@@ -20,12 +20,15 @@ String ServiceWorkerRouterInfo::GetRouterSourceTypeString(
   switch (source) {
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return "network";
-    case network::mojom::ServiceWorkerRouterSourceType::kRace:
-      return "race-network-and-fetch";
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
+      return "race-network-and-fetch-handler";
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return "cache";
     case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       return "fetch-event";
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+      return "race-network-and-cache";
   }
 }
 

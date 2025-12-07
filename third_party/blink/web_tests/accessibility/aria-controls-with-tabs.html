@@ -40,6 +40,12 @@ test((t) => {
     assert_equals(tab1.isSelected, false);
     assert_equals(tab2.isSelected, false);
 
+    // Set aria-expanded on one of the tabs. This removes selection because
+    // implicit selection is disallowed when aria-expanded is used on a tab,
+    // and there is not explicit selection.
+    document.getElementById("tab_2").setAttribute("aria-expanded", "false");
+    assert_equals(tab1.isSelected, false);
+
     // Now we set aria-selected to be true on tab1 so that it should become selected
     document.getElementById("tab_1").setAttribute("aria-selected", "true");
     assert_equals(tab1.isSelected, true);

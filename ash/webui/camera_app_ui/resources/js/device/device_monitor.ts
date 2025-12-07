@@ -40,7 +40,7 @@ export class DeviceMonitor {
    * Indicates whether the device list has been updated at least once
    * since initialization.
    */
-  private hasUpdated: boolean = false;
+  private hasUpdated = false;
 
   constructor(private readonly listener: (devices: DeviceInfo[]) => void) {
     if (loadTimeData.getBoard() === 'grunt') {
@@ -75,9 +75,8 @@ export class DeviceMonitor {
       const devicesInfo = await this.enumerateDevices();
       return await this.queryMojoDevicesInfo(devicesInfo);
     } catch (e) {
-      if (loadTimeData.isVideoCaptureDisallowed()) {
+      if (loadTimeData.isCCADisallowed()) {
         // The failure is expected due to the policy so don't throw any error.
-        // TODO(b/297317408): Show messages on the UI.
         // eslint-disable-next-line no-console
         console.log('Failed to load camera since it is blocked by policy');
       } else {

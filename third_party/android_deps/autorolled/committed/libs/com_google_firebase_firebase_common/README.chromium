@@ -1,0 +1,16 @@
+Name: firebase-common
+Short Name: firebase-common
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-common/22.0.1/firebase-common-22.0.1.aar
+Version: 22.0.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Common classes for Firebase SDKs.
+
+Local Modifications:
+No modifications.

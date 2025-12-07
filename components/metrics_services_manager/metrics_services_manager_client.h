@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 
 namespace metrics {
+class EnabledStateProvider;
 class MetricsServiceClient;
 class MetricsStateManager;
 }
@@ -29,12 +30,11 @@ namespace metrics_services_manager {
 // MetricsServicesManager to interact with its embedder.
 class MetricsServicesManagerClient {
  public:
-  virtual ~MetricsServicesManagerClient() {}
+  virtual ~MetricsServicesManagerClient() = default;
 
   // Methods that create the various services in the context of the embedder.
   virtual std::unique_ptr<variations::VariationsService>
-  CreateVariationsService(
-      variations::SyntheticTrialRegistry* synthetic_trial_registry) = 0;
+  CreateVariationsService() = 0;
   virtual std::unique_ptr<metrics::MetricsServiceClient>
   CreateMetricsServiceClient(
       variations::SyntheticTrialRegistry* synthetic_trial_registry) = 0;
@@ -47,11 +47,8 @@ class MetricsServicesManagerClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
-  // Returns whether metrics reporting is enabled.
-  virtual bool IsMetricsReportingEnabled() = 0;
-
-  // Returns whether metrics consent is given.
-  virtual bool IsMetricsConsentGiven() = 0;
+  // Returns the accessor for checking the metrics enabled state.
+  virtual const metrics::EnabledStateProvider& GetEnabledStateProvider() = 0;
 
   // Returns whether there are any OffTheRecord browsers/tabs open.
   virtual bool IsOffTheRecordSessionActive() = 0;

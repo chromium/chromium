@@ -5,10 +5,11 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {SeaPenImageId} from './constants.js';
-import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
-import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
-import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
+import type {SeaPenImageId} from './constants.js';
+import type {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {SeaPenActions} from './sea_pen_actions.js';
+import {SeaPenActionName} from './sea_pen_actions.js';
+import type {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
 
 function loadingReducer(
     state: SeaPenLoadingState, action: SeaPenActions): SeaPenLoadingState {
@@ -223,6 +224,16 @@ function shouldShowSeaPenIntroductionDialogReducer(
   }
 }
 
+function shouldShowSeaPenFreeformIntroductionDialogReducer(
+    state: boolean, action: SeaPenActions): boolean {
+  switch (action.name) {
+    case SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG:
+      return action.shouldShowFreeformDialog;
+    default:
+      return state;
+  }
+}
+
 function errorReducer(state: string|null, action: SeaPenActions): string|null {
   switch (action.name) {
     case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
@@ -269,6 +280,9 @@ export function seaPenReducer(
     currentSelected: currentSelectedReducer(state.currentSelected, action),
     pendingSelected:
         pendingSelectedReducer(state.pendingSelected, action, state),
+    shouldShowSeaPenFreeformIntroductionDialog:
+        shouldShowSeaPenFreeformIntroductionDialogReducer(
+            state.shouldShowSeaPenFreeformIntroductionDialog, action),
     shouldShowSeaPenIntroductionDialog:
         shouldShowSeaPenIntroductionDialogReducer(
             state.shouldShowSeaPenIntroductionDialog, action),

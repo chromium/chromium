@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 
@@ -25,9 +21,6 @@
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -35,14 +28,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -196,8 +185,12 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH},
       {"iconLabelBrowserSearch",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
+      {"iconLabelCameraAccessToggle",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CAMERA_ACCESS_TOGGLE},
       {"iconLabelContextMenu",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU},
+      {"iconLabelDoNotDisturb",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB},
       {"iconLabelEnableSelectToSpeak",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_SELECT_TO_SPEAK},
       {"iconLabelEnableOrToggleDictation",
@@ -248,28 +241,11 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_VIEW_ALL_APPS},
       {"iconLabelZoomToggle",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
+      {"blockQuickInsertKey",
+       IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE},
+      {"iconLabelQuickInsert", IDS_KEYBOARD_QUICK_INSERT_LABEL},
   };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // For official builds, only add the real string if the feature is enabled.
-  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
-    source->AddLocalizedString(
-        "blockRightAltKey",
-        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY_ERROR_MESSAGE);
-    source->AddLocalizedString("iconLabelRightAlt",
-                               IDS_KEYBOARD_RIGHT_ALT_LABEL);
-  } else {
-    source->AddLocalizedString("blockRightAltKey",
-                               IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
-    source->AddLocalizedString(
-        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-  }
-#else
-  source->AddLocalizedString("blockRightAltKey",
-                             IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
-  source->AddLocalizedString("iconLabelRightAlt",
-                             IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-#endif
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",
                     kShortcutCustomizationLearnMoreURL);
@@ -280,11 +256,7 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isCustomizationAllowed",
       Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
-  html_source->AddBoolean(
-      "isJellyEnabledForShortcutCustomization",
-      ash::features::IsJellyEnabledForShortcutCustomization());
-  html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
-                          features::IsInputDeviceSettingsSplitEnabled());
+  html_source->AddBoolean("isJellyEnabledForShortcutCustomization", true);
   html_source->AddBoolean(
       "hasFunctionKey",
       Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());
@@ -303,10 +275,7 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
 
   ash::EnableTrustedTypesCSP(source);
 
-  const auto resources =
-      base::make_span(kAshShortcutCustomizationAppResources,
-                      kAshShortcutCustomizationAppResourcesSize);
-  SetUpWebUIDataSource(source, resources,
+  SetUpWebUIDataSource(source, kAshShortcutCustomizationAppResources,
                        IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_INDEX_HTML);
   AddLocalizedStrings(source);
 
@@ -370,15 +339,6 @@ void ShortcutCustomizationAppUI::BindInterface(
   DCHECK(search_handler);
 
   search_handler->BindInterface(std::move(receiver));
-}
-
-void ShortcutCustomizationAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  // BindInterface should not be called unless jelly-colors and
-  // scanning-app-jelly flags are enabled.
-  CHECK(features::IsJellyEnabledForShortcutCustomization());
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShortcutCustomizationAppUI)

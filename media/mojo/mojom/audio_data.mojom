@@ -6,9 +6,6 @@ module media.mojom;
 
 // This defines a mojo transport format for an interleaved, signed
 // 16-bit audio buffer.
-// Marked [Stable], enabling its use across the LaCrOS/Ash boundary as part of
-// the speech recognition API.
-[Stable]
 struct AudioDataS16 {
   // Number of channels.
   int32 channel_count;

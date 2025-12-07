@@ -68,8 +68,9 @@ void WebTransportSimpleTestServer::Start() {
             net::test::ProofSourceForTestingChromium(), quic::QuicConfig(),
             quic::QuicCryptoServerConfig::ConfigOptions(),
             quic::AllSupportedVersions(), backend_.get());
-        bool result = server_->CreateUDPSocketAndListen(quic::QuicSocketAddress(
-            quic::QuicSocketAddress(quic::QuicIpAddress::Any6(), /*port=*/0)));
+        bool result = server_->CreateUDPSocketAndListen(
+            quic::QuicSocketAddress(quic::QuicSocketAddress(
+                quiche::QuicheIpAddress::Any6(), /*port=*/0)));
         CHECK(result);
         server_address = server_->server_address();
         event.Signal();

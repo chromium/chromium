@@ -5,13 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 
+#include <optional>
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
 #import "base/no_destructor.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/tab_group_sync_delegate.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class Browser;
 class BrowserList;
@@ -37,6 +39,29 @@ namespace tab_groups {
 // IOS Subclass of the TabGroupSyncDelegate.
 class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
  public:
+  // iOS derived class of the scoped batch operation designed to stop the
+  // updates of the WebStateLists.
+  class [[maybe_unused, nodiscard]] IOSScopedBatchOperation
+      : public TabGroupSyncDelegate::ScopedBatchOperation {
+   public:
+    IOSScopedBatchOperation(
+        std::vector<std::unique_ptr<WebStateList::ScopedBatchOperation>>
+            web_state_list_batches);
+
+    IOSScopedBatchOperation(IOSScopedBatchOperation&& other);
+
+    IOSScopedBatchOperation& operator=(IOSScopedBatchOperation&& other) {
+      web_state_list_batches_ = std::move(other.web_state_list_batches_);
+      return *this;
+    }
+
+    ~IOSScopedBatchOperation() override;
+
+   private:
+    std::vector<std::unique_ptr<WebStateList::ScopedBatchOperation>>
+        web_state_list_batches_;
+  };
+
   IOSTabGroupSyncDelegate(
       BrowserList* browser_list,
       TabGroupSyncService* sync_service,
@@ -47,24 +72,26 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   ~IOSTabGroupSyncDelegate() override;
 
   // TabGroupSyncDelegate.
-  void HandleOpenTabGroupRequest(
+  std::unique_ptr<ScopedBatchOperation> StartBatchOperation() override;
+  std::optional<LocalTabGroupID> HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
   void CreateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   void CloseLocalTabGroup(const LocalTabGroupID& local_tab_group_id) override;
+  void ConnectLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
+  void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   void UpdateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   std::vector<LocalTabGroupID> GetLocalTabGroupIds() override;
   std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
       const LocalTabGroupID& local_tab_group_id) override;
-  void CreateRemoteTabGroup(const LocalTabGroupID& local_tab_group_id) override;
+  std::set<LocalTabID> GetSelectedTabs() override;
+  std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
+  std::unique_ptr<SavedTabGroup> CreateSavedTabGroupFromLocalGroup(
+      const LocalTabGroupID& local_tab_group_id) override;
 
  private:
-  // Retrieves the browser associated with the scene with the highest level of
-  // activation.
-  Browser* GetMostActiveSceneBrowser();
-
   // Inserts the `distant_tab` using `tab_insertion_browser_agent` at
   // `web_state_index`.
   web::WebState* InsertDistantTab(

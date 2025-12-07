@@ -35,8 +35,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -93,8 +93,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   OneTimePermissionInteractiveUiTest()
       : geolocation_overrider_(
             std::make_unique<device::ScopedGeolocationOverrider>(6.66, 9.99)) {
-    feature_list_.InitWithFeatures({permissions::features::kOneTimePermission},
-                                   {});
   }
 
   OneTimePermissionInteractiveUiTest(
@@ -243,7 +241,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     histograms_.ExpectUniqueSample(
         permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
             content_setting_type),
-        static_cast<base::HistogramBase::Sample>(event), occ);
+        static_cast<base::HistogramBase::Sample32>(event), occ);
   }
 
   void OtpEventExpectBucketCount(ContentSettingsType content_setting_type,
@@ -252,7 +250,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     histograms_.ExpectBucketCount(
         permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
             content_setting_type),
-        static_cast<base::HistogramBase::Sample>(event), occ);
+        static_cast<base::HistogramBase::Sample32>(event), occ);
   }
 
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
@@ -265,8 +263,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   // The render frame host where JS calls will be executed.
   raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
       render_frame_host_ = nullptr;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -703,13 +699,13 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
                               active_expiry_is_active ? 2 : 0);
   histograms.ExpectBucketCount(
       kActiveExpiryHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           content_settings_uma_util::ContentSettingTypeToHistogramValue(
               ContentSettingsType::MEDIASTREAM_MIC)),
       active_expiry_is_active ? 1 : 0);
   histograms.ExpectBucketCount(
       kActiveExpiryHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           content_settings_uma_util::ContentSettingTypeToHistogramValue(
               ContentSettingsType::MEDIASTREAM_CAMERA)),
       active_expiry_is_active ? 1 : 0);
@@ -723,13 +719,13 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_CAMERA),
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       active_expiry_is_active ? 2 : 1);
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_CAMERA),
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME),
       active_expiry_is_active ? 1 : 0);
 
@@ -740,13 +736,13 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_MIC),
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       active_expiry_is_active ? 2 : 1);
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_MIC),
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME),
       active_expiry_is_active ? 1 : 0);
 

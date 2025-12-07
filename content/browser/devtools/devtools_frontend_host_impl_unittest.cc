@@ -157,6 +157,8 @@ constexpr char DevToolsFrontendHostImplTest::kStackTrace8[];
 constexpr char16_t DevToolsFrontendHostImplTest::kStackTrace16[];
 
 TEST_F(DevToolsFrontendHostImplTest, ErrorNotReportedWhenFeatureIsNotEnabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kEnableDevToolsJsErrorReporting);
   CallOnDidAddMessageToConsole(main_rfh(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceURL16, kStackTrace16);

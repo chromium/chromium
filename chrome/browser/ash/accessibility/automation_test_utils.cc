@@ -17,7 +17,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -48,7 +47,7 @@ gfx::Rect StringToRect(const std::string& script_result) {
 AutomationTestUtils::AutomationTestUtils(const std::string& extension_id)
     : extension_id_(extension_id) {}
 
-AutomationTestUtils::~AutomationTestUtils() {}
+AutomationTestUtils::~AutomationTestUtils() = default;
 
 void AutomationTestUtils::SetUpTestSupport() {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -164,14 +163,12 @@ void AutomationTestUtils::WaitForNodeWithClassNameAndValue(
 
 std::string AutomationTestUtils::ExecuteScriptInExtensionPage(
     const std::string& script) {
-  // Note SpokenFeedbackTest uses ExecuteScriptInBackgroundPageDeprecated.
-  // It seems that we must use the same method / callback style here for
-  // this to run successfully in the ChromeVox extension.
-  // TODO(b/290096429): Use non-deprecated method.
-  return extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      /*context=*/AccessibilityManager::Get()->profile(),
-      /*extension_id=*/extension_id_,
-      /*script=*/script);
+  base::Value value =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          /*context=*/AccessibilityManager::Get()->profile(),
+          /*extension_id=*/extension_id_,
+          /*script=*/script);
+  return value.GetString();
 }
 
 }  // namespace ash

@@ -1,25 +1,13 @@
 This is a testharness.js-based test.
-Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["outdent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<li>bar<br></li><ol><li>baz</li></ol></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<li>bar</li><ol><li>baz</li></ol></li><li>quz</li></ol>"
 [FAIL] [["outdent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li></ol><li>baz<br></li></li><li>quz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><ol><li>baz</li></ol><li>quz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><ol><li>baz</li></ol><li>quz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><ol><li>bar</li></ol><li>baz<br></li><li>quz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><ol><li>bar</li></ol><li>baz<br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li></ol><li>baz</li></li><li>quz</li></ol>"
 [FAIL] [["outdent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo<li>bar<br></li></li><li>baz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo<li>bar</li></li><li>baz</li></ol>"
 [FAIL] [["outdent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br><ol><li>baz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -39,55 +27,55 @@ Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p><ol><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li></ol>bar<br><ol><ol><li>baz</li></ol><li>quz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><div>quz</div>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><div>quz</div>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><p>quz</p>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><p>quz</p>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><div>quz</div>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><div>quz</div>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><p>quz</p>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><p>quz</p>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><div>bar</div><div>baz</div>" but got "<ol><li>foo</li></ol>bar<br>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><div>bar</div><div>baz</div>" but got "<ol><li>foo</li></ol>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p><p>baz</p>" but got "<ol><li>foo</li></ol>bar<br>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p><p>baz</p>" but got "<ol><li>foo</li></ol>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<br><ol><li>bar<br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<br><ol><li>bar</li><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<br><ol><li>bar<br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<br><ol><li>bar</li><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><div>baz</div>" but got "<ol><li>foo<li>bar<br></li></li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><div>baz</div>" but got "<ol><li>foo<li>bar</li></li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><p>baz</p>" but got "<ol><li>foo<li>bar<br></li></li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><p>baz</p>" but got "<ol><li>foo<li>bar</li></li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><div>baz</div>" but got "<ol><li>foo</li><li>bar<br></li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><div>baz</div>" but got "<ol><li>foo</li><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><p>baz</p>" but got "<ol><li>foo</li><li>bar<br></li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><p>baz</p>" but got "<ol><li>foo</li><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li></ol><div>baz</div><p>extra</p>" but got "foo<br>bar<br>baz<br><p>extra</p>"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li></ol><p>baz</p><p>extra</p>" but got "foo<br>bar<br>baz<br><p>extra</p>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li></ol><div>baz</div><p>extra</p>" but got "foo<br><ol><li>bar<br></li></ol>baz<br><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li></ol><div>baz</div><p>extra</p>" but got "foo<br><ol><li>bar</li></ol>baz<br><p>extra</p>"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li></ol><p>baz</p><p>extra</p>" but got "foo<br><ol><li>bar<br></li></ol>baz<br><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li></ol><p>baz</p><p>extra</p>" but got "foo<br><ol><li>bar</li></ol>baz<br><p>extra</p>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["outdent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo<li>bar<br></li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo<li>bar</li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><div>baz</div>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><div>baz</div>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><p>baz</p>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><p>baz</p>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol start=5><li>[bar]</ol>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div>bar</div>baz" but got "foo<br>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol start=5><li>[bar]</ol>baz" compare innerHTML
@@ -113,37 +101,25 @@ Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p style=\\"color:rgb(0, 0, 255)\\">bar</p>baz" but got "foo<br><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br>baz"
 [FAIL] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li value=\\"5\\">bar</li></ol>" but got "<ol><li>foo</li><li>bar<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li value=\\"5\\">bar</li></ol>" but got "<ol><li>foo</li><li>bar</li></ol>"
 [FAIL] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li value=\\"5\\">bar</li></ul>" but got "<ul><li>foo</li><li>bar<br></li></ul>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol start=5><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><li>baz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol id=abc><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><li>baz</li></ol>"
-[FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li value=\\"5\\">bar</li></ul>" but got "<ul><li>foo</li><li>bar</li></ul>"
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li>baz</li></ol>"
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span></li><li>baz</li></ol>"
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li>baz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol start=5><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><li>baz<br></li><li>quz</li></ol>"
-[FAIL] [["outdent",""]] "<ol><li>foo</li><ol id=abc><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><li>baz<br></li><li>quz</li></ol>"
-[FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span></li><li>baz</li></ol>"
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li><font color=\\"#0000ff\\">baz</font></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li><font color=\\"#0000ff\\">baz</font></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span></li><li>quz</li></ol>"
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li><span style=\\"text-indent:1em\\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span></li><li><span style=\\"text-indent:1em\\">baz</span></li><li>quz</li></ol>"
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li><span style=\\"text-indent:1em\\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span></li><li><span style=\\"text-indent:1em\\">baz</span></li><li>quz</li></ol>"
 [FAIL] [["outdent",""]] "<blockquote><ol><li>[foo]</ol></blockquote><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>extra</p>" but got "<blockquote>foo<br></blockquote><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>extra</p>" but got "<blockquote>foo</blockquote><p>extra</p>"
 [FAIL] [["outdent",""]] "<blockquote>foo<ol><li>[bar]</ol>baz</blockquote><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo</blockquote><ol><li>bar</li></ol><blockquote>baz</blockquote><p>extra</p>" but got "<blockquote>foo<br>bar<br>baz</blockquote><p>extra</p>"
 Harness: the test ran to completion.

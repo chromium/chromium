@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -261,7 +261,7 @@ class OriginTrialsTest : public testing::Test {
 
   // PersistTrialsFromTokens using |origin| as partition origin.
   void PersistTrialsFromTokens(const url::Origin& origin,
-                               base::span<std::string> tokens,
+                               base::span<const std::string> tokens,
                                base::Time time,
                                std::optional<ukm::SourceId> source_id) {
     origin_trials_.PersistTrialsFromTokens(origin,
@@ -652,8 +652,7 @@ TEST_F(OriginTrialsTest, SubdomainTokenNotDisabledBySubdomain) {
 
   // Clear the tokens for the subdomain that provided the token
   // (`trial_enabled_origin_subdomain_`).
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_,
-                          std::vector<std::string>(), kValidTime,
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, {}, kValidTime,
                           /*source_id=*/std::nullopt);
 
   {
@@ -695,8 +694,8 @@ TEST_F(OriginTrialsTest, SubdomainTokenDisabledByTokenOrigin) {
   }
 
   // Clear the tokens for the token origin (`trial_enabled_origin_`).
-  PersistTrialsFromTokens(trial_enabled_origin_, std::vector<std::string>(),
-                          kValidTime, /*source_id=*/std::nullopt);
+  PersistTrialsFromTokens(trial_enabled_origin_, {}, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =

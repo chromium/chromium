@@ -4,9 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterType, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
+import type {PrinterListEntry, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
+import {PrinterSettingsUserAction, PrinterStatusReason, PrinterType} from 'chrome://os-settings/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -70,7 +71,7 @@ suite('<settings-cups-printers-entry>', () => {
     const entryText =
         printerEntryTestElement.shadowRoot!.querySelector('.entry-text');
     assertTrue(!!entryText);
-    assertEquals(expectedPrinterName, entryText.textContent!.trim());
+    assertEquals(expectedPrinterName, entryText.textContent.trim());
   });
 
   test('savedPrinterShowsThreeDotMenu', () => {
@@ -160,7 +161,7 @@ suite('<settings-cups-printers-entry>', () => {
         'os-settings:printer-status-illo-orange', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusOutOfPaper'),
-        printerSubtext.textContent!.trim());
+        printerSubtext.textContent.trim());
 
     // Set to a good status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
@@ -173,7 +174,7 @@ suite('<settings-cups-printers-entry>', () => {
     assertEquals('os-settings:printer-status-illo-red', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusPrinterUnreachable'),
-        printerSubtext.textContent!.trim());
+        printerSubtext.textContent.trim());
 
     // Set to unknown status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id4');
@@ -276,6 +277,6 @@ suite('<settings-cups-printers-entry>', () => {
         loadTimeData.getString('savePrinter'),
         printerEntryTestElement.shadowRoot!
             .querySelector<HTMLElement>(
-                '#setupPrinterButton')!.textContent!.trim());
+                '#setupPrinterButton')!.textContent.trim());
   });
 });

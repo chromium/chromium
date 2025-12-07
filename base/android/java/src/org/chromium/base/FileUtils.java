@@ -10,12 +10,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,11 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
 /** Helper methods for dealing with Files. */
+@NullMarked
 @JNINamespace("base::android")
 public class FileUtils {
     private static final String TAG = "FileUtils";
@@ -73,26 +73,8 @@ public class FileUtils {
     }
 
     /**
-     * Delete the given files or directories by calling {@link #recursivelyDeleteFile(File)}. This
-     * supports deletion of content URIs.
-     * @param filePaths The file paths or content URIs to delete.
-     * @param canDelete the {@link Function} function used to check if the file can be deleted.
-     */
-    public static void batchDeleteFiles(
-            List<String> filePaths, Function<String, Boolean> canDelete) {
-        for (String filePath : filePaths) {
-            if (canDelete != null && !canDelete.apply(filePath)) continue;
-            if (ContentUriUtils.isContentUri(filePath)) {
-                ContentUriUtils.delete(filePath);
-            } else {
-                File file = new File(filePath);
-                if (file.exists()) recursivelyDeleteFile(file, canDelete);
-            }
-        }
-    }
-
-    /**
      * Get file size. If it is a directory, recursively get the size of all files within it.
+     *
      * @param file The file or directory.
      * @return The size in bytes.
      */
@@ -141,7 +123,6 @@ public class FileUtils {
     }
 
     /** Reads inputStream into a byte array. */
-    @NonNull
     public static byte[] readStream(InputStream inputStream) throws IOException {
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         FileUtils.copyStream(inputStream, data);
@@ -162,7 +143,7 @@ public class FileUtils {
         try {
             // Try to obtain a content:// URI, which is preferred to a file:// URI so that
             // receiving apps don't attempt to determine the file's mime type (which often fails).
-            uri = ContentUriUtils.getContentUriFromFile(file);
+            uri = FileProviderUtils.getContentUriFromFile(file);
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Could not create content uri: " + e);
         }
@@ -185,8 +166,7 @@ public class FileUtils {
     }
 
     /** Queries and decodes bitmap from content provider. */
-    @Nullable
-    public static Bitmap queryBitmapFromContentProvider(Context context, Uri uri) {
+    public static @Nullable Bitmap queryBitmapFromContentProvider(Context context, Uri uri) {
         try (ParcelFileDescriptor parcelFileDescriptor =
                 context.getContentResolver().openFileDescriptor(uri, "r")) {
             if (parcelFileDescriptor == null) {

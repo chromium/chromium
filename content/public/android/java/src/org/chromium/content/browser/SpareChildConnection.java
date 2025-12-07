@@ -7,17 +7,20 @@ package org.chromium.content.browser;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class is used to create a single spare ChildProcessConnection (usually early on during
  * start-up) that can then later be retrieved when a connection to a service is needed.
  */
+@NullMarked
 public class SpareChildConnection {
     private static final String TAG = "SpareChildConn";
 
@@ -25,14 +28,19 @@ public class SpareChildConnection {
     private final ChildConnectionAllocator mConnectionAllocator;
 
     // The actual spare connection.
-    private ChildProcessConnection mConnection;
+    private @Nullable ChildProcessConnection mConnection;
 
     // True when there is a spare connection and it is bound.
     private boolean mConnectionReady;
 
     // The callback that should be called when the connection becomes bound. Set when the connection
     // is retrieved.
-    private ChildProcessConnection.ServiceCallback mConnectionServiceCallback;
+    private ChildProcessConnection.@Nullable ServiceCallback mConnectionServiceCallback;
+
+    // The requested initial binding state passed in getConnection.
+    // If the connection is not yet bound when getConnection is called, we need to update
+    // the binding state in the onChildStarted callback.
+    @ChildBindingState @Nullable Integer mRequestedBindingState;
 
     /** Creates and binds a ChildProcessConnection using the specified parameters. */
     public SpareChildConnection(
@@ -46,6 +54,9 @@ public class SpareChildConnection {
                     @Override
                     public void onChildStarted() {
                         assert LauncherThread.runningOnLauncherThread();
+                        if (mRequestedBindingState != null) {
+                            updateInitialBindingState(mRequestedBindingState);
+                        }
                         mConnectionReady = true;
                         if (mConnectionServiceCallback != null) {
                             mConnectionServiceCallback.onChildStarted();
@@ -77,16 +88,19 @@ public class SpareChildConnection {
                     }
                 };
 
-        mConnection = mConnectionAllocator.allocate(context, serviceBundle, serviceCallback);
+        mConnection =
+                mConnectionAllocator.allocate(
+                        context, serviceBundle, serviceCallback, ChildBindingState.VISIBLE);
     }
 
     /**
      * @return a connection that has been bound or is being bound if one was created with the same
-     * allocator as the one provided, null otherwise.
+     *     allocator as the one provided, null otherwise.
      */
-    public ChildProcessConnection getConnection(
+    public @Nullable ChildProcessConnection getConnection(
             ChildConnectionAllocator allocator,
-            @NonNull final ChildProcessConnection.ServiceCallback serviceCallback) {
+            final ChildProcessConnection.ServiceCallback serviceCallback,
+            @ChildBindingState int requestedBindingState) {
         assert LauncherThread.runningOnLauncherThread();
         if (isEmpty() || mConnectionAllocator != allocator || mConnectionServiceCallback != null) {
             return null;
@@ -94,8 +108,10 @@ public class SpareChildConnection {
 
         mConnectionServiceCallback = serviceCallback;
 
+        assert mConnection != null;
         ChildProcessConnection connection = mConnection;
         if (mConnectionReady) {
+            updateInitialBindingState(requestedBindingState);
             // onChildStarted was already run. Call it explicitly on the passed serviceCallback.
             if (serviceCallback != null) {
                 // Post a task so the callback happens after the caller has retrieved the
@@ -109,6 +125,8 @@ public class SpareChildConnection {
                         });
             }
             clearConnection();
+        } else {
+            mRequestedBindingState = requestedBindingState;
         }
         return connection;
     }
@@ -128,7 +146,22 @@ public class SpareChildConnection {
     }
 
     @VisibleForTesting
-    public ChildProcessConnection getConnection() {
+    public @Nullable ChildProcessConnection getConnection() {
         return mConnection;
+    }
+
+    private void updateInitialBindingState(@ChildBindingState int requestedBindingState) {
+        ChildProcessConnection connection = mConnection;
+        assert connection != null;
+        // The spare connection is created with a visible binding. Adjust if needed.
+        if (requestedBindingState != ChildBindingState.VISIBLE) {
+            if (requestedBindingState == ChildBindingState.STRONG) {
+                connection.addStrongBinding();
+            } else if (requestedBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
+                connection.addNotPerceptibleBinding();
+            }
+            // For STRONG, NOT_PERCEPTIBLE, and WAIVED, we remove the original visible binding.
+            connection.removeVisibleBinding();
+        }
     }
 }

@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -25,6 +26,7 @@
 #include "services/resource_coordinator/memory_instrumentation/switches.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/importers/memory_tracker/graph_processor.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -86,6 +88,9 @@ memory_instrumentation::mojom::OSMemDumpPtr CreatePublicOSDump(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   os_dump->private_footprint_swap_kb =
       internal_os_dump.platform_private_footprint->vm_swap_bytes / 1024;
+  os_dump->mappings_count = internal_os_dump.mappings_count;
+  os_dump->pss_kb = internal_os_dump.pss_kb;
+  os_dump->swap_pss_kb = internal_os_dump.swap_pss_kb;
 #endif
   return os_dump;
 }
@@ -181,7 +186,7 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
       base::trace_event::MemoryDumpLevelOfDetailToString(
           request->args.level_of_detail));
 
-  request->failed_memory_dump_count = 0;
+  request->outcome = mojom::RequestOutcome::kSuccess;
 
   // Note: the service process itself is registered as a ClientProcess and
   // will be treated like any other process for the sake of memory dumps.
@@ -221,9 +226,9 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
 // so ask each process to do so Linux is special see below.
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     request->pending_responses.insert({client_info.pid, ResponseType::kOSDump});
-    client->RequestOSMemoryDump(request->memory_map_option(),
-                                {base::kNullProcessId},
-                                base::BindOnce(os_callback, client_info.pid));
+    client->RequestOSMemoryDump(
+        request->memory_map_option(), request->memory_dump_flags(),
+        {base::kNullProcessId}, base::BindOnce(os_callback, client_info.pid));
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
     // If we are in the single pid case, then we've already found the only
@@ -256,18 +261,18 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
     request->pending_responses.insert(
         {browser_client_pid, ResponseType::kOSDump});
     auto callback = base::BindOnce(os_callback, browser_client_pid);
-    browser_client->RequestOSMemoryDump(request->memory_map_option(), pids,
+    browser_client->RequestOSMemoryDump(request->memory_map_option(),
+                                        request->memory_dump_flags(), pids,
                                         std::move(callback));
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  // In this case, we have not found the pid we are looking for so increment
-  // the failed dump count and exit.
+  // The requested pid was not found. Update the outcome and exit.
   if (request->args.pid != base::kNullProcessId &&
       request->pending_responses.empty()) {
     DLOG(ERROR) << "Memory dump request failed due to missing pid "
                 << request->args.pid;
-    request->failed_memory_dump_count++;
+    request->outcome = mojom::RequestOutcome::kProcessNotFound;
     return;
   }
 }
@@ -299,7 +304,7 @@ void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
   request->pending_responses.insert(browser_client_pid);
   request->responses[browser_client_pid].process_id = browser_client_pid;
   auto callback = base::BindOnce(os_callback, browser_client_pid);
-  browser_client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES,
+  browser_client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES, {},
                                       desired_pids, std::move(callback));
 #else
   for (const auto& client_info : clients) {
@@ -309,7 +314,7 @@ void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
       request->responses[client_info.pid].process_id = client_info.pid;
       request->responses[client_info.pid].service_name =
           client_info.service_name;
-      client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES,
+      client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES, {},
                                   {base::kNullProcessId},
                                   base::BindOnce(os_callback, client_info.pid));
     }
@@ -497,7 +502,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
           DLOG(ERROR) << "Tracing is disabled or not setup yet while receiving "
                          "OS dump for pid "
                       << pid;
-          request->failed_memory_dump_count++;
+          request->outcome = mojom::RequestOutcome::kInvalidTracingState;
         }
       }
 
@@ -509,7 +514,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
           DLOG(ERROR) << "Tracing is disabled or not setup yet while receiving "
                          "Chrome dump for pid "
                       << pid;
-          request->failed_memory_dump_count++;
+          request->outcome = mojom::RequestOutcome::kInvalidTracingState;
         }
       }
     }
@@ -557,18 +562,21 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
 
     global_dump->process_dumps.push_back(std::move(pmd));
   }
-  global_dump->aggregated_metrics =
-      ComputeGlobalNativeCodeResidentMemoryKb(pid_to_os_dump);
-
-  const bool global_success = request->failed_memory_dump_count == 0;
+  if (!request->args.memory_footprint_only) {
+    global_dump->aggregated_metrics =
+        ComputeGlobalNativeCodeResidentMemoryKb(pid_to_os_dump);
+  } else {
+    global_dump->aggregated_metrics = mojom::AggregatedMetrics::New();
+  }
 
   // In the single process-case, we want to ensure that global_success
   // is true if and only if global_dump is not nullptr.
-  if (request->args.pid != base::kNullProcessId && !global_success) {
+  if (request->args.pid != base::kNullProcessId &&
+      request->outcome != mojom::RequestOutcome::kSuccess) {
     global_dump = nullptr;
   }
   auto& callback = request->callback;
-  std::move(callback).Run(global_success, request->dump_guid,
+  std::move(callback).Run(request->outcome, request->dump_guid,
                           std::move(global_dump));
 
   char guid_str[20];
@@ -576,7 +584,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       base::trace_event::MemoryDumpManager::kTraceCategory, "GlobalMemoryDump",
       TRACE_ID_LOCAL(request->dump_guid), "dump_guid", TRACE_STR_COPY(guid_str),
-      "success", global_success);
+      "success", request->outcome == mojom::RequestOutcome::kSuccess);
 }
 
 bool QueuedRequestDispatcher::AddChromeMemoryDumpToTrace(

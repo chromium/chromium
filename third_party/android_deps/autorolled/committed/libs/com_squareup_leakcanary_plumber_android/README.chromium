@@ -1,0 +1,19 @@
+Name: Auto installer for plumber-android-core
+Short Name: plumber-android
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/plumber-android/3.0-alpha-8/plumber-android-3.0-alpha-8.aar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.

@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // Converts an Input protobuf Message to a string that can be successfully read
 // by SkImageFilter::Deserialize and used as an image filter. The string
 // is essentially a valid flattened skia image filter. Note: We will sometimes
@@ -763,8 +765,7 @@ size_t Converter::PopStartSize() {
 template <typename T>
 void Converter::WriteNum(const T num) {
   if (sizeof(T) > 4) {
-    CHECK(num <= UINT32_MAX);
-    uint32_t four_byte_num = static_cast<uint32_t>(num);
+    auto four_byte_num = base::checked_cast<uint32_t>(num);
     char num_arr[sizeof(four_byte_num)];
     memcpy(num_arr, &four_byte_num, sizeof(four_byte_num));
     for (size_t idx = 0; idx < sizeof(four_byte_num); idx++)
@@ -778,8 +779,8 @@ void Converter::WriteNum(const T num) {
 }
 
 void Converter::InsertSize(const size_t size, const uint32_t position) {
-  char size_arr[sizeof(uint32_t)];
-  memcpy(size_arr, &size, sizeof(uint32_t));
+  std::array<char, sizeof(uint32_t)> size_arr;
+  memcpy(size_arr.data(), &size, sizeof(uint32_t));
 
   for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
     const size_t output__idx = position + idx - sizeof(uint32_t);
@@ -1319,7 +1320,7 @@ void Converter::Visit(const PathRef& path_ref) {
         case ValidVerb::kClose_Verb:
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
     WriteNum(num_points);
@@ -1381,12 +1382,7 @@ void Converter::Visit(const PathRef& path_ref) {
       WriteNum(verb.conic_weight());
   }
 
-  SkRect skrect;
-  if (!points.empty()) {
-    // Calling `setBoundsCheck()` with an empty array would set `skrect` to the
-    // empty rectangle, which it already is after default construction.
-    skrect.setBoundsCheck(points.data(), points.size());
-  }
+  SkRect skrect = SkRect::BoundsOrEmpty(points);
 
   WriteNum(skrect.fLeft);
   WriteNum(skrect.fTop);
@@ -1506,11 +1502,11 @@ void Converter::Visit(const ICC& icc) {
       tags_size = GetLut16Size(icc.color_space().a2b0().lut16()) +
                   kICCTagTableEntrySize;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     tag_count = 1;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   const uint32_t profile_size = sizeof(float) * 33 + tags_size;
@@ -1552,7 +1548,7 @@ void Converter::WriteTagSize(const char (&tag)[4], const size_t size) {
 
 // Writes num as a big endian number.
 void Converter::WriteBigEndian(base::StrictNumeric<uint32_t> num) {
-  auto arr = base::numerics::U32ToBigEndian(num);
+  auto arr = base::U32ToBigEndian(num);
   output_.insert(output_.end(), arr.begin(), arr.end());
 }
 
@@ -1785,8 +1781,8 @@ void Converter::WriteUInt8(T num) {
 }
 
 void Converter::WriteUInt16(uint16_t num) {
-  char num_arr[2];
-  memcpy(num_arr, &num, 2);
+  std::array<char, 2> num_arr;
+  memcpy(num_arr.data(), &num, 2);
   for (size_t idx = 0; idx < 2; idx++)
     output_.push_back(num_arr[idx]);
 }
@@ -2118,12 +2114,16 @@ void Converter::WriteFields(const Message& msg,
           break;
         }
         case FieldDescriptor::CPPTYPE_MESSAGE: {
+// TODO(crbug.com/393557657): update this.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
           Visit(reflection->GetRepeatedPtrField<google::protobuf::Message>(
               msg, field_descriptor));
+#pragma clang diagnostic pop
           break;
         }
         default: {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
       continue;
@@ -2157,7 +2157,7 @@ void Converter::WriteFields(const Message& msg,
         Visit(reflection->GetMessage(msg, field_descriptor));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   CHECK(!write_until_last ||

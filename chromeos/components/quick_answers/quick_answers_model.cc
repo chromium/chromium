@@ -4,22 +4,18 @@
 
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 
+#include <cmath>
+#include <compare>
+
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-double MaybeGetRatio(double value1, double value2) {
-  if (value1 == quick_answers::kInvalidRateTermValue ||
-      value2 == quick_answers::kInvalidRateTermValue) {
-    return quick_answers::kInvalidRateTermValue;
-  }
-
-  return std::max(value1, value2) / std::min(value1, value2);
-}
 
 int GetFormulaMessageId(bool is_multiply, bool is_approximate) {
   if (is_multiply) {
@@ -41,6 +37,21 @@ int GetFormulaMessageId(bool is_multiply, bool is_approximate) {
 
 namespace quick_answers {
 
+std::optional<quick_answers::Intent> ToIntent(IntentType intent_type) {
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      return quick_answers::Intent::kDefinition;
+    case IntentType::kTranslation:
+      return quick_answers::Intent::kTranslation;
+    case IntentType::kUnit:
+      return quick_answers::Intent::kUnitConversion;
+    case IntentType::kUnknown:
+      return std::nullopt;
+  }
+
+  NOTREACHED() << "Invalid intent type enum value provided";
+}
+
 PhoneticsInfo::PhoneticsInfo() = default;
 PhoneticsInfo::PhoneticsInfo(const PhoneticsInfo&) = default;
 PhoneticsInfo::~PhoneticsInfo() = default;
@@ -54,10 +65,6 @@ bool PhoneticsInfo::AudioUrlAvailable() const {
 }
 
 bool PhoneticsInfo::TtsAudioAvailable() const {
-  if (!tts_audio_enabled) {
-    return false;
-  }
-
   return !query_text.empty() && !locale.empty();
 }
 
@@ -68,12 +75,12 @@ IntentInfo::IntentInfo() = default;
 IntentInfo::IntentInfo(const IntentInfo& other) = default;
 IntentInfo::IntentInfo(const std::string& intent_text,
                        IntentType intent_type,
-                       const std::string& device_language,
-                       const std::string& source_language) {
+                       std::string_view device_language,
+                       std::string_view source_language) {
   this->intent_text = intent_text;
   this->intent_type = intent_type;
-  this->device_language = device_language;
-  this->source_language = source_language;
+  this->device_language = std::string(device_language);
+  this->source_language = std::string(source_language);
 }
 IntentInfo::~IntentInfo() = default;
 
@@ -177,21 +184,6 @@ std::optional<UnitConversion> UnitConversion::Create(
 
   return UnitConversion(source_rule, dest_rule);
 }
-bool UnitConversion::operator<(const UnitConversion& other) const {
-  double linear_term_ratio =
-      MaybeGetRatio(source_rule_.term_a(), dest_rule_.term_a());
-  if (linear_term_ratio == kInvalidRateTermValue) {
-    return false;
-  }
-
-  double other_linear_term_ratio =
-      MaybeGetRatio(other.source_rule_.term_a(), other.dest_rule_.term_a());
-  if (other_linear_term_ratio == kInvalidRateTermValue) {
-    return true;
-  }
-
-  return linear_term_ratio < other_linear_term_ratio;
-}
 double UnitConversion::ConvertSourceAmountToDestAmount(
     double source_amount) const {
   return dest_rule_.ConvertAmountFromSi(
@@ -239,6 +231,40 @@ std::optional<std::string> UnitConversion::GetConversionFormulaText() const {
       formula_message_id,
       base::UTF8ToUTF16(base::ToLowerASCII(source_rule_.category())),
       base::UTF8ToUTF16(BuildRoundedUnitAmountDisplayText(conversion_term_a)));
+}
+
+// static
+double UnitConversion::MaybeGetRatio(double value1, double value2) {
+  if (value1 == quick_answers::kInvalidRateTermValue ||
+      value2 == quick_answers::kInvalidRateTermValue) {
+    return quick_answers::kInvalidRateTermValue;
+  }
+
+  return std::max(value1, value2) / std::min(value1, value2);
+}
+
+std::weak_ordering operator<=>(const UnitConversion& a,
+                               const UnitConversion& b) {
+  double a_linear_term_ratio = UnitConversion::MaybeGetRatio(
+      a.source_rule_.term_a(), a.dest_rule_.term_a());
+  CHECK(std::isfinite(a_linear_term_ratio));
+  if (a_linear_term_ratio == kInvalidRateTermValue) {
+    return std::weak_ordering::greater;
+  }
+
+  double b_linear_term_ratio = UnitConversion::MaybeGetRatio(
+      b.source_rule_.term_a(), b.dest_rule_.term_a());
+  CHECK(std::isfinite(b_linear_term_ratio));
+  if (b_linear_term_ratio == kInvalidRateTermValue ||
+      a_linear_term_ratio < b_linear_term_ratio) {
+    return std::weak_ordering::less;
+  }
+
+  // Cannot use `<=>` on the doubles directly, since that returns a partial
+  // ordering, not a weak ordering.
+  return a_linear_term_ratio == b_linear_term_ratio
+             ? std::weak_ordering::equivalent
+             : std::weak_ordering::greater;
 }
 
 UnitConversionResult::UnitConversionResult() = default;

@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -16,7 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "extensions/common/features/feature_channel.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -43,10 +42,8 @@ class AccessibilityCommonTest
   }
 
   bool DoesComponentExtensionExist(const std::string& id) {
-    return extensions::ExtensionSystem::Get(
+    return extensions::ComponentLoader::Get(
                AccessibilityManager::Get()->profile())
-        ->extension_service()
-        ->component_loader()
         ->Exists(id);
   }
 
@@ -70,8 +67,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityCommonTest, ToggleFeatures) {
   {
     extensions::ExtensionHostTestHelper host_helper(
         manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
+    extensions::ExtensionRegistryTestHelper observer(
+        extension_misc::kAccessibilityCommonExtensionId, manager->profile());
     pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
-    host_helper.WaitForHostCompletedFirstLoad();
+    if (observer.WaitForManifestVersion() == 3) {
+      observer.WaitForServiceWorkerStart();
+    } else {
+      host_helper.WaitForHostCompletedFirstLoad();
+    }
   }
 
   EXPECT_EQ(1U, enabled_features.size());
@@ -122,33 +125,25 @@ INSTANTIATE_TEST_SUITE_P(AllChannels,
                                          version_info::Channel::CANARY,
                                          version_info::Channel::DEFAULT));
 
-class AccessibilityCommonFazeGazeTest : public AccessibilityCommonTest {
+class AccessibilityCommonFaceGazeTest : public AccessibilityCommonTest {
  public:
-  AccessibilityCommonFazeGazeTest() = default;
-  ~AccessibilityCommonFazeGazeTest() override = default;
-  AccessibilityCommonFazeGazeTest(const AccessibilityCommonFazeGazeTest&) =
+  AccessibilityCommonFaceGazeTest() = default;
+  ~AccessibilityCommonFaceGazeTest() override = default;
+  AccessibilityCommonFaceGazeTest(const AccessibilityCommonFaceGazeTest&) =
       delete;
-  AccessibilityCommonFazeGazeTest& operator=(
-      const AccessibilityCommonFazeGazeTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(features::kAccessibilityFaceGaze);
-    AccessibilityCommonTest::SetUpCommandLine(command_line);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  AccessibilityCommonFaceGazeTest& operator=(
+      const AccessibilityCommonFaceGazeTest&) = delete;
 };
 
 INSTANTIATE_TEST_SUITE_P(AllChannels,
-                         AccessibilityCommonFazeGazeTest,
+                         AccessibilityCommonFaceGazeTest,
                          testing::Values(version_info::Channel::STABLE,
                                          version_info::Channel::BETA,
                                          version_info::Channel::DEV,
                                          version_info::Channel::CANARY,
                                          version_info::Channel::DEFAULT));
 
-IN_PROC_BROWSER_TEST_P(AccessibilityCommonFazeGazeTest, ToggleFazeGaze) {
+IN_PROC_BROWSER_TEST_P(AccessibilityCommonFaceGazeTest, ToggleFaceGaze) {
   extensions::ScopedCurrentChannel channel(GetParam());
 
   AccessibilityManager* manager = AccessibilityManager::Get();
@@ -165,8 +160,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityCommonFazeGazeTest, ToggleFazeGaze) {
   // to load.
   extensions::ExtensionHostTestHelper host_helper(
       manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
+  extensions::ExtensionRegistryTestHelper observer(
+      extension_misc::kAccessibilityCommonExtensionId, manager->profile());
   pref_service->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, true);
-  host_helper.WaitForHostCompletedFirstLoad();
+  if (observer.WaitForManifestVersion() == 3) {
+    observer.WaitForServiceWorkerStart();
+  } else {
+    host_helper.WaitForHostCompletedFirstLoad();
+  }
 
   EXPECT_EQ(1U, enabled_features.size());
   EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityFaceGazeEnabled));

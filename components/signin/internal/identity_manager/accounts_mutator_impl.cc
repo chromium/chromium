@@ -4,7 +4,6 @@
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -36,23 +35,19 @@ AccountsMutatorImpl::AccountsMutatorImpl(
 #endif
 }
 
-AccountsMutatorImpl::~AccountsMutatorImpl() {}
+AccountsMutatorImpl::~AccountsMutatorImpl() = default;
 
 CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     const std::string& refresh_token,
     bool is_under_advanced_protection,
     signin_metrics::AccessPoint access_point,
-    signin_metrics::SourceForRefreshTokenOperation source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    ,
-    const std::vector<uint8_t>& wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+    signin_metrics::SourceForRefreshTokenOperation source,
+    const std::vector<uint8_t>& wrapped_binding_key) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
   CoreAccountId account_id =
       account_tracker_service_->SeedAccountInfo(gaia_id, email, access_point);
   account_tracker_service_->SetIsAdvancedProtectionAccount(
@@ -63,14 +58,11 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
   // tracker, which is not intended.
   account_tracker_service_->CommitPendingAccountChanges();
 
-  token_service_->UpdateCredentials(account_id, refresh_token, source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                    ,
-                                    wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+  token_service_->UpdateCredentials(account_id, refresh_token, source,
+                                    wrapped_binding_key);
 
   return account_id;
+#endif
 }
 
 void AccountsMutatorImpl::UpdateAccountInfo(
@@ -92,39 +84,41 @@ void AccountsMutatorImpl::UpdateAccountInfo(
 void AccountsMutatorImpl::RemoveAccount(
     const CoreAccountId& account_id,
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
   token_service_->RevokeCredentials(account_id, source);
+#endif
 }
 
 void AccountsMutatorImpl::RemoveAllAccounts(
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
   token_service_->RevokeAllCredentials(source);
+#endif
 }
 
 void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CoreAccountInfo primary_account_info =
       primary_account_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin);
   AddOrUpdateAccount(primary_account_info.gaia, primary_account_info.email,
                      GaiaConstants::kInvalidRefreshToken,
                      primary_account_info.is_under_advanced_protection,
-                     signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, source);
+                     signin_metrics::AccessPoint::kUnknown, source);
+#endif
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
                                       const CoreAccountId& account_id) {
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      primary_account_manager_->GetPrimaryAccountId(
+  if (primary_account_manager_->GetPrimaryAccountId(
           signin::ConsentLevel::kSignin) == account_id) {
     // Remove to avoid the primary account remaining in the original
     // profile without a refresh token which might lead to a crash. The account
@@ -149,8 +143,8 @@ void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-CoreAccountId AccountsMutatorImpl::SeedAccountInfo(const std::string& gaia_id,
+#if BUILDFLAG(IS_CHROMEOS)
+CoreAccountId AccountsMutatorImpl::SeedAccountInfo(const GaiaId& gaia_id,
                                                    const std::string& email) {
   return account_tracker_service_->SeedAccountInfo(gaia_id, email);
 }

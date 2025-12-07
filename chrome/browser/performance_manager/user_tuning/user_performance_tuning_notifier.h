@@ -18,8 +18,8 @@ namespace performance_manager::user_tuning {
 // the graph and notify the UserPerformanceTuningManager when certain thresholds
 // are met.
 class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
-                                      public PageNode::ObserverDefaultImpl,
-                                      public SystemNode::ObserverDefaultImpl {
+                                      public PageNodeObserver,
+                                      public SystemNodeObserver {
  public:
   // The tab count and memory % that, when reached, trigger an opt-in bubble for
   // memory saver.
@@ -38,12 +38,12 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
     virtual void NotifyTabCountThresholdReached() = 0;
 
     // Called when the current total resident set size of all processes exceeds
-    // `resident_set_threshold_kb`.
+    // `resident_set_threshold`.
     virtual void NotifyMemoryThresholdReached() = 0;
   };
 
   UserPerformanceTuningNotifier(std::unique_ptr<Receiver> delegate,
-                                uint64_t resident_set_threshold_kb,
+                                base::ByteCount resident_set_threshold,
                                 int tab_count_threshold);
   ~UserPerformanceTuningNotifier() override;
 
@@ -51,13 +51,13 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override;
 
-  // SystemNode::ObserverDefaultImpl:
+  // SystemNodeObserver:
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override;
 
  private:
@@ -68,8 +68,8 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   std::unique_ptr<
       performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
       metrics_interest_token_;
-  const uint64_t resident_set_threshold_kb_ = 0;
-  uint64_t previous_total_rss_ = 0;
+  const base::ByteCount resident_set_threshold_;
+  base::ByteCount previous_total_rss_;
 
   const int tab_count_threshold_ = 0;
   int tab_count_ = 0;

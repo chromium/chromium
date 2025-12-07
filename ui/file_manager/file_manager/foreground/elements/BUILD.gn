@@ -20,4 +20,5 @@ html_to_wrapper("polymer_elements") {
   ]
   scheme = "relative"
   minify = true
+  template = "polymer"
 }

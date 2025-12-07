@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/android/device_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -19,11 +20,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -64,7 +64,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   ObserverWaiter(const ObserverWaiter&) = delete;
   ObserverWaiter& operator=(const ObserverWaiter&) = delete;
 
-  ~ObserverWaiter() override {}
+  ~ObserverWaiter() override = default;
 
   // Waits till the OnDataAvailable() callback is called.
   void WaitForDataAvailable() {
@@ -232,14 +232,14 @@ class TestInstallableManager : public InstallableManager {
 class AddToHomescreenDataFetcherTest
     : public content::RenderViewHostTestHarness {
  public:
-  AddToHomescreenDataFetcherTest() {}
+  AddToHomescreenDataFetcherTest() = default;
 
   AddToHomescreenDataFetcherTest(const AddToHomescreenDataFetcherTest&) =
       delete;
   AddToHomescreenDataFetcherTest& operator=(
       const AddToHomescreenDataFetcherTest&) = delete;
 
-  ~AddToHomescreenDataFetcherTest() override {}
+  ~AddToHomescreenDataFetcherTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -329,8 +329,6 @@ class AddToHomescreenDataFetcherTest
   void SetShouldManifestTimeOut(bool should_time_out) {
     installable_manager_->SetShouldManifestTimeOut(should_time_out);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   class NullLargeIconService : public favicon::LargeIconService {
@@ -607,9 +605,6 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestDisplayMode) {
 
 TEST_F(AddToHomescreenDataFetcherTest,
        UniversalInstallEmptyManifestAtRootScope) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallRootScopeNoManifest}, {});
-
   GURL document_url = GURL("https://www.example.com/index.html");
   NavigateAndCommit(document_url);
 
@@ -640,9 +635,6 @@ TEST_F(AddToHomescreenDataFetcherTest,
 
 TEST_F(AddToHomescreenDataFetcherTest,
        UniversalInstallEmptyManifestNotRootScope) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallRootScopeNoManifest}, {});
-
   GURL document_url = GURL("https://www.example.com/scope/index.html");
   NavigateAndCommit(document_url);
 
@@ -659,10 +651,19 @@ TEST_F(AddToHomescreenDataFetcherTest,
 
   ObserverWaiter waiter;
   std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
-  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
-             blink::mojom::DisplayMode::kBrowser,
-             AddToHomescreenParams::AppType::SHORTCUT,
-             InstallableStatusCode::NO_MANIFEST);
+  if (base::android::device_info::is_desktop()) {
+    // Desktop Android expects a standalone DIY WebAPK.
+    RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+               blink::mojom::DisplayMode::kStandalone,
+               AddToHomescreenParams::AppType::WEBAPK_DIY,
+               InstallableStatusCode::NO_MANIFEST);
+  } else {
+    // Regular Android expects a shortcut.
+    RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+               blink::mojom::DisplayMode::kBrowser,
+               AddToHomescreenParams::AppType::SHORTCUT,
+               InstallableStatusCode::NO_MANIFEST);
+  }
 
   EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
   EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);

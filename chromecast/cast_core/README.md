@@ -10,25 +10,12 @@ Cast Core library.
 
 ## Build
 
-Building of this directory can be done by building the
-`chromecast/cast_core:core_runtime_simple` target with the following build
-flags:
+Build flags for Cast Web Runtime can be found in `//chromecast/build/args/product/`:
+ - atv* configs target Android TV
+ - linuxtv* configs target Linux-based TVs.
 
-```
-is_debug = true
-dcheck_always_on = true
-is_component_build = false
-symbol_level = 2
+Building of this directory can be done by building the `chromecast/cast_core:core_runtime_simple` target.
 
-is_castos = true
-enable_cast_receiver = true
-cast_streaming_enable_remoting = true
-enable_cast_audio_renderer = false
-enable_cast_renderer = false
-
-ffmpeg_branding = "Chrome"
-proprietary_codecs = true
-```
 
 ## Run
 

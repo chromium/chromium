@@ -5,12 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_MODEL_FACTORY_H_
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_MODEL_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class ReadingListModel;
 
 namespace reading_list {
@@ -18,17 +17,13 @@ class DualReadingListModel;
 }  // namespace reading_list
 
 // Singleton that creates the ReadingListModel and associates that service with
-// ChromeBrowserState.
-class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
+// a profile.
+class ReadingListModelFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static ReadingListModel* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static ReadingListModel* GetForProfile(ProfileIOS* profile);
   static reading_list::DualReadingListModel*
-  GetAsDualReadingListModelForBrowserState(ChromeBrowserState* browser_state);
+  GetAsDualReadingListModelForProfile(ProfileIOS* profile);
   static ReadingListModelFactory* GetInstance();
-
-  ReadingListModelFactory(const ReadingListModelFactory&) = delete;
-  ReadingListModelFactory& operator=(const ReadingListModelFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ReadingListModelFactory>;
@@ -36,11 +31,9 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
   ReadingListModelFactory();
   ~ReadingListModelFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_MODEL_FACTORY_H_

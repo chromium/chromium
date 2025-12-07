@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/lru_cache.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -66,7 +65,7 @@ void GetGlyphWidthAndExtents(const SkFont& font,
   SkRect sk_bounds;
   uint16_t glyph = static_cast<uint16_t>(codepoint);
 
-  font.getWidths(&glyph, 1, &sk_width, &sk_bounds);
+  font.getWidthsBounds({&glyph, 1}, {&sk_width, 1}, {&sk_bounds, 1}, nullptr);
   if (width)
     *width = SkiaScalarToHarfBuzzUnits(sk_width);
   if (extents) {
@@ -140,7 +139,7 @@ hb_position_t GetGlyphKerning(FontData* font_data,
                                static_cast<uint16_t>(second_glyph) };
   int32_t kerning_adjustments[1] = { 0 };
 
-  if (!typeface->getKerningPairAdjustments(glyphs, 2, kerning_adjustments))
+  if (!typeface->getKerningPairAdjustments(glyphs, kerning_adjustments))
     return 0;
 
   SkScalar upm = SkIntToScalar(typeface->getUnitsPerEm());
@@ -210,7 +209,10 @@ class FontFuncs {
   raw_ptr<hb_font_funcs_t> font_funcs_;
 };
 
-base::LazyInstance<FontFuncs>::Leaky g_font_funcs = LAZY_INSTANCE_INITIALIZER;
+FontFuncs& GetFontFuncs() {
+  static base::NoDestructor<FontFuncs> font_funcs;
+  return *font_funcs;
+}
 
 // Returns the raw data of the font table |tag|.
 hb_blob_t* GetFontTable(hb_face_t* face, hb_tag_t tag, void* user_data) {
@@ -254,8 +256,9 @@ class TypefaceData {
   TypefaceData& operator=(const TypefaceData&) = delete;
 
   ~TypefaceData() {
-    hb_face_destroy(face_);
+    auto* tmp = face_.get();
     face_ = nullptr;
+    hb_face_destroy(tmp);
   }
 
   hb_face_t* face() { return face_; }
@@ -304,7 +307,7 @@ hb_font_t* CreateHarfBuzzFont(sk_sp<SkTypeface> skia_face,
   // TODO(ckocagil): Do we need to update these params later?
   internal::ApplyRenderParams(params, subpixel_rendering_suppressed,
                               &hb_font_data->font_);
-  hb_font_set_funcs(harfbuzz_font, g_font_funcs.Get().get(), hb_font_data,
+  hb_font_set_funcs(harfbuzz_font, GetFontFuncs().get(), hb_font_data,
                     DeleteByType<FontData>);
   hb_font_make_immutable(harfbuzz_font);
   return harfbuzz_font;

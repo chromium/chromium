@@ -1,0 +1,19 @@
+Name: JSpecify annotations
+Short Name: jspecify
+URL: https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar
+Version: 1.0.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+An artifact of well-named and well-specified annotations to power static analysis checks
+
+See also: http://jspecify.org/
+
+
+Local Modifications:
+No modifications.

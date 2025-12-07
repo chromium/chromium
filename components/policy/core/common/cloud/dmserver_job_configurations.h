@@ -15,7 +15,6 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
-#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "url/gurl.h"
 
@@ -95,6 +94,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
     DMAuth auth_data = DMAuth::NoAuth();
     std::optional<std::string> profile_id = std::nullopt;
     std::optional<std::string> oauth_token = std::nullopt;
+    bool use_cookies = false;
     scoped_refptr<network::SharedURLLoaderFactory> factory;
     DMServerJobConfiguration::Callback callback;
   };

@@ -58,12 +58,11 @@ void VideoFrameReceiverOnTaskRunner::OnFrameDropped(
       base::BindOnce(&VideoFrameReceiver::OnFrameDropped, receiver_, reason));
 }
 
-void VideoFrameReceiverOnTaskRunner::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void VideoFrameReceiverOnTaskRunner::OnNewCaptureVersion(
+    media::CaptureVersion capture_version) {
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoFrameReceiver::OnNewSubCaptureTargetVersion,
-                     receiver_, sub_capture_target_version));
+      FROM_HERE, base::BindOnce(&VideoFrameReceiver::OnNewCaptureVersion,
+                                receiver_, capture_version));
 }
 
 void VideoFrameReceiverOnTaskRunner::OnFrameWithEmptyRegionCapture() {

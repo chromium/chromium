@@ -10,11 +10,13 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -27,6 +29,8 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ProfileKeyedMapTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Profile mProfile1;
     @Mock private Profile mIncognitoProfile1;
     @Mock private Profile mProfile2;
@@ -34,15 +38,13 @@ public class ProfileKeyedMapTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         Mockito.when(mProfile1.getOriginalProfile()).thenReturn(mProfile1);
         Mockito.when(mIncognitoProfile1.getOriginalProfile()).thenReturn(mProfile1);
     }
 
     @Test
     public void testReusesObjects() {
-        ProfileKeyedMap<Object> map = new ProfileKeyedMap<Object>(NO_REQUIRED_CLEANUP_ACTION);
+        ProfileKeyedMap<Object> map = new ProfileKeyedMap<>(NO_REQUIRED_CLEANUP_ACTION);
 
         Object obj1 = new Object();
         Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
@@ -52,8 +54,7 @@ public class ProfileKeyedMapTest {
     @Test
     public void testCleanupOnProfileDestruction() {
         Set<Object> destroyedObjects = new HashSet<>();
-        ProfileKeyedMap<Object> map =
-                new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
+        ProfileKeyedMap<Object> map = new ProfileKeyedMap<>((obj) -> destroyedObjects.add(obj));
 
         Object obj1 = new Object();
         Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
@@ -65,8 +66,7 @@ public class ProfileKeyedMapTest {
     @Test
     public void testDestroy() {
         Set<Object> destroyedObjects = new HashSet<>();
-        ProfileKeyedMap<Object> map =
-                new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
+        ProfileKeyedMap<Object> map = new ProfileKeyedMap<>((obj) -> destroyedObjects.add(obj));
 
         Object obj1 = new Object();
         Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
@@ -82,11 +82,9 @@ public class ProfileKeyedMapTest {
     @Test
     public void testMapsAreIndependent() {
         Set<Object> destroyedObjects = new HashSet<>();
-        ProfileKeyedMap<Object> map1 =
-                new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
+        ProfileKeyedMap<Object> map1 = new ProfileKeyedMap<>((obj) -> destroyedObjects.add(obj));
 
-        ProfileKeyedMap<Object> map2 =
-                new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
+        ProfileKeyedMap<Object> map2 = new ProfileKeyedMap<>((obj) -> destroyedObjects.add(obj));
 
         Object obj1 = new Object();
         Assert.assertEquals(obj1, map1.getForProfile(mProfile1, (profile) -> obj1));
@@ -121,7 +119,7 @@ public class ProfileKeyedMapTest {
     @Test
     public void testProfileSelection_OWN_INSTANCE() {
         ProfileKeyedMap<Object> map =
-                new ProfileKeyedMap<Object>(
+                new ProfileKeyedMap<>(
                         ProfileKeyedMap.ProfileSelection.OWN_INSTANCE, NO_REQUIRED_CLEANUP_ACTION);
         Object originalObj1 = new Object();
         Object incognitoObj1 = new Object();
@@ -133,7 +131,7 @@ public class ProfileKeyedMapTest {
     @Test
     public void testProfileSelection_REDIRECTED_TO_ORIGINAL() {
         ProfileKeyedMap<Object> map =
-                new ProfileKeyedMap<Object>(
+                new ProfileKeyedMap<>(
                         ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
                         NO_REQUIRED_CLEANUP_ACTION);
         Object originalObj1 = new Object();

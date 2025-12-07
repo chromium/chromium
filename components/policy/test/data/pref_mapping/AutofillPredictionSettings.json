@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed",
+      "default_value": 0,
+      "default_for_enterprise_users": 1,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+]

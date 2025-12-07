@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 
 #include <drm_fourcc.h>
@@ -13,7 +18,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
@@ -35,12 +43,12 @@
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check does not account for BUILDFLAG(), so including this header will
-// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// make gn check fail for builds other than ChromeOS. See gn help nogncheck
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(jkardatzke): Remove these once they are in linux/videodev2.h.
 #define V4L2_CID_MPEG_MTK_BASE (0x00990000 | 0x2000)
@@ -147,9 +155,9 @@ std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
   DCHECK(decoder_task_runner->RunsTasksInCurrentSequence());
   DCHECK(client);
 
-  return base::WrapUnique<VideoDecoderMixin>(
-      new V4L2VideoDecoder(std::move(media_log), std::move(decoder_task_runner),
-                           std::move(client), new V4L2Device()));
+  return base::WrapUnique<VideoDecoderMixin>(new V4L2VideoDecoder(
+      std::move(media_log), std::move(decoder_task_runner), std::move(client),
+      base::MakeRefCounted<V4L2Device>()));
 }
 
 // static
@@ -243,7 +251,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   cdm_context_ref_ = nullptr;
 
   if (config.is_encrypted()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     VLOGF(1) << "Encrypted content is not supported";
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
@@ -331,14 +339,6 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
             .AddCause(V4L2Status(V4L2Status::Codes::kNoProfile)));
     return;
   }
-  if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kAV1 &&
-      !base::FeatureList::IsEnabled(kChromeOSHWAV1Decoder)) {
-    VLOGF(1) << "AV1 hardware video decoding is disabled";
-    std::move(init_cb).Run(
-        DecoderStatus(DecoderStatus::Codes::kNotInitialized)
-            .AddCause(V4L2Status(V4L2Status::Codes::kNoProfile)));
-    return;
-  }
 
   V4L2Status status = InitializeBackend();
   if (status != V4L2Status::Codes::kOk) {
@@ -365,18 +365,16 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
 bool V4L2VideoDecoder::NeedsBitstreamConversion() const {
   DCHECK(output_cb_) << "V4L2VideoDecoder hasn't been initialized";
-  NOTREACHED_IN_MIGRATION();
-  return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
-         (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX);
+  NOTREACHED();
 }
 
 bool V4L2VideoDecoder::CanReadWithoutStalling() const {
   NOTIMPLEMENTED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int V4L2VideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoDecoderType V4L2VideoDecoder::GetDecoderType() const {
@@ -501,7 +499,7 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
 
 void V4L2VideoDecoder::AllocateSecureBuffer(uint32_t size,
                                             SecureBufferAllocatedCB callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   pending_secure_allocate_callbacks_++;
   // Wrap this with a default handler if it gets dropped somehow or otherwise we
   // could hang waiting to finish init.
@@ -515,8 +513,8 @@ void V4L2VideoDecoder::AllocateSecureBuffer(uint32_t size,
                   weak_this_for_callbacks_.GetWeakPtr(), std::move(callback))),
               mojo::PlatformHandle()));
 #else
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
@@ -556,7 +554,6 @@ void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
   ctrls.controls = &ctrl;
 
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls)) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     PLOG(ERROR) << "Failed getting secure buffer identifier for FD "
                 << secure_fd.get();
     SetState(State::kError);

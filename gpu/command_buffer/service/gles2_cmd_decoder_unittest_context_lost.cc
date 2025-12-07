@@ -131,7 +131,6 @@ TEST_P(GLES2DecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
   init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   const GLsync kGlSync = reinterpret_cast<GLsync>(0xdeadbeef);

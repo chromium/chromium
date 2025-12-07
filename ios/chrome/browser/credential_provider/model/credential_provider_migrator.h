@@ -13,6 +13,19 @@ namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
+// Values of the UMA Passkeys.IOSMigration histogram. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class PasskeysMigrationStatus {
+  // New passkey from the CPE migrated to Chrome.
+  kPasskeyCreated = 0,
+  // Existing passkey used by the CPE updated in Chrome.
+  kPasskeyUpdated = 1,
+  // An invalid passkey was sent from the CPE.
+  kInvalidPasskey = 2,
+  kMaxValue = kInvalidPasskey
+};
+
 @interface CredentialProviderMigrator : NSObject
 - (instancetype)
     initWithUserDefaults:(NSUserDefaults*)userDefaults

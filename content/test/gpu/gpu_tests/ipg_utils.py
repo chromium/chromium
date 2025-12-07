@@ -18,18 +18,30 @@ An easy way to use the APIs are:
    5 seconds, call AnalyzeIPGLogFile(skip_in_sec=5).
 """
 
+import dataclasses
 import datetime
 import json
 import logging
 import os
 import subprocess
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from gpu_tests.util import host_information
 
-SummaryType = Dict[str, Dict[str, float]]
-ResultType = Dict[str, Any]
-MetricType = Dict[str, Union[List[str], List[float]]]
+SummaryType = dict[str, dict[str, float]]
+ResultType = dict[str, Any]
+MetricType = dict[str, list[str] | list[float]]
+
+
+@dataclasses.dataclass
+class _LogFileColumn:
+  """Represents the parsed data from a column in an IPG log file."""
+  # The index of this column within the file.
+  index: int
+  # The name of the column.
+  label: str
+  # The sum of all rows within the column.
+  total: float = 0.0
 
 
 def LocateIPG() -> str:
@@ -47,7 +59,7 @@ def LocateIPG() -> str:
 
 
 def GenerateIPGLogFilename(log_prefix: str = 'PowerLog',
-                           log_dir: Optional[str] = None,
+                           log_dir: str | None = None,
                            current_run: int = 1,
                            total_runs: int = 1,
                            timestamp: bool = False) -> str:
@@ -55,23 +67,23 @@ def GenerateIPGLogFilename(log_prefix: str = 'PowerLog',
   log_dir = log_dir or os.getcwd()
   log_dir = os.path.abspath(log_dir)
   if total_runs > 1:
-    log_prefix = '%s_%d_%d' % (log_prefix, current_run, total_runs)
+    log_prefix = f'{log_prefix}_{current_run}_{total_runs}'
   if timestamp:
     now = datetime.datetime.now()
-    log_prefix = '%s_%s' % (log_prefix, now.strftime('%Y%m%d%H%M%S'))
+    log_prefix = f'{log_prefix}_{now.strftime("%Y%m%d%H%M%S")}'
   return os.path.join(log_dir, log_prefix + '.csv')
 
 
 def RunIPG(duration_in_s: int = 60,
            resolution_in_ms: int = 100,
-           logfile: Optional[str] = None) -> None:
+           logfile: str | None = None) -> None:
   intel_power_gadget_path = LocateIPG()
-  command = ('"%s" -duration %d -resolution %d' %
-             (intel_power_gadget_path, duration_in_s, resolution_in_ms))
+  command = (f'"{intel_power_gadget_path}" -duration {duration_in_s} '
+             f'-resolution {resolution_in_ms}')
   if not logfile:
     # It is not necessary but allows to print out the log path for debugging.
     logfile = GenerateIPGLogFilename()
-  command = command + (' -file %s' % logfile)
+  command = f'{command} -file {logfile}'
   logging.debug('Running: %s', command)
   try:
     output = subprocess.check_output(command,
@@ -84,56 +96,56 @@ def RunIPG(duration_in_s: int = 60,
   logging.debug(output)
 
 
-def AnalyzeIPGLogFile(logfile: Optional[str] = None,
+def AnalyzeIPGLogFile(logfile: str | None = None,
                       skip_in_sec: int = 0) -> ResultType:
   if not logfile:
     logfile = GenerateIPGLogFilename()
   if not os.path.isfile(logfile):
-    raise Exception("Can't locate logfile at " + logfile)
+    raise Exception(f"Can't locate logfile at {logfile}")
   first_line = True
   samples = 0
-  cols = 0
-  indices = []
-  labels = []
-  sums = []
+  total_columns = 0
+  columns = []
   col_time = None
-  for line in open(logfile):
+  with open(logfile, encoding='utf-8') as infile:
+    contents = infile.read()
+  for line in contents.splitlines(keepends=True):
     tokens = [token.strip('" ') for token in line.split(',')]
     if first_line:
       first_line = False
-      cols = len(tokens)
-      for ii in range(0, cols):
+      total_columns = len(tokens)
+      for ii in range(total_columns):
         token = tokens[ii]
         if token.startswith('Elapsed Time'):
           col_time = ii
         elif token.endswith('(Watt)'):
-          indices.append(ii)
-          labels.append(token[:-len('(Watt)')])
-          sums.append(0.0)
+          columns.append(_LogFileColumn(index=ii, label=token[:-len('(Watt)')]))
       assert col_time
-      assert cols > 0
-      assert len(indices) > 0
+      assert total_columns > 0
+      assert len(columns) > 0
       continue
-    if len(tokens) != cols:
+    if len(tokens) != total_columns:
       continue
     if skip_in_sec > 0 and float(tokens[col_time]) < skip_in_sec:
       continue
     samples += 1
-    for ii, index in enumerate(indices):
-      sums[ii] += float(tokens[index])
+    for c in columns:
+      c.total += float(tokens[c.index])
+
   results = {'samples': samples}
   if samples > 0:
-    for ii in range(0, len(indices)):
-      results[labels[ii]] = sums[ii] / samples
+    for c in columns:
+      results[c.label] = c.total / samples
   return results
 
 
-def ProcessResultsFromMultipleIPGRuns(logfiles: List[str],
-                                      skip_in_seconds: int = 0,
-                                      outliers: int = 0,
-                                      output_json: Optional[str] = None
-                                      ) -> SummaryType:
-  def _ScrapeDataFromIPGLogFiles() -> Tuple[Dict[str, ResultType], MetricType]:
+def ProcessResultsFromMultipleIPGRuns(
+    logfiles: list[str],
+    skip_in_seconds: int = 0,
+    outliers: int = 0,
+    output_json: str | None = None) -> SummaryType:
+
+  def _ScrapeDataFromIPGLogFiles() -> tuple[dict[str, ResultType], MetricType]:
     """Scrapes data from IPG log files.
 
     Returns:
@@ -153,10 +165,10 @@ def ProcessResultsFromMultipleIPGRuns(logfiles: List[str],
         core = core[len(prefix):]
       per_core_results[core] = results
 
-      for key in results:
+      for key, value in results.items():
         if key in ('samples', 'log'):
           continue
-        metrics.setdefault(key, []).append(results[key])
+        metrics.setdefault(key, []).append(value)
     return per_core_results, metrics
 
   def _CalculateSummaryStatistics(metrics: MetricType) -> SummaryType:
@@ -194,8 +206,7 @@ def ProcessResultsFromMultipleIPGRuns(logfiles: List[str],
   output['summary'] = summary
 
   if output_json:
-    json_file = open(output_json, 'w')
-    json_file.write(json.dumps(output, indent=4))
-    json_file.close()
+    with open(output_json, 'w', encoding='utf-8') as json_file:
+      json_file.write(json.dumps(output, indent=4))
 
   return summary

@@ -18,10 +18,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
@@ -65,12 +65,14 @@ class SystemWebAppManager : public KeyedService,
   static constexpr char kSystemWebAppSessionHasBrokenIconsPrefName[] =
       "web_apps.system_web_app_has_broken_icons_in_session";
 
-  static constexpr char kInstallResultHistogramName[] =
-      "Webapp.InstallResult.System";
-  static constexpr char kInstallDurationHistogramName[] =
+  static constexpr char kFreshInstallDurationHistogramName[] =
       "Webapp.SystemApps.FreshInstallDuration";
   static constexpr char kIconsFixedOnReinstallHistogramName[] =
       "Webapp.SystemApps.IconsFixedOnReinstall";
+  static constexpr char kIconsAreHealthyInSessionHistorgramName[] =
+      "Webapp.SystemApps.IconsAreHealthyInSession";
+  static constexpr char kInstallResultHistogramName[] =
+      "Webapp.InstallResult.System";
 
   // Returns whether the given app type is enabled.
   bool IsAppEnabled(SystemWebAppType type) const;

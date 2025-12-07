@@ -4,21 +4,25 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.annotation.MainThread;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 /** This class is used to get a singleton instance of {@link SigninChecker}. */
+@NullMarked
 public final class SigninCheckerProvider {
-    private static ProfileKeyedMap<SigninChecker> sProfileMap =
+    private static final ProfileKeyedMap<SigninChecker> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables();
-    private static SigninChecker sInstanceForTesting;
+    private static @Nullable SigninChecker sInstanceForTesting;
 
     /**
      * @return A {@link SigninChecker} instance for the given Profile.
@@ -34,9 +38,7 @@ public final class SigninCheckerProvider {
         // TODO(crbug.com/40736034): Move the initializations elsewhere.
         SyncErrorNotifier.getForProfile(profile);
         return new SigninChecker(
-                IdentityServicesProvider.get().getSigninManager(profile),
-                IdentityServicesProvider.get().getAccountTrackerService(profile),
-                SyncServiceFactory.getForProfile(profile));
+                assertNonNull(IdentityServicesProvider.get().getSigninManager(profile)));
     }
 
     @MainThread

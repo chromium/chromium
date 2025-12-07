@@ -73,7 +73,12 @@ pattern when something simpler would work equally well adds unnecessary
 complexity to the codebase. The codebase is inherently mutable and additional
 abstractions can be added _if and when_ they are needed.
 
-## Optimize for reducing timezone latency
+## Choosing the right reviewers
+
+For more on identifying the best contact, see
+[finding somebody who knows how a piece of code works](finding_reviewer.md).
+
+### Optimize for reducing timezone latency
 
 The Chromium project has contributors from around the world, and it is very
 likely that you will not be in the same timezone as a reviewer. You should
@@ -82,14 +87,14 @@ that there may be a significant timezone gap. Also see the advice about
 [minimizing lag across
 timezones](https://www.chromium.org/developers/contributing-code/minimizing-review-lag-across-time-zones/).
 
-## Get a full review from a single, main reviewer, before asking many OWNERs
+### Get a full review from a single, main reviewer, before asking many OWNERs
 
 If your CL requires the approval from 3+ OWNERs, get a small number of main
 reviewers (most commonly 1) to review the entire CL so that OWNERs don’t need to
 deal with issues that anybody can detect. This is particularly useful if OWNERs
 are in a different timezone.
 
-## Depend on more-specific owners
+### Depend on more-specific owners
 
 Wherever possible, choose reviewers from the deepest OWNERS files adjacent to
 the most significant aspects of your change. Once their review is complete, add

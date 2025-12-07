@@ -163,7 +163,6 @@ void FakeAmbientBackendControllerImpl::FetchSettingsAndAlbums(
 
 void FakeAmbientBackendControllerImpl::FetchWeather(
     std::optional<std::string> weather_client_id,
-    bool prefer_aplha_endpoint,
     FetchWeatherCallback callback) {
   ++fetch_weather_count_;
   weather_client_id_ = weather_client_id;

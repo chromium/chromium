@@ -29,13 +29,17 @@
     },
     {
       protocol: [
-        "fuchsia.logger.LogSink",
         "fuchsia.scheduler.ProfileProvider",
         "fuchsia.sysmem.Allocator",
         "fuchsia.sysmem2.Allocator",
         "fuchsia.tracing.provider.Registry",
         "fuchsia.vulkan.loader.Loader",
       ],
+      from: "parent",
+      to: "#test_ui_stack",
+    },
+    {
+      dictionary: "diagnostics",
       from: "parent",
       to: "#test_ui_stack",
     },

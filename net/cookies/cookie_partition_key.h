@@ -5,14 +5,15 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_H_
 
+#include <compare>
 #include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "net/base/cronet_buildflags.h"
-#include "net/base/features.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
@@ -22,6 +23,7 @@
 
 namespace net {
 
+class NetworkIsolationKey;
 class SiteForCookies;
 
 class NET_EXPORT CookiePartitionKey {
@@ -70,8 +72,7 @@ class NET_EXPORT CookiePartitionKey {
   ~CookiePartitionKey();
 
   bool operator==(const CookiePartitionKey& other) const;
-  bool operator!=(const CookiePartitionKey& other) const;
-  bool operator<(const CookiePartitionKey& other) const;
+  std::strong_ordering operator<=>(const CookiePartitionKey& other) const;
 
   // Methods for serializing and deserializing a partition key to/from a string.
   // This is currently used for:
@@ -88,7 +89,7 @@ class NET_EXPORT CookiePartitionKey {
   // TODO(crbug.com/40188414) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
   [[nodiscard]] static base::expected<SerializedCookiePartitionKey, std::string>
-  Serialize(const std::optional<CookiePartitionKey>& in);
+  Serialize(base::optional_ref<const CookiePartitionKey> in);
 
   static CookiePartitionKey FromURLForTesting(
       const GURL& url,
@@ -128,18 +129,17 @@ class NET_EXPORT CookiePartitionKey {
   // TODO(crbug.com/40188414) Consider removing this factory method and
   // `from_script_` flag when BlinkStorageKey is available in
   // ServiceWorkerGlobalScope.
-  static std::optional<CookiePartitionKey> FromScript() {
-    return std::make_optional(CookiePartitionKey(true));
-  }
+  static CookiePartitionKey FromScript() { return CookiePartitionKey(true); }
 
   // Create a new CookiePartitionKey from the components of a StorageKey.
   // Forwards to FromWire, but unlike that method in this one the optional nonce
   // argument has no default. It also checks that cookie partitioning is enabled
   // before returning a valid key, which FromWire does not check.
   [[nodiscard]] static std::optional<CookiePartitionKey>
-  FromStorageKeyComponents(const SchemefulSite& top_level_site,
-                           AncestorChainBit ancestor_chain_bit,
-                           const std::optional<base::UnguessableToken>& nonce);
+  FromStorageKeyComponents(
+      const SchemefulSite& top_level_site,
+      AncestorChainBit ancestor_chain_bit,
+      base::optional_ref<const base::UnguessableToken> nonce);
 
   // FromStorage is a factory method which is meant for creating a new
   // CookiePartitionKey using properties of a previously existing
@@ -168,15 +168,35 @@ class NET_EXPORT CookiePartitionKey {
   // Cookie partition keys whose internal site is opaque cannot be serialized.
   bool IsSerializeable() const;
 
+  // Returns true if unpartitioned cookie access is forbidden for the current
+  // cookie partition key.
+  bool ForbidsUnpartitionedCookieAccess() const { return nonce_.has_value(); }
+
   const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
-  static bool HasNonce(const std::optional<CookiePartitionKey>& key) {
+  static bool HasNonce(base::optional_ref<const CookiePartitionKey> key) {
     return key && key->nonce();
   }
 
   bool IsThirdParty() const {
     return ancestor_chain_bit_ == AncestorChainBit::kCrossSite;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Globally disable cookie partitioning. This must be called before any
+  // CookiePartitionKeys are created.
+  // This is used to disable CHIPS in WebView, and should not be used by any
+  // other embedder.
+  static void DisablePartitioningInWebView();
+
+  // Return whether partitioning has been disabled in WebView.
+  // Other embedders should not use this method.
+  static bool IsPartitioningDisabledInWebView();
+
+  // Disable partitioning in unit tests.
+  [[nodiscard]]
+  static base::AutoReset<bool> DisablePartitioningInScopeForTesting();
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // Used by DeserializeInternal to determine how strict the context should be
@@ -205,15 +225,17 @@ class NET_EXPORT CookiePartitionKey {
       CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
       CookiePartitionKey::ParsingMode parsing_mode);
 
-  AncestorChainBit MaybeAncestorChainBit() const;
+  AncestorChainBit GetAncestorChainBit() const { return ancestor_chain_bit_; }
+
+#if BUILDFLAG(IS_ANDROID)
+  static bool g_partitioning_disabled_in_webview_;
+  // Used to assert that no constructors are called before partitioning is
+  // disabled.
+  static bool g_constructor_called_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SchemefulSite site_;
   bool from_script_ = false;
-  // crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  //  when feature is no longer needed.
-  bool ancestor_chain_enabled_ = base::FeatureList::IsEnabled(
-      features::kAncestorChainBitEnabledInPartitionedCookies);
 
   // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
   // for non-opaque origins.

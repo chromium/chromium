@@ -17,11 +17,6 @@ namespace cast_api_bindings {
 class MessagePort;
 }
 
-namespace media {
-class AudioDecoderConfig;
-class VideoDecoderConfig;
-}  // namespace media
-
 namespace cast_streaming {
 
 class ReceiverConfig;
@@ -35,13 +30,6 @@ class ReceiverSession {
   class Client {
    public:
     virtual ~Client() = default;
-
-    // Called when the associated config is set or updated by the remote sender
-    // device.
-    virtual void OnAudioConfigUpdated(
-        const media::AudioDecoderConfig& audio_config) = 0;
-    virtual void OnVideoConfigUpdated(
-        const media::VideoDecoderConfig& video_config) = 0;
 
     // Called when the streaming session ends.
     virtual void OnStreamingSessionEnded() = 0;

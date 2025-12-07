@@ -8,21 +8,8 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/web_state.h"
-
-// This macro declares a static variable inside the class that inherits from
-// LazyWebStateUserData. The address of this static variable is used as the key
-// to store/retrieve an instance of the class on/from a WebState.
-#ifndef WEB_STATE_USER_DATA_KEY_DECL
-#define WEB_STATE_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
-#endif
-
-// This macro instantiates the static variable declared by the previous macro.
-// It must live in a .mm/.cc file to ensure that there is only one instantiation
-// of the static variable.
-#ifndef WEB_STATE_USER_DATA_KEY_IMPL
-#define WEB_STATE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
-#endif
 
 namespace web {
 
@@ -37,12 +24,9 @@ namespace web {
 //  private:
 //   explicit FooTabHelper(web::WebState* web_state);
 //   friend class web::LazyWebStateUserData<FooTabHelper>;
-//   WEB_STATE_USER_DATA_KEY_DECL();
 //   // ... more private stuff here ...
 // };
 //
-// --- in foo_tab_helper.cc ---
-// WEB_STATE_USER_DATA_KEY_IMPL(FooTabHelper)
 template <typename T>
 class LazyWebStateUserData : public base::SupportsUserData::Data {
  public:
@@ -66,12 +50,22 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
   // action is triggered.
   template <typename... Args>
   static T* GetOrCreateForWebState(WebState* web_state, Args&&... args) {
-    CHECK(web_state, base::NotFatalUntil::M131);
+    CHECK(web_state);
     if (!FromWebState(web_state)) {
-      CHECK(!web_state->IsBeingDestroyed(), base::NotFatalUntil::M131);
-      web_state->SetUserData(
-          UserDataKey(),
-          base::WrapUnique(new T(web_state, std::forward<Args>(args)...)));
+      CHECK(!web_state->IsBeingDestroyed());
+
+      // Fail if a tab helper is created for an unrealized WebState and
+      // the feature kCreateTabHelperOnlyForRealizedWebStates is enabled.
+      // If this CHECK(...) fails, the issue is in the code creating the
+      // tab helper, not in the WebStateUserData<T> implementation (i.e.
+      // look at the caller of this method to determine who should debug
+      // this crash).
+      if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+        CHECK(web_state->IsRealized(), base::NotFatalUntil::M160);
+      }
+
+      web_state->SetUserData(UserDataKey(),
+                             T::Create(web_state, std::forward<Args>(args)...));
     }
 
     return FromWebState(web_state);
@@ -82,7 +76,11 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
     web_state->RemoveUserData(UserDataKey());
   }
 
-  static const void* UserDataKey() { return &T::kUserDataKey; }
+  // The key under which to store the user data.
+  static inline const void* UserDataKey() {
+    static const int kId = 0;
+    return &kId;
+  }
 
  private:
   // Retrieves the instance of type T that was attached to the specified
@@ -90,6 +88,13 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
   // of the type was attached, returns nullptr.
   static T* FromWebState(WebState* web_state) {
     return static_cast<T*>(web_state->GetUserData(UserDataKey()));
+  }
+
+  // Default factory for T that invoke T's constructor. Can be overloaded
+  // by sub-class if they want to create a sub-class of T instead.
+  template <typename... Args>
+  static std::unique_ptr<T> Create(WebState* web_state, Args&&... args) {
+    return base::WrapUnique(new T(web_state, std::forward<Args>(args)...));
   }
 };
 

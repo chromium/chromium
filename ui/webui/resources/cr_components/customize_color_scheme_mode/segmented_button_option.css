@@ -47,7 +47,7 @@
 }
 
 #button:focus-visible #overlay {
-  border: 2px var(--cr-focus-outline-color) solid;
+  border: 2px var(--color-segmented-button-border) solid;
 }
 
 cr-ripple {

@@ -53,8 +53,7 @@ enum ScrollDirectionPhysical {
 inline bool IsExplicitScrollType(mojom::blink::ScrollType scroll_type) {
   return scroll_type == mojom::blink::ScrollType::kUser ||
          scroll_type == mojom::blink::ScrollType::kProgrammatic ||
-         scroll_type == mojom::blink::ScrollType::kCompositor ||
-         scroll_type == mojom::blink::ScrollType::kSequenced;
+         scroll_type == mojom::blink::ScrollType::kCompositor;
 }
 
 // Convert logical scroll direction to physical. Physical scroll directions are
@@ -114,8 +113,7 @@ inline ScrollDirectionPhysical ToPhysicalDirection(
     case mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode:
       return kScrollRight;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return kScrollUp;
 }
@@ -132,8 +130,7 @@ inline mojom::blink::ScrollDirection ToScrollDirection(
     case kScrollRight:
       return mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
 }
@@ -220,9 +217,7 @@ inline ScrollOffset ToScrollDelta(ScrollDirectionPhysical dir, float delta) {
 // physical pixels.
 inline gfx::Vector2d SnapScrollOffsetToPhysicalPixels(
     const gfx::Vector2dF& offset) {
-  // TODO(crbug.com/352722599): Investigate whether this should be rounded
-  // instead of floored.
-  return gfx::ToFlooredVector2d(offset);
+  return gfx::ToRoundedVector2d(offset);
 }
 
 }  // namespace blink

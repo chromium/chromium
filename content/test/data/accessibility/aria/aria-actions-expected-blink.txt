@@ -1,0 +1,39 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tabList horizontal
+++++++++tab hasActions name='your-file-name.pdf Close' nameFrom=contents selected=false actionsIds=button,link,button
+++++++++++staticText name='your-file-name.pdf ' nameFrom=contents
+++++++++++++inlineTextBox name='your-file-name.pdf ' nameFrom=contents
+++++++++++button name='Edit' nameFrom=contents
+++++++++++++staticText name='Edit' nameFrom=contents
+++++++++++++++inlineTextBox name='Edit' nameFrom=contents
+++++++++++link name='Open' nameFrom=contents
+++++++++++++staticText name='Open' nameFrom=contents
+++++++++++++++inlineTextBox name='Open' nameFrom=contents
+++++++++++switch name='Close' nameFrom=contents checkedState=false
+++++++++++++staticText name='Close' nameFrom=contents
+++++++++++++++inlineTextBox name='Close' nameFrom=contents
+++++++button name='Delete' nameFrom=contents
+++++++++staticText name='Delete' nameFrom=contents
+++++++++++inlineTextBox name='Delete' nameFrom=contents
+=== Start Continuation ===
+rootWebArea name='change-aria-action-id' nameFrom=relatedElement
+++genericContainer ignored
+++++genericContainer ignored
+++++++tabList horizontal
+++++++++tab hasActions name='your-file-name.pdf Edit Open' nameFrom=contents selected=false actionsIds=switch
+++++++++++staticText name='your-file-name.pdf ' nameFrom=contents
+++++++++++++inlineTextBox name='your-file-name.pdf ' nameFrom=contents
+++++++++++button name='Edit' nameFrom=contents
+++++++++++++staticText name='Edit' nameFrom=contents
+++++++++++++++inlineTextBox name='Edit' nameFrom=contents
+++++++++++link name='Open' nameFrom=contents
+++++++++++++staticText name='Open' nameFrom=contents
+++++++++++++++inlineTextBox name='Open' nameFrom=contents
+++++++++++switch name='Close' nameFrom=contents checkedState=false
+++++++++++++staticText name='Close' nameFrom=contents
+++++++++++++++inlineTextBox name='Close' nameFrom=contents
+++++++button name='Delete' nameFrom=contents
+++++++++staticText name='Delete' nameFrom=contents
+++++++++++inlineTextBox name='Delete' nameFrom=contents

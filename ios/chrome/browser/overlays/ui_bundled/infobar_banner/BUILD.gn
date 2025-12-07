@@ -16,30 +16,37 @@ source_set("coordinators") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/ui_bundled:constants",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/default",
-    "//ios/chrome/browser/shared/coordinator/layout_guide",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util:util_swift",
-    "//ios/chrome/browser/ui/infobars:constants",
-    "//ios/chrome/browser/ui/infobars/banners",
-    "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled:util",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_group",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_out_of_date",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/parcel_tracking",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_cvc",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/sync_error",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/tailored_security",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:mediators",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("mediators") {
@@ -53,11 +60,12 @@ source_set("mediators") {
     "//base",
     "//components/feature_engagement/public",
     "//components/infobars/core",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
-    "//ios/chrome/browser/ui/infobars/banners",
-    "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 

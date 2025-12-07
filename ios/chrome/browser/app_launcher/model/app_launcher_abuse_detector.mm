@@ -30,7 +30,7 @@ const int kMaxAllowedConsecutiveExternalAppLaunches = 2;
                      sourceURL:(const GURL&)sourcePageURL {
   return
       [NSString stringWithFormat:@"%s %s", sourcePageURL.GetContent().c_str(),
-                                 appURL.scheme().c_str()];
+                                 appURL.GetScheme().c_str()];
 }
 
 - (instancetype)init {

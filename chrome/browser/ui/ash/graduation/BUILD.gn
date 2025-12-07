@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("graduation") {
+  sources = [
+    "graduation_manager_impl.cc",
+    "graduation_manager_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//components/application_locale_storage",
+    "//components/prefs",
+    "//components/session_manager/core",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "graduation_manager_impl_browsertest.cc" ]
+
+  deps = [
+    ":graduation",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+}

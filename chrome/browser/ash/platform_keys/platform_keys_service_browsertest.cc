@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 
 #include <memory>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -35,18 +31,18 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_test_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/chaps_util/test_util.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -77,6 +73,7 @@ constexpr char kTestUserEmail[] = "test@example.com";
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
 const std::vector<uint8_t> kTestingData = {9, 8, 7, 6, 5, 0, 1, 2, 3};
 const std::vector<uint8_t> kSymId = {1, 2, 3, 0, 1, 2, 3};
+const std::vector<uint8_t> kSymId2 = {1, 0, 3, 0, 7, 0, 9};
 const int kDefaultSymKeySize = 32;
 const unsigned long kDefaultSymSignatureSize = 32;
 
@@ -251,9 +248,9 @@ class PlatformKeysServiceBrowserTestBase
     CERTCertificate* cert = out_cert->get();
     ASSERT_TRUE(cert);
     ASSERT_GT(cert->derPublicKey.len, 0U);
-    *out_spki_der =
-        std::vector<uint8_t>(cert->derPublicKey.data,
-                             cert->derPublicKey.data + cert->derPublicKey.len);
+    *out_spki_der = std::vector<uint8_t>(
+        cert->derPublicKey.data,
+        UNSAFE_TODO(cert->derPublicKey.data + cert->derPublicKey.len));
   }
 
  private:
@@ -474,9 +471,9 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       kSignatureAlgorithm,
-      base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
-      base::as_bytes(base::make_span(public_key_spki_der))));
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
+      base::as_byte_span(sign_waiter.Get<std::vector<uint8_t>>()),
+      base::as_byte_span(public_key_spki_der)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(kDataToSign));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -554,8 +551,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       kSignatureAlgorithm,
-      base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
-      base::as_bytes(base::make_span(public_key_spki_der))));
+      base::as_byte_span(sign_waiter.Get<std::vector<uint8_t>>()),
+      base::as_byte_span(public_key_spki_der)));
   signature_verifier.VerifyUpdate(kDataToSign);
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
@@ -710,8 +707,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::vector<uint8_t> public_key_2 = GenerateKeyPair(token_id);
   ASSERT_FALSE(public_key_2.empty());
 
-  auto public_key_bytes_1 = base::as_bytes(base::make_span(public_key_1));
-  auto public_key_bytes_2 = base::as_bytes(base::make_span(public_key_2));
+  auto public_key_bytes_1 = base::as_byte_span(public_key_1);
+  auto public_key_bytes_2 = base::as_byte_span(public_key_2);
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_1));
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_2));
 
@@ -750,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_TRUE(get_certificates_waiter_2.Wait());
   ASSERT_EQ(get_certificates_waiter_2.matches().size(), 1U);
 
-  auto public_key_bytes = base::as_bytes(base::make_span(public_key));
+  auto public_key_bytes = base::as_byte_span(public_key);
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes));
 
   // Try Removing the key pair.
@@ -857,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, SymKeySign) {
             kDefaultSymSignatureSize);
 }
 
-// Cannot sign with invalid/abscent key.
+// Cannot sign with invalid/absent key.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        SymKeySignInvalidKey) {
   const TokenId token_id = GetParam().token_id;
@@ -926,7 +923,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_EQ(kTestingData, decrypt_waiter.Get<std::vector<uint8_t>>());
 }
 
-// Cannot encrypt with invalid/abscent key.
+// Cannot encrypt with invalid/absent key.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        SymKeyEncryptInvalidKey) {
   const TokenId token_id = GetParam().token_id;
@@ -955,7 +952,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_EQ(encrypt_waiter2.Get<Status>(), Status::kErrorInternal);
 }
 
-// Cannot decrypt with invalid/abscent key.
+// Cannot decrypt with invalid/absent key.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        SymKeyDecryptInvalidKey) {
   const TokenId token_id = GetParam().token_id;
@@ -1015,6 +1012,77 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, SymRemoveKey) {
   platform_keys_service()->RemoveSymKey(token_id, kSymId,
                                         remove_waiter2.GetCallback());
   EXPECT_EQ(remove_waiter2.Get<Status>(), Status::kErrorKeyNotFound);
+}
+
+// Derives a symmetric key and then uses it to sign.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyDeriveAndSign) {
+  const TokenId token_id = GetParam().token_id;
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kSp800Kdf,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> derive_waiter;
+  platform_keys_service()->DeriveSymKey(
+      token_id, kSymId, kSymId2, kTestingData, kTestingData,
+      chromeos::platform_keys::SymKeyType::kHmac, derive_waiter.GetCallback());
+  EXPECT_EQ(derive_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId2, derive_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
+  platform_keys_service()->SignWithSymKey(token_id, kTestingData, kSymId2,
+                                          sign_waiter.GetCallback());
+  EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(sign_waiter.Get<std::vector<uint8_t>>().size(),
+            kDefaultSymSignatureSize);
+}
+
+// Derives a symmetric key and then uses it to encrypt/decrypt.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyDeriveAndEncryptDecrypt) {
+  const TokenId token_id = GetParam().token_id;
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kSp800Kdf,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> derive_waiter;
+  platform_keys_service()->DeriveSymKey(
+      token_id, kSymId, kSymId2, kTestingData, kTestingData,
+      chromeos::platform_keys::SymKeyType::kAesCbc,
+      derive_waiter.GetCallback());
+  EXPECT_EQ(derive_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId2, derive_waiter.Get<std::vector<uint8_t>>());
+
+  const std::vector<uint8_t> kInitVec(/*count=*/16, /*value=*/0);
+  base::test::TestFuture<std::vector<uint8_t>, Status> encrypt_waiter;
+  platform_keys_service()->EncryptAES(token_id, kTestingData, kSymId2,
+                                      "AES-CBC", kInitVec,
+                                      encrypt_waiter.GetCallback());
+  EXPECT_EQ(encrypt_waiter.Get<Status>(), Status::kSuccess);
+
+  std::vector<uint8_t> encrypted_data =
+      encrypt_waiter.Get<std::vector<uint8_t>>();
+  // Encrypted data's length should be divisible by 16.
+  EXPECT_TRUE(encrypted_data.size() % 16 == 0);
+
+  // Decrypting the resulting encrypted data to see if it matches the original
+  // data.
+  base::test::TestFuture<std::vector<uint8_t>, Status> decrypt_waiter;
+  platform_keys_service()->DecryptAES(token_id, encrypted_data, kSymId2,
+                                      "AES-CBC", kInitVec,
+                                      decrypt_waiter.GetCallback());
+  EXPECT_EQ(decrypt_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kTestingData, decrypt_waiter.Get<std::vector<uint8_t>>());
 }
 
 INSTANTIATE_TEST_SUITE_P(

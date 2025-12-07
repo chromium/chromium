@@ -7,8 +7,9 @@
 
 #include <optional>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -25,16 +26,31 @@ namespace media {
 // accessors return nullptr.
 class NativePixmapFrameResource : public FrameResource {
  public:
+  // The underlying NativePixmap is constructed from `handle`.
+  NativePixmapFrameResource(base::PassKey<NativePixmapFrameResource>,
+                            const media::VideoFrameLayout& layout,
+                            const gfx::Rect& visible_rect,
+                            const gfx::Size& natural_size,
+                            base::TimeDelta timestamp,
+                            viz::SharedImageFormat si_format,
+                            const base::UnguessableToken& token,
+                            std::optional<gfx::BufferUsage> buffer_usage,
+                            gfx::NativePixmapHandle handle);
+  NativePixmapFrameResource(
+      base::PassKey<NativePixmapFrameResource>,
+      const media::VideoFrameLayout& layout,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::TimeDelta timestamp,
+      const base::UnguessableToken& token,
+      std::optional<gfx::BufferUsage> buffer_usage,
+      scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap);
   NativePixmapFrameResource() = delete;
   NativePixmapFrameResource(const NativePixmapFrameResource&) = delete;
   NativePixmapFrameResource& operator=(const NativePixmapFrameResource&) =
       delete;
 
   // Creates a NativePixmapFrameResource that assumes ownership of |dmabuf_fds|.
-  // NOTE: This is only intended to be used to wrap DMA buffers that were not
-  // allocated by miniGBM. If this changes, additional arguments for the buffer
-  // modifier and whether WebGPU can directly import the handle to create
-  // texture from it will need to be added.
   static scoped_refptr<NativePixmapFrameResource> Create(
       const media::VideoFrameLayout& layout,
       const gfx::Rect& visible_rect,
@@ -74,14 +90,10 @@ class NativePixmapFrameResource : public FrameResource {
   scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   // CreateGpuMemoryBufferHandle() will duplicate file descriptors to make a
-  // gfx::GpuMemoryBufferHandle. The GpuMemoryBufferId will match
-  // GetSharedMemoryId(). Doing this helps with identification of original
-  // FrameResource from a VideoFrame produced by CreateVideoFrame().
+  // gfx::GpuMemoryBufferHandle.
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   // Always returns nullptr.
-  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
-      const override;
-  gfx::GenericSharedMemoryId GetSharedMemoryId() const override;
+  std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImage() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
   int stride(size_t plane) const override;
@@ -93,6 +105,7 @@ class NativePixmapFrameResource : public FrameResource {
   const VideoFrameMetadata& metadata() const override;
   VideoFrameMetadata& metadata() override;
   void set_metadata(const VideoFrameMetadata& metadata) override;
+  const base::UnguessableToken& tracking_token() const override;
   gfx::ColorSpace ColorSpace() const override;
   void set_color_space(const gfx::ColorSpace& color_space) override;
   const std::optional<gfx::HDRMetadata>& hdr_metadata() const override;
@@ -109,48 +122,27 @@ class NativePixmapFrameResource : public FrameResource {
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandleForTesting()
       const override;
 
-  // CreateVideoFrame() is used to create a VideoFrame from the underlying
+  // CreateDmabufVideoFrame() is used to create a VideoFrame from the underlying
   // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
-  // type GPU_MEMORY_BUFFER is created. The GpuMemoryBufferId of the returned
-  // frame equals |this->id_|. This is important to allow for frame pool frame
-  // reclamation.
-  scoped_refptr<VideoFrame> CreateVideoFrame() const;
+  // type STORAGE_DMABUFS is created.
+  scoped_refptr<VideoFrame> CreateDmabufVideoFrame() const;
+
+  // CreateMappableVideoFrame() is used to create a VideoFrame from the
+  // underlying NativePixmap. The DMABuf FDs are duplicated and a VideoFrame
+  // with storage type STORAGE_MAPPABLE_SHARED_IMAGE is created.
+  scoped_refptr<VideoFrame> CreateMappableVideoFrame(
+      gpu::SharedImageInterface* sii) const;
 
  private:
   ~NativePixmapFrameResource() override;
 
-  // The underlying NativePixmap is constructed from |handle|.
-  NativePixmapFrameResource(const media::VideoFrameLayout& layout,
-                            const gfx::Rect& visible_rect,
-                            const gfx::Size& natural_size,
-                            base::TimeDelta timestamp,
-                            gfx::BufferFormat buffer_format,
-                            gfx::GenericSharedMemoryId id,
-                            std::optional<gfx::BufferUsage> buffer_usage,
-                            gfx::NativePixmapHandle handle);
-
-  NativePixmapFrameResource(
-      const media::VideoFrameLayout& layout,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      base::TimeDelta timestamp,
-      gfx::GenericSharedMemoryId id,
-      std::optional<gfx::BufferUsage> buffer_usage,
-      scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap);
-
   // |pixmap_| is the underlying NativePixmap. It is is set by the constructors.
   const scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap_;
 
-  // |id_| is generated by the factory functions. It starts with 0. When a frame
-  // is wrapped, |id_| is copied to the wrapping frame. The ID's will be unique
-  // per underlying NativePixmapDmaBuf object, per process. The ID is generated
-  // by and stored in NativePixmapFrameResource because the ID returned by
-  // gxf::NativePixmapDmaBuf::GetUniqueId() is currently always zero.
-  const gfx::GenericSharedMemoryId id_;
-
   // |buffer_usage_| affects how a buffer can be used. It is only set if it was
   // provided by the caller of Create(), or if the NativePixmap was allocated by
-  // MiniGBM. If this not set, then CreateVideoFrame() will fail.
+  // MiniGBM. If this not set, then a CreateVideoFrame() should not be used to
+  // create a STORAGE_MAPPABLE_SHARED_IMAGE VideoFrame.
   const std::optional<gfx::BufferUsage> buffer_usage_;
 
   // VideoFrameLayout (includes format, coded_size, and strides). Per-plane

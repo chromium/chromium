@@ -4,12 +4,15 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/url_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 
 class HistoryClustersInternalsDisabledBrowserTest
@@ -32,6 +35,8 @@ class HistoryClustersInternalsDisabledBrowserTest
   }
 
   void RunTestCase(const std::string& testCase) {
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
     RunTestWithoutTestLoader(
         "history_clusters_internals/history_clusters_internals_test.js",
         base::StringPrintf(

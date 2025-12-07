@@ -20,6 +20,12 @@
  *   openReportingPrivacy: function(),
  *   openWhitepaper: function(),
  *   reportPhishingError: function(),
+ *   openAndroidAdvancedProtectionSettings: function(),
+ *   openHelpCenterInNewTab: function(),
+ *   openDiagnosticInNewTab: function(),
+ *   openReportingPrivacyInNewTab: function(),
+ *   openWhitepaperInNewTab: function(),
+ *   reportPhishingErrorInNewTab: function(),
  * }}
  */
 // eslint-disable-next-line no-var
@@ -47,6 +53,15 @@ export const SecurityInterstitialCommandId = {
   CMD_REPORT_PHISHING_ERROR: 12,
   // Open enhanced protection settings.
   CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: 13,
+  CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS: 16,
+  // Commands for opening links in a new tab, used by middle-clicks.
+  CMD_OPEN_HELP_CENTER_IN_NEW_TAB: 17,
+  CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB: 18,
+  CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB: 19,
+  CMD_OPEN_WHITEPAPER_IN_NEW_TAB: 20,
+  CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB: 21,
+  // View the certificate.
+  CMD_SHOW_CERTIFICATE_VIEWER: 22,
 };
 
 export const HIDDEN_CLASS = 'hidden';
@@ -99,6 +114,28 @@ export function sendCommand(cmd) {
         break;
       case SecurityInterstitialCommandId.CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
         certificateErrorPageController.openEnhancedProtectionSettings();
+        break;
+      case SecurityInterstitialCommandId
+          .CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
+        certificateErrorPageController.openAndroidAdvancedProtectionSettings();
+        break;
+      case SecurityInterstitialCommandId.CMD_OPEN_HELP_CENTER_IN_NEW_TAB:
+        certificateErrorPageController.openHelpCenterInNewTab();
+        break;
+      case SecurityInterstitialCommandId.CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB:
+        certificateErrorPageController.openDiagnosticInNewTab();
+        break;
+      case SecurityInterstitialCommandId.CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB:
+        certificateErrorPageController.openReportingPrivacyInNewTab();
+        break;
+      case SecurityInterstitialCommandId.CMD_OPEN_WHITEPAPER_IN_NEW_TAB:
+        certificateErrorPageController.openWhitepaperInNewTab();
+        break;
+      case SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
+        certificateErrorPageController.reportPhishingErrorInNewTab();
+        break;
+      case SecurityInterstitialCommandId.CMD_SHOW_CERTIFICATE_VIEWER:
+        certificateErrorPageController.showCertificateViewer();
         break;
     }
     return;

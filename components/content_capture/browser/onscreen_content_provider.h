@@ -51,6 +51,8 @@ class OnscreenContentProvider
   void RemoveConsumer(ContentCaptureConsumer& consumer);
 
   // The methods called by ContentCaptureReceiver.
+  void FlushCaptureContent(ContentCaptureReceiver* content_capture_receiver,
+                           const ContentCaptureFrame& data);
   void DidCaptureContent(ContentCaptureReceiver* content_capture_receiver,
                          const ContentCaptureFrame& data);
   void DidUpdateContent(ContentCaptureReceiver* content_capture_receiver,
@@ -60,6 +62,9 @@ class OnscreenContentProvider
   void DidRemoveSession(ContentCaptureReceiver* content_capture_receiver);
   void DidUpdateTitle(ContentCaptureReceiver* content_capture_receiver);
   void DidUpdateFavicon(ContentCaptureReceiver* content_capture_receiver);
+
+  // The methods called by metadata providers.
+  void DidUpdateSensitivityScore(float sensitivity_score);
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

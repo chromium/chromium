@@ -17,10 +17,12 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -50,10 +52,8 @@ BluetoothDetailedViewController::BluetoothDetailedViewController(
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
 
-  if (features::IsBluetoothDisconnectWarningEnabled()) {
-    GetHidPreservingBluetoothStateControllerService(
-        remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
-  }
+  GetHidPreservingBluetoothStateControllerService(
+      remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
 }
 
 BluetoothDetailedViewController::~BluetoothDetailedViewController() = default;
@@ -84,7 +84,12 @@ std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
 
 void BluetoothDetailedViewController::OnPropertiesUpdated(
     bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
-  if (properties->system_state == BluetoothSystemState::kUnavailable) {
+  // The tray controller should only be transitioning to the main view when this
+  // feature is disabled since the detailed tray view and the Bluetooth Pod in
+  // QS would be hidden. However, when the feature is enabled, the Bluetooth Pod
+  // is visible and the user should be able to see the detailed tray view.
+  if (!chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      properties->system_state == BluetoothSystemState::kUnavailable) {
     tray_controller_->TransitionToMainView(
         /*restore_focus=*/true);  // Deletes |this|.
     return;
@@ -120,12 +125,8 @@ void BluetoothDetailedViewController::OnPropertiesUpdated(
 }
 
 void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
-  if (features::IsBluetoothDisconnectWarningEnabled()) {
-    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
-        new_state, mojom::HidWarningDialogSource::kQuickSettings);
-  } else {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(new_state);
-  }
+  remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
+      new_state, mojom::HidWarningDialogSource::kQuickSettings);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();

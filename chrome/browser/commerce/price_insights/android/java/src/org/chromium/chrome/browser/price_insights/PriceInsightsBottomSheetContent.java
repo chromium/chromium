@@ -4,19 +4,27 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
+import android.widget.ScrollView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** An implementation of {@link BottomSheetContent} for the price insights bottom sheet content. */
+@NullMarked
 public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final ScrollView mScrollView;
 
-    public PriceInsightsBottomSheetContent(View contentView) {
+    public PriceInsightsBottomSheetContent(View contentView, ScrollView scrollView) {
         mContentView = contentView;
+        mScrollView = scrollView;
     }
 
     /* BottomSheetContent implementation. */
@@ -25,25 +33,22 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
     @Override
     public int getVerticalScrollOffset() {
+        if (mScrollView != null) {
+            return mScrollView.getScrollY();
+        }
         return 0;
     }
 
     @Override
     public int getPriority() {
         return ContentPriority.HIGH;
-    }
-
-    @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
     }
 
     @Override
@@ -65,24 +70,24 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.price_insights_bottom_sheet_content_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.price_insights_bottom_sheet_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.price_insights_bottom_sheet_content_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.price_insights_bottom_sheet_content_closed;
     }
 

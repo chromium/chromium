@@ -22,13 +22,17 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 
@@ -48,8 +52,9 @@ void OnLogResults(
       session->request()->response()->organizations.size() > 0 &&
       session->tab_organizations().size() > 0) {
     optimization_guide::proto::TabOrganizationQuality* quality =
-        log_entry
-            ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+        log_entry->log_ai_data_request()
+            ->mutable_tab_organization()
+            ->mutable_quality();
 
     AddSessionDetailsToQuality(quality, session);
   }
@@ -62,19 +67,25 @@ void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
     optimization_guide::OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!result.has_value()) {
-    // TODO(b/322206302): remove this when this is fixed in the ModelQualityLogEntry API
-    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
+    std::unique_ptr<optimization_guide::proto::TabOrganizationLoggingData>
+        logging_data) {
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  optimization_guide::ModelQualityLogsUploaderService* logs_uploader =
+      optimization_guide_keyed_service->GetModelQualityLogsUploaderService();
+  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+      logs_uploader ? logs_uploader->GetWeakPtr() : nullptr);
+  *log_entry->log_ai_data_request()->mutable_tab_organization() = *logging_data;
+  if (!result.response.has_value()) {
     std::move(on_failure).Run();
     return;
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::TabOrganizationResponse>(result.value());
+      optimization_guide::proto::TabOrganizationResponse>(
+      result.response.value());
 
   if (!response) {
-    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_failure).Run();
     return;
   }
@@ -96,8 +107,10 @@ void OnTabOrganizationModelExecutionResult(
                                std::move(response_tab_ids), group_id);
   }
 
-  const std::string execution_id =
-      log_entry->log_ai_data_request()->model_execution_info().execution_id();
+  const std::string execution_id = log_entry->log_ai_data_request()
+                                       ->tab_organization()
+                                       .model_execution_info()
+                                       .execution_id();
 
   std::unique_ptr<TabOrganizationResponse> local_response =
       std::make_unique<TabOrganizationResponse>(
@@ -127,7 +140,8 @@ void PerformTabOrganizationExecution(
 
     auto* tab = tab_organization_request.add_tabs();
     tab->set_tab_id(tab_data->tab_id());
-    tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
+    tab->set_title(
+        base::UTF16ToUTF8(tab_data->tab()->GetContents()->GetTitle()));
     tab->set_url(tab_data->original_url().spec());
   }
 
@@ -135,8 +149,7 @@ void PerformTabOrganizationExecution(
   // groups, complete without running the model to show the "No groups found"
   // error state.
   bool should_request_organization = valid_tabs > 1;
-  if (valid_tabs == 1 &&
-      base::FeatureList::IsEnabled(features::kTabReorganization)) {
+  if (valid_tabs == 1) {
     const auto* tab_group_model =
         request->tab_datas()[0]->original_tab_strip_model()->group_model();
     should_request_organization =
@@ -157,7 +170,8 @@ void PerformTabOrganizationExecution(
     for (const std::unique_ptr<TabData>& tab_data : group_data->tabs) {
       auto* tab = group->add_tabs();
       tab->set_tab_id(tab_data->tab_id());
-      tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
+      tab->set_title(
+          base::UTF16ToUTF8(tab_data->tab()->GetContents()->GetTitle()));
       tab->set_url(tab_data->original_url().spec());
     }
   }
@@ -166,14 +180,51 @@ void PerformTabOrganizationExecution(
     tab_organization_request.set_active_tab_id(request->base_tab_id().value());
   }
 
-  tab_organization_request.set_allow_reorganizing_existing_groups(
-      base::FeatureList::IsEnabled(features::kTabReorganization));
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy)) {
+    const int32_t strategy_int = profile->GetPrefs()->GetInteger(
+        tab_search_prefs::kTabOrganizationModelStrategy);
+    auto strategy =
+        static_cast<tab_search::mojom::TabOrganizationModelStrategy>(
+            strategy_int);
+    switch (strategy) {
+      case tab_search::mojom::TabOrganizationModelStrategy::kTopic:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
+        break;
+      case tab_search::mojom::TabOrganizationModelStrategy::kTask:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED);
+        break;
+      case tab_search::mojom::TabOrganizationModelStrategy::kDomain:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED);
+        break;
+      default:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
+        break;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    if (request->user_instruction().has_value()) {
+      tab_organization_request.set_user_command(
+          request->user_instruction().value());
+    }
+  }
+
+  tab_organization_request.set_allow_reorganizing_existing_groups(true);
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  optimization_guide_keyed_service->ExecuteModel(
+  ExecuteModelWithLogging(
+      optimization_guide_keyed_service,
       optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
-      tab_organization_request,
+      tab_organization_request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(OnTabOrganizationModelExecutionResult, profile,
                      std::move(on_completion), std::move(on_failure)));
 }

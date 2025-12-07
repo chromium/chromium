@@ -36,6 +36,18 @@
     self.gradientLayer.endPoint = endPoint;
     self.userInteractionEnabled = NO;
     [self updateColors];
+
+    NSArray<UITrait>* traits = @[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ];
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateColorsOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -52,21 +64,6 @@
   return base::apple::ObjCCastStrict<CAGradientLayer>(self.layer);
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    [CATransaction begin];
-    // If this isn't set, the changes here are automatically animated. The other
-    // color changes for dark mode don't animate, however, so there ends up
-    // being visual desyncing.
-    [CATransaction setDisableActions:YES];
-    [self updateColors];
-    [CATransaction commit];
-  }
-}
-
 - (void)setStartColor:(UIColor*)startColor endColor:(UIColor*)endColor {
   self.startColor = startColor;
   self.endColor = endColor;
@@ -80,6 +77,22 @@
     (id)self.startColor.CGColor,
     (id)self.endColor.CGColor,
   ];
+}
+
+// Animate and update the view's color when its appearance has been modified via
+// changes in UITraits.
+- (void)updateColorsOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [CATransaction begin];
+    // If this isn't set, the changes here are automatically animated. The other
+    // color changes for dark mode don't animate, however, so there ends up
+    // being visual desyncing.
+    [CATransaction setDisableActions:YES];
+    [self updateColors];
+    [CATransaction commit];
+  }
 }
 
 @end

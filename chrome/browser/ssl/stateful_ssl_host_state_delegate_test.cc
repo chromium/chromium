@@ -326,224 +326,64 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 42,
-      content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191,
-      content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
 
   // Mark a site as MIXED_CONTENT and check that only that host/child id
   // is affected, and only for MIXED_CONTENT (not for
   // CERT_ERRORS_CONTENT);
-  state->HostRanInsecureContent("www.google.com", 42,
+  state->HostRanInsecureContent("www.google.com",
                                 content::SSLHostStateDelegate::MIXED_CONTENT);
 
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "www.google.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 42,
-      content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
 
-  // Mark another site as MIXED_CONTENT, and check that that host/child
-  // id is affected (for MIXED_CONTENT only), and that the previously
-  // host/child id is still marked as MIXED_CONTENT.
-  state->HostRanInsecureContent("example.com", 42,
+  // Mark another site as MIXED_CONTENT, and check that that host is affected
+  // (for MIXED_CONTENT only), and that the previously host is still marked as
+  // MIXED_CONTENT.
+  state->HostRanInsecureContent("example.com",
                                 content::SSLHostStateDelegate::MIXED_CONTENT);
 
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "www.google.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
 
-  // Mark a MIXED_CONTENT host/child id as CERT_ERRORS_CONTENT also.
+  // Mark a MIXED_CONTENT host as CERT_ERRORS_CONTENT also.
   state->HostRanInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
 
+  EXPECT_TRUE(state->DidHostRunInsecureContent(
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
 
   // Mark a non-MIXED_CONTENT host as CERT_ERRORS_CONTENT.
   state->HostRanInsecureContent(
-      "www.google.com", 191,
+      "www.not-mixed-content.test",
       content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
 
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "www.google.com", 191,
+      "www.not-mixed-content.test",
       content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
-}
-
-// Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors returns true
-// after seeing an error of interest multiple times, in the default mode in
-// which error occurrences are stored in-memory.
-IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
-                       HasSeenRecurrentErrors) {
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-  StatefulSSLHostStateDelegate* chrome_state =
-      static_cast<StatefulSSLHostStateDelegate*>(state);
-  chrome_state->SetRecurrentInterstitialThresholdForTesting(2);
-  chrome_state->SetRecurrentInterstitialModeForTesting(
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF);
-
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-}
-
-// Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors returns true
-// after seeing an error of interest multiple times in pref mode (where the
-// count of each error is persisted across browsing sessions).
-IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
-                       HasSeenRecurrentErrorsPref) {
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-  StatefulSSLHostStateDelegate* chrome_state =
-      static_cast<StatefulSSLHostStateDelegate*>(state);
-  chrome_state->SetRecurrentInterstitialThresholdForTesting(2);
-  chrome_state->SetRecurrentInterstitialModeForTesting(
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF);
-
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
-  EXPECT_FALSE(
-      chrome_state->HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
-  EXPECT_TRUE(
-      chrome_state->HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
-
-  // Create a new StatefulSSLHostStateDelegate to check that the state has been
-  // saved to the pref and that the new StatefulSSLHostStateDelegate reads it.
-  StatefulSSLHostStateDelegate new_state(
-      profile, profile->GetPrefs(),
-      HostContentSettingsMapFactory::GetForProfile(profile));
-  new_state.SetRecurrentInterstitialThresholdForTesting(2);
-  new_state.SetRecurrentInterstitialModeForTesting(
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF);
-
-  EXPECT_TRUE(new_state.HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  EXPECT_TRUE(new_state.HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
-
-  // Also test the logic for when the number of displayed errors exceeds the
-  // threshold.
-  new_state.DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
-  EXPECT_TRUE(new_state.HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
-}
-
-// Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors handles
-// clocks going backwards in pref mode.
-IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
-                       HasSeenRecurrentErrorsPrefClockGoesBackwards) {
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-  StatefulSSLHostStateDelegate* chrome_state =
-      static_cast<StatefulSSLHostStateDelegate*>(state);
-  chrome_state->SetRecurrentInterstitialThresholdForTesting(2);
-  chrome_state->SetRecurrentInterstitialModeForTesting(
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF);
-
-  base::SimpleTestClock* clock = new base::SimpleTestClock();
-  clock->SetNow(base::Time::Now());
-  chrome_state->SetClockForTesting(
-      std::unique_ptr<base::SimpleTestClock>(clock));
-
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-
-  // Move the clock backwards and test that the recurrent error state is reset.
-  clock->Advance(-base::Seconds(10));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-
-  // If the clock continues to move forwards, a subsequent error page should
-  // trigger the recurrent error message.
-  clock->Advance(base::Seconds(10));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-}
-
-// Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors in pref mode
-// ignores errors that occurred too far in the past. Note that this test uses a
-// threshold of 3 errors, unlike previous tests which use a threshold of 2.
-IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
-                       HasSeenRecurrentErrorsPrefErrorsInPast) {
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-  StatefulSSLHostStateDelegate* chrome_state =
-      static_cast<StatefulSSLHostStateDelegate*>(state);
-  chrome_state->SetRecurrentInterstitialResetTimeForTesting(10);
-  chrome_state->SetRecurrentInterstitialModeForTesting(
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF);
-
-  base::SimpleTestClock* clock = new base::SimpleTestClock();
-  clock->SetNow(base::Time::Now());
-  chrome_state->SetClockForTesting(
-      std::unique_ptr<base::SimpleTestClock>(clock));
-
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-
-  // Subsequent errors more than 10 seconds later shouldn't trigger the
-  // recurrent error message.
-  clock->Advance(base::Seconds(12));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  clock->Advance(base::Seconds(3));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-
-  // But a third subsequent error within 10 seconds should.
-  clock->Advance(base::Seconds(3));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
+      "www.not-mixed-content.test",
+      content::SSLHostStateDelegate::MIXED_CONTENT));
 }
 
 // Tests the basic behavior of cert memory in incognito.

@@ -185,12 +185,11 @@ TEST_F(SOCKSConnectJobTest, SOCKS4) {
       host_resolver_.set_synchronous_mode(host_resolution_synchronous);
 
       MockWrite writes[] = {
-          MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
-                    kSOCKS4OkRequestLocalHostPort80Length, 0),
+          MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS4OkRequestLocalHostPort80),
       };
 
       MockRead reads[] = {
-          MockRead(SYNCHRONOUS, kSOCKS4OkReply, kSOCKS4OkReplyLength, 1),
+          MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS4OkReply),
       };
 
       SequencedSocketData sequenced_socket_data(reads, writes);
@@ -222,15 +221,13 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
       host_resolver_.set_synchronous_mode(host_resolution_synchronous);
 
       MockWrite writes[] = {
-          MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength,
-                    0),
-          MockWrite(SYNCHRONOUS, kSOCKS5OkRequest, kSOCKS5OkRequestLength, 2),
+          MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS5GreetRequest),
+          MockWrite(SYNCHRONOUS, /*seq=*/2, kSOCKS5OkRequest),
       };
 
       MockRead reads[] = {
-          MockRead(SYNCHRONOUS, kSOCKS5GreetResponse,
-                   kSOCKS5GreetResponseLength, 1),
-          MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 3),
+          MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS5GreetResponse),
+          MockRead(SYNCHRONOUS, /*seq=*/3, kSOCKS5OkResponse),
       };
 
       SequencedSocketData sequenced_socket_data(reads, writes);
@@ -259,13 +256,12 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
 TEST_F(SOCKSConnectJobTest, HasEstablishedConnection) {
   host_resolver_.set_ondemand_mode(true);
   MockWrite writes[] = {
-      MockWrite(ASYNC, kSOCKS4OkRequestLocalHostPort80,
-                kSOCKS4OkRequestLocalHostPort80Length, 0),
+      MockWrite(ASYNC, /*seq=*/0, kSOCKS4OkRequestLocalHostPort80),
   };
 
   MockRead reads[] = {
-      MockRead(ASYNC, ERR_IO_PENDING, 1),
-      MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength, 2),
+      MockRead(ASYNC, ERR_IO_PENDING, /*seq=*/1),
+      MockRead(ASYNC, /*seq=*/2, kSOCKS4OkReply),
   };
 
   SequencedSocketData sequenced_socket_data(reads, writes);
@@ -419,15 +415,14 @@ TEST_F(SOCKSConnectJobTest, ConnectTiming) {
   host_resolver_.set_ondemand_mode(true);
 
   MockWrite writes[] = {
-      MockWrite(ASYNC, ERR_IO_PENDING, 0),
-      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength, 1),
-      MockWrite(SYNCHRONOUS, kSOCKS5OkRequest, kSOCKS5OkRequestLength, 3),
+      MockWrite(ASYNC, ERR_IO_PENDING, /*seq=*/0),
+      MockWrite(ASYNC, /*seq=*/1, kSOCKS5GreetRequest),
+      MockWrite(SYNCHRONOUS, /*seq=*/3, kSOCKS5OkRequest),
   };
 
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength,
-               2),
-      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 4),
+      MockRead(SYNCHRONOUS, /*seq=*/2, kSOCKS5GreetResponse),
+      MockRead(SYNCHRONOUS, /*seq=*/4, kSOCKS5OkResponse),
   };
 
   SequencedSocketData sequenced_socket_data(reads, writes);
@@ -549,6 +544,90 @@ TEST_F(SOCKSConnectJobTest, CancelDuringHandshake) {
   // Socket should have been destroyed.
   EXPECT_FALSE(sequenced_socket_data.socket());
   EXPECT_TRUE(sequenced_socket_data.AllWriteDataConsumed());
+}
+
+TEST_F(SOCKSConnectJobTest,
+       SOCKS5_OnDestinationDnsAliasesResolved_ShouldNotBeInvoked) {
+  host_resolver_.set_synchronous_mode(true);
+
+  MockWrite writes[] = {
+      MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS5GreetRequest),
+      MockWrite(SYNCHRONOUS, /*seq=*/2, kSOCKS5OkRequest),
+  };
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS5GreetResponse),
+      MockRead(SYNCHRONOUS, /*seq=*/3, kSOCKS5OkResponse),
+  };
+
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  sequenced_socket_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
+
+  TestConnectJobDelegate test_delegate;
+
+  std::vector<std::string> aliases({"alias1", "alias2", kProxyHostName});
+  std::vector<std::string> dest_aliases(
+      {"dest-alias1", "dest-alias2", kSOCKS5TestHost});
+
+  // Add IP literal rule for proxy.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kProxyHostName, "2.2.2.2", std::move(aliases));
+  // Add IP literal rule for destination.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kSOCKS5TestHost, "3.3.3.3", std::move(dest_aliases));
+
+  std::unique_ptr<SOCKSConnectJob> socks_connect_job =
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
+                                        CreateSOCKSParams(SOCKSVersion::V5),
+                                        &test_delegate, nullptr /* net_log */);
+  test_delegate.StartJobExpectingResult(socks_connect_job.get(), OK,
+                                        /*expect_sync_result=*/true);
+
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+  EXPECT_TRUE(test_delegate.dns_aliases().empty());
+}
+
+TEST_F(SOCKSConnectJobTest,
+       SOCKS4_OnDestinationDnsAliasesResolved_ShouldNotBeInvoked) {
+  host_resolver_.set_synchronous_mode(true);
+
+  MockWrite writes[] = {
+      MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS4OkRequestLocalHostPort80),
+  };
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS4OkReply),
+  };
+
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  sequenced_socket_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
+
+  TestConnectJobDelegate test_delegate;
+
+  std::vector<std::string> aliases({"alias1", "alias2", kProxyHostName});
+  std::vector<std::string> dest_aliases(
+      {"dest-alias1", "dest-alias2", kSOCKS5TestHost});
+
+  // Add IP literal rule for proxy.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kProxyHostName, "2.2.2.2", std::move(aliases));
+  // Add IP literal rule for destination.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kSOCKS5TestHost, "3.3.3.3", std::move(dest_aliases));
+
+  std::unique_ptr<SOCKSConnectJob> socks_connect_job =
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
+                                        CreateSOCKSParams(SOCKSVersion::V4),
+                                        &test_delegate, nullptr /* net_log */);
+  test_delegate.StartJobExpectingResult(socks_connect_job.get(), OK,
+                                        /*expect_sync_result=*/true);
+
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+  EXPECT_TRUE(test_delegate.dns_aliases().empty());
 }
 
 }  // namespace

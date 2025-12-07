@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -56,7 +57,7 @@ SendTabToSelfDevicePickerBubbleView::SendTabToSelfDevicePickerBubbleView(
                       web_contents)
                       ->AsWeakPtr()) {
   DCHECK(controller_);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
@@ -96,8 +97,9 @@ void SendTabToSelfDevicePickerBubbleView::BackButtonPressed() {
 
 void SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed(
     SendTabToSelfBubbleDeviceButton* device_button) {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
 
   controller_->OnDeviceSelected(device_button->device_guid());
 
@@ -128,13 +130,14 @@ void SendTabToSelfDevicePickerBubbleView::Init() {
   AddChildView(std::make_unique<views::Separator>());
   views::View* footer = AddChildView(
       BuildManageAccountDevicesLinkView(/*show_link=*/true, controller_));
-  footer->SetBackground(views::CreateThemedSolidBackground(
-      ui::kColorMenuItemBackgroundHighlighted));
+  footer->SetBackground(
+      views::CreateSolidBackground(ui::kColorMenuItemBackgroundHighlighted));
 }
 
 void SendTabToSelfDevicePickerBubbleView::AddedToWidget() {
-  if (!controller_->show_back_button())
+  if (!controller_->show_back_button()) {
     return;
+  }
 
   // Adding a title view will replace the default title.
   GetBubbleFrameView()->SetTitleView(
@@ -178,8 +181,9 @@ void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
     view->SetGroup(kDeviceButtonGroup);
   }
 
-  if (!device_list_view->children().empty())
+  if (!device_list_view->children().empty()) {
     SetInitiallyFocusedView(device_list_view->children()[0]);
+  }
 }
 
 BEGIN_METADATA(SendTabToSelfDevicePickerBubbleView)

@@ -4,6 +4,7 @@
 
 #include "device/fido/mac/icloud_keychain.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -19,20 +20,22 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mac/fake_icloud_keychain_sys.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::fido::icloud_keychain {
@@ -141,14 +144,15 @@ static const uint8_t kCredentialID[] = {
     0x69, 0x71, 0xB3, 0x4E, 0xD3, 0x27, 0xFE, 0x7A, 0x4C,
 };
 
-class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
+class iCloudKeychainTest : public testing::Test,
+                           public FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
     if (@available(macOS 13.5, *)) {
       fake_ = base::MakeRefCounted<FakeSystemInterface>();
       SetSystemInterfaceForTesting(fake_);
 
-      discovery_ = NewDiscovery(kFakeNSWindowForTesting);
+      discovery_ = NewDiscovery(base::apple::WeakNSWindow());
       discovery_->set_observer(this);
       discovery_->Start();
       task_environment_.RunUntilIdle();
@@ -175,12 +179,12 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
 
   void AuthenticatorAdded(FidoDiscoveryBase* discovery,
                           FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:
@@ -335,7 +339,7 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
 
       const std::vector<uint8_t> returned_credential_id =
           response.attestation_object.authenticator_data().GetCredentialId();
-      EXPECT_TRUE(base::ranges::equal(returned_credential_id, kCredentialID));
+      EXPECT_TRUE(std::ranges::equal(returned_credential_id, kCredentialID));
       EXPECT_FALSE(response.enterprise_attestation_returned);
       EXPECT_TRUE(response.is_resident_key.value_or(false));
       EXPECT_FALSE(response.enterprise_attestation_returned);
@@ -450,9 +454,9 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
 
       AuthenticatorGetAssertionResponse response =
           std::move(std::get<1>(result)[0]);
-      EXPECT_TRUE(base::ranges::equal(response.signature, kSignature));
-      EXPECT_TRUE(base::ranges::equal(response.user_entity->id, kUserID));
-      EXPECT_TRUE(base::ranges::equal(response.credential->id, kCredentialID));
+      EXPECT_TRUE(std::ranges::equal(response.signature, kSignature));
+      EXPECT_TRUE(std::ranges::equal(response.user_entity->id, kUserID));
+      EXPECT_TRUE(std::ranges::equal(response.credential->id, kCredentialID));
       EXPECT_TRUE(response.user_selected);
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
@@ -505,14 +509,352 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
   }
 }
 
-// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
-TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
+TEST_F(iCloudKeychainTest, LargeBlobSupportForICloudKeychain) {
+  if (@available(macOS 14.0, *)) {
+    struct LargeBlobTestCase {
+      LargeBlobSupport large_blob_support_request;
+      FakeSystemInterface::LargeBlobSupportState support_state;
+      std::optional<LargeBlobSupportType> expected_large_blob_type;
+      std::string description;
+    };
+
+    const std::vector<LargeBlobTestCase> test_cases = {
+        {
+            .large_blob_support_request = LargeBlobSupport::kNotRequested,
+            .support_state = FakeSystemInterface::LargeBlobSupportState::
+                kSupportedAndEnabled,
+            .expected_large_blob_type = std::nullopt,
+            .description = "LargeBlobSupport not requested",
+        },
+        {
+            .large_blob_support_request = LargeBlobSupport::kRequired,
+            .support_state = FakeSystemInterface::LargeBlobSupportState::
+                kSupportedAndEnabled,
+            .expected_large_blob_type = LargeBlobSupportType::kBespoke,
+            .description = "LargeBlobSupport required",
+        },
+        {
+            .large_blob_support_request = LargeBlobSupport::kPreferred,
+            .support_state = FakeSystemInterface::LargeBlobSupportState::
+                kSupportedAndEnabled,
+            .expected_large_blob_type = LargeBlobSupportType::kBespoke,
+            .description = "LargeBlobSupport preferred",
+        },
+        {
+            .large_blob_support_request = LargeBlobSupport::kPreferred,
+            .support_state = FakeSystemInterface::LargeBlobSupportState::
+                kSupportedButDisabled,
+            .expected_large_blob_type = std::nullopt,
+            .description = "LargeBlobSupport preferred but API does not "
+                           "support large blob",
+        },
+        {
+            .large_blob_support_request = LargeBlobSupport::kPreferred,
+            .support_state =
+                FakeSystemInterface::LargeBlobSupportState::kNotSupported,
+            .expected_large_blob_type = std::nullopt,
+            .description = "LargeBlobSupport preferred but macOS version does "
+                           "not support large blob",
+        },
+    };
+
+    for (const auto& test_case : test_cases) {
+      SCOPED_TRACE(test_case.description);
+      PublicKeyCredentialParams public_key_params(
+          {PublicKeyCredentialParams::CredentialInfo()});
+
+      CtapMakeCredentialRequest request("{}", {{1, 2, 3, 4}, "rp.id"},
+                                        {{4, 3, 2, 1}, "name", "displayName"},
+                                        public_key_params);
+
+      MakeCredentialOptions options;
+      options.large_blob_support = test_case.large_blob_support_request;
+
+      fake_->set_large_blob_support_state(test_case.support_state);
+      fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+
+      base::test::TestFuture<MakeCredentialStatus,
+                             std::optional<AuthenticatorMakeCredentialResponse>>
+          future;
+      authenticator_->MakeCredential(request, options, future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+
+      auto [status, response_opt] = std::move(future).Take();
+      EXPECT_EQ(status, MakeCredentialStatus::kSuccess);
+      ASSERT_TRUE(response_opt.has_value());
+      EXPECT_EQ(response_opt->large_blob_type,
+                test_case.expected_large_blob_type);
+    }
+  }
+}
+
+TEST_F(iCloudKeychainTest, LargeBlobPreMacOS14) {
+  if (@available(macOS 14.0, *)) {
+    GTEST_SKIP() << "Large blob supported on macOS 14.0+";
+  }
+  if (@available(macOS 13.3, *)) {
+    const auto& options = authenticator_->Options();
+    EXPECT_EQ(options.large_blob_type, std::nullopt);
+
+    PublicKeyCredentialParams public_key_params(
+        {PublicKeyCredentialParams::CredentialInfo()});
+    CtapMakeCredentialRequest request("{}", {{1, 2, 3, 4}, "rp.id"},
+                                      {{4, 3, 2, 1}, "name", "displayName"},
+                                      public_key_params);
+
+    MakeCredentialOptions cred_options;
+    cred_options.large_blob_support = LargeBlobSupport::kPreferred;
+
+    fake_->set_large_blob_support_state(
+        FakeSystemInterface::LargeBlobSupportState::kSupportedAndEnabled);
+    fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+
+    base::test::TestFuture<MakeCredentialStatus,
+                           std::optional<AuthenticatorMakeCredentialResponse>>
+        future;
+    authenticator_->MakeCredential(request, cred_options, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+
+    auto [status, response_opt] = std::move(future).Take();
+    EXPECT_EQ(status, MakeCredentialStatus::kSuccess);
+    ASSERT_TRUE(response_opt.has_value());
+    EXPECT_EQ(response_opt->large_blob_type, std::nullopt);
+  }
+}
+
+TEST_F(iCloudKeychainTest, AuthenticatorOptionsLargeBlob) {
+  // large_blob_type should be supported when flag is enabled and macOS 14.0+.
+  if (@available(macOS 14.0, *)) {
+    const AuthenticatorSupportedOptions& options = authenticator_->Options();
+    EXPECT_EQ(options.large_blob_type, LargeBlobSupportType::kBespoke);
+
+    // macOS < 14.0 should never report large_blob_type even with the flag
+    // enabled.
+  } else if (@available(macOS 13.3, *)) {
+    const AuthenticatorSupportedOptions& options = authenticator_->Options();
+    EXPECT_EQ(options.large_blob_type, std::nullopt);
+  }
+}
+
+TEST_F(iCloudKeychainTest, LargeBlobRWForICloudKeychain) {
+  if (@available(macOS 14.0, *)) {
+    static const uint8_t kAuthenticatorData[] = {
+        0x26, 0xbd, 0x72, 0x78, 0xbe, 0x46, 0x37, 0x61, 0xf1, 0xfa,
+        0xa1, 0xb1, 0x0a, 0xb4, 0xc4, 0xf8, 0x26, 0x70, 0x26, 0x9c,
+        0x41, 0x0c, 0x72, 0x6a, 0x1f, 0xd6, 0xe0, 0x58, 0x55, 0xe1,
+        0x9b, 0x46, 0x01, 0x00, 0x00, 0x0f, 0xdd,
+    };
+    static const uint8_t kSignature[] = {1, 2, 3, 4};
+    static const uint8_t kUserID[] = {5, 6, 7, 8};
+
+    CtapGetAssertionRequest request("rp.id", "{}");
+    CtapGetAssertionOptions options;
+
+    auto run_get =
+        [&](GetAssertionStatus& status_out, std::optional<bool>& written_out,
+            std::optional<std::vector<uint8_t>>* read_blob_out = nullptr) {
+          base::test::TestFuture<GetAssertionStatus,
+                                 std::vector<AuthenticatorGetAssertionResponse>>
+              future;
+          authenticator_->GetAssertion(request, options, future.GetCallback());
+          ASSERT_TRUE(future.Wait());
+          auto [status, responses] = future.Take();
+          status_out = status;
+          if (!responses.empty()) {
+            if (status == GetAssertionStatus::kSuccess && !responses.empty()) {
+              written_out = responses[0].large_blob_written;
+              if (read_blob_out) {
+                *read_blob_out = responses[0].large_blob;
+              }
+            }
+          }
+        };
+    // Empty large blob write.
+    {
+      std::vector<uint8_t> small_blob = {0xA, 0xB, 0xC};
+      options.large_blob_write = small_blob;
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      fake_->set_large_blob_write_success(false);
+
+      GetAssertionStatus status;
+      std::optional<bool> written;
+      run_get(status, written);
+      EXPECT_EQ(status, GetAssertionStatus::kSuccess);
+      ASSERT_TRUE(written.has_value());
+      EXPECT_FALSE(*written);
+    }
+    // Attempted large blob write when large blob is not supported.
+    {
+      fake_->set_large_blob_support_state(
+          FakeSystemInterface::LargeBlobSupportState::kNotSupported);
+      std::vector<uint8_t> small_blob = {1, 2, 3};
+      options.large_blob_write = small_blob;
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      fake_->set_large_blob_write_success(false);
+
+      GetAssertionStatus status;
+      std::optional<bool> written;
+      run_get(status, written);
+      EXPECT_EQ(status, GetAssertionStatus::kSuccess);
+      ASSERT_TRUE(written.has_value());
+      EXPECT_FALSE(*written);
+    }
+    // Read a large blob.
+    {
+      options.large_blob_write.reset();
+      options.large_blob_read = true;
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      std::vector<uint8_t> kReadBlob = {0xDE, 0xAD, 0xBE, 0xEF};
+      fake_->set_large_blob_read_data(kReadBlob);
+      fake_->set_large_blob_write_success(false);
+
+      GetAssertionStatus status;
+      std::optional<bool> written;
+      std::optional<std::vector<uint8_t>> read_blob;
+      run_get(status, written, &read_blob);
+      EXPECT_EQ(status, GetAssertionStatus::kSuccess);
+      ASSERT_TRUE(written.has_value());
+      EXPECT_FALSE(*written);
+      ASSERT_TRUE(read_blob.has_value());
+      EXPECT_EQ(*read_blob, kReadBlob);
+    }
+  }
+}
+
+TEST_F(iCloudKeychainTest, HistogramMetricsForLargeBlob) {
+  if (@available(macOS 14.0, *)) {
+    static const uint8_t kAuthenticatorData[] = {
+        0x26, 0xbd, 0x72, 0x78, 0xbe, 0x46, 0x37, 0x61, 0xf1, 0xfa,
+        0xa1, 0xb1, 0x0a, 0xb4, 0xc4, 0xf8, 0x26, 0x70, 0x26, 0x9c,
+        0x41, 0x0c, 0x72, 0x6a, 0x1f, 0xd6, 0xe0, 0x58, 0x55, 0xe1,
+        0x9b, 0x46, 0x01, 0x00, 0x00, 0x0f, 0xdd,
+    };
+    static const uint8_t kSignature[] = {1, 2, 3, 4};
+    static const uint8_t kUserID[] = {5, 6, 7, 8};
+
+    CtapGetAssertionRequest request("rp.id", "{}");
+
+    // Helper that performs GetAssertion with the supplied options.
+    auto RunGetAssertion = [&](const CtapGetAssertionOptions& options,
+                               base::OnceCallback<void()> extra_fake_setup) {
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      std::move(extra_fake_setup).Run();
+      base::test::TestFuture<GetAssertionStatus,
+                             std::vector<AuthenticatorGetAssertionResponse>>
+          future;
+      authenticator_->GetAssertion(request, options, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+      EXPECT_EQ(future.Get<0>(), GetAssertionStatus::kSuccess);
+    };
+    // Emit failed large blob read.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_read = true;
+      RunGetAssertion(opts, base::DoNothing());
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Read", false,
+          1);
+    }
+    // Emit successful large blob read.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_read = true;
+      std::vector<uint8_t> kReadBlob = {0xAA, 0xBB};
+      RunGetAssertion(opts, base::BindLambdaForTesting([&] {
+                        fake_->set_large_blob_read_data(kReadBlob);
+                      }));
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Read", true,
+          1);
+    }
+    // Emit failed large blob write.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_write = std::vector<uint8_t>{0xEE, 0xFF};
+      RunGetAssertion(opts, base::BindLambdaForTesting([&] {
+                        fake_->set_large_blob_write_success(false);
+                      }));
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Write",
+          false, 1);
+    }
+    // Emit successful large blob write.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_write = std::vector<uint8_t>{0x01, 0x02};
+      RunGetAssertion(opts, base::BindLambdaForTesting([&] {
+                        fake_->set_large_blob_write_success(true);
+                      }));
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Write", true,
+          1);
+    }
+    // Helper that runs MakeCredential with a configurable fake state.
+    {
+      auto RunMake = [&](FakeSystemInterface::LargeBlobSupportState state) {
+        PublicKeyCredentialParams pk_params(
+            {PublicKeyCredentialParams::CredentialInfo()});
+
+        CtapMakeCredentialRequest mc_request(
+            "{}", {{1, 2, 3, 4}, "rp.id"},
+            {{4, 3, 2, 1}, "name", "displayName"}, pk_params);
+
+        MakeCredentialOptions mc_opts;
+        mc_opts.large_blob_support = LargeBlobSupport::kPreferred;
+
+        fake_->set_large_blob_support_state(state);
+        fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+
+        base::test::TestFuture<
+            MakeCredentialStatus,
+            std::optional<AuthenticatorMakeCredentialResponse>>
+            fut;
+        authenticator_->MakeCredential(mc_request, mc_opts, fut.GetCallback());
+        EXPECT_TRUE(fut.Wait());
+        EXPECT_EQ(fut.Get<0>(), MakeCredentialStatus::kSuccess);
+      };
+      // Emit large blob supported and enabled.
+      {
+        base::HistogramTester histograms;
+        RunMake(
+            FakeSystemInterface::LargeBlobSupportState::kSupportedAndEnabled);
+
+        histograms.ExpectUniqueSample(
+            "WebAuthentication.MacOS.MakeCredentialLargeBlobResult", true, 1);
+      }
+      // Emit large blob supported but disbled.
+      {
+        base::HistogramTester histograms;
+        RunMake(
+            FakeSystemInterface::LargeBlobSupportState::kSupportedButDisabled);
+
+        histograms.ExpectUniqueSample(
+            "WebAuthentication.MacOS.MakeCredentialLargeBlobResult", false, 1);
+      }
+    }
+  }
+}
+
+TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", std::nullopt}}};
+         {{4, 3, 2, 1}, "name", std::nullopt},
+         "Example provider"}};
     fake_->SetCredentials(creds);
     base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
                            FidoRequestHandlerBase::RecognizedCredential>
@@ -533,18 +875,19 @@ TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
   }
 }
 
-// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
-TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadataWithAllowlist) {
+TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", std::nullopt}},
+         {{4, 3, 2, 1}, "name", std::nullopt},
+         "Example provider"},
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 5},
-         {{4, 3, 2, 2}, "name", std::nullopt}},
+         {{4, 3, 2, 2}, "name", std::nullopt},
+         "Example provider"},
     };
     fake_->SetCredentials(creds);
     base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,

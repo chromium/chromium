@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/box_definitions.h"
 
 #include <bitset>
@@ -14,9 +9,11 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -25,6 +22,7 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/formats/common/opus_constants.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/media_buildflags.h"
@@ -305,9 +303,8 @@ bool SampleEncryptionEntry::Parse(BufferReader* reader,
   // the constant IV must be ensured by the caller.
   RCHECK(iv_size == 0 || iv_size == 8 || iv_size == 16);
 
-  memset(initialization_vector, 0, sizeof(initialization_vector));
   for (uint8_t i = 0; i < iv_size; i++)
-    RCHECK(reader->Read1(initialization_vector + i));
+    RCHECK(reader->Read1(&initialization_vector[i]));
 
   if (!has_subsamples) {
     subsamples.clear();
@@ -383,7 +380,8 @@ TrackEncryption::TrackEncryption()
       default_iv_size(0),
       default_crypt_byte_block(0),
       default_skip_byte_block(0),
-      default_constant_iv_size(0) {}
+      default_constant_iv_size(0),
+      default_constant_iv() {}
 TrackEncryption::TrackEncryption(const TrackEncryption& other) = default;
 TrackEncryption::~TrackEncryption() = default;
 FourCC TrackEncryption::BoxType() const { return FOURCC_TENC; }
@@ -405,9 +403,8 @@ bool TrackEncryption::Parse(BoxReader* reader) {
     if (default_iv_size == 0) {
       RCHECK(reader->Read1(&default_constant_iv_size));
       RCHECK(default_constant_iv_size == 8 || default_constant_iv_size == 16);
-      memset(default_constant_iv, 0, sizeof(default_constant_iv));
       for (uint8_t i = 0; i < default_constant_iv_size; i++)
-        RCHECK(reader->Read1(default_constant_iv + i));
+        RCHECK(reader->Read1(&default_constant_iv[i]));
     } else {
       RCHECK(default_iv_size == 8 || default_iv_size == 16);
     }
@@ -504,6 +501,7 @@ TrackHeader::TrackHeader()
       layer(-1),
       alternate_group(-1),
       volume(-1),
+      display_matrix(kDisplayIdentityMatrix),
       width(0),
       height(0) {}
 TrackHeader::TrackHeader(const TrackHeader& other) = default;
@@ -699,8 +697,8 @@ bool AVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
   return ParseInternal(reader, reader->media_log());
 }
 
-bool AVCDecoderConfigurationRecord::Parse(const uint8_t* data, int data_size) {
-  BufferReader reader(data, data_size);
+bool AVCDecoderConfigurationRecord::Parse(base::span<const uint8_t> data) {
+  BufferReader reader(data.data(), data.size());
   NullMediaLog media_log;
   return ParseInternal(&reader, &media_log);
 }
@@ -742,7 +740,7 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
 
   if (profile_indication == 100 || profile_indication == 110 ||
       profile_indication == 122 || profile_indication == 144) {
-    if (!ParseREXT(reader, media_log)) {
+    if (!reader->HasBytes(4) || !ParseREXT(reader, media_log)) {
       DVLOG(2) << __func__ << ": avcC REXT is missing or invalid";
       chroma_format = 0;
       bit_depth_luma_minus8 = 0;
@@ -1237,6 +1235,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       video_info.codec = VideoCodec::kH264;
       video_info.profile = H264Parser::ProfileIDCToVideoCodecProfile(
           avc_config->profile_indication);
+      video_info.level = avc_config->avc_level;
       // It can be Dolby Vision stream if there is dvvC box.
       std::tie(video_info, dv_info) = MaybeParseDOVI(reader, video_info);
       frame_bitstream_converter =
@@ -1543,11 +1542,13 @@ bool OpusSpecificBox::Parse(BoxReader* reader) {
 #error The code below assumes little-endianness.
 #endif
 
-  memcpy(&extradata[OPUS_EXTRADATA_SKIP_SAMPLES_OFFSET], &codec_delay_in_frames,
-         sizeof(codec_delay_in_frames));
-  memcpy(&extradata[OPUS_EXTRADATA_SAMPLE_RATE_OFFSET], &sample_rate,
-         sizeof(sample_rate));
-  memcpy(&extradata[OPUS_EXTRADATA_GAIN_OFFSET], &gain_db, sizeof(gain_db));
+  auto extradata_span = base::span(extradata);
+  extradata_span.subspan(OPUS_EXTRADATA_SKIP_SAMPLES_OFFSET)
+      .copy_prefix_from(base::U16ToLittleEndian(codec_delay_in_frames));
+  extradata_span.subspan(OPUS_EXTRADATA_SAMPLE_RATE_OFFSET)
+      .copy_prefix_from(base::U32ToLittleEndian(sample_rate));
+  extradata_span.subspan(OPUS_EXTRADATA_GAIN_OFFSET)
+      .copy_prefix_from(base::I16ToLittleEndian(gain_db));
 
   channel_count = extradata[OPUS_EXTRADATA_CHANNELS_OFFSET];
 
@@ -1764,7 +1765,7 @@ bool IamfSpecificBox::ReadOBUHeader(BufferReader* reader,
     RCHECK(ReadLeb128Value(reader, &extension_header_size));
     const int num_leb128_bytes_read = reader->pos() - last_reader_pos;
     RCHECK(reader->SkipBytes(extension_header_size));
-    obu_size -= (num_leb128_bytes_read + extension_header_size);
+    *obu_size -= (num_leb128_bytes_read + extension_header_size);
   }
   return true;
 }
@@ -1857,13 +1858,29 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   if (format == FOURCC_AC3 ||
       (format == FOURCC_ENCA && sinf.format.format == FOURCC_AC3)) {
-    RCHECK_MEDIA_LOGGED(reader->ReadChild(&ac3), reader->media_log(),
-                        "Failure parsing AC3SpecificBox (dac3)");
+    if (!(reader->ReadChild(&ac3))) {
+      MEDIA_LOG(ERROR, reader->media_log())
+          << "Failure parsing AC3SpecificBox (dac3)";
+      RCHECK_MEDIA_LOGGED(
+          channelcount != CHANNEL_LAYOUT_NONE, reader->media_log(),
+          "Channel configuration is undetermined. The primary "
+          "AC3SpecificBox(dac3) failed to parse, and the fallback "
+          "AudioSampleEntry channel count was zero (0), indicating no "
+          "valid channel information.");
+    }
   }
   if (format == FOURCC_EAC3 ||
       (format == FOURCC_ENCA && sinf.format.format == FOURCC_EAC3)) {
-    RCHECK_MEDIA_LOGGED(reader->ReadChild(&eac3), reader->media_log(),
-                        "Failure parsing EC3SpecificBox (dec3)");
+    if (!(reader->ReadChild(&eac3))) {
+      MEDIA_LOG(ERROR, reader->media_log())
+          << "Failure parsing EC3SpecificBox (dec3)";
+      RCHECK_MEDIA_LOGGED(
+          channelcount != CHANNEL_LAYOUT_NONE, reader->media_log(),
+          "Channel configuration is undetermined. The primary "
+          "EC3SpecificBox (dec3) failed to parse, and the fallback "
+          "AudioSampleEntry channel count was zero (0), indicating no "
+          "valid channel information.");
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
@@ -2289,7 +2306,8 @@ CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
       iv_size(0),
       crypt_byte_block(0),
       skip_byte_block(0),
-      constant_iv_size(0) {}
+      constant_iv_size(0),
+      constant_iv() {}
 CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry(
     const CencSampleEncryptionInfoEntry& other) = default;
 CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() = default;
@@ -2308,9 +2326,8 @@ bool CencSampleEncryptionInfoEntry::Parse(BoxReader* reader) {
     if (iv_size == 0) {
       RCHECK(reader->Read1(&constant_iv_size));
       RCHECK(constant_iv_size == 8 || constant_iv_size == 16);
-      memset(constant_iv, 0, sizeof(constant_iv));
       for (uint8_t i = 0; i < constant_iv_size; i++)
-        RCHECK(reader->Read1(constant_iv + i));
+        RCHECK(reader->Read1(&constant_iv[i]));
     } else {
       RCHECK(iv_size == 8 || iv_size == 16);
     }
@@ -2413,10 +2430,10 @@ MovieFragment::~MovieFragment() = default;
 FourCC MovieFragment::BoxType() const { return FOURCC_MOOF; }
 
 bool MovieFragment::Parse(BoxReader* reader) {
-  RCHECK(reader->ScanChildren() &&
-         reader->ReadChild(&header) &&
-         reader->ReadChildren(&tracks) &&
-         reader->MaybeReadChildren(&pssh));
+  RCHECK(reader->ScanChildren());
+  RCHECK(reader->ReadChild(&header));
+  RCHECK(reader->MaybeReadChildren(&tracks));
+  RCHECK(reader->MaybeReadChildren(&pssh));
   return true;
 }
 

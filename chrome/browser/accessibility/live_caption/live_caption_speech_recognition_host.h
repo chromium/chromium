@@ -82,7 +82,7 @@ class LiveCaptionSpeechRecognitionHost
                              const std::string& source_language,
                              const std::string& target_language,
                              bool is_final,
-                             const std::string& result);
+                             const captions::TranslateEvent& result);
 
   // Returns the WebContents if it exists. If it does not exist, sets the
   // RenderFrameHost reference to nullptr and returns nullptr.
@@ -127,6 +127,10 @@ class LiveCaptionSpeechRecognitionHost
 
   // The automatically detected language of the audio stream.
   std::string auto_detected_language_;
+
+  // Flag indicating whether the current source language was automatically
+  // detected and switched to.
+  bool language_auto_switched_ = false;
 
   // The number of consecutive highly confident language identification events.
   int language_identification_event_count_ = 0;

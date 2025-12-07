@@ -36,8 +36,8 @@ void TestWebDialogDelegate::SetCloseOnEscape(bool enabled) {
   close_on_escape_ = enabled;
 }
 
-ModalType TestWebDialogDelegate::GetDialogModalType() const {
-  return MODAL_TYPE_WINDOW;
+ui::mojom::ModalType TestWebDialogDelegate::GetDialogModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 std::u16string TestWebDialogDelegate::GetDialogTitle() const {

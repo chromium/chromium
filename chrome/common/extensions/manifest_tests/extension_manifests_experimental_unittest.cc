@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
-
 #include "base/command_line.h"
+#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace errors = extensions::manifest_errors;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace extensions {
+namespace {
 
 TEST_F(ChromeManifestTest, ExperimentalPermission) {
   LoadAndExpectWarning(
@@ -19,11 +22,13 @@ TEST_F(ChromeManifestTest, ExperimentalPermission) {
       "'experimental' requires the 'experimental-extension-apis' "
       "command line switch to be enabled.");
   LoadAndExpectSuccess("experimental.json",
-                       extensions::mojom::ManifestLocation::kComponent);
-  LoadAndExpectSuccess("experimental.json",
-                       extensions::mojom::ManifestLocation::kInternal,
-                       extensions::Extension::FROM_WEBSTORE);
+                       mojom::ManifestLocation::kComponent);
+  LoadAndExpectSuccess("experimental.json", mojom::ManifestLocation::kInternal,
+                       Extension::FROM_WEBSTORE);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      extensions::switches::kEnableExperimentalExtensionApis);
+      switches::kEnableExperimentalExtensionApis);
   LoadAndExpectSuccess("experimental.json");
 }
+
+}  // namespace
+}  // namespace extensions

@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -13,17 +12,22 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Implementation of {@link PaneManager} for managing {@link Pane}s. */
+@NullMarked
 public class PaneManagerImpl implements PaneManager {
-    private final ObservableSupplierImpl<Pane> mCurrentPaneSupplierImpl =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<Pane> mCurrentPaneSupplierImpl =
+            ObservableSuppliers.createMonotonic();
     private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
     private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
     private final Callback<Boolean> mHubVisibilityObserver;
     private final PaneTransitionHelper mPaneTransitionHelper;
     private final PaneOrderController mPaneOrderController;
+    private final @PaneId int mDefaultPaneId;
 
     /**
      * Create a {@link PaneManagerImpl}.
@@ -31,15 +35,19 @@ public class PaneManagerImpl implements PaneManager {
      * @param paneListBuilder The {@link PaneListBuilder} consumed to build the list of {@link
      *     Pane}s to manage.
      * @param hubVisibilitySupplier The supplier for visibility of the Hub.
+     * @param defaultPaneId The default pane's Id.
      */
     public PaneManagerImpl(
-            PaneListBuilder paneListBuilder, ObservableSupplier<Boolean> hubVisibilitySupplier) {
+            PaneListBuilder paneListBuilder,
+            ObservableSupplier<Boolean> hubVisibilitySupplier,
+            @PaneId int defaultPaneId) {
         mPanes = paneListBuilder.build();
         mHubVisibilitySupplier = hubVisibilitySupplier;
         mHubVisibilityObserver = this::onHubVisibilityChanged;
         mHubVisibilitySupplier.addObserver(mHubVisibilityObserver);
         mPaneTransitionHelper = new PaneTransitionHelper(this);
         mPaneOrderController = paneListBuilder.getPaneOrderController();
+        mDefaultPaneId = defaultPaneId;
     }
 
     /** Destroys the {@link PaneManager}. */
@@ -55,19 +63,19 @@ public class PaneManagerImpl implements PaneManager {
     }
 
     @Override
-    public @NonNull PaneOrderController getPaneOrderController() {
+    public PaneOrderController getPaneOrderController() {
         return mPaneOrderController;
     }
 
     @Override
-    public @NonNull ObservableSupplier<Pane> getFocusedPaneSupplier() {
+    public ObservableSupplier<Pane> getFocusedPaneSupplier() {
         return mCurrentPaneSupplierImpl;
     }
 
     @Override
     public boolean focusPane(@PaneId int paneId) {
         Pane nextPane = getPaneForId(paneId);
-        if (nextPane == null || !nextPane.getReferenceButtonDataSupplier().hasValue()) {
+        if (nextPane == null || nextPane.getReferenceButtonDataSupplier().get() == null) {
             return false;
         }
 
@@ -103,6 +111,16 @@ public class PaneManagerImpl implements PaneManager {
         return pane;
     }
 
+    @Override
+    public @Nullable Pane getDefaultPane() {
+        return getPaneForId(getDefaultPaneId());
+    }
+
+    @Override
+    public @PaneId int getDefaultPaneId() {
+        return mDefaultPaneId;
+    }
+
     private boolean isHubVisible() {
         return Boolean.TRUE.equals(mHubVisibilitySupplier.get());
     }
@@ -112,19 +130,22 @@ public class PaneManagerImpl implements PaneManager {
 
         Pane currentPane = mCurrentPaneSupplierImpl.get();
         boolean hasCurrentPane = currentPane != null;
-        if (hasCurrentPane && isVisible) {
-            mPaneTransitionHelper.processTransition(currentPane.getPaneId(), LoadHint.HOT);
+        if (hasCurrentPane) {
+            mPaneTransitionHelper.processTransition(
+                    assumeNonNull(currentPane).getPaneId(),
+                    isVisible ? LoadHint.HOT : LoadHint.WARM);
         }
 
         for (int paneId : mPanes.keySet()) {
-            if (hasCurrentPane && currentPane.getPaneId() == paneId) continue;
+            if (hasCurrentPane && assumeNonNull(currentPane).getPaneId() == paneId) continue;
 
             mPaneTransitionHelper.queueTransition(paneId, loadHint);
         }
 
         // Queue this as the last transition in case the user quickly returns.
         if (hasCurrentPane && !isVisible) {
-            mPaneTransitionHelper.queueTransition(currentPane.getPaneId(), LoadHint.COLD);
+            mPaneTransitionHelper.queueTransition(
+                    assumeNonNull(currentPane).getPaneId(), LoadHint.COLD);
         }
     }
 }

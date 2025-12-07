@@ -27,8 +27,14 @@ namespace content_settings {
 class RuleMetaData {
  public:
   RuleMetaData();
+  RuleMetaData(RuleMetaData&& other);
+  RuleMetaData(const RuleMetaData& other) = delete;
+  RuleMetaData& operator=(const RuleMetaData& other) = delete;
+  RuleMetaData& operator=(RuleMetaData&& other);
 
   bool operator==(const RuleMetaData& other) const;
+
+  RuleMetaData Clone() const;
 
   base::Time last_modified() const { return last_modified_; }
   void set_last_modified(base::Time last_modified) {
@@ -84,12 +90,26 @@ class RuleMetaData {
   // Returns whether the Rule is expired. Expiration is handled by
   // HostContentSettingsMap automatically, clients do not have to check this
   // attribute manually.
-  bool IsExpired(base::Clock* clock) const;
+  bool IsExpired(const base::Clock* clock) const;
 
   // Computes the setting's lifetime, based on the lifetime and expiration that
   // were read from persistent storage.
   static base::TimeDelta ComputeLifetime(base::TimeDelta lifetime,
                                          base::Time expiration);
+
+  bool decided_by_related_website_sets() const {
+    return decided_by_related_website_sets_;
+  }
+  void set_decided_by_related_website_sets(
+      bool decided_by_related_website_sets) {
+    decided_by_related_website_sets_ = decided_by_related_website_sets;
+  }
+
+  const base::Value& rule_options() const { return rule_options_; }
+
+  void set_rule_options(const base::Value& rule_options) {
+    rule_options_ = rule_options.Clone();
+  }
 
  private:
   // mojo (de)serialization needs access to private details.
@@ -122,6 +142,12 @@ class RuleMetaData {
   mojom::TpcdMetadataCohort tpcd_metadata_cohort_ =
       mojom::TpcdMetadataCohort::DEFAULT;
   uint32_t tpcd_metadata_elected_dtrp_ = 0u;
+
+  // Set to true if the storage access was decided by a Related Website Set.
+  bool decided_by_related_website_sets_ = false;
+
+  // Represents options which apply to the rule. May be empty.
+  base::Value rule_options_;
 };
 
 }  // namespace content_settings

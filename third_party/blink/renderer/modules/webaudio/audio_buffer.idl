@@ -37,9 +37,9 @@
 
     // Channel access
     readonly attribute unsigned long numberOfChannels;
-    [HighEntropy=Direct, Measure, RaisesException] Float32Array getChannelData(
+    [Measure, RaisesException] Float32Array getChannelData(
         unsigned long channelIndex);
-    [HighEntropy, Measure, RaisesException] void copyFromChannel(
+    [Measure, RaisesException] void copyFromChannel(
         Float32Array destination,
         unsigned long channelNumber,
         optional unsigned long bufferOffset = 0);

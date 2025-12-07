@@ -16,6 +16,7 @@
         securityOrigin: 'file://',
       });
 
-  testRunner.log(databaseWithObjectStores);
+  testRunner.log(`- name : ${databaseWithObjectStores.name}`);
+  testRunner.log(`- version : ${databaseWithObjectStores.version}`);
   testRunner.completeTest();
 });

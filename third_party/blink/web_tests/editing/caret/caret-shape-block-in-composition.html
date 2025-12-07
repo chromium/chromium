@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+  #target {
+    font-size: 3em;
+    caret-color: lime;
+    caret-shape: block;
+    caret-animation: manual;
+  }
+
+  #target:focus {
+    outline: none;
+  }
+</style>
+<p>Test passes if the caret shape shown is a bar during composition.</p>
+<div id="target" contenteditable spellcheck="false"></div>
+<script>
+  document.getElementById("target").focus();
+  if (window.textInputController)
+    textInputController.setComposition("foobar");
+</script>
+

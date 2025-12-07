@@ -3,14 +3,19 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import android.graphics.Color;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -20,7 +25,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * for an edge-to-edge like experience, with the ability to scroll back the bottom chin / "OS
  * navbar" to better view and access bottom-anchored web content.
  */
-public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
+@NullMarked
+public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarColorHelper {
     private final EdgeToEdgeBottomChinMediator mMediator;
     private final LayoutManager mLayoutManager;
     private final EdgeToEdgeBottomChinSceneLayer mSceneLayer;
@@ -29,46 +35,60 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
      * Build the coordinator that manages the edge-to-edge bottom chin.
      *
      * @param androidView The Android view for the bottom chin.
+     * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
+     *     visibility events.
+     * @param insetObserver The {@link InsetObserver} for checking IME insets.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
+     * @param requestRenderRunnable Runnable that requests a re-render of the scene overlay.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
-     * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
-     *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
+     * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
+     * @param defaultVisibility Whether the bottom chin is visible by default.
      */
     public EdgeToEdgeBottomChinCoordinator(
             View androidView,
-            @NonNull LayoutManager layoutManager,
-            @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull NavigationBarColorProvider navigationBarColorProvider,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            InsetObserver insetObserver,
+            LayoutManager layoutManager,
+            Runnable requestRenderRunnable,
+            EdgeToEdgeController edgeToEdgeController,
+            BottomControlsStacker bottomControlsStacker,
+            FullscreenManager fullscreenManager,
+            boolean defaultVisibility) {
         this(
                 androidView,
+                keyboardVisibilityDelegate,
+                insetObserver,
                 layoutManager,
                 edgeToEdgeController,
-                navigationBarColorProvider,
                 bottomControlsStacker,
-                new EdgeToEdgeBottomChinSceneLayer());
+                new EdgeToEdgeBottomChinSceneLayer(requestRenderRunnable),
+                fullscreenManager,
+                defaultVisibility);
     }
 
     @VisibleForTesting
     EdgeToEdgeBottomChinCoordinator(
             View androidView,
-            @NonNull LayoutManager layoutManager,
-            @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull NavigationBarColorProvider navigationBarColorProvider,
-            @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull EdgeToEdgeBottomChinSceneLayer sceneLayer) {
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            InsetObserver insetObserver,
+            LayoutManager layoutManager,
+            EdgeToEdgeController edgeToEdgeController,
+            BottomControlsStacker bottomControlsStacker,
+            EdgeToEdgeBottomChinSceneLayer sceneLayer,
+            FullscreenManager fullscreenManager,
+            boolean defaultVisibility) {
         mLayoutManager = layoutManager;
         mSceneLayer = sceneLayer;
 
-        int initNavBarColor = navigationBarColorProvider.getNavigationBarColor();
         PropertyModel model =
                 new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS)
-                        .with(EdgeToEdgeBottomChinProperties.IS_VISIBLE, false)
-                        .with(EdgeToEdgeBottomChinProperties.COLOR, initNavBarColor)
-                        .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, initNavBarColor)
+                        .with(EdgeToEdgeBottomChinProperties.CAN_SHOW, false)
+                        .with(EdgeToEdgeBottomChinProperties.COLOR, Color.TRANSPARENT)
+                        .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, Color.TRANSPARENT)
+                        .with(EdgeToEdgeBottomChinProperties.Y_OFFSET, 0)
                         .build();
         PropertyModelChangeProcessor.create(
                 model,
@@ -80,10 +100,13 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
         mMediator =
                 new EdgeToEdgeBottomChinMediator(
                         model,
+                        keyboardVisibilityDelegate,
+                        insetObserver,
                         mLayoutManager,
                         edgeToEdgeController,
-                        navigationBarColorProvider,
-                        bottomControlsStacker);
+                        bottomControlsStacker,
+                        fullscreenManager,
+                        defaultVisibility);
 
         mLayoutManager.addSceneOverlay(sceneLayer);
     }
@@ -93,5 +116,25 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
     public void destroy() {
         mMediator.destroy();
         mSceneLayer.destroy();
+    }
+
+    // SystemBarColorHelper
+
+    @Override
+    public boolean canSetStatusBarColor() {
+        return false;
+    }
+
+    @Override
+    public void setStatusBarColor(int color) {}
+
+    @Override
+    public void setNavigationBarColor(int color) {
+        mMediator.changeBottomChinColor(color);
+    }
+
+    @Override
+    public void setNavigationBarDividerColor(int dividerColor) {
+        mMediator.changeBottomChinDividerColor(dividerColor);
     }
 }

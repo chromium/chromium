@@ -5,28 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace page_content_annotations {
 class PageContentAnnotationsService;
 }  // namespace page_content_annotations
 
 // Singleton that owns all PageContentAnnotationsService(s) and associates them
-// with ChromeBrowserState. No service is created for incognito profile.
+// with ProfileIOS. No service is created for incognito profile.
 class PageContentAnnotationsServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  static page_content_annotations::PageContentAnnotationsService*
-  GetForBrowserState(ChromeBrowserState* context);
+  static page_content_annotations::PageContentAnnotationsService* GetForProfile(
+      ProfileIOS* profile);
   static PageContentAnnotationsServiceFactory* GetInstance();
 
   // Returns the default factory used to build PageContentAnnotationsService.
-  // Can be registered with SetTestingFactory to use real instances during
+  // Can be registered with AddTestingFactory to use real instances during
   // testing.
   static TestingFactory GetDefaultFactory();
 
@@ -35,15 +33,10 @@ class PageContentAnnotationsServiceFactory
 
   PageContentAnnotationsServiceFactory();
   ~PageContentAnnotationsServiceFactory() override;
-  PageContentAnnotationsServiceFactory(
-      const PageContentAnnotationsServiceFactory&) = delete;
-  PageContentAnnotationsServiceFactory& operator=(
-      const PageContentAnnotationsServiceFactory&) = delete;
 
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_

@@ -49,11 +49,14 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
   // Return the average time delta in the event queue.
   base::TimeDelta TimeInterval() const override;
 
+  base::TimeDelta ResampleLatency(
+      base::TimeDelta frame_interval) const override;
+
  private:
   // Class to cache the Resample Latency to avoid its recalculation each frame.
   class LatencyCalculator {
    public:
-    base::TimeDelta GetResampleLatency(base::TimeDelta frame_interval);
+    base::TimeDelta GetResampleLatencyInternal(base::TimeDelta frame_interval);
 
    private:
     base::TimeDelta CalculateLatency();
@@ -69,7 +72,7 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
   // Store the current delta time between the last 2 events
   base::TimeDelta events_dt_;
 
-  LatencyCalculator latency_calculator_;
+  mutable LatencyCalculator latency_calculator_;
 };
 
 }  // namespace ui

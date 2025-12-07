@@ -107,10 +107,6 @@ class CORE_EXPORT PluginData final : public GarbageCollected<PluginData> {
   Color PluginBackgroundColorForMimeType(const String& mime_type) const;
   bool IsExternalPluginMimeType(const String& mime_type) const;
 
-  // refreshBrowserSidePluginCache doesn't update existent instances of
-  // PluginData.
-  static void RefreshBrowserSidePluginCache();
-
  private:
   HeapVector<Member<PluginInfo>> plugins_;
   HeapVector<Member<MimeClassInfo>> mimes_;

@@ -6,6 +6,9 @@
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+
+#include <dxgi1_6.h>
 
 namespace gfx {
 
@@ -34,7 +37,7 @@ base::win::ScopedHandle DuplicateSharedHandle(HANDLE shared_handle) {
   if (!result) {
     const DWORD last_error = ::GetLastError();
     base::debug::Alias(&last_error);
-    CHECK(false);
+    NOTREACHED();
   }
   return base::win::ScopedHandle(duplicated_handle);
 }
@@ -89,6 +92,7 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromD3D11Fence(
 // static
 bool D3DSharedFence::IsSupported(ID3D11Device* d3d11_device) {
   DCHECK(d3d11_device);
+  // Check for ID3D11Device5:
   Microsoft::WRL::ComPtr<ID3D11Device5> d3d11_device5;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&d3d11_device5));
   if (FAILED(hr)) {
@@ -96,7 +100,30 @@ bool D3DSharedFence::IsSupported(ID3D11Device* d3d11_device) {
              << logging::SystemErrorCodeToString(hr);
     return false;
   }
-  return true;
+
+  // Check for IDXGIAdapter4:
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&dxgi_device));
+  CHECK_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter4;
+  hr = dxgi_adapter.As(&dxgi_adapter4);
+  if (FAILED(hr)) {
+    DVLOG(1) << "Failed to get IDXGIAdapter4: "
+             << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  DXGI_ADAPTER_DESC3 adapter_desc;
+  hr = dxgi_adapter4->GetDesc3(&adapter_desc);
+  CHECK_EQ(hr, S_OK);
+
+  // The adapter must support monitored fences.
+  return adapter_desc.Flags & DXGI_ADAPTER_FLAG3_SUPPORT_MONITORED_FENCES;
 }
 
 // static
@@ -111,6 +138,30 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromUnownedHandle(
     HANDLE shared_handle) {
   return base::WrapRefCounted(new D3DSharedFence(
       DuplicateSharedHandle(shared_handle), DXGIHandleToken()));
+}
+
+// static
+scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromD3D12Fence(
+    Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence,
+    uint64_t fence_value) {
+  CHECK(d3d12_fence);
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
+  HRESULT hr = d3d12_fence->GetDevice(IID_PPV_ARGS(&d3d12_device));
+  CHECK_EQ(hr, S_OK);
+  HANDLE shared_handle;
+  hr = d3d12_device->CreateSharedHandle(d3d12_fence.Get(), nullptr, GENERIC_ALL,
+                                        nullptr, &shared_handle);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Unable to create shared handle for D3D12Fence: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+  scoped_refptr<D3DSharedFence> fence =
+      gfx::D3DSharedFence::CreateFromScopedHandle(
+          base::win::ScopedHandle{shared_handle}, DXGIHandleToken());
+  fence->d3d12_signal_fence_ = std::move(d3d12_fence);
+  fence->fence_value_ = fence_value;
+  return fence;
 }
 
 D3DSharedFence::D3DSharedFence(base::win::ScopedHandle shared_handle,
@@ -218,6 +269,10 @@ bool D3DSharedFence::IncrementAndSignalD3D11() {
   }
   fence_value_++;
   return true;
+}
+
+Microsoft::WRL::ComPtr<ID3D12Fence> D3DSharedFence::GetD3D12Fence() const {
+  return d3d12_signal_fence_;
 }
 
 }  // namespace gfx

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/common/extension.h"
@@ -34,9 +35,9 @@ class ChromeExtensionsClientTest : public testing::Test {
 };
 
 base::span<const char* const> GetFeatureList() {
-  constexpr const char* feature_list[] = {"AllowedFeature",
-                                          "DisallowedFeature"};
-  return base::make_span(feature_list);
+  static constexpr const char* feature_list[] = {"AllowedFeature",
+                                                 "DisallowedFeature"};
+  return base::span(feature_list);
 }
 
 bool FeatureDelegatedCheck(const std::string& api_full_name,
@@ -97,7 +98,7 @@ TEST_F(ChromeExtensionsClientTest, GetBrowserImagePaths) {
                     .AppendASCII("browser_action")
                     .AppendASCII("basics");
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
                                Extension::NO_FLAGS, &error));
@@ -108,6 +109,24 @@ TEST_F(ChromeExtensionsClientTest, GetBrowserImagePaths) {
       ExtensionsClient::Get()->GetBrowserImagePaths(extension.get());
   ASSERT_EQ(1u, paths.size());
   EXPECT_EQ("icon.png", paths.begin()->BaseName().AsUTF8Unsafe());
+}
+
+// Test that theme image variants are returned correctly.
+TEST_F(ChromeExtensionsClientTest, GetBrowserImagePathsThemeHiDpi) {
+  base::FilePath install_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &install_dir));
+  install_dir =
+      install_dir.AppendASCII("extensions").AppendASCII("theme_hidpi");
+
+  std::u16string error;
+  scoped_refptr<Extension> extension(
+      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
+                               Extension::NO_FLAGS, &error));
+  ASSERT_TRUE(extension.get());
+
+  std::set<base::FilePath> paths =
+      ExtensionsClient::Get()->GetBrowserImagePaths(extension.get());
+  ASSERT_EQ(8u, paths.size());
 }
 
 // Test that extensions with zero-length action icons will not load.
@@ -121,12 +140,12 @@ TEST_F(ChromeExtensionsClientTest, CheckZeroLengthActionIconFiles) {
                                .AppendASCII("Extensions")
                                .AppendASCII("gggggggggggggggggggggggggggggggg");
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension2(
       file_util::LoadExtension(ext_dir, mojom::ManifestLocation::kUnpacked,
                                Extension::NO_FLAGS, &error));
   EXPECT_FALSE(extension2.get());
-  EXPECT_EQ("Could not load icon 'icon.png' specified in 'browser_action'.",
+  EXPECT_EQ(u"Could not load icon 'icon.png' specified in 'browser_action'.",
             error);
 
   // Try to install an extension with a zero-length page action icon file.
@@ -139,7 +158,7 @@ TEST_F(ChromeExtensionsClientTest, CheckZeroLengthActionIconFiles) {
       file_util::LoadExtension(ext_dir, mojom::ManifestLocation::kUnpacked,
                                Extension::NO_FLAGS, &error));
   EXPECT_FALSE(extension3.get());
-  EXPECT_EQ("Could not load icon 'icon.png' specified in 'page_action'.",
+  EXPECT_EQ(u"Could not load icon 'icon.png' specified in 'page_action'.",
             error);
 }
 

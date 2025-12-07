@@ -64,7 +64,7 @@
     margin: 0;
   }
 
-  #infoContainer > h2 {
+  #infoContainer > h1 {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6_regular-font);
     line-height: 24px;
@@ -166,7 +166,7 @@
             alt="$i18n{managedSetting}" title="$i18n{managedSetting}">
         <div id="enterpriseIconContainer">
           <iron-icon icon="personalization:managed"
-              title$="$i18n{managedSetting}">
+              title="$i18n{managedSetting}">
           </iron-icon>
         </div>
       </template>
@@ -205,13 +205,11 @@
   </div>
   <div id="infoContainer">
     <template is="dom-if" if="[[info_]]">
-      <h2 id="name">[[info_.name]]</h2>
+      <h1 id="name">[[info_.name]]</h1>
       <template is="dom-if" if="[[info_.email]]">
-        <!-- TODO(b/326488045) Update Settings path to /osPeople when Settings
-          revamp is launched. -->
         <a id="emailContainer"
             class="avatar-link"
-            href="chrome://os-settings/accountManager"
+            href="chrome://os-settings/osPeople"
             target="_blank"
             aria-description="$i18n{ariaLabelGoToAccountSettings}">
           <span id="email">[[info_.email]]</span>

@@ -6,6 +6,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace interest_group {
@@ -34,7 +36,7 @@ class InterestGroupPermissionsBrowserTest
   InterestGroupPermissionsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
@@ -174,7 +176,7 @@ class InterestGroupPermissionsBrowserTest
                      https_server_->GetURL("a.test", "/"),
                      https_server_->GetURL(
                          "a.test", "/interest_group/decision_logic.js")));
-    if (nullptr == auction_result) {
+    if (base::Value() == auction_result) {
       return false;
     }
     EXPECT_TRUE(base::StartsWith(auction_result.ExtractString(), "urn:uuid:",
@@ -217,7 +219,7 @@ class InterestGroupOffBrowserTest : public InterestGroupPermissionsBrowserTest {
  public:
   InterestGroupOffBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kInterestGroupStorage},
+        {network::features::kInterestGroupStorage},
         {blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kParakeet, features::kPrivacySandboxAdsAPIsOverride});
   }
@@ -239,7 +241,7 @@ class InterestGroupFledgeOnBrowserTest
  public:
   InterestGroupFledgeOnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kInterestGroupStorage, blink::features::kFledge,
+        {network::features::kInterestGroupStorage, blink::features::kFledge,
          features::kPrivacySandboxAdsAPIsOverride},
         {blink::features::kAdInterestGroupAPI, blink::features::kParakeet});
   }
@@ -262,7 +264,7 @@ class InterestGroupParakeetOnBrowserTest
  public:
   InterestGroupParakeetOnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kInterestGroupStorage, blink::features::kParakeet},
+        {network::features::kInterestGroupStorage, blink::features::kParakeet},
         {blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          features::kPrivacySandboxAdsAPIsOverride});
   }
@@ -286,7 +288,7 @@ class InterestGroupAPIOnBrowserTest
  public:
   InterestGroupAPIOnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI},
         {blink::features::kParakeet, blink::features::kFledge,
          features::kPrivacySandboxAdsAPIsOverride});
@@ -381,7 +383,7 @@ class FledgePermissionBrowserTestBaseFeatureDisabled
   FledgePermissionBrowserTestBaseFeatureDisabled() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kInterestGroupStorage);
+        network::features::kInterestGroupStorage);
   }
 };
 

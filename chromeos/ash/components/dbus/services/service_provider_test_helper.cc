@@ -36,7 +36,7 @@ void ServiceProviderTestHelper::SetUp(
   // Create a mock bus.
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  mock_bus_ = new dbus::MockBus(options);
+  mock_bus_ = new dbus::MockBus(std::move(options));
 
   // ShutdownAndBlock() will be called in TearDown().
   EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
@@ -90,7 +90,7 @@ void ServiceProviderTestHelper::SetUpReturnSignal(
   // |mock_object_proxy_|'s ConnectToSignal will use
   // MockConnectToSignal().
   EXPECT_CALL(*mock_object_proxy_.get(),
-              DoConnectToSignal(interface_name, signal_name, _, _))
+              ConnectToSignal(interface_name, signal_name, _, _))
       .WillOnce(Invoke(this, &ServiceProviderTestHelper::MockConnectToSignal));
 
   mock_object_proxy_->ConnectToSignal(interface_name, signal_name,
@@ -142,9 +142,9 @@ void ServiceProviderTestHelper::MockConnectToSignal(
     const std::string& interface_name,
     const std::string& signal_name,
     dbus::ObjectProxy::SignalCallback signal_callback,
-    dbus::ObjectProxy::OnConnectedCallback* connected_callback) {
+    dbus::ObjectProxy::OnConnectedCallback connected_callback) {
   // Tell the callback that the object proxy is connected to the signal.
-  std::move(*connected_callback).Run(interface_name, signal_name, true);
+  std::move(connected_callback).Run(interface_name, signal_name, true);
   // Capture the callback, so we can run this at a later time.
   on_signal_callback_ = signal_callback;
 }

@@ -1,2 +1,6 @@
+# No longer working primarily on Chrome. Still somewhat active and often the
+# most knowledgeable reviewer for DNS matters, but may be slow, so see the
+# "Primary" reviewers in /net/OWNERS if needed for urgent code reviews.
 ericorth@chromium.org
-horo@chromium.org
+
+per-file stale_host_resolver.*=file://components/cronet/OWNERS

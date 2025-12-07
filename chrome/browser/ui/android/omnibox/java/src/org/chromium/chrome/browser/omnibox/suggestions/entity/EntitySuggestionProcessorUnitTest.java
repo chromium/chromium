@@ -34,15 +34,21 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -52,7 +58,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Tests for {@link EntitySuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,6 +76,9 @@ public class EntitySuggestionProcessorUnitTest {
     private @Mock Bitmap mBitmap;
     private @Mock BookmarkState mBookmarkState;
     private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock AutocompleteInput mInput;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private EntitySuggestionProcessor mProcessor;
 
@@ -77,7 +86,7 @@ public class EntitySuggestionProcessorUnitTest {
      * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
      * processSuggestion and validate suggestions.
      */
-    class SuggestionTestHelper {
+    static class SuggestionTestHelper {
         // Stores created AutocompleteMatch
         protected final AutocompleteMatch mSuggestion;
         // Stores PropertyModel for the suggestion.
@@ -111,18 +120,22 @@ public class EntitySuggestionProcessorUnitTest {
 
     /** Populate model for associated suggestion. */
     void processSuggestion(SuggestionTestHelper helper) {
-        mProcessor.populateModel(helper.mSuggestion, helper.mModel, 0);
+        mProcessor.populateModel(mInput, helper.mSuggestion, helper.mModel, 0);
     }
 
     @Before
     public void setUp() {
-        mProcessor =
-                new EntitySuggestionProcessor(
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mTextProvider,
-                        Optional.of(mImageSupplier),
-                        mBookmarkState);
+                        mImageSupplier,
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+        mProcessor = new EntitySuggestionProcessor(uiContext);
         doReturn("").when(mTextProvider).getTextWithoutAutocomplete();
     }
 
@@ -167,7 +180,7 @@ public class EntitySuggestionProcessorUnitTest {
 
         assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         ColorDrawable icon = (ColorDrawable) suggHelper.getIcon();
-        Assert.assertEquals(icon.getColor(), Color.RED);
+        Assert.assertEquals(Color.RED, icon.getColor());
     }
 
     @Test
@@ -205,13 +218,17 @@ public class EntitySuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void fetchImage_withoutSupplier() {
-        mProcessor =
-                new EntitySuggestionProcessor(
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mTextProvider,
-                        /* imageSupplier= */ Optional.empty(),
-                        mBookmarkState);
+                        /* imageSupplier= */ null,
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+        mProcessor = new EntitySuggestionProcessor(uiContext);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
         verifyNoMoreInteractions(mImageSupplier);

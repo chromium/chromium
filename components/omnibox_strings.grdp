@@ -4,12 +4,102 @@
        referencing .grdp file or translation console pipeline breaks. -->
   <part file="omnibox_pedal_ui_strings.grdp" />
 
+<!-- Omnibox popup match descriptions. -->
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
   </message>
+  <message name="IDS_AUTOCOMPLETE_ASK_DESCRIPTION" desc="Description for matches from ask-keywords; e.g. gemini or ai mode.">
+    Ask <ph name="ENGINE">$1<ex>AI Mode</ex></ph>
+  </message>
+  <message name="IDS_AUTOCOMPLETE_SEARCH_IN_SIDE_PANEL_DESCRIPTION" desc="Description for search matches that open in side panel.">
+    Search in side panel
+  </message>
+
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL" desc="Label text for the action match that opens lens.">
+    Ask Google about this page
+  </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT" desc="Alternative label text for the action match that opens lens.">
+    Ask Google Lens about this page
+  </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT2" desc="Second alternative label text for the action match that opens lens.">
+    Ask Google Search about this page
+  </message>
+  <message name="IDS_OMNIBOX_TOOLBELT_LABEL" desc="The label shown before actions in the omnibox toolbelt.">
+    Search shortcuts
+  </message>
+
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT" desc="The button text contents to suggest an omnibox action that opens lens">
+    Ask Google about this page
+  </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that opens lens">
+    Ask Google about this page
+  </message>
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to open lens.">
+    <ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to ask Google about this page
+  </message>
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION" desc="Announcement when lens action button is focused">
+    Ask Google about this page button, activate to ask Google about this page
+  </message>
+
+  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_HINT" desc="The button label for an omnibox action that invokes bookmark search keyword mode.">
+    Search Bookmarks
+  </message>
+  <message name="IDS_STARTER_PACK_BOOKMARKS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes bookmark search keyword mode.">
+    Search Bookmarks
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke bookmark search.">
+    <ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search bookmarks
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_BOOKMARKS_ACTION" desc="Announcement when Search Bookmarks action button is focused">
+    Search Bookmarks button, activate to search bookmarks
+  </message>
+
+  <message name="IDS_STARTER_PACK_HISTORY_ACTION_HINT" desc="The button label for an omnibox action that invokes history search keyword mode.">
+    Search History
+  </message>
+  <message name="IDS_STARTER_PACK_HISTORY_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes history search keyword mode.">
+    Search History
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke history search.">
+    <ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search history
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_HISTORY_ACTION" desc="Announcement when Search History action button is focused">
+    Search History button, activate to search history
+  </message>
+
+  <message name="IDS_STARTER_PACK_TABS_ACTION_HINT" desc="The button label for an omnibox action that invokes tabs search keyword mode.">
+    Search Tabs
+  </message>
+  <message name="IDS_STARTER_PACK_TABS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes tabs search keyword mode.">
+    Search Tabs
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke tabs search.">
+    <ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to search tabs
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_TABS_ACTION" desc="Announcement when Search Tabs action button is focused">
+    Search Tabs button, activate to search tabs
+  </message>
+
+  <message name="IDS_STARTER_PACK_AI_MODE_ACTION_HINT" desc="The button label for an omnibox action that invokes the AI mode keyword.">
+    Ask AI Mode in Google Search
+  </message>
+  <message name="IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes the AI mode keyword.">
+    Ask AI Mode in Google Search
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_AI_MODE_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke AI mode.">
+    <ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to ask AI Mode in Google Search
+  </message>
+  <message name="IDS_ACC_STARTER_PACK_AI_MODE_ACTION" desc="Announcement when AI Mode action button is focused">
+    AI Mode button, activate to ask AI Mode in Google Search
+  </message>
+
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">
     &lt;Type search term&gt;
   </message>
+  <message name="IDS_EMPTY_STARTER_PACK_AI_MODE_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches an ask-keyword, but they haven't entered any text following the chrome keyword">
+    &lt;Type a question&gt;
+  </message>
+
   <if expr="use_titlecase">
     <message name="IDS_LINK_FROM_CLIPBOARD" desc="The label in the omnibox dropdown explaining that the link has been extracted from the user's clipboard." meaning="Length: 35em">
       Link You Copied
@@ -61,6 +151,38 @@
     <message name="IDS_OMNIBOX_EMPTY_HINT" desc="The text displayed in the omnibox when it is empty." formatter_data="android_java">
       Search or type URL
     </message>
+    <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
+      Search <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> or type URL
+    </message>
+    <if expr="is_android or enable_vr">
+      <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME_FOR_AI_MODE" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
+        Ask <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> anything
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_GALLERY" desc="The text displayed in the omnibox attachments popup. When clicked - opens image gallery." formatter_data="android_java">
+        Gallery
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_FILES" desc="The text displayed in the omnibox attachments popup. When clicked - opens file picker." formatter_data="android_java">
+        Files
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_TABS" desc="The text displayed in the omnibox attachments popup. When clicked - opens tabs picker." formatter_data="android_java">
+        Tabs
+      </message>
+      <message name="IDS_FUSEBOX_ADD_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup. When clicked - adds the curernt tab as context." formatter_data="android_java">
+        Add current tab
+      </message>
+      <message name="IDS_FUSEBOX_MAX_ATTACHMENTS" desc="The text displayed in a snackbar when the max number of omnibox attachments is reached" formatter_data="android_java">
+        Add up to 10 files, tabs, or images
+      </message>
+      <message name="IDS_FUSEBOX_UPLOAD_FAILED" desc="The text displayed in a snackbar when an attachment fails to upload" formatter_data="android_java">
+        Unable to add attachments
+      </message>
+      <message name="IDS_OMNIBOX_CREATE_IMAGE" desc="The text displayed in the omnibox attachments popup. When clicked - enables image creation." formatter_data="android_java">
+        Create Image
+      </message>
+      <message name="IDS_OMNIBOX_EMPTY_HINT_FOR_IMAGE_GENERATION" desc="The text displayed in the omnibox when it is empty and image generation is selected." formatter_data="android_java">
+        Describe your image
+      </message>
+    </if>
   </if>
   <if expr="is_android">
     <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">
@@ -69,9 +191,6 @@
   </if>
   <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
     <ph name="TRADITIONAL_TEXT">$1</ph> - <ph name="ADDITIONAL_TEXT">$2</ph>
-  </message>
-  <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_PARENTHESIS_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
-    <ph name="TRADITIONAL_TEXT">$1</ph> (<ph name="ADDITIONAL_TEXT">$2</ph>)
   </message>
   <message name="IDS_OMNIBOX_TAB_SUGGEST_HINT" desc="The button text contents to say that this suggestion will switch to another tab.">
     Switch to this tab
@@ -87,29 +206,122 @@
   <message name="IDS_OMNIBOX_READER_MODE" desc="Text shown in the omnibox to indicate a user is viewing the reader mode view of an article.">
     Reader Mode
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DOCUMENT" desc="Google Docs product name, for use in omnibox Docs result descriptions.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_BUGANIZER" desc="Buganizer issue name, for use in omnibox content suggestion descriptions.">
+    Buganizer Issue
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_COMMA_SEPARATED_VALUES" desc="Comma-separated values file format name, for use in omnibox content suggestion descriptions.">
+    Comma-Separated Values
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_APPS_SCRIPT" desc="Google Apps Script product name, for use in omnibox content suggestion descriptions.">
+    Google Apps Script
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DOCS" desc="Google Docs product name, for use in omnibox content suggestion descriptions.">
     Google Docs
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_FORM" desc="Google Docs product name, for use in omnibox Form result descriptions.">
-    Google Forms
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRAWINGS" desc="Google Drawings product name, for use in omnibox content suggestion descriptions.">
+    Google Drawings
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_SPREADSHEET" desc="Google Sheets product name, for use in omnibox Sheets result descriptions.">
-    Google Sheets
-  </message>
-    <message name="IDS_DRIVE_SUGGESTION_PRESENTATION" desc="Google Slides product name, for use in omnibox Slides result descriptions.">
-    Google Slides
-  </message>
-  <message name="IDS_DRIVE_SUGGESTION_GENERAL" desc="Google Drive product name, for use in general omnibox Drive file result descriptions.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRIVE" desc="Google Drive product name shown when the file type is unknown, for use in omnibox content suggestion descriptions.">
     Google Drive
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE" desc="Product description for Google Drive omnibox results.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRIVE_FOLDER" desc="Google Drive product name shown when the file is a folder, for use in omnibox content suggestion descriptions.">
+    Google Drive Folder
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_FORMS" desc="Google Forms product name, for use in omnibox content suggestion descriptions.">
+    Google Forms
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_JAMBOARD" desc="Google Jamboard product name, for use in omnibox content suggestion descriptions.">
+    Google Jamboard
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_PHOTOS" desc="Google Photos product name, for use in omnibox content suggestion descriptions.">
+    Google Photos
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SITES" desc="Google Sites product name, for use in omnibox content suggestion descriptions.">
+    Google Sites
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SHEETS" desc="Google Sheets product name, for use in omnibox content suggestion descriptions.">
+    Google Sheets
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SLIDES" desc="Google Slides product name, for use in omnibox content suggestion descriptions.">
+    Google Slides
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_JPEG" desc="JPEG image file format name, for use in omnibox content suggestion descriptions.">
+    JPEG Image
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_PNG" desc="PNG image file format name, for use in omnibox content suggestion descriptions.">
+    PNG Image
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_SVG" desc="SVG image file format name, for use in omnibox content suggestion descriptions.">
+    SVG Image
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_JIRA" desc="Jira issue name, for use in omnibox content suggestion descriptions.">
+    Jira Issue
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_JSON" desc="JSON file format name, for use in omnibox content suggestion descriptions.">
+    JSON
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MARKDOWN" desc="Markdown file format name, for use in omnibox content suggestion descriptions.">
+    Markdown
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_EXCEL" desc="Microsoft Excel product name, for use in omnibox content suggestion descriptions.">
+    Microsoft Excel
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_POWERPOINT" desc="Microsoft PowerPoint product name, for use in omnibox content suggestion descriptions.">
+    Microsoft PowerPoint
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_WORD" desc="Microsoft Word product name, for use in omnibox content suggestion descriptions.">
+    Microsoft Word
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_PRESENTATION" desc="OpenDocument Presentation product name, for use in omnibox content suggestion descriptions.">
+    OpenDocument Presentation
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_SPREADSHEET" desc="OpenDocument Spreadsheet product name, for use in omnibox content suggestion descriptions.">
+    OpenDocument Spreadsheet
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_TEXT" desc="OpenDocument Text product name, for use in omnibox content suggestion descriptions.">
+    OpenDocument Text
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_PDF" desc="PDF file format name, for use in omnibox content suggestion descriptions.">
+    PDF
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_PLAIN_TEXT" desc="Plain text file format name, for use in omnibox content suggestion descriptions.">
+    Plain Text
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_RICH_TEXT_FORMAT" desc="Rich Text Format file format name, for use in omnibox content suggestion descriptions.">
+    Rich Text Format
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_SALESFORCE" desc="Salesforce product name, for use in omnibox content suggestion descriptions.">
+    Salesforce
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_SLACK" desc="Slack message name, for use in omnibox content suggestion descriptions.">
+    Slack Message
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_MP4" desc="MP4 video file format name, for use in omnibox content suggestion descriptions.">
+    MP4 Video
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_QUICKTIME" desc="QuickTime video file format name, for use in omnibox content suggestion descriptions.">
+    QuickTime Video
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_WEBM" desc="WebM video file format name, for use in omnibox content suggestion descriptions.">
+    WebM Video
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_ZIP_FILE" desc="ZIP archive file format name, for use in omnibox content suggestion descriptions.">
+    ZIP Archive
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE" desc="Product description for Google Drive omnibox results.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_OWNER">$2<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$3<ex>Google Docs</ex></ph>
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE" desc="Product description for Google Drive omnibox results when date is missing.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE" desc="Product description for Google Drive omnibox results when date is missing.">
     <ph name="RESULT_OWNER">$1<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER" desc="Product description for Google Drive omnibox results when owner is missing.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER" desc="Product description for Google Drive omnibox results when owner is missing.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_FILE_TYPE_DESCRIPTION" desc="Product description for content suggestions in omnibox when the file type description is missing.">
+    <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_OWNER">$2<ex>First Last</ex></ph>
+  </message>
+  <message name="IDS_PERSON_SUGGESTION_DESCRIPTION" desc="Description for person suggestions in omnibox.">
+  <ph name="ENGINE">$1<ex>Agentspace</ex></ph> People
   </message>
   <if expr="use_titlecase">
     <then>
@@ -167,12 +379,34 @@
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS" desc="The button hover tooltip text to describe action.">
     Read customer evaluations of products, services, or experiences to help inform your decisions with reviews.
   </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT" desc="Label for Omnibox Action button that opens the AIM webpage" meaning="Length: 12em">
+    AI Mode
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Open AI Mode with this suggestion.
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_HINT" desc="Label for Omnibox Action button that switches to another tab" meaning="Length: 12em">
+    Switch to this tab
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Switch to this tab.
+  </message>
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT" desc="Label for Omnibox Action button that opens the POI website." meaning="Length: 12em">
     Website
   </message>
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS" desc="The button hover tooltip text to describe action.">
     Access the website to view information, resources, or services provided by the business.
   </message>
+
+  <message name="IDS_ACC_OMNIBOX_ACTION_IN_EXTENSION_SUGGEST_SUFFIX" desc="Suffix for spoken suggestion description with actions in suggest button(s) explaining that additional actions are available.">
+    <ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Call</ex></ph>, press Tab to browse available actions, then Enter to execute selected action.
+  </message>
+
+  <!-- Fusebox -->
+  <message name="IDS_AI_MODE_ENTRYPOINT_HINT" desc="Label for the Omnibox entrypoint that encourages the user to toggle AIMode on" formatter_data="android_java">
+    Try AI Mode
+  </message>
+
 
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
@@ -233,7 +467,16 @@
     <ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to search
   </message>
   <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
-    Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex>, type a query and press Enter to search</ph>
+    Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex></ph>
+  </message>
+  <message name="IDS_ACC_ASK_KEYWORD_MODE" desc="Announcement when entering keyword mode for an engine that is suitable for asking vs. searching (e.g. Gemini).">
+    Ask <ph name="KEYWORD_SUFFIX">$1<ex>Gemini</ex></ph>
+  </message>
+  <message name="IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT" desc="Announcement when entering keyword search mode with shortcut.">
+    <ph name="KEYWORD_SHORTCUT">$1<ex>yt</ex></ph>, Search <ph name="KEYWORD_SUFFIX">$2<ex>Youtube</ex></ph>
+  </message>
+  <message name="IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT" desc="Announcement when entering keyword mode for an engine that is suitable for asking vs. searching (e.g. Gemini) with shortcut.">
+    <ph name="KEYWORD_SHORTCUT">$1<ex>gemini</ex></ph>, Ask <ph name="KEYWORD_SUFFIX">$2<ex>Gemini</ex></ph>
   </message>
 
   <!-- Accessibility labels for the omnibox thumbs up feedback button. -->
@@ -260,26 +503,12 @@
   <message name="IDS_ACC_REMOVE_SUGGESTION_BUTTON" desc="Announcement when remove suggestion button is focused.">
     Remove Suggestion button, press Enter to remove this suggestion
   </message>
-  <!-- Tooltip labels for the omnibox popup header show/hide toggle button. -->
-  <message name="IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON" desc="Tooltip for the Show Suggestions button on section headers.">
-    Show suggestions
+  <!-- Accessibility labels for the omnibox AI Mode button. -->
+  <message name="IDS_ACC_AI_MODE_PLACEHOLDER_TEXT" desc="Announcement when omnibox text field is empty and AI Mode is available.">
+    Press tab then enter to ask AI Mode
   </message>
-  <message name="IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON" desc="Tooltip for the Hide Suggestions button on section headers.">
-    Hide suggestions
-  </message>
-  <!-- Accessibility labels for the omnibox popup header show/hide toggle button. -->
-  <message name="IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON" desc="Announcement for the Show Suggestions button on section headers.">
-    Show the &quot;<ph name="SECTION">$1<ex>related to recent searches</ex></ph>&quot; section
-  </message>
-  <message name="IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON" desc="Announcement for the Hide Suggestions button on section headers.">
-    Hide the &quot;<ph name="SECTION">$1<ex>related to recent searches</ex></ph>&quot; section
-  </message>
-  <!-- Accessibility announcements made when suggestion sections are shown or hidden. -->
-  <message name="IDS_ACC_HEADER_SECTION_SHOWN" desc="Announcement that lets the user know the suggestions section has been Shown.">
-    &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section shown
-  </message>
-  <message name="IDS_ACC_HEADER_SECTION_HIDDEN" desc="Announcement that lets the user know the suggestions section has been Hidden.">
-    &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section hidden
+  <message name="IDS_ACC_AI_MODE_BUTTON_FOCUSED" desc="Announcement when AI Mode button is focused.">
+    AI Mode button, press Enter to ask AI Mode
   </message>
 
   <!-- Accessibility announcements made for the Chrome tip IPH suggestions sometimes shown at the bottom of the Omnibox -->
@@ -291,6 +520,9 @@
   </message>
   <message name="IDS_ACC_DISMISS_CHROME_TIP_FOCUSED_PREFIX" desc="Announcement when dismiss chrome tip button is focused.">
     Dismiss Chrome Tip button, press Enter to dismiss, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Type @gemini to Chat with Gemini</ex></ph>
+  </message>
+  <message name="IDS_ACC_DISMISS_CHROME_TIP_BUTTON" desc="Announcement when dismiss chrome tip button is focused.">
+    Dismiss Chrome Tip button, press Enter to dismiss
   </message>
 
   <!-- Site Search/Keyword mode Starter Pack strings. Note: kCurrentDataVersion in template_url_starter_pack_data.cc must also be updated when changing these values. -->
@@ -315,17 +547,35 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_NAME" desc = "The name of the Gemini engine as it appears on chrome://settings/searchEngines.">
     Gemini
   </message>
-  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD" desc = "The keyword required to trigger Chat with Gemini in keyword mode. This will be prepended with an '@'.">
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD" desc = "The keyword required to trigger Ask Gemini in keyword mode. This will be prepended with an '@'.">
     Gemini
   </message>
-  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
-    <ph name="KEYWORD">$1<ex>@gemini</ex></ph> - Chat with <ph name="KEYWORD_SHORT_NAME">$2<ex>Gemini</ex></ph>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_NAME" desc = "The name of the search engine to search with the current page context as it appears on chrome://settings/searchEngines." translateable="false">
+    Page
+  </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_KEYWORD" desc = "The keyword required to trigger page context search in keyword mode. This will be prepended with an '@'." translateable="false">
+    Page
+  </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_NAME" desc = "The name of the Google AI Mode search engine as it appears on chrome://settings/searchEngines.">
+    Google AI Mode
+  </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_KEYWORD" desc = "The keyword required to trigger the Google AI Mode search engine. This will be stripped of whitespace and prepended with an '@'.">
+    AI Mode
+  </message>
+  <message name="IDS_STARTER_PACK_PAGE_KEYWORD_TEXT" desc="The text shown at the front of the Omnibox when a user has selected the starter pack page keyword mode." translateable="false">
+    Ask about this page
+  </message>
+  <message name="IDS_STARTER_PACK_PAGE_EMPTY_QUERY_MATCH_TEXT" desc="Shown in the location bar drop down as the first item in the list when the user enters the page search starter pack keyword mode but they haven't entered any text for a query yet." translateable="false">
+    &lt;Enter a question&gt;
+  </message>
+  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for asking. For example, starter pack suggestions like @gemini will Ask Gemini.">
+    <ph name="KEYWORD">$1<ex>@gemini</ex></ph> - Ask <ph name="KEYWORD_SHORT_NAME">$2<ex>Gemini</ex></ph>
   </message>
   <message name="IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for searching. For example, starter pack suggestions like @bookmarks will search Bookmarks.">
     <ph name="KEYWORD">$1<ex>@bookmarks</ex></ph> - Search <ph name="KEYWORD_SHORT_NAME">$2<ex>Bookmarks</ex></ph>
   </message>
-  <message name="IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT" desc="Text shown at the front of the Omnibox when a user has selected a keyword that is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
-    Chat with <ph name="KEYWORD_SHORT_NAME">$1<ex>Gemini</ex></ph>
+  <message name="IDS_OMNIBOX_SELECTED_KEYWORD_ASK_TEXT" desc="Text shown at the front of the Omnibox when a user has selected a keyword that is suitable for asking. For example, starter pack suggestions like @gemini will Ask Gemini.">
+    Ask <ph name="KEYWORD_SHORT_NAME">$1<ex>Gemini</ex></ph>
   </message>
 
   <!-- No results description for the Starter Pack's tab search feature (@tabs). This appears as the first suggestion when no matching tabs are found. -->
@@ -337,18 +587,44 @@
     Type @gemini to Chat with Gemini
   </message>
 
-  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the featured Enterprise search.">
-    Type @ to search <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
+  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the one or more featured Enterprise search engines.">
+    Type @ to search across <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
+  </message>
+
+  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SEARCH_AGGREGATOR_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the Enterprise Search Aggregator search engine.">
+    Type <ph name="SEARCH_AGGREGATOR_KEYWORD">$1<ex>@work</ex></ph> to search or ask <ph name="SEARCH_AGGREGATOR_SHORT_NAME">$2<ex>Work</ex></ph>
   </message>
 
   <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
     For a more powerful way to search your browsing history, turn on
   </message>
-  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT" desc="The string displayed as the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT" desc="The link displayed on the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
     History search, powered by AI
   </message>
 
-  <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc="The string displayed when a calculator answer is suggested.">
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH" desc="The string displayed as the last row in the Omnibox as IPH informing them their info is sent to Google.">
+    Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature. This is an experimental feature and won't always get it right.
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT" desc="The link displayed on the last row in the Omnibox as IPH informing them their info is sent to Google.">
+    Learn more
+  </message>
+  <message name="IDS_ACC_OMNIBOX_IPH_LINK_SELECTED" desc="Announcement when an IPH Chrome Tip link is selected.">
+    Chrome Tip link, press Enter to open <ph name="IPH_LINK_FOCUSED_LINK_TEXT">$1<ex>Learn more</ex></ph>
+  </message>
+
+  <message name="IDS_ACC_OMNIBOX_TOOLBELT_NEXT_SUFFIX" desc="Additional text announcement when a match preceding the toolbelt is selected.">
+    <ph name="TOOLBELT_PRECEDING_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab for more search shortcuts available after this search suggestion
+  </message>
+
+  <message name="IDS_OMNIBOX_HISTORY_SCOPE_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH encouraging users to try the @history scope.">
+    Type @history to search your browsing history
+  </message>
+
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH encouraging users to try the @history scope when AI features are enabled.">
+    Type @history to search your browsing history, powered by AI
+  </message>
+
+  <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
     <ph name="EXPRESSION">$1</ph> = <ph name="ANSWER">$2</ph>
   </message>
 
@@ -357,4 +633,40 @@
     Popular topics
   </message>
 
+  <!-- Placeholder text for the various starter pack scopes -->
+  <message name="IDS_OMNIBOX_BOOKMARKS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @bookmarks scope.">
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @history scope and hasn't opted into the history AI setting.">
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @history scope and has opted into the history AI setting.">
+    In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_OMNIBOX_TABS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @tabs scope.">
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @gemini scope.">
+    Enter a question
+  </message>
+  <message name="IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the @page starter pack match without further text input." translateable="false">
+    Enter a question
+  </message>
+  <message name="IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the AI Mode starter pack without further text input.">
+    Ask anything
+  </message>
+
+  <!-- Strings for Android Hub Search. -->
+  <message name="IDS_OMNIBOX_HUB_OPEN_TABS_HEADER" desc="The header for the open tabs zero-prefix suggestions section.">
+    Last open tabs
+  </message>
+  <message name="IDS_OMNIBOX_HUB_SEARCH_HEADER" desc="The header for the search typed suggestions section.">
+    Search the web
+  </message>
+  <message name="IDS_OMNIBOX_HUB_HISTORY_HEADER" desc="The header for the history suggestions section.">
+    History
+  </message>
+  <message name="IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER" desc="The header for the typed match suggestions section.">
+    Tabs and tab groups
+  </message>
 </grit-part>

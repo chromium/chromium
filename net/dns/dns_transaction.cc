@@ -4,7 +4,9 @@
 
 #include "net/dns/dns_transaction.h"
 
-#include <cstdint>
+#include <stdint.h>
+
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -15,6 +17,7 @@
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/byte_count.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -28,8 +31,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -59,6 +63,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -117,7 +122,8 @@ const char kDnsOverHttpResponseContentType[] = "application/dns-message";
 
 // The maximum size of the DNS message for DoH, per
 // https://datatracker.ietf.org/doc/html/rfc8484#section-6
-const int64_t kDnsOverHttpResponseMaximumSize = 65535;
+constexpr base::ByteCount kDnsOverHttpResponseMaximumSize =
+    base::ByteCount(65535);
 
 // Count labels in the fully-qualified name in DNS format.
 int CountLabels(base::span<const uint8_t> name) {
@@ -288,8 +294,7 @@ class DnsUDPAttempt : public DnsAttempt {
           rv = DoReadResponseComplete(rv);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
@@ -472,9 +477,9 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       request_->SetIdempotency(IDEMPOTENT);
       std::unique_ptr<UploadElementReader> reader =
           std::make_unique<UploadBytesElementReader>(
-              query_->io_buffer()->data(), query_->io_buffer()->size());
+              query_->io_buffer()->span());
       request_->set_upload(
-          ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+          ElementsUploadDataStream::CreateWithReader(std::move(reader)));
       extra_request_headers.SetHeader(HttpRequestHeaders::kContentType,
                                       kDnsOverHttpResponseContentType);
     }
@@ -485,7 +490,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     request_->SetSecureDnsPolicy(SecureDnsPolicy::kBootstrap);
     request_->SetLoadFlags(request_->load_flags() | LOAD_DISABLE_CACHE |
                            LOAD_BYPASS_PROXY);
-    request_->set_allow_credentials(false);
+    request_->set_disallow_credentials();
     request_->set_isolation_info(isolation_info);
   }
 
@@ -541,18 +546,18 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
     buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
 
-    if (request->response_headers()->HasHeader(
-            HttpRequestHeaders::kContentLength)) {
-      if (request_->response_headers()->GetContentLength() >
-          kDnsOverHttpResponseMaximumSize) {
+    std::optional<base::ByteCount> content_length =
+        request_->response_headers()->GetContentLength();
+    if (content_length.has_value()) {
+      if (content_length.value() > kDnsOverHttpResponseMaximumSize) {
         ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
         return;
       }
-
-      buffer_->SetCapacity(request_->response_headers()->GetContentLength() +
-                           1);
+      buffer_->SetCapacity(
+          base::checked_cast<int>(content_length->InBytes() + 1));
     } else {
-      buffer_->SetCapacity(kDnsOverHttpResponseMaximumSize + 1);
+      buffer_->SetCapacity(base::checked_cast<int>(
+          kDnsOverHttpResponseMaximumSize.InBytes() + 1));
     }
 
     DCHECK(buffer_->data());
@@ -587,7 +592,8 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     DCHECK_GE(bytes_read, 0);
 
     if (bytes_read > 0) {
-      if (buffer_->offset() + bytes_read > kDnsOverHttpResponseMaximumSize) {
+      if (buffer_->offset() + bytes_read >
+          kDnsOverHttpResponseMaximumSize.InBytes()) {
         ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
         return;
       }
@@ -794,8 +800,7 @@ class DnsTCPAttempt : public DnsAttempt {
           rv = DoReadResponseComplete(rv);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
@@ -813,8 +818,7 @@ class DnsTCPAttempt : public DnsAttempt {
     uint16_t query_size = static_cast<uint16_t>(query_->io_buffer()->size());
     if (static_cast<int>(query_size) != query_->io_buffer()->size())
       return ERR_FAILED;
-    base::as_writable_bytes(length_buffer_->span())
-        .copy_from(base::U16ToBigEndian(query_size));
+    length_buffer_->span().copy_from(base::U16ToBigEndian(query_size));
     buffer_ = base::MakeRefCounted<DrainableIOBuffer>(length_buffer_,
                                                       length_buffer_->size());
     next_state_ = STATE_SEND_LENGTH;
@@ -879,8 +883,8 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    response_length_ = base::U16FromBigEndian(
-        base::as_bytes(length_buffer_->span().first<2u>()));
+    response_length_ =
+        base::U16FromBigEndian(length_buffer_->span().first<2u>());
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
       return ERR_DNS_MALFORMED_RESPONSE;
@@ -1073,7 +1077,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                        probe_stats, network_change, sequence_start_time),
         probe_stats->backoff_entry->GetTimeUntilRelease());
 
-    unsigned attempt_number = probe_stats->probe_attempts.size();
+    uint32_t attempt_number = probe_stats->probe_attempts.size();
     ConstructDnsHTTPAttempt(
         session_.get(), doh_server_index, formatted_probe_qname_,
         dns_protocol::kTypeA, /*opt_rdata=*/nullptr,
@@ -1089,7 +1093,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
         base::TimeTicks::Now() /* query_start_time */));
   }
 
-  void ProbeComplete(unsigned attempt_number,
+  void ProbeComplete(uint32_t attempt_number,
                      size_t doh_server_index,
                      base::WeakPtr<ProbeStats> probe_stats,
                      bool network_change,
@@ -1439,7 +1443,7 @@ class DnsTransactionImpl final : public DnsTransaction {
 
     size_t doh_server_index = dns_server_iterator_->GetNextAttemptIndex();
 
-    unsigned attempt_number = attempts_.size();
+    uint32_t attempt_number = attempts_.size();
     ConstructDnsHTTPAttempt(session_.get(), doh_server_index, qnames_.front(),
                             qtype_, opt_rdata_, &attempts_,
                             resolve_context_->url_request_context(),
@@ -1513,7 +1517,7 @@ class DnsTransactionImpl final : public DnsTransaction {
                 network_quality_estimator, net_log_.net_log(),
                 net_log_.source());
 
-    unsigned attempt_number = attempts_.size();
+    uint32_t attempt_number = attempts_.size();
 
     attempts_.push_back(std::make_unique<DnsTCPAttempt>(
         server_index, std::move(socket), std::move(query)));
@@ -1556,7 +1560,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     return MakeAttempt();
   }
 
-  void OnAttemptComplete(unsigned attempt_number,
+  void OnAttemptComplete(uint32_t attempt_number,
                          bool record_rtt,
                          base::TimeTicks start,
                          int rv) {
@@ -1706,10 +1710,10 @@ class DnsTransactionImpl final : public DnsTransaction {
   }
 
   bool AnyAttemptPending() {
-    return base::ranges::any_of(attempts_,
-                                [](std::unique_ptr<DnsAttempt>& attempt) {
-                                  return attempt->IsPending();
-                                });
+    return std::ranges::any_of(attempts_,
+                               [](std::unique_ptr<DnsAttempt>& attempt) {
+                                 return attempt->IsPending();
+                               });
   }
 
   void OnFallbackPeriodExpired() {
@@ -1831,6 +1835,8 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
   SecureDnsMode GetSecureDnsModeForTest() override {
     return session_->config().secure_dns_mode;
   }
+
+  OptRecordRdata* GetOptRdataForTest() override { return opt_rdata_.get(); }
 
  private:
   scoped_refptr<DnsSession> session_;

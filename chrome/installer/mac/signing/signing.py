@@ -6,6 +6,7 @@ The signing module defines the various binary pieces of the Chrome application
 bundle that need to be signed, as well as providing utilities to sign them.
 """
 
+import asyncio
 import os.path
 import re
 
@@ -120,7 +121,7 @@ def verify_part(paths, part):
                          verify_options + [part_path])
 
 
-def validate_app(paths, config, part):
+async def validate_app(paths, config, part):
     """Displays and verifies the signature of a CodeSignedProduct.
 
     Args:
@@ -129,12 +130,30 @@ def validate_app(paths, config, part):
         part: The |model.CodeSignedProduct| for the outer application bundle.
     """
     app_path = os.path.join(paths.work, part.path)
+    verify_opts = part.verify_options.to_list() if part.verify_options else []
     commands.run_command([
         'codesign', '--display', '--requirements', '-', '--verbose=5', app_path
     ])
+    tasks = [
+        asyncio.create_task(
+            commands.run_command_all_output_async(
+                ['codesign', '--verify', '--verbose=6'] + verify_opts +
+                [app_path]))
+    ]
     if config.run_spctl_assess:
-        commands.run_command(['spctl', '--assess', '-vv', app_path])
-
+        tasks += [
+            asyncio.create_task(
+                commands.run_command_all_output_async(
+                    ['spctl', '--assess', '-vv', app_path]))
+        ]
+    await asyncio.sleep(0)  # Allow commands to start.
+    for task in tasks:
+        command, exit_code, stdout, stderr = await task
+        logger.info('Command %s returned %d: (stdout=) %s (stderr=) %s',
+                    command, exit_code, stdout, stderr)
+        if exit_code:
+            raise subprocess.CalledProcessError(
+                exit_code, command, output=stdout, stderr=stderr)
 
 def validate_app_geometry(paths, config, part):
     """Validates the architecture offsets in the main executable.

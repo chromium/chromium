@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -23,7 +24,8 @@ static constexpr int kDeviceHeight = 800;
 static constexpr float kMinimumZoom = 0.25f;
 static constexpr float kMaximumZoom = 5;
 
-class MobileFriendlinessCheckerTest : public testing::Test {
+class MobileFriendlinessCheckerTest : public testing::Test,
+                                      private CullRectTestConfig {
   static void ConfigureAndroidSettings(WebSettings* settings) {
     settings->SetViewportEnabled(true);
     settings->SetViewportMetaEnabled(true);
@@ -682,8 +684,8 @@ TEST_F(MobileFriendlinessCheckerTest,
               100);
 }
 
-// This test shows that text will grow with text-size-adjust: auto in a
-// fixed-width table.
+// This test shows that text will no longer, as of late 2025, grow with
+// text-size-adjust: auto in a fixed-width table.
 TEST_F(MobileFriendlinessCheckerTest, FixedWidthTableTextSizeAdjustAuto) {
   ukm::mojom::UkmEntry ukm = CalculateMetricsForHTMLString(R"HTML(
 <html>
@@ -699,7 +701,8 @@ TEST_F(MobileFriendlinessCheckerTest, FixedWidthTableTextSizeAdjustAuto) {
   </body>
 </html>
 )HTML");
-  ExpectUkm(ukm, ukm::builders::MobileFriendliness::kSmallTextRatioNameHash, 0);
+  ExpectUkm(ukm, ukm::builders::MobileFriendliness::kSmallTextRatioNameHash,
+            100);
 }
 
 // This test shows that text remains small with text-size-adjust: none in a

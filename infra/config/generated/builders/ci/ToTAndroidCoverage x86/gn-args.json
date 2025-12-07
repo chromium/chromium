@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "dcheck_always_on": true,
     "debuggable_apks": false,
     "is_clang": true,
@@ -8,7 +9,10 @@
     "llvm_force_head_revision": true,
     "target_cpu": "x86",
     "target_os": "android",
+    "treat_warnings_as_errors": false,
     "use_clang_coverage": true,
+    "use_reclient": false,
+    "use_remoteexec": true,
     "use_siso": true
   }
 }

@@ -137,7 +137,7 @@ void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
       base::UmaHistogramSparse("Net.QuicSession.StopSendingErrorCodeClient",
                                frame.stop_sending_frame.error_code);
       break;
-    case quic::MESSAGE_FRAME:
+    case quic::DATAGRAM_FRAME:
       break;
     case quic::CRYPTO_FRAME:
       break;
@@ -195,8 +195,7 @@ void QuicConnectionLogger::OnPacketSent(
           kMaxOutgoingPacketSize, 50);
       break;
     case quic::NUM_ENCRYPTION_LEVELS:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   event_logger_.OnPacketSent(packet_number, packet_length, has_crypto_handshake,
@@ -295,7 +294,7 @@ void QuicConnectionLogger::OnPacketHeader(const quic::QuicPacketHeader& header,
       // delivery.
       UMA_HISTOGRAM_COUNTS_1M(
           "Net.QuicSession.PacketGapReceived",
-          static_cast<base::HistogramBase::Sample>(delta - 1));
+          static_cast<base::HistogramBase::Sample32>(delta - 1));
     }
     largest_received_packet_number_ = header.packet_number;
   }
@@ -307,17 +306,18 @@ void QuicConnectionLogger::OnPacketHeader(const quic::QuicPacketHeader& header,
   if (last_received_packet_number_.IsInitialized() &&
       header.packet_number < last_received_packet_number_) {
     ++num_out_of_order_received_packets_;
-    if (previous_received_packet_size_ < last_received_packet_size_)
+    if (previous_received_packet_size_ < last_received_packet_size_) {
       ++num_out_of_order_large_received_packets_;
+    }
     UMA_HISTOGRAM_COUNTS_1M(
         "Net.QuicSession.OutOfOrderGapReceived",
-        static_cast<base::HistogramBase::Sample>(last_received_packet_number_ -
-                                                 header.packet_number));
+        static_cast<base::HistogramBase::Sample32>(
+            last_received_packet_number_ - header.packet_number));
   } else if (no_packet_received_after_ping_) {
     if (last_received_packet_number_.IsInitialized()) {
       UMA_HISTOGRAM_COUNTS_1M(
           "Net.QuicSession.PacketGapReceivedNearPing",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               header.packet_number - last_received_packet_number_));
     }
     no_packet_received_after_ping_ = false;
@@ -437,8 +437,9 @@ void QuicConnectionLogger::OnRetireConnectionIdFrame(
   event_logger_.OnRetireConnectionIdFrame(frame);
 }
 
-void QuicConnectionLogger::OnMessageFrame(const quic::QuicMessageFrame& frame) {
-  event_logger_.OnMessageFrame(frame);
+void QuicConnectionLogger::OnDatagramFrame(
+    const quic::QuicDatagramFrame& frame) {
+  event_logger_.OnDatagramFrame(frame);
 }
 
 void QuicConnectionLogger::OnHandshakeDoneFrame(
@@ -519,8 +520,9 @@ void QuicConnectionLogger::OnCertificateVerified(
 }
 
 float QuicConnectionLogger::ReceivedPacketLossRate() const {
-  if (!largest_received_packet_number_.IsInitialized())
+  if (!largest_received_packet_number_.IsInitialized()) {
     return 0.0f;
+  }
   float num_packets =
       largest_received_packet_number_ - first_received_packet_number_ + 1;
   float num_missing = num_packets - num_packets_received_;
@@ -529,8 +531,9 @@ float QuicConnectionLogger::ReceivedPacketLossRate() const {
 
 void QuicConnectionLogger::OnRttChanged(quic::QuicTime::Delta rtt) const {
   // Notify socket performance watcher of the updated RTT value.
-  if (!socket_performance_watcher_)
+  if (!socket_performance_watcher_) {
     return;
+  }
 
   int64_t microseconds = rtt.ToMicroseconds();
   if (microseconds != 0 &&
@@ -579,7 +582,7 @@ void QuicConnectionLogger::RecordAggregatePacketLossRate() const {
   base::HistogramBase* histogram = base::Histogram::FactoryGet(
       prefix + connection_description_, 1, 1000, 75,
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(static_cast<base::HistogramBase::Sample>(
+  histogram->Add(static_cast<base::HistogramBase::Sample32>(
       ReceivedPacketLossRate() * 1000));
 }
 

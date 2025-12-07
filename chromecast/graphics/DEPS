@@ -1,6 +1,8 @@
 include_rules = [
+  "+chromecast/starboard/chromecast/events",
   "+chromecast/ui",
   "+components/viz/common/frame_sinks",
+  "+ui/accessibility/platform",
   "+ui/aura",
   "+ui/base",
   "+ui/base/ime",

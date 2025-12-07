@@ -8,9 +8,9 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_web_dialog.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
@@ -56,8 +56,9 @@ void HelpAppLauncher::ShowHelpTopic(HelpTopic help_topic_id) {
                               static_cast<int>(help_topic_id)));
   // HelpApp component extension presents only in official builds so we can
   // show help only when the extensions is installed.
-  if (registry->enabled_extensions().GetByID(url.host()))
+  if (registry->enabled_extensions().GetByID(url.GetHost())) {
     ShowHelpTopicDialog(profile, GURL(url));
+  }
 }
 
 // static
@@ -68,7 +69,7 @@ void HelpAppLauncher::SetExtensionIdForTest(const char* extension_id) {
 ///////////////////////////////////////////////////////////////////////////////
 // HelpApp, protected:
 
-HelpAppLauncher::~HelpAppLauncher() {}
+HelpAppLauncher::~HelpAppLauncher() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // HelpApp, private:

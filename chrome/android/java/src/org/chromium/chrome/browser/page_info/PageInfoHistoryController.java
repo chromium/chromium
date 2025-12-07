@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryContentManager;
@@ -19,6 +22,7 @@ import org.chromium.chrome.browser.history.HistoryProvider;
 import org.chromium.chrome.browser.history.HistoryUmaRecorder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.page_info.PageInfoAction;
@@ -28,13 +32,15 @@ import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 /** Class for controlling the page info history section. */
+@NullMarked
 public class PageInfoHistoryController
         implements PageInfoSubpageController, HistoryContentManager.Observer {
     public static final int HISTORY_ROW_ID = View.generateViewId();
 
-    private static HistoryProvider sProviderForTests;
+    private static @Nullable HistoryProvider sProviderForTests;
 
     /** Clock to use so we can mock time in tests. */
     public interface Clock {
@@ -46,23 +52,23 @@ public class PageInfoHistoryController
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final String mTitle;
     private final String mHost;
     private boolean mDataIsStale;
-    private HistoryProvider mHistoryProvider;
-    private HistoryContentManager mContentManager;
+    private @Nullable HistoryProvider mHistoryProvider;
+    private @Nullable HistoryContentManager mContentManager;
     private long mLastVisitedTimestamp;
 
     public PageInfoHistoryController(
             PageInfoMainController mainController,
             PageInfoRowView rowView,
             PageInfoControllerDelegate delegate,
-            Supplier<Tab> tabSupplier) {
+            Supplier<@Nullable Tab> tabSupplier) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
-        mTitle = mRowView.getContext().getResources().getString(R.string.page_info_history_title);
+        mTitle = mRowView.getContext().getString(R.string.page_info_history_title);
         mHost = mainController.getURL().getHost();
         mTabSupplier = tabSupplier;
 
@@ -100,9 +106,17 @@ public class PageInfoHistoryController
                         new BrowsingHistoryBridge(profile),
                         null,
                         /* launchedForApp= */ false,
-                        /* showAppFilter= */ false);
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null,
+                        new ChromeAsyncTabLauncher(/* incognito= */ false),
+                        new ChromeAsyncTabLauncher(/* incognito= */ true));
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
+    }
+
+    @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mContentManager != null ? mContentManager.getRecyclerView() : null;
     }
 
     @Override
@@ -144,7 +158,7 @@ public class PageInfoHistoryController
         mRowView.setParams(rowParams);
     }
 
-    private String getRowTitle() {
+    private @Nullable String getRowTitle() {
         if (mLastVisitedTimestamp == 0) {
             return null;
         }
@@ -174,7 +188,7 @@ public class PageInfoHistoryController
     @Override
     public void clearData() {
         // TODO(crbug.com/40746014): Add functionality for clear history for this site.
-        return;
+
     }
 
     @Override
@@ -185,6 +199,9 @@ public class PageInfoHistoryController
         mDataIsStale = false;
     }
 
+    @Override
+    public void updateSubpageIfNeeded() {}
+
     // HistoryContentManager.Observer
     @Override
     public void onScrolledCallback(boolean loadedMore) {}
@@ -193,7 +210,6 @@ public class PageInfoHistoryController
     @Override
     public void onItemClicked(HistoryItem item) {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_CLICKED);
-        return;
     }
 
     // HistoryContentManager.Observer
@@ -201,7 +217,7 @@ public class PageInfoHistoryController
     public void onItemRemoved(HistoryItem item) {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_REMOVED);
         mDataIsStale = true;
-        if (mContentManager.getItemCount() == 0) {
+        if (assumeNonNull(mContentManager).getItemCount() == 0) {
             // Do the update right away if there are no entries left.
             mLastVisitedTimestamp = 0;
             setupHistoryRow();
@@ -214,7 +230,7 @@ public class PageInfoHistoryController
     public void onClearBrowsingDataClicked() {
         // TODO(crbug.com/40746014): Add functionality for "clear history" button click and
         // change the name of the current clear browsing data button.
-        return;
+
     }
 
     // HistoryContentManager.Observer

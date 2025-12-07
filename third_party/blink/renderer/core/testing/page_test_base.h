@@ -28,6 +28,7 @@ class Document;
 class FrameSelection;
 class LayoutObject;
 class LocalFrame;
+class LocalFrameView;
 class PendingAnimations;
 class StyleEngine;
 
@@ -84,16 +85,17 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
 
   // Navigate to |url| providing an empty response but
   // URL and security origin of the Document will be set to |url|.
-  void NavigateTo(const KURL& url,
-                  const WTF::HashMap<String, String>& headers = {});
+  void NavigateTo(const KURL& url, const HashMap<String, String>& headers = {});
 
   Document& GetDocument() const;
   Page& GetPage() const;
   LocalFrame& GetFrame() const;
+  LocalFrameView& GetFrameView() const;
   FrameSelection& Selection() const;
   DummyPageHolder& GetDummyPageHolder() const { return *dummy_page_holder_; }
   StyleEngine& GetStyleEngine();
   Element* GetElementById(const char* id) const;
+  Element* QuerySelector(const char* selector) const;
   AnimationClock& GetAnimationClock();
   PendingAnimations& GetPendingAnimations();
   FocusController& GetFocusController() const;

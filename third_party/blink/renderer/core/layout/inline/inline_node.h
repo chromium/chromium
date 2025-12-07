@@ -31,7 +31,7 @@ struct TextDiffRange;
 class CORE_EXPORT InlineNode : public LayoutInputNode {
  public:
   explicit InlineNode(LayoutBlockFlow*);
-  explicit InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
+  InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
     return To<LayoutBlockFlow>(box_.Get());
@@ -59,6 +59,10 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   const InlineItemsData& ItemsData(bool is_first_line) const {
     return Data().ItemsData(is_first_line);
   }
+
+  // True if `this` should use the first-line `InlineItemsData` for its first
+  // formatted line. See `ItemsData()`. Valid only when pre-layout is clean.
+  bool UseFirstLineStyleItemsData() const;
 
   // There's a special intrinsic size measure quirk for images that are direct
   // children of table cells that have auto inline-size: When measuring
@@ -119,7 +123,6 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     return GetLayoutBlockFlow()->CanContainFirstFormattedLine();
   }
 
-  bool UseFirstLineStyle() const;
   void CheckConsistency() const;
 
   // This function is available after PrepareLayout(), only for SVG <text>.
@@ -129,6 +132,8 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   const HeapVector<SvgTextContentRange>& SvgTextLengthRangeList() const;
   // This function is available after PrepareLayout(), only for SVG <text>.
   const HeapVector<SvgTextContentRange>& SvgTextPathRangeList() const;
+
+  const Font& FontForTab() const;
 
   String ToString() const;
 
@@ -168,18 +173,17 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   void SegmentBidiRuns(InlineNodeData*) const;
   void ShapeText(InlineItemsData*,
                  const String* previous_text = nullptr,
-                 const HeapVector<InlineItem>* previous_items = nullptr,
+                 const InlineItems* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(InlineNodeData*) const;
-  void ShapeTextIncludingFirstLine(
-      InlineNodeData* data,
-      const String* previous_text,
-      const HeapVector<InlineItem>* previous_items) const;
+  void ShapeTextIncludingFirstLine(InlineNodeData* data,
+                                   const String* previous_text,
+                                   const InlineItems* previous_items) const;
   void AssociateItemsWithInlines(InlineNodeData*) const;
   bool IsNGShapeCacheAllowed(const String&,
                              const Font*,
-                             const HeapVector<InlineItem>&,
-                             ShapeResultSpacing<String>&) const;
+                             const InlineItems&,
+                             ShapeResultSpacing&) const;
 
   InlineNodeData* MutableData() const {
     return To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();
@@ -205,11 +209,13 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
 };
 
 inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
+  // See https://quirks.spec.whatwg.org/#the-table-cell-width-calculation-quirk
   if (GetDocument().InQuirksMode()) [[unlikely]] {
     const ComputedStyle& style = Style();
-    if (style.Display() == EDisplay::kTableCell &&
-        !style.LogicalWidth().IsSpecified()) [[unlikely]] {
-      return true;
+    if (style.Display() == EDisplay::kTableCell) [[unlikely]] {
+      if (style.LogicalWidth().IsAuto()) {
+        return true;
+      }
     }
   }
   return false;

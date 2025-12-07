@@ -10,17 +10,19 @@ import './calibration_component_chip.js';
 import './icons.html.js';
 import './shimless_rma_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CalibrationComponentChipElement} from './calibration_component_chip.js';
+import type {CalibrationComponentChipElement} from './calibration_component_chip.js';
 import {ComponentTypeToId} from './data.js';
-import {CLICK_CALIBRATION_COMPONENT_BUTTON, ClickCalibrationComponentEvent} from './events.js';
+import type {ClickCalibrationComponentEvent} from './events.js';
+import {CLICK_CALIBRATION_COMPONENT_BUTTON} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_calibration_failed_page.html.js';
-import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import type {CalibrationComponentStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {CalibrationStatus} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**

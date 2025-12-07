@@ -16,8 +16,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+ScanningSystemAppDelegate::ScanningSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SCANNING,
+                                "Scanning",
+                                GURL("chrome://scanning"),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForScanningSystemWebApp() {
+ScanningSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUIScanningAppUrl);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -50,19 +56,7 @@ CreateWebAppInfoForScanningSystemWebApp() {
   info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-ScanningSystemAppDelegate::ScanningSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SCANNING,
-                                "Scanning",
-                                GURL("chrome://scanning"),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-ScanningSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForScanningSystemWebApp();
 }
 
 bool ScanningSystemAppDelegate::ShouldShowInLauncher() const {

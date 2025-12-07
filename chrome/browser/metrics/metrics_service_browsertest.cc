@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 // Tests the MetricsService stat recording to make sure that the numbers are
 // what we expect.
 
@@ -16,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -56,10 +58,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -104,7 +102,7 @@ void VerifyRendererExitCodeIsSignal(
 // clear to me how to test that.
 class MetricsServiceBrowserTest : public InProcessBrowserTest {
  public:
-  MetricsServiceBrowserTest() {}
+  MetricsServiceBrowserTest() = default;
 
   MetricsServiceBrowserTest(const MetricsServiceBrowserTest&) = delete;
   MetricsServiceBrowserTest& operator=(const MetricsServiceBrowserTest&) =
@@ -220,13 +218,10 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
 // TerminateWithHeapCorruption() isn't expected to work there.
 // See: https://crbug.com/1054423
 #if BUILDFLAG(IS_WIN)
-#if defined(ARCH_CPU_ARM64)
-#define MAYBE_HeapCorruptionInRenderer DISABLED_HeapCorruptionInRenderer
-#else
-#define MAYBE_HeapCorruptionInRenderer HeapCorruptionInRenderer
-#endif
+// TODO(crbug.com/380550755): Unfortuntely, it's flaky on non-arm64.
+// Previously, this was turned off only if defined(ARCH_CPU_ARM64).
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
-                       MAYBE_HeapCorruptionInRenderer) {
+                       DISABLED_HeapCorruptionInRenderer) {
   base::HistogramTester histogram_tester;
 
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIHeapCorruptionCrashURL);
@@ -273,7 +268,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
 #endif
 }
 
-#if BUILDFLAG(ENABLE_RUST_CRASH)
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
   base::HistogramTester histogram_tester;
 
@@ -287,7 +281,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
   histogram_tester.ExpectBucketCount(
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
 }
-#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
 
 // OOM code only works on Windows.
 #if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
@@ -338,7 +331,7 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
   using super = InProcessBrowserTest;
 
  public:
-  MetricsServiceBrowserFilesTest() {}
+  MetricsServiceBrowserFilesTest() = default;
 
   MetricsServiceBrowserFilesTest(const MetricsServiceBrowserFilesTest&) =
       delete;
@@ -378,7 +371,8 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
     base::File upload_file(
         upload_dir().AppendASCII("foo.bar"),
         base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    CHECK_EQ(6, upload_file.WriteAtCurrentPos("foobar", 6));
+    CHECK(upload_file.WriteAtCurrentPosAndCheck(
+        base::byte_span_from_cstring("foobar")));
 
     return true;
   }
@@ -428,7 +422,7 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
 class MetricsServiceBrowserDoUploadTest
     : public MetricsServiceBrowserFilesTest {
  public:
-  MetricsServiceBrowserDoUploadTest() {}
+  MetricsServiceBrowserDoUploadTest() = default;
 
   MetricsServiceBrowserDoUploadTest(const MetricsServiceBrowserDoUploadTest&) =
       delete;
@@ -455,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserDoUploadTest, FilesRemain) {
 class MetricsServiceBrowserNoUploadTest
     : public MetricsServiceBrowserFilesTest {
  public:
-  MetricsServiceBrowserNoUploadTest() {}
+  MetricsServiceBrowserNoUploadTest() = default;
 
   MetricsServiceBrowserNoUploadTest(const MetricsServiceBrowserNoUploadTest&) =
       delete;
@@ -475,18 +469,15 @@ class MetricsServiceBrowserNoUploadTest
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
   // SetUp() has removed consent and made metrics "sampled-in" (enabled).
-  auto non_pma_files = FindNonPMAFiles();
-  for (const auto& file : non_pma_files) {
-    LOG(INFO) << "Found non-PMA file:" << file;
-  }
-  EXPECT_TRUE(non_pma_files.empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return FindNonPMAFiles().empty(); }));
 }
 
 // Specific class for testing when metrics upload is disabled by sampling.
 class MetricsServiceBrowserSampledOutTest
     : public MetricsServiceBrowserFilesTest {
  public:
-  MetricsServiceBrowserSampledOutTest() {}
+  MetricsServiceBrowserSampledOutTest() = default;
 
   MetricsServiceBrowserSampledOutTest(
       const MetricsServiceBrowserSampledOutTest&) = delete;
@@ -506,33 +497,6 @@ class MetricsServiceBrowserSampledOutTest
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest, FilesRemoved) {
   // SetUp() has provided consent and made metrics "sampled-out" (disabled).
-  auto non_pma_files = FindNonPMAFiles();
-  for (const auto& file : non_pma_files) {
-    LOG(INFO) << "Found non-PMA file:" << file;
-  }
-  EXPECT_TRUE(non_pma_files.empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return FindNonPMAFiles().empty(); }));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, EntropyTransfer) {
-  // While creating, the EntropyState should have been transferred from the
-  // Ash init params to the Entropy values.
-  auto* init_params = chromeos::BrowserParamsProxy::Get();
-  metrics::MetricsService* metrics_service =
-      g_browser_process->GetMetricsServicesManager()->GetMetricsService();
-  // Due to version skew it could be that the used version of Ash does not
-  // support this yet.
-  if (init_params->EntropySource()) {
-    EXPECT_EQ(metrics_service->GetLowEntropySource(),
-              init_params->EntropySource()->low_entropy);
-    EXPECT_NE(init_params->EntropySource()->low_entropy, -1);
-    EXPECT_EQ(metrics_service->GetOldLowEntropySource(),
-              init_params->EntropySource()->old_low_entropy);
-    EXPECT_EQ(metrics_service->GetPseudoLowEntropySource(),
-              init_params->EntropySource()->pseudo_low_entropy);
-  } else {
-    LOG(WARNING) << "MetricsReportingLacrosBrowserTest.EntropyTransfer "
-                 << "- Ash version does not support entropy transfer yet";
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

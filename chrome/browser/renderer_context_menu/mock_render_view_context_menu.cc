@@ -4,9 +4,9 @@
 
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,7 +26,7 @@ MockRenderViewContextMenu::MockMenuItem::MockMenuItem()
 MockRenderViewContextMenu::MockMenuItem::MockMenuItem(
     const MockMenuItem& other) = default;
 
-MockRenderViewContextMenu::MockMenuItem::~MockMenuItem() {}
+MockRenderViewContextMenu::MockMenuItem::~MockMenuItem() = default;
 
 MockRenderViewContextMenu::MockMenuItem&
 MockRenderViewContextMenu::MockMenuItem::operator=(const MockMenuItem& other) =
@@ -39,7 +39,7 @@ MockRenderViewContextMenu::MockRenderViewContextMenu(bool incognito)
                                /*create_if_needed=*/true)
                          : original_profile_.get()) {}
 
-MockRenderViewContextMenu::~MockRenderViewContextMenu() {}
+MockRenderViewContextMenu::~MockRenderViewContextMenu() = default;
 
 bool MockRenderViewContextMenu::IsCommandIdChecked(int command_id) const {
   return observer_->IsCommandIdChecked(command_id);
@@ -190,7 +190,7 @@ void MockRenderViewContextMenu::RemoveMenuItem(int command_id) {
 void MockRenderViewContextMenu::RemoveAdjacentSeparators() {}
 
 void MockRenderViewContextMenu::RemoveSeparatorBeforeMenuItem(int command_id) {
-  auto iter = base::ranges::find(items_, command_id, &MockMenuItem::command_id);
+  auto iter = std::ranges::find(items_, command_id, &MockMenuItem::command_id);
 
   if (iter == items_.end()) {
     FAIL() << "Menu observer is trying to remove a separator before a "

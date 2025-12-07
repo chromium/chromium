@@ -6,37 +6,48 @@ package org.chromium.components.signin.base;
 
 import android.accounts.Account;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /**
  * Structure storing the core information about a Google account that is always known. The {@link
  * CoreAccountInfo} for a given user is almost always the same but it may change in some rare cases.
  * For example, the email will change if the user changes email.
- * This class has a native counterpart called CoreAccountInfo.
+ *
+ * <p>This class has a native counterpart called CoreAccountInfo.
  */
+@NullMarked
+@DoNotMock("Use TestAccounts or create a real instance.")
 public class CoreAccountInfo {
     private final CoreAccountId mId;
     private final String mEmail;
-    private final String mGaiaId;
+    private final GaiaId mGaiaId;
 
     /**
      * Constructs a CoreAccountInfo with the provided parameters
+     *
      * @param id A CoreAccountId associated with the account, equal to either email or gaiaId.
      * @param email The email of the account.
-     * @param gaiaId String representation of the Gaia ID. Must not be an email address.
+     * @param gaiaId An object representing a Gaia ID.
      */
     @CalledByNative
     protected CoreAccountInfo(
-            @NonNull CoreAccountId id, @NonNull String email, @NonNull String gaiaId) {
+            @JniType("CoreAccountId") CoreAccountId id,
+            @JniType("std::string") String email,
+            @JniType("GaiaId") GaiaId gaiaId) {
         assert id != null;
         assert email != null;
         assert gaiaId != null;
-        assert !gaiaId.contains("@");
+        assert !gaiaId.toString().contains("@");
 
         mId = id;
         mEmail = email;
@@ -45,19 +56,19 @@ public class CoreAccountInfo {
 
     /** Returns a unique identifier of the current account. */
     @CalledByNative
-    public CoreAccountId getId() {
+    public @JniType("CoreAccountId") CoreAccountId getId() {
         return mId;
     }
 
     /** Returns the email of the current account. */
     @CalledByNative
-    public String getEmail() {
+    public @JniType("std::string") String getEmail() {
         return mEmail;
     }
 
-    /** Returns the string representation of the Gaia ID */
+    /** Returns the Gaia ID */
     @CalledByNative
-    public String getGaiaId() {
+    public @JniType("GaiaId") GaiaId getGaiaId() {
         return mGaiaId;
     }
 
@@ -86,10 +97,11 @@ public class CoreAccountInfo {
      *
      * @return {@link Account} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable Account getAndroidAccountFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null
                 ? null
-                : AccountUtils.createAccountFromName(accountInfo.getEmail());
+                : AccountUtils.createAccountFromEmail(accountInfo.getEmail());
     }
 
     /**
@@ -97,6 +109,7 @@ public class CoreAccountInfo {
      *
      * @return {@link #getId()} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable CoreAccountId getIdFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getId();
     }
@@ -106,6 +119,7 @@ public class CoreAccountInfo {
      *
      * @return {@link #getEmail()} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable String getEmailFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getEmail();
     }
@@ -115,12 +129,13 @@ public class CoreAccountInfo {
      *
      * @return {@link #getGaiaId()} ()} for the argument if it is not null, null otherwise.
      */
-    public static @Nullable String getGaiaIdFrom(@Nullable CoreAccountInfo accountInfo) {
+    @Contract("!null -> !null")
+    public static @Nullable GaiaId getGaiaIdFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getGaiaId();
     }
 
     /** Creates a {@link CoreAccountInfo} object from email and gaiaID. */
-    public static CoreAccountInfo createFromEmailAndGaiaId(String email, String gaiaId) {
+    public static CoreAccountInfo createFromEmailAndGaiaId(String email, GaiaId gaiaId) {
         return new CoreAccountInfo(new CoreAccountId(gaiaId), email, gaiaId);
     }
 }

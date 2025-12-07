@@ -11,6 +11,8 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
+@class BackgroundCollectionConfiguration;
+
 // Consumer protocol for the HomeCustomizationMediator to provide data to the
 // main page's view controller.
 @protocol HomeCustomizationMainConsumer

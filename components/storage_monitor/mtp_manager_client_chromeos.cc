@@ -24,7 +24,7 @@ MtpManagerClientChromeOS::MtpManagerClientChromeOS(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-MtpManagerClientChromeOS::~MtpManagerClientChromeOS() {}
+MtpManagerClientChromeOS::~MtpManagerClientChromeOS() = default;
 
 bool MtpManagerClientChromeOS::GetStorageInfoForPath(
     const base::FilePath& path,

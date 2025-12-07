@@ -18,20 +18,8 @@
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 
-namespace {
-
-scoped_refptr<dbus::Bus> CreateBus() {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SYSTEM;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  return base::MakeRefCounted<dbus::Bus>(options);
-}
-
-}  // namespace
-
 PowerMonitorDeviceSourceLinux::PowerMonitorDeviceSourceLinux()
-    : bus_(CreateBus()) {
+    : bus_(dbus_thread_linux::GetSharedSystemBus()) {
   bus_->GetObjectProxy("org.freedesktop.login1",
                        dbus::ObjectPath("/org/freedesktop/login1"))
       ->ConnectToSignal(
@@ -42,36 +30,26 @@ PowerMonitorDeviceSourceLinux::PowerMonitorDeviceSourceLinux()
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-PowerMonitorDeviceSourceLinux::~PowerMonitorDeviceSourceLinux() {
-  if (bus_)
-    ShutdownBus();
-}
+PowerMonitorDeviceSourceLinux::~PowerMonitorDeviceSourceLinux() = default;
 
-bool PowerMonitorDeviceSourceLinux::IsOnBatteryPower() {
+base::PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSourceLinux::GetBatteryPowerStatus() const {
   // TODO(crbug.com/40836663): Use org.freedesktop.UPower to check for
   // OnBattery. One possibility is to connect to the DeviceService's
   // BatteryMonitor.
-  return false;
-}
-
-void PowerMonitorDeviceSourceLinux::ShutdownBus() {
-  DCHECK(bus_);
-  dbus::Bus* const bus_ptr = bus_.get();
-  bus_ptr->GetDBusTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, std::move(bus_)));
+  return base::PowerStateObserver::BatteryPowerStatus::kUnknown;
 }
 
 void PowerMonitorDeviceSourceLinux::OnSignalConnected(
     const std::string& interface_name,
     const std::string& signal_name,
     bool connected) {
-  if (connected)
+  if (connected) {
     return;
+  }
 
   DLOG(ERROR) << "Failed to connect to " << interface_name << " for signal "
               << signal_name;
-  if (bus_)
-    ShutdownBus();
 }
 
 void PowerMonitorDeviceSourceLinux::OnPrepareForSleep(dbus::Signal* signal) {

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -20,7 +21,7 @@
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
-#include "media/mojo/mojom/audio_processing.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom-forward.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +29,6 @@
 
 namespace media {
 class AudioParameters;
-class UserInputMonitorBase;
 }
 
 namespace content {
@@ -57,7 +57,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   class CONTENT_EXPORT Core final : public AudioStreamBroker::LoopbackSource {
    public:
     Core(base::WeakPtr<ForwardingAudioStreamFactory> owner,
-         media::UserInputMonitorBase* user_input_monitor,
          std::unique_ptr<AudioStreamBrokerFactory> factory);
 
     Core(const Core&) = delete;
@@ -89,6 +88,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void CreateOutputStream(
         int render_process_id,
         int render_frame_id,
+        const GlobalRenderFrameHostToken& main_frame_token,
         const std::string& device_id,
         const media::AudioParameters& params,
         mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
@@ -128,8 +128,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     media::mojom::AudioStreamFactory* GetFactory();
     void ResetRemoteFactoryPtrIfIdle();
     void ResetRemoteFactoryPtr();
-
-    const raw_ptr<media::UserInputMonitorBase> user_input_monitor_;
 
     // Used for posting tasks the UI thread to communicate when a loopback
     // stream is started/stopped. Weak since |this| on the IO thread outlives
@@ -182,7 +180,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   // the streams created with this factory will not be consumed by a renderer.
   ForwardingAudioStreamFactory(
       WebContents* web_contents,
-      media::UserInputMonitorBase* user_input_monitor,
       std::unique_ptr<AudioStreamBrokerFactory> factory);
 
   ForwardingAudioStreamFactory(const ForwardingAudioStreamFactory&) = delete;

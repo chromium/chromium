@@ -36,4 +36,4 @@ forwardApiMethods(
 // |ExtensionsWebViewElement.prototype.go|.
 var originalGo = ExtensionsWebViewElement.prototype.go;
 
-registerElement('WebView', ExtensionsWebViewElement);
+registerElement('WebView', 'WebView', ExtensionsWebViewElement);

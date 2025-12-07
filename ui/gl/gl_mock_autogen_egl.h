@@ -199,6 +199,7 @@ MOCK_METHOD4(LabelObjectKHR,
                     EGLenum objectType,
                     EGLObjectKHR object,
                     EGLLabelKHR label));
+MOCK_METHOD1(LockVulkanQueueANGLE, void(EGLDisplay dpy));
 MOCK_METHOD4(MakeCurrent,
              EGLBoolean(EGLDisplay dpy,
                         EGLSurface draw,
@@ -211,6 +212,10 @@ MOCK_METHOD6(PostSubBufferNV,
                         EGLint y,
                         EGLint width,
                         EGLint height));
+MOCK_METHOD3(PresentationTimeANDROID,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLSurface surface,
+                        EGLnsecsANDROID time));
 MOCK_METHOD0(QueryAPI, EGLenum());
 MOCK_METHOD4(QueryContext,
              EGLBoolean(EGLDisplay dpy,
@@ -311,6 +316,7 @@ MOCK_METHOD4(SwapBuffersWithDamageKHR,
                         EGLint n_rects));
 MOCK_METHOD2(SwapInterval, EGLBoolean(EGLDisplay dpy, EGLint interval));
 MOCK_METHOD1(Terminate, EGLBoolean(EGLDisplay dpy));
+MOCK_METHOD1(UnlockVulkanQueueANGLE, void(EGLDisplay dpy));
 MOCK_METHOD0(WaitClient, EGLBoolean());
 MOCK_METHOD0(WaitGL, EGLBoolean());
 MOCK_METHOD1(WaitNative, EGLBoolean(EGLint engine));

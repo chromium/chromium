@@ -9,10 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/commerce/content/browser/web_contents_wrapper.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+class KeyedService;
 
 namespace content {
 class NavigationHandle;
@@ -21,6 +22,8 @@ class WebContents;
 }  // namespace content
 
 namespace commerce {
+
+class ShoppingService;
 
 // This tab helper creates and maintains a WebWrapper that is backed by
 // WebContents. Events that occur on the wrapper are reported back to the
@@ -49,6 +52,7 @@ class CommerceTabHelper
   void SetShoppingServiceForTesting(KeyedService* service);
 
  private:
+  friend class CommerceTabHelperTest;
   friend class content::WebContentsUserData<CommerceTabHelper>;
 
   CommerceTabHelper(content::WebContents* contents,

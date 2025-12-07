@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
@@ -30,7 +31,7 @@ ScanServiceFactory* ScanServiceFactory::GetInstance() {
 }
 
 // static
-KeyedService* ScanServiceFactory::BuildInstanceFor(
+std::unique_ptr<KeyedService> ScanServiceFactory::BuildInstanceFor(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   auto* integration_service =
@@ -38,7 +39,7 @@ KeyedService* ScanServiceFactory::BuildInstanceFor(
   bool drive_available = integration_service &&
                          integration_service->is_enabled() &&
                          integration_service->IsMounted();
-  return new ScanService(
+  return std::make_unique<ScanService>(
       LorgnetteScannerManagerFactory::GetForBrowserContext(context),
       file_manager::util::GetMyFilesFolderForProfile(profile),
       drive_available ? integration_service->GetMountPointPath()
@@ -63,7 +64,8 @@ ScanServiceFactory::ScanServiceFactory()
 
 ScanServiceFactory::~ScanServiceFactory() = default;
 
-KeyedService* ScanServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ScanServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return BuildInstanceFor(context);
 }

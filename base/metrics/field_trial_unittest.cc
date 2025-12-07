@@ -6,14 +6,17 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_entry.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/rand_util.h"
@@ -42,7 +45,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 namespace base {
@@ -80,8 +83,8 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
     group_name_ = group;
   }
 
-  const std::string& trial_name() const { return trial_name_; }
-  const std::string& group_name() const { return group_name_; }
+  const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
+  const std::string& group_name() const LIFETIME_BOUND { return group_name_; }
 
  private:
   std::string trial_name_;
@@ -146,8 +149,8 @@ class TestFieldTrialObserverIncludingLowAnonymity
     group_name_ = group;
   }
 
-  const std::string& trial_name() const { return trial_name_; }
-  const std::string& group_name() const { return group_name_; }
+  const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
+  const std::string& group_name() const LIFETIME_BOUND { return group_name_; }
 
  private:
   std::string trial_name_;
@@ -310,13 +313,12 @@ TEST_F(FieldTrialTest, ActiveGroups) {
   FieldTrial::ActiveGroups active_groups;
   FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   EXPECT_EQ(2U, active_groups.size());
-  for (size_t i = 0; i < active_groups.size(); ++i) {
+  for (auto& group : active_groups) {
     // Order is not guaranteed, so check all values.
-    EXPECT_NE(no_group, active_groups[i].trial_name);
-    EXPECT_TRUE(one_winner != active_groups[i].trial_name ||
-                winner == active_groups[i].group_name);
-    EXPECT_TRUE(multi_group != active_groups[i].trial_name ||
-                multi_group_trial->group_name() == active_groups[i].group_name);
+    EXPECT_NE(no_group, group.trial_name);
+    EXPECT_TRUE(one_winner != group.trial_name || winner == group.group_name);
+    EXPECT_TRUE(multi_group != group.trial_name ||
+                multi_group_trial->group_name() == group.group_name);
   }
 }
 
@@ -560,8 +562,8 @@ TEST_F(FieldTrialTest, DuplicateFieldTrial) {
 
 TEST_F(FieldTrialTest, ForcedFieldTrials) {
   // Validate we keep the forced choice.
-  FieldTrial* forced_trial = FieldTrialList::CreateFieldTrial("Use the",
-                                                              "Force");
+  FieldTrial* forced_trial =
+      FieldTrialList::CreateFieldTrial("Use the", "Force");
   EXPECT_STREQ("Force", forced_trial->group_name().c_str());
 
   scoped_refptr<FieldTrial> factory_trial =
@@ -801,8 +803,9 @@ TEST_F(FieldTrialTest, FloatBoundariesGiveEqualGroupSizes) {
     scoped_refptr<FieldTrial> trial(
         new FieldTrial("test", kBucketCount, "default", entropy,
                        /*is_low_anonymity=*/false, /*is_overridden=*/false));
-    for (int j = 0; j < kBucketCount; ++j)
+    for (int j = 0; j < kBucketCount; ++j) {
       trial->AppendGroup(NumberToString(j), 1);
+    }
 
     EXPECT_EQ(NumberToString(i), trial->group_name());
   }
@@ -830,9 +833,9 @@ TEST_F(FieldTrialTest, CreateSimulatedFieldTrial) {
     double entropy_value;
     const char* expected_group;
   } test_cases[] = {
-    { 0.4, "A" },
-    { 0.85, "B" },
-    { 0.95, kDefaultGroupName },
+      {0.4, "A"},
+      {0.85, "B"},
+      {0.95, kDefaultGroupName},
   };
 
   for (auto& test_case : test_cases) {
@@ -1114,13 +1117,14 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
 
   // Dump and subsequently retrieve the field trial to |allocator|.
   FieldTrialList::DumpAllFieldTrialsToPersistentAllocator(&allocator);
-  std::vector<const FieldTrial::FieldTrialEntry*> entries =
-      FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(allocator);
+  std::vector<const internal::FieldTrialEntry*> entries =
+      internal::FieldTrialEntry::GetAllFieldTrialsFromPersistentAllocator(
+          allocator);
 
   // Check that we have the entry we put in.
   EXPECT_EQ(2u, entries.size());
-  const FieldTrial::FieldTrialEntry* entry1 = entries[0];
-  const FieldTrial::FieldTrialEntry* entry2 = entries[1];
+  const internal::FieldTrialEntry* entry1 = entries[0];
+  const internal::FieldTrialEntry* entry2 = entries[1];
 
   // Check that the trial information matches.
   std::string_view shm_trial_name;
@@ -1185,7 +1189,7 @@ TEST_F(FieldTrialListTest, PassFieldTrialSharedMemoryOnCommandLine) {
   // Setup some field trial state.
   test::ScopedFeatureList scoped_feature_list1;
   scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
-  std::unique_ptr<FeatureList> feature_list(new FeatureList);
+  auto feature_list = std::make_unique<FeatureList>();
   feature_list->InitFromCommandLine(kTestFeatureA.name, kTestFeatureB.name);
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial1", "Group1");
   feature_list->RegisterFieldTrialOverride(

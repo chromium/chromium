@@ -9,19 +9,26 @@ suite('CrRouterTest', function() {
   setup(function() {
     // Clear out the URL state, for a clean start.
     window.history.replaceState({}, '', '/');
-    window.dispatchEvent(new CustomEvent('popstate'));
+    CrRouter.resetForTesting();
+  });
+
+  test('getInstance', function() {
+    const router = CrRouter.getInstance();
+    assertEquals(router, CrRouter.getInstance());
   });
 
   test('sets url from setters', function() {
-    const router = CrRouter.getInstance();
+    const router = new CrRouter();
 
     assertEquals('/', window.location.pathname);
-    router.setPath('foo/nested');
+    router.setPath('/foo/nested');
     assertEquals('/foo/nested', window.location.pathname);
+    assertEquals('/foo/nested', router.getPath());
 
     assertEquals('', window.location.hash);
     router.setHash('bar');
     assertEquals('#bar', window.location.hash);
+    assertEquals('bar', router.getHash());
 
     const queryParams =
         new URLSearchParams(window.location.search.substring(1));
@@ -31,6 +38,7 @@ suite('CrRouterTest', function() {
     const updatedParams =
         new URLSearchParams(window.location.search.substring(1));
     assertEquals('hello world', updatedParams.get('q'));
+    assertEquals('hello world', router.getQueryParams().get('q'));
   });
 
   test('calls listeners when url changes', function() {
@@ -44,7 +52,7 @@ suite('CrRouterTest', function() {
     const hashListener = (e: Event) =>
         hashHistory.push((e as CustomEvent<string>).detail);
 
-    const router = CrRouter.getInstance();
+    const router = new CrRouter();
     assertEquals('/', router.getPath());
     assertEquals('', router.getQueryParams().toString());
     assertEquals('', router.getHash());
@@ -71,5 +79,59 @@ suite('CrRouterTest', function() {
     router.removeEventListener('cr-router-path-changed', pathListener);
     router.removeEventListener('cr-router-query-params-changed', queryListener);
     router.removeEventListener('cr-router-hash-changed', hashListener);
+  });
+
+  test('HashParsingSetting', function() {
+    function assertHash(rawValue: string, value: string) {
+      window.history.replaceState({}, '', `/#${rawValue}`);
+
+      // Check initialization.
+      const router = new CrRouter();
+      assertEquals(value, router.getHash());
+
+      // Check setting rawValue.
+      router.setHash(rawValue);
+      assertEquals(value, router.getHash());
+
+      // Check setting decoded value.
+      router.setHash(value);
+      assertEquals(value, router.getHash());
+    }
+
+    // Case 1: Hash that changes when passed to decodeURIComponent().
+    assertHash('%CE%9D%CE%B1%CE%B9', 'Ναι');
+
+    // Case 2: Hash that doesn't change when passed to decodeURIComponent().
+    assertHash('Yes', 'Yes');
+
+    // Case 3: Hash that can't be parsed with decodeURIComponent().
+    assertHash('%E0%A4%A', '%E0%A4%A');
+  });
+
+  test('PathParsingSetting', function() {
+    function assertPath(rawValue: string, value: string) {
+      window.history.replaceState({}, '', rawValue);
+
+      // Check initialization.
+      const router = new CrRouter();
+      assertEquals(value, router.getPath());
+
+      // Check setting rawValue.
+      router.setPath(rawValue);
+      assertEquals(value, router.getPath());
+
+      // Check setting decoded value.
+      router.setPath(value);
+      assertEquals(value, router.getPath());
+    }
+
+    // Case 1: Path that changes when passed to decodeURIComponent().
+    assertPath('/%CE%9D%CE%B1%CE%B9', '/Ναι');
+
+    // Case 2: Path that doesn't change when passed to decodeURIComponent().
+    assertPath('/Yes', '/Yes');
+
+    // Case 3: Path that can't be parsed with decodeURIComponent().
+    assertPath('/%E0%A4%A', '/%E0%A4%A');
   });
 });

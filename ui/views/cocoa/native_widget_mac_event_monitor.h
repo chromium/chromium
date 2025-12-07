@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -28,7 +27,10 @@ class VIEWS_EXPORT NativeWidgetMacEventMonitor {
     // Called for every observed NSEvent. If this client handles the event,
     // it should set `event_handled` to true. The initial value of
     // `event_handled` will be true if another client handled this event.
+    // The `target_is_this_window` parameter is set to true if the event target
+    // was equal to the NSWindow being monitored.
     virtual void NativeWidgetMacEventMonitorOnEvent(ui::Event* event,
+                                                    bool target_is_this_window,
                                                     bool* event_handled) = 0;
   };
   ~NativeWidgetMacEventMonitor();

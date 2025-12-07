@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Document: CustomElementRegistry.prototype.initialize should upgrade the element given to the first argument
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Document: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Document: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize should upgrade the element given to the first argument
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize should upgrade the element given to the first argument
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] CustomElementRegistry.prototype.initialize upgrades already initialized elements
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

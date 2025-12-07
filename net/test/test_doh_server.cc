@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -143,13 +143,13 @@ int TestDohServer::QueriesServedForSubdomains(std::string_view domain) {
     return net::IsSubdomainOf(candidate, domain);
   };
   base::AutoLock lock(lock_);
-  return base::ranges::count_if(query_qnames_, is_subdomain);
+  return std::ranges::count_if(query_qnames_, is_subdomain);
 }
 
 std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     const test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path_piece() != kPath) {
+  if (request_url.path() != kPath) {
     return nullptr;
   }
 
@@ -184,7 +184,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
 
   // Parse the DNS query.
   auto query_buf = base::MakeRefCounted<IOBufferWithSize>(query.size());
-  memcpy(query_buf->data(), query.data(), query.size());
+  query_buf->span().copy_from(base::as_byte_span(query));
   DnsQuery dns_query(std::move(query_buf));
   if (!dns_query.Parse(query.size())) {
     return MakeHttpErrorResponse(HTTP_BAD_REQUEST, "invalid DNS query");

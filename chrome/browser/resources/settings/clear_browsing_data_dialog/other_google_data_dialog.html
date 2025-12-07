@@ -1,0 +1,119 @@
+<style include="cr-icons cr-shared-style settings-shared">
+  #subpageDescription {
+    padding-bottom: 16px;
+  }
+
+  .cancel-button {
+    margin: 0;
+  }
+
+  .icon-arrow-back {
+    --cr-icon-button-margin-end: 12px;
+    --cr-icon-button-margin-start: 0;
+  }
+
+  .label {
+    color: var(--cr-primary-text-color);
+    font-weight: 500;
+  }
+
+  .link-rows-block > * {
+    background-color: var(--dbd-container-color);
+    padding: 4px 16px;
+  }
+
+  cr-link-row:first-of-type {
+    border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
+    border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
+    border-top-left-radius: var(--dbd-container-border-radius);
+    border-top-right-radius: var(--dbd-container-border-radius);
+    margin-bottom: 2px;
+  }
+
+  cr-link-row:last-of-type {
+    border-bottom-left-radius: var(--dbd-container-border-radius);
+    border-bottom-right-radius: var(--dbd-container-border-radius);
+    border-top-left-radius: var(--dbd-container-stacked-border-radius);
+    border-top-right-radius: var(--dbd-container-stacked-border-radius);
+    margin-bottom: 0;
+  }
+
+  cr-link-row:not(:first-of-type):not(:last-of-type) {
+    border-radius: var(--dbd-container-stacked-border-radius);
+    margin-bottom: 2px;
+  }
+
+  cr-link-row:only-of-type {
+    border-radius: var(--dbd-container-border-radius);
+    margin-bottom: 0;
+  }
+
+  cr-link-row.hide-icon::part(icon) {
+    display: none;
+  }
+
+  div[slot="title"] {
+    --cr-dialog-title-slot-padding-bottom: 12px;
+    --cr-dialog-title-slot-padding-top: 18px;
+    align-items: center;
+    display: flex;
+    font-size: 16px;
+    font-weight: 500;
+  }
+</style>
+
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">
+    <cr-icon-button class="icon-arrow-back" aria-label="$i18n{back}"
+        on-click="onBackOrCancelClick_" autofocus></cr-icon-button>
+    [[dialogTitle_]]
+  </div>
+  <div slot="body">
+    <div id="subpageDescription">$i18n{otherDataDescription}
+    </div>
+    <div class="link-rows-block">
+      <cr-link-row id="passwordManagerLink" external using-slotted-label
+          sub-label="$i18n{manageInGooglePasswordManager}"
+          on-click="onPasswordManagerClick_">
+        <div slot="label" class="label">$i18n{passwordsAndPasskeys}</div>
+      </cr-link-row>
+      <template is="dom-if"
+          if="[[shouldShowGoogleSearchHistoryLink_(syncStatus_, isGoogleDse_)]]"
+          restamp>
+        <cr-link-row id="googleSearchHistoryLink" external using-slotted-label
+            sub-label="$i18n{manageInYourGoogleAccount}"
+            on-click="onGoogleSearchHistoryLinkClick_">
+          <div slot="label" class="label">$i18n{searchHistory}</div>
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[shouldShowMyActivityLink_(syncStatus_)]]"
+          restamp>
+        <cr-link-row id="myActivityLink" external using-slotted-label
+            sub-label="$i18n{manageInYourGoogleAccount}"
+            on-click="onMyActivityLinkClick_">
+          <div slot="label" class="label">$i18n{myActivity}</div>
+        </cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowGeminiAppsActivityLink_(syncStatus_)]]" restamp>
+        <cr-link-row id="geminiAppsActivityLink" external using-slotted-label
+            sub-label="$i18n{manageInYourGeminiAppsActivity}"
+            on-click="onGeminiAppsActivityClick_">
+          <div slot="label" class="label">$i18n{geminiAppsActivity}</div>
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[!isGoogleDse_]]" restamp>
+        <cr-link-row id="nonGoogleSearchHistoryLink" external
+            using-slotted-label class="hide-icon"
+            sub-label="[[nonGoogleSearchHistorySubLabel_]]">
+          <div slot="label" class="label">$i18n{searchHistory}</div>
+        </cr-link-row>
+      </template>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onBackOrCancelClick_">
+      $i18n{done}
+    </cr-button>
+  </div>
+</cr-dialog>

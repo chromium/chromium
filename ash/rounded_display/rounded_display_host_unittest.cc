@@ -84,7 +84,7 @@ TEST_F(RoundedDisplayHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
   UpdateDisplay("1920x1080");
   host_window_->SetBounds(gfx::Rect(1920, 1080));
 
-  auto primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto primary_display = display::Screen::Get()->GetPrimaryDisplay();
 
   gfx::Size initial_frame_size = primary_display.GetSizeInPixel();
   float initial_device_scale_factor = primary_display.device_scale_factor();

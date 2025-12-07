@@ -17,6 +17,6 @@ android_library("javatests") {
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }

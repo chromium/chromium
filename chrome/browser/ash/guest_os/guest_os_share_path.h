@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -70,14 +71,13 @@ class GuestOsSharePath : public KeyedService,
   // ConvertArgsToPathsToShare returns this.
   struct PathsToShare {
     PathsToShare();
-    PathsToShare(PathsToShare&);
+    PathsToShare(const PathsToShare&);
     ~PathsToShare();
 
     std::vector<base::FilePath> paths_to_share;
     std::vector<std::string> launch_args;
   };
 
-  static GuestOsSharePath* GetForProfile(Profile* profile);
   explicit GuestOsSharePath(Profile* profile);
 
   GuestOsSharePath(const GuestOsSharePath&) = delete;
@@ -97,7 +97,7 @@ class GuestOsSharePath : public KeyedService,
   // Convert launch args and return paths to share with the VM, and string args
   // to pass to the app being launched. On failure, returns an error string
   // instead.
-  absl::variant<PathsToShare, std::string> ConvertArgsToPathsToShare(
+  std::variant<PathsToShare, std::string> ConvertArgsToPathsToShare(
       const guest_os::GuestOsRegistryService::Registration& registration,
       const std::vector<guest_os::LaunchArg>& args,
       const base::FilePath& vm_mount,

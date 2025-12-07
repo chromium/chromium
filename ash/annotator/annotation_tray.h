@@ -50,15 +50,15 @@ class AnnotationTray : public TrayBackgroundView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   void OnThemeChanged() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+  std::u16string GetAccessibleNameForBubble() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -67,6 +67,7 @@ class AnnotationTray : public TrayBackgroundView,
   void HideAnnotationTray();
   void SetTrayEnabled(bool enabled);
   void ToggleAnnotator();
+  void UpdateAccessibleName(bool is_annotator_enabled);
 
  private:
   void EnableAnnotatorWithPenColor();

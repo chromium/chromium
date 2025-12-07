@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
-#include "net/cookies/cookie_change_dispatcher.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
@@ -45,6 +44,7 @@ class CookiesEventRouter : public ProfileObserver {
 
   // ProfileObserver:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
   // This helper class connects to the CookieMonster over Mojo, and relays Mojo
@@ -87,6 +87,8 @@ class CookiesEventRouter : public ProfileObserver {
   raw_ptr<Profile> profile_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_;
+
+  base::ScopedObservation<Profile, ProfileObserver> otr_profile_observation_;
 
   // To listen to cookie changes in both the original and the off the record
   // profiles, we need a pair of bindings, as well as a pair of
@@ -199,6 +201,23 @@ class CookiesRemoveFunction : public ExtensionFunction {
   std::optional<api::cookies::Remove::Params> parsed_args_;
 };
 
+// Implements the cookies.getPartitionKey() extension function.
+class CookiesGetPartitionKeyFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("cookies.getPartitionKey", COOKIES_GETPARTITIONKEY)
+
+  CookiesGetPartitionKeyFunction();
+
+ protected:
+  ~CookiesGetPartitionKeyFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  std::optional<api::cookies::GetPartitionKey::Params> parsed_args_;
+};
+
 // Implements the cookies.getAllCookieStores() extension function.
 class CookiesGetAllCookieStoresFunction : public ExtensionFunction {
  public:
@@ -206,7 +225,7 @@ class CookiesGetAllCookieStoresFunction : public ExtensionFunction {
                              COOKIES_GETALLCOOKIESTORES)
 
  protected:
-  ~CookiesGetAllCookieStoresFunction() override {}
+  ~CookiesGetAllCookieStoresFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

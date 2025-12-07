@@ -131,10 +131,7 @@ FilterEffectBuilder::FilterEffectBuilder(const gfx::RectF& reference_box,
                                          const cc::PaintFlags* fill_flags,
                                          const cc::PaintFlags* stroke_flags)
     : reference_box_(reference_box),
-      viewport_(
-          RuntimeEnabledFeatures::SvgFilterUserSpaceViewportForNonSvgEnabled()
-              ? viewport
-              : std::nullopt),
+      viewport_(viewport),
       zoom_(zoom),
       shorthand_scale_(1),
       current_color_(current_color),
@@ -396,6 +393,9 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
           if (!paint_filter)
             continue;
           filters.AppendReferenceFilter(std::move(paint_filter));
+          if (filter_effect->OriginTainted()) {
+            filters.SetOriginTainted();
+          }
         }
         reference_operation.SetFilter(reference_filter);
         break;
@@ -419,7 +419,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             filters.AppendHueRotateFilter(amount);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }
@@ -428,12 +428,11 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       case FilterOperation::OperationType::kComponentTransfer:
       case FilterOperation::OperationType::kTurbulence:
         // These filter types only exist for Canvas filters.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FilterOperation::OperationType::kColorMatrix: {
         Vector<float> matrix_values =
             To<ColorMatrixFilterOperation>(*op).Values();
-        filters.AppendColorMatrixFilter(matrix_values);
+        filters.AppendColorMatrixFilter(std::move(matrix_values));
         break;
       }
       case FilterOperation::OperationType::kInvert:
@@ -455,13 +454,13 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             filters.AppendContrastFilter(amount);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }
       case FilterOperation::OperationType::kBlur: {
         float pixel_radius =
-            To<BlurFilterOperation>(*op).StdDeviation().GetFloatValue();
+            To<BlurFilterOperation>(*op).StdDeviation().Pixels();
         pixel_radius *= shorthand_scale_;
         filters.AppendBlurFilter(pixel_radius);
         break;
@@ -485,8 +484,6 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             paint_filter_builder::BuildBoxReflectFilter(reflection, nullptr));
         break;
       }
-      case FilterOperation::OperationType::kNone:
-        break;
     }
     // TODO(fs): When transitioning from a reference filter using "linearRGB"
     // to a filter function we should insert a conversion (like the one below)
@@ -540,12 +537,7 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
   // primitives since the behavior in these two cases (no primitives, empty
   // region) should match.
   if (filter_region.IsEmpty()) {
-    // TODO(fs): We rely on the presence of a node map here to opt-in to the
-    // check for an empty filter region. The reason for this is that we lack a
-    // viewport to resolve against for HTML content. This is crbug.com/512453.
-    if (viewport_ || node_map) {
-      return result;
-    }
+    return result;
   }
 
   if (!previous_effect)

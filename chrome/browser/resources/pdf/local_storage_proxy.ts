@@ -8,12 +8,14 @@ interface LocalStorageProxy {
 }
 
 export class LocalStorageProxyImpl implements LocalStorageProxy {
-  getItem(key: string) {
-    return window.localStorage.getItem(key);
+  getItem(key: string): string|null {
+    return window.localStorage ? window.localStorage.getItem(key) : null;
   }
 
-  setItem(key: string, value: string) {
-    window.localStorage.setItem(key, value);
+  setItem(key: string, value: string): void {
+    if (window.localStorage) {
+      window.localStorage.setItem(key, value);
+    }
   }
 
   static getInstance(): LocalStorageProxy {

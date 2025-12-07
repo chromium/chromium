@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -18,12 +20,19 @@
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/glue/sync_start_util.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/buildflags.h"
+#include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration.h"
 #include "components/sharing_message/sharing_device_source_sync.h"
@@ -33,8 +42,6 @@
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_service.h"
 #include "components/sharing_message/sharing_sync_preference.h"
-#include "components/sharing_message/vapid_key_manager.h"
-#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -51,8 +58,9 @@ constexpr char kServiceName[] = "SharingService";
 void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
   gcm::GCMEncryptionProvider* encryption_provider =
       gcm_driver->GetEncryptionProviderInternal();
-  if (!encryption_provider)
+  if (!encryption_provider) {
     return;
+  }
 
   encryption_provider->RemoveEncryptionInfo(kSharingFCMAppID,
                                             /*authorized_entity=*/std::string(),
@@ -93,6 +101,8 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
+  DependsOn(FaviconServiceFactory::GetInstance());
 }
 
 SharingServiceFactory::~SharingServiceFactory() = default;
@@ -104,8 +114,9 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
-  if (!sync_service)
+  if (!sync_service) {
     return nullptr;
+  }
 
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
   PrecompilePhoneNumberRegexesAsync();
@@ -116,19 +127,13 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   auto sync_prefs = std::make_unique<SharingSyncPreference>(
       profile->GetPrefs(), device_info_sync_service);
 
-  auto vapid_key_manager =
-      std::make_unique<VapidKeyManager>(sync_prefs.get(), sync_service);
-
   instance_id::InstanceIDProfileService* instance_id_service =
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile);
   auto sharing_device_registration =
       std::make_unique<SharingDeviceRegistrationImpl>(
-          profile->GetPrefs(), sync_prefs.get(), vapid_key_manager.get(),
-          instance_id_service->driver(), sync_service);
+          profile->GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
+          sync_service);
 
-  auto web_push_sender = std::make_unique<WebPushSender>(
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
   SharingMessageBridge* message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(profile);
   gcm::GCMDriver* gcm_driver =
@@ -139,9 +144,9 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto fcm_sender = std::make_unique<SharingFCMSender>(
-      std::move(web_push_sender), message_bridge, sync_prefs.get(),
-      vapid_key_manager.get(), gcm_driver, device_info_tracker,
-      local_device_info_provider, sync_service);
+      message_bridge, sync_prefs.get(), gcm_driver, device_info_tracker,
+      local_device_info_provider, sync_service,
+      sync_start_util::GetFlareForSyncableService(profile->GetPath()));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE});
@@ -150,6 +155,14 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kFCM, std::move(fcm_sender));
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    sharing_message_sender->RegisterSendDelegate(
+        SharingMessageSender::DelegateType::kIOSPush,
+        std::make_unique<sharing_message::SharingIOSPushSender>(
+            message_bridge, device_info_tracker, local_device_info_provider,
+            sync_service));
+  }
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);
@@ -162,11 +175,19 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
 
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS);
+
+  send_tab_to_self::SendTabToSelfModel* send_tab_model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+          ->GetSendTabToSelfModel();
+
   return std::make_unique<SharingService>(
-      std::move(sync_prefs), std::move(vapid_key_manager),
-      std::move(sharing_device_registration), std::move(sharing_message_sender),
-      std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, task_runner);
+      std::move(sync_prefs), std::move(sharing_device_registration),
+      std::move(sharing_message_sender), std::move(device_source),
+      std::move(handler_registry), std::move(fcm_handler), sync_service,
+      favicon_service, send_tab_model, task_runner);
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {

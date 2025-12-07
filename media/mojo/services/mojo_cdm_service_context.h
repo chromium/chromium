@@ -10,16 +10,17 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/media_mojo_export.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 namespace media {
 
@@ -42,7 +43,7 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // Unregisters the CDM. Must be called before the CDM is destroyed.
   void UnregisterCdm(const base::UnguessableToken& cdm_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   // Registers the |remote_context| and returns a unique (per-process) CDM ID.
   // This is used with out-of-process video decoding with HWDRM. We run
   // MojoCdmServiceContext in the GPU process which works with MojoCdmService.
@@ -55,7 +56,7 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // Unregisters the RemoteCdmContext. Must be called before the
   // RemoteCdmContext is destroyed.
   void UnregisterRemoteCdmContext(const base::UnguessableToken& cdm_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Returns the CdmContextRef associated with |cdm_id|.
   std::unique_ptr<CdmContextRef> GetCdmContextRef(
@@ -66,14 +67,15 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // different threads.
   base::Lock cdm_services_lock_;
   // A map between CDM ID and MojoCdmService.
-  std::map<base::UnguessableToken, MojoCdmService*> cdm_services_
-      GUARDED_BY(cdm_services_lock_);
+  std::map<base::UnguessableToken, raw_ptr<MojoCdmService, CtnExperimental>>
+      cdm_services_ GUARDED_BY(cdm_services_lock_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   // A map between CDM ID and RemoteCdmContext.
-  std::map<base::UnguessableToken, chromeos::RemoteCdmContext*>
+  std::map<base::UnguessableToken,
+           raw_ptr<chromeos::RemoteCdmContext, CtnExperimental>>
       remote_cdm_contexts_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 };
 
 }  // namespace media

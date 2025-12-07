@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,10 +26,10 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/image_annotation/image_annotation_service.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_platform.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
@@ -59,18 +58,12 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
 
   ~ImageAnnotatorClient() override = default;
 
-  // image_annotation::Annotator::Client implementation:
-  void BindJsonParser(mojo::PendingReceiver<data_decoder::mojom::JsonParser>
-                          receiver) override {
-    data_decoder_.GetService()->BindJsonParser(std::move(receiver));
-  }
-
   std::vector<std::string> GetAcceptLanguages() override {
     std::vector<std::string> accept_languages;
     const PrefService* pref_service = profile_->GetPrefs();
     std::string accept_languages_pref =
         pref_service->GetString(language::prefs::kAcceptLanguages);
-    for (std::string lang :
+    for (const std::string& lang :
          base::SplitString(accept_languages_pref, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
       accept_languages.push_back(lang);
@@ -113,7 +106,6 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
 
  private:
   const raw_ptr<Profile> profile_;
-  data_decoder::DataDecoder data_decoder_;
 };
 
 }  // namespace
@@ -176,13 +168,6 @@ void AccessibilityLabelsService::Init() {
 
   // This ensures prefs refresh the label images AXMode on startup.
   OnImageLabelsEnabledChanged();
-
-  // Log whether the feature is enabled after startup. This must be run on the
-  // UI thread because it accesses prefs.
-  content::BrowserAccessibilityState::GetInstance()
-      ->AddUIThreadHistogramCallback(base::BindOnce(
-          &AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms,
-          weak_factory_.GetWeakPtr()));
 }
 
 bool AccessibilityLabelsService::IsEnabled() {
@@ -196,7 +181,7 @@ bool AccessibilityLabelsService::IsEnabled() {
 
 void AccessibilityLabelsService::EnableLabelsServiceOnce(
     content::WebContents* web_contents) {
-  if (!accessibility_state_utils::IsScreenReaderEnabled()) {
+  if (!ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
     return;
   }
 
@@ -254,13 +239,11 @@ void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
             ->CreateScopedModeForBrowserContext(profile_,
                                                 ui::AXMode::kLabelImages);
   }
+
+  UpdateAccessibilityLabelsHistograms();
 }
 
 void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
-  if (!profile_ || !profile_->GetPrefs()) {
-    return;
-  }
-
   base::UmaHistogramBoolean("Accessibility.ImageLabels2",
                             profile_->GetPrefs()->GetBoolean(
                                 prefs::kAccessibilityImageLabelsEnabled));
@@ -296,16 +279,23 @@ bool AccessibilityLabelsService::GetAndroidEnabledStatus() {
       prefs::kAccessibilityImageLabelsOnlyOnWifi);
 
   if (enabled && only_on_wifi) {
-    enabled = net::NetworkChangeNotifier::GetConnectionType() ==
-              net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI;
+    net::NetworkChangeNotifier::ConnectionType current_connection_type =
+        net::NetworkChangeNotifier::GetConnectionType();
+    bool is_wifi =
+        (current_connection_type ==
+         net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+    bool is_ethernet =
+        (current_connection_type ==
+         net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
+    enabled = (is_wifi || is_ethernet);
   }
 
   return enabled;
 }
 
-void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
+static void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
@@ -323,4 +313,8 @@ void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
         }
       });
 }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ImageDescriptionsController)
 #endif

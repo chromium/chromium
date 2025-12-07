@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_contexts_are_isolated
+  assert False is True
+Harness: the test ran to completion.
+

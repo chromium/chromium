@@ -9,6 +9,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_sctp_transport_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -24,23 +25,21 @@
 namespace blink {
 
 namespace {
-String TransportStateToString(webrtc::SctpTransportState state) {
+V8RTCSctpTransportState::Enum TransportStateToEnum(
+    webrtc::SctpTransportState state) {
   switch (state) {
-    case webrtc::SctpTransportState::kNew:
-      // Not supposed to happen. DtlsTransport should
-      // only be visible after reaching "connecting" state.
-      NOTREACHED_IN_MIGRATION();
-      return String("new");
     case webrtc::SctpTransportState::kConnecting:
-      return String("connecting");
+      return V8RTCSctpTransportState::Enum::kConnecting;
     case webrtc::SctpTransportState::kConnected:
-      return String("connected");
+      return V8RTCSctpTransportState::Enum::kConnected;
     case webrtc::SctpTransportState::kClosed:
-      return String("closed");
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return String("failed");
+      return V8RTCSctpTransportState::Enum::kClosed;
+    case webrtc::SctpTransportState::kNew:
+    case webrtc::SctpTransportState::kNumValues:
+      // These shouldn't occur.
+      break;
   }
+  NOTREACHED();
 }
 
 std::unique_ptr<SctpTransportProxy> CreateProxy(
@@ -55,7 +54,7 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
   DCHECK(frame);
   return SctpTransportProxy::Create(
       *frame, main_thread, worker_thread,
-      rtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
+      webrtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
       delegate);
 }
 
@@ -63,7 +62,7 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport)
+    webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport)
     : RTCSctpTransport(context,
                        native_transport,
                        context->GetTaskRunner(TaskType::kNetworking),
@@ -72,7 +71,7 @@ RTCSctpTransport::RTCSctpTransport(
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
+    webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     scoped_refptr<base::SingleThreadTaskRunner> worker_thread)
     : ExecutionContextClient(context),
@@ -86,11 +85,11 @@ RTCSctpTransport::RTCSctpTransport(
 
 RTCSctpTransport::~RTCSctpTransport() {}
 
-String RTCSctpTransport::state() const {
+V8RTCSctpTransportState RTCSctpTransport::state() const {
   if (closed_from_owner_) {
-    return TransportStateToString(webrtc::SctpTransportState::kClosed);
+    return V8RTCSctpTransportState(V8RTCSctpTransportState::Enum::kClosed);
   }
-  return TransportStateToString(current_state_.state());
+  return V8RTCSctpTransportState(TransportStateToEnum(current_state_.state()));
 }
 
 double RTCSctpTransport::maxMessageSize() const {
@@ -113,7 +112,7 @@ RTCDtlsTransport* RTCSctpTransport::transport() const {
   return dtls_transport_.Get();
 }
 
-rtc::scoped_refptr<webrtc::SctpTransportInterface>
+webrtc::scoped_refptr<webrtc::SctpTransportInterface>
 RTCSctpTransport::native_transport() {
   return native_transport_;
 }

@@ -17,8 +17,6 @@ namespace updater {
 
 enum class UpdaterScope;
 
-extern const char kPrefUpdateTime[];
-
 class UpdaterPrefs : public base::RefCountedThreadSafe<UpdaterPrefs> {
  public:
   UpdaterPrefs() = default;

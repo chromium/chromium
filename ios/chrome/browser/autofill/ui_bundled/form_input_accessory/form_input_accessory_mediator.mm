@@ -7,14 +7,15 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/containers/fixed_flat_set.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
@@ -22,12 +23,19 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_chromium_text_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
@@ -39,11 +47,6 @@
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_chromium_text_data.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -51,8 +54,10 @@
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UmaHistogramEnumeration;
@@ -78,6 +83,23 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   }
 
   return default_value;
+}
+
+// Returns true if refreshing suggestions is allowed.
+bool IsSuggestionRefreshAllowed() {
+  // Do not allow suggestion refresh in the background when throttling is
+  // enabled.
+  return base::FeatureList::IsEnabled(
+             kThrottleFormInputAccessorySuggestionRefresh)
+             ? UIApplication.sharedApplication.applicationState ==
+                   UIApplicationStateActive
+             : true;
+}
+
+// Returns true if the FormSuggestionController (the provider for this KA
+// mediator) is in stateless mode.
+bool IsStateless() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
 }
 
 }  // namespace
@@ -173,6 +195,10 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
   // Whether the keyboard height change notifications are enabled.
   BOOL _keyboardHeightChangeNotificationsEnabled;
+
+  // The current FormSuggestionProvider that matches the current suggestions.
+  // Set to nil if there are no current suggestions. Only used when Stateless.
+  __weak id<FormSuggestionProvider> _currentSuggestionProvider;
 }
 
 - (instancetype)
@@ -281,11 +307,13 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     if (IsBottomOmniboxAvailable()) {
       _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
           initWithPrefService:GetApplicationContext()->GetLocalState()
-                     prefName:prefs::kBottomOmnibox];
+                     prefName:omnibox::kIsOmniboxInBottomPosition];
       [_bottomOmniboxEnabled setObserver:self];
       // Initialize to the current value.
       [self booleanDidChange:_bottomOmniboxEnabled];
     }
+
+    _currentSuggestionProvider = nil;
   }
   return self;
 }
@@ -335,6 +363,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 - (BOOL)lastFocusedFieldWasObfuscated {
   return _lastSeenParams.field_type == autofill::kObfuscatedFieldType;
+}
+
+- (autofill::FillingProduct)currentProviderMainFillingProduct {
+  return IsStateless() ? _currentSuggestionProvider.mainFillingProduct
+                       : self.currentProvider.mainFillingProduct;
 }
 
 #pragma mark - KeyboardNotification
@@ -419,21 +452,24 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     return;
   }
 
+  BOOL isDefaultViewEnabled =
+      IsIOSKeyboardAccessoryDefaultViewEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  BOOL isSelectOne = params.field_type == "select-one";
+
   // Return early and reset if element is a picker.
-  if (params.field_type == "select-one") {
+  if (isSelectOne && !isDefaultViewEnabled) {
     [self reset];
     return;
   }
 
   self.validActivityForAccessoryView = YES;
-  NSString* frameID;
-  if (frame) {
-    frameID = base::SysUTF8ToNSString(frame->GetFrameId());
-  }
-  DCHECK(frameID.length);
+  [self setLastFocusFormActivityWebFrameID:frame];
 
-  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
-  [self synchronizeNavigationControls];
+  if (isSelectOne && isDefaultViewEnabled) {
+    [self.consumer showNavigationButtons];
+    return;
+  }
 
   // Don't look for suggestions in the next events.
   if (params.type == "blur" || params.type == "change" ||
@@ -517,6 +553,14 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(_webState, webState);
+
+  // The keyboard accessory shouldn't be reset if the finished navigation
+  // happened within the same document. If reset, the keyboard accessory
+  // suggestions can suddenly disappear if a form field is still focused.
+  // See crbug.com/339851686.
+  if (navigation->IsSameDocument()) {
+    return;
+  }
   [self reset];
 }
 
@@ -544,8 +588,16 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   // call above.
   _keyboardHeightChangeNotificationsEnabled = NO;
 
+  BOOL enabledBeforeUpdate = _suggestionsEnabled;
   _suggestionsEnabled = enabled;
-  if (enabled) {
+  if (base::FeatureList::IsEnabled(
+          kThrottleFormInputAccessorySuggestionRefresh)) {
+    if (enabled && !enabledBeforeUpdate) {
+      // Only update suggestions if the suggestions went from disabled to
+      // enabled.
+      [self updateSuggestionsIfNeeded];
+    }
+  } else if (enabled) {
     [self updateSuggestionsIfNeeded];
   }
 }
@@ -592,22 +644,12 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 }
 
 - (void)updateSuggestionsIfNeeded {
-  if (_hasLastSeenParams && _webState) {
+  if (!_webState || !_webState->IsVisible()) {
+    return;
+  }
+  if (_hasLastSeenParams && _webState && IsSuggestionRefreshAllowed()) {
     [self retrieveSuggestionsForForm:_lastSeenParams webState:_webState];
   }
-}
-
-// Update the status of the consumer form navigation buttons to match the
-// handler state.
-- (void)synchronizeNavigationControls {
-  __weak __typeof(self) weakSelf = self;
-  [self.formNavigationHandler
-      fetchPreviousAndNextElementsPresenceWithCompletionHandler:^(
-          bool previousButtonEnabled, bool nextButtonEnabled) {
-        weakSelf.consumer.formInputNextButtonEnabled = nextButtonEnabled;
-        weakSelf.consumer.formInputPreviousButtonEnabled =
-            previousButtonEnabled;
-      }];
 }
 
 // Updates the accessory mediator with the passed web state, its JS suggestion
@@ -649,6 +691,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
   self.suggestionsEnabled = YES;
   self.currentProvider = nil;
+  _currentSuggestionProvider = nil;
 }
 
 // Asynchronously queries the providers for an accessory view. Sends it to
@@ -689,30 +732,44 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 // Post the passed `suggestions` to the consumer.
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
+  FormSuggestion* firstSuggestion = suggestions.firstObject;
+
+  // Set the `mainFillingProduct` from the `suggestions` when stateless.
+  // Defaults to autofill::FillingProduct::kNone by default if there are no
+  // suggestions available in which case `provider.mainFillingProduct` is also
+  // likely to give back autofill::FillingProduct::kNone since suggestions
+  // aren't available.
+  autofill::FillingProduct mainFillingProduct =
+      IsStateless() ? firstSuggestion.provider.mainFillingProduct
+                    : provider.mainFillingProduct;
+
   if (!self.suggestionsEnabled) {
     if (self.formInputInteractionDelegate) {
       [self.formInputInteractionDelegate
-          focusDidChangedWithFillingProduct:provider.mainFillingProduct];
+          focusDidChangedWithFillingProduct:mainFillingProduct];
     }
     return;
   }
 
   // If suggestions are enabled, update `currentProvider`.
   self.currentProvider = provider;
+  // Use the first suggestion to represent all suggestions since they are all
+  // tied to the same provider.
+  _currentSuggestionProvider = firstSuggestion.provider;
 
   // Post it to the consumer.
-  self.consumer.mainFillingProduct = provider.mainFillingProduct;
+  self.consumer.mainFillingProduct = mainFillingProduct;
   self.consumer.currentFieldId = _lastSeenParams.field_renderer_id;
   [self.consumer showAccessorySuggestions:suggestions];
-  if (suggestions.count) {
-    if (provider.type == SuggestionProviderTypeAutofill) {
+  if (firstSuggestion) {
+    SuggestionProviderType providerType =
+        [self getProviderTypeFromSuggestion:firstSuggestion];
+    if (providerType == SuggestionProviderTypeAutofill) {
       default_browser::NotifyAutofillSuggestionsShown(self.engagementTracker);
 
-      if (suggestions.firstObject.featureForIPH !=
-          SuggestionFeatureForIPH::kUnknown) {
+      if (firstSuggestion.featureForIPH != SuggestionFeatureForIPH::kUnknown) {
         [self.handler
-            showAutofillSuggestionIPHIfNeededFor:suggestions.firstObject
-                                                     .featureForIPH];
+            showAutofillSuggestionIPHIfNeededFor:firstSuggestion.featureForIPH];
       }
     }
   }
@@ -725,12 +782,15 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 // Logs information about what type of suggestion the user selected.
 - (void)logReauthenticationEvent:(ReauthenticationEvent)reauthenticationEvent
-                            type:(autofill::SuggestionType)type {
+                   forSuggestion:(FormSuggestion*)suggestion {
+  SuggestionProviderType providerType =
+      [self getProviderTypeFromSuggestion:suggestion];
+
   std::string histogramName;
-  if (self.currentProvider.type == SuggestionProviderTypePassword) {
+  if (providerType == SuggestionProviderTypePassword) {
     histogramName = "IOS.Reauth.Password.Autofill";
-  } else if (self.currentProvider.type == SuggestionProviderTypeAutofill) {
-    switch (type) {
+  } else if (providerType == SuggestionProviderTypeAutofill) {
+    switch (suggestion.type) {
       case autofill::SuggestionType::kCreditCardEntry:
       case autofill::SuggestionType::kVirtualCreditCardEntry:
         histogramName = "IOS.Reauth.CreditCard.Autofill";
@@ -747,9 +807,12 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   }
 }
 
-// Handles the selection of a suggestion.
-- (void)handleSuggestion:(FormSuggestion*)formSuggestion {
-  if (self.currentProvider.type == SuggestionProviderTypePassword) {
+// Handles the selection of a suggestion. `index` indicates the position of the
+// suggestion among the available suggestions.
+- (void)handleSuggestion:(FormSuggestion*)formSuggestion
+                 atIndex:(NSInteger)index {
+  if ([self getProviderTypeFromSuggestion:formSuggestion] ==
+      SuggestionProviderTypePassword) {
     default_browser::NotifyPasswordAutofillSuggestionUsed(
         self.engagementTracker);
   } else if (formSuggestion.featureForIPH !=
@@ -758,7 +821,14 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
         notifyAutofillSuggestionWithIPHSelectedFor:formSuggestion
                                                        .featureForIPH];
   }
-  [self.currentProvider didSelectSuggestion:formSuggestion];
+  [self.currentProvider didSelectSuggestion:formSuggestion atIndex:index];
+}
+
+// Sets the last focused form activity web frame ID with the given `frame`.
+- (void)setLastFocusFormActivityWebFrameID:(web::WebFrame*)frame {
+  NSString* frameID =
+      frame ? base::SysUTF8ToNSString(frame->GetFrameId()) : nil;
+  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
 }
 
 #pragma mark - Boolean Observer
@@ -771,14 +841,29 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 #pragma mark - FormSuggestionClient
 
-- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
+- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                    atIndex:(NSInteger)index {
+  if (IsStateless()) {
+    // When using the stateless FormSuggestionsController, ensure the params
+    // attached to the suggestion are the same as the ones held by this mediator
+    // to keep the status quo as this mediator should be the source of truth
+    // when it is used instead of directly using the suggestions provider for
+    // accepting the suggestions.
+    formSuggestion = [FormSuggestion copy:formSuggestion
+                             andSetParams:_lastSeenParams
+                                 provider:formSuggestion.provider];
+  }
+
+  // Close the popover view.
+  [self.handler dismissPopover];
+
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
-                            type:formSuggestion.type];
+                   forSuggestion:formSuggestion];
 
   if (!formSuggestion.requiresReauth) {
     [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
-                              type:formSuggestion.type];
-    [self handleSuggestion:formSuggestion];
+                     forSuggestion:formSuggestion];
+    [self handleSuggestion:formSuggestion atIndex:index];
     return;
   }
   if ([self.reauthenticationModule canAttemptReauth]) {
@@ -786,11 +871,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
         [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
-                                  type:formSuggestion.type];
-        [self handleSuggestion:formSuggestion];
+                         forSuggestion:formSuggestion];
+        [self handleSuggestion:formSuggestion atIndex:index];
       } else {
         [self logReauthenticationEvent:ReauthenticationEvent::kFailure
-                                  type:formSuggestion.type];
+                         forSuggestion:formSuggestion];
       }
     };
 
@@ -800,15 +885,16 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
                                  handler:completionHandler];
   } else {
     [self logReauthenticationEvent:ReauthenticationEvent::kMissingPasscode
-                              type:formSuggestion.type];
-    [self handleSuggestion:formSuggestion];
+                     forSuggestion:formSuggestion];
+    [self handleSuggestion:formSuggestion atIndex:index];
   }
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                    atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params {
-  CHECK(_lastSeenParams == params);
-  [self didSelectSuggestion:formSuggestion];
+  CHECK_EQ(_lastSeenParams, params);
+  [self didSelectSuggestion:formSuggestion atIndex:index];
 }
 
 #pragma mark - PasswordCounterObserver
@@ -847,6 +933,19 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 - (void)injectProvider:(id<FormInputSuggestionsProvider>)provider {
   self.provider = provider;
+}
+
+- (void)injectCurrentProvider:(id<FormInputSuggestionsProvider>)provider {
+  self.currentProvider = provider;
+}
+
+#pragma mark - Private
+
+// Returns the SuggestionProviderType for the `suggestion` based on whether or
+// not the FormSuggestionController is stateless.
+- (SuggestionProviderType)getProviderTypeFromSuggestion:
+    (FormSuggestion*)suggestion {
+  return IsStateless() ? suggestion.provider.type : self.currentProvider.type;
 }
 
 @end

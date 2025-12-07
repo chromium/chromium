@@ -26,38 +26,36 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-enum VTTNodeType {
-  kVTTNodeTypeNone = 0,
-  kVTTNodeTypeClass,
-  kVTTNodeTypeItalic,
-  kVTTNodeTypeLanguage,
-  kVTTNodeTypeBold,
-  kVTTNodeTypeUnderline,
-  kVTTNodeTypeRuby,
-  kVTTNodeTypeRubyText,
-  kVTTNodeTypeVoice
+enum class VttNodeType {
+  kNone = 0,
+  kClass,
+  kItalic,
+  kLanguage,
+  kBold,
+  kUnderline,
+  kRuby,
+  kRubyText,
+  kVoice
 };
 
 class VTTElement final : public Element {
  public:
   HTMLElement* CreateEquivalentHTMLElement(Document&);
 
-  VTTElement(const QualifiedName&, Document*);
-  VTTElement(VTTNodeType, Document*);
+  VTTElement(VttNodeType, Document*);
 
-  Element& CloneWithoutAttributesAndChildren(Document&) const override;
+  Element& CloneWithoutAttributesAndChildren(Document&, CustomElementRegistry*)
+      const override;
 
-  void SetVTTNodeType(VTTNodeType type) {
-    web_vtt_node_type_ = static_cast<unsigned>(type);
-  }
-  VTTNodeType WebVTTNodeType() const {
-    return static_cast<VTTNodeType>(web_vtt_node_type_);
+  VttNodeType GetVttNodeType() const {
+    return static_cast<VttNodeType>(vtt_node_type_);
   }
 
   bool IsPastNode() const { return is_past_node_; }
@@ -67,12 +65,12 @@ class VTTElement final : public Element {
   AtomicString Language() const { return language_; }
   void SetLanguage(AtomicString value) { language_ = value; }
 
-  static const QualifiedName& VoiceAttributeName() {
+  CORE_EXPORT static const QualifiedName& VoiceAttributeName() {
     DEFINE_STATIC_LOCAL(QualifiedName, voice_attr, (AtomicString("voice")));
     return voice_attr;
   }
 
-  static const QualifiedName& LangAttributeName() {
+  CORE_EXPORT static const QualifiedName& LangAttributeName() {
     DEFINE_STATIC_LOCAL(QualifiedName, attr, (AtomicString("lang")));
     return attr;
   }
@@ -83,11 +81,9 @@ class VTTElement final : public Element {
   void Trace(Visitor*) const override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle& style) override;
-
   Member<TextTrack> track_;
   unsigned is_past_node_ : 1;
-  unsigned web_vtt_node_type_ : 4;
+  const unsigned vtt_node_type_ : 4;
 
   AtomicString language_;
 };

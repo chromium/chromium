@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/video_conference/bubble/mic_indicator.h"
 
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -18,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -28,12 +25,12 @@ namespace ash::video_conference {
 
 namespace {
 
-const int kIndicatorLines = 4;
-const int kIndicatorSpace = 2;
-const int kIndicatorWidth = 2;
-const int kIndicatorTotalWidth =
+constexpr int kIndicatorLines = 4;
+constexpr int kIndicatorSpace = 2;
+constexpr int kIndicatorWidth = 2;
+constexpr int kIndicatorTotalWidth =
     kIndicatorLines * kIndicatorWidth + (kIndicatorLines - 1) * kIndicatorSpace;
-const float kIndicatorLengths[] = {0.3, 0.8, 0.5, 0.75};
+constexpr std::array<float, 4> kIndicatorLengths = {0.4, 0.9, 0.6, 0.85};
 
 // Powers above kLogEwmaMax will be restricted to this value.
 const float kLogEwmaMax = std::log(0.02);
@@ -42,8 +39,9 @@ const float kLogEwmaMin = std::log(0.00002);
 const float kLogEwmaDiff = kLogEwmaMax - kLogEwmaMin;
 
 constexpr int kMaxStep = 8;
-constexpr float phaseLengths[] = {1.0, 1.1, 1.3, 1.1, 1.0, 0.9, 0.7, 0.9};
-constexpr auto kMicIndicatorInsets = gfx::Insets::TLBR(16, 16, 16, 16);
+constexpr std::array<float, 8> phaseLengths = {1.0, 1.1, 1.3, 1.1,
+                                               1.0, 0.9, 0.7, 0.9};
+constexpr auto kMicIndicatorInsets = gfx::Insets::TLBR(10, 10, 10, 10);
 
 float ScalePower(float power) {
   // Adjust the power on a logarithmic scale, allowing for more noticeable
@@ -67,7 +65,7 @@ MicIndicator::MicIndicator() {
 
   power_ = VideoConferenceTrayController::Get()->GetEwmaPower();
   step_ = 0;
-  color_ = cros_tokens::kCrosSysDisabledOpaque;
+  color_ = cros_tokens::kCrosSysOnSurface;
 
   timer_ = std::make_unique<base::RepeatingTimer>();
   timer_->Start(FROM_HERE, base::Milliseconds(30),
@@ -84,10 +82,6 @@ MicIndicator::~MicIndicator() {
 void MicIndicator::UpdateProgress() {
   step_ = (step_ + 1) % kMaxStep;
   if (step_ == 0) {
-    bool sidetone_enabled =
-        VideoConferenceTrayController::Get()->GetSidetoneEnabled();
-    color_ = sidetone_enabled ? cros_tokens::kCrosSysPrimary
-                              : cros_tokens::kCrosSysDisabledOpaque;
     power_ = VideoConferenceTrayController::Get()->GetEwmaPower();
   }
   SchedulePaint();
@@ -101,7 +95,7 @@ void MicIndicator::OnPaint(gfx::Canvas* canvas) {
   flags.setStrokeWidth(kIndicatorWidth);
   flags.setColor(GetColorProvider()->GetColor(color_));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  SkPath path;
+  SkPathBuilder path;
 
   const int view_height = GetContentsBounds().height();
   const int view_width = GetContentsBounds().width();
@@ -119,10 +113,19 @@ void MicIndicator::OnPaint(gfx::Canvas* canvas) {
     float y1 = y0 + length;
     path.moveTo(x, y0);
     path.lineTo(x, y1);
-    canvas->DrawPath(path, flags);
+    canvas->DrawPath(path.snapshot(), flags);
 
     x += kIndicatorSpace + static_cast<int>(flags.getStrokeWidth());
   }
+}
+
+void MicIndicator::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  bool sidetone_enabled =
+      VideoConferenceTrayController::Get()->GetSidetoneEnabled();
+  color_ = sidetone_enabled ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                            : cros_tokens::kCrosSysOnSurface;
 }
 
 BEGIN_METADATA(MicIndicator)

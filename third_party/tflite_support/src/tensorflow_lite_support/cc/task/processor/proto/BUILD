@@ -1,4 +1,7 @@
+# Placeholder: load java_lite_proto_library
+# Placeholder: load proto_library
 load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_py_proto_library")
+load("//tools/build_defs/objc:objc_proto_library.bzl", "objc_proto_library")
 
 package(
     default_visibility = [
@@ -75,6 +78,13 @@ proto_library(
 
 cc_proto_library(
     name = "embedding_cc_proto",
+    deps = [
+        ":embedding_proto",
+    ],
+)
+
+objc_proto_library(
+    name = "embedding_objc_proto",
     deps = [
         ":embedding_proto",
     ],

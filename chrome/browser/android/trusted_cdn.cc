@@ -19,27 +19,25 @@
 #include "chrome/browser/tab/jni_headers/TrustedCdn_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
-TrustedCdn::TrustedCdn(JNIEnv* env, const JavaParamRef<jobject>& obj)
+TrustedCdn::TrustedCdn(JNIEnv* env, const JavaRef<jobject>& obj)
     : jobj_(env, obj) {}
 
 TrustedCdn::~TrustedCdn() = default;
 
 void TrustedCdn::SetWebContents(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
-                                const JavaParamRef<jobject>& jweb_contents) {
+                                const JavaRef<jobject>& jweb_contents) {
   web_contents_ = WebContents::FromJavaWebContents(jweb_contents);
 }
 
-void TrustedCdn::ResetWebContents(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj) {
+void TrustedCdn::ResetWebContents(JNIEnv* env) {
   web_contents_ = nullptr;
 }
 
-void TrustedCdn::OnDestroyed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void TrustedCdn::OnDestroyed(JNIEnv* env) {
   delete this;
 }
 
@@ -59,7 +57,8 @@ base::android::ScopedJavaLocalRef<jobject> TrustedCdn::GetPublisherUrl(
       embedder_support::GetPublisherURL(web_contents_->GetPrimaryMainFrame()));
 }
 
-static jlong JNI_TrustedCdn_Init(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj) {
+static jlong JNI_TrustedCdn_Init(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(new TrustedCdn(env, obj));
 }
+
+DEFINE_JNI(TrustedCdn)

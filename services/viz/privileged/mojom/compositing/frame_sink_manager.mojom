@@ -4,28 +4,32 @@
 
 module viz.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/privileged/mojom/compositing/display_private.mojom";
 import "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom";
+import "services/viz/privileged/mojom/compositing/features.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
-import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom";
+import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_info.mojom";
-import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
-import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "services/viz/public/mojom/compositing/video_detector_observer.mojom";
-import "third_party/blink/public/mojom/widget/platform_widget.mojom";
+import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "components/input/render_input_router.mojom";
 
 // Initialization parameters for a RootCompositorFrameSink.
 struct RootCompositorFrameSinkParams {
@@ -36,6 +40,10 @@ struct RootCompositorFrameSinkParams {
   bool send_swap_size_notifications = false;
   // Disables begin frame rate limiting for the display compositor.
   bool disable_frame_rate_limit = false;
+
+  // Whether to create a surface control input receiver on Viz.
+  [EnableIf=is_android]
+  bool create_input_receiver = false;
 
   [EnableIf=is_android]
   float refresh_rate;
@@ -48,6 +56,12 @@ struct RootCompositorFrameSinkParams {
 
   pending_associated_receiver<ExternalBeginFrameController>?
       external_begin_frame_controller;
+
+  // If this value is set, `external_begin_frame_controller` must be set as
+  // well. This field is not required to be set if
+  // `external_begin_frame_controller` is set.
+  pending_associated_remote<ExternalBeginFrameControllerClient>?
+      external_begin_frame_controller_client;
 };
 
 // The FrameSinkManager interface is a privileged interface that allows the
@@ -62,6 +76,7 @@ struct RootCompositorFrameSinkParams {
 // Thus, a client will typically simply request a CompositorFrameSink from the
 // frame sink manager host which will forward the request to the frame sink
 // manager.
+[DirectReceiver]
 interface FrameSinkManager {
   // Starts the scope of temporary references tied to this |frame_sink_id|.
   // Temporary references tied to this |frame_sink_id| will be dropped on
@@ -75,7 +90,7 @@ interface FrameSinkManager {
   // sequences or dangling temporary references assigned to it. If there is a
   // CompositorFrameSink for |frame_sink_id| then it will be destroyed and the
   // message pipe to the client will be closed.
-  InvalidateFrameSinkId(FrameSinkId frame_sink_id);
+  InvalidateFrameSinkId(FrameSinkId frame_sink_id) => ();
 
   // |debug_label| is used when printing out the surface hierarchy so we know
   // which clients are contributing which surfaces.
@@ -110,15 +125,14 @@ interface FrameSinkManager {
   // the client can submit frames for this sink in batch with other bundled
   // sinks using the FrameSinkBundle interface.
   //
-  // `render_input_router_client` is only set when `InputOnViz` flag is enabled,
+  // `config` is only set when `InputOnViz` flag is enabled,
   // and a layer tree frame sink for renderer is being requested.
   CreateCompositorFrameSink(
       FrameSinkId frame_sink_id,
       FrameSinkBundleId? bundle_id,
       pending_receiver<CompositorFrameSink> compositor_frame_sink,
       pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client,
-      pending_remote<blink.mojom.RenderInputRouterClient>?
-         render_input_router_client);
+      input.mojom.RenderInputRouterConfig? config);
 
   // Destroys CompositorFrameSink created by Create[Root]CompositorFrameSink().
   // This function should only be used synchronously for destroying root
@@ -130,19 +144,20 @@ interface FrameSinkManager {
   // Set up a BeginFrame relationship between two FrameSinkIds. In this case,
   // the child inherits the viz::BeginFrameSource from the parent if it doesn't
   // already have a viz::BeginFrameSource.
-  RegisterFrameSinkHierarchy(FrameSinkId parent_frame_sink_id,
-                             FrameSinkId child_frame_sink_id);
+  RegisterFrameSinkHierarchy(
+      FrameSinkId parent_frame_sink_id, FrameSinkId child_frame_sink_id);
 
   // Removes a BeginFrame relationship between two FrameSinkIds.
-  UnregisterFrameSinkHierarchy(FrameSinkId parent_frame_sink_id,
-                               FrameSinkId child_frame_sink_id);
+  UnregisterFrameSinkHierarchy(
+      FrameSinkId parent_frame_sink_id, FrameSinkId child_frame_sink_id);
 
   // Requests viz to notify |observer| whenever video activity is detected in
   // one of the clients. See viz::VideoDetector.
   AddVideoDetectorObserver(pending_remote<VideoDetectorObserver> observer);
 
   // Creates a FrameSinkVideoCapturer instance.
-  CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver);
+  CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver,
+                      uint32 capture_version_source);
 
   // Marks the given SurfaceIds for destruction. The client must supply a sorted
   // `surface_ids`.
@@ -151,8 +166,8 @@ interface FrameSinkManager {
   // Throttles the frame sinks specified by |frame_sink_ids| and all their
   // descendant sinks to send BeginFrames at an interval of |interval|. This
   // operation clears out any previous throttling operation on any frame sinks.
-  Throttle(array<FrameSinkId> frame_sink_ids,
-           mojo_base.mojom.TimeDelta interval);
+  Throttle(
+      array<FrameSinkId> frame_sink_ids, mojo_base.mojom.TimeDelta interval);
 
   // Throttles all current and future frame sinks to send BeginFrames at an
   // interval at least as long as |interval|. Because there is a single viz
@@ -171,9 +186,9 @@ interface FrameSinkManager {
   //
   // `capture_exact_surface_id`, when set to true, makes sure the snapshot will
   // only be taken by the surface with the exact `surface_id`.
-  RequestCopyOfOutput(SurfaceId surface_id, CopyOutputRequest request,
+  RequestCopyOfOutput(SurfaceId surface_id,
+                      CopyOutputRequest request,
                       bool capture_exact_surface_id);
-
 
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is
   // keyed using |cache_id| and evicted when EvictBackBuffer with the same id is
@@ -194,23 +209,35 @@ interface FrameSinkManager {
   // CompositorFrameSink. `transition_token` identifies the navigation for which
   // the resources were cached.
   ClearUnclaimedViewTransitionResources(
-    blink.mojom.ViewTransitionToken transition_token);
+      blink.mojom.ViewTransitionToken transition_token);
 
   // Initializes FrameSinksMetricsRecorder to enable the collection of metrics
   // related to frame sinks.
-  // TODO(b/356017406): Add the method behind a feature flag.
+  [RuntimeFeature=EnableVizTestApis]
   CreateMetricsRecorderForTest(
-    pending_receiver<FrameSinksMetricsRecorder> receiver);
+      pending_receiver<FrameSinksMetricsRecorder> receiver);
 
-  // Returns true if there are any unclaimed ViewTransition resources. For
-  // testing only.
-  [Sync]
-  HasUnclaimedViewTransitionResourcesForTest() => (bool has_resources);
+  // Initializes FrameSinkManagerTestApi.
+  [RuntimeFeature=EnableVizTestApis]
+  EnableFrameSinkManagerTestApi(
+      pending_receiver<FrameSinkManagerTestApi> receiver);
 
-  // Customizes the CopyOutputRequest's result size during tests.
-  [Sync]
-  SetSameDocNavigationScreenshotSizeForTesting(
-    gfx.mojom.Size result_size) => ();
+  // Sets up the RendererInputRouterDelegateRegistry interface for managing
+  // RenderInputRouterDelegate connections between RenderWidgetHosts (on
+  // CrBrowserMain thread) and the InputManager (on VizCompositor thread).
+  SetupRendererInputRouterDelegateRegistry(
+    pending_receiver<RendererInputRouterDelegateRegistry> receiver);
+
+  // Notifies list of RenderInputRouters of their block state changes for input
+  // event handling on the VizCompositorThread.
+  NotifyRendererBlockStateChanged(
+    bool blocked,
+    array<FrameSinkId> render_input_routers);
+
+  // Requests input handling to be transferred back to the CrBrowserMain thread
+  // from the VizCompositorThread. Safe to call even if the VizCompositorThread
+  // is not currently handling input, the request is a no-op in that case.
+  RequestInputBack();
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display
@@ -224,11 +251,13 @@ interface FrameSinkManagerClient {
 
   // Sends new |hit_test_data| to the client.
   OnAggregatedHitTestRegionListUpdated(
-      FrameSinkId frame_sink_id, array<AggregatedHitTestRegion> hit_test_data);
+      FrameSinkId frame_sink_id,
+      array<AggregatedHitTestRegion> hit_test_data);
 
   // Sends |frame_sink_id|, |frame_token|, and |activation_time| to the client
   // when a surface of the provided |frame_sink_id| activates.
-  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
+  OnFrameTokenChanged(FrameSinkId frame_sink_id,
+                      uint32 frame_token,
                       mojo_base.mojom.TimeTicks activation_time);
 
   // Verifies that |thread_ids| do not belong to the host process. Renderer
@@ -247,7 +276,35 @@ interface FrameSinkManagerClient {
   // This is used to copy a screenshot after same-document navigation committed
   // in the renderer process.
   OnScreenshotCaptured(
-    blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
-    CopyOutputResult copy_output_result
-  );
+      blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
+      CopyOutputResult copy_output_result);
+
+  // Called by Viz when the connection is established and the shared memory for
+  // touch state is available.
+  OnVizTouchStateAvailable(mojo_base.mojom.ReadOnlySharedMemoryRegion region);
+
+  // Called by Viz when a view transition requests to allow the browser to
+  // shutdown the old renderer process.
+  OnViewTransitionResourcesCaptured(
+      blink.mojom.ViewTransitionToken transition_token);
+};
+
+// Implemented by the GPU process (VizCompositorThread) and called from the
+// browser process (CrBrowserMain thread). This allows the
+// RenderInputRouterDelegate[Client] interface to use the same mojo pipe to
+// send/receive information for input handling between the CrBrowserMain and the
+// VizCompositorThread.
+[DirectReceiver]
+interface RendererInputRouterDelegateRegistry {
+  // Setup the connection between the Browser (at RenderWidgetHost level) and
+  // the VizCompositor thread (at InputManager level) in both directions to
+  // allow transferring information from Viz to the Browser and vice versa,
+  // when the VizCompositor thread is handling input using RenderInputRouters
+  // with InputVizard. This connection is per FrameSinkId.
+  SetupRenderInputRouterDelegateConnection(
+      FrameSinkId id,
+      pending_associated_remote<input.mojom.RenderInputRouterDelegateClient>
+          rir_delegate_client_remote,
+      pending_associated_receiver<input.mojom.RenderInputRouterDelegate>
+          rir_delegate_receiver);
 };

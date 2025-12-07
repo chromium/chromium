@@ -39,7 +39,7 @@ int64_t GetPageCountSync(sql::Database* db) {
 OfflinePageMetadataStoreTestUtil::OfflinePageMetadataStoreTestUtil()
     : store_ptr_(nullptr) {}
 
-OfflinePageMetadataStoreTestUtil::~OfflinePageMetadataStoreTestUtil() {}
+OfflinePageMetadataStoreTestUtil::~OfflinePageMetadataStoreTestUtil() = default;
 
 void OfflinePageMetadataStoreTestUtil::BuildStore() {
   if (!temp_directory_.IsValid() && !temp_directory_.CreateUniqueTempDir()) {
@@ -106,8 +106,9 @@ OfflinePageMetadataStoreTestUtil::GetPageByOfflineId(int64_t offline_id) {
       store(), criteria,
       base::BindLambdaForTesting(
           [&](const std::vector<OfflinePageItem>& cb_pages) {
-            if (!cb_pages.empty())
+            if (!cb_pages.empty()) {
               page = new OfflinePageItem(cb_pages[0]);
+            }
             run_loop.Quit();
           }));
   task->Execute(base::DoNothing());

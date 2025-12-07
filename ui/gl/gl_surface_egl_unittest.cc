@@ -26,13 +26,8 @@ namespace {
 class GLSurfaceEGLTest : public testing::Test {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
     display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
         GLImplementationParts(kGLImplementationEGLANGLE));
-#else
-    display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementationParts(kGLImplementationEGLGLES2));
-#endif
   }
 
   void TearDown() override { GLSurfaceTestSupport::ShutdownGL(display_); }
@@ -63,7 +58,7 @@ class TestPlatformDelegate : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
 };
 
 TEST_F(GLSurfaceEGLTest, FixedSizeExtension) {

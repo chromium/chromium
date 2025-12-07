@@ -6,6 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
@@ -46,8 +47,9 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
 }
 
 BatterySaverButton::~BatterySaverButton() {
-  if (IsBubbleShowing())
+  if (IsBubbleShowing()) {
     BatterySaverBubbleView::CloseBubble(bubble_);
+  }
 }
 
 bool BatterySaverButton::IsBubbleShowing() const {
@@ -61,12 +63,13 @@ void BatterySaverButton::Show() {
 
   // Wait until the view is properly laid out before triggering the promo
   // The promo will be triggered in |OnBoundsChanged| if the flag is set
-  if (!was_visible)
+  if (!was_visible) {
     pending_promo_ = true;
+  }
 }
 
 void BatterySaverButton::Hide() {
-  CloseFeaturePromo(user_education::EndFeaturePromoReason::kAbortPromo);
+  CloseFeaturePromo(/*engaged=*/false);
 
   if (IsBubbleShowing()) {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
@@ -88,11 +91,13 @@ bool BatterySaverButton::ShouldShowInkdropAfterIphInteraction() {
 void BatterySaverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ToolbarButton::OnBoundsChanged(previous_bounds);
 
-  if (!GetVisible() || size().IsEmpty())
+  if (!GetVisible() || size().IsEmpty()) {
     return;
+  }
 
-  if (pending_promo_)
+  if (pending_promo_) {
     MaybeShowFeaturePromo();
+  }
 }
 
 void BatterySaverButton::OnClicked() {
@@ -100,11 +105,7 @@ void BatterySaverButton::OnClicked() {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
     BatterySaverBubbleView::CloseBubble(bubble_);
   } else {
-    CloseFeaturePromo(user_education::EndFeaturePromoReason::kFeatureEngaged);
-
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kBatterySaverDialogShown);
-
+    CloseFeaturePromo(/*engaged=*/true);
     bubble_ = BatterySaverBubbleView::CreateBubble(
         browser_view_->browser(), this, views::BubbleBorder::TOP_RIGHT, this);
   }
@@ -112,17 +113,24 @@ void BatterySaverButton::OnClicked() {
 
 void BatterySaverButton::MaybeShowFeaturePromo() {
   pending_promo_ = false;
-  browser_view_->MaybeShowStartupFeaturePromo(
-      feature_engagement::kIPHBatterySaverModeFeature);
+  BrowserUserEducationInterface::From(browser_view_->browser())
+      ->MaybeShowStartupFeaturePromo(
+          feature_engagement::kIPHBatterySaverModeFeature);
 }
 
-void BatterySaverButton::CloseFeaturePromo(
-    user_education::EndFeaturePromoReason close_reason) {
+void BatterySaverButton::CloseFeaturePromo(bool engaged) {
   // CloseFeaturePromo checks if the promo is active for the feature before
   // attempting to close the promo bubble
   pending_promo_ = false;
-  browser_view_->CloseFeaturePromo(
-      feature_engagement::kIPHBatterySaverModeFeature, close_reason);
+  if (engaged) {
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHBatterySaverModeFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->AbortFeaturePromo(feature_engagement::kIPHBatterySaverModeFeature);
+  }
 }
 
 BEGIN_METADATA(BatterySaverButton)

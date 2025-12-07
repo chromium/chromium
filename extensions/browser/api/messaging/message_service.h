@@ -85,7 +85,8 @@ class MessageService : public BrowserContextKeyedAPI,
   void ClosePort(const PortId& port_id,
                  int process_id,
                  const PortContext& port_context,
-                 bool force_close) override;
+                 bool close_channel,
+                 const std::string& error_message) override;
   void PostMessage(const PortId& port_id, const Message& message) override;
   void NotifyResponsePending(const PortId& port_id) override;
 
@@ -93,8 +94,8 @@ class MessageService : public BrowserContextKeyedAPI,
   static MessageService* Get(content::BrowserContext* context);
 
   // Given an extension's ID, opens a channel between the given renderer "port"
-  // and every listening context owned by that extension. |channel_name| is
-  // an optional identifier for use by extension developers. |opener_port| is an
+  // and every listening context owned by that extension. `channel_name` is
+  // an optional identifier for use by extension developers. `opener_port` is an
   // optional pre-opened port that should be attached to the opened channel.
   void OpenChannelToExtension(const ChannelEndpoint& source,
                               const PortId& source_port_id,
@@ -134,14 +135,14 @@ class MessageService : public BrowserContextKeyedAPI,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host);
 
-  // Marks the given port as opened by |port_context| in the render process
-  // with id |process_id|.
+  // Marks the given port as opened by `port_context` in the render process
+  // with id `process_id`.
   void OpenPort(content::RenderProcessHost* process,
                 const PortId& port_id,
                 const PortContext& port_context);
 
-  // Closes the given port in the given |port_context|. If this was the last
-  // context or if |force_close| is true, then the other side is closed as well.
+  // Closes the given port in the given `port_context`. If this was the last
+  // context or if `force_close` is true, then the other side is closed as well.
   void ClosePort(content::RenderProcessHost* process,
                  const PortId& port_id,
                  const PortContext& port_context,
@@ -155,6 +156,9 @@ class MessageService : public BrowserContextKeyedAPI,
 
   // Returns the number of open channels for test.
   size_t GetChannelCountForTest() { return channels_.size(); }
+
+  bool HasPendingLazyContextChannelsForExtension(
+      const ExtensionId& extension_id) const;
 
   base::WeakPtr<MessagePort::ChannelDelegate> GetChannelDelegate() {
     return weak_factory_.GetWeakPtr();
@@ -180,6 +184,16 @@ class MessageService : public BrowserContextKeyedAPI,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host);
+
+  // Creates a MessagePort for the tab with the given `web_contents`.
+  // Returns nullptr if the tab is not available.
+  std::unique_ptr<MessagePort> CreateReceiverForTab(
+      const ExtensionId& extension_id,
+      const PortId& receiver_port_id,
+      content::WebContents* receiver_contents,
+      int receiver_frame_id,
+      const std::string& receiver_document_id);
+
   void OpenChannelToNativeAppImpl(
       const ChannelEndpoint& source,
       const PortId& source_port_id,
@@ -206,12 +220,12 @@ class MessageService : public BrowserContextKeyedAPI,
   // Workers.
   using PendingLazyContextChannelMap = std::map<ChannelId, LazyContextId>;
 
-  // Common implementation for opening a channel configured by |params|.
+  // Common implementation for opening a channel configured by `params`.
   //
-  // |target_extension| will be non-null if |params->target_extension_id| is
+  // `target_extension` will be non-null if |params->target_extension_id| is
   // non-empty, that is, if the target is an extension, it must exist.
   //
-  // |did_enqueue| will be true if the channel opening was delayed while
+  // `did_enqueue` will be true if the channel opening was delayed while
   // waiting for an event page to start, false otherwise.
   void OpenChannelImpl(content::BrowserContext* browser_context,
                        std::unique_ptr<OpenChannelParams> params,
@@ -230,7 +244,7 @@ class MessageService : public BrowserContextKeyedAPI,
                         const std::string& error_message,
                         bool notify_other_port);
 
-  // Have MessageService take ownership of |channel|, and remove any pending
+  // Have MessageService take ownership of `channel`, and remove any pending
   // channels with the same id.
   void AddChannel(std::unique_ptr<MessageChannel> channel,
                   const PortId& receiver_port_id);
@@ -257,7 +271,7 @@ class MessageService : public BrowserContextKeyedAPI,
 
   // Potentially registers a pending task with lazy context task queue
   // to open a channel. Returns true if a task was queued.
-  // Takes ownership of |params| if true is returned.
+  // Takes ownership of `params` if true is returned.
   bool MaybeAddPendingLazyContextOpenChannelTask(
       content::BrowserContext* context,
       const Extension* extension,
@@ -269,6 +283,7 @@ class MessageService : public BrowserContextKeyedAPI,
   // use that argument.
   void PendingLazyContextOpenChannel(
       std::unique_ptr<OpenChannelParams> params,
+      const base::UnguessableToken& open_channel_wakeup_context_tracking_id,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);
   void PendingLazyContextClosePort(
       const PortId& port_id,
@@ -287,8 +302,9 @@ class MessageService : public BrowserContextKeyedAPI,
       const PortId& port_id,
       const Message& message,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
-    if (context_info)
+    if (context_info) {
       PostMessage(port_id, message);
+    }
   }
 
   void DispatchPendingMessages(const PendingMessagesQueue& queue,
@@ -303,7 +319,7 @@ class MessageService : public BrowserContextKeyedAPI,
   const raw_ptr<content::BrowserContext> context_;
 
   // Delegate for embedder-specific messaging, e.g. for Chrome tabs.
-  // Owned by the ExtensionsAPIClient and guaranteed to outlive |this|.
+  // Owned by the ExtensionsAPIClient and guaranteed to outlive `this`.
   raw_ptr<MessagingDelegate> messaging_delegate_;
 
   MessageChannelMap channels_;

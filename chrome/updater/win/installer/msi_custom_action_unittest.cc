@@ -15,6 +15,7 @@
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer_api.h"
+#include "chrome/updater/win/win_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +25,6 @@ namespace {
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SetArgReferee;
 using ::testing::TestWithParam;
@@ -32,7 +32,6 @@ using ::testing::ValuesIn;
 
 class MockMsiHandle : public MsiHandleInterface {
  public:
-  ~MockMsiHandle() override = default;
   MOCK_METHOD(UINT,
               GetProperty,
               (const std::wstring& name,
@@ -112,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MsiSetTagsTest, MsiSetTags) {
   MockMsiHandle mock_msi_handle;
   const std::wstring msi_file_path = test::GetTestFilePath("tagged_msi")
-                                         .AppendASCII(GetParam().msi_file_name)
+                                         .AppendUTF8(GetParam().msi_file_name)
                                          .value();
   EXPECT_CALL(mock_msi_handle,
               GetProperty(std::wstring(L"OriginalDatabase"), _, Eq(1U)))
@@ -145,12 +144,12 @@ class MsiSetInstallerResultTest
         registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE));
     if (SetResults()) {
       InstallerOutcome installer_outcome = {};
-      installer_outcome.installer_result = InstallerResult::kCustomError;
+      installer_outcome.installer_result = InstallerApiResult::kCustomError;
       installer_outcome.installer_text = "some text";
       EXPECT_TRUE(SetInstallerOutcomeForTesting(
-          UpdaterScope::kSystem, base::WideToASCII(kAppId), installer_outcome));
-      ASSERT_TRUE(GetInstallerOutcome(UpdaterScope::kSystem,
-                                      base::WideToASCII(kAppId)));
+          UpdaterScope::kSystem, base::WideToUTF8(kAppId), installer_outcome));
+      ASSERT_TRUE(
+          GetInstallerOutcome(UpdaterScope::kSystem, base::WideToUTF8(kAppId)));
 
       if (OnlyInUpdaterKey()) {
         EXPECT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_WRITE))

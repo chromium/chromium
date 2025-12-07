@@ -1,20 +1,28 @@
+# This OWNERS list is a last resort. Please prefer to use more specific OWNERS
+# where possible. Examples of valid cases include the creation of new components
+# or large mechanical changes touching many components.
+
 set noparent
-blundell@chromium.org
-caitkp@chromium.org
-sdefresne@chromium.org
-tedchoc@chromium.org
+
+blundell@chromium.org  #{LAST_RESORT_SUGGESTION}
+caitkp@google.com  #{LAST_RESORT_SUGGESTION}
+nyquist@google.com  #{LAST_RESORT_SUGGESTION}
+sdefresne@chromium.org  #{LAST_RESORT_SUGGESTION}
+tedchoc@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 # For build configuration things and simple changes.
-thakis@chromium.org
+thakis@chromium.org  #{LAST_RESORT_SUGGESTION}
 
-per-file arc_strings.grdp=file://ash/components/arc/OWNERS
+per-file arc_strings.grdp=file://chromeos/ash/experiences/arc/OWNERS
 per-file android_system_error_page_strings.grdp=file://components/android_system_error_page/OWNERS
 per-file autofill_payments_strings.grdp=file://components/autofill/core/browser/payments/OWNERS
 per-file autofill_strings.grdp=file://components/autofill/OWNERS
 per-file bookmark_bar_strings.grdp=file://components/bookmarks/OWNERS
 per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
+per-file collaboration_strings.grdp=file://components/collaboration/OWNERS
 per-file commerce_strings.grdp=file://components/commerce_strings_grdp/OWNERS
 per-file compose_strings.grdp=file://components/compose_strings_grdp/OWNERS
+per-file contextual_tasks_strings.grdp=file://components/contextual_tasks/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
 per-file enterprise_strings.grdp=file://components/enterprise/OWNERS
@@ -27,7 +35,6 @@ per-file history_strings.grdp=file://components/history/OWNERS
 per-file history_clusters_strings.grdp=file://components/history_clusters/OWNERS
 per-file javascript_dialogs_strings.grdp=file://components/javascript_dialogs/OWNERS
 per-file live_caption_strings.grdp=file://components/live_caption/OWNERS
-per-file management_mobile_strings.grdp=file://components/management/OWNERS
 per-file management_strings.grdp=file://docs/privacy/OWNERS
 per-file media_message_center_strings.grdp=file://components/media_message_center/OWNERS
 per-file new_or_sad_tab_strings.grdp=file://chrome/browser/ui/webui/ntp/OWNERS
@@ -40,7 +47,6 @@ per-file password_manager_strings.grdp=file://components/password_manager/OWNERS
 per-file payments_strings.grdp=file://components/payments/OWNERS
 per-file permissions_strings.grdp=file://components/permissions/OWNERS
 per-file pdf_strings.grdp=file://pdf/OWNERS
-per-file plus_addresses_strings.grdp=file://components/plus_addresses/OWNERS
 per-file policy_strings.grdp=file://components/policy/OWNERS
 per-file print_media_strings.grdp=file://components/printing/OWNERS
 per-file printing_component_strings.grdp=file://components/printing/OWNERS
@@ -48,8 +54,8 @@ per-file privacy_sandbox_chrome_strings.grdp=file://components/privacy_sandbox/O
 per-file privacy_sandbox_strings.grd=file://components/privacy_sandbox/OWNERS
 per-file reset_password_strings.grdp=file://components/safe_browsing/OWNERS
 per-file saved_tab_groups_strings.grdp=file://components/saved_tab_groups/OWNERS
-per-file search_engine_choice_strings.grdp=file://components/search_engines/search_engine_choice/OWNERS
-per-file search_engine_descriptions_strings.grd=file://components/search_engines/search_engine_choice/OWNERS
+per-file search_engine_choice_strings.grdp=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
+per-file search_engine_descriptions_strings.grd=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 per-file security_interstitials_strings.grdp=file://components/security_interstitials/OWNERS
 per-file send_tab_to_self_strings.grdp=file://components/send_tab_to_self/OWNERS
 per-file site_settings_strings.grdp=file://components/browser_ui/site_settings/OWNERS
@@ -57,21 +63,22 @@ per-file site_settings_strings.grdp=file://chrome/browser/resources/settings/sit
 per-file sms_strings.grdp=file://content/browser/sms/OWNERS
 per-file ssl_errors_strings.grdp=file://components/ssl_errors/OWNERS
 per-file subresource_filter_strings.grdp=file://components/subresource_filter/OWNERS
+per-file supervised_user_strings.grdp=file://components/supervised_user/OWNERS
 per-file sync_ui_strings.grdp=file://components/sync/OWNERS
 per-file tab_groups_strings.grdp=file://components/tab_groups/OWNERS
 per-file translate_strings.grdp=file://components/translate/OWNERS
+per-file tab_resume_strings.grdp=file://components/visited_url_ranking/OWNERS
 per-file undo_strings.grdp=file://components/undo/OWNERS
+per-file user_data_importer_strings.grdp=file://components/user_data_importer/OWNERS
 per-file user_education_strings.grdp=file://components/user_education/OWNERS
-per-file version_ui_strings.grdp=file://components/version_ui/OWNERS
+per-file version_ui_strings.grdp=file://components/webui/version/OWNERS
+per-file wallet_strings.grdp=file://components/wallet/OWNERS
 per-file web_contents_delegate_android_strings.grdp=file://components/embedder_support/android/delegate/OWNERS
 per-file webxr_strings.grdp=file://components/webxr/OWNERS
 
 # For web_dev_style related changes.
 per-file .eslintrc.js=file://ui/webui/PLATFORM_OWNERS
 per-file PRESUBMIT.py=file://ui/webui/PLATFORM_OWNERS
-
-# For adding or removing languages.
-per-file *.grd=claudiomagni@chromium.org
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
@@ -86,6 +93,7 @@ per-file error_page_strings.grdp=edwardjung@chromium.org
 
 # Autorollers & git submodules
 per-file autofill/core/browser/form_parsing/internal_resources=*
+per-file autofill/core/browser/geo/chrome_alternative_state_name_maps=*
 per-file crash/core/app/internal=*
 per-file metrics/internal=*
 per-file ntp_tiles/resources/internal=*

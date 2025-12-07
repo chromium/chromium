@@ -1,0 +1,5 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/collaboration/internal/comments/comments_service_impl.h",
+  "+components/collaboration/internal/comments/empty_comments_service.h",
+]

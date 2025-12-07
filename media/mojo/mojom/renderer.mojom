@@ -14,17 +14,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 
-// See media/base/media_url_params.h for descriptions.
-struct MediaUrlParams {
-  url.mojom.Url media_url;
-  network.mojom.SiteForCookies site_for_cookies;
-  url.mojom.Origin top_frame_origin;
-  network.mojom.StorageAccessApiStatus storage_access_api_status;
-  bool allow_credentials;
-  bool is_hls;
-  map<string, string> headers;
-};
-
 // A Mojo equivalent of media::Renderer. Used when audio and video decoding
 // happens outside of the sandboxed render process.
 // See media/mojo/README.md
@@ -34,8 +23,7 @@ interface Renderer {
   // should be set.
   // TODO(sandersd): These should be separate methods or a union type.
   Initialize(pending_associated_remote<RendererClient> client,
-             array<pending_remote<DemuxerStream>>? streams,
-             MediaUrlParams? media_url_params) => (bool success);
+             array<pending_remote<DemuxerStream>>? streams) => (bool success);
 
   // Discards any buffered data, executing callback when completed.
   // NOTE: If an error occurs, RendererClient::OnError() can be called

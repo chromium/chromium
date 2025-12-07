@@ -31,8 +31,8 @@ static FeedApi* GetFeedApi() {
 
 static void JNI_FeedProcessScopeDependencyProvider_ProcessViewAction(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& action_data,
-    const base::android::JavaParamRef<jbyteArray>& logging_parameters) {
+    const base::android::JavaRef<jbyteArray>& action_data,
+    const base::android::JavaRef<jbyteArray>& logging_parameters) {
   FeedApi* feed_stream_api = GetFeedApi();
   if (!feed_stream_api)
     return;
@@ -43,15 +43,15 @@ static void JNI_FeedProcessScopeDependencyProvider_ProcessViewAction(
       action_data_string, ToNativeLoggingParameters(env, logging_parameters));
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_FeedProcessScopeDependencyProvider_GetSessionId(JNIEnv* env) {
+static std::string JNI_FeedProcessScopeDependencyProvider_GetSessionId(
+    JNIEnv* env) {
   std::string session;
   FeedApi* feed_stream_api = GetFeedApi();
   if (feed_stream_api) {
     session = feed_stream_api->GetSessionId();
   }
 
-  return base::android::ConvertUTF8ToJavaString(env, session);
+  return session;
 }
 
 static base::android::ScopedJavaLocalRef<jintArray>
@@ -79,5 +79,18 @@ JNI_FeedProcessScopeDependencyProvider_GetExperimentIds(JNIEnv* env) {
   return base::android::ToJavaIntArray(env, experiment_ids);
 }
 
+static base::android::ScopedJavaLocalRef<jbyteArray>
+JNI_FeedProcessScopeDependencyProvider_GetFeedLaunchCuiMetadata(JNIEnv* env) {
+  std::string feed_launch_cui_metadata;
+  FeedService* service = FeedServiceFactory::GetForBrowserContext(
+      ProfileManager::GetLastUsedProfile());
+  if (service) {
+    feed_launch_cui_metadata = service->GetFeedLaunchCuiMetadata();
+  }
+  return base::android::ToJavaByteArray(env, feed_launch_cui_metadata);
+}
+
 }  // namespace android
 }  // namespace feed
+
+DEFINE_JNI(FeedProcessScopeDependencyProvider)

@@ -10,8 +10,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,17 +30,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content {
-
-// Cleanup tasks generally run in the background since they're just internal
-// bookkeeping that shouldn't block other IDB operations. It has to block
-// shutdown because the tasks will own a reference to a LevelDBState object,
-// which MUST be destructed on shutdown as it will be joined with the IO
-// thread on shutdown. To compensate here, all tasks cooperatively exit by
-// checking `LevelDBState::is_destruction_requested()`.
-static constexpr base::TaskTraits kCleanupTaskTraits = {
-    base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-    base::TaskPriority::USER_VISIBLE};
+namespace content::indexed_db {
 
 LevelDBScopes::LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
                              size_t max_write_batch_size_bytes,
@@ -48,7 +41,21 @@ LevelDBScopes::LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
       max_write_batch_size_bytes_(max_write_batch_size_bytes),
       level_db_(std::move(level_db)),
       lock_manager_(lock_manager),
-      tear_down_callback_(std::move(tear_down_callback)) {}
+      tear_down_callback_(std::move(tear_down_callback)) {
+  // Cleanup tasks generally run in the background since they're just internal
+  // bookkeeping that shouldn't block other IDB operations. It has to block
+  // shutdown because the tasks will own a reference to a LevelDBState object,
+  // which MUST be destructed on shutdown as it will be joined with the IO
+  // thread on shutdown. To compensate here, all tasks cooperatively exit by
+  // checking `LevelDBState::destruction_requested()`.
+  // Note that any running cleanup tasks will be aborted if the
+  // `LevelDBScopes` object is destroyed, such as when the database is being
+  // deleted.
+  // TODO(estade): consider making this BEST_EFFORT.
+  cleanup_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+       base::TaskPriority::USER_VISIBLE});
+}
 
 LevelDBScopes::~LevelDBScopes() = default;
 
@@ -161,8 +168,7 @@ leveldb::Status LevelDBScopes::Initialize() {
       }
     }
     PartitionedLockHolder receiver;
-    lock_manager_->AcquireLocks(std::move(lock_requests),
-                                receiver.weak_factory.GetWeakPtr(),
+    lock_manager_->AcquireLocks(std::move(lock_requests), receiver,
                                 base::DoNothing());
 
     // AcquireLocks should grant the locks synchronously because
@@ -187,47 +193,53 @@ void LevelDBScopes::StartRecoveryAndCleanupTasks() {
   // Schedule all pending revert tasks ASAP. This is a delayed task so that it
   // doesn't delay IndexedDB::Open(), but it does need to be executed before any
   // other IDB operations/transactions execute.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::vector<StartupScopeToRevert> startup_scopes_to_revert,
-             base::WeakPtr<LevelDBScopes> scopes) {
-            if (!scopes) {
-              return;
-            }
-            for (auto& [scope_id, locks] : startup_scopes_to_revert) {
-              scopes->Rollback(scope_id, std::move(locks));
-            }
-          },
-          std::move(startup_scopes_to_revert_), weak_factory_.GetWeakPtr()));
+  if (!startup_scopes_to_revert_.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::vector<StartupScopeToRevert> startup_scopes_to_revert,
+               base::WeakPtr<LevelDBScopes> scopes) {
+              if (!scopes) {
+                return;
+              }
+              for (auto& [scope_id, locks] : startup_scopes_to_revert) {
+                scopes->Rollback(scope_id, std::move(locks));
+              }
+            },
+            std::move(startup_scopes_to_revert_), weak_factory_.GetWeakPtr()));
+  }
 
   // Schedule all committed scopes to be cleaned up.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kCleanupTaskTraits,
-      base::BindOnce(
-          [](std::vector<StartupScopeToCleanup> startup_scopes_to_clean,
-             scoped_refptr<LevelDBState> level_db,
-             std::vector<uint8_t> metadata_key_prefix,
-             size_t max_write_batch_size_bytes) {
-            for (auto& [scope_id, cleanup_mode] : startup_scopes_to_clean) {
-              leveldb::Status result =
-                  CleanupScopeTask(
-                      level_db, metadata_key_prefix, scope_id,
-                      cleanup_mode == StartupCleanupType::kExecuteCleanupTasks
-                          ? CleanupScopeTask::CleanupMode::kExecuteCleanupTasks
-                          : CleanupScopeTask::CleanupMode::kIgnoreCleanupTasks,
-                      max_write_batch_size_bytes)
-                      .Run();
-              if (!result.ok()) [[unlikely]] {
-                return result;
+  if (!startup_scopes_to_clean_.empty()) {
+    cleanup_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::vector<StartupScopeToCleanup> startup_scopes_to_clean,
+               scoped_refptr<LevelDBState> level_db,
+               std::vector<uint8_t> metadata_key_prefix,
+               size_t max_write_batch_size_bytes) {
+              for (auto& [scope_id, cleanup_mode] : startup_scopes_to_clean) {
+                leveldb::Status result =
+                    CleanupScopeTask(
+                        level_db, metadata_key_prefix, scope_id,
+                        cleanup_mode == StartupCleanupType::kExecuteCleanupTasks
+                            ? CleanupScopeTask::CleanupMode::
+                                  kExecuteCleanupTasks
+                            : CleanupScopeTask::CleanupMode::
+                                  kIgnoreCleanupTasks,
+                        max_write_batch_size_bytes)
+                        .Run();
+                if (!result.ok()) [[unlikely]] {
+                  return result;
+                }
               }
-            }
-            return leveldb::Status::OK();
-          },
-          std::move(startup_scopes_to_clean_), level_db_, metadata_key_prefix_,
-          max_write_batch_size_bytes_),
-      base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                     weak_factory_.GetWeakPtr(), base::OnceClosure()));
+              return leveldb::Status::OK();
+            },
+            std::move(startup_scopes_to_clean_), level_db_,
+            metadata_key_prefix_, max_write_batch_size_bytes_),
+        base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
@@ -258,12 +270,20 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
         level_db_, metadata_key_prefix_, scope->scope_id(),
         CleanupScopeTask::CleanupMode::kExecuteCleanupTasks,
         max_write_batch_size_bytes_);
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, kCleanupTaskTraits,
-        base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
-        base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(on_cleanup_complete)));
+    cleanup_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
+        base::BindOnce(
+            [](base::OnceClosure on_cleanup_complete,
+               base::OnceCallback<void(leveldb::Status)> callback,
+               leveldb::Status result) {
+              if (on_cleanup_complete) {
+                std::move(on_cleanup_complete).Run();
+              }
+              std::move(callback).Run(result);
+            },
+            std::move(on_cleanup_complete),
+            base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
+                           weak_factory_.GetWeakPtr())));
   }
   return status;
 }
@@ -287,22 +307,17 @@ void LevelDBScopes::Rollback(int64_t scope_id,
       level_db_, metadata_key_prefix_, scope_id,
       CleanupScopeTask::CleanupMode::kIgnoreCleanupTasks,
       max_write_batch_size_bytes_);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kCleanupTaskTraits,
-      base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
+  cleanup_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
       base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                     weak_factory_.GetWeakPtr(), base::OnceClosure()));
+                     weak_factory_.GetWeakPtr()));
 }
 
-void LevelDBScopes::OnCleanupTaskResult(base::OnceClosure on_complete,
-                                        leveldb::Status result) {
+void LevelDBScopes::OnCleanupTaskResult(leveldb::Status result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.ok()) [[unlikely]] {
     tear_down_callback_.Run(result);
   }
-  if (on_complete) {
-    std::move(on_complete).Run();
-  }
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

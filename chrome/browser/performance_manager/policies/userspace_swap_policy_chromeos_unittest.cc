@@ -5,8 +5,11 @@
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/byte_count.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -23,8 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
 using ::ash::memory::userspace_swap::UserspaceSwapConfig;
@@ -40,20 +42,20 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
   MockUserspaceSwapPolicy(const MockUserspaceSwapPolicy&) = delete;
   MockUserspaceSwapPolicy& operator=(const MockUserspaceSwapPolicy&) = delete;
 
-  ~MockUserspaceSwapPolicy() override {}
+  ~MockUserspaceSwapPolicy() override = default;
 
   MOCK_METHOD0(SwapNodesOnGraph, void(void));
   MOCK_METHOD1(InitializeProcessNode, bool(const ProcessNode*));
   MOCK_METHOD2(IsEligibleToSwap, bool(const ProcessNode*, const PageNode*));
   MOCK_METHOD1(SwapProcessNode, void(const ProcessNode*));
-  MOCK_METHOD0(GetSwapDeviceFreeSpaceBytes, uint64_t(void));
-  MOCK_METHOD0(GetTotalSwapFileUsageBytes, uint64_t(void));
-  MOCK_METHOD1(GetProcessNodeSwapFileUsageBytes, uint64_t(const ProcessNode*));
+  MOCK_METHOD0(GetSwapDeviceFreeSpace, base::ByteCount(void));
+  MOCK_METHOD0(GetTotalSwapFileUsage, base::ByteCount(void));
+  MOCK_METHOD1(GetProcessNodeSwapFileUsage,
+               base::ByteCount(const ProcessNode*));
   MOCK_METHOD1(IsPageNodeAudible, bool(const PageNode*));
   MOCK_METHOD1(IsPageNodeVisible, bool(const PageNode*));
   MOCK_METHOD1(IsPageNodeLoading, bool(const PageNode*));
-  MOCK_METHOD1(GetTimeSinceLastVisibilityChange,
-               base::TimeDelta(const PageNode*));
+  MOCK_METHOD1(GetLastVisibilityChangeTime, base::TimeTicks(const PageNode*));
 
   // Allow our mock to dispatch to default implementations.
   bool DefaultIsEligibleToSwap(const ProcessNode* process_node,
@@ -80,7 +82,6 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
     // Create a simple starting config that can be modified as needed for tests.
     // NOTE: We only initialize the configuration options which are used by the
     // policy.
-    memset(&test_config_, 0, sizeof(test_config_));
 
     test_config_.enabled = true;
     test_config_.graph_walk_frequency = base::Seconds(10);
@@ -102,7 +103,7 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
   UserspaceSwapPolicyTest(const UserspaceSwapPolicyTest&) = delete;
   UserspaceSwapPolicyTest& operator=(const UserspaceSwapPolicyTest&) = delete;
 
-  ~UserspaceSwapPolicyTest() override {}
+  ~UserspaceSwapPolicyTest() override = default;
 
   void SetUp() override {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
@@ -227,8 +228,8 @@ TEST_F(UserspaceSwapPolicyTest, ValidateGraphWalkFrequencyModeratePressure) {
 
   // Triger memory pressure and we should observe the walk since we've never
   // walked before.
-  system_node()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   auto initial_walk_time = base::TimeTicks::Now();
   FastForwardBy(base::Seconds(1));
   ASSERT_EQ(initial_walk_time, policy()->get_last_graph_walk());
@@ -237,16 +238,16 @@ TEST_F(UserspaceSwapPolicyTest, ValidateGraphWalkFrequencyModeratePressure) {
   // don't walk again even when we receive another moderate pressure
   // notification.
   FastForwardBy(base::Seconds(1));
-  system_node()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   // Since it's been less than the graph walk frequency we don't expect to walk.
   ASSERT_EQ(initial_walk_time, policy()->get_last_graph_walk());
 
   // Finally we will advance by a graph walk frequency and confirm we walk
   // again.
   FastForwardBy(policy()->config().graph_walk_frequency);
-  system_node()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::Seconds(1));
   ASSERT_NE(initial_walk_time, policy()->get_last_graph_walk());
@@ -270,8 +271,8 @@ TEST_F(UserspaceSwapPolicyTest, OnlySwapWhenEligibleToSwap) {
   EXPECT_CALL(*policy(), SwapProcessNode(process_node().get())).Times(0);
 
   // Trigger moderate memory pressure to start the graph walk.
-  system_node()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::Seconds(1));
 }
 
@@ -290,8 +291,8 @@ TEST_F(UserspaceSwapPolicyTest, OnlySwapWhenEligibleToSwapTrue) {
   EXPECT_CALL(*policy(), SwapProcessNode(process_node().get())).Times(1);
 
   // Trigger moderate memory pressure to start the graph walk.
-  system_node()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::Seconds(1));
 }
 
@@ -377,8 +378,8 @@ TEST_F(UserspaceSwapPolicyTest, ValidateProcessSwapFrequency) {
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*policy(), IsPageNodeVisible(page_node().get()))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(*policy(), GetTimeSinceLastVisibilityChange(page_node().get()))
-      .WillRepeatedly(Return(base::TimeDelta::Max()));
+  EXPECT_CALL(*policy(), GetLastVisibilityChangeTime(page_node().get()))
+      .WillRepeatedly(Return(base::TimeTicks::Max()));
 
   EXPECT_CALL(*policy(), SwapNodesOnGraph())
       .WillRepeatedly(
@@ -398,8 +399,8 @@ TEST_F(UserspaceSwapPolicyTest, ValidateProcessSwapFrequency) {
   // swap.
   for (int i = 0; i < 3; ++i) {
     FastForwardBy(policy()->config().graph_walk_frequency);
-    system_node()->OnMemoryPressureForTesting(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    base::MemoryPressureListener::SimulatePressureNotification(
+        base::MEMORY_PRESSURE_LEVEL_MODERATE);
   }
 }
 
@@ -410,7 +411,7 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenDiskSpaceTooLow) {
   policy()->config().graph_walk_frequency = base::Seconds(1);
   policy()->config().process_swap_frequency = base::Seconds(1);
 
-  policy()->config().minimum_swap_disk_space_available = 1 << 30;  // 1 GB
+  policy()->config().minimum_swap_disk_space_available = base::GiB(1).InBytes();
 
   EXPECT_CALL(*policy(), InitializeProcessNode(process_node().get()))
       .WillOnce(Return(true));
@@ -419,10 +420,10 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenDiskSpaceTooLow) {
   // We will have our mock return that there is only 100MB of disk space
   // available. This should prevent swapping because it's below the minimum
   // value.
-  EXPECT_CALL(*policy(), GetSwapDeviceFreeSpaceBytes())
-      .WillOnce(Return(100 << 20));  // 100MB
+  EXPECT_CALL(*policy(), GetSwapDeviceFreeSpace())
+      .WillOnce(Return(base::MiB(100)));
 
-  // Because GetSwapDeviceFreeSpaceBytes is less than the configured minimum it
+  // Because GetSwapDeviceFreeSpace is less than the configured minimum it
   // should return false.
   EXPECT_FALSE(
       policy()->DefaultIsEligibleToSwap(process_node().get(), nullptr));
@@ -436,7 +437,7 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenPerRendererSwapExceeded) {
   policy()->config().process_swap_frequency = base::Seconds(1);
 
   policy()->config().renderer_maximum_disk_swap_file_size_bytes =
-      128 << 20;  // 128MB
+      base::MiB(128).InBytes();
 
   EXPECT_CALL(*policy(), InitializeProcessNode(process_node().get()))
       .WillOnce(Return(true));
@@ -445,8 +446,8 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenPerRendererSwapExceeded) {
   // We will have our mock return that there is only 100MB of disk space
   // available. This should prevent swapping because it's below the minimum
   // value.
-  EXPECT_CALL(*policy(), GetProcessNodeSwapFileUsageBytes(process_node().get()))
-      .WillOnce(Return(190 << 20));  // 190 MB
+  EXPECT_CALL(*policy(), GetProcessNodeSwapFileUsage(process_node().get()))
+      .WillOnce(Return(base::MiB(190)));
 
   // We're already using 190 MB which is more than the configured 128 MB so it
   // should not be eligible to swap.
@@ -461,7 +462,7 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenTotalRendererSwapExceeded) {
   policy()->config().graph_walk_frequency = base::Seconds(1);
   policy()->config().process_swap_frequency = base::Seconds(1);
 
-  policy()->config().maximum_swap_disk_space_bytes = 1 << 30;  // 1 GB
+  policy()->config().maximum_swap_disk_space_bytes = base::GiB(1).InBytes();
 
   EXPECT_CALL(*policy(), InitializeProcessNode(process_node().get()))
       .WillOnce(Return(true));
@@ -470,9 +471,9 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenTotalRendererSwapExceeded) {
   // We will have our mock return that there is only 100MB of disk space
   // available. This should prevent swapping because it's below the minimum
   // value.
-  EXPECT_CALL(*policy(), GetTotalSwapFileUsageBytes())
-      .WillOnce(Return(500 << 20))    // 500 MB
-      .WillOnce(Return(1200 << 20));  // 1.2 GB
+  EXPECT_CALL(*policy(), GetTotalSwapFileUsage())
+      .WillOnce(Return(base::MiB(500)))
+      .WillOnce(Return(base::GiB(1.2)));
   // Since we're now below the 1GB limit we expect it will succeed.
   EXPECT_TRUE(policy()->DefaultIsEligibleToSwap(process_node().get(), nullptr));
 
@@ -483,5 +484,4 @@ TEST_F(UserspaceSwapPolicyTest, DontSwapWhenTotalRendererSwapExceeded) {
 }
 
 }  // namespace
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

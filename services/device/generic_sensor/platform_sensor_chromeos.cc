@@ -4,12 +4,12 @@
 
 #include "services/device/generic_sensor/platform_sensor_chromeos.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
@@ -96,11 +96,6 @@ void PlatformSensorChromeOS::OnSampleUpdated(
     case mojom::SensorType::AMBIENT_LIGHT:
       DCHECK_EQ(channel_indices_.size(), 2u);
       reading.als.value = GetScaledValue(sample.at(channel_indices_[0]));
-      break;
-
-    case mojom::SensorType::PROXIMITY:
-      DCHECK_EQ(channel_indices_.size(), 2u);
-      reading.proximity.value = GetScaledValue(sample.at(channel_indices_[0]));
       break;
 
     case mojom::SensorType::ACCELEROMETER:
@@ -354,7 +349,7 @@ void PlatformSensorChromeOS::GetAllChannelIdsCallback(
   iio_channel_ids_ = iio_channel_ids;
 
   for (const std::string& channel : required_channel_ids_) {
-    auto it = base::ranges::find(iio_channel_ids_, channel);
+    auto it = std::ranges::find(iio_channel_ids_, channel);
     if (it == iio_channel_ids_.end()) {
       LOG(ERROR) << "Missing channel: " << channel;
       ResetOnError();

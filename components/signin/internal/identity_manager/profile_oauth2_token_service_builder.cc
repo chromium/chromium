@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -22,11 +21,9 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
-#include "components/signin/public/webdata/token_web_data.h"
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
-#include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/webdata/token_web_data.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -63,17 +60,10 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     account_manager::AccountManagerFacade* account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool delete_signin_cookies_on_exit,
-#endif
     bool is_regular_profile) {
   return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
       signin_client, account_tracker_service, network_connection_tracker,
-      account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      delete_signin_cookies_on_exit,
-#endif
-      is_regular_profile);
+      account_manager_facade, is_regular_profile);
 }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -84,9 +74,7 @@ CreateMutableProfileOAuthDelegate(
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
     SigninClient* signin_client,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     unexportable_keys::UnexportableKeyService* unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN)
     MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback
         reauth_callback,
@@ -100,20 +88,17 @@ CreateMutableProfileOAuthDelegate(
           ? RevokeAllTokensOnLoad::kDeleteSiteDataOnExit
           : RevokeAllTokensOnLoad::kNo;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<TokenBindingHelper> token_binding_helper;
-  if (unexportable_key_service) {
+  if (unexportable_key_service &&
+      switches::IsChromeRefreshTokenBindingEnabled(signin_client->GetPrefs())) {
     token_binding_helper =
         std::make_unique<TokenBindingHelper>(*unexportable_key_service);
   }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   return std::make_unique<MutableProfileOAuth2TokenServiceDelegate>(
       signin_client, account_tracker_service, network_connection_tracker,
       token_web_data, account_consistency, revoke_all_tokens_on_load,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       std::move(token_binding_helper),
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN)
       reauth_callback
 #else
@@ -132,14 +117,12 @@ CreateOAuth2TokenServiceDelegate(
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     scoped_refptr<TokenWebData> token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     unexportable_keys::UnexportableKeyService* unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 #if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
@@ -158,27 +141,20 @@ CreateOAuth2TokenServiceDelegate(
 #elif BUILDFLAG(IS_CHROMEOS)
   return CreateCrOsOAuthDelegate(signin_client, account_tracker_service,
                                  network_connection_tracker,
-                                 account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                 delete_signin_cookies_on_exit,
-#endif
-                                 is_regular_profile);
+                                 account_manager_facade, is_regular_profile);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
-  // other than Android, iOS, and Chrome OS (Ash and Lacros).
+  // other than Android, iOS, and Chrome OS (Ash).
   return CreateMutableProfileOAuthDelegate(
       account_tracker_service, account_consistency,
       delete_signin_cookies_on_exit, token_web_data, signin_client,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN)
       reauth_callback,
 #endif  // BUILDFLAG(IS_WIN)
       network_connection_tracker);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -193,14 +169,10 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     unexportable_keys::UnexportableKeyService* unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
@@ -211,7 +183,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #endif
     SigninClient* signin_client) {
 // On ChromeOS the device ID is not managed by the token service.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Ensure the device ID is not empty. This is important for Dice, because the
   // device ID is needed on the network thread, but can only be generated on the
   // main thread.
@@ -226,14 +198,11 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #if BUILDFLAG(IS_CHROMEOS)
           account_manager_facade, is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-          delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-          token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+          delete_signin_cookies_on_exit,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+          token_web_data, unexportable_key_service,
 #endif
 #if BUILDFLAG(IS_IOS)
           std::move(device_accounts_provider),

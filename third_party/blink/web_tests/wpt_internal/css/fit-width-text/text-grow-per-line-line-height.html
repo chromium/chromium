@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<link rel="match" href="text-grow-per-line-line-height-ref.html">
+<meta name="flags" content="ahem">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+.target {
+  text-grow: per-line scale;
+  white-space: pre;
+  width: 100px;
+  font: 10px/normal Ahem;
+}
+</style>
+<body>
+<div class="target" style="width:102px">AB<span style="border:1px solid lime">CD</span>E</div>
+
+<!-- The border checks the line-heght of the last line. -->
+<div class="target" style="border:1px solid green">AB
+CDEFG</div>
+
+<!-- Fixed line-height -->
+<div class="target" style="line-height:20px;">AB
+CDEFG</div>
+</body>

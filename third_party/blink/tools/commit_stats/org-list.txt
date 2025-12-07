@@ -183,6 +183,7 @@ Individuals,zuster.org
 Intel,intel.com
 Intel,intel.corp-partner.google.com
 Intel,linux.intel.com
+Island,island.io
 Jetbrains,jetbrains.com
 KDE,kde.org
 Khronos,khronosgroup.org

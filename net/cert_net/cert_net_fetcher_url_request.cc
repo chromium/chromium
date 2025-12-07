@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Overview
 //
 // The main entry point is CertNetFetcherURLRequest. This is an implementation
@@ -63,18 +58,18 @@
 
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -467,8 +462,8 @@ void Job::AttachRequest(
 void Job::DetachRequest(CertNetFetcherURLRequest::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
-  auto it = base::ranges::find(requests_, request);
-  CHECK(it != requests_.end(), base::NotFatalUntil::M130);
+  auto it = std::ranges::find(requests_, request);
+  CHECK(it != requests_.end());
   requests_.erase(it);
 
   // If there are no longer any requests attached to the job then
@@ -522,7 +517,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
                                         this, traffic_annotation);
   if (request_params_->http_method == HTTP_METHOD_POST)
     url_request_->set_method("POST");
-  url_request_->set_allow_credentials(false);
+  url_request_->set_disallow_credentials();
 
   // Disable secure DNS for hostname lookups triggered by certificate network
   // fetches to prevent deadlock.
@@ -630,15 +625,16 @@ bool Job::ConsumeBytesRead(URLRequest* request, int num_bytes) {
   }
 
   // Enforce maximum size bound.
-  if (num_bytes + response_body_.size() > request_params_->max_response_bytes) {
+  const auto num_bytes_s = static_cast<size_t>(num_bytes);
+  if (num_bytes_s + response_body_.size() >
+      request_params_->max_response_bytes) {
     FailRequest(ERR_FILE_TOO_BIG);
     return false;
   }
 
   // Append the data to |response_body_|.
-  response_body_.reserve(num_bytes);
-  response_body_.insert(response_body_.end(), read_buffer_->data(),
-                        read_buffer_->data() + num_bytes);
+  response_body_.reserve(response_body_.size() + num_bytes_s);
+  base::Extend(response_body_, read_buffer_->first(num_bytes_s));
   return true;
 }
 

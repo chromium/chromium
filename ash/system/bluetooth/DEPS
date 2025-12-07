@@ -1,3 +1,9 @@
 include_rules = [
   "+services/device/public",
 ]
+
+specific_include_rules = {
+  "bluetooth_feature_pod_controller_unittest\\.cc": [
+    "+components/session_manager/core/session_manager.h",
+  ]
+}

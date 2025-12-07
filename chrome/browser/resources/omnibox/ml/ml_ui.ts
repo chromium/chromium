@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import './ml_calculator.js';
 import './ml_table.js';
 import './ml_chart.js';
@@ -10,11 +10,9 @@ import './ml_chart.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox_internals.mojom-webui.js';
 
 import {MlBrowserProxy} from './ml_browser_proxy.js';
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-ignore:next-line
 import sheet from './ml_ui.css' with {type : 'css'};
 import {getTemplate} from './ml_ui.html.js';
 

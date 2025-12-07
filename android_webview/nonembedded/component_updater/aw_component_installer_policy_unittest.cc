@@ -32,6 +32,8 @@ constexpr uint8_t kSha256Hash[] = {
     0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
     0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
 
+int highest_seq_num = 0;
+
 base::Value::Dict test_manifest(const base::Version& version) {
   base::Value::Dict manifest;
   manifest.Set("version", version.GetString());
@@ -87,6 +89,18 @@ class TestAwComponentInstallerPolicy : public AwComponentInstallerPolicy {
 
  private:
   void IncrementComponentsUpdatedCount() override { /* noop */
+  }
+  base::FilePath GetComponentsProviderServiceDirectory() override {
+    base::FilePath cps_component_path;
+    base::android::GetDataDirectory(&cps_component_path);
+    cps_component_path = cps_component_path.AppendASCII("components")
+                             .AppendASCII("cps")
+                             .AppendASCII(kComponentId);
+    return cps_component_path;
+  }
+  int GetHighestSequenceNumber(
+      base::FilePath cps_component_base_path) override {
+    return highest_seq_num;
   }
 };
 
@@ -150,7 +164,9 @@ TEST_F(AwComponentInstallerPolicyTest, TestExistingOtherVersions) {
   const base::Version testVersion("1.2.3.4");
 
   CreateTestFiles(cps_component_path_.AppendASCII("1_4.3.2.1"));
+  highest_seq_num = 1;
   CreateTestFiles(cps_component_path_.AppendASCII("10_2.3.4.1"));
+  highest_seq_num = 10;
 
   delegate_->ComponentReady(testVersion, GetTestInstallPath(),
                             test_manifest(testVersion));
@@ -167,6 +183,7 @@ TEST_F(AwComponentInstallerPolicyTest, TestExistingSameVersion) {
 
   CreateTestFiles(
       cps_component_path_.AppendASCII("5_" + testVersion.GetString()));
+  highest_seq_num = 5;
 
   delegate_->ComponentReady(testVersion, GetTestInstallPath(),
                             test_manifest(testVersion));

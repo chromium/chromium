@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_DOWNLOAD_DOWNLOAD_TASK_H_
 
 #import <Foundation/Foundation.h>
-
 #include <stdint.h>
 
 #include <memory>
@@ -90,6 +89,13 @@ class DownloadTask {
   // The URL that the download request originally attempted to fetch. This may
   // differ from the final download URL if there were redirects.
   virtual const GURL& GetOriginalUrl() const = 0;
+
+  // The URL that the download request attempted to fetch after redirection.
+  // This may differ from the Original download URL if there were redirects.
+  virtual const GURL& GetRedirectedUrl() const = 0;
+
+  // The host of the frame that initiated the download (if available).
+  virtual NSString* GetOriginatingHost() const = 0;
 
   // HTTP method for this download task (only @"GET" and @"POST" are currently
   // supported).

@@ -38,14 +38,10 @@ class SharingSyncPreference {
  public:
   // FCM registration status of current device. Not synced across devices.
   struct FCMRegistration {
-    FCMRegistration(std::optional<std::string> authorized_entity,
-                    base::Time timestamp);
+    explicit FCMRegistration(base::Time timestamp);
     FCMRegistration(FCMRegistration&& other);
     FCMRegistration& operator=(FCMRegistration&& other);
     ~FCMRegistration();
-
-    // Authorized entity registered with FCM.
-    std::optional<std::string> authorized_entity;
 
     // Timestamp of latest registration.
     base::Time timestamp;
@@ -66,21 +62,6 @@ class SharingSyncPreference {
   static std::optional<syncer::DeviceInfo::SharingInfo>
   GetLocalSharingInfoForSync(PrefService* prefs);
 
-  // Returns VAPID key from preferences if present, otherwise returns
-  // std::nullopt.
-  // For more information on vapid keys, please see
-  // https://tools.ietf.org/html/draft-thomson-webpush-vapid-02
-  std::optional<std::vector<uint8_t>> GetVapidKey() const;
-
-  // Adds VAPID key to preferences for syncing across devices.
-  void SetVapidKey(const std::vector<uint8_t>& vapid_key) const;
-
-  // Observes for VAPID key changes. Replaces previously set observer.
-  void SetVapidKeyChangeObserver(const base::RepeatingClosure& obs);
-
-  // Clears previously set observer.
-  void ClearVapidKeyChangeObserver();
-
   std::optional<FCMRegistration> GetFCMRegistration() const;
 
   void SetFCMRegistration(FCMRegistration registration);
@@ -97,7 +78,6 @@ class SharingSyncPreference {
   raw_ptr<PrefService> prefs_;
   raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
-  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // COMPONENTS_SHARING_MESSAGE_SHARING_SYNC_PREFERENCE_H_

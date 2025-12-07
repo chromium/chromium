@@ -36,16 +36,10 @@ struct PreloadKey final {
   ResourceType type = ResourceType::kImage;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::PreloadKey>
-    : TwoFieldsHashTraits<blink::PreloadKey,
-                          &blink::PreloadKey::url,
-                          &blink::PreloadKey::type> {};
+struct HashTraits<PreloadKey>
+    : TwoFieldsHashTraits<PreloadKey, &PreloadKey::url, &PreloadKey::type> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_PRELOAD_KEY_H_

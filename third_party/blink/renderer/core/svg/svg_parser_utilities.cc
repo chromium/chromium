@@ -20,15 +20,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 
 #include <limits>
+
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
@@ -43,180 +40,197 @@ static inline bool IsValidRange(const FloatType x) {
 // work at a higher precision internally, without any unnecessary runtime cost
 // or code complexity.
 template <typename CharType, typename FloatType>
-static bool GenericParseNumber(const CharType*& cursor,
-                               const CharType* end,
+static bool GenericParseNumber(base::span<const CharType>& result_span,
                                FloatType& number,
                                WhitespaceMode mode) {
-  if (mode & kAllowLeadingWhitespace)
-    SkipOptionalSVGSpaces(cursor, end);
+  if (mode & kAllowLeadingWhitespace) {
+    SkipOptionalSVGSpaces(result_span);
+  }
 
-  const CharType* ptr = cursor;
+  base::span<const CharType> span = result_span;
   // read the sign
   int sign = 1;
-  if (ptr < end && *ptr == '+')
-    ptr++;
-  else if (ptr < end && *ptr == '-') {
-    ptr++;
+  if (!span.empty() && span[0] == '+') {
+    span = span.template subspan<1u>();
+  } else if (!span.empty() && span[0] == '-') {
+    span = span.template subspan<1u>();
     sign = -1;
   }
 
-  if (ptr == end || ((*ptr < '0' || *ptr > '9') && *ptr != '.'))
+  if (span.empty() || (!IsASCIIDigit(span[0]) && span[0] != '.')) {
     // The first character of a number must be one of [0-9+-.]
     return false;
+  }
 
   // read the integer part, build right-to-left
-  const CharType* digits_start = ptr;
-  while (ptr < end && *ptr >= '0' && *ptr <= '9')
-    ++ptr;  // Advance to first non-digit.
+  size_t digits_count = 0;
+  while (digits_count < span.size() && IsASCIIDigit(span[digits_count])) {
+    ++digits_count;  // Advance to first non-digit.
+  }
 
   FloatType integer = 0;
-  if (ptr != digits_start) {
-    const CharType* ptr_scan_int_part = ptr - 1;
+  if (digits_count != 0) {
     FloatType multiplier = 1;
-    while (ptr_scan_int_part >= digits_start) {
-      integer +=
-          multiplier * static_cast<FloatType>(*(ptr_scan_int_part--) - '0');
+    size_t index = digits_count;
+    while (index > 0) {
+      integer += multiplier * static_cast<FloatType>(span[index - 1] - '0');
       multiplier *= 10;
+      --index;
     }
     // Bail out early if this overflows.
-    if (!IsValidRange(integer))
+    if (!IsValidRange(integer)) {
       return false;
+    }
+
+    span = span.subspan(digits_count);
   }
 
   FloatType decimal = 0;
-  if (ptr < end && *ptr == '.') {  // read the decimals
-    ptr++;
+  if (!span.empty() && span[0] == '.') {  // read the decimals
+    span = span.template subspan<1u>();
 
     // There must be a least one digit following the .
-    if (ptr >= end || *ptr < '0' || *ptr > '9')
+    if (span.empty() || !IsASCIIDigit(span[0])) {
       return false;
+    }
 
     FloatType frac = 1;
-    while (ptr < end && *ptr >= '0' && *ptr <= '9') {
+    size_t decimal_count = 0;
+    while (decimal_count < span.size() && IsASCIIDigit(span[decimal_count])) {
       frac *= static_cast<FloatType>(0.1);
-      decimal += (*(ptr++) - '0') * frac;
+      decimal += (span[decimal_count] - '0') * frac;
+      ++decimal_count;
     }
+    span = span.subspan(decimal_count);
+    digits_count += decimal_count;
   }
 
   // When we get here we should have consumed either a digit for the integer
   // part or a fractional part (with at least one digit after the '.'.)
-  DCHECK_NE(digits_start, ptr);
+  DCHECK_NE(digits_count, 0u);
 
   number = integer + decimal;
   number *= sign;
 
   // read the exponent part
-  if (ptr + 1 < end && (*ptr == 'e' || *ptr == 'E') &&
-      (ptr[1] != 'x' && ptr[1] != 'm')) {
-    ptr++;
+  if (span.size() > 1 && (span[0] == 'e' || span[0] == 'E') &&
+      (span[1] != 'x' && span[1] != 'm')) {
+    span = span.template subspan<1u>();
 
     // read the sign of the exponent
     bool exponent_is_negative = false;
-    if (*ptr == '+')
-      ptr++;
-    else if (*ptr == '-') {
-      ptr++;
+    if (span[0] == '+') {
+      span = span.template subspan<1u>();
+    } else if (span[0] == '-') {
+      span = span.template subspan<1u>();
       exponent_is_negative = true;
     }
 
     // There must be an exponent
-    if (ptr >= end || *ptr < '0' || *ptr > '9')
+    if (span.empty() || !IsASCIIDigit(span[0])) {
       return false;
+    }
 
     FloatType exponent = 0;
-    while (ptr < end && *ptr >= '0' && *ptr <= '9') {
+    size_t exponent_count = 0;
+    while (exponent_count < span.size() && IsASCIIDigit(span[exponent_count])) {
       exponent *= static_cast<FloatType>(10);
-      exponent += *ptr - '0';
-      ptr++;
+      exponent += span[exponent_count] - '0';
+      ++exponent_count;
     }
+
     // TODO(fs): This is unnecessarily strict - the position of the decimal
     // point is not taken into account when limiting |exponent|.
-    if (exponent_is_negative)
+    if (exponent_is_negative) {
       exponent = -exponent;
+    }
     // Fail if the exponent is greater than the largest positive power
     // of ten (that would yield a representable float.)
-    if (exponent > std::numeric_limits<FloatType>::max_exponent10)
+    if (exponent > std::numeric_limits<FloatType>::max_exponent10) {
       return false;
+    }
     // If the exponent is smaller than smallest negative power of 10 (that
     // would yield a representable float), then rely on the pow()+rounding to
     // produce a reasonable result (likely zero.)
-    if (exponent)
+    if (exponent) {
       number *= static_cast<FloatType>(std::pow(10.0, exponent));
+    }
+
+    span = span.subspan(exponent_count);
   }
 
   // Don't return Infinity() or NaN().
-  if (!IsValidRange(number))
+  if (!IsValidRange(number)) {
     return false;
+  }
 
   // A valid number has been parsed. Commit cursor.
-  cursor = ptr;
+  result_span = span;
 
-  if (mode & kAllowTrailingWhitespace)
-    SkipOptionalSVGSpacesOrDelimiter(cursor, end);
-
-  return true;
-}
-
-bool ParseNumber(const LChar*& ptr,
-                 const LChar* end,
-                 float& number,
-                 WhitespaceMode mode) {
-  return GenericParseNumber(ptr, end, number, mode);
-}
-
-bool ParseNumber(const UChar*& ptr,
-                 const UChar* end,
-                 float& number,
-                 WhitespaceMode mode) {
-  return GenericParseNumber(ptr, end, number, mode);
-}
-
-// only used to parse largeArcFlag and sweepFlag which must be a "0" or "1"
-// and might not have any whitespace/comma after it
-template <typename CharType>
-bool GenericParseArcFlag(const CharType*& ptr,
-                         const CharType* end,
-                         bool& flag) {
-  if (ptr >= end)
-    return false;
-  const CharType flag_char = *ptr;
-  if (flag_char == '0')
-    flag = false;
-  else if (flag_char == '1')
-    flag = true;
-  else
-    return false;
-
-  ptr++;
-  SkipOptionalSVGSpacesOrDelimiter(ptr, end);
+  if (mode & kAllowTrailingWhitespace) {
+    SkipOptionalSVGSpacesOrDelimiter(result_span);
+  }
 
   return true;
 }
 
-bool ParseArcFlag(const LChar*& ptr, const LChar* end, bool& flag) {
-  return GenericParseArcFlag(ptr, end, flag);
+bool ParseNumber(base::span<const LChar>& span,
+                 float& number,
+                 WhitespaceMode mode) {
+  return GenericParseNumber(span, number, mode);
 }
 
-bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag) {
-  return GenericParseArcFlag(ptr, end, flag);
+bool ParseNumber(base::span<const UChar>& span,
+                 float& number,
+                 WhitespaceMode mode) {
+  return GenericParseNumber(span, number, mode);
 }
 
 bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
-  if (string.empty())
+  if (string.empty()) {
     return false;
+  }
 
-  return WTF::VisitCharacters(string, [&](const auto* ptr, unsigned length) {
-    const auto* end = ptr + length;
-    if (!ParseNumber(ptr, end, x))
+  return VisitCharacters(string, [&](auto chars) {
+    if (!ParseNumber(chars, x)) {
       return false;
+    }
 
-    if (ptr == end)
+    if (chars.empty()) {
       y = x;
-    else if (!ParseNumber(ptr, end, y, kAllowLeadingAndTrailingWhitespace))
+    } else if (!ParseNumber(chars, y, kAllowLeadingAndTrailingWhitespace)) {
       return false;
+    }
 
-    return ptr == end;
+    return chars.empty();
   });
+}
+
+template <typename CharType>
+base::span<const CharType> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const CharType> chars,
+    size_t position,
+    char delimiter) {
+  size_t start = position;
+  while (position < chars.size() && chars[position] != delimiter &&
+         !IsHTMLSpace<CharType>(chars[position])) {
+    ++position;
+  }
+  return chars.subspan(start, position - start);
+}
+
+base::span<const LChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const LChar> chars,
+    size_t position,
+    char delimiter) {
+  return TokenUntilSvgSpaceOrDelimiter<LChar>(chars, position, delimiter);
+}
+
+base::span<const UChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const UChar> chars,
+    size_t position,
+    char delimiter) {
+  return TokenUntilSvgSpaceOrDelimiter<UChar>(chars, position, delimiter);
 }
 
 }  // namespace blink

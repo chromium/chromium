@@ -11,8 +11,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -40,13 +43,15 @@ PageInfoBubbleViewBase::GetPageInfoBubbleForTesting() {
   return g_page_info_bubble;
 }
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoBubbleViewBase,
+                                      kPageInfoBubbleElementIdentifier);
 PageInfoBubbleViewBase::PageInfoBubbleViewBase(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     PageInfoBubbleViewBase::BubbleType type,
     content::WebContents* web_contents)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::DIALOG_SHADOW,
                                /*autosize=*/false),
@@ -54,12 +59,14 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
   g_shown_bubble_type = type;
   g_page_info_bubble = this;
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
 
   set_parent_window(parent_window);
-  if (!anchor_view)
+  if (std::holds_alternative<std::nullptr_t>(anchor)) {
     SetAnchorRect(anchor_rect);
+  }
+  SetProperty(views::kElementIdentifierKey, kPageInfoBubbleElementIdentifier);
 }
 
 void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
@@ -77,8 +84,9 @@ void PageInfoBubbleViewBase::RenderFrameDeleted(
 
 void PageInfoBubbleViewBase::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     GetWidget()->Close();
+  }
 }
 
 void PageInfoBubbleViewBase::PrimaryPageChanged(content::Page& page) {

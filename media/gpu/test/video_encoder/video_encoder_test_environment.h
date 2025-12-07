@@ -16,10 +16,6 @@
 #include "media/gpu/test/video_test_environment.h"
 #include "media/video/video_encode_accelerator.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}
-
 namespace media {
 
 class Bitrate;
@@ -94,11 +90,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // Gets the frame output configuration.
   const FrameOutputConfig& ImageOutputConfig() const;
 
-  // Get the GpuMemoryBufferFactory for doing buffer allocations. This needs to
-  // survive as long as the process is alive just like in production which is
-  // why it's in here as there are threads that won't immediately die when an
-  // individual test is completed.
-  gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
+  // testing::Environment implementation.
+  void SetUp() override;
+  void TearDown() override;
 
  private:
   // TODO(crbug.com/40228467): merge |use_vbr| and |bitrate| into a single
@@ -150,8 +144,6 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // The configuration used when saving the decoded images of bitstream encoded
   // by VideoEncoder to disk.
   const FrameOutputConfig frame_output_config_;
-
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 };
 }  // namespace test
 }  // namespace media

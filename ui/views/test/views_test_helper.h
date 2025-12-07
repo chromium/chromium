@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_delegate.h"
 
 namespace views {
@@ -29,10 +29,13 @@ class ViewsTestHelper {
   // Returns the delegate to use if the test/owner does not create one.
   virtual std::unique_ptr<TestViewsDelegate> GetFallbackTestViewsDelegate();
 
-  // Does any additional necessary setup of the provided |delegate|.
+  // Does any additional necessary setup of the provided `delegate`.
   virtual void SetUpTestViewsDelegate(
       TestViewsDelegate* delegate,
       std::optional<ViewsDelegate::NativeWidgetFactory> factory);
+
+  // Does any additional necessary teardown of the provided `delegate`.
+  virtual void TearDownTestViewsDelegate(TestViewsDelegate* delegate);
 
   // Does any additional necessary setup of this object or its members.
   virtual void SetUp();

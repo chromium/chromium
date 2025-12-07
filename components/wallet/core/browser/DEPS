@@ -1,0 +1,12 @@
+include_rules = [
+  # go/keep-sorted start
+  "+components/keyed_service/core",
+  "+components/optimization_guide",
+  "+components/prefs",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+  "+components/strike_database",
+  "+components/sync",
+  "+components/sync_preferences",
+  # go/keep-sorted end
+]

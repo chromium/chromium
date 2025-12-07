@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/vr_base_export.h"
-#include "ui/gfx/geometry/point_f.h"
 
 namespace vr {
 

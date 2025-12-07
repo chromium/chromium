@@ -6,8 +6,8 @@
 #define MEDIA_BASE_SVC_SCALABILITY_MODE_H_
 
 #include <cstddef>
-#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -77,7 +77,7 @@ GetSVCScalabilityMode(const size_t num_spatial_layers,
                       SVCInterLayerPredMode inter_layer_pred);
 
 // Gets the supported SVCScalabilityModes by hardware encoders.
-MEDIA_EXPORT std::vector<SVCScalabilityMode>
+MEDIA_EXPORT base::flat_set<SVCScalabilityMode>
 GetSupportedScalabilityModesByHWEncoderForTesting();
 }  // namespace media
 

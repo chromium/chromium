@@ -10,8 +10,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -21,22 +19,26 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
+@NullMarked
 public class Clipboard {
     private static final String TAG = "Clipboard";
 
     @SuppressLint("StaticFieldLeak")
-    private static Clipboard sInstance;
+    private static @Nullable Clipboard sInstance;
 
     private long mNativeClipboard;
 
     /** Interface to be implemented for sharing image through FileProvider. */
     public interface ImageFileProvider {
         /** The helper class to load Clipboard file metadata. */
-        public class ClipboardFileMetadata {
+        class ClipboardFileMetadata {
             public static final long INVALID_TIMESTAMP = 0;
             public final Uri uri;
             public final long timestamp;
@@ -63,7 +65,7 @@ public class Clipboard {
          * On Android O and O_MR1, URI is stored for revoking permissions later.
          * @param clipboardFileMetadata The metadata needs to be stored.
          */
-        void storeLastCopiedImageMetadata(@NonNull ClipboardFileMetadata clipboardFileMetadata);
+        void storeLastCopiedImageMetadata(ClipboardFileMetadata clipboardFileMetadata);
 
         /** Get stored the last image uri and its timestamp. */
         @Nullable
@@ -106,6 +108,12 @@ public class Clipboard {
         sInstance = null;
     }
 
+    @VisibleForTesting
+    public static void setInstanceForTesting(Clipboard instance) {
+        sInstance = instance;
+        ResettersForTesting.register(Clipboard::resetForTesting);
+    }
+
     /** Cleans up clipboard on native side. */
     public static void cleanupNativeForTesting() {
         ClipboardJni.get().cleanupForTesting();
@@ -129,17 +137,17 @@ public class Clipboard {
      */
     @SuppressWarnings("javadoc")
     @CalledByNative
-    protected String getCoercedText() {
+    protected @Nullable String getCoercedText() {
         return null;
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected boolean hasCoercedText() {
         return false;
     }
 
-    public String clipDataToHtmlText(ClipData clipData) {
+    public @Nullable String clipDataToHtmlText(ClipData clipData) {
         return null;
     }
 
@@ -150,7 +158,7 @@ public class Clipboard {
      *         text or no entries on the primary clip.
      */
     @CalledByNative
-    protected String getHTMLText() {
+    protected @Nullable String getHTMLText() {
         return null;
     }
 
@@ -166,20 +174,21 @@ public class Clipboard {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean hasUrl() {
         return false;
     }
 
     /**
-     * On Pre S, we return the whole clipboard content if the clipboard content is a URL.
-     * On S+, we return the first URL in the content. ex, If clipboard contains "text www.foo.com
+     * On Pre S, we return the whole clipboard content if the clipboard content is a URL. On S+, we
+     * return the first URL in the content. ex, If clipboard contains "text www.foo.com
      * www.bar.com", then "www.foo.com" will be returned.
+     *
      * @return The URL in the clipboard, or the first URL on the clipbobard.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    String getUrl() {
+    @VisibleForTesting
+    @Nullable String getUrl() {
         return null;
     }
 
@@ -200,7 +209,7 @@ public class Clipboard {
     }
 
     @CalledByNative
-    protected String getImageUriString() {
+    protected @Nullable String getImageUriString() {
         return null;
     }
 
@@ -212,22 +221,24 @@ public class Clipboard {
      * @return a byte array of PNG data if available, otherwise null.
      */
     @CalledByNative
-    public byte[] getPng() {
+    public byte @Nullable [] getPng() {
         return null;
     }
 
     @CalledByNative
-    protected boolean hasImage() {
+    public boolean hasImage() {
         return false;
     }
 
     /**
-     * Gets a CRLF separated list of content URIs on the primary clip on the Android Clipboard.
+     * Gets a list of content URIs on the primary clip on the Android Clipboard and their display
+     * names.
      *
-     * @return a Java string with URI list if available, otherwise null.
+     * @return list of content URIs and display names. item[i][0] is the URI, and item[i][1] is the
+     *     optional display name which will be an empty string when unknown.
      */
     @CalledByNative
-    protected String getFilenames() {
+    protected String @Nullable [][] getFilenames() {
         return null;
     }
 
@@ -275,14 +286,13 @@ public class Clipboard {
     }
 
     /**
-     * Writes HTML to the clipboard, together with a plain-text representation
-     * of that very data.
+     * Writes HTML to the clipboard, together with a plain-text representation of that very data.
      *
-     * @param html  The HTML content to be pasted to the clipboard.
-     * @param text  Plain-text representation of the HTML content.
+     * @param html The HTML content to be pasted to the clipboard.
+     * @param text Plain-text representation of the HTML content.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setHTMLText(final String html, final String text) {
         Log.w(TAG, "setHTMLText is a no-op because Clipboard service isn't available");
     }
@@ -297,22 +307,21 @@ public class Clipboard {
     }
 
     /**
-     * Setting the clipboard's current primary clip to an image.
-     * This method requires background work and might not be immediately committed upon returning
-     * from this method.
-     * @param Uri The {@link Uri} will become the content of the clipboard's primary clip.
+     * Setting the clipboard's current primary clip to an image. This method requires background
+     * work and might not be immediately committed upon returning from this method.
+     *
+     * @param uri The {@link Uri} will become the content of the clipboard's primary clip.
      */
     public void setImageUri(final Uri uri) {
         Log.w(TAG, "setImageUri is a no-op because Clipboard service isn't available");
     }
 
     /**
-     * Setting the clipboard's current primary clip to an image.
-     * This method requires background work and might not be immediately committed upon returning
-     * from this method.
+     * Setting the clipboard's current primary clip to an image. This method requires background
+     * work and might not be immediately committed upon returning from this method.
      *
      * @see #setImageUri(Uri)
-     * @param Uri The {@link Uri} will become the content of the clipboard's primary clip.
+     * @param uri The {@link Uri} will become the content of the clipboard's primary clip.
      * @param notifyOnSuccess Whether show a notification when success.
      */
     public void setImageUri(final Uri uri, boolean notifyOnSuccess) {
@@ -333,10 +342,10 @@ public class Clipboard {
     /**
      * Writes content URI filenames to the clipboard.
      *
-     * @param uriList the CRLF-separated list of content URIs.
+     * @param uriList list of content URIs.
      */
     @CalledByNative
-    public void setFilenames(final String uriList) {
+    public void setFilenames(final String[] uriList) {
         Log.w(TAG, "setFilenames is a no-op because Clipboard service isn't available");
     }
 
@@ -400,12 +409,12 @@ public class Clipboard {
 
     protected void notifyPrimaryClipChanged() {
         if (mNativeClipboard == 0) return;
-        ClipboardJni.get().onPrimaryClipChanged(mNativeClipboard, this);
+        ClipboardJni.get().onPrimaryClipChanged(mNativeClipboard);
     }
 
     protected void notifyPrimaryClipTimestampInvalidated(long timestamp) {
         if (mNativeClipboard == 0) return;
-        ClipboardJni.get().onPrimaryClipTimestampInvalidated(mNativeClipboard, this, timestamp);
+        ClipboardJni.get().onPrimaryClipTimestampInvalidated(mNativeClipboard, timestamp);
     }
 
     protected long getLastModifiedTimeToJavaTime() {
@@ -415,10 +424,9 @@ public class Clipboard {
 
     @NativeMethods
     interface Natives {
-        void onPrimaryClipChanged(long nativeClipboardAndroid, Clipboard caller);
+        void onPrimaryClipChanged(long nativeClipboardAndroid);
 
-        void onPrimaryClipTimestampInvalidated(
-                long nativeClipboardAndroid, Clipboard caller, long timestamp);
+        void onPrimaryClipTimestampInvalidated(long nativeClipboardAndroid, long timestamp);
 
         long getLastModifiedTimeToJavaTime(long nativeClipboardAndroid);
 

@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakePointingSticks, fakePointingSticks2, PerDeviceSubsectionHeaderElement, SettingsPerDevicePointingStickElement} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
+
+import type {SettingsPerDevicePointingStickElement} from 'chrome://os-settings/lazy_load.js';
+import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
+import {fakePointingSticks, fakePointingSticks2} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,10 +57,10 @@ suite('<settings-per-device-pointing-stick>', function() {
           const name =
               subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
           if (fakePointingSticks[i]!.isExternal) {
-            assertEquals(fakePointingSticks[i]!.name, name!.trim());
+            assertEquals(fakePointingSticks[i]!.name, name.trim());
           } else {
             assertTrue(subsections[i]!.i18nExists('builtInPointingStickName'));
-            assertEquals('Built-in TrackPoint', name!.trim());
+            assertEquals('Built-in TrackPoint', name.trim());
           }
         }
       });

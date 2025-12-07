@@ -30,12 +30,14 @@ void ThreadPoolTestHelpers::EndFenceForTesting() {
 
 }  // namespace base
 
-void JNI_ThreadPoolTestHelpers_EnableThreadPoolExecutionForTesting(
+static void JNI_ThreadPoolTestHelpers_EnableThreadPoolExecutionForTesting(
     JNIEnv* env) {
   base::ThreadPoolTestHelpers::EndFenceForTesting();
 }
 
-void JNI_ThreadPoolTestHelpers_DisableThreadPoolExecutionForTesting(
+static void JNI_ThreadPoolTestHelpers_DisableThreadPoolExecutionForTesting(
     JNIEnv* env) {
   base::ThreadPoolTestHelpers::BeginFenceForTesting();
 }
+
+DEFINE_JNI(ThreadPoolTestHelpers)

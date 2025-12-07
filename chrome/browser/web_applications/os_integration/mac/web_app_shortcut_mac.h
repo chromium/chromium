@@ -28,6 +28,10 @@ std::string GetBundleIdentifierForShim(
 // at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
 bool UseAdHocSigningForWebAppShims();
 
+// Returns true if we're using ad-hoc signed app shims and the
+// kAppShimNotificationAttribution feature is enabled.
+bool UseNotificationAttributionForWebAppShims();
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MAC_WEB_APP_SHORTCUT_MAC_H_

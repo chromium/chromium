@@ -12,16 +12,19 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.widget.ScrollView;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -35,38 +38,60 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MenuSheetContentUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ExpandedPlayerSheetContent mBottomSheetContent;
     private Activity mActivity;
     private Context mContext;
     private Menu mMenu;
+
+    static class TestMenuSheetContent extends MenuSheetContent {
+        TestMenuSheetContent(
+                BottomSheetContent parent, BottomSheetController bottomSheetController) {
+            super(parent, bottomSheetController);
+        }
+
+        @Override
+        public View getContentView() {
+            return null;
+        }
+
+        @Override
+        public int getVerticalScrollOffset() {
+            return 0;
+        }
+
+        @Override
+        public @NonNull String getSheetContentDescription(Context context) {
+            // "Options menu"
+            // Automatically appended: "Swipe down to close."
+            return context.getString(R.string.readaloud_options_menu_description);
+        }
+    }
+
     private MenuSheetContent mContent;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mMenu = (Menu) mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu, null);
-        mContent =
-                new MenuSheetContent(
-                        mContext, mBottomSheetContent, mBottomSheetController, 0, mMenu);
+        mContent = new TestMenuSheetContent(mBottomSheetContent, mBottomSheetController);
     }
 
     @Test
     public void testNotifySheetClosed() {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mContent);
         mContent.notifySheetClosed(mContent);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
+        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, false);
     }
 
     @Test
-    public void testOpenSheet() {
+    public void testOpenParent() {
         mContent.openSheet(mBottomSheetContent);
+        // Hiding self will show the parent sheet.
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
     }
 
     @Test
@@ -75,26 +100,13 @@ public class MenuSheetContentUnitTest {
     }
 
     @Test
-    public void testGetContentView() {
-        assertEquals(mContent.getContentView(), mMenu);
-    }
-
-    @Test
     public void testGetToolbarView() {
         assertEquals(mContent.getToolbarView(), null);
     }
 
     @Test
-    public void testGetVerticalScrollOffset() {
-        ScrollView scrollView = mMenu.findViewById(R.id.items_scroll_view);
-        scrollView.setPadding(0, 100, 0, 100);
-        scrollView.scrollTo(0, 100);
-        assertEquals(100, mContent.getVerticalScrollOffset());
-    }
-
-    @Test
     public void testGetPriority() {
-        assertEquals(mContent.getPriority(), BottomSheetContent.ContentPriority.HIGH);
+        assertEquals(BottomSheetContent.ContentPriority.HIGH, mContent.getPriority());
     }
 
     @Test
@@ -114,7 +126,7 @@ public class MenuSheetContentUnitTest {
 
     @Test
     public void testGetPeekHeight() {
-        assertEquals(mContent.getPeekHeight(), BottomSheetContent.HeightMode.DISABLED);
+        assertEquals(BottomSheetContent.HeightMode.DISABLED, mContent.getPeekHeight());
     }
 
     @Test
@@ -146,7 +158,6 @@ public class MenuSheetContentUnitTest {
     public void testHandleBackPress() {
         mContent.handleBackPress();
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
     }
 
     @Test

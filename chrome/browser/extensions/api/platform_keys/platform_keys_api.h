@@ -16,23 +16,12 @@
 #include <vector>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
 namespace extensions {
-namespace platform_keys {
-
-extern const char kErrorInvalidToken[];
-extern const char kErrorInvalidX509Cert[];
-
-// Returns a known token if |token_id| is valid and returns nullopt for both
-// empty or unknown |token_id|.
-std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
-    const std::string& token_id);
-
-}  // namespace platform_keys
 
 class PlatformKeysInternalSelectClientCertificatesFunction
     : public ExtensionFunction {

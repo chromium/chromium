@@ -25,7 +25,7 @@
 
 #include <libxml/tree.h>
 #include <libxslt/transform.h>
-#include "base/memory/scoped_refptr.h"
+
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

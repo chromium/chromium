@@ -12,6 +12,7 @@ import android.graphics.Color;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,7 +32,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDefaultOfflineTest {
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     @Before
     public void setUp() {
@@ -44,8 +45,7 @@ public class WebappDefaultOfflineTest {
     @Feature({"Webapps"})
     public void testDefaultOffline() throws Exception {
         // Make sure the navigations to the test app result in a 404 error.
-        final String testAppUrl =
-                WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer());
+        final String testAppUrl = WebappTestPage.getTestUrl(mActivityTestRule.getTestServer());
         OfflineTestUtil.interceptWithOfflineError(testAppUrl);
 
         WebApkDataProvider.setWebappInfoForTesting(getDefaultWebappInfo(testAppUrl));
@@ -96,7 +96,7 @@ public class WebappDefaultOfflineTest {
 
     private WebappActivity runWebappActivityAndWaitForIdle(Intent intent) {
         return runWebappActivityAndWaitForIdleWithUrl(
-                intent, WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer()));
+                intent, WebappTestPage.getTestUrl(mActivityTestRule.getTestServer()));
     }
 
     private WebappActivity runWebappActivityAndWaitForIdleWithUrl(Intent intent, String url) {

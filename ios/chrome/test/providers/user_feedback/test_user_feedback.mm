@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
-
 #import <ostream>
 
 #import "base/notreached.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 
 namespace ios {
 namespace provider {
@@ -17,11 +16,11 @@ bool IsUserFeedbackSupported() {
 
 UIViewController* CreateUserFeedbackViewController(
     UserFeedbackConfiguration* configuration) {
-  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
+  NOTREACHED() << "User feedback not supported in unit tests.";
 }
 
 void UploadAllPendingUserFeedback() {
-  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
+  NOTREACHED() << "User feedback not supported in unit tests.";
 }
 
 bool CanUseStartUserFeedbackFlow() {

@@ -12,9 +12,6 @@ enum NTPLoggingEventType;
 [Native]
 enum OmniboxFocusState;
 
-[Native]
-struct NTPTileImpression;
-
 // Interface used to connect to the embedded search interface. This is a
 // separate interface such that a reverse connection (|client| below) can be
 // passed when connecting.

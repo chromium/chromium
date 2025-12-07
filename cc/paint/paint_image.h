@@ -5,13 +5,14 @@
 #ifndef CC_PAINT_PAINT_IMAGE_H_
 #define CC_PAINT_PAINT_IMAGE_H_
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "cc/paint/frame_metadata.h"
+#include "cc/paint/deferred_paint_record.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_record.h"
@@ -36,13 +37,24 @@ class VideoFrame;
 
 namespace cc {
 
+struct FrameMetadata;
 class PaintImageGenerator;
 class PaintWorkletInput;
 class TextureBacking;
 
 enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
 
-enum class AuxImage : size_t { kDefault = 0, kGainmap = 1 };
+// An encoded image may include several auxiliary images within it. This enum
+// is used to index those images. Auxiliary images can have different sizes and
+// pixel formats from the default image.
+enum class AuxImage : size_t {
+  // The default image that decoders unaware of independent auxiliary images
+  // will decode.
+  kDefault = 0,
+  // The UltraHDR or (equivalently) ISO 21496-1 gainmap image.
+  kGainmap = 1
+};
+
 static constexpr std::array<AuxImage, 2> kAllAuxImages = {AuxImage::kDefault,
                                                           AuxImage::kGainmap};
 constexpr size_t AuxImageIndex(AuxImage aux_image) {
@@ -57,10 +69,8 @@ constexpr const char* AuxImageName(AuxImage aux_image) {
   switch (aux_image) {
     case AuxImage::kDefault:
       return "default";
-      break;
     case AuxImage::kGainmap:
       return "gainmap";
-      break;
   }
 }
 
@@ -84,8 +94,8 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
   // The subsampling format used for the chroma planes, e.g., YUV 4:2:0.
   YUVSubsampling yuv_subsampling = YUVSubsampling::kUnknown;
 
-  // The HDR metadata included with the image, if present.
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  // Any HDR metadata included with the image.
+  gfx::HDRMetadata hdr_metadata;
 
   // The visible size of the image (i.e., the area that contains meaningful
   // pixels).
@@ -288,28 +298,30 @@ class CC_PAINT_EXPORT PaintImage {
   DecodingMode decoding_mode() const { return decoding_mode_; }
 
   explicit operator bool() const {
-    return paint_worklet_input_ || cached_sk_image_ || texture_backing_;
+    return deferred_paint_record_ || cached_sk_image_ || texture_backing_;
   }
   bool IsLazyGenerated() const {
     return paint_record_ || paint_image_generator_;
   }
-  bool IsPaintWorklet() const { return !!paint_worklet_input_; }
+  bool IsDeferredPaintRecord() const { return !!deferred_paint_record_; }
+  bool IsPaintWorklet() const {
+    return deferred_paint_record_ &&
+           deferred_paint_record_->IsPaintWorkletInput();
+  }
   bool NeedsLayer() const;
   bool IsTextureBacked() const;
-  // Skia internally buffers commands and flushes them as necessary but there
-  // are some cases where we need to force a flush.
-  void FlushPendingSkiaOps();
   int width() const { return GetSkImageInfo().width(); }
   int height() const { return GetSkImageInfo().height(); }
   SkColorSpace* color_space() const {
-    return paint_worklet_input_ ? nullptr : GetSkImageInfo().colorSpace();
+    return IsPaintWorklet() ? nullptr : GetSkImageInfo().colorSpace();
   }
   gfx::Size GetSize(AuxImage aux_image) const;
   SkISize GetSkISize(AuxImage aux_image) const {
     return GetSkImageInfo(aux_image).dimensions();
   }
+  bool GetReinterpretAsSRGB() const { return reinterpret_as_srgb_; }
 
-  gfx::ContentColorUsage GetContentColorUsage(bool* is_hlg = nullptr) const;
+  gfx::ContentColorUsage GetContentColorUsage() const;
 
   // Returns whether this image will be decoded and rendered from YUV data
   // and fills out |info|. |supported_data_types| indicates the bit depths and
@@ -344,27 +356,29 @@ class CC_PAINT_EXPORT PaintImage {
   sk_sp<SkImage> GetSkImageForFrame(size_t index,
                                     GeneratorClientId client_id) const;
 
-  const scoped_refptr<PaintWorkletInput>& paint_worklet_input() const {
-    return paint_worklet_input_;
+  const scoped_refptr<PaintWorkletInput> GetPaintWorkletInput() const;
+
+  const scoped_refptr<DeferredPaintRecord>& deferred_paint_record() const {
+    return deferred_paint_record_;
   }
 
   bool IsOpaque() const;
-  bool HasGainmap() const {
+  bool HasGainmapInfo() const {
     DCHECK_EQ(gainmap_paint_image_generator_ != nullptr ||
                   gainmap_sk_image_ != nullptr,
               gainmap_info_.has_value());
     return gainmap_info_.has_value();
   }
   const SkGainmapInfo& GetGainmapInfo() const {
-    DCHECK(HasGainmap());
+    DCHECK(HasGainmapInfo());
     return gainmap_info_.value();
   }
 
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const {
+  gfx::HDRMetadata GetHDRMetadata() const {
     if (const auto* image_metadata = GetImageHeaderMetadata()) {
       return image_metadata->hdr_metadata;
     }
-    return std::nullopt;
+    return gfx::HDRMetadata();
   }
 
   std::string ToString() const;
@@ -381,8 +395,8 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PlaybackImageProvider;
   friend class DrawImageRectOp;
   friend class DrawImageOp;
-  friend class DrawImageToneMapUtil;
   friend class DrawSkottieOp;
+  friend class ToneMapUtil;
 
   // TODO(crbug.com/40110279): Remove these once GetSkImage()
   // is fully removed.
@@ -410,20 +424,18 @@ class CC_PAINT_EXPORT PaintImage {
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
 
-  // The target HDR headroom for gainmap and global tone map application.
-  float target_hdr_headroom_ = 1.f;
+  // If true, then this images will be reinterpreted as being sRGB during paint.
+  // This is used by createImageBitmap's colorSpaceConversion:"none".
+  bool reinterpret_as_srgb_ = false;
 
   // Gainmap HDR metadata.
   sk_sp<SkImage> gainmap_sk_image_;
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
   std::optional<SkGainmapInfo> gainmap_info_;
 
-  // If true, then use `hdr_metadata_` to tone map to `target_hdr_headroom_`.
-  bool use_global_tone_map_ = false;
-
   // HDR metadata used by global tone map application and (potentially but not
   // yet) gain map application.
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
   sk_sp<TextureBacking> texture_backing_;
 
@@ -466,7 +478,7 @@ class CC_PAINT_EXPORT PaintImage {
   sk_sp<SkImage> cached_sk_image_;
 
   // The input parameters that are needed to execute the JS paint callback.
-  scoped_refptr<PaintWorkletInput> paint_worklet_input_;
+  scoped_refptr<DeferredPaintRecord> deferred_paint_record_;
 };
 
 }  // namespace cc

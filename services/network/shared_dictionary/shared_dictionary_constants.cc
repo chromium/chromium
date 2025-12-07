@@ -21,6 +21,7 @@ const char kOptionNameMatch[] = "match";
 const char kOptionNameMatchDest[] = "match-dest";
 const char kOptionNameType[] = "type";
 const char kOptionNameId[] = "id";
+const char kOptionNameTTL[] = "ttl";
 
 size_t GetDictionarySizeLimit() {
   return g_dictionary_size_limit;

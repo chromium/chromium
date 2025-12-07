@@ -45,6 +45,7 @@ export interface SyncStatus {
   signedInState?: SignedInState;
   signedInUsername?: string;
   statusActionText?: string;
+  secondaryButtonActionText?: string;
   statusText?: string;
   supervisedUser?: boolean;
   syncCookiesSupported?: boolean;
@@ -64,6 +65,9 @@ export enum StatusAction {
   RETRIEVE_TRUSTED_VAULT_KEYS = 'retrieveTrustedVaultKeys',
   CONFIRM_SYNC_SETTINGS =
       'confirmSyncSettings',  // User needs to confirm sync settings.
+  SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE =
+      'showBookmarksLimitHelpArticle',  // User needs to see bookmarks limit
+                                        // help article.
 }
 
 /**
@@ -90,6 +94,7 @@ export interface SyncPrefs {
   extensionsManaged: boolean;
   extensionsRegistered: boolean;
   extensionsSynced: boolean;
+  localSyncEnabled: boolean;
   passphraseRequired: boolean;
   passwordsManaged: boolean;
   passwordsRegistered: boolean;
@@ -148,6 +153,26 @@ export const syncPrefsIndividualDataTypes: string[] = [
   'wifiConfigurationsSynced',
 ];
 
+// Always keep in sync with `UserSelectableType` (C++).
+// LINT.IfChange(UserSelectableType)
+export enum UserSelectableType {
+  BOOKMARKS = 0,
+  PREFERENCES = 1,
+  PASSWORDS = 2,
+  AUTOFILL = 3,
+  THEMES = 4,
+  HISTORY = 5,
+  EXTENSIONS = 6,
+  APPS = 7,
+  READING_LIST = 8,
+  TABS = 9,
+  SAVED_TAB_GROUPS = 10,
+  PAYMENTS = 11,
+  PRODUCT_COMPARISON = 12,
+  COOKIES = 13
+}
+// LINT.ThenChange(/components/sync/base/user_selectable_type.h:UserSelectableType)
+
 export enum PageStatus {
   SPINNER = 'spinner',      // Before the page has loaded.
   CONFIGURE = 'configure',  // Preferences ready to be configured.
@@ -176,18 +201,20 @@ export interface ChromeSigninUserChoiceInfo {
   signedInEmail: string;
 }
 
-/**
- * Key to be used with localStorage.
- */
-const PROMO_IMPRESSION_COUNT_KEY: string = 'signin-promo-count';
+// LINT.IfChange(ChromeSigninAccessPoint)
+export enum ChromeSigninAccessPoint {
+  SETTINGS = 0,
+  SETTINGS_YOUR_SAVED_INFO = 1,
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/settings/people_handler.cc:ChromeSigninAccessPoint)
 
 export interface SyncBrowserProxy {
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   /**
    * Starts the signin process for the user. Does nothing if the user is
    * already signed in.
    */
-  startSignIn(): void;
+  startSignIn(accessPoint: ChromeSigninAccessPoint): void;
 
   /**
    * Signs out the signed-in user.
@@ -198,19 +225,23 @@ export interface SyncBrowserProxy {
    * Invalidates the Sync token without signing the user out.
    */
   pauseSync(): void;
+
+  /**
+   * Function to invoke when the account settings page with the account storage
+   * per type settings is shown.
+   */
+  didNavigateToAccountSettingsPage(): void;
+
+  /**
+   * Sets a single type of data to sync.
+   */
+  setSyncDatatype(pref: UserSelectableType, value: boolean):
+      Promise<PageStatus>;
+
+  recordSigninPendingOffered(): void;
   // </if>
 
-  /**
-   * @return the number of times the sync account promo was shown.
-   */
-  getPromoImpressionCount(): number;
-
-  /**
-   * Increment the number of times the sync account promo was shown.
-   */
-  incrementPromoImpressionCount(): void;
-
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   /**
    * Signs the user out.
    */
@@ -234,6 +265,12 @@ export interface SyncBrowserProxy {
   startKeyRetrieval(): void;
 
   /**
+   * Displays the sync passphrase dialog for users to enter passphrase to enable
+   * sync.
+   */
+  showSyncPassphraseDialog(): void;
+
+  /**
    * Gets the current sync status.
    */
   getSyncStatus(): Promise<SyncStatus>;
@@ -242,6 +279,11 @@ export interface SyncBrowserProxy {
    * Gets a list of stored accounts.
    */
   getStoredAccounts(): Promise<StoredAccount[]>;
+
+  /**
+   * Gets the current profile avatar.
+   */
+  getProfileAvatar(): Promise<string>;
 
   /**
    * Function to invoke when the sync page has been navigated to. This
@@ -313,9 +355,9 @@ export interface SyncBrowserProxy {
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
-  // <if expr="not chromeos_ash">
-  startSignIn() {
-    chrome.send('SyncSetupStartSignIn');
+  // <if expr="not is_chromeos">
+  startSignIn(accessPoint: ChromeSigninAccessPoint) {
+    chrome.send('SyncSetupStartSignIn', [accessPoint]);
   }
 
   signOut(deleteProfile: boolean) {
@@ -325,21 +367,21 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   pauseSync() {
     chrome.send('SyncSetupPauseSync');
   }
+
+  didNavigateToAccountSettingsPage() {
+    chrome.send('ShowAccountSettingsUI');
+  }
+
+  setSyncDatatype(pref: UserSelectableType, value: boolean) {
+    return sendWithPromise('SetDatatype', pref, value);
+  }
+
+  recordSigninPendingOffered() {
+    chrome.send('RecordSigninPendingOffered');
+  }
   // </if>
 
-  getPromoImpressionCount() {
-    return parseInt(
-               window.localStorage.getItem(PROMO_IMPRESSION_COUNT_KEY)!, 10) ||
-        0;
-  }
-
-  incrementPromoImpressionCount() {
-    window.localStorage.setItem(
-        PROMO_IMPRESSION_COUNT_KEY,
-        (this.getPromoImpressionCount() + 1).toString());
-  }
-
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   attemptUserExit() {
     chrome.send('AttemptUserExit');
   }
@@ -357,12 +399,20 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
     chrome.send('SyncStartKeyRetrieval');
   }
 
+  showSyncPassphraseDialog() {
+    chrome.send('SyncShowSyncPassphraseDialog');
+  }
+
   getSyncStatus() {
     return sendWithPromise('SyncSetupGetSyncStatus');
   }
 
   getStoredAccounts() {
     return sendWithPromise('SyncSetupGetStoredAccounts');
+  }
+
+  getProfileAvatar() {
+    return sendWithPromise('SyncSetupGetProfileAvatar');
   }
 
   didNavigateToSyncPage() {

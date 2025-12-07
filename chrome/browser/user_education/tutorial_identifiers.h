@@ -21,4 +21,10 @@ inline constexpr char kPasswordManagerTutorialId[] =
 inline constexpr char kPasswordManagerTutorialMetricPrefix[] =
     "PasswordManager";
 
+inline constexpr char kLensOverlayTutorialId[] = "Lens Overlay Tutorial";
+inline constexpr char kLensOverlayTutorialMetricPrefix[] = "LensOverlay";
+
+inline constexpr char kSplitViewTutorialId[] = "Split View Tutorial";
+inline constexpr char kSplitViewTutorialMetricPrefix[] = "SplitView";
+
 #endif  // CHROME_BROWSER_USER_EDUCATION_TUTORIAL_IDENTIFIERS_H_

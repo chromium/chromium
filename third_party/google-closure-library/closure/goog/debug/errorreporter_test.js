@@ -162,35 +162,7 @@ testSuite({
     assertEquals('trace=Not%20available', MockXhrIo.lastContent);
   },
 
-  /** @suppress {checkTypes} suppression added to enable type checking */
-  test_internetExplorerSendErrorReport() {
-    stubs.set(userAgent, 'IE', true);
-    stubs.set(userAgent, 'isVersionOrHigher', functions.FALSE);
 
-    // Remove test runner's onerror handler so the test doesn't fail.
-    stubs.set(globalThis, 'onerror', null);
-
-    errorReporter = ErrorReporter.install('/errorreporter');
-    globalThis.onerror('Goodbye :(', url, 22);
-    assertEquals(
-        `/errorreporter?script=${encodedUrl}` +
-            '&error=Goodbye%20%3A(&line=22',
-        MockXhrIo.lastUrl);
-    assertEquals('trace=Not%20available', MockXhrIo.lastContent);
-  },
-
-  /** @suppress {checkTypes} suppression added to enable type checking */
-  test_setLoggingHeaders() {
-    stubs.set(userAgent, 'IE', true);
-    stubs.set(userAgent, 'isVersionOrHigher', functions.FALSE);
-    // Remove test runner's onerror handler so the test doesn't fail.
-    stubs.set(globalThis, 'onerror', null);
-
-    errorReporter = ErrorReporter.install('/errorreporter');
-    errorReporter.setLoggingHeaders('header!');
-    globalThis.onerror('Goodbye :(', 'http://www.your.tst/more/bogus.js', 22);
-    assertEquals('header!', MockXhrIo.lastHeaders);
-  },
 
   test_nonInternetExplorerSendErrorReportWithTrace() {
     stubs.set(userAgent, 'IE', false);
@@ -341,12 +313,12 @@ testSuite({
 
   testProtectAdditionalEntryPoint_IE() {
     stubs.set(userAgent, 'IE', true);
-    stubs.set(userAgent, 'isVersionOrHigher', functions.FALSE);
 
     errorReporter = ErrorReporter.install('/errorreporter');
     const fn = () => {};
     const protectedFn = errorReporter.protectAdditionalEntryPoint(fn);
-    assertNull(protectedFn);
+    assertNotNull(protectedFn);
+    assertNotEquals(fn, protectedFn);
   },
 
   testHandleException_dispatchesEvent() {

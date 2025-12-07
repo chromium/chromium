@@ -108,15 +108,22 @@ export class TimelineDataSeries {
   getValuesInternal_(startTime, stepSize, count) {
     const values = [];
     let nextPoint = 0;
-    let currentValue = 0;
     let time = startTime;
+    let previousValue = 0;
     for (let i = 0; i < count; ++i) {
+      let currentValue = null;
+      let numPoints = 0;
       while (nextPoint < this.dataPoints_.length &&
              this.dataPoints_[nextPoint].time < time) {
-        currentValue = this.dataPoints_[nextPoint].value;
+        // In case multiple dataPoints exist within the `stepSize`,
+        // get the average in that interval.
+        currentValue += this.dataPoints_[nextPoint].value;
         ++nextPoint;
+        ++numPoints;
       }
-      values[i] = currentValue;
+      values[i] =
+        (currentValue == null) ? previousValue : (currentValue / numPoints);
+      previousValue = values[i];
       time += stepSize;
     }
     return values;

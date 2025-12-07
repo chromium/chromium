@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/filters/vpx_video_decoder.h"
 
 #include <memory>
@@ -10,6 +15,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -22,6 +28,7 @@
 #include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkData.h"
 
 using ::testing::_;
 
@@ -102,8 +109,7 @@ class VpxVideoDecoderTest : public testing::Test {
         case DecoderStatus::Codes::kOk:
           break;
         case DecoderStatus::Codes::kAborted:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
+          NOTREACHED();
         default:
           DCHECK(output_frames_.empty());
           return status;
@@ -322,7 +328,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 
   scoped_refptr<DecoderBuffer> data =
       ReadTestDataFile("vp9-duplicate-frame.webm");
-  InMemoryUrlProtocol protocol(data->data(), data->size(), false);
+  InMemoryUrlProtocol protocol(*data, false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 
@@ -360,5 +366,66 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
          last_frame->row_bytes(VideoFrame::Plane::kY));
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)
+
+TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
+  Initialize();
+
+  scoped_refptr<DecoderBuffer> data = ReadTestDataFile("vp9-agtm.webm");
+  InMemoryUrlProtocol protocol(*data, false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+
+  auto packet = ScopedAVPacket::Allocate();
+  ASSERT_GE(av_read_frame(glue.format_context(), packet.get()), 0);
+  ASSERT_EQ(packet->side_data_elems, 1);
+  auto buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet));
+  // SAFETY: The best we can do here is trust the size reported by ffmpeg.
+  auto side_data = UNSAFE_BUFFERS(
+      base::span(packet->side_data[0].data, packet->side_data[0].size));
+  ASSERT_EQ(base::U64FromBigEndian(side_data.first<8u>()), 4u);
+  buffer->WritableSideData().itu_t35_data =
+      base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+  DecoderStatus decode_status = Decode(buffer);
+  av_packet_unref(packet.get());
+  ASSERT_TRUE(decode_status.is_ok());
+
+  const auto& frame = output_frames_.front();
+  ASSERT_TRUE(frame->hdr_metadata().has_value());
+  ASSERT_TRUE(frame->hdr_metadata()->agtm.has_value());
+  EXPECT_EQ(frame->hdr_metadata()->agtm->payload->size(), 533u);
+
+  Destroy();
+}
+
+TEST_F(VpxVideoDecoderTest, AgtmMetadataWithItut35CountryCodeExtension) {
+  Initialize();
+
+  scoped_refptr<DecoderBuffer> data =
+      ReadTestDataFile("vp9-agtm-country-code-extension.webm");
+  InMemoryUrlProtocol protocol(*data, false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+
+  auto packet = ScopedAVPacket::Allocate();
+  ASSERT_GE(av_read_frame(glue.format_context(), packet.get()), 0);
+  ASSERT_EQ(packet->side_data_elems, 1);
+  auto buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet));
+  // SAFETY: The best we can do here is trust the size reported by ffmpeg.
+  auto side_data = UNSAFE_BUFFERS(
+      base::span(packet->side_data[0].data, packet->side_data[0].size));
+  ASSERT_EQ(base::U64FromBigEndian(side_data.first<8u>()), 4u);
+  buffer->WritableSideData().itu_t35_data =
+      base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+  DecoderStatus decode_status = Decode(buffer);
+  av_packet_unref(packet.get());
+  ASSERT_TRUE(decode_status.is_ok());
+
+  const auto& frame = output_frames_.front();
+  ASSERT_TRUE(frame->hdr_metadata().has_value());
+  ASSERT_TRUE(frame->hdr_metadata()->agtm.has_value());
+  EXPECT_EQ(frame->hdr_metadata()->agtm->payload->size(), 533u);
+
+  Destroy();
+}
 
 }  // namespace media

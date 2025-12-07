@@ -8,11 +8,17 @@
 #include <map>
 #include <memory>
 
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace media {
 
@@ -22,10 +28,18 @@ class CAPTURE_EXPORT CameraBufferFactory {
 
   virtual ~CameraBufferFactory();
 
-  virtual std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage);
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage,
+      const gfx::ColorSpace& color_space = gfx::ColorSpace());
+
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImageFromGmbHandle(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage,
+      const gfx::ColorSpace& color_space = gfx::ColorSpace());
 
   virtual ChromiumPixelFormat ResolveStreamBufferFormat(
       cros::mojom::HalPixelFormat hal_format,

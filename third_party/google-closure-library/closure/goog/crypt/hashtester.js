@@ -18,6 +18,7 @@ goog.require('goog.testing.PerformanceTable');
 goog.require('goog.testing.PseudoRandom');
 goog.require('goog.testing.asserts');
 goog.setTestOnly('hashTester');
+goog.requireType('goog.crypt.Hash');
 
 
 /**

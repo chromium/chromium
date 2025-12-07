@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -14,21 +15,25 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
+#include "components/cbor/writer.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/enclave/constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device {
 namespace {
@@ -42,6 +47,11 @@ constexpr uint8_t kSignature[] = "signature";
 constexpr uint8_t kUserId[] = "ab";
 constexpr uint8_t kEncryptedPasskey[] = {1, 2, 3, 4};
 constexpr char kClientDataJson[] = "client_data_json";
+constexpr uint8_t kClientDataJsonHash[] = {
+    0x13, 0xb2, 0x37, 0x27, 0x97, 0xd5, 0xca, 0x8a, 0xfa, 0x37, 0xb2,
+    0x91, 0x46, 0x0a, 0x82, 0x83, 0x35, 0x07, 0x0f, 0xea, 0xc6, 0x0f,
+    0xb5, 0x42, 0xbf, 0x2d, 0x7a, 0x03, 0xda, 0xd6, 0xca, 0xf2,
+};
 constexpr char kRpId[] = "test.example";
 constexpr char kGetAssertionRequestJson[] = R"({
     "allowCredentials":[
@@ -93,6 +103,18 @@ constexpr char kGetAssertionHexResponse[] =
 constexpr char kMakeCredentialHexResponse[] =
     "81A1626F6BA3677075625F6B657944050607086776657273696F6E0169656E637279707465"
     "644401020304";
+
+// An example response with the top-level "ok" key, dummy large blob and PRF
+// values.
+constexpr char kCompleteGetAssertionHexResponse[] =
+    "A1626F6B81A1626F6BA3637072661904D268726573706F6E7365A3697369676E6174757265"
+    "A2646461746184185318691867186E6474797065664275666665726A7573657248616E646C"
+    "65A2646461746182186118626474797065664275666665727161757468656E74696361746F"
+    "7244617461A2646461746198251118941822188D18A818FD18BD18EE18FD1826181B18D718"
+    "B61859185C18FD187018A50D187018C61840187B18CF01183D18E9186D184E18FB1718DE01"
+    "000000183B647479706566427566666572696C61726765426C6F62A264726561641904D264"
+    "73697A6501";
+
 constexpr int32_t kWrappedSecretVersion = 952;
 
 struct BadResponseTestCase {
@@ -126,6 +148,14 @@ BadResponseTestCase kFailingMakeCredentialResponses[] = {
      "81A1626F6BA2667075624B657944050607086776657273696F6E01"},
 };
 
+// A single data-driven test that covers all malformed largeBlob cases.
+using BlobBuilder = base::RepeatingCallback<cbor::Value::MapValue()>;
+
+struct LargeBlobFailureCase {
+  BlobBuilder build_blob;
+  const char* expected_error;
+};
+
 sync_pb::WebauthnCredentialSpecifics PasskeyEntity() {
   sync_pb::WebauthnCredentialSpecifics entity =
       sync_pb::WebauthnCredentialSpecifics::default_instance();
@@ -145,6 +175,20 @@ void FakeSigningCallback(
   ret.signature = fido_parsing_utils::Materialize(kSignature);
   ret.key_type = enclave::ClientKeyType::kHardware;
   std::move(callback).Run(std::move(ret));
+}
+
+cbor::Value MakeGetAssertionResponseWithLargeBlob(
+    cbor::Value::MapValue large_blob_map) {
+  std::vector<uint8_t> response_serialized;
+  CHECK(base::HexStringToBytes(kGetAssertionHexResponse, &response_serialized));
+  cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
+  const cbor::Value::MapValue& outer_map = response_cbor.GetArray()[0].GetMap();
+  const cbor::Value::MapValue& success_map =
+      outer_map.find(cbor::Value("ok"))->second.GetMap();
+  const_cast<cbor::Value::MapValue&>(success_map)
+      .insert_or_assign(cbor::Value("largeBlob"),
+                        cbor::Value(std::move(large_blob_map)));
+  return response_cbor;
 }
 
 // Class to receive the result of a BuildCommandRequestBody call. Only usable
@@ -224,12 +268,17 @@ class EnclaveProtocolUtilsTest : public testing::Test {
 
   std::vector<uint8_t> wrapped_secret() { return wrapped_secret_; }
 
+  std::vector<uint8_t> secret() { return secret_; }
+
  private:
   const std::vector<uint8_t> wrapped_secret_ = {1, 2, 3, 4, 5};
+  const std::vector<uint8_t> secret_ = {6, 7, 8, 9, 0};
   std::vector<uint8_t> device_id_;
   std::vector<uint8_t> user_id_;
   std::vector<uint8_t> encrypted_passkey_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kWebAuthenticationHashClientDataJsonForEnclave};
 };
 
 }  // namespace
@@ -240,8 +289,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
   BuildCommandCompletionWaiter waiter;
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kGetAssertionRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kGetAssertionRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -266,9 +315,9 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
               command_map.end());
   EXPECT_TRUE(command_map.find(cbor::Value("wrapped_pin_data")) ==
               command_map.end());
-  EXPECT_EQ(
-      command_map.find(cbor::Value("client_data_json"))->second.GetString(),
-      kClientDataJson);
+  EXPECT_THAT(command_map.find(cbor::Value("client_data_json_hash"))
+                  ->second.GetBytestring(),
+              testing::ElementsAreArray(kClientDataJsonHash));
   auto& request_value_map =
       command_map.find(cbor::Value("request"))->second.GetMap();
   EXPECT_EQ(request_value_map.find(cbor::Value("rpId"))->second.GetString(),
@@ -286,8 +335,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
   BuildCommandCompletionWaiter waiter;
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kGetAssertionRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kGetAssertionRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -322,8 +371,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
 
 TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
   BuildCommandCompletionWaiter waiter;
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kMakeCredentialRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kMakeCredentialRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -358,8 +407,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
 
 TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_WithPIN) {
   BuildCommandCompletionWaiter waiter;
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kMakeCredentialRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kMakeCredentialRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -401,9 +450,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Success) {
   auto parse_result =
       ParseGetAssertionResponse(std::move(response_cbor), cred_id);
   EXPECT_TRUE(
-      absl::holds_alternative<AuthenticatorGetAssertionResponse>(parse_result));
+      std::holds_alternative<AuthenticatorGetAssertionResponse>(parse_result));
   const auto& assertion_response =
-      absl::get<AuthenticatorGetAssertionResponse>(parse_result);
+      std::get<AuthenticatorGetAssertionResponse>(parse_result);
   EXPECT_EQ(assertion_response.user_entity->id,
             std::vector<uint8_t>({'a', 'b'}));
   EXPECT_EQ(assertion_response.credential->id, std::vector<uint8_t>({0, 1, 2}));
@@ -418,8 +467,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Failures) {
     std::vector<uint8_t> cred_id = {0, 1, 2};
     auto parse_result =
         ParseGetAssertionResponse(std::move(response_cbor), cred_id);
-    EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
-                absl::get<ErrorResponse>(parse_result).error_string.has_value())
+    EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result) &&
+                std::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed GetAssertion response parsing for: " << test_case.name;
   }
 }
@@ -437,14 +486,14 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
 
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
-      /*user_verified=*/true);
+      UserPresentAndVerifiedBits::kPresentAndVerified);
   EXPECT_TRUE(
-      (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
-                                         sync_pb::WebauthnCredentialSpecifics>>(
+      (std::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
+                                        sync_pb::WebauthnCredentialSpecifics>>(
           parse_result)));
   const auto& entity =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result)
           .second;
   EXPECT_EQ(entity.rp_id(), std::string(kRpId));
   EXPECT_EQ(entity.user_id(), std::string(user_id().begin(), user_id().end()));
@@ -453,8 +502,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
                                             encrypted_passkey().end()));
 
   const auto& register_response =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result)
           .first;
   auto response_cred_id =
       register_response.attestation_object.authenticator_data()
@@ -467,7 +516,39 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
       register_response.transports->contains(FidoTransportProtocol::kHybrid));
   EXPECT_TRUE(register_response.is_resident_key);
   EXPECT_TRUE(register_response.attestation_object.authenticator_data()
+                  .obtained_user_presence());
+  EXPECT_TRUE(register_response.attestation_object.authenticator_data()
                   .obtained_user_verification());
+}
+
+TEST_F(EnclaveProtocolUtilsTest,
+       ParseMakeCredentialResponse_WithoutUserPresence) {
+  std::vector<uint8_t> response_serialized;
+  CHECK(
+      base::HexStringToBytes(kMakeCredentialHexResponse, &response_serialized));
+  cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
+  CtapMakeCredentialRequest ctap_request(
+      kClientDataJson, PublicKeyCredentialRpEntity(kRpId),
+      PublicKeyCredentialUserEntity(user_id()),
+      PublicKeyCredentialParams(
+          std::vector<PublicKeyCredentialParams::CredentialInfo>()));
+
+  // Passkey upgrade requests yield up=0, uv=0 responses.
+  auto parse_result = ParseMakeCredentialResponse(
+      std::move(response_cbor), ctap_request, kWrappedSecretVersion,
+      UserPresentAndVerifiedBits::kNeither);
+  EXPECT_TRUE(
+      (std::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
+                                        sync_pb::WebauthnCredentialSpecifics>>(
+          parse_result)));
+  const auto& register_response =
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+          .first;
+  EXPECT_FALSE(register_response.attestation_object.authenticator_data()
+                   .obtained_user_presence());
+  EXPECT_FALSE(register_response.attestation_object.authenticator_data()
+                   .obtained_user_verification());
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
@@ -483,9 +564,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
     cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
     auto parse_result = ParseMakeCredentialResponse(
         std::move(response_cbor), ctap_request, kWrappedSecretVersion,
-        /*user_verified=*/false);
-    EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
-                absl::get<ErrorResponse>(parse_result).error_string.has_value())
+        UserPresentAndVerifiedBits::kPresentOnly);
+    EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result) &&
+                std::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed MakeCredential response parsing for: " << test_case.name;
   }
 }
@@ -498,9 +579,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_IntegerFailure) {
   auto parse_result =
       ParseGetAssertionResponse(std::move(response_cbor), cred_id);
 
-  EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
-  EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
-  EXPECT_EQ(*absl::get<ErrorResponse>(parse_result).error_code, 2);
+  EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result));
+  EXPECT_TRUE(std::get<ErrorResponse>(parse_result).error_code.has_value());
+  EXPECT_EQ(*std::get<ErrorResponse>(parse_result).error_code, 2);
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
@@ -515,11 +596,130 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
   cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
-      /*user_verified=*/false);
+      UserPresentAndVerifiedBits::kPresentOnly);
 
-  EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
-  EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
-  EXPECT_EQ(*absl::get<ErrorResponse>(parse_result).error_code, 2);
+  EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result));
+  EXPECT_TRUE(std::get<ErrorResponse>(parse_result).error_code.has_value());
+  EXPECT_EQ(*std::get<ErrorResponse>(parse_result).error_code, 2);
+}
+
+TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_LargeBlob_Failures) {
+  const LargeBlobFailureCase kCases[] = {
+      // Data present but size absent.
+      {base::BindRepeating([]() {
+         cbor::Value::MapValue map;
+         map.emplace(cbor::Value("largeBlobData"),
+                     cbor::Value(std::vector<uint8_t>{1, 2, 3}));
+         return map;
+       }),
+       "Malformed largeBlob: data/size field mismatch in enclave response."},
+
+      // Negative size value.
+      {base::BindRepeating([]() {
+         cbor::Value::MapValue map;
+         map.emplace(cbor::Value("largeBlobData"),
+                     cbor::Value(std::vector<uint8_t>{1, 2, 3}));
+         map.emplace(cbor::Value("largeBlobSize"), cbor::Value(-1));
+         return map;
+       }),
+       "Malformed largeBlob: largeBlobSize must be a non-negative int."},
+
+      // largeBlobWritten is not a boolean.
+      {base::BindRepeating([]() {
+         cbor::Value::MapValue map;
+         map.emplace(cbor::Value("largeBlobWritten"), cbor::Value("not-bool"));
+         return map;
+       }),
+       "Malformed largeBlob: largeBlobWritten is not a boolean."},
+
+      // written == true but encrypted data absent.
+      {base::BindRepeating([]() {
+         cbor::Value::MapValue map;
+         map.emplace(cbor::Value("largeBlobWritten"), cbor::Value(true));
+         return map;
+       }),
+       "Malformed largeBlob: encrypted blob data missing when "
+       "largeBlobWritten is true."},
+  };
+
+  for (const auto& tc : kCases) {
+    auto result = ParseGetAssertionResponse(
+        MakeGetAssertionResponseWithLargeBlob(tc.build_blob.Run()),
+        std::vector<uint8_t>{0x00});
+
+    const auto& err = std::get<ErrorResponse>(result);
+    ASSERT_TRUE(err.error_string);
+    EXPECT_EQ(*err.error_string, tc.expected_error);
+  }
+}
+
+TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_LargeBlob_Success) {
+  cbor::Value::MapValue large_blob_map;
+  large_blob_map.emplace(cbor::Value("largeBlobData"),
+                         cbor::Value(std::vector<uint8_t>{1, 2, 3}));
+  large_blob_map.emplace(cbor::Value("largeBlobSize"), cbor::Value(3));
+
+  auto result = ParseGetAssertionResponse(
+      MakeGetAssertionResponseWithLargeBlob(std::move(large_blob_map)),
+      std::vector<uint8_t>{0x00});
+
+  ASSERT_TRUE(
+      std::holds_alternative<AuthenticatorGetAssertionResponse>(result));
+  const auto& response = std::get<AuthenticatorGetAssertionResponse>(result);
+
+  ASSERT_TRUE(response.large_blob_extension);
+  EXPECT_EQ(response.large_blob_extension->original_size, 3u);
+  EXPECT_THAT(response.large_blob_extension->compressed_data,
+              testing::ElementsAre(1, 2, 3));
+}
+
+TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequest) {
+  auto entity = PasskeyEntity();
+  entity.set_rp_id(kRpId);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kGetAssertionRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  EXPECT_TRUE(parsed_json);
+  auto json_request =
+      base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+  cbor::Value request_cbor = BuildGetAssertionCommand(
+      std::move(entity), json_request, kClientDataJson,
+      /*claimed_pin=*/nullptr, /*wrapped_secret=*/std::nullopt, secret());
+  cbor::Value redacted = RedactEnclaveRequest(request_cbor);
+  ASSERT_TRUE(redacted.is_map());
+  const auto& redacted_map = redacted.GetMap();
+  const auto& redacted_value =
+      redacted_map.find(cbor::Value(kRequestSecretKey))->second;
+  EXPECT_EQ(redacted_value.GetString(), "[redacted]");
+}
+
+TEST_F(EnclaveProtocolUtilsTest, RedactErroneousEnclaveRequest) {
+  cbor::Value request = cbor::Value("not a valid request");
+  EXPECT_EQ(cbor::Writer::Write(RedactEnclaveRequest(request)),
+            cbor::Writer::Write(request));
+}
+
+TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveResponse) {
+  std::vector<uint8_t> response_serialized;
+  CHECK(base::HexStringToBytes(kCompleteGetAssertionHexResponse,
+                               &response_serialized));
+  cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
+
+  const cbor::Value redacted = RedactEnclaveResponse(response_cbor);
+  const cbor::Value::MapValue& redacted_outer_map =
+      redacted.GetMap().find(cbor::Value("ok"))->second.GetArray()[0].GetMap();
+  const cbor::Value::MapValue& redacted_map =
+      redacted_outer_map.find(cbor::Value("ok"))->second.GetMap();
+  const auto& large_blob_value =
+      redacted_map.find(cbor::Value("largeBlob"))->second;
+  EXPECT_EQ(large_blob_value.GetString(), "[redacted]");
+  const auto& prf_value = redacted_map.find(cbor::Value("prf"))->second;
+  EXPECT_EQ(prf_value.GetString(), "[redacted]");
+}
+
+TEST_F(EnclaveProtocolUtilsTest, RedactErroneousEnclaveResponse) {
+  cbor::Value response = cbor::Value("not a valid response");
+  EXPECT_EQ(cbor::Writer::Write(RedactEnclaveResponse(response)),
+            cbor::Writer::Write(response));
 }
 
 }  // namespace enclave

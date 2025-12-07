@@ -25,9 +25,9 @@ enum SelectionMode { "select", "start", "end", "preserve" };
 
 [
     Exposed=Window,
-    HTMLConstructor,
     ActiveScriptWrappable
 ] interface HTMLInputElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute DOMString accept;
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, ImplementedAs=IDLExposedAutofillValue] attribute DOMString autocomplete;
@@ -35,7 +35,9 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [ImplementedAs=checkedForBinding] attribute boolean checked;
     [CEReactions, Reflect] attribute DOMString dirName;
     [CEReactions, Reflect] attribute boolean disabled;
-    [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     // The 'files' attribute is intentionally not readonly.
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22682
     attribute FileList? files;
@@ -46,7 +48,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [CEReactions, Reflect] attribute DOMString formTarget;
     [CEReactions] attribute unsigned long height;
     attribute boolean indeterminate;
-    readonly attribute HTMLElement? list;
+    [ImplementedAs=listForBinding] readonly attribute HTMLElement? list;
     [CEReactions, Reflect] attribute DOMString max;
     [CEReactions, RaisesException=Setter] attribute long maxLength;
     [CEReactions, Reflect] attribute DOMString min;
@@ -112,6 +114,4 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [Reflect, MeasureAs=IncrementalAttribute] attribute boolean incremental;
 };
 
-HTMLInputElement includes PopoverInvokerElement;
-HTMLInputElement includes InvokerElement;
-HTMLInputElement includes InterestInvokerElement;
+HTMLInputElement includes PopoverTargetAttributes;

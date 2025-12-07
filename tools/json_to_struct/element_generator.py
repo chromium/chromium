@@ -24,20 +24,20 @@ def _JSONToCString16(json_string_literal):
 
 def _GenerateString(content, lines, indent='  '):
   """Generates an UTF-8 string to be included in a static structure initializer.
-  If content is not specified, uses NULL.
+  If content is not specified, uses nullptr.
   """
   if content is None:
-    lines.append(indent + 'NULL,')
+    lines.append(indent + 'nullptr,')
   else:
     # json.dumps quotes the string and escape characters as required.
     lines.append(indent + '%s,' % json.dumps(content))
 
 def _GenerateString16(content, lines, indent='  '):
   """Generates an UTF-16 string to be included in a static structure
-  initializer. If content is not specified, uses NULL.
+  initializer. If content is not specified, uses nullptr.
   """
   if content is None:
-    lines.append(indent + 'NULL,')
+    lines.append(indent + 'nullptr,')
   else:
     # json.dumps quotes the string and escape characters as required.
     lines.append(indent + 'u%s,' % _JSONToCString16(json.dumps(content)))
@@ -55,12 +55,11 @@ def _GenerateArrayVariableName(element_name, field_name, field_name_count):
 def _GenerateArray(element_name, field_info, content, lines, indent,
                    field_name_count):
   """Generates an array to be included in a static structure initializer. If
-  content is not specified, uses NULL. The array is assigned to a temporary
+  content is not specified, uses nullptr. The array is assigned to a temporary
   variable which is initialized before the structure.
   """
-  if content is None:
-    lines.append(indent + 'NULL,')
-    lines.append(indent + '0,')  # Size of the array.
+  if not content:
+    lines.append(indent + '{},')
     return
 
   # Create a new array variable and use it in the structure initializer.
@@ -69,7 +68,6 @@ def _GenerateArray(element_name, field_info, content, lines, indent,
   var = _GenerateArrayVariableName(element_name, field_info['field'],
                                    field_name_count)
   lines.append(indent + '%s,' % var)
-  lines.append(indent + '%s,' % len(content))  # Size of the array.
   # Generate the array content.
   array_lines = []
   field_info['contents']['field'] = var;
@@ -88,10 +86,10 @@ def _GenerateArray(element_name, field_info, content, lines, indent,
 def _GenerateStruct(element_name, field_info, content, lines, indent,
                     field_name_count):
   """Generates a struct to be included in a static structure initializer. If
-  content is not specified, uses {0}.
+  content is not specified, uses {}.
   """
   if content is None:
-    lines.append(indent + '{0},')
+    lines.append(indent + '{},')
     return
 
   fields = field_info['fields']
@@ -112,7 +110,11 @@ def GenerateFieldContent(element_name, field_info, content, lines, indent,
     content = field_info.get('default', None)
   type = field_info['type']
   if type in ('int', 'enum', 'class'):
-    lines.append('%s%s,' % (indent, content))
+    if isinstance(content, bool):
+      # Re-format Python `True` and `False` as C++ `true` and `false`.
+      lines.append('%s%s,' % (indent, str(content).lower()))
+    else:
+      lines.append('%s%s,' % (indent, content))
   elif type == 'string':
     _GenerateString(content, lines, indent)
   elif type == 'string16':

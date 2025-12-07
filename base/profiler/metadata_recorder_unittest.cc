@@ -4,9 +4,9 @@
 
 #include "base/profiler/metadata_recorder.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -305,7 +305,7 @@ TEST(MetadataRecorderTest, ReclaimInactiveSlots) {
   }
 
   MetadataRecorder::ItemArray items_arr;
-  ranges::copy(items_set, items_arr.begin());
+  std::ranges::copy(items_set, items_arr.begin());
 
   MetadataRecorder::ItemArray recorder_items;
   size_t recorder_item_count =

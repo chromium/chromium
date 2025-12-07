@@ -4,7 +4,10 @@
 
 package org.chromium.components.sync;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class provides some utility functions to deal with sync passphrases. */
+@NullMarked
 public class Passphrase {
     /**
      * Returns whether a passphrase type represents an "explicit" passphrase, which usually means

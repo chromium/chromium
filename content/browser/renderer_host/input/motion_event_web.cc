@@ -45,9 +45,8 @@ ui::MotionEvent::Action GetActionFrom(const WebTouchEvent& event) {
     default:
       break;
   };
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "Unable to derive a valid MotionEvent::Action from the WebTouchEvent.";
-  return ui::MotionEvent::Action::CANCEL;
 }
 
 int GetActionIndexFrom(const WebTouchEvent& event) {
@@ -127,6 +126,11 @@ float MotionEventWeb::GetTouchMinor(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
   return 2.f * std::min(event_.touches[pointer_index].radius_x,
                         event_.touches[pointer_index].radius_y);
+}
+
+bool MotionEventWeb::HasNativeTouchMajor(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, GetPointerCount());
+  return true;
 }
 
 float MotionEventWeb::GetOrientation(size_t pointer_index) const {
@@ -215,8 +219,7 @@ ui::MotionEvent::ToolType MotionEventWeb::GetToolType(
     case WebPointerProperties::PointerType::kTouch:
       return ToolType::FINGER;
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected pointerType";
-  return ToolType::UNKNOWN;
+  NOTREACHED() << "Unexpected pointerType";
 }
 
 int MotionEventWeb::GetButtonState() const {

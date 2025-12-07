@@ -9,6 +9,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "net/ssl/ssl_info.h"
 
 namespace content {
 

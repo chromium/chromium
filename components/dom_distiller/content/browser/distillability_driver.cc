@@ -124,7 +124,8 @@ void DistillabilityDriver::OnDistillability(
       DistillabilityResultPageData::GetForPage(
           GetWebContents().GetPrimaryPage());
   page_data->distillability_result = result;
-  latest_result_ = result;
+  page_data->distillability_result.url = GetWebContents().GetVisibleURL();
+  latest_result_ = page_data->distillability_result;
   for (auto& observer : observers_)
     observer.OnResult(result);
 }

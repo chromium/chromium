@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1243314992276662751">上传</translation>
+<translation id="1253734725326687145">触摸目标已移至右上角。点按此处。</translation>
 <translation id="1266864766717917324">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win 键</translation>
 <translation id="1291104554099683393">请尝试使用较小的文本块进行分享。</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">这是一项新功能</translation>
 <translation id="2006524834898217237">请确保此设备已连接到互联网。</translation>
 <translation id="208586643495776849">请重试</translation>
+<translation id="2111134541987263231">开启<ph name="BEGIN_BOLD" />在无痕模式下启用<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2168039046890040389">向上翻页</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">点按您屏幕上的触摸目标。</translation>
 <translation id="2295140143284145483">调查问卷</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}other{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}}</translation>
 <translation id="2353636109065292463">检查互联网连接状况</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2388990488038464401">要用手机拨打此号码？</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="24452542372838207">展开通知</translation>
 <translation id="2445449901874883781">使用高密度</translation>
+<translation id="2448407890032181691">触摸目标已移至右下角。点按此处。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">所有文件</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">全部删除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 天后}other{# 天后}}</translation>
 <translation id="2922712708897119705">“<ph name="COLUMN_NAME" />”列目前是按降序排列。</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{找不到扩展程序}other{找不到扩展程序}}</translation>
 <translation id="3036649622769666520">打开文件</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">通过以下方式拨打电话：</translation>
 <translation id="3306688585798492231">内置显示屏</translation>
 <translation id="335581015389089642">语音</translation>
+<translation id="3372635229069101468">点击<ph name="BEGIN_BOLD" />详细信息<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">文本过长</translation>
 <translation id="3406306243914553062">HTML 内容</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{还剩 1 天}other{还剩 # 天}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">“<ph name="COLUMN_NAME" />”列目前是按升序排列。</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 条未读通知}other{# 条未读通知}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{在无痕模式下启用以下扩展程序：}other{在无痕模式下启用以下扩展程序：}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 个月前}other{# 个月前}}</translation>
+<translation id="4277033906326892359">“<ph name="COLUMN_NAME" />”列目前是按升序排列</translation>
 <translation id="4289300219472526559">开始讲话</translation>
 <translation id="4289540628985791613">概述</translation>
 <translation id="4491109536499578614">图片</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">电话号码</translation>
 <translation id="4746179598275229723">已取消固定该扩展程序</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{还有 1 个月的时间}other{还有 # 个月的时间}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{若想使用无痕模式，您所在的组织要求您安装一个扩展程序}other{若想使用无痕模式，您所在的组织要求您安装一些扩展程序}}</translation>
+<translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">致电</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">粘贴(&amp;P)</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">发送失败</translation>
+<translation id="5283101102242354279">要在无痕模式下启用扩展程序，请执行以下操作：</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>
 <translation id="5361107212971249203">文字</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">网页加载失败，因为未安装开发者界面模块 (dev_ui)</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> 系统</translation>
 <translation id="5583640892426849032">退格</translation>
+<translation id="5606865426897221650">Tab 键</translation>
 <translation id="5613020302032141669">向左箭头</translation>
 <translation id="5633029987065897167">空白</translation>
+<translation id="5651438382973553530">触摸目标已移至左下角。点按此处。</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 分钟}other{# 分钟}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{今天曾有活动}=1{1 天前曾有活动}other{# 天前曾有活动}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 天 }other{# 天 }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">图片。</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 年后}other{# 年后}}</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{还剩 1 秒}other{还剩 # 秒}}</translation>
@@ -144,13 +158,14 @@
 <translation id="6007284015834422026">已固定该扩展程序</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6117103120090651229">居中的按钮</translation>
-<translation id="6129953537138746214">空格</translation>
+<translation id="6129953537138746214">空格键</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">已选择“<ph name="ROW_NAME" />”。</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
 <translation id="6346952829206698721">从剪贴板中粘贴</translation>
 <translation id="6364916375976753737">向左滚动</translation>
+<translation id="63712816010840859">如果当前显示屏不是触摸屏，请按 Esc 键。</translation>
 <translation id="6394627529324717982">逗号</translation>
 <translation id="6397363302884558537">停止讲话</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">要退出校准模式，请按 Esc 键。</translation>
 <translation id="6620110761915583480">保存文件</translation>
 <translation id="6699343763173986273">媒体下一曲</translation>
+<translation id="6738856801552481343">如果此显示屏不是触摸屏，请按 Esc 键。</translation>
+<translation id="6807086321996342431">“<ph name="COLUMN_NAME" />”列</translation>
 <translation id="6808150112686056157">媒体停止</translation>
 <translation id="6845383723252244143">选择文件夹</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{还剩 1 小时}other{还剩 # 小时}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">您的应用的显示设置会在下次重启此应用时生效。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{还剩 1 分钟}other{还剩 # 分钟}}</translation>
+<translation id="7252604552361840748">查找以上扩展程序</translation>
 <translation id="7363164521834647158">发送回复</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 分钟前}other{# 分钟前}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Cmd 键</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{超过 1 条未读通知}other{超过 # 条未读通知}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 分钟后}other{# 分钟后}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">号码源自 <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 小时前}other{# 小时前}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{还剩 1 秒}other{还剩 # 秒}}</translation>
 <translation id="8134065097954893699">重新加载此页</translation>
+<translation id="813785873406874127">“<ph name="COLUMN_NAME" />”列已取消排序</translation>
 <translation id="815598010540052116">向下滚动</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">向下翻页</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">十六进制颜色值</translation>
 <translation id="8328145009876646418">左边缘</translation>
 <translation id="8331626408530291785">向上滚动</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8394908167088220973">媒体播放/暂停</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 年}other{# 年}}</translation>
+<translation id="8582972250170726813">“<ph name="COLUMN_NAME" />”列目前是按降序排列</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> 文件 (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
@@ -225,7 +243,9 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="9059834730836941392">收起通知</translation>
 <translation id="9170848237812810038">撤消(&amp;U)</translation>
-<translation id="932327136139879170">首页</translation>
+<translation id="9195990613383871904">明天</translation>
+<translation id="928628199082367701">Super</translation>
+<translation id="932327136139879170">家</translation>
 <translation id="944069440740578670">未读通知</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>
 </translationbundle>

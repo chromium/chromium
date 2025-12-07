@@ -12,7 +12,7 @@ MockAutoEnrollmentCheckScreen::MockAutoEnrollmentCheckScreen(
     const base::RepeatingCallback<void(Result result)>& exit_callback)
     : AutoEnrollmentCheckScreen(std::move(view), error_screen, exit_callback) {}
 
-MockAutoEnrollmentCheckScreen::~MockAutoEnrollmentCheckScreen() {}
+MockAutoEnrollmentCheckScreen::~MockAutoEnrollmentCheckScreen() = default;
 
 void MockAutoEnrollmentCheckScreen::RealShow() {
   AutoEnrollmentCheckScreen::ShowImpl();

@@ -89,7 +89,10 @@ class SubtleCrypto final : public ScriptWrappable {
                                      bool extractable,
                                      const Vector<String>& key_usages,
                                      ExceptionState&);
-  ScriptPromise<IDLAny> exportKey(ScriptState*, const String&, CryptoKey*);
+  ScriptPromise<IDLAny> exportKey(ScriptState*,
+                                  const String&,
+                                  CryptoKey*,
+                                  ExceptionState&);
 
   ScriptPromise<IDLAny> wrapKey(ScriptState*,
                                 const String&,
@@ -110,7 +113,7 @@ class SubtleCrypto final : public ScriptWrappable {
   ScriptPromise<DOMArrayBuffer> deriveBits(ScriptState*,
                                            const V8AlgorithmIdentifier*,
                                            CryptoKey*,
-                                           unsigned,
+                                           std::optional<unsigned>,
                                            ExceptionState&);
   ScriptPromise<IDLAny> deriveKey(ScriptState*,
                                   const V8AlgorithmIdentifier*,

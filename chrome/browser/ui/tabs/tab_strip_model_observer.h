@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -15,10 +16,16 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
+namespace tabs {
+class TabGroupTabCollection;
+}  // namespace tabs
 
 namespace content {
 class WebContents;
@@ -48,43 +55,40 @@ class TabStripModelChange {
  public:
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
 
-  // Used to specify what will happen with the WebContents after it is removed.
+  // Used to specify what will happen with the tab after it is removed.
   enum class RemoveReason {
-    // WebContents will be deleted.
+    // Tab will be deleted.
     kDeleted,
 
-    // WebContents got detached from a TabStrip and inserted into another
-    // TabStrip.
-    kInsertedIntoOtherTabStrip
-  };
+    // Tab got detached from a TabStrip and inserted into another TabStrip.
+    kInsertedIntoOtherTabStrip,
 
-  // Base class for all changes.
-  // TODO(dfried): would love to change this whole thing into a std::variant,
-  // but C++17 features are not yet approved for use in chromium.
-  struct Delta {
-    virtual ~Delta() = default;
-
-    virtual void WriteIntoTrace(perfetto::TracedValue context) const = 0;
+    // Insert the WebContents into side panel.
+    kInsertedIntoSidePanel
   };
 
   struct RemovedTab {
-    RemovedTab(content::WebContents* contents,
+    RemovedTab(tabs::TabInterface* tab,
                int index,
                RemoveReason remove_reason,
+               tabs::TabInterface::DetachReason tab_detach_reason,
                std::optional<SessionID> session_id);
     virtual ~RemovedTab();
     RemovedTab(RemovedTab&& other);
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    raw_ptr<content::WebContents, DanglingUntriaged> contents;
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> contents = nullptr;
     int index;
     RemoveReason remove_reason;
+    tabs::TabInterface::DetachReason tab_detach_reason;
     std::optional<SessionID> session_id;
   };
 
   struct ContentsWithIndex {
-    raw_ptr<content::WebContents> contents;
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> contents = nullptr;
     int index;
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -92,14 +96,14 @@ class TabStripModelChange {
 
   // WebContents were inserted. This implicitly changes the existing selection
   // model by calling IncrementFrom(index) on each index in |contents[i].index|.
-  struct Insert : public Delta {
+  struct Insert {
     Insert();
-    ~Insert() override;
+    ~Insert();
     Insert(Insert&& other);
     Insert& operator=(Insert&& other);
 
-    // Contains the web contents that were inserted, along with their indexes at
-    // the time of insertion. For example, if we inserted elements:
+    // Contains the tabs that were inserted, along with their indexes at the
+    // time of insertion. For example, if we inserted elements:
     //
     // Before insertion:
     // A B C D
@@ -109,34 +113,33 @@ class TabStripModelChange {
     // A X Y B C Z D
     // 0 1 2 3 4 5 6
     //
-    // If the tabs were inserted in the order X, Y, Z, |contents| would contain:
+    // If the tabs were inserted in the order X, Y, Z, `contents` would contain:
     // { X, 1 }, { Y, 2 }, { Z, 5 }
     //
-    // But if the contents were inserted in the order Z, Y, X, |contents| would
+    // But if the contents were inserted in the order Z, Y, X, `contents` would
     // contain:
     // { Z, 3 }, { Y, 1 }, { X, 1 }
     //
-    // Therefore all observers which store indices of web contents should update
-    // them in the order the web contents appear in |contents|. Observers should
-    // not do index-based queries based on their own internally-stored indices
-    // until after processing all of |contents|.
+    // Therefore all observers which store indices of tabs should update them in
+    // the order the tabs appear in `contents`. Observers should not do
+    // index-based queries based on their own internally-stored indices until
+    // after processing all of `contents`.
     std::vector<ContentsWithIndex> contents;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   // WebContents were removed at |indices_before_removal|. This implicitly
   // changes the existing selection model by calling DecrementFrom(index).
-  struct Remove : public Delta {
+  struct Remove {
     Remove();
-    ~Remove() override;
+    ~Remove();
     Remove(Remove&& other);
     Remove& operator=(Remove&& other);
 
-    // Contains the list of web contents removed with their indexes at
-    // the time of removal along with flag |remove_reason| that indicates if
-    // the web contents will be deleted or not after removing. For example, if
-    // we removed elements:
+    // Contains the list of tabs removed with their indexes at the time of
+    // removal along with flag `remove_reason` that indicates i the tab will be
+    // deleted or not after removing. For example, if we removed elements:
     //
     // Before removal:
     // A B C D E F G
@@ -146,41 +149,43 @@ class TabStripModelChange {
     // A D E G
     // 0 1 2 3
     //
-    // If the tabs were removed in the order B, C, F, |contents| would contain:
+    // If the tabs were removed in the order B, C, F, `contents` would contain:
     // { B, 1 }, { C, 1 }, { F, 3 }
     //
-    // But if the tabs were removed in the order F, C, B, then |contents| would
+    // But if the tabs were removed in the order F, C, B, then `contents` would
     // contain:
     // { F, 5 }, { C, 2 }, { B, 1 }
     //
-    // Therefore all observers which store indices of web contents should update
-    // them in the order the web contents appear in |contents|. Observers should
-    // not do index-based queries based on their own internally-stored indices
-    // until after processing all of |contents|.
+    // Therefore all observers which store indices of tabs should update them
+    // in the order the tabs appear in `contents`. Observers should  not do
+    // index-based queries based on their own internally-stored indices until
+    // after processing all of `contents`.
     std::vector<RemovedTab> contents;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
-  // A WebContents was moved from |from_index| to |to_index|. This implicitly
-  // changes the existing selection model by calling
-  // Move(from_index, to_index, 1).
-  struct Move : public Delta {
-    raw_ptr<content::WebContents> contents;
+  // A tab was moved from `from_index` to `to_index`. This implicitly changes
+  // the existing selection model by calling Move(from_index, to_index, 1).
+  struct Move {
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> contents = nullptr;
     int from_index;
     int to_index;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
-  // The WebContents was replaced at the specified index. This is invoked when
-  // prerendering swaps in a prerendered WebContents.
-  struct Replace : public Delta {
-    raw_ptr<content::WebContents> old_contents;
-    raw_ptr<content::WebContents> new_contents;
+  // The tab was replaced at the specified index. This is invoked when
+  // prerendering swaps in a prerendered WebContents or when a tab's WebContents
+  // is discarded to save memory.
+  struct Replace {
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> old_contents = nullptr;
+    raw_ptr<content::WebContents> new_contents = nullptr;
     int index;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   TabStripModelChange();
@@ -201,10 +206,13 @@ class TabStripModelChange {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
-  TabStripModelChange(Type type, std::unique_ptr<Delta> delta);
+  using Delta = std::variant<Insert, Remove, Move, Replace>;
+
+  TabStripModelChange(Type type, Delta delta);
 
   const Type type_ = kSelectionOnly;
-  std::unique_ptr<Delta> delta_;
+
+  Delta delta_;
 };
 
 // Struct to carry changes on selection/activation.
@@ -218,10 +226,16 @@ struct TabStripSelectionChange {
   // Fill TabStripSelectionChange with given |contents| and |selection_model|.
   // note that |new_contents| and |new_model| will be filled too so that
   // selection_changed() and active_tab_changed() won't return true.
-  TabStripSelectionChange(content::WebContents* contents,
+  TabStripSelectionChange(tabs::TabInterface* tab,
                           const ui::ListSelectionModel& model);
 
-  bool active_tab_changed() const { return old_contents != new_contents; }
+  bool active_tab_changed() const {
+    // This could be `old_tab != new_tab`, except for tab discarding, where
+    // it's the same tab with different contents. Some observers want to
+    // treat tab discarding as a selection change, e.g. to update their
+    // observations.
+    return old_contents != new_contents;
+  }
 
   // TODO(sangwoo.ko) Do we need something to indicate that the change
   // was made implicitly?
@@ -229,9 +243,11 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> old_contents =
-      nullptr;
-  raw_ptr<content::WebContents, DanglingUntriaged> new_contents = nullptr;
+  raw_ptr<tabs::TabInterface> old_tab = nullptr;
+  raw_ptr<tabs::TabInterface> new_tab = nullptr;
+
+  raw_ptr<content::WebContents> old_contents = nullptr;
+  raw_ptr<content::WebContents> new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;
@@ -253,11 +269,17 @@ struct TabGroupChange {
   enum Type {
     kCreated,
     kEditorOpened,
-    kContentsChanged,
     kVisualsChanged,
     kMoved,
     kClosed
   };
+
+  enum class TabGroupCreationReason {
+    kNewGroupCreated,
+    kInsertedFromAnotherTabstrip
+  };
+
+  enum class TabGroupClosureReason { kGroupClosed, kDetachedToAnotherTabstrip };
 
   // Base class for all changes. Similar to TabStripModelChange::Delta.
   struct Delta {
@@ -272,6 +294,32 @@ struct TabGroupChange {
     raw_ptr<const tab_groups::TabGroupVisualData> new_visuals = nullptr;
   };
 
+  struct CreateChange : public Delta {
+    CreateChange(TabGroupCreationReason reason,
+                 tabs::TabGroupTabCollection* detached_group);
+    ~CreateChange() override;
+
+    TabGroupCreationReason reason() const { return reason_; }
+    std::vector<tabs::TabInterface*> GetDetachedTabs() const;
+
+   private:
+    TabGroupCreationReason reason_;
+    raw_ptr<tabs::TabGroupTabCollection> detached_group_;
+  };
+
+  struct CloseChange : public Delta {
+    CloseChange(TabGroupClosureReason reason,
+                tabs::TabGroupTabCollection* detached_group);
+    ~CloseChange() override;
+
+    TabGroupClosureReason reason() const { return reason_; }
+    std::vector<tabs::TabInterface*> GetDetachedTabs() const;
+
+   private:
+    TabGroupClosureReason reason_;
+    raw_ptr<tabs::TabGroupTabCollection> detached_group_;
+  };
+
   TabGroupChange(TabStripModel* model,
                  tab_groups::TabGroupId group,
                  Type type,
@@ -279,11 +327,154 @@ struct TabGroupChange {
   TabGroupChange(TabStripModel* model,
                  tab_groups::TabGroupId group,
                  VisualsChange deltap);
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
+                 CreateChange deltap);
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
+                 CloseChange deltap);
+
   ~TabGroupChange();
 
   const VisualsChange* GetVisualsChange() const;
+  const CreateChange* GetCreateChange() const;
+  const CloseChange* GetCloseChange() const;
 
   tab_groups::TabGroupId group;
+  raw_ptr<TabStripModel> model;
+  Type type;
+
+ private:
+  std::unique_ptr<Delta> delta;
+};
+
+struct SplitTabChange {
+  enum class Type { kAdded, kVisualsChanged, kContentsChanged, kRemoved };
+
+  enum class SplitTabAddReason {
+    kNewSplitTabAdded,
+    kSplitTabUpdated,
+    kInsertedFromAnotherTabstrip
+  };
+
+  enum class SplitTabRemoveReason {
+    kSplitTabRemoved,
+    kSplitTabUpdated,
+    kDetachedToAnotherTabstrip
+  };
+
+  enum class SplitVisualChangeReason {
+    kLayoutUpdated,
+    kRatioUpdated,
+  };
+
+  // Base class for all changes. Similar to TabStripModelChange::Delta.
+  struct Delta {
+    virtual ~Delta() = default;
+  };
+
+  struct AddedChange : public Delta {
+    AddedChange(const std::vector<std::pair<tabs::TabInterface*, int>>& tabs,
+                SplitTabAddReason reason,
+                const split_tabs::SplitTabVisualData& visual_data);
+    ~AddedChange() override;
+    AddedChange(const AddedChange&);
+
+    const std::vector<std::pair<tabs::TabInterface*, int>>& tabs() const {
+      return tabs_;
+    }
+    const split_tabs::SplitTabVisualData& visual_data() const {
+      return visual_data_;
+    }
+    SplitTabAddReason reason() const { return reason_; }
+
+   private:
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs_;
+    SplitTabAddReason reason_;
+    split_tabs::SplitTabVisualData visual_data_;
+  };
+
+  struct VisualsChange : public Delta {
+    VisualsChange(const split_tabs::SplitTabVisualData& old_visual_data,
+                  const split_tabs::SplitTabVisualData& new_visual_data,
+                  SplitVisualChangeReason reason);
+    ~VisualsChange() override;
+
+    const split_tabs::SplitTabVisualData& old_visual_data() const {
+      return old_visual_data_;
+    }
+    const split_tabs::SplitTabVisualData& new_visual_data() const {
+      return new_visual_data_;
+    }
+
+    SplitVisualChangeReason reason() const { return reason_; }
+
+   private:
+    split_tabs::SplitTabVisualData old_visual_data_;
+    split_tabs::SplitTabVisualData new_visual_data_;
+    SplitVisualChangeReason reason_;
+  };
+
+  struct ContentsChange : public Delta {
+    ContentsChange(
+        const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
+        const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs);
+    ~ContentsChange() override;
+    ContentsChange(const ContentsChange&);
+
+    const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs() const {
+      return prev_tabs_;
+    }
+    const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs() const {
+      return new_tabs_;
+    }
+
+   private:
+    std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs_;
+    std::vector<std::pair<tabs::TabInterface*, int>> new_tabs_;
+  };
+
+  struct RemovedChange : public Delta {
+    RemovedChange(const std::vector<std::pair<tabs::TabInterface*, int>>& tabs,
+                  SplitTabRemoveReason reason);
+    ~RemovedChange() override;
+    RemovedChange(const RemovedChange&);
+
+    const std::vector<std::pair<tabs::TabInterface*, int>>& tabs() const {
+      return tabs_;
+    }
+    SplitTabRemoveReason reason() const { return reason_; }
+
+   private:
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs_;
+    SplitTabRemoveReason reason_;
+  };
+
+  SplitTabChange(TabStripModel* model,
+                 split_tabs::SplitTabId split_id,
+                 Type type,
+                 std::unique_ptr<Delta> deltap);
+  SplitTabChange(TabStripModel* model,
+                 split_tabs::SplitTabId split_id,
+                 AddedChange deltap);
+  SplitTabChange(TabStripModel* model,
+                 split_tabs::SplitTabId split_id,
+                 VisualsChange deltap);
+  SplitTabChange(TabStripModel* model,
+                 split_tabs::SplitTabId split_id,
+                 ContentsChange deltap);
+  SplitTabChange(TabStripModel* model,
+                 split_tabs::SplitTabId split_id,
+                 RemovedChange deltap);
+
+  ~SplitTabChange();
+
+  const AddedChange* GetAddedChange() const;
+  const VisualsChange* GetVisualsChange() const;
+  const ContentsChange* GetContentsChange() const;
+  const RemovedChange* GetRemovedChange() const;
+
+  split_tabs::SplitTabId split_id;
   raw_ptr<TabStripModel> model;
   Type type;
 
@@ -357,11 +548,21 @@ class TabStripModelObserver {
   // independent of the tabstrip model and do not affect any tab state.
   virtual void OnTabGroupChanged(const TabGroupChange& change);
 
+  // Called when the "GroupFocused" state changes. This will happen before the
+  // group is fully destroyed.
+  virtual void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id);
+
   // Notfies us when a Tab Group is added to the Tab Group Model.
   virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
 
   // Notfies us when a Tab Group will be removed from the Tab Group Model.
   virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);
+
+  // Notifies us when there is a change to split tab state in the TabStripModel.
+  // The |change| provides details of the change to split tab.
+  virtual void OnSplitTabChanged(const SplitTabChange& change);
 
   // The specified WebContents at |index| changed in some way. |contents|
   // may be an entirely different object and the old value is no longer
@@ -383,10 +584,13 @@ class TabStripModelObserver {
   virtual void TabBlockedStateChanged(content::WebContents* contents,
                                       int index);
 
-  // Called when the tab at |index| is added to the group with id |group|.
+  // Called when the tab at `index` is added to the group with id `new_group` or
+  // removed from a group with id `old_group`.
   virtual void TabGroupedStateChanged(
-      std::optional<tab_groups::TabGroupId> group,
-      content::WebContents* contents,
+      TabStripModel* tab_strip_model,
+      std::optional<tab_groups::TabGroupId> old_group,
+      std::optional<tab_groups::TabGroupId> new_group,
+      tabs::TabInterface* tab,
       int index);
 
   // The TabStripModel now no longer has any tabs. The implementer may
@@ -411,10 +615,15 @@ class TabStripModelObserver {
   virtual void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                    CloseAllStoppedReason reason);
 
-  // The specified tab at |index| requires the display of a UI indication to the
+  // The specified tab at `index` requires the display of a UI indication to the
   // user that it needs their attention. The UI indication is set iff
-  // |attention| is true.
+  // `attention` is true.
   virtual void SetTabNeedsAttentionAt(int index, bool attention);
+
+  // Similar to SetTabNeedsAttentionAt but for Tab Groups. The UI indication is
+  // set iff `attention` is true.
+  virtual void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
+                                         bool attention);
 
   // Called when an observed TabStripModel is beginning destruction.
   virtual void OnTabStripModelDestroyed(TabStripModel* tab_strip_model);

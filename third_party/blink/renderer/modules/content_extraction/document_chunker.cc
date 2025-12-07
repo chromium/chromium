@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -19,13 +21,16 @@ namespace {
 
 // Checks for excluded tags. Text within these will be excluded from passages.
 bool IsExcludedElement(const Node& node) {
-  const HTMLElement* html_element = DynamicTo<HTMLElement>(node);
-  if (!html_element) {
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
     return false;
   }
-  return html_element->HasTagName(html_names::kNoscriptTag) ||
-         html_element->HasTagName(html_names::kScriptTag) ||
-         html_element->HasTagName(html_names::kStyleTag);
+  return element->HasTagName(html_names::kNoscriptTag) ||
+         element->HasTagName(html_names::kScriptTag) ||
+         element->HasTagName(html_names::kStyleTag) ||
+         element->HasTagName(svg_names::kDefsTag) ||
+         element->HasTagName(svg_names::kStyleTag) ||
+         element->HasTagName(svg_names::kScriptTag);
 }
 
 // Checks for tags that indicate a section break. Sibling nodes will not be
@@ -88,6 +93,9 @@ Vector<String> DocumentChunker::Chunk(const Node& tree) {
   if (max_passages_ != 0 && passages.size() > max_passages_) {
     passages.Shrink(max_passages_);
   }
+  for (String& passage : passages) {
+    passage.Truncate(1024);
+  }
 
   return passages;
 }
@@ -118,10 +126,9 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(
   if (const Text* text = DynamicTo<Text>(node)) {
     String simplified_text = text->data().SimplifyWhiteSpace();
     if (!simplified_text.empty()) {
-      current_node.num_words = WTF::VisitCharacters(
-          simplified_text, [](const auto* chars, unsigned len) {
-            return std::count(chars, chars + len, ' ') + 1;
-          });
+      current_node.num_words = VisitCharacters(simplified_text, [](auto chars) {
+        return std::count(chars.begin(), chars.end(), ' ') + 1;
+      });
       current_node.segments.push_back(simplified_text);
     }
     return current_node;
@@ -229,11 +236,7 @@ String DocumentChunker::AggregateNode::CreatePassage() const {
     return String();
   }
   StringBuilder builder;
-  builder.Append(segments[0]);
-  for (unsigned int i = 1; i < segments.size(); i++) {
-    builder.Append(' ');
-    builder.Append(segments[i]);
-  }
+  builder.AppendRange(segments, " ");
   return builder.ReleaseString();
 }
 

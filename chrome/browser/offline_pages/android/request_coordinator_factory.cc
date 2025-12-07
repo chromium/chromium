@@ -39,7 +39,7 @@ namespace {
 class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
  public:
   explicit ActiveTabInfo(Profile* profile) : profile_(profile) {}
-  ~ActiveTabInfo() override {}
+  ~ActiveTabInfo() override = default;
   bool DoesActiveTabMatch(const GURL& url) override {
     // Loop through to find the active tab and report whether the URL matches.
     for (const TabModel* model : TabModelList::models()) {
@@ -104,7 +104,7 @@ RequestCoordinatorFactory::BuildServiceInstanceForBrowserContext(
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   Profile* profile = Profile::FromBrowserContext(context);
   base::FilePath queue_store_path =
       profile->GetPath().Append(chrome::kOfflinePageRequestQueueDirname);

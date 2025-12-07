@@ -137,13 +137,9 @@ VideoDecodeAcceleratorTestSuite* VideoDecodeAcceleratorTestSuite::Create(
                                           // Options below are handled by Chrome
         it->first == "use-gl" || it->first == "v" || it->first == "vmodule" ||
         it->first == "enable-features" || it->first == "disable-features" ||
-        it->first == "test-launcher-shard-index" ||
-        it->first == "test-launcher-summary-output" ||
-        it->first == "test-launcher-total-shards" ||
+        it->first.find("test-launcher-") == 0 ||
         it->first == "enable-primary-node-access-for-vkms-testing" ||
         it->first == "single-process-tests" ||
-        it->first == "test-launcher-output" ||
-        it->first == "test-launcher-retries-left" ||
         it->first == "enable-clear-hevc-for-testing") {
       continue;
     }
@@ -254,12 +250,6 @@ VideoDecodeAcceleratorTestSuite* VideoDecodeAcceleratorTestSuite::Create(
   feature_list->InitFromCommandLine(
       cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
-  if (feature_list->IsFeatureOverridden("V4L2FlatStatefulVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
-  }
-  if (feature_list->IsFeatureOverridden("V4L2FlatVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
-  }
 #endif
 
   return new VideoDecodeAcceleratorTestSuite(
@@ -341,6 +331,10 @@ base::FilePath VideoDecodeAcceleratorTestSuite::GetTestOutputFilePath() const {
 
 bool VideoDecodeAcceleratorTestSuite::ValidVideoTestEnv() const {
   return !!video_test_env_;
+}
+
+bool VideoDecodeAcceleratorTestSuite::IsV4L2VirtualDriver() const {
+  return video_test_env_->IsV4L2VirtualDriver();
 }
 
 void VideoDecodeAcceleratorTestSuite::Initialize() {

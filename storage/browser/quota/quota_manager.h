@@ -21,9 +21,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager : public QuotaManagerImpl {
   QuotaManager(bool is_incognito,
                const base::FilePath& profile_path,
                scoped_refptr<base::SingleThreadTaskRunner> io_thread,
-               base::RepeatingClosure quota_change_callback,
                scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-               const GetQuotaSettingsFunc& get_settings_function);
+               const GetQuotaSettingsFunc& get_settings_function,
+               bool report_static_storage_quota = false);
 
  protected:
   ~QuotaManager() override;

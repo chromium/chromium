@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
 #include <array>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -32,13 +33,13 @@ TEST(SignedWebBundleSignatureStackEntryTest, Getters) {
   SignedWebBundleSignatureStackEntry signature_stack_entry(
       /*attributes_cbor=*/{3, 4, 5},
       SignedWebBundleSignatureInfoEd25519(
-          Ed25519PublicKey::Create(base::make_span(kEd25519PublicKey)),
-          Ed25519Signature::Create(base::make_span(kEd25519Signature))));
+          Ed25519PublicKey::Create(base::span(kEd25519PublicKey)),
+          Ed25519Signature::Create(base::span(kEd25519Signature))));
 
   EXPECT_THAT(signature_stack_entry.attributes_cbor(), ElementsAre(3, 4, 5));
 
   auto* ed25519_signature_info =
-      absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+      std::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
           &signature_stack_entry.signature_info());
   ASSERT_TRUE(ed25519_signature_info);
   EXPECT_THAT(ed25519_signature_info->public_key().bytes(),

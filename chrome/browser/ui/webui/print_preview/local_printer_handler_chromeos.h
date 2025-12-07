@@ -14,19 +14,34 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-
-namespace base {
-class Value;
-}
 
 namespace content {
 class WebContents;
 }
 
 namespace printing {
+
+// Managed print options constants.
+inline constexpr char kManagedPrintOptions[] = "managedPrintOptions";
+
+inline constexpr char kManagedPrintOptions_DefaultValue[] = "defaultValue";
+inline constexpr char kManagedPrintOptions_AllowedValues[] = "allowedValues";
+
+inline constexpr char kManagedPrintOptions_SizeWidth[] = "width";
+inline constexpr char kManagedPrintOptions_SizeHeight[] = "height";
+
+inline constexpr char kManagedPrintOptions_DpiHorizontal[] = "horizontal";
+inline constexpr char kManagedPrintOptions_DpiVertical[] = "vertical";
+
+inline constexpr char kManagedPrintOptions_MediaSize[] = "mediaSize";
+inline constexpr char kManagedPrintOptions_MediaType[] = "mediaType";
+inline constexpr char kManagedPrintOptions_Duplex[] = "duplex";
+inline constexpr char kManagedPrintOptions_Color[] = "color";
+inline constexpr char kManagedPrintOptions_Dpi[] = "dpi";
+inline constexpr char kManagedPrintOptions_Quality[] = "quality";
+inline constexpr char kManagedPrintOptions_PrintAsImage[] = "printAsImage";
 
 // This class must be created and used on the UI thread.
 class LocalPrinterHandlerChromeos : public PrinterHandler {
@@ -63,9 +78,14 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
       crosapi::mojom::CapabilitiesResponsePtr caps);
 
   // Returns a PrinterStatus object (defined in
-  // chrome/browser/resources/print_preview/data/printer_status_cros.js).
+  // chrome/browser/resources/print_preview/data/printer_status_cros.ts).
   static base::Value::Dict StatusToValue(
       const crosapi::mojom::PrinterStatus& status);
+
+  // Return a ManagedPrintOptions object (defined in
+  // chrome/browser/resources/print_preview/data/managed_print_options_cros.ts).
+  static base::Value::Dict ManagedPrintOptionsToValue(
+      const crosapi::mojom::ManagedPrintOptions& managed_print_options);
 
   // PrinterHandler implementation.
   void Reset() override;
@@ -116,9 +136,6 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
 
   const raw_ptr<content::WebContents> preview_web_contents_;
   raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int local_printer_version_ = 0;
-#endif
   base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};
 };
 

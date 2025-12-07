@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/data_pipe.h"
 
 #include <algorithm>
@@ -18,12 +13,14 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_math.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/ring_buffer.h"
+#include "mojo/core/ipcz_driver/validate_enum.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -230,7 +227,7 @@ MojoResult DataPipe::WriteData(const void* elements,
 
   FlushUpdatesFromPeer();
   const base::span<const uint8_t> input_bytes =
-      base::make_span(static_cast<const uint8_t*>(elements), num_bytes);
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(elements), num_bytes));
   scoped_refptr<PortalWrapper> portal;
   size_t write_size;
   {
@@ -349,7 +346,8 @@ MojoResult DataPipe::ReadData(void* elements,
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
 
-    output_bytes = base::span(static_cast<uint8_t*>(elements), num_bytes);
+    output_bytes =
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(elements), num_bytes));
   }
 
   size_t read_size = num_bytes;
@@ -503,12 +501,12 @@ bool DataPipe::Serialize(Transport& transmitter,
   // in core_ipcz.cc. Here we only serialize the header and the backing
   // SharedBuffer object.
   DCHECK_GE(data.size(), sizeof(DataPipeHeader));
-  auto& header = *reinterpret_cast<DataPipeHeader*>(data.data());
-  memset(&header, 0, sizeof(header));
-  header.size = sizeof(header);
-  header.endpoint_type = endpoint_type_;
-  header.element_size = base::checked_cast<uint32_t>(element_size_);
-  data_.Serialize(header.ring_buffer_state);
+  DataPipeHeader* header = new (data.data()) DataPipeHeader{
+      .size = sizeof(DataPipeHeader),
+      .endpoint_type = endpoint_type_,
+      .element_size = base::checked_cast<uint32_t>(element_size_),
+  };
+  data_.Serialize(header->ring_buffer_state);
 
   auto buffer_data = data.subspan(sizeof(DataPipeHeader));
   if (!buffer_->Serialize(transmitter, buffer_data, handles)) {
@@ -531,6 +529,10 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
   const auto& header = *reinterpret_cast<const DataPipeHeader*>(data.data());
   const size_t header_size = header.size;
   if (header_size < sizeof(header) || header_size % 8 != 0) {
+    return nullptr;
+  }
+
+  if (!ValidateEnum(header.endpoint_type)) {
     return nullptr;
   }
 
@@ -669,9 +671,9 @@ bool DataPipe::DeserializeRingBuffer(const RingBuffer::SerializedState& state) {
 
 DataPipe::Pair::Pair() = default;
 
-DataPipe::Pair::Pair(const Pair&) = default;
+DataPipe::Pair::Pair(Pair&&) = default;
 
-DataPipe::Pair& DataPipe::Pair::operator=(const Pair&) = default;
+DataPipe::Pair& DataPipe::Pair::operator=(Pair&&) = default;
 
 DataPipe::Pair::~Pair() = default;
 

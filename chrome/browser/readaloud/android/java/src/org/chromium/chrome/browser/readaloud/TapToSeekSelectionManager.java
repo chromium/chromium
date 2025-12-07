@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.readaloud;
 
-import android.os.Build;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.textclassifier.TextClassifier;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -24,14 +26,10 @@ import org.chromium.ui.touch_selection.SelectionEventType;
  * when SmartSelection has the surrounding text for a selection to send it to ReadAloud's tap to
  * seek feature.
  */
+@NullMarked
 public class TapToSeekSelectionManager implements SelectionClient.SurroundingTextCallback {
-    // Whether Smart Select is allowed to be enabled in Chrome. Set to true for Android O+. This
-    // check is also mirrored in {@link SelectionClientManager} when making the Smart Selection
-    // Client
-    private static final boolean IS_SMART_SELECTION_ENABLED_IN_CHROME =
-            Build.VERSION.SDK_INT > Build.VERSION_CODES.O;
     // Tab that Tap to Seek is hooked into. Can be null if not hooked into any tab.
-    @Nullable Tab mObservingTab;
+    private @Nullable Tab mObservingTab;
     private final ReadAloudController mReadAloudController;
 
     /**
@@ -40,15 +38,14 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
      */
     private @Nullable TapToSeekSelectionClient mSelectionClient;
 
-    @Nullable private static SelectionClient sSmartSelectionClientForTesting;
-    @Nullable private static SelectionPopupController sSelectionPopupControllerForTesting;
+    private static @Nullable SelectionClient sSmartSelectionClientForTesting;
+    private static @Nullable SelectionPopupController sSelectionPopupControllerForTesting;
 
     TapToSeekSelectionManager(
-            ReadAloudController readAloudController, ObservableSupplier<Tab> activePlaybackTab) {
+            ReadAloudController readAloudController,
+            ObservableSupplier<@Nullable Tab> activePlaybackTab) {
         mReadAloudController = readAloudController;
-        if (IS_SMART_SELECTION_ENABLED_IN_CHROME) {
-            activePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
-        }
+        activePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
     }
 
     @Override
@@ -60,12 +57,12 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
     }
 
     @VisibleForTesting
-    public void onActivePlaybackTabUpdated(Tab tab) {
+    public void onActivePlaybackTabUpdated(@Nullable Tab tab) {
         updateHooksForTab(tab);
         mObservingTab = tab;
     }
 
-    private void updateHooksForTab(Tab tab) {
+    private void updateHooksForTab(@Nullable Tab tab) {
         boolean isWebcontentsSame =
                 tab != null
                         && mObservingTab != null
@@ -82,13 +79,15 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
         }
     }
 
-    private void addHooks(WebContents webContents) {
-        if (IS_SMART_SELECTION_ENABLED_IN_CHROME && webContents != null) {
+    private void addHooks(@Nullable WebContents webContents) {
+        if (webContents != null) {
             mSelectionClient =
                     new TapToSeekSelectionClient(
-                            sSmartSelectionClientForTesting != null
-                                    ? sSmartSelectionClientForTesting
-                                    : SelectionClient.createSmartSelectionClient(webContents));
+                            assumeNonNull(
+                                    sSmartSelectionClientForTesting != null
+                                            ? sSmartSelectionClientForTesting
+                                            : SelectionClient.createSmartSelectionClient(
+                                                    webContents)));
             mSelectionClient.addSurroundingTextReceivedListeners(this);
             SelectionPopupController controller =
                     sSelectionPopupControllerForTesting != null
@@ -98,12 +97,13 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
         }
     }
 
-    private void removeHooks(WebContents webContents) {
+    private void removeHooks(@Nullable WebContents webContents) {
         if (webContents != null) {
             SelectionPopupController controller =
                     sSelectionPopupControllerForTesting != null
                             ? sSelectionPopupControllerForTesting
                             : SelectionPopupController.fromWebContents(webContents);
+            assumeNonNull(mSelectionClient);
             mSelectionClient.removeSurroundingTextReceivedListeners(this);
             if (controller.getSelectionClient() == mSelectionClient) {
                 controller.setSelectionClient(null);
@@ -162,17 +162,17 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
 
         @Override
         public TextClassifier getTextClassifier() {
-            return mSmartSelectionClient.getTextClassifier();
+            return assumeNonNull(mSmartSelectionClient.getTextClassifier());
         }
 
         @Override
         public TextClassifier getCustomTextClassifier() {
-            return mSmartSelectionClient.getCustomTextClassifier();
+            return assumeNonNull(mSmartSelectionClient.getCustomTextClassifier());
         }
 
         @Override
         public SelectionEventProcessor getSelectionEventProcessor() {
-            return mSmartSelectionClient.getSelectionEventProcessor();
+            return assumeNonNull(mSmartSelectionClient.getSelectionEventProcessor());
         }
 
         @Override

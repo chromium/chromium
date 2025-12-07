@@ -15,7 +15,7 @@
 #include "media/base/channel_mixer.h"
 #include "media/base/multi_channel_resampler.h"
 #include "services/audio/delay_buffer.h"
-#include "services/audio/loopback_group_member.h"
+#include "services/audio/snoopable.h"
 
 namespace media {
 class AudioBus;
@@ -53,7 +53,7 @@ namespace audio {
 // because the inbound audio is from a source that pre-renders audio for playout
 // in the near future, while the outbound audio is audio that would have been
 // played-out in the recent past.
-class SnooperNode final : public LoopbackGroupMember::Snooper {
+class SnooperNode final : public Snoopable::Snooper {
  public:
   // Use sample counts as a precise measure of audio signal position and time
   // duration.
@@ -75,22 +75,22 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
               base::TimeTicks reference_time,
               double volume) final;
 
-  // Given the timing of recent OnData() calls and the |duration| of output that
+  // Given the timing of recent OnData() calls and the `duration` of output that
   // would be requested in a call to Render(), determine the latest possible
-  // |reference_time| for a Render() call that won't result in an underrun.
+  // `reference_time` for a Render() call that won't result in an underrun.
   // Returns std::nullopt while current conditions prohibit making a reliable
   // suggestion.
   std::optional<base::TimeTicks> SuggestLatestRenderTime(FrameTicks duration);
 
   // Renders more audio that was recorded from the GroupMember until
-  // |output_bus| is filled, resampling and remixing the channels if necessary.
-  // |reference_time| is used for detecting skip-ahead (i.e., a significant
+  // `output_bus` is filled, resampling and remixing the channels if necessary.
+  // `reference_time` is used for detecting skip-ahead (i.e., a significant
   // forward jump in the reference time) and also to maintain synchronization
   // with the input.
   void Render(base::TimeTicks reference_time, media::AudioBus* output_bus);
 
  private:
-  // Helper to store the new |correction_fps|, recompute the resampling I/O
+  // Helper to store the new `correction_fps`, recompute the resampling I/O
   // ratio, and reconfigure the resampler with the new ratio.
   void UpdateCorrectionRate(int correction_fps);
 
@@ -113,19 +113,19 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   // this to determine the actual resampler I/O ratio.
   const double perfect_io_ratio_;
 
-  // Protects concurrent access to |buffer_| and the |write_position_| and
-  // |write_reference_time_|. All other members are either read-only, or are not
+  // Protects concurrent access to `buffer_` and the `write_position_` and
+  // `write_reference_time_`. All other members are either read-only, or are not
   // accessed by multiple threads.
   base::Lock lock_;
 
   // Allows input data to be recorded and then read-back from any position
   // later (by the resampler).
-  DelayBuffer buffer_;  // Guarded by |lock_|.
+  DelayBuffer buffer_ GUARDED_BY(lock_);
 
   // The next frame position at which to write into the delay buffer, and the
   // TimeTicks representing its corresponding system clock timestamp.
-  FrameTicks write_position_;             // Guarded by |lock_|.
-  base::TimeTicks write_reference_time_;  // Guarded by |lock_|.
+  FrameTicks write_position_ GUARDED_BY(lock_);
+  base::TimeTicks write_reference_time_ GUARDED_BY(lock_);
 
   // Used by SuggestLatestRenderTime() to track whether OnData() has been called
   // recently, and as a basis for its suggestion. Other methods should not
@@ -137,7 +137,7 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   // position of frames about to be Render()'ed.
   FrameTicks read_position_;
 
-  // The expected |reference_time| to be provided in the next call to Render().
+  // The expected `reference_time` to be provided in the next call to Render().
   // This is used to detect skip-ahead in the output, and compensate when
   // necessary.
   base::TimeTicks render_reference_time_;
@@ -154,7 +154,11 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   // Specifies whether channel mixing should occur before or after resampling,
   // or is not needed. The strategy is chosen such that the minimal number of
   // channels are resampled, as resampling is the more-expensive operation.
-  enum { kBefore, kAfter, kNone } const channel_mix_strategy_;
+  enum class ChannelMixStrategy {
+    kBefore,
+    kAfter,
+    kNone
+  } const channel_mix_strategy_;
 
   // Only used when the input channel layout differs from the output.
   media::ChannelMixer channel_mixer_;
@@ -166,12 +170,29 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   std::unique_ptr<media::AudioBus> mix_bus_;
 
   // An impossible value re-purposed to represent the "null" or "not set yet"
-  // condition for |read_position_| and |write_position_|.
+  // condition for `read_position_` and `write_position_`.
   static constexpr FrameTicks kNullPosition =
       std::numeric_limits<FrameTicks>::min();
 
   // The frame position where recording into the delay buffer always starts.
   static constexpr FrameTicks kWriteStartPosition = 0;
+
+  // Threshold for detecting a time skip in the input audio stream. A skip is
+  // considered to have occurred if the gap between the expected and actual
+  // `reference_time` in OnData() exceeds this value.
+  //
+  // When the `kWebAudioRemoveAudioDestinationResampler` feature is enabled,
+  // resampling for WebAudio output streams moves to the Audio Service. This
+  // can cause OnData() calls to arrive with irregular timing (e.g., in
+  // bursts or after a delay). To accommodate this, the threshold is doubled to
+  // `input_bus_duration_`, preventing valid data from being incorrectly
+  // discarded. Otherwise, it is `input_bus_duration_` / 2.
+  // See http://crbug.com/419853196.
+  const base::TimeDelta input_skip_threshold_;
+
+  // Threshold for detecting a time skip in the output audio stream, used
+  // during the Render() step. It is set to `output_bus_duration_` / 2.
+  const base::TimeDelta output_skip_threshold_;
 };
 
 }  // namespace audio

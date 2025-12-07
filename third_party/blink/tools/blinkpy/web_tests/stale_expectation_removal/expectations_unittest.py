@@ -5,11 +5,7 @@
 
 import os
 import unittest
-
-import six
-
-if six.PY3:
-    import unittest.mock as mock
+from unittest import mock
 
 from pyfakefs import fake_filesystem_unittest, fake_filesystem
 

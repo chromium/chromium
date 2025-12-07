@@ -21,11 +21,13 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -49,11 +51,12 @@ public class ScreenshotMonitorTest {
     private static final String TAG = "ScreenshotTest";
     private static final Uri TEST_URI = Uri.parse("content://media/external/images/media/101");
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ScreenshotMonitorImpl mTestScreenshotMonitor;
     private TestScreenshotMonitorDelegate mTestScreenshotMonitorDelegate;
     private ContentObserver mContentObserver;
 
-    private MockContentResolver mMockContentResolver = new MockContentResolver();
+    private final MockContentResolver mMockContentResolver = new MockContentResolver();
 
     @Mock private DisplayAndroid mDisplayAndroid;
 
@@ -93,7 +96,6 @@ public class ScreenshotMonitorTest {
                                         MimeTypeUtils.Type.IMAGE))
                         == PackageManager.PERMISSION_GRANTED);
 
-        MockitoAnnotations.initMocks(this);
         mTestScreenshotMonitorDelegate = new TestScreenshotMonitorDelegate();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -144,8 +146,6 @@ public class ScreenshotMonitorTest {
         Mockito.doReturn(width).when(mDisplayAndroid).getDisplayWidth();
         Mockito.doReturn(height).when(mDisplayAndroid).getDisplayHeight();
     }
-
-    private void mockValidScreenshot() {}
 
     /**
      * Verify that if monitoring starts, the delegate should be called. Also verify that the inner

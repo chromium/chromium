@@ -57,8 +57,6 @@ public class PermissionNavigationTest {
     /**
      * Check that modal permission prompts and queued permission requests are removed upon
      * navigation.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest
@@ -68,7 +66,7 @@ public class PermissionNavigationTest {
         mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
         mPermissionRule.waitForDialogShownState(true);
 
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         final CallbackHelper callbackHelper = new CallbackHelper();
         EmptyTabObserver navigationWaiter =
                 new EmptyTabObserver() {

@@ -29,14 +29,14 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.failed_parameter;
   }
 
-  static network::mojom::IPAddressSpace target_address_space(
-      const network::CorsErrorStatus& status) {
-    return status.target_address_space;
-  }
-
   static network::mojom::IPAddressSpace resource_address_space(
       const network::CorsErrorStatus& status) {
     return status.resource_address_space;
+  }
+
+  static network::mojom::IPAddressSpace inconsistent_address_space(
+      const network::CorsErrorStatus& status) {
+    return status.inconsistent_address_space;
   }
 
   static bool has_authorization_covered_by_wildcard_on_preflight(

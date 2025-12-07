@@ -11,8 +11,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
-#include "chromeos/crosapi/mojom/parent_access.mojom.h"
-#include "ui/gfx/image/image_skia.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -35,7 +35,7 @@ class SupervisedUserWebContentHandlerImpl
       content::WebContents* web_contents,
       const GURL& url,
       favicon::LargeIconService& large_icon_service,
-      int frame_id,
+      content::FrameTreeNodeId frame_id,
       int64_t interstitial_navigation_id);
 
   SupervisedUserWebContentHandlerImpl(
@@ -45,17 +45,19 @@ class SupervisedUserWebContentHandlerImpl
   ~SupervisedUserWebContentHandlerImpl() override;
 
   // ChromeSupervisedUserWebContentHandlerBase implementation:
-  void RequestLocalApproval(const GURL& url,
-                            const std::u16string& child_display_name,
-                            const supervised_user::UrlFormatter& url_formatter,
-                            ApprovalRequestInitiatedCallback callback) override;
+  void RequestLocalApproval(
+      const GURL& url,
+      const std::u16string& child_display_name,
+      const supervised_user::UrlFormatter& url_formatter,
+      const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
+      ApprovalRequestInitiatedCallback callback) override;
 
  private:
   void OnLocalApprovalRequestCompleted(
       supervised_user::SupervisedUserSettingsService& settings_service,
       const GURL& url,
       base::TimeTicks start_time,
-      crosapi::mojom::ParentAccessResultPtr result);
+      std::unique_ptr<ash::ParentAccessDialog::Result> result);
 
   // Helpers for private method testing.
   FRIEND_TEST_ALL_PREFIXES(SupervisedUserWebContentHandlerImplTest,
@@ -69,6 +71,7 @@ class SupervisedUserWebContentHandlerImpl
 
   std::unique_ptr<SupervisedUserFaviconRequestHandler> favicon_handler_;
   const raw_ref<Profile> profile_;
+  std::unique_ptr<ash::ParentAccessDialogProvider> dialog_provider_;
   base::WeakPtrFactory<SupervisedUserWebContentHandlerImpl> weak_ptr_factory_{
       this};
 };

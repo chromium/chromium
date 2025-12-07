@@ -22,10 +22,6 @@ AutofillPreferenceSetter GetAutofillPreferenceSetter(
     const PrefService::Preference* pref) {
   if (pref->IsUserControlled()) {
     return AutofillPreferenceSetter::kUserSetting;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (pref->IsStandaloneBrowserControlled()) {
-    return AutofillPreferenceSetter::kStandaloneBrowser;
-#endif
   } else if (pref->IsExtensionControlled()) {
     return AutofillPreferenceSetter::kExtension;
   } else if (pref->IsManagedByCustodian()) {
@@ -138,6 +134,11 @@ void MaybeLogAutofillProfileDisabled(const PrefService& pref_service) {
     return;
   }
   base::RecordAction(base::UserMetricsAction("Autofill_ProfileDisabled"));
+}
+
+void LogAutofillPaymentsSyncDisabled(SyncDisabledReason reason) {
+  base::UmaHistogramEnumeration("Autofill.CreditCard.SyncDisabledReason",
+                                reason);
 }
 
 }  // namespace autofill::autofill_metrics

@@ -4,25 +4,32 @@
 
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
+#include <algorithm>
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/views_screen_locker.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
@@ -34,15 +41,12 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -277,16 +281,15 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
 
   UMA_HISTOGRAM_ENUMERATION("ScreenLocker.AuthenticationSuccess",
                             unlock_attempt_type_, UnlockType::AUTH_COUNT);
-  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
-      /*success*/ true, TransformUnlockType());
+  auto& session_manager = CHECK_DEREF(session_manager::SessionManager::Get());
+  session_manager.NotifyUnlockAttempt(/*success*/ true, TransformUnlockType());
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
   if (user) {
     if (!user->is_active()) {
       saved_ime_state_ = nullptr;
-      user_manager::UserManager::Get()->SwitchActiveUser(
-          user_context.GetAccountId());
+      session_manager.SwitchActiveSession(user_context.GetAccountId());
     }
 
     // Reset the number of PIN attempts available to the user. We always do this
@@ -307,7 +310,7 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
       quick_unlock_storage->fingerprint_storage()->ResetUnlockAttemptCount();
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "Logged in user not found.";
+    NOTREACHED() << "Logged in user not found.";
   }
 
   if (pending_auth_state_) {
@@ -513,11 +516,11 @@ void ScreenLocker::OnStartLockCallback(bool locked) {
 user_manager::UserList ScreenLocker::GetUsersToShow() const {
   user_manager::UserList users_to_show;
   // Filter out Managed Guest Session users as they should not appear on the UI.
-  base::ranges::copy_if(users_, std::back_inserter(users_to_show),
-                        [](const user_manager::User* user) {
-                          return user->GetType() !=
-                                 user_manager::UserType::kPublicAccount;
-                        });
+  std::ranges::copy_if(users_, std::back_inserter(users_to_show),
+                       [](const user_manager::User* user) {
+                         return user->GetType() !=
+                                user_manager::UserType::kPublicAccount;
+                       });
   return users_to_show;
 }
 
@@ -755,7 +758,7 @@ void ScreenLocker::ScreenLockReady() {
     fingerprint_pref_change_registrar_->Add(
         prefs::kQuickUnlockFingerprintRecord,
         base::BindRepeating(&ScreenLocker::UpdateFingerprintStateForUser,
-                            base::Unretained(this), primary_user));
+                            weak_factory_.GetWeakPtr(), primary_user));
   }
 
   MaybeDisablePinAndFingerprintFromTimeout("ScreenLockReady",
@@ -784,9 +787,8 @@ void ScreenLocker::OnStatusChanged(
     default:
       break;
   }
-  LOG(ERROR) << "ScreenLocker StatusChanged to an unknown state: "
-             << static_cast<int>(status);
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED() << "ScreenLocker StatusChanged to an unknown state: "
+               << static_cast<int>(status);
 }
 
 void ScreenLocker::OnEnrollScanDone(device::mojom::ScanResult scan_result,
@@ -948,10 +950,12 @@ void ScreenLocker::MaybeDisablePinAndFingerprintFromTimeout(
   }
 }
 
-void ScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
-                                        bool can_authenticate) {
-  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
-                                                       can_authenticate);
+void ScreenLocker::OnPinCanAuthenticate(
+    const AccountId& account_id,
+    bool can_authenticate,
+    cryptohome::PinLockAvailability available_at) {
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
+      account_id, can_authenticate, available_at);
 }
 
 void ScreenLocker::UpdateFingerprintStateForUser(

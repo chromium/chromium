@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,35 +21,36 @@ import java.util.List;
  *
  * @param <T> The type of element to be inserted into the adapter.
  */
+@NullMarked
 class DropdownFieldAdapter<T> extends ArrayAdapter<T> {
     /**
      * Creates an array adapter.
      *
-     * @param context            The current context.
-     * @param resource           The resource ID for a layout file containing a layout to use when
-     *                           instantiating views.
+     * @param context The current context.
+     * @param resource The resource ID for a layout file containing a layout to use when
+     *     instantiating views.
      * @param textViewResourceId The id of the TextView within the layout resource to be populated.
-     * @param objects            The objects to represent in the ListView.
+     * @param objects The objects to represent in the ListView.
      */
     public DropdownFieldAdapter(
             Context context, int resource, int textViewResourceId, List<T> objects) {
-        super(context, resource, textViewResourceId, new ArrayList<T>(objects));
+        super(context, resource, textViewResourceId, new ArrayList<>(objects));
     }
 
     /**
      * Creates an array adapter.
      *
-     * @param context            The current context.
-     * @param resource           The resource ID for a layout file containing a layout to use when
-     *                           instantiating views.
-     * @param objects            The objects to represent in the ListView.
+     * @param context The current context.
+     * @param resource The resource ID for a layout file containing a layout to use when
+     *     instantiating views.
+     * @param objects The objects to represent in the ListView.
      */
     public DropdownFieldAdapter(Context context, int resource, List<T> objects) {
-        super(context, resource, new ArrayList<T>(objects));
+        super(context, resource, new ArrayList<>(objects));
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
 
         // Add the left and right padding of the parent's background to the selected item view to

@@ -12,17 +12,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.translate.TranslateMessage.MenuItem;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenu;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
     @FunctionalInterface
-    public static interface Handler {
-        public MenuItem[] handleSecondaryMenuItemClicked(MenuItem menuItem);
+    public interface Handler {
+        MenuItem @Nullable [] handleSecondaryMenuItemClicked(MenuItem menuItem);
     }
 
     private final Handler mHandler;
@@ -35,7 +38,7 @@ class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
             Context context,
             Handler handler,
             DataSetObserver dataSetObserver,
-            MenuItem[] menuItems) {
+            MenuItem @Nullable [] menuItems) {
         mHandler = handler;
         mAdapter = new TranslateMessageSecondaryMenuAdapter(context, menuItems);
         // The dataSetObserver *must* be registered on mAdapter before the call to
@@ -50,7 +53,7 @@ class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
         mListView.setDivider(null);
         mListView.setOnItemClickListener(this);
 
-        mClickRunnables = new LinkedList<>();
+        mClickRunnables = new ArrayList<>();
     }
 
     @Override

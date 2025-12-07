@@ -1,0 +1,977 @@
+rootWebArea htmlTag='#document' name='Material Web Select'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Filled select' value='Filled select %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled select'
+++++++++++++++++++++++++++inlineTextBox name='Filled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Outlined select' value='Outlined select Banana'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined select'
+++++++++++++++++++++++++++inlineTextBox name='Outlined select'
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Banana'
+++++++++++++++++++++++++++inlineTextBox name='Banana'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Required select' value='Required select* %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required select*'
+++++++++++++++++++++++++++inlineTextBox name='Required select*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Disabled select' value='Disabled select %C2%A0' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled select'
+++++++++++++++++++++++++++inlineTextBox name='Disabled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Select'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Filled select' value='Filled select %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled select'
+++++++++++++++++++++++++++inlineTextBox name='Filled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Option 2'
+++++++++++++++++++++++++++inlineTextBox name='Option 2'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Outlined select' value='Outlined select Banana'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined select'
+++++++++++++++++++++++++++inlineTextBox name='Outlined select'
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Banana'
+++++++++++++++++++++++++++inlineTextBox name='Banana'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Required select' value='Required select* %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required select*'
+++++++++++++++++++++++++++inlineTextBox name='Required select*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Disabled select' value='Disabled select %C2%A0' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled select'
+++++++++++++++++++++++++++inlineTextBox name='Disabled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Option 2 Selected'
+++++++++++++inlineTextBox name='Option 2 Selected'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Select'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Filled select' value='Filled select %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled select'
+++++++++++++++++++++++++++inlineTextBox name='Filled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Option 3'
+++++++++++++++++++++++++++inlineTextBox name='Option 3'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Outlined select' value='Outlined select Banana'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined select'
+++++++++++++++++++++++++++inlineTextBox name='Outlined select'
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Banana'
+++++++++++++++++++++++++++inlineTextBox name='Banana'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Required select' value='Required select* %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required select*'
+++++++++++++++++++++++++++inlineTextBox name='Required select*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Disabled select' value='Disabled select %C2%A0' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled select'
+++++++++++++++++++++++++++inlineTextBox name='Disabled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Option 2 Selected'
+++++++++++++inlineTextBox name='Option 2 Selected'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Option 3 Selected'
+++++++++++++inlineTextBox name='Option 3 Selected'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Select'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Filled select' value='Filled select %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled select'
+++++++++++++++++++++++++++inlineTextBox name='Filled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Option 1'
+++++++++++++++++++++++++++inlineTextBox name='Option 1'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Outlined select' value='Outlined select Banana'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined select'
+++++++++++++++++++++++++++inlineTextBox name='Outlined select'
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='Banana'
+++++++++++++++++++++++++++inlineTextBox name='Banana'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Required select' value='Required select* %C2%A0'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required select*'
+++++++++++++++++++++++++++inlineTextBox name='Required select*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Disabled select' value='Disabled select %C2%A0' restriction=disabled
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled select'
+++++++++++++++++++++++++++inlineTextBox name='Disabled select'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++staticText name='%C2%A0'
+++++++++++++++++++++++++++inlineTextBox name='%C2%A0'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++image htmlTag='svg'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++none ignored invisible
+++++++++++++++++++listBoxOption ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Option 2 Selected'
+++++++++++++inlineTextBox name='Option 2 Selected'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Option 3 Selected'
+++++++++++++inlineTextBox name='Option 3 Selected'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Option 1 Selected'
+++++++++++++inlineTextBox name='Option 1 Selected'

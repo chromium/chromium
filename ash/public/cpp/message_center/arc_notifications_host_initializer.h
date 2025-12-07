@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {
 
@@ -17,23 +16,16 @@ class ASH_PUBLIC_EXPORT ArcNotificationsHostInitializer {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Invoked when ARC notifications instance is ready.
-    virtual void OnSetArcNotificationsInstance(
+    // Invoked when ArcNotificationManager is initialized.
+    virtual void OnArcNotificationManagerInitialized(
         ArcNotificationManagerBase* arc_notification_manager) = 0;
-
-    // Invoked when the ArcNotificationsHostInitializer object (the thing that
-    // this observer observes) will be destroyed. In response, the observer,
-    // |this|, should call "RemoveObserver(this)", whether directly or
-    // indirectly (e.g. via ScopedObservation::Reset).
-    virtual void OnArcNotificationInitializerDestroyed(
-        ArcNotificationsHostInitializer* initializer) = 0;
   };
 
   static ArcNotificationsHostInitializer* Get();
 
-  virtual void SetArcNotificationManagerInstance(
-      std::unique_ptr<ArcNotificationManagerBase> manager_instance) = 0;
-  virtual ArcNotificationManagerBase* GetArcNotificationManagerInstance() = 0;
+  virtual void SetArcNotificationManager(
+      std::unique_ptr<ArcNotificationManagerBase> arc_notification_manager) = 0;
+  virtual ArcNotificationManagerBase* GetArcNotificationManager() = 0;
 
   // Adds and removes an observer.
   virtual void AddObserver(Observer* observer) = 0;

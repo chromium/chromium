@@ -6,7 +6,6 @@
 
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"

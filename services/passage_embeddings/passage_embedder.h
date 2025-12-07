@@ -5,7 +5,6 @@
 #ifndef SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 
-#include "base/containers/heap_array.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,8 +21,9 @@ inline constexpr char kCacheHitMetricName[] =
 // Class implementation of the passage embedder mojo interface.
 class PassageEmbedder : public mojom::PassageEmbedder {
  public:
-  explicit PassageEmbedder(
-      mojo::PendingReceiver<mojom::PassageEmbedder> receiver);
+  PassageEmbedder(mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+                  mojom::PassageEmbedderParamsPtr embedder_params,
+                  base::OnceCallback<void()> on_disconnect);
   PassageEmbedder(const PassageEmbedder&) = delete;
   PassageEmbedder& operator=(const PassageEmbedder) = delete;
   ~PassageEmbedder() override;
@@ -32,14 +32,11 @@ class PassageEmbedder : public mojom::PassageEmbedder {
   // embedding generation. Return true if successful.
   //
   // A TfLiteEngine can be provided to override any defaults.
-  bool LoadModels(base::File* embeddings_model_file,
-                  base::File* sp_file,
+  bool LoadModels(base::File embeddings_model_file,
+                  base::File sp_file,
+                  uint32_t embeddings_input_window_size,
                   std::unique_ptr<tflite::task::core::TfLiteEngine>
                       tflite_engine = nullptr);
-
-  // Sets the input window size that the loaded embeddings model expects. Needs
-  // to be called before the model can be executed.
-  void SetEmbeddingsModelInputWindowSize(uint32_t size);
 
   // mojom::PassageEmbedder:
   void GenerateEmbeddings(const std::vector<std::string>& inputs,
@@ -47,15 +44,9 @@ class PassageEmbedder : public mojom::PassageEmbedder {
                           GenerateEmbeddingsCallback callback) override;
 
  private:
-  // Loads the text embeddings tflite model from the bytes in the given file.
-  // Return true if successful.
-  bool LoadEmbeddingsModelFile(
-      base::File* embeddings_file,
-      std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine);
-
   // Loads the sentencepiece model for tokenization, from the bytes in the given
   // file. Returns true if successful.
-  bool LoadSentencePieceModelFile(base::File* sp_file);
+  bool LoadSentencePieceModelFile(base::File sp_file);
 
   // Unloads all associated models.
   void UnloadModelFiles();
@@ -74,8 +65,8 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   std::unique_ptr<PassageEmbedderExecutionTask> loaded_model_;
 
-  // Holds the bytes of the loaded text embedding model.
-  base::HeapArray<uint8_t> embeddings_model_buffer_;
+  // The text embedding model file. Empty when not loaded.
+  base::File embeddings_model_file_;
 
   // The input window size that the embeddings model expects.
   uint32_t embeddings_input_window_size_;
@@ -91,6 +82,19 @@ class PassageEmbedder : public mojom::PassageEmbedder {
   std::unique_ptr<tflite::task::core::TfLiteEngine> override_tflite_engine_;
 
   base::LRUCache<std::string, std::vector<float>> embeddings_cache_;
+
+  // The number of threads to use for PassagePriority::kUserInitiated.
+  uint32_t user_initiated_priority_num_threads_;
+
+  // The number of threads to use for PassagePriority::kUrgent.
+  uint32_t urgent_priority_num_threads_;
+
+  // The number of threads to use for PassagePriority::kPassive.
+  uint32_t passive_priority_num_threads_;
+
+  // Whether to allow model execution to run on the GPU if available for the
+  // device.
+  bool allow_gpu_execution_ = false;
 };
 
 }  // namespace passage_embeddings

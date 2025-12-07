@@ -7,24 +7,24 @@
 
 #include <memory>
 
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/task_runner.h"
-#include "base/types/pass_key.h"
 
+namespace actor {
+class PageStabilityMonitor;
+}  // namespace actor
 namespace blink {
 class LowPrecisionTimer;
 class ScriptedIdleTaskController;
 class TimerBase;
 class TimerBasedTickProvider;
 class WebRtcTaskQueue;
-}
+}  // namespace blink
 namespace IPC {
 class ChannelAssociatedGroupController;
 }  // namespace IPC
@@ -48,7 +48,7 @@ class PreFreezeBackgroundMemoryTrimmer;
 namespace internal {
 class DelayTimerBase;
 class DelayedTaskManager;
-}
+}  // namespace internal
 class DeadlineTimer;
 class MetronomeTimer;
 class SingleThreadTaskRunner;
@@ -57,12 +57,15 @@ class TimeTicks;
 
 namespace subtle {
 
+enum class DelayPolicy;
+
 // Restricts access to PostCancelableDelayedTask*() to authorized callers.
 class PostDelayedTaskPassKey {
  private:
   // Avoid =default to disallow creation by uniform initialization.
-  PostDelayedTaskPassKey() {}
+  PostDelayedTaskPassKey() = default;
 
+  friend class actor::PageStabilityMonitor;
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
@@ -86,7 +89,7 @@ class PostDelayedTaskPassKey {
 class RunOrPostTaskPassKey {
  private:
   // Avoid =default to disallow creation by uniform initialization.
-  RunOrPostTaskPassKey() {}
+  RunOrPostTaskPassKey() = default;
 
   friend class IPC::ChannelAssociatedGroupController;
   friend class RunOrPostTaskPassKeyForTesting;
@@ -297,8 +300,9 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // task_runner->ReleaseSoon(std::move(foo_scoped_refptr));
   template <class T>
   void ReleaseSoon(const Location& from_here, scoped_refptr<T>&& object) {
-    if (!object)
+    if (!object) {
       return;
+    }
 
     DeleteOrReleaseSoonInternal(from_here, &ReleaseHelper<T>::DoRelease,
                                 object.release());
@@ -339,6 +343,22 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   //    (which includes any thread that runs a MessagePump).
   [[nodiscard]] static bool HasCurrentDefault();
 
+  // Returns a SequencedTaskRunner for the current task. If possible, the
+  // task runner will schedule tasks with BEST_EFFORT TaskPriority. If not, it
+  // returns the same value as GetCurrentDefault(). See the comments on
+  // HasCurrentBestEffort() for more details.
+  [[nodiscard]] static scoped_refptr<SequencedTaskRunner>
+  GetCurrentBestEffort();
+
+  // Returns true if the current task is running on a sequence that multiplexes
+  // multiple task queues (eg. BrowserThread::UI). If so, GetCurrentBestEffort()
+  // will return the task runner for the lowest-priority task queue. Otherwise
+  // it will call GetCurrentDefault(). So if this and GetCurrentDefault() both
+  // return false, it's not safe to call GetCurrentBestEffort().
+  // TODO(crbug.com/441949788): It would also be possible to return true on a
+  // non-multiplexing sequence that only runs BEST_EFFORT tasks. Implement this.
+  [[nodiscard]] static bool HasCurrentBestEffort();
+
   class BASE_EXPORT CurrentDefaultHandle {
    public:
     // Sets the value returned by `SequencedTaskRunner::GetCurrentDefault()` to
@@ -362,7 +382,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
     // SingleThreadTaskRunner::CurrentHandleOverrideForTesting in unit tests to
     // avoid the friend requirement.
     friend class SingleThreadTaskRunner;
-    FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleTest,
+    FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleDeathTest,
                              OverrideWithNull);
     FRIEND_TEST_ALL_PREFIXES(SequencedTaskRunnerCurrentDefaultHandleTest,
                              OverrideWithNonNull);
@@ -403,8 +423,9 @@ struct BASE_EXPORT OnTaskRunnerDeleter {
   // For compatibility with std:: deleters.
   template <typename T>
   void operator()(const T* ptr) {
-    if (ptr)
+    if (ptr) {
       task_runner_->DeleteSoon(FROM_HERE, ptr);
+    }
   }
 
   scoped_refptr<SequencedTaskRunner> task_runner_;

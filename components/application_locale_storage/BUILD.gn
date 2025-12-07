@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("application_locale_storage") {
+  sources = [
+    "application_locale_storage.cc",
+    "application_locale_storage.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "application_locale_storage_unittest.cc" ]
+  deps = [
+    ":application_locale_storage",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

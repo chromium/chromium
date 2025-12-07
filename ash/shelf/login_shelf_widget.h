@@ -13,6 +13,7 @@
 namespace ash {
 class Shelf;
 class LoginShelfView;
+class LoginShelfWidgetDelegate;
 
 // The widget showing the login shelf. Exists separately from `ShelfWidget` so
 // that the login shelf can be focused without stacking the shelf widget above
@@ -53,7 +54,6 @@ class ASH_EXPORT LoginShelfWidget : public ShelfComponent,
 
   const raw_ptr<Shelf> shelf_;
 
-  class LoginShelfWidgetDelegate;
   raw_ptr<LoginShelfWidgetDelegate> delegate_;
 
   ScopedSessionObserver scoped_session_observer_;

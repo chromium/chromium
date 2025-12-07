@@ -11,9 +11,9 @@ import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ContentSettingsTypes} from './constants.js';
-import {ContentSetting, SiteSettingSource} from './constants.js';
-import type {RawSiteException,SiteException,SiteSettingsPrefsBrowserProxy} from './site_settings_prefs_browser_proxy.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
+import {SiteSettingSource} from './constants.js';
+import type {RawSiteException,SiteException,SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
+import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 // clang-format on
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -43,9 +43,9 @@ export const SiteSettingsMixin = dedupingMixin(
           };
         }
 
-        category: ContentSettingsTypes;
-        private contentTypes_: ContentSettingsTypes[];
-        browserProxy: SiteSettingsPrefsBrowserProxy;
+        declare category: ContentSettingsTypes;
+        declare private contentTypes_: ContentSettingsTypes[];
+        browserProxy: SiteSettingsBrowserProxy;
 
         constructor(...args: any[]) {
           super(...args);
@@ -54,7 +54,7 @@ export const SiteSettingsMixin = dedupingMixin(
            * The browser proxy used to retrieve and change information about
            * site settings categories and the sites within.
            */
-          this.browserProxy = SiteSettingsPrefsBrowserProxyImpl.getInstance();
+          this.browserProxy = SiteSettingsBrowserProxyImpl.getInstance();
         }
 
         /**
@@ -85,13 +85,6 @@ export const SiteSettingsMixin = dedupingMixin(
             return url.slice(0, -3);
           }
           return url;
-        }
-
-        /**
-         * @return true if the passed content setting is considered 'enabled'.
-         */
-        computeIsSettingEnabled(setting: ContentSetting): boolean {
-          return setting !== ContentSetting.BLOCK;
         }
 
         /**
@@ -171,9 +164,8 @@ export const SiteSettingsMixin = dedupingMixin(
     });
 
 export interface SiteSettingsMixinInterface {
-  browserProxy: SiteSettingsPrefsBrowserProxy;
+  browserProxy: SiteSettingsBrowserProxy;
   category: ContentSettingsTypes;
-  computeIsSettingEnabled(setting: string): boolean;
   originRepresentation(origin: string): string;
   toUrl(originOrPattern: string): URL|null;
   expandSiteException(exception: RawSiteException): SiteException;

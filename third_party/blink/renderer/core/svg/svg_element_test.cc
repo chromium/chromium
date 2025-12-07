@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
@@ -19,7 +18,7 @@ namespace blink {
 class SVGElementTest : public PageTestBase {};
 
 TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #rect2 { display: none }
       @container (max-width: 200px) {

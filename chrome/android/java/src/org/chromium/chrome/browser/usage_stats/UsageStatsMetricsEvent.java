@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.usage_stats;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -24,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
     UsageStatsMetricsEvent.NUM_ENTRIES,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface UsageStatsMetricsEvent {
     int OPT_IN = 0;
     int OPT_OUT = 1;

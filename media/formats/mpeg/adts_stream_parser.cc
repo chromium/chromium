@@ -20,31 +20,29 @@ ADTSStreamParser::ADTSStreamParser()
 
 ADTSStreamParser::~ADTSStreamParser() = default;
 
-int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
-                                       int size,
-                                       int* frame_size,
-                                       int* sample_rate,
+int ADTSStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
+                                       size_t* frame_size,
+                                       size_t* sample_rate,
                                        ChannelLayout* channel_layout,
-                                       int* sample_count,
+                                       size_t* sample_count,
                                        bool* metadata_frame,
                                        std::vector<uint8_t>* extra_data) {
-  DCHECK(data);
-  DCHECK_GE(size, 0);
-
-  if (size < kADTSHeaderMinSize)
+  DCHECK(!data.empty());
+  if (data.size() < kADTSHeaderMinSize) {
     return 0;
+  }
 
-  BitReader reader(data, size);
-  int sync;
-  int version;
-  int layer;
-  int protection_absent;
-  int profile;
+  BitReader reader(data);
+  uint16_t sync;
+  uint8_t version;
+  uint8_t layer;
+  uint8_t protection_absent;
+  uint8_t profile;
   size_t sample_rate_index;
   size_t channel_layout_index;
-  int frame_length;
+  size_t frame_length;
   size_t num_data_blocks;
-  int unused;
+  uint16_t unused;
 
   if (!reader.ReadBits(12, &sync) ||
       !reader.ReadBits(1, &version) ||
@@ -67,10 +65,10 @@ int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
            << " sample_rate_index 0x" << sample_rate_index
            << " channel_layout_index 0x" << channel_layout_index;
 
-  const int bytes_read = reader.bits_read() / 8;
+  const size_t bytes_read = reader.bits_read() / 8;
   if (sync != 0xfff || layer != 0 || frame_length < bytes_read ||
-      sample_rate_index >= kADTSFrequencyTableSize ||
-      channel_layout_index >= kADTSChannelLayoutTableSize) {
+      sample_rate_index >= kADTSFrequencyTable.size() ||
+      channel_layout_index >= kADTSChannelLayoutTable.size()) {
     if (media_log()) {
       LIMITED_MEDIA_LOG(DEBUG, media_log(), adts_parse_error_limit_, 5)
           << "Invalid header data :" << std::hex << " sync 0x" << sync

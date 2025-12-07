@@ -23,10 +23,6 @@ export function isSecondaryUser(): boolean {
   return loadTimeData.getBoolean('isSecondaryUser');
 }
 
-export function isRevampWayfindingEnabled(): boolean {
-  return loadTimeData.getBoolean('isRevampWayfindingEnabled');
-}
-
 // Apps page
 export function androidAppsVisible(): boolean {
   return loadTimeData.getBoolean('androidAppsVisible');
@@ -62,10 +58,6 @@ export function isExternalStorageEnabled(): boolean {
   return loadTimeData.getBoolean('isExternalStorageEnabled');
 }
 
-export function isInputDeviceSettingsSplitEnabled(): boolean {
-  return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
-}
-
 export function isDisplayBrightnessControlInSettingsEnabled(): boolean {
   return loadTimeData.getBoolean('enableDisplayBrightnessControlInSettings');
 }
@@ -84,11 +76,6 @@ export function isAccountManagerEnabled(): boolean {
   return loadTimeData.getBoolean('isAccountManagerEnabled');
 }
 
-// Personalization page
-export function shouldShowMultitaskingInPersonalization(): boolean {
-  return loadTimeData.getBoolean('shouldShowMultitaskingInPersonalization');
-}
-
 // Reset page
 export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');
@@ -100,10 +87,6 @@ export function isSanitizeAllowed(): boolean {
 }
 
 // Search page
-export function isAssistantAllowed(): boolean {
-  return loadTimeData.getBoolean('isAssistantAllowed');
-}
-
 export function isQuickAnswersSupported(): boolean {
   return loadTimeData.getBoolean('isQuickAnswersSupported');
 }
@@ -112,8 +95,16 @@ export function isMagicBoostFeatureEnabled(): boolean {
   return loadTimeData.getBoolean('isMagicBoostFeatureEnabled');
 }
 
-export function isMahiEnabled(): boolean {
-  return loadTimeData.getBoolean('isMahiEnabled');
+export function isMagicBoostNoticeBannerVisible(): boolean {
+  return loadTimeData.getBoolean('isMagicBoostNoticeBannerVisible');
+}
+
+export function isLobsterSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isLobsterSettingsToggleVisible');
+}
+
+export function isScannerSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isScannerSettingsToggleVisible');
 }
 
 // System preferences page
@@ -121,6 +112,7 @@ export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');
 }
 
-export function shouldShowMultitasking(): boolean {
-  return loadTimeData.getBoolean('shouldShowMultitasking');
+// Power page
+export function isBatteryChargeLimitAvailable(): boolean {
+  return loadTimeData.getBoolean('isBatteryChargeLimitAvailable');
 }

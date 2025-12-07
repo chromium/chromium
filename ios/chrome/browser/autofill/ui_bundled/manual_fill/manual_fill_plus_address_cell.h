@@ -24,6 +24,9 @@ class GURL;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
+// Plus address associated with this item.
+@property(nonatomic, readonly) NSString* plusAddress;
+
 // Inits a plus address with an `plusAddress`, a `contentInjector` and
 // `menuActions` for user selection. `cellIndexAccessibilityLabel` is the cell's
 // accessibility label and is used to indicate the index at which the plus
@@ -34,6 +37,7 @@ class GURL;
                         (id<ManualFillContentInjector>)contentInjector
                         menuActions:(NSArray<UIAction*>*)menuActions
         cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:(BOOL)isAddressManualFallbackUI
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -42,7 +46,7 @@ class GURL;
 
 // Cell to display a plus address into parts that are interactable
 // and sendable the data to the delegate.
-@interface ManualFillPlusAddressCell : TableViewCell
+@interface ManualFillPlusAddressCell : LegacyTableViewCell
 
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
@@ -55,7 +59,8 @@ class GURL;
 - (void)setUpWithPlusAddress:(ManualFillPlusAddress*)plusAddress
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+      isAddressManualFallbackUI:(BOOL)isAddressManualFallbackUI;
 
 // Configures the cell for the passed favicon attributes.
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes;

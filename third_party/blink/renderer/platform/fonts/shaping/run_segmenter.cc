@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
@@ -16,15 +15,14 @@
 
 namespace blink {
 
-RunSegmenter::RunSegmenter(const UChar* buffer,
-                           unsigned buffer_size,
+RunSegmenter::RunSegmenter(base::span<const UChar> buffer,
                            FontOrientation run_orientation)
-    : buffer_size_(buffer_size),
-      script_run_iterator_(buffer, buffer_size),
-      symbols_iterator_(buffer, buffer_size),
-      at_end_(!buffer_size) {
+    : buffer_size_(base::checked_cast<wtf_size_t>(buffer.size())),
+      script_run_iterator_(buffer),
+      symbols_iterator_(buffer),
+      at_end_(buffer.empty()) {
   if (run_orientation == FontOrientation::kVerticalMixed) [[unlikely]] {
-    orientation_iterator_.emplace(buffer, buffer_size, run_orientation);
+    orientation_iterator_.emplace(buffer, run_orientation);
   }
 }
 
@@ -60,7 +58,7 @@ bool RunSegmenter::Consume(RunSegmenterRange* next_range) {
     unsigned positions[] = {script_run_iterator_position_,
                             symbols_iterator_position_,
                             orientation_iterator_position_};
-    last_split_ = *base::ranges::min_element(positions);
+    last_split_ = *std::ranges::min_element(positions);
   } else {
     last_split_ =
         std::min(script_run_iterator_position_, symbols_iterator_position_);

@@ -11,68 +11,93 @@
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/features.h"
 
-namespace content {
+namespace content::webid {
 
-std::optional<bool> IsFedCmAuthzOverridden() {
-  return base::FeatureList::GetStateIfOverridden(features::kFedCmAuthz);
-}
-
-bool IsFedCmAuthzFlagEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAuthz);
-}
-
-bool IsFedCmMultipleIdentityProvidersEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmMultipleIdentityProviders);
-}
-
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag() {
-  if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled)) {
-    return FedCmIdpSigninStatusMode::ENABLED;
-  }
-  return FedCmIdpSigninStatusMode::METRICS_ONLY;
-}
-
-bool IsFedCmMetricsEndpointEnabled() {
+bool IsMetricsEndpointEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
 }
 
-bool IsFedCmSelectiveDisclosureEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
+bool IsDelegationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDelegation);
 }
 
-bool IsFedCmSameSiteNoneEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSameSiteNone);
-}
-
-bool IsFedCmIdPRegistrationEnabled() {
+bool IsIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
 
-bool IsFedCmWithoutWellKnownEnforcementEnabled() {
+bool IsWithoutWellKnownEnforcementEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmWithoutWellKnownEnforcement);
 }
 
-bool IsWebIdentityDigitalCredentialsEnabled() {
+bool IsDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsFedCmUseOtherAccountEnabled(bool is_button_mode) {
-  // TODO(crbug.com/328470597): this feature is bundled with the button mode at
-  // the moment. We should decouple them when supporting the feature in the
-  // widget flow.
-  return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
-         (IsFedCmButtonModeEnabled() && is_button_mode);
+bool IsDigitalCredentialsCreationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kWebIdentityDigitalCredentialsCreation);
 }
 
-bool IsFedCmButtonModeEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
+bool IsSameSiteLaxEnabled() {
+  return base::FeatureList::IsEnabled(
+      network::features::kSendSameSiteLaxForFedCM);
 }
 
-bool IsFedCmSameSiteLaxEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
+bool IsLightweightModeEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
 }
 
-}  // namespace content
+bool IsAlternativeIdentifiersEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
+}
+
+bool IsUseOtherAccountAndLabelsNewSyntaxEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+}
+
+bool IsFedCmEmbedderCheckEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmEmbedderCheck);
+}
+
+bool IsAutofillEnabled() {
+  // FedCmAutofill is a new flag extracted from FedCmDelegation. To avoid
+  // breaking existing developer testing, we consider the new flag being enabled
+  // if the old one is enabled.
+  return base::FeatureList::IsEnabled(features::kFedCmAutofill) ||
+         IsDelegationEnabled();
+}
+
+bool IsIframeOriginEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmIframeOrigin);
+}
+
+bool IsNonceInParamsEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNonceInParams);
+}
+
+bool IsNonStringTokenEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNonStringToken);
+}
+
+bool IsWellKnownEndpointValidationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmWellKnownEndpointValidation);
+}
+
+bool IsPreservePortsForTestingEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmPreservePortsForTesting);
+}
+
+bool IsErrorAttributeEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmErrorAttribute);
+}
+
+bool IsNavigationInterceptionEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
+}
+
+}  // namespace content::webid

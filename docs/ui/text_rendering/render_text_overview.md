@@ -57,6 +57,10 @@ We then do the following before passing the results of these steps off to Skia.
   that still need to be shaped.
 * For these remaining runs, we have fallback code to attempt to shape them
   again, but it is possible that some fail to be shaped.
+* Since fallback occurs on a per-run basis, we then re-itemize the runs,
+  accounting for missing glyphs, and restart the shaping stage. This ensures
+  that the number of missing glyphs are minimized, as each glyph will then
+  attempt to locate an appropriate font.
 
 ## Eliding:
 * If the text exceeds its constrained dimensions we will need to elide the text.

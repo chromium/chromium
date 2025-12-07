@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
+
 #include <memory>
 
 #include "base/test/bind.h"
 #include "base/version.h"
-#include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,23 +147,23 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
   SetGlobalSets(net::GlobalFirstPartySets(
       base::Version("0.0"),
       {{primary1_site,
-        {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary,
-                                 std::nullopt)}},
+        {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary)}},
        {associate_site,
-        {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated,
-                                 0)}}},
+        {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated)}}},
       {{primary1_cctld, primary1_site}}));
 
   // The context config of the profile adds a new set:
   // { primary: "https://primary2.test",
   // serviceSites: ["https://service.test"}
-  SetContextConfig(net::FirstPartySetsContextConfig(
-      {{primary2_site,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kPrimary, std::nullopt))},
-       {service_site,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kService, std::nullopt))}}));
+  SetContextConfig(
+      net::FirstPartySetsContextConfig::Create(
+          {{primary2_site,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                primary2_site, net::SiteType::kPrimary))},
+           {service_site,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                primary2_site, net::SiteType::kService))}})
+          .value());
 
   service()->InitForTesting();
   base::Value::List expected =
@@ -198,23 +200,19 @@ TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
       base::Version("0.0"),
       {
           {primary,
-           {net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
           {associated3,
-           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 2)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated)}},
           {associated1,
-           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 0)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated)}},
           {associated2,
-           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated)}},
           {service2,
-           {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kService)}},
           {service1,
-           {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kService)}},
           {service3,
-           {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kService)}},
       },
       {}));
 

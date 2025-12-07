@@ -196,7 +196,7 @@ void CaptureResolutionChooser::UpdateSnappedFrameSizes() {
   }
 
   // Reverse ordering, so that sizes are from smallest to largest.
-  std::reverse(snapped_sizes_.begin(), snapped_sizes_.end());
+  std::ranges::reverse(snapped_sizes_);
 
   if (VLOG_IS_ON(1)) {
     std::vector<std::string> stringified_sizes;

@@ -7,13 +7,16 @@
 
 class PrefService;
 
+// TODO(crbug.com/424385780): Move this enum to components/.
 // Values for the BrowserSignin policy.
 // VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
+// LINT.IfChange(BrowserSigninMode)
 enum class BrowserSigninMode {
   kDisabled = 0,
   kEnabled = 1,
   kForced = 2,
 };
+// LINT.ThenChange(//components/collaboration/internal/collaboration_service_impl.h:BrowserSigninMode)
 
 // The enum class for IncognitoModeAvalibility pref value, explains the meaning
 // of each value.
@@ -32,10 +35,6 @@ enum class IncognitoModePrefs {
 // Returns whether the browser has platform policies based on the presence of
 // policy data in the App Configuration from the platform.
 bool HasPlatformPolicies();
-
-// Returns whether the application is managed through MDM. This
-// checks the key set in the NSUserDefaults by iOS.
-bool IsApplicationManagedByMDM();
 
 // Returns true if IncognitoModeAvailability policy is set by enterprise or
 // custodian.

@@ -62,6 +62,7 @@ class TestGetSDKOverrideGCSPath(unittest.TestCase):
 @mock.patch('subprocess.run',
             return_value=CompletedProcess(args=['/bin'], returncode=0))
 @mock.patch('os.utime', return_value=None)
+@mock.patch('update_sdk.make_clean_directory')
 @mock.patch('update_sdk.DownloadAndUnpackFromCloudStorage')
 class TestGetTarballPath(unittest.TestCase):
 
@@ -74,7 +75,8 @@ class TestGetTarballPath(unittest.TestCase):
   @mock.patch('argparse.ArgumentParser.parse_args',
               return_value=argparse.Namespace(version='1.1.1.1',
                                               verbose=False,
-                                              file='core'))
+                                              file='core',
+                                              ignore_gen_build_defs=False))
   def testGetTarballPath(self, mock_arg, mock_download, *_):
     update_sdk_main()
     mock_download.assert_called_with('gs://bucket/sdk/linux-amd64/core.tar.gz',
@@ -83,7 +85,8 @@ class TestGetTarballPath(unittest.TestCase):
   @mock.patch('argparse.ArgumentParser.parse_args',
               return_value=argparse.Namespace(version='1.1.1.1',
                                               verbose=False,
-                                              file='google'))
+                                              file='google',
+                                              ignore_gen_build_defs=False))
   def testOverrideFile(self, mock_arg, mock_download, *_):
     update_sdk_main()
     mock_download.assert_called_with(

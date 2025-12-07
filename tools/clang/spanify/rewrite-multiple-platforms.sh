@@ -3,35 +3,132 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# IMPORTANT! Before running this script you have to run
-# `rm -r ~/scratch && mkdir ~/scratch` first
-#
-#
 # For more fine-grained instructions, see:
 # https://docs.google.com/document/d/1chTvr3fSofQNV_PDPEHRyUgcJCQBgTDOOBriW9gIm9M/edit?ts=5e9549a2#heading=h.fjdnrdg1gcty
 
-set -e  # makes the script quit on any command failure
 set -u  # unset variables are quit-worthy errors
 
+# Possible flag values and their default settings.
 PLATFORMS="linux"
-if [ "$1" != "" ]
+BUILD_CLANG=true
+REWRITE=true
+EXTRACT_EDITS=true
+KEEP_BUILD=false
+INCREMENTAL_CLANG_BUILD=false
+# The command line string to parse them.
+LONG_FLAGS="platforms::,skip-building-clang,skip-rewrite,skip-extract-edits,\
+           keep-build,incremental-clang-build,help"
+options=$(getopt -l "$LONG_FLAGS" -o "p::brekih" -- "$@")
+
+# Important not to access $1 if there is no passed values (due to set -u above
+# will trigger an error).
+# This ensures that '--' is the last value and will break the loop below.
+eval set -- "$options"
+while true; do
+  case "$1" in
+    -p|--platforms)
+      shift
+      PLATFORMS="$1"
+      ;;
+    -b|--skip-building-clang)
+      BUILD_CLANG=false
+      KEEP_BUILD=true
+      ;;
+    -r|--skip-rewrite)
+      REWRITE=false
+      ;;
+    -e|--skip-extract-edits)
+      EXTRACT_EDITS=false
+      ;;
+    -k|--keep-build)
+      KEEP_BUILD=true
+      ;;
+    -i|--incremental-clang-build)
+      INCREMENTAL_CLANG_BUILD=true
+      KEEP_BUILD=true
+      ;;
+    -h|--help)
+      echo "Usage: rewrite-multiple-platforms.sh [OPTIONS]..."
+      echo "Runs the clang plugin spanify over selected chromium platforms and"\
+           " spanifies unsafe buffers usage."
+      echo ""
+      echo "Options:"
+      echo "  [-p|--platforms]=<comma,separated,list,of,platforms>, defaults"\
+           "to 'linux'"
+      echo "  [-b|--skip-building-clang], when set we won't attempt to build"\
+           "third_party's clang, requires a previous run with --keep-build,"\
+           "but this flag also sets --keep-build for convenience."
+      echo "  [-r|--skip-rewrite], when set we won't create/destroy the"\
+           "scratch directory and won't run the clang plugin."
+      echo "  [-e|--skip-extract-edits], when set we won't run"\
+           "extract_edits.py to generate the patches."
+      echo "  [-k|--keep-build], when set we won't restore third_party/llvm."\
+           "this should be set when you are going to run this script again,"\
+           "but note you need to restore the directory to prevent slow down of"\
+           "your regular chromium builds."
+      echo "  [-i|--incremental-clang-build], when set we attempt to build"\
+           "incrementally. This only works if you previously completed a run"\
+           "with --keep-build and you haven't rebased, or gclient sync'd."\
+           "This also sets --keep-build for convenience."
+      echo ""
+      echo "Check the README for more info."
+      exit 0
+      ;;
+    --)
+      shift
+      break;;
+  esac
+  shift
+done
+
+# Create the scratch directory that we need and ensure it is empty.
+if [ $REWRITE = true ]
 then
-  PLATFORMS="$1"
+  if [ -d ~/scratch ]
+  then
+    echo "*** Clearing ~/scratch ***"
+    rm -r ~/scratch
+  fi
+  mkdir ~/scratch
 fi
 
 COMPILE_DIRS=.
 EDIT_DIRS=.
 
-# Save llvm-build as it is about to be overwritten.
-mv third_party/llvm-build third_party/llvm-build-upstream
-
 # Build and test the rewriter.
-echo "*** Building the rewriter ***"
-time tools/clang/scripts/build.py \
-    --with-android \
-    --without-fuchsia \
-    --extra-tools spanify
-tools/clang/spanify/tests/run_all_tests.py
+if [ $BUILD_CLANG = true ]
+then
+  # Save llvm-build as it is about to be overwritten (if it hasn't already been
+  # saved).
+  if [ ${INCREMENTAL_CLANG_BUILD} = false ] && \
+    [ ! -d third_party/llvm-build-upstream/ ]
+  then
+    echo "*** Saving current build ***"
+
+    mv third_party/llvm-build third_party/llvm-build-upstream
+  else
+    echo "*** Build is already saved ***"
+    echo "*** If you don't expect this you might need to delete and resync ***"
+  fi
+  if [ $INCREMENTAL_CLANG_BUILD = true ]
+  then
+    echo "*** Building the rewriter incrementally ***"
+    time ninja -C third_party/llvm-build/Release+Asserts/
+  else
+    echo "*** Building the rewriter completely ***"
+    time tools/clang/scripts/build.py \
+        --with-android \
+        --without-fuchsia \
+        --with-ml-inliner-model="" \
+        --extra-tools spanify || exit 1
+
+  fi
+else
+  echo "*** Skipping building clang ***"
+fi
+
+echo "*** Testing the rewriter ***"
+tools/clang/spanify/tests/run_all_tests.py || exit 1
 
 args_for_platform() {
     case "$1" in
@@ -98,7 +195,7 @@ force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
-    ash)
+    chromeos)
         cat <<EOF
 target_os = "chromeos"
 dcheck_always_on = true
@@ -131,6 +228,9 @@ EOF
     esac
 }
 
+# The latest rewrite directory.
+OUT_DIR=""
+
 pre_process() {
     PLATFORM="$1"
     OUT_DIR="out/rewrite-$PLATFORM"
@@ -138,13 +238,30 @@ pre_process() {
     mkdir -p "$OUT_DIR"
     args_for_platform "$PLATFORM" > "$OUT_DIR/args.gn"
 
+    if [ $PLATFORM = "mac" ]; then
+      # You can not build libclang_re.osx.a without mac, luckily we don't need
+      # to change it for the rewrite so just "restore" the version from the
+      # saved build regardless of platform.
+      LIBCLANG="Release+Asserts/lib/clang"
+      DARWIN_RT="lib/darwin"
+      for path in $(ls -d third_party/llvm-build-upstream/${LIBCLANG}/*); do
+        # the basename is the clang version (like "22")
+        DIR=`basename ${path}`
+        mkdir -p "third_party/llvm-build/${LIBCLANG}/${DIR}/${DARWIN_RT}"
+        cp third_party/llvm-build-upstream/${LIBCLANG}/${DIR}/${DARWIN_RT}/* \
+           third_party/llvm-build/${LIBCLANG}/${DIR}/${DARWIN_RT}/
+      done
+    fi
+
     # Build generated files that a successful compilation depends on.
     echo "*** Preparing targets for $PLATFORM ***"
     gn gen $OUT_DIR
     time ninja -C $OUT_DIR -t targets all \
         | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' \
         | cut -d : -f 1 \
-        | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR
+        | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR \
+        || exit 1
+
 
     TARGET_OS_OPTION=""
     if [ $PLATFORM = "win" ]; then
@@ -162,36 +279,65 @@ main_rewrite() {
     fi
 
     # Main rewrite.
+    #
+    # To avoid spending too much time writing to disk, we use `awk '!x[$0]++'`
+    # to removes duplicate lines. This reduces the output by a 62 factor: from
+    # 20GB to 300MB. It is faster than `sort -u`. This consumes RAM, but
+    # cloudtops have plenty of it.
     echo "*** Running the main rewrite phase for $PLATFORM ***"
-    time tools/clang/scripts/run_tool.py \
+    time (
+      tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool spanify \
         --generate-compdb \
         -p $OUT_DIR \
-        $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
-    cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
+        $COMPILE_DIRS    2>~/scratch/rewriter-${PLATFORM}.main.err \
+        | awk '!x[$0]++' 1>~/scratch/rewriter-${PLATFORM}.main.out
+    )
 }
 
-for PLATFORM in ${PLATFORMS//,/ }
-do
-    pre_process "$PLATFORM"
-done
+if [ $REWRITE = true ]
+then
+  for PLATFORM in ${PLATFORMS//,/ }
+  do
+      pre_process "$PLATFORM"
+  done
 
-for PLATFORM in ${PLATFORMS//,/ }
-do
-    main_rewrite "$PLATFORM"
-done
+  for PLATFORM in ${PLATFORMS//,/ }
+  do
+      main_rewrite "$PLATFORM"
+  done
+else
+  echo "*** Skipping rewrite ***"
+fi
 
 # Apply edits generated by the main rewrite.
-echo "*** Applying edits ***"
-cat ~/scratch/rewriter.main.out | \
-    tools/clang/spanify/extract_edits.py | \
-    tools/clang/scripts/apply_edits.py -p out/rewrite-win $EDIT_DIRS
+if [ $EXTRACT_EDITS = true ]
+then
+  echo "*** Clearing test patches ***"
+  rm ~/scratch/patch*
+
+  echo "*** Applying edits ***"
+  cat ~/scratch/rewriter-*.main.out \
+    | tools/clang/spanify/extract_edits.py \
+    | tools/clang/scripts/apply_edits.py -p $OUT_DIR $EDIT_DIRS
+else
+  echo "*** Skipping edits ***"
+  # For the rewriter to properly know where the files are OUT_DIR has to be
+  # set, to replicate the behaviour we set it to the last platform.
+  OUT_DIR=`echo ${PLATFORMS//,/ } | awk '{print $NF;}'`
+fi
 
 # Format sources, as many lines are likely over 80 chars now.
 echo "*** Formatting ***"
 time git cl format
 
 # Restore llvm-build. Without this, your future builds will be painfully slow.
-rm -r -f third_party/llvm-build
-mv third_party/llvm-build-upstream third_party/llvm-build
+if [ $KEEP_BUILD = false ]
+then
+  echo "*** Restoring llvm-build you will need to build the plugin again ***"
+  rm -r -f third_party/llvm-build
+  mv third_party/llvm-build-upstream third_party/llvm-build
+else
+  echo "*** Not restoring llvm-build, chromium wide builds will be slower ***"
+fi

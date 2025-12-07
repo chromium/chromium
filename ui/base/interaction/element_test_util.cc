@@ -60,6 +60,14 @@ gfx::Rect TestElementBase::GetScreenBounds() const {
   return screen_bounds_;
 }
 
+void TestElementBase::SetNativeView(gfx::NativeView native_view) {
+  native_view_ = native_view;
+}
+
+gfx::NativeView TestElementBase::GetNativeView() const {
+  return native_view_;
+}
+
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElement)
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElementOtherFramework)
 

@@ -14,8 +14,8 @@
 #include "chrome/browser/supervised_user/chromeos/mock_large_icon_service.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -71,11 +71,13 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()));
+              RecordLocalWebsiteApproval(url.GetHost()));
 
-  auto result = crosapi::mojom::ParentAccessResult::NewApproved(
-      crosapi::mojom::ParentAccessApprovedResult::New(
-          "TEST_TOKEN", base::Time::FromSecondsSinceUnixEpoch(123456UL)));
+  auto result = std::make_unique<ash::ParentAccessDialog::Result>();
+  result->status = ash::ParentAccessDialog::Result::Status::kApproved;
+  result->parent_access_token = "TEST_TOKEN";
+  result->parent_access_token_expire_timestamp =
+      base::Time::FromSecondsSinceUnixEpoch(123456L);
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -87,15 +89,15 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kApproved, 1);
+      supervised_user::LocalApprovalResult::kApproved, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::
           GetLocalApprovalDurationMillisecondsHistogram(),
@@ -114,11 +116,11 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()))
+              RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
-  auto result = crosapi::mojom::ParentAccessResult::NewDeclined(
-      crosapi::mojom::ParentAccessDeclinedResult::New());
+  auto result = std::make_unique<ash::ParentAccessDialog::Result>();
+  result->status = ash::ParentAccessDialog::Result::Status::kDeclined;
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -130,15 +132,15 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kDeclined, 1);
+      supervised_user::LocalApprovalResult::kDeclined, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::
           GetLocalApprovalDurationMillisecondsHistogram(),
@@ -157,11 +159,11 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()))
+              RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
-  auto result = crosapi::mojom::ParentAccessResult::NewCanceled(
-      crosapi::mojom::ParentAccessCanceledResult::New());
+  auto result = std::make_unique<ash::ParentAccessDialog::Result>();
+  result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -173,8 +175,8 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -186,7 +188,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       0);
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kCanceled, 1);
+      supervised_user::LocalApprovalResult::kCanceled, 1);
 }
 
 TEST_F(SupervisedUserWebContentHandlerImplTest,
@@ -197,12 +199,11 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()))
+              RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
-  auto result = crosapi::mojom::ParentAccessResult::NewError(
-      crosapi::mojom::ParentAccessErrorResult::New(
-          crosapi::mojom::ParentAccessErrorResult::Type::kUnknown));
+  auto result = std::make_unique<ash::ParentAccessDialog::Result>();
+  result->status = ash::ParentAccessDialog::Result::Status::kError;
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -214,8 +215,8 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler(
-      web_contents.get(), url, large_icon_service(),
-      /*frame_id=*/0, /*interstitial_navigation_id=*/0);
+      web_contents.get(), url, large_icon_service(), content::FrameTreeNodeId(),
+      /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -227,5 +228,5 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       0);
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kError, 1);
+      supervised_user::LocalApprovalResult::kError, 1);
 }

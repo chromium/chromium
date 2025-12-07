@@ -19,7 +19,7 @@
 
 // Weak handles provides a way to refer to weak pointers from another sequence.
 // This is useful because it is not safe to reference a weak pointer from a
-// sequence other than the sequence on which it was created.
+// sequence other than the sequence on which it will be invalidated.
 //
 // Weak handles can be passed across sequences, so for example, you can use them
 // to do the "real" work on one thread and get notified on another thread:
@@ -36,10 +36,11 @@
 //   const WeakHandle<Foo> foo_;
 // };
 //
-// class Foo : public SupportsWeakPtr<Foo> {
+// class Foo {
 //  public:
 //   Foo() {
-//     SpawnFooIOWorkerOnIOThread(base::MakeWeakHandle(AsWeakPtr()));
+//     SpawnFooIOWorkerOnIOThread(
+//         MakeWeakHandle(weak_ptr_factory_.GetWeakPtr()));
 //   }
 //
 //   /* Will always be called on the correct sequence, and only if this
@@ -48,6 +49,8 @@
 //
 //  private:
 //   SEQUENCE_CHECKER(sequence_checker_);
+//
+//   base::WeakPtrFactory<Foo> weak_ptr_factory_{this};
 // };
 
 namespace base {
@@ -94,14 +97,14 @@ template <typename T>
 class WeakHandleCore : public WeakHandleCoreBase,
                        public base::RefCountedThreadSafe<WeakHandleCore<T>> {
  public:
-  // Must be called on |ptr|'s owner thread, which is assumed to be
+  // Must be called on `ptr`'s owner thread, which is assumed to be
   // the current thread.
   explicit WeakHandleCore(const base::WeakPtr<T>& ptr) : ptr_(ptr) {}
 
   WeakHandleCore(const WeakHandleCore&) = delete;
   WeakHandleCore& operator=(const WeakHandleCore&) = delete;
 
-  // Must be called on |ptr_|'s owner thread.
+  // Must be called on `ptr_`'s owner thread.
   base::WeakPtr<T> Get() const {
     DCHECK(IsOnOwnerThread());
     return ptr_;
@@ -138,12 +141,12 @@ class WeakHandle {
   // Creates an uninitialized WeakHandle.
   WeakHandle() = default;
 
-  // Creates an initialized WeakHandle from |ptr|.
+  // Creates an initialized WeakHandle from `ptr`.
   explicit WeakHandle(const base::WeakPtr<T>& ptr)
       : core_(new internal::WeakHandleCore<T>(ptr)) {}
 
   // Allow conversion from WeakHandle<U> to WeakHandle<T> if U is
-  // convertible to T, but we *must* be on |other|'s owner thread.
+  // convertible to T, but we *must* be on `other`'s owner thread.
   // Note that this doesn't override the regular copy constructor, so
   // that one can be called on any thread.
   template <typename U>

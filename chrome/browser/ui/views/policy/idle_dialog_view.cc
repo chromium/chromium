@@ -11,9 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +21,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -53,12 +55,12 @@ std::unique_ptr<views::Label> CreateLabel() {
 
 // static
 base::WeakPtr<views::Widget> IdleDialog::Show(
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
     IdleDialog::ActionSet actions,
     base::OnceClosure on_close_by_user) {
-  return policy::IdleDialogView::Show(browser, dialog_duration, idle_threshold,
+  return policy::IdleDialogView::Show(bwi, dialog_duration, idle_threshold,
                                       actions, std::move(on_close_by_user));
 }
 
@@ -66,7 +68,7 @@ namespace policy {
 
 // static
 base::WeakPtr<views::Widget> IdleDialogView::Show(
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
     IdleDialog::ActionSet actions,
@@ -74,7 +76,7 @@ base::WeakPtr<views::Widget> IdleDialogView::Show(
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       std::make_unique<IdleDialogView>(dialog_duration, idle_threshold, actions,
                                        std::move(on_close_by_user)),
-      browser->window()->GetNativeWindow());
+      bwi->GetWindow()->GetNativeWindow());
   widget->Show();
   return widget->GetWeakPtr();
 }
@@ -98,7 +100,7 @@ ui::ImageModel IdleDialogView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kBusinessIcon, ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
+          views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }
 
 IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
@@ -109,17 +111,17 @@ IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
       actions_(actions),
       deadline_(base::TimeTicks::Now() + dialog_duration) {
   CHECK(actions.close || actions.clear);
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_IDLE_DISMISS_BUTTON));
   SetShowIcon(true);
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   auto [callback1, callback2] =
       base::SplitOnceCallback(std::move(on_close_by_user));
   SetAcceptCallback(std::move(callback1));
   SetCancelCallback(std::move(callback2));
 
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

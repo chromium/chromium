@@ -242,13 +242,6 @@ struct StructTraits<blink::mojom::AttributionSrcTokenDataView,
           blink::AttributionSrcToken> {};
 
 template <>
-struct StructTraits<blink::mojom::ClipboardSequenceNumberTokenDataView,
-                    blink::ClipboardSequenceNumberToken>
-    : public blink::TokenMojomTraitsHelper<
-          blink::mojom::ClipboardSequenceNumberTokenDataView,
-          blink::ClipboardSequenceNumberToken> {};
-
-template <>
 struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ExecutionContextTokenDataView,
                 blink::ExecutionContextToken> {
@@ -402,11 +395,18 @@ struct StructTraits<blink::mojom::WebNNContextTokenDataView,
           blink::WebNNContextToken> {};
 
 template <>
-struct StructTraits<blink::mojom::WebNNBufferTokenDataView,
-                    blink::WebNNBufferToken>
+struct StructTraits<blink::mojom::WebNNPendingConstantTokenDataView,
+                    blink::WebNNPendingConstantToken>
     : public blink::TokenMojomTraitsHelper<
-          blink::mojom::WebNNBufferTokenDataView,
-          blink::WebNNBufferToken> {};
+          blink::mojom::WebNNPendingConstantTokenDataView,
+          blink::WebNNPendingConstantToken> {};
+
+template <>
+struct StructTraits<blink::mojom::WebNNTensorTokenDataView,
+                    blink::WebNNTensorToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::WebNNTensorTokenDataView,
+          blink::WebNNTensorToken> {};
 
 }  // namespace mojo
 

@@ -4,6 +4,8 @@
 
 #include "chrome/common/win/delay_load_notify_hook.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -17,8 +19,8 @@ void WINAPI DummyFunction() {}
 FARPROC TestDelayLoadCallbackFunction(unsigned delay_load_event,
                                       DelayLoadInfo* delay_load_info) {
   if (delay_load_event == dliNotePreGetProcAddress &&
-      strcmp(delay_load_info->szDll, kTestDll) == 0 &&
-      strcmp(delay_load_info->dlp.szProcName, kDummyFunction) == 0) {
+      std::string_view(delay_load_info->szDll) == kTestDll &&
+      std::string_view(delay_load_info->dlp.szProcName) == kDummyFunction) {
     return reinterpret_cast<FARPROC>(DummyFunction);
   }
   return nullptr;
@@ -37,9 +39,9 @@ TEST(ChromeDelayLoadNotifyHookTest, OverrideDliNotifyHook) {
   DelayLoadInfo dli = {.szDll = kTestDll};
   dli.dlp.szProcName = kDummyFunction;
   absl::Cleanup reset_callback = [] {
-    chrome::SetDelayLoadHookCallback(nullptr);
+    SetDelayLoadHookCallback(nullptr);
   };
-  chrome::SetDelayLoadHookCallback(&TestDelayLoadCallbackFunction);
+  SetDelayLoadHookCallback(&TestDelayLoadCallbackFunction);
   EXPECT_EQ(__pfnDliNotifyHook2(dliNotePreGetProcAddress, &dli),
             reinterpret_cast<FARPROC>(DummyFunction));
 }

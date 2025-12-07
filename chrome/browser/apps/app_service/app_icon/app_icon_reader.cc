@@ -5,8 +5,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/files/file_util.h"
-#include "base/not_fatal_until.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
@@ -33,12 +31,6 @@ int GetResourceIdForIcon(const std::string& id,
   if (id == arc::kPlayStoreAppId) {
     return UseSmallIcon(size_in_dip) ? IDR_ARC_SUPPORT_ICON_32_PNG
                                      : IDR_ARC_SUPPORT_ICON_192_PNG;
-  }
-
-  if (ash::switches::IsAshDebugBrowserEnabled() &&
-      id == app_constants::kChromeAppId) {
-    return UseSmallIcon(size_in_dip) ? IDR_DEBUG_CHROME_APP_ICON_32
-                                     : IDR_DEBUG_CHROME_APP_ICON_192;
   }
 
   return icon_key.resource_id;
@@ -92,9 +84,9 @@ void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
   TRACE_EVENT0("ui", "AppIconReader::OnUncompressedIconRead");
   DCHECK_NE(IconType::kUnknown, icon_type);
 
-  auto it = base::ranges::find(decodes_, decoder,
-                               &std::unique_ptr<AppIconDecoder>::get);
-  CHECK(it != decodes_.end(), base::NotFatalUntil::M130);
+  auto it = std::ranges::find(decodes_, decoder,
+                              &std::unique_ptr<AppIconDecoder>::get);
+  CHECK(it != decodes_.end());
   decodes_.erase(it);
 
   if (!iv || iv->icon_type != IconType::kUncompressed ||

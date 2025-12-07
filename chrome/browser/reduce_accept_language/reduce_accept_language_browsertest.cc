@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -10,12 +11,13 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -27,7 +29,9 @@
 #include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/common/content_features.h"
@@ -116,7 +120,7 @@ static constexpr const char kDeprecationTrialName[] =
 
 }  // namespace
 
-class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
+class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
  public:
   ReduceAcceptLanguageBrowserTest() = default;
 
@@ -151,6 +155,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         ->ClearPersistedTokens();
 
     url_loader_interceptor_.reset();
+    intercepted_load_urls_.clear();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -238,11 +243,14 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       const std::vector<std::string>& expect_languages) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    base::Value languages_list =
-        content::EvalJs(web_contents, "navigator.languages").ExtractList();
+    base::Value::List languages_list =
+        content::EvalJs(web_contents, "navigator.languages")
+            .TakeValue()
+            .TakeList();
     std::vector<std::string> actual_languages;
-    for (const auto& result : languages_list.GetList())
+    for (const auto& result : languages_list) {
       actual_languages.push_back(result.GetString());
+    }
 
     EXPECT_EQ(expect_languages, actual_languages);
   }
@@ -260,7 +268,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   std::string GetResponseContentLanguage(
       const std::string& accept_language,
       const std::vector<std::string>& avail_languages) {
-    auto iter = base::ranges::find(avail_languages, accept_language);
+    auto iter = std::ranges::find(avail_languages, accept_language);
     return iter != avail_languages.end() ? *iter : avail_languages[0];
   }
 
@@ -341,6 +349,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   std::string origin_trial_third_party_token_;
   std::string valid_first_party_token_;
   std::string valid_third_party_token_;
+  std::set<GURL> intercepted_load_urls_;
 
  private:
   // Returns the value of the Accept-Language request header from the last sent
@@ -357,6 +366,8 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     if (expected_request_urls_.find(params->url_request.url) ==
         expected_request_urls_.end())
       return false;
+
+    intercepted_load_urls_.insert(params->url_request.url);
 
     if (params->url_request.url == CrossOriginSubresourceUrl()) {
       return RespondForCrossOriginSubResourceOriginTrialUrl(params);
@@ -385,7 +396,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
             "/subresource_simple.jpg",
             "/subresource_redirect_style.css",
         });
-    const std::string path = params->url_request.url.path();
+    const std::string path = params->url_request.url.GetPath();
     if (base::Contains(kSubresourcePaths, path)) {
       base::StrAppend(&headers, {BuildSubresourceResponseHeader()});
     } else {
@@ -432,7 +443,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       resource_path = "chrome/test/data/reduce_accept_language";
     }
     resource_path.append(
-        static_cast<std::string>(params->url_request.url.path_piece()));
+        static_cast<std::string>(params->url_request.url.path()));
 
     URLLoaderInterceptor::WriteResponse(resource_path, params->client.get(),
                                         &headers, std::nullopt,
@@ -524,9 +535,9 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
 class DisableFeatureReduceAcceptLanguageBrowserTest
     : public ReduceAcceptLanguageBrowserTest {
   void EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitFromCommandLine("", "ReduceAcceptLanguage");
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    scoped_feature_list_.InitWithFeatures(
+        {}, {network::features::kReduceAcceptLanguage,
+             network::features::kReduceAcceptLanguageHTTP});
   }
 };
 
@@ -563,21 +574,157 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                std::nullopt);
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
+}
+
+// Browser tests that using Enterprise policy to control ReduceAcceptLanguage
+// feature.
+class ReduceAcceptLanguageEnterprisePolicyBrowserTest
+    : public ReduceAcceptLanguageBrowserTest,
+      public ::testing::WithParamInterface<policy::PolicyTest::BooleanPolicy> {
+ public:
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case policy::PolicyTest::BooleanPolicy::kNotConfigured:
+        return "NotConfigured";
+      case policy::PolicyTest::BooleanPolicy::kTrue:
+        return "True";
+      case policy::PolicyTest::BooleanPolicy::kFalse:
+        return "False";
+    }
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    if (GetParam() == policy::PolicyTest::BooleanPolicy::kNotConfigured) {
+      return;
+    }
+
+    policy::PolicyMap policies;
+    SetPolicy(
+        &policies, policy::key::kReduceAcceptLanguageEnabled,
+        base::Value(GetParam() == policy::PolicyTest::BooleanPolicy::kTrue));
+    UpdateProviderPolicy(policies);
+  }
+
+  void EnabledFeatures() override {
+    scoped_feature_list_.InitWithFeatures(
+        {network::features::kReduceAcceptLanguage}, {});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+    ::testing::Values(policy::PolicyTest::BooleanPolicy::kNotConfigured,
+                      policy::PolicyTest::BooleanPolicy::kFalse,
+                      policy::PolicyTest::BooleanPolicy::kTrue),
+    &ReduceAcceptLanguageEnterprisePolicyBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+                       PolicyIsFollowed) {
+  SetTestOptions({.content_language_in_parent = "en",
+                  .avail_language_in_parent = "en, en-US",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+
+  // Both true and the default (no parameter) should be enabled.
+  const bool expect_feature_disabled =
+      GetParam() == policy::PolicyTest::BooleanPolicy::kFalse;
+  if (expect_feature_disabled) {
+    // Expect no Accept-Language header added because browser_tests can only
+    // check headers in navigation layer, browser_tests can't see headers added
+    // by network stack.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 std::nullopt);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  } else {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 "en-US,en;q=0.9");
+    VerifyNavigatorLanguages({"zh"});
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+                       PolicyIsFollowedIframe) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .avail_language_in_child = "es, en-US",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
+
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+
+  // Both true and the default (no parameter) should be enabled.
+  const bool expect_feature_disabled =
+      GetParam() == policy::PolicyTest::BooleanPolicy::kFalse;
+  if (expect_feature_disabled) {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                                 std::nullopt);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  } else {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                                 "en-US,en;q=0.9");
+    VerifyNavigatorLanguages({"zh"});
+  }
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
+}
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+                       PolicyIsFollowedImgSubresource) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .avail_language_in_child = "es, en-US",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginImgUrl(), SimpleImgUrl()});
+
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+
+  // Both true and the default (no parameter) should be enabled.
+  const bool expect_feature_disabled =
+      GetParam() == policy::PolicyTest::BooleanPolicy::kFalse;
+  if (expect_feature_disabled) {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SimpleImgUrl(), std::nullopt);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  } else {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SimpleImgUrl(),
+                                                 "en-US,en;q=0.9");
+    VerifyNavigatorLanguages({"zh"});
+  }
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 }
 
 // Tests same origin requests with the ReduceAcceptLanguage feature enabled.
 class SameOriginReduceAcceptLanguageBrowserTest
-    : public ReduceAcceptLanguageBrowserTest {
+    : public ReduceAcceptLanguageBrowserTest,
+      public testing::WithParamInterface<bool> {
  protected:
   void EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    // True: Enable the general feature for Reduce Accept-Language.
+    // False: Only enable reduction for HTTP header.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguage}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguageHTTP},
+          {network::features::kReduceAcceptLanguage});
+    }
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         SameOriginReduceAcceptLanguageBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        LargeLanguageListAndScriptDisable) {
   base::HistogramTester histograms;
 
@@ -612,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                                                "en-US,en;q=0.9");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        EmptyUserAcceptLanguage) {
   base::HistogramTester histograms;
 
@@ -635,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        NoAvailLanguageHeader) {
   base::HistogramTester histograms;
 
@@ -653,12 +800,17 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
-  // Verify navigator.languages only returns an array length 1 if
-  // ReduceAcceptLanguage enabled.
-  VerifyNavigatorLanguages({"zh"});
+  // Verify that navigator.languages only returns an array of length 1 if
+  // ReduceAcceptLanguage is enabled. For the HTTP-only feature, it should
+  // be no change and return the full list of languages.
+  if (GetParam()) {
+    VerifyNavigatorLanguages({"zh"});
+  } else {
+    VerifyNavigatorLanguages({"zh", "en"});
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        NoContentLanguageHeader) {
   base::HistogramTester histograms;
 
@@ -681,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        EmptyAvailLanguageAcceptLanguages) {
   base::HistogramTester histograms;
 
@@ -701,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        AvailLanguageAcceptLanguagesWhiteSpace) {
   base::HistogramTester histograms;
 
@@ -725,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchNonPrimaryLanguage) {
   base::HistogramTester histograms;
 
@@ -775,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
 // Verify no endless resend requests for the service worker navigation preload
 // requests.
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        ServiceWorkerNavigationPreload) {
   SetTestOptions(
       {.content_language_in_parent = "es",
@@ -852,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms3.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchPrimaryLanguage) {
   base::HistogramTester histograms;
 
@@ -880,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SubresourceRequestNoRestart) {
   base::HistogramTester histograms;
   SetTestOptions({.content_language_in_parent = "es",
@@ -891,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // Initial request.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "es");
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure no restart happens.
@@ -905,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchMultipleLanguage) {
   base::HistogramTester histograms;
 
@@ -953,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms_after.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageDontMatchAnyPreferredLanguage) {
   base::HistogramTester histograms;
 
@@ -982,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        PersistedAcceptLanguageNotAvailable) {
   SetTestOptions({.content_language_in_parent = "es",
                   .avail_language_in_parent = "es, ja, en-US",
@@ -1008,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeReduceAcceptLanguage) {
   base::HistogramTester histograms;
 
@@ -1039,7 +1191,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * simple_request_url: one fetch for initially adding header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   // Disable script for first party origin.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -1052,10 +1204,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // navigation should use the language after negotiation which is en-US.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                "en-US,en;q=0.9");
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        ImgSubresourceReduceAcceptLanguage) {
   base::HistogramTester histograms;
 
@@ -1086,10 +1238,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for same_origin_img_url main frame.
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeNoContentLanguageInChild) {
   base::HistogramTester histograms;
 
@@ -1120,10 +1272,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeNoAvailLanguageAcceptLanguageInChild) {
   base::HistogramTester histograms;
 
@@ -1154,10 +1306,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeSameContentLanguage) {
   base::HistogramTester histograms;
 
@@ -1188,10 +1340,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeDifferentContentLanguage) {
   base::HistogramTester histograms;
 
@@ -1222,11 +1374,12 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 class ThirdPartyReduceAcceptLanguageBrowserTest
-    : public ReduceAcceptLanguageBrowserTest {
+    : public ReduceAcceptLanguageBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   static constexpr char kOtherSiteOriginUrl[] = "https://other-site.com:44445";
   static constexpr char kOtherSiteBOriginUrl[] =
@@ -1274,13 +1427,24 @@ class ThirdPartyReduceAcceptLanguageBrowserTest
 
  protected:
   void EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    // True: Enable the general feature for Reduce Accept-Language.
+    // False: Only enable reduction for HTTP header.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguage}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguageHTTP},
+          {network::features::kReduceAcceptLanguage});
+    }
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ThirdPartyReduceAcceptLanguageBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
                        IframeDifferentContentLanguage) {
   base::HistogramTester histograms;
 
@@ -1312,10 +1476,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple_3p.html");
 }
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
                        ThirdPartyIframeWithSubresourceRequests) {
   base::HistogramTester histograms;
 
@@ -1351,10 +1515,14 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // One store for cross_region_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_iframe_basic.html");
+  // All subresources should have been loaded,
+  EXPECT_THAT(intercepted_load_urls_,
+              testing::IsSupersetOf({IframeThirdPartyRequestUrl(),
+                                     OtherSiteCssRequestUrl(),
+                                     OtherSiteBasicRequestUrl()}));
 }
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
                        ThirdPartyIframeWithSubresourceRedirectRequests) {
   base::HistogramTester histograms;
 
@@ -1389,7 +1557,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // One store for top_level_with_iframe_redirect_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_redirect_style.css");
+  // All subresources should have been loaded,
+  EXPECT_THAT(intercepted_load_urls_,
+              testing::IsSupersetOf(
+                  {SubframeThirdPartyRequestUrl(), OtherSiteCssRequestUrl()}));
 }
 
 class FencedFrameReduceAcceptLanguageBrowserTest
@@ -1468,7 +1639,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple_3p.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
@@ -1507,7 +1678,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ("/subframe_simple.html", LastRequestUrl().path());
+  EXPECT_EQ("/subframe_simple.html", LastRequestUrl().GetPath());
 }
 
 // Browser tests verify redirect same origin with different cases.
@@ -2437,7 +2608,7 @@ class SameOriginReduceAcceptLanguageDeprecationOTBrowserTest
     // Verify the first request opt-in deprecation origin trial.
     NavigateAndVerifyAcceptLanguageOfLastRequest(url,
                                                  expect_opt_in_fq_language);
-    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    EXPECT_EQ(LastRequestUrl().GetPath(), last_request_path);
 
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     // Ensure restart happen once.
@@ -2459,14 +2630,14 @@ class SameOriginReduceAcceptLanguageDeprecationOTBrowserTest
     SetOriginTrialFirstPartyToken(kInvalidOriginToken);
     NavigateAndVerifyAcceptLanguageOfLastRequest(url,
                                                  expect_opt_out_fq_language);
-    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    EXPECT_EQ(LastRequestUrl().GetPath(), last_request_path);
     VerifyNavigatorLanguages({user_accept_languages[0]});
 
     // Verify the second request has invalid deprecation origin trial token, it
     // should continue to reduce the Accept-Language.
     NavigateAndVerifyAcceptLanguageOfLastRequest(
         url, expect_reduced_accept_language);
-    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    EXPECT_EQ(LastRequestUrl().GetPath(), last_request_path);
   }
 
   void VerifySameOriginRequestNoRestart(
@@ -2896,7 +3067,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageDeprecationOTBrowserTest,
   // Persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple_3p.html");
 
   // For the second request, we expect no reduced Accept-Language send once
   // the deprecation origin trial takes effect.
@@ -2951,9 +3122,102 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageDeprecationOTBrowserTest,
   // No persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_redirect_style.css");
+  // All subresources should have been loaded,
+  EXPECT_THAT(intercepted_load_urls_,
+              testing::IsSupersetOf({CrossOriginMetaTagInjectingJavascriptUrl(),
+                                     CrossOriginCssRequestUrl()}));
 
   // Ensure third-party JavaScript access JS getters get the full list of
   // accept-language.
   VerifyNavigatorLanguages({"zh", "en-US"});
+}
+
+// Browser tests verify reduce the total number of Accept-Language.
+class ReduceAcceptLanguageCountBrowserTest
+    : public ReduceAcceptLanguageBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void EnabledFeatures() override {
+    // If explicitly set custom count set 5 as max.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{network::features::kReduceAcceptLanguageCount,
+                                 {{network::features::kMaxAcceptLanguage.name,
+                                   "5"}}}},
+          /*disabled_features=*/{network::features::kReduceAcceptLanguage,
+                                 network::features::kReduceAcceptLanguageHTTP});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{network::features::kReduceAcceptLanguageCount},
+          /*disabled_features=*/{network::features::kReduceAcceptLanguage,
+                                 network::features::kReduceAcceptLanguageHTTP});
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(FeatureFlag,
+                         ReduceAcceptLanguageCountBrowserTest,
+                         testing::Values(true, false));
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "en",
+                  .avail_language_in_parent = "en, en-US",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetPrefsAcceptLanguage(base::SplitString(
+      kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+
+  // Expect no Accept-Language header added because browser_tests can only check
+  // headers in navigation layer, browser_tests can't see headers added by
+  // network stack.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               std::nullopt);
+  if (GetParam()) {
+    VerifyNavigatorLanguages({"zh", "zh-CN", "en-US", "en", "af"});
+  } else {
+    VerifyNavigatorLanguages(
+        {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
+  }
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Expect a total count of 3. The histogram is recorded once during initial
+  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
+  // to sync the preference to the renderer and network services.
+  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
+}
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .avail_language_in_child = "es, en-US",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
+
+  SetPrefsAcceptLanguage(base::SplitString(
+      kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+
+  // Expect no Accept-Language header added because browser_tests can only check
+  // headers in navigation layer, browser_tests can't see headers added by
+  // network stack.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               std::nullopt);
+  if (GetParam()) {
+    VerifyNavigatorLanguages({"zh", "zh-CN", "en-US", "en", "af"});
+  } else {
+    VerifyNavigatorLanguages(
+        {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
+  }
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Expect a total count of 3. The histogram is recorded once during initial
+  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
+  // to sync the preference to the renderer and network services.
+  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
 }

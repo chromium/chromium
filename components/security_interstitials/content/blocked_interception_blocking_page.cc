@@ -4,6 +4,7 @@
 
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/metrics_helper.h"

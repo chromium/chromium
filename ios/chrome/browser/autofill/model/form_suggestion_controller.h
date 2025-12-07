@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -23,9 +22,9 @@ class WebState;
 @protocol CRWWebViewProxy;
 
 // Handles form focus events and presents input suggestions.
-@interface FormSuggestionController : NSObject<CRWWebStateObserver,
-                                               FormSuggestionClient,
-                                               FormInputSuggestionsProvider>
+@interface FormSuggestionController : NSObject <CRWWebStateObserver,
+                                                FormSuggestionClient,
+                                                FormInputSuggestionsProvider>
 
 // Initializes a new FormSuggestionController with the specified WebState and a
 // list of FormSuggestionProviders.
@@ -36,11 +35,6 @@ class WebState;
 // retrieveSuggestionsForForm:field:withCompletion:].
 - (instancetype)initWithWebState:(web::WebState*)webState
                        providers:(NSArray*)providers;
-
-// Finds a FormSuggestionProvider that can supply suggestions for the specified
-// form, requests them, and updates the view accordingly.
-- (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
-                          webState:(web::WebState*)webState;
 
 // Instructs the controller to detach itself from the WebState.
 - (void)detachFromWebState;

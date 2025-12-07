@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/common/credential_provider/credential.h"
+#import "ios/chrome/common/credential_provider/credential_store_util.h"
 
 @interface MultiStoreCredentialStore ()
 
@@ -35,6 +36,15 @@
     }
   }
   return uniqueCredentials.allObjects;
+}
+
+- (void)getCredentialsWithCompletion:(CredentialFetchCompletion)completion {
+  credential_store_util::ReadFromMultipleCredentialStoresAsync(
+      self.stores,
+      base::BindOnce(
+          [](CredentialFetchCompletion completion,
+             NSArray<id<Credential>>* credentials) { completion(credentials); },
+          std::move(completion)));
 }
 
 - (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier {

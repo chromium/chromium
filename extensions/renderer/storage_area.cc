@@ -16,7 +16,10 @@
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 
@@ -25,9 +28,14 @@ namespace extensions {
 namespace {
 
 #define DEFINE_STORAGE_AREA_HANDLERS()                                      \
-  const char* GetTypeName() override { return "StorageArea"; }              \
+  const char* GetHumanReadableName() const override {                       \
+    return "StorageArea";                                                   \
+  }                                                                         \
   void Get(gin::Arguments* arguments) {                                     \
     storage_area_.HandleFunctionCall("get", arguments);                     \
+  }                                                                         \
+  void GetKeys(gin::Arguments* arguments) {                                 \
+    storage_area_.HandleFunctionCall("getKeys", arguments);                 \
   }                                                                         \
   void Set(gin::Arguments* arguments) {                                     \
     storage_area_.HandleFunctionCall("set", arguments);                     \
@@ -68,16 +76,22 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
 
   ~LocalStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kLocalStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(isolate)
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &LocalStorageArea::Get)
+        .SetMethod("getKeys", &LocalStorageArea::GetKeys)
         .SetMethod("set", &LocalStorageArea::Set)
         .SetMethod("remove", &LocalStorageArea::Remove)
         .SetMethod("clear", &LocalStorageArea::Clear)
         .SetMethod("getBytesInUse", &LocalStorageArea::GetBytesInUse)
+        .SetMethod("setAccessLevel", &LocalStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &LocalStorageArea::GetOnChangedEvent)
         .SetValue("QUOTA_BYTES", api::storage::local::QUOTA_BYTES);
   }
@@ -85,10 +99,12 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
 
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
+
   StorageArea storage_area_;
 };
-
-gin::WrapperInfo LocalStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
  public:
@@ -107,16 +123,22 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
 
   ~SyncStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kSyncStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(isolate)
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &SyncStorageArea::Get)
+        .SetMethod("getKeys", &SyncStorageArea::GetKeys)
         .SetMethod("set", &SyncStorageArea::Set)
         .SetMethod("remove", &SyncStorageArea::Remove)
         .SetMethod("clear", &SyncStorageArea::Clear)
         .SetMethod("getBytesInUse", &SyncStorageArea::GetBytesInUse)
+        .SetMethod("setAccessLevel", &SyncStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &SyncStorageArea::GetOnChangedEvent)
         .SetValue("QUOTA_BYTES", api::storage::sync::QUOTA_BYTES)
         .SetValue("QUOTA_BYTES_PER_ITEM",
@@ -134,10 +156,12 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
 
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
+
   StorageArea storage_area_;
 };
-
-gin::WrapperInfo SyncStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
  public:
@@ -156,26 +180,34 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
 
   ~ManagedStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kManagedStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(isolate)
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &ManagedStorageArea::Get)
+        .SetMethod("getKeys", &ManagedStorageArea::GetKeys)
         .SetMethod("set", &ManagedStorageArea::Set)
         .SetMethod("remove", &ManagedStorageArea::Remove)
         .SetMethod("clear", &ManagedStorageArea::Clear)
         .SetMethod("getBytesInUse", &ManagedStorageArea::GetBytesInUse)
+        .SetMethod("setAccessLevel", &ManagedStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &ManagedStorageArea::GetOnChangedEvent);
   }
 
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
 
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
+
   StorageArea storage_area_;
 };
-
-gin::WrapperInfo ManagedStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
  public:
@@ -194,12 +226,17 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
 
   ~SessionStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kSessionStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(isolate)
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &SessionStorageArea::Get)
+        .SetMethod("getKeys", &SessionStorageArea::GetKeys)
         .SetMethod("set", &SessionStorageArea::Set)
         .SetMethod("remove", &SessionStorageArea::Remove)
         .SetMethod("clear", &SessionStorageArea::Clear)
@@ -220,8 +257,6 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
 
   StorageArea storage_area_;
 };
-
-gin::WrapperInfo SessionStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 #undef DEFINE_STORAGE_AREA_HANDLERS
 
@@ -250,26 +285,26 @@ v8::Local<v8::Object> StorageArea::CreateStorageArea(
     const BindingAccessChecker* access_checker) {
   v8::Local<v8::Object> object;
   if (property_name == "local") {
-    gin::Handle<LocalStorageArea> handle = gin::CreateHandle(
-        isolate, new LocalStorageArea(request_handler, event_handler, type_refs,
-                                      access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<LocalStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   } else if (property_name == "sync") {
-    gin::Handle<SyncStorageArea> handle = gin::CreateHandle(
-        isolate, new SyncStorageArea(request_handler, event_handler, type_refs,
-                                     access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<SyncStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   } else if (property_name == "session") {
-    gin::Handle<SessionStorageArea> handle = gin::CreateHandle(
-        isolate, new SessionStorageArea(request_handler, event_handler,
-                                        type_refs, access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<SessionStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   } else {
     CHECK_EQ("managed", property_name);
-    gin::Handle<ManagedStorageArea> handle = gin::CreateHandle(
-        isolate, new ManagedStorageArea(request_handler, event_handler,
-                                        type_refs, access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<ManagedStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   }
   return object;
 }
@@ -277,8 +312,12 @@ v8::Local<v8::Object> StorageArea::CreateStorageArea(
 void StorageArea::HandleFunctionCall(const std::string& method_name,
                                      gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
+  // This is only ever called from JavaScript, so we must have entered the
+  // isolate already in this thread.
+  CHECK_EQ(v8::Isolate::GetCurrent(), isolate);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
+  CHECK_EQ(isolate, v8::Isolate::GetCurrent());
 
   // The context may have been invalidated, as in the case where this could be
   // a reference to an object from a removed frame.
@@ -326,8 +365,7 @@ v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
       isolate, gin::StringToSymbol(isolate, "onChangedEvent"));
   v8::Local<v8::Value> event;
   if (!wrapper->GetPrivate(context, key).ToLocal(&event)) {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
+    NOTREACHED();
   }
 
   DCHECK(!event.IsEmpty());
@@ -340,8 +378,7 @@ v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
         context);
     v8::Maybe<bool> set_result = wrapper->SetPrivate(context, key, event);
     if (!set_result.IsJust() || !set_result.FromJust()) {
-      NOTREACHED_IN_MIGRATION();
-      return v8::Local<v8::Value>();
+      NOTREACHED();
     }
   }
   return event;

@@ -38,12 +38,12 @@ bool EnsureRowExistsSync(sql::Database* db,
 bool StoreThumbnailSync(sql::Database* db,
                         int64_t offline_id,
                         base::Time expiration,
-                        const std::string& thumbnail) {
+                        std::string thumbnail) {
   static const char kUpdateSql[] =
       "UPDATE page_thumbnails SET expiration=?,thumbnail=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
   statement.BindTime(0, expiration);
-  statement.BindBlob(1, thumbnail);
+  statement.BindBlob(1, std::move(thumbnail));
   statement.BindInt64(2, offline_id);
   return statement.Run();
 }
@@ -51,20 +51,20 @@ bool StoreThumbnailSync(sql::Database* db,
 bool StoreFaviconSync(sql::Database* db,
                       int64_t offline_id,
                       base::Time expiration,
-                      const std::string& favicon) {
+                      std::string favicon) {
   static const char kUpdateSql[] =
       "UPDATE page_thumbnails SET expiration=?,favicon=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
   statement.BindTime(0, expiration);
-  statement.BindBlob(1, favicon);
+  statement.BindBlob(1, std::move(favicon));
   statement.BindInt64(2, offline_id);
   return statement.Run();
 }
 
 bool StoreVisualsSync(int64_t offline_id,
                       base::Time expiration,
-                      const std::string& thumbnail,
-                      const std::string& favicon,
+                      std::string thumbnail,
+                      std::string favicon,
                       sql::Database* db) {
   if (expiration == base::Time()) {
     expiration = OfflineTimeNow() + kVisualsExpirationDelta;
@@ -74,12 +74,14 @@ bool StoreVisualsSync(int64_t offline_id,
     return false;
 
   if (!thumbnail.empty() &&
-      !StoreThumbnailSync(db, offline_id, expiration, thumbnail))
+      !StoreThumbnailSync(db, offline_id, expiration, std::move(thumbnail))) {
     return false;
+  }
 
   if (!favicon.empty() &&
-      !StoreFaviconSync(db, offline_id, expiration, favicon))
+      !StoreFaviconSync(db, offline_id, expiration, std::move(favicon))) {
     return false;
+  }
 
   return true;
 }

@@ -32,9 +32,11 @@ class FastCheckoutTabHelper
   explicit FastCheckoutTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FastCheckoutTabHelper>;
 
+  void DidStartNavigationImpl(const GURL& url);
   void FetchCapabilities(const GURL& url);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<FastCheckoutTabHelper> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TAB_HELPER_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -16,9 +17,9 @@
 #include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -33,12 +34,12 @@
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_client_view.h"
 
-namespace {
-
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
+
+namespace {
 
 class MockDownloadBubbleNavigationHandler
     : public DownloadBubbleNavigationHandler {
@@ -90,6 +91,8 @@ std::unique_ptr<KeyedService> BuildMockDownloadCoreService(
   return std::make_unique<MockDownloadCoreService>();
 }
 
+}  // namespace
+
 class DownloadBubbleContentsViewTest
     : public ChromeViewsTestBase,
       public ::testing::WithParamInterface<bool> {
@@ -114,6 +117,11 @@ class DownloadBubbleContentsViewTest
       EXPECT_CALL(*item, GetDangerType())
           .WillRepeatedly(Return(download::DownloadDangerType::
                                      DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+      EXPECT_CALL(*item, IsDangerous()).WillRepeatedly(Return(true));
+      EXPECT_CALL(*item, GetReferrerUrl())
+          .WillRepeatedly(ReturnRefOfCopy(GURL("https://chromium.org")));
+      EXPECT_CALL(*item, GetTargetFilePath())
+          .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
       content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile_,
                                                        nullptr);
       download_items_.push_back(std::move(item));
@@ -145,17 +153,19 @@ class DownloadBubbleContentsViewTest
         .WillRepeatedly(Return(delegate_.get()));
     EXPECT_CALL(*manager_, GetBrowserContext())
         .WillRepeatedly(Return(profile_.get()));
-    window_ = std::make_unique<TestBrowserWindow>();
+    auto window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    params.window = window.release();
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
+    bubble_delegate->SetOwnedByWidget(
+        views::WidgetDelegate::OwnedByWidgetPassKey());
     bubble_delegate_ = bubble_delegate.get();
     navigation_handler_ =
         std::make_unique<MockDownloadBubbleNavigationHandler>();
@@ -210,7 +220,6 @@ class DownloadBubbleContentsViewTest
   raw_ptr<MockDownloadCoreService> mock_download_core_service_;
   std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;
   std::unique_ptr<testing::NiceMock<content::MockDownloadManager>> manager_;
-  std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::vector<std::unique_ptr<NiceMock<download::MockDownloadItem>>>
       download_items_;
@@ -427,5 +436,3 @@ TEST_P(DownloadBubbleContentsViewTest,
       OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
       DownloadCommands::Command::DISCARD);
 }
-
-}  // namespace

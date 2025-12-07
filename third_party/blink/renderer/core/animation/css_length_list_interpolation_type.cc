@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/length_list_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -107,7 +108,7 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSLengthListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList())
     return nullptr;
@@ -150,7 +151,7 @@ void CSSLengthListInterpolationType::Composite(
     const InterpolationValue& value,
     double interpolation_fraction) const {
   ListInterpolationFunctions::Composite(
-      underlying_value_owner, underlying_fraction, *this, value,
+      underlying_value_owner, underlying_fraction, this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
       ListInterpolationFunctions::InterpolableValuesKnownCompatible,
       ListInterpolationFunctions::VerifyNoNonInterpolableValues,

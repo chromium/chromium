@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,8 +25,8 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -42,12 +41,9 @@ import java.util.concurrent.TimeoutException;
 public class NavigationRecorderTest {
     private static final String TAG = "NavRecorderTest";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sTestSetupRule = new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sTestSetupRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private EmbeddedTestServer mTestServer;
     private String mNavUrl;
@@ -55,12 +51,12 @@ public class NavigationRecorderTest {
 
     @Before
     public void setUp() {
-        mTestServer = sTestSetupRule.getEmbeddedTestServerRule().getServer();
+        mTestServer = mActivityTestRule.getTestServer();
         mNavUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mInitialTab = sTestSetupRule.getActivity().getActivityTab();
+                    mInitialTab = mActivityTestRule.getActivity().getActivityTab();
                     // Add logging to debug flaky test: crbug.com/1297086.
                     mInitialTab.addObserver(
                             new EmptyTabObserver() {
@@ -121,7 +117,7 @@ public class NavigationRecorderTest {
                     }
                 });
 
-        sTestSetupRule.loadUrlInNewTab(null);
+        mActivityTestRule.loadUrlInNewTab(null);
         callback.waitForCallback(0);
     }
 
@@ -140,7 +136,7 @@ public class NavigationRecorderTest {
                     }
                 });
 
-        sTestSetupRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
+        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
         callback.waitForCallback(0);
     }
 

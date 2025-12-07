@@ -187,7 +187,7 @@ class QuarantineWinTest : public ::testing::Test {
 TEST_F(QuarantineWinTest, MissingFile) {
   QuarantineFile(GetTempDir().AppendASCII("does-not-exist.exe"),
                  GURL(kDummySourceUrl), GURL(kDummyReferrerUrl),
-                 kDummyClientGuid,
+                 /*request_initiator=*/std::nullopt, kDummyClientGuid,
                  base::BindOnce(&CheckQuarantineResult,
                                 QuarantineFileResult::FILE_MISSING));
   base::RunLoop().RunUntilIdle();
@@ -210,7 +210,8 @@ TEST_F(QuarantineWinTest, LocalFile_DependsOnLocalConfig) {
     ASSERT_TRUE(CreateFile(test_file));
 
     QuarantineFile(
-        test_file, GURL(source_url), GURL(), kDummyClientGuid,
+        test_file, GURL(source_url), GURL(), /*request_initiator=*/std::nullopt,
+        kDummyClientGuid,
         base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
     base::RunLoop().RunUntilIdle();
 
@@ -237,7 +238,8 @@ TEST_F(QuarantineWinTest, DownloadedFile_DependsOnLocalConfig) {
     ASSERT_TRUE(CreateFile(test_file));
 
     QuarantineFile(
-        test_file, GURL(source_url), GURL(), kDummyClientGuid,
+        test_file, GURL(source_url), GURL(), /*request_initiator=*/std::nullopt,
+        kDummyClientGuid,
         base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
     base::RunLoop().RunUntilIdle();
 
@@ -270,7 +272,7 @@ TEST_F(QuarantineWinTest, UnsafeReferrer_DependsOnLocalConfig) {
     ASSERT_TRUE(CreateFile(test_file));
     QuarantineFile(
         test_file, GURL("http://example.com/good"), GURL(referrer_url),
-        kDummyClientGuid,
+        /*request_initiator=*/std::nullopt, kDummyClientGuid,
         base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
     base::RunLoop().RunUntilIdle();
 
@@ -288,12 +290,14 @@ TEST_F(QuarantineWinTest, UnsafeReferrer_DependsOnLocalConfig) {
 
 // An empty source URL should result in a file that's treated the same as one
 // downloaded from the internet.
-TEST_F(QuarantineWinTest, EmptySource_DependsOnLocalConfig) {
+// TODO(crbug.com/423622358): Re-enable this test
+TEST_F(QuarantineWinTest, DISABLED_EmptySource_DependsOnLocalConfig) {
   base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
   ASSERT_TRUE(CreateFile(test_file));
 
   QuarantineFile(
-      test_file, GURL(), GURL(), kDummyClientGuid,
+      test_file, GURL(), GURL(), /*request_initiator=*/std::nullopt,
+      kDummyClientGuid,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -314,7 +318,8 @@ TEST_F(QuarantineWinTest, EmptyFile) {
   ASSERT_TRUE(base::WriteFile(test_file, ""));
 
   QuarantineFile(
-      test_file, net::FilePathToFileURL(test_file), GURL(), kDummyClientGuid,
+      test_file, net::FilePathToFileURL(test_file), GURL(),
+      /*request_initiator=*/std::nullopt, kDummyClientGuid,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -336,7 +341,8 @@ TEST_F(QuarantineWinTest, NoClientGuid) {
   ASSERT_TRUE(CreateFile(test_file));
 
   QuarantineFile(
-      test_file, net::FilePathToFileURL(test_file), GURL(), std::string(),
+      test_file, net::FilePathToFileURL(test_file), GURL(),
+      /*request_initiator=*/std::nullopt, std::string(),
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -359,7 +365,8 @@ TEST_F(QuarantineWinTest, SuperLongURL) {
   std::string source_url("http://example.com/");
   source_url.append(INTERNET_MAX_URL_LENGTH * 2, 'a');
   QuarantineFile(
-      test_file, GURL(source_url), GURL(), std::string(),
+      test_file, GURL(source_url), GURL(), /*request_initiator=*/std::nullopt,
+      std::string(),
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -380,7 +387,8 @@ TEST_F(QuarantineWinTest, TrustedSite) {
 
   ASSERT_TRUE(CreateFile(test_file));
   QuarantineFile(
-      test_file, source_url, GURL(), kDummyClientGuid,
+      test_file, source_url, GURL(), /*request_initiator=*/std::nullopt,
+      kDummyClientGuid,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -398,7 +406,8 @@ TEST_F(QuarantineWinTest, RestrictedSite) {
   ASSERT_TRUE(CreateFile(test_file));
 
   // Files from a restricted site are deleted.
-  QuarantineFile(test_file, source_url, GURL(), kDummyClientGuid,
+  QuarantineFile(test_file, source_url, GURL(),
+                 /*request_initiator=*/std::nullopt, kDummyClientGuid,
                  base::BindOnce(&CheckQuarantineResult,
                                 QuarantineFileResult::BLOCKED_BY_POLICY));
   base::RunLoop().RunUntilIdle();
@@ -407,7 +416,8 @@ TEST_F(QuarantineWinTest, RestrictedSite) {
   EXPECT_FALSE(GetZoneIdentifierStreamContents(test_file, &zone_identifier));
 }
 
-TEST_F(QuarantineWinTest, TrustedSite_AlreadyQuarantined) {
+// TODO(crbug.com/454567187): Enabled after fixing
+TEST_F(QuarantineWinTest, DISABLED_TrustedSite_AlreadyQuarantined) {
   // Test file path and source URL.
   base::FilePath test_file = GetTempDir().AppendASCII("good.exe");
   GURL source_url(
@@ -417,7 +427,8 @@ TEST_F(QuarantineWinTest, TrustedSite_AlreadyQuarantined) {
   // Ensure the file already contains a zone identifier.
   ASSERT_TRUE(AddInternetZoneIdentifierDirectly(test_file));
   QuarantineFile(
-      test_file, source_url, GURL(), kDummyClientGuid,
+      test_file, source_url, GURL(), /*request_initiator=*/std::nullopt,
+      kDummyClientGuid,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -439,7 +450,8 @@ TEST_F(QuarantineWinTest, RestrictedSite_AlreadyQuarantined) {
   ASSERT_TRUE(AddInternetZoneIdentifierDirectly(test_file));
 
   // Files from a restricted site are deleted.
-  QuarantineFile(test_file, source_url, GURL(), kDummyClientGuid,
+  QuarantineFile(test_file, source_url, GURL(),
+                 /*request_initiator=*/std::nullopt, kDummyClientGuid,
                  base::BindOnce(&CheckQuarantineResult,
                                 QuarantineFileResult::BLOCKED_BY_POLICY));
   base::RunLoop().RunUntilIdle();
@@ -463,14 +475,16 @@ TEST_F(QuarantineWinTest, MetaData_ApplyMOTW_Directly) {
 
   // An invalid GUID will cause QuarantineFile() to apply the MOTW directly.
   QuarantineFile(
-      test_file, host_url, referrer_url, std::string(),
+      test_file, host_url, referrer_url, /*request_initiator=*/std::nullopt,
+      std::string(),
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(IsFileQuarantined(test_file, host_url_clean, referrer_url_clean));
 }
 
-TEST_F(QuarantineWinTest, MetaData_InvokeAS) {
+// TODO(crbug.com/433487891): Re-enable this flaky test
+TEST_F(QuarantineWinTest, DISABLED_MetaData_InvokeAS) {
   base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
   ASSERT_TRUE(CreateFile(test_file));
 
@@ -484,11 +498,27 @@ TEST_F(QuarantineWinTest, MetaData_InvokeAS) {
       base::StrCat({"https://", GetInternetSite(), "/folder/index?x#y"}));
 
   QuarantineFile(
-      test_file, host_url, referrer_url, kDummyClientGuid,
+      test_file, host_url, referrer_url, /*request_initiator=*/std::nullopt,
+      kDummyClientGuid,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(IsFileQuarantined(test_file, host_url_clean, referrer_url_clean));
+}
+
+// TODO(crbug.com/423622358): Re-enable this test
+TEST_F(QuarantineWinTest, DISABLED_RequestInitiatorReplacesSourceUrl) {
+  base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
+  ASSERT_TRUE(CreateFile(test_file));
+
+  GURL host_url(base::StrCat({"https://", GetInternetSite(), "/"}));
+  QuarantineFile(
+      test_file, GURL("data://text/html,payload"), GURL(),
+      url::Origin::Create(host_url), kDummyClientGuid,
+      base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(IsFileQuarantined(test_file, host_url, GURL()));
 }
 
 }  // namespace quarantine

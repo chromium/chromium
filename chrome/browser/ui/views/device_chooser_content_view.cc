@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 
+#include <array>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -19,8 +15,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
@@ -41,7 +39,11 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DeviceChooserContentView,
+                                      kDeviceChooserDialogBubbleElementId);
 
 DeviceChooserContentView::DeviceChooserContentView(
     views::TableViewObserver* table_view_observer,
@@ -50,6 +52,8 @@ DeviceChooserContentView::DeviceChooserContentView(
   chooser_controller_->set_view(this);
 
   SetPreferredSize(gfx::Size(402, 320));
+  SetProperty(views::kElementIdentifierKey,
+              kDeviceChooserDialogBubbleElementId);
 
   if (chooser_controller_->ShouldShowSelectAllCheckbox()) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -188,15 +192,15 @@ ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   }
 
   int level = chooser_controller_->GetSignalStrengthLevel(row);
-  if (level == -1)
+  if (level == -1) {
     return ui::ImageModel();
+  }
 
-  constexpr int kSignalStrengthLevelImageIds[5] = {
+  static constexpr std::array kSignalStrengthLevelImageIds{
       IDR_SIGNAL_0_BAR, IDR_SIGNAL_1_BAR, IDR_SIGNAL_2_BAR, IDR_SIGNAL_3_BAR,
       IDR_SIGNAL_4_BAR};
   DCHECK_GE(level, 0);
-  DCHECK_LT(static_cast<size_t>(level),
-            std::size(kSignalStrengthLevelImageIds));
+  DCHECK_LT(static_cast<size_t>(level), kSignalStrengthLevelImageIds.size());
   return ui::ImageModel::FromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           kSignalStrengthLevelImageIds[level]));
@@ -237,8 +241,9 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
     ShowReScanButton(enabled);
   }
 
-  if (GetWidget() && GetWidget()->GetRootView())
+  if (GetWidget() && GetWidget()->GetRootView()) {
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+  }
 }
 
 void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
@@ -261,13 +266,15 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     UpdateTableView();
   }
 
-  if (refreshing)
+  if (refreshing) {
     ShowThrobber();
-  else
+  } else {
     ShowReScanButton(/*enable=*/true);
+  }
 
-  if (GetWidget() && GetWidget()->GetRootView())
+  if (GetWidget() && GetWidget()->GetRootView()) {
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+  }
 }
 
 std::u16string DeviceChooserContentView::GetWindowTitle() const {
@@ -315,7 +322,7 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
   auto throbber_label = std::make_unique<views::Label>(
       throbber_strings.first, views::style::CONTEXT_LABEL,
       views::style::STYLE_DISABLED);
-  throbber_label->SetTooltipText(throbber_strings.second);
+  throbber_label->SetCustomTooltipText(throbber_strings.second);
   throbber_label_ = throbber_container->AddChildView(std::move(throbber_label));
 
   if (chooser_controller_->ShouldShowReScanButton()) {
@@ -353,9 +360,9 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
 }
 
 bool DeviceChooserContentView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   return chooser_controller_->BothButtonsAlwaysEnabled() ||
-         button != ui::DIALOG_BUTTON_OK ||
+         button != ui::mojom::DialogButton::kOk ||
          !table_view_->selection_model().empty();
 }
 
@@ -412,8 +419,9 @@ void DeviceChooserContentView::SelectAllCheckboxChanged() {
 }
 
 void DeviceChooserContentView::ShowThrobber() {
-  if (re_scan_button_)
+  if (re_scan_button_) {
     re_scan_button_->SetVisible(false);
+  }
 
   throbber_->SetVisible(true);
   throbber_label_->SetVisible(true);

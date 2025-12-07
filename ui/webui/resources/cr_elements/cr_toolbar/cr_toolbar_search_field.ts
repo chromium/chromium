@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons_lit.html.js';
+import '../icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -78,14 +78,14 @@ export class CrToolbarSearchFieldElement extends
     };
   }
 
-  narrow: boolean = false;
-  showingSearch: boolean = false;
-  disabled: boolean = false;
-  override autofocus: boolean = false;
-  spinnerActive: boolean = false;
-  private searchFocused_: boolean = false;
-  iconOverride?: string;
-  inputAriaDescription: string = '';
+  accessor narrow: boolean = false;
+  accessor showingSearch: boolean = false;
+  accessor disabled: boolean = false;
+  override accessor autofocus: boolean = false;
+  accessor spinnerActive: boolean = false;
+  private accessor searchFocused_: boolean = false;
+  accessor iconOverride: string|undefined;
+  accessor inputAriaDescription: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', e => this.showSearch_(e));
@@ -159,7 +159,7 @@ export class CrToolbarSearchFieldElement extends
   }
 
   private async showSearch_(e: Event) {
-    if (e.target !== this.shadowRoot!.querySelector('#clearSearch')) {
+    if (e.target !== this.shadowRoot.querySelector('#clearSearch')) {
       this.showingSearch = true;
     }
     if (this.narrow) {

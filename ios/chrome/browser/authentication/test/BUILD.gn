@@ -1,0 +1,104 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "signin_earl_grey_app_interface.h",
+    "signin_earl_grey_app_interface.mm",
+  ]
+  visibility = [
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/chrome/test/earl_grey:hooks",
+  ]
+  deps = [
+    "//components/application_locale_storage",
+    "//components/bookmarks/browser",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/browser",
+    "//components/sync",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:account_settings_presenter",
+    "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "expected_signin_histograms.h",
+    "expected_signin_histograms.mm",
+    "separate_profiles_util.h",
+    "separate_profiles_util.mm",
+    "signin_earl_grey.h",
+    "signin_earl_grey.mm",
+    "signin_earl_grey_app_interface.h",
+    "signin_earl_grey_app_interface_stub.mm",
+    "signin_earl_grey_ui_test_util.h",
+    "signin_earl_grey_ui_test_util.mm",
+    "signin_matchers.h",
+    "signin_matchers.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/browser",
+    "//components/signin/public/base",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/account_menu/public",
+    "//ios/chrome/browser/authentication/history_sync/public:pref_names",
+    "//ios/chrome/browser/authentication/ui_bundled:account_settings_presenter",
+    "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
+    "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
+    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+}

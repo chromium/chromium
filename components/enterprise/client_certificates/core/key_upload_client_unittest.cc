@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -30,14 +31,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace client_certificates {
+namespace {
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
+using base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
 using testing::Return;
 using testing::StrictMock;
-
-namespace {
 
 constexpr int kSuccessCode = 200;
 constexpr int kDeviceIdConflictCode = 409;
@@ -46,7 +47,7 @@ constexpr std::string_view kFakeSpki = "spki";
 constexpr std::string kFakeDMToken = "dm_token";
 
 std::vector<uint8_t> ToBytes(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 
@@ -77,10 +78,6 @@ scoped_refptr<net::X509Certificate> LoadTestCert() {
   static constexpr char kTestCertFileName[] = "client_1.pem";
   return net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                  kTestCertFileName);
-}
-
-MATCHER_P(EqualsProto, expected, "") {
-  return arg.SerializeAsString() == expected.SerializeAsString();
 }
 
 }  // namespace

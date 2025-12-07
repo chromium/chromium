@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
@@ -67,14 +69,14 @@ public class AndroidViewIntegrationTest extends AwParameterizedTest {
         private int mHeight;
 
         public int getWidth() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             synchronized (mLock) {
                 return mWidth;
             }
         }
 
         public int getHeight() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             synchronized (mLock) {
                 return mHeight;
             }
@@ -89,9 +91,9 @@ public class AndroidViewIntegrationTest extends AwParameterizedTest {
         }
     }
 
-    private OnContentSizeChangedHelper mOnContentSizeChangedHelper =
+    private final OnContentSizeChangedHelper mOnContentSizeChangedHelper =
             new OnContentSizeChangedHelper();
-    private CallbackHelper mOnPageScaleChangedHelper = new CallbackHelper();
+    private final CallbackHelper mOnPageScaleChangedHelper = new CallbackHelper();
     private AwTestContainerView mTestContainerView;
 
     private class TestAwLayoutSizer extends AwLayoutSizer {

@@ -56,7 +56,6 @@ class ShadowList : public GarbageCollected<ShadowList> {
 
   const ShadowDataVector& Shadows() const { return shadows_; }
   bool operator==(const ShadowList& o) const { return shadows_ == o.shadows_; }
-  bool operator!=(const ShadowList& o) const { return !(*this == o); }
 
   // Outsets needed to include all shadows in this list, as well as the
   // source (i.e. no outsets will be negative).

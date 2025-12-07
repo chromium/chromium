@@ -17,14 +17,11 @@ namespace enterprise_companion {
 // The name of the program image. E.g. "enterprise_companion.exe".
 extern const char kExecutableName[];
 
-// Determines the install directory for the app. On Windows this is dependent on
-// the architecture of the program image.
+// Determines the install directory for the app.
 std::optional<base::FilePath> GetInstallDirectory();
 
-// Searches the system for an existing installation of the app. On Windows, it
-// is possible that 32 and 64-bit installations exist. In such cases, the latter
-// is returned. Returns a path to the installed application binary, if one
-// exists.
+// Searches the system for an existing installation of the app. Returns a path
+// to the installed application binary, if one exists.
 std::optional<base::FilePath> FindExistingInstall();
 
 #if BUILDFLAG(IS_MAC)

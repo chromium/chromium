@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -66,7 +67,7 @@ class MEDIA_EXPORT EsParserMpeg1Audio : public EsParser {
   // Signal any audio configuration change (if any).
   // Return false if the current audio config is not
   // a supported Mpeg1 audio config.
-  bool UpdateAudioConfiguration(const uint8_t* mpeg1audio_header);
+  bool UpdateAudioConfiguration(base::span<const uint8_t> mpeg1audio_header);
 
   void SkipMpeg1AudioFrame(const Mpeg1AudioFrame& mpeg1audio_frame);
 

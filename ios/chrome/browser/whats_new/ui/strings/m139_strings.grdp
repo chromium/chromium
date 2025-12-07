@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_TITLE" desc="Passkeys Title displayed in What's New. [iOS only]">
+        Get your passkeys on all your devices
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_SUBTITLE" desc="Passkeys Subtitle displayed in What's New. [iOS only]">
+        Choose Chrome for AutoFill to use passkeys and sign in faster to sites
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of Passkeys in What's New. [iOS only]">
+        Tap “Go to Settings”
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of Passkeys in What's New. [iOS only]">
+        Turn on “AutoFill Passwords and Passkeys”
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of Passkeys in What's New. [iOS only]">
+        Choose Chrome
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_1" desc="Text in image displaying: Sign in for the feature: Passkeys in What's New. [iOS only]">
+        Sign in
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_2" desc="Text in image displaying: Sign in with your passkey? for the feature: Passkeys in What's New. [iOS only]">
+        Sign in with your passkey?
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_3" desc="Text in image displaying: Continue for the feature: Passkeys in What's New. [iOS only]">
+        Continue
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_4" desc="Text in image displaying: Other Sign In Options for the feature: Passkeys in What's New. [iOS only]">
+        Other Sign In Options
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_TITLE" desc="ChooseFromDrive Title displayed in What's New. [iOS only]">
+        Choose files from Drive
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SUBTITLE" desc="ChooseFromDrive Subtitle displayed in What's New. [iOS only]">
+        Quickly get to your Drive files when you need to upload them
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of ChooseFromDrive in What's New. [iOS only]">
+        When uploading a file from Chrome, you'll see the Chrome context menu
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of ChooseFromDrive in What's New. [iOS only]">
+        Tap Google Drive and select the file you need, or use search to help you find it
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of ChooseFromDrive in What's New. [iOS only]">
+        Tap Confirm to upload your file
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_1" desc="Text in image displaying: Cancel for the feature: ChooseFromDrive in What's New. [iOS only]">
+        Cancel
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_2" desc="Text in image displaying: Confirm for the feature: ChooseFromDrive in What's New. [iOS only]">
+        Confirm
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_3" desc="Text in image displaying: Search for the feature: ChooseFromDrive in What's New. [iOS only]">
+        Search
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_4" desc="Text in image displaying: My Drive for the feature: ChooseFromDrive in What's New. [iOS only]">
+        My Drive
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_5" desc="Text in image displaying: Shared Drives for the feature: ChooseFromDrive in What's New. [iOS only]">
+        Shared Drives
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_6" desc="Text in image displaying: Computers for the feature: ChooseFromDrive in What's New. [iOS only]">
+        Computers
+</message>
+<message name="IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_7" desc="Text in image displaying: Starred for the feature: ChooseFromDrive in What's New. [iOS only]">
+        Starred
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_TITLE" desc="SaveToDrive Title displayed in What's New. [iOS only]">
+        Save to Drive
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_SUBTITLE" desc="SaveToDrive Subtitle displayed in What's New. [iOS only]">
+        Easily save files to your Google Drive as you browse
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of SaveToDrive in What's New. [iOS only]">
+        When you’re signed in, tap on a file you want to download
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of SaveToDrive in What's New. [iOS only]">
+        Tap “Save” and choose “Google Drive”
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of SaveToDrive in What's New. [iOS only]">
+        Choose one of your profiles to save to
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_1" desc="Text in image displaying: Save in... for the feature: SaveToDrive in What's New. [iOS only]">
+        Save in...
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_2" desc="Text in image displaying: Cancel for the feature: SaveToDrive in What's New. [iOS only]">
+        Cancel
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_3" desc="Text in image displaying: Files for the feature: SaveToDrive in What's New. [iOS only]">
+        Files
+</message>
+<message name="IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_4" desc="Text in image displaying: Save for the feature: SaveToDrive in What's New. [iOS only]">
+        Save
+</message>
+</grit-part>

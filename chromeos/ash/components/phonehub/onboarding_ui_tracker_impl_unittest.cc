@@ -16,8 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -197,5 +196,4 @@ TEST_F(OnboardingUiTrackerImplTest, HideUiWhenFeatureIsEnabled) {
   EXPECT_FALSE(ShouldShowOnboardingUi());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

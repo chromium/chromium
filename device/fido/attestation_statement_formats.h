@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_ATTESTATION_STATEMENT_FORMATS_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -13,7 +14,7 @@
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
 #include "device/fido/attestation_statement.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

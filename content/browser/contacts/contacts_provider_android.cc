@@ -25,7 +25,7 @@
 namespace content {
 
 ContactsProviderAndroid::ContactsProviderAndroid(
-    RenderFrameHostImpl* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   WebContents* web_contents =
@@ -72,11 +72,11 @@ void ContactsProviderAndroid::Select(bool multiple,
 
 void ContactsProviderAndroid::AddContact(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& names_java,
-    const base::android::JavaParamRef<jobjectArray>& emails_java,
-    const base::android::JavaParamRef<jobjectArray>& tel_java,
-    const base::android::JavaParamRef<jobjectArray>& addresses_java,
-    const base::android::JavaParamRef<jobjectArray>& icons_java) {
+    const base::android::JavaRef<jobjectArray>& names_java,
+    const base::android::JavaRef<jobjectArray>& emails_java,
+    const base::android::JavaRef<jobjectArray>& tel_java,
+    const base::android::JavaRef<jobjectArray>& addresses_java,
+    const base::android::JavaRef<jobjectArray>& icons_java) {
   DCHECK(callback_);
 
   std::optional<std::vector<std::string>> names;
@@ -111,7 +111,7 @@ void ContactsProviderAndroid::AddContact(
          addresses_java.ReadElements<jbyteArray>()) {
       payments::mojom::PaymentAddressPtr address;
       base::span<const uint8_t> address_bytes =
-          base::android::JavaByteBufferToSpan(env, j_address.obj());
+          base::android::JavaByteBufferToSpan(env, j_address);
       if (!payments::mojom::PaymentAddress::Deserialize(
               address_bytes.data(), address_bytes.size(), &address)) {
         continue;
@@ -130,7 +130,7 @@ void ContactsProviderAndroid::AddContact(
          icons_java.ReadElements<jbyteArray>()) {
       blink::mojom::ContactIconBlobPtr icon;
       base::span<const uint8_t> icon_bytes =
-          base::android::JavaByteBufferToSpan(env, j_icon.obj());
+          base::android::JavaByteBufferToSpan(env, j_icon);
       if (!blink::mojom::ContactIconBlob::Deserialize(
               icon_bytes.data(), icon_bytes.size(), &icon)) {
         continue;
@@ -164,3 +164,5 @@ void ContactsProviderAndroid::EndWithPermissionDenied(JNIEnv* env) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContactsDialogHost)

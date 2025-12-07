@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-
-import {HelpContentProviderInterface, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
+import type {HelpContentProviderInterface, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -34,7 +32,7 @@ export class FakeHelpContentProvider implements HelpContentProviderInterface {
 
   getHelpContents(request: SearchRequest): Promise<{response: SearchResponse}> {
     ++this.getHelpContentsMethodCallCount;
-    this.lastQuery = mojoString16ToString(request.query);
+    this.lastQuery = request.query;
     return this.methods.resolveMethod('getHelpContents');
   }
 

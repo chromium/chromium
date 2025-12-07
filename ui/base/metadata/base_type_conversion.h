@@ -7,19 +7,23 @@
 
 #include <stdint.h>
 
-#include <algorithm>  // Silence broken lint check
+#include <algorithm>
+#include <cinttypes>
+#include <concepts>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -28,8 +32,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -53,36 +59,33 @@ using ValidStrings = std::vector<std::u16string>;
 // ArgType<T> gives the appropriate type to use as an argument in such cases.
 template <typename T>
 using ArgType =
-    typename std::conditional<std::is_fundamental<T>::value ||
-                                  std::is_enum<T>::value ||
-                                  std::is_pointer<T>::value ||
-                                  (std::is_move_assignable<T>::value &&
-                                   std::is_move_constructible<T>::value &&
-                                   !std::is_copy_assignable<T>::value &&
-                                   !std::is_copy_constructible<T>::value),
-                              T,
-                              const T&>::type;
-
-COMPONENT_EXPORT(UI_BASE_METADATA) extern const char kNoPrefix[];
-COMPONENT_EXPORT(UI_BASE_METADATA) extern const char kSkColorPrefix[];
+    std::conditional_t<std::is_fundamental_v<T> || std::is_enum_v<T> ||
+                           std::is_pointer_v<T> ||
+                           (std::movable<T> && !std::copyable<T>),
+                       T,
+                       const T&>;
 
 // General Type Conversion Template Functions ---------------------------------
 template <bool serializable,
           bool read_only = false,
-          const char* name_prefix = kNoPrefix>
+          const char* name_prefix = nullptr>
 struct BaseTypeConverter {
   static constexpr bool is_serializable = serializable;
   static constexpr bool is_read_only = read_only;
-  static bool IsSerializable() { return is_serializable; }
-  static bool IsReadOnly() { return is_read_only; }
-  static const char* PropertyNamePrefix() { return name_prefix; }
+  static constexpr std::string_view property_name_prefix = requires {
+    requires(!!name_prefix);
+  } ? std::string_view(name_prefix) : std::string_view();
 };
 
 template <typename T>
-struct TypeConverter : BaseTypeConverter<std::is_enum<T>::value> {
-  static std::u16string ToString(ArgType<T> source_value);
-  static std::optional<T> FromString(const std::u16string& source_value);
-  static ValidStrings GetValidStrings();
+struct TypeConverter : BaseTypeConverter<std::is_enum_v<T>> {
+  static std::u16string ToString(ArgType<T> source_value) {
+    return u"<unknown>";
+  }
+  static std::optional<T> FromString(const std::u16string& source_value) {
+    NOTREACHED();
+  }
+  static ValidStrings GetValidStrings() { return {}; }
 };
 
 // The following definitions and macros are needed only in cases where a type
@@ -147,7 +150,7 @@ struct EnumStringsMap;
 #define DEFINE_ENUM_CONVERTERS(T, ...)                                      \
   template <>                                                               \
   struct ui::metadata::EnumStringsMap<T> {                                  \
-    static_assert(std::is_enum<T>::value, "Error: " #T " is not an enum."); \
+    static_assert(std::is_enum_v<T>, "Error: " #T " is not an enum.");      \
                                                                             \
     static const auto& Get() {                                              \
       static constexpr auto kMap =                                          \
@@ -168,8 +171,8 @@ struct EnumStringsMap;
   std::optional<T> ui::metadata::TypeConverter<T>::FromString(              \
       const std::u16string& str) {                                          \
     const auto& map = EnumStringsMap<T>::Get();                             \
-    using Pair = base::ranges::range_value_t<decltype(map)>;                \
-    auto it = base::ranges::find(map, str, &Pair::second);                  \
+    using Pair = std::ranges::range_value_t<decltype(map)>;                 \
+    auto it = std::ranges::find(map, str, &Pair::second);                   \
     return it != map.end() ? std::make_optional(it->first) : std::nullopt;  \
   }                                                                         \
                                                                             \
@@ -177,7 +180,7 @@ struct EnumStringsMap;
   ui::metadata::ValidStrings                                                \
   ui::metadata::TypeConverter<T>::GetValidStrings() {                       \
     ValidStrings string_values;                                             \
-    base::ranges::transform(                                                \
+    std::ranges::transform(                                                 \
         EnumStringsMap<T>::Get(), std::back_inserter(string_values),        \
         [](const auto& pair) { return std::u16string(pair.second); });      \
     return string_values;                                                   \
@@ -185,8 +188,28 @@ struct EnumStringsMap;
 
 // String Conversions ---------------------------------------------------------
 
-COMPONENT_EXPORT(UI_BASE_METADATA)
-std::u16string PointerToString(const void* pointer_val);
+template <typename T>
+std::u16string PointerToString(T* ptr);
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<bool>
+    : BaseTypeConverter<true> {
+  static std::u16string ToString(bool source_value);
+  static std::optional<bool> FromString(const std::u16string& source_value);
+  static ValidStrings GetValidStrings();
+};
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<const char*>
+    : BaseTypeConverter<true, true> {
+  static std::u16string ToString(const char* source_value);
+};
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<std::string_view>
+    : BaseTypeConverter<true, true> {
+  static std::u16string ToString(std::string_view source_value);
+};
 
 #define DECLARE_CONVERSIONS(T)                                              \
   template <>                                                               \
@@ -209,9 +232,8 @@ DECLARE_CONVERSIONS(uint32_t)
 DECLARE_CONVERSIONS(uint64_t)
 DECLARE_CONVERSIONS(float)
 DECLARE_CONVERSIONS(double)
-DECLARE_CONVERSIONS(const char*)
+DECLARE_CONVERSIONS(GURL)
 DECLARE_CONVERSIONS(base::FilePath)
-DECLARE_CONVERSIONS(std::u16string)
 DECLARE_CONVERSIONS(base::TimeDelta)
 DECLARE_CONVERSIONS(gfx::Insets)
 DECLARE_CONVERSIONS(gfx::Point)
@@ -223,34 +245,28 @@ DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::SizeF)
 DECLARE_CONVERSIONS(std::string)
+DECLARE_CONVERSIONS(std::u16string)
+DECLARE_CONVERSIONS(ui::ColorVariant)
 DECLARE_CONVERSIONS(url::Component)
 
 #undef DECLARE_CONVERSIONS
 
-template <>
-struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<bool>
-    : BaseTypeConverter<true> {
-  static std::u16string ToString(bool source_value);
-  static std::optional<bool> FromString(const std::u16string& source_value);
-  static ValidStrings GetValidStrings();
-};
-
 // Special conversions for wrapper types --------------------------------------
 
-COMPONENT_EXPORT(UI_BASE_METADATA) const std::u16string& GetNullOptStr();
+inline constexpr char16_t kNullOptStr[] = u"<Empty>";
 
 template <typename T>
 struct TypeConverter<std::optional<T>>
     : BaseTypeConverter<TypeConverter<T>::is_serializable> {
   static std::u16string ToString(ArgType<std::optional<T>> source_value) {
-    if (!source_value)
-      return GetNullOptStr();
-    return TypeConverter<T>::ToString(source_value.value());
+    return source_value ? TypeConverter<T>::ToString(source_value.value())
+                        : std::u16string(kNullOptStr);
   }
   static std::optional<std::optional<T>> FromString(
       const std::u16string& source_value) {
-    if (source_value == GetNullOptStr())
+    if (source_value == kNullOptStr) {
       return std::make_optional<std::optional<T>>(std::nullopt);
+    }
 
     auto ret = TypeConverter<T>::FromString(source_value);
     return ret ? std::make_optional(ret) : std::nullopt;
@@ -278,7 +294,7 @@ struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false, true> {
 
 template <typename T>
 struct TypeConverter<T*> : BaseTypeConverter<false, true> {
-  static std::u16string ToString(ArgType<T*> source_value) {
+  static std::u16string ToString(T* source_value) {
     return PointerToString(source_value);
   }
   static std::optional<T*> FromString(const std::u16string& source_value) {
@@ -293,24 +309,26 @@ struct TypeConverter<std::vector<T>>
     : BaseTypeConverter<TypeConverter<T>::is_serializable> {
   static std::u16string ToString(ArgType<std::vector<T>> source_value) {
     std::vector<std::u16string> serialized;
-    base::ranges::transform(source_value, std::back_inserter(serialized),
-                            &TypeConverter<T>::ToString);
+    std::ranges::transform(source_value, std::back_inserter(serialized),
+                           &TypeConverter<T>::ToString);
     return u"{" + base::JoinString(serialized, u",") + u"}";
   }
   static std::optional<std::vector<T>> FromString(
       const std::u16string& source_value) {
     if (source_value.empty() || source_value.front() != u'{' ||
-        source_value.back() != u'}')
+        source_value.back() != u'}') {
       return std::nullopt;
+    }
     const auto values =
         base::SplitString(source_value.substr(1, source_value.length() - 2),
                           u",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     std::vector<T> output;
     for (const auto& value : values) {
-      auto ret = TypeConverter<T>::FromString(value);
-      if (!ret)
+      if (auto ret = TypeConverter<T>::FromString(value)) {
+        output.push_back(*std::move(ret));
+      } else {
         return std::nullopt;
-      output.push_back(*ret);
+      }
     }
     return std::make_optional(output);
   }
@@ -319,6 +337,7 @@ struct TypeConverter<std::vector<T>>
 
 MAKE_TYPE_UNIQUE(SkColor);
 
+inline constexpr char kSkColorPrefix[] = "--";
 template <>
 struct COMPONENT_EXPORT(UI_BASE_METADATA)
     TypeConverter<UNIQUE_TYPE_NAME(SkColor)>
@@ -372,16 +391,63 @@ struct COMPONENT_EXPORT(UI_BASE_METADATA)
 
 using SkColorConverter = TypeConverter<UNIQUE_TYPE_NAME(SkColor)>;
 
+// Defined after the type converters to avoid using specializations before
+// they're declared.
+template <typename T>
+std::u16string PointerToString(T* ptr) {
+  if (!ptr) {
+    return u"<null>";
+  }
+  if constexpr (std::is_void_v<T> ||
+                !TypeConverter<std::remove_const_t<T>>::is_serializable) {
+    return base::ASCIIToUTF16(
+        base::StringPrintf("<opaque object at 0x%016" PRIxPTR ">",
+                           reinterpret_cast<uintptr_t>(ptr)));
+  } else {
+    return base::StrCat(
+        {u"&{", TypeConverter<std::remove_const_t<T>>::ToString(*ptr), u"}"});
+  }
+}
+
+template <typename T>
+concept ClassHasToString = requires(T t) {
+  { t.ToString() } -> std::same_as<std::string>;
+};
+
+template <typename T>
+concept ClassHasFromString = requires(T t, std::string_view sv) {
+  { T::FromString(sv) } -> std::same_as<std::optional<T>>;
+};
+
+template <ClassHasToString T>
+struct TypeConverter<T>
+    : BaseTypeConverter<ClassHasFromString<T>, !ClassHasFromString<T>> {
+  static std::u16string ToString(ui::metadata::ArgType<T> source_value) {
+    return base::UTF8ToUTF16(source_value.ToString());
+  }
+
+  static std::optional<T> FromString(const std::u16string& source_value) {
+    if constexpr (ClassHasFromString<T>) {
+      return T::FromString(base::UTF16ToUTF8(source_value));
+    }
+
+    return std::nullopt;
+  }
+
+  static ValidStrings GetValidStrings() { return {}; }
+};
+
 }  // namespace metadata
 }  // namespace ui
 
+EXPORT_ENUM_CONVERTERS(gfx::ElideBehavior, COMPONENT_EXPORT(UI_BASE_METADATA))
 EXPORT_ENUM_CONVERTERS(gfx::HorizontalAlignment,
                        COMPONENT_EXPORT(UI_BASE_METADATA))
 EXPORT_ENUM_CONVERTERS(gfx::VerticalAlignment,
                        COMPONENT_EXPORT(UI_BASE_METADATA))
-EXPORT_ENUM_CONVERTERS(gfx::ElideBehavior, COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(ui::ButtonStyle, COMPONENT_EXPORT(UI_BASE_METADATA))
 EXPORT_ENUM_CONVERTERS(ui::MenuSeparatorType,
                        COMPONENT_EXPORT(UI_BASE_METADATA))
-EXPORT_ENUM_CONVERTERS(ui::ButtonStyle, COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(ui::TextInputType, COMPONENT_EXPORT(UI_BASE_METADATA))
 
 #endif  // UI_BASE_METADATA_BASE_TYPE_CONVERSION_H_

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_UPDATED_VIEW_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_UPDATED_VIEW_H_
 
+#include <vector>
+
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
@@ -18,11 +20,6 @@
 namespace media_message_center {
 class MediaNotificationItem;
 }  // namespace media_message_center
-
-namespace ui {
-struct AXNodeData;
-}  // namespace ui
-
 namespace views {
 class Button;
 class ImageView;
@@ -83,7 +80,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
@@ -178,6 +174,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // Update the display states of UI elements for casting devices.
   void UpdateCastingState();
 
+  void UpdateAccessibleName();
+
   // Whether the media is currently in picture-in-picture.
   bool in_picture_in_picture_ = false;
 
@@ -199,6 +197,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   base::TimeDelta position_on_drag_started_ = base::TimeDelta::Max();
 
   base::ObserverList<MediaItemUIObserver> observers_;
+
+  // Required to store the returned value though it is not used.
+  base::CallbackListSubscription title_label_changed_callback_;
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;

@@ -26,7 +26,6 @@
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
-#include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/internal/trust_store_nss.h"
 #elif BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
@@ -35,7 +34,6 @@
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_apple.h"
 #elif BUILDFLAG(IS_FUCHSIA)
-#include "base/lazy_instance.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #elif BUILDFLAG(IS_WIN)
 #include "net/cert/internal/trust_store_win.h"
@@ -166,6 +164,10 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->GetConstraintsForCert(cert);
   }
 
+  bssl::TrustStore* eutl_trust_store() override {
+    return trust_store_chrome_->eutl_trust_store();
+  }
+
   net::PlatformTrustStore* GetPlatformTrustStore() override {
     return platform_trust_store_;
   }
@@ -215,15 +217,6 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(chrome_root), std::make_unique<TrustStoreNSS>(
                                   TrustStoreNSS::UseTrustFromAllUserSlots()));
-}
-
-std::unique_ptr<SystemTrustStore>
-CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-    std::unique_ptr<TrustStoreChrome> chrome_root,
-    crypto::ScopedPK11Slot user_slot_restriction) {
-  return std::make_unique<SystemTrustStoreChrome>(
-      std::move(chrome_root),
-      std::make_unique<TrustStoreNSS>(std::move(user_slot_restriction)));
 }
 
 #elif BUILDFLAG(IS_MAC)
@@ -294,8 +287,10 @@ class FuchsiaSystemCerts {
   bssl::TrustStoreInMemory system_trust_store_;
 };
 
-base::LazyInstance<FuchsiaSystemCerts>::Leaky g_root_certs_fuchsia =
-    LAZY_INSTANCE_INITIALIZER;
+FuchsiaSystemCerts& GetFuchsiaRootCerts() {
+  static base::NoDestructor<FuchsiaSystemCerts> certs;
+  return *certs;
+}
 
 }  // namespace
 
@@ -304,12 +299,11 @@ class SystemTrustStoreFuchsia : public SystemTrustStore {
   SystemTrustStoreFuchsia() = default;
 
   bssl::TrustStore* GetTrustStore() override {
-    return g_root_certs_fuchsia.Get().system_trust_store();
+    return GetFuchsiaRootCerts().system_trust_store();
   }
 
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
-    return g_root_certs_fuchsia.Get().system_trust_store()->Contains(
-        trust_anchor);
+    return GetFuchsiaRootCerts().system_trust_store()->Contains(trust_anchor);
   }
 };
 

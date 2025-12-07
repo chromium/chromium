@@ -49,6 +49,8 @@ class NTPUserDataLogger {
   // Called when all NTP tiles have finished loading (successfully or failing).
   void LogMostVisitedLoaded(base::TimeDelta time,
                             bool using_most_visited,
+                            bool using_custom_links,
+                            bool using_enterprise_shortcuts,
                             bool is_visible);
 
   // Logs an impression on one of the NTP tiles by given details.
@@ -70,6 +72,8 @@ class NTPUserDataLogger {
   // the tab/shutting down Chrome), or when the user navigates to a URL.
   void EmitNtpStatistics(base::TimeDelta load_time,
                          bool using_most_visited,
+                         bool using_custom_links,
+                         bool using_enterprise_shortcuts,
                          bool is_visible);
 
   void EmitNtpTraceEvent(const char* event_name, base::TimeDelta duration);

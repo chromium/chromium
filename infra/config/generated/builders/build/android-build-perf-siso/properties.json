@@ -16,14 +16,15 @@
               "builder_group": "chromium.build",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -50,23 +51,18 @@
   "$build/code_coverage": {
     "use_clang_coverage": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder",
-      "remote-library-link",
-      "remote-exec-link"
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [
       "no-fallback"
     ],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1
   },

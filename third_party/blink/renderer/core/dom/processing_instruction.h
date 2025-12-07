@@ -46,7 +46,7 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   StyleSheet* sheet() const { return sheet_.Get(); }
 
   bool IsCSS() const { return is_css_; }
-  bool IsXSL() const { return is_xsl_; }
+  bool IsXSL() const;
 
   void DidAttributeChanged();
   bool IsLoading() const;

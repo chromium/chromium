@@ -30,7 +30,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
     // True if we should create a secure overlay.
     private boolean mSecure;
 
-    private String mInitialUrl;
+    private final String mInitialUrl;
 
     /**
      * AndroidOverlay client that supports waiting operations for callbacks.  One may call
@@ -71,7 +71,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
         private boolean mHasReceivedOverlayModeChange;
         private boolean mUseOverlayMode;
 
-        private ArrayBlockingQueue<Event> mPending;
+        private final ArrayBlockingQueue<Event> mPending;
 
         public Client() {
             mPending = new ArrayBlockingQueue<Event>(10);
@@ -152,7 +152,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
         }
     }
 
-    private Client mClient = new Client();
+    private final Client mClient = new Client();
 
     // Return the URL to start with.
     public DialogOverlayImplTestRule(String url) {

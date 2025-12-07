@@ -4,7 +4,7 @@
 
 #include "remoting/host/ipc_screen_controls.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "remoting/host/desktop_session_proxy.h"
 
 namespace remoting {

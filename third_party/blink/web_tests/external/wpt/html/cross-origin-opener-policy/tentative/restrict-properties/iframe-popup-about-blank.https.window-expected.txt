@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Cross-origin iframe
-  assert_true: Is main frame crossOriginIsolated? expected true got false
-[FAIL] Same-origin iframe
-  assert_true: Is main frame crossOriginIsolated? expected true got false
-Harness: the test ran to completion.
-

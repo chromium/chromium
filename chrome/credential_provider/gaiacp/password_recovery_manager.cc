@@ -10,17 +10,13 @@
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
 
 #include <windows.h>
-
-#include <lm.h>  // Needed for LSA_UNICODE_STRING
-#include <process.h>
 #include <winternl.h>
 
-#include <string_view>
-
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
+#include <lm.h>
+#include <process.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -30,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
@@ -38,6 +35,8 @@
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "crypto/aead.h"
+#include "crypto/evp.h"
+#include "crypto/random.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
@@ -160,48 +159,41 @@ bool UnpadSecret(const std::string& serialized_padded_secret,
 // Encrypts the given |secret| with the provided |public_key|. Returns a vector
 // of uint8_t as the encrypted secret.
 std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
-    const std::string& public_key,
+    const std::string& public_key_spki,
     const std::string& secret) {
-  CBS pub_key_cbs;
-  CBS_init(&pub_key_cbs, reinterpret_cast<const uint8_t*>(&public_key[0]),
-           public_key.size());
-  bssl::UniquePtr<EVP_PKEY> pub_key(EVP_parse_public_key(&pub_key_cbs));
-  if (!pub_key || CBS_len(&pub_key_cbs)) {
+  bssl::UniquePtr<EVP_PKEY> public_key =
+      crypto::evp::PublicKeyFromBytes(base::as_byte_span(public_key_spki));
+  if (!public_key) {
     ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
     return std::nullopt;
   }
 
-  RSA* rsa = EVP_PKEY_get0_RSA(pub_key.get());
+  RSA* rsa = EVP_PKEY_get0_RSA(public_key.get());
   if (!rsa) {
     ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
     return std::nullopt;
   }
 
   // Generate a random session key and random nonce.
-  uint8_t session_key_with_nonce[kSessionKeyLength + kNonceLength];
-  RAND_bytes(session_key_with_nonce, sizeof(session_key_with_nonce));
+  std::array<uint8_t, kSessionKeyLength + kNonceLength> session_key_with_nonce;
+  crypto::RandBytes(session_key_with_nonce);
+  auto [session_key, nonce] =
+      base::span(session_key_with_nonce).split_at(kSessionKeyLength);
 
   // Encrypt the session key with the RSA public key.
   size_t rsa_len;
   std::vector<uint8_t> ciphertext(RSA_size(rsa));
   if (!RSA_encrypt(rsa, &rsa_len, ciphertext.data(), ciphertext.size(),
-                   session_key_with_nonce, sizeof(session_key_with_nonce),
+                   session_key_with_nonce.data(), session_key_with_nonce.size(),
                    RSA_PKCS1_OAEP_PADDING)) {
     ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
     return std::nullopt;
   }
 
-  std::string session_key(session_key_with_nonce,
-                          session_key_with_nonce + kSessionKeyLength);
-
-  std::string sealed_secret;
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(&session_key);
-  aead.Seal(secret,
-            std::string_view(reinterpret_cast<const char*>(
-                                 &session_key_with_nonce[kSessionKeyLength]),
-                             kNonceLength),
-            /*ad=*/"", &sealed_secret);
+  aead.Init(session_key);
+  std::vector<uint8_t> sealed_secret =
+      aead.Seal(base::as_byte_span(secret), nonce, /*ad=*/{});
 
   ciphertext.insert(ciphertext.end(), sealed_secret.data(),
                     sealed_secret.data() + sealed_secret.size());
@@ -278,7 +270,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
   std::string public_key;
   base::Value::Dict request_dict;
   request_dict.Set(kGenerateKeyPairRequestDeviceIdParameterName, device_id);
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   // Fetch the results and extract the |resource_id| for the key and the
   // |public_key| to be used for encryption.
@@ -293,9 +285,9 @@ HRESULT EncryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  if (!request_result.has_value() || !request_result->is_dict() ||
+  if (!request_result ||
       !ExtractKeysFromDict(
-          request_result->GetDict(),
+          *request_result,
           {
               {kGenerateKeyPairResponseResourceIdParameterName, &resource_id},
               {kGenerateKeyPairResponsePublicKeyParameterName, &public_key},
@@ -361,7 +353,7 @@ HRESULT DecryptUserPasswordUsingEscrowService(
   }
 
   std::string private_key;
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   // Fetch the results and extract the |private_key| to be used for decryption.
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
@@ -376,9 +368,9 @@ HRESULT DecryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  if (!request_result.has_value() || !request_result->is_dict() ||
+  if (!request_result ||
       !ExtractKeysFromDict(
-          request_result->GetDict(),
+          *request_result,
           {
               {kGetPrivateKeyResponsePrivateKeyParameterName, &private_key},
           })) {
@@ -397,9 +389,8 @@ HRESULT DecryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  auto decrypted_secret =
-      PrivateKeyDecrypt(decoded_private_key,
-                        base::as_bytes(base::make_span(decoded_cipher_text)));
+  auto decrypted_secret = PrivateKeyDecrypt(
+      decoded_private_key, base::as_byte_span(decoded_cipher_text));
 
   if (decrypted_secret == std::nullopt) {
     return E_FAIL;
@@ -443,7 +434,6 @@ PasswordRecoveryManager::~PasswordRecoveryManager() = default;
 HRESULT PasswordRecoveryManager::ClearUserRecoveryPassword(
     const std::wstring& sid) {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
@@ -471,7 +461,6 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
   std::string device_id = base::WideToUTF8(machine_guid);
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
@@ -527,7 +516,6 @@ HRESULT PasswordRecoveryManager::RecoverWindowsPasswordIfPossible(
   DCHECK(recovered_password);
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);

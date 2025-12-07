@@ -12,7 +12,7 @@ namespace sessions {
 
 // Directory under the profile directory to store session data.
 // Added in Chrome 85.
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT kSessionsDirectory;
+extern const base::FilePath::StringViewType SESSIONS_EXPORT kSessionsDirectory;
 
 // File name prefix for a type of TAB.
 // Added in Chrome 85.
@@ -36,16 +36,16 @@ extern const base::FilePath::CharType SESSIONS_EXPORT kTimestampSeparator[];
 
 // Legacy file names (current and previous) for a type of TAB.
 // Used before Chrome 85.
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT
+extern const base::FilePath::StringViewType SESSIONS_EXPORT
     kLegacyCurrentTabSessionFileName;
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT
+extern const base::FilePath::StringViewType SESSIONS_EXPORT
     kLegacyLastTabSessionFileName;
 
 // Legacy file names (current and previous) for a type of SESSION.
 // Used before Chrome 85.
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT
+extern const base::FilePath::StringViewType SESSIONS_EXPORT
     kLegacyCurrentSessionFileName;
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT
+extern const base::FilePath::StringViewType SESSIONS_EXPORT
     kLegacyLastSessionFileName;
 
 // The maximum number of navigation entries in each direction to persist.

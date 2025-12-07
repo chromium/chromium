@@ -4,11 +4,12 @@
 
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 
-#include "net/socket/stream_socket.h"
-
 namespace net::test_server {
 
-void EmbeddedTestServerConnectionListener::OnResponseCompletedSuccessfully(
-    std::unique_ptr<StreamSocket> socket) {}
+EmbeddedTestServerConnectionListener::EmbeddedTestServerConnectionListener() =
+    default;
+
+EmbeddedTestServerConnectionListener::~EmbeddedTestServerConnectionListener() =
+    default;
 
 }  // namespace net::test_server

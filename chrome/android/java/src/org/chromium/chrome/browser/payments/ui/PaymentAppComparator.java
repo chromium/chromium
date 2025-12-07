@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.payments.PaymentApp;
@@ -16,6 +17,7 @@ import java.util.Comparator;
  * A comparator that is used to rank the payment apps to be listed on the PaymentRequest
  * UI.
  */
+@NullMarked
 /* package */ class PaymentAppComparator implements Comparator<PaymentApp> {
     private final PaymentRequestParams mParams;
 
@@ -53,12 +55,13 @@ import java.util.Comparator;
     }
 
     /**
-     * The ranking score is calculated according to use count and last use date. The formula is
-     * the same as the one used in GetRankingScore in autofill_data_model.cc.
+     * The ranking score is calculated according to use count and last use date. The formula is the
+     * same as the one used in GetRankingScore in usage_history_information.cc.
      */
     private static double getRankingScore(int count, long date) {
         long currentTime = System.currentTimeMillis();
-        return -Math.log((currentTime - date) / (24 * 60 * 60 * 1000) + 2) / Math.log(count + 2);
+        return -Math.log((double) ((currentTime - date) / (24 * 60 * 60 * 1000) + 2))
+                / Math.log(count + 2);
     }
 
     /**

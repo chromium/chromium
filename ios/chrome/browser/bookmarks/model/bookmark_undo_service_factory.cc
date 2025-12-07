@@ -4,26 +4,23 @@
 
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/undo/bookmark_undo_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
 // static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<BookmarkUndoService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<BookmarkUndoService>(
+      profile, /*create=*/true);
 }
 
 // static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
-  return static_cast<BookmarkUndoService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<BookmarkUndoService>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -33,16 +30,13 @@ BookmarkUndoServiceFactory* BookmarkUndoServiceFactory::GetInstance() {
 }
 
 BookmarkUndoServiceFactory::BookmarkUndoServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "BookmarkUndoService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("BookmarkUndoService") {}
 
-BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() {}
+BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-BookmarkUndoServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return base::WrapUnique(new BookmarkUndoService);
+BookmarkUndoServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+  return std::make_unique<BookmarkUndoService>();
 }
 
 }  // namespace ios

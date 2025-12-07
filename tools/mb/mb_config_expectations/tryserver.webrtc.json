@@ -1,6 +1,7 @@
 {
   "android_chromium_compile": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
@@ -10,7 +11,9 @@
       "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "linux_chromium_compile": {
@@ -19,7 +22,9 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "linux_chromium_compile_dbg": {
@@ -27,7 +32,9 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "mac_chromium_compile": {
@@ -38,7 +45,9 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "webrtc_linux_chromium": {
@@ -49,7 +58,9 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win_chromium_compile": {
@@ -61,7 +72,9 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win_chromium_compile_dbg": {
@@ -72,7 +85,9 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   }
 }

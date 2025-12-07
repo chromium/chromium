@@ -1,0 +1,84 @@
+{
+  "description": "Long aggregation key identifier not allowed in sources but allowed in triggers",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "aaaaaaaaaaaaaaaaaaaaaaaaaa": "0x159"
+                }
+              },
+              "Attribution-Reporting-Info": "report-header-errors"
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["aaaaaaaaaaaaaaaaaaaaaaaaaa"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "aaaaaaaaaaaaaaaaaaaaaaaaaa": 123
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"aggregation_keys\":{\"aaaaaaaaaaaaaaaaaaaaaaaaaa\":\"0x159\"},\"destination\":\"https://destination.test\"}"
+            },
+            "type": "header-parsing-error"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test"
+            },
+            "type": "trigger-no-matching-source"
+          }
+        ],
+        "report_time": "1",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

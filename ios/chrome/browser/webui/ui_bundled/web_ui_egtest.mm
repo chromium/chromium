@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -71,11 +72,13 @@ using chrome_test_util::ForwardButton;
 // navigates to terms page.
 - (void)testChromeURLNavigateToTerms {
   [ChromeEarlGrey loadURL:WebUIPageUrlWithHost(kChromeUIChromeURLsHost)];
+  [ChromeEarlGrey waitForWebStateContainingText:"chrome://terms"];
 
   // Tap on chrome://terms link on the page.
-  [ChromeEarlGrey
-      tapWebStateElementWithID:[NSString
-                                   stringWithUTF8String:kChromeUITermsHost]];
+  NSString* clickLinkScript =
+      @"document.body.querySelector('chrome-urls-app')"
+       ".shadowRoot.querySelector('a[href=\"chrome://terms\"]').click()";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
 
   // Verify that the resulting page is chrome://terms.
   GREYAssert(WaitForOmniboxURLString(kChromeUITermsURL),
@@ -88,11 +91,13 @@ using chrome_test_util::ForwardButton;
 // click.
 - (void)testChromeURLBackNavigationFromAnchorClick {
   [ChromeEarlGrey loadURL:GURL(kChromeUIChromeURLsURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"chrome://version"];
 
   // Tap on chrome://version link on the page.
-  [ChromeEarlGrey
-      tapWebStateElementWithID:[NSString
-                                   stringWithUTF8String:kChromeUIVersionHost]];
+  NSString* clickLinkScript =
+      @"document.body.querySelector('chrome-urls-app')"
+       ".shadowRoot.querySelector('a[href=\"chrome://version\"]').click()";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
 
   // Verify that the resulting page is chrome://version.
   GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
@@ -149,8 +154,7 @@ using chrome_test_util::ForwardButton;
 // Tests that all URLs on chrome://chrome-urls page load without error.
 - (void)testChromeURLsLoadWithoutError {
   // Load WebUI pages and verify they load without any error.
-  for (size_t i = 0; i < kNumberOfChromeHostURLs; ++i) {
-    const char* host = kChromeHostURLs[i];
+  for (const std::string_view host : kChromeHostURLs) {
     // Exclude non-WebUI pages, as they do not go through a "loading" phase.
     if (host == kChromeUINewTabHost) {
       continue;
@@ -217,7 +221,17 @@ using chrome_test_util::ForwardButton;
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
-  [ChromeEarlGrey waitForWebStateContainingText:"Available"];
+  NSString* selector =
+      @"(function() {"
+       "  var app = document.body.querySelector('flags-app');"
+       "  var crTabs = app.shadowRoot.querySelector('cr-tabs');"
+       "  return crTabs.tabNames.includes('Available');"
+       "})()";
+  NSString* description = @"'Available' tab exists.";
+  ElementSelector* tabTextSelector =
+      [ElementSelector selectorWithScript:selector
+                      selectorDescription:description];
+  [ChromeEarlGrey waitForWebStateContainingElement:tabTextSelector];
 
   // Validates that the experimental flags container is visible.
   NSString* flags_page_warning =
@@ -243,7 +257,17 @@ using chrome_test_util::ForwardButton;
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
-  [ChromeEarlGrey waitForWebStateContainingText:"Available"];
+  NSString* selector =
+      @"(function() {"
+       "  var app = document.body.querySelector('flags-app');"
+       "  var crTabs = app.shadowRoot.querySelector('cr-tabs');"
+       "  return crTabs.tabNames.includes('Available');"
+       "})()";
+  NSString* description = @"'Available' tab exists.";
+  ElementSelector* tabTextSelector =
+      [ElementSelector selectorWithScript:selector
+                      selectorDescription:description];
+  [ChromeEarlGrey waitForWebStateContainingElement:tabTextSelector];
 
   NSString* flags_page_warning =
       l10n_util::GetNSString(IDS_FLAGS_UI_PAGE_WARNING);

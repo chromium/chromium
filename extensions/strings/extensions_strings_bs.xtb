@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Zadnja kamera</translation>
 <translation id="1196338895211115272">Izvoz privatnog ključa nije uspio.</translation>
 <translation id="132960226125594336">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo jer bi premašilo maksimalnu veličinu skripte ili maksimalnu ukupnu veličinu skripte sadržaja ekstenzije.</translation>
-<translation id="1420684932347524586">Ups! Generiranje nasumičnog RSA privatnog ključa nije uspjelo.</translation>
 <translation id="1445572445564823378">Ova ekstenzija usporava aplikaciju <ph name="PRODUCT_NAME" />. Trebate je onemogućiti kako biste vratili performanse aplikacije <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Sistem ne podržava WebGL</translation>
 <translation id="1610570795592207282">Učitavanje CSS-a "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamjena crx fajla nije uspjela. Provjerite je li fajl upotrebi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nije moguće otpakirati ekstenziju.  Za sigurno otpakivanje ekstenzije, mora postojati putanja do direktorija vašeg profila koja počinje slovom diska i koja ne sadrži spoj, tačku aktiviranja ili simbolični link.  Za vaš profil ne postoji takva putanja.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrijednost za privatni ključ mora biti važeća putanja.</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu s opcijama "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja ekstenzije.</translation>
-<translation id="4115165561519362854">Administrator ove mašine zahtijeva da verzija ekstenzije <ph name="EXTENSION_NAME" /> bude minimalno <ph name="EXTENSION_VERSION" />. Ona ne može biti omogućena dok se ne ažurira na tu verziju (ili noviju).</translation>
 <translation id="4233778200880751280">Nije moguće učitati stranicu s informacijama "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Isporuka privatnog ključa nije uspjela.</translation>
 <translation id="4811956658694082538">Instalacija paketa nije uspjela jer je uslužni proces iznenada prekinut. Pokušajte ponovo pokrenuti Chrome i ponovite radnju.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Nije je moguće deinstalirati.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dobavljača <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Nije moguće otpakirati ekstenziju.  Da sigurno otpakirate ekstenziju, mora postojati putanja do direktorija vašeg profila koja ne sadrži simbolični link.  Takva putanja ne postoji za vaš profil.</translation>
 <translation id="6322279351188361895">Čitanje privatnog ključa nije uspjelo.</translation>
 <translation id="6391538222494443604">Mora postojati ulazni direktorij.</translation>
 <translation id="641087317769093025">Otpakiranje ekstenzije nije uspjelo</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Fajl deklaracije je nevažeći</translation>
 <translation id="7217838517480956708">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Uklanjanje ili izmjena nisu mogući.</translation>
 <translation id="7612608473764576263">Ulazna vrijednost za privatni ključ mora biti važeći format (PKCS#8-format PEM-kodiran RSA ključ).</translation>
+<translation id="7876803335449432072">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Stilski listovi skripti sadržaja se mogu učitati samo iz podržanih fajlova stilskih listi kao što su CSS fajlovi.</translation>
 <translation id="7939686037314084444">Pravilno učitavanje ekstenzije nije uspjelo. Možda neće moći presresti mrežne zahtjeve.</translation>
 <translation id="7972881773422714442">Opcije: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Prednja kamera</translation>
 <translation id="8047248493720652249">Ova ekstenzija nije uspjela dati naziv preuzimanju "<ph name="ATTEMPTED_FILENAME" />" jer je druga ekstenzija (<ph name="EXTENSION_NAME" />) odredila drugačiji naziv fajla. "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fajl s deklaracijom nedostaje ili je nečitljiv</translation>
+<translation id="8621383749470166852">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Skripte sadržaja se mogu učitati samo iz podržanih JavaScript fajlova kao što su JS fajlovi.</translation>
 <translation id="8636666366616799973">Paket je nevažeći. Detalji: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">Aplikacija "<ph name="APP_NAME" />" zahtijeva pristup jednom vašem uređaju:</translation>
 <translation id="8885905466771744233">Privatni ključ za navedenu ekstenziju već postoji. Ponovo iskoristite ključ ili ga prvo izbrišite.</translation>

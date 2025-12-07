@@ -6,12 +6,14 @@
 
 #import <memory>
 
-#import "components/autofill/core/browser/test_autofill_client.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/test_matchers.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory_test_api.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -27,12 +29,13 @@ using ::autofill::test::LazyRef;
 using ::autofill::test::SaveArgPtr;
 using ::testing::_;
 using ::testing::AllOf;
-using ::testing::DoAll;
+using ::testing::Each;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::MockFunction;
 using ::testing::Property;
 using ::testing::Ref;
+using ::testing::Truly;
 
 using LifecycleState = AutofillDriver::LifecycleState;
 using enum LifecycleState;
@@ -102,9 +105,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
     web_state_.SetContentIsHTML(true);
     web_state_.SetBrowserState(GetBrowserState());
     web_frames_manager().AddObserver(&pre_factory_);
-    ASSERT_FALSE(AutofillDriverIOSFactory::FromWebState(&web_state_));
-    AutofillDriverIOSFactory::CreateForWebState(&web_state_, &client_, nil,
-                                                "en-US");
+    client_ = std::make_unique<TestAutofillClientIOS>(&web_state_, nil);
     factory().AddObserver(&factory_observer_);
     web_frames_manager().AddObserver(&post_factory_);
   }
@@ -115,18 +116,19 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
     web_frames_manager().RemoveObserver(&post_factory_);
   }
 
-  std::unique_ptr<web::FakeWebFrame> CreateMainFrame() {
-    std::unique_ptr<web::FakeWebFrame> frame =
-        web::FakeWebFrame::CreateMainWebFrame(GURL());
+  std::unique_ptr<web::FakeWebFrame> CreateFrame(bool is_main_frame) {
+    std::unique_ptr<web::FakeWebFrame> frame = web::FakeWebFrame::Create(
+        test::MakeLocalFrameToken().ToString(), is_main_frame);
     frame->set_browser_state(GetBrowserState());
     return frame;
   }
 
+  std::unique_ptr<web::FakeWebFrame> CreateMainFrame() {
+    return CreateFrame(/*is_main_frame=*/true);
+  }
+
   std::unique_ptr<web::FakeWebFrame> CreateChildFrame() {
-    std::unique_ptr<web::FakeWebFrame> frame =
-        web::FakeWebFrame::CreateChildWebFrame(GURL());
-    frame->set_browser_state(GetBrowserState());
-    return frame;
+    return CreateFrame(/*is_main_frame=*/false);
   }
 
   web::WebFrame* AddFrame(std::unique_ptr<web::WebFrame> frame) {
@@ -140,7 +142,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
   }
 
   AutofillDriverIOSFactory& factory() {
-    return *AutofillDriverIOSFactory::FromWebState(&web_state_);
+    return client_->GetAutofillDriverFactory();
   }
 
   MockWebFramesManagerObserver& pre_factory() { return pre_factory_; }
@@ -161,18 +163,92 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
         *web_state_.GetWebFramesManager(content_world()));
   }
 
+  test::AutofillUnitTestEnvironment autofill_environment_;
   MockWebFramesManagerObserver pre_factory_;
   MockWebFramesManagerObserver post_factory_;
   MockAutofillDriverIOSFactoryObserver factory_observer_;
-  TestAutofillClient client_;
+  std::unique_ptr<TestAutofillClientIOS> client_;
   web::FakeWebState web_state_;
 };
+
+enum class SourceOfRecursion {
+  kOnAutofillDriverCreated,
+  kOnAutofillDriverStateChanged
+};
+
+// The parameter specifies where the recursive events come from.
+class AutofillDriverIOSFactoryTest_Recursion
+    : public AutofillDriverIOSFactoryTest,
+      public ::testing::WithParamInterface<SourceOfRecursion> {
+ public:
+  SourceOfRecursion source_of_recursion() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillDriverIOSFactoryTest,
+    AutofillDriverIOSFactoryTest_Recursion,
+    testing::Values(SourceOfRecursion::kOnAutofillDriverCreated,
+                    SourceOfRecursion::kOnAutofillDriverStateChanged));
+
+// Tests that DriverForFrame() tolerates recursive calls. These recursive calls
+// come from AutofillDriverIOSFactory::Observer events.
+TEST_P(AutofillDriverIOSFactoryTest_Recursion, RecursiveDriverForFrame) {
+  // Creates 5 frames without associated drivers.
+  std::unique_ptr<web::WebFrame> owned_frame = CreateMainFrame();
+  std::set<std::unique_ptr<web::WebFrame>> frames;
+  std::set<AutofillDriverIOS*> drivers;
+  while (frames.size() < 100) {
+    frames.insert(CreateChildFrame());
+  }
+
+  // Creates all the drivers in recursive DriverForFrame() calls.
+  auto create_drivers = [&](AutofillDriverIOSFactory& factory,
+                            AutofillDriverIOS& driver, auto...) {
+    for (auto& frame : frames) {
+      drivers.insert(test_api(factory).DriverForFrame(frame.get()));
+    }
+  };
+  MockAutofillDriverIOSFactoryObserver observer;
+  factory().AddObserver(&observer);
+  EXPECT_CALL(observer, OnAutofillDriverIOSCreated)
+      .WillRepeatedly(create_drivers);
+  EXPECT_CALL(observer, OnAutofillDriverIOSStateChanged)
+      .WillRepeatedly(create_drivers);
+  switch (source_of_recursion()) {
+    case SourceOfRecursion::kOnAutofillDriverCreated:
+      EXPECT_CALL(observer, OnAutofillDriverIOSCreated)
+          .WillRepeatedly(create_drivers);
+      break;
+    case SourceOfRecursion::kOnAutofillDriverStateChanged:
+      EXPECT_CALL(observer, OnAutofillDriverIOSStateChanged)
+          .WillRepeatedly(create_drivers);
+      break;
+  }
+
+  // Triggers the recursion.
+  EXPECT_EQ(test_api(factory()).num_drivers(), 0u);
+  EXPECT_EQ(frames.size(), 100u);
+  EXPECT_EQ(drivers.size(), 0u);
+  test_api(factory()).DriverForFrame(frames.begin()->get());
+  EXPECT_EQ(frames.size(), 100u);
+  EXPECT_EQ(drivers.size(), 100u);
+  EXPECT_EQ(test_api(factory()).num_drivers(), 100u);
+  factory().RemoveObserver(&observer);
+
+  // Validate that the drivers are still registered.
+  EXPECT_EQ(test_api(factory()).num_drivers(), 100u);
+  EXPECT_THAT(frames,
+              Each(Truly([&](const std::unique_ptr<web::WebFrame>& frame) {
+                return drivers.contains(
+                    test_api(factory()).DriverForFrame(frame.get()));
+              })));
+}
 
 // Two helper macros to make tests below more readable.
 #define EXPECT_DRIVER_CREATED(driver_ptr_ptr)                                  \
   EXPECT_CALL(factory_observer(),                                              \
               OnAutofillDriverIOSCreated(Ref(factory()), HasState(kInactive))) \
-      .WillOnce(DoAll(SaveArgPtr<1>((driver_ptr_ptr))))
+      .WillOnce(SaveArgPtr<1>((driver_ptr_ptr)))
 #define EXPECT_LIFECYCLE_CHANGE(driver_matcher, from, to)                  \
   EXPECT_CALL(factory_observer(),                                          \
               OnAutofillDriverIOSStateChanged(                             \

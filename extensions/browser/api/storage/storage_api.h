@@ -27,7 +27,7 @@ class SettingsFunction : public ExtensionFunction {
   bool PreRunValidation(std::string* error) override;
 
   // Returns whether the caller's context has access to the storage or not.
-  bool IsAccessToStorageAllowed();
+  bool IsAccessToStorageAllowed(StorageAreaNamespace storage_area_);
 
   StorageAreaNamespace storage_area() const { return storage_area_; }
 
@@ -59,6 +59,20 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
   // provide a fallback for data not present in storage.
   void OnGetOperationFinished(std::optional<base::Value::Dict> defaults,
                               StorageFrontend::GetResult result);
+};
+
+class StorageStorageAreaGetKeysFunction : public SettingsFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("storage.getKeys", STORAGE_GETKEYS)
+
+ protected:
+  ~StorageStorageAreaGetKeysFunction() override = default;
+
+  // SettingsFunction:
+  ResponseAction Run() override;
+
+  // Called after getting keys from storage.
+  void OnGetKeysOperationFinished(StorageFrontend::GetKeysResult result);
 };
 
 class StorageStorageAreaSetFunction : public SettingsFunction {

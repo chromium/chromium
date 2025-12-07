@@ -23,7 +23,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/example_combobox_model.h"
 #include "ui/views/examples/examples_color_id.h"
-#include "ui/views/examples/examples_themed_label.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -45,8 +44,7 @@ class ExamplePreferredSizeLabel : public Label {
 
  public:
   ExamplePreferredSizeLabel() {
-    SetBorder(
-        CreateThemedSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
+    SetBorder(CreateSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
   }
 
   ExamplePreferredSizeLabel(const ExamplePreferredSizeLabel&) = delete;
@@ -100,11 +98,10 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 
-  auto themed_label = std::make_unique<ThemedLabel>();
+  auto themed_label = std::make_unique<Label>();
   themed_label->SetText(u"A left-aligned blue label.");
   themed_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  themed_label->SetEnabledColorId(
-      ExamplesColorIds::kColorLabelExampleBlueLabel);
+  themed_label->SetEnabledColor(ExamplesColorIds::kColorLabelExampleBlueLabel);
   container->AddChildView(std::move(themed_label));
 
   label = std::make_unique<Label>(u"Password!");
@@ -130,8 +127,8 @@ void LabelExample::CreateExampleView(View* container) {
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(u"Label with thick border");
-  label->SetBorder(CreateThemedSolidBorder(
-      20, ExamplesColorIds::kColorLabelExampleThickBorder));
+  label->SetBorder(
+      CreateSolidBorder(20, ExamplesColorIds::kColorLabelExampleThickBorder));
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(
@@ -174,9 +171,9 @@ void LabelExample::ContentsChanged(Textfield* sender,
 
 void LabelExample::AddCustomLabel(View* container) {
   std::unique_ptr<View> control_container = std::make_unique<View>();
-  control_container->SetBorder(CreateThemedSolidBorder(
-      2, ExamplesColorIds::kColorLabelExampleCustomBorder));
-  control_container->SetBackground(CreateThemedSolidBackground(
+  control_container->SetBorder(
+      CreateSolidBorder(2, ExamplesColorIds::kColorLabelExampleCustomBorder));
+  control_container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorLabelExampleCustomBackground));
   control_container->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
@@ -244,7 +241,7 @@ Combobox* LabelExample::AddCombobox(View* parent,
   combobox->SetSelectedIndex(0);
   combobox->GetViewAccessibility().SetName(name);
   combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));
-  return parent->AddChildView(std::move(combobox));
+  return parent->AddChildViewRaw(std::move(combobox));
 }
 
 void LabelExample::AlignmentChanged() {

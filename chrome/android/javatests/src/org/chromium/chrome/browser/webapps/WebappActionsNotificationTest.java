@@ -9,9 +9,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
+import android.content.pm.PackageManager;
 import android.service.notification.StatusBarNotification;
 
 import androidx.annotation.Nullable;
@@ -22,27 +23,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
-import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
-import org.chromium.chrome.browser.customtabs.FakeDefaultBrowserProviderImpl;
-import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
-import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -57,36 +49,26 @@ public class WebappActionsNotificationTest {
 
     @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
-    private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule()
-                    .setOverride(
-                            BaseCustomTabActivityModule.Factory.class,
-                            (BrowserServicesIntentDataProvider intentDataProvider,
-                                    CustomTabNightModeStateController nightModeController,
-                                    CustomTabIntentHandler.IntentIgnoringCriterion
-                                            intentIgnoringCriterion,
-                                    TopUiThemeColorProvider topUiThemeColorProvider,
-                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
-                                    new BaseCustomTabActivityModule(
-                                            intentDataProvider,
-                                            nightModeController,
-                                            intentIgnoringCriterion,
-                                            topUiThemeColorProvider,
-                                            new FakeDefaultBrowserProviderImpl()));
+    private static class TestContext extends ContextWrapper {
+        public TestContext(Context baseContext) {
+            super(baseContext);
+        }
 
-    @Rule
-    public RuleChain mRuleChain =
-            RuleChain.emptyRuleChain().around(mActivityTestRule).around(mModuleOverridesRule);
+        @Override
+        public PackageManager getPackageManager() {
+            return CustomTabsTestUtils.getDefaultBrowserOverridingPackageManager(
+                    getPackageName(), super.getPackageManager());
+        }
+    }
 
     private EmbeddedTestServer mTestServer;
 
     @Before
     public void startWebapp() {
-        Context appContext =
-                InstrumentationRegistry.getInstrumentation()
-                        .getTargetContext()
-                        .getApplicationContext();
-        mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
+        Context appContext = ContextUtils.getApplicationContext();
+        TestContext testContext = new TestContext(appContext);
+        ContextUtils.initApplicationContextForTests(testContext);
+        mTestServer = EmbeddedTestServer.createAndStartServer(testContext);
         mActivityTestRule.startWebappActivity(
                 mActivityTestRule
                         .createIntent()
@@ -96,7 +78,7 @@ public class WebappActionsNotificationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "crbug/1267965")
+    @DisabledTest(message = "https://crbug.com/411465437")
     public void testNotification_openInChrome() throws Exception {
         Notification notification = getWebappNotification();
 

@@ -4,12 +4,12 @@
 
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
+#include <algorithm>
 #include <map>
 #include <ostream>
 #include <string_view>
 
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -55,10 +55,9 @@ bool CanonicalizeWebFacetURI(const std::string& input_uri,
   url::Parsed canonical_parsed;
   url::StdStringCanonOutput canonical_output(canonical_uri);
 
-  bool canonicalization_succeeded = url::CanonicalizeStandardURL(
-      input_uri.c_str(), input_parsed,
-      url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
-      &canonical_output, &canonical_parsed);
+  bool canonicalization_succeeded = url::CanonicalizeStandardUrl(
+      input_uri, input_parsed, url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION,
+      nullptr, &canonical_output, &canonical_parsed);
   canonical_output.Complete();
 
   if (canonicalization_succeeded && canonical_parsed.host.is_nonempty() &&
@@ -142,7 +141,7 @@ bool CanonicalizeAndroidFacetURI(const std::string& input_uri,
 
   url::Component unused;
   bool success = url::CanonicalizeScheme(
-      input_uri.c_str(), input_parsed.scheme, &canonical_output, &unused);
+      input_parsed.scheme.AsViewOn(input_uri), &canonical_output, &unused);
 
   canonical_output.push_back('/');
   canonical_output.push_back('/');
@@ -174,7 +173,7 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
   canonical_uri->clear();
   canonical_uri->reserve(input_uri.size() + 32);
 
-  url::Parsed input_parsed = url::ParseStandardURL(input_uri);
+  url::Parsed input_parsed = url::ParseStandardUrl(input_uri);
   std::string_view scheme = ComponentString(input_uri, input_parsed.scheme);
   if (base::EqualsCaseInsensitiveASCII(scheme, url::kHttpsScheme)) {
     return CanonicalizeWebFacetURI(input_uri, input_parsed, canonical_uri);
@@ -192,7 +191,7 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
 std::vector<FacetURI> ExtractAndSortFacetURIs(const AffiliatedFacets& facets) {
   std::vector<FacetURI> uris;
   uris.reserve(facets.size());
-  base::ranges::transform(facets, std::back_inserter(uris), &Facet::uri);
+  std::ranges::transform(facets, std::back_inserter(uris), &Facet::uri);
   std::sort(uris.begin(), uris.end());
   return uris;
 }
@@ -329,7 +328,7 @@ std::string FacetURI::GetAndroidPackageDisplayName() const {
   CHECK(IsValidAndroidFacetURI());
   std::vector<std::string> parts = base::SplitString(
       android_package_name(), ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(parts.begin(), parts.end());
+  std::ranges::reverse(parts);
   return base::JoinString(parts, ".");
 }
 
@@ -337,7 +336,7 @@ FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)
     : is_valid_(is_valid), canonical_spec_(canonical_spec) {
   // TODO(engedy): Refactor code in order to avoid to avoid parsing the URL
   // twice.
-  parsed_ = url::ParseStandardURL(canonical_spec_);
+  parsed_ = url::ParseStandardUrl(canonical_spec_);
 }
 
 // Facet
@@ -449,32 +448,11 @@ std::ostream& operator<<(std::ostream& os, const FacetURI& facet_uri) {
   return os << facet_uri.potentially_invalid_spec();
 }
 
-bool operator==(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
-  return std::tie(lhs.name, lhs.icon_url) == std::tie(rhs.name, rhs.icon_url);
-}
-
-bool operator!=(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator==(const Facet& lhs, const Facet& rhs) {
-  return std::tie(lhs.uri, lhs.branding_info, lhs.main_domain) ==
-         std::tie(rhs.uri, rhs.branding_info, rhs.main_domain);
-}
-
-bool operator!=(const Facet& lhs, const Facet& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator==(const GroupedFacets& lhs, const GroupedFacets& rhs) {
-  if (!base::ranges::is_permutation(lhs.facets, rhs.facets)) {
+  if (!std::ranges::is_permutation(lhs.facets, rhs.facets)) {
     return false;
   }
   return lhs.branding_info == rhs.branding_info;
-}
-
-bool operator!=(const GroupedFacets& lhs, const GroupedFacets& rhs) {
-  return !(lhs == rhs);
 }
 
 bool AreEquivalenceClassesEqual(const AffiliatedFacets& a,
@@ -499,7 +477,7 @@ std::string GetExtendedTopLevelDomain(
     return main_domain;
   }
 
-  std::string full_domain = url.host();
+  std::string full_domain = url.GetHost();
 
   // Something went wrong, and it shouldn't happen. Return early in this case to
   // avoid undefined behaviour.

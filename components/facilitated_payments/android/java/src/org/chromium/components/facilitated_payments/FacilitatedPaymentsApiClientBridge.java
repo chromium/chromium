@@ -6,13 +6,17 @@ package org.chromium.components.facilitated_payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
-/** Native bridge for facilitated payment APIs, such as PIX. */
+/** Native bridge for facilitated payment APIs, such as Pix. */
 @JNINamespace("payments::facilitated")
+@NullMarked
 public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsApiClient.Delegate {
     private final FacilitatedPaymentsApiClient mApiClient;
     private long mNativeFacilitatedPaymentsApiClientAndroid;
@@ -51,6 +55,12 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
         mApiClient.isAvailable();
     }
 
+    /** The synchronous version to check whether facilitated payments API is available to use. */
+    @CalledByNative
+    public boolean isAvailableSync() {
+        return mApiClient.isAvailableSync();
+    }
+
     /**
      * Retrieves the client token for initiating payment. The client token will be received back in
      * the onGetClientToken(byte[]) method. If the client token is null or empty, then payment
@@ -62,15 +72,18 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
     }
 
     /**
-     * Initiates the payment flow UI by invoking the payment manager with the action token. The
-     * result is received back in the onPurchaseActionResultEnum(PurchaseActionResult) method.
+     * Initiates the payment flow UI by invoking the purchase manager in Google play services with
+     * the secure payload. The result is received back in the
+     * onPurchaseActionResultEnum(PurchaseActionResult) method.
      *
      * @param primaryAccount User's signed in account.
-     * @param actionToken An opaque token used for invoking the purchase action.
+     * @param securePayload The secure payload received from Payments backend.
      */
     @CalledByNative
-    public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
-        mApiClient.invokePurchaseAction(primaryAccount, actionToken);
+    public void invokePurchaseAction(
+            @JniType("CoreAccountInfo") CoreAccountInfo primaryAccount,
+            SecurePayload securePayload) {
+        mApiClient.invokePurchaseAction(primaryAccount, securePayload);
     }
 
     // FacilitatedPaymentsApiClient.Delegate implementation:
@@ -83,7 +96,7 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
 
     // FacilitatedPaymentsApiClient.Delegate implementation:
     @Override
-    public void onGetClientToken(byte[] clientToken) {
+    public void onGetClientToken(byte @Nullable [] clientToken) {
         if (mNativeFacilitatedPaymentsApiClientAndroid == 0) return;
         FacilitatedPaymentsApiClientBridgeJni.get()
                 .onGetClientToken(mNativeFacilitatedPaymentsApiClientAndroid, clientToken);
@@ -101,9 +114,11 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
     interface Natives {
         void onIsAvailable(long nativeFacilitatedPaymentsApiClientAndroid, boolean isAvailable);
 
-        void onGetClientToken(long nativeFacilitatedPaymentsApiClientAndroid, byte[] clientToken);
+        void onGetClientToken(
+                long nativeFacilitatedPaymentsApiClientAndroid, byte @Nullable [] clientToken);
 
-        void onPurchaseActionResultEnum(long nativeFacilitatedPaymentsApiClientAndroid,
+        void onPurchaseActionResultEnum(
+                long nativeFacilitatedPaymentsApiClientAndroid,
                 @PurchaseActionResult int purchaseActionResult);
     }
 }

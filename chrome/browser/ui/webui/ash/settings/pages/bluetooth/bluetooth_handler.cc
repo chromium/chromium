@@ -28,7 +28,7 @@ BluetoothHandler::BluetoothHandler() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-BluetoothHandler::~BluetoothHandler() {}
+BluetoothHandler::~BluetoothHandler() = default;
 
 void BluetoothHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

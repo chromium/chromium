@@ -34,27 +34,30 @@ class AutofillImageFetcherImplTest : public testing::Test {
  private:
   std::unique_ptr<AutofillImageFetcherImpl> autofill_image_fetcher_;
 };
-// TODO(crbug.com/40221039): Write tests for
-// kAutofillEnableNewCardArtAndNetworkImages code paths
-class AutofillImageFetcherImplNewCardArtTest
-    : public AutofillImageFetcherImplTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableNewCardArtAndNetworkImages};
-};
 
-TEST_F(AutofillImageFetcherImplNewCardArtTest, ResolveCardArtURL) {
+TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
   // With kAutofillEnableNewCardArtAndNetworkImages enabled, we fetch the image
   // at height of 48.
   EXPECT_EQ(GURL("https://www.example.com/fake_image1=h48-pa"),
-            autofill_image_fetcher()->ResolveCardArtURL(
-                GURL("https://www.example.com/fake_image1")));
+            autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
 
   // The capitalone image is 'special' however, and we swap it out for the
   // larger variant.
   GURL capital_one_url = GURL(kCapitalOneCardArtUrl);
   EXPECT_EQ(GURL(kCapitalOneLargeCardArtUrl),
-            autofill_image_fetcher()->ResolveCardArtURL(capital_one_url));
+            autofill_image_fetcher()->ResolveImageURL(
+                capital_one_url,
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
+}
+
+TEST_F(AutofillImageFetcherImplTest, ResolveValuableImageURL) {
+  // Valuable images are resized to (96x96) and cropped.
+  EXPECT_EQ(GURL("https://www.example.com/fake_image1=h96-w96-cc-rp"),
+            autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
+                AutofillImageFetcherBase::ImageType::kValuableImage));
 }
 
 }  // namespace autofill

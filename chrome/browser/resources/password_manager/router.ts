@@ -15,7 +15,8 @@ export enum Page {
   SETTINGS = 'settings',
   // Sub-pages
   CHECKUP_DETAILS = 'checkup-details',
-  PASSWORD_DETAILS = 'password-details'
+  PASSWORD_DETAILS = 'password-details',
+  PASSWORD_CHANGE = 'password-change'
 }
 
 /**
@@ -68,6 +69,11 @@ export class Route {
         assert(this.details);
         path = '/' + Page.CHECKUP + '/' + this.details;
         break;
+      case Page.PASSWORD_CHANGE:
+        path = '/' + Page.SETTINGS + '/' + Page.PASSWORD_CHANGE;
+        break;
+      default:
+        assertNotReached();
     }
     const queryString = this.queryParameters.toString();
     if (queryString) {
@@ -186,7 +192,11 @@ export class Router {
         }
         break;
       case Page.SETTINGS:
-        this.currentRoute_.page = Page.SETTINGS;
+        if (details === Page.PASSWORD_CHANGE) {
+          this.currentRoute_.page = Page.PASSWORD_CHANGE;
+        } else {
+          this.currentRoute_.page = Page.SETTINGS;
+        }
         break;
       default:
         history.replaceState({}, '', this.currentRoute_.page);

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +28,7 @@ class TestVolumeMountWatcherWin;
 // This class watches the volume mount points and sends notifications to
 // StorageMonitor about the device attach/detach events.
 // This is a singleton class instantiated by StorageMonitorWin.
-class VolumeMountWatcherWin {
+class COMPONENT_EXPORT(STORAGE_MONITOR) VolumeMountWatcherWin {
  public:
   VolumeMountWatcherWin();
 

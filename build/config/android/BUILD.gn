@@ -57,7 +57,7 @@ config("compiler") {
   if (current_cpu == "arm64") {
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
-      rustflags = [ "-Zbranch-protection=bti" ]
+      rustflags = [ "-Zbranch-protection=pac-ret,bti" ]
     } else if (arm_control_flow_integrity == "pac") {
       cflags += [ "-mbranch-protection=pac-ret" ]
       rustflags = [ "-Zbranch-protection=pac-ret" ]
@@ -71,16 +71,8 @@ config("compiler") {
     cflags += [ "-mtls-dialect=trad" ]
   }
 
-  # $compile_api_level corresponds to the API level used for the sysroot path
-  # calculation in //build/config/android/config.gni
-  if (android_64bit_target_cpu) {
-    compile_api_level = android64_ndk_api_level
-  } else {
-    compile_api_level = android32_ndk_api_level
-  }
-
-  cflags += [ "--target=$android_abi_target$compile_api_level" ]
-  ldflags += [ "--target=$android_abi_target$compile_api_level" ]
+  cflags += [ "--target=$android_abi_target$android_ndk_api_level" ]
+  ldflags += [ "--target=$android_abi_target$android_ndk_api_level" ]
 
   # Assign any flags set for the C compiler to asmflags so that they are sent
   # to the assembler.
@@ -95,25 +87,29 @@ config("runtime_library") {
 }
 
 config("hide_all_but_jni_onload") {
-  ldflags = [ "-Wl,--version-script=" + rebase_path(
-                  "//build/android/android_only_explicit_jni_exports.lst",
-                  root_build_dir) ]
+  _version_script = "//build/android/android_only_explicit_jni_exports.lst"
+  inputs = [ _version_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_version_script, root_build_dir) ]
 }
 
 config("hide_all_but_jni") {
-  ldflags = [ "-Wl,--version-script=" +
-              rebase_path("//build/android/android_only_jni_exports.lst",
-                          root_build_dir) ]
+  _version_script = "//build/android/android_only_jni_exports.lst"
+  inputs = [ _version_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_version_script, root_build_dir) ]
 }
 
-config("lld_pack_relocations") {
-  ldflags = [ "-Wl,--pack-dyn-relocs=android" ]
-}
-
-config("lld_relr_relocations") {
+config("relr_relocations") {
   # RELR supported API 30+, but supported 28+ with --use-android-relr-tags.
   # https://android.googlesource.com/platform/bionic/+/master/android-changes-for-ndk-developers.md#relative-relocations-relr
   ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
+}
+
+config("default_relr_relocations") {
+  if (default_min_sdk_version >= 28) {
+    configs = [ ":relr_relocations" ]
+  }
 }
 
 config("lld_branch_target_hardening") {

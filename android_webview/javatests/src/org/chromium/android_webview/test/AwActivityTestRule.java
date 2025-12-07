@@ -6,10 +6,15 @@ package org.chromium.android_webview.test;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.AndroidRuntimeException;
 import android.util.Base64;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -22,9 +27,11 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
+import org.chromium.android_webview.common.WebViewCachedFlags;
+import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.Log;
@@ -33,6 +40,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
@@ -40,6 +48,7 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,20 +75,40 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     private static final Pattern MAYBE_QUOTED_STRING = Pattern.compile("^(\"?)(.*)\\1$");
 
-    private static boolean sBrowserProcessStarted;
+    // AwContents won't call shouldInterceptRequest if the developer hasn't passed in a
+    // WebViewClient that overrides it. The logic for this lives in WebViewChromium, which isn't
+    // used in our tests as we instead mock out the AwContentsClient. So, if the AwContentsClient
+    // overrides shouldInterceptRequest, we pass this class into AwContents. It should never be
+    // called, but the fact that it overrides shouldInterceptRequest means that AwContentsClient
+    // shouldInterceptRequest will be called.
+    private static final WebViewClient OVERRIDES_SHOULD_INTERCEPT_REQUEST_WEB_VIEW_CLIENT =
+            new WebViewClient() {
+                @Nullable
+                @Override
+                public WebResourceResponse shouldInterceptRequest(
+                        WebView view, WebResourceRequest request) {
+                    throw new RuntimeException("This should never be called.");
+                }
+            };
 
     /** An interface to call onCreateWindow(AwContents). */
     public interface OnCreateWindowHandler {
         /** This will be called when a new window pops up from the current webview. */
-        public boolean onCreateWindow(AwContents awContents);
+        boolean onCreateWindow(AwContents awContents);
     }
 
     private Description mCurrentTestDescription;
 
-    // The browser context needs to be a process-wide singleton.
-    private AwBrowserContext mBrowserContext;
+    /**
+     * The browser context needs to be a process-wide singleton.
+     *
+     * <p>Don't use directly for inner usages, use {@link #getAwBrowserContext()} instead as it
+     * makes sure that this instance is not null.
+     */
+    private static AwBrowserContext sBrowserContext;
 
-    private List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown = new ArrayList<>();
+    private final List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown =
+            new ArrayList<>();
 
     private Consumer<AwSettings> mMaybeMutateAwSettings;
 
@@ -101,13 +130,14 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     @Override
     protected void before() throws Throwable {
         super.before();
-        if (needsAwBrowserContextCreated()) {
-            createAwBrowserContext();
+        if (needsNativeInitialized()) {
+            // The Activity must be launched in order to load native code
+            launchActivity();
         }
         if (needsBrowserProcessStarted()) {
             startBrowserProcess();
         } else {
-            assert !sBrowserProcessStarted
+            assert sBrowserContext == null
                     : "needsBrowserProcessStarted false and @Batch are incompatible";
         }
     }
@@ -149,20 +179,15 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     @Override
-    public void launchActivity(Intent intent) {
-        if (getActivity() != null) return;
+    public AwTestRunnerActivity launchActivity(Intent intent) {
+        if (getActivity() != null) return getActivity();
         super.launchActivity(intent);
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
-    }
-
-    public AwTestRunnerActivity launchActivity() {
-        launchActivity(getLaunchIntent());
         return getActivity();
     }
 
-    public AwBrowserContext createAwBrowserContextOnUiThread() {
-        // Native pointer is initialized later in startBrowserProcess if needed.
-        return new AwBrowserContext(0);
+    public AwTestRunnerActivity launchActivity() {
+        return launchActivity(getLaunchIntent());
     }
 
     public TestDependencyFactory createTestDependencyFactory() {
@@ -170,21 +195,22 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     /**
-     * Override this to return false if the test doesn't want to create an
-     * AwBrowserContext automatically.
+     * Override this to return false if the test doesn't want the browser startup sequence to be run
+     * automatically.
+     *
+     * @return Whether the instrumentation test requires the browser process to already be started.
      */
-    public boolean needsAwBrowserContextCreated() {
+    public boolean needsBrowserProcessStarted() {
         return true;
     }
 
     /**
-     * Override this to return false if the test doesn't want the browser
-     * startup sequence to be run automatically.
+     * Override this to return false if the test doesn't want native to be initialized by default
+     * before running the tests.
      *
-     * @return Whether the instrumentation test requires the browser process to
-     *         already be started.
+     * @return Whether the instrumentation test requires the native to be initialized by default.
      */
-    public boolean needsBrowserProcessStarted() {
+    public boolean needsNativeInitialized() {
         return true;
     }
 
@@ -194,15 +220,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      */
     public boolean needsAwContentsCleanup() {
         return true;
-    }
-
-    public void createAwBrowserContext() {
-        if (mBrowserContext != null) {
-            throw new AndroidRuntimeException("There should only be one browser context.");
-        }
-        launchActivity(); // The Activity must be launched in order to load native code
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mBrowserContext = createAwBrowserContextOnUiThread());
     }
 
     public void startBrowserProcess() {
@@ -216,21 +233,15 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     private void doStartBrowserProcess(boolean useVulkan) {
         // The Activity must be launched in order for proper webview statics to be setup.
         launchActivity();
-        if (!sBrowserProcessStarted) {
-            sBrowserProcessStarted = true;
+        if (sBrowserContext == null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
                         AwBrowserProcess.configureChildProcessLauncherForTesting();
-                        AwBrowserProcess.start();
+                        WebViewCachedFlags.init(new InMemorySharedPreferences());
+                        AwBrowserProcess.startForTesting();
+                        sBrowserContext = AwBrowserContext.getDefault();
                     });
-        }
-        if (mBrowserContext != null) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            mBrowserContext.setNativePointer(
-                                    AwBrowserContext.getDefault()
-                                            .getNativeBrowserContextPointer()));
         }
     }
 
@@ -309,7 +320,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     /** Loads url on the UI thread but does not block. */
     public void postUrlAsync(final AwContents awContents, final String url, byte[] postData) {
         class PostUrl implements Runnable {
-            byte[] mPostData;
+            final byte[] mPostData;
 
             public PostUrl(byte[] postData) {
                 mPostData = postData;
@@ -475,8 +486,21 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         return testContainerView;
     }
 
+    /**
+     * The BrowserContext (profile) singleton for this test rule. It will start the BrowserProcess
+     * if it hasn't already started.
+     *
+     * @return AwBrowserContext instance for this test rule.
+     */
+    @NonNull
     public AwBrowserContext getAwBrowserContext() {
-        return mBrowserContext;
+        assert needsBrowserProcessStarted()
+                : "Starting browser process is a necessary step to use BrowserContext";
+        if (sBrowserContext == null) {
+            throw new IllegalStateException(
+                    "BrowserProcess isn't started yet, start it to access BrowserContext.");
+        }
+        return sBrowserContext;
     }
 
     public AwTestContainerView createDetachedAwTestContainerView(
@@ -501,14 +525,17 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         if (mMaybeMutateAwSettings != null) mMaybeMutateAwSettings.accept(awSettings);
         AwContents awContents =
                 testDependencyFactory.createAwContents(
-                        mBrowserContext,
+                        sBrowserContext,
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
-                        testContainerView.getNativeDrawFunctorFactory(),
+                        testContainerView.getDrawFnAccess(),
                         awContentsClient,
                         awSettings,
                         testDependencyFactory);
+        if (overridesShouldInterceptRequest(awContentsClient)) {
+            awContents.onWebViewClientUpdated(OVERRIDES_SHOULD_INTERCEPT_REQUEST_WEB_VIEW_CLIENT);
+        }
         testContainerView.initialize(awContents);
         mAwContentsDestroyedInTearDown.add(new WeakReference<>(awContents));
         return testContainerView;
@@ -622,6 +649,24 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      * @param objectToInject the JavaScript interface to inject.
      * @param javascriptIdentifier the name with which to refer to {@code objectToInject} from
      *     JavaScript code.
+     * @param allowlist the list of origins this JS interface should be visible to.
+     */
+    public static List<String> addJavascriptInterfaceOnUiThread(
+            final AwContents awContents,
+            final Object objectToInject,
+            final String javascriptIdentifier,
+            final List<String> allowlist)
+            throws Exception {
+        checkJavaScriptEnabled(awContents);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        awContents.addJavascriptInterface(
+                                objectToInject, javascriptIdentifier, allowlist));
+    }
+
+    /**
+     * This implementation of addJavascriptInterfaceOnUiThread injects the javascript interface into
+     * all origins.
      */
     public static void addJavascriptInterfaceOnUiThread(
             final AwContents awContents,
@@ -828,6 +873,23 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 titleCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
+    private static boolean overridesShouldInterceptRequest(AwContentsClient client) {
+        if (client == null) return false;
+
+        Class<?> clientClass = client.getClass();
+
+        try {
+            Method shouldInterceptRequest =
+                    clientClass.getMethod("shouldInterceptRequest", AwWebResourceRequest.class);
+
+            Class<?> nullAwContentsClient = NullContentsClient.class;
+
+            return !shouldInterceptRequest.getDeclaringClass().equals(nullAwContentsClient);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private boolean testMethodHasAnnotation(Class<? extends Annotation> clazz) {
         return mCurrentTestDescription.getAnnotation(clazz) != null;
     }
@@ -846,7 +908,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
             return new AwSettings(
                     context,
-                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportsLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,
                     /* allowGeolocationOnInsecureOrigins= */ true,
@@ -858,7 +920,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 ViewGroup containerView,
                 Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
                 AwSettings settings,
                 DependencyFactory dependencyFactory) {
@@ -867,7 +929,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     containerView,
                     context,
                     internalAccessAdapter,
-                    nativeDrawFunctorFactory,
+                    drawFnAccess,
                     contentsClient,
                     settings,
                     dependencyFactory);

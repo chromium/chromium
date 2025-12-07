@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 
@@ -31,25 +32,25 @@ constexpr char kKeepExtensionId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 
 class DualBadgeMapTest : public ExtensionServiceTestBase {
  public:
-  DualBadgeMapTest() {}
+  DualBadgeMapTest() = default;
 
   DualBadgeMapTest(const DualBadgeMapTest&) = delete;
   DualBadgeMapTest& operator=(const DualBadgeMapTest&) = delete;
 
-  ~DualBadgeMapTest() override { profile_.reset(); }
+  ~DualBadgeMapTest() override = default;
 
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
+    arc_app_test_.PreProfileSetUp();
     InitializeEmptyExtensionService();
-    arc_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile());
   }
 
   void TearDown() override {
-    arc_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     extensions::ExtensionServiceTestBase::TearDown();
+    arc_app_test_.PostProfileTearDown();
   }
-
-  Profile* profile() { return profile_.get(); }
 
  protected:
   arc::mojom::ArcPackageInfoPtr CreateArcPackage(
@@ -60,11 +61,11 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void AddArcPackage(arc::mojom::ArcPackageInfoPtr package) {
-    arc_test_.app_instance()->SendPackageAdded(std::move(package));
+    arc_app_test_.app_instance()->SendPackageAdded(std::move(package));
   }
 
   void RemoveArcPackage(const std::string& package_name) {
-    arc_test_.app_instance()->SendPackageUninstalled(package_name);
+    arc_app_test_.app_instance()->SendPackageUninstalled(package_name);
   }
 
   arc::mojom::AppInfoPtr CreateArcApp(const std::string& name,
@@ -75,7 +76,7 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void AddArcApp(arc::mojom::AppInfoPtr app) {
-    arc_test_.app_instance()->SendAppAdded(*app);
+    arc_app_test_.app_instance()->SendAppAdded(*app);
   }
 
   scoped_refptr<const Extension> CreateExtension(const std::string& id) {
@@ -83,16 +84,16 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void AddExtension(const Extension* extension) {
-    service()->AddExtension(extension);
+    registrar()->AddExtension(extension);
   }
 
   void RemoveExtension(const Extension* extension) {
-    service()->UninstallExtension(
+    registrar()->UninstallExtension(
         extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   }
 
  private:
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 };
 
 TEST_F(DualBadgeMapTest, ExtensionToArcAppMapTest) {

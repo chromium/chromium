@@ -41,13 +41,13 @@ class StopCastingButton : public views::LabelButton {
         ui::ImageModel::FromVectorIcon(media_message_center::kMediaCastStopIcon,
                                        foreground_color_id, kIconSize));
 
-    SetEnabledTextColorIds(foreground_color_id);
+    SetEnabledTextColors(foreground_color_id);
     SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
     SetImageLabelSpacing(kImageLabelSpacing);
     SetBorder(views::CreateEmptyBorder(kButtonInsets));
 
-    SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                           kButtonHeight / 2));
+    SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                     kButtonHeight / 2));
     SetFocusRingCornerRadius(kButtonHeight / 2);
     views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);
   }

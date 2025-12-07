@@ -51,6 +51,12 @@ class MouseEventBuilder {
     SetButton(blink::WebPointerProperties::Button::kLeft);
     return SetClickCount(1);
   }
+  MouseEventBuilder& CreateLeftMouseUpAtPosition(const gfx::PointF& position) {
+    SetType(blink::WebInputEvent::Type::kMouseUp);
+    SetPosition(position);
+    SetButton(blink::WebPointerProperties::Button::kLeft);
+    return SetClickCount(1);
+  }
 
   blink::WebMouseEvent Build() const;
 

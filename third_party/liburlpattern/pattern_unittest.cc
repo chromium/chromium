@@ -4,16 +4,35 @@
 
 #include "third_party/liburlpattern/pattern.h"
 
+#include <algorithm>
+#include <iterator>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
+#include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/parse.h"
 
 namespace {
 
-absl::StatusOr<std::string> PassThrough(std::string_view input) {
+base::expected<std::string, absl::Status> PassThrough(std::string_view input) {
   return std::string(input);
+}
+
+base::expected<std::string, absl::Status> ToUpper(std::string_view input) {
+  std::string output;
+
+  std::ranges::transform(input, std::back_inserter(output),
+                         [](unsigned char c) {
+                           return static_cast<unsigned char>(std::toupper(c));
+                         });
+  return base::ok(std::move(output));
 }
 
 }  // namespace
@@ -25,7 +44,7 @@ void RunRegexTest(std::string_view input,
                   std::vector<std::string> expected_name_list,
                   Options options = Options()) {
   auto result = Parse(input, PassThrough, options);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   std::vector<std::string> name_list;
   std::string regex = pattern.GenerateRegexString(&name_list);
@@ -203,14 +222,14 @@ TEST(PatternRegexTest, EndsWithNoEndNameWithPrefixAndOneOrMoreModifier) {
 void RunPatternStringTest(std::string_view input,
                           std::string_view expected_pattern_string) {
   auto result = Parse(input, PassThrough);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   std::string pattern_string = pattern.GeneratePatternString();
   EXPECT_EQ(pattern_string, expected_pattern_string);
 
   // The computed pattern string should be valid and parse correctly.
   auto result2 = Parse(pattern_string, PassThrough);
-  EXPECT_TRUE(result.ok());
+  EXPECT_TRUE(result.has_value());
 
   // The second Pattern object may or may not be identical to the first
   // due to normalization.  For example, stripping the unnecessary grouping
@@ -459,7 +478,7 @@ void RunDirectMatchTest(std::string_view input,
   auto result =
       Parse(input, PassThrough,
             {.sensitive = true, .strict = true, .end = true, .start = true});
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   EXPECT_TRUE(pattern.CanDirectMatch());
   for (const auto& c : case_list) {
@@ -479,7 +498,7 @@ void RunDirectMatchUnsupportedTest(std::string_view input,
                                                       .end = true,
                                                       .start = true}) {
   auto result = Parse(input, PassThrough, options);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   EXPECT_FALSE(pattern.CanDirectMatch());
 }
@@ -617,6 +636,98 @@ TEST(PatternDirectMatch, NamedGroupUnsupported) {
 
 TEST(PatternDirectMatch, RegexUnsupported) {
   RunDirectMatchUnsupportedTest("(foo)");
+}
+
+void ExpectGenerateSuccess(
+    std::string_view input_pattern,
+    const std::unordered_map<std::string, std::string>& input_groups,
+    std::string_view expected_output,
+    Options options = Options(),
+    EncodeCallback callback = PassThrough) {
+  auto parsed = Parse(input_pattern, callback, options);
+  ASSERT_TRUE(parsed.has_value());
+  Pattern& pattern = parsed.value();
+  auto result = pattern.Generate(input_groups, callback);
+  EXPECT_TRUE(result.has_value());
+  if (result.has_value()) {
+    EXPECT_EQ(result.value(), expected_output);
+  }
+}
+
+void ExpectGenerateFailure(
+    std::string_view input_pattern,
+    const std::unordered_map<std::string, std::string>& input_groups,
+    absl::StatusCode expected_error_code,
+    Options options = Options(),
+    EncodeCallback callback = PassThrough) {
+  auto parsed = Parse(input_pattern, callback, options);
+  ASSERT_TRUE(parsed.has_value());
+  Pattern& pattern = parsed.value();
+  auto result = pattern.Generate(input_groups, std::move(callback));
+  EXPECT_FALSE(result.has_value());
+  if (!result.has_value()) {
+    // Tests only error codes, not looking into error messages.
+    EXPECT_EQ(result.error().code(), expected_error_code);
+  }
+}
+
+TEST(PatternGenerateTest, EmptyPatternSupported) {
+  ExpectGenerateSuccess("", {}, "");
+}
+
+TEST(PatternGenerateTest, FixedTextSupported) {
+  ExpectGenerateSuccess("foo", {}, "foo");
+}
+
+TEST(PatternGenerateTest, FixedTextInGroupSupported) {
+  ExpectGenerateSuccess("{foo}", {}, "foo");
+}
+
+TEST(PatternGenerateTest, ModifiersUnimplemented) {
+  ExpectGenerateFailure("{foo}?", {}, absl::StatusCode::kUnimplemented);
+  ExpectGenerateFailure("{foo}*", {}, absl::StatusCode::kUnimplemented);
+  ExpectGenerateFailure("{foo}+", {}, absl::StatusCode::kUnimplemented);
+}
+
+TEST(PatternGenerateTest, SingleNamedGroupSupported) {
+  ExpectGenerateSuccess(":foo", {{"foo", "bar"}}, "bar");
+}
+
+TEST(PatternGenerateTest, SingleNamedGroupWithPresixSupported) {
+  ExpectGenerateSuccess("foo:bar", {{"bar", "baz"}}, "foobaz");
+}
+
+TEST(PatternGenerateTest, EncodeCallbackUsed) {
+  ExpectGenerateSuccess("foo:bar", {{"bar", "baz"}}, "FOOBAZ", Options(),
+                        ToUpper);
+}
+
+TEST(PatternGenerateTest, MultipleNamedGroupsSupported) {
+  ExpectGenerateSuccess(":foo/:bar", {{"foo", "baz"}, {"bar", "qux"}},
+                        "baz/qux");
+}
+
+TEST(PatternGnerateTest, FailsIfInputNotProvided) {
+  ExpectGenerateFailure(":foo", {}, absl::StatusCode::kInvalidArgument);
+}
+
+TEST(PatternGenerateTest, RegexpUnimplemented) {
+  ExpectGenerateFailure("(foo)", {}, absl::StatusCode::kUnimplemented);
+}
+
+TEST(PatternGenerateTest, FullWildcardUnimplemented) {
+  ExpectGenerateFailure("*", {}, absl::StatusCode::kUnimplemented);
+}
+
+TEST(PatternGenerateTest, UnnamedSegmentWildcardUnimplemented) {
+  ExpectGenerateFailure("([^\\/]+?)", {}, absl::StatusCode::kUnimplemented,
+                        {.delimiter_list = "/"});
+}
+
+TEST(PatternGenerateTest, InputWithDelimiterCharsUnimplemented) {
+  ExpectGenerateFailure(":foo", {{"foo", "bar/baz"}},
+                        absl::StatusCode::kUnimplemented,
+                        {.delimiter_list = "/"});
 }
 
 }  // namespace liburlpattern

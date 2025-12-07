@@ -20,7 +20,7 @@ OmniboxPedal::TokenSequence make_sequence(std::vector<int> token_ids) {
 
 class OmniboxPedalTest : public testing::Test {
  protected:
-  OmniboxPedalTest() {}
+  OmniboxPedalTest() = default;
 };
 
 TEST_F(OmniboxPedalTest, SynonymGroupRespectsSingle) {

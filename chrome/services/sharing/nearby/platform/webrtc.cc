@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -21,13 +22,13 @@
 #include "third_party/nearby/src/internal/platform/future.h"
 #include "third_party/nearby/src/internal/platform/logging.h"
 #include "third_party/webrtc/api/async_dns_resolver.h"
+#include "third_party/webrtc/api/create_modular_peer_connection_factory.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "third_party/webrtc_overrides/environment.h"
 #include "unicode/locid.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -109,14 +110,14 @@ class ProxyAsyncDnsResolverFactory final
     return socket_factory_->CreateAsyncDnsResolver();
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
     temp->Start(addr, std::move(callback));
     return temp;
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       int family,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
@@ -377,6 +378,13 @@ void WebRtcMedium::CreatePeerConnection(
                                 std::move(callback)));
 }
 
+void WebRtcMedium::CreatePeerConnection(
+    std::optional<webrtc::PeerConnectionFactoryInterface::Options> options,
+    webrtc::PeerConnectionObserver* observer,
+    PeerConnectionCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
                                    PeerConnectionCallback callback) {
   ice_config_fetcher_->GetIceServers(base::BindOnce(
@@ -384,7 +392,7 @@ void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
       base::UnsafeDanglingUntriaged(observer), std::move(callback)));
 }
 
-void WebRtcMedium::InitWebRTCThread(rtc::Thread** thread_to_set) {
+void WebRtcMedium::InitWebRTCThread(webrtc::Thread** thread_to_set) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   webrtc::ThreadWrapper::current()->set_send_allowed(true);
   *thread_to_set = webrtc::ThreadWrapper::current();
@@ -433,7 +441,7 @@ void WebRtcMedium::InitPeerConnectionFactory() {
   DCHECK(rtc_worker_thread_);
 
   webrtc::PeerConnectionFactoryDependencies factory_dependencies;
-  factory_dependencies.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  factory_dependencies.env = WebRtcEnvironment();
   factory_dependencies.network_thread = rtc_network_thread_;
   factory_dependencies.worker_thread = rtc_worker_thread_;
   factory_dependencies.signaling_thread = rtc_signaling_thread_;
@@ -471,7 +479,7 @@ void WebRtcMedium::InitNetworkThread(base::OnceClosure complete_callback) {
 
   // NOTE: IpcNetworkManager::Initialize() does not override the empty default
   // implementation so this doesn't actually do anything right now. However
-  // the contract of rtc::NetworkManagerBase states that it should be called
+  // the contract of webrtc::NetworkManagerBase states that it should be called
   // before using and explicitly on the network thread (which right now is the
   // current thread). Previously this was handled by P2PPortAllocator.
   network_manager_->Initialize();
@@ -532,14 +540,12 @@ void WebRtcMedium::OnIceServersFetched(
   // causing battery drain for Phone Hub's persistent connection.
   // Ideally these options should be configurable per connection, but right now
   // we have a single share factory for all peer connections.
-  if (ash::features::IsNearbyKeepAliveFixEnabled()) {
-    rtc_config.ice_connection_receiving_timeout =
-        kIceConnectionReceivingTimeout.InMilliseconds();
-    rtc_config.ice_check_interval_strong_connectivity =
-        kIceCheckIntervalStrongConnectivity.InMilliseconds();
-    rtc_config.stable_writable_connection_ping_interval_ms =
-        kStableWritableConnectionPingInterval.InMilliseconds();
-  }
+  rtc_config.ice_connection_receiving_timeout =
+      kIceConnectionReceivingTimeout.InMilliseconds();
+  rtc_config.ice_check_interval_strong_connectivity =
+      kIceCheckIntervalStrongConnectivity.InMilliseconds();
+  rtc_config.stable_writable_connection_ping_interval_ms =
+      kStableWritableConnectionPingInterval.InMilliseconds();
 
   webrtc::PeerConnectionDependencies dependencies(observer);
   sharing::P2PPortAllocator::Config port_config;
@@ -550,7 +556,7 @@ void WebRtcMedium::OnIceServersFetched(
   dependencies.async_dns_resolver_factory =
       std::make_unique<ProxyAsyncDnsResolverFactory>(socket_factory_.get());
 
-  webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::PeerConnectionInterface>>
+  webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::PeerConnectionInterface>>
       peer_connection = peer_connection_factory_->CreatePeerConnectionOrError(
           rtc_config, std::move(dependencies));
   if (peer_connection.ok()) {
@@ -568,5 +574,4 @@ WebRtcMedium::GetSignalingMessenger(
       std::string(self_id), location_hint, webrtc_signaling_messenger_);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

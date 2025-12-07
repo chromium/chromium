@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Càmera posterior</translation>
 <translation id="1196338895211115272">No s'ha pogut exportar la clau privada.</translation>
 <translation id="132960226125594336">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut perquè superaria la mida màxima de l'script o la mida màxima total de l'script de contingut de l'extensió.</translation>
-<translation id="1420684932347524586">Error. No s'ha pogut generar la clau privada RSA aleatòria.</translation>
 <translation id="1445572445564823378">Aquesta extensió està alentint <ph name="PRODUCT_NAME" />. L'heu de desactivar per restaurar el rendiment de: <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no és compatible.</translation>
 <translation id="1610570795592207282">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de CSS per a l'script.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No s'ha pogut substituir el fitxer crx. Comproveu si el fitxer s'està utilitzant.</translation>
 <translation id="3163201441334626963">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">No es pot desempaquetar l'extensió. Per desempaquetar l'extensió amb seguretat, cal un camí al directori del perfil que comenci amb la lletra d'una unitat i no contingui cap unió, punt de muntatge o enllaç simbòlic. No hi ha cap camí d'aquestes característiques al vostre perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor d'entrada per a la clau privada ha de ser un camí vàlid.</translation>
 <translation id="388442998277590542">No s'ha pogut carregar la pàgina d'opcions "<ph name="OPTIONS_PAGE" />".</translation>
-<translation id="3984413272403535372">S'ha produït un error en signar l'extensió.</translation>
-<translation id="4115165561519362854">L'administrador d'aquest ordinador requereix que <ph name="EXTENSION_NAME" /> tingui com a mínim la versió <ph name="EXTENSION_VERSION" />. No es pot activar fins que no s'hagi actualitzat a aquesta versió (o posterior).</translation>
+<translation id="3984413272403535372">Hi ha hagut un error en signar l'extensió.</translation>
 <translation id="4233778200880751280">No s'ha pogut carregar la pàgina d'informació "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">No s'ha pogut generar la clau privada.</translation>
 <translation id="4811956658694082538">No s'ha pogut instal·lar el paquet perquè un dels processos d'utilitat ha fallat. Reinicieu Chrome i torneu-ho a provar.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">L'administrador d'aquest dispositiu requereix que l'extensió <ph name="EXTENSION_NAME" /> estigui instal·lada. No es pot desinstal·lar.</translation>
 <translation id="6027032947578871493">Producte desconegut <ph name="PRODUCT_ID" /> de: <ph name="VENDOR_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">No es pot desempaquetar l'extensió. Per desempaquetar l'extensió amb seguretat, cal un camí al directori del perfil que no contingui un enllaç simbòlic. No hi ha cap camí d'aquestes característiques al vostre perfil.</translation>
 <translation id="6322279351188361895">No s'ha pogut llegir la clau privada.</translation>
 <translation id="6391538222494443604">El directori d'entrada ha d'existir.</translation>
 <translation id="641087317769093025">No s'ha pogut descomprimir l'extensió</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">El fitxer de manifest no és vàlid</translation>
 <translation id="7217838517480956708">L'administrador d'aquest equip necessita que s'instal·li <ph name="EXTENSION_NAME" />. No es pot eliminar o modificar.</translation>
 <translation id="7612608473764576263">El valor d'entrada per a la clau privada ha de ser un format vàlid (clau RSA en format PKCS #8 amb codificació PEM).</translation>
+<translation id="7876803335449432072">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els fulls d'estil dels scripts de contingut només es poden carregar des de fitxers de fulls d'estil admesos, com ara fitxers .css.</translation>
 <translation id="7939686037314084444">L'extensió no s'ha carregat correctament. És possible que no pugui interceptar les sol·licituds de xarxa.</translation>
 <translation id="7972881773422714442">Opcions: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Càmera frontal</translation>
 <translation id="8047248493720652249">Aquesta extensió no ha pogut posar nom a la baixada "<ph name="ATTEMPTED_FILENAME" />" perquè una altra extensió (<ph name="EXTENSION_NAME" />) ha indicat un nom de fitxer diferent "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> proporcionat per <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Falta el fitxer de manifest o no es pot llegir</translation>
+<translation id="8621383749470166852">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els scripts de contingut només es poden carregar des de fitxers JavaScript admesos, com ara fitxers .js.</translation>
 <translation id="8636666366616799973">El paquet no és vàlid. Detalls: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> sol·licita accés a un dels teus dispositius:</translation>
 <translation id="8885905466771744233">Ja existeix una clau privada per a l'extensió especificada. Torneu a utilitzar-la o suprimiu-la primer.</translation>

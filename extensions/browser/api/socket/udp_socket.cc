@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/socket/udp_socket.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/browser/api/api_resource.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -130,11 +126,11 @@ void UDPSocket::Read(int count, ReadCompletionCallback callback) {
 int UDPSocket::WriteImpl(net::IOBuffer* io_buffer,
                          int io_buffer_size,
                          net::CompletionOnceCallback callback) {
-  if (!IsConnected())
+  if (!IsConnected()) {
     return net::ERR_SOCKET_NOT_CONNECTED;
-  base::span<const uint8_t> data(
-      reinterpret_cast<const uint8_t*>(io_buffer->data()),
-      static_cast<size_t>(io_buffer_size));
+  }
+  base::span<const uint8_t> data =
+      io_buffer->first(static_cast<size_t>(io_buffer_size));
   socket_->Send(
       data,
       net::MutableNetworkTrafficAnnotationTag(
@@ -180,9 +176,8 @@ void UDPSocket::SendTo(scoped_refptr<net::IOBuffer> io_buffer,
     return;
   }
 
-  base::span<const uint8_t> data(
-      reinterpret_cast<const uint8_t*>(io_buffer->data()),
-      static_cast<size_t>(byte_count));
+  base::span<const uint8_t> data =
+      io_buffer->first(static_cast<size_t>(byte_count));
   socket_->SendTo(
       address, data,
       net::MutableNetworkTrafficAnnotationTag(
@@ -239,7 +234,8 @@ void UDPSocket::OnReceived(int32_t result,
 
   auto io_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(data.value().size());
-  memcpy(io_buffer->data(), data.value().data(), data.value().size());
+  UNSAFE_TODO(
+      memcpy(io_buffer->data(), data.value().data(), data.value().size()));
 
   if (!read_callback_.is_null()) {
     std::move(read_callback_)

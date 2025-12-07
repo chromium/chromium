@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/webui/common/backend/shortcut_input_provider.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"

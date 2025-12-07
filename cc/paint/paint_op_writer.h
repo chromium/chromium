@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
@@ -15,6 +10,8 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
@@ -23,7 +20,9 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -55,6 +54,19 @@ class DrawLooper;
 class PaintShader;
 class PathEffect;
 
+namespace internal {
+
+template <typename T>
+inline constexpr bool kIsVec = false;
+template <typename T, typename Allocator>
+inline constexpr bool kIsVec<std::vector<T, Allocator>> = true;
+template <typename T, size_t N, typename A>
+inline constexpr bool kIsVec<absl::InlinedVector<T, N, A>> = true;
+template <typename T>
+concept IsVec = kIsVec<std::remove_cvref_t<T>>;
+
+}  // namespace internal
+
 class CC_PAINT_EXPORT PaintOpWriter {
   STACK_ALLOCATED();
 
@@ -75,7 +87,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
         size_(base::bits::AlignDown(size, kDefaultAlignment)),
         options_(options),
         enable_security_constraints_(enable_security_constraints) {
-    memory_end_ = memory_ + size_;
+    memory_end_ = UNSAFE_TODO(memory_ + size_);
     AssertAlignment(memory_, BufferAlignment());
   }
 
@@ -109,7 +121,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   //
   // When enable_security_constraints is false, the alignment is 16 which is
   // the maximum alignment requirement of particular types of pixmaps (see
-  // image_transfer_data_cache.cc).
+  // image_transfer_cache_entry.cc).
   static constexpr size_t BufferAlignment(bool enable_security_constraints) {
     return enable_security_constraints ? kDefaultAlignment : kMaxAlignment;
   }
@@ -125,6 +137,10 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static constexpr size_t kDefaultAlignment = alignof(uint32_t);
 
  private:
+  template <typename ValueType>
+  friend size_t SerializeSizeSimpleValueUniforms(
+      const std::vector<PaintShader::Uniform<ValueType>>&);
+
   template <typename T>
   static constexpr size_t SerializedSizeSimple();
 
@@ -143,6 +159,15 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static size_t SerializedSize(const PaintImage& image);
   static size_t SerializedSize(const PaintRecord& record);
   static size_t SerializedSize(const SkHighContrastConfig& config);
+  static size_t SerializedSize(const SkString& sk_string);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::FloatUniform>& scalar_map);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::Float2Uniform>& float2_map);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::Float4Uniform>& float4_map);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::IntUniform>& int_map);
 
   // Serialization of raw/smart pointers is not supported by default.
   template <typename T>
@@ -209,7 +234,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
                                     size_t serialized_size);
 
   // Write a sequence of arbitrary bytes.
-  void WriteData(size_t bytes, const void* input);
+  void WriteData(base::span<const uint8_t> data);
 
   // Returns the size of successfully written data, including paddings for
   // alignment.
@@ -223,8 +248,10 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkMatrix matrix);
   void Write(const SkM44& matrix);
   void Write(uint8_t data) { WriteSimple(data); }
+  void Write(uint16_t data) { WriteSimple(data); }
   void Write(uint32_t data) { WriteSimple(data); }
   void Write(int32_t data) { WriteSimple(data); }
+  void Write(const SkPoint& point) { WriteSimple(point); }
   void Write(const SkRect& rect) { WriteSimple(rect); }
   void Write(const SkIRect& rect) { WriteSimple(rect); }
   void Write(const SkRRect& rect) { WriteSimple(rect); }
@@ -258,6 +285,11 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
   void Write(const PathEffect* effect);
   void Write(const gfx::HDRMetadata& hdr_metadata);
+  void Write(const SkString& sk_string);
+  void Write(const std::vector<PaintShader::FloatUniform>& scalar_uniforms);
+  void Write(const std::vector<PaintShader::Float2Uniform>& float2_uniforms);
+  void Write(const std::vector<PaintShader::Float4Uniform>& float4_uniforms);
+  void Write(const std::vector<PaintShader::IntUniform>& int_uniforms);
 
   void Write(SkClipOp op) { WriteEnum(op); }
   void Write(PaintCanvas::AnnotationType type) { WriteEnum(type); }
@@ -270,6 +302,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkTileMode tile_mode) { WriteEnum(tile_mode); }
   void Write(SkFilterMode filter_mode) { WriteEnum(filter_mode); }
   void Write(SkMipmapMode mipmap_mode) { WriteEnum(mipmap_mode); }
+  void Write(SkPathFillType fill_type) { WriteEnum(fill_type); }
 
   void Write(bool data) { Write(static_cast<uint8_t>(data)); }
 
@@ -344,25 +377,19 @@ class CC_PAINT_EXPORT PaintOpWriter {
         [&] {
           static_assert(std::is_trivially_copyable_v<decltype(vals)>);
           reinterpret_cast<decltype(vals)*>(ptr)[0] = vals;
-          ptr += base::bits::AlignUp(sizeof(vals), kDefaultAlignment);
+          UNSAFE_TODO(ptr +=
+                      base::bits::AlignUp(sizeof(vals), kDefaultAlignment));
         }(),
         ...);
 
     DidWrite(total_size);
   }
 
-  template <typename T>
-    requires(std::is_trivially_copyable_v<T>)
-  void Write(const std::vector<T>& vec) {
-    WriteSize(vec.size());
-    WriteData(vec.size() * sizeof(T), vec.data());
-  }
-
   template <typename T, typename... Args>
-    requires(!std::is_trivially_copyable_v<T>)
-  void Write(const std::vector<T>& vec, const Args&... args) {
+    requires internal::IsVec<T>
+  void Write(const T& vec, const Args&... args) {
     WriteSize(vec.size());
-    for (const T& t : vec) {
+    for (const auto& t : vec) {
       Write(t, args...);
     }
   }
@@ -382,7 +409,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
     reinterpret_cast<T*>(memory_)[0] = val;
 
-    memory_ += size;
+    UNSAFE_TODO(memory_ += size);
     AssertFieldAlignment();
   }
 
@@ -431,15 +458,16 @@ class CC_PAINT_EXPORT PaintOpWriter {
              const gfx::Rect& playback_rect,
              const gfx::SizeF& post_scale);
   void Write(const SkRegion& region);
-  void WriteImage(const DecodedDrawImage& decoded_draw_image);
+  void WriteImage(const DecodedDrawImage& decoded_draw_image,
+                  bool reinterpret_as_srgb);
   void WriteImage(uint32_t transfer_cache_entry_id, bool needs_mips);
-  void WriteImage(const gpu::Mailbox& mailbox);
+  void WriteImage(const gpu::Mailbox& mailbox, bool reinterpret_as_srgb);
   void DidWrite(size_t bytes_written) {
     // All data are aligned with kDefaultAlignment at least.
     size_t aligned_bytes =
         base::bits::AlignUp(bytes_written, kDefaultAlignment);
     DCHECK_LE(aligned_bytes, remaining_bytes());
-    memory_ += aligned_bytes;
+    UNSAFE_TODO(memory_ += aligned_bytes);
   }
   void EnsureBytes(size_t required_bytes) {
     if (remaining_bytes() < required_bytes) {

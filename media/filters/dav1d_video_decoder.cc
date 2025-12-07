@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/dav1d_video_decoder.h"
 
 #include <memory>
@@ -21,11 +16,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/agtm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_util.h"
+#include "third_party/skia/include/core/SkData.h"
 
 extern "C" {
 #include "third_party/dav1d/libdav1d/include/dav1d/dav1d.h"
@@ -119,6 +116,86 @@ static void LogDav1dMessage(void* cookie, const char* format, va_list ap) {
   DLOG(ERROR) << log;
 }
 
+// Dynamically allocated Dav1dPicture opaque data.
+struct FrameBufferData {
+  FrameBufferData(void* fb, scoped_refptr<FrameBufferPool> pool)
+      : fb_priv(fb), frame_pool(std::move(pool)) {
+    CHECK(fb_priv);
+    CHECK(frame_pool);
+  }
+
+  // FrameBufferPool key that we'll free when the Dav1dPicture is unused.
+  raw_ptr<void> fb_priv = nullptr;
+
+  // Pool which owns `fb_priv`.
+  scoped_refptr<FrameBufferPool> frame_pool;
+};
+
+static int AllocPicture(Dav1dPicture* p, void* frame_pool_opaque) {
+  // Copy of dav1d_default_picture_alloc() dav1d 1.5.1 but uses FrameBufferPool.
+  const int hbd = p->p.bpc > 8;
+  const int aligned_w = (p->p.w + 127) & ~127;
+  const int aligned_h = (p->p.h + 127) & ~127;
+  const int has_chroma = p->p.layout != DAV1D_PIXEL_LAYOUT_I400;
+  const int ss_ver = p->p.layout == DAV1D_PIXEL_LAYOUT_I420;
+  const int ss_hor = p->p.layout != DAV1D_PIXEL_LAYOUT_I444;
+  ptrdiff_t y_stride = aligned_w << hbd;
+  ptrdiff_t uv_stride = has_chroma ? y_stride >> ss_hor : 0;
+  /* Due to how mapping of addresses to sets works in most L1 and L2 cache
+   * implementations, strides of multiples of certain power-of-two numbers
+   * may cause multiple rows of the same superblock to map to the same set,
+   * causing evictions of previous rows resulting in a reduction in cache
+   * hit rate. Avoid that by slightly padding the stride when necessary. */
+  if (!(y_stride & 1023)) {
+    y_stride += DAV1D_PICTURE_ALIGNMENT;
+  }
+  if (!(uv_stride & 1023) && has_chroma) {
+    uv_stride += DAV1D_PICTURE_ALIGNMENT;
+  }
+  p->stride[0] = y_stride;
+  p->stride[1] = uv_stride;
+  const size_t y_sz = y_stride * aligned_h;
+  const size_t uv_sz = uv_stride * (aligned_h >> ss_ver);
+  const size_t pic_size = y_sz + 2 * uv_sz;
+
+  // Note: Subsequent code diverges from dav1d_default_picture_alloc().
+  auto frame_pool =
+      base::WrapRefCounted(static_cast<FrameBufferPool*>(frame_pool_opaque));
+
+  // FrameBufferPool doesn't provide alignment and it's not easy to add, so we
+  // over-allocate by the alignment and adjust accordingly. Over-allocating by
+  // 2*DAV1D_PICTURE_ALIGNMENT ensures this is safe to do and satisfies the
+  // requirement that data is padded _AND_ aligned by DAV1D_PICTURE_ALIGNMENT.
+  const size_t alloc_size = pic_size + DAV1D_PICTURE_ALIGNMENT * 2;
+  void* fb_priv = nullptr;
+  auto span = frame_pool->GetFrameBuffer(alloc_size, &fb_priv);
+  if (span.empty()) {
+    return DAV1D_ERR(ENOMEM);
+  }
+
+  p->allocator_data = new FrameBufferData(fb_priv, frame_pool);
+
+  // Safe due to over-allocation by DAV1D_PICTURE_ALIGNMENT * 2 above.
+  auto aligned_span = span.subspan(DAV1D_PICTURE_ALIGNMENT -
+                                   reinterpret_cast<uintptr_t>(span.data()) %
+                                       DAV1D_PICTURE_ALIGNMENT);
+  p->data[0] = aligned_span.data();
+  p->data[1] = has_chroma ? aligned_span.get_at(y_sz) : nullptr;
+  p->data[2] = has_chroma ? aligned_span.get_at(y_sz + uv_sz) : nullptr;
+  return 0;
+}
+
+static void ReleasePicture(Dav1dPicture* p, void*) {
+  if (!p || !p->allocator_data) {
+    return;
+  }
+
+  auto* opaque_data =
+      static_cast<FrameBufferData*>(std::move(p->allocator_data));
+  opaque_data->frame_pool->ReleaseFrameBuffer(std::move(opaque_data->fb_priv));
+  delete opaque_data;
+}
+
 // std::unique_ptr release helpers. We need to release both the containing
 // structs as well as refs held within the structures.
 struct ScopedDav1dDataFree {
@@ -135,6 +212,22 @@ struct ScopedDav1dPictureFree {
     dav1d_picture_unref(pic);
     delete pic;
   }
+};
+
+// Helper structure for storing generated 10-16bit UV planes for I400 content.
+class RefCountedUV16Data : public base::RefCountedMemory {
+ public:
+  RefCountedUV16Data(size_t count, uint16_t fill_value)
+      : uv_data_(count, fill_value) {}
+
+ private:
+  ~RefCountedUV16Data() override = default;
+
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override {
+    return base::as_byte_span(uv_data_);
+  }
+
+  std::vector<uint16_t> uv_data_;
 };
 
 // static
@@ -157,6 +250,9 @@ Dav1dVideoDecoder::Dav1dVideoDecoder(std::unique_ptr<MediaLog> media_log,
 Dav1dVideoDecoder::~Dav1dVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CloseDecoder();
+  if (frame_pool_) {
+    frame_pool_->Shutdown();
+  }
 }
 
 VideoDecoderType Dav1dVideoDecoder::GetDecoderType() const {
@@ -188,11 +284,20 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
+  if (!frame_pool_) {
+    frame_pool_ = base::MakeRefCounted<FrameBufferPool>();
+  }
+
   // Clear any previously initialized decoder.
   CloseDecoder();
 
   Dav1dSettings s;
   dav1d_default_settings(&s);
+
+  // Setup a custom allocator so OOM failures error out instead of crashing.
+  s.allocator.cookie = frame_pool_.get();
+  s.allocator.alloc_picture_callback = &AllocPicture;
+  s.allocator.release_picture_callback = &ReleasePicture;
 
   // Compute the ideal thread count values. We'll then clamp these based on the
   // maximum number of recommended threads (using number of processors, etc).
@@ -208,8 +313,9 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // We only want 1 frame thread in low delay mode, since otherwise we'll
   // require at least two buffers before the first frame can be output.
-  if (low_delay || config.is_rtc())
+  if (low_delay) {
     s.max_frame_delay = 1;
+  }
 
   // Only output the highest spatial layer.
   s.all_layers = 0;
@@ -220,12 +326,14 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Set a maximum frame size limit to avoid OOM'ing fuzzers.
   s.frame_size_limit = limits::kMaxCanvas;
 
-  // TODO(tmathmeyer) write the dav1d error into the data for the media error.
   {
     Dav1dContext* decoder = nullptr;
-    if (dav1d_open(&decoder, &s) < 0) {
+    const int res = dav1d_open(&decoder, &s);
+    if (res < 0) {
       std::move(bound_init_cb)
-          .Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+          .Run(DecoderStatus(DecoderStatus::Codes::kFailedToCreateDecoder,
+                             "dav1d_open() failed")
+                   .WithData("error_code", res));
       return;
     }
     dav1d_decoder_.reset(decoder);
@@ -250,13 +358,13 @@ void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                       : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(error_status_);
     return;
   }
 
   if (!DecodeBuffer(std::move(buffer))) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(error_status_);
     return;
   }
 
@@ -268,6 +376,7 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = DecoderState::kNormal;
   dav1d_flush(dav1d_decoder_.get());
+  error_status_ = DecoderStatus::Codes::kFailed;
 
   if (bind_callbacks_)
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -302,11 +411,18 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
   using ScopedPtrDav1dData = std::unique_ptr<Dav1dData, ScopedDav1dDataFree>;
   ScopedPtrDav1dData input_buffer;
-
   if (!buffer->end_of_stream()) {
-    input_buffer.reset(new Dav1dData{0});
-    if (dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
-                        &ReleaseDecoderBuffer, buffer.get()) < 0) {
+    auto buffer_span = base::span(*buffer);
+    input_buffer.reset(new Dav1dData{});
+    const int res = dav1d_data_wrap(input_buffer.get(), buffer_span.data(),
+                                    buffer_span.size(), &ReleaseDecoderBuffer,
+                                    buffer.get());
+    if (res < 0) {
+      if (res == DAV1D_ERR(ENOMEM)) {
+        error_status_ = DecoderStatus::Codes::kOutOfMemory;
+      }
+      MEDIA_LOG(ERROR, media_log_)
+          << "dav1d_data_wrap() failed with error " << res;
       return false;
     }
     input_buffer->m.timestamp = buffer->timestamp().InMicroseconds();
@@ -322,8 +438,9 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     if (input_buffer) {
       const int res = dav1d_send_data(dav1d_decoder_.get(), input_buffer.get());
       if (res < 0 && res != -EAGAIN) {
-        MEDIA_LOG(ERROR, media_log_) << "dav1d_send_data() failed on "
-                                     << buffer->AsHumanReadableString();
+        MEDIA_LOG(ERROR, media_log_)
+            << "dav1d_send_data() failed with error " << res << " on "
+            << buffer->AsHumanReadableString();
         return false;
       }
 
@@ -335,13 +452,14 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
     using ScopedPtrDav1dPicture =
         std::unique_ptr<Dav1dPicture, ScopedDav1dPictureFree>;
-    ScopedPtrDav1dPicture p(new Dav1dPicture{0});
+    ScopedPtrDav1dPicture p(new Dav1dPicture{});
 
     const int res = dav1d_get_picture(dav1d_decoder_.get(), p.get());
     if (res < 0) {
       if (res != -EAGAIN) {
-        MEDIA_LOG(ERROR, media_log_) << "dav1d_get_picture() failed on "
-                                     << buffer->AsHumanReadableString();
+        MEDIA_LOG(ERROR, media_log_)
+            << "dav1d_get_picture() failed with error " << res << " on "
+            << buffer->AsHumanReadableString();
         return false;
       }
 
@@ -352,6 +470,22 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       }
 
       continue;
+    }
+
+    if (p->itut_t35) {
+      // SAFETY: The best we can do is trust the size provided by Dav1d.
+      auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
+          p->itut_t35->payload, p->itut_t35->payload_size));
+      const std::optional<gfx::HdrMetadataAgtm> agtm =
+          GetHdrMetadataAgtmFromItutT35(p->itut_t35->country_code,
+                                        t35_payload_span);
+      if (agtm.has_value()) {
+        gfx::HDRMetadata hdr_metadata =
+            config_.hdr_metadata().value_or(gfx::HDRMetadata());
+        // Overwrite existing AGTM metadata if any.
+        hdr_metadata.agtm = agtm;
+        config_.set_hdr_metadata(hdr_metadata);
+      }
     }
 
     auto frame = BindImageToVideoFrame(p.get());
@@ -378,9 +512,11 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     frame->metadata().power_efficient = false;
     frame->set_hdr_metadata(config_.hdr_metadata());
 
-    // When we use bind mode, our image data is dependent on the Dav1dPicture,
-    // so we must ensure it stays alive along enough.
-    frame->AddDestructionObserver(base::DoNothingWithBoundArgs(std::move(p)));
+    FrameBufferData* opaque_data =
+        static_cast<FrameBufferData*>(p->allocator_data);
+    frame->AddDestructionObserver(
+        frame_pool_->CreateFrameCallback(opaque_data->fb_priv));
+
     output_cb_.Run(std::move(frame));
   }
 
@@ -398,55 +534,63 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
     return nullptr;
 
   auto uv_plane_stride = pic->stride[1];
-  auto* u_plane = static_cast<uint8_t*>(pic->data[1]);
-  auto* v_plane = static_cast<uint8_t*>(pic->data[2]);
+  const size_t y_plane_height = pic->p.h;
+  const size_t uv_plane_height =
+      media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, visible_size)
+          .height();
+
+  // SAFETY: Dav1d doesn't give us the size of the planes directly, that's
+  // why we assume it to be equal to stride * rows,
+  // as we do in many other places.
+  auto y_plane =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(pic->data[0]),
+                                y_plane_height * pic->stride[0]));
+  auto u_plane =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(pic->data[1]),
+                                uv_plane_height * uv_plane_stride));
+  auto v_plane =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(pic->data[2]),
+                                uv_plane_height * uv_plane_stride));
 
   const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
   if (needs_fake_uv_planes) {
     // UV planes are half the size of the Y plane.
     uv_plane_stride =
         base::bits::AlignUpDeprecatedDoNotUse(pic->stride[0] / 2, ptrdiff_t{2});
-    const auto uv_plane_height = (pic->p.h + 1) / 2;
     const size_t size_needed = uv_plane_stride * uv_plane_height;
 
     if (!fake_uv_data_ || fake_uv_data_->size() != size_needed) {
       if (pic->p.bpc == 8) {
         // Avoid having base::RefCountedBytes zero initialize the memory just to
-        // fill it with a different value.
+        // fill it with a different value. When we resize, existing frames will
+        // keep their refs on the old data.
         constexpr uint8_t kBlankUV = 256 / 2;
-        std::vector<unsigned char> empty_data(size_needed, kBlankUV);
-
-        // When we resize, existing frames will keep their refs on the old data.
-        fake_uv_data_ = base::RefCountedBytes::TakeVector(&empty_data);
+        fake_uv_data_ = base::MakeRefCounted<base::RefCountedBytes>(
+            std::vector<uint8_t>(size_needed, kBlankUV));
       } else {
         DCHECK(pic->p.bpc == 10 || pic->p.bpc == 12);
         const uint16_t kBlankUV = (1 << pic->p.bpc) / 2;
         fake_uv_data_ =
-            base::MakeRefCounted<base::RefCountedBytes>(size_needed);
-
-        uint16_t* data =
-            reinterpret_cast<uint16_t*>(fake_uv_data_->as_vector().data());
-        std::fill(data, data + size_needed / 2, kBlankUV);
+            base::MakeRefCounted<RefCountedUV16Data>(size_needed / 2, kBlankUV);
       }
     }
 
-    u_plane = v_plane =
-        reinterpret_cast<uint8_t*>(fake_uv_data_->as_vector().data());
+    u_plane = v_plane = base::span<const uint8_t>(*fake_uv_data_);
   }
 
   auto frame = VideoFrame::WrapExternalYuvData(
       pixel_format, visible_size, gfx::Rect(visible_size),
       config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size)),
-      pic->stride[0], uv_plane_stride, uv_plane_stride,
-      static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
-      base::Microseconds(pic->m.timestamp));
+      pic->stride[0], uv_plane_stride, uv_plane_stride, y_plane, u_plane,
+      v_plane, base::Microseconds(pic->m.timestamp));
   if (!frame)
     return nullptr;
 
   // Each frame needs a ref on the fake UV data to keep it alive until done.
   if (needs_fake_uv_planes) {
     frame->AddDestructionObserver(base::BindOnce(
-        [](scoped_refptr<base::RefCountedBytes>) {}, fake_uv_data_));
+        [](scoped_refptr<base::RefCountedMemory>) {}, fake_uv_data_));
   }
 
   return frame;

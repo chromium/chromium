@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/web/model/annotations/annotations_util.h",
+  "+ios/chrome/browser/search_engines/model",
+]

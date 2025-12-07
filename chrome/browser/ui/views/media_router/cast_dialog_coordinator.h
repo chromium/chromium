@@ -13,9 +13,13 @@
 class Browser;
 class Profile;
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 namespace gfx {
 class Rect;
-}
+}  // namespace gfx
 
 namespace views {
 class View;
@@ -83,7 +87,8 @@ class CastDialogCoordinator {
             CastDialogController* controller,
             Profile* profile,
             const base::Time& start_time,
-            MediaRouterDialogActivationLocation activation_location);
+            MediaRouterDialogActivationLocation activation_location,
+            actions::ActionItem* action_item = nullptr);
 
   views::ViewTracker cast_dialog_view_tracker_;
 };

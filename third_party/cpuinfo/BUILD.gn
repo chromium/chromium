@@ -18,6 +18,12 @@ config("cpuinfo_config") {
     # For clog.c.
     "-Wno-unused-result",
 
+    # For src/src/arm/windows/init-by-logical-sys-info.c.
+    "-Wno-tautological-pointer-compare",
+
+    # For src/src/arm/linux/chipset.c.
+    "-Wno-logical-op-parentheses",
+
     # A lot of locations.
     "-Wno-unused-function",
   ]
@@ -105,6 +111,10 @@ source_set("cpu_specific") {
     ]
   }
 
+  if (current_cpu == "riscv64") {
+    sources = [ "src/src/riscv/uarch.c" ]
+  }
+
   # Because "init.c" is reused again, but only has sources in the corresponding
   # build config.
   deps = [ ":x86_cache" ]
@@ -169,6 +179,14 @@ source_set("cpu_and_os_specific") {
       "src/src/arm/linux/hwcap.c",
       "src/src/arm/linux/init.c",
       "src/src/arm/linux/midr.c",
+    ]
+  }
+
+  if ((is_linux || is_chromeos) && current_cpu == "riscv64") {
+    sources = [
+      "src/src/riscv/linux/init.c",
+      "src/src/riscv/linux/riscv-hw.c",
+      "src/src/riscv/linux/riscv-isa.c",
     ]
   }
 

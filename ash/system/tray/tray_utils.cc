@@ -8,6 +8,7 @@
 
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -60,13 +61,9 @@ void SetupConnectedScrollListItem(HoverHighlightView* view,
 
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    view->sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysPositive);
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
-  } else {
-    view->sub_text_label()->SetEnabledColorId(kColorAshTextColorPositive);
-  }
+  view->sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysPositive);
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
 }
 
 void SetupConnectingScrollListItem(HoverHighlightView* view) {
@@ -81,13 +78,9 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
 
   view->SetSubText(subtext);
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  if (chromeos::features::IsJellyEnabled()) {
-    view->sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
-  } else {
-    view->sub_text_label()->SetEnabledColorId(kColorAshTextColorWarning);
-  }
+  view->sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysWarning);
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
 }
 
 gfx::Insets GetTrayBubbleInsets(aura::Window* window) {
@@ -101,7 +94,7 @@ gfx::Insets GetTrayBubbleInsets(aura::Window* window) {
   // The work area in tablet mode always uses the in-app shelf height, which is
   // shorter than the standard shelf height. In this state, we need to add back
   // the difference to compensate (see crbug.com/1033302).
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return insets;
   }
 
@@ -160,7 +153,7 @@ int CalculateMaxTrayBubbleHeight(aura::Window* window) {
       WorkAreaInsets::ForWindow(shelf->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
       anchor_rect_top - work_area->user_work_area_bounds().y();
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     free_space_height_above_anchor -= GetBubbleInsetHotseatCompensation(window);
   }
   return free_space_height_above_anchor - kBubbleMenuPadding * 2;

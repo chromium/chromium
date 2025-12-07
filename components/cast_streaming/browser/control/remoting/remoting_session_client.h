@@ -6,7 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_CONTROL_REMOTING_REMOTING_SESSION_CLIENT_H_
 
 #include "components/cast_streaming/browser/common/streaming_initialization_info.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_session.h"
 
 namespace openscreen::cast {
 class RpcMessenger;

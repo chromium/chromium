@@ -9,12 +9,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -71,8 +74,7 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
   shared_image_manager_ = std::make_unique<SharedImageManager>();
 
   bool use_passthrough_cmd_decoder =
-      gpu_preferences_.use_passthrough_cmd_decoder &&
-      gles2::PassthroughCommandDecoderSupported();
+      gpu_preferences_.use_passthrough_cmd_decoder;
 
   share_group_ = new gl::GLShareGroup();
   surface_ =

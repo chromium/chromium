@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
@@ -16,13 +17,13 @@
 // TODO (spqchan): Refine tests. See crbug.com/770873.
 class LocationIconViewBrowserTest : public InProcessBrowserTest {
  public:
-  LocationIconViewBrowserTest() {}
+  LocationIconViewBrowserTest() = default;
 
   LocationIconViewBrowserTest(const LocationIconViewBrowserTest&) = delete;
   LocationIconViewBrowserTest& operator=(const LocationIconViewBrowserTest&) =
       delete;
 
-  ~LocationIconViewBrowserTest() override {}
+  ~LocationIconViewBrowserTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -51,7 +52,8 @@ class LocationIconViewBrowserTest : public InProcessBrowserTest {
 // Check to see if the InkDropMode is off when the omnibox is editing.
 // Otherwise, it should be on.
 IN_PROC_BROWSER_TEST_F(LocationIconViewBrowserTest, InkDropMode) {
-  OmniboxEditModel* model = location_bar()->GetOmniboxView()->model();
+  OmniboxEditModel* model =
+      location_bar()->GetOmniboxController()->edit_model();
   model->SetInputInProgress(true);
   icon_view()->Update(/*suppress_animations=*/true);
 

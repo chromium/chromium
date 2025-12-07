@@ -38,16 +38,23 @@ struct CC_EXPORT FrameInfo {
     //     new update from the main-thread.
     kPresentedPartialOldMain,
     kPresentedPartialNewMain,
+    kPresentedPartialWithoutWaiting,
   };
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_v4 = FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_raster_property =
+      FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_raster_scroll = FrameFinalState::kNoUpdateDesired;
 
   enum class SmoothThread {
     kSmoothNone,
+    kSmoothRaster,
     kSmoothCompositor,
     kSmoothMain,
     kSmoothBoth
   };
   SmoothThread smooth_thread = SmoothThread::kSmoothNone;
+  SmoothThread smooth_thread_raster_property = SmoothThread::kSmoothNone;
 
   enum class MainThreadResponse {
     kIncluded,
@@ -55,11 +62,18 @@ struct CC_EXPORT FrameInfo {
   };
   MainThreadResponse main_thread_response = MainThreadResponse::kIncluded;
 
-  enum class SmoothEffectDrivingThread { kMain, kCompositor, kUnknown };
+  enum class SmoothEffectDrivingThread {
+    kMain = 0,
+    kCompositor = 1,
+    kRaster = 2,
+    kUnknown = 3,
+    kMaxValue = kUnknown,
+  };
   SmoothEffectDrivingThread scroll_thread = SmoothEffectDrivingThread::kUnknown;
 
   bool checkerboarded_needs_raster = false;
   bool checkerboarded_needs_record = false;
+  bool did_raster_inducing_scroll = false;
 
   // The time when the frame was terminated. If the frame had to be 'split'
   // (i.e. compositor-thread update and main-thread updates were presented in
@@ -79,7 +93,10 @@ struct CC_EXPORT FrameInfo {
   // Returns whether any update from the compositor/main thread was dropped, and
   // whether the update was part of a smooth sequence.
   bool WasSmoothCompositorUpdateDropped() const;
+  bool WasSmoothRasterPropertyUpdateDropped() const;
+  bool WasSmoothRasterScrollUpdateDropped() const;
   bool WasSmoothMainUpdateDropped() const;
+  bool WasSmoothMainUpdateDroppedV4() const;
   bool WasSmoothMainUpdateExpected() const;
 
   bool IsScrollPrioritizeFrameDropped() const;
@@ -94,7 +111,10 @@ struct CC_EXPORT FrameInfo {
  private:
   bool was_merged = false;
   bool compositor_update_was_dropped = false;
+  bool raster_property_was_dropped = false;
+  bool raster_scroll_was_dropped = false;
   bool main_update_was_dropped = false;
+  bool main_update_was_dropped_v4 = false;
 
   // A frame that `was_merged` could have differing final states, and differing
   // termination times. We track both so that each thread's jank can be

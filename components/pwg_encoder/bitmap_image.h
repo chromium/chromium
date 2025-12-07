@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,19 +29,18 @@ class BitmapImage {
 
   ~BitmapImage();
 
-  uint8_t channels() const;
+  static constexpr uint8_t channels() { return 4u; }
   const gfx::Size& size() const { return size_; }
   Colorspace colorspace() const { return colorspace_; }
 
-  const uint8_t* pixel_data() const { return data_.get(); }
-  uint8_t* pixel_data() { return data_.get(); }
+  base::span<uint32_t> pixels();
 
-  const uint8_t* GetPixel(const gfx::Point& point) const;
+  base::span<const uint32_t> GetRow(size_t row, bool flip_y) const;
 
  private:
   gfx::Size size_;
   Colorspace colorspace_;
-  std::unique_ptr<uint8_t[]> data_;
+  base::HeapArray<uint32_t> data_;
 };
 
 }  // namespace pwg_encoder

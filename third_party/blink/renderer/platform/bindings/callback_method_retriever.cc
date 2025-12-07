@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -24,12 +25,11 @@ v8::Local<v8::Object> CallbackMethodRetriever::GetPrototypeObject(
   // https://html.spec.whatwg.org/C/custom-elements.html#element-definition
   // step 10.1. Let prototype be Get(constructor, "prototype"). Rethrow any
   //   exceptions.
-  v8::TryCatch try_catch(isolate_);
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
   v8::Local<v8::Value> prototype;
   if (!constructor_->CallbackObject()
            ->Get(current_context_, V8AtomicString(isolate_, "prototype"))
            .ToLocal(&prototype)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return v8::Local<v8::Object>();
   }
   // step 10.2. If Type(prototype) is not Object, then throw a TypeError
@@ -48,16 +48,15 @@ v8::Local<v8::Value> CallbackMethodRetriever::GetFunctionOrUndefined(
     ExceptionState& exception_state) {
   DCHECK(prototype_object_->IsObject());
 
-  v8::TryCatch try_catch(isolate_);
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
   v8::Local<v8::Value> value;
   if (!object->Get(current_context_, V8AtomicString(isolate_, property))
            .ToLocal(&value)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return v8::Local<v8::Function>();
   }
   if (!value->IsUndefined() && !value->IsFunction()) {
     exception_state.ThrowTypeError(
-        String::Format("\"%s\" is not a function", property.Characters8()));
+        StrCat({"\"", property, "\" is not a function"}));
     return v8::Local<v8::Function>();
   }
   return value;
@@ -72,8 +71,8 @@ v8::Local<v8::Function> CallbackMethodRetriever::GetFunctionOrThrow(
   if (exception_state.HadException())
     return v8::Local<v8::Function>();
   if (value->IsUndefined()) {
-    exception_state.ThrowTypeError(String::Format(
-        "Property \"%s\" doesn't exist", property.Characters8()));
+    exception_state.ThrowTypeError(
+        StrCat({"Property \"", property, "\" doesn't exist"}));
     return v8::Local<v8::Function>();
   }
   return value.As<v8::Function>();

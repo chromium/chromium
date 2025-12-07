@@ -11,17 +11,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "device/vr/android/arcore/address_to_id_map.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace device {
 
 class ArCoreImpl;
 class ArCoreAnchorManager;
-
-using PlaneId = base::IdTypeU64<class PlaneTag>;
+class Pose;
 
 std::pair<gfx::Quaternion, gfx::Point3F> GetPositionAndOrientationFromArPose(
     const ArSession* session,
@@ -29,9 +29,9 @@ std::pair<gfx::Quaternion, gfx::Point3F> GetPositionAndOrientationFromArPose(
 
 device::Pose GetPoseFromArPose(const ArSession* session, const ArPose* pose);
 
-device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromMojomPose(
+device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromDevicePose(
     const ArSession* session,
-    const device::mojom::Pose& pose);
+    const device::Pose& pose);
 
 class ArCorePlaneManager {
  public:
@@ -51,7 +51,7 @@ class ArCorePlaneManager {
   bool PlaneExists(PlaneId id) const;
 
   // Returns std::nullopt if plane with the given address does not exist.
-  std::optional<PlaneId> GetPlaneId(void* plane_address) const;
+  std::optional<PlaneId> GetPlaneId(ArPlane* plane_address) const;
 
   // Returns std::nullopt if plane with the given id does not exist.
   std::optional<gfx::Transform> GetMojoFromPlane(PlaneId id) const;
@@ -62,7 +62,7 @@ class ArCorePlaneManager {
   device::internal::ScopedArCoreObject<ArAnchor*> CreateAnchor(
       base::PassKey<ArCoreAnchorManager> pass_key,
       PlaneId id,
-      const device::mojom::Pose& pose) const;
+      const Pose& pose) const;
 
  private:
   struct PlaneInfo {
@@ -74,6 +74,8 @@ class ArCorePlaneManager {
     PlaneInfo(PlaneInfo&& other);
     ~PlaneInfo();
   };
+
+  PlaneId GetOrCreatePlaneId(ArPlane* plane_address, bool* created);
 
   // Executes |fn| for each still tracked, non-subsumed plane present in
   // |arcore_planes|. |fn| will receive 3 parameters - a
@@ -95,12 +97,14 @@ class ArCorePlaneManager {
   // each call to the ARCore SDK.
   internal::ScopedArCoreObject<ArPose*> ar_pose_;
 
+  PlaneId::Generator plane_id_generator_;
+
   // Mapping from plane address to plane ID. It should be modified only during
   // calls to |Update()|.
-  AddressToIdMap<PlaneId> plane_address_to_id_;
+  absl::flat_hash_map<ArPlane*, PlaneId> plane_address_to_id_;
   // Mapping from plane ID to ARCore plane information. It should be modified
   // only during calls to |Update()|.
-  std::map<PlaneId, PlaneInfo> plane_id_to_plane_info_;
+  absl::flat_hash_map<PlaneId, PlaneInfo> plane_id_to_plane_info_;
   // Set containing IDs of planes updated in the last frame. It should be
   // modified only during calls to |Update()|.
   std::set<PlaneId> updated_plane_ids_;

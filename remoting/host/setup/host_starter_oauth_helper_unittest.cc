@@ -40,7 +40,8 @@ class HostStarterOAuthHelperTest : public testing::Test {
 
   void OnTokensRetrieved(const std::string& user_email,
                          const std::string& access_token,
-                         const std::string& refresh_token);
+                         const std::string& refresh_token,
+                         const std::string& scopes);
   void HandleOAuthError(const std::string& error_message,
                         HostStarter::Result error_result);
 
@@ -57,13 +58,15 @@ class HostStarterOAuthHelperTest : public testing::Test {
   std::string& access_token() { return access_token_; }
   std::string& refresh_token() { return refresh_token_; }
   std::string& user_email() { return user_email_; }
+  std::string& scopes() { return scopes_; }
   std::string& error_message() { return error_message_; }
   std::optional<HostStarter::Result>& error_result() { return error_result_; }
 
  private:
-  std::string user_email_;
   std::string access_token_;
   std::string refresh_token_;
+  std::string user_email_;
+  std::string scopes_;
   std::string error_message_;
   std::optional<HostStarter::Result> error_result_;
 
@@ -86,6 +89,7 @@ void HostStarterOAuthHelperTest::SetUp() {
   access_token_.clear();
   refresh_token_.clear();
   user_email_.clear();
+  scopes_.clear();
   error_message_.clear();
   error_result_.reset();
 
@@ -98,10 +102,12 @@ void HostStarterOAuthHelperTest::SetUp() {
 void HostStarterOAuthHelperTest::OnTokensRetrieved(
     const std::string& user_email,
     const std::string& access_token,
-    const std::string& refresh_token) {
-  user_email_ = user_email;
+    const std::string& refresh_token,
+    const std::string& scopes) {
   access_token_ = access_token;
   refresh_token_ = refresh_token;
+  user_email_ = user_email;
+  scopes_ = scopes;
   quit_closure_.Run();
 }
 

@@ -27,15 +27,16 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -66,7 +67,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/ui_test_utils.h"
 #else
 #include "chrome/browser/android/tab_android.h"
@@ -134,8 +137,9 @@ class ChromeBrowsingDataLifetimeManagerTest
     // triggered even if the same pref value is set twice in a row.
     GetProfile()->GetPrefs()->ClearPref(
         browsing_data::prefs::kBrowsingDataLifetime);
-    GetProfile()->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
-                                  *base::JSONReader::Read(pref));
+    GetProfile()->GetPrefs()->Set(
+        browsing_data::prefs::kBrowsingDataLifetime,
+        *base::JSONReader::Read(pref, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
     completion_observer.BlockUntilCompletion();
   }
@@ -328,6 +332,54 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
+                       KeepsDownloadsData) {
+  static constexpr char kPref[] =
+      R"([{"time_to_live_in_hours": 1, "data_types":
+      ["cookies_and_other_site_data"]}])";
+
+  // Download data and set some site data
+  GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  DownloadAnItem();
+  SetupSiteData(GetActiveWebContents());
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/true);
+
+  // Navigate away.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+
+  download::SimpleDownloadManager::DownloadVector downloads;
+  if (auto* download_manager = GetProfile()->GetDownloadManager()) {
+    download_manager->GetAllDownloads(&downloads);
+  }
+  ASSERT_EQ(downloads.size(), 1u);
+
+  // Set the download as in progress coming and the tab url to the page we
+  // started the download from.
+  downloads[0]->SetStateForTesting(
+      download::DownloadItem::DownloadState::IN_PROGRESS);
+  downloads[0]->SetDownloadUrlForTesting(url);
+
+  // Data should not be deleted while the download is in progress.
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/true);
+
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+
+  // Data should now be deleted since the download is in complete.
+  downloads[0]->SetStateForTesting(
+      download::DownloadItem::DownloadState::COMPLETE);
+
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/false);
+}
+#endif  //  !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        KeepsOtherTabData) {
   if (IsIncognito())
@@ -433,12 +485,17 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       browser(), url, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   content::WebContents* new_tab = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser())
-      new_tab = b->tab_strip_model()->GetActiveWebContents();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &new_tab](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface != browser()) {
+          new_tab = browser_window_interface->GetTabStripModel()
+                        ->GetActiveWebContents();
+          return false;
+        }
+        return true;
+      });
 
   ASSERT_TRUE(new_tab);
   ASSERT_NE(new_tab, GetActiveWebContents());
@@ -480,8 +537,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 
   autofill::AutofillProfile profile(
       "01234567-89ab-cdef-fedc-ba9876543210",
-      autofill::AutofillProfile::Source::kLocalOrSyncable,
-      AddressCountryCode("US"));
+      autofill::AutofillProfile::RecordType::kLocalOrSyncable,
+      autofill::AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
@@ -566,7 +623,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
   static constexpr char kPref[] = R"([])";
   GetProfile()->GetPrefs()->Set(
       browsing_data::prefs::kClearBrowsingDataOnExitList,
-      *base::JSONReader::Read(kPref));
+      *base::JSONReader::Read(kPref, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -602,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
       "hosted_app_data"])";
   GetProfile()->GetPrefs()->Set(
       browsing_data::prefs::kClearBrowsingDataOnExitList,
-      *base::JSONReader::Read(kPref));
+      *base::JSONReader::Read(kPref, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   base::RunLoop().RunUntilIdle();
 }
 

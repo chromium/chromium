@@ -22,12 +22,19 @@
 @class JavaScriptExecutionResult;
 @protocol GREYAction;
 @protocol GREYMatcher;
+enum class TipsNotificationType;
 
 namespace chrome_test_util {
 
 // Returns current keyWindow, from the list of all of the remote application
 // windows. Use only for single window tests.
 UIWindow* GetAnyKeyWindow();
+
+// Assert the error is nil. Use the error description as error message.
+void GREYAssertErrorNil(NSError* error);
+
+// Assert the error is nil. Postpone the error description to the error message.
+void GREYAssertErrorNil(NSError* error, NSString* description);
 
 }  // namespace chrome_test_util
 
@@ -93,6 +100,27 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
 - (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
+
+// Returns whether the Ask Gemini Chip feature is enabled.
+- (BOOL)isAskGeminiChipEnabled;
+
+// Returns whether the ComposeboxIOS feature is enabled.
+- (BOOL)isComposeboxIOSEnabled;
+
+// Returns the interface orientation of the scene.
+- (UIInterfaceOrientation)interfaceOrientation;
+
+#pragma mark - Profile Utilities (EG2)
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
+// profile, more precisely the profile associated with the foreground active
+// scene.
+- (NSString*)currentProfileName;
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
+// profile (as opposed to managed profiles), as per
+// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
+- (NSString*)personalProfileName;
 
 #pragma mark - History Utilities (EG2)
 
@@ -267,6 +295,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Adds typed URL into HistoryService.
 - (void)addHistoryServiceTypedURL:(const GURL&)URL;
 
+// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
+- (void)addHistoryServiceTypedURL:(const GURL&)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
+
+// Sets the page `title` for `URL` in the History Service.
+- (void)setHistoryServiceTitle:(const std::string_view&)title
+                       forPage:(const GURL&)URL;
+
 // Deletes typed URL from HistoryService.
 - (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
 
@@ -336,9 +372,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Simulates opening `url` from another application.
 - (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url;
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
-
-// Simulates opening the add account sign-in flow from the web.
-- (void)simulateAddAccountFromWeb;
 
 // Closes the current tab and waits for the UI to complete.
 - (void)closeCurrentTab;
@@ -526,6 +559,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
+// Opens the settings menu directly (not via the UI) in the window with the
+// given number. EarlGrey + Multiwindow + SwiftUI (the tools menu) do not
+// play well together, so EG often fails to interact with the tools menu in
+// secondary windows.
+- (void)openSettingsInWindowWithNumber:(int)windowNumber;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts & browsing data, and wait for
@@ -534,18 +573,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)signOutAndClearIdentities;
 
 #pragma mark - Sync Utilities (EG2)
-
-// Waits for sync engine to be initialized or not. It doesn't necessarily mean
-// that data types are configured and ready to use. See
-// SyncService::IsEngineInitialized() for details. If not succeeded a GREYAssert
-// is induced.
-- (void)waitForSyncEngineInitialized:(BOOL)isInitialized
-                         syncTimeout:(base::TimeDelta)timeout;
-
-// Waits for the sync feature to be enabled/disabled. See SyncService::
-// IsSyncFeatureEnabled() for details. If not succeeded a GREYAssert is induced.
-- (void)waitForSyncFeatureEnabled:(BOOL)isEnabled
-                      syncTimeout:(base::TimeDelta)timeout;
 
 // Waits for sync to become fully active; see
 // SyncService::TransportState::ACTIVE for details. If not succeeded a
@@ -632,6 +659,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the current web state's last committed URL.
 - (GURL)webStateLastCommittedURL;
 
+// Waits for the current web state's visible URL to be `URL`.
+- (void)waitForWebStateVisibleURL:(const GURL&)URL;
+
 // Purges cached web view pages, so the next time back navigation will not use
 // a cached page. Browsers don't have to use a fresh version for back/forward
 // navigation for HTTP pages and may serve a version from the cache even if the
@@ -685,6 +715,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // not be used.
 // Fails if the execution causes an error.
 - (void)evaluateJavaScriptForSideEffect:(NSString*)javaScript;
+
+// Same as -evaluateJavaScriptForSideEffect but executes the javascript in the
+// isolated world instead of the page content world. This allows interacting
+// with the gcrweb objects that are injected there.
+- (void)evaluateJavaScriptInIsolatedWorldForSideEffect:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
 - (NSString*)mobileUserAgentString;
@@ -741,23 +776,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
 
-// Returns whether the Web Channels feature is enabled.
-- (BOOL)isWebChannelsEnabled;
-
-// Returns whether the Tab Group Sync feature is enabled.
-- (BOOL)isTabGroupSyncEnabled;
-
 // Returns whether the unfocused omnibox is at the bottom.
 - (BOOL)isUnfocusedOmniboxAtBottom;
 
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the
-// original browser state.
+// original profile.
 - (ContentSetting)popupPrefValue;
 
 // Sets the popup content setting preference to the given value for the original
-// browser state.
+// profile.
 - (void)setPopupPrefValue:(ContentSetting)value;
 
 // Resets the desktop content setting to its default value.
@@ -808,48 +837,52 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (bool)localStateBooleanPref:(const std::string&)prefName;
 - (int)localStateIntegerPref:(const std::string&)prefName;
 - (std::string)localStateStringPref:(const std::string&)prefName;
+- (base::Time)localStateTimePref:(const std::string&)prefName;
 
 // Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
-// contains the preferences that are shared between all browser states.
+// contains the preferences that are shared between all profiles.
 - (void)setIntegerValue:(int)value
       forLocalStatePref:(const std::string&)prefName;
 
 // Sets the time value for the local state pref with `prefName`. `value` Local
-// State contains the preferences that are shared between all browser states.
+// State contains the preferences that are shared between all profiles.
 - (void)setTimeValue:(base::Time)value
     forLocalStatePref:(const std::string&)prefName;
 
-// Sets the time value for the user pref in the original browser state.
+// Sets the time value for the user pref in the original profile.
 - (void)setTimeValue:(base::Time)value
          forUserPref:(const std::string&)UTF8PrefName;
 
 // Sets the string value for the local state pref with `prefName`. `value` Local
-// State contains the preferences that are shared between all browser states.
+// State contains the preferences that are shared between all profiles.
 - (void)setStringValue:(const std::string&)value
      forLocalStatePref:(const std::string&)prefName;
 
 // Sets the bool value for the local state pref with `prefName`. Local
-// State contains the preferences that are shared between all browser states.
+// State contains the preferences that are shared between all profiles.
 - (void)setBoolValue:(BOOL)value forLocalStatePref:(const std::string&)prefName;
 
-// Gets the value of a user pref in the original browser state.
+// Gets the value of a user pref in the original profile.
 - (bool)userBooleanPref:(const std::string&)prefName;
 - (int)userIntegerPref:(const std::string&)prefName;
+- (double)userDoublePref:(const std::string&)prefName;
 - (std::string)userStringPref:(const std::string&)prefName;
 
-// Sets the value of a user pref in the original browser state.
+// Sets the value of a user pref in the original profile.
 - (void)setStringValue:(NSString*)value
            forUserPref:(const std::string&)UTF8PrefName;
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
+- (void)setDoubleValue:(double)value
+           forUserPref:(const std::string&)UTF8PrefName;
 
 // Returns true if the LocaState Preference is currently using its default
 // value, and has not been set by any higher-priority source (even with the same
 // value).
 - (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
 
-// Clears the user pref of `prefName` in the original browser state.
+// Clears the user pref of `prefName` in the original profile.
 - (void)clearUserPrefWithName:(const std::string&)prefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
@@ -876,6 +909,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Copies `text` into the clipboard from the app's perspective.
 - (void)copyTextToPasteboard:(NSString*)text;
+
+// Copies `link` as NSURL into the clipboard from the app's perspective.
+- (void)copyLinkAsURLToPasteBoard:(NSString*)link;
+
+// Copies `image` as NSData with PNG representation into the clipboard from the
+// app's perspective.
+- (void)copyImageToPasteboard:(UIImage*)image;
 
 #pragma mark - Context Menus Utilities (EG2)
 
@@ -965,6 +1005,29 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Whether the first run sentinel exists.
 - (bool)hasFirstRunSentinel;
+
+#pragma mark - Notification Utilities
+
+- (void)requestTipsNotification:(TipsNotificationType)type;
+
+#pragma mark - Variations Utilities
+
+// Forces an override of the variations stored permanent country.
+- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
+
+#pragma mark - Shared Tab Groups Utilities
+
+// Waits for the MessagingBackendService to be initialized.
+- (NSError*)waitForMessagingBackendServiceInitialized;
+
+#pragma mark - Reader mode Utilities
+
+// Shows Reader mode in the current tab and wait for the Reader mode WebState to
+// be ready.
+- (BOOL)showReaderModeAndWaitUntilReaderModeWebStateIsReady;
+
+// Hides Reader mode in the current tab.
+- (void)hideReaderMode;
 
 @end
 

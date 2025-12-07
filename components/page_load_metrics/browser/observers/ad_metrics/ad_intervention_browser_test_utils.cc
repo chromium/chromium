@@ -48,7 +48,7 @@ const char kHttpOkResponseHeader[] =
     "Content-Type: text/html; charset=utf-8\r\n"
     "\r\n";
 
-const int kMaxHeavyAdNetworkSize =
+const base::ByteCount kMaxHeavyAdNetworkSize =
     heavy_ad_thresholds::kMaxNetworkBytes +
     AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
         kMaxNetworkThresholdNoiseBytes;
@@ -58,17 +58,26 @@ int GetDocumentHeight(content::WebContents* web_contents) {
   return EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
 }
 
+void AddTextAndWaitForFirstContentfulPaint(content::WebContents* web_contents,
+                                           PageLoadMetricsTestWaiter* waiter) {
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+
+  ASSERT_TRUE(ExecJs(web_contents, R"(
+          const p = document.createElement('p');
+          p.textContent = 'Trigger First Contentful Paint';
+          p.style.position = 'fixed';
+          document.body.appendChild(p);
+        )"));
+
+  waiter->Wait();
+}
+
 void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
                                   PageLoadMetricsTestWaiter* waiter,
                                   const GURL& url,
                                   const gfx::Rect& rect) {
-  // The intersections returned by the renderer are scaled to the device's
-  // scale factor.
-  gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
-
-  // The renderer propagates values scaled by the device scale factor.
-  // Wait on these values.
-  waiter->AddMainFrameIntersectionExpectation(scaled_rect);
+  waiter->SetMainFrameAdRectsExpectation();
 
   EXPECT_TRUE(ExecJs(
       web_contents,
@@ -78,6 +87,11 @@ void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
                          url.spec())));
 
   waiter->Wait();
+
+  // The intersections returned by the renderer are scaled to the device's
+  // scale factor.
+  gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
+  waiter->AddMainFrameIntersectionExpectation(scaled_rect);
 }
 
 // Navigate to |url| in |web_contents| and wait until we see the first
@@ -109,11 +123,11 @@ void TriggerAndDetectLargeStickyAd(content::WebContents* web_contents) {
   // down.
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(web_contents, "", "window.scrollTo(0, 5000)")
-          .error.empty());
+          .is_ok());
 
   // Force a layout update to capture the final state. At this point the
   // detector should have detected the large-sticky-ad.
-  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").is_ok());
 }
 
 void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
@@ -125,7 +139,7 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
                   "0.25, window.innerHeight * 0.25, window.innerWidth * 0.5, "
                   "window.innerHeight * 0.5)",
                   content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                  .error.empty());
+                  .is_ok());
 
   // Force a layout update to capture the overlay-popup-ad. Then dismiss the
   // ad.
@@ -134,20 +148,20 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
                                  "document.getElementsByTagName('iframe')[0]."
                                  "style.display = 'none';",
                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .error.empty());
+          .is_ok());
 
   // Force a layout update to capture the state after the dismissal. At this
   // point the detector should have detected the overlay-popup-ad.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
                   web_contents, "", "", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                  .error.empty());
+                  .is_ok());
 }
 
 void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
-                       int bytes) {
+                       base::ByteCount bytes) {
   response->WaitForRequest();
   response->Send(kHttpOkResponseHeader);
-  response->Send(std::string(bytes, ' '));
+  response->Send(std::string(bytes.InBytes(), ' '));
   response->Done();
 }
 

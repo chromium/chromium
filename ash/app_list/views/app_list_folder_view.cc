@@ -38,7 +38,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -47,7 +46,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -55,6 +53,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -384,7 +383,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   void OnTopIconAnimationsComplete(TopIconAnimationView* view) override {
     // Clean up the transitional view for which the animation completes.
     view->RemoveObserver(this);
-    auto to_delete = base::ranges::find(top_icon_views_, view);
+    auto to_delete = std::ranges::find(top_icon_views_, view);
     DCHECK(to_delete != top_icon_views_.end());
     top_icon_views_.erase(to_delete);
 
@@ -662,28 +661,38 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   // such changes.
   background_view_ = AddChildView(std::make_unique<views::View>());
   background_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  background_view_->layer()->SetFillsBoundsOpaquely(false);
-  background_view_->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  background_view_->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    background_view_->layer()->SetFillsBoundsOpaquely(false);
+    background_view_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    background_view_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+  }
+
   background_view_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kFolderBackgroundRadius));
   background_view_->layer()->SetIsFastRoundedCorner(true);
   background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kFolderBackgroundRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  background_view_->SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  background_view_->SetBackground(
+      views::CreateSolidBackground(background_color_id));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());
   animating_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  animating_background_->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  animating_background_->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
-  animating_background_->layer()->SetFillsBoundsOpaquely(false);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    animating_background_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    animating_background_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+  }
+
   animating_background_->SetVisible(false);
 
   contents_container_ = AddChildView(std::make_unique<views::View>());
@@ -809,7 +818,7 @@ void AppListFolderView::ConfigureForFolderItemView(
 void AppListFolderView::ScheduleShowHideAnimation(bool show,
                                                   bool hide_for_reparent) {
   show_hide_metrics_tracker_ =
-      GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+      GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker();
   show_hide_metrics_tracker_->Start(
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(
@@ -821,8 +830,6 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   shown_ = show;
   UpdateExpandedCollapsedAccessibleState();
   if (show) {
-    // TODO(crbug.com/325137417): Investigate whether this line is necessary. It
-    // probably isn't.
     GetViewAccessibility().SetName(
         folder_item_view_->GetViewAccessibility().GetCachedName(),
         ax::mojom::NameFrom::kAttribute);
@@ -1150,17 +1157,6 @@ void AppListFolderView::ReparentItem(
     AppsGridView::Pointer pointer,
     AppListItemView* original_drag_view,
     const gfx::Point& drag_point_in_folder_grid) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    // Convert the drag point relative to the root level AppsGridView.
-    gfx::Point to_root_level_grid = drag_point_in_folder_grid;
-    ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
-                         &to_root_level_grid);
-    root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
-        pointer, original_drag_view, to_root_level_grid,
-        base::BindOnce(&AppListFolderView::CancelReparentDragFromRootGrid,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   // Ensures the icon updates to reflect that the icon has been removed during
   // the drag
   folder_item_view_->UpdateDraggedItem(original_drag_view->item());
@@ -1168,51 +1164,21 @@ void AppListFolderView::ReparentItem(
   folder_controller_->ReparentFolderItemTransit(folder_item_);
 }
 
-void AppListFolderView::DispatchDragEventForReparent(
-    AppsGridView::Pointer pointer,
-    const gfx::Point& drag_point_in_folder_grid) {
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
-
-  gfx::Point drag_point_in_root_grid = drag_point_in_folder_grid;
-  // Temporarily reset the transform of the contents container so that the point
-  // can be correctly converted to the root grid's coordinates.
-  gfx::Transform original_transform = contents_container_->GetTransform();
-  contents_container_->SetTransform(gfx::Transform());
-  ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
-                       &drag_point_in_root_grid);
-  contents_container_->SetTransform(original_transform);
-
-  root_apps_grid_view_->UpdateDragFromReparentItem(pointer,
-                                                   drag_point_in_root_grid);
-}
-
 void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
-    bool cancel_drag,
-    std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
+    bool cancel_drag) {
   if (folder_item_) {
     folder_item_view_->UpdateDraggedItem(nullptr);
     folder_item_->NotifyOfDraggedItem(nullptr);
   }
   folder_controller_->ReparentDragEnded();
 
-  // Cache `folder_item_view_`, as it will get reset in `HideViewImmediately()`.
-  AppListItemView* const folder_item_view = folder_item_view_;
-
   // The view was not hidden in order to keeping receiving mouse events. Hide it
   // now as the reparenting ended.
   HideViewImmediately();
-
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
-        folder_item_view, events_forwarded_to_drag_drop_host, cancel_drag,
-        std::move(drag_icon_proxy));
-  }
 }
 
 void AppListFolderView::Close() {
-  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
-
   CloseFolderPage();
 }
 

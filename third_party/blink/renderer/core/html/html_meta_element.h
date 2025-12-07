@@ -63,7 +63,7 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
 
   // Encoding computed from processing the http-equiv, charset and content
   // attributes.
-  WTF::TextEncoding ComputeEncoding() const;
+  TextEncoding ComputeEncoding() const;
 
   const AtomicString& Content() const;
   const AtomicString& HttpEquiv() const;

@@ -34,6 +34,7 @@
 
 namespace blink {
 
+class CSSUrlData;
 class Document;
 
 // This class represents an <image> that loads a single image resource (the
@@ -44,10 +45,9 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
  public:
   StyleFetchedImage(ImageResourceContent* image,
+                    const CSSUrlData& url_data,
                     const Document& document,
                     bool is_lazyload_possibly_deferred,
-                    bool origin_clean,
-                    bool is_ad_related,
                     const KURL& url,
                     const float override_image_resolution = 0.0f);
   ~StyleFetchedImage() override;
@@ -67,7 +67,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
@@ -78,7 +78,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   void RemoveClient(ImageResourceObserver*) override;
   String DebugName() const override { return "StyleFetchedImage"; }
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
@@ -91,10 +91,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   void Trace(Visitor*) const override;
 
-  bool IsOriginClean() const { return origin_clean_; }
-
-  bool IsLoadedAfterMouseover() const { return is_loaded_after_mouseover_; }
-
  private:
   bool IsEqual(const StyleImage&) const override;
   void Prefinalize();
@@ -106,8 +102,10 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) override;
+  bool CanBeSpeculativelyDecoded() const override;
 
   Member<ImageResourceContent> image_;
+  Member<const CSSUrlData> url_data_;
   Member<const Document> document_;
 
   const KURL url_;
@@ -115,17 +113,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   // This overrides an images natural resolution.
   // A value of zero indicates no override.
   const float override_image_resolution_;
-
-  const bool origin_clean_;
-
-  // Whether this was created by an ad-related CSSParserContext.
-  const bool is_ad_related_;
-
-  // This indicates that the style image was loaded after a recent mouseover
-  // event. This is used for LCP heuristics to ignore zoom widgets as LCP
-  // candidates. StyleFetchedImage is the best place to save this state, as it
-  // relates to the reason the image was fetched.
-  bool is_loaded_after_mouseover_ = false;
 };
 
 template <>

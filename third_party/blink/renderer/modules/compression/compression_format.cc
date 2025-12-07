@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -19,8 +20,8 @@ CompressionFormat LookupCompressionFormat(const AtomicString& format,
     return CompressionFormat::kDeflateRaw;
   }
 
-  exception_state.ThrowTypeError("Unsupported compression format: '" + format +
-                                 "'");
+  exception_state.ThrowTypeError(
+      StrCat({"Unsupported compression format: '", format, "'"}));
   return CompressionFormat::kGzip;
 }
 

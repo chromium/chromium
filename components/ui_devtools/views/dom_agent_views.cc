@@ -24,8 +24,8 @@ using ui_devtools::protocol::DOM::Node;
 
 }  // namespace
 
-DOMAgentViews::DOMAgentViews() {}
-DOMAgentViews::~DOMAgentViews() {}
+DOMAgentViews::DOMAgentViews() = default;
+DOMAgentViews::~DOMAgentViews() = default;
 
 std::unique_ptr<Node> DOMAgentViews::BuildTreeForUIElement(
     UIElement* ui_element) {

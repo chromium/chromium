@@ -16,6 +16,7 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
@@ -197,50 +198,6 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
     display_state.selected_mode = GetUserSelectedMode(*snapshot);
     cached_displays.push_back(display_state);
   }
-
-  // Hardware mirroring is now disabled by default until it is decided whether
-  // to permanently remove hardware mirroring support. See crbug.com/1161556 for
-  // details.
-  if (!features::IsHardwareMirrorModeEnabled())
-    return cached_displays;
-
-  // Hardware mirroring doesn't work on desktop-linux Chrome OS's fake displays.
-  // Skip mirror mode setup in that case to fall back on software mirroring.
-  if (!configure_displays_) {
-    return cached_displays;
-  }
-
-  if (cached_displays.size() <= 1)
-    return cached_displays;
-
-  std::vector<DisplayState*> displays;
-  int num_internal_displays = 0;
-  for (auto& display : cached_displays) {
-    if (display.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
-      ++num_internal_displays;
-    displays.emplace_back(&display);
-  }
-  CHECK_LT(num_internal_displays, 2);
-  LOG_IF(WARNING, num_internal_displays >= 2)
-      << "At least two internal displays detected.";
-
-  // Hardware mirroring doesn't work among displays on different devices. In
-  // this case we revert to software mirroring.
-  if (!AllDisplaysOnSameDevice(displays))
-    return cached_displays;
-
-  // Hardware mirroring doesn't work for displays that do not have display
-  // mode. In this case we revert to software mirroring.
-  if (!AllDisplaysHaveDisplayMode(displays))
-    return cached_displays;
-
-  bool can_mirror = false;
-  for (int attempt = 0; !can_mirror && attempt < 2; ++attempt) {
-    // Try preserving external display's aspect ratio on the first attempt.
-    // If that fails, fall back to the highest matching resolution.
-    bool preserve_aspect = attempt == 0;
-    can_mirror = FindExactMatchingMirrorMode(displays, preserve_aspect);
-  }
   return cached_displays;
 }
 
@@ -273,10 +230,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
   switch (new_display_state) {
     case MULTIPLE_DISPLAY_STATE_INVALID:
-      NOTREACHED_IN_MIGRATION()
-          << "Ignoring request to enter invalid state with " << displays.size()
-          << " connected display(s)";
-      return false;
+      NOTREACHED() << "Ignoring request to enter invalid state with "
+                   << displays.size() << " connected display(s)";
     case MULTIPLE_DISPLAY_STATE_HEADLESS:
       if (displays.size() != 0) {
         LOG(WARNING) << "Ignoring request to enter headless mode with "
@@ -413,17 +368,10 @@ DisplayConfigurator::DisplayLayoutManagerImpl::GetUserSelectedMode(
     ManagedDisplayMode mode;
     const bool mode_found = state_controller->GetSelectedModeForDisplayId(
         display.display_id(), &mode);
-    if (display::features::IsListAllDisplayModesEnabled()) {
-      // When selecting any arbitrary display mode is enabled, we don't try to
-      // be smart about finding the best mode matching the user-selected display
-      // size, rather we find an exact match to the selected display mode.
-      selected_mode =
-          mode_found ? FindExactMatchingMode(display, mode) : nullptr;
-    } else {
-      selected_mode = mode_found
-                          ? FindDisplayModeMatchingSize(display, mode.size())
-                          : nullptr;
-    }
+    // When selecting any arbitrary display mode is enabled, we don't try to
+    // be smart about finding the best mode matching the user-selected display
+    // size, rather we find an exact match to the selected display mode.
+    selected_mode = mode_found ? FindExactMatchingMode(display, mode) : nullptr;
   }
 
   // Fall back to native mode.
@@ -657,12 +605,18 @@ void DisplayConfigurator::SetConfigureDisplays(bool configure_displays) {
 }
 
 void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
+  TRACE_EVENT0("ui", "DisplayConfigurator::TakeControl");
   if (display_control_changing_) {
+    LOG(ERROR) << __func__
+               << " failed. There is another RelinquishControl() or "
+                  "TakeControl() call in progress.";
     std::move(callback).Run(false);
     return;
   }
 
   if (!display_externally_controlled_) {
+    LOG(ERROR) << __func__
+               << " failed. Displays are not controlled externally.";
     std::move(callback).Run(true);
     return;
   }
@@ -675,6 +629,8 @@ void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
 
 void DisplayConfigurator::OnDisplayControlTaken(DisplayControlCallback callback,
                                                 bool success) {
+  TRACE_EVENT1("ui", "DisplayConfigurator::OnDisplayControlTaken", "success",
+               success);
   display_control_changing_ = false;
   display_externally_controlled_ = !success;
   if (success) {
@@ -691,30 +647,45 @@ void DisplayConfigurator::OnDisplayControlTaken(DisplayControlCallback callback,
 }
 
 void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
+  TRACE_EVENT0("ui", "DisplayConfigurator::RelinquishControl");
   if (display_control_changing_) {
+    LOG(ERROR) << __func__
+               << " failed. There is another RelinquishControl() or "
+                  "TakeControl() call in progress.";
     std::move(callback).Run(false);
     return;
   }
 
   if (display_externally_controlled_) {
+    LOG(ERROR) << __func__
+               << " failed. Displays are already controlled externally.";
     std::move(callback).Run(true);
     return;
   }
 
   // For simplicity, just fail if in the middle of a display configuration.
   if (configuration_task_) {
+    LOG(ERROR) << __func__
+               << " failed. There is a display configuration in progress.";
     std::move(callback).Run(false);
     return;
   }
 
   display_control_changing_ = true;
 
-  // Turn off the displays before releasing control since we're no longer using
-  // them for output.
-  SetDisplayPowerInternal(
-      chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
-      base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (display::features::IsFastDrmMasterDropEnabled()) {
+    // Fast DRM drop forgoes turning off displays in favor of detaching all the
+    // planes and turning the screen black as part of the relinquish display
+    // process.
+    SendRelinquishDisplayControl(std::move(callback), /*success=*/true);
+  } else {
+    // Turn off the displays before releasing control since we're no longer
+    // using them for output.
+    SetDisplayPowerInternal(
+        chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
+        base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 void DisplayConfigurator::GetSeamlessRefreshRates(
@@ -727,6 +698,8 @@ void DisplayConfigurator::GetSeamlessRefreshRates(
 void DisplayConfigurator::SendRelinquishDisplayControl(
     DisplayControlCallback callback,
     bool success) {
+  TRACE_EVENT1("ui", "DisplayConfigurator::SendRelinquishDisplayControl",
+               "success", success);
   if (success) {
     // Set the flag early such that an incoming configuration event won't start
     // while we're releasing control of the displays.
@@ -735,6 +708,9 @@ void DisplayConfigurator::SendRelinquishDisplayControl(
         base::BindOnce(&DisplayConfigurator::OnDisplayControlRelinquished,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else {
+    LOG(ERROR) << __func__
+               << "failed. Failed to turn off all displays before "
+                  "relinquishing control.";
     display_control_changing_ = false;
     std::move(callback).Run(false);
   }
@@ -743,9 +719,22 @@ void DisplayConfigurator::SendRelinquishDisplayControl(
 void DisplayConfigurator::OnDisplayControlRelinquished(
     DisplayControlCallback callback,
     bool success) {
+  TRACE_EVENT1("ui", "DisplayConfigurator::OnDisplayControlRelinquished",
+               "success", success);
+
   display_control_changing_ = false;
   display_externally_controlled_ = success;
-  if (!success) {
+  if (success) {
+    if (display::features::IsFastDrmMasterDropEnabled()) {
+      // Emit a fake power-off signal call to Ash so it treats all displays as
+      // disconnected.
+      OnConfigured(/*success=*/true,
+                   /*displays=*/cached_displays_,
+                   /*unassociated_displays=*/{},
+                   /*new_display_state=*/current_display_state_,
+                   /*new_power_state=*/chromeos::DISPLAY_POWER_ALL_OFF);
+    }
+  } else {
     force_configure_ = true;
     RunPendingConfiguration();
   }
@@ -914,9 +903,7 @@ void DisplayConfigurator::OnConfigurationChanged() {
 void DisplayConfigurator::OnDisplaySnapshotsInvalidated() {
   VLOG(1) << "Display snapshots invalidated.";
   cached_displays_.clear();
-  for (Observer& observer : observers_) {
-    observer.OnDisplaySnapshotsInvalidated();
-  }
+  observers_.Notify(&Observer::OnDisplaySnapshotsInvalidated);
 }
 
 void DisplayConfigurator::AddObserver(Observer* observer) {
@@ -1136,18 +1123,16 @@ void DisplayConfigurator::NotifyDisplayStateObservers(
     bool success,
     MultipleDisplayState attempted_state) {
   if (success) {
-    for (Observer& observer : observers_)
-      observer.OnDisplayConfigurationChanged(cached_displays_);
+    observers_.Notify(&Observer::OnDisplayConfigurationChanged,
+                      cached_displays_);
   } else {
-    for (Observer& observer : observers_)
-      observer.OnDisplayConfigurationChangeFailed(cached_displays_,
-                                                  attempted_state);
+    observers_.Notify(&Observer::OnDisplayConfigurationChangeFailed,
+                      cached_displays_, attempted_state);
   }
 }
 
 void DisplayConfigurator::NotifyPowerStateObservers() {
-  for (Observer& observer : observers_)
-    observer.OnPowerStateChanged(current_power_state_);
+  observers_.Notify(&Observer::OnPowerStateChanged, current_power_state_);
 }
 
 bool DisplayConfigurator::IsDisplayOn() const {

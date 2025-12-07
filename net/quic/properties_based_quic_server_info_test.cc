@@ -30,8 +30,9 @@ const char kCertB[] = "cert_b";
 class PropertiesBasedQuicServerInfoTest : public ::testing::Test {
  protected:
   PropertiesBasedQuicServerInfoTest()
-      : server_id_("www.google.com", 443, PRIVACY_MODE_DISABLED),
+      : server_id_("www.google.com", 443),
         server_info_(server_id_,
+                     PRIVACY_MODE_DISABLED,
                      NetworkAnonymizationKey(),
                      &http_server_properties_) {}
 
@@ -69,8 +70,9 @@ TEST_F(PropertiesBasedQuicServerInfoTest, Update) {
   InitializeAndPersist();
 
   // Read the persisted data and verify we have read the data correctly.
-  PropertiesBasedQuicServerInfo server_info1(
-      server_id_, NetworkAnonymizationKey(), &http_server_properties_);
+  PropertiesBasedQuicServerInfo server_info1(server_id_, PRIVACY_MODE_DISABLED,
+                                             NetworkAnonymizationKey(),
+                                             &http_server_properties_);
   EXPECT_TRUE(server_info1.Load());
 
   // Verify the data.
@@ -84,8 +86,9 @@ TEST_F(PropertiesBasedQuicServerInfoTest, Update) {
   server_info1.Persist();
 
   // Read the persisted data and verify we have read the data correctly.
-  PropertiesBasedQuicServerInfo server_info2(
-      server_id_, NetworkAnonymizationKey(), &http_server_properties_);
+  PropertiesBasedQuicServerInfo server_info2(server_id_, PRIVACY_MODE_DISABLED,
+                                             NetworkAnonymizationKey(),
+                                             &http_server_properties_);
   EXPECT_TRUE(server_info2.Load());
 
   // Verify updated data.

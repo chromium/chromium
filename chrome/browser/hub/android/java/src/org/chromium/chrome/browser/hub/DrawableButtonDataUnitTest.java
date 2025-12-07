@@ -60,7 +60,6 @@ public class DrawableButtonDataUnitTest {
         DisplayButtonData buttonData =
                 new DrawableButtonData(
                         R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
-        assertEquals(buttonData, buttonData);
         assertEquals(
                 buttonData,
                 new DrawableButtonData(

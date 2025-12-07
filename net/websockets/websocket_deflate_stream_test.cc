@@ -15,9 +15,12 @@
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/mock_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -63,9 +66,7 @@ std::string ToString(const scoped_refptr<IOBufferWithSize>& buffer) {
 }
 
 std::string ToString(const WebSocketFrame* frame) {
-  return frame->payload
-             ? std::string(frame->payload, frame->header.payload_length)
-             : "";
+  return std::string(base::as_string_view(frame->payload));
 }
 
 std::string ToString(const std::unique_ptr<WebSocketFrame>& frame) {
@@ -238,9 +239,9 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
     auto frame = std::make_unique<WebSocketFrame>(opcode);
     frame->header.final = (flag & kFinal);
     frame->header.reserved1 = (flag & kReserved1);
-    auto buffer = std::make_unique<char[]>(data.size());
-    memcpy(buffer.get(), data.c_str(), data.size());
-    frame->payload = buffer.get();
+    auto buffer =
+        base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(data));
+    frame->payload = buffer.as_span();
     data_buffers.push_back(std::move(buffer));
     frame->header.payload_length = data.size();
     frames->push_back(std::move(frame));
@@ -252,8 +253,7 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
   // Owned by |deflate_stream_|.
   raw_ptr<WebSocketDeflatePredictorMock> predictor_ = nullptr;
 
-  // TODO(yoichio): Make this type std::vector<std::string>.
-  std::vector<std::unique_ptr<const char[]>> data_buffers;
+  std::vector<base::HeapArray<uint8_t>> data_buffers;
 };
 
 // Since WebSocketDeflater with DoNotTakeOverContext is well tested at
@@ -716,7 +716,7 @@ TEST_F(WebSocketDeflateStreamTest, SplitToMultipleFramesInReadFrames) {
   deflater.Initialize(kWindowBits);
   constexpr size_t kSize = kChunkSize * 3;
   const std::string original_data(kSize, 'a');
-  deflater.AddBytes(original_data.data(), original_data.size());
+  deflater.AddBytes(base::as_byte_span(original_data));
   deflater.Finish();
 
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
@@ -758,7 +758,7 @@ TEST_F(WebSocketDeflateStreamTest, InflaterInternalDataCanBeEmpty) {
   WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
   deflater.Initialize(kWindowBits);
   const std::string original_data(kChunkSize, 'a');
-  deflater.AddBytes(original_data.data(), original_data.size());
+  deflater.AddBytes(base::as_byte_span(original_data));
   deflater.Finish();
 
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
@@ -1188,15 +1188,15 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
     for (size_t i = 0; i < kSize; ++i) {
       data += static_cast<char>(lcg.Generate());
     }
-    deflater.AddBytes(data.data(), data.size());
+    deflater.AddBytes(base::as_byte_span(data));
     FrameFlag flag = is_final ? kFinal : kNoFlag;
     AppendTo(&frames, WebSocketFrameHeader::kOpCodeBinary, flag, data);
     predictor_->AddFramesToBeInput(frames);
     ASSERT_THAT(deflate_stream_->WriteFrames(&frames, CompletionOnceCallback()),
                 IsOk());
     for (auto& frame : *stub.frames()) {
-      buffers.emplace_back(frame->payload, frame->header.payload_length);
-      frame->payload = (buffers.end() - 1)->data();
+      buffers.emplace_back(base::as_string_view(frame->payload));
+      frame->payload = base::as_byte_span(buffers.back());
     }
     total_compressed_frames.insert(
         total_compressed_frames.end(),

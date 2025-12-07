@@ -7,7 +7,7 @@
  * controller. When loading it, it will populate data such as localized strings
  * into |loadTimeData| that is imported below.
  */
-import '../../strings.m.js';
+import '/strings.m.js';
 
 import {
   ColorChangeUpdater,
@@ -16,130 +16,219 @@ import {
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
+import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
-import {
-  Model,
-  ModelId,
-  ModelState,
-} from '../../core/on_device_model/types.js';
+import {ModelState} from '../../core/on_device_model/types.js';
+import {PerfLogger} from '../../core/perf.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
-import {Signal, signal} from '../../core/reactive/signal.js';
+import {computed, Signal, signal} from '../../core/reactive/signal.js';
+import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {SodaSession} from '../../core/soda/types.js';
 import {
-  assertExhaustive,
+  assertEnumVariant,
   assertExists,
-  assertNotReached,
+  assertInstanceof,
+  checkEnumVariant,
 } from '../../core/utils/assert.js';
+import {parseTopFrameInfo} from '../../core/utils/errors.js';
+import {lazyInit} from '../../core/utils/utils.js';
 
-import {OnDeviceModel} from './on_device_model.js';
+import {EventsSender} from './metrics.js';
+import {
+  mojoModelStateToModelState,
+  SummaryModelLoader,
+  TitleSuggestionModelLoader,
+} from './on_device_model.js';
 import {MojoSodaSession} from './soda_session.js';
 import {
-  LoadModelResult,
+  LangPackInfo as MojoLangPackInfo,
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
-  ModelStateType,
-  OnDeviceModelRemote,
   PageHandler as MojoPageHandler,
+  QuietModeMonitorReceiver,
   SodaClientReceiver,
   SodaRecognizerRemote,
 } from './types.js';
 
-function mojoModelStateToModelState(state: MojoModelState): ModelState {
-  switch (state.type) {
-    case ModelStateType.kNotInstalled:
-      return {kind: 'notInstalled'};
-    case ModelStateType.kInstalling:
-      return {kind: 'installing', progress: assertExists(state.progress)};
-    case ModelStateType.kInstalled:
-      return {kind: 'installed'};
-    case ModelStateType.kError:
-      return {kind: 'error'};
-    case ModelStateType.kUnavailable:
-      return {kind: 'unavailable'};
-    case ModelStateType.MIN_VALUE:
-    case ModelStateType.MAX_VALUE:
-      return assertNotReached(
-        `Got MIN_VALUE or MAX_VALUE from mojo ModelStateType: ${state.type}`,
-      );
-    default:
-      assertExhaustive(state.type);
-  }
-}
+const CRASH_SERVER_PRODUCT_NAME = 'ChromeOS_RecorderApp';
 
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
-  readonly sodaState = signal<ModelState>({kind: 'unavailable'});
+  private readonly sodaStates = new Map<LanguageCode, Signal<ModelState>>();
 
-  readonly modelStates = new Map<ModelId, Signal<ModelState>>();
+  private readonly langPacks = new Map<LanguageCode, LangPackInfo>();
+
+  private defaultLanguage = LanguageCode.EN_US;
+
+  override summaryModelLoader: SummaryModelLoader;
+
+  override titleSuggestionModelLoader: TitleSuggestionModelLoader;
+
+  readonly quietModeInternal = signal(false);
+
+  override readonly quietMode: Signal<boolean>;
+
+  override canUseSpeakerLabel = signal(false);
+
+  static override getStringF(id: string, ...args: Array<number|string>):
+    string {
+    return loadTimeData.getStringF(id, ...args);
+  }
+
+  static override getDeviceType(): string {
+    return loadTimeData.getStringF('deviceType');
+  }
+
+  override readonly canCaptureSystemAudioWithLoopback = signal(false);
+
+  override readonly eventsSender = new EventsSender();
+
+  override perfLogger = new PerfLogger(this.eventsSender);
 
   constructor() {
     super();
+    this.summaryModelLoader = new SummaryModelLoader(this.remote, this);
+    this.titleSuggestionModelLoader = new TitleSuggestionModelLoader(
+      this.remote,
+      this,
+    );
+    this.quietMode = computed({
+      get: () => {
+        return this.quietModeInternal.value;
+      },
+      set: (quietMode: boolean) => {
+        this.remote.setQuietMode(quietMode);
+        this.quietModeInternal.value = quietMode;
+      },
+    });
+  }
 
-    for (const modelId of Object.values(ModelId)) {
-      this.modelStates.set(modelId, signal({kind: 'unavailable'}));
+  private mojoLangPackInfoToLangPackInfo(
+    langPack: MojoLangPackInfo,
+  ): LangPackInfo|null {
+    const languageCode = checkEnumVariant(LanguageCode, langPack.languageCode);
+    if (languageCode === null) {
+      return null;
     }
+    return {
+      languageCode: languageCode,
+      displayName: langPack.displayName,
+      isGenAiSupported: langPack.isGenAiSupported,
+      isSpeakerLabelSupported: langPack.isSpeakerLabelSupported,
+    };
   }
 
   override async init(): Promise<void> {
     ColorChangeUpdater.forDocument().start();
 
-    const update = (state: MojoModelState) => {
-      this.sodaState.value = mojoModelStateToModelState(state);
-    };
-    const monitor = new ModelStateMonitorReceiver({update});
-    // This should be relatively quick since in recorder_app_ui.cc we just
-    // return the cached state here, but we await here to avoid UI showing
-    // temporary unavailabe state.
-    const {state} = await this.remote.addSodaMonitor(
-      monitor.$.bindNewPipeAndPassRemote(),
-    );
-    update(state);
+    this.canUseSpeakerLabel.value =
+      (await this.remote.canUseSpeakerLabel()).supported;
 
-    for (const modelId of this.modelStates.keys()) {
-      const update = (state: MojoModelState) => {
-        assertExists(this.modelStates.get(modelId)).value =
-          mojoModelStateToModelState(state);
-      };
+    this.canCaptureSystemAudioWithLoopback.value =
+      (await this.remote.canCaptureSystemAudioWithLoopback()).supported;
+
+    const mojoLangPacks = (await this.remote.getAvailableLangPacks()).langPacks;
+    for (const mojoLangPack of mojoLangPacks) {
+      const langPack = this.mojoLangPackInfoToLangPackInfo(mojoLangPack);
+      if (langPack === null) {
+        continue;
+      }
+      this.langPacks.set(langPack.languageCode, langPack);
+    }
+
+    for (const language of this.langPacks.keys()) {
+      const sodaState = signal<ModelState>({kind: 'unavailable'});
+      this.sodaStates.set(language, sodaState);
+      function update(state: MojoModelState) {
+        sodaState.value = mojoModelStateToModelState(state);
+      }
       const monitor = new ModelStateMonitorReceiver({update});
-
       // This should be relatively quick since in recorder_app_ui.cc we just
       // return the cached state here, but we await here to avoid UI showing
-      // temporary unavailabe state.
-      const {state} = await this.remote.addModelMonitor(
-        {value: modelId},
+      // temporary unavailable state.
+      const {state} = await this.remote.addSodaMonitor(
+        language,
         monitor.$.bindNewPipeAndPassRemote(),
       );
       update(state);
     }
-  }
 
-  override async loadModel(modelId: ModelId): Promise<Model> {
-    const newModel = new OnDeviceModelRemote();
-    const {result} = await this.remote.loadModel(
-      {value: modelId},
-      newModel.$.bindNewPipeAndPassReceiver(),
-    );
-    if (result !== LoadModelResult.kSuccess) {
-      // TODO(pihsun): Dedicated error type?
-      throw new Error(`Load model failed: ${result}`);
+    const languageCodeString =
+      (await this.remote.getDefaultLanguage()).languageCode;
+    const languageCode = assertEnumVariant(LanguageCode, languageCodeString);
+    if (this.getSodaState(languageCode).value.kind !== 'unavailable') {
+      this.defaultLanguage = languageCode;
     }
-    return new OnDeviceModel(newModel);
+
+    const quietModeMonitor = new QuietModeMonitorReceiver({
+      update: (inQuietMode: boolean) => {
+        this.quietModeInternal.value = inQuietMode;
+      },
+    });
+    const {inQuietMode} = await this.remote.addQuietModeMonitor(
+      quietModeMonitor.$.bindNewPipeAndPassRemote(),
+    );
+    this.quietModeInternal.value = inQuietMode;
+
+    await this.summaryModelLoader.init();
+    await this.titleSuggestionModelLoader.init();
+
+    this.initPerfEventWatchers();
   }
 
-  override installSoda(): void {
-    // We don't care about the returned promise as long as the request goes
-    // through. The install progress is separately tracked in `sodaState`.
-    void this.remote.installSoda();
+  override getDefaultLanguage(): LanguageCode {
+    return this.defaultLanguage;
   }
 
-  override async newSodaSession(): Promise<SodaSession> {
+  override getLangPackList = lazyInit((): readonly LangPackInfo[] => {
+    return Array.from(this.langPacks.values());
+  });
+
+  override getLangPackInfo(language: LanguageCode): LangPackInfo {
+    return assertExists(this.langPacks.get(language));
+  }
+
+  override isMultipleLanguageAvailable(): boolean {
+    let count = 0;
+    for (const state of this.sodaStates.values()) {
+      if (state.value.kind !== 'unavailable') {
+        count += 1;
+      }
+    }
+    return count > 1;
+  }
+
+  override async installSoda(language: LanguageCode): Promise<void> {
+    // Wait the request goes through to make sure all soda states are updated.
+    // The install progress is separately tracked in `sodaState`.
+    // TODO: b/375306309 - Remove "await" when soda states are always consistent
+    // after the `OnSodaUninstalled` event is implemented.
+    await this.remote.installSoda(language);
+  }
+
+  override isSodaAvailable(): boolean {
+    for (const state of this.sodaStates.values()) {
+      if (state.value.kind !== 'unavailable') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  override getSodaState(language: LanguageCode): Signal<ModelState> {
+    // All language states should be initialized in `init`.
+    return assertExists(this.sodaStates.get(language));
+  }
+
+  override async newSodaSession(language: LanguageCode): Promise<SodaSession> {
     const recognizer = new SodaRecognizerRemote();
     const session = new MojoSodaSession(recognizer);
     const client = new SodaClientReceiver(session);
     const {result} = await this.remote.loadSpeechRecognizer(
+      language,
       client.$.bindNewPipeAndPassRemote(),
       recognizer.$.bindNewPipeAndPassReceiver(),
     );
@@ -157,16 +246,33 @@ export class PlatformHandler extends PlatformHandlerBase {
     return info ?? {isDefault: false, isInternal: false};
   }
 
-  override getStringF(id: string, ...args: Array<number|string>): string {
-    return loadTimeData.getStringF(id, ...args);
-  }
-
   override renderDevUi(): RenderResult {
     return nothing;
   }
 
-  override handleUncaughtError(_error: unknown): RenderResult|null {
-    return null;
+  override handleUncaughtError(errorRaw: unknown): void {
+    const error = assertInstanceof(errorRaw, Error);
+
+    // TODO: b/327538011 - Hook the error handling with the integration tests so
+    // that it can properly fail the test when an error is thrown.
+
+    const stackStr = error.stack ?? '';
+    const {lineNo, colNo} = parseTopFrameInfo(stackStr);
+
+    chrome.crashReportPrivate.reportError(
+      {
+        product: CRASH_SERVER_PRODUCT_NAME,
+        url: self.location.href,
+        message: `${error.name}: ${error.message}`,
+        lineNumber: lineNo,
+        stackTrace: stackStr,
+        columnNumber: colNo,
+      },
+      /* callback= */
+      () => {
+        // Do nothing after error reported.
+      },
+    );
   }
 
   override showAiFeedbackDialog(description: string): void {
@@ -178,8 +284,24 @@ export class PlatformHandler extends PlatformHandlerBase {
       // `video: false` can be used here with the special permission
       // DISPLAY_MEDIA_SYSTEM_AUDIO.
       video: false,
-      audio: true,
+      audio: {
+        autoGainControl: {ideal: false},
+        echoCancellation: {ideal: false},
+        noiseSuppression: {ideal: false},
+      },
       systemAudio: 'include',
     });
+  }
+
+  override recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void {
+    this.remote.recordSpeakerLabelConsent(
+      consentGiven,
+      consentDescriptionNames,
+      consentConfirmationName,
+    );
   }
 }

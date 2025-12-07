@@ -5,6 +5,7 @@
 #include "extensions/renderer/object_backed_native_handler.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-external.h"
@@ -121,16 +123,17 @@ void ObjectBackedNativeHandler::Router(
   // something random.  See crbug.com/548273.
   CHECK(handler_function_value->IsExternal());
   static_cast<HandlerFunction*>(
-      handler_function_value.As<v8::External>()->Value())->Run(args);
+      handler_function_value.As<v8::External>()->Value(
+          gin::kObjectBackedNativeHandlerHandlerFunctionTag))
+      ->Run(args);
 
   // Verify that the return value, if any, is accessible by the context.
   v8::ReturnValue<v8::Value> ret = args.GetReturnValue();
   v8::Local<v8::Value> ret_value = ret.Get();
   if (ret_value->IsObject() && !ret_value->IsNull() &&
-      !ContextCanAccessObject(context, v8::Local<v8::Object>::Cast(ret_value),
-                              true)) {
-    NOTREACHED_IN_MIGRATION() << "Insecure return value";
-    ret.SetUndefined();
+      !ContextCanAccessObject(isolate, context,
+                              v8::Local<v8::Object>::Cast(ret_value), true)) {
+    NOTREACHED() << "Insecure return value";
   }
 }
 
@@ -157,8 +160,10 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
   // function.
   handler_functions_.push_back(
       std::make_unique<HandlerFunction>(std::move(handler_function)));
-  SetPrivate(data, kHandlerFunction,
-             v8::External::New(isolate, handler_functions_.back().get()));
+  SetPrivate(
+      data, kHandlerFunction,
+      v8::External::New(isolate, handler_functions_.back().get(),
+                        gin::kObjectBackedNativeHandlerHandlerFunctionTag));
   DCHECK(feature_name.empty() ||
          ExtensionAPI::GetSharedInstance()->GetFeatureDependency(feature_name))
       << feature_name;
@@ -201,6 +206,7 @@ void ObjectBackedNativeHandler::Invalidate() {
 
 // static
 bool ObjectBackedNativeHandler::ContextCanAccessObject(
+    v8::Isolate* isolate,
     const v8::Local<v8::Context>& context,
     const v8::Local<v8::Object>& object,
     bool allow_null_context) {
@@ -232,13 +238,13 @@ bool ObjectBackedNativeHandler::SetPrivate(v8::Local<v8::Context> context,
                                            v8::Local<v8::Object> obj,
                                            const char* key,
                                            v8::Local<v8::Value> value) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   return obj
       ->SetPrivate(context,
                    v8::Private::ForApi(
-                       context->GetIsolate(),
-                       v8::String::NewFromUtf8(context->GetIsolate(), key,
-                                               v8::NewStringType::kNormal)
-                           .ToLocalChecked()),
+                       isolate, v8::String::NewFromUtf8(
+                                    isolate, key, v8::NewStringType::kNormal)
+                                    .ToLocalChecked()),
                    value)
       .FromJust();
 }
@@ -254,12 +260,13 @@ bool ObjectBackedNativeHandler::GetPrivate(v8::Local<v8::Context> context,
                                            v8::Local<v8::Object> obj,
                                            const char* key,
                                            v8::Local<v8::Value>* result) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   return obj
-      ->GetPrivate(context, v8::Private::ForApi(context->GetIsolate(),
-                                                v8::String::NewFromUtf8(
-                                                    context->GetIsolate(), key,
-                                                    v8::NewStringType::kNormal)
-                                                    .ToLocalChecked()))
+      ->GetPrivate(context,
+                   v8::Private::ForApi(
+                       isolate, v8::String::NewFromUtf8(
+                                    isolate, key, v8::NewStringType::kNormal)
+                                    .ToLocalChecked()))
       .ToLocal(result);
 }
 
@@ -272,12 +279,12 @@ void ObjectBackedNativeHandler::DeletePrivate(v8::Local<v8::Object> obj,
 void ObjectBackedNativeHandler::DeletePrivate(v8::Local<v8::Context> context,
                                               v8::Local<v8::Object> obj,
                                               const char* key) {
-  obj->DeletePrivate(
-         context,
-         v8::Private::ForApi(context->GetIsolate(),
-                             v8::String::NewFromUtf8(context->GetIsolate(), key,
-                                                     v8::NewStringType::kNormal)
-                                 .ToLocalChecked()))
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  obj->DeletePrivate(context,
+                     v8::Private::ForApi(
+                         isolate, v8::String::NewFromUtf8(
+                                      isolate, key, v8::NewStringType::kNormal)
+                                      .ToLocalChecked()))
       .FromJust();
 }
 

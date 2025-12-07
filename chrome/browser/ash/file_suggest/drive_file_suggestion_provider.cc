@@ -13,9 +13,10 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -72,6 +73,7 @@ std::vector<FileSuggestData> FilterSuggestResultsByTime(
 }  // namespace
 
 DriveFileSuggestionProvider::DriveFileSuggestionProvider(
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback)
     : FileSuggestionProvider(notify_update_callback),
@@ -80,7 +82,7 @@ DriveFileSuggestionProvider::DriveFileSuggestionProvider(
           drive::DriveIntegrationServiceFactory::GetInstance()->GetForProfile(
               profile_)),
       item_suggest_cache_(std::make_unique<ItemSuggestCache>(
-          g_browser_process->GetApplicationLocale(),
+          application_locale_storage->Get(),
           profile,
           profile->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess())),

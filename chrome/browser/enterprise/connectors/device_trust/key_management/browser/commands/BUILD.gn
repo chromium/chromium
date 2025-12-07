@@ -25,7 +25,10 @@ source_set("commands") {
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/common",
-    "//components/enterprise",
+    "//components/enterprise/client_certificates/core",
+    "//components/enterprise/client_certificates/core:cloud_management_delegate",
+    "//components/enterprise/client_certificates/core:dm_server_client",
+    "//components/enterprise/client_certificates/core:management_delegate",
     "//components/policy/core/common",
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
@@ -37,6 +40,7 @@ source_set("commands") {
       "win_key_rotation_command.h",
     ]
     deps += [
+      "//chrome/browser/google",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",
@@ -87,7 +91,6 @@ source_set("test_support") {
   public_deps = [
     ":commands",
     "//chrome/browser/enterprise/connectors/device_trust:features",
-    "//components/enterprise",
     "//components/policy/core/common",
     "//components/prefs",
     "//services/network/public/cpp",
@@ -109,7 +112,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
-    "//components/enterprise:test_support",
+    "//components/policy/core/common:test_support",
     "//testing/gtest",
   ]
 
@@ -142,9 +145,10 @@ source_set("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//components/enterprise",
       "//components/enterprise:test_support",
+      "//components/enterprise/client_certificates/core:cloud_management_delegate",
       "//components/enterprise/client_certificates/core:test_support",
-      "//components/enterprise/connectors",
       "//components/prefs:test_support",
       "//services/network:test_support",
     ]

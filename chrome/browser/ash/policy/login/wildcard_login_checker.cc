@@ -28,9 +28,9 @@ const char kHostedDomainKey[] = "hd";
 
 }  // namespace
 
-WildcardLoginChecker::WildcardLoginChecker() {}
+WildcardLoginChecker::WildcardLoginChecker() = default;
 
-WildcardLoginChecker::~WildcardLoginChecker() {}
+WildcardLoginChecker::~WildcardLoginChecker() = default;
 
 void WildcardLoginChecker::StartWithRefreshToken(
     const std::string& refresh_token,

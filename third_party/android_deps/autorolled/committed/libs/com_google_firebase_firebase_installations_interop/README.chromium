@@ -1,0 +1,16 @@
+Name: firebase-installations-interop
+Short Name: firebase-installations-interop
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-installations-interop/17.1.1/firebase-installations-interop-17.1.1.aar
+Version: 17.1.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Interface library for Firebase Installations SDK.
+
+Local Modifications:
+No modifications.

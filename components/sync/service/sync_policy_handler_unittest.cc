@@ -9,13 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -139,6 +140,32 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
   EXPECT_TRUE(enabled);
 }
 
+TEST(SyncPolicyHandlerTest, SyncTypesListDisabled_TabsAndSavedTabGroups) {
+  // Start with prefs enabled so we can sense that they have changed.
+  PrefValueMap prefs;
+  prefs.SetBoolean(prefs::internal::kSyncTabs, true);
+  prefs.SetBoolean(prefs::internal::kSyncSavedTabGroups, true);
+
+  // Create a policy that disables tabs.
+  policy::PolicyMap policy;
+  auto disabled_types = base::Value::List().Append("tabs");
+  policy.Set(policy::key::kSyncTypesListDisabled,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
+  SyncPolicyHandler handler;
+  handler.ApplyPolicySettings(policy, &prefs);
+
+  // Both tabs and saved tab groups should be disabled.
+  bool enabled;
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncTabs, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncSavedTabGroups, &enabled));
+  EXPECT_FALSE(enabled);
+}
+
+
+
 TEST(SyncPolicyHandlerTest, SyncTypesListDisabledInvalidEntry) {
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
@@ -230,7 +257,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledUnknownEntry) {
   EXPECT_TRUE(enabled);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   // Start with prefs enabled so we can sense that they have changed.
@@ -293,7 +320,7 @@ TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncOsPreferences, &enabled));
   EXPECT_FALSE(enabled);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace syncer

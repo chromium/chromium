@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -30,7 +29,11 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
@@ -153,12 +156,13 @@ base::Value CalculateIdleActionValue(const base::Value* idle_action_value,
 }
 
 bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
-  return apps_util::IsChromeAppPolicyId(policy_id) ||
-         apps_util::IsArcAppPolicyId(policy_id) ||
-         apps_util::IsSystemWebAppPolicyId(policy_id) ||
-         apps_util::IsWebAppPolicyId(policy_id) ||
-         apps_util::IsPreinstalledWebAppPolicyId(policy_id) ||
-         apps_util::IsIsolatedWebAppPolicyId(policy_id);
+  return web_app::WebAppPolicyManager::IsChromeAppPolicyId(policy_id) ||
+         web_app::IsArcAppPolicyId(policy_id) ||
+         web_app::IsSystemWebAppPolicyId(policy_id) ||
+         web_app::WebAppPolicyManager::IsWebAppPolicyId(policy_id) ||
+         web_app::WebAppPolicyManager::IsPreinstalledWebAppPolicyId(
+             policy_id) ||
+         web_app::WebAppPolicyManager::IsIsolatedWebAppPolicyId(policy_id);
 }
 
 }  // namespace
@@ -166,7 +170,7 @@ bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
 ExternalDataPolicyHandler::ExternalDataPolicyHandler(const char* policy_name)
     : TypeCheckingPolicyHandler(policy_name, base::Value::Type::DICT) {}
 
-ExternalDataPolicyHandler::~ExternalDataPolicyHandler() {}
+ExternalDataPolicyHandler::~ExternalDataPolicyHandler() = default;
 
 bool ExternalDataPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
@@ -235,7 +239,8 @@ NetworkConfigurationPolicyHandler::CreateForDevicePolicy() {
       onc::prefs::kDeviceOpenNetworkConfiguration);
 }
 
-NetworkConfigurationPolicyHandler::~NetworkConfigurationPolicyHandler() {}
+NetworkConfigurationPolicyHandler::~NetworkConfigurationPolicyHandler() =
+    default;
 
 bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -308,7 +313,7 @@ void NetworkConfigurationPolicyHandler::ApplyPolicySettings(
   base::Value::List certificates;
   base::Value::Dict global_network_config;
   chromeos::onc::ParseAndValidateOncForImport(
-      onc_blob, onc_source_, "", &network_configs, &global_network_config,
+      onc_blob, onc_source_, &network_configs, &global_network_config,
       &certificates);
 
   // Currently, only the per-network configuration is stored in a pref. Ignore
@@ -492,7 +497,7 @@ ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()
                                 static_cast<int>(MagnifierType::kDocked),
                                 false) {}
 
-ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() {}
+ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() = default;
 
 void ScreenMagnifierPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -518,7 +523,7 @@ LoginScreenPowerManagementPolicyHandler::
                                     SCHEMA_ALLOW_UNKNOWN) {}
 
 LoginScreenPowerManagementPolicyHandler::
-    ~LoginScreenPowerManagementPolicyHandler() {}
+    ~LoginScreenPowerManagementPolicyHandler() = default;
 
 void LoginScreenPowerManagementPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -531,7 +536,7 @@ DeprecatedIdleActionHandler::DeprecatedIdleActionHandler()
           chromeos::PowerPolicyController::ACTION_DO_NOTHING,
           false) {}
 
-DeprecatedIdleActionHandler::~DeprecatedIdleActionHandler() {}
+DeprecatedIdleActionHandler::~DeprecatedIdleActionHandler() = default;
 
 void DeprecatedIdleActionHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                       PrefValueMap* prefs) {
@@ -556,7 +561,7 @@ PowerManagementIdleSettingsPolicyHandler::
           SCHEMA_ALLOW_UNKNOWN) {}
 
 PowerManagementIdleSettingsPolicyHandler::
-    ~PowerManagementIdleSettingsPolicyHandler() {}
+    ~PowerManagementIdleSettingsPolicyHandler() = default;
 
 void PowerManagementIdleSettingsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -618,7 +623,7 @@ ScreenLockDelayPolicyHandler::ScreenLockDelayPolicyHandler(
           chrome_schema.GetKnownProperty(key::kScreenLockDelays),
           SCHEMA_ALLOW_UNKNOWN) {}
 
-ScreenLockDelayPolicyHandler::~ScreenLockDelayPolicyHandler() {}
+ScreenLockDelayPolicyHandler::~ScreenLockDelayPolicyHandler() = default;
 
 void ScreenLockDelayPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,

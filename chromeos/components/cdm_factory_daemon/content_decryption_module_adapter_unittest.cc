@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
@@ -42,7 +39,7 @@ constexpr uint64_t kFakeSecureHandle = 75;
 
 template <size_t size>
 std::vector<uint8_t> ToVector(const char (&array)[size]) {
-  return std::vector<uint8_t>(array, array + size - 1);
+  return std::vector<uint8_t>(array, UNSAFE_TODO(array + size - 1));
 }
 
 MATCHER_P(MatchesDecoderBuffer, buffer, "") {
@@ -136,12 +133,11 @@ class ContentDecryptionModuleAdapterTest : public testing::Test {
     mojo::AssociatedRemote<cdm::mojom::ContentDecryptionModule> daemon_cdm_mojo;
     mock_daemon_cdm_ = std::make_unique<MockDaemonCdm>(
         daemon_cdm_mojo.BindNewEndpointAndPassDedicatedReceiver());
-    cdm_adapter_ = base::WrapRefCounted<ContentDecryptionModuleAdapter>(
-        new ContentDecryptionModuleAdapter(
-            nullptr /* storage */, std::move(daemon_cdm_mojo),
-            mock_session_message_cb_.Get(), mock_session_closed_cb_.Get(),
-            mock_session_keys_change_cb_.Get(),
-            mock_session_expiration_update_cb_.Get()));
+    cdm_adapter_ = base::MakeRefCounted<ContentDecryptionModuleAdapter>(
+        nullptr /* storage */, std::move(daemon_cdm_mojo),
+        mock_session_message_cb_.Get(), mock_session_closed_cb_.Get(),
+        mock_session_keys_change_cb_.Get(),
+        mock_session_expiration_update_cb_.Get());
   }
 
   ~ContentDecryptionModuleAdapterTest() override {

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("rollback_network_config") {
   sources = [
@@ -20,7 +20,6 @@ static_library("rollback_network_config") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
     "//chromeos/ash/components/dbus/shill",
@@ -57,18 +56,18 @@ source_set("unit_tests") {
     ":rollback_network_config",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/ownership",
-    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//components/onc",
     "//components/ownership",
     "//components/prefs:test_support",
+    "//components/proxy_config",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//testing/gtest",

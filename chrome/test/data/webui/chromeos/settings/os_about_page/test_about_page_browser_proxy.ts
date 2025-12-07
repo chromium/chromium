@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AboutPageBrowserProxy, BrowserChannel, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, VersionInfo} from 'chrome://os-settings/os_settings.js';
+import type {AboutPageBrowserProxy, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, VersionInfo} from 'chrome://os-settings/os_settings.js';
+import {BrowserChannel, UpdateStatus} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import type {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
@@ -25,6 +26,7 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     isLts: false,
   };
   private canChangeChannel_ = true;
+  private canChangeFirmware_ = true;
   private regulatoryInfo_: RegulatoryInfo|null = null;
   private tpmFirmwareUpdateStatus_: TpmFirmwareUpdateStatusChangedEvent = {
     updateAvailable: false,
@@ -32,7 +34,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
   private endOfLifeInfo_: EndOfLifeInfo = {
     hasEndOfLife: false,
     aboutPageEndOfLifeMessage: '',
-    shouldShowEndOfLifeIncentive: false,
     shouldShowOfferText: false,
     isExtendedUpdatesDatePassed: false,
     isExtendedUpdatesOptInRequired: false,
@@ -45,12 +46,13 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'applyDeferredUpdate',
+      'applyDeferredUpdateAdvanced',
       'pageReady',
       'refreshUpdateStatus',
       'openHelpPage',
       'openFeedbackDialog',
       'canChangeChannel',
+      'canChangeFirmware',
       'getChannelInfo',
       'getVersionInfo',
       'getRegulatoryInfo',
@@ -131,6 +133,10 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     this.canChangeChannel_ = canChangeChannel;
   }
 
+  setCanChangeFirmware(canChangeFirmware: boolean): void {
+    this.canChangeFirmware_ = canChangeFirmware;
+  }
+
   setChannels(current: BrowserChannel, target: BrowserChannel): void {
     this.channelInfo_.currentChannel = current;
     this.channelInfo_.targetChannel = target;
@@ -172,6 +178,11 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
   canChangeChannel(): Promise<boolean> {
     this.methodCalled('canChangeChannel');
     return Promise.resolve(this.canChangeChannel_);
+  }
+
+  canChangeFirmware(): Promise<boolean> {
+    this.methodCalled('canChangeFirmware');
+    return Promise.resolve(this.canChangeFirmware_);
   }
 
   checkInternetConnection(): Promise<boolean> {
@@ -275,8 +286,8 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordExtendedUpdatesShown');
   }
 
-  applyDeferredUpdate(): void {
-    this.methodCalled('applyDeferredUpdate');
+  applyDeferredUpdateAdvanced(): void {
+    this.methodCalled('applyDeferredUpdateAdvanced');
   }
 
   openProductLicenseOther(): void {

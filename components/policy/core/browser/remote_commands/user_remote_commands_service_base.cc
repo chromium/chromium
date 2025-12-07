@@ -5,14 +5,13 @@
 #include "components/policy/core/browser/remote_commands/user_remote_commands_service_base.h"
 
 #include "base/time/default_clock.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 
 namespace policy {
 
@@ -41,28 +40,19 @@ void UserRemoteCommandsServiceBase::
   }
   core_->StartRemoteCommandsService(GetFactory(),
                                     PolicyInvalidationScope::kUser);
-  invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
+  invalidator_ = std::make_unique<RemoteCommandsInvalidator>(
+      invalidation_provider->GetInvalidationListener(
+          kRemoteCommandsInvalidationsProjectNumber),
       core_, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kUser);
-  invalidator_->Initialize(
-      invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise));
 }
 
 void UserRemoteCommandsServiceBase::OnPolicyRefreshed(bool success) {}
 
 void UserRemoteCommandsServiceBase::Shutdown() {
   cloud_policy_service_observer_.Reset();
-  if (invalidator_) {
-    invalidator_->Shutdown();
-    // Reset `invalidator_` ahead of time to avoid dangling pointer from
-    // `RemoteCommandsInvalidator` to `ProfileInvalidationProvider`.
-    invalidator_.reset();
-  }
-}
-
-std::string_view UserRemoteCommandsServiceBase::name() const {
-  return "UserRemoteCommandsServiceBase";
+  // Reset `invalidator_` ahead of time to avoid dangling pointer from
+  // `RemoteCommandsInvalidator` to `ProfileInvalidationProvider`.
+  invalidator_.reset();
 }
 
 }  // namespace policy

@@ -6,10 +6,13 @@
  * @fileoverview Polymer behavior for observing CrosNetworkConfigObserver
  * events.
  */
-
-import {CrosNetworkConfigObserver, CrosNetworkConfigObserverReceiver, NetworkStateProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigObserverReceiver} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+
+// Type aliases for js-webui to ts-webui migration
+/** @typedef {*} CrosNetworkConfigObserver */
+/** @typedef {*} NetworkStateProperties */
 
 /** @polymerBehavior */
 export const NetworkListenerBehavior = {

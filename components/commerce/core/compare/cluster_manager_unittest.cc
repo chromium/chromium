@@ -61,8 +61,11 @@ class MockClusterServerProxy : public ClusterServerProxy {
  public:
   MockClusterServerProxy(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : ClusterServerProxy(identity_manager, url_loader_factory) {}
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AccountChecker* account_checker)
+      : ClusterServerProxy(identity_manager,
+                           url_loader_factory,
+                           account_checker) {}
   MockClusterServerProxy(const MockClusterServerProxy&) = delete;
   MockClusterServerProxy operator=(const MockClusterServerProxy&) = delete;
   ~MockClusterServerProxy() override = default;
@@ -89,11 +92,14 @@ class ClusterManagerTest : public testing::Test {
         GetAllProductSpecifications(
             testing::An<ProductSpecificationsService::GetAllCallback>()))
         .Times(1);
-    auto proxy = std::make_unique<MockClusterServerProxy>(nullptr, nullptr);
+    auto proxy =
+        std::make_unique<MockClusterServerProxy>(nullptr, nullptr, nullptr);
     server_proxy_ = proxy.get();
     cluster_manager_ = std::make_unique<ClusterManager>(
         product_specification_service_.get(), std::move(proxy),
         base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                            base::Unretained(this)),
+        base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                             base::Unretained(this)),
         base::BindRepeating(&ClusterManagerTest::url_infos,
                             base::Unretained(this)));
@@ -105,6 +111,17 @@ class ClusterManagerTest : public testing::Test {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(product_info_cb), url, product_infos_[url]));
+  }
+
+  void GetProductInfoBatch(const std::vector<GURL>& urls,
+                           ProductInfoBatchCallback product_info_batch_cb) {
+    std::map<GURL, std::optional<ProductInfo>> info_map;
+    for (const GURL& url : urls) {
+      info_map[url] = product_infos_[url];
+    }
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(product_info_batch_cb), std::move(info_map)));
   }
 
   const std::vector<UrlInfo> url_infos() { return url_infos_; }
@@ -294,8 +311,10 @@ TEST_F(ClusterManagerTest,
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
@@ -351,8 +370,10 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
@@ -381,8 +402,10 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
@@ -469,6 +492,41 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigation) {
   ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
   ASSERT_EQ(info->similar_candidate_products[foo3], kProductID3);
   ASSERT_EQ(info->title, "Lamp");
+}
+
+TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigation_CanAddToGroup) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+
+  // Add 3 products, product 1 and 3 has the same category.
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(3u, GetCandidateProductMap()->size());
+
+  std::optional<EntryPointInfo> info;
+  GetEntryPointInfoForNavigation(foo1, &info);
+  ASSERT_TRUE(info.has_value());
+
+  // Add a product group that foo1 and foo3 can be added to.
+  base::Uuid uuid = AddProductSpecificationSet().uuid();
+  ProductGroup* product_group = (*GetProductGroupMap())[uuid].get();
+  ASSERT_EQ(1u, product_group->member_products.size());
+  base::RunLoop().RunUntilIdle();
+  auto possible_product_group =
+      cluster_manager_->GetProductGroupForCandidateProduct(foo3);
+  ASSERT_TRUE(possible_product_group);
+  ASSERT_EQ(possible_product_group->uuid, product_group->uuid);
+
+  // Since foo1 and foo3 can be added to an existing product group, they'll have
+  // empty entry point info.
+  GetEntryPointInfoForNavigation(foo1, &info);
+  ASSERT_FALSE(info.has_value());
+  GetEntryPointInfoForNavigation(foo3, &info);
+  ASSERT_FALSE(info.has_value());
 }
 
 TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigationWithInvalidUrl) {
@@ -889,6 +947,36 @@ TEST_F(ClusterManagerTest,
 
   GetEntryPointInfoForSelection(foo2, foo3, &info);
   ASSERT_FALSE(info);
+}
+
+TEST_F(ClusterManagerTest, GetEntryPointInfoForSelection_CanAddToGroup) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  base::RunLoop().RunUntilIdle();
+
+  std::optional<EntryPointInfo> info;
+  GetEntryPointInfoForSelection(foo1, foo3, &info);
+  ASSERT_TRUE(info.has_value());
+
+  // Add a product group that foo1 and foo3 can be added to.
+  base::Uuid uuid = AddProductSpecificationSet().uuid();
+  ProductGroup* product_group = (*GetProductGroupMap())[uuid].get();
+  ASSERT_EQ(1u, product_group->member_products.size());
+  base::RunLoop().RunUntilIdle();
+  auto possible_product_group =
+      cluster_manager_->GetProductGroupForCandidateProduct(foo3);
+  ASSERT_TRUE(possible_product_group);
+  ASSERT_EQ(possible_product_group->uuid, product_group->uuid);
+
+  // Since foo1 and foo3 can be added to an existing product group, they'll have
+  // empty entry point info.
+  GetEntryPointInfoForSelection(foo1, foo3, &info);
+  ASSERT_FALSE(info.has_value());
 }
 
 TEST_F(ClusterManagerTest, ClusterManagerObserver) {

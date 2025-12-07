@@ -131,12 +131,12 @@ enum class NotificationCatalogName {
   kVMCameraMic = 112,
   kSecurityToken = 113,
   kCrostiniExportImport = 114,
-  kLacrosCannotLaunch = 115,
+  // [Deprecated] kLacrosCannotLaunch = 115,
   kRequestFileSystem = 116,
   kNetworkPortalDetector = 117,
   kCrostiniPackage = 118,
   kCrostiniUpgradeAvailable = 119,
-  kFullRestore = 120,
+  // [Deprecated] kFullRestore = 120,
   kAdbSideloadingDisallowed = 121,
   kAdbSideloadingPowerwashPlanned = 122,
   kAdbSideloadingPowerwashOnReboot = 123,
@@ -184,12 +184,12 @@ enum class NotificationCatalogName {
   kIPHGoogleOneOffer = 165,
   kLockScreen = 166,
   kWebAppSettings = 167,
-  kEOLIncentive = 168,
+  // [Deprecated] kEOLIncentive = 168,
   kHotspot = 169,
   kGeolocationSwitch = 170,
   kMultiCaptureOnLogin = 171,
   kFloatingWorkspace = 172,
-  kScalableIphNotification = 173,
+  // [Deprecated] kScalableIphNotification = 173,
   // [Deprecated] kUpdateNotification = 174,
   kSubAppsUninstall = 175,
   kNetworkCarrierUnlock = 176,
@@ -202,7 +202,23 @@ enum class NotificationCatalogName {
   kOnDeviceAppControls = 183,
   kFaceGazeAssetsDownloaded = 184,
   kFaceGazeAssetsFailed = 185,
-  kMaxValue = kFaceGazeAssetsFailed
+  kDeviceRestrictionScheduleUpcomingLogout = 186,
+  kDeviceRestrictionSchedulePostLogout = 187,
+  kTouchpadDisabled = 188,
+  kOnTaskEnterLockedMode = 189,
+  kOnTaskSessionEnd = 190,
+  kOnTaskAddContentToBundle = 191,
+  kOnTaskRemoveContentFromBundle = 192,
+  kScannerAction = 193,
+  kChromeAppDeprecation = 194,
+  kDownloadImageFromLobster = 195,
+  kBocaSpotlightStarted = 196,
+  kFaceGazeActive = 197,
+  kUsbPeripheralDeviceOrEndpointLimit = 198,
+  kDemoMode = 199,
+  kArcDlcInstall = 200,
+  kIncompatibleCharger = 201,
+  kMaxValue = kIncompatibleCharger
 };
 
 // A living catalog that registers system nudges.
@@ -231,7 +247,7 @@ enum class NudgeCatalogName {
   kVideoConferenceTrayCameraUseWhileSWDisabled = 15,
   kVideoConferenceTraySpeakOnMuteOptIn = 16,
   // [Deprecated] kVideoConferenceTraySpeakOnMuteOptInConfirmation = 17,
-  kScalableIphBubble = 18,
+  // [Deprecated] kScalableIphBubble = 18,
   kVideoConferenceTrayCameraMicrophoneUseWhileDisabled = 19,
   kMultitaskMenuClamshell = 20,
   kMultitaskMenuTablet = 21,
@@ -249,7 +265,12 @@ enum class NudgeCatalogName {
   kCapsLockShortcutPressed = 33,
   kMahi = 34,
   kBirchPrivacy = 35,
-  kMaxValue = kBirchPrivacy
+  kVideoConferenceTraySidetoneNotSupported = 36,
+  kVideoConferenceTraySidetoneEnabled = 37,
+  kGraduationAppEnabled = 38,
+  kSunfishLauncherNudge = 39,
+  kSunfishIncognitoNudge = 40,
+  kMaxValue = kSunfishIncognitoNudge
 };
 
 // A living catalog that registers toasts.
@@ -309,7 +330,19 @@ enum class ToastCatalogName {
   kAppNotClosable = 49,
   kGameDashboardEnterTablet = 50,
   kInformedRestoreOnboarding = 51,
-  kMaxValue = kInformedRestoreOnboarding
+  kTouchpadDisabled = 52,
+  // [Deprecated] kOnTaskEnterLockedMode = 53,
+  // [Deprecated] kOnTaskSessionEnd = 54,
+  kOnTaskUrlBlocked = 55,
+  kCopyImageToClipboardAction = 56,
+  kCaptureModeTextCopied = 57,
+  kCoralSavedGroupLimitMax = 58,
+  kScannerActionSuccess = 59,
+  kScannerActionFailure = 60,
+  kCameraNowAllowed = 61,
+  kCameraNowDisallowed = 62,
+  kCameraForceDisabled = 63,
+  kMaxValue = kCameraForceDisabled
 };
 
 }  // namespace ash

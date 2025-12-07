@@ -35,6 +35,8 @@ static_library("renderer") {
     "renderer_save_password_progress_logger.h",
     "suggestion_properties.cc",
     "suggestion_properties.h",
+    "synchronous_form_cache.cc",
+    "synchronous_form_cache.h",
     "timing.cc",
     "timing.h",
   ]
@@ -44,8 +46,10 @@ static_library("renderer") {
     "//base:i18n",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/common:autofill_regex",
-    "//components/password_manager/core/common:common",
+    "//components/password_manager/core/common",
     "//components/safe_browsing:buildflags",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/base:signin_switches",
     "//components/strings",
     "//content/public/common",
     "//content/public/renderer",
@@ -71,7 +75,6 @@ static_library("test_support") {
     "autofill_renderer_test.h",
     "focus_test_utils.cc",
     "focus_test_utils.h",
-    "form_cache_test_api.h",
     "form_tracker_test_api.h",
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",
@@ -119,6 +122,7 @@ source_set("browser_tests") {
     "a11y_utils_browsertest.cc",
     "autofill_agent_browsertest.cc",
     "autofill_agent_form_interaction_browsertest.cc",
+    "dom_label_browsertest.cc",
     "form_autofill_issues_browsertest.cc",
     "form_autofill_util_browsertest.cc",
     "form_cache_browsertest.cc",
@@ -135,9 +139,13 @@ source_set("browser_tests") {
     "//components/autofill/core/common",
     "//components/autofill/core/common:test_support",
     "//content/public/renderer",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
   ]
+
+  if (is_ios) {
+    deps += [ "//components/test:dom_label_test_bundle_data" ]
+  }
 }

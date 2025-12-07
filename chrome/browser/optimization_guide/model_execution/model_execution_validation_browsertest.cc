@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -41,7 +42,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
     cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host()};
+        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).GetHost()};
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(
         base::BindRepeating(&ModelExecutionValidationBrowserTestBase::
@@ -51,31 +52,29 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    cmd->AppendSwitchASCII(
+        switches::kOptimizationGuideServiceModelExecutionURL,
+        model_execution_server_
+            ->GetURL(GURL(kOptimizationGuideServiceModelExecutionDefaultURL)
+                         .GetHost(),
+                     "/")
+            .spec());
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             browser()->profile());
     host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&ModelExecutionValidationBrowserTestBase::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitchASCII(
-        switches::kOptimizationGuideServiceModelExecutionURL,
-        model_execution_server_
-            ->GetURL(
-                GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host(),
-                "/")
-            .spec());
   }
 
   void TearDownOnMainThread() override {
@@ -108,6 +107,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
     EXPECT_TRUE(base::Contains(request.headers,
                                net::HttpRequestHeaders::kAuthorization));
+    std::move(model_execution_request_closure_).Run();
 
     if (should_server_fail_model_execution_) {
       response->set_code(net::HTTP_NOT_FOUND);
@@ -118,8 +118,8 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     string_response.set_value("test_response");
     proto::ExecuteResponse execute_response;
     proto::Any* any_metadata = execute_response.mutable_response_metadata();
-    any_metadata->set_type_url("type.googleapis.com/" +
-                               string_response.GetTypeName());
+    any_metadata->set_type_url(
+        base::StrCat({"type.googleapis.com/", string_response.GetTypeName()}));
     string_response.SerializeToString(any_metadata->mutable_value());
 
     std::string serialized_response;
@@ -129,21 +129,17 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     return std::move(response);
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> model_execution_server_;
   base::HistogramTester histogram_tester_;
 
   bool should_server_fail_model_execution_ = false;
 
+  base::OnceClosure model_execution_request_closure_;
+
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 class ModelExecutionValidationBrowserTest
@@ -164,7 +160,11 @@ class ModelExecutionValidationBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
                        MAYBE_ModelExecutionSuccess) {
+  base::RunLoop run_loop;
+  model_execution_request_closure_ = run_loop.QuitClosure();
+
   EnableSignin();
+  run_loop.Run();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
 
@@ -184,8 +184,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
                        MAYBE_ModelExecutionFailsServerFailure) {
+  base::RunLoop run_loop;
+  model_execution_request_closure_ = run_loop.QuitClosure();
+
   EnableServerModelExecutionFailure();
   EnableSignin();
+  run_loop.Run();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
 

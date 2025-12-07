@@ -1,0 +1,49 @@
+<!doctype html>
+
+<style>
+.carousel {
+  height: 200px;
+  columns: 1;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-marker-group: after tabs;
+
+  &::scroll-marker-group {
+    height: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  &::column {
+    scroll-snap-align: center;
+  }
+
+  &::column::scroll-marker {
+    display: inline-block;
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid black;
+  }
+
+  &::column::scroll-marker:target-current {
+    background: blue;
+  }
+
+  & div {
+    display: inline-flex;
+    width: 30%;
+    height: 100%;
+  }
+}
+</style>
+
+<div class=carousel>
+  <div>One</div>
+  <div>Two</div>
+  <div>Three</div>
+  <div>Four</div>
+  <div>Five</div>
+  <div>Six</div>
+</div>

@@ -111,9 +111,6 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
   scoped_refptr<base::SingleThreadTaskRunner> target_task_runner_;
 };
 
-base::LazyInstance<WindowResizeHelperMac>::Leaky g_window_resize_helper =
-    LAZY_INSTANCE_INITIALIZER;
-
 ////////////////////////////////////////////////////////////////////////////////
 // WrappedTask
 
@@ -137,8 +134,7 @@ bool WrappedTask::ShouldRunBefore(const WrappedTask& other) {
   if (sequence_number_ > other.sequence_number_)
     return false;
   // Sequence numbers are unique, so this should never happen.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void WrappedTask::Run() {
@@ -274,8 +270,7 @@ bool PumpableTaskRunner::PostNonNestableDelayedTask(
     base::TimeDelta delay) {
   // The correctness of non-nestable events hasn't been proven for this
   // structure.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool PumpableTaskRunner::RunsTasksInCurrentSequence() const {
@@ -294,7 +289,8 @@ scoped_refptr<base::SingleThreadTaskRunner> WindowResizeHelperMac::task_runner()
 
 // static
 WindowResizeHelperMac* WindowResizeHelperMac::Get() {
-  return g_window_resize_helper.Pointer();
+  static base::NoDestructor<WindowResizeHelperMac> instance;
+  return instance.get();
 }
 
 void WindowResizeHelperMac::Init(
@@ -318,8 +314,8 @@ bool WindowResizeHelperMac::WaitForSingleTaskToRun(
   return pumpable_task_runner->WaitForSingleWrappedTaskToRun(max_delay);
 }
 
-WindowResizeHelperMac::WindowResizeHelperMac() {}
-WindowResizeHelperMac::~WindowResizeHelperMac() {}
+WindowResizeHelperMac::WindowResizeHelperMac() = default;
+WindowResizeHelperMac::~WindowResizeHelperMac() = default;
 
 void WindowResizeHelperMac::EventTimedWait(base::WaitableEvent* event,
                                            base::TimeDelta delay) {

@@ -6,48 +6,37 @@ import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
-import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
+import type {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
-import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
-import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
+import type {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
+import type {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
-import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
-import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
+import type {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
-import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, MetaKey, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {LayoutInfo, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, MetaKey, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {AcceleratorResultData, EditDialogCompletedActions, Subactions, UserAction} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import type {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import {EditDialogCompletedActions, Subactions, UserAction} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
-
-// Converts a JS string to mojo_base::mojom::String16 object.
-function strToMojoString16(str: string): {data: number[]} {
-  const arr = [];
-  for (let i = 0; i < str.length; i++) {
-    arr[i] = str.charCodeAt(i);
-  }
-  return {data: arr};
-}
 
 function initShortcutCustomizationAppElement():
     ShortcutCustomizationAppElement {
@@ -85,7 +74,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeIsCustomizationAllowedByPolicy(true);
     // The meta key is displayed as the launcher key in this test.
     provider.setFakeMetaKeyToDisplay(MetaKey.kLauncher);
-
+    provider.setHasCustomAccelerators(true);
     setShortcutProviderForTesting(provider);
     setShortcutInputProviderForTesting(shortcutInputProvider);
 
@@ -117,32 +106,28 @@ suite('shortcutCustomizationAppTest', function() {
 
   function getManager(): AcceleratorLookupManager {
     assertTrue(!!manager);
-    return manager as AcceleratorLookupManager;
+    return manager;
   }
 
   function getPage(): ShortcutCustomizationAppElement {
     assertTrue(!!page);
-    return page as ShortcutCustomizationAppElement;
-  }
-
-  function getDialog(selector: string) {
-    return getPage().shadowRoot!.querySelector(selector) as CrDialogElement;
+    return page;
   }
 
   function getSubsections(category: AcceleratorCategory):
       NodeListOf<AcceleratorSubsectionElement> {
     const navPanel =
         getPage().shadowRoot!.querySelector('navigation-view-panel');
-    const navBody = navPanel!!.shadowRoot!.querySelector('#navigationBody');
+    const navBody = navPanel!.shadowRoot!.querySelector('#navigationBody');
     const subPageId = `category-${category}`;
     const subPage = navBody!.querySelector(`#${subPageId}`);
     assertTrue(!!subPage, `Expected subpage with id ${subPageId} to exist.`);
-    return subPage!.shadowRoot!.querySelectorAll('accelerator-subsection');
+    return subPage.shadowRoot!.querySelectorAll('accelerator-subsection');
   }
 
   function getLinkEl(): HTMLLinkElement {
     assertTrue(!!linkEl);
-    return linkEl as HTMLLinkElement;
+    return linkEl;
   }
 
   async function openDialogForAcceleratorInSubsection(subsectionIndex: number) {
@@ -152,8 +137,8 @@ suite('shortcutCustomizationAppTest', function() {
 
     const subSections = getSubsections(AcceleratorCategory.kWindowsAndDesks);
     const accelerators =
-        subSections[subsectionIndex]!.shadowRoot!.querySelectorAll(
-            'accelerator-row') as NodeListOf<AcceleratorRowElement>;
+        subSections[subsectionIndex]!.shadowRoot!
+            .querySelectorAll<AcceleratorRowElement>('accelerator-row');
 
     // Click on the first accelerator's edit icon, expect the edit dialog to
     // open.
@@ -185,28 +170,28 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from second subsection.
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+            '#pendingAccelerator');
+    assertTrue(!!editElement);
     // Assert no error has occurred prior to pressing a shortcut.
     assertFalse(editElement.hasError);
 
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: acceleratorConfigResult,
-      shortcutName: stringToMojoString16('BRIGHTNESS_UP'),
+      shortcutName: 'BRIGHTNESS_UP',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -237,23 +222,23 @@ suite('shortcutCustomizationAppTest', function() {
     const expectedLayouts =
         getManager().getSubcategories(AcceleratorCategory.kWindowsAndDesks);
     // Two subsections for this category based on the data in fake_data.ts.
-    assertEquals(expectedLayouts!.size, actualSubsections!.length);
+    assertEquals(expectedLayouts!.size, actualSubsections.length);
 
     const keyIterator = expectedLayouts!.keys();
     // Assert subsection title matches expected value from fake lookup.
     const expectedFirstSubcat: AcceleratorSubcategory =
-        keyIterator.next().value;
+        keyIterator.next().value!;
     assertEquals(
         page.i18n(getSubcategoryNameStringId(expectedFirstSubcat)),
         actualSubsections[0]!.title);
     // Asert 2 accelerators are loaded for first subcategory.
     assertEquals(
         (expectedLayouts!.get(expectedFirstSubcat) as LayoutInfo[]).length,
-        actualSubsections[0]!.accelRowDataArray!.length);
+        actualSubsections[0]!.accelRowDataArray.length);
 
     // Assert subsection title matches expected value from fake lookup.
     const expectedSecondSubcat: AcceleratorSubcategory =
-        keyIterator.next().value;
+        keyIterator.next().value!;
     assertEquals(
         page.i18n(getSubcategoryNameStringId(expectedSecondSubcat)),
         actualSubsections[1]!.title);
@@ -267,7 +252,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert 2 accelerators are loaded for the second subcategory.
     assertEquals(
         (expectedLayouts!.get(expectedSecondSubcat) as LayoutInfo[]).length,
-        actualSubsections[1]!.accelRowDataArray!.length);
+        actualSubsections[1]!.accelRowDataArray.length);
   });
 
   test('LoadFakeBrowserPage', async () => {
@@ -284,7 +269,7 @@ suite('shortcutCustomizationAppTest', function() {
             .querySelector('navigation-selector');
     const navMenuItems =
         navSelector!.shadowRoot!.querySelector('#navigationSelectorMenu')!
-            .querySelectorAll('.navigation-item') as NodeListOf<HTMLDivElement>;
+            .querySelectorAll<HTMLElement>('.navigation-item');
     navMenuItems[1]!.click();
 
     await flushTasks();
@@ -296,23 +281,23 @@ suite('shortcutCustomizationAppTest', function() {
     const actualSubsections = getSubsections(AcceleratorCategory.kBrowser);
     const expectedLayouts =
         getManager().getSubcategories(AcceleratorCategory.kBrowser);
-    assertEquals(expectedLayouts!.size, actualSubsections!.length);
+    assertEquals(expectedLayouts!.size, actualSubsections.length);
 
     const keyIterator = expectedLayouts!.keys().next();
     // Assert subsection names match name lookup.
     assertEquals(
-        page.i18n(getSubcategoryNameStringId(keyIterator.value)),
+        page.i18n(getSubcategoryNameStringId(keyIterator.value!)),
         actualSubsections[0]!.title);
     // Assert lock icon displayed next to every subcategories under Browser
     // category.
     for (const subsection of actualSubsections) {
-      const lockIcon = subsection!.shadowRoot!.querySelector(
-                           '.lock-icon-container') as IronIconElement;
+      const lockIcon = subsection.shadowRoot!.querySelector<IronIconElement>(
+          '.lock-icon-container');
       assertTrue(isVisible(lockIcon));
     }
     // Assert only 1 accelerator is within this subsection.
     assertEquals(
-        (expectedLayouts!.get(keyIterator.value) as LayoutInfo[]).length,
+        (expectedLayouts!.get(keyIterator.value!) as LayoutInfo[]).length,
         actualSubsections[0]!.accelRowDataArray.length);
   });
 
@@ -376,7 +361,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Click done button.
     const doneButton =
-        strictQuery('#doneButton', editDialog!.shadowRoot, CrButtonElement);
+        strictQuery('#doneButton', editDialog.shadowRoot, CrButtonElement);
     doneButton.click();
 
     // Wait until dialog is closed to make sure onDialogClose() is triggered.
@@ -398,12 +383,11 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from the second subsection.
     const editView =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view')[0] as AcceleratorEditViewElement;
 
     // Click on edit button.
-    (editView!.shadowRoot!.querySelector('#editButton') as CrButtonElement)
-        .click();
+    editView.shadowRoot!.querySelector<CrButtonElement>('#editButton')!.click();
 
     await flushTasks();
 
@@ -417,7 +401,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
@@ -448,7 +432,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
     const updatedEditView =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view')[0] as AcceleratorEditViewElement;
     assertFalse(updatedEditView.hasError);
     assertEquals(
@@ -466,15 +450,14 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from second subsection.
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
@@ -482,8 +465,9 @@ suite('shortcutCustomizationAppTest', function() {
         UserAction.kStartAddAccelerator, provider.getLatestRecordedAction());
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+            '#pendingAccelerator');
+    assertTrue(!!editElement);
 
     // Assert no error has occurred prior to pressing a shortcut.
     assertFalse(editElement.hasError);
@@ -491,7 +475,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -513,14 +497,12 @@ suite('shortcutCustomizationAppTest', function() {
         'shortcut. To replace the existing shortcut, press this shortcut ' +
         'again.';
     assertEquals(
-        expected_error_message,
-        editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
-            .textContent!.trim());
+        expected_error_message, editElement.getStatusMessageForTesting());
 
     // Press a different shortcut, this time with another error state.
     const fakeResult2: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult2);
 
@@ -538,9 +520,7 @@ suite('shortcutCustomizationAppTest', function() {
     const expected_error_message2 =
         'Shortcut is being used for "TestConflictName". Press a new shortcut.';
     assertEquals(
-        expected_error_message2,
-        editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
-            .textContent!.trim());
+        expected_error_message2, editElement.getStatusMessageForTesting());
     assertTrue(editElement.hasError);
     // Since this was a failure, expect that latest recorded action is the same.
     assertEquals(
@@ -571,7 +551,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Click done button.
     const doneButton =
-        strictQuery('#doneButton', editDialog!.shadowRoot, CrButtonElement);
+        strictQuery('#doneButton', editDialog.shadowRoot, CrButtonElement);
     doneButton.click();
 
     // Wait until dialog is closed to make sure onDialogClose() is triggered.
@@ -597,17 +577,16 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
-    (editElement!.shadowRoot!.getElementById('cancelButton') as CrButtonElement)
-        .click();
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+            '#pendingAccelerator');
+    editElement!.shadowRoot!.querySelector<CrButtonElement>(
+                                '#cancelButton')!.click();
 
     assertTrue(provider.getLastRecordedIsAdd());
     assertEquals(
@@ -628,21 +607,20 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+            '#pendingAccelerator');
 
     const keyEvent: KeyEvent = {
       vkey: VKey.kSpace,
@@ -676,9 +654,8 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
@@ -718,15 +695,14 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -767,15 +743,14 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(!!editDialog);
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
     await flushTasks();
 
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -832,16 +807,15 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(!!editDialog);
 
     // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+    editDialog.shadowRoot!
+        .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
     await flushTasks();
 
     // Set the fake mojo return call, and make the result to be
     // kConflictCanOverride.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -948,14 +922,14 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from second subsection.
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: strToMojoString16('TestConflictName'),
+      shortcutName: 'TestConflictName',
     };
     provider.setFakeRemoveAcceleratorResult(fakeResult);
 
@@ -965,7 +939,8 @@ suite('shortcutCustomizationAppTest', function() {
     // Click on remove button.
     const editView = dialogAccels[0] as AcceleratorEditViewElement;
     const deleteButton =
-        editView!.shadowRoot!.querySelector('#deleteButton') as CrButtonElement;
+        editView.shadowRoot!.querySelector<CrButtonElement>('#deleteButton');
+    assertTrue(!!deleteButton);
     deleteButton.click();
 
     await flushTasks();
@@ -977,58 +952,6 @@ suite('shortcutCustomizationAppTest', function() {
         UserAction.kRemoveAccelerator, provider.getLatestRecordedAction());
   });
 
-  test('RestoreAllButton', async () => {
-    loadTimeData.overrideValues({isCustomizationAllowed: true});
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
-
-    let restoreDialog = getDialog('#restoreDialog');
-    // Expect the dialog to not appear initially.
-    assertFalse(!!restoreDialog);
-
-    // Click on the Restore all button.
-    const restoreButton =
-        getPage()
-            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
-            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
-    restoreButton!.click();
-
-    await flushTasks();
-
-    // Requery the dialog.
-    restoreDialog = getDialog('#restoreDialog');
-    assertTrue(restoreDialog!.open);
-
-    const confirmButton =
-        restoreDialog!.querySelector('#confirmButton') as CrButtonElement;
-    confirmButton.click();
-
-    await flushTasks();
-
-    assertEquals(UserAction.kResetAll, provider.getLatestRecordedAction());
-
-    // Confirm dialog is now closed.
-    restoreDialog = getDialog('#restoreDialog');
-    assertFalse(!!restoreDialog);
-
-    // Re-open the Restore All dialog.
-    restoreButton!.click();
-    await flushTasks();
-
-    restoreDialog = getDialog('#restoreDialog');
-    assertTrue(restoreDialog!.open);
-
-    // Click on Cancel button.
-    const cancelButton =
-        restoreDialog!.querySelector('#cancelButton') as CrButtonElement;
-    cancelButton.click();
-
-    await flushTasks();
-
-    restoreDialog = getDialog('#restoreDialog');
-    assertFalse(!!restoreDialog);
-  });
-
   test('RestoreAllButtonShownWithFlag', async () => {
     loadTimeData.overrideValues({isCustomizationAllowed: true});
     page = initShortcutCustomizationAppElement();
@@ -1037,7 +960,7 @@ suite('shortcutCustomizationAppTest', function() {
     const restoreButton =
         getPage()
             .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
-            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
+            .shadowRoot!.querySelector<CrButtonElement>('#restoreAllButton');
     await flushTasks();
     assertTrue(isVisible(restoreButton));
   });
@@ -1050,7 +973,7 @@ suite('shortcutCustomizationAppTest', function() {
     const restoreButton =
         getPage()
             .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
-            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
+            .shadowRoot!.querySelector<CrButtonElement>('#restoreAllButton');
     await flushTasks();
     assertFalse(isVisible(restoreButton));
   });
@@ -1129,7 +1052,7 @@ suite('shortcutCustomizationAppTest', function() {
       {
         category: AcceleratorCategory.kWindowsAndDesks,
         subCategory: AcceleratorSubcategory.kWindows,
-        description: strToMojoString16('Go to windows 1 through 8'),
+        description: 'Go to windows 1 through 8',
         style: LayoutStyle.kText,
         source: AcceleratorSource.kAmbient,
         action: 1,
@@ -1155,23 +1078,23 @@ suite('shortcutCustomizationAppTest', function() {
             textAccelerator: {
               parts: [
                 {
-                  text: strToMojoString16('ctrl'),
+                  text: 'ctrl',
                   type: TextAcceleratorPartType.kModifier,
                 },
                 {
-                  text: strToMojoString16(' + '),
+                  text: ' + ',
                   type: TextAcceleratorPartType.kDelimiter,
                 },
                 {
-                  text: strToMojoString16('1 '),
+                  text: '1 ',
                   type: TextAcceleratorPartType.kKey,
                 },
                 {
-                  text: strToMojoString16('through '),
+                  text: 'through ',
                   type: TextAcceleratorPartType.kPlainText,
                 },
                 {
-                  text: strToMojoString16('8'),
+                  text: '8',
                   type: TextAcceleratorPartType.kKey,
                 },
               ],
@@ -1211,7 +1134,7 @@ suite('shortcutCustomizationAppTest', function() {
       {
         category: AcceleratorCategory.kWindowsAndDesks,
         subCategory: AcceleratorSubcategory.kDesks,
-        description: stringToMojoString16('Create Desk'),
+        description: 'Create Desk',
         style: LayoutStyle.kDefault,
         source: AcceleratorSource.kAsh,
         action: 2,
@@ -1227,7 +1150,7 @@ suite('shortcutCustomizationAppTest', function() {
           locked: false,
           layoutProperties: {
             standardAccelerator: {
-              keyDisplay: stringToMojoString16('+'),
+              keyDisplay: '+',
               accelerator: {
                 modifiers: Modifier.COMMAND | Modifier.SHIFT,
                 keyCode: 187,
@@ -1254,11 +1177,11 @@ suite('shortcutCustomizationAppTest', function() {
     let editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
 
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     // Update shortcut: Create Desk - [search shift +] and [search a].
     const testUpdatedAcceleratorConfig: MojoAcceleratorConfig = {
@@ -1271,7 +1194,7 @@ suite('shortcutCustomizationAppTest', function() {
             locked: false,
             layoutProperties: {
               standardAccelerator: {
-                keyDisplay: stringToMojoString16('+'),
+                keyDisplay: '+',
                 accelerator: {
                   modifiers: Modifier.COMMAND | Modifier.SHIFT,
                   keyCode: 187,
@@ -1291,7 +1214,7 @@ suite('shortcutCustomizationAppTest', function() {
             locked: false,
             layoutProperties: {
               standardAccelerator: {
-                keyDisplay: stringToMojoString16('a'),
+                keyDisplay: 'a',
                 accelerator: {
                   modifiers: Modifier.COMMAND,
                   keyCode: 65,
@@ -1324,7 +1247,7 @@ suite('shortcutCustomizationAppTest', function() {
       assertTrue(!!editDialog);
       // Verify the number of dialog accelerators is expected.
       const updatedDialogAccels =
-          editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+          editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
               'accelerator-edit-view');
       assertEquals(expectedLength, updatedDialogAccels.length);
     };
@@ -1377,33 +1300,15 @@ suite('shortcutCustomizationAppTest', function() {
         !!navContentInDrawer, 'Bottom nav content in drawer should exist');
   });
 
-  test('LaunchOldKeyboardSettings', async () => {
-    loadTimeData.overrideValues({
-      isInputDeviceSettingsSplitEnabled: false,
-    });
+  test('LaunchKeyboardSettings', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
     const actualLink =
         getPage()
-            .shadowRoot!.querySelector(
-                            'shortcuts-bottom-nav-content')!.shadowRoot!
-            .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
-                '#keyboardSettingsLink') as HTMLLinkElement;
-    assertEquals('chrome://os-settings/keyboard-overlay', actualLink.href);
-  });
-
-  test('LaunchNewKeyboardSettings', async () => {
-    loadTimeData.overrideValues({
-      isInputDeviceSettingsSplitEnabled: true,
-    });
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
-    const actualLink =
-        getPage()
-            .shadowRoot!.querySelector(
-                            'shortcuts-bottom-nav-content')!.shadowRoot!
-            .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
-                '#keyboardSettingsLink') as HTMLLinkElement;
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
+            .querySelector<HTMLLinkElement>('#keyboardSettingsLink');
+    assertTrue(!!actualLink);
     assertEquals('chrome://os-settings/per-device-keyboard', actualLink.href);
   });
 
@@ -1411,8 +1316,8 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeIsCustomizationAllowedByPolicy(false);
     page = initShortcutCustomizationAppElement();
     await flushTasks();
-    const policyIndicator = getPage().shadowRoot!.querySelector(
-                                '#policyIndicator') as HTMLDivElement;
+    const policyIndicator =
+        getPage().shadowRoot!.querySelector<HTMLElement>('#policyIndicator');
     assertTrue(!!policyIndicator);
   });
 
@@ -1420,38 +1325,8 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeIsCustomizationAllowedByPolicy(true);
     page = initShortcutCustomizationAppElement();
     await flushTasks();
-    const policyIndicator = getPage().shadowRoot!.querySelector(
-                                '#policyIndicator') as HTMLDivElement;
+    const policyIndicator =
+        getPage().shadowRoot!.querySelector<HTMLElement>('#policyIndicator');
     assertFalse(!!policyIndicator);
-  });
-
-  test('HandleFindShortcut', async () => {
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
-
-    let searchBox =
-        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
-    let searchField = strictQuery(
-        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
-    assertFalse(searchField.isSearchFocused());
-
-    // press ctrl + f.
-    const keyboardEvent = new KeyboardEvent('keydown', {
-      key: 'f',
-      keyCode: 70,
-      code: 'KeyF',
-      ctrlKey: true,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    });
-    getPage().dispatchEvent(keyboardEvent);
-    await flushTasks();
-
-    searchBox =
-        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
-    searchField = strictQuery(
-        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
-    assertTrue(searchField.isSearchFocused());
   });
 });

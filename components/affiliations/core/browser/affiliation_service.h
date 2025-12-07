@@ -11,7 +11,6 @@
 #include "components/affiliations/core/browser/affiliation_source.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -22,17 +21,6 @@ namespace affiliations {
 // See affiliation_utils.h for details of what this means.
 class AffiliationService : public KeyedService {
  public:
-  // Controls whether to send a network request or fail on a cache miss.
-  enum class StrategyOnCacheMiss {
-    // Affiliation service will keep trying to send request with exponential
-    // backlog.
-    FETCH_OVER_NETWORK,
-    // Request will fail immediately.
-    FAIL,
-    // After first request failure affiliation service will stop trying.
-    TRY_ONCE_OVER_NETWORK
-  };
-
   using ResultCallback =
       base::OnceCallback<void(const AffiliatedFacets& /* results */,
                               bool /* success */)>;
@@ -42,27 +30,19 @@ class AffiliationService : public KeyedService {
 
   // Prefetches change password URLs for sites requested. Receives a callback to
   // run when the prefetch finishes.
-  virtual void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                          base::OnceClosure callback) = 0;
-
-  // Clears the result of URLs fetch.
-  virtual void Clear() = 0;
+  virtual void PrefetchChangePasswordURL(const GURL& urls,
+                                         base::OnceClosure callback) = 0;
 
   // Returns a URL with change password form for a site requested.
   virtual GURL GetChangePasswordURL(const GURL& url) const = 0;
 
   // Looks up facets affiliated with the facet identified by |facet_uri| and
-  // branding information, and invokes |result_callback| with the results. It is
-  // guaranteed that the results will contain one facet with URI equal to
-  // |facet_uri| when |result_callback| is invoked with success set to true.
-  //
-  // If the local cache contains fresh affiliation and branding information for
-  // |facet_uri|, the request will be served from cache. Otherwise,
-  // |cache_miss_policy| controls whether to issue an on-demand network request,
-  // or to fail the request without fetching.
+  // branding information in the local cache if it's fresh. Invokes
+  // |result_callback| with the results, it is guaranteed that the results will
+  // contain one facet with URI equal to |facet_uri| when |result_callback| is
+  // invoked with success set to true.
   virtual void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
-      AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
       ResultCallback result_callback) = 0;
 
   // Prefetches affiliation information for the facet identified by
@@ -104,7 +84,7 @@ class AffiliationService : public KeyedService {
   // Retrieves psl extension list. This list includes domain which shouldn't be
   // considered as PSL match.
   virtual void GetPSLExtensions(
-      base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
   // This method will fetch the latest affiliation and branding information for
   // |facets| even if local cache is still fresh. |callback| is invoked on

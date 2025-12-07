@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
 
@@ -20,7 +16,6 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
@@ -46,7 +41,7 @@ const char kTestContactEmailPrefix[] = "email_";
 const char kTestContactPhonePrefix[] = "phone_";
 const char kTestDefaultDeviceName[] = "Josh's Chromebook";
 const char kTestProfileUserName[] = "test@google.com";
-const char* kTestPersonNames[] = {"BBB BBB", "CCC CCC", "AAA AAA"};
+constexpr const char* kTestPersonNames[] = {"BBB BBB", "CCC CCC", "AAA AAA"};
 
 // From nearby_share_contact_manager_impl.cc.
 constexpr base::TimeDelta kContactUploadPeriod = base::Hours(24);
@@ -231,11 +226,10 @@ class NearbyShareContactManagerImplTest
         &scheduler_factory_);
     NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(
         &downloader_factory_);
-    profile_info_provider_.set_profile_user_name(kTestProfileUserName);
 
     manager_ = NearbyShareContactManagerImpl::Factory::Create(
-        &pref_service_, &http_client_factory_, &local_device_data_manager_,
-        &profile_info_provider_);
+        kTestProfileUserName, &pref_service_, &http_client_factory_,
+        &local_device_data_manager_);
     manager_awaiter_ =
         std::make_unique<nearby_share::mojom::ContactManagerAsyncWaiter>(
             manager_.get());
@@ -493,7 +487,6 @@ class NearbyShareContactManagerImplTest
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeNearbyShareClientFactory http_client_factory_;
   FakeNearbyShareLocalDeviceDataManager local_device_data_manager_;
-  FakeNearbyShareProfileInfoProvider profile_info_provider_;
   ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
   FakeNearbyShareContactDownloader::Factory downloader_factory_;
   std::unique_ptr<NearbyShareContactManager> manager_;

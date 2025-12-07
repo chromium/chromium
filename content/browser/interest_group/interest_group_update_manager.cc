@@ -21,7 +21,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -91,15 +91,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "Interest group periodic update fetcher"
           description:
-            "Fetches periodic updates of FLEDGE interest groups previously "
-            "joined by navigator.joinAdInterestGroup(). FLEDGE allow sites to "
-            "store persistent interest groups that are only accessible to "
-            "special on-device ad auction worklets run via "
-            "navigator.runAdAuction(). JavaScript running in the context of a "
-            "frame cannot read interest groups, but it can request that all "
-            "interest groups owned by the current frame's origin be updated by "
-            "fetching JSON from the registered update URL for each interest "
-            "group."
+            "Fetches periodic updates of Protected Audiences interest groups "
+            "previously joined by navigator.joinAdInterestGroup(). Protected "
+            "Audiences allow sites to store persistent interest groups that "
+            "are only accessible to special on-device ad auction worklets run "
+            "via navigator.runAdAuction(). JavaScript running in the context "
+            "of a frame cannot read interest groups, but it can request that "
+            "all interest groups owned by the current frame's origin be "
+            "updated by fetching JSON from the registered update URL for each "
+            "interest group."
             "See https://github.com/WICG/turtledove/blob/main/FLEDGE.md and "
             "https://developer.chrome.com/docs/privacy-sandbox/fledge/"
           trigger:
@@ -112,11 +112,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests are controlled by a feature flag that is off by "
-            "default now. When enabled, they can be disabled by the Privacy"
-            " Sandbox setting."
-          policy_exception_justification:
-            "These requests are triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 // TODO(crbug.com/40172488): Report errors to devtools for the TryToCopy*().
@@ -322,12 +324,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!maybe_user_bidding_signals) {
     return true;
   }
-  std::string user_bidding_signals;
-  JSONStringValueSerializer serializer(&user_bidding_signals);
-  if (!serializer.Serialize(*maybe_user_bidding_signals)) {
+  std::optional<std::string> user_bidding_signals =
+      base::WriteJson(*maybe_user_bidding_signals);
+  if (!user_bidding_signals.has_value()) {
     return false;
   }
-  interest_group_update.user_bidding_signals = std::move(user_bidding_signals);
+  interest_group_update.user_bidding_signals = *std::move(user_bidding_signals);
   return true;
 }
 
@@ -422,6 +424,48 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+// Copies the viewAndClickCountsProviders JSON field into
+// `view_and_click_counts_providers`.
+[[nodiscard]] bool TryToCopyViewAndClickCountsProviders(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value* maybe_view_and_click_counts_providers =
+      dict.Find("viewAndClickCountsProviders");
+
+  // No `viewAndClickCountsProviders` field in the update JSON.
+  if (!maybe_view_and_click_counts_providers) {
+    return true;
+  }
+
+  // `viewAndClickCountsProviders` field is `null` in the update JSON.
+  if (maybe_view_and_click_counts_providers->is_none()) {
+    interest_group_update.view_and_click_counts_providers = std::nullopt;
+    return true;
+  }
+
+  // If `view_and_click_counts_providers` is present and not null, it must
+  // be a valid list of URL origin strings.
+  if (!maybe_view_and_click_counts_providers->is_list()) {
+    return false;
+  }
+
+  const base::Value::List& view_and_click_counts_providers =
+      maybe_view_and_click_counts_providers->GetList();
+
+  interest_group_update.view_and_click_counts_providers.emplace();
+  interest_group_update.view_and_click_counts_providers->reserve(
+      view_and_click_counts_providers.size());
+  for (const base::Value& provider : view_and_click_counts_providers) {
+    if (!provider.is_string()) {
+      return false;
+    }
+    interest_group_update.view_and_click_counts_providers->emplace_back(
+        url::Origin::Create(GURL(provider.GetString())));
+  }
+
+  return true;
+}
+
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] std::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
     const base::Value::List& ads_list,
@@ -493,16 +537,20 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
       }
     }
+    const std::string* maybe_creative_scanning_metadata =
+        ads_dict->FindString("creativeScanningMetadata");
+    if (maybe_creative_scanning_metadata) {
+      ad.creative_scanning_metadata = *maybe_creative_scanning_metadata;
+    }
     const base::Value* maybe_metadata = ads_dict->Find("metadata");
     if (maybe_metadata) {
-      std::string metadata;
-      JSONStringValueSerializer serializer(&metadata);
-      if (!serializer.Serialize(*maybe_metadata)) {
+      std::optional<std::string> metadata = base::WriteJson(*maybe_metadata);
+      if (!metadata.has_value()) {
         // Binary blobs shouldn't be present, but it's possible we exceeded the
         // max JSON depth.
         return std::nullopt;
       }
-      ad.metadata = std::move(metadata);
+      ad.metadata = *std::move(metadata);
     }
     const std::string* maybe_ad_render_id = ads_dict->FindString("adRenderId");
     if (maybe_ad_render_id) {
@@ -624,6 +672,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     } else if (flag == "include-full-ads") {
       auction_server_request_flags.Put(
           blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
+    } else if (flag == "omit-user-bidding-signals") {
+      auction_server_request_flags.Put(
+          blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals);
     }
   }
   interest_group_update.auction_server_request_flags =
@@ -772,6 +823,9 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
                                                  interest_group_update)) {
     return std::nullopt;
   }
+  if (!TryToCopyViewAndClickCountsProviders(*dict, interest_group_update)) {
+    return std::nullopt;
+  }
   if (!TryToCopyUserBiddingSignals(*dict, interest_group_update)) {
     return std::nullopt;
   }
@@ -811,20 +865,24 @@ InterestGroupUpdateManager::~InterestGroupUpdateManager() = default;
 void InterestGroupUpdateManager::UpdateInterestGroupsOfOwner(
     const url::Origin& owner,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<std::string> user_agent_override,
     AreReportingOriginsAttestedCallback callback) {
   attestation_callback_ = std::move(callback);
-  owners_to_update_.Enqueue(owner, std::move(client_security_state));
+  owners_to_update_.Enqueue(owner, std::move(client_security_state),
+                            std::move(user_agent_override));
   MaybeContinueUpdatingCurrentOwner();
 }
 
 void InterestGroupUpdateManager::UpdateInterestGroupsOfOwners(
     base::span<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<std::string> user_agent_override,
     AreReportingOriginsAttestedCallback callback) {
   // Shuffle the list of interest group owners for fairness.
   base::RandomShuffle(owners.begin(), owners.end());
   for (const url::Origin& owner : owners) {
-    UpdateInterestGroupsOfOwner(owner, client_security_state.Clone(), callback);
+    UpdateInterestGroupsOfOwner(owner, client_security_state.Clone(),
+                                user_agent_override, callback);
   }
 }
 
@@ -856,9 +914,35 @@ InterestGroupUpdateManager::OwnersToUpdate::FrontSecurityState() const {
   return security_state_map_.at(FrontOwner()).Clone();
 }
 
+InterestGroupUpdateManager::OwnersToUpdate::InterestGroupOwnerUpdateData::
+    InterestGroupOwnerUpdateData() = default;
+
+InterestGroupUpdateManager::OwnersToUpdate::InterestGroupOwnerUpdateData::
+    InterestGroupOwnerUpdateData(std::optional<std::string> user_agent_override)
+    : user_agent_override(std::move(user_agent_override)) {}
+
+InterestGroupUpdateManager::OwnersToUpdate::InterestGroupOwnerUpdateData::
+    ~InterestGroupOwnerUpdateData() = default;
+
+InterestGroupUpdateManager::OwnersToUpdate::InterestGroupOwnerUpdateData::
+    InterestGroupOwnerUpdateData(const InterestGroupOwnerUpdateData& other) =
+        default;
+InterestGroupUpdateManager::OwnersToUpdate::InterestGroupOwnerUpdateData&
+InterestGroupUpdateManager::OwnersToUpdate::InterestGroupOwnerUpdateData::
+operator=(const InterestGroupOwnerUpdateData& other) = default;
+
 bool InterestGroupUpdateManager::OwnersToUpdate::Enqueue(
     const url::Origin& owner,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<std::string> user_agent_override) {
+  InterestGroupOwnerUpdateData owner_update_data(user_agent_override);
+
+  if (!interest_group_owner_update_data_
+           .emplace(owner, std::move(owner_update_data))
+           .second) {
+    return false;
+  }
+
   if (!security_state_map_.emplace(owner, std::move(client_security_state))
            .second) {
     return false;
@@ -869,10 +953,11 @@ bool InterestGroupUpdateManager::OwnersToUpdate::Enqueue(
 
 void InterestGroupUpdateManager::OwnersToUpdate::PopFront() {
   security_state_map_.erase(owners_to_update_.front());
+  interest_group_owner_update_data_.erase(owners_to_update_.front());
   owners_to_update_.pop_front();
 
   if (owners_to_update_.empty()) {
-    joining_origin_isolation_info_map_.clear();
+    Clear();
   }
 }
 
@@ -884,12 +969,23 @@ InterestGroupUpdateManager::OwnersToUpdate::GetIsolationInfoByJoiningOrigin(
   if (isolation_info_it != joining_origin_isolation_info_map_.end()) {
     return &isolation_info_it->second;
   } else {
-    net::IsolationInfo isolation_info = net::IsolationInfo::CreateTransient();
+    net::IsolationInfo isolation_info =
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
     const auto [it, success] = joining_origin_isolation_info_map_.insert(
         {joining_origin, std::move(isolation_info)});
     CHECK(success);
     return &it->second;
   }
+}
+
+std::optional<std::string>
+InterestGroupUpdateManager::OwnersToUpdate::MaybeGetUserAgentOverride(
+    const url::Origin& owner) const {
+  auto it = interest_group_owner_update_data_.find(owner);
+  if ((it != interest_group_owner_update_data_.end())) {
+    return it->second.user_agent_override;
+  }
+  return std::nullopt;
 }
 
 void InterestGroupUpdateManager::OwnersToUpdate::
@@ -899,6 +995,7 @@ void InterestGroupUpdateManager::OwnersToUpdate::
 
 void InterestGroupUpdateManager::OwnersToUpdate::Clear() {
   owners_to_update_.clear();
+  interest_group_owner_update_data_.clear();
   security_state_map_.clear();
   joining_origin_isolation_info_map_.clear();
 }
@@ -977,7 +1074,8 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
   // NIK for all storage interest groups.
   net::IsolationInfo per_update_isolation_info;
   if (!base::FeatureList::IsEnabled(features::kGroupNIKByJoiningOrigin)) {
-    per_update_isolation_info = net::IsolationInfo::CreateTransient();
+    per_update_isolation_info =
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   }
 
   for (auto& [interest_group_key, update_url, joining_origin] :
@@ -1002,6 +1100,16 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
     }
     resource_request->trusted_params->client_security_state =
         owners_to_update_.FrontSecurityState();
+
+    auto user_agent_override =
+        owners_to_update_.MaybeGetUserAgentOverride(owner);
+
+    if (user_agent_override) {
+      resource_request->headers.SetHeader(
+          net::HttpRequestHeaders::kUserAgent,
+          std::move(user_agent_override.value()));
+    }
+
     auto simple_url_loader = network::SimpleURLLoader::Create(
         std::move(resource_request), kTrafficAnnotation);
     simple_url_loader->SetTimeoutDuration(base::Seconds(30));
@@ -1130,7 +1238,7 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
     UrlLoadersList::iterator simple_url_loader_it,
     blink::InterestGroupKey group_key,
     base::TimeTicks start_time,
-    std::unique_ptr<std::string> fetch_body) {
+    std::optional<std::string> fetch_body) {
   DCHECK_EQ(group_key.owner, owners_to_update_.FrontOwner());
   DCHECK_GT(num_in_flight_updates_, 0);
   DCHECK(!waiting_on_db_read_);

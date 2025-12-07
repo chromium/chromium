@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <Cocoa/Cocoa.h>
-
 #include "chrome/utility/importer/safari_importer.h"
+
+#include <Cocoa/Cocoa.h>
 
 #include <string>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
-#include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "net/base/data_url.h"
 #include "url/gurl.h"
 
@@ -35,7 +35,7 @@ void RecursiveReadBookmarksFolder(
     const std::vector<std::u16string>& parent_path_elements,
     bool is_in_toolbar,
     const std::u16string& toolbar_name,
-    std::vector<ImportedBookmarkEntry>* out_bookmarks) {
+    std::vector<user_data_importer::ImportedBookmarkEntry>* out_bookmarks) {
   DCHECK(bookmark_folder);
 
   NSString* type = bookmark_folder[@"WebBookmarkType"];
@@ -50,11 +50,11 @@ void RecursiveReadBookmarksFolder(
   if (!is_top_level_bookmarks_container) {
     // Top level containers sometimes don't have title attributes.
     if (![type isEqualToString:@"WebBookmarkTypeList"] || !title) {
-      NOTREACHED_IN_MIGRATION()
-          << "Type=(" << (type ? base::SysNSStringToUTF8(type) : "Null type")
-          << ") Title=("
-          << (title ? base::SysNSStringToUTF8(title) : "Null title") << ")";
-      return;
+      NOTREACHED() << "Type=("
+                   << (type ? base::SysNSStringToUTF8(type) : "Null type")
+                   << ") Title=("
+                   << (title ? base::SysNSStringToUTF8(title) : "Null title")
+                   << ")";
     }
   }
 
@@ -65,7 +65,7 @@ void RecursiveReadBookmarksFolder(
     // above prevents either the toolbar folder or the bookmarks menu from being
     // added if either is empty.  Note also that all non-empty folders are added
     // implicitly when their children are added.
-    ImportedBookmarkEntry entry;
+    user_data_importer::ImportedBookmarkEntry entry;
     // Safari doesn't specify a creation time for the folder.
     entry.creation_time = base::Time::Now();
     entry.title = base::SysNSStringToUTF16(title);
@@ -117,7 +117,7 @@ void RecursiveReadBookmarksFolder(
     }
 
     // Output Bookmark.
-    ImportedBookmarkEntry entry;
+    user_data_importer::ImportedBookmarkEntry entry;
     // Safari doesn't specify a creation time for the bookmark.
     entry.creation_time = base::Time::Now();
     entry.title = base::SysNSStringToUTF16(element_title);
@@ -137,9 +137,10 @@ SafariImporter::SafariImporter(const base::FilePath& library_dir)
 
 SafariImporter::~SafariImporter() = default;
 
-void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
-                                 uint16_t items,
-                                 ImporterBridge* bridge) {
+void SafariImporter::StartImport(
+    const user_data_importer::SourceProfile& source_profile,
+    uint16_t items,
+    ImporterBridge* bridge) {
   bridge_ = bridge;
   // The order here is important!
   bridge_->NotifyStarted();
@@ -147,10 +148,10 @@ void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
   // In keeping with import on other platforms (and for other browsers), we
   // don't import the home page (since it may lead to a useless homepage); see
   // crbug.com/25603.
-  if ((items & importer::FAVORITES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::FAVORITES);
+  if ((items & user_data_importer::FAVORITES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportBookmarks();
-    bridge_->NotifyItemEnded(importer::FAVORITES);
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   }
 
   bridge_->NotifyEnded();
@@ -159,7 +160,7 @@ void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
 void SafariImporter::ImportBookmarks() {
   std::u16string toolbar_name =
       bridge_->GetLocalizedString(IDS_BOOKMARK_BAR_FOLDER_NAME);
-  std::vector<ImportedBookmarkEntry> bookmarks;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   ParseBookmarks(toolbar_name, &bookmarks);
 
   // Write bookmarks into profile.
@@ -172,7 +173,7 @@ void SafariImporter::ImportBookmarks() {
 
 void SafariImporter::ParseBookmarks(
     const std::u16string& toolbar_name,
-    std::vector<ImportedBookmarkEntry>* bookmarks) {
+    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks) {
   DCHECK(bookmarks);
 
   // Construct ~/Library/Safari/Bookmarks.plist path

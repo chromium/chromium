@@ -9,15 +9,13 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
@@ -30,7 +28,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -39,7 +36,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -52,16 +49,16 @@ constexpr char kAttributionDestination[] = "attribution_destination";
 
 struct DebugDataTypeAndBody {
   DebugDataType debug_data_type;
-  base::Value limit;
-  base::Value::Dict additional_fields;
+  base::Value::Dict body;
 
-  explicit DebugDataTypeAndBody(
-      DebugDataType debug_data_type,
-      base::Value limit = base::Value(),
-      base::Value::Dict additional_fields = base::Value::Dict())
-      : debug_data_type(debug_data_type),
-        limit(std::move(limit)),
-        additional_fields(std::move(additional_fields)) {}
+  explicit DebugDataTypeAndBody(DebugDataType debug_data_type,
+                                base::Value limit = base::Value(),
+                                base::Value::Dict body = base::Value::Dict())
+      : debug_data_type(debug_data_type), body(std::move(body)) {
+    if (!limit.is_none()) {
+      this->body.Set("limit", std::move(limit));
+    }
+  }
 };
 
 template <typename T>
@@ -71,32 +68,32 @@ base::Value GetLimit(T limit) {
 
 std::optional<DebugDataTypeAndBody> GetReportDataBody(
     const StoreSourceResult& result) {
-  base::Value::Dict additional_fields;
-  if (result.destination_limit().has_value()) {
-    additional_fields.Set("source_destination_limit",
-                          GetLimit(result.destination_limit().value()));
-  }
-
   const auto make_report_body = [&](DebugDataType type,
                                     base::Value limit = base::Value()) {
-    return std::make_optional(DebugDataTypeAndBody(
-        type, std::move(limit), std::move(additional_fields)));
+    base::Value::Dict body;
+    if (result.destination_limit().has_value()) {
+      body.Set("source_destination_limit",
+               GetLimit(result.destination_limit().value()));
+    }
+
+    return std::make_optional<DebugDataTypeAndBody>(type, std::move(limit),
+                                                    std::move(body));
   };
 
-  return absl::visit(
-      base::Overloaded{
+  return std::visit(
+      absl::Overload{
           [](StoreSourceResult::ProhibitedByBrowserPolicy) {
             return std::optional<DebugDataTypeAndBody>();
           },
-          [&](absl::variant<StoreSourceResult::Success,
-                            // `kSourceSuccess` is sent for a few errors as well
-                            // to mitigate the security concerns on reporting
-                            // these errors. Because these errors are thrown
-                            // based on information across reporting origins,
-                            // reporting on them would violate the same-origin
-                            // policy.
-                            StoreSourceResult::ExcessiveReportingOrigins,
-                            StoreSourceResult::DestinationGlobalLimitReached>) {
+          [&](std::variant<StoreSourceResult::Success,
+                           // `kSourceSuccess` is sent for a few errors as well
+                           // to mitigate the security concerns on reporting
+                           // these errors. Because these errors are thrown
+                           // based on information across reporting origins,
+                           // reporting on them would violate the same-origin
+                           // policy.
+                           StoreSourceResult::ExcessiveReportingOrigins,
+                           StoreSourceResult::DestinationGlobalLimitReached>) {
             return make_report_body(result.is_noised()
                                         ? DebugDataType::kSourceNoised
                                         : DebugDataType::kSourceSuccess);
@@ -105,12 +102,11 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
             return make_report_body(DebugDataType::kSourceDestinationLimit,
                                     GetLimit(v.limit));
           },
-          [&](absl::variant<StoreSourceResult::DestinationReportingLimitReached,
-                            StoreSourceResult::DestinationBothLimitsReached>
-                  v) {
+          [&](std::variant<StoreSourceResult::DestinationReportingLimitReached,
+                           StoreSourceResult::DestinationBothLimitsReached> v) {
             return make_report_body(
                 DebugDataType::kSourceDestinationRateLimit,
-                absl::visit([](auto v) { return GetLimit(v.limit); }, v));
+                std::visit([](auto v) { return GetLimit(v.limit); }, v));
           },
           [&](StoreSourceResult::DestinationPerDayReportingLimitReached v) {
             return make_report_body(
@@ -133,10 +129,19 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
             return make_report_body(DebugDataType::kSourceChannelCapacityLimit,
                                     base::Value(v.limit));
           },
+          [&](StoreSourceResult::ExceedsMaxScopesChannelCapacity v) {
+            return make_report_body(
+                DebugDataType::kSourceScopesChannelCapacityLimit,
+                base::Value(v.limit));
+          },
           [&](StoreSourceResult::ExceedsMaxTriggerStateCardinality v) {
             return make_report_body(
                 DebugDataType::kSourceTriggerStateCardinalityLimit,
                 GetLimit(v.limit));
+          },
+          [&](StoreSourceResult::ExceedsMaxEventStatesLimit v) {
+            return make_report_body(DebugDataType::kSourceMaxEventStatesLimit,
+                                    GetLimit(v.limit));
           },
       },
       result.result());
@@ -144,8 +149,8 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
 
 std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
     const CreateReportResult::EventLevel& result) {
-  return absl::visit(
-      base::Overloaded{
+  return std::visit(
+      absl::Overload{
           [](const CreateReportResult::EventLevelSuccess&) {
             return std::optional<DebugDataTypeAndBody>();
           },
@@ -156,66 +161,66 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
             return std::optional<DebugDataTypeAndBody>();
           },
           [](CreateReportResult::InternalError) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerUnknownError));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerUnknownError);
           },
           [](CreateReportResult::NoCapacityForConversionDestination v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventStorageLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventStorageLimit, GetLimit(v.max));
           },
           [](CreateReportResult::ExcessiveReportingOrigins v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingImpressions) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingSource));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingSource);
           },
           [](CreateReportResult::ExcessiveAttributions v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::
                     kTriggerEventAttributionsPerSourceDestinationLimit,
-                GetLimit(v.max)));
+                GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingSourceFilterData) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerNoMatchingFilterData));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingFilterData);
           },
           [](CreateReportResult::Deduplicated) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventDeduplicated));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventDeduplicated);
           },
           [](CreateReportResult::NoMatchingConfigurations) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventNoMatchingConfigurations));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoMatchingConfigurations);
           },
           [](CreateReportResult::NeverAttributedSource) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventNoise));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoise);
           },
           [](CreateReportResult::FalselyAttributedSource) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventNoise));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoise);
           },
           [](const CreateReportResult::PriorityTooLow&) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventLowPriority));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventLowPriority);
           },
           [](const CreateReportResult::ExcessiveEventLevelReports&) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventExcessiveReports));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventExcessiveReports);
           },
           [](CreateReportResult::ReportWindowNotStarted) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventReportWindowNotStarted));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventReportWindowNotStarted);
           },
           [](CreateReportResult::ReportWindowPassed) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventReportWindowPassed));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventReportWindowPassed);
           },
           [](CreateReportResult::NoMatchingTriggerData) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventNoMatchingTriggerData));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoMatchingTriggerData);
           },
       },
       result);
@@ -223,8 +228,8 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
 
 std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
     const CreateReportResult::Aggregatable& result) {
-  return absl::visit(
-      base::Overloaded{
+  return std::visit(
+      absl::Overload{
           [](const CreateReportResult::AggregatableSuccess&) {
             return std::optional<DebugDataTypeAndBody>();
           },
@@ -235,52 +240,57 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
             return std::optional<DebugDataTypeAndBody>();
           },
           [](CreateReportResult::InternalError) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerUnknownError));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerUnknownError);
           },
           [](CreateReportResult::NoCapacityForConversionDestination v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateStorageLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateStorageLimit, GetLimit(v.max));
           },
           [](CreateReportResult::ExcessiveReportingOrigins v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingImpressions) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingSource));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingSource);
           },
           [](CreateReportResult::ExcessiveAttributions v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::
                     kTriggerAggregateAttributionsPerSourceDestinationLimit,
-                GetLimit(v.max)));
+                GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingSourceFilterData) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerNoMatchingFilterData));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingFilterData);
           },
           [](CreateReportResult::Deduplicated) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateDeduplicated));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateDeduplicated);
           },
           [](CreateReportResult::NoHistograms) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateNoContributions));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateNoContributions);
           },
           [](CreateReportResult::InsufficientBudget) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kTriggerAggregateInsufficientBudget,
-                GetLimit(attribution_reporting::kMaxAggregatableValue)));
+                GetLimit(attribution_reporting::kMaxAggregatableValue));
+          },
+          [](const CreateReportResult::InsufficientNamedBudget& v) {
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateInsufficientNamedBudget,
+                GetLimit(v.budget), base::Value::Dict().Set("name", v.name));
           },
           [](CreateReportResult::ReportWindowPassed) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateReportWindowPassed));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateReportWindowPassed);
           },
           [](CreateReportResult::ExcessiveAggregatableReports v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kTriggerAggregateExcessiveReports,
-                GetLimit(v.max)));
+                GetLimit(v.max));
           },
       },
       result);
@@ -297,44 +307,35 @@ void SetSourceData(base::Value::Dict& data_body,
   }
 }
 
-void SetLimit(base::Value::Dict& data_body, base::Value limit) {
-  data_body.Set("limit", std::move(limit));
-}
-
 base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
                                     const CreateReportResult& result) {
   if (data.debug_data_type == DebugDataType::kTriggerEventExcessiveReports ||
       data.debug_data_type == DebugDataType::kTriggerEventLowPriority) {
-    DCHECK(result.dropped_event_level_report());
+    CHECK(result.dropped_event_level_report());
     return result.dropped_event_level_report()->ReportBody();
   }
 
-  base::Value::Dict data_body;
-  data_body.Set(
+  data.body.Set(
       kAttributionDestination,
       net::SchemefulSite(result.trigger().destination_origin()).Serialize());
+
   if (std::optional<uint64_t> debug_key =
           result.trigger().registration().debug_key) {
-    data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
+    data.body.Set("trigger_debug_key", base::NumberToString(*debug_key));
   }
 
   if (const std::optional<StoredSource>& source = result.source()) {
-    SetSourceData(data_body, source->source_event_id(),
+    SetSourceData(data.body, source->source_event_id(),
                   source->common_info().source_site(), source->debug_key());
   }
 
-  if (!data.limit.is_none()) {
-    SetLimit(data_body, std::move(data.limit));
-  }
-
-  return data_body;
+  return std::move(data.body);
 }
 
 base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
-  base::Value::Dict dict;
-  dict.Set("type", attribution_reporting::SerializeDebugDataType(type));
-  dict.Set("body", std::move(body));
-  return dict;
+  return base::Value::Dict()
+      .Set("type", attribution_reporting::SerializeDebugDataType(type))
+      .Set("body", std::move(body));
 }
 
 void RecordVerboseDebugReportType(DebugDataType type) {
@@ -359,7 +360,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StoreSourceResult& result) {
   const StorableSource& source = result.source();
   if (!source.registration().debug_reporting ||
-      !source.common_info().debug_cookie_set() ||
+      !source.common_info().cookie_based_debug_allowed() ||
       source.is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
@@ -371,41 +372,33 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
   RecordVerboseDebugReportType(data->debug_data_type);
 
-  base::Value::Dict body;
-  if (!data->limit.is_none()) {
-    SetLimit(body, std::move(data->limit));
-  }
-
   const attribution_reporting::SourceRegistration& registration =
       source.registration();
 
-  body.Set(kAttributionDestination, registration.destination_set.ToJson());
-  SetSourceData(body, registration.source_event_id,
+  data->body.Set(kAttributionDestination,
+                 registration.destination_set.ToJson());
+  SetSourceData(data->body, registration.source_event_id,
                 source.common_info().source_site(), registration.debug_key);
 
-  CHECK(base::ranges::none_of(data->additional_fields, [&](const auto& e) {
-    return body.contains(e.first);
-  }));
-  body.Merge(std::move(data->additional_fields));
-
-  base::Value::List report_body;
-  report_body.Append(GetReportData(data->debug_data_type, std::move(body)));
-  return AttributionDebugReport(std::move(report_body),
-                                source.common_info().reporting_origin());
+  return AttributionDebugReport(
+      base::Value::List::with_capacity(1).Append(
+          GetReportData(data->debug_data_type, std::move(data->body))),
+      source.common_info().reporting_origin());
 }
 
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     base::FunctionRef<bool()> is_operation_allowed,
-    bool is_debug_cookie_set,
+    bool cookie_based_debug_allowed,
     const CreateReportResult& result) {
   if (!result.trigger().registration().debug_reporting ||
-      !is_debug_cookie_set || result.trigger().is_within_fenced_frame() ||
-      !is_operation_allowed()) {
+      !cookie_based_debug_allowed ||
+      result.trigger().is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
 
-  if (result.source() && !result.source()->common_info().debug_cookie_set()) {
+  if (result.source() &&
+      !result.source()->common_info().cookie_based_debug_allowed()) {
     return std::nullopt;
   }
 
@@ -470,23 +463,22 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
       break;
   }
 
-  base::Value::Dict data_body;
-  data_body.Set("context_site",
-                net::SchemefulSite(registration.top_level_origin).Serialize());
-  data_body.Set("registration_url", registration_item.url.spec());
-
-  base::Value::List report_body;
-  report_body.Append(GetReportData(data_type, std::move(data_body)));
-
   RecordVerboseDebugReportType(data_type);
 
-  return AttributionDebugReport(std::move(report_body),
-                                *std::move(registration_origin));
+  return AttributionDebugReport(
+      base::Value::List::with_capacity(1).Append(GetReportData(
+          data_type,
+          base::Value::Dict()
+              .Set(
+                  "context_site",
+                  net::SchemefulSite(registration.top_level_origin).Serialize())
+              .Set("registration_url", registration_item.url.spec()))),
+      *std::move(registration_origin));
 }
 
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     attribution_reporting::SuitableOrigin reporting_origin,
-    const attribution_reporting::RegistrationHeaderError& error,
+    attribution_reporting::RegistrationHeaderError error,
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     base::FunctionRef<bool(const url::Origin&)> is_operation_allowed) {
@@ -494,20 +486,18 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return std::nullopt;
   }
 
-  base::Value::Dict data_body;
-  data_body.Set("context_site", net::SchemefulSite(context_origin).Serialize());
-  data_body.Set("header", error.HeaderName());
-  data_body.Set("value", error.header_value);
+  constexpr DebugDataType kDataType = DebugDataType::kHeaderParsingError;
 
-  const DebugDataType data_type = DebugDataType::kHeaderParsingError;
+  RecordVerboseDebugReportType(kDataType);
 
-  base::Value::List report_body;
-  report_body.Append(GetReportData(data_type, std::move(data_body)));
-
-  RecordVerboseDebugReportType(data_type);
-
-  return AttributionDebugReport(std::move(report_body),
-                                std::move(reporting_origin));
+  return AttributionDebugReport(
+      base::Value::List::with_capacity(1).Append(GetReportData(
+          kDataType, base::Value::Dict()
+                         .Set("context_site",
+                              net::SchemefulSite(context_origin).Serialize())
+                         .Set("header", error.HeaderName())
+                         .Set("value", std::move(error.header_value)))),
+      std::move(reporting_origin));
 }
 
 AttributionDebugReport::AttributionDebugReport(
@@ -515,7 +505,7 @@ AttributionDebugReport::AttributionDebugReport(
     attribution_reporting::SuitableOrigin reporting_origin)
     : report_body_(std::move(report_body)),
       reporting_origin_(std::move(reporting_origin)) {
-  DCHECK(!report_body_.empty());
+  CHECK(!report_body_.empty());
 }
 
 AttributionDebugReport::~AttributionDebugReport() = default;

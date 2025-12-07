@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -100,5 +101,3 @@ void WebSelectionTabHelper::SendResponse(WebSelectionResponse* response) {
   WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
   time_out_callback_.Stop();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebSelectionTabHelper)

@@ -27,8 +27,8 @@ class MEDIA_EXPORT OffloadingAudioEncoder final : public AudioEncoder {
   // runner.
   OffloadingAudioEncoder(
       std::unique_ptr<AudioEncoder> wrapped_encoder,
-      const scoped_refptr<base::SequencedTaskRunner> work_runner,
-      const scoped_refptr<base::SequencedTaskRunner> callback_runner);
+      scoped_refptr<base::SequencedTaskRunner> work_runner,
+      scoped_refptr<base::SequencedTaskRunner> callback_runner);
 
   // Uses current task runner for callbacks and asks thread pool for a new task
   // runner to do actual encoding work.

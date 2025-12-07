@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -47,9 +48,10 @@ class SharedAssociatedRemote {
   explicit SharedAssociatedRemote(
       PendingAssociatedRemote<Interface> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-          base::SequencedTaskRunner::GetCurrentDefault()) {
+          base::SequencedTaskRunner::GetCurrentDefault(),
+      const base::Location& location = base::Location::Current()) {
     if (pending_remote.is_valid())
-      Bind(std::move(pending_remote), std::move(bind_task_runner));
+      Bind(std::move(pending_remote), std::move(bind_task_runner), location);
   }
 
   bool is_bound() const { return remote_ != nullptr; }
@@ -83,20 +85,22 @@ class SharedAssociatedRemote {
   // one of them, on `task_runner`. The other is returned as a receiver.
   mojo::PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-          base::SequencedTaskRunner::GetCurrentDefault()) {
+          base::SequencedTaskRunner::GetCurrentDefault(),
+      const base::Location& location = base::Location::Current()) {
     if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
       return PendingAssociatedReceiver<Interface>();
     }
     mojo::PendingAssociatedRemote<Interface> remote;
     auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-    Bind(std::move(remote), std::move(bind_task_runner));
+    Bind(std::move(remote), std::move(bind_task_runner), location);
     return receiver;
   }
 
   // Binds to `pending_remote` on `bind_task_runner`.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-                base::SequencedTaskRunner::GetCurrentDefault()) {
+                base::SequencedTaskRunner::GetCurrentDefault(),
+            const base::Location& location = base::Location::Current()) {
     DCHECK(!remote_);
     DCHECK(pending_remote.is_valid());
     if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
@@ -104,7 +108,7 @@ class SharedAssociatedRemote {
       return;
     }
     remote_ = SharedRemoteBase<AssociatedRemote<Interface>>::Create(
-        std::move(pending_remote), std::move(bind_task_runner));
+        std::move(pending_remote), std::move(bind_task_runner), location);
   }
 
  private:

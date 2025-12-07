@@ -10,6 +10,10 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_utils.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/geometry/rect_f.h"
+#endif
+
 namespace content {
 
 // The results of a find request.

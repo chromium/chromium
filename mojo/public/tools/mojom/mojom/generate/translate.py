@@ -9,6 +9,7 @@ representation of a mojom file. When called it's assumed that all imports have
 already been parsed and converted to ASTs before.
 """
 
+import enum as pyenum
 import itertools
 import os
 import re
@@ -19,10 +20,14 @@ from mojom.generate import module as mojom
 from mojom.parse import ast
 
 
-is_running_backwards_compatibility_check_hack = False
+class ExtensibleEnumMode(pyenum.Enum):
+  RELAXED_FOR_BACKWARDS_COMPAT_CHECK = 0
+  RELAXED_FOR_CHROMEOS = 1
+  STRICT = 2
+
 
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
-_EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
+_EXTENSIBLE_ENUMS_MISSING_DEFAULT_CHROMEOS = {
     'x:arc.keymaster.mojom.Algorithm',
     'x:arc.keymaster.mojom.Digest',
     'x:arc.keymaster.mojom.SignatureResult',
@@ -218,20 +223,14 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:crosapi.mojom.BrowserAppInstanceType',
     'x:crosapi.mojom.CreationResult',
     'x:crosapi.mojom.DeviceAccessResultCode',
-    'x:crosapi.mojom.DeviceMode',
     'x:crosapi.mojom.DlpRestrictionLevel',
-    'x:crosapi.mojom.ExoImeSupport',
     'x:crosapi.mojom.FullscreenVisibility',
     'x:crosapi.mojom.GoogleServiceAuthError.State',
     'x:crosapi.mojom.IsInstallableResult',
     'x:crosapi.mojom.KeyTag',
-    'x:crosapi.mojom.KeystoreSigningAlgorithmName',
     'x:crosapi.mojom.KeystoreType',
-    'x:crosapi.mojom.LacrosFeedbackSource',
     'x:crosapi.mojom.MemoryPressureLevel',
-    'x:crosapi.mojom.MetricsReportingManaged',
     'x:crosapi.mojom.NotificationType',
-    'x:crosapi.mojom.OndeviceHandwritingSupport',
     'x:crosapi.mojom.OpenResult',
     'x:crosapi.mojom.PolicyDomain',
     'x:crosapi.mojom.RegistrationCodeType',
@@ -245,9 +244,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:crosapi.mojom.WallpaperLayout',
     'x:crosapi.mojom.WebAppInstallResultCode',
     'x:crosapi.mojom.WebAppUninstallResultCode',
-    'x:device.mojom.HidBusType',
-    'x:device.mojom.WakeLockReason',
-    'x:device.mojom.WakeLockType',
     'x:drivefs.mojom.DialogReason.Type',
     'x:drivefs.mojom.DriveError.Type',
     'x:drivefs.mojom.DriveFsDelegate.ExtensionConnectionStatus',
@@ -257,7 +253,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:drivefs.mojom.MirrorPathStatus',
     'x:drivefs.mojom.MirrorSyncStatus',
     'x:drivefs.mojom.QueryParameters.SortField',
-    'x:fuzz.mojom.FuzzEnum',
     'x:media.mojom.FillLightMode',
     'x:media.mojom.MeteringMode',
     'x:media.mojom.PowerLineFrequency',
@@ -270,32 +265,34 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:media.mojom.VideoCapturePixelFormat',
     'x:media.mojom.VideoCaptureTransportType',
     'x:media.mojom.VideoFacingMode',
-    'x:media_session.mojom.AudioFocusType',
-    'x:media_session.mojom.CameraState',
-    'x:media_session.mojom.EnforcementMode',
-    'x:media_session.mojom.MediaAudioVideoState',
-    'x:media_session.mojom.MediaImageBitmapColorType',
-    'x:media_session.mojom.MediaPictureInPictureState',
-    'x:media_session.mojom.MediaPlaybackState',
-    'x:media_session.mojom.MediaSession.SuspendType',
-    'x:media_session.mojom.MediaSessionAction',
-    'x:media_session.mojom.MediaSessionImageType',
-    'x:media_session.mojom.MediaSessionInfo.SessionState',
-    'x:media_session.mojom.MicrophoneState',
     'x:ml.model_loader.mojom.ComputeResult',
     'x:ml.model_loader.mojom.CreateModelLoaderResult',
     'x:ml.model_loader.mojom.LoadModelResult',
-    'x:mojo.test.AnExtensibleEnum',
-    'x:mojo.test.EnumB',
-    'x:mojo.test.ExtensibleEmptyEnum',
-    'x:mojo.test.enum_default_unittest.mojom.ExtensibleEnumWithoutDefault',
-    'x:network.mojom.WebSandboxFlags',
     'x:payments.mojom.BillingResponseCode',
     'x:payments.mojom.CreateDigitalGoodsResponseCode',
     'x:payments.mojom.ItemType',
     'x:printing.mojom.PrinterType',
-    'x:ui.mojom.KeyboardCode',
-)
+    'x:test.mojom.ExtensibleEnumForUnitTestsCrOS',
+}
+### DO NOT ADD ENTRIES TO THIS LIST. ###
+
+### DO NOT ADD ENTRIES TO THIS LIST. ###
+_EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED = {
+    'x:fuzz.mojom.FuzzEnum',
+    'x:media_session.mojom.MediaPlaybackState',
+    'x:media_session.mojom.MediaSessionAction',
+    'x:media_session.mojom.MediaSessionImageType',
+    'x:media_session.mojom.MediaPictureInPictureState',
+    'x:media_session.mojom.MediaAudioVideoState',
+    'x:media_session.mojom.MediaImageBitmapColorType',
+    'x:media_session.mojom.MediaSessionInfo.SessionState',
+    'x:media_session.mojom.MediaSession.SuspendType',
+    'x:media_session.mojom.AudioFocusType',
+    'x:mojo.test.ExtensibleEmptyEnum',
+    'x:mojo.test.enum_default_unittest.mojom.ExtensibleEnumWithoutDefault',
+    'x:network.mojom.WebSandboxFlags',
+    'x:test.mojom.ExtensibleEnumForUnitTests',
+}
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
 
 
@@ -543,12 +540,13 @@ def _LookupValue(module, parent_kind, implied_kind, ast_leaf_node):
   raise ValueError('Unknown identifier %s' % identifier)
 
 
-def _Kind(kinds, spec, scope):
+def _Kind(module, kinds, spec, scope):
   """Convert a type name into a mojom.Kind object.
 
   As a side-effect this function adds the result to 'kinds'.
 
   Args:
+    module: {mojom.Module} Module currently being constructed.
     kinds: {Dict[str, mojom.Kind]} All known kinds up to this point, indexed by
         their names.
     spec: {str} A name uniquely identifying a type.
@@ -564,22 +562,26 @@ def _Kind(kinds, spec, scope):
     return kind
 
   if spec.startswith('?'):
-    kind = _Kind(kinds, spec[1:], scope)
+    kind = _Kind(module, kinds, spec[1:], scope)
+    if not hasattr(kind, 'MakeNullableKind'):
+      raise Exception("Unknown spec: %s. Check for missing imports in %s" %
+                      (spec, module.path))
     kind = kind.MakeNullableKind()
   elif spec.startswith('a:'):
-    kind = mojom.Array(_Kind(kinds, spec[2:], scope))
+    kind = mojom.Array(_Kind(module, kinds, spec[2:], scope))
   elif spec.startswith('a'):
     colon = spec.find(':')
     length = int(spec[1:colon])
-    kind = mojom.Array(_Kind(kinds, spec[colon + 1:], scope), length)
+    kind = mojom.Array(_Kind(module, kinds, spec[colon + 1:], scope), length)
   elif spec.startswith('rmt:'):
-    kind = mojom.PendingRemote(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingRemote(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rcv:'):
-    kind = mojom.PendingReceiver(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingReceiver(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rma:'):
-    kind = mojom.PendingAssociatedRemote(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingAssociatedRemote(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rca:'):
-    kind = mojom.PendingAssociatedReceiver(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingAssociatedReceiver(_Kind(module, kinds, spec[4:],
+                                                 scope))
   elif spec.startswith('m['):
     # Isolate the two types from their brackets.
 
@@ -592,8 +594,8 @@ def _Kind(kinds, spec, scope):
     first_kind = spec[2:key_end]
     second_kind = spec[key_end + 2:-1]
 
-    kind = mojom.Map(
-        _Kind(kinds, first_kind, scope), _Kind(kinds, second_kind, scope))
+    kind = mojom.Map(_Kind(module, kinds, first_kind, scope),
+                     _Kind(module, kinds, second_kind, scope))
   else:
     kind = mojom.Kind(spec)
 
@@ -722,7 +724,7 @@ def _StructField(module, parsed_field, struct):
   """
   field = mojom.StructField()
   field.mojom_name = parsed_field.mojom_name.name
-  field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
+  field.kind = _Kind(module, module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, struct.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = _LookupValue(module, struct, field.kind,
@@ -747,7 +749,7 @@ def _UnionField(module, parsed_field, union):
   # Disallow unions from being self-recursive.
   parsed_typename = parsed_field.typename.identifier.id
   assert parsed_typename != union.mojom_name
-  field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
+  field.kind = _Kind(module, module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, union.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = None
@@ -773,7 +775,7 @@ def _Parameter(module, parsed_param, interface):
   """
   parameter = mojom.Parameter()
   parameter.mojom_name = parsed_param.mojom_name.name
-  parameter.kind = _Kind(module.kinds, _MapKind(parsed_param.typename),
+  parameter.kind = _Kind(module, module.kinds, _MapKind(parsed_param.typename),
                          (module.mojom_namespace, interface.mojom_name))
   parameter.ordinal = (parsed_param.ordinal.value
                        if parsed_param.ordinal else None)
@@ -800,10 +802,29 @@ def _Method(module, parsed_method, interface):
   method.parameters = list(
       map(lambda parameter: _Parameter(module, parameter, interface),
           parsed_method.parameter_list))
+  # Method can only have one of result response or response parameter list.
+  assert not (parsed_method.response_parameter_list
+              and parsed_method.result_response)
   if parsed_method.response_parameter_list is not None:
     method.response_parameters = list(
         map(lambda parameter: _Parameter(module, parameter, interface),
             parsed_method.response_parameter_list))
+  if parsed_method.result_response is not None:
+    result_type = parsed_method.result_response
+    success_kind = _Kind(module, module.kinds,
+                         _MapKind(result_type.success_type),
+                         (module.mojom_namespace, interface.mojom_name))
+    failure_kind = _Kind(module, module.kinds,
+                         _MapKind(result_type.failure_type),
+                         (module.mojom_namespace, interface.mojom_name))
+    result_response = mojom.Result(method, success_kind, failure_kind)
+    method.result_response = result_response
+    param = result_response.ToResponseParam(module)
+    method.response_parameters = [param]
+    # We need to add the generated types to the module.
+    module.kinds[param.kind.spec] = param.kind
+    module.unions.append(param.kind)
+
   method.attributes = _AttributeListToDict(module, method,
                                            parsed_method.attribute_list)
 
@@ -904,9 +925,10 @@ def _ResolveNumericEnumValues(enum):
       raise Exception('Unresolved enum value for %s' % field.value.GetSpec())
 
     if prev_value in (-128, -127):
-      raise Exception(f'{field.mojom_name} in {enum.spec} has the value '
-                      f'{prev_value}, which is reserved for WTF::HashTrait\'s '
-                      'default enum specialization and may not be used.')
+      raise Exception(
+          f'{field.mojom_name} in {enum.spec} has the value '
+          f'{prev_value}, which is reserved for blink::HashTrait\'s '
+          'default enum specialization and may not be used.')
     field.numeric_value = prev_value
     if min_value is None or prev_value < min_value:
       min_value = prev_value
@@ -952,13 +974,28 @@ def _Enum(module, parsed_enum, parent_kind):
         if enum.default_field is not None:
           raise Exception(f'Multiple [Default] enumerators in enum {enum.spec}')
         enum.default_field = field
-    # While running the backwards compatibility check, ignore errors because the
-    # old version of the enum might not specify [Default].
-    if (enum.extensible and enum.default_field is None
-        and enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT
-        and not is_running_backwards_compatibility_check_hack):
-      raise Exception(
-          f'Extensible enum {enum.spec} must specify a [Default] enumerator')
+    if enum.extensible and enum.default_field is None:
+      # Python 3.10 supports match + case... but chromium requires Python 3.9
+      if (module.extensible_enum_mode ==
+          ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK):
+        # While running the backwards compatibility check, ignore errors because
+        # the old version of the enum might not specify [Default].
+        pass
+      elif (module.extensible_enum_mode ==
+            ExtensibleEnumMode.RELAXED_FOR_CHROMEOS):
+        if (enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_CHROMEOS
+            and enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED):
+          raise Exception(
+              f'Extensible enum {enum.spec} must specify a [Default] enumerator'
+          )
+      elif module.extensible_enum_mode == ExtensibleEnumMode.STRICT:
+        if enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED:
+          raise Exception(
+              f'Extensible enum {enum.spec} must specify a [Default] enumerator'
+          )
+      else:
+        raise Exception(
+            f'Unhandled ExtensibleEnumMode {module.extensible_enum_mode}')
 
   module.kinds[enum.spec] = enum
 
@@ -988,7 +1025,8 @@ def _Constant(module, parsed_const, parent_kind):
   else:
     scope = (module.mojom_namespace, )
   # TODO(mpcomplete): maybe we should only support POD kinds.
-  constant.kind = _Kind(module.kinds, _MapKind(parsed_const.typename), scope)
+  constant.kind = _Kind(module, module.kinds, _MapKind(parsed_const.typename),
+                        scope)
   constant.parent_kind = parent_kind
   constant.value = _LookupValue(module, parent_kind, constant.kind,
                                 parsed_const.value)
@@ -1030,25 +1068,34 @@ def _CollectReferencedKinds(module, all_defined_kinds):
   def sanitize_kind(kind):
     """Removes nullability from a kind"""
     if kind.spec.startswith('?'):
-      return _Kind(module.kinds, kind.spec[1:], (module.mojom_namespace, ''))
+      return _Kind(module, module.kinds, kind.spec[1:],
+                   (module.mojom_namespace, ''))
     return kind
 
   referenced_user_kinds = {}
+
+  def find_and_add_all_user_kinds(kind):
+    for referenced_kind in extract_referenced_user_kinds(kind):
+      sanitized_kind = sanitize_kind(referenced_kind)
+      referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+
   for defined_kind in all_defined_kinds:
     if mojom.IsStructKind(defined_kind) or mojom.IsUnionKind(defined_kind):
       for field in defined_kind.fields:
-        for referenced_kind in extract_referenced_user_kinds(field.kind):
-          sanitized_kind = sanitize_kind(referenced_kind)
-          referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+        find_and_add_all_user_kinds(field.kind)
 
   # Also scan for references in parameter lists
   for interface in module.interfaces:
     for method in interface.methods:
       for param in itertools.chain(method.parameters or [],
                                    method.response_parameters or []):
-        for referenced_kind in extract_referenced_user_kinds(param.kind):
-          sanitized_kind = sanitize_kind(referenced_kind)
-          referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+        find_and_add_all_user_kinds(param.kind)
+
+      if method.result_response:
+        result_response = method.result_response
+        find_and_add_all_user_kinds(result_response.success_kind)
+        find_and_add_all_user_kinds(result_response.failure_kind)
+
   # Consts can reference imported enums.
   for const in module.constants:
     if not const.kind in mojom.PRIMITIVES:
@@ -1109,18 +1156,21 @@ def _AssertStructIsValid(kind):
             kind.mojom_name, ', '.join(map(str, expected_ordinals - ordinals))))
 
 
-def _Module(tree, path, imports):
+def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
   """
   Args:
     tree: {ast.Mojom} The parse tree.
     path: {str} The path to the mojom file.
     imports: {Dict[str, mojom.Module]} Mapping from filenames, as they appear in
         the import list, to already processed modules. Used to process imports.
+    extensible_enum_mode: How to treat extensible enums without default
+        specified.
 
   Returns:
     {mojom.Module} An AST for the mojom.
   """
   module = mojom.Module(path=path)
+  module.extensible_enum_mode = extensible_enum_mode
   module.kinds = {}
   for kind in mojom.PRIMITIVES:
     module.kinds[kind.spec] = kind
@@ -1206,6 +1256,13 @@ def _Module(tree, path, imports):
     all_defined_kinds[interface.spec] = interface
     for enum in interface.enums:
       all_defined_kinds[enum.spec] = enum
+
+  # Methods with result response will generate its own return union, so we do a
+  # second pass.
+  for defined_union in module.unions:
+    if not defined_union.spec in all_defined_kinds:
+      all_defined_kinds[defined_union.spec] = defined_union
+
   for enum in module.enums:
     all_defined_kinds[enum.spec] = enum
 
@@ -1237,7 +1294,11 @@ def _Module(tree, path, imports):
   return module
 
 
-def OrderedModule(tree, path, imports):
+def OrderedModule(
+    tree,
+    path,
+    imports,
+    extensible_enum_mode: ExtensibleEnumMode = ExtensibleEnumMode.STRICT):
   """Convert parse tree to AST module.
 
   Args:
@@ -1245,9 +1306,11 @@ def OrderedModule(tree, path, imports):
     path: {str} The path to the mojom file.
     imports: {Dict[str, mojom.Module]} Mapping from filenames, as they appear in
         the import list, to already processed modules. Used to process imports.
+    extensible_enum_mode: How to treat extensible enums without default
+        specified.
 
   Returns:
     {mojom.Module} An AST for the mojom.
   """
-  module = _Module(tree, path, imports)
+  module = _Module(tree, path, imports, extensible_enum_mode)
   return module

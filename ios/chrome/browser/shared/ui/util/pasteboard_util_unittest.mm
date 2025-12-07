@@ -6,7 +6,9 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -21,9 +23,19 @@ class PasteboardUtilTest : public PlatformTest {
  public:
   PasteboardUtilTest() {}
 
-  void SetUp() override { ClearPasteboard(); }
+  void SetUp() override {
+    base::RunLoop run_loop;
+    ClearPasteboard(run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
-  void TearDown() override { ClearPasteboard(); }
+  void TearDown() override {
+    base::RunLoop run_loop;
+    ClearPasteboard(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that the StoreInPasteboard function properly adds two items to the
@@ -36,7 +48,9 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
   NSData* url_as_data = [url_as_string dataUsingEncoding:NSUTF8StringEncoding];
   NSURL* test_ns_url = [NSURL URLWithString:url_as_string];
 
-  StoreInPasteboard(test_text, test_url);
+  base::RunLoop run_loop;
+  StoreInPasteboard(test_text, test_url, run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
@@ -50,21 +64,18 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
       [test_ns_url isEqual:[UIPasteboard.generalPasteboard
                                valuesForPasteboardType:UTTypeURL.identifier
                                              inItemSet:firstIndex][0]]);
-  EXPECT_TRUE(
-      [url_as_data isEqualToData:[UIPasteboard.generalPasteboard
-                                     dataForPasteboardType:plainTextType
-                                                 inItemSet:firstIndex][0]]);
+  EXPECT_NSEQ(url_as_data, [UIPasteboard.generalPasteboard
+                               dataForPasteboardType:plainTextType
+                                           inItemSet:firstIndex][0]);
 
   // The additional text is stored as the second item.
   NSIndexSet* secondIndex = [NSIndexSet indexSetWithIndex:1];
-  EXPECT_TRUE(
-      [text_as_data isEqualToData:[UIPasteboard.generalPasteboard
-                                      dataForPasteboardType:plainTextType
-                                                  inItemSet:secondIndex][0]]);
-  EXPECT_TRUE([test_text
-      isEqualToString:[UIPasteboard.generalPasteboard
-                          valuesForPasteboardType:UTTypeText.identifier
-                                        inItemSet:secondIndex][0]]);
+  EXPECT_NSEQ(text_as_data, [UIPasteboard.generalPasteboard
+                                dataForPasteboardType:plainTextType
+                                            inItemSet:secondIndex][0]);
+  EXPECT_NSEQ(test_text, [UIPasteboard.generalPasteboard
+                             valuesForPasteboardType:UTTypeText.identifier
+                                           inItemSet:secondIndex][0]);
 }
 
 // Tests that clearing the pasteboard does remove pasteboard items.
@@ -72,12 +83,31 @@ TEST_F(PasteboardUtilTest, ClearPasteboardWorks) {
   // Get something stored in the pasteboard.
   NSString* test_text = base::SysUTF8ToNSString(kTestText);
   GURL test_url(kTestURL);
-  StoreInPasteboard(test_text, test_url);
+  base::RunLoop store_run_loop;
+  StoreInPasteboard(test_text, test_url, store_run_loop.QuitClosure());
+
+  store_run_loop.Run();
 
   // Clear and assert.
-  ClearPasteboard();
+  base::RunLoop clear_run_loop;
+  ClearPasteboard(clear_run_loop.QuitClosure());
+  clear_run_loop.Run();
   EXPECT_FALSE(UIPasteboard.generalPasteboard.hasURLs);
   EXPECT_FALSE(UIPasteboard.generalPasteboard.hasStrings);
+}
+
+// Test for crbug.com/426647790, that trying to store a valid GURL that converts
+// to an invalid NSURL does not crash.
+TEST_F(PasteboardUtilTest, StoreInvalidNSURL) {
+  NSString* test_text = base::SysUTF8ToNSString(kTestText);
+  GURL valid_gurl_but_invalid_nsurl("http://{domain}/");
+  base::RunLoop store_run_loop;
+  // This line would crash due to the bug.
+  StoreInPasteboard(test_text, valid_gurl_but_invalid_nsurl,
+                    store_run_loop.QuitClosure());
+  store_run_loop.Run();
+
+  EXPECT_FALSE(UIPasteboard.generalPasteboard.hasURLs);
 }
 
 }  // namespace

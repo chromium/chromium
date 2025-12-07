@@ -20,6 +20,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/rules_registry_ids.h"
 
 namespace content {
 class BrowserContext;
@@ -37,23 +38,17 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
                              public ExtensionRegistryObserver,
                              public RulesCacheDelegate::Observer {
  public:
-  static const int kDefaultRulesRegistryID;
-  static const int kInvalidRulesRegistryID;
-
   struct RulesRegistryKey {
     std::string event_name;
     int rules_registry_id;
     RulesRegistryKey(const std::string& event_name, int rules_registry_id)
         : event_name(event_name), rules_registry_id(rules_registry_id) {}
-    bool operator<(const RulesRegistryKey& other) const {
-      return std::tie(event_name, rules_registry_id) <
-             std::tie(other.event_name, other.rules_registry_id);
-    }
+    auto operator<=>(const RulesRegistryKey& rhs) const = default;
   };
 
   class Observer {
    public:
-    // Called when any of the |cache_delegates_| have rule updates.
+    // Called when any of the `cache_delegates_` have rule updates.
     virtual void OnUpdateRules() = 0;
 
    protected:
@@ -76,12 +71,12 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
       GetFactoryInstance();
 
   // Convenience method to get the RulesRegistryService for a context. If a
-  // RulesRegistryService does not already exist for |context|, one will be
+  // RulesRegistryService does not already exist for `context`, one will be
   // created and returned.
   static RulesRegistryService* Get(content::BrowserContext* context);
 
   // The same as Get(), except that if a RulesRegistryService does not already
-  // exist for |context|, nullptr is returned.
+  // exist for `context`, nullptr is returned.
   static RulesRegistryService* GetIfExists(content::BrowserContext* context);
 
   int GetNextRulesRegistryID();
@@ -89,7 +84,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // Registers a RulesRegistry and wraps it in an InitializingRulesRegistry.
   void RegisterRulesRegistry(scoped_refptr<RulesRegistry> rule_registry);
 
-  // Returns the RulesRegistry for |event_name| and |rules_registry_id|.
+  // Returns the RulesRegistry for `event_name` and `rules_registry_id`.
   // Attempts to create and register the rules registry if necessary. Might
   // return null if no corresponding rules registry was registered.
   scoped_refptr<RulesRegistry> GetRulesRegistry(int rules_registry_id,
@@ -147,8 +142,8 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // RulesCacheDelegate::Observer implementation.
   void OnUpdateRules() override;
 
-  // Iterates over all registries, and calls |notification_callback| on them
-  // with |extension| as the argument. If a registry lives on a different
+  // Iterates over all registries, and calls `notification_callback` on them
+  // with `extension` as the argument. If a registry lives on a different
   // thread, the call is posted to that thread, so no guarantee of synchronous
   // processing.
   void NotifyRegistriesHelper(
@@ -162,7 +157,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   static const bool kServiceHasOwnInstanceInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
 
-  int current_rules_registry_id_;
+  int current_rules_registry_id_ = rules_registry_ids::kDefaultRulesRegistryID;
 
   RulesRegistryMap rule_registries_;
 
@@ -172,7 +167,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // Weak pointer into rule_registries_ to make it easier to handle content rule
   // conditions.
   raw_ptr<ContentRulesRegistry, AcrossTasksDanglingUntriaged>
-      content_rules_registry_;
+      content_rules_registry_ = nullptr;
 
   // Listen to extension load, unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

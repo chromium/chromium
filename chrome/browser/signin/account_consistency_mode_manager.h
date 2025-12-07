@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_H_
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
@@ -24,10 +23,6 @@ class ProfileAttributesEntry;
 // Manages the account consistency mode for each profile.
 class AccountConsistencyModeManager : public KeyedService {
  public:
-  // Returns the AccountConsistencyModeManager associated with this profile.
-  // May return nullptr if there is none (e.g. in incognito).
-  static AccountConsistencyModeManager* GetForProfile(Profile* profile);
-
   explicit AccountConsistencyModeManager(Profile* profile);
 
   AccountConsistencyModeManager(const AccountConsistencyModeManager&) = delete;

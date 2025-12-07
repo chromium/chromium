@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COMMERCE_DISCOUNTS_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "components/commerce/core/commerce_types.h"
@@ -49,14 +50,15 @@ class DiscountsPageActionController : public CommercePageActionController {
   void DiscountsBubbleShown(uint64_t discount_id);
 
  private:
-  void HandleDiscountInfoResponse(const DiscountsMap& discounts_map);
+  void HandleDiscountInfoResponse(const GURL& url,
+                                  const std::vector<DiscountInfo> discounts);
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService> shopping_service_;
   GURL last_committed_url_;
   bool got_discounts_response_for_page_ = false;
   // The last discounts that were fetched for the last committed URL.
-  std::optional<std::vector<DiscountInfo>> discounts_;
+  std::vector<DiscountInfo> discounts_;
   bool coupon_code_copied_ = false;
 
   base::WeakPtrFactory<DiscountsPageActionController> weak_ptr_factory_{this};

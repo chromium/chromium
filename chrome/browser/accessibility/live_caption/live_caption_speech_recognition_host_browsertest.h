@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_BROWSERTEST_H_
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_BROWSERTEST_H_
 
-#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
-
 #include <string>
 #include <vector>
 
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_test_util.h"
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,33 +20,13 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-
-namespace {
-// A WebContentsObserver that allows waiting for some media to start or stop
-// playing fullscreen.
-class FullscreenEventsWaiter : public content::WebContentsObserver {
- public:
-  explicit FullscreenEventsWaiter(content::WebContents* web_contents);
-  FullscreenEventsWaiter(const FullscreenEventsWaiter& rhs) = delete;
-  FullscreenEventsWaiter& operator=(const FullscreenEventsWaiter& rhs) = delete;
-  ~FullscreenEventsWaiter() override;
-
-  void MediaEffectivelyFullscreenChanged(bool value) override;
-
-  // Wait for the current media playing fullscreen mode to be equal to
-  // |expected_media_fullscreen_mode|.
-  void Wait();
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-}  // namespace
 
 namespace captions {
 
@@ -60,7 +39,7 @@ class MockLiveTranslateController : public LiveTranslateController {
   void GetTranslation(const std::string& result,
                       std::string source_language,
                       std::string target_language,
-                      OnTranslateEventCallback callback) override;
+                      TranslateEventCallback callback) override;
 
   // Returns a collection of strings passed into `GetTranslation()`.
   std::vector<std::string> GetTranslationRequests();

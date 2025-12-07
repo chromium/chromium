@@ -51,7 +51,7 @@ class WebContentsObserverConsistencyChecker
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(FrameTreeNodeId frame_tree_node_id) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
@@ -79,8 +79,6 @@ class WebContentsObserverConsistencyChecker
       const MediaPlayerInfo& media_info,
       const MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void DidStartLoading() override;
   void DidStopLoading() override;
@@ -102,7 +100,8 @@ class WebContentsObserverConsistencyChecker
   void AddInputEventObserver(RenderFrameHost* render_frame_host);
   void RemoveInputEventObserver(RenderFrameHost* render_frame_host);
 
-  std::map<int64_t, RenderFrameHost*> ready_to_commit_hosts_;
+  std::map<int64_t, raw_ptr<RenderFrameHost, CtnExperimental>>
+      ready_to_commit_hosts_;
   std::set<GlobalRoutingID> current_hosts_;
   std::set<GlobalRoutingID> live_routes_;
   std::set<GlobalRoutingID> deleted_routes_;
@@ -136,7 +135,7 @@ class WebContentsObserverConsistencyChecker
   // Remembers parents to make sure RenderFrameHost::GetParent() never changes.
   std::map<GlobalRoutingID, GlobalRoutingID> parent_ids_;
 
-  std::set<int> frame_tree_node_ids_;
+  std::set<FrameTreeNodeId> frame_tree_node_ids_;
 
   bool is_loading_;
 

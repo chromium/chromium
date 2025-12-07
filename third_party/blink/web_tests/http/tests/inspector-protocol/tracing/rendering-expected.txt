@@ -125,10 +125,16 @@ Got a PaintImage
 Object: {
 	args: {
 		data: {
+			frame: string
 			height: number
+			isCSS: boolean
+			isPicture: boolean
+			loadingAttribute: string
 			nodeId: number
+			nodeName: string
 			srcHeight: number
 			srcWidth: number
+			srcsetAttribute: string
 			url: string
 			width: number
 			x: number
@@ -169,6 +175,7 @@ Object: {
 		data: {
 			frame: string
 			nodeId: number
+			nodeName: string
 		}
 	}
 	cat: string
@@ -240,6 +247,7 @@ Object: {
 				{
 					depth: number
 					nodeId: number
+					nodeName: string
 				}
 			]
 		}
@@ -272,7 +280,9 @@ Object: {
 			columnNumber: number
 			frame: string
 			functionName: string
+			isolate: string
 			lineNumber: number
+			sampleTraceId: number
 			scriptId: string
 			url: string
 		}

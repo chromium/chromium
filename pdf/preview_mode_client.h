@@ -12,7 +12,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace chrome_pdf {
 
@@ -32,8 +34,8 @@ class PreviewModeClient : public PDFiumEngineClient {
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
-  void ScrollToX(int x_in_screen_coords) override;
-  void ScrollToY(int y_in_screen_coords) override;
+  void ScrollToX(int x_in_screen_coords, bool force_smooth_scroll) override;
+  void ScrollToY(int y_in_screen_coords, bool force_smooth_scroll) override;
   void ScrollBy(const gfx::Vector2d& scroll_delta) override;
   void ScrollToPage(int page) override;
   void NavigateTo(const std::string& url,
@@ -61,8 +63,8 @@ class PreviewModeClient : public PDFiumEngineClient {
                   int length) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   v8::Isolate* GetIsolate() override;
-  std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                               const char16_t* term,
+  std::vector<SearchStringResult> SearchString(const std::u16string& needle,
+                                               const std::u16string& haystack,
                                                bool case_sensitive) override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
@@ -73,6 +75,15 @@ class PreviewModeClient : public PDFiumEngineClient {
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+  void OnNewTextFragmentsSearchStarted() override;
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  bool IsInAnnotationMode() const override;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void OnSearchifyStateChange(bool busy) override;
+  void OnHasSearchifyText() override;
+  void MaybeShowSearchifyInProgress() override;
+#endif
 
  private:
   const raw_ptr<Client> client_;

@@ -4,7 +4,13 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +19,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 /** Class that tracks the mapping between tokens and fully-qualified domain names (FQDNs). */
+@NullMarked
 public class TokenTracker {
-    private Promise<Map<String, String>> mRootPromise;
-    private TokenGenerator mTokenGenerator;
-    private UsageStatsBridge mBridge;
+    private final Promise<Map<String, String>> mRootPromise;
+    private @MonotonicNonNull TokenGenerator mTokenGenerator;
+    private final UsageStatsBridge mBridge;
 
     public TokenTracker(UsageStatsBridge bridge) {
         mBridge = bridge;
@@ -36,27 +43,31 @@ public class TokenTracker {
         // call variants of then() that don't take a single callback. These variants set an
         // exception handler on the returned promise, so they expect there to be one on the root
         // promise.
-        mRootPromise.except((e) -> {});
+        mRootPromise.except(CallbackUtils.<@Nullable Exception>emptyCallback());
     }
 
     /**
-     * Associate a new token with FQDN, and return that token.
-     * If we're already tracking FQDN, return the corresponding token.
-     * The returned promise will be fulfilled once persistence succeeds, and rejected if persistence
-     * fails.
+     * Associate a new token with FQDN, and return that token. If we're already tracking FQDN,
+     * return the corresponding token. The returned promise will be fulfilled once persistence
+     * succeeds, and rejected if persistence fails.
      */
     public Promise<String> startTrackingWebsite(String fqdn) {
         Promise<String> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     if (result.containsValue(fqdn)) {
-                        writePromise.fulfill(getFirstKeyForValue(result, fqdn));
+                        // getFirstKeyForValue should be non-null because result.containsValue
+                        writePromise.fulfill(assumeNonNull(getFirstKeyForValue(result, fqdn)));
                         return;
                     }
 
                     UsageStatsMetricsReporter.reportMetricsEvent(
                             UsageStatsMetricsEvent.START_TRACKING_TOKEN);
-                    String token = mTokenGenerator.nextToken();
+                    // mTokenGenerator is non-null because it is set when we get a result from
+                    // mBridge.getAllTokenMappings, after which we use mRootPromise.fulfill.
+                    // If mBridge.getAllTokenMappings fails, then we use mRootPromise.except.
+                    // Here, we are in mRootPromise.then, so mTokenGenerator should be non-null.
+                    String token = assumeNonNull(mTokenGenerator).nextToken();
                     Map<String, String> resultCopy = new HashMap<>(result);
                     resultCopy.put(token, fqdn);
                     mBridge.setTokenMappings(
@@ -70,18 +81,17 @@ public class TokenTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.<@Nullable Exception>emptyCallback());
 
         return writePromise;
     }
 
     /**
-     * Remove token and its associated FQDN, if we're  already tracking token.
-     * The returned promise will be fulfilled once persistence succeeds, and rejected if persistence
-     * fails.
+     * Remove token and its associated FQDN, if we're already tracking token. The returned promise
+     * will be fulfilled once persistence succeeds, and rejected if persistence fails.
      */
-    public Promise<Void> stopTrackingToken(String token) {
-        Promise<Void> writePromise = new Promise<>();
+    public Promise<@Nullable Void> stopTrackingToken(String token) {
+        Promise<@Nullable Void> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     if (!result.containsKey(token)) {
@@ -104,15 +114,15 @@ public class TokenTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.<@Nullable Exception>emptyCallback());
 
         return writePromise;
     }
 
     /** Returns the token for a given FQDN, or null if we're not tracking that FQDN. */
-    public Promise<String> getTokenForFqdn(String fqdn) {
-        return mRootPromise.then(
-                (Function<Map<String, String>, String>)
+    public Promise<@Nullable String> getTokenForFqdn(@Nullable String fqdn) {
+        return mRootPromise.<@Nullable String>then(
+                (Function<Map<String, String>, @Nullable String>)
                         (result) -> {
                             return getFirstKeyForValue(result, fqdn);
                         });
@@ -127,7 +137,8 @@ public class TokenTracker {
                         });
     }
 
-    private static String getFirstKeyForValue(Map<String, String> map, String value) {
+    private static @Nullable String getFirstKeyForValue(
+            Map<String, String> map, @Nullable String value) {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (entry.getValue().equals(value)) {
                 return entry.getKey();

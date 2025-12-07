@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import type {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 
-import {EduCoexistenceParams} from './edu_coexistence_controller.js';
+import type {EduCoexistenceParams} from './edu_coexistence_controller.js';
 
 export interface EduCoexistenceBrowserProxy {
   /** Sends 'initialize' message to prepare for starting auth. */
@@ -61,11 +61,6 @@ export interface EduCoexistenceBrowserProxy {
    * Sends 'error' message to handler.
    */
   onError(msg: string[]): void;
-
-  /**
-   * Returns JSON-encoded dialog arguments.
-   */
-  getDialogArguments(): string;
 }
 
 export class EduCoexistenceBrowserProxyImpl implements
@@ -109,10 +104,6 @@ export class EduCoexistenceBrowserProxyImpl implements
 
   onError(msg: string[]) {
     chrome.send('error', msg);
-  }
-
-  getDialogArguments() {
-    return chrome.getVariableValue('dialogArguments');
   }
 
   static getInstance(): EduCoexistenceBrowserProxy {

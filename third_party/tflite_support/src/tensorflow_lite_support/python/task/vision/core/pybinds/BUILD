@@ -12,7 +12,11 @@ pybind_extension(
     srcs = [
         "image_utils.cc",
     ],
+    enable_stub_generation = True,
     module_name = "image_utils",
+    pytype_srcs = [
+        "image_utils.pyi",
+    ],
     deps = [
         "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "//tensorflow_lite_support/python/task/core/pybinds:task_utils",

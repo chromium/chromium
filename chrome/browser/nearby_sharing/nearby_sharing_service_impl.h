@@ -38,7 +38,6 @@
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/nearby_share_logger.h"
-#include "chrome/browser/nearby_sharing/nearby_share_profile_info_provider_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_share_transfer_profiler.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -74,6 +73,10 @@ namespace NearbySharingServiceUnitTests {
 class NearbySharingServiceImplTestBase;
 }
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 // All methods should be called from the same sequence that created the service.
 class NearbySharingServiceImpl
     : public NearbySharingService,
@@ -91,10 +94,10 @@ class NearbySharingServiceImpl
   // fixed window before deciding not to restart the process.
   static constexpr int kMaxRecentNearbyProcessUnexpectedShutdownCount = 4;
 
-  explicit NearbySharingServiceImpl(
-      PrefService* prefs,
-      NotificationDisplayService* notification_display_service,
+  NearbySharingServiceImpl(
+      user_manager::User& user,
       Profile* profile,
+      NotificationDisplayService* notification_display_service,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
       ash::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client,
@@ -427,7 +430,7 @@ class NearbySharingServiceImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   void OnStartDiscoveryResult(
       NearbyConnectionsManager::ConnectionsStatus status);
-  void SetInHighVisibility(bool in_high_visibility);
+  void SetInHighVisibility(bool new_in_high_visibility);
 
   // Note: |share_target| is intentionally passed by value. A share target
   // reference could likely be invalidated by the owner during the multi-step
@@ -448,8 +451,9 @@ class NearbySharingServiceImpl
   void OnVisibilityReminderTimerFired();
   base::TimeDelta GetTimeUntilNextVisibilityReminder();
 
-  raw_ptr<PrefService> prefs_ = nullptr;
   raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> prefs_ = nullptr;
+
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
@@ -466,7 +470,6 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
   NearbyShareHttpNotifier nearby_share_http_notifier_;
   std::unique_ptr<NearbyShareClientFactory> http_client_factory_;
-  std::unique_ptr<NearbyShareProfileInfoProvider> profile_info_provider_;
   std::unique_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_;
   std::unique_ptr<NearbyShareContactManager> contact_manager_;
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
@@ -522,7 +525,6 @@ class NearbySharingServiceImpl
   base::flat_map<std::string, ShareTarget> outgoing_share_target_map_;
   // A map of ShareTarget id to OutgoingShareTargetInfo. This lets us know which
   // endpoint and public certificate are related to the outgoing share target.
-  // TODO(crbug.com/40132032) update this map when handling payloads
   base::flat_map<base::UnguessableToken, OutgoingShareTargetInfo>
       outgoing_share_target_info_map_;
   // For metrics. The IDs of ShareTargets that are cancelled while trying to
@@ -572,7 +574,7 @@ class NearbySharingServiceImpl
   // The time scanning began.
   base::Time scanning_start_timestamp_;
   // True when we are advertising with a device name visible to everyone.
-  bool in_high_visibility = false;
+  bool in_high_visibility_ = false;
   // The time attachments are sent after a share target is selected. This is
   // used to time the process from selecting a share target to writing the
   // introduction frame (last frame before receiver gets notified).

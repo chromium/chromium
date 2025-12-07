@@ -20,8 +20,7 @@ class JoinLeaveQueueTest : public testing::Test {
   JoinLeaveQueueTest()
       : queue_(std::make_unique<JoinLeaveQueue<int>>(
             /*max_active=*/2,
-            WTF::BindRepeating(&JoinLeaveQueueTest::Start,
-                               base::Unretained(this)))) {}
+            BindRepeating(&JoinLeaveQueueTest::Start, Unretained(this)))) {}
 
  protected:
   void Start(int&& i) { start_order_.push_back(i); }

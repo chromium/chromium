@@ -228,7 +228,6 @@ class UnitTest(unittest.TestCase):
                                      mb.FlattenConfig)
     self.assertEqual(errs, [])
 
-  @unittest.skip('bla')
   def test_CheckDuplicateConfigs_dups(self):
     configs = ast.literal_eval(mb_unittest.TEST_DUP_CONFIG)
     config_configs = configs['configs']

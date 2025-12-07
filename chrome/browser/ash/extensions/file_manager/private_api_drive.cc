@@ -22,11 +22,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
@@ -41,7 +43,6 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/recent_drive_source.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host_origins.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -407,11 +408,8 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
       Profile::FromBrowserContext(function->browser_context()));
   auto on_response = base::BindOnce(&OnSearchDriveFs, std::move(function),
                                     filter_dirs, std::move(callback));
-  return service->GetDriveFsHost()->PerformSearch(
-      std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
-          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+  return service->GetDriveFsHost()->PerformSearch(std::move(query),
+                                                  std::move(on_response));
 }
 
 void UmaEmitSearchOutcome(

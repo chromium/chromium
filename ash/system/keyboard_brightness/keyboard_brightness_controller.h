@@ -23,6 +23,13 @@ namespace ash {
 
 class SessionControllerImpl;
 
+enum class BrightnessAction {
+  kDecreaseBrightness = 0,
+  kIncreaseBrightness = 1,
+  kToggleBrightness = 2,
+  kSetBrightness = 3,
+};
+
 // A class which controls keyboard brightness when Alt+F6, Alt+F7 or a
 // multimedia key for keyboard brightness is pressed.
 class ASH_EXPORT KeyboardBrightnessController
@@ -48,13 +55,15 @@ class ASH_EXPORT KeyboardBrightnessController
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // PowerManagerClient::Observer:
   void KeyboardAmbientLightSensorEnabledChanged(
       const power_manager::AmbientLightSensorChange& change) override;
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   // LoginDataDispatcher::Observer:
   void OnFocusPod(const AccountId& account_id) override;
@@ -78,6 +87,7 @@ class ASH_EXPORT KeyboardBrightnessController
 
   // Restore keyboard brightness settings during reboot.
   void RestoreKeyboardBrightnessSettings(const AccountId& account_id);
+  void MaybeRestoreKeyboardBrightnessSettings();
 
   // Restore keyboard ambient light sensor setting when first login.
   void RestoreKeyboardAmbientLightSensorSettingOnFirstLogin();
@@ -86,6 +96,10 @@ class ASH_EXPORT KeyboardBrightnessController
   void OnReceiveHasAmbientLightSensor(std::optional<bool> has_sensor);
   void OnReceiveKeyboardBrightnessAfterLogin(
       std::optional<double> keyboard_brightness);
+  void OnReceiveSwitchStates(
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+
+  void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
 
   // The current AccountId, used to set and retrieve prefs. Expected to be
   // nullopt on the login screen, but will be set on login.
@@ -94,6 +108,14 @@ class ASH_EXPORT KeyboardBrightnessController
   raw_ptr<PrefService> local_state_;                   // unowned.
   raw_ptr<PrefService> pref_service_;                  // unowned.
   raw_ptr<SessionControllerImpl> session_controller_;  // unowned.
+
+  // Timestamp of the last session change, e.g. when going from the login screen
+  // to the desktop, or from startup to the login screen.
+  base::TimeTicks last_session_change_time_;
+
+  // Used for metrics recording. True if and only if a brightness adjustment has
+  // occurred.
+  bool has_brightness_been_adjusted_ = false;
 
   // True if the keyboard ambient light sensor value has already been restored
   // for a user's first login.
@@ -104,11 +126,13 @@ class ASH_EXPORT KeyboardBrightnessController
   bool has_keyboard_ambient_light_sensor_status_been_recorded_ = false;
 
   // True if the keyboard has an ambient light sensor.
-  bool has_sensor_ = false;
+  std::optional<bool> has_sensor_ = false;
 
-  // Used to re-enable ambient light sensor if source is not from settings app.
-  //   base::Time keyboard_ambient_light_sensor_disabled_timestamp_;
-  std::optional<base::Time> keyboard_ambient_light_sensor_disabled_timestamp_;
+  // True if the keyboard has keyboard backlight.
+  std::optional<bool> has_keyboard_backlight_ = false;
+
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the keyboard ambient light sensor value has finished syncing.

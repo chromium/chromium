@@ -105,6 +105,8 @@ class CertProvisioningWorker {
   // Returns true if the worker is to be recreated due to a user-initiated
   // "reset" action.
   virtual bool IsWorkerMarkedForReset() const = 0;
+  // Returns the certificate provisioning process id.
+  virtual const std::string& GetProcessId() const = 0;
   // Returns CertProfile that this worker is working on.
   virtual const CertProfile& GetCertProfile() const = 0;
   // Returns public key or an empty string if the key is not created yet.
@@ -120,8 +122,9 @@ class CertProvisioningWorker {
   virtual const std::optional<BackendServerError>& GetLastBackendServerError()
       const = 0;
   // Return a message describing the reason for failure when the worker fails.
-  // In case the worker did not fail, the message is empty.
-  virtual std::string GetFailureMessage() const = 0;
+  // In case the worker did not fail, the message is empty. It can be shown in
+  // the UI, but should not be logged.
+  virtual std::string GetFailureMessageWithPii() const = 0;
 };
 
 }  // namespace cert_provisioning

@@ -27,6 +27,13 @@ class Unzipper {
                      const base::FilePath& destination,
                      UnzipCompleteCallback callback) = 0;
 
+  // Decode an `xz_file` into a `destination` file, then call `callback` with
+  // true if and only if the operation is successful. Returns a cancellation
+  // callback. The cancellation callback can be run on any sequence.
+  virtual base::OnceClosure DecodeXz(const base::FilePath& xz_file,
+                                     const base::FilePath& destination,
+                                     UnzipCompleteCallback callback) = 0;
+
  protected:
   Unzipper() = default;
 };

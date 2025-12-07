@@ -57,9 +57,13 @@ _PACKAGE_NAMES = {
     'TRICHROME_BETA': 40,
     'TRICHROME_AUTO': 50,
     'TRICHROME_DESKTOP': 60,
+    'CHROME_DESKTOP': 70,
+    'CHROME_DESKTOP_BETA': 80,
     'WEBVIEW_STABLE': 0,
     'WEBVIEW_BETA': 10,
     'WEBVIEW_DEV': 20,
+    'WEBVIEW_AUTO': 70,
+    'WEBVIEW_DESKTOP': 80
 }
 """ "Next" builds get +500 on their patch number.
 
@@ -91,6 +95,7 @@ _APKS = {
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32'),
+        ('WEBVIEW_AUTO', 'WEBVIEW_AUTO', '32'),
     ],
     '64': [
         ('CHROME', 'CHROME', '64'),
@@ -103,9 +108,14 @@ _APKS = {
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '64'),
+        ('WEBVIEW_AUTO', 'WEBVIEW_AUTO', '64'),
+        ('WEBVIEW_DESKTOP', 'WEBVIEW_DESKTOP', '64'),
     ],
     'hybrid': [
-        ('CHROME', 'CHROME', '64'),
+        ('CHROME', 'CHROME', '64_32'),
+        ('CHROME_HIGH', 'CHROME', '64'),
+        # Obsolete Chrome Modern version code being used for Chrome
+        ('CHROME_HIGH_BETA', 'CHROME_MODERN', '64'),
         ('CHROME_32', 'CHROME', '32'),
         ('CHROME_MODERN', 'CHROME_MODERN', '64'),
         ('MONOCHROME', 'MONOCHROME', '32_64'),
@@ -132,15 +142,31 @@ _APKS = {
         ('TRICHROME_64_32_HIGH_BETA', 'TRICHROME_BETA', '64_32_high'),
         ('TRICHROME_DESKTOP_64', 'TRICHROME_DESKTOP', '64'),
         ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
+        ('CHROME_DESKTOP', 'CHROME_DESKTOP', '64'),
+        ('CHROME_DESKTOP_BETA', 'CHROME_DESKTOP_BETA', '64'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
-        ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
-        ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
         ('WEBVIEW_32_STABLE', 'WEBVIEW_STABLE', '32'),
-        ('WEBVIEW_32_BETA', 'WEBVIEW_BETA', '32'),
-        ('WEBVIEW_32_DEV', 'WEBVIEW_DEV', '32'),
+        ('WEBVIEW_32_64_STABLE', 'WEBVIEW_STABLE', '32_64'),
         ('WEBVIEW_64_STABLE', 'WEBVIEW_STABLE', '64'),
+        ('WEBVIEW_64_32_STABLE', 'WEBVIEW_STABLE', '64_32'),
+        ('WEBVIEW_64_32_HIGH_STABLE', 'WEBVIEW_STABLE', '64_32_high'),
+        ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
+        ('WEBVIEW_32_BETA', 'WEBVIEW_BETA', '32'),
+        ('WEBVIEW_32_64_BETA', 'WEBVIEW_BETA', '32_64'),
         ('WEBVIEW_64_BETA', 'WEBVIEW_BETA', '64'),
+        ('WEBVIEW_64_32_BETA', 'WEBVIEW_BETA', '64_32'),
+        ('WEBVIEW_64_32_HIGH_BETA', 'WEBVIEW_BETA', '64_32_high'),
+        ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
+        ('WEBVIEW_32_DEV', 'WEBVIEW_DEV', '32'),
         ('WEBVIEW_64_DEV', 'WEBVIEW_DEV', '64'),
+        ('WEBVIEW_64_32_DEV', 'WEBVIEW_DEV', '64_32'),
+        ('WEBVIEW_AUTO', 'WEBVIEW_AUTO', '32_64'),
+        ('WEBVIEW_AUTO_32', 'WEBVIEW_AUTO', '32'),
+        ('WEBVIEW_AUTO_32_64', 'WEBVIEW_AUTO', '32_64'),
+        ('WEBVIEW_AUTO_64', 'WEBVIEW_AUTO', '64'),
+        ('WEBVIEW_AUTO_64_32', 'WEBVIEW_AUTO', '64_32'),
+        ('WEBVIEW_AUTO_64_32_HIGH', 'WEBVIEW_AUTO', '64_32_high'),
+        ('WEBVIEW_DESKTOP_64', 'WEBVIEW_DESKTOP', '64'),
     ]
 }
 
@@ -220,6 +246,8 @@ def _GetAbisToDigitMask(build_number, patch_number):
             '32_64': 1,
             '64_32': 2,
             '64_32_high': 3,
+            # This is not shipped, so fine that there's a dupe.
+            '64_high': 4,
             '64': 4,
         },
         'intel': {
@@ -298,11 +326,15 @@ def TranslateVersionCode(version_code, is_webview=False):
     is_next_build = True
     package_digit -= 5
 
+  package_name = None
   for package, number in _PACKAGE_NAMES.items():
     if number == package_digit * 10:
       if is_webview == ('WEBVIEW' in package):
         package_name = package
         break
+  if not package_name:
+    raise Error(f'Unable to match package with package_digit={package_digit} '
+                f'and is_webview={is_webview}')
 
   for arch, bitness_to_number in (_GetAbisToDigitMask(build_number,
                                                       patch_number).items()):
@@ -317,7 +349,7 @@ def TranslateVersionCode(version_code, is_webview=False):
                                is_next_build)
 
 
-def GenerateVersionCodes(build_number, patch_number, arch, is_next_build):
+def GenerateVersionCodes(build_number, patch_number, arch):
   """Build dict of version codes for the specified build architecture. Eg:
 
   {
@@ -341,9 +373,6 @@ def GenerateVersionCodes(build_number, patch_number, arch, is_next_build):
   Thus, this method is responsible for the final two digits of versionCode.
   """
   base_version_code = (build_number * 1000 + patch_number) * 100
-
-  if is_next_build:
-    base_version_code += _NEXT_BUILD_VERSION_CODE_DIFF
 
   mfg, bitness = _ARCH_TO_MFG_AND_BITNESS[arch]
 
@@ -375,10 +404,6 @@ def main():
   g2.add_argument('--arch',
                   choices=ARCH_CHOICES,
                   help='Set which cpu architecture the build is for.')
-  g2.add_argument('--next',
-                  action='store_true',
-                  help='Whether the current build should be a "next" '
-                  'build, which targets pre-release versions of Android.')
   args = parser.parse_args()
   if args.version_code:
     print(TranslateVersionCode(args.version_code, is_webview=args.webview))
@@ -386,7 +411,7 @@ def main():
     if not args.arch:
       parser.error('Required --arch')
     _, _, build, patch = args.version_name.split('.')
-    values = GenerateVersionCodes(int(build), int(patch), args.arch, args.next)
+    values = GenerateVersionCodes(int(build), int(patch), args.arch)
     for k, v in values.items():
       print(f'{k}={v}')
   else:

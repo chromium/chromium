@@ -21,7 +21,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,7 +83,8 @@ class TabManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsTabDiscarded(content::WebContents* content) {
-    return TabLifecycleUnitExternal::FromWebContents(content)->IsDiscarded();
+    return TabLifecycleUnitExternal::FromWebContents(content)->GetTabState() ==
+           ::mojom::LifecycleUnitState::DISCARDED;
   }
 
  protected:
@@ -101,7 +101,7 @@ TEST_F(TabManagerTest, IsInternalPage) {
   EXPECT_TRUE(TabManager::IsInternalPage(GURL(chrome::kChromeUISettingsURL)));
 
 // Debugging URLs are not included.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(TabManager::IsInternalPage(GURL(chrome::kChromeUIDiscardsURL)));
 #endif
   EXPECT_FALSE(
@@ -134,8 +134,8 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   auto window1 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params1(profile(), true);
   params1.type = Browser::TYPE_NORMAL;
-  params1.window = window1.get();
-  auto browser1 = std::unique_ptr<Browser>(Browser::Create(params1));
+  params1.window = window1.release();
+  auto browser1 = Browser::DeprecatedCreateOwnedForTesting(params1);
   TabStripModel* tab_strip1 = browser1->tab_strip_model();
   tab_strip1->AppendWebContents(CreateWebContents(), true);
   tab_strip1->AppendWebContents(CreateWebContents(), false);
@@ -145,19 +145,16 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params2(profile(), true);
   params2.type = Browser::TYPE_NORMAL;
-  params2.window = window2.get();
-  auto browser2 = std::unique_ptr<Browser>(Browser::Create(params1));
+  params2.window = window2.release();
+  auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params1);
   TabStripModel* tab_strip2 = browser2->tab_strip_model();
   tab_strip2->AppendWebContents(CreateWebContents(), true);
   tab_strip2->AppendWebContents(CreateWebContents(), false);
   tab_strip2->GetWebContentsAt(0)->WasHidden();
   tab_strip2->GetWebContentsAt(1)->WasHidden();
 
-  // Advance time enough that the tabs are urgent discardable.
-  task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
-
   for (int i = 0; i < 4; ++i)
-    tab_manager_->DiscardTab(LifecycleUnitDiscardReason::URGENT);
+    tab_manager_->DiscardTabByExtension(nullptr);
 
   // Active tab in a visible window should not be discarded.
   EXPECT_FALSE(IsTabDiscarded(tab_strip1->GetWebContentsAt(0)));
@@ -166,7 +163,7 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   EXPECT_TRUE(IsTabDiscarded(tab_strip1->GetWebContentsAt(1)));
   EXPECT_TRUE(IsTabDiscarded(tab_strip2->GetWebContentsAt(1)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, a non-visible tab should be discarded even if it's active in
   // its tab strip.
   EXPECT_TRUE(IsTabDiscarded(tab_strip2->GetWebContentsAt(0)));
@@ -174,37 +171,11 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   // On other platforms, an active tab is never discarded, even if it's not
   // visible.
   EXPECT_FALSE(IsTabDiscarded(tab_strip2->GetWebContentsAt(0)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Tabs with a committed URL must be closed explicitly to avoid DCHECK errors.
   tab_strip1->CloseAllTabs();
   tab_strip2->CloseAllTabs();
-}
-
-TEST_F(TabManagerTest, GetSortedLifecycleUnits) {
-  auto window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = window.get();
-  auto browser = std::unique_ptr<Browser>(Browser::Create(params));
-  TabStripModel* tab_strip = browser->tab_strip_model();
-
-  const int num_of_tabs_to_test = 20;
-  for (int i = 0; i < num_of_tabs_to_test; ++i) {
-    task_environment()->FastForwardBy(base::Seconds(10));
-    tab_strip->AppendWebContents(CreateWebContents(), /*foreground=*/true);
-  }
-
-  LifecycleUnitVector lifecycle_units = tab_manager_->GetSortedLifecycleUnits();
-  EXPECT_EQ(lifecycle_units.size(), static_cast<size_t>(num_of_tabs_to_test));
-
-  // Check that the lifecycle_units are sorted with ascending importance.
-  for (int i = 0; i < num_of_tabs_to_test - 1; ++i) {
-    EXPECT_TRUE(lifecycle_units[i]->GetSortKey() <
-                lifecycle_units[i + 1]->GetSortKey());
-  }
-
-  tab_strip->CloseAllTabs();
 }
 
 }  // namespace resource_coordinator

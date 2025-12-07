@@ -11,7 +11,11 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Represent the id of an account for interaction with GAIA.
 //
@@ -57,7 +61,7 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
 
   // Create a CoreAccountId from a Gaia ID.
   // Returns an empty CoreAccountId if |gaia_id| is empty.
-  static CoreAccountId FromGaiaId(const std::string& gaia_id);
+  static CoreAccountId FromGaiaId(const GaiaId& gaia_id);
 
   // Create a CoreAccountId object from an email of a robot account.
   // Returns an empty CoreAccountId if |email| is empty.
@@ -67,13 +71,13 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   // |CoreAccountId::ToString()|.
   static CoreAccountId FromString(const std::string& value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Only on ChromeOS, CoreAccountId objects may be created from Gaia emails.
   //
   // Create a CoreAccountId object from an email.
   // Returns an empty CoreAccountId if |email| is empty.
   static CoreAccountId FromEmail(const std::string& email);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // ---------------------------------------- ---------------------------------
 
  private:
@@ -81,16 +85,19 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
 };
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator<(const CoreAccountId& lhs, const CoreAccountId& rhs);
+inline auto operator<=>(const CoreAccountId& lhs, const CoreAccountId& rhs) {
+  return lhs.ToString() <=> rhs.ToString();
+}
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs);
+inline bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs) {
+  return lhs.ToString() == rhs.ToString();
+}
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator!=(const CoreAccountId& lhs, const CoreAccountId& rhs);
-
-COMPONENT_EXPORT(GOOGLE_APIS)
-std::ostream& operator<<(std::ostream& out, const CoreAccountId& a);
+inline std::ostream& operator<<(std::ostream& out, const CoreAccountId& a) {
+  return out << a.ToString();
+}
 
 // Returns the values of the account ids in a vector. Useful especially for
 // logs.
@@ -106,5 +113,35 @@ struct hash<CoreAccountId> {
   }
 };
 }  // namespace std
+
+#if BUILDFLAG(IS_ANDROID)
+// Constructs a Java CoreAccountId from the provided C++ CoreAccountId.
+COMPONENT_EXPORT(GOOGLE_APIS)
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
+    JNIEnv* env,
+    const CoreAccountId& account_id);
+
+// Constructs a C++ CoreAccountId from the provided Java CoreAccountId.
+COMPONENT_EXPORT(GOOGLE_APIS)
+CoreAccountId ConvertFromJavaCoreAccountId(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_core_account_id);
+
+namespace jni_zero {
+template <>
+inline CoreAccountId FromJniType<CoreAccountId>(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_core_account_id) {
+  return ConvertFromJavaCoreAccountId(env, j_core_account_id);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const CoreAccountId& core_account_id) {
+  return ConvertToJavaCoreAccountId(env, core_account_id);
+}
+}  // namespace jni_zero
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // GOOGLE_APIS_GAIA_CORE_ACCOUNT_ID_H_

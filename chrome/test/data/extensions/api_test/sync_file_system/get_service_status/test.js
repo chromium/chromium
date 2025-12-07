@@ -12,7 +12,9 @@ var testSteps = [
         chrome.test.callbackPass(testSteps.shift()));
   },
   function (status) {
-    chrome.test.assertEq('authentication_required', status);
+    chrome.test.getConfig(function(config) {
+      chrome.test.assertEq('disabled', status);
+    })
   }
 ];
 

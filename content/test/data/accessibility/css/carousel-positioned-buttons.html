@@ -1,0 +1,57 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  display: grid;
+  grid-auto-columns: 100%;
+  grid-auto-flow: column;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-marker-group: after;
+  div {
+    width: 100%;
+    &::scroll-marker {
+      display: block;
+      content: "";
+      aspect-ratio: 1;
+      width: 24px;
+      border: 1px solid silver;
+    }
+    &::scroll-marker:target-current {
+      background: white;
+    }
+    &::scroll-marker:where(:hover, :active, :focus) {
+      background: lightgray;
+    }
+  }
+
+  anchor-name: --carousel;
+  &::scroll-button(inline-end),
+  &::scroll-button(inline-start) {
+    position: absolute;
+    position-anchor: --carousel;
+    top: anchor(center);
+    inset-inline: anchor(start) anchor(end);
+    inline-size: 44px;
+    content: "";
+  }
+
+  &::scroll-button(inline-end) {
+    top: anchor(center);
+    inset-inline: auto anchor(end);
+    content: "";
+  }
+}
+</style>
+
+<div class="carousel">
+  <div>Item</div>
+  <div>Item</div>
+  <div>Item</div>
+</div>

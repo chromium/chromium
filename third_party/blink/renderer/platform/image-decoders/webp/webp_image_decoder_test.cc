@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 
+#include <array>
 #include <memory>
 
 #include "base/metrics/histogram_base.h"
@@ -68,7 +64,7 @@ void TestInvalidImage(const char* webp_file, bool parse_error_expected) {
 
 void TestWebPBppHistogram(const char* image_name,
                           const char* histogram_name = nullptr,
-                          base::HistogramBase::Sample sample = 0) {
+                          base::HistogramBase::Sample32 sample = 0) {
   TestBppHistogram(CreateWEBPDecoder, "WebP", image_name, histogram_name,
                    sample);
 }
@@ -102,14 +98,14 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
 
   const int kCanvasWidth = 11;
   const int kCanvasHeight = 29;
-  const AnimParam kFrameParameters[] = {
+  const auto kFrameParameters = std::to_array<AnimParam>({
       {0, 0, 11, 29, ImageFrame::kDisposeKeep,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {2, 10, 7, 17, ImageFrame::kDisposeKeep,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(500), true},
       {2, 2, 7, 16, ImageFrame::kDisposeKeep,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
@@ -143,7 +139,7 @@ TEST(AnimatedWebPTests,
 
   const int kCanvasWidth = 94;
   const int kCanvasHeight = 87;
-  const AnimParam kFrameParameters[] = {
+  const auto kFrameParameters = std::to_array<AnimParam>({
       {4, 10, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {34, 30, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
@@ -152,7 +148,7 @@ TEST(AnimatedWebPTests,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {10, 54, 32, 33, ImageFrame::kDisposeOverwriteBgcolor,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
@@ -185,7 +181,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
 
   const int kCanvasWidth = 94;
   const int kCanvasHeight = 87;
-  const AnimParam kFrameParameters[] = {
+  const auto kFrameParameters = std::to_array<AnimParam>({
       {4, 10, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
        ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
       {34, 30, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
@@ -194,7 +190,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
        ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
       {10, 54, 32, 33, ImageFrame::kDisposeOverwriteBgcolor,
        ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
@@ -261,7 +257,7 @@ TEST(AnimatedWebPTests, truncatedInBetweenFrame) {
   const Vector<char> full_data =
       ReadFile("/images/resources/invalid-animated-webp4.webp");
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), full_data.size() - 1);
+      SharedBuffer::Create(base::span(full_data).first(full_data.size() - 1));
   decoder->SetData(data.get(), false);
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(1);
@@ -287,7 +283,7 @@ TEST(AnimatedWebPTests, reproCrash) {
   const size_t kPartialSize = 32768;
   ASSERT_GT(full_data.size(), kPartialSize);
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), kPartialSize);
+      SharedBuffer::Create(base::span(full_data).first(kPartialSize));
   decoder->SetData(data.get(), false);
   EXPECT_EQ(1u, decoder->FrameCount());
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -318,7 +314,7 @@ TEST(AnimatedWebPTests, frameIsCompleteAndDuration) {
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
-      SharedBuffer::Create(data.data(), data.size() - 10);
+      SharedBuffer::Create(base::span(data).first(data.size() - 10));
   decoder->SetData(temp_data.get(), false);
 
   EXPECT_EQ(2u, decoder->FrameCount());
@@ -406,8 +402,8 @@ TEST(AnimatedWEBPTests, clearCacheExceptFrameWithAncestors) {
   // We need to store pointers to the image frames, since calling
   // FrameBufferAtIndex will decode the frame if it is not FrameComplete,
   // and we want to read the status of the frame without decoding it again.
-  ImageFrame* buffers[3];
-  size_t buffer_sizes[3];
+  std::array<ImageFrame*, 3> buffers;
+  std::array<size_t, 3> buffer_sizes;
   for (size_t i = 0; i < decoder->FrameCount(); i++) {
     buffers[i] = decoder->DecodeFrameBufferAtIndex(i);
     ASSERT_EQ(ImageFrame::kFrameComplete, buffers[i]->GetStatus());

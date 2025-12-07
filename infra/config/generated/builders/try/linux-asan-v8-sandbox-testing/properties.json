@@ -1,0 +1,72 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/linux-asan-v8-sandbox-testing/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "ASAN Release V8 Sandbox Testing",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.fuzz",
+              "clusterfuzz_archive": {
+                "archive_name_prefix": "asan-v8-sandbox-testing",
+                "archive_subdir": "v8-sandbox-testing",
+                "gs_acl": "public-read",
+                "gs_bucket": "chromium-browser-asan"
+              },
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "clobber"
+                ],
+                "build_config": "Release",
+                "config": "chromium_asan",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "ASAN Release V8 Sandbox Testing",
+          "project": "chromium"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-asan-v8-sandbox-testing/targets"
+    }
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_monitoring": true,
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "tryserver.chromium.fuzz",
+  "recipe": "chromium_trybot"
+}

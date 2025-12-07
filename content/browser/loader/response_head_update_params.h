@@ -23,6 +23,9 @@ struct CONTENT_EXPORT ResponseHeadUpdateParams {
 
   net::LoadTimingInfo load_timing_info;
   network::mojom::ServiceWorkerRouterInfoPtr router_info;
+  std::optional<network::mojom::ServiceWorkerStatus>
+      initial_service_worker_status;
+  bool is_synthetic_response_dry_run_mode = false;
 };
 
 }  // namespace content

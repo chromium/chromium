@@ -58,6 +58,10 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleExportCrostiniContainer(const base::Value::List& args);
   // Import the crostini container.
   void HandleImportCrostiniContainer(const base::Value::List& args);
+  // Export a guest disk image.
+  void HandleExportDiskImage(const base::Value::List& args);
+  // Import a guest disk image.
+  void HandleImportDiskImage(const base::Value::List& args);
   // Handle a request for the CrostiniInstallerView status.
   void HandleCrostiniInstallerStatusRequest(const base::Value::List& args);
   // crostini::CrostiniDialogStatusObserver
@@ -116,11 +120,11 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Fetches disk info for a VM, can be slow (seconds).
   void HandleGetCrostiniDiskInfo(const base::Value::List& args);
   void ResolveGetCrostiniDiskInfoCallback(
-      const std::string& callback_id,
+      std::string callback_id,
       std::unique_ptr<crostini::CrostiniDiskInfo> disk_info);
   // Handles a request to resize a Crostini disk.
   void HandleResizeCrostiniDisk(const base::Value::List& args);
-  void ResolveResizeCrostiniDiskCallback(const std::string& callback_id,
+  void ResolveResizeCrostiniDiskCallback(std::string callback_id,
                                          bool succeeded);
   // Returns a list of currently forwarded ports.
   void HandleGetCrostiniActivePorts(const base::Value::List& args);
@@ -161,7 +165,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Handle a request to open a file selector
   void HandleOpenContainerFileSelector(const base::Value::List& args);
   // Callback for CrostiniFileSelector
-  void OnContainerFileSelected(const std::string& callback_id,
+  void OnContainerFileSelected(std::string callback_id,
                                const base::FilePath& path);
 
   // Handle a request for the shared vmdevice info of all known containers

@@ -7,11 +7,11 @@
 
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -21,39 +21,12 @@
 
 namespace blink {
 
-class MLBuffer;
-class MLComputeResult;
+class MLTensor;
 class MLContext;
 class MLGraphBuilder;
 class ExecutionContext;
 
-// Stores information about a transferred `ArrayBufferView`. This struct doesn't
-// include Blink GC objects, and can be accessed by any threads.
-//
-// The information is used to recreate `ArrayBufferView` when computation
-// completes.
-struct ArrayBufferViewInfo {
-  ArrayBufferViewInfo() = default;
-  ~ArrayBufferViewInfo() = default;
-
-  ArrayBufferViewInfo(ArrayBufferViewInfo&& other) = default;
-  ArrayBufferViewInfo& operator=(ArrayBufferViewInfo&& other) = default;
-
-  ArrayBufferViewInfo(const ArrayBufferViewInfo&) = delete;
-  ArrayBufferViewInfo& operator=(const ArrayBufferViewInfo&) = delete;
-
-  DOMArrayBufferView::ViewType type;
-  size_t offset;
-  size_t length;
-  ArrayBufferContents contents;
-};
-
-// Implement the MLNamedArrayBufferViews type definition of WebNN spec:
-// https://www.w3.org/TR/webnn/#typedefdef-mlnamedarraybufferviews
-typedef HeapVector<std::pair<String, NotShared<DOMArrayBufferView>>>
-    MLNamedArrayBufferViews;
-
-typedef HeapVector<std::pair<String, Member<MLBuffer>>> MLNamedBuffers;
+typedef HeapVector<std::pair<String, Member<MLTensor>>> MLNamedTensors;
 
 // Represents a handle to a compiled, platform-specific computational graph.
 class MODULES_EXPORT MLGraph : public ScriptWrappable {
@@ -75,6 +48,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
               pending_graph_remote,
           NamedOperandDescriptors input_constraints,
           NamedOperandDescriptors output_constraints,
+          Vector<V8MLDeviceType> devices,
           base::PassKey<MLGraphBuilder> pass_key);
 
   MLGraph(const MLGraph&) = delete;
@@ -84,48 +58,30 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
+  // ml_graph.idl
+  void destroy();
+  Vector<V8MLDeviceType> devices() const;
+
   const NamedOperandDescriptors& GetInputConstraints() const;
   const NamedOperandDescriptors& GetOutputConstraints() const;
 
   // Execute the compiled platform graph asynchronously.
   //
-  // This method validates the input and output MLNamedArrayBufferViews against
-  // the graph's input and output resources info, transfers the input and output
-  // ArrayBufferViews, and then executes the compiled platform graph.
-  //
-  // TODO(crbug.com/331351967): Remove this method in favor of `Dispatch()`.
-  ScriptPromise<MLComputeResult> Compute(ScopedMLTrace scoped_trace,
-                                         const MLNamedArrayBufferViews& inputs,
-                                         const MLNamedArrayBufferViews& outputs,
-                                         ScriptState* script_state,
-                                         ExceptionState& exception_state);
-
-  // Execute the compiled platform graph asynchronously.
-  //
-  // This method validates the input and output MLNamedBuffers against the
+  // This method validates the input and output MLNamedTensors against the
   // graph's input and output resources info and then executes the compiled
   // platform graph.
-  void Dispatch(ScopedMLTrace scoped_trace,
-                const MLNamedBuffers& inputs,
-                const MLNamedBuffers& outputs,
+  void Dispatch(webnn::ScopedTrace scoped_trace,
+                const MLNamedTensors& inputs,
+                const MLNamedTensors& outputs,
                 ExceptionState& exception_state);
 
   const MLContext* Context() const;
 
  private:
-  void DidCompute(
-      ScopedMLTrace scoped_trace,
-      ScriptPromiseResolver<MLComputeResult>* resolver,
-      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
-          inputs_info,
-      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
-          outputs_info,
-      webnn::mojom::blink::ComputeResultPtr mojo_result);
-
   void OnConnectionError();
 
   // Describes the constraints on the inputs or outputs to this graph.
-  // Note that `WTF::HashMap` values must be nullable, but
+  // Note that `HashMap` values must be nullable, but
   // `webnn::OperandDescriptor` lacks a default constructor, so an optional is
   // used. Do not add std::nullopt values to these maps.
   const NamedOperandDescriptors input_constraints_;
@@ -137,10 +93,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
 
-  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
-  // rejected when the Mojo pipe is unexpectedly disconnected.
-  HeapHashSet<Member<ScriptPromiseResolver<MLComputeResult>>>
-      pending_resolvers_;
+  // Devices that will be used when dispatching the graph.
+  Vector<V8MLDeviceType> devices_;
 };
 
 }  // namespace blink

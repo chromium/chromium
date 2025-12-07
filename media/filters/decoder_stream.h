@@ -171,6 +171,9 @@ class MEDIA_EXPORT DecoderStream {
   // Returns maximum concurrent decode requests for the current |decoder_|.
   int GetMaxDecodeRequests() const;
 
+  // Returns if current |decoder_| is a platform decoder.
+  bool IsPlatformDecoder() const;
+
   // Returns the maximum number of outputs we should keep ready at any one time.
   int GetMaxReadyOutputs() const;
 
@@ -196,10 +199,6 @@ class MEDIA_EXPORT DecoderStream {
 
   // Performs the heavy lifting of the decode call.
   void DecodeInternal(scoped_refptr<DecoderBuffer> buffer);
-
-  // Flushes the decoder with an EOS buffer to retrieve internally buffered
-  // decoder output.
-  void FlushDecoder();
 
   // Callback for Decoder::Decode().
   void OnDecodeDone(int buffer_size,
@@ -307,6 +306,10 @@ class MEDIA_EXPORT DecoderStream {
   bool encryption_type_reported_ = false;
 
   int fallback_buffers_being_decoded_ = 0;
+
+  // Last timestamp seen by DecodeInternal(), used for average duration when
+  // explicit duration information is missing.
+  base::TimeDelta last_buffer_timestamp_ = kNoTimestamp;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<DecoderStream<StreamType>> weak_factory_{this};

@@ -348,35 +348,25 @@ state.GetFontBuilder().{{property.setter}}
   CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
 
   for (const CSSValue* item : *list) {
-    const auto& pair = To<CSSValuePair>(*item);
-    AtomicString identifier(To<CSSCustomIdentValue>(pair.First()).Value());
-    int counter_value = To<CSSPrimitiveValue>(pair.Second()).ComputeInteger(state.CssToLengthConversionData());
+    const auto& counter_data = To<cssvalue::CSSCounterValue>(*item);
+    AtomicString identifier(To<CSSCustomIdentValue>(counter_data.Identifier())->Value());
     CounterDirectives& directives =
-    map.insert(identifier, CounterDirectives()).stored_value->value;
-        {% if action == 'Reset' %}
-    directives.SetResetValue(counter_value);
-        {% elif action == 'Increment' %}
-    directives.AddIncrementValue(counter_value);
-        {% else %}
-    directives.SetSetValue(counter_value);
-        {% endif %}
+        map.insert(identifier, CounterDirectives()).stored_value->value;
+    if (const CSSPrimitiveValue* counter_data_value = counter_data.Value()) {
+      int counter_value = counter_data_value->ComputeInteger(state.CssToLengthConversionData());
+          {% if action == 'Reset' %}
+      directives.SetResetValue(counter_value);
+      if (counter_data.IsReversed()) {
+        directives.SetIsResetReversed();
+      }
+          {% elif action == 'Increment' %}
+      directives.AddIncrementValue(counter_value);
+          {% else %}
+      directives.SetSetValue(counter_value);
+          {% endif %}
+    }
   }
   DCHECK(!map.empty());
-    {% endcall %}
-  {% elif property.style_builder_template == 'grid' %}
-    {% set type = property.style_builder_template_args['type'] %}
-    {% call(property) apply_initial(property) %}
-  {{style_access(property)}}SetGridTemplate{{type}}s(ComputedStyleInitialValues::InitialGridTemplate{{type}}s());
-    {% endcall %}
-
-    {% call(property) apply_inherit(property) %}
-  {{style_access(property)}}SetGridTemplate{{type}}s(state.ParentStyle()->GridTemplate{{type}}s());
-    {% endcall %}
-
-    {% call(property) apply_value(property) %}
-  ComputedGridTrackList computed_grid_track_list;
-  StyleBuilderConverter::ConvertGridTrackList(value, computed_grid_track_list, state);
-  {{style_access(property)}}SetGridTemplate{{type}}s(computed_grid_track_list);
     {% endcall %}
   {% endif %}
 {%- endmacro %}

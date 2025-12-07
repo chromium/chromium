@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #include "third_party/content_analysis_sdk/src/proto/content_analysis/sdk/
-
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/content_analysis_sdk/src/proto/content_analysis/sdk/analysis.pb.h"
@@ -46,8 +44,11 @@ using ChromiumRule = ChromiumResult::TriggeredRule;
 using SdkRule = SdkResult::TriggeredRule;
 
 TEST(EnterpriseConnectorsProtoTest, TriggeredRuleActionEnum) {
-  EXPECT_EQ(ChromiumRule::Action_ARRAYSIZE, 4);
-  EXPECT_EQ(ChromiumRule::Action_ARRAYSIZE, SdkRule::Action_ARRAYSIZE);
+  // `ChromiumRule::Action` and `SdkRule::Action` have different sizes due to
+  // the addition of FORCE_SAVE_TO_CLOUD, which is not supported by Local
+  // Content Analysis Connectors, and therefore not added to `SdkRule::Action`.
+  EXPECT_EQ(ChromiumRule::Action_ARRAYSIZE, 5);
+  EXPECT_EQ(SdkRule::Action_ARRAYSIZE, 4);
 
   EXPECT_EQ((int)ChromiumRule::ACTION_UNSPECIFIED,
             (int)SdkRule::ACTION_UNSPECIFIED);

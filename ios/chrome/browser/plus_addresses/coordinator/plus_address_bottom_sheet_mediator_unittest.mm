@@ -6,22 +6,23 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "base/types/expected.h"
-#import "components/plus_addresses/fake_plus_address_service.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/metrics/plus_address_metrics.h"
-#import "components/plus_addresses/plus_address_service.h"
-#import "components/plus_addresses/plus_address_types.h"
-#import "components/plus_addresses/settings/mock_plus_address_setting_service.h"
+#import "components/plus_addresses/core/browser/fake_plus_address_service.h"
+#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
+#import "components/plus_addresses/core/browser/plus_address_test_utils.h"
+#import "components/plus_addresses/core/browser/plus_address_types.h"
+#import "components/plus_addresses/core/browser/settings/mock_plus_address_setting_service.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -41,21 +42,18 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
  protected:
   PlusAddressBottomSheetMediatorTest()
       : consumer_(OCMProtocolMock(@protocol(PlusAddressBottomSheetConsumer))),
-        browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(browser_state_.get()),
-        service_(
-            IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
-            &plus_address_setting_service_) {
+        profile_(TestProfileIOS::Builder().Build()),
+        browser_(profile_.get()) {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(&browser_);
     FakeUrlLoadingBrowserAgent::InjectForBrowser(&browser_);
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(&browser_));
-    BOOL incognito = browser_state_.get()->IsOffTheRecord();
+    BOOL incognito = profile_.get()->IsOffTheRecord();
     mediator_ = [[PlusAddressBottomSheetMediator alloc]
         initWithPlusAddressService:&service()
          plusAddressSettingService:&plus_address_setting_service_
+                          delegate:nil
                          activeUrl:GURL(FakePlusAddressService::kFacet)
-                  autofillCallback:base::DoNothing()
                          urlLoader:url_loader_
                          incognito:incognito];
     mediator_.consumer = consumer_;
@@ -71,8 +69,8 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
   id consumer_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   TestBrowser browser_;
   FakePlusAddressService service_;
   MockPlusAddressSettingService plus_address_setting_service_;
@@ -85,7 +83,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+                                plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -95,17 +93,21 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
   service().set_should_fail_to_reserve(true);
   OCMExpect([consumer_
-      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
-                      kReservePlusAddressError]);
+              notifyError:plus_addresses::metrics::
+                              PlusAddressModalCompletionStatus::
+                                  kReservePlusAddressError
+      withCreateErrorType:
+          plus_addresses::PlusAddressCreationBottomSheetErrorType::kNoError]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Ensure the consumer is notified when plus addresses are confirmed.
 TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
+  base::UserActionTester user_action_tester;
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+                                plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);
@@ -115,9 +117,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
 
 // Tests that the settings service is informed that the notice was accepted.
 TEST_F(PlusAddressBottomSheetMediatorTest, AcceptNoticeNotifiesService) {
-  base::test::ScopedFeatureList features_{
-      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice())
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice());
@@ -129,9 +128,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, AcceptNoticeNotifiesService) {
 // Tests that the settings service is not informed when the bottomsheet was
 // accepted if the notice has already been accepted before.
 TEST_F(PlusAddressBottomSheetMediatorTest, NoticeAlreadyAccepted) {
-  base::test::ScopedFeatureList features_{
-      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice())
       .WillByDefault(Return(true));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice()).Times(0);
@@ -144,12 +140,15 @@ TEST_F(PlusAddressBottomSheetMediatorTest, NoticeAlreadyAccepted) {
 TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+                                plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  OCMExpect([consumer_
-      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
-                      kConfirmPlusAddressError]);
+  OCMExpect([consumer_ notifyError:plus_addresses::metrics::
+                                       PlusAddressModalCompletionStatus::
+                                           kConfirmPlusAddressError
+               withCreateErrorType:plus_addresses::
+                                       PlusAddressCreationBottomSheetErrorType::
+                                           kCreateGeneric]);
   service().set_should_fail_to_confirm(true);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -159,16 +158,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, OpenManagementUrlOnNewTab) {
   [mediator() openNewTab:PlusAddressURLType::kManagement];
 
   EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressManagementUrl.Get()),
-            url_loader()->last_params.web_params.url);
-  // Ensure one new tab is opened.
-  EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
-}
-
-// Ensure that `openNewTab` opens errorReportUrl.
-TEST_F(PlusAddressBottomSheetMediatorTest, OpenErrorReportUrlOnNewTab) {
-  [mediator() openNewTab:PlusAddressURLType::kErrorReport];
-
-  EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressErrorReportUrl.Get()),
             url_loader()->last_params.web_params.url);
   // Ensure one new tab is opened.
   EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
@@ -185,12 +174,38 @@ TEST_F(PlusAddressBottomSheetMediatorTest, OpenLearnMoreUrlOnNewTab) {
 
 // Ensure the consumer is notified when plus addresses are refreshed.
 TEST_F(PlusAddressBottomSheetMediatorTest, DidTapRefresh) {
-  OCMExpect([consumer_
-      didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+  OCMExpect([consumer_ didReservePlusAddress:
+                           base::SysUTF8ToNSString(
+                               plus_addresses::test::kFakePlusAddressRefresh)]);
   [mediator() didTapRefreshButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Ensure the consumer is notified when affiliated suggestion is accepted during
+// creation.
+TEST_F(PlusAddressBottomSheetMediatorTest,
+       DidAcceptAffiliatedPlusAddressSuggestion) {
+  base::UserActionTester user_action_tester;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ dismissBottomSheet]);
+  [mediator() didAcceptAffiliatedPlusAddressSuggestion];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.AffiliationErrorFilledExisting"),
+            1);
+}
+
+// Ensure the consumer is notified when the user tries again to confirm.
+TEST_F(PlusAddressBottomSheetMediatorTest, DidSelectTryAgainToConfirm) {
+  base::UserActionTester user_action_tester;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ didSelectTryAgainToConfirm]);
+  [mediator() didSelectTryAgainToConfirm];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.CreateErrorTryAgainClicked"),
+            1);
 }

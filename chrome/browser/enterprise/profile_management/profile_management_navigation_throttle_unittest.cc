@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
@@ -16,8 +17,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,9 +86,9 @@ class ProfileManagementNavigationThrottleTest
   }
 
   std::unique_ptr<ProfileManagementNavigationThrottle> GetNavigationThrottle(
-      content::NavigationHandle* handle) {
+      content::NavigationThrottleRegistry& registry) {
     auto throttle =
-        std::make_unique<ProfileManagementNavigationThrottle>(handle);
+        std::make_unique<ProfileManagementNavigationThrottle>(registry);
     throttle->ClearAttributeMapForTesting();
     return throttle;
   }
@@ -107,10 +110,12 @@ TEST_F(ProfileManagementNavigationThrottleTest, FeaturesDisabled) {
 
   content::MockNavigationHandle navigation_handle(
       GURL("https://www.example.test/"), main_frame());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-  auto throttle = ProfileManagementNavigationThrottle::MaybeCreateThrottleFor(
-      &navigation_handle);
-  ASSERT_EQ(nullptr, throttle.get());
+  ProfileManagementNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(0u, registry.throttles().size());
 }
 
 TEST_F(ProfileManagementNavigationThrottleTest, ProfileCreationDisallowed) {
@@ -122,10 +127,12 @@ TEST_F(ProfileManagementNavigationThrottleTest, ProfileCreationDisallowed) {
 
   content::MockNavigationHandle navigation_handle(
       GURL("https://www.example.test/"), main_frame());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-  auto throttle = ProfileManagementNavigationThrottle::MaybeCreateThrottleFor(
-      &navigation_handle);
-  ASSERT_EQ(nullptr, throttle.get());
+  ProfileManagementNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(0u, registry.throttles().size());
 }
 
 TEST_F(ProfileManagementNavigationThrottleTest, UnsupportedHost) {
@@ -135,7 +142,10 @@ TEST_F(ProfileManagementNavigationThrottleTest, UnsupportedHost) {
       GURL("https://unsupported.host/"), main_frame());
   EXPECT_CALL(navigation_handle, GetResponseBody(_)).Times(0);
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillProcessResponse().action());
 }
@@ -153,8 +163,11 @@ TEST_F(ProfileManagementNavigationThrottleTest, Switch_InvalidJSON) {
   content::MockNavigationHandle navigation_handle(
       GURL(base::StrCat({"https://", kSwitchDomain})), main_frame());
   EXPECT_CALL(navigation_handle, GetResponseBody(_)).Times(0);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillProcessResponse().action());
 }
@@ -172,7 +185,11 @@ TEST_F(ProfileManagementNavigationThrottleTest, Switch_InvalidAttributes) {
       GURL(base::StrCat({"https://", kSwitchDomain})), main_frame());
   EXPECT_CALL(navigation_handle, GetResponseBody(_)).Times(0);
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillProcessResponse().action());
 }
@@ -203,9 +220,9 @@ class ProfileManagementNavigationThrottleRedirectTest
   }
 
   std::unique_ptr<ProfileManagementNavigationThrottle> GetNavigationThrottle(
-      content::NavigationHandle* handle) {
+      content::NavigationThrottleRegistry& registry) {
     auto throttle =
-        std::make_unique<ProfileManagementNavigationThrottle>(handle);
+        std::make_unique<ProfileManagementNavigationThrottle>(registry);
     throttle->ClearAttributeMapForTesting();
     throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
                                 base::StrCat({"https://", kUnmanagedUrl}));
@@ -226,7 +243,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidEmail) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kInvalidEmail));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -242,7 +262,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidEmail) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kValidEmail));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -259,7 +282,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(std::string()));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -275,7 +301,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomainAndToken) {
   SetNavigationHandleExpectations(
       navigation_handle, BuildSAMLResponse(std::string(), std::string()));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -291,7 +320,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kInvalidDomain));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -307,7 +339,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kValidDomain));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -330,7 +365,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, Switch_ValidDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kValidDomain));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = GetNavigationThrottle(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();

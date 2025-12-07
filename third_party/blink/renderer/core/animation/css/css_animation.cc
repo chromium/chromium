@@ -27,12 +27,10 @@ CSSAnimation::CSSAnimation(ExecutionContext* execution_context,
 bool CSSAnimation::IsEventDispatchAllowed() const {
   // If there is no owning element, CSS animation events are not dispatched:
   // https://drafts.csswg.org/css-animations-2/#event-dispatch
-  return (!RuntimeEnabledFeatures::UnownedAnimationsSkipCSSEventsEnabled() ||
-          OwningElement()) &&
-         Animation::IsEventDispatchAllowed();
+  return OwningElement() && Animation::IsEventDispatchAllowed();
 }
 
-String CSSAnimation::playState() const {
+V8AnimationPlayState CSSAnimation::playState() const {
   FlushStyles();
   return Animation::playState();
 }
@@ -123,6 +121,41 @@ CSSAnimation::PlayStateTransitionScope::~PlayStateTransitionScope() {
   bool is_paused = animation_.Paused();
   if (was_paused_ != is_paused)
     animation_.ignore_css_play_state_ = true;
+}
+
+void CSSAnimation::SetNamedTriggerAttachment(Member<const ScopedCSSName> name,
+                                             AnimationTrigger* trigger) {
+  named_trigger_attachments_.Set(name, trigger);
+}
+
+void CSSAnimation::RemoveStaleNamedTriggerAttachments(
+    const Member<const StyleTriggerAttachmentVector>& attachment_declarations) {
+  HeapHashMap<Member<const ScopedCSSName>, Member<AnimationTrigger>>
+      named_trigger_attachments_copy = named_trigger_attachments_;
+
+  for (const auto& [name, trigger] : named_trigger_attachments_copy) {
+    if (attachment_declarations) {
+      bool name_present = std::any_of(
+          attachment_declarations->begin(), attachment_declarations->end(),
+          [&](Member<StyleTriggerAttachment> attachment) {
+            return attachment->TriggerName()->GetName() == name->GetName();
+          });
+
+      if (name_present) {
+        continue;
+      }
+    }
+
+    trigger->removeAnimation(this);
+    named_trigger_attachments_.erase(name);
+  }
+}
+
+void CSSAnimation::Trace(blink::Visitor* visitor) const {
+  Animation::Trace(visitor);
+  visitor->Trace(owning_element_);
+  visitor->Trace(trigger_attachments_);
+  visitor->Trace(named_trigger_attachments_);
 }
 
 }  // namespace blink

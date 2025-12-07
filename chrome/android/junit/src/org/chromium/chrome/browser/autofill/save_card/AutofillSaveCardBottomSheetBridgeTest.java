@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,13 +36,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.Collections;
+
 /** Unit tests for {@link AutofillSaveCardBottomSheetBridge}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveCardBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE = 0xb00fb00fL;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
     private WindowAndroid mWindow;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -53,9 +53,9 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(AutofillSaveCardBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
+        AutofillSaveCardBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        mWindow = new WindowAndroid(activity);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
@@ -74,8 +74,17 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     private void requestShowContent() {
         mBridge.requestShowContent(
                 new AutofillSaveCardUiInfo.Builder()
+                        .withLogoIconDescription("")
                         .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
-                        .build());
+                        .withCardDescription("Card description")
+                        .withLegalMessageLines(Collections.EMPTY_LIST)
+                        .withTitleText("Title")
+                        .withConfirmText("Confirm")
+                        .withCancelText("Cancel")
+                        .withDescriptionText("Description")
+                        .withLoadingDescription("Loading description")
+                        .build(),
+                /* skipLoadingForFixFlow= */ false);
     }
 
     @Test

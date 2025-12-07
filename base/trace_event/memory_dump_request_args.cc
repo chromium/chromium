@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 // static
 const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
@@ -19,20 +18,20 @@ const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
     case MemoryDumpType::kSummaryOnly:
       return "summary_only";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 MemoryDumpType StringToMemoryDumpType(const std::string& str) {
   if (str == "periodic_interval") {
     return MemoryDumpType::kPeriodicInterval;
   }
-  if (str == "explicitly_triggered")
+  if (str == "explicitly_triggered") {
     return MemoryDumpType::kExplicitlyTriggered;
-  if (str == "summary_only")
+  }
+  if (str == "summary_only") {
     return MemoryDumpType::kSummaryOnly;
-  NOTREACHED_IN_MIGRATION();
-  return MemoryDumpType::kLast;
+  }
+  NOTREACHED();
 }
 
 const char* MemoryDumpLevelOfDetailToString(
@@ -45,21 +44,21 @@ const char* MemoryDumpLevelOfDetailToString(
     case MemoryDumpLevelOfDetail::kDetailed:
       return "detailed";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
     const std::string& str) {
-  if (str == "background")
+  if (str == "background") {
     return MemoryDumpLevelOfDetail::kBackground;
-  if (str == "light")
+  }
+  if (str == "light") {
     return MemoryDumpLevelOfDetail::kLight;
-  if (str == "detailed")
+  }
+  if (str == "detailed") {
     return MemoryDumpLevelOfDetail::kDetailed;
-  NOTREACHED_IN_MIGRATION();
-  return MemoryDumpLevelOfDetail::kLast;
+  }
+  NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

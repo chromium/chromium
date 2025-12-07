@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -35,7 +35,7 @@ CreateContactInfoEntityDataFromAutofillProfile(
 
 // Converts the given contact info `specifics` into an equivalent
 // `AutofillProfile`.
-std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
+AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
     const sync_pb::ContactInfoSpecifics& specifics);
 
 // Tests if the contact info `specifics` are valid and can be converted into an

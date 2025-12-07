@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
+#include "media/base/video_transformation.h"
 #include "media/formats/webm/webm_parser.h"
 
 namespace media {
@@ -23,6 +24,8 @@ class MEDIA_EXPORT WebMProjectionParser : public WebMParserClient {
 
   void Reset();
   bool Validate() const;
+
+  VideoTransformation GetVideoTransformation() const;
 
  private:
   friend class WebMProjectionParserTest;

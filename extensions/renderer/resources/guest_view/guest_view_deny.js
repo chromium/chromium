@@ -23,8 +23,9 @@ var GuestViewInternalNatives = requireNative('guest_view_internal');
 function asyncProvideElementConstructor(viewType, elementConstructor) {
   let useCapture = true;
   window.addEventListener('readystatechange', function listener(event) {
-    if (document.readyState == 'loading')
+    if (document.readyState == 'loading') {
       return;
+    }
 
     // If user code did use the name, we won't overwrite with the
     // error-providing element.

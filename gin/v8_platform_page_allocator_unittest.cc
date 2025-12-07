@@ -4,6 +4,7 @@
 
 #include "gin/v8_platform_page_allocator.h"
 
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,8 +101,8 @@ TEST_P(V8PlatformPageAllocatorBTIDeathTest, VerifyExecutablePagesAreProtected) {
   EXPECT_EQ(0u, ((uint64_t)function_range) % 4);
   EXPECT_EQ(0u, ((uint64_t)invalid_offset) % 4);
 
-  memcpy(buffer, reinterpret_cast<void*>(arm_bti_test_function),
-         function_range);
+  UNSAFE_TODO(memcpy(buffer, reinterpret_cast<void*>(arm_bti_test_function),
+                     function_range));
 
   // Next re-protect the page to the permission level to test
   page_allocator.SetPermissions(buffer, memory_size, permission_to_test);
@@ -115,7 +116,7 @@ TEST_P(V8PlatformPageAllocatorBTIDeathTest, VerifyExecutablePagesAreProtected) {
 
   // Next, attempt to call a function without BTI landing pad.
   BTITestFunction const bti_invalid_fn =
-      reinterpret_cast<BTITestFunction>(buffer + invalid_offset);
+      reinterpret_cast<BTITestFunction>(UNSAFE_TODO(buffer + invalid_offset));
 
   // Expectation for behaviour of bti_invalid_fn depends on the capabilities of
   // the actual CPU we are running on. The code that were are trying to execute

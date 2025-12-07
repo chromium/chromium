@@ -34,13 +34,18 @@ enum class GeneratedIconFixResult {
   kMaxValue = kSuccess,
 };
 
+// This command attempts to fix an app that has a generated icon by
+// re-downloading the icon from the app's manifest. This is typically used for
+// apps that were installed from sync and failed to download their icon
+// initially, or for apps whose icons were not available during a manifest
+// update.
 class GeneratedIconFixCommand
     : public WebAppCommand<SharedWebContentsWithAppLock,
                            GeneratedIconFixResult> {
  public:
   explicit GeneratedIconFixCommand(
       webapps::AppId app_id,
-      GeneratedIconFixSource source,
+      proto::GeneratedIconFixSource source,
       base::OnceCallback<void(GeneratedIconFixResult)> callback);
   ~GeneratedIconFixCommand() override;
 
@@ -57,7 +62,7 @@ class GeneratedIconFixCommand
   void Stop(GeneratedIconFixResult result, base::Location location);
 
   webapps::AppId app_id_;
-  GeneratedIconFixSource source_;
+  proto::GeneratedIconFixSource source_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;

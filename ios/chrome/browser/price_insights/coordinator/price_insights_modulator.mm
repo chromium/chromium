@@ -20,16 +20,17 @@
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
+#import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
+#import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
-#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -66,6 +67,8 @@ NSDate* getNSDateFromString(std::string date) {
 // The service responsible for interacting with commerce's price data
 // infrastructure.
 @property(nonatomic, assign) commerce::ShoppingService* shoppingService;
+// The price insights item linked to this modulator.
+@property(nonatomic, strong) PriceInsightsItem* priceInsightsItem;
 
 @end
 
@@ -79,21 +82,20 @@ NSDate* getNSDateFromString(std::string date) {
 - (void)start {
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
-  self.shoppingService = commerce::ShoppingServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  self.shoppingService = commerce::ShoppingServiceFactory::GetForProfile(
+      self.browser->GetProfile());
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::BookmarkModelFactory::GetForProfile(self.browser->GetProfile());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
+          self.browser->GetProfile()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:self.shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
-                     webState:webState
+                     webState:webState->GetWeakPtr()
       pushNotificationService:pushNotificationService];
   self.mediator.priceInsightsConsumer = self;
 }
@@ -101,6 +103,7 @@ NSDate* getNSDateFromString(std::string date) {
 - (void)stop {
   self.mediator = nil;
   self.shoppingService = nil;
+  self.priceInsightsItem = nil;
   [self dismissAlertCoordinator];
 }
 
@@ -123,13 +126,43 @@ NSDate* getNSDateFromString(std::string date) {
 
 #pragma mark - PriceInsightsConsumer
 
-- (void)didStartPriceTrackingWithNotification:(BOOL)granted {
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted
+                               showCompletion:(BOOL)showCompletion {
   [self.priceInsightsCell updateTrackStatus:YES];
-  [self displaySnackbar:granted];
+
+  if (!showCompletion) {
+    return;
+  }
+
+  __weak PriceInsightsModulator* weakSelf = self;
+  NSString* message =
+      granted
+          ? l10n_util::GetNSString(
+                IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED)
+          : l10n_util::GetNSString(
+                IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED);
+  [self displaySnackbar:message
+             buttonText:l10n_util::GetNSString(
+                            IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
+                 action:^{
+                   [weakSelf onPriceNotificationSnackBarClosed];
+                 }];
 }
 
 - (void)didStopPriceTracking {
+  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
+  __weak PriceInsightsModulator* weakSelf = self;
   [self.priceInsightsCell updateTrackStatus:NO];
+  [self displaySnackbar:l10n_util::GetNSString(
+                            IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_MESSAGE)
+             buttonText:l10n_util::GetNSString(
+                            IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_BUTTON_TITLE)
+                 action:^{
+                   [weakMediator
+                       priceInsightsTrackItem:weakSelf.priceInsightsItem
+                         notificationsGranted:NO
+                               showCompletion:NO];
+                 }];
 }
 
 - (void)didStartNavigationToWebpageWithPriceBucket:
@@ -138,19 +171,14 @@ NSDate* getNSDateFromString(std::string date) {
 }
 
 - (void)presentPushNotificationPermissionAlert {
-  NSString* settingURL = UIApplicationOpenSettingsURLString;
-  if (@available(iOS 15.4, *)) {
-    settingURL = UIApplicationOpenNotificationSettingsURLString;
-  }
-
   NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE);
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE);
+  NSString* closeTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CLOSE);
   NSString* settingsTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
 
   __weak PriceInsightsModulator* weakSelf = self;
   [_alertCoordinator stop];
@@ -159,87 +187,45 @@ NSDate* getNSDateFromString(std::string date) {
                          browser:self.browser
                            title:alertTitle
                          message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
+  [_alertCoordinator addItemWithTitle:closeTitle
                                action:^{
-                                 [weakSelf dismissAlertCoordinator];
+                                 [weakSelf onPushNotificationCancel];
                                }
                                 style:UIAlertActionStyleCancel];
-  [_alertCoordinator
-      addItemWithTitle:settingsTitle
-                action:^{
-                  [[UIApplication sharedApplication]
-                                openURL:[NSURL URLWithString:settingURL]
-                                options:{}
-                      completionHandler:nil];
-                  [weakSelf dismissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
-  [_alertCoordinator start];
-}
-
-- (void)presentStartPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {
-  NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
-  NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_SUBSCRIBE_ERROR_ALERT_DESCRIPTION);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
-  NSString* tryAgainTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT);
-
-  __weak PriceInsightsModulator* weakSelf = self;
-  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
-  [_alertCoordinator stop];
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:alertTitle
-                         message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
+  [_alertCoordinator addItemWithTitle:settingsTitle
                                action:^{
-                                 [weakSelf dismissAlertCoordinator];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator addItemWithTitle:tryAgainTitle
-                               action:^{
-                                 [weakMediator priceInsightsTrackItem:item];
-                                 [weakSelf dismissAlertCoordinator];
+                                 [weakSelf onPushNotificationSettings];
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
 }
 
-- (void)presentStopPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {
-  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
-  NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
-  NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
-  NSString* tryAgainTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT);
-
+- (void)presentStartPriceTrackingErrorSnackbar {
   __weak PriceInsightsModulator* weakSelf = self;
-  [_alertCoordinator stop];
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:alertTitle
-                         message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:^{
-                                 [weakSelf dismissAlertCoordinator];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator
-      addItemWithTitle:tryAgainTitle
-                action:^{
-                  [weakMediator priceInsightsStopTrackingItem:item];
-                  [weakSelf dismissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
-  [_alertCoordinator start];
+  [self
+      displaySnackbar:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_SUBSCRIBE_ERROR_ALERT_DESCRIPTION)
+           buttonText:
+               l10n_util::GetNSString(
+                   IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT)
+               action:^{
+                 [weakSelf onStartTrackingRetryForItem];
+               }];
+}
+
+- (void)presentStopPriceTrackingErrorSnackbar {
+  __weak PriceInsightsModulator* weakSelf = self;
+  [self
+      displaySnackbar:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION)
+           buttonText:
+               l10n_util::GetNSString(
+                   IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT)
+               action:^{
+                 [weakSelf onStopPriceTrackingRetryForItem];
+               }];
 }
 
 #pragma mark - private
@@ -248,7 +234,8 @@ NSDate* getNSDateFromString(std::string date) {
 - (void)configureCell:(PriceInsightsCell*)cell {
   cell.viewController = self.baseViewController;
   cell.mutator = self.mediator;
-  [cell configureWithItem:[self priceInsightsItemFromConfig]];
+  self.priceInsightsItem = [self priceInsightsItemFromConfig];
+  [cell configureWithItem:self.priceInsightsItem];
 }
 
 // Dismisses and removes the current alert coordinator.
@@ -257,7 +244,7 @@ NSDate* getNSDateFromString(std::string date) {
   _alertCoordinator = nil;
 }
 
-/// Creates a PriceInsightsItem object from the current item configuration.
+// Creates a PriceInsightsItem object from the current item configuration.
 - (PriceInsightsItem*)priceInsightsItemFromConfig {
   PriceInsightsItemConfiguration* config =
       static_cast<PriceInsightsItemConfiguration*>(
@@ -265,9 +252,11 @@ NSDate* getNSDateFromString(std::string date) {
   DCHECK(config->product_info.has_value());
 
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
-  item.title = base::SysUTF8ToNSString(config->product_info->title);
-  item.variants =
-      base::SysUTF8ToNSString(config->product_info->product_cluster_title);
+  std::string product_title =
+      config->product_info->product_cluster_title.empty()
+          ? config->product_info->title
+          : config->product_info->product_cluster_title;
+  item.title = base::SysUTF8ToNSString(product_title);
   item.currency = config->product_info->currency_code;
   item.country = config->product_info->country_code;
   item.canPriceTrack = config->can_price_track;
@@ -286,6 +275,12 @@ NSDate* getNSDateFromString(std::string date) {
     return item;
   }
 
+  if (config->price_insights_info->has_multiple_catalogs &&
+      config->price_insights_info->catalog_attributes.has_value()) {
+    item.variants = base::SysUTF8ToNSString(
+        config->price_insights_info->catalog_attributes.value());
+  }
+
   NSMutableDictionary* priceHistory = [[NSMutableDictionary alloc] init];
   for (std::tuple<std::string, int64_t> history :
        config->price_insights_info->catalog_history_prices) {
@@ -301,34 +296,70 @@ NSDate* getNSDateFromString(std::string date) {
   return item;
 }
 
-// Displays a snackbar message to inform the user about the successful price
-// tracking, with a button to open the price tracking UI.
-- (void)displaySnackbar:(BOOL)granted {
+// Displays a snackbar message.
+- (void)displaySnackbar:(NSString*)message
+             buttonText:(NSString*)buttonText
+                 action:(void (^)(void))action {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  __weak id<PriceNotificationsCommands> weakPriceNotificationsHandler =
-      HandlerForProtocol(dispatcher, PriceNotificationsCommands);
+  [snackbarHandler showSnackbarWithMessage:message
+                                buttonText:buttonText
+                             messageAction:action
+                          completionAction:nil];
+}
+
+// Callback invoked when the user chooses to retry stopping price tracking after
+// an initial error.
+- (void)onStopPriceTrackingRetryForItem {
+  [self.mediator priceInsightsStopTrackingItem:self.priceInsightsItem];
+  [self dismissAlertCoordinator];
+}
+
+// Callback is invoked when the user chooses to retry starting price tracking
+// after an initial error.
+- (void)onStartTrackingRetryForItem {
+  [self.mediator tryPriceInsightsTrackItem:self.priceInsightsItem];
+  [self dismissAlertCoordinator];
+}
+
+// Callback invoked when the user chooses to close push notifications prompt
+// during.
+- (void)onPushNotificationCancel {
+  [self.mediator priceInsightsTrackItem:self.priceInsightsItem
+                   notificationsGranted:NO
+                         showCompletion:YES];
+  [self dismissAlertCoordinator];
+}
+
+// Callback invoked when the user chooses to open settings.
+- (void)onPushNotificationSettings {
+  NSString* settingURL = UIApplicationOpenSettingsURLString;
+  settingURL = UIApplicationOpenNotificationSettingsURLString;
+
+  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:settingURL]
+                                     options:{}
+                           completionHandler:nil];
+  [self.mediator priceInsightsTrackItem:self.priceInsightsItem
+                   notificationsGranted:NO
+                         showCompletion:YES];
+  [self dismissAlertCoordinator];
+}
+
+// Callback invoked when the notification snackbar closes.
+- (void)onPriceNotificationSnackBarClosed {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  __weak id<PriceTrackedItemsCommands> weakPriceNotificationsHandler =
+      HandlerForProtocol(dispatcher, PriceTrackedItemsCommands);
   __weak id<ContextualSheetCommands> weakContextualSheetHandler =
       HandlerForProtocol(dispatcher, ContextualSheetCommands);
-  [snackbarHandler
-      showSnackbarWithMessage:
-          l10n_util::GetNSString(
-              granted
-                  ? IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED
-                  : IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED)
-                   buttonText:l10n_util::GetNSString(
-                                  IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
-                messageAction:^{
-                  base::RecordAction(
-                      base::UserMetricsAction("MobileMenuPriceNotifications"));
-                  base::UmaHistogramEnumeration(
-                      "IOS.ContextualPanel.DismissedReason",
-                      ContextualPanelDismissedReason::BlockInteraction);
-                  [weakContextualSheetHandler closeContextualSheet];
-                  [weakPriceNotificationsHandler showPriceNotifications];
-                }
-             completionAction:nil];
+
+  base::RecordAction(base::UserMetricsAction("MobileMenuPriceNotifications"));
+  base::UmaHistogramEnumeration(
+      "IOS.ContextualPanel.DismissedReason",
+      ContextualPanelDismissedReason::BlockInteraction);
+  [weakContextualSheetHandler closeContextualSheet];
+  [weakPriceNotificationsHandler showPriceTrackedItemsWithCurrentPage];
 }
 
 @end

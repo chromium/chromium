@@ -16,9 +16,6 @@ Digestor::Digestor(HashAlgorithm algorithm) {
 
   const EVP_MD* evp_md = nullptr;
   switch (algorithm) {
-    case kHashAlgorithmSha1:
-      evp_md = EVP_sha1();
-      break;
     case kHashAlgorithmSha256:
       evp_md = EVP_sha256();
       break;
@@ -46,9 +43,9 @@ bool Digestor::Update(base::span<const uint8_t> data) {
   return !has_failed_;
 }
 
-bool Digestor::UpdateUtf8(const String& string, WTF::UTF8ConversionMode mode) {
-  StringUTF8Adaptor utf8(string, mode);
-  return Update(base::as_bytes(base::make_span(utf8)));
+bool Digestor::UpdateUtf8(const String& string, Utf8ConversionMode mode) {
+  StringUtf8Adaptor utf8(string, mode);
+  return Update(base::as_byte_span(utf8));
 }
 
 bool Digestor::Finish(DigestValue& digest_result) {

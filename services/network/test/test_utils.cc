@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -27,7 +28,7 @@ std::string GetUploadData(const network::ResourceRequest& request) {
   CHECK_EQ(1u, body->elements()->size());
   const auto& element = body->elements()->at(0);
   CHECK_EQ(mojom::DataElementDataView::Tag::kBytes, element.type());
-  return std::string(element.As<DataElementBytes>().AsStringPiece());
+  return std::string(element.As<DataElementBytes>().AsStringView());
 }
 
 mojom::URLResponseHeadPtr CreateURLResponseHead(

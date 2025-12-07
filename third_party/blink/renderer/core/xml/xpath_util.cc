@@ -80,8 +80,7 @@ bool IsValidContextNode(Node* node) {
     case Node::kDocumentTypeNode:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsXMLSpace(UChar ch) {

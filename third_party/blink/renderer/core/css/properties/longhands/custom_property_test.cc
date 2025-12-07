@@ -14,11 +14,9 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -29,8 +27,8 @@ namespace {
 class CustomPropertyTest : public PageTestBase {
  public:
   void SetElementWithStyle(const String& value) {
-    GetDocument().body()->setInnerHTML("<div id='target' style='" + value +
-                                       "'></div>");
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+        "<div id='target' style='" + value + "'></div>");
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -48,12 +46,8 @@ class CustomPropertyTest : public PageTestBase {
   const CSSValue* ParseValue(const CustomProperty& property,
                              const String& value,
                              const CSSParserLocalContext& local_context) {
-    CSSTokenizer tokenizer(value);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    return property.Parse(CSSTokenizedValue{range, value}, *context,
-                          local_context);
+    return property.Parse(value, *context, local_context);
   }
 };
 
@@ -107,8 +101,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
@@ -118,8 +112,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
@@ -129,8 +123,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueEmptyInitial) {
@@ -158,7 +152,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNumberCalc) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsNumericLiteralValue());
   const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-  EXPECT_DOUBLE_EQ(2.4, numeric_literal->GetDoubleValue());
+  EXPECT_DOUBLE_EQ(2.4, numeric_literal->DoubleValue());
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
@@ -168,7 +162,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsNumericLiteralValue());
   const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-  EXPECT_DOUBLE_EQ(2.0, numeric_literal->GetDoubleValue());
+  EXPECT_DOUBLE_EQ(2.0, numeric_literal->DoubleValue());
 }
 
 TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {
@@ -201,7 +195,7 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
       ParseValue(property, "100px", CSSParserLocalContext());
   EXPECT_TRUE(value1->IsPrimitiveValue());
   EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
-                     CSSToLengthConversionData()));
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());
@@ -247,13 +241,11 @@ TEST_F(CustomPropertyTest, HasInitialValue) {
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
-  // We can't parse anchor queries as a <length>, because it can't be resolved
-  // into a pixel value at style time.
+  // Anchor queries are not allowed in registered custom properties for
+  // <length>.
   EXPECT_FALSE(
       ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
   EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
@@ -261,37 +253,18 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   RegisterProperty(GetDocument(), "--x", "<length-percentage>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
-  {
-    const CSSValue* value =
-        ParseValue(property, "anchor(--foo top)", CSSParserLocalContext());
-    ASSERT_TRUE(value);
-    EXPECT_EQ("anchor(--foo top)", value->CssText());
-  }
-
-  {
-    const CSSValue* value = ParseValue(property, "anchor-size(--foo width)",
-                                       CSSParserLocalContext());
-    ASSERT_TRUE(value);
-    EXPECT_EQ("anchor-size(--foo width)", value->CssText());
-  }
-
-  {
-    // There are no restrictions on what anchor queries are allowed in a custom
-    // property, so mixing anchor() and anchor-size() is also allowed, although
-    // using it in any builtin property via var() makes it invalid at
-    // computed-value time.
-    const CSSValue* value = ParseValue(
-        property, "calc(anchor(--foo top) + anchor-size(--foo width))",
-        CSSParserLocalContext());
-    ASSERT_TRUE(value);
-    EXPECT_EQ("calc(anchor(--foo top) + anchor-size(--foo width))",
-              value->CssText());
-  }
+  // Anchor queries are not allowed in registered custom properties for
+  // <length-percentage>.
+  EXPECT_FALSE(
+      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
+                          CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property,
+                          "calc(anchor(--foo top) + anchor-size(--foo width))",
+                          CSSParserLocalContext()));
 }
 
 TEST_F(CustomPropertyTest, ValueMode) {
@@ -308,7 +281,8 @@ TEST_F(CustomPropertyTest, ValueMode) {
   {
     StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                              /* StyleRecalcContext */ nullptr, StyleRequest());
-    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    state.CreateNewClonedStyle(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
     property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kNormal);
     const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
@@ -320,13 +294,24 @@ TEST_F(CustomPropertyTest, ValueMode) {
   {
     StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                              /* StyleRecalcContext */ nullptr, StyleRequest());
-    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    state.CreateNewClonedStyle(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
     property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kAnimated);
     const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
     EXPECT_TRUE(
         style->GetVariableData(AtomicString("--x"))->IsAnimationTainted());
   }
+}
+
+TEST_F(CustomPropertyTest, SelectionPropertyUseCounted) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<style>div::selection { --x: black; background-color: var(--x); "
+      "}</style> <div id='target'></div>");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
 }
 
 }  // namespace blink

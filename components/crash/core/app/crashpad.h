@@ -21,7 +21,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -30,6 +30,8 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/containers/span.h"
+#include "third_party/crashpad/crashpad/client/simple_address_range_bag.h"
+#include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"  // nogncheck
 #endif
 
 namespace base {
@@ -81,25 +83,30 @@ bool InitializeCrashpad(bool initial_client, const std::string& process_type);
 // crashpad_handler executable, relaunches the executable at |exe_path| or the
 // current executable if |exe_path| is empty with a command line argument of
 // --type=crashpad-handler. If |user_data_dir| is non-empty, it is added to the
-// handler's command line for use by Chrome Crashpad extensions.
-bool InitializeCrashpadWithEmbeddedHandler(bool initial_client,
-                                           const std::string& process_type,
-                                           const std::string& user_data_dir,
-                                           const base::FilePath& exe_path);
+// handler's command line for use by Chrome Crashpad extensions. |attachments|,
+// if not empty, indicates a list of files to be attached to a generated report.
+bool InitializeCrashpadWithEmbeddedHandler(
+    bool initial_client,
+    const std::string& process_type,
+    const std::string& user_data_dir,
+    const base::FilePath& exe_path,
+    const std::vector<base::FilePath>& attachments = {});
 
 // This version of InitializeCrashpadWithEmbeddedHandler is used to call an
 // embedded crash handler that comes from an entry point in a DLL. The command
 // line for these kind of embedded handlers is usually:
 // C:\Windows\System32\rundll.exe <path to dll>,<entrypoint> ...
 // In this situation the exe_path is not sufficient to allow spawning a crash
-// handler through the DLL so |initial_arguments| needs to be passed to
-// specify the DLL entry point.
+// handler through the DLL so |initial_arguments| needs to be passed to specify
+// the DLL entry point. |attachments|, if not empty, indicates a list of files
+// to be attached to a generated report.
 bool InitializeCrashpadWithDllEmbeddedHandler(
     bool initial_client,
     const std::string& process_type,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments);
+    const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments = {});
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns the CrashpadClient for this process. This will lazily create it if
@@ -117,7 +124,7 @@ void DestroyCrashpadClient();
 
 // ChromeOS has its own, OS-level consent system; Chrome does not maintain a
 // separate Upload Consent on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Enables or disables crash report upload, taking the given consent to upload
 // into account. Consent may be ignored, uploads may not be enabled even with
@@ -129,7 +136,7 @@ void DestroyCrashpadClient();
 // running.
 void SetUploadConsent(bool consent);
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 enum class ReportUploadState {
   NotUploaded,
@@ -175,12 +182,27 @@ bool ProcessExternalDump(
 
 // "platform", used to determine device_model, can be overridden.
 void OverridePlatformValue(const std::string& platform_value);
+
+// The simple extra memory ranges SimpleAddressRangeBag object.
+crashpad::SimpleAddressRangeBag* ExtraMemoryRanges();
+
+// Sets the bag of extra memory ranges to be included in the snapshot.
+void SetExtraMemoryRanges(crashpad::SimpleAddressRangeBag* address_range_bag);
+
+// The extra memory ranges SimpleAddressRangeBag object stored in the snapshot
+// but not the minidump.
+crashpad::SimpleAddressRangeBag* IntermediateDumpExtraMemoryRanges();
+
+// Sets the bag of extra memory ranges to be included in the snapshot but not
+// the minidump.
+void SetIntermediateDumpExtraMemoryRanges(
+    crashpad::SimpleAddressRangeBag* address_range_bag);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
 // crash dump.
-void CrashWithoutDumping(const std::string& message);
+[[noreturn]] void CrashWithoutDumping(const std::string& message);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -232,7 +254,8 @@ void DumpProcessWithoutCrashing(task_t task_port);
 // merge with any process annotations. These are useful for adding annotations
 // detected on the next run after a crash but before upload.
 void ProcessIntermediateDumps(
-    const std::map<std::string, std::string>& annotations = {});
+    const std::map<std::string, std::string>& annotations = {},
+    const crashpad::UserStreamDataSources* user_stream_sources = nullptr);
 
 // Convert a single intermediate dump at |file| into a minidump and
 // trigger an upload if StartProcessingPendingReports() has been called.
@@ -289,8 +312,10 @@ bool StartHandlerForClient(int fd, bool write_minidump_to_database);
 // |user_data_dir| is non-empty, the user data directory will be passed to the
 // handler process for use by Chrome Crashpad extensions; if |exe_path| is
 // non-empty, it specifies the path to the executable holding the embedded
-// handler. Sets the database path in |database_path|, if initializing in the
-// browser process. Returns false if initialization fails.
+// handler. |attachments|, if not empty, indicates a list of files to be
+// attached to a generated report (only supported on Linux and Windows). Sets
+// the database path in |database_path|, if initializing in the browser process.
+// Returns false if initialization fails.
 bool PlatformCrashpadInitialization(
     bool initial_client,
     bool browser_process,
@@ -298,6 +323,7 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path);
 
 // Returns the current crash report database object, or null if it has not

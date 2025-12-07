@@ -37,7 +37,7 @@ enum class URLSyntaxErrorCode {
 // starts with a prefix indicating a custom scheme i.e. an ASCII case
 // insensitive match to the string "web+" (or alternatively "ext+" if allowed).
 bool BLINK_COMMON_EXPORT
-IsValidCustomHandlerScheme(const std::string_view scheme,
+IsValidCustomHandlerScheme(std::string_view scheme,
                            ProtocolHandlerSecurityLevel security_level,
                            bool* has_custom_scheme_prefix = nullptr);
 
@@ -50,7 +50,11 @@ IsValidCustomHandlerScheme(const std::string_view scheme,
 // the spec states that it should throw a SyntaxError DOMException.
 URLSyntaxErrorCode BLINK_COMMON_EXPORT
 IsValidCustomHandlerURLSyntax(const GURL& full_url,
-                              const std::string_view& user_url);
+                              std::string_view user_url,
+                              ProtocolHandlerSecurityLevel security_level);
+URLSyntaxErrorCode BLINK_COMMON_EXPORT
+IsValidCustomHandlerURLSyntax(const GURL& full_url,
+                              ProtocolHandlerSecurityLevel security_level);
 
 // This function returns whether the specified URL is allowed as a protocol
 // handler parameter, as described in steps 6 and 7 (except same origin) of the

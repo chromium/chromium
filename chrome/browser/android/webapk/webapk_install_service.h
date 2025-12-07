@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -52,8 +51,6 @@ class WebApkInstallService : public KeyedService {
   // Called when the installation of a WebAPK finished or failed.
   using InstallFinishCallback =
       base::OnceCallback<void(webapps::WebApkInstallResult)>;
-
-  static WebApkInstallService* Get(content::BrowserContext* browser_context);
 
   explicit WebApkInstallService(content::BrowserContext* browser_context);
 

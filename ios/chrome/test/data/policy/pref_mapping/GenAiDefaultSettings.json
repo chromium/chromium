@@ -1,0 +1,109 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 0
+          },
+          "contextual_search.search_content_sharing_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 0
+          },
+          "contextual_search.search_content_sharing_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 1
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 1
+          },
+          "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "default_value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "default_value": 0
+          },
+          "contextual_search.search_content_sharing_settings": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 1,
+          "AIModeSettings": 1,
+          "LensOverlaySettings": 1,
+          "SearchContentSharingSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 1
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 1
+          },
+          "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 2,
+          "AIModeSettings": 1,
+          "LensOverlaySettings": 1,
+          "SearchContentSharingSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 1
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 1
+          },
+          "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

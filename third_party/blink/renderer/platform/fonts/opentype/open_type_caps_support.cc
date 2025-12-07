@@ -280,7 +280,7 @@ void OpenTypeCapsSupport::DetermineFontSupport(hb_script_t script) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

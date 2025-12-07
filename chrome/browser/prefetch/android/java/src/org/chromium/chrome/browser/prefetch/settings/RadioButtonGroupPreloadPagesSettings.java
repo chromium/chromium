@@ -8,9 +8,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -18,10 +22,11 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /**
- * A radio button group used for Preload Pages. Currently, it has 3 options:
- * Extended Preloading, Standard Preloading and No Preloading.
+ * A radio button group used for Preload Pages. Currently, it has 3 options: Extended Preloading,
+ * Standard Preloading and No Preloading.
  */
-public class RadioButtonGroupPreloadPagesSettings extends Preference
+@NullMarked
+public class RadioButtonGroupPreloadPagesSettings extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     /** Interface that will subscribe to Preload Pages state details requested events. */
@@ -33,9 +38,9 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
         void onPreloadPagesStateDetailsRequested(@PreloadPagesState int preloadPagesState);
     }
 
-    private RadioButtonWithDescriptionAndAuxButton mExtendedPreloading;
-    private RadioButtonWithDescriptionAndAuxButton mStandardPreloading;
-    private RadioButtonWithDescription mNoPreloading;
+    private @Nullable RadioButtonWithDescriptionAndAuxButton mExtendedPreloading;
+    private @Nullable RadioButtonWithDescriptionAndAuxButton mStandardPreloading;
+    private @Nullable RadioButtonWithDescription mNoPreloading;
     private @PreloadPagesState int mPreloadPagesState;
     private OnPreloadPagesStateDetailsRequested mPreloadPagesStateDetailsRequestedListener;
     private ManagedPreferenceDelegate mManagedPrefDelegate;
@@ -47,14 +52,32 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
 
     /**
      * Set Preload Pages state. Called before onBindViewHolder.
+     *
      * @param preloadPagesState The current Preload Pages state.
+     * @param preloadPagesStateDetailsRequestedListener Listener that will be notified when details
+     *     of a Preload Pages state are requested.
+     * @param managedPrefDelegate Determines whether this preference is managed.
      */
-    public void init(@PreloadPagesState int preloadPagesState) {
+    @Initializer
+    public void init(
+            @PreloadPagesState int preloadPagesState,
+            OnPreloadPagesStateDetailsRequested preloadPagesStateDetailsRequestedListener,
+            ManagedPreferenceDelegate managedPrefDelegate) {
         mPreloadPagesState = preloadPagesState;
+        mPreloadPagesStateDetailsRequestedListener = preloadPagesStateDetailsRequestedListener;
+        mManagedPrefDelegate = managedPrefDelegate;
+        // The value of `allowManagedIcon` doesn't matter, because the corresponding layout doesn't
+        // define an icon view.
+        ManagedPreferencesUtils.initPreference(
+                managedPrefDelegate,
+                this,
+                /* allowManagedIcon= */ true,
+                /* hasCustomLayout= */ true);
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        assertBound();
         if (checkedId == mExtendedPreloading.getId()) {
             mPreloadPagesState = PreloadPagesState.EXTENDED_PRELOADING;
         } else if (checkedId == mStandardPreloading.getId()) {
@@ -94,8 +117,16 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
         }
     }
 
+    @EnsuresNonNull({"mExtendedPreloading", "mStandardPreloading", "mNoPreloading"})
+    private void assertBound() {
+        assert mExtendedPreloading != null;
+        assert mStandardPreloading != null;
+        assert mNoPreloading != null;
+    }
+
     @Override
     public void onAuxButtonClicked(int clickedButtonId) {
+        assertBound();
         if (clickedButtonId == mExtendedPreloading.getId()) {
             mPreloadPagesStateDetailsRequestedListener.onPreloadPagesStateDetailsRequested(
                     PreloadPagesState.EXTENDED_PRELOADING);
@@ -108,35 +139,13 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
     }
 
     /**
-     * Sets a listener that will be notified when details of a Preload Pages state are requested.
-     * @param listener New listener that will be notified when details of a Preload Pages state are
-     *         requested.
-     */
-    public void setPreloadPagesStateDetailsRequestedListener(
-            OnPreloadPagesStateDetailsRequested listener) {
-        mPreloadPagesStateDetailsRequestedListener = listener;
-    }
-
-    /**
-     * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
-     */
-    public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
-        mManagedPrefDelegate = delegate;
-        // The value of `allowManagedIcon` doesn't matter, because the corresponding layout doesn't
-        // define an icon view.
-        ManagedPreferencesUtils.initPreference(
-                mManagedPrefDelegate,
-                this,
-                /* allowManagedIcon= */ true,
-                /* hasCustomLayout= */ true);
-    }
-
-    /**
      * Sets the checked state of the Preload Pages radio button group.
+     *
      * @param checkedState Set the radio button of checkedState to checked, and set the radio
-     *         buttons of other states to unchecked.
+     *     buttons of other states to unchecked.
      */
     public void setCheckedState(@PreloadPagesState int checkedState) {
+        assertBound();
         mPreloadPagesState = checkedState;
         mExtendedPreloading.setChecked(checkedState == PreloadPagesState.EXTENDED_PRELOADING);
         mStandardPreloading.setChecked(checkedState == PreloadPagesState.STANDARD_PRELOADING);
@@ -147,15 +156,17 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
         return mPreloadPagesState;
     }
 
-    public RadioButtonWithDescriptionAndAuxButton getExtendedPreloadingButtonForTesting() {
+    public @Nullable
+            RadioButtonWithDescriptionAndAuxButton getExtendedPreloadingButtonForTesting() {
         return mExtendedPreloading;
     }
 
-    public RadioButtonWithDescriptionAndAuxButton getStandardPreloadingButtonForTesting() {
+    public @Nullable
+            RadioButtonWithDescriptionAndAuxButton getStandardPreloadingButtonForTesting() {
         return mStandardPreloading;
     }
 
-    public RadioButtonWithDescription getNoPreloadingButtonForTesting() {
+    public @Nullable RadioButtonWithDescription getNoPreloadingButtonForTesting() {
         return mNoPreloading;
     }
 }

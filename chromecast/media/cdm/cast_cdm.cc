@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -88,8 +89,7 @@ int HdcpVersionX10(::media::HdcpVersion hdcp_version) {
       return 23;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -161,15 +161,16 @@ void CastCdm::OnSessionKeysChange(const std::string& session_id,
                                   ::media::CdmKeysInfo keys_info) {
   logging::LogMessage log_message(__FILE__, __LINE__, logging::LOGGING_INFO);
   log_message.stream() << "keystatuseschange ";
-  int status_count[kKeyStatusCount] = {0};
+  int status_count[kKeyStatusCount] = {};
   for (const auto& key_info : keys_info) {
-    status_count[key_info->status]++;
+    UNSAFE_TODO(status_count[key_info->status])++;
   }
   for (int i = 0; i != ::media::CdmKeyInformation::KEY_STATUS_MAX; ++i) {
-    if (status_count[i] == 0)
+    if (UNSAFE_TODO(status_count[i]) == 0) {
       continue;
-    log_message.stream() << status_count[i] << " " << static_cast<KeyStatus>(i)
-                         << " ";
+    }
+    log_message.stream() << UNSAFE_TODO(status_count[i]) << " "
+                         << static_cast<KeyStatus>(i) << " ";
   }
 
   session_keys_change_cb_.Run(session_id, newly_usable_keys,

@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -37,8 +36,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 import java.util.concurrent.Callable;
@@ -46,7 +43,6 @@ import java.util.concurrent.Callable;
 /** Unit tests for {@ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS})
 public class ThreadedInputConnectionFactoryTest {
     /** A testable version of ThreadedInputConnectionFactory. */
     private class TestFactory extends ThreadedInputConnectionFactory {
@@ -124,11 +120,6 @@ public class ThreadedInputConnectionFactoryTest {
         mEditorInfo = new EditorInfo();
         mUiHandler = new Handler();
 
-        mContext = Mockito.mock(Context.class);
-        mContainerView = Mockito.mock(View.class);
-        mImeAdapter = Mockito.mock(ImeAdapterImpl.class);
-        mInputMethodManager = Mockito.mock(InputMethodManager.class);
-
         mFactory = new TestFactory(new InputMethodManagerWrapperImpl(mContext, null, null));
         mFactory.onWindowFocusChanged(true);
         mImeHandler = mFactory.getHandler();
@@ -144,7 +135,6 @@ public class ThreadedInputConnectionFactoryTest {
         when(mContainerView.hasFocus()).thenReturn(true);
         when(mContainerView.hasWindowFocus()).thenReturn(true);
 
-        mProxyView = Mockito.mock(ThreadedInputConnectionProxyView.class);
         when(mProxyView.getContext()).thenReturn(mContext);
         when(mProxyView.requestFocus()).thenReturn(true);
         when(mProxyView.getHandler()).thenReturn(mImeHandler);
@@ -172,6 +162,7 @@ public class ThreadedInputConnectionFactoryTest {
                             private int mCount;
 
                             @Override
+                            @SuppressWarnings("DirectInvocationOnMock")
                             public Boolean answer(InvocationOnMock invocation) {
                                 mCount++;
                                 // To simplify IMM's behavior, let's say that it succeeds input

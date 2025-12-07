@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -28,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * Call {@link #setState(int)} to transition between the loading spinner, button, or hidden states.
  */
+@NullMarked
 public class MoreProgressButton extends FrameLayout implements View.OnClickListener {
     /** State for the button, reflects the visibility for the button and spinner */
     @IntDef({State.INVALID, State.HIDDEN, State.BUTTON, State.LOADING})
@@ -48,11 +49,11 @@ public class MoreProgressButton extends FrameLayout implements View.OnClickListe
 
     protected View mProgressSpinner;
     protected ButtonCompat mButton;
-    protected Runnable mOnClickRunnable;
+    protected @Nullable Runnable mOnClickRunnable;
 
     protected @State int mState = State.INVALID;
 
-    public MoreProgressButton(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public MoreProgressButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

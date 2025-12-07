@@ -9,9 +9,12 @@
 #include <string>
 
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 
@@ -49,8 +52,8 @@ class WebRequestPermissions {
   static bool HideRequest(extensions::PermissionHelper* permission_helper,
                           const extensions::WebRequestInfo& request);
 
-  // |host_permission_check| controls how permissions are checked with regard to
-  // |url| and |initiator| if an initiator exists.
+  // `host_permission_check` controls how permissions are checked with regard to
+  // `url` and `initiator` if an initiator exists.
   static extensions::PermissionsData::PageAccess CanExtensionAccessURL(
       extensions::PermissionHelper* permission_helper,
       const extensions::ExtensionId& extension_id,

@@ -18,12 +18,10 @@ using TableViewTextButtonItemTest = PlatformTest;
 
 // Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(TableViewTextButtonItemTest, SetProperties) {
-  NSString* text = @"You need to do something.";
   NSString* buttonText = @"Tap to do something.";
 
   TableViewTextButtonItem* item =
       [[TableViewTextButtonItem alloc] initWithType:0];
-  item.text = text;
   item.buttonText = buttonText;
 
   ASSERT_TRUE(item.dimBackgroundWhenDisabled);
@@ -33,11 +31,9 @@ TEST_F(TableViewTextButtonItemTest, SetProperties) {
 
   TableViewTextButtonCell* textButtonCell =
       base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
-  EXPECT_FALSE(textButtonCell.textLabel.text);
   EXPECT_FALSE(textButtonCell.button.configuration.title);
 
   [item configureCell:textButtonCell
            withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_NSEQ(text, textButtonCell.textLabel.text);
   EXPECT_NSEQ(buttonText, textButtonCell.button.configuration.title);
 }

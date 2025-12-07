@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/base64.h"
@@ -11,14 +12,13 @@
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/version_info/version_info.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "crypto/sha2.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/ip_address.h"
@@ -77,13 +77,6 @@ std::string Escape(const std::string& url) {
 }
 
 }  // namespace
-
-V4ProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
-                                     bool disable_auto_update) {
-  return V4ProtocolConfig(client_name, disable_auto_update,
-                          google_apis::GetAPIKey(),
-                          std::string(version_info::GetVersionNumber()));
-}
 
 void SetSbV4UrlPrefixForTesting(const char* url_prefix) {
   g_sbv4_url_prefix_for_testing = url_prefix;
@@ -189,15 +182,7 @@ StoreAndHashPrefix::StoreAndHashPrefix(ListIdentifier list_id,
                                        const HashPrefixStr& hash_prefix)
     : list_id(list_id), hash_prefix(hash_prefix) {}
 
-StoreAndHashPrefix::~StoreAndHashPrefix() {}
-
-bool StoreAndHashPrefix::operator==(const StoreAndHashPrefix& other) const {
-  return list_id == other.list_id && hash_prefix == other.hash_prefix;
-}
-
-bool StoreAndHashPrefix::operator!=(const StoreAndHashPrefix& other) const {
-  return !operator==(other);
-}
+StoreAndHashPrefix::~StoreAndHashPrefix() = default;
 
 size_t StoreAndHashPrefix::hash() const {
   std::size_t first = list_id.hash();
@@ -221,16 +206,6 @@ bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set) {
     }
   }
   return true;
-}
-
-bool ListIdentifier::operator==(const ListIdentifier& other) const {
-  return platform_type_ == other.platform_type_ &&
-         threat_entry_type_ == other.threat_entry_type_ &&
-         threat_type_ == other.threat_type_;
-}
-
-bool ListIdentifier::operator!=(const ListIdentifier& other) const {
-  return !operator==(other);
 }
 
 size_t ListIdentifier::hash() const {
@@ -257,19 +232,6 @@ ListIdentifier::ListIdentifier(const ListUpdateResponse& response)
     : ListIdentifier(response.platform_type(),
                      response.threat_entry_type(),
                      response.threat_type()) {}
-
-V4ProtocolConfig::V4ProtocolConfig(const std::string& client_name,
-                                   bool disable_auto_update,
-                                   const std::string& key_param,
-                                   const std::string& version)
-    : client_name(client_name),
-      disable_auto_update(disable_auto_update),
-      key_param(key_param),
-      version(version) {}
-
-V4ProtocolConfig::V4ProtocolConfig(const V4ProtocolConfig& other) = default;
-
-V4ProtocolConfig::~V4ProtocolConfig() {}
 
 // static
 base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
@@ -336,7 +298,7 @@ void V4ProtocolManagerUtil::UrlToFullHashes(
 
   std::vector<std::string> hosts;
   if (url.HostIsIPAddress()) {
-    hosts.push_back(url.host());
+    hosts.push_back(url.GetHost());
   } else {
     GenerateHostVariantsToCheck(canon_host, &hosts);
   }
@@ -455,7 +417,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   // 2. Do URL unescaping until no more hex encoded characters exist.
   std::string url_unescaped_str(Unescape(url_without_fragment.spec()));
   std::string_view url_unescaped_str_view(url_unescaped_str);
-  url::Parsed parsed = url::ParseStandardURL(url_unescaped_str);
+  url::Parsed parsed = url::ParseStandardUrl(url_unescaped_str);
 
   // 3. In hostname, remove all leading and trailing dots.
   std::string_view host;
@@ -476,19 +438,14 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
 
   url::Replacements<char> hp_replacements;
-  hp_replacements.SetHost(
-      host_without_consecutive_dots.data(),
-      url::Component(0, host_without_consecutive_dots.length()));
-  hp_replacements.SetPath(
-      path_without_consecutive_slash.data(),
-      url::Component(0, path_without_consecutive_slash.length()));
+  hp_replacements.SetHostStr(host_without_consecutive_dots);
+  hp_replacements.SetPathStr(path_without_consecutive_slash);
 
   std::string url_unescaped_with_can_hostpath;
   url::StdStringCanonOutput output(&url_unescaped_with_can_hostpath);
   url::Parsed temp_parsed;
-  url::ReplaceComponents(url_unescaped_str.data(), url_unescaped_str.length(),
-                         parsed, hp_replacements, nullptr, &output,
-                         &temp_parsed);
+  url::ReplaceComponents(url_unescaped_str_view, parsed, hp_replacements,
+                         nullptr, &output, &temp_parsed);
   output.Complete();
 
   // 6. Step needed to revert escaping done in url::ReplaceComponents.
@@ -497,7 +454,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   // 7. After performing all above steps, percent-escape all chars in url which
   // are <= ASCII 32, >= 127, #, %. Escapes must be uppercase hex characters.
   std::string escaped_canon_url_str(Escape(url_unescaped_with_can_hostpath));
-  url::Parsed final_parsed = url::ParseStandardURL(escaped_canon_url_str);
+  url::Parsed final_parsed = url::ParseStandardUrl(escaped_canon_url_str);
 
   if (canonicalized_hostname && final_parsed.host.is_nonempty()) {
     *canonicalized_hostname = escaped_canon_url_str.substr(
@@ -611,9 +568,9 @@ void V4ProtocolManagerUtil::SetClientInfoFromConfig(
 void V4ProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
     const std::unique_ptr<StoreStateMap>& store_state_map,
     std::vector<std::string>* list_client_states) {
-  base::ranges::transform(*store_state_map,
-                          std::back_inserter(*list_client_states),
-                          &StoreStateMap::value_type::second);
+  std::ranges::transform(*store_state_map,
+                         std::back_inserter(*list_client_states),
+                         &StoreStateMap::value_type::second);
 }
 
 }  // namespace safe_browsing

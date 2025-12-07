@@ -5,7 +5,7 @@
 // https://w3c.github.io/webauthn/#dictdef-registrationresponsejson
 
 dictionary RegistrationResponseJSON {
-    required Base64URLString id;
+    required DOMString id;
     required Base64URLString rawId;
     required AuthenticatorAttestationResponseJSON response;
     DOMString authenticatorAttachment;

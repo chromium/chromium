@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "ash/wm/overview/birch/birch_bar_constants.h"
+#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash::birch_bar_util {
@@ -17,12 +19,24 @@ std::unique_ptr<views::Button> CreateAddonButton(
     views::Button::PressedCallback callback,
     const std::u16string& label);
 
+// Creates a button for the glanceables chip with given `callback` and
+// `button_icon`, e.g. the expand/collapse button of coral chip.
+std::unique_ptr<views::Button> CreateCoralAddonButton(
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& button_icon);
+
 // Creates a weather temperature view which consists of two labels, one is for
 // the temperature degree and the other is for the degree unit (Fahrenheit v.s.
 // Celsius).
 std::unique_ptr<views::View> CreateWeatherTemperatureView(
     const std::u16string& temp_str,
     bool fahrenheit);
+
+// Gets suggestion type from the given command Id.
+BirchSuggestionType CommandIdToSuggestionType(int command_id);
+
+// Returns the visible tab app selection host if there is one.
+TabAppSelectionHost* GetVisibleTabAppSelectionHost();
 
 }  // namespace ash::birch_bar_util
 

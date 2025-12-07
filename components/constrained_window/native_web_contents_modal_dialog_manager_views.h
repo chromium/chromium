@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {

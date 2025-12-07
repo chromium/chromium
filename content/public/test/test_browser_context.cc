@@ -12,7 +12,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/platform_notification_service.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
@@ -46,15 +45,16 @@ TestBrowserContext::~TestBrowserContext() {
   NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
 
+  if (!browser_context_dir_.IsValid()) {
+    return;
+  }
   // Various things that were just torn down above post tasks to other
   // sequences that eventually bounce back to the main thread and out again.
   // Run all such tasks now before the instance is destroyed so that the
   // |browser_context_dir_| can be fully cleaned up.
   RunAllPendingInMessageLoop(BrowserThread::IO);
   RunAllTasksUntilIdle();
-
-  EXPECT_TRUE(!browser_context_dir_.IsValid() || browser_context_dir_.Delete())
-      << browser_context_dir_.GetPath();
+  EXPECT_TRUE(browser_context_dir_.Delete()) << browser_context_dir_.GetPath();
 }
 
 base::FilePath TestBrowserContext::TakePath() {
@@ -91,7 +91,7 @@ void TestBrowserContext::SetClientHintsControllerDelegate(
   client_hints_controller_delegate_ = delegate;
 }
 
-base::FilePath TestBrowserContext::GetPath() {
+base::FilePath TestBrowserContext::GetPath() const {
   return browser_context_dir_.GetPath();
 }
 

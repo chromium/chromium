@@ -9,11 +9,11 @@ namespace first_run {
 NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
     @"firstRunSignInScreenAccessibilityIdentifier";
 
-NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
-    @"SearchEngineChoiceTitleAccessibilityIdentifier";
-
 NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
     @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
+
+NSString* const kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier =
+    @"firstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier";
 
 NSString* const kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier =
     @"firstRunOmniboxPositionChoiceScreenAccessibilityIdentifier";
@@ -28,4 +28,10 @@ NSString* const kLaunchScreenAccessibilityIdentifier =
 NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier =
     @"enterpriseLoadingScreenAccessibilityIdentifier";
 
-}  // first_run
+NSString* const kBestFeaturesMainScreenAccessibilityIdentifier =
+    @"bestFeaturesMainScreenAccessibilityIdentifier";
+
+NSString* const kAnimatedLensPromoAccessibilityIdentifier =
+    @"animatedLensPromoAccessibilityIdentifier";
+
+}  // namespace first_run

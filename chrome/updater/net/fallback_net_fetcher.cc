@@ -71,15 +71,18 @@ void FallbackNetFetcher::PostRequestDone(
     update_client::NetworkFetcher::ProgressCallback progress_callback,
     update_client::NetworkFetcher::PostRequestCompleteCallback
         post_request_complete_callback,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     int net_error,
     const std::string& header_etag,
     const std::string& header_x_cup_server_proof,
+    const std::string& header_set_cookie,
     int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int should_fallback = net_error || (http_status_code_ != 200);
   if (should_fallback && next_) {
-    VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url;
+    VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url
+            << ", error: " << net_error
+            << ", HTTP status: " << http_status_code_;
     next_->PostRequest(url, post_data, content_type, post_additional_headers,
                        response_started_callback, progress_callback,
                        std::move(post_request_complete_callback));
@@ -87,7 +90,8 @@ void FallbackNetFetcher::PostRequestDone(
   }
   std::move(post_request_complete_callback)
       .Run(std::move(response_body), net_error, header_etag,
-           header_x_cup_server_proof, xheader_retry_after_sec);
+           header_x_cup_server_proof, header_set_cookie,
+           xheader_retry_after_sec);
 }
 
 base::OnceClosure FallbackNetFetcher::DownloadToFile(

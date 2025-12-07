@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("protocol") {
+  proto_in_dir = "//"
+  sources = [
+    "children.proto",
+    "split_collection_state.proto",
+    "tab_group_collection_state.proto",
+    "tab_state.proto",
+    "tab_strip_collection_state.proto",
+    "token.proto",
+  ]
+}
+
+proto_java_library("proto_java") {
+  proto_path = "//"
+  sources = [
+    "children.proto",
+    "split_collection_state.proto",
+    "tab_group_collection_state.proto",
+    "tab_state.proto",
+    "tab_strip_collection_state.proto",
+    "token.proto",
+  ]
+}

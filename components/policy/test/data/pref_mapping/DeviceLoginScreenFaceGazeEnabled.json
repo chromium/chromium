@@ -1,0 +1,17 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.a11y.face_gaze.enabled",
+      "pref_location": "signin_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

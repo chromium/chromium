@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_PASSWORD_COORDINATOR_H_
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_coordinator_delegate.h"
 
 class GURL;
 
@@ -16,7 +17,8 @@ struct CredentialUIEntry;
 @class ManualFillPlusAddressMediator;
 
 // Delegate for the coordinator actions.
-@protocol PasswordCoordinatorDelegate <FallbackCoordinatorDelegate>
+@protocol PasswordCoordinatorDelegate <FallbackCoordinatorDelegate,
+                                       PlusAddressCoordinatorDelegate>
 
 // Opens the password manager.
 - (void)openPasswordManager;
@@ -36,6 +38,13 @@ struct CredentialUIEntry;
 
 @end
 
+@protocol ManualFillPasswordCoordinatorConsumer
+
+// Notifies that passwords were fetched.
+- (void)passwordsFetched;
+
+@end
+
 // Creates and manages a view controller to present passwords to the user. It
 // will filter the passwords based on the passed URL when instantiating it. Any
 // selected password will be sent to the current field in the active web state.
@@ -44,6 +53,9 @@ struct CredentialUIEntry;
 // The delegate for this coordinator. Delegate protocol conforms to
 // FallbackCoordinatorDelegate, and replaces the superclass delegate.
 @property(nonatomic, weak) id<PasswordCoordinatorDelegate> delegate;
+
+// The consumer for this coordinator.
+@property(nonatomic, weak) id<ManualFillPasswordCoordinatorConsumer> consumer;
 
 // Creates a coordinator that uses a `viewController`, `browser`,
 // `URL`, an `injectionHandler` and relevant information related to the current

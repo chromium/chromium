@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_HOST_CHROME_IMPL_H_
 #define CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_HOST_CHROME_IMPL_H_
 
+#include <vector>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"

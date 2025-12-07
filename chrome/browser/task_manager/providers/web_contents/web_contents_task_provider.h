@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 
 namespace content {
@@ -42,7 +43,7 @@ class WebContentsTaskProvider : public TaskProvider {
   bool HasWebContents(content::WebContents* web_contents) const;
 
   // Returns the task, if any, of the provided frame.
-  Task* GetTaskOfFrame(content::RenderFrameHost* frame);
+  base::WeakPtr<Task> GetTaskOfFrame(content::RenderFrameHost* frame);
 
  private:
   class WebContentsEntry;

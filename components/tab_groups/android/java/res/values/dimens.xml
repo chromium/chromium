@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <item name="tab_group_color_picker_hovered_alpha" format="float" type="dimen">0.08</item>
+    <item name="tab_group_color_picker_focused_alpha" format="float" type="dimen">0.1</item>
+    <item name="tab_group_color_picker_pressed_alpha" format="float" type="dimen">0.12</item>
+</resources>

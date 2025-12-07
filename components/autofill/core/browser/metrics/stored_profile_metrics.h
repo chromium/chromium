@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 namespace autofill::autofill_metrics {
@@ -28,18 +28,19 @@ struct StoredProfileCounts {
 // depending on the `category`, country-less address profiles.
 // This metric is emitted each time a new Chrome profile is started. It is
 // tracked separately for each `category`.
-void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
+void LogStoredProfileCountStatistics(AutofillProfileRecordTypeCategory category,
                                      const StoredProfileCounts& counts);
 
 // Records the number of days since an address profile was last used. This is
 // logged separately for each profile of every `category`, each time a new
 // Chrome profile is launched.
-void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
-                                      size_t days);
+void LogStoredProfileDaysSinceLastUse(
+    AutofillProfileRecordTypeCategory category,
+    size_t days);
 
 // Logs the `LogStoredProfileCountStatistics()` and
 // `LogStoredProfileDaysSinceLastUse()` metrics for every
-// AutofillProfileSourceCategory and the corresponding subset of `profiles`.
+// AutofillProfileRecordTypeCategory and the corresponding subset of `profiles`.
 void LogStoredProfileMetrics(
     const std::vector<const AutofillProfile*>& profiles);
 
@@ -51,6 +52,10 @@ void LogStoredProfileMetrics(
 void LogLocalProfileSupersetMetrics(
     std::vector<const AutofillProfile*> profiles,
     std::string_view app_locale);
+
+// Logs the number of profiles that have an alternative name set.
+void LogStoredProfileCountWithAlternativeName(
+    base::span<const AutofillProfile* const> profiles);
 
 }  // namespace autofill::autofill_metrics
 

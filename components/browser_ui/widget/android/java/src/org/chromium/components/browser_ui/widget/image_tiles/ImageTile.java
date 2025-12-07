@@ -6,12 +6,14 @@ package org.chromium.components.browser_ui.widget.image_tiles;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Class encapsulating data needed to render a image tile. An {@link ImageTile} is a tile meant to
  * show an image with some text.
  */
+@NullMarked
 public class ImageTile {
     /** The ID representing this tile. */
     public final String id;

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/frame/wide_frame_view.h"
+
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -23,6 +24,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
@@ -95,9 +97,6 @@ WideFrameView::WideFrameView(views::Widget* target)
     : target_(target),
       frame_context_menu_controller_(
           std::make_unique<FrameContextMenuController>(target_, this)) {
-  // WideFrameView is owned by its client, not by Views.
-  SetOwnedByWidget(false);
-
   aura::Window* target_window = target->GetNativeWindow();
   target_window->AddObserver(this);
   // Use the HeaderView itself as a frame view because WideFrameView is
@@ -131,7 +130,7 @@ WideFrameView::WideFrameView(views::Widget* target)
   window->SetProperty(kHideInOverviewKey, true);
   window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
   WindowState::Get(window)->set_allow_set_bounds_direct(true);
 
   paint_as_active_subscription_ =
@@ -165,7 +164,8 @@ void WideFrameView::Layout(PassKey) {
 
 void WideFrameView::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsOnlyLeftMouseButton()) {
-    if ((event->flags() & ui::EF_IS_DOUBLE_CLICK)) {
+    if ((event->flags() & ui::EF_IS_DOUBLE_CLICK) &&
+        event->type() == ui::EventType::kMousePressed) {
       base::RecordAction(
           base::UserMetricsAction("Caption_ClickTogglesMaximize"));
       const WMEvent wm_event(WM_EVENT_TOGGLE_MAXIMIZE_CAPTION);
@@ -191,7 +191,7 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
   if (!target_window->GetRootWindow())
     return;
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (screen->GetDisplayNearestWindow(target_->GetNativeWindow()).id() !=
           display.id() ||
       !widget_) {
@@ -251,8 +251,8 @@ bool WideFrameView::ShouldShowContextMenu(
 }
 
 chromeos::HeaderView* WideFrameView::GetTargetHeaderView() {
-  auto* frame_view = static_cast<NonClientFrameViewAsh*>(
-      target_->non_client_view()->frame_view());
+  auto* frame_view =
+      static_cast<FrameViewAsh*>(target_->non_client_view()->frame_view());
   return frame_view->GetHeaderView();
 }
 

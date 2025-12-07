@@ -39,7 +39,7 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
 
   // Invokes AudioWorkletGlobalScope to create an instance of
   // AudioWorkletProcessor.
-  void CreateProcessorOnRenderingThread(
+  static void CreateProcessorOnRenderingThread(
       WorkerThread*,
       scoped_refptr<AudioWorkletHandler>,
       const String& name,
@@ -58,7 +58,7 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
   // AudioWorkletGlobalScope.
   bool IsProcessorRegistered(const String& name) const;
 
-  const Vector<CrossThreadAudioParamInfo> GetParamInfoListForProcessor(
+  Vector<CrossThreadAudioParamInfo> GetParamInfoListForProcessor(
       const String& name) const;
 
   // Returns a WorkerThread object backs the AudioWorkletThread instance.

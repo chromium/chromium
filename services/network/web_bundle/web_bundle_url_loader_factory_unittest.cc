@@ -15,7 +15,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +26,6 @@ namespace {
 
 const char kInitiatorUrl[] = "https://example.com/";
 const char kBundleUrl[] = "https://example.com/bundle.wbn";
-const char kBundleRequestId[] = "bundle-devtools-request-id";
 const char kResourceUrl[] = "https://example.com/";
 const char kResourceUrl2[] = "https://example.com/another";
 const char kResourceUrl3[] = "https://example.com/yetanother";
@@ -101,7 +99,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
 
   // mojom::WebBundleHandle
   void Clone(mojo::PendingReceiver<mojom::WebBundleHandle> receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void OnWebBundleError(mojom::WebBundleErrorType type,
@@ -168,14 +166,13 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     mojo::Remote<mojom::WebBundleHandle> handle;
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
-    devtools_observer_ = std::make_unique<MockDevToolsObserver>();
+
     const ResourceRequest::WebBundleTokenParams create_params(
         GURL(kBundleUrl), {} /* token */, {} /* handle */);
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         GURL(kBundleUrl), create_params, std::move(handle),
-        std::make_unique<MockMemoryQuotaConsumer>(), devtools_observer_->Bind(),
-        kBundleRequestId, CrossOriginEmbedderPolicy(),
-        nullptr /* coep_reporter */);
+        std::make_unique<MockMemoryQuotaConsumer>(),
+        CrossOriginEmbedderPolicy(), nullptr /* coep_reporter */);
     factory_->SetBundleStream(std::move(consumer));
   }
 
@@ -229,7 +226,6 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
   }
 
  protected:
-  std::unique_ptr<MockDevToolsObserver> devtools_observer_;
   std::unique_ptr<WebBundleURLLoaderFactory> factory_;
 
  private:
@@ -242,14 +238,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
   base::HistogramTester histogram_tester;
   WriteBundle(CreateSmallBundle());
   FinishWritingBundle();
-
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadata(kBundleRequestId,
-                                             ElementsAre(GURL(kResourceUrl))));
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleInnerResponse(
-                  kResourceRequestId, GURL(kResourceUrl),
-                  Optional(std::string(kBundleRequestId))));
 
   auto request = StartRequest(GURL(kResourceUrl), kResourceRequestId);
   request.client->RunUntilComplete();
@@ -277,11 +265,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
   WriteBundle(bundle);
   FinishWritingBundle();
 
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadataError(kBundleRequestId,
-                                                  Eq("Wrong magic bytes.")));
-  EXPECT_CALL(*devtools_observer_, OnSubresourceWebBundleInnerResponse(_, _, _))
-      .Times(0);
   request.client->RunUntilComplete();
   RunUntilBundleError();
 
@@ -315,11 +298,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataWithInvalidExchangeUrl) {
   WriteBundle(builder.CreateBundle());
   FinishWritingBundle();
 
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadataError(
-                  kBundleRequestId, Eq("Exchange URL is not valid.")));
-  EXPECT_CALL(*devtools_observer_, OnSubresourceWebBundleInnerResponse(_, _, _))
-      .Times(0);
   request.client->RunUntilComplete();
   RunUntilBundleError();
 
@@ -349,15 +327,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {
   WriteBundle(builder.CreateBundle());
   FinishWritingBundle();
 
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadata(kBundleRequestId,
-                                             ElementsAre(GURL(kResourceUrl))));
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleInnerResponseError(
-                  kResourceRequestId, GURL(kResourceUrl),
-                  Eq(":status must be 3 ASCII decimal digits."),
-                  Optional(std::string(kBundleRequestId))));
-
   auto request = StartRequest(GURL(kResourceUrl), kResourceRequestId);
   request.client->RunUntilComplete();
   RunUntilBundleError();
@@ -373,12 +342,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {
 TEST_F(WebBundleURLLoaderFactoryTest, ResourceNotFoundInBundle) {
   WriteBundle(CreateSmallBundle());
   FinishWritingBundle();
-
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadata(kBundleRequestId,
-                                             ElementsAre(GURL(kResourceUrl))));
-  EXPECT_CALL(*devtools_observer_, OnSubresourceWebBundleInnerResponse(_, _, _))
-      .Times(0);
 
   auto request = StartRequest(GURL("https://example.com/no-such-resource"),
                               kResourceRequestId);
@@ -403,15 +366,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, RedirectResponseIsNotAllowed) {
                       "body");
   WriteBundle(builder.CreateBundle());
   FinishWritingBundle();
-
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadata(
-                  kBundleRequestId,
-                  ElementsAre(GURL(kResourceUrl), GURL(kResourceUrl2))));
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleInnerResponse(
-                  kResourceRequestId, GURL(kResourceUrl),
-                  Optional(std::string(kBundleRequestId))));
 
   auto request = StartRequest(GURL(kResourceUrl), kResourceRequestId);
   request.client->RunUntilComplete();
@@ -443,14 +397,14 @@ TEST_F(WebBundleURLLoaderFactoryTest, MultipleRequests) {
   // Write the first 10kB of the bundle in which the bundle's metadata and the
   // response for kResourceUrl are included.
   ASSERT_GT(bundle.size(), 10000u);
-  WriteBundle(base::make_span(bundle).first(10000u));
+  WriteBundle(base::span(bundle).first<10000>());
   request1.client->RunUntilComplete();
 
   EXPECT_EQ(net::OK, request1.client->completion_status().error_code);
   EXPECT_FALSE(request2.client->has_received_completion());
 
   // Write the rest of the data.
-  WriteBundle(base::make_span(bundle).subspan(10000u));
+  WriteBundle(base::span(bundle).subspan<10000>());
   FinishWritingBundle();
   request2.client->RunUntilComplete();
 
@@ -478,7 +432,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CancelRequest) {
   // Write the first 10kB of the bundle in which the bundle's metadata, response
   // for kResourceUrl, and response header for kResourceUrl2 are included.
   ASSERT_GT(bundle.size(), 10000U);
-  WriteBundle(base::make_span(bundle).first(10000u));
+  WriteBundle(base::span(bundle).first<10000>());
 
   // This makes sure the bytes written above are consumed by WebBundle parser.
   request_to_complete1.client->RunUntilComplete();
@@ -490,7 +444,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CancelRequest) {
   request_to_cancel3.loader.reset();
 
   // Write the rest of the data.
-  WriteBundle(base::make_span(bundle).subspan(10000));
+  WriteBundle(base::span(bundle).subspan<10000>());
   FinishWritingBundle();
   request_to_complete2.client->RunUntilComplete();
   EXPECT_EQ(net::OK,

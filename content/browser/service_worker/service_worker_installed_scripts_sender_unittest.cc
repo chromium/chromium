@@ -154,7 +154,7 @@ class ServiceWorkerInstalledScriptsSenderTest : public testing::Test {
 
   EmbeddedWorkerTestHelper* helper() { return helper_.get(); }
   ServiceWorkerContextCore* context() { return helper_->context(); }
-  ServiceWorkerRegistry* registry() { return context()->registry(); }
+  ServiceWorkerRegistry& registry() { return context()->registry(); }
   ServiceWorkerVersion* version() { return version_.get(); }
 
  private:
@@ -707,7 +707,7 @@ TEST_F(ServiceWorkerInstalledScriptsSenderTest, StorageDisabled) {
   version()->script_cache_map()->SetResources(records);
 
   base::RunLoop loop;
-  registry()->DisableStorageForTesting(loop.QuitClosure());
+  registry().DisableStorageForTesting(loop.QuitClosure());
   loop.Run();
 
   auto sender =

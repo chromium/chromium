@@ -48,7 +48,7 @@ void ArcSerializationDelegate::PopulateBounds(
       // actual offset of a11y window bounds from ash window.
       // TODO(hirokisato): Android pi sends different coordinate.
       const display::Display display =
-          display::Screen::GetScreen()->GetDisplayNearestView(window);
+          display::Screen::Get()->GetDisplayNearestView(window);
       root_origin.Offset(-display.bounds().x(), -display.bounds().y());
 
       // Adjust the origin because a maximized window has an offset in

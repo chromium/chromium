@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -91,8 +90,13 @@ void WriteFirstRunSentinel() {
 }
 
 bool ShouldPresentFirstRunExperience() {
-  if (experimental_flags::AlwaysDisplayFirstRun())
+  if (experimental_flags::AlwaysDisplayFirstRun()) {
     return true;
+  }
+
+  if (experimental_flags::NeverDisplayFirstRun()) {
+    return false;
+  }
 
   if (tests_hook::DisableDefaultFirstRun()) {
     return false;

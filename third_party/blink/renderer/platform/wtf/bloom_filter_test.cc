@@ -7,7 +7,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 class BloomFilterTest : public ::testing::Test {
  protected:
@@ -108,4 +108,4 @@ TEST_F(BloomFilterTest, NonCountingBloomFilterBasic) {
   EXPECT_FALSE(filter.MayContain(charlie));
 }
 
-}  // namespace WTF
+}  // namespace blink

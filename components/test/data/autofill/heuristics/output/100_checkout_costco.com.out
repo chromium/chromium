@@ -11,5 +11,3 @@ ADDRESS_HOME_ZIP | addressFormInlineZip | ZIP / POSTAL CODE* |  | addressFormInl
 PHONE_HOME_CITY_AND_NUMBER | addressFormInlinePhoneNumber | PHONE NUMBER* |  | addressFormInlineFirstName_1
 EMAIL_ADDRESS | addressFormInlineEmail | EMAIL |  | addressFormInlineFirstName_1
 UNKNOWN_TYPE | addressFormInlineAddressNickName | ADDRESS NICKNAME* ?The Address Nickname is a short name you create to help you easily identify this address within your address book. |  | addressFormInlineFirstName_1
-UNKNOWN_TYPE | saveAddressCheckboxInline | Add to address book. | on | addressFormInlineFirstName_1
-UNKNOWN_TYPE | setDefaultCheckboxInline | Save as default shipping address in Address Book | on | addressFormInlineFirstName_1

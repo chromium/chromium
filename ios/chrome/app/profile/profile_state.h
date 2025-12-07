@@ -7,14 +7,96 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+#import "base/time/time.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
+
+@class AppState;
+@class DeferredInitializationRunner;
+class ProfileIOS;
+@protocol ProfileStateAgent;
+@protocol ProfileStateObserver;
+@class SceneState;
+@protocol StartupInformation;
 
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
-@interface ProfileState : NSObject
+@interface ProfileState : NSObject <UIBlockerManager>
 
-// The non-incognito ChromeBrowserState used for this Profile.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
+// The global AppState.
+@property(nonatomic, weak, readonly) AppState* appState;
+
+// Profile initialisation stage.
+@property(nonatomic, assign) ProfileInitStage initStage;
+
+// Whether any scene has completed initialisation of its UI.
+@property(nonatomic, readonly) BOOL firstSceneHasInitializedUI;
+
+// The non-incognito ProfileIOS instance.
+// This will be null until `initStage` >= `ProfileInitStage::kProfileLoaded`.
+@property(nonatomic, assign) ProfileIOS* profile;
+
+// The foreground and active scene, if there is one.
+@property(nonatomic, readonly) SceneState* foregroundActiveScene;
+
+// The list of all connected scenes.
+@property(nonatomic, readonly) NSArray<SceneState*>* connectedScenes;
+
+// The list of all scenes in the foreground (even if they are not active).
+@property(nonatomic, readonly) NSArray<SceneState*>* foregroundScenes;
+
+// All agents that have been attached. Use -addAgent: and -removeAgent: to
+// add and remove agents.
+@property(nonatomic, readonly) NSArray<id<ProfileStateAgent>>* connectedAgents;
+
+// Container for startup information.
+@property(nonatomic, weak, readonly) id<StartupInformation> startupInformation;
+
+// Can be used to schedule deferred initialization tasks.
+@property(nonatomic, readonly) DeferredInitializationRunner* deferredRunner;
+
+// YES if the sign-out prompt should be shown to the user when the scene becomes
+// active and enters the foreground. This can happen if the policies have
+// changed since the last cold start, meaning the user was signed out during
+// startup.
+@property(nonatomic) BOOL shouldShowForceSignOutPrompt;
+
+// Timestamp of the most recent scene connection.
+@property(nonatomic, readonly) base::TimeTicks lastSceneConnection;
+
+// The designated initializer.
+- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Adds a new agent. Agents are owned by the profile state.
+// This automatically sets the profile state on the `agent`.
+- (void)addAgent:(id<ProfileStateAgent>)agent;
+
+// Removes an agent.
+- (void)removeAgent:(id<ProfileStateAgent>)agent;
+
+// Adds an observer to this profile state. The observers will be notified about
+// profile state changes per ProfileStateObserver protocol. The observer will be
+// *immediately* notified about the latest profile init stage transition before
+// this method returns, if any such transitions happened, by calling
+// profileState:didTransitionToInitStage:fromInitStage:, .
+- (void)addObserver:(id<ProfileStateObserver>)observer;
+
+// Removes the observer. It's safe to call this at any time, including from
+// ProfileStateObserver callbacks.
+- (void)removeObserver:(id<ProfileStateObserver>)observer;
+
+// Informs the profile the given `sceneState` connected.
+- (void)sceneStateConnected:(SceneState*)sceneState;
+
+// Queue the transition to the next profile initialization stage.
+//
+// All observers will be notified about each transitions. If an observer call
+// this method from a transition notification, the transition will be queued
+// and performed once the in-progress transition is complete. It is an error
+// to queue more than one transition at once, or to queue a transition when
+// the stage is already ProfileInitStage::kFinal.
+- (void)queueTransitionToNextInitStage;
 
 @end
 

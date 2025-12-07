@@ -1,36 +1,18 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "native_printing.external_print_servers_whitelist": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "ExternalPrintServersAllowlist": [
-            "id1",
-            "id2",
-            "id3"
-          ]
-        },
-        "prefs": {
-          "native_printing.external_print_servers_whitelist": {
-            "value": [
-              "id1",
-              "id2",
-              "id3"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "native_printing.external_print_servers_whitelist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "id1",
+          "id2",
+          "id3"
+        ]
+      ]
+    }
   }
 ]

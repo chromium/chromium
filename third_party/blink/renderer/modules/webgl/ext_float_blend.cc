@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTFloatBlend::EXTFloatBlend(WebGLRenderingContextBase* context)
+EXTFloatBlend::EXTFloatBlend(WebGLRenderingContextBase* context,
+                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_float_blend");
 }

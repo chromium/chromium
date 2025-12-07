@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -22,15 +23,12 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace payments {
-
-using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
 
 namespace {
 
@@ -72,12 +70,12 @@ class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
   // NonAccessibleImageView:
   void OnThemeChanged() override {
     NonAccessibleImageView::OnThemeChanged();
-    SetImage(use_cart_image_
-                 ? GetHeaderImageSkia(GetNativeTheme()->ShouldUseDarkColors())
-                 : ui::ImageModel::FromVectorIcon(
-                       GetPlatformVectorIcon(
-                           GetNativeTheme()->ShouldUseDarkColors()),
-                       gfx::kPlaceholderColor));
+    const bool dark_mode = GetNativeTheme()->preferred_color_scheme() ==
+                           ui::NativeTheme::PreferredColorScheme::kDark;
+    SetImage(use_cart_image_ ? GetHeaderImageSkia(dark_mode)
+                             : ui::ImageModel::FromVectorIcon(
+                                   GetPlatformVectorIcon(dark_mode),
+                                   gfx::kPlaceholderColor));
   }
 
  private:
@@ -86,34 +84,6 @@ class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
 
 BEGIN_METADATA(SecurePaymentConfirmationHeaderIconView)
 END_METADATA
-
-std::unique_ptr<views::View> CreateInlineHeaderIconView(
-    const SkBitmap& icon_bitmap,
-    int view_id) {
-  CHECK(!icon_bitmap.drawsNothing());
-
-  auto icon_view = std::make_unique<views::ImageView>();
-  gfx::ImageSkia icon =
-      gfx::ImageSkia::CreateFrom1xBitmap(icon_bitmap).DeepCopy();
-  icon_view->SetImage(ui::ImageModel::FromImageSkia(icon));
-
-  // Resize to a constant height, with a variable width in the acceptable range
-  // based on the aspect ratio.
-  gfx::Size icon_size = icon.size();
-  // The CHECK on drawsNothing() above ensures that the height and width are
-  // non-zero, so this divide should be safe.
-  float aspect_ratio =
-      static_cast<float>(icon_size.width()) / icon_size.height();
-  int preferred_width = static_cast<int>(kInlineTitleIconHeight * aspect_ratio);
-  int icon_width = std::min(preferred_width, kInlineTitleMaxIconWidth);
-  icon_view->SetImageSize(gfx::Size(icon_width, kInlineTitleIconHeight));
-
-  icon_view->SetPaintToLayer();
-  icon_view->layer()->SetFillsBoundsOpaquely(false);
-  icon_view->SetID(view_id);
-
-  return icon_view;
-}
 
 }  // namespace
 
@@ -126,45 +96,6 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderIcon(
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_top(kHeaderIconTopPadding));
   return image_view;
-}
-
-std::unique_ptr<views::View>
-CreateSecurePaymentConfirmationInlineImageTitleView(
-    std::unique_ptr<views::Label> title_text,
-    const SkBitmap& network_icon,
-    int network_icon_id,
-    const SkBitmap& issuer_icon,
-    int issuer_icon_id) {
-  auto title_view = std::make_unique<views::BoxLayoutView>();
-  title_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  title_view->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-  title_view->SetBetweenChildSpacing(kInlineTitleRowHorizontalSpacing);
-
-  // Add the title text, weighted to take up as much space in the row as
-  // possible (and thus pushing the icons to the end of the row).
-  title_text->SetMultiLine(true);
-  auto* title_text_ptr = title_view->AddChildView(std::move(title_text));
-  title_view->SetFlexForView(title_text_ptr, 1);
-
-  // Add the icons, if present. A separator is also added if both icons are
-  // present.
-  if (!network_icon.drawsNothing()) {
-    title_view->AddChildView(
-        CreateInlineHeaderIconView(network_icon, network_icon_id));
-  }
-  if (!network_icon.drawsNothing() && !issuer_icon.drawsNothing()) {
-    title_view->AddChildView(
-        views::Builder<views::Separator>()
-            .SetPreferredLength(kInlineTitleIconSeparatorHeight)
-            .Build());
-  }
-  if (!issuer_icon.drawsNothing()) {
-    title_view->AddChildView(
-        CreateInlineHeaderIconView(issuer_icon, issuer_icon_id));
-  }
-
-  return title_view;
 }
 
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(

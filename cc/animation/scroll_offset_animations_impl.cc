@@ -5,7 +5,9 @@
 #include "cc/animation/scroll_offset_animations_impl.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/animation/animation.h"
@@ -14,6 +16,8 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
+#include "cc/base/features.h"
+#include "cc/paint/element_id.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace cc {
@@ -45,8 +49,7 @@ void ScrollOffsetAnimationImpl::AutoScrollAnimationCreate(
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
       ScrollOffsetAnimationCurveFactory::CreateAnimation(
-          target_offset,
-          ScrollOffsetAnimationCurveFactory::ScrollType::kAutoScroll);
+          target_offset, ScrollOffsetAnimationCurve::ScrollType::kAutoScroll);
   curve->SetInitialValue(current_offset, base::TimeDelta(),
                          autoscroll_velocity);
   ScrollAnimationCreateInternal(element_id, std::move(curve),
@@ -62,8 +65,7 @@ void ScrollOffsetAnimationImpl::MouseWheelScrollAnimationCreate(
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
       ScrollOffsetAnimationCurveFactory::CreateAnimation(
-          target_offset,
-          ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel);
+          target_offset, ScrollOffsetAnimationCurve::ScrollType::kMouseWheel);
 
   curve->SetInitialValue(current_offset, delayed_by);
   ScrollAnimationCreateInternal(element_id, std::move(curve),
@@ -216,7 +218,8 @@ void ScrollOffsetAnimationImpl::NotifyAnimationFinished(
     int group) {
   DCHECK_EQ(target_property, TargetProperty::SCROLL_OFFSET);
   DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->ScrollOffsetAnimationFinished();
+  animation_host_->mutator_host_client()->ScrollOffsetAnimationFinished(
+      scroll_offset_animation_->element_id());
   TRACE_EVENT_INSTANT0("cc", "NotifyAnimationFinished",
                        TRACE_EVENT_SCOPE_THREAD);
 }
@@ -270,9 +273,7 @@ void ScrollOffsetAnimationImpl::ReattachScrollOffsetAnimationIfNeeded(
 
 ScrollOffsetAnimationsImpl::ScrollOffsetAnimationsImpl(
     AnimationHost* animation_host)
-    : animation_host_(animation_host),
-      scroll_offset_animation_(
-          std::make_unique<ScrollOffsetAnimationImpl>(animation_host_)) {}
+    : animation_host_(animation_host) {}
 
 ScrollOffsetAnimationsImpl::~ScrollOffsetAnimationsImpl() = default;
 
@@ -282,9 +283,14 @@ void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
     const gfx::PointF& current_offset,
     float autoscroll_velocity,
     base::TimeDelta animation_start_offset) {
-  scroll_offset_animation_->AutoScrollAnimationCreate(
-      element_id, target_offset, current_offset, autoscroll_velocity,
-      animation_start_offset);
+  element_to_animation_map_.insert(
+      std::pair(element_id,
+                std::make_unique<ScrollOffsetAnimationImpl>(animation_host_)));
+  std::unique_ptr<ScrollOffsetAnimationImpl>& impl_animation =
+      element_to_animation_map_.at(element_id);
+  impl_animation->AutoScrollAnimationCreate(element_id, target_offset,
+                                            current_offset, autoscroll_velocity,
+                                            animation_start_offset);
 }
 
 void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
@@ -293,9 +299,14 @@ void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
     const gfx::PointF& current_offset,
     base::TimeDelta delayed_by,
     base::TimeDelta animation_start_offset) {
-  scroll_offset_animation_->MouseWheelScrollAnimationCreate(
-      element_id, target_offset, current_offset, delayed_by,
-      animation_start_offset);
+    element_to_animation_map_.insert(std::pair(
+        element_id,
+        std::make_unique<ScrollOffsetAnimationImpl>(animation_host_)));
+    std::unique_ptr<ScrollOffsetAnimationImpl>& impl_animation =
+        element_to_animation_map_.at(element_id);
+    impl_animation->MouseWheelScrollAnimationCreate(element_id, target_offset,
+                                                    current_offset, delayed_by,
+                                                    animation_start_offset);
 }
 
 std::optional<gfx::PointF>
@@ -303,36 +314,83 @@ ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
     const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
-    base::TimeDelta delayed_by) {
-  return scroll_offset_animation_->ScrollAnimationUpdateTarget(
+    base::TimeDelta delayed_by,
+    ElementId element_id) {
+  ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id);
+  DCHECK(animation);
+  return animation->ScrollAnimationUpdateTarget(
       scroll_delta, max_scroll_offset, frame_monotonic_time, delayed_by);
 }
 
 void ScrollOffsetAnimationsImpl::ScrollAnimationApplyAdjustment(
     ElementId element_id,
     const gfx::Vector2dF& adjustment) {
-  scroll_offset_animation_->ScrollAnimationApplyAdjustment(element_id,
-                                                           adjustment);
+  if (ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id)) {
+    animation->ScrollAnimationApplyAdjustment(element_id, adjustment);
+  }
 }
 
-void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion) {
-  scroll_offset_animation_->ScrollAnimationAbort(needs_completion);
+void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion,
+                                                      ElementId element_id) {
+  if (ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id)) {
+    animation->ScrollAnimationAbort(needs_completion);
+  }
 }
 
-void ScrollOffsetAnimationsImpl::AnimatingElementRemovedByCommit() {
-  scroll_offset_animation_->AnimatingElementRemovedByCommit();
+void ScrollOffsetAnimationsImpl::HandleRemovedScrollAnimatingElements(
+    bool commits_to_active) {
+  std::vector<ElementId> deleted;
+  for (auto& entry : element_to_animation_map_) {
+    ElementId element_id = entry.first;
+    if (!animation_host_->IsElementInPropertyTrees(element_id,
+                                                   commits_to_active)) {
+      // We probably shouldn't need to check IsAnimating here,
+      // but some bots recycle AnimationHost between tests
+      // which seems to lead to referencing Animations with null
+      // KeyframeModels.
+      if (entry.second->IsAnimating()) {
+        entry.second->AnimatingElementRemovedByCommit();
+      }
+      deleted.push_back(element_id);
+    }
+  }
+
+  for (auto& entry : deleted) {
+    element_to_animation_map_.erase(entry);
+  }
 }
 
-bool ScrollOffsetAnimationsImpl::IsAnimating() const {
-  return scroll_offset_animation_->IsAnimating();
+bool ScrollOffsetAnimationsImpl::ElementHasImplOnlyScrollAnimation(
+    ElementId element_id) const {
+  ScrollOffsetAnimationImpl* impl_animation = GetScrollAnimation(element_id);
+  return impl_animation && impl_animation->IsAnimating();
 }
 
-bool ScrollOffsetAnimationsImpl::IsAutoScrolling() const {
-  return scroll_offset_animation_->IsAutoScrolling();
+bool ScrollOffsetAnimationsImpl::HasImplOnlyScrollAnimatingElement() const {
+  for (auto& entry : element_to_animation_map_) {
+    if (entry.second->IsAnimating()) {
+      return true;
+    }
+  }
+  return false;
 }
 
-ElementId ScrollOffsetAnimationsImpl::GetElementId() const {
-  return scroll_offset_animation_->GetElementId();
+bool ScrollOffsetAnimationsImpl::HasImplOnlyAutoScrollAnimatingElement() const {
+  for (auto& entry : element_to_animation_map_) {
+    if (entry.second->IsAutoScrolling()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+ScrollOffsetAnimationImpl* ScrollOffsetAnimationsImpl::GetScrollAnimation(
+    ElementId element_id) const {
+  auto iter = element_to_animation_map_.find(element_id);
+  if (iter != element_to_animation_map_.end()) {
+    return iter->second.get();
+  }
+  return nullptr;
 }
 
 }  // namespace cc

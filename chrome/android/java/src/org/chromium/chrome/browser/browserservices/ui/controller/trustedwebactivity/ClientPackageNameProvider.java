@@ -4,46 +4,37 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.os.Bundle;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Provides the client package name for TWAs - this can come from either the Custom Tabs Connection
  * or one previously stored in the Activity's save instance state.
  */
-@ActivityScope
+@NullMarked
 public class ClientPackageNameProvider implements SaveInstanceStateObserver {
     /** Key for storing in Activity instance state. */
     private static final String KEY_CLIENT_PACKAGE = "twaClientPackageName";
 
-    private final String mClientPackageName;
+    private final @Nullable String mClientPackageName;
 
-    @Inject
     public ClientPackageNameProvider(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabsConnection customTabsConnection,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
-        Bundle savedInstanceState = savedInstanceStateSupplier.get();
+            Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mClientPackageName = savedInstanceState.getString(KEY_CLIENT_PACKAGE);
         } else {
             mClientPackageName =
-                    customTabsConnection.getClientPackageNameForSession(
-                            intentDataProvider.getSession());
+                    CustomTabsConnection.getInstance()
+                            .getClientPackageNameForSession(intentDataProvider.getSession());
         }
-        assert mClientPackageName != null;
 
         lifecycleDispatcher.register(this);
     }
@@ -54,7 +45,7 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
         outState.putString(KEY_CLIENT_PACKAGE, mClientPackageName);
     }
 
-    public String get() {
+    public @Nullable String get() {
         return mClientPackageName;
     }
 }

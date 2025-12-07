@@ -27,7 +27,6 @@ class WaylandBufferBackingShm : public WaylandBufferBacking {
   // WaylandBufferBacking override:
   void RequestBufferHandle(
       base::OnceCallback<void(wl::Object<wl_buffer>)> callback) override;
-  BufferBackingType GetBackingType() const override;
 
   base::ScopedFD fd_;
   const uint64_t length_;

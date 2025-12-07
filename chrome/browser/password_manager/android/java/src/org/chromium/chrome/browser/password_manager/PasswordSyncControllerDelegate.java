@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Interface to notify CredentialManager about sync events. All methods are expected to respond
  * asynchronously to callbacks.
  */
+@NullMarked
 public interface PasswordSyncControllerDelegate {
     /**
      * Triggers an async call to notify credential manager of the currently syncing account.

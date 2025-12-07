@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/util/installation_state.h"
@@ -85,15 +86,13 @@ TEST_P(SetupUnpackArchiveTest, UnpackArchive) {
   base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
   cmd_line.AppendSwitchPath(GetParam().archive_switch, chrome_archive);
   FakeInstallerState installer_state;
-  ArchiveType archive_type;
-  base::FilePath uncompressed_chrome_archive_out;
 
-  base::expected<void, InstallStatus> result = UnpackAndMaybePatchChromeArchive(
-      temp_dir.GetPath(), original_state,
-      base::FilePath(),  // Unused when archive is provided via cmd_line.
-      cmd_line, installer_state, &archive_type,
-      uncompressed_chrome_archive_out);
-  ASSERT_TRUE(result.has_value()) << result.error();
+  ASSERT_THAT(
+      UnpackChromeArchive(
+          temp_dir.GetPath(), original_state,
+          base::FilePath(),  // Unused when archive is provided via cmd_line.
+          cmd_line, installer_state),
+      base::test::HasValue());
 
   // Instead of containing "chrome-bin", the test archives contain this
   // "test_data.txt". Make sure the output file exists and matches the test
@@ -103,12 +102,6 @@ TEST_P(SetupUnpackArchiveTest, UnpackArchive) {
                                          FILE_PATH_LITERAL("test_data.txt"))),
                                      &actual_installer_data));
   EXPECT_STREQ(actual_installer_data.c_str(), "fakechromiumdata");
-
-  EXPECT_EQ(uncompressed_chrome_archive_out,
-            GetParam().uncompressed_output_matches_input_file
-                ? chrome_archive
-                : temp_dir.GetPath().Append(FILE_PATH_LITERAL("chrome.7z")));
-  ASSERT_EQ(archive_type, ArchiveType::FULL_ARCHIVE_TYPE);
 }
 
 TEST(SetupUnpackArchiveTest, UnpackFailsWhenCompressedAndUncompressedProvided) {
@@ -124,16 +117,13 @@ TEST(SetupUnpackArchiveTest, UnpackFailsWhenCompressedAndUncompressedProvided) {
       "uncompressed-archive",
       GetTestFileRootPath().Append(FILE_PATH_LITERAL("test_chrome.7z")));
   FakeInstallerState installer_state;
-  ArchiveType archive_type;
-  base::FilePath uncompressed_chrome_archive_out;
 
-  base::expected<void, InstallStatus> result = UnpackAndMaybePatchChromeArchive(
-      temp_dir.GetPath(), original_state,
-      base::FilePath(),  // Unused when archive is provided via cmd_line.
-      cmd_line, installer_state, &archive_type,
-      uncompressed_chrome_archive_out);
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error(), UNSUPPORTED_OPTION);
+  EXPECT_THAT(
+      UnpackChromeArchive(
+          temp_dir.GetPath(), original_state,
+          base::FilePath(),  // Unused when archive is provided via cmd_line.
+          cmd_line, installer_state),
+      base::test::ErrorIs(InstallStatus::UNSUPPORTED_OPTION));
 }
 
 }  // namespace installer

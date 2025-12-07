@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -12,7 +14,8 @@
 int main(int argc, const char* argv[]) {
   base::PlatformThread::SetName("UpdaterHelperMain");
   base::CommandLine::Init(argc, argv);
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
   base::ThreadPoolInstance::Create("UpdaterHelperThreadPool");
   base::ThreadPoolInstance::Get()->Start({1});
   const base::ScopedClosureRunner shutdown_thread_pool(

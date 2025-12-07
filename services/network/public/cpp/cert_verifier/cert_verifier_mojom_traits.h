@@ -53,10 +53,6 @@ struct StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
       const net::CertVerifier::Config& config) {
     return config.enable_sha1_local_anchors;
   }
-  static bool disable_symantec_enforcement(
-      const net::CertVerifier::Config& config) {
-    return config.disable_symantec_enforcement;
-  }
 
   static bool Read(cert_verifier::mojom::CertVerifierConfigDataView data,
                    net::CertVerifier::Config* config);

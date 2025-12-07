@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/one_shot_event.h"
@@ -147,7 +146,8 @@ void ShowCreateChromeAppShortcutsDialog(
   provider->scheduler().SynchronizeOsIntegration(
       app_id, base::BindOnce(std::move(close_callback), true),
       web_app::ConvertShortcutLocationsToSynchronizeOptions(
-          web_app::ShortcutLocations(), web_app::SHORTCUT_CREATION_BY_USER));
+          web_app::ShortcutLocations(), web_app::SHORTCUT_CREATION_BY_USER),
+      /*upgrade_to_fully_installed_if_installed=*/true);
 }
 
 }  // namespace chrome

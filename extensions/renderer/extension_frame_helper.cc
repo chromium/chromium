@@ -4,12 +4,13 @@
 
 #include "extensions/renderer/extension_frame_helper.h"
 
+#include <algorithm>
 #include <set>
 
-#include "base/feature_list.h"
+#include "base/auto_reset.h"
 #include "base/containers/map_util.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/renderer/render_frame.h"
@@ -180,10 +181,11 @@ v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
     mojom::ViewType view_type) {
   // WebFrame::ScriptCanAccess uses the isolate's current context. We need to
   // make sure that the current context is the one we're expecting.
-  DCHECK(context == context->GetIsolate()->GetCurrentContext());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  DCHECK(context == isolate->GetCurrentContext());
   std::vector<content::RenderFrame*> render_frames =
       GetExtensionFrames(extension_id, browser_window_id, tab_id, view_type);
-  v8::Local<v8::Array> v8_frames = v8::Array::New(context->GetIsolate());
+  v8::Local<v8::Array> v8_frames = v8::Array::New(isolate);
 
   int v8_index = 0;
   for (content::RenderFrame* frame : render_frames) {
@@ -191,7 +193,7 @@ v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
     if (!web_frame->IsOutermostMainFrame())
       continue;
 
-    if (!blink::WebFrame::ScriptCanAccess(context->GetIsolate(), web_frame)) {
+    if (!blink::WebFrame::ScriptCanAccess(isolate, web_frame)) {
       continue;
     }
 
@@ -406,19 +408,6 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
   // TODO(devlin): Add constants for main world id, no extension group.
 }
 
-void ExtensionFrameHelper::DidCommitProvisionalLoad(
-    ui::PageTransition transition) {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
-    return;
-  }
-  // Grant cross browsing instance frame lookup if we are an extension. This
-  // should match the conditions in FindFrame.
-  content::RenderFrame* frame = render_frame();
-  if (GetExtensionFromFrame(frame))
-    frame->SetAllowsCrossBrowsingInstanceFrameLookup();
-}
-
 void ExtensionFrameHelper::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
@@ -488,10 +477,10 @@ void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
 
     if (param->injection->get_css()->operation ==
             mojom::CSSInjection::Operation::kRemove &&
-        !base::ranges::all_of(param->injection->get_css()->sources,
-                              [](const mojom::CSSSourcePtr& source) {
-                                return source->key.has_value();
-                              })) {
+        !std::ranges::all_of(param->injection->get_css()->sources,
+                             [](const mojom::CSSSourcePtr& source) {
+                               return source->key.has_value();
+                             })) {
       local_frame_receiver_.ReportBadMessage(
           "An injection key must be specified for CSS removal.");
       return;
@@ -591,13 +580,12 @@ void ExtensionFrameHelper::DidClearWindowObject() {
   // Calling this multiple times in a page load is safe because
   // SetAllowsCrossBrowsingInstanceFrameLookup() just sets a bool to true on the
   // SecurityOrigin.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
-    // Grant cross browsing instance frame lookup if we are an extension. This
-    // should match the conditions in FindFrame.
-    content::RenderFrame* frame = render_frame();
-    if (GetExtensionFromFrame(frame))
-      frame->SetAllowsCrossBrowsingInstanceFrameLookup();
+
+  // Grant cross browsing instance frame lookup if we are an extension. This
+  // should match the conditions in FindFrame.
+  content::RenderFrame* frame = render_frame();
+  if (GetExtensionFromFrame(frame)) {
+    frame->SetAllowsCrossBrowsingInstanceFrameLookup();
   }
 }
 

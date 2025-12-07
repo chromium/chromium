@@ -52,7 +52,7 @@ bool GaiaConfig::GetURLIfExists(std::string_view key, GURL* out_url) {
     return false;
   }
 
-  *out_url = url;
+  *out_url = std::move(url);
   return true;
 }
 
@@ -72,10 +72,8 @@ bool GaiaConfig::GetAPIKeyIfExists(std::string_view key,
 
 void GaiaConfig::SerializeContentsToCommandLineSwitch(
     base::CommandLine* command_line) const {
-  std::string config_contents;
-  base::JSONWriter::Write(parsed_config_, &config_contents);
   command_line->AppendSwitchASCII(switches::kGaiaConfigContents,
-                                  config_contents);
+                                  base::WriteJson(parsed_config_).value_or(""));
 }
 
 // static
@@ -101,12 +99,13 @@ std::unique_ptr<GaiaConfig>* GaiaConfig::GetGlobalConfig() {
 // static
 std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromString(
     const std::string& config_contents) {
-  std::optional<base::Value> dict = base::JSONReader::Read(config_contents);
-  if (!dict || !dict->is_dict()) {
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      config_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!dict) {
     LOG(FATAL) << "Couldn't parse Gaia config file";
   }
 
-  return std::make_unique<GaiaConfig>(std::move(dict->GetDict()));
+  return std::make_unique<GaiaConfig>(std::move(*dict));
 }
 
 // static

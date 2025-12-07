@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
@@ -75,7 +76,8 @@ class AttributionDataHostManager {
       AttributionSuitableContext suitable_context,
       const blink::AttributionSrcToken& attribution_src_token,
       int64_t navigation_id,
-      std::string devtools_request_id) = 0;
+      std::string devtools_request_id,
+      bool from_context_menu) = 0;
 
   // Notifies the manager that an attribution request tied to an
   // attribution-enabled navigation with token `attribution_src_token` has sent
@@ -88,14 +90,17 @@ class AttributionDataHostManager {
   virtual bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
-      GURL reporting_url) = 0;
+      const GURL& reporting_url) = 0;
 
   // Notifies the manager whenever an attribution-enabled navigation request
   // completes. Should be called even for navigations when
   // `NotifyNavigationRegistrationStarted` did not get call for the token as
   // `RegisterNavigationDataHost` might have been called with the token.
+  //
+  // `navigation_id` is only used for debugging purposes.
   virtual void NotifyNavigationRegistrationCompleted(
-      const blink::AttributionSrcToken& attribution_src_token) = 0;
+      const blink::AttributionSrcToken& attribution_src_token,
+      int64_t navigation_id = 0) = 0;
 
   // Notifies the manager that a background attribution request has started.
   // Every call to `NotifyBackgroundRegistrationStarted` must be eventually
@@ -119,7 +124,7 @@ class AttributionDataHostManager {
   // processed.
   virtual bool NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId id,
-      const net::HttpResponseHeaders* headers,
+      scoped_refptr<net::HttpResponseHeaders> headers,
       GURL reporting_url) = 0;
 
   // Notifies the manager that a background attribution request has completed.

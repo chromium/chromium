@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -17,9 +18,11 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +54,7 @@ class RebootNotificationsSchedulerTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
     fake_user_manager_->AddUser(account_id);
     display_service_tester_ =
@@ -73,7 +76,8 @@ class RebootNotificationsSchedulerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<FakeRebootNotificationsScheduler> notifications_scheduler_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};

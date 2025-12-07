@@ -7,22 +7,26 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
-#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessible_pane_view.h"
@@ -31,16 +35,19 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
 class BookmarkContextMenu;
+class BookmarkMergedSurfaceService;
+struct BookmarkParentFolder;
 class Browser;
 class BrowserView;
 class Profile;
 
 namespace bookmarks {
-class BookmarkModel;
+class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
@@ -62,19 +69,21 @@ class MenuItemView;
 class LabelButton;
 }  // namespace views
 
-// BookmarkBarView renders the BookmarkModel.  Each starred entry on the
-// BookmarkBar is rendered as a MenuButton. An additional MenuButton aligned to
-// the right allows the user to quickly see recently starred entries.
+// BookmarkBarView renders the `BookmarkMergedSurfaceService`.  Each starred
+// entry on the BookmarkBar is rendered as a MenuButton. An additional
+// MenuButton aligned to the right allows the user to quickly see recently
+// starred entries.
 //
 // BookmarkBarView shows the bookmarks from a specific Profile. BookmarkBarView
 // waits until the HistoryService for the profile has been loaded before
 // creating the BookmarkModel.
 class BookmarkBarView : public views::AccessiblePaneView,
-                        public bookmarks::BookmarkModelObserver,
+                        public BookmarkMergedSurfaceServiceObserver,
                         public views::ContextMenuController,
                         public views::DragController,
                         public views::AnimationDelegateViews,
-                        public BookmarkMenuControllerObserver {
+                        public BookmarkMenuControllerObserver,
+                        public BookmarkContextMenuObserver {
   METADATA_HEADER(BookmarkBarView, views::AccessiblePaneView)
 
  public:
@@ -109,17 +118,17 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void SetBookmarkBarState(BookmarkBar::State state,
                            BookmarkBar::AnimateChangeType animate_type);
 
-  // If |loc| is over a bookmark button the node is returned corresponding to
-  // the button and |model_start_index| is set to 0. If a overflow button is
-  // showing and |loc| is over the overflow button, the bookmark bar node is
-  // returned and |model_start_index| is set to the index of the first node
-  // contained in the overflow menu.
-  const bookmarks::BookmarkNode* GetNodeForButtonAtModelIndex(
+  // If |loc| is over a bookmark button that is a folder, the folder
+  // corresponding to the button is returned and |model_start_index| is set to
+  // 0. If a overflow button is showing and |loc| is over the overflow button,
+  // the bookmark bar folder is returned and |model_start_index| is set to the
+  // index of the first node contained in the overflow menu.
+  std::optional<BookmarkParentFolder> GetBookmarkFolderForButtonAtLocation(
       const gfx::Point& loc,
       size_t* model_start_index);
 
-  // Returns the MenuButton for node.
-  views::MenuButton* GetMenuButtonForNode(const bookmarks::BookmarkNode* node);
+  // Returns the MenuButton for folder.
+  views::MenuButton* GetMenuButtonForFolder(const BookmarkParentFolder& folder);
 
   // Returns the position to anchor the menu for |button| at.
   void GetAnchorPositionForButton(views::MenuButton* button,
@@ -132,6 +141,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // "Other Bookmarks" folder.
   views::MenuButton* all_bookmarks_button() const {
     return all_bookmarks_button_;
+  }
+
+  const tab_groups::SavedTabGroupBar* saved_tab_group_bar() const {
+    return saved_tab_group_bar_;
   }
 
   // Returns the button used when not all the items on the bookmark bar fit.
@@ -160,7 +173,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
       int max_tooltip_width,
       const gfx::FontList& font_list,
       const GURL& url,
-      const std::u16string& title);
+      std::u16string_view title);
 
   // views::View:
   gfx::Size CalculatePreferredSize(
@@ -184,9 +197,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void ChildPreferredSizeChanged(views::View* child) override;
   void AddedToWidget() override;
 
-  // AccessiblePaneView:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
@@ -195,27 +205,25 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void BookmarkMenuControllerDeleted(
       BookmarkMenuController* controller) override;
 
-  // bookmarks::BookmarkModelObserver:
-  void BookmarkModelLoaded(bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted() override;
-  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+  // BookmarkMergedSurfaceServiceObserver:
+  void BookmarkMergedSurfaceServiceLoaded() override;
+  void BookmarkMergedSurfaceServiceBeingDeleted() override;
+  void BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                         size_t index) override;
+  void BookmarkNodesRemoved(
+      const BookmarkParentFolder& parent,
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override;
+  void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
-                         const bookmarks::BookmarkNode* new_parent,
+                         const BookmarkParentFolder& new_parent,
                          size_t new_index) override;
-  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
-                         size_t index,
-                         bool added_by_user) override;
-  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
-                           size_t old_index,
-                           const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls,
-                           const base::Location& location) override;
-  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
-                                   const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeChildrenReordered(
-      const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkParentFolderChildrenReordered(
+      const BookmarkParentFolder& folder) override;
+  void BookmarkAllUserNodesRemoved() override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
 
   // views::DragController:
   void WriteDragDataForView(views::View* sender,
@@ -228,9 +236,17 @@ class BookmarkBarView : public views::AccessiblePaneView,
                            const gfx::Point& p) override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
+
+  // BookmarkContextMenuObserver:
+  void WillRemoveBookmarks(
+      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                VectorExperimental>>& bookmarks) override {}
+  void DidRemoveBookmarks() override {}
+  void OnContextMenuClosed() override;
 
   // Calculate the available width for the saved tab group bar.
   // This is used in Tab Group v2 UI to allocate space for both saved tab groups
@@ -241,6 +257,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
       int available_width);
 
  private:
+  using BookmarkButtonAndNode =
+      std::pair<raw_ptr<views::LabelButton>,
+                raw_ptr<const bookmarks::BookmarkNode>>;
   struct DropInfo;
   struct DropLocation;
 
@@ -248,10 +267,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   friend class BookmarkBarViewEventTestBase;
 
   // Used to identify what the user is dropping onto.
-  enum DropButtonType {
-    DROP_BOOKMARK,
-    DROP_ALL_BOOKMARKS_FOLDER,
-    DROP_OVERFLOW
+  enum class DropButtonType {
+    kDropBookmark,
+    kDropAllBookmarksFolder,
+    kDropOverflow
   };
 
   // Creates recent bookmark button and when visible button as well as
@@ -261,7 +280,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void AppsPageShortcutPressed(const ui::Event& event);
   void OnButtonPressed(const bookmarks::BookmarkNode* node,
                        const ui::Event& event);
-  void OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
+  void OnMenuButtonPressed(const BookmarkParentFolder& folder,
                            const ui::Event& event);
 
   // NOTE: unless otherwise stated all methods that take an index are in terms
@@ -275,6 +294,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // visible, this returns GetBookmarkButtonCount().
   size_t GetFirstHiddenNodeIndex() const;
 
+  // Updates `first_hidden_node_idx_` and notifies the controller, if any, to
+  // update the overflow menu.
+  void UpdateFirstHiddenNodeIndex();
+
   // Creates the button showing the "All Bookmarks" folder.
   std::unique_ptr<views::MenuButton> CreateAllBookmarksButton();
 
@@ -286,7 +309,14 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Creates the button for rendering the specified bookmark node.
   std::unique_ptr<views::View> CreateBookmarkButton(
-      const bookmarks::BookmarkNode* node);
+      const bookmarks::BookmarkNode* node,
+      size_t index);
+
+  // Removes the bookmark button at the given index.
+  void RemoveBookmarkButton(size_t index);
+
+  // Removes all bookmark buttons.
+  void RemoveAllBookmarkButtons();
 
   // Creates the button for rendering the apps page shortcut.
   std::unique_ptr<views::LabelButton> CreateAppsPageShortcutButton();
@@ -298,26 +328,26 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
-  bool BookmarkNodeAddedImpl(const bookmarks::BookmarkNode* parent,
-                             size_t index);
+  bool BookmarkNodeAddedImpl(const BookmarkParentFolder& parent, size_t index);
 
   // Implementation for BookmarkNodeRemoved. Returns true if LayoutAndPaint() is
   // required.
-  bool BookmarkNodeRemovedImpl(const bookmarks::BookmarkNode* parent,
-                               size_t index);
+  bool BookmarkNodeRemovedImpl(const BookmarkParentFolder& old_parent,
+                               size_t old_index,
+                               const bookmarks::BookmarkNode* node);
 
   // If the node is a child of the root node, the button is updated
   // appropriately.
   void BookmarkNodeChangedImpl(const bookmarks::BookmarkNode* node);
 
-  // Shows the menu used during drag and drop for the specified node.
-  void ShowDropFolderForNode(const bookmarks::BookmarkNode* node);
+  // Shows the menu used during drag and drop for the specified folder.
+  void ShowDropFolderForNode(const BookmarkParentFolder& folder);
 
   // Cancels the timer used to show a drop menu.
   void StopShowFolderDropMenuTimer();
 
-  // Stars the timer used to show a drop menu for node.
-  void StartShowFolderDropMenuTimer(const bookmarks::BookmarkNode* node);
+  // Stars the timer used to show a drop menu for folder.
+  void StartShowFolderDropMenuTimer(const BookmarkParentFolder& folder);
 
   // Calculates the location for the drop in |location|.
   void CalculateDropLocation(const ui::DropTargetEvent& event,
@@ -356,9 +386,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   void OnShowManagedBookmarksPrefChanged();
 
-  // Updates the look and feel of the bookmarks bar based on the pref value.
-  void OnCompactModeChanged();
-
   void LayoutAndPaint() {
     InvalidateLayout();
     SchedulePaint();
@@ -373,13 +400,13 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // or size_t{-1} if |button| is not a bookmark button from this bar.
   size_t GetIndexForButton(views::View* button);
 
-  // Returns the target drop BookmarkNode parent pointer and updates `index`
-  // with the right value.
-  const bookmarks::BookmarkNode* GetParentNodeAndIndexForDrop(size_t& index);
+  // Returns the target drop `BookmarkParentFolder` and updates `index` with the
+  // right value.
+  BookmarkParentFolder GetParentFolderAndIndexForDrop(size_t& index);
 
   // Drops Bookmark `data` and updates `output_drag_op` accordingly.
   void PerformDrop(const bookmarks::BookmarkNodeData data,
-                   const bookmarks::BookmarkNode* parent_node,
+                   const BookmarkParentFolder& parent_folder,
                    const size_t index,
                    const bool copy,
                    const ui::DropTargetEvent& event,
@@ -391,20 +418,25 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   void MaybeShowSavedTabGroupsIntroPromo() const;
 
+  // True if BookmarkMergedSurfaceServiceLoaded() has been invoked,
+  // either by manually checking `bookmark_service_->loaded()` or by
+  // notification via BookmarkMergedSurfaceServiceObserver.
+  bool bookmark_service_loaded_signal_processed_ = false;
+
+  // Used to delay some layout updates when extensive changes are on going.
+  bool extensive_bookmarks_changes_ongoing_ = false;
+  bool needs_layout_update_after_extensive_changes_ = false;
+
   // Needed to react to bookmark bar pref changes.
   PrefChangeRegistrar profile_pref_registrar_;
-
-  // When true denotes if the bookmarks bar view should use the compact mode
-  // layout. Otherwise, layout normally.
-  bool is_compact_mode_ = false;
 
   // Used for opening urls.
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
 
-  // BookmarkModel that owns the entries and folders that are shown in this
-  // view. This is owned by the Profile.
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
+  // `BookmarkMergedSurfaceService` that manages the entries and folders that
+  // are shown in this view. This is owned by the Profile.
+  raw_ptr<BookmarkMergedSurfaceService> bookmark_service_ = nullptr;
 
   // ManagedBookmarkService. This is owned by the Profile.
   raw_ptr<bookmarks::ManagedBookmarkService> managed_ = nullptr;
@@ -421,6 +453,15 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // If non-NULL we're showing a context menu for one of the items on the
   // bookmark bar.
   std::unique_ptr<BookmarkContextMenu> context_menu_;
+
+  // Observe the context menu so that we know when it closes, in order to reset
+  // the anchor highlight.
+  base::ScopedObservation<BookmarkContextMenu, BookmarkContextMenuObserver>
+      context_menu_observation_{this};
+
+  // Manages the lifetime of the highlight for the button that the context menu
+  // is triggered for.
+  std::optional<views::Button::ScopedAnchorHighlight> context_menu_highlight_;
 
   // Saved Tab Group section
   raw_ptr<tab_groups::SavedTabGroupBar> saved_tab_group_bar_ = nullptr;
@@ -441,8 +482,14 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<views::MenuButton> overflow_button_ = nullptr;
 
   // The individual bookmark buttons.
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
-      bookmark_buttons_;
+  std::vector<BookmarkButtonAndNode> bookmark_buttons_;
+
+  std::map<raw_ptr<const views::LabelButton>, base::CallbackListSubscription>
+      button_visibility_changed_callbacks_;
+
+  // The index of the bookmark bar's first hidden node.
+  // This is used to populate the overflow bookmarks button.
+  size_t first_hidden_node_idx_ = 0;
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
   raw_ptr<ButtonSeparatorView> saved_tab_groups_separator_view_ = nullptr;

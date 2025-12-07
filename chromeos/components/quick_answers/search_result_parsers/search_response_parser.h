@@ -34,7 +34,7 @@ class SearchResponseParser {
   SearchResponseParser& operator=(const SearchResponseParser&) = delete;
 
   // Starts processing the search response.
-  void ProcessResponse(std::unique_ptr<std::string> response_body);
+  void ProcessResponse(const std::string& response_body);
 
  private:
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);

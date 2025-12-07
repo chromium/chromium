@@ -3,7 +3,7 @@
       'Tests that Bluetooth is unavailable when simulateCentral is set to absent');
   const bp = testRunner.browserP();
 
-  await bp.BluetoothEmulation.enable({state: 'absent'});
+  await bp.BluetoothEmulation.enable({state: 'absent', leSupported: true});
   testRunner.log(await session.evaluateAsync(
     () => navigator.bluetooth.getAvailability()), undefined, 'Bluetooth availability');
 

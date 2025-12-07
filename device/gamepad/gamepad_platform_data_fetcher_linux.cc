@@ -59,15 +59,17 @@ GamepadSource GamepadPlatformDataFetcherLinux::source() {
 }
 
 void GamepadPlatformDataFetcherLinux::OnAddedToProvider() {
-  std::vector<UdevWatcher::Filter> filters;
-  filters.emplace_back(UdevGamepadLinux::kInputSubsystem, "");
-  filters.emplace_back(UdevGamepadLinux::kHidrawSubsystem, "");
-  udev_watcher_ = UdevWatcher::StartWatching(this, filters);
+  udev_watcher_ = UdevWatcher::StartWatching(
+      this, {{UdevWatcher::Filter(UdevGamepadLinux::kInputSubsystem, ""),
+              UdevWatcher::Filter(UdevGamepadLinux::kHidrawSubsystem, "")}});
 
   for (auto it = devices_.begin(); it != devices_.end(); ++it)
     it->get()->Shutdown();
   devices_.clear();
 
+  if (!udev_watcher_) {
+    return;
+  }
   udev_watcher_->EnumerateExistingDevices();
 }
 

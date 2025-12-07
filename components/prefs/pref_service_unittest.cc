@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
@@ -28,37 +29,8 @@ using testing::Mock;
 namespace {
 
 const char kPrefName[] = "pref.name";
-const char kStandaloneBrowserPref[] = "standalone_browser_pref";
 
 }  // namespace
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST(PrefServiceUtilTest, GetAllDottedPaths) {
-  using pref_service_util::GetAllDottedPaths;
-
-  base::Value::Dict dict;
-  std::vector<std::string> paths;
-
-  GetAllDottedPaths(dict, paths);
-  // Expect paths to be [].
-  EXPECT_EQ(paths.size(), std::size_t(0));
-
-  dict.SetByDottedPath("one.two", base::Value(12));
-  GetAllDottedPaths(dict, paths);
-  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two"));
-
-  paths.clear();
-  dict.SetByDottedPath("one.three", base::Value(13));
-  GetAllDottedPaths(dict, paths);
-  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two", "one.three"));
-
-  paths.clear();
-  dict.SetByDottedPath("key", "value");
-  GetAllDottedPaths(dict, paths);
-  EXPECT_THAT(paths,
-              testing::UnorderedElementsAre("one.two", "one.three", "key"));
-}
-#endif
 
 TEST(PrefServiceTest, NoObserverFire) {
   TestingPrefServiceSimple prefs;
@@ -349,7 +321,7 @@ class WriteFlagChecker : public TestingPrefStore {
   bool last_write_flags_set() { return last_write_flags_set_; }
 
  private:
-  ~WriteFlagChecker() override {}
+  ~WriteFlagChecker() override = default;
 
   void SetLastWriteFlags(uint32_t flags) {
     CHECK(!last_write_flags_set_);
@@ -511,74 +483,28 @@ TEST_F(PrefServiceSetValueTest, SetListValue) {
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
-class PrefStandaloneBrowserPrefsTest : public testing::Test {
- protected:
-  PrefStandaloneBrowserPrefsTest()
-      : user_pref_store_(base::MakeRefCounted<TestingPrefStore>()),
-        standalone_browser_pref_store_(
-            base::MakeRefCounted<TestingPrefStore>()),
-        pref_registry_(base::MakeRefCounted<PrefRegistrySimple>()) {}
-
-  ~PrefStandaloneBrowserPrefsTest() override = default;
-
-  void SetUp() override {
-    auto pref_notifier = std::make_unique<PrefNotifierImpl>();
-    auto pref_value_store = std::make_unique<PrefValueStore>(
-        nullptr /* managed_prefs */, nullptr /* supervised_user_prefs */,
-        nullptr /* extension_prefs */, standalone_browser_pref_store_.get(),
-        new TestingPrefStore(), user_pref_store_.get(),
-        nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
-        pref_notifier.get());
-    pref_service_ = std::make_unique<PrefService>(
-        std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
-        standalone_browser_pref_store_, pref_registry_, base::DoNothing(),
-        false);
-    pref_registry_->RegisterIntegerPref(kStandaloneBrowserPref, 4);
-  }
-
-  std::unique_ptr<PrefService> pref_service_;
-  scoped_refptr<TestingPrefStore> user_pref_store_;
-  scoped_refptr<TestingPrefStore> standalone_browser_pref_store_;
-  scoped_refptr<PrefRegistrySimple> pref_registry_;
-};
-
-// Check that the standalone browser pref store is correctly initialized,
-// written to, read, and has correct precedence.
-TEST_F(PrefStandaloneBrowserPrefsTest, CheckStandaloneBrowserPref) {
-  const PrefService::Preference* preference =
-      pref_service_->FindPreference(kStandaloneBrowserPref);
-  EXPECT_TRUE(preference->IsDefaultValue());
-  EXPECT_EQ(base::Value(4), *(preference->GetValue()));
-  user_pref_store_->SetInteger(kStandaloneBrowserPref, 11);
-  EXPECT_EQ(base::Value(11), *(preference->GetValue()));
-  // The standalone_browser_pref_store has higher precedence.
-  standalone_browser_pref_store_->SetInteger(kStandaloneBrowserPref, 10);
-  ASSERT_EQ(base::Value(10), *(preference->GetValue()));
-  // Removing user_pref_store value shouldn't change the pref value.
-  user_pref_store_->RemoveValue(kStandaloneBrowserPref,
-                                WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  ASSERT_EQ(base::Value(10), *(preference->GetValue()));
-  // Now removing the standalone_browser_pref_store value should revert the
-  // value to default.
-  standalone_browser_pref_store_->RemoveValue(
-      kStandaloneBrowserPref, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  EXPECT_EQ(base::Value(4), *(preference->GetValue()));
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PrefStandaloneBrowserPrefsTest, RemoveAllStandaloneBrowserPrefs) {
-  const char int_pref_name[] = "int.name";
-  const char str_pref_name[] = "str.pref.name";
-  pref_registry_->RegisterIntegerPref(int_pref_name, 0);
-  pref_registry_->RegisterStringPref(str_pref_name, "");
-
-  pref_service_->SetStandaloneBrowserPref(int_pref_name, base::Value(4));
-  pref_service_->SetStandaloneBrowserPref(str_pref_name, base::Value("value"));
-  EXPECT_EQ(base::Value(4), pref_service_->GetValue(int_pref_name));
-  EXPECT_EQ(base::Value("value"), pref_service_->GetValue(str_pref_name));
-
-  pref_service_->RemoveAllStandaloneBrowserPrefs();
-  EXPECT_EQ(base::Value(0), pref_service_->GetValue(int_pref_name));
-  EXPECT_EQ(base::Value(""), pref_service_->GetValue(str_pref_name));
-}
+// TODO(crbug.com/441781730): Failing on CrOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GetValueWithTypeConversion DISABLED_GetValueWithTypeConversion
+#else
+#define MAYBE_GetValueWithTypeConversion GetValueWithTypeConversion
 #endif
+TEST(PrefServiceTest, MAYBE_GetValueWithTypeConversion) {
+  TestingPrefServiceSimple prefs;
+  const char kTimePref[] = "time_pref";
+  const char kInt64Pref[] = "int64_pref";
+  prefs.registry()->RegisterTimePref(kTimePref, base::Time());
+  prefs.registry()->RegisterInt64Pref(kInt64Pref, 0);
+
+  // Good cases:
+  prefs.SetTime(kTimePref, base::Time::Now());
+  base::IgnoreResult(prefs.GetTime(kTimePref));
+  prefs.SetInt64(kInt64Pref, 123);
+  base::IgnoreResult(prefs.GetInt64(kInt64Pref));
+
+  // Bad cases:
+  EXPECT_CHECK_DEATH(prefs.SetInt64(kTimePref, 123));
+  EXPECT_CHECK_DEATH(prefs.GetInt64(kTimePref));
+  EXPECT_CHECK_DEATH(prefs.SetTime(kInt64Pref, base::Time::Now()));
+  EXPECT_CHECK_DEATH(prefs.GetTime(kInt64Pref));
+}

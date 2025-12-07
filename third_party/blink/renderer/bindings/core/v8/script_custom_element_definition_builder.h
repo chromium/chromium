@@ -52,6 +52,7 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
   // available.
   v8::Local<v8::Value> v8_connected_callback_;
   v8::Local<v8::Value> v8_disconnected_callback_;
+  v8::Local<v8::Value> v8_connected_move_callback_;
   v8::Local<v8::Value> v8_adopted_callback_;
   v8::Local<v8::Value> v8_attribute_changed_callback_;
   v8::Local<v8::Value> v8_form_associated_callback_;

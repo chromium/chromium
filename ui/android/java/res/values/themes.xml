@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="ThemeOverlay.UI.AdaptiveDensityDefaults" parent="">
+        <!-- LINT.IfChange(AdaptiveDensityDefaults) -->
+        <!-- General dimensions. -->
+        <item name="minInteractTargetSize">@dimen/min_touch_target_size</item>
+        <!-- We've created a new attr instead of android:listPreferredItemHeightSmall to keep the
+             changes limited to the UI components we choose. -->
+
+        <!-- List item dimensions. -->
+        <item name="listItemHeight">?attr/minInteractTargetSize</item>
+        <item name="listItemHeightLarge">@dimen/list_menu_item_min_height_large</item>
+        <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
+        <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding</item>
+        <item name="listItemControlPadding">@dimen/list_menu_item_control_padding</item>
+        <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
+        <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
+
+        <!-- Popup attributes. -->
+        <item name="popupBg">@drawable/popup_bg_24dp</item>
+        <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_24dp</item>
+        <item name="zeroRadius">0dp</item>
+
+        <!-- Text dimensions. -->
+        <item name="textLargeSize">@dimen/text_size_large</item>
+        <item name="textLargeLeading">@dimen/text_size_large_leading</item>
+        <!-- LINT.ThenChange(//components/browser_ui/theme/android/templates/res/values/themes.xml:AdaptiveDensityDefaults) -->
+    </style>
+</resources>

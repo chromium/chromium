@@ -28,7 +28,7 @@ class Node:
   _CONTENT_TYPE_MIXED = 2  # CDATA and children, possibly intermingled
 
   # Types of files to be compressed by default.
-  _COMPRESS_BY_DEFAULT_EXTENSIONS = ('.js', '.html', '.css', '.svg')
+  _COMPRESS_BY_DEFAULT_EXTENSIONS = ('.js', '.html', '.css', '.svg', '.json')
 
   # Types of files to disallow compressing, as it provides no benefit, and can
   # potentially even make the file larger.
@@ -54,6 +54,7 @@ class Node:
     self.parent = None        # Our parent unless we are the root element.
     self.uberclique = None    # Allows overriding uberclique for parts of tree
     self.source = None        # File that this node was parsed from
+    self.translate_genders = False  # Translate into multiple per-gender files.
 
   # This context handler allows you to write "with node:" and get a
   # line identifying the offending node if an exception escapes from the body
@@ -179,7 +180,8 @@ class Node:
     if self._IsValidAttribute(attrib, value):
       self.attrs[attrib] = value
     else:
-      raise exception.UnexpectedAttribute(attrib)
+      raise exception.UnexpectedAttribute("'%s' in file '%s'" %
+                                          (attrib, self.source))
 
   def EndParsing(self):
     '''Called at the end of parsing.'''
@@ -470,15 +472,6 @@ class Node:
   def EvaluateExpression(cls, expr, defs, target_platform, extra_variables={}):
     '''Worker for EvaluateCondition (below) and conditions in XTB files.'''
 
-    if target_platform == 'chromeos':
-      assert defs.get('chromeos_ash', False) != defs.get(
-          'chromeos_lacros',
-          False), 'The chromeos target must be either ash or lacros'
-    else:
-      assert not defs.get('chromeos_ash', False) and not defs.get(
-          'chromeos_lacros',
-          False), 'Non-chromeos targets cannot be ash or lacros'
-
     if expr in cls.eval_expr_cache:
       code, variables_in_expr = cls.eval_expr_cache[expr]
     else:
@@ -677,6 +670,16 @@ class Node:
       return data
 
     raise Exception('Invalid value for compression')
+
+  def SetTranslateGenders(self, translate_genders):
+    '''Set the 'translate_genders' option, which, if enabled, causes translation
+    output to be split into up to 4 gendered files ('OTHER', 'MASCULINE',
+    'FEMININE', 'NEUTER').
+
+    Args:
+      translate_genders: Whether or not to enable gender translation.
+    '''
+    self.translate_genders = translate_genders
 
 
 class ContentNode(Node):

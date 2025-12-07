@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "components/version_info/channel.h"
 
@@ -36,6 +37,8 @@ class ChromeLabsModel {
  public:
   ChromeLabsModel();
   ~ChromeLabsModel();
+
+  static ChromeLabsModel* GetInstance();
 
   const std::vector<LabInfo>& GetLabInfo() const;
 

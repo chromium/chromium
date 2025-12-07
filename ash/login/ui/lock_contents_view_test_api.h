@@ -10,7 +10,6 @@
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
-#include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_camera_timeout_view.h"
 #include "ash/login/ui/login_error_bubble.h"
@@ -36,9 +35,7 @@ class ASH_EXPORT LockContentsViewTestApi {
   LoginBigUserView* opt_secondary_big_view() const;
   AccountId focused_user() const;
   ScrollableUsersListView* users_list() const;
-  LockScreenMediaControlsView* media_controls_view() const;
   LockScreenMediaView* media_view() const;
-  views::View* note_action() const;
   views::View* tooltip_bubble() const;
   views::View* management_bubble() const;
   LoginErrorBubble* detachable_base_error_bubble() const;
@@ -51,6 +48,8 @@ class ASH_EXPORT LockContentsViewTestApi {
   views::View* main_view() const;
   const std::vector<UserState>& users() const;
   LoginCameraTimeoutView* login_camera_timeout_view() const;
+  base::WeakPtr<ManagementDisclosureDialog> management_disclosure_dialog()
+      const;
 
   // Finds and focuses (if needed) Big User View view specified by
   // |account_id|. Returns nullptr if the user not found.

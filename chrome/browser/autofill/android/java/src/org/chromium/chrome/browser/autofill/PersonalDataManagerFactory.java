@@ -6,15 +6,18 @@ package org.chromium.chrome.browser.autofill;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /** Provides access to {@link PersonalDataManager}s for a given {@link Profile}. */
+@NullMarked
 public class PersonalDataManagerFactory {
-    private static ProfileKeyedMap<PersonalDataManager> sProfileMap =
+    private static final ProfileKeyedMap<PersonalDataManager> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables(
                     ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
-    private static PersonalDataManager sManagerForTesting;
+    private static @Nullable PersonalDataManager sManagerForTesting;
 
     /** Return the {@link PersonalDataManager} associated with the passed in {@link Profile}. */
     public static PersonalDataManager getForProfile(Profile profile) {

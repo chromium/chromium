@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <numeric>
-
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
+
+#include <algorithm>
+#include <numeric>
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -80,8 +79,7 @@ AccessCodeCastCastMode CastModeMetricsHelper(MediaCastMode mode) {
     case MediaCastMode::REMOTE_PLAYBACK:
       return AccessCodeCastCastMode::kRemotePlayback;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return AccessCodeCastCastMode::kPresentation;
+      NOTREACHED();
   }
 }
 
@@ -135,11 +133,8 @@ AccessCodeCastHandler::AccessCodeCastHandler(
     DCHECK(access_code_sink_service_)
         << "AccessCodeSinkService was not properly created!";
 
-    identity_manager_ = IdentityManagerFactory::GetForProfile(
-        media_route_starter_->GetProfile()->GetOriginalProfile());
+    identity_manager_ = access_code_sink_service_->GetIdentityManager();
 
-    sync_service_ = SyncServiceFactory::GetForProfile(
-        media_route_starter_->GetProfile()->GetOriginalProfile());
     Init();
   }
 }
@@ -161,8 +156,9 @@ AccessCodeCastHandler::AccessCodeCastHandler(
 AccessCodeCastHandler::~AccessCodeCastHandler() {
   AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(
       access_code_not_found_count_);
-  if (media_route_starter_)
+  if (media_route_starter_) {
     media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
+  }
 }
 
 void AccessCodeCastHandler::Init() {
@@ -190,12 +186,11 @@ void AccessCodeCastHandler::AddSink(
     return;
   }
 
-  if (!IsAccountSyncEnabled()) {
+  if (!IsPrimaryAccountSignedIn()) {
     GetMediaRouter()->GetLogger()->LogError(
         mojom::LogCategory::kDiscovery, kLoggerComponent,
-        "Sync is either pasused or diabled for this account. It must be "
-        "enabled fully for the access code casting flow to communicate with "
-        "the server.",
+        "The primary account is not signed in. It must be signed for the "
+        "access code casting flow to communicate with the server.",
         "", "", "");
     std::move(add_sink_callback_).Run(AddSinkResultCode::PROFILE_SYNC_ERROR);
     return;
@@ -214,13 +209,14 @@ bool AccessCodeCastHandler::IsCastModeAvailable(MediaCastMode mode) const {
 // attempt to create route parameters before the sink is in QRM will fail.
 void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   // Dialog  has already notified (with most likely an error).
-  if (!add_sink_callback_)
+  if (!add_sink_callback_) {
     return;
+  }
   DCHECK(sink_id_) << "Must have a sink id to complete!";
   DCHECK(media_route_starter_) << "Must have a MediaRouteStarter to complete!";
 
   // Verify that the sink is in QRM.
-  if (base::ranges::none_of(cast_mode_set_, [this](MediaCastMode cast_mode) {
+  if (std::ranges::none_of(cast_mode_set_, [this](MediaCastMode cast_mode) {
         return media_route_starter_->SinkSupportsCastMode(*sink_id_, cast_mode);
       })) {
     // sink hasn't been added to QRM yet.
@@ -235,8 +231,9 @@ void AccessCodeCastHandler::OnSinkAddedResult(
     std::optional<MediaSink::Id> sink_id) {
   DCHECK(sink_id || add_sink_result != AddSinkResultCode::OK);
 
-  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND)
+  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND) {
     access_code_not_found_count_++;
+  }
 
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
@@ -395,16 +392,18 @@ void AccessCodeCastHandler::SetIdentityManagerForTesting(
   identity_manager_ = identity_manager;
 }
 
-void AccessCodeCastHandler::SetSyncServiceForTesting(
-    syncer::SyncService* sync_service) {
-  sync_service_ = sync_service;
-}
-
-bool AccessCodeCastHandler::IsAccountSyncEnabled() {
-  if (!identity_manager_ || !sync_service_)
+bool AccessCodeCastHandler::IsPrimaryAccountSignedIn() {
+  if (!identity_manager_) {
     return false;
-  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-         sync_service_->IsSyncFeatureActive();
+  }
+  const CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+
+  return !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+      account_id);
 }
 
 }  // namespace media_router

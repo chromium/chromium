@@ -20,15 +20,15 @@ namespace performance_manager::policies {
 // backgrounded for a certain amount of time, when Memory Saver Mode is
 // enabled by the user.
 class MemorySaverModePolicy : public GraphOwned,
-                                 public PageNode::ObserverDefaultImpl,
-                                 public TabPageObserverDefaultImpl {
+                              public PageNodeObserver,
+                              public TabPageObserverDefaultImpl {
  public:
   MemorySaverModePolicy();
   ~MemorySaverModePolicy() override;
 
   static MemorySaverModePolicy* GetInstance();
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnIsVisibleChanged(const PageNode* page_node) override;
 
   // TabPageObserverDefaultImpl:
@@ -59,7 +59,7 @@ class MemorySaverModePolicy : public GraphOwned,
   base::TimeDelta GetTimeBeforeDiscardForCurrentMode() const;
   int GetMaxNumRevisitsForCurrentMode() const;
 
-  bool high_efficiency_mode_enabled_ = false;
+  bool memory_saver_mode_enabled_ = false;
 
   std::map<const TabPageDecorator::TabHandle*, base::OneShotTimer>
       active_discard_timers_;

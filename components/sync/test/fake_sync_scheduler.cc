@@ -61,8 +61,6 @@ void FakeSyncScheduler::OnReceivedCustomNudgeDelays(
 
 void FakeSyncScheduler::OnSyncProtocolError(const SyncProtocolError& error) {}
 
-void FakeSyncScheduler::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {}
-
 void FakeSyncScheduler::OnReceivedMigrationRequest(DataTypeSet types) {}
 
 void FakeSyncScheduler::OnReceivedQuotaParamsForExtensionTypes(

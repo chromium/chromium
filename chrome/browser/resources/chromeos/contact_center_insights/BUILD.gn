@@ -2,22 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/protobuf/proto_library.gni")
 
-reporting_proto_js_dir =
-    "${root_out_dir}/jsproto/components/reporting/proto/synced"
+reporting_proto_js_dir = "$proto_js_root/components/reporting/proto/synced"
 
 # JS library that includes all protos used by the extension for reporting
 # purposes
 js_library("reporting_protos") {
   extra_deps = [
-    "//components/reporting/proto:health_proto",
-    "//components/reporting/proto:metric_data_proto",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/proto:record_proto",
-    "//components/reporting/proto:session_affiliated_user_proto",
-    "//components/reporting/proto:status_proto",
+    "//components/reporting/proto:health_proto_gen",
+    "//components/reporting/proto:metric_data_proto_gen",
+    "//components/reporting/proto:record_constants_gen",
+    "//components/reporting/proto:record_proto_gen",
+    "//components/reporting/proto:session_affiliated_user_proto_gen",
+    "//components/reporting/proto:status_proto_gen",
   ]
 
   deps = [ "//third_party/protobuf:js_proto" ]
@@ -44,34 +45,36 @@ js_binary("generate_ccaas_deps") {
                     "jscomp_warning=checkTypes",
                     "jscomp_warning=deprecatedAnnotations",
                     "jscomp_warning=deprecated",
+
+                    # ECMAScript 2021 required for protobuf-javascript
+                    "language_in=ECMASCRIPT_2021",
                   ]
 }
 
-# Compile extension sources. Typechecking only on ChromeOS Ash as it is not
-# supported on Desktop platforms.
-if (is_chromeos_ash) {
-  # JS library that includes all extension sources
-  js_library("extension_sources") {
-    extra_deps = [ ":generate_ccaas_deps" ]
+# JS library that includes all extension sources
+js_library("extension_sources") {
+  extra_deps = [ ":generate_ccaas_deps" ]
 
-    deps = [ ":reporting_protos" ]
+  deps = [ ":reporting_protos" ]
 
-    sources = [
-      # Include all external dependencies so we can refrain ourselves from using
-      # the optimized bundle for type checks against the closure compiler
-      "$externs_path/chrome_extensions.js",
-      "background.js",
-      "background_wrapper.js",
-    ]
-  }
+  sources = [
+    # Include all external dependencies so we can refrain ourselves from using
+    # the optimized bundle for type checks against the closure compiler
+    "$externs_path/chrome_extensions.js",
+    "background.js",
+    "background_wrapper.js",
+  ]
+}
 
-  js_type_check("closure_compile") {
-    deps = [ ":extension_sources" ]
+js_type_check("closure_compile") {
+  deps = [ ":extension_sources" ]
 
-    closure_flags = default_closure_args + [
-                      "jscomp_warning=checkTypes",
-                      "jscomp_warning=deprecatedAnnotations",
-                      "jscomp_warning=deprecated",
-                    ]
-  }
+  closure_flags = default_closure_args + [
+                    "jscomp_warning=checkTypes",
+                    "jscomp_warning=deprecatedAnnotations",
+                    "jscomp_warning=deprecated",
+
+                    # ECMAScript 2021 required for protobuf-javascript
+                    "language_in=ECMASCRIPT_2021",
+                  ]
 }

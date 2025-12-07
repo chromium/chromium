@@ -1,0 +1,202 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/compose/features.gni")
+
+assert(enable_compose)
+
+source_set("compose") {
+  sources = [
+    "chrome_compose_client.h",
+    "compose_enabling.h",
+    "compose_session.h",
+    "compose_text_usage_logger.h",
+    "proactive_nudge_tracker.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:compose_optimization_guide_proto",
+    "//chrome/browser/optimization_guide",
+    "//chrome/common/compose:mojo_bindings",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/compose/core/browser",
+    "//components/content_extraction/content/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:model_execution",
+    "//components/prefs",
+    "//components/segmentation_platform/public",
+    "//components/signin/public/identity_manager",
+    "//components/translate/core/browser",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_compose_client.cc",
+    "compose_enabling.cc",
+    "compose_session.cc",
+    "compose_text_usage_logger.cc",
+    "proactive_nudge_tracker.cc",
+  ]
+  deps = [
+    ":compose",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
+    "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/signin",
+    "//chrome/browser/translate",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/user_education",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common/compose",
+    "//components/autofill/content/browser",
+    "//components/compose:buildflags",
+    "//components/compose/core/browser:features",
+    "//components/compose/core/browser:hats_utils",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/strings:components_strings",
+    "//components/unified_consent",
+    "//components/variations/service",
+    "//components/webui/flags",
+    "//content/public/common",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/gfx/geometry",
+    "//url",
+
+    # TODO(crbug.com/353332589): The following headers are included and cause
+    # a dependency against //c/b/ui:ui. Because of them, the `:impl` target is needed.
+    # Unify `:compose` and `:impl` targets and these inclusions are gone.
+    # - c/b/ui/browser.h"
+    # - c/b/ui/browser_dialogs.h"
+    # - c/b/ui/browser_finder.h"
+    # - c/b/ui/chrome_pages.h"
+    "//chrome/browser/ui",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_chrome_compose_client.cc",
+    "mock_chrome_compose_client.h",
+  ]
+  public_deps = [
+    ":compose",
+    "//components/autofill/core/browser",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chrome_compose_client_unittest.cc",
+    "compose_enabling_unittest.cc",
+    "compose_text_usage_logger_unittest.cc",
+    "proactive_nudge_tracker_unittest.cc",
+  ]
+  deps = [
+    ":compose",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:flags",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/translate",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/hats:test_support",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common/compose:mojo_bindings",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
+    "//components/compose/core/browser",
+    "//components/compose/core/browser:features",
+    "//components/compose/core/browser:hats_utils",
+    "//components/language/core/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:model_execution_test_support",
+    "//components/prefs",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/common",
+    "//components/translate/core/browser",
+    "//components/translate/core/browser:test_support",
+    "//components/ukm:test_support",
+    "//components/unified_consent",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "compose_dialog_browsertest.cc",
+      "compose_enabling_browsertest.cc",
+    ]
+    deps = [
+      ":compose",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:command_ids",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:flags",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/autofill/core/common:features",
+      "//components/compose/core/browser:features",
+      "//components/feature_engagement/test:test_support",
+      "//components/optimization_guide/core",
+      "//components/prefs",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/unified_consent",
+      "//components/variations/service",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//ui/gfx/geometry",
+      "//ui/views:test_support",
+    ]
+  }
+}

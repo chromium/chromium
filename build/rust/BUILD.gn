@@ -5,6 +5,10 @@
 import("//build/config/rust.gni")
 
 if (toolchain_has_rust) {
+  config("edition_2024") {
+    rustflags = [ "--edition=2024" ]
+  }
+
   config("edition_2021") {
     rustflags = [ "--edition=2021" ]
   }
@@ -18,35 +22,27 @@ if (toolchain_has_rust) {
   }
 
   if (enable_rust_cxx) {
-    # The version of cxx under //third_party/rust/chromium_crates_io/vendor.
-    # Update this whenever cxx is rolled. Also update the version number in the
-    # //third_party/rust/cxx/v1/cxx.h header.
-    cxx_version = "1.0.124"
-
     # The required dependencies for cxx-generated bindings, that must be included
     # on the C++ side.
     static_library("cxx_cppdeps") {
       sources = [
-        "//third_party/rust/chromium_crates_io/vendor/cxx-${cxx_version}/include/cxx.h",
-        "//third_party/rust/chromium_crates_io/vendor/cxx-${cxx_version}/src/cxx.cc",
+        "//third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h",
+        "//third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc",
 
         # Our version-independent forwarding header, which we patch cxx.cc to
         # use since we want it to use an absolute path for its include.
         "//third_party/rust/cxx/v1/cxx.h",
       ]
 
-      defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
-
       # We cannot depend on base/base_export.h because base depends on us.
       if (is_component_build) {
         if (is_win) {
-          defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
+          defines = [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
         } else {
-          defines +=
-              [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+          defines = [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
         }
       } else {
-        defines += [ "CXX_RS_EXPORT=" ]
+        defines = [ "CXX_RS_EXPORT=" ]
       }
 
       deps = [
@@ -84,17 +80,23 @@ config("proc_macro_extern") {
   ]
 }
 
-# Forbids unsafe code in crates with this config.
+# Forbids unsafe code in crates with this config.  See also `allow_unsafe` which
+# may be set in 1) `rust_static_library`, `rust_executable` and other targets,
+# 2) `gnrt_config.toml` entries for individual third-party crates.
 config("forbid_unsafe") {
-  rustflags = [ "-Funsafe_code" ]
+  rustflags = [
+    # `-F` = "forbid".  Documentation of the warning can be found in
+    # https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html#unsafe-code
+    "-Funsafe_code",
+  ]
 }
 
 config("panic_immediate_abort") {
   visibility = [ "//build/rust/std/rules:*" ]
   if (is_official_build) {
     rustflags = [
-      "--cfg",
-      "feature=\"panic_immediate_abort\"",
+      "-Zunstable-options",
+      "-Cpanic=immediate-abort",
     ]
   }
 }

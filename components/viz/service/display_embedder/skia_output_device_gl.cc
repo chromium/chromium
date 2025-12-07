@@ -10,9 +10,9 @@
 #include "base/debug/alias.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -20,11 +20,11 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_features.h"
@@ -41,7 +41,7 @@ NOINLINE void CheckForLoopFailures() {
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
       now - g_last_reshape_failure < threshold) {
-    CHECK(false);
+    NOTREACHED();
   }
   g_last_reshape_failure = now;
 }
@@ -96,11 +96,11 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
     gpu::SharedContextState* context_state,
     scoped_refptr<gl::GLSurface> gl_surface,
     scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
-    gpu::MemoryTracker* memory_tracker,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
-                       context_state->graphite_context(),
-                       memory_tracker,
+                       context_state->graphite_shared_context(),
+                       std::move(memory_tracker),
                        std::move(did_swap_buffer_complete_callback)),
       context_state_(context_state),
       gl_surface_(std::move(gl_surface)),
@@ -122,12 +122,12 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   capabilities_.supports_surfaceless = gl_surface_->IsSurfaceless();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If Chrome OS is run on Linux for development purposes, we need to
   // advertise a hardware orientation mode since Ash manages a separate device
   // rotation independent of the host's native windowing system.
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kHardware;
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 
   DCHECK(context_state_);
   DCHECK(gl_surface_);
@@ -190,9 +190,9 @@ SkiaOutputDeviceGL::~SkiaOutputDeviceGL() {
 }
 
 bool SkiaOutputDeviceGL::Reshape(const ReshapeParams& params) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(params.transform, gfx::OVERLAY_TRANSFORM_NONE);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   const gfx::Size size = params.GfxSize();
   const SkColorType color_type = params.image_info.colorType();

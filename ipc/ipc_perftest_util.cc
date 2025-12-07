@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ipc/ipc_perftest_util.h"
 
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/ipc_perftest_messages.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/multiprocess_test_helper.h"
 
@@ -28,55 +23,6 @@ scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner() {
       static_cast<base::SingleThreadTaskRunner*>(runner.get()));
 }
 
-ChannelReflectorListener::ChannelReflectorListener() : channel_(nullptr) {
-  VLOG(1) << "Client listener up";
-}
-
-ChannelReflectorListener::~ChannelReflectorListener() {
-  VLOG(1) << "Client listener down";
-}
-
-void ChannelReflectorListener::Init(Sender* channel,
-                                    base::OnceClosure quit_closure) {
-  DCHECK(!channel_);
-  channel_ = channel;
-  quit_closure_ = std::move(quit_closure);
-}
-
-bool ChannelReflectorListener::OnMessageReceived(const Message& message) {
-  CHECK(channel_);
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ChannelReflectorListener, message)
-    IPC_MESSAGE_HANDLER(TestMsg_Hello, OnHello)
-    IPC_MESSAGE_HANDLER(TestMsg_Ping, OnPing)
-    IPC_MESSAGE_HANDLER(TestMsg_SyncPing, OnSyncPing)
-    IPC_MESSAGE_HANDLER(TestMsg_Quit, OnQuit)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
-void ChannelReflectorListener::OnHello() {
-  channel_->Send(new TestMsg_Hello);
-}
-
-void ChannelReflectorListener::OnPing(const std::string& payload) {
-  channel_->Send(new TestMsg_Ping(payload));
-}
-
-void ChannelReflectorListener::OnSyncPing(const std::string& payload,
-                                          std::string* response) {
-  *response = payload;
-}
-
-void ChannelReflectorListener::OnQuit() {
-  std::move(quit_closure_).Run();
-}
-
-void ChannelReflectorListener::Send(IPC::Message* message) {
-  channel_->Send(message);
-}
-
 LockThreadAffinity::LockThreadAffinity(int cpu_number)
     : affinity_set_ok_(false) {
 #if BUILDFLAG(IS_WIN)
@@ -85,8 +31,8 @@ LockThreadAffinity::LockThreadAffinity(int cpu_number)
   affinity_set_ok_ = old_affinity_ != 0;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(cpu_number, &cpuset);
+  UNSAFE_TODO(CPU_ZERO(&cpuset));
+  UNSAFE_TODO(CPU_SET(cpu_number, &cpuset));
   auto get_result = sched_getaffinity(0, sizeof(old_cpuset_), &old_cpuset_);
   DCHECK_EQ(0, get_result);
   auto set_result = sched_setaffinity(0, sizeof(cpuset), &cpuset);
@@ -109,8 +55,7 @@ LockThreadAffinity::~LockThreadAffinity() {
 #endif
 }
 
-MojoPerfTestClient::MojoPerfTestClient()
-    : listener_(new ChannelReflectorListener()) {
+MojoPerfTestClient::MojoPerfTestClient() {
   mojo::core::test::MultiprocessTestHelper::ChildSetup();
 }
 
@@ -122,10 +67,8 @@ int MojoPerfTestClient::Run(MojoHandle handle) {
 
   base::RunLoop run_loop;
   std::unique_ptr<ChannelProxy> channel = IPC::ChannelProxy::Create(
-      handle_.release(), Channel::MODE_CLIENT, listener_.get(),
-      GetIOThreadTaskRunner(),
+      handle_.release(), Channel::MODE_CLIENT, nullptr, GetIOThreadTaskRunner(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  listener_->Init(channel.get(), run_loop.QuitWhenIdleClosure());
   run_loop.Run();
   return 0;
 }

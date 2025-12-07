@@ -28,7 +28,7 @@ ScreenOzone::ScreenOzone() {
     // that call into `Screen` functions below have a valid `platform_screen_`.
     platform->InitScreen(platform_screen_.get());
   } else {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "PlatformScreen is not implemented for this ozone platform.";
   }
 }
@@ -107,7 +107,7 @@ display::Display ScreenOzone::GetPrimaryDisplay() const {
   return platform_screen_->GetPrimaryDisplay();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 ScreenOzone::ScreenSaverSuspenderOzone::ScreenSaverSuspenderOzone(
     std::unique_ptr<ui::PlatformScreen::PlatformScreenSaverSuspender> suspender)
     : suspender_(std::move(suspender)) {}
@@ -119,7 +119,7 @@ ScreenOzone::SuspendScreenSaver() {
   return std::make_unique<ScreenSaverSuspenderOzone>(
       platform_screen_->SuspendScreenSaver());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 bool ScreenOzone::IsScreenSaverActive() const {
   return platform_screen_->IsScreenSaverActive();
@@ -156,16 +156,9 @@ std::optional<float> ScreenOzone::GetPreferredScaleFactorForWindow(
              : Screen::GetPreferredScaleFactorForWindow(window);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-display::TabletState ScreenOzone::GetTabletState() const {
-  return platform_screen_->GetTabletState();
+bool ScreenOzone::IsHeadless() const {
+  return platform_screen_->IsHeadless();
 }
-
-void ScreenOzone::OverrideTabletStateForTesting(
-    display::TabletState tablet_state) {
-  platform_screen_->OnTabletStateChanged(tablet_state);
-}
-#endif
 
 gfx::NativeWindow ScreenOzone::GetNativeWindowFromAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {

@@ -37,9 +37,6 @@ class MultitaskButton : public views::Button {
 
  private:
   const Type type_;
-  // The display orientation. This determines whether button is in
-  // landscape/portrait mode.
-  const bool is_portrait_mode_;
 
   // Used to determine whether the button should be painted as active. If a
   // window is in fullscreen or floated state, it should be painted as active.

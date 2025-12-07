@@ -18,5 +18,5 @@ MediaGalleriesDialogControllerMock::MediaGalleriesDialogControllerMock() {
       WillByDefault(Return(Entries()));
 }
 
-MediaGalleriesDialogControllerMock::~MediaGalleriesDialogControllerMock() {
-}
+MediaGalleriesDialogControllerMock::~MediaGalleriesDialogControllerMock() =
+    default;

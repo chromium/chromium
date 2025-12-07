@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 //
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 /*
  * Copyright (c) 2010, The WebM Project authors. All rights reserved.
  *
@@ -50,8 +45,10 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {
@@ -67,22 +64,17 @@ static const int kDefaultProbability = 0x80;  // 0x80 / 256 = 0.5
 #define VP8_LOTS_OF_BITS (0x40000000)
 
 // The number of leading zeros.
-static const unsigned char kVp8Norm[256] = {
-    0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4,
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+const std::array<unsigned char, 256> kVp8Norm = {
+    0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3,
+    3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
@@ -98,7 +90,7 @@ bool Vp8BoolDecoder::Initialize(const uint8_t* data, size_t size) {
     return false;
   user_buffer_start_ = data;
   user_buffer_ = data;
-  user_buffer_end_ = data + size;
+  user_buffer_end_ = UNSAFE_TODO(data + size);
   value_ = 0;
   count_ = -8;
   range_ = 255;
@@ -122,7 +114,7 @@ void Vp8BoolDecoder::FillDecoder() {
     while (shift >= loop_end) {
       count_ += CHAR_BIT;
       value_ |= static_cast<size_t>(*user_buffer_) << shift;
-      ++user_buffer_;
+      UNSAFE_TODO(++user_buffer_);
       shift -= CHAR_BIT;
     }
   }
@@ -211,4 +203,6 @@ inline bool Vp8BoolDecoder::OutOfBuffer() {
   return (count_ > VP8_BD_VALUE_BIT) && (count_ < VP8_LOTS_OF_BITS);
 }
 
+#undef VP8_BD_VALUE_BIT
+#undef VP8_LOTS_OF_BITS
 }  // namespace media

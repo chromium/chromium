@@ -17,3 +17,5 @@ static jboolean JNI_CustomTabsTestUtils_HasVariationId(JNIEnv* env, jint id) {
 }
 
 }  // namespace customtabs
+
+DEFINE_JNI(CustomTabsTestUtils)

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "content/browser/fenced_frame/automatic_beacon_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"

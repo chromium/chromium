@@ -31,7 +31,8 @@ TEST_F(LockWindowVirtualKeyboardTest, VirtualKeyboardDoesNotCoverAuthView) {
 }
 
 TEST_F(LockWindowVirtualKeyboardTest, ReleaseCapture) {
-  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window0(
+      CreateTestWindowInShell({.window_id = 0}));
   ::wm::CaptureController::Get()->SetCapture(window0.get());
   ASSERT_EQ(window0.get(), ::wm::CaptureController::Get()->GetCaptureWindow());
 

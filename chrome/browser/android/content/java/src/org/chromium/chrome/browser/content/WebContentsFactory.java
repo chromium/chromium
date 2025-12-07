@@ -4,25 +4,30 @@
 
 package org.chromium.chrome.browser.content;
 
-import dagger.Reusable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetId;
-
-import javax.inject.Inject;
 
 /**
  * This factory creates WebContents objects and the associated native counterpart. TODO(dtrainor):
  * Move this to the content/ layer if BrowserContext is ever supported in Java.
  */
-@Reusable
+@NullMarked
 public class WebContentsFactory {
-    @Inject
-    public WebContentsFactory() {}
+    private static @Nullable WebContents sWebContentsForTesting;
+
+    private WebContentsFactory() {}
+
+    public static void setWebContentsForTesting(WebContents webContents) {
+        sWebContentsForTesting = webContents;
+        ResettersForTesting.register(() -> sWebContentsForTesting = null);
+    }
 
     /** For capturing where WebContentsImpl is created. */
     private static class WebContentsCreationException extends RuntimeException {
@@ -42,6 +47,9 @@ public class WebContentsFactory {
      */
     public static WebContents createWebContentsWithSeparateStoragePartitionForExperiment(
             Profile profile) {
+        if (sWebContentsForTesting != null) {
+            return sWebContentsForTesting;
+        }
         return WebContentsFactoryJni.get()
                 .createWebContentsWithSeparateStoragePartitionForExperiment(
                         profile, new WebContentsCreationException());
@@ -53,21 +61,26 @@ public class WebContentsFactory {
      * @param profile The profile with which the {@link WebContents} should be built.
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
      * @param initializeRenderer Whether or not the {@link WebContents} should initialize renderer.
-     * @param targetNetwork target bound network, also refer to the documentation of
-     *                      {@link ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest}
-     *                      on how to use targetNetwork at the native layer.
+     * @param targetNetwork target bound network, also refer to the documentation of {@link
+     *     ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest} on how to use targetNetwork at
+     *     the native layer.
      * @return A newly created {@link WebContents} object.
      */
     public static WebContents createWebContents(
             Profile profile,
             boolean initiallyHidden,
             boolean initializeRenderer,
+            boolean usesPlatformAutofill,
             long targetNetwork) {
+        if (sWebContentsForTesting != null) {
+            return sWebContentsForTesting;
+        }
         return WebContentsFactoryJni.get()
                 .createWebContents(
                         profile,
                         initiallyHidden,
                         initializeRenderer,
+                        usesPlatformAutofill,
                         targetNetwork,
                         new WebContentsCreationException());
     }
@@ -83,7 +96,11 @@ public class WebContentsFactory {
     public static WebContents createWebContents(
             Profile profile, boolean initiallyHidden, boolean initializeRenderer) {
         return createWebContents(
-                profile, initiallyHidden, initializeRenderer, /* targetNetwork= */ NetId.INVALID);
+                profile,
+                initiallyHidden,
+                initializeRenderer,
+                /* usesPlatformAutofill= */ false,
+                /* targetNetwork= */ NetId.INVALID);
     }
 
     /**
@@ -96,17 +113,22 @@ public class WebContentsFactory {
      * @param targetNetwork target network handle.
      * @return A newly created {@link WebContents} object.
      */
-    public WebContents createWebContentsWithWarmRenderer(
-            Profile profile, boolean initiallyHidden, long targetNetwork) {
-        return createWebContents(profile, initiallyHidden, true, targetNetwork);
+    public static WebContents createWebContentsWithWarmRenderer(
+            Profile profile,
+            boolean initiallyHidden,
+            boolean usesPlatformAutofill,
+            long targetNetwork) {
+        return createWebContents(
+                profile, initiallyHidden, true, usesPlatformAutofill, targetNetwork);
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         WebContents createWebContents(
                 @JniType("Profile*") Profile profile,
                 boolean initiallyHidden,
                 boolean initializeRenderer,
+                boolean usesPlatformAutofill,
                 long targetNetwork,
                 Throwable javaCreator);
 

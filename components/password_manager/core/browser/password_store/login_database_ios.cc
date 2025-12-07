@@ -15,13 +15,15 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
+#include "crypto/apple/keychain_util.h"
 #include "sql/statement.h"
 
 using base::apple::ScopedCFTypeRef;
@@ -43,9 +45,8 @@ namespace password_manager {
 EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) const {
-  bool result = encryptor_
-                    ? encryptor_->EncryptString16(plain_text, cipher_text)
-                    : OSCrypt::EncryptString16(plain_text, cipher_text);
+  bool result =
+      encryptor_ && encryptor_->EncryptString16(plain_text, cipher_text);
   return result ? EncryptionResult::kSuccess
                 : EncryptionResult::kServiceFailure;
 }
@@ -53,9 +54,8 @@ EncryptionResult LoginDatabase::EncryptedString(
 EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
     std::u16string* plain_text) const {
-  bool result = encryptor_
-                    ? encryptor_->DecryptString16(cipher_text, plain_text)
-                    : OSCrypt::DecryptString16(cipher_text, plain_text);
+  bool result =
+      encryptor_ && encryptor_->DecryptString16(cipher_text, plain_text);
   return result ? EncryptionResult::kSuccess
                 : EncryptionResult::kServiceFailure;
 }
@@ -85,8 +85,9 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
   CFDictionarySetValue(attributes.get(), kSecValueData, data.get());
 
   // Only allow access when the device has been unlocked.
-  CFDictionarySetValue(attributes.get(), kSecAttrAccessible,
-                       kSecAttrAccessibleWhenUnlocked);
+  CFStringRef accessibility =
+      crypto::apple::GetKeychainAccessibilityAttribute();
+  CFDictionarySetValue(attributes.get(), kSecAttrAccessible, accessibility);
 
   OSStatus status = SecItemAdd(attributes.get(), NULL);
   if (status != errSecSuccess) {
@@ -121,6 +122,7 @@ OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
   // We are using the account attribute to store item references.
   CFDictionarySetValue(query.get(), kSecAttrAccount, item_ref.get());
   CFDictionarySetValue(query.get(), kSecReturnData, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecReturnAttributes, kCFBooleanTrue);
 
   ScopedCFTypeRef<CFTypeRef> data_cftype;
   OSStatus status =
@@ -130,14 +132,19 @@ OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
     return status;
   }
 
-  CFDataRef data = base::apple::CFCast<CFDataRef>(data_cftype.get());
-  const size_t size = CFDataGetLength(data);
-  auto buffer = base::HeapArray<UInt8>::Uninit(size);
-  CFDataGetBytes(data, CFRangeMake(0, size), buffer.data());
+  CFDictionaryRef result_dict =
+      base::apple::CFCast<CFDictionaryRef>(data_cftype.get());
+  CFDataRef data = base::apple::GetValueFromDictionary<CFDataRef>(
+      result_dict, kSecValueData);
 
-  *plain_text = base::UTF8ToUTF16(
-      std::string(static_cast<char*>(static_cast<void*>(buffer.data())),
-                  static_cast<size_t>(size)));
+  ScopedCFTypeRef<CFDictionaryRef> update_query =
+      crypto::apple::GenerateGenericPasswordUpdateQuery(keychain_identifier);
+
+  crypto::apple::MigrateKeychainItemAccessibilityIfNeeded(result_dict,
+                                                          update_query.get());
+
+  *plain_text =
+      base::UTF8ToUTF16(base::as_string_view(base::apple::CFDataToSpan(data)));
   return errSecSuccess;
 }
 
@@ -199,12 +206,8 @@ OSStatus GetAllPasswordsFromKeychain(
 
     if (CFDataRef data = base::apple::GetValueFromDictionary<CFDataRef>(
             dict, kSecValueData)) {
-      const size_t size = CFDataGetLength(data);
-      std::vector<UInt8> buffer(size);
-      CFDataGetBytes(data, CFRangeMake(0, size), buffer.data());
-
-      std::u16string plain_text = base::UTF8ToUTF16(std::string_view(
-          static_cast<char*>(static_cast<void*>(buffer.data())), size));
+      std::u16string plain_text = base::UTF8ToUTF16(
+          base::as_string_view(base::apple::CFDataToSpan(data)));
       key_password_pairs->emplace(key, std::move(plain_text));
     }
   }

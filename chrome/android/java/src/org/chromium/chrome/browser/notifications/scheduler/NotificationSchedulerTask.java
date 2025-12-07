@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
@@ -24,6 +25,7 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
  * A background task used by notification scheduler system to process and display scheduled
  * notifications.
  */
+@NullMarked
 public class NotificationSchedulerTask extends NativeBackgroundTask {
     @Override
     protected int onStartTaskBeforeNativeLoaded(
@@ -37,15 +39,14 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
         // Wrap to a Callback<Boolean> because JNI generator can't recognize TaskFinishedCallback as
         // a Java interface in the function parameter.
         Callback<Boolean> taskCallback =
-                new Callback<Boolean>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Boolean needsReschedule) {
                         callback.taskFinished(needsReschedule);
                     }
                 };
 
-        NotificationSchedulerTaskJni.get()
-                .onStartTask(NotificationSchedulerTask.this, taskCallback);
+        NotificationSchedulerTaskJni.get().onStartTask(taskCallback);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
 
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
-        return NotificationSchedulerTaskJni.get().onStopTask(NotificationSchedulerTask.this);
+        return NotificationSchedulerTaskJni.get().onStopTask();
     }
 
     /**
@@ -92,8 +93,8 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
 
     @NativeMethods
     interface Natives {
-        void onStartTask(NotificationSchedulerTask caller, Callback<Boolean> callback);
+        void onStartTask(Callback<Boolean> callback);
 
-        boolean onStopTask(NotificationSchedulerTask caller);
+        boolean onStopTask();
     }
 }

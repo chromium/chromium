@@ -2,6 +2,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/prefs",
   "+components/sync",
+  "+crypto",
   "+google_apis",
   "+net",
 ]

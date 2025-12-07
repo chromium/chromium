@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -20,19 +21,12 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
-
-// TODO(crbug.com/40858602): Enable tests on Lacros.
-// This feature depends on
-// https://chromium-review.googlesource.com/c/chromium/src/+/3867152 landing
-// to be able to work in Lacros. Currently Lacros doesn't know when the web app
-// publisher has been initialised.
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
  public:
@@ -90,6 +84,9 @@ class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
         .Await();
     return app_id;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, HealthyIcons) {
@@ -174,6 +171,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_EmptyIconFile) {
       WebAppProvider::GetForTest(profile())
           ->icon_manager()
           .GetIconFilePathForTesting(app_id, IconPurpose::ANY, 32);
+  ASSERT_FALSE(icon_path.empty());
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -201,6 +199,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_CorruptIconFile) {
       WebAppProvider::GetForTest(profile())
           ->icon_manager()
           .GetIconFilePathForTesting(app_id, IconPurpose::ANY, 32);
+  ASSERT_FALSE(icon_path.empty());
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -217,7 +216,5 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_CorruptIconFile) {
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, CorruptIconFile) {
   RunIconChecksWithMetricExpectations({.has_empty_icon_bitmap = true});
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

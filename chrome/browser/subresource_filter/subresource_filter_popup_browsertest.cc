@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
 
   // Navigate again to trigger histogram logging. Make sure the navigation
   // happens in the original WebContents.
-  browser()->tab_strip_model()->ToggleSelectionAt(
+  browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));

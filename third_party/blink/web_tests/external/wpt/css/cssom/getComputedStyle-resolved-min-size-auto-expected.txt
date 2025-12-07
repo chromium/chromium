@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Resolved value of min-width & min-height 'auto' keyword behaves as expected on element with id="block-with-valid-aspect-ratio"
+  assert_equals: block-with-valid-aspect-ratio: 'min-width:auto' should round-trip through getComputedStyle (as initial value) expected "auto" but got "0px"
+[FAIL] Resolved value of min-width & min-height 'auto' keyword behaves as expected on element with id="block-with-degenerate-aspect-ratio"
+  assert_equals: block-with-degenerate-aspect-ratio: 'min-width:auto' should round-trip through getComputedStyle (as initial value) expected "auto" but got "0px"
+[FAIL] Resolved value of min-width & min-height 'auto' keyword behaves as expected on element with id="block-with-two-part-valid-aspect-ratio"
+  assert_equals: block-with-two-part-valid-aspect-ratio: 'min-width:auto' should round-trip through getComputedStyle (as initial value) expected "auto" but got "0px"
+[FAIL] Resolved value of min-width & min-height 'auto' keyword behaves as expected on element with id="block-with-two-part-degenerate-aspect-ratio"
+  assert_equals: block-with-two-part-degenerate-aspect-ratio: 'min-width:auto' should round-trip through getComputedStyle (as initial value) expected "auto" but got "0px"
+[FAIL] Resolved value of min-width & min-height 'auto' keyword behaves as expected on element with id="inline-with-valid-aspect-ratio"
+  assert_equals: inline-with-valid-aspect-ratio: 'min-width:auto' should round-trip through getComputedStyle (as initial value) expected "auto" but got "0px"
+[FAIL] Resolved value of min-width & min-height 'auto' keyword behaves as expected on element with id="inline-with-degenerate-aspect-ratio"
+  assert_equals: inline-with-degenerate-aspect-ratio: 'min-width:auto' should round-trip through getComputedStyle (as initial value) expected "auto" but got "0px"
+Harness: the test ran to completion.
+

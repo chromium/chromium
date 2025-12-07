@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -34,6 +34,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.Arrays;
 
@@ -59,9 +60,9 @@ public class PreWarmingRecycledViewPoolTest {
                             }
 
                             @Override
-                            public @NonNull ViewHolder onCreateViewHolder(
+                            public @NonNull SimpleRecyclerViewAdapter.ViewHolder onCreateViewHolder(
                                     @NonNull ViewGroup parent, int viewType) {
-                                return new ViewHolder(mView, null);
+                                return new SimpleRecyclerViewAdapter.ViewHolder(mView, null);
                             }
                         });
         mPool = new PreWarmingRecycledViewPool(mAdapter, mContext);
@@ -96,7 +97,7 @@ public class PreWarmingRecycledViewPoolTest {
                         OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
                         OmniboxSuggestionUiType.DEFAULT,
                         OmniboxSuggestionUiType.ENTITY_SUGGESTION)) {
-            ViewHolder viewHolder = mPool.getRecycledView(uiType);
+            RecyclerView.ViewHolder viewHolder = mPool.getRecycledView(uiType);
             assertNotNull(viewHolder);
             assertEquals(expectedView, viewHolder.itemView);
         }

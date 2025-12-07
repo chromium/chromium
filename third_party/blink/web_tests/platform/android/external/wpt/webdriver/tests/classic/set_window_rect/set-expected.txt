@@ -1,0 +1,29 @@
+This is a wdspec test.
+[FAIL] test_restore_from_fullscreen
+  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Fullscreen mode is not supported on Android platform
+[FAIL] test_restore_from_maximized
+  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_x_y_floats
+  assert 0 == 150
+[FAIL] test_width_height_floats
+  assert 360 == 550
+[FAIL] test_set_to_available_size
+  AssertionError: assert {'height': 539, 'width': 360, 'x': 0, 'y': 0} == {'x': 0, 'y': 0, 'width': 360, 'height': 640}
+[FAIL] test_set_to_screen_size
+  assert 539 >= 640
+[FAIL] test_set_larger_than_screen_size
+  assert 539 >= 640
+[FAIL] test_set_smaller_than_minimum_browser_size
+  assert 360 < 360
+[FAIL] test_height_as_current
+  AssertionError: assert {'height': 539, 'width': 360, 'x': 0, 'y': 0} == {'x': 0, 'y': 0, 'width': 370, 'height': 539}
+[FAIL] test_width_as_current
+  AssertionError: assert {'height': 539, 'width': 360, 'x': 0, 'y': 0} == {'x': 0, 'y': 0, 'width': 360, 'height': 549}
+[FAIL] test_x_y
+  assert 0 == (0 + 10)
+[FAIL] test_x_as_current
+  assert 0 == (0 + 10)
+[FAIL] test_y_as_current
+  assert 0 == (0 + 10)
+Harness: the test ran to completion.
+

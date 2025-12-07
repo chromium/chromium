@@ -26,20 +26,19 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/hrtf_elevation.h"
 
 #include <math.h>
+
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
@@ -77,14 +76,15 @@ constexpr float kResponseSampleRate = 44100;
 // angle. See https://bugs.webkit.org/show_bug.cgi?id=98294#c9 for the
 // elevation angles and their order in the concatenated response.
 constexpr int kElevationIndexTableSize = 10;
-constexpr int kElevationIndexTable[kElevationIndexTableSize] = {
-    0, 15, 30, 45, 60, 75, 90, 315, 330, 345};
+constexpr std::array<int, kElevationIndexTableSize> kElevationIndexTable = {
+    0, 15, 30, 45, 60, 75, 90, 315, 330, 345,
+};
 
 // The range of elevations for the IRCAM impulse responses varies depending on
 // azimuth, but the minimum elevation appears to always be -45.
 //
 // Here's how it goes:
-constexpr int kMaxElevations[] = {
+constexpr auto kMaxElevations = std::to_array<int>({
     //  Azimuth
     //
     90,  // 0
@@ -110,8 +110,8 @@ constexpr int kMaxElevations[] = {
     75,  // 300
     45,  // 315
     60,  // 330
-    45   // 345
-};
+    45,  // 345
+});
 
 // Lazily load a concatenated HRTF database for given subject and store it in a
 // local hash table to ensure quick efficient future retrievals.
@@ -219,9 +219,9 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
         AudioBus::Create(response->NumberOfChannels(), fft_size / 2));
     for (unsigned channel = 0; channel < response->NumberOfChannels();
          ++channel) {
-      memcpy(padded_response->Channel(channel)->MutableData(),
-             response->Channel(channel)->Data(),
-             response->length() * sizeof(float));
+      UNSAFE_TODO(memcpy(padded_response->Channel(channel)->MutableData(),
+                         response->Channel(channel)->Data(),
+                         response->length() * sizeof(float)));
     }
     response = padded_response;
   }

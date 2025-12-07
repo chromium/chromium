@@ -17,10 +17,13 @@
   }
 </style>
 
+<settings-subpage page-title="$i18n{managePasskeysTitle}"
+    search-label="$i18n{managePasskeysSearch}"
+    search-term="{{filter_}}">
 <template is="dom-if" if="[[noManagement_]]">
   <div id="error" class="cr-row first">
     <div id="iconContainer">
-      <iron-icon icon="cr:info"></iron-icon>
+      <cr-icon icon="cr:info"></cr-icon>
     </div>
     <p>$i18n{managePasskeysNoSupport}</p>
   </div>
@@ -39,7 +42,7 @@
   </div>
   <div class="cr-separators list-with-header">
     <template is="dom-repeat" items="[[passkeys_]]"
-        filter="[[filterFunction_(filter)]]">
+        filter="[[filterFunction_(filter_)]]">
       <div class="list-item" focus-row-container>
         <div class="website-column no-min-width">
           <site-favicon url="[[getIconUrl_(item)]]"></site-favicon>
@@ -101,3 +104,4 @@
     </passkey-edit-dialog>
   </template>
 </if>
+</settings-subpage>

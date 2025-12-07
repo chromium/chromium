@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,7 +28,9 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -39,11 +40,11 @@ void UpdateAccountsPrefs(
     PrefService& pref_service,
     const signin::IdentityManager& identity_manager,
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh) {
+  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
     return;
   }
 
-  base::flat_set<std::string> account_ids_in_chrome =
+  const base::flat_set<GaiaId> account_ids_in_chrome =
       signin::GetAllGaiaIdsForKeyedPreferences(&identity_manager,
                                                accounts_in_cookie_jar_info);
 
@@ -54,12 +55,8 @@ void UpdateAccountsPrefs(
   // above checks on cookies and primary account.
 
   SigninPrefs signin_prefs(pref_service);
-  size_t removed_count = signin_prefs.RemoveAllAccountPrefsExcept(
-      // Convert `std::string` to `SigninPrefs::GaiaId`.
-      base::ToVector(account_ids_in_chrome,
-                     [](const std::string& gaia_id) -> SigninPrefs::GaiaId {
-                       return gaia_id;
-                     }));
+  size_t removed_count =
+      signin_prefs.RemoveAllAccountPrefsExcept(account_ids_in_chrome);
 
   if (removed_count > 0) {
     // There is a maximum of 10 Gaia accounts on the web. If we add the Chrome
@@ -82,11 +79,13 @@ void UpdateAccountsPrefs(
 }  // namespace
 
 GAIAInfoUpdateService::GAIAInfoUpdateService(
+    Profile* profile,
     signin::IdentityManager* identity_manager,
     ProfileAttributesStorage* profile_attributes_storage,
     PrefService& pref_service,
     const base::FilePath& profile_path)
-    : identity_manager_(identity_manager),
+    : profile_(profile),
+      identity_manager_(identity_manager),
       profile_attributes_storage_(profile_attributes_storage),
       pref_service_(pref_service),
       profile_path_(profile_path) {
@@ -136,7 +135,14 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   gaia_id_of_profile_attribute_entry_ = info.gaia;
   entry->SetGAIAGivenName(base::UTF8ToUTF16(info.given_name));
   entry->SetGAIAName(base::UTF8ToUTF16(info.full_name));
-  entry->SetHostedDomain(info.hosted_domain);
+  std::string hosted_domain_to_set;
+  if (std::optional<std::string_view> hosted_domain = info.GetHostedDomain()) {
+    hosted_domain_to_set = hosted_domain->empty()
+                               ? signin::constants::kNoHostedDomainFound
+                               : std::string(*hosted_domain);
+  }
+  entry->SetHostedDomain(hosted_domain_to_set);
+  entry->SetIsManaged(info.IsManaged());
 
   if (info.picture_url == kNoPictureURLFound) {
     entry->SetGAIAPicture(std::string(), gfx::Image());
@@ -149,8 +155,9 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
-  if (!info.IsValid())
+  if (!info.IsValid()) {
     return;
+  }
 
   ProfileAttributesEntry* entry =
       profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
@@ -169,11 +176,13 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   if (!entry) {
     return;
   }
-  gaia_id_of_profile_attribute_entry_ = "";
+  gaia_id_of_profile_attribute_entry_ = GaiaId();
   entry->SetGAIAName(std::u16string());
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
+  entry->SetIsManaged(signin::Tribool::kFalse);
+  entry->SetIsGlicEligible(false);
 }
 
 void GAIAInfoUpdateService::Shutdown() {
@@ -227,14 +236,14 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
   // We can fully regenerate the info about all accounts only when there are no
   // signed-out accounts. This means that for instance clearing cookies will
   // reset the info.
-  if (accounts_in_cookie_jar_info.signed_out_accounts.empty()) {
+  if (accounts_in_cookie_jar_info.GetSignedOutAccounts().empty()) {
     entry->ClearAccountNames();
 
     // Regenerate based on the info from signed-in accounts (if not available
     // now, it will be regenerated soon via OnExtendedAccountInfoUpdated() once
     // downloaded).
-    for (gaia::ListedAccount account :
-         accounts_in_cookie_jar_info.signed_in_accounts) {
+    for (const gaia::ListedAccount& account :
+         accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
       UpdateAnyAccount(
           identity_manager_->FindExtendedAccountInfoByAccountId(account.id));
     }

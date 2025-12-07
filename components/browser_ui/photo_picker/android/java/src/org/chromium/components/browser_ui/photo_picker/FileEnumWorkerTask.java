@@ -10,13 +10,14 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.MimeTypeFilter;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -26,7 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /** A worker task to enumerate image files on disk. */
-class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
+@NullMarked
+class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
     // A tag for logging error messages.
     private static final String TAG = "PhotoPicker";
 
@@ -37,16 +39,16 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
          *
          * @param files The list of images, or null if the function fails.
          */
-        void filesEnumeratedCallback(List<PickerBitmap> files);
+        void filesEnumeratedCallback(@Nullable List<PickerBitmap> files);
     }
 
     private final WindowAndroid mWindowAndroid;
 
     // The callback to use to communicate the results.
-    private FilesEnumeratedCallback mCallback;
+    private final FilesEnumeratedCallback mCallback;
 
     // The filter to apply to the list.
-    private MimeTypeFilter mFilter;
+    private final MimeTypeFilter mFilter;
 
     // Whether any image MIME types were requested.
     private boolean mIncludeImages;
@@ -55,7 +57,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
     private boolean mIncludeVideos;
 
     // The ContentResolver to use to retrieve image metadata from disk.
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The camera directory under DCIM.
     private static final String SAMPLE_DCIM_SOURCE_SUB_DIRECTORY = "Camera";
@@ -68,7 +70,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * @param filter The file filter to apply to the list.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      */
-    public FileEnumWorkerTask(
+    FileEnumWorkerTask(
             WindowAndroid windowAndroid,
             FilesEnumeratedCallback callback,
             MimeTypeFilter filter,
@@ -101,18 +103,14 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * @return A sorted list of images (by last-modified first).
      */
     @Override
-    protected List<PickerBitmap> doInBackground() {
+    protected @Nullable List<PickerBitmap> doInBackground() {
         ThreadUtils.assertOnBackgroundThread();
 
         if (isCancelled()) return null;
 
         List<PickerBitmap> pickerBitmaps = new ArrayList<>();
 
-        // The DATA column is deprecated in the Android Q SDK. Replaced by relative_path.
-        String directoryColumnName =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                        ? "relative_path"
-                        : MediaStore.Files.FileColumns.DATA;
+        final String directoryColumnName = "relative_path";
         final String[] selectColumns = {
             MediaStore.Files.FileColumns._ID,
             MediaStore.Files.FileColumns.DATE_ADDED,
@@ -159,15 +157,6 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
         // On some devices, such as Samsung and Redmi, the Screenshots folder is located under
         // DCIM/Screenshots, as opposed to DCIM/Pictures/Screenshots.
         String screenshotsDir = Environment.DIRECTORY_DCIM + "/Screenshots";
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            cameraDir = Environment.getExternalStoragePublicDirectory(cameraDir).toString();
-            picturesDir = Environment.getExternalStoragePublicDirectory(picturesDir).toString();
-            moviesDir = Environment.getExternalStoragePublicDirectory(moviesDir).toString();
-            downloadsDir = Environment.getExternalStoragePublicDirectory(downloadsDir).toString();
-            restoredDir = Environment.getExternalStoragePublicDirectory(restoredDir).toString();
-            screenshotsDir =
-                    Environment.getExternalStoragePublicDirectory(screenshotsDir).toString();
-        }
 
         String[] whereArgs =
                 new String[] {
@@ -241,7 +230,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * @param files The resulting list of files on disk.
      */
     @Override
-    protected void onPostExecute(List<PickerBitmap> files) {
+    protected void onPostExecute(@Nullable List<PickerBitmap> files) {
         if (isCancelled()) {
             return;
         }
@@ -253,7 +242,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * Creates a cursor containing the image files to show. Can be overridden in tests to provide
      * fake data.
      */
-    protected Cursor createImageCursor(
+    protected @Nullable Cursor createImageCursor(
             Uri contentUri,
             String[] selectColumns,
             String whereClause,

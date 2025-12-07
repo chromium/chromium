@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/socket/tcp_client_socket.h"
@@ -60,8 +60,8 @@ class WebSocket {
 
   void Read();
   void OnRead(bool read_again, int code);
-  void OnReadDuringHandshake(const char* data, int len);
-  void OnReadDuringOpen(const char* data, int len);
+  void OnReadDuringHandshake(base::span<const uint8_t> data_span);
+  void OnReadDuringOpen(base::span<uint8_t> data_span);
 
   void InvokeConnectCallback(int code);
   void Close(int code);

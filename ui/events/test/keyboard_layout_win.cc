@@ -18,6 +18,8 @@ namespace ui {
 // https://msdn.microsoft.com/en-us/library/windows/desktop/dd318693(v=vs.85).aspx
 PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
   switch (layout) {
+    case KEYBOARD_LAYOUT_ARABIC:
+      return LoadKeyboardLayout(L"00000401", KLF_ACTIVATE);
     case KEYBOARD_LAYOUT_ENGLISH_US:
       return LoadKeyboardLayout(L"00000409", KLF_ACTIVATE);
     case KEYBOARD_LAYOUT_FRENCH:
@@ -34,8 +36,7 @@ PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
       return LoadKeyboardLayout(L"00000419", KLF_ACTIVATE);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 PlatformKeyboardLayout ScopedKeyboardLayout::GetActiveLayout() {

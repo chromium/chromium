@@ -3,27 +3,26 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/openscreen/network_service_quic_packet_writer.h"
-#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
 #include <utility>
 
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 
 namespace {
 
-const quic::QuicIpAddress kValidIPAddress(quic::QuicIpAddress::Loopback4());
+const quiche::QuicheIpAddress kValidIPAddress(
+    quiche::QuicheIpAddress::Loopback4());
 const quic::QuicSocketAddress kValidSocketAddress(kValidIPAddress, 80);
 
 const net::Error kFailureErrorCode = net::Error::ERR_CONNECTION_CLOSED;
@@ -61,10 +60,10 @@ struct TestPacketWriter {
   void SetSendToCallbackError(int error_code) {
     EXPECT_CALL(*transport, SendTo(_, _, _))
         .WillOnce(WithArg<2>(
-            Invoke([error_code](base::OnceCallback<void(int32_t)> callback) {
+            [error_code](base::OnceCallback<void(int32_t)> callback) {
               std::move(callback).Run(error_code);
               return net::Error::OK;
-            })));
+            }));
   }
 
   StrictMock<MockDelegate> delegate;
@@ -235,11 +234,11 @@ TEST(NetworkServiceQuicPacketWriterTest, TooManyPacketsCausesWriteBlockage) {
   // Store the write complete callbacks for calling later.
   std::vector<base::OnceCallback<void(int32_t)>> callbacks;
   EXPECT_CALL(*test_writer.transport, SendTo(_, _, _))
-      .WillRepeatedly(WithArg<2>(
-          Invoke([&callbacks](base::OnceCallback<void(int32_t)> callback) {
+      .WillRepeatedly(
+          WithArg<2>([&callbacks](base::OnceCallback<void(int32_t)> callback) {
             callbacks.push_back(std::move(callback));
             return net::Error::OK;
-          })));
+          }));
 
   EXPECT_CALL(test_writer.delegate, OnWriteUnblocked());
 

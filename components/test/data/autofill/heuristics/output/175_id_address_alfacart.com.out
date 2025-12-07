@@ -7,4 +7,3 @@ ADDRESS_HOME_DEPENDENT_LOCALITY | listDistrict | Kecamatan * |  | txtAddAddressN
 UNKNOWN_TYPE | listVillage | Kelurahan * |  | txtAddAddressNewAddress_1
 ADDRESS_HOME_STREET_ADDRESS | txtAddressNewAddress | Alamat * |  | txtAddAddressNewAddress_1
 ADDRESS_HOME_ZIP | txtPostalCodeNewAddress | Kode pos * |  | txtAddAddressNewAddress_1
-UNKNOWN_TYPE | isDelivery | Atur Sebagai Default Pengiriman | on | txtAddAddressNewAddress_1

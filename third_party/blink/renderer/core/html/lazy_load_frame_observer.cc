@@ -9,7 +9,6 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -87,8 +86,7 @@ int GetLazyLoadingFrameMarginPx(const Document& document) {
     case WebEffectiveConnectionType::kType4G:
       return settings->GetLazyLoadingFrameMarginPx4G();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -117,30 +115,16 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
   lazy_load_request_info_ =
       std::make_unique<LazyLoadRequestInfo>(resource_request, frame_load_type);
 
-  if (RuntimeEnabledFeatures::LazyLoadScrollMarginIframeEnabled()) {
-    lazy_load_intersection_observer_ = IntersectionObserver::Create(
-        element_->GetDocument(),
-        WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
-                           WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
-        IntersectionObserver::Params{
-            .scroll_margin = {Length::Fixed(
-                GetLazyLoadingFrameMarginPx(element_->GetDocument()))},
-            .thresholds = {std::numeric_limits<float>::min()},
-        });
-  } else {
-    lazy_load_intersection_observer_ = IntersectionObserver::Create(
-        element_->GetDocument(),
-        WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
-                           WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
-        IntersectionObserver::Params{
-            .margin = {Length::Fixed(
-                GetLazyLoadingFrameMarginPx(element_->GetDocument()))},
-            .thresholds = {std::numeric_limits<float>::min()},
-        });
-  }
-
+  lazy_load_intersection_observer_ = IntersectionObserver::Create(
+      element_->GetDocument(),
+      BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
+                    WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+      IntersectionObserver::Params{
+          .scroll_margin = {Length::Fixed(
+              GetLazyLoadingFrameMarginPx(element_->GetDocument()))},
+          .thresholds = {std::numeric_limits<float>::min()},
+      });
   lazy_load_intersection_observer_->observe(element_);
 }
 

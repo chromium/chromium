@@ -68,3 +68,24 @@ message Vault {
     ChromeOsMetadata chrome_os_metadata = 11;
   }
 }
+
+enum UseCase {
+  USE_CASE_UNSPECIFIED = 0;
+  CHROME_DESKTOP_GPM_PIN_SYNC = 13;
+}
+
+// The response listing all the vaults belonging to the client.
+message ListVaultsResponse {
+  // The vaults belonging to the client making the request.
+  // Note that the raw recovery and application key data, but not their metadata
+  // such as names and corresponding public keys, are removed from the response.
+  // The vaults are returned in the reverse order of their updating
+  // (ie, the first vault is the most recently updated vault).
+  // Since the updating time of a vault is considered in terms of its keys'
+  // enrollment, first come the vaults containing keys, the vaults without keys
+  // trailing the list.
+  repeated Vault vaults = 1;
+
+  // The token identifying the next page to be retrieved.
+  string next_page_token = 2;
+}

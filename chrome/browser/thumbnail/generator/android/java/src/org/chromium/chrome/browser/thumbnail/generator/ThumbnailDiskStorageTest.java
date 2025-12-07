@@ -45,7 +45,7 @@ public class ThumbnailDiskStorageTest {
     private TestThumbnailDiskStorage mTestThumbnailDiskStorage;
 
     private static class TestThumbnailRequest implements ThumbnailProvider.ThumbnailRequest {
-        private String mContentId;
+        private final String mContentId;
 
         public TestThumbnailRequest(String contentId) {
             mContentId = contentId;
@@ -78,7 +78,7 @@ public class ThumbnailDiskStorageTest {
 
     private static class TestThumbnailDiskStorage extends ThumbnailDiskStorage {
         // Incremented when adding an existing entry and trimming. Accessed by test and UI threads.
-        public AtomicInteger removeCount = new AtomicInteger();
+        public final AtomicInteger removeCount = new AtomicInteger();
 
         public TestThumbnailDiskStorage(TestThumbnailGenerator thumbnailGenerator) {
             super(new ThumbnailStorageDelegate() {}, thumbnailGenerator, TEST_MAX_CACHE_BYTES);
@@ -104,8 +104,7 @@ public class ThumbnailDiskStorageTest {
         public Pair<String, Integer> getMostRecentEntry() {
             if (getCacheCount() <= 0) return null;
 
-            ArrayList<Pair<String, Integer>> list =
-                    new ArrayList<Pair<String, Integer>>(sDiskLruCache);
+            ArrayList<Pair<String, Integer>> list = new ArrayList<>(sDiskLruCache);
             return list.get(list.size() - 1);
         }
     }

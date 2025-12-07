@@ -25,15 +25,11 @@ void GenQueriesEXT(GLsizei n, GLuint* queries) override;
 
 void DeleteQueriesEXT(GLsizei n, const GLuint* queries) override;
 
-void QueryCounterEXT(GLuint id, GLenum target) override;
-
 void BeginQueryEXT(GLenum target, GLuint id) override;
 
 void EndQueryEXT(GLenum target) override;
 
 void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) override;
-
-void GetQueryObjectui64vEXT(GLuint id, GLenum pname, GLuint64* params) override;
 
 void LoseContextCHROMIUM(GLenum current, GLenum other) override;
 

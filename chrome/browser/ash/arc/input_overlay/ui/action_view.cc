@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
@@ -47,13 +48,6 @@ void ActionView::OnContentBoundsSizeChanged() {
 }
 
 void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
-  DCHECK(mode != DisplayMode::kEducation && mode != DisplayMode::kMenu &&
-         mode != DisplayMode::kPreMenu);
-  if (mode == DisplayMode::kEducation || mode == DisplayMode::kMenu ||
-      mode == DisplayMode::kPreMenu) {
-    return;
-  }
-
   // Set display mode for ActionLabel first and then other components update the
   // layout according to ActionLabel.
   if (!editing_label) {
@@ -91,32 +85,8 @@ void ActionView::SetPositionFromCenterPosition(
   SetPosition(gfx::Point(left, top));
 }
 
-void ActionView::ShowErrorMsg(std::string_view message,
-                              ActionLabel* editing_label,
-                              bool ax_annouce) {
-  display_overlay_controller_->AddEditMessage(message, MessageType::kError);
-  SetDisplayMode(DisplayMode::kEditedError, editing_label);
-  if (ax_annouce) {
-    GetViewAccessibility().AnnounceText(base::UTF8ToUTF16(message));
-  } else {
-    editing_label->GetViewAccessibility().SetDescription(
-        base::UTF8ToUTF16(message));
-  }
-}
-
-void ActionView::ShowInfoMsg(std::string_view message,
-                             ActionLabel* editing_label) {
-  display_overlay_controller_->AddEditMessage(message, MessageType::kInfo);
-}
-
 void ActionView::ShowFocusInfoMsg(std::string_view message, views::View* view) {
-  display_overlay_controller_->AddEditMessage(message,
-                                              MessageType::kInfoLabelFocus);
   view->GetViewAccessibility().SetDescription(base::UTF8ToUTF16(message));
-}
-
-void ActionView::RemoveMessage() {
-  display_overlay_controller_->RemoveEditMessage();
 }
 
 void ActionView::ChangeInputBinding(
@@ -125,46 +95,7 @@ void ActionView::ChangeInputBinding(
     std::unique_ptr<InputElement> input_element) {
   display_overlay_controller_->OnInputBindingChange(action,
                                                     std::move(input_element));
-  SetDisplayMode(DisplayMode::kEditedSuccess, action_label);
-}
-
-void ActionView::OnResetBinding() {
-  if (const auto& input_binding = action_->GetCurrentDisplayedInput();
-      !IsInputBound(input_binding) ||
-      input_binding == *action_->current_input()) {
-    return;
-  }
-
-  auto input_element =
-      std::make_unique<InputElement>(*(action_->current_input()));
-  display_overlay_controller_->OnInputBindingChange(action_,
-                                                    std::move(input_element));
-}
-
-bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
-                                    ActionLabel* editing_label) {
-  if ((!action_->support_modifier_key() &&
-       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
-      IsReservedDomCode(code)) {
-    ShowErrorMsg(l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS),
-                 editing_label, /*ax_annouce=*/true);
-    return true;
-  }
-
-  return false;
-}
-
-void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
-  if (labels_.size() == 1u) {
-    return;
-  }
-
-  for (arc::input_overlay::ActionLabel* label : labels_) {
-    if (label == child) {
-      continue;
-    }
-    label->OnSiblingUpdateFocus(focus);
-  }
+  SetDisplayMode(DisplayMode::kEdit, action_label);
 }
 
 void ActionView::RemoveNewState() {
@@ -213,13 +144,7 @@ void ActionView::OnDraggingCallback() {
 }
 
 void ActionView::OnMouseDragEndCallback() {
-  action_->PrepareToBindPosition(GetTouchCenterInWindow());
-  // "Restore to default" and "Cancel" functions are removed for Beta version,
-  // so the position change is applied immediately after change.
-  if (IsBeta()) {
-    action_->BindPending();
-  }
-
+  action_->BindPosition(GetTouchCenterInWindow());
   display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
       /*is_visible=*/true);
 
@@ -230,13 +155,7 @@ void ActionView::OnMouseDragEndCallback() {
 }
 
 void ActionView::OnGestureDragEndCallback() {
-  action_->PrepareToBindPosition(GetTouchCenterInWindow());
-  // "Restore to default" and "Cancel" functions are removed for Beta version,
-  // so the position change is applied immediately after change.
-  if (IsBeta()) {
-    action_->BindPending();
-  }
-
+  action_->BindPosition(GetTouchCenterInWindow());
   display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
       /*is_visible=*/true);
 
@@ -251,12 +170,7 @@ void ActionView::OnKeyPressedCallback() {
 }
 
 void ActionView::OnKeyReleasedCallback() {
-  action_->PrepareToBindPosition(GetTouchCenterInWindow());
-  // "Restore to default" and "Cancel" functions are removed for Beta version,
-  // so the position change is applied immediately after change.
-  if (IsBeta()) {
-    action_->BindPending();
-  }
+  action_->BindPosition(GetTouchCenterInWindow());
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,

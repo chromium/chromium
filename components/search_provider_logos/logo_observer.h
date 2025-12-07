@@ -12,7 +12,7 @@ namespace search_provider_logos {
 // Receives updates when the search provider's logo is available.
 class LogoObserver {
  public:
-  virtual ~LogoObserver() {}
+  virtual ~LogoObserver() = default;
 
   // Called when the cached logo is available and possibly when a freshly
   // downloaded logo is available. |logo| will be NULL if no logo is available.

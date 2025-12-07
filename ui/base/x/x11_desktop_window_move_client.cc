@@ -4,6 +4,7 @@
 
 #include "ui/base/x/x11_desktop_window_move_client.h"
 
+#include "base/functional/callback_helpers.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,7 +35,7 @@ bool X11DesktopWindowMoveClient::RunMoveLoop(bool can_grab_pointer,
                                              const gfx::Vector2d& drag_offset) {
   window_offset_ = drag_offset;
   return move_loop_.RunMoveLoop(can_grab_pointer, window_->GetLastCursor(),
-                                window_->GetLastCursor());
+                                window_->GetLastCursor(), base::DoNothing());
 }
 
 void X11DesktopWindowMoveClient::EndMoveLoop() {

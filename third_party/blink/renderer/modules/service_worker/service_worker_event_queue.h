@@ -68,15 +68,10 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
       base::OnceCallback<void(int /* event_id */,
                               mojom::blink::ServiceWorkerEventStatus)>;
 
-  using BeforeStartEventCallback =
-      base::RepeatingCallback<void(/*is_offline_event=*/bool)>;
-
-  ServiceWorkerEventQueue(BeforeStartEventCallback before_start_event_callback,
-                          base::RepeatingClosure idle_callback,
+  ServiceWorkerEventQueue(base::RepeatingClosure idle_callback,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
   // For testing.
-  ServiceWorkerEventQueue(BeforeStartEventCallback before_start_event_callback,
-                          base::RepeatingClosure idle_callback,
+  ServiceWorkerEventQueue(base::RepeatingClosure idle_callback,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           const base::TickClock* tick_clock);
   ~ServiceWorkerEventQueue();
@@ -101,12 +96,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
 
   // Similar to EnqueueNormal(), but enqueues a Pending event.
   void EnqueuePending(int event_id,
-                      StartCallback start_callback,
-                      AbortCallback abort_callback,
-                      std::optional<base::TimeDelta> custom_timeout);
-
-  // Similar to EnqueueNormal(), but enqueues an Offline event.
-  void EnqueueOffline(int event_id,
                       StartCallback start_callback,
                       AbortCallback abort_callback,
                       std::optional<base::TimeDelta> custom_timeout);
@@ -164,11 +153,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
       // signalling that the browser decided not to terminate the
       // worker.
       Pending,
-      // An offline event. ServiceWorkerEventQueue never dispatches offline
-      // events while non-offfline events are being dispatched, and vice-versa.
-      // An offline event is only used in offline-capability-check fetch event
-      // dispatch, which will be added later.
-      Offline,
     };
 
     Event(int event_id,
@@ -189,19 +173,9 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
     std::optional<base::TimeDelta> custom_timeout;
   };
 
-  // Represents the type of the currently running events.
-  enum class RunningEventType {
-    kNone = 0,
-    kOnline,
-    kOffline,
-  };
-
   // Enqueues the event to |queue_|, and run events in the queue or sometimes
   // later synchronously, depending on the type of events.
   void EnqueueEvent(std::unique_ptr<Event> event);
-
-  // Returns true if we can start |event|.
-  bool CanStartEvent(const Event& event) const;
 
   // Starts a single event.
   void StartEvent(int event_id, std::unique_ptr<Event> event);
@@ -229,10 +203,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // True if the idle callback is scheduled to run.
   bool HasScheduledIdleCallback() const;
 
-  // Returns either of `queued_online_events_` or `queued_offline_events_` to be
-  // executed depending on the currently running event type.
-  std::map<int, std::unique_ptr<Event>>& GetActiveEventQueue();
-
   struct EventInfo {
     EventInfo(base::TimeTicks expiration_time,
               base::OnceCallback<void(mojom::blink::ServiceWorkerEventStatus)>
@@ -248,9 +218,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // For long standing event timeouts. This is used to look up an EventInfo
   // by event id.
   HashMap<int /* event_id */, std::unique_ptr<EventInfo>> all_events_;
-
-  // Callback which is run just before starting an event.
-  BeforeStartEventCallback before_start_event_callback_;
 
   // For idle timeouts. When there's no inflight event, this is scheduled to run
   // in |idle_delay_|.
@@ -279,20 +246,10 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   std::map<int /* event_id */, std::unique_ptr<Event>> queued_online_events_
       ALLOW_DISCOURAGED_TYPE("Needs to be ordered by event_id");
 
-  // Event queue to where offline events are enqueued. We use std::map as a task
-  // queue because it's ordered by the `event_id` and the entries can be
-  // effectively erased in random order.
-  std::map<int /* event_id */, std::unique_ptr<Event>> queued_offline_events_
-      ALLOW_DISCOURAGED_TYPE("Needs to be ordered by event_id");
-
   // Set to true during running ProcessEvents(). This is used for avoiding to
   // invoke |idle_callback_| or to re-enter ProcessEvents() when calling
   // ProcessEvents().
   bool processing_events_ = false;
-
-  // Type of the currently running events. kNone if inflight events do not
-  // exist.
-  RunningEventType running_event_type_ = RunningEventType::kNone;
 
   // The number of the living StayAwakeToken. See also class comments.
   int num_of_stay_awake_tokens_ = 0;

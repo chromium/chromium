@@ -2,6 +2,8 @@
 <b><p>Bold </b> Not bold</p>
 Also not bold.
 #errors
+(1,3): expected-doctype-but-got-start-tag
+(1,15): adoption-agency-1.3
 #document
 | <html>
 |   <head>
@@ -21,6 +23,12 @@ Also not bold."
 <p>Italic and red. </i> Red.</font> I should not be red.</p>
 <b>Bold <i>Bold and italic</b> Only Italic </i> Plain
 #errors
+(1,6): expected-doctype-but-got-start-tag
+(2,58): adoption-agency-1.3
+(3,67): unexpected-end-tag
+(4,23): adoption-agency-1.3
+(4,35): adoption-agency-1.3
+(5,30): adoption-agency-1.3
 #document
 | <html>
 |   <head>
@@ -73,6 +81,11 @@ Also not bold."
 <p>Second paragraph.</p></font>
 <b><p><i>Bold and Italic</b> Italic</p>
 #errors
+(1,6): expected-doctype-but-got-start-tag
+(2,38): unexpected-end-tag
+(4,28): adoption-agency-1.3
+(4,28): adoption-agency-1.3
+(4,39): unexpected-end-tag
 #document
 | <html>
 |   <head>
@@ -107,6 +120,10 @@ Also not bold."
 </dl>
 </html>
 #errors
+(1,6): expected-doctype-but-got-start-tag
+(4,4): end-tag-too-early
+(5,5): end-tag-too-early
+(6,7): expected-one-end-tag-but-got-another
 #document
 | <html>
 |   <head>
@@ -131,6 +148,10 @@ Also not bold."
 <label><a><div>Hello<div>World</div></a></label>  
 </body></html>
 #errors
+(1,6): expected-doctype-but-got-start-tag
+(2,40): adoption-agency-1.3
+(2,48): unexpected-end-tag
+(3,7): expected-one-end-tag-but-got-another
 #document
 | <html>
 |   <head>
@@ -150,6 +171,15 @@ Also not bold."
 #data
 <table><center> <font>a</center> <img> <tr><td> </td> </tr> </table>
 #errors
+(1,7): expected-doctype-but-got-start-tag
+(1,15): foster-parenting-start-tag
+(1,16): foster-parenting-character
+(1,22): foster-parenting-start-tag
+(1,23): foster-parenting-character
+(1,32): foster-parenting-end-tag
+(1,32): end-tag-too-early
+(1,33): foster-parenting-character
+(1,38): foster-parenting-start-tag
 #document
 | <html>
 |   <head>
@@ -173,6 +203,37 @@ Also not bold."
 #data
 <table><tr><p><a><p>You should see this text.
 #errors
+(1,7): expected-doctype-but-got-start-tag
+(1,14): unexpected-start-tag-implies-table-voodoo
+(1,17): unexpected-start-tag-implies-table-voodoo
+(1,20): unexpected-start-tag-implies-table-voodoo
+(1,20): closing-non-current-p-element
+(1,21): foster-parenting-character
+(1,22): foster-parenting-character
+(1,23): foster-parenting-character
+(1,24): foster-parenting-character
+(1,25): foster-parenting-character
+(1,26): foster-parenting-character
+(1,27): foster-parenting-character
+(1,28): foster-parenting-character
+(1,29): foster-parenting-character
+(1,30): foster-parenting-character
+(1,31): foster-parenting-character
+(1,32): foster-parenting-character
+(1,33): foster-parenting-character
+(1,34): foster-parenting-character
+(1,35): foster-parenting-character
+(1,36): foster-parenting-character
+(1,37): foster-parenting-character
+(1,38): foster-parenting-character
+(1,39): foster-parenting-character
+(1,40): foster-parenting-character
+(1,41): foster-parenting-character
+(1,42): foster-parenting-character
+(1,43): foster-parenting-character
+(1,44): foster-parenting-character
+(1,45): foster-parenting-character
+(1,45): eof-in-table
 #document
 | <html>
 |   <head>
@@ -196,6 +257,16 @@ Also not bold."
 <a></font><font></a>
 This page contains an insanely badly-nested tag sequence.
 #errors
+(1,7): expected-doctype-but-got-start-tag
+(3,8): unexpected-start-tag-implies-table-voodoo
+(3,16): unexpected-start-tag-implies-table-voodoo
+(4,6): unexpected-start-tag-implies-table-voodoo
+(4,6): unexpected character token in table (the newline)
+(5,7): unexpected-start-tag-implies-end-tag
+(6,4): unexpected p end tag
+(7,10): adoption-agency-1.3
+(7,20): adoption-agency-1.3
+(8,57): expected-closing-tag-but-got-eof
 #document
 | <html>
 |   <head>
@@ -240,6 +311,10 @@ nobr should have closed the div inside it implicitly. </b><pre>A pre tag outside
 </body>
 </html>
 #errors
+(1,6): expected-doctype-but-got-start-tag
+(3,56): adoption-agency-1.3
+(4,58): adoption-agency-1.3
+(5,7): expected-one-end-tag-but-got-another
 #document
 | <html>
 |   <head>

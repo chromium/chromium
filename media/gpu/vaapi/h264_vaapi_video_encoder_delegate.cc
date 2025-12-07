@@ -16,8 +16,12 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_bitrate_allocation.h"
@@ -68,6 +72,20 @@ constexpr int kChromaFormatIDC = 1;
 constexpr uint8_t kMinSupportedH264TemporalLayers = 2;
 constexpr uint8_t kMaxSupportedH264TemporalLayers = 3;
 
+// Maximum number of temporal layers supported by software bitrate controller.
+constexpr uint8_t kMaxSupportedH264TemporalLayersBySWBRC = 2;
+
+bool ShouldInsertPrefixNALU() {
+  // Insert Prefix NALU for temporal layer encoding in ChromeOS selphie.
+  // TODO(b/465812584): Enable this on all ChromeOS x86 devices.
+#if BUILDFLAG(IS_CHROMEOS)
+  static bool isSelphie = base::SysInfo::GetLsbReleaseBoard() == "selphie";
+  return isSelphie;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 template <typename VAEncMiscParam>
 VAEncMiscParam& AllocateMiscParameterBuffer(
     std::vector<uint8_t>& misc_buffer,
@@ -81,15 +99,16 @@ VAEncMiscParam& AllocateMiscParameterBuffer(
   return *reinterpret_cast<VAEncMiscParam*>(va_buffer->data);
 }
 
-void CreateVAEncRateControlParams(uint32_t bps,
-                                  uint32_t target_percentage,
-                                  uint32_t window_size,
-                                  uint32_t initial_qp,
-                                  uint32_t min_qp,
-                                  uint32_t max_qp,
-                                  uint32_t framerate,
-                                  uint32_t buffer_size,
-                                  std::vector<uint8_t> misc_buffers[3]) {
+void CreateVAEncRateControlParams(
+    uint32_t bps,
+    uint32_t target_percentage,
+    uint32_t window_size,
+    uint32_t initial_qp,
+    uint32_t min_qp,
+    uint32_t max_qp,
+    uint32_t framerate,
+    uint32_t buffer_size,
+    base::span<std::vector<uint8_t>, 3> misc_buffers) {
   auto& rate_control_param =
       AllocateMiscParameterBuffer<VAEncMiscParameterRateControl>(
           misc_buffers[0], VAEncMiscParameterTypeRateControl);
@@ -118,13 +137,27 @@ static void InitVAPictureH264(VAPictureH264* va_pic) {
   va_pic->flags = VA_PICTURE_H264_INVALID;
 }
 
-// Updates |frame_num| as spec section 7.4.3 and sets it to |pic.frame_num|.
-void UpdateAndSetFrameNum(H264Picture& pic, unsigned int& frame_num) {
-  if (pic.idr)
+// Updates |prev_ref_frame_num| as spec section 7.4.3 and sets frame_num to
+// |pic.frame_num|.
+void UpdatePrevRefFrameNumAndSetFrameNum(H264Picture& pic,
+                                         unsigned int& prev_ref_frame_num) {
+  unsigned int frame_num = 0;
+  if (pic.idr) {
+    prev_ref_frame_num = 0;
     frame_num = 0;
-  else if (pic.ref)
-    frame_num++;
-  DCHECK_LT(frame_num, kIDRPeriod);
+  } else {
+    frame_num = prev_ref_frame_num + 1;
+    if (pic.ref) {
+      prev_ref_frame_num = frame_num;
+    }
+  }
+  if (frame_num == kIDRPeriod) {
+    frame_num = 0;
+  }
+  if (prev_ref_frame_num == kIDRPeriod) {
+    prev_ref_frame_num = 0;
+  }
+
   pic.frame_num = frame_num;
 }
 
@@ -135,7 +168,7 @@ void UpdateAndSetFrameNum(H264Picture& pic, unsigned int& frame_num) {
 void UpdatePictureForTemporalLayerEncoding(
     const size_t num_layers,
     H264Picture& pic,
-    unsigned int& frame_num,
+    unsigned int& prev_ref_frame_num,
     std::optional<size_t>& ref_frame_idx,
     const unsigned int num_encoded_frames,
     const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0) {
@@ -163,7 +196,7 @@ void UpdatePictureForTemporalLayerEncoding(
   std::tie(pic.metadata_for_encoding.emplace(), pic.ref) =
       kFrameMetadata[num_layers - 2][num_encoded_frames % kTemporalLayerCycle];
 
-  UpdateAndSetFrameNum(pic, frame_num);
+  UpdatePrevRefFrameNumAndSetFrameNum(pic, prev_ref_frame_num);
 
   if (pic.idr)
     return;
@@ -193,7 +226,121 @@ scoped_refptr<H264Picture> GetH264Picture(
   return base::WrapRefCounted(
       reinterpret_cast<H264Picture*>(job.picture().get()));
 }
+
+std::optional<H264RateControlConfigRTC> CreateRateControlConfig(
+    const gfx::Size encode_size,
+    const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
+    const VideoBitrateAllocation& bitrate_allocation,
+    const size_t& num_temporal_layers) {
+  // Limit max delay for intra frame with HRD buffer size (500ms-1s for camera
+  // video, 1s-10s for desktop sharing).
+  constexpr base::TimeDelta kHRDBufferDelayCamera = base::Milliseconds(1000);
+  constexpr base::TimeDelta kHRDBufferDelayDisplay = base::Milliseconds(3000);
+  H264RateControlConfigRTC rc_cfg{};
+  // Coded width and heght.
+  rc_cfg.frame_size = encode_size;
+  // Maximum GOP duration in milliseconds. It is set to maximum value.
+  rc_cfg.gop_max_duration = base::TimeDelta::Max();
+
+  // Source frame rate.
+  rc_cfg.frame_rate_max = static_cast<float>(encode_params.framerate);
+  // Number of temopral layers.
+  rc_cfg.num_temporal_layers = num_temporal_layers;
+  // Type of the video content (camera or display).
+  rc_cfg.content_type = encode_params.content_type;
+  rc_cfg.ease_hrd_reduction = true;
+
+  // Fill temporal layers variables.
+  uint32_t bitrate_sum = 0;
+  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
+    bitrate_sum += bitrate_allocation.GetBitrateBps(0u, tid);
+    auto& layer_setting = rc_cfg.layer_settings.emplace_back();
+    layer_setting.avg_bitrate = bitrate_sum;
+    if (bitrate_allocation.GetMode() == Bitrate::Mode::kConstant) {
+      layer_setting.peak_bitrate = bitrate_sum;
+    } else {
+      layer_setting.peak_bitrate = bitrate_sum * 3 / 2;
+    }
+    base::TimeDelta buffer_delay;
+    if (rc_cfg.content_type ==
+        VideoEncodeAccelerator::Config::ContentType::kDisplay) {
+      buffer_delay = kHRDBufferDelayDisplay;
+      layer_setting.min_qp = kScreenMinQP;
+    } else {
+      buffer_delay = kHRDBufferDelayCamera;
+      layer_setting.min_qp = kMinQP;
+    }
+    layer_setting.max_qp = encode_params.max_qp;
+
+    base::CheckedNumeric<size_t> buffer_size(layer_setting.avg_bitrate);
+    buffer_size *= buffer_delay.InMilliseconds();
+    buffer_size /= base::Seconds(8).InMilliseconds();
+
+    if (!buffer_size.AssignIfValid(&layer_setting.hrd_buffer_size)) {
+      DVLOGF(1) << "Invalid size for HRD buffer";
+      return std::nullopt;
+    }
+    layer_setting.frame_rate = static_cast<float>(
+        encode_params.framerate / (1u << (num_temporal_layers - tid - 1)));
+  }
+  return std::make_optional<H264RateControlConfigRTC>(rc_cfg);
+}
+
+std::pair<int, H264NALU::Type> GetSliceNALHeaderInfo(const H264Picture& pic) {
+  // IDR:3, Non-IDR I slice:2, P slice:1, non ref frame: 0.
+  int nal_ref_idc = 0;
+  H264NALU::Type nalu_type = H264NALU::Type::kUnspecified;
+  if (pic.type == H264SliceHeader::kISlice) {
+    nal_ref_idc = pic.idr ? 3 : 2;
+    nalu_type = pic.idr ? H264NALU::kIDRSlice : H264NALU::kNonIDRSlice;
+  } else {
+    // B frames is not used, so this is P frame.
+    nal_ref_idc = pic.ref;
+    nalu_type = H264NALU::kNonIDRSlice;
+  }
+  return {nal_ref_idc, nalu_type};
+}
 }  // namespace
+
+std::unique_ptr<H264RateControlWrapper> H264RateControlWrapper::Create(
+    const H264RateControlConfigRTC& config) {
+  auto impl = H264RateCtrlRTC::Create(config);
+  if (!impl) {
+    DLOG(ERROR) << "Failed creating video H264RateCtrlRTC";
+    return nullptr;
+  }
+  return base::WrapUnique(new H264RateControlWrapper(std::move(impl)));
+}
+
+H264RateControlWrapper::H264RateControlWrapper() = default;
+
+H264RateControlWrapper::H264RateControlWrapper(
+    std::unique_ptr<H264RateCtrlRTC> impl)
+    : impl_(std::move(impl)) {}
+
+H264RateControlWrapper::~H264RateControlWrapper() = default;
+
+void H264RateControlWrapper::UpdateRateControl(
+    const H264RateControlConfigRTC& config) {
+  DCHECK(impl_);
+  impl_->UpdateRateControl(config);
+}
+
+H264RateCtrlRTC::FrameDropDecision H264RateControlWrapper::ComputeQP(
+    const H264FrameParamsRTC& frame_params) {
+  DCHECK(impl_);
+  return impl_->ComputeQP(frame_params);
+}
+
+int H264RateControlWrapper::GetQP() const {
+  return impl_->GetQP();
+}
+
+void H264RateControlWrapper::PostEncodeUpdate(
+    uint64_t encoded_frame_size,
+    const H264FrameParamsRTC& frame_params) {
+  impl_->PostEncodeUpdate(encoded_frame_size, frame_params);
+}
 
 H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : framerate(0),
@@ -211,6 +358,11 @@ H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
     : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
 H264VaapiVideoEncoderDelegate::~H264VaapiVideoEncoderDelegate() = default;
+
+void H264VaapiVideoEncoderDelegate::set_rate_ctrl_for_testing(
+    std::unique_ptr<H264RateControlWrapper> rate_ctrl) {
+  rate_ctrl_ = std::move(rate_ctrl);
+}
 
 bool H264VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
@@ -302,9 +454,10 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   bool submit_packed_sps = false;
   bool submit_packed_pps = false;
   bool submit_packed_slice = false;
+  bool support_packed_raw = false;
   if (!vaapi_wrapper_->GetSupportedPackedHeaders(
           config.output_profile, submit_packed_sps, submit_packed_pps,
-          submit_packed_slice)) {
+          submit_packed_slice, support_packed_raw)) {
     DVLOGF(1) << "Failed getting supported packed headers";
     return false;
   }
@@ -320,6 +473,17 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(2) << "Packed headers are not submitted to a driver";
   }
 
+  // Prefix NALU is generated in temporal layer encoding so the decoder side can
+  // know the temporal layer index from the NALU. This is only enabled when
+  // ShouldInsertPrefixNALU() is enabled. See the comment in the function.
+  submit_packed_prefix_nalu_ =
+      num_temporal_layers_ > 1 && ShouldInsertPrefixNALU();
+  if (submit_packed_prefix_nalu_ && !support_packed_raw) {
+    DVLOGF(1) << "The driver doesn't support Packed Header Raw data, it's "
+                 "necessary to support prefix NALU";
+    return false;
+  }
+
   UpdateSPS();
   UpdatePPS();
 
@@ -328,6 +492,30 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   // not the default (constant bitrate).
   curr_params_.bitrate_allocation =
       VideoBitrateAllocation(config.bitrate.mode());
+
+  auto initial_bitrate_allocation = AllocateBitrateForDefaultEncoding(config);
+
+  curr_params_.content_type = config.content_type;
+  curr_params_.framerate = framerate;
+
+  if (UseSoftwareRateController(config)) {
+    if (!rate_ctrl_) {
+      auto rc_config = CreateRateControlConfig(visible_size_, curr_params_,
+                                               initial_bitrate_allocation,
+                                               num_temporal_layers_);
+      if (!rc_config) {
+        DVLOGF(1) << "Failed creating rate control config";
+        return false;
+      }
+      rate_ctrl_ = H264RateControlWrapper::Create(*rc_config);
+    }
+    if (!rate_ctrl_) {
+      return false;
+    }
+  } else {
+    CHECK(!rate_ctrl_);
+  }
+
   return UpdateRates(AllocateBitrateForDefaultEncoding(config), framerate);
 }
 
@@ -348,6 +536,32 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return {visible_size_};
+}
+
+bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
+    const VideoEncodeAccelerator::Config& config) {
+  // Software bitrate controller is not supported on AMD backend,
+  // crbug.com/365106092.
+  const bool is_sw_bitrate_controller_supported =
+      VaapiWrapper::GetImplementationType() != VAImplementation::kMesaGallium;
+
+  uint8_t num_temporal_layers = 1;
+  if (config.HasTemporalLayer()) {
+    DCHECK(!config.spatial_layers.empty());
+    num_temporal_layers = config.spatial_layers[0].num_of_temporal_layers;
+  }
+  const bool is_sw_bitrate_controller_enabled =
+#if BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(kVaapiH264SWBitrateController);
+#else
+      false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  const bool is_constant_bitrate_mode =
+      config.bitrate.mode() == Bitrate::Mode::kConstant;
+
+  return is_sw_bitrate_controller_supported &&
+         num_temporal_layers <= kMaxSupportedH264TemporalLayersBySWBRC &&
+         is_sw_bitrate_controller_enabled && is_constant_bitrate_mode;
 }
 
 BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
@@ -392,11 +606,11 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   std::optional<size_t> ref_frame_index;
   if (num_temporal_layers_ > 1u) {
     UpdatePictureForTemporalLayerEncoding(num_temporal_layers_, *pic,
-                                          frame_num_, ref_frame_index,
+                                          prev_ref_frame_num_, ref_frame_index,
                                           num_encoded_frames_, ref_pic_list0_);
   } else {
     pic->ref = true;
-    UpdateAndSetFrameNum(*pic, frame_num_);
+    UpdatePrevRefFrameNumAndSetFrameNum(*pic, prev_ref_frame_num_);
   }
 
   pic->pic_order_cnt = num_encoded_frames_ * 2;
@@ -408,10 +622,28 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
             << " frame_num: " << pic->frame_num
             << " POC: " << pic->pic_order_cnt;
 
-  // TODO(b/195407733): Use a software bitrate controller and specify QP.
+  std::optional<int> qp;
+  if (rate_ctrl_) {
+    H264FrameParamsRTC frame_params{};
+    frame_params.temporal_layer_id =
+        pic->metadata_for_encoding
+            ? base::strict_cast<int>(pic->metadata_for_encoding->temporal_idx)
+            : 0;
+    frame_params.keyframe = encode_job.IsKeyframeRequested();
+    frame_params.timestamp = encode_job.timestamp();
+    if (rate_ctrl_->ComputeQP(frame_params) ==
+        H264RateCtrlRTC::FrameDropDecision::kDrop) {
+      CHECK(!encode_job.IsKeyframeRequested());
+      DVLOGF(3) << "Drop frame";
+      return PrepareEncodeJobResult::kDrop;
+    }
+    qp = rate_ctrl_->GetQP();
+    DVLOGF(4) << "qp=" << qp.value();
+  }
+
   if (!SubmitFrameParameters(encode_job, curr_params_, current_sps_,
-                             current_pps_, pic, ref_pic_list0_,
-                             ref_frame_index)) {
+                             current_pps_, pic, ref_pic_list0_, ref_frame_index,
+                             qp)) {
     DVLOGF(1) << "Failed submitting frame parameters";
     return PrepareEncodeJobResult::kFail;
   }
@@ -421,6 +653,15 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     // operation on the generated stream.
     if (!SubmitPackedHeaders(*packed_sps_, *packed_pps_)) {
       DVLOGF(1) << "Failed submitting keyframe headers";
+      return PrepareEncodeJobResult::kFail;
+    }
+  }
+
+  if (num_temporal_layers_ > 1 && submit_packed_prefix_nalu_) {
+    // It's necessary to submit packed prefix NALU header here so it's shown
+    // before the slice NALU in the stream.
+    if (!SubmitPackedPrefixNALU(*pic)) {
+      DVLOGF(1) << "Failed submitting prefix NALU";
       return PrepareEncodeJobResult::kFail;
     }
   }
@@ -436,6 +677,27 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   num_encoded_frames_++;
   num_encoded_frames_ %= kIDRPeriod;
   return PrepareEncodeJobResult::kSuccess;
+}
+
+bool H264VaapiVideoEncoderDelegate::SubmitPackedPrefixNALU(
+    const H264Picture& pic) {
+  CHECK_GT(num_temporal_layers_, 1);
+  CHECK(pic.metadata_for_encoding);
+  uint8_t temporal_id = pic.metadata_for_encoding->temporal_idx;
+  const auto [nal_ref_idc, nalu_type] = GetSliceNALHeaderInfo(pic);
+  std::vector<uint8_t> prefix_nalu =
+      BuildPrefixNALU(nal_ref_idc, nalu_type, temporal_id);
+
+  VAEncPackedHeaderParameterBuffer packed_prefix_nalu;
+  packed_prefix_nalu.type = VAEncPackedHeaderRawData;
+  packed_prefix_nalu.bit_length = prefix_nalu.size() * CHAR_BIT;
+  packed_prefix_nalu.has_emulation_bytes = 0;
+
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAEncPackedHeaderParameterBufferType, sizeof(packed_prefix_nalu),
+        &packed_prefix_nalu},
+       {VAEncPackedHeaderDataBufferType, prefix_nalu.size(),
+        prefix_nalu.data()}});
 }
 
 bool H264VaapiVideoEncoderDelegate::UpdateRates(
@@ -487,6 +749,16 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
   // changes must be affected for encoding. UpdateSPS()+SubmitFrameParameters()
   // shall apply them to an encoder properly.
   encoding_parameters_changed_ = previous_encoding_parameters_changed;
+
+  if (rate_ctrl_) {
+    auto rc_config = CreateRateControlConfig(
+        visible_size_, curr_params_, bitrate_allocation, num_temporal_layers_);
+    if (!rc_config) {
+      DVLOGF(1) << "Failed creating rate control config";
+      return false;
+    }
+    rate_ctrl_->UpdateRateControl(*rc_config);
+  }
   return true;
 }
 
@@ -514,7 +786,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       current_sps_.profile_idc = H264SPS::kProfileIDCHigh;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   H264SPS::GetLevelConfigFromProfileLevel(profile_, level_,
@@ -532,7 +804,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.max_num_ref_frames = curr_params_.max_num_ref_frames;
 
   current_sps_.frame_mbs_only_flag = true;
-  current_sps_.gaps_in_frame_num_value_allowed_flag = false;
+  current_sps_.gaps_in_frame_num_value_allowed_flag = true;
 
   DCHECK_GT(mb_width_, 0u);
   DCHECK_GT(mb_height_, 0u);
@@ -590,8 +862,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       current_sps_.cbr_flag[0] = false;
       break;
     case Bitrate::Mode::kExternal:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   current_sps_.initial_cpb_removal_delay_length_minus_1 =
       H264SPS::kDefaultInitialCPBRemovalDelayLength - 1;
@@ -646,20 +917,9 @@ void H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
     const VAEncSliceParameterBufferH264& slice_param,
     const H264Picture& pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   const bool is_idr = !!pic_param.pic_fields.bits.idr_pic_flag;
-  const bool is_ref = !!pic_param.pic_fields.bits.reference_pic_flag;
-  // IDR:3, Non-IDR I slice:2, P slice:1, non ref frame: 0.
-  size_t nal_ref_idc = 0;
-  H264NALU::Type nalu_type = H264NALU::Type::kUnspecified;
-  if (slice_param.slice_type == H264SliceHeader::kISlice) {
-    nal_ref_idc = is_idr ? 3 : 2;
-    nalu_type = is_idr ? H264NALU::kIDRSlice : H264NALU::kNonIDRSlice;
-  } else {
-    // B frames is not used, so this is P frame.
-    nal_ref_idc = is_ref;
-    nalu_type = H264NALU::kNonIDRSlice;
-  }
+
+  const auto [nal_ref_idc, nalu_type] = GetSliceNALHeaderInfo(pic);
   packed_slice_header.BeginNALU(nalu_type, nal_ref_idc);
 
   packed_slice_header.AppendUE(
@@ -740,7 +1000,8 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     const H264PPS& pps,
     scoped_refptr<H264Picture> pic,
     const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
-    const std::optional<size_t>& ref_frame_index) {
+    const std::optional<size_t>& ref_frame_index,
+    const std::optional<int>& qp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Bitrate bitrate = encode_params.bitrate_allocation.GetSumBitrate();
@@ -754,15 +1015,15 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     // we use the peak, because it exists for variable bitrates.
     bitrate_bps = bitrate.peak_bps();
     DCHECK_NE(bitrate.peak_bps(), 0u);
-    base::CheckedNumeric<uint32_t> checked_percentage =
-        base::CheckDiv(base::CheckMul<uint32_t>(bitrate.target_bps(), 100u),
+    base::CheckedNumeric<uint64_t> checked_percentage =
+        base::CheckDiv(base::CheckMul<uint64_t>(bitrate.target_bps(), 100u),
                        bitrate.peak_bps());
     if (!checked_percentage.AssignIfValid(&target_percentage)) {
       DVLOGF(1)
           << "Integer overflow while computing target percentage for bitrate.";
       return false;
     }
-    target_percentage = checked_percentage.ValueOrDefault(100u);
+    DVLOGF(3) << "Target percentage: " << target_percentage;
   }
   VAEncSequenceParameterBufferH264 seq_param = {};
 
@@ -880,25 +1141,32 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       slice_param.RefPicList0[j++] = va_pic_h264;
   }
 
-  std::vector<uint8_t> misc_buffers[3];
-  CreateVAEncRateControlParams(
-      bitrate_bps, target_percentage, encode_params.cpb_window_size_ms,
-      base::strict_cast<uint32_t>(pic_param.pic_init_qp),
-      base::strict_cast<uint32_t>(encode_params.min_qp),
-      base::strict_cast<uint32_t>(encode_params.max_qp),
-      encode_params.framerate,
-      base::strict_cast<uint32_t>(encode_params.cpb_size_bits), misc_buffers);
+  if (qp.has_value()) {
+    slice_param.slice_qp_delta = base::checked_cast<int8_t>(qp.value() - 26);
+  }
 
   std::vector<VaapiWrapper::VABufferDescriptor> va_buffers = {
       {VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
       {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param},
-      {VAEncSliceParameterBufferType, sizeof(slice_param), &slice_param},
-      {VAEncMiscParameterBufferType, misc_buffers[0].size(),
-       misc_buffers[0].data()},
-      {VAEncMiscParameterBufferType, misc_buffers[1].size(),
-       misc_buffers[1].data()},
-      {VAEncMiscParameterBufferType, misc_buffers[2].size(),
-       misc_buffers[2].data()}};
+      {VAEncSliceParameterBufferType, sizeof(slice_param), &slice_param}};
+
+  std::vector<uint8_t> misc_buffers[3];
+  if (!qp.has_value()) {
+    CHECK(!rate_ctrl_);
+    CreateVAEncRateControlParams(
+        bitrate_bps, target_percentage, encode_params.cpb_window_size_ms,
+        base::strict_cast<uint32_t>(pic_param.pic_init_qp),
+        base::strict_cast<uint32_t>(encode_params.min_qp),
+        base::strict_cast<uint32_t>(encode_params.max_qp),
+        encode_params.framerate,
+        base::strict_cast<uint32_t>(encode_params.cpb_size_bits), misc_buffers);
+    va_buffers.push_back({VAEncMiscParameterBufferType, misc_buffers[0].size(),
+                          misc_buffers[0].data()});
+    va_buffers.push_back({VAEncMiscParameterBufferType, misc_buffers[1].size(),
+                          misc_buffers[1].data()});
+    va_buffers.push_back({VAEncMiscParameterBufferType, misc_buffers[2].size(),
+                          misc_buffers[2].data()});
+  }
 
   H26xAnnexBBitstreamBuilder packed_slice_header;
   VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
@@ -913,7 +1181,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
                           &packed_slice_param_buffer});
     va_buffers.push_back({VAEncPackedHeaderDataBufferType,
                           packed_slice_header.BytesInBuffer(),
-                          packed_slice_header.data()});
+                          packed_slice_header.data().data()});
   }
 
   return vaapi_wrapper_->SubmitBuffers(va_buffers);
@@ -937,11 +1205,38 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
       {{VAEncPackedHeaderParameterBufferType, sizeof(packed_sps_param),
         &packed_sps_param},
        {VAEncPackedHeaderDataBufferType, packed_sps.BytesInBuffer(),
-        packed_sps.data()},
+        packed_sps.data().data()},
        {VAEncPackedHeaderParameterBufferType, sizeof(packed_pps_param),
         &packed_pps_param},
        {VAEncPackedHeaderDataBufferType, packed_pps.BytesInBuffer(),
-        packed_pps.data()}});
+        packed_pps.data().data()}});
+}
+
+void H264VaapiVideoEncoderDelegate::BitrateControlUpdate(
+    const BitstreamBufferMetadata& metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!rate_ctrl_) {
+    return;
+  }
+
+  H264FrameParamsRTC frame_params{};
+  if (metadata.h264) {
+    frame_params.temporal_layer_id =
+        static_cast<int>(metadata.h264->temporal_idx);
+  } else {
+    frame_params.temporal_layer_id = 0;
+  }
+  frame_params.keyframe = metadata.key_frame;
+  frame_params.timestamp = metadata.timestamp;
+
+  DVLOGF(4) << "temporal_idx="
+            << (metadata.h264 ? metadata.h264->temporal_idx : 0)
+            << ", encoded chunk size=" << metadata.payload_size_bytes
+            << ", timestamp=" << metadata.timestamp
+            << ", keyframe=" << metadata.key_frame;
+
+  CHECK_NE(metadata.payload_size_bytes, 0u);
+  rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 
 }  // namespace media

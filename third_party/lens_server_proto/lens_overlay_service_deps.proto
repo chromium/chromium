@@ -10,11 +10,14 @@ package lens;
 
 import "lens_overlay_client_context.proto";
 import "lens_overlay_cluster_info.proto";
+import "lens_overlay_deep_gleam_data.proto";
+import "lens_overlay_document.proto";
 import "lens_overlay_image_crop.proto";
 import "lens_overlay_image_data.proto";
 import "lens_overlay_interaction_request_metadata.proto";
 import "lens_overlay_overlay_object.proto";
 import "lens_overlay_request_id.proto";
+import "lens_overlay_request_type.proto";
 import "lens_overlay_text.proto";
 
 // Request context for a Lens Overlay request.
@@ -28,6 +31,13 @@ message LensOverlayRequestContext {
   reserved 1, 2;
 }
 
+// Context information about the viewport for the request.
+message ViewportRequestContext {
+  // Optional. Pdf page number the user is viewing for contextual search
+  // requests. Only sent with viewport requests on pdf documents.
+  int32 pdf_page_number = 1;
+}
+
 message LensOverlayObjectsRequest {
   // Required. Basic information and context for the request.
   LensOverlayRequestContext request_context = 1;
@@ -35,7 +45,54 @@ message LensOverlayObjectsRequest {
   // Required. Image Data to process.
   ImageData image_data = 3;
 
+  // Optional. Data payload of the request.
+  // TODO(b/359638436): Mark required when clients have migrated to use Payload
+  // field.
+  Payload payload = 4;
+
+  // Optional. Viewport context for contextual search viewport requests.
+  ViewportRequestContext viewport_request_context = 5;
+
   reserved 2;
+}
+
+message LensOverlayUploadChunkRequest {
+  // Required. Chunks of the same payload should have the same request
+  // context.
+  LensOverlayRequestContext request_context = 1;
+
+  // Optional. Debug options for the request.
+  ChunkDebugOptions debug_options = 6;
+
+  // Required. The id of the chunk. This should start from 0 for the first
+  // chunk and go up to (total_chunks - 1) in sequential chunk order.
+  int64 chunk_id = 3;
+
+  // Required. The bytes of the payload chunk to upload.
+  bytes chunk_bytes = 4;
+}
+
+message LensOverlayUploadChunkResponse {
+  // Debug metadata from the upload chunk response.
+  ChunkDebugMetadata debug_metadata = 2;
+}
+
+message ChunkDebugOptions {
+  // Required in first chunk request of the payload. Optional afterwards.
+  // Total number of chunks that will be uploaded to Lens server for the given
+  // payload.
+  int64 total_chunks = 1;
+  // Optional. When true, Lens server will return a repeated list of remaining
+  // chunk ids that it expects to receive to complete the payload. Should only
+  // be used for debugging purposes.
+  bool query_chunks = 2;
+}
+
+message ChunkDebugMetadata {
+  // Only populated if ChunkDebugOptions.query_chunks is true in the
+  // UploadChunk request. List of chunk ids that Lens server is expecting to
+  // complete the payload. Should only be used for debugging purposes.
+  repeated int64 remaining_chunks = 1;
 }
 
 message LensOverlayObjectsResponse {
@@ -45,10 +102,13 @@ message LensOverlayObjectsResponse {
   // Text.
   Text text = 3;
 
+  // Gleams.
+  repeated DeepGleamData deep_gleams = 4;
+
   // The cluster info.
   LensOverlayClusterInfo cluster_info = 7;
 
-  reserved 1, 4, 5, 6;
+  reserved 1, 5, 6;
 }
 
 message LensOverlayInteractionRequest {
@@ -63,7 +123,121 @@ message LensOverlayInteractionRequest {
 }
 
 message LensOverlayInteractionResponse {
-  optional string encoded_response = 3;
+  string encoded_response = 3;
 
-  reserved 1, 2;
+  Text text = 5;
+
+  reserved 1, 2, 4;
+}
+
+// Next ID: 11
+message Payload {
+  // Optional. The type of the request.
+  RequestType request_type = 6;
+
+  // Currently unset, use image_data in ObjectsRequest.
+  // TODO(b/359638436): Move ObjectsRequest clients onto Payload.ImageData.
+  ImageData image_data = 2;
+
+  // Data for non-image payloads. May be sent with or without an image in the
+  // image_data field. If content_data is set, content_type must also be set.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  bytes content_data = 3;
+
+  // The media type/MIME type of the data represented i content_data, e.g.
+  // "application/pdf". If content_type is set, content_data should also be set.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  string content_type = 4;
+
+  // The page url this request was made on.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  string page_url = 5;
+
+  // The partially parsed PDF document. Used to get early suggest signals. This
+  // is only set for REQUEST_TYPE_EARLY_PARTIAL_PDF.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  LensOverlayDocument partial_pdf_document = 7;
+
+  // Compression format of content_data. Currently only used for PDF data.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  CompressionType compression_type = 8;
+
+  // Optional. Options for reading stored chunks from state layer.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  StoredChunkOptions stored_chunk_options = 9;
+
+  // Non-image content to be sent to the Lens server.
+  Content content = 10;
+
+  reserved 1;
+}
+
+// Specifies the options for the server to use when reading stored chunks from
+// state layer during a streamed request.
+// Next ID: 4
+message StoredChunkOptions {
+  // When set to true, Lens will retrieve payload chunks uploaded to state
+  // layer via the UploadChunk API and use those to construct
+  // content_data. If this is set, then content_type and total_stored_chunks
+  // must also be set.
+  bool read_stored_chunks = 1;
+
+  // The total number of chunks the payload was split into. This is used to
+  // facilitate the reconstruction of content_data.
+  int64 total_stored_chunks = 2;
+
+  // Indicates that this is a retry for a previously failed attempt to read
+  // payload chunks from the server.
+  bool is_read_retry = 3;
+}
+
+// Possible compression types for content_data.
+enum CompressionType {
+  // Default value. File is not compressed.
+  UNCOMPRESSED = 0;
+  // ZSTD compression.
+  ZSTD = 1;
+}
+
+// Generic content message for all types of content that can be sent to Lens.
+// Next ID: 5
+message Content {
+  // Optional. Page url for the webpage.
+  string webpage_url = 1;
+  // Optional. Page title of the webpage.
+  string webpage_title = 4;
+  // Optional. Content items for the request.
+  repeated ContentData content_data = 2;
+  // The type of the request.
+  RequestType request_type = 3;
+}
+
+// Generic content data message for all types of content that can be sent to
+// Lens.
+// Next ID: 5
+message ContentData {
+  // The type of the content.
+  ContentType content_type = 1;
+  // The content data.
+  bytes data = 2;
+  // Optional. Compression format of content_data.
+  CompressionType compression_type = 3;
+  // Optional. Options for reading stored chunks from state layer.
+  StoredChunkOptions stored_chunk_options = 4;
+  // Possible types of the content.
+  // Next ID: 6
+  enum ContentType {
+    // Default value.
+    CONTENT_TYPE_UNSPECIFIED = 0;
+    // PDF content.
+    CONTENT_TYPE_PDF = 1;
+    // Inner text content.
+    CONTENT_TYPE_INNER_TEXT = 2;
+    // Inner HTML content.
+    CONTENT_TYPE_INNER_HTML = 3;
+    // Annotated page content.
+    CONTENT_TYPE_ANNOTATED_PAGE_CONTENT = 4;
+    // Early partial PDF content.
+    CONTENT_TYPE_EARLY_PARTIAL_PDF = 5;
+  }
 }

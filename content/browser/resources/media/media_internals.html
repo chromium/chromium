@@ -14,161 +14,172 @@ found in the LICENSE file.
 </head>
 
 <body>
-  <cr-tab-box hidden>
-    <div slot="tab">Players</div>
-    <div slot="tab">Audio</div>
-    <div slot="tab">Video Capture</div>
-    <div slot="tab">Audio Focus</div>
-    <div slot="tab">CDMs</div>
-    <div slot="panel" id="players">
-      <button id="save-log-button" title="Save all player logs into a file." style="display:none">Save log</button>
-      <button id="hide-players-button" title="Hide all players in the current view." stype="display:inline-block">Hide players</button>
-      <button id="copy-all-player-button">Copy all to clipboard</button>
-      <div id="list-wrapper">
+  <div id="main-container">
+    <div id="right-pane-toolbar">
+      <button id="players-tab-button" class="toolbar-button selected">Players</button>
+      <button id="audio-tab-button" class="toolbar-button">Audio</button>
+      <button id="video-capture-tab-button" class="toolbar-button">Video Capture</button>
+      <button id="audio-focus-tab-button" class="toolbar-button">Audio Focus</button>
+      <button id="cdms-tab-button" class="toolbar-button">CDMs</button>
+    </div>
+    <div id="content-container">
+      <div id="left-pane">
         <div id="player-list-wrapper">
-          <h2>Recent Players</h2>
+          <h2>Select a player</h2>
           <ul id="player-list" class="show-none-if-empty"></ul>
+          <div id="player-list-placeholder" class="placeholder-text" hidden>
+            No media player logs
+          </div>
+        </div>
+        <div id="left-pane-controls">
+          <button id="hide-players-button">Clear Players</button>
         </div>
       </div>
-      <div class="property-wrapper">
-        <h2>
-          Player Properties
-          <button class="copy-properties-button">Copy to clipboard</button>
-        </h2>
-        <table id="player-property-table">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div id="right-pane">
+        <div id="right-pane-content">
+          <div id="players-panel" class="panel">
+            <div id="player-placeholder" class="placeholder-text">
+              Select a player to view properties and events.
+            </div>
+            <div id="player-details-container">
+              <div id="player-details-header">
+                <h2 id="player-details-title">Player Properties</h2>
+                <div id="player-actions">
+                  <input id="filter-text" type="text" placeholder="Filter log...">
+                  <div class="action-buttons">
+                    <button id="copy-log-button">Copy All</button>
+                    <button id="save-log-button">Save Log</button>
+                    <button id="close-player-view-button">Close</button>
+                  </div>
+                </div>
+              </div>
+              <div id="player-details-content">
+                <table id="player-property-table">
+                  <thead>
+                    <tr>
+                      <th>Property</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div id="log-wrapper">
+                  <h2>Log</h2>
+                  <table id="log">
+                    <thead>
+                      <tr>
+                        <th class="timestamp">Timestamp</th>
+                        <th>Property</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+              <ul id="graphs"></ul>
+            </div>
+          </div>
+          <div id="audio-panel" class="panel" hidden>
+            <div id="audio-component-list-wrapper">
+              <h2>Audio</h2>
+              <h3>Input Controllers</h3>
+              <ul id="audio-input-controller-list" class="show-none-if-empty"></ul>
+              <h3>Output Controllers</h3>
+              <ul id="audio-output-controller-list" class="show-none-if-empty"></ul>
+              <h3>Output Streams</h3>
+              <ul id="audio-output-stream-list" class="show-none-if-empty"></ul>
+            </div>
+            <div>
+              <h2>General Information</h2>
+              <table id="general-audio-info-table">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="property-wrapper">
+              <h2>
+                <span id="audio-property-name"></span> Properties
+                <button class="copy-properties-button">Copy to clipboard</button>
+              </h2>
+              <table id="audio-property-table">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="video-capture-panel" class="panel" hidden>
+            <div id="video-capture-capabilities-wrapper">
+              <h2>
+                <span>Video Capture Device Capabilities</span>
+                <button id="video-capture-capabilities-copy-button">
+                  Copy to clipboard
+                </button>
+              </h2>
+              <table id="video-capture-capabilities-table">
+                <thead>
+                  <tr>
+                    <th>Device Name</th>
+                    <th>Formats</th>
+                    <th>Capture API</th>
+                    <th>Pan-Tilt-Zoom</th>
+                    <th>Device ID</th>
+                  </tr>
+                </thead>
+                <tbody id="video-capture-capabilities-tbody" class="show-none-if-empty"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="audio-focus-panel" class="panel" hidden>
+            <div id="list-wrapper">
+              <h2>Active Sessions</h2>
+              <ul id="audio-focus-session-list" class="show-none-if-empty"></ul>
+            </div>
+            <template id="audio-focus-session-row">
+              <li>
+                <label class="audio-focus-session">
+                  <span class="player-name"></span><br />
+                  <span class="player-frame"></span><br />
+                  <span class="player-desc"></span>
+                </label>
+              </li>
+            </template>
+          </div>
+          <div id="cdms-panel" class="panel" hidden>
+            <div id="list-wrapper">
+              <h2>Registered Content Decryption Modules</h2>
+              <ul class="cdm-info-list">
+                <li>Clear Key ("org.w3.clearkey") is always supported and not listed
+                  here.</li>
+                <li>Empty video codec profile list means we are not differentiating
+                  and assume all profiles are supported.</li>
+                <li>Codecs marked with "*" signals clear lead not supported.</li>
+              </ul>
+              <ul id="cdm-list" class="show-none-if-empty"></ul>
+            </div>
+            <template id="cdm-row">
+              <li class="cdm-item">
+                <table class="cdm-properties-table">
+                  <tbody>
+                  </tbody>
+                </table>
+              </li>
+            </template>
+          </div>
+        </div>
       </div>
-      <div id="log-wrapper">
-        <h2>
-          Log <input id="filter-text" type="text" placeholder="property filter">
-          <button class="copy-log-button">Copy to clipboard</button>
-        </h2>
-        <table id="log">
-          <thead>
-            <tr>
-              <th class="timestamp">Timestamp</th>
-              <th>Property</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <ul id="graphs"></ul>
     </div>
-    <div slot="panel" id="audio">
-      <button id="copy-all-audio-button">Copy all to clipboard</button>
-      <div>
-        <h2>General Information</h2>
-        <table id="general-audio-info-table">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div id="audio-component-list-wrapper">
-        <h2>Input Controllers</h2>
-        <ul id="audio-input-controller-list" class="show-none-if-empty"></ul>
-      </div>
-      <div id="audio-component-list-wrapper">
-        <h2>Output Controllers</h2>
-        <ul id="audio-output-controller-list" class="show-none-if-empty"></ul>
-      </div>
-      <div id="audio-component-list-wrapper">
-        <h2>Output Streams</h2>
-        <ul id="audio-output-stream-list" class="show-none-if-empty"></ul>
-      </div>
-      <div class="property-wrapper">
-        <h2>
-          <span id="audio-property-name"></span> Properties
-          <button class="copy-properties-button">Copy to clipboard</button>
-        </h2>
-        <table id="audio-property-table">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-    <div slot="panel" id="video-capture">
-      <div id="video-capture-capabilities-wrapper">
-        <h2>
-          <span>Video Capture Device Capabilities</span>
-          <button id="video-capture-capabilities-copy-button">
-            Copy to clipboard
-          </button>
-        </h2>
-        <table id="video-capture-capabilities-table">
-          <thead>
-            <tr>
-              <th>Device Name</th>
-              <th>Formats</th>
-              <th>Capture API</th>
-              <th>Pan-Tilt-Zoom</th>
-              <th>Device ID</th>
-            </tr>
-          </thead>
-          <tbody id="video-capture-capabilities-tbody" class="show-none-if-empty"></tbody>
-        </table>
-      </div>
-    </div>
-    <div slot="panel" id="audio-focus">
-      <div id="list-wrapper">
-        <h2>Active Sessions</h2>
-        <ul id="audio-focus-session-list" class="show-none-if-empty"></ul>
-      </div>
-      <template id="audio-focus-session-row">
-        <li>
-          <label class="audio-focus-session">
-            <span class="player-name"></span><br />
-            <span class="player-frame"></span><br />
-            <span class="player-desc"></span>
-          </label>
-        </li>
-      </template>
-    </div>
-    <div slot="panel" id="cdms">
-      <div id="list-wrapper">
-        <h2>Registered Content Decryption Modules</h2>
-        <ul>
-          <li>Clear Key ("org.w3.clearkey") is always supported and not listed
-            here.</li>
-          <li>Empty video codec profile list means we are not differentiating
-            and assume all profiles are supported.</li>
-          <li>Codecs marked with "*" signals clear lead not supported.</li>
-        </ul>
-        <ul id="cdm-list" class="show-none-if-empty"></ul>
-      </div>
-      <template id="cdm-row">
-        <li>
-          <label class="cdm">
-            <span class="key-system"></span><br />
-            <span class="robustness"></span><br />
-            <span class="name"></span><br />
-            <span class="version"></span><br />
-            <span class="path"></span><br />
-            <span class="capability-status"></span><br />
-            <span class="capability"></span><br />
-          </label>
-        </li>
-      </template>
-    </div>
-  </cr-tab-box>
+  </div>
   <script type="module" src="media_internals.js"></script>
 </body>
 </html>

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REDUCE_ACCEPT_LANGUAGE_BROWSER_REDUCE_ACCEPT_LANGUAGE_SERVICE_H_
 #define COMPONENTS_REDUCE_ACCEPT_LANGUAGE_BROWSER_REDUCE_ACCEPT_LANGUAGE_SERVICE_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"

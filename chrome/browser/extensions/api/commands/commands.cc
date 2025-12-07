@@ -7,14 +7,15 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/extensions/api/commands/command_service.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/extensions/commands/command_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
-base::Value::Dict CreateCommandValue(const extensions::Command& command,
-                                     bool active) {
+base::Value::Dict CreateCommandValue(const ui::Command& command, bool active) {
   base::Value::Dict result;
   result.Set("name", command.command_name());
   result.Set("description", command.description());
@@ -56,13 +57,13 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
     command_list.Append(CreateCommandValue(page_action, active));
   }
 
-  extensions::CommandMap named_commands;
+  ui::CommandMap named_commands;
   command_service->GetNamedCommands(extension_->id(),
                                     extensions::CommandService::ALL,
                                     extensions::CommandService::ANY_SCOPE,
                                     &named_commands);
 
-  for (extensions::CommandMap::const_iterator iter = named_commands.begin();
+  for (ui::CommandMap::const_iterator iter = named_commands.begin();
        iter != named_commands.end(); ++iter) {
     extensions::Command command = command_service->FindCommandByName(
         extension_->id(), iter->second.command_name());

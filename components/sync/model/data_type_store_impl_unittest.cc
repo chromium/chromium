@@ -253,7 +253,8 @@ TEST_P(DataTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
       base::BindLambdaForTesting(
           [&](std::unique_ptr<DataTypeStore::RecordList> record_list)
               -> std::optional<ModelError> {
-            return ModelError(FROM_HERE, "Preprocessing error");
+            return ModelError(FROM_HERE,
+                              syncer::ModelError::Type::kGenericTestError);
           }),
       base::BindLambdaForTesting([&](const std::optional<ModelError>& error) {
         EXPECT_TRUE(error);

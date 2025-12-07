@@ -13,13 +13,14 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -29,6 +30,7 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable_factory.h"
@@ -40,7 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #endif
 
@@ -73,7 +75,8 @@ const char kNonDefaultCharsetValue[] = "foo";
 const char kDefaultCharsetValue[] = "utf-8";
 const char kBrowserPrefName[] = "browser_pref";
 const char kBrowserPriorityPrefName[] = "browser_priority_pref";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kAlwaysSyncingPriorityPrefName[] = "always_syncing_priority_pref";
+#if BUILDFLAG(IS_CHROMEOS)
 const char kOsPrefName[] = "os_pref";
 const char kOsPriorityPrefName[] = "os_priority_pref";
 #endif
@@ -81,32 +84,36 @@ const char kOsPriorityPrefName[] = "os_priority_pref";
 // Assigning an id of 0 to all the test prefs.
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kStringPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {1, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kListPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {2, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kMergeableListPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone,
+     {3, syncer::PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kMergeableListWithRewriteOnUpdate}},
     {kMergeableDictPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone,
+     {4, syncer::PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kMergeableDict}},
     {kDefaultCharsetPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {5, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kBrowserPriorityPrefName,
-     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {6, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
     {kBrowserPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {7, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kBrowserPriorityPrefName,
-     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {8, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {kOsPrefName,
-     {0, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {9, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kOsPriorityPrefName,
-     {0, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {10, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
 #endif
+    {kAlwaysSyncingPriorityPrefName,
+     {11, syncer::PRIORITY_PREFERENCES,
+      PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+      MergeBehavior::kNone}},
 };
 
 // Searches for a preference matching `name` and, if specified,`change_type`,
@@ -122,13 +129,14 @@ std::optional<base::Value> FindValue(
         change.sync_data().GetClientTagHash() ==
             syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
       return base::JSONReader::Read(
-          change.sync_data().GetSpecifics().preference().value());
+          change.sync_data().GetSpecifics().preference().value(),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     }
   }
   return std::nullopt;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr DataTypeSet kAllPreferenceDataTypes = {
     syncer::PREFERENCES, syncer::PRIORITY_PREFERENCES, syncer::OS_PREFERENCES,
     syncer::OS_PRIORITY_PREFERENCES};
@@ -137,7 +145,7 @@ MATCHER_P(MatchesDataType, data_type, "") {
   const syncer::SyncChange& sync_change = arg;
   return Matches(data_type)(sync_change.sync_data().GetDataType());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
  public:
@@ -152,7 +160,8 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
     }
     if (fail_next_) {
       fail_next_ = false;
-      return syncer::ModelError(FROM_HERE, "Error");
+      return syncer::ModelError(FROM_HERE,
+                                syncer::ModelError::Type::kGenericTestError);
     }
     return std::nullopt;
   }
@@ -321,7 +330,8 @@ TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
       sync_data.GetSpecifics().preference());
   EXPECT_EQ(std::string(kStringPrefName), specifics.name());
 
-  std::optional<base::Value> value = base::JSONReader::Read(specifics.value());
+  std::optional<base::Value> value = base::JSONReader::Read(
+      specifics.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(*pref->GetValue(), *value);
 }
 
@@ -435,11 +445,9 @@ class PrefServiceSyncableMergeTest : public testing::Test {
                                              new TestingPrefStore,
                                              new TestingPrefStore,
                                              user_prefs_.get(),
-                                             standalone_browser_prefs_.get(),
                                              pref_registry_->defaults().get(),
                                              pref_notifier_),
             user_prefs_,
-            standalone_browser_prefs_,
             pref_registry_,
             client_,
             /*read_error_callback=*/base::DoNothing(),
@@ -520,8 +528,6 @@ class PrefServiceSyncableMergeTest : public testing::Test {
   scoped_refptr<TestingPrefStore> managed_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
   scoped_refptr<TestingPrefStore> user_prefs_ =
-      base::MakeRefCounted<TestingPrefStore>();
-  scoped_refptr<TestingPrefStore> standalone_browser_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
   scoped_refptr<TestPrefModelAssociatorClient> client_ =
       base::MakeRefCounted<TestPrefModelAssociatorClient>();
@@ -664,6 +670,41 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldIgnoreUpdatesToNotSyncablePrefs) {
       pref_sync_service_->IsPrefSyncedForTesting(kUnsyncedPreferenceName));
   EXPECT_THAT(GetPreferenceValue(kUnsyncedPreferenceName).GetString(),
               Eq(kUnsyncedPreferenceDefaultValue));
+}
+
+using PrefServiceSyncableMetricsTest = PrefServiceSyncableMergeTest;
+
+TEST_F(PrefServiceSyncableMetricsTest, RecordRemoteIncrementalChange) {
+  constexpr std::string_view kHistogramName =
+      "Sync.SyncablePrefIncomingIncrementalUpdate";
+
+  InitWithSyncDataTakeOutput({}, nullptr);
+
+  base::HistogramTester tester;
+
+  // Remote incremental updates.
+  syncer::SyncChangeList update;
+  update.push_back(MakeRemoteChange(kStringPrefName,
+                                    base::Value(base::Value::Type::STRING),
+                                    SyncChange::ACTION_DELETE));
+  update.push_back(MakeRemoteChange(kMergeableListPrefName,
+                                    base::Value(base::Value::Type::LIST),
+                                    SyncChange::ACTION_ADD));
+  update.push_back(MakeRemoteChange(kMergeableDictPrefName,
+                                    base::Value(base::Value::Type::DICT),
+                                    SyncChange::ACTION_UPDATE));
+
+  pref_sync_service_->ProcessSyncChanges(FROM_HERE, update);
+
+  // Updates for the three syncable prefs were recorded.
+  tester.ExpectTotalCount(kHistogramName, /*expected_count=*/3);
+  tester.ExpectBucketCount(kHistogramName,
+                           /*sample=*/1, /*expected_count=*/1);
+  tester.ExpectBucketCount(kHistogramName,
+                           /*sample=*/3,
+                           /*expected_count=*/1);
+  tester.ExpectBucketCount(kHistogramName,
+                           /*sample=*/4, /*expected_count=*/1);
 }
 
 TEST_F(PrefServiceSyncableTest, FailModelAssociation) {
@@ -955,7 +996,7 @@ TEST_F(PrefServiceSyncableTest, DeletePreference) {
   EXPECT_TRUE(pref->IsDefaultValue());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The Chrome OS tests exercise pref model association that happens in the
 // constructor of PrefServiceSyncable. The tests must register prefs first,
 // then create the PrefServiceSyncable object. The tests live in this file
@@ -966,7 +1007,6 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
       : pref_registry_(base::MakeRefCounted<PrefRegistrySyncable>()),
         pref_notifier_(new PrefNotifierImpl),
         user_prefs_(base::MakeRefCounted<TestingPrefStore>()),
-        standalone_browser_prefs_(base::MakeRefCounted<TestingPrefStore>()),
         managed_prefs_(base::MakeRefCounted<TestingPrefStore>()),
         supervised_user_prefs_(base::MakeRefCounted<TestingPrefStore>()),
         extension_prefs_(base::MakeRefCounted<TestingPrefStore>()),
@@ -994,11 +1034,10 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
         std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
         std::make_unique<PrefValueStore>(
             managed_prefs_.get(), supervised_user_prefs_.get(),
-            extension_prefs_.get(), standalone_browser_prefs_.get(),
-            command_line_prefs_.get(), user_prefs_.get(),
-            recommended_prefs_.get(), pref_registry_->defaults().get(),
-            pref_notifier_),
-        user_prefs_, standalone_browser_prefs_, pref_registry_, client_,
+            extension_prefs_.get(), command_line_prefs_.get(),
+            user_prefs_.get(), recommended_prefs_.get(),
+            pref_registry_->defaults().get(), pref_notifier_),
+        user_prefs_, pref_registry_, client_,
         /*read_error_callback=*/base::DoNothing(),
         /*async=*/false);
   }
@@ -1048,7 +1087,6 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
   raw_ptr<PrefNotifierImpl, DanglingUntriaged>
       pref_notifier_;  // Owned by |prefs_|.
   scoped_refptr<TestingPrefStore> user_prefs_;
-  scoped_refptr<TestingPrefStore> standalone_browser_prefs_;
   scoped_refptr<TestingPrefStore> managed_prefs_;
   scoped_refptr<TestingPrefStore> supervised_user_prefs_;
   scoped_refptr<TestingPrefStore> extension_prefs_;
@@ -1309,53 +1347,7 @@ TEST_F(PrefServiceSyncableChromeOsTest, SyncedPrefObserver_EmptyCloud) {
 
   prefs_->RemoveSyncedPrefObserver(kOsPrefName, &observer);
 }
-
-TEST_F(PrefServiceSyncableChromeOsTest,
-       StandaloneBrowserPrefsNotLeakedInIncognito) {
-  CreatePrefService();
-
-  prefs_->SetStandaloneBrowserPref(kOsPrefName, base::Value("test_value"));
-
-  scoped_refptr<TestingPrefStore> incognito_extension_pref_store =
-      base::MakeRefCounted<TestingPrefStore>();
-
-  std::unique_ptr<PrefServiceSyncable> incognito_prefs =
-      prefs_->CreateIncognitoPrefService(incognito_extension_pref_store.get(),
-                                         /*persistent_pref_names=*/{});
-
-  // Verify that the primary profile has the `kOsPrefName` pref set.
-  {
-    const PrefService::Preference* main_profile_pref =
-        prefs_->FindPreference(kOsPrefName);
-    ASSERT_TRUE(main_profile_pref);
-    EXPECT_TRUE(main_profile_pref->IsStandaloneBrowserControlled());
-    EXPECT_EQ(*main_profile_pref->GetValue(), base::Value("test_value"));
-  }
-
-  // Verify that the incognito profile does not have the `kOsPrefName` pref set.
-  {
-    const PrefService::Preference* incognito_pref =
-        incognito_prefs->FindPreference(kOsPrefName);
-    ASSERT_TRUE(incognito_pref);
-    EXPECT_FALSE(incognito_pref->IsStandaloneBrowserControlled());
-    EXPECT_EQ(*incognito_pref->GetValue(), base::Value(""));
-  }
-
-  // Ensure this does not crash if it's accidentally called.
-  incognito_prefs->SetStandaloneBrowserPref(kOsPrefName,
-                                            base::Value("test_value"));
-  // Verify that standalone browser settings cannot be configured by the
-  // Incognito profile.
-  {
-    const PrefService::Preference* incognito_pref =
-        incognito_prefs->FindPreference(kOsPrefName);
-    ASSERT_TRUE(incognito_pref);
-    EXPECT_FALSE(incognito_pref->IsStandaloneBrowserControlled());
-    EXPECT_EQ(*incognito_pref->GetValue(), base::Value(""));
-  }
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
  public:
@@ -1375,7 +1367,8 @@ class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
 TEST_F(PrefServiceSyncableFactoryTest,
        ShouldCreateSyncServiceWithoutDualLayerStoreIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kEnablePreferencesAccountStorage);
+  feature_list.InitAndDisableFeature(
+      switches::kEnablePreferencesAccountStorage);
   auto pref_service =
       pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
   EXPECT_FALSE(static_cast<PrefModelAssociator*>(
@@ -1385,7 +1378,7 @@ TEST_F(PrefServiceSyncableFactoryTest,
       static_cast<PrefModelAssociator*>(
           pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
           ->IsUsingDualLayerUserPrefStoreForTesting());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(static_cast<PrefModelAssociator*>(
                    pref_service->GetSyncableService(syncer::OS_PREFERENCES))
                    ->IsUsingDualLayerUserPrefStoreForTesting());
@@ -1399,7 +1392,7 @@ TEST_F(PrefServiceSyncableFactoryTest,
 TEST_F(PrefServiceSyncableFactoryTest,
        ShouldCreateSyncServiceWithDualLayerStoreIfFeatureEnabled) {
   base::test::ScopedFeatureList feature_list(
-      syncer::kEnablePreferencesAccountStorage);
+      switches::kEnablePreferencesAccountStorage);
   auto pref_service =
       pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
   EXPECT_TRUE(static_cast<PrefModelAssociator*>(
@@ -1409,7 +1402,7 @@ TEST_F(PrefServiceSyncableFactoryTest,
       static_cast<PrefModelAssociator*>(
           pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
           ->IsUsingDualLayerUserPrefStoreForTesting());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(static_cast<PrefModelAssociator*>(
                   pref_service->GetSyncableService(syncer::OS_PREFERENCES))
                   ->IsUsingDualLayerUserPrefStoreForTesting());
@@ -1418,6 +1411,98 @@ TEST_F(PrefServiceSyncableFactoryTest,
           pref_service->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES))
           ->IsUsingDualLayerUserPrefStoreForTesting());
 #endif
+}
+
+class PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs
+    : public PrefServiceSyncableFactoryTest {
+ public:
+  PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs() {
+    feature_list_.InitWithFeatures(
+        {switches::kEnablePreferencesAccountStorage,
+         syncer::kSyncSupportAlwaysSyncingPriorityPreferences},
+        /*disabled_features=*/{});
+    pref_service_syncable_factory_.SetPrefModelAssociatorClient(client_);
+
+    // Register test prefs.
+    prefs_.registry()->RegisterStringPref(
+        kBrowserPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    prefs_.registry()->RegisterStringPref(
+        kBrowserPriorityPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+    prefs_.registry()->RegisterStringPref(
+        kAlwaysSyncingPriorityPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<TestPrefModelAssociatorClient> client_ =
+      base::MakeRefCounted<TestPrefModelAssociatorClient>();
+};
+
+TEST_F(PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs,
+       ShouldReadPriorityPrefsFromAccountStoreRightAway) {
+  account_prefs_->SetValue(kBrowserPrefName, base::Value("pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kBrowserPriorityPrefName,
+                           base::Value("priority_pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kAlwaysSyncingPriorityPrefName,
+                           base::Value("always_syncing_priority_pref"),
+                           /*flags=*/0);
+  // Simulate sync enabled in previous run.
+  {
+    std::unique_ptr<PrefServiceSyncable> pref_service =
+        pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+    syncer::TestSyncService sync_service;
+    sync_service.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kPreferences});
+    pref_service->OnSyncServiceInitialized(&sync_service);
+    sync_service.Shutdown();
+  }
+
+  // New browser run.
+  std::unique_ptr<PrefServiceSyncable> pref_service =
+      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+
+  // No OnSyncServiceInitialized() has been called yet. However, all the account
+  // pref values should be available immediately, even though the user selected
+  // types can't be queried from the SyncService yet.
+  EXPECT_THAT(pref_service->GetUserPrefValue(kBrowserPrefName),
+              testing::Pointee(testing::Eq("pref")));
+  EXPECT_THAT(pref_service->GetUserPrefValue(kBrowserPriorityPrefName),
+              testing::Pointee(testing::Eq("priority_pref")));
+  EXPECT_THAT(pref_service->GetUserPrefValue(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("always_syncing_priority_pref")));
+}
+
+// This is not a real-life scenario since account values cannot exist prior to
+// sync being enabled before.
+TEST_F(PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs,
+       ShouldReadPrefsAndAlwaysSyncingPriorityPrefsFromAccountStoreRightAway) {
+  // Fresh browser run.
+  account_prefs_->SetValue(kBrowserPrefName, base::Value("pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kBrowserPriorityPrefName,
+                           base::Value("priority_pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kAlwaysSyncingPriorityPrefName,
+                           base::Value("always_syncing_priority_pref"),
+                           /*flags=*/0);
+  std::unique_ptr<PrefServiceSyncable> pref_service =
+      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+
+  // No OnSyncServiceInitialized() has been called yet. Given that this is a
+  // fresh run, user selected types are not available till it can be queried
+  // from the SyncService. In such case, only regular priority prefs account
+  // values are not returned. Account values of non-priority prefs and the
+  // always syncing priority prefs are available right away.
+  EXPECT_THAT(pref_service->GetUserPrefValue(kBrowserPrefName),
+              testing::Pointee(testing::Eq("pref")));
+  EXPECT_THAT(pref_service->GetUserPrefValue(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("always_syncing_priority_pref")));
+  EXPECT_FALSE(pref_service->GetUserPrefValue(kBrowserPriorityPrefName));
 }
 
 }  // namespace

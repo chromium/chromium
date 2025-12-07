@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/public/common/mediastream/media_stream_mojom_traits.h"
 
+#include <array>
+#include <string>
+
 #include "base/base64.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -18,27 +19,26 @@
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
-#include <string>
-
 namespace {
 std::string GetRandomDeviceId() {
-  return base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(32)));
+  return base::HexEncodeLower(base::RandBytesAsVector(32));
 }
 
 std::string GetRandomOtherId() {
   // A valid UTF-8 string, but not a valid 32-byte value encoded as hex.
-  static constexpr char kLetters[] =
+  static constexpr std::array<char, 94> kLetters{
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
       "abcdefghijklmnopqrstuvwxyz"
       "01234567890"
-      "`~!@#$%^&*()_-=+[]{}\\|<>,./?'\"";
+      "`~!@#$%^&*()_-=+[]{}\\|<>,./?'\""};
 
   // The generated string should be kMaxDeviceIdSize bytes long, from
   // //third_party/blink/common/mediastream/media_stream_mojom_traits.cc,
   // so that adding a letter to it makes it too long.
   std::vector<char> result(500);
   for (char& c : result) {
-    c = kLetters[base::RandInt(0, sizeof(kLetters) - 1)];
+    c = kLetters[base::RandInt(
+        0, (kLetters.size() * sizeof(decltype(kLetters)::value_type)) - 1)];
   }
   return std::string(result.begin(), result.end());
 }
@@ -69,7 +69,7 @@ TEST(MediaStreamMojomTraitsTest,
     {
       auto failing_input = input;
       failing_input.device_ids.push_back(
-          base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(31))));
+          base::HexEncodeLower(base::RandBytesAsVector(31)));
       EXPECT_FALSE(
           mojo::test::SerializeAndDeserialize<blink::mojom::TrackControls>(
               failing_input, output));
@@ -79,7 +79,7 @@ TEST(MediaStreamMojomTraitsTest,
     {
       auto failing_input = input;
       failing_input.device_ids.push_back(
-          base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(33))));
+          base::HexEncodeLower(base::RandBytesAsVector(33)));
       EXPECT_FALSE(
           mojo::test::SerializeAndDeserialize<blink::mojom::TrackControls>(
               failing_input, output));
@@ -88,8 +88,7 @@ TEST(MediaStreamMojomTraitsTest,
     // Invalid characters
     {
       auto failing_input = input;
-      auto id =
-          base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(31)));
+      auto id = base::HexEncodeLower(base::RandBytesAsVector(31));
       id += "&*";
       failing_input.device_ids.push_back(id);
       EXPECT_FALSE(

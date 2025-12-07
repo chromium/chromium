@@ -28,6 +28,15 @@ import java.util.zip.ZipOutputStream;
 /** Base class for scripts that perform bytecode modifications on a jar file. */
 public abstract class ByteCodeRewriter {
     private static final String CLASS_FILE_SUFFIX = ".class";
+    private final ClassLoader mClassPathJarsClassLoader;
+
+    public ByteCodeRewriter(ClassLoader classPathJarsClassLoader) {
+        mClassPathJarsClassLoader = classPathJarsClassLoader;
+    }
+
+    public ClassLoader getClassLoader() {
+        return mClassPathJarsClassLoader;
+    }
 
     static String[] expandArgs(String[] args) throws IOException {
         if (args.length == 1 && args[0].startsWith("@")) {
@@ -108,7 +117,9 @@ public abstract class ByteCodeRewriter {
             if (!shouldRewriteClass(reader)) {
                 return false;
             }
-            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
+            ClassWriter writer =
+                    new CustomClassLoaderClassWriter(
+                            reader, ClassWriter.COMPUTE_FRAMES, getClassLoader());
             ClassVisitor classVisitor = getClassVisitorForClass(entry.getName(), writer);
             reader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
 
@@ -118,6 +129,21 @@ public abstract class ByteCodeRewriter {
             return true;
         } catch (Throwable e) {
             throw new RuntimeException("Failed when processing " + entry.getName(), e);
+        }
+    }
+
+    private static class CustomClassLoaderClassWriter extends ClassWriter {
+        private final ClassLoader mClassLoader;
+
+        public CustomClassLoaderClassWriter(
+                ClassReader reader, int flags, ClassLoader classLoader) {
+            super(reader, flags);
+            mClassLoader = classLoader;
+        }
+
+        @Override
+        protected ClassLoader getClassLoader() {
+            return mClassLoader;
         }
     }
 }

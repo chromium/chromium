@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 
 // This `SafetyCheckWarningReason` enum should match the enum of the same
 // name defined in the developer_private.idl and enums.xml files.
@@ -42,6 +44,9 @@ export enum UserAction {
   LEARN_MORE = 'Extensions.Settings.HostList.LearnMoreActivated',
 }
 
+// Duration of the toast shown.
+export const TOAST_DURATION_MS = 3000;
+
 // Values for logging Extension Safety Hub metrics.
 export const SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME =
     'SafeBrowsing.ExtensionSafetyHub.Trigger.Kept';
@@ -53,6 +58,13 @@ export const SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME =
 // `SafetyCheckWarningReason` defined in the `enums.xml` file.
 export const SAFETY_HUB_WARNING_REASON_MAX_SIZE = 7;
 
+// Histogram names for logging when an extension is uploaded to the user's
+// account.
+export const UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME =
+    `Extensions.UploadExtensionToAccount.ItemsListPage`;
+export const UPLOAD_EXTENSION_TO_ACCOUNT_DETAILS_VIEW_PAGE_HISTOGRAM_NAME =
+    `Extensions.UploadExtensionToAccount.DetailsViewPage`;
+
 /**
  * Returns true if the extension is enabled, including terminated
  * extensions.
@@ -63,11 +75,11 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
     case chrome.developerPrivate.ExtensionState.ENABLED:
     case chrome.developerPrivate.ExtensionState.TERMINATED:
       return true;
-    case chrome.developerPrivate.ExtensionState.BLACKLISTED:
+    case chrome.developerPrivate.ExtensionState.BLOCKLISTED:
     case chrome.developerPrivate.ExtensionState.DISABLED:
       return false;
     default:
-      assertNotReached();
+      assertNotReachedCase(state);
   }
 }
 
@@ -76,7 +88,8 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
  *     enabled.
  */
 export function userCanChangeEnablement(
-    item: chrome.developerPrivate.ExtensionInfo): boolean {
+    item: chrome.developerPrivate.ExtensionInfo,
+    mv2ExperimentStage: Mv2ExperimentStage): boolean {
   // User doesn't have permission.
   if (!item.userMayModify) {
     return false;
@@ -86,7 +99,14 @@ export function userCanChangeEnablement(
       item.disableReasons.suspiciousInstall ||
       item.disableReasons.updateRequired ||
       item.disableReasons.publishedInStoreRequired ||
-      item.disableReasons.blockedByPolicy) {
+      item.disableReasons.blockedByPolicy ||
+      item.disableReasons.unsupportedDeveloperExtension) {
+    return false;
+  }
+  // Item is disabled when MV2 deprecation is on 'unsupported' experiment stage
+  // and the extension is disabled due to unsupported manifest version.
+  if (item.disableReasons.unsupportedManifestVersion &&
+      mv2ExperimentStage === Mv2ExperimentStage.UNSUPPORTED) {
     return false;
   }
   // An item with dependent extensions can't be disabled (it would bork the
@@ -94,8 +114,8 @@ export function userCanChangeEnablement(
   if (item.dependentExtensions.length > 0) {
     return false;
   }
-  // Blacklisted can't be enabled, either.
-  if (item.state === chrome.developerPrivate.ExtensionState.BLACKLISTED) {
+  // Blocklisted can't be enabled, either.
+  if (item.state === chrome.developerPrivate.ExtensionState.BLOCKLISTED) {
     return false;
   }
 
@@ -120,7 +140,7 @@ export function getItemSource(item: chrome.developerPrivate.ExtensionInfo):
     case chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT:
       return SourceType.INSTALLED_BY_DEFAULT;
     default:
-      assertNotReached(item.location);
+      assertNotReachedCase(item.location);
   }
 }
 
@@ -141,7 +161,7 @@ export function getItemSourceString(source: SourceType): string {
       // chrome.developerPrivate.ExtensionInfo's |locationText| instead.
       return '';
     default:
-      assertNotReached();
+      assertNotReachedCase(source);
   }
 }
 
@@ -172,7 +192,7 @@ export function convertSafetyCheckReason(
       return SafetyCheckWarningReason.NO_PRIVACY_PRACTICE;
     }
     default: {
-      assertNotReached();
+      assertNotReachedCase(reason);
     }
   }
 }
@@ -228,8 +248,12 @@ export function getEnableToggleAriaLabel(
     case ExtensionType.EXTENSION:
     case ExtensionType.SHARED_MODULE:
       return extensionEnabled;
+    case ExtensionType.THEME:
+      assertNotReached('Don\'t send themes to the chrome://extensions page');
+    default:
+      assertNotReachedCase(
+          extensionsDataType, 'Item type is not App or Extension.');
   }
-  assertNotReached('Item type is not App or Extension.');
 }
 
 /**
@@ -287,4 +311,59 @@ export function getEnableToggleTooltipText(
       data.permissions.canAccessSiteData ?
           'enableToggleTooltipEnabledWithSiteAccess' :
           'enableToggleTooltipEnabled');
+}
+
+export function createDummyExtensionInfo():
+    chrome.developerPrivate.ExtensionInfo {
+  return {
+    commands: [],
+    isCommandRegistrationHandledExternally: false,
+    dependentExtensions: [],
+    description: '',
+    disableReasons: {
+      suspiciousInstall: false,
+      corruptInstall: false,
+      updateRequired: false,
+      publishedInStoreRequired: false,
+      blockedByPolicy: false,
+      reloading: false,
+      custodianApprovalRequired: false,
+      parentDisabledPermissions: false,
+      unsupportedManifestVersion: false,
+      unsupportedDeveloperExtension: false,
+    },
+    errorCollection: {isEnabled: false, isActive: false},
+    fileAccess: {isEnabled: false, isActive: false},
+    fileAccessPendingChange: false,
+    homePage: {url: '', specified: false},
+    iconUrl: '',
+    id: '',
+    incognitoAccess: {isEnabled: false, isActive: false},
+    userScriptsAccess: {isEnabled: false, isActive: false},
+    incognitoAccessPendingChange: false,
+    installWarnings: [],
+    location: chrome.developerPrivate.Location.UNKNOWN,
+    manifestErrors: [],
+    manifestHomePageUrl: '',
+    mustRemainInstalled: false,
+    name: '',
+    offlineEnabled: false,
+    permissions: {simplePermissions: [], canAccessSiteData: false},
+    runtimeErrors: [],
+    runtimeWarnings: [],
+    state: chrome.developerPrivate.ExtensionState.ENABLED,
+    type: chrome.developerPrivate.ExtensionType.EXTENSION,
+    updateUrl: '',
+    userMayModify: false,
+    version: '2.0',
+    views: [],
+    webStoreUrl: '',
+    showSafeBrowsingAllowlistWarning: false,
+    showAccessRequestsInToolbar: false,
+    safetyCheckWarningReason:
+        chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED,
+    isAffectedByMV2Deprecation: false,
+    didAcknowledgeMV2DeprecationNotice: false,
+    canUploadAsAccountExtension: false,
+  };
 }

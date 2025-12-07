@@ -13,25 +13,22 @@ enum FileSystemChangeType {
   "unknown",
 };
 
-[
-    Exposed=(DedicatedWorker,SharedWorker,Window),
-    SecureContext,
-    RuntimeEnabled=FileSystemObserver
-] interface FileSystemChangeRecord {
+dictionary FileSystemChangeRecord {
   // The handle that was passed to FileSystemObserver.observe().
-  readonly attribute FileSystemHandle root;
+  FileSystemHandle root;
 
-  // The handle affected by the file system change.
-  readonly attribute FileSystemHandle changedHandle;
+  // The handle affected by the file system change. This is null for
+  // "disappeared", "errored", and "unknown" change types.
+  FileSystemHandle? changedHandle;
 
   // The path of `changedHandle` relative to `root`.
-  readonly attribute FrozenArray<USVString> relativePathComponents;
+  sequence<DOMString> relativePathComponents;
 
   // The type of change.
-  readonly attribute FileSystemChangeType type;
+  FileSystemChangeType type;
 
   // If `type` is "moved", this corresponds to the former path of
   // `changedHandle` relative to `root`, if the former path is known;
   // otherwise null.
-  readonly attribute FrozenArray<USVString>? relativePathMovedFrom;
+  sequence<DOMString>? relativePathMovedFrom;
 };

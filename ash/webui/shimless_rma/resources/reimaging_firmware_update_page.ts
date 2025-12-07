@@ -13,7 +13,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_firmware_update_page.html.js';
-import {ExternalDiskStateObserverReceiver, ShimlessRmaServiceInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {ExternalDiskStateObserverReceiver, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 const STATUS_TEXT_KEY_MAP: {[key in UpdateRoFirmwareStatus]: string} = {

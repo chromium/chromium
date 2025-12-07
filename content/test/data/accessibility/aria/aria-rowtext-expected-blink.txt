@@ -1,0 +1,18 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++grid
+++++++++row name='cell A3cell B3'
+++++++++++gridCell name='cell A3'
+++++++++++++staticText name='cell A3'
+++++++++++++++inlineTextBox name='cell A3'
+++++++++++gridCell name='cell B3'
+++++++++++++staticText name='cell B3'
+++++++++++++++inlineTextBox name='cell B3'
+++++++++row name='cell A4cell B4'
+++++++++++gridCell name='cell A4'
+++++++++++++staticText name='cell A4'
+++++++++++++++inlineTextBox name='cell A4'
+++++++++++gridCell name='cell B4'
+++++++++++++staticText name='cell B4'
+++++++++++++++inlineTextBox name='cell B4'

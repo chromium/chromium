@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -66,8 +65,7 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
       GetMutableDebugValue().Set("type_of_action", "sync_db_os_value");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -98,8 +96,7 @@ void RunOnOsLoginCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
       SyncRunOnOsLoginMode();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -108,7 +105,7 @@ void RunOnOsLoginCommand::Abort(
   RecordCompletionState(aborted_state);
   switch (aborted_state) {
     case RunOnOsLoginCommandCompletionState::kCommandSystemShutDown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case RunOnOsLoginCommandCompletionState::kNotAllowedByPolicy:
       stop_reason_ = "Setting of run on OS login mode not allowed by policy";
       break;
@@ -116,7 +113,7 @@ void RunOnOsLoginCommand::Abort(
       stop_reason_ = "App is not locally installed";
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   GetMutableDebugValue().Set("Command Stop Reason: ", stop_reason_);
   CompleteAndSelfDestruct(CommandResult::kFailure);

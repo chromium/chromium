@@ -7,11 +7,13 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -27,6 +29,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/delayed_install_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
@@ -70,17 +74,6 @@ void CheckBooleanHistogramCounts(const char* histogram_name,
                                      /*expected_count=*/false_count);
 }
 
-// Convenience method for checking counts of blink::ServiceWorkerStatusCode
-// emitting histograms.
-void CheckStatusCodeHistogramCounts(const char* histogram_name,
-                                    blink::ServiceWorkerStatusCode status,
-                                    int count,
-                                    base::HistogramTester& histogram_tester) {
-  histogram_tester.ExpectBucketCount(histogram_name,
-                                     /*sample=*/status,
-                                     /*expected_count=*/count);
-}
-
 GURL new_tab_url() {
   return GURL("chrome://newtab");
 }
@@ -104,16 +97,17 @@ class ExtensionRegistrationAndUnregistrationWaiter
   ExtensionRegistrationAndUnregistrationWaiter& operator=(
       const ExtensionRegistrationAndUnregistrationWaiter&) = delete;
 
+  void WaitForWorkerRegistrationAttemptCompleted() {
+    SCOPED_TRACE("Waiting for worker registration attempt to complete");
+    registration_attempt_runloop.Run();
+  }
+
   void WaitForWorkerRegistrationAndUnRegistrationAttemptCompleted() {
     WaitForWorkerRegistrationAttemptCompleted();
     WaitForWorkerUnregistrationAttemptCompleted();
   }
 
  private:
-  void WaitForWorkerRegistrationAttemptCompleted() {
-    SCOPED_TRACE("Waiting for worker registration attempt to complete");
-    registration_attempt_runloop.Run();
-  }
   void WaitForWorkerUnregistrationAttemptCompleted() {
     SCOPED_TRACE("Waiting for worker unregistration attempt to complete");
     unregistration_attempt_runloop.Run();
@@ -192,6 +186,56 @@ class ServiceWorkerRegistrationApiTest : public ExtensionApiTest {
 // TODO(devlin): There's overlap with service_worker_apitest.cc in this file,
 // and other tests in that file that should go here so that it's less
 // monolithic.
+
+// Tests that when an extension has invalid syntax in it's background worker
+// script the registration is not considered a failure due to it being user
+// error.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
+                       InvalidWorkerSyntaxFailsWorkerRegistration) {
+  const ExtensionId test_extension_id("iegclhlplifhodhkoafiokenjoapiobj");
+  static constexpr const char kKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
+      "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
+      "qxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv"
+      "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
+      "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
+      "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+  static constexpr char kManifest[] =
+      R"({
+           "name": "TestExtension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "key": "%s",
+           "background": {"service_worker": "background.js"}
+         })";
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(base::StringPrintf(kManifest, kKey));
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                          "invalid_js_syntax;");
+
+  base::HistogramTester histogram_tester;
+  ExtensionRegistrationAndUnregistrationWaiter registration_waiter(
+      test_extension_id);
+
+  ChromeTestExtensionLoader(profile()).LoadUnpackedExtensionAsync(
+      extension_dir.UnpackedPath(), base::DoNothing());
+
+  {
+    SCOPED_TRACE("waiting for extension registration to finish");
+    registration_waiter.WaitForWorkerRegistrationAttemptCompleted();
+  }
+
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+      /*sample=*/blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed,
+      /*expected_count=*/0);
+}
 
 // Tests that a service worker registration is properly stored after extension
 // installation, both at the content layer and in the cached state in the
@@ -311,49 +355,45 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   ExtensionRegistrationAndUnregistrationWaiter extension_registration_waiter(
       test_extension_id);
   base::HistogramTester histogram_tester;
+  std::optional<base::UnguessableToken> activation_token;
   ChromeTestExtensionLoader(profile()).LoadUnpackedExtensionAsync(
       extension_dir.UnpackedPath(),
       base::BindLambdaForTesting([&](const extensions::Extension* extension) {
-        // Disable the extension as soon as it's been added as enabled, which
-        // causes the worker unregistration request to be sent.
         ASSERT_TRUE(extension);
+        // Confirm that an activation token was generated so we can later check
+        // for it to be removed.
+        activation_token =
+            task_queue->GetCurrentActivationToken(extension->id());
+        ASSERT_TRUE(activation_token.has_value());
+
+        // Disable the extension as soon as it's been added as enabled,
+        // which causes the worker unregistration request to be sent.
         DisableExtension(extension->id());
       }));
   extension_registration_waiter
       .WaitForWorkerRegistrationAndUnRegistrationAttemptCompleted();
 
-  // Registration fails because we didn't allow the registration to complete
-  // before we disabled the extension. We can't check the status code because
-  // it's not consistent. I've seen
-  // blink::ServiceWorkerStatusCode::kErrorDisallowed and
-  // blink::ServiceWorkerStatusCode::kErrorNetwork in testing.
+  // Registration considered success because we didn't allow the registration to
+  // complete before we disabled the extension. We can't check the failure
+  // status code because it's not consistent. I've seen
+  // blink::ServiceWorkerStatusCode::kErrorDisallowed, kErrorNetwork, and
+  // kErrorNotFound in manual testing.
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
-      /*true_count=*/0, /*false_count=*/1, histogram_tester);
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
 
-  // Unregistration fails with not found (expectedly) because the registration
-  // above did not complete.
-  // TODO(crbug.com/346732739): This status in this test example should not be
-  // considered a failure, but will first need to create logic to check for
-  // previous successful registration before we can fix that.
+  // Unregistration "succeeds"  because the registration above did not complete.
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
-      /*true_count=*/0, /*false_count=*/1, histogram_tester);
-  CheckStatusCodeHistogramCounts(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
-      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
-      histogram_tester);
-  CheckStatusCodeHistogramCounts(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension2",
-      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
-      histogram_tester);
-  // We aren't updating the extension so we shouldn't be unregistering due to an
-  // update.
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension2",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
       /*expected_count=*/0);
+
+  // Confirm the activation token doesn't remain after disabling the
+  // failed-to-register extension.
+  activation_token = task_queue->GetCurrentActivationToken(test_extension_id);
+  EXPECT_FALSE(activation_token.has_value());
 }
 
 // Tests updating an extension and installing it immediately while it has an
@@ -437,15 +477,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 
   // Open a new tab. The extension overrides the NTP, so this is the extension's
   // page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://newtab/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(NavigateToURLInNewTab(GURL("chrome://newtab/")));
 
-  EXPECT_EQ(
-      "This is a page",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.body.innerText;"));
+  EXPECT_EQ("This is a page", content::EvalJs(GetActiveWebContents(),
+                                              "document.body.innerText;"));
 
   // Verify the service worker is at v1.
   EXPECT_EQ(base::Value(1), GetVersionFlagFromBackgroundContext(id));
@@ -460,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
     // This also mimics update behavior if a user clicks "Update" in the
     // chrome://extensions page.
     scoped_refptr<CrxInstaller> crx_installer =
-        CrxInstaller::Create(extension_service(), /*prompt=*/nullptr);
+        CrxInstaller::Create(profile(), /*client=*/nullptr);
     crx_installer->set_error_on_unsupported_requirements(true);
     crx_installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedFromSettingsPage);
@@ -675,9 +710,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   ASSERT_TRUE(browsing_data_extension);
 
   auto open_new_tab = [this](const GURL& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    ASSERT_TRUE(NavigateToURLInNewTab(url));
   };
 
   // Verify the initial state. The service worker-based extension should have a
@@ -721,11 +754,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 // in the service worker being seen as "updated" (which would result in a
 // "waiting" service worker, violating expectations in the extensions system).
 // https://crbug.com/1271154.
+// TODO(crbug.com/355339195): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ModifyingLocalFilesForUnpackedExtensions \
+  DISABLED_ModifyingLocalFilesForUnpackedExtensions
+#else
+#define MAYBE_ModifyingLocalFilesForUnpackedExtensions \
+  ModifyingLocalFilesForUnpackedExtensions
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
-                       ModifyingLocalFilesForUnpackedExtensions) {
+                       MAYBE_ModifyingLocalFilesForUnpackedExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   const double kUpdateDelayInMilliseconds =
-      content::ServiceWorkerContext::GetUpdateDelay().InMillisecondsF();
+      content::ServiceWorkerContext::kUpdateDelay.InMillisecondsF();
   // Assert that whatever our update delay is, it's less than 5 seconds. If it
   // were more, the test would risk timing out. If we ever need to exceed this
   // in practice, we could introduce a test setter for a different amount of
@@ -787,9 +828,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
     // an extension page will be closed later in the test when the extension
     // reloads, and we need to make sure there's at least one tab left in the
     // browser.
-    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    EXPECT_TRUE(NavigateToURLInNewTab(page_url));
     return result_queue.GetNextResult();
   };
 
@@ -886,14 +925,13 @@ class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
 
   // Get the NTP javascript's version.
   content::EvalJsResult GetVersionOfNTPScript() {
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           "self.currentVersion;");
+    return content::EvalJs(GetActiveWebContents(), "self.currentVersion;");
   }
 
   // Request the version of the background context script from the perspective
   // of the NTP js.
   content::EvalJsResult GetBackgroundContextVersionFromNTPPage() {
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+    return content::EvalJs(GetActiveWebContents(),
                            "getCurrentVersionOfBackgroundContext();");
   }
 
@@ -935,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate current tab to new tab to engage v1 of the NTP extension to stay
   // non-idle.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), new_tab_url()));
 
   // Verify v1 of extension is responding to messages in the tab.
   std::u16string first_new_tab_title;
@@ -963,9 +1001,8 @@ IN_PROC_BROWSER_TEST_F(
         UpdateExtensionWaitForIdle(kNTPTestExtensionId, crx_v2_path,
                                    /*expected_change=*/0);
   }
-  ExtensionService* service = extension_service();
-  ASSERT_TRUE(service);
-  ASSERT_EQ(1u, service->delayed_installs()->size());
+  ASSERT_EQ(1u,
+            DelayedInstallManager::Get(profile())->delayed_installs().size());
   // v2 won't install though since v1 isn't idle (NTP page is still open) yet so
   // we're given the original `extension_v1` object.
   ASSERT_TRUE(extension_update);
@@ -989,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate again to new tab so we can confirm v1 is still running and v2
   // hasn't taken over future new tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), new_tab_url()));
   std::u16string third_new_tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &third_new_tab_title);
   ASSERT_EQ(u"Custom NTP test v1", third_new_tab_title);
@@ -1047,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to new tab page so we can confirm v2 is still running and v1
   // hasn't taken over future new tabs loads.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), new_tab_url()));
   std::u16string new_tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &new_tab_title);
   ASSERT_EQ(u"Custom NTP test v2", new_tab_title);
@@ -1192,12 +1229,11 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationInstallMetricBrowserTest,
   ServiceWorkerTaskQueueRegistrationObserver register_observer(
       extension()->id());
   task_queue->SetObserverForTest(&register_observer);
-  ExtensionSystem* system = ExtensionSystem::Get(profile());
   const ExtensionId extension_id = extension()->id();
   // Uninstalling frees `extension_` so we must free it here to prevent dangling
   // ptr between the uninstall and until the test is torn down.
   ReleaseExtension();
-  system->extension_service()->UninstallExtension(
+  ExtensionRegistrar::Get(profile())->UninstallExtension(
       extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   {
     SCOPED_TRACE(
@@ -1214,15 +1250,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationInstallMetricBrowserTest,
       "DeactivateExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension2",
+      "DeactivateExtension",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension2",
+      "AddExtension",
       /*expected_count=*/0);
 
   // We didn't update the extension.
@@ -1250,11 +1286,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
   ServiceWorkerTaskQueueRegistrationObserver register_observer(
       extension()->id());
   task_queue->SetObserverForTest(&register_observer);
-  ExtensionSystem* system = ExtensionSystem::Get(profile());
+
+  auto* extension_registrar = ExtensionRegistrar::Get(profile());
 
   // Disable extension and wait for worker to be unregistered.
-  system->extension_service()->DisableExtension(
-      extension()->id(), disable_reason::DISABLE_USER_ACTION);
+  extension_registrar->DisableExtension(extension()->id(),
+                                        {disable_reason::DISABLE_USER_ACTION});
   {
     SCOPED_TRACE(
         "waiting for worker to be unregistered after disabling extension");
@@ -1262,7 +1299,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
   }
 
   // Enable extension and wait for registration metric should have been emitted.
-  system->extension_service()->EnableExtension(extension()->id());
+  extension_registrar->EnableExtension(extension()->id());
   {
     SCOPED_TRACE(
         "waiting for worker to be registered after enabling extension");
@@ -1279,15 +1316,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
       "DeactivateExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension2",
+      "DeactivateExtension",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension2",
+      "AddExtension",
       /*expected_count=*/0);
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
@@ -1426,7 +1463,7 @@ IN_PROC_BROWSER_TEST_P(MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
   // version first.
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
-      /*true_count=*/0, /*false_count=*/1, histogram_tester);
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
@@ -1436,19 +1473,9 @@ IN_PROC_BROWSER_TEST_P(MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "AddExtension",
-      /*true_count=*/0, /*false_count=*/1, histogram_tester);
-  CheckStatusCodeHistogramCounts(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
-      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
-      histogram_tester);
-  CheckStatusCodeHistogramCounts(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension2",
-      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
-      histogram_tester);
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension2",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus4",
       /*expected_count=*/0);
 
   // Then the new worker registration is registered.
@@ -1573,15 +1600,15 @@ IN_PROC_BROWSER_TEST_P(WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
       "AddExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension2",
+      "DeactivateExtension",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension2",
+      "AddExtension",
       /*expected_count=*/0);
 
   CheckBooleanHistogramCounts(

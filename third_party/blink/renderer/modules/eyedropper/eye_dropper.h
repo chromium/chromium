@@ -55,7 +55,7 @@ class EyeDropper final : public ScriptWrappable {
                                  bool,
                                  uint32_t);
   void EndChooser(std::unique_ptr<ScopedAbortState>);
-  void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
+  void RejectPromiseHelper(DOMExceptionCode, const String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
   Member<ScriptPromiseResolver<ColorSelectionResult>> resolver_;

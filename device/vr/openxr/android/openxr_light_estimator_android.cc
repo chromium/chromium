@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/android/openxr_light_estimator_android.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -51,6 +47,7 @@ mojom::XRLightEstimationDataPtr OpenXrLightEstimatorAndroid::GetLightEstimate(
   if (light_estimator_ == XR_NULL_HANDLE) {
     return nullptr;
   }
+  TRACE_EVENT0("xr", "GetLightEstimate");
 
   XrLightEstimateGetInfoANDROID estimate_info = {
       XR_TYPE_LIGHT_ESTIMATE_GET_INFO_ANDROID};
@@ -86,16 +83,22 @@ mojom::XRLightEstimationDataPtr OpenXrLightEstimatorAndroid::GetLightEstimate(
   auto& spherical_harmonics = light_probe->spherical_harmonics;
 
   constexpr size_t kNumShCoefficients = 9;
+  constexpr size_t kNumChannels = 3;
   constexpr size_t kRedChannel = 0;
   constexpr size_t kGreenChannel = 1;
   constexpr size_t kBlueChannel = 2;
-  spherical_harmonics->coefficients.reserve(kNumShCoefficients);
-  for (size_t i = 0; i < kNumShCoefficients; i++) {
+
+  base::span<float[kNumChannels], kNumShCoefficients> coefficients =
+      base::span(ambient_harmonics.coefficients);
+  spherical_harmonics->coefficients.reserve(coefficients.size());
+
+  for (auto& coefficient : coefficients) {
+    base::span<float, kNumChannels> coefficient_data = base::span(coefficient);
     spherical_harmonics->coefficients.emplace_back(
-        ambient_harmonics.coefficients[i][kRedChannel],
-        ambient_harmonics.coefficients[i][kGreenChannel],
-        ambient_harmonics.coefficients[i][kBlueChannel]);
+        coefficient_data[kRedChannel], coefficient_data[kGreenChannel],
+        coefficient_data[kBlueChannel]);
   }
+
   light_probe->main_light_intensity = {directional_light.intensity.x,
                                        directional_light.intensity.y,
                                        directional_light.intensity.z};
@@ -119,13 +122,36 @@ OpenXrLightEstimatorAndroidFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
   return {device::mojom::XRSessionFeature::LIGHT_ESTIMATION};
+}
+
+void OpenXrLightEstimatorAndroidFactory::CheckAndUpdateEnabledState(
+    const OpenXrExtensionEnumeration* extension_enum,
+    XrInstance instance,
+    XrSystemId system) {
+  if (!AreAllRequestedExtensionsSupported(extension_enum)) {
+    SetEnabled(false);
+    return;
+  }
+
+  XrSystemLightEstimationPropertiesANDROID light_estimation_properties{
+      XR_TYPE_SYSTEM_LIGHT_ESTIMATION_PROPERTIES_ANDROID};
+
+  XrSystemProperties system_properties{XR_TYPE_SYSTEM_PROPERTIES};
+  system_properties.next = &light_estimation_properties;
+
+  bool lighting_supported = false;
+  XrResult result = xrGetSystemProperties(instance, system, &system_properties);
+  if (XR_SUCCEEDED(result)) {
+    lighting_supported = light_estimation_properties.supportsLightEstimation;
+  }
+
+  SetEnabled(lighting_supported);
 }
 
 std::unique_ptr<OpenXrLightEstimator>
@@ -133,7 +159,7 @@ OpenXrLightEstimatorAndroidFactory::CreateLightEstimator(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace mojo_space) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrLightEstimatorAndroid>(extension_helper,

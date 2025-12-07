@@ -32,8 +32,7 @@ EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::ToMojom(
       return test::EnumWithTraits::VALUE_1;
   };
 
-  NOTREACHED_IN_MIGRATION();
-  return test::EnumWithTraits::VALUE_0;
+  NOTREACHED();
 }
 
 bool EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::FromMojom(

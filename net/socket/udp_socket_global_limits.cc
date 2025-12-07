@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/socket/udp_socket_global_limits.h"
+
 #include <limits>
 
 #include "base/atomic_ref_count.h"
 #include "base/no_destructor.h"
-#include "net/base/features.h"
-#include "net/socket/udp_socket_global_limits.h"
 
 namespace net {
 
@@ -26,20 +26,13 @@ class GlobalUDPSocketCounts {
   }
 
   [[nodiscard]] bool TryAcquireSocket() {
-    int previous = count_.Increment(1);
-    if (previous >= GetMax()) {
+    size_t previous = count_.Increment(1);
+    if (previous >= OwnedUDPSocketCount::kMaxUdpSockets) {
       count_.Increment(-1);
       return false;
     }
 
     return true;
-  }
-
-  int GetMax() {
-    if (base::FeatureList::IsEnabled(features::kLimitOpenUDPSockets))
-      return features::kLimitOpenUDPSocketsMax.Get();
-
-    return std::numeric_limits<int>::max();
   }
 
   void ReleaseSocket() { count_.Increment(-1); }
@@ -52,7 +45,7 @@ class GlobalUDPSocketCounts {
 
 }  // namespace
 
-OwnedUDPSocketCount::OwnedUDPSocketCount() : OwnedUDPSocketCount(true) {}
+OwnedUDPSocketCount::OwnedUDPSocketCount() {}
 
 OwnedUDPSocketCount::OwnedUDPSocketCount(OwnedUDPSocketCount&& other) {
   *this = std::move(other);

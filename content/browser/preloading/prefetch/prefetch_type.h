@@ -5,11 +5,14 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TYPE_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TYPE_H_
 
+#include <optional>
+
 #include "content/common/content_export.h"
-#include "content/public/browser/preloading_trigger_type.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 
 namespace content {
+
+enum class PreloadingTriggerType;
 
 // The type of prefetch. This determines various details about how a prefetch is
 // handled.
@@ -30,7 +33,6 @@ class CONTENT_EXPORT PrefetchType {
   PrefetchType& operator=(const PrefetchType& prefetch_type) = delete;
 
   bool operator==(const PrefetchType& rhs) const = default;
-  bool operator!=(const PrefetchType& rhs) const = default;
 
   PreloadingTriggerType trigger_type() const { return trigger_type_; }
 

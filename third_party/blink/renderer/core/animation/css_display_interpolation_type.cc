@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -16,12 +17,9 @@ namespace blink {
 
 class CSSDisplayNonInterpolableValue final : public NonInterpolableValue {
  public:
+  CSSDisplayNonInterpolableValue(EDisplay start, EDisplay end)
+      : start_(start), end_(end) {}
   ~CSSDisplayNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSDisplayNonInterpolableValue> Create(EDisplay start,
-                                                              EDisplay end) {
-    return base::AdoptRef(new CSSDisplayNonInterpolableValue(start, end));
-  }
 
   EDisplay Display() const {
     DCHECK_EQ(start_, end_);
@@ -44,9 +42,6 @@ class CSSDisplayNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSDisplayNonInterpolableValue(EDisplay start, EDisplay end)
-      : start_(start), end_(end) {}
-
   const EDisplay start_;
   const EDisplay end_;
 };
@@ -102,7 +97,7 @@ InterpolationValue CSSDisplayInterpolationType::CreateDisplayValue(
     EDisplay display) const {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
-      CSSDisplayNonInterpolableValue::Create(display, display));
+      MakeGarbageCollected<CSSDisplayNonInterpolableValue>(display, display));
 }
 
 InterpolationValue CSSDisplayInterpolationType::MaybeConvertNeutral(
@@ -113,7 +108,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertNeutral(
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
       To<InterpolableNumber>(*underlying.interpolable_value)
-          .Value(CSSToLengthConversionData());
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   EDisplay underlying_display =
       To<CSSDisplayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Display(underlying_fraction);
@@ -143,7 +138,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSDisplayInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
   const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (!identifier_value) {
@@ -158,6 +153,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertValue(
     case CSSValueID::kFlex:
     case CSSValueID::kFlowRoot:
     case CSSValueID::kGrid:
+    case CSSValueID::kGridLanes:
     case CSSValueID::kInline:
     case CSSValueID::kInlineBlock:
     case CSSValueID::kInlineFlex:
@@ -189,7 +185,8 @@ PairwiseInterpolationValue CSSDisplayInterpolationType::MaybeMergeSingles(
   return PairwiseInterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
       MakeGarbageCollected<InterpolableNumber>(1),
-      CSSDisplayNonInterpolableValue::Create(start_display, end_display));
+      MakeGarbageCollected<CSSDisplayNonInterpolableValue>(start_display,
+                                                           end_display));
 }
 
 void CSSDisplayInterpolationType::Composite(
@@ -197,7 +194,7 @@ void CSSDisplayInterpolationType::Composite(
     double underlying_fraction,
     const InterpolationValue& value,
     double interpolation_fraction) const {
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSDisplayInterpolationType::ApplyStandardPropertyValue(

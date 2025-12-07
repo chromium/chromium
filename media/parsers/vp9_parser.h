@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/circular_deque.h"
@@ -98,10 +99,10 @@ struct MEDIA_EXPORT Vp9SegmentationParams {
   bool update_data;
   bool abs_or_delta_update;
   bool feature_enabled[kNumSegments][SEG_LVL_MAX];
-  int16_t feature_data[kNumSegments][SEG_LVL_MAX];
+  std::array<std::array<int16_t, SEG_LVL_MAX>, kNumSegments> feature_data;
 
-  int16_t y_dequant[kNumSegments][2];
-  int16_t uv_dequant[kNumSegments][2];
+  std::array<std::array<int16_t, 2>, kNumSegments> y_dequant;
+  std::array<std::array<int16_t, 2>, kNumSegments> uv_dequant;
 
   bool FeatureEnabled(size_t seg_id, SegmentLevelFeature feature) const {
     return feature_enabled[seg_id][feature];
@@ -120,9 +121,9 @@ struct MEDIA_EXPORT Vp9LoopFilterParams {
 
   bool delta_enabled;
   bool delta_update;
-  bool update_ref_deltas[VP9_FRAME_MAX];
-  int8_t ref_deltas[VP9_FRAME_MAX];
-  bool update_mode_deltas[kNumModeDeltas];
+  std::array<bool, VP9_FRAME_MAX> update_ref_deltas;
+  std::array<int8_t, VP9_FRAME_MAX> ref_deltas;
+  std::array<bool, kNumModeDeltas> update_mode_deltas;
   int8_t mode_deltas[kNumModeDeltas];
 
   // Calculated from above fields.
@@ -176,26 +177,19 @@ struct MEDIA_EXPORT Vp9FrameContext {
   Vp9Prob mv_hp_prob[2];
 };
 
-struct MEDIA_EXPORT Vp9CompressedHeader {
-  enum Vp9TxMode {
-    ONLY_4X4 = 0,
-    ALLOW_8X8 = 1,
-    ALLOW_16X16 = 2,
-    ALLOW_32X32 = 3,
-    TX_MODE_SELECT = 4,
-    TX_MODES = 5,
-  };
-
-  Vp9TxMode tx_mode;
-  Vp9ReferenceMode reference_mode;
-};
-
 // VP9 frame header.
 struct MEDIA_EXPORT Vp9FrameHeader {
   enum FrameType {
     KEYFRAME = 0,
     INTERFRAME = 1,
   };
+
+  Vp9FrameHeader();
+  Vp9FrameHeader(const Vp9FrameHeader&);
+  Vp9FrameHeader(Vp9FrameHeader&&);
+  Vp9FrameHeader& operator=(const Vp9FrameHeader&);
+  Vp9FrameHeader& operator=(Vp9FrameHeader&&);
+  ~Vp9FrameHeader();
 
   bool IsKeyframe() const;
   bool IsIntra() const;
@@ -204,72 +198,66 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   }
   VideoColorSpace GetColorSpace() const;
 
-  uint8_t profile;
+  uint8_t profile = 0;
 
-  bool show_existing_frame;
-  uint8_t frame_to_show_map_idx;
+  bool show_existing_frame = false;
+  uint8_t frame_to_show_map_idx = 0;
 
-  FrameType frame_type;
+  FrameType frame_type{KEYFRAME};
 
-  bool show_frame;
-  bool error_resilient_mode;
+  bool show_frame = false;
+  bool error_resilient_mode = false;
 
-  uint8_t bit_depth;
-  Vp9ColorSpace color_space;
-  bool color_range;
-  uint8_t subsampling_x;
-  uint8_t subsampling_y;
+  uint8_t bit_depth = 0;
+  Vp9ColorSpace color_space{Vp9ColorSpace::UNKNOWN};
+  bool color_range = false;
+  uint8_t subsampling_x = 0;
+  uint8_t subsampling_y = 0;
 
   // The range of frame_width and frame_height is 1..2^16.
-  uint32_t frame_width;
-  uint32_t frame_height;
-  uint32_t render_width;
-  uint32_t render_height;
+  uint32_t frame_width = 0;
+  uint32_t frame_height = 0;
+  uint32_t render_width = 0;
+  uint32_t render_height = 0;
 
-  bool intra_only;
-  uint8_t reset_frame_context;
-  uint8_t refresh_frame_flags;
-  uint8_t ref_frame_idx[kVp9NumRefsPerFrame];
-  bool ref_frame_sign_bias[Vp9RefType::VP9_FRAME_MAX];
-  bool allow_high_precision_mv;
-  Vp9InterpolationFilter interpolation_filter;
+  bool intra_only = false;
+  uint8_t reset_frame_context = 0;
+  uint8_t refresh_frame_flags = 0;
+  std::array<uint8_t, kVp9NumRefsPerFrame> ref_frame_idx = {};
+  bool ref_frame_sign_bias[Vp9RefType::VP9_FRAME_MAX] = {false};
+  bool allow_high_precision_mv = false;
+  Vp9InterpolationFilter interpolation_filter{Vp9InterpolationFilter::EIGHTTAP};
 
-  bool refresh_frame_context;
-  bool frame_parallel_decoding_mode;
-  uint8_t frame_context_idx;
+  bool refresh_frame_context = false;
+  bool frame_parallel_decoding_mode = false;
+  uint8_t frame_context_idx = 0;
   // |frame_context_idx_to_save_probs| is to be used by save_probs() only, and
   // |frame_context_idx| otherwise.
-  uint8_t frame_context_idx_to_save_probs;
+  uint8_t frame_context_idx_to_save_probs = 0;
 
-  Vp9QuantizationParams quant_params;
+  Vp9QuantizationParams quant_params = {};
 
-  uint8_t tile_cols_log2;
-  uint8_t tile_rows_log2;
+  uint8_t tile_cols_log2 = 0;
+  uint8_t tile_rows_log2 = 0;
 
-  // Pointer to the beginning of frame data. It is a responsibility of the
-  // client of the Vp9Parser to maintain validity of this data while it is
-  // being used outside of that class.
-  // RAW_PTR_EXCLUSION: Rewriting causes unrelated test failures.
-  // TODO(crbug.com/349424269): Fix tests and rewrite.
-  RAW_PTR_EXCLUSION const uint8_t* data;
-
-  // Size of |data| in bytes.
-  size_t frame_size;
+  // Frame data. It is a responsibility of the client of the Vp9Parser to
+  // maintain validity of this data while it is being used outside of that
+  // class.
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t> data;
 
   // Size of compressed header in bytes.
-  size_t header_size_in_bytes;
+  size_t header_size_in_bytes = 0;
 
   // Size of uncompressed header in bytes.
-  size_t uncompressed_header_size;
-
-  Vp9CompressedHeader compressed_header;
+  size_t uncompressed_header_size = 0;
 
   // Current frame entropy context after header parsing.
-  Vp9FrameContext frame_context;
+  Vp9FrameContext frame_context = {};
 
   // Segmentation and loop filter params from uncompressed header
-  Vp9SegmentationParams segmentation;
-  Vp9LoopFilterParams loop_filter;
+  Vp9SegmentationParams segmentation = {};
+  Vp9LoopFilterParams loop_filter = {};
 };
 
 // A parser for VP9 bitstream.
@@ -328,11 +316,17 @@ class MEDIA_EXPORT Vp9Parser {
   // Stores start pointer and size of each frame within the current superframe.
   struct FrameInfo {
     FrameInfo();
-    FrameInfo(const FrameInfo& copy_from);
     FrameInfo(const uint8_t* ptr, off_t size);
+    FrameInfo(FrameInfo&& other);
+    FrameInfo& operator=(FrameInfo&& other);
+
+    // Move-only type. Copying would require manual duplication of
+    // `other.decrypt_config`.
+    FrameInfo(const FrameInfo& other) = delete;
+    FrameInfo& operator=(const FrameInfo& other) = delete;
+
     ~FrameInfo();
 
-    FrameInfo& operator=(const FrameInfo& copy_from);
     bool IsValid() const { return ptr != nullptr; }
     void Reset() { ptr = nullptr; }
 
@@ -349,8 +343,7 @@ class MEDIA_EXPORT Vp9Parser {
     std::unique_ptr<DecryptConfig> decrypt_config;
   };
 
-  // See homonymous member variable for information on the parameter.
-  explicit Vp9Parser(bool parsing_compressed_header);
+  Vp9Parser();
 
   Vp9Parser(const Vp9Parser&) = delete;
   Vp9Parser& operator=(const Vp9Parser&) = delete;
@@ -420,17 +413,11 @@ class MEDIA_EXPORT Vp9Parser {
 
   // Returns true and populates |result| with the parsing result if parsing of
   // current frame is finished (possibly unsuccessfully). |fhdr| will only be
-  // populated and valid if |result| is kOk. Otherwise return false, indicating
-  // that the compressed header must be parsed next.
+  // populated and valid if |result| is kOk.
   bool ParseUncompressedHeader(const FrameInfo& frame_info,
                                Vp9FrameHeader* fhdr,
                                Result* result,
                                Vp9Parser::Context* context);
-
-  // Returns true if parsing of current frame is finished and |result| will be
-  // populated with value of parsing result. Otherwise, needs to continue setup
-  // current frame.
-  bool ParseCompressedHeader(const FrameInfo& frame_info, Result* result);
 
   int64_t GetQIndex(const Vp9QuantizationParams& quant, size_t segid) const;
   // Returns true if the setup to |context_| succeeded.
@@ -445,10 +432,6 @@ class MEDIA_EXPORT Vp9Parser {
   // Remaining bytes in stream_.
   off_t bytes_left_;
 
-  // Set on ctor if the client needs VP9Parser to also parse compressed headers,
-  // otherwise they'll be skipped.
-  const bool parsing_compressed_header_;
-
   // FrameInfo for the remaining frames in the current superframe to be parsed.
   base::circular_deque<FrameInfo> frames_;
 
@@ -460,7 +443,6 @@ class MEDIA_EXPORT Vp9Parser {
   // The frame size of each spatial layer.
   std::vector<uint32_t> spatial_layer_frame_size_;
 
-  FrameInfo curr_frame_info_;
   Vp9FrameHeader curr_frame_header_;
 };
 

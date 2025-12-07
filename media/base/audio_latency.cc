@@ -7,22 +7,19 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
+#include <numeric>
 
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "media/base/mac/audio_latency_mac.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -31,46 +28,9 @@
 
 namespace media {
 
-namespace {
-
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA)
-// Taken from "Bit Twiddling Hacks"
-// http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-uint32_t RoundUpToPowerOfTwo(uint32_t v) {
-  v--;
-  v |= v >> 1;
-  v |= v >> 2;
-  v |= v >> 4;
-  v |= v >> 8;
-  v |= v >> 16;
-  v++;
-  return v;
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-// WebAudio renderer's quantum size (frames per callback) that is used for
-// calculating the "interactive" buffer size.
-// TODO(crbug.com/40637820): This number needs to be passed down from Blink when
-// user-selectable render quantum size is implemented.
-const int kWebAudioRenderQuantumSize = 128;
-
-// From media/renderers/paint_canvas_video_renderer.cc. To calculate the optimum
-// buffer size for Pixel 3/4/5 devices, which has a HW buffer size of 96 frames.
-int GCD(int a, int b) {
-  return a == 0 ? b : GCD(b % a, a);
-}
-
-int LCM(int a, int b) {
-  return a / GCD(a, b) * b;
-}
-#endif
-
-}  // namespace
-
 // static
 bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #elif BUILDFLAG(IS_FUCHSIA)
   return true;
@@ -80,8 +40,8 @@ bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
   // cycles on resampling when using the playback mode. See OpenSLESOutputStream
   // for additional implementation details.
   return type == Type::kPlayback &&
-         base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_NOUGAT_MR1;
+         base::android::android_info::sdk_int() >=
+             base::android::android_info::SDK_VERSION_NOUGAT_MR1;
 #else
   return false;
 #endif
@@ -93,7 +53,8 @@ int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
 #if BUILDFLAG(USE_CRAS)
   // Use 80ms rounded to a power of 2.
   const double eighty_ms_size = 8.0 * sample_rate / 100;
-  const int high_latency_buffer_size = RoundUpToPowerOfTwo(eighty_ms_size);
+  const int high_latency_buffer_size =
+      std::bit_ceil(static_cast<uint32_t>(std::round(eighty_ms_size)));
 #elif BUILDFLAG(IS_FUCHSIA)
   // Use 80ms buffers. Doesn't need to be aligned to power of 2, but it should
   // be a multiple of the scheduling period used for audio threads.
@@ -125,7 +86,8 @@ int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
   // On Linux, the minimum hardware buffer size is 512, so the lower calculated
   // values are unused.  OSX may have a value as low as 128.
   const double twenty_ms_size = 2.0 * sample_rate / 100;
-  const int high_latency_buffer_size = RoundUpToPowerOfTwo(twenty_ms_size);
+  const int high_latency_buffer_size =
+      std::bit_ceil(static_cast<uint32_t>(std::round(twenty_ms_size)));
 #endif
 
   return std::max(preferred_buffer_size, high_latency_buffer_size);
@@ -179,6 +141,12 @@ int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
   // information out.
   LOG(INFO) << "audioHardwareBufferSize = " << hardware_buffer_size;
 
+  // WebAudio renderer's quantum size (frames per callback) that is used for
+  // calculating the "interactive" buffer size.
+  // TODO(crbug.com/40637820): This number needs to be passed down from Blink
+  // when user-selectable render quantum size is implemented.
+  const int kWebAudioRenderQuantumSize = 128;
+
   if (hardware_buffer_size >= kWebAudioRenderQuantumSize)
     return hardware_buffer_size;
 
@@ -186,9 +154,9 @@ int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
   // compute LCM to avoid glitches and regulate the workload per callback.
   // (e.g. 96 vs 128 -> 384) Also cap the buffer size to 4 render quanta
   // (512 frames ~= 10ms at 48K) if LCM goes beyond interactive latency range.
-  int sensible_buffer_size = std::min(
-      LCM(hardware_buffer_size, kWebAudioRenderQuantumSize),
-      kWebAudioRenderQuantumSize * 4);
+  int sensible_buffer_size =
+      std::min(std::lcm(hardware_buffer_size, kWebAudioRenderQuantumSize),
+               kWebAudioRenderQuantumSize * 4);
 
   return sensible_buffer_size;
 #else

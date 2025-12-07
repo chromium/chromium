@@ -15,11 +15,7 @@
 #endif  // defined(WEBDATA_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(WEBDATA_IMPLEMENTATION)
 #define WEBDATA_EXPORT __attribute__((visibility("default")))
-#else
-#define WEBDATA_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

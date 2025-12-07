@@ -19,11 +19,13 @@ import logging
 from typing import (
     Any,
     Dict,
+    Iterator,
     List,
     Literal,
     NamedTuple,
     Optional,
     Sequence,
+    Set,
     Tuple,
 )
 
@@ -59,6 +61,9 @@ Reference = Tuple[str, Relation]
 
 FuzzyRange = Tuple[int, int]
 FuzzyParameters = Tuple[Optional[FuzzyRange], Optional[FuzzyRange]]
+
+TestType = Literal['crashtest', 'manual', 'print-reftest', 'reftest',
+                   'testharness', 'wdspec']
 
 
 class _Test(NamedTuple):
@@ -145,7 +150,7 @@ class WPTManifest:
     def __init__(self,
                  raw_dict,
                  wpt_dir: str,
-                 test_types: Optional[Sequence[str]] = None,
+                 test_types: Optional[Sequence[TestType]] = None,
                  exclude_jsshell: bool = True):
         self._raw_dict = raw_dict
         self.wpt_dir = wpt_dir
@@ -161,10 +166,16 @@ class WPTManifest:
 
         items = self._raw_dict.get('items', {})
         for test_type in self.test_types:
-            self._map_tests(test_type, items.get(test_type, {}))
+            for url, test in self._items_in_trie(test_type,
+                                                 items.get(test_type, {})):
+                assert url not in self._tests_by_url, f'duplicate URL {url!r}'
+                self._tests_by_url[url] = test
 
-    def _map_tests(self, test_type: str, trie, path: str = ''):
-        """Record tests present in a trie for some test type.
+    def _items_in_trie(self,
+                       test_type: TestType,
+                       trie,
+                       path: str = '') -> Iterator[Tuple[str, _Test]]:
+        """Get tests present in a trie for some test type.
 
         Arguments:
             test_type: The WPT test type.
@@ -184,7 +195,7 @@ class WPTManifest:
                 # URLs always use `/` for path separators. Don't add a leading
                 # `/`, since that's the convention in `blinkpy` for test paths.
                 child_path = f'{path}/{component}' if path else component
-                self._map_tests(test_type, child, child_path)
+                yield from self._items_in_trie(test_type, child, child_path)
             return
 
         assert len(trie) >= 2, f'{trie!r} must contain at least one test'
@@ -201,9 +212,8 @@ class WPTManifest:
                 test = _Test(path, test_type, refs, extras)
             else:
                 url, test = path, _Test(None, test_type, refs, extras)
-            assert url not in self._tests_by_url, f'duplicate URL {url!r}'
             if not self._exclude_jsshell or not test.jsshell:
-                self._tests_by_url[url] = test
+                yield url, test
 
     @classmethod
     def from_file(cls,
@@ -223,11 +233,28 @@ class WPTManifest:
         """Returns a set of the URLs for all items in the manifest."""
         return frozenset(self._tests_by_url)
 
-    def get_test_type(self, url: str) -> Optional[str]:
+    def get_test_type(self, url: str) -> Optional[TestType]:
         """Returns the test type of the given test file path."""
         assert not url.startswith('/')
         test = self._tests_by_url.get(url)
         return test and test.test_type
+
+    def tests_under_path(self, file_path: str) -> Set[str]:
+        """Get all test URLs under a test file or directory.
+
+        This is similar to inverting `file_path_for_test_url()`.
+        """
+        assert not file_path.startswith('/')
+        components = file_path.split('/')
+        assert components, file_path
+        tries_by_type = self._raw_dict.get('items', {})
+        tests = set()
+        for test_type in self.test_types:
+            trie_for_type = tries_by_type.get(test_type, {})
+            if trie_for_path := self._lookup_path(trie_for_type, components):
+                tests.update(url for url, _ in self._items_in_trie(
+                    test_type, trie_for_path, file_path))
+        return tests
 
     def is_test_file(self, file_path: str) -> bool:
         """Checks if file_path is a test file according to the manifest."""
@@ -235,21 +262,34 @@ class WPTManifest:
         components = file_path.split('/')
         assert components, file_path
         tries_by_type = self._raw_dict.get('items', {})
-        return any(
-            self._contains_file(tries_by_type.get(test_type, {}), components)
-            for test_type in self.test_types)
+        test_files = (self._lookup_path(tries_by_type.get(test_type, {}),
+                                        components)
+                      for test_type in self.test_types)
+        return any(isinstance(maybe_file, list) for maybe_file in test_files)
 
-    def _contains_file(self, trie, components: Sequence[str]) -> bool:
-        """Determine if a test trie contains a test file."""
-        if isinstance(trie, list):
-            # Not a test file if there are still components at a leaf.
-            return not bool(components)
+    def _lookup_path(self, trie, components: Sequence[str]):
+        """Lookup an entry in a trie of test items.
+
+        Arguments:
+            trie: See above for format. One of:
+              * A test file (`list`) with a test type-dependent format.
+              * A test directory (`dict`) mapping names to subdirectories or
+                files.
+            components: Path components to the target file/directory.
+
+        Returns:
+            Either `None` for invalid paths, or a test file or directory.
+        """
         if not components:
-            # This is a test directory, not a test file.
-            return False
+            return trie
+        elif isinstance(trie, list):
+            # Path doesn't exist because there are still more path components to
+            # look up at a leaf.
+            return None
         next_component, *rest = components
-        child = trie.get(next_component)
-        return bool(child) and self._contains_file(child, rest)
+        if (child := trie.get(next_component)) is not None:
+            return self._lookup_path(child, rest)
+        return None
 
     def is_test_url(self, url):
         """Checks if url is a valid test in the manifest."""
@@ -346,16 +386,23 @@ class WPTManifest:
         return (test.file_path or url) if test else None
 
     @staticmethod
-    def ensure_manifest(port, path=None):
+    def ensure_manifest(port, path=None, test_paths=None):
         """Regenerates the WPT MANIFEST.json file.
 
         Args:
             port: A blinkpy.web_tests.port.Port object.
             path: The path to a WPT root (relative to web_tests, optional).
+            test_paths: test directories or files to update, None to update all.
         """
         fs = port.host.filesystem
         if path is None:
             path = fs.join('external', 'wpt')
+
+        if not port.should_update_manifest(path):
+            return
+        _log.info('%s MANIFEST.json for %s ...',
+                  'Partially updating' if test_paths else 'Generating', path)
+
         wpt_path = fs.join(port.web_tests_dir(), path)
         manifest_path = fs.join(wpt_path, MANIFEST_NAME)
 
@@ -368,7 +415,7 @@ class WPTManifest:
 
         # TODO(crbug.com/853815): perhaps also cache the manifest for wpt_internal.
         #
-        # `url_base` should match those of `web_tests/wptrunner.blink.ini` (or
+        # `url_base` should match those of `external/wpt/.config.json` (or
         # the implicit root `/` URL base).
         if path.startswith('external'):
             base_manifest_path = fs.join(port.web_tests_dir(), 'external',
@@ -378,13 +425,13 @@ class WPTManifest:
                            base_manifest_path, manifest_path)
                 fs.copyfile(base_manifest_path, manifest_path)
             else:
-                _log.error('Manifest base not found at "%s".',
-                           base_manifest_path)
+                _log.info('Manifest base not found at "%s".',
+                          base_manifest_path)
             url_base = '/'
         elif path.startswith('wpt_internal'):
             url_base = '/wpt_internal/'
 
-        WPTManifest.generate_manifest(port, wpt_path, url_base)
+        WPTManifest.generate_manifest(port, wpt_path, url_base, test_paths)
 
         if fs.isfile(manifest_path):
             _log.info(
@@ -396,7 +443,10 @@ class WPTManifest:
             fs.write_text_file(manifest_path, '{}')
 
     @staticmethod
-    def generate_manifest(port, dest_path, url_base: str = '/'):
+    def generate_manifest(port,
+                          dest_path,
+                          url_base: str = '/',
+                          test_paths: Optional[List[str]] = None):
         """Generates MANIFEST.json on the specified directory."""
         wpt_exec_path = PathFinder(
             port.host.filesystem).path_from_chromium_base(
@@ -410,6 +460,9 @@ class WPTManifest:
             f'--tests-root={dest_path}',
             f'--url-base={url_base}',
         ]
+
+        if test_paths:
+            cmd.extend(test_paths)
 
         # ScriptError will be raised if the command fails.
         # This will also include stderr in the exception message.

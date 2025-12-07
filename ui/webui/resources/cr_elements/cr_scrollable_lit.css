@@ -1,0 +1,72 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+/* Common CSS classes used to make an element scrollable and add anchored
+ * elements at the top and bottom of the scrollable element.  The anchored top
+ * and bottom elements show either a border or a shadow when the cr-scrollable
+ * element is scrollable in their respective directions. */
+
+.cr-scrollable {
+  anchor-name: --cr-scrollable;
+  anchor-scope: --cr-scrollable;
+  container-type: scroll-state;
+  overflow: auto;
+}
+
+.cr-scrollable-top,
+.cr-scrollable-top-shadow,
+.cr-scrollable-bottom {
+  display: none;
+  position: fixed;
+  position-anchor: --cr-scrollable;
+  left: anchor(left);
+  width: anchor-size(width);
+  pointer-events: none;
+
+  &:where(.force-on) {
+    display: block;
+  }
+}
+
+.cr-scrollable-top {
+  top: anchor(top);
+  border-top: 1px solid var(--cr-scrollable-border-color);
+
+  @container scroll-state(scrollable: top) {
+    display: block;
+  }
+}
+
+.cr-scrollable-bottom {
+  bottom: anchor(bottom);
+  border-bottom: 1px solid var(--cr-scrollable-border-color);
+
+  @container scroll-state(scrollable: bottom) {
+    display: block;
+  }
+}
+
+.cr-scrollable-top-shadow {
+  box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, .4);
+  display: block;
+  height: 8px;
+  opacity: 0;
+  top: anchor(top);
+  transition: opacity 500ms;
+  z-index: 1;
+
+  &:where(.force-on) {
+    opacity: 1;
+  }
+
+  @container scroll-state(scrollable: top) {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,14 @@
+include_rules = [
+  "+chromeos/components/cdm_factory_daemon",
+  "+components/viz/common/resources/shared_image_format_utils.h",
+  "+components/viz/common/resources/shared_image_format.h",
+  "+gpu/config/gpu_driver_bug_workarounds.h",
+  "+gpu/config/gpu_preferences.h",
+  "+gpu/ipc/service/arc_shared_image_interface.h",
+  "+media/base",
+  "+media/gpu",
+  "+media/media_buildflags.h",
+  "+media/video",
+  "+ui/gfx",
+  "+ui/ozone/public",
+]

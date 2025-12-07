@@ -36,6 +36,11 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="AndroidLocationProviderType">
+  <int value="0" label="ANDROID"/>
+  <int value="1" label="GMS_CORE"/>
+</enum>
+
 <enum name="CoreLocationErrorCode">
   <int value="0" label="kCLErrorLocationUnknown"/>
   <int value="1" label="kCLErrorDenied"/>
@@ -59,6 +64,12 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="kCLErrorHistoricalLocationError"/>
 </enum>
 
+<enum name="CoreLocationSessionResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kCoreLocationError"/>
+  <int value="2" label="kWifiDisabled"/>
+</enum>
+
 <enum name="GeolocationClientId">
   <int value="0" label="kForTesting"/>
   <int value="1" label="kGeolocationServiceImpl"/>
@@ -74,26 +85,60 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Authorized when in-use"/>
 </enum>
 
+<enum name="LocationProviderManagerMode">
+  <int value="0" label="kNetworkOnly"/>
+  <int value="1" label="kPlatformOnly"/>
+  <int value="2" label="kCustomOnly"/>
+  <int value="3" label="kHybridPlatform"/>
+  <int value="4" label="kHybridFallbackNetwork"/>
+  <int value="5" label="kHybridPlatform2"/>
+</enum>
+
+<enum name="LocationProviderManagerSource">
+  <int value="0" label="kNetworkProvider"/>
+  <int value="1" label="kPlatformProvider"/>
+  <int value="2" label="kCustomProvider"/>
+</enum>
+
 <enum name="LocationSystemPermissionStatus">
   <int value="0" label="kNotDetermined"/>
   <int value="1" label="kDenied"/>
   <int value="2" label="kAllowed"/>
 </enum>
 
-<enum name="NetworkLocationRequestEvent">
-  <int value="0" label="REQUEST_START"/>
-  <int value="1" label="REQUEST_CANCEL"/>
-  <int value="2" label="RESPONSE_SUCCESS"/>
-  <int value="3" label="RESPONSE_NOT_OK"/>
-  <int value="4" label="RESPONSE_EMPTY"/>
-  <int value="5" label="RESPONSE_MALFORMED"/>
-  <int value="6" label="RESPONSE_INVALID_FIX"/>
+<enum name="NetworkLocationRequestResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kCanceled"/>
+  <int value="2" label="kNetworkError"/>
+  <int value="3" label="kResponseNotOk"/>
+  <int value="4" label="kResponseEmpty"/>
+  <int value="5" label="kResponseMalformed"/>
+  <int value="6" label="kInvalidPosition"/>
 </enum>
 
 <enum name="NetworkLocationRequestSource">
   <int value="0" label="kNetworkLocationProvider"/>
   <int value="1" label="kPublicIpAddressGeolocator"/>
-  <int value="2" label="kSimpleGeolocationProvider"/>
+  <int value="2" label="kSystemLocationProvider"/>
+</enum>
+
+<enum name="WindowsDevicesGeolocationPositionSource">
+  <int value="0" label="PositionSource_Cellular"/>
+  <int value="1" label="PositionSource_Satellite"/>
+  <int value="2" label="PositionSource_WiFi"/>
+  <int value="3" label="PositionSource_IPAddress"/>
+  <int value="4" label="PositionSource_Unknown"/>
+  <int value="5" label="PositionSource_Default"/>
+  <int value="6" label="PositionSource_Obfuscated"/>
+</enum>
+
+<enum name="WindowsDevicesGeolocationPositionStatus">
+  <int value="0" label="PositionStatus_Ready"/>
+  <int value="1" label="PositionStatus_Initializing"/>
+  <int value="2" label="PositionStatus_NoData"/>
+  <int value="3" label="PositionStatus_Disabled"/>
+  <int value="4" label="PositionStatus_NotInitialized"/>
+  <int value="5" label="PositionStatus_NotAvailable"/>
 </enum>
 
 </enums>

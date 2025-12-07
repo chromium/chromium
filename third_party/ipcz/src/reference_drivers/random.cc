@@ -21,8 +21,6 @@
 #elif BUILDFLAG(IS_MAC)
 #include <sys/random.h>
 #include <unistd.h>
-#elif BUILDFLAG(IS_NACL)
-#include <nacl/nacl_random.h>
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -104,12 +102,6 @@ void RandomBytes(absl::Span<uint8_t> destination) {
   ABSL_ASSERT(ok);
 #elif BUILDFLAG(IS_IOS)
   RandomBytesFromDevUrandom(destination);
-#elif BUILDFLAG(IS_NACL)
-  while (!destination.empty()) {
-    size_t nread;
-    nacl_secure_random(destination.data(), destination.size(), &nread);
-    destination.remove_prefix(nread);
-  }
 #else
 #error "Unsupported platform"
 #endif

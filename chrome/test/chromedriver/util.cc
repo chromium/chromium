@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/util.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -123,8 +119,8 @@ Status UnzipArchive(const base::FilePath& unzip_dir,
 // Stream for writing binary data.
 class DataOutputStream {
  public:
-  DataOutputStream() {}
-  ~DataOutputStream() {}
+  DataOutputStream() = default;
+  ~DataOutputStream() = default;
 
   void WriteUInt16(uint16_t data) { WriteBytes(&data, sizeof(data)); }
 
@@ -139,7 +135,7 @@ class DataOutputStream {
       return;
     size_t next = buffer_.length();
     buffer_.resize(next + size);
-    memcpy(&buffer_[next], bytes, size);
+    UNSAFE_TODO(memcpy(&buffer_[next], bytes, size));
   }
 
   const std::string& buffer() const { return buffer_; }
@@ -153,7 +149,7 @@ class DataInputStream {
  public:
   DataInputStream(const char* data, int size)
       : data_(data), size_(size), iter_(0) {}
-  ~DataInputStream() {}
+  ~DataInputStream() = default;
 
   bool ReadUInt16(uint16_t* data) { return ReadBytes(data, sizeof(*data)); }
 
@@ -174,7 +170,7 @@ class DataInputStream {
   bool ReadBytes(void* bytes, int size) {
     if (iter_ + size > size_)
       return false;
-    memcpy(bytes, &data_[iter_], size);
+    UNSAFE_TODO(memcpy(bytes, &data_[iter_], size));
     iter_ += size;
     return true;
   }
@@ -614,7 +610,7 @@ bool GetOptionalSafeInt(const base::Value::Dict& dict,
 }
 
 bool SetSafeInt(base::Value::Dict& dict,
-                const std::string_view path,
+                std::string_view path,
                 int64_t in_value_64) {
   int int_value = static_cast<int>(in_value_64);
   if (in_value_64 == int_value)

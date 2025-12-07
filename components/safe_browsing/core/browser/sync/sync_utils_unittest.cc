@@ -13,7 +13,7 @@ namespace safe_browsing {
 
 class SyncUtilsTest : public PlatformTest {
  public:
-  SyncUtilsTest() {}
+  SyncUtilsTest() = default;
 
   base::test::TaskEnvironment task_environment_;
 };

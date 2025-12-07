@@ -54,7 +54,7 @@ using DecodeAnimationCallback =
 // Calls `callback` with an empty image/vector on
 // failure to read the file or decode the image.
 // If the image is too large, it will be repeatedly halved until it fits in
-// `IPC::Channel::kMaximumMessageSize` bytes.
+// `IPC::mojom::kChannelMaximumMessageSize` bytes.
 //
 // A custom `file_task_runner` may be specified if desired; if not, an arbitrary
 // task runner is used internally.
@@ -74,7 +74,7 @@ ASH_PUBLIC_EXPORT void DecodeAnimationFile(
 // Calls `callback` with an empty image/vector on failure to decode the
 // image.
 // If the image is too large, it will be repeatedly halved until it fits in
-// `IPC::Channel::kMaximumMessageSize` bytes.
+// `IPC::mojom::kChannelMaximumMessageSize` bytes.
 ASH_PUBLIC_EXPORT void DecodeImageData(DecodeImageCallback callback,
                                        data_decoder::mojom::ImageCodec codec,
                                        const std::string& data);

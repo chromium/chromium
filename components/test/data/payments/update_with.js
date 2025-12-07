@@ -63,8 +63,8 @@ function showPaymentRequest(pr) {
  * @param {String} paymentMethod - the payment method to be used.
  */
 function updateWithEmpty(paymentMethod) {
-  var pr = buildPaymentRequest(paymentMethod);
-  var updatedDetails = {};
+  const pr = buildPaymentRequest(paymentMethod);
+  const updatedDetails = {};
   pr.addEventListener('shippingaddresschange', function(e) {
     e.updateWith(updatedDetails);
   });
@@ -79,8 +79,8 @@ function updateWithEmpty(paymentMethod) {
  * @param {String} paymentMethod - the payment method to be used.
  */
 function updateWithTotal(paymentMethod) {
-  var pr = buildPaymentRequest(paymentMethod);
-  var updatedDetails = {
+  const pr = buildPaymentRequest(paymentMethod);
+  const updatedDetails = {
     total: {label: 'Updated total', amount: {currency: 'USD', value: '10.00'}},
   };
   pr.addEventListener('shippingaddresschange', function(e) {
@@ -97,8 +97,8 @@ function updateWithTotal(paymentMethod) {
  * @param {String} paymentMethod - the payment method to be used.
  */
 function updateWithDisplayItems(paymentMethod) {
-  var pr = buildPaymentRequest(paymentMethod);
-  var updatedDetails = {
+  const pr = buildPaymentRequest(paymentMethod);
+  const updatedDetails = {
     displayItems: [
       {label: 'Item1', amount: {currency: 'USD', value: '3.00'}},
       {label: 'Item2', amount: {currency: 'USD', value: '2.00'}},
@@ -118,8 +118,8 @@ function updateWithDisplayItems(paymentMethod) {
  * @param {String} paymentMethod - the payment method to be used.
  */
 function updateWithShippingOptions(paymentMethod) {
-  var pr = buildPaymentRequest(paymentMethod);
-  var updatedDetails = {
+  const pr = buildPaymentRequest(paymentMethod);
+  const updatedDetails = {
     shippingOptions: [{
       selected: true,
       id: 'updatedShipping',
@@ -141,8 +141,8 @@ function updateWithShippingOptions(paymentMethod) {
  * @param {String} paymentMethod - the payment method to be used.
  */
 function updateWithModifiers(paymentMethod) {
-  var pr = buildPaymentRequest(paymentMethod);
-  var updatedDetails = {
+  const pr = buildPaymentRequest(paymentMethod);
+  const updatedDetails = {
     modifiers: [{
       supportedMethods: paymentMethod,
       total: {
@@ -169,8 +169,8 @@ function updateWithModifiers(paymentMethod) {
  * @param {String} paymentMethod - the payment method to be used.
  */
 function updateWithError(paymentMethod) {
-  var pr = buildPaymentRequest(paymentMethod);
-  var errorDetails = {
+  const pr = buildPaymentRequest(paymentMethod);
+  const errorDetails = {
     error: 'This is an error for a browsertest',
   };
   pr.addEventListener('shippingaddresschange', function(e) {

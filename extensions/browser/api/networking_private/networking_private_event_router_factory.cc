@@ -45,7 +45,7 @@ content::BrowserContext*
 NetworkingPrivateEventRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
 bool NetworkingPrivateEventRouterFactory::ServiceIsCreatedWithBrowserContext()

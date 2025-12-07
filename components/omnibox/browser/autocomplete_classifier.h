@@ -65,6 +65,10 @@ class AutocompleteClassifier : public KeyedService {
       AutocompleteMatch* match,
       GURL* alternate_nav_url);
 
+  AutocompleteController* autocomplete_controller() {
+    return controller_.get();
+  }
+
  private:
   std::unique_ptr<AutocompleteController> controller_;
   std::unique_ptr<AutocompleteSchemeClassifier> scheme_classifier_;

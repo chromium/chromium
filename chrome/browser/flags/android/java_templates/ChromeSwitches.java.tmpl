@@ -81,9 +81,14 @@ public abstract class ChromeSwitches {{
     public static final String DISABLE_NATIVE_INITIALIZATION = "disable-native-initialization";
 
     /**
-     * Force enable the popup context menu to unblock drag and drop from web contents on phones.
+     * Force the app to turn off windowOptOutEdgeToEdgeEnforcement.
      */
-    public static final String FORCE_CONTEXT_MENU_POPUP = "force-context-menu-popup";
+    public static final String DISABLE_OPT_OUT_EDGE_TO_EDGE = "disable-opt-out-edge-to-edge";
+
+    /**
+     * Override the tab strip height transition threshold in DP.
+     */
+    public static final String TAB_STRIP_HEIGHT_TRANSITION_THRESHOLD = "tab-strip-height-transition-threshold";
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Native Switches
@@ -167,10 +172,6 @@ public abstract class ChromeSwitches {{
     /** Set the configuration to trigger the feed header menu IPH. */
     public static final String FEED_HEADER_MENU_IPH_TRIGGER_CONFIG =
             "feed-header-menu-iph-trigger-config";
-
-    /** Disable the default browser promo. */
-    public static final String DISABLE_DEFAULT_BROWSER_PROMO =
-            "disable-default-browser-promo";
 
     /** Debug Chime notifications. */
     public static final String DEBUG_CHIME_NOTIFICATION =

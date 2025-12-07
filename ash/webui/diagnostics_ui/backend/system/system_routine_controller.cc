@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller.h"
 
 #include <optional>
@@ -17,11 +12,13 @@
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/common/routine_properties.h"
 #include "ash/webui/diagnostics_ui/backend/system/cros_healthd_helpers.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -81,8 +78,7 @@ mojom::StandardRoutineResult TestStatusToResult(
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
     case healthd::DiagnosticRoutineStatusEnum::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::StandardRoutineResult::kExecutionError;
+      NOTREACHED();
   }
 }
 
@@ -201,7 +197,7 @@ void SystemRoutineController::OnAvailableRoutinesFetched(
   base::flat_set<healthd::DiagnosticRoutineEnum> healthd_routines(
       available_routines);
   for (size_t i = 0; i < kRoutinePropertiesLength; i++) {
-    const RoutineProperties& routine = kRoutineProperties[i];
+    const RoutineProperties& routine = UNSAFE_TODO(kRoutineProperties[i]);
     if (base::Contains(healthd_routines, routine.healthd_type)) {
       supported_routines_.push_back(routine.type);
     }

@@ -60,9 +60,9 @@ class PatternAccountRestriction {
 // pattern is invalid, returns false.
 bool ArePatternsValid(const base::Value* value);
 
-// Creates a PatternAccountRestriction from `list` which needs to
-// be a list of strings.
-std::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
+// Creates a PatternAccountRestriction from `list` which should be a list of
+// strings (any non-string values are silently ignored).
+PatternAccountRestriction PatternAccountRestrictionFromValue(
     const base::Value::List& list);
 
 // The given chunk is split by wildcards and a Pattern (list of chunks) is

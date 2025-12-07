@@ -178,6 +178,11 @@ declare interface ClientApiDelegate {
    */
   getDeviceInfo: () => Promise<DeviceInfo>;
   /**
+   * Opens OS Settings at the specified settings path. Valid path numbers:
+   * go/help-app-open-settings-paths
+   */
+  openSettings: (path: number) => undefined;
+  /**
    * Opens a valid https:// URL in a new browser tab without getting intercepted
    * by URL capturing logic. If the "HelpAppAutoTriggerInstallDialog" feature
    * flag is enabled, this will automatically trigger the install dialog.
@@ -185,6 +190,20 @@ declare interface ClientApiDelegate {
    * process to crash.
    */
   openUrlInBrowserAndTriggerInstallDialog: (url: string) => Promise<void>;
+  /**
+   * Sets the HasCompletedNewDeviceChecklist pref to true. Call this after the
+   * user completes the checklist.
+   */
+  setHasCompletedNewDeviceChecklist: () => undefined;
+  /**
+   * Sets the HasVisitedHowToPage pref to true. Call this after the user visits
+   * the how to page.
+   */
+  setHasVisitedHowToPage: () => undefined;
+  /**
+   * Opens the App Mall app at the specified path.
+   */
+  openAppMallPath: (path: string) => undefined;
 }
 
 /** Launch data that can be read by the app when it first loads. */

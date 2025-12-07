@@ -27,7 +27,7 @@ TEST(AXNodeDataMojomTraitsTest, Role) {
 
 TEST(AXNodeDataMojomTraitsTest, State) {
   ui::AXNodeData input, output;
-  input.state = 0;
+  input.state = ui::AXStates(0U);
   input.AddState(ax::mojom::State::kCollapsed);
   input.AddState(ax::mojom::State::kHorizontal);
   input.AddState(ax::mojom::State::kMaxValue);

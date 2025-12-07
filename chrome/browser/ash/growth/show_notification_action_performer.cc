@@ -13,10 +13,12 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -57,7 +59,8 @@ struct ShowNotificationParams {
 std::unique_ptr<ShowNotificationParams>
 ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
   if (!params) {
-    LOG(ERROR) << "Empty parameter to ShowNotificationActionPerformer.";
+    CAMPAIGNS_LOG(ERROR)
+        << "Empty parameter to ShowNotificationActionPerformer.";
     return nullptr;
   }
 
@@ -80,7 +83,7 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
     // TODO: b/331633771 - Consider adding default icon for notification.
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNotificationPayloadMissingIcon);
-    LOG(ERROR) << "icon is required for notification.";
+    CAMPAIGNS_LOG(ERROR) << "icon is required for notification.";
     return nullptr;
   }
 
@@ -134,27 +137,56 @@ std::string GetNotificationId(int campaign_id) {
 
 HandleNotificationClickAndCloseDelegate::
     HandleNotificationClickAndCloseDelegate(
+        const base::Value::Dict* params,
         const ButtonClickCallback& click_callback,
         const CloseCallback& close_callback)
-    : click_callback_(click_callback), close_callback_(close_callback) {}
+    :  // Copy ctor and assignment of Dict are not allowed. Need to use Clone()
+       // explicitly.
+       // `params` are currently owned by CampaignManager. When campaigns are
+       // reloaded at session start (e.g: lock and unlock), the memory will
+       // become invalid, so store the value in
+       // HandleNotificationClickAndCloseDelegate.
+       // HandleNotificationClickAndCloseDelegate is one instance per
+       // notification.
+      params_(params->Clone()),
+      click_callback_(click_callback),
+      close_callback_(close_callback) {}
 HandleNotificationClickAndCloseDelegate::
-    ~HandleNotificationClickAndCloseDelegate() {}
+    ~HandleNotificationClickAndCloseDelegate() = default;
 
 void HandleNotificationClickAndCloseDelegate::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
+  if (button_index) {
+    button_clicked_ = true;
+  }
+
   if (click_callback_.is_null()) {
     return;
   }
-  click_callback_.Run(button_index);
+
+  // Need to make another clone here because the Dict value is passed to
+  // multiple functions. If pass by reference, current test will fail due to
+  // dangling pointer.
+  click_callback_.Run(params_.Clone(), button_index);
 }
 
 void HandleNotificationClickAndCloseDelegate::Close(bool by_user) {
+  // Click any button in the notification will also trigger `Close()`.
+  // Return here because we only want to log the close metric with explicit
+  // close actions, such as clicking the close button.
+  if (button_clicked_) {
+    return;
+  }
+
   if (close_callback_.is_null()) {
     return;
   }
   close_callback_.Run(by_user);
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ShowNotificationActionPerformer,
+                                      kBubbleIdForTesting);
 
 ShowNotificationActionPerformer::ShowNotificationActionPerformer() = default;
 ShowNotificationActionPerformer::~ShowNotificationActionPerformer() = default;
@@ -195,10 +227,11 @@ void ShowNotificationActionPerformer::Run(
               ash::NotificationCatalogName::kGrowthFramework),
           optional_fields,
           base::MakeRefCounted<HandleNotificationClickAndCloseDelegate>(
+              params,
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClicked,
-                  weak_ptr_factory_.GetWeakPtr(), params, id, campaign_id,
-                  group_id, show_notification_params->should_log_cros_events),
+                  weak_ptr_factory_.GetWeakPtr(), id, campaign_id, group_id,
+                  show_notification_params->should_log_cros_events),
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClose,
                   weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id,
@@ -206,6 +239,8 @@ void ShowNotificationActionPerformer::Run(
                   show_notification_params->should_log_cros_events)),
           *show_notification_params->icon,
           message_center::SystemNotificationWarningLevel::NORMAL);
+  notification->set_host_view_element_id(kBubbleIdForTesting);
+
   auto* message_center = message_center::MessageCenter::Get();
   CHECK(message_center);
 
@@ -239,11 +274,11 @@ void ShowNotificationActionPerformer::HandleNotificationClose(
 }
 
 void ShowNotificationActionPerformer::HandleNotificationClicked(
-    const base::Value::Dict* params,
     const std::string& notification_id,
     int campaign_id,
     std::optional<int> group_id,
     bool should_log_cros_events,
+    base::Value::Dict params,
     std::optional<int> button_index) {
   if (!button_index) {
     // Notification message body clicked.
@@ -258,12 +293,13 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
     button_id = CampaignButtonId::kSecondary;
   }
 
-  const auto* buttons_value = params->FindList(kButtonsPath);
+  const auto* buttons_value = params.FindList(kButtonsPath);
   CHECK(buttons_value);
 
   const auto& button_value = (*buttons_value)[button_index_value];
   if (!button_value.is_dict()) {
-    LOG(ERROR) << "Invalid button payload.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid button payload.";
+    return;
   }
 
   const auto should_mark_dismissed =
@@ -275,7 +311,7 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
   if (!action_value) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNotificationPayloadMissingButtonAction);
-    LOG(ERROR) << "Missing action.";
+    CAMPAIGNS_LOG(ERROR) << "Missing action.";
     return;
   }
   auto action = growth::Action(action_value);

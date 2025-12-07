@@ -8,22 +8,28 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/browser/single_value_wildcard_rule_iterator.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -62,14 +68,36 @@ const char kObsoletePpapiBrokerDefaultPref[] =
 constexpr char kObsoleteFederatedIdentityDefaultPref[] =
     "profile.default_content_setting_values.fedcm_active_session";
 
-ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
+constexpr char kObsoletePrivateNetworkGuardDefaultPref[] =
+    "profile.default_content_setting_values.private_network_guard";
+
+constexpr char kGeolocationMigrateDefaultValue[] =
+    "profile.default_content_setting_values.migrate_geolocation";
+
+#if !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteTpcdTrialDefaultPref[] =
+    "profile.default_content_setting_values.3pcd_support";
+constexpr char kObsoleteTopLevelTpcdTrialDefaultPref[] =
+    "profile.default_content_setting_values.top_level_3pcd_support";
+constexpr char kObsoleteTopLevelTpcdOriginTrialDefaultPref[] =
+    "profile.default_content_setting_values.top_level_3pcd_origin_trial";
+// This setting was accidentally bound to a UI surface intended for a different
+// setting (https://crbug.com/364820109). It should not have been settable
+// except via enterprise policy, so it is temporarily cleaned up here to revert
+// it to its default value.
+// TODO(https://crbug.com/367181093): clean this up.
+constexpr char kBug364820109AlreadyWorkedAroundPref[] =
+    "profile.did_work_around_bug_364820109_default";
+#endif  // !BUILDFLAG(IS_IOS)
+
+base::Value GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
   if (initial_default.is_none())
-    return CONTENT_SETTING_DEFAULT;
-  return static_cast<ContentSetting>(initial_default.GetInt());
+    return base::Value(CONTENT_SETTING_DEFAULT);
+  return initial_default.Clone();
 }
 
-ContentSetting GetDefaultValue(ContentSettingsType type) {
+base::Value GetDefaultValue(ContentSettingsType type) {
   return GetDefaultValue(WebsiteSettingsRegistry::GetInstance()->Get(type));
 }
 
@@ -78,33 +106,6 @@ const std::string& GetPrefName(ContentSettingsType type) {
       ->Get(type)
       ->default_value_pref_name();
 }
-
-class DefaultRuleIterator : public RuleIterator {
- public:
-  explicit DefaultRuleIterator(base::Value value) {
-    if (!value.is_none())
-      value_ = std::move(value);
-    else
-      is_done_ = true;
-  }
-
-  DefaultRuleIterator(const DefaultRuleIterator&) = delete;
-  DefaultRuleIterator& operator=(const DefaultRuleIterator&) = delete;
-
-  bool HasNext() const override { return !is_done_; }
-
-  std::unique_ptr<Rule> Next() override {
-    DCHECK(HasNext());
-    is_done_ = true;
-    return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
-                                  ContentSettingsPattern::Wildcard(),
-                                  std::move(value_), RuleMetaData{});
-  }
-
- private:
-  bool is_done_ = false;
-  base::Value value_;
-};
 
 }  // namespace
 
@@ -115,10 +116,19 @@ void DefaultProvider::RegisterProfilePrefs(
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
-    registry->RegisterIntegerPref(info->default_value_pref_name(),
-                                  GetDefaultValue(info),
-                                  info->GetPrefRegistrationFlags());
+    if (info->initial_default_value().is_dict()) {
+      registry->RegisterDictionaryPref(
+          info->default_value_pref_name(),
+          info->initial_default_value().GetDict().Clone(),
+          info->GetPrefRegistrationFlags());
+    } else {
+      registry->RegisterIntegerPref(info->default_value_pref_name(),
+                                    GetDefaultValue(info->type()).GetInt(),
+                                    info->GetPrefRegistrationFlags());
+    }
   }
+
+  registry->RegisterBooleanPref(kGeolocationMigrateDefaultValue, false);
 
   // Obsolete prefs -------------------------------------------------------
 
@@ -126,6 +136,9 @@ void DefaultProvider::RegisterProfilePrefs(
   // be deleted on startup (see DiscardOrMigrateObsoletePreferences).
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteNfcDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteTpcdTrialDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteTopLevelTpcdTrialDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref, 0);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
@@ -139,6 +152,12 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoletePrivateNetworkGuardDefaultPref, 0);
+
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs,
@@ -156,6 +175,8 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
   // Read global defaults.
   ReadDefaultSettings();
 
+  MigrateGeolocationDefaultValue();
+
   if (should_record_metrics)
     RecordHistogramMetrics();
 
@@ -171,15 +192,12 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
 
 DefaultProvider::~DefaultProvider() = default;
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
-// when we call NotifyObservers().
 bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints,
-    const PartitionKey& partition_key) {
+    const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -212,16 +230,14 @@ bool DefaultProvider::SetWebsiteSetting(
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type,
-                  /*partition_key=*/nullptr);
+                  ContentSettingsPattern::Wildcard(), content_type);
 
   return true;
 }
 
 std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+    bool off_the_record) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record)
     return nullptr;
@@ -229,18 +245,15 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   base::AutoLock lock(lock_);
   const auto it = default_settings_.find(content_type);
   if (it == default_settings_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
-  return std::make_unique<DefaultRuleIterator>(it->second.Clone());
+  return std::make_unique<SingleValueWildcardRuleIterator>(it->second.Clone());
 }
 
-std::unique_ptr<Rule> DefaultProvider::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+std::unique_ptr<Rule> DefaultProvider::GetRule(const GURL& primary_url,
+                                               const GURL& secondary_url,
+                                               ContentSettingsType content_type,
+                                               bool off_the_record) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record) {
     return nullptr;
@@ -249,8 +262,7 @@ std::unique_ptr<Rule> DefaultProvider::GetRule(
   base::AutoLock lock(lock_);
   const auto it = default_settings_.find(content_type);
   if (it == default_settings_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   if (it->second.is_none()) {
@@ -263,8 +275,7 @@ std::unique_ptr<Rule> DefaultProvider::GetRule(
 }
 
 void DefaultProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   // TODO(markusheintz): This method is only called when the
   // |DesktopNotificationService| calls |ClearAllSettingsForType| method on the
   // |HostContentSettingsMap|. Don't implement this method yet, otherwise the
@@ -289,19 +300,24 @@ void DefaultProvider::ReadDefaultSettings() {
 
 bool DefaultProvider::IsValueEmptyOrDefault(ContentSettingsType content_type,
                                             const base::Value& value) {
-  return value.is_none() ||
-         ValueToContentSetting(value) == GetDefaultValue(content_type);
+  return value.is_none() || value == GetDefaultValue(content_type);
 }
 
 void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
                                     base::Value value) {
-  const ContentSettingsInfo* info =
-      ContentSettingsRegistry::GetInstance()->Get(content_type);
+  const PermissionSettingsInfo* info =
+      PermissionSettingsRegistry::GetInstance()->Get(content_type);
   DCHECK(!info || value.is_none() ||
-         info->IsDefaultSettingValid(ValueToContentSetting(value)));
-  default_settings_[content_type] =
-      value.is_none() ? ContentSettingToValue(GetDefaultValue(content_type))
-                      : std::move(value);
+         info->delegate().IsDefaultSettingValid(
+             *info->delegate().FromValue(value)))
+      << "type: " << content_type << " value: " << value.DebugString();
+  if (value.is_none()) {
+    value = GetDefaultValue(content_type);
+    if (value == CONTENT_SETTING_DEFAULT) {
+      value = base::Value();
+    }
+  }
+  default_settings_[content_type] = std::move(value);
 }
 
 void DefaultProvider::WriteToPref(ContentSettingsType content_type,
@@ -311,7 +327,7 @@ void DefaultProvider::WriteToPref(ContentSettingsType content_type,
     return;
   }
 
-  prefs_->SetInteger(GetPrefName(content_type), value.GetInt());
+  prefs_->Set(GetPrefName(content_type), value);
 }
 
 void DefaultProvider::OnPreferenceChanged(const std::string& name) {
@@ -332,10 +348,9 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   if (content_type == ContentSettingsType::DEFAULT) {
-    NOTREACHED_IN_MIGRATION() << "A change of the preference " << name
-                              << " was observed, but the preference could not "
-                                 "be mapped to a content settings type.";
-    return;
+    NOTREACHED() << "A change of the preference " << name
+                 << " was observed, but the preference could not be mapped to "
+                    "a content settings type.";
   }
 
   {
@@ -351,13 +366,24 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type,
-                  /*partition_key=*/nullptr);
+                  ContentSettingsPattern::Wildcard(), content_type);
 }
 
 base::Value DefaultProvider::ReadFromPref(ContentSettingsType content_type) {
-  int int_value = prefs_->GetInteger(GetPrefName(content_type));
-  return ContentSettingToValue(IntToContentSetting(int_value));
+  const base::Value& value = prefs_->GetValue(GetPrefName(content_type));
+  // Validate settings.
+  if (value.is_int()) {
+    return ContentSettingToValue(IntToContentSetting(value.GetInt()));
+  }
+  if (auto* info =
+          PermissionSettingsRegistry::GetInstance()->Get(content_type)) {
+    if (info->delegate().FromValue(value)) {
+      return value.Clone();
+    }
+  }
+  LOG(ERROR) << "invalid default setting: " << content_type << " "
+             << value.DebugString();
+  return base::Value();
 }
 
 void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
@@ -367,6 +393,9 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   // deleted.
 #if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteNfcDefaultPref);
+  prefs_->ClearPref(kObsoleteTpcdTrialDefaultPref);
+  prefs_->ClearPref(kObsoleteTopLevelTpcdTrialDefaultPref);
+  prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref);
 #if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);
@@ -378,6 +407,48 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFederatedIdentityDefaultPref);
+  prefs_->ClearPref(kObsoletePrivateNetworkGuardDefaultPref);
+
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
+#endif  // !BUILDFLAG(IS_IOS)
+}
+
+void DefaultProvider::MigrateGeolocationDefaultValue() {
+  if (is_off_the_record_) {
+    return;
+  }
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  // Migrate when the feature gets enabled the first time.
+  if (base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      !prefs_->GetBoolean(kGeolocationMigrateDefaultValue)) {
+    auto content_setting = ValueToContentSetting(
+        default_settings_.at(ContentSettingsType::GEOLOCATION));
+    auto geolocation_setting =
+        GeolocationSetting{ToPermissionOption(content_setting),
+                           ToPermissionOption(content_setting)};
+    ChangeSetting(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+                  info->delegate().ToValue(geolocation_setting));
+    prefs_->SetBoolean(kGeolocationMigrateDefaultValue, true);
+  }
+
+  // Migrate back when the feature is disabled the first time.
+  if (!base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      prefs_->GetBoolean(kGeolocationMigrateDefaultValue)) {
+    auto geolocation_setting =
+        std::get<GeolocationSetting>(ValueToPermissionSetting(
+            info, default_settings_.at(
+                      ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+    ChangeSetting(
+        ContentSettingsType::GEOLOCATION,
+        ContentSettingToValue(ToContentSetting(geolocation_setting.precise)));
+    prefs_->SetBoolean(kGeolocationMigrateDefaultValue, false);
+  }
 }
 
 void DefaultProvider::RecordHistogramMetrics() {
@@ -400,15 +471,13 @@ void DefaultProvider::RecordHistogramMetrics() {
       CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultImagesSetting",
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::IMAGES))),
       CONTENT_SETTING_NUM_SETTINGS);
-#endif
 
-#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultJavaScriptSetting",
       IntToContentSetting(
@@ -480,6 +549,11 @@ void DefaultProvider::RecordHistogramMetrics() {
       "ContentSettings.RegularProfile.DefaultAutoVerifySetting",
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::ANTI_ABUSE))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::JAVASCRIPT_OPTIMIZER))),
       CONTENT_SETTING_NUM_SETTINGS);
 #endif
 

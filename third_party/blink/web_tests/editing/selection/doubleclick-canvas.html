@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Clicking on canvas should not modify the selection</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<canvas id="target" width="50px" height="50px" style="background-color: #ADD8E6;"></canvas>
+<p>Some text</p>
+<script>
+  const selection = document.getSelection();
+  const canvas = document.getElementById("target");
+  generateDoubleClickSequence = () => new test_driver.Actions()
+    .pointerMove(0, 0, { origin: canvas })
+    .pointerDown()
+    .pointerUp()
+    .pause(10)
+    .pointerDown()
+    .pointerUp();
+
+  promise_test(async () => {
+    let doubleClickEventFired = false;
+    canvas.addEventListener("dblclick", () => {
+      doubleClickEventFired = true;
+    });
+
+    assert_equals(selection.anchorNode, null, "Selection should be empty initially.");
+    assert_false(doubleClickEventFired);
+
+    // Double click on the canvas.
+    await generateDoubleClickSequence().send();
+
+    assert_true(doubleClickEventFired, "dblclick event should be fired.");
+    assert_equals(selection.anchorNode, null, "Selection should not change.");
+  }, "Clicking on canvas should not modify the selection.");
+</script>

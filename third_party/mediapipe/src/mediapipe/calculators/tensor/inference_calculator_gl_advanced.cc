@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,18 +20,17 @@
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/time/time.h"
 #include "mediapipe/calculators/tensor/inference_calculator.h"
 #include "mediapipe/calculators/tensor/inference_io_mapper.h"
+#include "mediapipe/calculators/tensor/inference_on_disk_cache_helper.h"
+#include "mediapipe/calculators/tensor/inference_runner.h"
 #include "mediapipe/calculators/tensor/tensor_span.h"
 #include "mediapipe/framework/api2/packet.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/deps/file_path.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/mediapipe_profiling.h"
-#include "mediapipe/framework/port/file_helpers.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/gpu/gl_calculator_helper.h"
@@ -65,43 +63,18 @@ class InferenceCalculatorGlAdvancedImpl
   absl::Status Close(CalculatorContext* cc) override;
 
  private:
-  // Helper class that saves binary data to disk, or read from disk.
-  class OnDiskCacheHelper {
-   public:
-    absl::Status Init(
-        const mediapipe::InferenceCalculatorOptions& options,
-        const mediapipe::InferenceCalculatorOptions::Delegate::Gpu&
-            gpu_delegate_options);
-    absl::Status ReadGpuCaches(tflite::gpu::TFLiteGPURunner& gpu_runner) const;
-    // Writes caches to disk based on |cache_writing_behavior_|.
-    absl::Status SaveGpuCachesBasedOnBehavior(
-        tflite::gpu::TFLiteGPURunner& gpu_runner) const;
-    bool UseSerializedModel() const { return use_serialized_model_; }
-
-   private:
-    // Writes caches to disk, returns error on failure.
-    absl::Status SaveGpuCaches(tflite::gpu::TFLiteGPURunner& gpu_runner) const;
-
-    bool use_kernel_caching_ = false;
-    std::string cached_kernel_filename_;
-    bool use_serialized_model_ = false;
-    std::string serialized_model_path_;
-    mediapipe::InferenceCalculatorOptions::Delegate::Gpu::CacheWritingBehavior
-        cache_writing_behavior_;
-  };
-
   // Helper class that wraps everything related to GPU inference acceleration.
-  class GpuInferenceRunner {
+  class GpuInferenceRunner : public InferenceRunner {
    public:
     ~GpuInferenceRunner();
 
     absl::Status Init(CalculatorContext* cc,
                       std::shared_ptr<GlContext> gl_context);
 
-    absl::StatusOr<std::vector<Tensor>> Process(
-        CalculatorContext* cc, const TensorSpan& input_tensors);
+    absl::StatusOr<std::vector<Tensor>> Run(
+        CalculatorContext* cc, const TensorSpan& input_tensors) override;
 
-    const InputOutputTensorNames& GetInputOutputTensorNames() const;
+    const InputOutputTensorNames& GetInputOutputTensorNames() const override;
 
    private:
     absl::Status InitTFLiteGPURunner(
@@ -117,7 +90,7 @@ class InferenceCalculatorGlAdvancedImpl
 
     std::vector<Tensor::Shape> output_shapes_;
 
-    OnDiskCacheHelper on_disk_cache_helper_;
+    InferenceOnDiskCacheHelper on_disk_cache_helper_;
 
     InputOutputTensorNames input_output_tensor_names_;
   };
@@ -127,7 +100,7 @@ class InferenceCalculatorGlAdvancedImpl
   absl::StatusOr<std::unique_ptr<GpuInferenceRunner>> CreateInferenceRunner(
       CalculatorContext* cc);
 
-  std::unique_ptr<GpuInferenceRunner> gpu_inference_runner_;
+  std::unique_ptr<InferenceRunner> inference_runner_;
   mediapipe::GlCalculatorHelper gpu_helper_;
 };
 
@@ -169,7 +142,7 @@ absl::Status InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::Init(
 }
 
 absl::StatusOr<std::vector<Tensor>>
-InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::Process(
+InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::Run(
     CalculatorContext* cc, const TensorSpan& input_tensors) {
   std::vector<Tensor> output_tensors;
   for (int i = 0; i < input_tensors.size(); ++i) {
@@ -280,112 +253,6 @@ InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::InitTFLiteGPURunner(
       *tflite_gpu_runner_);
 }
 
-absl::Status InferenceCalculatorGlAdvancedImpl::OnDiskCacheHelper::Init(
-    const mediapipe::InferenceCalculatorOptions& options,
-    const mediapipe::InferenceCalculatorOptions::Delegate::Gpu&
-        gpu_delegate_options) {
-  // The kernel cache needs a unique filename based on either model_path or the
-  // model token, to prevent the cache from being overwritten if the graph has
-  // more than one model.
-  use_kernel_caching_ =
-      gpu_delegate_options.has_cached_kernel_path() &&
-      (options.has_model_path() || gpu_delegate_options.has_model_token());
-  use_serialized_model_ = gpu_delegate_options.has_serialized_model_dir() &&
-                          gpu_delegate_options.has_model_token();
-
-  if (use_kernel_caching_) {
-    absl::string_view basename =
-        options.has_model_path()
-            ? mediapipe::file::Basename(options.model_path())
-            : gpu_delegate_options.model_token();
-    cached_kernel_filename_ =
-        mediapipe::file::JoinPath(gpu_delegate_options.cached_kernel_path(),
-                                  absl::StrCat(basename, ".ker"));
-  }
-  if (use_serialized_model_) {
-    serialized_model_path_ =
-        mediapipe::file::JoinPath(gpu_delegate_options.serialized_model_dir(),
-                                  gpu_delegate_options.model_token());
-  }
-  cache_writing_behavior_ = gpu_delegate_options.has_cache_writing_behavior()
-                                ? gpu_delegate_options.cache_writing_behavior()
-                                : mediapipe::InferenceCalculatorOptions::
-                                      Delegate::Gpu::WRITE_OR_ERROR;
-  return absl::OkStatus();
-}
-
-absl::Status InferenceCalculatorGlAdvancedImpl::OnDiskCacheHelper::
-    SaveGpuCachesBasedOnBehavior(
-        tflite::gpu::TFLiteGPURunner& gpu_runner) const {
-  switch (cache_writing_behavior_) {
-    case mediapipe::InferenceCalculatorOptions::Delegate::Gpu::NO_WRITE:
-      return absl::OkStatus();
-    case mediapipe::InferenceCalculatorOptions::Delegate::Gpu::TRY_WRITE: {
-      auto status = SaveGpuCaches(gpu_runner);
-      if (!status.ok()) {
-        ABSL_LOG_FIRST_N(WARNING, 1) << "Failed to save gpu caches: " << status;
-      }
-      return absl::OkStatus();
-    }
-    case mediapipe::InferenceCalculatorOptions::Delegate::Gpu::WRITE_OR_ERROR:
-      return SaveGpuCaches(gpu_runner);
-    default:
-      ABSL_LOG_FIRST_N(ERROR, 1)
-          << "Unknown cache writing behavior: "
-          << static_cast<uint32_t>(cache_writing_behavior_);
-      return absl::InvalidArgumentError("Unknown cache writing behavior.");
-  }
-}
-
-absl::Status
-InferenceCalculatorGlAdvancedImpl::OnDiskCacheHelper::SaveGpuCaches(
-    tflite::gpu::TFLiteGPURunner& gpu_runner) const {
-  if (use_kernel_caching_ && gpu_runner.CanGenerateSerializedBinaryCache()) {
-    // Save kernel file.
-    MP_ASSIGN_OR_RETURN(std::vector<uint8_t> kernel_cache,
-                        gpu_runner.GetSerializedBinaryCache());
-    std::string cache_str(kernel_cache.begin(), kernel_cache.end());
-    MP_RETURN_IF_ERROR(
-        mediapipe::file::SetContents(cached_kernel_filename_, cache_str));
-  }
-  if (use_serialized_model_ && gpu_runner.CanGenerateSerializedModel()) {
-    // Save serialized model file.
-    MP_ASSIGN_OR_RETURN(std::vector<uint8_t> serialized_model_vec,
-                        gpu_runner.GetSerializedModel());
-    absl::string_view serialized_model(
-        reinterpret_cast<char*>(serialized_model_vec.data()),
-        serialized_model_vec.size());
-    MP_RETURN_IF_ERROR(
-        mediapipe::file::SetContents(serialized_model_path_, serialized_model));
-  }
-  return absl::OkStatus();
-}
-
-absl::Status
-InferenceCalculatorGlAdvancedImpl::OnDiskCacheHelper::ReadGpuCaches(
-    tflite::gpu::TFLiteGPURunner& gpu_runner) const {
-  if (use_kernel_caching_ &&
-      mediapipe::file::Exists(cached_kernel_filename_).ok()) {
-    // Load pre-compiled kernel file.
-    std::string cache_str;
-    MP_RETURN_IF_ERROR(
-        mediapipe::file::GetContents(cached_kernel_filename_, &cache_str));
-    std::vector<uint8_t> cache_vec(cache_str.begin(), cache_str.end());
-    gpu_runner.SetSerializedBinaryCache(std::move(cache_vec));
-  }
-  if (use_serialized_model_ &&
-      mediapipe::file::Exists(serialized_model_path_).ok()) {
-    // Load serialized model file.
-    std::string serialized_model_str;
-    MP_RETURN_IF_ERROR(
-        file::GetContents(serialized_model_path_, &serialized_model_str));
-    std::vector<uint8_t> serialized_model_vec(serialized_model_str.begin(),
-                                              serialized_model_str.end());
-    gpu_runner.SetSerializedModel(std::move(serialized_model_vec));
-  }
-  return absl::OkStatus();
-}
-
 absl::Status InferenceCalculatorGlAdvancedImpl::UpdateContract(
     CalculatorContract* cc) {
   MP_RETURN_IF_ERROR(TensorContractCheck(cc));
@@ -401,11 +268,10 @@ absl::Status InferenceCalculatorGlAdvancedImpl::UpdateContract(
 
 absl::Status InferenceCalculatorGlAdvancedImpl::Open(CalculatorContext* cc) {
   MP_RETURN_IF_ERROR(gpu_helper_.Open(cc));
-  gpu_inference_runner_ = std::make_unique<GpuInferenceRunner>();
-  MP_RETURN_IF_ERROR(
-      gpu_inference_runner_->Init(cc, gpu_helper_.GetSharedGlContext()));
+
+  MP_ASSIGN_OR_RETURN(inference_runner_, CreateInferenceRunner(cc));
   return InferenceCalculatorNodeImpl::UpdateIoMapping(
-      cc, gpu_inference_runner_->GetInputOutputTensorNames());
+      cc, inference_runner_->GetInputOutputTensorNames());
 }
 
 absl::StatusOr<std::vector<Tensor>> InferenceCalculatorGlAdvancedImpl::Process(
@@ -413,14 +279,14 @@ absl::StatusOr<std::vector<Tensor>> InferenceCalculatorGlAdvancedImpl::Process(
   std::vector<Tensor> output_tensors;
   MP_RETURN_IF_ERROR(gpu_helper_.RunInGlContext([&]() -> absl::Status {
     MP_ASSIGN_OR_RETURN(output_tensors,
-                        gpu_inference_runner_->Process(cc, tensor_span));
+                        inference_runner_->Run(cc, tensor_span));
     return absl::OkStatus();
   }));
   return output_tensors;
 }
 
 absl::Status InferenceCalculatorGlAdvancedImpl::Close(CalculatorContext* cc) {
-  gpu_inference_runner_.reset();
+  inference_runner_.reset();
 
   return absl::OkStatus();
 }

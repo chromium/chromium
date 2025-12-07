@@ -10,16 +10,19 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.components.embedder_support.view.ContentView;
 
+@NullMarked
 public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         implements View.OnApplyWindowInsetsListener {
 
@@ -34,19 +37,21 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
      * @param areControlsHidden Supplier of a flag indicating if browser controls are hidden.
      * @param exitFullscreenOnStop Whether fullscreen mode should exit on stop - should be true for
      *     Activities that are not always fullscreen.
+     * @param multiWindowDispatcher multi window mode observer allows to exit fullscreen when user
+     *     drag the window out of edge-to-edge fullscreen
      */
     public FullscreenHtmlApiHandlerCompat(
             Activity activity,
             ObservableSupplier<Boolean> areControlsHidden,
-            boolean exitFullscreenOnStop) {
-        super(activity, areControlsHidden, exitFullscreenOnStop);
+            boolean exitFullscreenOnStop,
+            MultiWindowModeStateDispatcher multiWindowDispatcher) {
+        super(activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);
     }
 
     // View.OnApplyWindowInsetsListener
 
-    @NonNull
     @Override
-    public WindowInsets onApplyWindowInsets(@NonNull View v, @NonNull WindowInsets insets) {
+    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
         if (mTabInFullscreen != null && getPersistentFullscreenMode()) {
             mHandler.sendEmptyMessageDelayed(
                     MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS, ANDROID_CONTROLS_SHOW_DURATION_MS);
@@ -57,7 +62,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
     // FullscreenHtmlApiHandlerBase
 
     @Override
-    protected void setContentView(ContentView contentView) {
+    protected void setContentView(@Nullable ContentView contentView) {
         ContentView oldContentView = getContentView();
         if (contentView == oldContentView) return;
         if (oldContentView != null) {
@@ -143,6 +148,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     boolean isLayoutFullscreen(View contentView) {
+        // TODO(crbug.com/41492646): Coordinate usage of #setDecorFitsSystemWindows
         return !mActivity.getWindow().getDecorView().getFitsSystemWindows();
     }
 
@@ -161,7 +167,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
     void setLayoutFullscreen(View contentView) {
         // Avoid setting this on automotive, as automotive devices are inconsistent in their
         // support for drawing edge-to-edge.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return;
         }
         // TODO(crbug.com/41492929): Account for floating windows.
@@ -187,7 +193,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     void logEnterFullscreen(View contentView) {
-        Log.i(TAG, "enterFullscreen, systemUiVisibility=" + getSystemUIVisibility(contentView));
+        Log.i(TAG, "enterFullscreen, systemUiVisibility=" + getSystemUiVisibility(contentView));
     }
 
     @Override
@@ -197,7 +203,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     void logExitFullscreen(View contentView) {
-        Log.i(TAG, "exitFullscreen, systemUiVisibility=" + getSystemUIVisibility(contentView));
+        Log.i(TAG, "exitFullscreen, systemUiVisibility=" + getSystemUiVisibility(contentView));
     }
 
     @Override
@@ -205,7 +211,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         Log.i(
                 TAG,
                 "handleMessage clear fullscreen flag, systemUiVisibility="
-                        + getSystemUIVisibility(contentView));
+                        + getSystemUiVisibility(contentView));
     }
 
     @Override
@@ -213,7 +219,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         Log.i(
                 TAG,
                 "handleMessage set flags, systemUiVisibility="
-                        + getSystemUIVisibility(contentView));
+                        + getSystemUiVisibility(contentView));
     }
 
     private WindowInsetsCompat getWindowInsets(View contentView) {
@@ -226,7 +232,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         return WindowCompat.getInsetsController(window, window.getDecorView());
     }
 
-    private String getSystemUIVisibility(View contentView) {
+    private String getSystemUiVisibility(View contentView) {
         boolean statusBarVisibility = !isStatusBarHidden(contentView);
         boolean navBarVisibility = !isNavigationBarHidden(contentView);
         boolean systemBarVisibility =

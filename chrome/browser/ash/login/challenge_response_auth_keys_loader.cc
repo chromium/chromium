@@ -18,15 +18,15 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -303,8 +303,7 @@ class ExtensionLoadObserver final
         GetProcessManager()->GetBackgroundHostForExtension(extension_id);
     if (!extension_host) {
       // Generally this should not happen, but better safe than sorry.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     if (extension_host->has_loaded_once()) {
@@ -320,8 +319,7 @@ class ExtensionLoadObserver final
 
   void StopWaitingOnExtension(const std::string& extension_id) {
     if (!extensions_waited_for_.contains(extension_id)) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     extensions_waited_for_.erase(extension_id);
@@ -425,8 +423,9 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
   }
   // Asynchronously poll all certificate providers to get the list of
   // currently available cryptographic keys.
-  std::unique_ptr<chromeos::CertificateProvider> cert_provider =
-      GetCertificateProviderService()->CreateCertificateProvider();
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      cert_provider =
+          GetCertificateProviderService()->CreateCertificateProvider();
   cert_provider->GetCertificates(base::BindOnce(
       &ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts,
       weak_ptr_factory_.GetWeakPtr(), account_id,

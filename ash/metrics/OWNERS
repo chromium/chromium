@@ -1,1 +1,3 @@
 per-file login_metrics_recorder*=file://ash/login/LOGIN_LOCK_OWNERS
+
+per-file demo_session_metrics_recorder*=file://chromeos/ash/components/demo_mode/OWNERS

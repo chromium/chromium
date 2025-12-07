@@ -310,7 +310,8 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
       const Extension* extension,
       const base::Value::Dict* listener_filter,
       std::optional<base::Value::List>& event_args_out,
-      mojom::EventFilteringInfoPtr& event_filtering_info_out);
+      mojom::EventFilteringInfoPtr& event_filtering_info_out,
+      bool* dispatch_separate_event_out);
 
   raw_ptr<content::BrowserContext> browser_context_;
 
@@ -790,7 +791,8 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   if (!extension)
     return false;
   EventRouter* event_router = EventRouter::Get(browser_context_);
@@ -806,9 +808,9 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
 }  // namespace
 
 // static
-PrinterProviderAPI* PrinterProviderAPI::Create(
+std::unique_ptr<PrinterProviderAPI> PrinterProviderAPI::Create(
     content::BrowserContext* context) {
-  return new PrinterProviderAPIImpl(context);
+  return std::make_unique<PrinterProviderAPIImpl>(context);
 }
 
 // static

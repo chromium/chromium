@@ -108,6 +108,7 @@ goog.ui.FlatMenuButtonRenderer.prototype.getContentElement = function(element) {
  * @param {Element} element Element to decorate.
  * @return {Element} Decorated element.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.FlatMenuButtonRenderer.prototype.decorate = function(button, element) {
   'use strict';

@@ -22,7 +22,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,6 +45,12 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
     Shell::Get()->birch_model()->SetWeatherItems({});
     return;
   }
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
+      Shell::Get()->session_controller()->IsActiveAccountManaged()) {
+    // Weather not allowed for managed accounts.
+    Shell::Get()->birch_model()->SetWeatherItems({});
+    return;
+  }
   const auto* pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   if (!pref_service ||
@@ -54,7 +61,7 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
     Shell::Get()->birch_model()->SetWeatherItems({});
     return;
   }
-  if (!SimpleGeolocationProvider::GetInstance()
+  if (!SystemLocationProvider::GetInstance()
            ->IsGeolocationUsageAllowedForSystem()) {
     // Weather is not allowed if geolocation is off.
     birch_model_->SetWeatherItems({});
@@ -100,13 +107,10 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
 }
 
 void BirchWeatherProvider::FetchWeather() {
-  const bool prefer_prod_endpoint = base::GetFieldTrialParamByFeatureAsBool(
-      features::kBirchWeather, "prod_weather_endpoint", false);
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
       ->FetchWeather("chromeos-system-ui",
-                     /*prefer_alpha_endpoint=*/!prefer_prod_endpoint,
                      base::BindOnce(&BirchWeatherProvider::OnWeatherInfoFetched,
                                     weak_factory_.GetWeakPtr()));
 }
@@ -139,11 +143,8 @@ void BirchWeatherProvider::AddItemToBirchModel(
     const std::u16string& weather_description,
     float temp_f,
     const std::string& icon_url) {
-  // Use the product logo ("favicon error") as the backup icon.
-  ui::ImageModel backup_icon =
-      ui::ImageModel::FromVectorIcon(kBirchFaviconErrorIcon);
   std::vector<BirchWeatherItem> items;
-  items.emplace_back(weather_description, temp_f, GURL(icon_url), backup_icon);
+  items.emplace_back(weather_description, temp_f, GURL(icon_url));
   birch_model_->SetWeatherItems(std::move(items));
 }
 

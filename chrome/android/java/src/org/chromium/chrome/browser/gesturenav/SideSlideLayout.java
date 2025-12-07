@@ -17,6 +17,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.ui.animation.EmptyAnimationListener;
@@ -31,6 +33,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout} and modified accordingly to
  * support horizontal gesture.
  */
+@NullMarked
 public class SideSlideLayout extends ViewGroup {
     /**
      * Classes that wish to be notified when the swipe gesture correctly triggers navigation should
@@ -71,7 +74,6 @@ public class SideSlideLayout extends ViewGroup {
 
     private final DecelerateInterpolator mDecelerateInterpolator;
     private final float mTotalDragDistance;
-    private final int mMediumAnimationDuration;
     private final int mCircleWidth;
 
     // Metrics
@@ -83,8 +85,8 @@ public class SideSlideLayout extends ViewGroup {
     // overscroll is bigger than a certain threshold.
     private float mMaxOverscroll;
 
-    private OnNavigateListener mListener;
-    private OnResetListener mResetListener;
+    private @Nullable OnNavigateListener mListener;
+    private @Nullable OnResetListener mResetListener;
 
     // Flag indicating that the navigation will be activated.
     private boolean mNavigating;
@@ -95,14 +97,14 @@ public class SideSlideLayout extends ViewGroup {
     // True while side gesture is in progress.
     private boolean mIsBeingDragged;
 
-    private NavigationBubble mArrowView;
+    private final NavigationBubble mArrowView;
     private int mArrowViewWidth;
 
     // Start position for animation moving the UI back to original offset.
     private int mFrom;
     private int mOriginalOffset;
 
-    private AnimationSet mHidingAnimation;
+    private @Nullable AnimationSet mHidingAnimation;
     private int mAnimationViewWidth;
 
     private boolean mIsForward;
@@ -138,9 +140,6 @@ public class SideSlideLayout extends ViewGroup {
     public SideSlideLayout(Context context) {
         super(context);
 
-        mMediumAnimationDuration =
-                getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
         setWillNotDraw(false);
         mDecelerateInterpolator = new DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR);
 
@@ -161,13 +160,7 @@ public class SideSlideLayout extends ViewGroup {
         // The absolute offset has to take into account that the circle starts at an offset
         mTotalDragDistance = RAW_SWIPE_LIMIT_DP * getResources().getDisplayMetrics().density;
 
-        mAnimateToStartPosition.setAnimationListener(
-                new EmptyAnimationListener() {
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        reset();
-                    }
-                });
+        prepareAnimateToStartPosition();
     }
 
     /** Set the listener to be notified when the navigation is triggered. */
@@ -210,7 +203,8 @@ public class SideSlideLayout extends ViewGroup {
         if (mHidingAnimation == null || mAnimationViewWidth != mArrowViewWidth) {
             mAnimationViewWidth = mArrowViewWidth;
             ScaleAnimation scalingDown =
-                    new ScaleAnimation(1, 0, 1, 0, mArrowViewWidth / 2, mArrowView.getHeight() / 2);
+                    new ScaleAnimation(
+                            1, 0, 1, 0, mArrowViewWidth / 2f, mArrowView.getHeight() / 2f);
             scalingDown.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
             scalingDown.setDuration(SCALE_DOWN_DURATION_MS);
             Animation fadingOut = new AlphaAnimation(1, 0);
@@ -274,24 +268,36 @@ public class SideSlideLayout extends ViewGroup {
     }
 
     /**
-     * Start the pull effect. If the effect is disabled or a navigation animation
-     * is currently active, the request will be ignored.
+     * Start the pull effect. If the effect is disabled or a navigation animation is currently
+     * active, the request will be ignored.
+     *
      * @return whether a new pull sequence has started.
      */
     public boolean start() {
         if (!isEnabled() || mNavigating || mListener == null) return false;
+
+        // Stop animation triggered by previous slide.
+        if (mAnimateToStartPosition.hasStarted()) {
+            mAnimateToStartPosition.setAnimationListener(null);
+            mArrowView.clearAnimation();
+            mAnimateToStartPosition.cancel();
+            mAnimateToStartPosition.reset();
+        }
+
         mTotalMotion = 0;
         mMaxOverscroll = 0.f;
         mIsBeingDragged = true;
         mWillNavigate = false;
         initializeOffset();
+        prepareAnimateToStartPosition();
         mArrowView.setFaded(false, false);
         return true;
     }
 
     /**
-     * Apply a pull impulse to the effect. If the effect is disabled or has yet
-     * to start, the pull will be ignored.
+     * Apply a pull impulse to the effect. If the effect is disabled or has yet to start, the pull
+     * will be ignored.
+     *
      * @param offset Updated total pull offset.
      */
     public void pull(float offset) {
@@ -363,11 +369,22 @@ public class SideSlideLayout extends ViewGroup {
         mCurrentTargetOffset = mArrowView.getLeft();
     }
 
+    private void prepareAnimateToStartPosition() {
+        mAnimateToStartPosition.setAnimationListener(
+                new EmptyAnimationListener() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        reset();
+                    }
+                });
+    }
+
     /**
-     * Release the active pull. If no pull has started, the release will be ignored.
-     * If the pull was sufficiently large, the navigation sequence will be initiated.
-     * @param allowNav whether to allow a sufficiently large pull to trigger
-     *                     the navigation action and animation sequence.
+     * Release the active pull. If no pull has started, the release will be ignored. If the pull was
+     * sufficiently large, the navigation sequence will be initiated.
+     *
+     * @param allowNav whether to allow a sufficiently large pull to trigger the navigation action
+     *     and animation sequence.
      */
     public void release(boolean allowNav) {
         if (!mIsBeingDragged) return;
@@ -375,7 +392,7 @@ public class SideSlideLayout extends ViewGroup {
         // See ACTION_UP handling in {@link #onTouchEvent(...)}.
         mIsBeingDragged = false;
 
-        boolean activated = mMaxOverscroll >= mArrowViewWidth / 3;
+        boolean activated = mMaxOverscroll >= mArrowViewWidth / 3f;
         if (activated) {
             GestureNavMetrics.recordHistogram("GestureNavigation.Activated2", mIsForward);
         }

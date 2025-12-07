@@ -14,7 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

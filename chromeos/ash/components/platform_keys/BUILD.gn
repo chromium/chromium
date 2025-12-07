@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("platform_keys") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS_IMPL" ]
+  sources = [
+    "platform_keys.cc",
+    "platform_keys.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/mojom",
+    "//crypto",
+    "//net",
+    "//third_party/boringssl",
+  ]
+}

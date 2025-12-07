@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.provider;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Copy of android.provider.Browser.BookmarkColumns. */
+@NullMarked
 public class BookmarkColumns implements BaseColumns {
     /**
      * The URL of the bookmark or history item.
-     * <p>Type: TEXT (URL)</p>
+     *
+     * <p>Type: TEXT (URL)
      */
     public static final String URL = "url";
 

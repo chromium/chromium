@@ -4,13 +4,22 @@
 
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_types.h"
 
 namespace {
 
@@ -22,8 +31,7 @@ std::u16string GetCommandIdLabel(int command_id) {
       return l10n_util::GetStringUTF16(
           IDS_WEBAUTHN_GPM_PIN_OPTION_ALPHANUMERIC);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -56,7 +64,7 @@ void PinOptionsButton::ButtonPressed() {
       views::MenuRunner::COMBOBOX | views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(
       GetWidget(), /*button_controller=*/nullptr, GetBoundsInScreen(),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE);
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
 }
 
 void PinOptionsButton::ExecuteCommand(int command_id, int event_flags) {
@@ -68,8 +76,7 @@ void PinOptionsButton::ExecuteCommand(int command_id, int event_flags) {
       callback_.Run(/*is_arbitrary=*/true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

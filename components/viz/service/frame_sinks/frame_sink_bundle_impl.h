@@ -62,19 +62,13 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
   void RemoveFrameSink(CompositorFrameSinkSupport* support);
 
   // mojom::FrameSinkBundle implementation:
-  void InitializeCompositorFrameSinkType(
-      uint32_t sink_id,
-      mojom::CompositorFrameSinkType type) override;
   void SetNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame) override;
-  void SetWantsBeginFrameAcks(uint32_t sink_id) override;
   void Submit(
       std::vector<mojom::BundledFrameSubmissionPtr> submissions) override;
-  void DidAllocateSharedBitmap(uint32_t sink_id,
-                               base::ReadOnlySharedMemoryRegion region,
-                               const SharedBitmapId& id) override;
+
 #if BUILDFLAG(IS_ANDROID)
-  void SetThreadIds(uint32_t sink_id,
-                    const std::vector<int32_t>& thread_ids) override;
+  void SetThreads(uint32_t sink_id,
+                  const std::vector<Thread>& threads) override;
 #endif
 
   // Helpers used by each CompositorFrameSinkImpl to proxy their client messages
@@ -86,7 +80,6 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
       uint32_t sink_id,
       const BeginFrameArgs& args,
       const base::flat_map<uint32_t, FrameTimingDetails>& details,
-      bool frame_ack,
       std::vector<ReturnedResource> resources);
   void EnqueueReclaimResources(uint32_t sink_id,
                                std::vector<ReturnedResource> resources);

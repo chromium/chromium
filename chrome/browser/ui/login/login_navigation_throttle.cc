@@ -12,28 +12,32 @@
 #include "net/http/http_status_code.h"
 
 LoginNavigationThrottle::LoginNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
-LoginNavigationThrottle::~LoginNavigationThrottle() {}
+LoginNavigationThrottle::~LoginNavigationThrottle() = default;
 
 LoginNavigationThrottle::ThrottleCheckResult
 LoginNavigationThrottle::WillProcessResponse() {
-  if (navigation_handle()->IsSameDocument())
+  if (navigation_handle()->IsSameDocument()) {
     return PROCEED;
-  if (!navigation_handle()->IsInPrimaryMainFrame())
+  }
+  if (!navigation_handle()->IsInPrimaryMainFrame()) {
     return PROCEED;
+  }
 
   LoginTabHelper* helper =
       LoginTabHelper::FromWebContents(navigation_handle()->GetWebContents());
   // The helper may not have been created yet if there was no auth challennge.
-  if (!helper)
+  if (!helper) {
     return PROCEED;
+  }
 
   const net::HttpResponseHeaders* headers =
       navigation_handle()->GetResponseHeaders();
-  if (!headers)
+  if (!headers) {
     return PROCEED;
+  }
   if (headers->response_code() != net::HTTP_UNAUTHORIZED &&
       headers->response_code() != net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
     return PROCEED;

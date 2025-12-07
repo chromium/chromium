@@ -12,7 +12,6 @@ attribution_reporting_promise_test(async t => {
   await redirectReportsTo(redirectOrigin);
   registerAttributionSrcByImg(createRedirectChain([
     {
-      cookie: 'foo=bar;Secure;HttpOnly;Path=/',
       reportingOrigin,
       source: {
         destination: 'https://{{host}}',

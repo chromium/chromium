@@ -27,7 +27,8 @@ std::optional<size_t> requested_read_only_shmem_size;
 std::optional<size_t> requested_unsafe_shmem_size;
 std::optional<size_t> requested_writable_shmem_size;
 
-MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size, SharedMemoryMapper* mapper) {
+MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size,
+                                             SharedMemoryMapper* mapper) {
   requested_read_only_shmem_size = size;
   return {};
 }

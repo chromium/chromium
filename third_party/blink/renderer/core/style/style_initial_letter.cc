@@ -40,10 +40,6 @@ bool StyleInitialLetter::operator==(const StyleInitialLetter& other) const {
          sink_type_ == other.sink_type_;
 }
 
-bool StyleInitialLetter::operator!=(const StyleInitialLetter& other) const {
-  return !operator==(other);
-}
-
 // static
 StyleInitialLetter StyleInitialLetter::Drop(float size) {
   return StyleInitialLetter(size, kDrop);

@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-
-import {StandardAcceleratorProperties} from './accelerator_info.mojom-webui.js';
+import type {StandardAcceleratorProperties} from './accelerator_info.mojom-webui.js';
 import * as MetaKeyTypes from './meta_key.mojom-webui.js';
-import {ShortcutInputKeyElement} from './shortcut_input_key.js';
+import type {ShortcutInputKeyElement} from './shortcut_input_key.js';
 
 export interface ShortcutLabelProperties extends StandardAcceleratorProperties {
   shortcutLabelText: TrustedHTML;
@@ -86,19 +84,21 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'AudioVolumeMute': 'volume-mute',
   'AudioVolumeUp': 'volume-up',
   'BrightnessDown': 'display-brightness-down',
-  'BrightnessUp': 'display-brightness-up',
+  'BrightnessUp': 'brightness-up-refresh',
   'BrowserBack': 'back',
   'BrowserForward': 'forward',
   'BrowserHome': 'browser-home',
   'BrowserRefresh': 'refresh',
   'BrowserSearch': 'browser-search',
+  'CameraAccessToggle': 'camera-access-toggle',
   'ContextMenu': 'menu',
+  'DoNotDisturb': 'do-not-disturb',
   'EmojiPicker': 'emoji-picker',
   'EnableOrToggleDictation': 'dictation-toggle',
   'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
   'KeyboardBrightnessUp': 'keyboard-brightness-up',
   'KeyboardBrightnessDown': 'keyboard-brightness-down',
-  'LaunchApplication1': 'overview',
+  'LaunchApplication1': 'overview-refresh',
   'LaunchApplication2': 'calculator',
   'LaunchAssistant': 'assistant',
   'LaunchMail': 'launch-mail',
@@ -117,13 +117,8 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'Settings': 'settings-icon',
   'Standby': 'lock',
   'ZoomToggle': 'fullscreen',
+  'QuickInsert': 'quick-insert',
 };
-
-// <if expr="_google_chrome" >
-export const KeyToInternalIconNameMap: {[key: string]: string|undefined} = {
-  'RightAlt': 'right-alt',
-};
-// </if>
 
 /**
  * Map the modifier keys to the bit value. Currently the modifiers only
@@ -156,7 +151,7 @@ export function createInputKeyParts(
     }
   }
 
-  const keyDisplay = mojoString16ToString(shortcutLabelProperties.keyDisplay);
+  const keyDisplay = shortcutLabelProperties.keyDisplay;
   if (!pressedModifiers.includes(keyDisplay.toLowerCase())) {
     const key = document.createElement('shortcut-input-key');
     key.keyState = KeyInputState.ALPHANUMERIC_SELECTED;

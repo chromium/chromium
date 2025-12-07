@@ -6,10 +6,10 @@
 #define UI_BASE_CLIPBOARD_SCOPED_CLIPBOARD_WRITER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -49,33 +49,31 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   void SetDataSourceURL(const GURL& main_frame, const GURL& frame);
 
   // Converts |text| to UTF-8 and adds it to the clipboard.
-  void WriteText(const std::u16string& text);
+  void WriteText(std::u16string_view text);
 
   // Adds HTML to the clipboard. The url parameter is optional, but especially
   // useful if the HTML fragment contains relative links.
   // The `content_type` refers to the sanitization of the markup.
-  void WriteHTML(const std::u16string& markup, const std::string& source_url);
+  void WriteHTML(std::u16string_view markup, std::string source_url);
 
   // Adds SVG to the clipboard.
-  void WriteSvg(const std::u16string& text);
+  void WriteSvg(std::u16string_view text);
 
   // Adds RTF to the clipboard.
-  void WriteRTF(const std::string& rtf_data);
+  void WriteRTF(std::string rtf_data);
 
   // Adds text/uri-list filenames to the clipboard.
   // Security Note: This function is expected to be called only by exo in
   // Chrome OS. It should not be called by renderers or any other untrusted
   // party since any paths written to the clipboard can be read by renderers.
-  void WriteFilenames(const std::string& uri_list);
+  void WriteFilenames(std::string uri_list);
 
   // Adds a bookmark to the clipboard.
-  void WriteBookmark(const std::u16string& bookmark_title,
-                     const std::string& url);
+  void WriteBookmark(std::u16string_view bookmark_title, std::string url);
 
   // Adds an html hyperlink (<a href>) to the clipboard. |anchor_text| and
   // |url| will be escaped as needed.
-  void WriteHyperlink(const std::u16string& anchor_text,
-                      const std::string& url);
+  void WriteHyperlink(std::u16string_view anchor_text, std::string_view url);
 
   // Used by WebKit to determine whether WebKit wrote the clipboard last
   void WriteWebSmartPaste();
@@ -84,17 +82,16 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   void WritePickledData(const base::Pickle& pickle,
                         const ClipboardFormatType& format);
 
+  // Writes raw bytes to clipboard.
+  void WriteRawDataForTest(const ClipboardFormatType& format,
+                           std::vector<uint8_t> data);
+
   // Data is written to the system clipboard in the same order as WriteData
   // calls are received.
   // This is only used to write custom format data.
-  void WriteData(const std::u16string& format, mojo_base::BigBuffer data);
+  void WriteData(std::u16string_view format, mojo_base::BigBuffer data);
 
   void WriteImage(const SkBitmap& bitmap);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Used by clipboard unit tests to write an encoded clipboard source DTE.
-  void WriteEncodedDataTransferEndpointForTesting(const std::string& json);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Mark the data to be written as confidential.
   void MarkAsConfidential();
@@ -110,6 +107,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // vector, and pass it to Clipboard::WritePortableRepresentations() during
   // object destruction.
   Clipboard::ObjectMap objects_;
+
+  // Same as `objects_`, but holds every type passed to `WritePickledData` to
+  // allow writing more than one to the clipboard at once.
+  // This uses a map instead of a vector to avoid attempts to write the same
+  // format type multiple times to the clipboard.
+  std::map<ClipboardFormatType, Clipboard::RawData> raw_objects_;
 
   std::vector<Clipboard::PlatformRepresentation> platform_representations_;
   // Keeps track of the unique custom formats registered in the clipboard.

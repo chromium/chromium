@@ -29,7 +29,7 @@ import java.util.List;
 public class AwContentsClientAutoLoginTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     public AwContentsClientAutoLoginTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

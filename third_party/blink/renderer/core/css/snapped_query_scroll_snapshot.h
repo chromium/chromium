@@ -30,14 +30,12 @@ class SnappedQueryScrollSnapshot
   Element* GetSnappedTargetY() const { return snapped_target_y_; }
 
   // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
   void Trace(Visitor*) const override;
 
  private:
-  bool UpdateSnappedTargets();
   void InvalidateSnappedTarget(Element* target);
 
   Member<PaintLayerScrollableArea> scroller_;

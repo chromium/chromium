@@ -10,6 +10,7 @@ proto_library("proto") {
     "local_tab_group_data.proto",
     "saved_tab_group_data.proto",
     "shared_tab_group_data.proto",
+    "url_restriction.proto",
   ]
-  link_deps = [ "//components/sync/protocol" ]
+  deps = [ "//components/sync/protocol" ]
 }

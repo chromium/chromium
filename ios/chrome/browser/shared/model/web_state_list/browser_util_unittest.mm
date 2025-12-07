@@ -13,12 +13,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_kind.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -35,28 +37,32 @@ namespace {
 const char kIdentifier0[] = "Identifier0";
 const char kIdentifier1[] = "Identifier1";
 
+// Converts `snapshot_id` to a SnapshotIDWrapper.
+SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
+  return [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshot_id];
+}
+
 }  // namespace
 
 // Test fixture for testing functions in browser_util.h/mm.
 class BrowserUtilTest : public PlatformTest {
  protected:
   BrowserUtilTest() {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         FakeTabRestoreService::GetTestingFactory());
 
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-    other_incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
+    other_incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(other_browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
@@ -73,8 +79,7 @@ class BrowserUtilTest : public PlatformTest {
     AppendNewWebState(incognito_browser_.get());
 
     tab_restore_service_ =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        IOSChromeTabRestoreServiceFactory::GetForProfile(profile_.get());
   }
 
   // Appends a new web state in the web state list of `browser`.
@@ -82,6 +87,7 @@ class BrowserUtilTest : public PlatformTest {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* inserted_web_state = fake_web_state.get();
     SnapshotTabHelper::CreateForWebState(inserted_web_state);
+    SnapshotSourceTabHelper::CreateForWebState(inserted_web_state);
     browser->GetWebStateList()->InsertWebState(
         std::move(fake_web_state),
         WebStateList::InsertionParams::Automatic().Activate());
@@ -96,24 +102,25 @@ class BrowserUtilTest : public PlatformTest {
 
   // Returns the cached snapshot for the given snapshot ID in the given snapshot
   // cache.
-  UIImage* GetSnapshot(SnapshotStorageWrapper* snapshot_storage,
+  UIImage* GetSnapshot(id<SnapshotStorage> snapshot_storage,
                        SnapshotID snapshot_id) {
     CHECK(snapshot_storage);
     base::RunLoop run_loop;
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    [snapshot_storage retrieveImageForSnapshotID:snapshot_id
-                                        callback:^(UIImage* cached_snapshot) {
-                                          snapshot = cached_snapshot;
-                                          run_loop_ptr->Quit();
-                                        }];
+    [snapshot_storage retrieveImageWithSnapshotID:ToWrapper(snapshot_id)
+                                     snapshotKind:SnapshotKindColor
+                                       completion:^(UIImage* cached_snapshot) {
+                                         snapshot = cached_snapshot;
+                                         run_loop_ptr->Quit();
+                                       }];
     run_loop.Run();
     return snapshot;
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;
@@ -209,14 +216,12 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent* agent =
       SnapshotBrowserAgent::FromBrowser(browser_.get());
   agent->SetSessionID(kIdentifier0);
-  SnapshotStorageWrapper* snapshot_storage = agent->snapshot_storage();
+  id<SnapshotStorage> snapshot_storage = agent->snapshot_storage();
   ASSERT_NE(nil, snapshot_storage);
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
   ASSERT_NE(nil, snapshot);
-  SnapshotTabHelper* snapshot_tab_helper =
-      SnapshotTabHelper::FromWebState(web_state);
-  SnapshotID snapshot_id = snapshot_tab_helper->GetSnapshotID();
-  [snapshot_storage setImage:snapshot withSnapshotID:snapshot_id];
+  const SnapshotID snapshot_id(web_state->GetUniqueIdentifier());
+  [snapshot_storage setImage:snapshot withSnapshotID:ToWrapper(snapshot_id)];
   ASSERT_TRUE(
       UIImagesAreEqual(snapshot, GetSnapshot(snapshot_storage, snapshot_id)));
   // Check that the other browser doesn’t have a snapshot for that identifier.
@@ -224,8 +229,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent* other_agent =
       SnapshotBrowserAgent::FromBrowser(other_browser_.get());
   other_agent->SetSessionID(kIdentifier1);
-  SnapshotStorageWrapper* other_snapshot_storage =
-      other_agent->snapshot_storage();
+  id<SnapshotStorage> other_snapshot_storage = other_agent->snapshot_storage();
   ASSERT_NE(nil, other_snapshot_storage);
   ASSERT_EQ(nil, GetSnapshot(other_snapshot_storage, snapshot_id));
 

@@ -70,6 +70,13 @@ std::u16string NumberToString16(double value) {
   return internal::DoubleToStringT<std::u16string>(value);
 }
 
+std::string NumberToStringWithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::string>(value, digits);
+}
+std::u16string NumberToString16WithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::u16string>(value, digits);
+}
+
 bool StringToInt(std::string_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
@@ -123,7 +130,7 @@ std::string HexEncode(const void* bytes, size_t size) {
   return HexEncode(
       // TODO(crbug.com/40284755): The pointer-based overload of HexEncode
       // should be removed.
-      UNSAFE_BUFFERS(span(static_cast<const uint8_t*>(bytes), size)));
+      UNSAFE_TODO(span(static_cast<const uint8_t*>(bytes), size)));
 }
 
 std::string HexEncode(span<const uint8_t> bytes) {
@@ -139,6 +146,21 @@ std::string HexEncode(span<const uint8_t> bytes) {
 
 std::string HexEncode(std::string_view chars) {
   return HexEncode(base::as_byte_span(chars));
+}
+
+std::string HexEncodeLower(base::span<const uint8_t> bytes) {
+  // Each input byte creates two output hex characters.
+  std::string ret;
+  ret.reserve(bytes.size() * 2);
+
+  for (uint8_t byte : bytes) {
+    AppendHexEncodedByte(byte, ret, /*uppercase=*/false);
+  }
+  return ret;
+}
+
+std::string HexEncodeLower(std::string_view chars) {
+  return HexEncodeLower(base::as_byte_span(chars));
 }
 
 bool HexStringToInt(std::string_view input, int* output) {
@@ -170,8 +192,9 @@ bool HexStringToString(std::string_view input, std::string* output) {
 }
 
 bool HexStringToSpan(std::string_view input, span<uint8_t> output) {
-  if (input.size() / 2 != output.size())
+  if (input.size() / 2 != output.size()) {
     return false;
+  }
 
   return internal::HexStringToByteContainer<uint8_t>(input, output.begin());
 }

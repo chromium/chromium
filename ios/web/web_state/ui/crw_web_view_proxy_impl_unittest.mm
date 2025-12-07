@@ -20,6 +20,7 @@
 @implementation CRWFakeContentView
 @synthesize contentOffset = _contentOffset;
 @synthesize contentInset = _contentInset;
+@synthesize obscuredInsets = _obscuredInsets;
 @synthesize scrollView = _scrollView;
 @synthesize shouldUseViewContentInset = _shouldUseViewContentInset;
 
@@ -75,6 +76,21 @@ TEST_F(CRWWebViewProxyImplTest, AllowsBackForwardNavigationGestures) {
 
   OCMExpect([mockWebController setAllowsBackForwardNavigationGestures:YES]);
   proxy.allowsBackForwardNavigationGestures = YES;
+  EXPECT_OCMOCK_VERIFY((id)mockWebController);
+}
+
+// Tests allowsLinkPreview property is delegated to CWVWebController.
+TEST_F(CRWWebViewProxyImplTest, AllowsLinkPreview) {
+  CRWWebController* mockWebController =
+      OCMStrictClassMock([CRWWebController class]);
+  CRWWebViewProxyImpl* proxy =
+      [[CRWWebViewProxyImpl alloc] initWithWebController:mockWebController];
+
+  OCMStub([mockWebController allowsLinkPreview]).andReturn(YES);
+  EXPECT_TRUE(proxy.allowsLinkPreview);
+
+  OCMExpect([mockWebController setAllowsLinkPreview:YES]);
+  proxy.allowsLinkPreview = YES;
   EXPECT_OCMOCK_VERIFY((id)mockWebController);
 }
 

@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
 #define COMPONENTS_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"

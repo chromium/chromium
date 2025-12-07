@@ -43,7 +43,7 @@ struct PendingInputBuffer {
 // (https://msdn.microsoft.com/en-us/windows/desktop/ms697561) based on the
 // given |demuxer_stream|.
 //
-class MediaFoundationStreamWrapper
+class MEDIA_EXPORT MediaFoundationStreamWrapper
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<
               Microsoft::WRL::RuntimeClassType::ClassicCom>,
@@ -74,7 +74,7 @@ class MediaFoundationStreamWrapper
   bool IsSelected();
   bool IsEnabled();
   void SetEnabled(bool enabled);
-  void SetFlushed(bool flushed);
+  void Flush();
 
   // TODO: revisting inheritance and potentially replacing it with composition.
 
@@ -153,11 +153,12 @@ class MediaFoundationStreamWrapper
   // Indicates whether the stream is enabled in the Chromium media pipeline.
   bool enabled_ GUARDED_BY(lock_) = true;
 
-  // Indicates whether the Chromium pipeline has flushed the renderer
-  // (prior to a seek).
-  // Since SetFlushed() can be invoked by media stack thread or MF threadpool
-  // thread, |flushed_| and |post_flush_buffers_| are protected by lock.
-  bool flushed_ GUARDED_BY(lock_) = false;
+  // Indicates whether the Chromium pipeline has flushed the renderer and we're
+  // buffering post-flush samples (prior to a seek). Since Flush() can be
+  // invoked by media stack thread or MF threadpool thread,
+  // |buffering_post_flush_samples_| and |post_flush_buffers_| are protected by
+  // lock.
+  bool buffering_post_flush_samples_ GUARDED_BY(lock_) = false;
 
   int stream_id_;
 
@@ -182,7 +183,7 @@ class MediaFoundationStreamWrapper
   // Maintain the buffer obtained by batch read. We push buffer into
   // |buffer_queue_| by OnDemuxerStreamReadBuffers(), pop buffer by
   // ProcessRequestsIfPossible(), these two operations are both on media stack
-  // thread. SetFlush() can be invoked by media stack thread or MF threadpool
+  // thread. Flush() can be invoked by media stack thread or MF threadpool
   // thread, it clears the buffer in |buffer_queue_|. So |buffer_queue_| needs
   // to be guardedby the lock.
   std::deque<PendingInputBuffer> buffer_queue_ GUARDED_BY(lock_);

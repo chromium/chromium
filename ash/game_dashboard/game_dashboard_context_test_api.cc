@@ -5,18 +5,22 @@
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_button_reveal_controller.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
+#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
+#include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/timer/timer.h"
@@ -60,6 +64,12 @@ views::Widget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
 GameDashboardButton* GameDashboardContextTestApi::GetGameDashboardButton()
     const {
   return context_->game_dashboard_button_;
+}
+
+float GameDashboardContextTestApi::GetGameDashboardButtonCornerRadius() const {
+  auto* game_dashboard_button = GetGameDashboardButton();
+  CHECK(game_dashboard_button);
+  return game_dashboard_button->container_corner_radius_;
 }
 
 views::Label* GameDashboardContextTestApi::GetGameDashboardButtonTitle() const {
@@ -111,7 +121,7 @@ FeatureTile* GameDashboardContextTestApi::GetMainMenuScreenshotTile() {
       GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
 }
 
-const std::u16string&
+std::u16string_view
 GameDashboardContextTestApi::GetMainMenuScreenSizeSubtitle() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
@@ -137,6 +147,26 @@ PillButton* GameDashboardContextTestApi::GetMainMenuGameControlsSetupButton() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
   return main_menu_view->GetGameControlsSetupButton();
+}
+
+TimeView* GameDashboardContextTestApi::GetMainMenuClockView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->clock_view_;
+}
+
+GameDashboardBatteryView*
+GameDashboardContextTestApi::GetMainMenuBatteryView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->battery_view_;
+}
+
+GameDashboardNetworkView*
+GameDashboardContextTestApi::GetMainMenuNetworkView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->network_view_;
 }
 
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {

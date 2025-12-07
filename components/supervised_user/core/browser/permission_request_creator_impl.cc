@@ -10,8 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -57,16 +58,16 @@ void OnResponse(
   OnSuccess(*response, std::move(callback));
 }
 
-// Flips order of arguments so that the sole unbound argument will be the
-// request.
-std::unique_ptr<ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>>
-FetcherFactory(
+// Flips order of arguments so that the unbound arguments will be the
+// request and callback
+std::unique_ptr<PermissionRequestFetcher> FetcherFactory(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const FetcherConfig& config,
-    const kidsmanagement::PermissionRequest& request) {
+    const kidsmanagement::PermissionRequest& request,
+    PermissionRequestFetcher::Callback callback) {
   return CreatePermissionRequestFetcher(*identity_manager, url_loader_factory,
-                                        request, config);
+                                        request, std::move(callback),
+                                        kCreatePermissionRequestConfig);
 }
 
 }  // namespace
@@ -76,8 +77,7 @@ PermissionRequestCreatorImpl::PermissionRequestCreatorImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : fetch_manager_(base::BindRepeating(&FetcherFactory,
                                          identity_manager,
-                                         url_loader_factory,
-                                         kCreatePermissionRequestConfig)) {}
+                                         url_loader_factory)) {}
 
 PermissionRequestCreatorImpl::~PermissionRequestCreatorImpl() = default;
 

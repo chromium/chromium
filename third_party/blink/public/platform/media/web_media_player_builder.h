@@ -15,8 +15,8 @@
 #include "cc/layers/surface_layer.h"
 #include "media/base/media_player_logging_id.h"
 #include "media/base/routing_token_callback.h"
-#include "media/mojo/mojom/media_metrics_provider.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 
@@ -43,7 +43,6 @@ namespace blink {
 class ResourceFetchContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
-class VideoFrameCompositor;
 class WebContentDecryptionModule;
 class WebLocalFrame;
 class WebMediaPlayerClient;
@@ -51,6 +50,7 @@ class WebMediaPlayerEncryptedMediaClient;
 class WebMediaPlayerDelegate;
 class WebSurfaceLayerBridge;
 class WebSurfaceLayerBridgeObserver;
+class WebVideoFrameSubmitter;
 
 using CreateSurfaceLayerBridgeCB =
     base::OnceCallback<std::unique_ptr<WebSurfaceLayerBridge>(
@@ -62,16 +62,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
   // Returns true if load will deferred. False if it will run immediately.
   using DeferLoadCB = base::RepeatingCallback<bool(base::OnceClosure)>;
 
-  // Callback to tell V8 about the amount of memory used by the WebMediaPlayer
-  // instance.  The input parameter is the delta in bytes since the last call to
-  // AdjustAllocatedMemoryCB and the return value is the total number of bytes
-  // used by objects external to V8.  Note: this value includes things that are
-  // not the WebMediaPlayer!
-  using AdjustAllocatedMemoryCB = base::RepeatingCallback<int64_t(int64_t)>;
-
   WebMediaPlayerBuilder(
       WebLocalFrame& frame,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
   WebMediaPlayerBuilder(const WebMediaPlayerBuilder&) = delete;
   WebMediaPlayerBuilder& operator=(const WebMediaPlayerBuilder&) = delete;
   ~WebMediaPlayerBuilder();
@@ -82,7 +75,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       WebMediaPlayerEncryptedMediaClient* encrypted_client,
       WebMediaPlayerDelegate* delegate,
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
-      std::unique_ptr<VideoFrameCompositor> compositor,
+      std::unique_ptr<WebVideoFrameSubmitter> video_frame_submitter,
       std::unique_ptr<media::MediaLog> media_log,
       media::MediaPlayerLoggingID player_id,
       DeferLoadCB defer_load_cb,
@@ -92,13 +85,12 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner>
           video_frame_compositor_task_runner,
-      AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
-      bool enable_instant_source_buffer_gc,
       bool embedded_media_experience_enabled,
-      mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
+      CrossVariantMojoRemote<media::mojom::MediaMetricsProviderInterfaceBase>
+          metrics_provider,
       CreateSurfaceLayerBridgeCB create_bridge_callback,
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       bool use_surface_layer_for_video,

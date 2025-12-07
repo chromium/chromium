@@ -40,10 +40,6 @@ std::ostream& operator<<(std::ostream& out, WindowSnapActionSource source) {
       return out << "SnapByDeskOrSessionChange";
     case WindowSnapActionSource::kSnapGroupWindowUpdate:
       return out << "SnapGroupWindowUpdate";
-    case WindowSnapActionSource::kTest:
-      return out << "Test";
-    case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
-      return out << "LacrosSnapButtonOrWindowLayoutMenu";
     case WindowSnapActionSource::kSnapBySwapWindowsInSnapGroup:
       return out << "SnapBySwapWindowsInSnapGroup";
   }

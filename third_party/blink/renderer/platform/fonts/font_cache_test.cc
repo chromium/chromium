@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include <unicode/unistr.h>
+
 #include <string>
 #include <tuple>
 
@@ -93,7 +94,8 @@ TEST_F(FontCacheTest, FallbackForEmojis) {
         const SimpleFontData* font_data = font_cache.FallbackFontForCharacter(
             font_description, character, nullptr,
             FontFallbackPriority::kEmojiEmoji);
-        EXPECT_EQ(font_data->PlatformData().FontFamilyName(), kNotoColorEmoji)
+        EXPECT_EQ(font_data->PlatformData().FontFamilyName(),
+                  String::FromUTF8(kNotoColorEmoji))
             << "Character " << character_utf8
             << " doesn't match what we expected for kEmojiEmoji.";
       }
@@ -102,11 +104,13 @@ TEST_F(FontCacheTest, FallbackForEmojis) {
             font_description, character, nullptr,
             FontFallbackPriority::kEmojiText);
         if (available_in_contour_font) {
-          EXPECT_NE(font_data->PlatformData().FontFamilyName(), kNotoColorEmoji)
+          EXPECT_NE(font_data->PlatformData().FontFamilyName(),
+                    String::FromUTF8(kNotoColorEmoji))
               << "Character " << character_utf8
               << " doesn't match what we expected for kEmojiText.";
         } else {
-          EXPECT_EQ(font_data->PlatformData().FontFamilyName(), kNotoColorEmoji)
+          EXPECT_EQ(font_data->PlatformData().FontFamilyName(),
+                    String::FromUTF8(kNotoColorEmoji))
               << "Character " << character_utf8
               << " doesn't match what we expected for kEmojiText.";
         }
@@ -134,6 +138,21 @@ TEST_F(FontCacheTest, firstAvailableOrFirst) {
   EXPECT_EQ("Arial", FontCache::FirstAvailableOrFirst(", not exist, Arial"));
   EXPECT_EQ("not exist",
             FontCache::FirstAvailableOrFirst(", not exist, not exist"));
+}
+
+TEST_F(FontCacheTest, FontUniqueNameMatchAvailable) {
+  FontCache& font_cache = FontCache::Get();
+
+  FontDescription font_description;
+  font_description.SetGenericFamily(FontDescription::kStandardFamily);
+  font_description.SetComputedSize(12.f);
+  FontFaceCreationParams creation_params;
+  EXPECT_FALSE(font_cache.IsPlatformFontUniqueNameMatchAvailable(
+      font_description, AtomicString()));
+  EXPECT_TRUE(font_cache.IsPlatformFontUniqueNameMatchAvailable(
+      font_description, AtomicString("Arial")));
+  EXPECT_FALSE(font_cache.IsPlatformFontUniqueNameMatchAvailable(
+      font_description, AtomicString("INVALID_FONT_NAME")));
 }
 
 // Unfortunately, we can't ensure a font here since on Android and Mac the

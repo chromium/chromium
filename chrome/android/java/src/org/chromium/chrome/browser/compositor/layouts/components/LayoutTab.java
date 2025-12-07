@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to draw itself
  * onto the GL canvas at the desired Y Offset.
  */
+@NullMarked
 public class LayoutTab extends PropertyModel {
     // TODO(crbug.com/40126260): Make the following properties be part of the PropertyModel.
     // Begin section --------------
@@ -28,14 +30,6 @@ public class LayoutTab extends PropertyModel {
     private static float sPxToDp;
 
     // End section --------------
-
-    /** Supplier for determining if the current layout is active. */
-    public interface IsActiveLayoutSupplier {
-        /**
-         * @return whether the current layout is active.
-         */
-        public boolean isActiveLayout();
-    }
 
     // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
@@ -60,8 +54,6 @@ public class LayoutTab extends PropertyModel {
 
     public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
-    public static final WritableFloatPropertyKey SATURATION = new WritableFloatPropertyKey();
-
     public static final WritableFloatPropertyKey BORDER_ALPHA = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey BORDER_SCALE = new WritableFloatPropertyKey();
@@ -76,11 +68,6 @@ public class LayoutTab extends PropertyModel {
 
     public static final WritableFloatPropertyKey MAX_CONTENT_HEIGHT =
             new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey STATIC_TO_VIEW_BLEND =
-            new WritableFloatPropertyKey();
-
-    public static final WritableBooleanPropertyKey SHOULD_STALL = new WritableBooleanPropertyKey();
 
     public static final WritableBooleanPropertyKey CAN_USE_LIVE_TEXTURE =
             new WritableBooleanPropertyKey();
@@ -114,8 +101,8 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyModel.WritableObjectPropertyKey<IsActiveLayoutSupplier>
-            IS_ACTIVE_LAYOUT_SUPPLIER = new WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_ACTIVE_LAYOUT =
+            new WritableBooleanPropertyKey();
 
     /** The tag indicating that this layer should be moved by viz. */
     public static final PropertyModel.WritableObjectPropertyKey<OffsetTag> CONTENT_OFFSET_TAG =
@@ -133,15 +120,12 @@ public class LayoutTab extends PropertyModel {
                 CLIPPED_WIDTH,
                 CLIPPED_HEIGHT,
                 ALPHA,
-                SATURATION,
                 BORDER_ALPHA,
                 BORDER_SCALE,
                 ORIGINAL_CONTENT_WIDTH_IN_DP,
                 ORIGINAL_CONTENT_HEIGHT_IN_DP,
                 MAX_CONTENT_WIDTH,
                 MAX_CONTENT_HEIGHT,
-                STATIC_TO_VIEW_BLEND,
-                SHOULD_STALL,
                 CAN_USE_LIVE_TEXTURE,
                 SHOW_TOOLBAR,
                 ANONYMIZE_TOOLBAR,
@@ -151,7 +135,7 @@ public class LayoutTab extends PropertyModel {
                 TOOLBAR_BACKGROUND_COLOR,
                 TEXT_BOX_BACKGROUND_COLOR,
                 CONTENT_OFFSET,
-                IS_ACTIVE_LAYOUT_SUPPLIER,
+                IS_ACTIVE_LAYOUT,
                 CONTENT_OFFSET_TAG
             };
 
@@ -187,7 +171,6 @@ public class LayoutTab extends PropertyModel {
      */
     public void init(int maxContentTextureWidth, int maxContentTextureHeight) {
         set(ALPHA, 1.0f);
-        set(SATURATION, 1.0f);
         set(BORDER_ALPHA, 1.0f);
         set(BORDER_SCALE, 1.0f);
         set(CLIPPED_WIDTH, Float.MAX_VALUE);
@@ -197,7 +180,6 @@ public class LayoutTab extends PropertyModel {
         set(Y, 0.0f);
         set(RENDER_X, 0.0f);
         set(RENDER_Y, 0.0f);
-        set(STATIC_TO_VIEW_BLEND, 0.0f);
         set(DECORATION_ALPHA, 1.0f);
         set(CAN_USE_LIVE_TEXTURE, true);
         set(SHOW_TOOLBAR, false);
@@ -210,27 +192,22 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * Initializes the {@link LayoutTab} from data extracted from a {@link Tab}.
-     * As this function may be expensive and can be delayed we initialize it as a separately.
+     * Initializes the {@link LayoutTab} from data extracted from a {@link Tab}. As this function
+     * may be expensive and can be delayed we initialize it as a separately.
      *
-     * @param backgroundColor       The color of the page background.
-     * @param fallbackThumbnailId   The id of a cached thumbnail to show if the current
-     *                              thumbnail is unavailable, or {@link Tab.INVALID_TAB_ID}
-     *                              if none exists.
-     * @param shouldStall           Whether the tab should display a desaturated thumbnail and
-     *                              wait for the content layer to load.
-     * @param canUseLiveTexture     Whether the tab can use a live texture when being displayed.
+     * @param backgroundColor The color of the page background.
+     * @param canUseLiveTexture Whether the tab can use a live texture when being displayed.
+     * @param toolbarBackgroundColor The color of the toolbar background.
+     * @param textBoxBackgroundColor The color of the text box background.
      */
     public void initFromHost(
             int backgroundColor,
-            boolean shouldStall,
             boolean canUseLiveTexture,
             int toolbarBackgroundColor,
             int textBoxBackgroundColor) {
         set(BACKGROUND_COLOR, backgroundColor);
         set(TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
         set(TEXT_BOX_BACKGROUND_COLOR, textBoxBackgroundColor);
-        set(SHOULD_STALL, shouldStall);
         set(CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
         set(INIT_FROM_HOST_CALLED, true);
     }
@@ -321,38 +298,10 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @return The original unclamped width (not scaled) of the tab contents texture.
-     */
-    public float getUnclampedOriginalContentHeight() {
-        return get(ORIGINAL_CONTENT_HEIGHT_IN_DP);
-    }
-
-    /**
      * @return The width of the drawn content (clipped and scaled).
      */
     public float getFinalContentWidth() {
         return Math.min(get(CLIPPED_WIDTH), getScaledContentWidth());
-    }
-
-    /**
-     * @return The maximum height the content can be.
-     */
-    public float getMaxContentHeight() {
-        return get(MAX_CONTENT_HEIGHT);
-    }
-
-    /**
-     * @param width The maximum width the content can be.
-     */
-    public void setMaxContentWidth(float width) {
-        set(MAX_CONTENT_WIDTH, width);
-    }
-
-    /**
-     * @param height The maximum height the content can be.
-     */
-    public void setMaxContentHeight(float height) {
-        set(MAX_CONTENT_HEIGHT, height);
     }
 
     /**
@@ -430,22 +379,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * Set the saturation value for the tab contents.
-     *
-     * @param f The saturation value for the contents.
-     */
-    public void setSaturation(float f) {
-        set(SATURATION, f);
-    }
-
-    /**
-     * @return The saturation value for the tab contents.
-     */
-    public float getSaturation() {
-        return get(SATURATION);
-    }
-
-    /**
      * @param alpha The maximum alpha value of the tab border.
      */
     public void setBorderAlpha(float alpha) {
@@ -495,20 +428,6 @@ public class LayoutTab extends PropertyModel {
         return get(DECORATION_ALPHA);
     }
 
-    /**
-     * @param percentageView The blend between the old static tab and the new live one.
-     */
-    public void setStaticToViewBlend(float percentageView) {
-        set(STATIC_TO_VIEW_BLEND, percentageView);
-    }
-
-    /**
-     * @return The current blend between the old static tab and the new live one.
-     */
-    public float getStaticToViewBlend() {
-        return get(STATIC_TO_VIEW_BLEND);
-    }
-
     @Override
     public String toString() {
         return Integer.toString(getId());
@@ -521,20 +440,6 @@ public class LayoutTab extends PropertyModel {
     public void setContentSize(int originalContentWidth, int originalContentHeight) {
         set(ORIGINAL_CONTENT_WIDTH_IN_DP, originalContentWidth * sPxToDp);
         set(ORIGINAL_CONTENT_HEIGHT_IN_DP, originalContentHeight * sPxToDp);
-    }
-
-    /**
-     * @param shouldStall Whether or not the tab should wait for the live layer to load.
-     */
-    public void setShouldStall(boolean shouldStall) {
-        set(SHOULD_STALL, shouldStall);
-    }
-
-    /**
-     * @return Whether or not the tab should wait for the live layer to load.
-     */
-    public boolean shouldStall() {
-        return get(SHOULD_STALL);
     }
 
     /**

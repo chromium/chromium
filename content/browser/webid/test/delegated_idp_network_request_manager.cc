@@ -42,22 +42,26 @@ void DelegatedIdpNetworkRequestManager::FetchClientMetadata(
                                  std::move(callback));
 }
 
-void DelegatedIdpNetworkRequestManager::SendAccountsRequest(
+bool DelegatedIdpNetworkRequestManager::SendAccountsRequest(
+    const url::Origin& idp_origin,
     const GURL& accounts_url,
     const std::string& client_id,
     AccountsRequestCallback callback) {
-  delegate_->SendAccountsRequest(accounts_url, client_id, std::move(callback));
+  return delegate_->SendAccountsRequest(idp_origin, accounts_url, client_id,
+                                        std::move(callback));
 }
 
 void DelegatedIdpNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& account,
     const std::string& url_encoded_post_data,
+    bool idp_blindness,
     TokenRequestCallback callback,
     ContinueOnCallback continue_on,
     RecordErrorMetricsCallback record_error_metrics_callback) {
   delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
-                              std::move(callback), std::move(continue_on),
+                              idp_blindness, std::move(callback),
+                              std::move(continue_on),
                               std::move(record_error_metrics_callback));
 }
 
@@ -75,8 +79,10 @@ void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
 
 void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
-    MetricsEndpointErrorCode error_code) {
-  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, error_code);
+    bool did_show_ui,
+    webid::MetricsEndpointErrorCode error_code) {
+  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, did_show_ui,
+                                           error_code);
 }
 
 void DelegatedIdpNetworkRequestManager::SendLogout(const GURL& logout_url,
@@ -97,6 +103,19 @@ void DelegatedIdpNetworkRequestManager::DownloadAndDecodeImage(
     const GURL& url,
     ImageCallback callback) {
   delegate_->DownloadAndDecodeImage(url, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::DownloadAndDecodeCachedImage(
+    const url::Origin& idp_origin,
+    const GURL& url,
+    ImageCallback callback) {
+  delegate_->DownloadAndDecodeCachedImage(idp_origin, url, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::CacheAccountPictures(
+    const url::Origin& idp_origin,
+    const std::vector<GURL>& picture_urls) {
+  delegate_->CacheAccountPictures(idp_origin, picture_urls);
 }
 
 }  // namespace content

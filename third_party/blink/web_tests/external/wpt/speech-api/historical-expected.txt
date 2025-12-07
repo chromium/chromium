@@ -9,11 +9,4 @@ This is a testharness.js-based test.
   assert_false: expected false got true
 [FAIL] webkitSpeechRecognitionEvent interface should not exist
   assert_false: expected false got true
-[FAIL] SpeechRecognition's serviceURI attribute should not exist
-  assert_implements: SpeechRecognition exposed undefined
-[FAIL] SpeechRecognitionEvent's interpretation attribute should not exist
-  assert_implements: SpeechRecognitionEvent exposed undefined
-[FAIL] SpeechRecognitionEvent's emma attribute should not exist
-  assert_implements: SpeechRecognitionEvent exposed undefined
 Harness: the test ran to completion.
-

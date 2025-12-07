@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -18,18 +20,19 @@ class WebContents;
 }  // namespace content
 
 class Browser;
-class ExtensionsContainer;
+class ExtensionsContainerViews;
 class ExtensionsRequestAccessHoverCardCoordinator;
 
 // Button in the toolbar bar that displays the extensions that requests
 // access, and are allowed to do so, and grants them access.
-class ExtensionsRequestAccessButton : public ToolbarChipButton {
+class ExtensionsRequestAccessButton : public ToolbarChipButton,
+                                      public TabStripModelObserver {
   METADATA_HEADER(ExtensionsRequestAccessButton, ToolbarChipButton)
 
  public:
   explicit ExtensionsRequestAccessButton(
       Browser* browser,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainerViews* extensions_container);
   ExtensionsRequestAccessButton(const ExtensionsRequestAccessButton&) = delete;
   const ExtensionsRequestAccessButton& operator=(
       const ExtensionsRequestAccessButton&) = delete;
@@ -54,8 +57,16 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   size_t GetExtensionsCount() const;
 
   // ToolbarButton:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   bool ShouldShowInkdropAfterIphInteraction() override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
 
   // Accessors used by tests:
   std::vector<extensions::ExtensionId> GetExtensionIdsForTesting() {
@@ -70,6 +81,8 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   }
 
  private:
+  void UpdateTooltipText();
+
   // Grants one-time site access to `extension_ids` and shows a confirmation
   // message on the button.
   void OnButtonPressed();
@@ -77,7 +90,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   content::WebContents* GetActiveWebContents() const;
 
   raw_ptr<Browser> browser_;
-  raw_ptr<ExtensionsContainer> extensions_container_;
+  raw_ptr<ExtensionsContainerViews> extensions_container_;
 
   std::unique_ptr<ExtensionsRequestAccessHoverCardCoordinator>
       hover_card_coordinator_;

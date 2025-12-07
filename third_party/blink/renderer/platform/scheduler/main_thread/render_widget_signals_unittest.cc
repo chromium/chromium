@@ -59,7 +59,8 @@ TEST_F(RenderWidgetSignalsTest, RenderWidgetSchedulingStateLifeCycle) {
   EXPECT_CALL(*mock_observer_, SetAllRenderWidgetsHidden(false)).Times(1);
   scoped_refptr<WidgetSchedulerImpl> widget1_scheduler =
       base::MakeRefCounted<WidgetSchedulerImpl>(
-          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get());
+          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get(),
+          /*delegate*/ nullptr);
   Mock::VerifyAndClearExpectations(mock_observer_.get());
 
   EXPECT_CALL(*mock_observer_, SetAllRenderWidgetsHidden(true)).Times(1);
@@ -70,7 +71,8 @@ TEST_F(RenderWidgetSignalsTest, RenderWidget_Hidden) {
   IgnoreWidgetCreationCallbacks();
   scoped_refptr<WidgetSchedulerImpl> widget1_scheduler =
       base::MakeRefCounted<WidgetSchedulerImpl>(
-          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get());
+          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get(),
+          /*delegate*/ nullptr);
   Mock::VerifyAndClearExpectations(mock_observer_.get());
 
   EXPECT_CALL(*mock_observer_, SetAllRenderWidgetsHidden(true)).Times(1);
@@ -85,7 +87,8 @@ TEST_F(RenderWidgetSignalsTest, RenderWidget_HiddenThreeTimesShownOnce) {
   IgnoreWidgetCreationCallbacks();
   scoped_refptr<WidgetSchedulerImpl> widget1_scheduler =
       base::MakeRefCounted<WidgetSchedulerImpl>(
-          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get());
+          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get(),
+          /*delegate*/ nullptr);
   Mock::VerifyAndClearExpectations(mock_observer_.get());
 
   EXPECT_CALL(*mock_observer_, SetAllRenderWidgetsHidden(true)).Times(1);
@@ -106,13 +109,16 @@ TEST_F(RenderWidgetSignalsTest, MultipleRenderWidgetsBecomeHiddenThenVisible) {
   IgnoreWidgetCreationCallbacks();
   scoped_refptr<WidgetSchedulerImpl> widget1_scheduler =
       base::MakeRefCounted<WidgetSchedulerImpl>(
-          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get());
+          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get(),
+          /*delegate*/ nullptr);
   scoped_refptr<WidgetSchedulerImpl> widget2_scheduler =
       base::MakeRefCounted<WidgetSchedulerImpl>(
-          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get());
+          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get(),
+          /*delegate*/ nullptr);
   scoped_refptr<WidgetSchedulerImpl> widget3_scheduler =
       base::MakeRefCounted<WidgetSchedulerImpl>(
-          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get());
+          /*main_thread_scheduler_impl=*/nullptr, render_widget_signals_.get(),
+          /*delegate*/ nullptr);
   Mock::VerifyAndClearExpectations(mock_observer_.get());
 
   // Widgets are initially assumed to be visible so start hiding them, we should

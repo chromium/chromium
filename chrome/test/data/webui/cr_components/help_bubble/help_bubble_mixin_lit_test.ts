@@ -12,7 +12,9 @@ import {ANCHOR_HIGHLIGHT_CLASS} from 'chrome://resources/cr_components/help_bubb
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {HelpBubbleProxy} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -69,7 +71,7 @@ class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    const spanEl = this.shadowRoot!.querySelector('span');
+    const spanEl = this.shadowRoot.querySelector('span');
     assertTrue(spanEl !== null, 'connectedCallback: span element exists');
 
     titleBubble = this.registerHelpBubble(TITLE_NATIVE_ID, '#title')!;
@@ -104,38 +106,47 @@ customElements.define(
     HelpBubbleMixinTestContainerElement.is,
     HelpBubbleMixinTestContainerElement);
 
-class TestHelpBubbleHandler extends TestBrowserProxy implements
-    HelpBubbleHandlerInterface {
+class TestTrackedElementHandler extends TestBrowserProxy implements
+    TrackedElementHandlerInterface {
   // Records the current visibility of all known elements.
   // Simply looking at the call logs can produce extraneous results, as
   // visible=true may be generated multiple times if an element e.g. changes
   // position on the page.
   visibility: Map<string, boolean> = new Map();
-
   constructor() {
     super([
-      'helpBubbleAnchorVisibilityChanged',
-      'helpBubbleAnchorActivated',
-      'helpBubbleAnchorCustomEvent',
+      'trackedElementVisibilityChanged',
+      'trackedElementActivated',
+      'trackedElementCustomEvent',
+    ]);
+  }
+
+  trackedElementVisibilityChanged(nativeIdentifier: string, visible: boolean) {
+    this.visibility.set(nativeIdentifier, visible);
+    this.methodCalled(
+        'trackedElementVisibilityChanged', nativeIdentifier, visible);
+  }
+
+  trackedElementActivated(nativeIdentifier: string) {
+    this.methodCalled('trackedElementActivated', nativeIdentifier);
+  }
+
+  trackedElementCustomEvent(nativeIdentifier: string, eventName: string) {
+    this.methodCalled('trackedElementCustomEvent', nativeIdentifier, eventName);
+  }
+}
+
+class TestHelpBubbleHandler extends TestBrowserProxy implements
+    HelpBubbleHandlerInterface {
+  constructor() {
+    super([
       'helpBubbleButtonPressed',
       'helpBubbleClosed',
     ]);
   }
 
-  helpBubbleAnchorVisibilityChanged(
-      nativeIdentifier: string, visible: boolean) {
-    this.visibility.set(nativeIdentifier, visible);
-    this.methodCalled(
-        'helpBubbleAnchorVisibilityChanged', nativeIdentifier, visible);
-  }
-
-  helpBubbleAnchorActivated(nativeIdentifier: string) {
-    this.methodCalled('helpBubbleAnchorActivated', nativeIdentifier);
-  }
-
-  helpBubbleAnchorCustomEvent(nativeIdentifier: string, eventName: string) {
-    this.methodCalled(
-        'helpBubbleAnchorCustomEvent', nativeIdentifier, eventName);
+  bindTrackedElementHandler(handler: TrackedElementHandlerPendingReceiver) {
+    this.methodCalled('bindTrackedElementHandler', handler);
   }
 
   helpBubbleButtonPressed(nativeIdentifier: string, button: number) {
@@ -148,6 +159,7 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
 }
 
 class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
+  private testTrackedElementHandler_ = new TestTrackedElementHandler();
   private testHandler_ = new TestHelpBubbleHandler();
   private callbackRouter_: HelpBubbleClientCallbackRouter =
       new HelpBubbleClientCallbackRouter();
@@ -158,6 +170,10 @@ class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
 
     this.callbackRouterRemote_ =
         this.callbackRouter_.$.bindNewPipeAndPassRemote();
+  }
+
+  getTrackedElementHandler(): TestTrackedElementHandler {
+    return this.testTrackedElementHandler_;
   }
 
   getHandler(): TestHelpBubbleHandler {
@@ -296,16 +312,17 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
   test(
       'help bubble mixin can pierce shadow dom to anchor to deep query', () => {
         const containerElement =
-            container.shadowRoot!.querySelector('#container-element');
-        let childElement =
-            container.shadowRoot!.querySelector('.child-element');
+            container.shadowRoot
+                .querySelector<HelpBubbleMixinTestContainerElement>(
+                    '#container-element');
+        let childElement = container.shadowRoot.querySelector('.child-element');
 
         assertTrue(containerElement !== null, 'container element is found');
         assertTrue(
             childElement === null, 'child element is isolated from container');
 
         childElement =
-            containerElement.shadowRoot!.querySelector('.child-element');
+            containerElement.shadowRoot.querySelector('.child-element');
         assertTrue(
             childElement !== null, 'child element is rendered in shadow dom');
 
@@ -379,7 +396,8 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     await microtasksFinished();
     assertTrue(container.isHelpBubbleShowing());
     const bubble = container.getHelpBubbleForTesting('p1')!;
-    const closeButton = bubble.shadowRoot!.querySelector<HTMLElement>('#close');
+    assert(bubble);
+    const closeButton = bubble.shadowRoot.querySelector<HTMLElement>('#close');
     assertTrue(!!closeButton);
     assertEquals(CLOSE_BUTTON_ALT_TEXT, closeButton.getAttribute('aria-label'));
   });
@@ -389,8 +407,9 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     await microtasksFinished();
     assertTrue(container.isHelpBubbleShowing());
     const bubble = container.getHelpBubbleForTesting('p1')!;
+    assert(bubble);
     assertEquals(bubble.bodyIconName, defaultParams.bodyIconName);
-    const bodyIcon = bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
+    const bodyIcon = bubble.shadowRoot.querySelector<HTMLElement>('#bodyIcon');
     assertTrue(!!bodyIcon);
     const ironIcon = bodyIcon.querySelector('cr-icon');
     assertTrue(!!ironIcon);
@@ -404,9 +423,10 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         await microtasksFinished();
         assertTrue(container.isHelpBubbleShowing());
         const bubble = container.getHelpBubbleForTesting('p1')!;
+        assert(bubble);
         assertEquals(bubble.bodyIconName, null);
         const bodyIcon =
-            bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
+            bubble.shadowRoot.querySelector<HTMLElement>('#bodyIcon');
         assertTrue(!!bodyIcon);
         assertTrue(bodyIcon.hidden);
       });
@@ -498,7 +518,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
           [SPAN_NATIVE_ID, true],
           [NESTED_CHILD_NATIVE_ID, true],
         ]),
-        testProxy.getHandler().visibility);
+        testProxy.getTrackedElementHandler().visibility);
   });
 
   test('help bubble mixin sends event on lost visibility', async () => {
@@ -513,7 +533,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
           [SPAN_NATIVE_ID, false],
           [NESTED_CHILD_NATIVE_ID, false],
         ]),
-        testProxy.getHandler().visibility);
+        testProxy.getTrackedElementHandler().visibility);
   });
 
   test('help bubble mixin sends event on element activated', async () => {
@@ -523,10 +543,13 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     container.notifyHelpBubbleAnchorActivated(bulletListBubble.getNativeId());
     container.notifyHelpBubbleAnchorActivated(titleBubble.getNativeId());
     assertEquals(
-        2, testProxy.getHandler().getCallCount('helpBubbleAnchorActivated'));
+        2,
+        testProxy.getTrackedElementHandler().getCallCount(
+            'trackedElementActivated'));
     assertDeepEquals(
         [LIST_NATIVE_ID, TITLE_NATIVE_ID],
-        testProxy.getHandler().getArgs('helpBubbleAnchorActivated'));
+        testProxy.getTrackedElementHandler().getArgs(
+            'trackedElementActivated'));
   });
 
   test('help bubble mixin sends custom events', async () => {
@@ -538,13 +561,16 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     container.notifyHelpBubbleAnchorCustomEvent(
         titleBubble.getNativeId(), EVENT2_NAME);
     assertEquals(
-        2, testProxy.getHandler().getCallCount('helpBubbleAnchorCustomEvent'));
+        2,
+        testProxy.getTrackedElementHandler().getCallCount(
+            'trackedElementCustomEvent'));
     assertDeepEquals(
         [
           [PARAGRAPH_NATIVE_ID, EVENT1_NAME],
           [TITLE_NATIVE_ID, EVENT2_NAME],
         ],
-        testProxy.getHandler().getArgs('helpBubbleAnchorCustomEvent'));
+        testProxy.getTrackedElementHandler().getArgs(
+            'trackedElementCustomEvent'));
   });
 
   test(
@@ -631,8 +657,8 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     const bubble2 = container.getHelpBubbleForTesting('p1');
     assertTrue(!!bubble1);
     assertTrue(!!bubble2);
-    assertEquals(container.$.title, bubble1!.getAnchorElement());
-    assertEquals(container.$.p1, bubble2!.getAnchorElement());
+    assertEquals(container.$.title, bubble1.getAnchorElement());
+    assertEquals(container.$.p1, bubble2.getAnchorElement());
     assertTrue(isVisible(bubble1));
     assertTrue(isVisible(bubble2));
   });
@@ -709,7 +735,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     container.showHelpBubble(p1Bubble, defaultParams);
 
     // Click the close button.
-    container.shadowRoot!.querySelector('help-bubble')!.$.close.click();
+    container.shadowRoot.querySelector('help-bubble')!.$.close.click();
     await waitForVisibilityEvents();
     assertEquals(1, testProxy.getHandler().getCallCount('helpBubbleClosed'));
     assertDeepEquals(
@@ -747,7 +773,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
 
     // Click one of the action buttons.
     const button =
-        container.shadowRoot!.querySelector('help-bubble')!.getButtonForTesting(
+        container.shadowRoot.querySelector('help-bubble')!.getButtonForTesting(
             1);
     assertTrue(!!button);
     button.click();
@@ -829,7 +855,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#bulletList');
     assertTrue(listItemBubble !== null, 'help bubble is registered');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown');
 
     // re-register when help bubble is not showing
@@ -839,17 +865,17 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         listItemBubble !== null,
         'help bubble can be re-registered with same nativeId');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown after re-registering');
 
     // un-register directly when help bubble is not showing
     container.unregisterHelpBubble(LIST_ITEM_NATIVE_ID);
     assertFalse(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble cannot be shown');
     // unregisterHelpBubble clears out the nativeIds
     assertThrows(
-        () => container.showHelpBubble(listItemBubble!, defaultParams),
+        () => container.showHelpBubble(listItemBubble, defaultParams),
         'Can\'t show help bubble',
     );
   });
@@ -859,12 +885,12 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#list-item');
     assertTrue(listItemBubble !== null, 'help bubble is registered');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown');
     assertFalse(container.isHelpBubbleShowing());
     assertFalse(container.isHelpBubbleShowingForTesting('list-item'));
 
-    container.showHelpBubble(listItemBubble!, defaultParams);
+    container.showHelpBubble(listItemBubble, defaultParams);
     assertTrue(container.isHelpBubbleShowing());
     assertTrue(container.isHelpBubbleShowingForTesting('list-item'));
 

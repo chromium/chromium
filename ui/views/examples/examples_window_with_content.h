@@ -6,7 +6,7 @@
 #define UI_VIEWS_EXAMPLES_EXAMPLES_WINDOW_WITH_CONTENT_H_
 
 #include "base/functional/callback_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/views_examples_with_content_export.h"
 

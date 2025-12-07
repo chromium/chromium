@@ -18,6 +18,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace variations {
+namespace {
+
 class GoogleGroupsManagerTest : public ::testing::Test {
  public:
   GoogleGroupsManagerTest() {
@@ -36,7 +39,7 @@ class GoogleGroupsManagerTest : public ::testing::Test {
       pref_groups_list.Append(std::move(group_dict));
     }
     source_prefs_.SetList(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         variations::kOsDogfoodGroupsSyncPrefName,
 #else
         variations::kDogfoodGroupsSyncPrefName,
@@ -59,7 +62,7 @@ class GoogleGroupsManagerTest : public ::testing::Test {
   void CheckSourcePrefCleared() {
     EXPECT_TRUE(source_prefs_
                     .GetList(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                         variations::kOsDogfoodGroupsSyncPrefName
 #else
                         variations::kDogfoodGroupsSyncPrefName
@@ -154,6 +157,27 @@ TEST_F(GoogleGroupsManagerTest, ClearProfilePrefsClearsTargetPref) {
   CheckTargetPref({});
 }
 
+// Tests that `IsFeatureGroupControlled` checks whether the internal feature
+// parameter that contains the ids in the google_groups filter is non-empty.
+TEST_F(GoogleGroupsManagerTest, IsFeatureGroupControlled) {
+  static BASE_FEATURE(kGroupControlledFeature, "GroupControlledFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kOtherFeature, "OtherFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_, source_prefs_);
+
+  base::test::FeatureRefAndParams enabled_feature{
+      kGroupControlledFeature,
+      {{variations::internal::kGoogleGroupFeatureParamName, "1234"}}};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters({enabled_feature},
+                                                    /*disabled_features=*/{});
+  EXPECT_TRUE(
+      GoogleGroupsManager::IsFeatureGroupControlled(kGroupControlledFeature));
+  EXPECT_FALSE(GoogleGroupsManager::IsFeatureGroupControlled(kOtherFeature));
+}
+
 // Tests that `IsFeatureEnabledForProfile` returns true if the feature is
 // enabled and the source prefs of the `GoogleGroupsManager` contain at
 // least one of the google_groups specified for the feature.
@@ -163,22 +187,15 @@ TEST_F(GoogleGroupsManagerTest, IsFeatureEnabledForProfile) {
   auto feature_list = std::make_unique<base::FeatureList>();
   GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
-
-  constexpr char kTrialName[] = "SampleTrial";
-  constexpr char kGroupName[] = "SampleGroup";
   constexpr char kRelevantGroupId[] = "1234";
-  base::FieldTrial* trial =
-      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
-  feature_list->RegisterFieldTrialOverride(
-      "SampleFeature", base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
-  ASSERT_TRUE(base::AssociateFieldTrialParams(
-      kTrialName, kGroupName,
-      {{variations::internal::kGoogleGroupFeatureParamName,
-        kRelevantGroupId}}));
 
-  SetSourcePref({"123", "789"});
+  base::test::FeatureRefAndParams enabled_feature{
+      kSampleFeature,
+      {{variations::internal::kGoogleGroupFeatureParamName, kRelevantGroupId}}};
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  scoped_feature_list.InitWithFeaturesAndParameters({enabled_feature},
+                                                    /*disabled_features=*/{});
+  SetSourcePref({"123", "789"});
   EXPECT_TRUE(base::FeatureList::IsEnabled(kSampleFeature));
   EXPECT_FALSE(
       google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
@@ -198,23 +215,18 @@ TEST_F(GoogleGroupsManagerTest,
   GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
 
-  constexpr char kTrialName[] = "SampleTrial";
-  constexpr char kGroupName[] = "SampleGroup";
   constexpr char kRelevantGroupId[] = "1234";
-  base::FieldTrial* trial =
-      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
-  feature_list->RegisterFieldTrialOverride(
-      "SampleFeature", base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
-  ASSERT_TRUE(base::AssociateFieldTrialParams(
-      kTrialName, kGroupName,
+
+  base::test::FeatureRefAndParams enabled_feature{
+      kSampleFeature,
       {{variations::internal::kGoogleGroupFeatureParamName,
         base::StrCat({"645",
                       variations::internal::kGoogleGroupFeatureParamSeparator,
-                      kRelevantGroupId})}}));
-
+                      kRelevantGroupId})}}};
   SetSourcePref({kRelevantGroupId, "789"});
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  scoped_feature_list.InitWithFeaturesAndParameters({enabled_feature},
+                                                    /*disabled_features=*/{});
   EXPECT_TRUE(base::FeatureList::IsEnabled(kSampleFeature));
   EXPECT_TRUE(google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
 }
@@ -244,3 +256,6 @@ TEST_F(GoogleGroupsManagerTest,
   EXPECT_FALSE(
       google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
 }
+
+}  // namespace
+}  // namespace variations

@@ -7,6 +7,8 @@
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/features.h"
+#import "ios/web/public/js_messaging/content_world.h"
 
 namespace autofill {
 
@@ -62,10 +64,12 @@ void ChildFrameRegistrar::RegisterMapping(RemoteFrameToken remote,
 
   lookup_map_[remote] = local;
 
-  // Check if we're waiting for this token and run the pending callback, if any.
-  auto pending = pending_callbacks_.extract(remote);
-  if (pending) {
-    std::move(pending.mapped()).Run(local);
+  // Check if we're waiting for this token and run the pending callbacks, if
+  // any.
+  if (auto pendings = pending_callbacks_.extract(remote)) {
+    for (auto& pending : pendings.mapped()) {
+      std::move(pending).Run(local);
+    }
   }
 }
 
@@ -106,13 +110,14 @@ void ChildFrameRegistrar::DeclareNewRemoteToken(
   }
 
   // Otherwise, store the relationship for later.
-  pending_callbacks_[remote] = std::move(callback);
+  pending_callbacks_[remote].push_back(std::move(callback));
 }
 
 ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(
     web::WebState* web_state) {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
+          autofill::features::kAutofillAcrossIframesIos) &&
+      !base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
     return nullptr;
   }
 
@@ -136,10 +141,50 @@ void ChildFrameRegistrar::RemoveObserver(
 }
 
 ChildFrameRegistrar::ChildFrameRegistrar(web::WebState* web_state) {
-  // TODO(crbug.com/40266126): Register self as observer of WebState and remove
-  // stale frame IDs from `lookup_map_`.
+  CHECK(web_state);
+
+  // Monitor frame destruction. When frames are gone we clean up entries in
+  // `lookup_map_` containing their local frame token.
+  for (auto content_world : {web::ContentWorld::kPageContentWorld,
+                             web::ContentWorld::kIsolatedWorld}) {
+    web_frames_managers_observation_.AddObservation(
+        web_state->GetWebFramesManager(content_world));
+  }
+  // On WebState destruction we need to remove the frame managers observation.
+  // Otherwise the frame managers can be destroyed first which cause a UAF when
+  // `this` is destroyed and tries to remove itself as an observer of the
+  // destroyed frame manager.
+  web_state_observation_.Observe(web_state);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(ChildFrameRegistrar)
+void ChildFrameRegistrar::WebFrameBecameUnavailable(
+    web::WebFramesManager* web_frames_manager,
+    const std::string& frame_id) {
+  // Now that the frame with `frame_id` is gone, remove all stale entries in
+  // `lookup_map_` containing `frame_id` as local frame token.
+  RemoveFrameID(frame_id);
+}
+
+void ChildFrameRegistrar::WebStateDestroyed(web::WebState* web_state) {
+  web_frames_managers_observation_.RemoveAllObservations();
+  web_state_observation_.Reset();
+}
+
+void ChildFrameRegistrar::RemoveFrameID(const std::string& frame_id) {
+  std::optional<base::UnguessableToken> deserialized_frame_id =
+      DeserializeJavaScriptFrameId(frame_id);
+  if (!deserialized_frame_id) {
+    return;
+  }
+  LocalFrameToken local_frame_token = LocalFrameToken(*deserialized_frame_id);
+
+  for (auto it = lookup_map_.begin(); it != lookup_map_.end();) {
+    if (it->second == local_frame_token) {
+      lookup_map_.erase(it++);
+    } else {
+      ++it;
+    }
+  }
+}
 
 }  // namespace autofill

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
 
 #include <memory>
+#include <vector>
+
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
@@ -34,19 +37,32 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   METADATA_HEADER(TabContainer, views::View)
 
  public:
+  struct TabInsertionParams {
+    std::unique_ptr<Tab> tab;
+    int model_index;
+    TabPinned pinned;
+
+    TabInsertionParams(std::unique_ptr<Tab> tab, int index, TabPinned pinned);
+    ~TabInsertionParams();
+    TabInsertionParams(TabInsertionParams&& other) noexcept;
+    TabInsertionParams& operator=(TabInsertionParams&& other) noexcept;
+
+    TabInsertionParams(const TabInsertionParams&) = delete;
+    TabInsertionParams& operator=(const TabInsertionParams&) = delete;
+  };
+
   // This callback is used when calculating animation targets that may increase
   // the width of the tabstrip.
   virtual void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback) = 0;
 
   // Handle model changes.
-  virtual Tab* AddTab(std::unique_ptr<Tab> tab,
-                      int model_index,
-                      TabPinned pinned) = 0;
+  virtual std::vector<Tab*> AddTabs(
+      std::vector<TabInsertionParams> tabs_params) = 0;
   virtual void MoveTab(int from_model_index, int to_model_index) = 0;
   virtual void RemoveTab(int index, bool was_active) = 0;
   virtual void SetTabPinned(int model_index, TabPinned pinned) = 0;
-  // Changes the active tab from |prev_active_index| to |new_active_index|.
+  // Changes the active tab from `prev_active_index` to `new_active_index`.
   virtual void SetActiveTab(std::optional<size_t> prev_active_index,
                             std::optional<size_t> new_active_index) = 0;
 
@@ -66,16 +82,10 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // may be called during `view`'s destruction.
   virtual void ReturnTabSlotView(TabSlotView* view) = 0;
 
-  // Scrolls so the tab at `model_index` is fully visible.
-  virtual void ScrollTabToVisible(int model_index) = 0;
-
-  // Animates and scrolls the tab container by an offset.
-  virtual void ScrollTabContainerByOffset(int offset) = 0;
-
   // Handle tab group model changes.
   virtual void OnGroupCreated(const tab_groups::TabGroupId& group) = 0;
-  // Opens the editor bubble for the tab |group| as a result of an explicit user
-  // action to create the |group|.
+  // Opens the editor bubble for the tab `group` as a result of an explicit user
+  // action to create the `group`.
   virtual void OnGroupEditorOpened(const tab_groups::TabGroupId& group) = 0;
   virtual void OnGroupMoved(const tab_groups::TabGroupId& group) = 0;
   virtual void OnGroupContentsChanged(const tab_groups::TabGroupId& group) = 0;
@@ -88,8 +98,12 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
                               ToggleTabGroupCollapsedStateOrigin origin) = 0;
   virtual void OnGroupClosed(const tab_groups::TabGroupId& group) = 0;
   virtual void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) = 0;
-  virtual void NotifyTabGroupEditorBubbleOpened() = 0;
-  virtual void NotifyTabGroupEditorBubbleClosed() = 0;
+  virtual void NotifyTabstripBubbleOpened() = 0;
+  virtual void NotifyTabstripBubbleClosed() = 0;
+
+  virtual void OnSplitCreated(const std::vector<int>& indices) = 0;
+  virtual void OnSplitRemoved(const std::vector<int>& indices) = 0;
+  virtual void OnSplitContentsChanged(const std::vector<int>& indices) = 0;
 
   virtual std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const = 0;
@@ -145,7 +159,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // Returns the total width available for the TabContainer's use.
   virtual int GetAvailableWidthForTabContainer() const = 0;
 
-  // See |in_tab_close_| for details on tab closing mode. |source| is the input
+  // See `in_tab_close_` for details on tab closing mode. `source` is the input
   // method used to enter tab closing mode, which determines how it is exited
   // due to user inactivity.
   virtual void EnterTabClosingMode(std::optional<int> override_width,
@@ -164,12 +178,8 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual const std::map<tab_groups::TabGroupId,
                          std::unique_ptr<TabGroupViews>>&
   get_group_views_for_testing() const = 0;
-
-  // Returns the current width of the active tab.
-  virtual int GetActiveTabWidth() const = 0;
-
-  // Returns the current width of inactive tabs.
-  virtual int GetInactiveTabWidth() const = 0;
+  virtual std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders()
+      const = 0;
 
   // Returns ideal bounds for the tab at `model_index` in this TabContainer's
   // coordinate space.

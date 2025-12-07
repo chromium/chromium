@@ -1,0 +1,1401 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome.cros.reporting.proto;
+
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
+import "components/safe_browsing/core/common/proto/csd.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// The end result of the events.
+enum EventResult {
+  EVENT_RESULT_UNSPECIFIED = 0;
+  EVENT_RESULT_ALLOWED = 1;
+  EVENT_RESULT_WARNED = 2;
+  EVENT_RESULT_BLOCKED = 3;
+  EVENT_RESULT_BYPASSED = 4;
+  EVENT_RESULT_DETECTED = 5;
+  EVENT_RESULT_DATA_MASKED = 6;
+  EVENT_RESULT_DATA_UNMASKED = 7;
+  EVENT_RESULT_FORCED_SAVE_TO_CLOUD = 8;
+}
+
+// The reporting target of the events.
+enum ReportingTarget {
+  REPORTING_TARGET_UNKNOWN = 0;
+  REPORTING_TARGET_CHROME = 1;
+  REPORTING_TARGET_RULES = 2;
+}
+
+// The user action led to a content transfer event.
+// Mostly for uploads for now, and will be extended to other triggers.
+enum ContentTransferMethod {
+  CONTENT_TRANSFER_METHOD_UNKNOWN = 0;
+  CONTENT_TRANSFER_METHOD_FILE_PICKER = 1;
+  CONTENT_TRANSFER_METHOD_DRAG_AND_DROP = 2;
+  CONTENT_TRANSFER_METHOD_FILE_PASTE = 3;
+}
+
+message CrowdstrikeAgent {
+  // Ensure field names are snake_case to be consistent with serialization in
+  // //j/c/g/chrome/cros/boq/common/connectors/proto/reporting_event_data.proto
+  string agent_id = 1 [json_name = "agent_id"];
+
+  string customer_id = 2 [
+    // copybara:datapol_begin
+    //   (datapol.semantic_type) = ST_CUSTOMER_ID,
+    // copybara:datapol_end
+    json_name = "customer_id"
+  ];
+}
+
+// Security agent installed on the device. To add new agents, you only need to
+// modify the SecurityAgent message
+message SecurityAgent {
+  oneof agent {
+    CrowdstrikeAgent crowdstrike = 100;
+  }
+}
+
+// Information about the algorithm/detector used to match sensitive data.
+message MatchedDetector {
+  // Unique identifier for this detector.
+  string detector_id = 1;
+
+  // Display name of the detector.
+  string display_name = 2;
+
+  enum DetectorType {
+    DETECTOR_TYPE_UNSPECIFIED = 0;
+
+    // Predefined detector part of Cloud DLP.
+    PREDEFINED_DLP = 1;
+
+    // A user-defined Raven detector.
+    USER_DEFINED = 2;
+  }
+
+  // The type of this detector.
+  DetectorType detector_type = 3;
+
+  enum MaskType {
+    MASK_TYPE_UNSPECIFIED = 0;
+    LIGHT_OBFUSCATION = 1;
+    HARD_OBFUSCATION = 2;
+    REDACT = 3;
+  }
+
+  // The mask type of this detector, if it is used for data masking.
+  MaskType mask_type = 4;
+}
+
+// Information about notification configuration for a triggered rule.
+message NotificationConfiguration {
+  enum Channel {
+    CHANNEL_UNKNOWN = 0;
+    EMAIL = 1;
+  }
+
+  // The notification's communication channel.
+  repeated Channel channels = 1;
+
+  // Whether the notification is sent to super admins.
+  bool send_to_super_admins = 2;
+
+  // Whether the notification is sent to primary admins.
+  bool send_to_primary_admins = 3;
+
+  // List of emails to receive the notification.
+  repeated string recipient_emails = 4;
+}
+
+enum ServerScanStatus {
+  SERVER_SCAN_STATUS_UNKNOWN = 0;
+  SERVER_SCAN_STATUS_COMPLETED = 1;
+  SERVER_SCAN_STATUS_AUDIT_DUE_TO_CONFIG = 2;
+  SERVER_SCAN_STATUS_AUDIT_DUE_TO_DEADLINE_EXCEEDED = 3;
+}
+
+// Stores content that matched a DLP rule plus a few characters around it
+// providing context information.
+message Snippet {
+  // The matched string with surrounding text which was used as context during
+  // detection.
+  // Required.
+  string content = 1
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Specifies a half-open interval [start, end).
+  message Range {
+    // Start index (inclusive).
+    int32 start = 1;
+
+    // End index (exclusive).
+    int32 end = 2;
+  }
+
+  // Zero-based unicode code points range representing where the match occurred,
+  // relative to the "content" field above.
+  //
+  // For example, the original file content is "I like long walks on the beach",
+  // and the snippet content is "long walks on" with the matched content
+  // "walks". The range here will be [5, 10) representing the matched content
+  // location relative to the snippet.
+  //
+  // Required.
+  Range match_codepoint_range = 2;
+
+  // ID of the matched detector if any. Set for both predefined and custom
+  // detectors.
+  string detector_id = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_NOT_REQUIRED
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Specifies the cell location of a match within a spreadsheet.
+  message RecordLocation {
+    // The zero-based index of the row where the match is located.
+    int64 row_index = 1;
+
+    // The field name associated with the match.
+    string field_name = 2;
+  }
+
+  // Location of the match within a spreadsheet if applicable.
+  RecordLocation record_location = 4;
+}
+
+// Information about the triggered rule.
+// Next ID: 15
+message TriggeredRuleInfo {
+  // The unique identifier for this rule.
+  int64 rule_id = 1;
+
+  // Name of this rule defined by its creator.
+  string rule_name = 2;
+
+  // External unique identifier for this rule.
+  string rule_resource_name = 3;
+
+  // Severity of this rule.
+  enum RuleSeverity {
+    RULE_SEVERITY_UNSPECIFIED = 0;
+    LOW = 1;
+    MEDIUM = 2;
+    HIGH = 3;
+  }
+
+  RuleSeverity severity = 4;
+
+  // Action taken by Chrome.
+  enum Action {
+    ACTION_UNKNOWN = 0;
+    REPORT_ONLY = 1;
+    WARN = 2;
+    BLOCK = 3;
+    FORCE_SAVE_TO_CLOUD = 4;
+  }
+
+  Action action = 5;
+
+  // The detectors which were matched.
+  repeated MatchedDetector matched_detectors = 6;
+
+  // Whether the rule has one or more alert(s) configured.
+  bool has_alert = 7;
+
+  // Configurations for sending notifications for the triggered rule.
+  repeated NotificationConfiguration notification_configurations = 8;
+
+  // Access level.
+  repeated string access_level = 9;
+
+  // URL Category of the URL as per this rule.
+  string url_category = 10;
+
+  // Matched content detected by this rule.
+  repeated Snippet snippets = 11;
+
+  // Whether the rule has watermarking enabled.
+  bool has_watermarking = 12;
+
+  // Whether the rule has screenshot protection enabled.
+  bool has_screenshot_protection = 13;
+
+  // URL categories in the iframes.
+  repeated string iframe_url_categories = 14;
+}
+
+// Risk level for a url/ip/file
+enum RiskLevel {
+  RISK_LEVEL_UNSPECIFIED = 0;
+
+  // The URI given is risky / mildly suspicious.
+  LOW = 20;
+
+  // Higher (>90%) confidence that the URI given is risky (with no egregious
+  // false positives)
+  MEDIUM = 30;
+
+  // Extremely high (>99%) confidence that the URI given is risky.
+  HIGH = 40;
+}
+
+// RiskInfo proto for url/ip/file
+// This field is considered Enriched/Proprietary, it should only be
+// available to SecOps, and removed for Workspace BIP/SIT, GCP Cloud Pubsub
+// or 3P SIEMs.
+// Next ID: 7
+message RiskInfo {
+  enum ThreatType {
+    THREAT_TYPE_UNSPECIFIED = 0;
+    // Anything related to malware, for either URL or file.
+    MALWARE = 1;
+    // Unwanted software.
+    UNWANTED_SOFTWARE = 2;
+    // Social engineering, including phishing.
+    SOCIAL_ENGINEERING = 3;
+    // Violating data protection/DLP rules.
+    DATA_LOSS = 4;
+    // Violates URL filtering rules.
+    URL_FILTERING = 5;
+    // Brand abuse detected by customer submitted screenshots.
+    ENTERPRISE_BRAND_ABUSE = 6;
+  }
+  ThreatType threat_type = 1;
+
+  RiskLevel risk_level = 2;
+
+  // Risk category (malware category/family, phishing brand, etc.)
+  message RiskCategory {
+    string key = 1;
+    string value = 2;
+  }
+  repeated RiskCategory risk_categories = 3;
+
+  // Reasons like Safe Browsing blocklist, ML models vs. heuristic rules.
+  repeated string risk_reasons = 4;
+
+  // RiskIndicators (e.g, contains_macros)
+  // See Safe Browsing entity prevalence doc.
+  message RiskIndicator {
+    // The key of the indicator.
+    string key = 1;
+
+    // The value of the indicator.
+    oneof value {
+      int32 int_value = 2;
+      bool bool_value = 3;
+      string string_value = 4;
+      float float_value = 5;
+    }
+  }
+  repeated RiskIndicator risk_indicators = 5;
+
+  // Risk source, to differentiate risk info from pipelines like Bineval
+  // Reputation  server, SUMS, LLAMA, etc.
+  enum RiskSource {
+    RISK_SOURCE_UNSPECIFIED = 0;
+    FILE_REPUTATION = 1;        // Bineval Reputation Server or SB blocklist.
+    FILE_CONTENT_SCANNING = 2;  // GAVS or SUMS.
+    URL_REPUTATION = 3;         // Llama / WebRisk Evaluate API or SB blocklist.
+    URL_CONTENT_SCANNING = 4;   // Ictis scanning pipeline.
+  }
+  RiskSource risk_source = 6;
+}
+
+// Next ID: 9
+message UrlInfo {
+  // The URL.
+  string url = 1;
+
+  // The URL category according to go/webcat-doc.
+  repeated string url_categories = 2;
+
+  string ip = 3;
+
+  // Type of the URL stored below, reference ResourceType
+  enum URLType {
+    URL_TYPE_UNSPECIFIED = 0;
+    DOWNLOAD_URL = 1;
+    DOWNLOAD_REDIRECT = 2;
+    TAB_URL = 3;
+    TAB_REDIRECT = 4;
+  }
+  URLType type = 4;
+
+  // Per-threat-type-Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 5;
+
+  // Top level risk level for the URL, aggregated over all per-threat-type
+  RiskLevel risk_level = 6;
+
+  message NavigationInitiator {
+    enum InitiatorType {
+      INITIATOR_TYPE_UNSPECIFIED = 0;
+      USER_INITIATIATED_NAVIGATION_OR_CLICK = 1;
+      BROWSER_INITIATED_NAVIGATION_OR_REDIRECT = 2;
+      CHROME_NOTIFICATION = 3;
+    }
+    InitiatorType initiator_type = 1;
+
+    string entity = 2;  // URL of the notification, name of APP, etc.
+  }
+  NavigationInitiator navigation_initiator = 7;
+
+  // The http(s) method via which the URL is requested. e.g. GET, POST, etc.
+  string request_http_method = 8;
+}
+
+// A message for reporting password reuse events.
+// Next ID: 16.
+message SafeBrowsingPasswordReuseEvent {
+  reserved 5, 6, 7, 8, 9, 10;
+
+  // URL where this reuse happened
+  string url = 1;
+
+  // Username of the reused password.
+  // May be email address or another identifier.
+  string user_name = 2;
+
+  // Indicates if the url is considered a phishing URL.
+  bool is_phishing_url = 3;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 4;
+
+  // The address of the webpages that sent the user to this url.
+  repeated string referral_urls = 11;
+
+  // Whether the warning has been ignored.
+  bool clicked_through = 12;
+
+  // Whether a warning was shown to the user.
+  EventResult event_result = 13;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 14
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 15;
+}
+
+// A message for reporting password change events.
+// Next ID: 6.
+message SafeBrowsingPasswordChangedEvent {
+  // Username of the reused password.
+  // May be email address or another identifier.
+  string user_name = 1;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 2;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 4;
+}
+
+// A message for reporting dangerous download events (malware transfer events).
+// Next ID: 41.
+message SafeBrowsingDangerousDownloadEvent {
+  reserved 5, 11, 12, 13, 14, 15, 16;
+
+  // The id of the scan. This will be shared by all events that are triggered
+  // from a single scan.
+  string scan_id = 24;
+
+  // URL of the download.
+  string url = 1;
+
+  // Source, e.g., a file system type.
+  string source = 25;
+
+  // Destination, e.g., a file system type.
+  string destination = 26;
+
+  // The file name.
+  string file_name = 2;
+
+  // The file hashes, not limited to downloaded files.
+  string download_digest_sha256 = 3;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 4;
+
+  enum DangerousDownloadThreatType {
+    DANGEROUS_DOWNLOAD_THREAT_TYPE_UNSPECIFIED = 0;
+    DANGEROUS = 1;
+    DANGEROUS_HOST = 2;
+    POTENTIALLY_UNWANTED = 3;
+    UNCOMMON = 4;
+    UNKNOWN = 5;
+    DANGEROUS_FILE_TYPE = 6;
+    DANGEROUS_URL = 7;
+    DANGEROUS_ACCOUNT_COMPROMISE = 8;
+  }
+
+  // Category of dangerous download.
+  DangerousDownloadThreatType threat_type = 6;
+
+  // Name of downloaded content.
+  string content_name = 7;
+
+  // MIME type of downloaded content.
+  string content_type = 8
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Size of downloaded content (in bytes).
+  uint64 content_size = 9;
+
+  // Which direction the dangerous file was transferred, can be upload,
+  // download, file transfer (CrOS only).
+  DataTransferEventTrigger trigger = 10;
+
+  // The address of the webpages that sent the user to this url.
+  repeated string referral_urls = 17;
+
+  // Whether the warning has been ignored.
+  bool clicked_through = 18;
+
+  // The justification the user provided to bypass the warning, if they did.
+  string user_justification = 20;
+
+  // The end result of the event.
+  EventResult event_result = 19;
+
+  // Malware category
+  string malware_category = 21;
+
+  // Malware family
+  string malware_family = 22;
+
+  // Evidence locker filepath in Google Cloud Storage.
+  string evidence_locker_filepath = 23;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 27
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 28;
+
+  // URL of the tab. Only different from `url` for downloads.
+  string tab_url = 29
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The user action led to a content transfer event.
+  ContentTransferMethod content_transfer_method = 30;
+
+  // The server side scan status.
+  ServerScanStatus server_scan_status = 31;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 32;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 33;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 34;
+
+  // Per-threat Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 35;
+
+  // Top-level risk level for the content.
+  RiskLevel risk_level = 36;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 37;
+
+  // The sha256 hash of the PEdata based on Safe Browsing's PEHash.
+  string pehash_sha256 = 38;
+
+  // Whether the content is encrypted.
+  bool is_encrypted = 39;
+
+  // URLs in the iframes.
+  repeated string iframe_urls = 40
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
+// Types of data transferring operations that may have triggered the event to
+// be sent by the client. For example, the user uploaded a data-sensitive file
+// which triggered a DLP event.
+enum DataTransferEventTrigger {
+  DATA_TRANSFER_EVENT_TRIGGER_TYPE_UNSPECIFIED = 0;
+  FILE_DOWNLOAD = 1;
+  FILE_UPLOAD = 2;
+  WEB_CONTENT_UPLOAD = 3;
+  PAGE_PRINT = 4;
+  URL_VISITED = 6;
+  CLIPBOARD_COPY = 7;
+
+  // Trigger for file transfers on ChromeOS.
+  FILE_TRANSFER = 5;
+
+  // Trigger for data masking events.
+  PAGE_LOAD = 8;
+  MUTATION = 9;
+  MOUSE_ACTION = 10;
+}
+
+// Next ID: 22.
+message SafeBrowsingInterstitialEvent {
+  reserved 2, 6, 8, 9, 10, 11, 12, 13, 15;
+
+  // Top level URL that triggers this interstitial.
+  string url = 1;
+
+  // Net error code.
+  int32 net_error_code = 3;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 4;
+
+  // Whether the warning has been ignored.
+  bool clicked_through = 5;
+
+  enum InterstitialThreatType {
+    INTERSTITIAL_THREAT_TYPE_UNSPECIFIED = 0;
+    DANGEROUS_DOWNLOAD_SEEN = 1;
+    DANGEROUS_DOWNLOAD_OPENED = 2;
+    UNSAFE_SITE_SEEN = 3;
+    UNSAFE_SITE_BYPASSED = 4;
+    INVALID_SSL_SEEN = 5;
+    INVALID_SSL_BYPASSED = 6;
+  }
+
+  // Threat category of the interstitial shown.
+  InterstitialThreatType threat_type = 7;
+
+  // The address of the webpages that sent the user to this url.
+  repeated string referral_urls = 14;
+
+  // To indicate why this interstitial is shown.
+  enum InterstitialReason {
+    THREAT_TYPE_UNSPECIFIED = 0;
+    SSL_ERROR = 1;
+    MALWARE = 2;
+    SOCIAL_ENGINEERING = 3;
+    UNWANTED_SOFTWARE = 4;
+    PHISHING = 5;
+    HARMFUL = 6;
+  }
+
+  InterstitialReason reason = 16;
+
+  // End result of the interstitial event.
+  EventResult event_result = 17;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 18
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 19;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 20;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 21;
+}
+
+// A DLP (Data Loss Prevention) event where sensitive data may have leaked.
+// Next ID: 37.
+message DlpSensitiveDataEvent {
+  reserved 6, 9, 10, 11, 12, 13, 15, 25;
+
+  // The id of the scan. This will be shared by all events that are triggered
+  // from a single scan.
+  string scan_id = 22;
+
+  // Name of file/content.
+  string file_name = 1;
+
+  // MIME type of downloaded content.
+  string content_type = 2;
+
+  // Size of content (in bytes).
+  uint64 content_size = 3;
+
+  // SHA256 hash of content with sensitive data.
+  string download_digest_sha_256 = 4;
+
+  // Trigger category that generated this event.
+  DataTransferEventTrigger trigger = 5;
+  repeated TriggeredRuleInfo triggered_rule_info = 17;
+
+  // Whether any warnings has been ignored and bypassed.
+  bool clicked_through = 7;
+
+  // The justification the user provided to bypass the warning, if they did.
+  string user_justification = 20;
+
+  // Top level URL that triggers this event.
+  string url = 8;
+
+  // Source, e.g., a file system type.
+  string source = 23;
+
+  // Destination, e.g., a file system type.
+  string destination = 24;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 14
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_EMAIL_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The address of the webpages that sent the user to this url.
+  repeated string referral_urls = 16;
+
+  // The reporting target of the event.
+  ReportingTarget reporting_target = 18;
+
+  // The end result of the event.
+  EventResult event_result = 19;
+
+  // Evidence locker filepath in Google Cloud Storage.
+  string evidence_locker_filepath = 21;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 26
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 27;
+
+  // URL of the tab. Only different from `url` for downloads.
+  string tab_url = 28
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The user action led to a content transfer event.
+  ContentTransferMethod content_transfer_method = 29;
+
+  // The server side scan status.
+  ServerScanStatus server_scan_status = 30;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 31;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 32;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 33;
+
+  // URLs in the iframes.
+  repeated string iframe_urls = 34
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The web app signed-in account email. Only populated for Workspace sites.
+  string web_app_signed_in_account = 35
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Copy origin webp app signed-in account for paste event only. Only populated
+  // for Workspace sites.
+  string source_web_app_signed_in_account = 36
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
+// Event where a large file could not be scanned for analysis e.g. malware or
+// DLP.
+// Next ID: 25.
+message UnscannedFileEvent {
+  reserved 6, 9, 10, 11, 12, 14;
+
+  // Name of large unscanned file.
+  string file_name = 1;
+
+  // MIME type of downloaded content.
+  string content_type = 2;
+
+  // Size of large unscanned file (in bytes).
+  uint64 content_size = 3;
+
+  // SHA256 hash of large unscanned file.
+  string download_digest_sha_256 = 4;
+
+  // Trigger category that generated this event.
+  DataTransferEventTrigger trigger = 5;
+
+  // Top level URL that triggers this event.
+  string url = 7;
+
+  // Source, e.g., a file system type.
+  string source = 19;
+
+  // Destination, e.g., a file system type.
+  string destination = 20;
+
+  // Reason why the file could not be scanned. e.g. fileTooLarge,
+  // filePasswordProtected
+  string reason = 8;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 13;
+
+  // The address of the webpages that sent the user to this url.
+  repeated string referral_urls = 15;
+
+  // Whether the warning has been ignored.
+  bool clicked_through = 16;
+
+  // The end result of the event.
+  EventResult event_result = 17;
+
+  enum UnscannedReason {
+    UNSCANNED_REASON_UNKNOWN = 0;
+    FILE_PASSWORD_PROTECTED = 1;
+    FILE_TOO_LARGE = 2;
+    DLP_SCAN_FAILED = 3;
+    MALWARE_SCAN_FAILED = 4;
+    DLP_SCAN_UNSUPPORTED_FILE_TYPE = 5;
+    MALWARE_SCAN_UNSUPPORTED_FILE_TYPE = 6;
+    SERVICE_UNAVAILABLE = 7;
+    TOO_MANY_REQUESTS = 8;
+    TIMEOUT = 9;
+  }
+
+  UnscannedReason unscanned_reason = 18;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 21
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 22;
+
+  // URL of the tab. Only different from `url` for downloads.
+  string tab_url = 23
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The user action led to a content transfer event.
+  ContentTransferMethod content_transfer_method = 24;
+}
+
+// Event that indicates that content was transferred.
+//
+// Next ID: 26.
+message ContentTransferEvent {
+  // The id of the scan. This will be shared by all events that are triggered
+  // from a single scan.
+  string scan_id = 1;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 2
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_EMAIL_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Top level URL that triggers this event.
+  string url = 3;
+
+  // Source, e.g., a file system type.
+  string source = 9;
+
+  // Destination, e.g., a file system type.
+  string destination = 10;
+
+  // Name of the transferred file.
+  string file_name = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Size of transferred file (in bytes).
+  uint64 content_size = 5;
+
+  // MIME type of transferred content.
+  string content_type = 6
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // SHA256 hash of transferred file.
+  string digest_sha256 = 7
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT,
+      //   (datapol.qualifier) = { is_encrypted: true }
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Trigger category that generated this event.
+  DataTransferEventTrigger trigger = 8;
+
+  // The detectors which were matched for data insights.
+  repeated MatchedDetector matched_detectors = 11;
+
+  // URL of the tab. Only different from `url` for downloads.
+  string tab_url = 12
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The user action led to a content transfer event.
+  ContentTransferMethod content_transfer_method = 13;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 14;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 15;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 16;
+
+  // Per-threat Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 17;
+
+  // Top-level risk level for the content.
+  RiskLevel risk_level = 18;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 19;
+
+  // The sha256 hash of the PEdata based on Safe Browsing's PEHash.
+  string pehash_sha256 = 20;
+
+  // Whether the content is encrypted.
+  bool is_encrypted = 21;
+
+  // Evidence locker filepath in Google Cloud Storage.
+  string evidence_locker_filepath = 22;
+
+  // URLs in the iframes.
+  repeated string iframe_urls = 23
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The web app signed-in account email. Only populated for Workspace sites.
+  string web_app_signed_in_account = 24
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Copy origin webp app signed-in account for paste event only. Only populated
+  // for Workspace sites.
+  string source_web_app_signed_in_account = 25
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
+// Event sent when a user successfully logs in to a website, as determined by
+// Chrome's password manager.
+//
+// Next ID: 8.
+message LoginEvent {
+  // The URL on which the login took place.
+  string url = 1;
+
+  // True if the login happens through a third-party provider (such as "Sign in
+  // with Google")
+  bool is_federated = 2;
+
+  // The origin of the third-party login provider, if |federated| is true.
+  string federated_origin = 3;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 4;
+
+  // Username used to login.
+  string login_user_name = 5;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 6
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 7;
+}
+
+// Event sent when the Chrome Password Manager detects that a user's password
+// can be found in a password breach and should be considered compromised.
+//
+// Next ID: 6.
+message PasswordBreachEvent {
+  // Which user action triggered the password check. Additional values may be
+  // added to this enum if the Chrome Password Manager eventually supports more
+  // trigger points for the password check.
+  enum TriggerType {
+    // Default value, unused.
+    TRIGGER_TYPE_UNSPECIFIED = 0;
+
+    // User manually started a password safety check in settings.
+    SAFETY_CHECK = 1;
+
+    // The check was triggered by the user entering a password on a webpage.
+    PASSWORD_ENTRY = 2;
+  }
+
+  TriggerType trigger = 1;
+
+  // Represents the identity of the user on a specific website where the
+  // breached password is used.
+  message Identity {
+    // Login URL of the site for which the user has breached credentials.
+    string url = 1;
+
+    // Username associated with |domain|.
+    string username = 2;
+  }
+
+  // List of all identities for which the user has breached credentials.
+  repeated Identity identities = 2;
+
+  // Username of the profile. This will be an email address and could be
+  // different from the usernames in |identities|.
+  string profile_user_name = 3;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
+}
+
+// Event sent when an extension is installed on a managed browser OR managed
+// profile.
+//
+// Next ID: 11.
+message BrowserExtensionInstallEvent {
+  // The extension ID.
+  string id = 1;
+
+  // The name of the extension.
+  string name = 2;
+
+  // The description of the extension.
+  string description = 3;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 4;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 5
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 6;
+
+  // The extension event action type.
+  enum ExtensionAction {
+    UNKNOWN = 0;
+    INSTALL = 1;
+    UPDATE = 2;
+    UNINSTALL = 3;
+  }
+
+  ExtensionAction extension_action_type = 7;
+
+  // The version of the extension.
+  string extension_version = 8
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_NOT_REQUIRED
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Whether the extension source is Chrome Web Store.
+  bool from_webstore = 9 [deprecated = true];
+
+  // The source of the extension.
+  enum ExtensionSource {
+    // Default value, unused.
+    EXTENSION_SOURCE_UNSPECIFIED = 0;
+
+    // Installed or updated from the Chrome Web Store.
+    CHROME_WEBSTORE = 1;
+
+    // Installed from outside the Chrome Web Store.
+    EXTERNAL = 2;
+
+    // Component extension built into Chrome.
+    COMPONENT = 3;
+  }
+
+  ExtensionSource extension_source = 10;
+}
+
+// Event sent when a crash occurs on a managed browser OR a managed profile.
+// The crash could be a browser process crash or a renderer process crash in
+// the Chrome Browser
+//
+// Next ID: 8.
+message BrowserCrashEvent {
+  // The Chrome Browser channel
+  string channel = 1;
+
+  // The Chrome Browser version number
+  string version = 2;
+
+  // The report ID in the collection server
+  string report_id = 3;
+
+  // The platform (OS)
+  string platform = 4;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 5;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 6
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 7;
+}
+
+// Next ID: 14
+message UrlFilteringInterstitialEvent {
+  // Top level URL that triggers this interstitial.
+  string url = 1;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 2;
+
+  // Whether the warning has been ignored.
+  bool clicked_through = 3;
+
+  enum InterstitialThreatType {
+    UNKNOWN_INTERSTITIAL_THREAT_TYPE = 0;
+    ENTERPRISE_BLOCKED_SEEN = 1;
+    ENTERPRISE_WARNED_SEEN = 2;
+    ENTERPRISE_WARNED_BYPASS = 3;
+  }
+
+  // Threat category of the interstitial shown.
+  InterstitialThreatType threat_type = 4;
+
+  // The address of the webpages that sent the user to this url.
+  repeated string referrer_urls = 5;
+
+  // This is the list of rules that were triggered for this event. They are
+  // ordered by rule severity (block>warn) and the rule with url category is
+  // prioritized for each verdict type.
+  // Sets only rule_id, rule_name, url_category and action for each rule
+  // in this event.
+  repeated TriggeredRuleInfo triggered_rule_info = 6;
+
+  // End result of the interstitial event.
+  EventResult event_result = 7;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 8
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 9;
+
+  // The reporting target of the event.
+  ReportingTarget reporting_target = 10;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 11;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 12;
+
+  // The account email of the content area. Only populated for Workspace sites.
+  string web_app_signed_in_account = 13
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
+// Next ID: 5
+message ExtensionTelemetryEvent {
+  // Protobuf for uploading Chrome extension telemetry reports.
+  safe_browsing.ExtensionTelemetryReportRequest extension_telemetry_report = 1;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 2
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USERNAME
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 4;
+}
+
+// Event sent when a user navigates to a URL.
+// Next ID: 7
+message UrlNavigationEvent {
+  // Tab URL of the navigation.
+  UrlInfo url_info = 1;
+
+  // The referrers of the webpage that sent the user to this url.
+  repeated UrlInfo referrers = 2;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USERNAME
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
+}
+
+// Event for suspicious site visits.
+message SuspiciousURLEvent {
+  // Tab URL of the navigation.
+  UrlInfo url_info = 1;
+
+  // The referrers of the webpage that sent the user to this url.
+  repeated UrlInfo referrers = 2;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 3;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
+}
+
+message TelomereEvent {
+  message TelomereLog {
+    // The event log_type if it needs to be specified.
+    string log_type = 1;
+
+    // The event log_message that will be forwarded to partners as is.
+    string log_data = 2
+        // copybara:datapol_begin
+        // [(datapol.semantic_type) = ST_USER_CONTENT]
+        // copybara:datapol_end
+        ;
+  }
+
+  // List of telomere events.
+  repeated TelomereLog logs = 1;
+}

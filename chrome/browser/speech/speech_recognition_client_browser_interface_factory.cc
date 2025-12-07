@@ -41,9 +41,7 @@ SpeechRecognitionClientBrowserInterfaceFactory::
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   DependsOn(::captions::LiveCaptionControllerFactory::GetInstance());
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 SpeechRecognitionClientBrowserInterfaceFactory::

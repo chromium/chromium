@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -50,7 +51,7 @@ void SVGAngleTearOff::setValue(float value, ExceptionState& exception_state) {
     return;
   }
   Target()->SetValue(value);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::setValueInSpecifiedUnits(
@@ -61,7 +62,7 @@ void SVGAngleTearOff::setValueInSpecifiedUnits(
     return;
   }
   Target()->SetValueInSpecifiedUnits(value);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
@@ -75,13 +76,13 @@ void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Cannot set value with unknown or invalid units (" +
-            String::Number(unit_type) + ").");
+        StrCat({"Cannot set value with unknown or invalid units (",
+                String::Number(unit_type), ")."}));
     return;
   }
   Target()->NewValueSpecifiedUnits(
       static_cast<SVGAngle::SVGAngleType>(unit_type), value_in_specified_units);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
@@ -94,8 +95,8 @@ void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Cannot convert to unknown or invalid units (" +
-            String::Number(unit_type) + ").");
+        StrCat({"Cannot convert to unknown or invalid units (",
+                String::Number(unit_type), ")."}));
     return;
   }
   if (Target()->UnitType() == SVGAngle::kSvgAngletypeUnknown) {
@@ -106,7 +107,7 @@ void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
   }
   Target()->ConvertToSpecifiedUnits(
       static_cast<SVGAngle::SVGAngleType>(unit_type));
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGAngleTearOff::setValueAsString(const String& value,
@@ -124,10 +125,10 @@ void SVGAngleTearOff::setValueAsString(const String& value,
   if (status != SVGParseStatus::kNoError) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The value provided ('" + value + "') is invalid.");
+        StrCat({"The value provided ('", value, "') is invalid."}));
     return;
   }
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGAngleTearOff* SVGAngleTearOff::CreateDetached() {

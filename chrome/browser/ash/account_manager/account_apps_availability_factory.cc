@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -54,13 +54,9 @@ AccountAppsAvailabilityFactory::BuildServiceInstanceForBrowserContext(
   if (!IsAccountManagerAvailable(profile))
     return nullptr;
 
-  if (!AccountAppsAvailability::IsArcAccountRestrictionsEnabled() &&
-      !AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-    return nullptr;
-  }
-
   return std::make_unique<AccountAppsAvailability>(
-      ::GetAccountManagerFacade(profile->GetPath().value()),
+      AccountManagerFactory::Get()->GetAccountManagerFacade(
+          profile->GetPath().value()),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
 

@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/interfaces/bindings/tests/test_data_view.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_data_view.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -70,8 +70,7 @@ TEST_F(DataViewTest, String) {
   data_view.GetFStringDataView(&string_data_view);
 
   ASSERT_FALSE(string_data_view.is_null());
-  EXPECT_EQ(std::string("hello"),
-            std::string(string_data_view.storage(), string_data_view.size()));
+  EXPECT_EQ(std::string("hello"), string_data_view.value());
 }
 
 TEST_F(DataViewTest, NestedStruct) {

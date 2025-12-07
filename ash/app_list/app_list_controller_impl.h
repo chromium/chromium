@@ -13,15 +13,15 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/app_waiter.h"
 #include "ash/app_list/home_launcher_animation_info.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
-#include "ash/assistant/model/assistant_ui_model_observer.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
-#include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -32,15 +32,18 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "components/prefs/pref_member.h"
 #include "ui/aura/window_observer.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/types/display_constants.h"
@@ -77,12 +80,10 @@ class ASH_EXPORT AppListControllerImpl
       public display::DisplayObserver,
       public KeyboardControllerObserver,
       public WallpaperControllerObserver,
-      public AssistantStateObserver,
       public display::DisplayManagerObserver,
       public aura::WindowObserver,
-      public AssistantControllerObserver,
-      public AssistantUiModelObserver,
-      public FeatureDiscoveryDurationReporter::ReporterObserver {
+      public FeatureDiscoveryDurationReporter::ReporterObserver,
+      public SunfishScannerFeatureWatcher::Observer {
  public:
   AppListControllerImpl();
   AppListControllerImpl(const AppListControllerImpl&) = delete;
@@ -96,6 +97,10 @@ class ASH_EXPORT AppListControllerImpl
   };
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Set the value of global variable `g_sunfish_nudge_disabled_for_test` to
+  // disable showing the nudge.
+  static void SetSunfishNudgeDisabledForTest(bool is_disabled);
 
   AppListPresenterImpl* fullscreen_presenter() {
     return fullscreen_presenter_.get();
@@ -122,6 +127,10 @@ class ASH_EXPORT AppListControllerImpl
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnUserSessionAdded(const AccountId& account_id) override;
+
+  // SunfishScannerFeatureWatcher::Observer:
+  void OnSunfishScannerFeatureStatesChanged(
+      SunfishScannerFeatureWatcher& source) override;
 
   // Methods used in ash:
   bool GetTargetVisibility(const std::optional<int64_t>& display_id) const;
@@ -158,8 +167,6 @@ class ASH_EXPORT AppListControllerImpl
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
-  void StartAssistant(assistant::AssistantEntryPoint entry_point) override;
-  void EndAssistant(assistant::AssistantExitPoint exit_point) override;
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;
   void StartSearch(const std::u16string& raw_query) override;
@@ -186,14 +193,12 @@ class ASH_EXPORT AppListControllerImpl
                            AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
-                                ui::MenuSourceType source_type) override;
+                                ui::mojom::MenuSourceType source_type) override;
   bool KeyboardTraversalEngaged() override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
-  AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
-  bool IsAssistantAllowedAndEnabled() const override;
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;
@@ -250,28 +255,12 @@ class ASH_EXPORT AppListControllerImpl
   void OnWallpaperPreviewStarted() override;
   void OnWallpaperPreviewEnded() override;
 
-  // AssistantStateObserver:
-  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
-  void OnAssistantSettingsEnabled(bool enabled) override;
-  void OnAssistantFeatureAllowedChanged(
-      assistant::AssistantAllowedState state) override;
-
   // display::DisplayManagerObserver:
   void OnDidApplyDisplayChanges() override;
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
   void OnWindowDestroyed(aura::Window* window) override;
-
-  // AssistantControllerObserver:
-  void OnAssistantReady() override;
-
-  // AssistantUiModelObserver:
-  void OnUiVisibilityChanged(
-      AssistantVisibility new_visibility,
-      AssistantVisibility old_visibility,
-      std::optional<AssistantEntryPoint> entry_point,
-      std::optional<AssistantExitPoint> exit_point) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
@@ -317,16 +306,6 @@ class ASH_EXPORT AppListControllerImpl
 
   void SetKeyboardTraversalMode(bool engaged);
 
-  // Returns whether the assistant page is showing (either in bubble app list or
-  // fullscreen app list).
-  bool IsShowingEmbeddedAssistantUI() const;
-
-  // Sets up `close_assistant_ui_runner_` to close the assistant.
-  void ScheduleCloseAssistant();
-
-  // Runs `close_assistant_ui_runner_` when it is non-null.
-  void MaybeCloseAssistant();
-
   using StateTransitionAnimationCallback =
       base::RepeatingCallback<void(AppListViewState)>;
 
@@ -369,6 +348,9 @@ class ASH_EXPORT AppListControllerImpl
   // Returns true when the quick app was changed to a valid `app_id` or reset
   // using an empty `app_id`.
   bool SetHomeButtonQuickApp(const std::string& app_id);
+
+  // May show the Sunfish education nudge, anchored to the `launcher_button`.
+  void MaybeShowSunfishLauncherNudge(views::View* launcher_button);
 
  private:
   // Convenience methods for getting models from `model_provider_`.
@@ -428,6 +410,11 @@ class ASH_EXPORT AppListControllerImpl
   // Gets the container which should contain the fullscreen launcher.
   int GetFullscreenLauncherContainerId() const;
 
+  // Show Gemini button in the search box with `app_name` as a display name.
+  void ShowGeminiButton(std::string app_name);
+  // Hide Gemini button in the search box.
+  void HideGeminiButton();
+
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)
   // * being hidden (either through an animation or a drag)
@@ -453,12 +440,9 @@ class ASH_EXPORT AppListControllerImpl
   // transition animation to finish.
   StateTransitionAnimationCallback state_transition_animation_callback_;
 
-  // Used for closing the Assistant ui in the asynchronous way.
-  base::ScopedClosureRunner close_assistant_ui_runner_;
-
   // Manages the tablet mode home launcher. Destroying `AppListPresenterImpl`
   // can reentrantly call back into `this` and use `model_provider_`,
-  // `state_transition_animation_callback_`, and `close_assistant_ui_runner_`,
+  // `state_transition_animation_callback_`,
   // so `fullscreen_presenter_` must be ordered after all those fields.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
@@ -548,11 +532,18 @@ class ASH_EXPORT AppListControllerImpl
   // animations.
   std::optional<ui::ThroughputTracker> smoothness_tracker_;
 
+  std::optional<AppWaiter> gemini_app_waiter_;
+
   // Sub-controller to handle app collections page.
   std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};
+
+  // Observes changes in Sunfish and Scanner feature states.
+  base::ScopedObservation<SunfishScannerFeatureWatcher,
+                          SunfishScannerFeatureWatcher::Observer>
+      sunfish_scanner_feature_observation_{this};
 
   base::WeakPtrFactory<AppListControllerImpl> weak_ptr_factory_{this};
 };

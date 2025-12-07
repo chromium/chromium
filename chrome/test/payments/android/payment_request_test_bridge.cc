@@ -151,9 +151,9 @@ static void JNI_PaymentRequestTestBridge_ResolvePaymentRequestObserverCallback(
 static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
     JNIEnv* env,
     jlong callback_ptr,
-    const base::android::JavaParamRef<jobjectArray>& japp_labels,
-    const base::android::JavaParamRef<jobjectArray>& japp_sublabels,
-    const base::android::JavaParamRef<jobjectArray>& japp_totals) {
+    const base::android::JavaRef<jobjectArray>& japp_labels,
+    const base::android::JavaRef<jobjectArray>& japp_sublabels,
+    const base::android::JavaRef<jobjectArray>& japp_totals) {
   std::vector<std::string> app_labels;
   base::android::AppendJavaStringArrayToStringVector(env, japp_labels,
                                                      &app_labels);
@@ -189,3 +189,5 @@ static void JNI_PaymentRequestTestBridge_InvokeBooleanCallback(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentRequestTestBridge)

@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -128,10 +127,6 @@ constexpr base::FilePath::CharType kProductBundleName[] =
     FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app");
 constexpr base::FilePath::CharType kKeystoneBundleName[] =
     FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle");
-constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                 base::FILE_PERMISSION_GROUP_MASK |
-                                 base::FILE_PERMISSION_READ_BY_OTHERS |
-                                 base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
 
 // Exit codes
 constexpr int kSuccess = 0;
@@ -255,7 +250,7 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
                 " or identifier \"" LEGACY_GOOGLE_UPDATE_APPID "\""
                 " or identifier \"" LEGACY_GOOGLE_UPDATE_APPID ".Agent\""
                 ") and certificate leaf[subject.OU] "
-                "= " MAC_TEAM_IDENTIFIER_STRING),
+                "= \"" MAC_TEAM_IDENTIFIER_STRING "\""),
           kSecCSDefaultFlags, requirement.InitializeInto()) != errSecSuccess) {
     return false;
   }
@@ -306,7 +301,7 @@ void PrivilegedHelperService::SetupSystemUpdater(
     }
   }
 
-  if (!ConfirmFilePermissions(base::FilePath(browser_path), kPermissionsMask)) {
+  if (!SetFilePermissionsRecursive(base::FilePath(browser_path))) {
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result), kFailedToConfirmPermissionChanges));

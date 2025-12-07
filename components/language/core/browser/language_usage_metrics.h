@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_USAGE_METRICS_H_
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_USAGE_METRICS_H_
 
-#include <set>
 #include <string_view>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 
@@ -35,7 +35,7 @@ class LanguageUsageMetrics {
       const language::UrlLanguageHistogram& language_counts);
 
   // Maps |locale| to a hash value in the "LanguageName" enum.
-  // Deprecated - please use the enum "LocaleCodeISO639" which maps the full
+  // Deprecated - please use the enum "LocaleCodeBCP47" which maps the full
   // locale including country variant to a base::HashMetricName value.
   //
   // The language hash is calculated by splitting the locale on "-" and bit
@@ -46,10 +46,9 @@ class LanguageUsageMetrics {
   static int ToLanguageCodeHash(std::string_view locale);
 
  private:
-  // Parses |accept_languages| and returns a set of language codes in
-  // |languages|.
-  static void ParseAcceptLanguages(std::string_view accept_languages,
-                                   std::set<int>* languages);
+  // Return a list of unique language codes after parsing `accept_languages`.
+  static std::vector<int> ParseAcceptLanguages(
+      std::string_view accept_languages);
 
   FRIEND_TEST_ALL_PREFIXES(LanguageUsageMetricsTest, ParseAcceptLanguages);
 };

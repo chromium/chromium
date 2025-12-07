@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">轻触便可更改要恢复标签页的同步设备，还可去查看或恢复已在当前设备上选择的标签页。键盘已隐藏。</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{打开 <ph name="TABS_COUNT_ONE" /> 个标签页}other{打开 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="4509609396389120020">获取其他设备中的标签页</translation>
+<translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4811934403802581334">当前所选设备上的全部所选标签页都将恢复。</translation>
 <translation id="5336031759968328813">查看所有标签页</translation>
 <translation id="5494920125229734069">全选</translation>

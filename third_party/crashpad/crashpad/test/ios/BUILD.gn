@@ -58,7 +58,7 @@ source_set("google_test_setup") {
     ":google_test_runner_shared_headers",
     "../$mini_chromium_source_parent:base",
     "../../build:apple_enable_arc",
-    "../../third_party/googletest:googletest",
+    "../../third_party/googletest",
   ]
   frameworks = [ "UIKit.framework" ]
 }

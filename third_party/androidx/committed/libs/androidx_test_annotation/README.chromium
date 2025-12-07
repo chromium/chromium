@@ -1,0 +1,20 @@
+Name: AndroidX Test Library
+Short Name: annotation
+URL: https://dl.google.com/dl/android/maven2/androidx/test/annotation/1.0.1/annotation-1.0.1.aar
+Version: 1.0.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+The AndroidX Test Library provides an extensive framework for testing Android apps
+
+See also: https://developer.android.com/testing
+
+
+Local Modifications:
+No modifications.

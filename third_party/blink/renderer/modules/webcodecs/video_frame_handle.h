@@ -36,7 +36,7 @@ class ExecutionContext;
 // fast enough through the GC to keep a pipeline running smoothly. In that case
 // report an unclosed frame through |close_auditor_|.
 class MODULES_EXPORT VideoFrameHandle
-    : public WTF::ThreadSafeRefCounted<VideoFrameHandle> {
+    : public ThreadSafeRefCounted<VideoFrameHandle> {
  public:
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    ExecutionContext*,
@@ -109,7 +109,7 @@ class MODULES_EXPORT VideoFrameHandle
   std::optional<base::TimeDelta> duration() const { return duration_; }
 
  private:
-  friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
+  friend class ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
 
   void InvalidateLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);

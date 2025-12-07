@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/extension_management_constants.h"
 
-namespace extensions {
-namespace schema_constants {
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace extensions::schema_constants {
 
 // Some values below are used by the policy component to filter out policy
 // values. They must be synced with
@@ -44,32 +42,16 @@ const char kUpdateUrlPrefix[] = "update_url:";
 const char kBlockedInstallMessage[] = "blocked_install_message";
 
 const char kToolbarPin[] = "toolbar_pin";
-const char kForcePinned[] = "force_pinned";
-const char kDefaultUnpinned[] = "default_unpinned";
 
 const char kFileUrlNavigationAllowed[] = "file_url_navigation_allowed";
 
-const AllowedTypesMapEntry kAllowedTypesMap[] = {
-    {"extension", Manifest::TYPE_EXTENSION},
-    {"theme", Manifest::TYPE_THEME},
-    {"user_script", Manifest::TYPE_USER_SCRIPT},
-    {"hosted_app", Manifest::TYPE_HOSTED_APP},
-    {"legacy_packaged_app", Manifest::TYPE_LEGACY_PACKAGED_APP},
-    {"platform_app", Manifest::TYPE_PLATFORM_APP},
-    {"chromeos_system_extension", Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION},
-    // TODO(binjin): Add shared_module type here and update
-    // ExtensionAllowedTypes policy.
-};
-
-const size_t kAllowedTypesMapSize = std::size(kAllowedTypesMap);
-
-Manifest::Type GetManifestType(const std::string& name) {
-  for (size_t index = 0; index < kAllowedTypesMapSize; ++index) {
-    if (kAllowedTypesMap[index].name == name)
-      return kAllowedTypesMap[index].manifest_type;
+Manifest::Type GetManifestType(std::string_view name) {
+  const auto iter = kAllowedTypesMap.find(name);
+  if (iter != kAllowedTypesMap.end()) {
+    return iter->second;
   }
   return Manifest::TYPE_UNKNOWN;
 }
 
-}  // namespace schema_constants
-}  // namespace extensions
+
+} // namespace extensions::schema_constants

@@ -86,7 +86,7 @@ class ImageFetcherImpl : public ImageFetcher {
                       const RequestMetadata& metadata,
                       const gfx::Image& image);
 
-  // Used to run |image_data_callback| only if |this| is still valid.
+  // Used to run `image_data_callback` only if `this` is still valid.
   void RunImageDataCallback(ImageDataFetcherCallback image_data_callback,
                             std::string image_data,
                             RequestMetadata request_metadata);

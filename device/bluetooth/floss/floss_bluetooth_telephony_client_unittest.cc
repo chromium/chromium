@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_bluetooth_telephony_client.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -44,7 +46,7 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
 
     // Handle method calls on the object proxy
     ON_CALL(*bluetooth_telephony_object_proxy_.get(),
-            DoCallMethodWithErrorResponse(
+            CallMethodWithErrorResponse(
                 HasMemberOf(bluetooth_telephony::kSetPhoneOpsEnabled),
                 testing::_, testing::_))
         .WillByDefault(Invoke(
@@ -55,7 +57,7 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     client_ = FlossBluetoothTelephonyClient::Create();
     SetUpMocks();
   }
@@ -67,18 +69,18 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
   void HandleSetPhoneOpsEnabled(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void TestSetPhoneOpsEnabled() {
     EXPECT_CALL(*bluetooth_telephony_object_proxy_.get(),
-                DoCallMethodWithErrorResponse)
+                CallMethodWithErrorResponse)
         .Times(testing::AnyNumber());
     EXPECT_CALL(*bluetooth_telephony_object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(bluetooth_telephony::kSetPhoneOpsEnabled),
                     testing::_, testing::_))
         .Times(1);

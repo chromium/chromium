@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
@@ -26,6 +22,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsBufferBound) {
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   DoBufferData(GL_PIXEL_PACK_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -53,6 +50,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixels2PixelPackBuffer) {
   const GLint kBytesPerPixel = 4;
   GLint size = kWidth * kHeight * kBytesPerPixel;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   DoBufferData(GL_PIXEL_PACK_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -78,9 +76,11 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   const GLenum kFormat = GL_RGBA;
 
   // Set up GL objects for the read pixels with a known framebuffer size
+  GenHelper<cmds::GenTexturesImmediate>(kClientTextureId);
   DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 0, kFormat, kWidth, kHeight, 0, kFormat,
                GL_UNSIGNED_BYTE, 0, 0);
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
   DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
   DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          kClientTextureId, 0);
@@ -92,7 +92,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  uint8_t* dest = reinterpret_cast<uint8_t*>(&result[1]);
+  uint8_t* dest = reinterpret_cast<uint8_t*>(&UNSAFE_TODO(result[1]));
 
   // The test cases
   static struct {
@@ -124,7 +124,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   for (auto test : tests) {
     // Clear the readpixels buffer so that we can see which pixels have been
     // written
-    memset(dest, 0, 4 * test.w * test.h);
+    UNSAFE_TODO(memset(dest, 0, 4 * test.w * test.h));
 
     cmds::ReadPixels cmd;
     cmd.Init(test.x, test.y, test.w, test.h, kFormat, GL_UNSIGNED_BYTE,
@@ -154,7 +154,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
 
         bool expect_written = 0 <= x && x < kWidth && 0 <= y && y < kHeight;
         for (GLint component = 0; component < 4; ++component) {
-          uint8_t value = dest[4 * (dy * test.w + dx) + component];
+          uint8_t value = UNSAFE_TODO(dest[4 * (dy * test.w + dx) + component]);
           EXPECT_EQ(expect_written, value != 0)
               << x << " " << y << " " << value;
         }
@@ -211,6 +211,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncSkippedIfPBOBound) {
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   cmds::BindBuffer bind_cmd;
   bind_cmd.Init(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(bind_cmd));
@@ -246,12 +247,12 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   size_t pixels_memory_size = shm_size - 1;
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   constexpr char kDummyValue = 11;
   size_t read_pixels_result_size = kWidth * kHeight * 4;
   EXPECT_GT(pixels_memory_size, read_pixels_result_size);
-  memset(pixels, kDummyValue, pixels_memory_size);
+  UNSAFE_TODO(memset(pixels, kDummyValue, pixels_memory_size));
 
   cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -282,7 +283,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
     constexpr char kReadPixelsValue = 42;
     char expected_value =
         i < read_pixels_result_size ? kReadPixelsValue : kDummyValue;
-    EXPECT_EQ(expected_value, pixels[i]);
+    UNSAFE_TODO(EXPECT_EQ(expected_value, pixels[i]));
   }
 }
 
@@ -298,12 +299,12 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   size_t pixels_memory_size = shm_size - 1;
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   constexpr char kDummyValue = 11;
   size_t read_pixels_result_size = kWidth * kHeight * 4;
   EXPECT_GT(pixels_memory_size, read_pixels_result_size);
-  memset(pixels, kDummyValue, pixels_memory_size);
+  UNSAFE_TODO(memset(pixels, kDummyValue, pixels_memory_size));
 
   cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -333,7 +334,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
     constexpr char kReadPixelsValue = 42;
     char expected_value =
         i < read_pixels_result_size ? kReadPixelsValue : kDummyValue;
-    EXPECT_EQ(expected_value, pixels[i]);
+    UNSAFE_TODO(EXPECT_EQ(expected_value, pixels[i]));
   }
 }
 
@@ -369,7 +370,9 @@ TEST_F(GLES2DecoderPassthroughTest,
 
 TEST_F(GLES2DecoderPassthroughTest,
        GetFramebufferAttachmentParameterivWithRenderbuffer) {
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
   DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+  GenHelper<cmds::GenRenderbuffersImmediate>(kClientRenderbufferId);
   DoBindRenderbuffer(GL_RENDERBUFFER, kClientRenderbufferId);
   DoFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, kClientRenderbufferId);
@@ -391,7 +394,9 @@ TEST_F(GLES2DecoderPassthroughTest,
 
 TEST_F(GLES2DecoderPassthroughTest,
        GetFramebufferAttachmentParameterivWithTexture) {
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
   DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+  GenHelper<cmds::GenTexturesImmediate>(kClientTextureId);
   DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
   DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          kClientTextureId, 0);

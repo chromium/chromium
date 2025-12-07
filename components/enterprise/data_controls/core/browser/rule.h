@@ -28,6 +28,7 @@ inline constexpr char kRestrictionPrinting[] = "PRINTING";
 inline constexpr char kRestrictionPrivacyScreen[] = "PRIVACY_SCREEN";
 inline constexpr char kRestrictionScreenShare[] = "SCREEN_SHARE";
 inline constexpr char kRestrictionFiles[] = "FILES";
+inline constexpr char kRestrictionFileDownload[] = "FILE_DOWNLOAD";
 
 inline constexpr char kLevelAllow[] = "ALLOW";
 inline constexpr char kLevelBlock[] = "BLOCK";
@@ -72,13 +73,16 @@ class Rule {
                          // through 3P extensions/websites.
     kFiles = 6,          // Restricts file operations, like copying, uploading
                          // or opening in an app.
-    kMaxValue = kFiles
+    kFileDownload = 7,   // Restricts downloading files.
+    kMaxValue = kFileDownload
   };
 
   // The enforcement level of the restriction set by Data Controls.
   // Should be listed in the order of increased priority.
   // When new entries are added, EnterpriseDlpPolicyLevel enum in
   // histograms/enums.xml should be updated.
+  //
+  // LINT.IfChange(Level)
   enum class Level {
     kNotSet = 0,  // Restriction level is not set.
     kReport = 1,  // Restriction level to only report on every action.
@@ -87,6 +91,7 @@ class Rule {
     kAllow = 4,   // Restriction level to allow (no restriction).
     kMaxValue = kAllow
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseDlpPolicyLevel)
 
   // Returns nullopt if the passed JSON doesn't match the expected schema.
   static std::optional<Rule> Create(const base::Value& value);

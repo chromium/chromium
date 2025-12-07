@@ -41,7 +41,7 @@ class NetworkMetricsProvider
     NetworkQualityEstimatorProvider& operator=(
         const NetworkQualityEstimatorProvider&) = delete;
 
-    virtual ~NetworkQualityEstimatorProvider() {}
+    virtual ~NetworkQualityEstimatorProvider() = default;
 
     // Provides |this| with |callback| that would be invoked by |this| every
     // time there is a change in the network quality estimates.
@@ -50,7 +50,7 @@ class NetworkMetricsProvider
             callback) = 0;
 
    protected:
-    NetworkQualityEstimatorProvider() {}
+    NetworkQualityEstimatorProvider() = default;
   };
 
   // Creates a NetworkMetricsProvider, where

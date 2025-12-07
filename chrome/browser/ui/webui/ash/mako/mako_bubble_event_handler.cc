@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_event_handler.h"
 
+#include <variant>
+
 #include "ash/constants/ash_features.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/display/screen.h"
@@ -29,7 +31,7 @@ constexpr int kWidgetPadding = 4;
 
 bool IsInSameDisplay(const gfx::Rect& original_bounds,
                      const gfx::Rect& new_bounds) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (screen == nullptr) {
     return false;
   }
@@ -300,7 +302,7 @@ void MakoBubbleEventHandler::ProcessPointerEvent(ui::LocatedEvent& event) {
   if (!delegate_) {
     return;
   }
-  state_ = absl::visit(
+  state_ = std::visit(
       StateProcessFunction(/*event=*/&event, /*delegate=*/delegate_), state_);
 }
 

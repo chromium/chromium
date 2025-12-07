@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/importer/importer_unittest_utils.h"
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-void TestEqualBookmarkEntry(const ImportedBookmarkEntry& entry,
-                            const BookmarkInfo& expected) {
+void TestEqualBookmarkEntry(
+    const user_data_importer::ImportedBookmarkEntry& entry,
+    const BookmarkInfo& expected) {
   ASSERT_EQ(base::WideToUTF16(expected.title), entry.title);
   ASSERT_EQ(expected.in_toolbar, entry.in_toolbar) << entry.title;
   ASSERT_EQ(expected.path_size, entry.path.size()) << entry.title;

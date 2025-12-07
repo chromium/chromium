@@ -38,9 +38,6 @@ const char kDisableGpuProgramCache[]        = "disable-gpu-program-cache";
 // Enforce GL minimums.
 const char kEnforceGLMinimums[]             = "enforce-gl-minimums";
 
-// Sets the total amount of memory that may be allocated for GPU resources
-const char kForceGpuMemAvailableMb[]        = "force-gpu-mem-available-mb";
-
 // Sets the maximum GPU memory to use for discardable caches.
 const char kForceGpuMemDiscardableLimitMb[] =
     "force-gpu-mem-discardable-limit-mb";
@@ -50,9 +47,6 @@ const char kForceMaxTextureSize[] = "force-max-texture-size";
 
 // Sets the maximum size of the in-memory gpu program cache, in kb
 const char kGpuProgramCacheSizeKb[]         = "gpu-program-cache-size-kb";
-
-// Disables the GPU shader on disk cache.
-const char kDisableGpuShaderDiskCache[]     = "disable-gpu-shader-disk-cache";
 
 // Simulates shared textures when share groups are not available. Not available
 // everywhere.

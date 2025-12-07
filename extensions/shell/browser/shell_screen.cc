@@ -5,6 +5,7 @@
 #include "extensions/shell/browser/shell_screen.h"
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/check.h"
@@ -16,7 +17,7 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 namespace {

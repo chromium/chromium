@@ -143,6 +143,10 @@ void UnifiedSliderView::OnEvent(ui::Event* event) {
     return;
   }
 
+  if (slider_ && !slider_->GetEnableAccessibilityEvents()) {
+    slider_->SetEnableAccessibilityEvents(true);
+  }
+
   auto* key_event = event->AsKeyEvent();
   auto key_code = key_event->key_code();
 

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -151,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
 #pragma clang optimize off
 #endif
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
-  CHECK(false);
+  base::ImmediateCrash();
 }
 #ifdef __clang__
 #pragma clang optimize on
@@ -321,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, Basic) {
   Test();
 }
 
-IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, SingleProcess) {
+// Flaky: crbug.com/378048895
+IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, DISABLED_SingleProcess) {
   Test();
 }
 
@@ -384,7 +386,14 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, NonNestableTask) {
   ASSERT_TRUE(non_nested_task_ran);
 }
 
-IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RunTimeoutInstalled) {
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+// TODO(crbug.com/440535492): Flaky on Win dbg.
+#define MAYBE_RunTimeoutInstalled DISABLED_RunTimeoutInstalled
+#else
+#define MAYBE_RunTimeoutInstalled RunTimeoutInstalled
+#endif
+IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunTimeoutInstalled) {
   // Verify that a RunLoop timeout is installed and shorter than the test
   // timeout itself.
   const base::RunLoop::RunLoopTimeout* run_timeout =

@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -94,18 +95,15 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
     ASSERT_TRUE(SetupClients());
 
     // Sign the profile in.
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     // Need to update hosted domain since it is not populated.
-    AccountInfo account_info;
-    account_info.account_id = current_info.account_id;
-    account_info.gaia = current_info.gaia;
-    account_info.email = current_info.email;
-    account_info.hosted_domain = kNoHostedDomainFound;
+    AccountInfo account_info = AccountInfo::Builder(current_info)
+                                   .SetHostedDomain(std::string())
+                                   .Build();
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 

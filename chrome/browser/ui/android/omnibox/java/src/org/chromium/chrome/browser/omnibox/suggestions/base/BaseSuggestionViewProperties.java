@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -21,27 +20,42 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** The base set of properties for most omnibox suggestions. */
+@NullMarked
 public @interface BaseSuggestionViewProperties {
 
-    /** Describes density of the suggestions. */
-    @IntDef({Density.DEFAULT, Density.COMPACT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Density {
-        int DEFAULT = 0;
-        int COMPACT = 1;
-    }
-
     /** Describes the content and behavior of the interactive Action Icon. */
-    public static final class Action {
+    final class Action {
         public final OmniboxDrawableState icon;
         public final Runnable callback;
-        public final @NonNull String accessibilityDescription;
+        public final String accessibilityDescription;
         public final @Nullable String onClickAnnouncement;
+        public final boolean showOnlyOnFocus;
+
+        /**
+         * Create a new action for suggestion.
+         *
+         * @param icon OmniboxDrawableState describing the icon to show.
+         * @param description Content description for the action view.
+         * @param onClickAnnouncement action announcement for the action view when the action view
+         *     is clicked.
+         * @param showOnlyOnFocus whether to show the action only when the suggestion is focused.
+         * @param callback Callback to invoke when user interacts with the icon.
+         */
+        public Action(
+                OmniboxDrawableState icon,
+                String description,
+                @Nullable String onClickAnnouncement,
+                boolean showOnlyOnFocus,
+                Runnable callback) {
+            this.icon = icon;
+            this.accessibilityDescription = description;
+            this.onClickAnnouncement = onClickAnnouncement;
+            this.callback = callback;
+            this.showOnlyOnFocus = showOnlyOnFocus;
+        }
 
         /**
          * Create a new action for suggestion.
@@ -53,14 +67,11 @@ public @interface BaseSuggestionViewProperties {
          * @param callback Callback to invoke when user interacts with the icon.
          */
         public Action(
-                @NonNull OmniboxDrawableState icon,
-                @NonNull String description,
+                OmniboxDrawableState icon,
+                String description,
                 @Nullable String onClickAnnouncement,
-                @NonNull Runnable callback) {
-            this.icon = icon;
-            this.accessibilityDescription = description;
-            this.onClickAnnouncement = onClickAnnouncement;
-            this.callback = callback;
+                Runnable callback) {
+            this(icon, description, onClickAnnouncement, false, callback);
         }
 
         /**
@@ -96,37 +107,27 @@ public @interface BaseSuggestionViewProperties {
 
     /** OmniboxDrawableState to show as a suggestion icon. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<OmniboxDrawableState> ICON =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<OmniboxDrawableState> ICON = new WritableObjectPropertyKey<>();
 
     /** Action Button descriptors. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<List<Action>> ACTION_BUTTONS =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<List<Action>> ACTION_BUTTONS = new WritableObjectPropertyKey<>();
 
     /** Callback invoked when the Suggestion view is highlighted. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
-            new WritableObjectPropertyKey<>();
-
-    /** Specifies how densely suggestions should be packed. */
-    @VisibleForTesting
-    public static final WritableIntPropertyKey DENSITY = new WritableIntPropertyKey();
+    WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION = new WritableObjectPropertyKey<>();
 
     /** Callback invoked when user clicks the suggestion. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Runnable> ON_CLICK = new WritableObjectPropertyKey<>();
 
     /** Callback invoked when user long-clicks the suggestion. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<Runnable> ON_LONG_CLICK =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Runnable> ON_LONG_CLICK = new WritableObjectPropertyKey<>();
 
     /** Callback invoked when user touches down on the suggestion. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT = new WritableObjectPropertyKey<>();
 
     /** {@see BaseSuggestionView#setShowDecorationIcon(boolean} */
     WritableBooleanPropertyKey SHOW_DECORATION = new WritableBooleanPropertyKey();
@@ -140,13 +141,12 @@ public @interface BaseSuggestionViewProperties {
     /** {@see BaseSuggestionView#setUseLargeDecorationIcon(boolean)} */
     WritableBooleanPropertyKey USE_LARGE_DECORATION = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS =
+    PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
                 ACTION_CHIP_LEAD_IN_SPACING,
                 ICON,
                 ACTION_BUTTONS,
                 ON_FOCUS_VIA_SELECTION,
-                DENSITY,
                 ON_CLICK,
                 ON_LONG_CLICK,
                 ON_TOUCH_DOWN_EVENT,
@@ -155,7 +155,7 @@ public @interface BaseSuggestionViewProperties {
                 USE_LARGE_DECORATION
             };
 
-    public static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(
                     PropertyModel.concatKeys(
                             ALL_UNIQUE_KEYS, ActionChipsProperties.ALL_UNIQUE_KEYS),

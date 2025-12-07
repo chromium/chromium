@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include <ntstatus.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <memory>

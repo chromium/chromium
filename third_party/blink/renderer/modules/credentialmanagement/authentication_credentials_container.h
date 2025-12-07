@@ -7,12 +7,13 @@
 
 #include <optional>
 
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
 #include "third_party/blink/renderer/modules/credentialmanagement/credentials_container.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -24,13 +25,16 @@ class ExceptionState;
 class Navigator;
 class ScriptState;
 
+DOMException* AuthenticatorStatusToDOMException(
+    mojom::blink::AuthenticatorStatus status,
+    const mojom::blink::WebAuthnDOMExceptionDetailsPtr& dom_exception_details);
+
 class MODULES_EXPORT AuthenticationCredentialsContainer final
     : public CredentialsContainer,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
   static CredentialsContainer* credentials(Navigator&);
-  explicit AuthenticationCredentialsContainer(Navigator&);
+  AuthenticationCredentialsContainer() = default;
 
   // CredentialsContainer:
   ScriptPromise<IDLNullable<Credential>> get(ScriptState*,
@@ -44,9 +48,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
       const CredentialCreationOptions*,
       ExceptionState&) override;
   ScriptPromise<IDLUndefined> preventSilentAccess(ScriptState*) override;
-  ScriptPromise<IDLUndefined> report(ScriptState*,
-                                     const CredentialReportOptions*,
-                                     ExceptionState&) override;
   void Trace(Visitor*) const override;
 
  private:
@@ -55,6 +56,14 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
                       ScriptPromiseResolver<IDLNullable<Credential>>*,
                       const CredentialRequestOptions&,
                       const IdentityCredentialRequestOptions&);
+
+  // Forwards a get() request to the authenticator interface.
+  // Currently used for publicKey requests and password requests with immediate
+  // mediation.
+  void ForwardRequestToAuthenticator(
+      ScriptState*,
+      ScriptPromiseResolver<IDLNullable<Credential>>*,
+      const CredentialRequestOptions*);
 
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;

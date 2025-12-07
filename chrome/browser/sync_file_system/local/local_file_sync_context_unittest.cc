@@ -420,7 +420,7 @@ TEST_F(LocalFileSyncContextTest, InitializeFileSystemContext) {
   file_system.TearDown();
 }
 
-TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
+TEST_F(LocalFileSyncContextTest, CreateDefaultTemporaryBucket) {
   CannedSyncableFileSystem file_system(GURL(kOrigin1), in_memory_env_.get(),
                                        io_task_runner_.get(),
                                        file_task_runner_.get());
@@ -434,18 +434,17 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
   EXPECT_EQ(SYNC_STATUS_OK,
             file_system.MaybeInitializeFileSystemContext(sync_context_.get()));
 
-  // Opens the file_system, to verify a kSyncable bucket is created.
+  // Opens the file_system, to verify a bucket is created.
   EXPECT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
 
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   file_system.quota_manager()->proxy()->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kOrigin1),
-      storage::kDefaultBucketName, blink::mojom::StorageType::kSyncable,
+      storage::kDefaultBucketName,
       base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(const auto result, future.Take());
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
-  EXPECT_EQ(result.type, blink::mojom::StorageType::kSyncable);
   EXPECT_GT(result.id.value(), 0);
 
   // Finishing the test.

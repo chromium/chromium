@@ -11,9 +11,11 @@
 
 namespace blink {
 
+class LayoutBlockFlow;
+class FragmentItems;
+
 // Friendly output of a subtree, useful for debugging.
 std::string TreeToStringHelper(const AXObject* obj,
-                               int indent = 2,
                                bool verbose = true);
 std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
                                                const AXObject* marked_object,
@@ -34,6 +36,17 @@ void CheckTreeConsistency(
                          ui::AXTreeUpdate*,
                          ui::AXTreeData*,
                          ui::AXNodeData>* plugin_serializer);
+
+#if DCHECK_IS_ON()
+// Performs a diagnostic dump of block fragmentation.
+// Though not performning DCHECKS the diagnostic tools for block fragmentation
+// are restricted to DCHECK-enabled builds to avoid including in release builds.
+// Launch with --vmodule=ax_debug_utils=2 to see a diagnostic dump of the block
+// fragmentation.
+void DumpBlockFragmentationData(const LayoutBlockFlow* layout_block_flow);
+void DumpBlockFragmentationData(const FragmentItems* fragment_items,
+                                int indent);
+#endif
 
 }  // namespace blink
 

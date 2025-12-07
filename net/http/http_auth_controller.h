@@ -190,6 +190,15 @@ class NET_EXPORT_PRIVATE HttpAuthController
 
   void OnGenerateAuthTokenDone(int result);
 
+  enum AuthEvent {
+    AUTH_EVENT_START = 0,
+    AUTH_EVENT_REJECT,
+    AUTH_EVENT_MAX,
+  };
+
+  // Records the number of authentication events per authentication scheme.
+  void HistogramAuthEvent(AuthEvent auth_event);
+
   // Indicates if this handler is for Proxy auth or Server auth.
   HttpAuth::Target target_;
 

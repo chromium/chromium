@@ -5,46 +5,63 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.util.SparseArray;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
+import java.util.function.Function;
+
 /** Provides resources specific to Omnibox. */
+@NullMarked
 public class OmniboxResourceProvider {
     private static final String TAG = "OmniboxResourceProvider";
 
     private static SparseArray<ConstantState> sDrawableCache = new SparseArray<>();
     private static SparseArray<String> sStringCache = new SparseArray<>();
+    private static @Nullable Function<Tab, @Nullable Bitmap> sTabFaviconFactory;
+    private static @ColorInt @Nullable Integer sUrlBarPrimaryTextColorForTesting;
+    private static @ColorInt @Nullable Integer sUrlBarHintTextColorForTesting;
 
     /**
      * As {@link androidx.appcompat.content.res.AppCompatResources#getDrawable(Context, int)} but
      * potentially augmented with caching. If caching is enabled, there is a single, unbounded cache
      * of ConstantState shared by all contexts.
      */
-    public static @NonNull Drawable getDrawable(Context context, @DrawableRes int res) {
+    public static Drawable getDrawable(Context context, @DrawableRes int res) {
         ThreadUtils.assertOnUiThread();
         ConstantState constantState = sDrawableCache.get(res, null);
         if (constantState != null) {
@@ -61,12 +78,26 @@ public class OmniboxResourceProvider {
      * with caching. If caching is enabled, there is a single, unbounded string cache shared by all
      * contexts. When dealing with strings with format params, the raw string is cached and
      * formatted on demand using the default locale.
+     *
+     * <p>This function converts cross-platform grit string expansion placeholders to Java
+     * placeholders allowing any single string to be used both from C++ and Java. This requires all
+     * the arguments to be of String type.
+     *
+     * @param context current context used to resolve string res
+     * @param res string res to retrieve, cache, and expand
+     * @param args positional arguments expanded when `res` includes expansion placeholders
+     * @return expanded and formatted string representing
      */
-    public static @NonNull String getString(Context context, @StringRes int res, Object... args) {
+    public static String getString(Context context, @StringRes int res, CharSequence... args) {
         ThreadUtils.assertOnUiThread();
         String string = sStringCache.get(res, null);
         if (string == null) {
-            string = context.getResources().getString(res);
+            string = context.getString(res);
+
+            // Translate `$1`, `$2`, ... strings (found typically on other platforms)
+            // to `%1$s`, `%2$s` etc, which are appropriate for Chrome.
+            string = string.replaceAll("\\$(\\d+)", "%$1\\$s");
+
             sStringCache.put(res, string);
         }
 
@@ -75,7 +106,7 @@ public class OmniboxResourceProvider {
                 : String.format(
                         context.getResources().getConfiguration().getLocales().get(0),
                         string,
-                        args);
+                        (Object[]) args);
     }
 
     /**
@@ -93,7 +124,7 @@ public class OmniboxResourceProvider {
         sDrawableCache =
                 new SparseArray<>() {
                     @Override
-                    public ConstantState get(int key) {
+                    public @Nullable ConstantState get(int key) {
                         return null;
                     }
 
@@ -105,7 +136,7 @@ public class OmniboxResourceProvider {
         sStringCache =
                 new SparseArray<>() {
                     @Override
-                    public String get(int key) {
+                    public @Nullable String get(int key) {
                         return null;
                     }
 
@@ -172,6 +203,9 @@ public class OmniboxResourceProvider {
      */
     public static @ColorInt int getUrlBarPrimaryTextColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
+        if (sUrlBarPrimaryTextColorForTesting != null) {
+            return sUrlBarPrimaryTextColorForTesting;
+        }
         final @ColorInt int color;
         if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
             color = context.getColor(R.color.branded_url_text_on_light_bg);
@@ -183,6 +217,11 @@ public class OmniboxResourceProvider {
             color = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
         }
         return color;
+    }
+
+    public static void setUrlBarPrimaryTextColorForTesting(@ColorInt int value) {
+        sUrlBarPrimaryTextColorForTesting = value;
+        ResettersForTesting.register(() -> sUrlBarPrimaryTextColorForTesting = null);
     }
 
     /**
@@ -216,7 +255,15 @@ public class OmniboxResourceProvider {
      */
     public static @ColorInt int getUrlBarHintTextColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
+        if (sUrlBarHintTextColorForTesting != null) {
+            return sUrlBarHintTextColorForTesting;
+        }
         return getUrlBarSecondaryTextColor(context, brandedColorScheme);
+    }
+
+    public static void setUrlBarHintTextColorForTesting(@ColorInt int value) {
+        sUrlBarHintTextColorForTesting = value;
+        ResettersForTesting.register(() -> sUrlBarHintTextColorForTesting = null);
     }
 
     /**
@@ -380,36 +427,60 @@ public class OmniboxResourceProvider {
      * Returns the background color for suggestions in a "standard" (non-incognito) TabModel with
      * the given context.
      */
-    public static @ColorInt int getStandardSuggestionBackgroundColor(Context context) {
-        return ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+    public static @ColorInt int getStandardSuggestionBackgroundColor(
+            Context context, @BrandedColorScheme int colorScheme) {
+        return colorScheme == BrandedColorScheme.INCOGNITO
+                ? context.getColor(R.color.omnibox_suggestion_bg_incognito)
+                : ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
     }
 
-    /**
-     * Returns the background color for the suggestions dropdown in a "standard" (non-incognito)
-     * TabModel with the given context.
-     */
-    public static @ColorInt int getSuggestionsDropdownStandardBackgroundColor(Context context) {
-        return ChromeColors.getSurfaceColor(
-                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+    /** Returns the background hover color for suggestions in a model with the given context. */
+    private static @ColorInt int getHoverSuggestionBackgroundColor(
+            Context context, @BrandedColorScheme int colorScheme) {
+
+        if (colorScheme == BrandedColorScheme.INCOGNITO) {
+            return context.getColor(R.color.omnibox_suggestion_bg_hover_incognito);
+        }
+
+        // omnibox_suggestion_bg + 8% colorOnSurface
+        @ColorInt int baseColor = ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
+        @ColorInt int hoverColor = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+        float fraction =
+                context.getResources()
+                        .getFraction(R.fraction.omnibox_suggestion_bg_hover_overlay_fraction, 1, 1);
+
+        return ColorUtils.overlayColor(baseColor, hoverColor, fraction);
     }
 
-    /**
-     * Returns the background color for the suggestions dropdown in an incognito TabModel with the
-     * given context.
-     */
-    public static @ColorInt int getSuggestionsDropdownIncognitoBackgroundColor(Context context) {
-        return context.getColor(R.color.omnibox_dropdown_bg_incognito);
+    /** Returns a stateful suggestion background with the select default state. */
+    public static Drawable getStatefulSuggestionBackground(
+            Context context, @ColorInt int defaultColor, @BrandedColorScheme int colorScheme) {
+        var background = new ColorDrawable(defaultColor);
+        var hover = new ColorDrawable(getHoverSuggestionBackgroundColor(context, colorScheme));
+
+        // Ripple effect to use when the user interacts with the suggestion.
+        var ripple =
+                resolveAttributeToDrawable(context, colorScheme, R.attr.selectableItemBackground);
+
+        var statefulBackground = new StateListDrawable();
+        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
+        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(
+                new int[] {android.R.attr.state_selected, android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(new int[] {}, background);
+
+        return new LayerDrawable(new Drawable[] {statefulBackground, ripple});
     }
 
     /**
      * Returns the background color for the suggestions dropdown for the given {@link
      * BrandedColorScheme} with the given context.
      */
-    public static @ColorInt int getSuggestionsDropdownBackgroundColorForColorScheme(
+    public static @ColorInt int getSuggestionsDropdownBackgroundColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? getSuggestionsDropdownIncognitoBackgroundColor(context)
-                : getSuggestionsDropdownStandardBackgroundColor(context);
+                ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
+                : ContextCompat.getColor(context, R.color.omnibox_suggestion_dropdown_bg);
     }
 
     /**
@@ -427,7 +498,7 @@ public class OmniboxResourceProvider {
     }
 
     /** Gets the margin, in pixels, on either side of an omnibox suggestion list. */
-    public static @Px int getDropdownSideSpacing(@NonNull Context context) {
+    public static @Px int getDropdownSideSpacing(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return getSideSpacing(context)
                 + context.getResources()
@@ -435,7 +506,7 @@ public class OmniboxResourceProvider {
     }
 
     /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
-    public static @Px int getSideSpacing(@NonNull Context context) {
+    public static @Px int getSideSpacing(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing_smallest);
@@ -478,12 +549,12 @@ public class OmniboxResourceProvider {
     }
 
     /**
-     * Returns the amount of pixels the toolbar should increased its height by when the omnibox is
-     * focused.
+     * Returns the amount of pixels the location bar background should increase in height by when
+     * the omnibox is focused.
      */
-    public static @Px int getToolbarOnFocusHeightIncrease(Context context) {
+    public static @Px int getLocationBarBackgroundOnFocusHeightIncrease(Context context) {
         return context.getResources()
-                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
+                .getDimensionPixelSize(R.dimen.location_bar_background_on_focus_height_increase);
     }
 
     /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
@@ -563,5 +634,163 @@ public class OmniboxResourceProvider {
     @ColorInt
     public static int getAdditionalTextColor(Context context) {
         return SemanticColorUtils.getDefaultTextColorSecondary(context);
+    }
+
+    public static @Nullable Bitmap getFaviconBitmapForTab(Tab tab) {
+        if (sTabFaviconFactory == null) return null;
+        return sTabFaviconFactory.apply(tab);
+    }
+
+    /**
+     * Converts a branded color scheme to a boolean, whether to use incognito colors or day night
+     * adaptive colors.
+     *
+     * @param brandedColorScheme The theme to check.
+     * @return A boolean, true for incognito, false for day night adaptive.
+     */
+    public static boolean convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(
+            @BrandedColorScheme int brandedColorScheme) {
+        // It is assumed that anywhere that calls this method doesn't actually need to support
+        // real branded colors schemes. Instead we just need to determine if it is incognito or not.
+        return brandedColorScheme == BrandedColorScheme.INCOGNITO;
+    }
+
+    /** Resolves the background color of the chip showing the AI Mode tool active. */
+    public static @ColorInt int getAiModeButtonColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorSurfaceContainerHigh(context, isIncognito);
+    }
+
+    /** Resolves the background color of the chip showing image gen the tool active. */
+    public static @ColorInt int getImageGenButtonColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorSurfaceContainerLow(context, isIncognito);
+    }
+
+    /** Resolves the border color of the active tool chip. */
+    public static @ColorInt int getRequestTypeButtonBorderColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorPrimaryContainer(context, isIncognito);
+    }
+
+    /**
+     * Resolves the vivid color used for the border of the tool chip when used as a hint to enter AI
+     * Mode, as well as the background of the send button.
+     */
+    public static @ColorInt int getColorPrimary(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorPrimary(context, isIncognito);
+    }
+
+    /** Resolves the icon tint to be used for secondary image gen icons, not the banana. */
+    public static @ColorInt int getDefaultIconColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getDefaultIconColor(context, isIncognito);
+    }
+
+    /** Resolves the icon tint to be used for all the ai mode icons. This is a vivid color. */
+    public static @ColorInt int getAiModeHintIconTintColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getDefaultIconColorSecondary(context, isIncognito);
+    }
+
+    /** Resolves the icon tint to be used for all the ai mode icons. */
+    public static @ColorInt int getAiModeHintBorderColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorOnSurfaceWithAlpha16(context, isIncognito);
+    }
+
+    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
+    public static ColorStateList getPrimaryIconTintList(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return ChromeColors.getPrimaryIconTint(context, isIncognito);
+    }
+
+    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
+    public static @ColorInt int getPopupDividerLineColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getDividerLineBgColor(context, isIncognito);
+    }
+
+    /** Resolves the icon tint for the plus button on top of the vivid send button. */
+    public static @ColorInt int getSendIconContrastColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorOnPrimary(context, isIncognito);
+    }
+
+    /** Resolves the text appearance for the image gen chip. */
+    public static @StyleRes int getImageGenButtonTextRes(
+            @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextMediumThickPrimary(isIncognito);
+    }
+
+    /** Resolves the text appearance for the AI Mode chip. This includes a vivid color. */
+    public static @StyleRes int getAiModeButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextMediumThickAccent1(isIncognito);
+    }
+
+    /** Resolves the text appearance for the hint chip, somewhat faded out. */
+    public static @StyleRes int getAiModeHintTextRes(@BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextMediumThickSecondary(isIncognito);
+    }
+
+    /** Resolves the text appearance for menu items in the popup. */
+    public static @StyleRes int getPopupButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextMediumPrimary(isIncognito);
+    }
+
+    /** Returns the drawable that is to go behind the + button in the search box. */
+    public static Drawable getSearchBoxIconBackground(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        @DrawableRes
+        int resId =
+                isIncognito
+                        ? R.drawable.search_box_icon_background_opaque_incognito
+                        : R.drawable.search_box_icon_background_opaque;
+        return getDrawable(context, resId);
+    }
+
+    /** Returns the drawable for the popup menu that shows menu items for context and tools. */
+    public static Drawable getPopupBackgroundDrawable(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        @DrawableRes
+        int resId = isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
+        return getDrawable(context, resId);
+    }
+
+    public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
+        sTabFaviconFactory = tabFaviconFactory;
     }
 }

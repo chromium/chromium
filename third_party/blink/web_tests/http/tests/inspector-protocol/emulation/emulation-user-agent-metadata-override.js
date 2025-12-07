@@ -23,6 +23,7 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
   await printHeader('sec-ch-ua-wow64');
+  await printHeader('sec-ch-ua-form-factors');
 
   // Now test with an override.
   testRunner.log('');
@@ -42,7 +43,8 @@
       model: 'QWERTY',
       mobile: true,
       bitness: '64',
-      wow64: false
+      wow64: false,
+      formFactors: ['Desktop', 'XR']
     }
   });
   testRunner.log('navigator.userAgent == ' + await session.evaluate('navigator.userAgent'));
@@ -50,7 +52,7 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64"])'));
+          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64", "formFactors"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-bitness');
@@ -61,6 +63,31 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
   await printHeader('sec-ch-ua-wow64');
+  await printHeader('sec-ch-ua-form-factors');
+
+  // Invalid form factors.
+  testRunner.log('');
+  testRunner.log('Testing with override invalid form factors');
+
+  const invalidOverride = await dp.Emulation.setUserAgentOverride({
+    userAgent: 'Ferrum Typewriter',
+    userAgentMetadata: {
+      brands: [{brand: 'Ferrum', version: '42.0'},
+        {brand: 'Iron', version: '3'}],
+      fullVersionList: [{brand: 'Ferrum', version: '42.0.3.14159'},
+              {brand: 'Iron', version: '3.1.4.159'}],
+      fullVersion: '42.0.3.14159',
+      platform: 'Typewriter',
+      platformVersion: '1950',
+      architecture: 'Electromechanical',
+      model: 'QWERTY',
+      mobile: true,
+      bitness: '64',
+      wow64: false,
+      formFactors: ['Desktop', 'Invalid']
+    }
+  });
+  testRunner.log(invalidOverride.error.message);
 
   // Verifying that the low-entropy UA-CH are returned in getHighEntropyValues() by default
   testRunner.log('');
@@ -102,7 +129,8 @@
       model: 'With erase tape',
       mobile: true,
       bitness: '64',
-      wow64: true
+      wow64: true,
+      formFactors: ['Desktop', 'XR']
     }
   });
   testRunner.log('navigator.userAgent == ' + await session.evaluate('navigator.userAgent'));
@@ -110,7 +138,7 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64"])'));
+          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64", "formFactors"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-bitness');
@@ -121,6 +149,7 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
   await printHeader('sec-ch-ua-wow64');
+  await printHeader('sec-ch-ua-form-factors');
 
   function printHeaderFromList(name, headers) {
     let logged = false;

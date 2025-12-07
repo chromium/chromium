@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 
@@ -36,7 +38,8 @@ enum class SimpleCacheConsistencyResult {
   kWriteFakeIndexFileFailed = 8,
   kReplaceFileFailed = 9,
   kBadFakeIndexReadSize = 10,
-  kMaxValue = kBadFakeIndexReadSize,
+  kEncryptionStatusMismatch = 11,
+  kMaxValue = kEncryptionStatusMismatch,
 };
 
 // Performs all necessary disk IO to upgrade the cache structure if it is
@@ -58,17 +61,21 @@ NET_EXPORT_PRIVATE bool DeleteIndexFilesIfCacheIsEmpty(
 struct NET_EXPORT_PRIVATE FakeIndexData {
   FakeIndexData();
 
-  // Must be equal to simplecache_v4::kSimpleInitialMagicNumber.
-  uint64_t initial_magic_number;
+  // Must be equal to kSimpleInitialMagicNumber.
+  uint64_t initial_magic_number = 0;
 
   // Must be equal kSimpleVersion when the cache backend is instantiated.
-  uint32_t version;
+  uint32_t version = 0;
 
   // These must be zero. The first was used for experiment type (With a max
   // valid value of 2), and the second was used for an experiment parameter.
-  uint32_t zero;
-  uint32_t zero2;
+  uint32_t zero = 0;
+  uint32_t zero2 = 0;
+
+  // Whether cache entries are stored encrypted on disk.
+  uint32_t encryption_status = 0;
 };
+static_assert(std::has_unique_object_representations_v<FakeIndexData>);
 
 // Exposed for testing.
 NET_EXPORT_PRIVATE bool UpgradeIndexV5V6(BackendFileOperations* file_operations,

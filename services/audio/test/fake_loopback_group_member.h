@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_parameters.h"
-#include "services/audio/loopback_group_member.h"
+#include "services/audio/loopback_source.h"
 
 namespace media {
 class AudioBus;
@@ -26,7 +26,7 @@ namespace audio {
 //
 // This class is not thread-safe. The caller must guarantee method calls are not
 // being made simultaneously in multithreaded tests.
-class FakeLoopbackGroupMember : public LoopbackGroupMember {
+class FakeLoopbackGroupMember : public LoopbackSource {
  public:
   explicit FakeLoopbackGroupMember(const media::AudioParameters& params);
 
@@ -50,7 +50,7 @@ class FakeLoopbackGroupMember : public LoopbackGroupMember {
   // AudioBus being delivered to the Snooper.
   void RenderMoreAudio(base::TimeTicks output_timestamp);
 
-  // LoopbackGroupMember implementation.
+  // LoopbackSource implementation.
   const media::AudioParameters& GetAudioParameters() const override;
   void StartSnooping(Snooper* snooper) override;
   void StopSnooping(Snooper* snooper) override;

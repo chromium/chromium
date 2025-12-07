@@ -299,11 +299,11 @@ bool ParseCdmManifest(const base::Value::Dict& manifest,
   return GetAudioCodecs(manifest, &capability->audio_codecs) &&
          GetVideoCodecs(manifest, &capability->video_codecs) &&
          GetEncryptionSchemes(manifest, &capability->encryption_schemes) &&
-         GetSessionTypes(manifest, &capability->session_types);
+         GetSessionTypes(manifest, &capability->session_types) &&
+         GetVersion(manifest, &capability->version);
 }
 
 bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
-                              base::Version* version,
                               media::CdmCapability* capability) {
   JSONFileValueDeserializer deserializer(manifest_path);
   int error_code;
@@ -318,6 +318,5 @@ bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
   base::Value::Dict& manifest_dict = manifest->GetDict();
 
   return IsCdmManifestCompatibleWithChrome(manifest_dict) &&
-         GetVersion(manifest_dict, version) &&
          ParseCdmManifest(manifest_dict, capability);
 }

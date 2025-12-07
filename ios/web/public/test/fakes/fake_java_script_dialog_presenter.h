@@ -5,21 +5,20 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 
-#import "ios/web/public/ui/java_script_dialog_presenter.h"
-
 #include <memory>
 #include <vector>
 
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "ios/web/public/ui/java_script_dialog_presenter.h"
 
 namespace web {
 
 struct FakeJavaScriptAlertDialog {
   FakeJavaScriptAlertDialog();
   ~FakeJavaScriptAlertDialog();
-  raw_ptr<WebState> web_state = nullptr;
-  GURL origin_url;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
+  url::Origin origin;
   NSString* message_text;
   base::OnceClosure callback;
 };
@@ -27,8 +26,8 @@ struct FakeJavaScriptAlertDialog {
 struct FakeJavaScriptConfirmDialog {
   FakeJavaScriptConfirmDialog();
   ~FakeJavaScriptConfirmDialog();
-  raw_ptr<WebState> web_state = nullptr;
-  GURL origin_url;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
+  url::Origin origin;
   NSString* message_text;
   base::OnceCallback<void(bool success)> callback;
 };
@@ -36,8 +35,8 @@ struct FakeJavaScriptConfirmDialog {
 struct FakeJavaScriptPromptDialog {
   FakeJavaScriptPromptDialog();
   ~FakeJavaScriptPromptDialog();
-  raw_ptr<WebState> web_state = nullptr;
-  GURL origin_url;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
+  url::Origin origin;
   NSString* message_text;
   NSString* default_prompt_text;
   base::OnceCallback<void(NSString* user_input)> callback;
@@ -53,17 +52,17 @@ class FakeJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
 
   // JavaScriptDialogPresenter overrides:
   void RunJavaScriptAlertDialog(WebState* web_state,
-                                const GURL& origin_url,
+                                const url::Origin& origin,
                                 NSString* message_text,
                                 base::OnceClosure callback) override;
   void RunJavaScriptConfirmDialog(
       WebState* web_state,
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       base::OnceCallback<void(bool success)> callback) override;
   void RunJavaScriptPromptDialog(
       WebState* web_state,
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       NSString* default_prompt_text,
       base::OnceCallback<void(NSString* user_input)> callback) override;
@@ -73,11 +72,13 @@ class FakeJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
   // requested while true, the callback will not be executed until unpaused.
   bool callback_execution_paused() const { return callback_execution_paused_; }
   void set_callback_execution_paused(bool callback_execution_paused) {
-    if (callback_execution_paused_ == callback_execution_paused)
+    if (callback_execution_paused_ == callback_execution_paused) {
       return;
+    }
     callback_execution_paused_ = callback_execution_paused;
-    if (!callback_execution_paused_)
+    if (!callback_execution_paused_) {
       ExecuteAllDialogCallbacks();
+    }
   }
 
   // True if the JavaScriptDialogPresenter CancelDialogs method has been called.

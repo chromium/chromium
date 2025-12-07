@@ -13,27 +13,28 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
-#include "services/network/public/cpp/simple_url_loader.h"
+
+class GURL;
 
 namespace base {
 class SequencedTaskRunner;
 }
 
-namespace content {
-class BrowserContext;
+namespace net {
+struct NetworkTrafficAnnotationTag;
 }
 
 namespace network {
+struct ResourceRequest;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace policy {
 
@@ -77,6 +78,7 @@ class POLICY_EXPORT DeviceManagementService {
   static constexpr int kRequestTooLarge = 413;
   static constexpr int kConsumerAccountWithPackagedLicense = 417;
   static constexpr int kInvalidPackagedDeviceForKiosk = 418;
+  static constexpr int kOrgUnitEnrollmentLimitExceeded = 419;
   static constexpr int kTooManyRequests = 429;
   static constexpr int kInternalServerError = 500;
   static constexpr int kServiceUnavailable = 503;
@@ -112,11 +114,6 @@ class POLICY_EXPORT DeviceManagementService {
 
     // Server endpoint for encrypted events.
     virtual std::string GetEncryptedReportingServerUrl() const = 0;
-
-    // Server at which to contact the real time reporting service for
-    // enterprise connectors.
-    virtual std::string GetReportingConnectorServerUrl(
-        content::BrowserContext* context) const = 0;
   };
 
   // A DeviceManagementService job manages network requests to the device
@@ -225,6 +222,8 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_OIDC_REGISTRATION = 32,
       TYPE_TOKEN_BASED_DEVICE_REGISTRATION = 33,
       TYPE_UPLOAD_FM_REGISTRATION_TOKEN = 34,
+      TYPE_POLICY_AGENT_REGISTRATION = 35,
+      TYPE_DETERMINE_PROMOTION_ELIGIBILITY = 36,
     };
 
     // The set of HTTP query parameters of the request.
@@ -247,6 +246,12 @@ class POLICY_EXPORT DeviceManagementService {
 
     // Gets the payload to send in requests.
     virtual std::string GetPayload() = 0;
+
+    // The content type of the payload.
+    virtual std::string GetContentType() = 0;
+
+    // Whether the request will forward user cookies or not.
+    virtual bool AreCookiesUsed() = 0;
 
     // Returns the network annotation to assign to requests.
     virtual net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() = 0;
@@ -316,9 +321,7 @@ class POLICY_EXPORT DeviceManagementService {
   std::pair<std::unique_ptr<Job>, JobForTesting> CreateJobForTesting(
       std::unique_ptr<JobConfiguration> config);
 
-  const scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForTesting() {
-    return task_runner_;
-  }
+  const scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForTesting();
 
  private:
   using JobQueue = std::vector<base::WeakPtr<JobImpl>>;
@@ -377,11 +380,16 @@ class POLICY_EXPORT JobConfigurationBase
       int response_code,
       const std::string& response_body) override;
   std::optional<base::TimeDelta> GetTimeoutDuration() override;
+  std::string GetContentType() override;
+  bool AreCookiesUsed() override;
+
+  void set_use_cookies(bool use_cookies) { use_cookies_ = use_cookies; }
 
  protected:
   JobConfigurationBase(JobType type,
                        DMAuth auth_data,
                        std::optional<std::string> oauth_token,
+                       bool use_cookies,
                        scoped_refptr<network::SharedURLLoaderFactory> factory);
   ~JobConfigurationBase() override;
 
@@ -408,6 +416,11 @@ class POLICY_EXPORT JobConfigurationBase
   // OAuth token that will be passed as a query parameter. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
   std::optional<std::string> oauth_token_;
+
+  // Will allow using cookies as part of the request when true. Cookies can
+  // be used in combination with other auth models, the order of precedence
+  // will be determined server-side.
+  bool use_cookies_;
 
   // Query parameters for the network request.
   ParameterMap query_params_;

@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/gfx/canvas.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/vector_icons.h"
@@ -69,7 +71,6 @@ class SquareView : public views::View {
     int width = available_size.width().value_or(1);
     return gfx::Size(width, width);
   }
-  int GetHeightForWidth(int width) const override { return width; }
 };
 
 BEGIN_METADATA(SquareView)
@@ -85,7 +86,7 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
 
   // Append a second MenuItemView that has a child SquareView.
   views::MenuItemView* flexible_view = root_menu.AppendMenuItem(2);
-  flexible_view->AddChildView(new SquareView());
+  flexible_view->AddChildView(std::make_unique<SquareView>());
   // Set margins to 0 so that we know width should match height.
   flexible_view->set_vertical_margin(0);
 
@@ -184,27 +185,43 @@ TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
 TEST_F(MenuItemViewUnitTest, AccessibleKeyShortcutsTest) {
   views::TestMenuItemView root_menu;
 
-  // Append MenuItemViews.
   views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"&Item 1");
   views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"It&em 2");
-  ui::AXNodeData data1, data2;
+  views::MenuItemView* item3 = root_menu.AppendSubMenu(1, u"Su&menu 1");
+  SubmenuView* submenu = item3->GetSubmenu();
+
+  ui::AXNodeData data1, data2, data3, data4;
 
   if (MenuConfig::instance().use_mnemonics) {
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
 
     root_menu.set_has_mnemonics(true);
     data1 = ui::AXNodeData();
     data2 = ui::AXNodeData();
+    data3 = ui::AXNodeData();
+    data4 = ui::AXNodeData();
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_EQ("i", data1.GetStringAttribute(
                        ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_EQ("e", data2.GetStringAttribute(
+                       ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_EQ("m", data3.GetStringAttribute(
+                       ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_EQ("m", data4.GetStringAttribute(
                        ax::mojom::StringAttribute::kKeyShortcuts));
 
     item1->set_may_have_mnemonics(false);
@@ -217,30 +234,75 @@ TEST_F(MenuItemViewUnitTest, AccessibleKeyShortcutsTest) {
     item1->set_may_have_mnemonics(true);
     data1 = ui::AXNodeData();
     data2 = ui::AXNodeData();
+    data3 = ui::AXNodeData();
+    data4 = ui::AXNodeData();
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
   } else {
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
 
     root_menu.set_has_mnemonics(true);
     data1 = ui::AXNodeData();
     data2 = ui::AXNodeData();
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
   }
+}
+
+TEST_F(MenuItemViewUnitTest, AccessibleProperties) {
+  views::TestMenuItemView root_menu;
+  views::MenuItemView* item1 = root_menu.AppendMenuItemImpl(
+      0, u"checkbox", ui::ImageModel(), MenuItemView::Type::kCheckbox);
+  views::MenuItemView* item2 = root_menu.AppendMenuItemImpl(
+      1, u"radio", ui::ImageModel(), MenuItemView::Type::kRadio);
+  views::MenuItemView* item3 = root_menu.AppendMenuItemImpl(
+      2, u"title", ui::ImageModel(), MenuItemView::Type::kTitle);
+  views::MenuItemView* item4 = root_menu.AppendMenuItemImpl(
+      3, u"highlighted", ui::ImageModel(), MenuItemView::Type::kHighlighted);
+  ui::AXNodeData data1, data2, data3, data4;
+
+  item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+  EXPECT_EQ(data1.role, ax::mojom::Role::kMenuItemCheckBox);
+
+  item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+  EXPECT_EQ(data2.role, ax::mojom::Role::kMenuItemRadio);
+
+  item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+  EXPECT_EQ(data3.role, ax::mojom::Role::kMenuItem);
+
+  item4->GetViewAccessibility().GetAccessibleNodeData(&data4);
+  EXPECT_EQ(data4.role, ax::mojom::Role::kMenuItem);
 }
 
 class TouchableMenuItemViewTest : public ViewsTestBase {
@@ -250,7 +312,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->Show();
 
     menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
@@ -261,7 +323,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
         std::move(menu_item_view_owning), MenuRunner::USE_ASH_SYS_UI_LAYOUT);
     menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
                             MenuAnchorPosition::kTopLeft,
-                            ui::MENU_SOURCE_KEYBOARD);
+                            ui::mojom::MenuSourceType::kKeyboard);
   }
 
   void TearDown() override {
@@ -321,7 +383,7 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
     ASSERT_TRUE(submenu->owned_by_client());
 
     submenu_parent_ = std::make_unique<View>();
-    submenu_parent_->AddChildView(submenu);
+    submenu_parent_->AddChildViewRaw(submenu);
     submenu_parent_->SetPosition(gfx::Point(0, 0));
     submenu_parent_->SetSize(submenu->GetPreferredSize({}));
   }
@@ -389,9 +451,8 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
     menu_item_view_ = menu_item_view_owning.get();
 
     widget_ = std::make_unique<Widget>();
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                     Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     widget_->Init(std::move(params));
     widget_->Show();
 
@@ -403,6 +464,20 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
     menu_item_view_ = nullptr;
     widget_->CloseNow();
     ViewsTestBase::TearDown();
+  }
+
+  test::TestMenuDelegate* GetDelegate() { return menu_delegate_.get(); }
+
+  ax::mojom::CheckedState GetCheckedStatus(int command,
+                                           views::MenuItemView::Type type) {
+    if (type == views::MenuItemView::Type::kRadio ||
+        type == views::MenuItemView::Type::kCheckbox) {
+      bool is_checked = GetDelegate() && GetDelegate()->IsItemChecked(command);
+      return is_checked ? ax::mojom::CheckedState::kTrue
+                        : ax::mojom::CheckedState::kFalse;
+    } else {
+      return ax::mojom::CheckedState::kNone;
+    }
   }
 
  protected:
@@ -450,7 +525,7 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   SkBitmap bitmap;
   gfx::Size size = menu_item_view()->GetMirroredBounds().size();
@@ -491,7 +566,7 @@ TEST_F(MenuItemViewPaintUnitTest, CustomColorAssertionCoverage) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   SkBitmap bitmap;
   gfx::Size size = menu_item_view()->GetMirroredBounds().size();
@@ -511,7 +586,7 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   ImageView* submenu_arrow_image_view =
       TestMenuItemView::submenu_arrow_image_view(submenu_item);
@@ -538,7 +613,7 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   // Show both the root and nested menus.
   SubmenuView* submenu = submenu_item->GetSubmenu();
@@ -549,8 +624,11 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   // The selected bit and selection based state should both update for all menu
   // items while they and their anscestors remain part of the menu.
-  EXPECT_FALSE(submenu_item->IsSelected());
-  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  EXPECT_EQ(submenu_item->IsSelected(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+  EXPECT_EQ(submenu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+
   submenu_item->SetSelected(true);
   EXPECT_TRUE(submenu_item->IsSelected());
   EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
@@ -593,9 +671,11 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
-  EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
+  EXPECT_EQ(child_menu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+
   child_menu_item->SetSelected(true);
   EXPECT_TRUE(child_menu_item->IsSelected());
   EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
@@ -615,7 +695,7 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedDuringDragAndDrop) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   // Show both the root and nested menus.
   SubmenuView* submenu = submenu_item->GetSubmenu();
@@ -639,6 +719,96 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedDuringDragAndDrop) {
   submenu->SetDropMenuItem(nullptr, MenuDelegate::DropPosition::kOn);
   EXPECT_TRUE(submenu_child1->last_paint_as_selected_for_testing());
   EXPECT_FALSE(submenu_child2->last_paint_as_selected_for_testing());
+}
+
+TEST_F(MenuItemViewPaintUnitTest, AccessibleCheckedStateChange) {
+  int command = 1000;
+  auto type = views::MenuItemView::Type::kNormal;
+  ui::AXNodeData data;
+
+  auto AddItem = [this](auto command_, auto type_) {
+    menu_item_view()->AddMenuItemAt(
+        0, command_, u"No custom colors", std::u16string(), std::u16string(),
+        ui::ImageModel(), ui::ImageModel(), type_, ui::NORMAL_SEPARATOR,
+        std::nullopt, std::nullopt, std::nullopt);
+  };
+
+  type = views::MenuItemView::Type::kRadio;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  type = views::MenuItemView::Type::kCheckbox;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  type = views::MenuItemView::Type::kNormal;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
+
+  data = ui::AXNodeData();
+  type = views::MenuItemView::Type::kSubMenu;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetSubmenu()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
+}
+
+TEST_F(MenuItemViewPaintUnitTest, AccessibleHasPopup) {
+  int command = 1000;
+  auto type = views::MenuItemView::Type::kNormal;
+  ui::AXNodeData data1, data2;
+
+  auto AddItem = [this](auto command_, auto type_) {
+    menu_item_view()->AddMenuItemAt(
+        0, command_, u"No custom colors", std::u16string(), std::u16string(),
+        ui::ImageModel(), ui::ImageModel(), type_, ui::NORMAL_SEPARATOR,
+        std::nullopt, std::nullopt, std::nullopt);
+  };
+
+  type = views::MenuItemView::Type::kCheckbox;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data1);
+  EXPECT_FALSE(data1.HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+
+  data1 = ui::AXNodeData();
+  type = views::MenuItemView::Type::kSubMenu;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data1);
+  EXPECT_EQ(data1.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetSubmenu()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data2);
+  EXPECT_EQ(data2.GetHasPopup(), ax::mojom::HasPopup::kMenu);
 }
 
 // Sets up a custom MenuDelegate that expects functions aren't called. See
@@ -672,27 +842,31 @@ using MenuItemViewA11yTest = MenuItemViewPaintUnitTest;
 // A MenuItemView that has a submenu should open the submenu on kExpand and
 // close the submenu on kCollapse.
 TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
-  MenuItemView* submenu_item_view =
-      menu_item_view()->AppendSubMenu(1, u"Submenu");
+  MenuItemView* menu_item = menu_item_view()->AppendMenuItem(1, u"Menu Item");
+  // On some platforms, the submenu is automatically opened when it's on the
+  // first item. To avoid this, add it to a second item.
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(2, u"SubMenu");
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   // Pre-conditions: An expandable submenu item.
-  ASSERT_TRUE(submenu_item_view->HasSubmenu());
-  ASSERT_FALSE(submenu_item_view->SubmenuIsShowing());
+  ASSERT_FALSE(menu_item->HasSubmenu());
+  ASSERT_FALSE(menu_item->SubmenuIsShowing());
+  ASSERT_TRUE(submenu->HasSubmenu());
+  ASSERT_FALSE(submenu->SubmenuIsShowing());
 
   // Send an expand action to the menu item.
   ui::AXActionData expand_action_data;
   expand_action_data.action = ax::mojom::Action::kExpand;
-  submenu_item_view->HandleAccessibleAction(expand_action_data);
-  EXPECT_TRUE(submenu_item_view->SubmenuIsShowing());
+  submenu->HandleAccessibleAction(expand_action_data);
+  EXPECT_TRUE(submenu->SubmenuIsShowing());
 
   // Send a collapse action to the menu item.
   ui::AXActionData collapse_action_data;
   collapse_action_data.action = ax::mojom::Action::kCollapse;
-  submenu_item_view->HandleAccessibleAction(collapse_action_data);
-  EXPECT_FALSE(submenu_item_view->SubmenuIsShowing());
+  submenu->HandleAccessibleAction(collapse_action_data);
+  EXPECT_FALSE(submenu->SubmenuIsShowing());
 }
 
 TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
@@ -729,4 +903,82 @@ TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
   EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
+TEST_F(MenuItemViewA11yTest, AccessibleExpandedCollapsedState) {
+  MenuItemView* non_submenu =
+      menu_item_view()->AppendMenuItem(1, u"Item, not a submenu");
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(1, u"Submenu");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  // The non-submenu item should not have an expanded/collapsed state.
+  ui::AXNodeData data;
+  non_submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kNone);
+
+  // The submenu item should have a collapsed state.
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+
+  // The submenu item should have an expanded state after expanding.
+  ui::AXActionData expand_action_data;
+  expand_action_data.action = ax::mojom::Action::kExpand;
+  submenu->HandleAccessibleAction(expand_action_data);
+
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+}
+
+TEST_F(MenuItemViewA11yTest, TooltipText) {
+  const int id = 1000;
+  const auto type = views::MenuItemView::Type::kNormal;
+  const int index = 0;
+
+  menu_item_view()->AddMenuItemAt(index, id, u"Custom", std::u16string(),
+                                  std::u16string(), ui::ImageModel(),
+                                  ui::ImageModel(), type, ui::NORMAL_SEPARATOR,
+                                  std::nullopt, std::nullopt, std::nullopt);
+
+  menu_item_view()->SetTooltip(u"Tooltip", id);
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(),
+            u"Tooltip");
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetRenderedTooltipText(
+                gfx::Point()),
+            u"Tooltip");
+}
+
+TEST_F(MenuItemViewA11yTest, TooltipTextAccessibility) {
+  const int id = 1000;
+  const auto type = views::MenuItemView::Type::kNormal;
+  const int index = 0;
+
+  menu_item_view()->AddMenuItemAt(index, id, u"Custom", std::u16string(),
+                                  std::u16string(), ui::ImageModel(),
+                                  ui::ImageModel(), type, ui::NORMAL_SEPARATOR,
+                                  std::nullopt, std::nullopt, std::nullopt);
+  ui::AXNodeData data;
+
+  menu_item_view()->SetTooltip(u"Tooltip", id);
+  menu_item_view()
+      ->GetMenuItemByID(id)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(),
+            u"Tooltip");
+  // When no description is explicitly set, the tooltip should be used.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Tooltip");
+}
 }  // namespace views

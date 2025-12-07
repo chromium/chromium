@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/android/fast_checkout/ui_view_android_utils.h"
 
 #include "base/android/jni_android.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
 
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -18,10 +20,8 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
   base::android::ScopedJavaLocalRef<jobject> scoped_profile =
       CreateFastCheckoutAutofillProfile(env, profile, "en-US");
 
-  base::android::JavaParamRef<jobject> java_profile(env, scoped_profile.obj());
-
   std::unique_ptr<autofill::AutofillProfile> parsed_profile =
-      CreateFastCheckoutAutofillProfileFromJava(env, java_profile, "en-US");
+      CreateFastCheckoutAutofillProfileFromJava(env, scoped_profile, "en-US");
 
   EXPECT_EQ(profile.guid(), parsed_profile->guid());
   EXPECT_EQ(profile.language_code(), parsed_profile->language_code());
@@ -60,11 +60,10 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutCreditCard) {
     base::android::ScopedJavaLocalRef<jobject> scoped_credit_card =
         CreateFastCheckoutCreditCard(env, credit_card, "en-US");
 
-    base::android::JavaParamRef<jobject> java_credit_card(
-        env, scoped_credit_card.obj());
-
     std::unique_ptr<autofill::CreditCard> parsed_credit_card =
-        CreateFastCheckoutCreditCardFromJava(env, java_credit_card);
+        CreateFastCheckoutCreditCardFromJava(env, scoped_credit_card);
     EXPECT_EQ(credit_card, *parsed_credit_card.get());
   }
 }
+
+}  // namespace

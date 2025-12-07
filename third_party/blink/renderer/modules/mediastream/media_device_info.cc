@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_kind.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
@@ -45,18 +46,19 @@ String MediaDeviceInfo::deviceId() const {
   return device_id_;
 }
 
-String MediaDeviceInfo::kind() const {
+V8MediaDeviceKind MediaDeviceInfo::kind() const {
   switch (device_type_) {
     case mojom::blink::MediaDeviceType::kMediaAudioInput:
-      return "audioinput";
-    case mojom::blink::MediaDeviceType::kMediaAudioOuput:
-      return "audiooutput";
+      return V8MediaDeviceKind(V8MediaDeviceKind::Enum::kAudioinput);
+    case mojom::blink::MediaDeviceType::kMediaAudioOutput:
+      return V8MediaDeviceKind(V8MediaDeviceKind::Enum::kAudiooutput);
     case mojom::blink::MediaDeviceType::kMediaVideoInput:
-      return "videoinput";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      return V8MediaDeviceKind(V8MediaDeviceKind::Enum::kVideoinput);
+    case mojom::blink::MediaDeviceType::kNumMediaDeviceTypes:
+      // Should not happen.
+      break;
   }
+  NOTREACHED();
 }
 
 String MediaDeviceInfo::label() const {
@@ -71,13 +73,13 @@ mojom::blink::MediaDeviceType MediaDeviceInfo::DeviceType() const {
   return device_type_;
 }
 
-ScriptValue MediaDeviceInfo::toJSONForBinding(ScriptState* script_state) {
+ScriptObject MediaDeviceInfo::toJSONForBinding(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddString("deviceId", deviceId());
-  result.AddString("kind", kind());
+  result.AddString("kind", kind().AsStringView());
   result.AddString("label", label());
   result.AddString("groupId", groupId());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 }  // namespace blink

@@ -12,7 +12,8 @@ found in the LICENSE file.
     android:background="@drawable/quick_action_search_widget_background"
     android:clipToOutline="true"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/Theme.Chromium.Widget" >
 
     <LinearLayout
         android:id="@+id/quick_action_search_widget_search_bar_container"

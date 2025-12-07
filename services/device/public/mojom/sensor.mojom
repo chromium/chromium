@@ -9,13 +9,11 @@ module device.mojom;
 // in SensorReading struct at sensor_reading.h file.
 enum SensorType {
   AMBIENT_LIGHT,
-  PROXIMITY,
   ACCELEROMETER,
   LINEAR_ACCELERATION,
   GRAVITY,
   GYROSCOPE,
   MAGNETOMETER,
-  PRESSURE,
   // Legacy sensor to support the W3C DeviceOrientation Event Specification.
   ABSOLUTE_ORIENTATION_EULER_ANGLES,
   // Recommended for new code.

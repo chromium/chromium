@@ -1,0 +1,20 @@
+Name: Emoji2 Views Helper
+Short Name: emoji2-views-helper
+URL: https://dl.google.com/dl/android/maven2/androidx/emoji2/emoji2-views-helper/1.6.0/emoji2-views-helper-1.6.0.aar
+Version: 1.6.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Provide helper classes for Emoji2 views.
+
+See also: https://developer.android.com/jetpack/androidx/releases/emoji2#1.6.0
+
+
+Local Modifications:
+No modifications.

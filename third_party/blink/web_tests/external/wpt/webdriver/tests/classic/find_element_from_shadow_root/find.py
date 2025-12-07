@@ -70,12 +70,12 @@ def test_no_such_shadow_root_with_shadow_root_from_other_frame(
     session, get_test_page
 ):
     session.url = get_test_page(as_frame=True)
-    session.switch_frame(0)
+    session.switch_to_frame(0)
 
     host = session.find.css("custom-element", all=False)
     shadow_root = host.shadow_root
 
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     response = find_element(session, shadow_root.id, "css selector", "div")
     assert_error(response, "no such shadow root")
@@ -87,7 +87,7 @@ def test_detached_shadow_root(session, get_test_page, as_frame):
 
     if as_frame:
         frame = session.find.css("iframe", all=False)
-        session.switch_frame(frame)
+        session.switch_to_frame(frame)
 
     host = session.find.css("custom-element", all=False)
     shadow_root = host.shadow_root
@@ -245,3 +245,34 @@ def test_find_element_in_nested_shadow_root(session, get_test_page, mode):
 
     element = WebElement.from_json(value, session)
     assert element.text == expected_text
+
+def test_implicit_wait_shadow_root(session, get_test_page):
+    session.url = get_test_page()
+    session.timeouts.implicit = 1
+
+    session.execute_script("""
+        setTimeout(() => {
+            const host = document.querySelector('custom-element');
+            const input = document.createElement('input');
+            input.id = 'delayed';
+            host.shadowRoot.appendChild(input);
+        }, 300);
+    """)
+
+    shadow_root = session.find.css("custom-element", all=False).shadow_root
+    response = find_element(session, shadow_root.id, "css selector", "#delayed")
+    value = assert_success(response)
+
+    expected = session.execute_script("""
+        return arguments[0].shadowRoot.getElementById('delayed')
+    """, args=(session.find.css("custom-element", all=False),))
+    assert_same_element(session, value, expected)
+
+
+def test_implicit_wait_timeout(session, get_test_page):
+    session.url = get_test_page()
+    session.timeouts.implicit = 0.5
+
+    shadow_root = session.find.css("custom-element", all=False).shadow_root
+    response = find_element(session, shadow_root.id, "css selector", "#nonexistent")
+    assert_error(response, "no such element")

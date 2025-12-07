@@ -5,7 +5,7 @@
 #include "content/test/mock_keyboard.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 

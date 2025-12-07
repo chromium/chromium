@@ -2,25 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/secure_channel/ble_weave_packet_generator.h"
 
+#include <netinet/in.h>
 #include <string.h>
 
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
 
 namespace ash::secure_channel::weave {
 
@@ -104,7 +95,7 @@ std::vector<Packet> BluetoothLowEnergyWeavePacketGenerator::EncodeDataMessage(
     SetPacketCounter(packet);
 
     for (uint32_t j = begin; j < end; ++j) {
-      packet->push_back(byte_message[j]);
+      packet->push_back(UNSAFE_TODO(byte_message[j]));
     }
   }
 
@@ -126,7 +117,7 @@ void BluetoothLowEnergyWeavePacketGenerator::SetShortField(uint32_t byte_offset,
   uint8_t* network_val_ptr = reinterpret_cast<uint8_t*>(&network_val);
 
   packet->at(byte_offset) = network_val_ptr[0];
-  packet->at(byte_offset + 1) = network_val_ptr[1];
+  packet->at(byte_offset + 1) = UNSAFE_TODO(network_val_ptr[1]);
 }
 
 void BluetoothLowEnergyWeavePacketGenerator::SetPacketTypeBit(PacketType type,

@@ -21,6 +21,7 @@ namespace blink {
 
 class LocalFrame;
 class Element;
+enum class ResourceType : uint8_t;
 
 // The LCPCriticalPathPredictor optimizes page load experience by utilizing
 // data collected by previous page loads. It sources hint data to various parts
@@ -30,7 +31,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
     : public GarbageCollected<LCPCriticalPathPredictor> {
  public:
   explicit LCPCriticalPathPredictor(LocalFrame& frame);
-  virtual ~LCPCriticalPathPredictor();
+  ~LCPCriticalPathPredictor();
 
   LCPCriticalPathPredictor(const LCPCriticalPathPredictor&) = delete;
   LCPCriticalPathPredictor& operator=(const LCPCriticalPathPredictor&) = delete;
@@ -42,7 +43,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   bool HasAnyHintData() const;
 
   void set_lcp_element_locators(
-      const std::vector<std::string>& lcp_element_locator_strings);
+      const std::vector<std::string>& lcp_element_locator_strings,
+      const std::vector<std::string>& lcp_element_locator_all_strings);
 
   const Vector<ElementLocator>& lcp_element_locators() {
     return lcp_element_locators_;
@@ -66,6 +68,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   const Vector<KURL>& unused_preloads() { return unused_preloads_; }
 
+  void enable_testing();
+
   void Reset();
 
   bool IsLcpInfluencerScript(const KURL& url);
@@ -76,7 +80,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
       const Element& lcp_element,
       std::optional<const KURL> maybe_image_url);
   void OnFontFetched(const KURL& url);
-  void OnStartPreload(const KURL& url);
+  void OnStartPreload(const KURL& url, const ResourceType& resource_type);
   void OnOutermostMainFrameDocumentLoad();
   void OnWarnedUnusedPreloads(const Vector<KURL>& unused_preloads);
 
@@ -99,6 +103,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   Vector<ElementLocator> lcp_element_locators_;
   Vector<std::string> lcp_element_locator_strings_;
+  Vector<std::string> lcp_element_locator_all_strings_;
   HashSet<KURL> lcp_influencer_scripts_;
   Vector<KURL> fetched_fonts_;
   Vector<url::Origin> preconnected_origins_;
@@ -111,6 +116,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   bool has_lcp_occurred_ = false;
   bool is_outermost_main_frame_document_loaded_ = false;
   bool has_sent_unused_preloads_ = false;
+
+  bool report_timing_predictor_for_testing_ = false;
 };
 
 }  // namespace blink

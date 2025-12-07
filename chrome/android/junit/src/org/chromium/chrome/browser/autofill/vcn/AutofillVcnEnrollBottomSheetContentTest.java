@@ -29,13 +29,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 public final class AutofillVcnEnrollBottomSheetContentTest {
-    private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING
-        = "robolectric.useRealScrolling";
-
+    private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING =
+            "robolectric.useRealScrolling";
+    private Activity mActivity;
+    private AutofillVcnEnrollBottomSheetContent mContent;
     private View mContentView;
     private ScrollView mScrollView;
     private boolean mDismissed;
-    private AutofillVcnEnrollBottomSheetContent mContent;
     private boolean mIsRealScrollingEnabled;
 
     @Before
@@ -45,9 +45,9 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
         // Disable Robolectric's real scrolling for legacy compatibility.
         // We need to remove it after migrating tests to real scrolling.
         System.setProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING, "false");
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        mContentView = new View(activity);
-        mScrollView = new ScrollView(activity);
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mContentView = new View(mActivity);
+        mScrollView = new ScrollView(mActivity);
         mDismissed = false;
         mContent =
                 new AutofillVcnEnrollBottomSheetContent(mContentView, mScrollView, this::onDismiss);
@@ -110,8 +110,10 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
     @Test
     public void testBottomSheetAccessibilityContentDescription() {
         assertThat(
-                mContent.getSheetContentDescriptionStringId(),
-                equalTo(R.string.autofill_virtual_card_enroll_content_description));
+                mContent.getSheetContentDescription(mActivity),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_virtual_card_enroll_content_description)));
     }
 
     @Test

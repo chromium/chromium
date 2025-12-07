@@ -34,7 +34,9 @@ std::unique_ptr<media::AudioBus> AudioPacketToAudioBus(
   std::unique_ptr<media::AudioBus> result =
       media::AudioBus::Create(packet.channels(), frame_count);
   result->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-      reinterpret_cast<const int16_t*>(packet.data(0).data()), frame_count);
+      // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+      UNSAFE_TODO(reinterpret_cast<const int16_t*>(packet.data(0).data())),
+      frame_count);
   return result;
 }
 
@@ -76,8 +78,7 @@ media::ChannelLayout RetrieveLayout(const remoting::AudioPacket& packet) {
     case remoting::AudioPacket::CHANNELS_7_1:
       return media::CHANNEL_LAYOUT_7_1;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid AudioPacket::Channels";
-  return media::CHANNEL_LAYOUT_UNSUPPORTED;
+  NOTREACHED() << "Invalid AudioPacket::Channels";
 }
 
 }  // namespace
@@ -185,7 +186,7 @@ void AudioPump::Core::EncodeAudioPacket(std::unique_ptr<AudioPacket> packet) {
     return;
   }
 
-  int packet_size = encoded_packet->ByteSize();
+  int packet_size = encoded_packet->ByteSizeLong();
   bytes_pending_ += packet_size;
 
   pump_task_runner_->PostTask(

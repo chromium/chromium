@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/command_line.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
@@ -22,7 +23,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/web/model/error_page_util.h"
@@ -77,21 +78,19 @@ NSError* CreateTestError() {
 
 class ChromeWebClientTest : public PlatformTest {
  public:
-  ChromeWebClientTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-  }
+  ChromeWebClientTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
   ChromeWebClientTest(const ChromeWebClientTest&) = delete;
   ChromeWebClientTest& operator=(const ChromeWebClientTest&) = delete;
 
   ~ChromeWebClientTest() override = default;
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
  protected:
   web::WebTaskEnvironment environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(ChromeWebClientTest, UserAgent) {
@@ -269,14 +268,14 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
   // make an actual network request.
   network::TestURLLoaderFactory test_loader_factory;
   test_loader_factory.AddResponse(
-      captive_portal::CaptivePortalDetector::kDefaultURL, "",
+      captive_portal::CaptivePortalDetector::GetDefaultUrl(), "",
       net::HTTP_NO_CONTENT);
-  browser_state_->SetSharedURLLoaderFactory(
+  profile_->SetSharedURLLoaderFactory(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_loader_factory));
 
   CaptivePortalTabHelper::GetOrCreateForWebState(&web_state);
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
@@ -296,7 +295,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
 TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   // Store an unsafe resource in `web_state`'s container.
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
@@ -314,9 +313,11 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
       ->StoreMainFrameUnsafeResource(resource);
 
-  NSError* error = [NSError errorWithDomain:kSafeBrowsingErrorDomain
-                                       code:kUnsafeResourceErrorCode
-                                   userInfo:nil];
+  NSError* error =
+      [NSError errorWithDomain:kSafeBrowsingErrorDomain
+                          code:base::checked_cast<NSInteger>(
+                                   SafeBrowsingErrorCode::kUnsafeResource)
+                      userInfo:nil];
   __block bool callback_called = false;
   __block NSString* page = nil;
   base::OnceCallback<void(NSString*)> callback =
@@ -337,11 +338,107 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   EXPECT_TRUE([page containsString:error_string]);
 }
 
+// Tests PrepareErrorPage for a safe browsing enterprise block error, which
+// results in a committed enterprise interstitial.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageForSafeBrowsingEnterpriseBlockError) {
+  // Store an unsafe resource in `web_state`'s container.
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile());
+  SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
+  SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
+  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+      &web_state);
+
+  security_interstitials::UnsafeResource resource;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
+  resource.url = GURL("http://www.chromium.test");
+  resource.weak_web_state = web_state.GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::URL_REAL_TIME_CHECK;
+  SafeBrowsingUrlAllowList::FromWebState(&web_state)
+      ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
+  SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
+      ->StoreMainFrameUnsafeResource(resource);
+
+  NSError* error = [NSError
+      errorWithDomain:kSafeBrowsingErrorDomain
+                 code:(NSInteger)SafeBrowsingErrorCode::kEnterpriseBlock
+             userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/std::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  NSString* error_string = l10n_util::GetNSString(IDS_ENTERPRISE_BLOCK_HEADING);
+  EXPECT_TRUE([page containsString:error_string]);
+}
+
+// Tests PrepareErrorPage for a safe browsing enterprise warn error, which
+// results in a committed enterprise interstitial.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageForSafeBrowsingEnterpriseWarnError) {
+  // Store an unsafe resource in `web_state`'s container.
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile());
+  SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
+  SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
+  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+      &web_state);
+
+  security_interstitials::UnsafeResource resource;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.url = GURL("http://www.chromium.test");
+  resource.weak_web_state = web_state.GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::URL_REAL_TIME_CHECK;
+  SafeBrowsingUrlAllowList::FromWebState(&web_state)
+      ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
+  SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
+      ->StoreMainFrameUnsafeResource(resource);
+
+  NSError* error =
+      [NSError errorWithDomain:kSafeBrowsingErrorDomain
+                          code:(NSInteger)SafeBrowsingErrorCode::kEnterpriseWarn
+                      userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/std::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  NSString* error_string = l10n_util::GetNSString(IDS_ENTERPRISE_WARN_HEADING);
+  EXPECT_TRUE([page containsString:error_string]);
+}
+
 // Tests PrepareErrorPage for a lookalike error, which results in a
 // committed lookalike interstitial.
 TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlError) {
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   LookalikeUrlContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
@@ -383,7 +480,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlError) {
 // button instead of 'Back to safety' (when there is no back item).
 TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   LookalikeUrlContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
@@ -428,7 +525,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
 // committed HTTPS-Only Mode interstitial that has a 'Go back'.
 TEST_F(ChromeWebClientTest, PrepareErrorPageForHttpsOnlyModeError) {
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   HttpsOnlyModeContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
@@ -466,10 +563,10 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForHttpsOnlyModeError) {
 TEST_F(ChromeWebClientTest, DefaultUserAgent) {
   ChromeWebClient web_client;
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
 
   scoped_refptr<HostContentSettingsMap> settings_map(
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state()));
+      ios::HostContentSettingsMapFactory::GetForProfile(profile()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_BLOCK);

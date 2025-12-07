@@ -49,14 +49,11 @@ class TranslateUILanguagesManagerTest : public ::testing::Test {
         std::make_unique<MockTranslateClient>(&driver_, pref_service_.get());
     ranker_ = std::make_unique<MockTranslateRanker>();
     language_model_ = std::make_unique<MockLanguageModel>();
-    manager_ = std::make_unique<TranslateManager>(client_.get(), ranker_.get(),
-                                                  language_model_.get());
-    manager_->GetLanguageState()->set_translation_declined(false);
 
     std::vector<std::string> languages = {"ar", "de", "es", "fr"};
 
-    languages_manager_ = std::make_unique<TranslateUILanguagesManager>(
-        manager_->GetWeakPtr(), languages, "ar", "fr");
+    languages_manager_ =
+        std::make_unique<TranslateUILanguagesManager>(languages, "ar", "fr");
   }
 
   // Do not reorder. These are ordered for dependency on creation/destruction.
@@ -65,7 +62,6 @@ class TranslateUILanguagesManagerTest : public ::testing::Test {
   std::unique_ptr<MockTranslateClient> client_;
   std::unique_ptr<MockTranslateRanker> ranker_;
   std::unique_ptr<MockLanguageModel> language_model_;
-  std::unique_ptr<TranslateManager> manager_;
   std::unique_ptr<TranslateUILanguagesManager> languages_manager_;
 };
 

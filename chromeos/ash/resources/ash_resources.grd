@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/ash_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -12,21 +12,14 @@
   </outputs>
   <release seq="1">
     <includes>
-      <part file="multidevice_resources.grdp" />
-      <if expr="enable_cros_libassistant">
-        <part file="assistant_resources.grdp" />
-      </if>
+      <part file="audio_resources.grdp" />
       <if expr="enable_cros_scalable_iph">
         <part file="scalable_iph_unscaled_resources.grdp" />
       </if>
       <if expr="is_chrome_branded">
         <part file="growth_framework_resources.grdp" />
+        <part file="scanner_resources.grdp" />
       </if>
     </includes>
-    <structures>
-      <if expr="is_chrome_branded">
-        <part file="picker_resources.grdp" />
-      </if>
-    </structures>
   </release>
 </grit>

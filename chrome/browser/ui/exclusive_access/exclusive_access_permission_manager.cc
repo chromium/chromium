@@ -10,6 +10,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -100,11 +101,20 @@ void ExclusiveAccessPermissionManager::RequestPermissions(
   if (requests_it == pending_requests_.end()) {
     return;
   }
+
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents.get());
+  if (media_session) {
+    media_session->StartDucking();
+  }
+
   PendingRequests& requests = requests_it->second;
   requests.waiting_responses += requests.pending.size();
   for (PermissionRequest& request : requests.pending) {
     content::PermissionRequestDescription description(
-        request.type, web_contents->HasRecentInteraction());
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(request.type),
+        web_contents->HasRecentInteraction());
     GetPermissionController(web_contents.get())
         ->RequestPermissionsFromCurrentDocument(
             rfh, std::move(description),
@@ -120,11 +130,6 @@ void ExclusiveAccessPermissionManager::RequestPermissions(
   if (requests_it != pending_requests_.end()) {
     requests_it->second.pending.clear();
   }
-  content::MediaSession* media_session =
-      content::MediaSession::GetIfExists(web_contents.get());
-  if (media_session) {
-    media_session->StartDucking();
-  }
 }
 
 void ExclusiveAccessPermissionManager::HandleRequestResult(
@@ -132,16 +137,15 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
     base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure granted_callback,
     base::OnceClosure denied_callback,
-    const std::vector<blink::mojom::PermissionStatus>& status) {
+    const std::vector<content::PermissionResult>& status) {
   auto requests_it = pending_requests_.find(rfh_id);
   if (requests_it == pending_requests_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   PendingRequests& requests = requests_it->second;
   CHECK_EQ(status.size(), 1u);
   std::vector<base::OnceClosure> result_callbacks;
-  switch (status[0]) {
+  switch (status[0].status) {
     case blink::mojom::PermissionStatus::GRANTED:
       requests.result_callbacks.push_back(std::move(granted_callback));
       break;

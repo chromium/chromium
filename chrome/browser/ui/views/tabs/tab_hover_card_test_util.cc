@@ -24,7 +24,7 @@ TabHoverCardTestUtil::~TabHoverCardTestUtil() {
 }
 
 // static
-TabStrip* TabHoverCardTestUtil::GetTabStrip(Browser* browser) {
+TabStrip* TabHoverCardTestUtil::GetTabStrip(BrowserWindowInterface* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)->tabstrip();
 }
 
@@ -59,8 +59,9 @@ int TabHoverCardTestUtil::GetHoverCardsSeenCount(Browser* browser) {
 }
 
 // static
-TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(Browser* browser,
-                                                               int tab_index) {
+TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(
+    BrowserWindowInterface* browser,
+    int tab_index) {
   auto* const tab_strip = GetTabStrip(browser);
 
   // We don't use Tab::OnMouseEntered here to invoke the hover card because
@@ -75,16 +76,18 @@ TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(Browser* browser,
 TabHoverCardTestUtil::HoverCardDestroyedWaiter::HoverCardDestroyedWaiter(
     TabStrip* tab_strip) {
   auto* const hover_card = GetHoverCard(tab_strip);
-  if (hover_card && hover_card->GetWidget())
+  if (hover_card && hover_card->GetWidget()) {
     observation_.Observe(hover_card->GetWidget());
+  }
 }
 
 TabHoverCardTestUtil::HoverCardDestroyedWaiter::~HoverCardDestroyedWaiter() =
     default;
 
 void TabHoverCardTestUtil::HoverCardDestroyedWaiter::Wait() {
-  if (!observation_.IsObserving())
+  if (!observation_.IsObserving()) {
     return;
+  }
   DCHECK(quit_closure_.is_null());
   quit_closure_ = run_loop_.QuitClosure();
   run_loop_.Run();
@@ -94,8 +97,9 @@ void TabHoverCardTestUtil::HoverCardDestroyedWaiter::Wait() {
 void TabHoverCardTestUtil::HoverCardDestroyedWaiter::OnWidgetDestroyed(
     views::Widget* widget) {
   observation_.Reset();
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 }  // namespace test

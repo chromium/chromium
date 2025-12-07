@@ -11,19 +11,19 @@ import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogPrope
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.SHOW_PROGRESS_BAR_OVERLAY;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.VIEW_DELEGATE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
-/** Class responsible for binding the model and the view in OTP Verification Dialog. **/
+/** Class responsible for binding the model and the view in OTP Verification Dialog. */
+@NullMarked
 class OtpVerificationDialogViewBinder {
     private OtpVerificationDialogViewBinder() {}
 
     static void bind(
             PropertyModel model, OtpVerificationDialogView dialogView, PropertyKey propertyKey) {
         if (propertyKey.equals(EDIT_TEXT)) {
-            if (!model.get(EDIT_TEXT).isPresent()) {
+            if (model.get(EDIT_TEXT) == null) {
                 dialogView.clearEditText();
             }
         } else if (propertyKey.equals(EDIT_TEXT_HINT)) {
@@ -31,8 +31,8 @@ class OtpVerificationDialogViewBinder {
         } else if (propertyKey.equals(VIEW_DELEGATE)) {
             dialogView.setViewDelegate(model.get(VIEW_DELEGATE));
         } else if (propertyKey.equals(OTP_ERROR_MESSAGE)) {
-            Optional<String> errorMessage = model.get(OTP_ERROR_MESSAGE);
-            if (errorMessage.isPresent()) {
+            String errorMessage = model.get(OTP_ERROR_MESSAGE);
+            if (errorMessage != null) {
                 dialogView.showOtpErrorMessage(errorMessage);
             } else {
                 dialogView.hideOtpErrorMessage();

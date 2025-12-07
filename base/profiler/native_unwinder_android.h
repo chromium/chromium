@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/DexFiles.h"
@@ -22,7 +23,7 @@ class NativeUnwinderAndroidMemoryRegionsMapImpl;
 // Implementation of unwindstack::Memory that restricts memory access to a stack
 // buffer, used by NativeUnwinderAndroid. While unwinding, only memory accesses
 // within the stack should be performed to restore registers.
-class UnwindStackMemoryAndroid : public unwindstack::Memory {
+class BASE_EXPORT UnwindStackMemoryAndroid : public unwindstack::Memory {
  public:
   UnwindStackMemoryAndroid(uintptr_t stack_ptr, uintptr_t stack_top);
   ~UnwindStackMemoryAndroid() override;
@@ -35,8 +36,9 @@ class UnwindStackMemoryAndroid : public unwindstack::Memory {
 };
 
 // Native unwinder implementation for Android, using libunwindstack.
-class NativeUnwinderAndroid : public Unwinder,
-                              public ModuleCache::AuxiliaryModuleProvider {
+class BASE_EXPORT NativeUnwinderAndroid
+    : public Unwinder,
+      public ModuleCache::AuxiliaryModuleProvider {
  public:
   // Creates maps object from /proc/self/maps for use by NativeUnwinderAndroid.
   // Since this is an expensive call, the maps object should be re-used across
@@ -59,8 +61,7 @@ class NativeUnwinderAndroid : public Unwinder,
   // |map_delegate| is used to manage memory used by libunwindstack. It must
   // outlives this object.
   NativeUnwinderAndroid(uintptr_t exclude_module_with_base_address,
-                        NativeUnwinderAndroidMapDelegate* map_delegate,
-                        bool is_java_name_hashing_enabled);
+                        NativeUnwinderAndroidMapDelegate* map_delegate);
   ~NativeUnwinderAndroid() override;
 
   NativeUnwinderAndroid(const NativeUnwinderAndroid&) = delete;
@@ -85,7 +86,6 @@ class NativeUnwinderAndroid : public Unwinder,
                     unwindstack::ArchEnum,
                     std::vector<Frame>* stack);
 
-  const bool is_java_name_hashing_enabled_;
   std::unique_ptr<unwindstack::DexFiles> dex_files_;
 
   const uintptr_t exclude_module_with_base_address_;

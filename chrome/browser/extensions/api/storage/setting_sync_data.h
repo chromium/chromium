@@ -11,7 +11,10 @@
 
 #include "base/values.h"
 #include "components/sync/model/sync_change.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace syncer {
 class SyncData;
@@ -26,7 +29,7 @@ class SettingSyncData {
   // Creates from a sync change.
   explicit SettingSyncData(const syncer::SyncChange& sync_change);
 
-  // Creates from sync data. |change_type| will be std::nullopt.
+  // Creates from sync data. `change_type` will be std::nullopt.
   explicit SettingSyncData(const syncer::SyncData& sync_data);
 
   // Creates explicitly.
@@ -55,7 +58,7 @@ class SettingSyncData {
   base::Value ExtractValue();
 
  private:
-  // Populates the extension ID, key, and value from |sync_data|. This will be
+  // Populates the extension ID, key, and value from `sync_data`. This will be
   // either an extension or app settings data type.
   void ExtractSyncData(const syncer::SyncData& sync_data);
 

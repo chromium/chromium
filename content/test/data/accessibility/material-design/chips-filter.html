@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:selectFirstChip()
+@EXECUTE-AND-WAIT-FOR:selectSecondChip()
+@EXECUTE-AND-WAIT-FOR:deselectFirstChip()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+@AURALINUX-ALLOW:pressed*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Filter Chips</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-filter-chip",
+            "md-chip-set",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const chipSet = document.createElement("md-chip-set");
+            const chips = [
+                { label: "Filter chip", id: "test-chip-1" },
+                { label: "Selected", selected: true, id: "test-chip-2" },
+                { label: "With icon", selected: true, icon: "check" }
+            ];
+            chips.forEach(chipInfo => {
+                const chip = document.createElement("md-filter-chip");
+                chip.label = chipInfo.label;
+                if (chipInfo.id) {
+                    chip.id = chipInfo.id;
+                }
+                if (chipInfo.selected) {
+                    chip.selected = true;
+                }
+                if (chipInfo.icon) {
+                    const icon = document.createElement("md-icon");
+                    icon.slot = "icon";
+                    icon.textContent = chipInfo.icon;
+                    chip.appendChild(icon);
+                }
+                chipSet.appendChild(chip);
+            });
+            statusDiv.appendChild(chipSet);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function selectFirstChip() {
+        const chip = document.getElementById("test-chip-1");
+        if (chip) {
+            chip.selected = true;
+            await chip.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Filter Chip 1 Selected";
+            statusDiv.appendChild(statusText);
+            return "Filter Chip 1 Selected";
+        }
+        return "Failed to select Filter Chip 1";
+    }
+
+    async function selectSecondChip() {
+        const chip = document.getElementById("test-chip-2");
+        if (chip) {
+            chip.selected = false;
+            await chip.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Filter Chip 2 Deselected";
+            statusDiv.appendChild(statusText);
+            return "Filter Chip 2 Deselected";
+        }
+        return "Failed to deselect Filter Chip 2";
+    }
+
+    async function deselectFirstChip() {
+        const chip = document.getElementById("test-chip-1");
+        if (chip) {
+            chip.selected = false;
+            await chip.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Filter Chip 1 Deselected";
+            statusDiv.appendChild(statusText);
+            return "Filter Chip 1 Deselected";
+        }
+        return "Failed to deselect Filter Chip 1";
+    }
+</script>
+</html>

@@ -5,10 +5,14 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_
 
+#include <vector>
+
+#include "base/feature_list.h"
 #include "components/variations/platform_field_trials.h"
 
-// Responsible for setting up field trials specific to WebView. Currently all
-// functions are stubs, as WebView has no specific field trials.
+// Responsible for setting up field trials specific to WebView. Used to provide
+// WebView-specific defaults that are used over the state coming from the
+// base::Feature when there is no other (e.g. server-side) override.
 // Lifetime: Singleton
 class AwFieldTrials : public variations::PlatformFieldTrials {
  public:

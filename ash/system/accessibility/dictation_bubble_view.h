@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,10 +16,6 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-
-namespace ui {
-struct AXNodeData;
-}  // namespace ui
 
 namespace ash {
 
@@ -52,10 +49,7 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  std::u16string GetTextForTesting();
+  std::u16string_view GetTextForTesting();
   bool IsStandbyViewVisibleForTesting();
   bool IsMacroSucceededImageVisibleForTesting();
   bool IsMacroFailedImageVisibleForTesting();
@@ -65,6 +59,8 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   friend class DictationBubbleControllerTest;
+
+  views::View* GetTopRowView();
 
   raw_ptr<TopRowView> top_row_view_ = nullptr;
   raw_ptr<DictationHintView> hint_view_ = nullptr;
@@ -89,9 +85,6 @@ class ASH_EXPORT DictationHintView : public views::View {
 
   // Updates the text content and visibility of all labels in this view.
   void Update(const std::optional<std::vector<DictationBubbleHintType>>& hints);
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   friend class DictationBubbleView;

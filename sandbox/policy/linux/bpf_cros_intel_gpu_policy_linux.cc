@@ -20,7 +20,8 @@ using sandbox::bpf_dsl::ResultExpr;
 namespace sandbox {
 namespace policy {
 
-CrosIntelGpuProcessPolicy::CrosIntelGpuProcessPolicy() {}
+CrosIntelGpuProcessPolicy::CrosIntelGpuProcessPolicy(MremapPolicy mremap_policy)
+    : GpuProcessPolicy(mremap_policy) {}
 
 CrosIntelGpuProcessPolicy::~CrosIntelGpuProcessPolicy() {}
 

@@ -5,11 +5,12 @@
 #ifndef MEDIA_BASE_WIN_TEST_UTILS_H_
 #define MEDIA_BASE_WIN_TEST_UTILS_H_
 
-#include <type_traits>
-
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <type_traits>
+
+#include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,6 +104,16 @@ ACTION_TEMPLATE(SaveComPtr,
 template <typename Interface>
 Microsoft::WRL::ComPtr<Interface> MakeComPtr() {
   return Microsoft::WRL::Make<Interface>();
+}
+
+template <typename T, typename... Args>
+Microsoft::WRL::ComPtr<T> MakeComPtrFromRefCounted(Args&&... args) {
+  // It's safe to use the raw pointer here because the ComPtr is also refcounted
+  // and inside it calls the same AddRef methods from the RefCounted
+  // implementation, while the temporal scoped_refptr object is kept alive until
+  // the end of the statement.
+  return Microsoft::WRL::ComPtr<T>(
+      base::MakeRefCounted<T>(std::forward<Args>(args)...).get());
 }
 
 }  // namespace media

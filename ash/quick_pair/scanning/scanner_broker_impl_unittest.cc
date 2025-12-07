@@ -180,11 +180,11 @@ class FakeFastPairNotDiscoverableScannerFactory
 namespace ash {
 namespace quick_pair {
 
-class ScannerBrokerImplTest : public AshTestBase,
+class ScannerBrokerImplTest : public NoSessionAshTestBase,
                               public ScannerBroker::Observer {
  public:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -210,8 +210,7 @@ class ScannerBrokerImplTest : public AshTestBase,
   void TearDown() override {
     scanner_broker_->RemoveObserver(this);
     scanner_broker_.reset();
-    ClearLogin();
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   void CreateScannerBroker() {
@@ -221,7 +220,7 @@ class ScannerBrokerImplTest : public AshTestBase,
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   void TriggerDiscoverableDeviceFound() {
@@ -369,6 +368,7 @@ TEST_F(ScannerBrokerImplTest, GuestUser_RegularUserLogsIn) {
   EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
   EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
 
+  ClearLogin();
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
@@ -387,6 +387,7 @@ TEST_F(ScannerBrokerImplTest, RegularUser_GuestUserLogsIn) {
   EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
   EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
 
+  ClearLogin();
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
@@ -407,7 +408,7 @@ TEST_F(ScannerBrokerImplTest, PublicUser_NotDiscoverableNotCreated) {
 }
 
 TEST_F(ScannerBrokerImplTest, Kiosk_NotDiscoverableNotCreated) {
-  Login(user_manager::UserType::kKioskApp);
+  Login(user_manager::UserType::kKioskChromeApp);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());

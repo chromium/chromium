@@ -43,7 +43,7 @@ TEST_F(InspectedFramesTest, FindsFrameForGivenStorageKey) {
       static_cast<StorageKey>(blink_storage_key).Serialize();
 
   EXPECT_EQ(page_holder->GetFrame(),
-            inspected_frames->FrameWithStorageKey(WTF::String(storage_key)));
+            inspected_frames->FrameWithStorageKey(String(storage_key)));
 }
 
 }  // namespace blink

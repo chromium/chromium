@@ -13,6 +13,7 @@ namespace quarantine {
 void QuarantineFile(const base::FilePath& file,
                     const GURL& source_url,
                     const GURL& referrer_url,
+                    const std::optional<url::Origin>& request_initiator,
                     const std::string& client_guid,
                     mojom::Quarantine::QuarantineFileCallback callback) {
   std::move(callback).Run(QuarantineFileResult::OK);

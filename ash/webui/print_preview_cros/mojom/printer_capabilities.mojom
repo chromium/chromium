@@ -121,7 +121,6 @@ struct PinCapability {
 
 struct Capabilities {
   string destination_id;
-  // TODO(b/323421684): Support vendor_capability.
   CollateCapability? collate;
   ColorCapability? color;
   CopiesCapability? copies;

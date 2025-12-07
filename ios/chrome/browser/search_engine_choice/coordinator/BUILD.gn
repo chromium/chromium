@@ -1,0 +1,116 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("coordinator") {
+  sources = [
+    "search_engine_choice_coordinator.h",
+    "search_engine_choice_coordinator.mm",
+    "search_engine_choice_mediator.h",
+    "search_engine_choice_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/regional_capabilities",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/coordinator",
+    "//ios/chrome/browser/search_engine_choice/ui",
+    "//ios/chrome/browser/search_engine_choice/ui:constants",
+    "//ios/chrome/browser/search_engine_choice/ui:ui_util",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ios/components/ui_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "search_engine_choice_coordinator_unittest.mm",
+    "search_engine_choice_ui_util_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/policy/core/common:test_support",
+    "//components/regional_capabilities",
+    "//components/search_engines",
+    "//components/search_engines:search_engines_switches",
+    "//components/test/ios",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/search_engine_choice/ui",
+    "//ios/chrome/browser/search_engine_choice/ui:constants",
+    "//ios/chrome/browser/search_engine_choice/ui:ui_util",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/resources:ui_resources_grd_grit",
+  ]
+  if (enable_builtin_search_provider_assets) {
+    deps += [
+      "//third_party/search_engines_data:search_engines_scaled_resources_grit",
+    ]
+  }
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "search_engine_choice_egtest.mm",
+    "search_engine_choice_first_run_taiyaki_egtest.mm",
+    "search_engine_choice_taiyaki_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/regional_capabilities",
+    "//components/search_engines",
+    "//components/signin/public/base:signin_switches",
+    "//components/variations",
+    "//ios/chrome/browser/first_run/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/search_engine_choice/test:earl_grey_ui_test_util",
+    "//ios/chrome/browser/search_engine_choice/ui:constants",
+    "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

@@ -56,7 +56,7 @@ void BlinkLeakDetector::PerformLeakDetection(
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+      ->ForEachMainThreadIsolate([](v8::Isolate* isolate) {
         v8::HandleScope handle_scope(isolate);
 
         // Instruct V8 to drop its non-essential internal caches. In contrast to
@@ -76,14 +76,15 @@ void BlinkLeakDetector::PerformLeakDetection(
         // FIXME: HTML5 Notification should be closed because notification
         // affects the result of number of DOM objects.
         V8PerIsolateData::From(isolate)->ClearScriptRegexpContext();
-      }));
+      });
 
   // Clear lazily loaded style sheets.
   CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
 
   // Stop keepalive loaders that may persist after page navigation.
-  for (auto resource_fetcher : ResourceFetcher::MainThreadFetchers())
+  for (auto& resource_fetcher : ResourceFetcher::MainThreadFetchers()) {
     resource_fetcher->PrepareForLeakDetection();
+  }
 
   Page::PrepareForLeakDetection();
 

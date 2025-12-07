@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 
 #include <cstdarg>
@@ -12,8 +17,8 @@
 
 namespace partition_alloc::internal::base {
 
-std::string PA_PRINTF_FORMAT(1, 2)
-    TruncatingStringPrintf(const char* format, ...) {
+PA_PRINTF_FORMAT(1, 2)
+std::string TruncatingStringPrintf(const char* format, ...) {
   base::ScopedClearLastError last_error;
   char stack_buf[kMaxLengthOfTruncatingStringPrintfResult + 1];
   va_list arguments;

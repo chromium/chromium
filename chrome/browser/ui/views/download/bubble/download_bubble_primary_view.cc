@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,14 +53,6 @@ DownloadBubblePrimaryView::DownloadBubblePrimaryView()
 
 DownloadBubblePrimaryView::~DownloadBubblePrimaryView() = default;
 
-void DownloadBubblePrimaryView::LogVisibleTimeMetrics() const {
-  std::string_view histogram_name = GetVisibleTimeHistogramName();
-  if (!histogram_name.empty()) {
-    base::UmaHistogramMediumTimes(std::string(histogram_name),
-                                  base::Time::Now() - creation_time_);
-  }
-}
-
 void DownloadBubblePrimaryView::BuildAndAddScrollView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
@@ -69,8 +60,7 @@ void DownloadBubblePrimaryView::BuildAndAddScrollView(
     const DownloadBubbleRowListViewInfo& info,
     int fixed_width) {
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
-      browser, bubble_controller, navigation_handler, fixed_width, info,
-      IsPartialView());
+      browser, bubble_controller, navigation_handler, fixed_width, info);
   row_list_view_ = row_list_view.get();
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetContents(std::move(row_list_view));
@@ -93,7 +83,7 @@ void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {
       views::BoxLayout::CrossAxisAlignment::kStart);
   header_info_row->SetBorder(
       views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
-  header_info_row->SetBackground(views::CreateThemedRoundedRectBackground(
+  header_info_row->SetBackground(views::CreateRoundedRectBackground(
       kColorDownloadBubbleInfoBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh)));

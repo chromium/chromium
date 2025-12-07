@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -23,7 +24,6 @@
 #include "extensions/common/api/socket.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,9 +50,9 @@ class TCPConnectedSocket;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrOSTerminal[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Socket;
 
@@ -62,7 +62,7 @@ class Socket;
 // "socket" namespace vs new version in "socket.xxx" namespaces).
 class SocketResourceManagerInterface {
  public:
-  virtual ~SocketResourceManagerInterface() {}
+  virtual ~SocketResourceManagerInterface() = default;
 
   virtual bool SetBrowserContext(content::BrowserContext* context) = 0;
   virtual int Add(Socket* socket) = 0;
@@ -123,6 +123,9 @@ class SocketResourceManager : public SocketResourceManagerInterface {
 // Base class for socket API functions, with some helper functions.
 class SocketApiFunction : public ExtensionFunction {
  public:
+  inline static constexpr char kExceedWriteQuotaError[] =
+      "Exceeded write quota.";
+
   SocketApiFunction();
 
  protected:
@@ -134,8 +137,8 @@ class SocketApiFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() final;
 
-  // Convenience wrapper for ErrorWithArguments(), where the arguments are just
-  // one integer value.
+  // Convenience wrapper for ErrorWithArgumentsDoNotUse(), where the arguments
+  // are just one integer value.
   ResponseValue ErrorWithCode(int error_code, const std::string& error);
 
   // Either extension_id() or url origin for CrOS Terminal.
@@ -147,6 +150,13 @@ class SocketApiFunction : public ExtensionFunction {
   // Checks SocketsManifestData::CheckRequest() if extension(), or returns true
   // for CrOS Terminal.
   bool CheckRequest(const content::SocketPermissionRequest& param) const;
+
+  // Adds `bytes_to_write` against the write quota. Returns false if it would
+  // exceed the write quota.
+  bool TakeWriteQuota(size_t bytes_to_write);
+
+  // Returns bytes taken in last `TakeWriteQuota` call to the write quota.
+  void ReturnWriteQuota();
 
   virtual std::unique_ptr<SocketResourceManagerInterface>
   CreateSocketResourceManager();
@@ -163,7 +173,18 @@ class SocketApiFunction : public ExtensionFunction {
                         Socket* socket);
 
  private:
+  class ScopedWriteQuota {
+   public:
+    ScopedWriteQuota(SocketApiFunction* owner, size_t bytes_used);
+    ~ScopedWriteQuota();
+
+   private:
+    const raw_ptr<SocketApiFunction> owner_;
+    const size_t bytes_used_;
+  };
+
   std::unique_ptr<SocketResourceManagerInterface> manager_;
+  std::optional<ScopedWriteQuota> write_quota_used_;
 };
 
 class SocketExtensionWithDnsLookupFunction
@@ -181,11 +202,11 @@ class SocketExtensionWithDnsLookupFunction
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
@@ -323,7 +344,7 @@ class SocketReadFunction : public SocketApiFunction {
 
   // SocketApiFunction:
   ResponseAction Work() override;
-  void OnCompleted(int result,
+  void OnCompleted(int bytes_read,
                    scoped_refptr<net::IOBuffer> io_buffer,
                    bool socket_destroying);
 };

@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
@@ -72,6 +73,9 @@ struct ContextMenuData {
   // The encoding for the frame in context.
   std::string frame_encoding;
 
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.common
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContextMenuDataMediaFlags
   enum MediaFlags {
     kMediaNone = 0,
     kMediaInError = 1,
@@ -160,9 +164,16 @@ struct ContextMenuData {
 
   WebMenuSourceType source_type;
 
-  // True when the context contains text selected by a text fragment. See
-  // TextFragmentAnchor.
-  bool opened_from_highlight = false;
+  // Set when the context contains text selected by an annotation (see
+  // third_party/blink/renderer/core/annotation/README.md).
+  std::optional<mojom::AnnotationType> annotation_type;
+
+  // True when the context menu was opened from an element with the
+  // `interestfor` attribute.
+  bool opened_from_interest_for = false;
+  // If opened_from_interest_for is true, this will contain the DOMNodeID of the
+  // link that generated the context menu.
+  int interest_for_node_id = 0;
 
   // The type of the form control element on which the context menu is invoked,
   // if any.
@@ -183,11 +194,6 @@ struct ContextMenuData {
   // associated.
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   uint64_t form_renderer_id = 0;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name
-  // attribute contains 'password' as a substring) recognize it as a password
-  // field.
-  bool is_password_type_by_heuristics = false;
 
   ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),

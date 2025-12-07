@@ -8,8 +8,12 @@
 #include <stdint.h>
 
 #include <optional>
+#include <utility>
+#include <vector>
 
+#include "components/attribution_reporting/data_host.mojom-blink-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -17,7 +21,7 @@
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -26,16 +30,13 @@ struct RegistrationInfo;
 
 namespace blink {
 
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 class HTMLElement;
 class KURL;
 class LocalFrame;
 class ResourceRequest;
 class ResourceResponse;
 class WebString;
-
-template <typename T>
-class WebVector;
 
 struct Impression;
 
@@ -79,7 +80,7 @@ class CORE_EXPORT AttributionSrcLoader
   [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
       const AtomicString& attribution_src,
-      HTMLAnchorElement* element,
+      HTMLAnchorElementBase* element,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
 
@@ -87,20 +88,27 @@ class CORE_EXPORT AttributionSrcLoader
   // with `window.open`.
   [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
-      const WebVector<WebString>& attribution_srcs,
+      const std::vector<WebString>& attribution_srcs,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
+
+  [[nodiscard]] std::optional<Impression> PrepareContextMenuNavigation(
+      const KURL& navigation_url,
+      HTMLAnchorElementBase* anchor);
+
+  // If the given impression is null, all data hosts are unbound.
+  void RegisterFromContextMenuNavigation(const std::optional<Impression>&,
+                                         HTMLAnchorElementBase* anchor);
 
   // Returns true if `url` can be used as an attributionsrc: its scheme is HTTP
   // or HTTPS, its origin is potentially trustworthy, the document's permission
   // policy supports Attribution Reporting, the window's context is secure, and
   // the Attribution Reporting runtime-enabled feature is enabled.
   //
-  // Reports a DevTools issue using `element` and `request_id` otherwise, if
-  // `log_issues` is true.
+  // Reports a DevTools issue using `element` otherwise, if `log_issues` is
+  // true.
   [[nodiscard]] bool CanRegister(const KURL& url,
                                  HTMLElement* element,
-                                 std::optional<uint64_t> request_id,
                                  bool log_issues = true);
 
   void Trace(Visitor* visitor) const;
@@ -114,17 +122,25 @@ class CORE_EXPORT AttributionSrcLoader
  private:
   class ResourceClient;
 
+  using DataHostSharedRemote =
+      mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost>;
+
   Vector<KURL> ParseAttributionSrc(const AtomicString& attribution_src,
                                    HTMLElement*);
 
   bool DoRegistration(const Vector<KURL>&,
                       std::optional<AttributionSrcToken>,
-                      network::mojom::ReferrerPolicy);
+                      network::mojom::ReferrerPolicy,
+                      DataHostSharedRemote);
+
+  void PrepareNavigationDataHost(const Vector<KURL>&,
+                                 AttributionSrcToken,
+                                 DataHostSharedRemote&);
 
   [[nodiscard]] std::optional<Impression> RegisterNavigationInternal(
       const KURL& navigation_url,
       Vector<KURL> attribution_src_urls,
-      HTMLAnchorElement*,
+      HTMLAnchorElementBase*,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
 
@@ -135,12 +151,14 @@ class CORE_EXPORT AttributionSrcLoader
   std::optional<attribution_reporting::SuitableOrigin>
   ReportingOriginForUrlIfValid(const KURL& url,
                                HTMLElement* element,
+                               const String& request_url,
                                std::optional<uint64_t> request_id,
                                bool log_issues = true);
 
   bool CreateAndSendRequests(Vector<KURL>,
                              std::optional<AttributionSrcToken>,
-                             network::mojom::ReferrerPolicy);
+                             network::mojom::ReferrerPolicy,
+                             DataHostSharedRemote);
 
   struct AttributionHeaders;
 
@@ -153,6 +171,11 @@ class CORE_EXPORT AttributionSrcLoader
       bool was_fetched_via_service_worker);
 
   const Member<LocalFrame> local_frame_;
+
+  using ContextMenuDataHostEntry =
+      std::pair<AttributionSrcToken, DataHostSharedRemote>;
+
+  Vector<ContextMenuDataHostEntry> context_menu_data_hosts_;
 };
 
 }  // namespace blink

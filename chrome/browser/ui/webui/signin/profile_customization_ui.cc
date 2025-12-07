@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,7 +30,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/webui_util.h"
 
 ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
@@ -42,6 +41,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   static constexpr webui::ResourcePath kResources[] = {
       {"profile_customization_app.js",
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_JS},
+      {"profile_customization_app.css.js",
+       IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_CSS_JS},
       {"profile_customization_app.html.js",
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_HTML_JS},
       {"profile_customization_browser_proxy.js",
@@ -55,16 +56,18 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   };
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kResources),
+      source, kResources,
       IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_HTML);
 
   // Localized strings.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"profileCustomizationDoneLabel",
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
       {"profileCustomizationSkipLabel",
        IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL},
       {"profileCustomizationInputLabel", IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL},
+      {"profileCustomizationInputTitle", IDS_PROFILE_CUSTOMIZATION_INPUT_TITLE},
       {"profileCustomizationInputPlaceholder",
        IDS_PROFILE_CUSTOMIZATION_INPUT_PLACEHOLDER},
       {"profileCustomizationInputErrorMessage",
@@ -106,8 +109,13 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean("isLocalProfileCreation",
                      GetProfileCustomizationStyle(url) ==
                          ProfileCustomizationStyle::kLocalProfileCreation);
+  source->AddBoolean(
+      "shouldShowDefaultProfileName",
+      base::FeatureList::IsEnabled(
+          switches::
+              kProfileCreationFrictionReductionExperimentPrefillNameRequirement));
 
-  if (url.query() == "debug") {
+  if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
     Initialize(base::DoNothing());

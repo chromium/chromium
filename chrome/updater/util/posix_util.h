@@ -15,12 +15,10 @@ namespace updater {
 enum class UpdaterScope;
 
 // Recursively delete a folder and its contents, returning `true` on success.
-bool DeleteFolder(const std::optional<base::FilePath>& installed_path);
+bool DeleteFolder(std::optional<base::FilePath> installed_path);
 
 // Delete this updater's versioned install folder.
 bool DeleteCandidateInstallFolder(UpdaterScope scope);
-
-base::FilePath GetUpdaterFolderName();
 
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope);
 

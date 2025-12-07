@@ -5,26 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_STRIKE_DATABASE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_STRIKE_DATABASE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
+
+namespace strike_database {
+class StrikeDatabase;
+}  // namespace strike_database
 
 namespace autofill {
 
-class StrikeDatabase;
-
 // Singleton that owns all StrikeDatabases and associates them with
-// ChromeBrowserState.
-class StrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class StrikeDatabaseFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static StrikeDatabase* GetForBrowserState(ChromeBrowserState* browser_state);
+  static strike_database::StrikeDatabase* GetForProfile(ProfileIOS* profile);
   static StrikeDatabaseFactory* GetInstance();
-
-  StrikeDatabaseFactory(const StrikeDatabaseFactory&) = delete;
-  StrikeDatabaseFactory& operator=(const StrikeDatabaseFactory&) = delete;
 
  private:
   friend class base::NoDestructor<StrikeDatabaseFactory>;
@@ -32,9 +31,9 @@ class StrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
   StrikeDatabaseFactory();
   ~StrikeDatabaseFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace autofill

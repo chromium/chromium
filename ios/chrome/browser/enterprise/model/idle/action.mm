@@ -4,25 +4,26 @@
 
 #import "ios/chrome/browser/enterprise/model/idle/action.h"
 
+#import <algorithm>
 #import <cstring>
 #import <utility>
 #import <vector>
 
 #import "base/callback_list.h"
 #import "base/check_is_test.h"
-#import "base/memory/raw_ptr.h"
 #import "base/containers/flat_map.h"
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#import "base/ranges/algorithm.h"
 #import "base/scoped_observation.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -31,8 +32,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
 namespace enterprise_idle {
@@ -45,14 +45,12 @@ class CloseTabsAction : public Action {
   CloseTabsAction() : Action(static_cast<int>(ActionType::kCloseTabs)) {}
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state);
+  void Run(ProfileIOS* profile, Continuation continuation) override {
+    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
     for (Browser* browser :
          browser_list->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       CloseAllWebStates(*browser->GetWebStateList(),
-                        WebStateList::CLOSE_NO_FLAGS);
+                        WebStateList::ClosingReason::kDefault);
     }
 
     metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kCloseTabs,
@@ -66,19 +64,16 @@ class SignOutAction : public Action {
   SignOutAction() : Action(static_cast<int>(ActionType::kSignOut)) {}
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
-    AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state);
-    if (authentication_service->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+  void Run(ProfileIOS* profile, Continuation continuation) override {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       signout_start_time_ = base::TimeTicks::Now();
-      authentication_service->SignOut(
+      signin::MultiProfileSignOutForProfile(
+          profile,
           signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
-          /*force_clear_browsing_data=*/false,
-          base::CallbackToBlock(
-              base::BindOnce(&SignOutAction::OnSignOutCompleted,
-                             base::Unretained(this), std::move(continuation))));
+          base::BindOnce(&SignOutAction::OnSignOutCompleted,
+                         base::Unretained(this), std::move(continuation)));
       return;
     }
     // Run continuation right away if user is not signed in.
@@ -116,20 +111,19 @@ class ClearBrowsingDataAction : public Action,
   ~ClearBrowsingDataAction() override = default;
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
+  void Run(ProfileIOS* profile, Continuation continuation) override {
     continuation_ = std::move(continuation);
     mask_ = GetRemoveMask();
-    browser_list_ = BrowserListFactory::GetForBrowserState(browser_state);
+    browser_list_ = BrowserListFactory::GetForProfile(profile);
 
     if (IsRemoveDataMaskSet(mask_, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
       // If browsing History will be cleared set the kLastClearBrowsingDataTime.
       // TODO(crbug.com/40693626): This pref is used by the Feed to prevent the
       // showing of customized content after history has been cleared.
-      browser_state->GetPrefs()->SetInt64(
+      profile->GetPrefs()->SetInt64(
           browsing_data::prefs::kLastClearBrowsingDataTime,
           base::Time::Now().ToTimeT());
-      DiscoverFeedServiceFactory::GetForBrowserState(browser_state)
+      DiscoverFeedServiceFactory::GetForProfile(profile)
           ->BrowsingHistoryCleared();
     }
 
@@ -206,8 +200,9 @@ class ClearBrowsingDataAction : public Action,
 
     for (Browser* browser :
          browser_list_->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
-          enabled);
+      if (auto* agent = WebUsageEnablerBrowserAgent::FromBrowser(browser)) {
+        agent->SetWebUsageEnabled(enabled);
+      }
     }
   }
 
@@ -271,7 +266,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
         break;
       default:
         // Perform validation in the `PolicyHandler` if a new type is added.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

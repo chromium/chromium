@@ -23,13 +23,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -65,7 +61,7 @@ namespace blink {
 
 // static
 std::unique_ptr<SkImageGenerator>
-DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
+DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<const SkData> data) {
   // This image generator is used only by code in Skia, which in practice means
   // out of process printing deserialization (MSKP) and a few odds and ends.
   // Blink side code uses DecodingImageGenerator::Create directly instead.
@@ -91,8 +87,7 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
   if (!frame)
     return nullptr;
 
-  WebVector<FrameMetadata> frames;
-  frames.emplace_back(FrameMetadata());
+  std::vector<FrameMetadata> frames = {FrameMetadata()};
   cc::ImageHeaderMetadata image_metadata =
       decoder->MakeMetadataForDecodeAcceleration();
   image_metadata.all_data_received_prior_to_decode = true;
@@ -110,7 +105,7 @@ sk_sp<DecodingImageGenerator> DecodingImageGenerator::Create(
     scoped_refptr<ImageFrameGenerator> frame_generator,
     const SkImageInfo& info,
     scoped_refptr<SegmentReader> data,
-    WebVector<FrameMetadata> frames,
+    std::vector<FrameMetadata> frames,
     PaintImage::ContentId content_id,
     bool all_data_received,
     bool can_yuv_decode,
@@ -124,12 +119,12 @@ DecodingImageGenerator::DecodingImageGenerator(
     scoped_refptr<ImageFrameGenerator> frame_generator,
     const SkImageInfo& info,
     scoped_refptr<SegmentReader> data,
-    WebVector<FrameMetadata> frames,
+    std::vector<FrameMetadata> frames,
     PaintImage::ContentId complete_frame_content_id,
     bool all_data_received,
     bool can_yuv_decode,
     const cc::ImageHeaderMetadata& image_metadata)
-    : PaintImageGenerator(info, frames.ReleaseVector()),
+    : PaintImageGenerator(info, std::move(frames)),
       frame_generator_(std::move(frame_generator)),
       data_(std::move(data)),
       all_data_received_(all_data_received),
@@ -139,7 +134,7 @@ DecodingImageGenerator::DecodingImageGenerator(
 
 DecodingImageGenerator::~DecodingImageGenerator() = default;
 
-sk_sp<SkData> DecodingImageGenerator::GetEncodedData() const {
+sk_sp<const SkData> DecodingImageGenerator::GetEncodedData() const {
   TRACE_EVENT0("blink", "DecodingImageGenerator::refEncodedData");
 
   // getAsSkData() may require copying, but the clients of this function are
@@ -277,9 +272,9 @@ bool DecodingImageGenerator::GetYUVAPlanes(
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
 
-  SkISize plane_sizes[3];
-  wtf_size_t plane_row_bytes[3];
-  void* plane_addrs[3];
+  std::array<SkISize, 3> plane_sizes;
+  std::array<wtf_size_t, 3> plane_row_bytes;
+  std::array<void*, 3> plane_addrs;
 
   // Verify sizes and extract DecodeToYUV parameters
   for (int i = 0; i < 3; ++i) {

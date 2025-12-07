@@ -10,10 +10,12 @@ import android.util.SparseBooleanArray;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Tracks multi-instance mode of Chrome browser app.
@@ -22,13 +24,15 @@ import java.util.List;
  * browser tasks have {@link ChromeTabbedActivity} at the bottom of the stack and other activities
  * on top of it. Their state is tracked to keep the multi-instance state up to date.
  */
+@NullMarked
 public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListener {
-    private static MultiInstanceState sInstance;
+    private static @Nullable MultiInstanceState sInstance;
 
-    /** Observer used to notify multi-instance state change. **/
+    /** Observer used to notify multi-instance state change. */
     public interface MultiInstanceStateObserver {
         /**
          * Called whenever multi-instance state is flipped.
+         *
          * @param inMultiInstanceMode Whether multiple instances are visible on screen.
          */
         void onMultiInstanceStateChanged(boolean inMultiInstanceMode);
@@ -39,7 +43,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
         boolean is(String baseActivity);
     }
 
-    private final Supplier<List<AppTask>> mAppTaskSupplier;
+    @Nullable private Supplier<List<AppTask>> mAppTaskSupplier;
     private final BaseActivityName mBaseActivityName;
 
     // Task visibility observer list.
@@ -69,6 +73,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
     }
 
     private boolean isRelevantTaskId(int taskId) {
+        assert mAppTaskSupplier != null;
         for (AppTask task : mAppTaskSupplier.get()) {
             ActivityManager.RecentTaskInfo taskInfo = AndroidTaskUtils.getTaskInfoFromTask(task);
             if (taskInfo == null || taskInfo.baseActivity == null || taskInfo.id != taskId) {
@@ -120,13 +125,13 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
     }
 
     void clear() {
-        // TODO(jinsukkim): Do the cleanup when the last base activity is destroyed.
         ApplicationStatus.unregisterTaskVisibilityListener(this);
         mObservers.clear();
+        mAppTaskSupplier = null;
         sInstance = null;
     }
 
-    public static MultiInstanceState getInstanceForTesting() {
+    public static @Nullable MultiInstanceState getInstanceForTesting() {
         return sInstance;
     }
 }

@@ -4,17 +4,8 @@
 
 module tab_strip.mojom;
 
-import "url/mojom/url.mojom";
 import "chrome/browser/ui/webui/tabs/tabs.mojom";
-
-// Must be kept in sync with TabNetworkState from
-// chrome/browser/ui/tabs/tab_network_state.h
-enum TabNetworkState {
-  kNone,
-  kWaiting,
-  kLoading,
-  kError
-};
+import "url/mojom/url.mojom";
 
 // Information of an open tab.
 struct Tab {
@@ -50,7 +41,7 @@ struct Tab {
   bool is_default_favicon;
 
   // The network state of the tab.
-  TabNetworkState network_state;
+  tabs.mojom.TabNetworkState network_state;
 
   // Whether the tab is pinned.
   bool pinned;
@@ -83,8 +74,8 @@ struct TabGroupVisualData {
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> handler);
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -117,8 +108,11 @@ interface PageHandler {
   GetLayout() => (map<string, string> layout);
 
   // Show tab group edit dialog.
-  ShowEditDialogForGroup(string group_id, int32 location_x, int32 location_y,
-                         int32 width, int32 height);
+  ShowEditDialogForGroup(string group_id,
+                         int32 location_x,
+                         int32 location_y,
+                         int32 width,
+                         int32 height);
 
   // Show tab context menu.
   ShowTabContextMenu(int32 tab_id, int32 location_x, int32 location_y);

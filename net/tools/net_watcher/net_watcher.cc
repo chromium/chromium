@@ -19,6 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -26,7 +27,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -42,8 +42,6 @@
 
 namespace {
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX)
 // Flag to specifies which network interfaces to ignore. Interfaces should
 // follow as a comma seperated list.
@@ -78,11 +76,22 @@ const char* ConnectionTypeToString(
   }
 }
 
+const char* IPAddressChangeTypeToString(
+    net::NetworkChangeNotifier::IPAddressChangeType type) {
+  switch (type) {
+    case net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE:
+      return "IP_ADDRESS_CHANGE_NONE";
+    case net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL:
+      return "IP_ADDRESS_CHANGE_NORMAL";
+    case net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR:
+      return "IP_ADDRESS_CHANGE_IPV6_TEMPADDR";
+    default:
+      return "IP_ADDRESS_CHANGE_UNEXPECTED";
+  }
+}
+
 std::string ProxyConfigToString(const net::ProxyConfig& config) {
-  base::Value config_value = config.ToValue();
-  std::string str;
-  base::JSONWriter::Write(config_value, &str);
-  return str;
+  return base::WriteJson(config.ToValue()).value_or("");
 }
 
 const char* ConfigAvailabilityToString(
@@ -115,7 +124,12 @@ class NetWatcher :
   ~NetWatcher() override = default;
 
   // net::NetworkChangeNotifier::IPAddressObserver implementation.
-  void OnIPAddressChanged() override { LOG(INFO) << "OnIPAddressChanged()"; }
+  void OnIPAddressChanged(
+      net::NetworkChangeNotifier::IPAddressChangeType change_type =
+          net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override {
+    LOG(INFO) << "OnIPAddressChanged("
+              << IPAddressChangeTypeToString(change_type) << ")";
+  }
 
   // net::NetworkChangeNotifier::ConnectionTypeObserver implementation.
   void OnConnectionTypeChanged(

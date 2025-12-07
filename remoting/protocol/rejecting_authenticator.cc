@@ -12,8 +12,12 @@
 
 namespace remoting::protocol {
 
-RejectingAuthenticator::RejectingAuthenticator(RejectionReason rejection_reason)
-    : rejection_reason_(rejection_reason) {}
+RejectingAuthenticator::RejectingAuthenticator(
+    RejectionReason rejection_reason,
+    std::string_view rejection_message,
+    const base::Location& rejection_location)
+    : rejection_reason_(rejection_reason),
+      rejection_details_{std::string(rejection_message), rejection_location} {}
 
 RejectingAuthenticator::~RejectingAuthenticator() = default;
 
@@ -39,6 +43,12 @@ Authenticator::RejectionReason RejectingAuthenticator::rejection_reason()
   return rejection_reason_;
 }
 
+Authenticator::RejectionDetails RejectingAuthenticator::rejection_details()
+    const {
+  DCHECK_EQ(state_, REJECTED);
+  return rejection_details_;
+}
+
 void RejectingAuthenticator::ProcessMessage(
     const jingle_xmpp::XmlElement* message,
     base::OnceClosure resume_callback) {
@@ -49,19 +59,20 @@ void RejectingAuthenticator::ProcessMessage(
 
 std::unique_ptr<jingle_xmpp::XmlElement>
 RejectingAuthenticator::GetNextMessage() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const std::string& RejectingAuthenticator::GetAuthKey() const {
-  NOTREACHED_IN_MIGRATION();
-  return auth_key_;
+  NOTREACHED();
+}
+
+const SessionPolicies* RejectingAuthenticator::GetSessionPolicies() const {
+  NOTREACHED();
 }
 
 std::unique_ptr<ChannelAuthenticator>
 RejectingAuthenticator::CreateChannelAuthenticator() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace remoting::protocol

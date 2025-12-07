@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"
 #include "ui/gl/gl_export.h"
 
@@ -37,9 +37,6 @@ class GL_EXPORT ChildWindowWin {
 
  private:
   class ChildWindowThread;
-
-  // The window owner thread.
-  scoped_refptr<ChildWindowThread> thread_;
 
   HWND window_ = nullptr;
   // The window is initially created with this parent window. We need to keep it

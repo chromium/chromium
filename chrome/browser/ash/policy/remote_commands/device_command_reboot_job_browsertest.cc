@@ -4,10 +4,9 @@
 
 #include <type_traits>
 
-#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/test/managed_guest_session_test_helpers.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -17,16 +16,25 @@
 #include "chrome/browser/ash/policy/test_support/remote_commands_service_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
 
 namespace policy {
 
+using ash::kiosk::test::LaunchAppManually;
+using ash::kiosk::test::TheKioskApp;
+using ash::kiosk::test::WaitKioskLaunched;
+
 namespace {
+
 template <typename BaseBrowserTest>
 class DeviceCommandRebootBaseTest : public BaseBrowserTest {
   static_assert(
@@ -51,27 +59,40 @@ class DeviceCommandRebootBaseTest : public BaseBrowserTest {
   RemoteCommandsServiceMixin remote_commands_service_mixin_{
       this->mixin_host_, policy_test_server_};
 };
+
 }  // namespace
 
-class DeviceCommandRebootJobAutoLaunchKioskBrowserTest
-    : public DeviceCommandRebootBaseTest<ash::LoginManagerTest> {
- protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    DeviceCommandRebootBaseTest::SetUpInProcessBrowserTestFixture();
+class DeviceCommandRebootJobKioskBrowserTest
+    : public DeviceCommandRebootBaseTest<MixinBasedInProcessBrowserTest>,
+      public testing::WithParamInterface<ash::KioskMixin::Config> {
+ public:
+  DeviceCommandRebootJobKioskBrowserTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
 
-    // Set up kiosk auto-launch mode.
-    em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-    ash::KioskAppsMixin::AppendAutoLaunchKioskAccount(&proto);
-    policy_helper()->RefreshDevicePolicy();
+  void SetUpOnMainThread() override {
+    DeviceCommandRebootBaseTest<
+        MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
+    if (IsManualLaunch()) {
+      ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+    }
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
  private:
-  ash::DeviceStateMixin device_state_{
-      &mixin_host_,
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  bool IsManualLaunch() {
+    return !GetParam().auto_launch_account_id.has_value();
+  }
+
+  ash::KioskMixin kiosk_{&mixin_host_,
+                         /*cached_configuration=*/GetParam()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobAutoLaunchKioskBrowserTest,
+IN_PROC_BROWSER_TEST_P(DeviceCommandRebootJobKioskBrowserTest,
                        RebootsInstantly) {
   ASSERT_TRUE(ash::LoginState::Get()->IsKioskSession());
   ASSERT_EQ(
@@ -85,51 +106,28 @@ IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobAutoLaunchKioskBrowserTest,
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }
 
-class DeviceCommandRebootJobKioskBrowserTest
-    : public DeviceCommandRebootBaseTest<ash::KioskBaseTest> {
- private:
-  ash::DeviceStateMixin device_state_{
-      &mixin_host_,
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-};
-
-IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobKioskBrowserTest,
-                       RebootsInstantly) {
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchWithOptions(false /* check launch data */,
-                              false /* terminate app */,
-                              true /* keep app open */);
-
-  ASSERT_TRUE(ash::LoginState::Get()->IsKioskSession());
-  ASSERT_EQ(
-      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
-
-  em::RemoteCommandResult result = SendRemoteCommand(
-      RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
-
-  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
-  EXPECT_EQ(
-      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
-}
-
-class DeviceCommandRebootJobWebKioskBrowserTest
-    : public DeviceCommandRebootBaseTest<ash::WebKioskBaseTest> {};
-
-IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobWebKioskBrowserTest,
-                       RebootsInstantly) {
-  InitializeRegularOnlineKiosk();
-
-  ASSERT_TRUE(ash::LoginState::Get()->IsKioskSession());
-  ASSERT_EQ(
-      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
-
-  em::RemoteCommandResult result = SendRemoteCommand(
-      RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
-
-  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
-  EXPECT_EQ(
-      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceCommandRebootJobKioskBrowserTest,
+    // TODO(crbug.com/379633748): Add IWA.
+    ::testing::Values(
+        ash::KioskMixin::Config{
+            /*name=*/"WebAppAutoLaunch",
+            ash::KioskMixin::AutoLaunchAccount{
+                ash::KioskMixin::SimpleWebAppOption().account_id},
+            {ash::KioskMixin::SimpleWebAppOption()}},
+        ash::KioskMixin::Config{
+            /*name=*/"ChromeAppAutoLaunch",
+            ash::KioskMixin::AutoLaunchAccount{
+                ash::KioskMixin::SimpleChromeAppOption().account_id},
+            {ash::KioskMixin::SimpleChromeAppOption()}},
+        ash::KioskMixin::Config{/*name=*/"WebAppManualLaunch",
+                                /*auto_launch_account_id=*/{},
+                                {ash::KioskMixin::SimpleWebAppOption()}},
+        ash::KioskMixin::Config{/*name=*/"ChromeAppManualLaunch",
+                                /*auto_launch_account_id=*/{},
+                                {ash::KioskMixin::SimpleChromeAppOption()}}),
+    ash::KioskMixin::ConfigName);
 
 class DeviceCommandRebootJobAutoLaunchManagedGuestSessionBrowserTest
     : public DeviceCommandRebootBaseTest<ash::LoginManagerTest> {
@@ -139,7 +137,7 @@ class DeviceCommandRebootJobAutoLaunchManagedGuestSessionBrowserTest
 
     // Set up MGS auto-launch mode.
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-    ash::AppendAutoLaunchManagedGuestSessionAccount(&proto);
+    ash::test::AppendAutoLaunchManagedGuestSessionAccount(&proto);
 
     policy_helper()->RefreshDevicePolicy();
   }

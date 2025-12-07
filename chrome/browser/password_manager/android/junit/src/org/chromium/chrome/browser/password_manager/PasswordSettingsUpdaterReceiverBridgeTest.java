@@ -20,14 +20,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
-
-import java.util.Optional;
 
 /** Tests that settings updater callbacks invoke the right native callbacks. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -37,7 +35,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
 
     private static final long sFakeNativePointer = 7;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PasswordSettingsUpdaterReceiverBridge.Natives mReceiverBridgeJniMock;
     @Mock private PasswordSettingsUpdaterMetricsRecorder mMetricsRecorderMock;
 
@@ -45,18 +43,14 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(
-                PasswordSettingsUpdaterReceiverBridgeJni.TEST_HOOKS, mReceiverBridgeJniMock);
+        PasswordSettingsUpdaterReceiverBridgeJni.setInstanceForTesting(mReceiverBridgeJniMock);
         mReceiverBridge = new PasswordSettingsUpdaterReceiverBridge(sFakeNativePointer);
     }
 
     @Test
     public void testOnSettingValueFetchedCalled() {
         mReceiverBridge.onSettingValueFetched(
-                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                Optional.of(true),
-                mMetricsRecorderMock);
+                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS, true, mMetricsRecorderMock);
         verify(mReceiverBridgeJniMock)
                 .onSettingValueFetched(
                         sFakeNativePointer, PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS, true);
@@ -66,9 +60,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testOnSettingValueAbsentCalled() {
         mReceiverBridge.onSettingValueFetched(
-                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                Optional.empty(),
-                mMetricsRecorderMock);
+                PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS, null, mMetricsRecorderMock);
         verify(mReceiverBridgeJniMock)
                 .onSettingValueAbsent(
                         sFakeNativePointer, PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS);

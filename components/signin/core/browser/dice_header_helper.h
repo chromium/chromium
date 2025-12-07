@@ -26,7 +26,7 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   DiceHeaderHelper(const DiceHeaderHelper&) = delete;
   DiceHeaderHelper& operator=(const DiceHeaderHelper&) = delete;
 
-  ~DiceHeaderHelper() override {}
+  ~DiceHeaderHelper() override = default;
 
   // Returns the parameters contained in the X-Chrome-ID-Consistency-Response
   // response header.
@@ -44,7 +44,7 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   // account.
   // |show_signout_confirmation| is true if Gaia must display the signout
   // confirmation dialog.
-  std::string BuildRequestHeader(const std::string& sync_gaia_id,
+  std::string BuildRequestHeader(const GaiaId& sync_gaia_id,
                                  const std::string& device_id);
 
   // SigninHeaderHelper implementation:

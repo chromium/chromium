@@ -49,10 +49,7 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
   // testing::Test:
   void SetUp() override {
     for (auto& device : test_devices_) {
-      // Don't rely on a legacy device ID if not using v1 DeviceSync, even
-      // though we almost always expect one in practice.
-      if (!features::ShouldUseV1DeviceSync())
-        GetMutableRemoteDevice(device)->public_key.clear();
+      GetMutableRemoteDevice(device)->public_key.clear();
     }
 
     fake_host_backend_delegate_ = std::make_unique<FakeHostBackendDelegate>();
@@ -141,12 +138,8 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
   void VerifyEasyUnlockHostDisableRequest(
       int expected_queue_size,
       const std::optional<multidevice::RemoteDeviceRef>& expected_host) {
-    EXPECT_EQ(
-        expected_queue_size,
-        features::ShouldUseV1DeviceSync()
-            ? fake_device_sync_client_
-                  ->GetSetSoftwareFeatureStateInputsQueueSize()
-            : fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize());
+    EXPECT_EQ(expected_queue_size,
+              fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize());
     if (expected_queue_size > 0) {
       ASSERT_TRUE(expected_host);
       VerifyLatestEasyUnlockHostDisableRequest(*expected_host);
@@ -155,13 +148,8 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
 
   void InvokePendingEasyUnlockHostDisableRequestCallback(
       device_sync::mojom::NetworkRequestResult result_code) {
-    if (features::ShouldUseV1DeviceSync()) {
-      fake_device_sync_client_->InvokePendingSetSoftwareFeatureStateCallback(
-          result_code);
-    } else {
-      fake_device_sync_client_->InvokePendingSetFeatureStatusCallback(
-          result_code);
-    }
+    fake_device_sync_client_->InvokePendingSetFeatureStatusCallback(
+        result_code);
   }
 
   const multidevice::RemoteDeviceRefList& test_devices() const {
@@ -177,23 +165,6 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
  private:
   void VerifyLatestEasyUnlockHostDisableRequest(
       const multidevice::RemoteDeviceRef& expected_host) {
-    // Verify inputs to SetSoftwareFeatureState().
-    if (features::ShouldUseV1DeviceSync()) {
-      ASSERT_FALSE(
-          fake_device_sync_client_->set_software_feature_state_inputs_queue()
-              .empty());
-      const device_sync::FakeDeviceSyncClient::SetSoftwareFeatureStateInputs&
-          inputs = fake_device_sync_client_
-                       ->set_software_feature_state_inputs_queue()
-                       .back();
-      EXPECT_EQ(expected_host.public_key(), inputs.public_key);
-      EXPECT_EQ(multidevice::SoftwareFeature::kSmartLockHost,
-                inputs.software_feature);
-      EXPECT_FALSE(inputs.enabled);
-      EXPECT_FALSE(inputs.is_exclusive);
-      return;
-    }
-
     // Verify inputs to SetFeatureStatus().
     ASSERT_FALSE(
         fake_device_sync_client_->set_feature_status_inputs_queue().empty());

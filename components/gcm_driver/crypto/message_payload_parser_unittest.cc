@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
+#include <array>
+#include <string>
+
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +22,8 @@ constexpr size_t kSaltSize = 16;
 constexpr size_t kPublicKeySize = 65;
 constexpr size_t kCiphertextSize = 18;
 
-const uint8_t kValidMessage[] = {
+static constexpr auto kValidMessage = std::to_array<uint8_t>({
+    // clang-format off
     // salt (16 bytes, kSaltSize)
     0x59, 0xFD, 0x35, 0x97, 0x3B, 0xF3, 0x66, 0xA7, 0xEB, 0x8D, 0x44, 0x1E,
     0xCB, 0x4D, 0xFC, 0xD8,
@@ -39,48 +40,49 @@ const uint8_t kValidMessage[] = {
     0x4E, 0xB3, 0x89, 0x87, 0x64,
     // payload (18 bytes, kCiphertextSize)
     0x3F, 0xD8, 0x95, 0x2C, 0xA2, 0x11, 0xBD, 0x7B, 0x57, 0xB2, 0x00, 0xBD,
-    0x57, 0x68, 0x3F, 0xF0, 0x14, 0x57};
+    0x57, 0x68, 0x3F, 0xF0, 0x14, 0x57,}  // clang-format on
+);
 
 static_assert(std::size(kValidMessage) == 104,
               "The smallest valid message is 104 bytes in size.");
 
 // Creates an std::string for the |kValidMessage| constant.
 std::string CreateMessageString() {
-  return std::string(reinterpret_cast<const char*>(kValidMessage),
-                     std::size(kValidMessage));
+  return std::string(base::as_string_view(kValidMessage));
 }
 
 TEST(MessagePayloadParserTest, ValidMessage) {
-  MessagePayloadParser parser(CreateMessageString());
+  MessagePayloadParser parser(base::as_string_view(kValidMessage));
   ASSERT_TRUE(parser.IsValid());
 
-  const uint8_t* salt = kValidMessage;
+  base::span<const uint8_t> salt = base::span(kValidMessage).first(kSaltSize);
 
   ASSERT_EQ(parser.salt().size(), kSaltSize);
-  EXPECT_EQ(parser.salt(), std::string(salt, salt + kSaltSize));
+  EXPECT_EQ(base::as_byte_span(parser.salt()), salt);
 
   ASSERT_EQ(parser.record_size(), 18u);
 
-  const uint8_t* public_key =
-      kValidMessage + kSaltSize + sizeof(uint32_t) + sizeof(uint8_t);
+  base::span<const uint8_t> public_key =
+      base::span(kValidMessage)
+          .subspan(kSaltSize + sizeof(uint32_t) + sizeof(uint8_t),
+                   kPublicKeySize);
 
   ASSERT_EQ(parser.public_key().size(), kPublicKeySize);
-  EXPECT_EQ(parser.public_key(),
-            std::string(public_key, public_key + kPublicKeySize));
+  EXPECT_EQ(base::as_byte_span(parser.public_key()), public_key);
 
-  const uint8_t* ciphertext = kValidMessage + kSaltSize + sizeof(uint32_t) +
-                              sizeof(uint8_t) + kPublicKeySize;
+  base::span<const uint8_t> ciphertext =
+      base::span(kValidMessage)
+          .subspan(
+              kSaltSize + sizeof(uint32_t) + sizeof(uint8_t) + kPublicKeySize,
+              kCiphertextSize);
 
   ASSERT_EQ(parser.ciphertext().size(), kCiphertextSize);
-  EXPECT_EQ(parser.ciphertext(),
-            std::string(ciphertext, ciphertext + kCiphertextSize));
+  EXPECT_EQ(base::as_byte_span(parser.ciphertext()), ciphertext);
 }
 
 TEST(MessagePayloadParserTest, MinimumMessageSize) {
-  std::string message = CreateMessageString();
-  message.resize(std::size(kValidMessage) / 2);
-
-  MessagePayloadParser parser(message);
+  MessagePayloadParser parser(
+      base::as_string_view(kValidMessage).substr(0u, kValidMessage.size() / 2));
   EXPECT_FALSE(parser.IsValid());
   EXPECT_EQ(parser.GetFailureReason(),
             GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH);

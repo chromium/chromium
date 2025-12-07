@@ -8,24 +8,28 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/test/mock_sync_error_infobar_delegate.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
-#import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 namespace {
@@ -38,14 +42,14 @@ const std::u16string kButtonLabelText = u"button_label_text";
 class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
   SyncErrorInfobarBannerOverlayMediatorTest() {
-    TestChromeBrowserState::Builder builder;
-    chrome_browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.
-    id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenter));
     std::unique_ptr<MockSyncErrorInfoBarDelegate> delegate =
         std::make_unique<MockSyncErrorInfoBarDelegate>(
-            chrome_browser_state_.get(), presenter, kTitleText, kMessageText,
+            profile_.get(), presenter_, kTitleText, kMessageText,
             kButtonLabelText,
             /*use_icon_background_tint=*/true);
     // Create an InfoBarIOS with a MockSyncErrorInfoBarDelegate.
@@ -63,6 +67,8 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
   ~SyncErrorInfobarBannerOverlayMediatorTest() override {
+    EXPECT_OCMOCK_VERIFY((id)presenter_);
+    EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
     // Force the mediator to be deallocated before the
     // request is destroyed to avoid undefined behaviour.
     @autoreleasepool {
@@ -71,9 +77,11 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<MockSyncErrorInfoBarDelegate> delegate_ = nil;
+  id<SyncPresenter> presenter_;
+  raw_ptr<MockSyncErrorInfoBarDelegate, DanglingUntriaged> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
   SyncErrorInfobarBannerOverlayMediator* mediator_;
@@ -82,7 +90,9 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
 // Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
 // consumer with correct messages.
-TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessages) {
+// TODO(crbug.com/422441504): re-enable.
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
+       DISABLED_SetUpConsumerWithMessages) {
   mediator_.consumer = consumer_mock_;
   // Verify that the infobar's text fields was set up properly.
   OCMExpect([consumer_mock_ setTitleText:base::SysUTF16ToNSString(kTitleText)]);
@@ -94,8 +104,9 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessages) {
 
 // Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
 // consumer's icon using SF symbol.
+// TODO(crbug.com/422441504): re-enable.
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
-       SetUpConsumerWithIconSettingsUseSFSymbol) {
+       DISABLED_SetUpConsumerWithIconSettingsUseSFSymbol) {
   mediator_.consumer = consumer_mock_;
   // Verify that the infobar's icon was set up properly.
   OCMExpect([consumer_mock_
@@ -123,4 +134,16 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
   infobar_ = nullptr;
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
+}
+
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
+       BannerDismissAfterTimeoutSetsInfobarTimeoutPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(switches::kEnableIdentityInAuthError);
+  base::Time startTime = base::Time::Now();
+
+  [mediator_ dismissInfobarBannerForUserInteraction:false];
+  EXPECT_GT(profile_->GetPrefs()->GetTime(
+                prefs::kIosSyncInfobarErrorLastDismissedTimestamp),
+            startTime);
 }

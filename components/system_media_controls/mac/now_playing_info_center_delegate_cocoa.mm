@@ -80,8 +80,16 @@
 }
 
 - (void)clearMetadata {
+  // Reset our internal dictionary to have default values.
   [self initializeNowPlayingInfoValues];
-  [self updateNowPlayingInfo];
+
+  // In some cases, setting defaultCenter to a dictionary of default values
+  // causes the menu bar's media icon to persist with completely blank metadata
+  // after a track ends, or on navigation away from the page that was playing
+  // media. See crbug.com/359628047 for more information.
+  // To avoid this, set defaultCenter to nil as recommended here:
+  // https://developer.apple.com/documentation/mediaplayer/mpnowplayinginfocenter/1615903-nowplayinginfo
+  [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
 }
 
 - (void)initializeNowPlayingInfoValues {

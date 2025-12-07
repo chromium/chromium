@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+
 
 #include "chrome/common/importer/firefox_importer_utils.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -30,7 +29,8 @@ struct GetPrefsJsValueCase {
   std::string prefs_content;
   std::string pref_name;
   std::string pref_value;
-} GetPrefsJsValueCases[] = {
+};
+auto GetPrefsJsValueCases = std::to_array<GetPrefsJsValueCase>({
     // Basic case. Single pref, unquoted value.
     {"user_pref(\"foo.bar\", 1);", "foo.bar", "1"},
     // Value is quoted. Quotes should be stripped.
@@ -50,12 +50,13 @@ struct GetPrefsJsValueCase {
      "foo.baz", std::string()},
     // Malformed content.
     {"uesr_pref(\"foo.bar\", 1);", "foo.bar", std::string()},
-};
+});
 
 struct GetFirefoxImporterNameCase {
   std::string app_ini_content;
   int resource_id;
-} GetFirefoxImporterNameCases[] = {
+};
+auto GetFirefoxImporterNameCases = std::to_array<GetFirefoxImporterNameCase>({
     // Basic case
     {"[App]\n"
      "Vendor=Mozilla\n"
@@ -100,7 +101,8 @@ struct GetFirefoxImporterNameCase {
      "Version=10.0.6\n",
      IDS_IMPORT_FROM_ICEWEASEL},
     // Empty file
-    {std::string(), IDS_IMPORT_FROM_FIREFOX}};
+    {std::string(), IDS_IMPORT_FROM_FIREFOX},
+});
 
 }  // anonymous namespace
 

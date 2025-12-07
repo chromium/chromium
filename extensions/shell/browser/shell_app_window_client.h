@@ -23,10 +23,6 @@ class ShellAppWindowClient : public AppWindowClient {
   // AppWindowClient overrides:
   AppWindow* CreateAppWindow(content::BrowserContext* context,
                              const Extension* extension) override;
-  AppWindow* CreateAppWindowForLockScreenAction(
-      content::BrowserContext* context,
-      const Extension* extension,
-      api::app_runtime::ActionType action) override;
   // Note that CreateNativeAppWindow is defined in separate (per-framework)
   // implementation files.
   std::unique_ptr<NativeAppWindow> CreateNativeAppWindow(

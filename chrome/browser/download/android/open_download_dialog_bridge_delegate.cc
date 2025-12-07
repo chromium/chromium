@@ -4,12 +4,12 @@
 
 #include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/android/path_utils.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
@@ -20,7 +20,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 OpenDownloadDialogBridgeDelegate::OpenDownloadDialogBridgeDelegate()
     : open_download_dialog_bridge_(
@@ -65,7 +65,7 @@ void OpenDownloadDialogBridgeDelegate::OnConfirmed(
 
 void OpenDownloadDialogBridgeDelegate::OnDownloadDestroyed(
     download::DownloadItem* download_item) {
-  auto iter = base::ranges::find(download_items_, download_item);
+  auto iter = std::ranges::find(download_items_, download_item);
   if (iter != download_items_.end()) {
     download_items_.erase(iter);
   }

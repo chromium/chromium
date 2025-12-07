@@ -32,6 +32,7 @@ declare_args() {
 # See http://gcc.gnu.org/wiki/Visibility
 config("symbol_visibility_hidden") {
   cflags = [ "-fvisibility=hidden" ]
+  rustflags = [ "-Zdefault-visibility=hidden" ]
 
   # Visibility attribute is not supported on AIX.
   if (current_os != "aix") {

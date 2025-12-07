@@ -33,7 +33,6 @@ class WebStateListMetricsBrowserAgent
 
  private:
   friend class BrowserUserData<WebStateListMetricsBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   WebStateListMetricsBrowserAgent(Browser* browser,
                                   SessionMetrics* session_metrics);

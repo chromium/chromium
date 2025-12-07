@@ -16,6 +16,8 @@ proto_library("proto") {
     "action.proto",
     "audio.proto",
     "control.proto",
+    "coordinates.proto",
+    "do_nothing.proto",
     "empty.proto",
     "event.proto",
     "file_transfer.proto",
@@ -34,17 +36,30 @@ proto_library("proto") {
 source_set("internal_structs") {
   public = [
     "logging_service.h",
+    "messaging_service.h",
+    "remote_support_service.h",
     "session_authz_service.h",
   ]
   sources = [
+    "logging_service.cc",
     "logging_service.h",
+    "messaging_service.cc",
+    "messaging_service.h",
+    "remote_support_service.cc",
+    "remote_support_service.h",
+    "service_common.h",
     "session_authz_service.cc",
     "session_authz_service.h",
   ]
   deps = [
     "//base",
     "//remoting/base:errors",
+    "//remoting/base:session_policies",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("internal_stubs") {
@@ -57,9 +72,13 @@ source_set("internal_stubs") {
 
   deps = [
     ":internal_structs",
+    ":proto",
     "//base",
-    "//third_party/protobuf:protobuf_lite",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("error_code_proto") {

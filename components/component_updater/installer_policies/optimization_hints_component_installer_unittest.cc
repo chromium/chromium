@@ -14,9 +14,9 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -33,8 +33,6 @@ class OptimizationHintsMockComponentUpdateService
       const OptimizationHintsMockComponentUpdateService&) = delete;
   OptimizationHintsMockComponentUpdateService& operator=(
       const OptimizationHintsMockComponentUpdateService&) = delete;
-
-  ~OptimizationHintsMockComponentUpdateService() override = default;
 };
 
 }  // namespace
@@ -42,16 +40,7 @@ class OptimizationHintsMockComponentUpdateService
 namespace component_updater {
 
 class OptimizationHintsComponentInstallerTest : public PlatformTest {
- public:
-  OptimizationHintsComponentInstallerTest() = default;
-
-  OptimizationHintsComponentInstallerTest(
-      const OptimizationHintsComponentInstallerTest&) = delete;
-  OptimizationHintsComponentInstallerTest& operator=(
-      const OptimizationHintsComponentInstallerTest&) = delete;
-
-  ~OptimizationHintsComponentInstallerTest() override = default;
-
+ protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -79,7 +68,6 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
     base::RunLoop().RunUntilIdle();
   }
 
- protected:
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
@@ -113,7 +101,7 @@ TEST_F(OptimizationHintsComponentInstallerTest,
   std::unique_ptr<OptimizationHintsMockComponentUpdateService> cus(
       new OptimizationHintsMockComponentUpdateService());
   EXPECT_CALL(*cus, RegisterComponent(testing::_))
-      .Times(1)
+
       .WillOnce(testing::Return(true));
   RegisterOptimizationHintsComponent(cus.get());
   RunUntilIdle();

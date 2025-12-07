@@ -71,7 +71,7 @@ def _DoWriteJavaOutput(output_path, constant_definition):
   folder = os.path.dirname(output_path)
   if folder and not os.path.exists(folder):
     os.makedirs(folder)
-  with open(output_path, 'w') as out_file:
+  with open(output_path, 'w', encoding='utf-8') as out_file:
     out_file.write(GenerateOutput(constant_definition))
 
 

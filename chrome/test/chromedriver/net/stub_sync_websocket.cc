@@ -57,7 +57,8 @@ bool ParseMessage(const std::string& message,
                   std::string* method,
                   base::Value::Dict* params,
                   std::string* session_id) {
-  std::optional<base::Value> value = base::JSONReader::Read(message);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(value);
   EXPECT_TRUE(value && value->is_dict());
   if (!value || !value->is_dict()) {
@@ -113,9 +114,8 @@ bool StubSyncWebSocket::Send(const std::string& message) {
         !it->second.Run(cmd_id, params, response)) {
       GenerateDefaultResponse(cmd_id, response);
     }
-    std::string serialized_response;
-    base::JSONWriter::Write(base::Value(std::move(response)),
-                            &serialized_response);
+    std::string serialized_response =
+        base::WriteJson(base::Value(std::move(response))).value_or("");
     if (response_limit_ > 0) {
       --response_limit_;
       queued_response_.push(std::move(serialized_response));
@@ -188,6 +188,13 @@ void StubSyncWebSocket::EnqueueHandshakeResponse(int cmd_id,
     } else {
       return;
     }
+  } else if (method == "Target.setAutoAttach") {
+    EXPECT_FALSE(handshake_target_set_autoattach_handled_);
+    if (!handshake_target_set_autoattach_handled_) {
+      handshake_target_set_autoattach_handled_ = true;
+    } else {
+      return;
+    }
   } else {
     // Unexpected handshake command
     VLOG(0) << "unexpected handshake method: " << method;
@@ -195,15 +202,16 @@ void StubSyncWebSocket::EnqueueHandshakeResponse(int cmd_id,
   }
 
   connect_complete_ =
-      handshake_add_script_handled_ && handshake_runtime_eval_handled_;
+      handshake_target_set_autoattach_handled_ ||
+      (handshake_add_script_handled_ && handshake_runtime_eval_handled_);
 
   base::Value::Dict response;
   response.Set("id", cmd_id);
   base::Value::Dict result;
   result.Set("param", 1);
   response.Set("result", std::move(result));
-  std::string message;
-  base::JSONWriter::Write(base::Value(std::move(response)), &message);
+  std::string message =
+      base::WriteJson(base::Value(std::move(response))).value_or("");
   if (response_limit_ > 0) {
     --response_limit_;
     queued_response_.push(std::move(message));

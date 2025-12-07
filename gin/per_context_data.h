@@ -13,7 +13,6 @@
 namespace gin {
 
 class ContextHolder;
-class Runner;
 
 // There is one instance of PerContextData per v8::Context managed by Gin. This
 // class stores all the Gin-related data that varies per context. Arbitrary data
@@ -31,16 +30,10 @@ class GIN_EXPORT PerContextData : public base::SupportsUserData {
   // Can return NULL after the ContextHolder has detached from context.
   static PerContextData* From(v8::Local<v8::Context> context);
 
-  // The Runner associated with this context. To execute script in this context,
-  // please use the appropriate API on Runner.
-  Runner* runner() const { return runner_; }
-  void set_runner(Runner* runner) { runner_ = runner; }
-
   ContextHolder* context_holder() { return context_holder_; }
 
  private:
   raw_ptr<ContextHolder, DanglingUntriaged> context_holder_;
-  raw_ptr<Runner> runner_;
 };
 
 }  // namespace gin

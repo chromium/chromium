@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.os.Build;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.text.TextUtils;
@@ -18,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.strictmode.StrictModePolicyViolation;
 import org.chromium.components.strictmode.Violation;
@@ -30,22 +30,23 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Initialize application-level StrictMode reporting. */
+@NullMarked
 public class ChromeStrictMode {
     private static final String TAG = "ChromeStrictMode";
     private static final double UPLOAD_PROBABILITY = 0.01;
     private static final double MAX_UPLOADS_PER_SESSION = 3;
 
     private static boolean sIsStrictModeAlreadyConfigured;
-    private static List<Violation> sCachedViolations =
+    private static final List<Violation> sCachedViolations =
             Collections.synchronizedList(new ArrayList<>());
-    private static AtomicInteger sNumUploads = new AtomicInteger();
+    private static final AtomicInteger sNumUploads = new AtomicInteger();
 
     /**
      * Always process the violation on the UI thread. This ensures other crash reports are not
      * corrupted. Since each individual user has a very small chance of uploading each violation,
      * and we have a hard cap of 3 per session, this will not affect performance too much.
      *
-     * @param violationInfo The violation info from the StrictMode violation in question.
+     * @param violation The violation info from the StrictMode violation in question.
      */
     @UiThread
     private static void reportStrictModeViolation(Violation violation) {
@@ -96,14 +97,8 @@ public class ChromeStrictMode {
                 .detectLeakedRegistrationObjects()
                 .detectLeakedSqlLiteObjects();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Introduced in O.
-            vmPolicy.detectContentUriWithoutPermission();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Introduced in Q.
-            vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
-        }
+        vmPolicy.detectContentUriWithoutPermission();
+        vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
 
         // File URI leak detection, has false positives when file URI intents are passed between
         // Chrome activities in separate processes. See http://crbug.com/508282#c11.

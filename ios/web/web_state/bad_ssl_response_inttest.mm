@@ -11,8 +11,6 @@
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/security/security_style.h"
 #import "ios/web/public/security/ssl_status.h"
-#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"

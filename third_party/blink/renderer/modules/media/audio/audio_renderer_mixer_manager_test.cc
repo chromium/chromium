@@ -22,6 +22,9 @@
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
+using testing::_;
+using testing::Return;
+
 namespace blink {
 
 namespace {
@@ -49,7 +52,7 @@ using media::AudioParameters;
 class AudioRendererMixerManagerTest : public testing::Test {
  public:
   AudioRendererMixerManagerTest()
-      : manager_(new AudioRendererMixerManager(
+      : manager_(std::make_unique<AudioRendererMixerManager>(
             base::BindRepeating(&AudioRendererMixerManagerTest::GetPlainSink,
                                 base::Unretained(this)))) {}
 
@@ -89,14 +92,14 @@ class AudioRendererMixerManagerTest : public testing::Test {
                                const std::string& device_id,
                                SinkUseState sink_state) {
     auto sink = GetSink(
-        source_frame_token,
+        source_frame_token, main_frame_token,
         media::AudioSinkParameters(base::UnguessableToken(), device_id));
     auto device_info = sink->GetOutputDeviceInfo();
     if (sink_state == SinkUseState::kNewSink) {
       EXPECT_CALL(*sink, Start()).Times(1);
     }
-    return manager_->GetMixer(main_frame_token, params, latency, device_info,
-                              std::move(sink));
+    return manager_->GetMixer(source_frame_token, main_frame_token, params,
+                              latency, device_info, std::move(sink));
   }
 
   void ReturnMixer(AudioRendererMixer* mixer) {
@@ -124,9 +127,20 @@ class AudioRendererMixerManagerTest : public testing::Test {
   size_t mixer_count() { return manager_->mixers_.size(); }
   size_t dead_mixer_count() { return manager_->dead_mixers_.size(); }
 
+  void InitializeManagerWithMockSink() {
+    manager_ = std::make_unique<AudioRendererMixerManager>(base::BindRepeating(
+        &AudioRendererMixerManagerTest::GetMockSink, base::Unretained(this)));
+  }
+
+  MOCK_METHOD2(GetMockSink,
+               scoped_refptr<media::AudioRendererSink>(
+                   const LocalFrameToken& source_frame_token,
+                   const media::AudioSinkParameters& params));
+
  protected:
   scoped_refptr<media::MockAudioRendererSink> GetSink(
       const LocalFrameToken& source_frame_token,
+      const FrameToken& main_frame_token,
       const media::AudioSinkParameters& params) {
     if ((params.device_id == kDefaultDeviceId) ||
         (params.device_id == kAnotherDeviceId)) {
@@ -147,8 +161,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
       return CreateMatchedDeviceSink();
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   test::TaskEnvironment task_environment_;
@@ -159,9 +172,27 @@ class AudioRendererMixerManagerTest : public testing::Test {
   scoped_refptr<media::AudioRendererSink> GetPlainSink(
       const LocalFrameToken& source_frame_token,
       const media::AudioSinkParameters& params) {
-    return GetSink(source_frame_token, params);
+    return GetSink(source_frame_token, kFrameToken, params);
   }
 };
+
+TEST_F(AudioRendererMixerManagerTest, GetSink) {
+  InitializeManagerWithMockSink();
+
+  // Sinks created for the default device id should use the main frame token if
+  // possible. Below we check that the expected local frame token is passed in.
+  testing::InSequence in_sequence;
+  EXPECT_CALL(*this, GetMockSink(kFrameToken.GetAs<LocalFrameToken>(), _))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(*this, GetMockSink(kLocalFrameToken, _))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(*this, GetMockSink(kLocalFrameToken, _))
+      .WillOnce(Return(nullptr));
+
+  manager_->GetSink(kLocalFrameToken, kFrameToken, kDefaultDeviceId);
+  manager_->GetSink(kLocalFrameToken, RemoteFrameToken(), kDefaultDeviceId);
+  manager_->GetSink(kLocalFrameToken, kFrameToken, kAnotherDeviceId);
+}
 
 // Verify GetMixer() and ReturnMixer() both work as expected; particularly with
 // respect to the explicit ref counting done.
@@ -364,6 +395,27 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
   EXPECT_EQ(0u, mixer_count());
   ASSERT_EQ(mock_sink_, nullptr);  // Sink is consumed by CreateInputHelper.
 
+  // Create another sink but for a non-default device, it should not be shared.
+  media::FakeAudioRenderCallback another_callback3(1, kSampleRate);
+  mock_sink_ = CreateNormalSink(kAnotherDeviceId);
+  EXPECT_CALL(*mock_sink_, Start()).Times(1);
+  auto another_input3 = CreateInputHelper(
+      kLocalFrameToken, kFrameToken, base::UnguessableToken(), kAnotherDeviceId,
+      AudioLatency::Type::kPlayback, params, &another_callback2);
+  EXPECT_EQ(0u, mixer_count());
+  ASSERT_EQ(mock_sink_, nullptr);  // Sink is consumed by CreateInputHelper.
+
+  // Create another sink for a non-default device, but in a different frame.
+  media::FakeAudioRenderCallback another_callback4(1, kSampleRate);
+  mock_sink_ = CreateNormalSink(kAnotherDeviceId);
+  EXPECT_CALL(*mock_sink_, Start()).Times(1);
+  auto another_input4 = CreateInputHelper(
+      LocalFrameToken(), kFrameToken, base::UnguessableToken(),
+      kAnotherDeviceId, AudioLatency::Type::kPlayback, params,
+      &another_callback2);
+  EXPECT_EQ(0u, mixer_count());
+  ASSERT_EQ(mock_sink_, nullptr);  // Sink is consumed by CreateInputHelper.
+
   // Implicitly test that AudioRendererMixerInput was provided with the expected
   // callbacks needed to acquire an AudioRendererMixer and return it.
   input->Start();
@@ -372,16 +424,24 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
   EXPECT_EQ(1u, mixer_count());
   another_input2->Start();
   EXPECT_EQ(2u, mixer_count());
+  another_input3->Start();
+  EXPECT_EQ(3u, mixer_count());
+  another_input4->Start();
+  EXPECT_EQ(4u, mixer_count());
 
   // Destroying the inputs should destroy the mixers.
   input->Stop();
   input = nullptr;
-  EXPECT_EQ(2u, mixer_count());
+  EXPECT_EQ(4u, mixer_count());
   another_input->Stop();
   another_input = nullptr;
-  EXPECT_EQ(1u, mixer_count());
+  EXPECT_EQ(3u, mixer_count());
   another_input2->Stop();
   another_input2 = nullptr;
+  EXPECT_EQ(2u, mixer_count());
+  another_input3->Stop();
+  EXPECT_EQ(1u, mixer_count());
+  another_input4->Stop();
   EXPECT_EQ(0u, mixer_count());
 }
 
@@ -521,7 +581,7 @@ TEST_F(AudioRendererMixerManagerTest, NonexistentDevice) {
       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(), kSampleRate,
       kBufferSize);
 
-  auto sink = GetSink(kLocalFrameToken,
+  auto sink = GetSink(kLocalFrameToken, kFrameToken,
                       media::AudioSinkParameters(base::UnguessableToken(),
                                                  kNonexistentDeviceId));
   auto device_info = sink->GetOutputDeviceInfo();
@@ -566,29 +626,13 @@ TEST_F(AudioRendererMixerManagerTest, LatencyMixing) {
   EXPECT_EQ(mixer3, mixer4);
   EXPECT_EQ(2u, mixer_count());  // Same latency => same mixer.
 
-  AudioRendererMixer* mixer5 = GetMixer(
-      kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kInteractive,
-      kDefaultDeviceId, SinkUseState::kNewSink);
-  ASSERT_TRUE(mixer5);
-  EXPECT_EQ(3u, mixer_count());  // Another latency => another mixer.
-
-  AudioRendererMixer* mixer6 = GetMixer(
-      kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kInteractive,
-      kDefaultDeviceId, SinkUseState::kExistingSink);
-  EXPECT_EQ(mixer5, mixer6);
-  EXPECT_EQ(3u, mixer_count());  // Same latency => same mixer.
-
   ReturnMixer(mixer1);
-  EXPECT_EQ(3u, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(2u, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer3);
-  EXPECT_EQ(2u, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer4);
-  EXPECT_EQ(1u, mixer_count());
-  ReturnMixer(mixer5);
-  EXPECT_EQ(1u, mixer_count());
-  ReturnMixer(mixer6);
   EXPECT_EQ(0u, mixer_count());
 }
 
@@ -710,7 +754,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlayback) {
 // latency when the device buffer size exceeds 20 ms.
 TEST_F(AudioRendererMixerManagerTest,
        MixerParamsLatencyPlaybackLargeDeviceBufferSize) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
@@ -750,7 +794,7 @@ TEST_F(AudioRendererMixerManagerTest,
 // Verify output bufer size of the mixer is correctly adjusted for Playback
 // latency when output audio is fake.
 TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlaybackFakeAudio) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_FAKE,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
@@ -832,7 +876,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtc) {
 // Verify output bufer size of the mixer is correctly adjusted for RTC latency
 // when output audio is fake.
 TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtcFakeAudio) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_FAKE,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
@@ -857,46 +901,10 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtcFakeAudio) {
   ReturnMixer(mixer);
 }
 
-// Verify output bufer size of the mixer is correctly adjusted for Interactive
-// latency.
-TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyInteractive) {
-  mock_sink_ = CreateNormalSink();
-
-  // Expecting hardware buffer size of 128 frames
-  EXPECT_EQ(44100,
-            mock_sink_->GetOutputDeviceInfo().output_params().sample_rate());
-  // Expecting hardware buffer size of 128 frames
-  EXPECT_EQ(
-      128,
-      mock_sink_->GetOutputDeviceInfo().output_params().frames_per_buffer());
-
-  media::AudioParameters params(
-      AudioParameters::AUDIO_PCM_LINEAR,
-      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(), 32000, 512);
-  params.set_latency_tag(AudioLatency::Type::kInteractive);
-
-  AudioRendererMixer* mixer =
-      GetMixer(kLocalFrameToken, kFrameToken, params, params.latency_tag(),
-               kDefaultDeviceId, SinkUseState::kNewSink);
-
-  if (AudioLatency::IsResamplingPassthroughSupported(params.latency_tag())) {
-    // Expecting input sample rate.
-    EXPECT_EQ(32000, mixer->get_output_params_for_testing().sample_rate());
-  } else {
-    // Expecting hardware sample rate.
-    EXPECT_EQ(44100, mixer->get_output_params_for_testing().sample_rate());
-  }
-
-  // Expect hardware buffer size.
-  EXPECT_EQ(128, mixer->get_output_params_for_testing().frames_per_buffer());
-
-  ReturnMixer(mixer);
-}
-
 // Verify output parameters are the same as input properties for bitstream
 // formats.
 TEST_F(AudioRendererMixerManagerTest, MixerParamsBitstreamFormat) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),

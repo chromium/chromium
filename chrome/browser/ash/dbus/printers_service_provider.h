@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_PRINTERS_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_PRINTERS_SERVICE_PROVIDER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_proxy.h"
@@ -16,7 +16,7 @@ namespace ash {
 
 // Provides a DBus service which emits a signal to indicate that the available
 // printers has changed.  Clients are intended to listen for the signal then
-// make a request for more printers through a side channel e.g. cups_proxy.
+// make a request for more printers through a side channel.
 class PrintersServiceProvider
     : public CrosDBusService::ServiceProviderInterface,
       public CupsPrintersManager::Observer {

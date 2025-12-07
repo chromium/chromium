@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace content {
 class BrowserContext;
 }
@@ -49,7 +53,7 @@ class ExtensionErrorUI {
   // synchronously.
   virtual void Close() = 0;
 
-  virtual ~ExtensionErrorUI() {}
+  virtual ~ExtensionErrorUI() = default;
 };
 
 }  // namespace extensions

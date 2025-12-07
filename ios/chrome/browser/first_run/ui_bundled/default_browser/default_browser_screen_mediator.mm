@@ -4,132 +4,76 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_mediator.h"
 
-#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
-#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "components/segmentation_platform/public/constants.h"
-#import "components/segmentation_platform/public/result.h"
-#import "components/segmentation_platform/public/segmentation_platform_service.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_consumer.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation DefaultBrowserScreenMediator {
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
-      _segmentationService;
-  raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
-      _deviceSwitcherResultDispatcher;
-  segmentation_platform::DefaultBrowserUserSegment _userSegment;
+  // True if the sign-in screen will be the first screen in the FRE sequence.
+  BOOL _firstScreenInFRESequence;
+  // Local state pref service.
+  raw_ptr<PrefService> _localState;
 }
 
 #pragma mark - Public
 
-- (instancetype)initWithSegmentationService:
-                    (segmentation_platform::SegmentationPlatformService*)
-                        segmentationService
-             deviceSwitcherResultDispatcher:
-                 (segmentation_platform::DeviceSwitcherResultDispatcher*)
-                     dispatcher {
-  if (self = [super init]) {
-    CHECK(segmentationService);
-    CHECK(dispatcher);
-    _segmentationService = segmentationService;
-    _deviceSwitcherResultDispatcher = dispatcher;
-    [self retrieveUserSegment];
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
+    _localState = GetApplicationContext()->GetLocalState();
+    _firstScreenInFRESequence = !_localState->GetBoolean(prefs::kEulaAccepted);
   }
   return self;
 }
 
 - (void)disconnect {
-  _segmentationService = nullptr;
-  _deviceSwitcherResultDispatcher = nullptr;
+  _localState = nullptr;
 }
 
 - (void)setConsumer:(id<DefaultBrowserScreenConsumer>)consumer {
   _consumer = consumer;
   if (_consumer) {
-    [self updatePromoTitleForConsumer];
-    [self updatePromoSubtitleForConsumer];
+    if (_firstScreenInFRESequence) {
+      _consumer.hasPlatformPolicies = HasPlatformPolicies();
+      BOOL metricReportingDisabled =
+          _localState->IsManagedPreference(
+              metrics::prefs::kMetricsReportingEnabled) &&
+          !_localState->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+      _consumer.screenIntent =
+          metricReportingDisabled
+              ? DefaultBrowserScreenConsumerScreenIntent::kTOSWithoutUMA
+              : DefaultBrowserScreenConsumerScreenIntent::kTOSAndUMA;
+    } else {
+      _consumer.screenIntent =
+          DefaultBrowserScreenConsumerScreenIntent::kDefault;
+    }
   }
 }
 
-#pragma mark - Private
-
-// Retrieves user segmentation data from the Segmentation Platform.
-- (void)retrieveUserSegment {
-  __weak __typeof(self) weakSelf = self;
-
-  _deviceSwitcherResultDispatcher->WaitForClassificationResult(
-      segmentation_platform::kDeviceSwitcherWaitTimeout,
-      base::BindOnce(^(const segmentation_platform::ClassificationResult&
-                           deviceSwitcherResult) {
-        [weakSelf
-            didReceiveDeviceSwitcherSegmentationResult:deviceSwitcherResult];
-      }));
-}
-
-// Sets the user's highest priority targeted segment retrieved from the
-// Segmentation Platform.
-- (void)didReceiveDeviceSwitcherSegmentationResult:
-    (const segmentation_platform::ClassificationResult&)result {
-  _userSegment = GetDefaultBrowserUserSegment(&result, nullptr);
-}
-
-// Sets the Default Browser screen view title with targeted messaging based on
-// the user's segment.
-- (void)updatePromoTitleForConsumer {
-  int promoTitleStringID = 0;
-  switch (_userSegment) {
-    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
-    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
-      promoTitleStringID =
-          UseIPadTailoredStringForDefaultBrowserPromo()
-              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
-              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE;
-      break;
-    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
-    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
-      promoTitleStringID =
-          UseIPadTailoredStringForDefaultBrowserPromo()
-              ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-              : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE;
-      break;
+- (void)finishPresenting {
+  if (_firstScreenInFRESequence) {
+    if (self.TOSLinkWasTapped) {
+      base::RecordAction(base::UserMetricsAction("MobileFreTOSLinkTapped"));
+    }
+    if (self.UMALinkWasTapped) {
+      base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
+    }
+    _localState->SetBoolean(prefs::kEulaAccepted, true);
+    _localState->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
+                            self.UMAReportingUserChoice);
+    _localState->CommitPendingWrite();
   }
-  CHECK_NE(promoTitleStringID, 0);
-  [_consumer setPromoTitle:l10n_util::GetNSString(promoTitleStringID)];
-}
-
-// Sets the Default Browser screen view subtitle with targeted messaging based
-// on the user's segment.
-- (void)updatePromoSubtitleForConsumer {
-  int promoSubtitleStringID = 0;
-  switch (_userSegment) {
-    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
-      promoSubtitleStringID =
-          UseIPadTailoredStringForDefaultBrowserPromo()
-              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
-              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE;
-      break;
-    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
-      promoSubtitleStringID =
-          UseIPadTailoredStringForDefaultBrowserPromo()
-              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
-              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE;
-      break;
-    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
-    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
-      promoSubtitleStringID =
-          UseIPadTailoredStringForDefaultBrowserPromo()
-              ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-              : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE;
-      break;
-  }
-  CHECK_NE(promoSubtitleStringID, 0);
-  [_consumer setPromoSubtitle:l10n_util::GetNSString(promoSubtitleStringID)];
 }
 
 @end

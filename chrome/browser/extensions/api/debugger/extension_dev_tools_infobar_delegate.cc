@@ -10,8 +10,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
@@ -21,13 +21,17 @@
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace extensions {
 
 namespace {
 
 using Delegates = std::map<ExtensionId, ExtensionDevToolsInfoBarDelegate*>;
-base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
+Delegates& GetDelegates() {
+  static base::NoDestructor<Delegates> delegates;
+  return *delegates;
+}
 
 }  // namespace
 
@@ -38,7 +42,7 @@ base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
     const ExtensionId& extension_id,
     const std::string& extension_name,
     base::OnceClosure destroyed_callback) {
-  Delegates& delegates = g_delegates.Get();
+  Delegates& delegates = GetDelegates();
   const auto it = delegates.find(extension_id);
   if (it != delegates.end()) {
     it->second->timer_.Stop();
@@ -58,7 +62,7 @@ base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
 
 ExtensionDevToolsInfoBarDelegate::~ExtensionDevToolsInfoBarDelegate() {
   callback_list_.Notify();
-  const size_t erased = g_delegates.Get().erase(extension_id_);
+  const size_t erased = GetDelegates().erase(extension_id_);
   DCHECK(erased);
 }
 
@@ -96,7 +100,23 @@ gfx::ElideBehavior ExtensionDevToolsInfoBarDelegate::GetMessageElideBehavior()
 }
 
 int ExtensionDevToolsInfoBarDelegate::GetButtons() const {
-  return BUTTON_CANCEL;
+  // Android does not allow infobars with a solitary "Cancel" button, because
+  // "Cancel" is considered a "secondary" button and cannot exist without a
+  // primary button. Since the primary action here is to cancel, use BUTTON_OK
+  // but label it as "Cancel" below and map Accept() to Cancel() below. This
+  // works across platforms and avoids assertion failures deep in the Android
+  // infobar code.
+  return BUTTON_OK;
+}
+
+std::u16string ExtensionDevToolsInfoBarDelegate::GetButtonLabel(
+    InfoBarButton button) const {
+  return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
+}
+
+bool ExtensionDevToolsInfoBarDelegate::Accept() {
+  // See comment in GetButtons() above.
+  return Cancel();
 }
 
 ExtensionDevToolsInfoBarDelegate::ExtensionDevToolsInfoBarDelegate(

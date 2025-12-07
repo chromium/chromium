@@ -61,7 +61,9 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
 
  private:
   void WillBeDestroyed() override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   bool FindCycleFromSelf() const override;
   std::unique_ptr<PatternData> BuildPatternData(

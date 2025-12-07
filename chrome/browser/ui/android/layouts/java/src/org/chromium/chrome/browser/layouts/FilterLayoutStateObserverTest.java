@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.layouts;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -20,6 +22,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FilterLayoutStateObserverTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final CallbackHelper mStartedShowingCallbackHelper = new CallbackHelper();
     private final CallbackHelper mStartedHidingCallbackHelper = new CallbackHelper();
     private final CallbackHelper mFinishedShowingCallbackHelper = new CallbackHelper();
@@ -29,8 +32,6 @@ public class FilterLayoutStateObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mBaseObserver =
                 new LayoutStateObserver() {
                     @Override

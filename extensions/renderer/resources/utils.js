@@ -13,8 +13,9 @@ var nativeDeepCopy = requireNative('utils').deepCopy;
  */
 function forEach(obj, f, self) {
   for (var key in obj) {
-    if ($Object.hasOwnProperty(obj, key))
+    if ($Object.hasOwnProperty(obj, key)) {
       $Function.call(f, self, key, obj[key]);
+    }
   }
 }
 

@@ -1,0 +1,10 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#![feature(portable_simd)]
+
+mod decoder_tests;
+mod lib_tests;
+mod quant_tests;
+mod selectors_tests;

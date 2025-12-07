@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/stringprintf.h"
 #include "base/system/system_monitor.h"
 #include "base/test/test_future.h"
 #include "components/media_effects/test/fake_audio_service.h"

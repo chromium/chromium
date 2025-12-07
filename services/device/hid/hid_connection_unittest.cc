@@ -16,12 +16,16 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_io_thread.h"
 #include "build/build_config.h"
 #include "services/device/hid/hid_connection.h"
 #include "services/device/hid/hid_service.h"
+#include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
+#include "services/device/public/cpp/hid/hid_collection.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/test/usb_test_gadget.h"
@@ -238,10 +242,12 @@ namespace {
 // succeed.
 class TestHidConnection : public HidConnection {
  public:
-  explicit TestHidConnection(scoped_refptr<HidDeviceInfo> device_info)
+  TestHidConnection(scoped_refptr<HidDeviceInfo> device_info,
+                    bool allow_protected_reports,
+                    bool allow_fido_reports)
       : HidConnection(device_info,
-                      /*allow_protected_reports=*/false,
-                      /*allow_fido_reports=*/false) {}
+                      allow_protected_reports,
+                      allow_fido_reports) {}
   TestHidConnection(const TestHidConnection&) = delete;
   TestHidConnection& operator=(TestHidConnection&) = delete;
 
@@ -281,7 +287,9 @@ class HidConnectionProtectedReportTest : public testing::Test,
   ~HidConnectionProtectedReportTest() override = default;
 
   scoped_refptr<HidDeviceInfo> CreateHidDeviceInfo(
-      base::span<const uint8_t> report_descriptor) {
+      base::span<const uint8_t> report_descriptor,
+      uint16_t vendor_id = 0x1234,
+      uint16_t product_id = 0xabcd) {
 #if BUILDFLAG(IS_MAC)
     const uint64_t kTestDeviceId = 0;
 #elif BUILDFLAG(IS_WIN)
@@ -290,13 +298,37 @@ class HidConnectionProtectedReportTest : public testing::Test,
     const char* const kTestDeviceId = "0";
 #endif
     return base::MakeRefCounted<HidDeviceInfo>(
-        kTestDeviceId, "physical-device-id", /*vendor_id=*/0x1234,
-        /*product_id=*/0xabcd, "product-name", "serial-number",
-        mojom::HidBusType::kHIDBusTypeUSB, report_descriptor);
+        kTestDeviceId, "physical-device-id", vendor_id, product_id,
+        "product-name", "serial-number", mojom::HidBusType::kHIDBusTypeUSB,
+        report_descriptor);
   }
 
-  void CreateConnection(scoped_refptr<HidDeviceInfo> device_info) {
-    connection_ = base::MakeRefCounted<TestHidConnection>(device_info);
+  scoped_refptr<HidDeviceInfo> CreateHidDeviceInfo(
+      mojom::HidCollectionInfoPtr collection,
+      size_t max_input_report_size,
+      size_t max_output_report_size,
+      size_t max_feature_report_size,
+      uint16_t vendor_id = 0x1234,
+      uint16_t product_id = 0xabcd) {
+#if BUILDFLAG(IS_MAC)
+    const uint64_t kTestDeviceId = 0;
+#elif BUILDFLAG(IS_WIN)
+    const wchar_t* const kTestDeviceId = L"0";
+#else
+    const char* const kTestDeviceId = "0";
+#endif
+    return base::MakeRefCounted<HidDeviceInfo>(
+        kTestDeviceId, "physical-device-id", "interface-id", vendor_id,
+        product_id, "product-name", "serial-number",
+        mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
+        max_input_report_size, max_output_report_size, max_feature_report_size);
+  }
+
+  void CreateConnection(scoped_refptr<HidDeviceInfo> device_info,
+                        bool allow_protected_reports = false,
+                        bool allow_fido_reports = false) {
+    connection_ = base::MakeRefCounted<TestHidConnection>(
+        device_info, allow_protected_reports, allow_fido_reports);
   }
 
   void SetConnectionClient() { connection_->SetClient(this); }
@@ -423,6 +455,142 @@ TEST_F(HidConnectionProtectedReportTest, ProtectedInputReportWithoutClient) {
   connection().Read(read_future.GetCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(read_future.IsReady());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest, AllowProtectedReportsAllowsFido) {
+  // Simulate a blocklisted FIDO device.
+  auto device_info = CreateHidDeviceInfo(TestReportDescriptors::FidoU2fHid());
+  ASSERT_TRUE(device_info);
+  ASSERT_EQ(device_info->collections().size(), 1u);
+  ASSERT_EQ(device_info->collections()[0]->usage->usage_page, mojom::kPageFido);
+
+  // Simulate a connection from a client allowed to access protected reports.
+  CreateConnection(device_info, /*allow_protected_reports=*/true);
+
+  // Simulate an input report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  EXPECT_TRUE(read_future.Get<0>());
+
+  // Simulate an output report.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest, AllowFidoReportsAllowsFido) {
+  // Simulate a FIDO security key.
+  auto device_info = CreateHidDeviceInfo(TestReportDescriptors::FidoU2fHid());
+  ASSERT_TRUE(device_info);
+  ASSERT_EQ(device_info->collections().size(), 1u);
+  ASSERT_EQ(device_info->collections()[0]->usage->usage_page, mojom::kPageFido);
+
+  // Simulate a connection from a FIDO-privileged origin.
+  CreateConnection(device_info, /*allow_protected_reports=*/false,
+                   /*allow_fido_reports=*/true);
+
+  // Simulate an input report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  EXPECT_TRUE(read_future.Get<0>());
+
+  // Simulate an output report.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest,
+       AllowFidoReportsAllowsNonFidoSecurityKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kSecurityKeyHidInterfacesAreFido);
+
+  // Simulate a known security key without FIDO capabilities.
+  auto known_security_keys =
+      device::HidBlocklist::GetKnownSecurityKeysForTesting();
+  ASSERT_GE(known_security_keys.size(), 1u);
+  const auto& [vendor_id, product_id] = known_security_keys.front();
+  auto device_info = CreateHidDeviceInfo(
+      TestReportDescriptors::VendorDefinedInputOutput(), vendor_id, product_id);
+  ASSERT_TRUE(device_info);
+  ASSERT_TRUE(HidBlocklist::IsKnownSecurityKey(device_info->vendor_id(),
+                                               device_info->product_id()));
+
+  // Simulate a connection from a FIDO-privileged origin.
+  CreateConnection(device_info, /*allow_protected_reports=*/false,
+                   /*allow_fido_reports=*/true);
+
+  // Simulate an input report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  EXPECT_TRUE(read_future.Get<0>());
+
+  // Simulate an output report.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest, InvisibleConstFeatureReport) {
+  auto collection = HidCollection(nullptr, mojom::kPageGenericDesktop,
+                                  mojom::kGenericDesktopMouse,
+                                  mojom::kHIDCollectionTypeApplication);
+  auto device_info_size = CreateHidDeviceInfo(collection.ToMojo(), 0, 0,
+                                              /*max_feature_report_size=*/1);
+  CreateConnection(device_info_size);
+
+  // Read protected invisible input report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  EXPECT_FALSE(read_future.Get<0>());
+
+  SetConnectionClient();
+
+  // Write protected invisible output report.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_FALSE(write_future.Get());
+
+  // Read unprotected invisible feature report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t>
+      get_feature_future;
+  connection().GetFeatureReport(/*report_id=*/0,
+                                get_feature_future.GetCallback());
+  EXPECT_TRUE(get_feature_future.Get<0>());
+
+  // Write unprotected invisible feature report.
+  TestFuture<bool> send_feature_future;
+  connection().SendFeatureReport(buffer, send_feature_future.GetCallback());
+  EXPECT_TRUE(send_feature_future.Get());
 
   // Close the connection.
   connection().Close();

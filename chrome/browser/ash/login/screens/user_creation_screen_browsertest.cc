@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -152,11 +152,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForSelf) {
                    ->GetWizardContextForTesting()
                    ->sign_in_as_child);
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN);
-  if (features::IsOobeGaiaInfoScreenEnabled()) {
-    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
-  } else {
-    OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  }
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SelectChild) {

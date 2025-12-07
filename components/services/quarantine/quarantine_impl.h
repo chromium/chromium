@@ -33,6 +33,7 @@ class QuarantineImpl : public mojom::Quarantine {
       const base::FilePath& full_path,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       const std::string& client_guid,
       mojom::Quarantine::QuarantineFileCallback callback) override;
 

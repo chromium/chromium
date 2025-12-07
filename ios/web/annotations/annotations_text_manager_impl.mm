@@ -5,6 +5,7 @@
 #import "ios/web/annotations/annotations_text_manager_impl.h"
 
 #import "base/strings/string_util.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -18,10 +19,7 @@ namespace web {
 static const int kMaxAnnotationsTextLength = 65535;
 
 AnnotationsTextManagerImpl::AnnotationsTextManagerImpl(WebState* web_state)
-    : web_state_(web_state),
-      seq_id_(1),
-      is_viewport_extraction_(
-          base::FeatureList::IsEnabled(features::kEnableViewportIntents)) {
+    : web_state_(web_state), seq_id_(1), is_viewport_extraction_(true) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
 }
@@ -150,7 +148,5 @@ void AnnotationsTextManagerImpl::OnClick(WebState* web_state,
     observer.OnClick(web_state, text, rect, data);
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTextManager)
 
 }  // namespace web

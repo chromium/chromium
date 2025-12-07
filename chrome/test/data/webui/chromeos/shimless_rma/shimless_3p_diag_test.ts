@@ -197,16 +197,16 @@ suite('shimless3pDiagTest', function() {
     await flushTasks();
     assertTrue(isDialogOpen('#shimless3pDiagErrorDialog'));
     assertEquals(
-         'Google diagnostics app is not installed',
+        'Google diagnostics app is not installed',
         strictQuery(
             '#shimless3pDiagErrorDialogTitle', component.shadowRoot,
             HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertEquals(
         'Check with the device manufacturer',
         strictQuery(
             '#shimless3pDiagErrorDialogBody', component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     await clickButton('#shimless3pDiagErrorDialogButton');
     assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
@@ -230,12 +230,12 @@ suite('shimless3pDiagTest', function() {
         strictQuery(
             '#shimless3pDiagErrorDialogTitle', component.shadowRoot,
             HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertEquals(
         'Try installing the app again',
         strictQuery(
             '#shimless3pDiagErrorDialogBody', component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     await clickButton('#shimless3pDiagErrorDialogButton');
     assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
@@ -348,13 +348,13 @@ suite('shimless3pDiagTest', function() {
         strictQuery(
             '#shimless3pDiagFindInstallableDialogTitle', component.shadowRoot,
             HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertEquals(
         'There is an installable app at /fake/installable.swbn',
         strictQuery(
             '#shimless3pDiagFindInstallableDialogBody', component.shadowRoot,
             HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     await clickButton('#shimless3pDiagFindInstallableDialogSkipButton');
     await flushTasks();
@@ -364,12 +364,12 @@ suite('shimless3pDiagTest', function() {
         strictQuery(
             '#shimless3pDiagErrorDialogTitle', component.shadowRoot,
             HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertEquals(
         'Check with the device manufacturer',
         strictQuery(
             '#shimless3pDiagErrorDialogBody', component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     await clickButton('#shimless3pDiagErrorDialogButton');
     assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
@@ -442,13 +442,13 @@ suite('shimless3pDiagTest', function() {
           strictQuery(
               '#shimless3pDiagErrorDialogTitle', component.shadowRoot,
               HTMLElement)
-              .textContent!.trim());
+              .textContent.trim());
       assertEquals(
           'Check with the device manufacturer',
           strictQuery(
               '#shimless3pDiagErrorDialogBody', component.shadowRoot,
               HTMLElement)
-              .textContent!.trim());
+              .textContent.trim());
 
       await clickButton('#shimless3pDiagErrorDialogButton');
       assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
@@ -492,13 +492,13 @@ suite('shimless3pDiagTest', function() {
           strictQuery(
               '#shimless3pDiagReviewPermissionDialogTitle',
               component.shadowRoot, HTMLElement)
-              .textContent!.trim());
+              .textContent.trim());
       assertDeepEquals(
           ['It can:', 'Run diagnostics test', 'Get device info', ''],
           strictQuery(
               '#shimless3pDiagReviewPermissionDialogMessage span',
               component.shadowRoot, HTMLElement)
-              .textContent!.split('\n')
+              .textContent.split('\n')
               .map(line => line.trim()));
 
       assert(dialogAction instanceof Function);

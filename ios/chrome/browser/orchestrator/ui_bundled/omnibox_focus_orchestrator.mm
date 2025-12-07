@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/material_timing.h"
 
 @interface OmniboxFocusOrchestrator ()
@@ -54,6 +56,15 @@
   self.areOmniboxChangesQueued = NO;
   self.inProgressAnimationCount = 0;
 
+  if (animated && [self isTriggerPinnedFakebox]) {
+    [self.locationBarAnimatee addFakeboxButtonsSnapshot];
+    [self.locationBarAnimatee setFakeboxButtonsSnapshotFaded:!omniboxFocused];
+  }
+
+  if (omniboxFocused) {
+    [self prepareToFocusOmniboxAnimated:animated];
+  }
+
   if (toolbarExpanded) {
     [self updateUIToExpandedState:animated];
   } else {
@@ -89,6 +100,29 @@
 
 #pragma mark - Private
 
+// Sets some initial state that needs to be set immediately, before any
+// `dispatch_async` calls, in order to avoid flicker at the start of the
+// animation.
+- (void)prepareToFocusOmniboxAnimated:(BOOL)animated {
+  if (!animated) {
+    return;
+  }
+
+  if ([self isTriggerUnpinnedFakebox]) {
+    // If focus trigger is the unpinned fakebox, the edit view will appear
+    // in-place (without animation) and the steady view will not slide and
+    // fade out - it will be hidden from the start.
+    [UIView performWithoutAnimation:^{
+      // This can be triggered inside of another animation on the NTP, so
+      // `performWithoutAnimation` is used to ensure that these changes happen
+      // immediately.
+      [self.locationBarAnimatee resetTextFieldOffsetAndOffsetSteadyViewToMatch];
+      [self.locationBarAnimatee setEditViewFaded:NO];
+      [self.locationBarAnimatee setSteadyViewFaded:YES];
+    }];
+  }
+}
+
 - (void)focusOmniboxAnimated:(BOOL)animated {
   // Cleans up after the animation.
   void (^cleanup)() = ^{
@@ -103,19 +137,10 @@
 
   if (animated) {
     // Prepare for animation.
-    BOOL shouldCrossfadeEditAndSteadyViews =
-        _trigger != OmniboxFocusTrigger::kUnpinnedLargeFakebox &&
-        _trigger != OmniboxFocusTrigger::kUnpinnedFakebox;
+    BOOL shouldCrossfadeEditAndSteadyViews = ![self isTriggerUnpinnedFakebox];
     if (shouldCrossfadeEditAndSteadyViews) {
       [self.locationBarAnimatee offsetTextFieldToMatchSteadyView];
       [self.locationBarAnimatee setEditViewFaded:YES];
-    } else {
-      // If focus trigger is the unpinned fakebox, the edit view will appear
-      // in-place (without animation) and the steady view will not slide and
-      // fade out - it will be hidden from the start.
-      [self.locationBarAnimatee resetTextFieldOffsetAndOffsetSteadyViewToMatch];
-      [self.locationBarAnimatee setEditViewFaded:NO];
-      [self.locationBarAnimatee setSteadyViewFaded:YES];
     }
 
     // Hide badge and entrypoint views before the transform regardless of
@@ -157,6 +182,14 @@
                                             [self.locationBarAnimatee
                                                 setEditViewFaded:NO];
                                           }];
+
+            [UIView
+                addKeyframeWithRelativeStartTime:0
+                                relativeDuration:0.7
+                                      animations:^{
+                                        [self.locationBarAnimatee
+                                            setFakeboxButtonsSnapshotFaded:YES];
+                                      }];
           }
 
           // Scale the leading icon in with a slight bounce / spring.
@@ -218,6 +251,7 @@
         animations:^{
           [self.locationBarAnimatee
                   resetSteadyViewOffsetAndOffsetTextFieldToMatch];
+          [self.locationBarAnimatee setFakeboxButtonsSnapshotFaded:NO];
         }
         completion:^(BOOL finished) {
           cleanup();
@@ -275,16 +309,18 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    if (IsIOSLargeFakeboxEnabled()) {
+    if (ShouldEnlargeNTPFakeboxForMIA()) {
       // Set the location bar height to the default.
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
     [self.toolbarAnimatee setToolbarFaded:NO];
     switch (_trigger) {
-      case OmniboxFocusTrigger::kPinnedLargeFakebox:
-        [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+      case OmniboxFocusTrigger::kPinnedFakebox:
+        if (ShouldEnlargeNTPFakeboxForMIA()) {
+          [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+        }
         break;
-      case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+      case OmniboxFocusTrigger::kUnpinnedFakebox:
         [self.toolbarAnimatee setToolbarFaded:YES];
         break;
       default:
@@ -294,18 +330,29 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          [UIView addKeyframeWithRelativeStartTime:0
-                                  relativeDuration:1
-                                        animations:^{
-                                          [self expansion];
-                                        }];
-          [UIView
-              addKeyframeWithRelativeStartTime:0
-                              relativeDuration:kMaterialDuration2 /
-                                               kMaterialDuration1
-                                    animations:^{
-                                      [self.toolbarAnimatee hideControlButtons];
-                                    }];
+          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
+          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
+          BOOL isLowerThan26 = !base::ios::IsRunningOnOrLater(26, 0, 0);
+          if (isLowerThan17 || (isHigherThan17_2 && isLowerThan26)) {
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:1
+                                          animations:^{
+                                            [self expansion];
+                                          }];
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:kMaterialDuration2 /
+                                                     kMaterialDuration1
+                                          animations:^{
+                                            [self.toolbarAnimatee
+                                                    hideControlButtons];
+                                          }];
+          } else {
+            // This is a workaround for a crash that is mostly happening on
+            // iOS 17.0-17.1. See crbug.com/369988988.
+            // Same crash occurs on iOS 26 (crbug.com/445914120).
+            [self expansion];
+            [self.toolbarAnimatee hideControlButtons];
+          }
         }
         completion:^(BOOL finished) {
           [self animationFinished];
@@ -330,17 +377,29 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          [UIView addKeyframeWithRelativeStartTime:0
-                                  relativeDuration:relativeDurationAnimation1
-                                        animations:^{
-                                          [self contraction];
-                                        }];
-          [UIView
-              addKeyframeWithRelativeStartTime:relativeDurationAnimation1
-                              relativeDuration:1 - relativeDurationAnimation1
-                                    animations:^{
-                                      [self.toolbarAnimatee showControlButtons];
-                                    }];
+          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
+          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
+          BOOL isLowerThan26 = !base::ios::IsRunningOnOrLater(26, 0, 0);
+          if (isLowerThan17 || (isHigherThan17_2 && isLowerThan26)) {
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:relativeDurationAnimation1
+                                          animations:^{
+                                            [self contraction];
+                                          }];
+            [UIView
+                addKeyframeWithRelativeStartTime:relativeDurationAnimation1
+                                relativeDuration:1 - relativeDurationAnimation1
+                                      animations:^{
+                                        [self.toolbarAnimatee
+                                                showControlButtons];
+                                      }];
+          } else {
+            // This is a workaround for a crash that is mostly happening on
+            // iOS 17.0-17.1. See crbug.com/369988988.
+            // Same crash occurs on iOS 26 (crbug.com/445839307).
+            [self contraction];
+            [self.toolbarAnimatee showControlButtons];
+          }
         }
         completion:^(BOOL finished) {
           [self.toolbarAnimatee hideCancelButton];
@@ -376,16 +435,15 @@
                                   trigger:_trigger
                                  animated:NO
                                completion:_completion];
-  } else {
-    if (_completion) {
-      _completion();
-      _completion = nil;
-    }
-    if (IsIOSLargeFakeboxEnabled()) {
+  } else if (_completion) {
+    _completion();
+    _completion = nil;
+    if (ShouldEnlargeNTPFakeboxForMIA()) {
       // Reset the location bar height back to the default.
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
   }
+  [self.locationBarAnimatee clearFakeboxButtonsSnapshot];
   self.stateChangedDuringAnimation = NO;
 }
 
@@ -396,10 +454,12 @@
   [self.toolbarAnimatee expandLocationBar];
   [self.toolbarAnimatee showCancelButton];
   switch (_trigger) {
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
-      [self.toolbarAnimatee setLocationBarHeightExpanded];
+    case OmniboxFocusTrigger::kPinnedFakebox:
+      if (ShouldEnlargeNTPFakeboxForMIA()) {
+        [self.toolbarAnimatee setLocationBarHeightExpanded];
+      }
       break;
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+    case OmniboxFocusTrigger::kUnpinnedFakebox:
       [self.toolbarAnimatee setToolbarFaded:NO];
       break;
     default:
@@ -410,9 +470,21 @@
 // Visually contracts the location bar for defocus.
 - (void)contraction {
   [self.toolbarAnimatee contractLocationBar];
-  if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
+  if (_trigger == OmniboxFocusTrigger::kPinnedFakebox &&
+      ShouldEnlargeNTPFakeboxForMIA()) {
     [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
   }
 }
 
+// Returns YES if the focus event was triggered by the NTP Fakebox in its
+// unpinned state.
+- (BOOL)isTriggerUnpinnedFakebox {
+  return _trigger == OmniboxFocusTrigger::kUnpinnedFakebox;
+}
+
+// Returns YES if the focus event was triggered by the NTP Fakebox in its
+// pinned state.
+- (BOOL)isTriggerPinnedFakebox {
+  return _trigger == OmniboxFocusTrigger::kPinnedFakebox;
+}
 @end

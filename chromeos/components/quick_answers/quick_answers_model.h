@@ -5,10 +5,12 @@
 #ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_
 
+#include <compare>
 #include <string>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
@@ -60,6 +62,8 @@ enum class IntentType {
   kTranslation = 3,
   kMaxValue = kTranslation
 };
+
+std::optional<quick_answers::Intent> ToIntent(IntentType intent_type);
 
 enum class QuickAnswerUiElementType {
   kUnknown = 0,
@@ -135,10 +139,6 @@ struct PhoneticsInfo {
   // For other type of results the URL will be empty.
   GURL phonetics_audio;
 
-  // Set to true if tts audio (`query_text` and `locale`) can be used.
-  // TODO(b/346794579): remove this field.
-  bool tts_audio_enabled = false;
-
   // Query text and locale which will be used for tts if enabled and
   // there is no phonetics audio available.
   std::string query_text;
@@ -173,8 +173,8 @@ struct IntentInfo {
   IntentInfo(const IntentInfo& other);
   IntentInfo(const std::string& intent_text,
              IntentType intent_type,
-             const std::string& device_language = std::string(),
-             const std::string& source_language = std::string());
+             std::string_view device_language = std::string_view(),
+             std::string_view source_language = std::string_view());
   ~IntentInfo();
 
   // The text extracted from the selected_text associated with the intent.
@@ -303,6 +303,9 @@ class ConversionRule {
   const std::string& category() const { return category_; }
   const std::string& unit_name() const { return unit_name_; }
 
+  friend bool operator==(const ConversionRule&,
+                         const ConversionRule&) = default;
+
  private:
   ConversionRule(const std::string& category,
                  const std::string& unit_name,
@@ -341,7 +344,8 @@ class UnitConversion {
   static std::optional<UnitConversion> Create(const ConversionRule& source_rule,
                                               const ConversionRule& dest_rule);
 
-  // Used for sorting alternative unit conversions.
+  // Used for sorting alternative unit conversions. This must be at least a weak
+  // ordering.
   //
   // We have no direct way of comparing unit conversions with different
   // formulas. The best approximation is to limit comparisons to linear
@@ -351,7 +355,11 @@ class UnitConversion {
   //
   // Unit conversions involving non-linear formulas will be considered greater
   // by default for our purposes.
-  bool operator<(const UnitConversion& other) const;
+  friend std::weak_ordering operator<=>(const UnitConversion& a,
+                                        const UnitConversion& b);
+
+  friend bool operator==(const UnitConversion&,
+                         const UnitConversion&) = default;
 
   // Given a |source_amount| in the source unit, returns the equivalent amount
   // in the destination unit.
@@ -368,6 +376,8 @@ class UnitConversion {
  private:
   UnitConversion(const ConversionRule& source_rule,
                  const ConversionRule& dest_rule);
+
+  static double MaybeGetRatio(double value1, double value2);
 
   ConversionRule source_rule_;
   ConversionRule dest_rule_;

@@ -15,14 +15,17 @@
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -37,7 +40,6 @@ constexpr gfx::Insets kFocusInsets(2);
 constexpr gfx::Insets kImageInsets(2);
 constexpr auto kLabelInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kCornerRadius = 12;
-constexpr int kChevronIconSize = 16;
 constexpr int kJellyChevronIconSize = 20;
 constexpr int kLabelFontSize = 12;
 
@@ -58,10 +60,8 @@ CounterExpandButton::CounterExpandButton() {
   label->SetText(base::NumberToString16(counter_));
   label->SetVisible(ShouldShowLabel());
   label_ = AddChildView(std::move(label));
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1, *label_);
-  }
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosAnnotation1, *label_);
 
   auto image = std::make_unique<views::ImageView>();
   image->SetPaintToLayer();
@@ -77,10 +77,9 @@ CounterExpandButton::CounterExpandButton() {
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kTrayItemCornerRadius});
-  layer()->SetIsFastRoundedCorner(true);
+  SetBackground(views::CreateLayerBasedRoundedBackground(
+      cros_tokens::kCrosSysSystemOnBase1,
+      gfx::RoundedCornersF{kTrayItemCornerRadius}));
 }
 
 CounterExpandButton::~CounterExpandButton() = default;
@@ -97,7 +96,8 @@ void CounterExpandButton::SetExpanded(bool expanded) {
   label_->SetText(base::NumberToString16(counter_));
   label_->SetVisible(ShouldShowLabel());
 
-  image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
+  image_->SetImage(ui::ImageModel::FromImageSkia(expanded_ ? expanded_image_
+                                                           : collapsed_image_));
 
   UpdateTooltip();
 }
@@ -113,10 +113,9 @@ void CounterExpandButton::UpdateCounter(int count) {
 }
 
 void CounterExpandButton::UpdateIcons() {
-  SkColor icon_color =
+  const SkColor icon_color =
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface);
-  int icon_size = chromeos::features::IsJellyEnabled() ? kJellyChevronIconSize
-                                                       : kChevronIconSize;
+  const int icon_size = kJellyChevronIconSize;
 
   expanded_image_ =
       gfx::CreateVectorIcon(kChevronUpSmallIcon, icon_size, icon_color);
@@ -124,7 +123,8 @@ void CounterExpandButton::UpdateIcons() {
   collapsed_image_ =
       gfx::CreateVectorIcon(kChevronDownSmallIcon, icon_size, icon_color);
 
-  image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
+  image_->SetImage(ui::ImageModel::FromImageSkia(expanded_ ? expanded_image_
+                                                           : collapsed_image_));
 }
 
 void CounterExpandButton::UpdateTooltip() {
@@ -203,7 +203,6 @@ void CounterExpandButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
   UpdateIcons();
-  UpdateBackgroundColor();
 }
 
 gfx::Size CounterExpandButton::CalculatePreferredSize(
@@ -268,11 +267,6 @@ std::u16string CounterExpandButton::GetExpandedStateTooltipText() const {
 
 std::u16string CounterExpandButton::GetCollapsedStateTooltipText() const {
   return u"";
-}
-
-void CounterExpandButton::UpdateBackgroundColor() {
-  layer()->SetColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase1));
 }
 
 BEGIN_METADATA(CounterExpandButton)

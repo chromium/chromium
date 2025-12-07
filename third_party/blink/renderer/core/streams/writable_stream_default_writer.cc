@@ -66,6 +66,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
   //  4. Set stream.[[writer]] to this.
   stream->SetWriter(this);
 
+  closed_resolver_->SuppressDetachCheck();
+
   //  5. Let state be stream.[[state]].
   const auto state = stream->GetState();
   auto* isolate = script_state->GetIsolate();
@@ -83,6 +85,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
         //      b. Otherwise, set this.[[readyPromise]] to a promise resolved
         //         with undefined.
         ready_resolver_->Resolve();
+      } else {
+        ready_resolver_->SuppressDetachCheck();
       }
       //      c. Set this.[[closedPromise]] to a new promise.
       break;
@@ -159,8 +163,8 @@ ScriptValue WritableStreamDefaultWriter::desiredSize(
   //  2. If this.[[ownerWritableStream]] is undefined, throw a TypeError
   //     exception.
   if (!owner_writable_stream_) {
-    exception_state.RethrowV8Exception(CreateWriterLockReleasedException(
-        isolate, "used to get the desiredSize"));
+    exception_state.ThrowTypeError(
+        CreateWriterLockReleasedMessage("used to get the desiredSize"));
     return ScriptValue();
   }
 
@@ -272,7 +276,7 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::write(
   }
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).
-  return Write(script_state, this, chunk.V8Value(), exception_state)->Promise();
+  return Write(script_state, this, chunk.V8Value(), exception_state);
 }
 
 void WritableStreamDefaultWriter::EnsureReadyPromiseRejected(
@@ -369,7 +373,7 @@ void WritableStreamDefaultWriter::Release(ScriptState* script_state,
   writer->owner_writable_stream_ = nullptr;
 }
 
-ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
+ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::Write(
     ScriptState* script_state,
     WritableStreamDefaultWriter* writer,
     v8::Local<v8::Value> chunk,
@@ -388,7 +392,7 @@ ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
   //  4. Let chunkSize be !
   //     WritableStreamDefaultControllerGetChunkSize(controller, chunk).
   double chunk_size = WritableStreamDefaultController::GetChunkSize(
-      script_state, controller, chunk, exception_state);
+      script_state, controller, chunk);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
@@ -397,7 +401,7 @@ ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
   //     promise rejected with a TypeError exception.
   if (stream != writer->owner_writable_stream_) {
     resolver->Reject(CreateWriterLockReleasedException(isolate, "written to"));
-    return resolver;
+    return resolver->Promise();
   }
 
   //  6. Let state be stream.[[state]].
@@ -407,7 +411,7 @@ ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
   //     stream.[[storedError]].
   if (state == WritableStream::kErrored) {
     resolver->Reject(stream->GetStoredError(isolate));
-    return resolver;
+    return resolver->Promise();
   }
 
   //  8. If ! WritableStreamCloseQueuedOrInFlight(stream) is true or state is
@@ -417,20 +421,24 @@ ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
     resolver->Reject(v8::Exception::TypeError(
         WritableStream::CreateCannotActionOnStateStreamMessage(
             isolate, "write to", "closing")));
-    return resolver;
+    return resolver->Promise();
   }
   if (state == WritableStream::kClosed) {
     resolver->Reject(WritableStream::CreateCannotActionOnStateStreamException(
         isolate, "write to", WritableStream::kClosed));
-    return resolver;
+    return resolver->Promise();
   }
 
   //  9. If state is "erroring", return a promise rejected with
   //     stream.[[storedError]].
   if (state == WritableStream::kErroring) {
     resolver->Reject(stream->GetStoredError(isolate));
-    return resolver;
+    return resolver->Promise();
   }
+
+  // A writer may be discarded before the write completes, so suppress the
+  // detach check.
+  resolver->SuppressDetachCheck();
 
   // 10. Assert: state is "writable".
   DCHECK_EQ(state, WritableStream::kWritable);
@@ -444,7 +452,7 @@ ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
                                          chunk_size, exception_state);
 
   // 13. Return promise.
-  return resolver;
+  return resolver->Promise();
 }
 
 std::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()

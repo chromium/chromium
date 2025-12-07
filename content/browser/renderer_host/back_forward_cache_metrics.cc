@@ -6,9 +6,11 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/strings/stringprintf.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -32,6 +34,10 @@
 #include "url/origin.h"
 
 namespace content {
+
+// When enabled, we check that DSNs have a value other than -1.
+// This is enforced at several points in the navigation flow.
+BASE_FEATURE(kCheckDocumentSequenceNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -79,6 +85,12 @@ BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetricsForNavigation(
     NavigationEntryImpl* previous_entry,
     bool is_main_frame_navigation,
     int64_t committing_document_sequence_number) {
+  // TODO(https://crbug.com/445585641): Make this enforceable on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kCheckDocumentSequenceNumber)) {
+    CHECK_NE(committing_document_sequence_number, -1);
+  }
+#endif
   if (!previous_entry) {
     // There is no previous NavigationEntry, so we must create a new metrics
     // object.
@@ -213,6 +225,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       SCOPED_CRASH_KEY_STRING256(
           "BFCacheMismatch", "previous_url",
           navigation->GetPreviousPrimaryMainFrameURL().spec());
+      // TODO(https://crbug.com/40229455): Reenable this when known cases are
+      // fixed.
       // base::debug::DumpWithoutCrashing();
     }
 
@@ -528,6 +542,19 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
   if (back_forward_cache_allowed) {
     UMA_HISTOGRAM_ENUMERATION("BackForwardCache.HistoryNavigationOutcome",
                               outcome);
+    int nav_offset = navigation->GetNavigationEntryOffset();
+    HistoryNavigationDirection direction =
+        nav_offset == 0
+            ? HistoryNavigationDirection::kSameEntry
+            : (nav_offset < 0 ? HistoryNavigationDirection::kBack
+                              : HistoryNavigationDirection::kForward);
+    if (navigation->IsServedFromBackForwardCache()) {
+      base::UmaHistogramEnumeration(
+          "BackForwardCache.RestoredNavigationDirection", direction);
+    } else {
+      base::UmaHistogramEnumeration(
+          "BackForwardCache.NonRestoredNavigationDirection", direction);
+    }
   }
 
   UMA_HISTOGRAM_ENUMERATION(
@@ -549,11 +576,14 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
         "BackForwardCache.AllSites.HistoryNavigationOutcome.NotRestoredReason",
         reason);
     if (reason == NotRestoredReason::kRendererProcessKilled) {
-      DCHECK(renderer_killed_timestamp_);
-      DCHECK(navigated_away_from_main_document_timestamp_);
+      CHECK(renderer_killed_timestamp_);
+      // It's possible (https://crbug.com/427426299) for the renderer to be
+      // killed before we record this timestamp. In that case, record 0.
       base::TimeDelta time =
-          renderer_killed_timestamp_.value() -
-          navigated_away_from_main_document_timestamp_.value();
+          navigated_away_from_main_document_timestamp_
+              ? (renderer_killed_timestamp_.value() -
+                 navigated_away_from_main_document_timestamp_.value())
+              : base::Seconds(0);
       UMA_HISTOGRAM_LONG_TIMES(
           "BackForwardCache.Eviction.TimeUntilProcessKilled", time);
     }

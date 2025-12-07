@@ -5,15 +5,27 @@
 #ifndef CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 #define CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 
-#include "build/build_config.h"
+#include <memory>
+
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/reading_list/core/dual_reading_list_model.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "content/public/browser/browser_context.h"
+
+class ReadingListModel;
 
 namespace base {
 template <typename T>
 class NoDestructor;
+}
+
+namespace content {
+class BrowserContext;
+}
+
+namespace reading_list {
+class DualReadingListModel;
+}
+
+namespace user_prefs {
+class PrefRegistrySyncable;
 }
 
 // Singleton that owns all ReadingListModels and associates them with
@@ -28,6 +40,11 @@ class ReadingListModelFactory : public ProfileKeyedServiceFactory {
 
   static reading_list::DualReadingListModel*
   GetAsDualReadingListForBrowserContext(content::BrowserContext* context);
+
+  // Returns whether a ReadingListModel was created for `profile`.
+  // GetForBrowserContext() can't be used because it creates the model if one
+  // doesn't exist yet.
+  static bool HasModel(content::BrowserContext* context);
 
   static ReadingListModelFactory* GetInstance();
 

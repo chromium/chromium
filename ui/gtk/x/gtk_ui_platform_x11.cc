@@ -10,7 +10,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
@@ -24,18 +24,21 @@ namespace gtk {
 
 GtkUiPlatformX11::GtkUiPlatformX11() : connection_(*x11::Connection::Get()) {
   gdk_set_allowed_backends("x11");
+  auto env = base::Environment::Create();
+
   // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
   // it to ensure we get the x11 backend.
-  base::Environment::Create()->SetVar("GDK_BACKEND", "x11");
+  env->SetVar("GDK_BACKEND", "x11");
+
   x11::InitXlib();
 }
 
 GtkUiPlatformX11::~GtkUiPlatformX11() = default;
 
-void GtkUiPlatformX11::OnInitialized(GtkWidget* widget) {
+void GtkUiPlatformX11::OnInitialized() {
   // Ensure the singleton instance of GtkEventLoopX11 is created and started.
   if (!event_loop_) {
-    event_loop_ = std::make_unique<GtkEventLoopX11>(widget);
+    event_loop_ = std::make_unique<GtkEventLoopX11>();
   }
 
   // GTK sets an Xlib error handler that exits the process on any async errors.
@@ -44,23 +47,9 @@ void GtkUiPlatformX11::OnInitialized(GtkWidget* widget) {
   x11::SetXlibErrorHandler();
 }
 
-GdkKeymap* GtkUiPlatformX11::GetGdkKeymap() {
-  DCHECK(!gtk::GtkCheckVersion(4));
-  return gdk_keymap_get_for_display(GetGdkDisplay());
-}
-
-GdkModifierType GtkUiPlatformX11::GetGdkKeyEventState(
-    const ui::KeyEvent& key_event) {
-  return gtk::GetGdkKeyEventState(key_event);
-}
-
-int GtkUiPlatformX11::GetGdkKeyEventGroup(const ui::KeyEvent& key_event) {
-  return GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
-}
-
 GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   DCHECK(!gtk::GtkCheckVersion(4));
-  GdkDisplay* display = GetGdkDisplay();
+  GdkDisplay* display = gdk_display_get_default();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
       display, static_cast<uint32_t>(window_id));
   if (gdk_window) {
@@ -76,7 +65,7 @@ GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return gdk_window;
 }
 
-bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
+void GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
   auto x11_window = static_cast<x11::Window>(
       gtk::GtkCheckVersion(4)
@@ -91,19 +80,11 @@ bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
 
   ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
       parent, static_cast<gfx::AcceleratedWidget>(x11_window));
-  return true;
 }
 
 void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
   ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
       parent, static_cast<gfx::AcceleratedWidget>(x11::Window::None));
-}
-
-GdkDisplay* GtkUiPlatformX11::GetGdkDisplay() {
-  if (!display_) {
-    display_ = gdk_display_get_default();
-  }
-  return display_;
 }
 
 void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
@@ -123,6 +104,12 @@ GtkUiPlatformX11::CreateInputMethodContext(
 
 bool GtkUiPlatformX11::IncludeFontScaleInDeviceScale() const {
   return true;
+}
+
+bool GtkUiPlatformX11::IncludeScaleInCursorSize() const {
+  // GTK4 supports per-monitor scaling in 4.9.2+, so the gtk-cursor-theme-size
+  // is not premultiplied by the scale factor.
+  return GtkCheckVersion(4, 9, 2);
 }
 
 }  // namespace gtk

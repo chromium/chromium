@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -67,8 +67,7 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   // ScopedVASurfaces for reuse according to the expectations of libva
   // vaDestroySurfaces(): "Surfaces can only be destroyed after all contexts
   // using these surfaces have been destroyed."
-  base::IDMap<std::unique_ptr<ScopedVASurface>,
-              decltype(gfx::GenericSharedMemoryId::id)>
+  base::flat_map<base::UnguessableToken, std::unique_ptr<ScopedVASurface>>
       allocated_va_surfaces_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 };
 

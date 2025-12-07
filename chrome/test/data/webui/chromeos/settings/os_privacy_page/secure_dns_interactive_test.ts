@@ -13,15 +13,17 @@ import 'chrome://os-settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SecureDnsInputElement, SettingsSecureDnsElement, SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
-import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode, SettingsToggleButtonElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
+import type {SecureDnsInputElement, SettingsSecureDnsElement} from 'chrome://os-settings/lazy_load.js';
+import {SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
+import type { ResolverOption, SettingsToggleButtonElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
+import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
-import { clearBody } from '../utils.js';
+import {clearBody} from '../utils.js';
 
 // clang-format on
 
@@ -97,7 +99,6 @@ suite('SettingsSecureDnsInteractive', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showSecureDnsSetting: true,
-      isRevampWayfindingEnabled: false,
     });
   });
 
@@ -130,6 +131,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -219,6 +222,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: '',
+      osMode: SecureDnsMode.SECURE,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -234,6 +239,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: resolverList[1]!.value,
+      osMode: SecureDnsMode.SECURE,
+      osConfig: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     await flushTasks();
@@ -303,13 +310,15 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals('some_input', testElement.$.secureDnsInput.value);
   });
 
-  test('SecureDnsDropdownChangeInAutomaticMode', async function() {
+  test('SecureDnsDropdownChangeInAutomaticMode', function() {
     const secureDnsToggle = getSecureDnsToggle();
 
     testElement.prefs.dns_over_https.templates.value = 'resolver1_template';
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: resolverList[1]!.value,
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -344,6 +353,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: resolverList[1]!.value,
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -382,6 +393,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: validEntry,
+      osMode: SecureDnsMode.SECURE,
+      osConfig: validEntry,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -412,6 +425,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -459,6 +474,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: managedDoubleEntry,
+      osMode: SecureDnsMode.SECURE,
+      osConfig: managedDoubleEntry,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -475,6 +492,8 @@ suite('SettingsSecureDnsInteractive', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: 'https://dns.example/dns-query',
+      osMode: SecureDnsMode.SECURE,
+      osConfig: 'https://dns.example/dns-query',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();

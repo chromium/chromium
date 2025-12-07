@@ -4,10 +4,13 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An interface that is notified of events and state changes related to gesture processing
  * from content layer.
  */
+@NullMarked
 public abstract class GestureStateListener {
     /** Called when the pinch gesture starts. */
     public void onPinchStarted() {}
@@ -53,13 +56,19 @@ public abstract class GestureStateListener {
 
     /**
      * Called at the beginning of any kind of touch event when the user's finger first touches down
-     * onto the screen.  The resulting gesture may be a single tap, long-press, or scroll.
+     * onto the screen. The resulting gesture may be a single tap, long-press, or scroll.
      */
     public void onTouchDown() {}
 
     /**
-     * Called after a single-tap gesture event was dispatched to the renderer,
-     * indicating whether or not the gesture was consumed.
+     * Called at the end of any kind of touch event when the user's last finger is lifted from the
+     * screen.
+     */
+    public void onTouchUp() {}
+
+    /**
+     * Called after a single-tap gesture event was dispatched to the renderer, indicating whether or
+     * not the gesture was consumed.
      */
     public void onSingleTap(boolean consumed) {}
 

@@ -23,6 +23,9 @@
 
 #include "java_generator.h"
 #include <google/protobuf/compiler/code_generator.h>
+#if GOOGLE_PROTOBUF_VERSION >= 5027000
+#include <google/protobuf/compiler/java/java_features.pb.h>
+#endif
 #include <google/protobuf/compiler/plugin.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
@@ -45,9 +48,27 @@ class JavaGrpcGenerator : public protobuf::compiler::CodeGenerator {
   JavaGrpcGenerator() {}
   virtual ~JavaGrpcGenerator() {}
 
+// Protobuf 5.27 released edition 2023.
+#if GOOGLE_PROTOBUF_VERSION >= 5027000
   uint64_t GetSupportedFeatures() const override {
-    return FEATURE_PROTO3_OPTIONAL;
+    return Feature::FEATURE_PROTO3_OPTIONAL |
+           Feature::FEATURE_SUPPORTS_EDITIONS;
   }
+  protobuf::Edition GetMinimumEdition() const override {
+    return protobuf::Edition::EDITION_PROTO2;
+  }
+  protobuf::Edition GetMaximumEdition() const override {
+    return protobuf::Edition::EDITION_2023;
+  }
+  std::vector<const protobuf::FieldDescriptor*> GetFeatureExtensions()
+      const override {
+    return {GetExtensionReflection(pb::java)};
+  }
+#else
+  uint64_t GetSupportedFeatures() const override {
+    return Feature::FEATURE_PROTO3_OPTIONAL;
+  }
+#endif
 
   virtual bool Generate(const protobuf::FileDescriptor* file,
                         const std::string& parameter,
@@ -58,6 +79,8 @@ class JavaGrpcGenerator : public protobuf::compiler::CodeGenerator {
 
     java_grpc_generator::ProtoFlavor flavor =
         java_grpc_generator::ProtoFlavor::NORMAL;
+    java_grpc_generator::GeneratedAnnotation generated_annotation =
+        java_grpc_generator::GeneratedAnnotation::JAVAX;
 
     bool disable_version = false;
     for (size_t i = 0; i < options.size(); i++) {
@@ -65,6 +88,12 @@ class JavaGrpcGenerator : public protobuf::compiler::CodeGenerator {
         flavor = java_grpc_generator::ProtoFlavor::LITE;
       } else if (options[i].first == "noversion") {
         disable_version = true;
+      } else if (options[i].first == "@generated") {
+         if (options[i].second == "omit") {
+           generated_annotation = java_grpc_generator::GeneratedAnnotation::OMIT;
+         } else if (options[i].second == "javax") {
+           generated_annotation = java_grpc_generator::GeneratedAnnotation::JAVAX;
+         }
       }
     }
 
@@ -77,7 +106,7 @@ class JavaGrpcGenerator : public protobuf::compiler::CodeGenerator {
       std::unique_ptr<protobuf::io::ZeroCopyOutputStream> output(
           context->Open(filename));
       java_grpc_generator::GenerateService(
-          service, output.get(), flavor, disable_version);
+          service, output.get(), flavor, disable_version, generated_annotation);
     }
     return true;
   }

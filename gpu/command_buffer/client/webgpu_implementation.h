@@ -90,27 +90,24 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
                         MailboxFlags flags,
                         const Mailbox& mailbox) override;
 
+  void AssociateMailboxForBuffer(GLuint device_id,
+                                 GLuint device_generation,
+                                 GLuint id,
+                                 GLuint generation,
+                                 uint64_t usage,
+                                 const Mailbox& mailbox) override;
+
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
-  bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override;
-  void CompleteLockDiscardableTexureOnContextThread(
-      uint32_t texture_id) override;
-  bool ThreadsafeDiscardableTextureIsDeletedForTracing(
-      uint32_t texture_id) override;
-  void* MapTransferCacheEntry(uint32_t serialized_size) override;
+  base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override;
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override;
   bool ThreadsafeLockTransferCacheEntry(uint32_t type, uint32_t id) override;
   void UnlockTransferCacheEntries(
       const std::vector<std::pair<uint32_t, uint32_t>>& entries) override;
   void DeleteTransferCacheEntry(uint32_t type, uint32_t id) override;
   unsigned int GetTransferBufferFreeSize() const override;
-  bool IsJpegDecodeAccelerationSupported() const override;
-  bool IsWebPDecodeAccelerationSupported() const override;
-  bool CanDecodeWithHardwareAcceleration(
-      const cc::ImageHeaderMetadata* image_metadata) const override;
 
   // InterfaceBase implementation.
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
@@ -118,7 +115,6 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
   void ShallowFlushCHROMIUM() override;
-  bool HasGrContextSupport() const override;
 
   // ImplementationBase implementation.
   void IssueShallowFlush() override;
@@ -137,6 +133,9 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
   scoped_refptr<APIChannel> GetAPIChannel() const override;
+  ReservedBuffer ReserveBuffer(
+      WGPUDevice device,
+      const WGPUBufferDescriptor* optionalDesc) override;
   ReservedTexture ReserveTexture(
       WGPUDevice device,
       const WGPUTextureDescriptor* optionalDesc = nullptr) override;

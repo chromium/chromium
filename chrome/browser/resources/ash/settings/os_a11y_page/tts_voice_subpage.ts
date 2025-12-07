@@ -15,29 +15,36 @@ import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 
-import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat, DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
-import {Route, routes} from '../router.js';
+import type {LanguagesBrowserProxy} from '../os_languages_page/languages_browser_proxy.js';
+import {LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './tts_voice_subpage.html.js';
-import {TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy.js';
+import type {TtsVoiceSubpageBrowserProxy} from './tts_voice_subpage_browser_proxy.js';
+import {TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy.js';
 
 /**
  * Represents a voice as sent from the TTS Handler class. |languageCode| is
- * the language, not the locale, i.e. 'en' rather than 'en-us'. |name| is the
- * user-facing voice name, and |id| is the unique ID for that voice name (which
- * is generated in tts_voice_subpage.js and not passed from tts_handler.cc).
+ * the language, not the locale, i.e. 'en' rather than 'en-us'.
+ * |name| is the internal voice name.
+ * |id| is the unique ID for that voice name (which is generated in
+ * tts_voice_subpage.js and not passed from tts_handler.cc).
  * |displayLanguage| is the user-facing display string, i.e. 'English'.
  * |fullLanguageCode| is the code with locale, i.e. 'en-us' or 'en-gb'.
  * |languageScore| is a relative measure of how closely the voice's language
  * matches the app language, and can be used to set a default voice.
+ * |displayName| is the user-facing voice name.
  */
 interface TtsHandlerVoice {
   languageCode: string;
@@ -47,6 +54,7 @@ interface TtsHandlerVoice {
   id: string;
   fullLanguageCode: string;
   languageScore: number;
+  displayName: string;
 }
 
 interface TtsHandlerExtension {
@@ -141,20 +149,6 @@ export class SettingsTtsVoiceSubpageElement extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kTextToSpeechRate,
-          Setting.kTextToSpeechPitch,
-          Setting.kTextToSpeechVolume,
-          Setting.kTextToSpeechVoice,
-          Setting.kTextToSpeechEngines,
-        ]),
-      },
     };
   }
 
@@ -164,11 +158,29 @@ export class SettingsTtsVoiceSubpageElement extends
   hasVoices: boolean;
   languagesOpened: boolean;
   languagesToVoices: TtsLanguage[];
-  prefs: {[key: string]: any};
+  prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kTextToSpeechRate,
+    Setting.kTextToSpeechPitch,
+    Setting.kTextToSpeechVolume,
+    Setting.kTextToSpeechVoice,
+    Setting.kTextToSpeechEngines,
+  ]);
+
   private isPreviewing_: boolean;
   private langBrowserProxy_: LanguagesBrowserProxy;
   private previewText_: string;
   private ttsBrowserProxy_: TtsVoiceSubpageBrowserProxy;
+
+  // Regular expressions that will match against a voice name if it contains a
+  // speaker ID in it.
+  private omitLocalSpeakerName_: RegExp = /-x-.*-local/;
+  private omitNetworkSpeakerName_: RegExp = /-x-.*-network/;
+  // Replacements that are used if the above regular expressions match.
+  private localSpeakerNameReplacement_ = '-x-local';
+  private networkSpeakerNameReplacement_ = '-x-network';
 
   constructor() {
     super();
@@ -278,6 +290,10 @@ export class SettingsTtsVoiceSubpageElement extends
     return this.hasVoices_(voices) && !isPreviewing && hasPreviewText;
   }
 
+  populateVoiceListForTesting(voices: TtsHandlerVoice[]): void {
+    this.populateVoiceList_(voices);
+  }
+
   /**
    * Populates the list of languages and voices for the UI to use in display.
    */
@@ -288,6 +304,19 @@ export class SettingsTtsVoiceSubpageElement extends
     const preferredLangs =
         this.get('prefs.intl.accept_languages.value').split(',');
     voices.forEach(voice => {
+      voice.name = voice.name || '';
+      voice.displayName = voice.displayName || voice.name;
+
+      if (this.omitLocalSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitLocalSpeakerName_, this.localSpeakerNameReplacement_);
+      } else if (this.omitNetworkSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitNetworkSpeakerName_, this.networkSpeakerNameReplacement_);
+      }
+
       if (!result[voice.languageCode]) {
         result[voice.languageCode] = {
           language: voice.displayLanguage,

@@ -11,35 +11,34 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_IDS_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_IDS_AUTOGEN_H_
 
-#define RASTER_COMMAND_LIST(OP)                             \
-  OP(Finish)                                      /* 256 */ \
-  OP(Flush)                                       /* 257 */ \
-  OP(GetError)                                    /* 258 */ \
-  OP(GenQueriesEXTImmediate)                      /* 259 */ \
-  OP(DeleteQueriesEXTImmediate)                   /* 260 */ \
-  OP(QueryCounterEXT)                             /* 261 */ \
-  OP(BeginQueryEXT)                               /* 262 */ \
-  OP(EndQueryEXT)                                 /* 263 */ \
-  OP(LoseContextCHROMIUM)                         /* 264 */ \
-  OP(BeginRasterCHROMIUMImmediate)                /* 265 */ \
-  OP(RasterCHROMIUM)                              /* 266 */ \
-  OP(EndRasterCHROMIUM)                           /* 267 */ \
-  OP(CreateTransferCacheEntryINTERNAL)            /* 268 */ \
-  OP(DeleteTransferCacheEntryINTERNAL)            /* 269 */ \
-  OP(UnlockTransferCacheEntryINTERNAL)            /* 270 */ \
-  OP(DeletePaintCachePathsINTERNALImmediate)      /* 271 */ \
-  OP(DeletePaintCachePathsINTERNAL)               /* 272 */ \
-  OP(ClearPaintCacheINTERNAL)                     /* 273 */ \
-  OP(CopySharedImageINTERNALImmediate)            /* 274 */ \
-  OP(WritePixelsINTERNALImmediate)                /* 275 */ \
-  OP(WritePixelsYUVINTERNALImmediate)             /* 276 */ \
-  OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 277 */ \
-  OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 278 */ \
-  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)  /* 279 */ \
-  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate) /* 280 */ \
-  OP(TraceBeginCHROMIUM)                          /* 281 */ \
-  OP(TraceEndCHROMIUM)                            /* 282 */ \
-  OP(SetActiveURLCHROMIUM)                        /* 283 */
+#define RASTER_COMMAND_LIST(OP)                          \
+  OP(Finish)                                   /* 256 */ \
+  OP(Flush)                                    /* 257 */ \
+  OP(GetError)                                 /* 258 */ \
+  OP(GenQueriesEXTImmediate)                   /* 259 */ \
+  OP(DeleteQueriesEXTImmediate)                /* 260 */ \
+  OP(BeginQueryEXT)                            /* 261 */ \
+  OP(EndQueryEXT)                              /* 262 */ \
+  OP(LoseContextCHROMIUM)                      /* 263 */ \
+  OP(BeginRasterCHROMIUMImmediate)             /* 264 */ \
+  OP(RasterCHROMIUM)                           /* 265 */ \
+  OP(EndRasterCHROMIUM)                        /* 266 */ \
+  OP(CreateTransferCacheEntryINTERNAL)         /* 267 */ \
+  OP(DeleteTransferCacheEntryINTERNAL)         /* 268 */ \
+  OP(UnlockTransferCacheEntryINTERNAL)         /* 269 */ \
+  OP(DeletePaintCachePathsINTERNALImmediate)   /* 270 */ \
+  OP(DeletePaintCachePathsINTERNAL)            /* 271 */ \
+  OP(DeletePaintCacheEffectsINTERNALImmediate) /* 272 */ \
+  OP(DeletePaintCacheEffectsINTERNAL)          /* 273 */ \
+  OP(ClearPaintCacheINTERNAL)                  /* 274 */ \
+  OP(CopySharedImageINTERNALImmediate)         /* 275 */ \
+  OP(WritePixelsINTERNALImmediate)             /* 276 */ \
+  OP(WritePixelsYUVINTERNALImmediate)          /* 277 */ \
+  OP(ReadbackARGBImagePixelsINTERNALImmediate) /* 278 */ \
+  OP(ReadbackYUVImagePixelsINTERNALImmediate)  /* 279 */ \
+  OP(TraceBeginCHROMIUM)                       /* 280 */ \
+  OP(TraceEndCHROMIUM)                         /* 281 */ \
+  OP(SetActiveURLCHROMIUM)                     /* 282 */
 
 enum CommandId {
   kOneBeforeStartPoint =

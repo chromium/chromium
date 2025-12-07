@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -36,7 +38,8 @@ class GeminiIntroScreenTest : public OobeBaseTest {
   GeminiIntroScreenTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFeatureManagementOobeAiIntro,
-         features::kFeatureManagementOobeGeminiIntro},
+         features::kFeatureManagementOobeGeminiIntro,
+         features::kOobePerksDiscovery},
         {});
   }
 
@@ -96,6 +99,21 @@ IN_PROC_BROWSER_TEST_F(GeminiIntroScreenTest, BackwardFlow) {
   OobeScreenWaiter(AiIntroScreenView::kScreenId).Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(GeminiIntroScreenTest, GamgeePerkShown) {
+  login_manager_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+
+  // Setting the user has seen the gamgee perk in OOBE.
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kOobePerksDiscoveryGamgeeShown, true);
+
+  WizardController::default_controller()->AdvanceToScreen(
+      GeminiIntroScreenView::kScreenId);
+
+  EXPECT_EQ(WaitForScreenExitResult(),
+            GeminiIntroScreen::Result::kNotApplicable);
+}
+
 class GeminiIntroScreenChildTest : public GeminiIntroScreenTest {
  public:
   // Child users require a user policy, set up an empty one so the user can
@@ -107,7 +125,8 @@ class GeminiIntroScreenChildTest : public GeminiIntroScreenTest {
 
  protected:
   const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+      AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                     GaiaId(test::kTestGaiaId))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 
@@ -127,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(GeminiIntroScreenChildTest, SkipScreenForChildUser) {
 class GeminiIntroScreenManagedTest : public GeminiIntroScreenTest {
  protected:
   const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("1111"))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 

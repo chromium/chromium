@@ -16,18 +16,15 @@ class TextBreakIteratorTest : public testing::Test {
     test_string_ = String::FromUTF8(test_string);
   }
 
-  void SetTestString16(Vector<UChar> input) {
-    test_string_ = String(input.data(), static_cast<unsigned>(input.size()));
-  }
+  void SetTestString16(Vector<UChar> input) { test_string_ = String(input); }
 
   // The expected break positions must be specified UTF-16 character boundaries.
   void MatchLineBreaks(
-      LineBreakType line_break_type,
       const Vector<int> expected_break_positions,
+      LineBreakType line_break_type = LineBreakType::kNormal,
       BreakSpaceType break_space = BreakSpaceType::kAfterSpaceRun) {
     if (test_string_.Is8Bit()) {
-      test_string_ = String::Make16BitFrom8BitSource(test_string_.Characters8(),
-                                                     test_string_.length());
+      test_string_ = String::Make16BitFrom8BitSource(test_string_.Span8());
     }
     LazyLineBreakIterator lazy_break_iterator(test_string_, locale_.get());
     lazy_break_iterator.SetBreakType(line_break_type);
@@ -74,8 +71,8 @@ class TextBreakIteratorTest : public testing::Test {
   Vector<unsigned> GraphemesClusterList(String input,
                                         unsigned start,
                                         unsigned length) {
-    Vector<unsigned> result;
-    ::blink::GraphemesClusterList(StringView(input, start, length), &result);
+    Vector<unsigned> result(length);
+    ::blink::GraphemesClusterList(StringView(input, start, length), result);
     return result;
   }
 
@@ -100,6 +97,24 @@ TEST_F(TextBreakIteratorTest, PooledBreakIterator) {
   // Because `it2` is released, `it3` should be the same instance as `it2`.
   PooledBreakIterator it3 = AcquireLineBreakIterator(str, locale);
   EXPECT_EQ(it3.get(), ptr2);
+}
+
+TEST_F(TextBreakIteratorTest, PooledCharacterBreakIterator) {
+  String str16(u"a");
+  ASSERT_FALSE(str16.Is8Bit());
+  CharacterBreakIterator it1(str16);
+
+  // Get another and release. It should be a different instance than `it1`.
+  TextBreakIterator* ptr2;
+  {
+    CharacterBreakIterator it2(str16);
+    EXPECT_NE(it2.iterator_.get(), it1.iterator_.get());
+    ptr2 = it2.iterator_.get();
+  }
+
+  // Because `it2` is released, `it3` should be the same instance as `it2`.
+  CharacterBreakIterator it3(str16);
+  EXPECT_EQ(it3.iterator_.get(), ptr2);
 }
 
 static const LineBreakType all_break_types[] = {
@@ -144,86 +159,86 @@ TEST_F(TextBreakIteratorTest, Strictness) {
 
 TEST_F(TextBreakIteratorTest, Basic) {
   SetTestString("a b  c");
-  MatchLineBreaks(LineBreakType::kNormal, {2, 5, 6});
+  MatchLineBreaks({2, 5, 6});
 }
 
 TEST_F(TextBreakIteratorTest, Newline) {
   SetTestString("a\nb\n\nc\n d");
-  MatchLineBreaks(LineBreakType::kNormal, {2, 5, 8, 9});
+  MatchLineBreaks({2, 5, 8, 9});
 }
 
 TEST_F(TextBreakIteratorTest, Tab) {
   SetTestString("a\tb\t\tc");
-  MatchLineBreaks(LineBreakType::kNormal, {2, 5, 6});
+  MatchLineBreaks({2, 5, 6}, LineBreakType::kNormal);
 }
 
 TEST_F(TextBreakIteratorTest, LatinPunctuation) {
   SetTestString("(ab) cd.");
-  MatchLineBreaks(LineBreakType::kNormal, {5, 8});
-  MatchLineBreaks(LineBreakType::kBreakAll, {2, 5, 6, 8});
-  MatchLineBreaks(LineBreakType::kBreakCharacter, {1, 2, 3, 4, 5, 6, 7, 8});
-  MatchLineBreaks(LineBreakType::kKeepAll, {5, 8});
+  MatchLineBreaks({5, 8}, LineBreakType::kNormal);
+  MatchLineBreaks({2, 5, 6, 8}, LineBreakType::kBreakAll);
+  MatchLineBreaks({1, 2, 3, 4, 5, 6, 7, 8}, LineBreakType::kBreakCharacter);
+  MatchLineBreaks({5, 8}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, Chinese) {
   SetTestString("標準萬國碼");
-  MatchLineBreaks(LineBreakType::kNormal, {1, 2, 3, 4, 5});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 3, 4, 5});
-  MatchLineBreaks(LineBreakType::kBreakCharacter, {1, 2, 3, 4, 5});
-  MatchLineBreaks(LineBreakType::kKeepAll, {5});
+  MatchLineBreaks({1, 2, 3, 4, 5}, LineBreakType::kNormal);
+  MatchLineBreaks({1, 2, 3, 4, 5}, LineBreakType::kBreakAll);
+  MatchLineBreaks({1, 2, 3, 4, 5}, LineBreakType::kBreakCharacter);
+  MatchLineBreaks({5}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, ChineseMixed) {
   SetTestString("標（準）萬ab國.碼");
-  MatchLineBreaks(LineBreakType::kNormal, {1, 4, 5, 7, 9, 10});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 4, 5, 6, 7, 9, 10});
-  MatchLineBreaks(LineBreakType::kBreakCharacter,
-                  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-  MatchLineBreaks(LineBreakType::kKeepAll, {1, 4, 9, 10});
+  MatchLineBreaks({1, 4, 5, 7, 9, 10}, LineBreakType::kNormal);
+  MatchLineBreaks({1, 4, 5, 6, 7, 9, 10}, LineBreakType::kBreakAll);
+  MatchLineBreaks({1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                  LineBreakType::kBreakCharacter);
+  MatchLineBreaks({1, 4, 9, 10}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, ChineseSpaces) {
   SetTestString("標  萬  a  國");
-  MatchLineBreaks(LineBreakType::kNormal, {3, 6, 9, 10});
-  MatchLineBreaks(LineBreakType::kBreakAll, {3, 6, 9, 10});
-  MatchLineBreaks(LineBreakType::kBreakCharacter,
-                  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-  MatchLineBreaks(LineBreakType::kKeepAll, {3, 6, 9, 10});
+  MatchLineBreaks({3, 6, 9, 10}, LineBreakType::kNormal);
+  MatchLineBreaks({3, 6, 9, 10}, LineBreakType::kBreakAll);
+  MatchLineBreaks({1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                  LineBreakType::kBreakCharacter);
+  MatchLineBreaks({3, 6, 9, 10}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiZWJFamilyIsolate) {
   SetTestString("\U0001F468\u200D\U0001F469\u200D\U0001F467\u200D\U0001F466");
-  MatchLineBreaks(LineBreakType::kNormal, {11});
-  MatchLineBreaks(LineBreakType::kBreakAll, {11});
-  MatchLineBreaks(LineBreakType::kBreakCharacter, {11});
-  MatchLineBreaks(LineBreakType::kKeepAll, {11});
+  MatchLineBreaks({11}, LineBreakType::kNormal);
+  MatchLineBreaks({11}, LineBreakType::kBreakAll);
+  MatchLineBreaks({11}, LineBreakType::kBreakCharacter);
+  MatchLineBreaks({11}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequenceIsolate) {
   SetTestString("\u261D\U0001F3FB");
-  MatchLineBreaks(LineBreakType::kNormal, {3});
-  MatchLineBreaks(LineBreakType::kBreakAll, {3});
-  MatchLineBreaks(LineBreakType::kBreakCharacter, {3});
-  MatchLineBreaks(LineBreakType::kKeepAll, {3});
+  MatchLineBreaks({3}, LineBreakType::kNormal);
+  MatchLineBreaks({3}, LineBreakType::kBreakAll);
+  MatchLineBreaks({3}, LineBreakType::kBreakCharacter);
+  MatchLineBreaks({3}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiZWJSequence) {
   SetTestString(
       "abc \U0001F469\u200D\U0001F469\u200D\U0001F467\u200D\U0001F467 def");
-  MatchLineBreaks(LineBreakType::kNormal, {4, 16, 19});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 4, 16, 17, 18, 19});
-  MatchLineBreaks(LineBreakType::kBreakCharacter,
-                  {1, 2, 3, 4, 15, 16, 17, 18, 19});
-  MatchLineBreaks(LineBreakType::kKeepAll, {4, 16, 19});
+  MatchLineBreaks({4, 16, 19}, LineBreakType::kNormal);
+  MatchLineBreaks({1, 2, 4, 16, 17, 18, 19}, LineBreakType::kBreakAll);
+  MatchLineBreaks({1, 2, 3, 4, 15, 16, 17, 18, 19},
+                  LineBreakType::kBreakCharacter);
+  MatchLineBreaks({4, 16, 19}, LineBreakType::kKeepAll);
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequence) {
   SetTestString("abc \u261D\U0001F3FB def");
-  MatchLineBreaks(LineBreakType::kNormal, {4, 8, 11});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 4, 8, 9, 10, 11});
-  MatchLineBreaks(LineBreakType::kBreakCharacter,
-                  {1, 2, 3, 4, 7, 8, 9, 10, 11});
-  MatchLineBreaks(LineBreakType::kKeepAll, {4, 8, 11});
+  MatchLineBreaks({4, 8, 11}, LineBreakType::kNormal);
+  MatchLineBreaks({1, 2, 4, 8, 9, 10, 11}, LineBreakType::kBreakAll);
+  MatchLineBreaks({1, 2, 3, 4, 7, 8, 9, 10, 11},
+                  LineBreakType::kBreakCharacter);
+  MatchLineBreaks({4, 8, 11}, LineBreakType::kKeepAll);
 }
 
 TEST_P(BreakTypeTest, NextBreakOpportunityAtEnd) {
@@ -236,9 +251,9 @@ TEST_P(BreakTypeTest, NextBreakOpportunityAtEnd) {
 TEST_F(TextBreakIteratorTest, Phrase) {
   locale_ = LayoutLocale::CreateForTesting(AtomicString("ja"));
   test_string_ = u"今日はよい天気です。";
-  MatchLineBreaks(LineBreakType::kPhrase, {3, 5, 10});
+  MatchLineBreaks({3, 5, 10}, LineBreakType::kPhrase);
   test_string_ = u"あなたに寄り添う最先端のテクノロジー。";
-  MatchLineBreaks(LineBreakType::kPhrase, {4, 8, 12, 19});
+  MatchLineBreaks({4, 8, 12, 19}, LineBreakType::kPhrase);
 }
 
 TEST_F(TextBreakIteratorTest, LengthOfGraphemeCluster) {
@@ -330,6 +345,30 @@ TEST_F(TextBreakIteratorTest, SoftHyphen) {
   TestNextBreakOpportunity({3, 6, 9, 12, 14}, break_iterator);
   break_iterator.EnableSoftHyphen(false);
   TestNextBreakOpportunity({9, 14}, break_iterator);
+}
+
+TEST_F(TextBreakIteratorTest, HyphenMinusBeforeHighLatin) {
+  SetTestString("Lorem-úpsum");
+  MatchLineBreaks({6, 11});
+  SetTestString("Lorem-èpsum");
+  MatchLineBreaks({6, 11});
+}
+
+TEST_F(TextBreakIteratorTest, WordBreakSwedish) {
+  // "k:a" is interpreted as one word in Swedish and 2 words in English, up
+  // until ICU 76. See https://github.com/unicode-org/icu/pull/3249
+  const String text = "k:a";
+  std::unique_ptr<TextBreakIterator> english =
+      CreateWordBreakIteratorForTest(text, "en-us");
+  std::unique_ptr<TextBreakIterator> swedish =
+      CreateWordBreakIteratorForTest(text, "sv-se");
+  EXPECT_EQ(english->following(0), 1);
+#if U_ICU_VERSION_MAJOR_NUM >= 77
+  constexpr int swedish_expected = 1;
+#else
+  constexpr int swedish_expected = 3;
+#endif
+  EXPECT_EQ(swedish->following(0), swedish_expected);
 }
 
 }  // namespace blink

@@ -14,7 +14,7 @@ import androidx.annotation.StringRes;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -22,7 +22,10 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -118,9 +121,13 @@ public class RuntimePermissionTestUtils {
         }
     }
 
-    public static void setupGeolocationSystemMock() {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+    public static void setupGeolocationSystemMock(boolean enabled) {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(enabled);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+    }
+
+    public static void setupGeolocationSystemMock() {
+        setupGeolocationSystemMock(true);
     }
 
     private static void waitUntilDifferentDialogIsShowing(
@@ -138,6 +145,7 @@ public class RuntimePermissionTestUtils {
     /**
      * Run a test related to the runtime permission prompt, based on the specified parameters.
      *
+     * @param activity The ChromeActivity instance to use for this test.
      * @param permissionTestRule The PermissionTestRule of the calling test.
      * @param testAndroidPermissionDelegate The TestAndroidPermissionDelegate to be used for this
      *     test.
@@ -154,9 +162,9 @@ public class RuntimePermissionTestUtils {
      *     skip).
      * @param missingPermissionPromptTextId The resource string id that matches the text of the
      *     missing permission prompt dialog (0 if not applicable).
-     * @throws Exception
      */
     public static void runTest(
+            final ChromeActivity activity,
             final PermissionTestRule permissionTestRule,
             final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
             final String testUrl,
@@ -167,19 +175,27 @@ public class RuntimePermissionTestUtils {
             final String javascriptToExecute,
             final @StringRes int missingPermissionPromptTextId)
             throws Exception {
-        final ChromeActivity activity = permissionTestRule.getActivity();
         activity.getWindowAndroid().setAndroidPermissionDelegate(testAndroidPermissionDelegate);
 
-        final Tab tab = activity.getActivityTab();
+        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         final PermissionUpdateWaiter permissionUpdateWaiter =
                 new PermissionUpdateWaiter(
                         expectPermissionAllowed ? "Granted" : "Denied", activity);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
 
-        permissionTestRule.setUpUrl(testUrl);
+        final String url = permissionTestRule.getURL(testUrl);
+        ChromeTabUtils.waitForTabPageLoaded(
+                tab,
+                url,
+                () -> {
+                    ChromeTabUtils.loadUrlOnUiThread(tab, url);
+                });
 
         if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
-            permissionTestRule.runJavaScriptCodeInCurrentTabWithGesture(javascriptToExecute);
+            JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                    ThreadUtils.runOnUiThreadBlocking(() -> tab.getWebContents()),
+                    "functionToRun = '" + javascriptToExecute + "'");
+            TouchCommon.singleClickView(ThreadUtils.runOnUiThreadBlocking(() -> tab.getView()));
         }
 
         PropertyModel askPermissionDialogModel = null;
@@ -214,7 +230,7 @@ public class RuntimePermissionTestUtils {
                     manager.getCurrentDialogForTest()
                             .get(ModalDialogProperties.CUSTOM_VIEW)
                             .findViewById(R.id.text);
-            String appName = BuildInfo.getInstance().hostPackageLabel;
+            String appName = ApkInfo.getHostPackageLabel();
             Assert.assertEquals(
                     ((TextView) dialogText).getText(),
                     activity.getResources().getString(missingPermissionPromptTextId, appName));
@@ -237,5 +253,34 @@ public class RuntimePermissionTestUtils {
         }
 
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(permissionUpdateWaiter));
+    }
+
+    /**
+     * This is a convenience method that automatically retrieves the {@link ChromeActivity} from the
+     * {@link PermissionTestRule} before running the test.
+     */
+    public static void runTest(
+            final PermissionTestRule permissionTestRule,
+            final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
+            final String testUrl,
+            final boolean expectPermissionAllowed,
+            final @PermissionTestRule.PromptDecision int promptDecision,
+            final boolean waitForMissingPermissionPrompt,
+            final boolean waitForUpdater,
+            final String javascriptToExecute,
+            final @StringRes int missingPermissionPromptTextId)
+            throws Exception {
+        final ChromeActivity activity = permissionTestRule.getActivity();
+        runTest(
+                activity,
+                permissionTestRule,
+                testAndroidPermissionDelegate,
+                testUrl,
+                expectPermissionAllowed,
+                promptDecision,
+                waitForMissingPermissionPrompt,
+                waitForUpdater,
+                javascriptToExecute,
+                missingPermissionPromptTextId);
     }
 }

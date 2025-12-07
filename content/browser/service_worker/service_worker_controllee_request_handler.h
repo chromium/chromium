@@ -8,11 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
@@ -21,10 +20,6 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -82,12 +77,14 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // If |skip_service_worker| is true, service workers are bypassed for
   // request interception.
+  // `service_worker_client->UpdateUrls()` should be called for this
+  // request/redirect leg before constructing
+  // `ServiceWorkerControlleeRequestHandler`.
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
+      std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      network::mojom::RequestDestination destination,
       bool skip_service_worker,
-      int frame_tree_node_id,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
 
   ServiceWorkerControlleeRequestHandler(
@@ -101,7 +98,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // class is created.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
-      const blink::StorageKey& storage_key,
       BrowserContext* browser_context,
       NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
@@ -111,18 +107,9 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
     return loader_wrapper_ ? loader_wrapper_->get() : nullptr;
   }
 
-  void set_parent_client_uuid(std::string uuid) {
-    parent_client_uuid_ = std::move(uuid);
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
-
-  // Does all initialization of |service_worker_client_| for a request.
-  void InitializeServiceWorkerClient(
-      const network::ResourceRequest& tentative_request,
-      const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
       // True when FindRegistrationForClientUrl() is called for navigation.
@@ -172,18 +159,18 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       start_service_worker_for_empty_fetch_handler_duration_for_testing_;
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
+
+  // FetchEvent.clientId
+  // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
+  const std::string fetch_event_client_id_;
+
   const base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  const network::mojom::RequestDestination destination_;
 
   // If true, service workers are bypassed for request interception.
   const bool skip_service_worker_;
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
-  GURL stripped_url_;
-  blink::StorageKey storage_key_;
   bool force_update_started_;
-  const int frame_tree_node_id_;
-  std::string parent_client_uuid_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

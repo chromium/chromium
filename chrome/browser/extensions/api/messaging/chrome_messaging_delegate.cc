@@ -11,22 +11,23 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
-#include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/api/messaging/extension_message_port.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
-#include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/api/messaging/native_message_port.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -107,55 +108,6 @@ content::WebContents* ChromeMessagingDelegate::GetWebContentsByTabId(
     return nullptr;
   }
   return contents;
-}
-
-std::unique_ptr<MessagePort> ChromeMessagingDelegate::CreateReceiverForTab(
-    base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
-    const ExtensionId& extension_id,
-    const PortId& receiver_port_id,
-    content::WebContents* receiver_contents,
-    int receiver_frame_id,
-    const std::string& receiver_document_id) {
-  // Frame ID -1 is every frame in the tab.
-  bool include_child_frames =
-      receiver_frame_id == -1 && receiver_document_id.empty();
-
-  content::RenderFrameHost* receiver_render_frame_host = nullptr;
-  if (include_child_frames) {
-    // The target is the active outermost main frame of the WebContents.
-    receiver_render_frame_host = receiver_contents->GetPrimaryMainFrame();
-  } else if (!receiver_document_id.empty()) {
-    ExtensionApiFrameIdMap::DocumentId document_id =
-        ExtensionApiFrameIdMap::DocumentIdFromString(receiver_document_id);
-
-    // Return early for invalid documentIds.
-    if (!document_id)
-      return nullptr;
-
-    receiver_render_frame_host =
-        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
-            document_id);
-
-    // If both |document_id| and |receiver_frame_id| are provided they
-    // should find the same RenderFrameHost, if not return early.
-    if (receiver_frame_id != -1 &&
-        ExtensionApiFrameIdMap::GetRenderFrameHostById(receiver_contents,
-                                                       receiver_frame_id) !=
-            receiver_render_frame_host) {
-      return nullptr;
-    }
-  } else {
-    DCHECK_GT(receiver_frame_id, -1);
-    receiver_render_frame_host = ExtensionApiFrameIdMap::GetRenderFrameHostById(
-        receiver_contents, receiver_frame_id);
-  }
-  if (!receiver_render_frame_host) {
-    return nullptr;
-  }
-
-  return std::make_unique<ExtensionMessagePort>(
-      channel_delegate, receiver_port_id, extension_id,
-      receiver_render_frame_host, include_child_frames);
 }
 
 std::unique_ptr<MessagePort>

@@ -170,6 +170,16 @@ void RemoveDefaultCamera();
 // found within the time limit.
 size_t WaitForCameraAvailabilityWithTimeout(base::TimeDelta time_out);
 
+// Selects a region by pressing and dragging the mouse. If `verify_region` is
+// true, verifies the user capture region.
+void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
+                             const gfx::Rect& region_in_screen,
+                             bool release_mouse = true,
+                             bool verify_region = true);
+
+// Verifies that capture mode session is active and has behavior of `type`.
+void VerifyActiveBehavior(BehaviorType type);
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should
@@ -214,7 +224,8 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
+                               views::View* starting_view,
+                               bool visible) override;
 
  private:
   const raw_ptr<views::View> view_;

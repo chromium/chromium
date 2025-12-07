@@ -5,9 +5,11 @@
 #ifndef EXTENSIONS_COMMON_IMAGE_UTIL_H_
 #define EXTENSIONS_COMMON_IMAGE_UTIL_H_
 
+#include <stdint.h>
+
 class SkBitmap;
 
-using SkColor = unsigned int;
+using SkColor = uint32_t;
 
 namespace base {
 class FilePath;
@@ -51,7 +53,7 @@ inline constexpr int kMaxAllowedPixels = 2048 * 2048;
                                                    SkBitmap* rendered_icon);
 
 // Load a PNG image from a file into the destination bitmap.
-bool LoadPngFromFile(const base::FilePath& path, SkBitmap* dst);
+SkBitmap LoadPngFromFile(const base::FilePath& path);
 
 }  // namespace extensions::image_util
 

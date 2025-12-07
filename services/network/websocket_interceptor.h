@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_WEBSOCKET_INTERCEPTOR_H_
 #define SERVICES_NETWORK_WEBSOCKET_INTERCEPTOR_H_
 
+#include <array>
 #include <optional>
 
 #include "base/component_export.h"
@@ -12,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -28,6 +30,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
 
   WebSocketInterceptor(
       uint32_t net_log_source_id,
+      const GURL& url,
       const std::optional<base::UnguessableToken>& throttling_profile_id);
 
   virtual ~WebSocketInterceptor();
@@ -53,11 +56,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
  private:
   void ThrottleCallback(FrameDirection direction, int result, int64_t bytes);
 
-  ThrottlingNetworkInterceptor::ThrottleCallback throttle_callbacks_[2];
+  std::array<ThrottlingNetworkInterceptor::ThrottleCallback, 2>
+      throttle_callbacks_;
   const uint32_t net_log_source_id_;
+  const GURL url_;
   const std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
-  base::OnceClosure pending_callbacks_[2];
+  std::array<base::OnceClosure, 2> pending_callbacks_;
 };
 
 }  // namespace network

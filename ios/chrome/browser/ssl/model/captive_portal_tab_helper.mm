@@ -8,7 +8,6 @@
 
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 
 CaptivePortalTabHelper::CaptivePortalTabHelper(web::WebState* web_state) {}
@@ -27,5 +26,3 @@ void CaptivePortalTabHelper::DisplayCaptivePortalLoginPage(GURL landing_url) {
 }
 
 CaptivePortalTabHelper::~CaptivePortalTabHelper() = default;
-
-WEB_STATE_USER_DATA_KEY_IMPL(CaptivePortalTabHelper)

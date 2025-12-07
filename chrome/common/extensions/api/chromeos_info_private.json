@@ -7,7 +7,7 @@
     "namespace": "chromeosInfoPrivate",
     "description": "none",
     "compiler_options": {
-      "implemented_in": "chrome/browser/chromeos/extensions/info_private_api.h"
+      "implemented_in": "chrome/browser/chromeos/extensions/info_private/info_private_api.h"
     },
     "types": [
       {
@@ -162,22 +162,6 @@
           "parameters": [
             {
               "name": "tabletModeEnabled",
-              "type": "boolean"
-            }
-          ]
-        }
-      },
-      {
-        "name": "isRunningOnLacros",
-        "type": "function",
-        "description": "Called to request status of lacros browser enabled for primary user.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "Returns true if called from within the Lacros context.",
-          "parameters": [
-            {
-              "name": "runningOnLacros",
               "type": "boolean"
             }
           ]

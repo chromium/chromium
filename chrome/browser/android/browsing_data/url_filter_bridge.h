@@ -24,11 +24,10 @@ class UrlFilterBridge {
   ~UrlFilterBridge();
 
   // Destroys this object.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Whether |jurl| is matched by this filter.
   bool MatchesUrl(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
                   std::string& url_spec) const;
 
   // The Java counterpart of this object.

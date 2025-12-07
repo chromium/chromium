@@ -14,12 +14,12 @@
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -110,14 +110,14 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   void StartPlaybackAndWait(Shell* shell, const std::string& id) {
     shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"document.querySelector('#" + base::ASCIIToUTF16(id) + u"').play();",
-        base::NullCallback());
+        base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
     WaitForStart(shell);
   }
 
   void StopPlaybackAndWait(Shell* shell, const std::string& id) {
     shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"document.querySelector('#" + base::ASCIIToUTF16(id) + u"').pause();",
-        base::NullCallback());
+        base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
     WaitForStop(shell);
   }
 

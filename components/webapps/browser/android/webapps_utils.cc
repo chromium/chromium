@@ -8,7 +8,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -30,8 +32,7 @@ bool IsUrlWebApkCompatible(const GURL& url) {
 }  // namespace
 
 // static
-bool WebappsUtils::IsWebApkInstalled(content::BrowserContext* browser_context,
-                                     const GURL& url) {
+bool WebappsUtils::IsWebApkInstalled(const GURL& url) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, url.spec());
@@ -67,4 +68,13 @@ void WebappsUtils::ShowWebApkInstallResultToast(
       base::android::AttachCurrentThread(), (int)result);
 }
 
+// static
+bool WebappsUtils::IsAutoMintedTwaEnabled() {
+  // TODO: crbug.com/449581904 - Also check if Web App Service in WebApp
+  // mainline module is enabled.
+  return base::FeatureList::IsEnabled(webapps::features::kAndroidAutoMintedTWA);
+}
+
 }  // namespace webapps
+
+DEFINE_JNI(WebappsUtils)

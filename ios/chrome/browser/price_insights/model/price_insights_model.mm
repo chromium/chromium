@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
@@ -15,24 +16,30 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// The histogram used to record the availability of ProductInfo.
+const char kPriceInsightsModelProductInfo[] =
+    "IOS.PriceInsights.Model.ProductInfo";
+
+// The histogram used to record the availability of PriceInsightsInfo.
+const char kPriceInsightsModelPriceInsightsInfo[] =
+    "IOS.PriceInsights.Model.PriceInsightsInfo";
+
+// The histogram used to record if the page can be tracked and user is eligible
+// to track.
+const char kPriceInsightsModelCanTrack[] = "IOS.PriceInsights.Model.CanTrack";
+
+// The histogram used to record whether or not the page is being tracked.
+const char kPriceInsightsModelIsSubscribed[] =
+    "IOS.PriceInsights.Model.IsSubscribed";
 
 std::string getHighConfidenceMomentsText() {
-  std::string low_price_value = GetLowPriceParamValue();
-  if (low_price_value == std::string(kLowPriceParamGoodDealNow)) {
-    return l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL);
-  }
-  if (low_price_value == std::string(kLowPriceParamSeePriceHistory)) {
-    return l10n_util::GetStringUTF8(
-        IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY);
-  }
-
-  return l10n_util::GetStringUTF8(
-      IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE);
+  return l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL);
 }
 
 }  // namespace
@@ -63,8 +70,8 @@ void PriceInsightsModel::FetchConfigurationForWebState(
   price_insights_executions_[product_url] =
       std::make_unique<PriceInsightsExecution>();
 
-  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   shopping_service_->GetProductInfoForUrl(
       product_url, base::BindOnce(&PriceInsightsModel::OnProductInfoUrlReceived,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -73,7 +80,11 @@ void PriceInsightsModel::FetchConfigurationForWebState(
 void PriceInsightsModel::OnProductInfoUrlReceived(
     const GURL& url,
     const std::optional<const commerce::ProductInfo>& info) {
-  if (!info.has_value()) {
+  bool has_valid_info =
+      info.has_value() &&
+      (!info->title.empty() || !info->product_cluster_title.empty());
+  base::UmaHistogramBoolean(kPriceInsightsModelProductInfo, has_valid_info);
+  if (!has_valid_info) {
     price_insights_executions_[url]->is_subscribed_processed = true;
     price_insights_executions_[url]->is_price_insights_info_processed = true;
     RunCallbacks(url);
@@ -92,6 +103,7 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
 
   bool can_track_price =
       shopping_service_->IsShoppingListEligible() && CanTrackPrice(info);
+  base::UmaHistogramBoolean(kPriceInsightsModelCanTrack, can_track_price);
   price_insights_executions_[url]->config->can_price_track = can_track_price;
   if (can_track_price && info.value().product_cluster_id.has_value()) {
     uint64_t cluster_id = info.value().product_cluster_id.value();
@@ -103,12 +115,17 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
   }
 
   price_insights_executions_[url]->is_subscribed_processed = true;
+  RunCallbacks(url);
 }
 
 void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
     const GURL& url,
     const std::optional<commerce::PriceInsightsInfo>& info) {
-  if (info.has_value()) {
+  bool has_valid_price_insights_info =
+      info.has_value() && info.value().catalog_history_prices.size() > 0;
+  base::UmaHistogramBoolean(kPriceInsightsModelPriceInsightsInfo,
+                            has_valid_price_insights_info);
+  if (has_valid_price_insights_info) {
     price_insights_executions_[url]->config->price_insights_info = info.value();
   }
   price_insights_executions_[url]->is_price_insights_info_processed = true;
@@ -118,6 +135,7 @@ void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
 
 void PriceInsightsModel::OnIsSubscribedReceived(const GURL& url,
                                                 bool is_subscribed) {
+  base::UmaHistogramBoolean(kPriceInsightsModelIsSubscribed, is_subscribed);
   price_insights_executions_[url]->config->is_subscribed = is_subscribed;
   price_insights_executions_[url]->is_subscribed_processed = true;
 
@@ -165,10 +183,17 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   if (!execution_it->second->config) {
     return;
   }
+
+  if (!execution_it->second->config->price_insights_info.has_value() &&
+      !execution_it->second->config->can_price_track) {
+    execution_it->second->config = nullptr;
+    return;
+  }
+
   execution_it->second->config->entrypoint_image_name =
       base::SysNSStringToUTF8(kDownTrendSymbol);
   execution_it->second->config->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
   execution_it->second->config->accessibility_label =
       l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY);
   execution_it->second->config->iph_feature =
@@ -176,6 +201,9 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->iph_entrypoint_used_event_name =
       feature_engagement::events::
           kIOSContextualPanelPriceInsightsEntrypointUsed;
+  execution_it->second->config->iph_entrypoint_explicitly_dismissed =
+      feature_engagement::events::
+          kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed;
 
   if (!execution_it->second->config->price_insights_info.has_value()) {
     execution_it->second->config->relevance =
@@ -185,44 +213,13 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
 
   commerce::PriceInsightsInfo info =
       execution_it->second->config->price_insights_info.value();
-  std::string message;
-  switch (info.price_bucket) {
-    case commerce::PriceBucket::kLowPrice: {
-      message = getHighConfidenceMomentsText();
-      break;
-    }
-    case commerce::PriceBucket::kHighPrice: {
-      if (!IsPriceInsightsHighPriceEnabled()) {
-        execution_it->second->config->relevance =
-            ContextualPanelItemConfiguration::low_relevance;
-        return;
-      }
-
-      execution_it->second->config->entrypoint_image_name =
-          base::SysNSStringToUTF8(kUpTrendSymbol);
-
-      if (!execution_it->second->config->can_price_track ||
-          execution_it->second->config->is_subscribed) {
-        execution_it->second->config->relevance =
-            ContextualPanelItemConfiguration::low_relevance;
-        return;
-      }
-      message =
-          l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT);
-      break;
-    }
-    case commerce::PriceBucket::kTypicalPrice: {
-      execution_it->second->config->relevance =
-          ContextualPanelItemConfiguration::low_relevance;
-      return;
-    }
-    case commerce::PriceBucket::kUnknown: {
-      execution_it->second->config->relevance =
-          ContextualPanelItemConfiguration::low_relevance;
-      return;
-    }
+  if (info.price_bucket != commerce::PriceBucket::kLowPrice) {
+    execution_it->second->config->relevance =
+        ContextualPanelItemConfiguration::low_relevance;
+    return;
   }
 
+  std::string message = getHighConfidenceMomentsText();
   execution_it->second->config->relevance =
       ContextualPanelItemConfiguration::high_relevance;
   execution_it->second->config->accessibility_label = message;
@@ -230,7 +227,6 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->iph_title = message;
   execution_it->second->config->iph_text =
       l10n_util::GetStringUTF8(IDS_INSIGHTS_RICH_IPH_TEXT);
-  execution_it->second->config->iph_image_name = "rich_iph_price_insights";
 }
 
 PriceInsightsItemConfiguration::PriceInsightsItemConfiguration()
@@ -252,11 +248,12 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
   entrypoint_image_name = config->entrypoint_image_name;
   iph_feature = config->iph_feature;
   iph_entrypoint_used_event_name = config->iph_entrypoint_used_event_name;
+  iph_entrypoint_explicitly_dismissed =
+      config->iph_entrypoint_explicitly_dismissed;
   image_type = config->image_type;
   relevance = config->relevance;
   iph_title = config->iph_title;
   iph_text = config->iph_text;
-  iph_image_name = config->iph_image_name;
 }
 
 PriceInsightsExecution::PriceInsightsExecution() = default;

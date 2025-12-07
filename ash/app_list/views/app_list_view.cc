@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/button_focus_skipper.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -29,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
@@ -39,6 +41,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 
 namespace ash {
@@ -248,6 +251,11 @@ void AppListView::InitContents() {
                                       /*is_app_list_bubble=*/false);
   search_box_view->InitializeForFullscreenLauncher();
 
+  // Skip the Gemini and Sunfish buttons on arrow up/down in app list.
+  button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>(this);
+  button_focus_skipper_->AddButton(search_box_view->sunfish_button());
+  button_focus_skipper_->AddButton(search_box_view->gemini_button());
+
   // Assign |app_list_main_view_| and |search_box_view_| here since they are
   // accessed during Init().
   app_list_main_view_ = AddChildView(std::move(app_list_main_view));
@@ -304,11 +312,6 @@ void AppListView::Show(AppListViewState preferred_state) {
   time_shown_ = std::nullopt;
 }
 
-void AppListView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  app_list_main_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-}
-
 void AppListView::CloseOpenedPage() {
   if (HandleCloseOpenFolder())
     return;
@@ -350,8 +353,7 @@ bool AppListView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       Back();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // Don't let DialogClientView handle the accelerator.
@@ -377,10 +379,9 @@ void AppListView::Layout(PassKey) {
   main_bounds.Inset(GetMainViewInsetsForShelf());
 
   app_list_main_view_->SetBoundsRect(main_bounds);
-}
 
-bool AppListView::IsShowingEmbeddedAssistantUI() const {
-  return app_list_main_view()->contents_view()->IsShowingEmbeddedAssistantUI();
+  // Call super class `Layout` to run `Layout` on child views.
+  LayoutSuperclass<views::WidgetDelegateView>(this);
 }
 
 bool AppListView::IsFolderBeingRenamed() {
@@ -422,15 +423,9 @@ void AppListView::HandleClickOrTap(ui::LocatedEvent* event) {
   // so they don't get closed.
   if (CloseKeyboardIfVisible()) {
     search_box_view_->NotifyGestureEvent();
-    if (search_box_view_->HasSearch() || IsShowingEmbeddedAssistantUI())
+    if (search_box_view_->HasSearch()) {
       return;
-  }
-
-  // Close embedded Assistant UI if it is shown.
-  if (IsShowingEmbeddedAssistantUI()) {
-    Back();
-    search_box_view_->ClearSearchAndDeactivateSearchBox();
-    return;
+    }
   }
 
   // Clear focus if the located event is not handled by any child view.
@@ -454,8 +449,9 @@ void AppListView::HandleClickOrTap(ui::LocatedEvent* event) {
     gfx::Point onscreen_location(event->location());
     ConvertPointToScreen(this, &onscreen_location);
     delegate_->ShowWallpaperContextMenu(
-        onscreen_location, event->IsGestureEvent() ? ui::MENU_SOURCE_TOUCH
-                                                   : ui::MENU_SOURCE_MOUSE);
+        onscreen_location, event->IsGestureEvent()
+                               ? ui::mojom::MenuSourceType::kTouch
+                               : ui::mojom::MenuSourceType::kMouse);
     return;
   }
 
@@ -503,7 +499,7 @@ void AppListView::EnsureWidgetBoundsMatchCurrentState() {
 }
 
 display::Display AppListView::GetDisplayNearestView() const {
-  return display::Screen::GetScreen()->GetDisplayNearestView(
+  return display::Screen::Get()->GetDisplayNearestView(
       GetWidget()->GetNativeWindow()->parent());
 }
 
@@ -516,15 +512,7 @@ PagedAppsGridView* AppListView::GetRootAppsGridView() {
 }
 
 views::View* AppListView::GetInitiallyFocusedView() {
-  views::View* initial_view;
-  if (IsShowingEmbeddedAssistantUI()) {
-    // Assistant page will redirect focus to its subviews.
-    auto* content = app_list_main_view_->contents_view();
-    initial_view = content->GetPageView(content->GetActivePageIndex());
-  } else {
-    initial_view = app_list_main_view_->search_box_view()->search_box();
-  }
-  return initial_view;
+  return app_list_main_view_->search_box_view()->search_box();
 }
 
 void AppListView::OnScrollEvent(ui::ScrollEvent* event) {
@@ -757,10 +745,6 @@ void AppListView::OnWindowDestroying(aura::Window* window) {
 
 void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {
   if (event->handled())
-    return;
-
-  // Allow text input inside the Assistant page.
-  if (IsShowingEmbeddedAssistantUI())
     return;
 
   views::Textfield* search_box = search_box_view_->search_box();

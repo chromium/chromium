@@ -1,4 +1,4 @@
 include_rules = [
-  "+ios/chrome/browser/ui/settings/cells/settings_cells_constants.h",
+  "+ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h",
   "+ios/chrome/browser/net/model/crurl.h",
 ]

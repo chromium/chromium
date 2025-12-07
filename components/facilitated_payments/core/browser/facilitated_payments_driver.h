@@ -8,55 +8,69 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace payments::facilitated {
 
-class FacilitatedPaymentsManager;
+class PaymentLinkManager;
+class FacilitatedPaymentsClient;
+class PixManager;
 
-// A cross-platform interface which is a gateway for all PIX payments related
-// communication from the browser code to the DOM (`FacilitatedPaymentsAgent`).
-// There can be one instance for each outermost main frame. It is only created
-// if the main frame is active at the time of load.
+// A cross-platform interface which is a gateway for all Facilitated Payments
+// related communication between the browser and the DOM. There can be one
+// instance for each outermost main frame. It is only created if the main frame
+// is active at the time of load.
+//
+// TODO(crbug.com/371059457): `FacilitatedPaymentsDriver` is currently an
+// abstract class. Considering migrating it to a pure interface and use delegate
+// to handle common logics shared by cross-platform.
 class FacilitatedPaymentsDriver {
  public:
-  explicit FacilitatedPaymentsDriver(
-      std::unique_ptr<FacilitatedPaymentsManager> manager);
+  FacilitatedPaymentsDriver(
+      FacilitatedPaymentsClient* client,
+      FacilitatedPaymentsApiClientCreator api_client_creator);
   FacilitatedPaymentsDriver(const FacilitatedPaymentsDriver&) = delete;
   FacilitatedPaymentsDriver& operator=(const FacilitatedPaymentsDriver&) =
       delete;
   virtual ~FacilitatedPaymentsDriver();
 
-  // Informs `FacilitatedPaymentsManager` that a navigation related event has
+  // Informs `PixManager` that a navigation related event has
   // taken place. The navigation could be to the currently displayed page, or
   // away from the currently displayed page. It is invoked only for the primary
   // main frame by the platform-specific implementation.
   void DidNavigateToOrAwayFromPage() const;
 
-  // Informs `FacilitatedPaymentsManager` that the content has finished loading
-  // in the primary main frame. It is invoked by the platform-specific
-  // implementation.
-  virtual void OnContentLoadedInThePrimaryMainFrame(
-      const GURL& url,
-      ukm::SourceId ukm_source_id) const;
-
-  // Trigger PIX code detection on the page. The `callback` is called after
-  // running PIX code detection.
-  virtual void TriggerPixCodeDetection(
-      base::OnceCallback<void(mojom::PixCodeDetectionResult,
-                              const std::string&)> callback) = 0;
-
-  // Inform the `FacilitatedPaymentsManager` about `copied_text` being copied to
+  // Inform the `PixManager` about `copied_text` being copied to
   // the clipboard. It is invoked only for the primary main frame.
-  virtual void OnTextCopiedToClipboard(const GURL& render_frame_host_url,
-                                       const std::u16string& copied_text,
-                                       ukm::SourceId ukm_source_id);
+  virtual void OnTextCopiedToClipboard(
+      const GURL& render_frame_host_url,
+      const url::Origin& render_frame_host_origin,
+      const std::u16string& copied_text,
+      ukm::SourceId ukm_source_id);
+
+  // Inform the `PaymentLinkManager` to trigger the payment link push payment
+  // flow. The payment information is included in the `payment_link_url`
+  // contained by the page with URL as `page_url`.
+  virtual void TriggerPaymentLinkPushPayment(const GURL& payment_link_url,
+                                             const GURL& page_url,
+                                             ukm::SourceId ukm_source_id);
+
+  virtual void SetPixManagerForTesting(std::unique_ptr<PixManager> pix_manager);
+  virtual void SetPaymentLinkManagerForTesting(
+      std::unique_ptr<PaymentLinkManager> payment_link_manager);
 
  private:
-  std::unique_ptr<FacilitatedPaymentsManager> manager_;
+  const raw_ref<FacilitatedPaymentsClient> facilitated_payments_client_;
+  FacilitatedPaymentsApiClientCreator api_client_creator_;
+  std::unique_ptr<PixManager> pix_manager_;
+  std::unique_ptr<PaymentLinkManager> payment_link_manager_;
 };
 
 }  // namespace payments::facilitated

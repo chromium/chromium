@@ -4,6 +4,8 @@
 
 package org.chromium.components.externalauth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -21,10 +23,13 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 
@@ -33,19 +38,19 @@ import org.chromium.gms.ChromiumPlayServicesAvailability;
  *
  * This class is safe to use on any thread.
  */
+@NullMarked
 public class ExternalAuthUtils {
     public static final int FLAG_SHOULD_BE_GOOGLE_SIGNED = 1 << 0;
     public static final int FLAG_SHOULD_BE_SYSTEM = 1 << 1;
     private static final String TAG = "ExternalAuthUtils";
     private static ExternalAuthUtils sInstance = new ExternalAuthUtils();
 
-    private final ExternalAuthGoogleDelegate mGoogleDelegate;
+    private final @Nullable ExternalAuthGoogleDelegate mGoogleDelegate =
+            ServiceLoaderUtil.maybeCreate(ExternalAuthGoogleDelegate.class);
 
-    public ExternalAuthUtils() {
-        mGoogleDelegate = new ExternalAuthGoogleDelegateImpl();
-    }
-
-    /** @return The singleton instance of ExternalAuthUtils. */
+    /**
+     * @return The singleton instance of ExternalAuthUtils.
+     */
     public static ExternalAuthUtils getInstance() {
         return sInstance;
     }
@@ -57,7 +62,7 @@ public class ExternalAuthUtils {
     private static String[] getCallingPackages() {
         int callingUid = Binder.getCallingUid();
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        return pm.getPackagesForUid(callingUid);
+        return assumeNonNull(pm.getPackagesForUid(callingUid));
     }
 
     /**
@@ -95,14 +100,16 @@ public class ExternalAuthUtils {
 
     /**
      * Returns whether the call is originating from a Google-signed package.
+     *
      * @param packageName The package name to inquire about.
      */
-    public boolean isGoogleSigned(String packageName) {
-        return mGoogleDelegate.isGoogleSigned(packageName);
+    public boolean isGoogleSigned(@Nullable String packageName) {
+        return mGoogleDelegate == null ? false : mGoogleDelegate.isGoogleSigned(packageName);
     }
 
     /**
      * Returns whether the package can bypass TWA verification.
+     *
      * @param packageName The package name to inquire about.
      * @param origin The origin of the TWA.
      */
@@ -242,11 +249,6 @@ public class ExternalAuthUtils {
      */
     public boolean canUseFirstPartyGooglePlayServices() {
         return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
-    }
-
-    /** @return this object's {@link ExternalAuthGoogleDelegate} instance. */
-    public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
-        return mGoogleDelegate;
     }
 
     /**

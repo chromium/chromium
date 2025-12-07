@@ -76,8 +76,8 @@ bool AreAllIndexedStaticRulesetsValid(
     content::BrowserContext* browser_context,
     FileBackedRulesetSource::RulesetFilter ruleset_filter);
 
-// Helper to create a verified ruleset matcher. Populates |matcher| and
-// |expected_checksum|. Returns true on success.
+// Helper to create a verified ruleset matcher. Populates `matcher` and
+// `expected_checksum`. Returns true on success.
 bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
                            const FileBackedRulesetSource& source,
                            std::unique_ptr<RulesetMatcher>* matcher,
@@ -92,7 +92,11 @@ FileBackedRulesetSource CreateTemporarySource(
 api::declarative_net_request::ModifyHeaderInfo CreateModifyHeaderInfo(
     api::declarative_net_request::HeaderOperation operation,
     std::string header,
-    std::optional<std::string> value);
+    std::optional<std::string> value,
+    std::optional<std::string> regex_filter = std::nullopt,
+    std::optional<std::string> regex_substitution = std::nullopt,
+    std::optional<api::declarative_net_request::HeaderRegexOptions>
+        regex_options = std::nullopt);
 
 bool EqualsForTesting(
     const api::declarative_net_request::ModifyHeaderInfo& lhs,
@@ -117,7 +121,7 @@ class RulesetManagerObserver : public RulesetManager::TestObserver {
   // function.
   std::vector<GURL> GetAndResetRequestSeen();
 
-  // Waits for the number of rulesets to change to |count|. Note |count| is the
+  // Waits for the number of rulesets to change to `count`. Note `count` is the
   // number of extensions with rulesets or the number of active
   // CompositeMatchers.
   void WaitForExtensionsWithRulesetsCount(size_t count);

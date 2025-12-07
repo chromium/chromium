@@ -12,7 +12,7 @@
 #import "base/strings/string_util.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -80,8 +80,7 @@ std::vector<Token> TokenizeWebStateListDescription(
 }
 
 // Creates a fake WebState with navigation items.
-std::unique_ptr<web::WebState> CreateWebState(
-    ChromeBrowserState* browser_state) {
+std::unique_ptr<web::WebState> CreateWebState(ProfileIOS* profile) {
   const GURL url = GURL(kChromeUIVersionURL);
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
@@ -91,7 +90,7 @@ std::unique_ptr<web::WebState> CreateWebState(
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state->SetNavigationItemCount(1);
   web_state->SetVisibleURL(url);
-  web_state->SetBrowserState(browser_state);
+  web_state->SetBrowserState(profile);
   web_state->SetWebFramesManager(web::ContentWorld::kAllContentWorlds,
                                  std::make_unique<web::FakeWebFramesManager>());
   web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
@@ -117,10 +116,10 @@ WebStateListBuilderFromDescription::~WebStateListBuilderFromDescription() {
 
 bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
     std::string_view description,
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return BuildWebStateListFromDescription(
       description,
-      base::BindRepeating(CreateWebState, base::Unretained(browser_state)));
+      base::BindRepeating(CreateWebState, base::Unretained(profile)));
 }
 
 bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
@@ -403,7 +402,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
-      const auto web_state = detach_change.detached_web_state();
+      web::WebState* web_state = detach_change.detached_web_state();
       const char identifier = GetWebStateIdentifier(web_state);
       if (identifier != '_') {
         web_state_for_identifier_.erase(identifier);
@@ -420,7 +419,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
-      const auto replaced_web_state = replace_change.replaced_web_state();
+      web::WebState* replaced_web_state = replace_change.replaced_web_state();
       const char identifier = GetWebStateIdentifier(replaced_web_state);
       // Remove the replaced WebState.
       if (identifier != '_') {
@@ -431,7 +430,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
         identifier_for_web_state_.erase(replaced_web_state);
       }
       // Add the inserted WebState.
-      const auto inserted_web_state = replace_change.inserted_web_state();
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
       SetWebStateIdentifier(inserted_web_state, identifier);
       break;
     }
@@ -450,7 +449,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
     case WebStateListChange::Type::kGroupDelete: {
       const WebStateListChangeGroupDelete& group_delete_change =
           change.As<WebStateListChangeGroupDelete>();
-      const auto group = group_delete_change.deleted_group();
+      const TabGroup* group = group_delete_change.deleted_group();
       const char identifier = GetTabGroupIdentifier(group);
       if (identifier != '_') {
         tab_group_for_identifier_.erase(identifier);
@@ -466,7 +465,6 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
 
 void WebStateListBuilderFromDescription::WebStateListDestroyed(
     WebStateList* web_state_list) {
-  NOTREACHED_IN_MIGRATION()
-      << "WebStateListBuilderFromDescription shouldn’t outlive its "
-         "WebStateList";
+  NOTREACHED() << "WebStateListBuilderFromDescription shouldn’t outlive its "
+                  "WebStateList";
 }

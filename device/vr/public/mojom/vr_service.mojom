@@ -5,6 +5,7 @@
 module device.mojom;
 
 import "device/gamepad/public/mojom/gamepad.mojom";
+import "device/vr/public/mojom/xr_hand_tracking_data.mojom";
 import "device/vr/public/mojom/xr_session.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -71,6 +72,9 @@ enum XRInteractionMode {
 struct XRDepthConfig {
   XRDepthUsage depth_usage;
   XRDepthDataFormat depth_data_format;
+  // The XRDepthType that the session is using, if the page's request was
+  // honored.
+  XRDepthType? depth_type;
 };
 
 // This structure contains a description of the device's active configuration
@@ -115,6 +119,7 @@ struct XRSessionDeviceConfig {
 // process before being handed off to the renderer process.
 struct XRSession {
   pending_remote<XRFrameDataProvider> data_provider;
+  pending_remote<XRLayerManager>? layer_manager;
   // TODO(http://crbug.com/842025) Move where the client_receiver gets set to the
   // device process then mark this as non-optional.
   pending_receiver<XRSessionClient>? client_receiver;
@@ -129,6 +134,12 @@ struct XRSession {
 
   XREnvironmentBlendMode enviroment_blend_mode;
   XRInteractionMode interaction_mode;
+
+  // Indicates whether the device would like for the page to go fullscreen to
+  // finish the session configuration. Some runtimes (ARCore on mobile), need
+  // this for a fully immersive experience, but cannot trigger it themselves.
+  [EnableIf=is_android]
+  bool wants_fullscreen = false;
 };
 
 // This structure contains the infomation and interfaces needed to create a two
@@ -159,53 +170,6 @@ struct XRInputSourceDescription {
   // spaces and has separate words concatenated with a "-". These names are
   // sorted in descending order of specificity.
   array<string> profiles;
-};
-
-// Sourced from https://immersive-web.github.io/webxr-hand-input/#idl-index
-enum XRHandJoint {
-  kWrist = 0,
-  kThumbMetacarpal = 1,
-  kThumbPhalanxProximal = 2,
-  kThumbPhalanxDistal = 3,
-  kThumbTip = 4,
-  kIndexFingerMetacarpal = 5,
-  kIndexFingerPhalanxProximal = 6,
-  kIndexFingerPhalanxIntermediate = 7,
-  kIndexFingerPhalanxDistal = 8,
-  kIndexFingerTip = 9,
-  kMiddleFingerMetacarpal = 10,
-  kMiddleFingerPhalanxProximal = 11,
-  kMiddleFingerPhalanxIntermediate = 12,
-  kMiddleFingerPhalanxDistal = 13,
-  kMiddleFingerTip = 14,
-  kRingFingerMetacarpal = 15,
-  kRingFingerPhalanxProximal = 16,
-  kRingFingerPhalanxIntermediate = 17,
-  kRingFingerPhalanxDistal = 18,
-  kRingFingerTip = 19,
-  kPinkyFingerMetacarpal = 20,
-  kPinkyFingerPhalanxProximal = 21,
-  kPinkyFingerPhalanxIntermediate = 22,
-  kPinkyFingerPhalanxDistal = 23,
-  kPinkyFingerTip = 24,
-};
-
-// This struct contains joint data and the associated joint for which the data
-// corresponds.
-// For each hand joint we are required to supply a transform and a radius.
-struct XRHandJointData {
-  // Which joint this data is for denoted by the XRHandJoint enum.
-  XRHandJoint joint;
-  // The transform of pose of this joint in mojo space.
-  gfx.mojom.Transform? mojo_from_joint;
-  // The radius of the joint in meters.
-  float radius;
-};
-
-// The list of joint data. Must have data for each of the 25 joints.
-struct XRHandTrackingData {
-  // The transforms and radii of the joints
-  array<XRHandJointData> hand_joint_data;
 };
 
 struct XRInputSourceState {
@@ -311,6 +275,23 @@ struct Pose {
   gfx.mojom.Point3F position;
 };
 
+struct AnchorId {
+  uint64 id_value;
+};
+
+struct HitTestSubscriptionId {
+  uint64 id_value;
+};
+
+struct PlaneId {
+  uint64 id_value;
+};
+
+struct XrVisibilityMaskId {
+  uint64 id_value;
+};
+
+
 struct XRRay {
   gfx.mojom.Point3F origin;
   gfx.mojom.Vector3dF direction;
@@ -318,10 +299,9 @@ struct XRRay {
 
 struct XRHitResult {
   Pose mojo_from_result;  // Pose of the result (aka intersection point).
-  uint64 plane_id;  // If the hit test result was computed based off of a plane,
-                    // the plane ID will be stored here. 0 signifies no plane.
-                    // TODO(crbug.com/40489779) - make it optional once
-                    // mojo supports optional numeric types.
+  PlaneId? plane_id;  // If the hit test result was computed based off of a
+                      // plane, the plane ID will be stored here. Null signifies
+                      // no plane was hit.
 };
 
 // Describes the eye that a view is associated with. kNone represents views that
@@ -333,12 +313,15 @@ enum XREye {
   kRight = 2,
 };
 
-// Information about a view for a given XR frame. A frame contains the state of
-// the XR device for a particular timestamp. A view represents the display or
-// a portion of the display, and contains all the information required to render
-// content to the view.
-struct XRView {
-  XREye eye;
+// This is designed to contain information about particular bits of device
+// hardware that need to be reported to the page. This could be configuration
+// information for a display right in front of the user's eyes, or information
+// of how to read from or compare to a depth buffer generated by an offset
+// depth camera. It is intended to help support the XRViewGeometry mixin:
+// https://immersive-web.github.io/webxr/#xrviewGeometry-mixin
+struct XRViewGeometry {
+  // The field of view that can be used to calculate the projection matrix of
+  // the given XRView.
   VRFieldOfView field_of_view;
 
   // The pose transform of this view relative to the device's native origin.
@@ -352,6 +335,36 @@ struct XRView {
   // Instead, send this in mojo space and send the relevant transforms to other
   // spaces in XRFrameData so the clients can calculate them as needed.
   gfx.mojom.Transform mojo_from_view;
+};
+
+// The VisibilityMask is used to describe the visible region of the view. It may
+// be omitted if the entire view is visible. The area described by the mesh
+// represented by this struct is the array that IS visible to the user and
+// therefore SHOULD BE drawn to by the page. This is retrieved from the device
+// runtime and then passed up to the renderer process.
+// This is a standard mesh representation with an array of vertices that are
+// indexed into by an array of indices used to describe the series of triangles
+// that make up the mesh, e.g. a square would be represented as:
+// vertices: {(0, 0), (1, 0), (1, 1), (0, 1)}
+// indices: { 0, 1, 2, 1, 2, 3 }
+// Which represents two triangles. One with vertices of 0, 1, 2 and one 1, 2, 3.
+struct XRVisibilityMask {
+  // Vertices are a list of X, Y coordinates that are referenced by the page to
+  // build the visibility mask.
+  array<gfx.mojom.PointF> vertices;
+  // This is the list of indices in the vertices list that the page should
+  // access in order to describe the region that SHOULD be drawn.
+  // Note that these are not checked for validity before being sent across.
+  array<uint32> unvalidated_indices;
+};
+
+// Information about a view for a given XR frame. A frame contains the state of
+// the XR device for a particular timestamp. A view represents the display or
+// a portion of the display, and contains all the information required to render
+// content to the view.
+struct XRView {
+  XREye eye;
+  XRViewGeometry geometry;
 
   // A viewport describes the rectangular region that the underlying graphics
   // API should use to render this view.
@@ -368,10 +381,24 @@ struct XRView {
   // capturing from the camera of an AR device.
   // https://immersive-web.github.io/webxr-ar-module/#first-person-observer-view
   bool is_first_person_observer = false;
+
+  // The visibility mask for the view. This is a mesh that indicates the
+  // portion of the view that is visible to the user. If it is missing, the
+  // entire view should be assumed to be visible to the user.
+  XRVisibilityMask? visibility_mask;
+
+  // This is used to indicate to the page when the visibility mask changes, so
+  // that pages can avoid potentially costly comparisons of the underlying
+  // arrays. This is sent from a trusted process to an untrusted one, so there's
+  // no risk here.
+  XrVisibilityMaskId visibility_mask_id;
 };
 
 struct VRStageParameters {
-  gfx.mojom.Transform mojo_from_floor;
+  // The transform from mojo space to the origin of the "stage" space. This
+  // should be on the ground and can be used in-place of the floor if the floor
+  // is missing.
+  gfx.mojom.Transform mojo_from_stage;
 
   // If present, indicates that the device supports a bounded reference space
   // (https://immersive-web.github.io/webxr/#xrboundedreferencespace-interface).
@@ -428,8 +455,8 @@ enum XRReferenceSpaceType {
 // & joint, or by input source id & input source space type.
 union XRNativeOriginInformation {
   XRInputSourceSpaceInfo input_source_space_info;
-  uint64 plane_id;
-  uint64 anchor_id;
+  PlaneId plane_id;
+  AnchorId anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
   uint32 image_index;
@@ -473,7 +500,7 @@ struct XRPlanePointData {
 // detected in the real world by the underlying system.
 struct XRPlaneData {
   // Unique (within a session) identifier of the plane.
-  uint64 id;
+  PlaneId id;
 
   // Plane orientation relative to gravity.
   XRPlaneOrientation orientation;
@@ -495,7 +522,7 @@ struct XRPlaneData {
 // present in updated_planes_data.
 struct XRPlaneDetectionData {
   // Array with ids of all tracked planes.
-  array<uint64> all_planes_ids;
+  array<PlaneId> all_planes_ids;
 
   // Array with plane data for all updated planes. Plane is considered updated
   // if its position or polygon has changed. Updated planes are always a subset
@@ -510,7 +537,7 @@ struct XRPlaneDetectionData {
 // evolves.
 struct XRAnchorData {
   // Unique (within a session) identifier of the anchor.
-  uint64 id;
+  AnchorId id;
 
   // Pose of the anchor. Null if the device does not know where the anchor is
   // located in the world space (tracking loss), but the tracking can still be
@@ -524,7 +551,7 @@ struct XRAnchorData {
 // will not be present in updated_anchors_data.
 struct XRAnchorsData {
   // Array with ids of all tracked anchors.
-  array<uint64> all_anchors_ids;
+  array<AnchorId> all_anchors_ids;
 
   // Array with anchor data for all updated anchors. Updated anchors are always
   // a subset of all anchors (i.e. for each anchor found in
@@ -536,7 +563,7 @@ struct XRAnchorsData {
 // This struct is relevant for subscriptions to hit test for persistent input
 // sources.
 struct XRHitTestSubscriptionResultData {
-  uint64 subscription_id;
+  HitTestSubscriptionId subscription_id;
   array<XRHitResult> hit_test_results;
 };
 
@@ -544,7 +571,7 @@ struct XRHitTestSubscriptionResultData {
 // This struct is relevant for subscriptions to hit test for transient input
 // sources.
 struct XRHitTestTransientInputSubscriptionResultData {
-  uint64 subscription_id;
+  HitTestSubscriptionId subscription_id;
   // Map from input source id to array of hit test results obtained using that
   // input source. Required since there might be multiple input sources that
   // match input source profile name passed in at subscription creation (see
@@ -573,24 +600,12 @@ struct RgbTupleF32 {
 // Contains the coefficient data for L2 spherical harmonics generated by ArCore.
 struct XRSphericalHarmonics {
   // L2 (3rd order) spherical harmonics coefficients.
-  // This array has 9 RGB vector elements, representing the 27 coefficients
-  // given by ArCore.
+  // This array has 9 RGB vector elements, representing the 27 required
+  // coefficients for 3rd order spherical harmonics.
   // Units are expressed in nits:
   // https://github.com/immersive-web/lighting-estimation/blob/master/lighting-estimation-explainer.md#physically-based-units
   array<RgbTupleF32, 9> coefficients;
 };
-
-// Tuple of half-precision floating point RGBA data.
-// Since there isn't a native way to represent half-precision floats, they are
-// stored a uint16s.
-// This is the pixel format used by ArCore for cubemap textures.
-struct RgbaTupleF16 {
-  uint16 red;
-  uint16 green;
-  uint16 blue;
-  uint16 alpha;
-};
-
 // Contains the pixel data for all six faces of an HDR cubemap generated by
 // ArCore. Pixel data is stored in RGBA16F format.
 struct XRCubeMap {
@@ -600,19 +615,23 @@ struct XRCubeMap {
   // The width and height (in pixels) of each cube map face.
   // Since each face is equal and square, this is only given as a single value.
   // Additionally, the dimensions of each face will be a power of two.
-  // Note that each pixel is a contiguous RGBA16F vector, so the length of each
-  // array will be this times |kNumComponentsPerPixel|.
   uint32 width_and_height;
 
-  // Each cube map face, stored in RGBA row-major order. Units are in nits.
-  // Each array will be |width_and_height ** 2| in length.
+  // Each cube map face, stored in RGBA row-major order.
+  // Each array will be |kNumComponentsPerPixel| * |width_and_height ** 2| in
+  // length, since each RGBA component is represented separately, but in a
+  // repeating order.
+  // Since there isn't a native way to represent half-precision floats, they are
+  // stored as uint16s.
+  // This matches the pixel format used by ArCore for cubemap textures.
+  // Units are expressed in nits:
   // https://github.com/immersive-web/lighting-estimation/blob/master/lighting-estimation-explainer.md#physically-based-units
-  array<RgbaTupleF16> positive_x;
-  array<RgbaTupleF16> negative_x;
-  array<RgbaTupleF16> positive_y;
-  array<RgbaTupleF16> negative_y;
-  array<RgbaTupleF16> positive_z;
-  array<RgbaTupleF16> negative_z;
+  array<uint16> positive_x;
+  array<uint16> negative_x;
+  array<uint16> positive_y;
+  array<uint16> negative_y;
+  array<uint16> positive_z;
+  array<uint16> negative_z;
 };
 
 // Contains lighting information generated from ArCore for use in diffuse
@@ -658,6 +677,10 @@ struct XRDepthDataUpdated {
   // Factor that needs to be applied when converting from raw values in the
   // |pixel_data| buffer into meters.
   float raw_value_to_meters;
+
+  // A description of the piece of hardware responsible for capturing this depth
+  // data. If null, the hardware is aligned with the XRView that contains it.
+  XRViewGeometry? view_geometry;
 };
 
 // Depth data may be the same as the one returned in the previous frame - it is
@@ -699,14 +722,123 @@ struct XRTrackedImagesData {
   array<bool>? image_trackable_scores;
 };
 
+struct LayerId {
+  uint64 id_value;
+};
+
+// Specific mutable layer data per type.
+struct XRProjectionLayerData {
+  // There is nothing here yet.
+};
+struct XRQuadLayerData {
+  gfx.mojom.Transform native_origin_from_layer;
+  float width;
+  float height;
+};
+struct XRCylinderLayerData {
+  gfx.mojom.Transform native_origin_from_layer;
+  float radius;
+  float central_angle;
+  float aspect_ratio;
+};
+struct XREquirectLayerData {
+  gfx.mojom.Transform native_origin_from_layer;
+  float radius;
+  float central_horizontal_angle;
+  float upper_vertical_angle;
+  float lower_vertical_angle;
+};
+struct XRCubeLayerData {
+  gfx.mojom.Quaternion orientation;
+};
+
+// A union of layer specific mutable data.
+union XRLayerSpecificData {
+  XRProjectionLayerData projection;
+  XRQuadLayerData quad;
+  XRCylinderLayerData cylinder;
+  XREquirectLayerData equirect;
+  XRCubeLayerData cube;
+};
+
+enum XRLayerLayout {
+  kDefault = 0,
+  kMono = 1,
+  kStereo = 2,
+  kStereoLeftRight = 3,
+  kStereoTopBottom = 4,
+};
+
+// Read-only data is only used to create a layer,
+// and cannot be modified after.
+struct XRLayerReadOnlyData {
+  // Unique id of the client-created layer, which is provided by the client.
+  LayerId layer_id;
+  XRLayerLayout layout;
+  uint32 texture_width;
+  uint32 texture_height;
+  bool is_static;
+};
+
+// Mutable layer data. It is used to created a layer,
+// and can also be modified later.
+struct XRLayerMutableData {
+  bool blend_texture_source_alpha;
+  float opacity;
+  XRNativeOriginInformation native_origin_information;
+  XRLayerSpecificData layer_data;
+};
+
+// The struct used to create a layer.
+struct XRCompositionLayerData {
+  XRLayerReadOnlyData read_only_data;
+  XRLayerMutableData mutable_data;
+};
+
+// Frame data for a layer created by client.
+struct XRLayerFrameData {
+  // Unique id of a client-created layer.
+  LayerId layer_id;
+  // The buffer_shared_image is used for sending imagery data back and forth
+  // across the process boundary.
+  gpu.mojom.ExportedSharedImage buffer_shared_image;
+  gpu.mojom.SyncToken buffer_sync_token;
+};
+
+// The result of XRLayerManager's CreateCompositionLayer method.
+enum CreateCompositionLayerResult {
+  SUCCESS = 0,
+  FAILURE = 1,
+};
+
+// Information required for rendering, used by ImmersiveOverlay.
+struct XRRenderInfo
+{
+  // The frame_id maps frame data to a frame arriving from the compositor. IDs
+  // will be reused after the frame arrives from the compositor. Negative IDs
+  // imply no mapping.
+  int16 frame_id;
+
+  // The viewer pose of this frame may be null if the device lost tracking.
+  VRPose? mojo_from_viewer;
+
+  // Information about all the views in a frame. Views can appear in any order
+  // so it should not be assumed the left eye comes before the right eye. It is
+  // valid for the array to contain multiple views of the same eye. An example
+  // of this scenario are displays that have dominant left/right eyes and inset
+  // left/right eyes. In these scenarios, the dominant views comes before the
+  // inset views in the array.
+  array<XRView> views;
+};
+
 // The data needed for each animation frame of an XRSession.
 struct XRFrameData {
   // General XRSession value
 
-  // The viewer pose of this frame. The pose may be null if the device lost
-  // tracking. The XRFrameData can still have other data, such as pass through
-  // camera image.
-  VRPose? mojo_from_viewer;
+  // Contains information necessary to render the frame. Note that while the
+  // embedded mojo_from_viewer may be null if the device lost tracking, other
+  // data may still be valid.
+  XRRenderInfo render_info;
   // Time delta from an unspecified origin.
   mojo_base.mojom.TimeDelta time_delta;
   // The buffer_shared_image is used for sending imagery data back and forth
@@ -731,20 +863,11 @@ struct XRFrameData {
   // https://immersive-web.github.io/webxr/#eventdef-xrreferencespace-reset
   bool mojo_space_reset;
 
+  // A transform that will translate things from `mojom` space to the floor.
+  // Should only be set if the local-floor feature has been granted.
+  gfx.mojom.Transform? mojo_from_floor;
+
   // Exclusive session values
-
-  // The frame_id maps frame data to a frame arriving from the compositor. IDs
-  // will be reused after the frame arrives from the compositor. Negative IDs
-  // imply no mapping.
-  int16 frame_id;
-
-  // Information about all the views in a frame. Views can appear in any order
-  // so it should not be assumed the left eye comes before the right eye. It is
-  // valid for the array to contain multiple views of the same eye. An example
-  // of this scenario are displays that have dominant left/right eyes and inset
-  // left/right eyes. In these scenarios, the dominant views comes before the
-  // inset views in the array.
-  array<XRView> views;
 
   // For immersive sessions only, reports the state of all active input devices
   // at the time of this frame. all controller state, including current
@@ -764,6 +887,11 @@ struct XRFrameData {
 
   // Tracked anchors information. Only present if anchors are enabled.
   XRAnchorsData? anchors_data;
+
+  // Frame data for every compostion layer that are enabled by
+  // SetEnabledCompositionLayers.
+  // Only present if layers are enabled.
+  array<XRLayerFrameData>? composition_layers_data;
 
   // Lighting estimation data. Only present if lighting estimation is enabled.
   XRLightEstimationData? light_estimation_data;
@@ -870,16 +998,6 @@ interface VRServiceClient {
   OnDeviceChanged();
 };
 
-enum CreateAnchorResult {
-  SUCCESS = 0,
-  FAILURE = 1,
-};
-
-enum SubscribeToHitTestResult {
-  SUCCESS = 0,
-  FAILURE_GENERIC = 1,
-};
-
 enum EntityTypeForHitTest {
   POINT = 1,
   PLANE = 2,
@@ -910,7 +1028,7 @@ interface XREnvironmentIntegrationProvider {
   SubscribeToHitTest(
     XRNativeOriginInformation native_origin_information,
     array<EntityTypeForHitTest> entity_types,
-    XRRay ray) => (SubscribeToHitTestResult result, uint64 subscription_id);
+    XRRay ray) => (HitTestSubscriptionId? subscription_id);
 
   // Establishes a hit test subscription on the device. The subscription results
   // will be computed taking into account latest state of the input sources that
@@ -932,54 +1050,51 @@ interface XREnvironmentIntegrationProvider {
   SubscribeToHitTestForTransientInput(
     string profile_name,
     array<EntityTypeForHitTest> entity_types,
-    XRRay ray) => (SubscribeToHitTestResult result, uint64 subscription_id);
+    XRRay ray) => (HitTestSubscriptionId? subscription_id);
 
   // Notifies the device that subscription with the passed in |subscription_id|
   // is no longer needed and should be removed. The |subscription_id| must be a
   // valid id of a subscription returned by one of the SubscribeToHitTest/
   // SubscribeToHitTestForTransientInput calls, otherwise the call will be
   // ignored.
-  UnsubscribeFromHitTest(uint64 subscription_id);
+  UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id);
 
-  // Issues a request to create a free-floating anchor (not attached to any
-  // particular real world entity).
+  // Issues a request to create an anchor. This anchor is free-floating (not
+  // attached to any particular real world entity), unless |plane_id| is set.
   // |native_origin_information| specifies native origin relative to which the
   // anchor is supposed to be created. |native_origin_from_anchor| describes the
   // desired pose of the newly created anchor.
-  // |result| will contain status code of the request. |anchor_id| will be valid
-  // only if the |result| is SUCCESS.
+  // If set, |plane_id| identifies which plane the anchor will be attached to.
+  // This allows specifying a "stationary" pose for the anchor separate from the
+  // notion of the plane who should ultimately be its parent, as the center
+  // point of a plane may shift from frame to frame.
+  // On success, |anchor_id| will contain the id of the newly created anchor.
+  // On failure, |anchor_id| will be null.
   CreateAnchor(
     XRNativeOriginInformation native_origin_information,
-    Pose native_origin_from_anchor)
-      => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(crbug.com/40489779): Switch anchor_id to nullable integer once
-  // that's available. This will allow us to remove CreateAnchorResult if we're
-  // not interested in obtaining detailed error information from the device.
-
-  // Issues a request to create an anchor attached to a plane.
-  // |native_origin_information| specifies native origin relative to which the
-  // anchor is supposed to be created. |native_origin_from_anchor| describes the
-  // desired pose of the newly created anchor. |plane_id| identifies which plane
-  // the anchor will be attached to.
-  // |result| will contain status code of the request. |anchor_id| will be valid
-  // only if the |result| is SUCCESS.
-  CreatePlaneAnchor(
-    XRNativeOriginInformation native_origin_information,
     Pose native_origin_from_anchor,
-    uint64 plane_id)
-      => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(crbug.com/40489779): Ditto - make anchor_id a nullable integer.
+    PlaneId? plane_id)
+      => (AnchorId? anchor_id);
 
   // Detaches an existing anchor. The |anchor_id| must be a valid id of an
   // anchor created by one of the CreateAnchor calls, otherwise the call will be
   // ignored.
-  DetachAnchor(uint64 anchor_id);
+  DetachAnchor(AnchorId anchor_id);
 };
 
 struct XRFrameDataRequestOptions {
   // Controls whether |XRFrameData.light_estimation_data| should be populated
   // by the request to |XRFrameDataProvider.GetFrameData()|.
   bool include_lighting_estimation_data;
+
+  // Controls whether |XRView.depth_data| is populated for the XRView's being
+  // sent up by the request to |XRFrameDataProvider.GetFrameData()|. Note that
+  // when this is false, the device is allowed to deallocate any objects it has
+  // created to track or retrieve depth data. Due to device and timing
+  // constraints, the device is not obligated  to send up depth data immediately
+  // when this is `true`, as it may take a few frames before such data is ready.
+  // If depth is not enabled on the session, this value is ignored.
+  bool depth_active;
 
   // The ID of the last known stage parameters set sent to the requesting
   // session. The XRFrameData should only send new stage parameters if it has
@@ -1028,11 +1143,17 @@ interface XRPresentationProvider {
   // XRPresentationTransportMethod SUBMIT_AS_TEXTURE_HANDLE
   // |texture| should only be used after |sync_token| has passed.
   [EnableIf=is_win]
-  SubmitFrameWithTextureHandle(int16 frameId, handle<platform> texture,
+  SubmitFrameWithTextureHandle(int16 frame_id, handle<platform> texture,
                                gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod DRAW_INTO_TEXTURE_MAILBOX
-  SubmitFrameDrawnIntoTexture(int16 frameId, gpu.mojom.SyncToken sync_token,
+  // If layer_ids is empty, the base layer will be used.
+  // Only when WebXR Layers feature is enabled, layer_ids can be
+  // non-empty. In such a case, the Open XR textures of the specified
+  // layers will be updated.
+  SubmitFrameDrawnIntoTexture(int16 frame_id,
+                              array<LayerId> layer_ids,
+                              gpu.mojom.SyncToken sync_token,
                               mojo_base.mojom.TimeDelta time_waited);
 };
 
@@ -1085,10 +1206,39 @@ interface XRSessionClient {
   OnVisibilityStateChanged(XRVisibilityState visibility_state);
 };
 
+// The interface provided by device/ to allow client to create and update
+// composition layers. This is needed to support WebXR layers. Currently,
+// it is only implemented with OpenXR/OpenGLES, and only enabled when the
+// device has the required extensions.
+interface XRLayerManager {
+  // Create a composition layer (projection layer, quad layer, e.g.).
+  // The caller must provide a unique LayerId.
+  CreateCompositionLayer(XRCompositionLayerData create_data)
+                         => (CreateCompositionLayerResult code);
+
+  // Destroy a composition layer specified by layer_id.
+  DestroyCompositionLayer(LayerId layer_id);
+
+  // Update the mutable data of a client-created XR composition layer.
+  // The layer id must be valid, and the data must have the same type
+  // used to create the layer.
+  UpdateCompositionLayer(LayerId layer_id, XRLayerMutableData update_data);
+
+  // Set the layers that will have shared images available and will be rendered.
+  // Layers not included in this list will be disabled. The layers will be composed
+  // in the same order as the order of layer_ids. This method can be called
+  // multiple times in the same session.
+  SetEnabledCompositionLayers(array<LayerId> layer_ids);
+};
+
 // Functions for pushing frame data to the sessions.
 // This interface is hosted in the Browser process, and called by the
 // renderer for use by debug WebUI.
 interface WebXrInternalsRendererListener {
     // Called when the renderer has new frame data to send to the session.
     OnFrameData(device.mojom.XrFrameStatistics xrframe_statistics);
+
+    // Called when the renderer has new console log data to send to the
+    // session.
+    OnConsoleLog(device.mojom.XrLogMessage xrlogging_statistics);
 };

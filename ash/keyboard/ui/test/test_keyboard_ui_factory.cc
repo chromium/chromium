@@ -41,7 +41,7 @@ aura::Window* TestKeyboardUIFactory::TestKeyboardUI::LoadKeyboardWindow(
   window_->set_owned_by_parent(false);
 
   // Set a default size for the keyboard.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   window_->SetBounds(
       test::KeyboardBoundsFromRootBounds(screen->GetPrimaryDisplay().bounds()));
 

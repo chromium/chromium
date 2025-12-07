@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/containers/flat_tree.h"
 
 // Following tests are ported and extended tests from libcpp for std::set.
@@ -33,6 +28,7 @@
 // * No tests with min_allocator and no tests counting allocations.
 //   Flat sets currently don't support allocators.
 
+#include <algorithm>
 #include <deque>
 #include <forward_list>
 #include <functional>
@@ -41,14 +37,14 @@
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
+#include "base/containers/span.h"
 #include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -77,12 +73,7 @@ class InputIterator {
     return tmp;
   }
 
-  friend bool operator==(const InputIterator& lhs, const InputIterator& rhs) {
-    return lhs.it_ == rhs.it_;
-  }
-  friend bool operator!=(const InputIterator& lhs, const InputIterator& rhs) {
-    return !(lhs == rhs);
-  }
+  friend bool operator==(const InputIterator&, const InputIterator&) = default;
 
  private:
   It it_;
@@ -127,7 +118,7 @@ class Emplaceable {
 
 struct TemplateConstructor {
   template <typename T>
-  TemplateConstructor(const T&) {}
+  explicit TemplateConstructor(const T&) {}
 
   friend bool operator<(const TemplateConstructor&,
                         const TemplateConstructor&) {
@@ -173,7 +164,7 @@ using EmplaceableTree = flat_tree<Emplaceable,
                                   std::less<>,
                                   std::vector<Emplaceable>>;
 using ReversedTree =
-    flat_tree<int, std::identity, std::greater<int>, std::vector<int>>;
+    flat_tree<int, std::identity, std::greater<>, std::vector<int>>;
 
 using TreeWithStrangeCompare = flat_tree<int,
                                          std::identity,
@@ -219,7 +210,7 @@ TEST(FlatTree, NoExcept) {
 
 TEST(FlatTree, IncompleteType) {
   struct A {
-    using Tree = flat_tree<A, std::identity, std::less<A>, std::vector<A>>;
+    using Tree = flat_tree<A, std::identity, std::less<>, std::vector<A>>;
     int data;
     Tree set_with_incomplete_type;
     Tree::iterator it;
@@ -241,8 +232,8 @@ TEST(FlatTree, Stability) {
   Tree cont({{0, 0}, {1, 0}, {0, 1}, {2, 0}, {0, 2}, {1, 1}});
 
   auto AllOfSecondsAreZero = [&cont] {
-    return ranges::all_of(cont,
-                          [](const Pair& elem) { return elem.second == 0; });
+    return std::ranges::all_of(
+        cont, [](const Pair& elem) { return elem.second == 0; });
   };
 
   EXPECT_TRUE(AllOfSecondsAreZero()) << "constructor should be stable";
@@ -324,8 +315,9 @@ TYPED_TEST_P(FlatTreeTest, CopyConstructor) {
 
 TEST(FlatTree, MoveConstructor) {
   int input_range[] = {1, 2, 3, 4};
+  auto span = base::span(input_range);
 
-  MoveOnlyTree original(std::begin(input_range), std::end(input_range));
+  MoveOnlyTree original(span.begin(), span.end());
   MoveOnlyTree moved(std::move(original));
 
   EXPECT_EQ(1U, moved.count(MoveOnlyInt(1)));
@@ -342,18 +334,20 @@ TEST(FlatTree, RangeConstructor) {
   {
     IntPair input_vals[] = {{1, 1}, {1, 2}, {2, 1}, {2, 2}, {1, 3},
                             {2, 3}, {3, 1}, {3, 2}, {3, 3}};
+    auto span = base::span(input_vals);
 
-    IntPairTree first_of(MakeInputIterator(std::begin(input_vals)),
-                         MakeInputIterator(std::end(input_vals)));
+    IntPairTree first_of(MakeInputIterator(span.begin()),
+                         MakeInputIterator(span.end()));
     EXPECT_THAT(first_of,
                 ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1)));
   }
   {
     TreeWithStrangeCompare::value_type input_vals[] = {1, 1, 1, 2, 2,
                                                        2, 3, 3, 3};
+    auto span = base::span(input_vals);
 
-    TreeWithStrangeCompare cont(MakeInputIterator(std::begin(input_vals)),
-                                MakeInputIterator(std::end(input_vals)),
+    TreeWithStrangeCompare cont(MakeInputIterator(span.begin()),
+                                MakeInputIterator(span.end()),
                                 NonDefaultConstructibleCompare(0));
     EXPECT_THAT(cont, ElementsAre(1, 2, 3));
   }
@@ -378,9 +372,9 @@ TEST(FlatTree, ContainerMoveConstructor) {
   // first item, the second allows us to test for stability. Using a move
   // only type to ensure the vector is not copied.
   std::vector<Pair> storage;
-  storage.push_back(Pair(2, MoveOnlyInt(0)));
-  storage.push_back(Pair(1, MoveOnlyInt(0)));
-  storage.push_back(Pair(2, MoveOnlyInt(1)));
+  storage.emplace_back(2, MoveOnlyInt(0));
+  storage.emplace_back(1, MoveOnlyInt(0));
+  storage.emplace_back(2, MoveOnlyInt(1));
 
   using Tree =
       flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
@@ -428,19 +422,19 @@ TYPED_TEST_P(FlatTreeTest, InitializerListConstructor) {
 TEST(FlatTree, SortedUniqueRangeConstructor) {
   {
     IntPair input_vals[] = {{1, 1}, {2, 1}, {3, 1}};
+    auto span = base::span(input_vals);
 
-    IntPairTree first_of(sorted_unique,
-                         MakeInputIterator(std::begin(input_vals)),
-                         MakeInputIterator(std::end(input_vals)));
+    IntPairTree first_of(sorted_unique, MakeInputIterator(span.begin()),
+                         MakeInputIterator(span.end()));
     EXPECT_THAT(first_of,
                 ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1)));
   }
   {
     TreeWithStrangeCompare::value_type input_vals[] = {1, 2, 3};
+    auto span = base::span(input_vals);
 
-    TreeWithStrangeCompare cont(sorted_unique,
-                                MakeInputIterator(std::begin(input_vals)),
-                                MakeInputIterator(std::end(input_vals)),
+    TreeWithStrangeCompare cont(sorted_unique, MakeInputIterator(span.begin()),
+                                MakeInputIterator(span.end()),
                                 NonDefaultConstructibleCompare(0));
     EXPECT_THAT(cont, ElementsAre(1, 2, 3));
   }
@@ -462,8 +456,8 @@ TEST(FlatTree, SortedUniqueVectorMoveConstructor) {
   using Pair = std::pair<int, MoveOnlyInt>;
 
   std::vector<Pair> storage;
-  storage.push_back(Pair(1, MoveOnlyInt(0)));
-  storage.push_back(Pair(2, MoveOnlyInt(0)));
+  storage.emplace_back(1, MoveOnlyInt(0));
+  storage.emplace_back(2, MoveOnlyInt(0));
 
   using Tree =
       flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
@@ -798,13 +792,14 @@ TEST(FlatTree, InsertIterIter) {
     }
   };
 
-  using IntIntMap = flat_tree<int, GetKeyFromIntIntPair, std::less<int>,
-                              std::vector<IntPair>>;
+  using IntIntMap =
+      flat_tree<int, GetKeyFromIntIntPair, std::less<>, std::vector<IntPair>>;
 
   {
     IntIntMap cont;
     IntPair int_pairs[] = {{3, 1}, {1, 1}, {4, 1}, {2, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    auto span = base::span(int_pairs);
+    cont.insert(span.begin(), span.end());
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -812,7 +807,8 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     std::vector<IntPair> int_pairs;
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    auto span = base::span(int_pairs);
+    cont.insert(span.begin(), span.end());
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -820,7 +816,8 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{1, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    auto span = base::span(int_pairs);
+    cont.insert(span.begin(), span.end());
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -828,7 +825,8 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{5, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    auto span = base::span(int_pairs);
+    cont.insert(span.begin(), span.end());
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1), IntPair(5, 1)));
   }
@@ -836,7 +834,8 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    auto span = base::span(int_pairs);
+    cont.insert(span.begin(), span.end());
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -845,7 +844,72 @@ TEST(FlatTree, InsertIterIter) {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}, {7, 2}, {6, 2},
                            {8, 2}, {5, 2}, {5, 3}, {6, 3}, {7, 3}, {8, 3}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    auto span = base::span(int_pairs);
+    cont.insert(span.begin(), span.end());
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1), IntPair(5, 2), IntPair(6, 2),
+                                  IntPair(7, 2), IntPair(8, 2)));
+  }
+}
+
+// template <class Range>
+//   void insert_range(Range range);
+
+TEST(FlatTree, InsertRange) {
+  struct GetKeyFromIntIntPair {
+    const int& operator()(const std::pair<int, int>& p) const {
+      return p.first;
+    }
+  };
+
+  using IntIntMap =
+      flat_tree<int, GetKeyFromIntIntPair, std::less<>, std::vector<IntPair>>;
+
+  {
+    IntIntMap cont;
+    IntPair int_pairs[] = {{3, 1}, {1, 1}, {4, 1}, {2, 1}};
+    cont.insert_range(base::span(int_pairs));
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    std::vector<IntPair> int_pairs;
+    cont.insert_range(base::span(int_pairs));
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{1, 1}};
+    cont.insert_range(base::span(int_pairs));
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{5, 1}};
+    cont.insert_range(base::span(int_pairs));
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1), IntPair(5, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}};
+    cont.insert_range(base::span(int_pairs));
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}, {7, 2}, {6, 2},
+                           {8, 2}, {5, 2}, {5, 3}, {6, 3}, {7, 3}, {8, 3}};
+    cont.insert_range(base::span(int_pairs));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1), IntPair(5, 2), IntPair(6, 2),
                                   IntPair(7, 2), IntPair(8, 2)));
@@ -933,7 +997,7 @@ TYPED_TEST_P(FlatTreeTest, Extract) {
   cont.emplace(4);
 
   TypeParam body = std::move(cont).extract();
-  EXPECT_THAT(cont, IsEmpty());
+  EXPECT_THAT(cont, IsEmpty());  // NOLINT(bugprone-use-after-move)
   EXPECT_THAT(body, ElementsAre(1, 2, 3, 4));
 }
 
@@ -997,8 +1061,9 @@ TYPED_TEST_P(FlatTreeTest, ErasePosition) {
     T v(0);
 
     auto it = cont.find(v);
-    if (it != cont.end())
+    if (it != cont.end()) {
       cont.erase(it);
+    }
   }
 }
 
@@ -1082,10 +1147,10 @@ TYPED_TEST_P(FlatTreeTest, EraseEndDeath) {
 TEST(FlatTree, KeyComp) {
   ReversedTree cont({1, 2, 3, 4, 5});
 
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.key_comp()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.key_comp()));
   int new_elements[] = {6, 7, 8, 9, 10};
-  ranges::copy(new_elements, std::inserter(cont, cont.end()));
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.key_comp()));
+  std::ranges::copy(new_elements, std::inserter(cont, cont.end()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.key_comp()));
 }
 
 // value_compare value_comp() const
@@ -1093,10 +1158,10 @@ TEST(FlatTree, KeyComp) {
 TEST(FlatTree, ValueComp) {
   ReversedTree cont({1, 2, 3, 4, 5});
 
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.value_comp()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.value_comp()));
   int new_elements[] = {6, 7, 8, 9, 10};
-  ranges::copy(new_elements, std::inserter(cont, cont.end()));
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.value_comp()));
+  std::ranges::copy(new_elements, std::inserter(cont, cont.end()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.value_comp()));
 }
 
 // ----------------------------------------------------------------------------
@@ -1400,6 +1465,21 @@ TYPED_TEST_P(FlatTreeTest, Swap) {
   EXPECT_THAT(y, ElementsAre(4));
 }
 
+TYPED_TEST_P(FlatTreeTest, AbslHash) {
+  using Tree = TypedTree<TypeParam>;
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      // These two are identical.
+      Tree({1, 2, 3, 4}),
+      Tree({1, 2, 3, 4}),
+      // `flat_tree` is ordered, so this is also identical.
+      Tree({4, 3, 2, 1}),
+      // Different content.
+      Tree({1, 2, 3}),
+      Tree({}),
+      Tree({0}),
+  }));
+}
+
 // bool operator==(const flat_tree& lhs, const flat_tree& rhs)
 // bool operator!=(const flat_tree& lhs, const flat_tree& rhs)
 // bool operator<(const flat_tree& lhs, const flat_tree& rhs)
@@ -1512,6 +1592,7 @@ REGISTER_TYPED_TEST_SUITE_P(FlatTreeTest,
                             LowerBound,
                             UpperBound,
                             Swap,
+                            AbslHash,
                             EraseIf,
                             SortedUniqueRangeConstructorDCHECKs,
                             SortedUniqueVectorCopyConstructorDCHECKs,
@@ -1523,5 +1604,4 @@ using IntSequenceContainers =
     ::testing::Types<std::deque<int>, std::vector<int>>;
 INSTANTIATE_TYPED_TEST_SUITE_P(My, FlatTreeTest, IntSequenceContainers);
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

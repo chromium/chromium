@@ -6,6 +6,7 @@
 #define COMPONENTS_UI_DEVTOOLS_DEVTOOLS_CLIENT_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/devtools_base_agent.h"

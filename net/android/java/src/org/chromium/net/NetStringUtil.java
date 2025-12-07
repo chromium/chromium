@@ -7,6 +7,9 @@ package org.chromium.net;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -14,21 +17,20 @@ import java.nio.charset.CodingErrorAction;
 import java.text.Normalizer;
 import java.util.Locale;
 
-/**
- * Utility functions for converting strings between formats when not built with
- * icu.
- */
+/** Utility functions for converting strings between formats when not built with icu. */
 @JNINamespace("net::android")
+@NullMarked
 public class NetStringUtil {
     /**
-     * Attempts to convert text in a given character set to a Unicode string.
-     * Returns null on failure.
+     * Attempts to convert text in a given character set to a Unicode string. Returns null on
+     * failure.
+     *
      * @param text ByteBuffer containing the character array to convert.
      * @param charsetName Character set it's in encoded in.
-     * @return: Unicode string on success, null on failure.
+     * @return Unicode string on success, null on failure.
      */
     @CalledByNative
-    private static String convertToUnicode(ByteBuffer text, String charsetName) {
+    private static @Nullable String convertToUnicode(ByteBuffer text, String charsetName) {
         try {
             Charset charset = Charset.forName(charsetName);
             CharsetDecoder decoder = charset.newDecoder();
@@ -40,29 +42,32 @@ public class NetStringUtil {
     }
 
     /**
-     * Attempts to convert text in a given character set to a Unicode string,
-     * and normalize it.  Returns null on failure.
+     * Attempts to convert text in a given character set to a Unicode string, and normalize it.
+     * Returns null on failure.
+     *
      * @param text ByteBuffer containing the character array to convert.
      * @param charsetName Character set it's in encoded in.
-     * @return: Unicode string on success, null on failure.
+     * @return Unicode string on success, null on failure.
      */
     @CalledByNative
-    private static String convertToUnicodeAndNormalize(ByteBuffer text, String charsetName) {
+    private static @Nullable String convertToUnicodeAndNormalize(
+            ByteBuffer text, String charsetName) {
         String unicodeString = convertToUnicode(text, charsetName);
         if (unicodeString == null) return null;
         return Normalizer.normalize(unicodeString, Normalizer.Form.NFC);
     }
 
     /**
-     * Convert text in a given character set to a Unicode string.  Any invalid
-     * characters are replaced with U+FFFD.  Returns null if the character set
-     * is not recognized.
+     * Convert text in a given character set to a Unicode string. Any invalid characters are
+     * replaced with U+FFFD. Returns null if the character set is not recognized.
+     *
      * @param text ByteBuffer containing the character array to convert.
      * @param charsetName Character set it's in encoded in.
-     * @return: Unicode string on success, null on failure.
+     * @return Unicode string on success, null on failure.
      */
     @CalledByNative
-    private static String convertToUnicodeWithSubstitutions(ByteBuffer text, String charsetName) {
+    private static @Nullable String convertToUnicodeWithSubstitutions(
+            ByteBuffer text, String charsetName) {
         try {
             Charset charset = Charset.forName(charsetName);
 
@@ -83,12 +88,12 @@ public class NetStringUtil {
 
     /**
      * Convert a string to uppercase.
+     *
      * @param str String to convert.
-     * @return: String converted to uppercase using default locale,
-     * null on failure.
+     * @return String converted to uppercase using default locale, null on failure.
      */
     @CalledByNative
-    private static String toUpperCase(String str) {
+    private static @Nullable String toUpperCase(String str) {
         try {
             return str.toUpperCase(Locale.getDefault());
         } catch (Exception e) {

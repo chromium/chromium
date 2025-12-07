@@ -7,6 +7,10 @@
 #ifndef EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_API_CONSTANTS_H_
 #define EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_API_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extension_web_request_api_constants {
 
 // Keys.
@@ -55,6 +59,12 @@ extern const char kAuthCredentialsKey[];
 extern const char kUsernameKey[];
 extern const char kPasswordKey[];
 extern const char kInitiatorKey[];
+extern const char kSecurityInfoKey[];
+extern const char kCertificatesKey[];
+extern const char kFingerprintKey[];
+extern const char kRawDerKey[];
+extern const char kSha256Key[];
+extern const char kStateKey[];
 
 // Events.
 extern const char kOnAuthRequiredEvent[];
@@ -88,6 +98,9 @@ extern const char kInvalidHeaderKeyCombination[];
 extern const char kInvalidHeader[];
 extern const char kInvalidHeaderName[];
 extern const char kInvalidHeaderValue[];
+extern const char kSecurityInfoAPINotAvailable[];
+extern const char kSecurityInfoFlagAbsentInExtensions[];
+extern const char kSecurityInfoFlagAbsentInControlledFrame[];
 
 }  // namespace extension_web_request_api_constants
 

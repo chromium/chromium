@@ -27,11 +27,7 @@ class BASE_I18N_EXPORT StreamingUtf8Validator {
   // processes characters it alternates between VALID_ENDPOINT and
   // VALID_MIDPOINT. If it encounters an invalid byte or UTF-8 sequence the
   // state changes permanently to INVALID.
-  enum State {
-    VALID_ENDPOINT,
-    VALID_MIDPOINT,
-    INVALID
-  };
+  enum State { VALID_ENDPOINT, VALID_MIDPOINT, INVALID };
 
   StreamingUtf8Validator() : state_(0u) {}
 

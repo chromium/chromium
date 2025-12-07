@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `link-cplusplus-1.0.12` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "link-cplusplus"
+version = "1.0.12"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"default" = []
+"libc++" = []
+"libcxx" = []
+"libstdc++" = []
+"libstdcxx" = []
+"nothing" = []
+
+[dependencies.cc]
+version = "^1"
+default_features = false

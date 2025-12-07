@@ -13,8 +13,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/android/fast_checkout/ui_view_android_utils.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -36,8 +36,8 @@ FastCheckoutViewImpl::~FastCheckoutViewImpl() {
 
 void FastCheckoutViewImpl::OnOptionsSelected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& autofill_profile_java,
-    const base::android::JavaParamRef<jobject>& credit_card_java) {
+    const base::android::JavaRef<jobject>& autofill_profile_java,
+    const base::android::JavaRef<jobject>& credit_card_java) {
   std::unique_ptr<autofill::AutofillProfile> autofill_profile =
       CreateFastCheckoutAutofillProfileFromJava(
           env, autofill_profile_java,
@@ -56,7 +56,7 @@ void FastCheckoutViewImpl::OnDismiss(JNIEnv* env) {
 
 void FastCheckoutViewImpl::Show(
     const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-    const std::vector<autofill::CreditCard*>& credit_cards) {
+    const std::vector<const autofill::CreditCard*>& credit_cards) {
   if (!RecreateJavaObjectIfNecessary()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a waiting
@@ -115,3 +115,5 @@ std::unique_ptr<FastCheckoutView> FastCheckoutView::Create(
     base::WeakPtr<FastCheckoutController> controller) {
   return std::make_unique<FastCheckoutViewImpl>(controller);
 }
+
+DEFINE_JNI(FastCheckoutBridge)

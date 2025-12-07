@@ -38,8 +38,9 @@ function testModifyHeadersOnRedirect(useExtraHeaders) {
   });
 
   var extraInfo = ['requestHeaders', 'blocking'];
-  if (useExtraHeaders)
+  if (useExtraHeaders) {
     extraInfo.push('extraHeaders');
+  }
   chrome.webRequest.onBeforeSendHeaders.addListener(listener,
       {urls: [finalURL]}, extraInfo);
 

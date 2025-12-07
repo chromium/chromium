@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -57,7 +56,7 @@ class TwoKeysAdapterMap {
   // |FindByPrimary(primary) && !FindBySecondary(secondary)| must hold.
   void SetSecondaryKey(const PrimaryKey& primary, SecondaryKey secondary) {
     auto it = entries_by_primary_.find(primary);
-    CHECK(it != entries_by_primary_.end(), base::NotFatalUntil::M130);
+    CHECK(it != entries_by_primary_.end());
     DCHECK(entries_by_secondary_.find(secondary) ==
            entries_by_secondary_.end());
     Entry* entry = it->value.get();
@@ -132,7 +131,7 @@ class TwoKeysAdapterMap {
     Value value;
 
     // The primary and secondary keys are cached here, instead of the
-    // respective iterators, because WTF::HashMap invalidates iterators
+    // respective iterators, because blink::HashMap invalidates iterators
     // upon changes on the set (eg insertion, deletions).
     //
     // Entries are only created in TwoKeysAdapterMap::Insert, which initializes
@@ -146,8 +145,8 @@ class TwoKeysAdapterMap {
     std::optional<SecondaryKey> secondary_key;
   };
 
-  using PrimaryMap = WTF::HashMap<PrimaryKey, std::unique_ptr<Entry>>;
-  using SecondaryMap = WTF::HashMap<SecondaryKey, Entry*>;
+  using PrimaryMap = HashMap<PrimaryKey, std::unique_ptr<Entry>>;
+  using SecondaryMap = HashMap<SecondaryKey, Entry*>;
 
   PrimaryMap entries_by_primary_;
   SecondaryMap entries_by_secondary_;

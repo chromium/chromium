@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/usb_service_linux.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -28,7 +24,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/usb/usb_device_handle.h"
@@ -150,8 +145,9 @@ void UsbServiceLinux::BlockingTaskRunnerHelper::OnDeviceAdded(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   const char* subsystem = udev_device_get_subsystem(device.get());
-  CHECK(subsystem);
-  CHECK_EQ(subsystem, kUsbSubsystem);
+  if (!subsystem || subsystem != kUsbSubsystem) {
+    return;
+  }
 
   const char* value = udev_device_get_devnode(device.get());
   if (!value)
@@ -169,9 +165,9 @@ void UsbServiceLinux::BlockingTaskRunnerHelper::OnDeviceAdded(
     return;
 
   std::unique_ptr<UsbDeviceDescriptor> descriptor(new UsbDeviceDescriptor());
-  if (!descriptor->Parse(base::make_span(
-          reinterpret_cast<const uint8_t*>(descriptors_str.data()),
-          descriptors_str.size()))) {
+  if (!descriptor->Parse(UNSAFE_TODO(
+          base::span(reinterpret_cast<const uint8_t*>(descriptors_str.data()),
+                     descriptors_str.size())))) {
     return;
   }
 

@@ -22,7 +22,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 
@@ -131,9 +130,10 @@ void EnrollmentHelperMixin::ExpectTokenBasedEnrollmentError(
 }
 
 void EnrollmentHelperMixin::SetupClearAuth() {
-  ON_CALL(mock_enrollment_launcher_, ClearAuth(_))
-      .WillByDefault(Invoke(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+  ON_CALL(mock_enrollment_launcher_, ClearAuth(_, _))
+      .WillByDefault([](base::OnceClosure callback, bool revoke_oauth2_tokens) {
+        std::move(callback).Run();
+      });
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentCredentials() {

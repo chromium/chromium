@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,12 +19,12 @@ namespace {
 
 class MockPluginRegistry : public mojom::blink::PluginRegistry {
  public:
-  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
-    DidGetPlugins(refresh);
+  void GetPlugins(GetPluginsCallback callback) override {
+    DidGetPlugins();
     std::move(callback).Run(Vector<mojom::blink::PluginInfoPtr>());
   }
 
-  MOCK_METHOD(void, DidGetPlugins, (bool));
+  MOCK_METHOD(void, DidGetPlugins, ());
 };
 
 TEST(PluginDataTest, UpdatePluginList) {
@@ -34,19 +35,20 @@ TEST(PluginDataTest, UpdatePluginList) {
   mojo::Receiver<mojom::blink::PluginRegistry> registry_receiver(
       &mock_plugin_registry);
   TestingPlatformSupport::ScopedOverrideMojoInterface override_plugin_registry(
-      WTF::BindRepeating(
+      BindRepeating(
           [](mojo::Receiver<mojom::blink::PluginRegistry>* registry_receiver,
              const char* interface, mojo::ScopedMessagePipeHandle pipe) {
-            if (!strcmp(interface, mojom::blink::PluginRegistry::Name_)) {
+            if (!UNSAFE_TODO(
+                    strcmp(interface, mojom::blink::PluginRegistry::Name_))) {
               registry_receiver->Bind(
                   mojo::PendingReceiver<mojom::blink::PluginRegistry>(
                       std::move(pipe)));
               return;
             }
           },
-          WTF::Unretained(&registry_receiver)));
+          Unretained(&registry_receiver)));
 
-  EXPECT_CALL(mock_plugin_registry, DidGetPlugins(false));
+  EXPECT_CALL(mock_plugin_registry, DidGetPlugins());
 
   auto* plugin_data = MakeGarbageCollected<PluginData>();
   plugin_data->UpdatePluginList();

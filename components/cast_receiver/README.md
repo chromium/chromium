@@ -51,9 +51,8 @@ in the Cast Core implementation. From there, the `OnWebContentsCreated()` and
 `CreateURLLoaderThrottles()` functions must be called from the
 `ContentBrowserClient` functions of the same name.
 
-The embedder may additionally call `AddApplicationStateObserver()` or
-`AddStreamingResolutionObserver()` to subscribe to state change events for the
-runtime.
+The embedder may additionally call `AddApplicationStateObserver()` to subscribe
+to state change events for the runtime.
 
 ### Renderer-Side Integration
 
@@ -258,11 +257,7 @@ vary:
     embedder-specific `ConfigurationManager` as
     [provided](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_receiver/browser/public/streaming_config_manager.h;l=25;drc=576992499f3c1488c8f86feafb3a65aee426f784)
     by `EmbedderApplication::GetStreamingConfigManager()`.
-5. Once streaming has started and a connection has been formed with the Cast
-sender device, a `OnStreamingResolutionChanged()`
-[event](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_receiver/browser/public/streaming_resolution_observer.h;l=29)
-will be fired.
-6. Streaming may be stopped by the embedder as with Web applications.
+5. Streaming may be stopped by the embedder as with Web applications.
 Alternatively, if the session is
 [ended](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_streaming/browser/public/receiver_session.h;l=49;drc=7eb26cecf3a3c92e25c68b8ca4f0fc467ea89af7)
 by the remote device, a `NotifyApplicationStopped()` event will be fired to the

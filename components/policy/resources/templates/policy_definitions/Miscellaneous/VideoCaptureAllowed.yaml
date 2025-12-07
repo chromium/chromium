@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled turns off prompts, and video capture is only available to URLs set in the VideoCaptureAllowedUrls list.
 
         Note: The policy affects all video input (not just the built-in camera).
+default: true
 example_value: false
 features:
   dynamic_refresh: true

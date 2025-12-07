@@ -143,11 +143,13 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  MOCK_METHOD0(OnInitialized, void());
-  MOCK_METHOD1(OnKeysReturned, void(std::vector<std::string>));
-  MOCK_METHOD1(OnStoreOperationComplete, void(bool));
-  MOCK_METHOD1(OnImageMetadataLoaded,
-               void(std::optional<CachedImageMetadataProto>));
+  MOCK_METHOD(void, OnInitialized, (), ());
+  MOCK_METHOD(void, OnKeysReturned, (std::vector<std::string>), ());
+  MOCK_METHOD(void, OnStoreOperationComplete, (bool), ());
+  MOCK_METHOD(void,
+              OnImageMetadataLoaded,
+              (std::optional<CachedImageMetadataProto>),
+              ());
 
  private:
   std::unique_ptr<base::SimpleTestClock> clock_;

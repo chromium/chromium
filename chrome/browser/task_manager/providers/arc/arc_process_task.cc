@@ -6,16 +6,16 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/mojom/process.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -134,14 +134,15 @@ bool ArcProcessTask::IsRunningInVM() const {
   return arc::IsArcVmEnabled();
 }
 
-void ArcProcessTask::Kill() {
+bool ArcProcessTask::Kill() {
   auto* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->process(),
       KillProcess);
   if (!process_instance)
-    return;
+    return false;
   process_instance->KillProcess(arc_process_.nspid(),
                                 "Killed manually from Task Manager");
+  return true;
 }
 
 void ArcProcessTask::OnConnectionReady() {

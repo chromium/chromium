@@ -37,7 +37,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
@@ -187,7 +187,7 @@ class FakeHistoryAdapter : public DownloadHistory::HistoryAdapter {
   void ExpectNoDownloadsRemoved() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     content::RunAllPendingInMessageLoop(content::BrowserThread::UI);
-    EXPECT_EQ(0, static_cast<int>(remove_downloads_.size()));
+    EXPECT_EQ(0u, remove_downloads_.size());
   }
 
   void ExpectDownloadsRemoved(const IdSet& ids) {
@@ -469,7 +469,7 @@ class DownloadHistoryTest : public testing::Test {
     EXPECT_CALL(manager(), GetDownload(row->id))
         .WillRepeatedly(Return(&item(index)));
     EXPECT_CALL(item(index), IsTemporary()).WillRepeatedly(Return(false));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     new extensions::DownloadedByExtension(&item(index), row->by_ext_id,
                                           row->by_ext_name);
 #endif

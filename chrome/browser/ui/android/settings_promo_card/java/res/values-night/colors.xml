@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Please see ui/android/java/res/values/color_palette.xml for the shared common colors. -->
+    <color name="default_browser_promo_illustration_1">@color/baseline_secondary_25</color>
+    <color name="default_browser_promo_illustration_2">@color/baseline_secondary_30</color>
+    <color name="default_browser_promo_illustration_3">@color/baseline_secondary_35</color>
+</resources>

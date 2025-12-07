@@ -94,7 +94,7 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   int response_status_ = OK;
 
   // The protocol that is negotiated.
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
   // Connect timing information for this stream. Populated when headers are
   // received.
   LoadTimingInfo::ConnectTiming connect_timing_;

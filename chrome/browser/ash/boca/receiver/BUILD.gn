@@ -1,0 +1,62 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("receiver") {
+  sources = [
+    "boca_receiver_service.cc",
+    "boca_receiver_service.h",
+    "boca_receiver_service_factory.cc",
+    "boca_receiver_service_factory.h",
+    "receiver_handler_delegate_impl.cc",
+    "receiver_handler_delegate_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/boca/spotlight",
+    "//chrome/browser/device_identity",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/boca:invalidation_delegate",
+    "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight_lib",
+    "//chromeos/ash/components/boca/receiver",
+    "//chromeos/ash/components/boca/session_api",
+    "//components/gcm_driver",
+    "//components/gcm_driver/instance_id",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//google_apis/common",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "receiver_handler_delegate_impl_unittest.cc" ]
+
+  deps = [
+    ":receiver",
+    "//base",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+}

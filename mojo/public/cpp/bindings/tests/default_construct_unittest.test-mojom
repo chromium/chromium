@@ -18,6 +18,10 @@ struct OptionalTestStructContainer {
   TestStruct? test_struct;
 };
 
+union TestStructUnion {
+  TestStruct test_struct;
+};
+
 interface TestInterface {
   TestMethod(TestStruct in) => (TestStruct out);
 

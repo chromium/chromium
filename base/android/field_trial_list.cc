@@ -6,10 +6,11 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/FieldTrialList_jni.h"
@@ -19,7 +20,7 @@ namespace {
 // Log trials and their groups on activation, for debugging purposes.
 class TrialLogger : public base::FieldTrialList::Observer {
  public:
-  TrialLogger() {}
+  TrialLogger() = default;
 
   TrialLogger(const TrialLogger&) = delete;
   TrialLogger& operator=(const TrialLogger&) = delete;
@@ -34,16 +35,18 @@ class TrialLogger : public base::FieldTrialList::Observer {
     // Changes to format of the log message below must be accompanied by
     // changes to finch smoke tests since they look for this log message
     // in the logcat.
-    LOG(INFO) << "Active field trial \"" << trial_name
-              << "\" in group \"" << group_name<< '"';
+    LOG(INFO) << "Active field trial \"" << trial_name << "\" in group \""
+              << group_name << '"';
   }
 
  protected:
-  ~TrialLogger() override {}
+  ~TrialLogger() override = default;
 };
 
-base::LazyInstance<TrialLogger>::Leaky g_trial_logger =
-    LAZY_INSTANCE_INITIALIZER;
+TrialLogger* GetTrialLogger() {
+  static base::NoDestructor<TrialLogger> trial_logger;
+  return trial_logger.get();
+}
 
 }  // namespace
 
@@ -73,6 +76,8 @@ static std::string JNI_FieldTrialList_GetVariationParameter(
 // friend the JNI function and is, in turn, friended by
 // FieldTrialListIncludingLowAnonymity which allows for the private
 // GetActiveFieldTrialGroups() to be reached.
+static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env);
+
 class AndroidFieldTrialListLogActiveTrialsFriendHelper {
  private:
   friend void ::JNI_FieldTrialList_LogActiveTrials(JNIEnv* env);
@@ -89,11 +94,12 @@ class AndroidFieldTrialListLogActiveTrialsFriendHelper {
 };
 
 static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env) {
-  DCHECK(!g_trial_logger.IsCreated()); // This need only be called once.
+  static int called_count = 0;
+  DCHECK_EQ(called_count++, 0);  // This need only be called once.
 
   LOG(INFO) << "Logging active field trials...";
   AndroidFieldTrialListLogActiveTrialsFriendHelper::AddObserver(
-      &g_trial_logger.Get());
+      GetTrialLogger());
 
   // Log any trials that were already active before adding the observer.
   std::vector<base::FieldTrial::ActiveGroup> active_groups;
@@ -110,3 +116,5 @@ static jboolean JNI_FieldTrialList_CreateFieldTrial(JNIEnv* env,
   return base::FieldTrialList::CreateFieldTrial(trial_name, group_name) !=
          nullptr;
 }
+
+DEFINE_JNI(FieldTrialList)

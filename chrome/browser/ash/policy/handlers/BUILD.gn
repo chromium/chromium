@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("handlers") {
   sources = [
@@ -14,6 +14,8 @@ static_library("handlers") {
     "app_launch_automation_policy_handler.h",
     "bluetooth_policy_handler.cc",
     "bluetooth_policy_handler.h",
+    "camera_save_location_policy_handler.cc",
+    "camera_save_location_policy_handler.h",
     "configuration_policy_handler_ash.cc",
     "configuration_policy_handler_ash.h",
     "contextual_google_integrations_policies_handler.cc",
@@ -30,10 +32,6 @@ static_library("handlers") {
     "device_name_policy_handler_name_generator.h",
     "device_wifi_allowed_handler.cc",
     "device_wifi_allowed_handler.h",
-    "lacros_availability_policy_handler.cc",
-    "lacros_availability_policy_handler.h",
-    "lacros_selection_policy_handler.cc",
-    "lacros_selection_policy_handler.h",
     "lock_to_single_user_manager.cc",
     "lock_to_single_user_manager.h",
     "minimum_version_policy_handler.cc",
@@ -50,16 +48,17 @@ static_library("handlers") {
     "tpm_auto_update_mode_policy_handler.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/upgrade_detector:build_state_observer",
+  ]
 
   deps = [
     "//ash",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//build:buildflag_header_h",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crostini",
@@ -69,8 +68,9 @@ static_library("handlers") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/upgrade_detector",
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -82,11 +82,12 @@ static_library("handlers") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/components/onc",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
@@ -163,29 +164,26 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session",
+    ":handlers",
+    ":test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/notifications:unit_tests",
     "//chrome/browser/ash/plugin_vm",
-    "//chrome/browser/ash/policy/handlers",
-    "//chrome/browser/ash/policy/handlers:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/common:chrome_features",
@@ -212,6 +210,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/dbus/power",
     "//components/account_id",
     "//components/policy:generated",
@@ -258,7 +260,6 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
@@ -269,15 +270,16 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/session:test_support",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/login:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/test:test_support",
@@ -290,12 +292,12 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/account_id",
-    "//components/flags_ui",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -309,6 +311,7 @@ source_set("browser_tests") {
     "//components/user_manager:common",
     "//components/variations",
     "//components/variations/service",
+    "//components/webui/flags",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
@@ -320,4 +323,8 @@ source_set("browser_tests") {
     "//ui/base:features",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -1,0 +1,30 @@
+caption: Allow software WebGL fallback using SwiftShader
+desc: |-
+  A policy that controls if SwiftShader will be used as a WebGL fallback when hardware GPU acceleration is not available.
+
+  SwiftShader has been used to support WebGL on systems without GPU acceleration such as headless systems or virtual machines but has been deprecated due to security issues. Starting in M139, WebGL context creation will fail when it would have otherwise used SwiftShader. This policy allows the browser or administrator to temporarily defer the deprecation.
+
+  Setting the policy to Enabled, SwiftShader will be used as a software WebGL fallback.
+
+  Setting the policy to Disabled or not set, WebGL context creation may fail if hardware GPU acceleration is not available. Web pages may misbehave if they do not gracefully handle WebGL context creation failure.
+
+  This is a temporary policy which will be removed in the future.
+default: false
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Enable support for unsafe SwiftShader WebGL fallback
+  value: true
+- caption: Disable support for unsafe SwiftShader WebGL fallback
+  value: false
+owners:
+- geofflang@chromium.org
+- file://gpu/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:139-
+tags: []
+type: main

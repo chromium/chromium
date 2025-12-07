@@ -6,9 +6,7 @@
 
 dictionary IdentityProviderConfig {
   // URL for the Identity Provider Configuration.
-  // Not marked as required to allow implementation of registered providers.
-  // See crbug.com/1406698.
-  USVString configURL;
+  required USVString configURL;
   // Not marked as required to allow implementation of digital credentials.
   // See crbug.com/1416939.
   USVString clientId;
@@ -17,10 +15,20 @@ dictionary IdentityProviderConfig {
   [RuntimeEnabled=FedCmIdPRegistration] DOMString type;
 };
 
+enum IdentityProviderRequestOptionsFormat {
+  "vc+sd-jwt",
+};
+
+dictionary IdentityProviderField {
+  required USVString name;
+};
+
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
+  // TODO(crbug.com/441895082): Remove nonce field when FedCmNonceInParams is enabled by default.
   USVString nonce;
   DOMString loginHint;
-  [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
-  [RuntimeEnabled=FedCmAuthz] sequence<USVString> fields;
-  [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
+  DOMString domainHint;
+  sequence<(USVString or IdentityProviderField)> fields;
+  any params;
+  [RuntimeEnabled=FedCmDelegation] IdentityProviderRequestOptionsFormat format;
 };

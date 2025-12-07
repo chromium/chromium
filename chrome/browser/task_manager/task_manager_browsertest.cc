@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
@@ -32,11 +34,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -49,6 +53,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -72,6 +77,7 @@
 #include "url/url_constants.h"
 
 using content::WebContents;
+using task_manager::DisplayCategory;
 using task_manager::browsertest_util::ColumnSpecifier;
 using task_manager::browsertest_util::MatchAboutBlankTab;
 using task_manager::browsertest_util::MatchAnyApp;
@@ -130,7 +136,7 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   GURL GetTestURL() {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kTitle1File));
   }
@@ -702,6 +708,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
 #define MAYBE_SentDataObserved SentDataObserved
 #endif
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
+  // TODO(crbug.com/397484647): Migrate TaskManagerDesktopRefreshBrowserTest
+  // version of this test into this one.
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
@@ -724,12 +732,16 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
-                                  base::NullCallback());
+                                  base::NullCallback(),
+                                  content::ISOLATED_WORLD_ID_GLOBAL);
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
       MatchTab("network use"), ColumnSpecifier::TOTAL_NETWORK_USE, 16000000));
   // There shouldn't be too much usage on the browser process. Note that it
   // should be the first row since tasks are sorted by process ID then by task
   // ID.
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    model()->UpdateModel(DisplayCategory::kSystem, u"");
+  }
   EXPECT_GE(20000,
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
@@ -742,6 +754,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
 #define MAYBE_TotalSentDataObserved TotalSentDataObserved
 #endif
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
+  // TODO(crbug.com/397484647): Migrate TaskManagerDesktopRefreshBrowserTest
+  // version of this test into this one.
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
@@ -764,7 +778,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
-                                  base::NullCallback());
+                                  base::NullCallback(),
+                                  content::ISOLATED_WORLD_ID_GLOBAL);
 
   // This test uses |setTimeout| to exceed the Nyquist ratio to ensure that at
   // least 1 refresh has happened of no traffic.
@@ -780,13 +795,17 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
-                                  base::NullCallback());
+                                  base::NullCallback(),
+                                  content::ISOLATED_WORLD_ID_GLOBAL);
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
       MatchTab("network use"), ColumnSpecifier::TOTAL_NETWORK_USE,
       16000000 * 2));
   // There shouldn't be too much usage on the browser process. Note that it
   // should be the first row since tasks are sorted by process ID then by task
   // ID.
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    model()->UpdateModel(DisplayCategory::kSystem, u"");
+  }
   EXPECT_GE(20000,
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
@@ -949,7 +968,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
       ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   content::RenderFrameHost* grandchild_frame = ChildFrameAt(child_frame, 0);
   grandchild_frame->ExecuteJavaScriptWithUserGestureForTests(
-      u"a=5", base::NullCallback());
+      u"a=5", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
   GURL d_url = embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(e)");
@@ -1012,12 +1031,13 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
 IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   ShowTaskManager();
 
+  // Navigate to a page A(B,C).
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   GURL main_url(embedded_test_server()->GetURL(
       "/cross-site/a.com/iframe_cross_site.html"));
   int expected_c_subframes = 1;
-  if (content::IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+  if (!content::AreAllSitesIsolatedForTesting()) {
     // Isolate b.com so that it will be forced into a separate process. This
     // will prevent the main frame and c.com subframe from being placed in the
     // the process that gets killed by this test.
@@ -1060,7 +1080,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   auto* b_frame =
       ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
   GURL b_url = b_frame->GetLastCommittedURL();
-  ASSERT_EQ(b_url.host(), "b.com");  // Sanity check of test code / setup.
+  ASSERT_EQ(b_url.GetHost(), "b.com");  // Sanity check of test code / setup.
   ASSERT_TRUE(b_frame->GetSiteInstance()->RequiresDedicatedProcess());
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
@@ -1579,7 +1599,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest, MAYBE_ProperlyShowsTasks) {
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
   std::string server_port;
   if (prerender_gurl.has_port()) {
-    server_port = prerender_gurl.port();
+    server_port = prerender_gurl.GetPort();
   }
 
   // Inject the speculation rule and wait for prerender to complete.
@@ -1741,8 +1761,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForAutocompleteActionPredictorInitialization();
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
   GetAutocompleteActionPredictor()->StartPrerendering(
-      prerender_gurl, *(browser()->tab_strip_model()->GetActiveWebContents()),
-      gfx::Size(50, 50));
+      prerender_gurl, *(browser()->tab_strip_model()->GetActiveWebContents()));
 
   // One task for main page and one for the prerendered page.
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
@@ -1780,7 +1799,7 @@ IN_PROC_BROWSER_TEST_F(
         embedded_test_server()->GetURL(kNewPrerenderURL);
     GetAutocompleteActionPredictor()->StartPrerendering(
         embedded_test_server()->GetURL(kNewPrerenderURL),
-        *GetActiveWebContents(), gfx::Size(50, 50));
+        *GetActiveWebContents());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyPrerender()));
     ASSERT_NO_FATAL_FAILURE(
         WaitForTaskManagerRows(1, MatchPrerender(new_prerender_gurl.spec())));
@@ -1820,8 +1839,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   ASSERT_TRUE(GetAutocompleteActionPredictor());
   WaitForAutocompleteActionPredictorInitialization();
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
-  GetAutocompleteActionPredictor()->StartPrerendering(
-      prerender_gurl, *GetActiveWebContents(), gfx::Size(50, 50));
+  GetAutocompleteActionPredictor()->StartPrerendering(prerender_gurl,
+                                                      *GetActiveWebContents());
 
   // One task for main page and one for the prerendered page.
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
@@ -2228,4 +2247,95 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnySubframe()));
+}
+
+//==============================================================================
+// Desktop refreshed task manager test.
+class TaskManagerDesktopRefreshBrowserTest : public TaskManagerBrowserTest {
+ public:
+  TaskManagerDesktopRefreshBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kTaskManagerDesktopRefresh, {}}},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(
+        base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
+  }
+  TaskManagerDesktopRefreshBrowserTest(
+      const TaskManagerDesktopRefreshBrowserTest&) = delete;
+  TaskManagerDesktopRefreshBrowserTest& operator=(
+      const TaskManagerDesktopRefreshBrowserTest&) = delete;
+  ~TaskManagerDesktopRefreshBrowserTest() override = default;
+
+  void UpdateModel(const DisplayCategory display_category,
+                   std::u16string_view search_term) {
+    model()->UpdateModel(display_category, search_term);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Testing that the refreshed task manager properly displays tasks on different
+// tabs.
+IN_PROC_BROWSER_TEST_F(TaskManagerDesktopRefreshBrowserTest,
+                       FilterTasksByCategoryAndSearchTerm) {
+  ShowTaskManager();
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
+
+  // New tab should be shown on the default `Tabs` tab of the task manager.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title2.html")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  // Load an extension which should be shown in the default `Tabs & Extensions`
+  // tab of the task manager. Current the task list is like below. The utility
+  // processes might be different for different systems.
+  // Utility: Network Service
+  // Utility: Video Capture
+  // Utility: Storage Service
+  // Tab: Title Of Awesomeness
+  // Extension: My extension 1
+  // Extension: Foobar
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("good")
+                                .AppendASCII("Extensions")
+                                .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
+                                .AppendASCII("1.0.0.0")));
+  GURL url("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html");
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchExtension("My extension 1")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  // Switch to `System` tab, the extension and tabs should not be shown.
+  UpdateModel(DisplayCategory::kSystem, u"");
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+
+  // Input search terms, all matched tasks would be shown no matter which tab
+  // they lie in.
+  UpdateModel(DisplayCategory::kAll, u"title");
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  UpdateModel(DisplayCategory::kAll, u"EN");
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchExtension("My extension 1")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 }

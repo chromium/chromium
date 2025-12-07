@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "ash/app_list/app_list_metrics.h"
@@ -132,13 +133,6 @@ class ASH_EXPORT AppListPresenterImpl
       float opacity,
       std::optional<TabletModeAnimationTransition> transition,
       UpdateHomeLauncherAnimationSettingsCallback callback);
-
-  // Shows or hides the Assistant page.
-  // |show| is true to show and false to hide.
-  void ShowEmbeddedAssistantUI(bool show);
-
-  // Returns current visibility of the Assistant page.
-  bool IsShowingEmbeddedAssistantUI() const;
 
  private:
   // Sets the app list view and attempts to show it.

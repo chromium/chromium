@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_UNPOSITIONED_FLOAT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_UNPOSITIONED_FLOAT_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -30,7 +29,6 @@ struct CORE_EXPORT UnpositionedFloat final {
                     const BlockBreakToken* token,
                     const LogicalSize available_size,
                     const LogicalSize percentage_size,
-                    const LogicalSize replaced_percentage_size,
                     const BfcOffset& origin_bfc_offset,
                     const ConstraintSpace& parent_space,
                     const ComputedStyle& parent_style,
@@ -41,7 +39,6 @@ struct CORE_EXPORT UnpositionedFloat final {
         token(token),
         available_size(available_size),
         percentage_size(percentage_size),
-        replaced_percentage_size(replaced_percentage_size),
         origin_bfc_offset(origin_bfc_offset),
         parent_space(parent_space),
         parent_style(parent_style),
@@ -54,7 +51,6 @@ struct CORE_EXPORT UnpositionedFloat final {
 
   const LogicalSize available_size;
   const LogicalSize percentage_size;
-  const LogicalSize replaced_percentage_size;
   const BfcOffset origin_bfc_offset;
   const ConstraintSpace& parent_space;
   const ComputedStyle& parent_style;

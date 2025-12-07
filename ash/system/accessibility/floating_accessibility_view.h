@@ -11,6 +11,7 @@
 #include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -37,7 +38,9 @@ class FloatingAccessibilityBubbleView : public TrayBubbleView {
   bool IsAnchoredToStatusArea() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // views::View:
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
@@ -74,6 +77,8 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     // When the layout of the view changes and we may need to reposition
     // ourselves.
     virtual void OnLayoutChanged() {}
+    virtual void OnFocused() {}
+    virtual void OnBlurred() {}
     virtual ~Delegate() = default;
   };
 
@@ -100,7 +105,10 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
+                               views::View* starting_view,
+                               bool visible) override;
+  void OnViewFocused(views::View* view) override;
+  void OnViewBlurred(views::View* view) override;
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool visible) override;
@@ -109,17 +117,35 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   void OnFocusLeavingSystemTray(bool reverse) override;
   void OnImeMenuTrayBubbleShown() override;
 
+  TrayBackgroundView* dictation_button() {
+    return dictation_button_observation_.GetSource();
+  }
+
+  TrayBackgroundView* select_to_speak_button() {
+    return select_to_speak_button_observation_.GetSource();
+  }
+
+  TrayBackgroundView* virtual_keyboard_button() {
+    return virtual_keyboard_button_observation_.GetSource();
+  }
+
+  ImeMenuTray* ime_button() { return ime_button_observation_.GetSource(); }
+
   // Feature buttons:
-  raw_ptr<TrayBackgroundView> dictation_button_ = nullptr;
-  raw_ptr<TrayBackgroundView> select_to_speak_button_ = nullptr;
-  raw_ptr<TrayBackgroundView> virtual_keyboard_button_ = nullptr;
+  base::ScopedObservation<TrayBackgroundView, ViewObserver>
+      dictation_button_observation_{this};
+  base::ScopedObservation<TrayBackgroundView, ViewObserver>
+      select_to_speak_button_observation_{this};
+  base::ScopedObservation<TrayBackgroundView, ViewObserver>
+      virtual_keyboard_button_observation_{this};
 
   // Button to list all available features.
   raw_ptr<FloatingMenuButton> a11y_tray_button_ = nullptr;
   // Button to move the view around corners.
   raw_ptr<FloatingMenuButton> position_button_ = nullptr;
   // Button to list all available keyboard languages.
-  raw_ptr<ImeMenuTray> ime_button_ = nullptr;
+  base::ScopedObservation<ImeMenuTray, ViewObserver> ime_button_observation_{
+      this};
 
   const raw_ptr<Delegate> delegate_;
 };

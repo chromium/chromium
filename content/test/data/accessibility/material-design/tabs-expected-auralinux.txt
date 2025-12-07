@@ -1,0 +1,87 @@
+[document web] name='Material Web Tabs'
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable
+++++++++[page tab] name='Tab 2' selectable selected
+++++++++[page tab] name='Tab 3' selectable
+++++++++[page tab] name='Disabled Tab' selectable
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Home' selectable
+++++++++[page tab] name='Search' selectable
+++++++++[page tab] name='Favorites' selectable selected
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Secondary 1' selectable
+++++++++[page tab] name='Secondary 2' selectable selected
+++++++++[page tab] name='Secondary 3' selectable
+=== Start Continuation ===
+[document web] name='Material Web Tabs'
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable selected
+++++++++[page tab] name='Tab 2' selectable
+++++++++[page tab] name='Tab 3' selectable
+++++++++[page tab] name='Disabled Tab' selectable
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Home' selectable
+++++++++[page tab] name='Search' selectable
+++++++++[page tab] name='Favorites' selectable selected
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Secondary 1' selectable
+++++++++[page tab] name='Secondary 2' selectable selected
+++++++++[page tab] name='Secondary 3' selectable
+++++[section]
+++++++[static] name='Tab 1 Clicked'
+=== Start Continuation ===
+[document web] name='Material Web Tabs'
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable
+++++++++[page tab] name='Tab 2' selectable selected
+++++++++[page tab] name='Tab 3' selectable
+++++++++[page tab] name='Disabled Tab' selectable
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Home' selectable
+++++++++[page tab] name='Search' selectable
+++++++++[page tab] name='Favorites' selectable selected
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Secondary 1' selectable
+++++++++[page tab] name='Secondary 2' selectable selected
+++++++++[page tab] name='Secondary 3' selectable
+++++[section]
+++++++[static] name='Tab 1 Clicked'
+++++[section]
+++++++[static] name='Tab 2 Clicked'
+=== Start Continuation ===
+[document web] name='Material Web Tabs'
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable
+++++++++[page tab] name='Tab 2' selectable
+++++++++[page tab] name='Tab 3' selectable selected
+++++++++[page tab] name='Disabled Tab' selectable
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Home' selectable
+++++++++[page tab] name='Search' selectable
+++++++++[page tab] name='Favorites' selectable selected
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Secondary 1' selectable
+++++++++[page tab] name='Secondary 2' selectable selected
+++++++++[page tab] name='Secondary 3' selectable
+++++[section]
+++++++[static] name='Tab 1 Clicked'
+++++[section]
+++++++[static] name='Tab 2 Clicked'
+++++[section]
+++++++[static] name='Tab 3 Clicked'

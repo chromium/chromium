@@ -4,15 +4,27 @@
 
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 
+#include <cstdint>
+
+#include "base/byte_count.h"
+#include "base/check_is_test.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/url_constants.h"
+
+namespace {
+using ::performance_manager::user_tuning::UserPerformanceTuningManager;
+}  // namespace
 
 MemorySaverChipTabHelper::~MemorySaverChipTabHelper() = default;
 
@@ -43,6 +55,7 @@ void MemorySaverChipTabHelper::OnVisibilityChanged(
     if (chip_state_ == memory_saver::ChipState::EXPANDED_WITH_SAVINGS ||
         chip_state_ == memory_saver::ChipState::EXPANDED_EDUCATION) {
       chip_state_ = memory_saver::ChipState::COLLAPSED_FROM_EXPANDED;
+      UpdatePageActionState();
     }
   }
 }
@@ -53,18 +66,27 @@ bool MemorySaverChipTabHelper::ShouldChipAnimate() {
   return should_animate;
 }
 
-MemorySaverChipTabHelper::MemorySaverChipTabHelper(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      content::WebContentsUserData<MemorySaverChipTabHelper>(*contents) {
+MemorySaverChipTabHelper::MemorySaverChipTabHelper(tabs::TabInterface& tab)
+    : ContentsObservingTabFeature(tab) {
   pref_service_ =
-      Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
+      Profile::FromBrowserContext(tab.GetBrowserWindowInterface()->GetProfile())
+          ->GetPrefs();
+
+  if (UserPerformanceTuningManager::HasInstance()) {
+    user_performance_tuning_manager_observation_.Observe(
+        UserPerformanceTuningManager::GetInstance());
+    is_memory_saver_mode_enabled_ =
+        UserPerformanceTuningManager::GetInstance()->IsMemorySaverModeActive();
+  } else {
+    // Some unit tests don't have a UserPerformanceTuningManager.
+    CHECK_IS_TEST();
+  }
 }
 
 bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
   bool const savings_over_threshold =
-      memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents()) >
-      kExpandedMemorySaverChipThresholdBytes;
+      memory_saver::GetDiscardedMemorySavings(web_contents()) >
+      kExpandedMemorySaverChipThreshold;
 
   base::Time const last_expanded_timestamp =
       pref_service_->GetTime(prefs::kLastMemorySaverChipExpandedTimestamp);
@@ -73,12 +95,12 @@ bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
       kExpandedMemorySaverChipFrequency;
 
   auto* const pre_discard_resource_usage =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          PreDiscardResourceUsage::FromWebContents(&GetWebContents());
+      UserPerformanceTuningManager::PreDiscardResourceUsage::FromWebContents(
+          web_contents());
   bool const tab_discard_time_over_threshold =
       pre_discard_resource_usage &&
       (base::LiveTicks::Now() -
-       pre_discard_resource_usage->discard_liveticks()) >
+       pre_discard_resource_usage->discard_live_ticks()) >
           kExpandedMemorySaverChipDiscardedDuration;
 
   if (savings_over_threshold && expanded_chip_not_shown_recently &&
@@ -111,7 +133,7 @@ void MemorySaverChipTabHelper::ComputeChipState(
   bool const is_site_supported =
       memory_saver::IsURLSupported(navigation_handle->GetURL());
 
-  if (!(was_discarded &&
+  if (!(is_memory_saver_mode_enabled_ && was_discarded &&
         (discard_reason == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
          discard_reason == mojom::LifecycleUnitDiscardReason::SUGGESTED) &&
         is_site_supported)) {
@@ -122,6 +144,52 @@ void MemorySaverChipTabHelper::ComputeChipState(
     chip_state_ = memory_saver::ChipState::EXPANDED_WITH_SAVINGS;
   } else {
     chip_state_ = memory_saver::ChipState::COLLAPSED;
+  }
+
+  UpdatePageActionState();
+}
+
+void MemorySaverChipTabHelper::UpdatePageActionState() {
+  if (!IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
+    return;
+  }
+
+  tabs::TabFeatures* tab_features = tab().GetTabFeatures();
+  if (!tab_features) {
+    // Tab features may not be present at shutdown.
+    return;
+  }
+  memory_saver::MemorySaverChipController* controller =
+      tab_features->memory_saver_chip_controller();
+  switch (chip_state_) {
+    case memory_saver::ChipState::HIDDEN:
+      controller->Hide();
+      break;
+    case memory_saver::ChipState::COLLAPSED:
+    case memory_saver::ChipState::COLLAPSED_FROM_EXPANDED:
+      controller->ShowIcon();
+      break;
+    case memory_saver::ChipState::EXPANDED_EDUCATION:
+      controller->ShowEducationChip();
+      break;
+
+    case memory_saver::ChipState::EXPANDED_WITH_SAVINGS:
+      const base::ByteCount bytes_saved =
+          memory_saver::GetDiscardedMemorySavings(web_contents());
+      controller->ShowMemorySavedChip(bytes_saved);
+      break;
+  }
+}
+
+void MemorySaverChipTabHelper::OnMemorySaverModeChanged() {
+  is_memory_saver_mode_enabled_ =
+      UserPerformanceTuningManager::GetInstance()->IsMemorySaverModeActive();
+
+  // If disabling the feature, clear any active UI. If enabling, let future
+  // navigation events show the UI.
+  if (!is_memory_saver_mode_enabled_) {
+    chip_state_ = memory_saver::ChipState::HIDDEN;
+    UpdatePageActionState();
   }
 }
 

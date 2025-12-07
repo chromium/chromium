@@ -1,0 +1,32 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "profile_metrics.cc",
+    "profile_metrics.h",
+  ]
+  deps = [
+    "//components/profile_metrics",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+  ]
+}
+
+source_set("profile_agent") {
+  sources = [
+    "profile_activity_profile_agent.h",
+    "profile_activity_profile_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/core/browser",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+  ]
+}

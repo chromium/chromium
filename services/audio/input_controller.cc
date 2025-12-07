@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/input_controller.h"
 
 #include <inttypes.h>
 
 #include <algorithm>
+#include <cstdarg>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -34,12 +33,11 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
-#include "media/base/user_input_monitor.h"
 #include "services/audio/audio_manager_power_user.h"
-#include "services/audio/device_output_listener.h"
 #include "services/audio/output_tapper.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
+#include "services/audio/reference_signal_provider.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "services/audio/audio_processor_handler.h"
@@ -52,6 +50,29 @@ using OpenOutcome = media::AudioInputStream::OpenOutcome;
 
 const int kMaxInputChannels = 3;
 constexpr base::TimeDelta kCheckMutedStateInterval = base::Seconds(1);
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
+
+InputController::ErrorCode MapReferenceOpenOutcomeToInputErrorCode(
+    ReferenceOpenOutcome open_outcome) {
+  CHECK(open_outcome != ReferenceOpenOutcome::SUCCESS);
+  switch (open_outcome) {
+    case ReferenceOpenOutcome::STREAM_CREATE_ERROR:
+      return InputController::REFERENCE_STREAM_CREATE_ERROR;
+    case ReferenceOpenOutcome::STREAM_OPEN_ERROR:
+      return InputController::REFERENCE_STREAM_OPEN_ERROR;
+    case ReferenceOpenOutcome::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR:
+      return InputController::REFERENCE_STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR;
+    case ReferenceOpenOutcome::STREAM_OPEN_DEVICE_IN_USE_ERROR:
+      return InputController::REFERENCE_STREAM_OPEN_DEVICE_IN_USE_ERROR;
+    case ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR:
+      return InputController::REFERENCE_STREAM_ERROR;
+    default:
+      NOTREACHED();
+  }
+}
+#endif
 
 #if defined(AUDIO_POWER_MONITORING)
 // Time in seconds between two successive measurements of audio power levels.
@@ -86,9 +107,8 @@ const char* SilenceStateToString(InputController::SilenceState state) {
     case InputController::SILENCE_STATE_AUDIO_AND_SILENCE:
       return "SILENCE_STATE_AUDIO_AND_SILENCE";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "INVALID";
 }
 
 // Helper method which calculates the average power of an audio bus. Unit is in
@@ -101,12 +121,9 @@ float AveragePower(const media::AudioBus& buffer) {
 
   // Scan all channels and accumulate the sum of squares for all samples.
   float sum_power = 0.0f;
-  for (int ch = 0; ch < channels; ++ch) {
-    const float* channel_data = buffer.channel(ch);
-    for (int i = 0; i < frames; i++) {
-      const float sample = channel_data[i];
-      sum_power += sample * sample;
-    }
+  for (auto channel : buffer.AllChannels()) {
+    sum_power += std::inner_product(channel.begin(), channel.end(),
+                                    channel.begin(), 0.0f);
   }
 
   // Update accumulated average results, with clamping for sanity.
@@ -124,7 +141,98 @@ float AveragePower(const media::AudioBus& buffer) {
 }
 #endif  // AUDIO_POWER_MONITORING
 
+constexpr base::TimeDelta kMinDelay = base::Milliseconds(1);
+constexpr base::TimeDelta kMaxDelay = base::Milliseconds(1000);
+constexpr int kBucketCount = 50;
+
+void LogNoAudioServiceAECDelay(base::TimeDelta delay) {
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "Media.Audio.InputController.Delay.NoAudioServiceAEC", delay, kMinDelay,
+      kMaxDelay, kBucketCount);
+}
+
+void LogChromeWideAECDelay(base::TimeDelta delay) {
+  UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.InputController.Delay.ChromeWideAEC",
+                             delay, kMinDelay, kMaxDelay, kBucketCount);
+}
+
+void LogLoopbackAECDelay(base::TimeDelta delay) {
+  UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.InputController.Delay.LoopbackAEC",
+                             delay, kMinDelay, kMaxDelay, kBucketCount);
+}
+
 }  // namespace
+
+// A helper class to report capture delay UMA stats from the InputController.
+class InputController::DelayReporter {
+ public:
+  enum class AECType {
+    kNoAudioServiceAEC,
+    kChromeWideAEC,
+    kLoopbackAEC,
+  };
+
+  using OnReportCallback = base::RepeatingCallback<void(base::TimeDelta)>;
+
+  explicit DelayReporter(
+      const ReferenceSignalProvider* reference_signal_provider)
+      : aec_type_(GetAecTypeFromReferenceSignal(reference_signal_provider)),
+        report_cb_(GetOnReportCallback(aec_type_)) {}
+
+  DelayReporter(const DelayReporter&) = delete;
+  DelayReporter& operator=(const DelayReporter&) = delete;
+
+  // Calculates and records the capture delay to a UMA histogram based on the
+  // active AEC type.
+  void ReportDelay(base::TimeTicks audio_capture_time) {
+    report_cb_.Run(base::TimeTicks::Now() - audio_capture_time);
+  }
+
+  AECType GetAecType() const { return aec_type_; }
+
+  const char* GetAECTypeAsString() const {
+    switch (aec_type_) {
+      case AECType::kNoAudioServiceAEC:
+        return "NoAudioServiceAEC";
+      case AECType::kChromeWideAEC:
+        return "ChromeWideAEC";
+      case AECType::kLoopbackAEC:
+        return "LoopbackAEC";
+    }
+    NOTREACHED();
+  }
+
+ private:
+  // Determine the AEC type which is used to select callback method.
+  static AECType GetAecTypeFromReferenceSignal(
+      const ReferenceSignalProvider* reference_signal_provider) {
+    if (!reference_signal_provider) {
+      return AECType::kNoAudioServiceAEC;
+    }
+    // Map kOutputDeviceMixer -> kChromeWideAEC, kLoopbackReference ->
+    // kLoopbackAEC.
+    if (reference_signal_provider->GetType() ==
+        ReferenceSignalProvider::Type::kOutputDeviceMixer) {
+      return AECType::kChromeWideAEC;
+    }
+    return AECType::kLoopbackAEC;
+  }
+
+  // Determine which callback to use when reporting the delay UMA.
+  static OnReportCallback GetOnReportCallback(AECType aec_type) {
+    switch (aec_type) {
+      case AECType::kNoAudioServiceAEC:
+        return base::BindRepeating(&LogNoAudioServiceAECDelay);
+      case AECType::kChromeWideAEC:
+        return base::BindRepeating(&LogChromeWideAECDelay);
+      case AECType::kLoopbackAEC:
+        return base::BindRepeating(&LogLoopbackAECDelay);
+    }
+  }
+
+  const AECType aec_type_;
+  const OnReportCallback report_cb_;
+};
 
 // This class implements the AudioInputCallback interface in place of the
 // InputController (AIC), so that
@@ -188,9 +296,9 @@ class AudioCallback : public media::AudioInputStream::AudioInputCallback {
 InputController::InputController(
     EventHandler* event_handler,
     SyncWriter* sync_writer,
-    media::UserInputMonitor* user_input_monitor,
-    DeviceOutputListener* device_output_listener,
+    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& output_params,
     const media::AudioParameters& device_params,
@@ -200,22 +308,20 @@ InputController::InputController(
       stream_(nullptr),
       sync_writer_(sync_writer),
       type_(type),
-      user_input_monitor_(user_input_monitor) {
+      delay_reporter_(
+          std::make_unique<DelayReporter>(reference_signal_provider.get())) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(event_handler_);
   DCHECK(sync_writer_);
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
+  SendLogMessage("%s => (delay reporter uses %s as AEC type)", __func__,
+                 delay_reporter_->GetAECTypeAsString());
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   MaybeSetUpAudioProcessing(std::move(processing_config), output_params,
-                            device_params, device_output_listener,
-                            aecdump_recording_manager);
+                            device_params, std::move(reference_signal_provider),
+                            aecdump_recording_manager, ml_model_manager);
 #endif
-
-  if (!user_input_monitor_) {
-    event_handler_->OnLog(
-        "AIC::InputController() => (WARNING: keypress monitoring is disabled)");
-  }
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -223,13 +329,30 @@ void InputController::MaybeSetUpAudioProcessing(
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& processing_output_params,
     const media::AudioParameters& device_params,
-    DeviceOutputListener* device_output_listener,
-    media::AecdumpRecordingManager* aecdump_recording_manager) {
-  if (!device_output_listener)
+    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
+    media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager) {
+  SendLogMessage(
+      "%s({processing_config=[%s]}, {processing_output_params=[%s]}, "
+      "{device_params=[%s]})",
+      __func__,
+      processing_config ? processing_config->settings.ToString().c_str()
+                        : "nullptr",
+      processing_output_params.AsHumanReadableString().c_str(),
+      device_params.AsHumanReadableString().c_str());
+  if (!processing_config) {
+    SendLogMessage("%s => (WARNING: undefined audio processing config)",
+                   __func__);
     return;
-
-  if (!(processing_config &&
-        processing_config->settings.NeedAudioModification())) {
+  }
+  // If audio processing is configured there should always be a
+  // ReferenceSignalProvider in case AEC is requested.
+  CHECK(reference_signal_provider);
+  const bool needs_webrtc_audio_processing =
+      processing_config->settings.NeedWebrtcAudioProcessing();
+  SendLogMessage("%s => (needs WebRTC audio processing: %s)", __func__,
+                 needs_webrtc_audio_processing ? "true" : "false");
+  if (!needs_webrtc_audio_processing) {
     return;
   }
 
@@ -237,10 +360,10 @@ void InputController::MaybeSetUpAudioProcessing(
       media::AudioProcessor::ComputeInputFormat(device_params,
                                                 processing_config->settings);
   if (!processing_input_params) {
-    event_handler_->OnLog(base::StringPrintf(
-        "AIC::MaybeSetupAudioProcessing() => (Unsupported device_params=%s, "
+    SendLogMessage(
+        "%s => (WARNING: unsupported device parameters, "
         "cannot do audio processing)",
-        device_params.AsHumanReadableString().c_str()));
+        __func__);
     return;
   }
 
@@ -256,32 +379,34 @@ void InputController::MaybeSetUpAudioProcessing(
                           base::Unretained(event_handler_)),
       base::BindRepeating(&InputController::DeliverProcessedAudio,
                           base::Unretained(this)),
+      // AudioProcessorHandler delivers errors on the main thread.
+      base::BindRepeating(&InputController::DoReportError, weak_this_,
+                          REFERENCE_STREAM_ERROR),
       std::move(processing_config->controls_receiver),
-      aecdump_recording_manager);
+      aecdump_recording_manager, ml_model_manager);
 
-  // If the required processing is lightweight, there is no need to offload work
-  // to a new thread.
-  if (!audio_processor_handler_->needs_playout_reference()) {
+  // If we are not running echo cancellation the processing is lightweight, so
+  // there is no need to offload work to a new thread.
+  const bool echo_cancellation_is_enabled =
+      audio_processor_handler_->needs_playout_reference();
+  SendLogMessage("%s => (echo cancellation is: %s)", __func__,
+                 (echo_cancellation_is_enabled ? "enabled" : "disabled"));
+  if (!echo_cancellation_is_enabled) {
     return;
   }
 
-  int fifo_size = media::GetProcessingAudioFifoSize();
-
-  // Only use the FIFO/new thread if its size is explicitly set.
-  if (fifo_size) {
-    // base::Unretained() is safe since both |audio_processor_handler_| and
-    // |event_handler_| outlive |processing_fifo_|.
-    processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
-        *processing_input_params, fifo_size,
-        base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
-                            base::Unretained(audio_processor_handler_.get())),
-        base::BindRepeating(&EventHandler::OnLog,
-                            base::Unretained(event_handler_.get())));
-  }
+  // base::Unretained() is safe since both |audio_processor_handler_| and
+  // |event_handler_| outlive |processing_fifo_|.
+  processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
+      *processing_input_params, kProcessingFifoSize,
+      base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
+                          base::Unretained(audio_processor_handler_.get())),
+      base::BindRepeating(&EventHandler::OnLog,
+                          base::Unretained(event_handler_.get())));
 
   // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
   output_tapper_ = std::make_unique<OutputTapper>(
-      device_output_listener, audio_processor_handler_.get(),
+      std::move(reference_signal_provider), audio_processor_handler_.get(),
       base::BindRepeating(&EventHandler::OnLog,
                           base::Unretained(event_handler_)));
 }
@@ -299,10 +424,11 @@ std::unique_ptr<InputController> InputController::Create(
     media::AudioManager* audio_manager,
     EventHandler* event_handler,
     SyncWriter* sync_writer,
-    media::UserInputMonitor* user_input_monitor,
-    DeviceOutputListener* device_output_listener,
+    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
+    LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
     const media::AudioParameters& params,
     const std::string& device_id,
     bool enable_agc) {
@@ -321,13 +447,15 @@ std::unique_ptr<InputController> InputController::Create(
   // Create the InputController object and ensure that it runs on
   // the audio-manager thread.
   // Using `new` to access a non-public constructor.
-  std::unique_ptr<InputController> controller = base::WrapUnique(
-      new InputController(event_handler, sync_writer, user_input_monitor,
-                          device_output_listener, aecdump_recording_manager,
-                          std::move(processing_config), params, device_params,
-                          ParamsToStreamType(params)));
+  std::unique_ptr<InputController> controller =
+      base::WrapUnique(new InputController(
+          event_handler, sync_writer, std::move(reference_signal_provider),
+          aecdump_recording_manager, ml_model_manager,
+          std::move(processing_config), params, device_params,
+          ParamsToStreamType(params)));
 
-  controller->DoCreate(audio_manager, params, device_id, enable_agc);
+  controller->DoCreate(audio_manager, params, device_id, enable_agc,
+                       std::move(maybe_create_loopback_mixin_cb));
   return controller;
 }
 
@@ -338,41 +466,54 @@ void InputController::Record() {
   if (!stream_ || audio_callback_)
     return;
 
-  event_handler_->OnLog("AIC::Record()");
+  SendLogMessage("%s", __func__);
 
-  if (user_input_monitor_) {
-    user_input_monitor_->EnableKeyPressMonitoring();
-    prev_key_down_count_ = user_input_monitor_->GetKeyPressCount();
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (output_tapper_) {
+    ReferenceOpenOutcome reference_open_outcome = output_tapper_->Start();
+    if (reference_open_outcome != ReferenceOpenOutcome::SUCCESS) {
+      // The AEC reference stream failed to start.
+      DoReportError(
+          MapReferenceOpenOutcomeToInputErrorCode(reference_open_outcome));
+      return;
+    }
   }
+
+  if (processing_fifo_) {
+    processing_fifo_->Start();
+  }
+#endif
 
   stream_create_time_ = base::TimeTicks::Now();
 
-  // Unretained() is safe, since |this| outlives |audio_callback_|.
+  // Unretained() is safe, since |this| and |loopback_mixin_| outlive
+  // |audio_callback_|.
+  AudioCallback::OnDataCallback on_data_callback =
+      loopback_mixin_
+          ? base::BindRepeating(&LoopbackMixin::OnData,
+                                base::Unretained(loopback_mixin_.get()))
+          : base::BindRepeating(&InputController::OnData,
+                                base::Unretained(this));
+
   // |on_first_data_callback| and |on_error_callback| calls are posted on the
   // audio thread, since all AudioCallback callbacks run on the hw callback
   // thread.
   audio_callback_ = std::make_unique<AudioCallback>(
-      /*on_data_callback=*/base::BindRepeating(&InputController::OnData,
-                                               base::Unretained(this)),
+      std::move(on_data_callback),
       /*on_first_data_callback=*/
       base::BindPostTask(
           task_runner_,
           base::BindOnce(&InputController::ReportIsAlive, weak_this_)),
       /*on_error_callback=*/
-      base::BindPostTask(
-          task_runner_,
-          base::BindRepeating(&InputController::DoReportError, weak_this_)));
+      base::BindPostTask(task_runner_,
+                         base::BindRepeating(&InputController::DoReportError,
+                                             weak_this_, STREAM_ERROR)));
 
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (processing_fifo_)
-    processing_fifo_->Start();
-
-  if (output_tapper_)
-    output_tapper_->Start();
-#endif
-
+  if (loopback_mixin_) {
+    // Start receiving chromium playout loopback.
+    loopback_mixin_->Start();
+  }
   stream_->Start(audio_callback_.get());
-  return;
 }
 
 void InputController::Close() {
@@ -382,10 +523,7 @@ void InputController::Close() {
   if (!stream_)
     return;
 
-  check_muted_state_timer_.AbandonAndStop();
-
-  std::string log_string;
-  static const char kLogStringPrefix[] = "AIC::Close => ";
+  check_muted_state_timer_.Stop();
 
   // Allow calling unconditionally and bail if we don't have a stream to close.
   if (audio_callback_) {
@@ -393,8 +531,9 @@ void InputController::Close() {
     stream_->Stop();
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    if (output_tapper_)
+    if (output_tapper_) {
       output_tapper_->Stop();
+    }
 
     if (processing_fifo_) {
       // Stop the FIFO after |stream_| is stopped, to guarantee there are no
@@ -418,13 +557,11 @@ void InputController::Close() {
                    : CAPTURE_STARTUP_NEVER_GOT_DATA);
     LogCaptureStartupResult(capture_startup_result);
     LogCallbackError();
-
-    log_string = base::StringPrintf("%s(stream duration=%" PRId64 " seconds%s",
-                                    kLogStringPrefix, duration.InSeconds(),
-                                    audio_callback_->received_callback()
-                                        ? ")"
-                                        : " - no callbacks received)");
-
+    SendLogMessage("%s => (stream duration=%" PRId64 " seconds%s", __func__,
+                   duration.InSeconds(),
+                   audio_callback_->received_callback()
+                       ? ")"
+                       : " - no callbacks received)");
     if (type_ == LOW_LATENCY) {
       if (audio_callback_->received_callback()) {
         UMA_HISTOGRAM_LONG_TIMES("Media.InputStreamDuration", duration);
@@ -434,16 +571,11 @@ void InputController::Close() {
       }
     }
 
-    if (user_input_monitor_)
-      user_input_monitor_->DisableKeyPressMonitoring();
-
     audio_callback_.reset();
+    loopback_mixin_.reset();
   } else {
-    log_string = base::StringPrintf("%s(WARNING: recording never started)",
-                                    kLogStringPrefix);
+    SendLogMessage("%s => (WARNING: recording never started)", __func__);
   }
-
-  event_handler_->OnLog(log_string);
 
   stream_->Close();
   stream_ = nullptr;
@@ -453,9 +585,8 @@ void InputController::Close() {
 #if defined(AUDIO_POWER_MONITORING)
   // Send stats if enabled.
   if (power_measurement_is_enabled_) {
-    log_string = base::StringPrintf("%s(silence_state=%s)", kLogStringPrefix,
-                                    SilenceStateToString(silence_state_));
-    event_handler_->OnLog(log_string);
+    SendLogMessage("%s => (silence_state=%s)", __func__,
+                   SilenceStateToString(silence_state_));
   }
 #endif
 
@@ -471,8 +602,7 @@ void InputController::SetVolume(double volume) {
   if (!stream_)
     return;
 
-  event_handler_->OnLog(
-      base::StringPrintf("AIC::SetVolume({volume=%.2f})", volume));
+  SendLogMessage("SetVolume({volume=%.2f})", volume);
 
   // Only ask for the maximum volume at first call and use cached value
   // for remaining function calls.
@@ -501,14 +631,6 @@ void InputController::SetOutputDeviceForAec(
 #endif
 }
 
-void InputController::OnStreamActive(Snoopable* output_stream) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-}
-
-void InputController::OnStreamInactive(Snoopable* output_stream) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-}
-
 InputController::ErrorCode MapOpenOutcomeToErrorCode(OpenOutcome outcome) {
   switch (outcome) {
     case OpenOutcome::kFailedSystemPermissions:
@@ -520,14 +642,16 @@ InputController::ErrorCode MapOpenOutcomeToErrorCode(OpenOutcome outcome) {
   }
 }
 
-void InputController::DoCreate(media::AudioManager* audio_manager,
-                               const media::AudioParameters& params,
-                               const std::string& device_id,
-                               bool enable_agc) {
+void InputController::DoCreate(
+    media::AudioManager* audio_manager,
+    const media::AudioParameters& params,
+    const std::string& device_id,
+    bool enable_agc,
+    LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!stream_);
   SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioInputController.CreateTime");
-  event_handler_->OnLog("AIC::DoCreate({device_id=" + device_id + "})");
+  SendLogMessage("%s({device_id=%s})", __func__, device_id.c_str());
 
 #if defined(AUDIO_POWER_MONITORING)
   // We only do power measurements for UMA stats for low latency streams, and
@@ -570,15 +694,19 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   // functionality to modify the input volume slider. One such example is
   // Windows XP.
   power_measurement_is_enabled_ &= agc_is_supported;
-  event_handler_->OnLog(
-      base::StringPrintf("AIC::DoCreate => (power_measurement_is_enabled=%d)",
-                         power_measurement_is_enabled_));
+  SendLogMessage("%s => (power_measurement_is_enabled=%d)", __func__,
+                 power_measurement_is_enabled_);
 #else
   stream->SetAutomaticGainControl(enable_agc);
 #endif
 
   // Finally, keep the stream pointer around, update the state and notify.
   stream_ = stream;
+
+  loopback_mixin_ = std::move(maybe_create_loopback_mixin_cb)
+                        .Run(device_id, audio_input_stream_params,
+                             base::BindRepeating(&InputController::OnData,
+                                                 base::Unretained(this)));
 
   // Send initial muted state along with OnCreated, to avoid races.
   is_muted_ = stream_->IsMuted();
@@ -588,9 +716,9 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   DCHECK(check_muted_state_timer_.IsRunning());
 }
 
-void InputController::DoReportError() {
+void InputController::DoReportError(ErrorCode error_code) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  event_handler_->OnError(STREAM_ERROR);
+  event_handler_->OnError(error_code);
 }
 
 void InputController::DoLogAudioLevels(float level_dbfs,
@@ -605,27 +733,24 @@ void InputController::DoLogAudioLevels(float level_dbfs,
   const bool microphone_is_muted = stream_->IsMuted();
   if (microphone_is_muted) {
     LogMicrophoneMuteResult(MICROPHONE_IS_MUTED);
-    event_handler_->OnLog("AIC::OnData => (microphone is muted)");
+    SendLogMessage("%s => (microphone is muted)", __func__);
   } else {
     LogMicrophoneMuteResult(MICROPHONE_IS_NOT_MUTED);
   }
 
-  std::string log_string = base::StringPrintf(
-      "AIC::OnData => (average audio level=%.2f dBFS", level_dbfs);
   static const float kSilenceThresholdDBFS = -72.24719896f;
-  if (level_dbfs < kSilenceThresholdDBFS)
-    log_string += " <=> low audio input level";
-  event_handler_->OnLog(log_string + ")");
+  SendLogMessage(
+      "%s => (average audio level=%.2f dBFS%s)", __func__, level_dbfs,
+      level_dbfs < kSilenceThresholdDBFS ? " <=> low audio input level" : "");
 
   if (!microphone_is_muted) {
     UpdateSilenceState(level_dbfs < kSilenceThresholdDBFS);
   }
-
-  log_string = base::StringPrintf("AIC::OnData => (microphone volume=%d%%",
-                                  microphone_volume_percent);
-  if (microphone_volume_percent < kLowLevelMicrophoneLevelPercent)
-    log_string += " <=> low microphone level";
-  event_handler_->OnLog(log_string + ")");
+  SendLogMessage("%s => (microphone volume=%d%%%s)", __func__,
+                 microphone_volume_percent,
+                 microphone_volume_percent < kLowLevelMicrophoneLevelPercent
+                     ? " <=> low microphone level"
+                     : "");
 #endif
 }
 
@@ -674,16 +799,12 @@ void InputController::LogMessage(const std::string& message) {
   event_handler_->OnLog(message);
 }
 
-bool InputController::CheckForKeyboardInput() {
-  if (!user_input_monitor_)
-    return false;
-
-  const size_t current_count = user_input_monitor_->GetKeyPressCount();
-  const bool key_pressed = current_count != prev_key_down_count_;
-  prev_key_down_count_ = current_count;
-  DVLOG_IF(6, key_pressed) << "Detected keypress.";
-
-  return key_pressed;
+void InputController::SendLogMessage(const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  event_handler_->OnLog(
+      base::StrCat({"AIC::", base::StringPrintV(format, args)}));
+  va_end(args);
 }
 
 bool InputController::CheckAudioPower(const media::AudioBus* source,
@@ -721,9 +842,8 @@ void InputController::CheckMutedState() {
   if (new_state != is_muted_) {
     is_muted_ = new_state;
     event_handler_->OnMuted(is_muted_);
-    std::string log_string =
-        base::StringPrintf("AIC::OnMuted({is_muted=%d})", is_muted_);
-    event_handler_->OnLog(log_string);
+    SendLogMessage("%s => (is_muted=%s)", __func__,
+                   is_muted_ ? "true" : "false");
   }
 }
 
@@ -731,7 +851,7 @@ void InputController::ReportIsAlive() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(stream_);
   // Don't store any state, just log the event for now.
-  event_handler_->OnLog("AIC::OnData => (stream is alive)");
+  SendLogMessage("%s => (stream is alive)", __func__);
 }
 
 void InputController::OnData(const media::AudioBus* source,
@@ -743,19 +863,18 @@ void InputController::OnData(const media::AudioBus* source,
               (capture_time - base::TimeTicks()).InMillisecondsF(),
               "capture_delay (ms)",
               (base::TimeTicks::Now() - capture_time).InMillisecondsF());
-  const bool key_pressed = CheckForKeyboardInput();
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (processing_fifo_) {
     DCHECK(audio_processor_handler_);
-    processing_fifo_->PushData(source, capture_time, volume, key_pressed,
-                               glitch_info);
+    processing_fifo_->PushData(source, capture_time, volume, glitch_info);
   } else if (audio_processor_handler_) {
-    audio_processor_handler_->ProcessCapturedAudio(
-        *source, capture_time, volume, key_pressed, glitch_info);
+    audio_processor_handler_->ProcessCapturedAudio(*source, capture_time,
+                                                   volume, glitch_info);
   } else
 #endif
   {
-    sync_writer_->Write(source, volume, key_pressed, capture_time, glitch_info);
+    delay_reporter_->ReportDelay(capture_time);
+    sync_writer_->Write(source, volume, capture_time, glitch_info);
   }
 
   float average_power_dbfs;
@@ -777,10 +896,11 @@ void InputController::DeliverProcessedAudio(
     base::TimeTicks audio_capture_time,
     std::optional<double> new_volume,
     const media::AudioGlitchInfo& glitch_info) {
+  delay_reporter_->ReportDelay(audio_capture_time);
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.
-  sync_writer_->Write(&audio_bus, /*volume=*/1.0,
-                      /*key_pressed=*/false, audio_capture_time, glitch_info);
+  sync_writer_->Write(&audio_bus, /*volume=*/1.0, audio_capture_time,
+                      glitch_info);
   if (new_volume) {
     task_runner_->PostTask(
         FROM_HERE,

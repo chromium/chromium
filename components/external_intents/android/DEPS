@@ -2,6 +2,7 @@ include_rules = [
   "+components/embedder_support/android",
   "+components/messages",
   "+components/navigation_interception",
+  "+components/url_formatter",
   "+components/webapk/android/libs/client",
   "+content/public/browser",
 

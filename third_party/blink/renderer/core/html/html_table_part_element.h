@@ -42,7 +42,7 @@ class CORE_EXPORT HTMLTablePartElement : public HTMLElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 
   HTMLTableElement* FindParentTable() const;
 };

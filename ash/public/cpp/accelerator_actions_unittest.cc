@@ -6,10 +6,9 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/hash/md5.h"
-#include "base/hash/md5_boringssl.h"
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,26 +17,13 @@ namespace ash {
 namespace {
 
 // The total number of accelerator actions.
-constexpr int kAcceleratorActionsTotalNum = 165;
+constexpr size_t kAcceleratorActionsTotalNum = 172;
 // The toal number of debug accelerators, these will not be used for hashing.
-constexpr int kDebugAcceleratorActionsNum = 27;
+constexpr size_t kDebugAcceleratorActionsNum = 29;
 // The hash of accelerator actions. Please update this when adding a new
 // accelerator action.
-constexpr char kAcceleratorActionsHash[] = "af26f45ccfb2450d29171e3b3697a8dd";
-
-// Define the mapping between an AcceleratorAction and its string name.
-// Example:
-//   AcceleratorAction::kDevToggleUnifiedDesktop -> "DevToggleUnifiedDesktop".
-constexpr static auto kAcceleratorActionToName =
-    base::MakeFixedFlatMap<AcceleratorAction, const char*>({
-#define ACCELERATOR_ACTION_ENTRY(action) \
-  {AcceleratorAction::k##action, #action},
-#define ACCELERATOR_ACTION_ENTRY_FIXED_VALUE(action, value) \
-  {AcceleratorAction::k##action, #action},
-        ACCELERATOR_ACTIONS
-#undef ACCELERATOR_ACTION_ENTRY
-#undef ACCELERATOR_ACTION_ENTRY_FIXED_VALUE
-    });
+constexpr char kAcceleratorActionsHash[] =
+    "5376c379e20a43cf689c1d23bc111305426d078d0a24343e2fd4f63787c61ebc";
 
 struct TestParams {
   bool use_debug_shortcuts = false;
@@ -80,14 +66,16 @@ TEST_P(AcceleratorActionsTest, CheckHistogramEnum) {
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of
   // enums in the C++ file.
-  EXPECT_EQ(enums->size(), kAcceleratorActionToName.size());
+  EXPECT_EQ(enums->size(), GetAcceleratorActionsForTest().size());
 
   for (const auto& entry : *enums) {
     // Check that the C++ file has a definition equal to the histogram file.
-    EXPECT_EQ(entry.second, kAcceleratorActionToName.find(entry.first)->second)
+    AcceleratorAction action = static_cast<AcceleratorAction>(entry.first);
+    const char* action_name = GetAcceleratorActionName(action);
+    EXPECT_EQ(entry.second, action_name)
         << "Enum entry name: " << entry.second
-        << " in enums.xml is different from enum entry name: "
-        << kAcceleratorActionToName.find(entry.first)->second << " in C++ file";
+        << " in enums.xml is different from enum entry name: " << action_name
+        << " in C++ file";
   }
 }
 
@@ -100,29 +88,19 @@ TEST_P(AcceleratorActionsTest, AcceleratorActionsHash) {
       "`kDebugAcceleratorActionsNum` (if applicable).";
 
   // First check that the size of the enum is correct.
-  const int current_actions_size = kAcceleratorActionToName.size();
-  EXPECT_EQ(current_actions_size, kAcceleratorActionsTotalNum)
-      << kCommonMessage;
+  auto all = GetAcceleratorActionsForTest();
+  ASSERT_EQ(all.size(), kAcceleratorActionsTotalNum);
+  const size_t kAcceleratorsToHashNum =
+      kAcceleratorActionsTotalNum - kDebugAcceleratorActionsNum;
+  auto names = base::span(all).first<kAcceleratorsToHashNum>();
+  const std::string hash =
+      ash::StableHashOfCollection(names, [](const auto& action) {
+        return std::string(GetAcceleratorActionName(action));
+      });
 
-  // Then check that the hash is correct.
-  base::MD5Context context;
-  base::MD5Init(&context);
-  int iter_count = 0;
-  for (const auto iter : kAcceleratorActionToName) {
-    base::MD5Update(&context, iter.second);
-    // Only hash up non-debug accelerator actions.
-    if (++iter_count >= current_actions_size - kDebugAcceleratorActionsNum) {
-      break;
-    }
-  }
-
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &context);
-  const std::string current_hash = MD5DigestToBase16(digest);
-
-  EXPECT_EQ(current_hash, kAcceleratorActionsHash)
+  EXPECT_EQ(hash, kAcceleratorActionsHash)
       << kCommonMessage << " Please update kAcceleratorActionsHash to: \n"
-      << current_hash << "\n";
+      << hash << "\n";
 }
 
 INSTANTIATE_TEST_SUITE_P(

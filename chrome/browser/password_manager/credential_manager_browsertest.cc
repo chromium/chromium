@@ -1064,7 +1064,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerPrerenderBrowserTest,
   auto prerender_url =
       embedded_test_server()->GetURL("/password/credentials.html");
   // Loads a page in the prerender.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
 
   // It should not have binding mojom::CredentialManager.

@@ -75,13 +75,28 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
         rare_data->NodeLists()->AdoptTreeScope();
     }
 
+    // 3. if inclusiveDescendant is an element
     auto* element = DynamicTo<Element>(node);
     if (!element)
       continue;
 
+    // 3-1. Set the node document of each attribute in inclusiveDescendant's
+    // attribute list to document.
     if (HeapVector<Member<Attr>>* attrs = element->GetAttrNodeList()) {
       for (const auto& attr : *attrs)
         MoveTreeToNewScope(*attr);
+    }
+
+    // 3-2. If inclusiveDescendant's custom element registry is a global custom
+    // element registry then set inclusiveDescendant's custom element registry
+    // to document's effective global custom element registry.
+    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+      auto* registry = element->customElementRegistry();
+      if (registry && registry->IsGlobalRegistry() &&
+          registry != new_document.EffectiveGlobalCustomElementRegistry()) {
+        element->SetCustomElementRegistry(
+            new_document.EffectiveGlobalCustomElementRegistry());
+      }
     }
 
     if (ShadowRoot* shadow = element->GetShadowRoot()) {
@@ -113,8 +128,19 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
 
   shadow_root.SetDocument(new_document);
 
-  if (shadow_root.registry()) {
-    shadow_root.registry()->AssociatedWith(new_document);
+  // 2. If inclusiveDescendant is a shadow root and inclusiveDescendant's custom
+  // element registry is a global custom element registry, then set
+  // inclusiveDescendant's custom element registry to document's effective
+  // global custom element registry.
+  auto* shadow_root_registry = shadow_root.customElementRegistry();
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      shadow_root_registry && shadow_root_registry->IsGlobalRegistry()) {
+    shadow_root_registry = new_document.EffectiveGlobalCustomElementRegistry();
+    shadow_root.SetCustomElementRegistry(shadow_root_registry);
+  }
+
+  if (shadow_root_registry) {
+    shadow_root_registry->AssociatedWith(new_document);
   }
 
   MoveTreeToNewDocument(shadow_root, old_document, new_document,
@@ -160,6 +186,19 @@ void TreeScopeAdopter::WillMoveTreeToNewDocument(Node& root) const {
     node.WillMoveToNewDocument(new_document);
 
     if (auto* element = DynamicTo<Element>(node)) {
+      // An element's custom element registry could be implied by its tree
+      // scope's registry if the element's registry wasn't explicitly set
+      // before. However, in the scenario of cross-document adoption, we need
+      // to make sure the element keeps its knowledge about the prior registry
+      // when it's moved to the new scope. Therefore, we're explicitly setting
+      // the element's registry here to ensure the knowledge is kept even with
+      // the scope change.
+      auto* registry = element->customElementRegistry();
+      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+          registry && registry == old_document.customElementRegistry()) {
+        element->SetCustomElementRegistry(element->customElementRegistry(),
+                                          /*explicitly_set=*/true);
+      }
       if (ShadowRoot* shadow_root = element->GetShadowRoot())
         WillMoveTreeToNewDocument(*shadow_root);
 
@@ -216,10 +255,6 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
     }
 
     if (auto* element = DynamicTo<Element>(node)) {
-      if (old_document.HasExplicitlySetAttrElements()) {
-        old_document.MoveElementExplicitlySetAttrElementsMapToNewDocument(
-            element, new_document);
-      }
       if (old_document.HasCachedAttrAssociatedElements()) {
         old_document.MoveElementCachedAttrAssociatedElementsMapToNewDocument(
             element, new_document);
@@ -236,7 +271,6 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
     DCHECK(!old_document.HasAnyNodeWithEventListeners());
     DCHECK(!old_document.HasMutationObservers());
     DCHECK(!old_document.ShouldInvalidateNodeListCaches());
-    DCHECK(!old_document.HasExplicitlySetAttrElements());
     DCHECK(!old_document.HasCachedAttrAssociatedElements());
   }
 
@@ -262,7 +296,6 @@ inline bool TreeScopeAdopter::IsDocumentEligibleForFastAdoption(
          !old_document.HasAnyNodeWithEventListeners() &&
          !old_document.HasMutationObservers() &&
          !old_document.ShouldInvalidateNodeListCaches() &&
-         !old_document.HasExplicitlySetAttrElements() &&
          !old_document.HasCachedAttrAssociatedElements();
 }
 

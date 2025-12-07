@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
@@ -28,8 +29,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -37,10 +39,10 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/webplugininfo.h"
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -50,6 +52,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
@@ -127,16 +130,10 @@ void FilterURLsForDropability(
 
     // Check whether the mime types, if given, are known to be supported or
     // whether there is a plugin that supports the mime type (e.g. PDF).
-    // TODO(bauerb): This possibly uses stale information, but it's guaranteed
-    // not to do disk access.
     bool supported = mime_type.empty() || blink::IsSupportedMimeType(mime_type);
 #if BUILDFLAG(ENABLE_PLUGINS)
-    content::WebPluginInfo plugin;
-    supported =
-        supported ||
-        content::PluginService::GetInstance()->GetPluginInfo(
-            browser_context, url, mime_type, /*allow_wildcard=*/false,
-            /*is_stale=*/nullptr, &plugin, /*actual_mime_type=*/nullptr);
+    supported = supported || content::PluginService::GetInstance()->HasPlugin(
+                                 browser_context, url, mime_type);
 #endif
 
     if (supported) {
@@ -150,15 +147,19 @@ void FilterURLsForDropability(
 // Returns the URLs that are currently being dragged by the user and which
 // should be considered for the drop.
 std::vector<GURL> GetURLsForDrop(const ui::DropTargetEvent& event) {
-  std::optional<std::vector<GURL>> urls =
+  std::vector<ui::ClipboardUrlInfo> url_infos =
       event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  if (!urls.has_value()) {
+  if (url_infos.empty()) {
     return {};
   }
 
-  std::erase_if(urls.value(), [](const GURL& url) { return !url.is_valid(); });
+  std::vector<GURL> urls;
+  urls.reserve(url_infos.size());
+  for (const auto& url_info : url_infos) {
+    urls.push_back(url_info.url);
+  }
 
-  return urls.value();
+  return urls;
 }
 
 // Converts from `ui::DragDropTypes` to `::ui::mojom::DragOperation`.
@@ -222,15 +223,15 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   }
 
   // If this is for a fallback window dragging session, return false and let
-  // TabStripRegionView forward drag events to TabDragController. This is
-  // necessary because we don't want to return true if the custom MIME type is
-  // there but the mouse is not over the tab strip region, and we don't know the
-  // current mouse location.
+  // HorizontalTabStripRegionView forward drag events to TabDragController. This
+  // is necessary because we don't want to return true if the custom MIME type
+  // is there but the mouse is not over the tab strip region, and we don't know
+  // the current mouse location.
   // TODO(crbug.com/40828528): This is a smoking gun code smell;
-  // TabStripRegionView and Toolbar have different affordances, so they should
-  // separately override the drag&drop methods.
-  if (data.HasCustomFormat(
-          ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag))) {
+  // HorizontalTabStripRegionView and Toolbar have different affordances, so
+  // they should separately override the drag&drop methods.
+  if (data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
+          ui::kMimeTypeWindowDrag))) {
     return false;
   }
 
@@ -288,12 +289,8 @@ int BrowserRootView::OnDragUpdated(const ui::DropTargetEvent& event) {
     drop_info_->target = drop_target;
 
     if (drop_info_->filtering_complete && !drop_info_->urls.empty()) {
-      const bool allow_replacement = drop_info_->urls.size() == 1;
-      drop_info_->index = GetDropIndexForEvent(event, event.data(), drop_target,
-                                               allow_replacement);
-      CHECK(allow_replacement || !drop_info_->index.has_value() ||
-            drop_info_->index->relative_to_index !=
-                DropIndex::RelativeToIndex::kReplaceIndex);
+      drop_info_->index =
+          GetDropIndexForEvent(event, event.data(), drop_target);
     } else {
       drop_info_->index.reset();
     }
@@ -325,12 +322,11 @@ views::View::DropCallback BrowserRootView::GetDropCallback(
 
 bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   // TODO(dfried): See if it's possible to move this logic deeper into the view
-  // hierarchy - ideally to TabStripRegionView.
+  // hierarchy - ideally to HorizontalTabStripRegionView.
 
   // Scroll-event-changes-tab is incompatible with scrolling tabstrip, so
   // disable it if the latter feature is enabled.
-  if (browser_defaults::kScrollEventChangesTab &&
-      !base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
+  if (browser_defaults::kScrollEventChangesTab) {
     // Switch to the left/right tab if the wheel-scroll happens over the
     // tabstrip, or the empty space beside the tabstrip.
     views::View* hit_view = GetEventHandlerForPoint(event.location());
@@ -412,7 +408,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
 
   // ToolbarView can't paint its own top stroke because the stroke is drawn just
   // above its bounds, where the active tab can overwrite it to visually join
-  // with the toolbar.  This painting can't be done in the NonClientFrameView
+  // with the toolbar.  This painting can't be done in the FrameView
   // because parts of the BrowserView (such as tabs) would get rendered on top
   // of the stroke.  It can't be done in BrowserView either because that view is
   // offset from the widget by a few DIPs, which is troublesome for computing a
@@ -438,14 +434,25 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     if (active_tab_index.has_value()) {
       Tab* active_tab = tabstrip()->tab_at(active_tab_index.value());
       if (active_tab && active_tab->GetVisible()) {
-        gfx::RectF bounds(active_tab->GetMirroredBounds());
-        // The root of the views tree that hosts tabstrip is BrowserRootView.
-        // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
-        // `overlay_widget` or `tab_overlay_widget`, each have their own root
-        // view.
-        ConvertRectToTarget(tabstrip(), tabstrip()->GetWidget()->GetRootView(),
-                            &bounds);
-        canvas->ClipRect(bounds, SkClipOp::kDifference);
+        auto clip_rect_for_tab = [canvas, this](Tab* tab) {
+          gfx::RectF bounds(tab->GetMirroredBounds());
+          // The root of the views tree that hosts tabstrip is BrowserRootView.
+          // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
+          // `overlay_widget` or `tab_overlay_widget`, each have their own root
+          // view.
+          ConvertRectToTarget(tabstrip(),
+                              tabstrip()->GetWidget()->GetRootView(), &bounds);
+          canvas->ClipRect(bounds, SkClipOp::kDifference);
+        };
+
+        if (active_tab->split()) {
+          for (Tab* split_tab :
+               active_tab->controller()->GetTabsInSplit(active_tab)) {
+            clip_rect_for_tab(split_tab);
+          }
+        } else {
+          clip_rect_for_tab(active_tab);
+        }
       }
     }
     canvas->UndoDeviceScaleFactor();
@@ -505,14 +512,13 @@ BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(
 std::optional<BrowserRootView::DropIndex> BrowserRootView::GetDropIndexForEvent(
     const ui::DropTargetEvent& event,
     const ui::OSExchangeData& data,
-    DropTarget* target,
-    bool allow_replacement) {
+    DropTarget* target) {
   gfx::Point loc_in_view(event.location());
   ConvertPointToTarget(this, target->GetViewForDrop(), &loc_in_view);
   ui::DropTargetEvent event_in_view(data, gfx::PointF(loc_in_view),
                                     gfx::PointF(loc_in_view),
                                     event.source_operations());
-  return target->GetDropIndex(event_in_view, allow_replacement);
+  return target->GetDropIndex(event_in_view);
 }
 
 void BrowserRootView::OnFilteringComplete(int sequence,
@@ -532,6 +538,14 @@ void BrowserRootView::SetOnFilteringCompleteClosureForTesting(
   on_filtering_complete_closure_ = std::move(closure);
 }
 
+TabStrip* BrowserRootView::tabstrip() {
+  return browser_view_->tabstrip();
+}
+
+ToolbarView* BrowserRootView::toolbar() {
+  return browser_view_->toolbar();
+}
+
 std::optional<GURL> BrowserRootView::GetPasteAndGoURL(
     const ui::OSExchangeData& data) {
   std::optional<std::u16string> text_result = data.GetString();
@@ -546,6 +560,17 @@ std::optional<GURL> BrowserRootView::GetPasteAndGoURL(
       ->Classify(text, false, false, metrics::OmniboxEventProto::INVALID_SPEC,
                  &match, nullptr);
   if (!match.destination_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  // `OSExchangeData` already tries to do best-effort conversion of strings
+  // to URLs, but the browser also does this coercion using slightly different
+  // logic. To avoid this coercion from bypassing URL filtering, only allow this
+  // coercion from http or https URLs if the drag data is renderer tainted.
+  if (base::FeatureList::IsEnabled(
+          features::kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText) &&
+      data.IsRendererTainted() &&
+      !match.destination_url.SchemeIsHTTPOrHTTPS()) {
     return std::nullopt;
   }
 
@@ -572,31 +597,66 @@ void BrowserRootView::NavigateToDroppedUrls(
     return;
   }
 
-  if (drop_info->index->index > model->GetTabCount()) {
+  // If the insertion point is off the end of the actual tab count, something
+  // went wrong between when the drop was calculated and now. Bail.
+  if (drop_info->index->index > model->count()) {
     return;
   }
 
-  for (const GURL& url : base::Reversed(drop_info->urls)) {
+  // To handle the four permutations of (one URL, multiple URLs) × (insert
+  // between tabs, replace tab), process the dropped URLs in two phases.
+  //
+  // Phase one: If the drop is indicated to replace the specified tab, then
+  // replace the tab with the first URL of the drop. Remove the first URL from
+  // the list of dropped URLs. Otherwise, skip this phase.
+  //
+  // Phase two: Create one tab for each remaining dropped URL, in reverse order.
+  // This preserves the ordering of the dropped URLs.
+
+  base::span<GURL> urls(drop_info->urls);
+  CHECK(!urls.empty());
+  int insertion_index = drop_info->index->index;
+
+  if (drop_info->index->relative_to_index ==
+      DropIndex::RelativeToIndex::kReplaceIndex) {
+    NavigateParams params(browser_view_->browser(), urls[0],
+                          ui::PAGE_TRANSITION_LINK);
+    params.tabstrip_index = insertion_index;
+    base::RecordAction(base::UserMetricsAction("Tab_DropURLOnTab"));
+    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    params.initiator_origin = event.data().GetRendererTaintedOrigin();
+    params.source_contents = model->GetWebContentsAt(insertion_index);
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
+    Navigate(&params);
+
+    urls = urls.subspan<1>();
+    ++insertion_index;  // Additional URLs inserted to the right.
+  }
+
+  for (const GURL& url : base::Reversed(urls)) {
     NavigateParams params(browser_view_->browser(), url,
                           ui::PAGE_TRANSITION_LINK);
-    params.tabstrip_index = drop_info->index->index;
-    if (drop_info->index->relative_to_index ==
-        DropIndex::RelativeToIndex::kInsertBeforeIndex) {
-      base::RecordAction(base::UserMetricsAction("Tab_DropURLBetweenTabs"));
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      if (drop_info->index->group_inclusion ==
-              DropIndex::GroupInclusion::kIncludeInGroup &&
-          drop_info->index->index < model->count()) {
-        params.group = model->GetTabGroupForTab(drop_info->index->index);
-      }
-    } else {
-      base::RecordAction(base::UserMetricsAction("Tab_DropURLOnTab"));
-      params.disposition = WindowOpenDisposition::CURRENT_TAB;
-      params.source_contents = model->GetWebContentsAt(drop_info->index->index);
+    params.tabstrip_index = insertion_index;
+    base::RecordAction(base::UserMetricsAction("Tab_DropURLBetweenTabs"));
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    if (drop_info->index->group_inclusion ==
+            DropIndex::GroupInclusion::kIncludeInGroup &&
+        insertion_index < model->count()) {
+      params.group = model->GetTabGroupForTab(insertion_index);
     }
-
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.initiator_origin = event.data().GetRendererTaintedOrigin();
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
+  }
+
+  // Ensure that the leftmost affected tab is the active one. If this drop was
+  // insertion-only, then the URLs were inserted right-to-left, leaving the
+  // leftmost tab active. If this was a replacement, then after the insertion of
+  // the remainder of the tabs, the second-to-the-left-most tab is active, which
+  // is odd, so manually select the leftmost tab.
+  if (drop_info->index->relative_to_index ==
+      DropIndex::RelativeToIndex::kReplaceIndex) {
+    model->ActivateTabAt(drop_info->index->index);
   }
 
   output_drag_op = GetDropEffect(event);

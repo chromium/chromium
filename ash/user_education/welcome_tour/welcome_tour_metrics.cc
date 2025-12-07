@@ -25,57 +25,42 @@ namespace {
 
 static constexpr char kWelcomeTourHistogramNamePrefix[] = "Ash.WelcomeTour.";
 
-// Helpers ---------------------------------------------------------------------
-
-PrefService* GetLastActiveUserPrefService() {
-  return Shell::HasInstance() ? Shell::Get()
-                                    ->session_controller()
-                                    ->GetLastActiveUserPrefService()
-                              : nullptr;
-}
-
 }  // namespace
 
-void MaybeActivateExperimentalArm() {
+void MaybeActivateExperimentalArm(PrefService* prefs) {
   CHECK(features::IsWelcomeTourEnabled());
-
-  // TODO: crbug.com/345829923 - `prefs` could be nullptr in the tests.
-  auto* const prefs = GetLastActiveUserPrefService();
-  if (!prefs) {
-    // When users who saw the Welcome Tour driven by the Finch, the experimental
-    // arm was recorded in the `prefs`. We only follow this set of users. Return
-    // early here to skip activating arms for users who were not in any Finch
-    // experimental arms in the first run.
-    return;
-  }
 
   const auto first_experimental_arm =
       welcome_tour_prefs::GetFirstExperimentalArm(prefs);
 
   // No pref value is set.
   if (!first_experimental_arm) {
+    // When users saw the Welcome Tour driven by the Finch, the experimental arm
+    // was recorded in the PrefService. We only follow this set of users. Return
+    // early here to skip activating arms for users who were not in any Finch
+    // experimental arms in the first run.
     return;
   }
 
   // NOTE: Checking feature flag state activates experimental arms.
   const bool is_holdback_enabled = features::IsWelcomeTourHoldbackEnabled();
   const bool is_v1_enabled = features::IsWelcomeTourCounterfactuallyEnabled();
-  const bool is_v2_enabled = features::IsWelcomeTourV2Enabled();
+  const bool is_v3_enabled = features::IsWelcomeTourV3Enabled();
 
   bool changed_experimental_arm = false;
   const auto experimental_arm = first_experimental_arm.value();
   switch (experimental_arm) {
     case welcome_tour_metrics::ExperimentalArm::kHoldback:
       changed_experimental_arm =
-          !is_holdback_enabled && (is_v1_enabled || is_v2_enabled);
+          !is_holdback_enabled && (is_v1_enabled || is_v3_enabled);
       break;
     case welcome_tour_metrics::ExperimentalArm::kV1:
       changed_experimental_arm =
-          !is_v1_enabled && (is_holdback_enabled || is_v2_enabled);
+          !is_v1_enabled && (is_holdback_enabled || is_v3_enabled);
       break;
-    case welcome_tour_metrics::ExperimentalArm::kV2:
+    case welcome_tour_metrics::ExperimentalArm::kV3:
       changed_experimental_arm =
-          !is_v2_enabled && (is_holdback_enabled || is_v1_enabled);
+          !is_v3_enabled && (is_holdback_enabled || is_v1_enabled);
       break;
   }
 
@@ -86,23 +71,23 @@ void MaybeActivateExperimentalArm() {
   }
 }
 
-void MaybeRecordExperimentalArm() {
+void MaybeRecordExperimentalArm(PrefService* prefs) {
   CHECK(features::IsWelcomeTourEnabled());
 
   // NOTE: Checking feature flag state activates experimental arms.
   std::optional<ExperimentalArm> experimental_arm;
   if (features::IsWelcomeTourCounterfactuallyEnabled()) {
     CHECK(!features::IsWelcomeTourHoldbackEnabled());
-    CHECK(!features::IsWelcomeTourV2Enabled());
+    CHECK(!features::IsWelcomeTourV3Enabled());
     experimental_arm = ExperimentalArm::kV1;
   } else if (features::IsWelcomeTourHoldbackEnabled()) {
     CHECK(!features::IsWelcomeTourCounterfactuallyEnabled());
-    CHECK(!features::IsWelcomeTourV2Enabled());
+    CHECK(!features::IsWelcomeTourV3Enabled());
     experimental_arm = ExperimentalArm::kHoldback;
-  } else if (features::IsWelcomeTourV2Enabled()) {
+  } else if (features::IsWelcomeTourV3Enabled()) {
     CHECK(!features::IsWelcomeTourCounterfactuallyEnabled());
     CHECK(!features::IsWelcomeTourHoldbackEnabled());
-    experimental_arm = ExperimentalArm::kV2;
+    experimental_arm = ExperimentalArm::kV3;
   }
 
   if (!experimental_arm) {
@@ -113,11 +98,8 @@ void MaybeRecordExperimentalArm() {
       base::StrCat({kWelcomeTourHistogramNamePrefix, "ExperimentalArm"}),
       experimental_arm.value());
 
-  // TODO: crbug.com/345829923 - `prefs` could be nullptr in the tests.
-  if (auto* prefs = GetLastActiveUserPrefService()) {
-    std::ignore = welcome_tour_prefs::MarkFirstExperimentalArm(
-        prefs, experimental_arm.value());
-  }
+  std::ignore = welcome_tour_prefs::MarkFirstExperimentalArm(
+      prefs, experimental_arm.value());
 }
 
 void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
@@ -128,11 +110,10 @@ void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
       when);
 }
 
-void RecordInteraction(Interaction interaction) {
+void RecordInteraction(PrefService* prefs, Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
 
   // Some interactions, like `kQuickSettings`, can occur before user activation.
-  auto* prefs = GetLastActiveUserPrefService();
   if (!prefs) {
     return;
   }
@@ -201,15 +182,15 @@ void RecordTourAborted(AbortedReason reason) {
       reason);
 }
 
-void RecordTourDuration(base::TimeDelta duration, bool completed) {
+void RecordTourDuration(PrefService* prefs,
+                        base::TimeDelta duration,
+                        bool completed) {
   CHECK(features::IsWelcomeTourEnabled());
 
   if (completed) {
-    welcome_tour_prefs::MarkTimeOfFirstTourCompletion(
-        GetLastActiveUserPrefService());
+    welcome_tour_prefs::MarkTimeOfFirstTourCompletion(prefs);
   } else {
-    welcome_tour_prefs::MarkTimeOfFirstTourAborted(
-        GetLastActiveUserPrefService());
+    welcome_tour_prefs::MarkTimeOfFirstTourAborted(prefs);
   }
 
   const std::string metric_infix = completed ? "Completed" : "Aborted";
@@ -220,12 +201,10 @@ void RecordTourDuration(base::TimeDelta duration, bool completed) {
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
-void RecordTourPrevented(PreventedReason reason) {
+void RecordTourPrevented(PrefService* prefs, PreventedReason reason) {
   CHECK(features::IsWelcomeTourEnabled());
-  // TODO: crbug.com/345829923 - `prefs` could be nullptr in the tests.
-  if (auto* prefs = GetLastActiveUserPrefService()) {
-    welcome_tour_prefs::MarkFirstTourPrevention(prefs, reason);
-  }
+
+  welcome_tour_prefs::MarkFirstTourPrevention(prefs, reason);
 
   base::UmaHistogramEnumeration(
       base::StrCat({kWelcomeTourHistogramNamePrefix, "Prevented.Reason"}),
@@ -256,7 +235,7 @@ std::string ToString(Interaction interaction) {
     case Interaction::kSettingsApp:
       return "SettingsApp";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // These strings are persisted to logs. These string values should never be
@@ -282,7 +261,7 @@ std::string ToString(Step step) {
     case Step::kStatusArea:
       return "StatusArea";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash::welcome_tour_metrics

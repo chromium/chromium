@@ -6,13 +6,12 @@
 
 #include <math.h>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -22,13 +21,11 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -36,6 +33,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -710,6 +711,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_METADATA_BOX_MODIFICATION_TIME);
   SET_STRING("METADATA_BOX_MODIFIED_BY",
              IDS_FILE_BROWSER_METADATA_BOX_MODIFIED_BY);
+  SET_STRING("METADATA_BOX_DATE_TAKEN",
+             IDS_FILE_BROWSER_METADATA_BOX_DATE_TAKEN);
   SET_STRING("METADATA_BOX_PAGE_COUNT",
              IDS_FILE_BROWSER_METADATA_BOX_PAGE_COUNT);
   SET_STRING("METADATA_BOX_SOURCE", IDS_FILE_BROWSER_METADATA_BOX_SOURCE);
@@ -1155,6 +1158,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_TITLE);
   SET_STRING("ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE",
              IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE);
+  SET_STRING("ONEDRIVE_OFFLINE_TITLE", IDS_FILE_BROWSER_ONEDRIVE_OFFLINE_TITLE);
+  SET_STRING("ONEDRIVE", IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE);
 }  // NOLINT(readability/fn_size): Structure of AddStringsGeneric function
    // should be easy to manage.
 
@@ -1179,12 +1184,12 @@ Profile* GetProfile() {
   return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
-bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
+bool IsEligibleAndEnabledGoogleOneOfferFilesBanner(
+    const std::string& application_locale,
+    const variations::VariationsService& variations_service) {
   // Google One offer is for a device, not for an account. Do not show a banner
   // if a device is enrolled.
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged()) {
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
 
@@ -1209,14 +1214,12 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
     return false;
   }
 
-  if (!kGoogleOneOfferBannerSupportedLocales.contains(
-          g_browser_process->GetApplicationLocale())) {
+  if (!kGoogleOneOfferBannerSupportedLocales.contains(application_locale)) {
     return false;
   }
 
   if (!kGoogleOneOfferBannerSupportedCountries.contains(
-          g_browser_process->variations_service()
-              ->GetStoredPermanentCountry())) {
+          variations_service.GetStoredPermanentCountry())) {
     return false;
   }
 
@@ -1275,6 +1278,8 @@ void AddStringsForSkyVault(base::Value::Dict* dict) {
                 l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_BANNER),
                 l10n_util::GetStringUTF16(IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE),
                 /*offset=*/nullptr));
+  dict->Set("SKYVAULT_DELETION_BANNER",
+            l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_DELETION_BANNER));
   dict->Set("SKYVAULT_MISCONFIGURED_POLICY_MESSAGE",
             l10n_util::GetStringUTF16(
                 IDS_POLICY_SKYVAULT_MISCONFIGURED_POLICY_MESSAGE));
@@ -1282,7 +1287,7 @@ void AddStringsForSkyVault(base::Value::Dict* dict) {
 
 }  // namespace
 
-base::Value::Dict GetFileManagerStrings() {
+base::Value::Dict GetFileManagerStrings(const std::string& application_locale) {
   base::Value::Dict dict;
 
   AddStringsForDrive(&dict);
@@ -1318,8 +1323,7 @@ base::Value::Dict GetFileManagerStrings() {
            base::StringPrintf(kHelpURLFormat, kNoActionForFileHelpNumber));
   dict.Set("DLP_HELP_URL", policy::dlp::kDlpLearnMoreUrl);
 
-  webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
-                                 &dict);
+  webui::SetLoadTimeDataDefaults(application_locale, &dict);
 
   return dict;
 }
@@ -1360,14 +1364,15 @@ int GetLocaleBasedWeekStart() {
   return fmod(local_day_of_week - (day_of_week - 1) + 7, 7);
 }
 
-void AddFileManagerFeatureStrings(const std::string& locale,
-                                  Profile* profile,
-                                  base::Value::Dict* dict) {
+void AddFileManagerFeatureStrings(
+    const std::string& ui_locale,
+    const std::string& application_locale,
+    const variations::VariationsService& variations_service,
+    Profile* profile,
+    base::Value::Dict* dict) {
   DCHECK(profile);
 
-  dict->Set("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
-  dict->Set("ARC_USB_STORAGE_UI_ENABLED",
-            base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
+  dict->Set("HIDE_SPACE_INFO", ash::demo_mode::IsDeviceInDemoMode());
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_LOCAL_IMAGE_SEARCH",
             ash::features::IsFilesLocalImageSearchEnabled());
@@ -1389,14 +1394,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
 
-  dict->Set("NEW_DIRECTORY_TREE", base::FeatureList::IsEnabled(
-                                      ash::features::kFilesNewDirectoryTree));
-
-  dict->Set("MATERIALIZED_VIEWS", base::FeatureList::IsEnabled(
-                                      ash::features::kFilesMaterializedViews));
-
-  if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
     policy::DlpRulesManager* rules_manager =
         policy::DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -1410,7 +1408,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(features::kSkyVaultV2));
 
   base::Value::List vms;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   if (share_path) {
     for (const auto& guest : share_path->ListGuests()) {
       base::Value::Dict d;
@@ -1422,11 +1420,12 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("VMS_FOR_SHARING", std::move(vms));
 
   // Lastly, set UI_LOCALE and locale-dependent settings.
-  dict->Set("UI_LOCALE", locale);
+  dict->Set("UI_LOCALE", ui_locale);
   dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
 
   // ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER does additional checks
   // in addition to a feature flag check.
   dict->Set("ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER",
-            IsEligibleAndEnabledGoogleOneOfferFilesBanner());
+            IsEligibleAndEnabledGoogleOneOfferFilesBanner(application_locale,
+                                                          variations_service));
 }

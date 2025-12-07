@@ -20,8 +20,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -31,6 +32,8 @@
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/extension_types_utils.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -85,9 +88,8 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // identity is its namespace+name, so we hash that to create a public key.
   // There will be no corresponding private key, which means user scripts cannot
   // be auto-updated, or claimed in the gallery.
-  uint8_t raw[crypto::kSHA256Length] = {0};
-  crypto::SHA256HashString(script_name, raw, crypto::kSHA256Length);
-  std::string key = base::Base64Encode(raw);
+  std::string key =
+      base::Base64Encode(crypto::hash::Sha256(base::as_byte_span(script_name)));
 
   // The script may not have a name field, but we need one for an extension. If
   // it is missing, use the filename of the original URL.
@@ -156,16 +158,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
     return nullptr;
   }
 
-  // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with std::u16string
-  std::string utf8_error;
   scoped_refptr<Extension> extension =
       Extension::Create(temp_dir.GetPath(), mojom::ManifestLocation::kInternal,
-                        root, Extension::NO_FLAGS, &utf8_error);
-  *error = base::UTF8ToUTF16(utf8_error);
+                        root, Extension::NO_FLAGS, error);
   if (!extension.get()) {
-    NOTREACHED_IN_MIGRATION() << "Could not init extension " << *error;
-    return nullptr;
+    NOTREACHED() << "Could not init extension " << *error;
   }
 
   temp_dir.Take();  // The caller takes ownership of the directory.

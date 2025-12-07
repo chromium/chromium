@@ -12,10 +12,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
 /** Stores high-level state about a session for metrics logging. */
+@NullMarked
 public class ChromeSessionState {
     /**
      * Records whether the activity is in multi-window mode with native-side feature utilities.

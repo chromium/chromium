@@ -12,19 +12,21 @@ template <typename T>
 class NoDestructor;
 }
 
+namespace strike_database {
+class StrikeDatabase;
+}
+
 class Profile;
 
 namespace autofill {
-
-class StrikeDatabase;
 
 // Singleton that owns all StrikeDatabases and associates them with
 // Profiles.
 class StrikeDatabaseFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the StrikeDatabase for |profile|, creating it if it is not
+  // Returns the StrikeDatabase for `profile`, creating it if it is not
   // yet created.
-  static StrikeDatabase* GetForProfile(Profile* profile);
+  static strike_database::StrikeDatabase* GetForProfile(Profile* profile);
 
   static StrikeDatabaseFactory* GetInstance();
 
@@ -38,7 +40,7 @@ class StrikeDatabaseFactory : public ProfileKeyedServiceFactory {
   ~StrikeDatabaseFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

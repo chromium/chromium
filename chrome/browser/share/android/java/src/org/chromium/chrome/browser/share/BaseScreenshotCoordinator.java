@@ -9,18 +9,22 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotSource;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotTask;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /**
  * Base coordinator for Sharing Hub features that require taking a browser screenshot. Handles
  * taking the screenshot after the bottom sheet is dismissed.
  */
+@NullMarked
 public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     protected final Activity mActivity;
     protected final String mShareUrl;
@@ -28,7 +32,7 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     protected final BottomSheetController mBottomSheetController;
 
     private final EditorScreenshotSource mScreenshotSource;
-    protected Bitmap mScreenshot;
+    protected @Nullable Bitmap mScreenshot;
 
     /**
      * Constructs a new BaseScreenshotCoordinator that takes a screenshot when the content of the
@@ -89,16 +93,16 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
 
     /** BottomSheetObserver implementation. */
     @Override
-    public void onSheetOpened(int reason) {}
+    public void onSheetOpened(@StateChangeReason int reason) {}
 
     @Override
-    public void onSheetClosed(int reason) {}
+    public void onSheetClosed(@StateChangeReason int reason) {}
 
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     @Override
-    public void onSheetStateChanged(int newState, int reason) {
+    public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
         if (newState == SheetState.HIDDEN) {
             // Clean up the observer since the coordinator is discarded when the sheet is hidden.
             mBottomSheetController.removeObserver(this);
@@ -107,5 +111,5 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     }
 
     @Override
-    public void onSheetContentChanged(BottomSheetContent newContent) {}
+    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
 }

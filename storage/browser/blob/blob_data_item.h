@@ -23,7 +23,6 @@
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "url/gurl.h"
 
 namespace storage {
 class BlobDataBuilder;
@@ -88,10 +87,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
   static scoped_refptr<BlobDataItem> CreateBytesDescription(size_t length);
   static scoped_refptr<BlobDataItem> CreateFile(
       base::FilePath path,
-      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-          file_access = base::NullCallback());
-  static scoped_refptr<BlobDataItem> CreateFile(
-      base::FilePath path,
       uint64_t offset,
       uint64_t length,
       base::Time expected_modification_time = base::Time(),
@@ -122,7 +117,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
 
   base::span<const uint8_t> bytes() const {
     DCHECK_EQ(type_, Type::kBytes);
-    return base::make_span(bytes_);
+    return base::span(bytes_);
   }
 
   const base::FilePath& path() const {
@@ -175,7 +170,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
 
   base::span<uint8_t> mutable_bytes() {
     DCHECK_EQ(type_, Type::kBytes);
-    return base::make_span(bytes_);
+    return base::span(bytes_);
   }
 
   void AllocateBytes();

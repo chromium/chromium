@@ -107,22 +107,24 @@ int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
 }
 
 std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
-  const char* filename = nullptr;
   struct GFreeDeleter {
     void operator()(gchar* ptr) const { g_free(ptr); }
   };
-  std::unique_ptr<gchar, GFreeDeleter> gchar_filename;
   if (GtkCheckVersion(4)) {
     if (auto file =
             TakeGObject(gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)))) {
-      filename = g_file_peek_path(file);
+      if (const char* filename = g_file_peek_path(file)) {
+        return std::string(filename);
+      }
     }
   } else {
-    gchar_filename = std::unique_ptr<gchar, GFreeDeleter>(
+    auto gchar_filename = std::unique_ptr<gchar, GFreeDeleter>(
         gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
-    filename = gchar_filename.get();
+    if (const char* filename = gchar_filename.get()) {
+      return std::string(filename);
+    }
   }
-  return filename ? std::string(filename) : std::string();
+  return std::string();
 }
 
 std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
@@ -194,6 +196,7 @@ SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
     dialogs.push_back(pair.first);
   }
   for (GtkWidget* dialog : dialogs) {
+    CHECK(dialog);
     GtkWindowDestroy(dialog);
     OnFileChooserDestroy(dialog);
   }
@@ -279,8 +282,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
               &SelectFileDialogLinuxGtk::OnSelectSingleFileDialogResponse);
       break;
     case SELECT_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   if (GtkCheckVersion(4)) {
     gtk_window_set_hide_on_close(GTK_WINDOW(dialog), true);
@@ -375,7 +377,7 @@ void SelectFileDialogLinuxGtk::FileSelected(GtkWidget* dialog,
              type() == SELECT_EXISTING_FOLDER) {
     set_last_opened_path(path.DirName());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (listener_) {
@@ -616,6 +618,7 @@ void SelectFileDialogLinuxGtk::OnFileChooserDestroy(GtkWidget* dialog) {
   // `state.parent` can be nullptr when closing the host window
   // while opening the file-picker.
   if (state.parent) {
+    CHECK(dialog);
     ClearAuraTransientParent(dialog, state.parent);
     state.parent->RemoveObserver(this);
   }

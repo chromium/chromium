@@ -17,12 +17,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
@@ -71,7 +71,7 @@ std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = page_scheduler->CreateFrameScheduler(
-      delegate, is_in_embedded_frame_tree, frame_type);
+      delegate, LocalFrameToken(), is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -86,7 +86,6 @@ class MockPageSchedulerDelegate : public PageScheduler::Delegate {
   MockPageSchedulerDelegate() {}
 
  private:
-  bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   void OnSetPageFrozen(bool is_frozen) override {}
   bool IsOrdinary() const override { return true; }
 };
@@ -107,7 +106,7 @@ class PageSchedulerImplTest : public testing::Test {
  protected:
   void SetUp() override {
     test_task_runner_ = base::WrapRefCounted(new base::TestMockTimeTaskRunner(
-        base::TestMockTimeTaskRunner::Type::kBoundToThread));
+        base::TestMockTimeTaskRunner::Type::kStandalone));
     // A null clock triggers some assertions.
     test_task_runner_->AdvanceMockTickClock(base::Milliseconds(5));
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
@@ -259,6 +258,8 @@ class PageSchedulerImplTest : public testing::Test {
     EXPECT_EQ(5, counter);
   }
 
+  base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
@@ -273,22 +274,22 @@ class PageSchedulerImplTest : public testing::Test {
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersBefore) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
 }
 
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersAfter) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   page_scheduler_.reset();
 }
@@ -423,9 +424,7 @@ TEST_F(PageSchedulerImplTest, IsLoadingTest) {
 
   // 2nd page finishes loading.
   frame_scheduler2->OnFirstContentfulPaintInMainFrame();
-  frame_scheduler2->OnFirstMeaningfulPaint(
-      base::TimeTicks::Now() -
-      GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint());
+  frame_scheduler2->OnFirstMeaningfulPaint();
 
   // Both pages are loaded.
   EXPECT_FALSE(page_scheduler_->IsLoading());
@@ -1224,6 +1223,10 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
 }
 
 TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
+  // Disabling StopInBackground (Android only) makes this easier to test as
+  // WebSockets are not exempt from background freezing.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kStopInBackground);
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);

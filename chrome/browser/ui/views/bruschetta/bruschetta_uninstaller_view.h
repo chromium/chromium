@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BRUSCHETTA_BRUSCHETTA_UNINSTALLER_VIEW_H_
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

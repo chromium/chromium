@@ -11,9 +11,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit.h"
@@ -24,6 +25,8 @@
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/syncer_error.h"
+#include "components/sync/engine/update_handler.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/http/http_status_code.h"
 
 namespace syncer {
@@ -34,8 +37,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     SyncProtocolErrorType protocol_error) {
   switch (protocol_error) {
     case SYNC_SUCCESS:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerErrorValueForUma::kSyncerOk;
+      NOTREACHED();
     case NOT_MY_BIRTHDAY:
       return SyncerErrorValueForUma::kServerReturnNotMyBirthday;
     case THROTTLED:
@@ -47,20 +49,19 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case DISABLED_BY_ADMIN:
       return SyncerErrorValueForUma::kServerReturnDisabledByAdmin;
     case PARTIAL_FAILURE:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerErrorValueForUma::kServerReturnUnknownError;
+      NOTREACHED();
     case CLIENT_DATA_OBSOLETE:
       return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
     case ENCRYPTION_OBSOLETE:
-      return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
+      return SyncerErrorValueForUma::kServerReturnEncryptionObsolete;
     case UNKNOWN_ERROR:
       return SyncerErrorValueForUma::kServerReturnUnknownError;
     case CONFLICT:
       return SyncerErrorValueForUma::kServerReturnConflict;
     case INVALID_MESSAGE:
-      return SyncerErrorValueForUma::kServerReturnUnknownError;
+      return SyncerErrorValueForUma::kServerReturnInvalidMessage;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
@@ -71,15 +72,32 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
       return SyncerErrorValueForUma::kNetworkConnectionUnavailable;
     case SyncerError::Type::kHttpError:
       if (error.GetHttpErrorOrDie() == net::HTTP_UNAUTHORIZED) {
-        return SyncerErrorValueForUma::kSyncAuthError;
+        return SyncerErrorValueForUma::kHttpAuthError;
       }
-      return SyncerErrorValueForUma::kSyncServerError;
+      return SyncerErrorValueForUma::kHttpError;
     case SyncerError::Type::kProtocolError:
       return GetSyncerErrorValueForUma(error.GetProtocolErrorOrDie());
     case SyncerError::Type::kProtocolViolationError:
-      return SyncerErrorValueForUma::kServerResponseValidationFailed;
+      return SyncerErrorValueForUma::kProtocolViolationError;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+// Returns the NudgedUpdateResult corresponding to the given SyncerError. Not
+// used for `kSuccess`.
+UpdateHandler::NudgedUpdateResult SyncerErrorToNudgedUpdateResult(
+    const SyncerError& error) {
+  switch (error.type()) {
+    case SyncerError::Type::kNetworkError:
+      return UpdateHandler::NudgedUpdateResult::kDownloadRequestNetworkError;
+    case SyncerError::Type::kHttpError:
+    case SyncerError::Type::kProtocolError:
+    case SyncerError::Type::kProtocolViolationError:
+      // Return server error for all non-network errors.
+      return UpdateHandler::NudgedUpdateResult::kDownloadRequestServerError;
+    case SyncerError::Type::kSuccess:
+      NOTREACHED();
+  }
 }
 
 // Returns invalidation info after applying updates. This is used to drop
@@ -88,9 +106,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
 // invalidations has been just received, it may be updated only in the next
 // sync cycle due to delay between threads.
 ActiveDevicesInvalidationInfo GetInvalidationInfo(const SyncCycle* cycle) {
-  if (cycle->status_controller().get_updated_types().Has(DEVICE_INFO) &&
-      base::FeatureList::IsEnabled(
-          kSkipInvalidationOptimizationsWhenDeviceInfoUpdated)) {
+  if (cycle->status_controller().get_updated_types().Has(DEVICE_INFO)) {
     return ActiveDevicesInvalidationInfo::CreateUninitialized();
   }
   return cycle->context()->active_devices_invalidation_info();
@@ -100,6 +116,35 @@ void HandleCycleBegin(SyncCycle* cycle) {
   cycle->mutable_status_controller()->UpdateStartTime();
   cycle->mutable_status_controller()->clear_updated_types();
   cycle->SendEventNotification(SyncCycleEvent::SYNC_CYCLE_BEGIN);
+}
+
+void LogCommitResult(const SyncerError& error,
+                     const DataTypeSet& request_types,
+                     base::TimeTicks start_time) {
+  constexpr char kCommitLatencyPrefix[] = "Sync.CommitLatency";
+  constexpr char kCommitResponsePrefix[] = "Sync.CommitResponse";
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time;
+
+  base::UmaHistogramEnumeration(kCommitResponsePrefix,
+                                GetSyncerErrorValueForUma(error));
+
+  const bool success = error.type() == SyncerError::Type::kSuccess;
+  if (success) {
+    base::UmaHistogramMediumTimes(kCommitLatencyPrefix, latency);
+  }
+
+  for (DataType type : request_types) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kCommitResponsePrefix, ".", DataTypeToHistogramSuffix(type)}),
+        GetSyncerErrorValueForUma(error));
+    if (success) {
+      base::UmaHistogramMediumTimes(
+          base::StrCat(
+              {kCommitLatencyPrefix, ".", DataTypeToHistogramSuffix(type)}),
+          latency);
+    }
+  }
 }
 
 }  // namespace
@@ -167,7 +212,7 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
                                      const GetUpdatesDelegate& delegate) {
   // CommitOnlyTypes() should not be included in the GetUpdates, but should be
   // included in the Commit. We are given a set of types for our SyncShare,
-  // and we must do this filtering. Note that |request_types| is also an out
+  // and we must do this filtering. Note that `request_types` is also an out
   // param, see below where we update it.
   DataTypeSet requested_commit_only_types =
       Intersection(*request_types, CommitOnlyTypes());
@@ -179,15 +224,28 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
   do {
     download_result =
         get_updates_processor.DownloadUpdates(&download_types, cycle);
+
+    // Exit without applying if we're shutting down.
+    if (ExitRequested()) {
+      return false;
+    }
   } while (get_updates_processor.HasMoreUpdatesToDownload());
+
+  DataTypeSet data_types_with_failure = Difference(
+      Difference(*request_types, download_types), requested_commit_only_types);
 
   // It is our responsibility to propagate the removal of types that occurred in
   // GetUpdatesProcessor::DownloadUpdates().
   *request_types = Union(download_types, requested_commit_only_types);
 
-  // Exit without applying if we're shutting down or an error was detected.
-  if (download_result.type() != SyncerError::Type::kSuccess ||
-      ExitRequested()) {
+  base::UmaHistogramEnumeration("Sync.DownloadUpdatesResult",
+                                GetSyncerErrorValueForUma(download_result));
+
+  // Exit without applying if an error was detected.
+  if (download_result.type() != SyncerError::Type::kSuccess) {
+    get_updates_processor.RecordDownloadFailure(
+        Union(download_types, data_types_with_failure),
+        SyncerErrorToNudgedUpdateResult(download_result));
     return false;
   }
 
@@ -197,7 +255,7 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
     // Apply updates to the other types. May or may not involve cross-thread
     // traffic, depending on the underlying update handlers and the GU type's
     // delegate.
-    get_updates_processor.ApplyUpdates(download_types,
+    get_updates_processor.ApplyUpdates(download_types, data_types_with_failure,
                                        cycle->mutable_status_controller());
 
     cycle->SendEventNotification(SyncCycleEvent::STATUS_CHANGED);
@@ -230,16 +288,12 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
       break;
     }
 
+    base::TimeTicks commit_start_time = base::TimeTicks::Now();
     SyncerError error = commit->PostAndProcessResponse(
         nudge_tracker, cycle, cycle->mutable_status_controller(),
         cycle->context()->extensions_activity());
-    base::UmaHistogramEnumeration("Sync.CommitResponse",
-                                  GetSyncerErrorValueForUma(error));
-    for (DataType type : commit->GetContributingDataTypes()) {
-      const std::string kPrefix = "Sync.CommitResponse.";
-      base::UmaHistogramEnumeration(kPrefix + DataTypeToHistogramSuffix(type),
-                                    GetSyncerErrorValueForUma(error));
-    }
+    LogCommitResult(error, commit->GetContributingDataTypes(),
+                    commit_start_time);
     if (error.type() != SyncerError::Type::kSuccess) {
       return error;
     }
@@ -256,8 +310,9 @@ bool Syncer::ExitRequested() {
 
 bool Syncer::HandleCycleEnd(SyncCycle* cycle,
                             sync_pb::SyncEnums::GetUpdatesOrigin origin) {
-  if (ExitRequested())
+  if (ExitRequested()) {
     return false;
+  }
 
   bool success =
       !HasSyncerError(cycle->status_controller().model_neutral_state());

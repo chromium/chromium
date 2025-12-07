@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
+import gzip
+
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.wpt_uploader import WptReportUploader
@@ -38,59 +41,44 @@ class WptReportUploaderTest(LoggingTestCase):
         build = uploader.fetch_latest_complete_build(*builder)
         self.assertIsNone(build)
 
-    def test_merge_reports(self):
+    def test_encode_result_files(self):
         uploader = WptReportUploader(self.host)
-        report0 = {"run_info": {"os": "linux",
-                                "processor": "x86_64",
-                                "product": "android_webview",
-                                "revision": "1408b119ac563b427a3e00a5514eef697c8da268"},
-                   "time_start": 4248,
-                   "results": [{"test": "foo1.html",
-                                "status": "PASS",
-                                "duration": 2100},
-                               {"test": "foo2.html",
-                                "status": "FAIL",
-                                "duration": 300}],
-                   "time_end": 7293}
-        self.assertEqual(uploader.merge_reports([report0]), report0)
+        files = uploader.encode_result_files(
+            [b'{"time_start":0}', b'{"time_start":1}'],
+            [b'data:image/png;base64,iVBORw\n'])
+        self.assertEqual(3, len(files), files)
 
-        report1 = {"run_info": {"os": "linux",
-                                "processor": "x86_64",
-                                "product": "android_webview",
-                                "revision": "1408b119ac563b427a3e00a5514eef697c8da268"},
-                   "time_start": 4200,
-                   "results": [{"test": "bar.html",
-                                "status": "PASS",
-                                "duration": 990}],
-                   "time_end": 7200}
+        form_field, (filename, payload, content_type) = files[0]
+        self.assertEqual('result_file', form_field)
+        self.assertEqual('result_0.json.gz', filename)
+        self.assertEqual({
+            'time_start': 0,
+        }, json.loads(gzip.decompress(payload)))
+        self.assertEqual('application/gzip', content_type)
 
-        report2 = {"run_info": {"os": "linux",
-                                "processor": "x86_64",
-                                "product": "android_webview",
-                                "revision": "1408b119ac563b427a3e00a5514eef697c8da268"},
-                   "time_start": 5200,
-                   "results": [{"test": "test.html",
-                                "status": "PASS",
-                                "duration": 990}],
-                   "time_end": 7999}
+        form_field, (filename, payload, content_type) = files[1]
+        self.assertEqual('result_file', form_field)
+        self.assertEqual('result_1.json.gz', filename)
+        self.assertEqual({
+            'time_start': 1,
+        }, json.loads(gzip.decompress(payload)))
+        self.assertEqual('application/gzip', content_type)
 
-        _expect = {"run_info": {"os": "linux",
-                                "processor": "x86_64",
-                                "product": "android_webview",
-                                "revision": "1408b119ac563b427a3e00a5514eef697c8da268"},
-                   "time_start": 4200,
-                   "results": [{"test": "foo1.html",
-                                "status": "PASS",
-                                "duration": 2100},
-                               {"test": "foo2.html",
-                                "status": "FAIL",
-                                "duration": 300},
-                               {"test": "bar.html",
-                                "status": "PASS",
-                                "duration": 990},
-                               {"test": "test.html",
-                                "status": "PASS",
-                                "duration": 990}],
-                   "time_end": 7999}
-        self.assertEqual(uploader.merge_reports([report0, report1, report2]),
-                         _expect)
+        form_field, (filename, payload, content_type) = files[2]
+        self.assertEqual('screenshot_file', form_field)
+        self.assertEqual('screenshots.txt.gz', filename)
+        self.assertEqual(b'data:image/png;base64,iVBORw\n',
+                         gzip.decompress(payload))
+        self.assertEqual('application/gzip', content_type)
+
+    def test_merge_screenshots(self):
+        uploader = WptReportUploader(self.host)
+        screenshots = [b'a\nb\n', b'c\n']
+        self.assertEqual(b'a\nb\nc\n',
+                         uploader.merge_screenshots(screenshots, size_limit=6))
+        self.assertEqual(b'a\nb\n',
+                         uploader.merge_screenshots(screenshots, size_limit=5))
+        self.assertEqual(b'a\nb\n',
+                         uploader.merge_screenshots(screenshots, size_limit=4))
+        self.assertEqual(b'a\n',
+                         uploader.merge_screenshots(screenshots, size_limit=3))

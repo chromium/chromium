@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -24,11 +25,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
-#include "base/trace_event/typed_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/in_progress_download_manager.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_context_impl.h"
@@ -36,7 +37,9 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/in_memory_federated_permission_context.h"
-#include "content/browser/media/browser_feature_provider.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/push_messaging/push_messaging_router.h"
 #include "content/browser/site_info.h"
 #include "content/browser/storage_partition_impl_map.h"
@@ -46,6 +49,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/prefetch_service_delegate.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -56,13 +61,19 @@
 #include "media/capabilities/video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
+#include "net/http/http_request_headers.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "url/gurl.h"
 
 namespace content {
+
+class PrefetchService;
+class PrefetchServiceDelegate;
 
 namespace {
 
@@ -181,6 +192,66 @@ StoragePartition* BrowserContext::GetDefaultStoragePartition() {
   return GetStoragePartition(StoragePartitionConfig::CreateDefault(this));
 }
 
+std::unique_ptr<content::PrefetchHandle>
+BrowserContext::StartBrowserPrefetchRequest(
+    const GURL& url,
+    const std::string& embedder_histogram_suffix,
+    bool javascript_enabled,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<PrefetchPriority> priority,
+    const net::HttpRequestHeaders& additional_headers,
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
+    base::TimeDelta ttl,
+    bool should_append_variations_header,
+    bool should_disable_block_until_head_timeout,
+    bool should_bypass_http_cache) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT0("loading", "BrowserContext::StartBrowserPrefetchRequest");
+
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(this)->GetPrefetchService();
+  if (!prefetch_service) {
+    if (request_status_listener) {
+      request_status_listener->OnPrefetchStartFailedGeneric();
+    }
+    return nullptr;
+  }
+
+  PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
+                             /*use_prefetch_proxy=*/false);
+  auto request = PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
+      this, url, prefetch_type, embedder_histogram_suffix,
+      blink::mojom::Referrer(), javascript_enabled,
+      /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
+      std::move(priority),
+      /*attempt=*/nullptr, additional_headers,
+      std::move(request_status_listener), ttl, should_append_variations_header,
+      should_disable_block_until_head_timeout, should_bypass_http_cache);
+  return prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
+}
+
+void BrowserContext::UpdatePrefetchServiceDelegateAcceptLanguageHeader(
+    std::string accept_language_header) {
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(this)->GetPrefetchService();
+  if (!prefetch_service) {
+    return;
+  }
+  prefetch_service->GetPrefetchServiceDelegate()->SetAcceptLanguageHeader(
+      accept_language_header);
+}
+
+bool BrowserContext::IsPrefetchDuplicate(
+    GURL& url,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint) {
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(this)->GetPrefetchService();
+  // `CHECK` is used here because this method should not be called unless there
+  // is a `prefetch_service` created for `this` browser context.
+  CHECK(prefetch_service);
+  return prefetch_service->IsPrefetchDuplicate(url, no_vary_search_hint);
+}
+
 void BrowserContext::CreateMemoryBackedBlob(base::span<const uint8_t> data,
                                             const std::string& content_type,
                                             BlobCallback callback) {
@@ -214,11 +285,12 @@ void BrowserContext::DeliverPushMessage(
     int64_t service_worker_registration_id,
     const std::string& message_id,
     std::optional<std::string> payload,
+    bool record_network_requests,
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingRouter::DeliverMessage(
       this, origin, service_worker_registration_id, message_id,
-      std::move(payload), std::move(callback));
+      std::move(payload), record_network_requests, std::move(callback));
 }
 
 void BrowserContext::FirePushSubscriptionChangeEvent(
@@ -300,10 +372,6 @@ media::WebrtcVideoPerfHistory* BrowserContext::GetWebrtcVideoPerfHistory() {
   return impl()->GetWebrtcVideoPerfHistory();
 }
 
-media::learning::LearningSession* BrowserContext::GetLearningSession() {
-  return impl()->GetLearningSession();
-}
-
 std::unique_ptr<download::InProgressDownloadManager>
 BrowserContext::RetrieveInProgressDownloadManager() {
   return nullptr;
@@ -314,8 +382,9 @@ void BrowserContext::WriteIntoTrace(
   perfetto::WriteIntoTracedProto(std::move(proto), impl());
 }
 
-ResourceContext* BrowserContext::GetResourceContext() const {
-  return impl()->GetResourceContext();
+void BrowserContext::BackfillPopupHeuristicGrants(
+    base::OnceCallback<void(bool)> callback) {
+  return impl_->BackfillPopupHeuristicGrants(std::move(callback));
 }
 
 base::WeakPtr<BrowserContext> BrowserContext::GetWeakPtr() {
@@ -369,8 +438,7 @@ BrowserContext::CreateVideoDecodePerfHistory() {
         GetPath().Append(FILE_PATH_LITERAL("VideoDecodeStats")), db_provider);
   }
 
-  return std::make_unique<media::VideoDecodePerfHistory>(
-      std::move(stats_db), BrowserFeatureProvider::GetFactoryCB());
+  return std::make_unique<media::VideoDecodePerfHistory>(std::move(stats_db));
 }
 
 FederatedIdentityApiPermissionContextDelegate*
@@ -396,5 +464,16 @@ OriginTrialsControllerDelegate*
 BrowserContext::GetOriginTrialsControllerDelegate() {
   return nullptr;
 }
+
+std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
+BrowserContext::TakeDefaultProtoDatabaseProvider() {
+  return nullptr;
+}
+
+#if BUILDFLAG(IS_ANDROID)
+std::string BrowserContext::GetExtraHeadersForUrl(const GURL& url) {
+  return std::string();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

@@ -1,7 +1,7 @@
 <dialog id="dialog" @close="${this.onOverlayClose_}"
     @click="${this.onOverlayClick_}" @keydown="${this.onOverlayKeydown_}">
   <div id="content" tabindex="-1">
-    <iron-selector id="texts" selected="${this.getText_()}"
+    <cr-page-selector id="texts" selected="${this.getText_()}" show-all
         attr-for-selected="text" fallback-selection="none" aria-live="polite"
         selected-attribute="visible" class="display-stack">
       <div text="none"></div>
@@ -15,8 +15,8 @@
         <span>${this.interimResult_}</span>
       </div>
       <div text="error">
-        <iron-pages id="errors" selected="${this.getErrorText_()}"
-            attr-for-selected="error" fallback-selection="other">
+        <cr-page-selector id="errors" selected="${this.getErrorText_()}"
+            attr-for-selected="error">
           <span error="no-speech">$i18n{noVoice}</span>
           <span error="audio-capture">$i18n{audioError}</span>
           <span error="network">$i18n{networkError}</span>
@@ -24,9 +24,9 @@
           <span error="language-not-supported">$i18n{languageError}</span>
           <span error="no-match">$i18n{noTranslation}</span>
           <span error="other">$i18n{otherError}</span>
-        </iron-pages>
-        <iron-pages id="errorLinks" selected="${this.getErrorLink_()}"
-            attr-for-selected="link" fallback-selection="none">
+        </cr-page-selector>
+        <cr-page-selector id="errorLinks" selected="${this.getErrorLink_()}"
+            attr-for-selected="link">
           <span link="none"></span>
           <a link="learn-more" target="_blank" href="${this.helpUrl_}"
               @click="${this.onLearnMoreClick_}"
@@ -44,9 +44,9 @@
               @keydown="${this.onLinkKeydown_}"><!--
             -->$i18n{tryAgain}
           </a>
-        </iron-pages>
+        </cr-page-selector>
       </div>
-    </iron-selector>
+    </cr-page-selector>
     <div id="micContainer" class="${this.getMicClass_()} display-stack">
       <div id="micVolume"
           .style="--mic-volume-level: ${this.micVolumeLevel_};

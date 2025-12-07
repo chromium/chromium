@@ -22,12 +22,20 @@ namespace web_app {
 class AppLock;
 
 struct WebAppIconDiagnosticResult {
+  // The list of downloaded icon sizes for the app is empty.
   bool has_empty_downloaded_icon_sizes = false;
+  // The app has the `is_generated_icon` flag set to true.
   bool has_generated_icon_flag = false;
+  // The app has a generated icon bitmap, but the `is_generated_icon` flag is
+  // false.
   bool has_generated_icon_flag_false_negative = false;
+  // The app's icon bitmap matches a dynamically generated one.
   bool has_generated_icon_bitmap = false;
+  // The app's icon bitmap is empty.
   bool has_empty_icon_bitmap = false;
+  // The app has an icon file on disk that is empty.
   bool has_empty_icon_file = false;
+  // The app is missing an icon file on disk.
   bool has_missing_icon_file = false;
   // TODO(crbug.com/40858602): Add more checks.
 

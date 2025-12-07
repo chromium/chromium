@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Point;
@@ -53,19 +53,6 @@ class OzoneUIControlsTestHelper {
                               const gfx::Point& mouse_loc,
                               const gfx::Point& mouse_loc_in_screen,
                               base::OnceClosure closure) = 0;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sends touch event and executes |closure| when done.
-  virtual void SendTouchEvent(gfx::AcceleratedWidget widget,
-                              int action,
-                              int id,
-                              const gfx::Point& touch_loc,
-                              base::OnceClosure closure) = 0;
-
-  // Update display and executes |closure| when done.
-  virtual void UpdateDisplay(const std::string& display_specs,
-                             base::OnceClosure closure) = 0;
-#endif
 
   // Executes closure after all pending ui events are sent.
   virtual void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure) = 0;

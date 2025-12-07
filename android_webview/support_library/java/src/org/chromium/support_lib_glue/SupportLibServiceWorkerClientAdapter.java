@@ -10,8 +10,8 @@ import android.webkit.WebResourceResponse;
 
 import com.android.webview.chromium.WebResourceRequestAdapter;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.base.TraceEvent;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.ServiceWorkerClientBoundaryInterface;

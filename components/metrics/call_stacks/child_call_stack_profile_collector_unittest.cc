@@ -36,7 +36,7 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
     Receiver(const Receiver&) = delete;
     Receiver& operator=(const Receiver&) = delete;
 
-    ~Receiver() override {}
+    ~Receiver() override = default;
 
     void Collect(base::TimeTicks start_timestamp,
                  mojom::ProfileType profile_type,
@@ -95,6 +95,8 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
   std::unique_ptr<Receiver> receiver_impl_;
   ChildCallStackProfileCollector child_collector_;
 };
+
+namespace {
 
 // Test the behavior when an interface is provided.
 TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
@@ -167,4 +169,5 @@ TEST_F(ChildCallStackProfileCollectorTest, HeapProfiles) {
                 mojom::ProfileType::kHeap);
 }
 
+}  // namespace
 }  // namespace metrics

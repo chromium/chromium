@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.touch_to_fill.common;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -16,14 +18,15 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * This is a helper class used to restore focus to the previously focused element after the
- * {@link BottomSheet} closes. This is an observer that can be registered for a one time use since
- * it deregisters itself once the sheet is closed.
+ * This is a helper class used to restore focus to the previously focused element after the {@link
+ * BottomSheet} closes. This is an observer that can be registered for a one time use since it
+ * deregisters itself once the sheet is closed.
  */
+@NullMarked
 public class BottomSheetFocusHelper extends EmptyBottomSheetObserver {
-    private WindowAndroid mWindowAndroid;
-    private BottomSheetController mBottomSheetController;
-    private WebContentsAccessibility mWebContentsAccessibility;
+    private final WindowAndroid mWindowAndroid;
+    private final BottomSheetController mBottomSheetController;
+    private @Nullable WebContentsAccessibility mWebContentsAccessibility;
 
     public BottomSheetFocusHelper(
             BottomSheetController bottomSheetController, WindowAndroid windowAndroid) {

@@ -8,28 +8,26 @@
 #include <memory>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/test/video_frame_helpers.h"
 
 namespace base {
-
 class WaitableEvent;
-
 }  // namespace base
 
-namespace media {
+namespace gpu {
+class TestSharedImageInterface;
+}  // namespace gpu
 
+namespace media {
 class VideoFrame;
 
 namespace test {
-
 class Image;
 
 // ImageProcessorClient is a client of ImageProcessor for testing purpose.
@@ -117,7 +115,7 @@ class ImageProcessorClient {
 
   std::unique_ptr<ImageProcessor> image_processor_;
 
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 
   // VideoFrameProcessors that will process the video frames produced by
   // |image_processor_|.

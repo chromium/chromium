@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] [required] triangular float32 4D tensor options.diagonal=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float32 4D tensor fully zero options.diagonal=3
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float32 4D tensor options.upper=true options.diagonal=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float32 4D tensor options.upper=false options.diagonal=-1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float32 4D tensor fully zero options.upper=false options.diagonal=-2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float16 4D tensor options.diagonal=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float16 4D tensor fully zero options.diagonal=3
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float16 4D tensor options.upper=true options.diagonal=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float16 4D tensor options.upper=false options.diagonal=-1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+[FAIL] [required] triangular float16 4D tensor fully zero options.upper=false options.diagonal=-2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported diagonal for triangular. The main diagonal must be kept."
+Harness: the test ran to completion.
+

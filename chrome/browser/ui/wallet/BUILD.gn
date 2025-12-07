@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("wallet") {
+  sources = [
+    "walletable_pass_bubble_controller_base.cc",
+    "walletable_pass_bubble_controller_base.h",
+    "walletable_pass_bubble_view_base.cc",
+    "walletable_pass_bubble_view_base.h",
+    "walletable_pass_bubble_view_factory.cc",
+    "walletable_pass_bubble_view_factory.h",
+    "walletable_pass_consent_bubble_controller.cc",
+    "walletable_pass_consent_bubble_controller.h",
+    "walletable_pass_consent_bubble_view.cc",
+    "walletable_pass_consent_bubble_view.h",
+    "walletable_pass_save_bubble_controller.cc",
+    "walletable_pass_save_bubble_controller.h",
+    "walletable_pass_save_bubble_view.cc",
+    "walletable_pass_save_bubble_view.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/wallet/core/browser",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "walletable_pass_save_bubble_controller_unittest.cc" ]
+
+  deps = [
+    ":wallet",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//components/wallet/core/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

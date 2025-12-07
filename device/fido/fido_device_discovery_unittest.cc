@@ -115,12 +115,11 @@ TEST(FidoDiscoveryTest, TestAddRemoveDevices) {
   FidoAuthenticator* authenticator0 = nullptr;
   base::RunLoop device0_done;
   EXPECT_CALL(observer, DiscoveryStarted(&discovery, true, _))
-      .WillOnce(testing::Invoke(
-          [&](auto* discovery, bool success, auto authenticators) {
-            EXPECT_EQ(1u, authenticators.size());
-            authenticator0 = authenticators[0];
-            device0_done.Quit();
-          }));
+      .WillOnce([&](auto* discovery, bool success, auto authenticators) {
+        EXPECT_EQ(1u, authenticators.size());
+        authenticator0 = authenticators[0];
+        device0_done.Quit();
+      });
   EXPECT_CALL(*device0, GetId()).WillRepeatedly(Return("device0"));
   EXPECT_TRUE(discovery.AddDevice(std::move(device0)));
   discovery.NotifyDiscoveryStarted(true);

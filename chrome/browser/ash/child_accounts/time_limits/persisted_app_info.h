@@ -12,8 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 class PersistedAppInfo {
  public:
@@ -63,7 +62,6 @@ class PersistedAppInfo {
   std::vector<AppActivity::ActiveTime> active_times_;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_PERSISTED_APP_INFO_H_

@@ -17,7 +17,6 @@
 #include "mojo/core/embedder/embedder.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/breakpad.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -34,7 +33,6 @@
 #if defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
 #include "base/linux_util.h"
-#include "remoting/host/linux/wayland_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
 #endif  // defined(REMOTING_USE_X11)
@@ -42,14 +40,18 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
-#include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/base/crash/crash_reporting_crashpad.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <commctrl.h>
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -78,11 +80,9 @@ bool CurrentProcessHasUiAccess() {
 // runs the task executor until It2MeNativeMessagingHost signals shutdown.
 int It2MeNativeMessagingHostMain(int argc, char** argv) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
-    // use X11 safely (such as the WebRTC capturer, GTK ...)
-    x11::InitXlib();
-  }
+  // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
+  // use X11 safely (such as the WebRTC capturer, GTK ...)
+  x11::InitXlib();
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 
@@ -99,14 +99,18 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   base::apple::ScopedNSAutoreleasePool pool;
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
-  // Initialize Breakpad as early as possible. On Mac the command-line needs to
-  // be initialized first, so that the preference for crash-reporting can be
-  // looked up in the config file.
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+  // Initialize crash reporting as early as possible. On Mac the command-line
+  // needs to be initialized first, so that the preference for crash-reporting
+  // can be looked up in the config file.
   if (IsUsageStatsAllowed()) {
-    InitializeCrashReporting();
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
 #if BUILDFLAG(IS_WIN)
   // Register and initialize common controls.
@@ -208,9 +212,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
   }
 #elif BUILDFLAG(IS_POSIX)
-  // The files are automatically closed.
-  read_file = base::File(STDIN_FILENO);
-  write_file = base::File(STDOUT_FILENO);
+  PipeMessagingChannel::OpenAndBlockStdio(read_file, write_file);
 #else
 #error Not implemented.
 #endif
@@ -224,12 +226,14 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     return mac::CanInjectInput() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   if (cmd_line->HasSwitch(kCheckScreenRecordingPermissionSwitchName)) {
-    // Trigger screen-capture, even if CanRecordScreen() returns true. It uses a
-    // heuristic that might not be 100% reliable, but it is critically
-    // important to add the host bundle to the list of apps under
-    // Security & Privacy -> Screen Recording.
-    DesktopCapturerChecker().TriggerSingleCapture();
-    return mac::CanRecordScreen() ? EXIT_SUCCESS : EXIT_FAILURE;
+    if (mac::CanRecordScreen()) {
+      return EXIT_SUCCESS;
+    }
+    // This adds the host bundle to the list of apps under Security & Privacy
+    // -> Screen Recording. This may also show a system prompt (if the bundle
+    // was not previously in the list).
+    mac::RequestScreenCapturePermission();
+    return EXIT_FAILURE;
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -246,10 +250,6 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   std::unique_ptr<extensions::NativeMessagingChannel> channel(
       new PipeMessagingChannel(std::move(read_file), std::move(write_file)));
 
-#if BUILDFLAG(IS_POSIX)
-  PipeMessagingChannel::ReopenStdinStdout();
-#endif  // BUILDFLAG(IS_POSIX)
-
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
@@ -259,17 +259,14 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   scoped_refptr<AutoThreadTaskRunner> input_task_runner;
-  if (!IsRunningWayland()) {
-    // Create an X11EventSource on all UI threads, so the global X11 connection
-    // (x11::Connection::Get()) can dispatch X events.
-    auto event_source =
-        std::make_unique<ui::X11EventSource>(x11::Connection::Get());
-    input_task_runner = context->input_task_runner();
-    input_task_runner->PostTask(
-        FROM_HERE, base::BindOnce([]() {
-          new ui::X11EventSource(x11::Connection::Get());
-        }));
-  }
+  // Create an X11EventSource on all UI threads, so the global X11 connection
+  // (x11::Connection::Get()) can dispatch X events.
+  auto event_source =
+      std::make_unique<ui::X11EventSource>(x11::Connection::Get());
+  input_task_runner = context->input_task_runner();
+  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
+                                new ui::X11EventSource(x11::Connection::Get());
+                              }));
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 
@@ -285,11 +282,9 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   run_loop.Run();
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                                  delete ui::X11EventSource::GetInstance();
-                                }));
-  }
+  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
+                                delete ui::X11EventSource::GetInstance();
+                              }));
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 

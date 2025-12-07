@@ -544,8 +544,7 @@ void ScreenOrientationController::LockRotationToOrientation(
                    display::Display::RotationSource::ACTIVE);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -668,7 +667,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
     return;
   }
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     if (IsAutoRotationAllowed()) {
       // We ignore windows and app requested orientation locks while the UI is
       // in clamshell mode when the device is physically in a tablet state.

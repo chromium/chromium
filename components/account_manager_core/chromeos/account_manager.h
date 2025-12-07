@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -42,14 +43,6 @@ namespace account_manager {
 
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
  public:
-  // A dummy token stored against Active Directory accounts in Account Manager.
-  // Accounts stored in Account Manager must have a token associated with them.
-  // Active Directory accounts use Kerberos tickets for authentication, which is
-  // handled by a different infrastructure. Hence, we need a dummy token to
-  // store Active Directory accounts in Account Manager.
-  // See |AccountManager::UpsertToken|.
-  static const char kActiveDirectoryDummyToken[];
-
   // A special token that is guaranteed to cheaply fail all network requests
   // performed using it.
   // Note that it neither marks an account in Account Manager as invalid, nor
@@ -57,8 +50,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // imported from elsewhere (Chrome content area or ARC++) and their tokens are
   // not yet known, but at the same time, these accounts need to be surfaced on
   // the UI.
-  // Do not use this token for Active Directory accounts,
-  // |kActiveDirectoryDummyToken| is meant for that.
   // See |AccountManager::UpsertToken|.
   static const char* const kInvalidToken;
 
@@ -68,6 +59,15 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
 
   using DelayNetworkCallRunner =
       base::RepeatingCallback<void(base::OnceClosure)>;
+
+  // Allows lazily returning SharedURLLoaderFactory for the short term
+  // workaround to avoid initialization order issue. crbug.com/458695293 If the
+  // callback is held, on using the value, it should be invoked to take the
+  // actual factory. Then, the factory should be kept and should be used
+  // repeatedly.
+  using URLLoaderFactoryParam = std::variant<
+      scoped_refptr<network::SharedURLLoaderFactory>,
+      base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>>;
 
   class Observer {
    public:
@@ -114,10 +114,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // |ash::DelayNetworkCall|. Cannot use |ash::DelayNetworkCall| due
   // to linking/dependency constraints.
   // This method MUST be called at least once in the lifetime of AccountManager.
-  void Initialize(
-      const base::FilePath& home_dir,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      DelayNetworkCallRunner delay_network_call_runner);
+  void Initialize(const base::FilePath& home_dir,
+                  URLLoaderFactoryParam url_loader_factory,
+                  DelayNetworkCallRunner delay_network_call_runner);
 
   // Same as above except that it accepts an |initialization_callback|, which
   // will be called after Account Manager has been fully initialized.
@@ -126,23 +125,20 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Note: During initialization, there is no ordering guarantee between
   // |initialization_callback| and Account Manager's observers getting their
   // callbacks.
-  void Initialize(
-      const base::FilePath& home_dir,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      DelayNetworkCallRunner delay_network_call_runner,
-      base::OnceClosure initialization_callback);
+  void Initialize(const base::FilePath& home_dir,
+                  URLLoaderFactoryParam url_loader_factory,
+                  DelayNetworkCallRunner delay_network_call_runner,
+                  base::OnceClosure initialization_callback);
 
   // Initializes |AccountManager| for ephemeral / in-memory usage.
   // Useful for tests that cannot afford to write to disk and clean up after
   // themselves.
-  void InitializeInEphemeralMode(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void InitializeInEphemeralMode(URLLoaderFactoryParam url_loader_factory);
 
   // Same as above, except it allows clients to provide a callback which will be
   // called after initialization.
-  void InitializeInEphemeralMode(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::OnceClosure initialization_callback);
+  void InitializeInEphemeralMode(URLLoaderFactoryParam url_loader_factory,
+                                 base::OnceClosure initialization_callback);
 
   // Returns |true| if |AccountManager| has been fully initialized.
   bool IsInitialized() const;
@@ -172,9 +168,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
 
   // Updates or inserts an account. `raw_email` is the raw, un-canonicalized
   // email id for `account_key`. `raw_email` must not be empty. Use
-  // `AccountManager::kActiveDirectoryDummyToken` as the `token` for Active
-  // Directory accounts, and `AccountManager::kInvalidToken` for Gaia accounts
-  // with unknown tokens.
+  // `AccountManager::kInvalidToken` as the `token` for Gaia accounts with
+  //  unknown tokens.
   // Note: This API is idempotent.
   void UpsertAccount(const ::account_manager::AccountKey& account_key,
                      const std::string& raw_email,
@@ -195,8 +190,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   void RemoveObserver(Observer* observer);
 
   // Sets the provided URL Loader Factory. Used only by tests.
-  void SetUrlLoaderFactoryForTests(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void SetUrlLoaderFactoryForTests(URLLoaderFactoryParam url_loader_factory);
 
   // Creates and returns an `OAuth2AccessTokenFetcher` using the refresh token
   // stored for `account_key`.
@@ -208,8 +202,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Returns |true| if an LST is available for |account_key|. Note that
   // "availability" does not guarantee "validity", i.e. this method will return
   // true for LSTs that have expired / been invalidated.
-  // Note: Always returns false for Active Directory accounts.
-  // Note: This method will return |false| if |AccountManager| has not been
+  // Note: This method will return `false` if `AccountManager` has not been
   // initialized yet.
   bool IsTokenAvailable(const ::account_manager::AccountKey& account_key) const;
 
@@ -270,12 +263,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   using AccountMap = std::map<::account_manager::AccountKey, AccountInfo>;
 
   // Same as the public |Initialize| except for a |task_runner|.
-  void Initialize(
-      const base::FilePath& home_dir,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      DelayNetworkCallRunner delay_network_call_runner,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceClosure initialization_callback);
+  void Initialize(const base::FilePath& home_dir,
+                  URLLoaderFactoryParam url_loader_factory,
+                  DelayNetworkCallRunner delay_network_call_runner,
+                  scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  base::OnceClosure initialization_callback);
 
   // Loads accounts from disk and returns the result.
   static AccountMap LoadAccountsFromDisk(
@@ -351,7 +343,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   InitializationState init_state_ = InitializationState::kNotStarted;
 
   // All tokens, if channel bound, are bound to |url_loader_factory_|.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  URLLoaderFactoryParam url_loader_factory_;
 
   // An indirect way to access `ash::DelayNetworkCall`. We cannot use
   // `ash::DelayNetworkCall` directly here due to linking/dependency

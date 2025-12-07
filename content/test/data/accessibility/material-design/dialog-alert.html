@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Alert Ready
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Material Web Alert Dialog</title>
+    <meta name="viewport" content="width=400, height=300">
+    <style>
+        body {
+            margin: 0;
+            width: 400px;
+            height: 300px;
+        }
+    </style>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, waitForStable } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-dialog",
+            "md-filled-button",
+            "md-text-button"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const dialog = document.createElement("md-dialog");
+            dialog.id = "alert-dialog";
+            dialog.quick = true;
+            dialog.type = "alert";
+
+            dialog.style.width = "300px";
+            dialog.style.height = "200px";
+
+            const headline = document.createElement("div");
+            headline.slot = "headline";
+            headline.style.padding = "0";
+            headline.style.margin = "0";
+            headline.textContent = "Alert Dialog";
+
+            const content = document.createElement("form");
+            content.slot = "content";
+            content.method = "dialog";
+            content.style.padding = "0";
+            content.style.margin = "0";
+            content.innerHTML = "<p style='margin:0;padding:0;'>Alert Ready</p>";
+
+            const actions = document.createElement("div");
+            actions.slot = "actions";
+
+            const okButton = document.createElement("md-text-button");
+            okButton.value = "ok";
+            okButton.textContent = "OK";
+            actions.appendChild(okButton);
+
+            dialog.appendChild(headline);
+            dialog.appendChild(content);
+            dialog.appendChild(actions);
+
+            statusDiv.appendChild(dialog);
+
+            setTimeout(async () => {
+                await dialog.updateComplete;
+                await new Promise(resolve => requestAnimationFrame(resolve));
+                await dialog.updateComplete;
+                dialog.show();
+                await waitForStable(dialog);
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                statusDiv.setAttribute("aria-label", "Ready");
+            }, 100);
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

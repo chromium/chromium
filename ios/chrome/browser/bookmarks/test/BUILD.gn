@@ -1,0 +1,107 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bookmarks_accessibility_egtest.mm",
+    "bookmarks_egtest.mm",
+    "bookmarks_entries_egtest.mm",
+    "bookmarks_search_egtest.mm",
+    "managed_bookmarks_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base/test:test_support",
+    "//components/policy:generated",
+    "//components/signin/public/base",
+    "//components/strings",
+    "//components/sync/base:features",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/public:constants",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ios/web/public/test/http_server",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bookmark_earl_grey_app_interface.h",
+    "bookmark_earl_grey_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/prefs",
+    "//components/query_parser",
+    "//components/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/public:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/bookmarks/ui_bundled/home",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bookmark_earl_grey.h",
+    "bookmark_earl_grey.mm",
+    "bookmark_earl_grey_app_interface.h",
+    "bookmark_earl_grey_app_interface_stub.mm",
+    "bookmark_earl_grey_ui.h",
+    "bookmark_earl_grey_ui.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/public:constants",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//ui/base",
+    "//url",
+  ]
+}

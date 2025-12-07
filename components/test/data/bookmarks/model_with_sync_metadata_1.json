@@ -1,5 +1,6 @@
 {
    "checksum": "6c2a9ad06ac72e4c0858441e5e988553",
+   "checksum_sha256": "f85737c3a975cdfe1da661f8f4218c7654088316acab379a5b5c2825c70f2e17",
    "roots": {
       "bookmark_bar": {
          "children": [ {

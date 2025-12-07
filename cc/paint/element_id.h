@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <iosfwd>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -22,6 +23,9 @@ class TracedValue;
 }  // namespace base
 
 namespace cc {
+
+// This number of bits is reserved for cc internal use.
+const int kElementIdReservedBitCount = 1;
 
 // Element ids are chosen by cc's clients and can be used as a stable identifier
 // across updates.
@@ -45,12 +49,21 @@ struct CC_PAINT_EXPORT ElementId {
   using InternalValue = uint64_t;
 
   static constexpr InternalValue kInvalidElementId = 0;
+  static constexpr InternalValue kDeletedElementId =
+      std::numeric_limits<InternalValue>::max();
 
   // Constructs an invalid element id.
   constexpr ElementId() : id_(kInvalidElementId) {}
 
   explicit constexpr ElementId(InternalValue id) : id_(id) {
     DCHECK_NE(id, kInvalidElementId);
+    DCHECK_NE(id, kDeletedElementId);
+  }
+
+  static constexpr ElementId DeletedValue() {
+    ElementId value;
+    value.id_ = kDeletedElementId;
+    return value;
   }
 
   bool operator==(const ElementId& o) const { return id_ == o.id_; }
@@ -68,7 +81,7 @@ struct CC_PAINT_EXPORT ElementId {
   // opaqueness of the id.
   InternalValue GetInternalValue() const { return id_; }
   static constexpr bool IsValidInternalValue(InternalValue value) {
-    return value != kInvalidElementId;
+    return value != kInvalidElementId && value != kDeletedElementId;
   }
 
  private:
@@ -81,6 +94,8 @@ struct CC_PAINT_EXPORT ElementId {
 };
 
 ElementId CC_PAINT_EXPORT LayerIdToElementIdForTesting(int layer_id);
+
+ElementId CC_PAINT_EXPORT RemapElementIdToCcNamespace(ElementId element_id);
 
 struct CC_PAINT_EXPORT ElementIdHash {
   size_t operator()(ElementId key) const;

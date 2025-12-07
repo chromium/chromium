@@ -66,6 +66,9 @@ message AppInstallResponse {
     // "android:com.spotify.music" or "web:http://manifest/id"
     optional string package_id = 1;
 
+    // The AppGroup Uuid that was used to populate this request.
+    optional string app_group_uuid = 11;
+
     // The name of the app.
     optional string name = 2;
 
@@ -105,6 +108,11 @@ message AppInstallResponse {
 
     // The (JSON) first-party Google Url for the manifest for this app.
     optional string scs_url = 3;
+
+    // For "Powerful Websites" only (ie. PackageId "website://") this indicates
+    // the value to use for the "open as window" boolean value required to
+    // "install" the website.
+    optional bool open_as_window = 4;
   }
 
   // For GFN-only metadata.

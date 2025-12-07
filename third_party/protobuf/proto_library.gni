@@ -67,20 +67,18 @@
 #       Extra flags passed to the plugin. See cc_generator_options.
 #
 #   deps (optional)
-#       DEPRECATED: use proto_deps or link_deps instead (crbug.com/938011).
-#       Additional dependencies.
+#       This is used to specify deps to other proto_library targets containing
+#       imported proto files as sources from proto files in this target.
 #
 #   link_deps (optional)
-#       Additional dependencies linked to library.
+#       Additional deps for the generated C++ library.
+#
+#   link_public_deps (optional)
+#       Additional public_deps for the generated C++ library.
 #
 #   proto_deps (optional)
 #       Additional dependencies required before running protoc.
 #       e.g. proto file generating action.
-#
-#   proto_data_sources (optional)
-#       Additional proto sources that will only be used for references
-#       and will not be compiled.
-#       This should be used in conjunction with import_dirs.
 #
 #   use_protobuf_full (optional)
 #       If adding protobuf library would be required, adds protobuf_full to deps
@@ -137,6 +135,9 @@
 #    ]
 #  }
 
+import("//build_overrides/protobuf.gni")
+
+import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/kythe.gni")
@@ -147,9 +148,21 @@ declare_args() {
   enable_js_protobuf = !is_cronet_build
 }
 
+declare_args() {
+  # Allows embedders to provide an alternate path to abseil-cpp. (Used
+  # by Dawn & Skia in stand alone builds)
+  if (!defined(protobuf_abseil_dir)) {
+    protobuf_abseil_dir = "//third_party/abseil-cpp"
+  }
+}
+
 if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
 }
+
+proto_python_root = "$root_out_dir/pyproto"
+proto_js_root = "$root_out_dir/jsproto"
+proto_ts_root = "$root_gen_dir/tsproto"
 
 if (host_os == "win") {
   _host_executable_suffix = ".exe"
@@ -171,225 +184,333 @@ _protoc_gen_js_label =
     "//third_party/protobuf-javascript:protoc-gen-js($host_toolchain)"
 _protoc_gen_js_path = get_label_info(_protoc_gen_js_label, "root_out_dir") +
                       "/protoc-gen-js" + _host_executable_suffix
+if (host_os == "win") {
+  _protoc_gen_ts_path = "//tools/protoc_wrapper/protoc-gen-ts_proto.bat"
+} else {
+  _protoc_gen_ts_path = "//tools/protoc_wrapper/protoc-gen-ts_proto.py"
+}
+
+_protoc_gen_ts_runtime_deps = [
+  "//third_party/node/node.py",
+  "//third_party/node/node_modules.py",
+  "//third_party/node/node_modules.tar.gz.sha1",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/create.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/descriptors.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/from-binary.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/is-message.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/package.json",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/proto-int64.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/error.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/guard.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/reflect-check.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/reflect.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/scalar.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/unsafe.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/to-binary.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/base64-encoding.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/binary-encoding.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/index.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/size-delimited.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/text-encoding.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/text-format.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/varint.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wkt/wrappers.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/package.json",
+  "//third_party/node/node_modules/case-anything/dist/cjs/index.cjs",
+  "//third_party/node/node_modules/case-anything/package.json",
+  "//third_party/node/node_modules/ts-poet/build/Code.js",
+  "//third_party/node/node_modules/ts-poet/build/ConditionalOutput.js",
+  "//third_party/node/node_modules/ts-poet/build/Import.js",
+  "//third_party/node/node_modules/ts-poet/build/Literal.js",
+  "//third_party/node/node_modules/ts-poet/build/Node.js",
+  "//third_party/node/node_modules/ts-poet/build/index.js",
+  "//third_party/node/node_modules/ts-poet/build/is-plain-object.js",
+  "//third_party/node/node_modules/ts-poet/build/saveFiles.js",
+  "//third_party/node/node_modules/ts-poet/build/utils.js",
+  "//third_party/node/node_modules/ts-poet/package.json",
+  "//third_party/node/node_modules/ts-proto-descriptors/dist/google/protobuf/compiler/plugin.js",
+  "//third_party/node/node_modules/ts-proto-descriptors/dist/google/protobuf/descriptor.js",
+  "//third_party/node/node_modules/ts-proto-descriptors/dist/index.js",
+  "//third_party/node/node_modules/ts-proto-descriptors/package.json",
+  "//third_party/node/node_modules/ts-proto/build/src/case.js",
+  "//third_party/node/node_modules/ts-proto/build/src/context.js",
+  "//third_party/node/node_modules/ts-proto/build/src/encode.js",
+  "//third_party/node/node_modules/ts-proto/build/src/enums.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-async-iterable.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-generic-service-definition.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-grpc-js.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-grpc-web.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-nestjs.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-nice-grpc.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-services.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-struct-wrappers.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-type-registry.js",
+  "//third_party/node/node_modules/ts-proto/build/src/main.js",
+  "//third_party/node/node_modules/ts-proto/build/src/options.js",
+  "//third_party/node/node_modules/ts-proto/build/src/options.js",
+  "//third_party/node/node_modules/ts-proto/build/src/plugin.js",
+  "//third_party/node/node_modules/ts-proto/build/src/schema.js",
+  "//third_party/node/node_modules/ts-proto/build/src/sourceInfo.js",
+  "//third_party/node/node_modules/ts-proto/build/src/types.js",
+  "//third_party/node/node_modules/ts-proto/build/src/utils.js",
+  "//third_party/node/node_modules/ts-proto/build/src/visit.js",
+  "//third_party/node/node_modules/ts-proto/package.json",
+  "//third_party/node/node_modules/ts-proto/protoc-gen-ts_proto",
+]
+
+# When use_remoteexec=true, node actions may run on remote
+# Linux worker. So it should include linux node binary in inputs.
+if (is_linux || is_chromeos || use_remoteexec) {
+  _protoc_gen_ts_runtime_deps +=
+      [ "//third_party/node/linux/node-linux-x64/bin/node" ]
+}
+if (is_win && host_os == "win") {
+  _protoc_gen_ts_runtime_deps += [ "//third_party/node/win/node.exe" ]
+}
+if (is_mac && host_os == "mac") {
+  if (host_cpu == "arm64") {
+    _protoc_gen_ts_runtime_deps +=
+        [ "//third_party/node/mac_arm64/node-darwin-arm64/bin/node" ]
+  } else {
+    _protoc_gen_ts_runtime_deps +=
+        [ "//third_party/node/mac/node-darwin-x64/bin/node" ]
+  }
+}
 
 template("proto_library") {
-  assert(defined(invoker.sources), "Need sources for proto_library")
-  proto_sources = invoker.sources
+  forward_variables_from(invoker, [ "testonly" ])
 
-  if (defined(invoker.generate_cc)) {
-    generate_cc = invoker.generate_cc
-  } else {
-    generate_cc = true
-  }
+  # TODO(agrieve): Remove perfetto instances of this.
+  not_needed(invoker, [ "generator_visibility" ])
 
-  if (defined(invoker.generate_python)) {
-    generate_python = invoker.generate_python
-  } else {
-    generate_python = true
-  }
+  _generate_cc = !defined(invoker.generate_cc) || invoker.generate_cc
+  _generate_py_runtime =
+      defined(invoker.generate_py_runtime) && invoker.generate_py_runtime
+  _generate_python = !defined(invoker.generate_python) ||
+                     invoker.generate_python || _generate_py_runtime
+  _generate_javascript = defined(invoker.generate_javascript) &&
+                         invoker.generate_javascript && enable_js_protobuf
+  _generate_typescript = defined(invoker.generate_typescript) &&
+                         invoker.generate_typescript && enable_js_protobuf
+  _generate_with_plugin = defined(invoker.generator_plugin_label) ||
+                          defined(invoker.generator_plugin_script)
 
-  if (defined(invoker.generate_javascript)) {
-    generate_javascript = invoker.generate_javascript
-  } else {
-    generate_javascript = false
-  }
+  # Whether source code bindings should be generated (alternative is to just
+  # build the descriptor).
+  _generate_sources =
+      _generate_cc || _generate_with_plugin || _generate_python ||
+      _generate_javascript || _generate_typescript
+  _generate_descriptor = defined(invoker.generate_descriptor)
+  assert(_generate_sources || _generate_descriptor || !enable_js_protobuf,
+         "Not generating anything...")
 
-  if (defined(invoker.generate_descriptor)) {
-    generate_descriptor = invoker.generate_descriptor
-  } else {
-    generate_descriptor = ""
-  }
-
-  if (defined(invoker.generate_py_runtime)) {
-    generate_py_runtime = invoker.generate_py_runtime
-  } else {
-    generate_py_runtime = false
-  }
-  if (generate_py_runtime) {
-    generate_python = true
-  }
-
-  # exclude_imports is only used for generating the descriptor. Therefore, the
-  # check needs to be here to avoid complaints from GN about the unused
-  # variable.
-  if (generate_descriptor != "") {
-    if (defined(invoker.exclude_imports)) {
-      exclude_imports = invoker.exclude_imports
-    } else {
-      exclude_imports = false
-    }
-  }
-
-  if (defined(invoker.generator_plugin_label)) {
-    # Straightforward way to get the name of executable doesn't work because
-    # |root_out_dir| and |root_build_dir| may differ in cross-compilation and
-    # also Windows executables have .exe at the end.
-
-    plugin_host_label = invoker.generator_plugin_label + "($host_toolchain)"
-    plugin_path =
-        get_label_info(plugin_host_label, "root_out_dir") + "/" +
-        get_label_info(plugin_host_label, "name") + _host_executable_suffix
-    generate_with_plugin = true
-  } else if (defined(invoker.generator_plugin_script)) {
-    plugin_path = invoker.generator_plugin_script
-    generate_with_plugin = true
-  } else {
-    generate_with_plugin = false
-  }
-
-  if (generate_with_plugin) {
+  if (_generate_with_plugin) {
     if (defined(invoker.generator_plugin_suffix)) {
-      generator_plugin_suffixes = [
+      _generator_plugin_suffixes = [
         "${invoker.generator_plugin_suffix}.h",
         "${invoker.generator_plugin_suffix}.cc",
       ]
     } else {
-      generator_plugin_suffixes = invoker.generator_plugin_suffixes
+      _generator_plugin_suffixes = invoker.generator_plugin_suffixes
     }
   }
 
+  _sources = invoker.sources
+
   if (defined(invoker.proto_in_dir)) {
-    proto_in_dir = invoker.proto_in_dir
-    has_nested_dirs = false
-    foreach(proto_source, proto_sources) {
-      if (get_path_info(proto_source, "dir") != proto_in_dir) {
-        has_nested_dirs = true
+    _proto_in_dir = invoker.proto_in_dir
+    _has_nested_dirs = false
+    foreach(_source, _sources) {
+      if (get_path_info(_source, "dir") != _proto_in_dir) {
+        _has_nested_dirs = true
       }
     }
   } else {
-    proto_in_dir = get_path_info(proto_sources[0], "dir")
-    has_nested_dirs = false
+    # Use the directory of the first source.
+    _proto_in_dir = get_path_info(_sources[0], "dir")
+    _has_nested_dirs = false
 
-    # Sanity check, |proto_in_dir| should be defined to allow sub-directories.
-    foreach(proto_source, proto_sources) {
-      assert(get_path_info(proto_source, "dir") == proto_in_dir,
+    # Consistency check: |proto_in_dir| should be defined to allow sub-directories.
+    foreach(_source, _sources) {
+      assert(get_path_info(_source, "dir") == _proto_in_dir,
              "Please define |proto_in_dir| to allow nested directories.")
     }
   }
 
-  # Avoid absolute path because of the assumption that |proto_in_dir| is
-  # relative to the directory of current BUILD.gn file.
-  proto_in_dir = rebase_path(proto_in_dir, ".")
+  # Ensure it's a relative path.
+  _proto_in_dir = rebase_path(_proto_in_dir, ".")
 
   if (defined(invoker.proto_out_dir)) {
-    proto_out_dir = invoker.proto_out_dir
+    _package_subdir = invoker.proto_out_dir
   } else {
-    # Absolute path to the directory of current BUILD.gn file excluding "//".
-    proto_out_dir = rebase_path(".", "//")
-    if (proto_in_dir != ".") {
-      proto_out_dir += "/$proto_in_dir"
+    # Path to the directory of current BUILD.gn.
+    _package_subdir = rebase_path(".", "//")
+    if (_proto_in_dir != ".") {
+      _package_subdir += "/$_proto_in_dir"
     }
   }
 
   # We need both absolute path to use in GN statements and a relative one
   # to pass to external script.
-  if (generate_cc || generate_with_plugin) {
-    cc_out_dir = "$root_gen_dir/" + proto_out_dir
-    rel_cc_out_dir = rebase_path(cc_out_dir, root_build_dir)
+  if (_generate_cc || _generate_with_plugin) {
+    _cc_out_dir = "$root_gen_dir/$_package_subdir"
+    _cc_outputs = []
   }
-  if (generate_python) {
-    py_out_dir = "$root_out_dir/pyproto/" + proto_out_dir
-    rel_py_out_dir = rebase_path(py_out_dir, root_build_dir)
+  if (_generate_python) {
+    _py_out_dir = "$proto_python_root/$_package_subdir"
+    _py_outputs = []
   }
-  if (generate_javascript) {
-    js_out_dir = "$root_out_dir/jsproto/" + proto_out_dir
-    rel_js_out_dir = rebase_path(js_out_dir, root_build_dir)
+  if (_generate_javascript) {
+    _js_out_dir = "$proto_js_root/$_package_subdir"
+    _js_outputs = []
   }
-  if (generate_descriptor != "") {
-    descriptor_out =
-        "$root_gen_dir/" + proto_out_dir + "/" + generate_descriptor
-    rel_descriptor_out = rebase_path(descriptor_out, root_build_dir)
-  }
-
-  protos = rebase_path(invoker.sources, proto_in_dir)
-  protogens = []
-  protogens_py = []
-  protogens_cc = []
-  protogens_js = []
-
-  # Whether source code bindings should be generated.
-  generate_sources = generate_cc || generate_python || generate_with_plugin ||
-                     generate_javascript
-
-  # Whether library should be generated.
-  # Library is not needed when proto_library is used to generate binary descriptor, in which case
-  # corresponding library target should be omitted entirely.
-  if (defined(invoker.generate_library)) {
-    generate_library = invoker.generate_library
-  } else {
-    generate_library = generate_sources
+  if (_generate_typescript) {
+    _ts_out_dir = "$proto_ts_root/$_package_subdir"
+    _ts_outputs = []
   }
 
   # List output files.
-  if (generate_sources) {
-    foreach(proto, protos) {
-      proto_dir = get_path_info(proto, "dir")
-      proto_name = get_path_info(proto, "name")
-      proto_path = proto_dir + "/" + proto_name
+  _relative_sources = rebase_path(_sources, _proto_in_dir)
+  if (_generate_sources) {
+    foreach(_source, _relative_sources) {
+      _proto_path =
+          get_path_info(_source, "dir") + "/" + get_path_info(_source, "name")
 
-      if (generate_cc) {
-        protogens_cc += [
-          "$cc_out_dir/$proto_path.pb.h",
-          "$cc_out_dir/$proto_path.pb.cc",
+      if (_generate_cc) {
+        _cc_outputs += [
+          "$_cc_out_dir/$_proto_path.pb.h",
+          "$_cc_out_dir/$_proto_path.pb.cc",
         ]
       }
-      if (generate_python) {
-        protogens_py += [ "$py_out_dir/${proto_path}_pb2.py" ]
+      if (_generate_python) {
+        _py_outputs += [ "$_py_out_dir/${_proto_path}_pb2.py" ]
       }
-      if (generate_with_plugin) {
-        foreach(suffix, generator_plugin_suffixes) {
-          protogens_cc += [ "$cc_out_dir/${proto_path}${suffix}" ]
+      if (_generate_with_plugin) {
+        foreach(_suffix, _generator_plugin_suffixes) {
+          _cc_outputs += [ "$_cc_out_dir/$_proto_path$_suffix" ]
         }
       }
-      if (generate_javascript) {
-        protogens_js += [ "$js_out_dir/${proto_path}.js" ]
+      if (_generate_javascript) {
+        _js_outputs += [ "$_js_out_dir/$_proto_path.js" ]
+      }
+      if (_generate_typescript) {
+        _ts_outputs += [ "$_ts_out_dir/$_proto_path.ts" ]
       }
     }
   }
 
-  # If descriptor needs to be generated, it should be added to list of outputs once.
-  if (generate_descriptor != "") {
-    protogens += [ descriptor_out ]
+  # Generated files may include other generated headers. These includes always
+  # use relative paths starting at |_cc_out_dir|.
+  # However there is no necessity to add an additional directory, if all protos
+  # are located in the same directory which is in the search path by default.
+  if (_generate_cc || _generate_with_plugin) {
+    # Not necessary if all protos are located in the same directory.
+    if (_has_nested_dirs || defined(invoker.import_dirs)) {
+      _include_dir_config_name = "${target_name}_config"
+      config("$_include_dir_config_name") {
+        include_dirs = []
+        if (_has_nested_dirs) {
+          include_dirs += [ _cc_out_dir ]
+        }
+        if (defined(invoker.import_dirs)) {
+          foreach(path, invoker.import_dirs) {
+            include_dirs += [ "$root_gen_dir/" + rebase_path(path, "//") ]
+          }
+        }
+      }
+    }
+  } else {
+    not_needed([ "_has_nested_dirs" ])
   }
 
-  action_name = "${target_name}_gen"
-  source_set_name = target_name
-  javascript_name = "${target_name}_js"
-  py_runtime_name = "${target_name}_py_runtime"
+  # Allows proto_library() targets that depend on this one to import its
+  # .proto files without declaring them as inputs.
+  _input_config_name = "${target_name}__inputs_config"
+  config(_input_config_name) {
+    inputs = _sources
+  }
+  _input_group_name = "${target_name}_input_group"
+  group(_input_group_name) {
+    public_configs = [ ":$_input_config_name" ]
+    public_deps = []
+
+    # The deps may have steps that have to run before running protoc.
+    if (defined(invoker.proto_deps)) {
+      public_deps += invoker.proto_deps
+    }
+    if (defined(invoker.deps)) {
+      # This is to propagate input deps for imported proto to ancestor targets.
+      foreach(_dep, invoker.deps) {
+        _dep = get_label_info(_dep, "label_no_toolchain")
+
+        # TODO(agrieve): Update perfetto to follow naming scheme.
+        if (filter_exclude([ _dep ], [ "//third_party/perfetto/*" ]) == []) {
+          # Protozero does not follow the naming scheme.
+          public_deps += [
+            "${_dep}_input_group",
+            _dep,
+          ]
+        } else {
+          # Depend directly on the _gen targets so as to not unnecessarily block
+          # on compile (by depending on source_set targets).
+          public_deps += [ "${_dep}_gen" ]
+        }
+      }
+    }
+  }
 
   # Generate protobuf stubs.
-  action(action_name) {
-    visibility = [
-      ":$javascript_name",
-      ":$py_runtime_name",
-      ":$source_set_name",
-    ]
+  _action_name = "${target_name}_gen"
+  action(_action_name) {
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
-    args = protos
-
-    sources = proto_sources
-    outputs =
-        get_path_info(protogens + protogens_cc + protogens_js + protogens_py,
-                      "abspath")
-
-    if (defined(invoker.testonly)) {
-      testonly = invoker.testonly
+    sources = _sources
+    inputs = [
+      # System protoc is not used so it's necessary to build a chromium one.
+      _protoc_path,
+    ]
+    outputs = []
+    if (_generate_cc || _generate_with_plugin) {
+      outputs += _cc_outputs
+    }
+    if (_generate_python) {
+      outputs += _py_outputs
+    }
+    if (_generate_javascript) {
+      outputs += _js_outputs
+    }
+    if (_generate_typescript) {
+      outputs += _ts_outputs
     }
 
-    args += [
-      # Wrapper should never pick a system protoc.
-      # Path should be rebased because |root_build_dir| for current toolchain
-      # may be different from |root_out_dir| of protoc built on host toolchain.
-      "--protoc",
-      "./" + rebase_path(_protoc_path, root_build_dir),
-      "--proto-in-dir",
-      rebase_path(proto_in_dir, root_build_dir),
-    ]
+    deps = [ _protoc_label ]
+    if (host_toolchain_is_msan) {
+      deps += [ "//third_party/instrumented_libs:ld-linux($host_toolchain)" ]
+      configs = [
+        "//third_party/instrumented_libs:msan_runtime_libs($host_toolchain)",
+      ]
+    }
 
-    if (generate_cc) {
+    public_deps = [ ":$_input_group_name" ]
+
+    args = _relative_sources + [
+             # Wrapper should never pick a system protoc.
+             # Path should be rebased because |root_build_dir| for current toolchain
+             # may be different from |root_out_dir| of protoc built on host toolchain.
+             "--protoc",
+             "./" + rebase_path(_protoc_path, root_build_dir),
+             "--proto-in-dir",
+             rebase_path(_proto_in_dir, root_build_dir),
+           ]
+
+    # TODO(crbug.com/409484308): Enable in fuzzer builds too.
+    if (treat_warnings_as_errors && !fuzzing_engine_supports_custom_main) {
+      args += [ "--fatal_warnings" ]
+    }
+
+    if (_generate_cc) {
       args += [
         "--cc-out-dir",
-        rel_cc_out_dir,
+        rebase_path(_cc_out_dir, root_build_dir),
       ]
       if (enable_kythe_annotations) {
         args += [ "--enable-kythe-annotation" ]
@@ -408,28 +529,67 @@ template("proto_library") {
       }
     }
 
-    if (generate_python) {
+    if (_generate_python) {
       args += [
         "--py-out-dir",
-        rel_py_out_dir,
+        rebase_path(_py_out_dir, root_build_dir),
       ]
     }
 
-    if (generate_javascript) {
+    if (_generate_javascript) {
       args += [
         "--js-out-dir",
-        rel_js_out_dir,
+        rebase_path(_js_out_dir, root_build_dir),
         "--protoc-gen-js",
         "./" + rebase_path(_protoc_gen_js_path, root_build_dir),
       ]
+      inputs += [ _protoc_gen_js_path ]
+      deps += [ _protoc_gen_js_label ]
     }
 
-    if (generate_with_plugin) {
+    if (_generate_typescript) {
+      args += [
+        "--ts-out-dir",
+        rebase_path(_ts_out_dir, root_build_dir),
+        "--protoc-gen-ts",
+        "./" + rebase_path(_protoc_gen_ts_path, root_build_dir),
+      ]
+      inputs += [
+                  _protoc_gen_ts_path,
+                  "//tools/protoc_wrapper/protoc-gen-ts_proto.py",
+                ] + _protoc_gen_ts_runtime_deps
+      deps += [ "//third_party/node:check_version" ]
+    }
+
+    if (_generate_with_plugin) {
+      if (defined(invoker.generator_plugin_label)) {
+        # Straightforward way to get the name of executable doesn't work because
+        # |root_out_dir| and |root_build_dir| may differ in cross-compilation and
+        # also Windows executables have .exe at the end.
+
+        _plugin_host_label =
+            "${invoker.generator_plugin_label}($host_toolchain)"
+        _plugin_path =
+            get_label_info(_plugin_host_label, "root_out_dir") + "/" +
+            get_label_info(_plugin_host_label, "name") + _host_executable_suffix
+        deps += [ _plugin_host_label ]
+      } else {
+        _plugin_path = invoker.generator_plugin_script
+      }
+      inputs += [ _plugin_path ]
+      if (defined(invoker.generator_plugin_script_deps)) {
+        # Additional scripts for plugin.
+        inputs += invoker.generator_plugin_script_deps
+      }
+      if (defined(plugin_host_label)) {
+        # Action depends on native generator plugin but for host toolchain only.
+        deps += [ plugin_host_label ]
+      }
       args += [
         "--plugin",
-        rebase_path(plugin_path, root_build_dir),
+        rebase_path(_plugin_path, root_build_dir),
         "--plugin-out-dir",
-        rel_cc_out_dir,
+        rebase_path(_cc_out_dir, root_build_dir),
       ]
       if (defined(invoker.generator_plugin_options)) {
         args += [
@@ -439,120 +599,82 @@ template("proto_library") {
       }
     }
 
-    if (generate_descriptor != "") {
+    if (_generate_descriptor) {
       depfile =
-          "$root_gen_dir/" + proto_out_dir + "/" + generate_descriptor + ".d"
-      rel_depfile = rebase_path(depfile, root_build_dir)
+          "$root_gen_dir/$_package_subdir/${invoker.generate_descriptor}.d"
 
-      if (exclude_imports) {
+      if (defined(invoker.exclude_imports) && invoker.exclude_imports) {
         args += [ "--exclude-imports" ]
       }
 
+      _descriptor_out =
+          "$root_gen_dir/$_package_subdir/${invoker.generate_descriptor}"
+      outputs += [ _descriptor_out ]
+
       args += [
         "--descriptor-set-out",
-        rel_descriptor_out,
+        rebase_path(_descriptor_out, root_build_dir),
         "--descriptor-set-dependency-file",
-        rel_depfile,
+        rebase_path(depfile, root_build_dir),
       ]
     }
-    inputs = []
-    if (defined(invoker.proto_data_sources)) {
-      inputs += invoker.proto_data_sources
-    }
 
+    # Some protos import descriptor.proto directly or indirectly. This is
+    # required for the creation of FieldOptions and MessageOptions for
+    # consumption by protoc plugins. To facilitate this, the descriptor must
+    # both be an input and have it be accessible on the include path for the
+    # proto_library target using it AND every library that transitively includes
+    # it. To prevent having massive side-effects to build files on changes, this
+    # simply adds the input and import_dir for descriptor.proto to all targets.
+    # The import_dirs modification can be removed if http://crbug.com/691451 is
+    # fixed.
+    inputs += [ "//third_party/protobuf/src/google/protobuf/descriptor.proto" ]
+    _import_dirs = [ "//third_party/protobuf/src" ]
     if (defined(invoker.import_dirs)) {
-      foreach(path, invoker.import_dirs) {
-        args += [ "--import-dir=" + rebase_path(path, root_build_dir) ]
-      }
+      _import_dirs += invoker.import_dirs
     }
-
-    # System protoc is not used so it's necessary to build a chromium one.
-    inputs += [ _protoc_path ]
-    deps = [ _protoc_label ]
-
-    if (enable_js_protobuf) {
-      inputs += [ _protoc_gen_js_path ]
-      deps += [ _protoc_gen_js_label ]
-    }
-
-    if (generate_with_plugin) {
-      inputs += [ plugin_path ]
-      if (defined(invoker.generator_plugin_script_deps)) {
-        # Additional scripts for plugin.
-        inputs += invoker.generator_plugin_script_deps
-      }
-      if (defined(plugin_host_label)) {
-        # Action depends on native generator plugin but for host toolchain only.
-        deps += [ plugin_host_label ]
-      }
-    }
-
-    # The deps may have steps that have to run before running protoc.
-    if (defined(invoker.proto_deps)) {
-      deps += invoker.proto_deps
-    }
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
+    foreach(_path, _import_dirs) {
+      args += [ "--import-dir=" + rebase_path(_path, root_build_dir) ]
     }
   }
 
-  if (!generate_library) {
+  if ((defined(invoker.generate_library) && !invoker.generate_library) ||
+      !_generate_sources) {
     # If only descriptor is required, just generate a group wrapper for action output.
-    link_target_type = "group"
+    _library_type = "group"
   } else if ((defined(invoker.force_source_set) && invoker.force_source_set) ||
              (defined(invoker.component_build_force_source_set) &&
               invoker.component_build_force_source_set && is_component_build)) {
     # Option to disable building a library in component build.
-    link_target_type = "source_set"
+    _library_type = "source_set"
   } else {
-    link_target_type = "static_library"
-  }
-
-  # Generated files may include other generated headers. These includes always
-  # use relative paths starting at |cc_out_dir|.
-  # However there is no necessity to add an additional directory, if all protos
-  # are located in the same directory which is in the search path by default.
-  config_name = "${target_name}_config"
-  config(config_name) {
-    include_dirs = []
-    if (has_nested_dirs && generate_cc) {
-      include_dirs += [ cc_out_dir ]
-    }
-    if (defined(invoker.import_dirs)) {
-      foreach(path, invoker.import_dirs) {
-        include_dirs += [ "$root_gen_dir/" + rebase_path(path, "//") ]
-      }
-    }
-  }
-
-  # Build generated javascript stubs.
-  if (generate_javascript) {
-    js_library(javascript_name) {
-      forward_variables_from(invoker,
-                             [
-                               "testonly",
-                               "visibility",
-                             ])
-
-      sources = protogens_js
-
-      deps = [ "$_this_dir:js_proto" ]
-
-      extra_deps = [ ":$action_name" ]
-    }
+    _library_type = "static_library"
   }
 
   # Build generated protobuf stubs as libary or source set.
-  target(link_target_type, target_name) {
+  target(_library_type, target_name) {
     forward_variables_from(invoker,
                            [
                              "defines",
-                             "testonly",
                              "visibility",
                            ])
+    deps = [ ":$_action_name" ]
+    public_deps = []
 
-    if (generate_library) {
-      sources = get_path_info(protogens_cc, "abspath")
+    # This will link any libraries in the deps (the use of invoker.deps in the
+    # action won't link it).
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    if (defined(invoker.link_deps)) {
+      deps += invoker.link_deps
+    }
+    if (defined(invoker.link_public_deps)) {
+      public_deps += invoker.link_public_deps
+    }
+
+    if (defined(_cc_outputs)) {
+      sources = _cc_outputs
 
       if (defined(invoker.remove_configs)) {
         configs -= invoker.remove_configs
@@ -569,36 +691,28 @@ template("proto_library") {
       configs += [ "//build/config/sanitizers:not_fuzzed" ]
     }
 
-    public_configs = [
-      "$_this_dir:using_proto",
-      "$_this_dir:allow_deprecated_proto_fields",
-    ]
-    public_deps = []
+    if (_generate_cc || _generate_with_plugin) {
+      public_configs = [ "$_this_dir:using_proto" ]
 
-    if (generate_cc || generate_with_plugin) {
-      # Not necessary if all protos are located in the same directory.
-      if (has_nested_dirs || defined(invoker.import_dirs)) {
-        # By default, propagate the config for |include_dirs| to dependent
-        # targets, so that public imports can be resolved to corresponding
-        # header files. In some cases, the embedder target handles include
-        # directory propagation itself, e.g. via a common config.
-        propagate_imports_configs =
-            !defined(invoker.propagate_imports_configs) ||
-            invoker.propagate_imports_configs
-        if (propagate_imports_configs) {
-          public_configs += [ ":$config_name" ]
+      # By default, propagate the config for |include_dirs| to dependent
+      # targets, so that public imports can be resolved to corresponding
+      # header files. In some cases, the embedder target handles include
+      # directory propagation itself, e.g. via a common config.
+      if (defined(_include_dir_config_name)) {
+        if (!defined(invoker.propagate_imports_configs) ||
+            invoker.propagate_imports_configs) {
+          public_configs += [ ":$_include_dir_config_name" ]
         } else {
           # Embedder handles include directory propagation to dependents.
-          configs += [ ":$config_name" ]
+          configs += [ ":$_include_dir_config_name" ]
         }
       }
 
       # If using built-in cc generator, the resulting headers reference headers
       # within protobuf_lite. Hence, dependencies require those headers too.
       # If using generator plugin, extra deps should be resolved by the invoker.
-      if (generate_cc) {
-        if (defined(invoker.use_protobuf_full) &&
-            invoker.use_protobuf_full == true) {
+      if (_generate_cc) {
+        if (defined(invoker.use_protobuf_full) && invoker.use_protobuf_full) {
           public_deps += [ "$_this_dir:protobuf_full" ]
         } else {
           public_deps += [ "$_this_dir:protobuf_lite" ]
@@ -615,25 +729,24 @@ template("proto_library") {
         }
       }
     }
+  }
 
-    public_deps += [ ":$action_name" ]
-    deps = []
-
-    # This will link any libraries in the deps (the use of invoker.deps in the
-    # action won't link it).
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-    if (defined(invoker.link_deps)) {
-      deps += invoker.link_deps
+  # Build generated javascript stubs.
+  if (_generate_javascript) {
+    js_library("${target_name}_js") {
+      forward_variables_from(invoker, [ "visibility" ])
+      sources = _js_outputs
+      deps = [ "$_this_dir:js_proto" ]
+      extra_deps = [ ":$_action_name" ]
     }
   }
 
-  if (generate_py_runtime) {
-    group(py_runtime_name) {
-      data = protogens_py
+  if (_generate_py_runtime) {
+    group("${target_name}_py_runtime") {
+      forward_variables_from(invoker, [ "visibility" ])
+      data = _py_outputs
       deps = [
-        ":$action_name",
+        ":$_action_name",
         "$_this_dir:py_proto_runtime",
       ]
     }
@@ -676,7 +789,7 @@ template("proto_library") {
 #     args = [
 #       "--encode=foo.FooMessage",
 #       "-I",
-#       rebase_path("//"),
+#       rebase_path("//", root_build_dir),
 #       "component/core/foo.proto",
 #     ]
 #   }
@@ -700,12 +813,18 @@ template("protoc_convert") {
     outputs = [ invoker.output_pattern ]
 
     args = [
-             "--protoc",
-             "./" + rebase_path(_protoc_path, root_build_dir),
-             "--infile",
-             "{{source}}",
-             "--outfile",
-             rebase_path(invoker.output_pattern),
-           ] + invoker.args
+      "--protoc",
+      "./" + rebase_path(_protoc_path, root_build_dir),
+      "--infile",
+      "{{source}}",
+      "--outfile",
+      rebase_path(invoker.output_pattern, root_build_dir),
+    ]
+
+    if (treat_warnings_as_errors) {
+      args += [ "--fatal_warnings" ]
+    }
+
+    args += invoker.args
   }
 }

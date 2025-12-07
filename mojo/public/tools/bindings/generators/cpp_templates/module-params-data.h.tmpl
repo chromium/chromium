@@ -10,8 +10,11 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include "mojo/public/cpp/bindings/lib/bindings_internal.h"
-#include "mojo/public/cpp/bindings/lib/buffer.h"
+{%- if interfaces|length %}
+#include "mojo/public/cpp/bindings/array_data_view.h"
+#include "mojo/public/cpp/bindings/map_data_view.h"
+#include "mojo/public/cpp/bindings/string_data_view.h"
+{%- endif %}
 
 #if defined(__clang__)
 #pragma clang diagnostic push

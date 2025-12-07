@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 
 /**
  * An interface for driving operations in the Contextual Search Manager's internal state by the
  * {@link ContextualSearchInternalStateController} class.
  */
+@NullMarked
 public interface ContextualSearchInternalStateHandler {
     /**
      * Hides the Contextual Search user interface.
+     *
      * @see ContextualSearchInternalStateController.InternalState#IDLE
      */
     void hideContextualSearchUi(@StateChangeReason int reason);

@@ -6,27 +6,32 @@ package org.chromium.content_public.browser;
 
 import android.os.Handler;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.content.browser.AppWebMessagePort;
 
 /** Interface for message ports that handle postMessage requests. */
 @UsedByReflection("")
+@NullMarked
 public interface MessagePort {
     /** The message callback for receiving messages. */
-    public interface MessageCallback {
+    interface MessageCallback {
         /**
          * Sent when the associated {@link MessagePort} gets a postMessage.
-         * @param messagePayload   The message payload that was received.
+         *
+         * @param messagePayload The message payload that was received.
          * @param sentPorts The {@link MessagePort}s that were sent if any.
          */
-        void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts);
+        void onMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts);
     }
 
     /**
      * Called to create an entangled pair of ports.
+     *
      * @return An array of a pair of{@link MessagePort} instances.
      */
-    public static MessagePort[] createPair() {
+    static MessagePort[] createPair() {
         return AppWebMessagePort.createPair();
     }
 
@@ -56,12 +61,12 @@ public interface MessagePort {
      *
      * See {@link MessagePort.MessageCallback}
      */
-    void setMessageCallback(MessageCallback messageCallback, Handler handler);
+    void setMessageCallback(MessageCallback messageCallback, @Nullable Handler handler);
 
     /**
      * Send a postMessage request through this port to its designated receiving end.
      * @param messagePayload   The message payload to be sent.
      * @param sentPorts The ports to be transferred.
      */
-    void postMessage(MessagePayload messagePayload, MessagePort[] sentPorts);
+    void postMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts);
 }

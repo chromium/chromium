@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,21 +22,22 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/search_engines/prepopulated_engines.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 // Tests for the chrome://search-engine-choice WebUI page.
@@ -91,13 +91,7 @@ class MockSearchEngineChoiceDialogService
         // engines.
         choice.prepopulate_id = i + 1;
         choice.SetShortName(kShortName);
-        if (i % 2 == 0) {
-          // The bing icon should be bundled with Chrome.
-          choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
-        } else {
-          // Uses the default generic favicon.
-          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
-        }
+        choice.SetKeyword(u"incredibar");
         choices_.push_back(std::make_unique<TemplateURL>(choice));
       }
     }
@@ -116,6 +110,7 @@ struct TestParam {
   bool first_snippet_text_larger = false;
   bool display_info_dialog = false;
   bool wait_for_banners_displayed = true;
+  bool is_guest_session = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -150,6 +145,10 @@ const TestParam kTestParams[] = {
     {.test_suffix = "InfoDialogDarkTheme",
      .use_dark_theme = true,
      .display_info_dialog = true},
+    {.test_suffix = "Guest", .is_guest_session = true},
+    {.test_suffix = "GuestRtl",
+     .use_right_to_left_language = true,
+     .is_guest_session = true},
 #endif
     // We enable the test on platforms other than Windows with the smallest
     // height due to a small maximum window height set by the operating system.
@@ -246,13 +245,32 @@ class SearchEngineChoiceUIPixelTest
                                               /*force_chrome_build=*/true)),
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
-                          GetParam().use_right_to_left_language) {
-  }
+                          GetParam().use_right_to_left_language) {}
 
   ~SearchEngineChoiceUIPixelTest() override = default;
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    if (GetParam().is_guest_session) {
+      ui_test_utils::BrowserCreatedObserver browser_created_observer;
+
+      CreateGuestBrowser();
+      Browser* new_browser = browser_created_observer.Wait();
+      ASSERT_TRUE(new_browser);
+      ASSERT_NE(new_browser, browser());
+      ASSERT_TRUE(new_browser->profile()->IsGuestSession());
+
+      CloseBrowserSynchronously(browser());
+      SetBrowser(new_browser);
+      ASSERT_EQ(new_browser, browser());
+    }
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, "BE");
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -267,8 +285,8 @@ class SearchEngineChoiceUIPixelTest
 
   // TestBrowserDialog
   void ShowUi(const std::string& name) override {
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
 
@@ -296,7 +314,7 @@ class SearchEngineChoiceUIPixelTest
       dialog_height = kMaximumHeight;
     }
 
-    ShowSearchEngineChoiceDialog(
+    SearchEngineChoiceDialog::Show(
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
 
@@ -332,8 +350,6 @@ class SearchEngineChoiceUIPixelTest
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

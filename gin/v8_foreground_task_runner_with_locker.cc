@@ -88,6 +88,7 @@ void V8ForegroundTaskRunnerWithLocker::PostIdleTaskImpl(
     const v8::SourceLocation& location) {
   DCHECK(IdleTasksEnabled());
   idle_task_runner()->PostIdleTask(
+      V8ToBaseLocation(location),
       std::make_unique<IdleTaskWithLocker>(isolate_, std::move(task)));
 }
 

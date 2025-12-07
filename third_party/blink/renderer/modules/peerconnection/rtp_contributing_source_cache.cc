@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -183,19 +184,18 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
   // Unretained is safe because we're waiting for the operation to complete.
   PostCrossThreadTask(
       *worker_thread_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
+      CrossThreadBindOnce(
           &RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread,
-          WTF::CrossThreadUnretained(this),
-          WTF::CrossThreadUnretained(&receivers),
-          WTF::CrossThreadUnretained(cached_sources_by_receiver),
-          WTF::CrossThreadUnretained(&event)));
+          CrossThreadUnretained(this), CrossThreadUnretained(&receivers),
+          CrossThreadUnretained(cached_sources_by_receiver),
+          CrossThreadUnretained(&event)));
   event.Wait();
 
   ExecutionContext::From(script_state)
       ->GetAgent()
       ->event_loop()
-      ->EnqueueMicrotask(WTF::BindOnce(&RtpContributingSourceCache::ClearCache,
-                                       weak_factory_.GetWeakPtr()));
+      ->EnqueueMicrotask(blink::BindOnce(
+          &RtpContributingSourceCache::ClearCache, weak_factory_.GetWeakPtr()));
 }
 
 void RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread(

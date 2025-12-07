@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -38,12 +37,9 @@ class Event;
 // Interactive. Implement First Idle.
 class CORE_EXPORT InteractiveDetector
     : public GarbageCollected<InteractiveDetector>,
-      public Supplement<Document>,
       public ExecutionContextLifecycleObserver,
       public LongTaskObserver {
  public:
-  static const char kSupplementName[];
-
   // This class can be easily switched out to allow better testing of
   // InteractiveDetector.
   class CORE_EXPORT NetworkActivityChecker {
@@ -87,7 +83,7 @@ class CORE_EXPORT InteractiveDetector
   // pointer down followed by a pointer up.
   std::optional<base::TimeDelta> GetFirstInputDelay() const;
 
-  WTF::Vector<std::optional<base::TimeDelta>>
+  Vector<std::optional<base::TimeDelta>>
   GetFirstInputDelaysAfterBackForwardCacheRestore() const;
 
   // The timestamp of the event whose delay is reported by GetFirstInputDelay().
@@ -128,6 +124,8 @@ class CORE_EXPORT InteractiveDetector
  private:
   friend class InteractiveDetectorTest;
 
+  Member<Document> document_;
+
   const base::TickClock* clock_;
 
   base::TimeTicks interactive_time_;
@@ -148,7 +146,7 @@ class CORE_EXPORT InteractiveDetector
     std::optional<base::TimeTicks> first_scroll_timestamp;
     std::optional<base::TimeDelta> frist_scroll_delay;
 
-    WTF::Vector<std::optional<base::TimeDelta>>
+    Vector<std::optional<base::TimeDelta>>
         first_input_delays_after_back_forward_cache_restore;
   } page_event_times_;
 
@@ -158,11 +156,11 @@ class CORE_EXPORT InteractiveDetector
   };
 
   // Stores sufficiently long quiet windows on the network.
-  Vector<WTF::PODInterval<base::TimeTicks>> network_quiet_windows_;
+  Vector<PodInterval<base::TimeTicks>> network_quiet_windows_;
 
   // Stores long tasks in order to compute Total Blocking Time (TBT) once Time
   // To Interactive (TTI) is known.
-  Vector<WTF::PODInterval<base::TimeTicks>> long_tasks_;
+  Vector<PodInterval<base::TimeTicks>> long_tasks_;
 
   // Start time of currently active network quiet windows.
   // Null base::TimeTicks values indicate network is not quiet at the moment.

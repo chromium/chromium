@@ -4,6 +4,11 @@
 
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 
+#include <string_view>
+
+#include "base/compiler_specific.h"
+#include "remoting/base/source_location.h"
+
 namespace mojo {
 
 // static
@@ -91,17 +96,7 @@ bool mojo::StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
   out_options->set_enable_user_interface(data_view.enable_user_interface());
   out_options->set_enable_notifications(data_view.enable_notifications());
   out_options->set_terminate_upon_input(data_view.terminate_upon_input());
-  out_options->set_enable_file_transfer(data_view.enable_file_transfer());
-  out_options->set_enable_remote_open_url(data_view.enable_remote_open_url());
   out_options->set_enable_remote_webauthn(data_view.enable_remote_webauthn());
-
-  std::optional<uint32_t> clipboard_size;
-  if (!data_view.ReadClipboardSize(&clipboard_size)) {
-    return false;
-  }
-  if (clipboard_size.has_value()) {
-    out_options->set_clipboard_size(std::move(clipboard_size));
-  }
 
   if (!data_view.ReadDesktopCaptureOptions(
           out_options->desktop_capture_options())) {
@@ -332,9 +327,9 @@ bool mojo::StructTraits<
     return false;
   }
 
-  std::unique_ptr<::webrtc::DesktopFrame> new_frame(
-      new ::webrtc::BasicDesktopFrame(image_size));
-  memcpy(new_frame->data(), image_data.data(), image_data.size());
+  auto new_frame = std::make_unique<::webrtc::BasicDesktopFrame>(
+      image_size, webrtc::FOURCC_ARGB);
+  UNSAFE_TODO(memcpy(new_frame->data(), image_data.data(), image_data.size()));
 
   // ::webrtc::MouseCursor methods take a raw pointer *and* take ownership.
   // TODO(joedow): Update webrtc::MouseCursor to use std::unique_ptr.
@@ -565,6 +560,12 @@ bool mojo::StructTraits<remoting::mojom::VideoTrackLayoutDataView,
   out_track->set_x_dpi(dpi.x());
   out_track->set_y_dpi(dpi.y());
 
+  std::string display_name;
+  if (!data_view.ReadDisplayName(&display_name)) {
+    return false;
+  }
+  out_track->set_display_name(std::move(display_name));
+
   return true;
 }
 
@@ -582,6 +583,36 @@ bool mojo::StructTraits<remoting::mojom::VideoLayoutDataView,
 
   out_layout->set_primary_screen_id(data_view.primary_screen_id());
 
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::SourceLocationDataView,
+                        ::remoting::SourceLocation>::
+    Read(remoting::mojom::SourceLocationDataView data_view,
+         ::remoting::SourceLocation* out_source_info) {
+  std::optional<std::string_view> function_name;
+  std::optional<std::string_view> file_name;
+  if (!data_view.ReadFunctionName(&function_name)) {
+    return false;
+  }
+  if (!data_view.ReadFileName(&file_name)) {
+    return false;
+  }
+  out_source_info->InitializeWithBackingStore(function_name, file_name,
+                                              data_view.line_number());
+
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::FractionalCoordinateDataView,
+                        ::remoting::protocol::FractionalCoordinate>::
+    Read(remoting::mojom::FractionalCoordinateDataView data_view,
+         ::remoting::protocol::FractionalCoordinate* out_coordinate) {
+  out_coordinate->set_screen_id(data_view.screen_id());
+  out_coordinate->set_x(data_view.x());
+  out_coordinate->set_y(data_view.y());
   return true;
 }
 

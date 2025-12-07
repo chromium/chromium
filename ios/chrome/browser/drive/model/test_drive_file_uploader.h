@@ -23,6 +23,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // will be returned.
   DriveFolderResult GetFolderSearchResult() const;
   DriveFolderResult GetFolderCreationResult() const;
+  DriveFolderResult GetClientFolderResult() const;
   std::vector<DriveFileUploadProgress> GetFileUploadProgressElements() const;
   DriveFileUploadResult GetFileUploadResult() const;
   DriveStorageQuotaResult GetStorageQuotaResult() const;
@@ -31,6 +32,8 @@ class TestDriveFileUploader final : public DriveFileUploader {
   void SetFolderSearchResult(const DriveFolderResult& result);
   // Sets folder creation result to be reported by `CreateSaveToDriveFolder()`.
   void SetFolderCreationResult(const DriveFolderResult& result);
+  // Sets the result to be returned by `FetchSaveToDriveClientFolder`.
+  void SetClientFolderResult(const DriveFolderResult& result);
   // Sets file upload progress elements to be reported by `UploadFile()`.
   void SetFileUploadProgressElements(
       std::vector<DriveFileUploadProgress> progress_elements);
@@ -42,6 +45,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Set quit closures.
   void SetSearchFolderQuitClosure(base::RepeatingClosure quit_closure);
   void SetCreateFolderQuitClosure(base::RepeatingClosure quit_closure);
+  void SetFetchClientFolderQuitClosure(base::RepeatingClosure quit_closure);
   void SetUploadFileProgressQuitClosure(base::RepeatingClosure quit_closure);
   void SetUploadFileCompletionQuitClosure(base::RepeatingClosure quit_closure);
   void SetFetchStorageQuotaQuitClosure(base::RepeatingClosure quit_closure);
@@ -50,6 +54,8 @@ class TestDriveFileUploader final : public DriveFileUploader {
   NSString* GetSearchedFolderName() const;
   // Returns `folder_name` passed to `CreateSaveToDriveFolder()`.
   NSString* GetCreatedFolderName() const;
+  // Returns `folder_name` passed to `FetchSaveToDriveClientFolder()`.
+  NSString* GetFetchedClientFolderName() const;
   // Returns `file_url` passed to `UploadFile()`.
   NSURL* GetUploadedFileUrl() const;
   // Returns `file_name` passed to `UploadFile()`.
@@ -67,6 +73,9 @@ class TestDriveFileUploader final : public DriveFileUploader {
       NSString* folder_name,
       DriveFolderCompletionCallback completion_callback) final;
   void CreateSaveToDriveFolder(
+      NSString* folder_name,
+      DriveFolderCompletionCallback completion_callback) final;
+  void FetchSaveToDriveClientFolder(
       NSString* folder_name,
       DriveFolderCompletionCallback completion_callback) final;
   void UploadFile(NSURL* file_url,
@@ -89,6 +98,11 @@ class TestDriveFileUploader final : public DriveFileUploader {
   void ReportFolderCreationResult(
       DriveFolderCompletionCallback completion_callback,
       DriveFolderResult folder_creation_result);
+  // Calls `completion_callback` with `client_folder_result` and calls
+  // `quit_closure_`.
+  void ReportClientFolderResult(
+      DriveFolderCompletionCallback completion_callback,
+      DriveFolderResult client_folder_result);
   // Calls `progress_callback` with `file_upload_progress` and calls
   // `quit_closure_`.
   void ReportFileUploadProgress(
@@ -108,6 +122,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Run quit closures.
   void RunSearchFolderQuitClosure();
   void RunCreateFolderQuitClosure();
+  void RunFetchClientFolderQuitClosure();
   void RunUploadFileProgressQuitClosure();
   void RunUploadFileCompletionQuitClosure();
   void RunFetchStorageQuotaQuitClosure();
@@ -117,6 +132,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Values passed to `DriveFileUploader` query methods.
   NSString* searched_folder_name_;
   NSString* created_folder_name_;
+  NSString* fetched_client_folder_name_;
   NSURL* uploaded_file_url_;
   NSString* uploaded_file_name_;
   NSString* uploaded_file_mime_type_;
@@ -127,6 +143,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // reported instead.
   std::optional<DriveFolderResult> folder_search_result_;
   std::optional<DriveFolderResult> folder_creation_result_;
+  std::optional<DriveFolderResult> client_folder_result_;
   std::vector<DriveFileUploadProgress> file_upload_progress_elements_;
   std::optional<DriveFileUploadResult> file_upload_result_;
   std::optional<DriveStorageQuotaResult> storage_quota_result_;
@@ -134,6 +151,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Quit closures.
   base::RepeatingClosure search_folder_quit_closure_ = base::DoNothing();
   base::RepeatingClosure create_folder_quit_closure_ = base::DoNothing();
+  base::RepeatingClosure fetch_client_folder_quit_closure_ = base::DoNothing();
   base::RepeatingClosure upload_file_progress_quit_closure_ = base::DoNothing();
   base::RepeatingClosure upload_file_completion_quit_closure_ =
       base::DoNothing();

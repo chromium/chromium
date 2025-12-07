@@ -189,4 +189,15 @@ celt_pitch_xcorr_c(const opus_val16 *_x, const opus_val16 *_y,
 # define celt_pitch_xcorr celt_pitch_xcorr_c
 #endif
 
+#ifdef NON_STATIC_COMB_FILTER_CONST_C
+void comb_filter_const_c(opus_val32 *y, opus_val32 *x, int T, int N,
+                         opus_val16 g10, opus_val16 g11, opus_val16 g12);
+#endif
+
+#ifndef OVERRIDE_COMB_FILTER_CONST
+# define comb_filter_const(y, x, T, N, g10, g11, g12, arch) \
+    ((void)(arch),comb_filter_const_c(y, x, T, N, g10, g11, g12))
+#endif
+
+
 #endif

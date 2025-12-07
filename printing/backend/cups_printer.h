@@ -14,7 +14,6 @@
 
 #include "base/component_export.h"
 #include "printing/backend/cups_deleters.h"
-#include "url/gurl.h"
 
 namespace printing {
 

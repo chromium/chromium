@@ -19,18 +19,9 @@ static const char kSupportedNetworks[] = "supportedNetworks";
 
 }  // namespace
 
-PaymentMethodData::PaymentMethodData() {}
+PaymentMethodData::PaymentMethodData() = default;
 PaymentMethodData::PaymentMethodData(const PaymentMethodData& other) = default;
 PaymentMethodData::~PaymentMethodData() = default;
-
-bool PaymentMethodData::operator==(const PaymentMethodData& other) const {
-  return supported_method == other.supported_method && data == other.data &&
-         supported_networks == other.supported_networks;
-}
-
-bool PaymentMethodData::operator!=(const PaymentMethodData& other) const {
-  return !(*this == other);
-}
 
 bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
   supported_networks.clear();
@@ -47,9 +38,7 @@ bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
   // version and attempt to parse supportedNetworks.
   const base::Value::Dict* data_dict = dict.FindDict(kMethodDataData);
   if (data_dict) {
-    std::string json_data;
-    base::JSONWriter::Write(*data_dict, &json_data);
-    data = json_data;
+    data = base::WriteJson(*data_dict).value_or("");
     const base::Value::List* supported_networks_list =
         data_dict->FindList(kSupportedNetworks);
     if (supported_networks_list) {

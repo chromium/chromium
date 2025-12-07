@@ -13,14 +13,14 @@
 #include "chrome/browser/wallet/android/jni_headers/BoardingPassBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace wallet {
 
 namespace {
 base::OnceCallback<void(const std::vector<std::string>&)> AdaptCallbackForJava(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jcallback) {
   auto adaptor = [](const base::android::JavaRef<jobject>& jcallback,
                     const std::vector<std::string>& result) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -35,14 +35,14 @@ base::OnceCallback<void(const std::vector<std::string>&)> AdaptCallbackForJava(
 
 static jboolean JNI_BoardingPassBridge_ShouldDetect(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jurl) {
+    const JavaRef<jstring>& jurl) {
   return BoardingPassDetector::ShouldDetect(ConvertJavaStringToUTF8(env, jurl));
 }
 
 static void JNI_BoardingPassBridge_DetectBoardingPass(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jcallback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
 
@@ -53,3 +53,5 @@ static void JNI_BoardingPassBridge_DetectBoardingPass(
 }
 
 }  // namespace wallet
+
+DEFINE_JNI(BoardingPassBridge)

@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node.h"
@@ -134,7 +133,7 @@ AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator++() {
   if (map_iter_ == map_end_iter_)
     return *this;
 
-  CHECK(set_iter_ != map_iter_->second.end(), base::NotFatalUntil::M130);
+  CHECK(set_iter_ != map_iter_->second.end());
   set_iter_++;
 
   // The map pointed to by |map_end_iter_| may contain empty sets of events in
@@ -160,7 +159,7 @@ AXEventGenerator::Iterator AXEventGenerator::Iterator::operator++(int) {
 
 AXEventGenerator::TargetedEvent AXEventGenerator::Iterator::operator*() const {
   DCHECK(map_iter_ != map_end_iter_);
-  CHECK(set_iter_ != map_iter_->second.end(), base::NotFatalUntil::M130);
+  CHECK(set_iter_ != map_iter_->second.end());
   return AXEventGenerator::TargetedEvent(map_iter_->first, *set_iter_);
 }
 
@@ -169,11 +168,6 @@ bool operator==(const AXEventGenerator::Iterator& lhs,
   if (lhs.map_iter_ == lhs.map_end_iter_ && rhs.map_iter_ == rhs.map_end_iter_)
     return true;
   return lhs.map_iter_ == rhs.map_iter_ && lhs.set_iter_ == rhs.set_iter_;
-}
-
-bool operator!=(const AXEventGenerator::Iterator& lhs,
-                const AXEventGenerator::Iterator& rhs) {
-  return !(lhs == rhs);
 }
 
 void swap(AXEventGenerator::Iterator& lhs, AXEventGenerator::Iterator& rhs) {
@@ -379,8 +373,7 @@ void AXEventGenerator::OnRoleChanged(AXTree* tree,
                                      ax::mojom::Role old_role,
                                      ax::mojom::Role new_role) {
   DCHECK_EQ(tree_, tree);
-  AddEvent(node, new_role == ax::mojom::Role::kAlert ? Event::ALERT
-                                                     : Event::ROLE_CHANGED);
+  AddEvent(node, ui::IsAlert(new_role) ? Event::ALERT : Event::ROLE_CHANGED);
 }
 
 void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
@@ -395,8 +388,17 @@ void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
   AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
 
   AddEvent(node, Event::IGNORED_CHANGED);
-  if (!is_ignored_new_value)
+  if (!is_ignored_new_value) {
     AddEvent(node, Event::SUBTREE_CREATED);
+    // Fire alert events when a node with alert role becomes unignored.
+    // This handles cases where role and ignored state change simultaneously
+    // (e.g. visibility:hidden->visible + role="alert" on the same element),
+    // which don't trigger OnRoleChanged due to early returns in
+    // NotifyNodeAttributesHaveBeenChanged for ignored state transitions.
+    if (IsAlert(node->GetRole())) {
+      AddEvent(node, Event::ALERT);
+    }
+  }
   if (node->GetRole() == ax::mojom::Role::kMenu) {
     if (is_ignored_new_value) {
       AddEvent(node, Event::MENU_POPUP_END);
@@ -428,8 +430,9 @@ void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
   const bool was_in_invisible_subtree =
       !base::Contains(nodes_to_suppress_parent_changed_on_, node->id());
   if (was_in_invisible_subtree) {
-    for (auto iter = node->UnignoredChildrenBegin();
-         iter != node->UnignoredChildrenEnd(); ++iter) {
+    for (auto iter = node->UnignoredChildrenBegin(),
+              end = node->UnignoredChildrenEnd();
+         iter != end; ++iter) {
       AddEvent(iter.get(), Event::PARENT_CHANGED);
     }
   }
@@ -671,6 +674,9 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
         AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
         AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
       }
+      break;
+    case ax::mojom::IntAttribute::kDefaultActionVerb:
+      AddEvent(node, Event::DEFAULT_ACTION_VERB_CHANGED);
       break;
     default:
       break;
@@ -922,7 +928,7 @@ void AXEventGenerator::AddEventsForTesting(
 }
 
 bool AXEventGenerator::IsRemovalRelevantInLiveRegion(AXNode* node) {
-  std::string aria_relevant = node->GetStringAttribute(
+  const std::string& aria_relevant = node->GetStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveRelevant);
   if (aria_relevant.empty())
     return false;
@@ -935,7 +941,7 @@ bool AXEventGenerator::IsRemovalRelevantInLiveRegion(AXNode* node) {
 
 void AXEventGenerator::FireLiveRegionEvents(AXNode* node, bool is_removal) {
   AXNode* live_root = node;
-  std::string container_live = node->GetStringAttribute(
+  const std::string& container_live = node->GetStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveStatus);
   // Return early if not in a live region.
   if (container_live.empty() || container_live == "off")
@@ -987,7 +993,7 @@ bool CanContributeToValueOfTextfield(AXNode* target_node) {
   }
 
   // Text and line breaks contribute.
-  if (ui::IsText(target_node->GetRole())) {
+  if (IsText(target_node->GetRole())) {
     return true;
   }
 
@@ -1039,7 +1045,7 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
     if (sources_it == target_to_sources.end())
       return;
 
-    base::ranges::for_each(sources_it->second, [&](AXNodeID source_id) {
+    std::ranges::for_each(sources_it->second, [&](AXNodeID source_id) {
       AXNode* source_node = tree->GetFromId(source_id);
 
       if (!source_node || source_nodes.count(source_node) > 0)
@@ -1053,8 +1059,8 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
     });
   };
 
-  base::ranges::for_each(tree->int_reverse_relations(), callback);
-  base::ranges::for_each(tree->intlist_reverse_relations(), [&](auto& entry) {
+  std::ranges::for_each(tree->int_reverse_relations(), callback);
+  std::ranges::for_each(tree->intlist_reverse_relations(), [&](auto& entry) {
     // Explicitly exclude relationships for which an additional event on the
     // source node would cause extra noise. For example, kRadioGroupIds
     // forms relations among all radio buttons and serves little value for
@@ -1331,6 +1337,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "collapsed";
     case AXEventGenerator::Event::CONTROLS_CHANGED:
       return "controlsChanged";
+    case AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
+      return "defaultActionVerbChanged";
     case AXEventGenerator::Event::DETAILS_CHANGED:
       return "detailsChanged";
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
@@ -1341,7 +1349,7 @@ const char* ToString(AXEventGenerator::Event event) {
       return "documentSelectionChanged";
     case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       return "documentTitleChanged";
-    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
+    case AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       return "editableTextChanged";
     case AXEventGenerator::Event::ENABLED_CHANGED:
       return "enabledChanged";
@@ -1357,7 +1365,7 @@ const char* ToString(AXEventGenerator::Event event) {
       return "haspopupChanged";
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
       return "hierarchicalLevelChanged";
-    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
+    case AXEventGenerator::Event::IGNORED_CHANGED:
       return "ignoredChanged";
     case AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
       return "imageAnnotationChanged";
@@ -1383,9 +1391,9 @@ const char* ToString(AXEventGenerator::Event event) {
       return "liveStatusChanged";
     case AXEventGenerator::Event::MENU_ITEM_SELECTED:
       return "menuItemSelected";
-    case ui::AXEventGenerator::Event::MENU_POPUP_END:
+    case AXEventGenerator::Event::MENU_POPUP_END:
       return "menuPopupEnd";
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
+    case AXEventGenerator::Event::MENU_POPUP_START:
       return "menuPopupStart";
     case AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       return "multilineStateChanged";
@@ -1481,9 +1489,7 @@ AXEventGenerator::Event ParseGeneratedEvent(const char* attribute) {
   if (MaybeParseGeneratedEvent(attribute, &event))
     return event;
 
-  LOG(ERROR) << "Could not parse: " << attribute;
-  NOTREACHED_IN_MIGRATION();
-  return AXEventGenerator::Event::NONE;
+  NOTREACHED() << "Could not parse: " << attribute;
 }
 
 }  // namespace ui

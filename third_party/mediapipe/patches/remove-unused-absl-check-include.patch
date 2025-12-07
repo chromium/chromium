@@ -1,0 +1,26 @@
+From d420b3f06c788364052c9a6700812516db0d637d Mon Sep 17 00:00:00 2001
+From: Ken Rockot <rockot@google.com>
+Date: Mon, 8 Jan 2024 13:14:29 -0800
+Subject: [PATCH] Remove unused absl/log/check.h include
+
+This include is not allowed in Chromium builds. It can be removed
+because it's not used.
+---
+ .../mediapipe/src/mediapipe/framework/calculator_graph.cc        | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/calculator_graph.cc b/third_party/mediapipe/src/mediapipe/framework/calculator_graph.cc
+index 8f9e7d777febf..ccaa720487cd3 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/calculator_graph.cc
++++ b/third_party/mediapipe/src/mediapipe/framework/calculator_graph.cc
+@@ -28,7 +28,6 @@
+ #include "absl/container/flat_hash_set.h"
+ #include "absl/log/absl_check.h"
+ #include "absl/log/absl_log.h"
+-#include "absl/log/check.h"
+ #include "absl/memory/memory.h"
+ #include "absl/status/status.h"
+ #include "absl/strings/str_cat.h"
+--
+2.48.1.262.g85cc9f2d1e-goog
+

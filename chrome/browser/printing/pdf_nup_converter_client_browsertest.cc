@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -55,7 +56,8 @@ base::MappedReadOnlyRegion GetPdfRegion(const char* file_name) {
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  memcpy(pdf_region.mapping.memory(), pdf_str.data(), pdf_str.size());
+  UNSAFE_TODO(
+      memcpy(pdf_region.mapping.memory(), pdf_str.data(), pdf_str.size()));
   return pdf_region;
 }
 
@@ -66,7 +68,8 @@ base::MappedReadOnlyRegion GetBadDataRegion() {
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData));
+  UNSAFE_TODO(
+      memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData)));
   return pdf_region;
 }
 
@@ -114,7 +117,7 @@ base::span<const gfx::SizeF> GetExpectedPdfSizes(std::string_view pdf_name) {
     return kSizes;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

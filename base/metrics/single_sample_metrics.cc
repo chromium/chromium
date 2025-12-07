@@ -13,8 +13,9 @@ static SingleSampleMetricsFactory* g_factory = nullptr;
 
 // static
 SingleSampleMetricsFactory* SingleSampleMetricsFactory::Get() {
-  if (!g_factory)
+  if (!g_factory) {
     g_factory = new DefaultSingleSampleMetricsFactory();
+  }
 
   return g_factory;
 }
@@ -36,8 +37,8 @@ void SingleSampleMetricsFactory::DeleteFactoryForTesting() {
 std::unique_ptr<SingleSampleMetric>
 DefaultSingleSampleMetricsFactory::CreateCustomCountsMetric(
     const std::string& histogram_name,
-    HistogramBase::Sample min,
-    HistogramBase::Sample max,
+    HistogramBase::Sample32 min,
+    HistogramBase::Sample32 max,
     uint32_t bucket_count) {
   return std::make_unique<DefaultSingleSampleMetric>(
       histogram_name, min, max, bucket_count,
@@ -46,8 +47,8 @@ DefaultSingleSampleMetricsFactory::CreateCustomCountsMetric(
 
 DefaultSingleSampleMetric::DefaultSingleSampleMetric(
     const std::string& histogram_name,
-    HistogramBase::Sample min,
-    HistogramBase::Sample max,
+    HistogramBase::Sample32 min,
+    HistogramBase::Sample32 max,
     uint32_t bucket_count,
     int32_t flags)
     : histogram_(Histogram::FactoryGet(histogram_name,
@@ -64,12 +65,13 @@ DefaultSingleSampleMetric::DefaultSingleSampleMetric(
 
 DefaultSingleSampleMetric::~DefaultSingleSampleMetric() {
   // |histogram_| may be nullptr if bad construction parameters are given.
-  if (sample_ < 0 || !histogram_)
+  if (sample_ < 0 || !histogram_) {
     return;
+  }
   histogram_->Add(sample_);
 }
 
-void DefaultSingleSampleMetric::SetSample(HistogramBase::Sample sample) {
+void DefaultSingleSampleMetric::SetSample(HistogramBase::Sample32 sample) {
   DCHECK_GE(sample, 0);
   sample_ = sample;
 }

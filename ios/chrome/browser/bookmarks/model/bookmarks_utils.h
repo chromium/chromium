@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <set>
 #include <vector>
@@ -16,19 +18,6 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
-
-// Enum representing the internal behavior's outcome for
-// `GetDefaultBookmarkFolder()`, distinguishing the various cases depending on
-// the values in PrefService. These values are persisted to logs. Entries should
-// not be renumbered and numeric values should never be reused.
-enum class DefaultBookmarkFolderOutcomeForMetrics {
-  kUnset = 0,
-  kExistingLocalFolderSet = 1,
-  kExistingAccountFolderSet = 2,
-  kMissingLocalFolderSet = 3,
-  kMissingAccountFolderSet = 4,
-  kMaxValue = kMissingAccountFolderSet
-};
 
 // Used in the preference kIosBookmarkLastUsedFolderReceivingBookmarks.
 // It means that the user has not set a folder for bookmarks explicitly.

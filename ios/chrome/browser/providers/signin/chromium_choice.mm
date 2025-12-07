@@ -5,8 +5,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace ios {

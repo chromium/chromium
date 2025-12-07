@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_H_
 
-#include <unordered_set>
 #include <vector>
 
 #include "base/gtest_prod_util.h"

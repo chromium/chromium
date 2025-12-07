@@ -80,6 +80,7 @@ class KnownInterceptionDisclosureInfoBarDelegate
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+  infobars::InfoBarDelegate::InfobarPriority GetPriority() const override;
   std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;

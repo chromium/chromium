@@ -6,7 +6,6 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_LIST_QUERY_PROCESSOR_H_
 
 #include <cstdint>
-#include <deque>
 #include <memory>
 #include <vector>
 

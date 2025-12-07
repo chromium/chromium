@@ -8,7 +8,10 @@
 
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace content {
 
@@ -37,7 +40,7 @@ storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 TestStoragePartition::GetURLLoaderFactoryForBrowserProcess() {
-  return nullptr;
+  return test_url_loader_factory_->GetSafeWeakWrapper();
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -53,7 +56,7 @@ TestStoragePartition::GetCookieManagerForBrowserProcess() {
 void TestStoragePartition::CreateTrustTokenQueryAnswerer(
     mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
     const url::Origin& top_frame_origin) {
-  NOTREACHED_IN_MIGRATION() << "Not implemented.";
+  NOTREACHED() << "Not implemented.";
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
@@ -78,10 +81,6 @@ BackgroundSyncContext* TestStoragePartition::GetBackgroundSyncContext() {
 
 storage::FileSystemContext* TestStoragePartition::GetFileSystemContext() {
   return file_system_context_;
-}
-
-storage::DatabaseTracker* TestStoragePartition::GetDatabaseTracker() {
-  return database_tracker_;
 }
 
 DOMStorageContext* TestStoragePartition::GetDOMStorageContext() {
@@ -154,16 +153,16 @@ TestStoragePartition::GetPrivateAggregationDataModel() {
   return nullptr;
 }
 
-CookieDeprecationLabelManager*
-TestStoragePartition::GetCookieDeprecationLabelManager() {
-  return nullptr;
-}
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
   return nullptr;
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+network::mojom::DeviceBoundSessionManager*
+TestStoragePartition::GetDeviceBoundSessionManager() {
+  return device_bound_session_manager_;
+}
 
 BrowsingTopicsSiteDataManager*
 TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
@@ -262,8 +261,6 @@ void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
 void TestStoragePartition::FlushCertVerifierInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
-
-void TestStoragePartition::WaitForCodeCacheShutdownForTesting() {}
 
 void TestStoragePartition::SetNetworkContextForTesting(
     mojo::PendingRemote<network::mojom::NetworkContext>

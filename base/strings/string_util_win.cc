@@ -4,10 +4,10 @@
 
 #include "base/strings/string_util_win.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_impl_helpers.h"
 
 namespace base {
@@ -78,7 +78,7 @@ bool ContainsOnlyChars(std::wstring_view input, std::wstring_view characters) {
 }
 
 bool EqualsASCII(std::wstring_view str, std::string_view ascii) {
-  return ranges::equal(ascii, str);
+  return std::ranges::equal(ascii, str);
 }
 
 bool StartsWith(std::wstring_view str,
@@ -91,6 +91,16 @@ bool EndsWith(std::wstring_view str,
               std::wstring_view search_for,
               CompareCase case_sensitivity) {
   return internal::EndsWithT(str, search_for, case_sensitivity);
+}
+
+std::optional<std::wstring_view> RemovePrefix(std::wstring_view string,
+                                              std::wstring_view prefix,
+                                              CompareCase case_sensitivity) {
+  if (!StartsWith(string, prefix, case_sensitivity)) {
+    return std::nullopt;
+  }
+  string.remove_prefix(prefix.size());
+  return string;
 }
 
 void ReplaceFirstSubstringAfterOffset(std::wstring* str,
@@ -131,7 +141,7 @@ std::wstring JoinString(std::initializer_list<std::wstring_view> parts,
 }
 
 std::wstring ReplaceStringPlaceholders(std::wstring_view format_string,
-                                       const std::vector<std::wstring>& subst,
+                                       base::span<const std::wstring> subst,
                                        std::vector<size_t>* offsets) {
   std::optional<std::wstring> replacement =
       internal::DoReplaceStringPlaceholders(

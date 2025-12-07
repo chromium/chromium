@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappGeolocationBridge.EXTRA_NEW_LOCATION_ERROR_CALLBACK;
 
 import android.app.ActivityOptions;
@@ -23,8 +24,6 @@ import android.os.Looper;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 import androidx.browser.trusted.TrustedWebActivityService;
@@ -33,20 +32,21 @@ import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -54,11 +54,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /** A client for calling methods on a {@link TrustedWebActivityService}. */
-@Singleton
+@NullMarked
 public class TrustedWebActivityClient {
     private static final String TAG = "TWAClient";
 
@@ -81,14 +78,20 @@ public class TrustedWebActivityClient {
             "notificationPermissionRequestPendingIntent";
     private static final String EXTRA_MESSENGER = "messenger";
 
+    private static final String COMMAND_CHECK_CONTACT_PERMISSION = "checkContactPermission";
+    private static final String CONTACT_PERMISSION_RESULT = "contactPermissionResult";
+    private static final String COMMAND_FETCH_CONTACTS = "fetchContacts";
+    private static final String COMMAND_FETCH_CONTACT_ICON = "fetchContactIcon";
+    private static final String EXTRA_ON_CONTACT_FETCH_ERROR = "onContactFetchError";
+
     private final ConnectionPool mConnectionPool;
-    private final InstalledWebappPermissionManager mPermissionManager;
-    private final TrustedWebActivityUmaRecorder mRecorder;
+
+    private static @Nullable TrustedWebActivityClient sInstance;
 
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
         /** Called when the app answered with a permission setting. */
-        void onPermission(ComponentName app, @ContentSettingValues int settingValue);
+        void onPermission(ComponentName app, @ContentSetting int settingValue);
 
         /** Called when no app was found to connect to. */
         default void onNoTwaFound() {}
@@ -101,23 +104,28 @@ public class TrustedWebActivityClient {
         void onNoTwaFound();
     }
 
+    public static TrustedWebActivityClient getInstance() {
+        if (sInstance == null) sInstance = new TrustedWebActivityClient();
+        return sInstance;
+    }
+
+    public static void setInstanceForTesting(TrustedWebActivityClient connection) {
+        var oldValue = sInstance;
+        sInstance = connection;
+        ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
     /** Creates a TrustedWebActivityClient. */
-    @Inject
-    public TrustedWebActivityClient(
-            TrustedWebActivityServiceConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityUmaRecorder recorder) {
-        this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager, recorder);
+    private TrustedWebActivityClient() {
+        this(
+                TrustedWebActivityClientWrappers.wrap(
+                        TrustedWebActivityServiceConnectionPool.create(
+                                ContextUtils.getApplicationContext())));
     }
 
     /** Creates a TrustedWebActivityClient for tests. */
-    public TrustedWebActivityClient(
-            ConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityUmaRecorder recorder) {
+    public TrustedWebActivityClient(ConnectionPool connectionPool) {
         mConnectionPool = connectionPool;
-        mPermissionManager = permissionManager;
-        mRecorder = recorder;
     }
 
     /**
@@ -129,20 +137,20 @@ public class TrustedWebActivityClient {
     public boolean twaExistsForScope(Uri scope) {
         Origin origin = Origin.create(scope);
         if (origin == null) return false;
-        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = InstalledWebappPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null) return false;
         return mConnectionPool.serviceExistsForScope(scope, possiblePackages);
     }
 
     /**
      * Gets the notification permission setting of the TWA for the given origin.
+     *
      * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
     public void checkNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_category_group_general);
 
         connectAndExecute(
@@ -163,30 +171,29 @@ public class TrustedWebActivityClient {
                                 commandResult == null
                                         ? false
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
-                        mRecorder.recordExtraCommandSuccess(
+                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
                         // The command might fail if the app is too old to support it. To handle
                         // that case, fall back to the old flow.
                         if (!commandSuccess) {
                             boolean enabled = service.areNotificationsEnabled(channelName);
-                            @ContentSettingValues
+                            @ContentSetting
                             int settingValue =
-                                    enabled
-                                            ? ContentSettingValues.ALLOW
-                                            : ContentSettingValues.BLOCK;
+                                    enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
                             permissionCallback.onPermission(
                                     service.getComponentName(), settingValue);
                             return;
                         }
 
-                        @ContentSettingValues int settingValue = ContentSettingValues.BLOCK;
+                        @ContentSetting int settingValue = ContentSetting.BLOCK;
+                        assert commandResult != null;
                         @PermissionStatus
                         int permissionStatus =
                                 commandResult.getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
                         if (permissionStatus == PermissionStatus.ALLOW) {
-                            settingValue = ContentSettingValues.ALLOW;
+                            settingValue = ContentSetting.ALLOW;
                         } else if (permissionStatus == PermissionStatus.ASK) {
-                            settingValue = ContentSettingValues.ASK;
+                            settingValue = ContentSetting.ASK;
                         }
                         permissionCallback.onPermission(service.getComponentName(), settingValue);
                     }
@@ -201,13 +208,13 @@ public class TrustedWebActivityClient {
 
     /**
      * Requests notification permission for the TWA for the given url using a dialog.
+     *
      * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
     public void requestNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_category_group_general);
         connectAndExecute(
                 Uri.parse(url),
@@ -229,15 +236,16 @@ public class TrustedWebActivityClient {
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
                         PendingIntent pendingIntent =
                                 commandSuccess
-                                        ? commandResult.getParcelable(
-                                                KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
+                                        ? assumeNonNull(commandResult)
+                                                .getParcelable(
+                                                        KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
                                         : null;
-                        mRecorder.recordExtraCommandSuccess(
+                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
                                 commandSuccess && pendingIntent != null);
                         if (!commandSuccess || pendingIntent == null) {
                             permissionCallback.onPermission(
-                                    service.getComponentName(), ContentSettingValues.BLOCK);
+                                    service.getComponentName(), ContentSetting.BLOCK);
                             return;
                         }
 
@@ -245,8 +253,7 @@ public class TrustedWebActivityClient {
                                 new Handler(
                                         Looper.getMainLooper(),
                                         message -> {
-                                            @ContentSettingValues
-                                            int settingValue = ContentSettingValues.BLOCK;
+                                            @ContentSetting int settingValue = ContentSetting.BLOCK;
                                             @PermissionStatus
                                             int permissionStatus =
                                                     message.getData()
@@ -254,9 +261,9 @@ public class TrustedWebActivityClient {
                                                                     KEY_PERMISSION_STATUS,
                                                                     PermissionStatus.BLOCK);
                                             if (permissionStatus == PermissionStatus.ALLOW) {
-                                                settingValue = ContentSettingValues.ALLOW;
+                                                settingValue = ContentSetting.ALLOW;
                                             } else if (permissionStatus == PermissionStatus.ASK) {
-                                                settingValue = ContentSettingValues.ASK;
+                                                settingValue = ContentSetting.ASK;
                                             }
                                             permissionCallback.onPermission(
                                                     service.getComponentName(), settingValue);
@@ -266,8 +273,8 @@ public class TrustedWebActivityClient {
                         extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                         try {
                             ActivityOptions options = ActivityOptions.makeBasic();
-                            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
-                                    options);
+                            ApiCompatibilityUtils
+                                    .setActivityOptionsBackgroundActivityStartAllowAlways(options);
                             pendingIntent.send(
                                     ContextUtils.getApplicationContext(),
                                     0,
@@ -311,11 +318,11 @@ public class TrustedWebActivityClient {
                                                         && bundle != null
                                                         && bundle.getBoolean(
                                                                 LOCATION_PERMISSION_RESULT);
-                                        @ContentSettingValues
+                                        @ContentSetting
                                         int settingValue =
                                                 granted
-                                                        ? ContentSettingValues.ALLOW
-                                                        : ContentSettingValues.BLOCK;
+                                                        ? ContentSetting.ALLOW
+                                                        : ContentSetting.BLOCK;
                                         permissionCallback.onPermission(
                                                 service.getComponentName(), settingValue);
                                     }
@@ -341,7 +348,7 @@ public class TrustedWebActivityClient {
                         if (executionResult == null
                                 || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
                             permissionCallback.onPermission(
-                                    service.getComponentName(), ContentSettingValues.BLOCK);
+                                    service.getComponentName(), ContentSetting.BLOCK);
                         }
                     }
 
@@ -434,11 +441,11 @@ public class TrustedWebActivityClient {
                     public void onConnected(Origin origin, Connection service)
                             throws RemoteException {
                         if (!service.areNotificationsEnabled(channelDisplayName)) {
-                            mPermissionManager.updatePermission(
+                            InstalledWebappPermissionManager.updatePermission(
                                     origin,
                                     service.getComponentName().getPackageName(),
                                     ContentSettingsType.NOTIFICATIONS,
-                                    ContentSettingValues.BLOCK);
+                                    ContentSetting.BLOCK);
 
                             // Attempting to notify when notifications are disabled won't have any
                             // effect, but returning here just saves us from doing unnecessary work.
@@ -473,21 +480,13 @@ public class TrustedWebActivityClient {
     private void fallbackToIconFromServiceIfNecessary(
             NotificationBuilderBase builder, Connection service) throws RemoteException {
         if (builder.hasSmallIconForContent() && builder.hasStatusBarIconBitmap()) {
-            recordFallback(DelegatedNotificationSmallIconFallback.NO_FALLBACK);
             return;
         }
 
         int id = service.getSmallIconId();
         if (id == TrustedWebActivityService.SMALL_ICON_NOT_SET) {
-            recordFallback(DelegatedNotificationSmallIconFallback.FALLBACK_ICON_NOT_PROVIDED);
             return;
         }
-
-        recordFallback(
-                builder.hasSmallIconForContent()
-                        ? DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR
-                        : DelegatedNotificationSmallIconFallback
-                                .FALLBACK_FOR_STATUS_BAR_AND_CONTENT);
 
         Bitmap bitmap = service.getSmallIconBitmap();
         if (!builder.hasStatusBarIconBitmap()) {
@@ -498,12 +497,9 @@ public class TrustedWebActivityClient {
         }
     }
 
-    private void recordFallback(@DelegatedNotificationSmallIconFallback int fallback) {
-        mRecorder.recordDelegatedNotificationSmallIconFallback(fallback);
-    }
-
     /**
      * Cancels a notification through a Trusted Web Activity client.
+     *
      * @param scope The scope of the Service Worker that triggered the notification.
      * @param platformTag The tag of the notification to cancel.
      * @param platformId The id of the notification to cancel.
@@ -525,6 +521,117 @@ public class TrustedWebActivityClient {
                 });
     }
 
+    public void checkContactPermission(String url, PermissionCallback permissionCallback) {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        TrustedWebActivityCallback callback =
+                                new TrustedWebActivityCallback() {
+                                    private void onUiThread(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        @ContentSetting
+                                        final int settingValue =
+                                                COMMAND_CHECK_CONTACT_PERMISSION.equals(
+                                                                        callbackName)
+                                                                && bundle != null
+                                                                && bundle.getBoolean(
+                                                                        CONTACT_PERMISSION_RESULT)
+                                                        ? ContentSetting.ALLOW
+                                                        : ContentSetting.BLOCK;
+
+                                        permissionCallback.onPermission(
+                                                service.getComponentName(), settingValue);
+                                    }
+
+                                    @Override
+                                    public void onExtraCallback(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        // Hop back to the UI thread because we are on a binder
+                                        // thread.
+                                        PostTask.postTask(
+                                                TaskTraits.UI_USER_VISIBLE,
+                                                () -> onUiThread(callbackName, bundle));
+                                    }
+                                };
+
+                        Bundle result =
+                                safeSendExtraCommand(
+                                        service,
+                                        COMMAND_CHECK_CONTACT_PERMISSION,
+                                        Bundle.EMPTY,
+                                        callback);
+
+                        if (result == null || !result.getBoolean(EXTRA_COMMAND_SUCCESS)) {
+                            permissionCallback.onPermission(
+                                    service.getComponentName(), ContentSetting.BLOCK);
+                        }
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.e(TAG, "Unable to request contact permission from TWA shell.");
+                        permissionCallback.onNoTwaFound();
+                    }
+                });
+    }
+
+    public void fetchContacts(
+            String url,
+            boolean includeNames,
+            boolean includeEmails,
+            boolean includeTel,
+            boolean includeAddresses,
+            TrustedWebActivityCallback callback) {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle args = new Bundle();
+                        args.putBoolean("includeNames", includeNames);
+                        args.putBoolean("includeEmails", includeEmails);
+                        args.putBoolean("includeTel", includeTel);
+                        args.putBoolean("includeAddresses", includeAddresses);
+
+                        safeSendExtraCommand(service, COMMAND_FETCH_CONTACTS, args, callback);
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.e(TAG, "Unable to get contact data from TWA shell.");
+                        notifyContactFetchError(callback, "NoTwaFound");
+                    }
+                });
+    }
+
+    public void fetchContactIcon(
+            String url, String id, int iconSize, TrustedWebActivityCallback callback) {
+        connectAndExecute(
+                Uri.parse(url),
+                new ExecutionCallback() {
+                    @Override
+                    public void onConnected(Origin origin, Connection service)
+                            throws RemoteException {
+                        Bundle args = new Bundle();
+
+                        args.putString("id", id);
+                        args.putInt("size", iconSize);
+
+                        safeSendExtraCommand(service, COMMAND_FETCH_CONTACT_ICON, args, callback);
+                    }
+
+                    @Override
+                    public void onNoTwaFound() {
+                        Log.e(TAG, "Unable to get contact icon from TWA shell.");
+                        notifyContactFetchError(callback, "NoTwaFound");
+                    }
+                });
+    }
+
     public void connectAndExecute(Uri scope, ExecutionCallback callback) {
         Origin origin = Origin.create(scope);
         if (origin == null) {
@@ -532,7 +639,7 @@ public class TrustedWebActivityClient {
             return;
         }
 
-        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = InstalledWebappPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null || possiblePackages.isEmpty()) {
             callback.onNoTwaFound();
             return;
@@ -546,17 +653,10 @@ public class TrustedWebActivityClient {
      * that is verified for the given url. If such an Activity is found, an Intent to start that
      * Activity as a Trusted Web Activity is returned. Otherwise {@code null} is returned.
      *
-     * If multiple {@link ResolveInfo}s in the list match this criteria, the first will be chosen.
+     * <p>If multiple {@link ResolveInfo}s in the list match this criteria, the first will be
+     * chosen.
      */
-    public static @Nullable Intent createLaunchIntentForTwa(
-            Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
-        // This is ugly, but the call site for this is static and called by native.
-        TrustedWebActivityClient client =
-                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
-        return client.createLaunchIntentForTwaInternal(appContext, url, resolveInfosForUrl);
-    }
-
-    private @Nullable Intent createLaunchIntentForTwaInternal(
+    public @Nullable Intent createLaunchIntentForTwa(
             Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
         Origin origin = Origin.create(url);
         if (origin == null) return null;
@@ -567,7 +667,7 @@ public class TrustedWebActivityClient {
         ComponentName componentName =
                 searchVerifiedApps(
                         appContext.getPackageManager(),
-                        mPermissionManager.getAllDelegateApps(origin),
+                        InstalledWebappPermissionManager.getAllDelegateApps(origin),
                         resolveInfosForUrl);
 
         if (componentName == null) return null;
@@ -581,9 +681,9 @@ public class TrustedWebActivityClient {
     }
 
     private static @Nullable ComponentName searchVerifiedApps(
-            @NonNull PackageManager pm,
+            PackageManager pm,
             @Nullable Set<Token> verifiedPackages,
-            @NonNull List<ResolveInfo> resolveInfosForUrl) {
+            List<ResolveInfo> resolveInfosForUrl) {
         if (verifiedPackages == null || verifiedPackages.isEmpty()) return null;
 
         for (ResolveInfo info : resolveInfosForUrl) {
@@ -605,11 +705,17 @@ public class TrustedWebActivityClient {
         callback.onExtraCallback(EXTRA_NEW_LOCATION_ERROR_CALLBACK, error);
     }
 
+    private void notifyContactFetchError(TrustedWebActivityCallback callback, String message) {
+        Bundle error = new Bundle();
+        error.putString("message", message);
+        callback.onExtraCallback(EXTRA_ON_CONTACT_FETCH_ERROR, error);
+    }
+
     private @Nullable Bundle safeSendExtraCommand(
             Connection service,
             String commandName,
             Bundle args,
-            TrustedWebActivityCallback callback) {
+            @Nullable TrustedWebActivityCallback callback) {
         try {
             return service.sendExtraCommand(commandName, args, callback);
         } catch (Exception e) {

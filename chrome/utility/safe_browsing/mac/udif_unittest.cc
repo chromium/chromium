@@ -11,6 +11,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -55,7 +56,8 @@ struct UDIFTestCase {
   // The disk image file to open.
   const char* file_name;
 
-  base::span<const std::string_view> expected_partitions;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const std::string_view> expected_partitions;
 
   // A bitmask of ExpectedResults. As the parser currently only supports
   // certain UDIF features, this is used to properly test expectations.
@@ -153,7 +155,8 @@ TEST_P(UDIFParserTest, ParseUDIF) {
       HFSPlusVolumeHeader alternate_header = {0};
       EXPECT_TRUE(stream->ReadType(alternate_header));
 
-      EXPECT_EQ(0, memcmp(&header, &alternate_header, sizeof(header)));
+      EXPECT_EQ(base::byte_span_from_ref(header),
+                base::byte_span_from_ref(alternate_header));
       EXPECT_EQ(kHFSPlusSigWord, OSSwapBigToHostInt16(header.signature));
     }
 

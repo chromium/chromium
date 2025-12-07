@@ -18,6 +18,7 @@
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
@@ -40,8 +41,17 @@ AwComponentUpdaterConfigurator::AwComponentUpdaterConfigurator(
           component_updater::ComponentUpdaterCommandLineConfigPolicy(cmdline),
           false),
       pref_service_(pref_service),
-      persisted_data_(
-          update_client::CreatePersistedData(pref_service, nullptr)) {}
+      persisted_data_(update_client::CreatePersistedData(
+          base::BindRepeating(
+              [](PrefService* pref_service) { return pref_service; },
+              pref_service),
+          nullptr)) {
+  base::FilePath path;
+  crx_cache_ = base::MakeRefCounted<update_client::CrxCache>(
+      base::android::GetCacheDirectory(&path)
+          ? std::optional<base::FilePath>(path.AppendASCII("webview_crx_cache"))
+          : std::nullopt);
+}
 
 AwComponentUpdaterConfigurator::~AwComponentUpdaterConfigurator() = default;
 
@@ -52,8 +62,6 @@ base::TimeDelta AwComponentUpdaterConfigurator::InitialDelay() const {
   // WebView has a short list of components and components registration happens
   // in an android background service so we want to start the update as soon as
   // possible.
-  // TODO(crbug.com/40750670): get rid of dependency in initial delay for
-  // WebView.
   return base::Seconds(10);
 }
 
@@ -139,8 +147,9 @@ AwComponentUpdaterConfigurator::GetCrxDownloaderFactory() {
 scoped_refptr<update_client::UnzipperFactory>
 AwComponentUpdaterConfigurator::GetUnzipperFactory() {
   if (!unzip_factory_) {
-    unzip_factory_ =
-        base::MakeRefCounted<update_client::InProcessUnzipperFactory>();
+    unzip_factory_ = base::MakeRefCounted<
+        update_client::InProcessUnzipperFactory>(
+        update_client::InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE);
   }
   return unzip_factory_;
 }
@@ -152,10 +161,6 @@ AwComponentUpdaterConfigurator::GetPatcherFactory() {
         base::MakeRefCounted<update_client::InProcessPatcherFactory>();
   }
   return patch_factory_;
-}
-
-bool AwComponentUpdaterConfigurator::EnabledDeltas() const {
-  return configurator_impl_.EnabledDeltas();
 }
 
 bool AwComponentUpdaterConfigurator::EnabledBackgroundDownloader() const {
@@ -201,13 +206,9 @@ scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(
                                                               pref_service);
 }
 
-std::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
-    const {
-  base::FilePath path;
-  return base::android::GetCacheDirectory(&path)
-             ? std::optional<base::FilePath>(
-                   path.AppendASCII(("webview_crx_cache")))
-             : std::nullopt;
+scoped_refptr<update_client::CrxCache>
+AwComponentUpdaterConfigurator::GetCrxCache() const {
+  return crx_cache_;
 }
 
 bool AwComponentUpdaterConfigurator::IsConnectionMetered() const {

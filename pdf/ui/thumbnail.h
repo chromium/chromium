@@ -9,6 +9,10 @@
 #include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace gfx {
+class SizeF;
+}
+
 namespace chrome_pdf {
 
 class Thumbnail;
@@ -17,7 +21,13 @@ using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 class Thumbnail final {
  public:
-  Thumbnail(const gfx::Size& page_size, float device_pixel_ratio);
+  // This is the equivalent to Thumbnail(...).image_size(), without the need to
+  // allocate memory for `image_data_`.
+  static gfx::Size CalculateImageSize(const gfx::SizeF& page_size,
+                                      float device_pixel_ratio);
+
+  // `page_size` is in points.
+  Thumbnail(const gfx::SizeF& page_size, float device_pixel_ratio);
   Thumbnail(Thumbnail&& other) noexcept;
   Thumbnail& operator=(Thumbnail&& other) noexcept;
   ~Thumbnail();
@@ -25,6 +35,8 @@ class Thumbnail final {
   float device_pixel_ratio() const { return device_pixel_ratio_; }
 
   int stride() const { return stride_; }
+
+  bool should_render_blank() const { return should_render_blank_; }
 
   const gfx::Size& image_size() const { return image_size_; }
 
@@ -44,6 +56,7 @@ class Thumbnail final {
   float device_pixel_ratio_;
 
   gfx::Size image_size_;  // In pixels.
+  bool should_render_blank_;  // True when the page size is empty.
   int stride_;
   base::Value::BlobStorage image_data_;
 };

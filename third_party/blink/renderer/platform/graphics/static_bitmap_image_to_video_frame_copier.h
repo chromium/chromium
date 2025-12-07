@@ -11,7 +11,7 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace media {
 class VideoFrame;

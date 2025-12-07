@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_COMPARISONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_COMPARISONS_H_
 
+#include <array>
 #include <bitset>
 
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -19,8 +20,8 @@ class MODULES_EXPORT GamepadStateCompareResult {
   STACK_ALLOCATED();
 
  public:
-  GamepadStateCompareResult(const HeapVector<Member<Gamepad>> old_gamepads,
-                            const HeapVector<Member<Gamepad>> new_gamepads,
+  GamepadStateCompareResult(const HeapVector<Member<Gamepad>>& old_gamepads,
+                            const HeapVector<Member<Gamepad>>& new_gamepads,
                             bool compare_all_axes,
                             bool compare_all_buttons);
   ~GamepadStateCompareResult() = default;
@@ -31,14 +32,24 @@ class MODULES_EXPORT GamepadStateCompareResult {
   // True if the corresponding gamepad event should be dispatched.
   bool IsGamepadConnected(size_t pad_index) const;
   bool IsGamepadDisconnected(size_t pad_index) const;
+  bool HasGamepadInputChanged(size_t pad_index) const;
   bool IsAxisChanged(size_t pad_index, size_t axis_index) const;
   bool IsButtonChanged(size_t pad_index, size_t button_index) const;
   bool IsButtonDown(size_t pad_index, size_t button_index) const;
   bool IsButtonUp(size_t pad_index, size_t button_index) const;
+  bool IsTouchChanged(size_t pad_index, size_t touch_index) const;
+
+  // Returns indices of all axes/buttons/touches that changed for the given
+  // gamepad.
+  Vector<int> GetChangedAxes(size_t pad_index) const;
+  Vector<int> GetChangedButtons(size_t pad_index) const;
+  Vector<int> GetButtonsPressed(size_t pad_index) const;
+  Vector<int> GetButtonsReleased(size_t pad_index) const;
+  Vector<int> GetChangedTouches(size_t pad_index) const;
 
  private:
-  bool CompareGamepads(const HeapVector<Member<Gamepad>> old_gamepads,
-                       const HeapVector<Member<Gamepad>> new_gamepads,
+  bool CompareGamepads(const HeapVector<Member<Gamepad>>& old_gamepads,
+                       const HeapVector<Member<Gamepad>>& new_gamepads,
                        bool compare_all_axes,
                        bool compare_all_buttons);
   bool CompareAxes(Gamepad* old_gamepad,
@@ -49,19 +60,29 @@ class MODULES_EXPORT GamepadStateCompareResult {
                       Gamepad* new_gamepad,
                       size_t gamepad_index,
                       bool compare_all);
-  bool CompareTouches(Gamepad* old_gamepad, Gamepad* new_gamepad);
+  bool CompareTouches(Gamepad* old_gamepad,
+                      Gamepad* new_gamepad,
+                      size_t gamepad_index);
 
   bool any_change_ = false;
   std::bitset<device::Gamepads::kItemsLengthCap> gamepad_connected_;
   std::bitset<device::Gamepads::kItemsLengthCap> gamepad_disconnected_;
-  std::bitset<device::Gamepad::kAxesLengthCap>
-      axis_changed_[device::Gamepads::kItemsLengthCap];
-  std::bitset<device::Gamepad::kButtonsLengthCap>
-      button_changed_[device::Gamepads::kItemsLengthCap];
-  std::bitset<device::Gamepad::kButtonsLengthCap>
-      button_down_[device::Gamepads::kItemsLengthCap];
-  std::bitset<device::Gamepad::kButtonsLengthCap>
-      button_up_[device::Gamepads::kItemsLengthCap];
+  std::bitset<device::Gamepads::kItemsLengthCap> gamepad_input_changed_;
+  std::array<std::bitset<device::Gamepad::kAxesLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      axis_changed_;
+  std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      button_changed_;
+  std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      button_down_;
+  std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      button_up_;
+  std::array<std::bitset<device::Gamepad::kTouchEventsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      touch_changed_;
 };
 
 class MODULES_EXPORT GamepadComparisons {
@@ -70,7 +91,7 @@ class MODULES_EXPORT GamepadComparisons {
  public:
   // Inspect the gamepad state in |gamepads| and return true if any gamepads
   // have a user activation gesture.
-  static bool HasUserActivation(const HeapVector<Member<Gamepad>> gamepads);
+  static bool HasUserActivation(const HeapVector<Member<Gamepad>>& gamepads);
 
   // Given the connection state of a gamepad in consecutive samples and whether
   // the ID string changed, return whether the gamepad was newly connected in
@@ -86,8 +107,8 @@ class MODULES_EXPORT GamepadComparisons {
   // is true, all axes or buttons will be compared. Otherwise, the comparison
   // will short-circuit after the first difference.
   static GamepadStateCompareResult Compare(
-      const HeapVector<Member<Gamepad>> old_gamepads,
-      const HeapVector<Member<Gamepad>> new_gamepads,
+      const HeapVector<Member<Gamepad>>& old_gamepads,
+      const HeapVector<Member<Gamepad>>& new_gamepads,
       bool compare_all_axes,
       bool compare_all_buttons);
 };

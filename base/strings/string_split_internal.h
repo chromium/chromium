@@ -37,8 +37,9 @@ static std::vector<OutputStringType> SplitStringT(T str,
                                                   WhitespaceHandling whitespace,
                                                   SplitResult result_type) {
   std::vector<OutputStringType> result;
-  if (str.empty())
+  if (str.empty()) {
     return result;
+  }
 
   size_t start = 0;
   while (start != std::basic_string<CharT>::npos) {
@@ -53,11 +54,13 @@ static std::vector<OutputStringType> SplitStringT(T str,
       start = end + 1;
     }
 
-    if (whitespace == TRIM_WHITESPACE)
+    if (whitespace == TRIM_WHITESPACE) {
       piece = TrimString(piece, WhitespaceForType<CharT>(), TRIM_ALL);
+    }
 
-    if (result_type == SPLIT_WANT_ALL || !piece.empty())
+    if (result_type == SPLIT_WANT_ALL || !piece.empty()) {
       result.emplace_back(piece);
+    }
   }
   return result;
 }
@@ -86,11 +89,13 @@ std::vector<OutputStringType> SplitStringUsingSubstrT(
                      ? input.substr(begin_index)
                      : input.substr(begin_index, end_index - begin_index);
 
-    if (whitespace == TRIM_WHITESPACE)
+    if (whitespace == TRIM_WHITESPACE) {
       term = TrimString(term, WhitespaceForType<CharT>(), TRIM_ALL);
+    }
 
-    if (result_type == SPLIT_WANT_ALL || !term.empty())
+    if (result_type == SPLIT_WANT_ALL || !term.empty()) {
       result.emplace_back(term);
+    }
   }
 
   return result;

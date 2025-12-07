@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_H_
 
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
+#include "chrome/browser/ui/webui/password_manager/password_manager_ui_handler.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 namespace base {
@@ -20,7 +26,23 @@ namespace extensions {
 class PasswordsPrivateDelegate;
 }
 
-class PasswordManagerUI : public TopChromeWebUIController,
+class PasswordManagerUI;
+
+class PasswordManagerUIConfig
+    : public content::DefaultWebUIConfig<PasswordManagerUI> {
+ public:
+  PasswordManagerUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           password_manager::kChromeUIPasswordManagerHost) {}
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
+
+class PasswordManagerUI : public ui::MojoWebUIController,
+                          public password_manager::mojom::PageHandlerFactory,
                           public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:
   explicit PasswordManagerUI(content::WebUI* web_ui);
@@ -40,12 +62,27 @@ class PasswordManagerUI : public TopChromeWebUIController,
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAddShortcutCustomEventId);
 
   void BindInterface(
+      mojo::PendingReceiver<password_manager::mojom::PageHandlerFactory>
+          receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
  private:
   scoped_refptr<extensions::PasswordsPrivateDelegate>
       passwords_private_delegate_;
+
+  // password_manager::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<password_manager::mojom::Page> page,
+      mojo::PendingReceiver<password_manager::mojom::PageHandler> receiver)
+      override;
+
+  std::unique_ptr<PasswordManagerUIHandler> password_manager_ui_handler_;
+
+  mojo::Receiver<password_manager::mojom::PageHandlerFactory>
+      password_manager_page_factory_receiver_{this};
 
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(

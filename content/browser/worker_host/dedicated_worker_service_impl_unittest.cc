@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
@@ -23,7 +22,6 @@
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
@@ -56,25 +54,18 @@ class MockDedicatedWorker
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
             worker_process_id, /*creator=*/render_frame_host_id,
             render_frame_host_id, blink::StorageKey::CreateFirstParty(origin),
-            net::IsolationInfo::CreateTransient(),
+            net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
             network::mojom::ClientSecurityState::New(),
-            coep_reporter->GetWeakPtr(), coep_reporter->GetWeakPtr()),
+            coep_reporter->GetWeakPtr()),
         factory_.BindNewPipeAndPassReceiver());
 
-    if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-      factory_->CreateWorkerHostAndStartScriptLoad(
-          blink::DedicatedWorkerToken(),
-          /*script_url=*/GURL(), network::mojom::CredentialsMode::kSameOrigin,
-          blink::mojom::FetchClientSettingsObject::New(),
-          mojo::PendingRemote<blink::mojom::BlobURLToken>(),
-          receiver_.BindNewPipeAndPassRemote(),
-          net::StorageAccessApiStatus::kNone);
-    } else {
-      factory_->CreateWorkerHost(
-          blink::DedicatedWorkerToken(), /*script_url=*/GURL(),
-          browser_interface_broker_.BindNewPipeAndPassReceiver(),
-          remote_host_.BindNewPipeAndPassReceiver(), base::DoNothing());
-    }
+    factory_->CreateWorkerHostAndStartScriptLoad(
+        blink::DedicatedWorkerToken(),
+        /*script_url=*/GURL(), network::mojom::CredentialsMode::kSameOrigin,
+        blink::mojom::FetchClientSettingsObject::New(),
+        mojo::PendingRemote<blink::mojom::BlobURLToken>(),
+        receiver_.BindNewPipeAndPassRemote(),
+        net::StorageAccessApiStatus::kNone);
   }
 
   ~MockDedicatedWorker() override = default;
@@ -86,7 +77,8 @@ class MockDedicatedWorker
   void OnWorkerHostCreated(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
-      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>) override {
+      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>,
+      const url::Origin&) override {
     browser_interface_broker_.Bind(std::move(browser_interface_broker));
   }
 
@@ -100,11 +92,14 @@ class MockDedicatedWorker
           subresource_loader_updater,
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host) override {}
+          back_forward_cache_controller_host,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          dip_reporting_observer) override {}
   void OnScriptLoadStartFailed() override {}
 
  private:
-  // Only used with the kPlzDedicatedWorker feature.
   mojo::Receiver<blink::mojom::DedicatedWorkerHostFactoryClient> receiver_{
       this};
 
@@ -116,8 +111,7 @@ class MockDedicatedWorker
 };
 
 class DedicatedWorkerServiceImplTest
-    : public RenderViewHostImplTestHarness,
-      public testing::WithParamInterface<bool> {
+    : public RenderViewHostImplTestHarness {
  public:
   DedicatedWorkerServiceImplTest() = default;
   ~DedicatedWorkerServiceImplTest() override = default;
@@ -129,8 +123,6 @@ class DedicatedWorkerServiceImplTest
       const DedicatedWorkerServiceImplTest& other) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kPlzDedicatedWorker, GetParam());
     RenderViewHostImplTestHarness::SetUp();
     browser_context_ = std::make_unique<TestBrowserContext>();
   }
@@ -154,9 +146,6 @@ class DedicatedWorkerServiceImplTest
   }
 
  private:
-  // Controls the state of the blink::features::kPlzDedicatedWorker feature.
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<TestBrowserContext> browser_context_;
 };
 
@@ -227,7 +216,7 @@ class TestDedicatedWorkerServiceObserver
       dedicated_worker_infos_;
 };
 
-TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
+TEST_F(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   // Set up the observer.
   TestDedicatedWorkerServiceObserver observer;
   base::ScopedObservation<DedicatedWorkerService,
@@ -245,7 +234,8 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
 
   // Create the dedicated worker.
   const DedicatedWorkerCreator creator(render_frame_host->GetGlobalId());
-  const int render_process_host_id = render_frame_host->GetProcess()->GetID();
+  const int render_process_host_id =
+      render_frame_host->GetProcess()->GetDeprecatedID();
   const auto origin = url::Origin::Create(kUrl);
   auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
       render_process_host_id, render_frame_host->GetGlobalId(), origin);
@@ -284,9 +274,5 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   // The service sent a OnBeforeWorkerTerminated() notification.
   EXPECT_TRUE(observer.dedicated_worker_infos().empty());
 }
-
-// Runs DedicatedWorkerServiceImplTest with both the enabled and disabled state
-// of the kPlzDedicatedWorker feature.
-INSTANTIATE_TEST_SUITE_P(, DedicatedWorkerServiceImplTest, testing::Bool());
 
 }  // namespace content

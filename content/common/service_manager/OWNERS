@@ -1,7 +1,0 @@
-rockot@google.com
-
-per-file *_messages*.h=set noparent
-per-file *_messages*.h=file://ipc/SECURITY_OWNERS
-
-per-file *_param_traits*.*=set noparent
-per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS

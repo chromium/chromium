@@ -1,0 +1,117 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* Variable declarations. */
+  --ntp-promo-background: var(--color-sys-surface3);
+  --ntp-promo-background-hovered: var(--color-sys-state-hover-on-subtle);
+  --ntp-promo-border-radius: 12px;
+  --ntp-promo-element-spacing: 16px;
+  --ntp-promo-foreground: var(--color-sys-on-surface);
+  --ntp-promo-icon-background: var(--color-sys-tonal-container);
+  --ntp-promo-icon-foreground: var(--color-sys-on-tonal-container);
+  --ntp-promo-action-icon-foreground: var(--color-sys-on-surface-subtle);
+  --ntp-promo-icon-border-radius: 8px;
+  --ntp-promo-icon-size: 40px;
+  --ntp-promo-icon-image-size: 20px;
+  --ntp-promo-padding: 16px;
+  --ntp-promo-text-line-height: 20px;
+  --ntp-promo-text-width: 382px;
+  --ntp-promo-text-width-multiple-promos: 256px;
+  --ntp-promo-spacing: 8px;
+
+  align-items: center;
+  /* Display is set to block on promo loaded. */
+  display: none;
+  justify-content: center;
+  margin-block-start: 30px;
+  margin-inline: 40px;
+  position: relative;
+}
+
+#promos {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--ntp-promo-spacing);
+  justify-content: center;
+}
+
+/* This styling includes overriding default <button> properties. */
+#promo {
+  align-items: center;
+  align-self: stretch;
+  background-color: var(--ntp-promo-background);
+  border: none;
+  border-radius: var(--ntp-promo-border-radius);
+  color: var(--ntp-promo-foreground);
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  font: inherit;
+  gap: var(--ntp-promo-element-spacing);
+  padding: var(--ntp-promo-padding);
+  position: relative;
+  text-align: start;
+}
+
+#promo:hover {
+  background-color: var(--ntp-promo-background-hovered);
+}
+
+#bodyIcon {
+  --iron-icon-height: var(--ntp-promo-icon-image-size);
+  --iron-icon-width: var(--ntp-promo-icon-image-size);
+
+  background-color: var(--ntp-promo-icon-background);
+  border-radius: var(--ntp-promo-icon-border-radius);
+  box-sizing: border-box;
+  color: var(--ntp-promo-icon-foreground);
+  display: inline-block;
+  height: var(--ntp-promo-icon-size);
+  margin: 0;
+  padding: calc(
+    (var(--ntp-promo-icon-size) - var(--ntp-promo-icon-image-size)) / 2
+  );
+  text-align: center;
+  width: var(--ntp-promo-icon-size);
+  flex: none;
+}
+
+#bodyText {
+  display: inline-block;
+  line-height: var(--ntp-promo-text-line-height);
+  margin-block: 0;
+  vertical-align: middle;
+  width: var(--ntp-promo-text-width);
+
+}
+
+#bodyText.multiplePromos {
+  width: var(--ntp-promo-text-width-multiple-promos);
+}
+
+#actionIcon {
+  --iron-icon-height: var(--ntp-promo-icon-image-size);
+  --iron-icon-width: var(--ntp-promo-icon-image-size);
+
+  background-color: transparent;
+  box-sizing: border-box;
+  color: var(--ntp-promo-action-icon-foreground);
+  display: inline-block;
+  flex: none;
+  height: var(--ntp-promo-icon-image-size);
+  margin: 0;
+  text-align: center;
+  width: var(--ntp-promo-icon-image-size);
+}
+
+#actionIcon:dir(rtl) {
+  transform: scaleX(-1);
+}

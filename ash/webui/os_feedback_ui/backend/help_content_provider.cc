@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/containers/contains.h"
@@ -22,6 +23,7 @@
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -76,7 +78,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-              email: "cros-feedback-app@google.com"
+              email: "cros-device-enablement@google.com"
             }
           }
           user_data {
@@ -198,8 +200,7 @@ std::string ConvertSearchRequestToJson(
     requested_results += kExtraItemsInRawResponse;
   }
   request_dict.Set("max_results", base::NumberToString(requested_results));
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
+  std::string request_content = base::WriteJson(request_dict).value_or("");
   VLOG(2) << request_content;
   return request_content;
 }
@@ -322,7 +323,7 @@ void HelpContentProvider::OnHelpContentSearchResponse(
     const uint32_t max_results,
     GetHelpContentsCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (IsLoaderSuccessful(url_loader.get()) && response_body) {
     DVLOG(2) << "HelpContentProvider response body: " << *response_body;
     // Send the JSON string to a dedicated service for safe parsing.

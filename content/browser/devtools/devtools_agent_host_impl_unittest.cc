@@ -12,9 +12,9 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/input/input_constants.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
-#include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -160,7 +160,7 @@ TEST_F(DevToolsAgentHostImplTest, NoUnresponsiveDialogInInspectedContents) {
 
   // Start a timeout.
   inspected_rvh->GetWidget()->StartInputEventAckTimeout();
-  task_environment()->FastForwardBy(kHungRendererDelay +
+  task_environment()->FastForwardBy(input::kHungRendererDelay +
                                     base::Milliseconds(10));
   EXPECT_FALSE(delegate.renderer_unresponsive_received());
 
@@ -168,7 +168,7 @@ TEST_F(DevToolsAgentHostImplTest, NoUnresponsiveDialogInInspectedContents) {
   client_host.Close();
   // Start a timeout.
   inspected_rvh->GetWidget()->StartInputEventAckTimeout();
-  task_environment()->FastForwardBy(kHungRendererDelay +
+  task_environment()->FastForwardBy(input::kHungRendererDelay +
                                     base::Milliseconds(10));
   EXPECT_TRUE(delegate.renderer_unresponsive_received());
 
@@ -237,15 +237,12 @@ TEST_F(DevToolsAgentHostImplTest, TestExternalProxy) {
   TestDevToolsClientHost client_host;
   client_host.InspectAgentHost(agent_host.get());
 
-  agent_host->DispatchProtocolMessage(
-      &client_host,
-      base::as_bytes(base::make_span("message1", strlen("message1"))));
-  agent_host->DispatchProtocolMessage(
-      &client_host,
-      base::as_bytes(base::make_span("message2", strlen("message2"))));
-  agent_host->DispatchProtocolMessage(
-      &client_host,
-      base::as_bytes(base::make_span("message2", strlen("message2"))));
+  agent_host->DispatchProtocolMessage(&client_host,
+                                      base::byte_span_from_cstring("message1"));
+  agent_host->DispatchProtocolMessage(&client_host,
+                                      base::byte_span_from_cstring("message2"));
+  agent_host->DispatchProtocolMessage(&client_host,
+                                      base::byte_span_from_cstring("message2"));
 
   client_host.Close();
 }

@@ -16,10 +16,10 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 
 namespace {
@@ -44,10 +44,10 @@ FakeTextCheckingCompletion::FakeTextCheckingCompletion(
     FakeTextCheckingResult* result)
     : result_(result) {}
 
-FakeTextCheckingCompletion::~FakeTextCheckingCompletion() {}
+FakeTextCheckingCompletion::~FakeTextCheckingCompletion() = default;
 
 void FakeTextCheckingCompletion::DidFinishCheckingText(
-    const blink::WebVector<blink::WebTextCheckingResult>& results) {
+    const std::vector<blink::WebTextCheckingResult>& results) {
   ++result_->completion_count_;
   result_->results_ = results;
 }
@@ -125,8 +125,11 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 
 void TestingSpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
+    blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+        should_force_refresh,
     std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
-  SpellCheckProvider::RequestTextChecking(text, std::move(completion));
+  SpellCheckProvider::RequestTextChecking(text, should_force_refresh,
+                                          std::move(completion));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -173,40 +176,36 @@ void TestingSpellCheckProvider::RequestTextCheck(
   text_check_requests_.push_back(std::make_pair(text, std::move(callback)));
 }
 
+#if BUILDFLAG(ENABLE_SPELLING_SERVICE)
 void TestingSpellCheckProvider::CheckSpelling(const std::u16string&,
                                               CheckSpellingCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
                                                    FillSuggestionListCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
+#endif  // BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
 void TestingSpellCheckProvider::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
-    std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                            /*enable=*/false);
-    return;
-  }
-
-  NOTREACHED_IN_MIGRATION();
+  std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
+                          /*enable=*/false);
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if BUILDFLAG(IS_ANDROID)
 void TestingSpellCheckProvider::DisconnectSessionBridge() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 
 void TestingSpellCheckProvider::SetLastResults(
     const std::u16string last_request,
-    blink::WebVector<blink::WebTextCheckingResult>& last_results) {
+    std::vector<blink::WebTextCheckingResult>& last_results) {
   last_request_ = last_request;
   last_results_ = last_results;
 }
@@ -242,4 +241,4 @@ base::WeakPtr<SpellCheckProvider> TestingSpellCheckProvider::GetWeakPtr() {
 
 SpellCheckProviderTest::SpellCheckProviderTest()
     : provider_(&embedder_provider_) {}
-SpellCheckProviderTest::~SpellCheckProviderTest() {}
+SpellCheckProviderTest::~SpellCheckProviderTest() = default;

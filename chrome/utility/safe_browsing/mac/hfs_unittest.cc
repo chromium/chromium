@@ -11,10 +11,12 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/dmg_test_utils.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
@@ -150,7 +152,7 @@ TEST_P(HFSFileReadTest, ReadReadme) {
   // Read the first four bytes.
   EXPECT_TRUE(stream->ReadExact(buffer));
   const uint8_t expected[] = { 'T', 'h', 'i', 's' };
-  EXPECT_EQ(0, memcmp(expected, &buffer[0], sizeof(expected)));
+  EXPECT_EQ(base::span(expected), base::span(buffer));
   buffer.clear();
 
   // Rewind back to the start.

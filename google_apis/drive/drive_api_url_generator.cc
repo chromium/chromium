@@ -64,8 +64,7 @@ const char* GetCorporaString(FilesListCorpora corpora) {
     case FilesListCorpora::ALL_TEAM_DRIVES:
       return kCorporaAllTeamDrives;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kCorporaDefault;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -102,9 +101,9 @@ GURL DriveApiUrlGenerator::GetFilesGetUrl(const std::string& file_id,
     // GURL::spec() always adds the trailing slash. Moreover, ports are
     // currently not supported.
     DCHECK(!embed_origin.has_port());
-    DCHECK(!embed_origin.has_path() || embed_origin.path() == "/");
+    DCHECK(!embed_origin.has_path() || embed_origin.GetPath() == "/");
     const std::string serialized_embed_origin =
-        embed_origin.scheme() + "://" + embed_origin.host();
+        embed_origin.GetScheme() + "://" + embed_origin.GetHost();
     url = net::AppendOrReplaceQueryParameter(
         url, "embedOrigin", serialized_embed_origin);
   }
@@ -271,8 +270,8 @@ GURL DriveApiUrlGenerator::GetInitiateUploadExistingFileUrl(
   return url;
 }
 
-GURL DriveApiUrlGenerator::GetMultipartUploadNewFileUrl(
-    bool set_modified_date) const {
+GURL DriveApiUrlGenerator::GetMultipartUploadNewFileUrl(bool set_modified_date,
+                                                        bool convert) const {
   GURL url = AddMultipartUploadParam(
       base_url_.Resolve(kDriveV2UploadNewFileUrl));
 
@@ -280,6 +279,9 @@ GURL DriveApiUrlGenerator::GetMultipartUploadNewFileUrl(
   // setModifiedDate is "false" by default.
   if (set_modified_date)
     url = net::AppendOrReplaceQueryParameter(url, "setModifiedDate", "true");
+  if (convert) {
+    url = net::AppendOrReplaceQueryParameter(url, "convert", "true");
+  }
 
   return url;
 }

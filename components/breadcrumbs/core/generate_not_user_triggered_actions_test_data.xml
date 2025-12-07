@@ -1,0 +1,87 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file contains some test actions for use in testing
+`application_breadcrumbs_not_user_actions.py`. This allows the script to be
+tested with hardcoded data (rather than the real actions.xml, which is ever
+growing), about which assertions can be made to ensure the script parses XML
+files correctly.
+
+This file contains 10 actions total, 7 of which are user-triggered and 3 of
+which are not. The longest action name is 65 characters.
+-->
+
+<actions>
+
+<action name="TestAction">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="ObsoleteAction">
+  <obsolete>
+    Deprecated
+  </obsolete>
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="ObsoleteAction2">
+  <obsolete>Deprecated</obsolete>
+  <owner>test@chromium.org</owner>
+  <owner>test@chromium.org</owner>
+  <description>
+    Description description description description description description
+    description description description description description description
+  </description>
+</action>
+
+<action name="NotUserTriggeredAction" not_user_triggered="true">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="TestAction2">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="NotUserTriggeredAction2" not_user_triggered="true">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="TestAction3">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="TestAction4">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="TestAction5" not_user_triggered="false">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action name="NotUserTriggeredActionWithLoooooooooooooooooooooooooooooooongName"
+  not_user_triggered="true">
+  <owner>test@chromium.org</owner>
+  <description>Description</description>
+</action>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Suffix"
+      label="Suffix label"/>
+  <suffix name="Suffix2"
+      label="Suffix label 2"/>
+  <affected-action name="NotUserTriggeredAction"/>
+</action-suffix>
+
+</actions>

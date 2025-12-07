@@ -84,10 +84,10 @@ using blink::xpath::Step;
 %left kPlus kMinus
 %left kOr kAnd
 %token <blink::xpath::Step::Axis> kAxisName
-%token <String> kNodeType kPI kFunctionName kLiteral
-%token <String> kVariableReference kNumber
+%token <blink::String> kNodeType kPI kFunctionName kLiteral
+%token <blink::String> kVariableReference kNumber
 %token kDotDot kSlashSlash
-%token <String> kNameTest
+%token <blink::String> kNameTest
 %token kXPathError
 
 %type <blink::Persistent<blink::xpath::LocationPath>> LocationPath
@@ -98,13 +98,13 @@ using blink::xpath::Step;
 %type <blink::Persistent<blink::xpath::Step>> DescendantOrSelf
 %type <blink::Persistent<blink::xpath::Step::NodeTest>> NodeTest
 %type <blink::Persistent<blink::xpath::Expression>> Predicate
-%type <blink::Persistent<blink::HeapVector<blink::Member<blink::xpath::Predicate>>>> OptionalPredicateList
-%type <blink::Persistent<blink::HeapVector<blink::Member<blink::xpath::Predicate>>>> PredicateList
+%type <blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>> OptionalPredicateList
+%type <blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>> PredicateList
 %type <blink::Persistent<blink::xpath::Step>> AbbreviatedStep
 %type <blink::Persistent<blink::xpath::Expression>> Expr
 %type <blink::Persistent<blink::xpath::Expression>> PrimaryExpr
 %type <blink::Persistent<blink::xpath::Expression>> FunctionCall
-%type <blink::Persistent<blink::HeapVector<blink::Member<blink::xpath::Expression>>>> ArgumentList
+%type <blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>>> ArgumentList
 %type <blink::Persistent<blink::xpath::Expression>> Argument
 %type <blink::Persistent<blink::xpath::Expression>> UnionExpr
 %type <blink::Persistent<blink::xpath::Expression>> PathExpr
@@ -203,8 +203,8 @@ Step:
     |
     kNameTest OptionalPredicateList
     {
-      AtomicString local_name;
-      AtomicString namespace_uri;
+      blink::AtomicString local_name;
+      blink::AtomicString namespace_uri;
       if (!parser_->ExpandQName($1, local_name, namespace_uri)) {
         parser_->got_namespace_error_ = true;
         YYABORT;
@@ -226,8 +226,8 @@ Step:
     |
     AxisSpecifier kNameTest OptionalPredicateList
     {
-      AtomicString local_name;
-      AtomicString namespace_uri;
+      blink::AtomicString local_name;
+      blink::AtomicString namespace_uri;
       if (!parser_->ExpandQName($2, local_name, namespace_uri)) {
         parser_->got_namespace_error_ = true;
         YYABORT;
@@ -288,7 +288,7 @@ OptionalPredicateList:
 PredicateList:
     Predicate
     {
-      $$ = blink::MakeGarbageCollected<blink::HeapVector<blink::Member<blink::xpath::Predicate>>>();
+      $$ = blink::MakeGarbageCollected<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>();
       $$->push_back(blink::MakeGarbageCollected<blink::xpath::Predicate>($1));
     }
     |
@@ -359,7 +359,7 @@ FunctionCall:
     |
     kFunctionName '(' ArgumentList ')'
     {
-      $$ = blink::xpath::CreateFunction($1, *$3);
+      $$ = blink::xpath::CreateFunction($1, $3.Get());
       if (!$$)
         YYABORT;
     }
@@ -368,7 +368,7 @@ FunctionCall:
 ArgumentList:
     Argument
     {
-      $$ = blink::MakeGarbageCollected<blink::HeapVector<blink::Member<blink::xpath::Expression>>>();
+      $$ = blink::MakeGarbageCollected<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>>();
       $$->push_back($1);
     }
     |

@@ -9,7 +9,6 @@
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace metrics {
 
@@ -27,7 +26,7 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
     DCHECK(thread_checker_.CalledOnValidThread());
   }
 
-  void SetSample(base::HistogramBase::Sample sample) override {
+  void SetSample(base::HistogramBase::Sample32 sample) override {
     DCHECK(thread_checker_.CalledOnValidThread());
     metric_->SetSample(sample);
   }
@@ -37,7 +36,7 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
   mojo::Remote<mojom::SingleSampleMetric> metric_;
 };
 
-ABSL_CONST_INIT thread_local mojo::Remote<mojom::SingleSampleMetricsProvider>*
+constinit thread_local mojo::Remote<mojom::SingleSampleMetricsProvider>*
     provider = nullptr;
 
 }  // namespace
@@ -46,13 +45,13 @@ SingleSampleMetricsFactoryImpl::SingleSampleMetricsFactoryImpl(
     CreateProviderCB create_provider_cb)
     : create_provider_cb_(std::move(create_provider_cb)) {}
 
-SingleSampleMetricsFactoryImpl::~SingleSampleMetricsFactoryImpl() {}
+SingleSampleMetricsFactoryImpl::~SingleSampleMetricsFactoryImpl() = default;
 
 std::unique_ptr<base::SingleSampleMetric>
 SingleSampleMetricsFactoryImpl::CreateCustomCountsMetric(
     const std::string& histogram_name,
-    base::HistogramBase::Sample min,
-    base::HistogramBase::Sample max,
+    base::HistogramBase::Sample32 min,
+    base::HistogramBase::Sample32 max,
     uint32_t bucket_count) {
   return CreateMetric(histogram_name, min, max, bucket_count,
                       base::HistogramBase::kUmaTargetedHistogramFlag);
@@ -65,8 +64,8 @@ void SingleSampleMetricsFactoryImpl::DestroyProviderForTesting() {
 
 std::unique_ptr<base::SingleSampleMetric>
 SingleSampleMetricsFactoryImpl::CreateMetric(const std::string& histogram_name,
-                                             base::HistogramBase::Sample min,
-                                             base::HistogramBase::Sample max,
+                                             base::HistogramBase::Sample32 min,
+                                             base::HistogramBase::Sample32 max,
                                              uint32_t bucket_count,
                                              int32_t flags) {
   mojo::PendingRemote<mojom::SingleSampleMetric> metric;

@@ -148,6 +148,11 @@ void LogVirtualCardEnrollBubbleLatencySinceUpstream(base::TimeDelta latency) {
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", latency);
 }
 
+void LogVirtualCardEnrollBubbleLatencySinceDownstream(base::TimeDelta latency) {
+  base::UmaHistogramTimes(
+      "Autofill.VirtualCardEnrollBubble.LatencySinceDownstream", latency);
+}
+
 void LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
     VirtualCardEnrollmentSource source) {
   base::UmaHistogramEnumeration(

@@ -29,12 +29,17 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
   int ThumbThickness() const override;
 
   void set_color(SkColor4f color) { color_ = color; }
+
+  int thumb_thickness() const { return thumb_thickness_; }
+  int track_start() const { return track_start_; }
+  SkColor4f color() const { return color_; }
 
  protected:
   SolidColorScrollbarLayerImpl(LayerTreeImpl* tree_impl,

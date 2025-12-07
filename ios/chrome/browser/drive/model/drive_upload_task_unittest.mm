@@ -8,10 +8,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
+#import "base/test/with_feature_override.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/test_upload_task_observer.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "net/base/url_util.h"
 #import "testing/gtest_mac.h"
@@ -21,8 +23,12 @@
 using State = UploadTask::State;
 
 // DriveUploadTask unit tests.
-class DriveUploadTaskTest : public PlatformTest {
+class DriveUploadTaskTest : public base::test::WithFeatureOverride,
+                            public PlatformTest {
  protected:
+  DriveUploadTaskTest()
+      : base::test::WithFeatureOverride(kIOSSaveToDriveClientFolder) {}
+
   void SetUp() final {
     PlatformTest::SetUp();
     uploading_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -37,14 +43,14 @@ class DriveUploadTaskTest : public PlatformTest {
   using TaskEnvironment = base::test::TaskEnvironment;
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   id<SystemIdentity> uploading_identity_;
-  raw_ptr<TestDriveFileUploader> uploader_;
+  raw_ptr<TestDriveFileUploader, DanglingUntriaged> uploader_;
   std::unique_ptr<TestUploadTaskObserver> observer_;
   std::unique_ptr<DriveUploadTask> task_;
 };
 
 // Tests that upon first starting and later cancelling an upload task, the state
 // of the task is correctly updated.
-TEST_F(DriveUploadTaskTest, TaskCanBeStartedAndCancelled) {
+TEST_P(DriveUploadTaskTest, TaskCanBeStartedAndCancelled) {
   EXPECT_EQ(0, task_->GetProgress());
   EXPECT_EQ(State::kNotStarted, task_->GetState());
   EXPECT_EQ(nil, task_->GetError());
@@ -66,7 +72,10 @@ TEST_F(DriveUploadTaskTest, TaskCanBeStartedAndCancelled) {
 
 // Tests that if the destination folder does *NOT* exist, the task will create
 // it and upload the file as expected.
-TEST_F(DriveUploadTaskTest, CreatesFolderIfNotFound) {
+TEST_P(DriveUploadTaskTest, CreatesFolderIfNotFound) {
+  if (IsParamFeatureEnabled()) {
+    return;
+  }
   base::HistogramTester histogram_tester;
   // Set up the uploader to simulate empty search results, a successful folder
   // creation and file upload progress and successful completion.
@@ -147,7 +156,10 @@ TEST_F(DriveUploadTaskTest, CreatesFolderIfNotFound) {
 
 // Tests that if the destination folder *DOES* exist, the task will use it as-is
 // and upload the file as expected.
-TEST_F(DriveUploadTaskTest, UsesExistingFolderIfFound) {
+TEST_P(DriveUploadTaskTest, UsesExistingFolderIfFound) {
+  if (IsParamFeatureEnabled()) {
+    return;
+  }
   base::HistogramTester histogram_tester;
   // Set up the uploader to simulate non-empty search result, and file upload
   // progress and successful completion.
@@ -222,12 +234,20 @@ TEST_F(DriveUploadTaskTest, UsesExistingFolderIfFound) {
 }
 
 // Tests that if the file upload fails, failure is correctly reported.
-TEST_F(DriveUploadTaskTest, ReportsFileUploadFailure) {
+TEST_P(DriveUploadTaskTest, ReportsFileUploadFailure) {
   base::HistogramTester histogram_tester;
-  // Set up the uploader to simulate non-empty search result, and file upload
-  // progress and unsuccessful completion.
-  uploader_->SetFolderSearchResult(
-      {.folder_identifier = @"test_folder_identifier", .error = nil});
+  if (IsParamFeatureEnabled()) {
+    // Set up the uploader to simulate a successful client folder fetch.
+    uploader_->SetClientFolderResult(
+        {.folder_identifier = @"test_folder_identifier", .error = nil});
+  } else {
+    // Set up the uploader to simulate non-empty search result.
+    uploader_->SetFolderSearchResult(
+        {.folder_identifier = @"test_folder_identifier", .error = nil});
+  }
+
+  // Set up the uploader to simulate file upload progress and unsuccessful
+  // completion.
   const std::vector<DriveFileUploadProgress> progress_elements{
       {0, 100},
       {10, 100},
@@ -247,13 +267,23 @@ TEST_F(DriveUploadTaskTest, ReportsFileUploadFailure) {
   const base::FilePath file_suggested_name{"test_uploaded_file_name"};
   task_->SetFileToUpload(file_path_to_upload, file_suggested_name,
                          "test_mime_type", 42);
-  // Test that a folder with appropriate name is searched.
-  uploader_->SetSearchFolderQuitClosure(task_environment_.QuitClosure());
+
+  // Test that the correct folder API is called.
+  if (IsParamFeatureEnabled()) {
+    uploader_->SetFetchClientFolderQuitClosure(task_environment_.QuitClosure());
+  } else {
+    uploader_->SetSearchFolderQuitClosure(task_environment_.QuitClosure());
+  }
   EXPECT_EQ(State::kNotStarted, task_->GetState());
   task_->Start();
   EXPECT_EQ(State::kInProgress, task_->GetState());
   task_environment_.RunUntilQuit();
-  EXPECT_NSEQ(@"test_folder_name", uploader_->GetSearchedFolderName());
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NSEQ(@"test_folder_name", uploader_->GetFetchedClientFolderName());
+  } else {
+    EXPECT_NSEQ(@"test_folder_name", uploader_->GetSearchedFolderName());
+  }
+
   // Test that the file parameters provided earlier are forwarded to the
   // uploader.
   EXPECT_NSEQ(base::apple::FilePathToNSURL(file_path_to_upload),
@@ -286,18 +316,100 @@ TEST_F(DriveUploadTaskTest, ReportsFileUploadFailure) {
   EXPECT_NSEQ(file_upload_error, task_->GetError());
   EXPECT_EQ(State::kFailed, task_->GetState());
   // Test that expected histograms were recorded.
-  histogram_tester.ExpectUniqueSample(kDriveSearchFolderResultSuccessful, true,
-                                      1);
-  histogram_tester.ExpectUniqueSample(kDriveCreateFolderResultSuccessful, true,
-                                      0);
+  if (IsParamFeatureEnabled()) {
+    histogram_tester.ExpectUniqueSample(kDriveFetchClientFolderResultSuccessful,
+                                        true, 1);
+  } else {
+    histogram_tester.ExpectUniqueSample(kDriveSearchFolderResultSuccessful,
+                                        true, 1);
+    histogram_tester.ExpectUniqueSample(kDriveCreateFolderResultSuccessful,
+                                        true, 0);
+  }
   histogram_tester.ExpectUniqueSample(kDriveFileUploadResultSuccessful, false,
                                       1);
   histogram_tester.ExpectUniqueSample(kDriveFileUploadResultErrorCode, 400, 1);
 }
 
+// Tests that `FetchSaveToDriveClientFolder()` is called on the uploader if the
+// corresponding feature is enabled.
+TEST_P(DriveUploadTaskTest, FetchesClientFolderIfFeatureEnabled) {
+  if (!IsParamFeatureEnabled()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Set up the uploader to simulate a successful client folder fetch.
+  uploader_->SetClientFolderResult(
+      {.folder_identifier = @"test_client_folder_identifier", .error = nil});
+
+  // Set up the task.
+  task_->SetDestinationFolderName("test_folder_name");
+  const base::FilePath file_path_to_upload{"/test/path/of/file/to/upload"};
+  const base::FilePath file_suggested_name{"test_uploaded_file_name"};
+  task_->SetFileToUpload(file_path_to_upload, file_suggested_name,
+                         "test_mime_type", 42);
+
+  // Test that `FetchSaveToDriveClientFolder` is called.
+  uploader_->SetFetchClientFolderQuitClosure(task_environment_.QuitClosure());
+  EXPECT_EQ(State::kNotStarted, task_->GetState());
+  task_->Start();
+  EXPECT_EQ(State::kInProgress, task_->GetState());
+  task_environment_.RunUntilQuit();
+  EXPECT_NSEQ(@"test_folder_name", uploader_->GetFetchedClientFolderName());
+
+  // Test that the file is uploaded to the client folder.
+  EXPECT_NSEQ(@"test_client_folder_identifier",
+              uploader_->GetUploadedFileFolderIdentifier());
+
+  // Test that expected histograms were recorded.
+  histogram_tester.ExpectUniqueSample(kDriveFetchClientFolderResultSuccessful,
+                                      true, 1);
+  histogram_tester.ExpectTotalCount(kDriveFetchClientFolderResultErrorCode, 0);
+}
+
+// Tests that if fetching the client folder fails, the task also fails.
+TEST_P(DriveUploadTaskTest, FetchesClientFolderIfFeatureEnabledFailure) {
+  if (!IsParamFeatureEnabled()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Set up the uploader to simulate a failed client folder fetch.
+  NSError* client_folder_error = [NSError errorWithDomain:@"test_domain"
+                                                     code:401
+                                                 userInfo:nil];
+  uploader_->SetClientFolderResult(
+      {.folder_identifier = nil, .error = client_folder_error});
+
+  // Set up the task.
+  task_->SetDestinationFolderName("test_folder_name");
+  const base::FilePath file_path_to_upload{"/test/path/of/file/to/upload"};
+  const base::FilePath file_suggested_name{"test_uploaded_file_name"};
+  task_->SetFileToUpload(file_path_to_upload, file_suggested_name,
+                         "test_mime_type", 42);
+
+  // Test that `FetchSaveToDriveClientFolder` is called and that the task fails.
+  uploader_->SetFetchClientFolderQuitClosure(task_environment_.QuitClosure());
+  EXPECT_EQ(State::kNotStarted, task_->GetState());
+  task_->Start();
+  EXPECT_EQ(State::kInProgress, task_->GetState());
+  task_environment_.RunUntilQuit();
+  EXPECT_NSEQ(@"test_folder_name", uploader_->GetFetchedClientFolderName());
+  EXPECT_EQ(State::kFailed, task_->GetState());
+  EXPECT_NSEQ(client_folder_error, task_->GetError());
+
+  // Test that expected histograms were recorded.
+  histogram_tester.ExpectUniqueSample(kDriveFetchClientFolderResultSuccessful,
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(kDriveFetchClientFolderResultErrorCode,
+                                      401, 1);
+}
+
 // Tests that a task that is destroyed before being started records the expected
 // histograms.
-TEST_F(DriveUploadTaskTest, TaskNotStartedDestructorRecordsMetrics) {
+TEST_P(DriveUploadTaskTest, TaskNotStartedDestructorRecordsMetrics) {
   base::HistogramTester histogram_tester;
   // Give file to task.
   task_->SetFileToUpload(base::FilePath("file_name.txt"),
@@ -319,7 +431,7 @@ TEST_F(DriveUploadTaskTest, TaskNotStartedDestructorRecordsMetrics) {
 
 // Tests that a task that is destroyed before being started records the expected
 // histograms.
-TEST_F(DriveUploadTaskTest, TaskInProgressDestructorRecordsMetrics) {
+TEST_P(DriveUploadTaskTest, TaskInProgressDestructorRecordsMetrics) {
   base::HistogramTester histogram_tester;
   // Give file to task.
   task_->SetFileToUpload(base::FilePath("file_name.pdf"),
@@ -343,7 +455,7 @@ TEST_F(DriveUploadTaskTest, TaskInProgressDestructorRecordsMetrics) {
 
 // Tests that a task that is destroyed after being started and then cancelled
 // records the expected histograms.
-TEST_F(DriveUploadTaskTest, TaskCancelledDestructorRecordsMetrics) {
+TEST_P(DriveUploadTaskTest, TaskCancelledDestructorRecordsMetrics) {
   base::HistogramTester histogram_tester;
   // Give file to task.
   task_->SetFileToUpload(base::FilePath("file_name.pdf"),
@@ -366,7 +478,7 @@ TEST_F(DriveUploadTaskTest, TaskCancelledDestructorRecordsMetrics) {
       std::string(kDriveUploadTaskFileSize) + ".Cancelled", 150 /* MB */, 1);
 }
 
-TEST_F(DriveUploadTaskTest, TaskCompleteDestructorRecordsMetrics) {
+TEST_P(DriveUploadTaskTest, TaskCompleteDestructorRecordsMetrics) {
   base::HistogramTester histogram_tester;
   // Give file to task.
   task_->SetFileToUpload(base::FilePath("file_name.pdf"),
@@ -392,7 +504,7 @@ TEST_F(DriveUploadTaskTest, TaskCompleteDestructorRecordsMetrics) {
       1);
 }
 
-TEST_F(DriveUploadTaskTest, TaskFailedDestructorRecordsMetrics) {
+TEST_P(DriveUploadTaskTest, TaskFailedDestructorRecordsMetrics) {
   base::HistogramTester histogram_tester;
   // Give file to task.
   task_->SetFileToUpload(base::FilePath("file_name.pdf"),
@@ -421,3 +533,5 @@ TEST_F(DriveUploadTaskTest, TaskFailedDestructorRecordsMetrics) {
   histogram_tester.ExpectUniqueSample(
       std::string(kDriveUploadTaskFileSize) + ".Failed", 0 /* MB */, 1);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DriveUploadTaskTest);

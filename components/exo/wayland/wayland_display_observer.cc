@@ -4,7 +4,6 @@
 
 #include "components/exo/wayland/wayland_display_observer.h"
 
-#include <chrome-color-management-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
@@ -13,7 +12,6 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/zaura_output_manager.h"
-#include "components/exo/wayland/zcr_color_manager.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
@@ -50,8 +48,7 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
   observers_.AddObserver(observer);
 
   display::Display display;
-  bool exists =
-      display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display);
+  bool exists = display::Screen::Get()->GetDisplayWithDisplayId(id(), &display);
   if (!exists) {
     // WaylandDisplayHandler is created asynchronously, and the
     // display can be deleted before created. This usually won't happen
@@ -116,7 +113,7 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
   xdg_output_resource_ = xdg_output_resource;
 
   display::Display display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display)) {
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(id(), &display)) {
     return;
   }
 

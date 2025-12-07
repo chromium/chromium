@@ -20,7 +20,7 @@ suite('ThemeSnapshotTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -56,7 +56,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.CUSTOM_THEME, page.getAttribute('theme-type'));
@@ -68,7 +68,7 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         'foo',
         $$(themeSnapshotElement,
-           '.snapshot-container #customThemeTitle')!.textContent!.trim());
+           '.snapshot-container #customThemeTitle')!.textContent.trim());
     assertEquals(
         'chrome://theme/foo',
         $$<HTMLImageElement>(
@@ -88,7 +88,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
@@ -100,8 +100,7 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         'Default Chrome',
         $$(themeSnapshotElement,
-           '.snapshot-container #classicChromeThemeTitle')!.textContent!
-            .trim());
+           '.snapshot-container #classicChromeThemeTitle')!.textContent.trim());
   });
 
   test('uploading a background updates theme snapshot', async () => {
@@ -118,7 +117,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.UPLOADED_IMAGE, page.getAttribute('theme-type'));
@@ -129,7 +128,7 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         'Uploaded image',
         $$(themeSnapshotElement,
-           '.snapshot-container #uploadedThemeTitle')!.textContent!.trim());
+           '.snapshot-container #uploadedThemeTitle')!.textContent.trim());
   });
 
   test('classic chrome snapshot shows correct image', async () => {
@@ -144,7 +143,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));

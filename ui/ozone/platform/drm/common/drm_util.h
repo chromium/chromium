@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 
@@ -14,14 +9,17 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
@@ -49,6 +47,9 @@ const size_t kMaxDrmCount =
 // It is safe to assume there will be no more than 256 connectors per DRM.
 const size_t kMaxDrmConnectors =
     display::features::IsEdidBasedDisplayIdsEnabled() ? 256u : 16u;
+
+// Using a moderate size e.g. 256 for the cursor is enough in most cases.
+const int kMaxCursorBufferSize = 256;
 
 // DRM property names.
 const char kContentProtectionKey[] = "Content Protection Key";
@@ -149,11 +150,17 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
 
+int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format);
+
 gfx::Size GetMaximumCursorSize(const DrmWrapper& drm);
 
 ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
                                      drmModeObjectProperties* properties,
                                      const char* name);
+
+bool GetConnectorPropertyValue(const drmModeConnector* const connector,
+                               const uint32_t prop_id,
+                               uint64_t* const prop_value);
 
 bool HasColorCorrectionMatrix(const DrmWrapper& drm, drmModeCrtc* crtc);
 
@@ -185,6 +192,13 @@ const char* GetNameForColorspace(const gfx::ColorSpace color_space);
 uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              int property_id,
                              const char* str);
+
+// Checks if |mode_size| corresponds to a tile mode size according to
+// |tile_property|. Note that this method does not return true for
+// tile-composited mode.
+bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property);
+
+const gfx::Point GetTileCrtcOffset(const TileProperty& tiled_property);
 
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
 
@@ -219,14 +233,13 @@ uint64_t GetDrmValueForInternalType(const InternalType& internal_state,
       << internal_state << ">).";
 
   for (int i = 0; i < property.count_enums; ++i) {
-    if (drm_enum == property.enums[i].name)
-      return property.enums[i].value;
+    if (drm_enum == UNSAFE_TODO(property.enums[i]).name) {
+      return UNSAFE_TODO(property.enums[i]).value;
+    }
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Failed to extract DRM value for property '" << property.name
-      << "' and enum '" << drm_enum << "'";
-  return std::numeric_limits<uint64_t>::max();
+  NOTREACHED() << "Failed to extract DRM value for property '" << property.name
+               << "' and enum '" << drm_enum << "'";
 }
 
 // Returns the internal type value that maps to the DRM property's current
@@ -253,10 +266,8 @@ const InternalType* GetDrmPropertyCurrentValueAsInternalType(
     }
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Failed to extract internal value for DRM property '" << property.name
-      << "'";
-  return nullptr;
+  NOTREACHED() << "Failed to extract internal value for DRM property '"
+               << property.name << "'";
 }
 
 // Returns the internal type value that maps to |drm_enum| within |array|.
@@ -302,6 +313,21 @@ void ConsolidateTiledDisplayInfo(
 
 // Get the total tile-composited size of a tiled display.
 gfx::Size GetTotalTileDisplaySize(const TileProperty& tile_property);
+
+// A custom comparator of gfx::Size used to sort cursor sizes.
+struct CursorSizeComparator {
+  bool operator()(const gfx::Size& a, const gfx::Size& b) const {
+    if (a.GetArea() == b.GetArea()) {
+      if (a.width() == b.width()) {
+        return a.height() < b.height();
+      } else {
+        return a.width() < b.width();
+      }
+    } else {
+      return a.GetArea() < b.GetArea();
+    }
+  }
+};
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_

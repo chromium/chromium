@@ -12,8 +12,8 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_bindings.h"
@@ -148,8 +148,8 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
     // Use the color type per plane for multiplanar formats.
-    SkColorType sk_color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format(), plane_index);
+    SkColorType sk_color_type =
+        viz::ToClosestSkColorType(format(), plane_index);
     auto surface = SkSurfaces::WrapBackendTexture(
         context_state_->gr_context(),
         promise_textures_[plane_index]->backendTexture(), surface_origin(),

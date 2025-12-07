@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_formatter/url_fixer.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/char_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -55,8 +51,9 @@ const size_t kMaxFixupURLDepth = 16;
 url::Component UTF8ComponentToUTF16Component(
     const std::string& text_utf8,
     const url::Component& component_utf8) {
-  if (component_utf8.len == -1)
+  if (component_utf8.len == -1) {
     return url::Component();
+  }
 
   std::string before_component_string =
       text_utf8.substr(0, component_utf8.begin);
@@ -114,7 +111,7 @@ base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
 void PrepareStringForFileOps(const base::FilePath& text, std::string* output) {
   TrimWhitespace(text.AsUTF16Unsafe(), base::TRIM_ALL, output);
 #if BUILDFLAG(IS_WIN)
-  base::ranges::replace(*output, '/', '\\');
+  std::ranges::replace(*output, '/', '\\');
 #endif
 }
 
@@ -124,11 +121,13 @@ void PrepareStringForFileOps(const base::FilePath& text, std::string* output) {
 bool ValidPathForFile(const std::string& text, base::FilePath* full_path) {
   base::FilePath file_path =
       base::MakeAbsoluteFilePath(base::FilePath::FromUTF8Unsafe(text));
-  if (file_path.empty())
+  if (file_path.empty()) {
     return false;
+  }
 
-  if (!base::PathExists(file_path))
+  if (!base::PathExists(file_path)) {
     return false;
+  }
 
   *full_path = file_path;
   return true;
@@ -142,26 +141,29 @@ std::string FixupHomedir(const std::string& text) {
 
   if (text.length() == 1 || text[1] == '/') {
     base::FilePath file_path;
-    if (home_directory_override)
+    if (home_directory_override) {
       file_path = base::FilePath(home_directory_override);
-    else
+    } else {
       base::PathService::Get(base::DIR_HOME, &file_path);
+    }
 
     // We'll probably break elsewhere if $HOME is undefined, but check here
     // just in case.
-    if (file_path.value().empty())
+    if (file_path.value().empty()) {
       return text;
+    }
     // Append requires to be a relative path, so we have to cut all preceeding
     // '/' characters.
     size_t i = 1;
-    while (i < text.length() && text[i] == '/')
+    while (i < text.length() && text[i] == '/') {
       ++i;
+    }
     return file_path.Append(text.substr(i)).value();
   }
 
-// Otherwise, this is a path like ~foobar/baz, where we must expand to
-// user foobar's home directory.  Officially, we should use getpwent(),
-// but that is a nasty blocking call.
+  // Otherwise, this is a path like ~foobar/baz, where we must expand to
+  // user foobar's home directory.  Officially, we should use getpwent(),
+  // but that is a nasty blocking call.
 
 #if BUILDFLAG(IS_APPLE)
   static const char kHome[] = "/Users/";
@@ -186,13 +188,15 @@ std::string FixupPath(const std::string& text) {
   PrepareStringForFileOps(input_path, &filename);
 
   // Fixup Windows-style drive letters, where "C:" gets rewritten to "C|".
-  if (filename.length() > 1 && filename[1] == '|')
+  if (filename.length() > 1 && filename[1] == '|') {
     filename[1] = ':';
+  }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath input_path(text);
   PrepareStringForFileOps(input_path, &filename);
-  if (filename.length() > 0 && filename[0] == '~')
+  if (filename.length() > 0 && filename[0] == '~') {
     filename = FixupHomedir(filename);
+  }
 #endif
 
   // Here, we know the input looks like a file.
@@ -211,8 +215,9 @@ std::string FixupPath(const std::string& text) {
 // Checks |domain| to see if a valid TLD is already present.  If not, appends
 // |desired_tld| to the domain, and prepends "www." unless it's already present.
 void AddDesiredTLD(const std::string& desired_tld, std::string* domain) {
-  if (desired_tld.empty() || domain->empty())
+  if (desired_tld.empty() || domain->empty()) {
     return;
+  }
 
   // Abort if we already have a known TLD. In the case of an invalid host,
   // HostHasRegistryControlledDomain will return false and we will try to
@@ -222,15 +227,17 @@ void AddDesiredTLD(const std::string& desired_tld, std::string* domain) {
   // "mail.yahoo" and hit ctrl-enter to get "www.mail.yahoo.com".
   if (net::registry_controlled_domains::HostHasRegistryControlledDomain(
           *domain, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES))
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)) {
     return;
+  }
 
   // Add the suffix at the end of the domain.
   const size_t domain_length(domain->length());
   DCHECK_GT(domain_length, 0U);
   DCHECK_NE(desired_tld[0], '.');
-  if ((*domain)[domain_length - 1] != '.')
+  if ((*domain)[domain_length - 1] != '.') {
     domain->push_back('.');
+  }
   domain->append(desired_tld);
 
   // Now, if the domain begins with "www.", stop.
@@ -244,8 +251,9 @@ void AddDesiredTLD(const std::string& desired_tld, std::string* domain) {
 inline void FixupUsername(const std::string& text,
                           const url::Component& part,
                           std::string* url) {
-  if (!part.is_valid())
+  if (!part.is_valid()) {
     return;
+  }
 
   // We don't fix up the username at the moment.
   url->append(text, part.begin, part.len);
@@ -256,8 +264,9 @@ inline void FixupUsername(const std::string& text,
 inline void FixupPassword(const std::string& text,
                           const url::Component& part,
                           std::string* url) {
-  if (!part.is_valid())
+  if (!part.is_valid()) {
     return;
+  }
 
   // We don't fix up the password at the moment.
   url->append(":");
@@ -269,8 +278,9 @@ void FixupHost(const std::string& text,
                bool has_scheme,
                const std::string& desired_tld,
                std::string* url) {
-  if (!part.is_valid())
+  if (!part.is_valid()) {
     return;
+  }
 
   // Make domain valid.
   // Strip all leading dots and all but one trailing dot, unless the user only
@@ -283,8 +293,9 @@ void FixupHost(const std::string& text,
     size_t last_nondot(domain.find_last_not_of('.'));
     DCHECK(last_nondot != std::string::npos);
     last_nondot += 2;  // Point at second period in ending string
-    if (last_nondot < domain.length())
+    if (last_nondot < domain.length()) {
       domain.erase(last_nondot);
+    }
   }
 
   // Add any user-specified TLD, if applicable.
@@ -296,8 +307,9 @@ void FixupHost(const std::string& text,
 void FixupPort(const std::string& text,
                const url::Component& part,
                std::string* url) {
-  if (part.is_empty())
+  if (part.is_empty()) {
     return;
+  }
 
   // We don't fix up the port at the moment.
   url->append(":");
@@ -320,8 +332,9 @@ inline void FixupPath(const std::string& text,
 inline void FixupQuery(const std::string& text,
                        const url::Component& part,
                        std::string* url) {
-  if (!part.is_valid())
+  if (!part.is_valid()) {
     return;
+  }
 
   // We don't fix up the query at the moment.
   url->append("?");
@@ -331,8 +344,9 @@ inline void FixupQuery(const std::string& text,
 inline void FixupRef(const std::string& text,
                      const url::Component& part,
                      std::string* url) {
-  if (!part.is_valid())
+  if (!part.is_valid()) {
     return;
+  }
 
   // We don't fix up the ref at the moment.
   url->append("#");
@@ -352,10 +366,11 @@ bool HasPort(const std::string& original_text,
                                      url::ParserMode::kSpecialURL)) {
     ++port_end;
   }
-  std::string_view port_piece(original_text.data() + port_start,
+  std::string_view port_piece(UNSAFE_TODO(original_text.data() + port_start),
                               port_end - port_start);
-  if (port_piece.empty())
+  if (port_piece.empty()) {
     return false;
+  }
 
   // Scan the |port_piece| to see if it is entirely digits.  Explicit check is
   // needed because base::StringToInt will silently ignore a leading '+'
@@ -363,7 +378,7 @@ bool HasPort(const std::string& original_text,
   //
   // https://url.spec.whatwg.org/#url-port-string says that "A URL-port string
   // must be zero or more ASCII digits".
-  if (!base::ranges::all_of(port_piece, base::IsAsciiDigit<char>)) {
+  if (!std::ranges::all_of(port_piece, base::IsAsciiDigit<char>)) {
     return false;
   }
 
@@ -395,7 +410,7 @@ bool GetValidScheme(const std::string& text,
   // brackets are not in the whitelist.
   url::StdStringCanonOutput canon_scheme_output(canon_scheme);
   url::Component canon_scheme_component;
-  if (!url::CanonicalizeScheme(text.data(), *scheme_component,
+  if (!url::CanonicalizeScheme(scheme_component->AsViewOn(text),
                                &canon_scheme_output, &canon_scheme_component)) {
     return false;
   }
@@ -409,14 +424,16 @@ bool GetValidScheme(const std::string& text,
   //
   // Note: This logic deviates from GURL, where "www.example.com:" would be
   // parsed as having "www.example.com" as the scheme with an empty hostname.
-  if (canon_scheme->find('.') != std::string::npos)
+  if (canon_scheme->find('.') != std::string::npos) {
     return false;
+  }
 
   // We need to fix up the segmentation for "www:123/".  For this case, we
   // will add an HTTP scheme later and make the URL parser happy.
   // TODO(pkasting): Maybe we should try to use GURL's parser for this?
-  if (HasPort(text, *scheme_component))
+  if (HasPort(text, *scheme_component)) {
     return false;
+  }
 
   // Everything checks out.
   return true;
@@ -431,19 +448,22 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 
   std::string trimmed;
   TrimWhitespaceUTF8(*text, base::TRIM_ALL, &trimmed);
-  if (trimmed.empty())
+  if (trimmed.empty()) {
     return std::string();  // Nothing to segment.
+  }
 
   std::string scheme;
 #if BUILDFLAG(IS_WIN)
   int trimmed_length = static_cast<int>(trimmed.length());
   if (url::DoesBeginWindowsDriveSpec(trimmed.data(), 0, trimmed_length) ||
-      url::DoesBeginUNCPath(trimmed.data(), 0, trimmed_length, true))
+      url::DoesBeginUNCPath(trimmed.data(), 0, trimmed_length, true)) {
     scheme = url::kFileScheme;
+  }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (base::FilePath::IsSeparator(trimmed.data()[0]) ||
-      trimmed.data()[0] == '~')
+      trimmed.data()[0] == '~') {
     scheme = url::kFileScheme;
+  }
 #endif
 
   // Otherwise, we need to look at things carefully.
@@ -456,14 +476,12 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     if (semicolon != 0 && semicolon != std::string::npos) {
       (*text)[semicolon] = ':';
       if (GetValidScheme(*text, &parts->scheme, &scheme) &&
-          (url::IsStandard(
-               scheme.c_str(),
-               url::Component(0, static_cast<int>(scheme.length()))) ||
-           scheme == url::kAboutScheme || scheme == kChromeUIScheme ||
-           scheme == url::kFileScheme))
+          (url::IsStandard(scheme) || scheme == url::kAboutScheme ||
+           scheme == kChromeUIScheme || scheme == url::kFileScheme)) {
         found_scheme = true;
-      else
+      } else {
         (*text)[semicolon] = ';';
+      }
     }
     if (!found_scheme) {
       // Couldn't determine the scheme, so just default to http.
@@ -475,26 +493,24 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   // Proceed with about, chrome, and devtools schemes,
   // but not file or nonstandard schemes.
   if ((scheme != url::kAboutScheme) && (scheme != kChromeUIScheme) &&
-      (scheme != kDevToolsScheme) &&
-      !url::IsStandard(scheme.c_str(),
-                       url::Component(0, static_cast<int>(scheme.length())))) {
+      (scheme != kDevToolsScheme) && !url::IsStandard(scheme)) {
     return scheme;
   }
 
   if (scheme == url::kFileScheme) {
-    *parts = url::ParseFileURL(*text);
+    *parts = url::ParseFileUrl(*text);
     return scheme;
   }
 
   if (scheme == url::kFileSystemScheme) {
     // Have the GURL parser do the heavy lifting for us.
-    *parts = url::ParseFileSystemURL(*text);
+    *parts = url::ParseFileSystemUrl(*text);
     return scheme;
   }
 
   if (parts->scheme.is_valid()) {
     // Have the GURL parser do the heavy lifting for us.
-    *parts = url::ParseStandardURL(*text);
+    *parts = url::ParseStandardUrl(*text);
     return scheme;
   }
 
@@ -512,14 +528,15 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   std::string inserted_text(scheme);
   // Assume a leading colon was meant to be a scheme separator (which GURL will
   // fix up for us into the full "://").  Otherwise add the separator ourselves.
-  if (first_nonwhite == text->end() || *first_nonwhite != ':')
+  if (first_nonwhite == text->end() || *first_nonwhite != ':') {
     inserted_text.append(url::kStandardSchemeSeparator);
+  }
   std::string text_to_parse(text->begin(), first_nonwhite);
   text_to_parse.append(inserted_text);
   text_to_parse.append(first_nonwhite, text->end());
 
   // Have the GURL parser do the heavy lifting for us.
-  *parts = url::ParseStandardURL(text_to_parse);
+  *parts = url::ParseStandardUrl(text_to_parse);
 
   // Offset the results of the parse to match the original text.
   const int offset = -static_cast<int>(inserted_text.length());
@@ -537,7 +554,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 
 }  // namespace
 
-std::string SegmentURL(const std::string& text, url::Parsed* parts) {
+std::string SegmentURL(std::string_view text, url::Parsed* parts) {
   std::string mutable_text(text);
   return SegmentURLInternal(&mutable_text, parts);
 }
@@ -559,8 +576,9 @@ GURL FixupURLInternal(const std::string& text,
 
   std::string trimmed;
   TrimWhitespaceUTF8(text, base::TRIM_ALL, &trimmed);
-  if (trimmed.empty())
+  if (trimmed.empty()) {
     return GURL();  // Nothing here.
+  }
 
   // Segment the URL.
   url::Parsed parts;
@@ -581,13 +599,15 @@ GURL FixupURLInternal(const std::string& text,
   }
 
   // We handle the file scheme separately.
-  if (scheme == url::kFileScheme)
+  if (scheme == url::kFileScheme) {
     return GURL(parts.scheme.is_valid() ? text : FixupPath(text));
+  }
 
   // We handle the filesystem scheme separately.
   if (scheme == url::kFileSystemScheme) {
-    if (parts.inner_parsed() && parts.inner_parsed()->scheme.is_valid())
+    if (parts.inner_parsed() && parts.inner_parsed()->scheme.is_valid()) {
       return GURL(text);
+    }
     return GURL();
   }
 
@@ -595,17 +615,16 @@ GURL FixupURLInternal(const std::string& text,
   // code and shouldn't use the chrome: scheme.
   if (base::EqualsCaseInsensitiveASCII(scheme, url::kAboutScheme)) {
     GURL about_url(base::ToLowerASCII(trimmed));
-    if (about_url.IsAboutBlank() || about_url.IsAboutSrcdoc())
+    if (about_url.IsAboutBlank() || about_url.IsAboutSrcdoc()) {
       return about_url;
+    }
   }
 
   // For some schemes whose layouts we understand, we rebuild the URL.
   bool chrome_url =
       (scheme == url::kAboutScheme) || (scheme == kChromeUIScheme);
   bool devtools_url = (scheme == kDevToolsScheme);
-  if (chrome_url || devtools_url ||
-      url::IsStandard(scheme.c_str(),
-                      url::Component(0, static_cast<int>(scheme.length())))) {
+  if (chrome_url || devtools_url || url::IsStandard(scheme)) {
     // Replace the about: scheme with the chrome: scheme.
     std::string url(scheme == url::kAboutScheme ? kChromeUIScheme : scheme);
     url.append(url::kStandardSchemeSeparator);
@@ -620,8 +639,9 @@ GURL FixupURLInternal(const std::string& text,
     }
 
     FixupHost(trimmed, parts.host, parts.scheme.is_valid(), desired_tld, &url);
-    if (chrome_url && !parts.host.is_valid())
+    if (chrome_url && !parts.host.is_valid()) {
       url.append(kChromeUIDefaultHost);
+    }
     FixupPort(trimmed, parts.port, &url);
     FixupPath(trimmed, parts.path, &url);
     FixupQuery(trimmed, parts.query, &url);
@@ -666,8 +686,9 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
   bool is_file = true;
   // Avoid recognizing definite non-file URLs as file paths.
   GURL gurl(trimmed);
-  if (gurl.is_valid() && gurl.IsStandard())
+  if (gurl.is_valid() && gurl.IsStandard()) {
     is_file = false;
+  }
   base::FilePath full_path;
   if (is_file && !ValidPathForFile(trimmed, &full_path)) {
     // Not a path as entered, try unescaping it in case the user has
@@ -684,15 +705,17 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
   }
 
   // Put back the current directory if we saved it.
-  if (!base_dir.empty())
+  if (!base_dir.empty()) {
     base::SetCurrentDirectory(old_cur_directory);
+  }
 
   if (is_file) {
     GURL file_url = net::FilePathToFileURL(full_path);
-    if (file_url.is_valid())
+    if (file_url.is_valid()) {
       return GURL(base::UTF16ToUTF8(url_formatter::FormatUrl(
           file_url, url_formatter::kFormatUrlOmitUsernamePassword,
           base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr)));
+    }
     // Invalid files fall through to regular processing.
   }
 
@@ -713,8 +736,9 @@ void OffsetComponent(int offset, url::Component* part) {
     part->begin += offset;
 
     // This part might not have existed in the original text.
-    if (part->begin < 0)
+    if (part->begin < 0) {
       part->reset();
+    }
   }
 }
 

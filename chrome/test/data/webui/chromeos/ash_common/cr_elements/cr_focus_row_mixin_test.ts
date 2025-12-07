@@ -160,7 +160,7 @@ suite('cr-focus-row-mixin-test', function() {
     return wait.then(() => {
       const button = getDeepActiveElement();
       assertTrue(!!button);
-      assertEquals('fake button three', button.textContent!.trim());
+      assertEquals('fake button three', button.textContent.trim());
     });
   });
 

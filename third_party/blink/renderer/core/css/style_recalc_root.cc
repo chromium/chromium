@@ -45,19 +45,22 @@ bool StyleRecalcRoot::IsDirty(const Node& node) const {
 
 namespace {
 
-std::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
+// Returns a pair. The first element in the pair is a boolean representing
+// whether finding an ancestor succeeded. The second element in the pair is a
+// pointer to the ancestor.
+std::pair<bool, Element*> FirstFlatTreeAncestorForChildDirty(
     ContainerNode& parent) {
   if (!parent.IsElementNode()) {
     // The flat tree does not contain shadow roots or the document node. The
     // closest ancestor for dirty bits is the shadow host or nullptr.
-    return parent.ParentOrShadowHostElement();
+    return {true, parent.ParentOrShadowHostElement()};
   }
   ShadowRoot* root = parent.GetShadowRoot();
   if (!root) {
-    return To<Element>(&parent);
+    return {true, To<Element>(&parent)};
   }
   if (!root->HasSlotAssignment()) {
-    return std::nullopt;
+    return {false, nullptr};
   }
   // The child has already been removed, so we cannot look up its slot
   // assignment directly. Find the slot which was part of the ancestor chain
@@ -65,12 +68,12 @@ std::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
   // was removed, there is at most one such child-dirty slot.
   for (const auto& slot : root->GetSlotAssignment().Slots()) {
     if (slot->ChildNeedsStyleRecalc()) {
-      return slot;
+      return {true, slot};
     }
   }
   // The slot has also been removed. Fall back to using the light tree parent as
   // the new recalc root.
-  return std::nullopt;
+  return {false, nullptr};
 }
 
 bool IsFlatTreeConnected(const Node& root) {
@@ -104,7 +107,7 @@ void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
   // as the new recalc root to allow the child-dirty bits to be cleared on the
   // next style recalc.
   auto opt_ancestor = FirstFlatTreeAncestorForChildDirty(parent);
-  if (!opt_ancestor) {
+  if (!opt_ancestor.first) {
     ContainerNode* common_ancestor = &parent;
     ContainerNode* new_root = &parent;
     if (!IsFlatTreeConnected(parent)) {
@@ -118,7 +121,7 @@ void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
     DCHECK_EQ(GetRootNode(), new_root);
     return;
   }
-  for (Element* ancestor = opt_ancestor.value(); ancestor;
+  for (Element* ancestor = opt_ancestor.second; ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {
     DCHECK(ancestor->ChildNeedsStyleRecalc());
     DCHECK(!ancestor->NeedsStyleRecalc());

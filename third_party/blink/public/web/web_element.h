@@ -34,10 +34,11 @@
 #include <vector>
 
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_node.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8-forward.h"
+
+class SkBitmap;
 
 namespace gfx {
 class Rect;
@@ -48,6 +49,7 @@ namespace blink {
 
 class Element;
 class Image;
+class LayoutBox;
 class WebLabelElement;
 
 // Provides access to some properties of a DOM element node.
@@ -83,6 +85,10 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString TextContentAbridged(unsigned int max_length) const;
   WebString InnerHTML() const;
 
+  void Focus();
+
+  void Blur();
+
   // Returns true if the element's computed writing suggestions value is true.
   // https://html.spec.whatwg.org/#writing-suggestions:computed-writing-suggestions-value
   bool WritingSuggestions() const;
@@ -116,7 +122,7 @@ class BLINK_EXPORT WebElement : public WebNode {
   void PasteText(const WebString& text, bool replace_all);
 
   // Returns all <label> elements associated to this element.
-  WebVector<WebLabelElement> Labels() const;
+  std::vector<WebLabelElement> Labels() const;
 
   // Returns true if this is an autonomous custom element.
   bool IsAutonomousCustomElement() const;
@@ -132,10 +138,21 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the open shadow root or the closed shadow root.
   WebNode OpenOrClosedShadowRoot();
 
-  // Returns the bounds of the element in Visual Viewport. The bounds
-  // have been adjusted to include any transformations, including page scale.
-  // This function will update the layout if required.
+  // Returns the bounds of the element relative to the RenderWidget (local root
+  // frame + viewport transform in the main frame). The bounds have been
+  // adjusted to include any transformations, including page scale. This
+  // function will update the layout if required.
   gfx::Rect BoundsInWidget() const;
+
+  // Same as above but this method will clip the bounds based on any of the
+  // element's ancestor overflow or frame boxes.
+  gfx::Rect VisibleBoundsInWidget() const;
+
+  // Returns the client rects of this Element relative to the RenderWidget
+  // (local root frame + viewport transform in the main frame). The bounds have
+  // been adjusted to include any transformations, including page scale. This
+  // function will update the layout if required.
+  std::vector<gfx::Rect> ClientRectsInWidget();
 
   // Returns the image contents of this element or a null SkBitmap
   // if there isn't any.
@@ -145,8 +162,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   // if there isn't any.
   std::vector<uint8_t> CopyOfImageData();
 
-  // Returns the original image file extension.
-  std::string ImageExtension();
+  // Returns the original image mime type.
+  WebString ImageMimeType();
 
   // Returns the original image size.
   gfx::Size GetImageSize();
@@ -156,6 +173,34 @@ class BLINK_EXPORT WebElement : public WebNode {
 
   // Returns {scrollWidth, scrollHeight}.
   gfx::Size GetScrollSize() const;
+
+  // Returns {scrollLeft, scrollTop}.
+  gfx::Vector2dF GetScrollOffset() const;
+
+  // Sets {scrollLeft, scrollTop} and forces instant scroll, returns true if the
+  // scroll was completed (or will be completed via a smooth scroll animation),
+  // false if the element cannot scroll (e.g. it's not rendered, no scroll
+  // extent).
+  bool SetScrollOffset(const gfx::Vector2dF& offset);
+
+  // Scrolls the element into view if it isn't already visible.
+  void ScrollIntoViewIfNeeded();
+
+  // Returns true if this element has scroll-behavior: smooth style, meaning
+  // that programmatic scrolls will animate rather than instantly jumping to the
+  // specified scroll offset.
+  bool HasScrollBehaviorSmooth() const;
+
+  // Returns whether the element has scrollable overflow and can be scrolled by
+  // the user (i.e. true for `overflow: scroll|auto` with overflow but false for
+  // `overflow: hidden`).
+  bool IsUserScrollableX() const;
+  bool IsUserScrollableY() const;
+
+  // Returns the effective zoom factor for this element. This includes the zoom
+  // factor coming from device scale factor and browser zoom but also the
+  // cumulative effects of the CSS zoom property in ancestor elements.
+  float GetEffectiveZoom() const;
 
   // ComputedStyle property values. The following exposure is of CSS property
   // values are part of the ComputedStyle set which is usually exposed through
@@ -173,6 +218,7 @@ class BLINK_EXPORT WebElement : public WebNode {
 #endif
 
  private:
+  LayoutBox* GetScrollingBox() const;
   Image* GetImage();
 };
 

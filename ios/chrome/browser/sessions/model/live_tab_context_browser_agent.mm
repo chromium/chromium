@@ -15,15 +15,15 @@
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
-
-BROWSER_USER_DATA_KEY_IMPL(LiveTabContextBrowserAgent)
+#import "ui/base/mojom/window_show_state.mojom.h"
 
 LiveTabContextBrowserAgent::LiveTabContextBrowserAgent(Browser* browser)
-    : browser_state_(browser->GetBrowserState()),
+    : BrowserUserData(browser),
+      profile_(browser->GetProfile()),
       web_state_list_(browser->GetWebStateList()),
       session_id_(SessionID::NewUnique()) {}
 
@@ -89,8 +89,7 @@ LiveTabContextBrowserAgent::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group) const {
   // Since we never return a group from GetTabGroupForTab(), this should never
   // be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
@@ -102,8 +101,7 @@ const std::optional<base::Uuid>
 LiveTabContextBrowserAgent::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
   // Not supported by iOS... yet.
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void LiveTabContextBrowserAgent::SetVisualDataForGroup(
@@ -117,9 +115,10 @@ const gfx::Rect LiveTabContextBrowserAgent::GetRestoredBounds() const {
   return gfx::Rect();
 }
 
-ui::WindowShowState LiveTabContextBrowserAgent::GetRestoredState() const {
+ui::mojom::WindowShowState LiveTabContextBrowserAgent::GetRestoredState()
+    const {
   // Not supported by iOS.
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 std::string LiveTabContextBrowserAgent::GetWorkspace() const {
@@ -131,11 +130,12 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select,
+    bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   // TODO(crbug.com/40491734): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
       session_util::CreateWebStateWithNavigationEntries(
-          browser_state_, tab.normalized_navigation_index(), tab.navigations),
+          profile_, tab.normalized_navigation_index(), tab.navigations),
       WebStateList::InsertionParams::AtIndex(tab_index).Activate());
   return nullptr;
 }
@@ -145,12 +145,12 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
   web_state_list_->ReplaceWebStateAt(
       web_state_list_->active_index(),
       session_util::CreateWebStateWithNavigationEntries(
-          browser_state_, tab.normalized_navigation_index(), tab.navigations));
+          profile_, tab.normalized_navigation_index(), tab.navigations));
 
   return nullptr;
 }
 
 void LiveTabContextBrowserAgent::CloseTab() {
   web_state_list_->CloseWebStateAt(web_state_list_->active_index(),
-                                   WebStateList::CLOSE_USER_ACTION);
+                                   WebStateList::ClosingReason::kUserAction);
 }

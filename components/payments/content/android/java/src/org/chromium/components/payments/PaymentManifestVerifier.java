@@ -4,13 +4,15 @@
 
 package org.chromium.components.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
 import org.chromium.components.payments.PaymentManifestParser.ManifestParseCallback;
 import org.chromium.url.GURL;
@@ -24,21 +26,23 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Verifies that the discovered native Android payment apps have the sufficient privileges
- * to handle a single payment method. Downloads and parses the manifest to compare package
- * names, versions, and signatures to the apps.
+ * Verifies that the discovered native Android payment apps have the sufficient privileges to handle
+ * a single payment method. Downloads and parses the manifest to compare package names, versions,
+ * and signatures to the apps.
  *
- * Spec:
+ * <p>Spec:
  * https://docs.google.com/document/d/1izV4uC-tiRJG3JLooqY3YRLU22tYOsLTNq0P_InPJeE/edit#heading=h.cjp3jlnl47h5
  */
+@NullMarked
 public class PaymentManifestVerifier
         implements ManifestDownloadCallback,
                 ManifestParseCallback,
-                PaymentManifestWebDataService.PaymentManifestWebDataServiceCallback {
+                WebPaymentsWebDataService.WebPaymentsWebDataServiceCallback {
     /** Interface for the callback to invoke when finished verification. */
     public interface ManifestVerifyCallback {
         /**
@@ -84,6 +88,7 @@ public class PaymentManifestVerifier
     /** Identifying information about an installed native Android payment app. */
     private static class AppInfo {
         /** Identifies a native Android payment app. */
+        @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
         public ResolveInfo resolveInfo;
 
         /** The version code for the native Android payment app, e.g., 123. */
@@ -93,7 +98,7 @@ public class PaymentManifestVerifier
          * The SHA256 certificate fingerprints for the native Android payment app, .e.g,
          * ["308201dd30820146020101300d06092a864886f70d010105050030"].
          */
-        public Set<String> sha256CertFingerprints;
+        public @Nullable Set<String> sha256CertFingerprints;
     }
 
     private static final String TAG = "PaymentManifest";
@@ -125,15 +130,15 @@ public class PaymentManifestVerifier
     /** A list of web app manifests to cache. */
     private final List<WebAppManifestSection[]> mWebAppManifestsToCache = new ArrayList<>();
 
-    private final PaymentManifestWebDataService mCache;
+    private final WebPaymentsWebDataService mCache;
     private final PaymentManifestDownloader mDownloader;
     private final PaymentManifestParser mParser;
     private final PackageManagerDelegate mPackageManagerDelegate;
     private final ManifestVerifyCallback mCallback;
-    private final MessageDigest mMessageDigest;
+    private final @Nullable MessageDigest mMessageDigest;
 
     /** The origin of the payment method manifest after all redirects have been followed. */
-    private Origin mPaymentMethodManifestOrigin;
+    private @Nullable Origin mPaymentMethodManifestOrigin;
 
     /**
      * The number of web app manifests that have not yet been retrieved from cache or downloaded
@@ -150,27 +155,26 @@ public class PaymentManifestVerifier
     /**
      * Builds the manifest verifier.
      *
-     * @param merchantOrigin         The origin of the iframe that invoked the PaymentRequest API.
-     * @param methodName             The name of the payment method name that apps offer to handle.
-     *                               Must be an absolute URL with HTTPS scheme or HTTP localhost.
-     * @param defaultApplications    The identifying information for the native Android payment apps
-     *                               that offer to handle this payment method as a default app,
-     *                               i.e., as one of the "default_applications". Can be null.
-     * @param supportedOrigins       The origins of the apps that claim support of this payment
-     *                               method as their non-default, i.e., as one of the
-     *                               "supported_origins". Can be null.
-     * @param webDataService         The web data service to cache manifest.
-     * @param downloader             The manifest downloader.
-     * @param parser                 The manifest parser.
+     * @param merchantOrigin The origin of the iframe that invoked the PaymentRequest API.
+     * @param methodName The name of the payment method name that apps offer to handle. Must be an
+     *     absolute URL with HTTPS scheme or HTTP localhost.
+     * @param defaultApplications The identifying information for the native Android payment apps
+     *     that offer to handle this payment method as a default app, i.e., as one of the
+     *     "default_applications". Can be null.
+     * @param supportedOrigins The origins of the apps that claim support of this payment method as
+     *     their non-default, i.e., as one of the "supported_origins". Can be null.
+     * @param webDataService The web data service to cache manifest.
+     * @param downloader The manifest downloader.
+     * @param parser The manifest parser.
      * @param packageManagerDelegate The package information retriever.
-     * @param callback               The callback to be notified of verification result.
+     * @param callback The callback to be notified of verification result.
      */
     public PaymentManifestVerifier(
             Origin merchantOrigin,
             GURL methodName,
             @Nullable Set<ResolveInfo> defaultApplications,
             @Nullable Set<GURL> supportedOrigins,
-            PaymentManifestWebDataService webDataService,
+            WebPaymentsWebDataService webDataService,
             PaymentManifestDownloader downloader,
             PaymentManifestParser parser,
             PackageManagerDelegate packageManagerDelegate,
@@ -191,7 +195,7 @@ public class PaymentManifestVerifier
         mSupportedOrigins =
                 Collections.unmodifiableSet(
                         supportedOrigins == null
-                                ? new HashSet<GURL>()
+                                ? new HashSet<>()
                                 : new HashSet<>(supportedOrigins));
         mDownloader = downloader;
         mCache = webDataService;
@@ -230,18 +234,28 @@ public class PaymentManifestVerifier
             PackageInfo packageInfo =
                     mPackageManagerDelegate.getPackageInfoWithSignatures(packageName);
             if (packageInfo == null) {
+                Log.e(TAG, "Unable to get package info with signatures for \"%s\".", packageName);
+                invalidAppsToRemove.add(packageName);
+                continue;
+            }
+
+            Signature[] signatures = packageInfo.signatures;
+            if (signatures == null) {
+                Log.e(TAG, "Unable to get signatures for \"%s\".", packageName);
                 invalidAppsToRemove.add(packageName);
                 continue;
             }
 
             appInfo.version = packageInfo.versionCode;
             appInfo.sha256CertFingerprints = new HashSet<>();
-            Signature[] signatures = packageInfo.signatures;
+            assumeNonNull(mMessageDigest);
             for (int i = 0; i < signatures.length; i++) {
-                mMessageDigest.update(signatures[i].toByteArray());
+                if (signatures[i] != null) {
+                    mMessageDigest.update(signatures[i].toByteArray());
 
-                // The digest is reset after completing the hash computation.
-                appInfo.sha256CertFingerprints.add(byteArrayToString(mMessageDigest.digest()));
+                    // The digest is reset after completing the hash computation.
+                    appInfo.sha256CertFingerprints.add(byteArrayToString(mMessageDigest.digest()));
+                }
             }
         }
 
@@ -263,8 +277,6 @@ public class PaymentManifestVerifier
      * @return A string representation of the input bytes, e.g., "0123456789abcdef".
      */
     private static String byteArrayToString(byte[] input) {
-        if (input == null) return null;
-
         StringBuilder builder = new StringBuilder(input.length * 2);
         Formatter formatter = new Formatter(builder);
         for (byte b : input) {
@@ -344,7 +356,8 @@ public class PaymentManifestVerifier
         Set<String> validAppPackageNames = verifyAppWithWebAppManifest(manifest);
         for (String validAppPackageName : validAppPackageNames) {
             mCallback.onValidDefaultPaymentApp(
-                    mMethodName, mDefaultApplications.get(validAppPackageName).resolveInfo);
+                    mMethodName,
+                    assumeNonNull(mDefaultApplications.get(validAppPackageName)).resolveInfo);
         }
 
         mPendingWebAppManifestsCount--;
@@ -387,6 +400,7 @@ public class PaymentManifestVerifier
         }
 
         if (webAppManifestUris.length == 0) {
+            Log.e(TAG, "No default_applications value in payment method manfest.");
             if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();
             // Cache supported package names and origins as well as possibly "*".
             mCache.addPaymentMethodManifest(
@@ -400,6 +414,7 @@ public class PaymentManifestVerifier
         for (int i = 0; i < webAppManifestUris.length; i++) {
             if (mAtLeastOneManifestFailedToDownloadOrParse) return;
             assert webAppManifestUris[i] != null;
+            assumeNonNull(mPaymentMethodManifestOrigin);
             mDownloader.downloadWebAppManifest(
                     mPaymentMethodManifestOrigin, webAppManifestUris[i], this);
         }
@@ -428,7 +443,8 @@ public class PaymentManifestVerifier
             Set<String> validAppPackageNames = verifyAppWithWebAppManifest(manifest);
             for (String validAppPackageName : validAppPackageNames) {
                 mCallback.onValidDefaultPaymentApp(
-                        mMethodName, mDefaultApplications.get(validAppPackageName).resolveInfo);
+                        mMethodName,
+                        assumeNonNull(mDefaultApplications.get(validAppPackageName)).resolveInfo);
             }
         }
 
@@ -490,37 +506,55 @@ public class PaymentManifestVerifier
         }
 
         Set<String> packageNames = new HashSet<>();
+        Set<String> errors = new HashSet<>();
         for (int i = 0; i < manifest.length; i++) {
             WebAppManifestSection section = manifest[i];
             AppInfo appInfo = mDefaultApplications.get(section.id);
-            if (appInfo == null) continue;
+            if (appInfo == null) {
+                errors.add(
+                        String.format(Locale.US, "No apps with package name \"%s\".", section.id));
+                continue;
+            }
 
             if (appInfo.version < section.minVersion) {
-                Log.e(
-                        TAG,
-                        "\"%s\" version is %d, but at least %d is required.",
-                        section.id,
-                        appInfo.version,
-                        section.minVersion);
+                errors.add(
+                        String.format(
+                                Locale.US,
+                                "\"%s\" version is %d, but at least %d is required.",
+                                section.id,
+                                appInfo.version,
+                                section.minVersion));
                 continue;
             }
 
             if (appInfo.sha256CertFingerprints == null) {
-                Log.e(TAG, "Unable to determine fingerprints of \"%s\".", section.id);
+                errors.add(
+                        String.format(
+                                Locale.US,
+                                "Unable to determine fingerprints of \"%s\".",
+                                section.id));
                 continue;
             }
 
             if (!appInfo.sha256CertFingerprints.equals(sectionsFingerprints.get(i))) {
-                Log.e(
-                        TAG,
-                        "\"%s\" fingerprints don't match the manifest. Expected %s, but found %s.",
-                        section.id,
-                        setToString(sectionsFingerprints.get(i)),
-                        setToString(appInfo.sha256CertFingerprints));
+                errors.add(
+                        String.format(
+                                Locale.US,
+                                "\"%s\" fingerprints don't match the manifest. Expected %s, but"
+                                        + " found %s.",
+                                section.id,
+                                setToString(sectionsFingerprints.get(i)),
+                                setToString(appInfo.sha256CertFingerprints)));
                 continue;
             }
 
             packageNames.add(section.id);
+        }
+
+        if (packageNames.isEmpty()) {
+            for (String error : errors) {
+                Log.e(TAG, error);
+            }
         }
 
         return packageNames;
@@ -538,6 +572,8 @@ public class PaymentManifestVerifier
 
     @Override
     public void onManifestDownloadFailure(String errorMessage) {
+        Log.e(TAG, "Failed to download manifest: " + errorMessage);
+
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
         mAtLeastOneManifestFailedToDownloadOrParse = true;
 
@@ -549,6 +585,8 @@ public class PaymentManifestVerifier
 
     @Override
     public void onManifestParseFailure() {
+        Log.e(TAG, "Failed to parse manifest.");
+
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
         mAtLeastOneManifestFailedToDownloadOrParse = true;
 

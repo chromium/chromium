@@ -36,8 +36,7 @@ void DrmWindowHostManager::RemoveWindow(gfx::AcceleratedWidget widget) {
       window_mouse_currently_on_ = nullptr;
     window_map_.erase(it);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Attempting to remove non-existing window " << widget;
+    NOTREACHED() << "Attempting to remove non-existing window " << widget;
   }
 
   if (event_grabber_ == widget)
@@ -49,9 +48,7 @@ DrmWindowHost* DrmWindowHostManager::GetWindow(gfx::AcceleratedWidget widget) {
   if (it != window_map_.end())
     return it->second;
 
-  NOTREACHED_IN_MIGRATION()
-      << "Attempting to get non-existing window " << widget;
-  return NULL;
+  NOTREACHED() << "Attempting to get non-existing window " << widget;
 }
 
 DrmWindowHost* DrmWindowHostManager::GetWindowAt(const gfx::Point& location) {
@@ -79,11 +76,15 @@ void DrmWindowHostManager::UngrabEvents(gfx::AcceleratedWidget widget) {
   event_grabber_ = gfx::kNullAcceleratedWidget;
 }
 
+void DrmWindowHostManager::ForceCursorUpdateOnNextMouseMove() {
+  window_mouse_currently_on_ = nullptr;
+}
+
 void DrmWindowHostManager::MouseOnWindow(DrmWindowHost* window) {
   if (window_mouse_currently_on_ == window)
     return;
   window_mouse_currently_on_ = window;
-  window->OnMouseEnter();
+  window->OnCursorUpdate();
 }
 
 }  // namespace ui

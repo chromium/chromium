@@ -45,7 +45,7 @@ wrapper `web-bluetooth-test.js` converted to implement the Bluetooth service as
 needed for tests.
 
 Design Doc:
-https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY
+[Web Bluetooth Testing](https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY)
 
 ## BluetoothEmulation support in Chrome Devtools Protocol
 
@@ -63,7 +63,7 @@ redundancy and produces consistency across all implementations.
 
 Unit tests operate at the public `device/bluetooth` API layer and the
 `BluetoothTest` fixture controls fake operating system behavior as close to the
-platfom as possible. The resulting test coverage spans the cross platform API,
+platform as possible. The resulting test coverage spans the cross platform API,
 common implementation, and platform specific implementation as close to
 operating system APIs as possible.
 
@@ -81,7 +81,7 @@ platform specific unit tests, e.g. `bluetooth_bluez_unittest.cc` &
 `bluetooth_adapter_win_unittest.cc`. The BlueZ style has platform specific
 methods to create fake devices and the public API is used to interact with them.
 
-Maintenance of these earlier implementation featuress should update tests in
+Maintenance of these earlier implementation features should update tests in
 place. Long term these tests should be [refactored into cross platform
 tests](https://crbug.com/580403).
 
@@ -90,6 +90,6 @@ tests](https://crbug.com/580403).
 
 Bluetooth controller system tests generating radio signals are run and managed
 by the Chrome OS team. See:
-https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/server/site_tests/
-https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/server/cros/bluetooth/
-https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/client/cros/bluetooth/
+* [autotest site_tests](https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/server/site_tests/)
+* [autotest server cros bluetooth](https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/server/cros/bluetooth/)
+* [autotest client cros bluetooth](https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/client/cros/bluetooth/)

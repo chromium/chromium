@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("release_notes") {
   sources = [
@@ -29,10 +29,11 @@ static_library("release_notes") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/strings",
     "//chromeos/strings:strings_grit",
@@ -51,10 +52,12 @@ static_library("release_notes") {
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [
     "release_notes_notification_unittest.cc",
     "release_notes_storage_unittest.cc",
   ]
+
   deps = [
     "//ash/constants",
     "//base",
@@ -62,8 +65,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
-    "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/release_notes",
     "//chrome/common:constants",
     "//chrome/test:test_support",

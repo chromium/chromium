@@ -19,7 +19,6 @@ items:
   value: false
 owners:
 - iremuguz@google.com
-- pmarko@chromium.org
 - file://components/policy/OWNERS
 schema:
   type: boolean

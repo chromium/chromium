@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +17,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -58,16 +54,12 @@ const char kHistogramProcessingTime[] =
 const char kHistogramTimeToNextPaint[] =
     "PageLoad.InteractiveTiming.TimeToNextPaint";
 
-// static
-const char InteractiveDetector::kSupplementName[] = "InteractiveDetector";
-
 InteractiveDetector* InteractiveDetector::From(Document& document) {
-  InteractiveDetector* detector =
-      Supplement<Document>::From<InteractiveDetector>(document);
+  InteractiveDetector* detector = document.GetInteractiveDetector();
   if (!detector) {
     detector = MakeGarbageCollected<InteractiveDetector>(
         document, std::make_unique<NetworkActivityChecker>(&document));
-    Supplement<Document>::ProvideTo(document, detector);
+    document.SetInteractiveDetector(detector);
   }
   return detector;
 }
@@ -79,8 +71,8 @@ const char* InteractiveDetector::SupplementName() {
 InteractiveDetector::InteractiveDetector(
     Document& document,
     std::unique_ptr<NetworkActivityChecker> network_activity_checker)
-    : Supplement<Document>(document),
-      ExecutionContextLifecycleObserver(document.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(document.GetExecutionContext()),
+      document_(document),
       clock_(base::DefaultTickClock::GetInstance()),
       network_activity_checker_(std::move(network_activity_checker)),
       time_to_interactive_timer_(
@@ -96,8 +88,9 @@ void InteractiveDetector::SetNavigationStartTime(
 
   // Don't record TTI for OOPIFs (yet).
   // TODO(crbug.com/808086): enable this case.
-  if (!GetSupplementable()->IsInMainFrame())
+  if (!document_->IsInMainFrame()) {
     return;
+  }
 
   LongTaskDetector::Instance().RegisterObserver(this);
   page_event_times_.nav_start = navigation_start_time;
@@ -149,7 +142,7 @@ std::optional<base::TimeDelta> InteractiveDetector::GetFirstInputDelay() const {
   return page_event_times_.first_input_delay;
 }
 
-WTF::Vector<std::optional<base::TimeDelta>>
+Vector<std::optional<base::TimeDelta>>
 InteractiveDetector::GetFirstInputDelaysAfterBackForwardCacheRestore() const {
   return page_event_times_.first_input_delays_after_back_forward_cache_restore;
 }
@@ -171,8 +164,8 @@ std::optional<base::TimeDelta> InteractiveDetector::GetFirstScrollDelay()
 
 bool InteractiveDetector::PageWasBackgroundedSinceEvent(
     base::TimeTicks event_time) {
-  DCHECK(GetSupplementable());
-  if (GetSupplementable()->hidden()) {
+  DCHECK(document_);
+  if (document_->hidden()) {
     return true;
   }
 
@@ -258,28 +251,26 @@ void InteractiveDetector::HandleForInputDelay(
 
     if (delay > kFirstInputDelayTraceEventThreshold) {
       // Emit a trace event to highlight long first input delays.
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "latency", "Long First Input Delay",
-          TRACE_ID_WITH_SCOPE("Long First Input Delay",
-                              g_num_long_input_events),
-          event_timestamp);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "latency", "Long First Input Delay",
-          TRACE_ID_WITH_SCOPE("Long First Input Delay",
-                              g_num_long_input_events),
-          event_timestamp + delay);
+      TRACE_EVENT_BEGIN("latency", "Long First Input Delay",
+                        perfetto::NamedTrack("Long First Input Delay",
+                                             g_num_long_input_events),
+                        event_timestamp);
+      TRACE_EVENT_END("latency",
+                      perfetto::NamedTrack("Long First Input Delay",
+                                           g_num_long_input_events),
+                      event_timestamp + delay);
       g_num_long_input_events++;
     }
   } else if (delay > kInputDelayTraceEventThreshold) {
     // Emit a trace event to highlight long input delays from second input and
     // onwards.
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+    TRACE_EVENT_BEGIN(
         "latency", "Long Input Delay",
-        TRACE_ID_WITH_SCOPE("Long Input Delay", g_num_long_input_events),
+        perfetto::NamedTrack("Long Input Delay", g_num_long_input_events),
         event_timestamp);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "latency", "Long Input Delay",
-        TRACE_ID_WITH_SCOPE("Long Input Delay", g_num_long_input_events),
+    TRACE_EVENT_END(
+        "latency",
+        perfetto::NamedTrack("Long Input Delay", g_num_long_input_events),
         event_timestamp + delay);
     // Apply metadata on stack samples.
     base::ApplyMetadataToPastSamples(
@@ -308,9 +299,8 @@ void InteractiveDetector::HandleForInputDelay(
                              event_timestamp - page_event_times_.nav_start,
                              base::Milliseconds(10), base::Minutes(10), 100);
 
-
-  if (GetSupplementable()->Loader() && interactive_timing_metrics_changed) {
-    GetSupplementable()->Loader()->DidChangePerformanceTiming();
+  if (document_->Loader() && interactive_timing_metrics_changed) {
+    document_->Loader()->DidChangePerformanceTiming();
   }
 }
 
@@ -356,8 +346,9 @@ void InteractiveDetector::UpdateNetworkQuietState(
 
 void InteractiveDetector::OnResourceLoadBegin(
     std::optional<base::TimeTicks> load_begin_time) {
-  if (!GetSupplementable())
+  if (!document_) {
     return;
+  }
   if (!interactive_time_.is_null())
     return;
   // The request that is about to begin is not counted in ActiveConnections(),
@@ -369,8 +360,9 @@ void InteractiveDetector::OnResourceLoadBegin(
 // clock_->NowTicks.
 void InteractiveDetector::OnResourceLoadEnd(
     std::optional<base::TimeTicks> load_finish_time) {
-  if (!GetSupplementable())
+  if (!document_) {
     return;
+  }
   if (!interactive_time_.is_null())
     return;
   UpdateNetworkQuietState(ActiveConnections(), load_finish_time);
@@ -417,8 +409,9 @@ void InteractiveDetector::OnInvalidatingInputEvent(
   page_event_times_.first_invalidating_input =
       std::max(invalidation_time, page_event_times_.nav_start);
 
-  if (GetSupplementable()->Loader())
-    GetSupplementable()->Loader()->DidChangePerformanceTiming();
+  if (document_->Loader()) {
+    document_->Loader()->DidChangePerformanceTiming();
+  }
 }
 
 void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
@@ -427,8 +420,9 @@ void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
 }
 
 void InteractiveDetector::TimeToInteractiveTimerFired(TimerBase*) {
-  if (!GetSupplementable() || !interactive_time_.is_null())
+  if (!document_ || !interactive_time_.is_null()) {
     return;
+  }
 
   // Value of 0.0 indicates there is currently no active timer.
   time_to_interactive_timer_fire_time_ = base::TimeTicks();
@@ -459,32 +453,38 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     base::TimeTicks lower_bound,
     base::TimeTicks current_time) {
   // Network iterator.
-  auto it_net = network_quiet_windows_.begin();
+  auto it_net = network_quiet_windows_.CheckedBegin();
+  auto net_end = network_quiet_windows_.CheckedEnd();
   // Long tasks iterator.
-  auto it_lt = long_tasks_.begin();
+  auto it_lt = long_tasks_.CheckedBegin();
+  auto lt_end = long_tasks_.CheckedEnd();
 
   base::TimeTicks main_quiet_start = page_event_times_.nav_start;
 
-  while (main_quiet_start < current_time &&
-         it_net < network_quiet_windows_.end()) {
+  while (main_quiet_start < current_time && it_net < net_end) {
     base::TimeTicks main_quiet_end =
-        it_lt == long_tasks_.end() ? current_time : it_lt->Low();
+        it_lt == lt_end ? current_time : it_lt->Low();
     base::TimeTicks next_main_quiet_start =
-        it_lt == long_tasks_.end() ? current_time : it_lt->High();
+        it_lt == lt_end ? current_time : it_lt->High();
     if (main_quiet_end - main_quiet_start < kTimeToInteractiveWindow) {
       // The main thread quiet window is too short.
-      ++it_lt;
+      if (it_lt != lt_end) {
+        ++it_lt;
+      }
       main_quiet_start = next_main_quiet_start;
       continue;
     }
     if (main_quiet_end <= lower_bound) {
-      // The main thread quiet window is before |lower_bound|.
+      // The main thread quiet window is before `lower_bound`.
+      // If `it_lt`==`lt_end`, `main_quit_end` will be assigned to
+      // `current_time`, which should be strictly larger than all the other
+      // times, so we can't get here.
       ++it_lt;
       main_quiet_start = next_main_quiet_start;
       continue;
     }
     if (it_net->High() <= lower_bound) {
-      // The network quiet window is before |lower_bound|.
+      // The network quiet window is before `lower_bound`.
       ++it_net;
       continue;
     }
@@ -493,6 +493,8 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     // [ main thread interval ]
     //                                     [ network interval ]
     if (main_quiet_end <= it_net->Low()) {
+      // See the comment about `++it_lt` in the "main_quiet_end <= lower_bound"
+      // case above.
       ++it_lt;
       main_quiet_start = next_main_quiet_start;
       continue;
@@ -516,6 +518,8 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     // The interval with earlier end time will not produce any more overlap, so
     // we move on from it.
     if (main_quiet_end <= it_net->High()) {
+      // See the comment about `++it_lt` in the "main_quiet_end <= lower_bound"
+      // case above.
       ++it_lt;
       main_quiet_start = next_main_quiet_start;
     } else {
@@ -570,14 +574,14 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
 void InteractiveDetector::OnTimeToInteractiveDetected() {
   LongTaskDetector::Instance().UnregisterObserver(this);
   network_quiet_windows_.clear();
-  LocalFrame* frame = GetSupplementable()->GetFrame();
-  DocumentLoader* loader = GetSupplementable()->Loader();
+  LocalFrame* frame = document_->GetFrame();
+  DocumentLoader* loader = document_->Loader();
   probe::LifecycleEvent(frame, loader, "InteractiveTime",
-                        base::TimeTicks::Now().since_origin().InSecondsF());
+                        interactive_time_.since_origin().InSecondsF());
 
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "loading,rail", "InteractiveTime", interactive_time_, "frame",
-      GetFrameIdForTracing(GetSupplementable()->GetFrame()), "args",
+      GetFrameIdForTracing(document_->GetFrame()), "args",
       [&](perfetto::TracedValue context) {
         // We log the trace event even if there is user input, but annotate the
         // event with whether that happened.
@@ -622,7 +626,7 @@ void InteractiveDetector::ContextDestroyed() {
 
 void InteractiveDetector::Trace(Visitor* visitor) const {
   visitor->Trace(time_to_interactive_timer_);
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -650,8 +654,8 @@ void InteractiveDetector::DidObserveFirstScrollDelay(
   if (!page_event_times_.frist_scroll_delay.has_value()) {
     page_event_times_.frist_scroll_delay = first_scroll_delay;
     page_event_times_.first_scroll_timestamp = first_scroll_timestamp;
-    if (GetSupplementable()->Loader()) {
-      GetSupplementable()->Loader()->DidChangePerformanceTiming();
+    if (document_->Loader()) {
+      document_->Loader()->DidChangePerformanceTiming();
     }
   }
 }

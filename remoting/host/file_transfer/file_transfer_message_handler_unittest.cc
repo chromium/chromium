@@ -31,8 +31,7 @@ std::unique_ptr<remoting::CompoundBuffer> StringToBuffer(
     const std::string& data) {
   std::unique_ptr<remoting::CompoundBuffer> buffer =
       std::make_unique<remoting::CompoundBuffer>();
-  buffer->Append(base::MakeRefCounted<net::StringIOBuffer>(data.data()),
-                 data.size());
+  buffer->Append(base::MakeRefCounted<net::StringIOBuffer>(data), data.size());
   return buffer;
 }
 

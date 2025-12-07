@@ -5,9 +5,14 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -17,12 +22,39 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/url_constants.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
 namespace history_clusters {
+
+namespace {
+
+history::ClusterVisit CreateVisit(
+    std::string url,
+    float score,
+    std::vector<std::string> related_searches = {}) {
+  history::ClusterVisit visit;
+  visit.annotated_visit = {
+      {GURL{url}, 0}, {}, {}, {}, 0, 0, history::VisitSource::SOURCE_BROWSED};
+  visit.annotated_visit.content_annotations.related_searches = related_searches;
+  visit.score = score;
+  visit.normalized_url = GURL{url};
+  return visit;
+}
+
+bool IsOpenInIncognitoEnabled(ui::MenuModel* menu) {
+  size_t index = 0;
+  return ui::MenuModel::GetModelAndIndexForCommandId(
+             IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, &menu, &index) &&
+         menu->IsEnabledAt(index);
+}
+
+}  // namespace
 
 class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
  public:
@@ -60,7 +92,7 @@ class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        OpenVisitUrlsInTabGroup) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   std::vector<mojom::URLVisitPtr> visits;
   auto visit1 = mojom::URLVisit::New();
@@ -70,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   visit2->normalized_url = GURL("https://bar");
   visits.push_back(std::move(visit2));
 
-  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
-  ASSERT_EQ(3, tab_strip_model->GetTabCount());
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
+  ASSERT_EQ(3, tab_strip_model->count());
 
   ASSERT_EQ(tab_strip_model->GetTabGroupForTab(1).value(),
             tab_strip_model->GetTabGroupForTab(2).value());
@@ -86,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        DISABLED_OpenVisitUrlsInTabGroupHardCap) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   std::vector<mojom::URLVisitPtr> visits;
   for (size_t i = 0; i < 50; ++i) {
@@ -96,14 +128,14 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   }
 
   // Verify that we open 32 at maximum. Including the NTP, that's 33 total.
-  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
-  ASSERT_EQ(33, tab_strip_model->GetTabCount());
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
+  ASSERT_EQ(33, tab_strip_model->count());
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUIVisitActions) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -138,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUIClusterActions) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -163,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUIRelatedSearchActions) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -185,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUnsuccessfulOutcome) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -202,6 +234,116 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
       "History.Clusters.Actions.FinalState.WasSuccessful", false, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.FinalState.NumberVisibilityToggles", 1, 1);
+}
+
+// Just a basic test that we transform the data to mojom. A lot of the meat of
+// the visit hiding logic is within QueryClustersState and HistoryClustersUtil.
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       QueryClustersResultToMojom_Integration) {
+  std::vector<history::Cluster> clusters;
+
+  history::Cluster cluster;
+  cluster.cluster_id = 4;
+  cluster.related_searches = {"one", "two", "three", "four", "five"};
+  cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
+  cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
+
+  clusters.push_back(cluster);
+
+  mojom::QueryResultPtr mojom_result = QueryClustersResultToMojom(
+      browser()->profile(), "query", clusters, true, false);
+
+  EXPECT_EQ(mojom_result->query, "query");
+  EXPECT_EQ(mojom_result->can_load_more, true);
+  EXPECT_EQ(mojom_result->is_continuation, false);
+
+  ASSERT_EQ(mojom_result->clusters.size(), 1u);
+  const auto& cluster_mojom = mojom_result->clusters[0];
+
+  EXPECT_EQ(cluster_mojom->id, 4);
+  const auto& visits = cluster_mojom->visits;
+  ASSERT_EQ(visits.size(), 2u);
+  // Test that the hidden attribute is passed through to mojom.
+  ASSERT_EQ(cluster_mojom->related_searches.size(), 5u);
+  EXPECT_EQ(cluster_mojom->related_searches[0]->query, "one");
+  EXPECT_EQ(cluster_mojom->related_searches[1]->query, "two");
+  EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
+  EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
+  EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
+}
+
+// TODO(crbug.com/401535901): Test is flaky.
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       DISABLED_RemoveVisitByUrlAndTime) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  // Open in a new tab to keep the history clusters UI open.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  history::QueryResults history_query_results;
+  base::RunLoop run_loop;
+  base::CancelableTaskTracker tracker;
+  HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->QueryHistory(
+          std::u16string(), history::QueryOptions(),
+          base::BindLambdaForTesting([&](history::QueryResults results) {
+            history_query_results = std::move(results);
+            run_loop.Quit();
+          }),
+          &tracker);
+  run_loop.Run();
+  EXPECT_EQ(history_query_results.size(), 1u);
+
+  base::test::TestFuture<bool> future;
+  handler_->RemoveVisitByUrlAndTime(
+      url,
+      history_query_results[0].visit_time().InMillisecondsFSinceUnixEpoch(),
+      future.GetCallback());
+  bool success = future.Take();
+  ASSERT_TRUE(success);
+
+  // Verify the history entry is no longer there.
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  EXPECT_EQ(0u, enumerator.urls().size());
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       OpenInIncognitoRespectsIncognitoModePolicy) {
+  // Disable incognito mode, the menu option should not appear.
+  const GURL test_url("https://www.foo.com/");
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kDisabled);
+  auto menu_model =
+      handler_->CreateHistoryClustersSidePanelContextMenuForTesting(browser(),
+                                                                    test_url);
+  EXPECT_FALSE(IsOpenInIncognitoEnabled(menu_model.get()));
+
+  // Enable incognito mode, the menu option should appear as expected.
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kEnabled);
+  menu_model = handler_->CreateHistoryClustersSidePanelContextMenuForTesting(
+      browser(), test_url);
+  EXPECT_TRUE(IsOpenInIncognitoEnabled(menu_model.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       OpenInIncognitoRespectsDisabledForIncognitoBrowsers) {
+  // Assert the option is enabled for regular browsers.
+  const GURL test_url("https://www.foo.com/");
+  auto menu_model =
+      handler_->CreateHistoryClustersSidePanelContextMenuForTesting(browser(),
+                                                                    test_url);
+  EXPECT_TRUE(IsOpenInIncognitoEnabled(menu_model.get()));
+
+  // Assert the option is disabled for incognito browsers.
+  menu_model = handler_->CreateHistoryClustersSidePanelContextMenuForTesting(
+      CreateIncognitoBrowser(), test_url);
+  EXPECT_FALSE(IsOpenInIncognitoEnabled(menu_model.get()));
 }
 
 }  // namespace history_clusters

@@ -4,11 +4,15 @@
 
 package org.chromium.components.infobars;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A listener for the InfoBar animations. */
+@NullMarked
 public interface InfoBarAnimationListener {
-    public static final int ANIMATION_TYPE_SHOW = 0;
-    public static final int ANIMATION_TYPE_SWAP = 1;
-    public static final int ANIMATION_TYPE_HIDE = 2;
+    int ANIMATION_TYPE_SHOW = 0;
+    int ANIMATION_TYPE_SWAP = 1;
+    int ANIMATION_TYPE_HIDE = 2;
 
     /** Notifies the subscriber when an animation is completed. */
     void notifyAnimationFinished(int animationType);
@@ -17,5 +21,5 @@ public interface InfoBarAnimationListener {
      * Notifies the subscriber when all animations are finished.
      * @param frontInfoBar The frontmost infobar or {@code null} if none are showing.
      */
-    void notifyAllAnimationsFinished(InfoBarUiItem frontInfoBar);
+    void notifyAllAnimationsFinished(@Nullable InfoBarUiItem frontInfoBar);
 }

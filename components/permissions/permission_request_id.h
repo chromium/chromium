@@ -9,7 +9,6 @@
 
 #include "base/types/id_type.h"
 #include "content/public/browser/global_routing_id.h"
-#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;
@@ -50,8 +49,8 @@ class PermissionRequestID {
     return request_local_id_;
   }
 
-  bool operator==(const PermissionRequestID& other) const;
-  bool operator!=(const PermissionRequestID& other) const;
+  friend bool operator==(const PermissionRequestID&,
+                         const PermissionRequestID&) = default;
 
   std::string ToString() const;
 
@@ -61,11 +60,5 @@ class PermissionRequestID {
 };
 
 }  // namespace permissions
-
-namespace std {
-template <>
-struct hash<permissions::PermissionRequestID::RequestLocalId>
-    : public permissions::PermissionRequestID::RequestLocalId::Hasher {};
-}  // namespace std
 
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_ID_H_

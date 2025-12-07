@@ -13,6 +13,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
@@ -22,9 +24,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.payments.InputProtector;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.payments.SslValidityChecker;
+import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -41,6 +43,7 @@ import java.lang.annotation.RetentionPolicy;
  * PaymentHandler mediator, which is responsible for receiving events from the view and notifies the
  * backend (the coordinator).
  */
+@NullMarked
 /* package */ class PaymentHandlerMediator extends WebContentsObserver
         implements BottomSheetObserver, PaymentHandlerToolbarObserver, View.OnLayoutChangeListener {
     // The value is picked in order to allow users to see the tab behind this UI.
@@ -65,7 +68,10 @@ import java.lang.annotation.RetentionPolicy;
     private final InputProtector mInputProtector;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
-    private TabObscuringHandler.Token mTabObscuringToken;
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
+
+    private @Nullable PropertyModel mScrimProperties;
+    private boolean mIsDestroyed;
 
     @IntDef({
         CloseReason.OTHERS,
@@ -139,6 +145,48 @@ import java.lang.annotation.RetentionPolicy;
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
     }
 
+    /** Destroy the dependencies of the Mediator. */
+    public void destroy() {
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
+
+        observe(null);
+
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+
+        switch (mCloseReason) {
+            case CloseReason.INSECURE_NAVIGATION:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
+                break;
+            case CloseReason.USER:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
+                break;
+            case CloseReason.FAIL_LOAD:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME);
+                break;
+            case CloseReason.ACTIVITY_DIED:
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED);
+                break;
+            case CloseReason.OTHERS:
+                // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
+                // payment request (and thus {@link ChromePaymentRequestService} closes
+                // PaymentHandlerMediator). "OTHERS" category includes this cases.
+                // TODO(crbug.com/40134410): we should explicitly list merchant aborting payment
+                // request as a {@link CloseReason}, renames "OTHERS" as "UNKNOWN" and asserts
+                // that PaymentHandler wouldn't be closed for unknown reason.
+        }
+        mHandler.removeCallbacksAndMessages(null);
+        hideScrim();
+    }
+
     // Implement View.OnLayoutChangeListener:
     // This is the Tab View's layout change listener, invoked in response to phone rotation.
     // TODO(crbug.com/40120866): It should listen to the BottomSheet container's layout change
@@ -193,10 +241,10 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void showScrim() {
-        ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
-        if (coordinator != null && !coordinator.isShowingScrim()) {
-            PropertyModel params = mBottomSheetController.createScrimParams();
-            coordinator.showScrim(params);
+        ScrimManager scrimManager = mBottomSheetController.getScrimManager();
+        if (scrimManager != null && !scrimManager.isShowingScrim()) {
+            mScrimProperties = mBottomSheetController.createScrimParams();
+            scrimManager.showScrim(mScrimProperties);
         }
         setObscureState(true);
     }
@@ -217,54 +265,23 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement BottomSheetObserver:
     @Override
-    public void onSheetContentChanged(BottomSheetContent newContent) {}
-
-    // Implement WebContentsObserver:
-    @Override
-    public void destroy() {
-        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
-
-        switch (mCloseReason) {
-            case CloseReason.INSECURE_NAVIGATION:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
-                break;
-            case CloseReason.USER:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
-                break;
-            case CloseReason.FAIL_LOAD:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME);
-                break;
-            case CloseReason.ACTIVITY_DIED:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
-                        mPaymentRequestWebContents,
-                        PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED);
-                break;
-            case CloseReason.OTHERS:
-                // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
-                // payment request (and thus {@link ChromePaymentRequestService} closes
-                // PaymentHandlerMediator). "OTHERS" category includes this cases.
-                // TODO(crbug.com/40134410): we should explicitly list merchant aborting payment
-                // request as a {@link CloseReason}, renames "OTHERS" as "UNKNOWN" and asserts
-                // that PaymentHandler wouldn't be closed for unknown reason.
-        }
-        mHandler.removeCallbacksAndMessages(null);
-        hideScrim();
-        super.destroy(); // Stops observing the web contents and cleans up associated references.
-    }
+    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
 
     private void hideScrim() {
         setObscureState(false);
 
-        ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
+        ScrimManager coordinator = mBottomSheetController.getScrimManager();
         if (coordinator != null && coordinator.isShowingScrim()) {
-            coordinator.hideScrim(/* animate= */ true);
+            assert mScrimProperties != null;
+            coordinator.hideScrim(mScrimProperties, /* animate= */ true);
+            mScrimProperties = null;
         }
+    }
+
+    // Implement WebContentsObserver:
+    @Override
+    public void webContentsDestroyed() {
+        destroy();
     }
 
     // Implement WebContentsObserver:
@@ -286,11 +303,11 @@ import java.lang.annotation.RetentionPolicy;
 
     private void closeIfInsecure() {
         if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(mPaymentHandlerWebContents)) {
-            closeUIForInsecureNavigation();
+            closeUiForInsecureNavigation();
         }
     }
 
-    private void closeUIForInsecureNavigation() {
+    private void closeUiForInsecureNavigation() {
         mHandler.post(
                 () -> {
                     mCloseReason = CloseReason.INSECURE_NAVIGATION;

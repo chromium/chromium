@@ -31,7 +31,7 @@ PrerenderTask::PrerenderTask(content::RenderFrameHost* render_frame_host,
 
 PrerenderTask::~PrerenderTask() = default;
 
-const Task* PrerenderTask::GetParentTask() const {
+base::WeakPtr<Task> PrerenderTask::GetParentTask() const {
   return task_provider_->GetTaskOfFrame(web_contents()->GetPrimaryMainFrame());
 }
 

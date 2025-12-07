@@ -36,6 +36,7 @@ class AbortSignalTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp();
+    NavigateTo(KURL("https://example.com/"));
 
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     controller_ = AbortController::Create(script_state);
@@ -61,7 +62,7 @@ class AbortSignalTest : public PageTestBase {
 TEST_F(AbortSignalTest, AbortAlgorithmRuns) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
-      WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+      BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
 
   // GC should not affect whether or not the algorithm runs.
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -77,7 +78,7 @@ TEST_F(AbortSignalTest, AbortAlgorithmRuns) {
 TEST_F(AbortSignalTest, AbortAlgorithmHandleRemoved) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
-      WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+      BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
 
   signal_->RemoveAlgorithm(abort_handle_.Get());
 
@@ -88,7 +89,7 @@ TEST_F(AbortSignalTest, AbortAlgorithmHandleRemoved) {
 TEST_F(AbortSignalTest, AbortAlgorithmHandleGCed) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
-      WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+      BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
 
   abort_handle_.Clear();
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -103,7 +104,7 @@ TEST_F(AbortSignalTest, RegisteredSignalAlgorithmRuns) {
       MakeGarbageCollected<TestEventListener>();
   {
     auto* handle = signal_->AddAlgorithm(
-        WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+        BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
     GetRegistry()->RegisterAbortAlgorithm(listener.Get(), handle);
   }
 
@@ -120,7 +121,7 @@ TEST_F(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
       MakeGarbageCollected<TestEventListener>();
   {
     auto* handle = signal_->AddAlgorithm(
-        WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+        BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
     GetRegistry()->RegisterAbortAlgorithm(listener.Get(), handle);
   }
 
@@ -141,6 +142,20 @@ TEST_F(AbortSignalTest, CanAbortAfterGC) {
   controller_.Clear();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(signal_->CanAbort());
+}
+
+TEST_F(AbortSignalTest, TimeoutTaskCanceledOnDetach) {
+  WeakPersistent<AbortSignal> timeout_signal =
+      AbortSignal::timeout(ToScriptStateForMainWorld(&GetFrame()), 10000);
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // The signal should be kept alive by the pending timeout task.
+  EXPECT_TRUE(timeout_signal);
+
+  NavigateTo(KURL("https://example2.com/"));
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // Navigating should cause the signal's context to detach, which should cancel
+  // the pending timeout task, removing the last strong reference to the signal.
+  EXPECT_FALSE(timeout_signal);
 }
 
 }  // namespace blink

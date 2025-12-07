@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -297,12 +297,13 @@ class CdmWrapperImpl : public CdmWrapper {
     void operator()(CdmInterface* cdm) const { cdm->Destroy(); }
   };
 
-  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { DCHECK(cdm_); }
+  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { CHECK(cdm_); }
 
   std::unique_ptr<CdmInterface, CdmDeleter> cdm_;
 };
 
-// Specialization for cdm::ContentDecryptionModule_10 methods.
+// Specialization for cdm::ContentDecryptionModule_10 methods and
+// cdm::ContentDecryptionModule_11 methods.
 
 template <>
 cdm::Status CdmWrapperImpl<10>::InitializeVideoDecoder(
@@ -311,38 +312,53 @@ cdm::Status CdmWrapperImpl<10>::InitializeVideoDecoder(
       ToVideoDecoderConfig_2(video_decoder_config));
 }
 
+template <>
+cdm::Status CdmWrapperImpl<11>::InitializeVideoDecoder(
+    const cdm::VideoDecoderConfig_3& video_decoder_config) {
+  return cdm_->InitializeVideoDecoder(
+      ToVideoDecoderConfig_2(video_decoder_config));
+}
+
+// Method to try creating CdmWrapper recursively iterating through the listed
+// versions.
+template <int FirstVersion, int... RemainingVersions>
+CdmWrapper* CreateWithVersions(CreateCdmFunc create_cdm_func,
+                               const char* key_system,
+                               uint32_t key_system_size,
+                               GetCdmHostFunc get_cdm_host_func,
+                               void* user_data) {
+  if (IsSupportedAndEnabledCdmInterfaceVersion(FirstVersion)) {
+    CdmWrapper* wrapper = CdmWrapperImpl<FirstVersion>::Create(
+        create_cdm_func, key_system, key_system_size, get_cdm_host_func,
+        user_data);
+    if (wrapper) {
+      return wrapper;
+    }
+  }
+
+  if constexpr (sizeof...(RemainingVersions) > 0) {
+    return CreateWithVersions<RemainingVersions...>(
+        create_cdm_func, key_system, key_system_size, get_cdm_host_func,
+        user_data);
+  } else {
+    // Base case for the last version not succeeding.
+    return nullptr;
+  }
+}
+
 // static
 CdmWrapper* CdmWrapper::Create(CreateCdmFunc create_cdm_func,
                                const char* key_system,
                                uint32_t key_system_size,
                                GetCdmHostFunc get_cdm_host_func,
                                void* user_data) {
-  static_assert(CheckSupportedCdmInterfaceVersions(10, 11),
+  static_assert(CheckSupportedCdmInterfaceVersions(10, 12),
                 "Mismatch between CdmWrapper::Create() and "
                 "IsSupportedCdmInterfaceVersion()");
 
-  // Try to create the CDM using the latest CDM interface version.
-  // This is only attempted if requested.
-  CdmWrapper* cdm_wrapper = nullptr;
-
-  // TODO(xhwang): Check whether we can use static loops to simplify this code.
-
-  // Try to use the latest supported and enabled CDM interface first. If it's
-  // not supported by the CDM, try to create the CDM using older supported
-  // versions.
-  if (IsSupportedAndEnabledCdmInterfaceVersion(11)) {
-    cdm_wrapper =
-        CdmWrapperImpl<11>::Create(create_cdm_func, key_system, key_system_size,
-                                   get_cdm_host_func, user_data);
-  }
-
-  if (!cdm_wrapper && IsSupportedAndEnabledCdmInterfaceVersion(10)) {
-    cdm_wrapper =
-        CdmWrapperImpl<10>::Create(create_cdm_func, key_system, key_system_size,
-                                   get_cdm_host_func, user_data);
-  }
-
-  return cdm_wrapper;
+  return CreateWithVersions<12, 11, 10>(create_cdm_func, key_system,
+                                        key_system_size, get_cdm_host_func,
+                                        user_data);
 }
 
 }  // namespace media

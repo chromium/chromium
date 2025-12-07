@@ -5,12 +5,15 @@
 #ifndef CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
 #define CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
 
-#include "base/functional/callback.h"
-#include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
-#include "services/device/public/mojom/battery_monitor.mojom-forward.h"
-#include "services/device/public/mojom/vibration_manager.mojom-forward.h"
-#include "url/origin.h"
+namespace mojo {
+class BinderMap;
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -18,6 +21,7 @@ class RenderFrameHost;
 class RenderFrameHostImpl;
 class DedicatedWorkerHost;
 class SharedWorkerHost;
+class SharedStorageWorkletHost;
 class ServiceWorkerHost;
 struct ServiceWorkerVersionInfo;
 struct ServiceWorkerVersionBaseInfo;
@@ -54,6 +58,13 @@ void PopulateBinderMapWithContext(
     mojo::BinderMapWithContext<const url::Origin&>* map);
 url::Origin GetContextForHost(SharedWorkerHost* host);
 
+// Registers the handlers for interfaces requested by shared storage worklets.
+void PopulateBinderMap(SharedStorageWorkletHost* host, mojo::BinderMap* map);
+void PopulateBinderMapWithContext(
+    SharedStorageWorkletHost* host,
+    mojo::BinderMapWithContext<SharedStorageWorkletHost*>* map);
+SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host);
+
 // Registers the handlers for interfaces requested by service workers.
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map);
 void PopulateBinderMapWithContext(
@@ -62,20 +73,6 @@ void PopulateBinderMapWithContext(
 ServiceWorkerVersionInfo GetContextForHost(ServiceWorkerHost* host);
 
 }  // namespace internal
-
-// Allows tests to override how frame hosts bind BatteryMonitor receivers.
-using BatteryMonitorBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<device::mojom::BatteryMonitor>)>;
-CONTENT_EXPORT void OverrideBatteryMonitorBinderForTesting(
-    BatteryMonitorBinder binder);
-
-// Allows tests to override how frame hosts bind VibrationManager receivers.
-using VibrationManagerBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<device::mojom::VibrationManager>,
-    mojo::PendingRemote<device::mojom::VibrationManagerListener>)>;
-CONTENT_EXPORT void OverrideVibrationManagerBinderForTesting(
-    VibrationManagerBinder binder);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_

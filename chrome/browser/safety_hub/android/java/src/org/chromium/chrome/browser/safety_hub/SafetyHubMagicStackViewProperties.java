@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.safety_hub;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties for the Safety Hub Magic Stack Module. */
+@NullMarked
 interface SafetyHubMagicStackViewProperties {
     PropertyModel.WritableObjectPropertyKey<String> HEADER =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -22,11 +24,19 @@ interface SafetyHubMagicStackViewProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<String> BUTTON_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
+    PropertyModel.WritableObjectPropertyKey<String> BUTTON_CONTENT_DESCRIPTION =
+            new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<OnClickListener> BUTTON_ON_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                HEADER, TITLE, SUMMARY, ICON_DRAWABLE, BUTTON_TEXT, BUTTON_ON_CLICK_LISTENER,
+                HEADER,
+                TITLE,
+                SUMMARY,
+                ICON_DRAWABLE,
+                BUTTON_TEXT,
+                BUTTON_CONTENT_DESCRIPTION,
+                BUTTON_ON_CLICK_LISTENER,
             };
 }

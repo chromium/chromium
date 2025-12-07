@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
@@ -54,8 +55,8 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 @end
 
 @implementation SpotlightDebuggerViewController {
-  // PrefService per a browser state.
-  PrefService* _prefService;
+  // PrefService per a profile.
+  raw_ptr<PrefService> _prefService;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -99,9 +100,8 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
     case DebugCommandsSection:
       return DebugCommandsRowsCount;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -137,8 +137,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
 
@@ -175,13 +174,11 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         }
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   cell.contentConfiguration = content;
@@ -201,8 +198,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           [self.delegate showAllItems];
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
 
@@ -224,13 +220,11 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           [self clearAndReindexTopSites];
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -240,24 +234,24 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 
 - (void)clearAllSpotlightEntries {
   [self showSpinner];
-  [self.spotlightInterface deleteAllSearchableItemsWithCompletionHandler:^(
-                               NSError* error) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      UIAlertController* controller = [UIAlertController
-          alertControllerWithTitle:@"Clear Entries"
-                           message:error ? error.localizedDescription
-                                         : @"Success"
-                    preferredStyle:UIAlertControllerStyleAlert];
-      [controller
-          addAction:[UIAlertAction actionWithTitle:@"OK"
-                                             style:UIAlertActionStyleDefault
-                                           handler:nil]];
-      [self presentViewController:controller animated:YES completion:nil];
+  [self.spotlightInterface
+      deleteAllSearchableItemsWithCompletionHandler:^(NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIAlertController* controller = [UIAlertController
+              alertControllerWithTitle:@"Clear Entries"
+                               message:error ? error.localizedDescription
+                                             : @"Success"
+                        preferredStyle:UIAlertControllerStyleAlert];
+          [controller
+              addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                 style:UIAlertActionStyleDefault
+                                               handler:nil]];
+          [self presentViewController:controller animated:YES completion:nil];
 
-      [self removeSpinner];
-      [self.tableView reloadData];
-    });
-  }];
+          [self removeSpinner];
+          [self.tableView reloadData];
+        });
+      }];
   _prefService->ClearPref(spotlight::kSpotlightLastIndexingDateKey);
 }
 

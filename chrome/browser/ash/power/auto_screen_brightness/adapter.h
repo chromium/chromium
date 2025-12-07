@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_samples.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/brightness_monitor.h"
-#include "chrome/browser/ash/power/auto_screen_brightness/metrics_reporter.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/modeller_impl.h"
@@ -135,9 +134,6 @@ class Adapter : public AlsReader::Observer,
   };
 
   struct AdapterDecision {
-    AdapterDecision();
-    AdapterDecision(const AdapterDecision& decision);
-    AdapterDecision& operator=(const AdapterDecision& decision);
     // If |no_brightness_change_cause| is not nullopt, then brightness
     // should not be changed.
     // If |brightness_change_cause| is not nullopt, then brightness should be
@@ -155,8 +151,7 @@ class Adapter : public AlsReader::Observer,
           AlsReader* als_reader,
           BrightnessMonitor* brightness_monitor,
           Modeller* modeller,
-          ModelConfigLoader* model_config_loader,
-          MetricsReporter* metrics_reporter);
+          ModelConfigLoader* model_config_loader);
 
   Adapter(const Adapter&) = delete;
   Adapter& operator=(const Adapter&) = delete;
@@ -212,7 +207,6 @@ class Adapter : public AlsReader::Observer,
       BrightnessMonitor* brightness_monitor,
       Modeller* modeller,
       ModelConfigLoader* model_config_loader,
-      MetricsReporter* metrics_reporter,
       const base::TickClock* tick_clock);
 
  private:
@@ -221,7 +215,6 @@ class Adapter : public AlsReader::Observer,
           BrightnessMonitor* brightness_monitor,
           Modeller* modeller,
           ModelConfigLoader* model_config_loader,
-          MetricsReporter* metrics_reporter,
           const base::TickClock* tick_clock);
 
   // Called by |OnModelConfigLoaded| and only if |model_config| has been checked
@@ -300,9 +293,6 @@ class Adapter : public AlsReader::Observer,
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
-
-  // Used to report daily metrics to UMA. This may be null in unit tests.
-  raw_ptr<MetricsReporter> metrics_reporter_;
 
   Params params_;
 

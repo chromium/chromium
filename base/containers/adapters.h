@@ -5,38 +5,31 @@
 #ifndef BASE_CONTAINERS_ADAPTERS_H_
 #define BASE_CONTAINERS_ADAPTERS_H_
 
-#include <stddef.h>
-
-#include <iterator>
+#include <ranges>
+#include <type_traits>
 #include <utility>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/compiler_specific.h"
+#include "base/containers/adapters_internal.h"
 
 namespace base {
 
-namespace internal {
-
-// Internal adapter class for implementing base::Reversed.
-template <typename T>
-class ReversedAdapter {
- public:
-  using Iterator = decltype(std::rbegin(std::declval<T&>()));
-
-  explicit ReversedAdapter(T& t) : t_(t) {}
-  ReversedAdapter(const ReversedAdapter& ra) : t_(ra.t_) {}
-  ReversedAdapter& operator=(const ReversedAdapter&) = delete;
-
-  Iterator begin() const { return std::rbegin(t_); }
-  Iterator end() const { return std::rend(t_); }
-
- private:
-  // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class. It is only used
-  // inside for loops. Ideally, the container being iterated over should be the
-  // one held via a raw_ref/raw_ptrs.
-  RAW_PTR_EXCLUSION T& t_;
-};
-
-}  // namespace internal
+// Returns a range adapter that exposes its elements as rvalues. When used as an
+// input range, this means the values in `range` will be moved from (and
+// the values potentially in an unspecified but valid state).
+template <typename Range>
+  requires(std::ranges::input_range<Range> &&
+           // The elements in the input range will be consumed, so restrict this
+           // to non-borrowed ranges, as the elements from a borrowed range can
+           // outlive this call.
+           !std::ranges::borrowed_range<Range> &&
+           // Disallow input ranges if the elements cannot be moved from (e.g.
+           // if they are const-qualified).
+           std::movable<
+               std::remove_reference_t<std::ranges::range_reference_t<Range>>>)
+auto RangeAsRvalues(Range&& range LIFETIME_BOUND) {
+  return internal::RangeOfRvaluesAdapter<Range>(std::forward<Range>(range));
+}
 
 // Reversed returns a container adapter usable in a range-based "for" statement
 // for iterating a reversible container in reverse order.
@@ -47,9 +40,9 @@ class ReversedAdapter {
 //   for (int i : base::Reversed(v)) {
 //     // iterates through v from back to front
 //   }
-template <typename T>
-internal::ReversedAdapter<T> Reversed(T& t) {
-  return internal::ReversedAdapter<T>(t);
+template <typename Range>
+auto Reversed(Range&& range LIFETIME_BOUND) {
+  return internal::ReversedAdapter<Range>(std::forward<Range>(range));
 }
 
 }  // namespace base

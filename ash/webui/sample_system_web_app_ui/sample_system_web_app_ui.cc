@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 
 #include <utility>
@@ -24,7 +19,6 @@
 #include "content/public/common/url_constants.h"
 #include "crypto/random.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -36,8 +30,7 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(browser_context,
                                              kChromeUISampleSystemWebAppHost);
   trusted_source->AddResourcePath("", IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
-  trusted_source->AddResourcePaths(base::make_span(
-      kAshSampleSystemWebAppResources, kAshSampleSystemWebAppResourcesSize));
+  trusted_source->AddResourcePaths(kAshSampleSystemWebAppResources);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
@@ -72,15 +65,14 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin sample_system_web_app_untrusted_origin =
       url::Origin::Create(GURL(kChromeUISampleSystemWebAppUntrustedURL));
-  for (const auto& permission : {
-           ContentSettingsType::COOKIES,
-           ContentSettingsType::JAVASCRIPT,
-           ContentSettingsType::IMAGES,
-           ContentSettingsType::SOUND,
-       }) {
-    webui_allowlist->RegisterAutoGrantedPermission(
-        sample_system_web_app_untrusted_origin, permission);
-  }
+  webui_allowlist->RegisterAutoGrantedPermissions(
+      sample_system_web_app_untrusted_origin,
+      {
+          ContentSettingsType::COOKIES,
+          ContentSettingsType::JAVASCRIPT,
+          ContentSettingsType::IMAGES,
+          ContentSettingsType::SOUND,
+      });
 }
 
 SampleSystemWebAppUI::~SampleSystemWebAppUI() = default;
@@ -91,12 +83,6 @@ void SampleSystemWebAppUI::BindInterface(
     sample_page_factory_.reset();
   }
   sample_page_factory_.Bind(std::move(factory));
-}
-
-void SampleSystemWebAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void SampleSystemWebAppUI::CreatePageHandler(

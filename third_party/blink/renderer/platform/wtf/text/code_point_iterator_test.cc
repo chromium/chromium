@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -76,6 +76,23 @@ TEST_P(CodePointIteratorParamTest, Length) {
   EXPECT_EQ(count, test.chars.size());
 }
 
+TEST_P(CodePointIteratorParamTest, DistanceByCodeUnits) {
+  const auto& test = GetParam();
+  const String string = test.ToString();
+  if (string.Is8Bit()) {
+    return;  // This test is only for UTF16.
+  }
+  const CodePointIterator::Utf16 begin{string.Span16()};
+  const auto end = begin.EndForThis();
+  wtf_size_t offset = 0;
+  for (auto iter = begin; iter != end;) {
+    const UChar32 ch = *iter;
+    ++iter;
+    offset += ch <= 0xFFFF ? 1 : 2;
+    EXPECT_EQ(offset, iter.DistanceByCodeUnits(begin));
+  }
+}
+
 TEST(CodePointIteratorTest, Equality) {
   StringView str1{"foo"};
   EXPECT_EQ(str1.begin(), str1.begin());
@@ -90,4 +107,4 @@ TEST(CodePointIteratorTest, Equality) {
 
 }  // namespace
 
-}  // namespace WTF
+}  // namespace blink

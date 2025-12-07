@@ -8,22 +8,23 @@
  * the graphics tablets, and allow users to configure the pen buttons for
  * each graphics tablet.
  */
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_pen_buttons_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, GraphicsTablet, GraphicsTabletButtonConfig, InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
+import type {ActionChoice, GraphicsTablet, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {GraphicsTabletButtonConfig, MetaKey} from './input_device_settings_types.js';
 
 const SettingsCustomizePenButtonsSubpageElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement));
@@ -166,7 +167,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
     }
 
     this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
-        this.selectedTablet!.id, this.selectedTablet!.settings);
+        this.selectedTablet.id, this.selectedTablet.settings);
   }
 
   private getDescription_(): string {
@@ -174,7 +175,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
       return '';
     }
     return this.i18n(
-        'customizeTabletButtonSubpageDescription', this.selectedTablet!.name);
+        'customizeTabletButtonSubpageDescription', this.selectedTablet.name);
   }
 
   private getcustomizePenButtonsNudgeHeader_(): string {

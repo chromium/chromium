@@ -4,6 +4,7 @@
 
 #include "components/update_client/test_installer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,8 +24,7 @@
 namespace update_client {
 
 TestInstaller::TestInstaller()
-    : error_(0),
-      install_count_(0),
+    : install_count_(0),
       install_error_(InstallError::NONE),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -35,10 +35,6 @@ TestInstaller::~TestInstaller() {
   if (!unpack_path_.empty()) {
     EXPECT_FALSE(base::DirectoryExists(unpack_path_));
   }
-}
-
-void TestInstaller::OnUpdateError(int error) {
-  error_ = error;
 }
 
 void TestInstaller::Install(const base::FilePath& unpack_path,
@@ -57,16 +53,16 @@ void TestInstaller::Install(const base::FilePath& unpack_path,
 void TestInstaller::InstallComplete(Callback callback,
                                     ProgressCallback progress_callback,
                                     const Result& result) {
-  for (auto sample : installer_progress_samples_) {
+  for (const auto& sample : installer_progress_samples_) {
     progress_callback.Run(sample);
   }
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(std::move(callback), result));
 }
 
-bool TestInstaller::GetInstalledFile(const std::string& file,
-                                     base::FilePath* installed_file) {
-  return false;
+std::optional<base::FilePath> TestInstaller::GetInstalledFile(
+    const std::string& file) {
+  return std::nullopt;
 }
 
 bool TestInstaller::Uninstall() {
@@ -78,10 +74,9 @@ ReadOnlyTestInstaller::ReadOnlyTestInstaller(const base::FilePath& install_dir)
 
 ReadOnlyTestInstaller::~ReadOnlyTestInstaller() = default;
 
-bool ReadOnlyTestInstaller::GetInstalledFile(const std::string& file,
-                                             base::FilePath* installed_file) {
-  *installed_file = install_directory_.AppendASCII(file);
-  return true;
+std::optional<base::FilePath> ReadOnlyTestInstaller::GetInstalledFile(
+    const std::string& file) {
+  return install_directory_.AppendUTF8(file);
 }
 
 VersionedTestInstaller::VersionedTestInstaller() {
@@ -110,7 +105,7 @@ void VersionedTestInstaller::Install(
 
   const base::Version version(*version_string);
   const base::FilePath path =
-      install_directory_.AppendASCII(version.GetString());
+      install_directory_.AppendUTF8(version.GetString());
   base::CreateDirectory(path.DirName());
   if (!base::Move(unpack_path, path)) {
     InstallComplete(std::move(callback), progress_callback,
@@ -124,12 +119,10 @@ void VersionedTestInstaller::Install(
                   Result(InstallError::NONE));
 }
 
-bool VersionedTestInstaller::GetInstalledFile(const std::string& file,
-                                              base::FilePath* installed_file) {
-  const base::FilePath path =
-      install_directory_.AppendASCII(current_version_.GetString());
-  *installed_file = path.Append(base::FilePath::FromUTF8Unsafe(file));
-  return true;
+std::optional<base::FilePath> VersionedTestInstaller::GetInstalledFile(
+    const std::string& file) {
+  return install_directory_.AppendUTF8(current_version_.GetString())
+      .AppendUTF8(file);
 }
 
 }  // namespace update_client

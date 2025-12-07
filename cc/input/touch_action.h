@@ -17,7 +17,7 @@ namespace cc {
 // This is intended to be the single canonical definition of the enum, it's used
 // elsewhere in both Blink and content since touch action logic spans those
 // subsystems.
-const size_t kTouchActionBits = 6;
+const size_t kTouchActionBits = 8;
 
 enum class TouchAction {
   // No scrolling or zooming allowed.
@@ -47,7 +47,7 @@ enum class TouchAction {
 
   kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls |
           kInternalNotWritable,
-  kMax = (1 << 8) - 1
+  kMax = (1 << kTouchActionBits) - 1
 };
 
 inline TouchAction operator|(TouchAction a, TouchAction b) {
@@ -209,8 +209,7 @@ inline const char* TouchActionToString(TouchAction touch_action) {
     case 63:
       return "AUTO";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace cc

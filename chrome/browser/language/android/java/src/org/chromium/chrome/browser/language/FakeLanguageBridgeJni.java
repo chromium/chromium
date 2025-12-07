@@ -14,15 +14,15 @@ public class FakeLanguageBridgeJni implements LanguageBridge.Natives {
     private ArrayList<String> mULPLanguages;
 
     public FakeLanguageBridgeJni() {
-        mULPLanguages = new ArrayList<String>();
+        mULPLanguages = new ArrayList<>();
     }
 
-    public void setULPLanguages(List languageCodes) {
+    public void setULPLanguages(List<String> languageCodes) {
         mULPLanguages = new ArrayList<>(languageCodes);
     }
 
     @Override
-    public String[] getULPFromPreference(Profile profile) {
-        return mULPLanguages.toArray(new String[mULPLanguages.size()]);
+    public List<String> getULPFromPreference(Profile profile) {
+        return mULPLanguages;
     }
 }

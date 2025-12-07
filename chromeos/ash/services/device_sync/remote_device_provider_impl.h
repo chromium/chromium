@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -44,13 +43,11 @@ class RemoteDeviceV2Loader;
 //  - If a v2 device has a public key that does not match any v1 device,
 //    append it to the synced-device list.
 class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
-                                 public CryptAuthDeviceManager::Observer,
                                  public CryptAuthV2DeviceManager::Observer {
  public:
   class Factory {
    public:
     static std::unique_ptr<RemoteDeviceProvider> Create(
-        CryptAuthDeviceManager* v1_device_manager,
         CryptAuthV2DeviceManager* v2_device_manager,
         const std::string& user_email,
         const std::string& user_private_key);
@@ -60,7 +57,6 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<RemoteDeviceProvider> CreateInstance(
-        CryptAuthDeviceManager* v1_device_manager,
         CryptAuthV2DeviceManager* v2_device_manager,
         const std::string& user_email,
         const std::string& user_private_key) = 0;
@@ -69,8 +65,7 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
     static Factory* factory_instance_;
   };
 
-  RemoteDeviceProviderImpl(CryptAuthDeviceManager* v1_device_manager,
-                           CryptAuthV2DeviceManager* v2_device_manager,
+  RemoteDeviceProviderImpl(CryptAuthV2DeviceManager* v2_device_manager,
                            const std::string& user_email,
                            const std::string& user_private_key);
 
@@ -82,30 +77,18 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
   // RemoteDeviceProvider:
   const multidevice::RemoteDeviceList& GetSyncedDevices() const override;
 
-  // CryptAuthDeviceManager::Observer:
-  void OnSyncFinished(
-      CryptAuthDeviceManager::SyncResult sync_result,
-      CryptAuthDeviceManager::DeviceChangeResult device_change_result) override;
-
   // CryptAuthV2DeviceManager::Observer:
   void OnDeviceSyncFinished(
       const CryptAuthDeviceSyncResult& device_sync_result) override;
 
  private:
-  void LoadV1RemoteDevices();
   void LoadV2RemoteDevices();
 
-  void OnV1RemoteDevicesLoaded(
-      const multidevice::RemoteDeviceList& synced_v1_remote_devices);
   void OnV2RemoteDevicesLoaded(
       const multidevice::RemoteDeviceList& synced_v2_remote_devices);
 
   // Only invoked when running v1 and v2 DeviceSync in parallel.
   void MergeV1andV2SyncedDevices();
-
-  // To get cryptauth::ExternalDeviceInfo needed to retrieve RemoteDevices. Null
-  // if v1 DeviceSync is disabled.
-  raw_ptr<CryptAuthDeviceManager> v1_device_manager_;
 
   // Used to retrieve CryptAuthDevices from the last v2 DeviceSync. Null if v2
   // DeviceSync is disabled.

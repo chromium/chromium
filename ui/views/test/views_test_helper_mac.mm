@@ -51,8 +51,10 @@ ViewsTestHelperMac::~ViewsTestHelperMac() {
   // down, but on Mac we need to be more explicit.
   @autoreleasepool {
     NSArray* native_windows = NSApp.windows;
-    for (NSWindow* window : native_windows)
-      DCHECK(!Widget::GetWidgetForNativeWindow(window)) << "Widget not closed.";
+    for (NSWindow* window : native_windows) {
+      DCHECK(!Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window)))
+          << "Widget not closed.";
+    }
 
     ui::test::EventGeneratorDelegate::SetFactoryFunction(
         ui::test::EventGeneratorDelegate::FactoryFunction());
@@ -64,6 +66,12 @@ void ViewsTestHelperMac::SetUpTestViewsDelegate(
     std::optional<ViewsDelegate::NativeWidgetFactory> factory) {
   ViewsTestHelper::SetUpTestViewsDelegate(delegate, std::move(factory));
   delegate->set_context_factory(context_factories_.GetContextFactory());
+}
+
+void ViewsTestHelperMac::TearDownTestViewsDelegate(
+    TestViewsDelegate* delegate) {
+  delegate->set_context_factory(nullptr);
+  ViewsTestHelper::TearDownTestViewsDelegate(delegate);
 }
 
 }  // namespace views

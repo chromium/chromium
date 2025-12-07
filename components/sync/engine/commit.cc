@@ -28,23 +28,23 @@ namespace {
 // The number of random ASCII bytes we'll add to CommitMessage. We choose 256
 // because it is not too large (to hurt performance and compression ratio), but
 // it is not too small to easily be canceled out using statistical analysis.
-const size_t kPaddingSize = 256;
+constexpr size_t kPaddingSize = 256;
 
 std::string RandASCIIString(size_t length) {
   std::string result;
   const int kMin = static_cast<int>(' ');
   const int kMax = static_cast<int>('~');
   result.reserve(length);
-  for (size_t i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i) {
     result.push_back(static_cast<char>(base::RandInt(kMin, kMax)));
+  }
   return result;
 }
 
 SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
   switch (syncer_error.type()) {
     case SyncerError::Type::kSuccess:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SyncerError::Type::kNetworkError:
       return SyncCommitError::kNetworkError;
     case SyncerError::Type::kHttpError:
@@ -59,7 +59,7 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
       return SyncCommitError::kBadServerResponse;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -88,8 +88,9 @@ std::unique_ptr<Commit> Commit::Init(
       commit_processor->GatherCommitContributions(max_entries);
 
   // Give up if no one had anything to commit.
-  if (contributions.empty())
+  if (contributions.empty()) {
     return nullptr;
+  }
 
   sync_pb::ClientToServerMessage message;
   message.set_message_contents(sync_pb::ClientToServerMessage::COMMIT);

@@ -86,27 +86,39 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
   InputHandlerPointerResult scroll_result;
   scroll_result.target_scroller = scrollbar->scroll_element_id();
   scroll_result.type = PointerResultType::kScrollbarScroll;
-  layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
   const ScrollbarPart scrollbar_part =
       GetScrollbarPartFromPointerDown(position_in_widget);
   const bool perform_jump_click_on_track =
       scrollbar->JumpOnTrackClick() != jump_key_modifier;
+
+  // IMPORTANT: Assign last_known_pointer_position_ BEFORE
+  // GetScrollDeltaForScrollbarPart. When the clicked part is a track
+  // (kBackTrack / kForwardTrack) AND perform_jump_click_on_track is true, the
+  // call chain reaches GetScrollDistanceForAbsoluteJump, which reads
+  // last_known_pointer_position_ to compute the pointer’s position relative to
+  // the scrollbar.
+  last_known_pointer_position_ = position_in_widget;
+
   scroll_result.scroll_delta = GetScrollDeltaForScrollbarPart(
       scrollbar_part, perform_jump_click_on_track);
-  last_known_pointer_position_ = position_in_widget;
+
   scrollbar_scroll_is_active_ = true;
   scroll_result.scroll_units =
       Granularity(scrollbar_part, perform_jump_click_on_track);
 
-  // Initialize drag state if either the scrollbar thumb is being dragged OR the
-  // user has initiated a jump click (since the thumb would have jumped under
-  // the pointer).
-  if (scrollbar_part == ScrollbarPart::kThumb || perform_jump_click_on_track) {
+  // Initialize drag state if either the scrollbar thumb is being dragged or the
+  // user has initiated a jump click on a track part.
+  const bool trigger_jump_click_on_track_part =
+      perform_jump_click_on_track &&
+      (scrollbar_part == ScrollbarPart::kBackTrack ||
+       scrollbar_part == ScrollbarPart::kForwardTrack);
+  if (scrollbar_part == ScrollbarPart::kThumb ||
+      trigger_jump_click_on_track_part) {
     drag_state_ = DragState();
     bool clipped = false;
 
     drag_state_->drag_origin =
-        perform_jump_click_on_track
+        trigger_jump_click_on_track_part
             ? DragOriginForJumpClick(scrollbar)
             : GetScrollbarRelativePosition(position_in_widget, &clipped);
 
@@ -174,7 +186,6 @@ bool ScrollbarController::SnapToDragOrigin(
   if (clipped)
     return false;
 
-  layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
   const ScrollbarOrientation orientation = scrollbar->orientation();
   const gfx::Rect forward_track_rect = scrollbar->ForwardTrackRect();
 
@@ -237,8 +248,6 @@ ui::ScrollGranularity ScrollbarController::Granularity(
 }
 
 float ScrollbarController::GetScrollDistanceForAbsoluteJump() const {
-  layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
-
   bool clipped = false;
   const gfx::PointF pointer_position_in_layer =
       GetScrollbarRelativePosition(last_known_pointer_position_, &clipped);
@@ -442,7 +451,6 @@ float ScrollbarController::GetScrollerToScrollbarRatio() const {
   //
   //          |<- scrollbar_thumb_length ->|
   //
-  layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
   float scroll_layer_length = scrollbar->scroll_layer_length();
   float scrollbar_track_length = scrollbar->TrackLength();
@@ -492,7 +500,7 @@ void ScrollbarController::DidUnregisterScrollbar(
       captured_scrollbar_metadata_->scroll_element_id == element_id &&
       captured_scrollbar_metadata_->orientation == orientation &&
       autoscroll_state_->status == AutoScrollStatus::kAutoscrollScrolling) {
-    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort(element_id);
     autoscroll_state_->status = AutoScrollStatus::kAutoscrollReady;
   }
 }
@@ -503,8 +511,6 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
       autoscroll_state_->status != AutoScrollStatus::kAutoscrollScrolling) {
     return;
   }
-
-  layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
 
   bool clipped;
   gfx::PointF scroller_relative_position(
@@ -538,7 +544,8 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
       (autoscroll_state_->direction ==
            AutoScrollDirection::kAutoscrollBackward &&
        thumb_start < pointer_position)) {
-    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort(
+        captured_scrollbar_metadata_->scroll_element_id);
   }
 
   // When the scroller is autoscrolling forward, its dimensions need to be
@@ -550,7 +557,8 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
   if (autoscroll_state_->direction == AutoScrollDirection::kAutoscrollForward) {
     const float scroll_layer_length = scrollbar->scroll_layer_length();
     if (autoscroll_state_->scroll_layer_length != scroll_layer_length) {
-      layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+      layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort(
+          scrollbar->scroll_element_id());
       StartAutoScrollAnimation();
     }
   }
@@ -562,7 +570,8 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
       GetRectForScrollbarPart(autoscroll_state_->pressed_scrollbar_part));
   if (!scrollbar_part_rect.Contains(scroller_relative_position)) {
     // Stop animating if pointer moves outside the rect bounds.
-    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort(
+        scrollbar->scroll_element_id());
   } else if (scrollbar_part_rect.Contains(scroller_relative_position) &&
              !layer_tree_host_impl_->mutator_host()->IsElementAnimating(
                  scrollbar->scroll_element_id())) {
@@ -614,9 +623,7 @@ void ScrollbarController::StartAutoScrollAnimation() {
   if (!(scroll_node && scrollbar_scroll_is_active_))
     return;
 
-  layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
   float scroll_layer_length = scrollbar->scroll_layer_length();
-
   gfx::PointF current_offset =
       scroll_tree.current_scroll_offset(scroll_node->element_id);
 
@@ -635,7 +642,8 @@ void ScrollbarController::StartAutoScrollAnimation() {
                                      ? AutoScrollDirection::kAutoscrollBackward
                                      : AutoScrollDirection::kAutoscrollForward;
 
-  layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+  layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort(
+      scroll_node->element_id);
   layer_tree_host_impl_->AutoScrollAnimationCreate(
       *scroll_node, target_offset_2d, std::abs(autoscroll_state_->velocity));
 }
@@ -654,7 +662,8 @@ InputHandlerPointerResult ScrollbarController::HandlePointerUp(
   // Only abort the animation if it is an "autoscroll" animation.
   if (autoscroll_state_.has_value() &&
       autoscroll_state_->status == AutoScrollStatus::kAutoscrollScrolling) {
-    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
+    layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort(
+        captured_scrollbar_metadata_->scroll_element_id);
   }
 
   ResetState();
@@ -698,31 +707,6 @@ float ScrollbarController::GetViewportLength() const {
   return length / GetPageScaleFactorForScroll();
 }
 
-float ScrollbarController::GetScrollDistanceForPercentBasedScroll() const {
-  const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
-
-  const ScrollNode* scroll_node =
-      layer_tree_host_impl_->active_tree()
-          ->property_trees()
-          ->scroll_tree()
-          .FindNodeFromElementId(scrollbar->scroll_element_id());
-  DCHECK(scroll_node);
-
-  const gfx::Vector2dF scroll_delta =
-      scrollbar->orientation() == ScrollbarOrientation::kVertical
-          ? gfx::Vector2dF(0, kPercentDeltaForDirectionalScroll)
-          : gfx::Vector2dF(kPercentDeltaForDirectionalScroll, 0);
-
-  const gfx::Vector2dF pixel_delta =
-      layer_tree_host_impl_->GetInputHandler().ResolveScrollGranularityToPixels(
-          *scroll_node, scroll_delta,
-          ui::ScrollGranularity::kScrollByPercentage);
-
-  return scrollbar->orientation() == ScrollbarOrientation::kVertical
-             ? pixel_delta.y()
-             : pixel_delta.x();
-}
-
 float ScrollbarController::GetPageScaleFactorForScroll() const {
   return layer_tree_host_impl_->active_tree()->page_scale_factor_for_scroll();
 }
@@ -735,11 +719,7 @@ float ScrollbarController::GetScrollDistanceForScrollbarPart(
   switch (scrollbar_part) {
     case ScrollbarPart::kBackButton:
     case ScrollbarPart::kForwardButton:
-      if (layer_tree_host_impl_->settings().percent_based_scrolling) {
-        scroll_delta = GetScrollDistanceForPercentBasedScroll();
-      } else {
-        scroll_delta = kPixelsPerLineStep * ScreenSpaceScaleFactor();
-      }
+      scroll_delta = kPixelsPerLineStep * ScreenSpaceScaleFactor();
       break;
     case ScrollbarPart::kBackTrack:
     case ScrollbarPart::kForwardTrack: {
@@ -747,9 +727,22 @@ float ScrollbarController::GetScrollDistanceForScrollbarPart(
         scroll_delta = GetScrollDistanceForAbsoluteJump();
         break;
       }
-      // TODO(savella) Use snapport length instead of viewport length to match
-      // main thread behaviour. See https://crbug.com/1098383.
-      scroll_delta = GetViewportLength() * kMinFractionToStepWhenPaging;
+      int snapport_length = GetViewportLength();
+      const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
+      const ScrollNode* target_node =
+          layer_tree_host_impl_->active_tree()
+              ->property_trees()
+              ->scroll_tree()
+              .FindNodeFromElementId(scrollbar->scroll_element_id());
+      if (target_node->snap_container_data) {
+        const gfx::RectF snapport =
+            target_node->snap_container_data.value().rect();
+        snapport_length =
+            scrollbar->orientation() == ScrollbarOrientation::kHorizontal
+                ? snapport.x()
+                : snapport.y();
+      }
+      scroll_delta = ScrollUtils::CalculatePageStep(snapport_length);
       break;
     }
     default:

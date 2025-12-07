@@ -5,9 +5,11 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
-#include "components/optimization_guide/core/hints_processing_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
 namespace {
@@ -15,7 +17,7 @@ namespace {
 // TODO(rajendrant): Verify if all debug messages before browser startup are
 // getting saved without being dropped, when some hints fetching and model
 // downloading happens.
-constexpr size_t kMaxRecentLogMessages = 100;
+constexpr size_t kMaxRecentLogMessages = 700;
 
 }  // namespace
 
@@ -112,6 +114,12 @@ OptimizationGuideLogger::LogMessage::LogMessage(
       source_file(source_file),
       source_line(source_line),
       message(message) {}
+
+// static
+OptimizationGuideLogger* OptimizationGuideLogger::GetInstance() {
+  static base::NoDestructor<OptimizationGuideLogger> instance;
+  return instance.get();
+}
 
 OptimizationGuideLogger::OptimizationGuideLogger()
     : command_line_flag_enabled_(

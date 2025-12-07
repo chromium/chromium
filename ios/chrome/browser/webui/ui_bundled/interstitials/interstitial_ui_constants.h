@@ -9,6 +9,8 @@
 extern const char kChromeInterstitialSslPath[];
 extern const char kChromeInterstitialCaptivePortalPath[];
 extern const char kChromeInterstitialSafeBrowsingPath[];
+extern const char kChromeInterstitialEnterpriseBlock[];
+extern const char kChromeInterstitialEnterpriseWarn[];
 
 // Query keys and values for chrome://interstitials/ssl
 extern const char kChromeInterstitialSslUrlQueryKey[];

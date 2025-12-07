@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -55,13 +56,27 @@ std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
   return FormatTree(BuildTree(root));
 }
 
+std::string AXTreeFormatterBase::Format(const AXTreeSelector& selector) const {
+  return FormatTree(BuildTreeForSelector(selector));
+}
+
 std::string AXTreeFormatterBase::FormatNode(
     AXPlatformNodeDelegate* node) const {
   return FormatTree(BuildNode(node));
 }
 
+std::string AXTreeFormatterBase::FormatNode(
+    const AXTreeSelector& selector) const {
+  return FormatTree(BuildNodeForSelector(selector));
+}
+
 base::Value::Dict AXTreeFormatterBase::BuildNode(
     AXPlatformNodeDelegate* node) const {
+  return base::Value::Dict();
+}
+
+base::Value::Dict AXTreeFormatterBase::BuildNodeForSelector(
+    const AXTreeSelector&) const {
   return base::Value::Dict();
 }
 
@@ -72,16 +87,14 @@ std::string AXTreeFormatterBase::FormatTree(
   return contents;
 }
 
-base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(
-    ui::AXNode* root) const {
-  NOTREACHED_IN_MIGRATION()
+base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(AXNode* root) const {
+  NOTREACHED()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
-  return base::Value::Dict();
 }
 
 std::string AXTreeFormatterBase::EvaluateScript(
     const AXTreeSelector& selector,
-    const ui::AXInspectScenario& scenario) const {
+    const AXInspectScenario& scenario) const {
   NOTIMPLEMENTED();
   return {};
 }
@@ -91,13 +104,14 @@ std::string AXTreeFormatterBase::EvaluateScript(
     const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
-  NOTREACHED_IN_MIGRATION() << "Not implemented";
-  return {};
+  NOTREACHED() << "Not implemented";
 }
 
 void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
                                               std::string* contents,
-                                              int depth) const {
+                                              int depth,
+                                              bool* found_subtree,
+                                              int* subtree_depth) const {
   // Check dictionary against node filters, may require us to skip this node
   // and its children.
   if (MatchesNodeFilters(dict))
@@ -123,6 +137,38 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
   // Replace U+202f to ASCII SPACE
   base::ReplaceFirstSubstringAfterOffset(&line, 0, "\u202f", " ");
 
+  // Handle subtree pattern filtering.
+  bool local_found = false;
+  int local_subtree_depth = 0;
+  if (!found_subtree) {
+    found_subtree = &local_found;
+    subtree_depth = &local_subtree_depth;
+  }
+
+  // If we have a subtree pattern and haven't found it yet, check if this line
+  // matches.
+  if (!subtree_pattern_.empty() && !*found_subtree) {
+    if (line.find(subtree_pattern_) != std::string::npos) {
+      *found_subtree = true;
+      *subtree_depth = depth;
+    } else {
+      // Pattern not found yet, skip this node but continue searching children.
+      const base::Value::List* children = dict.FindList(kChildrenDictAttr);
+      if (children) {
+        for (const auto& child : *children) {
+          DCHECK(child.is_dict());
+          RecursiveFormatTree(child.GetDict(), contents, depth + 1,
+                              found_subtree, subtree_depth);
+        }
+      }
+      return;
+    }
+  } else if (!subtree_pattern_.empty() && *found_subtree &&
+             depth <= *subtree_depth) {
+    // We've exited the subtree (returned to same or shallower level), stop.
+    return;
+  }
+
   *contents += line + "\n";
 
   // TODO(accessibility): This can be removed once the UIA tree formatter
@@ -134,7 +180,8 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
   if (children) {
     for (const auto& child : *children) {
       DCHECK(child.is_dict());
-      RecursiveFormatTree(child.GetDict(), contents, depth + 1);
+      RecursiveFormatTree(child.GetDict(), contents, depth + 1, found_subtree,
+                          subtree_depth);
     }
   }
 }
@@ -155,16 +202,19 @@ void AXTreeFormatterBase::SetNodeFilters(
   node_filters_ = node_filters;
 }
 
+void AXTreeFormatterBase::SetSubtreePattern(const std::string& pattern) {
+  subtree_pattern_ = pattern;
+}
+
 void AXTreeFormatterBase::set_show_ids(bool show_ids) {
   show_ids_ = show_ids;
 }
 
 std::string AXTreeFormatterBase::DumpInternalAccessibilityTree(
-    ui::AXTreeID tree_id,
+    AXTreeID tree_id,
     const std::vector<AXPropertyFilter>& property_filters) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
-  return std::string("");
 }
 
 std::vector<AXPropertyNode> AXTreeFormatterBase::PropertyFilterNodesFor(
@@ -215,13 +265,13 @@ bool AXTreeFormatterBase::HasMatchAllPropertyFilter() const {
 
 bool AXTreeFormatterBase::MatchesPropertyFilters(const std::string& text,
                                                  bool default_result) const {
-  return ui::AXTreeFormatter::MatchesPropertyFilters(property_filters_, text,
-                                                     default_result);
+  return AXTreeFormatter::MatchesPropertyFilters(property_filters_, text,
+                                                 default_result);
 }
 
 bool AXTreeFormatterBase::MatchesNodeFilters(
     const base::Value::Dict& dict) const {
-  return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
+  return AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
 std::string AXTreeFormatterBase::FormatCoordinates(

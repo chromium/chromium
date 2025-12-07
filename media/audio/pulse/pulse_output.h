@@ -62,7 +62,7 @@ class PulseAudioOutputStream : public AudioOutputStream {
 
  private:
   // Helper method used for sending native logs to the registered client.
-  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   // Called by PulseAudio when |pa_stream_| change state.  If an unexpected
   // failure state change happens and |source_callback_| is set

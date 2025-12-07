@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("enterprise_kiosk_input") {
+  sources = [
+    "enterprise_kiosk_input_api.cc",
+    "enterprise_kiosk_input_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//chromeos/crosapi/mojom",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/common/extensions/api",
+    "//ui/base/ime/ash",
+  ]
+}

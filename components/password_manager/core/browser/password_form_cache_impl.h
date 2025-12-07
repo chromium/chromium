@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/observer_list.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -37,18 +38,23 @@ class PasswordFormCacheImpl : public PasswordFormCache {
   void Clear();
   bool IsEmpty() const;
 
+  // PasswordFormCache:
+  const PasswordForm* GetPasswordForm(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id) const override;
+  const PasswordForm* GetPasswordForm(
+      PasswordManagerDriver* driver,
+      autofill::FieldRendererId field_id) const override;
+  void AddObserver(PasswordFormManagerObserver* observer) override;
+  void RemoveObserver(PasswordFormManagerObserver* observer) override;
   base::span<const std::unique_ptr<PasswordFormManager>> GetFormManagers()
-      const;
+      const override;
 
  private:
-  // PasswordFormCache:
-  bool HasPasswordForm(PasswordManagerDriver* driver,
-                       autofill::FormRendererId form_id) const override;
-  bool HasPasswordForm(PasswordManagerDriver* driver,
-                       autofill::FieldRendererId field_id) const override;
-
   // TODO(b/330313855): Check if `unique_ptr` can be removed here.
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
+
+  base::ObserverList<PasswordFormManagerObserver> form_manager_observers_;
 };
 
 }  // namespace password_manager

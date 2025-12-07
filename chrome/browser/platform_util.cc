@@ -9,26 +9,15 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/lacros/window_properties.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "ui/aura/window.h"
-#endif
 
 using content::BrowserThread;
 
 namespace platform_util {
 
 namespace {
-
-bool shell_operations_allowed = true;
 
 void VerifyAndOpenItemOnBlockingThread(const base::FilePath& path,
                                        OpenItemType type,
@@ -49,8 +38,9 @@ void VerifyAndOpenItemOnBlockingThread(const base::FilePath& path,
     return;
   }
 
-  if (shell_operations_allowed)
+  if (internal::AreShellOperationsAllowed()) {
     internal::PlatformOpenVerifiedItem(path, type);
+  }
   if (!callback.is_null())
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), OPEN_SUCCEEDED));
@@ -58,19 +48,7 @@ void VerifyAndOpenItemOnBlockingThread(const base::FilePath& path,
 
 }  // namespace
 
-namespace internal {
-
-void DisableShellOperationsForTesting() {
-  shell_operations_allowed = false;
-}
-
-bool AreShellOperationsAllowed() {
-  return shell_operations_allowed;
-}
-
-}  // namespace internal
-
-void OpenItem(Profile* profile,
+void OpenItem(Profile*,
               const base::FilePath& full_path,
               OpenItemType item_type,
               OpenOperationCallback callback) {
@@ -89,17 +67,7 @@ void OpenItem(Profile* profile,
 }
 
 bool IsBrowserLockedFullscreen(const Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  aura::Window* window = browser->window()->GetNativeWindow();
-  // |window| can be nullptr inside of unit tests.
-  if (!window)
-    return false;
-
-  return window->GetProperty(lacros::kWindowPinTypeKey) ==
-         chromeos::WindowPinType::kTrustedPinned;
-#else
   return false;
-#endif
 }
 
 }  // namespace platform_util

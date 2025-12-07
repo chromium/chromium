@@ -346,7 +346,7 @@ TEST(CastInternalMessageUtilTest, CreateReceiverActionCastMessage) {
            "displayStatus": null,
            "friendlyName": "friendly name 1",
            "isActiveInput": null,
-           "label": "Pr2CqqG4_NOPcVV6oKbocxyAik0",
+           "label": "geKUBWGyUr0XKTeV8M6y8c-5DUk_1xEesHDTyHqFCmc",
            "receiverType": "cast",
            "volume": null
         }
@@ -371,7 +371,7 @@ TEST(CastInternalMessageUtilTest, CreateReceiverActionStopMessage) {
            "displayStatus": null,
            "friendlyName": "friendly name 1",
            "isActiveInput": null,
-           "label": "Pr2CqqG4_NOPcVV6oKbocxyAik0",
+           "label": "geKUBWGyUr0XKTeV8M6y8c-5DUk_1xEesHDTyHqFCmc",
            "receiverType": "cast",
            "volume": null
         }
@@ -405,7 +405,7 @@ TEST(CastInternalMessageUtilTest, CreateNewSessionMessage) {
          "displayStatus": null,
          "friendlyName": "friendly name 1",
          "isActiveInput": null,
-         "label": "Pr2CqqG4_NOPcVV6oKbocxyAik0",
+         "label": "geKUBWGyUr0XKTeV8M6y8c-5DUk_1xEesHDTyHqFCmc",
          "receiverType": "cast",
          "volume": null
       },
@@ -443,7 +443,7 @@ TEST(CastInternalMessageUtilTest, CreateNewSessionMessageWithUniversalAppId) {
          "displayStatus": null,
          "friendlyName": "friendly name 1",
          "isActiveInput": null,
-         "label": "Pr2CqqG4_NOPcVV6oKbocxyAik0",
+         "label": "geKUBWGyUr0XKTeV8M6y8c-5DUk_1xEesHDTyHqFCmc",
          "receiverType": "cast",
          "volume": null
       },
@@ -483,7 +483,7 @@ TEST(CastInternalMessageUtilTest, CreateUpdateSessionMessage) {
          "displayStatus": null,
          "friendlyName": "friendly name 1",
          "isActiveInput": null,
-         "label": "Pr2CqqG4_NOPcVV6oKbocxyAik0",
+         "label": "geKUBWGyUr0XKTeV8M6y8c-5DUk_1xEesHDTyHqFCmc",
          "receiverType": "cast",
          "volume": null
       },

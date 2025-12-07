@@ -6,7 +6,7 @@
 #define COMPONENTS_PREFS_PREF_SERVICE_FACTORY_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_store.h"
@@ -41,10 +41,6 @@ class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
 
   void set_extension_prefs(scoped_refptr<PrefStore> prefs) {
     extension_prefs_.swap(prefs);
-  }
-
-  void set_standalone_browser_prefs(scoped_refptr<PersistentPrefStore> prefs) {
-    standalone_browser_prefs_.swap(prefs);
   }
 
   void set_command_line_prefs(scoped_refptr<PrefStore> prefs) {
@@ -85,7 +81,6 @@ class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
   scoped_refptr<PrefStore> managed_prefs_;
   scoped_refptr<PrefStore> supervised_user_prefs_;
   scoped_refptr<PrefStore> extension_prefs_;
-  scoped_refptr<PersistentPrefStore> standalone_browser_prefs_;
   scoped_refptr<PrefStore> command_line_prefs_;
   scoped_refptr<PersistentPrefStore> user_prefs_;
   scoped_refptr<PrefStore> recommended_prefs_;

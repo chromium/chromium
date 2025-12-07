@@ -1,0 +1,7 @@
+Tests that screen coordinates are correctly applied for touch events.
+{
+    clientX : 55
+    clientY : 75
+    isScreenXOffsetCorrect : true
+    isScreenYOffsetCorrect : true
+}

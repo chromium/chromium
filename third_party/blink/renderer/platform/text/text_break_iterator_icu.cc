@@ -19,11 +19,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 #include <unicode/rbbi.h>
@@ -47,13 +42,17 @@ namespace blink {
 
 namespace {
 
+inline icu::Locale CurrentTextBreakIcuLocale() {
+  return icu::Locale(CurrentTextBreakLocaleID());
+}
+
 class LineBreakIteratorPool final {
   USING_FAST_MALLOC(LineBreakIteratorPool);
 
  public:
   static LineBreakIteratorPool& SharedPool() {
-    static WTF::ThreadSpecific<LineBreakIteratorPool>* pool =
-        new WTF::ThreadSpecific<LineBreakIteratorPool>;
+    static ThreadSpecific<LineBreakIteratorPool>* pool =
+        new ThreadSpecific<LineBreakIteratorPool>;
     return **pool;
   }
 
@@ -75,7 +74,7 @@ class LineBreakIteratorPool final {
       UErrorCode open_status = U_ZERO_ERROR;
       bool locale_is_empty = locale.empty();
       iterator = icu::BreakIterator::createLineInstance(
-          locale_is_empty ? icu::Locale(CurrentTextBreakLocaleID())
+          locale_is_empty ? CurrentTextBreakIcuLocale()
                           : icu::Locale(locale.Utf8().c_str()),
           open_status);
       // locale comes from a web page and it can be invalid, leading ICU
@@ -83,7 +82,7 @@ class LineBreakIteratorPool final {
       if (!locale_is_empty && U_FAILURE(open_status)) {
         open_status = U_ZERO_ERROR;
         iterator = icu::BreakIterator::createLineInstance(
-            icu::Locale(CurrentTextBreakLocaleID()), open_status);
+            CurrentTextBreakIcuLocale(), open_status);
       }
 
       if (U_FAILURE(open_status)) {
@@ -117,8 +116,8 @@ class LineBreakIteratorPool final {
   Pool pool_;
   HashMap<icu::BreakIterator*, AtomicString> vended_iterators_;
 
-  friend WTF::ThreadSpecific<
-      LineBreakIteratorPool>::operator LineBreakIteratorPool*();
+  friend ThreadSpecific<LineBreakIteratorPool>::
+  operator LineBreakIteratorPool*();
 };
 
 enum TextContext { kNoContext, kPriorContext, kPrimaryContext };
@@ -149,18 +148,19 @@ void TextFixPointer(const UText* source,
                     UText* destination,
                     const void*& pointer) {
   if (pointer >= source->pExtra &&
-      pointer < static_cast<char*>(source->pExtra) + source->extraSize) {
+      pointer <
+          UNSAFE_TODO(static_cast<char*>(source->pExtra) + source->extraSize)) {
     // Pointer references source extra buffer.
-    pointer = static_cast<char*>(destination->pExtra) +
-              (static_cast<const char*>(pointer) -
-               static_cast<const char*>(source->pExtra));
+    pointer = UNSAFE_TODO(static_cast<char*>(destination->pExtra) +
+                          (static_cast<const char*>(pointer) -
+                           static_cast<const char*>(source->pExtra)));
   } else if (pointer >= source &&
-             pointer <
-                 reinterpret_cast<const char*>(source) + source->sizeOfStruct) {
+             pointer < UNSAFE_TODO(reinterpret_cast<const char*>(source) +
+                                   source->sizeOfStruct)) {
     // Pointer references source text structure, but not source extra buffer.
-    pointer = reinterpret_cast<char*>(destination) +
-              (static_cast<const char*>(pointer) -
-               reinterpret_cast<const char*>(source));
+    pointer = UNSAFE_TODO(reinterpret_cast<char*>(destination) +
+                          (static_cast<const char*>(pointer) -
+                           reinterpret_cast<const char*>(source)));
   }
 }
 
@@ -180,11 +180,11 @@ UText* TextClone(UText* destination,
   void* extra_new = destination->pExtra;
   int32_t flags = destination->flags;
   int size_to_copy = std::min(source->sizeOfStruct, destination->sizeOfStruct);
-  memcpy(destination, source, size_to_copy);
+  UNSAFE_TODO(memcpy(destination, source, size_to_copy));
   destination->pExtra = extra_new;
   destination->flags = flags;
   if (extra_size > 0) {
-    memcpy(destination->pExtra, source->pExtra, extra_size);
+    UNSAFE_TODO(memcpy(destination->pExtra, source->pExtra, extra_size));
   }
   TextFixPointer(source, destination, destination->context);
   TextFixPointer(source, destination, destination->p);
@@ -205,9 +205,7 @@ int32_t TextExtract(UText*,
                     UErrorCode* error_code) {
   // In the present context, this text provider is used only with ICU functions
   // that do not perform an extract operation.
-  NOTREACHED_IN_MIGRATION();
-  *error_code = U_UNSUPPORTED_ERROR;
-  return 0;
+  NOTREACHED();
 }
 
 void TextClose(UText* text) {
@@ -264,10 +262,12 @@ void TextLatin1MoveInPrimaryContext(UText* text,
                           : 0;
   text->nativeIndexingLimit = text->chunkLength;
   text->chunkOffset = forward ? 0 : text->chunkLength;
-  StringImpl::CopyChars(
-      const_cast<UChar*>(text->chunkContents),
+  auto source = UNSAFE_TODO(base::span(
       static_cast<const LChar*>(text->p) + (text->chunkNativeStart - text->b),
-      static_cast<unsigned>(text->chunkLength));
+      static_cast<unsigned>(text->chunkLength)));
+  auto dest = UNSAFE_TODO(base::span(const_cast<UChar*>(text->chunkContents),
+                                     static_cast<unsigned>(text->chunkLength)));
+  StringImpl::CopyChars(dest, source);
 }
 
 void TextLatin1SwitchToPrimaryContext(UText* text,
@@ -604,20 +604,7 @@ UText* TextOpenUTF16(UText* text,
 
 constexpr UText g_empty_text = UTEXT_INITIALIZER;
 
-TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
-  UErrorCode error_code = U_ZERO_ERROR;
-  static TextBreakIterator* break_iter = nullptr;
-  if (!break_iter) {
-    break_iter = icu::BreakIterator::createWordInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code);
-    DCHECK(U_SUCCESS(error_code))
-        << "ICU could not open a break iterator: " << u_errorName(error_code)
-        << " (" << error_code << ")";
-    if (!break_iter) {
-      return nullptr;
-    }
-  }
-
+bool SetText8(TextBreakIterator* break_iter, base::span<const LChar> string) {
   UTextWithBuffer text_local;
   text_local.text = g_empty_text;
   text_local.text.extraSize = sizeof(text_local.buffer);
@@ -627,7 +614,7 @@ TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
   UText* text = TextOpenLatin1(&text_local, string, nullptr, 0, &open_status);
   if (U_FAILURE(open_status)) {
     DLOG(ERROR) << "textOpenLatin1 failed with status " << open_status;
-    return nullptr;
+    return false;
   }
 
   UErrorCode set_text_status = U_ZERO_ERROR;
@@ -638,8 +625,7 @@ TextBreakIterator* WordBreakIterator(base::span<const LChar> string) {
   }
 
   utext_close(text);
-
-  return break_iter;
+  return true;
 }
 
 void SetText16(TextBreakIterator* iter, base::span<const UChar> string) {
@@ -652,54 +638,88 @@ void SetText16(TextBreakIterator* iter, base::span<const UChar> string) {
   iter->setText(&u_text, error_code);
 }
 
-TextBreakIterator* GetNonSharedCharacterBreakIterator() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<std::unique_ptr<TextBreakIterator>>, thread_specific, ());
+class WordBreakIteratorPool {
+ public:
+  explicit WordBreakIteratorPool(const char* locale = nullptr)
+      : locale_(locale) {}
 
-  std::unique_ptr<TextBreakIterator>& iterator = *thread_specific;
+  TextBreakIterator* Get(base::span<const LChar> string);
+  TextBreakIterator* Get(base::span<const UChar> string);
 
-  if (!iterator) {
-    ICUError error_code;
-    iterator = base::WrapUnique(icu::BreakIterator::createCharacterInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code));
-    DCHECK(U_SUCCESS(error_code) && iterator)
+  static std::unique_ptr<TextBreakIterator> Create(
+      const char* locale = nullptr) {
+    UErrorCode error_code = U_ZERO_ERROR;
+    std::unique_ptr<TextBreakIterator> break_iter =
+        base::WrapUnique(icu::BreakIterator::createWordInstance(
+            locale ? icu::Locale(locale) : CurrentTextBreakIcuLocale(),
+            error_code));
+    DCHECK(U_SUCCESS(error_code))
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
+    return break_iter;
   }
 
-  DCHECK(iterator);
-  return iterator.get();
+ private:
+  TextBreakIterator* Get() {
+    if (!pool_) {
+      pool_ = Create(locale_);
+    }
+    return pool_.get();
+  }
+
+  std::unique_ptr<TextBreakIterator> pool_;
+  const char* locale_ = nullptr;
+};
+
+TextBreakIterator* WordBreakIteratorPool::Get(base::span<const LChar> string) {
+  if (TextBreakIterator* break_iter = Get()) {
+    if (SetText8(break_iter, string)) {
+      return break_iter;
+    }
+  }
+  return nullptr;
+}
+
+TextBreakIterator* WordBreakIteratorPool::Get(base::span<const UChar> string) {
+  if (TextBreakIterator* break_iter = Get()) {
+    SetText16(break_iter, string);
+    return break_iter;
+  }
+  return nullptr;
 }
 
 }  // namespace
 
 TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
-  UErrorCode error_code = U_ZERO_ERROR;
-  static TextBreakIterator* break_iter = nullptr;
-  if (!break_iter) {
-    break_iter = icu::BreakIterator::createWordInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code);
-    DCHECK(U_SUCCESS(error_code))
-        << "ICU could not open a break iterator: " << u_errorName(error_code)
-        << " (" << error_code << ")";
-    if (!break_iter) {
-      return nullptr;
-    }
-  }
-  SetText16(break_iter, string);
-  return break_iter;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WordBreakIteratorPool, pool, ());
+  return pool.Get(string);
 }
 
-TextBreakIterator* WordBreakIterator(const String& string,
-                                     int start,
-                                     int length) {
+TextBreakIterator* WordBreakIterator(const StringView& string) {
   if (string.empty()) {
     return nullptr;
   }
   if (string.Is8Bit()) {
-    return WordBreakIterator(string.Span8().subspan(start, length));
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(WordBreakIteratorPool, pool, ());
+    return pool.Get(string.Span8());
   }
-  return WordBreakIterator(string.Span16().subspan(start, length));
+  return WordBreakIterator(string.Span16());
+}
+
+std::unique_ptr<TextBreakIterator> CreateWordBreakIteratorForTest(
+    const StringView& string,
+    const String& locale) {
+  if (string.empty()) {
+    return nullptr;
+  }
+  std::unique_ptr<TextBreakIterator> break_iter =
+      WordBreakIteratorPool::Create(locale.Utf8().c_str());
+  if (string.Is8Bit()) {
+    SetText8(break_iter.get(), string.Span8());
+  } else {
+    SetText16(break_iter.get(), string.Span16());
+  }
+  return break_iter;
 }
 
 PooledBreakIterator AcquireLineBreakIterator(
@@ -785,54 +805,77 @@ void ReturnBreakIteratorToPool::operator()(void* ptr) const {
   LineBreakIteratorPool::SharedPool().Put(iterator);
 }
 
-NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
-    const StringView& string)
-    : is_8bit_(true),
-      charaters8_(nullptr),
-      offset_(0),
-      length_(0),
-      iterator_(nullptr) {
+//
+// A simple pool of `icu::BreakIterator` without any keys, as
+// `CharacterBreakIterator` is locale-independent.
+//
+class CharacterBreakIterator::Pool {
+ public:
+  static Pool& Get() {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Pool>, pool, ());
+    return *pool;
+  }
+
+  PooledIterator TakeOrCreate() {
+    if (!pool_.empty()) {
+      PooledIterator iterator(pool_.back().release());
+      pool_.pop_back();
+      return iterator;
+    }
+
+    ICUError error_code;
+    PooledIterator iterator(icu::BreakIterator::createCharacterInstance(
+        CurrentTextBreakIcuLocale(), error_code));
+    DCHECK(U_SUCCESS(error_code) && iterator)
+        << "ICU could not open a break iterator: " << u_errorName(error_code)
+        << " (" << error_code << ")";
+    return iterator;
+  }
+
+  void Put(icu::BreakIterator* iterator) { pool_.push_back(iterator); }
+
+ private:
+  static constexpr size_t kCapacity = 4;
+  Vector<std::unique_ptr<icu::BreakIterator>, kCapacity> pool_;
+};
+
+void CharacterBreakIterator::ReturnToPool::operator()(void* ptr) const {
+  icu::BreakIterator* iterator = static_cast<icu::BreakIterator*>(ptr);
+  DCHECK(iterator);
+  Pool::Get().Put(iterator);
+}
+
+CharacterBreakIterator::CharacterBreakIterator(const StringView& string) {
   if (string.empty()) {
+    is_8bit_ = true;
     return;
   }
 
   is_8bit_ = string.Is8Bit();
 
   if (is_8bit_) {
-    charaters8_ = string.Characters8();
+    base::span<const LChar> chars = string.Span8();
+    charaters8_ = chars.data();
     offset_ = 0;
-    length_ = string.length();
+    // static_cast<> is safe because `chars` came from a StringView.
+    length_ = static_cast<unsigned>(chars.size());
     return;
   }
 
-  CreateIteratorForBuffer(string.Characters16(), string.length());
+  CreateIteratorForBuffer(string.Span16());
 }
 
-NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
-    const UChar* buffer,
-    unsigned length)
-    : is_8bit_(false),
-      charaters8_(nullptr),
-      offset_(0),
-      length_(0),
-      iterator_(nullptr) {
-  CreateIteratorForBuffer(buffer, length);
+CharacterBreakIterator::CharacterBreakIterator(base::span<const UChar> buffer) {
+  CreateIteratorForBuffer(buffer);
 }
 
-void NonSharedCharacterBreakIterator::CreateIteratorForBuffer(
-    const UChar* buffer,
-    unsigned length) {
-  iterator_ = GetNonSharedCharacterBreakIterator();
-  SetText16(iterator_, {buffer, length});
+void CharacterBreakIterator::CreateIteratorForBuffer(
+    base::span<const UChar> buffer) {
+  iterator_ = Pool::Get().TakeOrCreate();
+  SetText16(iterator_.get(), buffer);
 }
 
-NonSharedCharacterBreakIterator::~NonSharedCharacterBreakIterator() {
-  if (is_8bit_) {
-    return;
-  }
-}
-
-int NonSharedCharacterBreakIterator::Next() {
+int CharacterBreakIterator::Next() {
   if (!is_8bit_) {
     return iterator_->next();
   }
@@ -845,21 +888,21 @@ int NonSharedCharacterBreakIterator::Next() {
   return offset_;
 }
 
-int NonSharedCharacterBreakIterator::Current() {
+int CharacterBreakIterator::Current() {
   if (!is_8bit_) {
     return iterator_->current();
   }
   return offset_;
 }
 
-bool NonSharedCharacterBreakIterator::IsBreak(int offset) const {
+bool CharacterBreakIterator::IsBreak(int offset) const {
   if (!is_8bit_) {
     return iterator_->isBoundary(offset);
   }
   return !IsLFAfterCR(offset);
 }
 
-int NonSharedCharacterBreakIterator::Preceding(int offset) const {
+int CharacterBreakIterator::Preceding(int offset) const {
   if (!is_8bit_) {
     return iterator_->preceding(offset);
   }
@@ -872,7 +915,7 @@ int NonSharedCharacterBreakIterator::Preceding(int offset) const {
   return offset - 1;
 }
 
-int NonSharedCharacterBreakIterator::Following(int offset) const {
+int CharacterBreakIterator::Following(int offset) const {
   if (!is_8bit_) {
     return iterator_->following(offset);
   }
@@ -887,7 +930,7 @@ TextBreakIterator* SentenceBreakIterator(base::span<const UChar> string) {
   static TextBreakIterator* iterator = nullptr;
   if (!iterator) {
     iterator = icu::BreakIterator::createSentenceInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), open_status);
+        CurrentTextBreakIcuLocale(), open_status);
     DCHECK(U_SUCCESS(open_status))
         << "ICU could not open a break iterator: " << u_errorName(open_status)
         << " (" << open_status << ")";
@@ -907,7 +950,8 @@ bool IsWordTextBreak(TextBreakIterator* iterator) {
   return rule_status != UBRK_WORD_NONE;
 }
 
-TextBreakIterator* CursorMovementIterator(base::span<const UChar> string) {
+TextBreakIterator* CursorMovementIteratorDeprecated(
+    base::span<const UChar> string) {
   // This rule set is based on character-break iterator rules of ICU 4.0
   // <http://source.icu-project.org/repos/icu/icu/tags/release-4-0/source/data/brkitr/char.txt>.
   // The major differences from the original ones are listed below:

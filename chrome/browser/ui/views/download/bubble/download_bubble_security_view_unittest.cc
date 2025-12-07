@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -19,8 +20,8 @@
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -32,6 +33,7 @@
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/vector_icons.h"
@@ -177,11 +179,11 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
     EXPECT_CALL(*manager_.get(), GetBrowserContext())
         .WillRepeatedly(testing::Return(profile_.get()));
-    window_ = std::make_unique<TestBrowserWindow>();
+    auto window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    params.window = window.release();
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     security_view_info_ = std::make_unique<DownloadBubbleSecurityViewInfo>();
     anchor_widget_ =
@@ -189,6 +191,8 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
                          views::Widget::InitParams::TYPE_WINDOW);
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
+    bubble_delegate->SetOwnedByWidget(
+        views::WidgetDelegate::OwnedByWidgetPassKey());
     bubble_delegate_ = bubble_delegate.get();
     bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>(
         *security_view_info_);
@@ -239,12 +243,22 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     ON_CALL(download_item1_, GetDangerType())
         .WillByDefault(Return(
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item1_, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(download_item1_, GetReferrerUrl())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://chromium.org")));
+    ON_CALL(download_item1_, GetTargetFilePath())
+        .WillByDefault(ReturnRefOfCopy(base::FilePath()));
     ON_CALL(download_item1_, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
 
     ON_CALL(download_item2_, GetDangerType())
         .WillByDefault(Return(
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item2_, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(download_item2_, GetReferrerUrl())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://chromium.org")));
+    ON_CALL(download_item2_, GetTargetFilePath())
+        .WillByDefault(ReturnRefOfCopy(base::FilePath()));
     ON_CALL(download_item2_, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
   }
@@ -285,7 +299,6 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
   std::unique_ptr<testing::NiceMock<content::MockDownloadManager>> manager_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
-  std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
 };
 
@@ -300,11 +313,12 @@ TEST_F(DownloadBubbleSecurityViewTest,
                      /*is_prominent=*/false, ui::kColorAlertHighSeverity)});
 
   EXPECT_EQ(bubble_delegate_->buttons(),
-            ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_OK);
+            static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
+  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
 
   // Two buttons, none prominent
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting(
       {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
@@ -314,28 +328,32 @@ TEST_F(DownloadBubbleSecurityViewTest,
   UpdateView();
 
   EXPECT_EQ(bubble_delegate_->buttons(),
-            ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
+            static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
+  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // One button, none prominent
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting(
       {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
                      /*is_prominent=*/false)});
   UpdateView();
 
-  EXPECT_EQ(bubble_delegate_->buttons(), ui::DIALOG_BUTTON_OK);
-  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(bubble_delegate_->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
+  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // No buttons, none prominent
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting({});
   UpdateView();
 
-  EXPECT_EQ(bubble_delegate_->buttons(), ui::DIALOG_BUTTON_NONE);
-  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(bubble_delegate_->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
+  EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
 }
 
 TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
@@ -521,7 +539,6 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   int short_width =
       bubble_delegate_->GetDialogClientView()->GetMinimumSize().width();
 
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting({SubpageButton(
       DownloadCommands::Command::DISCARD,
@@ -534,7 +551,6 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
 
   ASSERT_LT(short_width, medium_width);
 
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting(
       {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
@@ -562,7 +578,6 @@ TEST_F(DownloadBubbleSecurityViewTest, InitializeAndReset) {
             OfflineItemUtils::GetContentIdForDownload(&download_item1_));
 
   // Reset and initialize with the other download.
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row2_model_);
   EXPECT_TRUE(security_view_->IsInitialized());
   EXPECT_EQ(security_view_->content_id(),

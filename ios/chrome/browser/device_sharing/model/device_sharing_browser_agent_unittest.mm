@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -28,24 +28,18 @@ class DeviceSharingBrowserAgentTest : public PlatformTest {
         url_2_("http://www.test.com/2.html"),
         url_3_("http://www.test.com/3.html"),
         url_4_("http://www.test.com/4.html") {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
-        DeviceSharingManagerFactory::GetInstance(),
-        DeviceSharingManagerFactory::GetDefaultFactory());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-
-    other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
   }
 
   NSURL* ActiveHandoffUrl() {
     DeviceSharingManagerImpl* sharing_manager =
         static_cast<DeviceSharingManagerImpl*>(
-            DeviceSharingManagerFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
+            DeviceSharingManagerFactory::GetForProfile(profile_.get()));
     return [sharing_manager->handoff_manager_ userActivityWebpageURL];
   }
 
@@ -67,7 +61,7 @@ class DeviceSharingBrowserAgentTest : public PlatformTest {
   const GURL url_4_;
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;
@@ -75,7 +69,9 @@ class DeviceSharingBrowserAgentTest : public PlatformTest {
 
 TEST_F(DeviceSharingBrowserAgentTest, UpdateEmptyBrowser) {
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
       ->UpdateForActiveBrowser();
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
@@ -84,7 +80,9 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdateEmptyBrowser) {
 TEST_F(DeviceSharingBrowserAgentTest, UpdatePopulatedBrowser) {
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
   AppendNewWebState(browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   // `browser_` isn't the active browser in the device manager yet, so expect
   // the active URL hasn't yet changed.
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
@@ -94,7 +92,9 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdatePopulatedBrowser) {
 }
 
 TEST_F(DeviceSharingBrowserAgentTest, ActivateInBrowser) {
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
       ->UpdateForActiveBrowser();
   // As the active browser, newly actiated web states will change the active
@@ -107,7 +107,9 @@ TEST_F(DeviceSharingBrowserAgentTest, ActivateInBrowser) {
 }
 
 TEST_F(DeviceSharingBrowserAgentTest, NavigateInBrowser) {
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   web::FakeWebState* web_state = AppendNewWebState(browser_.get(), url_1_);
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
       ->UpdateForActiveBrowser();
@@ -120,7 +122,9 @@ TEST_F(DeviceSharingBrowserAgentTest, NavigateInBrowser) {
 }
 
 TEST_F(DeviceSharingBrowserAgentTest, NavigateInactiveInBrowser) {
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   web::FakeWebState* web_state =
       AppendNewWebState(browser_.get(), url_1_, /*activate=*/false);
   AppendNewWebState(browser_.get(), url_2_);
@@ -136,7 +140,9 @@ TEST_F(DeviceSharingBrowserAgentTest, NavigateInactiveInBrowser) {
 }
 
 TEST_F(DeviceSharingBrowserAgentTest, DestroyBrowser) {
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
       ->UpdateForActiveBrowser();
   AppendNewWebState(browser_.get(), url_1_);
@@ -149,7 +155,9 @@ TEST_F(DeviceSharingBrowserAgentTest, DestroyBrowser) {
 TEST_F(DeviceSharingBrowserAgentTest, UpdatePopulatedIncognitoBrowser) {
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
   AppendNewWebState(incognito_browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(incognito_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      incognito_browser_.get(), DeviceSharingManagerFactory::GetForProfile(
+                                    incognito_browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(incognito_browser_.get())
       ->UpdateForActiveBrowser();
   // The incognito browser, when active, should never update the active URL.
@@ -157,7 +165,9 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdatePopulatedIncognitoBrowser) {
 }
 
 TEST_F(DeviceSharingBrowserAgentTest, ActivateInIncognitoBrowser) {
-  DeviceSharingBrowserAgent::CreateForBrowser(incognito_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      incognito_browser_.get(), DeviceSharingManagerFactory::GetForProfile(
+                                    incognito_browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(incognito_browser_.get())
       ->UpdateForActiveBrowser();
   AppendNewWebState(incognito_browser_.get(), url_1_);
@@ -166,7 +176,9 @@ TEST_F(DeviceSharingBrowserAgentTest, ActivateInIncognitoBrowser) {
 }
 
 TEST_F(DeviceSharingBrowserAgentTest, NavigateInIncognitoBrowser) {
-  DeviceSharingBrowserAgent::CreateForBrowser(incognito_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      incognito_browser_.get(), DeviceSharingManagerFactory::GetForProfile(
+                                    incognito_browser_->GetProfile()));
   web::FakeWebState* incognito_web_state =
       AppendNewWebState(incognito_browser_.get(), url_1_);
 
@@ -178,12 +190,16 @@ TEST_F(DeviceSharingBrowserAgentTest, NavigateInIncognitoBrowser) {
 
 TEST_F(DeviceSharingBrowserAgentTest, UpdateTwoBrowsersOneEmpty) {
   AppendNewWebState(browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
       ->UpdateForActiveBrowser();
   EXPECT_NSEQ(ActiveHandoffUrl(), net::NSURLWithGURL(url_1_));
   // Activate an empty browser.
-  DeviceSharingBrowserAgent::CreateForBrowser(other_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      other_browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(other_browser_->GetProfile()));
   DeviceSharingBrowserAgent::FromBrowser(other_browser_.get())
       ->UpdateForActiveBrowser();
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
@@ -195,9 +211,13 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdateTwoBrowsersOneEmpty) {
 
 TEST_F(DeviceSharingBrowserAgentTest, UpdateTwoPopulatedBrowsers) {
   AppendNewWebState(browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   AppendNewWebState(other_browser_.get(), url_2_);
-  DeviceSharingBrowserAgent::CreateForBrowser(other_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      other_browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(other_browser_->GetProfile()));
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
@@ -230,10 +250,14 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdateTwoPopulatedBrowsers) {
 
 TEST_F(DeviceSharingBrowserAgentTest, UpdateAndNavigateTwoBrowsers) {
   web::FakeWebState* web_state = AppendNewWebState(browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   web::FakeWebState* other_web_state =
       AppendNewWebState(other_browser_.get(), url_2_);
-  DeviceSharingBrowserAgent::CreateForBrowser(other_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      other_browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(other_browser_->GetProfile()));
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
@@ -269,9 +293,13 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdateAndNavigateTwoBrowsers) {
 
 TEST_F(DeviceSharingBrowserAgentTest, UpdateRegularAndIncognitoBrowsers) {
   AppendNewWebState(browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   AppendNewWebState(other_browser_.get(), url_2_);
-  DeviceSharingBrowserAgent::CreateForBrowser(incognito_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      incognito_browser_.get(), DeviceSharingManagerFactory::GetForProfile(
+                                    incognito_browser_->GetProfile()));
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())
@@ -295,10 +323,14 @@ TEST_F(DeviceSharingBrowserAgentTest, UpdateRegularAndIncognitoBrowsers) {
 
 TEST_F(DeviceSharingBrowserAgentTest, NavigateInRegularAndIncognitoBrowsers) {
   web::FakeWebState* web_state = AppendNewWebState(browser_.get(), url_1_);
-  DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      browser_.get(),
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile()));
   web::FakeWebState* incognito_web_state =
       AppendNewWebState(incognito_browser_.get(), url_2_);
-  DeviceSharingBrowserAgent::CreateForBrowser(incognito_browser_.get());
+  DeviceSharingBrowserAgent::CreateForBrowser(
+      incognito_browser_.get(), DeviceSharingManagerFactory::GetForProfile(
+                                    incognito_browser_->GetProfile()));
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())

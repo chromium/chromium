@@ -1,0 +1,20 @@
+Name: Coordinator Layout
+Short Name: coordinatorlayout
+URL: https://dl.google.com/dl/android/maven2/androidx/coordinatorlayout/coordinatorlayout/1.3.0/coordinatorlayout-1.3.0.aar
+Version: 1.3.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.
+
+See also: https://developer.android.com/jetpack/androidx/releases/coordinatorlayout#1.3.0
+
+
+Local Modifications:
+No modifications.

@@ -18,7 +18,8 @@ namespace autofill {
 // `StartUploadRequest`.
 class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
  public:
-  explicit MockAutofillCrowdsourcingManager(AutofillClient* client);
+  explicit MockAutofillCrowdsourcingManager(AutofillClient* client,
+                                            LogManager* log_manager = nullptr);
   ~MockAutofillCrowdsourcingManager() override;
 
   MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
@@ -26,12 +27,13 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
   MockAutofillCrowdsourcingManager& operator=(
       const MockAutofillCrowdsourcingManager&) = delete;
 
-  MOCK_METHOD(bool,
-              StartQueryRequest,
-              ((const std::vector<raw_ptr<FormStructure, VectorExperimental>>&),
-               std::optional<net::IsolationInfo>,
-               QueryRequestCompleteCallback),
-              (override));
+  MOCK_METHOD(
+      bool,
+      StartQueryRequest,
+      ((const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&),
+       std::optional<net::IsolationInfo>,
+       base::OnceCallback<void(std::optional<QueryResponse>)>),
+      (override));
 
   MOCK_METHOD(bool,
               StartUploadRequest,

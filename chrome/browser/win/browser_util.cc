@@ -7,19 +7,21 @@
 #include <windows.h>
 
 // sddl.h must come after windows.h.
-#include <sddl.h>
 #include <winternl.h>
 
+#include <sddl.h>
+
+#include <algorithm>
 #include <climits>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 
@@ -78,10 +80,10 @@ bool IsBrowserAlreadyRunning() {
     return false;
   }
   std::replace(nt_dir_name->begin(), nt_dir_name->end(), '\\', '!');
-  base::ranges::transform(*nt_dir_name, nt_dir_name->begin(), tolower);
+  std::ranges::transform(*nt_dir_name, nt_dir_name->begin(), tolower);
   nt_dir_name = L"Global\\" + nt_dir_name.value();
   if (handle != NULL)
-    ::CloseHandle(handle);
+    ::CloseHandle(std::exchange(handle, nullptr));
 
   // For this to work for both user and system installs, we need the event to be
   // accessible to all interactive users so that we can correctly detect any
@@ -107,9 +109,12 @@ bool IsBrowserAlreadyRunning() {
   }
   base::win::ScopedLocalAlloc scoped_sd(attributes.lpSecurityDescriptor);
 
-  handle = ::CreateEventW(&attributes, TRUE, TRUE, nt_dir_name->c_str());
+  handle = ::CreateEventW(&attributes, /*bManualReset=*/TRUE,
+                          /*bInitialState=*/TRUE, nt_dir_name->c_str());
   int error = ::GetLastError();
-  return (error == ERROR_ALREADY_EXISTS || error == ERROR_ACCESS_DENIED);
+  // There is another browser running if `CreateEventW` succeeded and the object
+  // existed prior to the call or if `CreateEventW` failed due to access denied.
+  return error == (handle ? ERROR_ALREADY_EXISTS : ERROR_ACCESS_DENIED);
 }
 
 }  // namespace browser_util

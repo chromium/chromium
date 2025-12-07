@@ -20,8 +20,8 @@ namespace performance_manager {
 // active/background/closed/discarded states and records timing information
 // about these states.
 class TabRevisitTracker : public TabPageObserver,
-                          public PageLiveStateObserverDefaultImpl,
-                          public PageNode::ObserverDefaultImpl,
+                          public PageLiveStateObserver,
+                          public PageNodeObserver,
                           public GraphOwnedAndRegistered<TabRevisitTracker> {
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
@@ -83,10 +83,10 @@ class TabRevisitTracker : public TabPageObserver,
       TabPageDecorator::TabHandle* tab_handle) override;
   void OnBeforeTabRemoved(TabPageDecorator::TabHandle* tab_handle) override;
 
-  // PageLiveStateObserverDefaultImpl:
+  // PageLiveStateObserver:
   void OnIsActiveTabChanged(const PageNode* page_node) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnUkmSourceIdChanged(const PageNode* page_node) override;
 
   std::map<const TabPageDecorator::TabHandle*, StateBundle> tab_states_;

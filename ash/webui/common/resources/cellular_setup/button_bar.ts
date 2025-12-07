@@ -14,7 +14,8 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './button_bar.html.js';
-import {Button, ButtonBarState, ButtonState} from './cellular_types.js';
+import type {ButtonBarState} from './cellular_types.js';
+import {Button, ButtonState} from './cellular_types.js';
 
 const ButtonBarElementBase = I18nMixin(PolymerElement);
 
@@ -37,7 +38,7 @@ export class ButtonBarElement extends ButtonBarElementBase {
         value: {},
       },
 
-      Button: {
+      buttonEnum_: {
         type: Object,
         value: Button,
       },

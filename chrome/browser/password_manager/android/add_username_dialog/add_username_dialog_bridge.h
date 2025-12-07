@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class AddUsernameDialogBridge {
  public:
@@ -25,7 +25,7 @@ class AddUsernameDialogBridge {
     JniDelegate& operator=(const JniDelegate&) = delete;
     virtual ~JniDelegate() = 0;
 
-    virtual void Create(const gfx::NativeWindow window_android,
+    virtual void Create(ui::WindowAndroid& window_android,
                         AddUsernameDialogBridge* bridge) = 0;
     virtual void ShowAddUsernameDialog(const std::u16string& password) = 0;
     // Dismisses the displayed dialog. The bridge calls it in the destructor to
@@ -47,8 +47,7 @@ class AddUsernameDialogBridge {
                              DialogAcceptedCallback dialog_accepted_callback,
                              base::OnceClosure dialog_dismissed_callback);
 
-  void OnDialogAccepted(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>& username);
+  void OnDialogAccepted(JNIEnv* env, const std::u16string& username);
   void OnDialogDismissed(JNIEnv* env);
 
  private:

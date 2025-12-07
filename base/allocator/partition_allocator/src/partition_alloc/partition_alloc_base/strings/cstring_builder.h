@@ -7,12 +7,7 @@
 
 #include <cstddef>
 
-#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-
-#if !PA_BUILDFLAG(IS_WIN)
-#include <unistd.h>
-#endif
 
 namespace partition_alloc::internal::base::strings {
 

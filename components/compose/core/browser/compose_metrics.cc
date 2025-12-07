@@ -49,6 +49,7 @@ const char kInnerTextNodeOffsetFound[] =
     "Compose.Dialog.InnerTextNodeOffsetFound";
 const char kComposeContextMenuCtr[] = "Compose.ContextMenu.CTR";
 const char kComposeProactiveNudgeCtr[] = "Compose.ProactiveNudge.CTR";
+const char kComposeSelectionNudgeCtr[] = "Compose.SelectionNudge.CTR";
 const char kComposeProactiveNudgeShowStatus[] =
     "Compose.ProactiveNudge.ShowStatus";
 const char kOpenComposeDialogResult[] =
@@ -82,6 +83,7 @@ bool HasAckedFreOrAcceptedMsbb(ComposeFreOrMsbbSessionCloseReason reason) {
     case ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed:
     case ComposeFreOrMsbbSessionCloseReason::kAbandoned:
     case ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession:
+    case ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration:
       return false;
   }
 }
@@ -172,7 +174,7 @@ void PageUkmTracker::MaybeLogUkm() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-ComposeSessionEvents::ComposeSessionEvents() {}
+ComposeSessionEvents::ComposeSessionEvents() = default;
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeContextMenuCtr, event);
@@ -182,8 +184,12 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
   base::UmaHistogramEnumeration(kComposeShowStatus, status);
 }
 
-void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event) {
+void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeProactiveNudgeCtr, event);
+}
+
+void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event) {
+  base::UmaHistogramEnumeration(kComposeSelectionNudgeCtr, event);
 }
 
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status) {
@@ -197,12 +203,22 @@ void LogOpenComposeDialogResult(OpenComposeDialogResult result) {
 void LogStartSessionEntryPoint(ComposeEntryPoint entry_point) {
   base::UmaHistogramEnumeration(kComposeStartSessionEntryPoint, entry_point);
 
-  if (entry_point == ComposeEntryPoint::kProactiveNudge) {
-    base::RecordAction(
-        base::UserMetricsAction("Compose.StartedSession.ProactiveNudge"));
-  } else if (entry_point == ComposeEntryPoint::kContextMenu) {
-    base::RecordAction(
-        base::UserMetricsAction("Compose.StartedSession.ContextMenu"));
+  switch (entry_point) {
+    case ComposeEntryPoint::kContextMenu:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.StartedSession.ContextMenu"));
+      break;
+    case ComposeEntryPoint::kProactiveNudge:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.StartedSession.ProactiveNudge"));
+      break;
+    case ComposeEntryPoint::kSelectionNudge:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.StartedSession.SelectionNudge"));
+      break;
+    case ComposeEntryPoint::kSavedStateNudge:
+    case ComposeEntryPoint::kSavedStateNotification:
+      break;
   }
 }
 
@@ -256,6 +272,10 @@ void LogComposeRequestDuration(base::TimeDelta duration,
   base::UmaHistogramMediumTimes(
       base::StrCat({"Compose.", EvalLocationString(eval_location), suffix}),
       duration);
+}
+
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason) {
+  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
 }
 
 void LogComposeFirstRunSessionCloseReason(
@@ -325,11 +345,17 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case ComposeSessionCloseReason::kAbandoned:
     case ComposeSessionCloseReason::kReplacedWithNewSession:
     case ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
+    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
       status = ".Ignored";
+      break;
+    case compose::ComposeSessionCloseReason::kEndedAtFre:
+    case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
+    case compose::ComposeSessionCloseReason::kEndedAtMsbb:
+      NOTREACHED();
   }
 
   // Report all location-agnostic metrics.
-  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
+  LogComposeSessionCloseReason(reason);
   base::UmaHistogramCounts1000(kComposeSessionComposeCount + status,
                                session_events.compose_requests_count);
   base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,

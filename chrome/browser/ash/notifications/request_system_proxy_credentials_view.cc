@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/notifications/request_system_proxy_credentials_view.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -99,11 +101,11 @@ const std::string& RequestSystemProxyCredentialsView::GetProxyServer() const {
   return proxy_server_;
 }
 
-std::u16string RequestSystemProxyCredentialsView::GetUsername() const {
+std::u16string_view RequestSystemProxyCredentialsView::GetUsername() const {
   return username_textfield_->GetText();
 }
 
-std::u16string RequestSystemProxyCredentialsView::GetPassword() const {
+std::u16string_view RequestSystemProxyCredentialsView::GetPassword() const {
   return password_textfield_->GetText();
 }
 
@@ -112,7 +114,7 @@ void RequestSystemProxyCredentialsView::Init() {
   SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText)));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_OK_BUTTON));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -196,8 +198,8 @@ void RequestSystemProxyCredentialsView::Init() {
 
 BEGIN_METADATA(RequestSystemProxyCredentialsView)
 ADD_READONLY_PROPERTY_METADATA(std::string, ProxyServer)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
+ADD_READONLY_PROPERTY_METADATA(std::u16string_view, Username)
+ADD_READONLY_PROPERTY_METADATA(std::u16string_view, Password)
 END_METADATA
 
 }  // namespace ash

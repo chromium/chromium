@@ -16,8 +16,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,53 +30,65 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-
-import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupListCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
 public class TabGroupListCoordinatorUnitTest {
     public static final long FAKE_NATIVE_PTR = 1L;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
-    @Mock Activity mActivity;
     @Mock Profile mProfile;
     @Mock Callback<Drawable> mCallback;
     @Mock Bitmap mBitmap;
 
     @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
 
+    private Activity mActivity;
+    private TabListFaviconProvider mTabListFaviconProvider;
+
     @Before
     public void setUp() {
-        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(FAKE_NATIVE_PTR);
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    private void onActivity(Activity activity) {
+        mActivity = activity;
+        mTabListFaviconProvider =
+                new TabListFaviconProvider(
+                        activity,
+                        /* isTabStrip= */ false,
+                        R.dimen.default_favicon_corner_radius,
+                        /* tabWebContentsFaviconDelegate= */ null);
+    }
+
+    @After
+    public void tearDown() {
+        mTabListFaviconProvider.destroy();
     }
 
     @Test
-    @SmallTest
     public void testForeignFavicon() {
-        BiConsumer<GURL, Callback<Drawable>> resolver =
-                TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
-        resolver.accept(JUnitTestGURLs.URL_1, mCallback);
+        FaviconResolver resolver =
+                TabGroupListFaviconResolverFactory.build(
+                        mActivity, mProfile, mTabListFaviconProvider);
+        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
                         anyLong(), any(), any(), anyInt(), mFaviconImageCallbackCaptor.capture());
@@ -86,11 +98,11 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFallbackFavicon() {
-        BiConsumer<GURL, Callback<Drawable>> resolver =
-                TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
-        resolver.accept(JUnitTestGURLs.URL_1, mCallback);
+        FaviconResolver resolver =
+                TabGroupListFaviconResolverFactory.build(
+                        mActivity, mProfile, mTabListFaviconProvider);
+        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
                         anyLong(), any(), any(), anyInt(), mFaviconImageCallbackCaptor.capture());
@@ -100,11 +112,11 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInternalFavicon() {
-        BiConsumer<GURL, Callback<Drawable>> resolver =
-                TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
-        resolver.accept(JUnitTestGURLs.NTP_NATIVE_URL, mCallback);
+        FaviconResolver resolver =
+                TabGroupListFaviconResolverFactory.build(
+                        mActivity, mProfile, mTabListFaviconProvider);
+        resolver.resolve(JUnitTestGURLs.NTP_NATIVE_URL, mCallback);
         verify(mCallback).onResult(notNull());
     }
 }

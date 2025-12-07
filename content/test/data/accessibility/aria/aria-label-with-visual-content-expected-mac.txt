@@ -1,0 +1,11 @@
+AXWebArea
+++AXButton AXDescription='button supports naming with child content'
+++AXLink AXDescription='link supports naming with child content'
+++++AXStaticText AXValue='This is a link'
+++AXGroup AXDescription='div does not support naming with child content'
+++++AXStaticText AXValue='This is a div'
+++AXGroup AXDescription='span does not support naming with child content'
+++++AXStaticText AXValue='This is a span'
+++AXStaticText AXValue=' '
+++AXGroup AXDescription='region does not support naming with child content'
+++++AXStaticText AXValue='This is a region'

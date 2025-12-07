@@ -65,19 +65,22 @@ export function assertExhaustive(
   assert(false, optMessage);
 }
 
+type EnumObj = Record<string, number|string>;
+
 /**
- * Check if a string value is a variant of an enum.
+ * Check if a string or number value is a variant of an enum.
  *
  * @param enumType The enum type to be checked.
  * @param value Value to be checked.
  * @return The value if it's an enum variant, null otherwise.
  */
-export function checkEnumVariant<T extends {[key: string]: string}>(
+export function checkEnumVariant<T extends EnumObj>(
   enumType: T,
   value: unknown,
 ): T[keyof T]|null {
-  if (value === null || value === undefined || typeof value !== 'string' ||
-      !Object.values<string>(enumType).includes(value)) {
+  // `includes` work for any value types.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  if (!Object.values(enumType).includes(value as T[keyof T])) {
     return null;
   }
 
@@ -88,16 +91,16 @@ export function checkEnumVariant<T extends {[key: string]: string}>(
 }
 
 /**
- * Asserts that a string value is a variant of an enum.
+ * Asserts that a string or number value is a variant of an enum.
  *
  * @param enumType The enum type to be checked.
  * @param value Value to be checked.
  * @return The value if it's an enum variant, throws assertion error otherwise.
  */
-export function assertEnumVariant<T extends string>(
-  enumType: {[key: string]: T},
+export function assertEnumVariant<T extends EnumObj>(
+  enumType: T,
   value: unknown,
-): T {
+): T[keyof T] {
   const ret = checkEnumVariant(enumType, value);
   assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;

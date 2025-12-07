@@ -1,0 +1,37 @@
+This is a wdspec test.
+[FAIL] test_params_proxy_http_proxy_invalid_value[http://foo]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo:-1]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo:65536]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo/test]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo#42]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo?foo=bar]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] 1]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[https://foo]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo:-1]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo:65536]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo/test]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo#42]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo?foo=bar]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_socks_proxy_invalid_type[42]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_socks_proxy_invalid_type[True]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_socks_proxy_invalid_type[value2]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_proxy_socks_proxy_invalid_type[value3]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+Harness: the test ran to completion.
+

@@ -11,6 +11,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_view_util.h"
 #include "base/check_deref.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,7 +30,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -60,12 +61,6 @@ constexpr int kTitleBottomMargin = 35;
 // Line height for the widget content text.
 constexpr int kContentLineHeight = 12;
 
-views::FlexSpecification FullFlex() {
-  return views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                                  views::MaximumFlexSizeRule::kUnbounded)
-      .WithWeight(1);
-}
-
 gfx::ImageSkia EnterpriseIcon(const ui::ColorProvider& color_provider) {
   return gfx::CreateVectorIcon(
       chromeos::kEnterpriseIcon,
@@ -86,14 +81,22 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
       kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType));
-  SetBackground(
-      views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 
-  layer()->SetFillsBoundsOpaquely(false);
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kPowerButtonMenuBackgroundColorId)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
+  SetBackground(views::CreateSolidBackground(background_color_id));
+
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  layer()->SetIsFastRoundedCorner(true);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   Initialize();
 
@@ -122,7 +125,8 @@ void PowerButtonMenuCurtainView::ScheduleShowHideAnimation(bool show) {
 void PowerButtonMenuCurtainView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const ui::ColorProvider& color_provider = CHECK_DEREF(GetColorProvider());
-  enterprise_icon().SetImage(EnterpriseIcon(color_provider));
+  enterprise_icon().SetImage(
+      ui::ImageModel::FromImageSkia(EnterpriseIcon(color_provider)));
   title_text().SetEnabledColor(
       color_provider.GetColor(kColorAshIconColorPrimary));
   description_text().SetEnabledColor(
@@ -131,53 +135,49 @@ void PowerButtonMenuCurtainView::OnThemeChanged() {
 
 void PowerButtonMenuCurtainView::Initialize() {
   Builder<FlexLayoutView>(this)
-      .SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetOrientation(LayoutOrientation::kVertical)
       .AddChildren(
-          Builder<FlexLayoutView>()
-              .SetOrientation(LayoutOrientation::kVertical)
-              .SetProperty(views::kFlexBehaviorKey, FullFlex())
-              .AddChildren(
-                  // Enterprise icon
-                  Builder<ImageView>()
-                      .SetImageSize(kEnterpriseIconSize)
-                      .SetSize(kEnterpriseIconSize)
-                      .SetHorizontalAlignment(ImageView::Alignment::kLeading)
-                      .SetProperty(views::kFlexBehaviorKey, FullFlex())
-                      .SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(
-                                       kVerticalPadding, kHorizontalPadding,
-                                       kIconBottomMargin, kHorizontalPadding))
-                      .CopyAddressTo(&enterprise_icon_),
-                  // Title
-                  Builder<views::Label>()
-                      .SetText(TitleText())
-                      .SetTextStyle(views::style::STYLE_EMPHASIZED)
-                      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-                      .SetHorizontalAlignment(
-                          gfx::HorizontalAlignment::ALIGN_LEFT)
-                      .SetMultiLine(true)
-                      .SetProperty(views::kFlexBehaviorKey, FullFlex())
-                      .SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(0, kHorizontalPadding,
-                                                     kTitleBottomMargin,
-                                                     kHorizontalPadding))
-                      .SetMaximumWidth(kWidth)
-                      .CopyAddressTo(&title_text_),
-                  // Description
-                  Builder<views::Label>()
-                      .SetText(MessageText())
-                      .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-                      .SetHorizontalAlignment(
-                          gfx::HorizontalAlignment::ALIGN_LEFT)
-                      .SetMultiLine(true)
-                      .SetProperty(views::kFlexBehaviorKey, FullFlex())
-                      .SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(0, kHorizontalPadding,
-                                                     kVerticalPadding,
-                                                     kHorizontalPadding))
-                      .SetLineHeight(kContentLineHeight)
-                      .SetMaximumWidth(kWidth)
-                      .CopyAddressTo(&description_text_)))
+          // Enterprise icon
+          Builder<ImageView>()
+              .SetImageSize(kEnterpriseIconSize)
+              .SetSize(kEnterpriseIconSize)
+              .SetHorizontalAlignment(ImageView::Alignment::kLeading)
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets::TLBR(kVerticalPadding, kHorizontalPadding,
+                                    kIconBottomMargin, kHorizontalPadding))
+              .CopyAddressTo(&enterprise_icon_),
+          // Title
+          Builder<views::Label>()
+              .SetText(TitleText())
+              .SetTextStyle(views::style::STYLE_EMPHASIZED)
+              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+              .SetMultiLine(true)
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets::TLBR(0, kHorizontalPadding, kTitleBottomMargin,
+                                    kHorizontalPadding))
+              .SetMaximumWidth(kWidth)
+              .CopyAddressTo(&title_text_),
+          // Description
+          Builder<views::Label>()
+              .SetText(MessageText())
+              .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+              .SetMultiLine(true)
+              .SetProperty(views::kFlexBehaviorKey,
+                           views::FlexSpecification(
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded)
+                               .WithWeight(1))
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets::TLBR(0, kHorizontalPadding, kVerticalPadding,
+                                    kHorizontalPadding))
+              .SetLineHeight(kContentLineHeight)
+              .SetMaximumWidth(kWidth)
+              .CopyAddressTo(&description_text_))
       .BuildChildren();
 }
 

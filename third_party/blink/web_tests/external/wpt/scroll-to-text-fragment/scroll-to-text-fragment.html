@@ -31,6 +31,16 @@ let test_cases = [
     description: 'Text directive with invalid syntax (context terms without "-") should not parse as a text directive'
   },
   {
+    fragment: '#:~:text=foo-',
+    expect_position: 'top',
+    description: 'Text directive with invalid syntax (only prefix, no start text) should not parse as a text directive'
+  },
+  {
+    fragment: '#:~:text=-foo',
+    expect_position: 'top',
+    description: 'Text directive with invalid syntax (only suffix, no start text) should not parse as a text directive'
+  },
+  {
     fragment: '#element:~:directive',
     expect_position: 'element',
     description: 'Generic fragment directive with existing element fragment should scroll to element'
@@ -255,6 +265,8 @@ for (const test_case of test_cases) {
     // If the position is not 'top', the :target element should be the positioned element.
     assert_true(data.scrollPosition == 'top' || data.target == data.scrollPosition);
     assert_equals(data.href.indexOf(':~:'), -1, 'Expected fragment directive to be stripped from the URL.');
+    assert_true(data.performanceNavigationEntries.every(entry => entry.indexOf(':~:') === -1), 'Expected fragment directive to be stripped from the URL in navigation performance metrics.')
+    assert_true(data.performanceResourcesEntries.every(entry => entry.indexOf(':~:') === -1), 'Expected fragment directive to be stripped from the URL in resource performance metrics.')
     assert_equals(data.scrollPosition, test_case.expect_position,
                   `Expected ${test_case.fragment} (${test_case.description}) to scroll to ${test_case.expect_position}.`);
   }), `Test navigation with fragment: ${test_case.description}.`);

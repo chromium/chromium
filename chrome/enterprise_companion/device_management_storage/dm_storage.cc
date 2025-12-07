@@ -51,7 +51,7 @@ bool DeletePolicies(const base::FilePath& cache_root,
                        /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
                        FILE_PATH_LITERAL("*"))
       .ForEach([&exclusion_set, &result](const base::FilePath& file) {
-        if (exclusion_set.contains(file.BaseName().MaybeAsASCII())) {
+        if (exclusion_set.contains(file.BaseName().AsUTF8Unsafe())) {
           return;
         }
 
@@ -82,7 +82,7 @@ class DMStorageImpl final : public DMStorage {
   DMStorageImpl(const base::FilePath& policy_cache_root,
                 std::unique_ptr<TokenServiceInterface> token_service)
       : policy_cache_root_(policy_cache_root),
-        policy_info_file_(policy_cache_root_.AppendASCII(kPolicyInfoFileName)),
+        policy_info_file_(policy_cache_root_.AppendUTF8(kPolicyInfoFileName)),
         token_service_(std::move(token_service)) {
     CHECK(token_service_);
   }
@@ -159,9 +159,7 @@ class DMStorageImpl final : public DMStorage {
     // Persists individual policies.
     std::set<std::string> updated_policy_set;
     bool policy_info_data_saved = false;
-    for (const auto& policy_entry : policy_map) {
-      const std::string& policy_type = policy_entry.first;
-      const std::string& policy_value = policy_entry.second;
+    for (const auto& [policy_type, policy_value] : policy_map) {
       if (!policy_info_data_saved) {
         // Policy info has a new public key when server rotates the key.
         // In this case, persists the policy info as the cached policy info
@@ -179,10 +177,10 @@ class DMStorageImpl final : public DMStorage {
       updated_policy_set.emplace(encoded_policy_type);
 
       const base::FilePath policy_dir =
-          policy_cache_root_.AppendASCII(encoded_policy_type);
+          policy_cache_root_.AppendUTF8(encoded_policy_type);
       if (!CreateGlobalAccessibleDirectory(policy_dir) ||
           !WriteContentToGlobalReadableFile(
-              policy_dir.AppendASCII(kPolicyFileName), policy_value)) {
+              policy_dir.AppendUTF8(kPolicyFileName), policy_value)) {
         return false;
       }
     }
@@ -225,8 +223,8 @@ class DMStorageImpl final : public DMStorage {
     enterprise_management::PolicyFetchResponse response;
     enterprise_management::PolicyData policy_data;
     base::FilePath policy_file =
-        policy_cache_root_.AppendASCII(base::Base64Encode(policy_type))
-            .AppendASCII(kPolicyFileName);
+        policy_cache_root_.AppendUTF8(base::Base64Encode(policy_type))
+            .AppendUTF8(kPolicyFileName);
     if (!base::PathExists(policy_file)) {
       VLOG(1) << "No policy file exists for " << policy_type;
       return std::nullopt;
@@ -270,6 +268,9 @@ bool CreateGlobalAccessibleDirectory(const base::FilePath& path) {
 
 bool WriteContentToGlobalReadableFile(const base::FilePath& path,
                                       const std::string& content) {
+  if (!base::PathExists(path.DirName())) {
+    base::CreateDirectory(path.DirName());
+  }
   return base::ImportantFileWriter::WriteFileAtomically(path, content) &&
          MakePathGlobalAccessible(path);
 }

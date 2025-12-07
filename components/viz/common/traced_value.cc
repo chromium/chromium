@@ -4,38 +4,40 @@
 
 #include "components/viz/common/traced_value.h"
 
+#include <cinttypes>
+
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 
 namespace viz {
 
-void TracedValue::AppendIDRef(const void* id,
-                              base::trace_event::TracedValue* state) {
+void TracedValue::AppendIDRef(Id id, base::trace_event::TracedValue* state) {
   state->BeginDictionary();
-  state->SetString("id_ref", base::StringPrintf("%p", id));
+  state->SetString("id_ref", base::StringPrintf("0x%" PRIxPTR, id.value_));
   state->EndDictionary();
 }
 
-void TracedValue::SetIDRef(const void* id,
+void TracedValue::SetIDRef(Id id,
                            base::trace_event::TracedValue* state,
                            const char* name) {
   state->BeginDictionary(name);
-  state->SetString("id_ref", base::StringPrintf("%p", id));
+  state->SetString("id_ref", base::StringPrintf("0x%" PRIxPTR, id.value_));
   state->EndDictionary();
 }
 
 void TracedValue::MakeDictIntoImplicitSnapshot(
     base::trace_event::TracedValue* dict,
     const char* object_name,
-    const void* id) {
-  dict->SetString("id", base::StringPrintf("%s/%p", object_name, id));
+    Id id) {
+  dict->SetString("id",
+                  base::StringPrintf("%s/0x%" PRIxPTR, object_name, id.value_));
 }
 
 void TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
     const char* category,
     base::trace_event::TracedValue* dict,
     const char* object_name,
-    const void* id) {
+    Id id) {
   dict->SetString("cat", category);
   MakeDictIntoImplicitSnapshot(dict, object_name, id);
 }
@@ -45,7 +47,7 @@ void TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
     base::trace_event::TracedValue* dict,
     const char* object_base_type_name,
     const char* object_name,
-    const void* id) {
+    Id id) {
   dict->SetString("cat", category);
   dict->SetString("base_type", object_base_type_name);
   MakeDictIntoImplicitSnapshot(dict, object_name, id);

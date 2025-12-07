@@ -11,16 +11,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_controller.h"
 
-namespace base {
-class ElapsedTimer;
-}  // namespace base
-
 namespace syncer {
+
+class ModelError;
+class SyncError;
 
 // Timeout duration for loading data types in ModelLoadManager. Exposed for
 // testing.
@@ -42,8 +42,9 @@ class ModelLoadManagerDelegate {
   // error occurred during loading. Can be called for types that are not
   // connected or have already failed but should not be called for the same
   // error multiple times.
-  virtual void OnSingleDataTypeWillStop(DataType type,
-                                        const SyncError& error) = 0;
+  virtual void OnSingleDataTypeWillStop(
+      DataType type,
+      const std::optional<SyncError>& error) = 0;
 
   virtual ~ModelLoadManagerDelegate() = default;
 };
@@ -75,8 +76,7 @@ class ModelLoadManager {
   // Can be called at any time. Synchronously stops all datatypes.
   void Stop(SyncStopMetadataFate metadata_fate);
 
-  // Stops an individual datatype `type`. `error` must be an actual error (i.e.
-  // not UNSET).
+  // Stops an individual datatype `type`.
   void StopDatatype(DataType type,
                     SyncStopMetadataFate metadata_fate,
                     SyncError error);
@@ -88,10 +88,10 @@ class ModelLoadManager {
 
   // Callback that will be invoked when the model for `type` finishes loading.
   // This callback is passed to the controller's `LoadModels` method.
-  void ModelLoadCallback(DataType type, const SyncError& error);
+  void ModelLoadCallback(DataType type, const std::optional<ModelError>& error);
 
   // A helper to stop an individual datatype.
-  void StopDatatypeImpl(const SyncError& error,
+  void StopDatatypeImpl(const std::optional<SyncError>& error,
                         SyncStopMetadataFate metadata_fate,
                         DataTypeController* dtc,
                         DataTypeController::StopCallback callback);
@@ -127,7 +127,7 @@ class ModelLoadManager {
 
   // Timer to measure time by which all types have finished loading (or timed
   // out).
-  std::unique_ptr<base::ElapsedTimer> load_models_elapsed_timer_;
+  std::optional<base::ElapsedTimer> load_models_elapsed_timer_;
 
   bool delegate_waiting_for_ready_for_configure_ = false;
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] style(--foo: var(--foo)) should match
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

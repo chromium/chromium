@@ -5,9 +5,14 @@
 #ifndef CONTENT_BROWSER_ANDROID_BROWSER_STARTUP_CONTROLLER_H_
 #define CONTENT_BROWSER_ANDROID_BROWSER_STARTUP_CONTROLLER_H_
 
+#include "base/time/time.h"
+
 namespace content {
 
-void BrowserStartupComplete(int result);
+void BrowserStartupComplete(
+    int result,
+    base::TimeDelta longest_duration_of_posted_startup_tasks,
+    base::TimeDelta total_duration_of_posted_startup_tasks);
 bool ShouldStartGpuProcessOnBrowserStartup();
 void MinimalBrowserStartupComplete();
 

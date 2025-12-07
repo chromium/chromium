@@ -64,23 +64,33 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kCounterStyleRule = 11,
     kSupportsRule = 12,
     kFontFeatureValuesRule = 14,
-    kViewportRule = 15,
     // CSSOM constants are deprecated [1], and there will be no new
     // web-exposed values.
     //
     // [1] https://wiki.csswg.org/spec/cssom-constants
 
     // Values for internal use, not web-exposed:
-    kPropertyRule,
+    kFirstInternalRule = 16,
+    // go/keep-sorted start
+    kApplyMixinRule = kFirstInternalRule,
     kContainerRule,
+    kContentsMixinRule,
+    kCustomMediaRule,
+    kFontFeatureRule,
+    kFontPaletteValuesRule,
+    kFunctionDeclarationsRule,
+    kFunctionRule,
     kLayerBlockRule,
     kLayerStatementRule,
-    kFontPaletteValuesRule,
+    kMixinRule,
+    kNavigationRule,
+    kNestedDeclarationsRule,
+    kPositionTryRule,
+    kPropertyRule,
     kScopeRule,
-    kFontFeatureRule,
     kStartingStyleRule,
     kViewTransitionRule,
-    kPositionTryRule,
+    // go/keep-sorted end
   };
 
   virtual Type GetType() const = 0;
@@ -88,7 +98,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   // https://drafts.csswg.org/cssom/#dom-cssrule-type
   int type() const {
     Type type = GetType();
-    return type > Type::kViewportRule ? 0 : static_cast<int>(type);
+    return type >= Type::kFirstInternalRule ? 0 : static_cast<int>(type);
   }
 
   virtual String cssText() const = 0;
@@ -116,8 +126,6 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
 
   // The CSSOM spec states that "setting the cssText attribute must do nothing."
   void setCSSText(const String&) {}
-
-  virtual void UseCountForSignalAffected() {}
 
  protected:
   explicit CSSRule(CSSStyleSheet* parent);

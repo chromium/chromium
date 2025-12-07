@@ -6,12 +6,13 @@
 
 // Define the URL constants used for each type of message target, including
 // iframes and workers.
-const kDocumentMessageTarget = 'resources/message-target.html';
-const kSharedWorkerMessageTarget = 'resources/message-target-shared-worker.js';
+const kDocumentMessageTarget = '../fs/resources/message-target.html';
+const kSharedWorkerMessageTarget =
+    '../fs/resources/message-target-shared-worker.js';
 const kServiceWorkerMessageTarget =
-  'resources/message-target-service-worker.js';
+    '../fs/resources/message-target-service-worker.js';
 const kDedicatedWorkerMessageTarget =
-  'resources/message-target-dedicated-worker.js';
+    '../fs/resources/message-target-dedicated-worker.js';
 
 function create_dedicated_worker(test, url) {
   const dedicated_worker = new Worker(url);
@@ -103,29 +104,32 @@ function create_message_channel(target, target_origin) {
 }
 
 // Creates a variety of different FileSystemFileHandles for testing.
-async function create_file_system_handles(test, root) {
+async function create_file_system_handles(root) {
   // Create some files to use with postMessage().
-  const empty_file = await createEmptyFile(test, 'empty-file', root);
+  const empty_file = await createEmptyFile('empty-file', root);
   const first_file = await createFileWithContents(
-    test, 'first-file-with-contents', 'first-text-content', root);
+      'first-file-with-contents', 'first-text-content', root);
   const second_file = await createFileWithContents(
-    test, 'second-file-with-contents', 'second-text-content', root);
+      'second-file-with-contents', 'second-text-content', root);
 
   // Create an empty directory to use with postMessage().
-  const empty_directory = await createDirectory(test, 'empty-directory', root);
+  const empty_directory = await createDirectory('empty-directory', root);
 
   // Create a directory containing both files and subdirectories to use
   // with postMessage().
   const directory_with_files =
-    await createDirectory(test, 'directory-with-files', root);
-  await createFileWithContents(test, 'first-file-in-directory',
-    'first-directory-text-content', directory_with_files);
-  await createFileWithContents(test, 'second-file-in-directory',
-    'second-directory-text-content', directory_with_files);
+      await createDirectory('directory-with-files', root);
+  await createFileWithContents(
+      'first-file-in-directory', 'first-directory-text-content',
+      directory_with_files);
+  await createFileWithContents(
+      'second-file-in-directory', 'second-directory-text-content',
+      directory_with_files);
   const subdirectory =
-    await createDirectory(test, 'subdirectory', directory_with_files);
-  await createFileWithContents(test, 'first-file-in-subdirectory',
-    'first-subdirectory-text-content', subdirectory);
+      await createDirectory('subdirectory', directory_with_files);
+  await createFileWithContents(
+      'first-file-in-subdirectory', 'first-subdirectory-text-content',
+      subdirectory);
 
   return [
     empty_file,
@@ -152,8 +156,7 @@ async function create_file_system_handles(test, root) {
 async function do_post_message_test(
   test, root_dir, receiver, target, target_origin) {
   // Create and send the handles to |target|.
-  const handles =
-    await create_file_system_handles(test, root_dir, target, target_origin);
+  const handles = await create_file_system_handles(root_dir);
   target.postMessage(
     { type: 'receive-file-system-handles', cloned_handles: handles },
     { targetOrigin: target_origin });

@@ -17,16 +17,16 @@
 #import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 
 class SpotlightTopSitesBridge;
 class SpotlightTopSitesCallbackBridge;
 
-@interface TopSitesSpotlightManager ()<SyncObserverModelBridge> {
+@interface TopSitesSpotlightManager () <SyncObserverModelBridge> {
   // Bridge to register for top sites changes. It's important that this instance
   // variable is released before the _topSite one.
   std::unique_ptr<SpotlightTopSitesBridge> _topSitesBridge;
@@ -112,14 +112,13 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 @implementation TopSitesSpotlightManager
 @synthesize topSites = _topSites;
 
-+ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
   return [[TopSitesSpotlightManager alloc]
       initWithLargeIconService:largeIconService
-                      topSites:ios::TopSitesFactory::GetForBrowserState(
-                                   browserState)
+                      topSites:ios::TopSitesFactory::GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:
              [[SearchableItemFactory alloc]
@@ -162,8 +161,9 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 }
 
 - (void)addAllTopSitesSpotlightItems {
-  if (!_topSites)
+  if (!_topSites) {
     return;
+  }
 
   [self addAllLocalTopSitesItems];
 }

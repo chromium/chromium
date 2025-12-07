@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/controller/highest_pmf_reporter.h"
 
 #include <limits>
@@ -20,14 +15,20 @@
 
 namespace blink {
 
-const char* HighestPmfReporter::highest_pmf_metric_names[] = {
+namespace {
+
+constexpr size_t kMaxReportCount = 4;
+
+constexpr std::array<const char*, kMaxReportCount> kHighestPmfMetricNames = {
     "Memory.Experimental.Renderer.HighestPrivateMemoryFootprint.0to2min",
     "Memory.Experimental.Renderer.HighestPrivateMemoryFootprint.2to4min",
     "Memory.Experimental.Renderer.HighestPrivateMemoryFootprint.4to8min",
     "Memory.Experimental.Renderer.HighestPrivateMemoryFootprint.8to16min"};
 
-constexpr base::TimeDelta HighestPmfReporter::time_to_report[] = {
+constexpr std::array<base::TimeDelta, kMaxReportCount> kTimeToReport = {
     base::Minutes(2), base::Minutes(4), base::Minutes(8), base::Minutes(16)};
+
+}  // namespace
 
 void HighestPmfReporter::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -77,9 +78,9 @@ void HighestPmfReporter::OnMemoryPing(MemoryUsage usage) {
   if (FirstNavigationStarted()) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&HighestPmfReporter::OnReportMetrics,
-                      WTF::Unretained(this)),
-        time_to_report[0]);
+        blink::BindOnce(&HighestPmfReporter::OnReportMetrics,
+                        blink::Unretained(this)),
+        kTimeToReport[0]);
   }
 
   if (current_highest_pmf_ > usage.private_footprint_bytes)
@@ -105,7 +106,7 @@ void HighestPmfReporter::OnReportMetrics() {
   peak_resident_bytes_at_current_highest_pmf_ = 0.0;
   webpage_counts_at_current_highest_pmf_ = 0;
   report_count_++;
-  if (report_count_ >= std::size(time_to_report)) {
+  if (report_count_ >= kMaxReportCount) {
     // Stop observing the MemoryUsageMonitor once there's no more histogram to
     // report.
     MemoryUsageMonitor::Instance().RemoveObserver(this);
@@ -113,17 +114,17 @@ void HighestPmfReporter::OnReportMetrics() {
   }
 
   base::TimeDelta delay =
-      time_to_report[report_count_] - time_to_report[report_count_ - 1];
+      kTimeToReport[report_count_] - kTimeToReport[report_count_ - 1];
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      WTF::BindOnce(&HighestPmfReporter::OnReportMetrics,
-                    WTF::Unretained(this)),
+      blink::BindOnce(&HighestPmfReporter::OnReportMetrics,
+                      blink::Unretained(this)),
       delay);
 }
 
 void HighestPmfReporter::ReportMetrics() {
-  base::UmaHistogramMemoryMB(highest_pmf_metric_names[report_count_],
-                             base::saturated_cast<base::Histogram::Sample>(
+  base::UmaHistogramMemoryMB(kHighestPmfMetricNames[report_count_],
+                             base::saturated_cast<base::Histogram::Sample32>(
                                  current_highest_pmf_ / 1024 / 1024));
 }
 

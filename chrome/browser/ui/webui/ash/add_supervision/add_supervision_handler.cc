@@ -79,15 +79,16 @@ void AddSupervisionHandler::GetInstalledArcApps(
   std::vector<std::string> installed_arc_apps;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .ForEachApp([&installed_arc_apps,
-                   profile](const apps::AppUpdate& update) {
-        if (ShouldIncludeAppUpdate(update)) {
-          std::string package_name =
-              arc::AppIdToArcPackageName(update.AppId(), profile);
-          if (!package_name.empty())
-            installed_arc_apps.push_back(package_name);
-        }
-      });
+      .ForEachApp(
+          [&installed_arc_apps, profile](const apps::AppUpdate& update) {
+            if (ShouldIncludeAppUpdate(update)) {
+              std::string package_name =
+                  arc::AppIdToArcPackageName(update.AppId(), profile);
+              if (!package_name.empty()) {
+                installed_arc_apps.push_back(package_name);
+              }
+            }
+          });
 
   std::move(callback).Run(installed_arc_apps);
 }
@@ -98,17 +99,11 @@ void AddSupervisionHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
         add_supervision::mojom::OAuthTokenFetchStatus::ERROR, "");
     return;
   }
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope);
-  scopes.insert(GaiaConstants::kPeopleApiReadOnlyOAuth2Scope);
-  scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
-  scopes.insert(GaiaConstants::kAuditRecordingOAuth2Scope);
-  scopes.insert(GaiaConstants::kClearCutOAuth2Scope);
 
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-          "add_supervision", scopes,
+          signin::OAuthConsumerId::kAddSupervision,
           base::BindOnce(&AddSupervisionHandler::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
           signin::AccessTokenFetcher::Mode::kImmediate);

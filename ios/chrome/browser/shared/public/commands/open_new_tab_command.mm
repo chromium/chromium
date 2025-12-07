@@ -16,6 +16,7 @@
 @synthesize inIncognito = _inIncognito;
 @synthesize inBackground = _inBackground;
 @synthesize originPoint = _originPoint;
+@synthesize extraHeaders = _extraHeaders;
 @synthesize fromChrome = _fromChrome;
 @synthesize appendTo = _appendTo;
 @synthesize userInitiated = _userInitiated;

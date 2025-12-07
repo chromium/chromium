@@ -12,13 +12,15 @@
 
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/protected_audience_network_util.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -32,10 +34,12 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -54,6 +58,20 @@ net::IsolationInfo CreateBidderIsolationInfo(const url::Origin& bidder_origin) {
                                     net::SiteForCookies());
 }
 
+// Helper to create the IsolationInfo used for trusted seller signals requests.
+net::IsolationInfo CreateTrustedSellerSignalsIsolationInfo(
+    const url::Origin& top_frame_origin,
+    const url::Origin& seller_origin) {
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeUseNonTransientNIKForSeller)) {
+    return net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther, top_frame_origin,
+        seller_origin, net::SiteForCookies(), /*nonce=*/std::nullopt,
+        net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  }
+  return net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+}
+
 }  // namespace
 
 AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
@@ -61,7 +79,6 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     PreconnectSocketCallback preconnect_socket_callback,
-    GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
     GetDevtoolsAuctionIdsCallback get_devtools_auction_ids,
     bool force_reload,
     const url::Origin& top_frame_origin,
@@ -73,12 +90,11 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     const std::optional<GURL>& wasm_url,
     const std::optional<GURL>& trusted_signals_base_url,
     bool needs_cors_for_additional_bid,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : receiver_(this, std::move(pending_receiver)),
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
           std::move(get_trusted_url_loader_factory)),
-      get_cookie_deprecation_label_(std::move(get_cookie_deprecation_label)),
       get_devtools_auction_ids_(std::move(get_devtools_auction_ids)),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
@@ -86,7 +102,9 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       is_for_seller_(is_for_seller),
       force_reload_(force_reload),
       client_security_state_(std::move(client_security_state)),
-      isolation_info_(is_for_seller ? net::IsolationInfo::CreateTransient()
+      isolation_info_(is_for_seller ? CreateTrustedSellerSignalsIsolationInfo(
+                                          top_frame_origin,
+                                          url::Origin::Create(script_url))
                                     : CreateBidderIsolationInfo(
                                           url::Origin::Create(script_url))),
       owner_frame_tree_node_id_(frame_tree_node_id),
@@ -140,8 +158,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
              accept_header == "application/wasm") {
     event_type = InterestGroupAuctionFetchType::kBidderWasm;
     is_request_allowed = true;
-  } else if (CouldBeTrustedSignalsUrl(url_request.url) &&
-             accept_header == "application/json") {
+  } else if (CouldBeTrustedSignalsUrl(url_request.url, accept_header)) {
     event_type = is_for_seller_
                      ? InterestGroupAuctionFetchType::kSellerTrustedSignals
                      : InterestGroupAuctionFetchType::kBidderTrustedSignals;
@@ -181,18 +198,12 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     return;
   }
 
-  bool is_cross_origin_enabled_trusted_signals_request = false;
-  if (is_trusted_signals_request &&
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    is_cross_origin_enabled_trusted_signals_request = true;
-  }
-
   // Create fresh request object, only keeping the URL field and Accept request
-  // header, to protect against compromised auction worklet processes setting
-  // values that should not have access to (e.g., sending credentialed
-  // requests). Only the URL and traffic annotation of the original request are
-  // used.
+  // header for GET requests, to protect against compromised auction worklet
+  // processes setting values that should not have access to (e.g., sending
+  // credentialed requests). Only the URL and traffic annotation of the original
+  // request are used.
+  // For POST requests, also move over request method, body and content-type.
   network::ResourceRequest new_request;
   new_request.url = url_request.url;
   new_request.web_bundle_token_params =
@@ -205,6 +216,17 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.request_initiator = frame_origin_;
   new_request.enable_load_timing = url_request.enable_load_timing;
 
+  if (url_request.method == net::HttpRequestHeaders::kPostMethod) {
+    new_request.method = std::move(url_request.method);
+    new_request.request_body = std::move(url_request.request_body);
+    std::optional<std::string> content_type =
+        url_request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+    if (content_type.has_value()) {
+      new_request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                    std::move(content_type).value());
+    }
+  }
+
   if (event_type.has_value() && new_request.devtools_request_id.has_value() &&
       devtools_instrumentation::NeedInterestGroupAuctionEvents(
           owner_frame_tree_node_id_)) {
@@ -216,15 +238,6 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   if (is_trusted_signals_request) {
-    std::optional<std::string> maybe_deprecation_label =
-        get_cookie_deprecation_label_.Run();
-    if (maybe_deprecation_label) {
-      new_request.headers.SetHeader("Sec-Cookie-Deprecation",
-                                    *maybe_deprecation_label);
-    }
-  }
-
-  if (is_cross_origin_enabled_trusted_signals_request) {
     // For cross-origin trusted signals request, the principal is the origin
     // of the script.
     new_request.request_initiator = url::Origin::Create(script_url_);
@@ -232,10 +245,13 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
+  } else if (url_request.load_flags & net::LOAD_SUPPORT_ASYNC_REVALIDATION) {
+    // Support stale-while-revalidate in the worklet.
+    new_request.load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
   }
 
   if (maybe_subresource_info || needs_cors_for_additional_bid_ ||
-      is_cross_origin_enabled_trusted_signals_request) {
+      is_trusted_signals_request) {
     // CORS is needed.
     //
     // For subresource bundle requests, CORS is supported if the subresource
@@ -243,6 +259,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // traditional network requests, the browser cannot read the response if
     // kNoCors is used, even with CORS-safe methods and headers -- the response
     // is blocked by ORB.
+    //
+    // For trusted signals requests, need CORS as they may be cross-origin.
     new_request.mode = network::mojom::RequestMode::kCors;
   } else {
     // CORS is not needed.
@@ -251,16 +269,9 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // owner, which was either added by the owner itself, or by a third party
     // explicitly allowed to do so.
     //
-    // For seller worklets, while the publisher page provides both the script
-    // and the trusted signals URLs, both requests use safe methods (GET), and
-    // don't set any headers, so CORS is not needed. ORB would block the
-    // signal's JSON response, if made in the context of the page, but the JSON
-    // is only made available to the same-origin script, so ORB isn't needed
-    // here.
-    //
-    // This does not apply if we permit trusted signals to be cross-origin from
-    // the corresponding script, in which has the signals origin's permission is
-    // required before sharing its data with the script.
+    // For seller worklets, while the publisher page provides the script URL,
+    // requests use safe methods (GET), and don't set any headers, so CORS is
+    // not needed.
     new_request.mode = network::mojom::RequestMode::kNoCors;
   }
 
@@ -309,22 +320,18 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
         client_security_state_.Clone();
   }
 
-  bool network_instrumentation_enabled = false;
-  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (owner_frame_tree_node_id_) {
     FrameTreeNode* owner_frame_tree_node =
         FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
-    new_request.throttling_profile_id =
-        owner_frame_tree_node->current_frame_host()->devtools_frame_token();
 
-    devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
-        owner_frame_tree_node, &new_request, &network_instrumentation_enabled);
-  }
-
-  if (network_instrumentation_enabled) {
-    new_request.enable_load_timing = true;
-    if (new_request.trusted_params.has_value()) {
-      new_request.trusted_params->devtools_observer = CreateDevtoolsObserver();
+    std::optional<std::string> user_agent_override =
+        GetUserAgentOverrideForProtectedAudience(owner_frame_tree_node);
+    if (user_agent_override) {
+      new_request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                    std::move(user_agent_override).value());
     }
+
+    SetUpDevtoolsForRequest(owner_frame_tree_node, new_request);
   }
 
   url_loader_factory_getter.Run()->CreateLoaderAndStart(
@@ -338,11 +345,11 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
 void AuctionURLLoaderFactoryProxy::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 AuctionNetworkEventsProxy::AuctionNetworkEventsProxy(
-    int owner_frame_tree_node_id)
+    FrameTreeNodeId owner_frame_tree_node_id)
     : owner_frame_tree_node_id_(owner_frame_tree_node_id) {}
 
 AuctionNetworkEventsProxy::~AuctionNetworkEventsProxy() = default;
@@ -377,8 +384,14 @@ void AuctionNetworkEventsProxy::OnNetworkRequestComplete(
 }
 
 bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
-    const GURL& url) const {
+    const GURL& url,
+    const std::string& accept_header) const {
   if (!trusted_signals_base_url_) {
+    return false;
+  }
+
+  if (accept_header != "application/json" &&
+      accept_header != "message/ad-auction-trusted-signals-response") {
     return false;
   }
 
@@ -402,25 +415,15 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
     return true;
   }
 
-  std::string full_prefix = base::StringPrintf(
-      "%s?hostname=%s&", trusted_signals_base_url_->spec().c_str(),
-      top_frame_origin_.host().c_str());
-  return base::StartsWith(url.spec(), full_prefix,
-                          base::CompareCase::SENSITIVE);
-}
-
-mojo::PendingRemote<network::mojom::DevToolsObserver>
-AuctionURLLoaderFactoryProxy::CreateDevtoolsObserver() {
-  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
-    FrameTreeNode* initiator_frame_tree_node =
-        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
-
-    if (initiator_frame_tree_node) {
-      return NetworkServiceDevToolsObserver::MakeSelfOwned(
-          initiator_frame_tree_node);
-    }
+  if (accept_header == "application/json") {
+    std::string full_prefix = base::StringPrintf(
+        "%s?hostname=%s&", trusted_signals_base_url_->spec().c_str(),
+        top_frame_origin_.host().c_str());
+    return base::StartsWith(url.spec(), full_prefix,
+                            base::CompareCase::SENSITIVE);
+  } else {
+    return url.spec() == trusted_signals_base_url_->spec();
   }
-  return mojo::PendingRemote<network::mojom::DevToolsObserver>();
 }
 
 }  // namespace content

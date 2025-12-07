@@ -7,10 +7,11 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/user_education_context.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_education::test {
@@ -23,16 +24,19 @@ class MockFeaturePromoController : public FeaturePromoController {
   // FeaturePromoController:
   MOCK_METHOD(FeaturePromoResult,
               CanShowPromo,
-              (const FeaturePromoParams&),
+              (const FeaturePromoParams&, const UserEducationContextPtr&),
               (const, override));
-  MOCK_METHOD(FeaturePromoResult,
+  MOCK_METHOD(void,
               MaybeShowPromo,
-              (FeaturePromoParams),
+              (FeaturePromoParams, UserEducationContextPtr),
               (override));
-  MOCK_METHOD(bool, MaybeShowStartupPromo, (FeaturePromoParams), (override));
-  MOCK_METHOD(FeaturePromoResult,
+  MOCK_METHOD(void,
+              MaybeShowStartupPromo,
+              (FeaturePromoParams, UserEducationContextPtr),
+              (override));
+  MOCK_METHOD(void,
               MaybeShowPromoForDemoPage,
-              (FeaturePromoParams),
+              (FeaturePromoParams, UserEducationContextPtr),
               (override));
   MOCK_METHOD(FeaturePromoStatus,
               GetPromoStatus,
@@ -63,6 +67,12 @@ class MockFeaturePromoController : public FeaturePromoController {
               HasPromoBeenDismissed,
               (const FeaturePromoParams&, FeaturePromoClosedReason*),
               (const, override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              NotifyFeatureUsedIfValid,
+              (const base::Feature&),
+              (override));
+#endif
 
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
 

@@ -14,16 +14,15 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 // A form field that accepts a standalone cvc.
 class StandaloneCvcFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
-  explicit StandaloneCvcFieldParser(const AutofillField* field);
+  explicit StandaloneCvcFieldParser(FieldAndMatchInfo match);
 
   ~StandaloneCvcFieldParser() override;
 
@@ -34,10 +33,10 @@ class StandaloneCvcFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  raw_ptr<const AutofillField> field_;
+  FieldAndMatchInfo match_;
 
   // static
-  static bool MatchGiftCard(ParsingContext& context, AutofillScanner* scanner);
+  static bool MatchGiftCard(ParsingContext& context, AutofillScanner& scanner);
 };
 
 }  // namespace autofill

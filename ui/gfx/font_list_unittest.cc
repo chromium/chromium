@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font_names_testing.h"
 
@@ -235,8 +236,7 @@ TEST(FontListTest, Fonts_DeriveWithSizeDelta) {
 TEST(FontListTest, Fonts_GetHeight_GetBaseline) {
   // If a font list has only one font, the height and baseline must be the same.
   Font font1(kTestFontName, 16);
-  ASSERT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(font1.GetActualFontName()));
+  EXPECT_THAT(font1.GetActualFontNames(), testing::Contains(kTestFontName));
   FontList font_list1(std::string(kTestFontName) + ", 16px");
   EXPECT_EQ(font1.GetHeight(), font_list1.GetHeight());
   EXPECT_EQ(font1.GetBaseline(), font_list1.GetBaseline());
@@ -246,8 +246,7 @@ TEST(FontListTest, Fonts_GetHeight_GetBaseline) {
   // NOTE: On most platforms, kCJKFontName has different metrics than
   // kTestFontName, but on Android it does not.
   Font font2(kCJKFontName, 16);
-  ASSERT_EQ(base::ToLowerASCII(kCJKFontName),
-            base::ToLowerASCII(font2.GetActualFontName()));
+  EXPECT_THAT(font2.GetActualFontNames(), testing::Contains(kCJKFontName));
   std::vector<Font> fonts;
   fonts.push_back(font1);
   fonts.push_back(font2);

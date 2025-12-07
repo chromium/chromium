@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+<!-- Drag handlebar -->
+<ImageView
+    android:id="@+id/drag_handle_bar"
+    android:importantForAccessibility="no"
+    android:layout_gravity="center_horizontal"
+    android:layout_height="@dimen/default_browser_bottom_sheet_drag_handel_bar_height"
+    android:layout_marginVertical="@dimen/default_browser_bottom_sheet_drag_handel_bar_margin_vertical"
+    android:layout_width="@dimen/default_browser_bottom_sheet_drag_handel_bar_width"
+    android:src="@drawable/drag_handlebar"
+    app:tint="@macro/drag_handlebar_color" />
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:scrollbars="none">
+    <LinearLayout
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/default_browser_bottom_sheet_scroll_view_padding_lateral"
+        android:paddingRight="@dimen/default_browser_bottom_sheet_scroll_view_padding_lateral"
+        android:clickable="true"
+        android:focusable="true">
+
+      <ImageView
+          android:id="@+id/icon"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/default_browser_bottom_sheet_icon_container_height"
+          android:layout_marginTop="@dimen/default_browser_bottom_sheet_icon_container_margin_top"
+          android:paddingTop="@dimen/default_browser_bottom_sheet_icon_container_padding_top"
+          android:paddingBottom="@dimen/default_browser_bottom_sheet_icon_container_padding_bottom"
+          android:layout_gravity="center_horizontal"
+          android:importantForAccessibility="no"
+          android:background="@drawable/default_browser_promo_bottom_sheet_chrome_icon_background"
+          app:srcCompat="@drawable/chrome_sync_logo" />
+
+      <LinearLayout
+          android:id="@+id/title_and_description_container"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/default_browser_bottom_sheet_title_margin_top"
+          android:orientation="vertical"
+          android:focusable="true">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
+            android:text="@string/educational_tip_default_browser_bottom_sheet_title"/>
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_browser_bottom_sheet_description_margin_top"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/educational_tip_default_browser_bottom_sheet_description"/>
+      </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/steps_container"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/default_browser_bottom_sheet_steps_container_margin_top"
+        android:orientation="vertical"
+        android:focusable="true">
+      <LinearLayout
+          android:id="@+id/first_step"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingTop="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingBottom="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingStart="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingEnd="@dimen/default_browser_bottom_sheet_step_padding_end"
+          android:orientation="horizontal">
+        <TextView
+            android:id="@+id/first_step_number"
+            android:layout_width="@dimen/default_browser_bottom_sheet_step_number_width"
+            android:layout_height="@dimen/default_browser_bottom_sheet_step_number_width"
+            android:background="@drawable/default_browser_promo_bottom_sheet_circle_background"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            tools:ignore="HardcodedText"
+            android:text="1"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+        <TextView
+            android:id="@+id/first_step_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_browser_bottom_sheet_step_content_margin_start"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textAlignment="viewStart"
+            android:focusable="false"
+            android:text="@string/educational_tip_default_browser_bottom_sheet_first_step"/>
+      </LinearLayout>
+      <LinearLayout
+          android:id="@+id/second_step"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingTop="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingBottom="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingStart="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingEnd="@dimen/default_browser_bottom_sheet_step_padding_end"
+          android:orientation="horizontal">
+        <TextView
+            android:id="@+id/second_step_number"
+            android:layout_width="@dimen/default_browser_bottom_sheet_step_number_width"
+            android:layout_height="@dimen/default_browser_bottom_sheet_step_number_width"
+            android:background="@drawable/default_browser_promo_bottom_sheet_circle_background"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            tools:ignore="HardcodedText"
+            android:text="2"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+        <TextView
+            android:id="@+id/second_step_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_browser_bottom_sheet_step_content_margin_start"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textAlignment="viewStart"
+            android:focusable="false"
+            android:text="@string/educational_tip_default_browser_bottom_sheet_second_step"
+            android:contentDescription="@string/educational_tip_default_browser_bottom_sheet_second_step_accessibility"/>
+      </LinearLayout>
+      <LinearLayout
+          android:id="@+id/third_step"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingTop="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingBottom="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingStart="@dimen/default_browser_bottom_sheet_step_padding_top"
+          android:paddingEnd="@dimen/default_browser_bottom_sheet_step_padding_end"
+          android:orientation="horizontal">
+        <TextView
+            android:id="@+id/third_step_number"
+            android:layout_width="@dimen/default_browser_bottom_sheet_step_number_width"
+            android:layout_height="@dimen/default_browser_bottom_sheet_step_number_width"
+            android:background="@drawable/default_browser_promo_bottom_sheet_circle_background"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            tools:ignore="HardcodedText"
+            android:text="3"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+        <TextView
+            android:id="@+id/third_step_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_browser_bottom_sheet_step_content_margin_start"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textAlignment="viewStart"
+            android:focusable="false"
+            android:text="@string/educational_tip_default_browser_bottom_sheet_third_step"
+            android:contentDescription="@string/educational_tip_default_browser_bottom_sheet_third_step_accessibility"/>
+      </LinearLayout>
+    </LinearLayout>
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/button"
+          style="@style/FilledButton"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/default_browser_bottom_sheet_button_margin_top"
+          android:layout_marginBottom="@dimen/default_browser_bottom_sheet_button_margin_bottom"
+          android:gravity="center"
+          android:singleLine="true"
+          android:text="@string/educational_tip_default_browser_bottom_sheet_button" />
+   </LinearLayout>
+  </ScrollView>
+</LinearLayout>

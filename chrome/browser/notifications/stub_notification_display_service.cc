@@ -4,9 +4,10 @@
 
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,7 @@ StubNotificationDisplayService::GetDisplayedNotificationsForType(
 std::optional<message_center::Notification>
 StubNotificationDisplayService::GetNotification(
     const std::string& notification_id) {
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       notifications_, notification_id,
       [](const NotificationData& data) { return data.notification.id(); });
 
@@ -64,7 +65,7 @@ StubNotificationDisplayService::GetNotification(
 const NotificationCommon::Metadata*
 StubNotificationDisplayService::GetMetadataForNotification(
     const message_center::Notification& notification) {
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       notifications_, notification.id(),
       [](const NotificationData& data) { return data.notification.id(); });
 
@@ -247,17 +248,21 @@ void StubNotificationDisplayService::ProcessNotificationOperation(
     const std::string& notification_id,
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
-    const std::optional<bool>& by_user) {
+    const std::optional<bool>& by_user,
+    const std::optional<bool>& is_suspicious,
+    base::OnceClosure on_complete_cb) {
   if (process_notification_operation_delegate_) {
-    process_notification_operation_delegate_.Run(operation, notification_type,
-                                                 origin, notification_id,
-                                                 action_index, reply, by_user);
+    // TODO(b/375547360): run `on_complete_cb` when notification processing
+    // finishes.
+    process_notification_operation_delegate_.Run(
+        operation, notification_type, origin, notification_id, action_index,
+        reply, by_user, is_suspicious);
     return;
   }
 
   NotificationDisplayServiceImpl::ProcessNotificationOperation(
       operation, notification_type, origin, notification_id, action_index,
-      reply, by_user);
+      reply, by_user, is_suspicious, std::move(on_complete_cb));
 }
 
 StubNotificationDisplayService::NotificationData::NotificationData(
@@ -272,7 +277,7 @@ StubNotificationDisplayService::NotificationData::NotificationData(
       notification(std::move(other.notification)),
       metadata(std::move(other.metadata)) {}
 
-StubNotificationDisplayService::NotificationData::~NotificationData() {}
+StubNotificationDisplayService::NotificationData::~NotificationData() = default;
 
 StubNotificationDisplayService::NotificationData&
 StubNotificationDisplayService::NotificationData::operator=(
@@ -287,7 +292,7 @@ std::vector<StubNotificationDisplayService::NotificationData>::iterator
 StubNotificationDisplayService::FindNotification(
     NotificationHandler::Type notification_type,
     const std::string& notification_id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       notifications_,
       [notification_type, &notification_id](const NotificationData& data) {
         return data.type == notification_type &&

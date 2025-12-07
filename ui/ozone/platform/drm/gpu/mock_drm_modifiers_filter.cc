@@ -13,7 +13,7 @@ MockDrmModifiersFilter::MockDrmModifiersFilter(
 MockDrmModifiersFilter::~MockDrmModifiersFilter() = default;
 
 std::vector<uint64_t> MockDrmModifiersFilter::Filter(
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     const std::vector<uint64_t>& modifiers) {
   std::vector<uint64_t> intersection;
   for (const auto& modifier : modifiers) {

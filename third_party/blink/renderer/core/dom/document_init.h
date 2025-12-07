@@ -144,6 +144,9 @@ class CORE_EXPORT DocumentInit final {
   DocumentInit& WithFallbackBaseURL(const KURL& fallback_base_url);
   DocumentInit& WithJavascriptURL(bool is_for_javascript_url);
 
+  DocumentInit& ForDiscard(bool is_for_discard);
+  bool IsForDiscard() const;
+
   DocumentInit& WithUkmSourceId(ukm::SourceId ukm_source_id);
   ukm::SourceId UkmSourceId() const { return ukm_source_id_; }
 
@@ -173,6 +176,8 @@ class CORE_EXPORT DocumentInit final {
   KURL fallback_base_url_;
   // True when the commit reason for this DocumentInit was a javascript: url.
   bool is_for_javascript_url_ = false;
+  // True when the commit reason for this DocumentInit was a discard operation.
+  bool is_for_discard_ = false;
 
   // Source id to set on the Document to be created.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;

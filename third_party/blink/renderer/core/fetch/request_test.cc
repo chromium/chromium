@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/request.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_destination.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_retry_options.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -79,7 +78,7 @@ TEST_F(RequestBodyTest, InitWithBodyString) {
 TEST_F(RequestBodyTest, InitWithBodyArrayBuffer) {
   V8TestingScope scope;
   String body = "test body!";
-  auto* buffer = DOMArrayBuffer::Create(body.Bytes(), body.length());
+  auto* buffer = DOMArrayBuffer::Create(body.Span8());
   auto* init = CreateRequestInit(
       scope, ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(), buffer));
 
@@ -94,8 +93,7 @@ TEST_F(RequestBodyTest, InitWithBodyArrayBuffer) {
 TEST_F(RequestBodyTest, InitWithBodyArrayBufferView) {
   V8TestingScope scope;
   String body = "test body!";
-  DOMArrayBufferView* buffer_view =
-      DOMUint8Array::Create(body.Span8().data(), body.length());
+  DOMArrayBufferView* buffer_view = DOMUint8Array::Create(body.Span8());
   auto* init =
       CreateRequestInit(scope, ToV8Traits<DOMArrayBufferView>::ToV8(
                                    scope.GetScriptState(), buffer_view));
@@ -192,10 +190,14 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
 
   const KURL url("http://www.example.com/");
   const String method = "GET";
-  struct {
+  struct KeyValueCStringPair {
     const char* key;
     const char* value;
-  } headers[] = {{"X-Foo", "bar"}, {"X-Quux", "foop"}, {nullptr, nullptr}};
+  };
+  constexpr auto headers = std::to_array<KeyValueCStringPair>({
+      {"X-Foo", "bar"},
+      {"X-Quux", "foop"},
+  });
   const String referrer = "http://www.referrer.com/";
   const network::mojom::ReferrerPolicy kReferrerPolicy =
       network::mojom::ReferrerPolicy::kAlways;
@@ -216,9 +218,8 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
   fetch_api_request->cache_mode = kCacheMode;
   fetch_api_request->redirect_mode = kRedirectMode;
   fetch_api_request->destination = kDestination;
-  for (int i = 0; headers[i].key; ++i) {
-    fetch_api_request->headers.insert(String(headers[i].key),
-                                      String(headers[i].value));
+  for (const auto& header : headers) {
+    fetch_api_request->headers.insert(String(header.key), String(header.value));
   }
   fetch_api_request->referrer =
       mojom::blink::Referrer::New(KURL(NullURL(), referrer), kReferrerPolicy);
@@ -230,17 +231,18 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
   DCHECK(request);
   EXPECT_EQ(url, request->url());
   EXPECT_EQ(method, request->method());
-  EXPECT_EQ("audio", request->destination());
+  EXPECT_EQ(V8RequestDestination::Enum::kAudio, request->destination());
   EXPECT_EQ(referrer, request->referrer());
-  EXPECT_EQ("navigate", request->mode());
+  EXPECT_EQ(V8RequestMode::Enum::kNavigate, request->mode());
 
   Headers* request_headers = request->getHeaders();
 
-  WTF::HashMap<String, String> headers_map;
-  for (int i = 0; headers[i].key; ++i)
-    headers_map.insert(headers[i].key, headers[i].value);
+  HashMap<String, String> headers_map;
+  for (const auto& header : headers) {
+    headers_map.insert(header.key, header.value);
+  }
   EXPECT_EQ(headers_map.size(), request_headers->HeaderList()->size());
-  for (WTF::HashMap<String, String>::iterator iter = headers_map.begin();
+  for (HashMap<String, String>::iterator iter = headers_map.begin();
        iter != headers_map.end(); ++iter) {
     DummyExceptionStateForTesting exception_state;
     EXPECT_EQ(iter->value, request_headers->get(iter->key, exception_state));
@@ -274,6 +276,82 @@ TEST(ServiceWorkerRequestTest, ToFetchAPIRequestDoesNotStripURLFragment) {
   mojom::blink::FetchAPIRequestPtr fetch_api_request =
       request->CreateFetchAPIRequest();
   EXPECT_EQ(url_with_fragment, fetch_api_request->url);
+}
+
+TEST(RequestRetryOptionsTest, RetryOptionsEnabledNoOptionsSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFetchRetry);
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  Request* request = Request::Create(
+      scope.GetScriptState(), "https://example.com", scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  EXPECT_EQ(request->getRetryOptions(), nullptr);
+}
+
+TEST(RequestRetryOptionsTest, RetryOptionsEnabledWithOptionsSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFetchRetry);
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  RequestInit* init = RequestInit::Create();
+  RetryOptions* retry_options = RetryOptions::Create();
+  retry_options->setMaxAttempts(5);
+  retry_options->setInitialDelay(100);
+  retry_options->setBackoffFactor(2.5);
+  retry_options->setMaxAge(5000);
+  retry_options->setRetryAfterUnload(true);
+  retry_options->setRetryNonIdempotent(true);
+  retry_options->setRetryOnlyIfServerUnreached(true);
+  init->setRetryOptions(retry_options);
+
+  Request* request =
+      Request::Create(scope.GetScriptState(), "https://example.com", init,
+                      scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  RetryOptions* result = request->getRetryOptions();
+  ASSERT_NE(result, nullptr);
+  EXPECT_EQ(result->maxAttempts(), 5u);
+  EXPECT_TRUE(result->hasInitialDelay());
+  EXPECT_EQ(result->initialDelay(), 100u);
+  EXPECT_TRUE(result->hasBackoffFactor());
+  EXPECT_EQ(result->backoffFactor(), 2.5);
+  EXPECT_EQ(result->maxAge(), 5000u);
+  EXPECT_TRUE(result->retryAfterUnload());
+  EXPECT_TRUE(result->retryNonIdempotent());
+  EXPECT_TRUE(result->retryOnlyIfServerUnreached());
+}
+
+TEST(RequestRetryOptionsTest, RetryOptionsEnabledWithPartialOptionsSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFetchRetry);
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  RequestInit* init = RequestInit::Create();
+  RetryOptions* retry_options = RetryOptions::Create();
+  retry_options->setMaxAttempts(2);
+  retry_options->setMaxAge(2000);
+  init->setRetryOptions(retry_options);
+
+  Request* request =
+      Request::Create(scope.GetScriptState(), "https://example.com", init,
+                      scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  RetryOptions* result = request->getRetryOptions();
+  ASSERT_NE(result, nullptr);
+  EXPECT_EQ(result->maxAttempts(), 2u);
+  EXPECT_FALSE(result->hasInitialDelay());
+  EXPECT_FALSE(result->hasBackoffFactor());
+  EXPECT_EQ(result->maxAge(), 2000u);
+  EXPECT_FALSE(result->retryAfterUnload());
+  EXPECT_FALSE(result->retryNonIdempotent());
+  EXPECT_FALSE(result->retryOnlyIfServerUnreached());
 }
 
 }  // namespace blink

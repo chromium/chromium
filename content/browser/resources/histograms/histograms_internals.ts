@@ -249,6 +249,14 @@ function downloadHistograms() {
   }
 }
 
+function handleHashChange() {
+  // In monitoring mode the updated histograms will be fetched by fetchDiff()
+  // within 1s of changing URL and the proper filter will be applied.
+  if (!inMonitoringMode) {
+    requestHistograms();
+  }
+}
+
 /**
  * Load the initial list of histograms.
  */
@@ -266,4 +274,4 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Reload histograms when the "#abc" in "chrome://histograms/#abc" changes.
  */
-window.onhashchange = requestHistograms;
+window.onhashchange = handleHashChange;

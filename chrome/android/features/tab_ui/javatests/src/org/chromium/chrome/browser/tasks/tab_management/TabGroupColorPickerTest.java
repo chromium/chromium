@@ -14,7 +14,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -22,7 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -33,6 +37,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -62,6 +68,8 @@ public class TabGroupColorPickerTest {
                     .setRevision(2)
                     .build();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -78,7 +86,6 @@ public class TabGroupColorPickerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -121,6 +128,8 @@ public class TabGroupColorPickerTest {
                     mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.SINGLE_ROW);
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to restrict for a double row
         ThreadUtils.runOnUiThreadBlocking(
@@ -176,6 +185,8 @@ public class TabGroupColorPickerTest {
                     mRootView.addView(mContainerView);
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         // Change the width of the parent view to allow for a single row
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -226,11 +237,16 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({
+        ChromeFeatureList.ANDROID_THEME_MODULE,
+    })
     public void testColorPicker_dynamicSingleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -258,11 +274,16 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({
+        ChromeFeatureList.ANDROID_THEME_MODULE,
+    })
     public void testColorPicker_dynamicAlternateSelection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -292,11 +313,45 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_THEME_MODULE,
+    })
+    public void testColorPicker_dynamicSingleRow_androidThemeModule() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    Assert.assertEquals(mColorList.size(), firstRow.getChildCount());
+
+                    for (int color : mColorList) {
+                        FrameLayout colorView = (FrameLayout) firstRow.getChildAt(color);
+                        Assert.assertTrue(
+                                colorView.findViewById(R.id.color_picker_icon)
+                                        instanceof MaterialButton);
+                        MaterialButton materialButton =
+                                colorView.findViewById(R.id.color_picker_icon);
+                        Assert.assertNotNull(materialButton.getBackgroundTintList());
+                        Assert.assertNotNull(materialButton.getRippleColor());
+                    }
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testColorPicker_dynamicDoubleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to enact a row split on the colors
         ThreadUtils.runOnUiThreadBlocking(
@@ -387,6 +442,8 @@ public class TabGroupColorPickerTest {
                     mRootView.addView(mContainerView);
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         mRenderTestRule.render(mRootView, "tab_group_color_picker_single_row");
     }
 
@@ -398,6 +455,8 @@ public class TabGroupColorPickerTest {
                 () -> {
                     mRootView.addView(mContainerView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Change the width of the parent view to enact a row split on the colors
         ThreadUtils.runOnUiThreadBlocking(

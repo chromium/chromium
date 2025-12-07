@@ -14,7 +14,6 @@
 
 #include <ostream>
 
-#include "base/logging.h"
 #include "util/ios/ios_intermediate_dump_data.h"
 #include "util/ios/ios_intermediate_dump_map.h"
 
@@ -73,9 +72,10 @@ const IOSIntermediateDumpList* GetListFromMap(const IOSIntermediateDumpMap* map,
 //!
 //! \param[in] map The map to load from.
 //! \param[in] key The key to load from \a map.
+//! \param[out] value The loaded string.
 //!
-//! \return Returns `true` if the string could be loaded, otherwise returns
-//!     `false` and logs an error.
+//! \return Returns `true` with \a value set accordingly if the string could be
+//!     loaded, otherwise returns `false` and logs an error.
 bool GetDataStringFromMap(const IOSIntermediateDumpMap* map,
                           const IntermediateDumpKey& key,
                           std::string* value);

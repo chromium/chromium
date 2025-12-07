@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ShortcutInputProvider} from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
 
-import {ShortcutInputProviderInterface} from './input_device_settings_types.js';
+import type {ShortcutInputProviderInterface} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -14,6 +14,11 @@ import {ShortcutInputProviderInterface} from './input_device_settings_types.js';
  */
 
 let shortcutInputProvider: ShortcutInputProviderInterface|null;
+
+export function setShortcutInputProviderForTesting(
+    testProvider: ShortcutInputProviderInterface): void {
+  shortcutInputProvider = testProvider;
+}
 
 export function getShortcutInputProvider(): ShortcutInputProviderInterface {
   if (!shortcutInputProvider) {

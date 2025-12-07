@@ -75,6 +75,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   void ClearBatterySaverModeToast();
 
+  void StopObservingPowerStatusForTest();
+
  private:
   // Types used for metrics tracking.
   struct EnableRecord {

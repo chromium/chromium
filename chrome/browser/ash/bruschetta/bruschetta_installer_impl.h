@@ -19,6 +19,7 @@
 #include "components/download/public/background_service/download_metadata.h"
 #include "url/gurl.h"
 
+class PrefService;
 class Profile;
 
 namespace bruschetta {
@@ -29,7 +30,9 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   // Public for a free function in the .cc file, not actually part of the public
   // interface.
   struct Fds;
-  BruschettaInstallerImpl(Profile* profile, base::OnceClosure close_callback);
+  BruschettaInstallerImpl(Profile* profile,
+                          PrefService& local_state,
+                          base::OnceClosure close_callback);
 
   BruschettaInstallerImpl(const BruschettaInstallerImpl&) = delete;
   BruschettaInstallerImpl& operator=(const BruschettaInstallerImpl&) = delete;
@@ -74,7 +77,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
       std::optional<vm_tools::concierge::CreateDiskImageResponse> result);
   void InstallPflash();
   void OnInstallPflash(
-      std::optional<vm_tools::concierge::InstallPflashResponse> result);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> result);
   void ClearVek();
   void OnClearVek(const attestation::DeleteKeysReply& result);
   void StartVm();
@@ -104,11 +107,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   std::unique_ptr<BruschettaDownload> boot_disk_download_;
   std::unique_ptr<BruschettaDownload> pflash_download_;
   base::RepeatingCallback<std::unique_ptr<BruschettaDownload>(void)>
-      download_factory_ = base::BindRepeating([]() {
-        std::unique_ptr<BruschettaDownload> d =
-            std::make_unique<SimpleURLLoaderDownload>();
-        return d;
-      });
+      download_factory_;
 
   base::OnceClosure close_closure_;
 

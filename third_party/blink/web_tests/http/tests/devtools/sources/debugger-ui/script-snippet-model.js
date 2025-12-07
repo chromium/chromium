@@ -10,6 +10,7 @@ import * as Console from 'devtools/panels/console/console.js';
 import * as Snippets from 'devtools/panels/snippets/snippets.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -33,7 +34,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       }
 
       async function printUiSourceCode(uiSourceCode) {
-        const { content } = await uiSourceCode.requestContent();
+        const { content } = await uiSourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
         TestRunner.addResult(content);
       }
 

@@ -121,16 +121,17 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url,
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
-                                         url.scheme(),
+                                         url.GetScheme(),
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
                                          omit_port_for_testing
-                                             ? std::string(url.host())
+                                             ? std::string(url.GetHost())
                                              : AuthorityView::Encode(url),
                                          apps::PatternMatchType::kLiteral);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, url.path(),
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath,
+                                         url.GetPath(),
                                          apps::PatternMatchType::kPrefix);
 
   return intent_filter;
@@ -241,8 +242,8 @@ size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
   if (path_length == 0) {
     return 0;
   }
-  return url.scheme_piece().size() + /*length("://")*/ 3 +
-         url.host_piece().size() + path_length;
+  return url.scheme().size() + /*length("://")*/ 3 + url.host().size() +
+         path_length;
 }
 
 std::set<std::string> GetSupportedLinksForAppManagement(

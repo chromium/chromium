@@ -22,6 +22,15 @@
 
 namespace paint_preview {
 
+using CaptureParams = PaintPreviewBaseService::CaptureParams;
+
+CaptureParams::CaptureParams() = default;
+
+CaptureParams::CaptureParams(const CaptureParams&) = default;
+CaptureParams& CaptureParams::operator=(const CaptureParams&) = default;
+CaptureParams::CaptureParams(CaptureParams&&) = default;
+CaptureParams& CaptureParams::operator=(CaptureParams&&) = default;
+
 PaintPreviewBaseService::PaintPreviewBaseService(
     std::unique_ptr<PaintPreviewFileMixin> file_mixin,
     std::unique_ptr<PaintPreviewPolicy> policy,
@@ -56,6 +65,8 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
     params.root_dir = *capture_params.root_dir;
   }
   params.inner.clip_rect = capture_params.clip_rect;
+  params.inner.clip_x_coord_override = capture_params.clip_x_coord_override;
+  params.inner.clip_y_coord_override = capture_params.clip_y_coord_override;
   params.inner.is_main_frame = render_frame_host->IsInPrimaryMainFrame();
   params.inner.capture_links = capture_params.capture_links;
   params.inner.max_capture_size = capture_params.max_per_capture_size;
@@ -63,6 +74,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
       capture_params.max_decoded_image_size_bytes;
   params.inner.skip_accelerated_content =
       capture_params.skip_accelerated_content;
+  params.inner.redaction_params = std::move(capture_params.redaction_params);
 
   // TODO(crbug.com/40123632): Consider moving to client so that this always
   // happens. Although, it is harder to get this right in the client due to its
@@ -73,7 +85,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
 
   auto start_time = base::TimeTicks::Now();
   client->CapturePaintPreview(
-      params, render_frame_host,
+      std::move(params), render_frame_host,
       base::BindOnce(&PaintPreviewBaseService::OnCaptured,
                      weak_ptr_factory_.GetWeakPtr(), std::move(capture_handle),
                      start_time, std::move(callback)));
@@ -99,6 +111,19 @@ void PaintPreviewBaseService::OnCaptured(
   base::UmaHistogramTimes("Browser.PaintPreview.Capture.TotalCaptureDuration",
                           base::TimeTicks::Now() - start_time);
   std::move(callback).Run(CaptureStatus::kOk, std::move(result));
+}
+
+std::string ToString(PaintPreviewBaseService::CaptureStatus status) {
+  switch (status) {
+    case PaintPreviewBaseService::CaptureStatus::kOk:
+      return "CaptureStatus::kOk";
+    case PaintPreviewBaseService::CaptureStatus::kContentUnsupported:
+      return "CaptureStatus::kContentUnsupported";
+    case PaintPreviewBaseService::CaptureStatus::kClientCreationFailed:
+      return "CaptureStatus::kClientCreationFailed";
+    case PaintPreviewBaseService::CaptureStatus::kCaptureFailed:
+      return "CaptureStatus::kCaptureFailed";
+  }
 }
 
 }  // namespace paint_preview

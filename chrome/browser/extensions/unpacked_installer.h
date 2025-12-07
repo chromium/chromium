@@ -11,16 +11,27 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile_observer.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/preload_check.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
@@ -29,37 +40,58 @@ class ExtensionService;
 class PreloadCheckGroup;
 
 // Installs and loads an unpacked extension. Because internal state needs to be
-// held about the instalation process, only one call to Load*() should be made
+// held about the installation process, only one call to Load*() should be made
 // per UnpackedInstaller.
 // TODO(erikkay): It might be useful to be able to load a packed extension
 // (presumably into memory) without installing it.
-class UnpackedInstaller
-    : public base::RefCountedThreadSafe<UnpackedInstaller> {
+class UnpackedInstaller : public base::RefCountedThreadSafe<
+                              UnpackedInstaller,
+                              content::BrowserThread::DeleteOnUIThread>,
+                          public ProfileObserver {
  public:
+  // Manifest settings override types.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ManifestSettingsOverrideType)
+  enum ManifestSettingsOverrideType {
+    // No overrides.
+    kNoOverride = 0,
+    // Overrides the default search engine.
+    kSearchEngine = 1,
+    // Overrides the new tab page.
+    kNewTabPage = 2,
+    // Overrides the default search engine and new tab page.
+    kSearchEngineAndNewTabPage = 3,
+
+    kMaxValue = kSearchEngineAndNewTabPage,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ManifestSettingsOverrideType)
+
   using CompletionCallback = base::OnceCallback<void(const Extension* extension,
                                                      const base::FilePath&,
-                                                     const std::string&)>;
+                                                     const std::u16string&)>;
 
   UnpackedInstaller(const UnpackedInstaller&) = delete;
   UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;
 
   static scoped_refptr<UnpackedInstaller> Create(
-      ExtensionService* extension_service);
+      content::BrowserContext* context);
 
-  // Loads the extension from the directory |extension_path|, which is
+  // Loads the extension from the directory `extension_path`, which is
   // the top directory of a specific extension where its manifest file lives.
   // Errors are reported through LoadErrorReporter. On success,
   // ExtensionService::AddExtension() is called.
   void Load(const base::FilePath& extension_path);
 
-  // Loads the extension from the directory |extension_path|;
+  // Loads the extension from the directory `extension_path`;
   // for use with command line switch --load-extension=path or
   // --load-and-launch-app=path.
   // This is equivalent to Load, except that it reads the extension from
-  // |extension_path| synchronously.
+  // `extension_path` synchronously.
   // The return value indicates whether the installation has begun successfully.
-  // The id of the extension being loaded is returned in |extension_id|.
-  // |only_allow_apps| is used to avoid side-loading of non-app extensions.
+  // The id of the extension being loaded is returned in `extension_id`.
+  // `only_allow_apps` is used to avoid side-loading of non-app extensions.
   bool LoadFromCommandLine(const base::FilePath& extension_path,
                            std::string* extension_id,
                            bool only_allow_apps);
@@ -90,10 +122,12 @@ class UnpackedInstaller
   void set_install_param(const std::string& param) { install_param_ = param; }
 
  private:
-  friend class base::RefCountedThreadSafe<UnpackedInstaller>;
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::UI>;
+  friend class base::DeleteHelper<UnpackedInstaller>;
 
-  explicit UnpackedInstaller(ExtensionService* extension_service);
-  virtual ~UnpackedInstaller();
+  explicit UnpackedInstaller(content::BrowserContext* context);
+  ~UnpackedInstaller() override;
 
   // Must be called from the UI thread. Begin management policy and requirements
   // checks.
@@ -112,9 +146,9 @@ class UnpackedInstaller
   // file thread with LoadWithFileAccess.
   // TODO(yoz): It would be nice to remove this ping-pong, but we need to know
   // what file access flags to pass to file_util::LoadExtension.
-  void GetAbsolutePath();
+  void GetAbsolutePathOnFileThread();
   void CheckExtensionFileAccess();
-  void LoadWithFileAccess(int flags);
+  void LoadWithFileAccessOnFileThread(int flags);
 
   // Notify the frontend that an attempt to retry will not be necessary.
   void UnregisterLoadRetryListener();
@@ -131,28 +165,37 @@ class UnpackedInstaller
   // Helper to load an extension. Should be called on a sequence where file IO
   // is allowed. Loads the extension, validates extension locales and persists
   // the ruleset for the Declarative Net Request API, if needed. In case of an
-  // error, returns false and populates |error|.
+  // error, returns false and populates `error`.
   bool LoadExtension(mojom::ManifestLocation location,
                      int flags,
-                     std::string* error);
+                     std::u16string* error);
 
   // Reads the Declarative Net Request JSON rulesets for the extension, if it
   // provided any, and persists the indexed rulesets. Returns false and
-  // populates |error| in case of an error. Should be called on a sequence where
+  // populates `error` in case of an error. Should be called on a sequence where
   // file IO is allowed.
-  bool IndexAndPersistRulesIfNeeded(std::string* error);
+  bool IndexAndPersistRulesIfNeeded(std::u16string* error);
 
-  // Records command-line extension metrics organized by developer mode, emitted
-  // when a command line extension is loaded.
-  void RecordCommandLineDeveloperModeMetrics();
+  // Records command-line extension metrics, emitted when a command line
+  // extension is installed.
+  void RecordCommandLineMetrics();
+
+  // ProfileObserver
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  // Called when the browser is terminating.
+  void OnBrowserTerminating();
 
   const Extension* extension() { return extension_.get(); }
 
   // The service we will report results back to.
-  base::WeakPtr<ExtensionService> service_weak_;
+  raw_ptr<ExtensionService> service_ = nullptr;
 
   // The Profile the extension is being installed in.
   raw_ptr<Profile, DanglingUntriaged> profile_;
+
+  // Observes profile destruction.
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // The pathname of the directory to load from, which is an absolute path
   // after GetAbsolutePath has been called.
@@ -188,6 +231,12 @@ class UnpackedInstaller
 
   // Specify an install param.
   std::optional<std::string> install_param_;
+
+  // True if the browser is terminating.
+  bool browser_terminating_ = false;
+
+  // Subscription to browser termination.
+  base::CallbackListSubscription on_browser_terminating_subscription_;
 };
 
 }  // namespace extensions

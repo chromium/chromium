@@ -1,0 +1,2 @@
+# For structural changes due to updates in chrome/browser/hub/.
+per-file BookmarkPane.java=file://chrome/browser/hub/OWNERS

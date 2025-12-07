@@ -57,8 +57,8 @@ class DefaultParamEmbeddedPermissionPromptUiTest
  public:
   DefaultParamEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{permissions::features::kOneTimePermission, {}},
-         {blink::features::kPermissionElement, {}},
+        {{blink::features::kPermissionElement, {}},
+         {blink::features::kUserMediaElement, {}},
          {blink::features::kBypassPepcSecurityForTesting, {}}},
         {});
   }
@@ -92,8 +92,8 @@ class WindowMiddleEmbeddedPermissionPromptUiTest
   WindowMiddleEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kPermissionElement, {}},
+            {blink::features::kUserMediaElement, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "window_middle"}}},
@@ -130,8 +130,8 @@ class NearElementEmbeddedPermissionPromptUiTest
   NearElementEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kPermissionElement, {}},
+            {blink::features::kUserMediaElement, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "near_element"}}},
@@ -168,8 +168,8 @@ class LegacyPromptEmbeddedPermissionPromptUiTest
   LegacyPromptEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kPermissionElement, {}},
+            {blink::features::kUserMediaElement, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "legacy_prompt"}}},
@@ -186,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
-                       InvokeUi_microphone) {
+                       // TODO(crbug.com/365077551): Re-enable this test
+                       DISABLED_InvokeUi_microphone) {
   /* A static port is needed because it is part of the shown dialog UI which
    * is used for gold pixel texts.*/
   ASSERT_TRUE(embedded_https_test_server().Start(41141));

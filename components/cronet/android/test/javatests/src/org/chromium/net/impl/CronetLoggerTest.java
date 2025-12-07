@@ -4,7 +4,6 @@
 
 package org.chromium.net.impl;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -14,11 +13,8 @@ import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
-
-import com.google.protobuf.ByteString;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,8 +30,8 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.ExperimentalCronetEngine;
@@ -45,13 +41,12 @@ import org.chromium.net.TestBidirectionalStreamCallback;
 import org.chromium.net.TestUploadDataProvider;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UrlRequest;
-import org.chromium.net.httpflags.FlagValue;
-import org.chromium.net.httpflags.Flags;
 import org.chromium.net.impl.CronetEngineBuilderImpl.HttpCacheMode;
 import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
+import org.chromium.net.test.ServerCertificate;
 
 import java.time.Duration;
 import java.util.AbstractMap;
@@ -80,18 +75,22 @@ public final class CronetLoggerTest {
 
     private TestLogger mTestLogger;
     private Context mContext;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() {
         mContext = mTestRule.getTestFramework().getContext();
         mTestLogger = mLoggerTestRule.mTestLogger;
-        assertThat(NativeTestServer.startNativeTestServer(mContext)).isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServerWithHTTPS(
+                        mContext, ServerCertificate.CERT_OK);
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() {
         mTestLogger = null;
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -111,7 +110,7 @@ public final class CronetLoggerTest {
         assertThat(builderInfo.isNetworkQualityEstimatorEnabled())
                 .isEqualTo(builder.networkQualityEstimatorEnabled());
         assertThat(builderInfo.getThreadPriority())
-                .isEqualTo(builder.threadPriority(THREAD_PRIORITY_BACKGROUND));
+                .isEqualTo(CronetEngineBuilderImpl.NETWORK_THREAD_PRIORITY);
     }
 
     @Test
@@ -165,7 +164,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testTelemetryDefaultEnabled() throws JSONException {
-        final String url = NativeTestServer.getEchoBodyURL();
+        final String url = mNativeTestServer.getEchoBodyURL();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
@@ -360,207 +359,6 @@ public final class CronetLoggerTest {
         assertThat(cronetInitializedInfo.engineAsyncLatencyMillis).isAtLeast(0);
     }
 
-    private void setReadHttpFlagsInManifest(boolean value) {
-        Bundle metaData = new Bundle();
-        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, value);
-        mTestRule.getTestFramework().interceptContext(new CronetManifestInterceptor(metaData));
-    }
-
-    @Test
-    @SmallTest
-    public void testCronetInitializedInfoHttpFlagsDisabled() {
-        setReadHttpFlagsInManifest(false);
-
-        mTestRule.getTestFramework().startEngine();
-        mTestLogger.waitForCronetInitializedInfo();
-        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
-        assertThat(cronetInitializedInfo).isNotNull();
-        assertThat(cronetInitializedInfo.httpFlagsLatencyMillis).isAtLeast(0);
-        assertThat(cronetInitializedInfo.httpFlagsSuccessful).isNull();
-        assertThat(cronetInitializedInfo.httpFlagsNames).isEmpty();
-        assertThat(cronetInitializedInfo.httpFlagsValues).isEmpty();
-    }
-
-    @Test
-    @SmallTest
-    public void testCronetInitializedInfoHttpFlagsEnabled() {
-        setReadHttpFlagsInManifest(true);
-        mTestRule
-                .getTestFramework()
-                .setHttpFlags(
-                        Flags.newBuilder()
-                                .putFlags(
-                                        "true_bool_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setBoolValue(true))
-                                                .build())
-                                .putFlags(
-                                        "false_bool_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setBoolValue(false))
-                                                .build())
-                                .putFlags(
-                                        "int_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setIntValue(42))
-                                                .build())
-                                .putFlags(
-                                        "float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(42.5f))
-                                                .build())
-                                .putFlags(
-                                        "small_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(0.000_000_001f))
-                                                .build())
-                                .putFlags(
-                                        "large_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(1_000_000_000f))
-                                                .build())
-                                .putFlags(
-                                        "max_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(Float.MAX_VALUE))
-                                                .build())
-                                .putFlags(
-                                        "min_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(Float.MIN_VALUE))
-                                                .build())
-                                .putFlags(
-                                        "negative_infinity_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(
-                                                                        (Float.NEGATIVE_INFINITY)))
-                                                .build())
-                                .putFlags(
-                                        "positive_infinity_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(
-                                                                        Float.POSITIVE_INFINITY))
-                                                .build())
-                                .putFlags(
-                                        "nan_float_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setFloatValue(Float.NaN))
-                                                .build())
-                                .putFlags(
-                                        "string_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setStringValue(
-                                                                        "string_flag_value"))
-                                                .build())
-                                .putFlags(
-                                        "bytes_flag_name",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setBytesValue(
-                                                                        ByteString.copyFrom(
-                                                                                new byte[] {
-                                                                                    'b', 'y', 't',
-                                                                                    'e', 's'
-                                                                                })))
-                                                .build())
-                                .build());
-
-        mTestRule.getTestFramework().startEngine();
-        mTestLogger.waitForCronetInitializedInfo();
-        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
-        assertThat(cronetInitializedInfo).isNotNull();
-        assertThat(cronetInitializedInfo.httpFlagsLatencyMillis).isAtLeast(0);
-        assertThat(cronetInitializedInfo.httpFlagsSuccessful).isTrue();
-        assertThat(cronetInitializedInfo.httpFlagsNames)
-                .containsExactly(
-                        // MD5("negative_infinity_float_flag_name") =
-                        // 9d696a83954fce335d1e8f6a9810492b
-                        0x9d696a83954fce33L, // -7104029823821951437
-                        // MD5("small_float_flag_name") = ab72c47c397f6a43c613537a966219af
-                        0xab72c47c397f6a43L, // -6092591308059219389
-                        // MD5("bytes_flag_name") = ba9a5e9e6b90bfbb81680aa990b634eb
-                        0xba9a5e9e6b90bfbbL, // -5000580401739022405
-                        // MD5("true_bool_flag_name") = c9c07033b6976b0da6db6289170f57cf
-                        0xc9c07033b6976b0dL, // -3909001109148570867
-                        // MD5("min_float_flag_name") = d256444fcdc3c570c80a581c9693b7d1
-                        0xd256444fcdc3c570L, // -3290367368202304144
-                        // MD5("nan_float_flag_name") = d6ab336abb86e1898709bbc0cd39ddf5
-                        0xd6ab336abb86e189L, // -2978230195069722231
-                        // MD5("float_flag_name") = da91d8c7fd76cbad314db23f64d851cc
-                        0xda91d8c7fd76cbadL, // -2697136348355703891
-                        // MD5("false_bool_flag_name") = 054604bfb6c5dda576298f09ae47e27e
-                        0x054604bfb6c5dda5L, // 379996440011070885
-                        // MD5("string_flag_name") = 44c075a1c49b1a409841fd7be863b836
-                        0x44c075a1c49b1a40L, // 4954088927756229184
-                        // MD5("positive_infinity_float_flag_name") =
-                        // 4bfaed6273d43c6f9e0b3bf6cab1ba77
-                        0x4bfaed6273d43c6fL, // 5474949304128126063
-                        // MD5("int_flag_name") = 57c409545ac02037d0251cffc79ac636
-                        0x57c409545ac02037L, // 6324190034639462455
-                        // MD5("max_float_flag_name") = 5e4417deb0623183ba34114388f0633f
-                        0x5e4417deb0623183L, // 6792580383190954371
-                        // MD5("large_float_flag_name") = 6bc0a810fc7df652ff363da9130fc725
-                        0x6bc0a810fc7df652L // 7764390548495791698
-                        )
-                .inOrder();
-        assertThat(cronetInitializedInfo.httpFlagsValues)
-                .containsExactly(
-                        // negative_infinity_float_flag_name
-                        Long.MIN_VALUE,
-                        // small_float_flag_name
-                        1L,
-                        // bytes_flag_name
-                        // MD5("bytes") = 4b3a6218bb3e3a7303e8a171a60fcf92
-                        0x4b3a6218bb3e3a73L,
-                        // true_bool_flag_name
-                        1L,
-                        // min_float_flag_name
-                        0L,
-                        // nan_float_flag_name
-                        0L,
-                        // float_flag_name
-                        42_500_000_000L,
-                        // false_bool_flag_name
-                        0L,
-                        // string_flag_name
-                        // MD5("string_flag_value") = de880cd0cda4184ef97ee4ad3757e5c3
-                        0xde880cd0cda4184eL,
-                        // positive_infinity_float_flag_name
-                        Long.MAX_VALUE,
-                        // int_flag_name
-                        42L,
-                        // max_float_flag_name
-                        Long.MAX_VALUE,
-                        // large_float_flag_name
-                        1_000_000_000_000_000_000L)
-                .inOrder();
-    }
-
     @Test
     @SmallTest
     public void testEngineCreationAndTrafficInfoEngineId() throws Exception {
@@ -642,7 +440,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testSuccessfulRequestNative() throws Exception {
-        final String url = NativeTestServer.getEchoMethodURL();
+        final String url = mNativeTestServer.getEchoMethodURL();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -672,7 +470,10 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getReadCount()).isGreaterThan(0);
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
-        assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
+        assertThat(trafficInfo.getTimeToEstablishDNSMillis()).isGreaterThan(-1);
+        assertThat(trafficInfo.getTimeToEstablishSSLMillis()).isGreaterThan(0);
+        assertThat(trafficInfo.getTimeToConnectMillis()).isGreaterThan(0);
+        assertThat(trafficInfo.getTimeToSendFirstByteMillis()).isGreaterThan(0);
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -718,6 +519,11 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(-300);
         assertThat(trafficInfo.getFailureReason())
                 .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
+        assertThat(trafficInfo.getTimeToEstablishDNSMillis()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToEstablishSSLMillis()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToConnectMillis()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToSendFirstByteMillis()).isEqualTo(-1);
+
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
     }
@@ -733,7 +539,7 @@ public final class CronetLoggerTest {
                 .getTestFramework()
                 .startEngine()
                 .newUrlRequestBuilder(
-                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                        mNativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
                 .build()
                 .start();
         callback.blockForDone();
@@ -759,7 +565,7 @@ public final class CronetLoggerTest {
                 .getTestFramework()
                 .startEngine()
                 .newUrlRequestBuilder(
-                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                        mNativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
                 .build()
                 .start();
         callback.blockForDone();
@@ -773,7 +579,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testCanceledRequestNative() throws Exception {
-        final String url = NativeTestServer.getEchoBodyURL();
+        final String url = mNativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -827,7 +633,7 @@ public final class CronetLoggerTest {
                 .getTestFramework()
                 .startEngine()
                 .newUrlRequestBuilder(
-                        NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor())
+                        mNativeTestServer.getEchoBodyURL(), callback, callback.getExecutor())
                 .setUploadDataProvider(dataProvider, callback.getExecutor())
                 .addHeader("Content-Type", "useless/string")
                 .build()
@@ -888,6 +694,10 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
             assertThat(trafficInfo.getFailureReason())
                     .isEqualTo(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
+            assertThat(trafficInfo.getTimeToEstablishDNSMillis()).isGreaterThan(-1);
+            assertThat(trafficInfo.getTimeToEstablishSSLMillis()).isGreaterThan(0);
+            assertThat(trafficInfo.getTimeToConnectMillis()).isGreaterThan(0);
+            assertThat(trafficInfo.getTimeToSendFirstByteMillis()).isGreaterThan(0);
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
         } finally {

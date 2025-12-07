@@ -43,6 +43,8 @@ namespace blink {
 
 class Animation;
 class CallbackFunctionTest;
+class CanvasImageSource;
+class CanvasRenderingContext;
 class DOMArrayBuffer;
 class DOMPoint;
 class DOMRect;
@@ -61,7 +63,6 @@ class HTMLIFrameElement;
 class HTMLInputElement;
 class HTMLMediaElement;
 class HTMLSelectElement;
-class HTMLSelectListElement;
 class HTMLVideoElement;
 class HitTestLayerRectList;
 class HitTestLocation;
@@ -72,9 +73,9 @@ class InternalsUkmRecorder;
 class LocalDOMWindow;
 class LocalFrame;
 class Location;
+class NADCAttributeTest;
 class Node;
 class OriginTrialsTest;
-class OffscreenCanvas;
 class Page;
 class Range;
 class ReadableStream;
@@ -100,7 +101,6 @@ class Internals final : public ScriptWrappable {
   static void ResetToConsistentState(Page*);
 
   explicit Internals(ExecutionContext*);
-  ~Internals() override;
 
   String elementLayoutTreeAsText(Element*, ExceptionState&);
 
@@ -140,7 +140,13 @@ class Internals final : public ScriptWrappable {
 
   // Animation testing.
   void pauseAnimations(double pause_time, ExceptionState&);
+  // An animation is composited if it is actively ticking on the compositor.
   bool isCompositedAnimation(Animation*);
+  // An animation is main thread if it is actively ticking on the main thread.
+  // Animations that don't need to tick at all are considered neither compositor
+  // nor main thread animations. Animations that fall into the neither category
+  // are those that are optimized out for having no visual effect.
+  bool isMainThreadAnimation(Animation*);
   void disableCompositedAnimation(Animation*);
   void disableCSSAdditiveAnimations();
 
@@ -237,8 +243,6 @@ class Internals final : public ScriptWrappable {
                                  unsigned start_offset,
                                  unsigned end_offset,
                                  bool);
-  void setMarkedTextMatchesAreHighlighted(Document*, bool);
-
   String viewportAsText(Document*,
                         float device_pixel_ratio,
                         int available_width,
@@ -365,9 +369,7 @@ class Internals final : public ScriptWrappable {
   String layerTreeAsText(Document*, unsigned flags, ExceptionState&) const;
   String layerTreeAsText(Document*, ExceptionState&) const;
 
-  String scrollingStateTreeAsText(Document*) const;
   String mainThreadScrollingReasons(Document*, ExceptionState&) const;
-  DOMRectList* nonFastScrollableRects(Document*, ExceptionState&) const;
 
   void evictAllResources() const;
 
@@ -421,6 +423,7 @@ class Internals final : public ScriptWrappable {
   UnionTypesTest* unionTypesTest() const;
   OriginTrialsTest* originTrialsTest() const;
   CallbackFunctionTest* callbackFunctionTest() const;
+  NADCAttributeTest* nadcAttributeTest() const;
 
   Vector<String> getReferencedFilePaths() const;
   void disableReferencedFilePathsVerification() const;
@@ -456,8 +459,6 @@ class Internals final : public ScriptWrappable {
   int selectPopupItemStyleFontHeight(Node*, int);
   void resetTypeAheadSession(HTMLSelectElement*);
 
-  void resetSelectListTypeAheadSession(HTMLSelectListElement*);
-
   StaticSelection* getDragCaret();
   StaticSelection* getSelectionInFlatTree(DOMWindow*, ExceptionState&);
   Node* visibleSelectionAnchorNode();
@@ -477,7 +478,7 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
   ScriptPromise<IDLAny> createRejectedPromise(ScriptState*, ScriptValue);
-  ScriptPromise<IDLAny> addOneToPromise(ScriptState*, ScriptPromiseUntyped);
+  ScriptPromise<IDLLong> addOneToPromise(ScriptState*, ScriptPromise<IDLLong>);
   ScriptPromise<IDLAny> promiseCheck(ScriptState*,
                                      int32_t,
                                      bool,
@@ -511,12 +512,9 @@ class Internals final : public ScriptWrappable {
 
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
-  void forceLoseCanvasContext(HTMLCanvasElement* canvas,
-                              const String& context_type);
-
-  void forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
-                              const String& context_type);
-  void disableCanvasAcceleration(HTMLCanvasElement* canvas);
+  void forceLoseCanvasContext(CanvasRenderingContext* context);
+  void disableCanvasAccelerationForCanvas2D(HTMLCanvasElement* canvas);
+  bool isCanvasImageSourceAccelerated(const CanvasImageSource*) const;
 
   String selectedHTMLForClipboard();
   String selectedTextForClipboard();
@@ -641,6 +639,8 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise<IDLUndefined> exemptUrlFromNetworkRevocation(ScriptState*,
                                                              const String& url);
+  String lastCompiledScriptFileName(Document* document);
+  bool lastCompiledScriptUsedCodeCache(Document* document);
 
  private:
   Document* ContextDocument() const;

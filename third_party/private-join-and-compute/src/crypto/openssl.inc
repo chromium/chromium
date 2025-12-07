@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 // Contains all the OpenSSL includes we use.
 
 #include <openssl/aead.h>
+#include <openssl/base.h>
 #include <openssl/bn.h>
 #include <openssl/buffer.h>
 #include <openssl/crypto.h>
@@ -27,3 +28,6 @@
 #include <openssl/ossl_typ.h>
 #include <openssl/rand.h>
 #include <openssl/sha.h>
+#include <openssl/mem.h>
+#include <openssl/base.h>
+#include <openssl/nid.h>

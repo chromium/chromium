@@ -41,6 +41,10 @@ class WaylandCursorShape
   // for values for |shape|. Virtual for testing.
   virtual void SetCursorShape(uint32_t shape);
 
+  // Returns a new shape device for a tablet tool.
+  wl::Object<wp_cursor_shape_device_v1> CreateTabletToolShapeDevice(
+      zwp_tablet_tool_v2* tablet_tool);
+
  private:
   wp_cursor_shape_device_v1* GetShapeDevice();
 

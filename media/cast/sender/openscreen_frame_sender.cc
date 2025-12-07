@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/sender/openscreen_frame_sender.h"
 
 #include <algorithm>
@@ -24,7 +19,8 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media::cast {
 namespace {
@@ -57,11 +53,9 @@ std::unique_ptr<FrameSender> FrameSender::Create(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
     std::unique_ptr<openscreen::cast::Sender> sender,
-    Client& client,
-    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb) {
+    Client& client) {
   return std::make_unique<OpenscreenFrameSender>(cast_environment, config,
-                                                 std::move(sender), client,
-                                                 std::move(get_bitrate_cb));
+                                                 std::move(sender), client);
 }
 
 // Convenience macro used in logging statements throughout this file.
@@ -73,20 +67,15 @@ OpenscreenFrameSender::OpenscreenFrameSender(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
     std::unique_ptr<openscreen::cast::Sender> sender,
-    Client& client,
-    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
+    Client& client)
     : cast_environment_(cast_environment),
       sender_(std::move(sender)),
       client_(client),
       max_frame_rate_(config.max_frame_rate),
-      is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
+      is_audio_(config.is_audio()),
       min_playout_delay_(config.min_playout_delay),
       max_playout_delay_(config.max_playout_delay) {
   CHECK_GT(sender_->config().rtp_timebase, 0);
-  if (!is_audio_) {
-    bitrate_suggester_ = std::make_unique<VideoBitrateSuggester>(
-        config, std::move(get_bitrate_cb));
-  }
 
   const std::chrono::milliseconds target_playout_delay =
       sender_->config().target_playout_delay;
@@ -173,13 +162,6 @@ int OpenscreenFrameSender::GetUnacknowledgedFrameCount() const {
   return sender_->GetInFlightFrameCount();
 }
 
-int OpenscreenFrameSender::GetSuggestedBitrate(base::TimeTicks playout_time,
-                                               base::TimeDelta playout_delay) {
-  // Currently only used by the video sender.
-  DCHECK(!is_audio_);
-  return bitrate_suggester_->GetSuggestedBitrate();
-}
-
 double OpenscreenFrameSender::MaxFrameRate() const {
   return max_frame_rate_;
 }
@@ -213,7 +195,7 @@ base::TimeDelta OpenscreenFrameSender::GetAllowedInFlightMediaDuration() const {
 
 CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(encoded_frame);
   VLOG_WITH_SSRC(2) << "About to send another frame ("
                     << encoded_frame->frame_id
@@ -222,10 +204,9 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
   CHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
       << "enqueued frames out of order.";
   last_enqueued_frame_id_ = encoded_frame->frame_id;
-  last_send_time_ = cast_environment_->Clock()->NowTicks();
+  last_send_time_ = cast_environment_->NowTicks();
 
-  if (!is_audio_ && encoded_frame->dependency ==
-                        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+  if (!is_audio_ && encoded_frame->is_key_frame) {
     VLOG_WITH_SSRC(1) << "Sending encoded key frame, id="
                       << encoded_frame->frame_id;
     frame_id_map_.clear();
@@ -248,10 +229,11 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     send_target_playout_delay_ = false;
   }
 
-  static const char* name = is_audio_ ? "Audio Transport" : "Video Transport";
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+  static const perfetto::StaticString name =
+      is_audio_ ? "Audio Transport" : "Video Transport";
+  TRACE_EVENT_BEGIN(
       "cast.stream", name,
-      TRACE_ID_WITH_SCOPE(name, encoded_frame->frame_id.lower_32_bits()),
+      perfetto::NamedTrack(name, encoded_frame->frame_id.lower_32_bits()),
       "rtp_timestamp", encoded_frame->rtp_timestamp.lower_32_bits());
 
   // The `FrameId` given to us by child classes such as VideoSender should
@@ -300,7 +282,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
   const int count_frames_in_flight =
       GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
-    RecordShouldDropNextFrame(/*should_drop=*/true);
     return CastStreamingFrameDropReason::kTooManyFramesInFlight;
   }
 
@@ -310,7 +291,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
   const double max_frames_in_flight =
       max_frame_rate_ * duration_in_flight.InSecondsF();
   if (count_frames_in_flight >= max_frames_in_flight + kMaxFrameBurst) {
-    RecordShouldDropNextFrame(/*should_drop=*/true);
     return CastStreamingFrameDropReason::kBurstThresholdExceeded;
   }
 
@@ -337,18 +317,11 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
     }
   }
   if (duration_would_be_in_flight > allowed_in_flight) {
-    RecordShouldDropNextFrame(/*should_drop=*/true);
     return CastStreamingFrameDropReason::kInFlightDurationTooHigh;
   }
 
   // Next frame is accepted.
-  RecordShouldDropNextFrame(/*should_drop=*/false);
   return CastStreamingFrameDropReason::kNotDropped;
 }
 
-void OpenscreenFrameSender::RecordShouldDropNextFrame(bool should_drop) {
-  if (bitrate_suggester_) {
-    bitrate_suggester_->RecordShouldDropNextFrame(should_drop);
-  }
-}
 }  // namespace media::cast

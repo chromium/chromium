@@ -8,26 +8,25 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace enterprise_connectors {
 
@@ -41,20 +40,38 @@ device_signals::Trigger DetermineTrigger(Profile* profile) {
   if (!profile) {
     return device_signals::Trigger::kUnspecified;
   }
-  if (ash::ProfileHelper::IsUserProfile(profile)) {
+  if (ash::IsUserBrowserContext(profile)) {
     return device_signals::Trigger::kBrowserNavigation;
   }
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::IsSigninBrowserContext(profile)) {
     return device_signals::Trigger::kLoginScreen;
   }
 
   return device_signals::Trigger::kUnspecified;
 }
 
+// Checks for the given profile if the user is affiliated or belongs to the
+// sign-in profile.
+bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {
+  if (ash::IsSigninBrowserContext(profile)) {
+    return true;
+  }
+
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user) {
+    return false;
+  }
+  return user->IsAffiliated();
+}
+
 void GetNetworkDeviceStates(Profile* profile,
                             ash::NetworkStateHandler::DeviceStateList* list) {
-  if (!crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
-          profile)) {
+  if (!IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     return;
   }
 
@@ -62,6 +79,25 @@ void GetNetworkDeviceStates(Profile* profile,
       ash::NetworkHandler::Get()->network_state_handler();
 
   network_state_handler->GetDeviceList(list);
+}
+
+std::optional<std::string> GetMacAddress(Profile* profile) {
+  if (!IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
+    return std::nullopt;
+  }
+
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  const ash::NetworkState* network = network_state_handler->DefaultNetwork();
+  if (!network) {
+    return std::nullopt;
+  }
+  const ash::DeviceState* device =
+      network_state_handler->GetDeviceState(network->device_path());
+  if (!device) {
+    return std::nullopt;
+  }
+  return ash::network_util::FormattedMacAddress(device->mac_address());
 }
 
 }  // namespace
@@ -95,13 +131,13 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
   // On ChromeOS the disk is always encrypted. See (b/249756773) for more
   // information.
   signals.Set(device_signals::names::kDiskEncrypted,
-              static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+              static_cast<int32_t>(device_signals::SettingValue::ENABLED));
 
   // Also, there is no way to remove the need for a password when logging into a
   // device, including when the screen is locked. A password or pin is always
   // required.
   signals.Set(device_signals::names::kScreenLockSecured,
-              static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+              static_cast<int32_t>(device_signals::SettingValue::ENABLED));
 
   base::Value::List imei_list;
   base::Value::List meid_list;
@@ -120,48 +156,14 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
   signals.Set(device_signals::names::kImei, std::move(imei_list));
   signals.Set(device_signals::names::kMeid, std::move(meid_list));
 
-  if (!crosapi::CrosapiManager::Get() ||
-      !crosapi::CrosapiManager::Get()->crosapi_ash() ||
-      !crosapi::CrosapiManager::Get()
-           ->crosapi_ash()
-           ->networking_attributes_ash()) {
-    LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
-
-    std::move(done_closure).Run();
-    return;
-  }
-
-  auto callback =
-      base::BindOnce(&AshSignalsDecorator::OnNetworkInfoRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
-                     start_time, std::move(done_closure));
-
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->networking_attributes_ash()
-      ->GetNetworkDetails(std::move(callback));
-}
-
-void AshSignalsDecorator::OnNetworkInfoRetrieved(
-    base::Value::Dict& signals,
-    base::TimeTicks start_time,
-    base::OnceClosure done_closure,
-    crosapi::mojom::GetNetworkDetailsResultPtr result) {
   std::vector<std::string> mac_addresses;
-  using Result = crosapi::mojom::GetNetworkDetailsResult;
-  switch (result->which()) {
-    case Result::Tag::kErrorMessage:
-      break;
-    case Result::Tag::kNetworkDetails:
-      std::optional<std::string> mac_address =
-          result->get_network_details()->mac_address;
-
-      // `get_network_details()->mac_address` returns a std::string. On other
-      // platforms (Windows, Linux and Mac) there can be multiple mac
-      // addresses.
-      if (mac_address) {
-        mac_addresses.push_back(mac_address.value());
-      }
+  std::optional<std::string> mac_address = GetMacAddress(
+      g_browser_process->profile_manager()->GetPrimaryUserProfile());
+  // `get_network_details()->mac_address` returns a std::string. On other
+  // platforms (Windows, Linux and Mac) there can be multiple mac
+  // addresses.
+  if (mac_address) {
+    mac_addresses.push_back(mac_address.value());
   }
 
   // The mac addresses signal must always have a value, which can be an empty
@@ -169,7 +171,6 @@ void AshSignalsDecorator::OnNetworkInfoRetrieved(
   signals.Set(device_signals::names::kMacAddresses, ToListValue(mac_addresses));
 
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
-
   std::move(done_closure).Run();
 }
 

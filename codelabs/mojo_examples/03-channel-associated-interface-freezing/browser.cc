@@ -5,13 +5,14 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump.h"
+#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/threading/thread.h"
 #include "codelabs/mojo_examples/mojom/interface.mojom.h"
 #include "codelabs/mojo_examples/process_bootstrapper.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -93,7 +94,7 @@ class BrowserIPCListener : public IPC::Listener {
 
     // 1.) Bootstrap the IPC Channel.
     std::unique_ptr<IPC::ChannelFactory> channel_factory =
-        IPC::ChannelMojo::CreateServerFactory(
+        IPC::ChannelFactory::CreateServerFactory(
             std::move(ipc_bootstrap_pipe), io_task_runner,
             base::SingleThreadTaskRunner::GetCurrentDefault());
     channel_proxy_ = IPC::ChannelProxy::Create(
@@ -113,14 +114,10 @@ class BrowserIPCListener : public IPC::Listener {
   }
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& msg) override {
-    CHECK(false) << "The browser should not receive messages";
-    return false;
-  }
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override {
-    CHECK(false)
+    NOTREACHED()
         << "The browser should not receive associated interface requests";
   }
 

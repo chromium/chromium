@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] history.pushState() with an empty string URL and base URL different from document's URL
-  assert_equals: expected "/html/browsers/history/the-history-interface/pushstate-replacestate-empty-string/pushstate-base.html" but got "/the-base"
-Harness: the test ran to completion.
-

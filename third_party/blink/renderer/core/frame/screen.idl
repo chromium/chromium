@@ -31,23 +31,23 @@
 [
     Exposed=Window
 ] interface Screen : EventTarget {
-    [HighEntropy=Direct, Measure] readonly attribute long availWidth;
-    [HighEntropy=Direct, Measure] readonly attribute long availHeight;
-    [HighEntropy=Direct, Measure] readonly attribute long width;
-    [HighEntropy=Direct, Measure] readonly attribute long height;
-    [HighEntropy=Direct, Measure] readonly attribute unsigned long colorDepth;
+    [Measure] readonly attribute long availWidth;
+    [Measure] readonly attribute long availHeight;
+    [Measure] readonly attribute long width;
+    [Measure] readonly attribute long height;
+    [Measure] readonly attribute unsigned long colorDepth;
     // pixelDepth() is an alias for colorDepth(), no need to instrument it twice.
-    [HighEntropy, Measure] readonly attribute unsigned long pixelDepth;
+    [Measure] readonly attribute unsigned long pixelDepth;
 
     // Non-standard
-    [HighEntropy=Direct, Measure] readonly attribute long availLeft;
-    [HighEntropy=Direct, Measure] readonly attribute long availTop;
+    [Measure] readonly attribute long availLeft;
+    [Measure] readonly attribute long availTop;
 
     // Fired when the window’s screen or that screen's attributes change.
     // https://w3c.github.io/window-management/
-    [SecureContext, HighEntropy, MeasureAs=WindowScreenChange] attribute EventHandler onchange;
+    [SecureContext, MeasureAs=WindowScreenChange] attribute EventHandler onchange;
 
     // Whether the device’s visual output extends over multiple screens.
     // https://w3c.github.io/window-management/
-    [SecureContext, HighEntropy=Direct, MeasureAs=WindowScreenIsExtended] readonly attribute boolean isExtended;
+    [SecureContext, MeasureAs=WindowScreenIsExtended] readonly attribute boolean isExtended;
 };

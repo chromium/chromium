@@ -13,6 +13,7 @@ class GURL;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace extensions {
@@ -48,8 +49,8 @@ class RuntimeAPIDelegate {
   // Reloads an extension.
   virtual void ReloadExtension(const ExtensionId& extension_id) = 0;
 
-  // Requests an extensions update update check. Returns |false| if updates
-  // are disabled. Otherwise |callback| is called with the result of the
+  // Requests an extensions update update check. Returns `false` if updates
+  // are disabled. Otherwise `callback` is called with the result of the
   // update check.
   virtual bool CheckForUpdates(const ExtensionId& extension_id,
                                UpdateCheckCallback callback) = 0;
@@ -65,11 +66,16 @@ class RuntimeAPIDelegate {
   // will not be restarted.
   virtual bool RestartDevice(std::string* error_message) = 0;
 
-  // Open |extension|'s options page, if it has one. Returns true if an
+  // Open `extension`'s options page, if it has one. Returns true if an
   // options page was opened, false otherwise. See the docs of the
   // chrome.runtime.openOptionsPage function for the gritty details.
   virtual bool OpenOptionsPage(const Extension* extension,
                                content::BrowserContext* browser_context);
+
+  // Get the window ID for developer tools. This must be provided by the clients
+  // because they can choose to dock developer tools in a different window.
+  virtual int GetDeveloperToolsWindowId(
+      content::WebContents* developer_tools_web_contents);
 };
 
 }  // namespace extensions

@@ -33,16 +33,15 @@
 
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 WTF_EXPORT extern base::PlatformThreadId g_main_thread_identifier;
 
 // This function must be called exactly once from the main thread before using
 // anything else in WTF.
-WTF_EXPORT void Initialize();
+WTF_EXPORT void InitializeWtf();
 
 // thread_local variables can't be exported on Windows, so we use an extra
 // function call on component builds. Also, thread_local on Android is emulated
@@ -50,14 +49,12 @@ WTF_EXPORT void Initialize();
 #if BUILDFLAG(IS_ANDROID) || (defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN))
 WTF_EXPORT bool IsMainThread();
 #else
-WTF_EXPORT ABSL_CONST_INIT extern thread_local bool g_is_main_thread;
+WTF_EXPORT constinit extern thread_local bool g_is_main_thread;
 inline bool IsMainThread() {
   return g_is_main_thread;
 }
 #endif
 
-}  // namespace WTF
-
-using WTF::IsMainThread;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_H_

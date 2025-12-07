@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INDEXEDDB_INDEXED_DB_DEFAULT_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INDEXEDDB_INDEXED_DB_DEFAULT_MOJOM_TRAITS_H_
 
@@ -24,9 +19,6 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                  blink::IndexedDBDatabaseMetadata> {
-  static int64_t id(const blink::IndexedDBDatabaseMetadata& metadata) {
-    return metadata.id;
-  }
   static const std::u16string& name(
       const blink::IndexedDBDatabaseMetadata& metadata) {
     return metadata.name;
@@ -44,6 +36,9 @@ struct BLINK_COMMON_EXPORT
   }
   static bool was_cold_open(const blink::IndexedDBDatabaseMetadata& metadata) {
     return metadata.was_cold_open;
+  }
+  static bool is_sqlite(const blink::IndexedDBDatabaseMetadata& metadata) {
+    return metadata.is_sqlite;
   }
   static bool Read(blink::mojom::IDBDatabaseMetadataDataView data,
                    blink::IndexedDBDatabaseMetadata* out);
@@ -98,9 +93,7 @@ struct BLINK_COMMON_EXPORT
     return key.array();
   }
   static base::span<const uint8_t> binary(const blink::IndexedDBKey& key) {
-    return base::make_span(
-        reinterpret_cast<const uint8_t*>(key.binary().data()),
-        key.binary().size());
+    return base::as_byte_span(key.binary());
   }
   static const std::u16string& string(const blink::IndexedDBKey& key) {
     return key.string();

@@ -58,7 +58,6 @@ class NGramExtractor {
     }
 
     bool operator==(const Iterator& rhs) const { return head_ == rhs.head_; }
-    bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
 
     NGramType operator*() const { return ngram_; }
     NGramType* operator->() const { return &ngram_; }

@@ -22,21 +22,21 @@ class CORE_EXPORT SizesAttributeParser {
  public:
   SizesAttributeParser(MediaValues*,
                        const String&,
-                       const ExecutionContext*,
+                       ExecutionContext*,
                        const HTMLImageElement* = nullptr);
 
   bool IsAuto();
   float Size();
 
  private:
-  bool Parse(CSSParserTokenRange, const CSSParserTokenOffsets&);
+  bool Parse(CSSParserTokenStream&);
   float EffectiveSize();
-  bool CalculateLengthInPixels(CSSParserTokenRange, float& result);
+  bool CalculateLengthInPixels(CSSParserTokenStream&, float& result);
   bool MediaConditionMatches(const MediaQuerySet& media_condition);
   float EffectiveSizeDefaultValue();
 
   MediaValues* media_values_{};
-  const ExecutionContext* execution_context_{};
+  ExecutionContext* execution_context_{};
   float size_{};
   bool size_was_set_{};
   bool is_valid_{};

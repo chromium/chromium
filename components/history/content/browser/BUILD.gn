@@ -26,7 +26,7 @@ static_library("browser") {
     "//components/visitedlink/browser",
     "//components/visitedlink/core",
     "//content/public/browser",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -40,10 +40,14 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base",
-    "//components/history/core/browser:browser",
+    "//components/history/core/browser",
     "//components/history/core/test",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

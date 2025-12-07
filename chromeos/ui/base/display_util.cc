@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/ui/base/display_util.h"
+
+#include "base/notreached.h"
 #include "ui/display/display.h"
 
 namespace chromeos {
@@ -50,8 +52,7 @@ OrientationType RotationToOrientation(OrientationType natural,
         return OrientationType::kLandscapeSecondary;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return OrientationType::kAny;
+  NOTREACHED();
 }
 
 display::Display::Rotation OrientationToRotation(OrientationType natural,
@@ -88,8 +89,7 @@ display::Display::Rotation OrientationToRotation(OrientationType natural,
         break;
     }
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(orientation);
-  return display::Display::ROTATE_0;
+  NOTREACHED() << static_cast<int>(orientation);
 }
 
 bool IsPrimaryOrientation(OrientationType type) {

@@ -4,17 +4,16 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Bridge to interface with send_tab_to_self_android_bridge which interacts with the corresponding
@@ -22,9 +21,10 @@ import java.util.Optional;
  * bridge is created and destroyed within the same method call.
  */
 @JNINamespace("send_tab_to_self")
+@NullMarked
 public class SendTabToSelfAndroidBridge {
     // TODO(crbug.com/40618597): Add logic back in to track whether model is loaded.
-    private boolean mIsNativeSendTabToSelfModelLoaded;
+    // private boolean mIsNativeSendTabToSelfModelLoaded;
 
     /**
      * Creates a new entry to be persisted to the sync backend.
@@ -75,18 +75,14 @@ public class SendTabToSelfAndroidBridge {
 
     /**
      * @param webContents WebContents where a navigation was just completed.
-     * @param profile Profile to which |webContents| belongs.
      */
     public static void updateActiveWebContents(WebContents webContents) {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
     }
 
-    public static Optional</*@EntryPointDisplayReason*/ Integer> getEntryPointDisplayReason(
+    public static @Nullable @EntryPointDisplayReason Integer getEntryPointDisplayReason(
             Profile profile, String url) {
-        @Nullable
-        Integer reason =
-                SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
-        return reason == null ? Optional.empty() : Optional.of(reason.intValue());
+        return SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
     }
 
     @NativeMethods
@@ -106,7 +102,7 @@ public class SendTabToSelfAndroidBridge {
 
         void updateActiveWebContents(WebContents webContents);
 
-        @Nullable
-        Integer getEntryPointDisplayReason(@JniType("Profile*") Profile profile, String url);
+        @Nullable Integer getEntryPointDisplayReason(
+                @JniType("Profile*") Profile profile, String url);
     }
 }

@@ -5,15 +5,21 @@
 #ifndef CHROME_TEST_USER_EDUCATION_INTERACTIVE_FEATURE_PROMO_TEST_H_
 #define CHROME_TEST_USER_EDUCATION_INTERACTIVE_FEATURE_PROMO_TEST_H_
 
+#include <variant>
+
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_internal.h"
-#include "components/user_education/common/feature_promo_result.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/webui/chrome_urls/pref_names.h"
+#include "ui/base/interaction/element_identifier.h"
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic for testing User Education experiences.
@@ -49,6 +55,9 @@ class InteractiveFeaturePromoTestApi
           InitialSessionState::kOutsideGracePeriod);
   ~InteractiveFeaturePromoTestApi() override;
 
+  // Changes the controller mode. Call before calling base class `SetUp()`.
+  void SetControllerMode(ControllerMode controller_mode);
+
   // Gets the mock tracker, if the tracker mode is `UseMockTracker`.
   MockTracker* GetMockTrackerFor(Browser* browser);
 
@@ -80,21 +89,67 @@ class InteractiveFeaturePromoTestApi
 
   // --------------------------------------------------------------------------
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.
-  // TODO(dfried): fix these so that they work for WebUI help bubbles as well.
+
+  struct WebUiHelpBubbleShown {};
+  struct CustomHelpBubbleShown {
+    ui::ElementIdentifier expected_id;
+  };
+  using ShowPromoResult = std::variant<WebUiHelpBubbleShown,
+                                       CustomHelpBubbleShown,
+                                       user_education::FeaturePromoResult>;
 
   // Possibly tries to show the promo with `params`, which should produce the
-  // `expected_result`. If the result is success, checks that the help bubble is
-  // open and the correct promo is showing.
+  // `show_promo_result`. If `show_promo_result` is not `WebUiHelpBubbleShown`
+  // and the result is success, checks that a Views help bubble is open and the
+  // correct promo is showing. For WebUI bubbles, only checks that the correct
+  // promo is showing.
   //
   // When using a mock `FeatureEngagementTracker` the tracker will be set up to
   // handle the appropriate calls.
   [[nodiscard]] MultiStep MaybeShowPromo(
       user_education::FeaturePromoParams params,
-      user_education::FeaturePromoResult expected_result =
+      ShowPromoResult show_promo_result =
           user_education::FeaturePromoResult::Success());
 
-  // Waits for the given promo to be shown.
+  // Waits for the given Views promo bubble to be shown and verifies that the
+  // correct IPH is active.
+  //
+  // If this step is done `InAnyContext()` it will verify that the promo appears
+  // in at least one browser.
+  //
+  // IMPORTANT USAGE NOTE: if the browser the promo is shown from (by calling
+  // `MaybeShowFeaturePromo()` or using the `MaybeShowPromo()` action in this
+  // test API) is different from the window in which it actually appears, you
+  // MUST use `InAnyContext()` with this step, as otherwise it assumes that both
+  // are in the current/specified context - i.e. the same browser window.
+  // Failing to do so will cause either the check for the bubble or the step
+  // that verifies the correct promo is showing to fail.
+  //
+  // NOTE: the current context is potentially undefined after this step if it
+  // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
+  // that case.
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);
+
+  // Checks that the promo `iph_feature` is has been requested and is either
+  // queued or showing. Does not handle the case where the promo has already
+  // been closed.
+  //
+  // If this step is done `InAnyContext()` it will verify that the promo is
+  // requested in at least one browser (or if `active` is false, that it is not
+  // requested in any browser.)
+  //
+  // NOTE: the current context is potentially undefined after this step if it
+  // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
+  // that case.
+  [[nodiscard]] StepBuilder CheckPromoRequested(
+      const base::Feature& iph_feature,
+      bool requested = true);
+
+  // Same as `CheckPromoRequested()` but ignores queued promos. Usually prefer
+  // to use `CheckPromoRequested()`. Note that "active" includes both "bubble
+  // visible" and "bubble closed but promo continued".
+  [[nodiscard]] StepBuilder CheckPromoActive(const base::Feature& iph_feature,
+                                             bool requested = true);
 
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,
@@ -109,11 +164,17 @@ class InteractiveFeaturePromoTestApi
   // End Views help bubble-only methods.
   // --------------------------------------------------------------------------
 
- private:
-  internal::InteractiveFeaturePromoTestPrivate& test_impl() {
-    return static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-        private_test_impl());
+  internal::InteractiveFeaturePromoTestPrivate& feature_promo_test_impl() {
+    return *test_impl_;
   }
+
+ private:
+  // Shared by CheckPromoRequested and some internal actions.
+  [[nodiscard]] StepBuilder CheckPromoImpl(const base::Feature& iph_feature,
+                                           bool requested,
+                                           bool include_queued);
+
+  const raw_ptr<internal::InteractiveFeaturePromoTestPrivate> test_impl_;
 };
 
 // Template for adding `InteractiveFeaturePromoTestApi` to any existing test
@@ -122,10 +183,10 @@ class InteractiveFeaturePromoTestApi
 // use `InteractiveFeaturePromoTest` directly.
 template <typename T>
   requires std::derived_from<T, InProcessBrowserTest>
-class InteractiveFeaturePromoTestT : public T,
-                                     public InteractiveFeaturePromoTestApi {
+class InteractiveFeaturePromoTestMixin : public T,
+                                         public InteractiveFeaturePromoTestApi {
  public:
-  explicit InteractiveFeaturePromoTestT(
+  explicit InteractiveFeaturePromoTestMixin(
       TrackerMode tracker_mode = UseMockTracker(),
       ClockMode clock_mode = ClockMode::kUseTestClock,
       InitialSessionState initial_session_state =
@@ -136,26 +197,36 @@ class InteractiveFeaturePromoTestT : public T,
                                        initial_session_state) {}
 
   template <typename... Args>
-  InteractiveFeaturePromoTestT(TrackerMode tracker_mode,
-                               ClockMode clock_mode,
-                               InitialSessionState initial_session_state,
-                               Args&&... args)
+  InteractiveFeaturePromoTestMixin(TrackerMode tracker_mode,
+                                   ClockMode clock_mode,
+                                   InitialSessionState initial_session_state,
+                                   Args&&... args)
       : T(std::forward<Args>(args)...),
         InteractiveFeaturePromoTestApi(std::move(tracker_mode),
                                        clock_mode,
                                        initial_session_state) {}
-  ~InteractiveFeaturePromoTestT() override = default;
+  ~InteractiveFeaturePromoTestMixin() override = default;
 
  protected:
+  void SetUp() override {
+    feature_promo_test_impl().CommitControllerMode();
+    T::SetUp();
+  }
+
+  void TearDown() override {
+    T::TearDown();
+    feature_promo_test_impl().ResetControllerMode();
+  }
+
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
     if (Browser* browser = T::browser()) {
       SetContextWidget(
           BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
-      static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-          private_test_impl())
-          .MaybeWaitForTrackerInitialization(browser);
+      feature_promo_test_impl().MaybeWaitForTrackerInitialization(browser);
     }
   }
 
@@ -166,6 +237,6 @@ class InteractiveFeaturePromoTestT : public T,
 };
 
 using InteractiveFeaturePromoTest =
-    InteractiveFeaturePromoTestT<InProcessBrowserTest>;
+    InteractiveFeaturePromoTestMixin<InProcessBrowserTest>;
 
 #endif  // CHROME_TEST_USER_EDUCATION_INTERACTIVE_FEATURE_PROMO_TEST_H_

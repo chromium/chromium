@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 
 namespace ash {
 namespace input_method {

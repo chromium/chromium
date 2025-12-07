@@ -11,9 +11,9 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
-#include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -64,8 +64,15 @@ AllSupportedQuicVersions() {
   return filtered_versions;
 }
 
-// When a connection is idle for 30 seconds it will be closed.
-constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
+// The idle connection timeout. Defaults to 30 seconds, but can be overridden
+// by a field trial.
+inline base::TimeDelta GetIdleConnectionTimeout() {
+  if (base::FeatureList::IsEnabled(
+          net::features::kQuicLongerIdleConnectionTimeout)) {
+    return base::Seconds(300);
+  }
+  return base::Seconds(30);
+}
 
 // Sessions can migrate if they have been idle for less than this period.
 constexpr base::TimeDelta kDefaultIdleSessionMigrationPeriod =
@@ -80,7 +87,8 @@ constexpr base::TimeDelta kDefaultRetransmittableOnWireTimeout =
 
 // The default maximum time QUIC session could be on non-default network before
 // migrate back to default network.
-constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork = base::Seconds(128);
+inline constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork =
+    base::Seconds(128);
 
 // The default maximum number of migrations to non default network on write
 // error per network.
@@ -118,8 +126,12 @@ struct NET_EXPORT QuicParams {
   // Maximum number of server configs that are to be stored in
   // HttpServerProperties, instead of the disk cache.
   size_t max_server_configs_stored_in_properties = 0u;
+
+  // If trust, QUIC will be forced on all origins.
+  bool force_quic_everywhere = false;
   // QUIC will be used for all connections in this set.
-  std::set<HostPortPair> origins_to_force_quic_on;
+  std::set<url::SchemeHostPort> origins_to_force_quic_on;
+
   // WebTransport developer mode disables the requirement that all QUIC
   // connections are anchored to a system certificate root, but only for
   // WebTransport connections.
@@ -143,7 +155,7 @@ struct NET_EXPORT QuicParams {
   // changes.
   bool goaway_sessions_on_ip_change = false;
   // Specifies QUIC idle connection state lifetime.
-  base::TimeDelta idle_connection_timeout = kIdleConnectionTimeout;
+  base::TimeDelta idle_connection_timeout = GetIdleConnectionTimeout();
   // Specifies the reduced ping timeout subsequent connections should use when
   // a connection was timed out with open streams.
   base::TimeDelta reduced_ping_timeout = base::Seconds(quic::kPingTimeoutSecs);
@@ -199,7 +211,7 @@ struct NET_EXPORT QuicParams {
       kMaxMigrationsToNonDefaultNetworkOnPathDegrading;
   // If true, allows migration of QUIC connections to a server-specified
   // alternate server address.
-  bool allow_server_migration = false;
+  bool allow_server_migration = true;
   // If true, allows QUIC to use alternative services with a different
   // hostname from the origin.
   bool allow_remote_alt_svc = true;
@@ -226,11 +238,21 @@ struct NET_EXPORT QuicParams {
   bool delay_main_job_with_available_spdy_session = false;
 
   // If true, ALPS uses new codepoint to negotiates application settings.
-  bool use_new_alps_codepoint = false;
+  bool use_new_alps_codepoint = true;
 
-  // If true, read Explicit Congestion Notification (ECN) marks from QUIC
-  // sockets and report them to the peer.
-  bool report_ecn = false;
+  // If true, parse received ORIGIN frame.
+  bool enable_origin_frame = true;
+
+  // If true, skip DNS resolution for a hostname if the ORIGIN frame received
+  // during an ongoing session encompasses that hostname.
+  bool skip_dns_with_origin_frame = true;
+
+  // If true, a request will be sent on the existing session iff the hostname
+  // matches the certificate presented during the handshake.
+  bool ignore_ip_matching_when_finding_existing_sessions = false;
+
+  // If true, the obfuscated sni is sent in the transport parameters.
+  bool enable_debugging_sni_in_transport_param = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the
@@ -253,6 +275,13 @@ class NET_EXPORT_PRIVATE QuicContext {
   const quic::ParsedQuicVersionVector& supported_versions() {
     return params_.supported_versions;
   }
+
+  // Returns the first quic::ParsedQuicVersion that has been advertised in
+  // `advertised_versions` and is supported, following the order of
+  // `advertised_versions`.  If no mutually supported version is found,
+  // quic::ParsedQuicVersion::Unsupported() will be returned.
+  quic::ParsedQuicVersion SelectQuicVersion(
+      const quic::ParsedQuicVersionVector& advertised_versions);
 
   void SetHelperForTesting(
       std::unique_ptr<quic::QuicConnectionHelperInterface> helper) {

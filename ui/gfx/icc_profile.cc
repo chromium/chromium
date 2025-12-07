@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/icc_profile.h"
 
+#include <array>
 #include <list>
 #include <set>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -37,12 +34,17 @@ class DataToProfileCache : public DataToProfileCacheBase {
  public:
   DataToProfileCache() : DataToProfileCacheBase(kMaxCachedICCProfiles) {}
 };
-base::LazyInstance<DataToProfileCache>::Leaky g_data_to_profile_cache =
-    LAZY_INSTANCE_INITIALIZER;
 
-// Lock that must be held to access |g_data_to_profile_cache|.
-base::LazyInstance<base::Lock>::Leaky g_icc_profile_lock =
-    LAZY_INSTANCE_INITIALIZER;
+DataToProfileCache& GetDataToProfileCache() {
+  static base::NoDestructor<DataToProfileCache> cache;
+  return *cache;
+}
+
+// Lock that must be held to access |GetDataToProfileCache()|.
+base::Lock& GetIccProfileLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
 }  // namespace
 
@@ -68,7 +70,11 @@ void ICCProfile::Internals::Initialize() {
   float wX = m.vals[0][0] + m.vals[0][1] + m.vals[0][2];
   float wY = m.vals[1][0] + m.vals[1][1] + m.vals[1][2];
   float wZ = m.vals[2][0] + m.vals[2][1] + m.vals[2][2];
-  static const float kD50_WhitePoint[3] = { 0.96420f, 1.00000f, 0.82491f };
+  static const std::array<float, 3> kD50_WhitePoint = {
+      0.96420f,
+      1.00000f,
+      0.82491f,
+  };
   if (fabsf(wX - kD50_WhitePoint[0]) > 0.04f ||
       fabsf(wY - kD50_WhitePoint[1]) > 0.04f ||
       fabsf(wZ - kD50_WhitePoint[2]) > 0.04f) {
@@ -132,10 +138,6 @@ bool ICCProfile::operator==(const ICCProfile& other) const {
   return false;
 }
 
-bool ICCProfile::operator!=(const ICCProfile& other) const {
-  return !(*this == other);
-}
-
 bool ICCProfile::IsValid() const {
   return internals_ ? internals_->is_valid_ : false;
 }
@@ -147,22 +149,23 @@ std::vector<char> ICCProfile::GetData() const {
 // static
 ICCProfile ICCProfile::FromData(const void* data_as_void, size_t size) {
   const char* data_as_byte = reinterpret_cast<const char*>(data_as_void);
-  std::vector<char> data(data_as_byte, data_as_byte + size);
+  std::vector<char> data(data_as_byte, UNSAFE_TODO(data_as_byte + size));
 
-  base::AutoLock lock(g_icc_profile_lock.Get());
+  base::AutoLock lock(GetIccProfileLock());
 
   // See if there is already an entry with the same data. If so, return that
   // entry. If not, parse the data.
   ICCProfile icc_profile;
-  auto found_by_data = g_data_to_profile_cache.Get().Get(data);
-  if (found_by_data != g_data_to_profile_cache.Get().end()) {
+  auto& cache = GetDataToProfileCache();
+  auto found_by_data = cache.Get(data);
+  if (found_by_data != cache.end()) {
     icc_profile = found_by_data->second;
   } else {
     icc_profile.internals_ = base::MakeRefCounted<Internals>(std::move(data));
   }
 
   // Insert the profile into all caches.
-  g_data_to_profile_cache.Get().Put(icc_profile.internals_->data_, icc_profile);
+  cache.Put(icc_profile.internals_->data_, icc_profile);
 
   return icc_profile;
 }

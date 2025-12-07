@@ -19,6 +19,9 @@ namespace policy {
 
 namespace {
 
+// The maximum input size the fuzzer accepts.
+constexpr size_t kMaxInputSize = 100 * 1000;
+
 // Holds the state and performs initialization that's shared across fuzzer runs.
 struct Environment {
   Environment() {
@@ -69,12 +72,17 @@ void TestMasking(const Environment& env, const base::Value& parsed_json) {
 // Fuzzer for methods of the `Schema` class.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
+  if (size > kMaxInputSize) {
+    // Avoid spurious timeouts on exceedingly large inputs.
+    return 0;
+  }
 
   const std::string data_string(reinterpret_cast<const char*>(data), size);
 
   TestParsing(env, data_string);
 
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(data_string);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(data_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (parsed_json) {
     TestValidation(env, *parsed_json);
     TestMasking(env, *parsed_json);

@@ -10,16 +10,16 @@
 
 namespace blink {
 
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 
 // Exported for testing only.
-CORE_EXPORT uint32_t AnchorElementId(const HTMLAnchorElement& element);
+CORE_EXPORT uint32_t AnchorElementId(const HTMLAnchorElementBase& element);
 
 // Returns null if the given element should not be evaluated.
 // Exported for testing only.
 CORE_EXPORT
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
-    const HTMLAnchorElement&);
+    const HTMLAnchorElementBase&);
 
 }  // namespace blink
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/data_url.h"
 #include "net/base/ip_address.h"
@@ -16,7 +17,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -38,8 +38,7 @@ getNetPrivateRegistryFilter(
   // There are only two network_utils::PrivateRegistryFilter enum entries, so
   // we should never reach this point. However, we must have a default return
   // value to avoid a compiler error.
-  NOTREACHED_IN_MIGRATION();
-  return net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -48,20 +47,21 @@ namespace blink {
 
 namespace network_utils {
 
-bool IsReservedIPAddress(const String& host) {
+bool IsReservedIPAddress(const StringView& host) {
   net::IPAddress address;
-  StringUTF8Adaptor utf8(host);
+  StringUtf8Adaptor utf8(host);
   if (!net::ParseURLHostnameToAddress(utf8.AsStringView(), &address)) {
     return false;
   }
   return !address.IsPubliclyRoutable();
 }
 
-String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
-  StringUTF8Adaptor host_utf8(host);
+String GetDomainAndRegistry(const StringView& host,
+                            PrivateRegistryFilter filter) {
+  StringUtf8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       host_utf8.AsStringView(), getNetPrivateRegistryFilter(filter));
-  return String(domain.data(), domain.length());
+  return String(domain);
 }
 
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
@@ -82,23 +82,23 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
   if (result != net::OK)
     return std::make_tuple(result, ResourceResponse(), nullptr);
 
-  auto buffer = SharedBuffer::Create(data_string.data(), data_string.size());
+  auto buffer = SharedBuffer::Create(data_string);
   // The below code is the same as in
   // `CreateResourceForTransparentPlaceholderImage()`.
   ResourceResponse response;
   response.SetHttpStatusCode(200);
   response.SetHttpStatusText(AtomicString("OK"));
   response.SetCurrentRequestUrl(url);
-  response.SetMimeType(WebString::FromUTF8(utf8_mime_type));
+  response.SetMimeType(AtomicString(String::FromUTF8(utf8_mime_type)));
   response.SetExpectedContentLength(buffer->size());
-  response.SetTextEncodingName(WebString::FromUTF8(utf8_charset));
+  response.SetTextEncodingName(AtomicString(String::FromUTF8(utf8_charset)));
 
   size_t iter = 0;
   std::string name;
   std::string value;
   while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-    response.AddHttpHeaderField(WebString::FromLatin1(name),
-                                WebString::FromLatin1(value));
+    response.AddHttpHeaderField(AtomicString(base::as_byte_span(name)),
+                                AtomicString(base::as_byte_span(value)));
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
@@ -168,12 +168,12 @@ bool IsCertificateTransparencyRequiredError(int error_code) {
 }
 
 String GenerateAcceptLanguageHeader(const String& lang) {
-  return WebString::FromUTF8(
+  return String::FromUTF8(
       net::HttpUtil::GenerateAcceptLanguageHeader(lang.Utf8()));
 }
 
 String ExpandLanguageList(const String& lang) {
-  return WebString::FromUTF8(net::HttpUtil::ExpandLanguageList(lang.Utf8()));
+  return String::FromUTF8(net::HttpUtil::ExpandLanguageList(lang.Utf8()));
 }
 
 Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
@@ -186,8 +186,7 @@ Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
                                   &had_charset, &boundary);
   base::TrimString(boundary, " \"", &boundary);
   Vector<char> result;
-  result.Append(boundary.data(),
-                base::checked_cast<wtf_size_t>(boundary.size()));
+  result.AppendSpan(base::span(boundary));
   return result;
 }
 

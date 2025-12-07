@@ -28,15 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/down_sampler.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
@@ -111,15 +107,16 @@ void DownSampler::Process(const float* source_p,
   DCHECK_EQ(input_buffer_.size(), source_frames_to_process * 2);
   DCHECK_LE(half_size, source_frames_to_process);
 
-  float* input_p = input_buffer_.Data() + source_frames_to_process;
-  memcpy(input_p, source_p, sizeof(float) * source_frames_to_process);
+  float* input_p = UNSAFE_TODO(input_buffer_.Data() + source_frames_to_process);
+  UNSAFE_TODO(
+      memcpy(input_p, source_p, sizeof(float) * source_frames_to_process));
 
   // Copy the odd sample-frames from sourceP, delayed by one sample-frame
   // (destination sample-rate) to match shifting forward in time in
   // m_reducedKernel.
   float* odd_samples_p = temp_buffer_.Data();
   for (unsigned i = 0; i < dest_frames_to_process; ++i) {
-    odd_samples_p[i] = *((input_p - 1) + i * 2);
+    UNSAFE_TODO(odd_samples_p[i]) = *(UNSAFE_TODO((input_p - 1) + i * 2));
   }
 
   // Actually process oddSamplesP with m_reducedKernel for efficiency.
@@ -133,12 +130,13 @@ void DownSampler::Process(const float* source_p,
 
   // Sum into the destination.
   for (unsigned i = 0; i < dest_frames_to_process; ++i) {
-    dest_p[i] += 0.5 * *((input_p - half_size) + i * 2);
+    UNSAFE_TODO(dest_p[i]) +=
+        0.5 * *(UNSAFE_TODO((input_p - half_size) + i * 2));
   }
 
   // Copy 2nd half of input buffer to 1st half.
-  memcpy(input_buffer_.Data(), input_p,
-         sizeof(float) * source_frames_to_process);
+  UNSAFE_TODO(memcpy(input_buffer_.Data(), input_p,
+                     sizeof(float) * source_frames_to_process));
 }
 
 void DownSampler::Reset() {

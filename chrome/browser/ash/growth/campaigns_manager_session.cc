@@ -5,28 +5,39 @@
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -39,19 +50,69 @@ namespace {
 
 CampaignsManagerSession* g_instance = nullptr;
 
-bool IsWebBrowserAppId(const std::string& app_id) {
-  return app_id == app_constants::kChromeAppId ||
-         app_id == app_constants::kAshDebugBrowserAppId ||
-         app_id == app_constants::kLacrosAppId;
+Profile* g_profile_for_testing = nullptr;
+
+// The time to trigger delayed campaigns.
+constexpr base::TimeDelta kTimeToTriggerDelayedCampaigns = base::Minutes(5);
+
+Profile* GetProfile() {
+  if (g_profile_for_testing) {
+    return g_profile_for_testing;
+  }
+
+  return ProfileManager::GetActiveUserProfile();
+}
+
+AccountId GetAccountId() {
+  return CHECK_DEREF(ash::AnnotatedAccountId::Get(GetProfile()));
+}
+
+bool IsEligible() {
+  Profile* profile = GetProfile();
+
+  if (!profile) {
+    // Records metrics when profile is nullptr.
+    // TODO: b/367998596 - Change this to CHECK(profile).
+    // In the test ExtensionCrxInstallerTest.KioskOnlyTest, the call sequences
+    // are this:
+    // 1. CampaignsManagerSession::OnSessionStateChanged().
+    // 2. The IsEligible() returns true, the code continues.
+    // 3. Add a callback when the device owner is set: OnOwnershipDetermined().
+    // 4. In OnOwnershipDetermined(), load the campaigns.
+    // 5. When the campaigns are loaded, call MaybeTriggerRuntimeCampaigns().
+    // 6. Which calls IsEligible() again, and hits the CHECK(profile).
+    // The profile becames nullptr during steps 2-6.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNullptrProfile);
+    return false;
+  }
+
+  // TODO(b/320789239): Enable for unicorn users.
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    // Only enabled for consumer session for now.
+    // Demo Mode session is handled separately at `DemoSession`.
+    return false;
+  }
+
+  // TODO: b/341328441 - Enable Growth Framework on guest mode.
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool IsWebBrowserAppId(std::string_view app_id) {
+  return app_id == app_constants::kChromeAppId;
 }
 
 bool IsAppVisible(const apps::InstanceUpdate& update) {
-  return (update.State() & apps::InstanceState::kVisible);
+  return update.State() & apps::InstanceState::kVisible;
 }
 
 bool IsAppActiveAndVisible(const apps::InstanceUpdate& update) {
-  return (IsAppVisible(update) &&
-          (update.State() & apps::InstanceState::kActive));
+  return IsAppVisible(update) &&
+         (update.State() & apps::InstanceState::kActive);
 }
 
 std::optional<growth::ActionType> GetActionTypeBySlot(growth::Slot slot) {
@@ -63,29 +124,43 @@ std::optional<growth::ActionType> GetActionTypeBySlot(growth::Slot slot) {
     return growth::ActionType::kShowNudge;
   }
 
+  if (slot == growth::Slot::kDryRun) {
+    return growth::ActionType::kDryRun;
+  }
+
   return std::nullopt;
 }
 
-std::optional<std::string> GetAppGroupId() {
+std::string_view GetAppGroupId() {
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  auto app_id = campaigns_manager->GetOpenedAppId();
-  if (IsWebBrowserAppId(app_id)) {
-    // For web browser, get group id by active url.
-    auto active_url = campaigns_manager->GetActiveUrl();
-    return growth::GetAppGroupId(active_url);
+  const auto app_id = campaigns_manager->GetOpenedAppId();
+  return IsWebBrowserAppId(app_id)
+             ? growth::GetAppGroupId(campaigns_manager->GetActiveUrl())
+             : growth::GetAppGroupId(app_id);
+}
+
+base::TimeDelta GetTimeToTriggerDelayedCampaigns() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          ash::switches::kGrowthCampaignsDelayedTriggerTimeInSecs)) {
+    const auto& value = command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsDelayedTriggerTimeInSecs);
+
+    double seconds;
+    CHECK(base::StringToDouble(value, &seconds));
+    return base::Seconds(seconds);
   }
 
-  // For non web browser, get group id by app id.
-  return growth::GetAppGroupId(app_id);
+  return kTimeToTriggerDelayedCampaigns;
 }
 
 void MaybeTriggerSlot(growth::Slot slot) {
   const auto action_type = GetActionTypeBySlot(slot);
   if (!action_type) {
-    LOG(ERROR) << "Invalid: no supported action type for slot "
-               << static_cast<int>(action_type.value());
+    CAMPAIGNS_LOG(ERROR) << "Invalid: no supported action type for slot "
+                         << static_cast<int>(action_type.value());
     return;
   }
 
@@ -100,7 +175,12 @@ void MaybeTriggerSlot(growth::Slot slot) {
 
   auto campaign_id = growth::GetCampaignId(campaign);
   if (!campaign_id) {
-    LOG(ERROR) << "Invalid: Missing campaign id.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid: Missing campaign id.";
+    return;
+  }
+
+  if (action_type == growth::ActionType::kDryRun) {
+    // Skip rendering for dry run.
     return;
   }
 
@@ -115,46 +195,24 @@ void MaybeTriggerSlot(growth::Slot slot) {
                                    action_type.value(), payload);
 }
 
-void MaybeTriggerCampaignsOnEvent(const std::string& event) {
-  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
+void MaybeTriggerRuntimeCampaigns(growth::TriggerType type,
+                                  std::string_view event = std::string_view()) {
+  // We need this for trigger points that are not managed by
+  // `CampaignsManagerSession`, e.g: `MaybeTriggerCampaignsOnEvent()`.
+  if (!IsEligible()) {
     return;
   }
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = event;
+  growth::Trigger trigger(type);
+  trigger.events = {std::string(event)};
   campaigns_manager->SetTrigger(std::move(trigger));
 
   MaybeTriggerSlot(growth::Slot::kNudge);
   MaybeTriggerSlot(growth::Slot::kNotification);
-}
-
-void MaybeTriggerCampaignsWhenAppOpened() {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  auto app_group_id = GetAppGroupId();
-
-  // If `app_group_id` is defined, record the `event` and trigger campaigns
-  // based on the trigger `event`. An `app_group_id` is used to configurate how
-  // often, i.e. the interval, to show the nudges.
-  if (app_group_id) {
-    campaigns_manager->RecordEventForTargeting(growth::CampaignEvent::kEvent,
-                                               app_group_id.value());
-    MaybeTriggerCampaignsOnEvent(app_group_id.value());
-  }
-
-  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
-    return;
-  }
-
-  growth::Trigger trigger(growth::TriggerType::kAppOpened);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
+  MaybeTriggerSlot(growth::Slot::kDryRun);
 }
 
 void MaybeTriggerCampaignsWhenCampaignsLoaded() {
@@ -162,65 +220,61 @@ void MaybeTriggerCampaignsWhenCampaignsLoaded() {
     return;
   }
 
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kCampaignsLoaded);
+}
 
-  growth::Trigger trigger(growth::TriggerType::kCampaignsLoaded);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
+void MaybeTriggerDelayedCampaigns() {
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kDelayedOneShotTimer);
 }
 
 // The app_id is optional and only required if the browser type is app.
 content::WebContents* FindActiveWebContent(
-    const Profile* profile,
-    Browser::Type browser_type,
+    const AccountId& account_id,
+    ash::BrowserType browser_type,
     const webapps::AppId& app_id = std::string()) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (browser->type() != browser_type) {
-      continue;
-    }
-    if (browser->profile() != profile) {
-      continue;
-    }
-    // For web app type, it must match the app_id.
-    if (browser_type == Browser::TYPE_APP &&
-        !web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-      continue;
-    }
+  content::WebContents* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.IsAttemptingToClose() || browser.IsClosing()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser.GetType() != browser_type) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (account_id != browser.GetAccountId()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        // For web app type, it must match the app_id.
+        if (browser_type == ash::BrowserType::kApp &&
+            (!browser.IsWebApp() || browser.GetAppId() != app_id)) {
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    const auto* tab_strip_model = browser->tab_strip_model();
-    if (!tab_strip_model) {
-      LOG(ERROR) << "No tab_strip_model.";
-      continue;
-    }
+        auto* active_web_contents = browser.GetActiveWebContents();
+        if (!active_web_contents) {
+          CAMPAIGNS_LOG(ERROR) << "No active web contents.";
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    auto* active_web_contents = tab_strip_model->GetActiveWebContents();
-    if (!active_web_contents) {
-      LOG(ERROR) << "No active web contents.";
-      continue;
-    }
-
-    return active_web_contents;
-  }
-  return nullptr;
+        result = active_web_contents;
+        return ash::BrowserController::kBreakIteration;
+      });
+  return result;
 }
 
-const GURL FindActiveWebAppUrl(Profile* profile, const webapps::AppId& app_id) {
+const GURL FindActiveWebAppUrl(const AccountId& account_id,
+                               const webapps::AppId& app_id) {
   auto* active_web_contents =
-      FindActiveWebContent(profile, Browser::TYPE_APP, app_id);
+      FindActiveWebContent(account_id, ash::BrowserType::kApp, app_id);
   if (!active_web_contents) {
     return GURL::EmptyGURL();
   }
   return active_web_contents->GetURL();
 }
 
-content::WebContents* FindActiveTabWebContent(Profile* profile) {
-  return FindActiveWebContent(profile, Browser::TYPE_NORMAL);
+content::WebContents* FindActiveTabWebContent(const AccountId& account_id) {
+  return FindActiveWebContent(account_id, ash::BrowserType::kNormal);
 }
 
 std::optional<apps::AppType> GetAppType(const std::string& app_id) {
@@ -234,46 +288,36 @@ std::optional<apps::AppType> GetAppType(const std::string& app_id) {
   return cache->GetAppType(app_id);
 }
 
-// Returns current active browser. If there's no active browser, return nullptr.
-Browser* GetActiveBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->profile()->IsOffTheRecord() ||
-        !browser->window()->IsVisible()) {
-      continue;
-    }
-
-    if (browser->window()->IsActive()) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-
 bool IsSystemWebApp(Profile* profile, const webapps::AppId& app_id) {
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::Get(profile);
   if (!swa_manager) {
-    CHECK_IS_TEST();
+    // `swa_manager` might be nullptr in tests and during kiosk mode.
     return false;
   }
   return swa_manager->IsSystemWebApp(app_id);
 }
 
 bool HasValidPwaBrowserForAppId(const std::string& app_id) {
-  auto* browser = GetActiveBrowser();
-
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
   if (!browser) {
-    LOG(ERROR) << "No browser window";
     return false;
   }
 
-  if (browser->type() != Browser::TYPE_APP) {
-    LOG(ERROR) << "Not pwa browser type";
+  if (browser->IsOffTheRecord() || !browser->IsActive()) {
+    CAMPAIGNS_LOG(ERROR) << "No browser window";
     return false;
   }
 
-  if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-    LOG(ERROR) << "Browser belongs to a different app";
+  if (browser->GetType() != ash::BrowserType::kApp) {
+    CAMPAIGNS_LOG(ERROR) << "Not pwa browser type";
+    return false;
+  }
+
+  std::optional<webapps::AppId> browser_app_id = browser->GetAppId();
+  if (!browser->IsWebApp() || browser_app_id != app_id) {
+    CAMPAIGNS_LOG(ERROR) << "Browser belongs to a different app";
     return false;
   }
 
@@ -308,15 +352,28 @@ CampaignsManagerSession::CampaignsManagerSession() {
     session_manager_observation_.Observe(session_manager);
     OnSessionStateChanged();
   }
+
+  // Shell is not available in unit tests.
+  auto* power_manager_client = chromeos::PowerManagerClient::Get();
+  if (power_manager_client && ash::Shell::HasInstance()) {
+    shell_observer_.Observe(ash::Shell::Get());
+    power_manager_client_observer_.Observe(power_manager_client);
+  }
 }
 
 CampaignsManagerSession::~CampaignsManagerSession() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  g_profile_for_testing = nullptr;
   SetCampaignManagerPrefService(nullptr);
 }
 
 void CampaignsManagerSession::OnSessionStateChanged() {
+  // Stop the timer to avoid triggering campaigns if the session is not active.
+  if (delayed_timer_.IsRunning()) {
+    delayed_timer_.Stop();
+  }
+
   if (session_manager::SessionManager::Get()->session_state() ==
       session_manager::SessionState::LOCKED) {
     if (scoped_observation_.IsObserving()) {
@@ -335,6 +392,7 @@ void CampaignsManagerSession::OnSessionStateChanged() {
     return;
   }
 
+  RecordSessionUnlockEvent();
   SetCampaignManagerPrefService(GetProfile());
 
   ash::OwnerSettingsServiceAsh* service =
@@ -346,8 +404,26 @@ void CampaignsManagerSession::OnSessionStateChanged() {
   } else {
     // TODO: b/338085893 - Add metric to track the case that settings service
     // is not available at this point.
-    LOG(ERROR) << "Owner settings service unavailable for the profile.";
+    CAMPAIGNS_LOG(ERROR)
+        << "Owner settings service unavailable for the profile.";
   }
+}
+
+void CampaignsManagerSession::OnShellDestroying() {
+  // Observe shell destroying as indicator of power manager destroying event if
+  // this happens before campaign manager session is destructed.
+  power_manager_client_observer_.Reset();
+  shell_observer_.Reset();
+}
+
+void CampaignsManagerSession::SuspendDone(base::TimeDelta sleep_duration) {
+  // Do not record event when the session is not active, such as lock screen.
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
+  RecordSessionUnlockEvent();
 }
 
 void CampaignsManagerSession::OnInstanceUpdate(
@@ -365,15 +441,13 @@ void CampaignsManagerSession::OnInstanceUpdate(
   auto app_id = update.AppId();
   auto app_type = GetAppType(app_id);
   if (!app_type) {
-    LOG(ERROR) << "Invalid app type for " << app_id;
+    CAMPAIGNS_LOG(ERROR) << "Invalid app type for " << app_id;
     return;
   }
 
   switch (app_type.value()) {
     case apps::AppType::kUnknown:
-      // e.g Ash debug browser.
       break;
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kChromeApp:
       HandleWebBrowserInstanceUpdate(update);
       break;
@@ -402,6 +476,15 @@ void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
   }
 }
 
+void CampaignsManagerSession::MaybeTriggerCampaignsOnEvent(
+    std::string_view event) {
+  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
+    return;
+  }
+
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kEvent, event);
+}
+
 void CampaignsManagerSession::PrimaryPageChanged(
     const content::WebContents* web_contents) {
   auto* campaigns_manager = growth::CampaignsManager::Get();
@@ -419,7 +502,7 @@ void CampaignsManagerSession::PrimaryPageChanged(
   // 2. While `url1` is loading, open a "tab 2" and load the same URL `url1`
   // 3. The nudge triggered twice - one by the inactive "tab 1" and one by the
   // active "tab 2".
-  auto* active_tab_web_contents = FindActiveTabWebContent(GetProfile());
+  auto* active_tab_web_contents = FindActiveTabWebContent(GetAccountId());
   if (active_tab_web_contents != web_contents) {
     return;
   }
@@ -430,33 +513,7 @@ void CampaignsManagerSession::PrimaryPageChanged(
 }
 
 void CampaignsManagerSession::SetProfileForTesting(Profile* profile) {
-  profile_for_testing_ = profile;
-}
-
-Profile* CampaignsManagerSession::GetProfile() {
-  if (profile_for_testing_) {
-    return profile_for_testing_;
-  }
-
-  return ProfileManager::GetActiveUserProfile();
-}
-
-bool CampaignsManagerSession::IsEligible() {
-  Profile* profile = GetProfile();
-  CHECK(profile);
-  // TODO(b/320789239): Enable for unicorn users.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    // Only enabled for consumer session for now.
-    // Demo Mode session is handled separately at `DemoSession`.
-    return false;
-  }
-
-  // TODO: b/341328441 - Enable Growth Framework on guest mode.
-  if (profile->IsGuestSession()) {
-    return false;
-  }
-
-  return true;
+  g_profile_for_testing = profile;
 }
 
 void CampaignsManagerSession::SetupWindowObserver() {
@@ -493,6 +550,12 @@ void CampaignsManagerSession::OnLoadCampaignsCompleted() {
   }
 
   MaybeTriggerCampaignsWhenCampaignsLoaded();
+  StartDelayedTimer();
+}
+
+void CampaignsManagerSession::StartDelayedTimer() {
+  delayed_timer_.Start(FROM_HERE, GetTimeToTriggerDelayedCampaigns(),
+                       base::BindOnce(&MaybeTriggerDelayedCampaigns));
 }
 
 void CampaignsManagerSession::CacheAppOpenContext(
@@ -546,7 +609,7 @@ void CampaignsManagerSession::HandleWebBrowserInstanceUpdate(
   // Non web browser app such as text editor will be handled like default
   // app type.
   if (!IsWebBrowserAppId(app_id)) {
-    LOG(ERROR) << "Not a web broswer: " << app_id;
+    CAMPAIGNS_LOG(ERROR) << "Not a web broswer: " << app_id;
     HandleAppInstanceUpdate(update);
     return;
   }
@@ -585,11 +648,11 @@ void CampaignsManagerSession::HandlePwaInstanceUpdate(
   // mismatch.
   auto app_id = update.AppId();
   if (!HasValidPwaBrowserForAppId(app_id)) {
-    LOG(ERROR) << "Invalid web app browser";
+    CAMPAIGNS_LOG(ERROR) << "Invalid web app browser";
     return;
   }
 
-  CacheAppOpenContext(update, FindActiveWebAppUrl(GetProfile(), app_id));
+  CacheAppOpenContext(update, FindActiveWebAppUrl(GetAccountId(), app_id));
   MaybeTriggerCampaignsWhenAppOpened();
 }
 
@@ -604,4 +667,32 @@ void CampaignsManagerSession::HandleAppInstanceDestruction(
     return;
   }
   ClearAppOpenContext();
+}
+
+void CampaignsManagerSession::MaybeTriggerCampaignsWhenAppOpened() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  // If `app_group_id` is defined, record the `event` and trigger campaigns
+  // based on the trigger `event`. An `app_group_id` is used to configurate how
+  // often, i.e. the interval, to show the nudges.
+  if (const std::string_view app_group_id = GetAppGroupId();
+      !app_group_id.empty()) {
+    campaigns_manager->RecordEvent(
+        GetEventName(growth::CampaignEvent::kEvent, app_group_id));
+    MaybeTriggerCampaignsOnEvent(app_group_id);
+  }
+
+  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+    return;
+  }
+
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kAppOpened);
+}
+
+void CampaignsManagerSession::RecordSessionUnlockEvent() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  campaigns_manager->RecordEvent(growth::kGrowthCampaignsEventSessionUnlock);
 }

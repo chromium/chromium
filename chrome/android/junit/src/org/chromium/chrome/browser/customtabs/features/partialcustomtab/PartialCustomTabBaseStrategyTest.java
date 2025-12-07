@@ -12,10 +12,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,13 +29,13 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 @Config(manifest = Config.NONE)
 public class PartialCustomTabBaseStrategyTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ActivityManager mActivityManager;
     @Mock PackageManager mPackageManager;
     @Mock private Context mContext;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mContext.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
     }

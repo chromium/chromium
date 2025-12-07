@@ -19,6 +19,7 @@
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
+#include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -28,11 +29,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/bluetooth_delegate_impl.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -66,16 +68,7 @@
 
 namespace {
 
-using ::device::BluetoothAdapter;
 using ::device::BluetoothGattCharacteristic;
-using ::device::BluetoothGattNotifySession;
-using ::device::BluetoothGattService;
-using ::device::BluetoothRemoteGattCharacteristic;
-using ::device::BluetoothRemoteGattService;
-using ::device::BluetoothUUID;
-using ::device::MockBluetoothGattCharacteristic;
-using ::device::MockBluetoothGattNotifySession;
-using ::device::MockBluetoothGattService;
 
 constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
 constexpr char kDeviceAddress2[] = "00:00:00:00:00:01";
@@ -88,335 +81,6 @@ const device::BluetoothUUID kHeartRateMeasurementUUID(
     kHeartRateMeasurementUUIDString);
 
 constexpr char kExampleUrl[] = "https://example.com";
-
-class FakeBluetoothAdapter
-    : public testing::NiceMock<device::MockBluetoothAdapter> {
- public:
-  FakeBluetoothAdapter() = default;
-
-  // Move-only class
-  FakeBluetoothAdapter(const FakeBluetoothAdapter&) = delete;
-  FakeBluetoothAdapter& operator=(const FakeBluetoothAdapter&) = delete;
-
-  void SetIsPresent(bool is_present) { is_present_ = is_present; }
-
-  void SimulateDeviceAdvertisementReceived(
-      const std::string& device_address,
-      const std::optional<std::string>& advertisement_name =
-          std::nullopt) const {
-    for (auto& observer : observers_) {
-      observer.DeviceAdvertisementReceived(
-          device_address, /*device_name=*/std::nullopt, advertisement_name,
-          /*rssi=*/std::nullopt, /*tx_power=*/std::nullopt,
-          /*appearance=*/std::nullopt,
-          /*advertised_uuids=*/{}, /*service_data_map=*/{},
-          /*manufacturer_data_map=*/{});
-    }
-  }
-
-  // device::BluetoothAdapter implementation:
-  void AddObserver(device::BluetoothAdapter::Observer* observer) override {
-    device::BluetoothAdapter::AddObserver(observer);
-  }
-
-  bool IsPresent() const override { return is_present_; }
-
-  bool IsPowered() const override { return true; }
-
-  device::BluetoothAdapter::ConstDeviceList GetDevices() const override {
-    device::BluetoothAdapter::ConstDeviceList devices;
-    for (const auto& it : mock_devices_)
-      devices.push_back(it.get());
-    return devices;
-  }
-
-  device::BluetoothDevice* GetDevice(const std::string& address) override {
-    for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address)
-        return it.get();
-    }
-    return nullptr;
-  }
-
-  void StartScanWithFilter(
-      std::unique_ptr<device::BluetoothDiscoveryFilter> filter,
-      base::OnceCallback<void(/*is_error*/ bool,
-                              device::UMABluetoothDiscoverySessionOutcome)>
-          callback) override {
-    std::move(callback).Run(
-        /*is_error=*/false,
-        device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
-  }
-
- protected:
-  ~FakeBluetoothAdapter() override = default;
-
-  bool is_present_ = true;
-};
-
-class FakeBluetoothGattCharacteristic
-    : public testing::NiceMock<MockBluetoothGattCharacteristic> {
- public:
-  FakeBluetoothGattCharacteristic(MockBluetoothGattService* service,
-                                  const std::string& identifier,
-                                  const BluetoothUUID& uuid,
-                                  Properties properties,
-                                  Permissions permissions)
-      : testing::NiceMock<MockBluetoothGattCharacteristic>(service,
-                                                           identifier,
-                                                           uuid,
-                                                           properties,
-                                                           permissions),
-        value_({1}) {}
-
-  // Move-only class
-  FakeBluetoothGattCharacteristic(const FakeBluetoothGattCharacteristic&) =
-      delete;
-  FakeBluetoothGattCharacteristic operator=(
-      const FakeBluetoothGattCharacteristic&) = delete;
-
-  void ReadRemoteCharacteristic(ValueCallback callback) override {
-    if (!(GetProperties() & BluetoothGattCharacteristic::PROPERTY_READ)) {
-      std::move(callback).Run(
-          BluetoothGattService::GattErrorCode::kNotPermitted,
-          std::vector<uint8_t>());
-      return;
-    }
-    if (defer_read_until_notification_start_) {
-      DCHECK(!deferred_read_callback_);
-      deferred_read_callback_ = std::move(callback);
-      return;
-    }
-    std::move(callback).Run(/*error_code=*/std::nullopt, value_);
-  }
-
-  void StartNotifySession(NotifySessionCallback callback,
-                          ErrorCallback error_callback) override {
-    if (!(GetProperties() & BluetoothGattCharacteristic::PROPERTY_NOTIFY)) {
-      std::move(error_callback)
-          .Run(BluetoothGattService::GattErrorCode::kNotPermitted);
-      return;
-    }
-    auto fake_notify_session =
-        std::make_unique<testing::NiceMock<MockBluetoothGattNotifySession>>(
-            GetWeakPtr());
-    active_notify_sessions_.insert(fake_notify_session->unique_id());
-
-    if (deferred_read_callback_) {
-      // A new value as a result of calling readValue().
-      std::move(deferred_read_callback_)
-          .Run(/*error_code=*/std::nullopt, value_);
-    }
-
-    if (emit_value_change_at_notification_start_) {
-      BluetoothAdapter* adapter = GetService()->GetDevice()->GetAdapter();
-      adapter->NotifyGattCharacteristicValueChanged(this, value_);
-
-      // NotifyGattCharacteristicValueChanged(...) posts a task to notify the
-      // renderer of the change. Do the same for |callback| to ensure
-      // StartNotifySession completes after the value change notification is
-      // received.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), std::move(fake_notify_session)));
-    } else {
-      // Complete StartNotifySession normally.
-      std::move(callback).Run(std::move(fake_notify_session));
-    }
-    EXPECT_TRUE(IsNotifying());
-  }
-
-  void StopNotifySession(BluetoothGattNotifySession::Id session,
-                         base::OnceClosure callback) override {
-    EXPECT_TRUE(base::Contains(active_notify_sessions_, session));
-    std::move(callback).Run();
-  }
-
-  bool IsNotifying() const override { return !active_notify_sessions_.empty(); }
-
-  // Do not call the readValue callback until midway through the completion
-  // of the startNotification callback registration.
-  // https://crbug.com/1153426
-  void DeferReadUntilNotificationStart() {
-    defer_read_until_notification_start_ = true;
-  }
-
-  // Possibly trigger value characteristicvaluechanged events on the page
-  // during the setup of startNotifications.
-  // https://crbug.com/1153426.
-  void EmitChangeNotificationAtNotificationStart() {
-    emit_value_change_at_notification_start_ = true;
-  }
-
- private:
-  std::vector<uint8_t> value_;
-  ValueCallback deferred_read_callback_;
-  bool defer_read_until_notification_start_ = false;
-  bool emit_value_change_at_notification_start_ = false;
-  std::set<BluetoothGattNotifySession::Id> active_notify_sessions_;
-};
-
-class FakeBluetoothGattConnection
-    : public testing::NiceMock<device::MockBluetoothGattConnection> {
- public:
-  FakeBluetoothGattConnection(scoped_refptr<device::BluetoothAdapter> adapter,
-                              const std::string& device_address)
-      : testing::NiceMock<device::MockBluetoothGattConnection>(adapter,
-                                                               device_address) {
-  }
-
-  // Move-only class
-  FakeBluetoothGattConnection(const FakeBluetoothGattConnection&) = delete;
-  FakeBluetoothGattConnection operator=(const FakeBluetoothGattConnection&) =
-      delete;
-};
-
-class FakeBluetoothDevice
-    : public testing::NiceMock<device::MockBluetoothDevice> {
- public:
-  FakeBluetoothDevice(device::MockBluetoothAdapter* adapter,
-                      const std::string& address)
-      : testing::NiceMock<device::MockBluetoothDevice>(adapter,
-                                                       /*bluetooth_class=*/0u,
-                                                       /*name=*/"Test Device",
-                                                       address,
-                                                       /*paired=*/true,
-                                                       /*connected=*/true) {}
-
-  void CreateGattConnection(
-      device::BluetoothDevice::GattConnectionCallback callback,
-      std::optional<device::BluetoothUUID> service_uuid =
-          std::nullopt) override {
-    SetConnected(true);
-    gatt_services_discovery_complete_ = true;
-    std::move(callback).Run(
-        std::make_unique<FakeBluetoothGattConnection>(adapter_, GetAddress()),
-        /*error_code=*/std::nullopt);
-  }
-
-  bool IsGattServicesDiscoveryComplete() const override {
-    return gatt_services_discovery_complete_;
-  }
-
-  BluetoothRemoteGattService* GetGattService(
-      const std::string& identifier) const override {
-    return GetMockService(identifier);
-  }
-
-  std::vector<device::BluetoothRemoteGattService*> GetGattServices()
-      const override {
-    return GetMockServices();
-  }
-
-  // Move-only class
-  FakeBluetoothDevice(const FakeBluetoothDevice&) = delete;
-  FakeBluetoothDevice& operator=(const FakeBluetoothDevice&) = delete;
-
- protected:
-  bool gatt_services_discovery_complete_ = false;
-};
-
-class FakeBluetoothChooser : public content::BluetoothChooser {
- public:
-  FakeBluetoothChooser(content::BluetoothChooser::EventHandler event_handler,
-                       const std::optional<std::string>& device_to_select)
-      : event_handler_(event_handler), device_to_select_(device_to_select) {}
-  ~FakeBluetoothChooser() override = default;
-
-  // content::BluetoothChooser implementation:
-  void AddOrUpdateDevice(const std::string& device_id,
-                         bool should_update_name,
-                         const std::u16string& device_name,
-                         bool is_gatt_connected,
-                         bool is_paired,
-                         int signal_strength_level) override {
-    // Select the first device that is added if |device_to_select_| is not
-    // populated.
-    if (!device_to_select_) {
-      event_handler_.Run(content::BluetoothChooserEvent::SELECTED, device_id);
-      return;
-    }
-
-    // Otherwise, select the added device if its device ID matches
-    // |device_to_select_|.
-    if (device_to_select_.value() == device_id) {
-      event_handler_.Run(content::BluetoothChooserEvent::SELECTED, device_id);
-    }
-  }
-
-  // Move-only class
-  FakeBluetoothChooser(const FakeBluetoothChooser&) = delete;
-  FakeBluetoothChooser& operator=(const FakeBluetoothChooser&) = delete;
-
- private:
-  content::BluetoothChooser::EventHandler event_handler_;
-  std::optional<std::string> device_to_select_;
-};
-
-class TestBluetoothDelegate : public permissions::BluetoothDelegateImpl {
- public:
-  TestBluetoothDelegate()
-      : permissions::BluetoothDelegateImpl(
-            std::make_unique<ChromeBluetoothDelegateImplClient>()) {}
-  ~TestBluetoothDelegate() override = default;
-  TestBluetoothDelegate(const TestBluetoothDelegate&) = delete;
-  TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
-
-  void UseRealChooser() {
-    EXPECT_FALSE(device_to_select_.has_value());
-    use_real_chooser_ = true;
-  }
-
-  void SetDeviceToSelect(const std::string& device_address) {
-    EXPECT_FALSE(use_real_chooser_);
-    device_to_select_ = device_address;
-  }
-
- protected:
-  // content::BluetoothDelegate implementation:
-  std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
-      content::RenderFrameHost* frame,
-      const content::BluetoothChooser::EventHandler& event_handler) override {
-    if (use_real_chooser_) {
-      return permissions::BluetoothDelegateImpl::RunBluetoothChooser(
-          frame, event_handler);
-    }
-    return std::make_unique<FakeBluetoothChooser>(event_handler,
-                                                  device_to_select_);
-  }
-
-  std::unique_ptr<content::BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
-      content::RenderFrameHost* frame,
-      const content::BluetoothScanningPrompt::EventHandler& event_handler)
-      override {
-    // Simulate that a prompt was accepted; no actual prompt is needed here.
-    event_handler.Run(content::BluetoothScanningPrompt::Event::kAllow);
-    return nullptr;
-  }
-
- private:
-  std::optional<std::string> device_to_select_;
-  bool use_real_chooser_ = false;
-};
-
-class TestContentBrowserClient : public ChromeContentBrowserClient {
- public:
-  TestContentBrowserClient() = default;
-  ~TestContentBrowserClient() override = default;
-  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
-  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
-
-  TestBluetoothDelegate* bluetooth_delegate() { return &bluetooth_delegate_; }
-
- protected:
-  // ChromeContentBrowserClient:
-  content::BluetoothDelegate* GetBluetoothDelegate() override {
-    return &bluetooth_delegate_;
-  }
-
- private:
-  TestBluetoothDelegate bluetooth_delegate_;
-};
 
 class WebBluetoothTest : public InProcessBrowserTest {
  public:
@@ -460,7 +124,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.host() == "example.com") {
+              if (params->url_request.url.GetHost() == "example.com") {
                 content::URLLoaderInterceptor::WriteResponse(
                     "content/test/data/simple_page.html", params->client.get());
                 return true;
@@ -540,7 +204,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       global_values_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  TestContentBrowserClient browser_client_;
+  BluetoothTestContentBrowserClient browser_client_;
   raw_ptr<content::ContentBrowserClient, AcrossTasksDanglingUntriaged>
       old_browser_client_ = nullptr;
   raw_ptr<FakeBluetoothGattCharacteristic, AcrossTasksDanglingUntriaged>
@@ -600,13 +264,15 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, KillSwitchShouldBlock) {
 
   // Turn on the global kill switch.
   std::map<std::string, std::string> params;
-  params["Bluetooth"] =
-      permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+  params["Bluetooth"] = permissions::ContentSettingPermissionContextBase::
+      kPermissionsKillSwitchBlockedValue;
   base::AssociateFieldTrialParams(
-      permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      permissions::ContentSettingPermissionContextBase::
+          kPermissionsKillSwitchFieldStudy,
       "TestGroup", params);
   base::FieldTrialList::CreateFieldTrial(
-      permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      permissions::ContentSettingPermissionContextBase::
+          kPermissionsKillSwitchFieldStudy,
       "TestGroup");
 
   std::string rejection =
@@ -683,8 +349,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NavigateWithChooserCrossOrigin) {
   waiter->WaitForChange();
   EXPECT_TRUE(waiter->has_shown());
 
-  EXPECT_TRUE(content::ExecJs(web_contents_.get(),
-                              "document.location.href = 'https://google.com'"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://google.com")));
 
   observer.Wait();
   waiter->WaitForChange();
@@ -755,8 +421,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::Value promise_values = js_values.ExtractList();
-  EXPECT_EQ(2U, promise_values.GetList().size());
+  const base::Value::List& promise_values = js_values.ExtractList();
+  EXPECT_EQ(2U, promise_values.size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
 
@@ -874,8 +540,6 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
       InvokeRequestDevice(web_contents_.get());
   content::EvalJsResult inner_device_id = InvokeGetDevices(
       content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
-  ASSERT_TRUE(outer_device_id.value.is_list()) << outer_device_id.value;
-  ASSERT_TRUE(inner_device_id.value.is_list()) << inner_device_id.value;
   EXPECT_EQ(outer_device_id.ExtractList(), inner_device_id.ExtractList());
 
   // If we navigate the main frame to inner.com, it should lose access to the
@@ -906,8 +570,6 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
   content::EvalJsResult inner_device_id = InvokeRequestDevice(
       content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
   content::EvalJsResult outer_device_id = InvokeGetDevices(web_contents_.get());
-  ASSERT_TRUE(outer_device_id.value.is_list()) << outer_device_id.value;
-  ASSERT_TRUE(inner_device_id.value.is_list()) << inner_device_id.value;
   EXPECT_EQ(outer_device_id.ExtractList(), inner_device_id.ExtractList());
 }
 
@@ -1396,31 +1058,29 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
   ~TestWebContentsObserver() override = default;
 
-  void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device) override {
-    ++num_is_connected_to_bluetooth_device_changed_;
-    last_is_connected_to_bluetooth_device_ = is_connected_to_bluetooth_device;
-    if (quit_closure_ && expected_updating_count_ ==
-                             num_is_connected_to_bluetooth_device_changed_) {
+  void OnCapabilityTypesChanged(
+      content::WebContentsCapabilityType capability_type,
+      bool used) override {
+    EXPECT_EQ(capability_type,
+              content::WebContentsCapabilityType::kBluetoothConnected);
+    ++num_capability_types_changed_;
+    last_device_used_ = used;
+    if (quit_closure_ &&
+        expected_updating_count_ == num_capability_types_changed_) {
       std::move(quit_closure_).Run();
     }
   }
 
-  int num_is_connected_to_bluetooth_device_changed() {
-    return num_is_connected_to_bluetooth_device_changed_;
-  }
+  int num_capability_types_changed() { return num_capability_types_changed_; }
 
-  const std::optional<bool>& last_is_connected_to_bluetooth_device() {
-    return last_is_connected_to_bluetooth_device_;
-  }
+  const std::optional<bool>& last_device_used() { return last_device_used_; }
 
-  void clear_last_is_connected_to_bluetooth_device() {
-    last_is_connected_to_bluetooth_device_.reset();
-  }
+  void clear_last_device_used() { last_device_used_.reset(); }
 
   void WaitUntilConnectionIsUpdated(int expected_count) {
-    if (num_is_connected_to_bluetooth_device_changed_ == expected_count)
+    if (num_capability_types_changed_ == expected_count) {
       return;
+    }
     expected_updating_count_ = expected_count;
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -1428,8 +1088,8 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  int num_is_connected_to_bluetooth_device_changed_ = 0;
-  std::optional<bool> last_is_connected_to_bluetooth_device_;
+  int num_capability_types_changed_ = 0;
+  std::optional<bool> last_device_used_;
   int expected_updating_count_;
   base::OnceClosure quit_closure_;
 };
@@ -1457,15 +1117,16 @@ IN_PROC_BROWSER_TEST_F(
 
   observer.WaitUntilConnectionIsUpdated(1);
   // In the active main frame, the connection of Web Bluetooth works.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().has_value());
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().value());
-  observer.clear_last_is_connected_to_bluetooth_device();
+  EXPECT_EQ(observer.num_capability_types_changed(), 1);
+  EXPECT_TRUE(observer.last_device_used().has_value());
+  EXPECT_TRUE(observer.last_device_used().value());
+  observer.clear_last_device_used();
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
   // The prerendering doesn't affect the current scanning.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   content::RenderFrameHost* prerendered_frame_host =
@@ -1478,12 +1139,13 @@ IN_PROC_BROWSER_TEST_F(
       navigator.bluetooth.requestDevice({
           filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
+  EXPECT_THAT(result, content::EvalJsResult::ErrorIs(
+                          ::testing::HasSubstr(kUserGestureError)));
 
   // In the prerendering, the connection of Web Bluetooth is deferred and
   // `observer` doesn't have any update.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
-  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().has_value());
+  EXPECT_EQ(observer.num_capability_types_changed(), 1);
+  EXPECT_FALSE(observer.last_device_used().has_value());
 
   content::RenderFrameDeletedObserver rfh_observer(
       GetWebContents()->GetPrimaryMainFrame());
@@ -1499,9 +1161,9 @@ IN_PROC_BROWSER_TEST_F(
   // During prerendering activation, the connection from the previous
   // RenderFrameHost to Web Bluetooth is closed, while the connection attempt
   // from the prerendering RenderFrameHost was refused.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 2);
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().has_value());
-  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().value());
+  EXPECT_EQ(observer.num_capability_types_changed(), 2);
+  EXPECT_TRUE(observer.last_device_used().has_value());
+  EXPECT_FALSE(observer.last_device_used().value());
 }
 
 }  // namespace

@@ -29,7 +29,6 @@ class CommerceInternalsUI : public CommerceInternalsUIBase,
                               int default_resource)>;
 
   CommerceInternalsUI(content::WebUI* web_ui,
-                      SetupWebUIDataSourceCallback setup_callback,
                       ShoppingService* shopping_service);
   CommerceInternalsUI(const CommerceInternalsUI&) = delete;
   CommerceInternalsUI operator&(const CommerceInternalsUI&) = delete;

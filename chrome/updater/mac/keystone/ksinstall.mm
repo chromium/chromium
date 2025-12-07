@@ -59,7 +59,7 @@ void KSInstallApp::Uninstall(base::OnceCallback<void(int)> callback) {
                                                    : UpdaterScope::kUser);
         if (!keystone_path ||
             !base::DeletePathRecursively(
-                keystone_path->AppendASCII(KEYSTONE_NAME ".bundle"))) {
+                keystone_path->Append(KEYSTONE_NAME ".bundle"))) {
           PLOG(ERROR) << "Couldn't find/delete Keystone path.";
           return false;
         }
@@ -122,7 +122,8 @@ int KSInstallMain(int argc, char* argv[]) {
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
   return MakeKSInstallApp(argc, argv)->Run();
 }
 

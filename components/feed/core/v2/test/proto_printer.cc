@@ -28,7 +28,8 @@ struct IsFieldSetHelper {
   static bool IsSet(const T& v) { return true; }
 };
 template <typename T>
-struct IsFieldSetHelper<T, std::enable_if_t<std::is_scalar<T>::value>> {
+  requires(std::is_scalar_v<T>)
+struct IsFieldSetHelper<T> {
   static bool IsSet(const T& v) { return !!v; }
 };
 template <>

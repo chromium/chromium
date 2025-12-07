@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_incognito_file_delegate.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,8 +55,7 @@ void WriteDataToProducer(
       << "WriteDataToProducer must not be called on the main thread";
 
   auto data_source = std::make_unique<mojo::StringDataSource>(
-      base::span<const char>(reinterpret_cast<const char*>(data->data.data()),
-                             data->data.size()),
+      base::as_chars(base::span(data->data)),
       mojo::StringDataSource::AsyncWritingMode::
           STRING_STAYS_VALID_UNTIL_COMPLETION);
 
@@ -71,10 +66,10 @@ void WriteDataToProducer(
   // the duration of the write.
   producer_raw->Write(
       std::move(data_source),
-      WTF::BindOnce([](std::unique_ptr<mojo::DataPipeProducer>,
-                       scoped_refptr<base::RefCountedData<Vector<uint8_t>>>,
-                       MojoResult) {},
-                    std::move(producer), std::move(data)));
+      blink::BindOnce([](std::unique_ptr<mojo::DataPipeProducer>,
+                         scoped_refptr<base::RefCountedData<Vector<uint8_t>>>,
+                         MojoResult) {},
+                      std::move(producer), std::move(data)));
 }
 
 }  // namespace
@@ -124,7 +119,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
     CHECK_LE(bytes_read, bytes_to_read);
     CHECK_LE(buffer->size(), static_cast<uint64_t>(bytes_to_read));
 
-    memcpy(data.data(), buffer->data(), bytes_to_read);
+    UNSAFE_TODO(memcpy(data.data(), buffer->data(), bytes_to_read));
   } else {
     CHECK_EQ(bytes_read, 0);
   }
@@ -134,7 +129,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
 
 base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
     int64_t offset,
-    const base::span<uint8_t> data) {
+    base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(offset, 0);
 

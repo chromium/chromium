@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -83,8 +85,7 @@ class SiteDataRecorderHeuristics {
 // The SiteDataRecorder decorator is responsible for adorning PageNodes with a
 // SiteDataReader and a SiteDataWriter and for forwarding the event of interest
 // to this writer.
-class SiteDataRecorder : public GraphOwned,
-                         public PageNode::ObserverDefaultImpl {
+class SiteDataRecorder : public GraphOwned, public PageNodeObserver {
  public:
   class Data;
 
@@ -106,11 +107,11 @@ class SiteDataRecorder : public GraphOwned,
   static void SetHeuristicsImplementationForTesting(
       std::unique_ptr<SiteDataRecorderHeuristics> heuristics);
 
-  // GraphOwned implementation:
+  // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnMainFrameUrlChanged(const PageNode* page_node) override;
@@ -157,6 +158,13 @@ class SiteDataRecorder::Data {
   // Convenience accessor.
   static SiteDataReader* GetReaderForPageNode(const PageNode* page_node);
 };
+
+// Invokes `callback` when a fully-loaded SiteDataReader is available for
+// `page_node`. Note that `callback` might never be invoked if no SiteDataReader
+// becomes available (such as if the PageNode never navigates to an origin).
+void WaitForSiteDataReader(
+    base::WeakPtr<PageNode> page_node,
+    base::OnceCallback<void(const SiteDataReader&)> callback);
 
 }  // namespace performance_manager
 

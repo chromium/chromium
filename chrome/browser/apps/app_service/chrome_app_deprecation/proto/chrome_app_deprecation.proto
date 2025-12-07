@@ -1,0 +1,9 @@
+edition = "2023";
+
+package ChromeAppDeprecation;
+
+message DynamicAllowlists {
+  repeated string common_allowlist = 1;
+  repeated string user_installed_allowlist = 2;
+  repeated string kiosk_session_allowlist = 3;
+}

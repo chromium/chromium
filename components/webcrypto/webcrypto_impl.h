@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_WEBCRYPTO_WEBCRYPTO_IMPL_H_
 #define COMPONENTS_WEBCRYPTO_WEBCRYPTO_IMPL_H_
 
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace webcrypto {
 
@@ -31,17 +32,17 @@ class WebCryptoImpl : public blink::WebCrypto {
   void Encrypt(
       const blink::WebCryptoAlgorithm& algorithm,
       const blink::WebCryptoKey& key,
-      blink::WebVector<unsigned char> data,
+      std::vector<unsigned char> data,
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void Decrypt(
       const blink::WebCryptoAlgorithm& algorithm,
       const blink::WebCryptoKey& key,
-      blink::WebVector<unsigned char> data,
+      std::vector<unsigned char> data,
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void Digest(const blink::WebCryptoAlgorithm& algorithm,
-              blink::WebVector<unsigned char> data,
+              std::vector<unsigned char> data,
               blink::WebCryptoResult result,
               scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void GenerateKey(
@@ -52,7 +53,7 @@ class WebCryptoImpl : public blink::WebCrypto {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void ImportKey(
       blink::WebCryptoKeyFormat format,
-      blink::WebVector<unsigned char> key_data,
+      std::vector<unsigned char> key_data,
       const blink::WebCryptoAlgorithm& algorithm,
       bool extractable,
       blink::WebCryptoKeyUsageMask usages,
@@ -65,14 +66,14 @@ class WebCryptoImpl : public blink::WebCrypto {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void Sign(const blink::WebCryptoAlgorithm& algorithm,
             const blink::WebCryptoKey& key,
-            blink::WebVector<unsigned char> data,
+            std::vector<unsigned char> data,
             blink::WebCryptoResult result,
             scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void VerifySignature(
       const blink::WebCryptoAlgorithm& algorithm,
       const blink::WebCryptoKey& key,
-      blink::WebVector<unsigned char> signature,
-      blink::WebVector<unsigned char> data,
+      std::vector<unsigned char> signature,
+      std::vector<unsigned char> data,
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void WrapKey(
@@ -84,7 +85,7 @@ class WebCryptoImpl : public blink::WebCrypto {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void UnwrapKey(
       blink::WebCryptoKeyFormat format,
-      blink::WebVector<unsigned char> wrapped_key,
+      std::vector<unsigned char> wrapped_key,
       const blink::WebCryptoKey& wrapping_key,
       const blink::WebCryptoAlgorithm& unwrap_algorithm,
       const blink::WebCryptoAlgorithm& unwrapped_key_algorithm,
@@ -96,7 +97,7 @@ class WebCryptoImpl : public blink::WebCrypto {
   void DeriveBits(
       const blink::WebCryptoAlgorithm& algorithm,
       const blink::WebCryptoKey& base_key,
-      unsigned int length_bits,
+      std::optional<unsigned int> length_bits,
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
@@ -114,12 +115,11 @@ class WebCryptoImpl : public blink::WebCrypto {
                               blink::WebCryptoKeyType type,
                               bool extractable,
                               blink::WebCryptoKeyUsageMask usages,
-                              const unsigned char* key_data,
-                              unsigned key_data_size,
+                              base::span<const unsigned char> key_data,
                               blink::WebCryptoKey& key) override;
 
   bool SerializeKeyForClone(const blink::WebCryptoKey& key,
-                            blink::WebVector<unsigned char>& key_data) override;
+                            std::vector<unsigned char>& key_data) override;
 };
 
 }  // namespace webcrypto

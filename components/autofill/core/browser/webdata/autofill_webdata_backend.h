@@ -13,12 +13,13 @@ class WebDatabase;
 namespace autofill {
 
 class AutofillWebDataServiceObserverOnDBSequence;
+class AutofillWebDataServiceObserverOnUISequence;
 
-// Interface for doing Autofill work directly on the DB sequence (used by
-// Sync, mostly), without fully exposing the AutofillWebDataBackend to clients.
+// Exposes operations on the Autofill database tables for AutofillWebDataService
+// and the sync bridges.
 class AutofillWebDataBackend {
  public:
-  virtual ~AutofillWebDataBackend() {}
+  virtual ~AutofillWebDataBackend() = default;
 
   // Get a raw pointer to the WebDatabase.
   virtual WebDatabase* GetDatabase() = 0;
@@ -30,6 +31,14 @@ class AutofillWebDataBackend {
   // Remove an observer.
   virtual void RemoveObserver(
       AutofillWebDataServiceObserverOnDBSequence* observer) = 0;
+
+  // Add an observer to be notified of changes on the UI sequence.
+  virtual void AddObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) = 0;
+
+  // Remove an observer.
+  virtual void RemoveObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) = 0;
 
   // Commits the currently open transaction in the database. Should be only used
   // by parties that talk directly to the database and not through the
@@ -65,6 +74,18 @@ class AutofillWebDataBackend {
   // added/removed/updated in the WebDatabase.
   // NOTE: This method is intended to be called from the DB sequence.
   virtual void NotifyOnServerCvcChanged(const ServerCvcChange& change) = 0;
+
+  // Notifies listeners on the DB sequence that an entity instance has been
+  // added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence.
+  virtual void NotifyOnEntityInstanceChanged(
+      const EntityInstanceChange& change) = 0;
+
+  // Notifies listeners on the DB sequence that a server entity instance's
+  // metadata has been added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence.
+  virtual void NotifyOnServerEntityMetadataChanged(
+      const EntityInstanceMetadataChange& change) = 0;
 };
 
 } // namespace autofill

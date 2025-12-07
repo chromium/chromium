@@ -38,8 +38,7 @@ LayerAnimationSequence::LayerAnimationSequence(
 }
 
 LayerAnimationSequence::~LayerAnimationSequence() {
-  for (auto& observer : observers_)
-    observer.DetachedFromSequence(this, true);
+  observers_.Notify(&LayerAnimationObserver::DetachedFromSequence, this, true);
 }
 
 void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
@@ -273,13 +272,11 @@ void LayerAnimationSequence::OnAnimatorDestroyed() {
 
 void LayerAnimationSequence::OnAnimatorAttached(
     LayerAnimationDelegate* delegate) {
-  for (LayerAnimationObserver& observer : observers_)
-    observer.OnAnimatorAttachedToTimeline();
+  observers_.Notify(&LayerAnimationObserver::OnAnimatorAttachedToTimeline);
 }
 
 void LayerAnimationSequence::OnAnimatorDetached() {
-  for (LayerAnimationObserver& observer : observers_)
-    observer.OnAnimatorDetachedFromTimeline();
+  observers_.Notify(&LayerAnimationObserver::OnAnimatorDetachedFromTimeline);
 }
 
 size_t LayerAnimationSequence::size() const {
@@ -295,28 +292,23 @@ LayerAnimationElement* LayerAnimationSequence::FirstElement() const {
 }
 
 void LayerAnimationSequence::NotifyScheduled() {
-  for (auto& observer : observers_)
-    observer.OnLayerAnimationScheduled(this);
+  observers_.Notify(&LayerAnimationObserver::OnLayerAnimationScheduled, this);
 }
 
 void LayerAnimationSequence::NotifyStarted() {
-  for (auto& observer : observers_)
-    observer.OnLayerAnimationStarted(this);
+  observers_.Notify(&LayerAnimationObserver::OnLayerAnimationStarted, this);
 }
 
 void LayerAnimationSequence::NotifyEnded() {
-  for (auto& observer : observers_)
-    observer.OnLayerAnimationEnded(this);
+  observers_.Notify(&LayerAnimationObserver::OnLayerAnimationEnded, this);
 }
 
 void LayerAnimationSequence::NotifyWillRepeat() {
-  for (auto& observer : observers_)
-    observer.OnLayerAnimationWillRepeat(this);
+  observers_.Notify(&LayerAnimationObserver::OnLayerAnimationWillRepeat, this);
 }
 
 void LayerAnimationSequence::NotifyAborted() {
-  for (auto& observer : observers_)
-    observer.OnLayerAnimationAborted(this);
+  observers_.Notify(&LayerAnimationObserver::OnLayerAnimationAborted, this);
 }
 
 LayerAnimationElement* LayerAnimationSequence::CurrentElement() const {

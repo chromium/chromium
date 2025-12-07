@@ -19,7 +19,8 @@ var default_content_settings = {
   'camera': 'ask',
   'automaticDownloads': 'ask',
   'clipboard': 'ask',
-  'autoVerify': 'allow'
+  'autoVerify': 'allow',
+  'sound': 'allow',
 };
 
 var settings = {
@@ -37,7 +38,8 @@ var settings = {
   'camera': 'block',
   // Conditionally enabled. See crbug.com/1501857
   'clipboard': 'block',
-  'automaticDownloads': 'block'
+  'automaticDownloads': 'block',
+  'sound': 'block',
 };
 
 // Settings that do not support site-specific exceptions.

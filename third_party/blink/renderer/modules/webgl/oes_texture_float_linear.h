@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class OESTextureFloatLinear final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -37,7 +39,7 @@ class OESTextureFloatLinear final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit OESTextureFloatLinear(WebGLRenderingContextBase*);
+  OESTextureFloatLinear(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

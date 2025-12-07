@@ -65,6 +65,10 @@ group("icuuc_public") {
   public_deps = [ ":icuuc" ]
 }
 
+group("icui18n_hidden_visibility") {
+  public_deps = [ ":icui18n" ]
+}
+
 shim_headers("icui18n_shim") {
   root_path = "source/i18n"
   headers = [

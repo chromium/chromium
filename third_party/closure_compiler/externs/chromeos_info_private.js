@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,10 +148,3 @@ chrome.chromeosInfoPrivate.set = function(propertyName, propertyValue) {};
  *     as a boolean.
  */
 chrome.chromeosInfoPrivate.isTabletModeEnabled = function(callback) {};
-
-/**
- * Called to request status of lacros browser enabled for primary user.
- * @param {function(boolean): void} callback Returns true if called from within
- *     the Lacros context.
- */
-chrome.chromeosInfoPrivate.isRunningOnLacros = function(callback) {};

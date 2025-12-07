@@ -53,7 +53,7 @@ bool ConvertListToString(const base::Value::List& bytes, std::string* out) {
       if (!value.has_value()) {
         return false;
       }
-      out->push_back(static_cast<char>(value.value()));
+      out->push_back(static_cast<char>(*value));
     }
   }
   return true;
@@ -95,25 +95,25 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
     return false;
   }
 
-  std::optional<base::Value> value = base::JSONReader::Read(message.data());
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      message.data(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value) {
     LOG(WARNING) << "Failed to retrieve data from gnubby-auth message.";
     return true;
   }
 
-  const base::Value::Dict& client_message = value->GetDict();
-  const std::string* type = client_message.FindString(kMessageType);
+  const std::string* type = value->FindString(kMessageType);
   if (!type) {
     LOG(WARNING) << "Invalid gnubby-auth message format.";
     return true;
   }
 
   if (*type == kControlMessage) {
-    ProcessControlMessage(client_message);
+    ProcessControlMessage(*value);
   } else if (*type == kDataMessage) {
-    ProcessDataMessage(client_message);
+    ProcessDataMessage(*value);
   } else if (*type == kErrorMessage) {
-    ProcessErrorMessage(client_message);
+    ProcessErrorMessage(*value);
   } else {
     VLOG(2) << "Unknown gnubby-auth message type: " << type;
   }
@@ -206,14 +206,9 @@ void SecurityKeyExtensionSession::SendMessageToClient(
   }
   request_dict.Set(kDataPayload, std::move(bytes));
 
-  base::Value request(std::move(request_dict));
-
-  std::string request_json;
-  CHECK(base::JSONWriter::Write(request, &request_json));
-
   protocol::ExtensionMessage message;
   message.set_type(kExtensionMessageType);
-  message.set_data(request_json);
+  message.set_data(base::WriteJson(request_dict).value());
 
   client_stub_->DeliverHostMessage(message);
 }

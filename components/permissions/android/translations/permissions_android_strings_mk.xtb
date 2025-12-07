@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Сајтов не може да побара ваша дозвола</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Вклучете Bluetooth<ph name="END_LINK" /> за да овозможите спарување</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> бара дозвола да ги следи вашите раце.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /> додека се скенира за уреди…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> бара дозвола за да пристапи до микрофонот за сајтов.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> сака да скенира за уреди со Bluetooth во близина. Најдени се следниве уреди:</translation>

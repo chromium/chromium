@@ -19,6 +19,7 @@
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace ash {
@@ -111,7 +112,10 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
 
 }  // namespace
 
-SwitchAccessMenuView::SwitchAccessMenuView() = default;
+SwitchAccessMenuView::SwitchAccessMenuView() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
+}
+
 SwitchAccessMenuView::~SwitchAccessMenuView() = default;
 
 void SwitchAccessMenuView::SetActions(std::vector<std::string> actions) {
@@ -153,10 +157,6 @@ int SwitchAccessMenuView::GetBubbleWidthDip() const {
   return (kMaxColumns * SwitchAccessMenuButton::kWidthDip) +
          ((kMaxColumns - 1) * kBubbleMenuPadding) +
          kUnifiedMenuItemPadding.left() + kUnifiedMenuItemPadding.right();
-}
-
-void SwitchAccessMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kMenu;
 }
 
 BEGIN_METADATA(SwitchAccessMenuView)

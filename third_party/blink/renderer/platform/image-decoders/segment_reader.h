@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -38,7 +41,7 @@ class PLATFORM_EXPORT SegmentReader
       scoped_refptr<const SharedBuffer>);
 
   // These versions use thread-safe input, so they are always thread-safe.
-  static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<SkData>);
+  static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<const SkData>);
   static scoped_refptr<SegmentReader> CreateFromROBuffer(
       scoped_refptr<ROBuffer>);
 
@@ -46,17 +49,20 @@ class PLATFORM_EXPORT SegmentReader
   SegmentReader(const SegmentReader&) = delete;
   SegmentReader& operator=(const SegmentReader&) = delete;
   virtual size_t size() const = 0;
-  virtual size_t GetSomeData(const char*& data, size_t position) const = 0;
-  virtual sk_sp<SkData> GetAsSkData() const = 0;
+  // Returns a span of however much data is left in the segment containing the
+  // `position`. If there's no data at the specified `position`, an empty span
+  // is returned.
+  virtual base::span<const uint8_t> GetSomeData(size_t position) const = 0;
+  virtual sk_sp<const SkData> GetAsSkData() const = 0;
   virtual void LockData() {}
   virtual void UnlockData() {}
 
   static sk_sp<SkData> RWBufferCopyAsSkData(RWBuffer::ROIter iter,
                                             size_t available);
-  static size_t RWBufferGetSomeData(RWBuffer::ROIter& iter,
-                                    size_t& position_of_block,
-                                    const char*& data,
-                                    size_t position);
+  static base::span<const uint8_t> RWBufferGetSomeData(
+      RWBuffer::ROIter& iter,
+      size_t& position_of_block,
+      size_t position);
 
  protected:
   friend class ThreadSafeRefCounted<SegmentReader>;

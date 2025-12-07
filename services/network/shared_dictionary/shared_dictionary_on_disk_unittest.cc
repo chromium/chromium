@@ -91,9 +91,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id*/ "", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
   EXPECT_EQ(expected_size, dictionary->size());
   EXPECT_EQ(hash, dictionary->hash());
@@ -110,7 +108,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
       .Run(disk_cache::EntryResult::MakeOpened(entry.release()));
   ASSERT_TRUE(buffer);
   ASSERT_TRUE(read_all_callback);
-  memcpy(buffer->data(), kTestData.c_str(), kTestData.size());
+  buffer->span().copy_prefix_from(base::as_byte_span(kTestData));
   std::move(read_all_callback).Run(base::checked_cast<int>(expected_size));
   EXPECT_TRUE(read_all_finished);
   EXPECT_EQ(kTestData,
@@ -158,9 +156,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
@@ -172,7 +168,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
 
   ASSERT_TRUE(buffer);
   ASSERT_TRUE(read_all_callback);
-  memcpy(buffer->data(), kTestData.c_str(), kTestData.size());
+  buffer->span().copy_prefix_from(base::as_byte_span(kTestData));
   std::move(read_all_callback).Run(base::checked_cast<int>(expected_size));
   EXPECT_TRUE(read_all_finished);
   EXPECT_EQ(kTestData,
@@ -213,15 +209,13 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadData) {
         EXPECT_EQ(1, index);
         EXPECT_EQ(0, offset);
         EXPECT_EQ(base::checked_cast<int>(expected_size), buf_len);
-        memcpy(buf->data(), kTestData.c_str(), kTestData.size());
+        buf->span().copy_prefix_from(base::as_byte_span(kTestData));
         return base::checked_cast<int>(expected_size);
       });
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
@@ -265,7 +259,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
         EXPECT_EQ(1, index);
         EXPECT_EQ(0, offset);
         EXPECT_EQ(base::checked_cast<int>(expected_size), buf_len);
-        memcpy(buf->data(), kTestData.c_str(), kTestData.size());
+        buf->span().copy_prefix_from(base::as_byte_span(kTestData));
         return base::checked_cast<int>(expected_size);
       });
 
@@ -277,9 +271,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   // ReadAll() synchronously returns OK.

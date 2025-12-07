@@ -1,0 +1,37 @@
+caption: Tab group sharing settings
+desc: |-
+  Control whether an entreprise user can access tab group sharing feature in Chrome.
+
+  Tab group sharing feature allows user to share and collaborate in tab groups.
+
+  Setting the policy to 0 or not set, indicates that tab groups can be shared.
+  Setting the policy to 1, indicates that tab groups can not be shared.
+owners:
+- haileywang@google.com
+- file://components/collaboration/OWNERS
+supported_on:
+- android:140-
+- chrome.*:140-
+- chrome_os:140-
+- ios:140-
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+  user_only: true
+type: int-enum
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+items:
+- caption: Use the tab group sharing feature.
+  name: UseTabGroupSharing
+  value: 0
+- caption: Do not use the tab group sharing feature.
+  name: DoNotUseTabGroupSharing
+  value: 1
+default: 0
+example_value: 0
+tags: []

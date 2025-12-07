@@ -24,18 +24,21 @@ class RenderFrameHost;
 // the calls it receives.
 class WebContentsObserverProxy : public WebContentsObserver {
  public:
-  WebContentsObserverProxy(JNIEnv* env, jobject obj, WebContents* web_contents);
+  WebContentsObserverProxy(JNIEnv* env,
+                           const base::android::JavaRef<jobject>& obj,
+                           WebContents* web_contents);
 
   WebContentsObserverProxy(const WebContentsObserverProxy&) = delete;
   WebContentsObserverProxy& operator=(const WebContentsObserverProxy&) = delete;
 
   ~WebContentsObserverProxy() override;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
  private:
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus termination_status) override;
   void DidStartLoading() override;
@@ -57,6 +60,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void DidFinishLoad(RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
+  void OnFirstContentfulPaintInPrimaryMainFrame() override;
   void NavigationEntryCommitted(
       const LoadCommittedDetails& load_details) override;
   void NavigationEntriesDeleted() override;
@@ -77,10 +81,12 @@ class WebContentsObserverProxy : public WebContentsObserver {
                                      bool will_cause_resize) override;
   bool SetToBaseURLForDataURLIfNeeded(GURL* url);
   void ViewportFitChanged(blink::mojom::ViewportFit value) override;
+  void SafeAreaConstraintChanged(bool has_constriant) override;
   void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) override;
   void OnWebContentsFocused(RenderWidgetHost*) override;
   void OnWebContentsLostFocus(RenderWidgetHost*) override;
   void MediaSessionCreated(MediaSession* media_session) override;
+  void WasDiscarded() override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
   GURL base_url_of_last_started_data_url_;

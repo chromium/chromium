@@ -1,8 +1,7 @@
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/image-decoder-utils.js
 
-function testFourColorsDecode(filename, mimeType, options = {}) {
-  var decoder = null;
+async function testFourColorsDecode(filename, mimeType, options = {}) {
   return ImageDecoder.isTypeSupported(mimeType).then(support => {
     assert_implements_optional(
         support, 'Optional codec ' + mimeType + ' not supported.');
@@ -14,8 +13,7 @@ function testFourColorsDecode(filename, mimeType, options = {}) {
 
 // Note: Requiring all data to do YUV decoding is a Chromium limitation, other
 // implementations may support YUV decode with partial ReadableStream data.
-function testFourColorsYuvDecode(filename, mimeType, options = {}) {
-  var decoder = null;
+async function testFourColorsYuvDecode(filename, mimeType, options = {}) {
   return ImageDecoder.isTypeSupported(mimeType).then(support => {
     assert_implements_optional(
         support, 'Optional codec ' + mimeType + ' not supported.');
@@ -95,7 +93,6 @@ promise_test(t => {
   return testFourColorDecodeWithExifOrientation(8, null, /*useYuv=*/ true);
 }, 'Test 4:2:0 JPEG w/ EXIF orientation left-bottom.');
 
-
 promise_test(t => {
   return testFourColorsDecode('four-colors.png', 'image/png');
 }, 'Test PNG image decoding.');
@@ -158,6 +155,66 @@ promise_test(t => {
       {yuvFormat: 'I420', tolerance: 3});
 }, 'Test WEBP image YUV 4:2:0 decoding.');
 
+const FOUR_COLORS_AVIF_HLG_COLOR_SPACE = new VideoColorSpace({
+  primaries: 'bt2020',
+  transfer: 'hlg',
+  matrix: 'bt2020-ncl',
+  fullRange: true,
+});
+promise_test(t => {
+  return testFourColorsYuvDecode(
+      'four-colors-full-range-hlg-420-10bpc.avif', 'image/avif', {
+        yuvFormat: 'I420P10',
+        colorSpace: FOUR_COLORS_AVIF_HLG_COLOR_SPACE,
+        tolerance: 3
+      });
+}, 'Test AVIF image HDR YUV 10-bit 4:2:0 decoding.');
+
+promise_test(t => {
+  return testFourColorsYuvDecode(
+      'four-colors-full-range-hlg-422-10bpc.avif', 'image/avif', {
+        yuvFormat: 'I422P10',
+        colorSpace: FOUR_COLORS_AVIF_HLG_COLOR_SPACE,
+        tolerance: 3
+      });
+}, 'Test AVIF image HDR YUV 10-bit 4:2:2 decoding.');
+
+promise_test(t => {
+  return testFourColorsYuvDecode(
+      'four-colors-full-range-hlg-444-10bpc.avif', 'image/avif', {
+        yuvFormat: 'I444P10',
+        colorSpace: FOUR_COLORS_AVIF_HLG_COLOR_SPACE,
+        tolerance: 3
+      });
+}, 'Test AVIF image HDR YUV 10-bit 4:4:4 decoding.');
+
+promise_test(t => {
+  return testFourColorsYuvDecode(
+      'four-colors-full-range-hlg-420-12bpc.avif', 'image/avif', {
+        yuvFormat: 'I420P12',
+        colorSpace: FOUR_COLORS_AVIF_HLG_COLOR_SPACE,
+        tolerance: 3
+      });
+}, 'Test AVIF image HDR YUV 12-bit 4:2:0 decoding.');
+
+promise_test(t => {
+  return testFourColorsYuvDecode(
+      'four-colors-full-range-hlg-422-12bpc.avif', 'image/avif', {
+        yuvFormat: 'I422P12',
+        colorSpace: FOUR_COLORS_AVIF_HLG_COLOR_SPACE,
+        tolerance: 3
+      });
+}, 'Test AVIF image HDR YUV 12-bit 4:2:2 decoding.');
+
+promise_test(t => {
+  return testFourColorsYuvDecode(
+      'four-colors-full-range-hlg-444-12bpc.avif', 'image/avif', {
+        yuvFormat: 'I444P12',
+        colorSpace: FOUR_COLORS_AVIF_HLG_COLOR_SPACE,
+        tolerance: 3
+      });
+}, 'Test AVIF image HDR YUV 12-bit 4:4:4 decoding.');
+
 promise_test(t => {
   return fetch('four-colors.png').then(response => {
     let decoder = new ImageDecoder({data: response.body, type: 'junk/type'});
@@ -199,6 +256,7 @@ promise_test(t => {
           return response.arrayBuffer();
         })
         .then(buffer => {
+          // IDAT chunk starts at byte 83 (0x53).
           decoder =
               new ImageDecoder({data: buffer.slice(0, 100), type: 'image/png'});
           return decoder.tracks.ready;
@@ -207,14 +265,28 @@ promise_test(t => {
           // Queue two decodes to ensure index verification and decoding are
           // properly ordered.
           p1 = decoder.decode({frameIndex: 0});
-          return promise_rejects_js(
-              t, RangeError, decoder.decode({frameIndex: 1}));
+          return promise_rejects_dom(
+              // Requesting to decode frame #1 would normally be expected to
+              // return RangeError (see 'Test out of range index returns
+              // RangeError' above).  Here the decoder fails earlier because
+              // `p1` is requesting to decode frame #0 and the PNG has been
+              // truncated to the first 100 bytes.  This is why here we expect
+              // EncodingError instead.
+              //
+              // Also note that in this test the data source is an ArrayBuffer.
+              // Therefore the decoder can see that there is no more data coming
+              // - this means that the decoder can declare a fatal error, rather
+              // than assuming an incomplete input stream.
+              t, 'EncodingError', decoder.decode({frameIndex: 1}));
         })
         .then(_ => {
-          return promise_rejects_js(t, RangeError, p1);
+          // Requesting to decode frame #0 (the `p1` Promise) throws
+          // EncodingError, because the PNG has been truncated to the first 100
+          // bytes.
+          return promise_rejects_dom(t, 'EncodingError', p1);
         })
   });
-}, 'Test partial decoding without a frame results in an error');
+}, 'Test decoding a partial ArrayBuffer results in EncodingError');
 
 promise_test(t => {
   var decoder;
@@ -295,7 +367,7 @@ promise_test(t => {
           assert_equals(result.image.displayHeight, 240);
           assert_equals(result.image.timestamp, 0);
 
-          // Swap to the the other track.
+          // Swap to the other track.
           let newIndex = (decoder.tracks.selectedIndex + 1) % 2;
           decoder.tracks[newIndex].selected = true;
           return decoder.decode()

@@ -1181,4 +1181,4 @@ void main() {
 
 }  // namespace
 
-#endif
+#endif  // MEDIA_GPU_CHROMEOS_SHADERS_SHADERS_H_

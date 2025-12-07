@@ -164,8 +164,7 @@ gfx::ImageSkia ActiveNetworkIcon::GetImage(
     case Type::kCellular:
       return GetDualImageCellular(color_provider, icon_type, animating);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::ImageSkia();
+  NOTREACHED();
 }
 
 gfx::ImageSkia ActiveNetworkIcon::GetSingleImage(

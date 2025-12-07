@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "components/subresource_filter/core/browser/copying_file_stream.h"
+#include "components/subresource_filter/core/common/copying_file_stream.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -48,8 +48,9 @@ bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
 
   base::WriteFile(indexed_path, indexer.data());
 
-  if (out_checksum)
+  if (out_checksum) {
     *out_checksum = indexer.GetChecksum();
+  }
 
   return true;
 }

@@ -15,8 +15,9 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/visibility.h"
 #include "url/gurl.h"
 
@@ -47,14 +48,18 @@ void OneTimePermissionsTracker::RemoveObserver(
 void OneTimePermissionsTracker::WebContentsBackgrounded(
     const url::Origin& origin) {
   if (!ShouldIgnoreOrigin(origin)) {
-    origin_tracker_[origin].background_tab_counter++;
+    // For some reason using `origin_tracker_[origin].background_tab_counter++;`
+    // on some builds leaves the value of
+    // `origin_tracker_[origin].background_tab_counter` at 0 in case of
+    // insertion. My best efforts to understand it have failed. Hence, `+=` is
+    // necessary here for the feature to work at all there.
+    origin_tracker_[origin].background_tab_counter += 1;
 
     if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
       // When all undiscarded tabs which point to the origin are in the
       // background, the timers should be reset.
       origin_tracker_[origin].background_expiration_timer->Start(
-          FROM_HERE,
-          permissions::feature_params::kOneTimePermissionTimeout.Get(),
+          FROM_HERE, permissions::kOneTimePermissionTimeout,
           base::BindOnce(
               &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
               weak_factory_.GetWeakPtr(), origin,
@@ -62,8 +67,7 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
                   kTimeout));
 
       origin_tracker_[origin].background_expiration_long_timer->Start(
-          FROM_HERE,
-          permissions::feature_params::kOneTimePermissionLongTimeout.Get(),
+          FROM_HERE, permissions::kOneTimePermissionMaximumLifetime,
           base::BindOnce(
               &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
               weak_factory_.GetWeakPtr(), origin,
@@ -117,8 +121,7 @@ void OneTimePermissionsTracker::StartContentSpecificExpirationTimer(
   origin_tracker_[origin]
       .content_setting_specific_expiration_timer_map[content_setting]
       ->Start(
-          FROM_HERE,
-          permissions::feature_params::kOneTimePermissionTimeout.Get(),
+          FROM_HERE, permissions::kOneTimePermissionTimeout,
           base::BindOnce(notify_callback, weak_factory_.GetWeakPtr(), origin));
 }
 
@@ -134,8 +137,7 @@ void OneTimePermissionsTracker::HandleUserMediaState(
       notify_callback = &OneTimePermissionsTracker::NotifyCapturingAudioExpired;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   if (origin_tracker_[origin].used_content_settings_set.find(content_setting) !=
@@ -212,7 +214,7 @@ void OneTimePermissionsTracker::CleanupStateForExpiredContentSetting(
   }
 
   for (const auto& origin : affected_origins) {
-    if (type == ContentSettingsType::GEOLOCATION) {
+    if (type == permissions::PermissionUtil::GetGeolocationType()) {
       origin_tracker_[origin].background_expiration_timer->Stop();
     } else {
       origin_tracker_[origin]

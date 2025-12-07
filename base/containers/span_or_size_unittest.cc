@@ -21,7 +21,7 @@ TEST(SpanOrSizeTest, Size) {
 
 TEST(SpanOrSizeTest, Span) {
   std::vector<int> v{1, 2, 3};
-  SpanOrSize<int> s{base::span<int>(v)};
+  SpanOrSize<int> s{span<int>(v)};
 
   EXPECT_TRUE(s.span().has_value());
   EXPECT_EQ(s.span()->data(), v.data());
@@ -36,7 +36,7 @@ TEST(SpanOrSizeTest, SpanDeductionGuide) {
 
   // MAIN TEST: No need to spell out `SpanOrSize<int>` below
   // (IIUC thanks to an implicit deduction guide inferred by the compiler).
-  auto s = SpanOrSize(base::span(v));
+  auto s = SpanOrSize(span(v));
 
   EXPECT_EQ(s.span().value()[1], 42);
 }

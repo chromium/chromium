@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -62,8 +63,9 @@ std::vector<url::Origin> GetOrigins(const MediaSource::Id& source_id) {
   if (IsSiteInitiatedMirroringSource(source_id) &&
       !base::FeatureList::IsEnabled(kAllowAllSitesToInitiateMirroring)) {
     allowed_origins.reserve(kPresentationApiAllowlist.size());
-    for (const auto& origin : kPresentationApiAllowlist)
+    for (const auto& origin : kPresentationApiAllowlist) {
       allowed_origins.push_back(url::Origin::Create(GURL(origin)));
+    }
   }
   return allowed_origins;
 }
@@ -165,10 +167,11 @@ void CastMediaRouteProvider::Init(
   receiver_.Bind(std::move(receiver));
   media_router_.Bind(std::move(media_router));
   media_router_->GetLogger(logger_.BindNewPipeAndPassReceiver());
+  media_router_->GetDebugger(debugger_.BindNewPipeAndPassReceiver());
 
   activity_manager_ = std::make_unique<CastActivityManager>(
       media_sink_service_, session_tracker, message_handler_,
-      media_router_.get(), logger_.get(), hash_token);
+      media_router_.get(), logger_, debugger_, hash_token);
 }
 
 CastMediaRouteProvider::~CastMediaRouteProvider() {
@@ -188,8 +191,6 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                                          CreateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40561499): Handle mirroring routes, including
-  // mirror-to-Cast transitions.
   const MediaSinkInternal* sink = media_sink_service_->GetSinkById(sink_id);
   if (!sink) {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
@@ -213,7 +214,8 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
     return;
   }
   activity_manager_->LaunchSession(*cast_source, *sink, presentation_id, origin,
-                                   frame_tree_node_id, std::move(callback));
+                                   content::FrameTreeNodeId(frame_tree_node_id),
+                                   std::move(callback));
 }
 
 void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
@@ -237,20 +239,11 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
   if (!activity_manager_) {
     // This should never happen, but it looks like maybe it does.  See
     // crbug.com/1114067.
-    NOTREACHED_IN_MIGRATION();
-    // This message will probably go unnoticed, but it's here to give some
-    // indication of what went wrong, since NOTREACHED() is compiled out of
-    // release builds.  It would be nice if we could log a message to |logger_|,
-    // but it's initialized in the same place as |activity_manager_|, so it's
-    // almost certainly not available here.
-    LOG(ERROR) << "missing activity manager";
-    std::move(callback).Run(std::nullopt, nullptr,
-                            "Internal error: missing activity manager",
-                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
-    return;
+    NOTREACHED();
   }
   activity_manager_->JoinSession(*cast_source, presentation_id, origin,
-                                 frame_tree_node_id, std::move(callback));
+                                 content::FrameTreeNodeId(frame_tree_node_id),
+                                 std::move(callback));
 }
 
 void CastMediaRouteProvider::TerminateRoute(const std::string& route_id,
@@ -267,20 +260,21 @@ void CastMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
 void CastMediaRouteProvider::SendRouteBinaryMessage(
     const std::string& media_route_id,
     const std::vector<uint8_t>& data) {
-  NOTREACHED_IN_MIGRATION()
-      << "Binary messages are not supported for Cast routes.";
+  NOTREACHED() << "Binary messages are not supported for Cast routes.";
 }
 
 void CastMediaRouteProvider::StartObservingMediaSinks(
     const std::string& media_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::Contains(sink_queries_, media_source))
+  if (base::Contains(sink_queries_, media_source)) {
     return;
+  }
 
   std::unique_ptr<CastMediaSource> cast_source =
       CastMediaSource::FromMediaSourceId(media_source);
-  if (!cast_source)
+  if (!cast_source) {
     return;
+  }
 
   sink_queries_[media_source] =
       app_discovery_service_->StartObservingMediaSinks(
@@ -306,10 +300,6 @@ void CastMediaRouteProvider::DetachRoute(const std::string& route_id) {
   NOTIMPLEMENTED();
 }
 
-void CastMediaRouteProvider::EnableMdnsDiscovery() {
-  NOTIMPLEMENTED();
-}
-
 void CastMediaRouteProvider::DiscoverSinksNow() {
   app_discovery_service_->Refresh();
 }
@@ -332,8 +322,9 @@ void CastMediaRouteProvider::GetState(GetStateCallback callback) {
       activity_manager_->GetCastSessionTracker()->GetSessions();
   mojom::CastProviderStatePtr cast_state(mojom::CastProviderState::New());
   for (const auto& session : sessions) {
-    if (!session.second)
+    if (!session.second) {
       continue;
+    }
     mojom::CastSessionStatePtr session_state(mojom::CastSessionState::New());
     session_state->sink_id = session.first;
     session_state->app_id = session.second->app_id();

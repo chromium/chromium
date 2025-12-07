@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -17,7 +18,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,9 +39,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
@@ -51,18 +57,22 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.KeyboardNavigationListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * A toolbar that changes its view depending on whether a selection is established. The toolbar
- * also optionally shows a search view depending on whether {@link #initializeSearchView()} has
- * been called.
+ * A toolbar that changes its view depending on whether a selection is established. The toolbar also
+ * optionally shows a search view depending on whether {@link #initializeSearchView()} has been
+ * called.
  *
  * @param <E> The type of the selectable items this toolbar interacts with.
  */
+@NullMarked
 public class SelectableListToolbar<E> extends Toolbar
         implements SelectionObserver<E>,
                 OnClickListener,
@@ -102,22 +112,43 @@ public class SelectableListToolbar<E> extends Toolbar
         int NORMAL_VIEW_BACK = 3;
     }
 
+    // These are used to track whether there is actually a change in selection state, so that we can
+    // correctly make a11y announcements.
     protected boolean mIsSelectionEnabled;
+    // When we assign mSelectedItems, make sure we copy the contents so that we can properly track
+    // whether the content actually changed.
+    @Nullable private Set<E> mSelectedItems;
+
+    @SuppressWarnings("NullAway.Init")
     protected SelectionDelegate<E> mSelectionDelegate;
 
     private final ObservableSupplierImpl<Boolean> mIsSearchingSupplier =
             new ObservableSupplierImpl<>();
     private boolean mHasSearchView;
+
+    @SuppressWarnings("NullAway.Init")
     private LinearLayout mSearchView;
+
+    @SuppressWarnings("NullAway.Init")
     private EditText mSearchEditText;
+
+    @SuppressWarnings("NullAway.Init")
     private ImageButton mClearTextButton;
+
+    @SuppressWarnings("NullAway.Init")
+    private InlineSearchBox mInlineSearchBox;
+
+    @SuppressWarnings("NullAway.Init")
     private SearchDelegate mSearchDelegate;
+
     private boolean mSearchEnabled;
     private boolean mUpdateStatusBarColor;
     private boolean mShowBackInNormalView;
 
     protected NumberRollView mNumberRollView;
-    private Drawable mMenuButton;
+    private @Nullable Drawable mMenuButton;
+
+    @SuppressWarnings("NullAway.Init")
     private Drawable mNavigationIconDrawable;
 
     private @NavigationButton int mNavigationButton;
@@ -129,9 +160,9 @@ public class SelectableListToolbar<E> extends Toolbar
 
     private @ColorInt int mNormalBackgroundColor;
     private @ColorInt int mSearchBackgroundColor;
-    private ColorStateList mIconColorList;
+    private @Nullable ColorStateList mIconColorList;
 
-    private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
     private int mWideDisplayStartOffsetPx;
     private int mModernNavButtonStartOffsetPx;
     private int mModernToolbarActionMenuEndOffsetPx;
@@ -145,6 +176,9 @@ public class SelectableListToolbar<E> extends Toolbar
 
     // current view type that SelectableListToolbar is showing
     private int mViewType;
+    private boolean mIsLargeScreenWithKeyboard;
+    private final ObservableSupplierImpl<Boolean> mHasSearchTextSupplier =
+            new ObservableSupplierImpl<>(false);
 
     /** Constructor for inflating from XML. */
     public SelectableListToolbar(Context context, AttributeSet attrs) {
@@ -214,6 +248,14 @@ public class SelectableListToolbar<E> extends Toolbar
 
         mSelectionDelegate = delegate;
         mSelectionDelegate.addObserver(this);
+        // Initialize the selection state so that if selection is already enabled,
+        // mIsSelectionEnabled correctly tracks that instead of defaulting to false.
+        mIsSelectionEnabled = mSelectionDelegate.isSelectionEnabled();
+        mSelectedItems = new HashSet<>(mSelectionDelegate.getSelectedItems());
+        // If we're already in selection mode, show the selection mode.
+        if (mIsSelectionEnabled) {
+            showSelectionView(mSelectionDelegate.getSelectedItemsAsList(), mIsSelectionEnabled);
+        }
 
         mModernNavButtonStartOffsetPx =
                 getResources()
@@ -247,10 +289,12 @@ public class SelectableListToolbar<E> extends Toolbar
                         getContext(),
                         R.drawable.ic_arrow_back_white_24dp,
                         R.color.default_icon_color_tint_list);
+        mNavigationIconDrawable.setAutoMirrored(true);
 
         mShowInfoIcon = true;
         mShowInfoStringId = R.string.show_info;
         mHideInfoStringId = R.string.hide_info;
+        mIsLargeScreenWithKeyboard = false;
 
         if (showBackInNormalView) {
             mShowBackInNormalView = true;
@@ -288,12 +332,17 @@ public class SelectableListToolbar<E> extends Toolbar
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         mClearTextButton.setVisibility(
                                 TextUtils.isEmpty(s) ? View.INVISIBLE : View.VISIBLE);
+                        mHasSearchTextSupplier.set(!TextUtils.isEmpty(s));
                         if (isSearching()) mSearchDelegate.onSearchTextChanged(s.toString());
                     }
                 });
 
         mClearTextButton = findViewById(R.id.clear_text_button);
-        mClearTextButton.setOnClickListener(v -> mSearchEditText.setText(""));
+        mClearTextButton.setOnClickListener(
+                v -> {
+                    mSearchEditText.setText("");
+                    mSearchEditText.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                });
     }
 
     @Override
@@ -304,6 +353,37 @@ public class SelectableListToolbar<E> extends Toolbar
         mNumberRollView = findViewById(R.id.selection_mode_number);
         mNumberRollView.setString(R.plurals.selected_items);
         mNumberRollView.setStringForZero(R.string.select_items);
+
+        // Set listener to be able to move focus out of toolbar view to adjacent views.
+        setOnKeyListener(
+                new KeyboardNavigationListener() {
+                    @Override
+                    protected boolean handleEnterKeyPress() {
+                        return SelectableListToolbar.this.handleEnterKeyPress();
+                    }
+
+                    @Override
+                    public @Nullable View getNextFocusBackward() {
+                        return SelectableListToolbar.this.getNextFocusBackward();
+                    }
+
+                    @Override
+                    public @Nullable View getNextFocusForward() {
+                        return SelectableListToolbar.this.getNextFocusForward();
+                    }
+                });
+    }
+
+    protected @Nullable View getNextFocusBackward() {
+        return null;
+    }
+
+    protected @Nullable View getNextFocusForward() {
+        return null;
+    }
+
+    protected boolean handleEnterKeyPress() {
+        return false;
     }
 
     @Override
@@ -311,6 +391,8 @@ public class SelectableListToolbar<E> extends Toolbar
     public void onSelectionStateChange(List<E> selectedItems) {
         boolean wasSelectionEnabled = mIsSelectionEnabled;
         mIsSelectionEnabled = mSelectionDelegate.isSelectionEnabled();
+        Set<E> previouslySelectedItems = mSelectedItems;
+        mSelectedItems = new HashSet<>(selectedItems);
 
         // If onSelectionStateChange() gets called before onFinishInflate(), mNumberRollView
         // will be uninitialized. See crbug.com/637948.
@@ -326,14 +408,24 @@ public class SelectableListToolbar<E> extends Toolbar
             showNormalView();
         }
 
+        // Handle a11y announcements
+        if (wasSelectionEnabled == mIsSelectionEnabled
+                && mSelectedItems.equals(previouslySelectedItems)) {
+            // If there's no actual change in selection state, don't announce anything.
+            return;
+        }
+        // Otherwise, make an appropriate announcement.
         if (mIsSelectionEnabled) {
             @StringRes
             int resId =
                     wasSelectionEnabled
                             ? R.string.accessibility_toolbar_multi_select
                             : R.string.accessibility_toolbar_screen_position;
-            announceForAccessibility(
-                    getContext().getString(resId, Integer.toString(selectedItems.size())));
+            ViewCompat.setAccessibilityPaneTitle(
+                    this, getContext().getString(resId, Integer.toString(selectedItems.size())));
+        } else {
+            ViewCompat.setAccessibilityPaneTitle(
+                    this, getContext().getString(R.string.accessibility_toolbar_exit_select));
         }
     }
 
@@ -381,6 +473,7 @@ public class SelectableListToolbar<E> extends Toolbar
      */
     protected void setNavigationButton(@NavigationButton int navigationButton) {
         @StringRes int contentDescriptionId = Resources.ID_NULL;
+        Drawable navigationButtonDrawable = mNavigationIconDrawable;
 
         mNavigationButton = navigationButton;
         setNavigationOnClickListener(this);
@@ -389,6 +482,24 @@ public class SelectableListToolbar<E> extends Toolbar
             case NavigationButton.NONE:
                 break;
             case NavigationButton.SEARCH_BACK:
+                if (mIsLargeScreenWithKeyboard) break;
+                // Create a LayerDrawable to hold the search box icon highlight background as well
+                // as the navigation icon drawable.
+                var navigationBackgroundDrawable =
+                        AppCompatResources.getDrawable(
+                                getContext(), R.drawable.search_box_icon_background);
+                var navigationLayerDrawable =
+                        new LayerDrawable(
+                                new Drawable[] {
+                                    navigationBackgroundDrawable, mNavigationIconDrawable
+                                });
+                int inset =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.search_box_nav_button_background_inset);
+                navigationLayerDrawable.setLayerInset(1, inset, inset, inset, inset);
+                navigationButtonDrawable = navigationLayerDrawable;
+
                 DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
@@ -408,10 +519,29 @@ public class SelectableListToolbar<E> extends Toolbar
         }
 
         setNavigationIcon(
-                contentDescriptionId == Resources.ID_NULL ? null : mNavigationIconDrawable);
+                contentDescriptionId == Resources.ID_NULL ? null : navigationButtonDrawable);
         setNavigationContentDescription(contentDescriptionId);
 
         updateDisplayStyleIfNecessary();
+    }
+
+    /**
+     * Requests focus on the search text field if the search view is currently visible.
+     *
+     * @param showKeyboard Whether to show the soft keyboard.
+     */
+    public void requestSearchFocus(boolean showKeyboard) {
+        if (mIsLargeScreenWithKeyboard) {
+            mInlineSearchBox.requestSearchFocus(showKeyboard);
+        } else if (isSearching() && mSearchEditText != null) {
+            mSearchEditText.post(
+                    () -> {
+                        mSearchEditText.requestFocus();
+                        if (showKeyboard) {
+                            KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
+                        }
+                    });
+        }
     }
 
     /** Shows the search edit text box and related views. */
@@ -423,12 +553,8 @@ public class SelectableListToolbar<E> extends Toolbar
 
         showSearchViewInternal();
 
-        mSearchEditText.requestFocus();
-        if (showKeyboard) {
-            KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
-        }
-
         setTitle(null);
+        requestSearchFocus(showKeyboard);
     }
 
     /** Hides the search edit text box and related views. Notifies delegate of the change. */
@@ -446,6 +572,7 @@ public class SelectableListToolbar<E> extends Toolbar
         if (!isSearching()) return;
 
         mIsSearchingSupplier.set(false);
+        mHasSearchTextSupplier.set(false);
         mSearchEditText.setText("");
         hideKeyboard();
         showNormalView();
@@ -454,7 +581,42 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     /**
+     * @return An observable supplier that notifies observers if the search box has text.
+     */
+    public ObservableSupplier<Boolean> hasSearchTextSupplier() {
+        return mHasSearchTextSupplier;
+    }
+
+    /**
+     * @return If search text is present.
+     */
+    public boolean hasSearchText() {
+        if (mIsLargeScreenWithKeyboard) {
+            return mInlineSearchBox.hasSearchText();
+        }
+        if (mSearchEditText == null) return false;
+        return !TextUtils.isEmpty(mSearchEditText.getText());
+    }
+
+    /**
+     * Clears the text in the search edit text box. This is the desired behavior on large screens
+     * where the search bar is persistent and should not be hidden.
+     */
+    public void clearSearch() {
+        if (mIsLargeScreenWithKeyboard) {
+            mInlineSearchBox.clearSearch();
+            return;
+        }
+
+        if (!isSearching()) return;
+        mSearchEditText.setText("");
+
+        mSearchEditText.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    /**
      * Called to enable/disable search menu button.
+     *
      * @param searchEnabled Whether the search button should be enabled.
      */
     public void setSearchEnabled(boolean searchEnabled) {
@@ -479,7 +641,7 @@ public class SelectableListToolbar<E> extends Toolbar
         if (mIsDestroyed) return;
 
         if (mSelectionDelegate != null) mSelectionDelegate.clearSelection();
-        if (isSearching()) hideSearchView();
+        if (isSearching() && !mIsLargeScreenWithKeyboard) hideSearchView();
     }
 
     /**
@@ -501,7 +663,8 @@ public class SelectableListToolbar<E> extends Toolbar
     @Override
     public void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         int padding =
-                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, getResources());
+                SelectableListLayout.getPaddingForDisplayStyle(
+                        newDisplayStyle, this, getResources());
         int paddingStartOffset = 0;
         boolean isSearchViewShowing = isSearching() && !mIsSelectionEnabled;
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
@@ -539,12 +702,21 @@ public class SelectableListToolbar<E> extends Toolbar
                 this.getPaddingTop(),
                 padding + actionMenuBarEndOffsetPx,
                 this.getPaddingBottom());
+
+        if (mInlineSearchBox != null) {
+            mInlineSearchBox.setInlinePadding(
+                    padding + paddingStartOffset + navigationButtonStartOffsetPx,
+                    this.getPaddingTop(),
+                    0,
+                    0);
+        }
     }
 
     /**
      * @return Whether search mode is currently active. Once a search is started, this method will
-     *         return true until the search is ended regardless of whether the toolbar view changes
-     *         dues to a selection.
+     *     return true until the search is ended regardless of whether the toolbar view changes dues
+     *     to a selection. Note that, on LFF devices, this method always returns false as they have a
+     *     persistent search box UI instead of entering the search mode.
      */
     public boolean isSearching() {
         assert mIsSearchingSupplier.get() != null : "Supplier is not correctly initialized.";
@@ -673,11 +845,13 @@ public class SelectableListToolbar<E> extends Toolbar
 
     /** Hides the keyboard. */
     public void hideKeyboard() {
-        KeyboardVisibilityDelegate.getInstance().hideKeyboard(mSearchEditText);
+        View searchText =
+                mIsLargeScreenWithKeyboard ? mInlineSearchBox.getSearchText() : mSearchEditText;
+        KeyboardVisibilityDelegate.getInstance().hideKeyboard(searchText);
     }
 
     @Override
-    public void setTitle(CharSequence title) {
+    public void setTitle(@Nullable CharSequence title) {
         super.setTitle(title);
 
         // The super class adds an AppCompatTextView for the title which not focusable by default.
@@ -734,5 +908,36 @@ public class SelectableListToolbar<E> extends Toolbar
     @VisibleForTesting
     public @ViewType int getCurrentViewType() {
         return mViewType;
+    }
+
+    public void setIsLargeScreenWithKeyboard(boolean isLargeScreenWithKeyboard) {
+        mIsLargeScreenWithKeyboard = isLargeScreenWithKeyboard;
+    }
+
+    public boolean isLargeScreenWithKeyboard() {
+        return mIsLargeScreenWithKeyboard;
+    }
+
+    public void initializeInlineSearchView(
+            SearchDelegate searchDelegate, @IdRes int searchMenuItemId) {
+        mSearchDelegate = searchDelegate;
+        this.getMenu().removeItem(searchMenuItemId);
+        mInlineSearchBox =
+                new InlineSearchBox(
+                        mSearchDelegate,
+                        mHasSearchTextSupplier,
+                        KeyboardVisibilityDelegate.getInstance());
+    }
+
+    public ViewGroup initializeSearchBoxContainer(
+            @Nullable ViewGroup parent, @StringRes int hintStringResId) {
+        mInlineSearchBox.initializeSearchBoxContainer(parent, hintStringResId, this, getContext());
+        ViewGroup searchBoxContainer = mInlineSearchBox.getSearchBoxContainer();
+        updateDisplayStyleIfNecessary();
+        return searchBoxContainer;
+    }
+
+    public EditText getSearchTextForTest() {
+        return mInlineSearchBox.getSearchText(); // IN-TEST
     }
 }

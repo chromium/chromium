@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -86,12 +87,12 @@ constexpr chromeos::WindowStateType kWindowStateType2 =
 constexpr chromeos::WindowStateType kWindowStateType3 =
     chromeos::WindowStateType::kPrimarySnapped;
 
-constexpr ui::WindowShowState kPreMinimizedWindowStateType1 =
-    ui::SHOW_STATE_DEFAULT;
-constexpr ui::WindowShowState kPreMinimizedWindowStateType2 =
-    ui::SHOW_STATE_MAXIMIZED;
-constexpr ui::WindowShowState kPreMinimizedWindowStateType3 =
-    ui::SHOW_STATE_DEFAULT;
+constexpr ui::mojom::WindowShowState kPreMinimizedWindowStateType1 =
+    ui::mojom::WindowShowState::kDefault;
+constexpr ui::mojom::WindowShowState kPreMinimizedWindowStateType2 =
+    ui::mojom::WindowShowState::kMaximized;
+constexpr ui::mojom::WindowShowState kPreMinimizedWindowStateType3 =
+    ui::mojom::WindowShowState::kDefault;
 
 constexpr int32_t kSnapPercentage = 75;
 
@@ -246,7 +247,7 @@ class RestoreDataTest : public testing::Test {
       const base::Uuid& desk_guid,
       const gfx::Rect& current_bounds,
       chromeos::WindowStateType window_state_type,
-      ui::WindowShowState pre_minimized_show_state_type,
+      ui::mojom::WindowShowState pre_minimized_show_state_type,
       uint32_t snap_percentage,
       std::optional<gfx::Size> max_size,
       std::optional<gfx::Size> min_size,
@@ -742,30 +743,6 @@ TEST_F(RestoreDataTest, HasBrowser) {
       std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId2);
   restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
   EXPECT_TRUE(restore_data().HasBrowser());
-}
-
-TEST_F(RestoreDataTest, UpdateAppIdToLacros) {
-  auto app_launch_info1 =
-      std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId1);
-
-  restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
-  // Verify that ash chrome is added.
-  const auto ash_chrome_it =
-      restore_data().app_id_to_launch_list().find(app_constants::kChromeAppId);
-  EXPECT_TRUE(ash_chrome_it != restore_data().app_id_to_launch_list().end());
-  EXPECT_FALSE(ash_chrome_it->second.empty());
-
-  restore_data().UpdateBrowserAppIdToLacros();
-  // Verify that ash chrome app id is modified to lacros version.
-  const auto lacros_chrome_it =
-      restore_data().app_id_to_launch_list().find(app_constants::kLacrosAppId);
-  const auto ash_chrome_after_update_it =
-      restore_data().app_id_to_launch_list().find(app_constants::kChromeAppId);
-  EXPECT_TRUE(lacros_chrome_it != restore_data().app_id_to_launch_list().end());
-  EXPECT_FALSE(lacros_chrome_it->second.empty());
-  EXPECT_TRUE(ash_chrome_after_update_it ==
-              restore_data().app_id_to_launch_list().end());
-  EXPECT_EQ(1u, restore_data().app_id_to_launch_list().size());
 }
 
 TEST_F(RestoreDataTest, CompareAppRestoreData) {

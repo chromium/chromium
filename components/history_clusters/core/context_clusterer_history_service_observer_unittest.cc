@@ -4,13 +4,16 @@
 
 #include "components/history_clusters/core/context_clusterer_history_service_observer.h"
 
+#include <optional>
+
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
-#include "components/optimization_guide/core/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
@@ -56,7 +59,7 @@ class TestOptimizationGuideDecider
       optimization_guide::OptimizationMetadata* optimization_metadata)
       override {
     DCHECK_EQ(optimization_guide::proto::HISTORY_CLUSTERS, optimization_type);
-    return url.host() == "shouldskip.com"
+    return url.GetHost() == "shouldskip.com"
                ? optimization_guide::OptimizationGuideDecision::kFalse
                : optimization_guide::OptimizationGuideDecision::kTrue;
   }
@@ -212,7 +215,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
                 history::VisitID opener_visit = history::kInvalidVisitID,
                 history::VisitID referring_visit = history::kInvalidVisitID,
                 bool is_synced_visit = false,
-                bool is_visible_visit = true) {
+                bool is_visible_visit = true,
+                history::VisitResponseCodeCategory response_code_category =
+                    history::VisitResponseCodeCategory::kNot404) {
     history::URLRow url_row(url);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
@@ -224,7 +229,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         (is_visible_visit ? ui::PAGE_TRANSITION_LINK
                           : ui::PAGE_TRANSITION_AUTO_SUBFRAME) |
         ui::PAGE_TRANSITION_CHAIN_END);
-    observer_->OnURLVisited(history_service_.get(), url_row, new_visit);
+    observer_->OnURLVisited(
+        history_service_.get(),
+        history::VisitedURLInfo(url_row, new_visit, response_code_category));
   }
 
   // Simulates deleting `urls` from history. If `urls` is empty, we will
@@ -318,15 +325,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
 
-  // Should clean up cluster even if persisted cluster id hasn't been received
-  // yet since there are no other visits tied to that cluster.
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 1, 1);
-
   // Do not expect any calls to history service.
   history_service_->RunLastClusterIdCallbackWithClusterId(cluster_id);
 
@@ -341,8 +339,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   int64_t cluster_id = 123;
 
   {
-    base::HistogramTester histogram_tester;
-
     history::ClusterVisit got_cluster_visit;
     EXPECT_CALL(*history_service_, ReserveNextClusterIdWithVisit(
                                        _, base::test::IsNotNullCallback(), _))
@@ -361,15 +357,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 
     // Force a cleanup pass.
     MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-    // Should not actually clean up any clusters.
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
-    // Though it should have been up for clean up.
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 1, 1);
   }
 
   {
@@ -401,21 +388,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
         "History.Clusters.ContextClusterer."
         "NumUnpersistedVisitsBeforeClusterPersisted",
         1, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-
-    // Force a cleanup pass.
-    MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-    // Cluster should have already been cleaned up.
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 0);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0);
   }
 }
 
@@ -677,6 +649,28 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
       "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
 }
 
+TEST_F(ContextClustererHistoryServiceObserverTest, Skips404Visits) {
+  base::HistogramTester histogram_tester;
+
+  SetPersistenceExpectedConfig();
+
+  VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
+           history::kInvalidVisitID, history::kInvalidVisitID,
+           /*is_synced_visit=*/false, /*is_visible_visit=*/true,
+           history::VisitResponseCodeCategory::k404);
+
+  EXPECT_EQ(0, GetNumClustersCreated());
+
+  // No DB latency histograms should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.DbLatency.UpdateClusterVisit", 0);
+  // Visit processing histogram should not be recorded.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 0);
+}
+
 TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(1));
   VisitURL(GURL("https://example.com/2"), 2, base::Time::FromTimeT(2), 1);
@@ -714,14 +708,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
     // Force a cleanup pass.
     MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
 
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 3, 1);
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 2, 1);
-    // Should not finalize cluster with visit 10.
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
-
     histogram_tester.ExpectTotalCount(
         "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited",
         5);
@@ -737,16 +723,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
 
   // Expect only one more cluster to be created, which makes 4 total.
   EXPECT_EQ(4, GetNumClustersCreated());
-
-  // Make sure everything is cleaned up eventually.
-  {
-    base::HistogramTester histogram_tester;
-
-    MoveClockForwardBy(2 * GetConfig().cluster_navigation_time_cutoff);
-
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0, 1);
-  }
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
@@ -760,15 +736,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
 
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-  // There should be nothing to clean up so it shouldn't even initiate a clean
-  // up pass.
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0);
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlsDeleted",
@@ -789,14 +756,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteSelectURLs) {
 
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-  // There should be 1 cluster untouched by the deletion.
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlsDeleted",

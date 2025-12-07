@@ -12,12 +12,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/test/ui_controls.h"
@@ -59,7 +61,7 @@ class MouseEventsTest : public InProcessBrowserTest {
     ui_controls::SendMouseMove(bounds.CenterPoint().x(), bounds.y() - 2);
 
     // Navigate to the test page and wait for onload to be called.
-    const GURL url = ui_test_utils::GetTestUrl(
+    const GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(),
         base::FilePath(FILE_PATH_LITERAL("mouse_events_test.html")));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -81,7 +83,7 @@ class MouseEventsTest : public InProcessBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Flaky; http://crbug.com/133361.
 #define MAYBE_MouseOver DISABLED_MouseOver
 #else
@@ -153,8 +155,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"done()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
@@ -181,15 +183,15 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"alert()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   dialog_wait.Run();
 
   // Cancel the dialog.
   js_dialog_manager->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"done()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);

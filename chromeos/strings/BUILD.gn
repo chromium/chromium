@@ -6,12 +6,10 @@ import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
-grit("strings") {
+grit_strings("strings") {
   source = "../chromeos_strings.grd"
-  outputs =
-      [ "grit/chromeos_strings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "chromeos_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/chromeos_strings.h" ]
+  output_prefix = "chromeos_strings_"
 }
 
 repack("chromeos_test_strings") {

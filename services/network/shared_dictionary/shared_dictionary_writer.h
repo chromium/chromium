@@ -5,7 +5,10 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_WRITER_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_WRITER_H_
 
+#include <stdint.h>
+
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 
 namespace network {
@@ -16,7 +19,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriter
     : public base::RefCounted<SharedDictionaryWriter> {
  public:
   // Appends the binary to the dictionary.
-  virtual void Append(const char* buf, int num_bytes) = 0;
+  virtual void Append(base::span<const uint8_t> data) = 0;
 
   // Finishes writing to the dictionary.
   // Note: Currently there is no implementation of SharedDictionaryWriter which

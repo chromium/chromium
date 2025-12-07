@@ -20,10 +20,21 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/browser.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Allow ProfileKeyedService to depend on browser_process for now.
+  "file_suggest_keyed_service_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
+  ],
+
+  ".*unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+}

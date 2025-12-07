@@ -18,6 +18,17 @@ interfaces and library. For each navigation in Android apps when Safe Browsing i
 since a single page can contain multiple threats WebView gets the most
 severe threat for the navigation chain and shows an interstitial.
 
+For WebView versions prior to M126, Safe Browsing on WebView uses the
+"Local Blocklist" or "V4" protocol. URLs are checked for malware, phishing etc
+against an on-device blocklist that is periodically updated by Google's servers.
+
+From M126 onwards, WebView uses a "Real-Time" or "V5" protocol for Safe Browsing.
+URLs are checked in real-time against blocklists maintained by our servers.
+This [blog post](https://blog.google/products/chrome/google-chrome-safe-browsing-real-time/)
+highlights the motivation behind real-time safe browsing and
+[go/androidSBv5](http://go/androidSBv5) explains this protocol in detail.
+Real-time Safe Browsing can be disabled by the user.
+
 ## Safe Browsing in //components
 
 Safe Browsing has many components; for brevity, we will only discuss the ones most
@@ -33,10 +44,20 @@ based on some conditions, the following diagram shows the flow in a bigger pictu
 
 <br>
 
-`SafeBrowsingLookupMechanism` is the base class and we have three implementations
-for it, hash_realtime == V5 (send partial hash of the URL to the server through
-a proxy), url_realtime == Protego (send URL to the server), hash_database == V4
-(check against the local blocklist), worth mentioning that `SafeBrowsingLookupMechanismRunner`
+`SafeBrowsingLookupMechanism` is the base class and we have three
+implementations for it:
+
+1. `hash_realtime` == V5. This sends a partial hash of the URL to the server
+   through a proxy.
+2. `url_realtime` == Protego. This sends the URL to the server. **This is
+   not currently supported in Android WebView**.
+3. `hash_database` == V4. This checks against the local blocklist, which is an
+   on-device database of **partial** URL hashes. If there is a match in the
+   local database, then this connects to the server to request all URL hashes
+   which match this prefix, and then it finally determines if there is a true
+   match or not.
+
+It's worth mentioning that `SafeBrowsingLookupMechanismRunner`
 controls LookUpMechanism and  sets a timeout for the mechanism to run within.
 The timeout is defined at the top of the class.
 
@@ -47,6 +68,19 @@ call, the next section talks about WebView specifics.
 
 See the relevant Chromium classes in
 [//components/safe\_browsing/](/components/safe_browsing).
+
+### What's the difference between URL hashes and hash prefixes
+
+* URL: this is the actual URL string (e.g., "https://www.example.com/").
+* Hash: this is a full-length hash of the URL string.
+* Hash prefix: this is the first several bytes of the full-length hash. This is
+  not a complete hash, so it is intentional that many URLs will have the same
+  hash prefix.
+
+Refer to
+https://developers.google.com/safe-browsing/v4/urls-hashing#hash-prefix-computations
+for an explanation of how the hashing computation and hash prefixes work in v4
+of the protocol.
 
 ## WebView Implementation
 
@@ -117,6 +151,23 @@ accessed by your choice of two different routes:
   Settings (gear icon) > Scan apps with Play Protect`, or
 * In the Android Settings app: `Launch the Settings app > Security & Privacy >
   App Security > Google Play Protect > Gear icon > Scan apps with Play Protect`
+
+
+### Real-time Safe Browsing user opt-in
+
+*** note
+**Note:** this is only relevant for the GMS-based implementation in downstream
+WebView targets.
+***
+
+To enable real-time Safe Browsing, which is available M126 onwards, ensure that
+you have opted into it.
+
+`Launch Settings > Security & Privacy > More Security & Privacy >
+Android Safe Browsing > Use live threat protection`
+
+If this toggle is off, WebView will still perform Safe Browsing, but will use
+the "Local Blocklist" (V4) protocol instead of the "Real-time" (V5) protocol.
 
 ### Application opt-in
 

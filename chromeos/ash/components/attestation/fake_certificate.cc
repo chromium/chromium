@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/evp.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
@@ -22,7 +18,7 @@ namespace attestation {
 namespace {
 
 // A test key encoded as ASN.1 PrivateKeyInfo from PKCS #8.
-const uint8_t kTestKeyData[] = {
+constexpr auto kTestKeyData = std::to_array<uint8_t>({
     0x30, 0x82, 0x01, 0x55, 0x02, 0x01, 0x00, 0x30, 0x0d, 0x06, 0x09, 0x2a,
     0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x04, 0x82,
     0x01, 0x3f, 0x30, 0x82, 0x01, 0x3b, 0x02, 0x01, 0x00, 0x02, 0x41, 0x00,
@@ -52,7 +48,7 @@ const uint8_t kTestKeyData[] = {
     0x00, 0xaa, 0xb1, 0xff, 0x8a, 0xa2, 0xb2, 0x2b, 0xef, 0x9a, 0x83, 0x3f,
     0xc5, 0xbc, 0xd4, 0x6a, 0x07, 0xe8, 0xc7, 0x0b, 0x2e, 0xd4, 0x0f, 0xf8,
     0x98, 0x68, 0xe1, 0x04, 0xa8, 0x92, 0xd0, 0x10, 0xaa,
-};
+});
 
 }  // namespace
 
@@ -63,14 +59,12 @@ bool GetFakeCertificateDER(const base::TimeDelta& expiry,
   if (valid_expiry <= valid_start) {
     valid_start = valid_expiry - base::Days(1);
   }
-  std::unique_ptr<crypto::RSAPrivateKey> test_key(
-      crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
-          &kTestKeyData[0], &kTestKeyData[std::size(kTestKeyData)])));
-  if (!test_key.get()) {
-    return false;
-  }
+  bssl::UniquePtr<EVP_PKEY> key =
+      crypto::evp::PrivateKeyFromBytes(kTestKeyData);
+  // Since the cert data is hardcoded, deserializing it should never fail.
+  CHECK(key);
   return net::x509_util::CreateSelfSignedCert(
-      test_key->key(), net::x509_util::DIGEST_SHA256, "CN=subject", 12345,
+      key.get(), net::x509_util::DIGEST_SHA256, "CN=subject", 12345,
       valid_start, valid_expiry, {}, certificate);
 }
 

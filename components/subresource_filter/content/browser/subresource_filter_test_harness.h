@@ -13,6 +13,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_renderer_host.h"
 
@@ -23,8 +24,9 @@
 class GURL;
 
 namespace content {
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 class RenderFrameHost;
+class TestNavigationThrottleInserter;
 }  // namespace content
 
 namespace infobars {
@@ -37,8 +39,7 @@ class RulesetService;
 class SubresourceFilterContentSettingsManager;
 
 // Unit test harness for the subresource filtering component.
-class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
-                                     public content::WebContentsObserver {
+class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness {
  public:
   // Allowlist rules must prefix a disallowed rule in order to work correctly.
   static constexpr const char kDefaultAllowedSuffix[] = "not_disallowed.html";
@@ -93,17 +94,14 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
  protected:
   // Tests can override this to have custom throttles added to navigations.
   virtual void AppendCustomNavigationThrottles(
-      content::NavigationHandle* navigation_handle,
-      std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {}
+      content::NavigationThrottleRegistry& registry) {}
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;
   }
 
  private:
-  // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void InsertThrottle(content::NavigationThrottleRegistry& registry);
 
   base::ScopedTempDir ruleset_service_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
@@ -112,6 +110,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
   std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<RulesetService> ruleset_service_;
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 #if BUILDFLAG(IS_ANDROID)
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 #endif

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/power_metrics/energy_metrics_provider_win.h"
 
 #include <initguid.h>
@@ -16,6 +11,7 @@
 #include <emi.h>
 #include <setupapi.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
@@ -218,16 +214,16 @@ bool EnergyMetricsProviderWin::Initialize() {
   // respectively.
   if (emi_version.EmiVersion == EMI_VERSION_V1) {
     EMI_METADATA_V1* metadata_v1 =
-        reinterpret_cast<EMI_METADATA_V1*>(metadata_buf.data());
+        UNSAFE_TODO(reinterpret_cast<EMI_METADATA_V1*>(metadata_buf.data()));
     metric_types_.push_back(metadata_v1->MeteredHardwareName);
   } else if (emi_version.EmiVersion == EMI_VERSION_V2) {
     EMI_METADATA_V2* metadata_v2 =
-        reinterpret_cast<EMI_METADATA_V2*>(metadata_buf.data());
+        UNSAFE_TODO(reinterpret_cast<EMI_METADATA_V2*>(metadata_buf.data()));
     EMI_CHANNEL_V2* channel = &metadata_v2->Channels[0];
     // EMI v2 has a different channel for each metric.
     for (int i = 0; i < metadata_v2->ChannelCount; ++i) {
       metric_types_.push_back(channel->ChannelName);
-      channel = EMI_CHANNEL_V2_NEXT_CHANNEL(channel);
+      channel = UNSAFE_TODO(EMI_CHANNEL_V2_NEXT_CHANNEL(channel));
     }
   }
 

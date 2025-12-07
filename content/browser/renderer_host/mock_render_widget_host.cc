@@ -57,6 +57,12 @@ void MockRenderWidgetHost::NotifyNewContentRenderingTimeoutForTesting() {
   new_content_rendering_timeout_fired_ = true;
 }
 
+void MockRenderWidgetHost::RejectPointerLockOrUnlockIfNecessary(
+    blink::mojom::PointerLockResult result) {
+  pointer_lock_rejected_ = true;
+  RenderWidgetHostImpl::RejectPointerLockOrUnlockIfNecessary(result);
+}
+
 MockRenderWidgetHost::MockRenderWidgetHost(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
@@ -70,9 +76,7 @@ MockRenderWidgetHost::MockRenderWidgetHost(
                            site_instance_group,
                            routing_id,
                            /*hidden=*/false,
-                           /*renderer_initiated_creation=*/false,
-                           std::make_unique<FrameTokenMessageQueue>()),
-      new_content_rendering_timeout_fired_(false) {
+                           /*renderer_initiated_creation=*/false) {
   SetupMockRenderInputRouter();
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   BindWidgetInterfaces(

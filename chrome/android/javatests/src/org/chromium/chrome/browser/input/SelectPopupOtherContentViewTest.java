@@ -22,7 +22,9 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -34,7 +36,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SelectPopupOtherContentViewTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String SELECT_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -67,10 +70,10 @@ public class SelectPopupOtherContentViewTest {
     @Feature({"Browser"})
     public void testPopupNotClosedByOtherContentView() throws Exception, Throwable {
         // Load the test page.
-        mActivityTestRule.startMainActivityWithURL(SELECT_URL);
+        WebPageStation page = mActivityTestRule.startOnUrl(SELECT_URL);
 
         // Once clicked, the popup should show up.
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "select");
+        DOMUtils.clickNode(page.webContentsElement.value(), "select");
         CriteriaHelper.pollInstrumentationThread(
                 this::isSelectPopupVisibleOnUiThread, "The select popup did not show up on click.");
 

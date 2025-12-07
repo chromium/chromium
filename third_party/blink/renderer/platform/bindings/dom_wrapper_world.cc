@@ -35,11 +35,10 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
-#include "third_party/blink/renderer/platform/bindings/v8_object_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -60,18 +59,19 @@ static_assert(IsMainWorldId(kMainDOMWorldId),
               "the internal blink value.");
 
 // This does not contain the main world because the WorldMap needs
-// non-default hashmap traits (WTF::IntWithZeroKeyHashTraits) to contain
+// non-default hashmap traits (blink::IntWithZeroKeyHashTraits) to contain
 // it for the main world's id (0), and it may change the performance trends.
 // (see https://crbug.com/704778#c6).
 using WorldMap = HeapHashMap<int, WeakMember<DOMWrapperWorld>>;
 static WorldMap& GetWorldMap() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<WorldMap>>, map,
-                                  ());
-  Persistent<WorldMap>& persistent_map = *map;
+  using WorldMapWrapper = DisallowNewWrapper<WorldMap>;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<WorldMapWrapper>>,
+                                  map, ());
+  Persistent<WorldMapWrapper>& persistent_map = *map;
   if (!persistent_map) {
-    persistent_map = MakeGarbageCollected<WorldMap>();
+    persistent_map = MakeGarbageCollected<WorldMapWrapper>();
   }
-  return *persistent_map;
+  return persistent_map->Value();
 }
 
 }  // namespace
@@ -118,7 +118,7 @@ DOMWrapperWorld::DOMWrapperWorld(PassKey,
       dom_data_store_(
           MakeGarbageCollected<DOMDataStore>(isolate,
                                              is_default_world_of_isolate)),
-      v8_object_data_store_(MakeGarbageCollected<V8ObjectDataStore>()) {
+      isolate_(isolate) {
   switch (world_type_) {
     case WorldType::kMain:
       // The main world is managed separately from worldMap(). See worldMap().
@@ -148,7 +148,7 @@ void DOMWrapperWorld::AllWorldsInIsolate(
     v8::Isolate* isolate,
     HeapVector<Member<DOMWrapperWorld>>& worlds) {
   DCHECK(worlds.empty());
-  WTF::CopyValuesToVector(GetWorldMap(), worlds);
+  worlds.assign(GetWorldMap().Values());
   if (IsMainThread()) {
     worlds.push_back(&MainWorld(isolate));
   }
@@ -253,7 +253,7 @@ void DOMWrapperWorld::SetNonMainWorldHumanReadableName(
   IsolatedWorldHumanReadableNames().Set(world_id, human_readable_name);
 }
 
-ABSL_CONST_INIT thread_local int next_world_id =
+constinit thread_local int next_world_id =
     DOMWrapperWorld::kUnspecifiedWorldIdStart;
 
 // static
@@ -265,7 +265,7 @@ std::optional<int> DOMWrapperWorld::GenerateWorldIdForType(
     case WorldType::kIsolated:
       // This function should not be called for IsolatedWorld because an
       // identifier for the world is given from out of DOMWrapperWorld.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case WorldType::kInspectorIsolated: {
       DCHECK(IsMainThread());
       static int next_devtools_isolated_world_id =
@@ -284,7 +284,7 @@ std::optional<int> DOMWrapperWorld::GenerateWorldIdForType(
       return next_world_id++;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -315,7 +315,6 @@ bool DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
 
 void DOMWrapperWorld::Trace(Visitor* visitor) const {
   visitor->Trace(dom_data_store_);
-  visitor->Trace(v8_object_data_store_);
 }
 
 }  // namespace blink

@@ -6,19 +6,19 @@
 
 #include <cstdlib>
 #include <memory>
+#include <set>
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -33,7 +33,6 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -127,8 +126,7 @@ LoadState SSLConnectJob::GetLoadState() const {
     case STATE_SSL_CONNECT_COMPLETE:
       return LOAD_STATE_SSL_HANDSHAKE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return LOAD_STATE_IDLE;
+      NOTREACHED();
   }
 }
 
@@ -161,6 +159,16 @@ void SSLConnectJob::OnNeedsProxyAuth(
   // anything once credentials are provided.
   NotifyDelegateOfProxyAuth(response, auth_controller,
                             std::move(restart_with_auth_callback));
+}
+
+Error SSLConnectJob::OnDestinationDnsAliasesResolved(
+    const std::set<std::string>& aliases,
+    ConnectJob* job) {
+  // Resolved DNS aliases should only be handled for direct connections.
+  if (params_->GetConnectionType() != SSLSocketParams::DIRECT) {
+    return OK;
+  }
+  return HandleDnsAliasesResolved(aliases);
 }
 
 ConnectionAttempts SSLConnectJob::GetConnectionAttempts() const {
@@ -228,9 +236,7 @@ int SSLConnectJob::DoLoop(int result) {
         rv = DoSSLConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
@@ -243,11 +249,17 @@ int SSLConnectJob::DoTransportConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  // If this is an ECH retry, connect to the same server as before.
+  // If this is an ECH or Trust Anchor IDs retry, connect to the same server as
+  // before.
   std::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
-  if (ech_retry_configs_) {
-    DCHECK(ssl_client_context()->config().ech_enabled);
+  if (ech_retry_configs_ || !trust_anchor_ids_for_retry_.empty()) {
+    if (ech_retry_configs_) {
+      DCHECK(ssl_client_context()->config().ech_enabled);
+    }
+    if (!trust_anchor_ids_for_retry_.empty()) {
+      DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
+    }
     DCHECK(endpoint_result_);
     endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
   }
@@ -373,6 +385,28 @@ int SSLConnectJob::DoSSLConnect() {
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
+      !ssl_client_context()->config().trust_anchor_ids.empty()) {
+    if (!trust_anchor_ids_for_retry_.empty()) {
+      ssl_config.trust_anchor_ids = trust_anchor_ids_for_retry_;
+    } else if (endpoint_result_) {
+      ssl_config.trust_anchor_ids =
+          ssl_client_context()->config().SelectTrustAnchorIDs(
+              endpoint_result_->metadata.trust_anchor_ids);
+    } else {
+      // Send an empty trust_anchors extension to signal we support the
+      // extension and can trigger the retry flow if the server picked a
+      // certificate wrong.
+      ssl_config.trust_anchor_ids.emplace();
+    }
+  }
+
+  net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
+    base::Value::Dict dict;
+    dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);
+    dict.Set("ech_config_list", NetLogBinaryValue(ssl_config.ech_config_list));
+    return dict;
+  });
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
       ssl_client_context(), std::move(nested_socket_), params_->host_and_port(),
       ssl_config);
@@ -384,7 +418,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   connect_timing_.ssl_end = base::TimeTicks::Now();
 
   if (result != OK && !server_address_.address().empty()) {
-    connection_attempts_.push_back(ConnectionAttempt(server_address_, result));
+    connection_attempts_.emplace_back(server_address_, result);
     server_address_ = IPEndPoint();
   }
 
@@ -437,74 +471,39 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     return OK;
   }
 
-  if (is_ech_capable && ech_enabled) {
-    // These values are persisted to logs. Entries should not be renumbered
-    // and numeric values should never be reused.
-    enum class ECHResult {
-      // The connection succeeded on the initial connection.
-      kSuccessInitial = 0,
-      // The connection failed on the initial connection, without providing
-      // retry configs.
-      kErrorInitial = 1,
-      // The connection succeeded after getting retry configs.
-      kSuccessRetry = 2,
-      // The connection failed after getting retry configs.
-      kErrorRetry = 3,
-      // The connection succeeded after getting a rollback signal.
-      kSuccessRollback = 4,
-      // The connection failed after getting a rollback signal.
-      kErrorRollback = 5,
-      kMaxValue = kErrorRollback,
-    };
-    const bool is_ok = result == OK;
-    ECHResult ech_result;
-    if (!ech_retry_configs_.has_value()) {
-      ech_result =
-          is_ok ? ECHResult::kSuccessInitial : ECHResult::kErrorInitial;
-    } else if (ech_retry_configs_->empty()) {
-      ech_result =
-          is_ok ? ECHResult::kSuccessRollback : ECHResult::kErrorRollback;
-    } else {
-      ech_result = is_ok ? ECHResult::kSuccessRetry : ECHResult::kErrorRetry;
-    }
-    base::UmaHistogramEnumeration("Net.SSL.ECHResult", ech_result);
-  }
-
-  if (result == OK) {
-    DCHECK(!connect_timing_.ssl_start.is_null());
-    base::TimeDelta connect_duration =
-        connect_timing_.ssl_end - connect_timing_.ssl_start;
-    UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
-                               base::Milliseconds(1), base::Minutes(1), 100);
-    if (is_ech_capable) {
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_ECH",
-                                 connect_duration, base::Milliseconds(1),
-                                 base::Minutes(1), 100);
-    }
-
-    SSLInfo ssl_info;
-    bool has_ssl_info = ssl_socket_->GetSSLInfo(&ssl_info);
-    DCHECK(has_ssl_info);
-
-    SSLVersion version =
-        SSLConnectionStatusToVersion(ssl_info.connection_status);
-    UMA_HISTOGRAM_ENUMERATION("Net.SSLVersion", version,
-                              SSL_CONNECTION_VERSION_MAX);
-
-    uint16_t cipher_suite =
-        SSLConnectionStatusToCipherSuite(ssl_info.connection_status);
-    base::UmaHistogramSparse("Net.SSL_CipherSuite", cipher_suite);
-
-    if (ssl_info.key_exchange_group != 0) {
-      base::UmaHistogramSparse("Net.SSL_KeyExchange.ECDHE",
-                               ssl_info.key_exchange_group);
+  // If we got a certificate error and the server advertised some Trust Anchor
+  // IDs in the handshake that we trust, then retry the connection, using the
+  // fresh Trust Anchor IDs from the server. We only want to retry once; if we
+  // already have |server_trust_anchor_ids_for_retry_| set at this point, it
+  // means we already retried, so we skip all of this and treat the connection
+  // error as usual.
+  //
+  // TODO(https://crbug.com/399937371): clarify and test the interactions of ECH
+  // retry and TAI retry.
+  if (IsCertificateError(result) && trust_anchor_ids_for_retry_.empty() &&
+      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
+        ssl_socket_->GetServerTrustAnchorIDsForRetry();
+    // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
+    // If the EncryptedExtensions had no trust_anchor extension, or no match was
+    // found, the client returns the error to the application.
+    if (!server_trust_anchor_ids.empty()) {
+      trust_anchor_ids_for_retry_ =
+          ssl_client_context()->config().SelectTrustAnchorIDs(
+              server_trust_anchor_ids);
+      if (!trust_anchor_ids_for_retry_.empty()) {
+        ResetStateForRestart();
+        next_state_ = GetInitialState(params_->GetConnectionType());
+        return OK;
+      }
     }
   }
 
-  base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
-  if (is_ech_capable) {
-    base::UmaHistogramSparse("Net.SSL_Connection_Error_ECH", std::abs(result));
-  }
+  SSLClientSocket::RecordSSLConnectResult(
+      ssl_socket_.get(), result, is_ech_capable, ech_enabled,
+      ech_retry_configs_,
+      endpoint_result_ && !endpoint_result_->metadata.trust_anchor_ids.empty(),
+      !trust_anchor_ids_for_retry_.empty(), connect_timing_);
 
   if (result == OK || IsCertificateError(result)) {
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));
@@ -526,8 +525,7 @@ SSLConnectJob::State SSLConnectJob::GetInitialState(
     case SSLSocketParams::SOCKS_PROXY:
       return STATE_SOCKS_CONNECT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return STATE_NONE;
+  NOTREACHED();
 }
 
 int SSLConnectJob::ConnectInternal() {

@@ -5,7 +5,6 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -37,6 +36,13 @@ test("services_unittests") {
     "//services/test:run_all_unittests",
   ]
 
+  fuzztests = [
+    "GetAttributionSupportHeader.IsSupportValid",
+    "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
+    "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
+    "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
+  ]
+
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
 
   if (use_blink) {
@@ -59,11 +65,23 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
+      "//services/webnn/public/cpp:tests",
       "//services/webnn/public/mojom:tests",
     ]
     if (is_ios) {
       bundle_deps =
           [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
+    }
+    if (is_android) {
+      deps += [
+        # The java target is added explicitly because the unit tests below
+        # require connection to the Java classes. Without a direct dependency,
+        # the unit tests will encounter a ClassNotFoundException error at
+        # runtime.
+        "//services/on_device_model/android:java",
+        "//services/on_device_model/android:native_java_unittests_java",
+        "//services/on_device_model/android:unit_tests",
+      ]
     }
   }
 
@@ -71,7 +89,7 @@ test("services_unittests") {
     deps += [ "//base:base_profiler_test_support_library" ]
   }
 
-  if (is_chromeos_ash || is_linux || is_fuchsia) {
+  if (is_linux) {
     deps += [ "//services/accessibility:tests" ]
   }
 
@@ -82,7 +100,6 @@ test("services_unittests") {
   if (is_android) {
     deps += [
       "//components/signin/public/android:java",
-      "//services/data_decoder/public/cpp/android:safe_json_java",
       "//services/device:java",
       "//services/media_session/public/cpp/android:media_session_java",
       "//services/tracing:tracing_test_helper_java",
@@ -109,10 +126,6 @@ test("services_unittests") {
     ]
   }
 
-  if (enable_video_effects) {
-    deps += [ "//services/video_effects:tests" ]
-  }
-
   if (is_fuchsia) {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
@@ -129,9 +142,14 @@ if (!is_ios) {
   test("services_perftests") {
     deps = [
       "//services/device:perftests",
+      "//services/network/public/cpp:perftests",
       "//services/test:run_all_unittests",
       "//services/viz/public/cpp/compositing:perftests",
     ]
+
+    if (is_android) {
+      deps += [ "//components/signin/public/android:java" ]
+    }
   }
 }
 
@@ -148,6 +166,7 @@ if (is_android) {
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
+      "$google_play_services_package:google_play_services_tasks_java",
       "$google_play_services_package:google_play_services_vision_common_java",
       "$google_play_services_package:google_play_services_vision_java",
       "//base:base_java",
@@ -161,12 +180,14 @@ if (is_android) {
       "//services/device/geolocation:geolocation_java",
       "//services/device/nfc/android:java",
       "//services/device/public/java:device_feature_list_java",
+      "//services/device/public/java:geolocation_java",
       "//services/device/public/java:geolocation_java_test_support",
       "//services/device/public/java:nfc_java",
       "//services/device/public/mojom:generic_sensor_java",
       "//services/device/public/mojom:mojom_java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
+      "//third_party/google-truth:google_truth_java",
     ]
   }
 
@@ -193,6 +214,7 @@ if (is_android) {
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",

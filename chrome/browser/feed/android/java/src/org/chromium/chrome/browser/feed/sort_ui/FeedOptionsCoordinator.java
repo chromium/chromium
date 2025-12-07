@@ -8,10 +8,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A coordinator for the feed options panel. */
+@NullMarked
 public class FeedOptionsCoordinator {
     /** Listener for change in options selection. */
     public interface OptionChangedListener {
@@ -44,9 +46,9 @@ public class FeedOptionsCoordinator {
 
     private final FeedOptionsView mView;
     private final Context mContext;
-    private List<PropertyModel> mChipModels;
-    private PropertyModel mModel;
-    @Nullable private OptionChangedListener mOptionsListener;
+    private final List<PropertyModel> mChipModels;
+    private final PropertyModel mModel;
+    private @Nullable OptionChangedListener mOptionsListener;
 
     public FeedOptionsCoordinator(Context context) {
         // We don't use ChipsCoordinator here because RecyclerView does not play
@@ -136,12 +138,10 @@ public class FeedOptionsCoordinator {
             @StringRes int contentDescriptionId) {
         return new PropertyModel.Builder(ChipProperties.ALL_KEYS)
                 .with(ChipProperties.ID, id)
-                .with(ChipProperties.TEXT, mContext.getResources().getString(textId))
+                .with(ChipProperties.TEXT, mContext.getString(textId))
                 .with(ChipProperties.SELECTED, isSelected)
                 .with(ChipProperties.CLICK_HANDLER, this::onOptionSelected)
-                .with(
-                        ChipProperties.CONTENT_DESCRIPTION,
-                        mContext.getResources().getString(contentDescriptionId))
+                .with(ChipProperties.CONTENT_DESCRIPTION, mContext.getString(contentDescriptionId))
                 .build();
     }
 

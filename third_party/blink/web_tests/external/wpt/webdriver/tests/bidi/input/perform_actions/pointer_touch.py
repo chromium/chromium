@@ -1,6 +1,8 @@
 import pytest
 
+from webdriver.bidi.error import MoveTargetOutOfBoundsException, NoSuchFrameException
 from webdriver.bidi.modules.input import Actions, get_element_origin
+from webdriver.bidi.modules.script import ContextTarget
 
 from .. import get_events
 from . import (
@@ -11,6 +13,122 @@ from . import (
 )
 
 pytestmark = pytest.mark.asyncio
+
+CONTEXT_LOAD_EVENT = "browsingContext.load"
+
+
+async def test_click_at_fractional_coordinates(bidi_session, top_context, inline):
+    url = inline("""
+        <script>
+          var allEvents = { events: [] };
+          window.addEventListener("pointermove", ev => {
+            allEvents.events.push({
+                "type": event.type,
+                "pageX": event.pageX,
+                "pageY": event.pageY,
+            });
+          }, { once: true });
+        </script>
+        """)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=url,
+        wait="complete",
+    )
+
+    target_point = {
+        "x": 5.75,
+        "y": 10.25,
+    }
+
+    actions = Actions()
+    (
+        actions
+        .add_pointer(pointer_type="touch")
+        .pointer_down(button=0)
+        .pointer_move(x=target_point["x"], y=target_point["y"])
+    )
+
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    events = await get_events(bidi_session, top_context["context"])
+    assert len(events) == 1
+
+    # For now we are allowing any of floor, ceil, or precise values, because
+    # it's unclear what the actual spec requirements really are
+    assert events[0]["type"] == "pointermove"
+    assert events[0]["pageX"] == pytest.approx(target_point["x"], abs=1.0)
+    assert events[0]["pageY"] == pytest.approx(target_point["y"], abs=1.0)
+
+
+async def test_pointer_down_closes_browsing_context(
+    bidi_session, configuration, get_element, new_tab, inline, subscribe_events,
+    wait_for_event
+):
+    url = inline("""<input onpointerdown="window.close()">close</input>""")
+
+    # Opening a new context via `window.open` is required for script to be able
+    # to close it.
+    await subscribe_events(events=[CONTEXT_LOAD_EVENT])
+    on_load = wait_for_event(CONTEXT_LOAD_EVENT)
+
+    await bidi_session.script.evaluate(
+        expression=f"window.open('{url}')",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True
+    )
+    # Wait for the new context to be created and get it.
+    new_context = await on_load
+
+    element = await get_element("input", context=new_context)
+    origin = get_element_origin(element)
+
+    actions = Actions()
+    (
+        actions.add_pointer(pointer_type="touch")
+        .pointer_move(0, 0, origin=origin)
+        .pointer_down(button=0)
+        .pause(250 * configuration["timeout_multiplier"])
+        .pointer_up(button=0)
+    )
+
+    with pytest.raises(NoSuchFrameException):
+        await bidi_session.input.perform_actions(
+            actions=actions, context=new_context["context"]
+        )
+
+
+@pytest.mark.parametrize("origin", ["element", "pointer", "viewport"])
+async def test_params_actions_origin_outside_viewport(
+    bidi_session, get_actions_origin_page, top_context, get_element, origin
+):
+    if origin == "element":
+        url = get_actions_origin_page(
+            """width: 100px; height: 50px; background: green;
+            position: relative; left: -200px; top: -100px;"""
+        )
+        await bidi_session.browsing_context.navigate(
+            context=top_context["context"],
+            url=url,
+            wait="complete",
+        )
+
+        element = await get_element("#inner")
+        origin = get_element_origin(element)
+
+    actions = Actions()
+    (
+        actions.add_pointer(pointer_type="touch")
+        .pointer_move(x=-100, y=-100, origin=origin)
+    )
+
+    with pytest.raises(MoveTargetOutOfBoundsException):
+        await bidi_session.input.perform_actions(
+            actions=actions, context=top_context["context"]
+        )
 
 
 @pytest.mark.parametrize("mode", ["open", "closed"])
@@ -100,6 +218,8 @@ async def test_touch_pointer_properties(
     )
 
     events = await get_events(bidi_session, top_context["context"])
+    # Filter mouse events.
+    events = [e for e in events if e["pointerType"] == "touch"]
 
     assert len(events) == 7
     event_types = [e["type"] for e in events]
@@ -173,6 +293,8 @@ async def test_touch_pointer_properties_angle_twist(
     )
 
     events = await get_events(bidi_session, top_context["context"])
+    # Filter mouse events.
+    events = [e for e in events if e["pointerType"] == "touch"]
 
     assert len(events) == 7
     event_types = [e["type"] for e in events]

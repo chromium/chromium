@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_SCOPED_BORINGSSL_BYTES_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_SCOPED_BORINGSSL_BYTES_H_
 
-#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace network {
@@ -37,21 +32,20 @@ namespace network {
 class ScopedBoringsslBytes {
  public:
   ScopedBoringsslBytes() = default;
-  ~ScopedBoringsslBytes() { OPENSSL_free(ptr_); }
+  ~ScopedBoringsslBytes() { OPENSSL_free(ptr_.ExtractAsDangling()); }
 
   bool is_valid() { return ptr_; }
-  uint8_t** mutable_ptr() { return &ptr_; }
+  raw_ptr<uint8_t>* mutable_ptr() { return &ptr_; }
   size_t* mutable_len() { return &len_; }
 
   base::span<const uint8_t> as_span() const {
     CHECK(ptr_);
-    return base::make_span(ptr_, len_);
+    return UNSAFE_TODO(base::span(ptr_.get(), len_));
   }
 
  private:
   size_t len_ = 0;
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION uint8_t* ptr_ = nullptr;
+  raw_ptr<uint8_t> ptr_ = nullptr;
 };
 
 }  // namespace network

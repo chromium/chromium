@@ -4,23 +4,29 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.content.Context;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout.LayoutParams;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -33,84 +39,103 @@ import org.chromium.ui.util.TokenHolder;
  * <p>This class holds all the dependencies of {@link HubCoordinator} so that the Hub UI can be
  * created and torn down as needed when {@link HubLayout} visibility changes.
  */
+@NullMarked
 public class HubManagerImpl implements HubManager, HubController {
     private final ValueChangedCallback<Pane> mOnFocusedPaneChanged =
             new ValueChangedCallback<>(this::onFocusedPaneChanged);
-    private final @NonNull ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
+    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private final @NonNull Context mContext;
-    private final @NonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final @NonNull PaneManagerImpl mPaneManager;
-    private final @NonNull HubContainerView mHubContainerView;
-    private final @NonNull BackPressManager mBackPressManager;
-    private final @NonNull MenuOrKeyboardActionController mMenuOrKeyboardActionController;
-    private final @NonNull SnackbarManager mSnackbarManager;
-    private final @NonNull ObservableSupplier<Tab> mTabSupplier;
-    private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
-    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
+    private final Activity mActivity;
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private final PaneManagerImpl mPaneManager;
+    private final HubContainerView mHubContainerView;
+    private final BackPressManager mBackPressManager;
+    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    private final SnackbarManager mSnackbarManager;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
+    private final MenuButtonCoordinator mMenuButtonCoordinator;
+    private final HubShowPaneHelper mHubShowPaneHelper;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final SearchActivityClient mSearchActivityClient;
+    private final HubColorMixer mHubColorMixer;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
-    private HubLayoutController mHubLayoutController;
-    private HubCoordinator mHubCoordinator;
+    private @MonotonicNonNull HubLayoutController mHubLayoutController;
+    private @Nullable HubCoordinator mHubCoordinator;
     private int mSnackbarOverrideToken;
     private int mStatusIndicatorHeight;
     private int mAppHeaderHeight;
+    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final @PaneId int mDefaultPaneId;
 
     /** See {@link HubManagerFactory#createHubManager}. */
     public HubManagerImpl(
-            @NonNull Context context,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull PaneListBuilder paneListBuilder,
-            @NonNull BackPressManager backPressManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator,
-            @NonNull HubShowPaneHelper hubShowPaneHelper) {
-        mContext = context;
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            PaneListBuilder paneListBuilder,
+            BackPressManager backPressManager,
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            SnackbarManager snackbarManager,
+            NullableObservableSupplier<Tab> tabSupplier,
+            MenuButtonCoordinator menuButtonCoordinator,
+            HubShowPaneHelper hubShowPaneHelper,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            SearchActivityClient searchActivityClient,
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @PaneId int defaultPaneId) {
+        mActivity = activity;
         mProfileProviderSupplier = profileProviderSupplier;
-        mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
+        mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier, defaultPaneId);
         mBackPressManager = backPressManager;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mSnackbarManager = snackbarManager;
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mHubShowPaneHelper = hubShowPaneHelper;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mSearchActivityClient = searchActivityClient;
 
         // TODO(crbug.com/40283238): Consider making this a xml file so the entire core UI is
         // inflated.
-        mHubContainerView = new HubContainerView(mContext);
+        mHubContainerView = new HubContainerView(mActivity);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mHubContainerView.setLayoutParams(params);
 
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnFocusedPaneChanged);
+        mHubColorMixer =
+                new HubColorMixerImpl(
+                        mActivity, mHubVisibilitySupplier, mPaneManager.getFocusedPaneSupplier());
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        mDefaultPaneId = defaultPaneId;
     }
 
     @Override
     public void destroy() {
+        mHubVisibilitySupplier.set(false);
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChanged);
         mPaneManager.destroy();
+        mHubColorMixer.destroy();
         destroyHubCoordinator();
     }
 
     @Override
-    public @NonNull PaneManager getPaneManager() {
+    public PaneManager getPaneManager() {
         return mPaneManager;
     }
 
     @Override
-    public @NonNull HubController getHubController() {
+    public HubController getHubController() {
         return this;
     }
 
     @Override
-    public @NonNull ObservableSupplier<Boolean> getHubVisibilitySupplier() {
+    public ObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
     }
 
     @Override
-    public @NonNull HubShowPaneHelper getHubShowPaneHelper() {
+    public HubShowPaneHelper getHubShowPaneHelper() {
         return mHubShowPaneHelper;
     }
 
@@ -134,14 +159,24 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public void setHubLayoutController(@NonNull HubLayoutController hubLayoutController) {
+    public ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+        return mHubColorMixer.getOverviewColorSupplier();
+    }
+
+    @Override
+    public void setHubLayoutController(HubLayoutController hubLayoutController) {
         assert mHubLayoutController == null : "setHubLayoutController should only be called once.";
         mHubLayoutController = hubLayoutController;
     }
 
     @Override
-    public @NonNull HubContainerView getContainerView() {
+    public HubContainerView getContainerView() {
         assert mHubCoordinator != null : "Access of a HubContainerView with no descendants.";
+        return mHubContainerView;
+    }
+
+    @Override
+    public HubContainerView getContainerViewUnchecked() {
         return mHubContainerView;
     }
 
@@ -154,7 +189,7 @@ public class HubManagerImpl implements HubManager, HubController {
     @Override
     public @ColorInt int getBackgroundColor(@Nullable Pane pane) {
         @HubColorScheme int colorScheme = HubColors.getColorSchemeSafe(pane);
-        return HubColors.getBackgroundColor(mContext, colorScheme);
+        return HubColors.getBackgroundColor(mActivity, colorScheme);
     }
 
     @Override
@@ -167,8 +202,8 @@ public class HubManagerImpl implements HubManager, HubController {
     public void onHubLayoutDoneHiding() {
         // TODO(crbug.com/40283238): Consider deferring this destruction till after a timeout.
         mHubContainerView.removeAllViews();
-        destroyHubCoordinator();
         mHubVisibilitySupplier.set(false);
+        destroyHubCoordinator();
     }
 
     @Override
@@ -186,6 +221,11 @@ public class HubManagerImpl implements HubManager, HubController {
         }
     }
 
+    @Override
+    public HubColorMixer getHubColorMixer() {
+        return mHubColorMixer;
+    }
+
     private void ensureHubCoordinatorIsInitialized() {
         if (mHubCoordinator != null) return;
 
@@ -194,12 +234,18 @@ public class HubManagerImpl implements HubManager, HubController {
 
         mHubCoordinator =
                 new HubCoordinator(
+                        mActivity,
                         mProfileProviderSupplier,
                         mHubContainerView,
                         mPaneManager,
                         mHubLayoutController,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mSearchActivityClient,
+                        mEdgeToEdgeSupplier,
+                        mHubColorMixer,
+                        mXrSpaceModeObservableSupplier,
+                        mDefaultPaneId);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);
@@ -216,7 +262,7 @@ public class HubManagerImpl implements HubManager, HubController {
         }
     }
 
-    HubCoordinator getHubCoordinatorForTesting() {
+    @Nullable HubCoordinator getHubCoordinatorForTesting() {
         return mHubCoordinator;
     }
 
@@ -245,6 +291,7 @@ public class HubManagerImpl implements HubManager, HubController {
 
     private void attachPaneDependencies(@Nullable Pane pane) {
         if (pane == null) return;
+        assumeNonNull(mHubCoordinator);
 
         pane.setPaneHubController(mHubCoordinator);
         MenuOrKeyboardActionHandler menuOrKeyboardActionHandler =

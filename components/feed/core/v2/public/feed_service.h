@@ -67,6 +67,9 @@ class FeedService : public KeyedService {
     // Returns a string which represents the top locale and region of the
     // device.
     virtual std::string GetLanguageTag() = 0;
+    // Returns the country code. Country code is in the format of uppercase ISO
+    // 3166-1 alpha-2.
+    virtual std::string GetCountry() = 0;
     // Returns display metrics for the device.
     virtual DisplayMetrics GetDisplayMetrics() = 0;
     // Returns how the tab group feature is enabled.
@@ -84,6 +87,10 @@ class FeedService : public KeyedService {
         size_t follow_count) = 0;
     // Registers a synthetic field trial "FeedUserSettings".
     virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
+    // Returns the server-provided feed launch CUI metadata.
+    virtual const std::string& GetFeedLaunchCuiMetadata() const = 0;
+    // Sets the server-provided feed launch CUI metadata.
+    virtual void SetFeedLaunchCuiMetadata(const std::string& metadata) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.
@@ -136,6 +143,9 @@ class FeedService : public KeyedService {
 
   // Returns the synthetic field experiments.
   const Experiments& GetExperiments() const;
+
+  // Returns the server-provided feed launch CUI metadata.
+  const std::string& GetFeedLaunchCuiMetadata() const;
 
  private:
   class StreamDelegateImpl;

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/crash/core/app/minidump_with_crashpad_info.h"
-
-#include "base/files/file_util.h"
 #include "components/crash/core/app/crash_export_thunks.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/crash/core/app/minidump_with_crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/settings.h"

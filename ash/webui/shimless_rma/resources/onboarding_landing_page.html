@@ -48,7 +48,10 @@
             [[i18n('validatedComponentsSuccessText')]]
           </span>
           <span inner-h-t-m-l="[[verificationFailedMessage]]"
-              hidden$="[[isCompliant]]" class="instructions">
+              hidden$="[[isCompliant || isSkipped]]" class="instructions">
+          </span>
+          <span id="verificationSkipMessage" hidden$="[[!isSkipped]]">
+            [[i18n('validatedComponentsSkipText')]]
           </span>
         </span>
       </div>
@@ -65,7 +68,8 @@
       </cr-button>
       <cr-button id="landingExit" class="pill"
           on-click="onLandingExitButtonClicked"
-          disabled="[[allButtonsDisabled]]">
+          disabled="[[allButtonsDisabled]]"
+          hidden$="[[!canExit]]">
         <span id="exitButtonLabel">
           [[i18n('exitButtonLabel')]]
         </span>

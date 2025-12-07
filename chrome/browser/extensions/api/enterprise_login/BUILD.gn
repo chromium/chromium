@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("enterprise_login") {
+  sources = [
+    "enterprise_login_api.cc",
+    "enterprise_login_api.h",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/common/extensions/api",
+    "//components/prefs",
+  ]
+}

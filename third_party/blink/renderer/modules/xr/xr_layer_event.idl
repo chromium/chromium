@@ -1,0 +1,13 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webxrlayers-1/#xrlayerevent
+[
+  RuntimeEnabled=WebXRLayers,
+  SecureContext,
+  Exposed=Window
+] interface XRLayerEvent : Event {
+  constructor(DOMString type, XRLayerEventInit eventInitDict);
+  [SameObject] readonly attribute XRLayer layer;
+};

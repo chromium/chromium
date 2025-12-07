@@ -47,7 +47,7 @@ constexpr char kJlnKey[] =
 
 namespace crx_file {
 
-using CrxVerifierTest = testing::Test;
+using CrxVerifierTest = ::testing::Test;
 
 TEST_F(CrxVerifierTest, ValidFullCrx3) {
   const std::vector<std::vector<uint8_t>> keys;

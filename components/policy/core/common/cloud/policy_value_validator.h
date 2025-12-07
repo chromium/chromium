@@ -10,6 +10,11 @@
 
 namespace policy {
 
+enum ValidationAction {
+  kStore,
+  kLoad,
+};
+
 struct ValueValidationIssue {
   enum Severity { kWarning, kError };
 

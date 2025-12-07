@@ -11,8 +11,12 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -31,7 +35,7 @@ class HttpResponse;
 // be registered as an additional request handler.
 class FakeGaia {
  public:
-  static constexpr std::string_view kDefaultGaiaId = "12345";
+  static GaiaId GetDefaultGaiaId() { return GaiaId("12345"); }
 
   using ScopeSet = std::set<std::string>;
   using RefreshTokenToDeviceIdMap = std::map<std::string, std::string>;
@@ -45,7 +49,7 @@ class FakeGaia {
     std::string token;
     std::string issued_to;
     std::string audience;
-    std::string user_id;
+    GaiaId user_id;
     ScopeSet scopes;
     int expires_in = 3600;
     std::string email;
@@ -76,15 +80,43 @@ class FakeGaia {
     std::string access_token;
     std::string id_token;
 
-    // Values of SID and LSID cookie generated from multilogin call.
+    // Values of SID, SIDTS and LSID cookie generated from multilogin call.
     std::string session_sid_cookie;
+    std::string session_1p_sidts_cookie;
+    std::string session_3p_sidts_cookie;
     std::string session_lsid_cookie;
 
-    // The e-mail address returned by /ListAccounts.
-    std::string email;
+    // The e-mail addresses returned by /ListAccounts.
+    std::vector<std::string> emails;
 
     // List of signed out gaia IDs returned by /ListAccounts.
-    std::vector<std::string> signed_out_gaia_ids;
+    std::vector<GaiaId> signed_out_gaia_ids;
+
+    // If true and OAuthMultilogin is called with a signed challenge, the
+    // response will contain additional bound session information indicating
+    // that the existing session should be reused. Otherwise, payload to
+    // register the new session will be returned.
+    bool reuse_bound_session = false;
+
+    // If true, the server will return a spec-compliant device-bound session
+    // info in the response to OAuthMultilogin.
+    //
+    // NOTE: This is only applicable when `reuse_bound_session` is `false`.
+    bool spec_compliant_device_bound_session = true;
+
+    // Overrides the status returned by OAuthMultilogin. If not set, `FakeGaia`
+    // determines the status based on the request parameters.
+    //
+    // NOTE: Currently only supported for
+    // `OAuthMultiloginResponseStatus::kInvalidInput` and
+    // `OAuthMultiloginResponseStatus::kError` statuses.
+    std::optional<OAuthMultiloginResponseStatus>
+        oauth_multilogin_response_status;
+
+    // The cookies set by `/RotateBoundCookies` (the cookies are set for
+    // `google.com` domain). If empty, the server will return an HTTP error
+    // (400).
+    std::vector<std::string> rotated_cookies;
   };
 
   struct SyncTrustedVaultKeys {
@@ -94,6 +126,29 @@ class FakeGaia {
     std::vector<uint8_t> encryption_key;
     int encryption_key_version = 0;
     std::vector<std::vector<uint8_t>> trusted_public_keys;
+  };
+
+  // Represents a single OAuthMultilogin call. It contains the
+  // `gaia::MultiOAuthHeader` sent by the client (if any) and the action the
+  // server took in response to the request.
+  //
+  // Only successful calls are recorded (see `MultiloginAction` for the
+  // list of possible actions).
+  struct MultiloginCall {
+    // Indicates what action the server performed when handling an
+    // OAuthMultilogin request.
+    enum class Action {
+      kReturnUnboundCookies,
+      kReturnBoundCookies,
+      kReturnBindingChallenge,
+    };
+
+    MultiloginCall();
+    MultiloginCall(const MultiloginCall& other);
+    ~MultiloginCall();
+
+    std::optional<gaia::MultiOAuthHeader> header;
+    Action action;
   };
 
   FakeGaia();
@@ -116,7 +171,7 @@ class FakeGaia {
   // Sets the specified |gaia_id| as corresponding to the given |email|
   // address when setting GAIA response headers.  If no mapping is given for
   // an email address, a default GAIA Id is used.
-  void MapEmailToGaiaId(const std::string& email, const std::string& gaia_id);
+  void MapEmailToGaiaId(const std::string& email, const GaiaId& gaia_id);
 
   // Adds sync trusted vault keys for |email|.
   void SetSyncTrustedVaultKeys(
@@ -139,6 +194,10 @@ class FakeGaia {
   // scope and audience requested by the client need to match the token_info.
   void IssueOAuthToken(const std::string& auth_token,
                        const AccessTokenInfo& token_info);
+
+  // Returns `true` if at least one access token was configured to be returned
+  // for `auth_token` via `IssueOAuthToken()`.
+  bool HasAccessTokenForAuthToken(const std::string& auth_token) const;
 
   // Associates an account id with a SAML IdP redirect endpoint. When a
   // /ServiceLoginAuth request comes in for that user, it will be redirected
@@ -218,9 +277,13 @@ class FakeGaia {
     return passwordless_support_level_;
   }
 
+  // Returns and resets the list of OAuthMultilogin calls that have been made to
+  // the fake server.
+  base::queue<MultiloginCall> GetAndResetMultiloginCalls();
+
   // Returns the fake server's URL that browser tests can visit to trigger a
   // RemoveLocalAccount event.
-  GURL GetFakeRemoveLocalAccountURL(const std::string& gaia_id) const;
+  GURL GetFakeRemoveLocalAccountURL(const GaiaId& gaia_id) const;
 
   void SetFakeSamlContinueResponse(
       const std::string& fake_saml_continue_response) {
@@ -229,19 +292,19 @@ class FakeGaia {
 
  private:
   using AccessTokenInfoMap = std::multimap<std::string, AccessTokenInfo>;
-  using EmailToGaiaIdMap = std::map<std::string, std::string>;
+  using EmailToGaiaIdMap = std::map<std::string, GaiaId>;
   using SamlAccountIdpMap = std::map<std::string, GURL>;
   using SamlSsoProfileRedirectUrlMap = std::map<std::string, GURL>;
   using SamlDomainRedirectUrlMap = std::map<std::string, GURL>;
   using EmailToSyncTrustedVaultKeysMap =
       std::map<std::string, SyncTrustedVaultKeys>;
 
-  std::string GetGaiaIdOfEmail(const std::string& email) const;
-  std::string GetEmailOfGaiaId(const std::string& email) const;
+  GaiaId GetGaiaIdOfEmail(const std::string& email) const;
+  std::string GetEmailOfGaiaId(const GaiaId& gaia_id) const;
 
   void AddGoogleAccountsSigninHeader(
       net::test_server::BasicHttpResponse* http_response,
-      const std::string& email) const;
+      const std::vector<std::string>& emails) const;
 
   void SetOAuthCodeCookie(
       net::test_server::BasicHttpResponse* http_response) const;
@@ -249,17 +312,6 @@ class FakeGaia {
   void AddSyncTrustedKeysHeader(
       net::test_server::BasicHttpResponse* http_response,
       const std::string& email) const;
-
-  // Formats a JSON response with the data in |value|, setting the http status
-  // to |status|.
-  void FormatJSONResponse(const base::ValueView& value,
-                          net::HttpStatusCode status,
-                          net::test_server::BasicHttpResponse* http_response);
-
-  // Formats a JSON response with the data in |value|, setting the http status
-  // to net::HTTP_OK.
-  void FormatOkJSONResponse(const base::ValueView& value,
-                            net::test_server::BasicHttpResponse* http_response);
 
   using HttpRequestHandlerCallback = base::RepeatingCallback<void(
       const net::test_server::HttpRequest& request,
@@ -326,6 +378,12 @@ class FakeGaia {
   void HandleFakeRemoveLocalAccount(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
+  void HandleOAuth2TokenRevoke(
+      const net::test_server::HttpRequest& request,
+      net::test_server::BasicHttpResponse* http_response);
+  void HandleRotateBoundCookies(
+      const net::test_server::HttpRequest& request,
+      net::test_server::BasicHttpResponse* http_response);
 
   // Returns the access token associated with |auth_token| that matches the
   // given |client_id| and |scope_string|. If |scope_string| is empty, the first
@@ -369,6 +427,7 @@ class FakeGaia {
   GaiaAuthConsumer::ReAuthProofTokenStatus next_reauth_status_ =
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess;
   GURL embedded_setup_chromeos_iframe_url_;
+  base::queue<MultiloginCall> multilogin_calls_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_FAKE_GAIA_H_

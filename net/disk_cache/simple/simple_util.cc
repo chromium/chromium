@@ -25,14 +25,14 @@
 namespace {
 
 // Size of the uint64_t hash_key number in Hex format in a string.
-const size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
+constexpr size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
 
 }  // namespace
 
 namespace disk_cache::simple_util {
 
 std::string ConvertEntryHashKeyToHexString(uint64_t hash_key) {
-  const std::string hash_key_str = base::StringPrintf("%016" PRIx64, hash_key);
+  std::string hash_key_str = base::StringPrintf("%016" PRIx64, hash_key);
   DCHECK_EQ(kEntryHashKeyAsHexStringSize, hash_key_str.size());
   return hash_key_str;
 }
@@ -86,13 +86,13 @@ size_t GetHeaderSize(size_t key_length) {
   return sizeof(SimpleFileHeader) + key_length;
 }
 
-int32_t GetDataSizeFromFileSize(size_t key_length, int64_t file_size) {
+int64_t GetDataSizeFromFileSize(size_t key_length, int64_t file_size) {
   int64_t data_size =
       file_size - key_length - sizeof(SimpleFileHeader) - sizeof(SimpleFileEOF);
-  return base::checked_cast<int32_t>(data_size);
+  return data_size;
 }
 
-int64_t GetFileSizeFromDataSize(size_t key_length, int32_t data_size) {
+int64_t GetFileSizeFromDataSize(size_t key_length, int64_t data_size) {
   return data_size + key_length + sizeof(SimpleFileHeader) +
          sizeof(SimpleFileEOF);
 }
@@ -102,19 +102,17 @@ int GetFileIndexFromStreamIndex(int stream_index) {
 }
 
 uint32_t Crc32(base::span<const uint8_t> data) {
-  auto chars = base::as_chars(data);
-  return Crc32(chars.data(), base::checked_cast<int>(data.size()));
-}
-
-uint32_t Crc32(const char* data, int length) {
   uint32_t empty_crc = crc32(0, Z_NULL, 0);
-  if (length == 0)
+  if (data.size() == 0) {
     return empty_crc;
-  return crc32(empty_crc, reinterpret_cast<const Bytef*>(data), length);
+  } else {
+    return crc32(empty_crc, data.data(), data.size());
+  }
 }
 
-uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length) {
-  return crc32(previous_crc, reinterpret_cast<const Bytef*>(data), length);
+uint32_t IncrementalCrc32(uint32_t previous_crc,
+                          base::span<const uint8_t> data) {
+  return crc32(previous_crc, data.data(), data.size());
 }
 
 }  // namespace disk_cache::simple_util

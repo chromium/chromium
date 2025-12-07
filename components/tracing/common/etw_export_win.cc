@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/etw_interceptor_win.h"
-#include "base/trace_event/trace_event_etw_export_win.h"
 #include "base/trace_event/trace_logging_minimal_win.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -19,9 +18,7 @@
 namespace tracing {
 namespace {
 
-BASE_FEATURE(kEnableEtwExports,
-             "EnableEtwExports",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableEtwExports, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to protect the upper 16 bits reserved by winmeta.xml as they
 // should not be used but older logging code and tools incorrectly used
@@ -36,6 +33,7 @@ perfetto::TraceConfig CreateTraceConfigForETWKeyword(uint64_t keyword) {
   data_source_config->mutable_interceptor_config()->set_name("etwexport");
   perfetto::protos::gen::TrackEventConfig track_event_config =
       base::trace_event::ETWKeywordToTrackEventConfig(keyword);
+  track_event_config.set_filter_dynamic_event_names(true);
   data_source_config->set_track_event_config_raw(
       track_event_config.SerializeAsString());
   return config;
@@ -63,12 +61,21 @@ class ETWExportController {
   std::unique_ptr<TlmProvider> etw_provider_;
 };
 
+// This GUID is the used to identify the Chrome provider and is used whenever
+// ETW is enabled via tracing tools and cannot change without updating tools
+// that collect Chrome ETW data.
+constexpr GUID kChromeETWGUID = {
+    0xD2D578D9,
+    0x2936,
+    0x45B6,
+    {0xA0, 0x9F, 0x30, 0xE3, 0x27, 0x15, 0xF4, 0x2D}};
+
 ETWExportController::ETWExportController() {
   // Construct the ETW provider. If construction fails then the event logging
   // calls will fail. We're passing a callback function as part of registration.
   // This allows us to detect changes to enable/disable/keyword changes.
   etw_provider_ = std::make_unique<TlmProvider>(
-      "Google.Chrome", base::trace_event::Chrome_GUID,
+      "Google.Chrome", kChromeETWGUID,
       base::BindRepeating(&ETWExportController::OnUpdate,
                           base::Unretained(this)));
   base::trace_event::ETWInterceptor::Register(etw_provider_.get());

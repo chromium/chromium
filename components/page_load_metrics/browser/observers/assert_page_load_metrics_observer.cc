@@ -289,6 +289,8 @@ void AssertPageLoadMetricsObserver::OnParseStop(
 
 void AssertPageLoadMetricsObserver::OnConnectStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {}
+void AssertPageLoadMetricsObserver::OnConnectEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
 void AssertPageLoadMetricsObserver::OnDomainLookupStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {}
 void AssertPageLoadMetricsObserver::OnDomainLookupEnd(
@@ -325,6 +327,24 @@ void AssertPageLoadMetricsObserver::OnFirstImagePaintInPage(
 }
 
 void AssertPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  CHECK(committed_);
+  if (IsPrerendered()) {
+    CHECK(activated_);
+  }
+  CHECK(timing.paint_timing->first_contentful_paint.has_value());
+}
+
+void AssertPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  CHECK(committed_);
+  if (IsPrerendered()) {
+    CHECK(activated_);
+  }
+  CHECK(timing.paint_timing->first_paint.has_value());
+}
+
+void AssertPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(committed_);
   if (IsPrerendered()) {
@@ -409,7 +429,8 @@ void AssertPageLoadMetricsObserver::OnRenderFrameDeleted(
   CHECK(started_);
 }
 
-void AssertPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+void AssertPageLoadMetricsObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   CHECK(started_);
 }
 

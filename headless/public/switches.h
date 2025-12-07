@@ -83,6 +83,10 @@ inline constexpr char kFontRenderHinting[] = "font-render-hinting";
 inline constexpr char kForceNewBrowsingInstance[] =
     "force-new-browsing-instance";
 
+// Force reporting destination attested for headless shell.
+inline constexpr char kForceReportingDestinationAttested[] =
+    "force-reporting-destination-attested";
+
 // Forces Incognito mode even if user data directory is specified using the
 // --user-data-dir switch.
 inline constexpr char kIncognito[] = "incognito";
@@ -103,12 +107,17 @@ inline constexpr char kPasswordStore[] = "password-store";
 // Specifies a list of hosts for whom we bypass proxy settings and use direct
 // connections. Ignored unless --proxy-server is also specified. This is a
 // comma-separated list of bypass rules. See:
-// "net/proxy_resolution/proxy_bypass_rules.h" for the format of these rules.
+// "net/proxy_resolution/proxy_host_matching_rules.h" for the format of these
+// rules.
 inline constexpr char kProxyBypassList[] = "proxy-bypass-list";
 
 // Uses a specified proxy server, overrides system settings. This switch only
 // affects HTTP and HTTPS requests.
 inline constexpr char kProxyServer[] = "proxy-server";
+
+// Headless screen info in the format: {0,0 800x600}{800,0 600x800}.
+// See //components/headless/screen_info/README.md for more details.
+inline constexpr char kScreenInfo[] = "screen-info";
 
 // A string used to override the default user agent with a custom one.
 inline constexpr char kUserAgent[] = "user-agent";
@@ -122,6 +131,7 @@ inline constexpr char kUserDataDir[] = "user-data-dir";
 inline constexpr char kVersion[] = "version";
 
 // Sets the initial window size. Provided as string in the format "800,600".
+// This also defines the headless screen size in lieu of --screen-info.
 inline constexpr char kWindowSize[] = "window-size";
 
 // No! Please don't just add your switches at the end of the list.

@@ -1,6 +1,7 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 //
 // This file implements memory allocation primitives for PageAllocator using
 // Fuchsia's VMOs (Virtual Memory Objects). VMO API is documented in
@@ -27,8 +28,6 @@
 #include "partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
-
-namespace {
 
 zx::resource GetVmexResource() {
   auto vmex_resource_client =
@@ -93,8 +92,6 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
   };
   PA_NOTREACHED();
 }
-
-}  // namespace
 
 // zx_vmar_map() will fail if the VMO cannot be mapped at |vmar_offset|, i.e.
 // |hint| is not advisory.
@@ -208,6 +205,10 @@ void DiscardSystemPagesInternal(uint64_t address, size_t length) {
   zx_status_t status = zx::vmar::root_self()->op_range(
       ZX_VMO_OP_DECOMMIT, address, length, nullptr, 0);
   PA_ZX_CHECK(status == ZX_OK, status);
+}
+
+bool SealSystemPagesInternal(uint64_t address, size_t length) {
+  return false;
 }
 
 void DecommitSystemPagesInternal(

@@ -10,17 +10,18 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 
-class IsolatedWebAppInstallerShelfItemControllerTest : public ash::AshTestBase {
+class IsolatedWebAppInstallerShelfItemControllerTest
+    : public ChromeAshTestBase {
  public:
   void CreateWindowAndAddToShelf(const std::string& app_id) {
     widget_ = CreateTestWidget(
@@ -39,7 +40,8 @@ class IsolatedWebAppInstallerShelfItemControllerTest : public ash::AshTestBase {
 
     auto* delegate_ptr = shelf_model()->GetShelfItemDelegate(shelf_id);
     ASSERT_TRUE(delegate_ptr);
-    static_cast<LacrosShelfItemController*>(delegate_ptr)->AddWindow(window());
+    static_cast<IsolatedWebAppInstallerShelfItemController*>(delegate_ptr)
+        ->AddWindow(window());
   }
 
   ash::ShelfModel* shelf_model() { return ash::ShelfModel::Get(); }
@@ -48,7 +50,7 @@ class IsolatedWebAppInstallerShelfItemControllerTest : public ash::AshTestBase {
 
   void TearDown() override {
     shelf_model()->DestroyItemDelegates();
-    ash::AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
  private:

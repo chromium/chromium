@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,13 +73,11 @@ struct Parameters {
 
 std::string ReadInputFile(const Parameters& params) {
   if (!base::PathExists(params.input_file_path)) {
-    NOTREACHED_IN_MIGRATION()
-        << "File " << params.input_file_path << " does not exist.";
+    NOTREACHED() << "File " << params.input_file_path << " does not exist.";
   }
   std::string wav_data;
   if (!base::ReadFileToString(params.input_file_path, &wav_data)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unable to open wav file, " << params.input_file_path;
+    NOTREACHED() << "Unable to open wav file, " << params.input_file_path;
   }
   return wav_data;
 }
@@ -88,7 +87,8 @@ class WavMixerInputSource : public MixerInput::Source {
  public:
   WavMixerInputSource(const Parameters& params)
       : wav_data_(ReadInputFile(params)),
-        input_handler_(::media::WavAudioHandler::Create(wav_data_)),
+        input_handler_(
+            ::media::WavAudioHandler::Create(base::as_byte_span(wav_data_))),
         device_id_(params.device_id),
         bytes_per_frame_(input_handler_->num_channels() *
                          input_handler_->bits_per_sample() / 8) {
@@ -136,8 +136,8 @@ class WavMixerInputSource : public MixerInput::Source {
     CHECK_LE(num_frames, buffer->frames());
     if (num_frames < buffer->frames()) {
       std::vector<float*> channel_data;
-      for (int i = 0; i < buffer->channels(); ++i) {
-        channel_data.push_back(buffer->channel(i));
+      for (auto channel : buffer->AllChannels()) {
+        channel_data.push_back(channel.data());
       }
       std::unique_ptr<::media::AudioBus> buffer_wrapper =
           ::media::AudioBus::WrapVector(num_frames, channel_data);
@@ -182,8 +182,7 @@ class WavOutputHandler : public OutputHandler {
 
     // Write wav file header to fill space. We'll need to go back and fill in
     // the size later.
-    wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(&header_),
-                                sizeof(header_));
+    wav_file_.WriteAtCurrentPos(base::byte_span_from_ref(header_));
   }
 
   WavOutputHandler(const WavOutputHandler&) = delete;
@@ -208,8 +207,7 @@ class WavOutputHandler : public OutputHandler {
         clipped_data[i] = std::clamp(clipped_data[i], -1.0f, 1.0f);
       }
     }
-    wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(clipped_data.data()),
-                                sizeof(clipped_data[0]) * clipped_data.size());
+    wav_file_.WriteAtCurrentPos(base::as_byte_span(clipped_data));
   }
 
  private:

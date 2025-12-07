@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -40,6 +39,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -92,8 +92,9 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
 
 }  // namespace
 
-class UserPolicySigninServiceTest : public InProcessBrowserTest,
-                                    public ::testing::WithParamInterface<bool> {
+// TODO(https://crbug.com/340623286): Convert this test suite to use the
+// `ProfileManagementDisclaimerService`.
+class UserPolicySigninServiceTest : public InProcessBrowserTest {
  public:
   UserPolicySigninServiceTest()
       : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -110,10 +111,6 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
             base::Unretained(this))));
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
-
-    bool disallow_managed_profile_signout = GetParam();
-    feature_list_.InitWithFeatureState(kDisallowManagedProfileSignout,
-                                       disallow_managed_profile_signout);
   }
 
   ~UserPolicySigninServiceTest() override {
@@ -142,7 +139,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
     // that these objects did not leak.
     ++helper_created_count_;
     return new TurnSyncOnHelper(
-        profile(), signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
+        profile(), signin_metrics::AccessPoint::kBookmarkManager,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         account_info_.account_id,
         TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
@@ -219,6 +216,8 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kLsoUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kGoogleApisUrl, base_url.spec());
+    command_line->AppendSwitchASCII(switches::kOAuthAccountManagerUrl,
+                                    base_url.spec());
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
     fake_gaia_.Initialize();
     // Configure Sync server.
@@ -251,8 +250,9 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
     settings.mutable_showhomebutton()->mutable_policy_options()->set_mode(
         em::PolicyOptions::MANDATORY);
     settings.mutable_showhomebutton()->set_value(true);
-    policy_storage->SetPolicyPayload(policy::dm_protocol::kChromeUserPolicyType,
-                                     settings.SerializeAsString());
+    policy_storage->SetPolicyPayload(
+        policy::dm_protocol::GetChromeUserPolicyType(),
+        settings.SerializeAsString());
     policy_storage->add_managed_user("*");
     policy_storage->set_policy_user(kTestEmail);
     policy_storage->signature_provider()->set_current_key_version(1);
@@ -298,7 +298,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
 
     // Redirect to the policy server.
     GURL::Replacements replace_query;
-    std::string query = r.GetURL().query();
+    std::string query = r.GetURL().GetQuery();
     replace_query.SetQueryStr(query);
     std::string dest =
         policy_server_->GetServiceURL().ReplaceComponents(replace_query).spec();
@@ -309,7 +309,6 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
     return http_response;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer embedded_test_server_;
   FakeGaia fake_gaia_;
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_;
@@ -332,14 +331,14 @@ TestTurnSyncOnHelperDelegate::~TestTurnSyncOnHelperDelegate() {
 }
 
 void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
@@ -363,18 +362,18 @@ void TestTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
 }
 
 void TestTurnSyncOnHelperDelegate::ShowSyncSettings() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-// Disabled for Win11 arm64 flakes: https://crbug.com/340623286
-IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
+// TODO(https://crbug.com/340623286): Convert this test to use the
+// `ProfileManagementDisclaimerService`.
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
-      /*has_sync_account=*/false));
+  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed());
 
   // Signin and show sync confirmation dialog.
   CreateTurnSyncOnHelper();
@@ -384,9 +383,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_NE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false),
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
 
   // Opt-in to Sync.
   ConfirmSync(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -394,20 +391,17 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_EQ(signin::ConsentLevel::kSync,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_FALSE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/true));
-  EXPECT_EQ(signin_client()->IsRevokeSyncConsentAllowed(),
-            base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
+  EXPECT_TRUE(signin_client()->IsRevokeSyncConsentAllowed());
 }
 
-// Disabled for Win11 arm64 flakes: https://crbug.com/340623286
-IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
+// TODO(https://crbug.com/340623286): Convert this test to use the
+// `ProfileManagementDisclaimerService`.
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_FALSE(
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-  EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
-      /*has_sync_account=*/false));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_FALSE(enterprise_util::ProfileCanBeManaged(profile()));
+  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed());
 
   // Signin and show sync confirmation dialog.
   CreateTurnSyncOnHelper();
@@ -417,43 +411,79 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_NE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false),
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
 
   // Cancel sync.
   ConfirmSync(LoginUIService::ABORT_SYNC);
 
-  if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
-    // Policy is still applied.
-    WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
-                     base::Value(true));
-    EXPECT_EQ(signin::ConsentLevel::kSignin,
-              signin::GetPrimaryAccountConsentLevel(identity_manager()));
-    EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed(
-        /*has_sync_account=*/false));
-    EXPECT_TRUE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-
-  } else {
-    // Policy is reverted.
-    WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
-                     base::Value(false));
-    EXPECT_EQ(std::nullopt,
-              signin::GetPrimaryAccountConsentLevel(identity_manager()));
-    EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
-        /*has_sync_account=*/false));
-    EXPECT_FALSE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  }
+  // Policy is still applied.
+  WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
+                   base::Value(true));
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
 }
+
+// TODO(https://crbug.com/340623286): Convert this test to use the
+// `ProfileManagementDisclaimerService`.
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
+                       DISABLED_AcceptManagementDeclineSync) {
+  TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  EXPECT_FALSE(enterprise_util::ProfileCanBeManaged(profile()));
+  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed());
+
+  // Signin and show sync confirmation dialog.
+  CreateTurnSyncOnHelper();
+  WaitForSyncConfirmation();
+
+  // Policies are applied right before the sync confirmation is shown.
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
+
+  // Cancel sync.
+  ConfirmSync(LoginUIService::ABORT_SYNC);
+
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
+  // Policy is still applied.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
+  TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
+}
+
+// This test can be deleted once syncer::kReplaceSyncPromosWithSignInPromos is
+// launched.
+class UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled
+    : public UserPolicySigninServiceTest {
+ public:
+  UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Regression test for https://crbug.com/1061459
 // Start a new signing flow while the existing one is hanging on a policy
 // request.
-IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
+IN_PROC_BROWSER_TEST_F(
+    UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled,
+    ConcurrentSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   set_policy_hanging(true);
@@ -462,8 +492,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
 
   // Policy hanging, policy is not applied.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
-      /*has_sync_account=*/false));
+  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed());
 
   // Restart a new signin flow and allow it to complete.
   CreateTurnSyncOnHelper();
@@ -474,9 +503,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_NE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false),
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
 
   // Confirm the signin.
   ConfirmSync(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -484,70 +511,6 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_EQ(signin::ConsentLevel::kSync,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_FALSE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/true));
-  EXPECT_EQ(signin_client()->IsRevokeSyncConsentAllowed(),
-            base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
+  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
+  EXPECT_TRUE(signin_client()->IsRevokeSyncConsentAllowed());
 }
-
-// Disabled for Win11 arm64 flakes: https://crbug.com/340623286
-IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
-                       DISABLED_AcceptManagementDeclineSync) {
-  TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
-      /*has_sync_account=*/false));
-
-  // Signin and show sync confirmation dialog.
-  CreateTurnSyncOnHelper();
-  WaitForSyncConfirmation();
-
-  // Policies are applied right before the sync confirmation is shown.
-  EXPECT_EQ(signin::ConsentLevel::kSignin,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_NE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false),
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
-
-  // Cancel sync.
-  ConfirmSync(LoginUIService::ABORT_SYNC);
-
-  EXPECT_EQ(signin::ConsentLevel::kSignin,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_TRUE(
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-  EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  EXPECT_NE(
-      signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false),
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
-  // Policy is still applied.
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-
-  if (!base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
-    // Signout
-    identity_manager()->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::ProfileSignout::kTest);
-    EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
-        /*has_sync_account=*/false));
-    EXPECT_EQ(std::nullopt,
-              signin::GetPrimaryAccountConsentLevel(identity_manager()));
-    EXPECT_FALSE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  } else {
-    EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed(
-        /*has_sync_account=*/false));
-    EXPECT_EQ(signin::ConsentLevel::kSignin,
-              signin::GetPrimaryAccountConsentLevel(identity_manager()));
-    EXPECT_TRUE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
-  }
-  TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
-}
-
-INSTANTIATE_TEST_SUITE_P(DisallowManagedProfileSignoutFeature,
-                         UserPolicySigninServiceTest,
-                         ::testing::Bool());

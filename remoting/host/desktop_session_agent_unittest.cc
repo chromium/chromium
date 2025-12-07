@@ -61,17 +61,12 @@ class FakeListener : public IPC::Listener {
 
  private:
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   const base::RepeatingClosure action_after_received_;
 };
-
-bool FakeListener::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
 
 void FakeListener::OnAssociatedInterfaceRequest(
     const std::string& interface_name,

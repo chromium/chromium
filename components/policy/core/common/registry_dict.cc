@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/registry_dict.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
@@ -259,7 +255,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
     switch (it.Type()) {
       case REG_EXPAND_SZ:
         if (auto expanded_path = base::win::ExpandEnvironmentVariables(
-                base::wcstring_view{it.Value(), wcslen(it.Value())})) {
+                UNSAFE_TODO(base::wcstring_view(it.Value())))) {
           SetValue(name, base::Value(base::WideToUTF8(*expanded_path)));
           continue;
         }
@@ -276,7 +272,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
               // ValueSize() here is the number of non-NUL *bytes* in the
               // Value() string, so we cast the Value() to bytes which is what
               // we want in the end anyway.
-              UNSAFE_BUFFERS(
+              UNSAFE_TODO(
                   base::span(reinterpret_cast<const uint8_t*>(it.Value()),
                              it.ValueSize()))
                   .first<sizeof(DWORD)>();

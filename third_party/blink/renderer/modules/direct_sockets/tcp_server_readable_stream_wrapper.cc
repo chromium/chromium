@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_server_readable_stream_wrapper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -24,8 +25,8 @@ TCPServerReadableStreamWrapper::TCPServerReadableStreamWrapper(
                           ExecutionContext::From(script_state)
                               ->GetTaskRunner(TaskType::kNetworking));
   tcp_server_socket_.set_disconnect_handler(
-      WTF::BindOnce(&TCPServerReadableStreamWrapper::ErrorStream,
-                    WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
+      BindOnce(&TCPServerReadableStreamWrapper::ErrorStream,
+               WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
 
   ScriptState::Scope scope(script_state);
 
@@ -47,8 +48,8 @@ void TCPServerReadableStreamWrapper::Pull() {
 
   tcp_server_socket_->Accept(
       std::move(socket_observer_remote),
-      WTF::BindOnce(&TCPServerReadableStreamWrapper::OnAccept,
-                    WrapPersistent(this), std::move(socket_observer)));
+      BindOnce(&TCPServerReadableStreamWrapper::OnAccept, WrapPersistent(this),
+               std::move(socket_observer)));
 }
 
 void TCPServerReadableStreamWrapper::CloseStream() {
@@ -59,7 +60,8 @@ void TCPServerReadableStreamWrapper::CloseStream() {
 
   tcp_server_socket_.reset();
 
-  std::move(on_close_).Run(/*exception=*/ScriptValue());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -68,6 +70,10 @@ void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
   }
   SetState(State::kAborted);
 
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.TCPServerReadableStreamError",
+                           -error_code);
+
   tcp_server_socket_.reset();
 
   auto* script_state = GetScriptState();
@@ -75,13 +81,11 @@ void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrDie(
-          script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
-          String{"Server socket closed: " + net::ErrorToString(error_code)}));
-  Controller()->Error(exception.V8Value());
-  std::move(on_close_).Run(exception);
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
+      String{"Server socket closed: " + net::ErrorToString(error_code)});
+  Controller()->Error(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPServerReadableStreamWrapper::Trace(Visitor* visitor) const {

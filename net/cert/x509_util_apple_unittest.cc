@@ -6,7 +6,9 @@
 
 #include <string_view>
 
+#include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -28,9 +30,9 @@ std::string BytesForSecCert(SecCertificateRef sec_cert) {
     ADD_FAILURE();
     return result;
   }
-  result.assign(reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
-                CFDataGetLength(der_data.get()));
-  return result;
+
+  return std::string(
+      base::as_string_view(base::apple::CFDataToSpan(der_data.get())));
 }
 
 std::string BytesForSecCert(const void* sec_cert) {

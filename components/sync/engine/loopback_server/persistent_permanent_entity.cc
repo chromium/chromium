@@ -19,7 +19,7 @@ namespace {
 
 // The parent tag for children of the root entity. Entities with this parent are
 // referred to as top level enities.
-static const char kRootParentTag[] = "0";
+constexpr char kRootParentTag[] = "0";
 
 }  // namespace
 

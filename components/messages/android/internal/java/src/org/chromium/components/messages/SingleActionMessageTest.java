@@ -56,8 +56,8 @@ public class SingleActionMessageTest {
 
     private static Activity sActivity;
 
-    private class MockDurationProvider implements MessageAutodismissDurationProvider {
-        private long mDuration;
+    private static class MockDurationProvider implements MessageAutodismissDurationProvider {
+        private final long mDuration;
 
         public MockDurationProvider(long duration) {
             mDuration = duration;
@@ -77,16 +77,12 @@ public class SingleActionMessageTest {
     private CallbackHelper mPrimaryActionCallback;
     private CallbackHelper mSecondaryActionCallback;
     private CallbackHelper mDismissCallback;
-    private SingleActionMessage.DismissCallback mEmptyDismissCallback =
+    private final SingleActionMessage.DismissCallback mEmptyDismissCallback =
             (model, dismissReason) -> {};
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity = sActivityTestRule.getActivity();
-                });
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -258,10 +254,10 @@ public class SingleActionMessageTest {
         createAndShowSingleActionMessage(container, m2, view2, Position.FRONT, Position.BACK);
         Assert.assertTrue(
                 "front view's elevation "
-                        + view1.getElevation()
+                        + view1.getElevationForTesting()
                         + " should be larger than the back one "
-                        + view2.getElevation(),
-                view1.getElevation() > view2.getElevation());
+                        + view2.getElevationForTesting(),
+                view1.getElevationForTesting() > view2.getElevationForTesting());
 
         PropertyModel m3 = createBasicSingleActionMessageModel();
         final MessageBannerView view3 = createMessageBannerView(container);
@@ -269,10 +265,10 @@ public class SingleActionMessageTest {
         createAndShowSingleActionMessage(container, m3, view3, Position.INVISIBLE, Position.FRONT);
         Assert.assertTrue(
                 "front view's elevation "
-                        + view3.getElevation()
+                        + view3.getElevationForTesting()
                         + " should be larger than the back one "
-                        + view2.getElevation(),
-                view3.getElevation() > view2.getElevation());
+                        + view2.getElevationForTesting(),
+                view3.getElevationForTesting() > view2.getElevationForTesting());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -346,57 +342,6 @@ public class SingleActionMessageTest {
         fullyVisible.assertExpected("Messages should have been fully visible before");
     }
 
-    @Test
-    @MediumTest
-    public void testOnFullyVisibleNotCalled() {
-        MessageContainer container = new MessageContainer(sActivity, null);
-        PropertyModel m1 = createBasicSingleActionMessageModel(MessageIdentifier.SYNC_ERROR);
-        m1.set(MessageBannerProperties.ON_FULLY_VISIBLE, (unused) -> {});
-
-        final var fullyVisible =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "Android.Messages.FullyVisible", MessageIdentifier.SYNC_ERROR)
-                        .build();
-
-        final var dismissal =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Messages.TimeToFullyShow.SyncError", 1000)
-                        .expectIntRecord(
-                                "Android.Messages.Error.FullyVisibleNotInformed",
-                                MessageIdentifier.SYNC_ERROR)
-                        .build();
-
-        final MessageBannerView view1 = createMessageBannerView(container);
-        var sam1 =
-                new SingleActionMessage(
-                        container,
-                        m1,
-                        mEmptyDismissCallback,
-                        () -> 0,
-                        () -> 0,
-                        new MockDurationProvider(0L),
-                        mSwipeAnimationHandler) {
-                    @Override
-                    void notifyVisibilityChange(boolean fullyVisible) {
-                        // Do nothing
-                    }
-                };
-        view1.setId(R.id.message_banner);
-        PropertyModelChangeProcessor.create(m1, view1, MessageBannerViewBinder::bind);
-        sam1.setMessageBannerForTesting(mMessageBanner);
-        sam1.setViewForTesting(view1);
-
-        mFakeTime.advanceMillis(1000);
-        sam1.show(Position.INVISIBLE, Position.FRONT);
-
-        mFakeTime.advanceMillis(500);
-        sam1.dismiss(DismissReason.GESTURE);
-
-        fullyVisible.assertExpected("Messages should have been fully visible before");
-        dismissal.assertExpected("Incorrect histograms on dismiss");
-    }
-
     private void executeAndVerifyRepeatedButtonClicks(
             boolean isPrimaryButtonClickedFirst,
             PropertyModel model,
@@ -465,9 +410,11 @@ public class SingleActionMessageTest {
     }
 
     private MessageBannerView createMessageBannerView(MessageContainer container) {
-        return (MessageBannerView)
-                LayoutInflater.from(container.getContext())
-                        .inflate(R.layout.message_banner_view, container, false);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        (MessageBannerView)
+                                LayoutInflater.from(container.getContext())
+                                        .inflate(R.layout.message_banner_view, container, false));
     }
 
     private PropertyModel createBasicSingleActionMessageModel(int id) {

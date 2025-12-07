@@ -3,24 +3,54 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "base/debug/proc_maps_linux.h"
 
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/utsname.h>
+
+#include <array>
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
+
+namespace {
+
+// SmapsRollup was added in Linux 4.14.
+bool IsSmapsRollupSupported() {
+  struct utsname info;
+  if (uname(&info) < 0) {
+    NOTREACHED();
+  }
+
+  int major, minor, patch;
+  if (sscanf(info.release, "%d.%d.%d", &major, &minor, &patch) < 3) {
+    NOTREACHED();
+  }
+
+  if (major > 4) {
+    return true;
+  }
+
+  if (major < 4 || minor < 14) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
 
 TEST(ProcMapsTest, Empty) {
   std::vector<MappedMemoryRegion> regions;
@@ -65,8 +95,7 @@ TEST(ProcMapsTest, NoNewline) {
 }
 
 TEST(ProcMapsTest, NoPath) {
-  static const char kNoPath[] =
-      "00400000-0040b000 rw-p 00000000 00:00 0 \n";
+  static const char kNoPath[] = "00400000-0040b000 rw-p 00000000 00:00 0 \n";
 
   std::vector<MappedMemoryRegion> regions;
   ASSERT_TRUE(ParseProcMaps(kNoPath, &regions));
@@ -149,33 +178,34 @@ TEST(ProcMapsTest, Multiple) {
 }
 
 TEST(ProcMapsTest, Permissions) {
-  static struct {
+  struct TestCases {
     const char* input;
     uint8_t permissions;
-  } kTestCases[] = {
-    {"00400000-0040b000 ---s 00000000 fc:00 794418 /bin/cat\n", 0},
-    {"00400000-0040b000 ---S 00000000 fc:00 794418 /bin/cat\n", 0},
-    {"00400000-0040b000 r--s 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::READ},
-    {"00400000-0040b000 -w-s 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::WRITE},
-    {"00400000-0040b000 --xs 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::EXECUTE},
-    {"00400000-0040b000 rwxs 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::READ | MappedMemoryRegion::WRITE |
-         MappedMemoryRegion::EXECUTE},
-    {"00400000-0040b000 ---p 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::PRIVATE},
-    {"00400000-0040b000 r--p 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::READ | MappedMemoryRegion::PRIVATE},
-    {"00400000-0040b000 -w-p 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::WRITE | MappedMemoryRegion::PRIVATE},
-    {"00400000-0040b000 --xp 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::EXECUTE | MappedMemoryRegion::PRIVATE},
-    {"00400000-0040b000 rwxp 00000000 fc:00 794418 /bin/cat\n",
-     MappedMemoryRegion::READ | MappedMemoryRegion::WRITE |
-         MappedMemoryRegion::EXECUTE | MappedMemoryRegion::PRIVATE},
   };
+  static auto kTestCases = std::to_array<TestCases>({
+      {"00400000-0040b000 ---s 00000000 fc:00 794418 /bin/cat\n", 0},
+      {"00400000-0040b000 ---S 00000000 fc:00 794418 /bin/cat\n", 0},
+      {"00400000-0040b000 r--s 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::READ},
+      {"00400000-0040b000 -w-s 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::WRITE},
+      {"00400000-0040b000 --xs 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::EXECUTE},
+      {"00400000-0040b000 rwxs 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::READ | MappedMemoryRegion::WRITE |
+           MappedMemoryRegion::EXECUTE},
+      {"00400000-0040b000 ---p 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::PRIVATE},
+      {"00400000-0040b000 r--p 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::READ | MappedMemoryRegion::PRIVATE},
+      {"00400000-0040b000 -w-p 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::WRITE | MappedMemoryRegion::PRIVATE},
+      {"00400000-0040b000 --xp 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::EXECUTE | MappedMemoryRegion::PRIVATE},
+      {"00400000-0040b000 rwxp 00000000 fc:00 794418 /bin/cat\n",
+       MappedMemoryRegion::READ | MappedMemoryRegion::WRITE |
+           MappedMemoryRegion::EXECUTE | MappedMemoryRegion::PRIVATE},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(
@@ -184,8 +214,9 @@ TEST(ProcMapsTest, Permissions) {
     std::vector<MappedMemoryRegion> regions;
     EXPECT_TRUE(ParseProcMaps(kTestCases[i].input, &regions));
     EXPECT_EQ(1u, regions.size());
-    if (regions.empty())
+    if (regions.empty()) {
       continue;
+    }
     EXPECT_EQ(kTestCases[i].permissions, regions[0].permissions);
   }
 }
@@ -260,19 +291,19 @@ TEST(ProcMapsTest, ReadProcMapsNonEmptyString) {
 }
 
 TEST(ProcMapsTest, MissingFields) {
-  static const char* const kTestCases[] = {
-    "00400000\n",                               // Missing end + beyond.
-    "00400000-0040b000\n",                      // Missing perms + beyond.
-    "00400000-0040b000 r-xp\n",                 // Missing offset + beyond.
-    "00400000-0040b000 r-xp 00000000\n",        // Missing device + beyond.
-    "00400000-0040b000 r-xp 00000000 fc:00\n",  // Missing inode + beyond.
-    "00400000-0040b000 00000000 fc:00 794418 /bin/cat\n",  // Missing perms.
-    "00400000-0040b000 r-xp fc:00 794418 /bin/cat\n",      // Missing offset.
-    "00400000-0040b000 r-xp 00000000 fc:00 /bin/cat\n",    // Missing inode.
-    "00400000 r-xp 00000000 fc:00 794418 /bin/cat\n",      // Missing end.
-    "-0040b000 r-xp 00000000 fc:00 794418 /bin/cat\n",     // Missing start.
-    "00400000-0040b000 r-xp 00000000 794418 /bin/cat\n",   // Missing device.
-  };
+  static const auto kTestCases = std::to_array<const char*>({
+      "00400000\n",                               // Missing end + beyond.
+      "00400000-0040b000\n",                      // Missing perms + beyond.
+      "00400000-0040b000 r-xp\n",                 // Missing offset + beyond.
+      "00400000-0040b000 r-xp 00000000\n",        // Missing device + beyond.
+      "00400000-0040b000 r-xp 00000000 fc:00\n",  // Missing inode + beyond.
+      "00400000-0040b000 00000000 fc:00 794418 /bin/cat\n",  // Missing perms.
+      "00400000-0040b000 r-xp fc:00 794418 /bin/cat\n",      // Missing offset.
+      "00400000-0040b000 r-xp 00000000 fc:00 /bin/cat\n",    // Missing inode.
+      "00400000 r-xp 00000000 fc:00 794418 /bin/cat\n",      // Missing end.
+      "-0040b000 r-xp 00000000 fc:00 794418 /bin/cat\n",     // Missing start.
+      "00400000-0040b000 r-xp 00000000 794418 /bin/cat\n",   // Missing device.
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%zu] = %s", i, kTestCases[i]));
@@ -282,14 +313,14 @@ TEST(ProcMapsTest, MissingFields) {
 }
 
 TEST(ProcMapsTest, InvalidInput) {
-  static const char* const kTestCases[] = {
-    "thisisal-0040b000 rwxp 00000000 fc:00 794418 /bin/cat\n",
-    "0040000d-linvalid rwxp 00000000 fc:00 794418 /bin/cat\n",
-    "00400000-0040b000 inpu 00000000 fc:00 794418 /bin/cat\n",
-    "00400000-0040b000 rwxp tforproc fc:00 794418 /bin/cat\n",
-    "00400000-0040b000 rwxp 00000000 ma:ps 794418 /bin/cat\n",
-    "00400000-0040b000 rwxp 00000000 fc:00 parse! /bin/cat\n",
-  };
+  static const auto kTestCases = std::to_array<const char*>({
+      "thisisal-0040b000 rwxp 00000000 fc:00 794418 /bin/cat\n",
+      "0040000d-linvalid rwxp 00000000 fc:00 794418 /bin/cat\n",
+      "00400000-0040b000 inpu 00000000 fc:00 794418 /bin/cat\n",
+      "00400000-0040b000 rwxp tforproc fc:00 794418 /bin/cat\n",
+      "00400000-0040b000 rwxp 00000000 ma:ps 794418 /bin/cat\n",
+      "00400000-0040b000 rwxp 00000000 fc:00 parse! /bin/cat\n",
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%zu] = %s", i, kTestCases[i]));
@@ -311,15 +342,15 @@ TEST(ProcMapsTest, ParseProcMapsEmptyString) {
 TEST(ProcMapsTest, ParseProcMapsWeirdCorrectInput) {
   std::vector<MappedMemoryRegion> regions;
   const std::string kContents =
-    "00400000-0040b000 r-xp 00000000 fc:00 2106562 "
+      "00400000-0040b000 r-xp 00000000 fc:00 2106562 "
       "               /bin/cat\r\n"
-    "7f53b7dad000-7f53b7f62000 r-xp 00000000 fc:00 263011 "
+      "7f53b7dad000-7f53b7f62000 r-xp 00000000 fc:00 263011 "
       "       /lib/x86_64-linux-gnu/libc-2.15.so\n\r"
-    "7f53b816d000-7f53b818f000 r-xp 00000000 fc:00 264284 "
+      "7f53b816d000-7f53b818f000 r-xp 00000000 fc:00 264284 "
       "        /lib/x86_64-linux-gnu/ld-2.15.so\n"
-    "7fff9c7ff000-7fff9c800000 r-xp 00000000 00:00 0 "
+      "7fff9c7ff000-7fff9c800000 r-xp 00000000 00:00 0 "
       "               \"vd so\"\n"
-    "ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0 "
+      "ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0 "
       "               [vsys call]\n";
   EXPECT_TRUE(ParseProcMaps(kContents, &regions));
   EXPECT_EQ(5ULL, regions.size());
@@ -330,5 +361,64 @@ TEST(ProcMapsTest, ParseProcMapsWeirdCorrectInput) {
   EXPECT_EQ("[vsys call]", regions[4].path);
 }
 
-}  // namespace debug
-}  // namespace base
+TEST(SmapsRollupTest, ReadAndParse) {
+  if (!IsSmapsRollupSupported()) {
+    GTEST_SKIP() << "smaps_rollup not supported";
+  }
+
+  const auto result = ReadAndParseSmapsRollup();
+
+  EXPECT_TRUE(result.has_value());
+
+  SmapsRollup smaps_rollup = result.value();
+
+  EXPECT_GT(smaps_rollup.rss.InKiB(), 0u);
+  EXPECT_GT(smaps_rollup.pss.InKiB(), 0u);
+  EXPECT_GT(smaps_rollup.private_dirty.InKiB(), 0u);
+}
+
+TEST(SmapsRollupTest, Valid) {
+  const auto result = ParseSmapsRollupForTesting(
+      // This input is based on a real one captured locally, but with some
+      // values changed in order to make them unique (to test that the correct
+      // values are being parsed).
+      R"(55f4d118e000-7ffff6e62000 ---p 00000000 00:00 0                          [rollup]
+Rss:                1908 kB
+Pss:                 573 kB
+Pss_Dirty:           144 kB
+Pss_Anon:            100 kB
+Pss_File:            469 kB
+Pss_Shmem:            12 kB
+Shared_Clean:       1356 kB
+Shared_Dirty:          0 kB
+Private_Clean:       448 kB
+Private_Dirty:       104 kB
+Referenced:         1900 kB
+Anonymous:           105 kB
+KSM:                   0 kB
+LazyFree:              0 kB
+AnonHugePages:         0 kB
+ShmemPmdMapped:        0 kB
+FilePmdMapped:         0 kB
+Shared_Hugetlb:        0 kB
+Private_Hugetlb:       0 kB
+Swap:                 10 kB
+SwapPss:              20 kB
+Locked:                0 kB
+)");
+
+  EXPECT_TRUE(result.has_value());
+
+  SmapsRollup smaps_rollup = result.value();
+
+  EXPECT_EQ(smaps_rollup.rss.InKiB(), 1908u);
+  EXPECT_EQ(smaps_rollup.pss.InKiB(), 573u);
+  EXPECT_EQ(smaps_rollup.private_dirty.InKiB(), 104u);
+  EXPECT_EQ(smaps_rollup.pss_anon.InKiB(), 100u);
+  EXPECT_EQ(smaps_rollup.pss_file.InKiB(), 469u);
+  EXPECT_EQ(smaps_rollup.pss_shmem.InKiB(), 12u);
+  EXPECT_EQ(smaps_rollup.swap.InKiB(), 10u);
+  EXPECT_EQ(smaps_rollup.swap_pss.InKiB(), 20u);
+}
+
+}  // namespace base::debug

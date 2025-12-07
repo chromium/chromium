@@ -9,24 +9,27 @@ import android.graphics.RectF;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
-import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
-import java.util.List;
+import java.util.function.Supplier;
 
 /** The public interface for the top toolbar texture component. */
+@NullMarked
 public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** The view state for this overlay. */
     private final PropertyModel mModel;
@@ -40,16 +43,26 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Business logic for this overlay. */
     private final TopToolbarOverlayMediator mMediator;
 
+    private final Context mContext;
+
     public TopToolbarOverlayCoordinator(
             Context context,
             LayoutManager layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
+            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
-            boolean isVisibilityManuallyControlled) {
+            boolean isVisibilityManuallyControlled,
+            ObservableSupplier<Long> captureResourceIdSupplier,
+            @Nullable ToolbarProgressBar progressBar) {
+        // If BCIV is enabled, we always show the hairline on the composited
+        // toolbar, and let renderer+viz control the visibility during scrolls.
+        mContext = context;
+        boolean showHairline = ChromeFeatureList.sBrowserControlsInViz.isEnabled();
         mModel =
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                         .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
@@ -59,9 +72,10 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         .with(TopToolbarOverlayProperties.VISIBLE, true)
                         .with(TopToolbarOverlayProperties.X_OFFSET, 0)
                         .with(
-                                TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
                                 browserControlsStateProvider.getContentOffset())
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
+                        .with(TopToolbarOverlayProperties.SHOW_SHADOW, showHairline)
                         .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =
@@ -76,8 +90,12 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         tabSupplier,
                         browserControlsStateProvider,
                         topUiThemeColorProvider,
+                        bottomToolbarControlsOffsetSupplier,
+                        suppressToolbarSceneLayerSupplier,
                         layoutsToShowOn,
-                        isVisibilityManuallyControlled);
+                        isVisibilityManuallyControlled,
+                        captureResourceIdSupplier,
+                        progressBar);
     }
 
     /**
@@ -98,9 +116,29 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
         mMediator.setXOffset(xOffset);
     }
 
-    /** @param anonymize Whether the URL should be hidden when the layer is rendered. */
+    /** Set the yOffset */
+    public void setYOffset(float yOffset) {
+        mMediator.setYOffset(yOffset);
+    }
+
+    /** Set the offset tag from the current browser controls instance. */
+    public void setOffsetTagInfo(@Nullable BrowserControlsOffsetTagsInfo offsetTagInfo) {
+        mMediator.updateOffsetTag(offsetTagInfo);
+    }
+
+    /**
+     * @param anonymize Whether the URL should be hidden when the layer is rendered.
+     */
     public void setAnonymize(boolean anonymize) {
         mMediator.setAnonymize(anonymize);
+    }
+
+    /**
+     * @param bookmarkBarHeightSupplier Supplier of the current Bookmark Bar height.
+     */
+    public void setBookmarkBarHeightSupplier(
+            @Nullable Supplier<Integer> bookmarkBarHeightSupplier) {
+        mMediator.setBookmarkBarHeightSupplier(bookmarkBarHeightSupplier);
     }
 
     /** Clean up this component. */
@@ -112,8 +150,13 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         return mSceneLayer;
+    }
+
+    @Override
+    public void removeFromParent() {
+        mSceneLayer.removeFromParent();
     }
 
     @Override
@@ -122,34 +165,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     }
 
     @Override
-    public EventFilter getEventFilter() {
-        return null;
-    }
-
-    @Override
     public void onSizeChanged(
-            float width, float height, float visibleViewportOffsetY, int orientation) {}
-
-    @Override
-    public void getVirtualViews(List<VirtualView> views) {}
-
-    @Override
-    public boolean shouldHideAndroidBrowserControls() {
-        return false;
-    }
-
-    @Override
-    public boolean updateOverlay(long time, long dt) {
-        return false;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public boolean handlesTabCreating() {
-        return false;
+            float width, float height, float visibleViewportOffsetY, int orientation) {
+        mMediator.setViewportHeight(height * mContext.getResources().getDisplayMetrics().density);
     }
 }

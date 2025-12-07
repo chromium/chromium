@@ -21,7 +21,8 @@
           "collapsed": {"type": "boolean", "description": "Whether the group is collapsed. A collapsed group is one whose tabs are hidden."},
           "color": {"$ref": "Color", "description": "The group's color."},
           "title": {"type": "string", "optional": true, "description": "The title of the group."},
-          "windowId": {"type": "integer", "minimum": 0, "description": "The ID of the window that contains the group."}
+          "windowId": {"type": "integer", "minimum": 0, "description": "The ID of the window that contains the group."},
+          "shared": {"type": "boolean", "description": "Whether the group is shared."}
         }
       }
     ],
@@ -73,6 +74,11 @@
                 "type": "string",
                 "optional": true,
                 "description": "Match group titles against a pattern."
+              },
+              "shared": {
+                "type": "boolean",
+                "optional": true,
+                "description": "Whether the group is shared."
               },
               "windowId": {
                 "type": "integer",

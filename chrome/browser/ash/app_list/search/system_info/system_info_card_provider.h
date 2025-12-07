@@ -30,8 +30,6 @@ information such as Storage usage, CPU consumption, battery health, current
 version, network information and memory usage. The answer cards link to the
 relevant pages within the Settings and Diagnostics apps.*/
 
-// TODO(b/263994165): Complete the System Info Card Provider to return results.
-// This provider is a work in progress.
 class SystemInfoCardProvider : public SearchProvider,
                                public ash::settings::SizeCalculator::Observer {
  public:
@@ -123,7 +121,7 @@ class SystemInfoCardProvider : public SearchProvider,
   // Keeps track of the size of each storage item. Adding 1 since we are also
   // saving the system storage here
   int64_t storage_items_total_bytes_
-      [::ash::settings::SizeCalculator::kCalculationTypeCount + 1] = {0};
+      [::ash::settings::SizeCalculator::kCalculationTypeCount + 1] = {};
 
   // Controls if the size of each storage item has been calculated.
   std::bitset<::ash::settings::SizeCalculator::kCalculationTypeCount>

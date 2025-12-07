@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace chromeos {
 namespace {
 
-using ExtensionManifestChromeOSSystemExtensionTest = ChromeManifestTest;
+using ExtensionManifestChromeOSSystemExtensionTest =
+    extensions::ChromeManifestTest;
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        InvalidChromeOSSystemExtension) {
@@ -54,6 +52,22 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        ValidChromeOSSystemExtension_Allowlisted_ASUS) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess("chromeos_system_extension_asus.json"));
+  EXPECT_TRUE(extension->is_chromeos_system_extension());
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+
+TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
+       ValidChromeOSSystemExtension_Allowlisted_Acer) {
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess("chromeos_system_extension_acer.json"));
+  EXPECT_TRUE(extension->is_chromeos_system_extension());
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+
+TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
+       ValidChromeOSSystemExtension_Allowlisted_Lenovo) {
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess("chromeos_system_extension_lenovo.json"));
   EXPECT_TRUE(extension->is_chromeos_system_extension());
   EXPECT_TRUE(extension->install_warnings().empty());
 }
@@ -130,7 +144,6 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
   EXPECT_TRUE(extension->install_warnings().empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        ChromeOSSystemExtensionDevIsEnabled) {
   auto scoped_info =
@@ -146,7 +159,6 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
   EXPECT_TRUE(extension->is_chromeos_system_extension());
   EXPECT_TRUE(extension->install_warnings().empty());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace chromeos

@@ -15,7 +15,7 @@
 #include "components/affiliations/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store/encrypt_decrypt_intrface.h"
+#include "components/password_manager/core/browser/password_store/encrypt_decrypt_interface.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -36,8 +36,7 @@ std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
   std::map<FormPrimaryKey, std::vector<PasswordNote>> results;
   while (s->Step()) {
     std::u16string unique_display_name = s->ColumnString16(1);
-    std::string encrypted_value;
-    s->ColumnBlobAsString(2, &encrypted_value);
+    std::string encrypted_value = s->ColumnBlobAsString(2);
     std::u16string decrypted_value;
     if (decryptor->DecryptedString(encrypted_value, &decrypted_value) !=
         EncryptionResult::kSuccess) {
@@ -62,9 +61,9 @@ const char PasswordNotesTable::kTableName[] = "password_notes";
 
 void PasswordNotesTable::Init(
     sql::Database* db,
-    EncryptDecryptInterface* encrypt_decrypt_intrface) {
+    EncryptDecryptInterface* encrypt_decrypt_interface) {
   db_ = db;
-  encrypt_decrypt_intrface_ = encrypt_decrypt_intrface;
+  encrypt_decrypt_interface_ = encrypt_decrypt_interface;
 }
 
 bool PasswordNotesTable::MigrateTable(int current_version,
@@ -74,7 +73,7 @@ bool PasswordNotesTable::MigrateTable(int current_version,
 
 #if BUILDFLAG(IS_IOS)
   if (current_version < 40) {
-    // In version 39 passwords encryption on iOS was migrated to OSCrypt.
+    // In version 39 passwords encryption on iOS was migrated to os_crypt_async.
     // In version 40 password notes encryption on iOS is migrated as well.
     sql::Statement get_notes_statement(
         db_->GetUniqueStatement("SELECT id, value FROM password_notes"));
@@ -82,8 +81,8 @@ bool PasswordNotesTable::MigrateTable(int current_version,
     // Update each note value with the new BLOB.
     while (get_notes_statement.Step()) {
       int id = get_notes_statement.ColumnInt(0);
-      std::string keychain_identifier;
-      get_notes_statement.ColumnBlobAsString(1, &keychain_identifier);
+      std::string keychain_identifier =
+          get_notes_statement.ColumnBlobAsString(1);
       if (keychain_identifier.empty()) {
         continue;
       }
@@ -106,9 +105,9 @@ bool PasswordNotesTable::MigrateTable(int current_version,
         // Stop migration with any other error.
         return false;
       } else {
-        // Encrypt note using OSCrypt.
+        // Encrypt note using os_crypt_async.
         std::string encrypted_note;
-        if (encrypt_decrypt_intrface_->EncryptedString(plaintext_note,
+        if (encrypt_decrypt_interface_->EncryptedString(plaintext_note,
                                                        &encrypted_note) !=
             EncryptionResult::kSuccess) {
           return false;
@@ -133,7 +132,7 @@ bool PasswordNotesTable::InsertOrReplace(FormPrimaryKey parent_id,
                                          const PasswordNote& note) {
   DCHECK(db_);
   std::string encrypted_value;
-  if (encrypt_decrypt_intrface_->EncryptedString(
+  if (encrypt_decrypt_interface_->EncryptedString(
           note.value, &encrypted_value) != EncryptionResult::kSuccess) {
     return false;
   }
@@ -174,7 +173,7 @@ std::vector<PasswordNote> PasswordNotesTable::GetPasswordNotes(
           kTableName)));
   s.BindInt(0, parent_id.value());
   return StatementToPasswordNotes(&s,
-                                  encrypt_decrypt_intrface_.get())[parent_id];
+                                  encrypt_decrypt_interface_.get())[parent_id];
 }
 
 std::map<FormPrimaryKey, std::vector<PasswordNote>>
@@ -186,6 +185,6 @@ PasswordNotesTable::GetAllPasswordNotesForTest() const {
           "SELECT parent_id, key, value, date_created, confidential "
           "FROM %s",
           kTableName)));
-  return StatementToPasswordNotes(&s, encrypt_decrypt_intrface_.get());
+  return StatementToPasswordNotes(&s, encrypt_decrypt_interface_.get());
 }
 }  // namespace password_manager

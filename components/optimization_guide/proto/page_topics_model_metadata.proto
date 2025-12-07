@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
+package optimization_guide.proto;
+
+option features.enum_type = CLOSED;
+option features.utf8_validation = NONE;
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "PageTopicsModelMetadataProto";
 
-package optimization_guide.proto;
-
 enum PageTopicsSupportedOutput {
   PAGE_TOPICS_SUPPORTED_OUTPUT_UNKNOWN = 0;
+
   // Supports evaluating the visibility score of a page.
   PAGE_TOPICS_SUPPORTED_OUTPUT_VISIBILITY = 1;
+
   // Supports evaluating categories of page content.
   PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES = 2;
 }
@@ -21,19 +25,22 @@ enum PageTopicsSupportedOutput {
 message PageTopicsVisibilityPostprocessingParams {
   // The name of the category to evaluate whether page content's visibility
   // score.
-  optional string category_name = 1;
+  string category_name = 1;
 }
 
 message PageTopicsCategoryPostprocessingParams {
   // Output at most max_categories, and only those with min_category_weight.
-  optional int32 max_categories = 1;
+  int32 max_categories = 1;
+
   // The minimum weight a category must have for it to be in the output.
-  optional float min_category_weight = 2;
+  float min_category_weight = 2;
+
   // The minimum weight after category weights are normalized that the top N
   // categories must have.
-  optional float min_normalized_weight_within_top_n = 3;
+  float min_normalized_weight_within_top_n = 3;
+
   // The minimum weight for the NONE label has to be to remove all labels.
-  optional float min_none_weight = 4;
+  float min_none_weight = 4;
 }
 
 message PageTopicsOutputPostprocessingParams {
@@ -42,25 +49,28 @@ message PageTopicsOutputPostprocessingParams {
   //
   // Will only be included if PAGE_TOPICS_SUPPORTED_OUTPUT_VISIBILITY is
   // supported by the model.
-  optional PageTopicsVisibilityPostprocessingParams visibility_params = 1;
+  PageTopicsVisibilityPostprocessingParams visibility_params = 1;
+
   // The parameters to use to post-process categories.
   //
   // Will only be included if PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES is
   // supported by the model.
-  optional PageTopicsCategoryPostprocessingParams category_params = 2;
+  PageTopicsCategoryPostprocessingParams category_params = 2;
 }
 
 message Topic {
   // The user-visible string of the taxonomy topic.
-  optional string topic_name = 1;
+  string topic_name = 1;
+
   // The id of the topic.
-  optional int64 topic_id = 2;
+  int64 topic_id = 2;
 }
 
 message TopicTaxonomy {
   // The version of this specific taxonomy, which is separate from the model
   // version.
-  optional int64 version = 1;
+  int64 version = 1;
+
   // The topics supported by this taxonomy.
   repeated Topic topics = 2;
 }
@@ -73,17 +83,20 @@ message PageTopicsModelMetadata {
   // model the client supports (e.g., pre/post processing). When provided from
   // the server, it specifies which of these support functions for the model is
   // expected to use.
-  optional int64 version = 1;
+  int64 version = 1;
+
   // The supported output.
   //
   // If sent by the client, this represents the output that the client knows
   // how to support. If sent by the server, this represents the outputs of the
   // model.
-  repeated PageTopicsSupportedOutput supported_output = 2;
+  repeated PageTopicsSupportedOutput supported_output = 2
+      [features.repeated_field_encoding = EXPANDED];
+
   // A set of postprocessing parameters per supported output and will only be
   // populated by the server.
-  optional PageTopicsOutputPostprocessingParams output_postprocessing_params =
-      3;
+  PageTopicsOutputPostprocessingParams output_postprocessing_params = 3;
+
   // The taxonomy version sent by the client to request the corresponding model.
-  optional int64 taxonomy_version = 6;
+  int64 taxonomy_version = 6;
 }

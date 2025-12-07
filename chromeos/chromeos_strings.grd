@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/chromeos_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -249,17 +249,44 @@
       <message name="IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE" desc="A11y description template for the Quick Answers user notice view.">
         <ph name="DESC_TEXT">$1<ex>With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</ex></ph> Use Left or Right arrow keys to manage this feature.
       </message>
+      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_DEFINITION_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when the supported intent is generated from the query.">
+        Define "<ph name="query">$1<ex>unfathomable</ex></ph>"
+      </message>
+      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_TRANSLATION_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when the supported intent is generated from the query.">
+        Translate "<ph name="query">$1<ex>信息</ex></ph>"
+      </message>
+      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_UNIT_CONVERSION_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when the supported intent is generated from the query.">
+        Convert "<ph name="query">$1<ex>1kg</ex></ph>"
+      </message>
+      <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEXT" desc="A11y description text for the Quick Answers Magic Boost user notice view.">
+        Right-click or press and hold to get definitions, translations, or unit conversions. Use Left or Right arrow keys to manage this feature.
+      </message>
+      <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_DEFINITION_INTENT_LABEL_BUTTON" desc="Button label for Dictionary intent in the magic boost user consent view which leads to the magic boost disclaimer UI when clicked upon.">
+        Define "<ph name="query">$1<ex>unfathomable</ex></ph>"
+      </message>
+      <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_TRANSLATION_INTENT_LABEL_BUTTON" desc="Button label for Translation intent in the magic boost user consent view which leads to the magic boost disclaimer UI when clicked upon.">
+        Translate "<ph name="query">$1<ex>信息</ex></ph>"
+      </message>
+      <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_UNIT_CONVERSION_INTENT_LABEL_BUTTON" desc="Button label for Unit Conversion intent in the magic boost user consent view which leads to the magic boost disclaimer UI when clicked upon.">
+        Convert "<ph name="query">$1<ex>1kg</ex></ph>"
+      </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when supported intent is generated.">
         Get the <ph name="intent">$1<ex>definition</ex></ph> for "<ph name="query">$2<ex>unfathomable</ex></ph>" and more
       </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature.">
         Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text
       </message>
+      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESCRIPTION_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature. This string is used for a refreshed design.">
+        Right-click or press and hold to get definitions, translations, or unit conversions
+      </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON" desc="Display text on the no thanks button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
         No thanks
       </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON" desc="Display text on the allow button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
         Allow
+      </message>
+      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TRY_IT_BUTTON" desc="Display text on the try it button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        Try it
       </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_LOADING" desc="Display text when the Quick Answers view is loading.">
         Loading...
@@ -279,6 +306,18 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2" desc="A11y description template for the Quick Answers view (V2 version).">
         <ph name="QUERY_TEXT">$1<ex>interested</ex></ph>; <ph name="RESULT_TEXT">$2<ex>showing curiosity or concern about something or someone; having a feeling of interest.</ex></ph>; Press Search plus Space to see result in Google Search.
       </message>
+      <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_TEMPLATE" desc="A11y description template for the refreshed Quick Answers view. Note that this text is not rendered in UI but passed to a11y service.">
+        <ph name="INTENT">$1<ex>Unit Conversion</ex></ph>; <ph name="QUERY_TEXT">$2<ex>10 kg</ex></ph>; <ph name="RESULT_TEXT">$3<ex>22.04 pounds</ex></ph>
+      </message>
+      <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_AND_SUBTEXT_TEMPLATE" desc="A11y description template for the refreshed Quick Answers view with sub text. Note that this text is not rendered in UI but passed to a11y service.">
+        <ph name="INTENT">$1<ex>Translate</ex></ph>; <ph name="QUERY_TEXT">$2<ex>信息</ex></ph>; <ph name="SUBTEXT">$3<ex>Chinese</ex></ph>; <ph name="RESULT_TEXT">$4<ex>information</ex></ph>
+      </message>
+      <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_TEMPLATE" desc="A11y description template for the Quick Answers view. Note that this text is not rendered in UI but passed to a11y service.">
+        <ph name="QUERY_TEXT">$1<ex>10 kg</ex></ph>; <ph name="RESULT_TEXT">$2<ex>22.04 pounds</ex></ph>
+      </message>
+      <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_SUBTEXT_TEMPLATE" desc="A11y description template for the Quick Answers view with sub text. Note that this text is not rendered in UI but passed to a11y service.">
+        <ph name="QUERY_TEXT">$1<ex>信息</ex></ph>; <ph name="SUBTEXT">$2<ex>Chinese</ex></ph>; <ph name="RESULT_TEXT">$3<ex>information</ex></ph>
+      </message>
       <!-- TODO(b/259440976): Remove navigation directions once the QA Rich Card feature launches. -->
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
         Info related to your selection
@@ -297,6 +336,15 @@
       </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Report this query
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_DEFINITION" desc="Header text shown in a definition result card">
+        Define
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_TRANSLATION" desc="Header text shown in a translation result card">
+        Translate
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_UNIT_CONVERSION" desc="Header text shown in a unit conversion result card">
+        Convert
       </message>
 
       <!-- Rich Answers -->
@@ -357,7 +405,7 @@
         Enter a prompt like "write a thank you note"
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode.">
-        Rewrite
+        Refine
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode.">
         Enter a prompt like "make it more confident"
@@ -394,8 +442,29 @@
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT" desc="The text label for the summarize button inside the Mahi menu">
         Summarize
       </message>
+      <message name="IDS_MAHI_SUMMARIZE_INDICATOR_LABEL" desc="The text label that indicates the result is a summary">
+        Summary
+      </message>
+      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT" desc="The tooltip of summary button when selected text is too short.">
+        Not enough words to summarize
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_LABEL_TEXT" desc="The text label for the simplify button inside the Mahi menu">
+        Simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_INDICATOR_LABEL" desc="The text label that indicates the result is a simplication">
+        Simplified text
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_EMPTY" desc="The tooltip of the simplify button when it's disabled because of no selected text">
+        Select some text to simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_SHORT" desc="The tooltip of the simplify button when it's disabled because the text selection is too short">
+        Too few words to simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_LONG" desc="The tooltip of the simplify button when it's disabled because the text selection is too long">
+        Too many words to simplify
+      </message>
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
-        Ask question, e.g. "What is this page about?"
+        Ask a question
       </message>
       <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
         Summary
@@ -430,7 +499,59 @@
         Help me read
       </message>
       <message name="IDS_ASH_MAHI_CONDENSED_MENU_BUTTON_LABEL" desc="The label that appears on the condensed Mahi menu button">
-        Help me read this page
+        Summarize with Help me read
+      </message>
+
+      <!-- Mako Feedback -->
+      <message name="IDS_MAKO_FEEDBACK_LINK_ARIA_LABEL" desc="aria-label for links on the Mako feedback form. Makes it clear that it will only open in a different tab. This is appened after the standard label for the link">
+        <ph name="LINK_TEXT">$1</ph>, opens in new tab
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_TITLE" desc="Title of the Mako feedback form">
+        Send feedback
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_SUBTITLE" desc="Subtitle of the Mako feedback form">
+        Thanks for sharing your experience. Your feedback helps us create more accurate and beneficial content.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_QUESTION" desc="Label for the question on the Mako feedback form">
+        What didn’t work well?
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_QUESTION_PLACEHOLDER" desc="Placeholder for the question on the Mako feedback form">
+        Share your feedback or describe your issue. Make sure to not include anything that is personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_OFFENSIVE_OR_UNSAFE" desc="Button label for &quot;offensive or unsafe&quot; on the Mako feedback form">
+        Offensive/Unsafe
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_FACTUALLY_INCORRECT" desc="Button label for &quot;factually incorrect&quot; on the Mako feedback form">
+        Factually incorrect
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_LEGAL_ISSUE" desc="Button label for &quot;legal issue&quot; on the Mako feedback form">
+        Legal issue
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_FEEDBACK_DISCLAIMER" desc="Label for the feedback disclaimer on the Mako feedback form">
+        When you select send, your feedback and content (shown below) will be sent to Google, reviewed by humans, and used to train or improve our products and services subject to the <ph name="LINK_POLICY_BEGIN">$1</ph>Privacy Policy<ph name="LINK_POLICY_END">$2</ph> and <ph name="LINK_TERMS_OF_SERVICE_BEGIN">$3</ph>Google Terms of Service<ph name="LINK_TERMS_OF_SERVICE_END">$4</ph>.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_PRIVACY_POLICY" desc="Label for privacy policy links on the Mako feedback form">
+        Privacy Policy
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_TERMS_OF_SERVICE" desc="Label for Google Terms of Service links on the Mako feedback form">
+        Google Terms of Service
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_CANCEL" desc="Button label for cancelling feedback on the Mako feedback form">
+        Cancel
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_SEND" desc="Button label for sending feedback on the Mako feedback form">
+        Send
+      </message>
+
+      <!-- Lobster -->
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_TAB_LABEL" desc="The label for Image Generation tab in the Editor menu card.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_CHIP_LABEL" desc="The label for Image Generation chip in the Editor menu card.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu Card when the Image Generation tab is selected.">
+        Enter a prompt like "draw a misty forest"
       </message>
 
       <!-- Multitask Menu -->
@@ -486,7 +607,7 @@
       <message name="IDS_ARC_SDK_VERSION_UNKNOWN" desc="Message displayed when the Android SDK Version can not be found">
         Unknown
       </message>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <part file="recorder_strings.grdp" />
 
         <!-- The following strings are located here for accessibility from both //ash and //chrome -->
@@ -654,6 +775,44 @@
 
         <message name="IDS_IME_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process providing the input methods.">
           ChromeOS Input Method Service
+        </message>
+
+        <!-- Content transfer App -->
+        <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Content transfer app in the app shelf. The Content transfer app allows user to transfer data from their EDU account to their consumer account.">
+          Content transfer
+        </message>
+        <message name="IDS_GRADUATION_APP_BACK_BUTTON_LABEL" desc="Text for a button that navigates to the previous step of the Transfer flow.">
+          Back
+        </message>
+        <message name="IDS_GRADUATION_APP_DONE_BUTTON_LABEL" desc="Text for a button that is clicked to indicate that the Transfer flow is complete.">
+          Done
+        </message>
+        <message name="IDS_GRADUATION_APP_GET_STARTED_BUTTON_LABEL" desc="Text for a button that is clicked to navigate to the Transfer tool.">
+          Get Started
+        </message>
+        <message name="IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Takeout webview is loading.">
+          Please wait...
+        </message>
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_TITLE" desc="The title of the welcome page shown when the Content transfer app is opened.">
+          Take your Gmail and Google Drive files with you
+        </message>
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_DESCRIPTION" desc="The description of the welcome page shown when the Content transfer app is opened.">
+          When you lose access to your school account, you will no longer have access to the associated email and Google Drive files such as Gmail, Docs, Slides, and more.
+        </message>
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION" desc="An additional description shown on the welcome page when the Content transfer app is opened.">
+          Make sure to use the Content transfer app by Google to move your school account data to your personal account before you lose access.
+        </message>
+        <message name="IDS_GRADUATION_APP_ERROR_PAGE_TITLE" desc="The title of the page shown in the Content transfer app when an error has occurred.">
+          An error occurred
+        </message>
+        <message name="IDS_GRADUATION_APP_ERROR_PAGE_DESCRIPTION" desc="The description of the page shown in the Content transfer app when an error has occurred.">
+          Please try again later
+        </message>
+        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_TITLE" desc="The title of the page shown in the Content transfer app when the network is not available.">
+          Can’t connect to the internet
+        </message>
+        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_DESCRIPTION" desc="The description of the page shown in the Content transfer app when the network is not available.">
+          Check your internet connection
         </message>
 
         <!-- Help App -->
@@ -1578,7 +1737,7 @@
         <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SHIFT_RIGHT" desc="Describes the right Shift key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Right shift key not pressed', 'Right shift key pressed', or 'Right shift key tested').">
           Right shift
         </message>
-        <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TAB" desc="Describes the Tab key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Tab key not pressed', 'Tab key pressed', or 'Tab key tested').">
+        <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TAB" desc="Describes the Tab key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Tab key not pressed', 'Tab key pressed', or 'Tab key tested')." meaning="Tab key on the keyboard">
           Tab
         </message>
 
@@ -2406,6 +2565,12 @@
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_OPEN" desc="Label for the button to open wallpaper description dialog">
           About the art
         </message>
+        <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE" desc="Label for the link to learn more about the currently selected wallpaper.">
+          Learn more
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Aria label for the link to learn more about the currently selected wallpaper.">
+          Learn more about the selected wallpaper
+        </message>
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_CLOSE" desc="Label for the close button on wallpaper description dialog">
           Close
         </message>
@@ -2556,6 +2721,9 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
           OFF - To display local weather <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_MANAGED_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed (but is managed by the admin) for displaying local weather info">
+          OFF - This setting is managed by your administrator.
         </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_BODY" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
           Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph>-<ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, turn on system location access.
@@ -2756,6 +2924,9 @@
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_NETWORK_ERROR" desc="Error message displayed when screen saver information cannot be downloaded.">
           Please connect to a network and reload the page to view screen saver.
         </message>
+        <message name="IDS_PERSONALIZATION_APP_MANAGED_FEATURE" desc="Message to show in the personalization hub for a feature which is enterprise managed by administrators.">
+          This feature is managed by your administrator
+        </message>
         <message name="IDS_PERSONALIZATION_APP_MANAGED_SETTING" desc="Message to show in the personalization hub for a setting which is enterprise managed by administrators.">
           This setting is managed by your administrators
         </message>
@@ -2782,6 +2953,9 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip for the button to enable auto color mode.">
           Time based changes may not be accurate. Turn on system location access in settings.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_MANAGED_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip text for auto color mode, when geolocation is disabled by the admin.">
+          Time based changes may not be accurate. This setting is managed by your administrator.
         </message>
         <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS" desc="Aria label for the link to account settings.">
           Go to account settings
@@ -2859,6 +3033,9 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_NEW_MEXICO_ALBUM_TITLE" desc="Title for the new mexico video in the ambient section of the hub.">
           Earth Flow
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_JUPITER_ALBUM_TITLE" desc="Title for the jupiter video in the ambient section of the hub.">
+          Jupiter
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
           Exclusive to <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
@@ -3143,85 +3320,107 @@
         </message>
 
         <!-- Sanitize UI -->
-        <message name="IDS_SANITIZE" desc="Name of the Sanitize web app" translateable="false">
-          Sanitize
+        <message name="IDS_SANITIZE" desc="Name of the Safety reset web app">
+          Safety reset
         </message>
-        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window" translateable="false">
-          Your device is sanitized
+        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window">
+          Safety reset has been completed
         </message>
-        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog" translateable="false">
-          Your ChromeOS device was reset to safe defaults.
+        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog">
+          Your Chromebook was reset to safe defaults. You can adjust these changes anytime in Settings.
         </message>
-        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Description of how the user can roll back changes" translateable="false">
-          We made changes to make your device more secure, you can undo some of our changes below.
+        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Summary title">
+          Your Chromebook was reset to safe defaults. You can make changes anytime in Settings.
         </message>
-        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the sanitize done dialog" translateable="false">
+        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the safety reset done dialog">
           Done
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" translateable="false">
-          Your Extensions
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" translateable="false">
-          Re-enable extensions you trust
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" translateable="false">
-          Your ChromeOS Settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" translateable="false">
-          Verify your input method
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" translateable="false">
-          Check your current network
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" translateable="false">
-          Your Chrome Settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" translateable="false">
-          Verify your site content settings
-        </message>
-        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" translateable="false">
-          Check your Chrome startup preferences
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" translateable="false">
-          Verify the status of your homepage
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" translateable="false">
-          Verify your language settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" translateable="false">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" desc="Accordion title for extension resets">
           Extensions
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" translateable="false">
-          ChromeOS Input
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE_SUBHEADER" desc="Subheader for instructions to re-enable extensions">
+          Extensions
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" translateable="false">
-          ChromeOS Network
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" desc="Instructions to re-enable extensions">
+          Extensions disabled to prevent changes to settings. Only turn on extensions you trust.
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" translateable="false">
-          Chrome Startup
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" desc="Accordion title for ChromeOS resets">
+          ChromeOS Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" translateable="false">
-          Chrome Homepage
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT_SUBHEADER" desc="Subheader for instructions to adjust ChromeOS Inputs">
+          Input method
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" translateable="false">
-          Chrome Languages
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+          Reset to prevent others from accessing data. Only use input methods you trust.
         </message>
-        <message name="IDS_SANITIZE_HEADING" translateable="false" desc="Name of the 'Safety reset' window">
-          Sanitize your device
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK_SUBHEADER" desc="Subheader for instructions to adjust ChromeOS Network">
+          Network
         </message>
-        <message name="IDS_SANITIZE_DESCRIPTION" translateable="false" desc="Description of the sanitization feature on the sanitize window">
-          Getting unwanted pop-ups, or other unexpected behavior? Sometimes,
-          apps and extensions that you install can change your ChromeOS settings
-          without you knowing.
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+          Reset to protect data sent through your networks. Only use networks you trust.
         </message>
-        <message name="IDS_SANITIZE_WARNING" translateable="false" desc="Warning text in the 'Sanitize' window">
-          This will disable extensions and reset your settings to safe defaults.
-          Tabs, files, and cookies will be preserved.
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" desc="Accordion title for Chrome resets">
+          Chrome Settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT_SUBHEADER" desc="Subheader for instructions to adjust Chrome site content settings">
+          Site content
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+          Reset to stop others from using your microphone or camera. Only grant permissions to sites you trust.
+        </message>
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP_SUBHEADER" desc="Subheader for instruction to adjust Chrome startup settings">
+          Startup preferences
+        </message>
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+          Reset to make sure the default startup page is not a phishing website. Only use websites you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE_SUBHEADER" desc="Subheader for instructions to adjust Chrome homepage settings">
+          Homepage
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+          Reset to make sure the default homepage is not a phishing site. Only use websites you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES_SUBHEADER" desc="Subheader for instruction to adjust Chrome language settings">
+          Language
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+          Reset to make sure you can access information in your preferred language. Check that only preferred languages are used.
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" desc="Button label to redirect to Chrome Extensions page">
+          Extensions
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" desc="Button label to redirect to ChromeOS Input Settings">
+          Input settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" desc="Button label to redirect to ChromeOS Network Settings">
+          Network settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_SITE_CONTENT" desc="Button label to redirect to Chrome Site Content Settings">
+          Site content settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" desc="Button label to redirect to Chrome Startup Settings">
+          Startup settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" desc="Button label to redirect to Chrome Homepage Settings">
+          Homepage settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" desc="Button label to redirecto to Chrome Language Settings">
+          Language settings
+        </message>
+        <message name="IDS_SANITIZE_HEADING" desc="Name of the 'Safety reset' window">
+          Safety reset
+        </message>
+        <message name="IDS_SANITIZE_DESCRIPTION" desc="Description of the safety reset feature">
+          Safety reset can help remove unwanted pop-ups, fix network issues, and address other unexpected issues.
+        </message>
+        <message name="IDS_SANITIZE_WARNING" desc="Warning text in the safety reset">
+          Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
+          Your default search engine will be reset, but your tabs, files, cookies, and history won’t be changed.
         </message>
         <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
           Help make ChromeOS better by reporting the current settings
         </message>
-        <message name="IDS_SANITIZE_CANCEL" translateable="false" desc="Button label to cancel proceeding with sanitize">
+        <message name="IDS_SANITIZE_CANCEL" desc="Button label to cancel proceeding with the safety reset">
           Cancel
         </message>
 
@@ -3362,11 +3561,10 @@
         All created images will automatically appear here.
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_TITLE" desc="The title of the introduction dialog displayed on the first time the user enters Sea Pen subpage.">
-          How to create with AI and a few things to keep in mind
+          A few things to keep in mind
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog.">
-          Choose a theme and then select the underlined words to personalize your AI images.
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Choose a theme and then select the underlined words to personalize your AI images.<ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Select "Inspire me" to get more unique and varied AI images options.
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
@@ -3376,13 +3574,31 @@
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Generative AI is experimental, in early development, and currently has limited availability.
         </message>
+        <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog when freeform is enabled.">
+          When you select "Create your own," you can write a custom prompt. You can also select "Choose a theme" and then select the underlined words to personalize your AI wallpaper.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Select "Inspire me" to get more unique and varied AI images options.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          When you create your own wallpaper, the prompt is sent to Google servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Terms of Service and Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. Don't include anything personal, sensitive, or confidential.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Generative AI can make mistakes, including about people, so double-check it. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER">&lt;a target="_blank" href="https://support.google.com/chromebook?p=octocorallia"&gt;</ph>Learn more<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>
+        </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON" desc="The button to close the introduction dialog.">
           Got it
         </message>
+        <message name="IDS_SEA_PEN_ARIA_DESCRIPTION_GENERATED_IMAGE" desc="Informational text presented to screen readers to inform users that an image is generated">
+          Generated image
+        </message>
 
         <!-- Freeform prompts -->
-        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_TEMPLATES_LABEL" desc="Label for the Wallpaper AI templates feature.">
-          AI Wallpapers
+        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_LABEL" desc="Label for the Wallpaper AI freeform feature.">
+          Create your own
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATES_WALLPAPER_LABEL" desc="Label for the Wallpaper AI templates feature.">
+          Choose a theme
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL" desc="Label for a list of sample prompts, used to help users write prompts to generate AI images.">
           Sample prompts
@@ -3396,32 +3612,195 @@
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
         Describe the wallpaper you want to create
         </message>
+        <message name="IDS_SEA_PEN_FREEFORM_DISCLAIMER" desc="Aria label for a button that shuffles a list of suggestions (IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS)">
+          Generative AI can make mistakes, including about people, so double-check it
+        </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_PERSON" desc="Error message displayed when the generated images contain a person.">
+          For now, results with people won't be shown. Try another prompt.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message displayed when the search query uses an unsupported language.">
           This language isn't supported at this time
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS" desc="Error message displayed when the search results were blocked.">
-          Can't create images of this. Try another prompt.
-        </message>
-        <message name="IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
-          Powered by Google AI
+            Can’t create images of this right now. Try rephrasing your description. Keep in mind you can't create images of people, harmful, or explicit content. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://policies.google.com/terms/generative-ai/use-policy"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS" desc="Section heading that shows previously-generated wallpapers.">
           Previous prompts
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS_TOOLTIP" desc="Tooltip for IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS">
-          Your 2 most recent prompts. You can only use these prompts while you're on this page.
-        </message>
-        <message name="IDS_SEA_PEN_FREEFORM_MORE_SUGGESTIONS_BUTTON" desc="Description for a button that will show more options">
-          More
+          Your 3 most recent prompts and outputs. You can only access these while you're using Wallpaper &amp; style.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE" desc="A link to a guide with instructions on how to write a prompt to generate AI images.">
-          Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a href="chrome://help-app/help/sub/3399710/id/1251809"&gt;</ph>prompting guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
+          Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=octocorallia"&gt;</ph>prompt guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SAMPLE_PROMPTS" desc="Aria label for a list of sample text prompts to be used to generate AI images (IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL)">
+          Sample prompts
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS" desc="Aria label for a list of suggestions that can be added to an AI text-to-image prompt (e.g. 'realistic photo')">
+          Suggestions
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SHUFFLE_SUGGESTIONS" desc="Aria label for a button that shuffles a list of suggestions (IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS)">
+          Shuffle suggestions
+        </message>
+        <message name="IDS_SEA_PEN_ARIA_ANNOUNCE_SAMPLE_PROMPTS_SHUFFLED" desc="Text read out by the screen reader after the sample prompts are shuffled.">
+          Sample prompts shuffled
+        </message>
+        <message name="IDS_SEA_PEN_ARIA_ANNOUNCE_SUGGESTIONS_SHUFFLED" desc="Text read out by the screen reader after the prompt suggestions are shuffled.">
+          Suggestions shuffled
+        </message>
+
+        <!-- Sea Pen Freeform Suggestions -->
+       <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_4K" desc="A suggestion of text that could be added to an image generation prompt">
+          4k
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_REALISTIC_PHOTO" desc="A suggestion of text that could be added to an image generation prompt">
+          realistic photo
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_SURREAL" desc="A suggestion of text that could be added to an image generation prompt">
+          surreal
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_BEAUTIFUL" desc="A suggestion of text that could be added to an image generation prompt">
+          beautiful
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_MINIMAL" desc="A suggestion of text that could be added to an image generation prompt">
+          minimal
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_SUNSET" desc="A suggestion of text that could be added to an image generation prompt">
+          sunset
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_PASTEL_COLORS" desc="A suggestion of text that could be added to an image generation prompt">
+          pastel colors
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_GLOWING" desc="A suggestion of text that could be added to an image generation prompt">
+          glowing
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_STAR_FILLED_SKY" desc="A suggestion of text that could be added to an image generation prompt">
+          star-filled sky
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_DRAMATIC_SHADOWS" desc="A suggestion of text that could be added to an image generation prompt">
+          dramatic shadows
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_COVERED_IN_SNOW" desc="A suggestion of text that could be added to an image generation prompt">
+          covered in snow
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_BIOLUMINESCENT" desc="A suggestion of text that could be added to an image generation prompt">
+          bioluminescent
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_LONG_EXPOSURE" desc="A suggestion of text that could be added to an image generation prompt">
+          long exposure
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_FOGGY" desc="A suggestion of text that could be added to an image generation prompt">
+          foggy
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_GALAXY" desc="A suggestion of text that could be added to an image generation prompt">
+          galaxy
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_NEON_LIGHTS" desc="A suggestion of text that could be added to an image generation prompt">
+          neon lights
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_REFLECTIONS" desc="A suggestion of text that could be added to an image generation prompt">
+          reflections
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_LIGHTNING" desc="A suggestion of text that could be added to an image generation prompt">
+          lightning
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_BOKEH_EFFECT" desc="A suggestion of text that could be added to an image generation prompt">
+          bokeh effect
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_WITH_COLOR_GRADING" desc="A suggestion of text that could be added to an image generation prompt">
+          with color grading
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_VOLUMETRIC_LIGHT" desc="A suggestion of text that could be added to an image generation prompt">
+          volumetric light
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_NEGATIVE_SPACE" desc="A suggestion of text that could be added to an image generation prompt">
+          negative space
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_DIGITAL_ART" desc="A suggestion of text that could be added to an image generation prompt">
+          digital art
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_T_REX" desc="A suggestion of text that could be added to an image generation prompt">
+          t-rex
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_UNICORN" desc="A suggestion of text that could be added to an image generation prompt">
+          unicorn
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_CATS" desc="A suggestion of text that could be added to an image generation prompt">
+          cats
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_VECTOR_ART_STYLE" desc="A suggestion of text that could be added to an image generation prompt">
+          vector art style
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_3D_RENDER" desc="A suggestion of text that could be added to an image generation prompt">
+          3D render
+        </message>
+
+        <!-- Sea Pen Sample Prompts -->
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_CHROME_SPHERES" desc="An example prompt that can be used to generate an image">
+          3D rendering of chrome spheres and sphere shapes on a background of chrome architectural elements. The composition is a modern minimalistic concept for advertising, branding or presentation with copy space. A large arch stands in front of an abstract background in the style of minimalism. Studio lighting. Closeup shot.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_GALAXY_WITH_SPACESHIP" desc="An example prompt that can be used to generate an image">
+          a beautiful cosmic nebula galaxy with a fast futuristic spaceship, blue, pink and purple hues
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_CAT_RIDING_UNICORN" desc="An example prompt that can be used to generate an image">
+          a cat playing a flying v while riding a unicorn, with a lightning bolt in the background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_ANIMATED_FLOWERS" desc="An example prompt that can be used to generate an image">
+          a close up of several white and yellow flowers, a still from an animated film, a delicate pale pink flower with long petals and a green stem placed between two large yellow tulips against a blue sky with no leaves or foliage, in pastel colors, a cinematic still shot with high resolution and very detailed intricate details, octane render with beautiful lighting, volumetric light and moody light.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_LILY_IN_RAIN" desc="An example prompt that can be used to generate an image">
+          a closeup of an intricate, dew-covered pond lily in the rain. The focus is on the delicate petals and light-reflecting water droplets, capturing their soft pastel colors against a blue background. Shot from eye level using natural light
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_DALMATION" desc="An example prompt that can be used to generate an image">
+          a dalmatian dog in front of a pink background in a full body dynamic pose, shot with high resolution photography hyper realistic stock background with color grading
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_DELOREAN" desc="An example prompt that can be used to generate an image">
+          a Delorean with neon lights driving through the galaxy with stars whizzing by
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_BLACK_MOTORCYCLE" desc="An example prompt that can be used to generate an image">
+          a futuristic motorcycle made of black paper with neon lights dark background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_SPACESHIP_OVER_CITY" desc="An example prompt that can be used to generate an image">
+          A huge spaceship floats over the city, which is illuminated by many lights. The entire scene has an oil painting style and presents dark tones. It creates a mysterious atmosphere with futuristic sci-fi elements. This artwork was created using C4D software and OC renderer to highlight high resolution and high details. There were also some urban buildings in close range, adding a depth of field effect. The scene is rendered in the style of an oil painting, presenting dark tones and creating a mysterious atmosphere with futuristic sci-fi elements.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_CAT_ON_WINDOWSILL" desc="An example prompt that can be used to generate an image">
+          a Japanese animation illustration of a cat sitting on a windowsill watching the rain in the afternoon
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_BIOLUMINESCENT_BEACH" desc="An example prompt that can be used to generate an image">
+          a long exposure photo of a bioluminescent beach at sunset with stars in the sky, beautiful pastel colors, 4k
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_BLACK_SAND_DUNES" desc="An example prompt that can be used to generate an image">
+          a minimal professional photo of glittery black sand dunes with dramatic shadows
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_TREE_MADE_OF_STARS" desc="An example prompt that can be used to generate an image">
+          a photo of a glowing tree made of stars with a beautiful night sky and galaxy in the background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_MOON_OVER_LAKE" desc="An example prompt that can be used to generate an image">
+          a photograph of a moon over a lake with falling cherry blossom leaves, 4k
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_MARBLE_ARCH" desc="An example prompt that can be used to generate an image">
+          a piece of white organza floating in the middle, above a white marble arch with a cream background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_STEAMPUNK_SPACESHIP" desc="An example prompt that can be used to generate an image">
+          a steampunk space ship flying through a sand storm
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_WHITE_TIGER" desc="An example prompt that can be used to generate an image">
+          a surreal white tiger with gold eyes and gold stripes sitting on a white sand dune
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_ANIME_PATH_OVERLOOKING_OCEAN" desc="An example prompt that can be used to generate an image">
+          anime path overlooking the ocean with falling cherry blossom leaves
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_PAPAVER_RHEA_STEMS" desc="An example prompt that can be used to generate an image">
+          minimal still life of a few Papaver rhea flowers in a glass vase on a black background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_METEOR_SHOWER" desc="An example prompt that can be used to generate an image">
+          photo of a night sky with a meteor shower and a few trees in the foreground, with purple and pink hues
         </message>
 
         <!-- Sea Pen Templates (AUTOGENERATED - contact assistive-eng@google.com before editing) -->
@@ -4890,7 +5269,7 @@
           Reset
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
-          Manually reset data usage
+          Reset data usage
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_LAST_RESET_DATE_UNAVAILABLE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to show missing last reset information">
           Date of last data reset is unavailable
@@ -4915,6 +5294,12 @@
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_DROPDOWN_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text describing the reset days to choose from">
           Select an auto reset day ranging from 1 to 31, inclusive
+        </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_DAY_TOOLTIP_A11Y_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, accessible label for reset button help tooltip icon">
+          More info on Reset date
+        </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_BUTTON_PRESSED_A11Y_MESSAGE" desc="Settings > Network > Mobile data > SIM > Data usage, accessible message to indicate reset data usage button pressed">
+          Data usage has been reset
         </message>
 
         <!-- Bluetooth -->
@@ -5118,6 +5503,9 @@
         </message>
         <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL" translateable="false" desc="Validation check found that device components are NOT approved for this device.">
           <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> detected. If you choose to confirm this has been installed, please do so now.
+        </message>
+        <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SKIP" translateable="false" desc="Validation check is skipped.">
+          Component validation has been skipped.
         </message>
         <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" translateable="false" desc="The label for the button to start the RMA process.">
           Get started
@@ -5649,6 +6037,9 @@
         <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
           Firmware updates for external devices
         </message>
+        <message name="IDS_FLEX_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app on Flex devices with the firmware update feature flag.">
+          Firmware updates
+        </message>
         <message name="IDS_FIRMWARE_CRITICAL_UPDATE_TEXT" desc="The text shown when an update is deemed critcal.">
           Critical update
         </message>
@@ -5664,11 +6055,17 @@
         <message name="IDS_FIRMWARE_DONE_BUTTON_TEXT" desc="Label for button shown when the firmware update is completed.">
           Done
         </message>
+        <message name="IDS_FIRMWARE_RESTART_NOW_BUTTON_TEXT" desc="Label for the button shown when the firmware update is completed, but, it needs a restart to apply and the user wants to restart immediately.">
+          Restart Now
+        </message>
+        <message name="IDS_FIRMWARE_RESTART_LATER_BUTTON_TEXT" desc="Label for the button shown when the firmware update is completed and needs a restart but the user wants to defer the restart for later.">
+          Restart Later
+        </message>
         <message name="IDS_FIRMWARE_UPDATE_BUTTON_TEXT" desc="Label for button to start the firmware update.">
           Update
         </message>
-        <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update.">
-          Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+        <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update, announces the device name and version to update to.">
+          Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> to version <ph name="VERSION">$2<ex>3.0.2</ex></ph>
         </message>
         <message name="IDS_FIRMWARE_OK_BUTTON_TEXT" desc="Label for button shown when an install fails.">
           OK
@@ -5679,11 +6076,20 @@
         <message name="IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT" desc="Label for when a device is up to date.">
           Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is now up to date
         </message>
+        <message name="IDS_FIRMWARE_DEVICE_READY_TO_INSTALL_UPDATE_TEXT" desc="Label for when a device needs a reboot to complete an update.">
+          <ph name="DEVICE_NAME">$1<ex>system firmware</ex></ph> is ready to be updated
+        </message>
+        <message name="IDS_FIRMWARE_DEVICE_NEEDS_REBOOT_TEXT" desc="Label for displaying which version the device will update to after the necessary reboot.">
+          A restart is required to complete the installation of firmware for <ph name="DEVICE_NAME">$1<ex>system</ex></ph> to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>. Your computer may appear to reboot several times. This behavior is expected.
+        </message>
         <message name="IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT" desc="Label for displaying which version the device has been updated to.">
           Firmware <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> has been updated to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>
         </message>
         <message name="IDS_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
           While the firmware is updating, do not unplug this external device or shut down your computer. You can minimize this window. This update may take a few minutes and your external device may not work during this time.
+        </message>
+        <message name="IDS_UEFI_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
+          Installing this update will take a few minutes. Keep your device plugged in and powered on when the update is being downloaded. Your device may reboot itself several times and show a black screen during this process. You will be prompted to restart your device to complete installation.
         </message>
         <message name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
           Updating (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
@@ -5723,6 +6129,9 @@
         </message>
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google.">
           This update is provided by the external device manufacturer and hasn't been verified by Google.
+        </message>
+        <message name="IDS_UEFI_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google, but isn't externally located.">
+          This update is provided by the device manufacturer and has not been verified by Google
         </message>
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected.">
           Warning
@@ -5828,8 +6237,8 @@
         <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach bluetooth logs from the current session.">
           Attach bluetooth history and information. <ph name="BEGIN_LINK1">&lt;a id="bluetoothLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
         </message>
-        <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the bluetooth logs hyperlink">
-          Include bluetooth logs which captures information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
+        <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user (Googlers only) clicks on the bluetooth logs hyperlink">
+          Include bluetooth logs which capture information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible. The information is stored for up to one year and access is restricted to the team working on this issue.&#10;&#10;Additionally, if you have consented to extended bluetooth debugging via go/fw-dump-consent: If a problem with the bluetooth controller is detected, a firmware dump will be included, which may include unencrypted bluetooth packet data, over a very short time frame. This data may be shared with the controller's (third-party) manufacturer for troubleshooting controller issues.
         </message>
         <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach Wifi debug logs from the current session.">
           Attach additional Wi-Fi information. <ph name="BEGIN_LINK1">&lt;a id="wifiDebugLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
@@ -5846,16 +6255,10 @@
         <message name="IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_MESSAGE" translateable="false" desc="Message shown after user clicks on the Cross Device Feedback hyperlink">
           For cross-device issues related to features such as Phone Hub, Smart Lock, Instant Tethering, you may be prompted to file another feedback report from your phone.&#10;&#10;Access to this feedback report is restricted to the team working on this issue.
         </message>
-        <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach assistant logs from the current session.">
-        Include recent Google Assistant history and information. <ph name="BEGIN_LINK1">&lt;a id="assistantLogsLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
-        </message>
         <message name="IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach autofill logs from the current page.">
         Send <ph name="BEGIN_LINK1">&lt;a href="#" id="autofillMetadataUrl"&gt;</ph>autofill metadata<ph name="END_LINK1">&lt;/a&gt;</ph>
         <ph name="LINE_BREAK">&lt;br&gt;</ph>
         (your autofill data won't be shared)
-        </message>
-        <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the assistant logs hyperlink">
-          Google Assistance captures recent history and information such as your identity and location to help us better understand your issue.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
         </message>
         <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE" desc="Text for the privacy note included in the feedback app">
           Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>. To request content changes, go to <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help<ph name="END_LINK1">&lt;/a&gt;</ph>.
@@ -6029,10 +6432,9 @@
             that includes a top row key but does not include the search/launcher key">
           Shortcut with top row keys need to include the <ph name="meta_key">$1<ex>search</ex></ph> key.
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY"
-            desc="The status message that displays when user press a key combination
-            that includes right alt key." translateable="false">
-          Press a new shortcut without right alt.
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE" desc="The status message that displays when user press a key combination
+            that includes right alt key.">
+          Quick Insert can't be used for custom shortcuts.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
@@ -6067,6 +6469,9 @@
             desc="The placeholder text that appears in the input box where the
             user is required to press a key combination for a shortcut.">
           key
+        </message>
+        <message name="IDS_KEYBOARD_QUICK_INSERT_LABEL" desc="In keyboard subpage, the item for the super insert key.">
+          quick insert
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys.">
           or
@@ -6321,7 +6726,13 @@
           full screen
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY" desc="The text read aloud by the screen reader describing the keyboard icon 'accessibility'.">
-          accessibility action
+          accessibility options
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB" desc="The text read aloud by the screen reader describing the keyboard icon 'do not disturb'.">
+          do not disturb
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CAMERA_ACCESS_TOGGLE" desc="The text read aloud by the screen reader describing the keyboard icon 'camera access toggle'.">
+          toggle camera access
         </message>
 
         <!-- End of Shortcut Customization -->
@@ -6716,6 +7127,152 @@
         Suspicious files will be scanned automatically by Google Safe Browsing as part of the enhanced protection you chose
       </message>
 
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user they will be signed out soon.">
+        You will be signed out at <ph name="TIME">$1<ex>7:30 PM</ex></ph>
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user they will be signed out soon.">
+        Make sure to save any work
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user that they were logged out.">
+        You've been signed out
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user that they were logged out.">
+        The <ph name="MANAGER">$1<ex>google.com</ex></ph> administrator has set when this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> can be used
+      </message>
+      <message name="IDS_DEVICE_DISABLED_HEADING_RESTRICTION_SCHEDULE" desc="Heading of the message shown to the user when the device has been disabled because it is inside restriction schedule.">
+        Device can't be used
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE" desc="Explanation shown to the user when the device has been disabled because it is inside restriction schedule.">
+        The <ph name="MANAGER">$1<ex>google.com</ex></ph> administrator has set when this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> can be used.
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME" desc="Time when the user will be able to use the device again.">
+        You'll be able to use this device again <ph name="DAY">$1<ex>tomorrow</ex></ph> at <ph name="TIME">$2<ex>8:00 AM</ex></ph>.
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_MONDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Monday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TUESDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Tuesday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_WEDNESDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Wednesday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_THURSDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Thursday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_FRIDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Friday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_SATURDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Saturday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_SUNDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        on Sunday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TODAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        today
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TOMORROW" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
+        tomorrow
+      </message>
+
+      <!-- Strings for OnTask notifications -->
+      <message name="IDS_ON_TASK_NOTIFICATION_TITLE" desc="Class Tools title for OnTask notifications">
+        Class Tools
+      </message>
+      <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_COUNTDOWN_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the teachers lock students' screen.">
+        You will only be able to use Class Tools in <ph name="NUM_SECONDS">$1<ex>5</ex></ph> seconds
+      </message>
+      <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE" desc="Notification message telling students that their teachers have locked their screen.">
+        You're now only able to use Class Tools
+      </message>
+      <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Notification message telling students that their class session ended.">
+        Class Tools session has ended for you
+      </message>
+      <message name="IDS_ON_TASK_URL_BLOCKED_NOTIFICATION_MESSAGE" desc="Toast message telling students that the url is blocked.">
+        Access isn’t allowed for this link. Check with your teacher if you need access.
+      </message>
+      <message name="IDS_ON_TASK_BUNDLE_CONTENT_ADDED_MESSAGE" desc="Notification message telling students that their teacher has added new content to the bundle.">
+        Your teacher has added new content in Class Tools
+      </message>
+      <message name="IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE" desc="Notification message telling students that their teacher has removed content from the bundle.">
+        Your teacher has removed content in Class Tools
+      </message>
+
+      <!-- Strings for the OnTask pod -->
+      <message name="IDS_ON_TASK_POD_ACCESSIBLE_NAME" desc="Accessible name for the OnTask pod widget.">
+        OnTask Pod
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_BACK_ACCESSIBLE_NAME" desc="Accessible name for the Navigate back button in the OnTask pod.">
+        Go back
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_FORWARD_ACCESSIBLE_NAME" desc="Accessible name for the Navigate forward button in the OnTask pod.">
+        Go forward
+      </message>
+      <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
+        Reload this page
+      </message>
+      <message name="IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the show tab strip button in the OnTask pod.">
+        Click to show tabs
+      </message>
+      <message name="IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the hide tab strip button in the OnTask pod.">
+        Click to autohide tabs
+      </message>
+      <message name="IDS_ON_TASK_MOVE_POD_TOP_LEFT_ACCESSIBLE_NAME" desc="Accessible name for the move pod to top left button in the OnTask pod.">
+        Move this menu to the left
+      </message>
+      <message name="IDS_ON_TASK_MOVE_POD_TOP_RIGHT_ACCESSIBLE_NAME" desc="Accessible name for the move pod to top right button in the OnTask pod.">
+        Move this menu to the right
+      </message>
+
+      <!-- Strings for Class Tools -->
+      <message name="IDS_CLASS_TOOLS_TITLE" desc="Title of the Class Tools App">
+        Class Tools
+      </message>
+      <message name="IDS_CLASS_TOOLS_HOME_PAGE" desc="Title of the Class Tools Home">
+        Class Tools Home
+      </message>
+      <message name="IDS_NOT_IN_CLASS_TOOLS" desc="Title to show when not in Class Tools">
+        Not in Class Tools
+      </message>
+
+      <!-- Strings for Class Hub notifications -->
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a class tools session.">
+        Class Tools is connected to students
+      </message>
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open class tools app.">
+        Open app
+      </message>
+      <message name="IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that class tools is currently using their microphone.">
+        Class Tools is using your microphone
+      </message>
+      <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the class tools notification">
+        Class Tools
+      </message>
+       <message name="IDS_BOCA_SHARE_SCREEN_NOTIFICATION_MESSAGE" desc="Message of a notification that tells the user that the Class Tools app is sharing their screen to a display">
+        Class Tools is sharing your screen to <ph name="RECEIVER_NAME">$1<ex>Classroom 101</ex></ph>
+      </message>
+
+      <!-- Strings for Spotlight notifications -->
+      <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
+        Your teacher will view your screen in <ph name="NUM_SECONDS">$1<ex>3</ex></ph> seconds
+      </message>
+      <message name="IDS_BOCA_SPOTLIGHT_PERSISTENT_NOTIFICATION_MESSAGE" desc="Message of the notiification telling users their screen is currently being viewed.">
+       <ph name="TEACHER_NAME">$1<ex>John Doe</ex></ph> is viewing your screen
+      </message>
+
+      <!-- Strings for Class Tools caption bubble -->
+      <message name="IDS_BOCA_CAPTIONS_TRANSLATION_AVAILABLE_BUTTON_TEXT" desc="Text for the button to start captions translation.">
+        Translation available
+      </message>
+      <message name="IDS_BOCA_CAPTIONS_STOP_TRANSLATING_BUTTON_TEXT" desc="Text for the button to stop captions translation.">
+        Stop translating
+      </message>
+
+      <!-- Strings for Class Tools remote receiver -->
+      <message name="IDS_BOCA_RECEIVER_TITLE" desc="Title of an app which runs in kiosk mode and receives incoming screen share presentations. Screen share presentations are initiated from the Class Tools app on another ChromeOS device.">
+        Class Tools display
+      </message>
     </messages>
   </release>
 </grit>

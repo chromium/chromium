@@ -15,16 +15,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_metrics_document_data.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "navigation_predictor_metrics_document_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
-#include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
 namespace content {
@@ -58,10 +57,6 @@ class NavigationPredictor
                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
 
   void SetModelScoreCallbackForTesting(ModelScoreCallbackForTesting callback);
-
-  void SetTaskRunnerForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      const base::TickClock* clock);
 
   static void DisableRendererMetricSendingDelayForTesting();
 
@@ -158,8 +153,7 @@ class NavigationPredictor
     std::optional<base::TimeTicks> pointer_over_timestamp;
     size_t pointer_hovering_over_count = 0u;
   };
-  std::unordered_map<AnchorId, AnchorElementData, typename AnchorId::Hasher>
-      anchors_;
+  std::unordered_map<AnchorId, AnchorElementData> anchors_;
   // It is the anchor element that the user has recently interacted
   // with and is a good candidate for the ML model to predict the next user
   // click.
@@ -170,8 +164,7 @@ class NavigationPredictor
 
   // Mapping between the anchor ID for the anchors that we track and the index
   // that this anchor will have in the UKM logs.
-  std::unordered_map<AnchorId, int, typename AnchorId::Hasher>
-      tracked_anchor_id_to_index_;
+  std::unordered_map<AnchorId, int> tracked_anchor_id_to_index_;
 
   // URLs that were sent to the prediction service.
   // We store hashes of URLs, rather than URLs themselves, to save memory.

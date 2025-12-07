@@ -12,22 +12,40 @@
 
 namespace blink {
 class Credential;
+class CredentialCreationOptions;
 class CredentialRequestOptions;
-class ExceptionState;
 
-// Returns whether `options` contains a credential of digital-identity type.
+// Returns whether `CredentialRequestOptions options` contains a credential of
+// digital-identity type.
 //
 // The return value is not affected by additional non-digital-identity
 // credential types in `options`.
 MODULES_EXPORT bool IsDigitalIdentityCredentialType(
     const CredentialRequestOptions& options);
 
-// Requests the digital-identity credential specified by `options`.
-MODULES_EXPORT ScriptPromise<IDLNullable<Credential>>
-DiscoverDigitalIdentityCredentialFromExternalSource(
+// Returns whether `CredentialCreationOptions options` contains a credential of
+// digital-identity type.
+//
+// The return value is not affected by additional non-digital-identity
+// credential types in `options`.
+MODULES_EXPORT bool IsDigitalIdentityCredentialType(
+    const CredentialCreationOptions& options);
+
+// Requests the digital-identity credential specified by `options`. Credentials
+// are stored in external wallets, and not stored in the browser. Therefore, the
+// browser will forward the request to the underlying platform to handle the
+// communication with external sources.
+MODULES_EXPORT void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    ExceptionState& expection_state,
     const CredentialRequestOptions& options);
+
+// Creates the digital-identity credential specified by `options`. Credentials
+// are stored in external wallets, and not stored in the browser. Therefore, the
+// browser will forward the request to the underlying platform to handle the
+// communication with external sources.
+MODULES_EXPORT void CreateDigitalIdentityCredentialInExternalSource(
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+    const CredentialCreationOptions& options);
 
 }  // namespace blink
 

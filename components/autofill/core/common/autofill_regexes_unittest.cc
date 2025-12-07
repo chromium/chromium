@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,20 @@ bool MatchesRegex(std::u16string_view input,
                   std::vector<std::u16string>* groups = nullptr) {
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   return autofill::MatchesRegex(input, *cache->GetRegexPattern(regex), groups);
+}
+
+std::optional<std::vector<std::u16string>> SplitByRegex(
+    std::u16string_view input,
+    std::string_view regex,
+    size_t max_groups) {
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::RegexPattern> pattern = base::WrapUnique(
+      icu::RegexPattern::compile(icu::UnicodeString::fromUTF8(regex),
+                                 UREGEX_CASE_INSENSITIVE, status));
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  return autofill::SplitByRegex(input, *pattern, max_groups);
 }
 
 struct InputPatternTestCase {
@@ -123,6 +138,24 @@ INSTANTIATE_TEST_SUITE_P(
                                u"a(b+)c(d+)e",  // There is no b in the input.
                                false,
                                {}}));
+
+TEST(AutofillRegexes, SplitByRegex) {
+  EXPECT_EQ(SplitByRegex(u"이영 호", "[", 10), std::nullopt);
+  EXPECT_EQ(SplitByRegex(u"이영 호", " ", 10),
+            std::vector<std::u16string>({u"이영", u"호"}));
+  EXPECT_EQ(SplitByRegex(u"이영 호", " ", 1),
+            std::vector<std::u16string>({u"이영 호"}));
+  EXPECT_EQ(SplitByRegex(u"regex", " ", 10),
+            std::vector<std::u16string>({u"regex"}));
+  EXPECT_EQ(SplitByRegex(u"1  2 3", " ", 2),
+            std::vector<std::u16string>({u"1", u" 2 3"}));
+  EXPECT_EQ(SplitByRegex(u"", " ", 10), std::nullopt);
+  EXPECT_EQ(SplitByRegex(u"    ", "\\s*", 10),
+            std::vector<std::u16string>({u"", u""}));
+  EXPECT_EQ(SplitByRegex(u"abcd", "\\s*", 10),
+            std::vector<std::u16string>({u"", u"a", u"b", u"c", u"d", u""}));
+  EXPECT_EQ(SplitByRegex(u"", "", 10), std::nullopt);
+}
 
 }  // namespace
 

@@ -15,11 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -29,8 +29,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutoTranslateSnackbarControllerTest {
     private static final int NATIVE_SNACKBAR_VIEW = 1001;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock AutoTranslateSnackbarController.Natives mMockJni;
 
     @Mock private WebContents mWebContents;
@@ -38,8 +37,7 @@ public final class AutoTranslateSnackbarControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutoTranslateSnackbarControllerJni.TEST_HOOKS, mMockJni);
+        AutoTranslateSnackbarControllerJni.setInstanceForTesting(mMockJni);
     }
 
     @Test
@@ -64,7 +62,7 @@ public final class AutoTranslateSnackbarControllerTest {
     public void testCreateWithNullSnackbarManager() {
         Activity activity = Mockito.mock(Activity.class);
 
-        Mockito.doReturn(new WeakReference<Activity>(activity)).when(mWindowAndroid).getActivity();
+        Mockito.doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
         Mockito.doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         Mockito.doReturn(new UnownedUserDataHost()).when(mWindowAndroid).getUnownedUserDataHost();
         Assert.assertNull(

@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.class_management_tools.caption_eligibility_setting",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

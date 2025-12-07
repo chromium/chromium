@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -22,7 +23,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
@@ -75,6 +76,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/378735617
     public void testPrivacyNeutralPeekExpandMaximize() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         mPolicy.overrideDecidedStateForTesting(false);
@@ -100,7 +102,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testNonResolveCaption() throws Exception {
         // Simulate a non-resolve search and make sure a Caption is shown if appropriate.
         simulateNonResolveSearch(SEARCH_NODE);

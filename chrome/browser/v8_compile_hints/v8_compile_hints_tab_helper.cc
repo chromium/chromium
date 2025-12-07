@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace v8_compile_hints {
@@ -33,17 +31,12 @@ V8CompileHintsTabHelper::V8CompileHintsTabHelper(
       content::WebContentsUserData<V8CompileHintsTabHelper>(*web_contents),
       optimization_guide_decider_(optimization_guide_decider),
       web_contents_(web_contents) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints));
   optimization_guide_decider_->RegisterOptimizationTypes(
       {optimization_guide::proto::V8_COMPILE_HINTS});
 }
 
 void V8CompileHintsTabHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints)) {
-    return;
-  }
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider =
@@ -141,7 +134,7 @@ void V8CompileHintsTabHelper::SendDataToRenderer(const proto::Model& model) {
   int64_t* memory = shared_memory_mapping.GetMemoryAs<int64_t>();
 
   for (size_t i = 0; i < kModelInt64Count; ++i) {
-    memory[i] = model.bloom_filter().Get(i);
+    UNSAFE_TODO(memory[i]) = model.bloom_filter().Get(i);
   }
 
   base::ReadOnlySharedMemoryRegion read_only_region =

@@ -767,7 +767,10 @@ source_set("ruy_instrumentation") {
     "src/ruy/profiler/instrumentation.cc",
     "src/ruy/profiler/instrumentation.h",
   ]
-  configs += [ ":ruy_shared_config" ]
+  configs += [
+    ":ruy_shared_config",
+    "//build/config/compiler:no_exit_time_destructors",
+  ]
   defines = [ "RUY_PROFILER" ]
 }
 

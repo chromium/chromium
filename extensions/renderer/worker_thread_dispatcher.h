@@ -21,9 +21,7 @@
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
-#include "ipc/ipc_sync_message_filter.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
@@ -76,11 +74,12 @@ class WorkerThreadDispatcher :
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
       const std::optional<base::UnguessableToken>& activation_sequence,
+      const blink::ServiceWorkerToken& service_worker_token,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);
 
-  // Updates bindings of all Service Workers for |extension_id|, after extension
+  // Updates bindings of all Service Workers for `extension_id`, after extension
   // permission update.
   // Returns whether or not the update request was successfully issued to
   // each Service Workers.
@@ -102,7 +101,7 @@ class WorkerThreadDispatcher :
   // Returns true if the task to each worker thread posts correctly.
   bool UpdateBindingsHelper(const std::optional<ExtensionId>& extension_id);
 
-  using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
+  using IDToTaskRunnerMap = std::map<int, base::TaskRunner*>;
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
 };

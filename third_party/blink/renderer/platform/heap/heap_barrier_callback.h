@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -28,7 +29,7 @@ class BarrierCallbackInfo {
   BarrierCallbackInfo(wtf_size_t num_callbacks,
                       base::OnceCallback<void(DoneArg)> done_callback)
       : num_callbacks_left_(num_callbacks),
-        results_(MakeGarbageCollected<HeapVector<Member<T>>>()),
+        results_(MakeGarbageCollected<GCedHeapVector<Member<T>>>()),
         done_callback_(std::move(done_callback)) {
     results_->reserve(num_callbacks);
   }
@@ -45,32 +46,31 @@ class BarrierCallbackInfo {
 
  private:
   wtf_size_t num_callbacks_left_;
-  Persistent<HeapVector<Member<T>>> results_;
+  Persistent<GCedHeapVector<Member<T>>> results_;
   base::OnceCallback<void(DoneArg)> done_callback_;
 };
 
 template <typename T>
 void ShouldNeverRun(T t) {
-  CHECK(false);
+  NOTREACHED();
 }
 
 }  // namespace internal
 
 // This is a near-copy of base/barrier_callback.h, except that it is stores
-// the result in a HeapVector so that the results can be GarbageCollected
+// the result in a GCedHeapVector so that the results can be GarbageCollected
 // objects.
 template <typename T,
           typename RawArg = std::remove_cvref_t<T>,
-          typename DoneArg = HeapVector<Member<RawArg>>,
-          template <typename>
-          class CallbackType>
-  requires(
-      std::same_as<HeapVector<Member<RawArg>>, std::remove_cvref_t<DoneArg>>)
+          typename DoneArg = GCedHeapVector<Member<RawArg>>,
+          template <typename> class CallbackType>
+  requires(std::same_as<GCedHeapVector<Member<RawArg>>,
+                        std::remove_cvref_t<DoneArg>>)
 base::RepeatingCallback<void(T*)> HeapBarrierCallback(
     wtf_size_t num_callbacks,
     CallbackType<void(DoneArg)> done_callback) {
   if (num_callbacks == 0) {
-    std::move(done_callback).Run(HeapVector<Member<RawArg>>());
+    std::move(done_callback).Run(GCedHeapVector<Member<RawArg>>());
     return base::BindRepeating(&internal::ShouldNeverRun<T*>);
   }
 

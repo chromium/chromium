@@ -71,7 +71,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         final int contentWidth = 101;
         final int contentHeight = 389;
@@ -93,7 +93,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
         final int requestLayoutCallCount = delegate.requestLayoutCallCount;
@@ -109,7 +109,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
         layoutSizer.onMeasure(
@@ -128,7 +128,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
         layoutSizer.onMeasure(
@@ -147,7 +147,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(SMALLER_CONTENT_SIZE, SMALLER_CONTENT_SIZE);
         layoutSizer.onMeasure(
@@ -172,7 +172,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(SMALLER_CONTENT_SIZE, SMALLER_CONTENT_SIZE);
         layoutSizer.onMeasure(
@@ -198,7 +198,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(SMALLER_CONTENT_SIZE, SMALLER_CONTENT_SIZE);
         layoutSizer.onMeasure(
@@ -237,7 +237,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
         layoutSizer.onMeasure(
@@ -256,7 +256,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
         layoutSizer.onMeasure(
@@ -275,7 +275,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         final float tooLargePageScale = 3.00f;
 
@@ -302,7 +302,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         final int requestLayoutCallCount = delegate.requestLayoutCallCount;
         layoutSizer.freezeLayoutRequests();
@@ -317,7 +317,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.freezeLayoutRequests();
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
@@ -333,7 +333,7 @@ public class AwLayoutSizerTest {
         AwLayoutSizer layoutSizer = new AwLayoutSizer();
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.freezeLayoutRequests();
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
@@ -356,7 +356,7 @@ public class AwLayoutSizerTest {
         final int measuredWidth = 800;
         final int measuredHeight = 400;
 
-        layoutSizer.setDIPScale(dipScale);
+        layoutSizer.setDipScale(dipScale);
 
         layoutSizer.onContentSizeChanged(FIRST_CONTENT_WIDTH, FIRST_CONTENT_HEIGHT);
         layoutSizer.onMeasure(
@@ -379,7 +379,7 @@ public class AwLayoutSizerTest {
         int contentWidth = 9;
         int contentHeight = 6;
 
-        layoutSizer.setDIPScale(dipScale);
+        layoutSizer.setDipScale(dipScale);
         layoutSizer.onContentSizeChanged(contentWidth, contentHeight);
         layoutSizer.onMeasure(
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
@@ -414,7 +414,7 @@ public class AwLayoutSizerTest {
 
         Assert.assertFalse(delegate.forceZeroHeight);
 
-        layoutSizer.setDIPScale(dipScale);
+        layoutSizer.setDipScale(dipScale);
         layoutSizer.onContentSizeChanged(contentWidth, contentHeight);
         layoutSizer.onPageScaleChanged(pageScale);
         layoutSizer.onMeasure(
@@ -439,7 +439,7 @@ public class AwLayoutSizerTest {
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         delegate.heightWrapContent = false;
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(TOO_LARGE_CONTENT_SIZE, TOO_LARGE_CONTENT_SIZE);
         layoutSizer.onMeasure(
@@ -463,7 +463,7 @@ public class AwLayoutSizerTest {
         LayoutSizerDelegate delegate = new LayoutSizerDelegate();
         delegate.heightWrapContent = false;
         layoutSizer.setDelegate(delegate);
-        layoutSizer.setDIPScale(DIP_SCALE);
+        layoutSizer.setDipScale(DIP_SCALE);
 
         layoutSizer.onContentSizeChanged(TOO_LARGE_CONTENT_SIZE, TOO_LARGE_CONTENT_SIZE);
         layoutSizer.onMeasure(

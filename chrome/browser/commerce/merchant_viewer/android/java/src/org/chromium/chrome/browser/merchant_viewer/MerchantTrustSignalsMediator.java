@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.merchant_viewer;
 import android.text.TextUtils;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -17,6 +19,7 @@ import org.chromium.content_public.browser.NavigationHandle;
  * Responsible for detecting candidate events for fetching the merchant trust signal and publishing
  * the merchant trust message.
  */
+@NullMarked
 class MerchantTrustSignalsMediator {
     /** Callback interface to communicate with the owning object. */
     interface MerchantTrustSignalsCallback {
@@ -30,7 +33,7 @@ class MerchantTrustSignalsMediator {
     private final CurrentTabObserver mCurrentTabObserver;
 
     MerchantTrustSignalsMediator(
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             MerchantTrustSignalsCallback delegate,
             MerchantTrustMetrics metrics) {
         mCurrentTabObserver =
@@ -40,12 +43,12 @@ class MerchantTrustSignalsMediator {
                             @Override
                             public void onDidFinishNavigationInPrimaryMainFrame(
                                     Tab tab, NavigationHandle navigation) {
-                                if ((tab.isIncognito())
-                                        || (!navigation.hasCommitted())
-                                        || (navigation.isPrimaryMainFrameFragmentNavigation())
-                                        || (navigation.isErrorPage())
+                                if (tab.isIncognito()
+                                        || !navigation.hasCommitted()
+                                        || navigation.isPrimaryMainFrameFragmentNavigation()
+                                        || navigation.isErrorPage()
                                         || (navigation.getUrl() == null)
-                                        || (TextUtils.isEmpty(navigation.getUrl().getHost()))) {
+                                        || TextUtils.isEmpty(navigation.getUrl().getHost())) {
                                     return;
                                 }
 

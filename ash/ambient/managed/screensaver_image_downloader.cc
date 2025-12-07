@@ -4,25 +4,33 @@
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 
+#include <algorithm>
 #include <string>
+#include <string_view>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace ash {
+
+namespace ambient {
+// Not placed in namespace {} so it can be friended from //crypto.
+std::string Sha1UrlAsHexEncodeForFilename(std::string_view url) {
+  return base::HexEncode(crypto::obsolete::Sha1::Hash(url));
+}
+}  // namespace ambient
 
 namespace {
 
@@ -116,8 +124,7 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }
 
 std::string GetHashedFileNameForUrl(const std::string& url) {
-  auto hash = base::SHA1Hash(base::as_byte_span(url));
-  return base::HexEncode(hash) + kCacheFileExt;
+  return ambient::Sha1UrlAsHexEncodeForFilename(url) + kCacheFileExt;
 }
 
 std::vector<std::string> GetImageUrlsToProcess(
@@ -177,6 +184,34 @@ bool DeleteFiles(const std::vector<base::FilePath>& files_to_delete) {
   return success;
 }
 
+// Deletes all images on disk in the cache directory that are not referenced
+// by the given `new_image_urls`.
+std::vector<base::FilePath> DeleteUnreferencedImageFiles(
+    const std::vector<std::string>& new_image_urls,
+    const base::FilePath& download_directory) {
+  std::vector<std::string> hashed_image_urls = new_image_urls;
+  // Hash the image url
+  std::ranges::transform(hashed_image_urls.begin(), hashed_image_urls.end(),
+                         hashed_image_urls.begin(), GetHashedFileNameForUrl);
+
+  base::flat_set<std::string> hashed_image_file_paths(hashed_image_urls);
+
+  auto cached_images_from_disk = GetCachedImagesFromDisk(download_directory);
+
+  std::vector<base::FilePath> file_paths_to_delete;
+  for (const auto& downloaded_file : cached_images_from_disk) {
+    if (!hashed_image_file_paths.contains(downloaded_file.BaseName().value())) {
+      file_paths_to_delete.push_back(downloaded_file);
+    }
+  }
+  if (!DeleteFiles(file_paths_to_delete)) {
+    // TODO(b/276208772): Track result with metrics
+    DLOG(WARNING) << "Failed to delete some of the files";
+  }
+
+  return file_paths_to_delete;
+}
+
 }  // namespace
 
 ScreensaverImageDownloader::ScreensaverImageDownloader(
@@ -209,14 +244,10 @@ void ScreensaverImageDownloader::UpdateImageUrlList(
   const std::vector<std::string> new_image_urls =
       GetImageUrlsToProcess(image_url_list);
 
-  // `this` is unretained here as `PostTaskAndReplyWithResult` does not work
-  // with weak ptrs as weak ptrs do not work with functions that return a value.
-  // The usage is safe as the task is executed immediately and `this` should
-  // outlive the call.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ScreensaverImageDownloader::DeleteUnreferencedImageFiles,
-                     base::Unretained(this), new_image_urls),
+      base::BindOnce(&DeleteUnreferencedImageFiles, new_image_urls,
+                     download_directory_),
       base::BindOnce(&ScreensaverImageDownloader::OnUnreferencedImagesDeleted,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -224,32 +255,6 @@ void ScreensaverImageDownloader::UpdateImageUrlList(
     DVLOG(1) << "Queue URL: " << image_url;
     QueueImageDownload(image_url);
   }
-}
-
-std::vector<base::FilePath>
-ScreensaverImageDownloader::DeleteUnreferencedImageFiles(
-    const std::vector<std::string>& new_image_urls) {
-  std::vector<std::string> hashed_image_urls = new_image_urls;
-  // Hash the image url
-  base::ranges::transform(hashed_image_urls.begin(), hashed_image_urls.end(),
-                          hashed_image_urls.begin(), GetHashedFileNameForUrl);
-
-  base::flat_set<std::string> hashed_image_file_paths(hashed_image_urls);
-
-  auto cached_images_from_disk = GetCachedImagesFromDisk(download_directory_);
-
-  std::vector<base::FilePath> file_paths_to_delete;
-  for (const auto& downloaded_file : cached_images_from_disk) {
-    if (!hashed_image_file_paths.contains(downloaded_file.BaseName().value())) {
-      file_paths_to_delete.push_back(downloaded_file);
-    }
-  }
-  if (!DeleteFiles(file_paths_to_delete)) {
-    // TODO(b/276208772): Track result with metrics
-    DLOG(WARNING) << "Failed to delete some of the files";
-  }
-
-  return file_paths_to_delete;
 }
 
 void ScreensaverImageDownloader::OnUnreferencedImagesDeleted(

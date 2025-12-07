@@ -188,7 +188,7 @@ class TSimpleStringDictionary {
       for (size_t i = 0; i < num_entries; ++i) {
         if (!entries_[i].is_active()) {
           entry = &entries_[i];
-          SetFromStringPiece(key, entry->key, key_size);
+          SetFromStringView(key, entry->key, key_size);
           break;
         }
       }
@@ -210,7 +210,7 @@ class TSimpleStringDictionary {
     DCHECK_EQ(count, 1);
 #endif
 
-    SetFromStringPiece(value, entry->value, value_size);
+    SetFromStringView(value, entry->value, value_size);
   }
 
   //! \brief Removes \a key from the map.
@@ -237,9 +237,9 @@ class TSimpleStringDictionary {
   }
 
  private:
-  static void SetFromStringPiece(std::string_view src,
-                                 char* dst,
-                                 size_t dst_size) {
+  static void SetFromStringView(std::string_view src,
+                                char* dst,
+                                size_t dst_size) {
     size_t copy_len = std::min(dst_size - 1, src.size());
     src.copy(dst, copy_len);
     dst[copy_len] = '\0';

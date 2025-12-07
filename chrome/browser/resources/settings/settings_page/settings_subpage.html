@@ -40,7 +40,7 @@
         justify-content: center;
         margin-inline-end: var(--cr-icon-ripple-margin);
         margin-inline-start: var(--cr-icon-button-margin-start);
-        position: relative;  /* Needed for paper-ripple. */
+        position: relative;  /* Needed for cr-ripple. */
         width: var(--cr-icon-ripple-size);
       }
 
@@ -61,9 +61,12 @@
         margin-inline-start: -10px;
       }
 
-      paper-spinner-lite {
-        height: var(--cr-icon-size);
-        width: var(--cr-icon-size);
+      .cr-title-text {
+        /* Title should stay on one line. */
+        white-space: nowrap;
+        /* Show ellipsis if title would overflow. */
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       h1 {
@@ -92,20 +95,17 @@
       <h1 class="cr-title-text">[[pageTitle]]</h1>
       <slot name="subpage-title-extra"></slot>
       <template is="dom-if" if="[[learnMoreUrl]]">
-        <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
+        <cr-icon-button iron-icon="cr:help-outline" suppress-rtl-flip
             aria-label="[[getLearnMoreAriaLabel_(pageTitle)]]"
             aria-description="$i18n{opensInNewTab}" on-click="onHelpClick_">
         </cr-icon-button>
       </template>
       <template is="dom-if" if="[[searchLabel]]">
         <cr-search-field label="[[searchLabel]]"
+            icon-override="[[searchIcon]]"
             on-search-changed="onSearchChanged_"
             clear-label="$i18n{clearSearch}">
         </cr-search-field>
-      </template>
-      <template is="dom-if" if="[[showSpinner]]">
-        <paper-spinner-lite active title$="[[spinnerTitle]]">
-        </paper-spinner-lite>
       </template>
     </div>
     <slot></slot>

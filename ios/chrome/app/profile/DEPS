@@ -1,0 +1,12 @@
+specific_include_rules = {
+  "profile_controller.mm": [
+    "+components/desktop_to_mobile_promos/features.h",
+  ],
+  "synced_set_up_profile_agent.mm": [
+    "+components/sync_device_info/device_info.h",
+    "+components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h",
+  ],
+  "welcome_back_screen_profile_agent\.mm": [
+    "+components/signin/public/base/consent_level.h",
+  ],
+}

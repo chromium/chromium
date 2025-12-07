@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './omnibox_input.js';
 import './omnibox_output.js';
 
@@ -10,9 +10,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox.mojom-webui.js';
-import {AutocompleteControllerType, OmniboxPageCallbackRouter, OmniboxPageHandler} from './omnibox.mojom-webui.js';
 import type {DisplayInputs, OmniboxInput, QueryInputs} from './omnibox_input.js';
+import type {OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox_internals.mojom-webui.js';
+import {AutocompleteControllerType, OmniboxPageCallbackRouter, OmniboxPageHandler} from './omnibox_internals.mojom-webui.js';
 import type {OmniboxOutput} from './omnibox_output.js';
 
 /**
@@ -81,8 +81,8 @@ class BrowserProxy {
         this.handleNewAutocompleteResponse.bind(this));
     this.callbackRouter_.handleNewAutocompleteQuery.addListener(
         this.handleNewAutocompleteQuery.bind(this));
-    this.callbackRouter_.handleAnswerImageData.addListener(
-        omniboxOutput.updateAnswerImage.bind(omniboxOutput));
+    this.callbackRouter_.handleAnswerIconImageData.addListener(
+        omniboxOutput.updateAnswerIconImage.bind(omniboxOutput));
 
     this.handler_ = OmniboxPageHandler.getRemote();
     this.handler_.setClientPage(
@@ -159,7 +159,7 @@ class BrowserProxy {
     // time a request is made. Doing so would require extra bookkeeping on the
     // host side, so for now we keep it simple.
     return isDebugController && !!this.lastRequest &&
-        this.lastRequest!.inputText.trimStart() === inputText;
+        this.lastRequest.inputText.trimStart() === inputText;
   }
 }
 

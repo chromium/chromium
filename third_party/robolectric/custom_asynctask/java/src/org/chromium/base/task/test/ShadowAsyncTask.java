@@ -1,12 +1,15 @@
 package org.chromium.base.task.test;
 
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.RealObject;
-import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.base.task.Location;
+import org.chromium.base.task.LocationAwareExecutor;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -26,50 +29,56 @@ public class ShadowAsyncTask<Result> {
     private @AsyncTask.Status int status = AsyncTask.Status.PENDING;
 
     public ShadowAsyncTask() {
-        worker = new Callable<Result>() {
-            @Override
-            public Result call() {
-                return getBridge().doInBackground();
-            }
-        };
-        future = new FutureTask<Result>(worker) {
-            @Override
-            protected void done() {
-                status = AsyncTask.Status.FINISHED;
-                try {
-                    final Result result = get();
-
-                    try {
-                        ShadowApplication.getInstance().getForegroundThreadScheduler().post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (realAsyncTask instanceof BackgroundOnlyAsyncTask)
-                                            return;
-                                        getBridge().onPostExecute(result);
-                                    }
-                                });
-                    } catch (Throwable t) {
-                        throw new OnPostExecuteException(t);
+        worker =
+                new Callable<Result>() {
+                    @Override
+                    public Result call() {
+                        return getBridge().doInBackground();
                     }
-                } catch (CancellationException e) {
-                    ShadowApplication.getInstance().getForegroundThreadScheduler().post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    getBridge().onCancelled();
-                                }
-                            });
-                } catch (InterruptedException e) {
-                    // Ignore.
-                } catch (OnPostExecuteException e) {
-                    throw new RuntimeException(e.getCause());
-                } catch (Throwable t) {
-                    throw new RuntimeException(
-                            "An error occured while executing doInBackground()", t.getCause());
-                }
-            }
-        };
+                };
+        future =
+                new FutureTask<Result>(worker) {
+                    @Override
+                    protected void done() {
+                        status = AsyncTask.Status.FINISHED;
+                        try {
+                            final Result result = get();
+
+                            try {
+                                Robolectric.getForegroundThreadScheduler()
+                                        .post(
+                                                new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        if (realAsyncTask
+                                                                instanceof BackgroundOnlyAsyncTask)
+                                                            return;
+                                                        getBridge().onPostExecute(result);
+                                                    }
+                                                });
+                            } catch (Throwable t) {
+                                throw new OnPostExecuteException(t);
+                            }
+                        } catch (CancellationException e) {
+                            Robolectric.getForegroundThreadScheduler()
+                                    .post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    getBridge().onCancelled();
+                                                }
+                                            });
+                        } catch (InterruptedException e) {
+                            // Ignore.
+                        } catch (OnPostExecuteException e) {
+                            throw new RuntimeException(e.getCause());
+                        } catch (Throwable t) {
+                            throw new RuntimeException(
+                                    "An error occured while executing doInBackground()",
+                                    t.getCause());
+                        }
+                    }
+                };
     }
 
     @Implementation
@@ -97,12 +106,14 @@ public class ShadowAsyncTask<Result> {
         status = AsyncTask.Status.RUNNING;
         getBridge().onPreExecute();
 
-        ShadowApplication.getInstance().getBackgroundThreadScheduler().post(new Runnable() {
-            @Override
-            public void run() {
-                future.run();
-            }
-        });
+        Robolectric.getBackgroundThreadScheduler()
+                .post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                future.run();
+                            }
+                        });
 
         return realAsyncTask;
     }
@@ -121,6 +132,17 @@ public class ShadowAsyncTask<Result> {
         });
 
         return realAsyncTask;
+    }
+
+    @Implementation
+    public AsyncTask<Result> executeOnExecutor(LocationAwareExecutor executor) {
+        return executeOnExecutor((Executor) executor);
+    }
+
+    @Implementation
+    public AsyncTask<Result> executeOnExecutor(
+            LocationAwareExecutor executor, @Nullable Location location) {
+        return executeOnExecutor(executor);
     }
 
     @Implementation

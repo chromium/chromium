@@ -9,7 +9,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace signin {
 class IdentityManager;
@@ -28,7 +28,7 @@ namespace safe_browsing {
 class ChromeTailoredSecurityService : public TailoredSecurityService {
  public:
   explicit ChromeTailoredSecurityService(
-      ChromeBrowserState* state,
+      ProfileIOS* profile,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
   ~ChromeTailoredSecurityService() override;
@@ -43,7 +43,7 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   // Called when the app has been foregrounded.
   void AppWillEnterForeground();
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 
   // Observers for NSNotificationCenter notifications.
   id application_backgrounding_observer_;

@@ -9,13 +9,19 @@ import os
 import sys
 import unittest
 
-REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
 
 from spdx_writer import _get_spdx_path
 from spdx_writer import _Package
 from spdx_writer import _SPDXJSONWriter
-from test_utils import path_from_root
+
+_OS_ROOT = os.path.abspath(os.sep)
+
+
+def path_from_root(*paths: str):
+  return os.path.join(_OS_ROOT, *paths)
 
 
 class SpdxPathTest(unittest.TestCase):

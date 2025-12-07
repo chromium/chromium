@@ -6,18 +6,19 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device.h"
@@ -91,7 +92,7 @@ bool IsAndroidSecurityKeyRequest(
   return params->type == mojom::UsbControlTransferType::VENDOR &&
          params->request == 52 && params->index == 1 &&
          data.size() >= strlen(magic) &&
-         memcmp(data.data(), magic, strlen(magic)) == 0;
+         UNSAFE_TODO(memcmp(data.data(), magic, strlen(magic))) == 0;
 }
 
 // Returns the sum of `packet_lengths`, or nullopt if the sum would overflow.
@@ -173,8 +174,8 @@ bool DeviceImpl::HasControlTransferPermission(
     interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
   } else {
     auto interface_it =
-        base::ranges::find(config->interfaces, index & 0xff,
-                           &mojom::UsbInterfaceInfo::interface_number);
+        std::ranges::find(config->interfaces, index & 0xff,
+                          &mojom::UsbInterfaceInfo::interface_number);
     if (interface_it != config->interfaces.end())
       interface = interface_it->get();
   }
@@ -267,8 +268,8 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
   }
 
   auto interface_it =
-      base::ranges::find(config->interfaces, interface_number,
-                         &mojom::UsbInterfaceInfo::interface_number);
+      std::ranges::find(config->interfaces, interface_number,
+                        &mojom::UsbInterfaceInfo::interface_number);
   if (interface_it == config->interfaces.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;

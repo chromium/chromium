@@ -52,17 +52,12 @@
 #define SIMPLE_MATRIX_OUTPUT_SIZE 40
 
 int assert_is_equal(
-  const opus_val16 *a, const opus_int16 *b, int size, opus_int16 tolerance)
+  const opus_res *a, const opus_int16 *b, int size, opus_int16 tolerance)
 {
   int i;
   for (i = 0; i < size; i++)
   {
-#ifdef FIXED_POINT
-    opus_int16 val = a[i];
-#else
-    opus_int16 val = FLOAT2INT16(a[i]);
-#endif
-    if (abs(val - b[i]) > tolerance)
+    if (abs(RES2INT16(a[i]) - b[i]) > tolerance)
       return 1;
   }
   return 0;
@@ -94,15 +89,15 @@ void test_simple_matrix(void)
 
   int i, ret;
   opus_int32 simple_matrix_size;
-  opus_val16 *input_val16;
-  opus_val16 *output_val16;
+  opus_res *input_pcm;
+  opus_res *output_pcm;
   opus_int16 *output_int16;
   MappingMatrix *simple_matrix;
 
   /* Allocate input/output buffers. */
-  input_val16 = (opus_val16 *)opus_alloc(sizeof(opus_val16) * SIMPLE_MATRIX_INPUT_SIZE);
+  input_pcm = (opus_res *)opus_alloc(sizeof(opus_res) * SIMPLE_MATRIX_INPUT_SIZE);
   output_int16 = (opus_int16 *)opus_alloc(sizeof(opus_int16) * SIMPLE_MATRIX_OUTPUT_SIZE);
-  output_val16 = (opus_val16 *)opus_alloc(sizeof(opus_val16) * SIMPLE_MATRIX_OUTPUT_SIZE);
+  output_pcm = (opus_res *)opus_alloc(sizeof(opus_res) * SIMPLE_MATRIX_OUTPUT_SIZE);
 
   /* Initialize matrix */
   simple_matrix_size = mapping_matrix_get_size(simple_matrix_params.rows,
@@ -118,23 +113,19 @@ void test_simple_matrix(void)
   /* Copy inputs. */
   for (i = 0; i < SIMPLE_MATRIX_INPUT_SIZE; i++)
   {
-#ifdef FIXED_POINT
-    input_val16[i] = input_int16[i];
-#else
-    input_val16[i] = (1/32768.f)*input_int16[i];
-#endif
+    input_pcm[i] = INT16TORES(input_int16[i]);
   }
 
   /* _in_short */
   for (i = 0; i < SIMPLE_MATRIX_OUTPUT_SIZE; i++)
-    output_val16[i] = 0;
+    output_pcm[i] = 0;
   for (i = 0; i < simple_matrix->rows; i++)
   {
     mapping_matrix_multiply_channel_in_short(simple_matrix,
-      input_int16, simple_matrix->cols, &output_val16[i], i,
+      input_int16, simple_matrix->cols, &output_pcm[i], i,
       simple_matrix->rows, SIMPLE_MATRIX_FRAME_SIZE);
   }
-  ret = assert_is_equal(output_val16, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
+  ret = assert_is_equal(output_pcm, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
   if (ret)
     test_failed();
 
@@ -144,7 +135,7 @@ void test_simple_matrix(void)
   for (i = 0; i < simple_matrix->cols; i++)
   {
     mapping_matrix_multiply_channel_out_short(simple_matrix,
-      &input_val16[i], i, simple_matrix->cols, output_int16,
+      &input_pcm[i], i, simple_matrix->cols, output_int16,
       simple_matrix->rows, SIMPLE_MATRIX_FRAME_SIZE);
   }
   ret = assert_is_equal_short(output_int16, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
@@ -154,34 +145,34 @@ void test_simple_matrix(void)
 #if !defined(DISABLE_FLOAT_API) && !defined(FIXED_POINT)
   /* _in_float */
   for (i = 0; i < SIMPLE_MATRIX_OUTPUT_SIZE; i++)
-    output_val16[i] = 0;
+    output_pcm[i] = 0;
   for (i = 0; i < simple_matrix->rows; i++)
   {
     mapping_matrix_multiply_channel_in_float(simple_matrix,
-      input_val16, simple_matrix->cols, &output_val16[i], i,
+      input_pcm, simple_matrix->cols, &output_pcm[i], i,
       simple_matrix->rows, SIMPLE_MATRIX_FRAME_SIZE);
   }
-  ret = assert_is_equal(output_val16, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
+  ret = assert_is_equal(output_pcm, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
   if (ret)
     test_failed();
 
   /* _out_float */
   for (i = 0; i < SIMPLE_MATRIX_OUTPUT_SIZE; i++)
-    output_val16[i] = 0;
+    output_pcm[i] = 0;
   for (i = 0; i < simple_matrix->cols; i++)
   {
     mapping_matrix_multiply_channel_out_float(simple_matrix,
-      &input_val16[i], i, simple_matrix->cols, output_val16,
+      &input_pcm[i], i, simple_matrix->cols, output_pcm,
       simple_matrix->rows, SIMPLE_MATRIX_FRAME_SIZE);
   }
-  ret = assert_is_equal(output_val16, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
+  ret = assert_is_equal(output_pcm, expected_output_int16, SIMPLE_MATRIX_OUTPUT_SIZE, ERROR_TOLERANCE);
   if (ret)
     test_failed();
 #endif
 
-  opus_free(input_val16);
+  opus_free(input_pcm);
   opus_free(output_int16);
-  opus_free(output_val16);
+  opus_free(output_pcm);
   opus_free(simple_matrix);
 }
 
@@ -231,7 +222,7 @@ void test_creation_arguments(const int channels, const int mapping_family)
     opus_free(matrix);
   }
 
-  is_channels_valid = (order_plus_one >= 2 && order_plus_one <= 4) &&
+  is_channels_valid = (order_plus_one >= 2 && order_plus_one <= 6) &&
     (nondiegetic_channels == 0 || nondiegetic_channels == 2);
   is_projection_valid = (enc_error == OPUS_OK && dec_error == OPUS_OK);
   if (is_channels_valid ^ is_projection_valid)

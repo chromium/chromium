@@ -6,7 +6,6 @@
 #define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_LANGUAGE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <string_view>
 #include <vector>

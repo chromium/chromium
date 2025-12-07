@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-paint-invalidation</h1>
+<p>
+  transferBackFromGPUTexture() should trigger the canvas to repaint, showing
+  the content from WebGPU.
+</p>
+<canvas id="canvas" width="100" height="100"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = '#4080C0FF';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+</script>

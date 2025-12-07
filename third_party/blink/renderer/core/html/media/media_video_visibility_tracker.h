@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client_types.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/skia/include/core/SkRect.h"
 
@@ -20,9 +20,10 @@ namespace blink {
 class Document;
 class HTMLVideoElement;
 
-// This class tracks the percentage of an HTMLVideoElement that is visible to
-// the user (visibility percentage) and reports whether the element's visibility
-// is greater or equal than a given threshold (|visibility_threshold_|) or not.
+// This class tracks the area of an HTMLVideoElement, measured in square CSS
+// pixels, that is visible to the user and reports whether the element's
+// visibility is greater or equal than a given threshold of the visible area
+// (`visibility_threshold_`) or not.
 //
 // "Visible" in this context is defined as intersecting with the viewport and
 // not occluded by other html elements within the page, with the exception of
@@ -69,7 +70,7 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   using ReportVisibilityCb = base::RepeatingCallback<void(bool)>;
   using TrackerAttachedToDocument = WeakMember<Document>;
-  using ClientIdsSet = WTF::HashSet<DisplayItemClientId>;
+  using ClientIdsSet = HashSet<DisplayItemClientId>;
 
   // `RequestVisibilityCallback` is used to enable computing video visibility
   // on-demand, in response to calls to the MediaPlayer interface
@@ -81,7 +82,7 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   MediaVideoVisibilityTracker(
       HTMLVideoElement& video,
-      float visibility_threshold,
+      int visibility_threshold,
       ReportVisibilityCb report_visibility_cb,
       base::TimeDelta hit_test_interval = kMinimumAllowedHitTestInterval);
   ~MediaVideoVisibilityTracker() override;
@@ -138,7 +139,8 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   ListBasedHitTestBehavior ComputeOcclusion(const ClientIdsSet& client_ids_set,
                                             Metrics&,
-                                            const Node& node);
+                                            const Node& node,
+                                            DOMNodeId node_id);
   bool MeetsVisibilityThreshold(Metrics& counters, const PhysicalRect& rect);
   void ReportVisibility(bool meets_visibility_threshold);
   bool ComputeVisibility();
@@ -164,9 +166,14 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   Member<HTMLVideoElement> video_element_;
 
   // Threshold used to report whether a video element is sufficiently visible or
-  // not. A video element with visibility greater or equal than
-  // |visibility_threshold_| is considered to meet the visibility threshold.
-  float visibility_threshold_ = 1.0;
+  // not. A video element with a visible area (in square pixels) greater or
+  // equal than `visibility_threshold_` is considered to meet the visibility
+  // threshold.
+  //
+  // There are no considerations for how this area is distributed, as long as
+  // the visible area is >= `visibility_threshold_`, the video element will be
+  // considered sufficiently visible.
+  const int visibility_threshold_;
   OcclusionState occlusion_state_;
   ReportVisibilityCb report_visibility_cb_;
   RequestVisibilityCallback request_visibility_callback_;

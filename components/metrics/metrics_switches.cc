@@ -75,15 +75,17 @@ bool IsMsbbSettingForcedOnForUkm() {
 
 void EnableMetricsRecordingOnlyForTesting(base::CommandLine* command_line) {
   CHECK(command_line);
-  if (!command_line->HasSwitch(switches::kMetricsRecordingOnly))
+  if (!command_line->HasSwitch(switches::kMetricsRecordingOnly)) {
     command_line->AppendSwitch(switches::kMetricsRecordingOnly);
+  }
 }
 
 void ForceEnableMetricsReportingForTesting() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   CHECK(command_line);
-  if (!command_line->HasSwitch(switches::kForceEnableMetricsReporting))
+  if (!command_line->HasSwitch(switches::kForceEnableMetricsReporting)) {
     command_line->AppendSwitch(switches::kForceEnableMetricsReporting);
+  }
 }
 
 }  // namespace metrics

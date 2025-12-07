@@ -25,6 +25,25 @@ static String RectsAsString(const Vector<T>& rects) {
   return sb.ToString();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+static String XrRegionsAsString(const Vector<CompositorElementId>& xr_regions) {
+  StringBuilder sb;
+  sb.Append("[");
+  bool first = true;
+  for (const auto& id : xr_regions) {
+    if (!first) {
+      sb.Append(", ");
+    }
+    first = false;
+    sb.Append("(");
+    sb.Append(String(id.ToString()));
+    sb.Append(")");
+  }
+  sb.Append("]");
+  return sb.ToString();
+}
+#endif
+
 String HitTestData::ToString() const {
   StringBuilder sb;
   sb.Append("{");
@@ -50,6 +69,15 @@ String HitTestData::ToString() const {
                  RectsAsString<gfx::Rect>(wheel_event_rects));
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // NOTE: We may not want to dump xr_regions here, since this method
+  // is used primarily in tests and this will require different
+  // test code per-platform.
+  if (!xr_regions.empty()) {
+    append_field("xr_regions: ", XrRegionsAsString(xr_regions));
+  }
+#endif
+
   if (!scroll_hit_test_rect.IsEmpty()) {
     append_field("scroll_hit_test_rect: ",
                  String(scroll_hit_test_rect.ToString()));
@@ -57,7 +85,7 @@ String HitTestData::ToString() const {
 
   if (scroll_translation) {
     append_field("scroll_translation: ",
-                 String::Format("%p", scroll_translation.get()));
+                 String::Format("%p", scroll_translation.Get()));
     if (scrolling_contents_cull_rect != InfiniteIntRect()) {
       append_field("scrolling_contents_cull_rect: ",
                    String(scrolling_contents_cull_rect.ToString()));

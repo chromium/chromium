@@ -24,6 +24,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 class BoxLayoutView;
@@ -94,6 +95,12 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     kCollapsedSummaryView,
     kAppIconViewContainer,
     kLargeImageView,
+    kMainView,
+    kIconView,
+    kInlineSettingsRow,
+    kExpandButton,
+    kLeftContent,
+    kImageContainerView,
   };
 
   NotificationViewBase(const NotificationViewBase&) = delete;

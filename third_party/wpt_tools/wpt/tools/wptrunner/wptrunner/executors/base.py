@@ -5,16 +5,18 @@ import hashlib
 import io
 import json
 import os
+import socket
+import struct
+import sys
 import threading
 import traceback
-import socket
-import sys
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable, ClassVar, Tuple, Type
+from typing import Any, Callable, ClassVar, Optional, Union, Tuple, Type
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from . import pytestrunner
 from .actions import actions
+from .asyncactions import async_actions
 from .protocol import Protocol, WdspecProtocol
 
 
@@ -33,7 +35,8 @@ def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwar
                        "target_platform": run_info_data["os"]}
 
     if test_type in ("reftest", "print-reftest"):
-        executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
+        screenshot_cache = test_environment.screenshot_caches[test_type, subsuite.name]
+        executor_kwargs["screenshot_cache"] = screenshot_cache
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
 
     if test_type == "wdspec":
@@ -416,7 +419,7 @@ class RefTestImplementation:
         return self.executor.logger
 
     def get_hash(self, test, viewport_size, dpi, page_ranges):
-        key = (self.subsuite, test.url, viewport_size, dpi)
+        key = (test.url, viewport_size, dpi)
 
         if key not in self.screenshot_cache:
             success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges)
@@ -461,19 +464,19 @@ class RefTestImplementation:
                                                           lhs_screenshots,
                                                           rhs_screenshots)):
             comparison_screenshots = (lhs_screenshot, rhs_screenshot)
-            if not fuzzy or fuzzy == ((0, 0), (0, 0)):
-                equal = lhs_hash == rhs_hash
-                # sometimes images can have different hashes, but pixels can be identical.
-                if not equal:
-                    self.logger.info("Image hashes didn't match%s, checking pixel differences" %
-                                     ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
-                    max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
-                                                                             urls)
-                    equal = pixels_different == 0 and max_per_channel == 0
+            if lhs_hash == rhs_hash:
+                max_per_channel, pixels_different = 0, 0
             else:
+                # sometimes images can have different hashes, but pixels can be identical.
+                self.logger.info("Image hashes didn't match%s, checking pixel differences" %
+                                 ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
                 max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
                                                                          urls,
                                                                          page_idx if len(hashes) > 1 else None)
+
+            if not fuzzy or fuzzy == ((0, 0), (0, 0)):
+                equal = pixels_different == 0 and max_per_channel == 0
+            else:
                 allowed_per_channel, allowed_different = fuzzy
                 self.logger.info("Allowed %s pixels different, maximum difference per channel %s" %
                                  ("-".join(str(item) for item in allowed_different),
@@ -492,6 +495,11 @@ class RefTestImplementation:
 
         lhs = Image.open(io.BytesIO(base64.b64decode(screenshots[0]))).convert("RGB")
         rhs = Image.open(io.BytesIO(base64.b64decode(screenshots[1]))).convert("RGB")
+        if lhs.size != rhs.size:
+            self.logger.info(
+                f"Images differ in size; {urls[0]} is {lhs.size}, {urls[1]} is {rhs.size}" +
+                ("" if page_idx is None else f" on page {page_idx + 1}")
+            )
         self.check_if_solid_color(lhs, urls[0])
         self.check_if_solid_color(rhs, urls[1])
         diff = ImageChops.difference(lhs, rhs)
@@ -611,10 +619,50 @@ class RefTestImplementation:
         self.screenshot_cache[key] = hash_val, data
         return True, data
 
+    def get_png_dimensions(
+        self, base64_image_data: Union[bytes, str], png_name: str
+    ) -> Optional[Tuple[int, int]]:
+        needed_bytes = 32  # math.ceil(24 / 3) * 4
+        image_data = base64.b64decode(base64_image_data[:needed_bytes])
+
+        png_signature = b"\x89PNG\x0d\x0a\x1a\x0a"
+
+        if not image_data.startswith(png_signature):
+            self.logger.warning(f"Got data which wasn't a PNG for {png_name}")
+            return None
+
+        chunk_length, chunk_type = struct.unpack(">L4s", image_data[8:16])
+        if chunk_type != b"IHDR" or chunk_length < 8:
+            self.logger.warning(
+                f"Got PNG whose first chunk was {chunk_type.decode('ASCII')}, "
+                f"not IHDR, for {png_name}"
+            )
+            return None
+
+        return struct.unpack(">LL", image_data[16:24])
+
     def get_screenshot_list(self, node, viewport_size, dpi, page_ranges):
         success, data = self.executor.screenshot(node, viewport_size, dpi, page_ranges)
-        if success and not isinstance(data, list):
-            return success, [data]
+        viewport_size = (800, 600) if viewport_size is None else viewport_size
+        dpi = 96 if dpi is None else dpi
+        dpcm = dpi / 2.54
+
+        if self.executor.is_print:
+            # In the print case, viewport_size is in cm.
+            vw, vh = viewport_size
+            viewport_size = (round(vw * dpcm), round(vh * dpcm))
+
+        if success:
+            if not isinstance(data, list):
+                data = [data]
+
+            for screenshot in data:
+                image_size = self.get_png_dimensions(screenshot, node.url)
+                if image_size is not None and image_size != viewport_size:
+                    self.logger.warning(
+                        f"Unexpected viewport size for {node.url}, "
+                        f"{image_size}, expected {viewport_size}"
+                    )
         return success, data
 
 
@@ -714,7 +762,7 @@ class WdspecRun:
         except (socket.timeout, OSError):
             self.result = False, ("CRASH", None)
         except Exception as e:
-            message = getattr(e, "message")
+            message = getattr(e, "message", "")
             if message:
                 message += "\n"
             message += traceback.format_exc()
@@ -760,15 +808,16 @@ class CallbackHandler:
     def process_action(self, url, payload):
         action = payload["action"]
         cmd_id = payload["id"]
+        params = payload["params"]
         self.logger.debug(f"Got action: {action}")
         try:
             action_handler = self.actions[action]
         except KeyError as e:
             raise ValueError(f"Unknown action {action}") from e
         try:
-            with ActionContext(self.logger, self.protocol, payload.get("context")):
+            with ActionContext(self.logger, self.protocol, params.get("context")):
                 try:
-                    result = action_handler(payload)
+                    result = action_handler(params)
                 except AttributeError as e:
                     # If we fail to get an attribute from the protocol presumably that's a
                     # ProtocolPart we don't implement
@@ -781,12 +830,13 @@ class CallbackHandler:
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
             self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")
-        except self.expected_exc:
-            self.logger.debug(f"Action {action} failed with an expected exception")
-            self._send_message(cmd_id, "complete", "error", f"Action {action} failed")
+        except self.expected_exc as e:
+            self.logger.debug(f"Action {action} failed with an expected exception", exc_info=True)
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed: {e!s}")
         except Exception:
-            self.logger.warning(f"Action {action} failed")
-            self._send_message(cmd_id, "complete", "error")
+            self.logger.warning(f"Action {action} failed with an unexpected exception", exc_info=True)
+            exception_string = traceback.format_exc()
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed:\n{exception_string}")
             raise
         else:
             self.logger.debug(f"Action {action} completed with result {result}")
@@ -797,6 +847,64 @@ class CallbackHandler:
 
     def _send_message(self, cmd_id, message_type, status, message=None):
         self.protocol.testdriver.send_message(cmd_id, message_type, status, message=message)
+
+
+class AsyncCallbackHandler(CallbackHandler):
+    """
+    Handle synchronous and asynchronous actions. Extends `CallbackHandler` with support of async actions.
+    """
+
+    def __init__(self, logger, protocol, test_window, loop):
+        super().__init__(logger, protocol, test_window)
+        self.loop = loop
+        self.async_actions = {cls.name: cls(self.logger, self.protocol) for cls in async_actions}
+
+    def process_action(self, url, payload):
+        action = payload["action"]
+        if action in self.async_actions:
+            # Schedule async action to be processed in the event loop and return immediately.
+            self.logger.debug(f"Scheduling async action processing: {action}, {payload}")
+            self.loop.create_task(self._process_async_action(action, payload))
+            return False, None
+        else:
+            # Fallback to the default action processing, which will fail if the action is not implemented.
+            self.logger.debug(f"Processing synchronous action: {action}, {payload}")
+            return super().process_action(url, payload)
+
+    async def _process_async_action(self, action, payload):
+        """
+        Process async action and send the result back to the test driver.
+
+        This method is analogous to `process_action` but is intended to be used with async actions in a task, so it does
+        not raise unexpected exceptions. However, the unexpected exceptions are logged and the error message is sent
+        back to the test driver.
+        """
+        async_action_handler = self.async_actions[action]
+        cmd_id = payload["id"]
+        params = payload["params"]
+        try:
+            result = await async_action_handler(params)
+        except AttributeError as e:
+            # If we fail to get an attribute from the protocol presumably that's a
+            # ProtocolPart we don't implement
+            # AttributeError got an obj property in Python 3.10, for older versions we
+            # fall back to looking at the error message.
+            if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
+                    f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
+                raise NotImplementedError from e
+        except self.unimplemented_exc:
+            self.logger.warning("Action %s not implemented" % action)
+            self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")
+        except self.expected_exc as e:
+            self.logger.debug(f"Action {action} failed with an expected exception: {e}")
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed: {e}")
+        except Exception as e:
+            self.logger.warning(f"Action {action} failed with an unexpected exception: {e}")
+            self._send_message(cmd_id, "complete", "error", f"Unexpected exception: {e}")
+        else:
+            self.logger.debug(f"Action {action} completed with result {result}")
+            return_message = {"result": result}
+            self._send_message(cmd_id, "complete", "success", json.dumps(return_message))
 
 
 class ActionContext:

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] ResolveExport on invalid re-export from WebAssembly
+  promise_rejects_js: function "function() { throw e; }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/resolve-export.js" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
+Harness: the test ran to completion.
+

@@ -6,6 +6,8 @@
  * @fileoverview Unit test for the Braille IME.
  */
 
+GEN_INCLUDE(['../common/testing/e2e_test_base.js']);
+
 /**
  * Mock Chrome event supporting one listener.
  */
@@ -58,27 +60,148 @@ class MockPort {
   }
 }
 
+/**
+ * Mock chrome.storage.local mv2, supports set and get.
+ */
+class MockLocalStorage {
+  constructor() {
+    this.store = {};
+  }
+
+  /**
+   * Set the keyed storage.
+   * @param {Object}
+   */
+  set(obj, callback) {
+    for (let key in obj) {
+      this.store[key] = obj[key];
+    }
+    callback();
+  }
+
+  /**
+   * Gets the current storage. This function will only work with a callback
+   * provided, like chrome.storage.local.set mv2.
+   * @param {Array<string>} key for receiving specific store entries, ignored.
+   * @param {function()}
+   */
+  get(keys, callback) {
+    callback(this.store);
+  }
+}
 
 /**
  * Engine ID as specified in manifest.
  * @const {string}
  */
-ENGINE_ID = 'braille';
+const ENGINE_ID = 'braille';
 
-var localStorage;
-
-/**
- * Test fixture for the braille IME unit test.
- */
-BrailleImeUnitTest = class extends testing.Test {
+/** Test fixture for the braille IME unit test. */
+BrailleImeUnitTest = class extends E2ETestBase {
   /** @override */
-  setUp() {
-    super.setUp();
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/common/chrome_paths.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "extensions/test/test_extension_dir.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+    `);
+  }
+
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    // Use a test extension to host this test suite.
+    GEN(`
+      base::FilePath resources_path;
+      ASSERT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES,
+                                         &resources_path));
+
+      // Randomly generated extension id and its manifest key. This is because
+      // WaitForExtension need to pass in an extension id before it is loaded
+      // so we could not rely on extension loader to generate a default one.
+      const char kExtensionId[] = "kjaakbloiojfjkogmejphfpgejngoama";
+      const char kKey[] =
+          "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuEz2eIbHVJymg0lMnvs/kg"
+          "2szbydMYeiEDW9L4A4wumUy63StCcxBswE4vfyz/pOAEZkkvQhExsSEhymFVhuqNTK"
+          "jYCY/t4XwnF9CaMoeRnZgS/QvUCfb6Pr59jEj5x/sK5WeVI6Pc24INu2yOGE1wvNdU"
+          "hhlN+j9isa205RWc6rWA6KMjiqjkkWNUt3TTPhlc+GsiZo69qHyhxirR3upNCyii4e"
+          "TossXuD9yc1gMQ1Icv/JC+9h59gupFJ85xcIzbEQ4XypEfB5xNKGtAKiAPkk93beUN"
+          "IXZ9wEw7E3c4VnW7qhl5NeHx0VWOLsTs27kmEgxhvgJOcAf//eIuIFkwIDAQAB";
+
+      extensions::TestExtensionDir ext_dir;
+      ext_dir.WriteManifest(base::StringPrintf(R"({
+        "name": "Test",
+        "version": "0.0.1",
+        "manifest_version": 3,
+        "key": "%s",
+        "permissions": [
+          "input",
+          "storage"
+        ],
+        "background": {
+          "service_worker": "sw.js",
+          "type": "module"
+        }
+      })", kKey));
+
+      ext_dir.CopyFileTo(
+          resources_path.Append(
+              FILE_PATH_LITERAL("chromeos/accessibility/common/testing/"
+                                "test_import_manager.js")),
+          FILE_PATH_LITERAL("test_import_manager.js"));
+
+      const auto kBrailleIme = FILE_PATH_LITERAL("braille_ime.js");
+      ext_dir.CopyFileTo(
+          resources_path.Append(
+              ash::extension_ime_util::kBrailleImeExtensionPath)
+              .Append(kBrailleIme),
+          kBrailleIme);
+
+      ext_dir.WriteFile(
+          "sw.js",
+          R"(
+            import {BrailleIme} from './braille_ime.js';
+            import {TestImportManager} from './test_import_manager.js';
+
+            globalThis.BrailleIme = BrailleIme;
+
+            // Add a heartbeat function so that the service worker doesn't get
+            // terminated in the middle of the test.
+            setInterval(chrome.runtime.getPlatformInfo, 25 * 1000);
+          )");
+      extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
+
+      base::OnceClosure load_cb = base::BindLambdaForTesting([&] {
+        ASSERT_TRUE(extension_loader.LoadExtension(ext_dir.UnpackedPath()));
+      });
+      WaitForExtension(kExtensionId, std::move(load_cb));
+
+      bool fail_on_console_error = true;
+      extensions::TestExtensionConsoleObserver
+        console_observer(GetProfile(), kExtensionId, fail_on_console_error);
+    `);
+  }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+
+    // `BrailleIme` should be loaded in the test extension.
+    assertNotNullNorUndefined(BrailleIme);
+
     chrome = chrome || {};
     chrome.input = chrome.input || {};
     chrome.input.ime = chrome.input.ime || {};
     chrome.runtime = chrome.runtime || {};
-    localStorage = {};
+    chrome.storage = {local: new MockLocalStorage()};
+
     this.lastSentKeyRequestId_ = 0;
     this.lastHandledKeyRequestId_ = undefined;
     this.lastHandledKeyResult_ = undefined;
@@ -142,11 +265,8 @@ BrailleImeUnitTest = class extends testing.Test {
   }
 };
 
-/** @Override */
-BrailleImeUnitTest.prototype.extraLibraries = ['braille_ime.js'];
 
-
-TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
+AX_TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   this.activateIme();
   assertFalse(this.sendKeyDown('KeyF'));
   assertFalse(this.sendKeyDown('KeyD'));
@@ -155,7 +275,7 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   assertEquals(0, this.port.messages.length);
 });
 
-TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
+AX_TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   this.activateIme();
   assertFalse(this.menuItems[0].checked);
   this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
@@ -209,7 +329,7 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   ]);
 });
 
-TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
+AX_TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   this.activateIme();
   // Enable standard keyboard feature.
   assertFalse(this.menuItems[0].checked);
@@ -229,18 +349,19 @@ TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   assertTrue(this.lastHandledKeyResult_);
 });
 
-TEST_F('BrailleImeUnitTest', 'UseStandardKeyboardSettingPreserved', function() {
-  this.activateIme();
-  assertFalse(this.menuItems[0].checked);
-  this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
-  assertTrue(this.menuItems[0].checked);
-  // Create a new instance and make sure the setting is still turned on.
-  this.createIme();
-  this.activateIme();
-  assertTrue(this.menuItems[0].checked);
-});
+AX_TEST_F(
+    'BrailleImeUnitTest', 'UseStandardKeyboardSettingPreserved', function() {
+      this.activateIme();
+      assertFalse(this.menuItems[0].checked);
+      this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
+      assertTrue(this.menuItems[0].checked);
+      // Create a new instance and make sure the setting is still turned on.
+      this.createIme();
+      this.activateIme();
+      assertTrue(this.menuItems[0].checked);
+    });
 
-TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
+AX_TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
   var CONTEXT_ID = 1;
   var hasSelection = false;
   var text = 'Hi, ';
@@ -273,7 +394,7 @@ TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
   assertEquals('Hi, good bye!', text);
 });
 
-TEST_F('BrailleImeUnitTest', 'Uncommitted', function() {
+AX_TEST_F('BrailleImeUnitTest', 'Uncommitted', function() {
   var CONTEXT_ID = 1;
   var text = '';
   chrome.input.ime.commitText = function(params) {

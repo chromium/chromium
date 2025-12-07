@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_group_favicon_cluster"
+    android:layout_width="@dimen/tab_group_cluster_size"
+    android:layout_height="@dimen/tab_group_cluster_size"
+    android:layout_marginStart="@dimen/tab_group_list_first_element_horizontal_margin"
+    android:background="@drawable/tab_group_start_icon_bg">
+  <!-- Inflation logic will adjust these to occupy different corners. -->
+  <include layout="@layout/tab_group_favicon_quarter" />
+  <include layout="@layout/tab_group_favicon_quarter" />
+  <include layout="@layout/tab_group_favicon_quarter" />
+  <include layout="@layout/tab_group_favicon_quarter" />
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster>

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/input/touch_event_stream_validator.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "components/input/web_touch_event_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,32 +122,18 @@ TEST(TouchEventStreamValidator, EmptyEvent) {
   EXPECT_FALSE(error_msg.empty());
 }
 
-TEST(TouchEventStreamValidator, InvalidEventType) {
-  TouchEventStreamValidator validator;
-  WebTouchEvent event(WebInputEvent::Type::kGestureScrollBegin,
-                      WebInputEvent::kNoModifiers,
-                      WebInputEvent::GetStaticTimeStampForTests());
-  std::string error_msg;
-
-  event.touches_length = 1;
-  event.touches[0].state = WebTouchPoint::State::kStatePressed;
-
-  EXPECT_FALSE(validator.Validate(event, &error_msg));
-  EXPECT_FALSE(error_msg.empty());
-}
-
 TEST(TouchEventStreamValidator, InvalidPointStates) {
   TouchEventStreamValidator validator;
   std::string error_msg;
 
-  WebInputEvent::Type kTouchTypes[4] = {
+  std::array<WebInputEvent::Type, 4> kTouchTypes = {
       WebInputEvent::Type::kTouchStart,
       WebInputEvent::Type::kTouchMove,
       WebInputEvent::Type::kTouchEnd,
       WebInputEvent::Type::kTouchCancel,
   };
 
-  WebTouchPoint::State kValidTouchPointStatesForType[4] = {
+  std::array<WebTouchPoint::State, 4> kValidTouchPointStatesForType = {
       WebTouchPoint::State::kStatePressed,
       WebTouchPoint::State::kStateMoved,
       WebTouchPoint::State::kStateReleased,

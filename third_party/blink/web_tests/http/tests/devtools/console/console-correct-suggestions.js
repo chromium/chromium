@@ -5,7 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+import * as CodeMirror from 'devtools/third_party/codemirror.next/codemirror.next.js';
+import * as TextEditor from 'devtools/ui/components/text_editor/text_editor.js';
 
 (async function() {
   TestRunner.addResult(`Tests that console correctly finds suggestions in complicated cases.\n`);
@@ -59,11 +60,15 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
     var cursorPosition = text.indexOf('|');
 
     if (cursorPosition < 0)
-      cursorPosition = Infinity;
+      cursorPosition = text.length;
 
-    consoleEditor.setText(text.replace('|', ''));
-    consoleEditor.setSelection(TextUtils.TextRange.TextRange.createFromLocation(0, cursorPosition));
-    consoleEditor.autocompleteController.autocomplete(force);
+    consoleEditor.editor.dispatch({
+      changes: [
+        { from: 0, to: consoleEditor.editor.state.doc.length },   // Nuke existing text.
+        { from: 0, insert: text.replace('|', '') },               // Insert new text.
+      ],
+    });
+
     var message =
         'Checking \'' + text.replace('\n', '\\n').replace('\r', '\\r') + '\'';
 
@@ -71,26 +76,18 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
       message += ' forcefully';
 
     TestRunner.addResult(message);
-    const suggestions = await TestRunner.addSnifferPromise(
-        consoleEditor.autocompleteController, '_onSuggestionsShownForTest');
-    var completions =
-        new Map(suggestions.map(suggestion => [suggestion, suggestion.text]))
-            .inverse();
-
-    for (const suggestionText of completions.keysArray()) {
-      const size = completions.get(suggestionText).size;
-      if (size > 1)
-        TestRunner.addResult(`ERROR! ${size} duplicates found for '${suggestionText}'!`)
-    }
+    const result = await TextEditor.JavaScript.javascriptCompletionSource(
+      new CodeMirror.CompletionContext(consoleEditor.editor.state, cursorPosition, Boolean(force), consoleEditor.editor));
+    const completions = result?.options ?? [];
 
     for (var i = 0; i < expected.length; i++) {
-      if (completions.has(expected[i])) {
-        for (var completion of completions.get(expected[i])) {
-          if (completion.title)
-            TestRunner.addResult(
-                'Found: ' + expected[i] + ', displayed as ' + completion.title);
-          else
-            TestRunner.addResult('Found: ' + expected[i]);
+      const completion = completions.find(completion => completion.label === expected[i] || completion.apply === expected[i]);
+      if (completion) {
+        if (completion.apply) {
+          TestRunner.addResult(
+            'Found: ' + expected[i] + ', displayed as ' + completion.label);
+        } else {
+          TestRunner.addResult('Found: ' + expected[i]);
         }
       } else {
         TestRunner.addResult('Not Found: ' + expected[i]);
@@ -98,11 +95,11 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
     }
 
     if (reportDefault) {
-        const defaultSuggestion = suggestions.reduce((a, b) => (a.priority || 0) >= (b.priority || 0) ? a : b);
-        if (defaultSuggestion.title)
-            TestRunner.addResult(`Default suggestion: ${defaultSuggestion.text}, displayed as ${defaultSuggestion.title}`);
+      const defaultSuggestion = completions.reduce((a, b) => (a.boost || 0) >= (b.boost || 0) ? a : b);
+      if (defaultSuggestion.apply)
+        TestRunner.addResult(`Default suggestion: ${defaultSuggestion.apply}, displayed as ${defaultSuggestion.label}`);
         else
-            TestRunner.addResult(`Default suggestion: ${defaultSuggestion.text}`);
+        TestRunner.addResult(`Default suggestion: ${defaultSuggestion.label}`);
     }
 
     if (await TestRunner.evaluateInPagePromise('cantTouchThis') !== false) {

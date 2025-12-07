@@ -1,0 +1,78 @@
+{
+  "$build/chromium": {
+    "fail_build_on_clang_warnings": true
+  },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ToTRustMac(dbg)/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "ToTRustMac(dbg)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.clang",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "rust_tot_mac",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "rust_tot"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "ToTRustMac(dbg)",
+          "project": "chromium"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTRustMac(dbg)/targets"
+    }
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_monitoring": true,
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "project": "rbe-chromium-trusted"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.clang",
+  "gardener_rotations": [
+    "chromium.clang"
+  ],
+  "perf_dashboard_machine_group": "ChromiumClang",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.clang"
+  ],
+  "xcode_build_version": "14c18"
+}

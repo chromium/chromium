@@ -23,6 +23,7 @@ static_library("browser") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
+    "//net",
     "//services/data_decoder/public/cpp",
   ]
 

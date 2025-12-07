@@ -12,15 +12,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -40,14 +41,13 @@ public class ConfirmationDialogHelperTest {
     private FakeModalDialogManager mModalDialogManager;
     private ConfirmationDialogHelper mHelper;
 
-    @Mock private DialogInterface mDialogInterface;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Runnable mConfirmedCallback;
     @Mock private Runnable mDeclinedCallback;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivity = Robolectric.setupActivity(Activity.class);
         mHelper = new ConfirmationDialogHelper(mActivity);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
@@ -57,15 +57,14 @@ public class ConfirmationDialogHelperTest {
     @Test
     @SmallTest
     public void dialogShown() {
-        mHelper.showConfirmation(
-                "Title", "Message", R.string.ok, mConfirmedCallback, mDeclinedCallback);
+        mHelper.showConfirmation("Title", "Message", "Ok", mConfirmedCallback, mDeclinedCallback);
         assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 
     @Test
     @SmallTest
     public void positiveButtonPressed() {
-        mHelper.showConfirmation("Title", "Message", R.string.ok, mConfirmedCallback, () -> fail());
+        mHelper.showConfirmation("Title", "Message", "Ok", mConfirmedCallback, () -> fail());
         mModalDialogManager.clickPositiveButton();
         assertNull(mModalDialogManager.getShownDialogModel());
         verify(mConfirmedCallback, times(1)).run();
@@ -74,7 +73,7 @@ public class ConfirmationDialogHelperTest {
     @Test
     @SmallTest
     public void negativeButtonPressed() {
-        mHelper.showConfirmation("Title", "Message", R.string.ok, () -> fail(), mDeclinedCallback);
+        mHelper.showConfirmation("Title", "Message", "Ok", () -> fail(), mDeclinedCallback);
         mModalDialogManager.clickNegativeButton();
         assertNull(mModalDialogManager.getShownDialogModel());
         verify(mDeclinedCallback, times(1)).run();
@@ -83,15 +82,13 @@ public class ConfirmationDialogHelperTest {
     @Test
     @SmallTest
     public void dialogStrings() {
-        mHelper.showConfirmation(
-                "Title", "Message", R.string.ok, mConfirmedCallback, mDeclinedCallback);
+        mHelper.showConfirmation("Title", "Message", "Ok", mConfirmedCallback, mDeclinedCallback);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         assertNotNull(model);
-        assertEquals(model.get(ModalDialogProperties.TITLE), "Title");
-        assertEquals(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1), "Message");
-        assertEquals(
-                model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
-                mActivity.getString(R.string.ok));
+        assertEquals("Title", model.get(ModalDialogProperties.TITLE));
+        assertEquals("Message", model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
+        assertEquals("Ok", model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(1, model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT),
                 mActivity.getString(R.string.cancel));

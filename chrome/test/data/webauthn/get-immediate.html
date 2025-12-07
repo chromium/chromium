@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WebAuthn Get Immediate</title>
+    <script>
+      function getImmediate() {
+        navigator.credentials.get({
+          mediation: 'immediate',
+          publicKey: {
+            challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            timeout: 30000,
+            userVerification: 'preferred',
+          },
+        }).then(cred => {
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('message-container').innerText = cred.id;
+          }, error => {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('message-container').innerText = error.toString();
+          }
+        );
+      }
+      function getImmediateUvDiscouraged() {
+        navigator.credentials.get({
+          mediation: 'immediate',
+          publicKey: {
+            challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            timeout: 30000,
+            userVerification: 'discouraged',
+          },
+        }).then(cred => {
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('message-container').innerText = cred.id;
+          }, error => {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('message-container').innerText = error.toString();
+          }
+        );
+      }
+      function getImmediateUvRequired() {
+        navigator.credentials.get({
+          mediation: 'immediate',
+          publicKey: {
+            challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            timeout: 30000,
+            userVerification: 'required',
+          },
+        }).then(cred => {
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('message-container').innerText = cred.id;
+          }, error => {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('message-container').innerText = error.toString();
+          }
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="getImmediate()" id="get-immediate-button">
+      Get Immediate Credentials (userVerification preferred)
+    </button>
+    <button onclick="getImmediateUvDiscouraged()" id="get-immediate-uv-discouraged-button">
+      Get Immediate Credentials (userVerification discouraged)
+    </button>
+    <button onclick="getImmediateUvRequired()" id="get-immediate-uv-required-button">
+      Get Immediate Credentials (userVerification required)
+    </button>
+    <div id="success-message" style="display: none">Success!</div>
+    <div id="error-message" style="display: none">Error!</div>
+    <div id="message-container"></div>
+  </body>
+</html>

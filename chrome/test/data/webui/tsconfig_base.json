@@ -1,9 +1,10 @@
 {
   "extends": "../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "typeRoots": [
         "./../../../../third_party/node/node_modules/@types"
     ],
-    "types": ["chai", "mocha", "trusted-types"]
+    "types": ["mocha", "trusted-types"]
   }
 }

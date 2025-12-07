@@ -55,7 +55,7 @@ void LogAndCall(StatusCallback callback,
 }
 
 void AddLoggingToCallback(StatusCallback& callback,
-                          const std::string_view method,
+                          std::string_view method,
                           const GURL& auth_server,
                           const chromeos::Uri& ipp_endpoint = chromeos::Uri()) {
   // Wrap the `callback` with the function LogAndCall() defined above.

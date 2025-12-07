@@ -42,9 +42,12 @@ extern const char kProcessTypeXSessionChooser[];
 extern const char kEvaluateCapabilitySwitchName[];
 
 #if BUILDFLAG(IS_LINUX)
-// Used to record client sessions to utmp/wtmp.
-extern const char kEnableUtempter[];
+// Used to record client sessions to wtmpd.
+extern const char kEnableWtmpdb[];
 #endif
+
+// Indicates whether Corp Messaging should be enabled for signaling.
+extern const char kEnableCorpMessaging[];
 
 // Values for kEvaluateCapabilitySwitchName.
 #if BUILDFLAG(IS_WIN)

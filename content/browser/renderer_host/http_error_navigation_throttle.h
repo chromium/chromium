@@ -21,13 +21,12 @@ namespace content {
 // response body is empty or not.
 class HttpErrorNavigationThrottle : public NavigationThrottle {
  public:
-  static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
-      NavigationHandle& navigation_handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
   ~HttpErrorNavigationThrottle() override;
 
  private:
-  explicit HttpErrorNavigationThrottle(NavigationHandle& navigation_handle);
+  explicit HttpErrorNavigationThrottle(NavigationThrottleRegistry& registry);
 
   // NavigationThrottle overrides.
   const char* GetNameForLogging() override;

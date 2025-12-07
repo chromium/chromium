@@ -7,10 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
-
-namespace WTF {
-class TextPosition;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -57,6 +54,10 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
                                     const ScriptFetchOptions& fetch_options,
                                     v8::Local<v8::Value> value,
                                     const TextPosition& start_position);
+
+  v8::Local<v8::Value> GetExport(v8::Isolate* isolate) const {
+    return export_value_.Get(isolate);
+  }
 
   // <specdef
   // href="https://webidl.spec.whatwg.org/#synthetic-module-record">

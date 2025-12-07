@@ -4,5 +4,12 @@ include_rules = [
   "+components/password_manager/core/common/password_manager_constants.h",
   "+components/sync/protocol",
   "+components/webauthn/core/browser",
+  "+device/fido",
   "+ios/components/credential_provider_extension",
 ]
+
+specific_include_rules = {
+  "passkey_util_unittest.mm": [
+    "+components/cbor",
+  ],
+}

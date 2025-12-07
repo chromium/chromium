@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/autofill",
+  "+components/password_manager",
+  "+content/public/browser",
+  "+content/public/test",
+  "+ui/android",
+]
+
+specific_include_rules = {
+  '.*\.java': [
+    "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java",
+    "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
+  ],
+}

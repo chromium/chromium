@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.is;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
@@ -30,10 +31,24 @@ import org.junit.rules.ExternalResource;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.ui.KeyboardUtils;
+
+import java.util.EnumSet;
 
 /**
  * A replacement for ActivityTestRule, designed for use in Chromium. This implementation supports
  * launching the target activity through a launcher or redirect from another Activity.
+ *
+ * <p>This would make more sense to be in //ui/android but it's difficult to move since it's used
+ * broadly.
+ *
+ * <p>Relevant adaptations:
+ *
+ * <ul>
+ *   <li>Enables accessibility checks (with some suppressions).
+ *   <li>Finishes the Activity after the test (by default).
+ *   <li>Checks that the soft keyboard is hidden after the test.
+ * </ul>
  *
  * @param <T> The type of Activity this Rule will use.
  */
@@ -99,8 +114,12 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     @Override
     @CallSuper
     protected void after() {
-        if (mFinishActivity && mActivity != null) {
-            ApplicationTestUtils.finishActivity(mActivity);
+        try {
+            ensureSoftKeyboardIsHidden();
+        } finally {
+            if (mFinishActivity && mActivity != null) {
+                finishActivity();
+            }
         }
     }
 
@@ -111,6 +130,16 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
      */
     public void setFinishActivity(boolean finishActivity) {
         mFinishActivity = finishActivity;
+    }
+
+    protected void ensureSoftKeyboardIsHidden() {
+        T activity = getActivity();
+        if (activity != null) {
+            View decorView = activity.getWindow().getDecorView();
+            if (KeyboardUtils.isAndroidSoftKeyboardShowing(decorView)) {
+                Log.w(TAG, "Soft keyboard should not be showing at the end of a test.");
+            }
+        }
     }
 
     /**
@@ -132,8 +161,10 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     /**
      * Launches the Activity under test using the provided intent. If the provided intent is null,
      * an explicit intent targeting the Activity is created and used.
+     *
+     * @return The activity launched as a result of this method.
      */
-    public void launchActivity(@Nullable Intent startIntent) {
+    public T launchActivity(@Nullable Intent startIntent) {
         if (startIntent == null) {
             startIntent = getActivityIntent();
         } else {
@@ -151,16 +182,32 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
         Log.d(TAG, String.format("Launching activity %s", mActivityClass.getName()));
 
         final Intent intent = startIntent;
+        // Android system pauses the activity on delivering an intent to an existing activity.
+        // https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)
+        EnumSet<Stage> targetStages =
+                (startIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0
+                        ? EnumSet.of(Stage.PAUSED, Stage.CREATED)
+                        : EnumSet.of(Stage.CREATED);
         mActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         mActivityClass,
-                        Stage.CREATED,
+                        targetStages,
                         () -> ContextUtils.getApplicationContext().startActivity(intent));
+        return mActivity;
     }
 
     /**
-     * Recreates the Activity, blocking until finished.
-     * After calling this, getActivity() returns the new Activity.
+     * Finishes the Activity, blocking until finished. After calling this, getActivity() returns
+     * null.
+     */
+    public void finishActivity() {
+        ApplicationTestUtils.finishActivity(getActivity());
+        setActivity(null);
+    }
+
+    /**
+     * Recreates the Activity, blocking until finished. After calling this, getActivity() returns
+     * the new Activity.
      */
     public void recreateActivity() {
         setActivity(ApplicationTestUtils.recreateActivity(getActivity()));

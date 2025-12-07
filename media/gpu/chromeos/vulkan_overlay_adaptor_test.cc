@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 
 #include <linux/videodev2.h>
@@ -10,18 +15,17 @@
 
 #include <cstdint>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -33,7 +37,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/perf_test_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -41,6 +44,7 @@
 #include "media/gpu/test/image_quality_metrics.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/video_frame_mapper_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_bindings.h"
@@ -69,6 +73,7 @@ namespace {
 struct FrameState {
   uint32_t fourcc;
   bool is_scaled;
+  bool is_rotated;
 
   friend constexpr bool operator==(const FrameState& lhs,
                                    const FrameState& rhs) = default;
@@ -80,7 +85,9 @@ struct FrameState {
 template <>
 struct std::hash<media::FrameState> {
   size_t operator()(const media::FrameState& f) const {
-    return static_cast<size_t>(f.fourcc) | static_cast<size_t>(f.is_scaled);
+    return static_cast<size_t>(f.fourcc) |
+           (static_cast<size_t>(f.is_scaled) << 15) |
+           (static_cast<size_t>(f.is_rotated) << 7);
   }
 };
 
@@ -114,6 +121,17 @@ const base::FilePath::CharType* kMT2TImage =
     FILE_PATH_LITERAL("crowd_run_1080x512.mt2t");
 
 constexpr int kLibYUVSuccess = 0;
+
+base::span<const uint32_t> ConvertBytesSpanToUint32Span(
+    base::span<const uint8_t> bytes) {
+  CHECK_EQ(bytes.size() % sizeof(uint32_t), 0u);
+  // SAFETY: The above CHECK_EQ() ensures that the size of `bytes` is divisible
+  // by sizeof(uint32_t), and thus the range bytes.data() + size is valid for
+  // uint32_t once you divide by sizeof(uint32_t).
+  return UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint32_t*>(bytes.data()),
+                 bytes.size() / sizeof(uint32_t)));
+}
 
 scoped_refptr<VideoFrame> ConvMM21ToI420(const VideoFrame& in_frame) {
   CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_NV12);
@@ -248,13 +266,13 @@ scoped_refptr<VideoFrame> ConvI010ToAR30(const VideoFrame& in_frame) {
   return out_frame;
 }
 
-scoped_refptr<VideoFrame> ScaleI420(const gfx::Size& dst_size,
+scoped_refptr<VideoFrame> ScaleI420(const gfx::Size* dst_size,
                                     const VideoFrame& in_frame) {
   CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_I420);
 
-  scoped_refptr<VideoFrame> out_frame =
-      VideoFrame::CreateFrame(VideoPixelFormat::PIXEL_FORMAT_I420, dst_size,
-                              gfx::Rect(dst_size), dst_size, base::TimeDelta());
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_I420, *dst_size, gfx::Rect(*dst_size),
+      *dst_size, base::TimeDelta());
 
   CHECK_EQ(
       libyuv::I420Scale(
@@ -278,13 +296,13 @@ scoped_refptr<VideoFrame> ScaleI420(const gfx::Size& dst_size,
   return out_frame;
 }
 
-scoped_refptr<VideoFrame> ScaleI010(const gfx::Size& dst_size,
+scoped_refptr<VideoFrame> ScaleI010(const gfx::Size* dst_size,
                                     const VideoFrame& in_frame) {
   CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_YUV420P10);
 
   scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
-      VideoPixelFormat::PIXEL_FORMAT_YUV420P10, dst_size, gfx::Rect(dst_size),
-      dst_size, base::TimeDelta());
+      VideoPixelFormat::PIXEL_FORMAT_YUV420P10, *dst_size, gfx::Rect(*dst_size),
+      *dst_size, base::TimeDelta());
 
   CHECK_EQ(
       libyuv::I420Scale_16(
@@ -314,12 +332,112 @@ scoped_refptr<VideoFrame> ScaleI010(const gfx::Size& dst_size,
   return out_frame;
 }
 
+scoped_refptr<VideoFrame> RotateI420(libyuv::RotationMode rotation,
+                                     gfx::Size* final_out_size,
+                                     const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_I420);
+
+  gfx::Size out_size = in_frame.coded_size();
+  if (rotation == libyuv::kRotate90 || rotation == libyuv::kRotate270) {
+    out_size.Transpose();
+
+    // If we need to do a scale and a rotate, we may need to transpose the scale
+    // operation's output dimensions if it comes before the rotation. To handle
+    // this, we transpose the final output size initially, and then here, in the
+    // rotation operation, we transpose it back to the original dimensions in
+    // case the scale operation comes later.
+    final_out_size->Transpose();
+  }
+  scoped_refptr<VideoFrame> out_frame =
+      VideoFrame::CreateFrame(VideoPixelFormat::PIXEL_FORMAT_I420, out_size,
+                              gfx::Rect(out_size), out_size, base::TimeDelta());
+
+  CHECK_EQ(libyuv::I420Rotate(
+               in_frame.visible_data(VideoFrame::Plane::kY),
+               in_frame.stride(VideoFrame::Plane::kY),
+               in_frame.visible_data(VideoFrame::Plane::kU),
+               in_frame.stride(VideoFrame::Plane::kU),
+               in_frame.visible_data(VideoFrame::Plane::kV),
+               in_frame.stride(VideoFrame::Plane::kV),
+               out_frame->GetWritableVisibleData(VideoFrame::Plane::kY),
+               out_frame->stride(VideoFrame::Plane::kY),
+               out_frame->GetWritableVisibleData(VideoFrame::Plane::kU),
+               out_frame->stride(VideoFrame::Plane::kU),
+               out_frame->GetWritableVisibleData(VideoFrame::Plane::kV),
+               out_frame->stride(VideoFrame::Plane::kV),
+               in_frame.visible_rect().width(),
+               in_frame.visible_rect().height(), rotation),
+           kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> RotateI010(libyuv::RotationMode rotation,
+                                     gfx::Size* final_out_size,
+                                     const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_YUV420P10);
+
+  gfx::Size out_size = in_frame.coded_size();
+  if (rotation == libyuv::kRotate90 || rotation == libyuv::kRotate270) {
+    out_size.Transpose();
+
+    final_out_size->Transpose();
+  }
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_YUV420P10, out_size, gfx::Rect(out_size),
+      out_size, base::TimeDelta());
+
+  CHECK_EQ(libyuv::I010Rotate(
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kY)),
+               in_frame.stride(VideoFrame::Plane::kY) / 2,
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kU)),
+               in_frame.stride(VideoFrame::Plane::kU) / 2,
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kV)),
+               in_frame.stride(VideoFrame::Plane::kV) / 2,
+               reinterpret_cast<uint16_t*>(
+                   out_frame->GetWritableVisibleData(VideoFrame::Plane::kY)),
+               out_frame->stride(VideoFrame::Plane::kY) / 2,
+               reinterpret_cast<uint16_t*>(
+                   out_frame->GetWritableVisibleData(VideoFrame::Plane::kU)),
+               out_frame->stride(VideoFrame::Plane::kU) / 2,
+               reinterpret_cast<uint16_t*>(
+                   out_frame->GetWritableVisibleData(VideoFrame::Plane::kV)),
+               out_frame->stride(VideoFrame::Plane::kV) / 2,
+               in_frame.visible_rect().width(),
+               in_frame.visible_rect().height(), rotation),
+           kLibYUVSuccess);
+
+  return out_frame;
+}
+
 // Convenience function for handling multi-step LibYUV conversions with pivots.
 scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
                                              uint32_t in_fourcc,
                                              const gfx::Size& in_size,
                                              uint32_t out_fourcc,
-                                             const gfx::Size& out_size) {
+                                             gfx::Size out_size,
+                                             gfx::OverlayTransform transform) {
+  libyuv::RotationMode rotation;
+  switch (transform) {
+    case gfx::OVERLAY_TRANSFORM_NONE:
+      rotation = libyuv::kRotate0;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+      rotation = libyuv::kRotate90;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
+      rotation = libyuv::kRotate180;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+      rotation = libyuv::kRotate270;
+      break;
+    default:
+      NOTREACHED() << "Invalid overlay transform: " << transform;
+  }
+
   // Assemble a graph of the available LibYUV conversion functions.
   std::unordered_multimap<
       uint32_t, std::pair<base::RepeatingCallback<scoped_refptr<VideoFrame>(
@@ -328,27 +446,34 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
       frame_process_graph = {
           {V4L2_PIX_FMT_MM21,
            std::make_pair(base::BindRepeating(&ConvMM21ToI420),
-                          FrameState(V4L2_PIX_FMT_YUV420, false))},
+                          FrameState(V4L2_PIX_FMT_YUV420, false, false))},
           {V4L2_PIX_FMT_MT2T,
            std::make_pair(base::BindRepeating(&ConvMT2TToP010),
-                          FrameState(V4L2_PIX_FMT_P010, false))},
+                          FrameState(V4L2_PIX_FMT_P010, false, false))},
           {V4L2_PIX_FMT_P010,
            std::make_pair(base::BindRepeating(&ConvP010ToI010),
-                          FrameState(V4L2_PIX_FMT_I010, false))},
+                          FrameState(V4L2_PIX_FMT_I010, false, false))},
           {V4L2_PIX_FMT_YUV420,
            std::make_pair(base::BindRepeating(&ConvI420ToARGB),
-                          FrameState(V4L2_PIX_FMT_ARGB32, false))},
+                          FrameState(V4L2_PIX_FMT_ARGB32, false, false))},
           {V4L2_PIX_FMT_I010,
            std::make_pair(base::BindRepeating(&ConvI010ToAR30),
-                          FrameState(V4L2_PIX_FMT_ARGB2101010, false))},
+                          FrameState(V4L2_PIX_FMT_ARGB2101010, false, false))},
           {V4L2_PIX_FMT_YUV420,
-           std::make_pair(base::BindRepeating(&ScaleI420, out_size),
-                          FrameState(V4L2_PIX_FMT_YUV420, true))},
+           std::make_pair(base::BindRepeating(&ScaleI420, &out_size),
+                          FrameState(V4L2_PIX_FMT_YUV420, true, false))},
           {V4L2_PIX_FMT_I010,
-           std::make_pair(base::BindRepeating(&ScaleI010, out_size),
-                          FrameState(V4L2_PIX_FMT_I010, true))}};
+           std::make_pair(base::BindRepeating(&ScaleI010, &out_size),
+                          FrameState(V4L2_PIX_FMT_I010, true, false))},
+          {V4L2_PIX_FMT_YUV420,
+           std::make_pair(base::BindRepeating(&RotateI420, rotation, &out_size),
+                          FrameState(V4L2_PIX_FMT_YUV420, false, true))},
+          {V4L2_PIX_FMT_I010,
+           std::make_pair(base::BindRepeating(&RotateI010, rotation, &out_size),
+                          FrameState(V4L2_PIX_FMT_I010, false, true))}};
 
-  FrameState target_state = {out_fourcc, in_size != out_size};
+  FrameState target_state = {out_fourcc, in_size != out_size,
+                             rotation != libyuv::kRotate0};
   std::vector<
       base::RepeatingCallback<scoped_refptr<VideoFrame>(const VideoFrame&)>>
       path;
@@ -358,11 +483,11 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
   // steps for a given frame. Some of these conversions are not completely
   // lossless, so we want to minimize distortion.
   std::vector<FrameState> frame_states = {FrameState(in_fourcc, false)};
-  std::unordered_set<FrameState> seen_states;
+  absl::flat_hash_set<FrameState> seen_states;
   std::vector<std::vector<
       base::RepeatingCallback<scoped_refptr<VideoFrame>(const VideoFrame&)>>>
       paths = {{}};
-  constexpr int kMaxPivots = 5;
+  constexpr int kMaxPivots = 10;
   int search_radius;
   for (search_radius = 0; search_radius < kMaxPivots; search_radius++) {
     if (found_path) {
@@ -385,7 +510,8 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
       for (auto itr = range.first; itr != range.second; itr++) {
         FrameState candidate_state(
             itr->second.second.fourcc,
-            itr->second.second.is_scaled | curr_state.is_scaled);
+            itr->second.second.is_scaled | curr_state.is_scaled,
+            itr->second.second.is_rotated | curr_state.is_rotated);
         if (seen_states.contains(candidate_state)) {
           continue;
         }
@@ -409,6 +535,9 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
   CHECK_NE(search_radius, kMaxPivots);
 
   auto frame = in_frame;
+  if (rotation == libyuv::kRotate90 || rotation == libyuv::kRotate270) {
+    out_size.Transpose();
+  }
   for (auto& process : path) {
     frame = process.Run(*frame);
   }
@@ -432,9 +561,9 @@ void InitWithRandom(const gfx::Size size,
                     size_t y_stride,
                     uint8_t* uv_plane,
                     size_t uv_stride) {
-  base::span<uint8_t> y_plane_span = UNSAFE_BUFFERS(base::span(
+  base::span<uint8_t> y_plane_span = UNSAFE_TODO(base::span(
       y_plane, y_stride * base::checked_cast<size_t>(size.height())));
-  base::span<uint8_t> uv_plane_span = UNSAFE_BUFFERS(base::span(
+  base::span<uint8_t> uv_plane_span = UNSAFE_TODO(base::span(
       uv_plane, uv_stride * base::checked_cast<size_t>(size.height()) / 2u));
   const auto width = base::checked_cast<size_t>(size.width());
 
@@ -450,9 +579,15 @@ void InitWithRandom(const gfx::Size size,
   }
 }
 
+struct VulkanOverlayAdaptorTestParam {
+  TiledImageFormat tiling;
+  gfx::Size size;
+  gfx::OverlayTransform transform;
+};
+
 class VulkanOverlayAdaptorTest
     : public testing::Test,
-      public testing::WithParamInterface<TiledImageFormat> {
+      public testing::WithParamInterface<VulkanOverlayAdaptorTestParam> {
  public:
   VulkanOverlayAdaptorTest();
   ~VulkanOverlayAdaptorTest() = default;
@@ -461,7 +596,25 @@ class VulkanOverlayAdaptorTest
     template <class ParamType>
     std::string operator()(
         const testing::TestParamInfo<ParamType>& info) const {
-      return base::StringPrintf("%s", (info.param == kMM21) ? "MM21" : "MT2T");
+      std::string ret = info.param.tiling == kMM21 ? "MM21" : "MT2T";
+      ret += "_" + info.param.size.ToString();
+      switch (info.param.transform) {
+        case gfx::OVERLAY_TRANSFORM_NONE:
+          ret += "_rot0";
+          break;
+        case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+          ret += "_rot90";
+          break;
+        case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
+          ret += "_rot180";
+          break;
+        case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+          ret += "_rot270";
+          break;
+        default:
+          NOTREACHED() << "Invalid transform: " << info.param.transform;
+      }
+      return ret;
     }
   };
 
@@ -489,6 +642,7 @@ class VulkanOverlayAdaptorTest
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   scoped_refptr<gpu::SharedContextState> context_state_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::GpuPreferences gpu_preferences_;
@@ -503,7 +657,8 @@ VulkanOverlayAdaptorTest::VulkanOverlayAdaptorTest()
                                                   gfx::Size())),
       context_(gl::init::CreateGLContext(share_group_.get(),
                                          surface_.get(),
-                                         gl::GLContextAttribs())) {
+                                         gl::GLContextAttribs())),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   context_->MakeCurrent(surface_.get());
   context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
       share_group_, surface_, context_, false, base::DoNothing(),
@@ -560,16 +715,16 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
                           kMM21TileHeight) *
           bpp_numerator / bpp_denom);
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateMappableVideoFrame(
       VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, visible_rect, alloc_size,
-      kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      test_sii_.get());
 
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12,
-          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+          /*force_linear_buffer_mapper=*/true);
   scoped_refptr<VideoFrame> mapped_frame =
       frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
 
@@ -601,11 +756,11 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
     bool is_10bit) {
   constexpr base::TimeDelta kNullTimestamp;
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateMappableVideoFrame(
       is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                : VideoPixelFormat::PIXEL_FORMAT_ARGB,
       coded_size, gfx::Rect(coded_size), coded_size, kNullTimestamp,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii_.get());
 
   auto gmb = CreateGpuMemoryBufferHandle(frame.get());
   shared_image_factory_->CreateSharedImage(
@@ -622,9 +777,8 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
       VideoFrameMapperFactory::CreateMapper(
           is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                    : VideoPixelFormat::PIXEL_FORMAT_ARGB,
-          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+          /*force_linear_buffer_mapper=*/true);
   scoped_refptr<VideoFrame> mapped_frame =
       frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
 
@@ -632,7 +786,9 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
 }
 
 TEST_P(VulkanOverlayAdaptorTest, Correctness) {
-  bool is_10bit = GetParam() == kMT2T;
+  bool is_10bit = GetParam().tiling == kMT2T;
+  const gfx::Size& output_size = GetParam().size;
+  const gfx::OverlayTransform transform = GetParam().transform;
 
   auto in_mailbox = gpu::Mailbox::Generate();
   auto out_mailbox = gpu::Mailbox::Generate();
@@ -650,17 +806,27 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
       CreateVideoFrame(in_mailbox, image.Size(), image.VisibleRect(),
                        std::move(init_cb), is_10bit);
 
-  gfx::Size output_size(1000, 1000);
   auto out_frame = CreateFramebuffer(out_mailbox, output_size, is_10bit);
 
   auto vulkan_overlay_adaptor =
-      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam().tiling);
+
+  bool performed_cleanup = false;
+  auto* fence_helper =
+      vulkan_overlay_adaptor->GetVulkanDeviceQueue()->GetFenceHelper();
+  fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
+      [](bool* cleanup_flag, gpu::VulkanDeviceQueue* device_queue,
+         bool device_lost) { *cleanup_flag = true; },
+      &performed_cleanup));
+  auto cleanup_fence = fence_helper->GenerateCleanupFence();
+  fence_helper->Wait(cleanup_fence, UINT64_MAX);
 
   ProcessMailboxes(in_mailbox, image.VisibleRect().size(), out_mailbox,
                    gfx::RectF(base::checked_cast<float>(output_size.width()),
                               base::checked_cast<float>(output_size.height())),
-                   gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
-                   *vulkan_overlay_adaptor);
+                   gfx::RectF(1.0f, 1.0f), transform, *vulkan_overlay_adaptor);
+  ASSERT_TRUE(performed_cleanup);
+
   // This implicitly waits for all semaphores to signal.
   vulkan_overlay_adaptor->GetVulkanDeviceQueue()
       ->GetFenceHelper()
@@ -680,18 +846,21 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
   // raw, packed image data.
   auto packed_in_frame = VideoFrame::WrapExternalData(
       VideoPixelFormat::PIXEL_FORMAT_NV12, in_frame->coded_size(),
-      in_frame->visible_rect(), in_frame->coded_size(), image.Data(),
-      in_frame->coded_size().GetArea() * 3 / 2, base::TimeDelta());
+      in_frame->visible_rect(), in_frame->coded_size(),
+      base::span(image.Data(),
+                 static_cast<size_t>(in_frame->coded_size().GetArea() * 3 / 2)),
+      base::TimeDelta());
 
-  auto libyuv_out_frame = ProcessFrameLibyuv(
-      packed_in_frame, in_fourcc, image.Size(), out_fourcc, output_size);
+  auto libyuv_out_frame =
+      ProcessFrameLibyuv(packed_in_frame, in_fourcc, image.Size(), out_fourcc,
+                         output_size, transform);
   if (is_10bit) {
     psnr = test::ComputeAR30PSNR(
-        reinterpret_cast<const uint32_t*>(
-            out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        ConvertBytesSpanToUint32Span(
+            out_frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB)),
         out_frame->stride(VideoFrame::Plane::kARGB) / 4,
-        reinterpret_cast<const uint32_t*>(
-            libyuv_out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        ConvertBytesSpanToUint32Span(
+            libyuv_out_frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB)),
         libyuv_out_frame->stride(VideoFrame::Plane::kARGB) / 4,
         output_size.width(), output_size.height());
   } else {
@@ -702,18 +871,23 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
         libyuv_out_frame->stride(VideoFrame::Plane::kARGB), output_size.width(),
         output_size.height());
   }
-  ASSERT_TRUE(psnr >= psnr_threshold);
+
+  EXPECT_GE(psnr, psnr_threshold);
 }
 
 TEST_P(VulkanOverlayAdaptorTest, Performance) {
   constexpr size_t kNumberOfTestFrames = 10;
   constexpr size_t kNumberOfTestCycles = 200;
-  constexpr int kTestImageWidth = 1920;
-  constexpr int kTestImageHeight = 1088;
 
-  const bool is_10bit = GetParam() == kMT2T;
+  const bool is_10bit = GetParam().tiling == kMT2T;
+  const gfx::Size& test_image_size = GetParam().size;
+  const gfx::OverlayTransform transform = GetParam().transform;
+  gfx::Size output_size = test_image_size;
+  if (transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 ||
+      transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) {
+    output_size.Transpose();
+  }
 
-  gfx::Size test_image_size(kTestImageWidth, kTestImageHeight);
   gfx::Size test_coded_size(
       base::bits::AlignUp(base::checked_cast<size_t>(test_image_size.width()),
                           kMM21TileWidth),
@@ -732,22 +906,20 @@ TEST_P(VulkanOverlayAdaptorTest, Performance) {
                                     std::move(init_cb), is_10bit);
 
     out_mailboxes[i] = gpu::Mailbox::Generate();
-    out_frames[i] =
-        CreateFramebuffer(out_mailboxes[i], test_image_size, is_10bit);
+    out_frames[i] = CreateFramebuffer(out_mailboxes[i], output_size, is_10bit);
   }
 
   auto vulkan_overlay_adaptor =
-      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam().tiling);
 
   auto start_time = base::TimeTicks::Now();
   for (size_t i = 0; i < kNumberOfTestCycles; i++) {
     ProcessMailboxes(
         in_mailboxes[i % kNumberOfTestFrames], test_image_size,
         out_mailboxes[i % kNumberOfTestFrames],
-        gfx::RectF(base::checked_cast<float>(test_image_size.width()),
-                   base::checked_cast<float>(test_image_size.height())),
-        gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
-        *vulkan_overlay_adaptor);
+        gfx::RectF(base::checked_cast<float>(output_size.width()),
+                   base::checked_cast<float>(output_size.height())),
+        gfx::RectF(1.0f, 1.0f), transform, *vulkan_overlay_adaptor);
   }
   auto end_time = base::TimeTicks::Now();
 
@@ -758,10 +930,77 @@ TEST_P(VulkanOverlayAdaptorTest, Performance) {
                    {"FramesPerSecond", fps}});
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VulkanOverlayAdaptorTest,
-                         testing::Values(kMM21, kMT2T),
-                         VulkanOverlayAdaptorTest::PrintToStringParamName());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VulkanOverlayAdaptorTest,
+    testing::Values(
+        VulkanOverlayAdaptorTestParam({kMM21, gfx::Size(320, 240),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMM21, gfx::Size(1280, 720),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMM21, gfx::Size(1920, 1080),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(320, 240),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1280, 720),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1920, 1080),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam({kMT2T, gfx::Size(320, 240),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMT2T, gfx::Size(1280, 720),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMT2T, gfx::Size(1920, 1080),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(320, 240),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1280, 720),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1920, 1080),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270})),
+    VulkanOverlayAdaptorTest::PrintToStringParamName());
 
 }  // namespace
 }  // namespace media

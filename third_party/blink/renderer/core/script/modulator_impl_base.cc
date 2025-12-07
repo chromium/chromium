@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/script/dynamic_module_resolver.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 namespace blink {
@@ -73,10 +73,12 @@ void ModulatorImplBase::FetchTree(
     const ScriptFetchOptions& options,
     ModuleScriptCustomFetchType custom_fetch_type,
     ModuleTreeClient* client,
+    ModuleImportPhase import_phase,
     String referrer) {
   tree_linker_registry_->Fetch(
       url, module_type, fetch_client_settings_object_fetcher, context_type,
-      destination, options, this, custom_fetch_type, client, referrer);
+      destination, options, this, custom_fetch_type, client, import_phase,
+      referrer);
 }
 
 void ModulatorImplBase::FetchDescendantsForInlineScript(
@@ -126,11 +128,12 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   // errors, but should be supressed (i.e. |logger| should be null) in normal
   // cases.
 
+  std::optional<KURL> result;
   std::optional<KURL> mapped_url;
-  if (GetImportMap()) {
+  if (import_map_) {
     String import_map_debug_message;
-    mapped_url = GetImportMap()->Resolve(parsed_specifier, base_url,
-                                         &import_map_debug_message);
+    mapped_url = import_map_->Resolve(parsed_specifier, base_url,
+                                      &import_map_debug_message);
 
     // Output the resolution log. This is too verbose to be always shown, but
     // will be helpful for Web developers (and also Chromium developers) for
@@ -142,9 +145,10 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
       if (!url.IsValid()) {
         if (failure_reason)
           *failure_reason = import_map_debug_message;
-        return KURL();
+        result = KURL();
+      } else {
+        result = url;
       }
-      return url;
     }
   }
 
@@ -152,23 +156,32 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   // - There are no import maps, or
   // - The import map doesn't have an entry for |parsed_specifier|.
 
-  switch (parsed_specifier.GetType()) {
-    case ParsedSpecifier::Type::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return KURL();
+  if (!result) {
+    switch (parsed_specifier.GetType()) {
+      case ParsedSpecifier::Type::kInvalid:
+        NOTREACHED();
 
-    case ParsedSpecifier::Type::kBare:
-      // Reject bare specifiers as specced by the pre-ImportMap spec.
-      if (failure_reason) {
-        *failure_reason =
-            "Relative references must start with either \"/\", \"./\", or "
-            "\"../\".";
-      }
-      return KURL();
+      case ParsedSpecifier::Type::kBare:
+        // Reject bare specifiers as specced by the pre-ImportMap spec.
+        if (failure_reason) {
+          *failure_reason =
+              "Relative references must start with either \"/\", \"./\", or "
+              "\"../\".";
+        }
+        return KURL();
 
-    case ParsedSpecifier::Type::kURL:
-      return parsed_specifier.GetUrl();
+      case ParsedSpecifier::Type::kURL:
+        result = parsed_specifier.GetUrl();
+    }
   }
+  // Step 13. If result is not null, then:
+  // Step 13.1. Add module to resolved module set given settingsObject,
+  // baseURLString, and normalizedSpecifier.
+  AddModuleToResolvedModuleSet(base_url.GetString(),
+                               parsed_specifier.GetImportMapKeyString());
+
+  // Step 13.2. Return result.
+  return result.value();
 }
 
 bool ModulatorImplBase::HasValidContext() {
@@ -191,6 +204,12 @@ void ModulatorImplBase::ResolveDynamically(
                                                resolver);
 }
 
+void ModulatorImplBase::AddEntryToModuleMap(const KURL& url,
+                                            ModuleType type,
+                                            ModuleScript* script) {
+  map_->AddEntry(url, type, script);
+}
+
 // <specdef href="https://html.spec.whatwg.org/C/#hostgetimportmetaproperties">
 ModuleImportMeta ModulatorImplBase::HostGetImportMetaProperties(
     v8::Local<v8::Module> record) const {
@@ -209,11 +228,10 @@ ModuleImportMeta ModulatorImplBase::HostGetImportMetaProperties(
 }
 
 String ModulatorImplBase::GetIntegrityMetadataString(const KURL& url) const {
-  const ImportMap* import_map = GetImportMap();
-  if (!import_map) {
+  if (!import_map_) {
     return String();
   }
-  return import_map->GetIntegrity(url);
+  return import_map_->ResolveIntegrity(url);
 }
 
 IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
@@ -221,37 +239,42 @@ IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
   String value = GetIntegrityMetadataString(url);
   IntegrityMetadataSet integrity_metadata;
   if (!value.IsNull()) {
-    SubresourceIntegrity::ReportInfo report_info;
+    IntegrityReport integrity_report;
     SubresourceIntegrity::ParseIntegrityAttribute(
-        value, SubresourceIntegrity::IntegrityFeatures::kDefault,
-        integrity_metadata, &report_info);
-    SubresourceIntegrityHelper::DoReport(*GetExecutionContext(), report_info);
+        value, integrity_metadata, GetExecutionContext(), &integrity_report);
+    integrity_report.SendReports(GetExecutionContext());
   }
   return integrity_metadata;
 }
 
+// <specdef
+// href="https://html.spec.whatwg.org/#module-type-from-module-request">
 ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();
   if (module_type_string.IsNull()) {
-    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
-    // step="1">Let module type be "javascript".</spec> If no type assertion is
-    // provided, the import is treated as a JavaScript module.
-    return ModuleType::kJavaScript;
+    // <spec step="1">Let moduleType be "javascript-or-wasm".</spec>
+    // If no type assertion is provided, the import is treated as a JavaScript
+    // or WebAssembly module.
+    return ModuleType::kJavaScriptOrWasm;
   } else if (module_type_string == "json") {
-    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
-    // step="17"> If...module type is "json", then set module script to the
-    // result of creating a JSON module script...</spec>
+    // <spec step="2">If moduleRequest.[[Attributes]] has a Record entry such
+    // that entry.[[Key]] is "type", then:</spec>
+    // <spec step="2.2"> Otherwise, set moduleType to entry.[[Value]].</spec>
     return ModuleType::kJSON;
   } else if (module_type_string == "css" && GetExecutionContext()->IsWindow()) {
-    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
-    // step="16"> If...module type is "css", then set module script to the
-    // result of creating a CSS module script...</spec>
+    // <spec step="2">If moduleRequest.[[Attributes]] has a Record entry such
+    // that entry.[[Key]] is "type", then:</spec>
+    // <spec step="2.2"> Otherwise, set moduleType to entry.[[Value]].</spec>
     return ModuleType::kCSS;
   } else {
-    // Per https://github.com/whatwg/html/pull/7066, unrecognized type
-    // assertions or "css" type assertions in a non-document context should be
-    // treated as an error similar to an invalid module specifier.
+    // <spec step="2.1">If entry.[[Value]] is "javascript-or-wasm", then set
+    // moduleType to null. </spec>
+    //
+    // As per "https://html.spec.whatwg.org/#module-type-allowed".
+    // Unrecognized type assertions or "css" type assertions in a non-document
+    // context should be treated as an error similar to an invalid module
+    // specifier.
     return ModuleType::kInvalid;
   }
 }
@@ -277,13 +300,11 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 
   discovered_set->insert(module_script);
 
-  v8::Local<v8::Module> record = module_script->V8Module();
-  DCHECK(!record.IsEmpty());
+  DCHECK(!module_script->HasEmptyRecord());
 
   module_script->ProduceCache();
-
   Vector<ModuleRequest> child_specifiers =
-      ModuleRecord::ModuleRequests(GetScriptState(), record);
+      module_script->GetModuleRecordRequests();
 
   for (const auto& module_request : child_specifiers) {
     KURL child_url =

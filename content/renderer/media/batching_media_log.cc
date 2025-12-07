@@ -20,9 +20,7 @@ namespace {
 // Keep the JSON conversion in one function to prevent LOG and DVLOG calls
 // from unnecessarily converting it.
 std::string ToJSON(const media::MediaLogRecord& event) {
-  std::string params_json;
-  base::JSONWriter::Write(event.params, &params_json);
-  return params_json;
+  return base::WriteJson(event.params).value_or("");
 }
 
 // Print an event to the chromium log.
@@ -37,12 +35,6 @@ void Log(const media::MediaLogRecord& event) {
     DVLOG(1) << "MediaEvent: " << ToJSON(event);
   }
 }
-
-// This string comes from the TypeName template specialization
-// in media_log_type_enforcement.h, it's not encoded anywhere, so it's
-// just typed out here.
-constexpr char kDurationChangedMessage[] = "kDurationChanged";
-constexpr char kBufferingStateChangedMessage[] = "kBufferingStateChanged";
 
 }  // namespace
 
@@ -107,12 +99,28 @@ void BatchingMediaLog::AddLogRecordLocked(
       case media::MediaLogRecord::Type::kMediaEventTriggered: {
         const base::Value* event_key = event->params.Find(MediaLog::kEventKey);
         DCHECK(event_key);
-        if (*event_key == kDurationChangedMessage) {
+
+        // These strings come from the TypeName template specialization
+        // in media_log_type_enforcement.h, it's not encoded anywhere, so it's
+        // just typed out here.
+        if (*event_key == "kDurationChanged") {
           // This may fire many times for badly muxed media; only keep the last.
           last_duration_changed_event_ = *event;
-        } else if (*event_key == kBufferingStateChangedMessage) {
+        } else if (*event_key == "kBufferingStateChanged") {
           // This may fire many times on poor networks; only keep the last.
-          last_buffering_state_event_ = *event;
+          if (event->params.Find("video_buffering_state")) {
+            last_video_buffering_state_ = *event;
+          } else if (event->params.Find("audio_buffering_state")) {
+            last_audio_buffering_state_ = *event;
+          } else if (event->params.Find("pipeline_buffering_state")) {
+            last_pipeline_buffering_state_ = *event;
+          } else {
+            NOTREACHED();
+          }
+        } else if (*event_key == "kPlay") {
+          last_play_event_ = *event;
+        } else if (*event_key == "kPause") {
+          last_pause_event_ = *event;
         } else {
           MaybeQueueEvent_Locked(std::move(event));
         }
@@ -190,9 +198,7 @@ std::string BatchingMediaLog::MediaEventToMessageString(
         return PipelineStatusToString(
             static_cast<media::PipelineStatusCodes>(code));
       }
-      std::stringstream formatted;
-      formatted << *group << ":" << code;
-      return formatted.str();
+      return *group;
     }
     case media::MediaLogRecord::Type::kMessage: {
       const std::string* result = event.params.FindString(
@@ -206,9 +212,9 @@ std::string BatchingMediaLog::MediaEventToMessageString(
     }
     case media::MediaLogRecord::Type::kMediaPropertyChange:
     case media::MediaLogRecord::Type::kMediaEventTriggered:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BatchingMediaLog::SendQueuedMediaEvents() {
@@ -223,9 +229,29 @@ void BatchingMediaLog::SendQueuedMediaEvents() {
     last_duration_changed_event_.reset();
   }
 
-  if (last_buffering_state_event_) {
-    queued_media_events_.push_back(*last_buffering_state_event_);
-    last_buffering_state_event_.reset();
+  if (last_video_buffering_state_) {
+    queued_media_events_.push_back(*last_video_buffering_state_);
+    last_video_buffering_state_.reset();
+  }
+
+  if (last_audio_buffering_state_) {
+    queued_media_events_.push_back(*last_audio_buffering_state_);
+    last_audio_buffering_state_.reset();
+  }
+
+  if (last_pipeline_buffering_state_) {
+    queued_media_events_.push_back(*last_pipeline_buffering_state_);
+    last_pipeline_buffering_state_.reset();
+  }
+
+  if (last_play_event_) {
+    queued_media_events_.push_back(*last_play_event_);
+    last_play_event_.reset();
+  }
+
+  if (last_pause_event_) {
+    queued_media_events_.push_back(*last_pause_event_);
+    last_pause_event_.reset();
   }
 
   last_ipc_send_time_ = tick_clock_->NowTicks();

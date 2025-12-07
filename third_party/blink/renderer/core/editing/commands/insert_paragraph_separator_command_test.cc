@@ -71,7 +71,7 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithCaptionBeforeBody) {
   // Insert <caption> between head and body
   Element* caption =
       GetDocument().CreateElementForBinding(AtomicString("caption"));
-  caption->setInnerHTML("AxBxC");
+  caption->SetInnerHTMLWithoutTrustedTypes("AxBxC");
   GetDocument().documentElement()->insertBefore(caption, GetDocument().body());
 
   Selection().SetSelection(
@@ -117,8 +117,7 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithObjectWithFloat) {
       SetSelectionOptions());
   base::RunLoop().RunUntilIdle();  // prepare <object> fallback content
 
-  Element& object_element =
-      *GetDocument().QuerySelector(AtomicString("object"));
+  Element& object_element = *QuerySelector("object");
   object_element.appendChild(Text::Create(GetDocument(), "XYZ"));
 
   auto* command =

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
+#include "content/public/browser/frame_tree_node_id.h"
 
 enum class AndroidLocalWebApprovalFlowOutcome;
 
@@ -23,7 +24,7 @@ class SupervisedUserWebContentHandlerImpl
     : public ChromeSupervisedUserWebContentHandlerBase {
  public:
   SupervisedUserWebContentHandlerImpl(content::WebContents* web_contents,
-                                      int frame_id,
+                                      content::FrameTreeNodeId frame_id,
                                       int64_t interstitial_navigation_id);
 
   SupervisedUserWebContentHandlerImpl(
@@ -33,10 +34,12 @@ class SupervisedUserWebContentHandlerImpl
   ~SupervisedUserWebContentHandlerImpl() override;
 
   // ChromeSupervisedUserWebContentHandlerBase implementaion:
-  void RequestLocalApproval(const GURL& url,
-                            const std::u16string& child_display_name,
-                            const supervised_user::UrlFormatter& url_formatter,
-                            ApprovalRequestInitiatedCallback callback) override;
+  void RequestLocalApproval(
+      const GURL& url,
+      const std::u16string& child_display_name,
+      const supervised_user::UrlFormatter& url_formatter,
+      const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
+      ApprovalRequestInitiatedCallback callback) override;
 
  private:
   void OnLocalApprovalRequestCompleted(

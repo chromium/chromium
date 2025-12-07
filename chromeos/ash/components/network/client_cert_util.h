@@ -6,13 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_CLIENT_CERT_UTIL_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_pattern.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class Value;

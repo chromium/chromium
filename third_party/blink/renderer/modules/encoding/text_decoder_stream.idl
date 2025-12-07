@@ -4,7 +4,7 @@
 
 // https://encoding.spec.whatwg.org/#interface-textdecoderstream
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface TextDecoderStream {
     [CallWith=ScriptState, RaisesException, MeasureAs=TextDecoderStreamConstructor] constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options = {});
     readonly attribute DOMString encoding;

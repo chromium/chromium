@@ -86,8 +86,7 @@ bool IsPinnedShelfItemType(ShelfItemType type) {
     case TYPE_UNDEFINED:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SamePinState(ShelfItemType a, ShelfItemType b) {

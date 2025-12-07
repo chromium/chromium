@@ -4,14 +4,12 @@
 
 package org.chromium.chrome.browser.browserservices.verification;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.recordVerificationResult;
 import static org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.recordVerificationTime;
 
-import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsService.Relation;
@@ -21,12 +19,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.VerificationResult;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -42,24 +41,23 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Most classes that are Activity-scoped should take an {@link ChromeOriginVerifierFactory} and use
- * that to get instances of this.
- * Added functionality over {@link OriginVerifier}:
- *  - Parsing of {@link Relation} to String which is used in {@link OriginVerifier}.
- *  - Check for `ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION` command line switch to skip
- * the verification.
- *  - Implementation of {@link wasPreviouslyVerified} using {@link ChromeVerificationResultStore}.
- *  - Clearing of data in {@link ChromeVerificationResultStore} as this safes data in
- * SharedPreferences.
- *  - Implementation of {@link isAllowlisted} for bypassing verification of TWA for {@code
- * mPackageName}.
- *  - Chrome specific metric logging.
+ * Should be acquired through {@link ChromeOriginVerifierFactory} for ease of mocking in tests.
+ * Added functionality over {@link OriginVerifier}: <br>
+ * - Parsing of {@link Relation} to String which is used in {@link OriginVerifier}. <br>
+ * - Check for `ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION` command line switch to skip
+ * the verification. <br>
+ * - Implementation of {@link wasPreviouslyVerified} using {@link ChromeVerificationResultStore}.
+ * <br>
+ * - Clearing of data in {@link ChromeVerificationResultStore} as this safes data in
+ * SharedPreferences. <br>
+ * - Implementation of {@link isAllowlisted} for bypassing verification of TWA for {@code
+ * mPackageName}. <br>
+ * - Chrome specific metric logging.
  */
 @JNINamespace("customtabs")
+@NullMarked
 public class ChromeOriginVerifier extends OriginVerifier {
     private static final String TAG = "ChromeOriginVerifier";
-
-    @Nullable private ExternalAuthUtils mExternalAuthUtils;
 
     static String relationToRelationship(@Relation int relation) {
         switch (relation) {
@@ -70,25 +68,24 @@ public class ChromeOriginVerifier extends OriginVerifier {
             default:
                 assert false;
         }
-        return null;
+        return assumeNonNull(null);
     }
 
     /**
-     * Main constructor.
-     * Use {@link ChromeOriginVerifier#start}
+     * Main constructor. Use {@link ChromeOriginVerifier#start}
+     *
      * @param packageName The package for the Android application for verification.
      * @param relation Digital Asset Links {@link Relation} to use during verification.
      * @param webContents The web contents of the tab used for reporting errors to DevTools. Can be
-     *         null if unavailable.
+     *     null if unavailable.
      * @param externalAuthUtils The auth utils used to check if an origin is allowlisted to bypass/
      * @param verificationResultStore The {@link ChromeVerificationResultStore} for persisting
-     *         results.
+     *     results.
      */
     public ChromeOriginVerifier(
-            String packageName,
+            @Nullable String packageName,
             @Relation int relation,
             @Nullable WebContents webContents,
-            @Nullable ExternalAuthUtils externalAuthUtils,
             ChromeVerificationResultStore verificationResultStore) {
         super(
                 packageName,
@@ -96,7 +93,6 @@ public class ChromeOriginVerifier extends OriginVerifier {
                 webContents,
                 null,
                 verificationResultStore);
-        mExternalAuthUtils = externalAuthUtils;
     }
 
     /**
@@ -107,7 +103,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param origin The postMessage origin the application is claiming to have. Can't be null.
      */
     @Override
-    public void start(@NonNull OriginVerificationListener listener, @NonNull Origin origin) {
+    public void start(OriginVerificationListener listener, Origin origin) {
         ThreadUtils.assertOnUiThread();
         if (!isNativeOriginVerifierInitialized()) {
             initNativeOriginVerifier(ProfileManager.getLastUsedRegularProfile());
@@ -121,48 +117,61 @@ public class ChromeOriginVerifier extends OriginVerifier {
             mListeners.get(origin).add(listener);
         }
 
-        // Website to app Digital Asset Link verification can be skipped for a specific URL by
-        // passing a command line flag to ease development.
-        String disableDalUrl =
+        // Website to app Digital Asset Link verification can be skipped for specific
+        // semicolon-delimited URLs by passing a command line flag to ease development.
+        String disableDalUrls =
                 CommandLine.getInstance()
                         .getSwitchValue(ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION);
-        if (!TextUtils.isEmpty(disableDalUrl) && origin.equals(Origin.create(disableDalUrl))) {
-            Log.i(TAG, "Verification skipped for %s due to command line flag.", origin);
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
-            return;
+
+        if (disableDalUrls != null) {
+            for (String disableDalUrl : disableDalUrls.split(";")) {
+                if (!TextUtils.isEmpty(disableDalUrl)
+                        && origin.equals(Origin.create(disableDalUrl))) {
+                    Log.i(TAG, "Verification skipped for %s due to command line flag.", origin);
+                    PostTask.runOrPostTask(
+                            TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
+                    return;
+                }
+            }
         }
+
         validate(origin);
     }
 
     @Override
     public boolean isAllowlisted(String packageName, Origin origin, String relation) {
-        if (mExternalAuthUtils == null) return false;
+        if (ExternalAuthUtils.getInstance() == null) return false;
 
         if (!relation.equals(HANDLE_ALL_URLS)) return false;
 
-        return mExternalAuthUtils.isAllowlistedForTwaVerification(packageName, origin);
+        return ExternalAuthUtils.getInstance().isAllowlistedForTwaVerification(packageName, origin);
     }
 
     @Override
     public boolean wasPreviouslyVerified(Origin origin) {
+        if (mPackageName == null) {
+            return false;
+        }
         return wasPreviouslyVerified(mPackageName, mSignatureFingerprints, origin, mRelation);
     }
 
     /**
      * Returns whether an origin is first-party relative to a given package name.
      *
-     * This only returns data from previously cached relations, and does not trigger an asynchronous
-     * validation. This cache is persisted across Chrome restarts. If you have an instance of
-     * OriginVerifier, use {@link #wasPreviouslyVerified(Origin)} instead as that avoids recomputing
-     * the signatureFingerprint of the package.
+     * <p>This only returns data from previously cached relations, and does not trigger an
+     * asynchronous validation. This cache is persisted across Chrome restarts. If you have an
+     * instance of OriginVerifier, use {@link #wasPreviouslyVerified(Origin)} instead as that avoids
+     * recomputing the signatureFingerprint of the package.
      *
      * @param packageName The package name.
      * @param origin The origin to verify.
      * @param relation The Digital Asset Links relation to verify for.
      */
     public static boolean wasPreviouslyVerified(
-            String packageName, Origin origin, @Relation int relation) {
-        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+            @Nullable String packageName, Origin origin, @Relation int relation) {
+        if (packageName == null) {
+            return false;
+        }
         List<String> fingerprints =
                 PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);
 
@@ -188,7 +197,10 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param relation The Digital Asset Links relation to verify for.
      */
     private static boolean wasPreviouslyVerified(
-            String packageName, String signatureFingerprint, Origin origin, String relation) {
+            String packageName,
+            @Nullable String signatureFingerprint,
+            Origin origin,
+            String relation) {
         ChromeVerificationResultStore resultStore = ChromeVerificationResultStore.getInstance();
         return resultStore.shouldOverride(packageName, origin, relation)
                 || resultStore.isRelationshipSaved(
@@ -212,7 +224,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
      */
     private static boolean wasPreviouslyVerified(
             String packageName,
-            List<String> signatureFingerprints,
+            @Nullable List<String> signatureFingerprints,
             Origin origin,
             String relation) {
         ChromeVerificationResultStore resultStore = ChromeVerificationResultStore.getInstance();
@@ -253,9 +265,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
 
     @Override
     public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
-        setNativeOriginVerifier(
-                ChromeOriginVerifierJni.get()
-                        .init(ChromeOriginVerifier.this, browserContextHandle));
+        setNativeOriginVerifier(ChromeOriginVerifierJni.get().init(this, browserContextHandle));
     }
 
     @Override
@@ -277,6 +287,6 @@ public class ChromeOriginVerifier extends OriginVerifier {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        long init(ChromeOriginVerifier caller, BrowserContextHandle browserContextHandle);
+        long init(ChromeOriginVerifier self, BrowserContextHandle browserContextHandle);
     }
 }

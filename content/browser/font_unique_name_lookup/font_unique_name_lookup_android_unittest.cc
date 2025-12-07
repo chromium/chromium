@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -46,7 +46,7 @@ std::vector<base::FilePath> AndroidFontFilesList() {
 }
 
 std::vector<base::FilePath> SplitFontFilesList(
-    const std::vector<base::FilePath> font_files,
+    const std::vector<base::FilePath>& font_files,
     bool return_second_half) {
   CHECK_GT(font_files.size(), 2u);
   auto start_copy = font_files.begin();
@@ -112,18 +112,18 @@ TEST_F(FontUniqueNameLookupTest, TestHandleFailedRead) {
   ASSERT_TRUE(font_unique_name_lookup_->PersistToFile());
   ASSERT_TRUE(base::PathExists(
       font_unique_name_lookup_->TableCacheFilePathForTesting()));
-  int64_t file_size;
-  ASSERT_TRUE(base::GetFileSize(
-      font_unique_name_lookup_->TableCacheFilePathForTesting(), &file_size));
+  std::optional<int64_t> file_size = base::GetFileSize(
+      font_unique_name_lookup_->TableCacheFilePathForTesting());
+  ASSERT_TRUE(file_size.has_value());
   // For 10 fonts, assume we have at least 256 bytes of data, it's
   // around 30k in practice on Kitkat with 81 fonts.
-  ASSERT_GT(file_size, 256);
+  ASSERT_GT(file_size.value(), 256);
   ASSERT_TRUE(font_unique_name_lookup_->LoadFromFile());
 
   // For each truncated size, reading must fail, otherwise we successfully read
   // a truncated protobuf.
-  for (int64_t truncated_size = file_size - 1; truncated_size >= 0;
-       truncated_size -= file_size) {
+  for (int64_t truncated_size = file_size.value() - 1; truncated_size >= 0;
+       truncated_size -= file_size.value()) {
     TruncateFileToLength(
         font_unique_name_lookup_->TableCacheFilePathForTesting(),
         truncated_size);
@@ -132,8 +132,8 @@ TEST_F(FontUniqueNameLookupTest, TestHandleFailedRead) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptName) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_S) {
     // TODO(crbug.com/40203471): Fonts identified by
     // kRobotoCondensedBoldItalicNames do not seem to be available on Android
     // 12, SDK level 31, Android S.
@@ -155,8 +155,8 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptName) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_NOUGAT) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SdkVersion::SDK_VERSION_NOUGAT) {
     // Pre-Nougat Android does not contain any .ttc files as system fonts.
     return;
   }
@@ -169,10 +169,10 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
       "NotoSansMonoCJKjp-Regular", "NotoSansMonoCJKkr-Regular",
       "NotoSansMonoCJKsc-Regular", "NotoSansMonoCJKtc-Regular",
   };
-  // In Android 11 the font file contains addition HK variants as part of the
+  // In Android 10 the font file contains addition HK variants as part of the
   // TrueType collection.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_R) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_Q) {
     ttc_postscript_names = std::vector<std::string>(
         {"NotoSansCJKjp-Regular", "NotoSansCJKkr-Regular",
          "NotoSansCJKsc-Regular", "NotoSansCJKtc-Regular",
@@ -193,8 +193,8 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchFullFontName) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_S) {
     // TODO(crbug.com/40203471): Fonts identified by
     // kRobotoCondensedBoldItalicNames do not seem to be available on Android
     // 12, SDK level 31, Android S.

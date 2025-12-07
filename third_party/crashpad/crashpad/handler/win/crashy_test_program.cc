@@ -133,7 +133,7 @@ bool CreateThreadWithRegisterPointingToTestMemory() {
   return true;
 }
 
-void SomeCrashyFunction() {
+__declspec(noinline) void SomeCrashyFunction() {
   // SetLastError and NTSTATUS so that we have something to view in !gle in
   // windbg. RtlNtStatusToDosError() stores STATUS_NO_SUCH_FILE into the
   // LastStatusError of the TEB as a side-effect, and we'll be setting

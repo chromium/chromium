@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Process;
@@ -12,15 +14,14 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.ColdStartTracker;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -36,15 +38,15 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /** A {@link TabObserver} that also handles custom tabs specific logging and messaging. */
-@ActivityScope
+@NullMarked
 public class CustomTabObserver extends EmptyTabObserver {
-    private final CustomTabsConnection mCustomTabsConnection;
-    private final CustomTabsSessionToken mSession;
-    private final boolean mOpenedByChrome;
+    private final @Nullable CustomTabsConnection mCustomTabsConnection;
+    private final @Nullable SessionHolder<?> mSession;
+
     private final NavigationInfoCaptureTrigger mNavigationInfoCaptureTrigger =
             new NavigationInfoCaptureTrigger(this::captureNavigationInfo);
 
@@ -60,13 +62,17 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     // true/false if the mayLaunchUrl API was used and the speculation was used/not used. null if
     // the API was not used.
-    @Nullable private Boolean mUsedHiddenTabSpeculation;
-
-    // The time page load started in the most recent Custom Tab launch.
-    private long mPageLoadStartedRealtimeMillis;
+    private @Nullable Boolean mUsedHiddenTabSpeculation;
 
     // The time of the first navigation commit in the most recent Custom Tab launch.
     private long mFirstCommitRealtimeMillis;
+    private long mFirstCommitUptimeMillis;
+
+    // Version of android-browser-helper, or zero if not reported
+    private int mBrowserHelperVersion;
+    // System.uptimeMillis() when the TWA wrapper activity has started, or zero if not reported
+    private long mTwaStartupUptimeMillis;
+    private final List<Runnable> mTwaStartupTimeAvailableCallbacks = new ArrayList<>();
 
     // Lets Long press on links select the link text instead of triggering context menu.
     private boolean mLongPressLinkSelectText;
@@ -82,9 +88,19 @@ public class CustomTabObserver extends EmptyTabObserver {
     // Tracks what point in the first navigation after a Custom Tab launch we're in.
     private @State int mCurrentState;
 
-    private LargestContentfulPaintObserver mLCPObserver;
+    private @Nullable PageLoadMetricsObserver mPageLoadMetricsObserver;
 
-    private class LargestContentfulPaintObserver implements PageLoadMetrics.Observer {
+    private class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
+        @Override
+        public void onFirstContentfulPaint(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long firstContentfulPaintMs) {
+            recordFirstContentfulPaint(
+                    webContents, navigationStartMicros / 1000 + firstContentfulPaintMs);
+        }
+
         @Override
         public void onLargestContentfulPaint(
                 WebContents webContents,
@@ -92,26 +108,59 @@ public class CustomTabObserver extends EmptyTabObserver {
                 long navigationStartMicros,
                 long largestContentfulPaintMs,
                 long largestContentfulPaintSize) {
-            recordLargestContentfulPaint(navigationStartMicros / 1000 + largestContentfulPaintMs);
-            PageLoadMetrics.removeObserver(mLCPObserver);
-            mLCPObserver = null;
+            recordLargestContentfulPaint(
+                    webContents, navigationStartMicros / 1000 + largestContentfulPaintMs);
+            PageLoadMetrics.removeObserver(assertNonNull(mPageLoadMetricsObserver));
+            mPageLoadMetricsObserver = null;
+        }
+
+        @Override
+        public void onUserTimingMarkFullyLoaded(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long markFullyLoadedMs) {
+            recordUserTiming(
+                    webContents,
+                    navigationStartMicros / 1000 + markFullyLoadedMs,
+                    "TimeToMarkFullyLoaded");
+        }
+
+        @Override
+        public void onUserTimingMarkFullyVisible(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long markFullyVisibleMs) {
+            recordUserTiming(
+                    webContents,
+                    navigationStartMicros / 1000 + markFullyVisibleMs,
+                    "TimeToMarkFullyVisible");
+        }
+
+        @Override
+        public void onUserTimingMarkInteractive(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long markInteractiveMs) {
+            recordUserTiming(
+                    webContents,
+                    navigationStartMicros / 1000 + markInteractiveMs,
+                    "TimeToMarkInteractive");
         }
     }
 
-    @Inject
-    public CustomTabObserver(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabsConnection connection) {
-        mOpenedByChrome = intentDataProvider.isOpenedByChrome();
-        mCustomTabsConnection = mOpenedByChrome ? null : connection;
-        mSession = intentDataProvider.getSession();
+    public CustomTabObserver(boolean openedByChrome, @Nullable SessionHolder<?> token) {
+        mCustomTabsConnection = openedByChrome ? null : CustomTabsConnection.getInstance();
+        mSession = token;
         resetPageLoadTracking();
     }
 
     private void trackNextLCP() {
-        if (mLCPObserver != null) return;
-        mLCPObserver = new LargestContentfulPaintObserver();
-        PageLoadMetrics.addObserver(mLCPObserver, true);
+        if (mPageLoadMetricsObserver != null) return;
+        mPageLoadMetricsObserver = new PageLoadMetricsObserver();
+        PageLoadMetrics.addObserver(mPageLoadMetricsObserver, true);
     }
 
     /**
@@ -120,10 +169,9 @@ public class CustomTabObserver extends EmptyTabObserver {
      * load.
      */
     public void trackNextPageLoadForLaunch(Tab tab, Intent sourceIntent) {
-        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
-        mIntentReceivedUptimeMillis = BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
+        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getLaunchedRealtimeMillis(sourceIntent);
+        mIntentReceivedUptimeMillis = BrowserIntentUtils.getLaunchedUptimeMillis(sourceIntent);
         if (tab.isLoading()) {
-            mPageLoadStartedRealtimeMillis = -1;
             mCurrentState = State.WAITING_LOAD_FINISH;
         } else {
             mCurrentState = State.WAITING_LOAD_START;
@@ -132,15 +180,21 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     public void trackNextPageLoadForHiddenTab(
-            boolean usedSpeculation, boolean hasCommitted, Intent sourceIntent) {
+            WebContents webContents,
+            boolean usedSpeculation,
+            boolean hasCommitted,
+            Intent sourceIntent) {
+        // If page load is already being tracked, it must have been an early nav - nothing to do
+        // here.
+        if (mIntentReceivedRealtimeMillis != 0) return;
         mUsedHiddenTabSpeculation = usedSpeculation;
         mLaunchedForSpeculationRealtimeMillis =
-                BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
+                BrowserIntentUtils.getLaunchedRealtimeMillis(sourceIntent);
         mLaunchedForSpeculationUptimeMillis =
-                BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
+                BrowserIntentUtils.getLaunchedUptimeMillis(sourceIntent);
         trackNextLCP();
         if (usedSpeculation && hasCommitted) {
-            recordFirstCommitNavigation(mLaunchedForSpeculationRealtimeMillis);
+            recordFirstCommitNavigation(webContents);
         }
     }
 
@@ -177,14 +231,12 @@ public class CustomTabObserver extends EmptyTabObserver {
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
         if (mCurrentState == State.WAITING_LOAD_START) {
-            mPageLoadStartedRealtimeMillis = SystemClock.elapsedRealtime();
             mCurrentState = State.WAITING_LOAD_FINISH;
         } else if (mCurrentState == State.WAITING_LOAD_FINISH) {
             if (mCustomTabsConnection != null) {
                 mCustomTabsConnection.sendNavigationInfo(
                         mSession, tab.getUrl().getSpec(), tab.getTitle(), (Uri) null);
             }
-            mPageLoadStartedRealtimeMillis = SystemClock.elapsedRealtime();
         }
         if (mCustomTabsConnection != null) {
             mCustomTabsConnection.setSendNavigationInfoForSession(mSession, false);
@@ -199,60 +251,6 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
-        long pageLoadFinishedTimestamp = SystemClock.elapsedRealtime();
-
-        if (mCurrentState == State.WAITING_LOAD_FINISH && mIntentReceivedRealtimeMillis > 0) {
-            String histogramPrefix = mOpenedByChrome ? "ChromeGeneratedCustomTab" : "CustomTabs";
-            long timeToPageLoadFinishedMs =
-                    pageLoadFinishedTimestamp - mIntentReceivedRealtimeMillis;
-            if (mPageLoadStartedRealtimeMillis > 0) {
-                long timeToPageLoadStartedMs =
-                        mPageLoadStartedRealtimeMillis - mIntentReceivedRealtimeMillis;
-                // Intent to Load Start is recorded here to make sure we do not record
-                // failed/aborted page loads.
-                RecordHistogram.recordCustomTimesHistogram(
-                        histogramPrefix + ".IntentToFirstNavigationStartTime.ZoomedOut",
-                        timeToPageLoadStartedMs,
-                        50,
-                        DateUtils.MINUTE_IN_MILLIS * 10,
-                        50);
-                RecordHistogram.recordCustomTimesHistogram(
-                        histogramPrefix + ".IntentToFirstNavigationStartTime.ZoomedIn",
-                        timeToPageLoadStartedMs,
-                        200,
-                        DateUtils.SECOND_IN_MILLIS,
-                        100);
-            }
-            // Same bounds and bucket count as PLT histograms.
-            RecordHistogram.recordCustomTimesHistogram(
-                    histogramPrefix + ".IntentToPageLoadedTime",
-                    timeToPageLoadFinishedMs,
-                    10,
-                    DateUtils.MINUTE_IN_MILLIS * 10,
-                    100);
-
-            // Not all page loads go through a navigation commit (prerender for instance).
-            if (mPageLoadStartedRealtimeMillis != 0) {
-                long timeToFirstCommitMs =
-                        mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
-                // Current median is 550ms, and long tail is very long. ZoomedIn gives good view of
-                // the median and ZoomedOut gives a good overview.
-                RecordHistogram.recordCustomTimesHistogram(
-                        "CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedIn",
-                        timeToFirstCommitMs,
-                        200,
-                        DateUtils.SECOND_IN_MILLIS,
-                        100);
-                // For ZoomedOut very rarely is it under 50ms and this range matches
-                // CustomTabs.IntentToFirstCommitNavigationTime2.ZoomedOut.
-                RecordHistogram.recordCustomTimesHistogram(
-                        "CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedOut",
-                        timeToFirstCommitMs,
-                        50,
-                        DateUtils.MINUTE_IN_MILLIS * 10,
-                        50);
-            }
-        }
         resetPageLoadTracking();
         mNavigationInfoCaptureTrigger.onLoadFinished(tab);
     }
@@ -281,70 +279,154 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (!isFirstMainFrameCommit) return;
 
         mFirstCommitRealtimeMillis = SystemClock.elapsedRealtime();
+        mFirstCommitUptimeMillis = SystemClock.uptimeMillis();
 
-        recordFirstCommitNavigation(mFirstCommitRealtimeMillis);
+        recordFirstCommitNavigation(assertNonNull(tab.getWebContents()));
     }
 
-    private void recordFirstCommitNavigation(long firstCommitRealtimeMillis) {
+    private void recordFirstCommitNavigation(WebContents webContents) {
         if (mCustomTabsConnection == null) return;
-        String histogram = null;
+        String suffix = null;
         long duration = 0;
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
-            duration = firstCommitRealtimeMillis - mLaunchedForSpeculationRealtimeMillis;
-            histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Speculated";
+            duration = mFirstCommitRealtimeMillis - mLaunchedForSpeculationRealtimeMillis;
+            suffix = ".Speculated";
         } else if (mIntentReceivedRealtimeMillis > 0) {
             // When the process is already warm the earliest measurable point in startup is when the
             // intent is received so we measure from there. In the cold start case we measure from
             // when the process was started as the best comparison against the warm case.
             if (wasWarmedUp()) {
-                duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
-                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.WarmedUp";
+                duration = mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
+                suffix = ".WarmedUp";
             } else if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
-                duration = firstCommitRealtimeMillis - Process.getStartElapsedRealtime();
-                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Cold";
+                duration = mFirstCommitRealtimeMillis - Process.getStartElapsedRealtime();
+                suffix = ".Cold";
             } else {
-                duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
-                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Warm";
+                duration = mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
+                suffix = ".Warm";
             }
         }
-        if (histogram != null) {
+        if (suffix != null) {
             RecordHistogram.recordCustomTimesHistogram(
-                    histogram, duration, 50, DateUtils.MINUTE_IN_MILLIS, 50);
+                    "CustomTabs.Startup.TimeToFirstCommitNavigation2" + suffix,
+                    duration,
+                    50,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    50);
         }
+        callOnTwaStartupTimeAvailable(
+                () -> {
+                    long twaDuration = mFirstCommitUptimeMillis - mTwaStartupUptimeMillis;
+                    // The TWA durations are always relative to the startup time passed in the
+                    // Intent.
+                    RecordHistogram.recordCustomTimesHistogram(
+                            "TrustedWebActivity.Startup.TimeToFirstCommitNavigation2"
+                                    + (isTwaColdStart() ? ".Cold" : ".Warm"),
+                            twaDuration,
+                            50,
+                            DateUtils.MINUTE_IN_MILLIS,
+                            50);
+                    RecordHistogram.recordSparseHistogram(
+                            "CustomTabs.AndroidBrowserHelper.Version", mBrowserHelperVersion);
+                    String metricName =
+                            "TimeToFirstCommitNavigation2." + (isTwaColdStart() ? "Cold" : "Warm");
+                    new UkmRecorder(webContents, "TrustedWebActivity.Startup")
+                            .addMetric(metricName, (int) twaDuration)
+                            .addMetric("AndroidBrowserHelper.Version", mBrowserHelperVersion)
+                            .record();
+                });
     }
 
-    public void recordLargestContentfulPaint(long lcpUptimeMillis) {
+    private void recordFirstContentfulPaint(WebContents webContents, long fcpUptimeMillis) {
+        recordPaint(webContents, fcpUptimeMillis, "TimeToFirstContentfulPaint");
+    }
+
+    private void recordLargestContentfulPaint(WebContents webContents, long lcpUptimeMillis) {
+        recordPaint(webContents, lcpUptimeMillis, "TimeToLargestContentfulPaint2");
+    }
+
+    private boolean isTwaColdStart() {
+        // TWAs usually start by initiating a CustomTabsConnection first, which
+        // means we will get ProcessCreationReason.SERVICE as the startup
+        // reason all the time.
+        //
+        // Since that would not be useful, check for the timestamp from the TWA
+        // wrapper instead. If the wrapper started before the browser process,
+        // treat it as a cold start, no matter whatever warm up or other
+        // initialization that the wrapper could perform in between.
+        return mTwaStartupUptimeMillis != 0
+                && mTwaStartupUptimeMillis < Process.getStartUptimeMillis();
+    }
+
+    private void recordPaint(
+            WebContents webContents, long paintUptimeMillis, String paintMetricName) {
         if (mCustomTabsConnection == null) return;
-        String histogram = null;
+        String suffix = null;
         long duration = 0;
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
-            duration = lcpUptimeMillis - mLaunchedForSpeculationUptimeMillis;
-            histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Speculated";
+            duration = paintUptimeMillis - mLaunchedForSpeculationUptimeMillis;
+            suffix = ".Speculated";
         } else if (mIntentReceivedRealtimeMillis > 0) {
             // When the process is already warm the earliest measurable point in startup is when the
             // intent is received so we measure from there. In the cold start case we measure from
             // when the process was started as the best comparison against the warm case.
             if (wasWarmedUp()) {
-                duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.WarmedUp";
+                duration = paintUptimeMillis - mIntentReceivedUptimeMillis;
+                suffix = ".WarmedUp";
             } else if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
-                duration = lcpUptimeMillis - Process.getStartUptimeMillis();
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Cold";
+                duration = paintUptimeMillis - Process.getStartUptimeMillis();
+                suffix = ".Cold";
             } else {
-                duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Warm";
+                duration = paintUptimeMillis - mIntentReceivedUptimeMillis;
+                suffix = ".Warm";
             }
         }
-        if (histogram != null) {
+        if (suffix != null) {
             RecordHistogram.recordCustomTimesHistogram(
-                    histogram, duration, 50, DateUtils.MINUTE_IN_MILLIS, 50);
+                    "CustomTabs.Startup." + paintMetricName + suffix,
+                    duration,
+                    50,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    50);
         }
+        callOnTwaStartupTimeAvailable(
+                () -> {
+                    long twaDuration = mFirstCommitUptimeMillis - mTwaStartupUptimeMillis;
+                    // The TWA durations are always relative to the startup time passed in the
+                    // Intent.
+                    RecordHistogram.recordCustomTimesHistogram(
+                            "TrustedWebActivity.Startup."
+                                    + paintMetricName
+                                    + (isTwaColdStart() ? ".Cold" : ".Warm"),
+                            twaDuration,
+                            50,
+                            DateUtils.MINUTE_IN_MILLIS,
+                            50);
+                    String metricName =
+                            paintMetricName + "." + (isTwaColdStart() ? "Cold" : "Warm");
+                    new UkmRecorder(webContents, "TrustedWebActivity.Startup")
+                            .addMetric(metricName, (int) twaDuration)
+                            .record();
+                });
+    }
+
+    private void recordUserTiming(
+            WebContents webContents, long markUptimeMillis, String markMetricName) {
+        if (mCustomTabsConnection == null) return;
+        callOnTwaStartupTimeAvailable(
+                () -> {
+                    long twaDuration = markUptimeMillis - mTwaStartupUptimeMillis;
+                    String metricName = markMetricName + "." + (isTwaColdStart() ? "Cold" : "Warm");
+                    new UkmRecorder(webContents, "TrustedWebActivity.Startup")
+                            .addMetric(metricName, (int) twaDuration)
+                            .record();
+                });
     }
 
     @Override
@@ -373,5 +455,27 @@ public class CustomTabObserver extends EmptyTabObserver {
         String title = tab.getTitle();
         if (TextUtils.isEmpty(title)) return;
         mCustomTabsConnection.sendNavigationInfo(mSession, tab.getUrl().getSpec(), title, null);
+    }
+
+    private void callOnTwaStartupTimeAvailable(Runnable callback) {
+        if (mTwaStartupUptimeMillis != 0) {
+            callback.run();
+        } else {
+            mTwaStartupTimeAvailableCallbacks.add(callback);
+        }
+    }
+
+    public void setTwaStartupMetadata(int browserHelperVersion, long startupUptimeMillis) {
+        // Support for both were added in 2.6.1 (android-browser-helper version code 1), so we
+        // either get both or neither.
+        if (browserHelperVersion == 0 || startupUptimeMillis == 0) return;
+        assert mBrowserHelperVersion == 0;
+        mBrowserHelperVersion = browserHelperVersion;
+        assert mTwaStartupUptimeMillis == 0;
+        mTwaStartupUptimeMillis = startupUptimeMillis;
+        for (Runnable callback : mTwaStartupTimeAvailableCallbacks) {
+            callback.run();
+        }
+        mTwaStartupTimeAvailableCallbacks.clear();
     }
 }

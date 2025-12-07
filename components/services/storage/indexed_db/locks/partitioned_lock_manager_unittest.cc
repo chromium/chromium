@@ -4,12 +4,14 @@
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -18,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class BarrierBuilder {
@@ -93,7 +95,7 @@ TEST_F(PartitionedLockManagerTest, BasicAcquisition) {
       locks1_requests.emplace_back(
           std::move(lock_id), PartitionedLockManager::LockType::kExclusive);
     }
-    lock_manager.AcquireLocks(std::move(locks1_requests), holder1.AsWeakPtr(),
+    lock_manager.AcquireLocks(std::move(locks1_requests), holder1,
                               barrier.AddClosure());
 
     // Now acquire kTotalLocks/2 locks starting at (kTotalLocks-1) to verify
@@ -104,7 +106,7 @@ TEST_F(PartitionedLockManagerTest, BasicAcquisition) {
       locks2_requests.emplace_back(
           std::move(lock_id), PartitionedLockManager::LockType::kExclusive);
     }
-    lock_manager.AcquireLocks(std::move(locks2_requests), holder2.AsWeakPtr(),
+    lock_manager.AcquireLocks(std::move(locks2_requests), holder2,
                               barrier.AddClosure());
   }
   loop.Run();
@@ -150,14 +152,14 @@ TEST_F(PartitionedLockManagerTest, Shared) {
               lock_manager.TestLock(
                   {lock_id, PartitionedLockManager::LockType::kShared}));
     lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        locks_holder1.AsWeakPtr(), barrier.AddClosure());
+        {{lock_id, PartitionedLockManager::LockType::kShared}}, locks_holder1,
+        barrier.AddClosure());
     EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
               lock_manager.TestLock(
                   {lock_id, PartitionedLockManager::LockType::kShared}));
     lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        locks_holder2.AsWeakPtr(), barrier.AddClosure());
+        {{lock_id, PartitionedLockManager::LockType::kShared}}, locks_holder2,
+        barrier.AddClosure());
   }
   loop.Run();
   EXPECT_EQ(2ll, lock_manager.LocksHeldForTesting());
@@ -184,10 +186,10 @@ TEST_F(PartitionedLockManagerTest, SharedAndExclusiveQueuing) {
       BarrierBuilder barrier(loop.QuitClosure());
       lock_manager.AcquireLocks(
           {{lock_id, PartitionedLockManager::LockType::kShared}},
-          shared_lock1_holder.AsWeakPtr(), barrier.AddClosure());
+          shared_lock1_holder, barrier.AddClosure());
       lock_manager.AcquireLocks(
           {{lock_id, PartitionedLockManager::LockType::kShared}},
-          shared_lock2_holder.AsWeakPtr(), barrier.AddClosure());
+          shared_lock2_holder, barrier.AddClosure());
     }
     loop.Run();
   }
@@ -206,10 +208,10 @@ TEST_F(PartitionedLockManagerTest, SharedAndExclusiveQueuing) {
   // line, then the shared lock will come after it.
   lock_manager.AcquireLocks(
       {{lock_id, PartitionedLockManager::LockType::kExclusive}},
-      exclusive_lock3_holder.AsWeakPtr(), base::DoNothing());
+      exclusive_lock3_holder, base::DoNothing());
   lock_manager.AcquireLocks(
       {{lock_id, PartitionedLockManager::LockType::kShared}},
-      shared_lock3_holder.AsWeakPtr(), base::DoNothing());
+      shared_lock3_holder, base::DoNothing());
   // Flush the task queue.
   {
     base::RunLoop loop;
@@ -276,13 +278,13 @@ TEST_F(PartitionedLockManagerTest, PartitionsOperateSeparately) {
                   {lock_id_p0, PartitionedLockManager::LockType::kExclusive}));
     lock_manager.AcquireLocks(
         {{lock_id_p0, PartitionedLockManager::LockType::kExclusive}},
-        p0_lock_holder.AsWeakPtr(), barrier.AddClosure());
+        p0_lock_holder, barrier.AddClosure());
     EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
               lock_manager.TestLock(
                   {lock_id_p1, PartitionedLockManager::LockType::kExclusive}));
     lock_manager.AcquireLocks(
         {{lock_id_p1, PartitionedLockManager::LockType::kExclusive}},
-        p1_lock_holder.AsWeakPtr(), barrier.AddClosure());
+        p1_lock_holder, barrier.AddClosure());
   }
   loop.Run();
   EXPECT_FALSE(p0_lock_holder.locks.empty());
@@ -294,151 +296,123 @@ TEST_F(PartitionedLockManagerTest, PartitionsOperateSeparately) {
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
 }
 
-TEST_F(PartitionedLockManagerTest, AcquireOptionsEnsureAsync) {
-  {
-    base::RunLoop loop;
-    bool callback_ran = false;
+TEST_F(PartitionedLockManagerTest, Prioritize) {
+  PartitionedLockManager lock_manager;
+  const PartitionedLockManager::PartitionedLockRequest common_lock_request{
+      {0, IntegerKey(0)}, PartitionedLockManager::LockType::kExclusive};
+  const PartitionedLockManager::PartitionedLockRequest unique_lock_request{
+      {1, IntegerKey(0)}, PartitionedLockManager::LockType::kExclusive};
 
-    PartitionedLockManager lock_manager;
-    PartitionedLockHolder lock_holder;
-    PartitionedLockId lock_id = {0, IntegerKey(0)};
+  // Grab the contentious lock.
+  PartitionedLockHolder lock_holder;
+  lock_manager.AcquireLocks({common_lock_request}, lock_holder,
+                            base::DoNothing());
+  EXPECT_FALSE(lock_holder.locks.empty());
 
-    EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
-              lock_manager.TestLock(
-                  {lock_id, PartitionedLockManager::LockType::kShared}));
+  // Enqueue a request that won't be satisfied right away. This request includes
+  // a unique lock request to verify that the lock manager doesn't overzealously
+  // grant that lock and then hold up later (but higher priority) acquisitions.
+  PartitionedLockHolder holder2, holder3;
+  lock_manager.AcquireLocks({common_lock_request, unique_lock_request}, holder2,
+                            base::DoNothing());
+  EXPECT_TRUE(holder2.locks.empty());
 
-    content::PartitionedLockManager::AcquireOptions options{};
-    options.ensure_async = true;
+  // Enqueue a request that has the highest priority.
+  lock_manager.AcquireLocks(
+      {common_lock_request}, holder3, base::DoNothing(),
+      base::BindRepeating(
+          [](const PartitionedLockHolder& other) { return true; }));
+  EXPECT_TRUE(holder3.locks.empty());
 
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        lock_holder.AsWeakPtr(),
-        base::BindOnce(
-            [](base::RunLoop* loop, bool* callback_ran) {
-              *callback_ran = true;
-              loop->Quit();
-            },
-            base::Unretained(&loop), base::Unretained(&callback_ran)),
-        options);
-    EXPECT_FALSE(callback_ran);
-
-    loop.Run();
-    EXPECT_TRUE(callback_ran);
-  }
-  {
-    base::RunLoop loop;
-    bool callback_ran = false;
-
-    PartitionedLockManager lock_manager;
-    PartitionedLockHolder lock_holder;
-    PartitionedLockId lock_id = {0, IntegerKey(0)};
-
-    EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
-              lock_manager.TestLock(
-                  {lock_id, PartitionedLockManager::LockType::kShared}));
-
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        lock_holder.AsWeakPtr(),
-        base::BindOnce(
-            [](base::RunLoop* loop, bool* callback_ran) {
-              *callback_ran = true;
-              loop->Quit();
-            },
-            base::Unretained(&loop), base::Unretained(&callback_ran)));
-    EXPECT_TRUE(callback_ran);
-
-    loop.Run();
-    EXPECT_TRUE(callback_ran);
-  }
+  // After releasing the held lock, the higher priority request gets served.
+  EXPECT_FALSE(lock_holder.locks.empty());
+  lock_holder.locks.clear();
+  EXPECT_TRUE(holder2.locks.empty());
+  EXPECT_FALSE(holder3.locks.empty());
 }
 
-TEST_F(PartitionedLockManagerTest, Locations) {
+TEST_F(PartitionedLockManagerTest, NotReentrant) {
   PartitionedLockManager lock_manager;
+  PartitionedLockHolder lock_holder;
+  PartitionedLockId lock_id = {0, IntegerKey(0)};
 
-  base::Location location1 = FROM_HERE;
-  base::Location location2 = FROM_HERE;
-  base::Location location3 = FROM_HERE;
+  PartitionedLockManager::PartitionedLockRequest lock_request{
+      lock_id, PartitionedLockManager::LockType::kExclusive};
 
-  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
+  EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
+            lock_manager.TestLock(lock_request));
 
-  PartitionedLockId lock_id = {0, "foo"};
-
-  PartitionedLockHolder holder1;
-  PartitionedLockHolder holder2;
+  // Grabbing a lock that's free is synchronous.
   {
-    base::test::TestFuture<void> lock_acquired;
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder1.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location1);
-    ASSERT_TRUE(lock_acquired.Wait());
+    base::RunLoop run_loop;
+    lock_manager.AcquireLocks({lock_request}, lock_holder,
+                              run_loop.QuitClosure());
+    EXPECT_FALSE(lock_holder.locks.empty());
+    EXPECT_TRUE(run_loop.AnyQuitCalled());
   }
-  {
-    base::test::TestFuture<void> lock_acquired;
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder2.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location2);
-    ASSERT_TRUE(lock_acquired.Wait());
-  }
-  {
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kExclusive}},
-        holder2.AsWeakPtr(), base::DoNothing(),
-        PartitionedLockManager::AcquireOptions(), location3);
-  }
-  std::vector<base::Location> held_locations =
-      lock_manager.GetHeldAndQueuedLockLocations(
-          {{lock_id, PartitionedLockManager::LockType::kShared}});
-  ASSERT_EQ(held_locations.size(), 3ul);
-  EXPECT_THAT(held_locations,
-              testing::UnorderedElementsAre(location1, location2, location3));
+
+  // Enqueue two requests. The first one immediately releases the locks when
+  // it's notified that they're granted.
+  PartitionedLockHolder holder2, holder3;
+  base::RunLoop run_loop;
+  lock_manager.AcquireLocks(
+      {lock_request}, holder2,
+      base::BindLambdaForTesting([&holder2]() { holder2.locks.clear(); }));
+  lock_manager.AcquireLocks({lock_request}, holder3, run_loop.QuitClosure());
+  // Both requests are still waiting.
+  EXPECT_TRUE(holder2.locks.empty());
+  EXPECT_TRUE(holder3.locks.empty());
+
+  // Release the lock. The third request will then get the locks, but only
+  // asynchronously.
+  lock_holder.locks.clear();
+  EXPECT_FALSE(holder2.locks.empty());
+  EXPECT_TRUE(holder3.locks.empty());
+  run_loop.Run();
+  EXPECT_TRUE(holder2.locks.empty());
+  EXPECT_FALSE(holder3.locks.empty());
 }
 
-TEST_F(PartitionedLockManagerTest, DebugValueNoCrash) {
+TEST_F(PartitionedLockManagerTest, LockReleased) {
   PartitionedLockManager lock_manager;
+  const PartitionedLockManager::PartitionedLockRequest exclusive_lock_0{
+      {0, IntegerKey(0)}, PartitionedLockManager::LockType::kExclusive};
+  const PartitionedLockManager::PartitionedLockRequest exclusive_lock_1{
+      {1, IntegerKey(0)}, PartitionedLockManager::LockType::kExclusive};
+  const PartitionedLockManager::PartitionedLockRequest shared_lock_1{
+      {1, IntegerKey(0)}, PartitionedLockManager::LockType::kShared};
 
-  base::Location location1 = FROM_HERE;
-  base::Location location2 = FROM_HERE;
-  base::Location location3 = FROM_HERE;
-
-  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
-
-  PartitionedLockId lock_id = {0, "foo"};
-
+  // Grant locks to a couple holders.
   PartitionedLockHolder holder1;
+  lock_manager.AcquireLocks({exclusive_lock_0}, holder1, base::DoNothing());
+  EXPECT_FALSE(holder1.locks.empty());
+
   PartitionedLockHolder holder2;
-  {
-    base::test::TestFuture<void> lock_acquired;
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder1.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location1);
-    ASSERT_TRUE(lock_acquired.Wait());
-  }
-  {
-    base::test::TestFuture<void> lock_acquired;
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kShared}},
-        holder2.AsWeakPtr(), lock_acquired.GetCallback(),
-        PartitionedLockManager::AcquireOptions(), location2);
-    ASSERT_TRUE(lock_acquired.Wait());
-  }
-  {
-    lock_manager.AcquireLocks(
-        {{lock_id, PartitionedLockManager::LockType::kExclusive}},
-        holder2.AsWeakPtr(), base::DoNothing(),
-        PartitionedLockManager::AcquireOptions(), location3);
-  }
-  base::Value debug_value =
-      lock_manager.ToDebugValue([](const PartitionedLockId& lock) {
-        return base::StringPrintf("%i %s", lock.partition, lock.key.c_str());
-      });
-  EXPECT_TRUE(debug_value.is_dict());
+  lock_manager.AcquireLocks({exclusive_lock_1}, holder2, base::DoNothing());
+  EXPECT_FALSE(holder2.locks.empty());
+
+  // This one is blocked on both the first couple of holders.
+  PartitionedLockHolder holder3;
+  lock_manager.AcquireLocks({exclusive_lock_0, shared_lock_1}, holder3,
+                            base::DoNothing());
+  EXPECT_TRUE(holder3.locks.empty());
+
+  // This one is only blocked on one of the initial holders.
+  PartitionedLockHolder holder4, holder5;
+  lock_manager.AcquireLocks({shared_lock_1}, holder4, base::DoNothing());
+  lock_manager.AcquireLocks({shared_lock_1}, holder5, base::DoNothing());
+  EXPECT_TRUE(holder4.locks.empty());
+  EXPECT_TRUE(holder5.locks.empty());
+
+  // Now release one of the held locks. holder3 is next in line, but it still
+  // can't get all its desired locks. The next two after it, however, can be
+  // granted their locks because they only need the one that was freed (and they
+  // don't need exclusive access, and they aren't blocked on holder3).
+  holder2.locks.clear();
+  EXPECT_TRUE(holder3.locks.empty());
+  EXPECT_FALSE(holder4.locks.empty());
+  EXPECT_FALSE(holder5.locks.empty());
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

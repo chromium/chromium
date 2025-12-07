@@ -7,17 +7,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/linux/device_scale_factor_observer.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
-#if defined(USE_DBUS_MENU)
+#if BUILDFLAG(USE_DBUS)
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"  // nogncheck
 #endif
 
-class BrowserFrame;
+class BrowserWidget;
 class BrowserView;
-class DesktopBrowserFrameAuraLinux;
+class BrowserNativeWidgetAuraLinux;
 enum class TabDragKind;
 
 namespace views {
@@ -39,7 +41,7 @@ class BrowserDesktopWindowTreeHostLinux
       views::internal::NativeWidgetDelegate* native_widget_delegate,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura,
       BrowserView* browser_view,
-      BrowserFrame* browser_frame);
+      BrowserWidget* browser_widget);
 
   BrowserDesktopWindowTreeHostLinux(const BrowserDesktopWindowTreeHostLinux&) =
       delete;
@@ -67,7 +69,6 @@ class BrowserDesktopWindowTreeHostLinux
 
   // BrowserDesktopWindowTreeHost:
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
-  int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
 
   // BrowserWindowTreeHostPlatform:
@@ -77,14 +78,15 @@ class BrowserDesktopWindowTreeHostLinux
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   bool SupportsMouseLock() override;
   void LockMouse(aura::Window* window) override;
   void UnlockMouse(aura::Window* window) override;
+  void ClientDestroyedWidget() override;
 
   // ui::X11ExtensionDelegate:
-  bool IsOverrideRedirect() const override;
+  bool IsOverrideRedirect(const ui::X11Extension& x11_extension) const override;
 
   // ui::PlatformWindowDelegate
   gfx::Insets CalculateInsetsInDIP(
@@ -100,10 +102,10 @@ class BrowserDesktopWindowTreeHostLinux
   void OnDeviceScaleFactorChanged() override;
 
   raw_ptr<BrowserView> browser_view_ = nullptr;
-  raw_ptr<BrowserFrame> browser_frame_ = nullptr;
-  raw_ptr<DesktopBrowserFrameAuraLinux> native_frame_ = nullptr;
+  raw_ptr<BrowserWidget> browser_widget_ = nullptr;
+  raw_ptr<BrowserNativeWidgetAuraLinux> native_widget_ = nullptr;
 
-#if defined(USE_DBUS_MENU)
+#if BUILDFLAG(USE_DBUS)
   // Each browser frame maintains its own menu bar object because the lower
   // level dbus protocol associates a xid to a menu bar; we can't map multiple
   // xids to the same menu bar.

@@ -2,44 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
+#import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_util.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "net/base/apple/url_conversions.h"
-#include "ui/gfx/range/range.h"
+#import "ui/gfx/range/range.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace {
-// Converts |autofill::LegalMessageLines| into |NSArray<NSAttributedString*>*|.
-NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
-    const autofill::LegalMessageLines& legalMessageLines) {
-  NSMutableArray<NSAttributedString*>* legalMessages = [NSMutableArray array];
-  for (const autofill::LegalMessageLine& legalMessageLine : legalMessageLines) {
-    NSString* text = base::SysUTF16ToNSString(legalMessageLine.text());
-    NSMutableAttributedString* legalMessage =
-        [[NSMutableAttributedString alloc] initWithString:text];
-    for (const autofill::LegalMessageLine::Link& link :
-         legalMessageLine.links()) {
-      NSURL* url = net::NSURLWithGURL(link.url);
-      NSRange range = link.range.ToNSRange();
-      [legalMessage addAttribute:NSLinkAttributeName value:url range:range];
-    }
-    [legalMessages addObject:[legalMessage copy]];
-  }
-  return [legalMessages copy];
-}
-}  // namespace
-
 @implementation CWVCreditCardSaver {
-  autofill::AutofillClient::SaveCreditCardOptions _saveOptions;
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
+      _saveOptions;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       _saveCardCallback;
 
@@ -59,8 +40,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 - (instancetype)
     initWithCreditCard:(const autofill::CreditCard&)creditCard
-           saveOptions:
-               (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
+           saveOptions:(autofill::payments::PaymentsAutofillClient::
+                            SaveCreditCardOptions)saveOptions
      legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
     savePromptCallback:(autofill::payments::PaymentsAutofillClient::
                             UploadSaveCardPromptCallback)savePromptCallback {
@@ -79,7 +60,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   // If the user did not choose, the decision should be marked as ignored.
   if (_saveCardCallback) {
     std::move(_saveCardCallback)
-        .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
+        .Run(autofill::payments::PaymentsAutofillClient::
+                 SaveCardOfferUserDecision::kIgnored,
              /*user_provided_card_details=*/{});
   }
 }
@@ -99,14 +81,14 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
   _saveCompletionHandler = completionHandler;
   DCHECK(_saveCardCallback);
+  autofill::payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = base::SysNSStringToUTF16(cardHolderFullName);
+  details.expiration_date_month = base::SysNSStringToUTF16(expirationMonth);
+  details.expiration_date_year = base::SysNSStringToUTF16(expirationYear);
   std::move(_saveCardCallback)
-      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
-           {
-               .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
-               .expiration_date_month =
-                   base::SysNSStringToUTF16(expirationMonth),
-               .expiration_date_year = base::SysNSStringToUTF16(expirationYear),
-           });
+      .Run(autofill::payments::PaymentsAutofillClient::
+               SaveCardOfferUserDecision::kAccepted,
+           details);
   _decisionMade = YES;
 }
 
@@ -116,7 +98,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
          "-decline: once per instance.";
   DCHECK(_saveCardCallback);
   std::move(_saveCardCallback)
-      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
+      .Run(autofill::payments::PaymentsAutofillClient::
+               SaveCardOfferUserDecision::kDeclined,
            /*user_provided_card_details=*/{});
   _decisionMade = YES;
 }

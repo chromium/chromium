@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/sync/cwv_trusted_vault_observer_internal.h"
-
 #import <Foundation/Foundation.h>
 
 #import "components/trusted_vault/trusted_vault_client.h"
+#import "ios/web_view/internal/sync/cwv_trusted_vault_observer_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -16,7 +15,9 @@ namespace ios_web_view {
 // Concrete observer just for testing.
 class TrustedVaultObserver
     : public trusted_vault::TrustedVaultClient::Observer {
-  void OnTrustedVaultKeysChanged() override {}
+  void OnTrustedVaultKeysChanged(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override {}
   void OnTrustedVaultRecoverabilityChanged() override {}
 };
 

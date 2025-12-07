@@ -20,14 +20,15 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/ash/login/ui/input_events_blocker.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/input_events_blocker.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
@@ -102,7 +103,10 @@ void WelcomeScreenHandler::ShowRemoraRequisitionDialog() {
 
 void WelcomeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (fjord_util::ShouldShowFjordOobe()) {
+    builder->Add("welcomeScreenGreeting", IDS_FJORD_WELCOME_MESSAGE);
+    builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
+  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
   } else if (switches::IsRevenBranding()) {
@@ -114,7 +118,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   } else if (features::IsBootAnimationEnabled()) {
     auto product_name =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CROS_OOBE_PRODUCT_NAME);
     builder->AddF("welcomeScreenGreeting",
                   IDS_WELCOME_SCREEN_GREETING_CLOUD_READY,
@@ -261,7 +265,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   }
 
   dict->Set("languageList", std::move(language_list));
-  dict->Set("inputMethodsList", GetAndActivateLoginKeyboardLayouts(
+  dict->Set("inputMethodsList", GetAndActivateOobeInputMethods(
                                     application_locale, selected_input_method,
                                     input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
@@ -317,8 +321,8 @@ base::Value::List WelcomeScreenHandler::GetTimezoneList() {
     CHECK(value.is_list());
     const base::Value::List& timezone = value.GetList();
 
-    std::string timezone_id = timezone[0].GetString();
-    std::string timezone_name = timezone[1].GetString();
+    const std::string& timezone_id = timezone[0].GetString();
+    const std::string& timezone_name = timezone[1].GetString();
 
     base::Value::Dict timezone_option;
     timezone_option.Set("value", timezone_id);

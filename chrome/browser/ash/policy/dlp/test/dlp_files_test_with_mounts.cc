@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/policy/dlp/test/dlp_files_test_with_mounts.h"
 
+#include "base/files/file_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -20,6 +22,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -53,7 +56,7 @@ void DlpFilesTestWithMounts::MountExternalComponents() {
   ash::SeneschalClient::InitializeFake();
 
   crostini::CrostiniManager* crostini_manager =
-      crostini::CrostiniManager::GetForProfile(profile_.get());
+      crostini::CrostiniManager::GetForProfile(profile());
   ASSERT_TRUE(crostini_manager);
   crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
   crostini_manager->AddRunningContainerForTesting(
@@ -62,16 +65,16 @@ void DlpFilesTestWithMounts::MountExternalComponents() {
                               "testuser", "/home/testuser", "PLACEHOLDER_IP"));
   // Register Crostini.
   ASSERT_TRUE(mount_points_->RegisterFileSystem(
-      file_manager::util::GetCrostiniMountPointName(profile_.get()),
+      file_manager::util::GetCrostiniMountPointName(profile()),
       storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      file_manager::util::GetCrostiniMountDirectory(profile_.get())));
+      file_manager::util::GetCrostiniMountDirectory(profile())));
 
   // Setup for DriveFS.
-  profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
-  drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get())
-      ->SetEnabled(true);
+  profile()->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
+  drive::DriveIntegrationServiceFactory::GetForProfile(profile())->SetEnabled(
+      true);
   drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get());
+      drive::DriveIntegrationServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(integration_service);
   base::FilePath mount_point_drive = integration_service->GetMountPointPath();
   // Register DriveFS.
@@ -82,9 +85,9 @@ void DlpFilesTestWithMounts::MountExternalComponents() {
 
 void DlpFilesTestWithMounts::SetUp() {
   DlpFilesTestBase::SetUp();
-  ASSERT_TRUE(rules_manager_);
+  ASSERT_TRUE(rules_manager());
   files_controller_ =
-      std::make_unique<DlpFilesControllerAsh>(*rules_manager_, profile_.get());
+      std::make_unique<DlpFilesControllerAsh>(*rules_manager(), profile());
 
   event_storage_ = files_controller_->GetEventStorageForTesting();
   DCHECK(event_storage_);
@@ -101,27 +104,26 @@ void DlpFilesTestWithMounts::SetUp() {
   SetReportQueueForReportingManager(
       reporting_manager_.get(), events_,
       base::SequencedTaskRunner::GetCurrentDefault());
-  ON_CALL(*rules_manager_, GetReportingManager)
+  ON_CALL(*rules_manager(), GetReportingManager)
       .WillByDefault(::testing::Return(reporting_manager_.get()));
 
   // Set FilesPolicyNotificationManager.
   policy::FilesPolicyNotificationManagerFactory::GetInstance()
       ->SetTestingFactory(
-          profile_.get(),
+          profile(),
           base::BindRepeating(
               &DlpFilesTestWithMounts::SetFilesPolicyNotificationManager,
               base::Unretained(this)));
 
   ASSERT_TRUE(
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-          profile_.get()));
+          profile()));
   ASSERT_TRUE(fpnm_);
 
   chromeos::DlpClient::InitializeFake();
   chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
 
-  my_files_dir_ =
-      file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+  my_files_dir_ = file_manager::util::GetMyFilesFolderForProfile(profile());
   ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
   file_system_context_ =
       storage::CreateFileSystemContextForTesting(nullptr, my_files_dir_);
@@ -172,7 +174,7 @@ DlpFilesTestWithMounts::SetFilesPolicyNotificationManager(
     content::BrowserContext* context) {
   auto fpnm =
       std::make_unique<testing::StrictMock<MockFilesPolicyNotificationManager>>(
-          profile_.get());
+          profile());
   fpnm_ = fpnm.get();
 
   return fpnm;

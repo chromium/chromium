@@ -5,19 +5,20 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_EVENT_HANDLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_EVENT_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/focus/focus_manager.h"
 
-class LensOverlayController;
+class LensSearchController;
 
 namespace lens {
 
 class LensOverlayEventHandler {
  public:
   explicit LensOverlayEventHandler(
-      LensOverlayController* lens_overlay_controller);
+      LensSearchController* lens_search_controller);
 
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event,
@@ -28,8 +29,9 @@ class LensOverlayEventHandler {
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
-  // The Lens Overlay controller to direct actions to.
-  const raw_ptr<LensOverlayController> lens_overlay_controller_;
+  // The Lens Search controller that owns this class and owns the overlay to
+  // direct actions to.
+  const raw_ptr<LensSearchController> lens_search_controller_;
 };
 
 }  // namespace lens

@@ -14,11 +14,11 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
@@ -42,7 +42,7 @@ class PolicyBuilder {
   // Constants used as dummy data for filling the PolicyData protobuf.
   static const char kFakeDeviceId[];
   static const char kFakeDomain[];
-  static const char kFakeGaiaId[];
+  static const GaiaId::Literal kFakeGaiaId;
   static const char kFakeMachineName[];
   static const char kFakePolicyType[];
   static const int kFakePublicKeyVersion;
@@ -81,14 +81,14 @@ class PolicyBuilder {
 
   // Use these methods for obtaining and changing the current signing key.
   // Note that, by default, a hard-coded testing signing key is used.
-  std::unique_ptr<crypto::RSAPrivateKey> GetSigningKey() const;
-  void SetSigningKey(const crypto::RSAPrivateKey& key);
+  std::optional<crypto::keypair::PrivateKey> GetSigningKey() const;
+  void SetSigningKey(const crypto::keypair::PrivateKey& key);
   void SetDefaultSigningKey();
   void UnsetSigningKey();
 
   // Use these methods for obtaining and changing the new signing key.
   // By default, there is no new signing key.
-  std::unique_ptr<crypto::RSAPrivateKey> GetNewSigningKey() const;
+  std::optional<crypto::keypair::PrivateKey> GetNewSigningKey() const;
   void SetDefaultNewSigningKey();
   void UnsetNewSigningKey();
 
@@ -108,8 +108,8 @@ class PolicyBuilder {
   std::string GetBlob() const;
 
   // These return hard-coded testing keys. Don't use in production!
-  static std::unique_ptr<crypto::RSAPrivateKey> CreateTestSigningKey();
-  static std::unique_ptr<crypto::RSAPrivateKey> CreateTestOtherSigningKey();
+  static crypto::keypair::PrivateKey CreateTestSigningKey();
+  static crypto::keypair::PrivateKey CreateTestOtherSigningKey();
 
   // Verification signatures for the two hard-coded testing keys above. These
   // signatures are valid only for the kFakeDomain domain.
@@ -159,7 +159,7 @@ class PolicyBuilder {
   // which would coincide with the user's database. However, these keys are used
   // for signing the policy and don't have to coincide with the user's known
   // keys. Instead, we store the private keys as raw bytes. Where needed, a
-  // temporary RSAPrivateKey is created.
+  // temporary PrivateKey is created.
   std::vector<uint8_t> raw_signing_key_;
   std::vector<uint8_t> raw_new_signing_key_;
   std::string raw_new_signing_key_signature_;
@@ -186,8 +186,9 @@ class TypedPolicyBuilder : public PolicyBuilder {
 
   // PolicyBuilder:
   void Build() override {
-    if (payload_)
+    if (payload_) {
       CHECK(payload_->SerializeToString(policy_data().mutable_policy_value()));
+    }
 
     PolicyBuilder::Build();
   }
@@ -218,12 +219,15 @@ class StringPolicyBuilder : public PolicyBuilder {
 using UserPolicyBuilder =
     TypedPolicyBuilder<enterprise_management::CloudPolicySettings>;
 
+using ExtensionInstallPoliciesBuilder =
+    TypedPolicyBuilder<enterprise_management::ExtensionInstallPolicies>;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ComponentCloudPolicyBuilder =
     TypedPolicyBuilder<enterprise_management::ExternalPolicyData>;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using ComponentActiveDirectoryPolicyBuilder = StringPolicyBuilder;
 #endif
 

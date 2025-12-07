@@ -35,9 +35,33 @@ async function runNotAllowedTest(method, params, expectAllowed) {
                    chrome.test.getConfig(resolve)
                  });
   const fileUrl = new URL(config.testDataDirectory + '/../body1.html').href;
+  const mhtmlFileUrl = new URL(config.testDataDirectory +
+      '/../mhtml-with-subframes.mht').href;
   const expectFileAccess = !!config.customArg;
 
   ({ openTab } = await import('/_test_resources/test_util/tabs_util.js'));
+
+  function testAttachWithFileUrl(url) {
+    chrome.tabs.onUpdated.addListener(function listener(
+      tabId, changeInfo, tab) {
+      if (tab.status == 'complete' && tab.url == url) {
+        chrome.tabs.onUpdated.removeListener(listener);
+        chrome.debugger.attach({tabId: tabId}, '1.1', function() {
+          if (expectFileAccess) {
+            chrome.test.assertNoLastError();
+            chrome.debugger.detach({tabId: tabId}, function() {
+              chrome.test.assertNoLastError();
+              chrome.test.succeed();
+            });
+          } else {
+            chrome.test.assertLastError('Cannot attach to this target.');
+            chrome.test.succeed();
+          }
+        });
+      }
+    });
+    chrome.test.openFileUrl(url);
+  };
 
   chrome.test.runTests([
     function verifyInitialState() {
@@ -48,27 +72,12 @@ async function runNotAllowedTest(method, params, expectAllowed) {
         chrome.test.succeed();
       });
     },
-
     function testAttach() {
-      chrome.tabs.onUpdated.addListener(function listener(
-        tabId, changeInfo, tab) {
-        if (tab.status == 'complete' && tab.url == fileUrl) {
-          chrome.tabs.onUpdated.removeListener(listener);
-          chrome.debugger.attach({tabId: tabId}, '1.1', function() {
-            if (expectFileAccess) {
-              chrome.test.assertNoLastError();
-              chrome.debugger.detach({tabId: tabId}, function() {
-                chrome.test.assertNoLastError();
-                chrome.test.succeed();
-              });
-            } else {
-              chrome.test.assertLastError('Cannot attach to this target.');
-              chrome.test.succeed();
-            }
-          });
-        }
-      });
-      chrome.test.openFileUrl(fileUrl);
+      testAttachWithFileUrl(fileUrl);
+    },
+
+    function testAttachMhtml() {
+      testAttachWithFileUrl(mhtmlFileUrl);
     },
 
     function testAttachAndNavigate() {
@@ -105,6 +114,30 @@ async function runNotAllowedTest(method, params, expectAllowed) {
           chrome.debugger.onDetach.addListener(onDetach);
           chrome.debugger.sendCommand({tabId: tabId}, 'Page.navigate',
                                       {url: fileUrl}, onResponse);
+        });
+      });
+    },
+
+    function testCreateTarget() {
+      const url = chrome.runtime.getURL('dummy.html');
+      openTab(url).then((tab) => {
+        chrome.test.assertEq(url, tab.url);
+        const tabId = tab.id;
+        chrome.debugger.attach({tabId: tabId}, '1.1', function() {
+          chrome.test.assertNoLastError();
+          chrome.debugger.sendCommand({tabId: tabId}, 'Target.createTarget',
+                                      {url: fileUrl}, function() {
+            if (expectFileAccess) {
+              chrome.test.assertNoLastError();
+            } else {
+              chrome.test.assertLastError(JSON.stringify({
+                code: -32000,
+                message: 'Creating a target with a local URL is not allowed'
+              }));
+            }
+            chrome.tabs.remove(tabId);
+            chrome.test.succeed();
+          });
         });
       });
     },

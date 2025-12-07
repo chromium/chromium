@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace net {
@@ -19,7 +20,7 @@ ScopedResState::ScopedResState() {
   memset(&_res, 0, sizeof(_res));
   res_init_result_ = res_init();
 #else
-  memset(&res_, 0, sizeof(res_));
+  UNSAFE_TODO(memset(&res_, 0, sizeof(res_)));
   res_init_result_ = res_ninit(&res_);
 #endif  // BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_FUCHSIA)
 }

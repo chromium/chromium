@@ -8,17 +8,19 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.Nullable;
+
 import java.io.File;
 
 /** An {@link android.app.Activity} for running native browser tests. */
 public abstract class NativeBrowserTestActivity extends FragmentActivity {
-    private static final String TAG = "NativeTest";
+    private static final String TAG = "NativeTestActivity";
 
-    private NativeTest mTest = new NativeTest();
+    private final NativeTest mTest = new NativeTest();
     private boolean mStarted;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         mTest.preCreate(this);
         super.onCreate(savedInstanceState);
         mTest.postCreate(this);
@@ -44,7 +46,9 @@ public abstract class NativeBrowserTestActivity extends FragmentActivity {
         if (mStarted) return;
 
         mStarted = true;
-        NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
+        if (!mTest.shouldKeepUserDataDir()) {
+            NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
+        }
         initializeBrowserProcess();
     }
 

@@ -50,10 +50,6 @@ class CORE_EXPORT PlainTextRange {
     return start_ == other.start_ && end_ == other.end_;
   }
 
-  bool operator!=(const PlainTextRange& other) const {
-    return !operator==(other);
-  }
-
   wtf_size_t End() const {
     DCHECK(IsNotNull());
     return end_;

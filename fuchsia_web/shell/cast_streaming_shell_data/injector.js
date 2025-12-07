@@ -11,21 +11,21 @@ domAutomationController._frame_request = 0;
 domAutomationController._done = false;
 domAutomationController._failure = false;
 
-function requestVideoFrameCallback() {
-  const video = document.querySelector('video');
-  if (!video) {
-    console.log('Video element could not be found');
-    window.close();
-    return;
-  }
-  video.requestVideoFrameCallback(domAutomationController.addFrame);
-}
-
 // Waits for document to be fully loaded before calling
 // requestVideoFrameCallback.
 document.onreadystatechange = function() {
-  if (document.readystate === 'complete') {
-    requestVideoFrameCallback();
+  if (document.readyState === 'complete') {
+    const video = document.querySelector('video');
+    if (!video) {
+      console.log('Video element could not be found');
+      window.close();
+      return;
+    }
+    video.requestVideoFrameCallback(function(now, metadata) {
+      // Increments frame count when a frame is presented for composition.
+      domAutomationController._frame_count++;
+      domAutomationController.checkTermination();
+    });
   }
 }
 
@@ -37,15 +37,6 @@ domAutomationController.checkTermination = function() {
   }
   if (this._frame_request >= this._frame_count) {
     this._done = true;
-  }
-}
-
-// Increments frame count when a frame is presented for composition.
-domAutomationController.addFrame = function(now, metadata) {
-  domAutomationController._frame_count++;
-  domAutomationController.checkTermination();
-  if (!this._done) {
-    requestVideoFrameCallback();
   }
 }
 

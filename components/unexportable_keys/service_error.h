@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_SERVICE_ERROR_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_SERVICE_ERROR_H_
 
+#include <stdint.h>
+
 #include "base/types/expected.h"
 
 namespace unexportable_keys {
@@ -12,7 +14,8 @@ namespace unexportable_keys {
 // Various errors returned by this component.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ServiceError {
+// LINT.IfChange(ServiceError)
+enum class ServiceError : uint8_t {
   // Reserved for histograms.
   // kNone = 0
   // crypto:: operation returned an error.
@@ -28,9 +31,17 @@ enum class ServiceError {
   kAlgorithmNotSupported = 5,
   // The key object hasn't been created yet. Try again later.
   kKeyNotReady = 6,
+  // The returned signature did not verify with the corresponding public key.
+  kVerifySignatureFailed = 7,
+  // The operation is not supported by the key provider.
+  kOperationNotSupported = 8,
 
-  kMaxValue = kKeyNotReady
+  kMaxValue = kOperationNotSupported
 };
+// LINT.ThenChange(
+//     /components/unexportable_keys/mojom/unexportable_key_service.mojom:ServiceError,
+//     /tools/metrics/histograms/metadata/net/enums.xml:UnexportableKeyServiceResult
+// )
 
 // Fake `ServiceError` value that can be used for metrics to signify that no
 // error has occurred.

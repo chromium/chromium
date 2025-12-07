@@ -17,8 +17,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
+#include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -55,7 +56,10 @@ const char kTestChildMessagePipeName[] = "test_pipe";
 const char kDisableAllCapabilities[] = "disable-all-capabilities";
 
 // For use (and only valid) in a test child process:
-base::LazyInstance<IsolatedConnection>::Leaky g_child_isolated_connection;
+IsolatedConnection& GetChildIsolatedConnection() {
+  static base::NoDestructor<IsolatedConnection> connection;
+  return *connection;
+}
 
 int RunClientFunction(base::OnceCallback<int(MojoHandle)> handler,
                       bool pass_pipe_ownership_to_main) {
@@ -73,6 +77,13 @@ MultiprocessTestHelper::MultiprocessTestHelper() = default;
 
 MultiprocessTestHelper::~MultiprocessTestHelper() {
   CHECK(!test_child_.IsValid());
+}
+
+// static
+void MultiprocessTestHelper::InitForMultiprocessTest() {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  bool is_broker = !command_line.HasSwitch(kRunAsBrokerClient);
+  mojo::core::Init({.is_broker_process = is_broker});
 }
 
 ScopedMessagePipeHandle MultiprocessTestHelper::StartChild(
@@ -96,6 +107,13 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   // values.
   base::CommandLine command_line(
       base::GetMultiProcessTestChildBaseCommandLine().GetProgram());
+
+#if BUILDFLAG(IS_WIN)
+  // Some mojo unit tests launch child processes and send invalid handles to
+  // them which would usually cause a STATUS_INVALID_HANDLE (0xC0000008) to be
+  // raised, so this disables that for child test processes only.
+  command_line.AppendSwitch(::switches::kDisableStrictHandleCheckingForTesting);
+#endif  // BUILDFLAG(IS_WIN)
 
   std::set<std::string> uninherited_args;
   uninherited_args.insert("mojo-platform-channel-handle");
@@ -218,7 +236,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
         DCHECK(server_endpoint.is_valid());
         pipe = isolated_connection_->Connect(std::move(server_endpoint));
 #else
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
 #endif
       }
       break;
@@ -302,8 +320,7 @@ void MultiprocessTestHelper::ChildSetup() {
       invitation = IncomingInvitation::Accept(std::move(endpoint));
     primordial_pipe = invitation.ExtractMessagePipe(kTestChildMessagePipeName);
   } else {
-    primordial_pipe =
-        g_child_isolated_connection.Get().Connect(std::move(endpoint));
+    primordial_pipe = GetChildIsolatedConnection().Connect(std::move(endpoint));
   }
 }
 

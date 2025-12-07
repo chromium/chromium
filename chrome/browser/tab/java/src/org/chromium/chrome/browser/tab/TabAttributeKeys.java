@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -15,9 +17,12 @@ import java.lang.annotation.RetentionPolicy;
     TabAttributeKeys.MODAL_DIALOG_SHOWING,
     TabAttributeKeys.PARENT_TAB_TASK_ID,
     TabAttributeKeys.PARENT_TAB_ROOT_TASK_ID,
-    TabAttributeKeys.ENTER_FULLSCREEN
+    TabAttributeKeys.ENTER_FULLSCREEN,
+    TabAttributeKeys.FULLSCREEN_START_POSITION,
+    TabAttributeKeys.FULLSCREEN_OPTIONS
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface TabAttributeKeys {
     /** Whether the tab should be grouped with its parent tab. True by default. */
     String GROUPED_WITH_PARENT = "isTabGroupedWithParent";
@@ -33,4 +38,13 @@ public @interface TabAttributeKeys {
 
     /** A runnable to delay the enabling of fullscreen mode if necessary. */
     String ENTER_FULLSCREEN = "EnterFullscreen";
+
+    /**
+     * A pair of display id (int) and window position (Rect) from where Fullscreen to screen
+     * originated.
+     */
+    String FULLSCREEN_START_POSITION = "FullscreenStartPosition";
+
+    /** FullscreenOptions when entering fullscreen to screen. */
+    String FULLSCREEN_OPTIONS = "FullscreenOptions";
 }

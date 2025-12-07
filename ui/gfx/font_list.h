@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -35,7 +35,7 @@ class FontListImpl;
 // Here are examples of valid font description strings:
 // - "Arial, Helvetica, Italic Semi-Bold 14px"
 // - "Arial, 14px"
-class GFX_EXPORT FontList {
+class COMPONENT_EXPORT(GFX) FontList {
  public:
   // Parses a FontList description string into |families_out|, |style_out| (a
   // bitfield of gfx::Font::Style values), |size_pixels_out| and |weight_out|.

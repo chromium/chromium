@@ -1,12 +1,4 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/extensions/file_manager",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -14,7 +6,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app/vector_icons",
   "+chrome/browser/app_mode",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps/api/media_galleries",
@@ -28,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/fusebox",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/lock",
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/ash/policy/skyvault",
@@ -48,7 +38,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/lifetime",
-  "+chrome/browser/metrics",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/pdf",
@@ -57,9 +46,10 @@ include_rules = [
   "+chrome/browser/sharesheet",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/holding_space",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
@@ -79,6 +69,6 @@ include_rules = [
 
 specific_include_rules = {
   "private_api_dialog.cc" : [
-    "+chrome/browser/ui/views/select_file_dialog_extension.h",
+    "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   ],
 }

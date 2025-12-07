@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -116,8 +117,10 @@ LayoutTable* LayoutTableCell::Table() const {
   return nullptr;
 }
 
-void LayoutTableCell::StyleDidChange(StyleDifference diff,
-                                     const ComputedStyle* old_style) {
+void LayoutTableCell::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (LayoutTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
@@ -126,7 +129,7 @@ void LayoutTableCell::StyleDidChange(StyleDifference diff,
       table->GridBordersChanged();
     }
   }
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
 }
 
 void LayoutTableCell::WillBeRemovedFromTree() {
@@ -195,8 +198,7 @@ unsigned LayoutTableCell::AbsoluteColumnIndex() const {
   if (PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->TableCellColumnIndex();
   }
-  NOTREACHED_IN_MIGRATION() << "AbsoluteColumnIndex did not find cell";
-  return 0;
+  NOTREACHED() << "AbsoluteColumnIndex did not find cell";
 }
 
 unsigned LayoutTableCell::ColSpan() const {

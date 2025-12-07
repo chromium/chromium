@@ -187,15 +187,15 @@ void ExposeRendererInterfacesToBrowser(
   DCHECK(render_thread);
 
   binders->Add<blink::mojom::SharedWorkerFactory>(
-      base::BindRepeating(&SharedWorkerFactoryImpl::Create),
+      &SharedWorkerFactoryImpl::Create,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::ResourceUsageReporter>(
       base::BindRepeating(&CreateResourceUsageReporter, render_thread),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #if BUILDFLAG(IS_ANDROID)
   binders->Add<auction_worklet::mojom::AuctionWorkletService>(
-      base::BindRepeating(
-          &auction_worklet::AuctionWorkletServiceImpl::CreateForRenderer),
+
+      &auction_worklet::AuctionWorkletServiceImpl::CreateForRenderer,
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 

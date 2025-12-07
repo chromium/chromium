@@ -97,11 +97,13 @@ class CallbackCommandWithResult : public WebAppCommand<LockType, ItemType> {
             std::make_tuple(std::move(arg_for_shutdown))),
         callback_(std::move(command_callback)) {}
 
-  ~CallbackCommandWithResult() override {}
+  ~CallbackCommandWithResult() override = default;
 
  protected:
   // WebAppCommand:
   void StartWithLock(std::unique_ptr<LockType> lock) override {
+    CHECK(lock);
+    CHECK(lock->IsGranted());
     ReturnType result = std::move(callback_).Run(
         *lock, internal::CommandBase::GetMutableDebugValue());
     WebAppCommand<LockType, ItemType>::CompleteAndSelfDestruct(

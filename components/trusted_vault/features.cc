@@ -9,28 +9,10 @@
 
 namespace trusted_vault {
 
-BASE_FEATURE(kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
-             "SyncTrustedVaultDegradedRecoverabilityHandler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrustedVaultFrequentDegradedRecoverabilityPolling,
-             "TrustedVaultFrequentDegradedRecoverabilityPolling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSetClientEncryptionKeysJsApi,
-             "SetClientEncryptionKeysJsApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSetClientEncryptionKeysJsApi, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kChromeOSTrustedVaultUseWebUIDialog,
-             "ChromeOSTrustedVaultUseWebUIDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeOSTrustedVaultClientShared,
-             "ChromeOSTrustedVaultClientShared",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kEnableTrustedVaultSHA256, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace trusted_vault

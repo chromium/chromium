@@ -7,16 +7,22 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
+
+namespace content {
+class NavigationThrottleRegistry;
+}  // namespace content
 
 class NavigationPolicyHandler;
 
 class WEB_ENGINE_EXPORT NavigationPolicyThrottle
     : public content::NavigationThrottle {
  public:
-  explicit NavigationPolicyThrottle(content::NavigationHandle* handle,
-                                    NavigationPolicyHandler* policy_handler);
+  explicit NavigationPolicyThrottle(
+      content::NavigationThrottleRegistry& registry,
+      NavigationPolicyHandler* policy_handler);
   ~NavigationPolicyThrottle() override;
 
   NavigationPolicyThrottle(const NavigationPolicyThrottle&) = delete;
@@ -38,8 +44,7 @@ class WEB_ENGINE_EXPORT NavigationPolicyThrottle
   content::NavigationThrottle::ThrottleCheckResult HandleNavigationPhase(
       fuchsia::web::NavigationPhase phase);
 
-  NavigationPolicyHandler* policy_handler_;
-  content::NavigationHandle* navigation_handle_;
+  raw_ptr<NavigationPolicyHandler> policy_handler_;
 
   // Indicates if the navigation is currently paused.
   bool is_paused_ = false;

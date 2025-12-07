@@ -14,21 +14,29 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/sessions/session_common_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper_delegate.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 class Profile;
+class ProfileBrowserCollection;
+class SessionServiceBaseObserver;
+
+namespace base {
+class Value;
+}
 
 namespace content {
 class WebContents;
@@ -50,7 +58,7 @@ struct SessionWindow;
 class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                            public sessions::SessionTabHelperDelegate,
                            public KeyedService,
-                           public BrowserListObserver {
+                           public BrowserCollectionObserver {
  public:
   enum class SessionServiceType { kAppRestore, kSessionRestore };
 
@@ -80,7 +88,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Sets the bounds of a window.
   void SetWindowBounds(SessionID window_id,
                        const gfx::Rect& bounds,
-                       ui::WindowShowState show_state);
+                       ui::mojom::WindowShowState show_state);
 
   // Sets the workspace the window resides in.
   void SetWindowWorkspace(SessionID window_id, const std::string& workspace);
@@ -169,6 +177,25 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void TabNavigationPathEntriesDeleted(SessionID window_id,
                                        SessionID tab_id) override;
 
+#if DCHECK_IS_ON()
+  // Returns the state of this class and logs for the
+  // chrome://internals/session-service debug page. The logs are in reverse
+  // order for truncation ease. This value is NOT STABLE -
+  // do not rely on it's contents for anything.
+  virtual base::Value ToDebugValue() const;
+#endif  // DCHECK_IS_ON()
+
+  // Some platforms support windowing system level session management, in such
+  // cases, GetPlatformSessionId() returns a non-empty string identifier
+  // provided by the platform at session initialization and persisted in the
+  // session command backing storage for future session restoration.
+  // See ui/ozone/public/platfrom_session_manager.h for more details.
+  std::optional<std::string> GetPlatformSessionId();
+  void SetPlatformSessionIdForTesting(const std::string& id);
+
+  void AddObserver(SessionServiceBaseObserver* observer);
+  void RemoveObserver(SessionServiceBaseObserver* observer);
+
  protected:
   // Creates a SessionService for the specified profile.
   SessionServiceBase(Profile* profile, SessionServiceType type);
@@ -204,10 +231,8 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void RemoveUnusedRestoreWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* window_list);
 
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override {}
-  void OnBrowserRemoved(Browser* browser) override {}
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // Converts |commands| to SessionWindows and notifies the callback.
   void OnGotSessionCommands(
@@ -224,6 +249,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                                    content::WebContents* tab,
                                    int index_in_window,
                                    std::optional<tab_groups::TabGroupId> group,
+                                   std::optional<split_tabs::SplitTabId> split,
                                    bool is_pinned,
                                    IdToRange* tab_to_available_range);
 
@@ -254,7 +280,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   bool ShouldTrackChangesToWindow(SessionID window_id) const;
 
   // Returns true if we track changes to the specified browser.
-  bool ShouldTrackBrowser(Browser* browser) const;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) const;
 
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   virtual void RebuildCommandsIfRequired() = 0;
@@ -274,6 +300,14 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
  private:
   friend class SessionServiceBaseTestHelper;
   friend class SessionServiceTestHelper;
+
+  // If supported by the platform, initializes windowing system level session
+  // and requests `discarded_window_ids` to be removed from the session. If it
+  // succeeds, `platform_session_id_` should contain the session id to be used
+  // by browser windows to associate them to a given platform session.
+  void InitializePlatformSessionIfNeeded(
+      const std::string& restored_platform_session_id,
+      const std::set<SessionID>& discarded_window_ids);
 
   // This is always non-null.
   raw_ptr<Profile> profile_;
@@ -305,6 +339,16 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   bool is_saving_enabled_ = true;
 
   bool did_save_commands_at_least_once_ = false;
+
+  // The platform session identifier, if supported and successfully initialized.
+  // See GetPlatformSessionId() for more details.
+  std::optional<std::string> platform_session_id_;
+
+  base::ObserverList<SessionServiceBaseObserver>
+      session_service_base_observers_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 
   base::WeakPtrFactory<SessionServiceBase> weak_factory_{this};
 };

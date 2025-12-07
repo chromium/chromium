@@ -1,0 +1,88 @@
+<!--
+  Copyright 2025 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<html>
+
+<head>
+  <title>Windowing API Test Extension</title>
+</head>
+
+<body style="min-width: 200px;">
+  <h3>chrome.windows API Test</h3>
+
+  <ul style="list-style-type: none; padding: 0;">
+    <details>
+      <summary>Get Window(s)</summary>
+      <li style="padding: 5px 0;"><button id="get_all_windows_button">getAll()</button></li>
+      <li style="padding: 5px 0;"><button id="get_current_window_button">getCurrent()</button></li>
+      <li style="padding: 5px 0;"><button id="get_last_focused_window_button">getLastFocused()</button>
+      </li>
+      <li style="padding: 5px 0;">
+        <button id="get_window_button">get()</button>
+        <input type="number" id="get_window_id_input" placeholder="Enter Window ID">
+      </li>
+    </details>
+    <hr>
+    <details>
+      <summary>Remove Window</summary>
+      <li style="padding: 5px 0;">
+        <button id="remove_window_button">remove()</button>
+        <input type="number" id="remove_window_id_input" placeholder="Enter Window ID">
+      </li>
+    </details>
+    <hr>
+    <details>
+      <summary>Update Window</summary>
+      <li style="padding: 5px 0;">
+        <button id="update_window_button">update()</button>
+        <input type="number" id="update_window_id_input" placeholder="Enter Window ID" style="width: 120px;">
+        <div id="update_window_options_radio_group">
+          <div>
+            <label><input type="radio" name="update_window_option" value="focus" checked>focus:</label>
+            <div id="focus_options" style="display: none; padding-left: 20px;">
+              <label><input type="radio" name="focus_value" value="true" checked>true</label>
+              <label><input type="radio" name="focus_value" value="false">false</label>
+            </div>
+          </div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="resize">resize:</label>
+            <div id="resize_options" style="display: none; padding-left: 20px;">
+              <label>left:<input type="number" id="resize_left" value="50" style="width: 6ch;"></label><br>
+              <label>top:<input type="number" id="resize_top" value="100" style="width: 6ch;"></label><br>
+              <label>width:<input type="number" id="resize_width" value="800" style="width: 6ch;"></label><br>
+              <label>height:<input type="number" id="resize_height" value="600" style="width: 6ch;"></label>
+            </div>
+          </div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="state">state:</label>
+            <div id="state_options" style="display: none; padding-left: 20px;">
+              <label><input type="radio" name="state_value" value="normal" checked>normal</label><br>
+              <label><input type="radio" name="state_value" value="minimized">minimized</label><br>
+              <label><input type="radio" name="state_value" value="maximized">maximized</label><br>
+              <label><input type="radio" name="state_value" value="fullscreen">fullscreen</label><br>
+              <label><input type="radio" name="state_value" value="locked-fullscreen">locked-fullscreen</label>
+            </div>
+          </div>
+          <div>
+            <label><input type="radio" name="update_window_option" value="drawAttention">drawAttention:</label>
+            <div id="drawAttention_options" style="display: none; padding-left: 20px;">
+              <label><input type="radio" name="drawAttention_value" value="true" checked>true</label><br>
+              <label><input type="radio" name="drawAttention_value" value="false">false</label>
+            </div>
+          </div>
+        </div>
+      </li>
+    </details>
+    <hr>
+  </ul>
+
+  <p>API return value:</p>
+  <textarea id="api_return_value_text_area" rows="15" cols="30" readonly></textarea>
+
+  <script src="default_popup.js" type="module"></script>
+</body>
+
+</html>

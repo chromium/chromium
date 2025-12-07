@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 
+#include "base/functional/callback_helpers.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"

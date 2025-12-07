@@ -9,12 +9,13 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 ദിവസം മുമ്പ്}other{# ദിവസം മുമ്പ്}}</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡ് ചെയ്യുക</translation>
+<translation id="1253734725326687145">ടച്ച് ടാർഗറ്റ് മുകളിൽ വലതുഭാഗത്തേക്ക് നീക്കി. ഇവിടെ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> പങ്കിടാനായില്ല</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">ചെറിയ ഭാഗങ്ങളായി ടെക്‌സ്‌റ്റ് പങ്കിടാൻ ശ്രമിക്കൂ.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">ഇടതുനിന്ന് വലത്തേക്ക്</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">തിരയുക</translation>
 <translation id="1398853756734560583">വലുതാക്കുക</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> പങ്കിടാനാവുന്നില്ല</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">ഇതൊരു പുതിയ ഫീച്ചറാണ്</translation>
 <translation id="2006524834898217237">ഈ ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="208586643495776849">വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />അദൃശ്യ മോഡിൽ അനുവദിക്കുക<ph name="END_BOLD" /> ഓണാക്കുക</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ദിവസം}other{# ദിവസം}}</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">സ്‌ക്രീനിലുള്ള 'ടാർഗെറ്റുകൾ സ്‌പർശിക്കുക' ടാപ്പുചെയ്യുക.</translation>
 <translation id="2295140143284145483">സർവ്വേ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡിയിൽ ഉള്ള വിപുലീകരണം കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡികളിൽ ഉള്ള വിപുലീകരണങ്ങൾ കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}}</translation>
 <translation id="2353636109065292463">നിങ്ങളുടെ ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2388990488038464401">നിങ്ങളുടെ ഫോണിൽ നിന്ന് ഈ നമ്പറിലേക്ക് വിളിക്കണോ?</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="24452542372838207">അറിയിപ്പ് വികസിപ്പിക്കുക</translation>
 <translation id="2445449901874883781">കൂടിയ സാന്ദ്രത ഉപയോഗിക്കുക</translation>
+<translation id="2448407890032181691">ടച്ച് ടാർഗറ്റ് ചുവടെ വലതുഭാഗത്തേക്ക് നീക്കി. ഇവിടെ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2497284189126895209">എല്ലാ ഫയലുകളും</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">എല്ലാം ഇല്ലാതാക്കൂ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ഒരു ദിവസത്തിൽ}other{# ദിവസത്തിൽ}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> എന്ന കോളം അവരോഹണക്രമത്തിൽ അടുക്കി.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{വിപുലീകരണം കണ്ടെത്താനാകുന്നില്ല}other{വിപുലീകരണങ്ങൾ കണ്ടെത്താനാകുന്നില്ല}}</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">താഴെ</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">ഇതുപയോഗിച്ച് കോൾ ചെയ്യുക</translation>
 <translation id="3306688585798492231">ബിൽറ്റ് ഇൻ ഡിസ്‌പ്ലേ</translation>
 <translation id="335581015389089642">സംഭാഷണം</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />വിശദാംശങ്ങൾ<ph name="END_BOLD" /> എന്നതിൽ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="3389286852084373014">ടെക്‌സ്‌റ്റ് വളരെ വലുതാണ്</translation>
 <translation id="3406306243914553062">HTML ഉള്ളടക്കം</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ഒരു ദിവസം ശേഷിക്കുന്നു}other{# ദിവസം ശേഷിക്കുന്നു}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> എന്ന കോളം ആരോഹണക്രമത്തിൽ അടുക്കി.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{വായിക്കാത്ത ഒരു അറിയിപ്പ്}other{വായിക്കാത്ത # അറിയിപ്പുകൾ}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണം ഓണാക്കുക:}other{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണങ്ങൾ ഓണാക്കുക:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ഒരു മാസം മുമ്പ്}other{# മാസം മുമ്പ്}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> എന്ന കോളം ആരോഹണക്രമത്തിൽ അടുക്കി</translation>
 <translation id="4289300219472526559">സംഭാഷണം ആരംഭിക്കുക</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4491109536499578614">ചിത്രം</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">നമ്പർ</translation>
 <translation id="4746179598275229723">വിപുലീകരണം അൺപിൻ ചെയ്തു</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ഒരു മാസം ശേഷിക്കുന്നു}other{# മാസം ശേഷിക്കുന്നു}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ഒരു വിപുലീകരണം ആവശ്യമാണ്}other{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ചില വിപുലീകരണങ്ങൾ ആവശ്യമാണ്}}</translation>
+<translation id="482932175346970750">നിങ്ങളുടെ ബ്രൗസറിൽ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="4888938634149558681">കോൾ ചെയ്യുക</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ഒരു സെക്കന്‍ഡ്}other{# സെക്കൻഡ്}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;ഒട്ടിക്കുക</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">അയയ്ക്കാനായില്ല</translation>
+<translation id="5283101102242354279">അദൃശ്യ മോഡിൽ ഒരു വിപുലീകരണം ഓണാക്കുക:</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>
 <translation id="5329858601952122676">&amp;ഇല്ലാതാക്കൂ</translation>
 <translation id="5361107212971249203">ടെക്‌സ്റ്റ്</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">ഡെവലപ്പര്‍ UI മൊഡ്യൂള്‍ (dev_ui) ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ലാത്തതിനാൽ, പേജ് ലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> സിസ്‌റ്റം</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
+<translation id="5606865426897221650">ടാബ്</translation>
 <translation id="5613020302032141669">ഇടത് ആരോ അടയാളം</translation>
 <translation id="5633029987065897167">ഒന്നുമില്ല</translation>
+<translation id="5651438382973553530">ടച്ച് ടാർഗറ്റ് താഴെ ഇടതുഭാഗത്തേക്ക് നീക്കി. ഇവിടെ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{ഒരു മിനിറ്റ്}other{# മിനിറ്റ്}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ഇന്ന് സജീവമായിരുന്നു}=1{ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു}other{# ദിവസം മുമ്പ് സജീവമായിരുന്നു}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{ഒരു ദിവസവും }other{# ദിവസവും }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">ചിത്രം.</translation>
+<translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{ഒരു വർഷത്തിൽ}other{# വർഷത്തിൽ}}</translation>
 <translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു}other{# സെക്കൻഡ് ശേഷിക്കുന്നു}}</translation>
@@ -144,13 +158,14 @@
 <translation id="6007284015834422026">വിപുലീകരണം പിൻ ചെയ്തു</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6117103120090651229">നടുവിലുള്ള ബട്ടൺ</translation>
-<translation id="6129953537138746214">സ്പെയ്സ്</translation>
+<translation id="6129953537138746214">സ്‌പെയ്‌സ്</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
 <translation id="6264365405983206840">എല്ലാം &amp;തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6346952829206698721">ക്ലിപ്പ്‌ബോർഡിൽ നിന്ന് ഒട്ടിക്കുക</translation>
 <translation id="6364916375976753737">ഇടത്തേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
+<translation id="63712816010840859">നിലവിലെ ഡിസ്പ്ലേ ടച്ച്സ്ക്രീനല്ലെങ്കിൽ, Esc അമർത്തുക.</translation>
 <translation id="6394627529324717982">കോമ</translation>
 <translation id="6397363302884558537">സംഭാഷണം നിർത്തുക</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{ഒരു സെക്കൻഡ് മുമ്പ്}other{# സെക്കൻഡ് മുമ്പ്}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">കാലിബറേഷനിൽ നിന്ന് പുറത്തുകടക്കാൻ Esc അമർത്തുക.</translation>
 <translation id="6620110761915583480">ഫയല്‍‌ സംരക്ഷിക്കുക</translation>
 <translation id="6699343763173986273">അടുത്ത മീഡിയാ ട്രാക്ക്</translation>
+<translation id="6738856801552481343">ഡിസ്പ്ലേ ടച്ച്സ്ക്രീനല്ലെങ്കിൽ, Esc അമർത്തുക.</translation>
+<translation id="6807086321996342431">കോളം <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">മീഡിയ ‌നിർത്തുക</translation>
 <translation id="6845383723252244143">ഫോള്‍ഡര്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{ഒരു മണിക്കൂർ ശേഷിക്കുന്നു}other{# മണിക്കൂർ ശേഷിക്കുന്നു}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">അടുത്ത തവണ റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ആപ്പിന്റെ ഡിസ്‌പ്ലേ ക്രമീകരണം പ്രാബല്യത്തിൽ വരും.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>
+<translation id="7252604552361840748">മുകളിലുള്ള വിപുലീകരണം കണ്ടെത്തുക</translation>
 <translation id="7363164521834647158">മറുപടി അയയ്ക്കുക</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{ഒരു മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">കമാൻഡ്</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{ഒന്നിലധികം വായിക്കാത്ത അറിയിപ്പ് ഉണ്ട്}other{#-ലധികം വായിക്കാത്ത അറിയിപ്പുകൾ ഉണ്ട്}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{ഒരു മിനിറ്റിൽ}other{# മിനിറ്റിൽ}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> എന്നതിൽ നിന്നുള്ള നമ്പർ</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{ഒരു മണിക്കൂര്‍ മുമ്പ്}other{# മണിക്കൂർ മുമ്പ്}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു}other{# സെക്കൻഡ് ശേഷിക്കുന്നു}}</translation>
 <translation id="8134065097954893699">ഈ പേജ് റീലോഡ് ചെയ്യുന്നു</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> എന്ന കോളം അടുക്കിയത് മാറ്റി</translation>
 <translation id="815598010540052116">താഴേയ്‌ക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">ടാബ്</translation>
 <translation id="8259556432390118667">ഹെക്‌സ് വർണ മൂല്യം</translation>
 <translation id="8328145009876646418">ഇടത് അഗ്രം</translation>
 <translation id="8331626408530291785">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8394908167088220973">മീഡിയ പ്ലേ ചെയ്യുക/താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1വർഷം}other{#വർഷം}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> എന്ന കോളം അവരോഹണക്രമത്തിൽ അടുക്കി</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ഫയല്‍ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{ഒരു സെക്കൻഡ്}other{# സെക്കൻഡ്}}</translation>
 <translation id="9059834730836941392">അറിയിപ്പ് ചുരുക്കുക</translation>
 <translation id="9170848237812810038">‍&amp;പൂര്‍വാവസ്ഥയിലാക്കുക</translation>
+<translation id="9195990613383871904">നാളെ</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">ഹോം</translation>
 <translation id="944069440740578670">വായിക്കാത്ത അറിയിപ്പുകൾ</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 സെക്കൻഡ് മുമ്പ്}other{# സെക്കൻഡ് മുമ്പ്}}</translation>

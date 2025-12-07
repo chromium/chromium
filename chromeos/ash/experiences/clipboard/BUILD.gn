@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+
+assert(is_chromeos)
+
+static_library("clipboard") {
+  sources = [
+    "clipboard_history_controller_delegate_impl.cc",
+    "clipboard_history_controller_delegate_impl.h",
+    "clipboard_image_model_factory_impl.cc",
+    "clipboard_image_model_factory_impl.h",
+    "clipboard_image_model_request.cc",
+    "clipboard_image_model_request.h",
+    "clipboard_util.cc",
+    "clipboard_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_types",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "clipboard_history_test_util.cc",
+    "clipboard_history_test_util.h",
+  ]
+
+  deps = [
+    ":clipboard",
+    "//ash/public/cpp",
+    "//base",
+    "//testing/gtest",
+  ]
+}

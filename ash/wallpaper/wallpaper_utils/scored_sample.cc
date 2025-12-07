@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wallpaper/wallpaper_utils/scored_sample.h"
 
 #include <type_traits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/material_color_utilities/src/cpp/quantize/celebi.h"
@@ -43,7 +39,8 @@ std::vector<Argb> ImageToArgb(const SkBitmap* bitmap) {
   int64_t num_pixels = pixmap.dimensions().area();
   if (pixmap.colorType() == kBGRA_8888_SkColorType) {
     // Fast path if the buffer is already in the expected format.
-    return std::vector<Argb>(pixmap.addr32(), pixmap.addr32() + num_pixels);
+    return std::vector<Argb>(pixmap.addr32(),
+                             UNSAFE_TODO(pixmap.addr32() + num_pixels));
   }
 
   // TODO(b/266948729): Evaluate if there are faster ways to perform this

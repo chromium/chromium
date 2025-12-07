@@ -15,6 +15,8 @@ using RecentAppsUiState =
 
 // Keep in sync with corresponding PhoneHubInterstitialScreenEvent enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(PhoneHubInterstitialScreenEvent)
 enum class InterstitialScreenEvent {
   kShown = 0,
   kLearnMore = 1,
@@ -22,12 +24,15 @@ enum class InterstitialScreenEvent {
   kConfirm = 3,
   kMaxValue = kConfirm
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubInterstitialScreenEvent)
 
 // Keep in sync with corresponding PhoneHubScreen enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-// Note that value 2 and 3 have been deprecated and should not be reused.
+// Note that value 2 and 3 have been deprecated and should not be reused.\
+//
+// LINT.IfChange(PhoneHubScreen)
 enum class Screen {
   kBluetoothOrWifiDisabled = 0,
   kPhoneDisconnected = 1,
@@ -41,9 +46,12 @@ enum class Screen {
   kMiniLauncher = 11,
   kMaxValue = kMiniLauncher
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubScreen)
 
 // Keep in sync with corresponding PhoneHubQuickAction enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(PhoneHubQuickAction)
 enum class QuickAction {
   kToggleHotspotOn = 0,
   kToggleHotspotOff,
@@ -53,20 +61,26 @@ enum class QuickAction {
   kToggleLocatePhoneOff,
   kMaxValue = kToggleLocatePhoneOff
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubQuickAction)
 
 // Enumeration of possible interactions with a PhoneHub notification. Keep in
 // sync with corresponding PhoneHubNotificationInteraction enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. Values are persisted
 // to logs. Entries should not be renumbered and numeric values should never be
 // reused.
+//
+// LINT.IfChange(PhoneHubNotificationInteraction)
 enum class NotificationInteraction {
   kInlineReply = 0,
   kDismiss = 1,
   kMaxValue = kDismiss,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubNotificationInteraction)
 
 // Keep in sync with corresponding PhoneHubCameraRollContentShown enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(PhoneHubCameraRollContentShown)
 enum class CameraRollContentShown {
   kContentShown1 = 1,
   kContentShown2 = 2,
@@ -75,9 +89,12 @@ enum class CameraRollContentShown {
   kContentShownGTE5 = 5,
   kMaxValue = kContentShownGTE5
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubCameraRollContentShown)
 
 // Keep in sync with corresponding PhoneHubCameraRollContentClicked enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(PhoneHubCameraRollContentClicked)
 enum class CameraRollContentClicked {
   kContentClicked1 = 11,
   kContentClicked2 = 21,
@@ -86,9 +103,12 @@ enum class CameraRollContentClicked {
   kContentClickedGTE5 = 51,
   kMaxValue = kContentClickedGTE5
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubCameraRollContentClicked)
 
 // Keep in sync with corresponding PhoneHubCameraRollContextMenuDownload enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(PhoneHubCameraRollContextMenuDownload)
 enum class CameraRollContextMenuDownload {
   kDownload1 = 111,
   kDownload2 = 211,
@@ -97,31 +117,41 @@ enum class CameraRollContextMenuDownload {
   kDownloadGTE5 = 511,
   kMaxValue = kDownloadGTE5
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubCameraRollContextMenuDownload)
 
 // Keep in sync with corresponding MoreAppsButtonLoadingState enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(MoreAppsButtonLoadingState)
 enum class MoreAppsButtonLoadingState {
   kAnimationShown = 0,
   kMoreAppsButtonLoaded = 1,
   kMaxValue = kMoreAppsButtonLoaded
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:MoreAppsButtonLoadingState)
 
 // Keep in sync with corresponding RecentAppsViewUiState enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(RecentAppsViewUiState)
 enum class RecentAppsViewUiState {
   kLoading = 0,
   kError = 1,
   kApps = 2,
   kMaxValue = kApps,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:RecentAppsViewUiState)
 
 // Keep in sync with MultideviceSetupNudgeInteraction enum in
-// //tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/cross_device/enums.xml.
+//
+// LINT.IfChange(MultideviceSetupNudgeInteraction)
 enum class MultideviceSetupNudgeInteraction {
   kNudgeClicked = 0,
   kPhoneHubIconClicked = 1,
   kMaxValue = kPhoneHubIconClicked,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:MultideviceSetupNudgeInteraction)
 
 enum class CameraRollMediaType { kPhoto = 0, kVideo = 1, kMaxValue = kVideo };
 

@@ -48,16 +48,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -68,20 +66,13 @@ import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
  * to the Partial Custom Tabs logic.
  */
 public class PartialCustomTabTestRule implements TestRule {
-    @Implements(SemanticColorUtils.class)
-    static class ShadowSemanticColorUtils {
-        @Implementation
-        public static int getDividerLineBgColor(Context context) {
-            return Color.LTGRAY;
-        }
-    }
-
     // Pixel 3 XL metrics
     static final float DENSITY = 1.25f;
     static final int DEVICE_HEIGHT = 2960;
@@ -135,6 +126,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock ViewGroup mCompositorViewHolder;
     @Mock PackageManager mPackageManager;
     @Mock ActivityManager mActivityManager;
+    @Mock CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     @Captor ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
 
     Context mContext;
@@ -155,6 +147,7 @@ public class PartialCustomTabTestRule implements TestRule {
     private void setUp() {
         ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
+        SemanticColorUtils.setDividerLineBgColorForTesting(Color.LTGRAY);
         when(mActivity.getWindow()).thenReturn(mWindow);
         when(mActivity.getResources()).thenReturn(mResources);
         when(mActivity.getWindowManager()).thenReturn(mWindowManager);
@@ -243,6 +236,7 @@ public class PartialCustomTabTestRule implements TestRule {
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
+        when(mActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
         when(mActivity.getPackageManager()).thenReturn(mPackageManager);
     }
 
@@ -315,6 +309,7 @@ public class PartialCustomTabTestRule implements TestRule {
         return mAttributeResults.get(mAttributeResults.size() - 1);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public float getDisplayDensity() {
         return mActivity.getResources().getDisplayMetrics().density;
     }

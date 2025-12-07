@@ -82,8 +82,7 @@ bool SharedStorageWorkletDevToolsAgentHost::Close() {
 }
 
 bool SharedStorageWorkletDevToolsAgentHost::AttachSession(
-    DevToolsSession* session,
-    bool acquire_wake_lock) {
+    DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
@@ -101,9 +100,9 @@ void SharedStorageWorkletDevToolsAgentHost::WorkletReadyForInspection(
     return;
   }
 
-  GetRendererChannel()->SetRenderer(std::move(agent_remote),
-                                    std::move(agent_host_receiver),
-                                    worklet_host_->GetProcessHost()->GetID());
+  GetRendererChannel()->SetRenderer(
+      std::move(agent_remote), std::move(agent_host_receiver),
+      worklet_host_->GetProcessHost()->GetDeprecatedID());
 }
 
 void SharedStorageWorkletDevToolsAgentHost::WorkletDestroyed() {

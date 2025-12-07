@@ -41,7 +41,7 @@ std::unique_ptr<views::Label> CreateTimerLabel(
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   return label;
 }
 
@@ -49,7 +49,8 @@ std::unique_ptr<views::View> CreateSpacerView() {
   auto spacer_view = std::make_unique<views::View>();
   spacer_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   return spacer_view;
 }
@@ -83,7 +84,6 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular,
                        cros_tokens::kCrosSysOnSurface));
 
-  // TODO(b/286931547): Timer Progress Bar.
   progress_bar_ =
       timer_container->AddChildView(std::make_unique<views::ProgressBar>());
   progress_bar_->SetPreferredHeight(kBarHeight);

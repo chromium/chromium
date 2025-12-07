@@ -38,7 +38,7 @@ export const PrivacyGuideAvailabilityMixin = dedupingMixin(
           };
         }
 
-        isPrivacyGuideAvailable: boolean;
+        declare isPrivacyGuideAvailable: boolean;
 
         override connectedCallback(): void {
           super.connectedCallback();

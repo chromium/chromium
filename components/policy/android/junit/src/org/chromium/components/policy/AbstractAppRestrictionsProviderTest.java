@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AbstractAppRestrictionsProviderTest {
     /** Minimal concrete class implementing AbstractAppRestrictionsProvider. */
-    private class DummyAppRestrictionsProvider extends AbstractAppRestrictionsProvider {
+    private static class DummyAppRestrictionsProvider extends AbstractAppRestrictionsProvider {
         public DummyAppRestrictionsProvider(Context context) {
             super(context);
         }
@@ -56,7 +56,7 @@ public class AbstractAppRestrictionsProviderTest {
         }
     }
 
-    private class DummyContext extends ContextWrapper {
+    private static class DummyContext extends ContextWrapper {
         public DummyContext(Context baseContext) {
             super(baseContext);
             mReceiverCount = new AtomicInteger(0);
@@ -122,8 +122,8 @@ public class AbstractAppRestrictionsProviderTest {
             return mLastRegisteredReceiverFlags.get();
         }
 
-        private AtomicInteger mReceiverCount;
-        private AtomicInteger mLastRegisteredReceiverFlags;
+        private final AtomicInteger mReceiverCount;
+        private final AtomicInteger mLastRegisteredReceiverFlags;
     }
 
     /** Test method for {@link AbstractAppRestrictionsProvider#refresh()}. */
@@ -178,7 +178,7 @@ public class AbstractAppRestrictionsProviderTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
             // asserting that the receiver was only registered for protected broadcasts.
-            final int badMask = ContextUtils.RECEIVER_EXPORTED | ContextUtils.RECEIVER_NOT_EXPORTED;
+            final int badMask = Context.RECEIVER_EXPORTED | Context.RECEIVER_NOT_EXPORTED;
             Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
     }
@@ -203,7 +203,7 @@ public class AbstractAppRestrictionsProviderTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
             // asserting that the receiver was only registered for protected broadcasts.
-            final int badMask = ContextUtils.RECEIVER_EXPORTED | ContextUtils.RECEIVER_NOT_EXPORTED;
+            final int badMask = Context.RECEIVER_EXPORTED | Context.RECEIVER_NOT_EXPORTED;
             Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
         provider.stopListening();

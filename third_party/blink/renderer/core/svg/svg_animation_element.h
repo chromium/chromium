@@ -112,6 +112,13 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   void WillChangeAnimationTarget() override;
   void AnimationAttributeChanged();
 
+  struct Keyframe {
+    wtf_size_t from_index = kNotFound;
+    wtf_size_t to_index = kNotFound;
+
+    friend bool operator==(const Keyframe&, const Keyframe&) = default;
+  };
+
  private:
   bool IsValid() const final { return SVGTests::IsValid(); }
 
@@ -122,27 +129,24 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   String ByValue() const;
   String FromValue() const;
 
-  bool UpdateAnimationParameters();
+  bool UpdateAnimationMode();
   bool CheckAnimationParameters() const;
   bool UpdateAnimationValues();
 
-  virtual bool CalculateToAtEndOfDurationValue(
-      const String& to_at_end_of_duration_string) = 0;
-  virtual void CalculateFromAndToValues(const String& from_string,
+  virtual void UpdateKeyframeValues(const Keyframe& keyframe) = 0;
+  virtual bool CalculateFromAndToValues(const String& from_string,
                                         const String& to_string) = 0;
-  virtual void CalculateFromAndByValues(const String& from_string,
+  virtual bool CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
+  virtual bool CalculateValues(const Vector<String>& values) = 0;
+  virtual wtf_size_t ValuesCount() const = 0;
   virtual void CalculateAnimationValue(SMILAnimationValue&,
                                        float percent,
                                        unsigned repeat_count) const = 0;
-  virtual float CalculateDistance(const String& /*fromString*/,
-                                  const String& /*toString*/) {
-    return -1.f;
-  }
+  virtual float CalculateDistance(const Keyframe& keyframe) const = 0;
 
   float CurrentValuesForValuesAnimation(float percent,
-                                        String& from,
-                                        String& to) const;
+                                        Keyframe& keyframe) const;
   // Also decides which list is to be used, either key_times_from_attribute_
   // or key_times_for_paced_ by toggling the flag use_paced_key_times_.
   void CalculateKeyTimesForCalcModePaced();
@@ -153,9 +157,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   }
 
   float CalculatePercentFromKeyPoints(float percent) const;
-  float CurrentValuesFromKeyPoints(float percent,
-                                   String& from,
-                                   String& to) const;
+  float CurrentValuesFromKeyPoints(float percent, Keyframe& keyframe) const;
   float CalculatePercentForSpline(float percent, unsigned spline_index) const;
   float CalculatePercentForFromTo(float percent) const;
   unsigned CalculateKeyTimesIndex(float percent) const;
@@ -171,8 +173,6 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool registered_animation_;
   bool use_paced_key_times_;
 
-  Vector<String> values_;
-
   // FIXME: We should probably use doubles for this, but there's no point
   // making such a change unless all SVG logic for sampling animations is
   // changed to use doubles.
@@ -185,9 +185,8 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   HeapVector<float> key_points_;
   Vector<gfx::CubicBezier> key_splines_;
-  String last_values_animation_from_;
-  String last_values_animation_to_;
   CalcMode calc_mode_;
+  Keyframe last_keyframe_;
   AnimationMode animation_mode_;
 };
 

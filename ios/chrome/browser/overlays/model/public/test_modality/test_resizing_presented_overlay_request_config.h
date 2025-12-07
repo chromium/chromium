@@ -20,7 +20,7 @@ class TestResizingPresentedOverlay
   const CGRect& frame() { return frame_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(TestResizingPresentedOverlay);
+  friend class OverlayUserData<TestResizingPresentedOverlay>;
   TestResizingPresentedOverlay(const CGRect& frame);
 
   const CGRect frame_;

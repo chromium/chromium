@@ -4,7 +4,7 @@
 
 #include "gpu/vulkan/vulkan_image.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace gpu {
 

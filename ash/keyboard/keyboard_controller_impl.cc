@@ -64,7 +64,7 @@ const char kSpellCheckEnabledKey[] = "spell_check_enabled";
 const char kVoiceInputEnabledKey[] = "voice_input_enabled";
 
 std::optional<display::Display> GetFirstTouchDisplay() {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (display.touch_support() == display::Display::TouchSupport::AVAILABLE)
       return display;
   }
@@ -298,13 +298,9 @@ KeyboardControllerImpl::GetKeyRepeatSettings() {
 }
 
 bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
-  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
-    return Shell::Get()
-        ->input_device_settings_controller()
-        ->GetGeneralizedTopRowAreFKeys();
-  }
-  PrefService* prefs = pref_change_registrar_->prefs();
-  return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
+  return Shell::Get()
+      ->input_device_settings_controller()
+      ->GetGeneralizedTopRowAreFKeys();
 }
 
 void KeyboardControllerImpl::SetSmartVisibilityEnabled(bool enabled) {
@@ -431,7 +427,7 @@ aura::Window* KeyboardControllerImpl::GetContainerForDisplay(
 }
 
 aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   const std::optional<display::Display> first_touch_display =
       GetFirstTouchDisplay();
   const bool has_touch_display = first_touch_display.has_value();

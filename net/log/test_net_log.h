@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -68,6 +69,11 @@ class RecordingNetLogObserver : public NetLog::ThreadSafeObserver {
 
   // Clears the captured entry list.
   void Clear();
+
+  // Returns all recorded entries as JSON string. Useful for testing that
+  // certain values do/do not appear in the output (e.g., when testing redacting
+  // information).
+  std::string GetJson() const;
 
  private:
   mutable base::Lock lock_;

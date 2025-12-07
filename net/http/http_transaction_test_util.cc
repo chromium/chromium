@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_transaction_test_util.h"
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,6 +25,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
@@ -61,10 +62,10 @@ void RemoveMockTransaction(const MockTransaction* trans) {
 }  // namespace
 
 TransportInfo DefaultTransportInfo() {
-  return TransportInfo(TransportType::kDirect,
-                       IPEndPoint(IPAddress::IPv4Localhost(), 80),
-                       /*accept_ch_frame_arg=*/"",
-                       /*cert_is_issued_by_known_root=*/false, kProtoUnknown);
+  return TransportInfo(
+      TransportType::kDirect, IPEndPoint(IPAddress::IPv4Localhost(), 80),
+      /*accept_ch_frame_arg=*/"",
+      /*cert_is_issued_by_known_root=*/false, NextProto::kProtoUnknown);
 }
 
 //-----------------------------------------------------------------------------
@@ -255,10 +256,8 @@ std::string MockHttpRequest::CacheKey() {
 
 TestTransactionConsumer::TestTransactionConsumer(
     RequestPriority priority,
-    HttpTransactionFactory* factory) {
-  // Disregard the error code.
-  factory->CreateTransaction(priority, &trans_);
-}
+    HttpTransactionFactory* factory)
+    : trans_(factory->CreateTransaction(priority)) {}
 
 TestTransactionConsumer::~TestTransactionConsumer() = default;
 
@@ -323,7 +322,7 @@ void TestTransactionConsumer::OnIOComplete(int result) {
       DidRead(result);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -409,12 +408,14 @@ int MockNetworkTransaction::Read(IOBuffer* buf,
       num = t->read_handler.Run(content_length_, data_cursor_, buf, buf_len);
       data_cursor_ += num;
     } else {
-      int data_len = static_cast<int>(data_.size());
+      int data_len = base::checked_cast<int>(data_.size());
       num = std::min(static_cast<int64_t>(buf_len), data_len - data_cursor_);
       if (test_mode_ & TEST_MODE_SLOW_READ)
         num = std::min(num, 1);
       if (num) {
-        memcpy(buf->data(), data_.data() + data_cursor_, num);
+        buf->span().copy_prefix_from(
+            base::span(data_).subspan(base::checked_cast<size_t>(data_cursor_),
+                                      base::checked_cast<size_t>(num)));
         data_cursor_ += num;
       }
     }
@@ -461,10 +462,6 @@ LoadState MockNetworkTransaction::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
 
-void MockNetworkTransaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {
-}
-
 bool MockNetworkTransaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   if (socket_log_id_ != NetLogSource::kInvalidId) {
@@ -485,6 +482,11 @@ bool MockNetworkTransaction::GetLoadTimingInfo(
     load_timing_info->send_end = base::TimeTicks::Now();
   }
   return true;
+}
+
+void MockNetworkTransaction::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  load_timing_internal_info->initialize_stream_delay = base::TimeDelta();
 }
 
 bool MockNetworkTransaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {
@@ -528,24 +530,12 @@ int MockNetworkTransaction::StartInternal(HttpRequestInfo request,
     return ERR_IO_PENDING;
   }
 
-  next_state_ = State::NOTIFY_BEFORE_CREATE_STREAM;
+  next_state_ = State::CREATE_STREAM;
   int rv = DoLoop(OK);
   if (rv == ERR_IO_PENDING) {
     callback_ = std::move(callback);
   }
   return rv;
-}
-
-int MockNetworkTransaction::DoNotifyBeforeCreateStream() {
-  next_state_ = State::CREATE_STREAM;
-  bool defer = false;
-  if (!before_network_start_callback_.is_null()) {
-    std::move(before_network_start_callback_).Run(&defer);
-  }
-  if (!defer) {
-    return OK;
-  }
-  return ERR_IO_PENDING;
 }
 
 int MockNetworkTransaction::DoCreateStream() {
@@ -613,7 +603,7 @@ int MockNetworkTransaction::DoSendRequest() {
 
   std::string resp_status = t->status;
   std::string resp_headers = t->response_headers;
-  std::string resp_data = t->data;
+  std::string resp_data(t->data);
 
   if (t->handler) {
     t->handler.Run(&current_request_, &resp_status, &resp_headers, &resp_data);
@@ -639,16 +629,20 @@ int MockNetworkTransaction::DoSendRequest() {
   }
 
   response_.response_time = transaction_factory_->Now();
-  if (!t->response_time.is_null())
+  if (!t->response_time.is_null()) {
     response_.response_time = t->response_time;
+    response_.original_response_time = t->response_time;
+  }
 
   response_.headers = base::MakeRefCounted<HttpResponseHeaders>(header_data);
   response_.ssl_info.cert = t->cert;
   response_.ssl_info.cert_status = t->cert_status;
   response_.ssl_info.connection_status = t->ssl_connection_status;
   response_.dns_aliases = t->dns_aliases;
-  data_ = resp_data;
-  content_length_ = response_.headers->GetContentLength();
+  data_ = std::vector<uint8_t>(resp_data.begin(), resp_data.end());
+  std::optional<base::ByteCount> content_length =
+      response_.headers->GetContentLength();
+  content_length_ = content_length ? content_length->InBytes() : -1;
 
   if (net_log_.net_log()) {
     socket_log_id_ = net_log_.net_log()->NextID();
@@ -689,10 +683,6 @@ int MockNetworkTransaction::DoLoop(int result) {
     State state = next_state_;
     next_state_ = State::NONE;
     switch (state) {
-      case State::NOTIFY_BEFORE_CREATE_STREAM:
-        CHECK_EQ(OK, rv);
-        rv = DoNotifyBeforeCreateStream();
-        break;
       case State::CREATE_STREAM:
         CHECK_EQ(OK, rv);
         rv = DoCreateStream();
@@ -728,9 +718,7 @@ int MockNetworkTransaction::DoLoop(int result) {
         rv = DoReadHeadersComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != State::NONE);
 
@@ -745,11 +733,6 @@ void MockNetworkTransaction::OnIOComplete(int result) {
   }
 }
 
-void MockNetworkTransaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  before_network_start_callback_ = std::move(callback);
-}
-
 void MockNetworkTransaction::SetModifyRequestHeadersCallback(
     base::RepeatingCallback<void(HttpRequestHeaders*)> callback) {
   modify_request_headers_callback_ = std::move(callback);
@@ -758,11 +741,6 @@ void MockNetworkTransaction::SetModifyRequestHeadersCallback(
 void MockNetworkTransaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   connected_callback_ = callback;
-}
-
-int MockNetworkTransaction::ResumeNetworkStart() {
-  CHECK_EQ(next_state_, State::CREATE_STREAM);
-  return DoLoop(OK);
 }
 
 ConnectionAttempts MockNetworkTransaction::GetConnectionAttempts() const {
@@ -808,16 +786,14 @@ void MockNetworkLayer::ResetTransactionCount() {
   transaction_count_ = 0;
 }
 
-int MockNetworkLayer::CreateTransaction(
-    RequestPriority priority,
-    std::unique_ptr<HttpTransaction>* trans) {
+std::unique_ptr<HttpTransaction> MockNetworkLayer::CreateTransaction(
+    RequestPriority priority) {
   transaction_count_++;
   last_create_transaction_priority_ = priority;
   auto mock_transaction =
       std::make_unique<MockNetworkTransaction>(priority, this);
   last_transaction_ = mock_transaction->AsWeakPtr();
-  *trans = std::move(mock_transaction);
-  return OK;
+  return std::move(mock_transaction);
 }
 
 HttpCache* MockNetworkLayer::GetCache() {

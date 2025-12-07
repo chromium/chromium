@@ -8,7 +8,7 @@
 #include "base/android/jni_android.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace segmentation_platform {
 

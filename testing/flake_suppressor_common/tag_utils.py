@@ -5,18 +5,23 @@
 
 from typing import Iterable, Type
 
+# //testing imports.
 from flake_suppressor_common import common_typing as ct
 
 TagUtils = None
 
 
+# TODO(crbug.com/358591565): Refactor this to remove the need for global
+# statements.
 def SetTagUtilsImplementation(impl: Type['BaseTagUtils']) -> None:
-  global TagUtils
+  global TagUtils  # pylint: disable=global-statement
   assert issubclass(impl, BaseTagUtils)
   TagUtils = impl()
 
 
 class BaseTagUtils():
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def RemoveIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
     """Removes ignored tags from |tags|.
 
@@ -31,6 +36,7 @@ class BaseTagUtils():
       removed.
     """
     return tuple(tags)
+  # pylint: enable=no-self-use
 
 
 TagUtils = BaseTagUtils()

@@ -9,10 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 
 namespace ash {
@@ -26,9 +28,7 @@ const int kStationaryDelayMs = 500;
 ////////////////////////////////////////////////////////////////////////////////
 // CursorView, public:
 
-CursorView::~CursorView() {
-  ui::CursorController::GetInstance()->RemoveCursorObserver(this);
-}
+CursorView::~CursorView() = default;
 
 // static
 views::UniqueWidgetPtr CursorView::Create(const gfx::Point& initial_location,
@@ -55,9 +55,6 @@ void CursorView::SetCursorImages(
         cursor_image.GetRepresentation(device_scale_factor_).GetBitmap()));
   }
   cursor_size_ = cursor_size;
-  // Enlarge `cursor_size_` by 1 pixel for the possible rounding errors
-  // after scaling cursor images to device scale factor.
-  cursor_size_.Enlarge(1, 1);
   cursor_hotspot_ = cursor_hotspot;
 
   UpdateAnimation();
@@ -68,26 +65,13 @@ void CursorView::SetCursorImages(
 }
 
 void CursorView::SetLocation(const gfx::Point& location) {
-  if (location != cursor_location_) {
-    stationary_timer_->Reset();
+  if (location == cursor_location_) {
+    return;
   }
+  stationary_timer_->Reset();
   cursor_location_ = location;
 
   UpdateCursor();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ui::CursorController::CursorObserver overrides:
-
-void CursorView::OnCursorLocationChanged(const gfx::PointF& location) {
-  gfx::PointF new_location_f = buffer_to_screen_transform_.MapPoint(location);
-  gfx::Point new_location = gfx::ToRoundedPoint(new_location_f);
-
-  // This may be called on the evdev thread, so post the change notification to
-  // the UI thread.
-  ui_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&CursorView::SetLocation,
-                                weak_ptr_factory_.GetWeakPtr(), new_location));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,12 +91,11 @@ void CursorView::Init() {
       host()->window_to_buffer_transform().GetCheckedInverse();
   device_scale_factor_ =
       GetWidget()->GetNativeView()->GetHost()->device_scale_factor();
-  ui::CursorController::GetInstance()->AddCursorObserver(this);
 }
 
 void CursorView::UpdateAnimation() {
   cursor_image_index_ = 0;
-  if (cursor_images_.size() == 1) {
+  if (cursor_images_.size() <= 1) {
     animated_cursor_timer_.Stop();
   } else if (cursor_images_.size() > 1) {
     animated_cursor_timer_.Start(
@@ -136,12 +119,21 @@ void CursorView::Draw() {
 
     // Undo device scale factor on the canvas.
     sk_canvas->scale(SkFloatToScalar(1 / device_scale_factor_));
-    paint->canvas().DrawImageInt(cursor_images_[cursor_image_index_], 0, 0);
+    if (!cursor_images_.empty()) {
+      paint->canvas().DrawImageInt(cursor_images_[cursor_image_index_], 0, 0);
+    }
   }
 
   // Update content and damage rectangles for surface. When cursor is moving,
   // enable `auto_refresh` to send frames asynchronously to minimize latency.
+  // TODO(crbug.com/371546474): Font buffer rendering causes artifacts due to an
+  // issue in i915 driver. Re-enable the front buffer rendering once the issue
+  // is fixed.
+#if defined(ARCH_CPU_X86_FAMILY)
+  const bool is_cursor_moving = false;
+#else
   const bool is_cursor_moving = stationary_timer_->IsRunning();
+#endif
   UpdateSurface(cursor_rect_, damage_rect_,
                 /*auto_refresh=*/is_cursor_moving);
 }
@@ -157,6 +149,10 @@ void CursorView::UpdateCursor() {
   cursor_rect_.set_x(SkIntToScalar(cursor_location_.x() - cursor_hotspot_.x()));
   cursor_rect_.set_y(SkIntToScalar(cursor_location_.y() - cursor_hotspot_.y()));
   damage_rect_.Union(cursor_rect_);
+
+  // Grow `damage_rect_` on all sides by 1 pixel for the possible rounding
+  // errors after scaling cursor images to device scale factor.
+  damage_rect_.Outset(1);
 
   Draw();
 }

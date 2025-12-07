@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -26,15 +27,24 @@
 
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/image/image_skia.h"
+#endif
+
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
+namespace gfx {
+class ImageSkia;
+}
 #endif
 
 namespace ui {
 
 class DataTransferEndpoint;
 
-// Controls whether or not filenames should be converted to file: URLs when
-// getting a URL.
+// Controls whether or not filenames are converted to file: URLs when getting a
+// URL. Some callers, e.g. when populating the DataTransfer object for the web
+// platform, need to suppress this conversion, as this:
+// - leaks filesystem paths to the web
+// - results in duplicate entries for the same logical entity
+// See crbug.com/40078641 for more historical context.
 enum class FilenameToURLPolicy {
   CONVERT_FILENAMES,
   DO_NOT_CONVERT_FILENAMES,
@@ -56,8 +66,8 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual void MarkAsFromPrivileged() = 0;
   virtual bool IsFromPrivileged() const = 0;
 
-  virtual void SetString(const std::u16string& data) = 0;
-  virtual void SetURL(const GURL& url, const std::u16string& title) = 0;
+  virtual void SetString(std::u16string_view data) = 0;
+  virtual void SetURL(const GURL& url, std::u16string_view title) = 0;
   virtual void SetFilename(const base::FilePath& path) = 0;
   virtual void SetFilenames(const std::vector<FileInfo>& file_names) = 0;
   virtual void SetPickledData(const ClipboardFormatType& format,
@@ -68,6 +78,11 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
     GURL url;
     std::u16string title;
   };
+  // Even if there is no URL data present, many implementations will coerce text
+  // content into URLs if the text is a valid URL. This coercion should only
+  // happen for HTTP-like URLs (i.e. http or https) if the data originates from
+  // a renderer (i.e. `IsRendererTainted()` is true) to avoid bypassing the URL
+  // filtering applied when a drag is started.
   virtual std::optional<UrlInfo> GetURLAndTitle(
       FilenameToURLPolicy policy) const = 0;
   virtual std::optional<std::vector<GURL>> GetURLs(

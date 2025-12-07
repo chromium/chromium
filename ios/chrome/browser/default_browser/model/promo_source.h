@@ -19,7 +19,9 @@ enum class DefaultBrowserSettingsPageSource {
   // host.
   kExternalAction = 4,
   kTipsNotification = 5,
-  kMaxValue = kTipsNotification,
+  kBannerPromo = 6,
+  kMagicStackCard = 7,
+  kMaxValue = kMagicStackCard,
 };
 // When adding new values:
 // (1) update ```DefaultBrowserSettingsPageSourceToString``` in

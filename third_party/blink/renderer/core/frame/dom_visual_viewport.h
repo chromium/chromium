@@ -44,7 +44,6 @@ namespace blink {
 
 class LocalDOMWindow;
 class ExecutionContext;
-class DOMRect;
 
 class CORE_EXPORT DOMVisualViewport final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
@@ -66,7 +65,6 @@ class CORE_EXPORT DOMVisualViewport final : public EventTarget {
   double width() const;
   double height() const;
   double scale() const;
-  std::optional<HeapVector<Member<DOMRect>>> segments() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resize, kResize)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(scroll, kScroll)

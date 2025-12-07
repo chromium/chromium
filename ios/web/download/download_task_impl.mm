@@ -8,6 +8,7 @@
 
 #import <limits>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
@@ -87,11 +88,10 @@ NSData* ReadDataFromFile(base::FilePath path, int64_t bytes) {
     return nil;
   }
 
-  const int bytes_to_read = static_cast<int>(bytes);
   NSMutableData* data = [NSMutableData dataWithLength:bytes];
-  char* buffer = static_cast<char*>(data.mutableBytes);
-
-  if (base::ReadFile(path, buffer, bytes_to_read) != bytes_to_read) {
+  std::optional<uint64_t> bytes_read =
+      base::ReadFile(path, base::apple::NSMutableDataToSpan(data));
+  if (!bytes_read || *bytes_read != static_cast<uint64_t>(bytes)) {
     return nil;
   }
 
@@ -105,6 +105,7 @@ NSData* ReadDataFromFile(base::FilePath path, int64_t bytes) {
 DownloadTaskImpl::DownloadTaskImpl(
     WebState* web_state,
     const GURL& original_url,
+    NSString* originating_host,
     NSString* http_method,
     const std::string& content_disposition,
     int64_t total_bytes,
@@ -112,6 +113,7 @@ DownloadTaskImpl::DownloadTaskImpl(
     NSString* identifier,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : original_url_(original_url),
+      originating_host_([originating_host copy]),
       http_method_(http_method),
       total_bytes_(total_bytes),
       content_disposition_(content_disposition),
@@ -140,8 +142,9 @@ DownloadTaskImpl::DownloadTaskImpl(
 DownloadTaskImpl::~DownloadTaskImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [NSNotificationCenter.defaultCenter removeObserver:observer_];
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadDestroyed(this);
+  }
 
   // Delete the downloaded file if it was a temporary file or if the download
   // failed (it is not an error to delete a non-existent file).
@@ -193,6 +196,19 @@ NSString* DownloadTaskImpl::GetIdentifier() const {
 const GURL& DownloadTaskImpl::GetOriginalUrl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return original_url_;
+}
+
+const GURL& DownloadTaskImpl::GetRedirectedUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (redirected_url_.is_valid()) {
+    return redirected_url_;
+  }
+  return original_url_;
+}
+
+NSString* DownloadTaskImpl::GetOriginatingHost() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return originating_host_;
 }
 
 NSString* DownloadTaskImpl::GetHttpMethod() const {
@@ -259,7 +275,7 @@ base::FilePath DownloadTaskImpl::GenerateFileName() const {
   return net::GenerateFileName(original_url_, content_disposition_,
                                /*referrer_charset=*/std::string(),
                                /*suggested_name=*/GetSuggestedName(),
-                               /*mime_type=*/std::string(),
+                               /*mime_type=*/mime_type_,
                                /*default_name=*/"document");
 }
 
@@ -333,8 +349,18 @@ void DownloadTaskImpl::OnDownloadFinished(DownloadResult download_result) {
 
 void DownloadTaskImpl::OnDownloadUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnDownloadUpdated(this);
+  observers_.Notify(&DownloadTaskObserver::OnDownloadUpdated, this);
+}
+
+void DownloadTaskImpl::OnRedirected(const GURL& redirected_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (redirected_url == GetRedirectedUrl()) {
+    // If the redirected URL is the original one, or the redirection was already
+    // known, ignore it.
+    return;
+  }
+  redirected_url_ = redirected_url;
+  observers_.Notify(&DownloadTaskObserver::OnDownloadUpdated, this);
 }
 
 }  // namespace web

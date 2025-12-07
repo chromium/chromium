@@ -76,7 +76,7 @@ class ControlledFrameTestBase
   InstallAndOpenIwaThenCreateControlledFrame(
       std::optional<std::string_view> controlled_frame_host_name,
       std::string_view controlled_frame_src_relative_url,
-      web_app::ManifestBuilder manfest_buider = web_app::ManifestBuilder());
+      web_app::ManifestBuilder manfest_builder = web_app::ManifestBuilder());
 
   extensions::WebViewGuest* GetWebViewGuest(
       content::RenderFrameHost* embedder_frame);

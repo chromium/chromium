@@ -38,17 +38,7 @@ RefCountedBytes::RefCountedBytes(std::vector<uint8_t> initializer)
 RefCountedBytes::RefCountedBytes(base::span<const uint8_t> initializer)
     : bytes_(initializer.begin(), initializer.end()) {}
 
-RefCountedBytes::RefCountedBytes(const uint8_t* p, size_t size)
-    : bytes_(p, p + size) {}
-
 RefCountedBytes::RefCountedBytes(size_t size) : bytes_(size, 0u) {}
-
-scoped_refptr<RefCountedBytes> RefCountedBytes::TakeVector(
-    std::vector<uint8_t>* to_destroy) {
-  auto bytes = MakeRefCounted<RefCountedBytes>();
-  bytes->bytes_.swap(*to_destroy);
-  return bytes;
-}
 
 base::span<const uint8_t> RefCountedBytes::AsSpan() const {
   return bytes_;
@@ -90,8 +80,9 @@ scoped_refptr<RefCountedSharedMemoryMapping>
 RefCountedSharedMemoryMapping::CreateFromWholeRegion(
     const ReadOnlySharedMemoryRegion& region) {
   ReadOnlySharedMemoryMapping mapping = region.Map();
-  if (!mapping.IsValid())
+  if (!mapping.IsValid()) {
     return nullptr;
+  }
   return MakeRefCounted<RefCountedSharedMemoryMapping>(std::move(mapping));
 }
 

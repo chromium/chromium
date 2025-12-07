@@ -28,8 +28,6 @@ class CORE_EXPORT StyleScrollbarColor
     return thumb_color_ == o.thumb_color_ && track_color_ == o.track_color_;
   }
 
-  bool operator!=(const StyleScrollbarColor& o) const { return !(*this == o); }
-
  private:
   StyleColor thumb_color_;
   StyleColor track_color_;

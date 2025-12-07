@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View style="@style/ButtonBarTopDivider" />
+
+    <LinearLayout
+        android:id="@+id/media_capture_picker_audio_share_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dialog_padding_sides"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginVertical="8dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_vol_unmute"
+            app:tint="@color/default_icon_color_tint_list" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/media_capture_picker_dialog_audio_share_text"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            app:leading="@dimen/text_size_large_leading" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <include layout="@layout/preference_switch"
+            android:id="@+id/media_capture_picker_audio_share_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false" />
+    </LinearLayout>
+
+
+    <org.chromium.ui.widget.ButtonCompat
+    android:id="@+id/screen_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/dialog_padding_sides"
+    android:layout_gravity="end"
+    android:text="@string/media_capture_picker_dialog_window_or_screen_text"
+    style="@style/TextButton" />
+
+    <org.chromium.components.browser_ui.widget.DualControlLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+        android:paddingBottom="@dimen/modal_dialog_control_vertical_padding_filled"
+        android:paddingStart="@dimen/modal_dialog_control_horizontal_padding_filled"
+        android:paddingEnd="@dimen/modal_dialog_control_horizontal_padding_filled"
+        app:stackedMargin="@dimen/button_bar_stacked_margin"
+        app:buttonAlignment="end">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/positive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/media_capture_picker_dialog_share_text"
+            style="@style/FilledButton" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/negative_button"
+            android:accessibilityTraversalAfter="@+id/positive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            style="@style/TextButton" />
+    </org.chromium.components.browser_ui.widget.DualControlLayout>
+
+</LinearLayout>

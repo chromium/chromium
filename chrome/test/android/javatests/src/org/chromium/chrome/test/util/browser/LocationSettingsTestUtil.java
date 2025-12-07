@@ -30,4 +30,39 @@ public class LocationSettingsTestUtil {
                             });
                 });
     }
+
+    /**
+     * Mocks the system location setting and android location permission as either enabled or
+     * disabled. Can be called on any thread.
+     */
+    public static void setSystemAndAndroidLocationSettings(
+            final boolean systemEnabled,
+            final boolean androidEnabled,
+            final boolean androidFineEnabled) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocationUtils.setFactory(
+                            new LocationUtils.Factory() {
+                                @Override
+                                public LocationUtils create() {
+                                    return new LocationUtils() {
+                                        @Override
+                                        public boolean isSystemLocationSettingEnabled() {
+                                            return systemEnabled;
+                                        }
+
+                                        @Override
+                                        public boolean hasAndroidLocationPermission() {
+                                            return androidEnabled;
+                                        }
+
+                                        @Override
+                                        public boolean hasAndroidFineLocationPermission() {
+                                            return androidFineEnabled;
+                                        }
+                                    };
+                                }
+                            });
+                });
+    }
 }

@@ -13,11 +13,17 @@
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
+
+namespace home_modules {
+class HomeModulesCardRegistry;
+}
+
 struct Config;
 class ModelProvider;
 
 // Returns a Config created from the finch feature params.
-std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig();
+std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
+    home_modules::HomeModulesCardRegistry* homeModulesCardRegistry);
 
 // Implementation of FieldTrialRegister that uses synthetic field trials to
 // record segmentation groups.

@@ -33,7 +33,6 @@ class BrowserWindowPropertyManager {
   PrefChangeRegistrar profile_pref_registrar_;
   raw_ptr<const BrowserView> view_;
   const HWND hwnd_;
-
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_WINDOW_PROPERTY_MANAGER_WIN_H_

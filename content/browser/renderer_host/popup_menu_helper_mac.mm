@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/base_view.h"
 
@@ -45,7 +46,6 @@ PopupMenuHelper::~PopupMenuHelper() {
 
 void PopupMenuHelper::ShowPopupMenu(
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> items,
@@ -94,11 +94,6 @@ void PopupMenuHelper::Hide() {
   popup_client_.reset();
 }
 
-// static
-void PopupMenuHelper::DontShowPopupMenuForTesting() {
-  g_allow_showing_popup_menus = false;
-}
-
 RenderWidgetHostViewMac* PopupMenuHelper::GetRenderWidgetHostView() const {
   return static_cast<RenderWidgetHostViewMac*>(
       render_frame_host_->GetOutermostMainFrameOrEmbedder()->GetView());
@@ -129,6 +124,11 @@ void PopupMenuHelper::PopupMenuClosed(std::optional<uint32_t> selected_item) {
   }
 
   delegate_->OnMenuClosed();  // May delete |this|.
+}
+
+// As declared in //content/public/browser/popup_menu.h.
+CONTENT_EXPORT void DontShowPopupMenus() {
+  g_allow_showing_popup_menus = false;
 }
 
 }  // namespace content

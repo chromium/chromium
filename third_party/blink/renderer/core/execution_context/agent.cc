@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 
 namespace blink {
 
@@ -46,7 +47,8 @@ Agent::Agent(v8::Isolate* isolate,
 Agent::~Agent() = default;
 
 void Agent::Trace(Visitor* visitor) const {
-  Supplementable<Agent>::Trace(visitor);
+  visitor->Trace(custom_element_reaction_stack_);
+  visitor->Trace(mutation_observer_agent_data_);
 }
 
 void Agent::AttachContext(ExecutionContext* context) {

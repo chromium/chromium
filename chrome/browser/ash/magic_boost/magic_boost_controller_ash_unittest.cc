@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
-#include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
@@ -12,11 +11,11 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
-#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -27,24 +26,17 @@ constexpr char kTestUrl[] = "https://www.google.com";
 
 }  // namespace
 
-class MagicBoostControllerAshTest : public AshTestBase {
+class MagicBoostControllerAshTest : public ChromeAshTestBase {
  public:
-  MagicBoostControllerAshTest() {
-    // Sets the default functions for the test to create image with the lottie
-    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
-    // the `ResourceBundle`.
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
-  }
+  MagicBoostControllerAshTest() = default;
   MagicBoostControllerAshTest(const MagicBoostControllerAshTest&) = delete;
   MagicBoostControllerAshTest& operator=(const MagicBoostControllerAshTest&) =
       delete;
   ~MagicBoostControllerAshTest() override = default;
 
-  // AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     mock_magic_boost_state_ = std::make_unique<MockMagicBoostState>();
     mock_magic_boost_state_->set_editor_panel_manager_for_test(
@@ -53,7 +45,7 @@ class MagicBoostControllerAshTest : public AshTestBase {
 
   void TearDown() override {
     mock_magic_boost_state_.reset();
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   void OnDisclaimerAcceptButtonPressed(
@@ -87,7 +79,7 @@ TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
@@ -111,8 +103,7 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
 
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(
       /*display_id=*/display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
@@ -129,8 +120,6 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
-  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
-
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
@@ -150,8 +139,7 @@ TEST_F(MagicBoostControllerAshTest,
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(
       display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
@@ -168,8 +156,6 @@ TEST_F(MagicBoostControllerAshTest,
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
-  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
-
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
@@ -188,8 +174,7 @@ TEST_F(MagicBoostControllerAshTest,
   mock_magic_boost_state_->set_editor_panel_manager_for_test(
       &mock_editor_panel_manager_);
 
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(
       display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
@@ -219,7 +204,7 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
 
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kHmrOnly);
 
@@ -254,7 +239,7 @@ TEST_F(MagicBoostControllerAshTest,
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
@@ -284,7 +269,7 @@ TEST_F(MagicBoostControllerAshTest,
 
 TEST_F(MagicBoostControllerAshTest, ClickingOnLinkClosesWidget) {
   controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
       /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 

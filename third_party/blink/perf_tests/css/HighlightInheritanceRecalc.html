@@ -5,8 +5,8 @@
 <main></main>
 <style>
 /* non-::selection rules required when HighlightInheritance is disabled */
-:root, :root::selection { --bg: blue; }
-.green:root, .green:root::selection { --bg: green; }
+:root { --bg: blue; }
+.green:root { --bg: green; }
 *::selection /* same as ::selection */ {
     /* explicitly inherit all for worst case scenario */
     all: inherit;

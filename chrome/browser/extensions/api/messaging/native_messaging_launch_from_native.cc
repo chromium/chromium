@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +26,7 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "extensions/browser/api/messaging/native_message_port.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
@@ -35,6 +35,7 @@
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 namespace {
@@ -75,9 +76,9 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
         NativeMessageProcessHost::CreateWithLauncher(
             extension_id, host_id,
             NativeProcessLauncher::CreateDefault(
-                /* allow_user_level = */ true,
-                /* native_view = */ nullptr, profile->GetPath(),
-                /* require_native_initiated_connections = */ false,
+                /* allow_user_level_hosts= */ true,
+                /* native_view= */ gfx::NativeView(), profile->GetPath(),
+                /* require_native_initiated_connections= */ false,
                 connection_id, error_arg, profile));
     MovableScopedKeepAlive keep_alive(
         new ScopedKeepAlive(KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT,
@@ -116,7 +117,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   void CloseChannel(const std::string& error_message) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    timeout_.AbandonAndStop();
+    timeout_.Stop();
 
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   }
@@ -207,7 +208,7 @@ ScopedNativeMessagingErrorTimeoutOverrideForTest::
   g_native_messaging_host_timeout_override = nullptr;
 }
 
-bool IsValidConnectionId(const std::string_view connection_id) {
+bool IsValidConnectionId(std::string_view connection_id) {
   return connection_id.size() <= 20 &&
          base::ContainsOnlyChars(
              connection_id,
@@ -240,9 +241,9 @@ void LaunchNativeMessageHostFromNativeApp(const ExtensionId& extension_id,
   auto native_message_host = NativeMessageProcessHost::CreateWithLauncher(
       extension_id, host_id,
       NativeProcessLauncher::CreateDefault(
-          /* allow_user_level = */ true, /* native_view = */ nullptr,
-          profile->GetPath(),
-          /* require_native_initiated_connections = */ true, connection_id, "",
+          /* allow_user_level_hosts= */ true,
+          /* native_view= */ gfx::NativeView(), profile->GetPath(),
+          /* require_native_initiated_connections= */ true, connection_id, "",
           profile));
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,

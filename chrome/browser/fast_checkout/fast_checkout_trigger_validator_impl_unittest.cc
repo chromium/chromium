@@ -12,15 +12,16 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 using ::autofill::FastCheckoutTriggerOutcome;
 using ::autofill::FastCheckoutUIState;
 using ::testing::Return;
@@ -34,9 +35,9 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
 class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
+  MOCK_METHOD(autofill::LogManager*, GetCurrentLogManager, (), (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
-  MOCK_METHOD(GeoIpCountryCode,
+  MOCK_METHOD(autofill::GeoIpCountryCode,
               GetVariationConfigCountryCode,
               (),
               (const override));
@@ -47,7 +48,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
   MockPersonalDataHelper() = default;
   ~MockPersonalDataHelper() override = default;
 
-  MOCK_METHOD(std::vector<autofill::CreditCard*>,
+  MOCK_METHOD(std::vector<const autofill::CreditCard*>,
               GetValidCreditCards,
               (),
               (const override));
@@ -63,7 +64,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
               GetProfilesToSuggest,
               (),
               (const override));
-  MOCK_METHOD(std::vector<autofill::CreditCard*>,
+  MOCK_METHOD(std::vector<const autofill::CreditCard*>,
               GetCreditCardsToSuggest,
               (),
               (const override));
@@ -93,7 +94,7 @@ class FastCheckoutTriggerValidatorTest
         .WillByDefault(Return(true));
     ON_CALL(*personal_data_helper(), GetValidCreditCards)
         .WillByDefault(
-            Return(std::vector<autofill::CreditCard*>{&credit_card_}));
+            Return(std::vector<const autofill::CreditCard*>{&credit_card_}));
     ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
         .WillByDefault(
             Return(std::vector<const autofill::AutofillProfile*>{&profile_}));
@@ -101,7 +102,7 @@ class FastCheckoutTriggerValidatorTest
         .WillByDefault(Return(&pdm()));
     ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(true));
     ON_CALL(*autofill_client(), GetVariationConfigCountryCode)
-        .WillByDefault(Return(GeoIpCountryCode("US")));
+        .WillByDefault(Return(autofill::GeoIpCountryCode("US")));
 
     pdm().test_address_data_manager().SetAutofillProfileEnabled(true);
     pdm().test_payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
@@ -226,7 +227,7 @@ TEST_F(FastCheckoutTriggerValidatorTest,
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_NoValidCreditCards_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidCreditCards)
-      .WillByDefault(Return(std::vector<autofill::CreditCard*>{}));
+      .WillByDefault(Return(std::vector<const autofill::CreditCard*>{}));
   EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
 }
 

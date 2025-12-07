@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -19,6 +20,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -35,11 +38,6 @@ class PermissionsUpdaterBrowserTest : public ExtensionBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
-  }
-
-  // Returns the current active web contents.
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 };
 
@@ -87,15 +85,16 @@ IN_PROC_BROWSER_TEST_F(PermissionsUpdaterBrowserTest,
   ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
 
   // Step 2: Navigate to a.com.
+  content::WebContents* web_contents = GetActiveWebContents();
   GURL optional_url = embedded_test_server()->GetURL("a.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), optional_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, optional_url));
+  content::WaitForLoadStop(web_contents);
 
   // Verify extension's active permissions don't include a.com and renderer
   // hasn't injected the extension's script.
   EXPECT_FALSE(extension->permissions_data()
                    ->active_permissions()
                    .HasEffectiveAccessToURL(optional_url));
-  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_EQ(base::Value(),
             content::EvalJs(web_contents, "window.didInjectContentScript"));
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(

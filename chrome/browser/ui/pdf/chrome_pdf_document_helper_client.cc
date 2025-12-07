@@ -6,9 +6,13 @@
 
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/content_restriction.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
@@ -27,11 +31,38 @@ content::WebContents* GetWebContentsToUse(
              : content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
+bool MaybeShowFeaturePromo(const base::Feature& feature,
+                           content::WebContents* contents) {
+  auto* user_education_interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(contents);
+  if (!user_education_interface) {
+    return false;
+  }
+  user_education_interface->MaybeShowFeaturePromo(
+      user_education::FeaturePromoParams(feature));
+  return true;
+}
+
+void MaybeHideSearchifyFeaturePromo(tabs::TabInterface* tab_interface) {
+  auto* user_education_interface = BrowserUserEducationInterface::From(
+      tab_interface->GetBrowserWindowInterface());
+  if (user_education_interface) {
+    user_education_interface->AbortFeaturePromo(
+        feature_engagement::kIPHPdfSearchifyFeature);
+  }
+}
+
 }  // namespace
 
 ChromePDFDocumentHelperClient::ChromePDFDocumentHelperClient() = default;
 
 ChromePDFDocumentHelperClient::~ChromePDFDocumentHelperClient() = default;
+
+void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
+    content::RenderFrameHost* render_frame_host) {
+  MaybeShowFeaturePromo(feature_engagement::kIPHPdfInkSignaturesFeature,
+                        GetWebContentsToUse(render_frame_host));
+}
 
 void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
     content::RenderFrameHost* render_frame_host,
@@ -52,13 +83,7 @@ void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
   }
 }
 
-void ChromePDFDocumentHelperClient::OnPDFHasUnsupportedFeature(
-    content::WebContents* contents) {
-  // There is no more Adobe plugin for PDF so there is not much we can do in
-  // this case. Maybe simply download the file.
-}
-
-void ChromePDFDocumentHelperClient::OnSaveURL(content::WebContents* contents) {
+void ChromePDFDocumentHelperClient::OnSaveURL() {
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_PDF_SAVE);
 }
 
@@ -86,4 +111,24 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
   if (guest_view) {
     guest_view->SetPluginCanSave(can_save);
   }
+}
+
+void ChromePDFDocumentHelperClient::OnSearchifyStarted(
+    content::RenderFrameHost* render_frame_host) {
+  // Show the promo only when ScreenAI component is available and OCR can be
+  // done.
+  if (!screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
+    return;
+  }
+  content::WebContents* web_contents = GetWebContentsToUse(render_frame_host);
+  if (!MaybeShowFeaturePromo(feature_engagement::kIPHPdfSearchifyFeature,
+                             web_contents)) {
+    return;
+  }
+  auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
+  tab_subscriptions_.push_back(tab->RegisterWillDeactivate(
+      base::BindRepeating(&MaybeHideSearchifyFeaturePromo)));
 }

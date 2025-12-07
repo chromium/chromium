@@ -56,8 +56,6 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
       delete;
   ~DiagnosticsLogControllerTest() override = default;
 
-  void SetUp() override { NoSessionAshTestBase::SetUp(); }
-
  protected:
   base::FilePath GetSessionLogPath() {
     EXPECT_TRUE(save_dir_.CreateUniqueTempDir());
@@ -135,7 +133,7 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionString) {
   EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
   const base::FilePath expected_path_regular_user =
       base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Initialize(
       std::make_unique<FakeDiagnosticsBrowserDelegate>(
           expected_path_regular_user));
@@ -173,7 +171,7 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
       base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
   const base::FilePath expected_diagnostics_log_path =
       expected_path_regular_user.Append(kDiangosticsDirName);
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Initialize(
       std::make_unique<FakeDiagnosticsBrowserDelegate>(
           expected_path_regular_user));
@@ -217,7 +215,7 @@ TEST_F(DiagnosticsLogControllerTest,
       base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
   const base::FilePath expected_diagnostics_log_path =
       expected_path_regular_user.Append(kDiangosticsDirName);
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Initialize(
       std::make_unique<FakeDiagnosticsBrowserDelegate>(
           expected_path_regular_user));
@@ -273,7 +271,6 @@ TEST_F(DiagnosticsLogControllerTest,
   InitializeWithFakeDelegate();
 
   // Simulate sign-in user.
-  ClearLogin();
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
@@ -281,11 +278,13 @@ TEST_F(DiagnosticsLogControllerTest,
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  ClearLogin();
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
-  SimulateKioskMode(user_manager::UserType::kWebKioskApp);
+  ClearLogin();
+  SimulateKioskMode(user_manager::UserType::kKioskWebApp);
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 }
@@ -298,7 +297,7 @@ TEST_F(DiagnosticsLogControllerTest,
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_with_empty_file_path =
       std::make_unique<FakeDiagnosticsBrowserDelegate>(base::FilePath());
   SetBrowserDelegate(std::move(delegate_with_empty_file_path));
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 }
@@ -308,7 +307,7 @@ TEST_F(DiagnosticsLogControllerTest,
   InitializeWithFakeDelegate();
   const base::FilePath expected_path_regular_user =
       base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_regular_user, log_base_path());
 }
@@ -320,19 +319,21 @@ TEST_F(DiagnosticsLogControllerTest,
   InitializeWithFakeDelegate();
 
   // Simulate sign-in user.
-  ClearLogin();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
   SimulateGuestLogin();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  ClearLogin();
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
-  SimulateKioskMode(user_manager::UserType::kWebKioskApp);
+  ClearLogin();
+  SimulateKioskMode(user_manager::UserType::kKioskWebApp);
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
-  SimulateUserLogin(kTestUserEmail);
+  ClearLogin();
+  SimulateUserLogin({kTestUserEmail});
   const base::FilePath expected_path_regular_user =
       base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
   EXPECT_EQ(expected_path_regular_user, log_base_path());
@@ -364,7 +365,7 @@ TEST_F(DiagnosticsLogControllerTest, LogsDeletedOnUserSignin) {
   EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
 
   // Sign in and verify the log directory is deleted.
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(expected_diagnostics_log_path));
 }
@@ -377,7 +378,7 @@ TEST_F(DiagnosticsLogControllerTest, SetLogWritersUsingLogBasePath) {
       base::FilePath(scoped_dir.GetPath().Append(kFakeUserDir));
   const base::FilePath expected_diagnostics_log_path =
       expected_path_regular_user.Append(kDiangosticsDirName);
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Initialize(
       std::make_unique<FakeDiagnosticsBrowserDelegate>(
           expected_path_regular_user));
@@ -421,7 +422,7 @@ TEST_F(DiagnosticsLogControllerTest, ClearLogDirectoryOnInitialize) {
       expected_path_regular_user.Append(kDiangosticsDirName);
   EXPECT_TRUE(base::CreateDirectory(expected_diagnostics_log_path));
   EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
-  SimulateUserLogin(kTestUserEmail);
+  SimulateUserLogin({kTestUserEmail});
   DiagnosticsLogController::Initialize(
       std::make_unique<FakeDiagnosticsBrowserDelegate>(
           expected_path_regular_user));

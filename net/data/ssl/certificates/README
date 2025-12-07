@@ -1,6 +1,34 @@
 This directory contains various certificates for use with SSL-related
 unit tests.
 
+
+
+*****************************************************************************
+*****************************************************************************
+*********** Please DO NOT add new checked-in certificate files! *************
+*****************************************************************************
+*****************************************************************************
+
+Checked-in certificate files are a maintenance burden and should be avoided,
+see https://issues.chromium.org/issues/40802244. Alternatives exist which
+should be preferred when possible. (If the alternatives do not work for you,
+please ask for advice.)
+
+For tests using EmbeddedTestServer, prefer to use the runtime-generated
+certificates through ServerCertificateConfig. (If the certificate DNS names are
+the only thing that need to be configured, the simpler SetCertHostnames helper
+can be used.)
+
+For tests that need a certificate directly, CertBuilder may be used.
+
+Please ask net/cert/OWNERS for advice before adding new checked-in
+certificates.
+
+*****************************************************************************
+*****************************************************************************
+
+
+
 ===== Real-world certificates that need manual updating
 - google.binary.p7b
 - google.chain.pem
@@ -41,11 +69,6 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- leaf_from_known_root.pem : A certificate issued by a public trust anchor,
-     used for CertVerifyProcInternalTest.TestKnownRoot. Using for other
-     purposes is not recommended. This needs to be updated periodically so the
-     server name the cert is valid for may change.
-
 - lets-encrypt-dst-x3-root.pem: A chain that ends in the Lets encrypt DST X3
   root (https://crt.sh/?id=8395). Has the same leaf as
   lets-encrypt-isrg-x1-root.pem.
@@ -70,7 +93,12 @@ unit tests.
      encoded as the empty byte string.
 
 - client_with_ec_key.p12 : A PKCS #12 file containing a client certificate and
-     a private EC key created for testing.  The password is "12345".
+     a private EC key created for testing.  The password is "123456".
+
+- client_1_old.key
+- client_1_old.pem : static copy of a previous version of client_1.* files.
+     (For some tests that hard-coded various expectations of the cert and keys
+     which aren't easily updated when the certs are regenerated.)
 
 - unittest.selfsigned.der : A self-signed certificate generated using private
      key in unittest.key.bin. The common name is "unittest".
@@ -134,13 +162,13 @@ unit tests.
     A certificate and private key valid for *.example.org, used in various
     net unit tests.
 
+- google_wildcard.pem :
+     A certificate and private key valid for *.google.com, used in net unit
+     tests.
+
 - test_names.pem
     A certificate and private key valid for a number of test names. See
     [test_names] in ee.cnf. Other names may be added as needed.
-
-- bad_validity.pem
-    A certificate and private key only valid on 0001-01-01. Windows refuses to
-    parse this certificate.
 
 - spdy_pooling.pem : Used to test the handling of spdy IP connection pooling
 
@@ -155,24 +183,6 @@ unit tests.
 
 - sha1_2016.pem
     Used to test the handling of SHA1 certificates expiring in 2016.
-
-- 10_year_validity.pem
-- 11_year_validity.pem
-- 39_months_after_2015_04.pem
-- 40_months_after_2015_04.pem
-- 60_months_after_2012_07.pem
-- 61_months_after_2012_07.pem
-- pre_br_validity_bad_121.pem
-- pre_br_validity_bad_2020.pem
-- pre_br_validity_ok.pem
-- start_after_expiry.pem
-    Certs to test that the maximum validity durations set by the CA/Browser
-    Forum Baseline Requirements are enforced.
-
-- may_2018.pem
-   An 825-day certificate issued on May 1, 2018, the official start of
-   enforcement requiring Certificate Transparency for new certificates. This
-   certificate does not have any embedded SCTs.
 
 - x509_verify_results.chain.pem : A simple certificate chain used to test that
     the correctly ordered, filtered certificate chain is returned during
@@ -254,10 +264,13 @@ unit tests.
        than RSA.
      - client_6.pem is similar to client_2.pem but is a P-521 ECDSA key rather
        than RSA.
+     - client_7.pem is similar to client_2.pem but is a RSA-1024 key rather
+       than RSA-2048.
      - client_root_ca.pem is the CA certificate which signed client_*_ca.pem.
      - client_1_u16_password.p12 contains the client_1.key and client_1.pem key
        and certificate, but is encoded as a PKCS#12 file and has a password with
        UTF-16 symbols ("Hello, 世界").
+     - The password for all the other client_?.p12 files is "chrome".
 
 ===== From net/data/ssl/scripts/generate-bad-eku-certs.sh
 - eku-test-root.pem

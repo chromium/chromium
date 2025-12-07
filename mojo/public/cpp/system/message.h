@@ -5,13 +5,13 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_MESSAGE_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_MESSAGE_H_
 
-#include <limits>
 #include <string_view>
 #include <vector>
 
-#include "base/numerics/safe_conversions.h"
+#include "base/check.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/system/system_export.h"
 
 namespace mojo {
 
@@ -90,13 +90,8 @@ inline MojoResult GetMessageData(MessageHandle message,
                             &num_handles);
 }
 
-inline MojoResult NotifyBadMessage(MessageHandle message,
-                                   const std::string_view& error) {
-  DCHECK(message.is_valid());
-  DCHECK(base::IsValueInRangeForNumericType<uint32_t>(error.size()));
-  return MojoNotifyBadMessage(message.value(), error.data(),
-                              static_cast<uint32_t>(error.size()), nullptr);
-}
+MOJO_CPP_SYSTEM_EXPORT MojoResult
+NotifyBadMessage(MessageHandle message, const std::string_view& error);
 
 }  // namespace mojo
 

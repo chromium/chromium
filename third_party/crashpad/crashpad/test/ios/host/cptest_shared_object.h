@@ -43,10 +43,18 @@
 - (bool)pendingReportExceptionInfo:(NSNumber**)exception_info;
 
 // Return an NSDictionary with a dictionary named "simplemap", an array named
-// "vector" and an array named "objects", representing the combination of all
-// modules AnnotationsSimpleMap, AnnotationsVector and AnnotationObjects
-// (strings only) respectively.
+// "vector" an array named "objects", and an array named "ringbuffers",
+// representing the combination of all modules AnnotationsSimpleMap,
+// AnnotationsVector and AnnotationObjects (String and RingBuffer type)
+// respectively.
 - (NSDictionary*)getAnnotations;
+
+// Return an NSDictionary with a dictionary representing all key value pairs of
+// ExtraMemory MemorySnapshots where the data can be converted to an NSString.
+- (NSDictionary*)getExtraMemory;
+
+// Returns YES if a minidump contains the expected custom stream data.
+- (BOOL)hasExtensionStream;
 
 // Return an NSDictionary representing the ProcessSnapshotMinidump
 // AnnotationsSimpleMap.

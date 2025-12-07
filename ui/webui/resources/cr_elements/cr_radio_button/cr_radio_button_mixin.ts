@@ -28,12 +28,14 @@ export const CrRadioButtonMixin = dedupingMixin(
             checked: {
               type: Boolean,
               reflectToAttribute: true,
+              value: false,
             },
 
             disabled: {
               type: Boolean,
               reflectToAttribute: true,
               notify: true,
+              value: false,
             },
 
             /**
@@ -44,15 +46,18 @@ export const CrRadioButtonMixin = dedupingMixin(
             focusable: {
               type: Boolean,
               observer: 'onFocusableChanged_',
+              value: false,
             },
 
             hideLabelText: {
               type: Boolean,
               reflectToAttribute: true,
+              value: false,
             },
 
             label: {
               type: String,
+              value: '', // Allows hidden$= binding to run without being set.
             },
 
             name: {
@@ -71,13 +76,13 @@ export const CrRadioButtonMixin = dedupingMixin(
           };
         }
 
-        checked: boolean = false;
-        disabled: boolean = false;
-        focusable: boolean = false;
-        hideLabelText: boolean = false;
-        label: string = ''; // Allows hidden$= binding to run without being set.
-        name?: string;
-        protected buttonTabIndex_: number = 0;
+        declare checked: boolean;
+        declare disabled: boolean;
+        declare focusable: boolean;
+        declare hideLabelText: boolean;
+        declare label: string;
+        declare name?: string;
+        declare protected buttonTabIndex_: number;
 
         override connectedCallback() {
           super.connectedCallback();

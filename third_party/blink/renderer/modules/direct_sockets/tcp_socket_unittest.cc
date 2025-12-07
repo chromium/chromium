@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -44,9 +45,7 @@ TEST(TCPSocketTest, CloseBeforeInit) {
 
   auto* script_state = scope.GetScriptState();
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
-
-  auto close_promise =
-      tcp_socket->close(script_state, scope.GetExceptionState());
+  tcp_socket->close(script_state, scope.GetExceptionState());
 
   ASSERT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
@@ -80,8 +79,7 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   opened_tester.WaitUntilSettled();
   ASSERT_TRUE(opened_tester.IsFulfilled());
 
-  auto close_promise =
-      tcp_socket->close(script_state, scope.GetExceptionState());
+  tcp_socket->close(script_state, scope.GetExceptionState());
   test::RunPendingTasks();
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 }

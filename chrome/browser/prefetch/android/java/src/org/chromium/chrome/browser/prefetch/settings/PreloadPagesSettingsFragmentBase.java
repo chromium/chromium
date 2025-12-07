@@ -9,20 +9,33 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /** The base fragment class for Preload Pages settings fragments. */
+@NullMarked
 public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSettingsFragment {
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         SettingsUtils.addPreferencesFromResource(this, getPreferenceResource());
-        getActivity().setTitle(R.string.prefs_section_preload_pages_title);
+        mPageTitle.set(getString(R.string.prefs_section_preload_pages_title));
 
         onCreatePreferencesInternal(bundle, s);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -51,10 +64,11 @@ public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSetting
      * this method.
      *
      * @param bundle If the fragment is being re-created from a previous saved state, this is the
-     *         state.
+     *     state.
      * @param s If non-null, this preference should be rooted at the PreferenceScreen with this key.
      */
-    protected void onCreatePreferencesInternal(Bundle bundle, String s) {}
+    @Initializer
+    protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String s) {}
 
     /**
      * @return The resource id of the preference.

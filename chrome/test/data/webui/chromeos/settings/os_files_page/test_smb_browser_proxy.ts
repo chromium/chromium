@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SmbBrowserProxy, SmbMountResult} from 'chrome://os-settings/lazy_load.js';
+import type {SmbBrowserProxy} from 'chrome://os-settings/lazy_load.js';
+import {SmbMountResult} from 'chrome://os-settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSmbBrowserProxy extends TestBrowserProxy implements
@@ -30,8 +31,8 @@ export class TestSmbBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('startDiscovery');
   }
 
-  updateCredentials(mountId: string, username: string, password: string): void {
-    this.methodCalled('updateCredentials', mountId, username, password);
+  updateCredentials(username: string, password: string): void {
+    this.methodCalled('updateCredentials', username, password);
   }
 
   hasAnySmbMountedBefore(): Promise<boolean> {

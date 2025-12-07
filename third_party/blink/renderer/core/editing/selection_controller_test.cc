@@ -151,7 +151,7 @@ TEST_F(SelectionControllerTest, setCaretAtHitTestResult) {
   SetBodyContent(body_content);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(
+  script->SetInnerHTMLWithoutTrustedTypes(
       "var sample = document.getElementById('sample');"
       "sample.addEventListener('onselectstart', "
       "  event => elem.parentNode.removeChild(elem));");
@@ -172,7 +172,7 @@ TEST_F(SelectionControllerTest, setCaretAtHitTestResultWithNullPosition) {
       "<div id=sample></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  // Hit "&nbsp;" in before pseudo element of "sample".
+  // Hit "&nbsp;" in before pseudo-element of "sample".
   HitTestLocation location((gfx::Point(10, 10)));
   SetCaretAtHitTestResult(
       GetFrame().GetEventHandler().HitTestResultAtLocation(location));
@@ -185,7 +185,7 @@ TEST_F(SelectionControllerTest,
        SetCaretAtHitTestResultWithDisconnectedPosition) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(
+  script->SetInnerHTMLWithoutTrustedTypes(
       "document.designMode = 'on';"
       "const selection = window.getSelection();"
       "const html = document.getElementsByTagName('html')[0];"
@@ -228,7 +228,7 @@ TEST_F(SelectionControllerTest, AdjustSelectionWithTrailingWhitespace) {
   SetBodyContent(
       "<input type=checkbox>"
       "<div style='user-select:none'>abc</div>");
-  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
+  Element* const input = QuerySelector("input");
 
   const SelectionInFlatTree& selection = ExpandWithGranularity(
       SelectionInFlatTree::Builder()
@@ -592,6 +592,37 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
   EXPECT_EQ(adjust_selection.Focus(), selection.Focus());
   EXPECT_EQ(adjust_selection.Focus(),
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
+}
+
+// https://crbug.com/399412221
+#if BUILDFLAG(IS_OZONE)
+#define MAYBE_MiddleClickPasteToggle MiddleClickPasteToggle
+#else
+#define MAYBE_MiddleClickPasteToggle DISABLED_MiddleClickPasteToggle
+#endif
+TEST_F(SelectionControllerTest, MAYBE_MiddleClickPasteToggle) {
+  SetBodyContent("<input type=text id=dst>");
+
+  // Create a middle mouse button up event
+  auto point = gfx::PointF(25, 25);
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseUp, point, point,
+                            WebMouseEvent::Button::kMiddle, 1, 0,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.SetFrameScale(1);
+
+  // Test with middle-click paste disabled
+  GetDocument().GetSettings()->SetMiddleClickPasteAllowed(false);
+  EXPECT_FALSE(Controller().HandlePasteGlobalSelection(mouse_event));
+
+  // Test with middle-click paste enabled
+  GetDocument().GetSettings()->SetMiddleClickPasteAllowed(true);
+  EXPECT_TRUE(Controller().HandlePasteGlobalSelection(mouse_event));
+
+  // Test with middle-click paste enabled, but wrong mouse event
+  WebMouseEvent mouse_event_down(WebInputEvent::Type::kMouseDown,
+                                 WebInputEvent::kIsCompatibilityEventForTouch,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  EXPECT_FALSE(Controller().HandlePasteGlobalSelection(mouse_event_down));
 }
 
 }  // namespace blink

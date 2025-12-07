@@ -2,4 +2,3 @@ This test for a bug copy/pasting underlined text. The color of the underline sho
 | <span>
 |   style="color: rgb(255, 0, 0); text-decoration-line: underline;"
 |   "This should be underlined.<#selection-caret>"
-| <br>

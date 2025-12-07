@@ -44,19 +44,18 @@ MEDIA_EXPORT std::optional<VideoType> ParseVideoCodecString(
     std::string_view codec_id,
     bool allow_ambiguous_matches = false);
 
-// Returns true if successfully parsed the given |mime_type| and |codec_id|,
-// setting |out_audio_codec| to found codec. Empty string |mime_type| indicates
-// "no mime type". |mime_type| should be provided whenever available for parsing
-// and validation in combination with |codec_id|. |out_is_ambiguous| will be
-// true when the codec string is incomplete such that some guessing was required
-// to decide the codec.
+// Returns a parse result if |mime_type| and |codec_id| can be parsed.
+// Empty string |mime_type| indicates "no mime type". |mime_type| should be
+// provided whenever available for parsing and validation in combination with
+// |codec_id|. If |allow_ambiguous_matches| is true, matches against
+// non-standard codec strings (e.g., mp4a.40 vs mp4a.40.2) will be allowed.
 //
-// Returns false if parsing fails (invalid string, or unrecognized audio codec),
-// in which case values for |out_*| arguments are undefined.
-MEDIA_EXPORT bool ParseAudioCodecString(std::string_view mime_type,
-                                        std::string_view codec_id,
-                                        bool* out_is_ambiguous,
-                                        AudioCodec* out_codec);
+// Returns std::nullopt if parsing fails (invalid string, or unrecognized audio
+// codec).
+MEDIA_EXPORT std::optional<AudioType> ParseAudioCodecString(
+    std::string_view mime_type,
+    std::string_view codec_id,
+    bool allow_ambiguous_matches = false);
 
 // Indicates that the MIME type and (possible codec string) are supported.
 enum class SupportsType {

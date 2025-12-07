@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -27,13 +28,12 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
 #if defined(USE_AURA)
   wm::ActivationClient* client = wm::GetActivationClient(
       browser->window()->GetNativeWindow()->GetRootWindow());
-  if (!client)
+  if (!client) {
     return nullptr;
+  }
   gfx::NativeWindow active_window = client->GetActiveWindow();
 #elif BUILDFLAG(IS_MAC)
-  NSWindow* active_window = platform_util::GetActiveWindow();
-  if (!active_window)
-    return nullptr;
+  gfx::NativeWindow active_window = platform_util::GetActiveWindow();
 #endif
 
   views::Widget* widget =
@@ -46,14 +46,16 @@ namespace chrome {
 
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (view && view->tabstrip())
-    return view->tabstrip()->GetFocusedTabIndex();
+  if (view && view->tab_strip_view()) {
+    return view->tab_strip_view()->GetFocusedTabIndex();
+  }
   return std::nullopt;
 }
 
 void ExecuteUIDebugCommand(int id, const Browser* browser) {
-  if (!base::FeatureList::IsEnabled(features::kUIDebugTools))
+  if (!base::FeatureList::IsEnabled(features::kUIDebugTools)) {
     return;
+  }
 
   switch (id) {
     case IDC_DEBUG_TOGGLE_TABLET_MODE: {
@@ -64,15 +66,15 @@ void ExecuteUIDebugCommand(int id, const Browser* browser) {
       break;
     }
     case IDC_DEBUG_PRINT_VIEW_TREE:
-      if (views::View* view = GetActiveWindowRootView(browser))
-        PrintViewHierarchy(view);
-      break;
     case IDC_DEBUG_PRINT_VIEW_TREE_DETAILS:
-      if (views::View* view = GetActiveWindowRootView(browser))
-        PrintViewHierarchy(view, /* verbose= */ true);
+      if (views::View* view = GetActiveWindowRootView(browser)) {
+        LOG(ERROR) << '\n'
+                   << PrintViewHierarchy(
+                          view, id == IDC_DEBUG_PRINT_VIEW_TREE_DETAILS);
+      }
       break;
     default:
-      NOTREACHED_NORETURN() << "Unimplemented UI Debug command: " << id;
+      NOTREACHED() << "Unimplemented UI Debug command: " << id;
   }
 }
 

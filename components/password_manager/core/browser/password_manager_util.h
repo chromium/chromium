@@ -11,13 +11,12 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
 class PasswordManagerDriver;
@@ -55,8 +54,8 @@ void UpdateMetadataForUsage(password_manager::PasswordForm* credential);
 
 // A convenience function for testing that |client| has a non-null LogManager
 // and that that LogManager returns true for IsLoggingActive. This function can
-// be removed once PasswordManagerClient::GetLogManager is implemented on iOS
-// and required to always return non-null.
+// be removed once PasswordManagerClient::GetCurrentLogManager is implemented on
+// iOS and required to always return non-null.
 bool IsLoggingActive(password_manager::PasswordManagerClient* client);
 
 // True iff the manual password generation is enabled for the current site.
@@ -91,6 +90,12 @@ std::string_view GetSignonRealmWithProtocolExcluded(
 // the match for the requested page.
 GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
 
+// Returns true if the credential is a PSL match or a grouped match. Such
+// matches are called weak matches and do not trigger fill on page load.
+// If the form is submitted with weak match filled, credentials are saved on the
+// submitted form realm without prompting to the user.
+bool IsCredentialWeakMatch(const password_manager::PasswordForm& form);
+
 // Given all non-blocklisted |matches| returns best matches as the result of the
 // function. For comparing credentials the following rule is used:
 //   - non-psl match is better than psl match,
@@ -108,6 +113,13 @@ std::vector<password_manager::PasswordForm> FindBestMatches(
 const password_manager::PasswordForm* FindFormByUsername(
     base::span<const password_manager::PasswordForm> forms,
     const std::u16string& username_value);
+
+// Returns a form from |submitted_manager|'s best matches with
+// `kChangeSubmission` type that matches |submitted_manager|'s pending
+// credentials on username, and has a backup password. Returns nullptr if such
+// form is not found.
+const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
+    const password_manager::PasswordFormManagerForUI& submitted_manager);
 
 // If the user submits a form, they may have used existing credentials, new
 // credentials, or modified existing credentials that should be updated.
@@ -133,10 +145,7 @@ const password_manager::PasswordForm* GetMatchForUpdating(
 password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordFormDigest digest);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-bool IsBiometricAuthenticationForFillingEnabled(
-    password_manager::PasswordManagerClient* client);
-
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state);
 
@@ -159,11 +168,12 @@ std::string GetSignonRealm(const GURL& url);
 #if BUILDFLAG(IS_IOS)
 // Returns a boolean indicating whether the user had enabled the credential
 // provider in their iOS settings at startup.
-bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs);
+bool IsCredentialProviderEnabledOnStartup(const PrefService* local_state);
 
 // Sets the boolean indicating whether the user had enabled the credential
 // provider in their iOS settings at startup.
-void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled);
+void SetCredentialProviderEnabledOnStartup(PrefService* local_state,
+                                           bool enabled);
 #endif
 
 // Contains all special symbols considered for password-generation.
@@ -187,6 +197,9 @@ bool IsSpecialSymbol(char16_t c);
 
 // Returns true if 'type' is a username in a password-less form.
 bool IsSingleUsernameType(autofill::FieldType type);
+
+// Returns the prettified version of |signon_realm| to be displayed on the UI.
+std::u16string GetHumanReadableRealm(const std::string& signon_realm);
 
 }  // namespace password_manager_util
 

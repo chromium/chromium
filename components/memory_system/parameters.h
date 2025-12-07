@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/profiler/process_type.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
 
 namespace memory_system {
@@ -30,11 +30,12 @@ struct GwpAsanParameters {
 // ProfilingClient specific parameters, please see
 // components/heap_profiling/in_process/heap_profiler_controller.h for details.
 struct ProfilingClientParameters {
-  ProfilingClientParameters(version_info::Channel channel,
-                            base::ProfilerProcessType process_type);
+  ProfilingClientParameters(
+      version_info::Channel channel,
+      sampling_profiler::ProfilerProcessType process_type);
 
   version_info::Channel channel;
-  base::ProfilerProcessType process_type;
+  sampling_profiler::ProfilerProcessType process_type;
 };
 
 // Dispatcher specific parameters, please see

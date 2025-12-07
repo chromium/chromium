@@ -1,0 +1,46 @@
+include_rules = [
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_command_controller.h",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_list_observer.h",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
+]
+
+specific_include_rules = {
+  "locked_quiz_session_manager_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  ],
+  "on_task_locked_session_navigation_throttle_interactive_ui_test\\.cc": [
+    "+chrome/browser/ui/browser_navigator_params.h",
+    "+chrome/browser/ui/test/test_browser_closed_waiter.h",
+    "+chrome/test/base/interactive_test_utils.h",
+    "+chrome/test/base/ui_test_utils.h",
+  ],
+  "on_task_locked_session_window_tracker_browsertest\\.cc": [
+    "+chrome/app/chrome_command_ids.h",
+    "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
+    "+chrome/common/chrome_paths.h",
+    "+chrome/common/webui_url_constants.h",
+    "+chrome/test/base/ui_test_utils.h"
+  ],
+  "on_task_pod_controller_impl_browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/test/base/ui_test_utils.h",
+  ],
+  "on_task_session_manager_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/test/base/ui_test_utils.h"
+  ]
+}

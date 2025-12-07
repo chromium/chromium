@@ -65,6 +65,16 @@ class CORE_EXPORT ComputedStylePropertyMap
 
   Element* StyledElement() const;
   const ComputedStyle* UpdateStyle() const;
+
+  // A property-specific use counter is triggered when the computed value for a
+  // border-*-width, column-rule-width, and outline-width property is non-zero
+  // and the corresponding style property is set to "none" or "hidden". This
+  // will be used to assess web compatibility risks, as the computed value for
+  // border-*-width, column-rule-width, and outline-width properties should not
+  // be influenced by the corresponding style property being set to "none" or
+  // "hidden".
+  void RecordUseCounterForWidthStyleValues(CSSPropertyID,
+                                           const ComputedStyle&) const;
 };
 
 }  // namespace blink

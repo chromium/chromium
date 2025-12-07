@@ -15,7 +15,6 @@
 #include "base/win/wrapped_window_proc.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "ui/gfx/win/singleton_hwnd.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace media {
 
@@ -90,11 +89,6 @@ class SystemMessageWindowWin::DeviceNotifications {
 };
 
 SystemMessageWindowWin::SystemMessageWindowWin() {
-  // base:Unretained() is safe because the observer handles the correct cleanup
-  // if either the SingletonHwnd or forwarded object is destroyed first.
-  singleton_hwnd_observer_ =
-      std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
-          &SystemMessageWindowWin::WndProc, base::Unretained(this)));
   device_notifications_ = std::make_unique<DeviceNotifications>(
       gfx::SingletonHwnd::GetInstance()->hwnd());
 }

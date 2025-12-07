@@ -34,12 +34,8 @@ class BASE_EXPORT PowerStateObserver {
 
   // Notification of a change in power status of the computer, such
   // as from switching between battery and A/C power.
-  virtual void OnPowerStateChange(bool on_battery_power) = 0;
-
-  void OnBatteryPowerStateChanged(BatteryPowerStatus battery_power_status) {
-    OnPowerStateChange(battery_power_status ==
-                       BatteryPowerStatus::kBatteryPower);
-  }
+  virtual void OnBatteryPowerStatusChange(
+      BatteryPowerStatus battery_power_status) = 0;
 
  protected:
   virtual ~PowerStateObserver() = default;

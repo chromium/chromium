@@ -25,19 +25,25 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
   ~Entry() override {}
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "ModuleMap::Entry"; }
+  const char* GetHumanReadableName() const override {
+    return "ModuleMap::Entry";
+  }
 
   // Notify fetched |m_moduleScript| to the client asynchronously.
-  void AddClient(SingleModuleClient*);
+  void AddClient(SingleModuleClient*, ModuleImportPhase);
+
+  // Set a module script that has been created outside of a fetch context.
+  void SetModuleScript(ModuleScript*);
 
   // This is only to be used from ModuleRecordResolver implementations.
   ModuleScript* GetModuleScript() const;
 
  private:
-  void DispatchFinishedNotificationAsync(SingleModuleClient*);
+  void DispatchFinishedNotificationAsync(SingleModuleClient*,
+                                         ModuleImportPhase);
 
   // Implements ModuleScriptLoaderClient
-  void NotifyNewSingleModuleFinished(ModuleScript*) override;
+  void NotifyNewSingleModuleFinished(ModuleScript*, ModuleImportPhase) override;
 
   Member<ModuleScript> module_script_;
   Member<ModuleMap> map_;
@@ -59,18 +65,21 @@ void ModuleMap::Entry::Trace(Visitor* visitor) const {
 }
 
 void ModuleMap::Entry::DispatchFinishedNotificationAsync(
-    SingleModuleClient* client) {
+    SingleModuleClient* client,
+    ModuleImportPhase import_phase) {
   map_->GetModulator()->TaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
-                               WrapPersistent(client),
-                               WrapPersistent(module_script_.Get())));
+      FROM_HERE,
+      blink::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
+                      WrapPersistent(client),
+                      WrapPersistent(module_script_.Get()), import_phase));
 }
 
-void ModuleMap::Entry::AddClient(SingleModuleClient* new_client) {
+void ModuleMap::Entry::AddClient(SingleModuleClient* new_client,
+                                 ModuleImportPhase import_phase) {
   DCHECK(!clients_.Contains(new_client));
   if (!is_fetching_) {
     DCHECK(clients_.empty());
-    DispatchFinishedNotificationAsync(new_client);
+    DispatchFinishedNotificationAsync(new_client, import_phase);
     return;
   }
 
@@ -78,15 +87,23 @@ void ModuleMap::Entry::AddClient(SingleModuleClient* new_client) {
 }
 
 void ModuleMap::Entry::NotifyNewSingleModuleFinished(
-    ModuleScript* module_script) {
+    ModuleScript* module_script,
+    ModuleImportPhase import_phase) {
   CHECK(is_fetching_);
   module_script_ = module_script;
   is_fetching_ = false;
 
   for (const auto& client : clients_) {
-    DispatchFinishedNotificationAsync(client);
+    DispatchFinishedNotificationAsync(client, import_phase);
   }
   clients_.clear();
+}
+
+void ModuleMap::Entry::SetModuleScript(ModuleScript* module_script) {
+  CHECK(clients_.empty());
+  CHECK(!module_script_);
+  module_script_ = module_script;
+  is_fetching_ = false;
 }
 
 ModuleScript* ModuleMap::Entry::GetModuleScript() const {
@@ -140,7 +157,7 @@ void ModuleMap::FetchSingleModuleScript(
   // <spec step="14">Set moduleMap[url] to module script, and asynchronously
   // complete this algorithm with module script.</spec>
   if (client)
-    entry->AddClient(client);
+    entry->AddClient(client, request.GetModuleImportPhase());
 }
 
 ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url,
@@ -149,6 +166,16 @@ ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url,
   if (it == map_.end())
     return nullptr;
   return it->value->GetModuleScript();
+}
+
+void ModuleMap::AddEntry(const KURL& url,
+                         ModuleType type,
+                         ModuleScript* script) {
+  Entry* entry = MakeGarbageCollected<Entry>(this);
+  entry->SetModuleScript(script);
+
+  // TODO(crbug.com/448174611) - what should happen with duplicate entries?
+  map_.insert(std::make_pair(url, type), entry);
 }
 
 }  // namespace blink

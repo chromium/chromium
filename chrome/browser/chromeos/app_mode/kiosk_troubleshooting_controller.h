@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_TROUBLESHOOTING_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 

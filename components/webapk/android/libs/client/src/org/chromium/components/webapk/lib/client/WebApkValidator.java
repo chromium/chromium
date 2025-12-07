@@ -4,6 +4,7 @@
 
 package org.chromium.components.webapk.lib.client;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.SCOPE;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.START_URL;
@@ -22,13 +23,14 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.ui.widget.Toast;
 
@@ -41,14 +43,15 @@ import java.nio.channels.FileChannel;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Checks whether a URL belongs to a WebAPK, and whether a WebAPK is signed by the WebAPK Minting
  * Server.
  */
+@NullMarked
 public class WebApkValidator {
     private static final String TAG = "WebApkValidator";
     private static final String KEY_FACTORY = "EC"; // aka "ECDSA"
@@ -57,9 +60,9 @@ public class WebApkValidator {
             "https://www.google.com/maps"; // Matches scope.
     private static final boolean DEBUG = false;
 
-    private static byte[] sExpectedSignature;
-    private static byte[] sCommentSignedPublicKeyBytes;
-    private static PublicKey sCommentSignedPublicKey;
+    private static byte @Nullable [] sExpectedSignature;
+    private static byte @Nullable [] sCommentSignedPublicKeyBytes;
+    private static @Nullable PublicKey sCommentSignedPublicKey;
     private static boolean sOverrideValidation;
 
     @IntDef({
@@ -141,12 +144,13 @@ public class WebApkValidator {
     private static void showDeprecationWarning(
             Context context, String appName, @StringRes int resId) {
         assert ThreadUtils.runningOnUiThread();
-        String text = context.getResources().getString(resId, appName);
+        String text = context.getString(resId, appName);
         Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    private static Bundle extractWebApkMetaData(Context context, String webApkPackageName) {
+    private static @Nullable Bundle extractWebApkMetaData(
+            Context context, String webApkPackageName) {
         PackageManager packageManager = context.getPackageManager();
         try {
             ApplicationInfo appInfo =
@@ -185,7 +189,8 @@ public class WebApkValidator {
                     case ValidationResult.V1_WEB_APK:
                         int shellApkVersion =
                                 IntentUtils.safeGetInt(
-                                        extractWebApkMetaData(context, webApkPackage),
+                                        assumeNonNull(
+                                                extractWebApkMetaData(context, webApkPackage)),
                                         WebApkMetaDataKeys.SHELL_APK_VERSION,
                                         0);
                         if (0 < shellApkVersion && shellApkVersion < minShellVersion) {
@@ -228,7 +233,7 @@ public class WebApkValidator {
     private static List<ResolveInfo> resolveInfosForUrlAndOptionalPackage(
             Context context, String url, @Nullable String applicationPackage) {
         Intent intent = createWebApkIntentForUrlAndOptionalPackage(url, applicationPackage);
-        if (intent == null) return new LinkedList<>();
+        if (intent == null) return new ArrayList<>();
 
         // StrictMode is relaxed due to https://crbug.com/843092.
         StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
@@ -241,7 +246,7 @@ public class WebApkValidator {
             // We used to catch only java.util.MissingResourceException, but we need to catch
             // more exceptions to handle "Package manager has died" exception.
             // http://crbug.com/794363
-            return new LinkedList<>();
+            return new ArrayList<>();
         } finally {
             StrictMode.setThreadPolicy(policy);
         }
@@ -348,7 +353,7 @@ public class WebApkValidator {
      *     WebApk exists. If package isn't specified, the intent may create a disambiguation dialog
      *     when started.
      */
-    public static Intent createWebApkIntentForUrlAndOptionalPackage(
+    public static @Nullable Intent createWebApkIntentForUrlAndOptionalPackage(
             String url, @Nullable String applicationPackage) {
         Intent intent;
         try {

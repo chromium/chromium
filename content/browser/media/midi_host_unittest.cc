@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -104,7 +105,8 @@ class FakeMidiManagerFactory : public midi::MidiService::ManagerFactory {
 
 class MidiHostForTesting : public MidiHost {
  public:
-  MidiHostForTesting(int renderer_process_id, midi::MidiService* midi_service)
+  MidiHostForTesting(ChildProcessId renderer_process_id,
+                     midi::MidiService* midi_service)
       : MidiHost(renderer_process_id, midi_service) {
     SetHasMidiPermissionForTesting(true);
   }
@@ -133,7 +135,7 @@ class MidiSessionClientForTesting : public midi::mojom::MidiSessionClient {
 
 class MidiHostTest : public testing::Test {
  public:
-  MidiHostTest() : data_(kNoteOn, kNoteOn + std::size(kNoteOn)), port_id_(0) {
+  MidiHostTest() : data_(base::ToVector(kNoteOn)), port_id_(0) {
     browser_context_ = std::make_unique<TestBrowserContext>();
     rph_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
     std::unique_ptr<FakeMidiManagerFactory> factory =

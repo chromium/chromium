@@ -7,10 +7,12 @@ package org.chromium.components.webapps;
 import android.graphics.Bitmap;
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binds an add-to-homescreen {@link PropertyModel} with a {@link AddToHomescreenDialogView}. */
+@NullMarked
 class AddToHomescreenViewBinder {
     static void bind(PropertyModel model, AddToHomescreenDialogView view, PropertyKey propertyKey) {
         if (propertyKey.equals(AddToHomescreenProperties.TITLE)) {

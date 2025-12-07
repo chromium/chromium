@@ -17,11 +17,16 @@ class Tracker;
 @protocol ContextualPanelEntrypointMediatorDelegate;
 @protocol ContextualSheetCommands;
 @protocol ContextualPanelEntrypointIPHCommands;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
 class WebStateList;
 
 // Mediator for Contextual Panel Entrypoint.
 @interface ContextualPanelEntrypointMediator
     : NSObject <ContextualPanelEntrypointMutator>
+
+// The entrypoint visibility delegate.
+@property(nonatomic, weak) id<ContextualPanelEntrypointVisibilityDelegate>
+    visibilityDelegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -39,6 +44,9 @@ class WebStateList;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointMediatorDelegate>
     delegate;
+
+// Cancels any ongoing or future loud moment for the current navigation.
+- (void)cancelContextualPanelEntrypointLoudMoment;
 
 // Cleanup and disconnect the mediator.
 - (void)disconnect;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/sync_socket.h"
 
 #include <errno.h>
@@ -95,10 +90,6 @@ size_t SyncSocket::Send(span<const uint8_t> data) {
   return SendHelper(handle(), data);
 }
 
-size_t SyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
-}
-
 size_t SyncSocket::Receive(span<uint8_t> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   CHECK_LE(buffer.size(), kMaxMessageLength);
@@ -107,10 +98,6 @@ size_t SyncSocket::Receive(span<uint8_t> buffer) {
     return buffer.size();
   }
   return 0;
-}
-
-size_t SyncSocket::Receive(void* buffer, size_t length) {
-  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
 }
 
 size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
@@ -136,15 +123,18 @@ size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
     const TimeDelta this_timeout = finish_time - TimeTicks::Now();
     const int timeout_ms =
         static_cast<int>(this_timeout.InMillisecondsRoundedUp());
-    if (timeout_ms <= 0)
+    if (timeout_ms <= 0) {
       break;
+    }
     const int poll_result = poll(&pollfd, 1, timeout_ms);
     // Handle EINTR manually since we need to update the timeout value.
-    if (poll_result == -1 && errno == EINTR)
+    if (poll_result == -1 && errno == EINTR) {
       continue;
+    }
     // Return if other type of error or a timeout.
-    if (poll_result <= 0)
+    if (poll_result <= 0) {
       return bytes_read_total;
+    }
 
     // poll() only tells us that data is ready for reading, not how much.  We
     // must Peek() for the amount ready for reading to avoid blocking.
@@ -156,14 +146,16 @@ size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
     const size_t bytes_to_read = std::min(Peek(), buffer.size());
 
     // There may be zero bytes to read if the socket at the other end closed.
-    if (!bytes_to_read)
+    if (!bytes_to_read) {
       return bytes_read_total;
+    }
 
-    const size_t bytes_received = Receive(buffer.subspan(0u, bytes_to_read));
+    const size_t bytes_received = Receive(buffer.first(bytes_to_read));
     bytes_read_total += bytes_received;
     buffer = buffer.subspan(bytes_received);
-    if (bytes_received != bytes_to_read)
+    if (bytes_received != bytes_to_read) {
       return bytes_read_total;
+    }
   }
 
   return bytes_read_total;
@@ -215,10 +207,6 @@ size_t CancelableSyncSocket::Send(span<const uint8_t> data) {
   }
 
   return len;
-}
-
-size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
 }
 
 // static

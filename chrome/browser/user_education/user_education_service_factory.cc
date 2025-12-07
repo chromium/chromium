@@ -7,17 +7,21 @@
 #include <memory>
 #include <optional>
 
+#include "base/synchronization/lock.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/user_education/common/feature_promo_idle_observer.h"
-#include "components/user_education/common/feature_promo_idle_policy.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
+#include "components/user_education/common/session/user_education_idle_observer.h"
+#include "components/user_education/common/session/user_education_idle_policy.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -27,12 +31,12 @@
 namespace {
 
 // Idle observer that doesn't do anything.
-class StubIdleObserver : public user_education::FeaturePromoIdleObserver {
+class StubIdleObserver : public user_education::UserEducationIdleObserver {
  public:
   StubIdleObserver() = default;
   ~StubIdleObserver() override = default;
 
-  // FeaturePromoIdleObserver:
+  // UserEducationIdleObserver:
   std::optional<base::Time> MaybeGetNewLastActiveTime() const override {
     return std::nullopt;
   }
@@ -42,7 +46,7 @@ class StubIdleObserver : public user_education::FeaturePromoIdleObserver {
 
 // These are found in chrome/browser/ui/user_education, so extern the factory
 // methods to create the necessary objects.
-extern std::unique_ptr<user_education::FeaturePromoIdleObserver>
+extern std::unique_ptr<user_education::UserEducationIdleObserver>
 CreatePollingIdleObserver();
 extern std::unique_ptr<RecentSessionObserver> CreateRecentSessionObserver(
     Profile& profile);
@@ -87,15 +91,14 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
 
   // Create the user education service.
   auto result = std::make_unique<UserEducationService>(
-      std::make_unique<BrowserFeaturePromoStorageService>(profile),
-      ProfileAllowsUserEducation(profile));
+      profile, ProfileAllowsUserEducation(profile));
 
   // Set up the session manager.
-  result->feature_promo_session_manager().Init(
-      &result->feature_promo_storage_service(),
+  result->user_education_session_manager().Init(
+      &result->user_education_storage_service(),
       disable_idle_polling ? std::make_unique<StubIdleObserver>()
                            : CreatePollingIdleObserver(),
-      std::make_unique<user_education::FeaturePromoIdlePolicy>());
+      std::make_unique<user_education::UserEducationIdlePolicy>());
 
   // Possibly install a session observer. This isn't public, since it's
   // self-contained and mostly for tracking state.
@@ -113,25 +116,43 @@ bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
   // IPH is always disabled in Chrome for Testing.
   return false;
 #else
+
   // In order to do user education, the browser must have a UI and not be an
   // "off-the-record" or in a demo or guest mode.
+
   if (profile->IsIncognitoProfile() || profile->IsGuestSession() ||
       profiles::IsDemoSession() || profiles::IsChromeAppKioskSession()) {
     return false;
   }
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsManagedGuestSession()) {
     return false;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (profiles::IsWebKioskSession()) {
-    return false;
-  }
-#endif
+
   if (headless::IsHeadlessMode()) {
     return false;
   }
+
+  // If `--no-first-run` is enabled and we have not put IPH into test mode, User
+  // Education is not eligible. (No FRE implies no startup bubbles, which
+  // precludes any IPH that might show, as it may be used for performance
+  // testing.)
+  //
+  // If IPH is in test mode (all features blocked, or all but a specific feature
+  // is blocked) then zero or more IPH are under test and all other IPH are
+  // already blocked. Since tests are no-FRE, not making this additional check
+  // would break all IPH tests.
+  const bool no_first_run =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoFirstRun);
+  const bool in_feature_test_mode =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile)
+          ->IsInFeatureTestMode();
+  if (no_first_run && !in_feature_test_mode) {
+    return false;
+  }
+
   return true;
 #endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }

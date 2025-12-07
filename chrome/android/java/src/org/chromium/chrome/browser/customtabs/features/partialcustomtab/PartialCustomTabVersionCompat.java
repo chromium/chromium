@@ -17,12 +17,13 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -30,6 +31,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.List;
 
 /** Collection of methods that differ in the implementation per OS build version. */
+@NullMarked
 abstract class PartialCustomTabVersionCompat {
     protected final Activity mActivity;
     protected final Runnable mPositionUpdater;
@@ -57,7 +59,7 @@ abstract class PartialCustomTabVersionCompat {
     abstract @Px int getScreenWidth();
 
     /** Returns the status bar height */
-    abstract @Px int getStatusbarHeight();
+    abstract @Px int getStatusBarHeight();
 
     /** Returns the bottom navigation bar height */
     abstract @Px int getNavbarHeight();
@@ -76,7 +78,7 @@ abstract class PartialCustomTabVersionCompat {
     /** Implementation that supports R+ */
     @RequiresApi(Build.VERSION_CODES.R)
     private static class PartialCustomTabVersionCompatR extends PartialCustomTabVersionCompat {
-        private WindowInsetsAnimation.Callback mAnimCallback;
+        private WindowInsetsAnimation.@Nullable Callback mAnimCallback;
 
         private PartialCustomTabVersionCompatR(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
@@ -96,16 +98,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            Insets navbarInsets =
-                    mActivity
-                            .getWindowManager()
-                            .getCurrentWindowMetrics()
-                            .getWindowInsets()
-                            .getInsets(
-                                    WindowInsets.Type.navigationBars()
-                                            | WindowInsets.Type.displayCutout());
-            int navbarWidth = navbarInsets.left + navbarInsets.right;
-            return windowBounds().width() - navbarWidth;
+            return CustomTabDimensionUtils.getDisplayWidthR(mActivity);
         }
 
         @Override
@@ -125,7 +118,7 @@ abstract class PartialCustomTabVersionCompat {
 
         @Override
         @Px
-        int getStatusbarHeight() {
+        int getStatusBarHeight() {
             return mActivity
                     .getWindowManager()
                     .getCurrentWindowMetrics()
@@ -155,7 +148,7 @@ abstract class PartialCustomTabVersionCompat {
         }
 
         @Override
-        boolean setImeStateCallback(Callback<Boolean> callback) {
+        boolean setImeStateCallback(@Nullable Callback<Boolean> callback) {
             boolean update = (callback == null) ^ (mAnimCallback == null);
             if (callback == null && mAnimCallback != null) {
                 mAnimCallback = null;
@@ -165,13 +158,13 @@ abstract class PartialCustomTabVersionCompat {
                                 WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
                             @Override
                             public WindowInsets onProgress(
-                                    @NonNull WindowInsets insets,
-                                    @NonNull List<WindowInsetsAnimation> runningAnimations) {
+                                    WindowInsets insets,
+                                    List<WindowInsetsAnimation> runningAnimations) {
                                 return insets;
                             }
 
                             @Override
-                            public void onEnd(@NonNull WindowInsetsAnimation animation) {
+                            public void onEnd(WindowInsetsAnimation animation) {
                                 WindowInsets insets =
                                         mActivity
                                                 .getWindowManager()
@@ -196,7 +189,7 @@ abstract class PartialCustomTabVersionCompat {
 
     /** Implementation that supports version below R */
     private static class PartialCustomTabVersionCompatLegacy extends PartialCustomTabVersionCompat {
-        private View.OnLayoutChangeListener mLayoutListener;
+        private View.@Nullable OnLayoutChangeListener mLayoutListener;
 
         private PartialCustomTabVersionCompatLegacy(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
@@ -245,10 +238,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            Display display = mActivity.getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            return size.x;
+            return CustomTabDimensionUtils.getDisplayWidth(mActivity);
         }
 
         @Override
@@ -266,7 +256,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @SuppressWarnings("DiscouragedApi")
         @Px
-        int getStatusbarHeight() {
+        int getStatusBarHeight() {
             int statusBarHeight = 0;
             final int statusBarHeightResourceId =
                     mActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -301,7 +291,7 @@ abstract class PartialCustomTabVersionCompat {
             // matter) doesn't have the top action bar. So getting the height of |content| is
             // enough.
             View contentFrame = mActivity.findViewById(android.R.id.content);
-            return contentFrame.getHeight() + getStatusbarHeight();
+            return contentFrame.getHeight() + getStatusBarHeight();
         }
 
         private int getAppUsableScreenHeightFromDisplay() {
@@ -327,14 +317,12 @@ abstract class PartialCustomTabVersionCompat {
         }
 
         private static int getDisplayCutoutRightInset(Display display) {
-            // TODO(crbug.com/40898784): Make this work on P.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return 0;
             DisplayCutout cutout = display.getCutout();
             return cutout != null ? cutout.getSafeInsetRight() : 0;
         }
 
         @Override
-        boolean setImeStateCallback(Callback<Boolean> callback) {
+        boolean setImeStateCallback(@Nullable Callback<Boolean> callback) {
             View contentFrame = mActivity.findViewById(android.R.id.content);
             if (callback == null && mLayoutListener != null) {
                 contentFrame.removeOnLayoutChangeListener(mLayoutListener);
@@ -353,7 +341,7 @@ abstract class PartialCustomTabVersionCompat {
                             // to use it again.
                             boolean imeVisible =
                                     KeyboardVisibilityDelegate.getInstance()
-                                            .isKeyboardShowing(mActivity, view);
+                                            .isKeyboardShowing(view);
                             callback.onResult(imeVisible);
                         };
                 contentFrame.addOnLayoutChangeListener(mLayoutListener);

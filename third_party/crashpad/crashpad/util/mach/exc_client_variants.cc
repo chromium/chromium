@@ -123,8 +123,7 @@ kern_return_t UniversalExceptionRaise(exception_behavior_t behavior,
           new_state_count);
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return KERN_INVALID_ARGUMENT;
+      NOTREACHED();
   }
 }
 

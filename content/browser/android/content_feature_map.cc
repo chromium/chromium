@@ -5,13 +5,14 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "components/input/features.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "content/public/android/content_jni_headers/ContentFeatureMap_jni.h"
+#include "content/public/android/content_main_dex_jni/ContentFeatureMap_jni.h"
 
 namespace content::android {
 
@@ -21,36 +22,50 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &blink::features::kCursorAnchorInfoMojoPipe,
+    &blink::features::kAndroidDesktopWebPrefsLargeDisplays,
     &blink::features::kDevicePosture,
-    &blink::features::kStylusPointerAdjustment,
-    &blink::features::kStylusRichGestures,
+    &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
+    &blink::features::kSecurePaymentConfirmationUxRefresh,
     &blink::features::kViewportSegments,
-    &features::kAccessibilityIncludeLongClickAction,
-    &features::kAccessibilityPageZoom,
-    &features::kAccessibilityPageZoomEnhancements,
+    &input::features::kInputOnViz,
+    &features::kAndroidCaptureKeyEvents,
+    &features::kAndroidCaretBrowsing,
+    &features::kAndroidDevToolsFrontend,
+    &features::kAccessibilityCheckJavaNodeCacheFreshness,
+    &features::kAccessibilityDeprecateJavaNodeCache,
+    &features::kAccessibilityDeprecateTypeAnnounce,
+    &features::kAccessibilityExtendedSelection,
+    &features::kAccessibilityImproveLiveRegionAnnounce,
+    &features::kAccessibilityMagnificationFollowsFocus,
+    &features::kAccessibilityRequestLayoutBasedActions,
+    &features::kAccessibilityPageZoomV2,
+    &features::kAccessibilityPopulateSupplementalDescriptionApi,
+    &features::kAccessibilitySequentialFocus,
+    &features::kAccessibilitySetSelectableOnAllNodesWithText,
     &features::kAccessibilityUnifiedSnapshots,
     &features::kAccessibilityManageBroadcastReceiverOnBackground,
-    &features::kAndroidOpenPdfInline,
+    &features::kAndroidDesktopZoomScaling,
+    &features::kAndroidFallbackToNextSlot,
+    &features::kAndroidMediaInsertion,
+    &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,
-    &features::kMouseAndTrackpadDropdownMenu,
-    &features::kOptimizeImmHideCalls,
-    &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kContinueGestureOnLosingFocus,
-    &features::kSelectionMenuItemModification,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,
+    &features::kWebContentsDiscard,
     &features::kWebIdentityDigitalCredentials,
-    &features::kWebNfc,
+    &features::kBtmTtl,
+    &features::kEnableJavalessRenderers,
+    &features::kSpareRendererProcessPriority,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -61,3 +76,5 @@ static jlong JNI_ContentFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace content::android
+
+DEFINE_JNI(ContentFeatureMap)

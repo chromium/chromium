@@ -9,10 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 
-namespace message_center {
-class Notification;
-}  // namespace message_center
-
 namespace ash {
 
 // SystemProxyNotification manages the notification informing the user that
@@ -39,8 +35,6 @@ class SystemProxyNotification {
   const system_proxy::ProtectionSpace protection_space_;
   const bool show_error_;
   OnClickCallback on_click_callback_;
-
-  std::unique_ptr<message_center::Notification> notification_;
 
   base::WeakPtrFactory<SystemProxyNotification> weak_ptr_factory_{this};
 };

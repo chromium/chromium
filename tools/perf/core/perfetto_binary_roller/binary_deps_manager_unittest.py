@@ -104,6 +104,7 @@ class BinaryDepsManagerTests(unittest.TestCase):
         }})
 
   def testFetchHostBinary(self):
+    """Test that FetchHostBinary downloads when local file doesn't exist."""
     bucket = 'bucket'
     remote_path = 'remote/path/to/bin'
     full_remote_path = '/'.join([bucket, remote_path])
@@ -115,21 +116,25 @@ class BinaryDepsManagerTests(unittest.TestCase):
             }
         }
     })
-    with mock.patch('py_utils.cloud_storage.Get') as get_patch:
-      with mock.patch(
-          'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
-      ) as get_os_patch:
-        with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
-          with mock.patch('os.stat'):
-            with mock.patch('os.chmod'):
-              hash_patch.return_value = '123'
-              get_os_patch.return_value = 'testos'
-              local_path = binary_deps_manager.FetchHostBinary('dep')
-
+    with mock.patch('os.path.exists') as exists_patch:
+      with mock.patch('py_utils.cloud_storage.Get') as get_patch:
+        with mock.patch(
+            'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+        ) as get_os_patch:
+          with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
+            with mock.patch('os.stat') as stat_patch:
+              with mock.patch('os.chmod') as chmod_patch:
+                # Local file doesn't exist, so download is needed
+                exists_patch.return_value = False
+                hash_patch.return_value = '123'
+                get_os_patch.return_value = 'testos'
+                stat_patch.return_value = mock.Mock(st_mode=0o644)
+                local_path = binary_deps_manager.FetchHostBinary('dep')
+                chmod_patch.assert_called_once_with(local_path, 0o744)
     self.assertEqual(os.path.basename(local_path), 'bin')
     get_patch.assert_called_once_with(bucket, remote_path, local_path)
 
-  def testFetchHostBinaryWrongHash(self):
+  def testFetchHostBinaryDownloadedFileHasWrongHash(self):
     bucket = 'bucket'
     remote_path = 'remote/path/to/bin'
     full_remote_path = '/'.join([bucket, remote_path])
@@ -150,6 +155,76 @@ class BinaryDepsManagerTests(unittest.TestCase):
           get_os_patch.return_value = 'testos'
           with self.assertRaises(RuntimeError):
             binary_deps_manager.FetchHostBinary('dep')
+
+  def testFetchHostBinaryLocalFileExistsWithCorrectHash(self):
+    """Test that FetchHostBinary returns existing local file if hash matches."""
+    bucket = 'bucket'
+    remote_path = 'remote/path/to/bin'
+    full_remote_path = '/'.join([bucket, remote_path])
+    self.writeConfig({
+        'dep': {
+            'testos': {
+                'full_remote_path': full_remote_path,
+                'hash': '123',
+            }
+        }
+    })
+
+    with mock.patch('os.path.exists') as exists_patch:
+      with mock.patch('py_utils.cloud_storage.Get') as get_patch:
+        with mock.patch(
+            'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+        ) as get_os_patch:
+          with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
+            with mock.patch('os.stat') as stat_patch:
+              with mock.patch('os.chmod') as chmod_patch:
+                exists_patch.return_value = True
+                hash_patch.return_value = '123'
+                get_os_patch.return_value = 'testos'
+                stat_patch.return_value = mock.Mock(st_mode=0o644)
+
+                local_path = binary_deps_manager.FetchHostBinary('dep')
+
+                # Should return the local path without downloading
+                self.assertEqual(os.path.basename(local_path), 'bin')
+                get_patch.assert_not_called()
+                chmod_patch.assert_called_once_with(local_path, 0o744)
+
+  def testFetchHostBinaryLocalFileExistsWithWrongHash(self):
+    """Test that FetchHostBinary downloads when local file has wrong hash."""
+    bucket = 'bucket'
+    remote_path = 'remote/path/to/bin'
+    full_remote_path = '/'.join([bucket, remote_path])
+    self.writeConfig({
+        'dep': {
+            'testos': {
+                'full_remote_path': full_remote_path,
+                'hash': '123',
+            }
+        }
+    })
+
+    with mock.patch('os.path.exists') as exists_patch:
+      with mock.patch('py_utils.cloud_storage.Get') as get_patch:
+        with mock.patch(
+            'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+        ) as get_os_patch:
+          with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
+            with mock.patch('os.stat') as stat_patch:
+              with mock.patch('os.chmod') as chmod_patch:
+                # Two CalculateHash calls: before download, after download
+                hash_patch.side_effect = ['wrong_hash', '123']
+
+                exists_patch.return_value = True
+                get_os_patch.return_value = 'testos'
+                stat_patch.return_value = mock.Mock(st_mode=0o644)
+
+                local_path = binary_deps_manager.FetchHostBinary('dep')
+
+                self.assertEqual(os.path.basename(local_path), 'bin')
+                get_patch.assert_called_once_with(bucket, remote_path,
+                                                  local_path)
+                chmod_patch.assert_called_once_with(local_path, 0o744)
 
   def testUploadAndSwitchDataFile(self):
     self.writeConfig(

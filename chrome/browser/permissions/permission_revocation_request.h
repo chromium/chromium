@@ -14,8 +14,10 @@
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/safe_browsing/buildflags.h"
 #include "url/gurl.h"
 
+class HostContentSettingsMap;
 class Profile;
 
 // Revokes the notifications permission if an origin marked as abusive or
@@ -51,6 +53,13 @@ class PermissionRevocationRequest {
   static void ExemptOriginFromFutureRevocations(Profile* profile,
                                                 const GURL& origin);
 
+  static void ExemptOriginFromFutureRevocations(HostContentSettingsMap* hcsm,
+                                                const GURL& origin);
+
+  static void UndoExemptOriginFromFutureRevocations(
+      HostContentSettingsMap* hcsm,
+      const GURL& origin);
+
   static bool IsOriginExemptedFromFutureRevocations(Profile* profile,
                                                     const GURL& origin);
 
@@ -62,11 +71,13 @@ class PermissionRevocationRequest {
   // DISRUPTIVE_BEHAVIOR lists. If yes, the notifications permission will be
   // revoked. |callback_| will be synchronously called with the result.
   void CheckAndRevokeIfBlocklisted();
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void OnSiteReputationReady(
       const CrowdDenyPreloadData::SiteReputation* reputation);
   void OnSafeBrowsingVerdictReceived(
       const CrowdDenyPreloadData::SiteReputation* reputation,
       CrowdDenySafeBrowsingRequest::Verdict verdict);
+#endif
   void NotifyCallback(Outcome outcome);
 
   std::optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;

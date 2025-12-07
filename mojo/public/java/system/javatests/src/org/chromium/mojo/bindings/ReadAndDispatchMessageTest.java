@@ -39,8 +39,8 @@ public class ReadAndDispatchMessageTest {
 
     private ByteBuffer mData;
     private Pair<MessagePipeHandle, MessagePipeHandle> mHandles;
-    private List<Handle> mHandlesToSend = new ArrayList<Handle>();
-    private List<Handle> mHandlesToClose = new ArrayList<Handle>();
+    private final List<Handle> mHandlesToSend = new ArrayList<Handle>();
+    private final List<Handle> mHandlesToClose = new ArrayList<Handle>();
     private RecordingMessageReceiver mMessageReceiver;
 
     /**

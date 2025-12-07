@@ -82,9 +82,8 @@ void CreateUDPAddress(const std::string& ip_str,
 void UDPSocketPerfTest::WritePacketsToSocket(UDPClientSocket* socket,
                                              int num_of_packets,
                                              base::OnceClosure* done_callback) {
-  scoped_refptr<IOBufferWithSize> io_buffer =
-      base::MakeRefCounted<IOBufferWithSize>(kPacketSize);
-  memset(io_buffer->data(), 'G', kPacketSize);
+  auto io_buffer = base::MakeRefCounted<VectorIOBuffer>(
+      std::vector<uint8_t>(kPacketSize, 'G'));
 
   while (num_of_packets) {
     int rv = socket->Write(

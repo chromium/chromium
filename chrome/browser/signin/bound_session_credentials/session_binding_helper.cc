@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
@@ -25,6 +26,18 @@ constexpr std::string_view kSessionBindingNamespace = "CookieBinding";
 unexportable_keys::BackgroundTaskPriority kSessionBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
 
+bool ShouldTryToReloadKey(
+    const unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableKeyId>& key_id_or_error) {
+  if (key_id_or_error.has_value()) {
+    // The key was successfully loaded, no need to reload.
+    return false;
+  }
+  unexportable_keys::ServiceError error = key_id_or_error.error();
+  return error == unexportable_keys::ServiceError::kCryptoApiFailed ||
+         error == unexportable_keys::ServiceError::kKeyCollision;
+}
+
 base::expected<std::string, SessionBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
@@ -35,18 +48,9 @@ base::expected<std::string, SessionBindingHelper::Error> CreateAssertionToken(
     return base::unexpected(kSignAssertionFailure);
   }
 
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(algorithm, *signature, public_key)) {
-    return base::unexpected(kVerifySignatureFailure);
-  }
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(header_and_payload)));
-  if (!verifier.VerifyFinal()) {
-    return base::unexpected(kVerifySignatureFailure);
-  }
-
   std::optional<std::string> assertion_token =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
-                                                *signature);
+                                                public_key, *signature);
   if (!assertion_token) {
     return base::unexpected(kAppendSignatureFailure);
   }
@@ -67,7 +71,7 @@ SessionBindingHelper::SessionBindingHelper(
 SessionBindingHelper::~SessionBindingHelper() = default;
 
 void SessionBindingHelper::MaybeLoadBindingKey() {
-  if (!key_loader_) {
+  if (!key_loader_ || ShouldTryToReloadKey(key_loader_->GetKeyIdOrError())) {
     key_loader_ =
         unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
             unexportable_key_service_.get(), wrapped_binding_key_,
@@ -105,7 +109,8 @@ void SessionBindingHelper::SignAssertionToken(
   std::optional<std::string> header_and_payload =
       signin::CreateKeyAssertionHeaderAndPayload(
           algorithm, public_key, session_id_, challenge, destination_url,
-          kSessionBindingNamespace, /*ephemeral_key=*/nullptr);
+          kSessionBindingNamespace,
+          /*ephemeral_public_key=*/std::string_view());
 
   if (!header_and_payload.has_value()) {
     std::move(callback).Run(base::unexpected(Error::kCreateAssertionFailure));
@@ -113,7 +118,7 @@ void SessionBindingHelper::SignAssertionToken(
   }
 
   unexportable_key_service_->SignSlowlyAsync(
-      *binding_key, base::as_bytes(base::make_span(*header_and_payload)),
+      *binding_key, base::as_byte_span(*header_and_payload),
       kSessionBindingPriority,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm,
                      std::move(public_key))

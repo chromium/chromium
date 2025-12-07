@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
@@ -22,11 +23,11 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -43,7 +44,6 @@ class WebContents;
 
 namespace page_load_metrics {
 
-struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
 
 namespace internal {
@@ -56,8 +56,6 @@ enum class PageLoadPrerenderEvent {
   kMaxValue = kPrerenderActivationNavigation,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class PageLoadTrackerPageType {
   kPrimaryPage = 0,
   kPrerenderPage = 1,
@@ -68,29 +66,6 @@ enum class PageLoadTrackerPageType {
 
 extern const char kErrorEvents[];
 extern const char kPageLoadPrerender2Event[];
-extern const char kPageLoadPrerender2VisibilityAtActivation[];
-extern const char kPageLoadTrackerPageType[];
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class VisibilityAtActivation {
-  kHidden = 0,
-  kOccluded = 1,
-  kVisible = 2,
-  kMaxValue = kVisible
-};
-
-// These values are recorded into a UMA histogram as causes of irregular LCP
-// image load timings. These entries should not be renumbered and the numeric
-// values should not be reused. These entries should be kept in sync with the
-// definition in tools/metrics/histograms/enums.xml
-enum class ImageLoadStartLessThanDocumentTtfbCause {
-  kUnknown = 0,
-  kLoadedFromMemoryCache = 1,
-  kPreloadedWithEarlyHints = 2,
-  kLoadedFromMemoryCacheAndPreloadedWithEarlyHints = 3,
-  kMaxValue = kLoadedFromMemoryCacheAndPreloadedWithEarlyHints
-};
 
 }  // namespace internal
 
@@ -206,17 +181,31 @@ bool IsNavigationUserInitiated(content::NavigationHandle* handle);
 class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                         public PageLoadMetricsObserverDelegate {
  public:
+  // Whether a page is in foreground when it starts loading.
+  using InForegroundBool = base::StrongAlias<struct ForegroundTag, bool>;
+  // Whether a navigation is the first to occur in a WebContents.
+  using IsFirstNavigationInWebContentsBool =
+      base::StrongAlias<struct FirstNavigationInWebContentsTag, bool>;
+  // Whether a navigation is a reload of a page that was previously discarded.
+  // This typically happens when a user re-activates a background page that the
+  // browser had discarded. See https://wicg.github.io/page-lifecycle/spec.html
+  // for the formal definition of discarding.
+  using IsReloadAfterDiscardBool =
+      base::StrongAlias<struct ReloadAfterDiscardTag, bool>;
+
   // Caller must guarantee that the `embedder_interface` pointer outlives this
   // class. The PageLoadTracker must not hold on to `navigation_handle` beyond
   // the scope of the constructor.
-  PageLoadTracker(bool in_foreground,
-                  PageLoadMetricsEmbedderInterface* embedder_interface,
-                  const GURL& currently_committed_url,
-                  bool is_first_navigation_in_web_contents,
-                  content::NavigationHandle* navigation_handle,
-                  UserInitiatedInfo user_initiated_info,
-                  ukm::SourceId source_id,
-                  base::WeakPtr<PageLoadTracker> parent_tracker);
+  PageLoadTracker(
+      InForegroundBool in_foreground,
+      PageLoadMetricsEmbedderInterface* embedder_interface,
+      const GURL& currently_committed_url,
+      IsFirstNavigationInWebContentsBool is_first_navigation_in_web_contents,
+      IsReloadAfterDiscardBool is_reload_after_discard,
+      content::NavigationHandle* navigation_handle,
+      UserInitiatedInfo user_initiated_info,
+      ukm::SourceId source_id,
+      base::WeakPtr<PageLoadTracker> parent_tracker);
 
   PageLoadTracker(const PageLoadTracker&) = delete;
   PageLoadTracker& operator=(const PageLoadTracker&) = delete;
@@ -255,10 +244,10 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
-  void OnMainFrameImageAdRectsChanged(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) override;
-  void SetUpSharedMemoryForSmoothness(
-      base::ReadOnlySharedMemoryRegion shared_memory) override;
+  void OnMainFrameAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
+  void SetUpSharedMemoryForDroppedFrames(
+      base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
 
   // PageLoadMetricsObserverDelegate implementation:
   content::WebContents* GetWebContents() const override;
@@ -271,6 +260,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       size_t index) const override;
   bool StartedInForeground() const override;
   PageVisibility GetVisibilityAtActivation() const override;
+  bool IsReloadAfterDiscard() const override;
   bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
@@ -303,11 +293,14 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
-  ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
-  ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const override;
+  // Maps main-frame same-document navigation identified
+  // by |same_document_metrics_token| to its UKM source id.
+  ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
+      base::UnguessableToken same_document_metrics_token) const override;
   bool IsFirstNavigationInWebContents() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;
+  bool ShouldObserveScheme(std::string_view scheme) const override;
   int64_t GetNavigationId() const override;
 
   // The following methods are called on navigation related events.
@@ -332,7 +325,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void PageHidden();
   void PageShown();
   void RenderFrameDeleted(content::RenderFrameHost* rfh);
-  void FrameTreeNodeDeleted(int frame_tree_node_id);
+  void FrameTreeNodeDeleted(content::FrameTreeNodeId frame_tree_node_id);
 
   void OnInputEvent(const blink::WebInputEvent& event);
 
@@ -447,15 +440,17 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when the previewed page was activated for the tab promotion.
   void DidActivatePreviewedPage(base::TimeTicks activation_time);
 
-  // Called when V8 per-frame memory usage updates are available.
-  void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);
-
   // Called when a `SharedStorageWorkletHost` is created.
   void OnSharedStorageWorkletHostCreated();
 
   // Called when `sharedStorage.selectURL()` is called for some frame on the
   // page tracked.
   void OnSharedStorageSelectURLCalled();
+
+  // Called when a Fledge auction completes.
+  void OnAdAuctionComplete(bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result);
 
   // Checks if this tracker is for outermost pages.
   bool IsOutermostTracker() const { return !parent_tracker_; }
@@ -596,13 +591,12 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   const raw_ptr<content::WebContents> web_contents_;
 
-  // Holds the RenderFrameHost for the main frame of the page that this tracker
-  // instance is bound. Safe to use raw_ptr as the tracker instance is accessed
-  // via a map that uses the RenderFrameHost as the key while it's valid.
-  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
-      page_main_frame_;
+  // ID of the RenderFrameHost for the main frame of the page that this tracker
+  // instance is bound.
+  content::GlobalRenderFrameHostId page_main_frame_id_;
 
-  const bool is_first_navigation_in_web_contents_;
+  const IsFirstNavigationInWebContentsBool is_first_navigation_in_web_contents_;
+  const IsReloadAfterDiscardBool is_reload_after_discard_;
   const bool is_origin_visit_;
   bool is_terminal_visit_ = true;
 
@@ -613,12 +607,10 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   mojom::SoftNavigationMetricsPtr soft_navigation_metrics_;
 
-  GURL potential_soft_navigation_url_;
-
-  ukm::SourceId potential_soft_navigation_source_id_ = ukm::kInvalidSourceId;
-  ukm::SourceId previous_soft_navigation_source_id_ = ukm::kInvalidSourceId;
-
-  std::optional<base::TimeTicks> main_frame_receive_headers_start_;
+  // Maps main-frame same-document navigations identified
+  // by their token to their UKM source ids.
+  std::map<base::UnguessableToken, ukm::SourceId>
+      source_id_by_same_document_metrics_token_;
 
   const internal::PageLoadTrackerPageType page_type_;
 

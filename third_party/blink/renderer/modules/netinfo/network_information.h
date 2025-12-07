@@ -13,32 +13,30 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class NavigatorBase;
+class V8ConnectionType;
+class V8EffectiveConnectionType;
 
 class NetworkInformation final
     : public EventTarget,
       public ActiveScriptWrappable<NetworkInformation>,
-      public Supplement<NavigatorBase>,
       public ExecutionContextLifecycleObserver,
       public NetworkStateNotifier::NetworkStateObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Web-exposed as navigator.connection.
   static NetworkInformation* connection(NavigatorBase&);
 
   explicit NetworkInformation(NavigatorBase&);
   ~NetworkInformation() override;
 
-  String type() const;
+  V8ConnectionType type() const;
   double downlinkMax() const;
-  String effectiveType();
+  V8EffectiveConnectionType effectiveType();
   uint32_t rtt();
   double downlink();
   bool saveData() const;

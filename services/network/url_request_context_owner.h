@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_URL_REQUEST_CONTEXT_OWNER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 

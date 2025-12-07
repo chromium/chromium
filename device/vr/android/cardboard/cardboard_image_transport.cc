@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 
 #include <memory>
@@ -48,8 +43,9 @@ void CardboardImageTransport::DoRuntimeInitialization() {
   // TODO(crbug.com/40900864): Move this into helper classes rather than
   // directly using the cardboard types here.
   CardboardOpenGlEsDistortionRendererConfig config = {
-      CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes,
+      CardboardSupportedOpenGlEsTextureType::kGlTexture2D,
   };
+
   renderer_ = internal::ScopedCardboardObject<CardboardDistortionRenderer*>(
       CardboardOpenGlEs2DistortionRenderer_create(&config));
 
@@ -105,10 +101,11 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
   // Mojo (and by extension RectF and the frame bounds), use a convention that
   // the origin is the top left; while OpenGL/Cardboard use the convention that
   // the origin for textures should be at the bottom left, so the top/bottom are
-  // intentionally inverted here. However, this inversion is already accounted
-  // for in the non-shared buffer mode where we swap the texture to a surface
-  // beforehand.
-  if (UseSharedBuffer()) {
+  // typically intentionally inverted here. However, WebGPU produces textures
+  // that are flipped relative to WebGL, so WebGPU textures don't need to be
+  // flipped.
+  const bool should_flip = !IsWebGPUSession();
+  if (should_flip) {
     left_eye_description_.top_v = left_bounds.bottom();
     left_eye_description_.bottom_v = left_bounds.y();
     right_eye_description_.top_v = right_bounds.bottom();
@@ -120,10 +117,11 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
     right_eye_description_.top_v = right_bounds.y();
   }
 
-  GLuint texture = GetRenderingTextureId(webxr);
+  LocalTexture texture = GetRenderingTexture(webxr);
+  CHECK_EQ(static_cast<uint32_t>(GL_TEXTURE_2D), texture.target);
 
-  left_eye_description_.texture = texture;
-  right_eye_description_.texture = texture;
+  left_eye_description_.texture = texture.id;
+  right_eye_description_.texture = texture.id;
 
   // "x" and "y" below refer to the lower left pixel coordinates, which should
   // be 0,0.
@@ -134,8 +132,9 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
 }
 
 mojom::VRFieldOfViewPtr CardboardImageTransport::GetFOV(CardboardEye eye) {
-  float fov[4];
-  CardboardLensDistortion_getFieldOfView(lens_distortion_.get(), eye, fov);
+  std::array<float, 4> fov;
+  CardboardLensDistortion_getFieldOfView(lens_distortion_.get(), eye,
+                                         fov.data());
 
   return mojom::VRFieldOfView::New(
       fov[kFovTop] * kRadToDeg, fov[kFovBottom] * kRadToDeg,

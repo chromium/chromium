@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cast/message_port/message_port.h"
 
 namespace cast_api_bindings {
@@ -84,7 +85,7 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
       std::string_view message,
       std::vector<std::unique_ptr<MessagePort>> ports) final;
 
-  cast_api_bindings::MessagePort::Receiver* receiver_ = nullptr;
+  raw_ptr<cast_api_bindings::MessagePort::Receiver> receiver_ = nullptr;
   base::circular_deque<fuchsia::web::WebMessage> message_queue_;
 
  private:

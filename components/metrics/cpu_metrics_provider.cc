@@ -10,9 +10,9 @@
 
 namespace metrics {
 
-CPUMetricsProvider::CPUMetricsProvider() {}
+CPUMetricsProvider::CPUMetricsProvider() = default;
 
-CPUMetricsProvider::~CPUMetricsProvider() {}
+CPUMetricsProvider::~CPUMetricsProvider() = default;
 
 void CPUMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {
@@ -23,6 +23,7 @@ void CPUMetricsProvider::ProvideSystemProfileMetrics(
   cpu->set_vendor_name(cpu_info.vendor_name());
   cpu->set_signature(cpu_info.signature());
   cpu->set_num_cores(base::SysInfo::NumberOfProcessors());
+  cpu->set_num_efficient_cores(base::SysInfo::NumberOfEfficientProcessors());
   cpu->set_is_hypervisor(cpu_info.is_running_in_vm());
 }
 

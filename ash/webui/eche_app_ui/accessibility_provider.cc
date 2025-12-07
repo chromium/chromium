@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -76,11 +77,6 @@ AccessibilityProvider::AccessibilityProvider(
 AccessibilityProvider::~AccessibilityProvider() = default;
 
 void AccessibilityProvider::TrackView(AshWebView* view) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEcheSWAProcessAndroidAccessibilityTree)) {
-    // Don't track views if a11y tree is not enabled.
-    return;
-  }
   tree_source_ = std::make_unique<ax::android::AXTreeSourceAndroid>(
       this, std::make_unique<SerializationDelegate>(device_bounds_),
       view->GetNativeView() /*window*/);
@@ -105,11 +101,6 @@ void AccessibilityProvider::HandleStreamClosed() {
 
 void AccessibilityProvider::HandleAccessibilityEventReceived(
     const std::vector<uint8_t>& serialized_proto) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEcheSWAProcessAndroidAccessibilityTree)) {
-    return;
-  }
-
   if (serialized_proto.empty()) {
     return;
   }
@@ -141,8 +132,7 @@ void AccessibilityProvider::HandleAccessibilityEventReceived(
     case ax::android::mojom::AccessibilityFilterType::OFF:
       break;
     case ax::android::mojom::AccessibilityFilterType::INVALID_ENUM_VALUE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

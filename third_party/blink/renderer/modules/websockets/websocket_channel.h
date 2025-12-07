@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_CHANNEL_H_
 
 #include <memory>
-#include "base/functional/callback_forward.h"
+
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -48,14 +48,30 @@ class KURL;
 class MODULES_EXPORT WebSocketChannel
     : public GarbageCollected<WebSocketChannel> {
  public:
-  enum class SendResult { kSentSynchronously, kCallbackWillBeCalled };
+  // Abstract base class for objects that are called back when a call to Send()
+  // completes.
+  class MODULES_EXPORT SendCompletionWatcher {
+   public:
+    SendCompletionWatcher() = default;
+
+    SendCompletionWatcher(const SendCompletionWatcher&) = delete;
+    SendCompletionWatcher& operator=(const SendCompletionWatcher&) = delete;
+
+    // If the message is never sent due to the channel being closed, then the
+    // destructor can be used to clean up.
+    virtual ~SendCompletionWatcher();
+
+    // Called once when the message is sent. `synchronously` is true if the
+    // message was sent synchronously from with the Send() method.
+    virtual void OnMessageSent(bool synchronously) = 0;
+  };
 
   WebSocketChannel() = default;
 
   WebSocketChannel(const WebSocketChannel&) = delete;
   WebSocketChannel& operator=(const WebSocketChannel&) = delete;
 
-  virtual ~WebSocketChannel() = default;
+  virtual ~WebSocketChannel();
 
   enum CloseEventCode {
     kCloseEventCodeNotSpecified = -1,
@@ -77,12 +93,20 @@ class MODULES_EXPORT WebSocketChannel
   };
 
   virtual bool Connect(const KURL&, const String& protocol) = 0;
-  virtual SendResult Send(const std::string&,
-                          base::OnceClosure completion_callback) = 0;
-  virtual SendResult Send(const DOMArrayBuffer&,
-                          size_t byte_offset,
-                          size_t byte_length,
-                          base::OnceClosure completion_callback) = 0;
+
+  // Send a Text message. `watcher` may be null. If it is non-null and the
+  // return value is kWatcherWillBeCalled, then watcher->OnMessageSent() will be
+  // called when the message has been sent.
+  virtual void Send(const std::string&,
+                    std::unique_ptr<SendCompletionWatcher> watcher) = 0;
+
+  // Send a Binary message. `watcher` may be null. If it is non-null and the
+  // return value is kWatcherWillBeCalled, then watcher->OnMessageSent() will be
+  // called when the message has been sent.
+  virtual void Send(const DOMArrayBuffer&,
+                    size_t byte_offset,
+                    size_t byte_length,
+                    std::unique_ptr<SendCompletionWatcher> watcher) = 0;
 
   // Blobs are always sent asynchronously. No callers currently need completion
   // callbacks for Blobs, so they are not implemented.
@@ -100,7 +124,7 @@ class MODULES_EXPORT WebSocketChannel
   // execution context. Location should not be null.
   virtual void Fail(const String& reason,
                     mojom::ConsoleMessageLevel,
-                    std::unique_ptr<SourceLocation>) = 0;
+                    SourceLocation*) = 0;
 
   // Do not call any methods after calling this method.
   virtual void Disconnect() = 0;  // Will suppress didClose().

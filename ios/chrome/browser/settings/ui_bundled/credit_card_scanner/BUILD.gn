@@ -1,0 +1,55 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("credit_card_scanner") {
+  sources = [
+    "credit_card_scanned_image_delegate.h",
+    "credit_card_scanner_camera_controller.h",
+    "credit_card_scanner_camera_controller.mm",
+    "credit_card_scanner_camera_controller_delegate.h",
+    "credit_card_scanner_consumer.h",
+    "credit_card_scanner_coordinator.h",
+    "credit_card_scanner_coordinator.mm",
+    "credit_card_scanner_image_processor.h",
+    "credit_card_scanner_image_processor.mm",
+    "credit_card_scanner_mediator.h",
+    "credit_card_scanner_mediator.mm",
+    "credit_card_scanner_mediator_delegate.h",
+    "credit_card_scanner_string_util.h",
+    "credit_card_scanner_string_util.mm",
+    "credit_card_scanner_view.h",
+    "credit_card_scanner_view.mm",
+    "credit_card_scanner_view_controller.h",
+    "credit_card_scanner_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/scanner/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ui/base",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "Vision.framework",
+    "CoreMedia.framework",
+    "CoreVideo.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "credit_card_scanner_mediator_unittest.mm",
+    "credit_card_scanner_string_util_unittest.mm",
+  ]
+  deps = [
+    ":credit_card_scanner",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

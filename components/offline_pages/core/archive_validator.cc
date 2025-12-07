@@ -10,29 +10,24 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "build/build_config.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
-#endif
 
 namespace offline_pages {
 
-ArchiveValidator::ArchiveValidator() {
-  secure_hash_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-}
-
+ArchiveValidator::ArchiveValidator() = default;
 ArchiveValidator::~ArchiveValidator() = default;
 
-void ArchiveValidator::Update(const char* input, size_t len) {
-  secure_hash_->Update(input, len);
+void ArchiveValidator::Update(base::span<const uint8_t> buffer) {
+  hash_.Update(buffer);
+}
+
+void ArchiveValidator::Update(std::string_view buffer) {
+  hash_.Update(buffer);
 }
 
 std::string ArchiveValidator::Finish() {
-  std::string digest(crypto::kSHA256Length, 0);
-  secure_hash_->Finish(&(digest[0]), digest.size());
-  return digest;
+  std::string result(crypto::hash::kSha256Size, 0);
+  hash_.Finish(base::as_writable_byte_span(result));
+  return result;
 }
 
 // static
@@ -44,48 +39,39 @@ std::string ArchiveValidator::ComputeDigest(const base::FilePath& file_path) {
 // static
 std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
     const base::FilePath& file_path) {
-  base::File file;
-#if BUILDFLAG(IS_ANDROID)
-  if (file_path.IsContentUri()) {
-    file = base::OpenContentUri(file_path,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ);
-  } else {
-#endif  // BUILDFLAG(IS_ANDROID)
-    file.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-#if BUILDFLAG(IS_ANDROID)
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  if (!file.IsValid())
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
     return std::make_pair(0LL, std::string());
+  }
 
   ArchiveValidator archive_validator;
 
-  const int kMaxBufferSize = 1024;
-  std::vector<char> buffer(kMaxBufferSize);
+  std::array<uint8_t, 1024> buffer;
   int64_t total_read = 0LL;
-  int bytes_read;
-  do {
-    bytes_read = file.ReadAtCurrentPos(buffer.data(), kMaxBufferSize);
-    if (bytes_read > 0) {
-      total_read += bytes_read;
-      archive_validator.Update(buffer.data(), bytes_read);
+  while (true) {
+    std::optional<size_t> bytes_read = file.ReadAtCurrentPos(buffer);
+    if (!bytes_read.has_value()) {
+      return {0LL, std::string()};
     }
-  } while (bytes_read > 0);
-  if (bytes_read < 0)
-    return std::make_pair(0LL, std::string());
-
-  return std::make_pair(total_read, archive_validator.Finish());
+    if (bytes_read.value() == 0) {
+      return {total_read, archive_validator.Finish()};
+    }
+    total_read += bytes_read.value();
+    archive_validator.Update(base::span(buffer).first(*bytes_read));
+  }
 }
 
 // static
 bool ArchiveValidator::ValidateFile(const base::FilePath& file_path,
                                     int64_t expected_file_size,
                                     const std::string& expected_digest) {
-  int64_t actual_file_size;
-  if (!base::GetFileSize(file_path, &actual_file_size))
+  std::optional<int64_t> actual_file_size = base::GetFileSize(file_path);
+  if (!actual_file_size.has_value()) {
     return false;
-  if (expected_file_size != actual_file_size)
+  }
+  if (expected_file_size != actual_file_size.value()) {
     return false;
+  }
 
   std::string actual_digest = ComputeDigest(file_path);
   return expected_digest == actual_digest;

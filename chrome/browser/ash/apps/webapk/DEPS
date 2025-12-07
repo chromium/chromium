@@ -1,0 +1,18 @@
+include_rules = [
+  "-chrome",
+  "+chrome/browser/ash/apps/webapk",
+
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/apps",
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/policy",
+  "+chrome/browser/profiles",
+  "+chrome/browser/web_applications/web_app_icon_manager.h",
+  "+chrome/browser/web_applications/web_app_install_info.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/browser/web_applications/web_app_registrar.h",
+  "+chrome/browser/web_applications/web_app_utils.h",
+  "+chrome/common/chrome_switches.h",
+  "+components/webapk",
+]

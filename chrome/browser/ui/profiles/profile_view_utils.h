@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+class GURL;
 class Profile;
 class ProfileAttributesEntry;
 struct AccountInfo;
@@ -16,7 +17,7 @@ struct AccountInfo;
 // Navigates to the Google Account page.
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email);
 
-// Returns true if account sync is paused.
+// Returns true if account sync is paused, and a sync consent is present.
 bool IsSyncPaused(Profile* profile);
 
 // Returns true if there is an unconstented profile.
@@ -43,5 +44,9 @@ std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(
 
 // Returns true if |command_id| identifies an other profile menu item.
 bool IsOtherProfileCommand(int command_id);
+
+// True if the UI may present an affordance to open `url` into an OTR context
+// (e.g. a menu option to open the link in a new incognito window).
+bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url);
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_VIEW_UTILS_H_

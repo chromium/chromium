@@ -4,11 +4,11 @@
 
 #include "chrome/browser/printing/pdf_blob_data_flattener.h"
 
-#include <cstring>
 #include <utility>
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
@@ -59,7 +59,7 @@ void PdfBlobDataFlattener::ReadAndFlattenPdf(
 void PdfBlobDataFlattener::OnPdfRead(ReadAndFlattenPdfCallback callback,
                                      std::string data,
                                      int64_t /*blob_total_size*/) {
-  if (!LooksLikePdf(base::as_bytes(base::make_span(data)))) {
+  if (!LooksLikePdf(base::as_byte_span(data))) {
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
@@ -70,7 +70,7 @@ void PdfBlobDataFlattener::OnPdfRead(ReadAndFlattenPdfCallback callback,
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
-  memcpy(memory.mapping.memory(), data.data(), data.size());
+  memory.mapping.GetMemoryAsSpan<char>().copy_prefix_from(data);
 
   if (g_disable_pdf_flattening_for_testing) {
     CHECK_IS_TEST();

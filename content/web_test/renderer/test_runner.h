@@ -101,10 +101,6 @@ class TestRunner {
   // Notification that another renderer has explicitly asked the test to end.
   void TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source);
 
-  // Performs a reset at the end of a test, in order to prepare for the next
-  // test.
-  void ResetRendererAfterWebTest();
-
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
   void AddMainFrame(WebFrameTestProxy& frame);
@@ -140,6 +136,11 @@ class TestRunner {
   // Returns the default page margin size to be used for printing. The value
   // applies to all four sides of the page.
   int GetPrintingMargin() const;
+
+  // Returns printable safe inset. Printers usually have unprintable areas near
+  // the paper edges, due to the paper handling mechanism. This is the larger
+  // inset of those areas.
+  int GetSafePrintableInset() const;
 
   // Returns the page ranges to be printed. This is specified in the document
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no
@@ -467,7 +468,6 @@ class TestRunner {
   void DumpResourceResponseMIMETypes();
 
   // WebContentSettingsClient related.
-  void SetImagesAllowed(bool allowed, WebFrameTestProxy& source);
   void SetStorageAllowed(bool allowed, WebFrameTestProxy& source);
   void SetAllowRunningOfInsecureContent(bool allowed,
                                         WebFrameTestProxy& source);
@@ -485,6 +485,7 @@ class TestRunner {
                            WebFrameTestProxy& source);
   void SetPrintingSize(int width, int height, WebFrameTestProxy& source);
   void SetPrintingMargin(int size, WebFrameTestProxy& source);
+  void SetSafePrintableInset(int inset, WebFrameTestProxy& source);
   void SetShouldCenterAndShrinkToFitPaper(bool b) {
     should_center_and_shrink_to_fit_paper_ = b;
   }

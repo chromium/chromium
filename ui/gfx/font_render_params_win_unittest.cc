@@ -49,8 +49,9 @@ TEST_F(FontRenderParamsTest, SystemFontSettingsDisabled) {
 TEST_F(FontRenderParamsTest, DefaultRegistryState) {
   // Ensure that with the feature enabled, the values of `FontRenderParams`
   // match the associated registry key values.
-  base::test::ScopedFeatureList scoped_features(
-      features::kUseGammaContrastRegistrySettings);
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {features::kUseGammaContrastRegistrySettings}, {});
 
   FontRenderParams params =
       GetFontRenderParams(FontRenderParamsQuery(), nullptr);
@@ -119,9 +120,7 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
   // flag.
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
-      {features::kIncreaseWindowsTextContrast,
-       features::kUseGammaContrastRegistrySettings},
-      {});
+      {features::kUseGammaContrastRegistrySettings}, {});
 
   // Override the registry to maintain test machine state.
   ASSERT_NO_FATAL_FAILURE(
@@ -144,16 +143,6 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
     EXPECT_FLOAT_EQ(FontUtilWin::GetGammaFromRegistry() * kGammaMultiplier,
                     gamma);
   }
-}
-
-TEST_F(FontRenderParamsTest, TextGammaContrast) {
-  EXPECT_EQ(FontUtilWin::TextGammaContrast(), SK_GAMMA_CONTRAST);
-}
-
-TEST_F(FontRenderParamsTest, IncreasedContrast) {
-  base::test::ScopedFeatureList scoped_features(
-      features::kIncreaseWindowsTextContrast);
-  EXPECT_EQ(FontUtilWin::TextGammaContrast(), 1.0f);
 }
 
 }  // namespace gfx

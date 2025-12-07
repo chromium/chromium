@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <utility>
 
@@ -12,6 +14,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -19,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_store_delete_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_store_get_options.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -35,6 +39,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -68,7 +73,8 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     const KURL& cookie_url,
     const CookieInit* options,
     ExceptionState& exception_state,
-    net::CookieInclusionStatus& status_out) {
+    net::CookieInclusionStatus& status_out,
+    ExecutionContext* execution_context) {
   const String& name = options->name();
   const String& value = options->value();
   if (name.empty() && value.Contains('=')) {
@@ -81,16 +87,55 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
         "Cookie name and value both cannot be empty");
     return nullptr;
   }
+  if (name.Contains('=')) {
+    exception_state.ThrowTypeError("Cookie name cannot contain '='");
+    return nullptr;
+  }
 
-  base::Time expires = options->hasExpiresNonNull()
-                           ? base::Time::FromMillisecondsSinceUnixEpoch(
-                                 options->expiresNonNull())
-                           : base::Time();
+  base::Time expiry_time;
+  if (base::FeatureList::IsEnabled(blink::features::kCookieStoreAPIMaxAge) &&
+      options->hasMaxAge()) {
+    if (options->expires().has_value()) {
+      // If both maxAge and expires are provided, throw an error.
+      exception_state.ThrowTypeError(
+          "Cookie expires and maxAge cannot both be specified");
+      return nullptr;
+    }
+    const int64_t max_age = options->maxAge().value();
+    // "If delta-seconds is less than or equal to zero (0), let expiry-
+    // time be the earliest representable date and time. Otherwise, let the
+    // expiry-time be the current date and time plus delta-seconds seconds."
+    expiry_time = (max_age <= 0) ? base::Time().Min()
+                                 : base::Time::Now() + base::Seconds(max_age);
 
-  String cookie_url_host = cookie_url.Host();
+  } else if (options->expires().has_value()) {
+    expiry_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(options->expires().value());
+  }
+
+  String cookie_url_host = cookie_url.Host().ToString();
   String domain;
+  // Trying to set `__http-` prefixed cookie will be rejected further down by
+  // CreateSanitizedCookie regardless of the condition below. Its role is to
+  // provide a more meaningful exception message than "Cookie was malformed..".
+  const bool is_http_prefix =
+      base::FeatureList::IsEnabled(net::features::kPrefixCookieHttp) &&
+      name.StartsWithIgnoringASCIICase("__http-");
+  const bool is_host_http_prefix =
+      base::FeatureList::IsEnabled(net::features::kPrefixCookieHostHttp) &&
+      name.StartsWithIgnoringASCIICase("__host-http-");
+  if (is_http_prefix || is_host_http_prefix) {
+    StringBuilder builder;
+    builder.AppendFormat(
+        "Cookies with \"%s\" prefix cannot be set using the CookieStore API.",
+        is_http_prefix ? "__Http-" : "__Host-Http-");
+    exception_state.ThrowTypeError(builder.ToString());
+    return nullptr;
+  }
+  const bool is_host_prefixed_cookie =
+      name.StartsWithIgnoringASCIICase("__host-");
   if (!options->domain().IsNull()) {
-    if (name.StartsWith("__Host-")) {
+    if (is_host_prefixed_cookie) {
       exception_state.ThrowTypeError(
           "Cookies with \"__Host-\" prefix cannot have a domain");
       return nullptr;
@@ -103,18 +148,24 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       return nullptr;
     }
 
-    domain = String(".") + options->domain();
+    domain = StrCat({".", options->domain()}).LowerASCII();
     if (!cookie_url_host.EndsWith(domain) &&
-        cookie_url_host != options->domain()) {
+        cookie_url_host != options->domain().LowerASCII()) {
       exception_state.ThrowTypeError(
           "Cookie domain must domain-match current host");
       return nullptr;
     }
   }
 
+  // If `options` has a supplied `path`, and the `path` is empty, this implies
+  // the caller intentionally set this option to be the empty string.
+  // We log when this happens to see how common it is for scripts to do this.
+  if (options->hasPath() && options->path().empty()) {
+    UseCounter::Count(execution_context, WebFeature::kCookieStoreEmptyPath);
+  }
   String path = options->path();
   if (!path.empty()) {
-    if (name.StartsWith("__Host-") && path != "/") {
+    if (is_host_prefixed_cookie && path != "/") {
       exception_state.ThrowTypeError(
           "Cookies with \"__Host-\" prefix cannot have a non-\"/\" path");
       return nullptr;
@@ -124,7 +175,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       return nullptr;
     }
     if (!path.EndsWith("/")) {
-      path = path + String("/");
+      path = StrCat({path, "/"});
     }
   }
 
@@ -145,13 +196,16 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   }
 
   net::CookieSameSite same_site;
-  if (options->sameSite() == "strict") {
-    same_site = net::CookieSameSite::STRICT_MODE;
-  } else if (options->sameSite() == "lax") {
-    same_site = net::CookieSameSite::LAX_MODE;
-  } else {
-    DCHECK_EQ(options->sameSite(), "none");
-    same_site = net::CookieSameSite::NO_RESTRICTION;
+  switch (options->sameSite().AsEnum()) {
+    case V8CookieSameSite::Enum::kStrict:
+      same_site = net::CookieSameSite::STRICT_MODE;
+      break;
+    case V8CookieSameSite::Enum::kLax:
+      same_site = net::CookieSameSite::LAX_MODE;
+      break;
+    case V8CookieSameSite::Enum::kNone:
+      same_site = net::CookieSameSite::NO_RESTRICTION;
+      break;
   }
 
   std::optional<net::CookiePartitionKey> cookie_partition_key = std::nullopt;
@@ -164,7 +218,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           GURL(cookie_url), name.Utf8(), value.Utf8(), domain.Utf8(),
-          path.Utf8(), base::Time() /*creation*/, expires,
+          path.Utf8(), base::Time() /*creation*/, expiry_time,
           base::Time() /*last_access*/, true /*secure*/, false /*http_only*/,
           same_site, net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
           cookie_partition_key, &status_out);
@@ -202,6 +256,7 @@ KURL CookieUrlForRead(const CookieStoreGetOptions* options,
     return default_cookie_url;
 
   KURL cookie_url = KURL(default_cookie_url, options->url());
+  cookie_url.RemoveFragmentIdentifier();
 
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     DCHECK_EQ(default_cookie_url, window->document()->CookieURL());
@@ -258,6 +313,15 @@ const scoped_refptr<const SecurityOrigin> DefaultTopFrameOrigin(
       url::Origin::Create(net::SchemefulSite(key.GetTopLevelSite()).GetURL()));
 }
 
+bool IsAdTagged(ExecutionContext* context) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (auto* local_frame = window->GetFrame()) {
+      return local_frame->IsAdFrame();
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 CookieStore::CookieStore(
@@ -295,8 +359,8 @@ ScriptPromise<IDLSequence<CookieListItem>> CookieStore::getAll(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   DoRead(script_state, options,
-         WTF::BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
-                       WrapPersistent(resolver)),
+         BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
+                  WrapPersistent(resolver)),
          exception_state);
   if (exception_state.HadException()) {
     resolver->Detach();
@@ -330,10 +394,10 @@ ScriptPromise<IDLNullable<CookieListItem>> CookieStore::get(
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<CookieListItem>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  DoRead(script_state, options,
-         WTF::BindOnce(&CookieStore::GetAllForUrlToGetResult,
-                       WrapPersistent(resolver)),
-         exception_state);
+  DoRead(
+      script_state, options,
+      BindOnce(&CookieStore::GetAllForUrlToGetResult, WrapPersistent(resolver)),
+      exception_state);
   if (exception_state.HadException()) {
     resolver->Detach();
     return EmptyPromise();
@@ -369,7 +433,7 @@ ScriptPromise<IDLUndefined> CookieStore::Delete(
 
   CookieInit* set_options = CookieInit::Create();
   set_options->setName(name);
-  set_options->setValue("deleted");
+  set_options->setValue(name.empty() ? "deleted" : "");
   set_options->setExpires(0);
   return DoWrite(script_state, set_options, exception_state);
 }
@@ -380,11 +444,11 @@ ScriptPromise<IDLUndefined> CookieStore::Delete(
     ExceptionState& exception_state) {
   CookieInit* set_options = CookieInit::Create();
   set_options->setName(options->name());
-  set_options->setValue("deleted");
+  set_options->setValue(options->name().empty() ? "deleted" : "");
   set_options->setExpires(0);
   set_options->setDomain(options->domain());
   set_options->setPath(options->path());
-  set_options->setSameSite("strict");
+  set_options->setSameSite(V8CookieSameSite::Enum::kStrict);
   set_options->setPartitioned(options->partitioned());
   return DoWrite(script_state, set_options, exception_state);
 }
@@ -463,18 +527,17 @@ void CookieStore::DoRead(ScriptState* script_state,
     return;
   }
 
-  bool is_ad_tagged = false;
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (auto* local_frame = window->GetFrame()) {
-      is_ad_tagged = local_frame->IsAdFrame();
-    }
-  }
-  backend_->GetAllForUrl(cookie_url, default_site_for_cookies_,
-                         default_top_frame_origin_,
-                         context->GetStorageAccessApiStatus(),
-                         std::move(backend_options), is_ad_tagged,
-                         /*force_disable_third_party_cookies=*/false,
-                         std::move(backend_result_converter));
+  bool is_ad_tagged = IsAdTagged(context);
+  bool should_apply_devtools_overrides = false;
+  probe::ShouldApplyDevtoolsCookieSettingOverrides(
+      GetExecutionContext(), &should_apply_devtools_overrides);
+
+  backend_->GetAllForUrl(
+      cookie_url, default_site_for_cookies_, default_top_frame_origin_,
+      context->GetStorageAccessApiStatus(), std::move(backend_options),
+      is_ad_tagged, should_apply_devtools_overrides,
+      /*force_disable_third_party_cookies=*/false,
+      std::move(backend_result_converter));
 }
 
 // static
@@ -534,8 +597,8 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
   }
 
   net::CookieInclusionStatus status;
-  std::unique_ptr<net::CanonicalCookie> canonical_cookie =
-      ToCanonicalCookie(default_cookie_url_, options, exception_state, status);
+  std::unique_ptr<net::CanonicalCookie> canonical_cookie = ToCanonicalCookie(
+      default_cookie_url_, options, exception_state, status, context);
 
   if (!canonical_cookie) {
     DCHECK(exception_state.HadException());
@@ -551,14 +614,20 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
     return EmptyPromise();
   }
 
+  bool is_ad_tagged = IsAdTagged(context);
+  bool should_apply_devtools_overrides = false;
+  probe::ShouldApplyDevtoolsCookieSettingOverrides(
+      GetExecutionContext(), &should_apply_devtools_overrides);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
       default_site_for_cookies_, default_top_frame_origin_,
-      context->GetStorageAccessApiStatus(), status,
-      WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
-                    WrapPersistent(resolver)));
+      context->GetStorageAccessApiStatus(), status, is_ad_tagged,
+      should_apply_devtools_overrides,
+      BindOnce(&CookieStore::OnSetCanonicalCookieResult,
+               WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

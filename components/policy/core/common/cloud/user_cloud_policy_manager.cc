@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -47,7 +46,7 @@ UserCloudPolicyManager::UserCloudPolicyManager(
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : CloudPolicyManager(dm_protocol::kChromeUserPolicyType,
+    : CloudPolicyManager(dm_protocol::GetChromeUserPolicyType(),
                          std::string(),
                          std::move(user_store),
                          task_runner,
@@ -56,7 +55,7 @@ UserCloudPolicyManager::UserCloudPolicyManager(
       component_policy_cache_path_(component_policy_cache_path),
       external_data_manager_(std::move(external_data_manager)) {}
 
-UserCloudPolicyManager::~UserCloudPolicyManager() {}
+UserCloudPolicyManager::~UserCloudPolicyManager() = default;
 
 std::unique_ptr<UserCloudPolicyManager> UserCloudPolicyManager::Create(
     const base::FilePath& profile_path,
@@ -140,7 +139,7 @@ void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   // that all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
   user_store_->Clear();
-  SetPoliciesRequired(false, PolicyFetchReason::kUnspecified);
+  SetPoliciesRequired(false, PolicyFetchReason::kDisconnect);
 }
 
 void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
@@ -149,14 +148,6 @@ void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
   // If the store has a verified policy blob received from the server then apply
   // the defaults for policies that haven't been configured by the administrator
   // given that this is an enterprise user.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!store()->has_policy())
-    return;
-
-  // TODO(https://crbug.com/1206315): Don't apply enterprise defaults for Child
-  // user.
-  SetEnterpriseUsersProfileDefaults(policy_map);
-#endif
 #if BUILDFLAG(IS_ANDROID)
   if (store()->has_policy() &&
       !policy_map->Get(key::kNTPContentSuggestionsEnabled)) {

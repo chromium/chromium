@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -43,17 +43,21 @@
 namespace {
 
 // Check that there are two browsers. Find the one that is not |browser|.
-Browser* FindOneOtherBrowser(Browser* browser) {
+BrowserWindowInterface* FindOneOtherBrowser(Browser* browser) {
   // There should only be one other browser.
   EXPECT_EQ(2u, chrome::GetBrowserCount(browser->profile()));
 
   // Find the new browser.
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser)
-      return b;
-  }
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [browser, &result](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface != browser) {
+          result = browser_window_interface;
+        }
+        return !result;
+      });
 
-  return nullptr;
+  return result;
 }
 
 class MockTriggeredProfileResetter : public TriggeredProfileResetter {
@@ -124,8 +128,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
 
   Profile* profile = browser()->profile();
 
-  // Avoid showing the Welcome and What's New pages.
-  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+  // Avoid showing the What's New page.
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
 
@@ -148,18 +151,18 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                    chrome::startup::IsFirstRun::kNo);
-  launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
+  launch.Launch(profile, chrome::startup::IsProcessStartup::kNo,
                 /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
+  BrowserWindowInterface* const new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
 
   std::vector<GURL> expected_urls(urls);
   expected_urls.insert(expected_urls.begin(), GetTriggeredResetSettingsURL());
 
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  TabStripModel* const tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(static_cast<int>(expected_urls.size()), tab_strip->count());
   for (size_t i = 0; i < expected_urls.size(); i++) {
     EXPECT_EQ(expected_urls[i],
@@ -189,23 +192,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   // Prep the next launch to be offered a reset prompt.
   MockTriggeredProfileResetter::SetHasResetTrigger(true);
 
-  // Avoid showing the Welcome page.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage,
-                                               true);
-
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
-                nullptr, /*restore_tabbed_browser=*/true);
+                /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
+  BrowserWindowInterface* const new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
 
   // Verify that only the first-run tabs are shown.
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  TabStripModel* const tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(2, tab_strip->count());
 
   EXPECT_EQ("title1.html",
@@ -235,12 +234,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
     launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
-                  nullptr, /*restore_tabbed_browser=*/true);
+                  /*restore_tabbed_browser=*/true);
   }
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
+  BrowserWindowInterface* const new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
 
   // Now create a second browser instance pointing to a different profile.
@@ -250,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   std::unique_ptr<Profile> other_profile;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    other_profile =
-        Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
+    other_profile = Profile::CreateProfile(path, nullptr,
+                                           Profile::CreateMode::kSynchronous);
   }
   Profile* other_profile_ptr = other_profile.get();
   profile_manager->RegisterTestingProfile(std::move(other_profile), true);
@@ -275,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
     launch.Launch(other_profile_ptr, chrome::startup::IsProcessStartup::kNo,
-                  nullptr, /*restore_tabbed_browser=*/true);
+                  /*restore_tabbed_browser=*/true);
   }
 
   Browser* other_profile_browser =

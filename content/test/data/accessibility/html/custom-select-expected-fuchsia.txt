@@ -1,0 +1,69 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable label='Currency for purchase' actions='{DEFAULT}' value='USD'
+++++++++UNKNOWN hidden
+++++++++++BUTTON hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++IMAGE hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++STATIC_TEXT hidden
+++++++++++++UNKNOWN hidden
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN hidden focusable label='EUR Euro' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++IMAGE hidden
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='EUR'
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='Euro'
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++UNKNOWN hidden focusable label='GBP Great British Pound' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++IMAGE hidden
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='GBP'
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='Great British Pound'
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++UNKNOWN focusable selected label='USD United States Dollar' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN
+++++++++++++++++++IMAGE
+++++++++++++++++++UNKNOWN
+++++++++++++++++++++UNKNOWN
+++++++++++++++++++++++STATIC_TEXT label='USD'
+++++++++++++++++++++UNKNOWN
+++++++++++++++++++++++STATIC_TEXT label='United States Dollar'
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++UNKNOWN hidden focusable label='JPY Japanese Yen' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++IMAGE hidden
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='JPY'
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='Japanese Yen'
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++UNKNOWN hidden focusable label='BTC Bitcoin' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++IMAGE hidden
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='BTC'
+++++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++++STATIC_TEXT hidden label='Bitcoin'
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++STATIC_TEXT hidden

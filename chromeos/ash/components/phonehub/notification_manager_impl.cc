@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
@@ -77,5 +76,4 @@ void NotificationManagerImpl::OnFeatureStatesChanged(
   notifications_feature_status_ = notifications_feature_state;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

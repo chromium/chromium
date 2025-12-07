@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.feed;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
@@ -15,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Tracker class for various feed surfaces. */
+@NullMarked
 public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     /** Feed surface tracker observer. */
     public interface Observer {
@@ -22,16 +25,16 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
         void surfaceOpened();
     }
 
-    private static FeedSurfaceTracker sSurfaceTracker;
+    private static @Nullable FeedSurfaceTracker sSurfaceTracker;
 
     // We avoid attaching surfaces until after |startup()| is called. This ensures that
     // the correct sign-in state is used if attaching the surface triggers a fetch.
     private boolean mStartupCalled;
 
-    private ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     // Tracks all the instances of FeedSurfaceCoordinator.
-    @VisibleForTesting HashSet<SurfaceCoordinator> mCoordinators;
+    @VisibleForTesting @Nullable HashSet<SurfaceCoordinator> mCoordinators;
 
     public static FeedSurfaceTracker getInstance() {
         if (sSurfaceTracker == null) {
@@ -45,7 +48,7 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     /**
      * @return the process scope for the feed.
      */
-    public ProcessScope getXSurfaceProcessScope() {
+    public @Nullable ProcessScope getXSurfaceProcessScope() {
         return FeedServiceBridge.xSurfaceProcessScope();
     }
 

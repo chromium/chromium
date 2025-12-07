@@ -11,20 +11,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -57,7 +53,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
                          ToBlobFunctionType function_type,
                          base::TimeTicks start_time,
                          ExecutionContext*,
-                         const IdentifiableToken& input_digest,
                          ScriptPromiseResolver<Blob>*);
   CanvasAsyncBlobCreator(scoped_refptr<StaticBitmapImage>,
                          const ImageEncodeOptions*,
@@ -65,7 +60,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
                          V8BlobCallback*,
                          base::TimeTicks start_time,
                          ExecutionContext*,
-                         const IdentifiableToken& input_digest,
                          ScriptPromiseResolver<Blob>* = nullptr);
   virtual ~CanvasAsyncBlobCreator();
 
@@ -118,7 +112,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   base::TimeTicks start_time_;
   base::TimeTicks schedule_idle_task_start_time_;
   bool static_bitmap_image_loaded_;
-  IdentifiableToken input_digest_;
 
   // Used when CanvasAsyncBlobCreator runs on main thread only
   scoped_refptr<base::SingleThreadTaskRunner> parent_frame_task_runner_;
@@ -149,9 +142,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
 
   void IdleTaskStartTimeoutEvent(double quality);
   void IdleTaskCompleteTimeoutEvent();
-
-  void RecordIdentifiabilityMetric();
-  void TraceCanvasContent(Vector<unsigned char>* encoded_image);
 };
 
 }  // namespace blink

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] cookieStore.get with same-origin url path in options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'get' on 'CookieStore': URL must be within Service Worker scope"
+[FAIL] cookieStore.get with whitespace
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'name')"
+Harness: the test ran to completion.
+

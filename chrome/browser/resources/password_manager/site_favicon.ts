@@ -55,9 +55,9 @@ export class SiteFaviconElement extends PolymerElement {
     };
   }
 
-  domain: string;
-  url: string;
-  private showDownloadedIcon_: boolean;
+  declare domain: string;
+  declare url: string;
+  declare private showDownloadedIcon_: boolean;
 
   override ready() {
     super.ready();

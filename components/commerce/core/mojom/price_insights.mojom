@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module commerce.price_insights.mojom;
+
+// Used by the WebUI page (i.e., price insights side panel) to bootstrap
+// communication with the C++-side handler.
+interface PriceInsightsHandler {
+  // Notify the backend that the UI is ready to be shown.
+  ShowSidePanelUI();
+
+  // Show feedback form for price insights.
+  ShowFeedback();
+};
+
+// Browser-side handler for price insights related requests from the WebUI page.
+interface PriceInsightsHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePriceInsightsHandler(
+      pending_receiver<PriceInsightsHandler> handler);
+};

@@ -7,40 +7,31 @@ package org.chromium.chrome.browser.ui.signin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.res.Configuration;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.components.signin.AccountUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Helper functions for sign-in and accounts. */
+@NullMarked
 public final class SigninUtils {
-    private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
-    private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
+    private static final int DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH = 600;
 
     private SigninUtils() {}
 
     /**
      * Opens a Settings page to configure settings for a single account.
+     *
      * @param activity Activity to use when starting the Activity.
      * @param accountEmail The account email for which the Settings page should be opened.
      * @return Whether or not Android accepted the Intent.
      */
     public static boolean openSettingsForAccount(Activity activity, String accountEmail) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // ACCOUNT_SETTINGS_ACTION no longer works on Android O+, always open all accounts page.
-            return openSettingsForAllAccounts(activity);
-        }
-        Intent intent = new Intent(ACCOUNT_SETTINGS_ACTION);
-        intent.putExtra(
-                ACCOUNT_SETTINGS_ACCOUNT_KEY, AccountUtils.createAccountFromName(accountEmail));
-        return IntentUtils.safeStartActivity(activity, intent);
+        return openSettingsForAllAccounts(activity);
     }
 
     /**
@@ -107,35 +98,34 @@ public final class SigninUtils {
 
     private static String getAccountLabelForNonSelectedAccount(
             DisplayableProfileData profileData, Context context) {
+        String fullName = profileData.getFullName();
         if (!profileData.hasDisplayableEmailAddress()) {
-            return profileData.getFullName();
+            return TextUtils.isEmpty(fullName) ? "" : fullName;
         }
-        if (TextUtils.isEmpty(profileData.getFullName())) {
+        if (TextUtils.isEmpty(fullName)) {
             return profileData.getAccountEmail();
         }
         return context.getString(
                 R.string.signin_account_label_for_non_selected_account,
-                profileData.getFullName(),
+                fullName,
                 profileData.getAccountEmail());
     }
 
-    /**
-     * Returns whether the new sign-in flow should be shown instead of the usual one (sign-in and
-     * enable sync for instance) for an sign-in access point eligible to the new flow.
-     */
-    public static boolean shouldShowNewSigninFlow() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-    }
-
-    /** Wraps the view into layout that resembles DialogWhenLarge. */
     public static View wrapInDialogWhenLargeLayout(View promoContentView) {
         return DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(promoContentView);
     }
 
-    /** Returns whether the activity shows on tablet or automotive. */
-    public static boolean isTabletOrAuto(Activity activity) {
-        return BuildInfo.getInstance().isAutomotive
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
+    /**
+     * Returns whether dual panes horizontal layout can be used on full screen views (e.g. FRE or
+     * Upgrade promo sub-views) given the configuration.
+     */
+    public static boolean shouldShowDualPanesHorizontalLayout(Context context) {
+        Configuration configuration = context.getResources().getConfiguration();
+
+        // Since the landscape view has two panes the minimum screenWidth to show it is set to
+        // 600dp for phones.
+        return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                && configuration.screenWidthDp >= DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH
+                && !DialogWhenLargeContentLayout.shouldShowAsDialog(context);
     }
 }

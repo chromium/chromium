@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_distance_model_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_panning_model_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/audio/distance_effect.h"
@@ -56,26 +58,26 @@ class PannerHandler final : public AudioHandler {
                                    uint32_t frames_to_process);
   bool RequiresTailProcessing() const override;
   void SetChannelCount(unsigned, ExceptionState&) override;
-  void SetChannelCountMode(const String&, ExceptionState&) override;
+  void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&) override;
   double TailTime() const override { return panner_ ? panner_->TailTime() : 0; }
   void Uninitialize() override;
 
   double ConeInnerAngle() const { return cone_effect_.InnerAngle(); }
   double ConeOuterAngle() const { return cone_effect_.OuterAngle(); }
   double ConeOuterGain() const { return cone_effect_.OuterGain(); }
-  String DistanceModel() const;
+  V8DistanceModelType::Enum DistanceModel() const;
   double MaxDistance() { return distance_effect_.MaxDistance(); }
-  String PanningModel() const;
+  V8PanningModelType::Enum PanningModel() const;
   double RefDistance() { return distance_effect_.RefDistance(); }
   double RolloffFactor() { return distance_effect_.RolloffFactor(); }
 
   void SetConeInnerAngle(double angles_in_degrees);
   void SetConeOuterAngle(double angles_in_degrees);
   void SetConeOuterGain(double);
-  void SetDistanceModel(const String&);
+  void SetDistanceModel(V8DistanceModelType::Enum);
   void SetMaxDistance(double);
   void SetOrientation(float x, float y, float z, ExceptionState&);
-  void SetPanningModel(const String&);
+  void SetPanningModel(V8PanningModelType::Enum);
   void SetPosition(float x, float y, float z, ExceptionState&);
   void SetRefDistance(double);
   void SetRolloffFactor(double);
@@ -154,6 +156,17 @@ class PannerHandler final : public AudioHandler {
   scoped_refptr<AudioParamHandler> orientation_z_;
 
   scoped_refptr<AudioListenerHandler> listener_handler_;
+
+  // Sample-accurate value arrays for PannerHandler.
+  AudioFloatArray panner_x_values_;
+  AudioFloatArray panner_y_values_;
+  AudioFloatArray panner_z_values_;
+  AudioFloatArray orientation_x_values_;
+  AudioFloatArray orientation_y_values_;
+  AudioFloatArray orientation_z_values_;
+  AudioDoubleArray azimuth_values_;
+  AudioDoubleArray elevation_values_;
+  AudioFloatArray total_gain_values_;
 
   // To synchronize `Process()` with the setting of this panner's state. (e.g.
   // position, orientation, distance, sound cone, and the listener)

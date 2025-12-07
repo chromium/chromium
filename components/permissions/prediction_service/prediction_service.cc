@@ -6,18 +6,22 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/types/optional_ref.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -96,8 +100,6 @@ const GURL PredictionService::GetPredictionServiceUrl(
   static base::NoDestructor<GURL> command_line_url_override{
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kDefaultPredictionServiceUrlSwitchKey)};
-  static base::NoDestructor<GURL> feature_param_url_override{
-      feature_params::kPermissionPredictionServiceUrlOverride.Get()};
 
   // To facilitate tests that want to exercise various url building logic,
   // reinitialize the static variables if this flag is set.
@@ -105,15 +107,10 @@ const GURL PredictionService::GetPredictionServiceUrl(
     *command_line_url_override =
         GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             kDefaultPredictionServiceUrlSwitchKey));
-    *feature_param_url_override =
-        GURL(feature_params::kPermissionPredictionServiceUrlOverride.Get());
   }
 
   if (command_line_url_override->is_valid())
     return *command_line_url_override;
-
-  if (feature_param_url_override->is_valid())
-    return *feature_param_url_override;
 
   return *default_prediction_service_url;
 }
@@ -158,11 +155,11 @@ void PredictionService::OnURLLoaderComplete(
     const PredictionRequestFeatures& entity,
     network::SimpleURLLoader* loader,
     base::TimeTicks request_start_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   for (auto& request : pending_requests_) {
     if (request.first.get() == loader) {
       auto prediction_response =
-          CreatePredictionsResponse(loader, response_body.get());
+          CreatePredictionsResponse(loader, response_body);
 
       if (request.second) {
         std::optional<GeneratePredictionsResponse> response;
@@ -181,12 +178,13 @@ void PredictionService::OnURLLoaderComplete(
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected loader callback.";
+  NOTREACHED() << "Unexpected loader callback.";
 }
 
 std::unique_ptr<GeneratePredictionsResponse>
-PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
-                                             const std::string* response_body) {
+PredictionService::CreatePredictionsResponse(
+    network::SimpleURLLoader* loader,
+    base::optional_ref<std::string> response_body) {
   if (!response_body || loader->NetError() != net::OK ||
       loader->ResponseInfo()->headers->response_code() != net::HTTP_OK) {
     return nullptr;

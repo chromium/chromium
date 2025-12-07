@@ -11,29 +11,38 @@ namespace blink::cssvalue {
 
 bool CSSDynamicRangeLimitMixValue::Equals(
     const CSSDynamicRangeLimitMixValue& other) const {
-  return base::ValuesEquivalent(limit1_, other.limit1_) &&
-         base::ValuesEquivalent(limit2_, other.limit2_) &&
-         base::ValuesEquivalent(percentage_, other.percentage_);
+  if (limits_.size() != other.limits_.size()) {
+    return false;
+  }
+  CHECK(limits_.size() == other.percentages_.size());
+  for (size_t i = 0; i < limits_.size(); ++i) {
+    if (!base::ValuesEquivalent(limits_[i], other.limits_[i]) ||
+        !base::ValuesEquivalent(percentages_[i], other.percentages_[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 String CSSDynamicRangeLimitMixValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("dynamic-range-limit-mix(");
-  result.Append(limit1_->CssText());
-  result.Append(", ");
-  result.Append(limit2_->CssText());
-  result.Append(", ");
-  result.Append(percentage_->CssText());
+  for (size_t i = 0; i < limits_.size(); ++i) {
+    result.Append(limits_[i]->CssText());
+    result.Append(" ");
+    result.Append(percentages_[i]->CssText());
+    if (i != limits_.size() - 1) {
+      result.Append(", ");
+    }
+  }
   result.Append(")");
-
   return result.ReleaseString();
 }
 
 void CSSDynamicRangeLimitMixValue::TraceAfterDispatch(
     blink::Visitor* visitor) const {
-  visitor->Trace(limit1_);
-  visitor->Trace(limit2_);
-  visitor->Trace(percentage_);
+  visitor->Trace(limits_);
+  visitor->Trace(percentages_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 

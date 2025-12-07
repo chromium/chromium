@@ -8,13 +8,14 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ui {
 
 WebDialogDelegate::WebDialogDelegate() = default;
 WebDialogDelegate::~WebDialogDelegate() = default;
 
-ModalType WebDialogDelegate::GetDialogModalType() const {
+mojom::ModalType WebDialogDelegate::GetDialogModalType() const {
   return modal_type_;
 }
 
@@ -170,6 +171,16 @@ bool WebDialogDelegate::CheckMediaAccessPermission(
 
 WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
   return frame_kind_;
+}
+
+void WebDialogDelegate::SetTitleChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  title_changed_callback_ = std::move(callback);
+}
+
+void WebDialogDelegate::SetAccessibleTitleChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  accessible_title_changed_callback_ = std::move(callback);
 }
 
 }  // namespace ui

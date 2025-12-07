@@ -115,7 +115,7 @@ std::optional<std::wstring> GetLastInstallerResultUIString(
                  key->ReadValueDW(kRegValueLastInstallerResult,
                                   &last_installer_result) == ERROR_SUCCESS &&
                  last_installer_result ==
-                     static_cast<DWORD>(InstallerResult::kCustomError) &&
+                     static_cast<DWORD>(InstallerApiResult::kCustomError) &&
                  key->ReadValue(kRegValueLastInstallerResultUIString, &val) ==
                      ERROR_SUCCESS &&
                  !val.empty()

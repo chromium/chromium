@@ -9,9 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -53,7 +55,14 @@ class SigninInterceptFirstRunExperienceDialog
     // The user skipped profile customization.
     kProfileCustomizationClickSkip = 7,
 
-    kMaxValue = kProfileCustomizationClickSkip
+    // History sync optin screen was shown to the user.
+    kShowHistorySyncOptinScreen = 8,
+    // The user turned on history syncing.
+    kHistorySyncOptinAccept = 9,
+    // The user rejected history syncing.
+    kHistorySyncOptinReject = 10,
+
+    kMaxValue = kHistorySyncOptinReject
   };
 
   explicit SigninInterceptFirstRunExperienceDialog(
@@ -76,17 +85,21 @@ class SigninInterceptFirstRunExperienceDialog
   void OnModalDialogClosed() override;
 
  private:
-  // `InterceptTurnSyncOnHelperDelegate` needs access to private methods of
-  // `SigninInterceptFirstRunExperienceDialog`.
   class InterceptTurnSyncOnHelperDelegate;
-  friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
+  class InterceptHistorySyncOptinHelperDelegate;
+  friend class SigninInterceptFirstRunExperienceDialogBrowserTestBase;
 
   // Ordered list of first run steps. Some steps might be skipped but they
   // always appear in this order.
   enum class Step {
     kStart,
+    // Steps relevant for sync confirmation only.
     kTurnOnSync,
     kSyncConfirmation,
+    // Steps relevant for history sync optin screen only.
+    kStartHistorySyncOptin,
+    kShowHistorySyncScreen,
+    // Common steps.
     kWaitForSyncedTheme,
     kProfileCustomization,
     kProfileSwitchIPHAndCloseModal,
@@ -98,6 +111,10 @@ class SigninInterceptFirstRunExperienceDialog
   // Actions executed right after moving to a corresponding step.
   void DoTurnOnSync();
   void DoSyncConfirmation();
+
+  void DoStartHistorySync();
+  void DoShowHistorySyncOptin();
+
   void DoWaitForSyncedTheme();
   void DoProfileCustomization();
   void DoProfileSwitchIPHAndCloseModal();
@@ -120,9 +137,13 @@ class SigninInterceptFirstRunExperienceDialog
                           SigninViewControllerDelegate::Observer>
       dialog_delegate_observation_{this};
 
+  base::WeakPtr<InterceptHistorySyncOptinHelperDelegate>
+      history_sync_optin_delegate_;
+
   std::unique_ptr<content::WebContents>
       profile_customization_preloaded_contents_;
   std::unique_ptr<ProfileCustomizationSyncedThemeWaiter> synced_theme_waiter_;
+  base::ScopedClosureRunner auto_accept_management_;
 
   base::WeakPtrFactory<SigninInterceptFirstRunExperienceDialog>
       weak_ptr_factory_{this};

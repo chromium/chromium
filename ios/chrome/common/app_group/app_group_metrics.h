@@ -11,21 +11,6 @@
 
 namespace app_group {
 
-// Suffix to the name of file containing logs ready for upload.
-extern NSString* const kPendingLogFileSuffix;
-
-// Directory containing the logs produced by extensions that are ready for
-// upload.
-extern NSString* const kPendingLogFileDirectory;
-
-// An app_group key to the number of times Search Extension was displayed since
-// last Chrome launch.
-extern NSString* const kSearchExtensionDisplayCount;
-
-// An app_group key to the number of times Content Extension was displayed since
-// last Chrome launch.
-extern NSString* const kContentExtensionDisplayCount;
-
 // An app_group key to the number of times Credential Extension was displayed
 // since last Chrome launch.
 extern NSString* const kCredentialExtensionDisplayCount;
@@ -96,9 +81,6 @@ extern NSString* const kCredentialExtensionSaveCredentialFailureCount;
 // Returns the app_group key containing the number of times the given histogram
 // bucket was fired.
 NSString* HistogramCountKey(NSString* histogram, int bucket);
-
-// Offsets the sessionID to avoid collision. The sessionID is limited to 1<<23.
-int AppGroupSessionID(int sessionID, AppGroupApplications application);
 
 }  // namespace app_group
 

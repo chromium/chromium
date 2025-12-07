@@ -28,7 +28,7 @@ GPUExternalTexture* ExternalTextureCache::Import(
     ExceptionState& exception_state) {
   // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
   // expired immediately.
-  if (device()->destroyed()) {
+  if (device()->IsDestroyed()) {
     return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
   }
 
@@ -139,8 +139,8 @@ void ExternalTextureCache::ExpireAtEndOfTask(
   device()
       ->GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebGPU)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&ExternalTextureCache::ExpireTask,
-                                          WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, BindOnce(&ExternalTextureCache::ExpireTask,
+                                     WrapWeakPersistent(this)));
   expire_task_scheduled_ = true;
 }
 
@@ -172,11 +172,12 @@ void ExternalTextureCache::ReferenceUntilGPUIsFinished(
   // Keep mailbox texture alive until callback returns.
   auto* callback = BindWGPUOnceCallback(
       [](scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
-         WGPUQueueWorkDoneStatus) {},
+         wgpu::QueueWorkDoneStatus, wgpu::StringView) {},
       std::move(mailbox_texture));
 
   device()->queue()->GetHandle().OnSubmittedWorkDone(
-      callback->UnboundCallback(), callback->AsUserdata());
+      wgpu::CallbackMode::AllowSpontaneous, callback->UnboundCallback(),
+      callback->AsUserdata());
 
   // Ensure commands are flushed.
   device()->EnsureFlush(ToEventLoop(execution_context));
@@ -346,7 +347,7 @@ GPUExternalTexture::GPUExternalTexture(
 void GPUExternalTexture::Refresh() {
   CHECK(status_ != Status::Destroyed);
 
-  if (active()) {
+  if (IsActive()) {
     return;
   }
 
@@ -355,7 +356,7 @@ void GPUExternalTexture::Refresh() {
 }
 
 void GPUExternalTexture::Expire() {
-  if (expired() || destroyed()) {
+  if (IsExpired() || IsDestroyed()) {
     return;
   }
 
@@ -364,13 +365,13 @@ void GPUExternalTexture::Expire() {
 }
 
 void GPUExternalTexture::Destroy() {
-  DCHECK(!destroyed());
+  DCHECK(!IsDestroyed());
   DCHECK(mailbox_texture_);
 
   // One copy path finished video frame access after GPUExternalTexture
   // construction. Zero copy path needs to ensure all gpu commands
   // execution finished before destroy.
-  if (isZeroCopy() && isReadLockFenceEnabled()) {
+  if (isZeroCopy() && IsReadLockFenceEnabled()) {
     cache_->ReferenceUntilGPUIsFinished(std::move(mailbox_texture_));
   }
 
@@ -397,7 +398,7 @@ bool GPUExternalTexture::NeedsToUpdate() {
 
   // If GPUExternalTexture is used in current task scope, don't do
   // reimport until current task scope finished.
-  if (active()) {
+  if (IsActive()) {
     return false;
   }
 
@@ -445,8 +446,8 @@ void GPUExternalTexture::OnSourceInvalidated() {
   if (status_ == Status::Active && video_) {
     if (!remove_from_cache_task_scheduled_) {
       task_runner_->PostTask(FROM_HERE,
-                             WTF::BindOnce(&GPUExternalTexture::RemoveFromCache,
-                                           WrapWeakPersistent(this)));
+                             BindOnce(&GPUExternalTexture::RemoveFromCache,
+                                      WrapWeakPersistent(this)));
     }
     remove_from_cache_task_scheduled_ = true;
   } else {
@@ -455,6 +456,14 @@ void GPUExternalTexture::OnSourceInvalidated() {
 }
 
 void GPUExternalTexture::RemoveFromCache() {
+  // HTMLVE relies on posted delay task to destroy outdated GPUExternalTexture.
+  // This task might be executed after GPUExternalTexture is destroyed (e.g.
+  // ExternalTextureCache destroyed).
+  // Prevent calling destroy on already destructed GPUExternalTexture.
+  if (IsDestroyed()) {
+    return;
+  }
+
   if (video_) {
     cache_->Remove(video_);
   } else if (frame_) {
@@ -479,8 +488,9 @@ bool GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
 void GPUExternalTexture::OnVideoFrameClosed() {
   CHECK(task_runner_);
 
-  if (destroyed())
+  if (IsDestroyed()) {
     return;
+  }
 
   // Expire the GPUExternalTexture here in the main thread to prevent it from
   // being used again (because WebGPU runs on the main thread). Expiring the
@@ -501,11 +511,11 @@ void GPUExternalTexture::OnVideoFrameClosed() {
                              WrapCrossThreadWeakPersistent(this))));
 }
 
-bool GPUExternalTexture::active() const {
+bool GPUExternalTexture::IsActive() const {
   return status_ == Status::Active;
 }
 
-bool GPUExternalTexture::expired() const {
+bool GPUExternalTexture::IsExpired() const {
   return status_ == Status::Expired;
 }
 
@@ -513,11 +523,11 @@ bool GPUExternalTexture::isZeroCopy() const {
   return is_zero_copy_;
 }
 
-bool GPUExternalTexture::isReadLockFenceEnabled() const {
+bool GPUExternalTexture::IsReadLockFenceEnabled() const {
   return read_lock_fences_enabled_;
 }
 
-bool GPUExternalTexture::destroyed() const {
+bool GPUExternalTexture::IsDestroyed() const {
   return status_ == Status::Destroyed;
 }
 

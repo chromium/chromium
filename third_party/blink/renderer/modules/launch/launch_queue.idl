@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/829689): Add link to spec once complete.
-// Explainer: https://github.com/WICG/file-handling/blob/main/explainer.md
+// Explainer: https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 
+// https://wicg.github.io/web-app-launch/#launchqueue-interface
 [
     Exposed=Window,
     RuntimeEnabled=WebAppLaunchQueue
@@ -12,4 +12,5 @@
   void setConsumer(LaunchConsumer consumer);
 };
 
+// https://wicg.github.io/web-app-launch/#launchconsumer-function
 callback LaunchConsumer = void(LaunchParams params);

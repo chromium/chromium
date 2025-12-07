@@ -14,7 +14,21 @@ source_set("constants") {
     "install_result_code.h",
     "uninstall_result_code.cc",
     "uninstall_result_code.h",
+    "web_app_error_page_constants.h",
   ]
+}
+
+source_set("webapps_client") {
+  sources = [
+    "webapps_client.cc",
+    "webapps_client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/security_state/core",
+    "//components/webapps/common",
+  ]
+  deps = [ "//components/segmentation_platform/public" ]
 }
 
 source_set("browser") {
@@ -34,6 +48,8 @@ source_set("browser") {
     "banners/web_app_banner_data.h",
     "features.cc",
     "features.h",
+    "image_visual_diff.cc",
+    "image_visual_diff.h",
     "installable/installable_data.cc",
     "installable/installable_data.h",
     "installable/installable_data_fetcher.cc",
@@ -66,15 +82,19 @@ source_set("browser") {
     "installable/ml_install_result_reporter.h",
     "installable/ml_installability_promoter.cc",
     "installable/ml_installability_promoter.h",
+    "launch_queue/launch_params.cc",
+    "launch_queue/launch_params.h",
+    "launch_queue/launch_queue.cc",
+    "launch_queue/launch_queue.h",
+    "launch_queue/launch_queue_delegate.h",
     "pwa_install_path_tracker.cc",
     "pwa_install_path_tracker.h",
     "web_contents/web_app_url_loader.cc",
     "web_contents/web_app_url_loader.h",
-    "webapps_client.cc",
-    "webapps_client.h",
   ]
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//components/back_forward_cache",
     "//components/content_settings/core/browser",
     "//components/favicon/content",
@@ -83,7 +103,7 @@ source_set("browser") {
     "//components/password_manager/content/common",
     "//components/permissions",
     "//components/security_state/core",
-    "//components/segmentation_platform/public:public",
+    "//components/segmentation_platform/public",
     "//components/site_engagement/content",
     "//components/variations",
     "//components/webapps/common",
@@ -99,7 +119,10 @@ source_set("browser") {
     "//url",
   ]
 
-  public_deps = [ ":constants" ]
+  public_deps = [
+    ":constants",
+    ":webapps_client",
+  ]
 
   if (is_android) {
     sources += [
@@ -150,7 +173,7 @@ source_set("browser") {
       "//components/feature_engagement",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
-      "//components/prefs:prefs",
+      "//components/prefs",
       "//components/strings",
       "//components/url_formatter",
       "//components/version_info",
@@ -159,7 +182,7 @@ source_set("browser") {
       "//components/webapps/common:mojo_bindings",
       "//services/device/public/mojom",
       "//third_party/smhasher:murmurhash2",
-      "//ui/android:android",
+      "//ui/android",
       "//ui/base",
       "//ui/gfx",
     ]
@@ -190,6 +213,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "banners/app_banner_settings_helper_unittest.cc",
+    "image_visual_diff_unittest.cc",
     "install_result_code_unittest.cc",
     "installable/installable_evaluator_unittest.cc",
     "installable/installable_task_queue_unittest.cc",

@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [
+    "wallet_features.cc",
+    "wallet_features.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "wallet_prefs.cc",
+    "wallet_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+  ]
+}

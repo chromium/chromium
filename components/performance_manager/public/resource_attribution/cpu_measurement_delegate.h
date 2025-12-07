@@ -55,8 +55,8 @@ class CPUMeasurementDelegate::Factory {
 
   // Returns true iff a CPUMeasurementDelegate should be created for
   // `process_node`. The production factory returns true to measure
-  // renderer processes with a valid (running) base::Process and a
-  // base::ProcessId assigned.
+  // renderer processes for which ProcessNodeHasRunningProcess() returns true,
+  // except on Android which can only measure the current process.
   virtual bool ShouldMeasureProcess(
       const performance_manager::ProcessNode* process_node) = 0;
 
@@ -64,6 +64,11 @@ class CPUMeasurementDelegate::Factory {
   // called if ShouldMeasureProcess(process_node) returns true.
   virtual std::unique_ptr<CPUMeasurementDelegate> CreateDelegateForProcess(
       const performance_manager::ProcessNode* process_node) = 0;
+
+  // Returns true if `process_node` has a valid (running) base::Process and a
+  // base::ProcessId assigned.
+  static bool ProcessNodeHasRunningProcess(
+      const performance_manager::ProcessNode* process_node);
 };
 
 }  // namespace resource_attribution

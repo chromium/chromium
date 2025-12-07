@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
@@ -125,7 +126,7 @@ struct IPCParams {
   ArgType args[kMaxIpcParams];
 
   bool Matches(IPCParams* other) const {
-    return !memcmp(this, other, sizeof(*other));
+    return UNSAFE_TODO(!memcmp(this, other, sizeof(*other)));
   }
 };
 

@@ -11,16 +11,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/fullscreen_control/fullscreen_features.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -32,7 +34,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/l10n/l10n_util_win.h"
@@ -50,6 +52,13 @@ bool IsTabFullscreenType(ExclusiveAccessBubbleType type) {
 
 }  // namespace
 
+constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
+    .default_options = {
+        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
+
 ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
     ExclusiveAccessBubbleViewsContext* context,
     const ExclusiveAccessBubbleParams& params,
@@ -64,7 +73,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   view_->SetProperty(views::kElementIdentifierKey,
                      kExclusiveAccessBubbleViewElementId);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Technically the exit fullscreen key on ChromeOS is F11 and the
   // "Fullscreen" key on the keyboard is just translated to F11 or F4 (which
   // is also a toggle-fullscreen command on ChromeOS). However most Chromebooks
@@ -148,19 +157,22 @@ void ExclusiveAccessBubbleViews::Update(
     ExclusiveAccessBubbleHideCallback first_hide_callback) {
   DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
          params.has_download);
-  if (params_.type == params.type && params_.url == params.url &&
-      !params.force_update && (IsShowing() || IsVisible())) {
+  bool already_shown = IsShowing() || IsVisible();
+  if (params_.type == params.type && params_.origin == params.origin &&
+      !params.force_update && already_shown) {
     return;
   }
 
-  // Show the notification about overriding only if requesting a download
-  // notification, a notification was visible earlier, and the earlier
-  // notification was either a non-download one, or was one about an override
-  // itself.
-  notify_overridden_ = params.has_download &&
-                       (IsVisible() || animation_->IsShowing()) &&
-                       (!params_.has_download || notify_overridden_);
-  params_.has_download = params.has_download;
+  // Show the notification about overriding only if:
+  // 1. There was a notification visible earlier, and
+  // 2. Exactly one of the previous and current notifications has a download,
+  //    or the previous notification was about an override itself.
+  // If both the previous and current notifications have a download, but
+  // neither is an override, then we don't need to show an override.
+  notify_overridden_ =
+      already_shown &&
+      (notify_overridden_ || (params.has_download ^ params_.has_download));
+  params_.has_download = params.has_download || notify_overridden_;
 
   // Bubble maybe be re-used after timeout.
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
@@ -170,7 +182,7 @@ void ExclusiveAccessBubbleViews::Update(
   const bool entering_tab_fullscreen =
       !IsTabFullscreenType(params_.type) && IsTabFullscreenType(params.type);
 
-  params_.url = params.url;
+  params_.origin = params.origin;
   // When a request to notify about a download is made, the bubble type
   // should be preserved from the old value, and not be updated.
   if (!params.has_download) {
@@ -192,13 +204,15 @@ void ExclusiveAccessBubbleViews::Update(
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
-  if (IsVisible())
+  if (IsVisible()) {
     UpdateBounds();
+  }
 }
 
 void ExclusiveAccessBubbleViews::HideImmediately() {
-  if (!IsShowing() && !popup_->IsVisible())
+  if (!IsShowing() && !popup_->IsVisible()) {
     return;
+  }
 
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
@@ -221,6 +235,23 @@ void ExclusiveAccessBubbleViews::UpdateBounds() {
     view_->SetY(popup_rect.height() - view_->height());
   }
 }
+
+namespace {
+
+std::optional<std::u16string> OriginDisplayName(Profile* profile,
+                                                const url::Origin& origin) {
+  if (origin.opaque() ||
+      !base::FeatureList::IsEnabled(features::kFullscreenBubbleShowOrigin)) {
+    return std::nullopt;
+  }
+
+  return UrlIdentity::CreateFromUrl(profile, origin.GetURL(),
+                                    kUrlIdentityAllowedTypes,
+                                    kUrlIdentityOptions)
+      .name;
+}
+
+}  // namespace
 
 void ExclusiveAccessBubbleViews::UpdateViewContent(
     ExclusiveAccessBubbleType bubble_type) {
@@ -247,11 +278,17 @@ void ExclusiveAccessBubbleViews::UpdateViewContent(
     accelerator = base::i18n::ToLower(accelerator);
 #endif
   }
+
   // This string *may* contain the name of the key surrounded in pipe characters
   // ('|'), which should be drawn graphically as a key, not displayed literally.
   // `accelerator` is the name of the key to exit fullscreen mode.
   view_->UpdateContent(exclusive_access_bubble::GetInstructionTextForType(
-      params_.type, accelerator, params_.has_download, notify_overridden_));
+      params_.type, accelerator,
+      OriginDisplayName(bubble_view_context_->GetExclusiveAccessManager()
+                            ->context()
+                            ->GetProfile(),
+                        params_.origin),
+      params_.has_download, notify_overridden_));
 }
 
 bool ExclusiveAccessBubbleViews::IsVisible() const {
@@ -280,8 +317,10 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
 
 void ExclusiveAccessBubbleViews::AnimationEnded(
     const gfx::Animation* animation) {
-  if (animation_->IsShowing())
-    GetView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  if (animation_->IsShowing()) {
+    GetView()->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                  true);
+  }
   AnimationProgressed(animation);
 }
 
@@ -291,7 +330,7 @@ gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
   int x = widget_bounds.x() + (widget_bounds.width() - size.width()) / 2;
 
   int top_container_bottom = widget_bounds.y();
-#if !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS)
   if (bubble_view_context_->IsImmersiveModeEnabled()) {
     // Skip querying the top container height in CrOS non-immersive fullscreen
     // because:
@@ -327,8 +366,9 @@ void ExclusiveAccessBubbleViews::Hide() {
 }
 
 void ExclusiveAccessBubbleViews::Show() {
-  if (animation_->IsShowing())
+  if (animation_->IsShowing()) {
     return;
+  }
   animation_->SetSlideDuration(base::Milliseconds(350));
   animation_->Show();
 }

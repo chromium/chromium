@@ -17,8 +17,9 @@
 #include "ui/gl/gl_surface_egl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <sync/sync.h>  // nogncheck
+
 #include "base/posix/eintr_wrapper.h"
-#include "third_party/libsync/src/include/sync/sync.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -117,17 +118,6 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
 #endif  // !BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
 
-bool PassthroughCommandDecoderSupported() {
-  GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  // Using the passthrough command buffer requires that specific ANGLE
-  // extensions are exposed
-  return display->ext->b_EGL_CHROMIUM_create_context_bind_generates_resource &&
-         display->ext->b_EGL_ANGLE_create_context_webgl_compatibility &&
-         display->ext->b_EGL_ANGLE_robust_resource_initialization &&
-         display->ext->b_EGL_ANGLE_display_texture_share_group &&
-         display->ext->b_EGL_ANGLE_create_context_client_arrays;
-}
-
 const GlWorkarounds& GetGlWorkarounds() {
   return g_workarounds;
 }
@@ -137,17 +127,8 @@ void SetGlWorkarounds(const GlWorkarounds& workarounds) {
 }
 
 #if BUILDFLAG(IS_WIN)
-unsigned int FrameRateToPresentDuration(float frame_rate) {
-  if (frame_rate == 0)
-    return 0u;
-  // Present duration unit is 100 ns.
-  return static_cast<unsigned int>(1.0E7 / frame_rate);
-}
-
 unsigned int DirectCompositionRootSurfaceBufferCount() {
-  return base::FeatureList::IsEnabled(features::kDCompTripleBufferRootSwapChain)
-             ? 3u
-             : 2u;
+  return 2u;
 }
 
 // Labels swapchain buffers with the string name_prefix + _Buffer_ +
@@ -179,8 +160,8 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
   }
 }
 
-// Same as LabelSwapChainAndBuffers, but only does the buffers. Used for resize
-// operations
+// Labels swapchain with the name_prefix and its buffers with the string
+// name_prefix + _Buffer_ + <buffer_number>.
 void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
                               const char* name_prefix) {
   SetDebugName(swap_chain, name_prefix);
@@ -206,6 +187,10 @@ GLDisplay* GetDefaultDisplay() {
 void SetGpuPreferenceEGL(GpuPreference preference, uint64_t system_device_id) {
   GLDisplayManagerEGL::GetInstance()->SetGpuPreference(preference,
                                                        system_device_id);
+}
+
+uint64_t GetSystemDeviceIdEGLForTesting(GpuPreference preference) {
+  return GLDisplayManagerEGL::GetInstance()->GetSystemDeviceId(preference);
 }
 
 void RemoveGpuPreferenceEGL(GpuPreference preference) {
@@ -253,4 +238,58 @@ ScopedPixelStore::~ScopedPixelStore() {
     glPixelStorei(name_, old_value_);
 }
 
+const char* GetDebugSourceString(unsigned int source) {
+  switch (source) {
+    case GL_DEBUG_SOURCE_API:
+      return "OpenGL";
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+      return "Window System";
+    case GL_DEBUG_SOURCE_SHADER_COMPILER:
+      return "Shader Compiler";
+    case GL_DEBUG_SOURCE_THIRD_PARTY:
+      return "Third Party";
+    case GL_DEBUG_SOURCE_APPLICATION:
+      return "Application";
+    case GL_DEBUG_SOURCE_OTHER:
+      return "Other";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+const char* GetDebugTypeString(unsigned int type) {
+  switch (type) {
+    case GL_DEBUG_TYPE_ERROR:
+      return "Error";
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+      return "Deprecated behavior";
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+      return "Undefined behavior";
+    case GL_DEBUG_TYPE_PORTABILITY:
+      return "Portability";
+    case GL_DEBUG_TYPE_PERFORMANCE:
+      return "Performance";
+    case GL_DEBUG_TYPE_OTHER:
+      return "Other";
+    case GL_DEBUG_TYPE_MARKER:
+      return "Marker";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+const char* GetDebugSeverityString(unsigned int severity) {
+  switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH:
+      return "High";
+    case GL_DEBUG_SEVERITY_MEDIUM:
+      return "Medium";
+    case GL_DEBUG_SEVERITY_LOW:
+      return "Low";
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+      return "Notification";
+    default:
+      return "UNKNOWN";
+  }
+}
 }  // namespace gl

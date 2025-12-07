@@ -12,8 +12,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -21,12 +24,15 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -36,6 +42,11 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#endif
 
 using ::testing::NiceMock;
 
@@ -48,6 +59,12 @@ constexpr char kProfile[] = "Default";
 constexpr char16_t kProfile16[] = u"Profile";
 constexpr char kIdleProfile[] = "IdleProfile";
 constexpr char16_t kIdleProfile16[] = u"IdleProfile";
+constexpr char kFakeProfileId[] = "fake-profile-id";
+
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr char kAffiliationId1[] = "affiliation-id-1";
+constexpr char kAffiliationId2[] = "affiliation-id-2";
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 const int kMaxNumberOfExtensionRequest = 1000;
@@ -68,6 +85,11 @@ constexpr char kBlockedExtensionSettings[] = R"({
   }
 })";
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+std::unique_ptr<KeyedService> CreateProfileIdService(
+    content::BrowserContext* context) {
+  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
+}
 
 }  // namespace
 
@@ -98,6 +120,9 @@ class ProfileReportGeneratorTest : public ::testing::Test {
             GetIdentityTestEnvironmentFactories(),
         /*is_supervised_profile=*/false, std::nullopt,
         std::move(policy_service_));
+
+    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&CreateProfileIdService));
   }
 
   void InitMockPolicyService() {
@@ -120,17 +145,19 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport(
       const base::FilePath& path,
-      const std::string& name) {
-    std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, name, ReportType::kFull);
-    return report;
+      const SecuritySignalsMode signals_mode) {
+    base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+        test_future;
+    generator_.MaybeGenerate(path, ReportType::kFull, signals_mode,
+                             test_future.GetCallback());
+    return test_future.Take();
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
     auto report =
-        GenerateReport(profile()->GetPath(), profile()->GetProfileUserName());
+        GenerateReport(profile()->GetPath(), SecuritySignalsMode::kNoSignals);
     EXPECT_TRUE(report);
-    EXPECT_EQ(profile()->GetProfileUserName(), report->name());
+    EXPECT_EQ(GetProfileName(), report->name());
     EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
     EXPECT_TRUE(report->is_detail_available());
 
@@ -155,8 +182,8 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings.has_value());
     profile()->GetTestingPrefService()->SetManagedPref(
         extensions::pref_names::kExtensionManagement,
@@ -164,8 +191,17 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+  std::string GetProfileName() {
+    ProfileAttributesEntry* entry =
+        testing_profile_manager()
+            ->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile()->GetPath());
+    return base::UTF16ToUTF8(entry->GetName());
+  }
+
   TestingProfile* profile() { return profile_; }
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
+  TestingProfileManager* testing_profile_manager() { return &profile_manager_; }
 
   PlatformReportingDelegateFactory reporting_delegate_factory_;
   ProfileReportGenerator generator_;
@@ -181,15 +217,18 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
 TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
   const base::FilePath profile_path =
-      profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
+      testing_profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = kIdleProfile16;
-  profile_manager()->profile_attributes_storage()->AddProfile(
+  testing_profile_manager()->profile_attributes_storage()->AddProfile(
       std::move(params));
-  std::unique_ptr<em::ChromeUserProfileInfo> response =
-      generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
-  ASSERT_FALSE(response.get());
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile_path, ReportType::kFull,
+                           SecuritySignalsMode::kSignalsAttached,
+                           test_future.GetCallback());
+  ASSERT_FALSE(test_future.Get().get());
 }
 
 TEST_F(ProfileReportGeneratorTest, UnsignedInProfile) {
@@ -209,7 +248,7 @@ TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
   auto report = GenerateReport();
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
-  EXPECT_EQ(expected_info.gaia,
+  EXPECT_EQ(expected_info.gaia.ToString(),
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
@@ -225,34 +264,150 @@ TEST_F(ProfileReportGeneratorTest,
   auto report = GenerateReport();
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
-  EXPECT_EQ(expected_info.gaia,
+  EXPECT_EQ(expected_info.gaia.ToString(),
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
-TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
-  auto report = generator_.MaybeGenerate(profile()->GetPath(),
-                                         profile()->GetProfileUserName(),
-                                         ReportType::kProfileReport);
+TEST_F(ProfileReportGeneratorTest,
+       SignalsOnlyMode_IncludesPoliciesAndExcludesExtensions) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kCloudExtensionRequestEnabled,
+      std::make_unique<base::Value>(true));
+  SetExtensionSettings(kBlockedExtensionSettings);
+  extensions::ExtensionBuilder builder(
+      "Test Extension", extensions::ExtensionBuilder::Type::EXTENSION);
+  auto extension = builder.SetID(kExtensionId).Build();
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+#endif
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kSignalsOnly,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
   ASSERT_TRUE(report);
-  EXPECT_EQ(profile()->GetProfileUserName(), report->name());
+  EXPECT_GT(report->chrome_policies_size(), 0);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_EQ(report->extensions_size(), 0);
+#endif
+}
+
+TEST_F(ProfileReportGeneratorTest,
+       NoSignalsAndSignalsAttachedMode_IncludesPoliciesAndExtensions) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kCloudExtensionRequestEnabled,
+      std::make_unique<base::Value>(true));
+  SetExtensionSettings(kBlockedExtensionSettings);
+  extensions::ExtensionBuilder builder(
+      "Test Extension", extensions::ExtensionBuilder::Type::EXTENSION);
+  auto extension = builder.SetID(kExtensionId).Build();
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+#endif
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kSignalsAttached,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_GT(report->chrome_policies_size(), 0);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_GT(report->extensions_size(), 0);
+#endif
+
+  test_future.Clear();
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kNoSignals,
+                           test_future.GetCallback());
+
+  auto report2 = test_future.Take();
+  ASSERT_TRUE(report2);
+  EXPECT_GT(report2->chrome_policies_size(), 0);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_GT(report2->extensions_size(), 0);
+#endif
+}
+
+TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscateByDefault) {
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kSignalsAttached,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(GetProfileName(), report->name());
   EXPECT_NE(profile()->GetPath().AsUTF8Unsafe(), report->id());
   EXPECT_TRUE(report->is_detail_available());
 
-  auto report2 = generator_.MaybeGenerate(profile()->GetPath(),
-                                          profile()->GetProfileUserName(),
-                                          ReportType::kProfileReport);
+  test_future.Clear();
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kSignalsAttached,
+                           test_future.GetCallback());
+
   // Profile id is obfuscated with `kProfileReport` type, but the obfuscated
   // result is consistent.
+  auto report2 = test_future.Take();
   EXPECT_EQ(report->id(), report2->id());
 
   TestingProfile* another_profile =
-      profile_manager()->CreateTestingProfile("another_profile");
-  auto report3 = generator_.MaybeGenerate(another_profile->GetPath(),
-                                          another_profile->GetProfileUserName(),
-                                          ReportType::kProfileReport);
+      testing_profile_manager()->CreateTestingProfile("another_profile");
+
+  test_future.Clear();
+  generator_.MaybeGenerate(
+      another_profile->GetPath(), ReportType::kProfileReport,
+      SecuritySignalsMode::kSignalsAttached, test_future.GetCallback());
   // Different profiles' id will be different even after obfuscation.
+  auto report3 = test_future.Take();
   EXPECT_NE(report->id(), report3->id());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ProfileReportGeneratorTest, ProfileIdNotObfuscatedInAffiliatedProfile) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kSignalsAttached,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(GetProfileName(), report->name());
+  EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
+  EXPECT_TRUE(report->is_detail_available());
+}
+
+TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscatedInUnaffiliatedProfile) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId2});
+
+  base::test::TestFuture<std::unique_ptr<em::ChromeUserProfileInfo>>
+      test_future;
+  generator_.MaybeGenerate(profile()->GetPath(), ReportType::kProfileReport,
+                           SecuritySignalsMode::kSignalsAttached,
+                           test_future.GetCallback());
+
+  auto report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(GetProfileName(), report->name());
+  EXPECT_NE(profile()->GetPath().AsUTF8Unsafe(), report->id());
+  EXPECT_TRUE(report->is_detail_available());
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
   // Users' profile info is collected by default.
@@ -289,6 +444,42 @@ TEST_F(ProfileReportGeneratorTest, PoliciesHidden) {
     }
   }
 }
+
+TEST_F(ProfileReportGeneratorTest, ProfileId) {
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+  EXPECT_EQ(kFakeProfileId, report->profile_id());
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ProfileReportGeneratorTest, IsAffiliated) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+
+  ASSERT_TRUE(report->has_affiliation());
+
+  EXPECT_TRUE(report->affiliation().is_affiliated());
+  EXPECT_FALSE(report->affiliation().has_unaffiliation_reason());
+}
+
+TEST_F(ProfileReportGeneratorTest, NotAffiliated) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId2});
+
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+
+  ASSERT_TRUE(report->has_affiliation());
+
+  EXPECT_FALSE(report->affiliation().is_affiliated());
+  EXPECT_EQ(em::AffiliationState_UnaffiliationReason_USER_UNMANAGED,
+            report->affiliation().unaffiliation_reason());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
@@ -372,9 +563,30 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
 
   // And the filter is stable.
   auto report2 = GenerateReport();
-  for (int id = 0; id < kMaxNumberOfExtensionRequest; id += 1)
+  for (int id = 0; id < kMaxNumberOfExtensionRequest; id += 1) {
     EXPECT_EQ(report->extension_requests(id).id(),
               report2->extension_requests(id).id());
+  }
+}
+
+TEST_F(ProfileReportGeneratorTest, DisableExtensionInfo) {
+  extensions::ExtensionBuilder builder(
+      "name", extensions::ExtensionBuilder::Type::EXTENSION);
+
+  auto extension = builder.SetID("abcdefghijklmnoabcdefghijklmnoab").Build();
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+
+  EXPECT_EQ(1, GenerateReport()->extensions_size());
+
+  bool is_extension_enabled = false;
+  generator_.SetExtensionsEnabledCallback(base::BindRepeating(
+      [](bool* is_extension_enabled) { return *is_extension_enabled; },
+      &is_extension_enabled));
+
+  EXPECT_EQ(0, GenerateReport()->extensions_size());
+
+  is_extension_enabled = true;
+  EXPECT_EQ(1, GenerateReport()->extensions_size());
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

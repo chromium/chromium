@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <style>
+    body {
+      margin: 0;
+    }
+
+    html {
+      background-color: var(--cros-sys-app_base_shaded);
+    }
+  </style>
+  <head>
+    <title>$i18n{appTitle}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
+    <script type="module" src="/js/graduation_app.js"></script>
+  </head>
+  <body class="jelly-enabled">
+    <graduation-app></graduation-app>
+  </body>
+</html>

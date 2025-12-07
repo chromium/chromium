@@ -4,16 +4,16 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -232,7 +232,7 @@ void CookieStoreManager::AddSubscriptions(
     auto new_subscription = std::make_unique<CookieChangeSubscription>(
         std::move(mojo_subscription), service_worker_registration->id());
 
-    auto existing_subscription_it = base::ranges::find(
+    auto existing_subscription_it = std::ranges::find(
         subscriptions, *new_subscription,
         &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (existing_subscription_it == subscriptions.end())
@@ -240,7 +240,7 @@ void CookieStoreManager::AddSubscriptions(
   }
 
   ActivateSubscriptions(
-      base::make_span(subscriptions).subspan(old_subscriptions_size));
+      base::span(subscriptions).subspan(old_subscriptions_size));
   StoreSubscriptions(service_worker_registration_id, storage_key, subscriptions,
                      std::move(callback));
 }
@@ -330,7 +330,7 @@ void CookieStoreManager::RemoveSubscriptions(
   }
 
   for (auto& subscription : all_subscriptions) {
-    auto target_subscription_it = base::ranges::find(
+    auto target_subscription_it = std::ranges::find(
         target_subscriptions, *subscription,
         &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (target_subscription_it == target_subscriptions.end()) {
@@ -526,7 +526,7 @@ void CookieStoreManager::DeactivateSubscriptions(
     subscription->RemoveFromList();
   }
   auto it = subscriptions_by_url_key_.find(url_key);
-  CHECK(it != subscriptions_by_url_key_.end(), base::NotFatalUntil::M130);
+  CHECK(it != subscriptions_by_url_key_.end());
   if (it->second.empty())
     subscriptions_by_url_key_.erase(it);
 }
@@ -561,11 +561,14 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
     return;
   }
 
-  if (change.cause == net::CookieChangeCause::OVERWRITE) {
+  if (change.cause == net::CookieChangeCause::OVERWRITE ||
+      change.cause == net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE) {
     // Cookie overwrites generate an OVERWRITE event with the old cookie data
-    // and an INSERTED event with the new cookie data. The Cookie Store API
-    // only reports new cookie information, so OVERWRITE events doesn't need to
-    // be dispatched to service workers.
+    // and an INSERTED event with the new cookie data if the cookie changed and
+    // INSERTED_NO_CHANGE_OVERWRITE if the overwrite did not result in an
+    // observable change to the cookie. The Cookie Store API only reports new
+    // cookie information, so OVERWRITE events doesn't need to be dispatched to
+    // service workers or not at all if it does not result in a change.
     return;
   }
 
@@ -615,7 +618,8 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
               if (content_browser_client && !change.cookie.IsPartitioned() &&
                   !content_browser_client->IsFullCookieAccessAllowed(
                       browser_context, /*web_contents=*/nullptr,
-                      registration->scope(), registration->key())) {
+                      registration->scope(), registration->key(),
+                      /*overrides=*/{})) {
                 return;
               }
 

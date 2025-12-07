@@ -22,14 +22,12 @@
 
 // http://www.w3.org/TR/SVG11/coords.html#InterfaceSVGPoint
 
-// TODO(foolip): SVGPoint is gone from SVG 2, replaced by DOMPoint.
-// https://crbug.com/709001
 [
     Exposed=Window,
     ImplementedAs=SVGPointTearOff
 ] interface SVGPoint {
-    [RaisesException=Setter] attribute unrestricted float x;
-    [RaisesException=Setter] attribute unrestricted float y;
+    [RaisesException=Setter] attribute float x;
+    [RaisesException=Setter] attribute float y;
 
     [MeasureAs=SVGPointMatrixTransform] SVGPoint matrixTransform(SVGMatrix matrix);
 };

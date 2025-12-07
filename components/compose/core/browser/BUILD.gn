@@ -13,6 +13,12 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("hats_utils") {
+  sources = [ "compose_hats_utils.h" ]
+
+  deps = [ "//base" ]
+}
+
 static_library("browser") {
   sources = [
     "compose_client.h",
@@ -28,7 +34,10 @@ static_library("browser") {
     "config.h",
   ]
 
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":features",
+    ":hats_utils",
+  ]
 
   deps = [
     ":mojo_bindings",
@@ -36,7 +45,7 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
-    "//components/segmentation_platform/public:public",
+    "//components/segmentation_platform/public",
     "//components/strings",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -69,4 +78,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

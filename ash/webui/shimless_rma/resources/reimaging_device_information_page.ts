@@ -10,13 +10,15 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrContainerShadowMixin} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_device_information_page.html.js';
-import {FeatureLevel, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
-import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEnabled} from './shimless_rma_util.js';
+import type {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {FeatureLevel} from './shimless_rma.mojom-webui.js';
+import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -90,6 +92,41 @@ export class ReimagingDeviceInformationPage extends
         type: Boolean,
         computed: 'getDisableResetDramPartNumber(' +
             'originalDramPartNumber, dramPartNumber, allButtonsDisabled)',
+      },
+
+      disableModifySerialNumber: {
+        type: Boolean,
+        value: false,
+      },
+
+      disableModifyRegion: {
+        type: Boolean,
+        value: false,
+      },
+
+      disableModifySku: {
+        type: Boolean,
+        value: false,
+      },
+
+      disableModifyCustomLabel: {
+        type: Boolean,
+        value: false,
+      },
+
+      disableModifyDramPartNumber: {
+        type: Boolean,
+        value: false,
+      },
+
+      disableModifyFeatureLevel: {
+        type: Boolean,
+        value: false,
+      },
+
+      serialNumberLabel: {
+        type: String,
+        value: '',
       },
 
       originalSerialNumber: {
@@ -206,6 +243,13 @@ export class ReimagingDeviceInformationPage extends
   protected disableResetSku: boolean;
   protected disableResetCustomLabel: boolean;
   protected disableResetDramPartNumber: boolean;
+  protected disableModifySerialNumber: boolean;
+  protected disableModifyRegion: boolean;
+  protected disableModifySku: boolean;
+  protected disableModifyCustomLabel: boolean;
+  protected disableModifyDramPartNumber: boolean;
+  protected disableModifyFeatureLevel: boolean;
+  protected serialNumberLabel: string;
   protected originalSerialNumber: string;
   protected serialNumber: string;
 
@@ -216,10 +260,9 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalSkuAndSkuList();
     this.getOriginalCustomLabelAndCustomLabelList();
     this.getOriginalDramPartNumber();
-
-    if (isComplianceCheckEnabled()) {
-      this.getOriginalFeatureLevel();
-    }
+    this.getOriginalFeatureLevel();
+    this.updateInputFieldModifiabilities();
+    this.updateSerialNumberNaming();
 
     focusPageTitle(this);
   }
@@ -273,33 +316,44 @@ export class ReimagingDeviceInformationPage extends
         });
   }
 
-  private getOriginalSkuAndSkuList(): void {
-    this.shimlessRmaService.getOriginalSku()
-        .then((result: {skuIndex: number}) => {
-          this.originalSkuIndex = result.skuIndex;
-          return this.shimlessRmaService.getSkuList();
-        })
-        .then((result: {skus: bigint[]}) => {
-          this.skus = result.skus;
-          this.skuIndex = this.originalSkuIndex;
-          return this.shimlessRmaService.getSkuDescriptionList();
-        })
-        .then((result: {skuDescriptions: string[]}) => {
-          // The SKU description list can be empty.
-          if (this.skus.length === result.skuDescriptions.length) {
-            this.skus = this.skus.map(
-                (sku, index) => `${sku}: ${result.skuDescriptions[index]}`);
-          }
+  private async getOriginalSkuAndSkuList(): Promise<void> {
+    const originalSkuResult = await this.shimlessRmaService.getOriginalSku();
+    this.originalSkuIndex = originalSkuResult.skuIndex;
 
-          // Need to wait for the select options to render before setting the
-          // selected index.
-          afterNextRender(this, () => {
-            const skuSelect: HTMLSelectElement|null =
-                this.shadowRoot!.querySelector('#skuSelect');
-            assert(skuSelect);
-            skuSelect.selectedIndex = this.skuIndex;
-          });
-        });
+    const skuListResult = await this.shimlessRmaService.getSkuList();
+    this.skus = skuListResult.skus;
+    this.skuIndex = this.originalSkuIndex;
+
+    const skuDescriptionResult =
+        await this.shimlessRmaService.getSkuDescriptionList();
+
+    const stateProperties =
+        (await this.shimlessRmaService.getStateProperties())
+            ?.statePropertyResult.property?.updateDeviceInfoStateProperty;
+
+    const hideGoogleSku =
+        (loadTimeData.getBoolean('hideGoogleSKUEnabled') &&
+         stateProperties?.hideGoogleSku);
+
+    // The SKU description list can be empty.
+    if (this.skus.length === skuDescriptionResult.skuDescriptions.length) {
+      if (hideGoogleSku) {
+        this.skus = skuDescriptionResult.skuDescriptions;
+      } else {
+        this.skus = this.skus.map(
+            (sku, index) =>
+                `${sku}: ${skuDescriptionResult.skuDescriptions[index]}`);
+      }
+    }
+
+    // Need to wait for the select options to render before setting the
+    // selected index.
+    afterNextRender(this, () => {
+      const skuSelect: HTMLSelectElement|null =
+          this.shadowRoot!.querySelector('#skuSelect');
+      assert(skuSelect);
+      skuSelect.selectedIndex = this.skuIndex;
+    });
   }
 
   private getOriginalCustomLabelAndCustomLabelList(): void {
@@ -326,7 +380,7 @@ export class ReimagingDeviceInformationPage extends
             const customLabelSelect: HTMLSelectElement|null =
                 this.shadowRoot!.querySelector('#customLabelSelect');
             assert(customLabelSelect);
-            customLabelSelect!.selectedIndex = this.customLabelIndex;
+            customLabelSelect.selectedIndex = this.customLabelIndex;
           });
         });
   }
@@ -466,8 +520,7 @@ export class ReimagingDeviceInformationPage extends
   }
 
   private shouldShowComplianceSection(): boolean {
-    return isComplianceCheckEnabled() &&
-        this.featureLevel !== FeatureLevel.kRmadFeatureLevelUnsupported;
+    return this.featureLevel !== FeatureLevel.kRmadFeatureLevelUnsupported;
   }
 
   private isComplianceStatusKnown(): boolean {
@@ -485,6 +538,50 @@ export class ReimagingDeviceInformationPage extends
         this.featureLevel >= FeatureLevel.kRmadFeatureLevel1;
     return deviceIsCompliant ? this.i18n('confirmDeviceInfoDeviceCompliant') :
                                this.i18n('confirmDeviceInfoDeviceNotCompliant');
+  }
+
+  private async updateInputFieldModifiabilities(): Promise<void> {
+    if (!loadTimeData.getBoolean('dynamicDeviceInfoInputsEnabled')) {
+      return;
+    }
+
+    const result = await this.shimlessRmaService.getStateProperties();
+
+    if (result?.statePropertyResult.property?.updateDeviceInfoStateProperty ===
+        undefined) {
+      return;
+    }
+
+    const properties =
+        result.statePropertyResult.property.updateDeviceInfoStateProperty;
+
+    this.disableModifySerialNumber = !properties.serialNumberModifiable;
+    this.disableModifyRegion = !properties.regionModifiable;
+    this.disableModifySku = !properties.skuModifiable;
+    this.disableModifyCustomLabel = !properties.customLabelModifiable;
+    this.disableModifyDramPartNumber = !properties.dramPartNumberModifiable;
+    this.disableModifyFeatureLevel = !properties.featureLevelModifiable;
+  }
+
+  private async updateSerialNumberNaming(): Promise<void> {
+    this.serialNumberLabel = this.i18n('confirmDeviceInfoSerialNumberLabel');
+    if (!loadTimeData.getBoolean('flexibleSerialNumberNameEnabled')) {
+      return;
+    }
+
+    const result = await this.shimlessRmaService.getStateProperties();
+    const properties =
+        result?.statePropertyResult.property?.updateDeviceInfoStateProperty;
+    if (properties === undefined ||
+        properties.customizedSerialNumberNaming === '') {
+      return;
+    }
+
+    this.serialNumberLabel = properties.customizedSerialNumberNaming;
+  }
+
+  protected isInputDisabled(inputDisabled: boolean): boolean {
+    return inputDisabled || this.allButtonsDisabled;
   }
 }
 

@@ -11,13 +11,10 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
-
-import dagger.Lazy;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -25,18 +22,18 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
-import javax.inject.Inject;
+import java.util.function.Supplier;
 
 /**
  * Shows the Trusted Web Activity disclosure when appropriate and notifies of its acceptance.
  *
- * Thread safety: All methods on this class should be called on the UI thread.
+ * <p>Thread safety: All methods on this class should be called on the UI thread.
  */
-@ActivityScope
+@NullMarked
 public class DisclosureInfobar
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
     private final Resources mResources;
-    private final Lazy<SnackbarManager> mSnackbarManager;
+    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final TrustedWebActivityModel mModel;
 
     /**
@@ -50,19 +47,18 @@ public class DisclosureInfobar
             new SnackbarManager.SnackbarController() {
                 /** To be called when the user accepts the Running in Chrome disclosure. */
                 @Override
-                public void onAction(Object actionData) {
+                public void onAction(@Nullable Object actionData) {
                     mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureAccepted();
                 }
             };
 
-    @Inject
-    DisclosureInfobar(
+    public DisclosureInfobar(
             Resources resources,
-            Lazy<SnackbarManager> snackbarManager,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mResources = resources;
-        mSnackbarManager = snackbarManager;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
         mModel = model;
         mModel.addObserver(this);
         lifecycleDispatcher.register(this);
@@ -78,7 +74,7 @@ public class DisclosureInfobar
                 showIfNeeded();
                 break;
             case DISCLOSURE_STATE_NOT_SHOWN:
-                mSnackbarManager.get().dismissSnackbars(mSnackbarController);
+                mSnackbarManagerSupplier.get().dismissSnackbars(mSnackbarController);
                 break;
         }
     }
@@ -106,7 +102,7 @@ public class DisclosureInfobar
         String action = mResources.getString(R.string.ok);
         return Snackbar.make(title, mSnackbarController, type, code)
                 .setAction(action, null)
-                .setSingleLine(false);
+                .setDefaultLines(false);
     }
 
     public void showIfNeeded() {
@@ -117,7 +113,7 @@ public class DisclosureInfobar
             return;
         }
 
-        mSnackbarManager.get().showSnackbar(snackbar);
+        mSnackbarManagerSupplier.get().showSnackbar(snackbar);
         mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();
     }
 }

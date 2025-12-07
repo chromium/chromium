@@ -41,6 +41,7 @@ static_library("certificate") {
     ":certificate_reader",
     ":certificate_roots",
     "//base",
+    "//base:build_time",
     "//net",
     "//third_party/boringssl",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
@@ -95,4 +96,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

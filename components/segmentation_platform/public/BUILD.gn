@@ -47,6 +47,8 @@ source_set("public") {
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//url",
   ]
 
@@ -58,6 +60,8 @@ source_set("public") {
       "android/prediction_options_android.h",
       "android/segmentation_platform_conversion_bridge.cc",
       "android/segmentation_platform_conversion_bridge.h",
+      "android/training_labels_android.cc",
+      "android/training_labels_android.h",
     ]
     deps += [ ":jni_headers" ]
   }
@@ -79,8 +83,8 @@ source_set("unit_tests") {
     sources += [ "android/input_context_android_unittest.cc" ]
 
     deps += [
-      "//base:base",
-      "//url:url",
+      "//base",
+      "//url",
     ]
   }
 }
@@ -90,6 +94,7 @@ source_set("test_support") {
 
   sources = [
     "testing/mock_database_client.h",
+    "testing/mock_device_switcher_result_dispatcher.h",
     "testing/mock_field_trial_register.h",
     "testing/mock_segmentation_platform_service.h",
   ]
@@ -97,6 +102,7 @@ source_set("test_support") {
   deps = [
     ":public",
     "//base",
+    "//components/segmentation_platform/embedder/default_model",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -113,6 +119,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
+      "android/java/src/org/chromium/components/segmentation_platform/TrainingLabels.java",
     ]
 
     deps = [
@@ -137,6 +144,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java",
       "android/java/src/org/chromium/components/segmentation_platform/PredictionOptionsTest.java",
+      "android/java/src/org/chromium/components/segmentation_platform/ProcessedValueTest.java",
     ]
 
     deps = [
@@ -162,6 +170,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
       "android/java/src/org/chromium/components/segmentation_platform/PredictionOptions.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
+      "android/java/src/org/chromium/components/segmentation_platform/TrainingLabels.java",
     ]
   }
 

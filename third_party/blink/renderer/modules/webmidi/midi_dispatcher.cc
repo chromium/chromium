@@ -41,23 +41,25 @@ MIDIDispatcher::MIDIDispatcher(ExecutionContext* execution_context)
           execution_context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI)),
       receiver_.BindNewPipeAndPassRemote(
           execution_context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI)));
+  receiver_.set_disconnect_handler(blink::BindOnce(
+      &MIDIDispatcher::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 MIDIDispatcher::~MIDIDispatcher() = default;
 
 void MIDIDispatcher::SendMIDIData(uint32_t port,
-                                  const uint8_t* data,
-                                  wtf_size_t length,
+                                  base::span<const uint8_t> data,
                                   base::TimeTicks timestamp) {
-  if ((kMaxUnacknowledgedBytesSent - unacknowledged_bytes_sent_) < length) {
+  if ((kMaxUnacknowledgedBytesSent - unacknowledged_bytes_sent_) <
+      data.size()) {
     // TODO(toyoshim): buffer up the data to send at a later time.
     // For now we're just dropping these bytes on the floor.
     return;
   }
 
-  unacknowledged_bytes_sent_ += length;
+  unacknowledged_bytes_sent_ += data.size();
   Vector<uint8_t> v;
-  v.Append(data, length);
+  v.AppendSpan(data);
   midi_session_->SendData(port, std::move(v), timestamp);
 }
 
@@ -140,7 +142,7 @@ void MIDIDispatcher::DataReceived(uint32_t port,
   DCHECK(!data.empty());
 
   if (initialized_)
-    client_->DidReceiveMIDIData(port, &data[0], data.size(), timestamp);
+    client_->DidReceiveMIDIData(port, data, timestamp);
 }
 
 void MIDIDispatcher::Trace(Visitor* visitor) const {
@@ -148,6 +150,12 @@ void MIDIDispatcher::Trace(Visitor* visitor) const {
   visitor->Trace(midi_session_);
   visitor->Trace(receiver_);
   visitor->Trace(midi_session_provider_);
+}
+
+void MIDIDispatcher::OnConnectionError() {
+  if (client_) {
+    client_->OnSessionStartFailed();
+  }
 }
 
 }  // namespace blink

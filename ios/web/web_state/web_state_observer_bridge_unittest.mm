@@ -15,10 +15,9 @@
 
 namespace web {
 namespace {
-const char kRawResponseHeaders[] =
-    "HTTP/1.1 200 OK\0"
-    "Content-Length: 450\0"
-    "Connection: keep-alive\0";
+const char kRawResponseHeaders[] = "HTTP/1.1 200 OK\0"
+                                   "Content-Length: 450\0"
+                                   "Connection: keep-alive\0";
 }  // namespace
 
 // Test fixture to test WebStateObserverBridge class.
@@ -259,16 +258,6 @@ TEST_F(WebStateObserverBridgeTest, PermissionStateChanged) {
                                           web::PermissionCamera);
   EXPECT_EQ(web::PermissionCamera,
             [observer_ permissionStateChangedInfo]->permission);
-}
-
-// Tests `webStateDidChangeTitle:` forwarding.
-TEST_F(WebStateObserverBridgeTest, UnderPageBackgroundColorChanged) {
-  ASSERT_FALSE([observer_ underPageBackgroundColorChangedInfo]);
-
-  observer_bridge_.UnderPageBackgroundColorChanged(&fake_web_state_);
-  ASSERT_TRUE([observer_ underPageBackgroundColorChangedInfo]);
-  EXPECT_EQ(&fake_web_state_,
-            [observer_ underPageBackgroundColorChangedInfo]->web_state);
 }
 
 // Tests `renderProcessGoneForWebState:` forwarding.

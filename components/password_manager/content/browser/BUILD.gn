@@ -6,8 +6,6 @@ static_library("browser") {
   sources = [
     "bad_message.cc",
     "bad_message.h",
-    "content_credential_manager.cc",
-    "content_credential_manager.h",
     "content_password_manager_driver.cc",
     "content_password_manager_driver.h",
     "content_password_manager_driver_factory.cc",
@@ -51,6 +49,26 @@ static_library("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("password_form_classification_util") {
+  sources = [
+    "password_form_classification_util.cc",
+    "password_form_classification_util.h",
+  ]
+
+  public_deps = [
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/content/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/form_parsing",
+    "//content/public/browser",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   deps = [ "//base" ]
@@ -73,6 +91,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "bad_message_unittest.cc",
     "content_password_manager_driver_factory_unittest.cc",
     "content_password_manager_driver_unittest.cc",
     "form_submission_tracker_util_unittest.cc",
@@ -95,4 +114,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

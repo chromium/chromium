@@ -64,7 +64,8 @@ export abstract class ModeBase {
   async stopCapture(): Promise<void> {
     this.stop();
     try {
-      await this.capture;
+      // We're intentionally ignoring the returned [Promise<void>].
+      void await this.capture;
     } catch (e) {
       if (e instanceof CanceledError) {
         return;

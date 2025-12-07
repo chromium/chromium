@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme} from '../../color_scheme.mojom-webui.js';
-import {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
+import type {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import type {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change theme state.
@@ -21,12 +21,14 @@ export enum ThemeActionName {
   SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
   SET_SUNRISE_TIME = 'set_sunrise_time',
   SET_SUNSET_TIME = 'set_sunset_time',
+  SET_GEOLOCATION_IS_USER_MODIFIABLE = 'set_geolocation_is_user_modifiable',
 }
 
-export type ThemeActions = SetColorModeAutoScheduleAction|
-    SetDarkModeEnabledAction|SetColorSchemeAction|SetSampleColorSchemesAction|
-    SetStaticColorAction|SetGeolocationPermissionEnabledAction|
-    SetSunriseTimeAction|SetSunsetTimeAction;
+export type ThemeActions =
+    SetColorModeAutoScheduleAction|SetDarkModeEnabledAction|
+    SetColorSchemeAction|SetSampleColorSchemesAction|SetStaticColorAction|
+    SetGeolocationPermissionEnabledAction|SetSunriseTimeAction|
+    SetSunsetTimeAction|SetGeolocationIsUserModifiableAction;
 
 export interface SetDarkModeEnabledAction extends Action {
   name: ThemeActionName.SET_DARK_MODE_ENABLED;
@@ -60,6 +62,11 @@ export interface SetStaticColorAction extends Action {
 export interface SetGeolocationPermissionEnabledAction extends Action {
   name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED;
   enabled: boolean;
+}
+
+export interface SetGeolocationIsUserModifiableAction extends Action {
+  name: ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE;
+  isUserModifiable: boolean;
 }
 
 export interface SetSunriseTimeAction extends Action {
@@ -100,6 +107,14 @@ export function setStaticColorAction(staticColor: SkColor|
 export function setGeolocationPermissionEnabledAction(enabled: boolean):
     SetGeolocationPermissionEnabledAction {
   return {name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
+}
+
+export function setGeolocationIsUserModifiableAction(isUserModifiable: boolean):
+    SetGeolocationIsUserModifiableAction {
+  return {
+    name: ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE,
+    isUserModifiable,
+  };
 }
 
 export function setSunriseTimeAction(time: string): SetSunriseTimeAction {

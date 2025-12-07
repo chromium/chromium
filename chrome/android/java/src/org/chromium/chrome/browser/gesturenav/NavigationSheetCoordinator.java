@@ -13,8 +13,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationSheetMediator.ItemProperties;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,11 +33,12 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AttrUtils;
 
-/**
- * Coordinator class for navigation sheet.
- * TODO(jinsukkim): Write tests.
- */
+import java.util.function.Supplier;
+
+/** Coordinator class for navigation sheet. TODO(jinsukkim): Write tests. */
+@NullMarked
 class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet {
     // Type of the navigation list item. We have only single type.
     static final int NAVIGATION_LIST_ITEM_TYPE_ID = 0;
@@ -98,7 +102,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         }
     }
 
-    private NavigationSheetView mContentView;
+    private @Nullable NavigationSheetView mContentView;
 
     private boolean mForward;
 
@@ -107,11 +111,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     // Metrics. True if sheet was opened from long-press on back button.
     private boolean mOpenedAsPopup;
 
-    // Set to {@code true} for each trigger when the sheet should fully expand with
-    // no peek/half state.
-    private boolean mFullyExpand;
-
-    private Profile mProfile;
+    private final Profile mProfile;
 
     /** Construct a new NavigationSheet. */
     NavigationSheetCoordinator(
@@ -145,14 +145,15 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                 NavigationItemViewBinder::bind);
         mOpenSheetRunnable =
                 () -> {
-                    if (isHidden()) openSheet(true, true);
+                    if (isHidden()) openSheet(true);
                 };
         mLongSwipePeekThreshold =
                 Math.min(
                         context.getResources().getDisplayMetrics().density
                                 * LONG_SWIPE_PEEK_THRESHOLD_DP,
-                        parent.getWidth() / 2);
-        mItemHeight = getSizePx(context, R.dimen.navigation_popup_item_height);
+                        parent.getWidth() / 2f);
+        mItemHeight = AttrUtils.getDimensionPixelSize(context, R.attr.listItemHeightLarge);
+        assert mItemHeight >= 0;
         mContentPadding =
                 getSizePx(context, R.dimen.navigation_sheet_content_top_padding)
                         + getSizePx(context, R.dimen.navigation_sheet_content_bottom_padding);
@@ -163,7 +164,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     // Transition to either peeked or expanded state.
-    private boolean openSheet(boolean expandIfSmall, boolean animate) {
+    private boolean openSheet(boolean expandIfSmall) {
         mContentView =
                 (NavigationSheetView) mLayoutInflater.inflate(R.layout.navigation_sheet, null);
         ListView listview = mContentView.findViewById(R.id.navigation_entries);
@@ -180,7 +181,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         }
         mBottomSheetController.get().addObserver(mSheetObserver);
         if (expandIfSmall && history.getEntryCount() <= SKIP_PEEK_COUNT) {
-            mFullyExpand = true;
             expandSheet();
         }
         return true;
@@ -193,6 +193,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     // NavigationSheet
 
     @Override
+    @Initializer
     public void setDelegate(NavigationSheet.Delegate delegate) {
         mDelegate = delegate;
     }
@@ -202,7 +203,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         if (mBottomSheetController.get() == null) return;
         mForward = forward;
         mShowCloseIndicator = showCloseIndicator;
-        mFullyExpand = false;
         mOpenedAsPopup = false;
     }
 
@@ -216,7 +216,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         // Enter the expanded state by disabling peek/half state rather than
         // calling |expandSheet| explicilty. Otherwise it cause an extra
         // state transition (full -> full), which cancels the animation effect.
-        boolean opened = openSheet(/* expandIfSmall= */ false, animate);
+        boolean opened = openSheet(/* expandIfSmall= */ false);
         if (opened) GestureNavMetrics.recordUserAction("Popup");
         return opened;
     }
@@ -294,6 +294,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
 
     @Override
     public View getContentView() {
+        assert mContentView != null;
         return mContentView;
     }
 
@@ -304,11 +305,14 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
 
     @Override
     public int getVerticalScrollOffset() {
+        assert mContentView != null;
         return mContentView.getVerticalScrollOffset();
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mMediator.destroy();
+    }
 
     @Override
     public @ContentPriority int getPriority() {
@@ -351,22 +355,22 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.overscroll_navigation_sheet_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.overscroll_navigation_sheet_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.overscroll_navigation_sheet_opened_half;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.overscroll_navigation_sheet_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.overscroll_navigation_sheet_closed;
     }
 }

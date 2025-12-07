@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/task/sequenced_task_runner.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 
-#import "base/task/sequenced_task_runner.h"
+class GaiaId;
 
 namespace ios {
 namespace provider {
@@ -35,12 +36,13 @@ class ChromiumPushNotificationService final : public PushNotificationService {
                       void (^completion_handler)(NSError* error)) final;
   void UnregisterDevice(void (^completion_handler)(NSError* error)) final;
   bool DeviceTokenIsSet() const final;
+  std::string GetRepresentativeTargetIdForGaiaId(const GaiaId& gaia_id) final;
 
  protected:
   // PushNotificationService implementation.
   void SetAccountsToDevice(NSArray<NSString*>* account_ids,
                            CompletionHandler completion_handler) final;
-  void SetPreferences(NSString* account_id,
+  void SetPreferences(const GaiaId& account_id,
                       PreferenceMap preference_map,
                       CompletionHandler completion_handler) final;
 };
@@ -66,6 +68,11 @@ bool ChromiumPushNotificationService::DeviceTokenIsSet() const {
   return false;
 }
 
+std::string ChromiumPushNotificationService::GetRepresentativeTargetIdForGaiaId(
+    const GaiaId& gaia_id) {
+  return "";
+}
+
 void ChromiumPushNotificationService::SetAccountsToDevice(
     NSArray<NSString*>* account_ids,
     void (^completion_handler)(NSError* error)) {
@@ -76,7 +83,7 @@ void ChromiumPushNotificationService::SetAccountsToDevice(
 }
 
 void ChromiumPushNotificationService::SetPreferences(
-    NSString* account_id,
+    const GaiaId& account_id,
     PreferenceMap preference_map,
     CompletionHandler completion_handler) {
   // Chromium does not initialize the device's connection to the push

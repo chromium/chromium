@@ -28,8 +28,9 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
   // Shows the popup, or updates the existing popup with the given values.
   // If the popup contains credit card items, find and set
-  // |touchBarController_| and show the credit card autofill touch bar.
-  void Show(std::vector<autofill::Suggestion> suggestions,
+  // `touchBarController_` and show the credit card autofill touch bar.
+  void Show(UiSessionId ui_session_id,
+            std::vector<autofill::Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
 
@@ -45,9 +46,6 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
  private:
   // The controller providing the autofill touch bar.
   WebTextfieldTouchBarController* __weak touch_bar_controller_;
-
-  // True if the popup contains credit card items.
-  BOOL is_credit_card_popup_;
 };
 
 }  // namespace autofill

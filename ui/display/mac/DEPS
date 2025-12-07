@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/viz/common/resources/shared_image_format.h",
+]
+
+specific_include_rules = {
+  "screen_mac_headless\.mm": [
+    "+components/headless/screen_info",
+  ],
+}

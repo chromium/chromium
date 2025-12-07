@@ -2,22 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
+
+# If enable_extensions is true then enable_guest_view must also be true.
+assert(!enable_extensions || enable_guest_view)
 
 source_set("renderer") {
   sources = [
     "activity_log_converter_strategy.cc",
     "activity_log_converter_strategy.h",
-    "api/app_window_custom_bindings.cc",
-    "api/app_window_custom_bindings.h",
-    "api/automation/automation_api_converters.cc",
-    "api/automation/automation_api_converters.h",
-    "api/automation/automation_internal_custom_bindings.cc",
-    "api/automation/automation_internal_custom_bindings.h",
     "api/context_menus_custom_bindings.cc",
     "api/context_menus_custom_bindings.h",
     "api/core_extensions_renderer_api_provider.cc",
@@ -48,6 +45,8 @@ source_set("renderer") {
     "api/runtime_hooks_delegate.h",
     "api/web_request_hooks.cc",
     "api/web_request_hooks.h",
+    "api/web_request_natives.cc",
+    "api/web_request_natives.h",
     "api_activity_logger.cc",
     "api_activity_logger.h",
     "api_definitions_natives.cc",
@@ -129,6 +128,8 @@ source_set("renderer") {
     "extension_throttle_entry.h",
     "extension_throttle_manager.cc",
     "extension_throttle_manager.h",
+    "extension_throttle_manager_access.cc",
+    "extension_throttle_manager_access.h",
     "extension_url_loader_throttle.cc",
     "extension_url_loader_throttle.h",
     "extension_web_view_helper.cc",
@@ -144,14 +145,6 @@ source_set("renderer") {
     "gc_callback.h",
     "get_script_context.cc",
     "get_script_context.h",
-    "guest_view/guest_view_internal_custom_bindings.cc",
-    "guest_view/guest_view_internal_custom_bindings.h",
-    "guest_view/mime_handler_view/mime_handler_view_container_manager.cc",
-    "guest_view/mime_handler_view/mime_handler_view_container_manager.h",
-    "guest_view/mime_handler_view/mime_handler_view_frame_container.cc",
-    "guest_view/mime_handler_view/mime_handler_view_frame_container.h",
-    "guest_view/mime_handler_view/post_message_support.cc",
-    "guest_view/mime_handler_view/post_message_support.h",
     "id_generator_custom_bindings.cc",
     "id_generator_custom_bindings.h",
     "injection_host.cc",
@@ -186,6 +179,8 @@ source_set("renderer") {
     "renderer_frame_context_data.h",
     "resource_bundle_source_map.cc",
     "resource_bundle_source_map.h",
+    "resource_request_policy.cc",
+    "resource_request_policy.h",
     "runtime_custom_bindings.cc",
     "runtime_custom_bindings.h",
     "safe_builtins.cc",
@@ -250,12 +245,11 @@ source_set("renderer") {
   ]
 
   deps = [
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//chrome:resources",
     "//components/crx_file",
-    "//components/guest_view/common",
-    "//components/guest_view/common:mojom",
-    "//components/guest_view/renderer",
+    "//components/guest_view/buildflags",
     "//components/version_info",
     "//content:content_resources",
     "//content/public/renderer",
@@ -265,6 +259,7 @@ source_set("renderer") {
     "//extensions/common/api",
     "//gin",
     "//mojo/public/js:resources",
+    "//pdf:buildflags",
     "//services/accessibility/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia",
@@ -276,11 +271,49 @@ source_set("renderer") {
     "//ui/strings:auto_image_annotation_strings_grit",
   ]
 
+  # TODO(https://crbug.com/356905053): The following files don't compile
+  # cleanly with the experimental desktop-android build. Either make them
+  # compile, or determine they should not be included and place them under a
+  # more appropriate if-block.
+  if (enable_extensions) {
+    sources += [
+      "api/automation/automation_api_converters.cc",
+      "api/automation/automation_api_converters.h",
+      "api/automation/automation_internal_custom_bindings.cc",
+      "api/automation/automation_internal_custom_bindings.h",
+    ]
+  }
+
   if (enable_pdf) {
     deps += [
       "//components/pdf/common:util",
-      "//pdf:buildflags",
       "//pdf:features",
+    ]
+  }
+
+  if (enable_guest_view) {
+    sources += [
+      "guest_view/guest_view_internal_custom_bindings.cc",
+      "guest_view/guest_view_internal_custom_bindings.h",
+      "guest_view/mime_handler_view/mime_handler_view_container_manager.cc",
+      "guest_view/mime_handler_view/mime_handler_view_container_manager.h",
+      "guest_view/mime_handler_view/mime_handler_view_frame_container.cc",
+      "guest_view/mime_handler_view/mime_handler_view_frame_container.h",
+      "guest_view/mime_handler_view/post_message_support.cc",
+      "guest_view/mime_handler_view/post_message_support.h",
+    ]
+
+    deps += [
+      "//components/guest_view/common",
+      "//components/guest_view/common:mojom",
+      "//components/guest_view/renderer",
+    ]
+  }
+
+  if (enable_platform_apps) {
+    sources += [
+      "api/app_window_custom_bindings.cc",
+      "api/app_window_custom_bindings.h",
     ]
   }
 }
@@ -332,8 +365,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "activity_log_converter_strategy_unittest.cc",
-    "api/automation/automation_internal_custom_bindings_unittests.cc",
-    "api/feedback_private_hooks_delegate_unittest.cc",
     "api/i18n_hooks_delegate_unittest.cc",
     "api/messaging/gin_port_unittest.cc",
     "api/messaging/messaging_util_unittest.cc",
@@ -390,7 +421,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/crx_file:crx_file",
+    "//components/crx_file",
     "//content/test:test_support",
     "//extensions:extensions_renderer_resources",
     "//extensions:test_support",
@@ -398,31 +429,42 @@ source_set("unit_tests") {
     "//extensions/common",
     "//gin",
     "//gin:gin_test",
-    "//ipc:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
     "//ui/base",
   ]
+
+  # TODO(https://crbug.com/356905053): Gradually include more of these sources
+  # in the desktop-android build when the related extensions APIs are enabled.
+  if (enable_extensions) {
+    sources += [
+      "api/automation/automation_internal_custom_bindings_unittests.cc",
+      "api/feedback_private_hooks_delegate_unittest.cc",
+    ]
+  }
 }
 
-source_set("browser_tests") {
-  testonly = true
-  sources = [ "script_context_browsertest.cc" ]
+if (enable_extensions) {
+  # Browser tests are not currently supported in desktop-android builds.
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "script_context_browsertest.cc" ]
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [
-    ":renderer",
-    "//base",
-    "//content/public/renderer",
-    "//content/test:test_support",
-    "//extensions:test_support",
-    "//extensions/common",
-    "//extensions/shell:app_shell_lib",
-    "//extensions/shell:browser_tests",
-    "//third_party/blink/public:blink",
-    "//url",
-  ]
+    deps = [
+      ":renderer",
+      "//base",
+      "//content/public/renderer",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/common",
+      "//extensions/shell:app_shell_lib",
+      "//extensions/shell:browser_tests",
+      "//third_party/blink/public:blink",
+      "//url",
+    ]
+  }
 }

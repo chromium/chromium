@@ -24,6 +24,10 @@ function plugin() {
   // URL mappings from bare import URLs to file paths.
   const redirects = new Map([
     ['lit/index.js', path.join(pathToNodeModules, 'lit/index.js')],
+    ['lit-html/async-directive.js',
+      path.join(pathToNodeModules, 'lit-html/async-directive.js')],
+    ['lit-html/directive.js',
+      path.join(pathToNodeModules, 'lit-html/directive.js')],
     ['lit-element/lit-element.js',
       path.join(pathToNodeModules, 'lit-element/lit-element.js')],
     ['lit-html/is-server.js',
@@ -37,6 +41,12 @@ function plugin() {
     name: 'lit-path-resolver-plugin',
 
     resolveId(source, origin) {
+      // Ensure all lit-html imports are de-duped so that this file is not
+      // included in the bundle twice.
+      if (source.endsWith('lit-html.js')) {
+        return path.join(pathToNodeModules, 'lit-html/lit-html.js');
+      }
+
       if (source.startsWith('.')) {
         // Let Rollup handle relative paths.
         return null;

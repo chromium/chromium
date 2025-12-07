@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="TextAppearance.DividerText" parent="TextAppearance.TextLarge.Secondary">
+        <item name="android:textColor">@color/baseline_neutral_70</item>
+    </style>
+    <style name="KeyboardAccessoryActionButton" parent="FilledButton">
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingEnd">@dimen/keyboard_accessory_suggestion_padding</item>
+        <item name="android:paddingStart">@dimen/keyboard_accessory_suggestion_padding</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="KeyboardAccessoryActionButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryActionButton</item>
+    </style>
+    <style name="KeyboardAccessoryDismissButton" parent="TextButton">
+        <item name="android:gravity">center</item>
+        <item name="android:paddingEnd">@dimen/keyboard_accessory_dismiss_button_padding_horizontal</item>
+        <item name="android:paddingStart">@dimen/keyboard_accessory_dismiss_button_padding_horizontal</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="KeyboardAccessoryDismissButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryDismissButton</item>
+    </style>
+    <style name="KeyboardAccessoryChip" parent="AssistiveChip">
+        <item name="iconWidth">
+            @dimen/keyboard_accessory_bar_item_icon_width
+        </item>
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets</item>
+    </style>
+    <style name="KeyboardAccessoryLargeChip" parent="KeyboardAccessoryChip">
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets_large_font</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardChip" parent="KeyboardAccessoryChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardLargeChip" parent="KeyboardAccessoryLargeChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
+        <style name="KeyboardAccessoryHomeAndWorkChip" parent="KeyboardAccessoryChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
+    </style>
+    <style name="KeyboardAccessoryHomeAndWorkLargeChip" parent="KeyboardAccessoryLargeChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
+    </style>
+    <!-- TODO: crbug.com/385172647 - Clean up old styles once 2 line chip feature is launched. -->
+    <style name="KeyboardAccessoryTwoLineChip" parent="AssistiveChip">
+        <item name="android:minHeight">
+            @dimen/keyboard_accessory_chip_min_height_redesign
+        </item>
+        <item name="cornerRadius">
+            @dimen/keyboard_accessory_chip_corner_radius_redesign
+        </item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_start_padding_redesign</item>
+        <item name="chipEndPadding">@dimen/keyboard_accessory_chip_end_padding_redesign</item>
+        <item name="textArrangement">vertical</item>
+        <item name="textAlignStart">true</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
+        <item name="primaryTextStartPadding">@dimen/keyboard_accessory_text_start_padding_redesign</item>
+        <item name="secondaryTextAppearance">@style/TextAppearance.TextSmall.Primary</item>
+        <item name="iconWidth">
+            @dimen/keyboard_accessory_bar_item_icon_width
+        </item>
+    </style>
+    <style name="KeyboardAccessoryLargeTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets_large_font</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryHomeAndWorkTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryHomeAndWorkLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryPaymentsTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_payments_start_padding_redesign</item>
+        <item name="primaryTextStartPadding">@dimen/keyboard_accessory_payments_text_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryPaymentsLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_payments_start_padding_redesign</item>
+        <item name="primaryTextStartPadding">@dimen/keyboard_accessory_payments_text_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryTwoLineActionButton" parent="FilledButton.Tonal.ButtonStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">@dimen/keyboard_accessory_chip_min_height_redesign</item>
+        <item name="android:paddingEnd">@dimen/keyboard_accessory_action_button_horizontal_padding</item>
+        <item name="android:paddingStart">@dimen/keyboard_accessory_action_button_horizontal_padding</item>
+        <item name="android:textAlignment">center</item>
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets</item>
+        <item name="rippleCornerRadiusTopStart">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryTwoLineActionButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryTwoLineActionButton</item>
+    </style>
+    <style name="KeyboardAccessoryLargeTwoLineActionButton" parent="KeyboardAccessoryTwoLineActionButton">
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets_large_font</item>
+    </style>
+    <style name="KeyboardAccessoryLargeTwoLineActionButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryLargeTwoLineActionButton</item>
+    </style>
+</resources>

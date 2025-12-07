@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_VIEW_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
+class Browser;
 class ExtensionsToolbarContainer;
 
 class ExtensionsToolbarContainerViewController final
@@ -19,6 +21,13 @@ class ExtensionsToolbarContainerViewController final
   static constexpr int kFlexOrderExtensionsButton = 1;
   static constexpr int kFlexOrderRequestAccessButton = 2;
   static constexpr int kFlexOrderActionView = 3;
+
+  // In a live environment, the Extensions Zero State Promo IPH will only open
+  // after at least 10 minutes into the browsing session.
+  //
+  // This function sets the Zero State Promo show timer so that the IPH can
+  // show immediately.
+  static void WakeZeroStatePromoForTesting();
 
   ExtensionsToolbarContainerViewController(
       Browser* browser,
@@ -69,12 +78,14 @@ class ExtensionsToolbarContainerViewController final
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
-  void OnSiteAccessRequestAdded(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;
-  void OnSiteAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
-  void OnSiteAccessRequestsCleared(int tab_id) override;
-  void OnSiteAccessRequestDismissedByUser(
+  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+                                  int tab_id) override;
+  void OnHostAccessRequestsCleared(int tab_id) override;
+  void OnHostAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id,
       const url::Origin& origin) override;
 

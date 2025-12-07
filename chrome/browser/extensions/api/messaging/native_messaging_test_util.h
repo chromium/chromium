@@ -10,12 +10,17 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #else
 #include "base/test/scoped_path_override.h"
 #endif
+
+// This class does not work yet on desktop Android because it relies on running
+// a python executable on the test device.
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 namespace extensions {
 

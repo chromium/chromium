@@ -4,10 +4,11 @@
 
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -39,7 +40,7 @@ namespace {
 
 bool HeadersContainFrameAncestorsCSP(
     const network::mojom::ParsedHeadersPtr& headers) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       headers->content_security_policy, [](const auto& csp) {
         return csp->header->type ==
                    network::mojom::ContentSecurityPolicyType::kEnforce &&
@@ -93,11 +94,10 @@ RenderFrameHostImpl* GetParentForFrameAncestors(NavigationRequest* request,
 }  // namespace
 
 // static
-std::unique_ptr<NavigationThrottle> AncestorThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+void AncestorThrottle::CreateAndAdd(NavigationThrottleRegistry& registry) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  return base::WrapUnique(new AncestorThrottle(handle));
+  registry.AddThrottle(base::WrapUnique(new AncestorThrottle(registry)));
 }
 
 AncestorThrottle::~AncestorThrottle() {}
@@ -163,8 +163,8 @@ const char* AncestorThrottle::GetNameForLogging() {
   return "AncestorThrottle";
 }
 
-AncestorThrottle::AncestorThrottle(NavigationHandle* handle)
-    : NavigationThrottle(handle) {}
+AncestorThrottle::AncestorThrottle(NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 void AncestorThrottle::ParseXFrameOptionsError(
     const net::HttpResponseHeaders* headers,
@@ -173,8 +173,8 @@ void AncestorThrottle::ParseXFrameOptionsError(
          disposition == network::mojom::XFrameOptionsValue::kInvalid);
   DCHECK(headers);
 
-  std::string value;
-  headers->GetNormalizedHeader("X-Frame-Options", &value);
+  std::string value =
+      headers->GetNormalizedHeader("X-Frame-Options").value_or(std::string());
 
   std::string message;
   if (disposition == network::mojom::XFrameOptionsValue::kConflict) {
@@ -367,19 +367,13 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
             GURL(),  // url_before_redirects is ignored for frame-ancestors
-            navigation_handle()->WasServerRedirect(),
-            true /* is_response_check */, empty_source_location,
+            navigation_handle()->WasServerRedirect(), empty_source_location,
             network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,
-            navigation_handle()->IsFormSubmission());
+            /*is_opaque_fenced_frame=*/false);
     if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
           parent,
           blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
-    }
-    if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          parent,
-          blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
     }
     if (!result) {
       return CheckResult::BLOCK;

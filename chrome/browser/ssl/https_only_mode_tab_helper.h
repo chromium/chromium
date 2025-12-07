@@ -27,6 +27,8 @@ class HttpsOnlyModeTabHelper
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // HTTPS-Only Mode metadata getters and setters:
   void set_is_navigation_upgraded(bool upgraded) {
@@ -44,7 +46,7 @@ class HttpsOnlyModeTabHelper
   }
   GURL fallback_url() const { return fallback_url_; }
 
-  bool has_failed_upgrade(const GURL& url) {
+  bool has_failed_upgrade(const GURL& url) const {
     return base::Contains(failed_upgrade_urls_, url);
   }
   void add_failed_upgrade(const GURL& url) { failed_upgrade_urls_.insert(url); }
@@ -52,7 +54,7 @@ class HttpsOnlyModeTabHelper
   void set_is_exempt_error(bool is_exempt_error) {
     is_exempt_error_ = is_exempt_error;
   }
-  bool is_exempt_error() { return is_exempt_error_; }
+  bool is_exempt_error() const { return is_exempt_error_; }
 
  private:
   explicit HttpsOnlyModeTabHelper(content::WebContents* web_contents);

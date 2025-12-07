@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
+
+#include <string_view>
+
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/session/session_controller_impl.h"
@@ -58,7 +61,7 @@ class NightLightFeaturePodControllerTest : public AshTestBase {
 
   void PressLabel() { controller_->OnLabelPressed(); }
 
-  const std::u16string& GetButtonLabelText() {
+  std::u16string_view GetButtonLabelText() {
     return tile_->sub_label()->GetText();
   }
 

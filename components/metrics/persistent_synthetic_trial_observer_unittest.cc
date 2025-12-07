@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 class PersistentSyntheticTrialObserverTest : public testing::Test {
  public:
@@ -74,4 +75,5 @@ TEST_F(PersistentSyntheticTrialObserverTest, AddRemoveTrials) {
   EXPECT_EQ(variations::HashName("Group3"), profile.field_trial(0).group_id());
 }
 
+}  // namespace
 }  // namespace metrics

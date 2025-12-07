@@ -4,8 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core)
 
 source_set("settings_observer") {
   sources = [ "settings_observer.h" ]
@@ -65,6 +64,7 @@ source_set("storage") {
     "//components/value_store",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
   ]

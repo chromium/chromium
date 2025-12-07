@@ -71,8 +71,7 @@ storage::FileSystemType ToStorageFileSystemType(
     case blink::mojom::FileSystemType::kExternal:
       return storage::FileSystemType::kFileSystemTypeExternal;
   }
-  NOTREACHED_IN_MIGRATION();
-  return storage::FileSystemType::kFileSystemTypeTemporary;
+  NOTREACHED();
 }
 
 blink::mojom::FileSystemType ToMojoFileSystemType(
@@ -106,11 +105,9 @@ blink::mojom::FileSystemType ToMojoFileSystemType(
     case storage::FileSystemType::kFileSystemTypeSmbFs:
     case storage::FileSystemType::kFileSystemTypeFuseBox:
     case storage::FileSystemType::kFileSystemInternalTypeEnumEnd:
-      NOTREACHED_IN_MIGRATION();
-      return blink::mojom::FileSystemType::kTemporary;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::FileSystemType::kTemporary;
+  NOTREACHED();
 }
 
 blink::mojom::FileSystemInfoPtr ToMojoFileSystemInfo(

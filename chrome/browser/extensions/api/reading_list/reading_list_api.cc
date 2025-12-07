@@ -71,7 +71,8 @@ ReadingListAddEntryFunction::AddEntryToReadingList() {
 
   reading_list_model_->AddOrReplaceEntry(
       url_, title_, reading_list::EntrySource::ADDED_VIA_EXTENSION,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   reading_list_model_->SetReadStatusIfExists(url_, has_been_read_);
 
   return NoArguments();

@@ -19,7 +19,6 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/common/api/hid.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
@@ -68,8 +67,8 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   void Connect(const std::string& device_guid, ConnectCallback callback);
 
-  // Checks if |extension| has permission to open |device_info|. Set
-  // |update_last_used| to update the timestamp in the DevicePermissionsManager.
+  // Checks if `extension` has permission to open `device_info`. Set
+  // `update_last_used` to update the timestamp in the DevicePermissionsManager.
   bool HasPermission(const Extension* extension,
                      const device::mojom::HidDeviceInfo& device_info,
                      bool update_last_used);
@@ -134,6 +133,10 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   DeviceIdToResourceIdMap resource_ids_;
   base::WeakPtrFactory<HidDeviceManager> weak_factory_{this};
 };
+
+template <>
+void BrowserContextKeyedAPIFactory<
+    HidDeviceManager>::DeclareFactoryDependencies();
 
 }  // namespace extensions
 

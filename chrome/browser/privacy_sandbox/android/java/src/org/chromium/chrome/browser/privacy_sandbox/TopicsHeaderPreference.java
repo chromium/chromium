@@ -10,8 +10,10 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
+@NullMarked
 public class TopicsHeaderPreference extends TextMessagePreference {
     public TopicsHeaderPreference(Context context, AttributeSet attrs) {
         super(context, attrs);

@@ -21,12 +21,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,6 +36,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "media/base/encoder_status.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -53,6 +55,7 @@
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -155,7 +158,7 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
 
   // The default value of VideoEncoderInfo of VaapiVideoEncodeAccelerator.
   encoder_info_.implementation_name = "VaapiVideoEncodeAccelerator";
-  DCHECK(!encoder_info_.has_trusted_rate_controller);
+  encoder_info_.has_trusted_rate_controller = true;
   DCHECK(encoder_info_.is_hardware_accelerated);
   DCHECK(encoder_info_.supports_native_handle);
   DCHECK(!encoder_info_.supports_simulcast);
@@ -171,7 +174,7 @@ VaapiVideoEncodeAccelerator::~VaapiVideoEncodeAccelerator() {
   num_instances_.Decrement();
 }
 
-bool VaapiVideoEncodeAccelerator::Initialize(
+EncoderStatus VaapiVideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -180,13 +183,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(
 
   if (!can_use_encoder_) {
     MEDIA_LOG(ERROR, media_log.get()) << "Too many encoders are allocated";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (AttemptedInitialization()) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Initialize() cannot be called more than once.";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
@@ -196,14 +199,14 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     if (config.output_profile != VideoCodecProfile::VP9PROFILE_PROFILE0) {
       MEDIA_LOG(ERROR, media_log.get())
           << "Spatial layers are only supported for VP9 encoding";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
     if (config.inter_layer_pred != SVCInterLayerPredMode::kOnKeyPic &&
         config.inter_layer_pred != SVCInterLayerPredMode::kOff) {
       MEDIA_LOG(ERROR, media_log.get())
           << "Only K-SVC and S mode encoding are supported.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -211,13 +214,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       if (config.inter_layer_pred == SVCInterLayerPredMode::kOff &&
           !base::FeatureList::IsEnabled(kVaapiVp9SModeHWEncoding)) {
         MEDIA_LOG(ERROR, media_log.get()) << "Vp9 S-mode encoding is disabled";
-        return false;
+        return {EncoderStatus::Codes::kEncoderInitializationError};
       }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     // TODO(crbug.com/40172317): Remove this restriction.
-    if (!base::ranges::is_sorted(
+    if (!std::ranges::is_sorted(
             config.spatial_layers,
             [](const VideoEncodeAccelerator::Config::SpatialLayer& lhs,
                const VideoEncodeAccelerator::Config::SpatialLayer& rhs) {
@@ -226,7 +229,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       MEDIA_LOG(ERROR, media_log.get())
           << "Doesn't support k-SVC encoding where spatial layers "
              "have the same resolution";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
   }
 
@@ -235,18 +238,18 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       codec != VideoCodec::kVP9 && codec != VideoCodec::kAV1) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported profile: " << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
     if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
       MEDIA_LOG(ERROR, media_log.get()) << "Variable bitrate is disabled.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
     if (codec != VideoCodec::kH264) {
       MEDIA_LOG(ERROR, media_log.get())
           << "Variable bitrate is only supported with H264 encoding.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
   }
 
@@ -254,7 +257,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       config.input_format != PIXEL_FORMAT_NV12) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported input format: " << config.input_format;
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   bool native_input_mode =
@@ -264,13 +267,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported format for native input mode: "
         << VideoPixelFormatToString(config.input_format);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.HasSpatialLayer() && !native_input_mode) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Spatial scalability is only supported for native input now";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   const SupportedProfiles& profiles = GetSupportedProfiles();
@@ -282,7 +285,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
   if (profile == profiles.end()) {
     MEDIA_LOG(ERROR, media_log.get()) << "Unsupported output profile "
                                       << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.input_visible_size.width() > profile->max_resolution.width() ||
@@ -290,14 +293,14 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     MEDIA_LOG(ERROR, media_log.get())
         << "Input size too big: " << config.input_visible_size.ToString()
         << ", max supported size: " << profile->max_resolution.ToString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   // Finish remaining initialization on the encoder thread.
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VaapiVideoEncodeAccelerator::InitializeTask,
                                 encoder_weak_this_, config));
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
@@ -314,9 +317,13 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
     VaapiWrapper::CodecMode mode;
     switch (output_codec_) {
       case VideoCodec::kH264:
-        mode = config.bitrate.mode() == Bitrate::Mode::kConstant
-                   ? VaapiWrapper::kEncodeConstantBitrate
-                   : VaapiWrapper::kEncodeVariableBitrate;
+        if (H264VaapiVideoEncoderDelegate::UseSoftwareRateController(config)) {
+          mode = VaapiWrapper::kEncodeConstantQuantizationParameter;
+        } else {
+          mode = config.bitrate.mode() == Bitrate::Mode::kConstant
+                     ? VaapiWrapper::kEncodeConstantBitrate
+                     : VaapiWrapper::kEncodeVariableBitrate;
+        }
         break;
       case VideoCodec::kVP8:
       case VideoCodec::kVP9:
@@ -370,6 +377,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
             VaapiWrapper::GetImplementationType() ==
                 VAImplementation::kIntelIHD) {
           encoder_info_.reports_average_qp = false;
+          encoder_info_.has_trusted_rate_controller = false;
         }
       }
       break;
@@ -392,9 +400,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported codec type " << GetCodecName(output_codec_);
-      return;
+      NOTREACHED() << "Unsupported codec type " << GetCodecName(output_codec_);
   }
 
   if (!vaapi_wrapper_->GetVAEncMaxNumOfRefFrames(
@@ -573,7 +579,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     // |frame| can be nullptr to indicate a flush.
     const bool is_expected_storage_type =
         native_input_mode_
-            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
             : frame->IsMappable();
     if (!is_expected_storage_type) {
       NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
@@ -596,7 +602,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
-  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
 
   if (frame.format() != PIXEL_FORMAT_NV12) {
@@ -642,11 +648,11 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   // ordered from small to larger ones. It cannot contain duplicates.
   // TODO(crbug.com/40172317): Consider supporting multiple layers with the
   // same resolution.
-  CHECK(base::ranges::is_sorted(spatial_layer_resolutions,
-                                [](const gfx::Size& lhs, const gfx::Size& rhs) {
-                                  return lhs.width() < rhs.width() &&
-                                         lhs.height() < rhs.height();
-                                }));
+  CHECK(std::ranges::is_sorted(spatial_layer_resolutions,
+                               [](const gfx::Size& lhs, const gfx::Size& rhs) {
+                                 return lhs.width() < rhs.width() &&
+                                        lhs.height() < rhs.height();
+                               }));
 
   // Create input surfaces.
   TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "layers",
@@ -888,19 +894,19 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
   scoped_refptr<CodecPicture> picture;
   switch (output_codec_) {
     case VideoCodec::kH264:
-      picture = new VaapiH264Picture(
+      picture = base::MakeRefCounted<VaapiH264Picture>(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kVP8:
-      picture = new VaapiVP8Picture(
+      picture = base::MakeRefCounted<VaapiVP8Picture>(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kVP9:
-      picture = new VaapiVP9Picture(
+      picture = base::MakeRefCounted<VaapiVP9Picture>(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kAV1:
-      picture = new VaapiAV1Picture(
+      picture = base::MakeRefCounted<VaapiAV1Picture>(
           /*display_va_surface=*/nullptr,
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
@@ -989,8 +995,8 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       jobs.emplace_back(std::move(job));
     }
     for (auto& job : jobs) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media,gpu", "PlatformEncoding.Encode",
-                                        TRACE_ID_LOCAL(&job));
+      TRACE_EVENT_BEGIN("media,gpu", "PlatformEncoding.Encode",
+                        perfetto::Track::FromPointer(&job));
 
       if (!encoder_->Encode(*job)) {
         NotifyError({EncoderStatus::Codes::kEncoderFailedEncode,
@@ -1007,10 +1013,10 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
         return;
       }
 
-      TRACE_EVENT_NESTABLE_ASYNC_END2(
-          "media,gpu", "PlatformEncoding.Encode", TRACE_ID_LOCAL(&jobs[i]),
-          "timestamp", result->metadata().timestamp.InMicroseconds(), "size",
-          spatial_layer_resolutions[i].ToString());
+      TRACE_EVENT_END("media,gpu", /*"PlatformEncoding.Encode"*/
+                      perfetto::Track::FromPointer(&jobs[i]), "timestamp",
+                      result->metadata().timestamp.InMicroseconds(), "size",
+                      spatial_layer_resolutions[i].ToString());
 
       pending_encode_results_.push(std::move(result));
     }
@@ -1243,7 +1249,7 @@ bool VaapiVideoEncodeAccelerator::OnMemoryDump(
 
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddString("encoder native input mode", "",
-                  native_input_mode_ ? "true" : "false");
+                  base::ToString(native_input_mode_));
 
   constexpr double kNumBytesPerPixelYUV420 = 12.0 / 8;
 

@@ -11,18 +11,18 @@
 
 #include <stddef.h>
 
-#include <memory>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/immediate_crash.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -33,23 +33,23 @@ namespace {
 NOINLINE void CorruptMemoryBlock(bool induce_crash) {
   // NOTE(sebmarchand): We intentionally corrupt a memory block here in order to
   //     trigger an Address Sanitizer (ASAN) error report.
-  static const int kArraySize = 5;
-  LONG* array = new LONG[kArraySize];
+  static const size_t kArraySize = 5;
+  auto array = base::HeapArray<LONG>::Uninit(kArraySize);
 
   // Explicitly call out to a kernel32 function to perform the memory access.
   // This way the underflow won't be detected but the corruption will (as the
   // allocator will still be hooked).
   auto InterlockedIncrementFn =
-      reinterpret_cast<LONG (*)(LONG volatile * addend)>(
+      reinterpret_cast<LONG (*)(LONG volatile* addend)>(
           GetProcAddress(GetModuleHandle(L"kernel32"), "InterlockedIncrement"));
   CHECK(InterlockedIncrementFn);
 
-  LONG volatile dummy = InterlockedIncrementFn(array - 1);
+  LONG volatile dummy = InterlockedIncrementFn(array.data() - 1);
   base::debug::Alias(const_cast<LONG*>(&dummy));
 
-  if (induce_crash)
-    CHECK(false);
-  delete[] array;
+  if (induce_crash) {
+    base::ImmediateCrash();
+  }
 }
 #endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 
@@ -66,16 +66,15 @@ static const size_t kArraySize = 4;
 
 void AsanHeapOverflow() {
   // Declares the array as volatile to make sure it doesn't get optimized away.
-  std::unique_ptr<volatile int[]> array(
-      const_cast<volatile int*>(new int[kArraySize]));
-  int dummy = array[kArraySize];
+  auto array = base::HeapArray<volatile int>::Uninit(kArraySize);
+  // SAFETY: required for test.
+  int dummy = UNSAFE_BUFFERS(array.data()[kArraySize]);
   base::debug::Alias(&dummy);
 }
 
 void AsanHeapUnderflow() {
   // Declares the array as volatile to make sure it doesn't get optimized away.
-  std::unique_ptr<volatile int[]> array(
-      const_cast<volatile int*>(new int[kArraySize]));
+  auto array = base::HeapArray<volatile int>::Uninit(kArraySize);
   // We need to store the underflow address in a temporary variable as trying to
   // access array[-1] will trigger a warning C4245: "conversion from 'int' to
   // 'size_t', signed/unsigned mismatch".
@@ -86,10 +85,9 @@ void AsanHeapUnderflow() {
 
 void AsanHeapUseAfterFree() {
   // Declares the array as volatile to make sure it doesn't get optimized away.
-  std::unique_ptr<volatile int[]> array(
-      const_cast<volatile int*>(new int[kArraySize]));
-  volatile int* dangling = array.get();
-  array.reset();
+  auto array = base::HeapArray<volatile int>::Uninit(kArraySize);
+  volatile int* dangling = array.data();
+  array = base::HeapArray<volatile int>();
   int dummy = dangling[kArraySize / 2];
   base::debug::Alias(&dummy);
 }
@@ -105,5 +103,4 @@ void AsanCorruptHeap() {
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

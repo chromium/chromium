@@ -6,14 +6,21 @@
 
 #import "base/i18n/rtl.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -50,10 +57,6 @@ const CGSize kEntrypointContainerShadowOffset = {0, 3};
 
 // The point size of the entrypoint's symbol.
 const CGFloat kEntrypointSymbolPointSize = 15;
-
-// The colorset used for the Contextual Panel's entrypoint background.
-NSString* const kContextualPanelEntrypointBackgroundColor =
-    @"contextual_panel_entrypoint_background_color";
 
 // Accessibility identifier for the entrypoint's image view.
 NSString* const kContextualPanelEntrypointImageViewIdentifier =
@@ -96,6 +99,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   BOOL _shouldCollapseForFullscreen;
   // Whether there currently are any Infobar badges being shown.
   BOOL _infobarBadgesCurrentlyShown;
+
+  // LayoutGuideCenter to register the entrypoint container's view for global
+  // access, only when it is large (i.e. dismissable).
+  LayoutGuideCenter* _layoutGuideCenter;
+
+  // Swipe gesture recognizer for the entrypoint (allows the user to "dismiss"
+  // the large chip entrypoint).
+  UISwipeGestureRecognizer* _swipeRecognizer;
 }
 @end
 
@@ -107,6 +118,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   // Set the view as hidden when created as it should only appear when the
   // entrypoint should be shown.
   self.view.hidden = YES;
+  self.view.isAccessibilityElement = NO;
   _entrypointDisplayed = NO;
 
   _entrypointContainer = [self configuredEntrypointContainer];
@@ -121,19 +133,24 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [_entrypointItemsWrapper addSubview:_imageView];
   [_entrypointItemsWrapper addSubview:_label];
 
+  [self updateAccessibilityStatus];
+
   [self activateInitialConstraints];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
-                       withAction:@selector(updateLabelFont)];
-  }
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(updateLabelFont)];
+
+  // TODO(crbug.com/361110974): Have bubbles gracefully handle orientation
+  // changes without needing to dismiss here.
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self
+             selector:@selector(dismissIPHWithoutAnimation)
+                 name:UIDeviceOrientationDidChangeNotification
+               object:nil];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-
-  _entrypointContainer.layer.cornerRadius =
-      _entrypointContainer.bounds.size.height / 2.0;
 
   _entrypointItemsWrapper.layer.cornerRadius =
       _entrypointItemsWrapper.bounds.size.height / 2.0;
@@ -143,9 +160,13 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 - (void)displayEntrypointView:(BOOL)display {
   if (!display) {
-    [self.mutator dismissIPHAnimated:NO];
+    [self dismissIPHWithoutAnimation];
   }
-  self.view.hidden = !display || !_entrypointDisplayed;
+
+  BOOL hidden = !display || !_entrypointDisplayed;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
+
+  [self updateAccessibilityStatus];
 }
 
 - (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
@@ -172,12 +193,24 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 #pragma mark - private
 
+// Returns the entrypoint button configuration with the given background color.
+- (UIButtonConfiguration*)entrypointContainerConfigurationWithBackgroundColor:
+    (UIColor*)backgroundColor {
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration filledButtonConfiguration];
+  configuration.baseBackgroundColor = backgroundColor;
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  return configuration;
+}
+
 // Creates and configures the entrypoint's button container view.
 - (UIButton*)configuredEntrypointContainer {
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.backgroundColor =
-      [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+  UIColor* defaultBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  button.configuration =
+      [self entrypointContainerConfigurationWithBackgroundColor:
+                defaultBackgroundColor];
   button.clipsToBounds = NO;
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
@@ -238,6 +271,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   label.font = [self entrypointLabelFont];
   label.numberOfLines = 1;
   label.accessibilityIdentifier = kContextualPanelEntrypointLabelIdentifier;
+  label.isAccessibilityElement = NO;
   [label
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -347,6 +381,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _label.font = [self entrypointLabelFont];
 }
 
+- (void)dismissIPHWithoutAnimation {
+  [self.mutator dismissIPHAnimated:NO];
+}
+
 // Returns the preferred font and size given the current ContentSizeCategory.
 - (UIFont*)entrypointLabelFont {
   return PreferredFontForTextStyleWithMaxCategory(
@@ -355,11 +393,20 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       UIContentSizeCategoryAccessibilityLarge);
 }
 
+// Refreshes the VoiceOver bounding box and notifies the mutator that the
+// animation to transition to a small entrypoint has completed.
+- (void)didCompleteTransitionToSmallEntrypoint {
+  [self refreshVoiceOverBoundingBoxIfFocused];
+  [self.mutator didCompleteTransitionToSmallEntrypoint];
+}
+
 // Sets the proper entrypoint visual features depending on current infobar
 // badges status and whether the Contextual Panel is open.
 - (void)refreshEntrypointVisualElements {
+  BOOL shouldAccountForVisibleInfobarBadges =
+      _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
   BOOL shouldShowMutedColors =
-      _infobarBadgesCurrentlyShown || _entrypointTapped;
+      shouldAccountForVisibleInfobarBadges || _entrypointTapped;
 
   // Entrypoint icon tint color.
   _imageView.tintColor = shouldShowMutedColors
@@ -372,13 +419,16 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   // Entrypoint container background color.
   UIColor* untappedEntrypointColor =
-      _infobarBadgesCurrentlyShown
+      shouldAccountForVisibleInfobarBadges
           ? nil
-          : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+          : [UIColor colorNamed:kBackgroundColor];
 
-  _entrypointContainer.backgroundColor =
-      _entrypointTapped ? [UIColor colorNamed:kTertiaryBackgroundColor]
+  UIColor* entrypointContainerBackgroundColor =
+      _entrypointTapped ? [UIColor colorNamed:kGrey100Color]
                         : untappedEntrypointColor;
+  _entrypointContainer.configuration =
+      [self entrypointContainerConfigurationWithBackgroundColor:
+                entrypointContainerBackgroundColor];
 
   // Separator visibility.
   _separator.hidden = !_infobarBadgesCurrentlyShown;
@@ -387,31 +437,67 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 // Applies the correct color to the entrypoint (highlighted blue when the
 // in-product help is present), otherwise back to the normal colorset.
 - (void)styleEntrypointForColoredState:(BOOL)colored {
-  _imageView.tintColor =
-      colored ? [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor]
-              : [UIColor colorNamed:kBlue600Color];
+  _imageView.tintColor = colored ? [UIColor colorNamed:kBackgroundColor]
+                                 : [UIColor colorNamed:kBlue600Color];
 
-  _entrypointContainer.backgroundColor =
+  // Update entrypoint container background.
+  UIColor* entrypointContainerBackgroundColor =
       colored ? [UIColor colorNamed:kBlue600Color]
-              : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+              : [UIColor colorNamed:kBackgroundColor];
+  _entrypointContainer.configuration =
+      [self entrypointContainerConfigurationWithBackgroundColor:
+                entrypointContainerBackgroundColor];
+}
+
+// User swiped the large entrypoint chip towards the leading edge, intending to
+// dismiss it.
+- (void)largeEntrypointChipSwiped {
+  [self transitionToSmallEntrypoint];
+  base::RecordAction(base::UserMetricsAction(
+      "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
+}
+
+// Refreshes the VoiceOver bounding box if VoiceOver is currently running and
+// the entrypoint is focused.
+- (void)refreshVoiceOverBoundingBoxIfFocused {
+  if (!UIAccessibilityIsVoiceOverRunning() ||
+      ![_entrypointContainer accessibilityElementIsFocused]) {
+    return;
+  }
+
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _entrypointContainer);
 }
 
 #pragma mark - ContextualPanelEntrypointConsumer
 
-- (void)setEntrypointConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
   if (!config) {
     return;
   }
 
   _entrypointContainer.accessibilityLabel =
       base::SysUTF8ToNSString(config->accessibility_label);
+  if (config->accessibility_hint.size() > 0) {
+    _entrypointContainer.accessibilityHint =
+        base::SysUTF8ToNSString(config->accessibility_hint);
+  }
 
   _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
 
-  UIImage* image = CustomSymbolWithPointSize(
-      base::SysUTF8ToNSString(config->entrypoint_image_name),
-      kEntrypointSymbolPointSize);
+  UIImage* image;
+  switch (config->image_type) {
+    case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
+      image = DefaultSymbolWithPointSize(
+          base::SysUTF8ToNSString(config->entrypoint_image_name),
+          kEntrypointSymbolPointSize);
+      break;
+    case ContextualPanelItemConfiguration::EntrypointImageType::Image:
+      image = CustomSymbolWithPointSize(
+          base::SysUTF8ToNSString(config->entrypoint_image_name),
+          kEntrypointSymbolPointSize);
+      break;
+  }
 
   _imageView.image = image;
 }
@@ -439,17 +525,23 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
-  self.view.hidden = !_entrypointDisplayed;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:NO];
+
+  [self updateAccessibilityStatus];
+
+  __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
-                        delay:0
-                      options:(UIViewAnimationOptionCurveEaseIn |
-                               UIViewAnimationOptionAllowUserInteraction)
-                   animations:^{
-                     self.view.alpha = 1;
-                     self.view.transform = CGAffineTransformIdentity;
-                   }
-                   completion:nil];
+      delay:0
+      options:(UIViewAnimationOptionCurveEaseIn |
+               UIViewAnimationOptionAllowUserInteraction)
+      animations:^{
+        self.view.alpha = 1;
+        self.view.transform = CGAffineTransformIdentity;
+      }
+      completion:^(BOOL completed) {
+        [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+      }];
 }
 
 - (void)hideEntrypoint {
@@ -457,17 +549,32 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [self transitionToContextualPanelOpenedState:NO];
 
   _entrypointDisplayed = NO;
-  self.view.hidden = YES;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:YES];
+  [self updateAccessibilityStatus];
 
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
 
   [self.view layoutIfNeeded];
+
+  [self refreshVoiceOverBoundingBoxIfFocused];
 }
 
 - (void)transitionToLargeEntrypoint {
   if (_largeTrailingConstraint.active) {
     return;
   }
+
+  [_layoutGuideCenter referenceView:_entrypointContainer
+                          underName:kContextualPanelLargeEntrypointGuide];
+
+  _swipeRecognizer = [[UISwipeGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(largeEntrypointChipSwiped)];
+  _swipeRecognizer.cancelsTouchesInView = YES;
+  _swipeRecognizer.direction = base::i18n::IsRTL()
+                                   ? UISwipeGestureRecognizerDirectionRight
+                                   : UISwipeGestureRecognizerDirectionLeft;
+  [_entrypointContainer addGestureRecognizer:_swipeRecognizer];
 
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
@@ -488,7 +595,9 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToLargeEntrypoint
-                   completion:nil];
+                   completion:^(BOOL completed) {
+                     [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+                   }];
 }
 
 - (void)transitionToSmallEntrypoint {
@@ -515,7 +624,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
-                   completion:nil];
+                   completion:^(BOOL completed) {
+                     [weakSelf didCompleteTransitionToSmallEntrypoint];
+                   }];
+
+  [_entrypointContainer removeGestureRecognizer:_swipeRecognizer];
+
+  [_layoutGuideCenter referenceView:nil
+                          underName:kContextualPanelLargeEntrypointGuide];
 }
 
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened {
@@ -541,6 +657,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                    completion:nil];
 }
 
+- (void)updateAccessibilityStatus {
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+}
+
 #pragma mark - ContextualPanelEntrypointMutator
 
 - (void)userTappedEntrypoint {
@@ -552,9 +672,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _shouldCollapseForFullscreen = progress <= kFullscreenProgressThreshold;
   if (_shouldCollapseForFullscreen) {
-    self.view.hidden = YES;
+    [self.visibilityDelegate setContextualPanelEntrypointHidden:YES];
   } else {
-    self.view.hidden = !_entrypointDisplayed;
+    [self.visibilityDelegate
+        setContextualPanelEntrypointHidden:!_entrypointDisplayed];
 
     // Fade in/out the entrypoint badge.
     CGFloat alphaValue = fmax((progress - kFullscreenProgressThreshold) /
@@ -562,21 +683,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                               0);
     self.view.alpha = alphaValue;
   }
-}
 
-#pragma mark - UIView
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateLabelFont];
-  }
+  [self updateAccessibilityStatus];
 }
 
 @end

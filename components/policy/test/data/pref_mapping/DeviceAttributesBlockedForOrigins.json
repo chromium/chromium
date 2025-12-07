@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_device_attributes_blocked_for_origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+          "https://www.google.com"
+        ]
+      ]
+    }
+  }
+]

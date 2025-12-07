@@ -86,11 +86,6 @@ void VideoSourceImpl::CreatePushSubscription(
   }
 }
 
-void VideoSourceImpl::RegisterVideoEffectsProcessor(
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote) {
-  pending_video_effects_processor_ = std::move(remote);
-}
-
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receivers_.empty()) {
@@ -144,10 +139,8 @@ void VideoSourceImpl::OnCreateDeviceResponse(
       scoped_trace->AddStep("StartDevice");
 
     // Device was created successfully.
-    info.device->StartInProcess(
-        device_start_settings_, broadcaster_.GetWeakPtr(),
-        media::VideoEffectsContext(
-            std::move(pending_video_effects_processor_)));
+    info.device->StartInProcess(device_start_settings_,
+                                broadcaster_.GetWeakPtr());
     UmaHistogramTimes("Media.VideoCapture.StartSourceSuccessLatency",
                       base::TimeTicks::Now() - device_startup_start_time_);
     device_status_ = DeviceStatus::kStarted;

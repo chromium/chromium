@@ -547,7 +547,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
       v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, chunk_size)));
+      DOMUint8Array::Create(data_span.first(chunk_size)));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -647,10 +647,9 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_EQ(decoder->type(), kImageType);
 
   // Enqueue a single byte and ensure nothing breaks.
-  base::span<const uint8_t> data_span = base::as_byte_span(data);
+  const auto [first, rest] = base::as_byte_span(data).split_at<1>();
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
-      v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, 1)));
+      v8_scope.GetScriptState(), DOMUint8Array::Create(first));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -671,9 +670,8 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_FALSE(decode_tester.IsRejected());
 
   // Append the rest of the data.
-  v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
-      v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(1, data.size() - 1)));
+  v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(v8_scope.GetScriptState(),
+                                                  DOMUint8Array::Create(rest));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -764,7 +762,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->format(), "I420");
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420);
     EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 3u);
@@ -792,7 +790,7 @@ TEST_F(ImageDecoderTest, DecodePartialImage) {
   Vector<char> data = ReadFile("images/resources/dice.png");
   auto* array_buffer = DOMArrayBuffer::Create(128, 1);
   array_buffer->ByteSpan().copy_from(
-      base::as_byte_span(data).subspan(0, array_buffer->ByteLength()));
+      base::as_byte_span(data).first(array_buffer->ByteLength()));
 
   init->setData(MakeGarbageCollected<V8ImageBufferSource>(array_buffer));
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
@@ -851,7 +849,7 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
 
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
       v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, data.size() / 2)));
+      DOMUint8Array::Create(data_span.first(data.size() / 2)));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -901,7 +899,7 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
 
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
       v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, data.size() / 2)));
+      DOMUint8Array::Create(data_span.first(data.size() / 2)));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -968,12 +966,155 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->format(), "I420");
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420);
     EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 99u);
     EXPECT_EQ(frame->displayHeight(), 99u);
     EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateJpeg());
+  }
+}
+
+TEST_F(ImageDecoderTest, DecodeYuv10Bit) {
+  if (!HasAv1Decoder()) {
+    GTEST_SKIP() << "AV1 decoder required for this test.";
+  }
+
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/avif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/avif/red-full-range-420-10bpc.avif",
+      kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  const auto& tracks = decoder->tracks();
+  ASSERT_EQ(tracks.length(), 1u);
+  EXPECT_EQ(tracks.AnonymousIndexedGetter(0)->animated(), false);
+  EXPECT_EQ(tracks.selectedTrack()->animated(), false);
+
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(tracks.selectedTrack()->frameCount(), 1u);
+  EXPECT_EQ(tracks.selectedTrack()->repetitionCount(), 0);
+  EXPECT_EQ(decoder->complete(), true);
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420P10);
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), std::nullopt);
+    EXPECT_EQ(frame->displayWidth(), 3u);
+    EXPECT_EQ(frame->displayHeight(), 3u);
+    EXPECT_EQ(frame->frame()->ColorSpace(),
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::SRGB,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::FULL));
+  }
+}
+
+TEST_F(ImageDecoderTest, DecodeYuv12Bit) {
+  if (!HasAv1Decoder()) {
+    GTEST_SKIP() << "AV1 decoder required for this test.";
+  }
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/avif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/avif/red-full-range-420-12bpc.avif",
+      kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  const auto& tracks = decoder->tracks();
+  ASSERT_EQ(tracks.length(), 1u);
+  EXPECT_EQ(tracks.AnonymousIndexedGetter(0)->animated(), false);
+  EXPECT_EQ(tracks.selectedTrack()->animated(), false);
+
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(tracks.selectedTrack()->frameCount(), 1u);
+  EXPECT_EQ(tracks.selectedTrack()->repetitionCount(), 0);
+  EXPECT_EQ(decoder->complete(), true);
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420P12);
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), std::nullopt);
+    EXPECT_EQ(frame->displayWidth(), 3u);
+    EXPECT_EQ(frame->displayHeight(), 3u);
+    EXPECT_EQ(frame->frame()->ColorSpace(),
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::SRGB,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::FULL));
+  }
+}
+
+TEST_F(ImageDecoderTest, DecodeYuvCustomColorProfile) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/jpeg";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/ycbcr-420-custom-color-profile.jpg",
+      kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420);
+
+    auto cs = frame->frame()->ColorSpace();
+    EXPECT_TRUE(cs.IsValid());
+    EXPECT_EQ(cs.GetPrimaryID(), gfx::ColorSpace::PrimaryID::CUSTOM);
+    EXPECT_EQ(cs.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
+    EXPECT_EQ(cs.GetMatrixID(), gfx::ColorSpace::MatrixID::SMPTE170M);
+    EXPECT_EQ(cs.GetRangeID(), gfx::ColorSpace::RangeID::FULL);
+
+    auto primaries = cs.GetPrimaryMatrix();
+    EXPECT_TRUE(primaries.isFinite());
+
+    constexpr SkM44 kIdentity;
+    EXPECT_NE(primaries, kIdentity);
+
+    EXPECT_FALSE(cs.IsTransferFunctionEqualTo({0}));
   }
 }
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Check import and export between WebAssembly modules
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/wasm-import-from-wasm.wasm"
+Harness: the test ran to completion.
+

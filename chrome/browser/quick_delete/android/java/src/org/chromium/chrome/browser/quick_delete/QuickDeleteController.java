@@ -4,35 +4,30 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
-import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,25 +36,25 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.List;
 
 /** A controller responsible for setting up quick delete MVC. */
+@NullMarked
 public class QuickDeleteController {
+    // LINT.IfChange(TipsPrefNames)
+    public static final String QUICK_DELETE_EVER_USED_PREF = "browser.quick_delete_ever_used";
+    // LINT.ThenChange(//components/browsing_data/core/pref_names.h:TipsPrefNames)
 
-    private final @NonNull Context mContext;
-    private final @NonNull QuickDeleteDelegate mDelegate;
-    private final @NonNull QuickDeleteTabsFilter mDeleteRegularTabsFilter;
+    private final Context mContext;
+    private final QuickDeleteDelegate mDelegate;
+    private final QuickDeleteTabsFilter mDeleteRegularTabsFilter;
     // Null when declutter is disabled.
     private final @Nullable QuickDeleteTabsFilter mDeleteArchivedTabsFilter;
-    private final @NonNull SnackbarManager mSnackbarManager;
-    private final @NonNull LayoutManager mLayoutManager;
-    private final @NonNull Profile mProfile;
-    private final @NonNull TabModel mTabModel;
-    // Null when declutter is disabled.
-    private final @Nullable TabModel mArchivedTabModel;
-    private final QuickDeleteBridge mQuickDeleteBridge;
+    private final SnackbarManager mSnackbarManager;
+    private final LayoutManager mLayoutManager;
+    private final Profile mProfile;
+    private final TabModel mTabModel;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private final TabModelSelector mTabModelSelector;
-    private CurrentTabObserver mCurrentTabObserver;
+    private final QuickDeleteDialogDelegate mDialogDelegate;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -69,17 +64,16 @@ public class QuickDeleteController {
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
-     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
-     *     history disambiguation notice.
-     * @param archivedTabModel The {@link TabModel} for archived tabs.
+     * @param tabModelSelector {@link TabModelSelector} for regular tabs.
+     * @param archivedTabModelSelector The {@link TabModelSelector} for archived tabs.
      */
     public QuickDeleteController(
-            @NonNull Context context,
-            @NonNull QuickDeleteDelegate delegate,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull LayoutManager layoutManager,
-            @NonNull TabModelSelector tabModelSelector,
+            Context context,
+            QuickDeleteDelegate delegate,
+            ModalDialogManager modalDialogManager,
+            SnackbarManager snackbarManager,
+            LayoutManager layoutManager,
+            TabModelSelector tabModelSelector,
             @Nullable TabModelSelector archivedTabModelSelector) {
         mContext = context;
         mDelegate = delegate;
@@ -87,26 +81,23 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
 
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        mArchivedTabModel = archivedTabModelSelector.getModel(/* incognito= */ false);
         mDeleteRegularTabsFilter =
                 new QuickDeleteTabsFilter(
-                        (TabGroupModelFilter)
+                        assumeNonNull(
                                 tabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(/* incognito= */ false));
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false)));
         if (archivedTabModelSelector != null) {
             mDeleteArchivedTabsFilter =
                     new QuickDeleteTabsFilter(
-                            (TabGroupModelFilter)
+                            assumeNonNull(
                                     archivedTabModelSelector
-                                            .getTabModelFilterProvider()
-                                            .getTabModelFilter(/* incognito= */ false));
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(/* isIncognito= */ false)));
         } else {
             mDeleteArchivedTabsFilter = null;
         }
-        mProfile = tabModelSelector.getCurrentModel().getProfile();
-        mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
-        mTabModelSelector = tabModelSelector;
+        mProfile = assumeNonNull(tabModelSelector.getCurrentModel().getProfile());
 
         // MVC setup.
         View quickDeleteView =
@@ -125,11 +116,10 @@ public class QuickDeleteController {
                 new QuickDeleteMediator(
                         mPropertyModel,
                         mProfile,
-                        mQuickDeleteBridge,
                         mDeleteRegularTabsFilter,
                         mDeleteArchivedTabsFilter);
 
-        QuickDeleteDialogDelegate dialogDelegate =
+        mDialogDelegate =
                 new QuickDeleteDialogDelegate(
                         context,
                         quickDeleteView,
@@ -137,39 +127,16 @@ public class QuickDeleteController {
                         this::onDialogDismissed,
                         tabModelSelector,
                         mQuickDeleteMediator);
-        dialogDelegate.showDialog();
     }
 
     void destroy() {
         mPropertyModelChangeProcessor.destroy();
-        mQuickDeleteBridge.destroy();
-
-        if (mCurrentTabObserver != null) {
-            mCurrentTabObserver.destroy();
-            mCurrentTabObserver = null;
-        }
+        mQuickDeleteMediator.destroy();
     }
 
-    /**
-     * @return True, if quick delete feature flag is enabled, false otherwise
-     */
-    public static boolean isQuickDeleteEnabled() {
-        return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
-    }
-
-    /**
-     * @return True, if quick delete follow up is enabled, false otherwise
-     */
-    public static boolean isQuickDeleteFollowupEnabled() {
-        return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
-    }
-
-    /**
-     * @return True, if quick delete survey is enabled, false otherwise
-     */
-    public static boolean isQuickDeleteSurveyEnabled() {
-        return isQuickDeleteFollowupEnabled()
-                && ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
+    /** Show the Quick Delete dialog. */
+    public void showDialog() {
+        mDialogDelegate.showDialog();
     }
 
     /** A method called when the user confirms or cancels the dialog. */
@@ -203,6 +170,7 @@ public class QuickDeleteController {
             @TimePeriod int timePeriod, boolean isTabClosureDisabled) {
         RecordHistogram.recordBooleanHistogram(
                 "Privacy.QuickDelete.TabsEnabled", !isTabClosureDisabled);
+        UserPrefs.get(mProfile).setBoolean(QUICK_DELETE_EVER_USED_PREF, true);
 
         // Ensure that no in-product help is triggered during tab closure and the post-deletion
         // experience.
@@ -212,20 +180,24 @@ public class QuickDeleteController {
         if (isTabClosureDisabled) {
             showPostDeleteFeedback(timePeriod, trackerLock);
         } else {
-            navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
+            TabSwitcherUtils.navigateToTabSwitcher(
+                    mLayoutManager,
+                    /* animate= */ true,
+                    () -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
         }
     }
 
     private void maybeShowQuickDeleteAnimation(
-            @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
+            @TimePeriod int timePeriod, Tracker.@Nullable DisplayLockHandle trackerLock) {
         mDeleteRegularTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         if (mDeleteArchivedTabsFilter != null) {
             mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         }
         boolean isTabModelEmpty = mTabModel.getCount() == 0;
-
-        if (isQuickDeleteFollowupEnabled() && !isTabModelEmpty) {
-            List<Tab> tabs = mDeleteRegularTabsFilter.getListOfTabsFilteredToBeClosed();
+        if (!isTabModelEmpty) {
+            List<Tab> tabs =
+                    mDeleteRegularTabsFilter
+                            .getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups();
             mDelegate.showQuickDeleteAnimation(
                     () -> closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock), tabs);
         } else {
@@ -234,7 +206,7 @@ public class QuickDeleteController {
     }
 
     private void closeTabsAndShowPostDeleteFeedback(
-            @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
+            @TimePeriod int timePeriod, Tracker.@Nullable DisplayLockHandle trackerLock) {
         mDeleteRegularTabsFilter.closeTabsFilteredForQuickDelete();
         if (mDeleteArchivedTabsFilter != null) {
             mDeleteArchivedTabsFilter.closeTabsFilteredForQuickDelete();
@@ -243,69 +215,20 @@ public class QuickDeleteController {
     }
 
     private void showPostDeleteFeedback(
-            @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
+            @TimePeriod int timePeriod, Tracker.@Nullable DisplayLockHandle trackerLock) {
         triggerHapticFeedback();
         showSnackbar(timePeriod);
 
         if (trackerLock == null) return;
         trackerLock.release();
 
-        if (isQuickDeleteSurveyEnabled()) {
-            assert mCurrentTabObserver == null;
-            mCurrentTabObserver =
-                    new CurrentTabObserver(
-                            mTabModelSelector.getCurrentTabSupplier(),
-                            new EmptyTabObserver() {
-                                @Override
-                                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                                    WebContents webContents = tab.getWebContents();
-                                    if (!tab.isOffTheRecord() && webContents != null) {
-                                        showSurvey(webContents);
-                                    }
-                                }
-                            },
-                            /* swapCallback= */ null);
-        }
-    }
-
-    /**
-     * @see {@link QuickDeleteBridge#showSurvey(WebContents)}
-     */
-    private void showSurvey(@NonNull WebContents webContents) {
-        mQuickDeleteBridge.showSurvey(webContents);
         destroy();
-    }
-
-    /** A method to navigate to tab switcher. */
-    private void navigateToTabSwitcher(Runnable onNavigationFinished) {
-        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            onNavigationFinished.run();
-            return;
-        }
-
-        mLayoutManager.addObserver(
-                new LayoutStateObserver() {
-                    @Override
-                    public void onFinishedShowing(int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER) {
-                            mLayoutManager.removeObserver(this);
-                            onNavigationFinished.run();
-                        }
-                    }
-                });
-
-        mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ true);
     }
 
     private void triggerHapticFeedback() {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         final long duration = 50;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            // Deprecated in API 26.
-            v.vibrate(duration);
-        }
+        v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
     }
 
     /** A method to show the quick delete snack-bar. */

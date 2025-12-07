@@ -1,5 +1,6 @@
 include_rules = [
   "+base",
   "+net",
+  "+services/proxy_resolver/public/mojom",
   "+url",
 ]

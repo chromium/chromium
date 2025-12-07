@@ -22,4 +22,8 @@ found in the LICENSE file.
     <declare-styleable name="ManageAccountDevicesLinkView">
         <attr name="showLink" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="HubToolbarView">
+        <attr name="newTabButtonStyle" format="reference" />
+    </declare-styleable>
 </resources>

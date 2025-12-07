@@ -61,7 +61,8 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   // changes).
   LocalSessionEventHandlerImpl(Delegate* delegate,
                                SyncSessionsClient* sessions_client,
-                               SyncedSessionTracker* session_tracker);
+                               SyncedSessionTracker* session_tracker,
+                               bool is_new_session);
 
   LocalSessionEventHandlerImpl(const LocalSessionEventHandlerImpl&) = delete;
   LocalSessionEventHandlerImpl& operator=(const LocalSessionEventHandlerImpl&) =
@@ -72,6 +73,7 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   // LocalSessionEventHandler implementation.
   void OnSessionRestoreComplete() override;
   void OnLocalTabModified(SyncedTabDelegate* modified_tab) override;
+  void OnLocalTabClosed() override;
 
   // Returns tab specifics from |tab_delegate|. Exposed publicly for testing.
   sync_pb::SessionTab GetTabSpecificsFromDelegateForTest(
@@ -94,6 +96,15 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   // Set |session_tab| from |tab_delegate|.
   sync_pb::SessionTab GetTabSpecificsFromDelegate(
       SyncedTabDelegate& tab_delegate) const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Handles the association of placeholder tabs on Android. This is a helper
+  // for AssociateWindows().
+  void HandlePlaceholderTabForAssociate(bool is_session_restore,
+                                        SyncedTabDelegate* synced_tab,
+                                        const sessions::SessionTab** tab,
+                                        WriteBatch* batch);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   bool AssociatePlaceholderTab(std::unique_ptr<SyncedTabDelegate> snapshot,
                                WriteBatch* batch);

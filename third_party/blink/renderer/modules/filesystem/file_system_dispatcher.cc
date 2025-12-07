@@ -33,7 +33,7 @@ class FileSystemDispatcher::WriteListener
   void ResultsRetrieved(
       Vector<filesystem::mojom::blink::DirectoryEntryPtr> entries,
       bool has_more) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ErrorOccurred(base::File::Error error_code) override {
@@ -60,7 +60,7 @@ class FileSystemDispatcher::ReadDirectoryListener
       bool has_more) override {
     for (const auto& entry : entries) {
       callbacks_->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name),
+          FilePathToWebString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks_->DidReadDirectoryEntries(has_more);
@@ -70,31 +70,25 @@ class FileSystemDispatcher::ReadDirectoryListener
     callbacks_->DidFail(error_code);
   }
 
-  void DidWrite(int64_t byte_count, bool complete) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void DidWrite(int64_t byte_count, bool complete) override { NOTREACHED(); }
 
  private:
   std::unique_ptr<EntriesCallbacks> callbacks_;
 };
 
 FileSystemDispatcher::FileSystemDispatcher(ExecutionContext& context)
-    : Supplement<ExecutionContext>(context),
+    : execution_context_(context),
       file_system_manager_(&context),
       next_operation_id_(1),
       op_listeners_(&context) {}
 
 // static
-const char FileSystemDispatcher::kSupplementName[] = "FileSystemDispatcher";
-
-// static
 FileSystemDispatcher& FileSystemDispatcher::From(ExecutionContext* context) {
   DCHECK(context);
-  FileSystemDispatcher* dispatcher =
-      Supplement<ExecutionContext>::From<FileSystemDispatcher>(context);
+  FileSystemDispatcher* dispatcher = context->GetFileSystemDispatcher();
   if (!dispatcher) {
     dispatcher = MakeGarbageCollected<FileSystemDispatcher>(*context);
-    Supplement<ExecutionContext>::ProvideTo(*context, dispatcher);
+    context->SetFileSystemDispatcher(dispatcher);
   }
   return *dispatcher;
 }
@@ -106,10 +100,10 @@ mojom::blink::FileSystemManager& FileSystemDispatcher::GetFileSystemManager() {
     // See https://bit.ly/2S0zRAS for task types
     mojo::PendingReceiver<mojom::blink::FileSystemManager> receiver =
         file_system_manager_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(
+            execution_context_->GetTaskRunner(
                 blink::TaskType::kMiscPlatformAPI));
 
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    execution_context_->GetBrowserInterfaceBroker().GetInterface(
         std::move(receiver));
   }
   DCHECK(file_system_manager_.is_bound());
@@ -122,8 +116,8 @@ void FileSystemDispatcher::OpenFileSystem(
     std::unique_ptr<FileSystemCallbacks> callbacks) {
   GetFileSystemManager().Open(
       origin, type,
-      WTF::BindOnce(&FileSystemDispatcher::DidOpenFileSystem,
-                    WrapWeakPersistent(this), std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidOpenFileSystem,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::OpenFileSystemSync(
@@ -143,8 +137,8 @@ void FileSystemDispatcher::ResolveURL(
     std::unique_ptr<ResolveURICallbacks> callbacks) {
   GetFileSystemManager().ResolveURL(
       filesystem_url,
-      WTF::BindOnce(&FileSystemDispatcher::DidResolveURL,
-                    WrapWeakPersistent(this), std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidResolveURL,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::ResolveURLSync(
@@ -165,8 +159,8 @@ void FileSystemDispatcher::Move(const KURL& src_path,
                                 std::unique_ptr<EntryCallbacks> callbacks) {
   GetFileSystemManager().Move(
       src_path, dest_path,
-      WTF::BindOnce(&FileSystemDispatcher::DidFinish, WrapWeakPersistent(this),
-                    std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidFinish,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::MoveSync(const KURL& src_path,
@@ -182,8 +176,8 @@ void FileSystemDispatcher::Copy(const KURL& src_path,
                                 std::unique_ptr<EntryCallbacks> callbacks) {
   GetFileSystemManager().Copy(
       src_path, dest_path,
-      WTF::BindOnce(&FileSystemDispatcher::DidFinish, WrapWeakPersistent(this),
-                    std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidFinish,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::CopySync(const KURL& src_path,
@@ -199,8 +193,8 @@ void FileSystemDispatcher::Remove(const KURL& path,
                                   std::unique_ptr<VoidCallbacks> callbacks) {
   GetFileSystemManager().Remove(
       path, recursive,
-      WTF::BindOnce(&FileSystemDispatcher::DidRemove, WrapWeakPersistent(this),
-                    std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidRemove,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::RemoveSync(
@@ -216,8 +210,8 @@ void FileSystemDispatcher::ReadMetadata(
     const KURL& path,
     std::unique_ptr<MetadataCallbacks> callbacks) {
   GetFileSystemManager().ReadMetadata(
-      path, WTF::BindOnce(&FileSystemDispatcher::DidReadMetadata,
-                          WrapWeakPersistent(this), std::move(callbacks)));
+      path, blink::BindOnce(&FileSystemDispatcher::DidReadMetadata,
+                            WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::ReadMetadataSync(
@@ -235,8 +229,8 @@ void FileSystemDispatcher::CreateFile(
     std::unique_ptr<EntryCallbacks> callbacks) {
   GetFileSystemManager().Create(
       path, exclusive, /*is_directory=*/false, /*is_recursive=*/false,
-      WTF::BindOnce(&FileSystemDispatcher::DidFinish, WrapWeakPersistent(this),
-                    std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidFinish,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::CreateFileSync(
@@ -256,8 +250,8 @@ void FileSystemDispatcher::CreateDirectory(
     std::unique_ptr<EntryCallbacks> callbacks) {
   GetFileSystemManager().Create(
       path, exclusive, /*is_directory=*/true, recursive,
-      WTF::BindOnce(&FileSystemDispatcher::DidFinish, WrapWeakPersistent(this),
-                    std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidFinish,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::CreateDirectorySync(
@@ -276,8 +270,8 @@ void FileSystemDispatcher::Exists(const KURL& path,
                                   std::unique_ptr<EntryCallbacks> callbacks) {
   GetFileSystemManager().Exists(
       path, is_directory,
-      WTF::BindOnce(&FileSystemDispatcher::DidFinish, WrapWeakPersistent(this),
-                    std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::DidFinish,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::ExistsSync(
@@ -299,7 +293,7 @@ void FileSystemDispatcher::ReadDirectory(
       std::make_unique<ReadDirectoryListener>(std::move(callbacks)),
       std::move(receiver),
       // See https://bit.ly/2S0zRAS for task types
-      GetSupplementable()->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
+      execution_context_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
   GetFileSystemManager().ReadDirectory(path, std::move(listener));
 }
 
@@ -320,8 +314,8 @@ void FileSystemDispatcher::InitializeFileWriter(
     std::unique_ptr<FileWriterCallbacks> callbacks) {
   GetFileSystemManager().ReadMetadata(
       path,
-      WTF::BindOnce(&FileSystemDispatcher::InitializeFileWriterCallback,
-                    WrapWeakPersistent(this), path, std::move(callbacks)));
+      blink::BindOnce(&FileSystemDispatcher::InitializeFileWriterCallback,
+                      WrapWeakPersistent(this), path, std::move(callbacks)));
 }
 
 void FileSystemDispatcher::InitializeFileWriterSync(
@@ -339,23 +333,22 @@ void FileSystemDispatcher::Truncate(const KURL& path,
                                     int* request_id_out,
                                     StatusCallback callback) {
   HeapMojoRemote<mojom::blink::FileSystemCancellableOperation> op_remote(
-      GetSupplementable());
+      execution_context_);
   // See https://bit.ly/2S0zRAS for task types
   mojo::PendingReceiver<mojom::blink::FileSystemCancellableOperation>
       op_receiver = op_remote.BindNewPipeAndPassReceiver(
-          GetSupplementable()->GetTaskRunner(
-              blink::TaskType::kMiscPlatformAPI));
+          execution_context_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
   int operation_id = next_operation_id_++;
   op_remote.set_disconnect_handler(
-      WTF::BindOnce(&FileSystemDispatcher::RemoveOperationRemote,
-                    WrapWeakPersistent(this), operation_id));
+      BindOnce(&FileSystemDispatcher::RemoveOperationRemote,
+               WrapWeakPersistent(this), operation_id));
   cancellable_operations_.insert(operation_id,
                                  WrapDisallowNew(std::move(op_remote)));
   GetFileSystemManager().Truncate(
       path, offset, std::move(op_receiver),
-      WTF::BindOnce(&FileSystemDispatcher::DidTruncate,
-                    WrapWeakPersistent(this), operation_id,
-                    std::move(callback)));
+      blink::BindOnce(&FileSystemDispatcher::DidTruncate,
+                      WrapWeakPersistent(this), operation_id,
+                      std::move(callback)));
 
   if (request_id_out)
     *request_id_out = operation_id;
@@ -376,30 +369,31 @@ void FileSystemDispatcher::Write(const KURL& path,
                                  const WriteCallback& success_callback,
                                  StatusCallback error_callback) {
   HeapMojoRemote<mojom::blink::FileSystemCancellableOperation> op_remote(
-      GetSupplementable());
+      execution_context_);
   // See https://bit.ly/2S0zRAS for task types
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      GetSupplementable()->GetTaskRunner(blink::TaskType::kMiscPlatformAPI);
+      execution_context_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI);
   mojo::PendingReceiver<mojom::blink::FileSystemCancellableOperation>
       op_receiver = op_remote.BindNewPipeAndPassReceiver(task_runner);
   int operation_id = next_operation_id_++;
   op_remote.set_disconnect_handler(
-      WTF::BindOnce(&FileSystemDispatcher::RemoveOperationRemote,
-                    WrapWeakPersistent(this), operation_id));
+      BindOnce(&FileSystemDispatcher::RemoveOperationRemote,
+               WrapWeakPersistent(this), operation_id));
   cancellable_operations_.insert(operation_id,
                                  WrapDisallowNew(std::move(op_remote)));
 
   mojo::PendingRemote<mojom::blink::FileSystemOperationListener> listener;
   mojo::PendingReceiver<mojom::blink::FileSystemOperationListener> receiver =
       listener.InitWithNewPipeAndPassReceiver();
-  op_listeners_.Add(std::make_unique<WriteListener>(
-                        WTF::BindRepeating(&FileSystemDispatcher::DidWrite,
-                                           WrapWeakPersistent(this),
-                                           success_callback, operation_id),
-                        WTF::BindOnce(&FileSystemDispatcher::WriteErrorCallback,
-                                      WrapWeakPersistent(this),
-                                      std::move(error_callback), operation_id)),
-                    std::move(receiver), task_runner);
+  op_listeners_.Add(
+      std::make_unique<WriteListener>(
+          blink::BindRepeating(&FileSystemDispatcher::DidWrite,
+                               WrapWeakPersistent(this), success_callback,
+                               operation_id),
+          blink::BindOnce(&FileSystemDispatcher::WriteErrorCallback,
+                          WrapWeakPersistent(this), std::move(error_callback),
+                          operation_id)),
+      std::move(receiver), task_runner);
 
   GetFileSystemManager().Write(path, blob.AsMojoBlob(), offset,
                                std::move(op_receiver), std::move(listener));
@@ -436,17 +430,18 @@ void FileSystemDispatcher::Cancel(int request_id_to_cancel,
     std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
-  remote->Cancel(WTF::BindOnce(&FileSystemDispatcher::DidCancel,
-                               WrapWeakPersistent(this), std::move(callback),
-                               request_id_to_cancel));
+  remote->Cancel(blink::BindOnce(&FileSystemDispatcher::DidCancel,
+                                 WrapWeakPersistent(this), std::move(callback),
+                                 request_id_to_cancel));
 }
 
 void FileSystemDispatcher::CreateSnapshotFile(
     const KURL& file_path,
     std::unique_ptr<SnapshotFileCallbackBase> callbacks) {
   GetFileSystemManager().CreateSnapshotFile(
-      file_path, WTF::BindOnce(&FileSystemDispatcher::DidCreateSnapshotFile,
-                               WrapWeakPersistent(this), std::move(callbacks)));
+      file_path,
+      blink::BindOnce(&FileSystemDispatcher::DidCreateSnapshotFile,
+                      WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::CreateSnapshotFileSync(
@@ -467,7 +462,7 @@ void FileSystemDispatcher::Trace(Visitor* visitor) const {
   visitor->Trace(file_system_manager_);
   visitor->Trace(cancellable_operations_);
   visitor->Trace(op_listeners_);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 void FileSystemDispatcher::DidOpenFileSystem(
@@ -531,7 +526,7 @@ void FileSystemDispatcher::DidReadDirectory(
   if (error_code == base::File::Error::FILE_OK) {
     for (const auto& entry : entries) {
       callbacks->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name),
+          FilePathToWebString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks->DidReadDirectoryEntries(false);

@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +40,7 @@ abstract class AwDataDirLock {
     private static @Nullable FileLock sExclusiveFileLock;
 
     static void lock(final Context appContext) {
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwDataDirLock.lock");
+        try (DualTraceEvent e1 = DualTraceEvent.scoped("AwDataDirLock.lock");
                 StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             if (sExclusiveFileLock != null) {
                 // We have already called lock() and successfully acquired the lock in this process.
@@ -100,14 +99,10 @@ abstract class AwDataDirLock {
 
             // We failed to get the lock even after retrying.
             // Many existing apps rely on this even though it's known to be unsafe.
-            // Make it fatal when on P for apps that target P or higher
+            // Make it fatal for apps that target P or higher
             @Nullable ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
             String error = getLockFailureReason(holder);
-            boolean dieOnFailure =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                            && appContext.getApplicationInfo().targetSdkVersion
-                                    >= Build.VERSION_CODES.P;
-            if (dieOnFailure) {
+            if (appContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P) {
                 throw new RuntimeException(error);
             } else {
                 Log.w(TAG, error);

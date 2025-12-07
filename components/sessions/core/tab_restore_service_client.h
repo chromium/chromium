@@ -13,6 +13,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 class GURL;
@@ -50,7 +51,7 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
       SessionWindow::WindowType type,
       const std::string& app_name,
       const gfx::Rect& bounds,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       const std::string& workspace,
       const std::string& user_title,
       const std::map<std::string, std::string>& extra_data) = 0;

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {makeStoreClientMixin} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
-import {Action, Store} from 'chrome://resources/js/store.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import {Store} from 'chrome://resources/js/store.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -45,23 +46,26 @@ class StoreClientTestElement extends TestStoreClientMixin
 
   static get properties() {
     return {
-      value_: Number,
-      neverTwo_: Number,
+      value: Number,
+      neverTwo: Number,
     };
   }
 
+  value: number = -1;
+  neverTwo: number = -1;
+
   static get template() {
     return html`<div>
-      <span id="value">[[value_]]</span>
-      <span id="neverTwo">[[neverTwo_]]</span>
+      <span id="value">[[value]]</span>
+      <span id="neverTwo">[[neverTwo]]</span>
     </div>`;
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<number>('value_', state => state.value);
+    this.watch<number>('value', state => state.value);
     this.watch<number>(
-        'neverTwo_', state => state.value === 2 ? undefined : state.value);
+        'neverTwo', state => state.value === 2 ? undefined : state.value);
     this.updateFromStore();
   }
 }

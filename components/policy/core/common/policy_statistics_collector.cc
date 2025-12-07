@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -29,10 +28,6 @@ namespace policy {
 namespace {
 
 constexpr char kPoliciesSourceMetricsName[] = "Enterprise.Policies.Sources";
-#if !BUILDFLAG(IS_CHROMEOS)
-constexpr char kBrowserSigninModeMetricsName[] =
-    "Enterprise.BrowserSigninPolicy";
-#endif
 
 constexpr const char* kCBCMEnrollmentPolicies[] = {
     "CloudManagementEnrollmentToken", "CloudManagementEnrollmentMandatory"};
@@ -90,17 +85,6 @@ void RecordPoliciesSources(SimplePolicySource source) {
                                   PoliciesSources::kEnrollmentOnly);
   }
 }
-#if !BUILDFLAG(IS_CHROMEOS)
-// Records UMA metrics for signin mode
-void RecordBrowserSigninMode(const base::Value* value) {
-  if (value && value->is_int() && 0 <= value->GetInt() &&
-      value->GetInt() <= static_cast<int>(BrowserSigninMode::kMaxValue)) {
-    base::UmaHistogramEnumeration(
-        kBrowserSigninModeMetricsName,
-        static_cast<BrowserSigninMode>(value->GetInt()));
-  };
-}
-#endif
 }  // namespace
 
 const base::TimeDelta PolicyStatisticsCollector::kStatisticsUpdateRate =
@@ -133,7 +117,8 @@ void PolicyStatisticsCollector::Initialize() {
 
 // static
 void PolicyStatisticsCollector::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(policy_prefs::kLastPolicyStatisticsUpdate, 0);
+  registry->RegisterTimePref(policy_prefs::kLastPolicyStatisticsUpdate,
+                             base::Time());
 }
 
 void PolicyStatisticsCollector::RecordPolicyUse(int id, Condition condition) {
@@ -171,16 +156,12 @@ void PolicyStatisticsCollector::CollectStatistics() {
         RecordPolicyUse(details->id, kRecommended);
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     source |= SimplifyPolicySource(policy_entry->source, it.key());
   }
 
   RecordPoliciesSources(static_cast<SimplePolicySource>(source));
-#if !BUILDFLAG(IS_CHROMEOS)
-  RecordBrowserSigninMode(
-      policies.GetValue(key::kBrowserSignin, base::Value::Type::INTEGER));
-#endif
 
   // Take care of next update.
   prefs_->SetTime(policy_prefs::kLastPolicyStatisticsUpdate, base::Time::Now());

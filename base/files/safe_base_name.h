@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 
 namespace base {
@@ -28,9 +29,16 @@ class BASE_EXPORT SafeBaseName {
   // Factory method that returns a valid SafeBaseName or std::nullopt.
   static std::optional<SafeBaseName> Create(const FilePath&);
 
-  // Same as above, but takes a StringPieceType for convenience.
-  static std::optional<SafeBaseName> Create(FilePath::StringPieceType);
-  const FilePath& path() const { return path_; }
+  // Same as above, but takes a StringViewType for convenience.
+  static std::optional<SafeBaseName> Create(FilePath::StringViewType);
+  const FilePath& path() const LIFETIME_BOUND { return path_; }
+
+  // Convenience functions.
+  const std::string AsUTF8Unsafe() const { return path_.AsUTF8Unsafe(); }
+  const FilePath::StringType& value() const LIFETIME_BOUND {
+    return path_.value();
+  }
+  [[nodiscard]] bool empty() const { return path_.empty(); }
 
   bool operator==(const SafeBaseName& that) const;
 

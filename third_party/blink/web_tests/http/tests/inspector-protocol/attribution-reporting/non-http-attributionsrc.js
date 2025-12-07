@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startBlank(
+  const {dp, session} = await testRunner.startBlank(
       'Test that using a non-HTTP-family URL as an attributionsrc triggers an issue.');
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
+  session.evaluate(`
+    document.body.innerHTML = '<img attributionsrc="wss://devtools.test:8443/">'
+  `);
 
-  await dp.Runtime.evaluate({expression: `
-    document.body.innerHTML = '<img attributionsrc="wss://example.com/">';
-  `});
+  let issue;
+  do {
+    issue = await dp.Audits.onceIssueAdded();
+  } while (issue.params.issue.code !== 'AttributionReportingIssue');
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

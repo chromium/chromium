@@ -80,7 +80,7 @@ WifiSyncNotificationController::WifiSyncNotificationController(
       delegate_notifier_(delegate_notifier) {
   if (pref_service_->GetBoolean(kCanShowWifiSyncAnnouncementPrefName)) {
     session_manager::SessionManager::Get()->AddObserver(this);
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
     did_register_session_observers_ = true;
   }
 }
@@ -88,7 +88,7 @@ WifiSyncNotificationController::WifiSyncNotificationController(
 WifiSyncNotificationController::~WifiSyncNotificationController() {
   if (did_register_session_observers_) {
     session_manager::SessionManager::Get()->RemoveObserver(this);
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   }
 }
 

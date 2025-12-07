@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 
 namespace ui {
@@ -63,10 +62,9 @@ void CompositorAnimationObserver::NotifyFailure() {
     TRACE_EVENT_BEGIN("ui", "LongCompositorAnimationObserved",
                       perfetto::ThreadTrack::Current(), *start_);
     TRACE_EVENT_END("ui");
-    LOG(DFATAL_OR_WARNING)
-        << "CompositorAnimationObserver is active for too long ("
-        << (base::TimeTicks::Now() - *start_).InSecondsF()
-        << "s) location=" << location_.ToString();
+    LOG(ERROR) << "CompositorAnimationObserver is active for too long ("
+               << (base::TimeTicks::Now() - *start_).InSecondsF()
+               << "s) location=" << location_.ToString();
   }
 }
 

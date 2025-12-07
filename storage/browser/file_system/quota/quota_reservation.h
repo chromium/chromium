@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "storage/browser/file_system/quota/quota_reservation_manager.h"
 #include "storage/common/file_system/file_system_types.h"
 

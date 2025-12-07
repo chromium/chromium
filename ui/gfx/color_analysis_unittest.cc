@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/color_analysis.h"
 
 #include <stddef.h>
@@ -247,8 +242,10 @@ TEST_F(ColorAnalysisTest, FindClosestColor) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   bitmap.eraseColor(SK_ColorWHITE);
-  base::span<uint8_t> bitmap_span(static_cast<uint8_t*>(bitmap.getPixels()),
-                                  bitmap.computeByteSize());
+  // SAFETY: There's no Skia API to retrieve the bitmap pixels as a span.
+  // TODO(https://crbug.com/354829279): Remove this if/when Skia gets span APIs.
+  UNSAFE_BUFFERS(base::span<uint8_t> bitmap_span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
   color = FindClosestColor(bitmap_span, bitmap.width(), bitmap.height(),
                            SK_ColorRED);
   EXPECT_EQ(SK_ColorWHITE, color);

@@ -53,15 +53,6 @@ function querySelector<E extends Element>(
   return element.shadowRoot.querySelector<E>(selector);
 }
 
-// Converts a JS string to mojo_base::mojom::String16 object.
-function strToMojoString16(str: string): {data: number[]} {
-  const arr = [];
-  for (let i = 0; i < str.length; i++) {
-    arr[i] = str.charCodeAt(i);
-  }
-  return {data: arr};
-}
-
 /**
  * Converts a JS time (milliseconds since UNIX epoch) to mojom::time
  * (microseconds since WINDOWS epoch).
@@ -73,11 +64,6 @@ function convertToMojoTime(jsDate: Date): number {
       (jsDate.getTime() * 1000);
 }
 
-// Converts utf16 to a readable string.
-function decodeString16(arr: {data: number[]}): string {
-  return arr.data.map(ch => String.fromCodePoint(ch)).join('');
-}
-
 function createJobEntry(
     id: string, title: string, date: number, printerErrorCode: number,
     completedInfo: CompletedPrintJobInfo|null,
@@ -87,10 +73,10 @@ function createJobEntry(
 
   const jobEntry: PrintJobInfo = {
     'id': id,
-    'title': strToMojoString16(title),
+    'title': title,
     'creationTime': {internalValue: BigInt(date)},
     'printerId': 'printerId',
-    'printerName': strToMojoString16('printerName'),
+    'printerName': 'printerName',
     'printerUri': {url: '192.168.1.1'},
     'numberOfPages': 4,
     'printerErrorCode': printerErrorCode,
@@ -129,15 +115,12 @@ function verifyPrintJobs(
     const actualJobInfo = actual[i]!.jobEntry;
     const expectedJob = expected[i]!;
     assertEquals(expectedJob.id, actualJobInfo.id);
-    assertEquals(
-        decodeString16(expectedJob.title), decodeString16(actualJobInfo.title));
+    assertEquals(expectedJob.title, actualJobInfo.title);
     assertEquals(
         Number(expectedJob.creationTime.internalValue),
         Number(actualJobInfo.creationTime.internalValue));
     assertEquals(expectedJob.printerId, actualJobInfo.printerId);
-    assertEquals(
-        decodeString16(expectedJob.printerName),
-        decodeString16(actualJobInfo.printerName));
+    assertEquals(expectedJob.printerName, actualJobInfo.printerName);
     assertEquals(expectedJob.printerErrorCode, actualJobInfo.printerErrorCode);
 
     if (actualJobInfo.completedInfo) {
@@ -884,7 +867,7 @@ suite('PrintManagementTest', () => {
     assertTrue(page!.i18nExists('managePrintersButtonLabel'));
     assertEquals(
         page!.i18n('managePrintersButtonLabel'),
-        managePrintersButton.textContent!.trim());
+        managePrintersButton.textContent.trim());
   });
 
   // Verifies clicking 'manage printers' button triggers invokes
@@ -1210,10 +1193,10 @@ suite('PrinterSetupInfoTest', () => {
   function getElementTextContent(selector: string): string {
     assertTrue(!!printerSetupInfoElement);
     const element =
-        querySelector<HTMLElement>(printerSetupInfoElement!, selector);
+        querySelector<HTMLElement>(printerSetupInfoElement, selector);
     assertTrue(!!element);
 
-    return element!.textContent?.trim() ?? '';
+    return element.textContent?.trim() ?? '';
   }
 
   /**
@@ -1223,7 +1206,7 @@ suite('PrinterSetupInfoTest', () => {
   function getLocalizedString(localizationKey: string): string {
     assertTrue(!!printerSetupInfoElement);
 
-    return printerSetupInfoElement!.i18n(localizationKey);
+    return printerSetupInfoElement.i18n(localizationKey);
   }
 
   // Verify core elements of element rendered.

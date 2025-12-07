@@ -56,20 +56,24 @@ class NearbyShareDelegateImpl
 
   // ash::NearbyShareDelegate
   bool IsEnabled() override;
+  void SetEnabled(bool enabled) override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
+  bool IsOnboardingComplete() override;
   bool IsEnableHighVisibilityRequestActive() const override;
   base::TimeTicks HighVisibilityShutoffTime() const override;
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
+  void ShowOnboardingPage() const override;
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
   std::u16string GetPlaceholderFeatureName() const override;
   ::nearby_share::mojom::Visibility GetVisibility() const override;
+  void SetVisibility(::nearby_share::mojom::Visibility visibility) override;
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
-  void OnFirstSessionStarted() override;
+  void OnFirstSessionReady() override;
 
   // NearbyShareService::Observer
   void OnHighVisibilityChangeRequested() override;
@@ -77,6 +81,7 @@ class NearbyShareDelegateImpl
   void OnShutdown() override;
 
   void SetNearbyShareServiceForTest(NearbySharingService* service);
+  void SetNearbyShareSettingsForTest(NearbyShareSettings* settings);
   void set_settings_opener_for_test(
       std::unique_ptr<SettingsOpener> settings_opener) {
     settings_opener_ = std::move(settings_opener);

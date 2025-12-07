@@ -1,4 +1,4 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -90,12 +90,26 @@ arm64_asm_sources = [
   "libdav1d/src/arm/64/looprestoration_common.S",
   "libdav1d/src/arm/64/mc.S",
   "libdav1d/src/arm/64/mc16.S",
+  "libdav1d/src/arm/64/mc16_sve.S",
   "libdav1d/src/arm/64/mc_dotprod.S",
   "libdav1d/src/arm/64/msac.S",
   "libdav1d/src/arm/64/refmvs.S",
 ]
 
 arm_template_sources = []
+riscv64_asm_sources = [
+  "libdav1d/src/riscv/64/cdef.S",
+  "libdav1d/src/riscv/64/cdef16.S",
+  "libdav1d/src/riscv/64/cpu.S",
+  "libdav1d/src/riscv/64/ipred.S",
+  "libdav1d/src/riscv/64/ipred16.S",
+  "libdav1d/src/riscv/64/itx.S",
+  "libdav1d/src/riscv/64/mc.S",
+  "libdav1d/src/riscv/64/mc16.S",
+  "libdav1d/src/riscv/64/pal.S",
+  "libdav1d/src/riscv/asm.S",
+]
+
 template_sources = [
   "libdav1d/src/cdef_apply_tmpl.c",
   "libdav1d/src/cdef_tmpl.c",
@@ -160,6 +174,7 @@ c_headers = [
 c_sources = [
   "libdav1d/src/cdf.c",
   "libdav1d/src/cpu.c",
+  "libdav1d/src/ctx.c",
   "libdav1d/src/data.c",
   "libdav1d/src/decode.c",
   "libdav1d/src/dequant_tables.c",

@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/feature_engagement/internal/event_storage_migration.h"
 #include "components/feature_engagement/public/session_controller.h"
 #include "components/feature_engagement/public/tracker.h"
 
@@ -23,26 +23,32 @@ namespace base {
 class Clock;
 }
 
+class PrefService;
+
 namespace feature_engagement {
 class AvailabilityModel;
 class ConditionValidator;
 class Configuration;
 class DisplayLockController;
 class DisplayLockHandle;
-class EventModel;
+class EventModelProvider;
 class TimeProvider;
+class EventModelReader;
+class EventModelWriter;
 
 // The internal implementation of the Tracker.
 class TrackerImpl : public Tracker {
  public:
-  TrackerImpl(std::unique_ptr<EventModel> event_model,
+  TrackerImpl(std::unique_ptr<EventModelProvider> event_model_provider,
               std::unique_ptr<AvailabilityModel> availability_model,
               std::unique_ptr<Configuration> configuration,
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider,
               std::unique_ptr<TrackerEventExporter> event_exporter,
-              std::unique_ptr<SessionController> session_controller);
+              std::unique_ptr<SessionController> session_controller,
+              std::unique_ptr<EventStorageMigration> event_storage_migration,
+              PrefService* pref_service);
 
   TrackerImpl(const TrackerImpl&) = delete;
   TrackerImpl& operator=(const TrackerImpl&) = delete;
@@ -76,13 +82,14 @@ class TrackerImpl : public Tracker {
                                            base::OnceClosure callback) override;
   void UnregisterPriorityNotificationHandler(
       const base::Feature& feature) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateConfig(const base::Feature& feature,
                     const ConfigurationProvider* provider) override;
 #endif
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
                           base::Time initial_now) override;
+  bool IsInFeatureTestMode() const override;
 
  private:
   // Invoked by the EventModel when it has been initialized.
@@ -90,6 +97,9 @@ class TrackerImpl : public Tracker {
 
   // Invoked by the AvailabilityModel when it has been initialized.
   void OnAvailabilityModelInitializationFinished(bool success);
+
+  // Invoked by the EventStorageMigration when the migration is finished.
+  void OnEventStorageMigrationFinished(bool success);
 
   // Invoked by the TrackerEventExporter if it has any events to
   // migrate.
@@ -114,11 +124,18 @@ class TrackerImpl : public Tracker {
   // test::ScopedIphFeatureList.
   static bool IsFeatureBlockedByTest(const base::Feature& feature);
 
+  // Returns the EventModelReader for the given feature config.
+  const EventModelReader* GetEventModelReaderForFeature(
+      const FeatureConfig& feature_config) const;
+
+  // Returns the EventModelWriter.
+  EventModelWriter* GetEventModelWriter();
+
   // The currently recorded start times (one per feature currently presented).
   std::map<std::string, base::Time> start_times_;
 
   // The current model for all events.
-  std::unique_ptr<EventModel> event_model_;
+  std::unique_ptr<EventModelProvider> event_model_provider_;
 
   // The current model for when particular features were enabled.
   std::unique_ptr<AvailabilityModel> availability_model_;
@@ -144,12 +161,19 @@ class TrackerImpl : public Tracker {
   // The session controller that manages the life time of a session.
   std::unique_ptr<SessionController> session_controller_;
 
-  // Whether the initialization of the underlying EventModel has finished.
-  bool event_model_initialization_finished_;
+  // The event storage migration.
+  std::unique_ptr<EventStorageMigration> event_storage_migration_;
+
+  // The pref service.
+  raw_ptr<PrefService> pref_service_;
+
+  // Whether the initialization of the underlying EventModelProvider has
+  // finished.
+  bool event_model_provider_initialization_finished_ = false;
 
   // Whether the initialization of the underlying AvailabilityModel has
   // finished.
-  bool availability_model_initialization_finished_;
+  bool availability_model_initialization_finished_ = false;
 
   // Whether event migration has been finished.
   bool event_migration_finished_ = false;

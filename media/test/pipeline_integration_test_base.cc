@@ -10,8 +10,12 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -52,6 +56,10 @@
 #include "media/filters/manifest_demuxer.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
@@ -71,9 +79,17 @@ class TestDataSourceFactory
     : public HlsDataSourceProviderImpl::DataSourceFactory {
  public:
   ~TestDataSourceFactory() override = default;
-  void CreateDataSource(GURL uri, DataSourceCb callback) override {
+  void CreateDataSource(GURL uri, bool, DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
-    base::FilePath file_path(uri.GetContent());
+    base::FilePath file_path(
+#if BUILDFLAG(IS_WIN)
+        // Windows file paths can't start with '/' the way unix file paths can,
+        // So we have to strip the leading one which comes from GetContent().
+        base::UTF8ToWide(uri.GetContent().erase(0, 1))
+#else
+        uri.GetContent()
+#endif
+    );
     CHECK(file_data_source->Initialize(file_path))
         << "Is " << file_path.value() << " missing?";
     std::move(callback).Run(std::move(file_data_source));
@@ -119,6 +135,11 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     DCHECK(!audio_decoders.empty());
   }
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+  audio_decoders.push_back(
+      std::make_unique<SymphoniaAudioDecoder>(media_task_runner, media_log));
+#endif
+
 #if BUILDFLAG(ENABLE_FFMPEG)
   audio_decoders.push_back(
       std::make_unique<FFmpegAudioDecoder>(media_task_runner, media_log));
@@ -126,7 +147,8 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
   return audio_decoders;
 }
 
-const char kNullVideoHash[] = "d41d8cd98f00b204e9800998ecf8427e";
+const char kNullVideoHash[] =
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const char kNullAudioHash[] = "0.00,0.00,0.00,0.00,0.00,0.00,";
 
 PipelineIntegrationTestBase::PipelineIntegrationTestBase()
@@ -139,6 +161,7 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase()
       pipeline_status_(PIPELINE_OK),
       last_video_frame_format_(PIXEL_FORMAT_UNKNOWN),
       current_duration_(kInfiniteDuration) {
+  hash_context_.emplace(crypto::hash::kSha256);
   AddSupplementalCodecsForTesting();
 
   pipeline_ = std::make_unique<PipelineImpl>(
@@ -214,8 +237,8 @@ void PipelineIntegrationTestBase::DemuxerMediaTracksUpdatedCB(
   // Verify that track ids are unique.
   std::set<MediaTrack::Id> track_ids;
   for (const auto& track : tracks->tracks()) {
-    EXPECT_EQ(track_ids.end(), track_ids.find(track->id()));
-    track_ids.insert(track->id());
+    EXPECT_EQ(track_ids.end(), track_ids.find(track->track_id()));
+    track_ids.insert(track->track_id());
   }
 }
 
@@ -280,6 +303,7 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithHlsManifest(
 
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       std::move(hls_dsp), task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing(), base::DoNothing(),
       /*name=*/false, manifest_root, &media_log_);
   demuxer_ = std::make_unique<ManifestDemuxer>(
       task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),
@@ -395,10 +419,10 @@ PipelineStatus PipelineIntegrationTestBase::Start(
                        prepend_audio_decoders_cb);
 }
 
-PipelineStatus PipelineIntegrationTestBase::Start(const uint8_t* data,
-                                                  size_t size,
-                                                  uint8_t test_type) {
-  return StartInternal(std::make_unique<MemoryDataSource>(data, size), nullptr,
+PipelineStatus PipelineIntegrationTestBase::Start(
+    base::span<const uint8_t> data,
+    uint8_t test_type) {
+  return StartInternal(std::make_unique<MemoryDataSource>(data), nullptr,
                        test_type);
 }
 
@@ -580,19 +604,19 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
       task_environment_.GetMainThreadTaskRunner(), video_sink_.get(),
       base::BindRepeating(&CreateVideoDecodersForTest, &media_log_,
                           prepend_video_decoders_cb_),
-      false, &media_log_, nullptr, 0);
+      false, &media_log_, nullptr, MediaPlayerLoggingID(0));
 
   if (!clockless_playback_) {
     DCHECK(!mono_output_) << " NullAudioSink doesn't specify output parameters";
 
-    audio_sink_ =
-        new NullAudioSink(task_environment_.GetMainThreadTaskRunner());
+    audio_sink_ = base::MakeRefCounted<NullAudioSink>(
+        task_environment_.GetMainThreadTaskRunner());
   } else {
     ChannelLayoutConfig output_layout_config =
         mono_output_ ? ChannelLayoutConfig::Mono()
                      : ChannelLayoutConfig::Stereo();
 
-    clockless_audio_sink_ = new ClocklessAudioSink(
+    clockless_audio_sink_ = base::MakeRefCounted<ClocklessAudioSink>(
         OutputDeviceInfo("", OUTPUT_DEVICE_STATUS_OK,
                          AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                          output_layout_config, 44100, 512)));
@@ -614,7 +638,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
       base::BindRepeating(&CreateAudioDecodersForTest, &media_log_,
                           task_environment_.GetMainThreadTaskRunner(),
                           prepend_audio_decoders_cb_),
-      &media_log_, 0, nullptr);
+      &media_log_, MediaPlayerLoggingID(0), nullptr);
   if (hashing_enabled_) {
     if (clockless_playback_)
       clockless_audio_sink_->StartAudioHashForTesting();
@@ -646,7 +670,7 @@ void PipelineIntegrationTestBase::OnVideoFramePaint(
   if (!hashing_enabled_ || last_frame_ == frame)
     return;
   DVLOG(3) << __func__ << " pts=" << frame->timestamp().InSecondsF();
-  VideoFrame::HashFrameForTesting(&md5_context_, *frame);
+  VideoFrame::UpdateHashWithFrameForTesting(*hash_context_, *frame);
   last_frame_ = std::move(frame);
 }
 
@@ -664,14 +688,14 @@ base::TimeDelta PipelineIntegrationTestBase::GetStartTime() {
 
 void PipelineIntegrationTestBase::ResetVideoHash() {
   DVLOG(1) << __func__;
-  base::MD5Init(&md5_context_);
+  hash_context_.emplace(crypto::hash::kSha256);
 }
 
 std::string PipelineIntegrationTestBase::GetVideoHash() {
   DCHECK(hashing_enabled_);
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &md5_context_);
-  return base::MD5DigestToBase16(digest);
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  hash_context_->Finish(digest);
+  return base::HexEncodeLower(digest);
 }
 
 const AudioHash& PipelineIntegrationTestBase::GetAudioHash() const {

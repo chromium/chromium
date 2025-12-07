@@ -4,6 +4,8 @@
 
 #include "media/formats/webm/webm_webvtt_parser.h"
 
+#include "base/compiler_specific.h"
+
 namespace media {
 
 void WebMWebVTTParser::Parse(const uint8_t* payload,
@@ -16,7 +18,7 @@ void WebMWebVTTParser::Parse(const uint8_t* payload,
 }
 
 WebMWebVTTParser::WebMWebVTTParser(const uint8_t* payload, int payload_size)
-    : ptr_(payload), ptr_end_(payload + payload_size) {}
+    : ptr_(payload), ptr_end_(UNSAFE_TODO(payload + payload_size)) {}
 
 void WebMWebVTTParser::Parse(std::string* id,
                              std::string* settings,
@@ -30,12 +32,12 @@ bool WebMWebVTTParser::GetByte(uint8_t* byte) {
   if (ptr_ >= ptr_end_)
     return false;  // indicates end-of-stream
 
-  *byte = *ptr_++;
+  *byte = *UNSAFE_TODO(ptr_++);
   return true;
 }
 
 void WebMWebVTTParser::UngetByte() {
-  --ptr_;
+  UNSAFE_TODO(--ptr_);
 }
 
 void WebMWebVTTParser::ParseLine(std::string* line) {

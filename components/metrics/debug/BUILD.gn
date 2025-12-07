@@ -13,8 +13,9 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "field_trials.ts",
+    "private_metrics.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "log_utils.ts",
     "metrics_internals.ts",
@@ -27,13 +28,11 @@ build_webui("build") {
 
     web_component_files += [ "structured/app.ts" ]
 
-    non_web_component_files += [
+    ts_files += [
       "structured/structured_metrics_browser_proxy.ts",
       "structured/structured_utils.ts",
     ]
   }
-
-  html_to_wrapper_template = "native"
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
@@ -54,6 +53,8 @@ static_library("debug") {
 
   deps = [
     "//base",
+    "//base:i18n",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics_services_manager",
     "//components/variations",

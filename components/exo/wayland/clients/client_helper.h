@@ -8,7 +8,6 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-output-management-client-protocol.h>
 #include <aura-shell-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
@@ -21,7 +20,6 @@
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
-#include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <notification-shell-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <pointer-constraints-unstable-v1-client-protocol.h>
@@ -53,6 +51,16 @@
 #include <gbm.h>
 #if defined(USE_VULKAN)
 #include <vulkan/vulkan.h>
+// vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
+// after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
+// This defines some macros which break build, so undefine them here.
+#undef Always
+#undef Bool
+#undef False
+#undef None
+#undef Status
+#undef Success
+#undef True
 #endif  // defined(USE_GBM)
 #endif  // defined(USE_VULKAN)
 
@@ -92,19 +100,11 @@ DEFAULT_DELETER_FDECL(zaura_shell)
 DEFAULT_DELETER_FDECL(zaura_surface)
 DEFAULT_DELETER_FDECL(zaura_toplevel)
 DEFAULT_DELETER_FDECL(zaura_output)
-DEFAULT_DELETER_FDECL(zcr_color_manager_v1)
-DEFAULT_DELETER_FDECL(zcr_color_management_output_v1)
-DEFAULT_DELETER_FDECL(zcr_color_management_surface_v1)
-DEFAULT_DELETER_FDECL(zcr_color_space_creator_v1)
-DEFAULT_DELETER_FDECL(zcr_color_space_v1)
-DEFAULT_DELETER_FDECL(zwp_linux_buffer_release_v1)
 DEFAULT_DELETER_FDECL(zwp_fullscreen_shell_v1)
 DEFAULT_DELETER_FDECL(zwp_input_timestamps_manager_v1)
 DEFAULT_DELETER_FDECL(zwp_input_timestamps_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_buffer_params_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_dmabuf_v1)
-DEFAULT_DELETER_FDECL(zwp_linux_explicit_synchronization_v1)
-DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
 DEFAULT_DELETER_FDECL(wp_single_pixel_buffer_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)

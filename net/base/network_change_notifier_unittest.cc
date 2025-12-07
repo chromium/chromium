@@ -123,7 +123,7 @@ TEST(NetworkChangeNotifierTest, IgnoreAirdropOnMac) {
   interface_airdrop.friendly_name = "awdl0";
   interface_airdrop.address =
       // Link-local IPv6 address
-      IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4});
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4);
   list.push_back(interface_airdrop);
 
 #if BUILDFLAG(IS_APPLE)
@@ -143,7 +143,7 @@ TEST(NetworkChangeNotifierTest, IgnoreTunnelsOnMac) {
   interface_tunnel.friendly_name = "utun0";
   interface_tunnel.address =
       // Link-local IPv6 address
-      IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 2, 1});
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 2, 1);
   list.push_back(interface_tunnel);
 
 #if BUILDFLAG(IS_APPLE)
@@ -163,7 +163,7 @@ TEST(NetworkChangeNotifierTest, IgnoreDisconnectedEthernetOnMac) {
   interface_ethernet.friendly_name = "en5";
   interface_ethernet.address =
       // Link-local IPv6 address
-      IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 3});
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 3);
   list.push_back(interface_ethernet);
 
 #if BUILDFLAG(IS_APPLE)

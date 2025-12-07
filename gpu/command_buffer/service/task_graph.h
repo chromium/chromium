@@ -13,15 +13,15 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/command_buffer/service/retaining_one_shot_timer_holder.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
-#include "gpu/gpu_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -29,15 +29,76 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 
+class TaskGraph;
+
+// FenceSyncReleaseDelegate can be used to release fence sync during task
+// execution.
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT FenceSyncReleaseDelegate {
+ public:
+  explicit FenceSyncReleaseDelegate(SyncPointManager* sync_point_manager);
+
+  // Releases fence sync with the release count specified at task registration.
+  void Release();
+  // Releases fence sync with release count `release`, which should be no
+  // greater than the release count specified at task registration.
+  void Release(uint64_t release);
+
+  // Used by TaskGraph::Sequence.
+  void Reset(const SyncToken& release_upperbound);
+
+ private:
+  const raw_ptr<SyncPointManager> sync_point_manager_;
+  SyncToken release_upperbound_;
+};
+
+// The task can use `release_delegate` during its execution to release fence
+// sync specified at task registration. Note:
+// * Calling `release_delegate` is optional. If not called, release will happen
+//   right after task completion.
+// * `release_delegate` is not supposed to be stored or used after the task
+//   callback returns.
+using TaskCallback =
+    base::OnceCallback<void(FenceSyncReleaseDelegate* release_delegate)>;
+
+// A callback to be used for reporting when the task is ready to run (when the
+// dependencies have been solved).
+using ReportingCallback = base::OnceCallback<void(base::TimeTicks task_ready)>;
+
+// ScopedSyncPointClientState (if valid) destroys the corresponding
+// SyncPointClientState when it is destructed. It is move-only to avoid
+// calling destroy multiple times.
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT ScopedSyncPointClientState {
+ public:
+  ScopedSyncPointClientState() = default;
+
+  // `task_graph` must outlive this object.
+  ScopedSyncPointClientState(TaskGraph* task_graph,
+                             SequenceId sequence_id,
+                             CommandBufferNamespace namespace_id,
+                             CommandBufferId command_buffer_id);
+
+  ~ScopedSyncPointClientState();
+
+  ScopedSyncPointClientState(ScopedSyncPointClientState&& other);
+  ScopedSyncPointClientState& operator=(ScopedSyncPointClientState&& other);
+
+  explicit operator bool() const { return !!task_graph_; }
+
+  // Explicitly destroys the corresponding SyncPointClientState, if the object
+  // is valid.
+  void Reset();
+
+ private:
+  raw_ptr<TaskGraph> task_graph_ = nullptr;
+  SequenceId sequence_id_;
+  CommandBufferNamespace namespace_id_ = CommandBufferNamespace::INVALID;
+  CommandBufferId command_buffer_id_;
+};
+
 // TaskGraph keeps track of task sequences and the sync point dependencies
 // between tasks.
-class GPU_EXPORT TaskGraph {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
  public:
-  // A callback to be used for reporting when the task is ready to run (when the
-  // dependencies have been solved).
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
-
   class Sequence;
 
   explicit TaskGraph(SyncPointManager* sync_point_manager);
@@ -50,12 +111,13 @@ class GPU_EXPORT TaskGraph {
   static constexpr base::TimeDelta kMaxValidationDelay = base::Seconds(6);
   static constexpr base::TimeDelta kMinValidationDelay = base::Seconds(3);
 
-  SequenceId CreateSequence(
-      base::RepeatingClosure front_task_unblocked_callback,
-      scoped_refptr<base::SingleThreadTaskRunner> validation_runner)
-      LOCKS_EXCLUDED(lock_);
-
   void AddSequence(std::unique_ptr<Sequence> sequence) LOCKS_EXCLUDED(lock_);
+
+  // Creates a SyncPointClientState object associated with the sequence.
+  [[nodiscard]] ScopedSyncPointClientState CreateSyncPointClientState(
+      SequenceId sequence_id,
+      CommandBufferNamespace namespace_id,
+      CommandBufferId command_buffer_id) LOCKS_EXCLUDED(lock_);
 
   void DestroySequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock_);
 
@@ -77,16 +139,24 @@ class GPU_EXPORT TaskGraph {
   // one calls DestroySequence() to destroy this sequence.
   Sequence* GetSequence(SequenceId sequence_id) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  class GPU_EXPORT Sequence {
+  // Validates task dependencies, starting from `root_sequence`.
+  void ValidateSequenceTaskFenceDeps(Sequence* root_sequence)
+      LOCKS_EXCLUDED(lock_);
+
+  class GPU_COMMAND_BUFFER_SERVICE_EXPORT Sequence {
    public:
-    // Notes regarding `front_task_unblocked_callback`:
-    // - It could be called from any thread.
-    // - To avoid reentrancy, it is not called by AddTask() or FinishTask(),
-    //   even if those methods result a new front task which is not blocked.
-    // - It is called while holding `TaskGraph::lock_`.
-    Sequence(TaskGraph* task_graph,
-             base::RepeatingClosure front_task_unblocked_callback,
-             scoped_refptr<base::SingleThreadTaskRunner> validation_runner);
+    // `validation_runner` is used for task dependency validation when
+    // graph-based validation is enabled. If not provided, validation is not
+    // automatically run and it is the sequence owner's responsibility to call
+    // ValidateSequenceTaskFenceDeps().
+    //
+    // If `namespace_id` is valid, also creates a SyncPointClientState that
+    // lasts as long as the sequence itself.
+    Sequence(
+        TaskGraph* task_graph,
+        scoped_refptr<base::SingleThreadTaskRunner> validation_runner,
+        CommandBufferNamespace namespace_id = CommandBufferNamespace::INVALID,
+        CommandBufferId command_buffer_id = {});
 
     Sequence(const Sequence&) = delete;
     Sequence& operator=(const Sequence&) = delete;
@@ -99,27 +169,52 @@ class GPU_EXPORT TaskGraph {
       return order_data_;
     }
 
+    // Creates a SyncPointClientState associated with the sequence. It is
+    // destroyed either when the returned object is destructed or when the
+    // sequence is destroyed, whichever happens earlier.
+    [[nodiscard]] ScopedSyncPointClientState CreateSyncPointClientState(
+        CommandBufferNamespace namespace_id,
+        CommandBufferId command_buffer_id)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
     bool HasTasks() const EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_) {
       return !tasks_.empty();
     }
 
     // Enqueues a task in the sequence and returns the generated order number.
-    virtual uint32_t AddTask(base::OnceClosure closure,
+    uint32_t AddTask(TaskCallback task_callback,
+                     std::vector<SyncToken> wait_fences,
+                     const SyncToken& release,
+                     ReportingCallback report_callback)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
+    virtual uint32_t AddTask(base::OnceClosure task_closure,
                              std::vector<SyncToken> wait_fences,
                              const SyncToken& release,
                              ReportingCallback report_callback)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    virtual uint32_t BeginTask(base::OnceClosure* closure)
+    virtual uint32_t BeginTask(base::OnceClosure* task_closure)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
     // Should be called after running the closure returned by BeginTask().
     virtual void FinishTask() EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    // Continues running the current task with the given closure. Must be called
-    // in between BeginTask() and FinishTask().
-    virtual void ContinueTask(base::OnceClosure closure)
+    // Continues running the current task with the given callback. Must be
+    // called in between BeginTask() and FinishTask().
+    void ContinueTask(TaskCallback task_callback)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+    virtual void ContinueTask(base::OnceClosure task_closure)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
+    // Called to inform subclasses that their front task is unblocked from sync
+    // token dependencies. Notes:
+    // - It could be called from any thread.
+    // - To avoid reentrancy, it is not called by AddTask() or FinishTask(),
+    //   even if those methods result a new front task which is not blocked.
+    // - It is called while holding `TaskGraph::lock_`.
+    virtual void OnFrontTaskUnblocked(uint32_t order_num)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_) {}
 
     // Sets the first dependency added time on the last task if it wasn't
     // already set, no-op otherwise.
@@ -193,14 +288,16 @@ class GPU_EXPORT TaskGraph {
 
     struct Task {
       Task(Task&& other);
-      Task(base::OnceClosure closure,
+      Task(base::OnceClosure task_closure,
            uint32_t order_num,
            const SyncToken& release,
            ReportingCallback report_callback);
       ~Task();
       Task& operator=(Task&& other);
 
-      base::OnceClosure closure;
+      // Always store tasks as closures. TaskCallbacks are bound with argument
+      // and wrap as closures.
+      base::OnceClosure task_closure;
       uint32_t order_num;
       SyncToken release;
 
@@ -219,7 +316,12 @@ class GPU_EXPORT TaskGraph {
     using TaskIter = typename base::circular_deque<Task>::iterator;
 
     // Must NOT be accessed under `&TaskGraph::lock_`.
-    void StopValidation() LOCKS_EXCLUDED(&TaskGraph::lock_);
+    void Destroy() LOCKS_EXCLUDED(&TaskGraph::lock_);
+
+    scoped_refptr<SyncPointClientState> TakeSyncPointClientState(
+        CommandBufferNamespace namespace_id,
+        CommandBufferId command_buffer_id)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
     void UpdateValidationTimer() EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
@@ -230,11 +332,13 @@ class GPU_EXPORT TaskGraph {
     const Task* FindReleaseTask(const SyncToken& sync_token) const
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
+    base::OnceClosure CreateTaskClosure(TaskCallback task_callback);
+
     const raw_ptr<TaskGraph> task_graph_ = nullptr;
     const scoped_refptr<SyncPointOrderData> order_data_;
     const SequenceId sequence_id_;
 
-    const base::RepeatingClosure front_task_unblocked_callback_
+    std::vector<scoped_refptr<SyncPointClientState>> sync_point_states_
         GUARDED_BY(&TaskGraph::lock_);
 
     // While processing a task, the task is removed from `tasks_`. This field is
@@ -255,10 +359,16 @@ class GPU_EXPORT TaskGraph {
     // the task's order number.
     WaitFenceSet wait_fences_ GUARDED_BY(&TaskGraph::lock_);
 
+    // Not supposed to be accessed from multiple thread simultaneously. It is
+    // updated by BeginTask() and called by user task callback.
+    FenceSyncReleaseDelegate release_delegate_;
+
     scoped_refptr<RetainingOneShotTimerHolder> validation_timer_;
   };
 
  private:
+  friend class ScopedSyncPointClientState;
+
   // Records the validation state for a sequence.
   struct ValidateState {
     // Next task in the sequence to validate.
@@ -272,8 +382,10 @@ class GPU_EXPORT TaskGraph {
                               SequenceId waiting_sequence_id)
       LOCKS_EXCLUDED(lock_);
 
-  // Validates task dependencies, starting from `root_sequence`.
-  void ValidateSequenceTaskFenceDeps(Sequence* root_sequence)
+  // Accessed by ScopedSyncPointClientState.
+  void DestroySyncPointClientState(SequenceId sequence_id,
+                                   CommandBufferNamespace namespace_id,
+                                   CommandBufferId command_buffer_id)
       LOCKS_EXCLUDED(lock_);
 
   using ReleaseMap = base::flat_map<SyncPointClientId, uint64_t>;

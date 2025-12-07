@@ -48,7 +48,7 @@ class VisualRectMappingTest : public PaintTestConfigurations,
       const LayoutObject& object,
       const LayoutBoxModelObject& ancestor,
       const PhysicalRect& expected_visual_rect_in_ancestor) {
-    CheckVisualRect(object, ancestor, object.LocalVisualRect(),
+    CheckVisualRect(object, ancestor, LocalVisualRect(object),
                     expected_visual_rect_in_ancestor);
   }
 
@@ -295,7 +295,8 @@ TEST_P(VisualRectMappingTest, LayoutView) {
   // This case involves clipping: frame height is 50, y-coordinate of result
   // rect is 13, so height should be clipped to (50 - 13) == 37.
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 47), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 47), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect original_rect(4, 60, 20, 80);
@@ -371,7 +372,8 @@ TEST_P(VisualRectMappingTest, LayoutViewDisplayNone) {
   // This part is copied from the LayoutView test, just to ensure that the
   // mapped rect is valid before display:none is set on the iframe.
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 47), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 47), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect original_rect(4, 60, 20, 80);
@@ -396,7 +398,7 @@ TEST_P(VisualRectMappingTest, SelfFlippedWritingMode) {
   )HTML");
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  PhysicalRect local_visual_rect = target->LocalVisualRect();
+  PhysicalRect local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 70 = height(50) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 70), local_visual_rect);
@@ -421,7 +423,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingMode) {
   )HTML");
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  PhysicalRect target_local_visual_rect = target->LocalVisualRect();
+  PhysicalRect target_local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 110 = height(90) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 110), target_local_visual_rect);
@@ -440,7 +442,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingMode) {
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(),
                                    PhysicalRect(322, 111, 140, 110));
 
-  PhysicalRect container_local_visual_rect = container->LocalVisualRect();
+  PhysicalRect container_local_visual_rect = LocalVisualRect(*container);
   EXPECT_EQ(PhysicalRect(0, 0, 200, 100), container_local_visual_rect);
   rect = container_local_visual_rect;
   EXPECT_TRUE(container->MapToVisualRectInAncestorSpace(container, rect));
@@ -469,7 +471,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowScroll) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  PhysicalRect target_local_visual_rect = target->LocalVisualRect();
+  PhysicalRect target_local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 110 = height(90) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 110), target_local_visual_rect);
@@ -492,7 +494,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowScroll) {
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(),
                                    PhysicalRect(232, 121, 50, 80));
 
-  PhysicalRect container_local_visual_rect = container->LocalVisualRect();
+  PhysicalRect container_local_visual_rect = LocalVisualRect(*container);
   // Because container has overflow clip, its visual overflow doesn't include
   // overflow from children.
   // 70 = width(50) + border_left_width(10) + border_right_width(10)
@@ -531,7 +533,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowScroll) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  PhysicalRect target_local_visual_rect = target->LocalVisualRect();
+  PhysicalRect target_local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 110 = height(90) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 110), target_local_visual_rect);
@@ -556,7 +558,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowScroll) {
   PhysicalRect expectation(262, 121, 50, 80);
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(), expectation);
 
-  PhysicalRect container_local_visual_rect = container->LocalVisualRect();
+  PhysicalRect container_local_visual_rect = LocalVisualRect(*container);
   // Because container has overflow clip, its visual overflow doesn't include
   // overflow from children.
   // 110 = width(50) + border_left_width(40) + border_right_width(20)
@@ -589,7 +591,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowHidden) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  auto target_local_visual_rect = target->LocalVisualRect();
+  auto target_local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 110 = height(90) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 110), target_local_visual_rect);
@@ -625,7 +627,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowHidden) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  PhysicalRect target_local_visual_rect = target->LocalVisualRect();
+  PhysicalRect target_local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 110 = height(90) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 110), target_local_visual_rect);
@@ -665,7 +667,7 @@ TEST_P(VisualRectMappingTest, ContainerAndTargetDifferentFlippedWritingMode) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
-  PhysicalRect target_local_visual_rect = target->LocalVisualRect();
+  PhysicalRect target_local_visual_rect = LocalVisualRect(*target);
   // 140 = width(100) + box_shadow_offset_x(40)
   // 110 = height(90) + box_shadow_offset_y(20)
   EXPECT_EQ(PhysicalRect(0, 0, 140, 110), target_local_visual_rect);
@@ -708,7 +710,7 @@ TEST_P(VisualRectMappingTest,
 
   auto* normal_flow =
       To<LayoutBlock>(GetLayoutObjectByElementId("normal-flow"));
-  PhysicalRect normal_flow_visual_rect = normal_flow->LocalVisualRect();
+  PhysicalRect normal_flow_visual_rect = LocalVisualRect(*normal_flow);
   EXPECT_EQ(PhysicalRect(0, 0, 2000, 2000), normal_flow_visual_rect);
   PhysicalRect rect = normal_flow_visual_rect;
   EXPECT_TRUE(normal_flow->MapToVisualRectInAncestorSpace(scroller, rect));
@@ -719,7 +721,7 @@ TEST_P(VisualRectMappingTest,
   auto* absolute = To<LayoutBlock>(GetLayoutObjectByElementId("absolute"));
   EXPECT_EQ(stacking_context, absolute->Container());
 
-  EXPECT_EQ(PhysicalRect(0, 0, 50, 50), absolute->LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 50, 50), LocalVisualRect(*absolute));
   CheckPaintInvalidationVisualRect(*absolute, *stacking_context,
                                    PhysicalRect(222, 111, 50, 50));
 }
@@ -748,7 +750,7 @@ TEST_P(VisualRectMappingTest,
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
   EXPECT_EQ(container, absolute->Container());
 
-  PhysicalRect absolute_visual_rect = absolute->LocalVisualRect();
+  PhysicalRect absolute_visual_rect = LocalVisualRect(*absolute);
   EXPECT_EQ(PhysicalRect(0, 0, 50, 50), absolute_visual_rect);
   PhysicalRect rect = absolute_visual_rect;
   EXPECT_TRUE(absolute->MapToVisualRectInAncestorSpace(stacking_context, rect));
@@ -769,7 +771,7 @@ TEST_P(VisualRectMappingTest, CSSClip) {
 
   auto* target = GetLayoutBoxByElementId("target");
 
-  EXPECT_EQ(PhysicalRect(0, 0, 400, 400), target->LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 400, 400), LocalVisualRect(*target));
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(),
                                    PhysicalRect(0, 0, 200, 200));
 }
@@ -784,7 +786,7 @@ TEST_P(VisualRectMappingTest, ContainPaint) {
 
   auto* target = GetLayoutBoxByElementId("target");
 
-  EXPECT_EQ(PhysicalRect(0, 0, 400, 400), target->LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 400, 400), LocalVisualRect(*target));
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(),
                                    PhysicalRect(0, 0, 200, 200));
 }
@@ -802,7 +804,7 @@ TEST_P(VisualRectMappingTest, FloatUnderInline) {
   auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
-  PhysicalRect target_visual_rect = target->LocalVisualRect();
+  PhysicalRect target_visual_rect = LocalVisualRect(*target);
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
 
   PhysicalRect rect = target_visual_rect;
@@ -831,7 +833,7 @@ TEST_P(VisualRectMappingTest, FloatUnderInlineVerticalRL) {
   auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
-  auto target_visual_rect = target->LocalVisualRect();
+  auto target_visual_rect = LocalVisualRect(*target);
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
 
   auto rect = target_visual_rect;
@@ -862,7 +864,7 @@ TEST_P(VisualRectMappingTest, InlineBlock) {
   auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
-  auto target_visual_rect = target->LocalVisualRect();
+  auto target_visual_rect = LocalVisualRect(*target);
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
 
   auto rect = target_visual_rect;
@@ -888,7 +890,7 @@ TEST_P(VisualRectMappingTest, InlineBlockVerticalRL) {
   auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
-  auto target_visual_rect = target->LocalVisualRect();
+  auto target_visual_rect = LocalVisualRect(*target);
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
 
   auto rect = target_visual_rect;
@@ -916,7 +918,7 @@ TEST_P(VisualRectMappingTest, AbsoluteUnderRelativeInline) {
   auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
-  auto target_visual_rect = target->LocalVisualRect();
+  auto target_visual_rect = LocalVisualRect(*target);
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
 
   auto rect = target_visual_rect;
@@ -942,7 +944,7 @@ TEST_P(VisualRectMappingTest, AbsoluteUnderRelativeInlineVerticalRL) {
   auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
-  auto target_visual_rect = target->LocalVisualRect();
+  auto target_visual_rect = LocalVisualRect(*target);
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
 
   auto rect = target_visual_rect;
@@ -1104,7 +1106,7 @@ TEST_P(VisualRectMappingTest, PerspectivePlusScroll) {
     </div>
   )HTML");
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
-  To<Element>(container->GetNode())->scrollTo(0, 5);
+  To<Element>(container->GetNode())->scrollToForTesting(0, 5);
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
@@ -1148,7 +1150,8 @@ TEST_P(VisualRectMappingTest, FixedContentsInIframe) {
                                       root_view, kDefaultVisualRectFlags, true);
 
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   // The fixed element should not scroll so the mapped visual rect should not
@@ -1180,7 +1183,8 @@ TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
                                       ancestor, kDefaultVisualRectFlags, true);
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   // The fixed element does not scroll but the ancestor does which changes the
@@ -1207,7 +1211,8 @@ TEST_P(VisualRectMappingTest, FixedContentsUnderViewWithScrollOffset) {
       fixed->View(), kDefaultVisualRectFlags, true);
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   // Results of mapping to ancestor are in absolute coordinates of the
@@ -1288,8 +1293,6 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
 }
 
 TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1380,6 +1383,274 @@ TEST_P(VisualRectMappingTest, IgnoreFilters) {
                                       parent, kDefaultVisualRectFlags, true);
   CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, filter,
                                       parent, kIgnoreFilters, true);
+}
+
+TEST_P(VisualRectMappingTest, NestedTransformsFastVsSlowPath) {
+  // Purpose: validate that the non-GeometryMapper code path produces the same
+  // visual rect as the GeometryMapper fast path, even when mapping through
+  // nested transforms.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #parent {
+        position: relative;
+        top: 100px;
+        left: 100px;
+        width: 100px;
+        height: 100px;
+        transform: rotate(45deg);
+      }
+      #child {
+        width: 100px;
+        height: 100px;
+        transform: rotate(45deg);
+      }
+    </style>
+    <div id="parent"><div id="child"></div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* layout_view = &GetLayoutView();
+  auto* child = GetLayoutObjectByElementId("child");
+  ASSERT_TRUE(child);
+
+  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
+      kUseGeometryMapper | kDefaultVisualRectFlags);
+  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  PhysicalRect local_rect(0, 0, 100, 100);
+
+  // GeometryMapper path (expected reference).
+  PhysicalRect mapper_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(layout_view, mapper_rect,
+                                                    kGeomFlags));
+  EXPECT_EQ(PhysicalRect(100, 100, 100, 100), mapper_rect);
+
+  // Non-GeometryMapper path with the same ancestor should match the reference.
+  PhysicalRect non_mapper_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(
+      layout_view, non_mapper_rect, kNonMapperFlags));
+  EXPECT_EQ(mapper_rect, non_mapper_rect);
+
+  // Mapping to the main frame (null ancestor) should also match.
+  PhysicalRect root_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(nullptr, root_rect,
+                                                    kNonMapperFlags));
+  EXPECT_EQ(mapper_rect, root_rect);
+}
+
+TEST_P(VisualRectMappingTest, NestedTransformsGeometryMapperFlag) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #grandparent {
+        position: relative;
+      }
+      #parent {
+        width: 100px;
+        height: 100px;
+        transform: rotate(45deg);
+      }
+      #child {
+        width: 100px;
+        height: 100px;
+        transform: rotate(45deg);
+      }
+      #grandchild {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="grandparent">
+      <div id="parent">
+        <div id="child">
+          <div id="grandchild"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* grandparent = GetLayoutObjectByElementId("grandparent");
+  auto* grandchild = GetLayoutObjectByElementId("grandchild");
+
+  PhysicalRect local_rect(0, 0, 100, 100);
+  PhysicalRect mapper_rect = local_rect;
+  ASSERT_TRUE(grandchild->MapToVisualRectInAncestorSpace(
+      To<LayoutBoxModelObject>(grandparent), mapper_rect, kUseGeometryMapper));
+  PhysicalRect slow_rect = local_rect;
+  ASSERT_TRUE(grandchild->MapToVisualRectInAncestorSpace(
+      To<LayoutBoxModelObject>(grandparent), slow_rect,
+      kDefaultVisualRectFlags));
+  EXPECT_NEAR(mapper_rect.X().ToFloat(), slow_rect.X().ToFloat(), 0.1f);
+  EXPECT_NEAR(mapper_rect.Y().ToFloat(), slow_rect.Y().ToFloat(), 0.1f);
+  EXPECT_NEAR(mapper_rect.Width().ToFloat(), slow_rect.Width().ToFloat(), 0.1f);
+  EXPECT_NEAR(mapper_rect.Height().ToFloat(), slow_rect.Height().ToFloat(),
+              0.1f);
+}
+
+TEST_P(VisualRectMappingTest, NestedTransformsComposeAngles) {
+  // Purpose: prove that nested rotations accumulate (10deg + 35deg = 45deg)
+  // and that the non-GeometryMapper path matches the GeometryMapper result.
+  // Using a non-square box and transform-origin: 0 0 ensures the bounding box
+  // shifts and grows; if rotations were skipped we would still see 100x50 at
+  // the origin.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #parent {
+        width: 100px;
+        height: 50px;
+        transform-origin: 0 0;
+        transform: rotate(10deg);
+      }
+      #child {
+        width: 100px;
+        height: 50px;
+        transform-origin: 0 0;
+        transform: rotate(35deg);
+      }
+    </style>
+    <div id="parent"><div id="child"></div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* layout_view = &GetLayoutView();
+  auto* child = GetLayoutObjectByElementId("child");
+  ASSERT_TRUE(child);
+
+  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
+      kUseGeometryMapper | kDefaultVisualRectFlags);
+  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  PhysicalRect local_rect(0, 0, 100, 50);
+
+  PhysicalRect mapper_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(layout_view, mapper_rect,
+                                                    kGeomFlags));
+
+  // A 45deg rotation of a 100x50 box around the origin produces a bounding box
+  // roughly [-35.36, 0] with size ~106.07x106.07. Allow a small tolerance for
+  // snapping and rounding.
+  EXPECT_NEAR(mapper_rect.X().ToFloat(), -35.4f, 1.5f);
+  EXPECT_NEAR(mapper_rect.Y().ToFloat(), 0.0f, 1.5f);
+  EXPECT_NEAR(mapper_rect.Width().ToFloat(), 106.1f, 1.5f);
+  EXPECT_NEAR(mapper_rect.Height().ToFloat(), 106.1f, 1.5f);
+
+  PhysicalRect non_mapper_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(
+      layout_view, non_mapper_rect, kNonMapperFlags));
+  EXPECT_EQ(mapper_rect, non_mapper_rect);
+}
+
+TEST_P(VisualRectMappingTest, NestedTransformsFractionalPositionSnapsOnce) {
+  // Purpose: guard against reintroducing subpixel accumulation through
+  // non-translation transforms (crbug.com/710665). Place the child at a
+  // fractional position under a rotation/scale; verify both GeometryMapper
+  // and the non-GeometryMapper path produce the same enclosed rect and that
+  // positions are snapped once (no cascading subpixel drift).
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #container {
+        transform: rotate(15deg) scale(1.2);
+      }
+      #child {
+        position: absolute;
+        left: 10.25px;
+        top: 20.75px;
+        width: 40px;
+        height: 30px;
+      }
+    </style>
+    <div id="container"><div id="child"></div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* layout_view = &GetLayoutView();
+  auto* child = GetLayoutObjectByElementId("child");
+  ASSERT_TRUE(child);
+
+  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
+      kUseGeometryMapper | kDefaultVisualRectFlags);
+  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  PhysicalRect local_rect(0, 0, 40, 30);
+
+  PhysicalRect mapper_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(layout_view, mapper_rect,
+                                                    kGeomFlags));
+
+  PhysicalRect non_mapper_rect = local_rect;
+  ASSERT_TRUE(child->MapToVisualRectInAncestorSpace(
+      layout_view, non_mapper_rect, kNonMapperFlags));
+  EXPECT_EQ(mapper_rect, non_mapper_rect);
+
+  // Ensure we produced a real, non-empty rect and avoided explosive
+  // accumulation. Using loose size checks keeps the test resilient to minor
+  // layout rounding while still catching regressions like NaN/zero/negative.
+  EXPECT_FALSE(mapper_rect.IsEmpty());
+  EXPECT_GT(mapper_rect.Width(), LayoutUnit(30));
+  EXPECT_GT(mapper_rect.Height(), LayoutUnit(30));
+}
+
+TEST_P(VisualRectMappingTest, FractionalSnapping) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      * { margin: 0; }
+      #container {
+        position: relative;
+        transform-origin: 0 0;
+        transform: scale(100);
+      }
+      #a {
+        position: absolute;
+        top: 0;
+        left: 0.25px;
+        width: 1px;
+        height: 1px;
+      }
+      #b {
+        position: absolute;
+        top: 0;
+        left: 0.75px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+    <div id="container">
+      <div id="a"></div>
+      <div id="b"></div>
+    </div>
+  )HTML");
+  auto* a = To<LayoutBlock>(GetLayoutObjectByElementId("a"));
+  auto* b = To<LayoutBlock>(GetLayoutObjectByElementId("b"));
+
+  PhysicalRect a_local_rect = LocalVisualRect(*a);
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 1), a_local_rect);
+  PhysicalRect b_local_rect = LocalVisualRect(*b);
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 1), b_local_rect);
+
+  PhysicalRect a_visual_rect_slow = a_local_rect;
+  EXPECT_TRUE(
+      a->MapToVisualRectInAncestorSpace(&GetLayoutView(), a_visual_rect_slow));
+  EXPECT_EQ(PhysicalRect(25, 0, 100, 100), a_visual_rect_slow);
+
+  PhysicalRect b_visual_rect_slow = b_local_rect;
+  EXPECT_TRUE(
+      b->MapToVisualRectInAncestorSpace(&GetLayoutView(), b_visual_rect_slow));
+  EXPECT_EQ(PhysicalRect(75, 0, 100, 100), b_visual_rect_slow);
+
+  PhysicalRect a_visual_rect_mapper = a_local_rect;
+  EXPECT_TRUE(a->MapToVisualRectInAncestorSpace(
+      &GetLayoutView(), a_visual_rect_mapper, kUseGeometryMapper));
+  EXPECT_EQ(PhysicalRect(25, 0, 100, 100), a_visual_rect_mapper);
+
+  PhysicalRect b_visual_rect_mapper = b_local_rect;
+  EXPECT_TRUE(b->MapToVisualRectInAncestorSpace(
+      &GetLayoutView(), b_visual_rect_mapper, kUseGeometryMapper));
+  EXPECT_EQ(PhysicalRect(75, 0, 100, 100), b_visual_rect_mapper);
 }
 
 }  // namespace blink

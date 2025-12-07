@@ -16,13 +16,16 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,6 +44,9 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
   explicit TestFileSuggestKeyedService(Profile* profile,
                                        const base::FilePath& proto_path)
       : FileSuggestKeyedService(
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
             profile,
             ash::PersistentProto<RemovedResultsProto>(proto_path,
                                                       base::TimeDelta())) {}
@@ -125,7 +131,8 @@ class ZeroStateDriveProviderTest : public testing::Test {
     file_suggest_service_ = static_cast<TestFileSuggestKeyedService*>(
         ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
             profile_));
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
     auto provider = std::make_unique<ZeroStateDriveProvider>(
         profile_, &search_controller_,

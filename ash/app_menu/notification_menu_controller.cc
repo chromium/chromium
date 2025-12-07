@@ -7,7 +7,7 @@
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/app_menu/notification_menu_view.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -131,7 +131,7 @@ void NotificationMenuController::InitializeNotificationMenuView() {
   views::MenuItemView* container =
       root_menu_->AppendMenuItem(NOTIFICATION_CONTAINER);
   notification_menu_view_ = new NotificationMenuView(this, this, app_id_);
-  container->AddChildView(notification_menu_view_.get());
+  container->AddChildViewRaw(notification_menu_view_.get());
 
   for (message_center::Notification* notification :
        message_center::MessageCenter::Get()->FindNotificationsByAppId(

@@ -10,20 +10,20 @@ import './diagnostics_shared.css.js';
 import './icons.html.js';
 import './percent_bar_chart.js';
 import './routine_section.js';
-import './strings.m.js';
+import '/strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './battery_status_card.html.js';
 import {getDiagnosticsIcon} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
-import {BatteryChargeStatus, BatteryChargeStatusObserverReceiver, BatteryHealth, BatteryHealthObserverReceiver, BatteryInfo, BatteryState, ExternalPowerSource, SystemDataProviderInterface} from './system_data_provider.mojom-webui.js';
+import type {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from './system_data_provider.mojom-webui.js';
+import {BatteryChargeStatusObserverReceiver, BatteryHealthObserverReceiver, BatteryState, ExternalPowerSource} from './system_data_provider.mojom-webui.js';
 import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 const BATTERY_ICON_PREFIX = 'battery-';
@@ -203,11 +203,11 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
     }
 
     const powerTimeStr = this.batteryChargeStatus.powerTime;
-    if (!powerTimeStr || powerTimeStr.data.length === 0) {
+    if (!powerTimeStr || powerTimeStr.length === 0) {
       return loadTimeData.getString('batteryCalculatingText');
     }
 
-    const timeValue = mojoString16ToString(powerTimeStr);
+    const timeValue = powerTimeStr;
     const charging =
         this.batteryChargeStatus.powerAdapterStatus === ExternalPowerSource.kAc;
 
@@ -250,9 +250,12 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
 
   protected getRunTestsAdditionalMessage(): string {
     const batteryInfoMissing = !this.batteryChargeStatus || !this.batteryHealth;
+    if (batteryInfoMissing) {
+      return '';
+    }
     const notCharging = this.batteryChargeStatus.powerAdapterStatus ===
         ExternalPowerSource.kDisconnected;
-    if (notCharging || batteryInfoMissing) {
+    if (notCharging) {
       return '';
     }
 

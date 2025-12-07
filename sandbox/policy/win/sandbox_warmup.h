@@ -13,6 +13,15 @@ namespace sandbox::policy {
 // pre-loaded to support the infrastructure underlying crypto::RandBytes.
 SANDBOX_POLICY_EXPORT void WarmupRandomnessInfrastructure();
 
+// Call in a sandboxed process where dwrite.dll might be loaded and Csrss
+// lockdown makes GetUserDefaultLCID() crash in its tracing infrastructure.
+// Returns `true` if the hooks are emplaced, `false` if dwrite is not loaded,
+// or the hooks could not be emplaced. If emplaced, the hooks are never removed.
+SANDBOX_POLICY_EXPORT bool HookDwriteGetUserDefaultLCID();
+
+// Helper to preload the delayloaded dll dbghelp.dll before sandbox lockdown.
+SANDBOX_POLICY_EXPORT void MaybeDelayloadDbghelp();
+
 }  // namespace sandbox::policy
 
 #endif  // SANDBOX_POLICY_WIN_SANDBOX_WARMUP_H_

@@ -23,14 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_STACK_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_STACK_ITEM_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -78,7 +74,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     // We rely on Create() allocating extra memory past our end for the
     // attributes.
     for (wtf_size_t i = 0; i < token->Attributes().size(); ++i) {
-      new (TokenAttributesData() + i) Attribute(token->Attributes()[i]);
+      new (UNSAFE_TODO(TokenAttributesData() + i))
+          Attribute(token->Attributes()[i]);
     }
   }
 
@@ -114,11 +111,20 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
 
   const base::span<Attribute> Attributes() {
     DCHECK(LocalName());
-    return {TokenAttributesData(), num_token_attributes_};
+    return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
   }
   const base::span<const Attribute> Attributes() const {
     DCHECK(LocalName());
-    return {TokenAttributesData(), num_token_attributes_};
+    return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
+  }
+  Vector<Attribute> TakeAttributes() {
+    Vector<Attribute> attributes;
+    attributes.ReserveInitialCapacity(num_token_attributes_);
+    for (Attribute& attr : Attributes()) {
+      attributes.push_back(std::move(attr));
+    }
+    num_token_attributes_ = 0;
+    return attributes;
   }
   Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
     DCHECK(LocalName());
@@ -325,6 +331,24 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(node_);
     visitor->Trace(next_item_in_stack_);
+    visitor->Trace(adjusted_insertion_target_);
+    visitor->Trace(adjusted_insertion_next_child_);
+  }
+
+  void SetAdjustedInsertionTarget(ContainerNode* target) {
+    adjusted_insertion_target_ = target;
+  }
+
+  ContainerNode* AdjustedInsertionTarget() const {
+    return adjusted_insertion_target_.Get();
+  }
+
+  void SetAdjustedInsertionNextChild(Node* child) {
+    adjusted_insertion_next_child_ = child;
+  }
+
+  Node* AdjustedInsertionNextChild() const {
+    return adjusted_insertion_next_child_.Get();
   }
 
  private:
@@ -345,17 +369,20 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   // by Create().
   Attribute* TokenAttributesData() {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
-    return reinterpret_cast<Attribute*>(this + 1);
+    return reinterpret_cast<Attribute*>(UNSAFE_TODO(this + 1));
   }
   const Attribute* TokenAttributesData() const {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
-    return reinterpret_cast<const Attribute*>(this + 1);
+    return reinterpret_cast<const Attribute*>(UNSAFE_TODO(this + 1));
   }
 
   Member<ContainerNode> node_;
 
   // This member is maintained by HTMLElementStack.
   Member<HTMLStackItem> next_item_in_stack_{nullptr};
+
+  Member<ContainerNode> adjusted_insertion_target_;
+  Member<Node> adjusted_insertion_next_child_;
 
   HTMLTokenName token_name_;
   AtomicString namespace_uri_;

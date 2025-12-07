@@ -8,7 +8,14 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "url/origin.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class BrowserContext;
@@ -37,7 +44,12 @@ BASE_DECLARE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine);
 // If there is a PWA installed, grant/deny permission based on whether the
 // one-shot Background Sync content setting is set to allow/block.
 class PeriodicBackgroundSyncPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+      public web_app::WebAppInstallManagerObserver
+#endif  // !BUILDFLAG(IS_ANDROID)
+{
  public:
   explicit PeriodicBackgroundSyncPermissionContext(
       content::BrowserContext* browser_context);
@@ -58,22 +70,46 @@ class PeriodicBackgroundSyncPermissionContext
   virtual GURL GetDefaultSearchEngineUrl() const;
 
  private:
-  // PermissionContextBase implementation.
-  ContentSetting GetPermissionStatusInternal(
+  // ContentSettingPermissionContextBase implementation.
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
+
+  // PermissionContextBase implementation.
   void DecidePermission(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedding_origin,
-                           permissions::BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override;
+  void NotifyPermissionSet(
+      const permissions::PermissionRequestData& request_data,
+      permissions::BrowserPermissionCallback callback,
+      bool persist,
+      PermissionDecision decision,
+      bool is_final_decision) override;
+
+  // content_settings::Observer:
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // web_app::WebAppInstallManagerObserver:
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
+  // TODO(crbug.com/340952100): Remove after the InstallState is saved in the
+  // database & available from OnWebAppInstalled.
+  void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+  void OnWebAppUninstalled(
+      const webapps::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
+
+  std::map<webapps::AppId, GURL> app_id_origin_map_;
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_

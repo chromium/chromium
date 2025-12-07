@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors)
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,10 +60,12 @@
 #define REMOTE_COMMANDS ::policy::PolicyLogger::Log::Source::kRemoteCommands
 #define DEVICE_TRUST ::policy::PolicyLogger::Log::Source::kDeviceTrust
 #define OIDC_ENROLLMENT ::policy::PolicyLogger::Log::Source::kOidcEnrollment
+#define EXTENSIBLE_SSO ::policy::PolicyLogger::Log::Source::kExtensibleSSO
+#define REPORTING ::policy::PolicyLogger::Log::Source::kReporting
 
 namespace policy {
 
-// Collects logs to be displayed in chrome://policy-logs.
+// Collects logs to be displayed in chrome://policy/logs.
 class POLICY_EXPORT PolicyLogger {
  public:
   class POLICY_EXPORT Log {
@@ -78,13 +80,15 @@ class POLICY_EXPORT PolicyLogger {
       kRemoteCommands,
       kDeviceTrust,
       kOidcEnrollment,
+      kExtensibleSSO,
+      kReporting,
     };
     enum class Severity { kInfo, kWarning, kError, kVerbose };
 
     Log(const Severity log_severity,
         const Source log_source,
         const std::string& message,
-        const std::string_view file,
+        std::string_view file,
         const int line);
     Log(const Log&) = delete;
     Log& operator=(const Log&) = delete;
@@ -124,7 +128,7 @@ class POLICY_EXPORT PolicyLogger {
               const PolicyLogger::Log::Severity log_severity,
               const int log_verbosity,
               const PolicyLogger::Log::Source log_source,
-              const std::string_view file,
+              std::string_view file,
               const int line);
     LogHelper(const LogHelper&) = delete;
     LogHelper& operator=(const LogHelper&) = delete;
@@ -134,7 +138,7 @@ class POLICY_EXPORT PolicyLogger {
     ~LogHelper();
 
     template <typename T>
-    LogHelper& operator<<(T message) {
+    LogHelper& operator<<(const T& message) {
       message_buffer_ << message;
       return *this;
     }

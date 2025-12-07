@@ -4,14 +4,15 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementAppLanguageItemElement} from 'chrome://os-settings/lazy_load.js';
-import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementAppLanguageItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {isHidden, replaceBody, setupFakeHandler} from '../../app_management/test_util.js';
 
 type AppConfig = Partial<App>;
@@ -77,8 +78,7 @@ suite('<app-management-app-language-item>', () => {
             appLanguageItem.shadowRoot!.querySelector('cr-link-row')!
                 .shadowRoot!.querySelector('#labelWrapper > #subLabel');
         assertTrue(!!selectedLocaleLabel);
-        assertTrue(
-            selectedLocaleLabel.textContent!.includes('Device language'));
+        assertTrue(selectedLocaleLabel.textContent.includes('Device language'));
       });
 
   test('Selected locale exists, show display name', async () => {
@@ -106,7 +106,7 @@ suite('<app-management-app-language-item>', () => {
         appLanguageItem.shadowRoot!.querySelector('cr-link-row')!.shadowRoot!
             .querySelector('#labelWrapper > #subLabel');
     assertTrue(!!selectedLocaleLabel);
-    assertTrue(selectedLocaleLabel.textContent!.includes(displayName));
+    assertTrue(selectedLocaleLabel.textContent.includes(displayName));
   });
 
   test('Clicks link, show app language selection dialog', async () => {

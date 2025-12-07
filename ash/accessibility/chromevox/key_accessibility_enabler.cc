@@ -25,7 +25,7 @@ KeyAccessibilityEnabler::~KeyAccessibilityEnabler() {
 void KeyAccessibilityEnabler::OnKeyEvent(ui::KeyEvent* event) {
   if ((event->type() != ui::EventType::kKeyPressed &&
        event->type() != ui::EventType::kKeyReleased) ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     return;
   }
 

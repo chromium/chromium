@@ -146,7 +146,7 @@ void RSCoder16::MakeDecoderMatrix()
 }
 
 
-// Apply Gauss–Jordan elimination to find inverse of decoder matrix.
+// Apply Gauss-Jordan elimination to find inverse of decoder matrix.
 // We have the square NDxND matrix, but we do not store its trivial
 // diagonal "1" rows matching valid data, so we work with NExND matrix.
 // Our original Cauchy matrix does not contain 0, so we skip search

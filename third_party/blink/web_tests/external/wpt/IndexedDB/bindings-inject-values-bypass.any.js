@@ -1,8 +1,8 @@
 // META: global=window,worker
 // META: title=IndexedDB: ES bindings - Inject a key into a value - Values bypass chain and setters
 // META: script=resources/support-promises.js
+'use strict';
 
-'use_strict';
 
 promise_test(async t => {
   const db = await createDatabase(t, db => {
@@ -12,7 +12,7 @@ promise_test(async t => {
   Object.prototype.a = {b: {c: 'on proto'}};
   t.add_cleanup(() => { delete Object.prototype.a; });
 
-  const tx = db.transaction('store', 'readwrite', {durability: "relaxed"});
+  const tx = db.transaction('store', 'readwrite');
   tx.objectStore('store').put({});
   const result = await promiseForRequest(t, tx.objectStore('store').get(1));
 
@@ -40,7 +40,7 @@ promise_test(async t => {
   });
   t.add_cleanup(() => { delete Object.prototype['id']; });
 
-  const tx = db.transaction('store', 'readwrite', {durability: 'relaxed'});
+  const tx = db.transaction('store', 'readwrite');
   tx.objectStore('store').put({});
   const result = await promiseForRequest(t, tx.objectStore('store').get(1));
 

@@ -1,0 +1,9 @@
+{
+  "name": "ExtTab",
+  "version": "1.0",
+  "description": "Chromedriver extension Mv3 that opens a new tab",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  }
+}

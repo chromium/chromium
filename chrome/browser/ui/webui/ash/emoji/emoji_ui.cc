@@ -2,29 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 
 #include <iostream>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
+#include "chrome/browser/ui/webui/ash/emoji/bubble_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"
 #include "chrome/grit/emoji_picker_resources_map.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/seal_resources.h"
-#include "chrome/grit/seal_resources_map.h"
 #include "chromeos/ash/components/emoji/grit/emoji_map.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -34,8 +29,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
-#include "ui/resources/grit/webui_resources.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 constexpr gfx::Size kExtensionWindowSize(420, 480);
@@ -46,15 +41,43 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
 
  public:
   explicit EmojiBubbleDialogView(
-      std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
-        contents_wrapper_(std::move(contents_wrapper)) {
-    set_has_parent(false);
+      std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
+      gfx::Rect caret_bounds)
+      : WebUIBubbleDialogView(nullptr,
+                              contents_wrapper->GetWeakPtr(),
+                              std::nullopt,
+                              views::BubbleBorder::TOP_RIGHT,
+                              /*autosize=*/false),
+        contents_wrapper_(std::move(contents_wrapper)),
+        caret_bounds_(caret_bounds) {
+    // Place the emoji bubble in the float container to ensure it appears above
+    // float and PIP windows for example. See crbug.com/402617739 for more
+    // details.
+    display::Display display =
+        display::Screen::Get()->GetDisplayMatching(caret_bounds);
+    aura::Window* root_window =
+        ash::Shell::GetRootWindowForDisplayId(display.id());
+    CHECK(root_window);
+    set_parent_window(ash::Shell::GetContainer(
+        root_window, ash::kShellWindowId_FloatContainer));
+
     set_corner_radius(20);
+    SetProperty(views::kElementIdentifierKey, ash::kEmojiPickerElementId);
+  }
+
+  // WebUIBubbleDialogView:
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override {
+    WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
+    GetWidget()->SetBounds(ash::GetBubbleBoundsAroundCaret(
+        caret_bounds_,
+        -GetBubbleFrameView()->bubble_border()->GetInsets().ToOutsets(),
+        new_size));
   }
 
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  gfx::Rect caret_bounds_;
 };
 
 BEGIN_METADATA(EmojiBubbleDialogView)
@@ -96,25 +119,9 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       chrome::kChromeUIEmojiPickerHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
-      IDR_EMOJI_PICKER_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(kEmoji, kEmojiSize));
-
-  // Add seal extra resources.
-  if (SealUtils::ShouldEnable()) {
-    source->AddResourcePaths(
-        base::make_span(kSealResources, kSealResourcesSize));
-  }
-
-  // Some web components defined in seal extra resources are based on lit; so
-  // we override content security policy here to make them work.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types goog#html parse-html-subset sanitize-inner-html "
-      "static-types lit-html lottie-worker-script-loader webui-test-script "
-      "webui-test-html print-preview-plugin-loader polymer-html-literal "
-      "polymer-template-event-attribute-policy;");
+  webui::SetupWebUIDataSource(source, kEmojiPickerResources,
+                              IDR_EMOJI_PICKER_INDEX_HTML);
+  source->AddResourcePaths(kEmoji);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,
@@ -136,7 +143,7 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client,
 void EmojiUI::Show(ui::EmojiPickerCategory category,
                    ui::EmojiPickerFocusBehavior focus_behavior,
                    const std::string& initial_query) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
   }
@@ -197,23 +204,13 @@ void EmojiUI::Show(ui::EmojiPickerCategory category,
       ConvertCategoryEnum(category);
   contents_wrapper->GetWebUIController()->initial_query_ = initial_query;
 
-  auto bubble_view =
-      std::make_unique<EmojiBubbleDialogView>(std::move(contents_wrapper));
+  auto bubble_view = std::make_unique<EmojiBubbleDialogView>(
+      std::move(contents_wrapper), caret_bounds);
   auto weak_ptr = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  weak_ptr->SetAnchorRect(anchor_rect);
-  weak_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
-      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  weak_ptr->set_adjust_if_offscreen(true);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EmojiUI)
-
-void EmojiUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
 
 void EmojiUI::BindInterface(
     mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver) {
@@ -230,18 +227,6 @@ void EmojiUI::BindInterface(
     mojo::PendingReceiver<new_window_proxy::mojom::NewWindowProxy> receiver) {
   new_window_proxy_ =
       std::make_unique<ash::NewWindowProxy>(std::move(receiver));
-}
-
-void EmojiUI::BindInterface(
-    mojo::PendingReceiver<seal::mojom::SealService> receiver) {
-  if (SealUtils::ShouldEnable()) {
-    Profile* profile = Profile::FromWebUI(web_ui());
-    manta::MantaService* manta_service =
-        manta::MantaServiceFactory::GetForProfile(profile);
-    seal_service_ = std::make_unique<SealService>(
-        /*receiver=*/std::move(receiver),
-        /*snapper_provider=*/manta_service->CreateSnapperProvider());
-  }
 }
 
 void EmojiUI::CreatePageHandler(

@@ -22,6 +22,7 @@ import android.view.ViewStructure;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
 import java.util.ArrayList;
@@ -29,8 +30,9 @@ import java.util.Arrays;
 
 /**
  */
+@NullMarked
 public class ViewStructureBuilder {
-    private RenderCoordinatesImpl mRenderCoordinates;
+    private final RenderCoordinatesImpl mRenderCoordinates;
 
     public ViewStructureBuilder(RenderCoordinatesImpl renderCoordinates) {
         this.mRenderCoordinates = renderCoordinates;

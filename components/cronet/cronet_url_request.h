@@ -10,11 +10,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/idempotency.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
+#include "net/shared_dictionary/shared_dictionary.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
@@ -158,6 +160,7 @@ class CronetURLRequest {
                    bool traffic_stats_uid_set,
                    int32_t traffic_stats_uid,
                    net::Idempotency idempotency,
+                   scoped_refptr<net::SharedDictionary> shared_dictionary,
                    net::handles::NetworkHandle network =
                        net::handles::kInvalidNetworkHandle);
 
@@ -221,6 +224,7 @@ class CronetURLRequest {
                  bool traffic_stats_uid_set,
                  int32_t traffic_stats_uid,
                  net::Idempotency idempotency,
+                 scoped_refptr<net::SharedDictionary> shared_dictionary,
                  net::handles::NetworkHandle network);
 
     NetworkTasks(const NetworkTasks&) = delete;
@@ -302,6 +306,8 @@ class CronetURLRequest {
     const int32_t traffic_stats_uid_;
     // Idempotency of the request.
     const net::Idempotency idempotency_;
+    // Optional compression dictionary for this request. != nullptr if present.
+    scoped_refptr<net::SharedDictionary> shared_dictionary_;
 
     net::handles::NetworkHandle network_;
 

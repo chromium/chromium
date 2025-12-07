@@ -1,0 +1,28 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CameraSaveLocation": "${google_drive}/test"
+        },
+        "prefs": {
+          "ash.camera.save_location": {
+            "value": "${google_drive}/test"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.camera.save_location": {
+            "default_value": ""
+          }
+        }
+      }
+    ]
+  }
+]

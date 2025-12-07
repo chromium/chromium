@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef IPCZ_SRC_IPCZ_MESSAGE_H_
 #define IPCZ_SRC_IPCZ_MESSAGE_H_
 
@@ -46,7 +51,7 @@ struct MessageHeader {
   // Used for sequencing messages along a NodeLink to preserve end-to-end
   // ordering, as NodeLink messages may be transmitted either across a driver
   // transport or queues in shared memory.
-  SequenceNumber sequence_number;
+  SequenceNumber node_sequence_number;
 
   // Offset into the message where the unified array of DriverObjectData lives,
   // or zero if there are no driver objects attached.
@@ -130,6 +135,9 @@ enum class ParamType {
   // A parameter encoded inline within the message's primary parameter struct.
   kData,
 
+  // An inline parameter with kMinValue==0 and kMaxValue that is validated.
+  kEnum,
+
   // A parameter encoded as a 32-bit index elsewhere in the message. This index
   // points to encoded array contents, beginning with an ArrayHeader.
   kDataArray,
@@ -160,6 +168,10 @@ struct ParamMetadata {
   // If this is an array-typed field, this is the encoded size of each array
   // element expected.
   size_t array_element_size;
+
+  // Max value of enum-typed field. We statically assert that kMinValue==0 and
+  // that the size of the enum field is no larger than a uint32_t.
+  uint32_t enum_max_value;
 
   // The generic type of this parameter. See ParamType above.
   ParamType type;
@@ -399,6 +411,10 @@ class IPCZ_ALIGN(8) Message {
   // Message.
   ReceivedDataBuffer TakeReceivedData() &&;
 
+  void SetEnvelope(DriverObject envelope);
+
+  DriverObject TakeEnvelope();
+
  protected:
   // Returns `x` aligned above to the nearest 8-byte boundary.
   constexpr size_t Align(size_t x) { return (x + 7) & ~7; }
@@ -495,6 +511,8 @@ class IPCZ_ALIGN(8) Message {
   // transmissible handles, there is generally NOT a 1:1 correpsondence between
   // this list and `driver_objects_`.
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_driver_handles_;
+
+  DriverObject envelope_;
 };
 
 // Template helper to wrap the Message type for a specific macro-generated

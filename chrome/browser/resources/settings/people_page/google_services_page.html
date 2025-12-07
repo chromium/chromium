@@ -1,0 +1,15 @@
+<style>
+  settings-personalization-options {
+    --settings-signin-choice-padding: 0px 20px 10px;
+  }
+</style>
+
+<settings-subpage page-title="$i18n{googleServicesPageTitle}"
+    route-path$="[[routePath]]">
+  <template is="dom-if" if="[[shouldShowPageContents_(syncStatus_,
+      syncStatus_.signedInState)]]" restamp>
+    <settings-personalization-options prefs="{{prefs}}"
+        sync-status="[[syncStatus_]]">
+    </settings-personalization-options>
+  </template>
+</settings-subpage>

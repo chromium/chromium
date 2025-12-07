@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "android_webview/browser/variations/variations_seed_loader.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <jni.h>
+
 #include <memory>
 #include <string>
-
-#include "android_webview/browser/variations/variations_seed_loader.h"
 
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,7 +23,7 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace android_webview {
 
@@ -57,13 +57,12 @@ bool IsSeedValid(AwVariationsSeed* seed) {
 
 static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
     JNIEnv* env,
-    const JavaParamRef<jstring>& seed_path) {
+    std::string& seed_path) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
-  std::string native_seed_path = ConvertJavaStringToUTF8(seed_path);
 
-  int native_fd = open(native_seed_path.c_str(), O_RDONLY);
+  int native_fd = open(seed_path.c_str(), O_RDONLY);
   if (native_fd == -1) {
     PLOG(INFO) << "Failed to open file for reading.";
     return false;
@@ -90,11 +89,11 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
 
 static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& seed_as_bytes) {
+    const JavaRef<jbyteArray>& seed_as_bytes) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
-  jbyte* src_bytes = env->GetByteArrayElements(seed_as_bytes, nullptr);
+  jbyte* src_bytes = env->GetByteArrayElements(seed_as_bytes.obj(), nullptr);
   if (!seed->ParseFromArray(src_bytes,
                             env->GetArrayLength(seed_as_bytes.obj()))) {
     LOG(ERROR) << "Failed to parse seed file.";
@@ -125,3 +124,5 @@ void CacheSeedFreshness(long freshness) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(VariationsSeedLoader)

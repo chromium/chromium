@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verifies that a view-transition can start on the compositor</title>
+</head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+  #block {
+    background-color: hotpink;
+    height: 200px;
+    width: 200px;
+    view-transition-name: block;
+  }
+  #block.update {
+    height: 100px;
+    width: 100px;
+  }
+
+  :root {
+    view-transition-name: none;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 3s;
+  }
+
+</style>
+<body>
+  <div id="container">
+    <div id="block"></div>
+  </div>
+</body>
+<script>
+  "use strict";
+
+  function raf() {
+    return new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  promise_test(async t => {
+    await raf();
+    const vt = container.startViewTransition(() => {
+      block.style.backgroundColor = 'rebeccapurple';
+    });
+    await vt.ready;
+    await Promise.all(document.getAnimations().map(anim => anim.ready));
+
+    const validate = (anim, actual, expected, message) => {
+      const label = `${anim.animationName} on ${anim.effect.pseudoElement}`;
+      const maybe_should = expected ? 'should' : 'should not';
+      assert_equals(actual, expected,
+                    `${label} ${maybe_should} be ${message}`);
+    };
+
+    // fade-in and fade-out animations should be running on the compositor.
+    // All other animations should be optimized out as static animations.
+    document.getAnimations().forEach(anim => {
+      validate(anim, internals.isMainThreadAnimation(anim), false,
+               'animating on the main thread');
+      validate(anim, internals.isCompositedAnimation(anim),
+               !!anim.animationName.match(/fade/),
+               'animating on the compositor');
+    });
+
+    // Change the size of the target block so that the animations that include
+    // height and width are no longer static.
+    await raf();
+    block.classList.add('update');
+    await raf();
+
+    document.getAnimations().forEach(anim => {
+      const on_main  =  internals.isMainThreadAnimation(anim);
+      const on_compositor = internals.isCompositedAnimation(anim);
+      const has_no_effect = !on_main && !on_compositor;
+      validate(anim, on_main,
+               !!anim.effect.pseudoElement.match(/group/),
+               'animating on the main thread after update');
+      validate(anim, on_compositor,
+               !!anim.animationName.match(/fade/),
+               'animating on the compositor after update');
+      validate(anim, has_no_effect,
+               !!anim.animationName.match(/blend-mode/),
+               'optimized out as a static animation');
+    });
+
+  }, 'view-transition animations run on the compositor thread');
+</script>
+</html>

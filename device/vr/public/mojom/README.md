@@ -60,6 +60,8 @@ for a presentation session, such as submitting frames to the underlying VR API.
 XRPresentationClient - lives in the renderer process.  Is notified when various
 rendering events occur, so it can reclaim/reuse textures.
 
+XRLayerManager - lives in the XRDevice process.  Implements Layers feature.
+
 # Browser <-> Device interfaces (defined in isolated_xr_service.mojom)
 The XRDevice process may be the browser process or an isolated service for
 different devices implementations.  A device provider in the browser will choose

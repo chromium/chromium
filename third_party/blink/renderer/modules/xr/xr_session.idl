@@ -64,6 +64,7 @@ enum XRReflectionFormat {
   attribute EventHandler onsqueeze;
   attribute EventHandler onsqueezestart;
   attribute EventHandler onsqueezeend;
+  [RuntimeEnabled=WebXRVisibilityMask] attribute EventHandler onvisibilitymaskchange;
   [RuntimeEnabled=WebXRFrameRate] attribute EventHandler onframeratechange;
 
   [RaisesException] void updateRenderState(optional XRRenderStateInit init = {});
@@ -88,7 +89,16 @@ enum XRReflectionFormat {
   Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();
 
   [RaisesException]
+  undefined pauseDepthSensing();
+  [RaisesException]
+  undefined resumeDepthSensing();
+
+  [RaisesException]
   readonly attribute XRDepthUsage? depthUsage;
   [RaisesException]
   readonly attribute XRDepthDataFormat? depthDataFormat;
+  [RaisesException]
+  readonly attribute XRDepthType? depthType;
+  [RaisesException]
+  readonly attribute boolean? depthActive;
 };

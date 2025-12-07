@@ -39,12 +39,6 @@ void WebContentsObserver::Observe(WebContents* web_contents) {
   }
 }
 
-bool WebContentsObserver::OnMessageReceived(
-    const IPC::Message& message,
-    RenderFrameHost* render_frame_host) {
-  return false;
-}
-
 void WebContentsObserver::ResetWebContents() {
   static_cast<WebContentsImpl*>(web_contents_)->RemoveObserver(this);
   web_contents_ = nullptr;

@@ -30,19 +30,31 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:focusableInTouchMode="true">
 
-    <!-- TODO(crbug.com/40117411): Remove android:background for radio buttons here and below after enhancement. -->
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
         android:id="@+id/radio_button_chrome_ntp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:primaryText="@string/options_homepage_chrome_homepage" />
+        app:primaryText="@string/options_homepage_chrome_homepage"
+        app:backgroundStyle="none" />
 
     <org.chromium.components.browser_ui.widget.RadioButtonWithEditText
         android:id="@+id/radio_button_uri_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/options_homepage_edit_hint"
-        android:inputType="textUri" />
+        android:inputType="textUri"
+        app:backgroundStyle="none" />
 
   </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+
+  <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+      android:id="@+id/managed_disclaimer_text"
+      style="@style/ManagedDisclaimerView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingStart="@dimen/homepage_radio_button_managed_lateral_padding"
+      android:paddingEnd="@dimen/homepage_radio_button_managed_lateral_padding"
+      android:drawablePadding="@dimen/homepage_managed_icon_padding"
+      android:visibility="gone" />
 </LinearLayout>

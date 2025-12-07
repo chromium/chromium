@@ -39,3 +39,5 @@ void DownloadTaskScheduler::CancelTask(DownloadTaskType task_type) {
 
 }  // namespace android
 }  // namespace download
+
+DEFINE_JNI(DownloadTaskScheduler)

@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_origin
+  assert (1080, 1608) == (2940, 4377)
+Harness: the test ran to completion.
+

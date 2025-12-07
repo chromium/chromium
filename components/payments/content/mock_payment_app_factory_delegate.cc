@@ -30,4 +30,8 @@ void MockPaymentAppFactoryDelegate::SetRequestedPaymentMethod(
       /*observer=*/nullptr, /*app_locale=*/"en-US");
 }
 
+void MockPaymentAppFactoryDelegate::ResetSpec() {
+  spec_.reset();
+}
+
 }  // namespace payments

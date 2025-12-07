@@ -4,17 +4,23 @@
 
 package org.chromium.ui.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.SparseArray;
+import android.view.View;
 
 import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiSwitches;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
@@ -27,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Manager for managing the display of a queue of {@link PropertyModel}s. */
+@NullMarked
 public class ModalDialogManager {
     /**
      * An observer of the ModalDialogManager intended to broadcast notifications about any dialog
@@ -51,11 +58,25 @@ public class ModalDialogManager {
         default void onDialogCreated(PropertyModel model, @Nullable ComponentDialog dialog) {}
 
         /**
+         * A notification that the manager showed a modal dialog.
+         *
+         * @param dialogView The view associated with the modal dialog.
+         */
+        default void onDialogShown(View dialogView) {}
+
+        /**
          * A notification that the manager dismisses a modal dialog.
          *
          * @param model The model that describes the dialog that was dismissed.
          */
         default void onDialogDismissed(PropertyModel model) {}
+
+        /**
+         * A notification that the manager has suppressed a modal dialog because it is suspended.
+         *
+         * @param model The model that describes the dialog that was suppressed.
+         */
+        default void onDialogSuppressed(PropertyModel model) {}
 
         /** A notification that the manager has dismissed all queued modal dialog. */
         default void onLastDialogDismissed() {}
@@ -63,8 +84,8 @@ public class ModalDialogManager {
 
     /** Present a {@link PropertyModel} in a container. */
     public abstract static class Presenter {
-        private Callback<Integer> mDismissCallback;
-        private PropertyModel mDialogModel;
+        private @Nullable Callback<Integer> mDismissCallback;
+        private @Nullable PropertyModel mDialogModel;
 
         /**
          * @param model The dialog model that's currently showing in this presenter. If null, no
@@ -73,7 +94,8 @@ public class ModalDialogManager {
         private void setDialogModel(
                 @Nullable PropertyModel model,
                 @Nullable Callback<Integer> dismissCallback,
-                @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
+                @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
+                @Nullable Callback<View> onDialogShownCallback) {
             if (model == null) {
                 removeDialogView(mDialogModel);
                 mDialogModel = null;
@@ -83,7 +105,7 @@ public class ModalDialogManager {
                         : "Should call setDialogModel(null) before setting a dialog model.";
                 mDialogModel = model;
                 mDismissCallback = dismissCallback;
-                addDialogView(model, onDialogCreatedCallback);
+                addDialogView(model, onDialogCreatedCallback, onDialogShownCallback);
             }
         }
 
@@ -101,7 +123,7 @@ public class ModalDialogManager {
         /**
          * @return The dialog model that this presenter is showing.
          */
-        public final PropertyModel getDialogModel() {
+        public final @Nullable PropertyModel getDialogModel() {
             return mDialogModel;
         }
 
@@ -113,6 +135,7 @@ public class ModalDialogManager {
         protected static String getContentDescription(PropertyModel model) {
             String description = model.get(ModalDialogProperties.CONTENT_DESCRIPTION);
             if (description == null) description = model.get(ModalDialogProperties.TITLE);
+            assert description != null;
             return description;
         }
 
@@ -123,16 +146,38 @@ public class ModalDialogManager {
          * @param onDialogCreatedCallback The callback that notifies observers when the dialog is
          *     created but not shown yet, providing the ComponentDialog associated with the {@link
          *     AppModalPresenter} implementation of this modal dialog.
+         * @param onDialogShownCallback The callback that notifies observers after triggering
+         *     `showDialog`.
          */
         protected abstract void addDialogView(
-                PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback);
+                PropertyModel model,
+                @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
+                @Nullable Callback<View> onDialogShownCallback);
 
         /**
          * Removes the view created for the specified model from a container.
          *
          * @param model The dialog model that needs to be removed.
          */
-        protected abstract void removeDialogView(PropertyModel model);
+        protected abstract void removeDialogView(@Nullable PropertyModel model);
+
+        /**
+         * An {@link InsetObserver} to get insets for the window associated with a modal dialog.
+         *
+         * @param insetObserver The observer to set.
+         */
+        protected void setInsetObserver(InsetObserver insetObserver) {}
+
+        /**
+         * A supplier to determine whether edge-to-edge is active in the enclosing window.
+         *
+         * @param edgeToEdgeStateSupplier The supplier for edge-to-edge state.
+         * @param isEdgeToEdgeEverywhereEnabled Whether the edge-to-edge-everywhere feature is
+         *     enabled.
+         */
+        protected void setEdgeToEdgeStateSupplier(
+                ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+                boolean isEdgeToEdgeEverywhereEnabled) {}
     }
 
     // This affects only the dialog style. To define a priority, call showDialog with {@link
@@ -177,6 +222,20 @@ public class ModalDialogManager {
         int NUM_ENTRIES = RANGE_MAX - RANGE_MIN + 1;
     }
 
+    /**
+     * This is for identifying individual dialog types. If a dialog needs identifying, add an entry
+     * for the type here, set it in the property model and then you can query the name field.
+     */
+    @IntDef({DialogName.UNKNOWN, DialogName.DUPLICATE_DOWNLOAD_DIALOG})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DialogName {
+        // Dialog name wasn't set.
+        int UNKNOWN = 0;
+        // Dialog shown when there is a file name collision.
+        int DUPLICATE_DOWNLOAD_DIALOG = 1;
+        int NUM_ENTRIES = 2;
+    }
+
     /** Mapping of the {@link Presenter}s and the type of dialogs they are showing. */
     private final SparseArray<Presenter> mPresenters = new SparseArray<>();
 
@@ -193,7 +252,7 @@ public class ModalDialogManager {
      * The presenter of the type of the dialog that is currently showing. Note that if there is no
      * matching {@link Presenter} for {@link #mCurrentType}, this will be the default presenter.
      */
-    private Presenter mCurrentPresenter;
+    private @Nullable Presenter mCurrentPresenter;
 
     /**
      * The type of the current dialog. This can be different from the type of the current
@@ -207,6 +266,10 @@ public class ModalDialogManager {
     /** True if the current dialog is in the process of being dismissed. */
     private boolean mDismissingCurrentDialog;
 
+    private @Nullable ModalDialogManagerBridge mModalDialogManagerBridge;
+
+    private boolean mDestroyed;
+
     /** Observers of this manager. */
     private final ObserverList<ModalDialogManagerObserver> mObserverList = new ObserverList<>();
 
@@ -219,14 +282,48 @@ public class ModalDialogManager {
      */
     private final PendingDialogContainer mPendingDialogContainer = new PendingDialogContainer();
 
+    /** An {@link InsetObserver} to provide system window insets. */
+    private @Nullable InsetObserver mInsetObserver;
+
+    /** A supplier to determine whether edge-to-edge is active in the enclosing window. */
+    private final @Nullable ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+
+    private final boolean mIsEdgeToEdgeEverywhereEnabled;
+
     /**
-     * Constructor for initializing default {@link Presenter}.
+     * Constructor for initializing default {@link Presenter}. TODO (crbug.com/41492646): Remove
+     * this constructor in favor of the one depending on E2E when this bug is addressed.
+     *
      * @param defaultPresenter The default presenter to be used when no presenter specified.
      * @param defaultType The dialog type of the default presenter.
      */
+    public ModalDialogManager(Presenter defaultPresenter, @ModalDialogType int defaultType) {
+        this(
+                defaultPresenter,
+                defaultType,
+                /* edgeToEdgeStateSupplier= */ null,
+                /* isEdgeToEdgeEverywhereEnabled= */ false);
+    }
+
+    /**
+     * Constructor for initializing default {@link Presenter}, when knowledge of edge-to-edge state
+     * is required.
+     *
+     * @param defaultPresenter The default presenter to be used when no presenter specified.
+     * @param defaultType The dialog type of the default presenter.
+     * @param edgeToEdgeStateSupplier Supplier to determine whether edge-to-edge is active. This
+     *     will be used to account for system bars insets in dialog margin calculations when
+     *     applicable.
+     * @param isEdgeToEdgeEverywhereEnabled Whether the edge-to-edge-everywhere feature is enabled.
+     */
     public ModalDialogManager(
-            @NonNull Presenter defaultPresenter, @ModalDialogType int defaultType) {
+            Presenter defaultPresenter,
+            @ModalDialogType int defaultType,
+            @Nullable ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+            boolean isEdgeToEdgeEverywhereEnabled) {
         mDefaultPresenter = defaultPresenter;
+        mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;
+        mIsEdgeToEdgeEverywhereEnabled = isEdgeToEdgeEverywhereEnabled;
         registerPresenter(defaultPresenter, defaultType);
 
         mTokenHolders.put(
@@ -241,10 +338,16 @@ public class ModalDialogManager {
     public void destroy() {
         dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
         mObserverList.clear();
+        if (mModalDialogManagerBridge != null) {
+            mModalDialogManagerBridge.destroyNative();
+            mModalDialogManagerBridge = null;
+        }
+        mDestroyed = true;
     }
 
     /**
      * Add an observer to this manager.
+     *
      * @param observer The observer to add.
      */
     public void addObserver(ModalDialogManagerObserver observer) {
@@ -253,6 +356,7 @@ public class ModalDialogManager {
 
     /**
      * Remove an observer of this manager.
+     *
      * @param observer The observer to remove.
      */
     public void removeObserver(ModalDialogManagerObserver observer) {
@@ -260,8 +364,21 @@ public class ModalDialogManager {
     }
 
     /**
+     * Set the {@link InsetObserver} to get insets for the window associated with a modal dialog.
+     *
+     * @param observer The observer to set.
+     */
+    public void setInsetObserver(InsetObserver observer) {
+        mInsetObserver = observer;
+        for (int i = 0; i < mPresenters.size(); i++) {
+            mPresenters.valueAt(i).setInsetObserver(observer);
+        }
+    }
+
+    /**
      * Register a {@link Presenter} that shows a specific type of dialog. Note that only one
      * presenter of each type can be registered.
+     *
      * @param presenter The {@link Presenter} to be registered.
      * @param dialogType The type of the dialog shown by the specified presenter.
      */
@@ -269,11 +386,19 @@ public class ModalDialogManager {
         assert mPresenters.get(dialogType) == null
                 : "Only one presenter can be registered for each type.";
         mPresenters.put(dialogType, presenter);
+        if (mInsetObserver != null) {
+            presenter.setInsetObserver(mInsetObserver);
+        }
+        if (mEdgeToEdgeStateSupplier != null) {
+            presenter.setEdgeToEdgeStateSupplier(
+                    mEdgeToEdgeStateSupplier, mIsEdgeToEdgeEverywhereEnabled);
+        }
     }
 
     /**
      * @return Whether a dialog is currently showing.
      */
+    @EnsuresNonNullIf("mCurrentPresenter")
     public boolean isShowing() {
         return mCurrentPresenter != null;
     }
@@ -367,9 +492,10 @@ public class ModalDialogManager {
         } else {
             // Put the new dialog in pending list if the dialog type is suspended or the current
             // dialog is of higher priority.
-            if ((mSuspendedTypes.contains(dialogType))
+            if (mSuspendedTypes.contains(dialogType)
                     || (isShowing() && mCurrentPriority >= dialogPriority)) {
                 mPendingDialogContainer.put(dialogType, dialogPriority, model, showAsNext);
+                for (ModalDialogManagerObserver o : mObserverList) o.onDialogSuppressed(model);
                 return;
             }
         }
@@ -387,6 +513,11 @@ public class ModalDialogManager {
                     for (ModalDialogManagerObserver o : mObserverList) {
                         o.onDialogCreated(model, dialog);
                     }
+                },
+                (dialogView) -> {
+                    for (ModalDialogManagerObserver o : mObserverList) {
+                        o.onDialogShown(dialogView);
+                    }
                 });
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogAdded(model);
     }
@@ -400,7 +531,8 @@ public class ModalDialogManager {
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialog is
      *     dismissed.
      */
-    public void dismissDialog(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+    public void dismissDialog(
+            @Nullable PropertyModel model, @DialogDismissalCause int dismissalCause) {
         if (model == null) return;
         if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
             assert mCurrentType == ModalDialogType.APP;
@@ -426,7 +558,7 @@ public class ModalDialogManager {
         if (mDismissingCurrentDialog) return;
         mDismissingCurrentDialog = true;
         model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);
-        mCurrentPresenter.setDialogModel(null, null, null);
+        mCurrentPresenter.setDialogModel(null, null, null, null);
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogDismissed(model);
         mCurrentPresenter = null;
         mCurrentPriority = ModalDialogPriority.LOW;
@@ -437,8 +569,9 @@ public class ModalDialogManager {
 
     /**
      * Dismiss the dialog currently shown and remove all pending dialogs.
+     *
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialogs are
-     *                       dismissed.
+     *     dismissed.
      */
     public void dismissAllDialogs(@DialogDismissalCause int dismissalCause) {
         for (@ModalDialogType int dialogType = ModalDialogType.RANGE_MIN;
@@ -466,11 +599,11 @@ public class ModalDialogManager {
     /**
      * Dismiss the dialog currently shown if it is of the specified type.
      *
-     * Any pending dialogs will then be shown.
+     * <p>Any pending dialogs will then be shown.
      *
      * @param dialogType The specified type of dialog.
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialogs are
-     *                       dismissed.
+     *     dismissed.
      * @return true if a dialog was showing and was dismissed.
      */
     public boolean dismissActiveDialogOfType(
@@ -500,10 +633,10 @@ public class ModalDialogManager {
      * Suspend all dialogs of the specified type, including the one currently shown. The currently
      * shown dialog would be suspended if its priority is not VERY_HIGH.
      *
-     * These dialogs will be prevented from showing unless {@link #resumeType(int, int)} is called
-     * after the suspension. If the current dialog is suspended, it will be moved back to the first
-     * dialog in the pending list. Any dialogs of the specified type in the pending list will be
-     * skipped.
+     * <p>These dialogs will be prevented from showing unless {@link #resumeType(int, int)} is
+     * called after the suspension. If the current dialog is suspended, it will be moved back to the
+     * first dialog in the pending list. Any dialogs of the specified type in the pending list will
+     * be skipped.
      *
      * @param dialogType The specified type of dialogs to be suspended.
      * @return A token to use when resuming the suspended type.
@@ -512,29 +645,42 @@ public class ModalDialogManager {
         mSuspendedTypes.add(dialogType);
         if (isShowing()
                 && dialogType == mCurrentType
-                && mCurrentPriority != ModalDialogPriority.VERY_HIGH) {
+                && mCurrentPriority != ModalDialogPriority.VERY_HIGH
+                && !mDismissingCurrentDialog) {
             suspendCurrentDialog();
             showNextDialog();
         }
-        return mTokenHolders.get(dialogType).acquireToken();
+        return assumeNonNull(mTokenHolders.get(dialogType)).acquireToken();
     }
 
     /**
      * Resume the specified type of dialogs after suspension. This method does not resume showing
      * the dialog until after all held tokens are released.
+     *
      * @param dialogType The specified type of dialogs to be resumed.
      * @param token The token generated from suspending the dialog type.
      */
     public void resumeType(@ModalDialogType int dialogType, int token) {
-        mTokenHolders.get(dialogType).releaseToken(token);
+        assumeNonNull(mTokenHolders.get(dialogType)).releaseToken(token);
+    }
+
+    public long getOrCreateNativeBridge() {
+        // Prevents the bridge gets recreated after `destroy()` is called.
+        if (mDestroyed) return 0;
+
+        if (mModalDialogManagerBridge == null) {
+            mModalDialogManagerBridge = new ModalDialogManagerBridge(this);
+        }
+        return mModalDialogManagerBridge.getNativePtr();
     }
 
     /**
      * Actually resumes showing the type of dialog after all tokens are released.
+     *
      * @param dialogType The specified type of dialogs to be resumed.
      */
     private void resumeTypeInternal(@ModalDialogType int dialogType) {
-        if (mTokenHolders.get(dialogType).hasTokens()) return;
+        if (assumeNonNull(mTokenHolders.get(dialogType)).hasTokens()) return;
         mSuspendedTypes.remove(dialogType);
         if (!isShowing()) showNextDialog();
     }
@@ -543,7 +689,7 @@ public class ModalDialogManager {
     private void suspendCurrentDialog() {
         assert isShowing();
         PropertyModel dialogView = mCurrentPresenter.getDialogModel();
-        mCurrentPresenter.setDialogModel(null, null, null);
+        mCurrentPresenter.setDialogModel(null, null, null, null);
         mCurrentPresenter = null;
         mPendingDialogContainer.put(
                 mCurrentType, mCurrentPriority, dialogView, /* showAsNext= */ true);
@@ -578,7 +724,7 @@ public class ModalDialogManager {
         }
     }
 
-    public PropertyModel getCurrentDialogForTest() {
+    public @Nullable PropertyModel getCurrentDialogForTest() {
         return mCurrentPresenter == null ? null : mCurrentPresenter.getDialogModel();
     }
 
@@ -587,11 +733,11 @@ public class ModalDialogManager {
         return mPendingDialogContainer.get(dialogType, priority);
     }
 
-    public Presenter getPresenterForTest(@ModalDialogType int dialogType) {
+    public @Nullable Presenter getPresenterForTest(@ModalDialogType int dialogType) {
         return mPresenters.get(dialogType);
     }
 
-    public Presenter getCurrentPresenterForTest() {
+    public @Nullable Presenter getCurrentPresenterForTest() {
         return mCurrentPresenter;
     }
 }

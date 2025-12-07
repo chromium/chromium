@@ -7,7 +7,7 @@
 
 namespace media_router {
 
-static constexpr char kHistogramDialCreateRouteResult[] =
+inline constexpr char kHistogramDialCreateRouteResult[] =
     "MediaRouter.Dial.CreateRoute";
 
 // Note on enums defined in this file:

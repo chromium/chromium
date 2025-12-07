@@ -26,7 +26,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
-#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_global_scope_context.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/public/web/blink.h"
@@ -88,8 +88,15 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
   blink::InstallCreateWebFrameWidgetHook(&create_widget_callback_);
 
   blink::UniqueNameHelper::PreserveStableUniqueNameForTesting();
-  blink::WebDedicatedOrSharedWorkerFetchContext::InstallRewriteURLFunction(
-      RewriteWebTestsURL);
+  blink::WebDedicatedOrSharedWorkerGlobalScopeContext::
+      InstallRewriteURLFunction(RewriteWebTestsURL);
+
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+  // On these platforms, fonts are set up in the renderer process. Other
+  // platforms set up fonts as part of WebTestBrowserMainRunner in the
+  // browser process, via WebTestBrowserPlatformInitialize().
+  skia::InitializeSkFontMgrForTest();
+#endif
 }
 
 WebTestContentRendererClient::~WebTestContentRendererClient() {
@@ -101,13 +108,6 @@ void WebTestContentRendererClient::RenderThreadStarted() {
   ShellContentRendererClient::RenderThreadStarted();
 
   test_runner_ = std::make_unique<TestRunner>();
-
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
-  // On these platforms, fonts are set up in the renderer process. Other
-  // platforms set up fonts as part of WebTestBrowserMainRunner in the
-  // browser process, via WebTestBrowserPlatformInitialize().
-  skia::InitializeSkFontMgrForTest();
-#endif
 }
 
 void WebTestContentRendererClient::RenderFrameCreated(

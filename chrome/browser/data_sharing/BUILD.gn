@@ -14,13 +14,13 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
     ]
 
     deps = [
-      ":delegate_java",
+      ":internal_library_java",
       ":java",
       "//base:base_java",
+      "//base:service_loader_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//components/data_sharing/public:public_java",
@@ -30,133 +30,419 @@ if (is_android) {
     ]
   }
 
+  # TODO(crbug.com/380154734): Move this to collaboration/ directory near messages factory.
+  android_library("instant_message_delegate_factory_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java" ]
+
+    deps = [
+      ":factory_java",
+      ":internal_library_java",
+      "//base:base_java",
+      "//chrome/browser/collaboration:messaging_factory_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab_group_sync:factory_java",
+      "//components/collaboration/public:messaging_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
   android_resources("java_resources") {
     sources = [
+      "android/java/res/drawable/ic_person_manage_24dp.xml",
       "android/java/res/drawable/round_image_filled.xml",
-      "android/java/res/layout/data_sharing_invitation_dialog_footer.xml",
+      "android/java/res/layout/recent_activity_bottom_sheet.xml",
+      "android/java/res/layout/recent_activity_log_item.xml",
       "android/java/res/layout/shared_image_tiles.xml",
-      "android/java/res/layout/shared_image_tiles_count.xml",
       "android/java/res/layout/shared_image_tiles_icon.xml",
+      "android/java/res/values/colors.xml",
       "android/java/res/values/dimens.xml",
+      "android/java/res/values/ids.xml",
+      "android/java/res/values/styles.xml",
+    ]
+    deps = [ "//components/browser_ui/styles/android:java_resources" ]
+  }
+
+  android_library("data_sharing_public_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingIntentUtils.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingMetrics.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtils.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupsDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManager.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/RecentActivityActionHandlerImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/TabGridDialogShareBottomSheetContent.java",
+    ]
+
+    deps = [
+      ":avatar_java",
+      ":favicon_java",
+      ":java_resources",
+      ":recent_activity_java",
+      "//base:base_java",
+      "//chrome/browser/android/intents:java",
+      "//chrome/browser/collaboration:utils_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/notifications:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/share:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group_sync:factory_java",
+      "//chrome/browser/tab_group_sync:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/tabwindow:java",
+      "//chrome/browser/ui/android/favicon:java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//chrome/browser/url_constants/android:java",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/notifications/android:java",
+      "//components/browser_ui/share/android:java",
+      "//components/browser_ui/styles/android:java_resources",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
+      "//components/embedder_support/android:util_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/strings:components_strings_grd",
+      "//content/public/android:content_full_java",
+      "//third_party/android_sdk:android_window_extensions_java",
+      "//ui/android:ui_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("recent_activity_java") {
+    resources_package =
+        "org.chromium.chrome.browser.data_sharing.ui.recent_activity"
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/DescriptionAndTimestamp.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityActionHandler.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityBottomSheetContent.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityContainerProperties.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityContainerViewBinder.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListMediator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListProperties.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListViewBinder.java",
+    ]
+
+    deps = [
+      ":java_resources",
+      "//base:callback_java",
+      "//base:supplier_java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/bottomsheet/android:java_resources",
+      "//components/browser_ui/widget/android:java",
+      "//components/browser_ui/widget/android:java_resources",
+      "//components/collaboration/public:messaging_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/strings:components_strings_grd",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      "//ui/android:ui_full_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("favicon_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/BulkFaviconUtil.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProvider.java",
+    ]
+
+    deps = [
+      ":java_resources",
+      "//base:callback_java",
+      "//base:supplier_java",
+      "//base:tasks_java",
+      "//chrome/browser/data_sharing:recent_activity_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/android/favicon:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/browser_ui/widget/android:java_resources",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("avatar_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingAvatarProvider.java" ]
+
+    deps = [
+      ":java_resources",
+      "//base:callback_java",
+      "//chrome/browser/data_sharing:recent_activity_java",
+      "//components/browser_ui/styles/android:java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
+  robolectric_library("avatar_junit_tests") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingAvatarProviderUnitTest.java" ]
+    deps = [
+      ":avatar_java",
+      ":java_resources",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//base:callback_java",
+      "//chrome/browser/data_sharing:recent_activity_java",
+      "//chrome/browser/tab:java",
+      "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/data_sharing:test_support_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_junit_test_support",
+      "//url:url_java",
     ]
   }
 
   android_library("java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/FakeDataSharingUIDelegateImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/NoOpDataSharingSDKDelegateImpl.java",
+    ]
 
     deps = [
       "//base:base_java",
-      "//chrome/browser/android/intents:java",
-      "//chrome/browser/notifications:java",
+      "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
-      "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/styles/android:java_resources",
+      "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
+      "//google_apis/gaia/android:java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/android_sdk:android_window_extensions_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_utils_java",
       "//url:url_java",
     ]
-
-    public_deps = [ ":delegate_java" ]
   }
 
   android_library("shared_image_tiles_java") {
     resources_package =
         "org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles"
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesConfig.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesMediator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesProperties.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesView.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesViewBinder.java",
     ]
 
     deps = [
       ":java_resources",
+      "//base:callback_java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//chrome/browser/ui/android/theme:java",
+      "//components/browser_ui/styles/android:java",
+      "//components/collaboration/public:core_java",
+      "//components/data_sharing/public:public_java",
+      "//components/tab_groups:tab_groups_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
 
-  android_library("invitation_dialog_java") {
-    resources_package =
-        "org.chromium.chrome.browser.data_sharing.ui.invitation_dialog"
+  android_library("versioning_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing.ui.versioning"
     sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/invitation_dialog/DataSharingInvitationDialogCoordinator.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/invitation_dialog/DataSharingInvitationDialogMediator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersionUpdateIphHandler.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningMessageBanner.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningModalDialog.java",
+    ]
+    deps = [
+      "//base:callback_java",
+      "//base:supplier_java",
+      "//chrome/android:chrome_app_java_resources",
+      "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab_group_sync:factory_java",
+      "//chrome/browser/user_education:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/feature_engagement/public:public_java",
+      "//components/messages/android:java",
+      "//components/prefs/android:java",
+      "//components/saved_tab_groups/public:java",
+      "//components/user_prefs/android:java",
+      "//content/public/android:content_full_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+
+  android_library("internal_library_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImpl.java",
     ]
 
     deps = [
+      ":data_sharing_public_java",
+      ":java",
       ":java_resources",
-      "//chrome/browser/ui/android/strings:ui_strings_grd",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//ui/android:ui_no_recycler_view_java",
-    ]
-  }
-
-  android_library("delegate_java") {
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingSDKDelegateImpl.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
-    ]
-
-    deps = [
       "//base:base_java",
-      "//build/android:build_java",
+      "//base:holder_java",
+      "//base:service_loader_java",
+      "//base:supplier_java",
+      "//chrome/android:chrome_app_java_resources",
+      "//chrome/browser/android/intents:java",
+      "//chrome/browser/notifications:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/url_constants/android:java",
+      "//components/browser_ui/notifications/android:java",
+      "//components/browser_ui/styles/android:java",
+      "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
-      "//components/data_sharing/public/protocol:proto_java",
-      "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//components/embedder_support/android:util_java",
+      "//components/messages/android:java",
+      "//components/saved_tab_groups/public:java",
+      "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
       "//url:url_java",
     ]
-    if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
-      jar_excluded_patterns = [
-        "*/DataSharingSDKDelegateImpl.class",
-        "*/DataSharingUIDelegateImpl.class",
-      ]
-    }
   }
 
   robolectric_library("junit") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManagerUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManagerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtilsUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesCoordinatorUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersionUpdateIphHandlerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningMessageBannerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningModalDialogUnitTest.java",
+    ]
     deps = [
+      ":data_sharing_public_java",
+      ":internal_library_java",
       ":java",
+      ":shared_image_tiles_java",
+      ":versioning_java",
       "//base:base_java",
+      "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//chrome/browser/collaboration:messaging_factory_java",
       "//chrome/browser/notifications:java",
+      "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group_sync:factory_java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/user_education:java",
+      "//chrome/test/android:chrome_java_unit_test_support",
       "//components/browser_ui/notifications/android:java",
+      "//components/browser_ui/notifications/android:utils_java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing:test_support_java",
+      "//components/data_sharing/public:public_java",
+      "//components/embedder_support/android:util_java",
+      "//components/messages/android:factory_java",
+      "//components/messages/android:java",
+      "//components/messages/android:manager_java",
+      "//components/prefs/android:java",
+      "//components/saved_tab_groups/public:java",
+      "//components/saved_tab_groups/public:test_support_java",
+      "//components/signin/public/android:java",
+      "//components/user_prefs/android:java",
+      "//content/public/android:content_full_java",
+      "//google_apis/gaia/android:java",
       "//third_party/android_deps:robolectric_all_java",
-      "//third_party/junit:junit",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_junit_test_support",
+      "//url:url_java",
+    ]
+  }
+
+  robolectric_library("recent_activity_junit_tests") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListCoordinatorUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListMediatorUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListViewBinderUnitTest.java",
+    ]
+    deps = [
+      ":recent_activity_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//chrome/browser/tab:java",
+      "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/notifications/android:java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/signin/public/android:java",
+      "//content/public/android:content_full_java",
+      "//google_apis/gaia/android:java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_junit_test_support",
+      "//url:url_java",
     ]
   }
 
   android_library("javatests") {
     testonly = true
 
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/invitation_dialog/DataSharingInvitationDialogTest.java",
-    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java" ]
     deps = [
+      ":factory_java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//chrome/browser/data_sharing:factory_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
@@ -167,7 +453,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
     ]
   }
 }

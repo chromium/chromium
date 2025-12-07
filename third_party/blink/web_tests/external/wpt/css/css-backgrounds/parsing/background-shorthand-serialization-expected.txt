@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] multiple backgrounds with varying values
-  assert_equals: expected "url(\\"/favicon.ico\\") left top no-repeat, url(\\"/favicon.ico\\") center center / 100% 100% no-repeat, white url(\\"/favicon.ico\\")" but got "url(\\"/favicon.ico\\") left top no-repeat, url(\\"/favicon.ico\\") center center / 100% 100% no-repeat, url(\\"/favicon.ico\\") white"
+[FAIL] background-size with non-initial background-position
+  assert_equals: expected "url(\\"/favicon.ico\\") 0% 0% / 10rem auto" but got "url(\\"/favicon.ico\\") 0% 0% / 10rem"
 [FAIL] all initial values
   assert_equals: expected "none" but got "padding-box border-box"
+[FAIL] border-area border-box
+  assert_equals: expected "border-area" but got ""
+[FAIL] border-area padding-box
+  assert_equals: expected "padding-box border-area" but got ""
 Harness: the test ran to completion.
 

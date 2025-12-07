@@ -37,18 +37,18 @@ class CORE_EXPORT UnderlyingValueOwner : public UnderlyingValue {
   InterpolableValue& MutableInterpolableValue() final;
   void SetInterpolableValue(InterpolableValue*) final;
   const NonInterpolableValue* GetNonInterpolableValue() const final;
-  void SetNonInterpolableValue(scoped_refptr<const NonInterpolableValue>) final;
+  void SetNonInterpolableValue(const NonInterpolableValue*) final;
 
-  const InterpolationType& GetType() const {
+  const InterpolationType* GetType() const {
     DCHECK(type_);
-    return *type_;
+    return type_;
   }
 
   const InterpolationValue& Value() const;
 
   void Set(std::nullptr_t);
-  void Set(const InterpolationType&, const InterpolationValue&);
-  void Set(const InterpolationType&, InterpolationValue&&);
+  void Set(const InterpolationType*, const InterpolationValue&);
+  void Set(const InterpolationType*, InterpolationValue&&);
   void Set(TypedInterpolationValue*);
   void Set(const TypedInterpolationValue*);
 

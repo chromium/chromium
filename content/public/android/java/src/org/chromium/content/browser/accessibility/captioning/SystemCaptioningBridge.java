@@ -4,16 +4,19 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for platform dependent captioning bridges. */
+@NullMarked
 public interface SystemCaptioningBridge {
     /** Interface for listening to changed from SystemCaptioningBridge. */
-    public interface SystemCaptioningBridgeListener {
+    interface SystemCaptioningBridgeListener {
         /**
          * Called when system captioning settings change.
          *
          * @param settings The TextTrackSettings object containing the new settings.
          */
-        public void onSystemCaptioningChanged(TextTrackSettings settings);
+        void onSystemCaptioningChanged(TextTrackSettings settings);
     }
 
     /**
@@ -21,19 +24,19 @@ public interface SystemCaptioningBridge {
      *
      * @param listener The SystemCaptioningBridgeListener object to receive all settings.
      */
-    public void syncToListener(SystemCaptioningBridgeListener listener);
+    void syncToListener(SystemCaptioningBridgeListener listener);
 
     /**
      * Add a listener for changes with the system CaptioningManager.
      *
      * @param listener The SystemCaptioningBridgeListener object to add.
      */
-    public void addListener(SystemCaptioningBridgeListener listener);
+    void addListener(SystemCaptioningBridgeListener listener);
 
     /**
      * Remove a listener from system CaptionManager.
      *
      * @param listener The SystemCaptioningBridgeListener object to remove.
      */
-    public void removeListener(SystemCaptioningBridgeListener listener);
+    void removeListener(SystemCaptioningBridgeListener listener);
 }

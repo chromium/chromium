@@ -21,7 +21,7 @@ using ChannelId = std::pair<base::UnguessableToken, int>;
 // A unique identifier for an extension port. The id is composed of three parts:
 // - context_id: An UnguessableToken that uniquely identifies the creation
 //               context of the port.
-// - port_number: A simple identifer that uniquely identifies the port *within
+// - port_number: A simple identifier that uniquely identifies the port *within
 //                the creation context*. That is, each creation context may
 //                have a port with number '1', but there should only be a single
 //                port with the number '1' in each.
@@ -76,8 +76,7 @@ struct PortId {
     return PortId(context_id, port_number, !is_opener, serialization_format);
   }
 
-  bool operator==(const PortId& other) const;
-  bool operator<(const PortId& other) const;
+  auto operator<=>(const PortId& other) const = default;
 };
 
 }  // namespace extensions

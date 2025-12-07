@@ -20,6 +20,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -84,12 +85,12 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
             @Override
             public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
                 Assert.assertEquals(
-                        "onReceivedError called twice for " + request.url,
+                        "onReceivedError called twice for " + request.getUrl(),
                         false,
                         mIsOnReceivedErrorCalled);
                 mIsOnReceivedErrorCalled = true;
                 Assert.assertEquals(
-                        "onPageFinished called before onReceivedError for " + request.url,
+                        "onPageFinished called before onReceivedError for " + request.getUrl(),
                         false,
                         mIsOnPageFinishedCalled);
                 super.onReceivedError(request, error);
@@ -125,7 +126,7 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
         String invalidUrl = "http://localhost:7/non_existent";
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, invalidUrl);
 
-        Assert.assertEquals(invalidUrl, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(invalidUrl, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertEquals(invalidUrl, onPageFinishedHelper.getUrl());
 
         // Rather than wait a fixed time to see that another onPageFinished callback isn't issued
@@ -523,7 +524,7 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
                     webServer.setResponseWithRunnableAction(
                             "/slow_page.html",
                             "",
-                            /* headers= */ null,
+                            /* responseHeaders= */ null,
                             () -> {
                                 try {
                                     // Delay the server response so that we guarantee stopLoading()
@@ -549,7 +550,8 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
             firstUrlLatch.countDown();
 
             // Load another page to ensure onPageFinished isn't called several times.
-            final String syncUrl = webServer.setResponse("/sync.html", "", /* headers= */ null);
+            final String syncUrl =
+                    webServer.setResponse("/sync.html", "", /* responseHeaders= */ null);
             mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, syncUrl);
             Assert.assertEquals(syncUrl, onPageFinishedHelper.getUrl());
             final int finalCallCount = onPageFinishedHelper.getCallCount();
@@ -577,7 +579,7 @@ public class ClientOnPageFinishedTest extends AwParameterizedTest {
                     webServer.setResponseWithRunnableAction(
                             "/stallingImage.html",
                             "",
-                            /* headers= */ null,
+                            /* responseHeaders= */ null,
                             () -> {
                                 serverImageUrlLatch.countDown();
                                 try {

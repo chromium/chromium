@@ -7,21 +7,28 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 /** The default strategy for setting the height of the custom tab. */
+@NullMarked
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -44,21 +51,23 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
             Supplier<TouchEventProvider> touchEventProvider,
-            Supplier<Tab> tab,
-            CustomTabsConnection connection,
+            Supplier<@Nullable Tab> tab,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
+            BooleanSupplier isEnteringPip,
             boolean isTablet) {
         if (!intentData.isPartialCustomTab()) {
             return new CustomTabHeightStrategy();
         }
 
-        CustomTabsSessionToken session = intentData.getSession();
+        SessionHolder<?> session = intentData.getSession();
         OnResizedCallback resizeCallback =
-                (height, width) -> connection.onResized(session, height, width);
+                (height, width) ->
+                        CustomTabsConnection.getInstance().onResized(session, height, width);
         OnActivityLayoutCallback layoutCallback =
                 (left, top, right, bottom, state) ->
-                        connection.onActivityLayout(session, left, top, right, bottom, state);
+                        CustomTabsConnection.getInstance()
+                                .onActivityLayout(session, left, top, right, bottom, state);
         return new PartialCustomTabDisplayManager(
                 activity,
                 intentData,
@@ -68,6 +77,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                 layoutCallback,
                 lifecycleDispatcher,
                 fullscreenManager,
+                isEnteringPip,
                 isTablet);
     }
 
@@ -85,12 +95,17 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
      * Provide this class with the required views and values so it can set up the strategy.
      *
      * @param coordinatorView Coordinator view to insert the UI handle for the users to resize the
-     *                        custom tab.
+     *     custom tab.
      * @param toolbar The {@link CustomTabToolbar} to set up the strategy.
      * @param toolbarCornerRadius The custom tab corner radius in pixels.
+     * @param toolbarButtonsCoordinator The {@link CustomTabToolbarButtonsCoordinator} to
+     *     communicate with the toolbar buttons.
      */
     public void onToolbarInitialized(
-            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {}
+            View coordinatorView,
+            CustomTabToolbar toolbar,
+            @Px int toolbarCornerRadius,
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {}
 
     /**
      * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}
@@ -102,10 +117,11 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     }
 
     /**
-     * Set the scrim value to apply to partial CCT UI.
-     * @param scrimFraction Scrim fraction.
+     * Set the scrim color to apply to partial CCT UI.
+     *
+     * @param scrimColor The color (including transparency) that's effecting the CCT UI.
      */
-    public void setScrimFraction(float scrimFraction) {}
+    public void setScrimColor(@ColorInt int scrimColor) {}
 
     // FindToolbarObserver implementation.
 

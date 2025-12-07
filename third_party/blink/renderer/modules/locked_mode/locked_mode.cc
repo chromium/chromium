@@ -9,27 +9,20 @@
 
 namespace blink {
 
-const char LockedMode::kSupplementName[] = "LockedMode";
-
 // static
 LockedMode* LockedMode::lockedMode(NavigatorBase& navigator) {
-  LockedMode* locked_mode =
-      Supplement<NavigatorBase>::From<LockedMode>(navigator);
+  LockedMode* locked_mode = navigator.GetLockedMode();
   if (!locked_mode) {
-    locked_mode = MakeGarbageCollected<LockedMode>(navigator);
-    ProvideTo(navigator, locked_mode);
+    locked_mode = MakeGarbageCollected<LockedMode>();
+    navigator.SetLockedMode(locked_mode);
   }
   return locked_mode;
 }
-
-LockedMode::LockedMode(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator) {}
 
 LockedMode::~LockedMode() = default;
 
 void LockedMode::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
 }
 
 }  // namespace blink

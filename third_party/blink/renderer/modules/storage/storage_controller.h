@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_CONTROLLER_H_
 
-#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -87,9 +86,10 @@ class MODULES_EXPORT StorageController : public mojom::blink::DomStorageClient {
   void EnsureLocalStorageNamespaceCreated();
 
   // mojom::blink::DomStorageClient:
-  void ResetStorageAreaAndNamespaceConnections() override;
+  void ResetSessionStorageConnections() override;
+  void ResetLocalStorageConnections() override;
 
-  Persistent<HeapHashMap<String, WeakMember<StorageNamespace>>> namespaces_;
+  Persistent<GCedHeapHashMap<String, WeakMember<StorageNamespace>>> namespaces_;
   Persistent<StorageNamespace> local_storage_namespace_;
   size_t total_cache_limit_;
 

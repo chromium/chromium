@@ -14,7 +14,7 @@ TestWatchDog::TestWatchDog(mojo::PendingReceiver<mojom::DataWatchDog> receiver,
                            mojom::DataFilterPtr filter)
     : receiver_(this, std::move(receiver)), filter_(std::move(filter)) {}
 
-TestWatchDog::~TestWatchDog() {}  // IN-TEST
+TestWatchDog::~TestWatchDog() = default;  // IN-TEST
 
 const mojom::DataFilterPtr TestWatchDog::GetFilter() {
   return filter_->Clone();
@@ -28,7 +28,7 @@ void TestWatchDog::OnNotify(const std::string& data) {
     display_name = "[" + filter_->pattern.value_or("NO_PATTERN") + "]";
   }
 
-  VLOG(4) << display_name << " watchdog tripped!";
+  VLOG(2) << display_name << " watchdog tripped!";
 }
 
 }  // namespace ash::cfm

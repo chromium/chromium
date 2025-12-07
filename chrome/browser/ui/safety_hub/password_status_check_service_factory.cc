@@ -6,6 +6,7 @@
 
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/factories/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -20,9 +21,6 @@ PasswordStatusCheckServiceFactory::GetInstance() {
 // static
 PasswordStatusCheckService* PasswordStatusCheckServiceFactory::GetForProfile(
     Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return nullptr;
-  }
   return static_cast<PasswordStatusCheckService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -52,10 +50,6 @@ PasswordStatusCheckServiceFactory::~PasswordStatusCheckServiceFactory() =
 std::unique_ptr<KeyedService>
 PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return nullptr;
-  }
-
   Profile* profile = Profile::FromBrowserContext(context);
   password_manager::PasswordStoreInterface* store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -69,4 +63,9 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<PasswordStatusCheckService>(
       Profile::FromBrowserContext(context));
+}
+
+bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }

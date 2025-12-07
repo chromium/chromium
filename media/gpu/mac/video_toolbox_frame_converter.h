@@ -12,6 +12,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,7 +81,6 @@ class VideoToolboxFrameConverter
   raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
   gpu::SequenceId wait_sequence_id_;
   raw_ptr<gpu::SharedImageStub> sis_ = nullptr;
-  bool texture_rectangle_ = false;
 };
 
 }  // namespace media

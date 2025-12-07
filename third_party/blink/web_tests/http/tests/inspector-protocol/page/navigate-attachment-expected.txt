@@ -1,0 +1,12 @@
+Tests that Page.navigate returns isDownload when server responds with Content-Disposition: attachment.
+{
+    id : <number>
+    result : {
+        errorText : net::ERR_ABORTED
+        frameId : <string>
+        isDownload : true
+        loaderId : <string>
+    }
+    sessionId : <string>
+}
+

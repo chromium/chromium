@@ -29,7 +29,6 @@
 #include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/token_manager.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -309,7 +308,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   std::string GetDeviceIdFromCameraId(int32_t camera_id);
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
-      base::flat_set<int32_t> camera_ids);
+      const base::flat_set<int32_t>& camera_ids);
 
   void StopOnProxyThread();
 

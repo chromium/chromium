@@ -16,6 +16,10 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 #     A single TypeScript (or JavaScript) file to compile and bundle into the
 #     application.
 #
+#   output_name:
+#     The name of the exported value or namespace. For more details, see
+#     https://rollupjs.org/guide/en/#outputname
+#
 template("optimize_ts") {
   assert(defined(invoker.sources), "sources must be set")
   _sources_count = 0
@@ -52,6 +56,9 @@ template("optimize_ts") {
     _script = filter_include(get_target_outputs(":$_compile_ts_target_name"),
                              [ "*/$_script_name" ])
     primary_script = _script[0]
+    if (defined(invoker.output_name)) {
+      output_name = invoker.output_name
+    }
     sources = _script
   }
 }

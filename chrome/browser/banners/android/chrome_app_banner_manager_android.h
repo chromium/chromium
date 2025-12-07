@@ -37,7 +37,7 @@ class ChromeAppBannerManagerAndroid
   GetSegmentationPlatformService() override;
   PrefService* GetPrefService() override;
   void RecordExtraMetricsForInstallEvent(
-      AddToHomescreenInstaller::Event event,
+      AddToHomescreenEvent event,
       const AddToHomescreenParams& a2hs_params) override;
 
  private:

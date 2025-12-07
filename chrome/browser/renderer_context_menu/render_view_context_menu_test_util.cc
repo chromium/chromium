@@ -10,8 +10,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/menu_model.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
 #endif
 
 using ui::MenuModel;
@@ -21,7 +25,7 @@ TestRenderViewContextMenu::TestRenderViewContextMenu(
     content::ContextMenuParams params)
     : RenderViewContextMenu(render_frame_host, params) {}
 
-TestRenderViewContextMenu::~TestRenderViewContextMenu() {}
+TestRenderViewContextMenu::~TestRenderViewContextMenu() = default;
 
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
@@ -80,7 +84,7 @@ bool TestRenderViewContextMenu::IsItemInRangePresent(
 
 bool TestRenderViewContextMenu::GetMenuModelAndItemIndex(
     int command_id,
-    MenuModel** found_model,
+    raw_ptr<MenuModel>* found_model,
     size_t* found_index) {
   std::vector<MenuModel*> models_to_search;
   models_to_search.push_back(&menu_model_);

@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Decodes icons in batches.
 // TODO(b/233279034): There are three decoders now: `CameraRollThumbnailDecoder`
@@ -49,7 +48,6 @@ class IconDecoder {
   IconDecoder() = default;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_ICON_DECODER_H_

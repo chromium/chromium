@@ -23,8 +23,8 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes) (>=17.0.0)
-to build. Visual Studio can also be used to debug Chromium.
+Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes)
+(>=17.0.0) to build. Visual Studio can also be used to debug Chromium.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
 license is appropriate for you. You must install the "Desktop development with
@@ -52,47 +52,91 @@ $ PATH_TO_INSTALLER.EXE ^
 Required
 
 * [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
-version 10.0.22621.2428. This can be installed separately or by checking the
+version 10.0.26100.4654. This can be installed separately or by checking the
 appropriate box in the Visual Studio Installer.
-* (Windows 11) SDK Debugging Tools 10.0.22621.755 or higher. This version of the
+* (Windows 11) SDK Debugging Tools 10.0.26100.3323 or higher. This version of the
 Debugging tools is needed in order to support reading the large-page PDBs that
-Chrome uses to allow greater-than 4 GiB PDBs. This can be installed after the
-matching Windows SDK version is installed, from: Control Panel -> Programs and
-Features
--> Windows Software Development Kit [version] -> Change -> Debugging Tools for
-Windows. If building on ARM64 Windows then you will need to manually copy the
-Debuggers\x64 directory from another machine because it does not get installed
-on ARM64 and is needed, whether you are building Chromium for x64 or ARM64 on
-ARM64.
+Chrome uses to allow greater-than 4 GiB PDBs. If the current SDK installation
+does not include debugging tools, they can be installed at:
+Control Panel -> Programs and Features -> Windows Software Development Kit [version]
+-> Change -> Debugging Tools for Windows. If building on ARM64 Windows then you
+will need to manually copy the Debuggers\x64 directory from another machine because
+it does not get installed on ARM64 and is needed, whether you are building Chromium
+for x64 or ARM64 on ARM64.
+
+WARNING: On sufficiently old versions of Windows (1909 or earlier), dawn or
+related components may fail with a D3d-related error when using the 26100 SDK.
+This is because the d3dcompiler_47.dll file in the new SDK attempts to
+dynamically link versions of the Universal C Runtime which are not present by
+default on older systems. If you experience these errors, you can either update
+the UCRT on your system, or install the 22621 SDK and use the d3dcompiler_47.dll
+file included there, which statically links the UCRT.
+
+This problem may also manifest as a DLL failure to load `__CxxFrameHandler4`.
+
+## git installation
+
+### Install git
+
+If you haven't installed `git` directly before, you can download a standalone
+installer for the latest version of Git For Windows from the Git website at
+https://git-scm.com/download/win.
+
+For more information on Git for Windows (which is a separate project from Git),
+see https://gitforwindows.org.
+
+Note: if you are a Google employee, see git installation instructions at
+[go/building-chrome-win](https://goto.google.com/building-chrome-win#install-updates-and-required-software).
+
+### Update git
+
+Note: this section is about updating a direct installation of `git` because
+`depot_tools` will soon stop bundling `git`.
+
+Updating to the latest version of `git` will depend on which version you
+currently have installed. First, check your `git` version. From a cmd.exe shell,
+run:
+```shell
+$ git version
+```
+
+| Current version | How to update to latest |
+| --- | --- |
+| `2.14.1` or earlier | You will need to manually uninstall Git, then follow the instructions above to [install git](#install-git) |
+| `2.14.2` to `2.16.1` | In a cmd.exe shell, run: `git update` |
+| `2.16.1(2)` and later | In a cmd.exe shell, run: `git update-git-for-windows` |
 
 ## Install `depot_tools`
 
-Download the
-[depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere (eg: C:\src\depot_tools).
+From a command shell, navigate to the directory where you want to put
+`depot_tools` and clone the `depot_tools` repository. For example, if you
+want it to be cloned to `C:\src\depot_tools`:
 
-***
-**Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
-this will not extract the hidden “.git” folder which is necessary for
-depot_tools to autoupdate itself. You can use “Extract all…” from the
-context menu though.
-***
+```shell
+$ cd C:\src
+$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python. Note that environment variable names are case insensitive).
-* Assuming you unzipped the bundle to C:\src\depot_tools, open: Control Panel → System and Security → System → Advanced system settings
-* If you have Administrator access, Modify the PATH system variable and put
-`C:\src\depot_tools` at the front (or at least in front of any directory that
-might already have a copy of Python or Git).
-* If you don't have Administrator access, you can add a user-level PATH
-environment variable by opening: Control Panel → System and Security → System →
-Search for "Edit environment variables for your account"
-* Add `C:\src\depot_tools` at the front. Note: If your system PATH has a Python
-in it, you will be out of luck.
+* Assuming you cloned the repo to `C:\src\depot_tools`, open:
+  Control Panel → System and Security → System
+* Select which PATH variable to edit.
+  * If you have Administrator access, you can edit the **system** PATH. Click
+  Advanced system settings → Environment Variables. Under "System variables",
+  select the Path variable for editing.
+  * If you don't have Administrator access, you can edit your **user-level**
+  PATH. Search for "Edit environment variables for your account". Under "User
+  variables for %USER%", select the Path variable for editing.
+* Modify the Path variable by adding `C:\src\depot_tools` at the front (or at
+  least in front of any directory that might already have a copy of Python).
+  Note: If you can only modify your user-level PATH and the system PATH has a
+  Python in it, you will be out of luck.
 
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and set
-it to 0. This tells depot_tools to use your locally installed version of Visual
-Studio (by default, depot_tools will try to use a google-internal version).
+Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and
+set it to 0. This tells depot_tools to use your locally installed version of
+Visual Studio (by default, depot_tools will try to use a google-internal
+version).
 
 You may also have to set variable `vs2022_install` to your installation path of
 Visual Studio 2022, like
@@ -111,6 +155,11 @@ with the code, including msysgit and python.
   may not get installed correctly.
 * If you see strange errors with the file system on the first run of gclient,
   you may want to [disable Windows Indexing](https://tortoisesvn.net/faq.html#cantmove2).
+* If you use WSL to build for Linux on the same machine, do **not** use the same
+  depot_tools directory for both. depot_tools caches platform-specific state, so
+  running `gclient sync` from inside one system will break the other. Use a
+  WSL-specific depot_tools dir inside WSL (and put it first in your PATH when you
+  log in there, e.g. via your WSL .bashrc) instead.
 
 ## Check python install
 
@@ -134,6 +183,8 @@ $ git config --global user.name "My Name"
 $ git config --global user.email "my-name@chromium.org"
 $ git config --global core.autocrlf false
 $ git config --global core.filemode false
+$ git config --global core.preloadindex true
+$ git config --global core.fscache true
 $ git config --global branch.autosetuprebase always
 ```
 
@@ -189,8 +240,8 @@ development and testing purposes.
 
 ## Setting up the build
 
-Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
-a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
+Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/build/siso#section-readme)
+ as its main build tool along with a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory:
 
@@ -198,7 +249,7 @@ with different configurations. To create a build directory:
 $ gn gen out\Default
 ```
 
-* You only have to run this once for each new build directory, Ninja will
+* You only have to run this once for each new build directory, Siso will
   update the build files as needed.
 * You can replace `Default` with another name, but
   it should be a subdirectory of `out`.
@@ -225,11 +276,7 @@ in the editor that appears when you create your output directory
 Some helpful settings to consider using include:
 * `is_component_build = true` - this uses more, smaller DLLs, and may avoid
 having to relink chrome.dll after every change.
-* `enable_nacl = false` - this disables Native Client which is usually not
-needed for local builds.
-* `target_cpu = "x86"` - x86 builds may be slightly faster than x64 builds. Note
-that if you set this but don't set `enable_nacl = false` then build times may
-get worse.
+* `target_cpu = "x86"` - x86 builds may be slightly faster than x64 builds.
 * `blink_symbol_level = 0` - turn off source-level debugging for
 blink to reduce build times, appropriate if you don't plan to debug blink.
 * `v8_symbol_level = 0` - turn off source-level debugging for v8 to reduce
@@ -243,19 +290,22 @@ local variable or type information. With `symbol_level = 0` there is no
 source-level debugging but call stacks still have function names. Changing
 `symbol_level` requires recompiling everything.
 
-When invoking ninja, specify 'chrome' as the target to avoid building all test
+When you build, specify `chrome` as the target to avoid building all test
 binaries as well.
 
-#### Use Reclient
+#### Use Remote Execution
 
-In addition, Google employees should use Reclient, a distributed compilation system.
-Detailed information is available internally but the relevant gn arg is:
+In addition, Google employees should use RBE, a remote execution system. Detailed information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
 Google employees can visit
 [go/building-chrome-win#setup-remote-execution](https://goto.google.com/building-chrome-win#setup-remote-execution)
-for more information. For external contributors, Reclient does not support
-Windows builds.
+Note: Don't set `DEPOT_TOOLS_WIN_TOOLCHAIN` environment variable.
+Need to use `third_party/depot_tools/win_toolchain/vs_files` for
+remote execution.
+
+For external contributors, Siso's remote execution with rbe-chromium-untrusted
+does not support Windows builds.
 
 #### Use SCCACHE
 
@@ -263,7 +313,6 @@ You might be able to use [sccache](https://github.com/mozilla/sccache) for the
 build process by enabling the following arguments:
 
 * `cc_wrapper = "sccache"` - assuming the `sccache` binary is in your `%PATH%`
-* `chrome_pgo_phase = 0`
 
 ### Why is my build slow?
 
@@ -279,19 +328,17 @@ If you suspect that Defender is slowing your build then you can try Microsoft's
 [Performance analyzer for Microsoft Defender Antivirus](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/tune-performance-defender-antivirus?view=o365-worldwide)
 to investigate in detail.
 
-The next step is to gather some data. If you set the ``NINJA_SUMMARIZE_BUILD``
-environment variable to 1 then ``autoninja`` will do three things. First, it
-will set the [NINJA_STATUS](https://ninja-build.org/manual.html#_environment_variables)
-environment variable so that ninja will print additional information while
-building Chrome. It will show how many build processes are running at any given
-time, how many build steps have completed, how many build steps have completed
-per second, and how long the build has been running, as shown here:
+Siso prints progress while building Chrome. It shows how many build processes
+are running at any given time, how many build steps have completed, how many
+ build steps have completed per second, and how long the entire build and
+ the longest build step has been running, as shown here:
 
 ```shell
-$ set NINJA_SUMMARIZE_BUILD=1
 $ autoninja -C out\Default base
 ninja: Entering directory `out\Default'
-[1 processes, 86/86 @ 2.7/s : 31.785s ] LINK(DLL) base.dll base.dll.lib base.dll.pdb
+...
+pre:0 local:0 remote:6461 15.6/s cache: 0.00% fallback:0
+[3829/64499] 4m47.48s 4m00.35s[remote]: LINK(DLL) base.dll base.dll.lib base.dll.pdb
 ```
 
 This makes slow process creation immediately obvious and lets you tell quickly
@@ -327,42 +374,16 @@ will have a weighted time that is the same or similar to its elapsed time. A
 compile that runs in parallel with 999 other compiles will have a weighted time
 that is tiny.
 
-You can also generate these reports by manually running the script after a build:
+You can also generate these reports by manually running the script after a
+build:
 
 ```shell
 $ python depot_tools\post_build_ninja_summary.py -C out\Default
 ```
 
-Finally, setting ``NINJA_SUMMARIZE_BUILD=1`` tells autoninja to tell Ninja to
-report on its own overhead by passing "-d stats". This can be helpful if, for
-instance, process creation (which shows up in the StartEdge metric) is making
-builds slow, perhaps due to antivirus interference due to clang-cl not being in
-an excluded directory:
-
-```shell
-$ set NINJA_SUMMARIZE_BUILD=1
-$ autoninja -C out\Default base
-metric                  count   avg (us)        total (ms)
-.ninja parse            3555    1539.4          5472.6
-canonicalize str        1383032 0.0             12.7
-canonicalize path       1402349 0.0             11.2
-lookup node             1398245 0.0             8.1
-.ninja_log load         2       118.0           0.2
-.ninja_deps load        2       67.5            0.1
-node stat               2516    29.6            74.4
-depfile load            2       1132.0          2.3
-StartEdge               88      3508.1          308.7
-FinishCommand           87      1670.9          145.4
-CLParser::Parse         45      1889.1          85.0
-```
-
 You can also get a visual report of the build performance with
-[ninjatracing](https://github.com/nico/ninjatracing). This converts the
-.ninja_log file into a .json file which can be loaded into [chrome://tracing](chrome://tracing):
-
-```shell
-$ python ninjatracing out\Default\.ninja_log >build.json
-```
+[perfetto](https://ui.perfetto.dev/) by uploading `.ninja_log` or
+ `siso_trace.json`.
 
 ## Build Chromium
 
@@ -380,22 +401,7 @@ You can get a list of all of the other build targets from GN by running
 the GN label with no preceding "//" (so for `//chrome/test:unit_tests`
 use `autoninja -C out\Default chrome/test:unit_tests`).
 
-## Compile a single file
-
-Ninja supports a special [syntax `^`][ninja hat syntax] to compile a single object file specyfing
-the source file. For example, `ninja -C out/Default ../../base/logging.cc^`
-compiles `obj/base/base/logging.o`.
-
-[ninja hat syntax]: https://ninja-build.org/manual.html#:~:text=There%20is%20also%20a%20special%20syntax%20target%5E%20for%20specifying%20a%20target%20as%20the%20first%20output%20of%20some%20rule%20containing%20the%20source%20you%20put%20in%20the%20command%20line%2C%20if%20one%20exists.%20For%20example%2C%20if%20you%20specify%20target%20as%20foo.c%5E%20then%20foo.o%20will%20get%20built%20(assuming%20you%20have%20those%20targets%20in%20your%20build%20files)
-
-With autoninja, you need to add  `^^` to preserve the trailing `^`.
-
-```shell
-$ autoninja -C out\Default ..\..\base\logging.cc^^
-```
-
-In addition to `foo.cc^^`, Siso also supports `foo.h^^` syntax to compile
-the corresponding `foo.o` if it exists.
+Tips: See [Siso tips](../siso_tips.md).
 
 ## Run Chromium
 
@@ -479,7 +485,7 @@ page). This is an example when your checkout is `C:\src\chromium` and your
 output directory is `out\Default`:
 
 ```shell
-$ gn gen --ide=vs --ninja-executable=C:\src\chromium\src\third_party\ninja\ninja.exe out\Default
+$ gn gen --ide=vs --ninja-executable=autoninja out\Default
 $ devenv out\Default\all.sln
 ```
 
@@ -498,7 +504,7 @@ let you compile and run Chrome in the IDE but will not show any source files
 is:
 
 ```
-$ gn gen --ide=vs --ninja-executable=C:\src\chromium\src\third_party\ninja\ninja.exe --filters=//chrome --no-deps out\Default
+$ gn gen --ide=vs --ninja-executable=autoninja --filters=//chrome --no-deps out\Default
 ```
 
 You can selectively add other directories you care about to the filter like so:

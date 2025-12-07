@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
@@ -131,13 +132,14 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   typedef DemuxerStream::Type Type;
   typedef StreamParser::TrackId TrackId;
 
-  static scoped_refptr<StreamParserBuffer> CreateEOSBuffer();
+  static scoped_refptr<StreamParserBuffer> CreateEOSBuffer(
+      std::optional<ConfigVariant> next_config = std::nullopt);
 
-  static scoped_refptr<StreamParserBuffer> CopyFrom(const uint8_t* data,
-                                                    int data_size,
-                                                    bool is_key_frame,
-                                                    Type type,
-                                                    TrackId track_id);
+  static scoped_refptr<StreamParserBuffer> CopyFrom(
+      base::span<const uint8_t> data,
+      bool is_key_frame,
+      Type type,
+      TrackId track_id);
   static scoped_refptr<StreamParserBuffer> FromExternalMemory(
       std::unique_ptr<ExternalMemory> external_memory,
       bool is_key_frame,
@@ -149,6 +151,24 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
       Type type,
       TrackId track_id);
 
+  StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                     base::HeapArray<uint8_t> heap_array,
+                     bool is_key_frame,
+                     Type type,
+                     TrackId track_id);
+  StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                     std::unique_ptr<ExternalMemory> external_memory,
+                     bool is_key_frame,
+                     Type type,
+                     TrackId track_id);
+  StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                     base::span<const uint8_t> data,
+                     bool is_key_frame,
+                     Type type,
+                     TrackId track_id);
+  StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                     DecoderBufferType decoder_buffer_type,
+                     std::optional<ConfigVariant> next_config);
   StreamParserBuffer(const StreamParserBuffer&) = delete;
   StreamParserBuffer& operator=(const StreamParserBuffer&) = delete;
 
@@ -163,7 +183,7 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
 
   // Gets the parser's media type associated with this buffer. Value is
   // meaningless for EOS buffers.
-  Type type() const { return type_; }
+  Type type() const { return static_cast<Type>(type_); }
   const char* GetTypeName() const;
 
   // Gets the parser's track ID associated with this buffer. Value is
@@ -197,29 +217,25 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   size_t GetMemoryUsage() const override;
 
  private:
-  StreamParserBuffer(base::HeapArray<uint8_t> heap_array,
-                     bool is_key_frame,
-                     Type type,
-                     TrackId track_id);
-
-  StreamParserBuffer(std::unique_ptr<ExternalMemory> external_memory,
-                     bool is_key_frame,
-                     Type type,
-                     TrackId track_id);
-  StreamParserBuffer(const uint8_t* data,
-                     int data_size,
-                     bool is_key_frame,
-                     Type type,
-                     TrackId track_id);
-  explicit StreamParserBuffer(DecoderBufferType decoder_buffer_type);
   ~StreamParserBuffer() override;
 
+  // ***************************************************************************
+  // WARNING: This is a highly allocated object. Care should be taken when
+  // adding any fields to make sure they are absolutely necessary. If a field
+  // must be added and can be optional, ensure it is heap allocated through the
+  // usage of something like std::unique_ptr.
+  // ***************************************************************************
+
+  // Note: This field is stored as a uint8_t instead of Type and uses
+  // static_cast<Type> in type() to avoid signed vs unsigned issues when Type
+  // is directly used as a bit-field.
+  const uint8_t type_ : 2;
+
+  bool is_duration_estimated_ : 1 = false;
   DecodeTimestamp decode_timestamp_ = kNoDecodeTimestamp;
   int config_id_ = kInvalidConfigId;
-  Type type_;
-  TrackId track_id_;
+  const TrackId track_id_;
   scoped_refptr<StreamParserBuffer> preroll_buffer_;
-  bool is_duration_estimated_ = false;
 };
 
 }  // namespace media

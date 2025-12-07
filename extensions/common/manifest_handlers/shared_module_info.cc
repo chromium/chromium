@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -45,18 +45,16 @@ static base::LazyInstance<SharedModuleInfo>::DestructorAtExit
 const SharedModuleInfo& GetSharedModuleInfo(const Extension* extension) {
   SharedModuleInfo* info = static_cast<SharedModuleInfo*>(
       extension->GetManifestData(kSharedModule));
-  if (!info)
+  if (!info) {
     return g_empty_shared_module_info.Get();
+  }
   return *info;
 }
 
 }  // namespace
 
-SharedModuleInfo::SharedModuleInfo() {
-}
-
-SharedModuleInfo::~SharedModuleInfo() {
-}
+SharedModuleInfo::SharedModuleInfo() = default;
+SharedModuleInfo::~SharedModuleInfo() = default;
 
 // static
 void SharedModuleInfo::ParseImportedPath(const std::string& path,
@@ -68,8 +66,9 @@ void SharedModuleInfo::ParseImportedPath(const std::string& path,
       crx_file::id_util::IdIsValid(tokens[1])) {
     *import_id = tokens[1];
     *import_relative_path = tokens[2];
-    for (size_t i = 3; i < tokens.size(); ++i)
+    for (size_t i = 3; i < tokens.size(); ++i) {
       *import_relative_path += "/" + tokens[i];
+    }
   }
 }
 
@@ -96,11 +95,13 @@ bool SharedModuleInfo::IsExportAllowedByAllowlist(const Extension* extension,
   // Sanity check. In case the caller did not check |extension| to make sure it
   // is a shared module, we do not want it to appear that the extension with
   // |other_id| importing |extension| is valid.
-  if (!SharedModuleInfo::IsSharedModule(extension))
+  if (!SharedModuleInfo::IsSharedModule(extension)) {
     return false;
+  }
   const SharedModuleInfo& info = GetSharedModuleInfo(extension);
-  if (info.export_allowlist_.empty())
+  if (info.export_allowlist_.empty()) {
     return true;
+  }
   return base::Contains(info.export_allowlist_, other_id);
 }
 
@@ -108,9 +109,10 @@ bool SharedModuleInfo::IsExportAllowedByAllowlist(const Extension* extension,
 bool SharedModuleInfo::ImportsExtensionById(const Extension* extension,
                                             const ExtensionId& other_id) {
   const SharedModuleInfo& info = GetSharedModuleInfo(extension);
-  for (size_t i = 0; i < info.imports_.size(); i++) {
-    if (info.imports_[i].extension_id == other_id)
+  for (const auto& import : info.imports_) {
+    if (import.extension_id == other_id) {
       return true;
+    }
   }
   return false;
 }
@@ -163,8 +165,8 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
   if (has_export && manifest_keys.export_->allowlist) {
     auto begin = manifest_keys.export_->allowlist->begin();
     auto end = manifest_keys.export_->allowlist->end();
-    auto it = base::ranges::find_if_not(*manifest_keys.export_->allowlist,
-                                        &crx_file::id_util::IdIsValid);
+    auto it = std::ranges::find_if_not(*manifest_keys.export_->allowlist,
+                                       &crx_file::id_util::IdIsValid);
     if (it != end) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidExportAllowlistString,
@@ -226,14 +228,14 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool SharedModuleHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // Extensions that export resources should not have any permissions of their
   // own, instead they rely on the permissions of the extensions which import
   // them.
-  if (SharedModuleInfo::IsSharedModule(extension) &&
-      !extension->permissions_data()->active_permissions().IsEmpty()) {
+  if (SharedModuleInfo::IsSharedModule(&extension) &&
+      !extension.permissions_data()->active_permissions().IsEmpty()) {
     *error = errors::kInvalidExportPermissions;
     return false;
   }

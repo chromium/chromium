@@ -22,7 +22,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
 #include "third_party/webrtc_overrides/api/location.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
@@ -33,7 +32,7 @@ namespace {
 
 constexpr base::TimeDelta kTaskLatencySampleDuration = base::Seconds(3);
 
-ABSL_CONST_INIT thread_local ThreadWrapper* jingle_thread_wrapper = nullptr;
+constinit thread_local ThreadWrapper* jingle_thread_wrapper = nullptr;
 
 }  // namespace
 
@@ -90,12 +89,12 @@ class ThreadWrapper::PostTaskLatencySampler {
 };
 
 struct ThreadWrapper::PendingSend {
-  explicit PendingSend(rtc::FunctionView<void()> functor)
+  explicit PendingSend(webrtc::FunctionView<void()> functor)
       : functor(functor),
         done_event(base::WaitableEvent::ResetPolicy::MANUAL,
                    base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-  rtc::FunctionView<void()> functor;
+  webrtc::FunctionView<void()> functor;
   base::WaitableEvent done_event;
 };
 
@@ -107,7 +106,7 @@ void ThreadWrapper::EnsureForCurrentMessageLoop() {
     base::CurrentThread::Get()->AddDestructionObserver(wrapper.release());
   }
 
-  DCHECK_EQ(rtc::Thread::Current(), current());
+  DCHECK_EQ(webrtc::Thread::Current(), current());
 }
 
 std::unique_ptr<ThreadWrapper> ThreadWrapper::WrapTaskRunner(
@@ -130,40 +129,40 @@ void ThreadWrapper::SetLatencyAndTaskDurationCallbacks(
 
 ThreadWrapper::ThreadWrapper(
     ::scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
+    : Thread(std::make_unique<webrtc::PhysicalSocketServer>()),
       resetter_(&jingle_thread_wrapper, this, nullptr),
       task_runner_(task_runner),
       send_allowed_(false),
       pending_send_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DCHECK(task_runner->BelongsToCurrentThread());
-  DCHECK(!rtc::Thread::Current());
+  DCHECK(!webrtc::Thread::Current());
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-  rtc::ThreadManager::Add(this);
+  webrtc::ThreadManager::Add(this);
   SafeWrapCurrent();
 }
 
 ThreadWrapper::~ThreadWrapper() {
   DCHECK_EQ(this, ThreadWrapper::current());
-  DCHECK_EQ(this, rtc::Thread::Current());
+  DCHECK_EQ(this, webrtc::Thread::Current());
 
   UnwrapCurrent();
-  rtc::ThreadManager::Instance()->SetCurrentThread(nullptr);
-  rtc::ThreadManager::Remove(this);
+  webrtc::ThreadManager::Instance()->SetCurrentThread(nullptr);
+  webrtc::ThreadManager::Remove(this);
 
   CHECK(pending_send_messages_.empty());
   coalesced_tasks_.Clear();
 }
 
-rtc::SocketServer* ThreadWrapper::SocketServer() {
-  return rtc::Thread::socketserver();
+webrtc::SocketServer* ThreadWrapper::SocketServer() {
+  return webrtc::Thread::socketserver();
 }
 
 void ThreadWrapper::WillDestroyCurrentMessageLoop() {
   delete this;
 }
 
-void ThreadWrapper::BlockingCallImpl(rtc::FunctionView<void()> functor,
+void ThreadWrapper::BlockingCallImpl(webrtc::FunctionView<void()> functor,
                                      const webrtc::Location& location) {
   ThreadWrapper* current_thread = ThreadWrapper::current();
   DCHECK(current_thread != nullptr) << "BlockingCall() can be called only from "
@@ -302,31 +301,29 @@ void ThreadWrapper::FinalizeRunTask(
 }
 
 bool ThreadWrapper::IsQuitting() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // All methods below are marked as not reached. See comments in the
 // header for more details.
 void ThreadWrapper::Quit() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ThreadWrapper::Restart() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int ThreadWrapper::GetDelay() {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void ThreadWrapper::Stop() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ThreadWrapper::Run() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace webrtc

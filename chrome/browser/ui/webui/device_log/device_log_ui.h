@@ -6,8 +6,16 @@
 #define CHROME_BROWSER_UI_WEBUI_DEVICE_LOG_DEVICE_LOG_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 
 namespace chromeos {
+
+class DeviceLogUI;
+
+class DeviceLogUIConfig : public content::DefaultWebUIConfig<DeviceLogUI> {
+ public:
+  DeviceLogUIConfig();
+};
 
 class DeviceLogUI : public content::WebUIController {
  public:

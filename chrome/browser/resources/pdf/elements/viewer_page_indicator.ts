@@ -4,40 +4,46 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {isRTL} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Viewport} from '../viewport.js';
 
-import {getTemplate} from './viewer_page_indicator.html.js';
+import {getCss} from './viewer_page_indicator.css.js';
+import {getHtml} from './viewer_page_indicator.html.js';
 
-export class ViewerPageIndicatorElement extends PolymerElement {
+export interface ViewerPageIndicatorElement {
+  $: {
+    text: HTMLElement,
+  };
+}
+
+export class ViewerPageIndicatorElement extends CrLitElement {
   static get is() {
     return 'viewer-page-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      label: {type: String, value: '1'},
-
-      index: {type: Number, observer: 'indexChanged'},
-
-      pageLabels: {type: Array, value: null, observer: 'pageLabelsChanged'},
+      index: {type: Number},
+      pageLabels: {type: Array},
     };
   }
 
-  label: string;
-  index: number;
-  pageLabels: number[]|null;
-  timerId?: number;
+  accessor index: number = 0;
+  accessor pageLabels: number[]|null = null;
+  private timerId_?: number;
   private viewport_: Viewport|null = null;
 
-  override ready() {
-    super.ready();
-    const callback = this.fadeIn_.bind(this);
+  override firstUpdated() {
+    const callback = () => this.fadeIn_();
     window.addEventListener('scroll', function() {
       requestAnimationFrame(callback);
     });
@@ -68,24 +74,19 @@ export class ViewerPageIndicatorElement extends PolymerElement {
 
     // Animate opacity.
     this.style.opacity = '1';
-    clearTimeout(this.timerId);
+    clearTimeout(this.timerId_);
 
-    this.timerId = setTimeout(() => {
+    this.timerId_ = setTimeout(() => {
       this.style.opacity = '0';
-      this.timerId = undefined;
+      this.timerId_ = undefined;
     }, 2000);
   }
 
-  pageLabelsChanged() {
-    this.indexChanged();
-  }
-
-  indexChanged() {
+  protected getLabel_(): string {
     if (this.pageLabels) {
-      this.label = String(this.pageLabels[this.index]);
-    } else {
-      this.label = String(this.index + 1);
+      return String(this.pageLabels[this.index]);
     }
+    return String(this.index + 1);
   }
 }
 

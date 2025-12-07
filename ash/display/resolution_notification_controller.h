@@ -16,7 +16,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 

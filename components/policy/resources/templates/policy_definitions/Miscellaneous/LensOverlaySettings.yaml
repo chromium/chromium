@@ -1,22 +1,24 @@
 caption: Settings for the Lens Overlay feature
 desc: |-
-  Lens Overlay lets users issue Google searches by interacting with a screenshot of the current page laid over the actual web contents.
+  Lens Overlay lets users perform contextual Google searches either via a screenshot or by asking a question about the current page's contents. This feature requires the end user to opt-in.
 
-  There is no user setting to control this feature, it is generally made available to all users with Google as their default search engine unless disabled by this policy.
+  This feature is available to all users with Google as their default search engine, unless it is disabled by this policy.
 
-  When policy is set to 0 - Enabled or not set, the feature will be available to users.
-  When policy is set to 1 - Disabled, the feature will not be available.
+  When policy is set to 0 - Allow or not set, the feature will be available to users.
 
+  When policy is set to 1 - Do not allow, the feature will not be available.
+
+  Starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 140, if the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
 default: 0
 example_value: 1
 features:
   dynamic_refresh: true
   per_profile: true
 items:
-- caption: Enable
-  name: Enabled
+- caption: Allow
+  name: Allowed
   value: 0
-- caption: Disable
+- caption: Do not allow
   name: Disabled
   value: 1
 owners:
@@ -35,4 +37,3 @@ supported_on:
 tags:
 - google-sharing
 type: int-enum
-

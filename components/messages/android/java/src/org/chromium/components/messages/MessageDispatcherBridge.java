@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -15,6 +16,7 @@ import org.chromium.ui.base.WindowAndroid;
  * with MessageDispatcher.
  */
 @JNINamespace("messages")
+@NullMarked
 public class MessageDispatcherBridge {
     /**
      * Return false if it fails to enqueue message, which usually happens when

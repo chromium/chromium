@@ -1,0 +1,22 @@
+Name: libinput
+URL: https://gitlab.freedesktop.org/libinput/libinput
+Version: 1.27.1
+Revision: 3aa004b96488bf0b2446c11b97a7f8a75ff37c23
+Update Mechanism: Manual
+License: MIT
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+Input device management and event handling library.
+
+This is only used in tests.
+
+Local Modifications:
+None.
+
+When updating to a new version, update the Revision above with the new commit hash,
+and perform the following steps:
+1. Run on_update.sh
+2. Check in the generated files along with the changes for the update.

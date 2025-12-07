@@ -28,7 +28,7 @@ class RepositionController;
 class TouchPoint;
 
 // Represents the default label index. Default -1 means all the index.
-constexpr int kDefaultLabelIndex = -1;
+inline constexpr int kDefaultLabelIndex = -1;
 
 // ActionView is the view for each action.
 class ActionView : public views::View {
@@ -43,9 +43,6 @@ class ActionView : public views::View {
 
   // Each type of the actions sets view content differently.
   virtual void SetViewContent(BindingOption binding_option) = 0;
-  // Each type of the actions acts differently on key binding change.
-  virtual void OnKeyBindingChange(ActionLabel* action_label,
-                                  ui::DomCode code) = 0;
   virtual void OnBindingToKeyboard() = 0;
   virtual void OnBindingToMouse(std::string mouse_action) = 0;
   // Each type of the actions shows different edit menu.
@@ -65,14 +62,6 @@ class ActionView : public views::View {
 
   // Set position from its center position.
   void SetPositionFromCenterPosition(const gfx::PointF& center_position);
-  // Show error message for action. If `ax_annouce` is true, ChromeVox
-  // announces the `message` directly. Otherwise, `message` is added as the
-  // description of `editing_label`.
-  void ShowErrorMsg(std::string_view message,
-                    ActionLabel* editing_label,
-                    bool ax_annouce);
-  // Show info/edu message.
-  void ShowInfoMsg(std::string_view message, ActionLabel* editing_label);
   void ShowFocusInfoMsg(std::string_view message, views::View* view);
   void RemoveMessage();
   // Change binding for `action` binding to `input_element` and set
@@ -81,14 +70,6 @@ class ActionView : public views::View {
   void ChangeInputBinding(Action* action,
                           ActionLabel* action_label,
                           std::unique_ptr<InputElement> input_element);
-  // Reset binding to its previous binding before entering to the edit mode.
-  void OnResetBinding();
-  // Return true if it needs to show error message and also shows error message.
-  // Otherwise, don't show any error message and return false.
-  bool ShouldShowErrorMsg(ui::DomCode code,
-                          ActionLabel* editing_label = nullptr);
-  // Reacts to child label focus change.
-  void OnChildLabelUpdateFocus(ActionLabel* child, bool focus);
 
   // Set the action view to be not new, for the action label.
   void RemoveNewState();
@@ -163,7 +144,6 @@ class ActionView : public views::View {
  private:
   friend class ActionViewTest;
   friend class OverlayViewTestBase;
-  friend class ViewTestBase;
 
   void RemoveTouchPoint();
 

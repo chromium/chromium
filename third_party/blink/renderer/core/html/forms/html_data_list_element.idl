@@ -30,8 +30,8 @@
 
 // https://html.spec.whatwg.org/C/#the-datalist-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLDataListElement : HTMLElement {
+    [HTMLConstructor] constructor();
     readonly attribute HTMLCollection options;
 };

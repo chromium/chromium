@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
-#include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -114,23 +113,11 @@ void OomInterventionImpl::OnMemoryPing(MemoryUsage usage) {
 void OomInterventionImpl::Check(MemoryUsage usage) {
   DCHECK(host_);
 
-  OomInterventionMetrics current_memory =
-      CrashMemoryMetricsReporterImpl::MemoryUsageToMetrics(usage);
-
   bool oom_detected = false;
 
-  oom_detected |= detection_args_->blink_workload_threshold > 0 &&
-                  current_memory.current_blink_usage_kb * 1024 >
-                      detection_args_->blink_workload_threshold;
   oom_detected |= detection_args_->private_footprint_threshold > 0 &&
-                  current_memory.current_private_footprint_kb * 1024 >
+                  usage.private_footprint_bytes >
                       detection_args_->private_footprint_threshold;
-  oom_detected |=
-      detection_args_->swap_threshold > 0 &&
-      current_memory.current_swap_kb * 1024 > detection_args_->swap_threshold;
-  oom_detected |= detection_args_->virtual_memory_thresold > 0 &&
-                  current_memory.current_vm_size_kb * 1024 >
-                      detection_args_->virtual_memory_thresold;
 
   if (oom_detected) {
     base::debug::SetCrashKeyString(GetStateCrashKey(), "during");
@@ -159,7 +146,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     host_->OnHighMemoryUsage();
     MemoryUsageMonitorInstance().RemoveObserver(this);
     // Send memory pressure notification to trigger GC.
-    task_runner_->PostTask(FROM_HERE, WTF::BindOnce(&TriggerGC));
+    task_runner_->PostTask(FROM_HERE, BindOnce(&TriggerGC));
     // Notify V8GCForContextDispose that page navigation gc is needed when
     // intervention runs, as it indicates that memory usage is high.
     V8GCForContextDispose::Instance().SetForcePageNavigationGC();
@@ -170,9 +157,9 @@ void OomInterventionImpl::TriggerGC() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+      ->ForEachMainThreadIsolate([](v8::Isolate* isolate) {
         isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
-      }));
+      });
 }
 
 }  // namespace blink

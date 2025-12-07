@@ -38,10 +38,9 @@ struct TestTraits {
 
 constexpr TestTraits traits = {};  // expected-error {{constexpr variable 'traits' must be initialized by a constant expression}}
                                    // expected-error@base/traits_bag.h:* {{The traits bag is missing a required trait.}}
-                                   // expected-error@*:* {{no matching constructor for initialization of 'base::trait_helpers::RequiredEnumTraitFilter<base::RequiredTrait>'}}
+                                   // expected-error@*:* 1+ {{no matching constructor for initialization}}
 
-constexpr TestTraits traits2 = {RequiredTrait::A, NotAValidTrait{}};  // expected-error {{no matching constructor for initialization of 'const TestTraits'}}
-                                                                      // expected-error@*:* {{type occurs more than once in type list}}
+constexpr TestTraits traits2 = {RequiredTrait::A, NotAValidTrait{}};  // expected-error@*:* {{type occurs more than once in type list}}
 
 constexpr TestTraits traits3 = {RequiredTrait::A, RequiredTrait::B};  // expected-error {{constexpr variable 'traits3' must be initialized by a constant expression}}
                                                                       // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}

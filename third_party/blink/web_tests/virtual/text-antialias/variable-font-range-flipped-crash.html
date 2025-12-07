@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+@font-face {
+  font-family: 'roboto-variable-flipped';
+  src: url('resources/Roboto-Variable_flipped.ttf');
+}
+</style>
+<body>
+  <div id="test">This test passes if it doesn't crash</div>
+</body>
+<script>
+test(() => {
+  document.getElementById('test').style.fontFamily = 'roboto-variable-flipped';
+}, 'Should not crash');
+</script>

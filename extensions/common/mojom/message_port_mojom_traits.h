@@ -18,20 +18,20 @@ namespace mojo {
 template <>
 struct StructTraits<extensions::mojom::MessageDataView, extensions::Message> {
   static const std::string& data(const extensions::Message& message) {
-    return message.data;
+    return message.data();
   }
 
   static extensions::mojom::SerializationFormat format(
       const extensions::Message& message) {
-    return message.format;
+    return message.format();
   }
 
   static bool user_gesture(const extensions::Message& message) {
-    return message.user_gesture;
+    return message.user_gesture();
   }
 
   static bool from_privileged_context(const extensions::Message& message) {
-    return message.from_privileged_context;
+    return message.from_privileged_context();
   }
 
   static bool Read(extensions::mojom::MessageDataView data,

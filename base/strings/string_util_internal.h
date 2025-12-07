@@ -5,11 +5,10 @@
 #ifndef BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 #define BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 
+#include <algorithm>
 #include <concepts>
 #include <string_view>
 #include <type_traits>
-
-#include "base/ranges/algorithm.h"
 
 namespace base::internal {
 
@@ -33,27 +32,31 @@ constexpr int CompareCaseInsensitiveASCIIT(T a, T b) {
   while (i < a.length() && i < b.length()) {
     UCharT lower_a = static_cast<UCharT>(ToLowerASCII(a[i]));
     UCharT lower_b = static_cast<UCharT>(ToLowerASCII(b[i]));
-    if (lower_a < lower_b)
+    if (lower_a < lower_b) {
       return -1;
-    if (lower_a > lower_b)
+    }
+    if (lower_a > lower_b) {
       return 1;
+    }
     i++;
   }
 
   // End of one string hit before finding a different character. Expect the
   // common case to be "strings equal" at this point so check that first.
-  if (a.length() == b.length())
+  if (a.length() == b.length()) {
     return 0;
+  }
 
-  if (a.length() < b.length())
+  if (a.length() < b.length()) {
     return -1;
+  }
   return 1;
 }
 
 template <typename CharT, typename CharU>
 inline bool EqualsCaseInsensitiveASCIIT(std::basic_string_view<CharT> a,
                                         std::basic_string_view<CharU> b) {
-  return ranges::equal(a, b, [](auto lhs, auto rhs) {
+  return std::ranges::equal(a, b, [](auto lhs, auto rhs) {
     return ToLowerASCII(lhs) == ToLowerASCII(rhs);
   });
 }

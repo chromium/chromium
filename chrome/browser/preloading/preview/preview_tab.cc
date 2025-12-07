@@ -120,7 +120,7 @@ void PreviewTab::AttachTabHelpersForInit() {
   // (initiation/promotion) we should attach each of them.
   zoom::ZoomController::CreateForWebContents(web_contents);
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
-  chrome::InitializePageLoadMetricsForWebContents(web_contents);
+  InitializePageLoadMetricsForWebContents(web_contents);
 }
 
 bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
@@ -142,7 +142,8 @@ bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
 }
 
 content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
   return content::PreloadingEligibility::kPreloadingDisabled;
 }
 
@@ -208,7 +209,7 @@ void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
   web_contents->ActivatePreviewPage();
 }
 
-// Copied from chrome/browser/ui/views/accelerator_table.h
+// Copied from chrome/browser/ui/accelerator_table.h
 struct AcceleratorMapping {
   ui::KeyboardCode keycode;
   int modifiers;
@@ -255,7 +256,7 @@ bool PreviewTab::AcceleratorPressed(const ui::Accelerator& accelerator) {
       preview_zoom_controller_->Zoom(content::PAGE_ZOOM_IN);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return true;

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ntp_cards_bottom_sheet_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
+
+    <include layout="@layout/ntp_customization_drag_handle_bar" />
+
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_height="@dimen/ntp_customization_back_button_clickable_size"
+        android:layout_width="@dimen/ntp_customization_back_button_clickable_size"
+        android:padding="@dimen/ntp_customization_back_button_padding"
+        android:layout_marginStart="@dimen/ntp_customization_back_button_margin_start"
+        android:contentDescription="@string/back"
+        android:src="@drawable/btn_back"
+        app:tint="@macro/default_icon_color"
+        app:layout_constraintTop_toTopOf="@id/bottom_sheet_title"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:text="@string/home_modules_configuration"
+        android:layout_marginStart="@dimen/ntp_customization_ntp_cards_title_margin"
+        android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/drag_handle_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:accessibilityHeading="true"/>
+
+    <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/cards_switch_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:paddingHorizontal="@dimen/ntp_customization_edit_icon_margin"
+        tools:baselinealigned="false"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single"
+        android:text="@string/text_on"
+        android:visibility="gone" /> <!-- TODO(crbug.com/458409311): Make this always visible -->
+
+    <TextView
+        android:id="@+id/cards_section_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:layout_marginTop="@dimen/ntp_customization_feed_list_items_title_margin_top"
+        android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginEnd="@dimen/ntp_customization_edit_icon_margin"
+        app:layout_constraintTop_toBottomOf="@id/cards_switch_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:focusable="true"
+        android:text="@string/home_modules_manage_cards_title"
+        android:accessibilityHeading="true"
+        android:visibility="gone"/> <!-- TODO(crbug.com/458409311): Make this always visible -->
+
+    <org.chromium.chrome.browser.ntp_customization.MaterialSwitchWithTextListContainerView
+        android:id="@+id/ntp_cards_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/ntp_customization_ntp_cards_margin"
+        android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        app:layout_constraintTop_toBottomOf="@id/cards_section_title"
+        app:layout_constraintStart_toStartOf="parent">
+    </org.chromium.chrome.browser.ntp_customization.MaterialSwitchWithTextListContainerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

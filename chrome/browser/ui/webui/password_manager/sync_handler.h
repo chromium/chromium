@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_SYNC_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -60,8 +61,23 @@ class SyncHandler : public content::WebUIMessageHandler,
   // Handles the request for the primary account information.
   void HandleGetAccountInfo(const base::Value::List& args);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Opens the Batch Upload Dialog.
+  void HandleOpenBatchUploadDialog(const base::Value::List& args);
+#endif
+
+  // Handles getitng the local password count from the `syncer::SyncService`
+  // API.
+  void HandleGetLocalPasswordCount(const base::Value::List& args);
+  void FireOnGetLocalDataDescriptionReceived(
+      std::map<syncer::DataType, syncer::LocalDataDescription> data);
+  void OnGetLocalDataDescriptionReceived(
+      base::Value callback_id,
+      std::map<syncer::DataType, syncer::LocalDataDescription> data);
+
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // IdentityManager::Observer implementation.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -77,6 +93,8 @@ class SyncHandler : public content::WebUIMessageHandler,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::WeakPtrFactory<SyncHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

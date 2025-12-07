@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win",
+      "chromeos",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_connectors.cache_encryption_enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

@@ -4,6 +4,7 @@
 
 #include "components/web_package/web_bundle_parser_factory.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/files/file.h"
@@ -11,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -76,12 +76,9 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
   constexpr int64_t test_length = 16;
   ASSERT_LE(test_length, file_length);
   std::vector<uint8_t> first16b(test_length);
-  ASSERT_EQ(test_length, file.Read(0, reinterpret_cast<char*>(first16b.data()),
-                                   first16b.size()));
+  ASSERT_TRUE(file.ReadAndCheck(0, first16b));
   std::vector<uint8_t> last16b(test_length);
-  ASSERT_EQ(test_length,
-            file.Read(file_length - test_length,
-                      reinterpret_cast<char*>(last16b.data()), last16b.size()));
+  ASSERT_TRUE(file.ReadAndCheck(file_length - test_length, last16b));
 
   auto data_source = CreateFileDataSource(std::move(file));
 
@@ -199,8 +196,8 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFileWithRelativeUrls) {
 
   std::vector<GURL> requests;
   requests.reserve(metadata->requests.size());
-  base::ranges::transform(metadata->requests, std::back_inserter(requests),
-                          [](const auto& entry) { return entry.first; });
+  std::ranges::transform(metadata->requests, std::back_inserter(requests),
+                         [](const auto& entry) { return entry.first; });
   EXPECT_THAT(requests, UnorderedElementsAreArray(
                             {GURL("https://test.example.org/absolute-url"),
                              GURL("https://example.com/relative-url-1"),

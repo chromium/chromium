@@ -6,23 +6,17 @@
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace data_controls {
 
-// Controls enabling Data Controls for all desktop browser platforms (Windows,
-// Mac, Linux, CrOS). Policies controlling cross-platform Data Controls will be
-// ignored if this feature is disabled.
-//
-// Use `kEnableScreenshotProtection` to gate the implementation of screenshot
-// protection rules instead of this feature.
-BASE_DECLARE_FEATURE(kEnableDesktopDataControls);
+#if BUILDFLAG(IS_ANDROID)
+// Controls enabling Data Controls rules for clipboard copy / paste on Android.
+BASE_DECLARE_FEATURE(kEnableClipboardDataControlsAndroid);
+#endif
 
-// Controls enabling screenshot blocking Data Controls rules for supported
-// desktop browser platforms (Windows, Mac).
-//
-// Use `kEnableDesktopDataControls` to gate the implementation ofother rule
-// types.
-BASE_DECLARE_FEATURE(kEnableScreenshotProtection);
+// Controls enabling Data Controls rules for downloads.
+BASE_DECLARE_FEATURE(kEnableDownloadDataControls);
 
 }  // namespace data_controls
 

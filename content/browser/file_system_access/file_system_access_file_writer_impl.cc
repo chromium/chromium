@@ -50,9 +50,6 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
       has_transient_user_activation_(has_transient_user_activation),
       auto_close_(auto_close) {
   CHECK_EQ(swap_url.type(), url.type());
-  CHECK(!lock_->IsExclusive() ||
-        base::FeatureList::IsEnabled(
-            blink::features::kFileSystemAccessLockingScheme));
   CHECK(swap_lock_->IsExclusive());
 
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -85,7 +82,8 @@ void FileSystemAccessFileWriterImpl::Write(
     WriteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessFileWriterImpl::WriteImpl,
                      weak_factory_.GetWeakPtr(), offset, std::move(stream)),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -100,7 +98,8 @@ void FileSystemAccessFileWriterImpl::Truncate(uint64_t length,
                                               TruncateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessFileWriterImpl::TruncateImpl,
                      weak_factory_.GetWeakPtr(), length),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -113,7 +112,8 @@ void FileSystemAccessFileWriterImpl::Truncate(uint64_t length,
 void FileSystemAccessFileWriterImpl::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessFileWriterImpl::CloseImpl,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -126,7 +126,8 @@ void FileSystemAccessFileWriterImpl::Close(CloseCallback callback) {
 void FileSystemAccessFileWriterImpl::Abort(AbortCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessFileWriterImpl::AbortImpl,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -179,7 +180,7 @@ void FileSystemAccessFileWriterImpl::WriteImpl(
     mojo::ScopedDataPipeConsumerHandle stream,
     WriteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   if (is_close_pending()) {
@@ -217,7 +218,7 @@ void FileSystemAccessFileWriterImpl::DidWrite(WriteState* state,
 void FileSystemAccessFileWriterImpl::TruncateImpl(uint64_t length,
                                                   TruncateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   if (is_close_pending()) {
@@ -240,7 +241,7 @@ void FileSystemAccessFileWriterImpl::TruncateImpl(uint64_t length,
 
 void FileSystemAccessFileWriterImpl::CloseImpl(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
   if (is_close_pending()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
@@ -299,6 +300,9 @@ void FileSystemAccessFileWriterImpl::DidReplaceSwapFile(
     CallCloseCallbackAndDeleteThis(std::move(result));
     return;
   }
+
+  // Restore permission grants for the target path when necessary.
+  MaybeNotifyEntryModified(url());
 
   CallCloseCallbackAndDeleteThis(file_system_access_error::Ok());
 }

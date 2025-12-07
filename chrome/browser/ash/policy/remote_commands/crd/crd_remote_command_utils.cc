@@ -7,17 +7,23 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "remoting/protocol/errors.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/chromeos/features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
@@ -31,25 +37,26 @@ using chromeos::network_config::mojom::NetworkFilter;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
-using remoting::protocol::ErrorCode;
+using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 
-const ash::KioskAppManagerBase* GetKioskAppManager(
-    const user_manager::UserManager& user_manager) {
-  if (user_manager.IsLoggedInAsKioskApp()) {
+const ash::KioskAppManagerBase* GetKioskAppManager() {
+  if (chromeos::IsChromeAppKioskSession()) {
     return ash::KioskChromeAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsWebKioskApp()) {
-    return ash::WebKioskAppManager::Get();
+  if (chromeos::IsWebKioskSession()) {
+    return ash::KioskWebAppManager::Get();
+  }
+  if (chromeos::IsIwaKioskSession()) {
+    return ash::KioskIwaManager::Get();
   }
 
   // This method should only be invoked when we know we're in a kiosk
   // environment, so one of these app managers must exist.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
-bool IsRunningAutoLaunchedKiosk(const user_manager::UserManager& user_manager) {
-  const auto& kiosk_app_manager = CHECK_DEREF(GetKioskAppManager(user_manager));
+bool IsRunningAutoLaunchedKiosk() {
+  const auto& kiosk_app_manager = CHECK_DEREF(GetKioskAppManager());
   return kiosk_app_manager.current_app_was_auto_launched_with_zero_delay();
 }
 
@@ -110,111 +117,10 @@ void CloseMojomConnection(
 
 }  // namespace
 
-ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
-    ErrorCode error_code) {
-  switch (error_code) {
-    case ErrorCode::OK:
-      return ExtendedStartCrdSessionResultCode::kSuccess;
-    case ErrorCode::PEER_IS_OFFLINE:
-      return ExtendedStartCrdSessionResultCode::kFailurePeerIsOffline;
-    case ErrorCode::SESSION_REJECTED:
-      return ExtendedStartCrdSessionResultCode::kFailureSessionRejected;
-    case ErrorCode::INCOMPATIBLE_PROTOCOL:
-      return ExtendedStartCrdSessionResultCode::kFailureIncompatibleProtocol;
-    case ErrorCode::AUTHENTICATION_FAILED:
-      return ExtendedStartCrdSessionResultCode::kFailureAuthenticationFailed;
-    case ErrorCode::INVALID_ACCOUNT:
-      return ExtendedStartCrdSessionResultCode::kFailureInvalidAccount;
-    case ErrorCode::CHANNEL_CONNECTION_ERROR:
-      return ExtendedStartCrdSessionResultCode::kFailureChannelConnectionError;
-    case ErrorCode::SIGNALING_ERROR:
-      return ExtendedStartCrdSessionResultCode::kFailureSignalingError;
-    case ErrorCode::SIGNALING_TIMEOUT:
-      return ExtendedStartCrdSessionResultCode::kFailureSignalingTimeout;
-    case ErrorCode::HOST_OVERLOAD:
-      return ExtendedStartCrdSessionResultCode::kFailureHostOverload;
-    case ErrorCode::MAX_SESSION_LENGTH:
-      return ExtendedStartCrdSessionResultCode::kFailureMaxSessionLength;
-    case ErrorCode::HOST_CONFIGURATION_ERROR:
-      return ExtendedStartCrdSessionResultCode::kFailureHostConfigurationError;
-    case ErrorCode::HOST_CERTIFICATE_ERROR:
-      return ExtendedStartCrdSessionResultCode::kFailureHostCertificateError;
-    case ErrorCode::HOST_REGISTRATION_ERROR:
-      return ExtendedStartCrdSessionResultCode::kFailureHostRegistrationError;
-    case ErrorCode::EXISTING_ADMIN_SESSION:
-      return ExtendedStartCrdSessionResultCode::kFailureExistingAdminSession;
-    case ErrorCode::AUTHZ_POLICY_CHECK_FAILED:
-      return ExtendedStartCrdSessionResultCode::kFailureAuthzPolicyCheckFailed;
-    case ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
-      return ExtendedStartCrdSessionResultCode::
-          kFailureLocationAuthzPolicyCheckFailed;
-    case ErrorCode::DISALLOWED_BY_POLICY:
-      return ExtendedStartCrdSessionResultCode::kFailureDisabledByPolicy;
-    case ErrorCode::UNAUTHORIZED_ACCOUNT:
-      return ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount;
-    case ErrorCode::UNKNOWN_ERROR:
-    // This error can only take place for windows builds which is not a part for
-    // commercial CRD.
-    case ErrorCode::ELEVATION_ERROR:
-      return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
-    case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
-      return ExtendedStartCrdSessionResultCode::
-          kFailureReauthzPolicyCheckFailed;
-    case ErrorCode::NO_COMMON_AUTH_METHOD:
-      return ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod;
-  }
-  NOTREACHED_NORETURN();
-}
-
-StartCrdSessionResultCode ToStartCrdSessionResultCode(
-    ExtendedStartCrdSessionResultCode result_code) {
-  switch (result_code) {
-    case ExtendedStartCrdSessionResultCode::kSuccess:
-      return StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS;
-    case ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType:
-      return StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE;
-    case ExtendedStartCrdSessionResultCode::kFailureNotIdle:
-      return StartCrdSessionResultCode::FAILURE_NOT_IDLE;
-    case ExtendedStartCrdSessionResultCode::kFailureNoOauthToken:
-      return StartCrdSessionResultCode::FAILURE_NO_OAUTH_TOKEN;
-    case ExtendedStartCrdSessionResultCode::kFailureCrdHostError:
-      return StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR;
-    case ExtendedStartCrdSessionResultCode::kFailureUnmanagedEnvironment:
-      return StartCrdSessionResultCode::FAILURE_UNMANAGED_ENVIRONMENT;
-    case ExtendedStartCrdSessionResultCode::kFailureDisabledByPolicy:
-      return StartCrdSessionResultCode::FAILURE_DISABLED_BY_POLICY;
-    case ExtendedStartCrdSessionResultCode::kFailureUnknownError:
-      return StartCrdSessionResultCode::START_CRD_SESSION_RESULT_UNKNOWN;
-
-    case ExtendedStartCrdSessionResultCode::kFailureAuthzPolicyCheckFailed:
-    case ExtendedStartCrdSessionResultCode::kFailurePeerIsOffline:
-    case ExtendedStartCrdSessionResultCode::kFailureSessionRejected:
-    case ExtendedStartCrdSessionResultCode::kFailureIncompatibleProtocol:
-    case ExtendedStartCrdSessionResultCode::kFailureAuthenticationFailed:
-    case ExtendedStartCrdSessionResultCode::kFailureInvalidAccount:
-    case ExtendedStartCrdSessionResultCode::kFailureChannelConnectionError:
-    case ExtendedStartCrdSessionResultCode::kFailureSignalingError:
-    case ExtendedStartCrdSessionResultCode::kFailureSignalingTimeout:
-    case ExtendedStartCrdSessionResultCode::kFailureHostOverload:
-    case ExtendedStartCrdSessionResultCode::kFailureMaxSessionLength:
-    case ExtendedStartCrdSessionResultCode::kFailureHostConfigurationError:
-    case ExtendedStartCrdSessionResultCode::kFailureHostCertificateError:
-    case ExtendedStartCrdSessionResultCode::kFailureHostRegistrationError:
-    case ExtendedStartCrdSessionResultCode::kFailureExistingAdminSession:
-    case ExtendedStartCrdSessionResultCode::
-        kFailureLocationAuthzPolicyCheckFailed:
-    case ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount:
-    case ExtendedStartCrdSessionResultCode::kFailureHostPolicyError:
-    case ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError:
-    case ExtendedStartCrdSessionResultCode::kHostSessionDisconnected:
-    case ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed:
-    case ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod:
-      // The server side is not interested in a lot of the different CRD host
-      // failures, which is why most of them are simply mapped to
-      // 'FAILURE_CRD_HOST_ERROR`.
-      return StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR;
-  }
-  NOTREACHED_NORETURN();
+const std::string GetCrdCrashKeyValue(CrdSessionType crd_session_type,
+                                      UserSessionType session_type) {
+  return base::StrCat({CrdSessionTypeToString(crd_session_type), "-",
+                       UserSessionTypeToString(session_type)});
 }
 
 base::TimeDelta GetDeviceIdleTime() {
@@ -227,6 +133,12 @@ base::TimeDelta GetDeviceIdleTime() {
   return base::TimeTicks::Now() - last_activity;
 }
 
+bool IsDeviceIdleSinceReboot() {
+  base::TimeTicks last_activity =
+      CHECK_DEREF(ui::UserActivityDetector::Get()).last_activity_time();
+  return last_activity.is_null();
+}
+
 UserSessionType GetCurrentUserSessionType() {
   const auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
 
@@ -235,7 +147,7 @@ UserSessionType GetCurrentUserSessionType() {
   }
 
   if (user_manager.IsLoggedInAsAnyKioskApp()) {
-    if (IsRunningAutoLaunchedKiosk(user_manager)) {
+    if (IsRunningAutoLaunchedKiosk()) {
       return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
     } else {
       return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
@@ -284,6 +196,9 @@ bool UserSessionSupportsRemoteSupport(UserSessionType user_session) {
       return true;
 
     case UserSessionType::NO_SESSION:
+      return base::FeatureList::IsEnabled(
+          kEnableCrdSharedSessionToUnattendedDevice);
+
     case UserSessionType::UNAFFILIATED_USER_SESSION:
     case UserSessionType::GUEST_SESSION:
     case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
@@ -352,6 +267,58 @@ void CalculateIsInManagedEnvironmentAsync(
           // Keep the mojom connection alive until the callback is invoked.
           .Then(base::BindOnce(CloseMojomConnection,
                                std::move(network_service))));
+}
+
+remoting::ChromeOsEnterpriseRequestOrigin
+ConvertToChromeOsEnterpriseRequestOrigin(
+    StartCrdSessionJobDelegate::RequestOrigin request_origin) {
+  switch (request_origin) {
+    case StartCrdSessionJobDelegate::RequestOrigin::kClassManagement:
+      return remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement;
+    case StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin:
+      return remoting::ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  }
+  NOTREACHED();
+}
+
+StartCrdSessionJobDelegate::RequestOrigin
+ConvertToStartCrdSessionJobDelegateRequestOrigin(
+    SharedCrdSession::RequestOrigin request_origin) {
+  switch (request_origin) {
+    case SharedCrdSession::RequestOrigin::kClassManagement:
+      return StartCrdSessionJobDelegate::RequestOrigin::kClassManagement;
+    case SharedCrdSession::RequestOrigin::kEnterpriseAdmin:
+      return StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin;
+  }
+  NOTREACHED();
+}
+
+remoting::ChromeOsEnterpriseAudioPlayback
+ConvertToChromeOsEnterpriseAudioPlayback(
+    StartCrdSessionJobDelegate::AudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+    case StartCrdSessionJobDelegate::AudioPlayback::kRemoteAndLocal:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kRemoteAndLocal;
+    case StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kRemoteOnly;
+  }
+  NOTREACHED();
+}
+
+StartCrdSessionJobDelegate::AudioPlayback
+ConvertToStartCrdSessionJobDelegateAudioPlayback(
+    SharedCrdSession::AudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case SharedCrdSession::AudioPlayback::kLocalOnly:
+      return StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly;
+    case SharedCrdSession::AudioPlayback::kRemoteAndLocal:
+      return StartCrdSessionJobDelegate::AudioPlayback::kRemoteAndLocal;
+    case SharedCrdSession::AudioPlayback::kRemoteOnly:
+      return StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly;
+  }
+  NOTREACHED();
 }
 
 }  // namespace policy

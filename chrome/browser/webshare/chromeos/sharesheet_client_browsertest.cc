@@ -12,12 +12,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -31,24 +29,19 @@ namespace webshare {
 
 class SharesheetClientBrowserTest : public InProcessBrowserTest {
  public:
-  SharesheetClientBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kWebShare);
-  }
-
   static void CheckSize(const base::FilePath& file_path,
                         int64_t expected_size) {
     base::RunLoop run_loop;
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindLambdaForTesting([&file_path]() {
+        base::BindLambdaForTesting([&file_path]() -> std::optional<int64_t> {
           base::ScopedBlockingCall scoped_blocking_call(
               FROM_HERE, base::BlockingType::WILL_BLOCK);
-          int64_t file_size;
-          EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
-          return file_size;
+          return base::GetFileSize(file_path);
         }),
         base::BindLambdaForTesting(
-            [&run_loop, &expected_size](int64_t file_size) {
+            [&run_loop, &expected_size](std::optional<int64_t> file_size) {
+              ASSERT_TRUE(file_size.has_value());
               EXPECT_EQ(expected_size, file_size);
               run_loop.Quit();
             }));
@@ -85,9 +78,6 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareMultipleFiles) {

@@ -4,20 +4,25 @@
 
 package org.chromium.chrome.browser.ui;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.function.Supplier;
+
 /**
  * Handles interaction with other UI's when a bottom sheet goes in and out of expanded mode:
+ *
  * <ul>
- * <li> Suspends modal dialogs
- * <li> Hides the tab from accessibility tree
+ *   <li>Suspends modal dialogs
+ *   <li>Hides the tab from accessibility tree
  * </ul>
  */
+@NullMarked
 public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
     /** A token for suppressing app modal dialogs. */
     private int mAppModalToken = TokenHolder.INVALID_TOKEN;
@@ -26,13 +31,13 @@ public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
     private int mTabModalToken = TokenHolder.INVALID_TOKEN;
 
     /** A delegate that provides the functionality of obscuring all tabs. */
-    private TabObscuringHandler mTabObscuringHandler;
+    private final TabObscuringHandler mTabObscuringHandler;
 
     /** A token held while the bottom sheet is obscuring all visible tabs. */
-    private TabObscuringHandler.Token mTabObscuringToken;
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
     /** A supplier of the activity's dialog manager. */
-    private Supplier<ModalDialogManager> mDialogManager;
+    private final Supplier<ModalDialogManager> mDialogManager;
 
     public ExpandedSheetHelperImpl(
             Supplier<ModalDialogManager> dialogManager, TabObscuringHandler tabObscuringHandler) {
@@ -80,6 +85,7 @@ public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
 
     /**
      * Set whether the bottom sheet is obscuring all tabs.
+     *
      * @param isObscuring Whether the bottom sheet is considered to be obscuring.
      */
     private void setIsObscuringAllTabs(boolean isObscuring) {
@@ -88,7 +94,7 @@ public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
             mTabObscuringToken =
                     mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
         } else {
-            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            if (mTabObscuringToken != null) mTabObscuringHandler.unobscure(mTabObscuringToken);
             mTabObscuringToken = null;
         }
     }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/heap_array.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,8 +25,8 @@
 #include "media/cast/openscreen/decoder_buffer_reader.h"
 #include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
@@ -73,18 +74,15 @@ class RemotingSender::SenderEncodedFrameFactory {
     remoting_frame->frame_id = frame_id;
 
     // DecoderBuffer data must be encoded in a special format.
-    std::vector<uint8_t> data =
+    remoting_frame->data =
         media::cast::DecoderBufferToByteArray(decoder_buffer);
-    if (!decoder_buffer.end_of_stream() && data.empty()) {
+    if (!decoder_buffer.end_of_stream() && remoting_frame->data.empty()) {
       return nullptr;
     }
-    remoting_frame->data =
-        std::string(reinterpret_cast<const char*>(data.data()), data.size());
 
     const bool is_key_frame =
         !decoder_buffer.end_of_stream() && decoder_buffer.is_key_frame();
-    remoting_frame->dependency =
-        is_key_frame ? Dependency::kKeyFrame : Dependency::kDependent;
+    remoting_frame->is_key_frame = is_key_frame;
     remoting_frame->referenced_frame_id =
         is_key_frame ? frame_id : frame_id - 1;
     remoting_frame->reference_time = clock_->NowTicks();
@@ -164,8 +162,7 @@ RemotingSender::RemotingSender(
                               base::Unretained(this)),
           std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
-      is_audio_(config.rtp_payload_type <=
-                media::cast::RtpPayloadType::REMOTE_AUDIO),
+      is_audio_(config.is_audio()),
       frame_factory_(
           std::make_unique<SenderEncodedFrameFactory>(config.rtp_timebase,
                                                       *frame_sender_,
@@ -214,13 +211,11 @@ void RemotingSender::CancelInFlightData() {
 }
 
 int RemotingSender::GetNumberOfFramesInEncoder() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 base::TimeDelta RemotingSender::GetEncoderBacklogDuration() const {
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeDelta();
+  NOTREACHED();
 }
 
 void RemotingSender::OnFrameCanceled(media::cast::FrameId frame_id) {
@@ -253,7 +248,7 @@ void RemotingSender::TrySendFrame() {
 #if DCHECK_IS_ON()
   CHECK_GE(remoting_frame->referenced_frame_id, remoting_frame->frame_id - 1);
   if (flow_restart_pending_) {
-    CHECK_EQ(remoting_frame->dependency, Dependency::kKeyFrame);
+    CHECK(remoting_frame->is_key_frame);
     CHECK_EQ(remoting_frame->referenced_frame_id, remoting_frame->frame_id);
   } else {
     CHECK_GT(remoting_frame->frame_id, media::cast::FrameId::first());
@@ -328,8 +323,9 @@ void RemotingSender::OnRemotingDataStreamError() {
   // NOTE: This method must be idemptotent as it may be called more than once.
   decoder_buffer_reader_.reset();
   stream_sender_.reset();
-  if (!error_callback_.is_null())
+  if (!error_callback_.is_null()) {
     std::move(error_callback_).Run();
+  }
 }
 
 void RemotingSender::ClearCurrentFrame() {

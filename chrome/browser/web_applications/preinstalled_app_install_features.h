@@ -13,16 +13,16 @@ class Profile;
 
 namespace web_app {
 
-// Returns whether preinstalled Google Docs, Sheets, and Slides apps should
+// Returns whether preinstalled Google Docs, Sheets, Slides and Vids apps should
 // display as standalone tabbed apps, and Drive as standalone but not
 // tabbed, by default. Always false on non-CrOS.
-bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile);
+bool IsPreinstalledWorkspaceStandaloneTabbed(Profile& profile);
 
-// Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
-// corresponds to |feature_name|. Used by external app install configs to gate
-// installation on features listed in |kPreinstalledAppInstallFeatures|.
-bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
-                                            const Profile& profile);
+// Returns whether the feature in |kPreinstalledAppInstallFeatures| that
+// corresponds to `feature_name` is enabled. Used by external app install
+// configs to gate installation on features listed in
+// `kPreinstalledAppInstallFeatures`.
+bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name);
 
 base::AutoReset<bool> SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 

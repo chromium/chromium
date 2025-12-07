@@ -70,9 +70,9 @@ export class MultiStoreDeletePasswordDialogElement extends
     };
   }
 
-  duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry;
-  private removeFromAccountChecked_: boolean;
-  private removeFromDeviceChecked_: boolean;
+  declare duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry;
+  declare private removeFromAccountChecked_: boolean;
+  declare private removeFromDeviceChecked_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

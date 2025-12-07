@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <!-- NTP customization main bottom sheet sections -->
+  <item type="id" name="ntp_cards" />
+  <item type="id" name="feed_settings" />
+  <item type="id" name="theme" />
+  <item type="id" name="mvt_settings" />
+</resources>

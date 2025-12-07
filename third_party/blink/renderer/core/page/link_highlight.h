@@ -30,9 +30,9 @@ class PaintArtifactCompositor;
 class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
  public:
   explicit LinkHighlight(Page&);
-  virtual ~LinkHighlight();
+  ~LinkHighlight();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
   void ResetForPageNavigation();
 

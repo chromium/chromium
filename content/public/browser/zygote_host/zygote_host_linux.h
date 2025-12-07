@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "base/process/process.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -359,6 +360,25 @@ void AuthFactorEditor::RemovePinFactor(std::unique_ptr<UserContext> context,
   client_->RemoveAuthFactor(req, std::move(remove_auth_factor_callback));
 }
 
+void AuthFactorEditor::RemovePasswordFactor(
+    std::unique_ptr<UserContext> context,
+    const cryptohome::KeyLabel& label,
+    AuthOperationCallback callback) {
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  LOGIN_LOG(EVENT) << "Removing password factor";
+  cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword, label};
+
+  user_data_auth::RemoveAuthFactorRequest req;
+  req.set_auth_session_id(context->GetAuthSessionId());
+  req.set_auth_factor_label(ref.label().value());
+
+  auto remove_auth_factor_callback = base::BindOnce(
+      &AuthFactorEditor::OnRemoveAuthFactor, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  client_->RemoveAuthFactor(req, std::move(remove_auth_factor_callback));
+}
+
 void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
                                          AuthOperationCallback callback) {
   DCHECK(!context->GetAuthSessionId().empty());
@@ -660,6 +680,20 @@ void AuthFactorEditor::UpdatePinFactorMetadata(
                                     std::move(on_updated_callback));
 }
 
+void AuthFactorEditor::LockCryptohomeRecoveryUntilReboot(
+    NoContextOperationCallback callback) {
+  LOGIN_LOG(EVENT) << "Locking Cryptohome recovery until reboot";
+
+  user_data_auth::LockFactorUntilRebootRequest request;
+  request.set_auth_factor_type(
+      ::user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+
+  client_->LockFactorUntilReboot(
+      request,
+      base::BindOnce(&AuthFactorEditor::OnCryptohomeRecoveryLockedUntilReboot,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 /// ---- private callbacks ----
 
 void AuthFactorEditor::OnListAuthFactors(
@@ -808,6 +842,21 @@ void AuthFactorEditor::OnUpdateAuthFactorMetadata(
   LOGIN_LOG(EVENT) << "Successfully updated auth factor metadata";
   context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), std::nullopt);
+}
+
+void AuthFactorEditor::OnCryptohomeRecoveryLockedUntilReboot(
+    NoContextOperationCallback callback,
+    std::optional<user_data_auth::LockFactorUntilRebootReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (cryptohome::HasError(error)) {
+    LOGIN_LOG(ERROR) << "LockCryptohomeRecoveryUntilReboot failed with error "
+                     << error;
+    std::move(callback).Run(AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  LOGIN_LOG(EVENT) << "Successfully locked cryptohome recovery till reboot";
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace ash

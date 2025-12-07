@@ -6,10 +6,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {PrinterType} from '../../print.mojom-webui.js';
-import {Capabilities} from '../../printer_capabilities.mojom-webui.js';
+import type {Capabilities} from '../../printer_capabilities.mojom-webui.js';
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {DestinationProviderCompositeInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import type {DestinationProviderCompositeInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
 
@@ -87,18 +87,14 @@ export class CapabilitiesManager extends EventTarget {
       return;
     }
 
-    // TODO(b/323421684): Use printer type from destination once the
-    // `Destination` object is mojo typed.
     this.destinationProvider!
         .fetchCapabilities(destination.id, PrinterType.kPdf)
         .then(
-            // TODO(b/323421684): Create a CapabilitiesResponse.
             (response: {capabilities: Capabilities}) =>
                 this.onCapabilitiesFetched(response.capabilities));
   }
 
   private onCapabilitiesFetched(caps: Capabilities): void {
-    // TODO(b/323421684): Handle failed capabilities call.
     if (!caps) {
       return;
     }

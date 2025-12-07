@@ -46,13 +46,9 @@ class CrossOriginOpenerPolicyReportingBrowserTest
  public:
   CrossOriginOpenerPolicyReportingBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    // Enable COOP and DocumentReporting:
-    feature_list_.InitWithFeatures(
-        // Enabled features:
-        {network::features::kCrossOriginOpenerPolicy,
-         net::features::kDocumentReporting},
-        // Disabled features:
-        {});
+    // Enable COOP:
+    feature_list_.InitAndEnableFeature(
+        network::features::kCrossOriginOpenerPolicy);
   }
 
   int32_t reports_uploaded() {

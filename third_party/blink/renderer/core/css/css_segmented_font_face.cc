@@ -224,12 +224,9 @@ bool CascadePriorityHigherThan(const FontFace& new_font_face,
               ->GetScopedStyleResolver()
               ->GetCascadeLayerMap();
   }
-  if (!map) {
-    return true;
-  }
-  return map->CompareLayerOrder(
-             existing_font_face.GetStyleRule()->GetCascadeLayer(),
-             new_font_face.GetStyleRule()->GetCascadeLayer()) <= 0;
+  return CascadeLayerMap::CompareLayerOrder(
+             map, existing_font_face.GetLayeredStyleRule(),
+             new_font_face.GetLayeredStyleRule()) <= 0;
 }
 
 }  // namespace

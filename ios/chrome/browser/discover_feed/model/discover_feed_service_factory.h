@@ -5,25 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class DiscoverFeedService;
+class ProfileIOS;
 
 // Singleton that owns all DiscoverFeedServices and associates them with
-// ChromeBrowserState.
-class DiscoverFeedServiceFactory : public BrowserStateKeyedServiceFactory {
+// Profile.
+class DiscoverFeedServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static DiscoverFeedService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
-      bool create = true);
+  static DiscoverFeedService* GetForProfile(ProfileIOS* profile);
+  static DiscoverFeedService* GetForProfileIfExists(ProfileIOS* profile);
 
   static DiscoverFeedServiceFactory* GetInstance();
-
-  DiscoverFeedServiceFactory(const DiscoverFeedServiceFactory&) = delete;
-  DiscoverFeedServiceFactory& operator=(const DiscoverFeedServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<DiscoverFeedServiceFactory>;
@@ -31,9 +26,9 @@ class DiscoverFeedServiceFactory : public BrowserStateKeyedServiceFactory {
   DiscoverFeedServiceFactory();
   ~DiscoverFeedServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_SERVICE_FACTORY_H_

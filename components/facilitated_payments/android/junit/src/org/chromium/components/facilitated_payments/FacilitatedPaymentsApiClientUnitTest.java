@@ -29,7 +29,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
     }
 
     /** A delegate for receiving the responses from the API. */
-    public class TestDelegate implements FacilitatedPaymentsApiClient.Delegate {
+    public static class TestDelegate implements FacilitatedPaymentsApiClient.Delegate {
         public boolean mIsAvailableChecked;
         public boolean mIsAvailable;
 
@@ -71,6 +71,15 @@ public class FacilitatedPaymentsApiClientUnitTest {
     }
 
     @Test
+    public void apiIsNotAvailableByDefaultSyncCheck() throws Exception {
+        TestDelegate delegate = new TestDelegate();
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
+
+        Assert.assertFalse(apiClient.isAvailableSync());
+    }
+
+    @Test
     public void cannotRetrieveClientTokenByDefault() throws Exception {
         TestDelegate delegate = new TestDelegate();
         FacilitatedPaymentsApiClient apiClient =
@@ -89,14 +98,15 @@ public class FacilitatedPaymentsApiClientUnitTest {
                 FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.invokePurchaseAction(
-                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+                /* primaryAccount= */ null,
+                SecurePayload.create(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertEquals(PurchaseActionResult.COULD_NOT_INVOKE, delegate.mPurchaseActionResult);
     }
 
     /** A fake implementation of the API client, which always succeeds. */
-    public class FakeApiClient extends FacilitatedPaymentsApiClient {
+    public static class FakeApiClient extends FacilitatedPaymentsApiClient {
         /** Creates an instance of a fake implementation of the API client. */
         public FakeApiClient(Delegate delegate) {
             super(delegate);
@@ -108,23 +118,39 @@ public class FacilitatedPaymentsApiClientUnitTest {
         }
 
         @Override
+        public boolean isAvailableSync() {
+            return true;
+        }
+
+        @Override
         public void getClientToken() {
             mDelegate.onGetClientToken(/* clientToken= */ TEST_CLIENT_TOKEN);
         }
 
         @Override
-        public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
+        public void invokePurchaseAction(
+                CoreAccountInfo primaryAccount, SecurePayload securePayload) {
             mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.RESULT_OK);
         }
     }
 
     /** A factory for creating a fake implementation of the API client, which always succeeds. */
-    public class FakeApiClientFactory implements FacilitatedPaymentsApiClient.Factory {
+    public static class FakeApiClientFactory implements FacilitatedPaymentsApiClient.Factory {
         @Override
         public FacilitatedPaymentsApiClient factoryCreate(
                 RenderFrameHost renderFrameHost, FacilitatedPaymentsApiClient.Delegate delegate) {
             return new FakeApiClient(delegate);
         }
+    }
+
+    @Test
+    public void factoryCanOverrideApiAvailableSyncResult() throws Exception {
+        FacilitatedPaymentsApiClient.setFactory(new FakeApiClientFactory());
+        TestDelegate delegate = new TestDelegate();
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
+
+        Assert.assertTrue(apiClient.isAvailableSync());
     }
 
     @Test
@@ -161,7 +187,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
                 FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.invokePurchaseAction(
-                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+                /* primaryAccount= */ null,
+                SecurePayload.create(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertEquals(PurchaseActionResult.RESULT_OK, delegate.mPurchaseActionResult);

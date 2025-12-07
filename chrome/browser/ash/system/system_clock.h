@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/user_manager/user_manager.h"
 
 class PrefChangeRegistrar;
@@ -32,8 +31,7 @@ class SystemClockObserver;
 // that is responsible for correct time formatting. It listens to events that
 // modify on-screen time representation (like ActiveUserChanged) and notifies
 // observers.
-class SystemClock : public LoginState::Observer,
-                    public ProfileObserver,
+class SystemClock : public ProfileObserver,
                     public user_manager::UserManager::UserSessionStateObserver {
  public:
   SystemClock();
@@ -68,6 +66,10 @@ class SystemClock : public LoginState::Observer,
   void AddObserver(SystemClockObserver* observer);
   void RemoveObserver(SystemClockObserver* observer);
 
+  // Whether the given user should use 24-hour clock type.
+  bool ShouldUse24HourClockForUser(const AccountId& user_id) const;
+
+  // Whether the active user should use 24-hour clock type.
   bool ShouldUse24HourClock() const;
 
   // ProfileObserver:
@@ -80,16 +82,23 @@ class SystemClock : public LoginState::Observer,
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
-  // LoginState::Observer overrides.
-  void LoggedInStateChanged() override;
-
+  // Callback invoked when the clock type in policy or owner settings changes.
   void OnSystemPrefChanged();
 
-  void UpdateClockType();
+  // Callback invoked when the clock type in user prefs changes.
+  void OnUserPrefChanged();
+
+  // Callback after owner check to copy clock type of the updating user to owner
+  // settings if the updating user is the owner.
+  void MaybeCopyToOwnerSettings(const AccountId& updating_user_id,
+                                const AccountId& owner_id);
+
+  // Notifies observes about the clock type change. Currently system tray is
+  // an observer and this Updates clock type in system UI.
+  void NotifySystemClockTypeChanged();
 
   std::optional<base::HourClockType> scoped_hour_clock_type_;
 
-  raw_ptr<Profile> user_profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
 

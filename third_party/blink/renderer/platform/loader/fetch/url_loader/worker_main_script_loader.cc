@@ -99,17 +99,16 @@ void WorkerMainScriptLoader::Start(
     return;
   }
 
-  script_encoding_ =
-      resource_response_.TextEncodingName().empty()
-          ? UTF8Encoding()
-          : WTF::TextEncoding(resource_response_.TextEncodingName());
+  script_encoding_ = resource_response_.TextEncodingName().empty()
+                         ? Utf8Encoding()
+                         : TextEncoding(resource_response_.TextEncodingName());
 
   url_loader_remote_.Bind(std::move(
       worker_main_script_load_params->url_loader_client_endpoints->url_loader));
   receiver_.Bind(
       std::move(worker_main_script_load_params->url_loader_client_endpoints
                     ->url_loader_client));
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &WorkerMainScriptLoader::OnConnectionClosed, WrapWeakPersistent(this)));
   data_pipe_ = std::move(worker_main_script_load_params->response_body);
 
@@ -131,7 +130,7 @@ void WorkerMainScriptLoader::Cancel() {
 void WorkerMainScriptLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerMainScriptLoader::OnReceiveResponse(
@@ -139,14 +138,14 @@ void WorkerMainScriptLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle handle,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerMainScriptLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerMainScriptLoader::OnUploadProgress(
@@ -154,7 +153,7 @@ void WorkerMainScriptLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerMainScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -171,11 +170,19 @@ void WorkerMainScriptLoader::OnComplete(
   resource_response_.SetEncodedBodyLength(status.encoded_body_length);
   resource_response_.SetDecodedBodyLength(status.decoded_body_length);
   resource_response_.SetCurrentRequestUrl(last_request_url_);
-  mojom::blink::ResourceTimingInfoPtr timing_info = CreateResourceTimingInfo(
-      start_time_, initial_request_url_, &resource_response_);
-  timing_info->response_end = status.completion_time;
-  fetch_context_->AddResourceTiming(std::move(timing_info),
-                                    fetch_initiator_type_names::kOther);
+
+  // https://fetch.spec.whatwg.org/#fetch-finale
+  // Step 3.3.1. If fetchParams's request's URL's scheme is not an HTTP(S)
+  // scheme, then return.
+  //
+  // i.e. call `AddResourceTiming()` only if the URL's scheme is HTTP(S).
+  if (initial_request_url_.ProtocolIsInHTTPFamily()) {
+    mojom::blink::ResourceTimingInfoPtr timing_info = CreateResourceTimingInfo(
+        start_time_, initial_request_url_, &resource_response_);
+    timing_info->response_end = status.completion_time;
+    fetch_context_->AddResourceTiming(std::move(timing_info),
+                                      fetch_initiator_type_names::kOther);
+  }
 
   has_received_completion_ = true;
   status_ = status;
@@ -213,8 +220,8 @@ void WorkerMainScriptLoader::StartLoadingBody() {
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   MojoResult rv =
       watcher_->Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                      WTF::BindRepeating(&WorkerMainScriptLoader::OnReadable,
-                                         WrapWeakPersistent(this)));
+                      BindRepeating(&WorkerMainScriptLoader::OnReadable,
+                                    WrapWeakPersistent(this)));
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   watcher_->ArmOrNotify();
 }
@@ -227,8 +234,7 @@ void WorkerMainScriptLoader::OnReadable(MojoResult) {
   switch (rv) {
     case MOJO_RESULT_BUSY:
     case MOJO_RESULT_INVALID_ARGUMENT:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case MOJO_RESULT_FAILED_PRECONDITION:
       has_seen_end_of_data_ = true;
       NotifyCompletionIfAppropriate();

@@ -132,13 +132,10 @@ class DateTimeFormatTest : public testing::Test {
     String ToString() const {
       StringBuilder builder;
       builder.Append("Tokens(");
-      for (unsigned index = 0; index < tokens_.size(); ++index) {
-        if (index)
-          builder.Append(',');
-        builder.Append(tokens_[index].ToString());
-      }
+      builder.AppendRange(tokens_, ",",
+                          [](const auto& token) { return token.ToString(); });
       builder.Append(')');
-      return builder.ToString();
+      return builder.ReleaseString();
     }
 
    private:

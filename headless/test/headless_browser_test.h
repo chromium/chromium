@@ -31,8 +31,9 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   HeadlessBrowserTest();
   ~HeadlessBrowserTest() override;
 
-  // BrowserTestBase:
+  // content::BrowserTestBase:
   void SetUp() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
 #if BUILDFLAG(IS_MAC)
@@ -42,6 +43,9 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   // Run an asynchronous test in a nested run loop. The caller should call
   // FinishAsynchronousTest() to notify that the test should finish.
   void RunAsynchronousTest();
+
+  // Return true if CLI switch --reset-results provided.
+  bool ShouldUpdateExpectations();
 
  protected:
   // Call this instead of SetUp() to run tests without GPU rendering (i.e.,
@@ -54,6 +58,10 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   // Returns the options used by the browser. Modify with caution, since some
   // options only take effect if they were set before browser creation.
   HeadlessBrowser::Options* options() const;
+
+  // Override to disable OOPIF in tests. Default implementation returns
+  // positive.
+  virtual bool ShouldEnableSitePerProcess();
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;

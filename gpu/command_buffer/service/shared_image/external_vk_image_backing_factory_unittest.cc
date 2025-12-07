@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -33,7 +30,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/buildflags.h"
@@ -50,13 +47,10 @@ namespace {
 class ExternalVkImageBackingFactoryTest : public SharedImageTestBase {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    GTEST_SKIP() << "Chrome OS Vulkan initialization fails";
-#else
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kVulkan));
-    backing_factory_ =
-        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
-#endif
+    constexpr bool kIsInterop = false;
+    backing_factory_ = std::make_unique<ExternalVkImageBackingFactory>(
+        context_state_, kIsInterop);
   }
 };
 
@@ -102,11 +96,10 @@ class ExternalVkImageBackingFactoryDawnTest
   }
 
  protected:
-  static constexpr WGPUInstanceDescriptor dawn_instance_desc_ = {
-      .features =
-          {
-              .timedWaitAnyEnable = true,
-          },
+  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
+  static constexpr wgpu::InstanceDescriptor dawn_instance_desc_ = {
+      .requiredFeatureCount = 1,
+      .requiredFeatures = &kTimedWaitAny,
   };
   dawn::native::Instance dawn_instance_ =
       dawn::native::Instance(&dawn_instance_desc_);
@@ -206,11 +199,11 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
 
     for (int i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
       EXPECT_EQ(pixel[0], 0);
-      EXPECT_EQ(pixel[1], 255);
-      EXPECT_EQ(pixel[2], 0);
-      EXPECT_EQ(pixel[3], 255);
+      UNSAFE_TODO(EXPECT_EQ(pixel[1], 255));
+      UNSAFE_TODO(EXPECT_EQ(pixel[2], 0));
+      UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
     }
 
     skia_scoped_access->ApplyBackendSurfaceEndState();
@@ -308,11 +301,11 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     // Encode the buffer copy
     wgpu::CommandEncoder encoder = dawn_device_.CreateCommandEncoder();
     {
-      wgpu::ImageCopyTexture src_copy_view = {};
+      wgpu::TexelCopyTextureInfo src_copy_view = {};
       src_copy_view.origin = {0, 0, 0};
       src_copy_view.texture = src_texture;
 
-      wgpu::ImageCopyBuffer dst_copy_view = {};
+      wgpu::TexelCopyBufferInfo dst_copy_view = {};
       dst_copy_view.buffer = dst_buffer;
       dst_copy_view.layout.bytesPerRow = 256;
       dst_copy_view.layout.offset = 0;
@@ -331,7 +324,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     wgpu::FutureWaitInfo wait_info{
         dst_buffer.MapAsync(wgpu::MapMode::Read, 0, 256 * size.height(),
                             wgpu::CallbackMode::WaitAnyOnly,
-                            [](wgpu::MapAsyncStatus status, const char*) {
+                            [](wgpu::MapAsyncStatus status, wgpu::StringView) {
                               ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
                             })};
 
@@ -345,17 +338,17 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
         static_cast<const uint8_t*>(dst_buffer.GetConstMappedRange());
     for (int h = 0; h < size.height(); ++h) {
       for (int w = 0; w < size.width(); ++w) {
-        const uint8_t* pixel = (pixel_data + h * 256) + w * 4;
+        const uint8_t* pixel = UNSAFE_TODO((pixel_data + h * 256) + w * 4);
         if (h < size.height() / 2) {
           EXPECT_EQ(pixel[0], 0);
-          EXPECT_EQ(pixel[1], 0);
-          EXPECT_EQ(pixel[2], 255);
-          EXPECT_EQ(pixel[3], 255);
+          UNSAFE_TODO(EXPECT_EQ(pixel[1], 0));
+          UNSAFE_TODO(EXPECT_EQ(pixel[2], 255));
+          UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
         } else {
           EXPECT_EQ(pixel[0], 0);
-          EXPECT_EQ(pixel[1], 255);
-          EXPECT_EQ(pixel[2], 0);
-          EXPECT_EQ(pixel[3], 255);
+          UNSAFE_TODO(EXPECT_EQ(pixel[1], 255));
+          UNSAFE_TODO(EXPECT_EQ(pixel[2], 0));
+          UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
         }
       }
     }
@@ -532,6 +525,54 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   ASSERT_TRUE(shared_image_ref);
 
   VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
+}
+
+TEST_P(ExternalVkImageBackingFactoryWithFormatTest, ReadbackToMemory) {
+  viz::SharedImageFormat format = get_format();
+
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(9, 9);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kVulkan, {});
+  ASSERT_TRUE(supported);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  std::vector<SkBitmap> src_bitmaps =
+      AllocateRedBitmaps(format, size, /*added_stride=*/0);
+
+  // Upload from bitmap with expected stride.
+  ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(src_bitmaps)));
+
+  const int num_planes = format.NumberOfPlanes();
+  // Do readback into bitmap with same stride and validate pixels match what
+  // was uploaded.
+  std::vector<SkBitmap> readback_bitmaps(num_planes);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    auto& info = src_bitmaps[plane].info();
+    size_t stride = info.minRowBytes();
+    readback_bitmaps[plane].allocPixels(info, stride);
+  }
+
+  std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
+  ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+
+  for (int plane = 0; plane < num_planes; ++plane) {
+    EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],
+                                  cc::ExactPixelComparator()))
+        << "plane_index=" << plane;
+  }
 }
 
 std::string TestParamToString(

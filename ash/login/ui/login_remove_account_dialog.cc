@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -167,22 +166,17 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kVerticalMarginUsernameMailDp));
-    AddChildView(container);
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
+    AddChildViewRaw(container);
     username_label_ =
-        container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
-            display_username, nullptr,
-            is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                     : kColorAshTextColorPrimary,
+        container->AddChildView(login_views_utils::CreateBubbleLabel(
+            display_username, nullptr, cros_tokens::kCrosSysOnSurface,
             gfx::FontList({login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kFontSizeUsername,
                           gfx::Font::Weight::MEDIUM),
             kLineHeightUsername));
-    email_label_ =
-        container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
-            email, nullptr,
-            is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
-                     : kColorAshTextColorSecondary));
+    email_label_ = container->AddChildView(login_views_utils::CreateBubbleLabel(
+        email, nullptr,
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)));
   }
 
   // Add a warning text if the user is managed.
@@ -191,7 +185,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(user.user_account_manager.value()));
     management_disclosure_label_ =
-        AddChildView(login_views_utils::CreateThemedBubbleLabel(
+        AddChildView(login_views_utils::CreateBubbleLabel(
             managed_text, this, kColorAshTextColorPrimary));
   }
 
@@ -221,19 +215,19 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     remove_user_confirm_data_->SetVisible(false);
 
     remove_user_confirm_data_->AddChildView(
-        login_views_utils::CreateThemedBubbleLabel(part1, this,
-                                                   kColorAshTextColorPrimary));
+        login_views_utils::CreateBubbleLabel(part1, this,
+                                             kColorAshTextColorPrimary));
 
     remove_user_confirm_data_->AddChildView(
-        login_views_utils::CreateThemedBubbleLabel(part2, this,
-                                                   kColorAshTextColorPrimary));
+        login_views_utils::CreateBubbleLabel(part2, this,
+                                             kColorAshTextColorPrimary));
 
     remove_user_button_ = new RemoveUserButton(
         base::BindRepeating(&LoginRemoveAccountDialog::RemoveUserButtonPressed,
                             base::Unretained(this)),
         this);
     remove_user_button_->SetID(kRemoveUserButtonIdForTest);
-    AddChildView(remove_user_button_.get());
+    AddChildViewRaw(remove_user_button_.get());
 
     // Traps the focus on the remove user button.
     focus_search_ = std::make_unique<TrappedFocusSearch>(remove_user_button_);
@@ -242,6 +236,11 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
   set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
   SetPadding(kHorizontalPaddingRemoveAccountDialogDp,
              kVerticalPaddingRemoveAccountDialogDp);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
+  UpdateAccessibleDescription();
+  GetViewAccessibility().SetIsModal(true);
 }
 
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
@@ -260,27 +259,6 @@ void LoginRemoveAccountDialog::RequestFocus() {
 
 bool LoginRemoveAccountDialog::HasFocus() const {
   return remove_user_button_ && remove_user_button_->HasFocus();
-}
-
-void LoginRemoveAccountDialog::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  if (remove_user_button_) {
-    node_data->SetName(l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
-    node_data->SetDescription(l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
-  } else {
-    node_data->SetName(username_label_->GetText());
-    if (management_disclosure_label_) {
-      node_data->SetDescription(
-          base::StrCat({email_label_->GetText(), u" ",
-                        management_disclosure_label_->GetText()}));
-    } else {
-      node_data->SetDescription(email_label_->GetText());
-    }
-  }
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 
 views::FocusTraversable* LoginRemoveAccountDialog::GetPaneFocusTraversable() {
@@ -328,6 +306,37 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
 
   if (on_remove_user_requested_) {
     std::move(on_remove_user_requested_).Run();
+  }
+}
+
+void LoginRemoveAccountDialog::UpdateAccessibleDescription() {
+  if (remove_user_button_) {
+    GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
+  } else {
+    if (management_disclosure_label_) {
+      GetViewAccessibility().SetDescription(
+          base::StrCat({email_label_->GetText(), u" ",
+                        management_disclosure_label_->GetText()}));
+    } else {
+      GetViewAccessibility().SetDescription(
+          std::u16string(email_label_->GetText()));
+    }
+  }
+}
+
+void LoginRemoveAccountDialog::UpdateAccessibleName() {
+  if (remove_user_button_) {
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
+  } else {
+    std::u16string_view accessible_name = username_label_->GetText();
+    if (!accessible_name.empty()) {
+      GetViewAccessibility().SetName(std::u16string(accessible_name));
+    } else {
+      GetViewAccessibility().SetName(
+          std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
   }
 }
 

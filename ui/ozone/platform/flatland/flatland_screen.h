@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_screen.h"

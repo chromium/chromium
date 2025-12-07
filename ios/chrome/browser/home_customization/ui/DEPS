@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/ntp/ui_bundled",
+  "+third_party/material_color_utilities/src/cpp",
+  "+ios/chrome/browser/content_suggestions/ui_bundled",
+]

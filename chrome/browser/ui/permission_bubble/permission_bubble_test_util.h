@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERMISSION_BUBBLE_PERMISSION_BUBBLE_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_PERMISSION_BUBBLE_PERMISSION_BUBBLE_TEST_UTIL_H_
 
+#include <memory>
 #include <vector>
 
 #include "components/permissions/permission_prompt.h"
@@ -29,9 +30,8 @@ class TestPermissionBubbleViewDelegate
 
   ~TestPermissionBubbleViewDelegate() override;
 
-  const std::vector<
-      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
-  Requests() override;
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
+      override;
 
   GURL GetRequestingOrigin() const override;
 
@@ -42,6 +42,8 @@ class TestPermissionBubbleViewDelegate
   void Deny() override {}
   void Dismiss() override {}
   void Ignore() override {}
+  void SetPromptOptions(PromptOptions prompt_options) override {}
+  GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override;
   void FinalizeCurrentRequests() override {}
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override {}
@@ -58,19 +60,16 @@ class TestPermissionBubbleViewDelegate
   void SetPromptShown() override {}
   void SetDecisionTime() override {}
   bool RecreateView() override;
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override;
   content::WebContents* GetAssociatedWebContents() override;
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override;
 
   void set_requests(
-      std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-          requests) {
-    requests_ = requests;
-  }
+      std::vector<std::unique_ptr<permissions::PermissionRequest>> requests);
 
  private:
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests_;
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
   base::WeakPtrFactory<TestPermissionBubbleViewDelegate> weak_factory_{this};
 };
 

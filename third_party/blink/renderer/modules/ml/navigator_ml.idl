@@ -5,10 +5,9 @@
 // https://www.w3.org/TR/webnn/#api-ml
 
 [
-  Exposed=Window,
-  SecureContext,
-  ImplementedAs=NavigatorML,
   RuntimeEnabled=MachineLearningNeuralNetwork
-] partial interface Navigator {
-  [SameObject] readonly attribute ML ml;
+] interface mixin NavigatorML {
+  [SameObject, SecureContext] readonly attribute ML ml;
 };
+Navigator includes NavigatorML;
+WorkerNavigator includes NavigatorML;

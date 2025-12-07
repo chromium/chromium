@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model.h"
@@ -141,6 +142,10 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
   menu_item_view->set_may_have_mnemonics(
       model->MayHaveMnemonicsAt(model_index));
+  if (const std::u16string acc_name = model->GetAccessibleNameAt(model_index);
+      !acc_name.empty()) {
+    menu_item_view->GetViewAccessibility().SetName(acc_name);
+  }
   const ui::ElementIdentifier element_id =
       model->GetElementIdentifierAt(model_index);
   if (element_id) {
@@ -185,6 +190,12 @@ void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
 
 bool MenuModelAdapter::IsTriggerableEvent(MenuItemView* source,
                                           const ui::Event& e) {
+  // By default, a sub-menu is not triggerable.
+  // Subclass can override this behavior.
+  if (source->GetType() == MenuItemView::Type::kSubMenu) {
+    return false;
+  }
+
   return e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
          (e.IsMouseEvent() && (triggerable_event_flags_ & e.flags()));
@@ -242,16 +253,18 @@ bool MenuModelAdapter::IsItemChecked(int id) const {
 
 void MenuModelAdapter::WillShowMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
-  const std::map<MenuItemView*, ui::MenuModel*>::const_iterator map_iterator =
-      menu_map_.find(menu);
+  const std::map<MenuItemView*,
+                 raw_ptr<ui::MenuModel, CtnExperimental>>::const_iterator
+      map_iterator = menu_map_.find(menu);
   CHECK(map_iterator != menu_map_.end());
   map_iterator->second->MenuWillShow();
 }
 
 void MenuModelAdapter::WillHideMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
-  const std::map<MenuItemView*, ui::MenuModel*>::const_iterator map_iterator =
-      menu_map_.find(menu);
+  const std::map<MenuItemView*,
+                 raw_ptr<ui::MenuModel, CtnExperimental>>::const_iterator
+      map_iterator = menu_map_.find(menu);
   CHECK(map_iterator != menu_map_.end());
   map_iterator->second->MenuWillClose();
 }
@@ -263,6 +276,15 @@ void MenuModelAdapter::OnMenuClosed(MenuItemView* menu) {
 }
 
 // MenuModelDelegate overrides:
+void MenuModelAdapter::OnIconChanged(int command_id) {
+  ui::MenuModel* model = menu_model_;
+  size_t index;
+  menu_model_->GetModelAndIndexForCommandId(command_id, &model, &index);
+  views::MenuItemView* item = menu_->GetMenuItemByID(command_id);
+  CHECK(item);
+  item->SetIcon(model->GetIconAt(index));
+}
+
 void MenuModelAdapter::OnMenuStructureChanged() {
   if (menu_) {
     BuildMenu(menu_);

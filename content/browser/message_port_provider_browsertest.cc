@@ -35,18 +35,18 @@ IN_PROC_BROWSER_TEST_F(MessagePortProviderBrowserTest, PostMessage) {
       } )"));
 
   // Post a message.
-  const std::string target_origin(url.DeprecatedGetOriginAsURL().spec());
-  const std::string source_origin("https://source.origin.com");
+  const url::Origin target_origin = url::Origin::Create(url);
+  const url::Origin source_origin =
+      url::Origin::Create(GURL("https://source.origin.com"));
   const std::string message("success");
   DOMMessageQueue msg_queue(shell()->web_contents());
   MessagePortProvider::PostMessageToFrame(
-      shell()->web_contents()->GetPrimaryPage(),
-      base::UTF8ToUTF16(source_origin), base::UTF8ToUTF16(target_origin),
+      shell()->web_contents()->GetPrimaryPage(), &source_origin, &target_origin,
       base::UTF8ToUTF16(message));
 
   // Verify that the message was received (and had the expected payload).
   std::string expected_test_reply =
-      base::StrCat({"\"", source_origin, ":", message, "\""});
+      base::StrCat({"\"", source_origin.Serialize(), ":", message, "\""});
   std::string actual_test_reply;
   EXPECT_TRUE(msg_queue.WaitForMessage(&actual_test_reply));
   EXPECT_EQ(expected_test_reply, actual_test_reply);
@@ -64,18 +64,18 @@ IN_PROC_BROWSER_TEST_F(MessagePortProviderBrowserTest, PostArrayBufferMessage) {
       } )"));
 
   // Post a message.
-  const std::string target_origin(url.DeprecatedGetOriginAsURL().spec());
-  const std::string source_origin("https://source.origin.com");
+  const url::Origin target_origin = url::Origin::Create(url);
+  const url::Origin source_origin =
+      url::Origin::Create(GURL("https://source.origin.com"));
   const std::vector<uint8_t> message = {0x01, 0x02, 0x03, 0x04};
   DOMMessageQueue msg_queue(shell()->web_contents());
   MessagePortProvider::PostMessageToFrame(
-      shell()->web_contents()->GetPrimaryPage(),
-      base::UTF8ToUTF16(source_origin), base::UTF8ToUTF16(target_origin),
+      shell()->web_contents()->GetPrimaryPage(), &source_origin, &target_origin,
       blink::WebMessageArrayBufferPayload::CreateForTesting(message));
 
   // Verify that the message was received (and had the expected payload).
   std::string expected_test_reply =
-      base::StrCat({"\"", source_origin, ":1,2,3,4\""});
+      base::StrCat({"\"", source_origin.Serialize(), ":1,2,3,4\""});
   std::string actual_test_reply;
   EXPECT_TRUE(msg_queue.WaitForMessage(&actual_test_reply));
   EXPECT_EQ(expected_test_reply, actual_test_reply);

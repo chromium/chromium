@@ -28,8 +28,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/safe_browsing/buildflags.h"
 #include "media/media_buildflags.h"
 
 class BackgroundModeManager;
@@ -66,8 +66,14 @@ class NetworkQualityTracker;
 class SharedURLLoaderFactory;
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 namespace safe_browsing {
 class SafeBrowsingService;
+}
+#endif
+
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
 }
 
 namespace subresource_filter {
@@ -80,10 +86,6 @@ class VariationsService;
 
 namespace component_updater {
 class ComponentUpdateService;
-}
-
-namespace extensions {
-class EventRouterForwarder;
 }
 
 namespace gcm {
@@ -123,6 +125,10 @@ class ResourceCoordinatorParts;
 class TabManager;
 }
 
+namespace ui {
+class UnownedUserDataHost;
+}  // namespace ui
+
 // NOT THREAD SAFE, call only from the main thread.
 // These functions shouldn't return NULL unless otherwise noted.
 class BrowserProcess {
@@ -133,6 +139,12 @@ class BrowserProcess {
   BrowserProcess& operator=(const BrowserProcess&) = delete;
 
   virtual ~BrowserProcess();
+
+  // Returns the UnownedUserDataHost associated with this browser process. This
+  // is used to retrieve arbitrary features from the browser process without
+  // requiring BrowserProcess to have knowledge of them.
+  virtual ui::UnownedUserDataHost& GetUnownedUserDataHost() = 0;
+  virtual const ui::UnownedUserDataHost& GetUnownedUserDataHost() const = 0;
 
   // Invoked when the user is logging out/shutting down. When logging off we may
   // not have enough time to do a normal shutdown. This method is invoked prior
@@ -159,12 +171,11 @@ class BrowserProcess {
   virtual PrefService* local_state() = 0;
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   shared_url_loader_factory() = 0;
+  virtual signin::ActivePrimaryAccountsMetricsRecorder*
+  active_primary_accounts_metrics_recorder() = 0;
   virtual variations::VariationsService* variations_service() = 0;
 
   virtual BrowserProcessPlatformPart* platform_part() = 0;
-
-  virtual extensions::EventRouterForwarder*
-      extension_event_router_forwarder() = 0;
 
   // Returns the manager for desktop notifications.
   // TODO(miguelg) This is in the process of being deprecated in favour of
@@ -216,15 +227,20 @@ class BrowserProcess {
   //
   // Setting the locale updates a few core places where this information is
   // stored, but does not reload any resources or refresh any UI.
+
+  // DEPRECATED: Please use GetFeatures()->application_locale_storage()->Get().
+  // TODO(crbug.com/407832571): Replace existing usages and remove this.
   virtual const std::string& GetApplicationLocale() = 0;
+  // DEPRECATED: Please use GetFeatures()->application_locale_storage()->Set().
+  // TODO(crbug.com/407832571): Replace existing usages and remove this.
   virtual void SetApplicationLocale(const std::string& actual_locale) = 0;
 
   virtual DownloadStatusUpdater* download_status_updater() = 0;
   virtual DownloadRequestLimiter* download_request_limiter() = 0;
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   // Returns the object that manages background applications.
   virtual BackgroundModeManager* background_mode_manager() = 0;
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   virtual void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) = 0;
 #endif
@@ -234,26 +250,21 @@ class BrowserProcess {
   // on this platform (or this is a unit test).
   virtual StatusTray* status_tray() = 0;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Returns the SafeBrowsing service.
   virtual safe_browsing::SafeBrowsingService* safe_browsing_service() = 0;
+#endif
 
   // Returns the service providing versioned storage for rules used by the Safe
   // Browsing subresource filter.
   virtual subresource_filter::RulesetService*
   subresource_filter_ruleset_service() = 0;
 
-  // Returns the service providing versioned storage for rules used by the
-  // Fingerprinting Protection subresource filter.
-  virtual subresource_filter::RulesetService*
-  fingerprinting_protection_ruleset_service() = 0;
-
   // Returns the StartupData which owns any pre-created objects in //chrome
   // before the full browser starts.
   virtual StartupData* startup_data() = 0;
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   // This will start a timer that, if Chrome is in persistent mode, will check
   // whether an update is available, and if that's the case, restart the
   // browser. Note that restart code will strip some of the command line keys
@@ -266,7 +277,9 @@ class BrowserProcess {
 
   virtual component_updater::ComponentUpdateService* component_updater() = 0;
 
+#if BUILDFLAG(IS_CHROMEOS)
   virtual MediaFileSystemRegistry* media_file_system_registry() = 0;
+#endif
 
   virtual WebRtcLogUploader* webrtc_log_uploader() = 0;
 
@@ -285,11 +298,11 @@ class BrowserProcess {
   virtual resource_coordinator::ResourceCoordinatorParts*
   resource_coordinator_parts() = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns the object which keeps track of serial port permissions configured
   // through the policy engine.
   virtual SerialPolicyAllowedPorts* serial_policy_allowed_ports() = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the object which maintains Human Interface Device (HID) system tray
   // icon.
   virtual HidSystemTrayIcon* hid_system_tray_icon() = 0;
@@ -312,6 +325,10 @@ class BrowserProcess {
   virtual BuildState* GetBuildState() = 0;
   // Returns the feature controllers scoped to this browser process.
   virtual GlobalFeatures* GetFeatures() = 0;
+
+  // Create GlobalFeatures scoped to this browser process. Should only be used
+  // in unit tests to create GlobalFeatures after modifying feature flags.
+  virtual void CreateGlobalFeaturesForTesting() = 0;
 
   // Do not add new members to this class. Instead use GlobalFeatures. See file
   // level comment for details.

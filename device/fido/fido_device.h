@@ -15,8 +15,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/authenticator_get_info_response.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

@@ -35,7 +35,4 @@ void SimpleConnectionListener::WaitForConnections() {
   run_loop_.Run();
 }
 
-void SimpleConnectionListener::OnResponseCompletedSuccessfully(
-    std::unique_ptr<StreamSocket> socket) {}
-
 }  // namespace net::test_server

@@ -6,9 +6,11 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_INPUT_CONTEXT_H_
 
 #include <optional>
+#include <set>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 
@@ -46,6 +48,9 @@ struct InputContext : base::RefCounted<InputContext> {
 
 // For logging and debug purposes.
 std::ostream& operator<<(std::ostream& out, const InputContext& value);
+
+using InputContextKeysCallback =
+    base::OnceCallback<void(std::set<std::string>)>;
 
 }  // namespace segmentation_platform
 

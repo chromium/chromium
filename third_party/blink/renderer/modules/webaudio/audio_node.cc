@@ -29,14 +29,18 @@
 
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_count_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_interpretation.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_wiring.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/script_processor_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
@@ -75,7 +79,7 @@ void AudioNode::Dispose() {
   // the handler still needs to be added in case the context is resumed.
   DCHECK(context());
   if (context()->IsPullingAudioGraph() ||
-      context()->ContextState() == BaseAudioContext::kSuspended) {
+      context()->ContextState() == V8AudioContextState::Enum::kSuspended) {
     context()->GetDeferredTaskHandler().AddRenderingOrphanHandler(
         std::move(handler_));
   }
@@ -161,18 +165,18 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "output index (" + String::Number(output_index) +
-            ") exceeds number of outputs (" +
-            String::Number(numberOfOutputs()) + ").");
+        StrCat({"output index (", String::Number(output_index),
+                ") exceeds number of outputs (",
+                String::Number(numberOfOutputs()), ")."}));
     return nullptr;
   }
 
   if (destination && input_index >= destination->numberOfInputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "input index (" + String::Number(input_index) +
-            ") exceeds number of inputs (" +
-            String::Number(destination->numberOfInputs()) + ").");
+        StrCat({"input index (", String::Number(input_index),
+                ") exceeds number of inputs (",
+                String::Number(destination->numberOfInputs()), ")."}));
     return nullptr;
   }
 
@@ -187,8 +191,10 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   // ScriptProcessorNodes with 0 output channels can't be connected to any
   // destination.  If there are no output channels, what would the destination
   // receive?  Just disallow this.
-  if (Handler().GetNodeType() == AudioHandler::kNodeTypeScriptProcessor &&
-      Handler().NumberOfOutputChannels() == 0) {
+  if (Handler().GetNodeType() ==
+          AudioHandler::NodeType::kNodeTypeScriptProcessor &&
+      static_cast<ScriptProcessorHandler&>(Handler())
+          .NumberOfOutputChannels() == 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "cannot connect a ScriptProcessorNode "
                                       "with 0 output channels to any "
@@ -196,20 +202,25 @@ AudioNode* AudioNode::connect(AudioNode* destination,
     return nullptr;
   }
 
-  SendLogMessage(String::Format(
-      "%s({output=[index:%u, type:%s, handler:0x%" PRIXPTR
-      "]} --> "
-      "{input=[index:%u, type:%s, handler:0x%" PRIXPTR "]})",
-      __func__, output_index, Handler().NodeTypeName().Utf8().c_str(),
-      reinterpret_cast<uintptr_t>(&Handler()), input_index,
-      destination->Handler().NodeTypeName().Utf8().c_str(),
-      reinterpret_cast<uintptr_t>(&destination->Handler())));
+  SendLogMessage(
+      __func__, String::Format(
+                    "({output=[index:%u, type:%s, handler:0x%" PRIXPTR "]} --> "
+                    "{input=[index:%u, type:%s, handler:0x%" PRIXPTR "]})",
+                    output_index, Handler().NodeTypeName().Utf8().c_str(),
+                    reinterpret_cast<uintptr_t>(&Handler()), input_index,
+                    destination->Handler().NodeTypeName().Utf8().c_str(),
+                    reinterpret_cast<uintptr_t>(&destination->Handler())));
+
+  // Once the destination node is connected, the source node (e.g.,
+  // MediaElementAudioSourceNode) can eventually disable the MediaElement's
+  // audio output to the device.
+  ConnectToDestinationReady();
 
   AudioNodeWiring::Connect(Handler().Output(output_index),
                            destination->Handler().Input(input_index));
   if (!connected_nodes_[output_index]) {
     connected_nodes_[output_index] =
-        MakeGarbageCollected<HeapHashSet<Member<AudioNode>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<AudioNode>>>();
   }
   connected_nodes_[output_index]->insert(destination);
 
@@ -237,9 +248,9 @@ void AudioNode::connect(AudioParam* param,
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "output index (" + String::Number(output_index) +
-            ") exceeds number of outputs (" +
-            String::Number(numberOfOutputs()) + ").");
+        StrCat({"output index (", String::Number(output_index),
+                ") exceeds number of outputs (",
+                String::Number(numberOfOutputs()), ")."}));
     return;
   }
 
@@ -251,10 +262,15 @@ void AudioNode::connect(AudioParam* param,
     return;
   }
 
+  // Once the destination node is connected, the source node (e.g.,
+  // MediaElementAudioSourceNode) can eventually disable the MediaElement's
+  // audio output to the device.
+  ConnectToDestinationReady();
+
   AudioNodeWiring::Connect(Handler().Output(output_index), param->Handler());
   if (!connected_params_[output_index]) {
     connected_params_[output_index] =
-        MakeGarbageCollected<HeapHashSet<Member<AudioParam>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<AudioParam>>>();
   }
   connected_params_[output_index]->insert(param);
 
@@ -415,8 +431,8 @@ void AudioNode::disconnect(AudioNode* destination,
   if (number_of_disconnections == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "output (" + String::Number(output_index) +
-            ") is not connected to the given destination.");
+        StrCat({"output (", String::Number(output_index),
+                ") is not connected to the given destination."}));
   }
 
   Handler().UpdatePullStatusIfNeeded();
@@ -465,9 +481,9 @@ void AudioNode::disconnect(AudioNode* destination,
                                        input_index)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "output (" + String::Number(output_index) +
-            ") is not connected to the input (" + String::Number(input_index) +
-            ") of the destination.");
+        StrCat({"output (", String::Number(output_index),
+                ") is not connected to the input (",
+                String::Number(input_index), ") of the destination."}));
     return;
   }
 
@@ -544,8 +560,8 @@ void AudioNode::disconnect(AudioParam* destination_param,
   if (!DisconnectFromOutputIfConnected(output_index, *destination_param)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "specified destination AudioParam and node output (" +
-            String::Number(output_index) + ") are not connected.");
+        StrCat({"specified destination AudioParam and node output (",
+                String::Number(output_index), ") are not connected."}));
     return;
   }
 
@@ -571,22 +587,23 @@ void AudioNode::setChannelCount(unsigned count,
   Handler().SetChannelCount(count, exception_state);
 }
 
-String AudioNode::channelCountMode() const {
-  return Handler().GetChannelCountMode();
+V8ChannelCountMode AudioNode::channelCountMode() const {
+  return V8ChannelCountMode(Handler().GetChannelCountMode());
 }
 
-void AudioNode::setChannelCountMode(const String& mode,
+void AudioNode::setChannelCountMode(const V8ChannelCountMode& mode,
                                     ExceptionState& exception_state) {
-  Handler().SetChannelCountMode(mode, exception_state);
+  Handler().SetChannelCountMode(mode.AsEnum(), exception_state);
 }
 
-String AudioNode::channelInterpretation() const {
-  return Handler().ChannelInterpretation();
+V8ChannelInterpretation AudioNode::channelInterpretation() const {
+  return V8ChannelInterpretation(Handler().ChannelInterpretation());
 }
 
-void AudioNode::setChannelInterpretation(const String& interpretation,
-                                         ExceptionState& exception_state) {
-  Handler().SetChannelInterpretation(interpretation, exception_state);
+void AudioNode::setChannelInterpretation(
+    const V8ChannelInterpretation& interpretation,
+    ExceptionState& exception_state) {
+  Handler().SetChannelInterpretation(interpretation.AsEnum(), exception_state);
 }
 
 const AtomicString& AudioNode::InterfaceName() const {
@@ -604,8 +621,11 @@ void AudioNode::DidAddOutput(unsigned number_of_outputs) {
   DCHECK_EQ(number_of_outputs, connected_params_.size());
 }
 
-void AudioNode::SendLogMessage(const String& message) {
-  WebRtcLogMessage(String::Format("[WA]AN::%s", message.Utf8().c_str()).Utf8());
+void AudioNode::SendLogMessage(const char* const function_name,
+                               const String& message) {
+  WebRtcLogMessage(
+      String::Format("[WA]AN::%s %s", function_name, message.Utf8().c_str())
+          .Utf8());
 }
 
 }  // namespace blink

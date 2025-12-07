@@ -12,7 +12,6 @@
 #include "components/live_caption/caption_bubble_context.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace captions {
 
@@ -36,6 +35,7 @@ class CaptionBubbleContextRemote : public CaptionBubbleContext {
   const std::string GetSessionId() const override;
   void Activate() override;
   bool IsActivatable() const override;
+  bool ShouldAvoidOverlap() const override;
   std::unique_ptr<CaptionBubbleSessionObserver>
   GetCaptionBubbleSessionObserver() override;
   OpenCaptionSettingsCallback GetOpenCaptionSettingsCallback() override;

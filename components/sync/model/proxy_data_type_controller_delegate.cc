@@ -24,11 +24,11 @@ void OnSyncStartingHelperOnModelThread(
   delegate->OnSyncStarting(request, std::move(callback_bound_to_ui_thread));
 }
 
-void HasUnsyncedDataHelperOnModelThread(
-    base::OnceCallback<void(bool)> callback_bound_to_ui_thread,
+void GetUnsyncedDataCountHelperOnModelThread(
+    base::OnceCallback<void(size_t)> callback_bound_to_ui_thread,
     base::WeakPtr<DataTypeControllerDelegate> delegate) {
   DCHECK(delegate);
-  delegate->HasUnsyncedData(std::move(callback_bound_to_ui_thread));
+  delegate->GetUnsyncedDataCount(std::move(callback_bound_to_ui_thread));
 }
 
 void GetAllNodesForDebuggingHelperOnModelThread(
@@ -74,7 +74,7 @@ void ReportBridgeErrorOnModelThreadForTest(  // IN-TEST
 }
 
 // Rurns some task on the destination task runner (backend sequence), first
-// exercising |delegate_provider| *also* in the backend sequence.
+// exercising `delegate_provider` *also* in the backend sequence.
 void RunModelTask(
     const ProxyDataTypeControllerDelegate::DelegateProvider& delegate_provider,
     base::OnceCallback<void(base::WeakPtr<DataTypeControllerDelegate>)> task) {
@@ -102,9 +102,12 @@ ProxyDataTypeControllerDelegate::~ProxyDataTypeControllerDelegate() = default;
 void ProxyDataTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
+  DataTypeActivationRequest proxy_request = request;
+  proxy_request.error_handler =
+      base::BindPostTaskToCurrentDefault(request.error_handler);
   PostTask(
       FROM_HERE,
-      base::BindOnce(&OnSyncStartingHelperOnModelThread, request,
+      base::BindOnce(&OnSyncStartingHelperOnModelThread, proxy_request,
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
@@ -114,11 +117,11 @@ void ProxyDataTypeControllerDelegate::OnSyncStopping(
            base::BindOnce(&StopSyncHelperOnModelThread, metadata_fate));
 }
 
-void ProxyDataTypeControllerDelegate::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void ProxyDataTypeControllerDelegate::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
   PostTask(
       FROM_HERE,
-      base::BindOnce(&HasUnsyncedDataHelperOnModelThread,
+      base::BindOnce(&GetUnsyncedDataCountHelperOnModelThread,
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 

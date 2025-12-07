@@ -7,12 +7,11 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
@@ -73,10 +72,6 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   static void SetPlatformWindowFactoryDelegateForTesting(
       PlatformWindowFactoryDelegateForTesting* delegate);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::string GetUniqueId() const override;
-#endif
-
  protected:
   // NOTE: this does not call CreateCompositor(); subclasses must call
   // CreateCompositor() at the appropriate time.
@@ -101,13 +96,13 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void OnWillDestroyAcceleratedWidget() override;
   void OnAcceleratedWidgetDestroyed() override;
   void OnActivationChanged(bool active) override;
-  void OnMouseEnter() override;
+  void OnCursorUpdate() override;
   void OnOcclusionStateChanged(
       ui::PlatformWindowOcclusionState occlusion_state) override;
   int64_t OnStateUpdate(const PlatformWindowDelegate::State& old,
                         const PlatformWindowDelegate::State& latest) override;
-  void SetFrameRateThrottleEnabled(bool enabled) override;
-  void DisableNativeWindowOcclusion() override;
+  void OnDisplayColorSpacesChanged(
+      scoped_refptr<gfx::DisplayColorSpacesRef> color_spaces) override;
 
   // Overridden from aura::WindowTreeHost:
   gfx::Point GetLocationOnScreenInPixels() const override;
@@ -116,6 +111,9 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void ReleaseSystemKeyEventCapture() override;
   bool IsKeyLocked(ui::DomCode dom_code) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
+
+  void OnVideoCaptureLockCreated() override;
+  void OnVideoCaptureLockDestroyed() override;
 
  private:
   gfx::AcceleratedWidget widget_;

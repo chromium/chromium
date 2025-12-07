@@ -7,23 +7,25 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/prefs/pref_service.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -42,31 +44,34 @@ class InactiveTabsFakeWebStateListDelegate : public FakeWebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
     SnapshotTabHelper::CreateForWebState(web_state);
+    SnapshotSourceTabHelper::CreateForWebState(web_state);
   }
 };
 
 class InactiveTabsUtilsTest : public PlatformTest {
  public:
   InactiveTabsUtilsTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     browser_active_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
+        profile_.get(),
         std::make_unique<InactiveTabsFakeWebStateListDelegate>());
     browser_inactive_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
+        profile_.get(),
         std::make_unique<InactiveTabsFakeWebStateListDelegate>());
     SnapshotBrowserAgent::CreateForBrowser(browser_active_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_inactive_.get());
+    profile_->GetPrefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
   }
 
-  PrefService* local_state() {
-    return GetApplicationContext()->GetLocalState();
+  ~InactiveTabsUtilsTest() override {
+    prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
   }
+
+  PrefService* prefs() { return profile_->GetPrefs(); }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_active_;
   std::unique_ptr<TestBrowser> browser_inactive_;
   // Used to verify histogram logging.
@@ -110,17 +115,6 @@ class InactiveTabsUtilsTest : public PlatformTest {
 // Ensure that the active tab in the active tab list with date set at "Now" is
 // not added to the inactive tab list.
 TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
 
@@ -146,16 +140,7 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
 // Ensure that inactive tabs are moved from the active tab list to the inactive
 // tab list.
 TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -181,17 +166,6 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
 
 // Ensure there is no active tab in the inactive tab list.
 TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
 
@@ -216,16 +190,7 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
 
 // Ensure that inactive tab stay in inactive list.
 TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -251,11 +216,9 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
 
 // Restore all inactive tab.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
-  // RestoreAllInactive checks that it is called when the feature is disabled,
-  // either via the flag, or via the user pref. Disable in both places.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+  // RestoreAllInactive checks that it is called when the feature is disabled
+  // via the user pref.
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -282,18 +245,7 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
 // Ensure that all moving functions are working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitWithFeaturesAndParameters(
-      {/* Enabled features */
-       {kTabInactivityThreshold, {parameters}}},
-      {/* Disabled features */});
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -372,11 +324,9 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
 // Ensure that restore function is working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
-  // RestoreAllInactive checks that it is called when the feature is disabled,
-  // either via the flag, or via the user pref. Disable in both places.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+  // RestoreAllInactive checks that it is called when the feature is disabled
+  // via the user pref.
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -415,17 +365,6 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
   // Needed to use the NewTabPageTabHelper and ensure that the tab is an NTP.
   std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
       std::make_unique<web::FakeNavigationManager>();
@@ -442,7 +381,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   fake_web_state->SetVisibleURL(url);
   fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
   fake_web_state->SetLastActiveTime(base::Time::Now() - base::Days(30));
-  fake_web_state->SetBrowserState(browser_state_.get());
+  fake_web_state->SetBrowserState(profile_.get());
 
   // Ensure this is an ntp web state.
   id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
@@ -450,7 +389,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   NewTabPageTabHelper* ntp_helper =
       NewTabPageTabHelper::FromWebState(fake_web_state.get());
   ntp_helper->SetDelegate(delegate);
-  ASSERT_TRUE(ntp_helper->IsActive());
+  ASSERT_TRUE(IsVisibleURLNewTabPage(fake_web_state.get()));
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -476,71 +415,12 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
       "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
 }
 
-TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
-  // Test that flags are taken into account instead of pref as we set the
-  // preference default value.
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
-
-  WebStateList* active_web_state_list = browser_active_->GetWebStateList();
-  WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
-
-  EXPECT_EQ(active_web_state_list->count(), 0);
-  EXPECT_EQ(inactive_web_state_list->count(), 0);
-
-  // Add tabs in the active browser.
-  AddInactiveTab(active_web_state_list, base::Days(3));
-  AddInactiveTab(active_web_state_list, base::Days(10));
-  AddInactiveTab(active_web_state_list, base::Days(30));
-
-  EXPECT_EQ(active_web_state_list->count(), 3);
-  EXPECT_EQ(inactive_web_state_list->count(), 0);
-
-  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
-
-  EXPECT_EQ(active_web_state_list->count(), 1);
-  EXPECT_EQ(inactive_web_state_list->count(), 2);
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
-
-  std::vector<int> expected_inactive_order = {10, 30};
-  CheckOrder(inactive_web_state_list, expected_inactive_order);
-
-  // Set the preference to 14.
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, 14);
-  MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 0, 1);
-
-  EXPECT_EQ(active_web_state_list->count(), 2);
-  EXPECT_EQ(inactive_web_state_list->count(), 1);
-
-  std::vector<int> expected_active_order = {10, 3};
-  CheckOrder(active_web_state_list, expected_active_order);
-}
-
 // Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
-  // RestoreAllInactive checks that it is called when the feature is disabled,
-  // either via the flag, or via the user pref. Disable in both places.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+  // RestoreAllInactive checks that it is called when the feature via the user
+  // pref.
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
@@ -571,17 +451,6 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
 // filters out duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest,
        MoveTabsFromInactiveToActiveRemovesCrossDuplicates) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now();
@@ -611,17 +480,6 @@ TEST_F(InactiveTabsUtilsTest,
 // filters out duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest,
        MoveTabsFromActiveToInactiveRemovesCrossDuplicates) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now() - base::Days(10);
@@ -648,16 +506,7 @@ TEST_F(InactiveTabsUtilsTest,
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();

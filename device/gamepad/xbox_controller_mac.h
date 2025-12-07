@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/heap_array.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -186,8 +187,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   // aren't correctly framed. The 360 controller frames its packets with a 2
   // byte header (type, total length) so we can reframe the packet data
   // ourselves.
-  uint16_t read_buffer_size_ = 0;
-  std::unique_ptr<uint8_t[]> read_buffer_;
+  base::HeapArray<uint8_t> read_buffer_;
 
   // The pattern that the LEDs on the device are currently displaying, or
   // LED_NUM_PATTERNS if unknown.

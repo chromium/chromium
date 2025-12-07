@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer multiline value='%E2%80%A2 This is a very long line of text that is intended to wrap into multiple lines so that we can test the accessibility of multiline list markers. This sentence has more than forty words to ensure it is long enough to wrap on most screen sizes.'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 ' nameFrom=contents nextOnLineId=inlineTextBox:"This is a very long line of text that is intended to wrap into multiple lines so that we can test the accessibility of "
+++++++++++++++staticText ignored
+++++++++++++staticText name='This is a very long line of text that is intended to wrap into multiple lines so that we can test the accessibility of multiline list markers. This sentence has more than forty words to ensure it is long enough to wrap on most screen sizes.' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='This is a very long line of text that is intended to wrap into multiple lines so that we can test the accessibility of ' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='multiline list markers. This sentence has more than forty words to ensure it is long enough to wrap on most screen ' nameFrom=contents
+++++++++++++++inlineTextBox name='sizes.' nameFrom=contents

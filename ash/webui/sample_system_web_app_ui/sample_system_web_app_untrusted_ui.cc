@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
 
 #include "ash/webui/grit/ash_sample_system_web_app_untrusted_resources_map.h"
@@ -27,9 +22,7 @@ SampleSystemWebAppUntrustedUI::SampleSystemWebAppUntrustedUI(
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUISampleSystemWebAppUntrustedURL);
-  untrusted_source->AddResourcePaths(
-      base::make_span(kAshSampleSystemWebAppUntrustedResources,
-                      kAshSampleSystemWebAppUntrustedResourcesSize));
+  untrusted_source->AddResourcePaths(kAshSampleSystemWebAppUntrustedResources);
   untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
 }
 

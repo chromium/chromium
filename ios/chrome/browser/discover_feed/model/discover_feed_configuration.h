@@ -28,8 +28,8 @@ class SyncService;
 // AuthenticationService used by DiscoverFeedService.
 @property(nonatomic, assign) AuthenticationService* authService;
 
-// The per BrowserState PrefService.
-@property(nonatomic, assign) PrefService* browserStatePrefService;
+// The per Profile PrefService.
+@property(nonatomic, assign) PrefService* profilePrefService;
 
 // The global PrefService.
 @property(nonatomic, assign) PrefService* localStatePrefService;

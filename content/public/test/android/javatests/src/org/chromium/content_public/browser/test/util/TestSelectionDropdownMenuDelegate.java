@@ -12,15 +12,25 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A placeholder {@link SelectionDropdownMenuDelegate} to be used with tests. */
 public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuDelegate {
+    private static final WritableIntPropertyKey ID = new WritableIntPropertyKey();
+    private static final WritableObjectPropertyKey<String> TITLE =
+            new WritableObjectPropertyKey<>();
+    private static final PropertyKey[] TEST_KEYS = {ID, TITLE};
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListMenuItemType.DIVIDER, ListMenuItemType.MENU_ITEM})
     public @interface ListMenuItemType {
@@ -34,6 +44,7 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
+            HierarchicalMenuController hierarchicalMenuController,
             int x,
             int y) {}
 
@@ -41,30 +52,16 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
     public void dismiss() {}
 
     @Override
-    public int getGroupId(PropertyModel itemModel) {
-        return 0;
-    }
-
-    @Override
-    public int getItemId(PropertyModel itemModel) {
-        return 0;
-    }
-
-    @Nullable
-    @Override
-    public Intent getItemIntent(PropertyModel itemModel) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public View.OnClickListener getClickListener(PropertyModel itemModel) {
-        return null;
+    public SelectionMenuItem getMinimalMenuItem(PropertyModel itemModel) {
+        return new SelectionMenuItem.Builder(
+                        PropertyModel.getFromModelOrDefault(itemModel, TITLE, ""))
+                .setId(PropertyModel.getFromModelOrDefault(itemModel, ID, 0))
+                .build();
     }
 
     @Override
     public MVCListAdapter.ListItem getDivider() {
-        return new MVCListAdapter.ListItem(ListMenuItemType.DIVIDER, new PropertyModel());
+        return new MVCListAdapter.ListItem(ListMenuItemType.DIVIDER, new PropertyModel(TEST_KEYS));
     }
 
     @Override
@@ -77,8 +74,11 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            @Nullable View.OnClickListener clickListener,
-            @Nullable Intent intent) {
-        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, new PropertyModel());
+            @Nullable Intent intent,
+            int order) {
+        PropertyModel model = new PropertyModel(TEST_KEYS);
+        model.set(ID, id);
+        model.set(TITLE, title);
+        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, model);
     }
 }

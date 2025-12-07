@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/tether/active_host.h"
 
 namespace ash {

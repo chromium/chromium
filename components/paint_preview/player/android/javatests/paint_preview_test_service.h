@@ -31,13 +31,13 @@ class PaintPreviewTestService : public PaintPreviewBaseService {
       jint j_id,
       jint j_width,
       jint j_height,
-      const base::android::JavaParamRef<jintArray>& j_link_rects,
-      const base::android::JavaParamRef<jobjectArray>& j_link_urls,
-      const base::android::JavaParamRef<jintArray>& j_child_rects);
+      const base::android::JavaRef<jintArray>& j_link_rects,
+      const base::android::JavaRef<jobjectArray>& j_link_urls,
+      const base::android::JavaRef<jintArray>& j_child_rects);
 
   jboolean SerializeFrames(JNIEnv* env,
-                           const base::android::JavaParamRef<jstring>& j_key,
-                           const base::android::JavaParamRef<jstring>& j_url);
+                           const base::android::JavaRef<jstring>& j_key,
+                           const base::android::JavaRef<jstring>& j_url);
 
  private:
   struct Frame {

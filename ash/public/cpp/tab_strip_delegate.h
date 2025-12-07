@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
@@ -27,7 +26,8 @@ struct ASH_PUBLIC_EXPORT TabInfo {
   ~TabInfo();
   std::u16string title;
   GURL url;
-  ui::ImageModel favicon;
+  GURL favicon;
+  int32_t id;
   base::TimeTicks last_access_timetick;
 };
 

@@ -4,90 +4,75 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../print_preview_utils.js';
-import './destination_dialog_style.css.js';
 import './destination_list.js';
 import './print_preview_search_box.js';
-import './print_preview_shared.css.js';
-import './print_preview_vars.css.js';
-import '../strings.m.js';
-import './throbber.css.js';
-import './destination_list_item.js';
+import '/strings.m.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 import type {DestinationStore} from '../data/destination_store.js';
 import {DestinationStoreEventType} from '../data/destination_store.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
-import {getTemplate} from './destination_dialog.html.js';
-import type {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
+import {getCss} from './destination_dialog.css.js';
+import {getHtml} from './destination_dialog.html.js';
+import type {PrintPreviewDestinationListElement} from './destination_list.js';
 import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 
 export interface PrintPreviewDestinationDialogElement {
   $: {
     dialog: CrDialogElement,
     searchBox: PrintPreviewSearchBoxElement,
+    printList: PrintPreviewDestinationListElement,
   };
 }
 
-const PrintPreviewDestinationDialogElementBase =
-    ListPropertyUpdateMixin(PolymerElement);
-
-export class PrintPreviewDestinationDialogElement extends
-    PrintPreviewDestinationDialogElementBase {
+export class PrintPreviewDestinationDialogElement extends CrLitElement {
   static get is() {
     return 'print-preview-destination-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      destinationStore: {
-        type: Object,
-        observer: 'onDestinationStoreSet_',
-      },
-
-      destinations_: {
-        type: Array,
-        value: [],
-      },
-
-      loadingDestinations_: {
-        type: Boolean,
-        value: false,
-      },
-
-      searchQuery_: {
-        type: Object,
-        value: null,
-      },
+      destinationStore: {type: Object},
+      loadingDestinations_: {type: Boolean},
+      searchQuery_: {type: Object},
     };
   }
 
-  destinationStore: DestinationStore;
-  private destinations_: Destination[];
-  private loadingDestinations_: boolean;
-  private searchQuery_: RegExp|null;
+  accessor destinationStore: DestinationStore|null = null;
+  protected accessor loadingDestinations_: boolean = false;
+  protected accessor searchQuery_: RegExp|null = null;
 
   private tracker_: EventTracker = new EventTracker();
   private initialized_: boolean = false;
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('destinationStore')) {
+      this.onDestinationStoreSet_();
+    }
   }
 
   override disconnectedCallback() {
@@ -107,7 +92,8 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   private onDestinationStoreSet_() {
-    assert(this.destinations_.length === 0);
+    assert(!this.initialized_);
+    assert(this.destinationStore);
     this.tracker_.add(
         this.destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
@@ -119,52 +105,42 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   private updateDestinations_() {
-    if (this.destinationStore === undefined || !this.initialized_) {
+    if (!this.destinationStore || !this.initialized_) {
       return;
     }
 
-    this.updateList(
-        'destinations_', destination => destination.key,
-        this.getDestinationList_());
+    this.$.printList.destinations = this.destinationStore.destinations();
 
     this.loadingDestinations_ =
         this.destinationStore.isPrintDestinationSearchInProgress;
   }
 
-  private getDestinationList_(): Destination[] {
-    const destinations = this.destinationStore.destinations();
-
-    return destinations;
-  }
-
-  private onCloseOrCancel_() {
+  protected onCloseOrCancel_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }
   }
 
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
   /**
-   * @param e Event containing the selected destination list item element.
+   * @param e Event containing the selected destination.
    */
-  private onDestinationSelected_(
-      e: CustomEvent<PrintPreviewDestinationListItemElement>) {
-    const listItem = e.detail;
-    const destination = listItem.destination;
-    this.selectDestination_(destination);
+  protected onDestinationSelected_(e: CustomEvent<Destination>) {
+    this.selectDestination_(e.detail);
   }
 
   private selectDestination_(destination: Destination) {
+    assert(this.destinationStore);
     this.destinationStore.selectDestination(destination);
     this.$.dialog.close();
   }
 
   show() {
     this.$.dialog.showModal();
-    const loading = this.destinationStore === undefined ||
+    const loading = !this.destinationStore ||
         this.destinationStore.isPrintDestinationSearchInProgress;
     if (!loading) {
       // All destinations have already loaded.
@@ -178,10 +154,16 @@ export class PrintPreviewDestinationDialogElement extends
     return this.$.dialog.hasAttribute('open');
   }
 
-  private onManageButtonClick_() {
+  protected onManageButtonClick_() {
     NativeLayerImpl.getInstance().managePrinters();
   }
+
+  protected onSearchQueryChanged_(e: CustomEvent<{value: RegExp | null}>) {
+    this.searchQuery_ = e.detail.value;
+  }
 }
+
+export type DestinationDialogElement = PrintPreviewDestinationDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {

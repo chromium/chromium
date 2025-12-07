@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -40,12 +41,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Integration tests for status indicator covering related code in {@link
@@ -54,21 +57,23 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/40112282): Enable for tablets once we support them.
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+@Restriction({DeviceFormFactor.PHONE})
 public class StatusIndicatorTest {
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private StatusIndicatorSceneLayer mStatusIndicatorSceneLayer;
     private View mControlContainer;
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mStatusIndicatorCoordinator =
                 ((TabbedRootUiCoordinator)
                                 mActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
@@ -128,7 +133,7 @@ public class StatusIndicatorTest {
                                 Color.WHITE,
                                 Color.BLACK,
                                 Color.BLACK,
-                                () -> {}));
+                                CallbackUtils.emptyRunnable()));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // The Android view should be visible.
@@ -213,7 +218,7 @@ public class StatusIndicatorTest {
     @MediumTest
     public void testShowAndHideOnNtp() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         final int viewId = View.generateViewId();
         final View view = tab.getNativePage().getView();
@@ -254,7 +259,12 @@ public class StatusIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                            "Exit status",
+                            null,
+                            Color.WHITE,
+                            Color.BLACK,
+                            Color.BLACK,
+                            CallbackUtils.emptyRunnable());
                     mStatusIndicatorCoordinator
                             .getMediatorForTesting()
                             .finishAnimationsForTesting();
@@ -291,7 +301,7 @@ public class StatusIndicatorTest {
     @MediumTest
     public void testShowAndHideOnRecentTabsPage() {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(tab);
 
         // R.id.status_indicator won't be in the View tree until the indicator is shown for the
@@ -333,7 +343,12 @@ public class StatusIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                            "Exit status",
+                            null,
+                            Color.WHITE,
+                            Color.BLACK,
+                            Color.BLACK,
+                            CallbackUtils.emptyRunnable());
                     mStatusIndicatorCoordinator
                             .getMediatorForTesting()
                             .finishAnimationsForTesting();
@@ -379,7 +394,7 @@ public class StatusIndicatorTest {
     }
 
     private static Matcher<View> withTopMargin(final int expected) {
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             private int mActual;
 
             @Override

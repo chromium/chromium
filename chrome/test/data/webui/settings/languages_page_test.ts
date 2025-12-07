@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsCheckboxListEntryElement, CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -36,7 +36,7 @@ suite('LanguagesPage', function() {
     assertTrue(!!i18nString);
     const menuItems = actionMenu.querySelectorAll<T>('.dropdown-item');
     const menuItem = Array.from(menuItems).find(
-        item => item.textContent!.trim() === i18nString);
+        item => item.textContent.trim() === i18nString);
     assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
     return menuItem;
   }
@@ -45,11 +45,11 @@ suite('LanguagesPage', function() {
   const initialLanguages = 'en-US,sw';
 
   suiteSetup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrSettingsPrefs.deferInitialization = true;
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
@@ -69,14 +69,12 @@ suite('LanguagesPage', function() {
       settingsLanguages.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
+      languageHelper = settingsLanguages;
 
       languagesPage = document.createElement('settings-languages-page');
 
       languagesPage.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, languagesPage, 'prefs');
-
-      languagesPage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
 
       languagesPage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, languagesPage, 'languages');
@@ -85,18 +83,14 @@ suite('LanguagesPage', function() {
       flush();
       actionMenu = languagesPage.$.menu.get();
 
-      languageHelper = languagesPage.languageHelper;
-      return languageHelper.whenReady();
+      return settingsLanguages.whenReady();
     });
-  });
-
-  teardown(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   suite('AddLanguagesDialog', function() {
     let dialog: SettingsAddLanguagesDialogElement;
     let dialogItems: NodeListOf<SettingsCheckboxListEntryElement>;
+    let addLanguagesButton: CrButtonElement;
     let cancelButton: CrButtonElement;
     let actionButton: CrButtonElement;
     let dialogClosedResolver: PromiseResolver<void>;
@@ -124,9 +118,9 @@ suite('LanguagesPage', function() {
     }
 
     setup(function() {
-      const addLanguagesButton =
-          languagesPage.shadowRoot!.querySelector<HTMLElement>('#addLanguages')!
-          ;
+      addLanguagesButton =
+          languagesPage.shadowRoot!.querySelector<CrButtonElement>(
+              '#addLanguages')!;
       const whenDialogOpen = eventToPromise('cr-dialog-open', languagesPage);
       addLanguagesButton.click();
 
@@ -142,7 +136,8 @@ suite('LanguagesPage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            languagesPage.shadowRoot!, {childList: true});
+            languagesPage.shadowRoot!.querySelector('settings-section')!,
+            {childList: true});
 
         actionButton = dialog.shadowRoot!.querySelector<CrButtonElement>(
             '.action-button')!;
@@ -168,6 +163,14 @@ suite('LanguagesPage', function() {
 
     teardown(function() {
       dialogClosedObserver.disconnect();
+    });
+
+    test('undefined languages', function() {
+      assertFalse(addLanguagesButton.disabled);
+
+      // Make the languages undefined and make sure the button is disabled.
+      languagesPage.languages = undefined;
+      assertTrue(addLanguagesButton.disabled);
     });
 
     test('cancel', function() {
@@ -286,16 +289,16 @@ suite('LanguagesPage', function() {
     /*
      * This suite tests that the translate target language is labelled
      */
-    test('test translate target language is labelled', function() {
+    test('translate target language is labelled', function() {
       // Translate target language disabled.
       const targetLanguageCode = languageHelper.languages!.translateTarget;
       assertTrue(!!targetLanguageCode);
       assertTrue(languageHelper.languages!.enabled.some(
-          l => languageHelper.convertLanguageCodeForTranslate(
-                   l.language.code) === targetLanguageCode));
+          l => convertLanguageCodeForTranslate(l.language.code) ===
+              targetLanguageCode));
       assertTrue(languageHelper.languages!.enabled.some(
-          l => languageHelper.convertLanguageCodeForTranslate(
-                   l.language.code) !== targetLanguageCode));
+          l => convertLanguageCodeForTranslate(l.language.code) !==
+              targetLanguageCode));
       let translateTargetLabel = null;
       let item = null;
 
@@ -315,8 +318,7 @@ suite('LanguagesPage', function() {
             num_visibles++;
             assertEquals(
                 targetLanguageCode,
-                languageHelper.convertLanguageCodeForTranslate(
-                    item.language.code));
+                convertLanguageCodeForTranslate(item.language.code));
           }
         }
         assertEquals(

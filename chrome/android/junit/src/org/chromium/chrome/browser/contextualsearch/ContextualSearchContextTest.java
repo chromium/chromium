@@ -20,11 +20,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 
 /** Tests parts of the ContextualSearchContext class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -35,6 +35,7 @@ public class ContextualSearchContextTest {
     private static final String HOME_COUNTRY = "unused";
     private static final long NATIVE_PTR = 1;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ContextualSearchContext mContext;
     private boolean mDidSelectionChange;
 
@@ -45,14 +46,11 @@ public class ContextualSearchContextTest {
         }
     }
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock private ContextualSearchContext.Natives mContextJniMock;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(ContextualSearchContextJni.TEST_HOOKS, mContextJniMock);
+        ContextualSearchContextJni.setInstanceForTesting(mContextJniMock);
         when(mContextJniMock.init(any())).thenReturn(NATIVE_PTR);
         mDidSelectionChange = false;
         mContext = new ContextualSearchContextForTest();
@@ -79,12 +77,6 @@ public class ContextualSearchContextTest {
 
     private void setupResolvingTapInBarak() {
         setupTapInBarack();
-        mContext.setResolveProperties(HOME_COUNTRY, true, "", "");
-    }
-
-    private void setupResolvingTapInObama() {
-        int obamaBeforeMOffset = "Now Barack Oba".length();
-        mContext.setSurroundingText(SAMPLE_TEXT, obamaBeforeMOffset, obamaBeforeMOffset);
         mContext.setResolveProperties(HOME_COUNTRY, true, "", "");
     }
 
@@ -203,23 +195,23 @@ public class ContextualSearchContextTest {
         // Most common to least common
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq(""));
+                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq(""));
         mContext.setTranslationLanguages("en", "en", "en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq(""));
+                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq(""));
         mContext.setTranslationLanguages("", "en", "en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq("en"), eq("de"), eq(""));
+                .setTranslationLanguages(anyLong(), eq("en"), eq("de"), eq(""));
         mContext.setTranslationLanguages("en", "de", "de");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq("en"), eq("de"), eq("de,en"));
+                .setTranslationLanguages(anyLong(), eq("en"), eq("de"), eq("de,en"));
         mContext.setTranslationLanguages("en", "de", "de,en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq("de,en"));
+                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq("de,en"));
         mContext.setTranslationLanguages("de", "de", "de,en");
     }
 }

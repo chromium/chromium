@@ -69,7 +69,7 @@ class LazyLevelDb {
   // to delete the database. Will only attempt a single recovery.
   ValueStore::Status EnsureDbIsOpen();
 
-  const char* open_histogram_name() const {
+  std::string_view open_histogram_name() const {
     return open_histogram_->histogram_name();
   }
 

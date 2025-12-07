@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -31,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
@@ -145,7 +147,7 @@ class VmCameraMicManagerTest : public testing::Test {
 
     // Make the profile the primary one.
     fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
-        testing_profile_.GetProfileUserName(), "id"));
+        testing_profile_.GetProfileUserName(), GaiaId("id")));
 
     // Inject a fake notification display service.
     fake_display_service_ = static_cast<FakeNotificationDisplayService*>(
@@ -325,6 +327,9 @@ TEST_F(VmCameraMicManagerTest, PrivacyIndicatorsView) {
   SetCameraAccessing(kPluginVm, false);
   SetCameraPrivacyIsOn(false);
   ForwardToStable();
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
 }
 
@@ -606,6 +611,9 @@ TEST_F(VmCameraMicManagerDebounceTest, DisplayStageBeforeTarget) {
   // Eventually display the "target" notification, which is no notification at
   // all.
   ForwardDebounceTime(/*factor=*/0.11);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectNotificationsExist(std::set<std::string>{});
 
   ForwardToStable();
@@ -644,6 +652,9 @@ TEST_F(VmCameraMicManagerDebounceTest, SimulateSkypeStartingMeeting) {
   // Simulate the waiting to start screen, in which only the camera is active.
   SetCameraAccessing(kPluginVm, true);
   ForwardToStable();
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectNotificationsExist(
       std::set<std::string>{GetNotificationId(kPluginVm, kCameraNotification)});
 
@@ -652,10 +663,16 @@ TEST_F(VmCameraMicManagerDebounceTest, SimulateSkypeStartingMeeting) {
   // only changes to "camera and mic" once.
   SetCameraAccessing(kPluginVm, false);
   ForwardDebounceTime(0.2);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   SetMicActive(kPluginVm, true);
   ForwardDebounceTime(0.2);
   SetCameraAccessing(kPluginVm, true);
   ForwardDebounceTime(0.7);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment_.FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectNotificationsExist(std::set<std::string>{
       GetNotificationId(kPluginVm, kCameraAndMicNotification)});
   ForwardToStable();

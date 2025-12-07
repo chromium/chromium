@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef ASH_ACCELEROMETER_ACCELEROMETER_TYPES_H_
 #define ASH_ACCELEROMETER_ACCELEROMETER_TYPES_H_
+
+#include <array>
 
 #include "ash/ash_export.h"
 
@@ -80,7 +77,7 @@ class ASH_EXPORT AccelerometerUpdate {
   void Reset();
 
  protected:
-  AccelerometerReading data_[ACCELEROMETER_SOURCE_COUNT];
+  std::array<AccelerometerReading, ACCELEROMETER_SOURCE_COUNT> data_;
 };
 
 }  // namespace ash

@@ -4,6 +4,7 @@
 
 #include "components/translate/core/browser/translate_prefs.h"
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -16,13 +17,11 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
@@ -81,7 +80,7 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // about always translating from or to the old source language, or always
     // translating from the old target language, then skip merging this pair
     // into the new pref.
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             always_translate_dictionary,
             [&old_language_pair](const auto& new_language_pair) {
               return old_language_pair.first == new_language_pair.first ||
@@ -96,10 +95,8 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // If the old pair's source language matches any of the never-translate
     // languages, it probably means that this source language was set to never
     // be translated after the old pref was deprecated, so avoid this conflict.
-    const std::string& (base::Value::*get_string)() const =
-        &base::Value::GetString;
     if (base::Contains(prefs->GetList(prefs::kBlockedLanguages),
-                       old_language_pair.first, get_string)) {
+                       old_language_pair.first)) {
       continue;
     }
 
@@ -111,11 +108,6 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
 }
 
 bool IsTranslateLanguage(std::string_view language) {
-  // Allow "xx" to be used for testing purposes.
-  if (language == "xx") {
-    return true;
-  }
-
   // Check if |language| is translatable.
   TranslateLanguageList* language_list =
       TranslateDownloadManager::GetInstance()->language_list();
@@ -130,14 +122,9 @@ bool IsTranslateLanguage(std::string_view language) {
 // * translate_too_often_denied
 // * translate_language_blacklist
 
-BASE_FEATURE(kTranslateRecentTarget,
-             "TranslateRecentTarget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTranslate, "Translate", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateRecentTarget, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMigrateAlwaysTranslateLanguagesFix,
-             "MigrateAlwaysTranslateLanguagesFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 TranslateLanguageInfo::TranslateLanguageInfo() = default;
@@ -213,7 +200,7 @@ void TranslatePrefs::ResetToDefaults() {
 // static
 base::Value::List TranslatePrefs::GetDefaultBlockedLanguages() {
   base::Value::List languages;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Preferred languages.
   std::string language = language::kFallbackInputMethodLocale;
   language::ToTranslateLanguageSynonym(&language);
@@ -261,15 +248,25 @@ bool TranslatePrefs::IsBlockedLanguage(std::string_view input_language) const {
 
 void TranslatePrefs::BlockLanguage(std::string_view input_language) {
   DCHECK(!input_language.empty());
-  std::string canonical_lang(input_language);
-  language::ToTranslateLanguageSynonym(&canonical_lang);
-  if (!l10n_util::IsPossibleAcceptLanguage(canonical_lang)) {
+
+  // Get the translate version of the string to add to the blocked list.
+  std::string translate_lang(input_language);
+  language::ToTranslateLanguageSynonym(&translate_lang);
+
+  // Get the Chrome version of the base language.
+  std::string chrome_lang(l10n_util::GetLanguage(input_language));
+  language::ToChromeLanguageSynonym(&chrome_lang);
+
+  // If neither the translate or Chrome language is a possible accept
+  // language skip adding to blocked language list.
+  if (!l10n_util::IsPossibleAcceptLanguage(translate_lang) &&
+      !l10n_util::IsPossibleAcceptLanguage(chrome_lang)) {
     return;
   }
 
-  if (!IsBlockedLanguage(canonical_lang)) {
+  if (!IsBlockedLanguage(translate_lang)) {
     ScopedListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
-    update->Append(std::move(canonical_lang));
+    update->Append(std::move(translate_lang));
   }
   // Remove the blocked language from the always translate list if present.
   RemoveLanguagePairFromAlwaysTranslateList(input_language);
@@ -303,7 +300,13 @@ std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
 
   std::vector<std::string> languages;
   for (const auto& language : fluent_languages_value) {
-    std::string chrome_language(language.GetString());
+    const std::string* language_as_string = language.GetIfString();
+    // This needs to be checked here as there can be corrupt entries in the pref
+    // list which causes a crash.
+    if (!language_as_string) {
+      continue;
+    }
+    std::string chrome_language{*language_as_string};
     language::ToChromeLanguageSynonym(&chrome_language);
     languages.push_back(chrome_language);
   }
@@ -354,7 +357,7 @@ void TranslatePrefs::RemoveFromLanguageList(std::string_view input_language) {
   GetUserSelectedLanguageList(&user_selected_languages);
 
   // Remove the language from the list.
-  const auto& it = base::ranges::find(user_selected_languages, chrome_language);
+  const auto& it = std::ranges::find(user_selected_languages, chrome_language);
   if (it != user_selected_languages.end()) {
 
     user_selected_languages.erase(it);
@@ -388,7 +391,7 @@ void TranslatePrefs::RearrangeLanguage(
   std::vector<std::string> languages;
   GetUserSelectedLanguageList(&languages);
 
-  auto pos = base::ranges::find(languages, language);
+  auto pos = std::ranges::find(languages, language);
   if (pos == languages.end())
     return;
 
@@ -450,8 +453,7 @@ void TranslatePrefs::RearrangeLanguage(
       return;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   language_prefs_->SetUserSelectedLanguagesList(languages);
@@ -476,8 +478,8 @@ void TranslatePrefs::GetLanguageInfoList(
   language_list->clear();
 
   // Collect the language codes from the supported accept-languages.
-  std::vector<std::string> language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &language_codes);
+  std::vector<std::string> language_codes =
+      l10n_util::GetAcceptLanguagesForLocale(app_locale);
 
   // Collator used to sort display names in the given locale.
   UErrorCode error = U_ZERO_ERROR;
@@ -977,7 +979,7 @@ void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
   ScopedListPrefUpdate update(prefs_, pref_id);
   base::Value::List& never_prompt_list = update.Get();
 
-  auto value_to_erase = base::ranges::find_if(
+  auto value_to_erase = std::ranges::find_if(
       never_prompt_list, [value](const base::Value& value_in_list) {
         return value_in_list.is_string() && value_in_list.GetString() == value;
       });

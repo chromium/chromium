@@ -16,7 +16,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 namespace {
 
@@ -31,8 +32,9 @@ constexpr int kMaxProfileBucket = 100;
 constexpr base::TimeDelta kLongTimeOfInactivity = base::Minutes(30);
 
 int GetMetricsBucketIndex(const Profile* profile) {
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession()) {
     return 0;
+  }
 
   if (!g_browser_process->profile_manager()) {
     VLOG(1) << "Failed to read profile bucket index because profile manager "
@@ -55,8 +57,9 @@ int GetMetricsBucketIndex(const Profile* profile) {
 
 void RecordProfileSessionDuration(const Profile* profile,
                                   base::TimeDelta session_length) {
-  if (!profile || session_length.InMinutes() <= 0)
+  if (!profile || session_length.InMinutes() <= 0) {
     return;
+  }
 
   int profile_bucket = GetMetricsBucketIndex(profile);
 
@@ -86,8 +89,9 @@ void RecordProfileSwitch() {
 }
 
 void RecordUserAction(const Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   int profile_bucket = GetMetricsBucketIndex(profile);
 
@@ -133,8 +137,9 @@ void ProfileActivityMetricsRecorder::CleanupForTesting() {
   g_profile_activity_metrics_recorder = nullptr;
 }
 
-void ProfileActivityMetricsRecorder::OnBrowserSetLastActive(Browser* browser) {
-  Profile* active_profile = browser->profile()->GetOriginalProfile();
+void ProfileActivityMetricsRecorder::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  Profile* active_profile = browser->GetProfile()->GetOriginalProfile();
 
   RecordBrowserActivation(active_profile);
   RecordAccountMetrics(active_profile);
@@ -153,8 +158,9 @@ void ProfileActivityMetricsRecorder::OnBrowserSetLastActive(Browser* browser) {
     // Record state at startup (when |last_session_end_| is 0) and whenever the
     // user starts browsing after a longer time of inactivity. Do it
     // asynchronously because active_time of the just activated profile is also
-    // updated from OnBrowserSetLastActive() in another BrowserListObserver and
-    // we have no guarantee if this happens before or after this function call.
+    // updated from OnBrowserActivated() in another BrowserCollectionObserver
+    // and we have no guarantee if this happens before or after this function
+    // call.
     if (last_session_end_.is_null() ||
         (running_session_start_ - last_session_end_ > kLongTimeOfInactivity)) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -163,8 +169,9 @@ void ProfileActivityMetricsRecorder::OnBrowserSetLastActive(Browser* browser) {
   }
 
   if (last_active_profile_ != active_profile) {
-    if (last_active_profile_ != nullptr)
+    if (last_active_profile_ != nullptr) {
       RecordProfileSwitch();
+    }
     last_active_profile_ = active_profile;
   }
 
@@ -177,8 +184,9 @@ void ProfileActivityMetricsRecorder::OnSessionEnded(
     base::TimeTicks session_end) {
   // If this call is emitted after OnProfileWillBeDestroyed, return
   // early. We already logged the session duration there.
-  if (!running_session_profile_)
+  if (!running_session_profile_) {
     return;
+  }
 
   // |session_length| can't be used here because it was measured across all
   // profiles.
@@ -210,7 +218,8 @@ void ProfileActivityMetricsRecorder::OnProfileWillBeDestroyed(
 }
 
 ProfileActivityMetricsRecorder::ProfileActivityMetricsRecorder() {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
   action_callback_ = base::BindRepeating(
       &ProfileActivityMetricsRecorder::OnUserAction, base::Unretained(this));
@@ -218,7 +227,6 @@ ProfileActivityMetricsRecorder::ProfileActivityMetricsRecorder() {
 }
 
 ProfileActivityMetricsRecorder::~ProfileActivityMetricsRecorder() {
-  BrowserList::RemoveObserver(this);
   metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
   base::RemoveActionCallback(action_callback_);
 }

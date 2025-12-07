@@ -15,6 +15,7 @@ import org.chromium.android_webview.test.OnlyRunIn.ProcessMode;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,7 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
      */
     public AwJUnit4ClassRunner(Class<?> klass) throws InitializationError {
         super(klass);
+        DeviceRestriction.registerChecks(mRestrictionSkipCheck);
     }
 
     @CallSuper

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Draggable input image button should be draggable from border
+  assert_equals: dataTransfer should have no items expected 0 but got 3
+[FAIL] Draggable input image button should be draggable from image
+  assert_equals: dataTransfer should have no items expected 0 but got 3
+Harness: the test ran to completion.
+

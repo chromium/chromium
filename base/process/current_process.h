@@ -9,29 +9,37 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "build/buildflag.h"
 
 namespace tracing {
 class TraceEventDataSource;
 class CustomEventRecorder;
-void SetProcessTrackDescriptor(int64_t process_start_timestamp);
+class TrackNameRecorder;
 }  // namespace tracing
 
 namespace mojo::core {
 class Channel;
 }
 
+namespace network {
+class ContentDecodingInterceptor;
+}  // namespace network
+
 namespace base {
 namespace test {
 class CurrentProcessForTest;
 }  // namespace test
 
-using CurrentProcessType =
-    perfetto::protos::pbzero::ChromeProcessDescriptor::ProcessType;
+#if BUILDFLAG(IS_ANDROID)
+class PlatformThreadPriorityMonitor;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+using CurrentProcessType = perfetto::protos::chrome_enums::pbzero::ProcessType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -75,9 +83,9 @@ class BASE_EXPORT CurrentProcess {
     friend class ::base::test::CurrentProcessForTest;
     friend class ::tracing::TraceEventDataSource;
     friend class ::tracing::CustomEventRecorder;
-    friend void ::tracing::SetProcessTrackDescriptor(
-        int64_t process_start_timestamp);
+    friend class ::tracing::TrackNameRecorder;
     friend class ::mojo::core::Channel;
+    friend class ::network::ContentDecodingInterceptor;
   };
   // Returns an enum corresponding to the type of the current process (e.g.
   // browser / renderer / utility / etc). It can be used in metrics or tracing
@@ -89,8 +97,7 @@ class BASE_EXPORT CurrentProcess {
   // "browser" or "renderer" process), the access to this function is controlled
   // by an explicit list.
   CurrentProcessType GetType(TypeKey key) {
-    return static_cast<CurrentProcessType>(
-        process_type_.load(std::memory_order_relaxed));
+    return process_type_.load(std::memory_order_relaxed);
   }
 
   ShortProcessType GetShortType(TypeKey key);
@@ -98,15 +105,28 @@ class BASE_EXPORT CurrentProcess {
   class NameKey {
    private:
     NameKey() = default;
+#if BUILDFLAG(IS_ANDROID)
+    friend class ::base::PlatformThreadPriorityMonitor;
+#endif  // BUILDFLAG(IS_ANDROID)
     friend class ::base::test::CurrentProcessForTest;
     friend class ::tracing::TraceEventDataSource;
-    friend void ::tracing::SetProcessTrackDescriptor(
-        int64_t process_start_timestamp);
+    friend class ::tracing::TrackNameRecorder;
   };
   std::string GetName(NameKey key) {
     AutoLock lock(lock_);
     return process_name_;
   }
+
+  class BASE_EXPORT Delegate {
+   public:
+    // Called on the main thread of the process whose name is changing,
+    // immediately after the name is set.
+    virtual void OnProcessNameChanged(const std::string& process_name,
+                                      CurrentProcessType process_type) = 0;
+
+   protected:
+    ~Delegate() = default;
+  };
 
   // Sets the name and type of the process for the metrics and tracing. This
   // function should be called as early as possible in the process's lifetime
@@ -114,8 +134,10 @@ class BASE_EXPORT CurrentProcess {
   // process_name as an argument if it can't be trivially derived from the
   // process type.
   void SetProcessType(CurrentProcessType process_type);
-  void SetProcessNameAndType(const std::string& process_name,
-                             CurrentProcessType process_type);
+
+  // `delegate` might racily be invoked after resetting, thus its lifetime must
+  // match `CurrentProcess`.
+  void SetDelegate(Delegate* delegate, NameKey key);
 
   bool IsProcessNameEmpty() const {
     AutoLock lock(lock_);
@@ -127,6 +149,9 @@ class BASE_EXPORT CurrentProcess {
 
   CurrentProcess() = default;
 
+  void SetProcessNameAndType(const std::string& process_name,
+                             CurrentProcessType process_type);
+
   mutable Lock lock_;
   std::string process_name_;
   // The process_type_ is set at the startup before processes start running.
@@ -136,6 +161,8 @@ class BASE_EXPORT CurrentProcess {
   // where we don't have a guarantee that it will be called early enough in the
   // process's lifetime, thus we use std::atomic here.
   std::atomic<CurrentProcessType> process_type_;
+
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace base

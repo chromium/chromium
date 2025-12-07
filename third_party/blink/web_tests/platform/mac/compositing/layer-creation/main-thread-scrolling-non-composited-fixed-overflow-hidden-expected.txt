@@ -26,3 +26,4 @@ TEST
   ]
 }
 
+Prefer non-composited scrolling

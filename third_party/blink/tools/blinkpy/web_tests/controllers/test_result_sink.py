@@ -16,46 +16,29 @@ section.
 import json
 import logging
 import requests
+from typing import Optional
 
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_results import TestResult
 from blinkpy.web_tests.models.typ_types import ResultType
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 _log = logging.getLogger(__name__)
 
 
-# A map from the enum values of typ.ResultType to ResultSink.Status.
-# The enum values of ResultSink.Status can be found at
-# https://godoc.org/go.chromium.org/luci/resultdb/proto/sink/v1#pkg-variables.
-_result_type_to_sink_status = {
-    ResultType.Pass:
-    'PASS',
-    ResultType.Failure:
-    'FAIL',
-    # timeout is just a special case of a reason to abort a test result.
-    ResultType.Timeout:
-    'ABORT',
-    # 'Aborted' is a web_tests-specific type given on TestResults with a device
-    # failure.
-    'Aborted':
-    'ABORT',
-    ResultType.Crash:
-    'CRASH',
-    ResultType.Skip:
-    'SKIP',
-}
-
-
 class TestResultSinkClosed(Exception):
     """Raises if sink() is called over a closed TestResultSink instance."""
 
 
-def CreateTestResultSink(port):
+def CreateTestResultSink(port,
+                         expectations: Optional[TestExpectations] = None):
     """Creates TestResultSink, if result_sink is present in LUCI_CONTEXT.
 
     Args:
         port: A blinkpy.web_tests.port.Port object
+
     Returns:
         TestResultSink object if result_sink section is present in LUCI_CONTEXT.
             None, otherwise.
@@ -69,14 +52,19 @@ def CreateTestResultSink(port):
         if sink_ctx is None:
             return None
 
-    return TestResultSink(port, sink_ctx)
+    return TestResultSink(port, sink_ctx, expectations)
 
 
-class TestResultSink(object):
+class TestResultSink:
     """A class for uploading test results and artifacts via ResultSink."""
 
-    def __init__(self, port, sink_ctx):
+    def __init__(self,
+                 port,
+                 sink_ctx,
+                 expectations: Optional[TestExpectations] = None):
         self._port = port
+        # Null with `--no-expectations`.
+        self._expectations = expectations
         self.is_closed = False
         self._sink_ctx = sink_ctx
         self._url = (
@@ -93,21 +81,7 @@ class TestResultSink(object):
     def _send(self, data):
         self._session.post(self._url, data=json.dumps(data)).raise_for_status()
 
-    def _status(self, result):
-        """Returns the TestStatus enum value corresponding to the result type.
-
-        Args:
-            result: The TestResult object to find the status of.
-        Returns:
-            The corresponding enum value.
-        """
-        status = _result_type_to_sink_status.get(
-            'Aborted' if result.device_failed else result.type)
-
-        assert status is not None, 'unsupported result.type %r' % result.type
-        return status
-
-    def _tags(self, result, expectations):
+    def _tags(self, result):
         """Returns a list of tags that should be added into a given test result.
 
         Args:
@@ -130,10 +104,7 @@ class TestResultSink(object):
 
         tags = [
             pair('test_name', result.test_name),
-            pair('web_tests_device_failed', str(result.device_failed)),
-            pair('web_tests_result_type', result.type),
-            pair('web_tests_flag_specific_config_name',
-                 self._port.flag_specific_config_name() or ''),
+            # Used by `//third_party/blink/tools/run_slow_test_analyzer.py`.
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
             pair('web_tests_test_was_slow', json.dumps(test_was_slow)),
@@ -146,6 +117,7 @@ class TestResultSink(object):
                 pair(test_failures.FailureImage.ACTUAL_HASH_RDB_TAG,
                      result.actual_image_hash))
 
+        # Used by `//third_party/blink/tools/run_fuzzy_diff_analyzer.py`.
         if (result.image_diff_stats and result.image_diff_stats.keys() >=
             {'maxDifference', 'totalPixels'}):
             tags.append(
@@ -154,22 +126,21 @@ class TestResultSink(object):
             tags.append(
                 pair('web_tests_image_diff_total_pixels',
                      str(result.image_diff_stats['totalPixels'])))
-
         for test_type_str in sorted(result.test_type):
             tags.append(pair('web_tests_test_type', test_type_str))
 
+        # Used by the Blink unexpected pass finder (UPF).
         for used_file in self._port.used_expectations_files():
             tags.append(
                 pair('web_tests_used_expectations_file',
                      self._port.relative_test_filename(used_file)))
 
-        if expectations:
-            expectation_tags = expectations.system_condition_tags
-            test_expectation = expectations.get_expectations(result.test_name)
-            raw_expected_results = test_expectation.raw_results
-            for expectation in raw_expected_results:
+        if self._expectations:
+            test_expectation = self._expectations.get_expectations(
+                result.test_name)
+            for expectation in test_expectation.raw_results:
                 tags.append(pair('raw_typ_expectation', expectation))
-            for tag in expectation_tags:
+            for tag in self._expectations.system_condition_tags:
                 tags.append(pair('typ_tag', tag))
 
         return tags
@@ -222,15 +193,9 @@ class TestResultSink(object):
         # Sort summaries to display "command" at the top of the summary.
         return sorted(summaries), ret
 
-    def sink(self, expected, result, expectations):
+    def sink(self, result: TestResult):
         """Reports the test result to ResultSink.
 
-        Args:
-            expected: True if the test was expected to fail and actually failed.
-                False, otherwise.
-            result: The TestResult object to report.
-            expectations: A test_expectations.TestExpectations object to pull
-                expectation data from.
         Exceptions:
             requests.exceptions.ConnectionError, if there was a network
               connection error.
@@ -251,14 +216,11 @@ class TestResultSink(object):
         summaries, artifacts = self._artifacts(result)
         r = {
             'artifacts': artifacts,
-            'duration': '%ss' % result.total_run_time,
-            # device failures are never expected.
-            'expected': not result.device_failed and expected,
-            'status': self._status(result),
+            'duration': '%.9fs' % result.total_run_time,
             # TODO(crbug/1093659): web_tests report TestResult with the start
             # time.
             # 'startTime': result.start_time
-            'tags': self._tags(result, expectations),
+            'tags': self._tags(result),
             'testId': result.test_name,
             'testMetadata': {
                 'name': result.test_name,
@@ -271,16 +233,68 @@ class TestResultSink(object):
                     # skip: 'line'
                 },
             },
+            'frameworkExtensions': {
+                'webTest': {
+                    'isExpected': result.is_expected,
+                    'status': result.type,
+                },
+            },
         }
+
+        test_split = result.test_name.rsplit('/', 1)
+        if test_split:
+            # Source comes from:
+            # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+            fine_name = test_split[0] if len(test_split) > 1 else '/'
+            case_name = test_split[1] if len(test_split) > 1 else test_split[0]
+            struct_test_dict = {
+                'coarseName': None,  # Not used for webtests.
+                'fineName': fine_name,
+                'caseNameComponents': [case_name],
+            }
+            r['testIdStructured'] = struct_test_dict
+
+        if result.is_expected:
+            if result.type == ResultType.Skip:
+                r['statusV2'] = 'SKIPPED'
+                # ResultDB requires a skipped reason message to be uploaded for all skipped tests.
+                r['skippedReason'] = {
+                    # TODO(crbug.com/410893293): Improve this to report the actual skip reason.
+                    'kind':
+                    'OTHER',
+                    'reasonMessage':
+                    'Test was skipped for one of the reasons in https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/port/base.py?q=skips_test',
+                }
+            else:
+                # Expected failure, timeout, crash, pass all
+                # represent logically "passing" tests.
+                r['statusV2'] = 'PASSED'
+        else: # not result.is_expected
+            if result.type == ResultType.Skip:
+                r['statusV2'] = 'EXECUTION_ERRORED'
+            else:
+                # Unexpected pass, failure, crash and timeout
+                # represent logically "failing" tests.
+                r['statusV2'] = 'FAILED'
+                kind = 'ORDINARY'
+                if result.type == ResultType.Crash:
+                    kind = 'CRASH'
+                elif result.type == ResultType.Timeout:
+                    kind = 'TIMEOUT'
+
+                r['failureReason'] = {
+                    'kind': kind,
+                }
+
         if summaries:
             r['summaryHtml'] = '\n'.join(summaries)
 
-        if result.failure_reason:
+        if r['statusV2'] == 'FAILED' and result.failure_reason:
             primary_error_message = _truncate_to_utf8_bytes(
                 result.failure_reason.primary_error_message, 1024)
-            r['failureReason'] = {
-                'primaryErrorMessage': primary_error_message,
-            }
+            r['failureReason']['errors'] = [{
+                'message': primary_error_message,
+            }]
 
         self._send({'testResults': [r]})
 

@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,18 +49,19 @@ class TestListComputer extends Computer {
         // https://cs.android.com/android/platform/superproject/main/+/main:external/robolectric-shadows/robolectric/src/main/java/org/robolectric/internal/SandboxFactory.java?q=symbol%3A%5Cborg.robolectric.internal.SandboxFactory.getSdkEnvironment%5Cb%20case%3Ayes
         List<Class<?>> shadows = new ArrayList<>();
         LooperMode.Mode looperMode = Mode.PAUSED;
-        ArrayList allAnnotations = new ArrayList();
+        String qualifiers = "";
+        ArrayList<Annotation> allAnnotations = new ArrayList<>();
         allAnnotations.addAll(Arrays.asList(description.getTestClass().getAnnotations()));
         allAnnotations.addAll(description.getAnnotations());
         for (var annotation : allAnnotations) {
-            if (annotation instanceof SandboxConfig) {
-                shadows.addAll(Arrays.asList(((SandboxConfig) annotation).shadows()));
-            } else if (annotation instanceof Config) {
-                shadows.addAll(Arrays.asList(((Config) annotation).shadows()));
-                instrumentedPackages.addAll(
-                        Arrays.asList(((Config) annotation).instrumentedPackages()));
-            } else if (annotation instanceof LooperMode) {
-                looperMode = ((LooperMode) annotation).value();
+            if (annotation instanceof SandboxConfig sandboxConfig) {
+                shadows.addAll(Arrays.asList(sandboxConfig.shadows()));
+            } else if (annotation instanceof Config config) {
+                shadows.addAll(Arrays.asList(config.shadows()));
+                instrumentedPackages.addAll(Arrays.asList(config.instrumentedPackages()));
+                qualifiers = config.qualifiers();
+            } else if (annotation instanceof LooperMode mode) {
+                looperMode = mode.value();
             }
         }
         for (var clazz : shadows) {
@@ -86,7 +88,10 @@ class TestListComputer extends Computer {
                 sdkSuffix = methodName.substring(startIdx, endIdx + 1);
             }
         }
-        return looperMode + sdkSuffix;
+        if (!qualifiers.isEmpty()) {
+            qualifiers = "." + qualifiers;
+        }
+        return looperMode + qualifiers + sdkSuffix;
     }
 
     private void throwShadowException(String shadowClass, String shadowingClass) {
@@ -132,8 +137,8 @@ class TestListComputer extends Computer {
 
         @Override
         public void filter(Filter filter) throws NoTestsRemainException {
-            if (mRunner instanceof Filterable) {
-                ((Filterable) mRunner).filter(filter);
+            if (mRunner instanceof Filterable runnerFilter) {
+                runnerFilter.filter(filter);
             }
         }
     }

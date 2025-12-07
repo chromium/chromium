@@ -28,42 +28,33 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     return MakeGarbageCollected<DOMArrayBuffer>(std::move(contents));
   }
   static DOMArrayBuffer* Create(size_t num_elements, size_t element_byte_size) {
-    ArrayBufferContents contents(num_elements, element_byte_size,
-                                 ArrayBufferContents::kNotShared,
-                                 ArrayBufferContents::kZeroInitialize);
-    if (!contents.Data()) [[unlikely]] {
-      OOM_CRASH(num_elements * element_byte_size);
-    }
+    ArrayBufferContents contents(
+        num_elements, element_byte_size, ArrayBufferContents::kNotShared,
+        ArrayBufferContents::kZeroInitialize,
+        ArrayBufferContents::AllocationFailureBehavior::kCrash);
+    CHECK(contents.IsValid());
     return Create(std::move(contents));
   }
   static DOMArrayBuffer* Create(base::span<const uint8_t> source) {
-    ArrayBufferContents contents(source.size(), 1,
-                                 ArrayBufferContents::kNotShared,
-                                 ArrayBufferContents::kDontInitialize);
-    if (!contents.Data()) [[unlikely]] {
-      OOM_CRASH(source.size());
-    }
+    ArrayBufferContents contents(
+        source.size(), 1, ArrayBufferContents::kNotShared,
+        ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::AllocationFailureBehavior::kCrash);
+    CHECK(contents.IsValid());
     contents.ByteSpan().copy_from(source);
     return Create(std::move(contents));
   }
-  static DOMArrayBuffer* Create(const void* source, size_t byte_length) {
-    // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
-    return Create(UNSAFE_BUFFERS(
-        base::span(static_cast<const uint8_t*>(source), byte_length)));
-  }
 
   static DOMArrayBuffer* Create(scoped_refptr<SharedBuffer>);
-  static DOMArrayBuffer* Create(const Vector<base::span<const char>>&);
+  static DOMArrayBuffer* Create(const Vector<base::span<const uint8_t>>&);
 
   static DOMArrayBuffer* CreateOrNull(size_t num_elements,
                                       size_t element_byte_size);
   static DOMArrayBuffer* CreateOrNull(base::span<const uint8_t> source);
-  static DOMArrayBuffer* CreateOrNull(const void* source, size_t byte_length) {
-    // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
-    return CreateOrNull(UNSAFE_BUFFERS(
-        base::span(static_cast<const uint8_t*>(source), byte_length)));
-  }
 
+  // For use by DOMTypedArray.
+  static DOMArrayBuffer* CreateUninitialized(size_t num_elements,
+                                             size_t element_byte_size);
   // Only for use by XMLHttpRequest::responseArrayBuffer,
   // Internals::serializeObject, and
   // FetchDataLoaderAsArrayBuffer::OnStateChange.

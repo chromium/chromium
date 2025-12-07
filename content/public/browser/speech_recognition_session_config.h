@@ -9,11 +9,12 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/speech_recognition_session_context.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_grammar.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/origin.h"
@@ -29,17 +30,17 @@ struct CONTENT_EXPORT SpeechRecognitionSessionConfig {
   ~SpeechRecognitionSessionConfig();
 
   std::string language;
-  // Accept language header. If |language| is empty, used to get a language
-  // instead.
-  std::string accept_language;
   std::vector<media::mojom::SpeechRecognitionGrammar> grammars;
+  std::optional<media::SpeechRecognitionRecognitionContext> recognition_context;
   url::Origin origin;
-  bool filter_profanities;
-  bool continuous;
-  bool interim_results;
-  uint32_t max_hypotheses;
-  bool on_device;
-  bool allow_cloud_fallback;
+  bool filter_profanities = false;
+  bool continuous = false;
+  bool interim_results = false;
+  uint32_t max_hypotheses = 1;
+  bool on_device = false;  // Whether on-device speech recognition must be used.
+  bool on_device_available = false;  // Whether on-device speech recognition is
+                                     // installed and available.
+  bool allow_cloud_fallback = false;
   std::string auth_token;
   std::string auth_scope;
   scoped_refptr<SpeechRecognitionSessionPreamble> preamble;

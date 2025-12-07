@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/simple_test_clock.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -358,73 +359,57 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Make sure the preconditions are satisfied.
-  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  tracker->NotifyEvent(
+      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   SatisfyChromeOpenCondition(tracker.get());
 
   // The promo should trigger because all the preconditions are now satisfied.
-  ASSERT_TRUE(tracker->WouldTriggerHelpUI(
+  // Use `WouldTriggerHelpUI` instead of `ShouldTriggerHelpUI` (otherwise the
+  // promo will be prevented by the session rate rules at the FET group level),
+  // but still manually fire the trigger event to simulate the promo being
+  // shown.
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-  // Mark promo displayed without calling ```ShouldTriggerHelpUI``` to avoid
-  // session rate limitations.
   tracker->NotifyEvent("generic_default_browser_promo_trigger");
 
   // It shouldn't trigger the second time.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 
-  // After a month it still shouldn't trigger
+  // After a month it still shouldn't trigger.
   test_clock_.Advance(base::Days(30));
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 
-  // After 365 days it should show again.
+  // After 365 days it should show again (still need to satisfy the
+  // preconditions).
   test_clock_.Advance(base::Days(366));
-
-  // Still need to satisfy the preconditions.
-  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  tracker->NotifyEvent(
+      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   SatisfyChromeOpenCondition(tracker.get());
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-}
+  tracker->NotifyEvent("generic_default_browser_promo_trigger");
 
-// Verify generic promo triggers without satisfying all conditions when in
-// experiment.
-TEST_F(DefaultBrowserFeatureEngagementTest,
-       GenericPromoTriggerCriteriaExperimentTest) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeatures(
-      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
-       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment});
-  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
-  tracker->NotifyEvent(feature_engagement::events::
-                           kDefaultBrowserPromoTriggerCriteriaConditionsMet);
-
-  // Promo shouldn't trigger because the group preconditions are not satistfied.
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-
-  // Make sure the group preconditions are satisfied.
-  SatisfyChromeOpenCondition(tracker.get());
-
-  // The promo should trigger because all the preconditions are now satisfied.
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-  tracker->Dismissed(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
-
-  // It shouldn't trigger the second time.
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-
-  // After a year and satisfying all the conditions again it still shouldn't
-  // trigger.
+  // After an off-cycle promo trigger, the generic promo should be put on
+  // cooldown again.
   test_clock_.Advance(base::Days(366));
-  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  tracker->NotifyEvent(
+      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   SatisfyChromeOpenCondition(tracker.get());
-
+  tracker->NotifyEvent("default_browser_off_cycle_promo_trigger");
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // After 365 days it should show again (still need to satisfy the
+  // preconditions).
+  test_clock_.Advance(base::Days(366));
+  tracker->NotifyEvent(
+      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
+  SatisfyChromeOpenCondition(tracker.get());
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+  tracker->NotifyEvent("generic_default_browser_promo_trigger");
 }
 
 // Test only one of the tailored promos will show.

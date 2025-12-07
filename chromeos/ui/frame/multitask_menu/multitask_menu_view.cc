@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -69,7 +68,7 @@ std::unique_ptr<views::View> CreateButtonContainer(
   views::Label* label = container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(label_message_id)));
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-  label->SetEnabledColorId(ui::kColorSysOnSurface);
+  label->SetEnabledColor(ui::kColorSysOnSurface);
   label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                    kLabelFontSize, gfx::Font::Weight::NORMAL));
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -193,16 +192,15 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
   DCHECK(window);
   DCHECK(close_callback_);
   DCHECK(dismiss_callback_);
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorSysSurface3));
+  SetBackground(views::CreateSolidBackground(ui::kColorSysSurface3));
   SetUseDefaultFillLayout(true);
 
   window_observation_.Observe(window);
 
   // The display orientation. This determines whether menu is in
   // landscape/portrait mode.
-  const bool is_portrait_mode = !display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(window)
-                                     .is_landscape();
+  const bool is_portrait_mode =
+      !display::Screen::Get()->GetDisplayNearestWindow(window).is_landscape();
   const gfx::Size preferred_size = is_portrait_mode
                                        ? kMultitaskButtonPortraitSize
                                        : kMultitaskButtonLandscapeSize;
@@ -267,6 +265,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
         MultitaskButton::Type::kFloat, is_portrait_mode,
         /*paint_as_active=*/floated, l10n_util::GetStringUTF16(message_id));
     float_button->SetPreferredSize(preferred_size);
+    float_button->SetMirrored(is_reversed_);
     float_button_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id,
                                        label_max_length));
@@ -366,7 +365,7 @@ bool MultitaskMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     // Update the visual appearance of the split buttons. The callbacks will be
     // updated in `PartialButtonPressed()`.
     partial_button_->UpdateButtons(/*is_portrait_mode=*/
-                                   !display::Screen::GetScreen()
+                                   !display::Screen::Get()
                                         ->GetDisplayNearestWindow(window_)
                                         .is_landscape(),
                                    is_reversed_);
@@ -433,7 +432,7 @@ void MultitaskMenuView::HalfButtonPressed(SnapDirection direction) {
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
   wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_));
+      display::Screen::Get()->GetDisplayNearestWindow(window_));
   const bool is_primary_partial_split =
       (is_primary_display_layout && direction == SnapDirection::kPrimary) ||
       (!is_primary_display_layout && direction == SnapDirection::kSecondary);

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script>
+'use strict';
+
+window.onload = function() {
+  const enabled = document.featurePolicy?.allowsFeature('aria-notify');
+  parent.postMessage({ type: 'availability-result', enabled }, '*');
+}
+</script>

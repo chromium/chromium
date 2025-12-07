@@ -14,7 +14,7 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
 #include "media/remoting/stream_provider.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 namespace media {
 
@@ -46,13 +46,9 @@ class End2EndTestRenderer final : public Renderer {
   base::TimeDelta GetMediaTime() override;
   RendererType GetRendererType() override;
 
-  void OnSelectedVideoTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
-
-  void OnEnabledAudioTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       DemuxerStream* enabled_track,
+                       base::OnceClosure change_completed_cb) override;
 
  private:
   class TestRemotee;

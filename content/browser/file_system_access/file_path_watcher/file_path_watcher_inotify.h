@@ -11,16 +11,8 @@
 
 namespace content {
 
-// Get the maximum number of inotify watches can be used by a FilePathWatcher
-// instance. This is based on /proc/sys/fs/inotify/max_user_watches entry.
-CONTENT_EXPORT size_t GetMaxNumberOfInotifyWatches();
-
-// Overrides max inotify watcher counter for test.
-class CONTENT_EXPORT ScopedMaxNumberOfInotifyWatchesOverrideForTest {
- public:
-  explicit ScopedMaxNumberOfInotifyWatchesOverrideForTest(size_t override_max);
-  ~ScopedMaxNumberOfInotifyWatchesOverrideForTest();
-};
+CONTENT_EXPORT size_t
+GetQuotaLimitFromSystemLimitForTesting(size_t system_limit);
 
 }  // namespace content
 

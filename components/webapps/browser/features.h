@@ -13,14 +13,6 @@
 namespace webapps {
 namespace features {
 
-// Default number of days that dismissing or ignoring the banner will prevent it
-// being seen again for.
-constexpr unsigned int kMinimumBannerBlockedToBannerShown = 90;
-constexpr unsigned int kMinimumDaysBetweenBannerShows = 7;
-
-// Default site engagement required to trigger the banner.
-constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
-
 // Default amount of days after which the guardrail information about user
 // cancellations and dismissals on the ML promoted installation dialog is
 // automatically cleared. To understand more on how this works, please refer to
@@ -31,25 +23,12 @@ inline constexpr int kTotalDaysToStoreMLGuardrails = 180;
 inline constexpr int kMinimumFaviconSize = 48;
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
-BASE_DECLARE_FEATURE(kInstallPromptGlobalGuardrails);
-extern const base::FeatureParam<int>
-    kInstallPromptGlobalGuardrails_DismissCount;
-extern const base::FeatureParam<base::TimeDelta>
-    kInstallPromptGlobalGuardrails_DismissPeriod;
-extern const base::FeatureParam<int> kInstallPromptGlobalGuardrails_IgnoreCount;
-extern const base::FeatureParam<base::TimeDelta>
-    kInstallPromptGlobalGuardrails_IgnorePeriod;
-
-BASE_DECLARE_FEATURE(kPwaUniversalInstallUi);
-
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
+BASE_DECLARE_FEATURE(kAndroidWebAppMenuButton);
+BASE_DECLARE_FEATURE(kAndroidTWAOriginDisplay);
+BASE_DECLARE_FEATURE(kAndroidWebAppHeaderForStandaloneMode);
+BASE_DECLARE_FEATURE(kAndroidAutoMintedTWA);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-BASE_DECLARE_FEATURE(kAppBannerTriggering);
-extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey;
-extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey;
-extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey;
 
 // ML Installability promotion flags and all the feature params.
 BASE_DECLARE_FEATURE(kWebAppsEnableMLModelForPromotion);
@@ -57,8 +36,7 @@ extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb;
 extern const base::FeatureParam<double> kWebAppsMLModelUserDeclineReportProb;
 extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage;
 
-BASE_DECLARE_FEATURE(kUniversalInstallRootScopeNoManifest);
-BASE_DECLARE_FEATURE(kUniversalInstallDefaultUrl);
+BASE_DECLARE_FEATURE(kCheckWebAppExistenceAsync);
 
 }  // namespace features
 }  // namespace webapps

@@ -7,10 +7,6 @@
 
 namespace translate {
 
-// The language code used when the language of a page could not be detected.
-// (Matches what the CLD -Compact Language Detection- library reports.)
-extern const char* const kUnknownLanguageCode;
-
 // The maximum number of characters allowed for a text selection in Partial
 // Translate. Longer selections will be truncated down to the first valid word
 // break respecting the threshold.

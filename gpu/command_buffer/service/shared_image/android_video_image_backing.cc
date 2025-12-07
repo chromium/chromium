@@ -8,7 +8,6 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
@@ -16,9 +15,7 @@
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/video_surface_texture_image_backing.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/gpu_fence.h"
@@ -42,11 +39,11 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
           alpha_type,
           // This SI will be used to back a VideoFrame. As such, it
           // will potentially be sent to the display compositor and read by the
-          // GL interface for WebGL.
+          // GL interface for WebGL, and read by raster interface.
           // TODO: crbug.com/354856448 - add a parameter to the constructor that
           // allows to specify whether SCANOUT is needed.
           {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
-           SHARED_IMAGE_USAGE_SCANOUT},
+           SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_SCANOUT},
           std::move(debug_label),
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,
@@ -65,18 +62,10 @@ std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock) {
-  if (features::IsAImageReaderEnabled()) {
-    return std::make_unique<VideoImageReaderImageBacking>(
-        mailbox, size, color_space, surface_origin, alpha_type,
-        std::move(debug_label), std::move(stream_texture_sii),
-        std::move(context_state), std::move(drdc_lock));
-  } else {
-    DCHECK(!drdc_lock);
-    return std::make_unique<VideoSurfaceTextureImageBacking>(
-        mailbox, size, color_space, surface_origin, alpha_type,
-        std::move(debug_label), std::move(stream_texture_sii),
-        std::move(context_state));
-  }
+  return std::make_unique<VideoImageReaderImageBacking>(
+      mailbox, size, color_space, surface_origin, alpha_type,
+      std::move(debug_label), std::move(stream_texture_sii),
+      std::move(context_state), std::move(drdc_lock));
 }
 
 // Static.

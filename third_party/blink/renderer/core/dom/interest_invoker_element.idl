@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[RuntimeEnabled=HTMLInterestTargetAttribute]
+[RuntimeEnabled=HTMLInterestForAttribute]
 interface mixin InterestInvokerElement {
-  [CEReactions,Reflect=interesttarget] attribute Element? interestTargetElement;
-  [CEReactions,Reflect=interestaction] attribute DOMString interestAction;
+  [CEReactions,Reflect=interestfor] attribute Element? interestForElement;
 };

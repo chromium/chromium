@@ -9,6 +9,8 @@ from unittest import mock
 
 import merge_lib as merger
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class MergeLibTest(unittest.TestCase):
 
@@ -35,7 +37,8 @@ class MergeLibTest(unittest.TestCase):
                                            output_profdata_files,
                                            invalid_profraw_files,
                                            counter_overflows,
-                                           '/usr/bin/llvm-cov')
+                                           '/usr/bin/llvm-cov',
+                                           show_profdata=False)
       self.assertEqual(
           expected_results,
           [output_profdata_files, invalid_profraw_files, counter_overflows])

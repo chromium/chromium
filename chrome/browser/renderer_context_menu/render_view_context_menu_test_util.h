@@ -11,18 +11,17 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/chrome_compose_client.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/context_menu_matcher.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+class ChromeComposeClient;
 #endif
 
 namespace content {
@@ -31,7 +30,7 @@ class WebContents;
 namespace ui {
 class MenuModel;
 }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace policy {
 class DlpRulesManager;
 }
@@ -64,6 +63,10 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
       const GURL& link_url = GURL(),
       bool is_subframe = false);
 
+  static constexpr auto GetFencedFrameUntrustedNetworkStatusGatedCommands() {
+    return kFencedFrameUntrustedNetworkStatusGatedCommands;
+  }
+
   // Returns true if the command specified by |command_id| is present
   // in the menu.
   // A list of command ids can be found in chrome/app/chrome_command_ids.h.
@@ -86,7 +89,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   // value is true and the model and index where it appears in that model are
   // returned in |found_model| and |found_index|. Otherwise returns false.
   bool GetMenuModelAndItemIndex(int command_id,
-                                ui::MenuModel** found_model,
+                                raw_ptr<ui::MenuModel>* found_model,
                                 size_t* found_index);
 
   // Returns the command id of the menu item with the specified |path|.
@@ -106,6 +109,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   }
 
   using RenderViewContextMenu::AppendImageItems;
+  using RenderViewContextMenu::GetIsNewFeatureAtValue;
 
   // RenderViewContextMenu:
   void Show() override;

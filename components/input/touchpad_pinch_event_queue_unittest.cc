@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/input/event_with_latency_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +40,9 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   ~TouchpadPinchEventQueueTest() = default;
 
   void QueueEvent(const blink::WebGestureEvent& event) {
-    queue_->QueueEvent(GestureEventWithLatencyInfo(event));
+    ScopedDispatchToRendererCallback dispatch_callback(base::DoNothing());
+    queue_->QueueEvent(GestureEventWithLatencyInfo(event),
+                       dispatch_callback.callback);
   }
 
   void QueuePinchBegin() {
@@ -104,8 +107,10 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   }
 
   void SendMouseWheelEventForPinchImmediately(
+      const blink::WebGestureEvent& pinch_event,
       const MouseWheelEventWithLatencyInfo& event,
-      MouseWheelEventHandledCallback callback) override {
+      MouseWheelEventHandledCallback callback,
+      DispatchToRendererCallback& dispatch_callback) override {
     mock_client_.SendMouseWheelEventForPinchImmediately(event);
     callbacks_.emplace_back(base::BindOnce(
         [](MouseWheelEventHandledCallback callback,

@@ -15,7 +15,6 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -26,6 +25,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
@@ -121,8 +121,7 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
       return params;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return LayoutParams();
+      NOTREACHED();
     }
   }
 }
@@ -156,8 +155,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
       return params;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return GradientParams();
+      NOTREACHED();
     }
   }
 }
@@ -197,7 +195,7 @@ ScrollableUsersListView::ScrollableUsersListView(
                                    base::RepeatingClosure());
     user_views_.push_back(view);
     view->UpdateForUser(users[i], false /*animate*/);
-    user_view_host_->AddChildView(view);
+    user_view_host_->AddChildViewRaw(view);
   }
 
   // |user_view_host_| is the same size as the user views, which may be shorter
@@ -218,7 +216,7 @@ ScrollableUsersListView::ScrollableUsersListView(
       views::BoxLayout::MainAxisAlignment::kCenter);
   ensure_min_height_layout->set_cross_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
-  ensure_min_height->AddChildView(user_view_host_.get());
+  ensure_min_height->AddChildViewRaw(user_view_host_.get());
   SetContents(std::move(ensure_min_height));
   SetBackgroundColor(std::nullopt);
   SetDrawOverflowIndicator(false);
@@ -324,8 +322,13 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
 
-    ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
-    flags.setColor(GetColorProvider()->GetColor(background_color_id));
+    // Use a special color when showing a full list on the right side.
+    if (display_style_ == LoginDisplayStyle::kExtraSmall) {
+      ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
+      flags.setColor(GetColorProvider()->GetColor(background_color_id));
+    } else {
+      flags.setColor(gradient_params_.color_to);
+    }
     canvas->DrawRoundRect(render_bounds,
                           login::kNonBlurredWallpaperBackgroundRadiusDp, flags);
   }

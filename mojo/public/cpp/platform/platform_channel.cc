@@ -19,6 +19,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/win/scoped_handle.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -43,15 +44,8 @@
 #include "base/apple/scoped_mach_port.h"
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/socket.h>
-#elif BUILDFLAG(IS_NACL)
-#include "native_client/src/public/imc_syscalls.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/binder.h"
-#include "mojo/public/cpp/platform/binder_exchange.h"
 #endif
 
 namespace mojo {
@@ -62,7 +56,7 @@ namespace {
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
   std::wstring pipe_name = NamedPlatformChannel::GetPipeNameFromServerName(
-      NamedPlatformChannel::GenerateRandomServerName());
+      NamedPlatformChannel::GenerateRandomServerName(), /*is_local_pipe=*/true);
   DWORD kOpenMode =
       PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE;
   const DWORD kPipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE;
@@ -86,6 +80,31 @@ void CreateChannel(PlatformHandle* local_endpoint,
   *remote_endpoint = PlatformHandle(base::win::ScopedHandle(
       ::CreateFileW(pipe_name.c_str(), kDesiredAccess, 0, &security_attributes,
                     OPEN_EXISTING, kFlags, nullptr)));
+  if (!remote_endpoint->is_valid() && ::GetLastError() == ERROR_PIPE_BUSY) {
+    // TODO(crbug.com/443055954): Sporadically, opening this named pipe fails
+    // with ERROR_PIPE_BUSY. This is unexpected as the pipe name is random. But
+    // there is a very small probability of a name collision, so try again with
+    // a new name. After this hypothesis is tested, refactor this function based
+    // on what has been learned.
+    pipe_name = NamedPlatformChannel::GetPipeNameFromServerName(
+        NamedPlatformChannel::GenerateRandomServerName(),
+        /*is_local_pipe=*/true);
+    *local_endpoint = PlatformHandle(base::win::ScopedHandle(
+        ::CreateNamedPipeW(pipe_name.c_str(), kOpenMode, kPipeMode,
+                           1,           // Max instances.
+                           4096,        // Output buffer size.
+                           4096,        // Input buffer size.
+                           5000,        // Timeout in ms.
+                           nullptr)));  // Default security descriptor.
+    PCHECK(local_endpoint->is_valid());
+    *remote_endpoint = PlatformHandle(base::win::ScopedHandle(
+        ::CreateFileW(pipe_name.c_str(), kDesiredAccess, 0,
+                      &security_attributes, OPEN_EXISTING, kFlags, nullptr)));
+    if (remote_endpoint->is_valid()) {
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+
   PCHECK(remote_endpoint->is_valid());
 
   // Since a client has connected, ConnectNamedPipe() should return zero and
@@ -127,37 +146,12 @@ void CreateChannel(PlatformHandle* local_endpoint,
 #elif BUILDFLAG(IS_POSIX)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(core::kMojoUseBinder) &&
-      base::android::IsNativeBinderAvailable()) {
-    auto [exchange0, exchange1] = CreateBinderExchange();
-    *local_endpoint = PlatformHandle(std::move(exchange0));
-    *remote_endpoint = PlatformHandle(std::move(exchange1));
-    return;
-  }
-#endif  // BUILDFLAG_IS_ANDROID
-
   int fds[2];
-#if BUILDFLAG(IS_NACL)
-  PCHECK(imc_socketpair(fds) == 0);
-#else
   PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
 
   // Set non-blocking on both ends.
   PCHECK(fcntl(fds[0], F_SETFL, O_NONBLOCK) == 0);
   PCHECK(fcntl(fds[1], F_SETFL, O_NONBLOCK) == 0);
-
-#if BUILDFLAG(IS_APPLE)
-  // This turns off |SIGPIPE| when writing to a closed socket, causing the call
-  // to fail with |EPIPE| instead. On Linux we have to use |send...()| with
-  // |MSG_NOSIGNAL| instead, which is not supported on Mac.
-  int no_sigpipe = 1;
-  PCHECK(setsockopt(fds[0], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                    sizeof(no_sigpipe)) == 0);
-  PCHECK(setsockopt(fds[1], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                    sizeof(no_sigpipe)) == 0);
-#endif  // BUILDFLAG(IS_APPLE)
-#endif  // BUILDFLAG(IS_NACL)
 
   *local_endpoint = PlatformHandle(base::ScopedFD(fds[0]));
   *remote_endpoint = PlatformHandle(base::ScopedFD(fds[1]));

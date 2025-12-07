@@ -8,7 +8,6 @@
  * per-device-pointing-stick subsection settings in system settings.
  */
 
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -21,16 +20,17 @@ import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, PointingStick, PointingStickSettings} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, PointingStick, PointingStickSettings} from './input_device_settings_types.js';
 import {settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_pointing_stick_subsection.html.js';
 
@@ -112,18 +112,6 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
 
       pointingStick: {type: Object},
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPointingStickAcceleration,
-          Setting.kPointingStickSpeed,
-          Setting.kPointingStickSwapPrimaryButtons,
-        ]),
-      },
-
       pointingStickIndex: {
         type: Number,
       },
@@ -155,6 +143,13 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
       this.attemptDeepLink();
     }
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPointingStickAcceleration,
+    Setting.kPointingStickSpeed,
+    Setting.kPointingStickSwapPrimaryButtons,
+  ]);
 
   private pointingStick: PointingStick;
   private sensitivityValues: number[];

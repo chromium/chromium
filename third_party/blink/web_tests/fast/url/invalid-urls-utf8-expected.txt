@@ -10,13 +10,13 @@ PASS src is expected
 PASS src is expected
 PASS src is expected
 PASS src is expected
-FAIL src should be     foo://user:password@[xxxxx]/    . Was foo://user:password@[xxxxx]/.
-FAIL src should be foo://user:password@[?tête à tête/. Was foo://user:password@[?t%C3%AAte%20%C3%A0%20t%C3%AAte/.
-FAIL src should be foo://user:password@[?tête à tête]/. Was foo://user:password@[?t%C3%AAte%20%C3%A0%20t%C3%AAte]/.
-FAIL src should be foo://user:password@host:tête à tête/. Was foo://user:password@host:t%C3%AAte %C3%A0 t%C3%AAte/.
-FAIL src should be foo://user:password@host:80tête à tête. Was foo://user:password@host:80t%C3%AAte %C3%A0 t%C3%AAte.
-FAIL src should be foo://user:password@host:tête à tête/. Was foo://user:password@host:t%C3%AAte %C3%A0 t%C3%AAte/.
-FAIL src should be foo://user:password@host:80tête à tête. Was foo://user:password@host:80t%C3%AAte %C3%A0 t%C3%AAte.
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
 PASS src is expected
 PASS src is expected
 PASS src is expected

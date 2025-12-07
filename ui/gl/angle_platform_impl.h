@@ -8,14 +8,17 @@
 // Implements the ANGLE platform interface, for functionality like
 // histograms and trace profiling.
 
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 
 typedef void* EGLDisplay;
 
 namespace angle {
 
-GL_EXPORT bool InitializePlatform(EGLDisplay display);
-GL_EXPORT void ResetPlatform(EGLDisplay display);
+GL_EXPORT bool InitializePlatform(EGLDisplay display,
+                                  GLGetProcAddressProc get_proc_address);
+GL_EXPORT void ResetPlatform(EGLDisplay display,
+                             GLGetProcAddressProc get_proc_address);
 
 }  // namespace angle
 

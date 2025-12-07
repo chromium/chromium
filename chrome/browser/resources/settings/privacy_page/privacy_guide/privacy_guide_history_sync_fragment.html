@@ -1,13 +1,13 @@
 <style include="privacy-guide-fragment-shared"></style>
-<div class="header-phase2" focus-element tabindex="-1">
+<div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
     <source
         srcset="./images/privacy_guide/history_sync_graphic_dark_v2.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/history_sync_graphic_v2.svg">
   </picture>
-  <h2 class="header-label-phase2">
-    $i18n{privacyGuideHistorySyncCardHeader}
+  <h2 class="settings-fragment-header-label">
+    [[historySyncCardHeader_]]
   </h2>
 </div>
 <div class="fragment-content">
@@ -15,36 +15,39 @@
     <settings-toggle-button id="historyToggle"
         pref="{{historySyncVirtualPref_}}"
         on-change="onToggleClick_"
-        label="$i18n{privacyGuideHistorySyncSettingLabel}">
+        label="[[historySyncToggleLabel_]]">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">
     <div class="column">
       <h3 class="description-header">
-        $i18n{privacyGuideFeatureDescriptionHeader}
+        $i18n{columnHeadingWhenOn}
       </h3>
-      <div role="list">
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:history"
-            label="$i18n{privacyGuideHistorySyncFeatureDescription1}">
-        </privacy-guide-description-item>
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:dns"
-            label="$i18n{privacyGuideHistorySyncFeatureDescription2}">
-        </privacy-guide-description-item>
-      </div>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:history" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            [[historySyncFeatureDescription1_]]
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:dns" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideHistorySyncFeatureDescription2}
+          </div>
+        </li>
+      </ul>
     </div>
     <div class="column">
-      <h3 class="description-header">$i18n{privacyGuideThingsToConsider}</h3>
-      <div role="list">
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:link"
-            label="$i18n{privacyGuideHistorySyncPrivacyDescription1}">
-        </privacy-guide-description-item>
-      </div>
+      <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:link" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideHistorySyncPrivacyDescription1}
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

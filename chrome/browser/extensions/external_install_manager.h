@@ -10,9 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -23,21 +27,25 @@ class Extension;
 class ExtensionPrefs;
 class ExternalInstallError;
 
-class ExternalInstallManager : public ExtensionRegistryObserver {
+class ExternalInstallManager : public KeyedService,
+                               public ExtensionRegistryObserver {
  public:
-  ExternalInstallManager(content::BrowserContext* browser_context,
-                         bool is_first_run);
+  explicit ExternalInstallManager(content::BrowserContext* browser_context);
 
   ExternalInstallManager(const ExternalInstallManager&) = delete;
   ExternalInstallManager& operator=(const ExternalInstallManager&) = delete;
 
   ~ExternalInstallManager() override;
 
-  // Called when the associated profile will be destroyed.
-  void Shutdown();
+  // Specifies whether this is first run or not.
+  void set_is_first_run(bool value) { is_first_run_ = value; }
 
-  // Returns true if prompting for external extensions is enabled.
-  static bool IsPromptingEnabled();
+  // KeyedService:
+  // Called when the associated profile will be destroyed.
+  void Shutdown() override;
+
+  // Returns the instance for the given `browser_context`.
+  static ExternalInstallManager* Get(content::BrowserContext* browser_context);
 
   // Removes the error associated with a given extension.
   void RemoveExternalInstallError(const std::string& extension_id);
@@ -49,7 +57,7 @@ class ExternalInstallManager : public ExtensionRegistryObserver {
   // acknowledged.
   void AcknowledgeExternalExtension(const std::string& extension_id);
 
-  // Notifies the manager that |external_install_error| has changed its alert
+  // Notifies the manager that `external_install_error` has changed its alert
   // visibility.
   void DidChangeInstallAlertVisibility(
       ExternalInstallError* external_install_error,
@@ -81,7 +89,7 @@ class ExternalInstallManager : public ExtensionRegistryObserver {
                               extensions::UninstallReason reason) override;
 
   // Adds a global error informing the user that an external extension was
-  // installed. If |is_new_profile| is true, then this error is from the first
+  // installed. If `is_new_profile` is true, then this error is from the first
   // time our profile checked for new extensions.
   void AddExternalInstallError(const Extension* extension, bool is_new_profile);
 

@@ -9,11 +9,19 @@ import "components/content_settings/core/common/content_settings.mojom";
 
 // Mojo interface for DevUI access to data for Privacy Sandbox state.
 
+// Container type for pref names displayed in PS internals and their values.
+struct PrivacySandboxInternalsPref {
+  string name;
+  mojo_base.mojom.Value value;
+};
+
 // Renderer -> Browser
 interface PageHandler {
-  // Reads a named pref and returns its value.  If the pref name is not
-  // registered will return a null Value.
-  ReadPref(string pref_name) => (mojo_base.mojom.Value s);
+  // Returns an array of PrivacySandboxInternalsPref items for prefs that start
+  // with one of the prefixes in pref_prefixes. Empty strings and duplicates in
+  // pref_prefixes are considered invalid input and will close the connection.
+  ReadPrefsWithPrefixes(array<string> pref_prefixes) => (
+    array<PrivacySandboxInternalsPref> prefs);
 
   // Return a list of ContentSettings for the current profile and given type.
   // Reads directly from the HostContentSettingsMap.

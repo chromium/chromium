@@ -36,7 +36,9 @@ namespace {
 using ObservePolicy = page_load_metrics::PageLoadMetricsObserver::ObservePolicy;
 using Visibility = PerformanceManagerMetricsObserver::Visibility;
 using performance_manager::Graph;
+using performance_manager::GraphOwnedAndRegistered;
 using performance_manager::PageNode;
+using performance_manager::PageNodeObserver;
 using performance_manager::PerformanceManager;
 
 constexpr char kLCPToLoadedIdleHistogram[] =
@@ -45,10 +47,14 @@ constexpr char kLCPWithoutLoadedIdleHistogram[] =
     "PageLoad.Clients.PerformanceManager.LCPWithoutLoadedIdle";
 constexpr char kLoadedIdleWithoutLCPHistogram[] =
     "PageLoad.Clients.PerformanceManager.LoadedIdleWithoutLCP";
+constexpr char kNavigationToLoadedIdleHistogram[] =
+    "PageLoad.Clients.PerformanceManager.NavigationToLoadedIdle";
+constexpr char kNavigationWithoutLoadedIdleHistogram[] =
+    "PageLoad.Clients.PerformanceManager.NavigationWithoutLoadedIdle";
 
 class LoadedIdleObserver final
-    : public PageNode::ObserverDefaultImpl,
-      public performance_manager::GraphOwnedAndRegistered<LoadedIdleObserver> {
+    : public PageNodeObserver,
+      public GraphOwnedAndRegistered<LoadedIdleObserver> {
  public:
   // Gets a singleton LoadedIdleObserver registered with `graph`. It will be
   // deleted when `graph` is torn down, so in unit tests a new
@@ -66,7 +72,7 @@ class LoadedIdleObserver final
       base::WeakPtr<PageNode> page_node,
       base::OnceCallback<void(base::TimeTicks)> on_loaded_idle_callback);
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState) final;
   void OnBeforePageNodeRemoved(const PageNode* page_node) final;
@@ -154,9 +160,9 @@ const char* GetVisibilitySuffix(Visibility visibility) {
     case Visibility::kMixed:
       return ".MixedBGFG";
     case Visibility::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -172,7 +178,7 @@ void PerformanceManagerMetricsObserver::OnPageNodeLoadedIdle(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(loaded_idle_time_.is_null());
   loaded_idle_time_ = loaded_idle_time;
-  LogMetricsIfLoaded(/*is_final=*/false);
+  LogMetricsIfAvailable();
 }
 
 ObservePolicy PerformanceManagerMetricsObserver::OnStart(
@@ -226,113 +232,187 @@ ObservePolicy PerformanceManagerMetricsObserver::OnShown() {
 ObservePolicy
 PerformanceManagerMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming&) {
-  return LogMetricsIfLoaded(/*is_final=*/false);
+  return LogMetricsIfAvailable();
 }
 
 void PerformanceManagerMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming&) {
-  LogMetricsIfLoaded(/*is_final=*/true);
+  LogFinalMetrics();
 }
 
 void PerformanceManagerMetricsObserver::OnFailedProvisionalLoad(
     const page_load_metrics::FailedProvisionalLoadInfo&) {
-  LogMetricsIfLoaded(/*is_final=*/true);
+  LogFinalMetrics();
 }
 
-ObservePolicy PerformanceManagerMetricsObserver::LogMetricsIfLoaded(
-    bool is_final) {
+std::optional<base::TimeDelta>
+PerformanceManagerMetricsObserver::DeltaFromNavigationStartTime(
+    base::TimeTicks time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_NE(visibility_, Visibility::kUnknown);
-  if (logged_metrics_) {
-    return STOP_OBSERVING;
-  }
-
   const base::TimeTicks navigation_start_time =
       GetDelegate().GetNavigationStart();
   CHECK(!navigation_start_time.is_null());
+  // `navigation_start_time` is reported from renderers so can't be guaranteed
+  // monotonically increasing compared to TimeTicks::Now() taken in this
+  // process. Return nullopt if it's not valid.
+  if (time < navigation_start_time) {
+    return std::nullopt;
+  }
+  return time - navigation_start_time;
+}
 
-  std::optional<base::TimeDelta> loaded_idle_delta;
-  if (!loaded_idle_time_.is_null()) {
-    loaded_idle_delta = loaded_idle_time_ - navigation_start_time;
-    if (loaded_idle_delta->is_negative()) {
-      // `navigation_start_time` is reported from renderers so can't be
-      // guaranteed monotonically increasing compared to TimeTicks::Now() taken
-      // in this process. Bail out if it's not valid.
-      return STOP_OBSERVING;
-    }
+ObservePolicy PerformanceManagerMetricsObserver::LogMetricsIfAvailable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (loaded_idle_time_.is_null()) {
+    // Keep waiting for loaded idle time to come in.
+    return CONTINUE_OBSERVING;
   }
 
-  const page_load_metrics::ContentfulPaintTimingInfo& lcp_info =
-      GetDelegate()
-          .GetLargestContentfulPaintHandler()
-          .MergeMainFrameAndSubframes();
+  const std::optional<base::TimeDelta> loaded_idle_delta =
+      DeltaFromNavigationStartTime(loaded_idle_time_);
+  if (!loaded_idle_delta.has_value()) {
+    // Bail out if the delta from navigation start isn't valid.
+    return STOP_OBSERVING;
+  }
 
-  if (lcp_info.ContainsValidTime() && loaded_idle_delta.has_value()) {
-    // Log time between LCP and LoadedIdle. If LoadedIdle came before LCP
-    // (unexpected) the negative TimeDelta will be logged in the 0 bucket.
+  // Log metrics about LoadedIdle time.
+  if (!logged_load_metrics_) {
+    // Broken down by visibility.
+    base::UmaHistogramMediumTimes(
+        base::StrCat({kNavigationToLoadedIdleHistogram,
+                      GetVisibilitySuffix(visibility_)}),
+        loaded_idle_delta.value());
+    // All page loads.
+    base::UmaHistogramMediumTimes(kNavigationToLoadedIdleHistogram,
+                                  loaded_idle_delta.value());
+    logged_load_metrics_ = true;
+  }
+
+  // Log time between LCP and LoadedIdle.
+  if (!logged_lcp_metrics_) {
+    const page_load_metrics::ContentfulPaintTimingInfo& lcp_info =
+        GetDelegate()
+            .GetLargestContentfulPaintHandler()
+            .MergeMainFrameAndSubframes();
+    if (!lcp_info.ContainsValidTime()) {
+      // Keep waiting for LCP to come in.
+      return CONTINUE_OBSERVING;
+    }
+
+    // If LoadedIdle came before LCP (unexpected) the negative TimeDelta will
+    // be logged in the 0 bucket.
     CHECK(!lcp_info.Time()->is_negative());
     CHECK(!loaded_idle_delta->is_negative());
     base::TimeDelta loaded_idle_delta_from_lcp =
         loaded_idle_delta.value() - lcp_info.Time().value();
 
     // Broken down by visibility.
-    UmaHistogramMediumTimes(base::StrCat({kLCPToLoadedIdleHistogram,
-                                          GetVisibilitySuffix(visibility_)}),
-                            loaded_idle_delta_from_lcp);
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {kLCPToLoadedIdleHistogram, GetVisibilitySuffix(visibility_)}),
+        loaded_idle_delta_from_lcp);
     // All page loads.
-    UmaHistogramMediumTimes(kLCPToLoadedIdleHistogram,
-                            loaded_idle_delta_from_lcp);
+    base::UmaHistogramMediumTimes(kLCPToLoadedIdleHistogram,
+                                  loaded_idle_delta_from_lcp);
 
-    logged_metrics_ = true;
-    return STOP_OBSERVING;
+    logged_lcp_metrics_ = true;
   }
 
-  if (is_final && lcp_info.ContainsValidTime()) {
+  if (logged_load_metrics_ && logged_lcp_metrics_) {
+    // Nothing more to log.
+    return STOP_OBSERVING;
+  }
+  // Keep waiting.
+  return CONTINUE_OBSERVING;
+}
+
+void PerformanceManagerMetricsObserver::LogFinalMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogMetricsIfAvailable();
+
+  if (!logged_load_metrics_) {
+    // Log that navigation stopped without receiving LoadIdleTime.
+    if (!loaded_idle_time_.is_null()) {
+      // After calling LogMetricsIfAvailable() above, only expects non null
+      // loaded_idle_time_ when timestamps from different processes are out of
+      // order.
+      CHECK(!DeltaFromNavigationStartTime(loaded_idle_time_).has_value());
+      // Skip logging data, timestamps are not reliable.
+      return;
+    }
+
+    const std::optional<base::TimeDelta> navigation_delta =
+        DeltaFromNavigationStartTime(base::TimeTicks::Now());
+    if (navigation_delta.has_value()) {
+      // Broken down by visibility.
+      base::UmaHistogramMediumTimes(
+          base::StrCat({kNavigationWithoutLoadedIdleHistogram,
+                        GetVisibilitySuffix(visibility_)}),
+          navigation_delta.value());
+      // All page loads.
+      base::UmaHistogramMediumTimes(kNavigationWithoutLoadedIdleHistogram,
+                                    navigation_delta.value());
+      logged_load_metrics_ = true;
+    }
+  }
+
+  if (logged_lcp_metrics_) {
+    // Nothing more to log.
+    return;
+  }
+
+  const page_load_metrics::ContentfulPaintTimingInfo& lcp_info =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (lcp_info.ContainsValidTime()) {
     // Page never reached LoadedIdle.
+    CHECK(loaded_idle_time_.is_null());
     CHECK(!lcp_info.Time()->is_negative());
 
     // Broken down by visibility.
-    UmaHistogramMediumTimes(base::StrCat({kLCPWithoutLoadedIdleHistogram,
-                                          GetVisibilitySuffix(visibility_)}),
-                            lcp_info.Time().value());
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {kLCPWithoutLoadedIdleHistogram, GetVisibilitySuffix(visibility_)}),
+        lcp_info.Time().value());
     // All page loads.
-    UmaHistogramMediumTimes(kLCPWithoutLoadedIdleHistogram,
-                            lcp_info.Time().value());
+    base::UmaHistogramMediumTimes(kLCPWithoutLoadedIdleHistogram,
+                                  lcp_info.Time().value());
 
-    logged_metrics_ = true;
-    return STOP_OBSERVING;
-  }
-
-  if (is_final && loaded_idle_delta.has_value()) {
+    logged_lcp_metrics_ = true;
+  } else if (!loaded_idle_time_.is_null()) {
     // Page reached LoadedIdle without recording LCP.
-    CHECK(!loaded_idle_delta->is_negative());
+    const std::optional<base::TimeDelta> loaded_idle_delta =
+        DeltaFromNavigationStartTime(loaded_idle_time_);
+    if (loaded_idle_delta.has_value()) {
+      // Broken down by visibility.
+      base::UmaHistogramMediumTimes(
+          base::StrCat({kLoadedIdleWithoutLCPHistogram,
+                        GetVisibilitySuffix(visibility_)}),
+          loaded_idle_delta.value());
+      // All page loads.
+      base::UmaHistogramMediumTimes(kLoadedIdleWithoutLCPHistogram,
+                                    loaded_idle_delta.value());
 
-    // Broken down by visibility.
-    UmaHistogramMediumTimes(base::StrCat({kLoadedIdleWithoutLCPHistogram,
-                                          GetVisibilitySuffix(visibility_)}),
-                            loaded_idle_delta.value());
-    // All page loads.
-    UmaHistogramMediumTimes(kLoadedIdleWithoutLCPHistogram,
-                            loaded_idle_delta.value());
-
-    logged_metrics_ = true;
-    return STOP_OBSERVING;
+      logged_lcp_metrics_ = true;
+    }
   }
-
-  // Keep waiting.
-  return CONTINUE_OBSERVING;
 }
 
 void PerformanceManagerMetricsObserver::WatchForLoadedIdle(
     base::WeakPtr<PageNode> page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!PerformanceManager::IsAvailable()) {
+    return;
+  }
+
   auto on_loaded_idle_callback =
       base::BindOnce(&PerformanceManagerMetricsObserver::OnPageNodeLoadedIdle,
                      weak_factory_.GetWeakPtr());
   // When `page_node` enters the LoadedIdle state in PerformanceManager, call
   // `on_loaded_idle_callback` on this sequence.
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(&WatchLoadedIdleObserver, page_node,
-                                base::BindPostTaskToCurrentDefault(
-                                    std::move(on_loaded_idle_callback))));
+  WatchLoadedIdleObserver(std::move(page_node),
+                          std::move(on_loaded_idle_callback),
+                          PerformanceManager::GetGraph());
 }

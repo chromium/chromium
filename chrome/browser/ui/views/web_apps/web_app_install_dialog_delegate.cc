@@ -6,16 +6,23 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/observer_list_internal.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "base/observer_list.h"
+#include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -26,8 +33,10 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -50,7 +59,55 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 }
 #endif
 
+// Creates a scoped highlight on the corresponding page action icon, if any.
+// Returns nullopt if not found.
+std::optional<std::variant<views::Button::ScopedAnchorHighlight,
+                           page_actions::ScopedPageActionActivity>>
+NewPageActionHighlight(content::WebContents& web_contents) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(&web_contents);
+  if (!tab) {
+    return std::nullopt;
+  }
+
+  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
+    tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+    CHECK(tab_features);
+
+    return tab_features->page_action_controller()->AddActivity(
+        kActionInstallPwa);
+  }
+
+  // TODO(crbug.com/425953501): We shouldn't be using this. Once
+  // `ToolbarButtonProvider` is migrated to `BrowserWindowInterface`, we can
+  // use that directly.
+  Browser* browser =
+      tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return std::nullopt;
+  }
+
+  ToolbarButtonProvider* toolbar_button_provider =
+      browser_view->toolbar_button_provider();
+  if (!toolbar_button_provider) {
+    return std::nullopt;
+  }
+
+  views::Button* install_icon = toolbar_button_provider->GetPageActionIconView(
+      PageActionIconType::kPwaInstall);
+
+  if (install_icon) {
+    // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
+    return install_icon->AddAnchorHighlight();
+  }
+
+  return std::nullopt;
+}
 }  // namespace
+
+constexpr int kMinBoundsForInstallDialog = 50;
 
 std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   std::u16string normalized = title;
@@ -63,8 +120,21 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   return normalized;
 }
 
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
+  const gfx::Size& current_size = widget->GetSize();
+  const gfx::Size& preferred_size =
+      widget->GetContentsView()->GetPreferredSize();
+  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
+  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
+  return current_size.width() < min_width || current_size.height() < min_height;
+}
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
                                       kDiyAppsDialogOkButtonId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
+                                      kPwaInstallDialogInstallButton);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(WebAppInstallDialogDelegate,
+                                       kInstalledPWAEventId);
 
 WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     content::WebContents* web_contents,
@@ -75,44 +145,22 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
     InstallDialogType dialog_type)
-    : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+    : WebAppModalDialogDelegate(web_contents),
       install_info_(std::move(web_app_info)),
       install_tracker_(std::move(install_tracker)),
       callback_(std::move(callback)),
       iph_state_(std::move(iph_state)),
       prefs_(prefs),
       tracker_(tracker),
-      dialog_type_(dialog_type) {
+      dialog_type_(dialog_type),
+      page_action_highlight_(
+          NewPageActionHighlight(CHECK_DEREF(web_contents))) {
   CHECK(install_info_);
   CHECK(install_tracker_);
   CHECK(prefs_);
 }
 
-WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
-  // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser) {
-    return;
-  }
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-
-  if (browser_view && browser_view->toolbar_button_provider()) {
-    PageActionIconView* install_icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kPwaInstall);
-    if (install_icon) {
-      // Dehighlight the install icon when this dialog is closed.
-      install_icon->SetHighlighted(false);
-    }
-  }
-}
-
-void WebAppInstallDialogDelegate::StartObservingForPictureInPictureOcclusion(
-    views::Widget* install_dialog_widget) {
-  occlusion_observation_.Observe(install_dialog_widget);
-}
+WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() = default;
 
 void WebAppInstallDialogDelegate::OnAccept() {
   MeasureAcceptUserActionsForInstallDialog();
@@ -140,6 +188,21 @@ void WebAppInstallDialogDelegate::OnAccept() {
     install_info_->title = text_field_contents_;
     install_info_->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
+  }
+
+  // The password manager PWA installation tutorial requires the
+  // `kInstalledPWAEventId` event to be fired from the detailed install dialog.
+  // See `kPasswordManagerTutorialMetricPrefix` in
+  // `MaybeRegisterChromeTutorials()` for more information.
+  if (dialog_type_ == InstallDialogType::kDetailed) {
+    auto* element_tracker = ui::ElementTracker::GetElementTracker();
+    auto* element_framework = ui::ElementTracker::GetFrameworkDelegate();
+    CHECK(element_tracker);
+    auto* ok_button =
+        element_tracker->GetElementInAnyContext(kPwaInstallDialogInstallButton);
+    if (ok_button && element_framework) {
+      element_framework->NotifyCustomEvent(ok_button, kInstalledPWAEventId);
+    }
   }
 
   CHECK(callback_);
@@ -200,26 +263,14 @@ void WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
                                    /*enabled=*/!text_field_contents.empty());
 }
 
-void WebAppInstallDialogDelegate::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility != content::Visibility::VISIBLE) {
-    CloseDialogAsIgnored();
-  }
-}
-
-void WebAppInstallDialogDelegate::WebContentsDestroyed() {
-  CloseDialogAsIgnored();
-}
-
-void WebAppInstallDialogDelegate::PrimaryPageChanged(content::Page& page) {
-  CloseDialogAsIgnored();
-}
-
-void WebAppInstallDialogDelegate::OnOcclusionStateChanged(bool occluded) {
-  // If a picture-in-picture window is occluding the dialog, froce it to close
-  // to prevent spoofing.
-  if (occluded) {
-    PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+void WebAppInstallDialogDelegate::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppInstallDialogDelegate::CloseDialogAsIgnored,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

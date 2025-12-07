@@ -17,7 +17,7 @@
 
 namespace blink {
 
-// Used by BaseRenderingContext2D to track cached colors.
+// Used by Canvas2DRecorderContext to track cached colors.
 struct CachedColor final : public GarbageCollected<CachedColor> {
   CachedColor(v8::Isolate* isolate,
               const v8::Local<v8::String>& color_string,
@@ -28,7 +28,7 @@ struct CachedColor final : public GarbageCollected<CachedColor> {
         parse_result(parse_result),
         hash_code(color_string->GetIdentityHash()) {
     // Color-mix is not cached.
-    DCHECK_NE(parse_result, ColorParseResult::kColorMix);
+    DCHECK_NE(parse_result, ColorParseResult::kColorFunction);
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(color_string); }
@@ -47,7 +47,7 @@ struct CachedColor final : public GarbageCollected<CachedColor> {
 
 // Allows using CachedColor in a HashMap.
 struct CachedColorTraits final
-    : public WTF::BaseMemberHashTraits<CachedColor, Member<CachedColor>> {
+    : public BaseMemberHashTraits<CachedColor, Member<CachedColor>> {
   STATIC_ONLY(CachedColorTraits);
   static unsigned GetHash(const CachedColor* cached_color) {
     return cached_color->hash_code;

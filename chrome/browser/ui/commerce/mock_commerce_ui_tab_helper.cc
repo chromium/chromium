@@ -6,39 +6,25 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
-namespace {
-class TabFeaturesFake : public tabs::TabFeatures {
- public:
-  TabFeaturesFake() = default;
-
- protected:
-  std::unique_ptr<commerce::CommerceUiTabHelper> CreateCommerceUiTabHelper(
-      content::WebContents* contents,
-      Profile* profile) override {
-    return std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
-        contents, side_panel_registry());
-  }
-};
-}  // namespace
-
 // static
-void MockCommerceUiTabHelper::ReplaceFactory() {
-  tabs::TabFeatures::ReplaceTabFeaturesForTesting(
-      base::BindRepeating([]() -> std::unique_ptr<tabs::TabFeatures> {
-        return std::make_unique<TabFeaturesFake>();
+ui::UserDataFactory::ScopedOverride MockCommerceUiTabHelper::ReplaceFactory() {
+  return tabs::TabFeatures::GetUserDataFactoryForTesting()
+      .AddOverrideForTesting(base::BindRepeating([](tabs::TabInterface& tab) {
+        return std::make_unique<MockCommerceUiTabHelper>(
+            tab, tab.GetTabFeatures()->side_panel_registry());
       }));
 }
 
-MockCommerceUiTabHelper::MockCommerceUiTabHelper(content::WebContents* content,
+MockCommerceUiTabHelper::MockCommerceUiTabHelper(tabs::TabInterface& tab,
                                                  SidePanelRegistry* registry)
-    : CommerceUiTabHelper(content, nullptr, nullptr, nullptr, registry) {
+    : CommerceUiTabHelper(tab, nullptr, nullptr, nullptr, registry) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   valid_product_image_ = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));

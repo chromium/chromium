@@ -1,0 +1,91 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_index") {
+  sources = [
+    "content_index_metrics.h",
+    "content_index_provider_factory.h",
+    "content_index_provider_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/offline_items_collection/core",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "content_index_metrics.cc",
+    "content_index_provider_factory.cc",
+    "content_index_provider_impl.cc",
+  ]
+  deps = [
+    ":content_index",
+    "//chrome/browser/engagement",
+    "//chrome/browser/metrics",
+    "//chrome/browser/offline_items_collection",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//components/site_engagement/content",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_index_provider_unittest.cc" ]
+  deps = [
+    ":content_index",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/engagement",
+    "//chrome/browser/history",
+    "//chrome/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/site_engagement/content",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "content_index_browsertest.cc" ]
+    deps = [
+      ":content_index",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/test:test_support_ui",
+      "//components/offline_items_collection/core",
+      "//components/ukm:test_support",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//testing/gmock",
+      "//third_party/blink/public/common:headers",
+      "//third_party/re2",
+      "//url",
+    ]
+  }
+}

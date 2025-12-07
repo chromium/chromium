@@ -4,17 +4,21 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Sets up communication with the VariationsService. This is primarily used for
  * triggering seed fetches on application startup.
  */
+@NullMarked
 public class VariationsSession {
     private boolean mRestrictModeFetchStarted;
-    private String mRestrictMode;
+    private @Nullable String mRestrictMode;
 
     public void initializeWithNative() {
         // No-op, but overridden by the internal subclass for extra logic.
@@ -31,11 +35,10 @@ public class VariationsSession {
 
         mRestrictModeFetchStarted = true;
         getRestrictModeValue(
-                new Callback<String>() {
+                new Callback<>() {
                     @Override
                     public void onResult(String restrictMode) {
-                        VariationsSessionJni.get()
-                                .startVariationsSession(VariationsSession.this, mRestrictMode);
+                        VariationsSessionJni.get().startVariationsSession(mRestrictMode);
                     }
                 });
     }
@@ -55,7 +58,7 @@ public class VariationsSession {
             return;
         }
         getRestrictMode(
-                new Callback<String>() {
+                new Callback<>() {
                     @Override
                     public void onResult(String restrictMode) {
                         assert restrictMode != null;
@@ -78,13 +81,14 @@ public class VariationsSession {
      * @return The latest country according to the current variations state. Null if not known.
      */
     public String getLatestCountry() {
-        return VariationsSessionJni.get().getLatestCountry(this);
+        return VariationsSessionJni.get().getLatestCountry();
     }
 
     @NativeMethods
     interface Natives {
-        void startVariationsSession(VariationsSession caller, String restrictMode);
+        void startVariationsSession(@JniType("std::string") @Nullable String restrictMode);
 
-        String getLatestCountry(VariationsSession caller);
+        @JniType("std::string")
+        String getLatestCountry();
     }
 }

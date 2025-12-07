@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//url",
   ]
@@ -26,11 +27,11 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test/fakes",
     "//ios/web/public",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/url_pattern.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <ostream>
 #include <string_view>
 
@@ -33,7 +29,7 @@ namespace {
 
 // TODO(aa): What about more obscure schemes like javascript: ?
 // Note: keep this array in sync with kValidSchemeMasks.
-const char* const kValidSchemes[] = {
+constexpr std::array kValidSchemes = {
     url::kHttpScheme,          url::kHttpsScheme,
     url::kFileScheme,          url::kFtpScheme,
     content::kChromeUIScheme,  extensions::kExtensionScheme,
@@ -42,7 +38,7 @@ const char* const kValidSchemes[] = {
     url::kUuidInPackageScheme,
 };
 
-const int kValidSchemeMasks[] = {
+constexpr std::array kValidSchemeMasks = {
     URLPattern::SCHEME_HTTP,
     URLPattern::SCHEME_HTTPS,
     URLPattern::SCHEME_FILE,
@@ -70,16 +66,16 @@ const char kParseErrorInvalidPort[] = "Invalid port.";
 const char kParseErrorInvalidHost[] = "Invalid host.";
 
 // Message explaining each URLPattern::ParseResult.
-const char* const kParseResultMessages[] = {
-  kParseSuccess,
-  kParseErrorMissingSchemeSeparator,
-  kParseErrorInvalidScheme,
-  kParseErrorWrongSchemeType,
-  kParseErrorEmptyHost,
-  kParseErrorInvalidHostWildcard,
-  kParseErrorEmptyPath,
-  kParseErrorInvalidPort,
-  kParseErrorInvalidHost,
+constexpr std::array kParseResultMessages = {
+    kParseSuccess,
+    kParseErrorMissingSchemeSeparator,
+    kParseErrorInvalidScheme,
+    kParseErrorWrongSchemeType,
+    kParseErrorEmptyHost,
+    kParseErrorInvalidHostWildcard,
+    kParseErrorEmptyPath,
+    kParseErrorInvalidPort,
+    kParseErrorInvalidHost,
 };
 
 static_assert(static_cast<int>(URLPattern::ParseResult::kNumParseResults) ==
@@ -94,8 +90,7 @@ bool IsStandardScheme(std::string_view scheme) {
     return true;
   }
 
-  return url::IsStandard(scheme.data(),
-                         url::Component(0, static_cast<int>(scheme.length())));
+  return url::IsStandard(scheme);
 }
 
 bool IsValidPortForScheme(std::string_view scheme, std::string_view port) {
@@ -104,8 +99,7 @@ bool IsValidPortForScheme(std::string_view scheme, std::string_view port) {
   }
 
   // Only accept non-wildcard ports if the scheme uses ports.
-  if (url::DefaultPortForScheme(scheme.data(), scheme.length()) ==
-      url::PORT_UNSPECIFIED) {
+  if (url::DefaultPortForScheme(scheme) == url::PORT_UNSPECIFIED) {
     return false;
   }
 
@@ -188,24 +182,11 @@ URLPattern::URLPattern(const URLPattern& other) = default;
 
 URLPattern::URLPattern(URLPattern&& other) = default;
 
-URLPattern::~URLPattern() {
-}
+URLPattern::~URLPattern() = default;
 
 URLPattern& URLPattern::operator=(const URLPattern& other) = default;
 
 URLPattern& URLPattern::operator=(URLPattern&& other) = default;
-
-bool URLPattern::operator<(const URLPattern& other) const {
-  return GetAsString() < other.GetAsString();
-}
-
-bool URLPattern::operator>(const URLPattern& other) const {
-  return GetAsString() > other.GetAsString();
-}
-
-bool URLPattern::operator==(const URLPattern& other) const {
-  return GetAsString() == other.GetAsString();
-}
 
 std::ostream& operator<<(std::ostream& out, const URLPattern& url_pattern) {
   return out << '"' << url_pattern.GetAsString() << '"';
@@ -459,7 +440,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
 
   // Ensure the scheme matches first, since <all_urls> may not match this URL if
   // the scheme is excluded.
-  if (!MatchesScheme(test_url->scheme_piece())) {
+  if (!MatchesScheme(test_url->scheme())) {
     return false;
   }
 
@@ -475,7 +456,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
 
   std::string path_for_request = test.PathForRequest();
   if (has_inner_url) {
-    path_for_request = base::StrCat({test_url->path_piece(), path_for_request});
+    path_for_request = base::StrCat({test_url->path(), path_for_request});
   }
 
   return MatchesSecurityOriginHelper(*test_url) &&
@@ -493,7 +474,7 @@ bool URLPattern::MatchesSecurityOrigin(const GURL& test) const {
     test_url = test.inner_url();
   }
 
-  if (!MatchesScheme(test_url->scheme())) {
+  if (!MatchesScheme(test_url->GetScheme())) {
     return false;
   }
 
@@ -522,7 +503,7 @@ bool URLPattern::MatchesHost(std::string_view host) const {
 }
 
 bool URLPattern::MatchesHost(const GURL& test) const {
-  std::string_view test_host(CanonicalizeHostForMatching(test.host_piece()));
+  std::string_view test_host(CanonicalizeHostForMatching(test.host()));
   const std::string_view pattern_host(CanonicalizeHostForMatching(host_));
 
   // If the hosts are exactly equal, we have a match.

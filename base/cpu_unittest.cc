@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/cpu.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/protected_memory_buildflags.h"
 #include "base/strings/string_util.h"
@@ -181,28 +177,18 @@ TEST(CPU, X86FamilyAndModel) {
 }
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-TEST(CPU, ARMImplementerAndPartNumber) {
-  base::CPU cpu;
-
-  const std::string& cpu_brand = cpu.cpu_brand();
-
-  // Some devices, including on the CQ, do not report a cpu_brand
-  // https://crbug.com/1166533 and https://crbug.com/1167123.
-  EXPECT_EQ(cpu_brand, base::TrimWhitespaceASCII(cpu_brand, base::TRIM_ALL));
-  EXPECT_GT(cpu.implementer(), 0u);
-  EXPECT_GT(cpu.part_number(), 0u);
-}
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 TEST(CPUDeathTest, VerifyModifyingCPUInstanceNoAllocationCrashes) {
   const base::CPU& cpu = base::CPU::GetInstanceNoAllocation();
-  uint8_t* const bytes =
-      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(&cpu));
-
+  // SAFETY: This test explicitly checks the functionality of protected memory.
+  // Any write to any byte of CPU should crash. Thus this test is used to
+  // precisely manipulate and target the memory to cause a crash. Here we just
+  // wrap it into a span for convenience.
+  // TODO(sergiosolano): Use base::byte_span_from_ref() here once base::CPU is
+  // trivially copyable.
+  const base::span<uint8_t> bytes = UNSAFE_BUFFERS(
+      base::span(const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(&cpu)),
+                 sizeof(cpu)));
   // We try and flip a couple of bits and expect the test to die immediately.
   // Checks are limited to every 15th byte, otherwise the tests run into
   // time-outs.

@@ -13,7 +13,7 @@
 
 struct AccountInfo;
 class Browser;
-@class MDCSnackbarMessageAction;
+@class SnackbarMessageAction;
 
 class ReadingListBrowserAgent
     : public BrowserUserData<ReadingListBrowserAgent> {
@@ -32,7 +32,6 @@ class ReadingListBrowserAgent
 
  private:
   friend class BrowserUserData<ReadingListBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit ReadingListBrowserAgent(Browser* browser);
 
@@ -48,7 +47,7 @@ class ReadingListBrowserAgent
   // it will remove the item from both storages if the account storage is
   // enabled, and if the user tries to re-add an existing entry (no-op add),
   // then taps "undo", the existing entry will be removed.
-  MDCSnackbarMessageAction* CreateUndoActionWithReadingListURLs(
+  SnackbarMessageAction* CreateUndoActionWithReadingListURLs(
       NSArray<URLWithTitle*>* urls);
 
   // Removes the given urls from the reading list.
@@ -56,10 +55,7 @@ class ReadingListBrowserAgent
 
   // Creates the "view" action for the snackbar message for bulk adding to
   // Reading List.
-  MDCSnackbarMessageAction* CreateViewAction();
-
-  // The browser associated with this agent.
-  raw_ptr<Browser> browser_;
+  SnackbarMessageAction* CreateViewAction();
 
   // Create weak pointers to ensure that the callback bound to the object is
   // canceled when the object is destroyed.

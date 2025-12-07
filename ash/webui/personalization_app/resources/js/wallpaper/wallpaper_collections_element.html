@@ -157,6 +157,11 @@
     top: 20px;
   }
 
+  #promoted wallpaper-grid-item[data-is-time-of-day-collection]::part(info-icon) {
+    right: 36px;
+    top: 20px;
+  }
+
   .tile-tag {
     background-color: var(--cros-sys-complement_variant);
     border-radius: 36px;
@@ -205,7 +210,6 @@
                 class$="[[getSeaPenTileTagClass_(item)]]">
               [[getSeaPenTileTagLabel_(item)]]
             </div>
-            <!-- TODO(345856242) update the real string for primary-text -->
             <wallpaper-grid-item
                 data-sea-pen-freeform
                 data-is-promoted-tile
@@ -214,7 +218,7 @@
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
                 on-wallpaper-grid-item-selected="onCollectionSelected_"
-                primary-text="$i18n{seaPenLabel}"
+                primary-text="$i18n{seaPenFreeformWallpaperLabel}"
                 secondary-text="$i18n{seaPenPoweredByGoogleAi}"
                 role="option"
                 src="[[item.preview]]"
@@ -224,10 +228,9 @@
                   <cr-tooltip-icon
                       class="tooltip-icon"
                       icon-class="personalization:managed"
-                      tooltip-text="$i18n{managedSetting}"
-                      icon-aria-label="$i18n{managedSetting}">
+                      tooltip-text="$i18n{managedFeature}"
+                      icon-aria-label="$i18n{managedFeature}">
                   </cr-tooltip-icon>
-                  <p title$="$i18n{seaPenManagedLabel}">$i18n{seaPenManagedLabel}</p>
                 </div>
               </template>
             </wallpaper-grid-item>
@@ -255,10 +258,9 @@
                   <cr-tooltip-icon
                       class="tooltip-icon"
                       icon-class="personalization:managed"
-                      tooltip-text="$i18n{managedSetting}"
-                      icon-aria-label="$i18n{managedSetting}">
+                      tooltip-text="$i18n{managedFeature}"
+                      icon-aria-label="$i18n{managedFeature}">
                   </cr-tooltip-icon>
-                  <p title$="$i18n{seaPenManagedLabel}">$i18n{seaPenManagedLabel}</p>
                 </div>
               </template>
             </wallpaper-grid-item>
@@ -315,7 +317,7 @@
             <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
               <div slot="text" class="primary-text">
                 <iron-icon icon="personalization:managed"
-                    title$="$i18n{managedSetting}">
+                    title="$i18n{managedSetting}">
                 </iron-icon>
                 <p title$="[[item.name]]">[[item.name]]</p>
               </div>

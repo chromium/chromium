@@ -25,11 +25,10 @@ TranslationResponseParser::~TranslationResponseParser() {
 }
 
 void TranslationResponseParser::ProcessResponse(
-    std::unique_ptr<std::string> response_body) {
+    const std::string& response_body) {
   data_decoder::DataDecoder::ParseJsonIsolated(
-      response_body->c_str(),
-      base::BindOnce(&TranslationResponseParser::OnJsonParsed,
-                     weak_factory_.GetWeakPtr()));
+      response_body, base::BindOnce(&TranslationResponseParser::OnJsonParsed,
+                                    weak_factory_.GetWeakPtr()));
 }
 
 void TranslationResponseParser::OnJsonParsed(

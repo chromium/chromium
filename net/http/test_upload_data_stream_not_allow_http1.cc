@@ -4,6 +4,11 @@
 
 #include "net/http/test_upload_data_stream_not_allow_http1.h"
 
+#include <stdint.h>
+
+#include <string>
+
+#include "base/containers/span.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -20,7 +25,8 @@ int UploadDataStreamNotAllowHTTP1::InitInternal(const NetLogWithSource&) {
 int UploadDataStreamNotAllowHTTP1::ReadInternal(IOBuffer* buf, int buf_len) {
   const size_t bytes_to_read =
       std::min(content_.length(), static_cast<size_t>(buf_len));
-  memcpy(buf->data(), content_.c_str(), bytes_to_read);
+  buf->span().copy_prefix_from(
+      base::as_byte_span(content_).first(bytes_to_read));
   content_ = content_.substr(bytes_to_read);
   if (!content_.length())
     SetIsFinalChunk();

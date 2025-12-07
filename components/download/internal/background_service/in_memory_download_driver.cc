@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/in_memory_download.h"
+#include "components/download/public/background_service/url_loader_factory_getter.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 namespace download {
@@ -15,6 +16,7 @@ namespace {
 DriverEntry::State ToDriverEntryState(InMemoryDownload::State state) {
   switch (state) {
     case InMemoryDownload::State::INITIAL:
+    case InMemoryDownload::State::RETRIEVE_URL_LOADER_FACTIORY:
     case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
       return DriverEntry::State::IN_PROGRESS;
@@ -23,8 +25,7 @@ DriverEntry::State ToDriverEntryState(InMemoryDownload::State state) {
     case InMemoryDownload::State::COMPLETE:
       return DriverEntry::State::COMPLETE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return DriverEntry::State::UNKNOWN;
+  NOTREACHED();
 }
 
 // Helper function to create download driver entry based on in memory download.
@@ -39,15 +40,30 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
   entry.url_chain = download.url_chain();
   entry.response_headers = download.response_headers();
   if (entry.response_headers) {
-    entry.expected_total_size = entry.response_headers->GetContentLength();
+    std::optional<base::ByteCount> content_length =
+        entry.response_headers->GetContentLength();
+    // TODO(https://crbug.com/440360443): This was migrated as-is from an
+    // earlier version of GetContentLength() where a return value of -1 was used
+    // to indicate that there was no header included. It is not clear as to
+    // whether this code correctly handled this case, and so the previous
+    // behavior with -1 was maintained. Please evaluate whether -1 is being
+    // correctly used in this case, fix any correctness issues, and remove this
+    // TODO comment.
+    //
+    // Specifically: The documentation for `entry.expected_total_size` notes
+    // that its value is "set to 0 if the Content-Length http header is not
+    // presented" but GetContentLength() was directly assigned over, and
+    // GetContentLength() returned -1, not 0, if there was no header present.
+    entry.expected_total_size = content_length ? content_length->InBytes() : -1;
   }
   // Currently incognito mode network backend can't resume in the middle.
   entry.can_resume = false;
 
   if (download.state() == InMemoryDownload::State::COMPLETE) {
     auto blob_handle = download.ResultAsBlob();
-    if (blob_handle)
+    if (blob_handle) {
       entry.blob_handle = std::optional<storage::BlobDataHandle>(*blob_handle);
+    }
   }
   return entry;
 }
@@ -55,10 +71,8 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
 }  // namespace
 
 InMemoryDownloadFactory::InMemoryDownloadFactory(
-    network::mojom::URLLoaderFactory* url_loader_factory,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : url_loader_factory_(url_loader_factory),
-      io_task_runner_(io_task_runner) {}
+    : io_task_runner_(io_task_runner) {}
 
 InMemoryDownloadFactory::~InMemoryDownloadFactory() = default;
 
@@ -68,18 +82,19 @@ std::unique_ptr<InMemoryDownload> InMemoryDownloadFactory::Create(
     scoped_refptr<network::ResourceRequestBody> request_body,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     InMemoryDownload::Delegate* delegate) {
-  DCHECK(url_loader_factory_);
   return std::make_unique<InMemoryDownloadImpl>(
       guid, request_params, std::move(request_body), traffic_annotation,
-      delegate, url_loader_factory_, io_task_runner_);
+      delegate, io_task_runner_);
 }
 
 InMemoryDownloadDriver::InMemoryDownloadDriver(
     std::unique_ptr<InMemoryDownload::Factory> download_factory,
-    BlobContextGetterFactoryPtr blob_context_getter_factory)
+    BlobContextGetterFactoryPtr blob_context_getter_factory,
+    URLLoaderFactoryGetterPtr url_loader_factory_getter)
     : client_(nullptr),
       download_factory_(std::move(download_factory)),
-      blob_context_getter_factory_(std::move(blob_context_getter_factory)) {}
+      blob_context_getter_factory_(std::move(blob_context_getter_factory)),
+      url_loader_factory_getter_(std::move(url_loader_factory_getter)) {}
 
 InMemoryDownloadDriver::~InMemoryDownloadDriver() = default;
 
@@ -119,22 +134,25 @@ void InMemoryDownloadDriver::Remove(const std::string& guid, bool remove_file) {
 
 void InMemoryDownloadDriver::Pause(const std::string& guid) {
   auto it = downloads_.find(guid);
-  if (it != downloads_.end())
+  if (it != downloads_.end()) {
     it->second->Pause();
+  }
 }
 
 void InMemoryDownloadDriver::Resume(const std::string& guid) {
   auto it = downloads_.find(guid);
-  if (it != downloads_.end())
+  if (it != downloads_.end()) {
     it->second->Resume();
+  }
 }
 
 std::optional<DriverEntry> InMemoryDownloadDriver::Find(
     const std::string& guid) {
   std::optional<DriverEntry> entry;
   auto it = downloads_.find(guid);
-  if (it != downloads_.end())
+  if (it != downloads_.end()) {
     entry = CreateDriverEntry(*it->second);
+  }
   return entry;
 }
 
@@ -184,10 +202,10 @@ void InMemoryDownloadDriver::OnDownloadComplete(InMemoryDownload* download) {
       // OnDownloadSucceeded.
       return;
     case InMemoryDownload::State::INITIAL:
+    case InMemoryDownload::State::RETRIEVE_URL_LOADER_FACTIORY:
     case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -200,6 +218,11 @@ void InMemoryDownloadDriver::OnUploadProgress(InMemoryDownload* download) {
 void InMemoryDownloadDriver::RetrieveBlobContextGetter(
     BlobContextGetterCallback callback) {
   blob_context_getter_factory_->RetrieveBlobContextGetter(std::move(callback));
+}
+
+void InMemoryDownloadDriver::RetrievedURLLoaderFactory(
+    URLLoaderFactoryGetterCallback callback) {
+  url_loader_factory_getter_->RetrieveURLLoaderFactory(std::move(callback));
 }
 
 }  // namespace download

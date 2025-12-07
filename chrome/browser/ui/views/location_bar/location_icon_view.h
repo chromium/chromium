@@ -154,6 +154,9 @@ class LocationIconView : public IconLabelBubbleView {
   // Sets the security level to use for testing.
   void SetSecurityLevelForTesting(security_state::SecurityLevel security_level);
 
+  // Set the rounded rect background with the given color.
+  void SetBackgroundColor(SkColor color);
+
   // The security level when the location icon was last updated. Used to decide
   // whether to animate security level transitions.
   security_state::SecurityLevel last_update_security_level_ =

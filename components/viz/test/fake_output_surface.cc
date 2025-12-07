@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -72,9 +71,7 @@ gfx::OverlayTransform FakeSoftwareOutputSurface::GetDisplayTransform() {
                                          : gfx::OVERLAY_TRANSFORM_NONE;
 }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 void FakeSoftwareOutputSurface::SetNeedsSwapSizeNotifications(
     bool needs_swap_size_notifications) {}
 #endif

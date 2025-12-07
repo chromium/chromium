@@ -38,7 +38,6 @@ class LengthSize {
   bool operator==(const LengthSize& o) const {
     return width_ == o.width_ && height_ == o.height_;
   }
-  bool operator!=(const LengthSize& o) const { return !(*this == o); }
 
   void SetWidth(const Length& width) { width_ = width; }
   const Length& Width() const { return width_; }

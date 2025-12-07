@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -31,14 +30,11 @@ class NavigatorBase;
 class ScriptState;
 
 class MODULES_EXPORT HID : public EventTarget,
-                           public Supplement<NavigatorBase>,
                            public device::mojom::blink::HidManagerClient,
                            public HIDDevice::ServiceInterface {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Web-exposed getter for navigator.hid
   static HID* hid(NavigatorBase&);
 
@@ -107,6 +103,7 @@ class MODULES_EXPORT HID : public EventTarget,
   void FinishRequestDevice(HIDDeviceResolver*,
                            Vector<device::mojom::blink::HidDeviceInfoPtr>);
 
+  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::HidService> service_;
   HeapMojoAssociatedReceiver<device::mojom::blink::HidManagerClient, HID>
       receiver_;

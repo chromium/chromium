@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -23,6 +24,9 @@ class PrefService;
 
 namespace content_settings {
 class CookieSettings;
+}
+namespace privacy_sandbox_test_util {
+class PrivacySandboxSettingsTestPeer;
 }
 
 namespace privacy_sandbox {
@@ -95,6 +99,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const override;
+  bool IsFencedStorageReadAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      content::RenderFrameHost* console_frame) const override;
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin,
@@ -105,10 +113,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   TpcdExperimentEligibility GetCookieDeprecationExperimentCurrentEligibility()
       const override;
 
-  bool IsCookieDeprecationLabelAllowed() const override;
-  bool IsCookieDeprecationLabelAllowedForContext(
-      const url::Origin& top_frame_origin,
-      const url::Origin& context_origin) const override;
   void SetAllPrivacySandboxAllowedForTesting() override;
   void SetTopicsBlockedForTesting() override;
   bool IsPrivacySandboxRestricted() const override;
@@ -123,20 +127,11 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool AreRelatedWebsiteSetsEnabled() const override;
 
  private:
-  friend class PrivacySandboxSettingsTest;
   friend class PrivacySandboxAttestations;
-  friend class PrivacySandboxAttestationsTestBase;
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxAttestationsBrowserTest,
-      CallComponentReadyWhenRegistrationFindsExistingComponent);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
-                           SentinelFilePreventsSubsequentParsings);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
-                           DifferentHistogramAfterAttestationsFileCheck);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, FledgeJoiningAllowed);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
-                           FledgeJoinSettingTimeRangeDeletion);
+  // NOTE: Do not add any new friend classes for testing; tests that need
+  // access to private functions / variables should go through this peer class.
+  friend class privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
+
   // Called when the Related Website Sets enabled preference is changed.
   void OnRelatedWebsiteSetsEnabledPrefChanged();
 
@@ -209,6 +204,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // Internal helper for `IsFledgeAllowed`. Used only when
   // `interest_group_api_operation` is `kJoin`.
   bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
+
+  // Whether fenced frame local unpartitioned data access is enabled.
+  Status GetFencedStorageReadEnabledStatus() const;
 
   // From TrackingProtectionSettingsObserver.
   void OnBlockAllThirdPartyCookiesChanged() override;

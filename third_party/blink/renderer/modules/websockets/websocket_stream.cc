@@ -4,11 +4,14 @@
 
 #include "third_party/blink/renderer/modules/websockets/websocket_stream.h"
 
+#include <ios>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -44,6 +47,9 @@ namespace {
 constexpr char kWebSocketNotCleanlyClosedErrorMessage[] =
     "WebSocket was not cleanly closed.";
 
+constexpr char kClosedWebSocketStreamMessage[] =
+    "Cannot write to a closed WebSocketStream.";
+
 }  // namespace
 
 class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
@@ -52,14 +58,14 @@ class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
       : UnderlyingSourceBase(script_state), creator_(creator) {}
 
   // UnderlyingSourceBase implementation.
-  ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&) override;
-  ScriptPromiseUntyped Cancel(ScriptState*,
-                              ScriptValue reason,
-                              ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                     ScriptValue reason,
+                                     ExceptionState&) override;
 
   // API for WebSocketStream.
   void DidReceiveTextMessage(const String&);
-  void DidReceiveBinaryMessage(const Vector<base::span<const char>>&);
+  void DidReceiveBinaryMessage(const Vector<base::span<const uint8_t>>&);
   void DidStartClosingHandshake();
   void DidCloseCleanly(uint16_t code, const String& reason);
   void CloseWithError(v8::Local<v8::Value> error);
@@ -100,51 +106,84 @@ class WebSocketStream::UnderlyingSink final : public UnderlyingSinkBase {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(creator_);
     visitor->Trace(close_resolver_);
+    visitor->Trace(error_);
     UnderlyingSinkBase::Trace(visitor);
   }
 
  private:
+  friend SendCompletionWatcherImpl;
+
   void ErrorControllerBecauseClosed();
-  void FinishWriteCallback(ScriptPromiseResolver<IDLUndefined>*);
+  void ErrorControllerIfNeeded(v8::Local<v8::Value> with_error);
   void ResolveClose(bool was_clean);
-  void SendAny(ScriptState*,
-               v8::Local<v8::Value> v8chunk,
-               ScriptPromiseResolver<IDLUndefined>*,
-               base::OnceClosure callback,
-               ExceptionState&);
   void SendArrayBuffer(ScriptState*,
                        DOMArrayBuffer*,
                        size_t offset,
                        size_t length,
-                       ScriptPromiseResolver<IDLUndefined>*,
-                       base::OnceClosure callback);
+                       std::unique_ptr<SendCompletionWatcherImpl> watcher);
   void SendString(ScriptState*,
                   v8::Local<v8::Value> v8chunk,
                   ScriptPromiseResolver<IDLUndefined>*,
-                  base::OnceClosure callback);
+                  std::unique_ptr<SendCompletionWatcherImpl> watcher);
 
   Member<WebSocketStream> creator_;
   Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
+
+  // If the stream is errored, `error_` contains the error we errored it with.
+  ScriptValue error_;
   bool closed_ = false;
   bool is_writing_ = false;
 };
 
-ScriptPromiseUntyped WebSocketStream::UnderlyingSource::Pull(
+class WebSocketStream::SendCompletionWatcherImpl final
+    : public WebSocketChannel::SendCompletionWatcher {
+ public:
+  SendCompletionWatcherImpl(UnderlyingSink* sink,
+                            ScriptPromiseResolver<IDLUndefined>* resolver)
+      : sink_(sink), resolver_(resolver) {}
+
+  ~SendCompletionWatcherImpl() override {
+    if (!resolver_) {
+      // Message was sent.
+      return;
+    }
+
+    CHECK(sink_);
+    resolver_->Reject(sink_->error_);
+  }
+
+  void OnMessageSent(bool synchronously) override {
+    DVLOG(1) << "SendCompletionWatcherImpl::OnMessageSent " << this
+             << " OnMessageSent(); synchronously = " << std::boolalpha
+             << synchronously;
+    CHECK(resolver_) << "OnMessageSent() should only be called once";
+    resolver_->Resolve();
+    resolver_ = nullptr;
+    sink_->is_writing_ = false;
+    sink_ = nullptr;
+  }
+
+ private:
+  Persistent<UnderlyingSink> sink_;
+  Persistent<ScriptPromiseResolver<IDLUndefined>> resolver_;
+};
+
+ScriptPromise<IDLUndefined> WebSocketStream::UnderlyingSource::Pull(
     ScriptState* script_state,
     ExceptionState&) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Pull()";
   creator_->channel_->RemoveBackpressure();
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped WebSocketStream::UnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> WebSocketStream::UnderlyingSource::Cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Cancel()";
   closed_ = true;
   creator_->CloseMaybeWithReason(reason, exception_state);
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void WebSocketStream::UnderlyingSource::DidReceiveTextMessage(
@@ -159,7 +198,7 @@ void WebSocketStream::UnderlyingSource::DidReceiveTextMessage(
 }
 
 void WebSocketStream::UnderlyingSource::DidReceiveBinaryMessage(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this
            << " DidReceiveBinaryMessage()";
 
@@ -217,17 +256,43 @@ ScriptPromise<IDLUndefined> WebSocketStream::UnderlyingSink::write(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " write()";
   is_writing_ = true;
+
+  v8::Local<v8::Value> v8chunk = chunk.V8Value();
+  auto* isolate = script_state->GetIsolate();
+  DOMArrayBuffer* data = nullptr;
+  size_t offset = 0;
+  size_t length = 0;
+  if (v8chunk->IsArrayBuffer()) {
+    data = NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, v8chunk,
+                                                          exception_state);
+    if (exception_state.HadException()) {
+      closed_ = true;
+      is_writing_ = false;
+      return EmptyPromise();
+    }
+    length = data->ByteLength();
+  } else if (v8chunk->IsArrayBufferView()) {
+    NotShared<DOMArrayBufferView> data_view =
+        NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
+            isolate, v8chunk, exception_state);
+    if (exception_state.HadException()) {
+      closed_ = true;
+      is_writing_ = false;
+      return EmptyPromise();
+    }
+    data = data_view->buffer();
+    offset = data_view->byteOffset();
+    length = data_view->byteLength();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
-  base::OnceClosure callback =
-      WTF::BindOnce(&UnderlyingSink::FinishWriteCallback,
-                    WrapWeakPersistent(this), WrapPersistent(resolver));
-  v8::Local<v8::Value> v8chunk = chunk.V8Value();
-  SendAny(script_state, v8chunk, resolver, std::move(callback),
-          exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state);
+  auto watcher = std::make_unique<SendCompletionWatcherImpl>(this, resolver);
+  if (data) {
+    SendArrayBuffer(script_state, data, offset, length, std::move(watcher));
+  } else {
+    SendString(script_state, v8chunk, resolver, std::move(watcher));
   }
   return result;
 }
@@ -293,29 +358,23 @@ void WebSocketStream::UnderlyingSink::CloseWithError(
   }
   closed_ = true;
 
-  ScriptState* script_state = creator_->script_state_;
-  Controller()->error(script_state,
-                      ScriptValue(script_state->GetIsolate(), error));
+  ErrorControllerIfNeeded(error);
 }
 
 void WebSocketStream::UnderlyingSink::ErrorControllerBecauseClosed() {
   ScriptState* script_state = creator_->script_state_;
-  Controller()->error(
-      script_state,
-      ScriptValue(
-          script_state->GetIsolate(),
-          V8ThrowDOMException::CreateOrEmpty(
-              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-              "Cannot write to a closed WebSocketStream")));
+  ErrorControllerIfNeeded(V8ThrowDOMException::CreateOrEmpty(
+      script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+      kClosedWebSocketStreamMessage));
 }
 
-void WebSocketStream::UnderlyingSink::FinishWriteCallback(
-    ScriptPromiseResolver<IDLUndefined>* resolver) {
-  DVLOG(1) << "WebSocketStream::UnderlyingSink " << this
-           << " FinishWriteCallback()";
-
-  resolver->Resolve();
-  is_writing_ = false;
+void WebSocketStream::UnderlyingSink::ErrorControllerIfNeeded(
+    v8::Local<v8::Value> with_error) {
+  if (error_.IsEmpty()) {
+    ScriptState* script_state = creator_->script_state_;
+    error_ = ScriptValue(script_state->GetIsolate(), with_error);
+    Controller()->error(script_state, error_);
+  }
 }
 
 void WebSocketStream::UnderlyingSink::ResolveClose(bool was_clean) {
@@ -330,69 +389,24 @@ void WebSocketStream::UnderlyingSink::ResolveClose(bool was_clean) {
       creator_->CreateWebSocketError(kWebSocketNotCleanlyClosedErrorMessage));
 }
 
-void WebSocketStream::UnderlyingSink::SendAny(
-    ScriptState* script_state,
-    v8::Local<v8::Value> v8chunk,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    base::OnceClosure callback,
-    ExceptionState& exception_state) {
-  DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " SendAny()";
-  auto* isolate = script_state->GetIsolate();
-
-  if (v8chunk->IsArrayBuffer()) {
-    DOMArrayBuffer* data = NativeValueTraits<DOMArrayBuffer>::NativeValue(
-        isolate, v8chunk, exception_state);
-    if (exception_state.HadException()) {
-      closed_ = true;
-      is_writing_ = false;
-      return;
-    }
-    SendArrayBuffer(script_state, data, 0, data->ByteLength(), resolver,
-                    std::move(callback));
-    return;
-  }
-
-  if (v8chunk->IsArrayBufferView()) {
-    NotShared<DOMArrayBufferView> data =
-        NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
-            isolate, v8chunk, exception_state);
-    if (exception_state.HadException()) {
-      closed_ = true;
-      is_writing_ = false;
-      return;
-    }
-
-    SendArrayBuffer(script_state, data->buffer(), data->byteOffset(),
-                    data->byteLength(), resolver, std::move(callback));
-    return;
-  }
-
-  SendString(script_state, v8chunk, resolver, std::move(callback));
-}
-
 void WebSocketStream::UnderlyingSink::SendArrayBuffer(
     ScriptState* script_state,
     DOMArrayBuffer* buffer,
     size_t offset,
     size_t length,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    base::OnceClosure callback) {
+    std::unique_ptr<SendCompletionWatcherImpl> watcher) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this
            << " SendArrayBuffer() buffer = " << buffer << " offset = " << offset
            << " length = " << length;
 
-  if (creator_->channel_->Send(*buffer, offset, length, std::move(callback)) ==
-      WebSocketChannel::SendResult::kSentSynchronously) {
-    is_writing_ = false;
-    resolver->Resolve();
-  }
+  creator_->channel_->Send(*buffer, offset, length, std::move(watcher));
 }
 
 void WebSocketStream::UnderlyingSink::SendString(
     ScriptState* script_state,
     v8::Local<v8::Value> v8chunk,
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    base::OnceClosure callback) {
+    std::unique_ptr<SendCompletionWatcherImpl> watcher) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " SendString()";
   auto* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
@@ -404,20 +418,14 @@ void WebSocketStream::UnderlyingSink::SendString(
     return;
   }
   // Skip one string copy by using v8::String UTF8 conversion instead of going
-  // via WTF::String.
-  int expected_length = string_chunk->Utf8Length(isolate) + 1;
-  std::string message(expected_length, '\0');
-  int written_length = string_chunk->WriteUtf8(
-      isolate, &message[0], -1, nullptr, v8::String::REPLACE_INVALID_UTF8);
-  DCHECK_EQ(expected_length, written_length);
-  DCHECK_GT(expected_length, 0);
-  DCHECK_EQ(message.back(), '\0');
-  message.pop_back();  // Remove the null terminator.
-  if (creator_->channel_->Send(message, std::move(callback)) ==
-      WebSocketChannel::SendResult::kSentSynchronously) {
-    is_writing_ = false;
-    resolver->Resolve();
-  }
+  // via blink::String.
+  size_t utf8_length = string_chunk->Utf8LengthV2(isolate);
+  std::string message(utf8_length, '\0');
+  size_t written_length =
+      string_chunk->WriteUtf8V2(isolate, message.data(), utf8_length,
+                                v8::String::WriteFlags::kReplaceInvalidUtf8);
+  DCHECK_EQ(utf8_length, written_length);
+  creator_->channel_->Send(message, std::move(watcher));
 }
 
 WebSocketStream* WebSocketStream::Create(ScriptState* script_state,
@@ -460,8 +468,9 @@ WebSocketStream* WebSocketStream::CreateInternal(
         execution_context, stream, CaptureSourceLocation(execution_context));
   }
   stream->Connect(script_state, url, options, exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return nullptr;
+  }
 
   return stream;
 }
@@ -504,12 +513,14 @@ void WebSocketStream::DidConnect(const String& subprotocol,
            << " DidConnect() subprotocol=" << subprotocol
            << " extensions=" << extensions;
 
-  if (!channel_)
+  if (!channel_) {
     return;
+  }
 
   ScriptState::Scope scope(script_state_);
-  if (common_.GetState() != WebSocketCommon::kConnecting)
+  if (common_.GetState() != WebSocketCommon::kConnecting) {
     return;
+  }
   common_.SetState(WebSocketCommon::kOpen);
   was_ever_connected_ = true;
   auto* open_info = MakeGarbageCollected<WebSocketOpenInfo>();
@@ -531,18 +542,20 @@ void WebSocketStream::DidReceiveTextMessage(const String& string) {
   DVLOG(1) << "WebSocketStream " << this
            << " DidReceiveTextMessage() string=" << string;
 
-  if (!channel_)
+  if (!channel_) {
     return;
+  }
 
   ScriptState::Scope scope(script_state_);
   source_->DidReceiveTextMessage(string);
 }
 
 void WebSocketStream::DidReceiveBinaryMessage(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   DVLOG(1) << "WebSocketStream " << this << " DidReceiveBinaryMessage()";
-  if (!channel_)
+  if (!channel_) {
     return;
+  }
 
   ScriptState::Scope scope(script_state_);
   source_->DidReceiveBinaryMessage(data);
@@ -558,8 +571,9 @@ void WebSocketStream::DidConsumeBufferedAmount(uint64_t consumed) {
 
 void WebSocketStream::DidStartClosingHandshake() {
   DVLOG(1) << "WebSocketStream " << this << " DidStartClosingHandshake()";
-  if (!channel_)
+  if (!channel_) {
     return;
+  }
 
   ScriptState::Scope scope(script_state_);
   common_.SetState(WebSocketCommon::kClosing);
@@ -576,8 +590,9 @@ void WebSocketStream::DidClose(
            << closing_handshake_completion << " code=" << code
            << " reason=" << reason;
 
-  if (!channel_)
+  if (!channel_) {
     return;
+  }
 
   ScriptState::Scope scope(script_state_);
   if (!was_ever_connected_) {
@@ -593,7 +608,6 @@ void WebSocketStream::DidClose(
   common_.SetState(WebSocketCommon::kClosed);
 
   channel_->Disconnect();
-  channel_ = nullptr;
   abort_handle_.Clear();
   if (was_clean) {
     if (source_) {
@@ -614,6 +628,9 @@ void WebSocketStream::DidClose(
     }
     closed_->Reject(ScriptValue(script_state_->GetIsolate(), error));
   }
+  // By freeing the WebSocketChannel last, we ensure that any unsent messages
+  // are able to see the error stored in the sink.
+  channel_ = nullptr;
 }
 
 void WebSocketStream::ContextDestroyed() {
@@ -666,7 +683,7 @@ void WebSocketStream::Connect(ScriptState* script_state,
     }
 
     abort_handle_ = signal->AddAlgorithm(
-        WTF::BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
+        BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
   }
 
   auto result = common_.Connect(
@@ -739,8 +756,9 @@ v8::Local<v8::Value> WebSocketStream::CreateWebSocketError(
 void WebSocketStream::OnAbort() {
   DVLOG(1) << "WebSocketStream " << this << " OnAbort()";
 
-  if (was_ever_connected_ || !channel_)
+  if (was_ever_connected_ || !channel_) {
     return;
+  }
 
   channel_->CancelHandshake();
   channel_ = nullptr;

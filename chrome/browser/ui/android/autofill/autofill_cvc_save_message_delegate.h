@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_CVC_SAVE_MESSAGE_DELEGATE_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_CVC_SAVE_MESSAGE_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/messages/android/message_wrapper.h"

@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.gesturenav;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationHistory;
 
+import java.util.function.Supplier;
+
 /** Interface that defines the methods for controlling Navigation sheet. */
+@NullMarked
 public interface NavigationSheet {
     /** Delegate performing navigation-related operations/providing the required info. */
     interface Delegate {
@@ -29,17 +32,18 @@ public interface NavigationSheet {
 
     /**
      * Create {@link NavigationSheet} object.
-     * @param rootView Root view whose dimension is used for the sheet.
+     *
+     * @param parentView Parent view whose dimension is used for the sheet.
      * @param context {@link Context} used to retrieve resources.
      * @param bottomSheetController {@link BottomSheetController} object.
      * @return NavigationSheet object.
      */
-    public static NavigationSheet create(
-            View rootView,
+    static NavigationSheet create(
+            View parentView,
             Context context,
             Supplier<BottomSheetController> bottomSheetController,
             Profile profile) {
-        return new NavigationSheetCoordinator(rootView, context, bottomSheetController, profile);
+        return new NavigationSheetCoordinator(parentView, context, bottomSheetController, profile);
     }
 
     /**
@@ -52,14 +56,14 @@ public interface NavigationSheet {
     /**
      * @return {@code true} if another instance of NavigationSheet is already showing.
      */
-    public static boolean isInstanceShowing(BottomSheetController controller) {
+    static boolean isInstanceShowing(BottomSheetController controller) {
         if (controller == null) return false;
         return (controller.getCurrentSheetContent() instanceof NavigationSheetCoordinator)
                 && controller.isSheetOpen();
     }
 
     /** Placeholder object that does nothing. Saves lots of null checks. */
-    static final NavigationSheet PLACEHOLDER =
+    NavigationSheet PLACEHOLDER =
             new NavigationSheet() {
                 @Override
                 public void setDelegate(Delegate delegate) {}

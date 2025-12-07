@@ -199,7 +199,7 @@ void DataTypeStoreImpl::ReadAllDataAndPreprocess(
                      base::Unretained(backend_store_.get()),
                      std::move(preprocess_on_backend_sequence_callback));
   // ReadAllDataAndPreprocessDone() is only needed to guarantee that callbacks
-  // get cancelled if |this| gets destroyed.
+  // get cancelled if `this` gets destroyed.
   auto reply =
       base::BindOnce(&DataTypeStoreImpl::ReadAllDataAndPreprocessDone,
                      weak_ptr_factory_.GetWeakPtr(),

@@ -234,6 +234,7 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
   // Gets the default shelf color, calculated using the wallpaper color if
   // available.
   SkColor GetDefaultShelfColor(const views::Widget* widget) const;
+  ui::ColorId GetDefaultShelfColorId() const;
 
   // Returns the current blur radius to use for the control buttons.
   int GetShelfControlButtonBlurRadius() const;

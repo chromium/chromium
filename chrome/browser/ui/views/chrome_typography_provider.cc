@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/default_style.h"
@@ -22,7 +21,9 @@
 #include "ui/native_theme/native_theme_win.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include <optional>
+
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/ash_typography.h"  // nogncheck
 #endif
@@ -39,14 +40,13 @@ bool ChromeTypographyProvider::StyleAllowedForContext(int context,
     // Limit emphasizing text to contexts where it's obviously correct. If you
     // hit this check, ensure it's sane and UX-approved to extend it to your
     // new case (e.g. don't add CONTEXT_BUTTON_MD).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40234831): Limit more specific Ash contexts.
     return true;
 #else
     return context == views::style::CONTEXT_LABEL ||
            context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
-           context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
-           context == CONTEXT_DOWNLOAD_SHELF;
+           context == CONTEXT_DIALOG_BODY_TEXT_SMALL;
 #endif
   }
 
@@ -62,20 +62,18 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
   }
 
   // "Target" font size constants.
-  constexpr int kHeadlineSize = 20;
   constexpr int kTitleSize = 15;
   constexpr int kTouchableLabelSize = 14;
   constexpr int kBodyTextLargeSize = 13;
   constexpr int kCR23ButtonTextSize = 13;
   constexpr int kDefaultSize = 12;
-  constexpr int kStatusSize = 10;
   constexpr int kBadgeSize = 9;
 
   ui::ResourceBundle::FontDetails details;
 
   details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kDefaultSize);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ApplyAshFontStyles(context, style, details);
 #endif
 
@@ -100,15 +98,8 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
       break;
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
-    case CONTEXT_DOWNLOAD_SHELF:
       details.size_delta =
           gfx::PlatformFont::GetFontSizeDelta(kBodyTextLargeSize);
-      break;
-    case CONTEXT_HEADLINE:
-      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kHeadlineSize);
-      break;
-    case CONTEXT_DOWNLOAD_SHELF_STATUS:
-      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kStatusSize);
       break;
     default:
       break;
@@ -135,8 +126,8 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
-  if (style == STYLE_PRIMARY_MONOSPACED ||
-      style == STYLE_SECONDARY_MONOSPACED) {
+  if (style == views::style::STYLE_PRIMARY_MONOSPACED ||
+      style == views::style::STYLE_SECONDARY_MONOSPACED) {
 #if BUILDFLAG(IS_MAC)
     details.typeface = "Menlo";
 #elif BUILDFLAG(IS_WIN)
@@ -146,35 +137,34 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
 #endif
   }
 
+  if (style == STYLE_SMALL) {
+    details.size_delta -= 2;
+  }
+
   return details;
 }
 
 ui::ColorId ChromeTypographyProvider::GetColorIdImpl(int context,
                                                      int style) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/400615941): Remove ash-spcecific handling from //chrome.
+  if (std::optional<ui::ColorId> color_id = ash::GetColorId(style);
+      color_id.has_value()) {
+    return color_id.value();
+  }
+#endif
+
   // Body text styles are the same as for labels.
   if (context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
-      context == CONTEXT_DIALOG_BODY_TEXT_SMALL)
+      context == CONTEXT_DIALOG_BODY_TEXT_SMALL) {
     context = views::style::CONTEXT_LABEL;
-
-  // Monospaced styles have the same colors as their normal counterparts.
-  if (style == STYLE_PRIMARY_MONOSPACED) {
-    style = views::style::STYLE_PRIMARY;
-  } else if (style == STYLE_SECONDARY_MONOSPACED) {
-    style = views::style::STYLE_SECONDARY;
   }
 
-  if (context == CONTEXT_DOWNLOAD_SHELF ||
-      context == CONTEXT_DOWNLOAD_SHELF_STATUS) {
-    switch (style) {
-      case STYLE_RED:
-        return kColorDownloadItemForegroundDangerous;
-      case STYLE_GREEN:
-        return kColorDownloadItemForegroundSafe;
-      case views::style::STYLE_DISABLED:
-        return kColorDownloadItemForegroundDisabled;
-      default:
-        return kColorDownloadItemForeground;
-    }
+  // Monospaced styles have the same colors as their normal counterparts.
+  if (style == views::style::STYLE_PRIMARY_MONOSPACED) {
+    style = views::style::STYLE_PRIMARY;
+  } else if (style == views::style::STYLE_SECONDARY_MONOSPACED) {
+    style = views::style::STYLE_SECONDARY;
   }
 
   switch (style) {
@@ -193,11 +183,19 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
     return TypographyProvider::GetLineHeightImpl(context, style);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/400615941): Remove ash-spcecific handling when we remove
+  // usage where GetLineHeightImpl receives ash-specific `context`.
+  std::optional<int> height = ash::GetLineHeight(context);
+  if (height) {
+    return height.value();
+  }
+#endif
+
   // "Target" line height constants from the Harmony spec. A default OS
   // configuration should use these heights. However, if the user overrides OS
   // defaults, then GetLineHeight() should return the height that would add the
   // same extra space between lines as the default configuration would have.
-  constexpr int kHeadlineHeight = 32;
   constexpr int kTitleHeight = 22;
   constexpr int kBodyHeight = 20;  // For both large and small.
   constexpr int kControlHeight = 16;
@@ -206,17 +204,14 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
 // asking for the target size constants in ChromeTypographyProvider::GetFont()
 // in a default OS configuration.
 #if BUILDFLAG(IS_MAC)
-  constexpr int kHeadlinePlatformHeight = 25;
   constexpr int kTitlePlatformHeight = 19;
   constexpr int kBodyTextLargePlatformHeight = 16;
   constexpr int kBodyTextSmallPlatformHeight = 15;
 #elif BUILDFLAG(IS_WIN)
-  constexpr int kHeadlinePlatformHeight = 27;
   constexpr int kTitlePlatformHeight = 20;
   constexpr int kBodyTextLargePlatformHeight = 18;
   constexpr int kBodyTextSmallPlatformHeight = 16;
 #else
-  constexpr int kHeadlinePlatformHeight = 24;
   constexpr int kTitlePlatformHeight = 18;
   constexpr int kBodyTextLargePlatformHeight = 17;
   constexpr int kBodyTextSmallPlatformHeight = 15;
@@ -228,9 +223,6 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
   // TODO(tapted): These statics should be cleared out when something invokes
   // ui::ResourceBundle::ReloadFonts(). Currently that only happens on ChromeOS.
   // See http://crbug.com/708943.
-  static const int headline_height =
-      GetFont(CONTEXT_HEADLINE, kTemplateStyle).GetHeight() -
-      kHeadlinePlatformHeight + kHeadlineHeight;
   static const int title_height =
       GetFont(views::style::CONTEXT_DIALOG_TITLE, kTemplateStyle).GetHeight() -
       kTitlePlatformHeight + kTitleHeight;
@@ -256,10 +248,7 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case views::style::CONTEXT_TABLE_ROW:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
-    case CONTEXT_DOWNLOAD_SHELF:
       return body_large_height;
-    case CONTEXT_HEADLINE:
-      return headline_height;
     default:
       return default_height;
   }

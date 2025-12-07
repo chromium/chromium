@@ -15,7 +15,6 @@
 #include "base/containers/heap_array.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/h265_nalu_parser.h"
@@ -97,10 +96,7 @@ class MEDIA_EXPORT H26xAnnexBBitstreamBuilder {
   // Return a pointer to the stream. FinishNALU() must be called before
   // accessing the stream, otherwise some bits may still be cached and not in
   // the buffer.
-  //
-  // TODO(crbug.com/40284755): Return a span up to `pos_` which is the range of
-  // initialized bytes in `data_`.
-  const uint8_t* data() const;
+  base::span<const uint8_t> data() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(H26xAnnexBBitstreamBuilderAppendBitsTest,

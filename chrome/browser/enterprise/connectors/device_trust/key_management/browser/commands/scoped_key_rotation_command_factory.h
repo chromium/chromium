@@ -13,7 +13,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
-class BrowserDMTokenStorage;
 class DeviceManagementService;
 }  // namespace policy
 
@@ -40,7 +39,6 @@ class ScopedKeyRotationCommandFactory : public KeyRotationCommandFactory {
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service) override;
 
  private:

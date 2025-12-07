@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INK_OVERFLOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INK_OVERFLOW_H_
 
+#include <array>
 #include <optional>
 
 #include "base/check_op.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
@@ -24,6 +26,7 @@ class Font;
 class FragmentItem;
 class InlineCursor;
 class InlinePaintContext;
+class LayoutObject;
 class ShadowList;
 class Text;
 struct LogicalRect;
@@ -181,6 +184,11 @@ class CORE_EXPORT InkOverflow {
       const InlinePaintContext* inline_context,
       const WritingMode writing_mode);
 
+  // Returns ink-overflow with caret overflow in logical direction.
+  static LogicalRect ComputeCaretOverflow(const InlineCursor& cursor,
+                                          const ComputedStyle& style,
+                                          const LogicalRect& ink_overflow_in);
+
 #if DCHECK_IS_ON()
   struct ReadUnsetAsNoneScope {
     STACK_ALLOCATED();
@@ -210,6 +218,7 @@ class CORE_EXPORT InkOverflow {
       const FragmentItem* fragment_item,
       const TextOffsetRange& fragment_dom_offsets,
       Text* node,
+      const LayoutObject&,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
@@ -222,6 +231,7 @@ class CORE_EXPORT InkOverflow {
       const FragmentItem* fragment_item,
       const TextOffsetRange& fragment_dom_offsets,
       Text* text_node,
+      const LayoutObject& layout_object,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
@@ -264,7 +274,7 @@ class CORE_EXPORT InkOverflow {
     // When both self and contents overflow.
     ContainerInkOverflow* container_;
     // Outsets in small |LayoutUnit|s when overflow is small.
-    SmallRawValue outsets_[4];
+    std::array<SmallRawValue, 4> outsets_;
     static_assert(sizeof(outsets_) == sizeof(single_),
                   "outsets should be the size of a pointer");
   };

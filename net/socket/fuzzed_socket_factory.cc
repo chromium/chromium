@@ -40,16 +40,14 @@ class FailingSSLClientSocket : public SSLClientSocket {
   int Read(IOBuffer* buf,
            int buf_len,
            CompletionOnceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_UNEXPECTED;
+    NOTREACHED();
   }
 
   int Write(IOBuffer* buf,
             int buf_len,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_UNEXPECTED;
+    NOTREACHED();
   }
 
   int SetReceiveBufferSize(int32_t size) override { return OK; }
@@ -73,7 +71,9 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
   bool WasEverUsed() const override { return false; }
 
-  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
+  NextProto GetNegotiatedProtocol() const override {
+    return NextProto::kProtoUnknown;
+  }
 
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
 
@@ -86,18 +86,15 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
   // SSLSocket implementation:
   int ExportKeyingMaterial(std::string_view label,
-                           bool has_context,
-                           std::string_view context,
-                           unsigned char* out,
-                           unsigned int outlen) override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+                           std::optional<base::span<const uint8_t>> context,
+                           base::span<uint8_t> out) override {
+    NOTREACHED();
   }
 
   // SSLClientSocket implementation:
-  std::vector<uint8_t> GetECHRetryConfigs() override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+  std::vector<uint8_t> GetECHRetryConfigs() override { NOTREACHED(); }
+  std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDsForRetry() override {
+    NOTREACHED();
   }
 
  private:

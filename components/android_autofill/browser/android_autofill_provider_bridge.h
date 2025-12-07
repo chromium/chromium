@@ -41,6 +41,14 @@ class AndroidAutofillProviderBridge {
                                    const gfx::RectF& bounds) = 0;
     virtual void OnShowBottomSheetResult(bool is_shown,
                                          bool provided_autofill_structure) = 0;
+
+    // Asks whether passkeys options are available that should be triggered when
+    // `OnTriggerPasskeyRequest` is called.
+    virtual bool HasPasskeyRequest() = 0;
+
+    // The user explicitly requested passkeys to be shown. Even if no passkeys
+    // are available, call the framework to allow using fallback entry points.
+    virtual void OnTriggerPasskeyRequest() = 0;
   };
 
   // A helper struct to reference a field in a form.
@@ -54,7 +62,7 @@ class AndroidAutofillProviderBridge {
   // Attaches the bridge to its Java counterpart.
   virtual void AttachToJavaAutofillProvider(
       JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& jcaller) = 0;
+      const base::android::JavaRef<jobject>& obj) = 0;
 
   // Sends a prefill request to the Android Autofill framework.
   virtual void SendPrefillRequest(FormDataAndroid& form) = 0;
@@ -96,7 +104,7 @@ class AndroidAutofillProviderBridge {
   virtual void OnFormSubmitted(mojom::SubmissionSource submission_source) = 0;
 
   // Informs the Java side that the form was autofilled.
-  virtual void OnDidFillAutofillFormData() = 0;
+  virtual void OnDidAutofillForm() = 0;
 
   // Cancels the current autofill session with clearing the cache if needed.
   virtual void CancelSession() = 0;

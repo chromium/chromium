@@ -10,7 +10,6 @@
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 #include "chrome/browser/manta/manta_service_factory.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/orca_provider.h"
@@ -19,10 +18,6 @@ namespace ash::input_method {
 namespace {
 
 std::unique_ptr<manta::OrcaProvider> CreateProvider(Profile* profile) {
-  if (!manta::features::IsMantaServiceEnabled()) {
-    return nullptr;
-  }
-
   manta::MantaService* service =
       manta::MantaServiceFactory::GetForProfile(profile);
   return service ? service->CreateOrcaProvider() : nullptr;

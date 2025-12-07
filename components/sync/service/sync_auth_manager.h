@@ -8,12 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/service/sync_token_status.h"
@@ -23,6 +24,7 @@
 namespace signin {
 class AccessTokenFetcher;
 struct AccessTokenInfo;
+class AccountManagedStatusFinder;
 }  // namespace signin
 
 namespace syncer {
@@ -32,6 +34,11 @@ struct SyncCredentials;
 struct SyncAccountInfo {
   CoreAccountInfo account_info;
   bool is_sync_consented = false;
+  signin::AccountManagedStatusFinderOutcome managed_status =
+      signin::AccountManagedStatusFinderOutcome::kPending;
+
+  friend bool operator==(const SyncAccountInfo&,
+                         const SyncAccountInfo&) = default;
 };
 
 // SyncAuthManager tracks the account to be used for Sync and its authentication
@@ -39,21 +46,27 @@ struct SyncAccountInfo {
 // IdentityManager::GetPrimaryAccountInfo() etc).
 class SyncAuthManager : public signin::IdentityManager::Observer {
  public:
-  // Called when the existence of an authenticated account changes. It's
-  // guaranteed that this is only called for going from "no account" to "have
-  // account" or vice versa, or if the existing account's |is_primary| bit
-  // changed. I.e. SyncAuthManager will never directly switch from one account
-  // to a different one. Call GetActiveAccountInfo to get the new state.
-  using AccountStateChangedCallback = base::RepeatingClosure;
-  // Called when the credential state changes, i.e. an access token was
-  // added/changed/removed. Call GetCredentials to get the new state.
-  using CredentialsChangedCallback = base::RepeatingClosure;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
 
-  // |identity_manager| may be null (this is the case if local Sync is enabled),
-  // but if non-null, must outlive this object.
+    // Called when the existence of an authenticated account changes. It's
+    // guaranteed that this is only called for going from "no account" to "have
+    // account" or vice versa, or if the existing account's `is_primary` bit
+    // changed. I.e. SyncAuthManager will never directly switch from one account
+    // to a different one. Call GetActiveAccountInfo to get the new state.
+    virtual void SyncAuthAccountStateChanged() = 0;
+
+    // Called when the credential state changes, i.e. an access token was
+    // added/changed/removed. Call GetCredentials to get the new state.
+    virtual void SyncAuthCredentialsChanged() = 0;
+  };
+
+  // `identity_manager` may be null (this is the case if local Sync is enabled),
+  // but if non-null, must outlive this object. `delegate` must not be null and
+  // must outlive this object.
   SyncAuthManager(signin::IdentityManager* identity_manager,
-                  const AccountStateChangedCallback& account_state_changed,
-                  const CredentialsChangedCallback& credentials_changed);
+                  Delegate* delegate);
 
   SyncAuthManager(const SyncAuthManager&) = delete;
   SyncAuthManager& operator=(const SyncAuthManager&) = delete;
@@ -122,20 +135,58 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
   void OnRefreshTokensLoaded() override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Test-only methods for inspecting/modifying internal state.
   bool IsRetryingAccessTokenFetchForTest() const;
   void ResetRequestAccessTokenBackoffForTest();
 
  private:
-  SyncAccountInfo DetermineAccountToUse() const;
+  // Helper class that ensures the account's managed-status gets queried
+  // whenever the account itself changes.
+  class ActiveAccount {
+   public:
+    // The `account_changed_callback` will be called whenever an account's
+    // managed-ness is determined asynchronously.
+    ActiveAccount(signin::IdentityManager* identity_manager,
+                  base::RepeatingClosure account_changed_callback);
+    ~ActiveAccount();
 
-  // Updates |sync_account_| to the appropriate account (i.e.
-  // DetermineAccountToUse) if necessary, and notifies observers of any changes
-  // (sign-in/sign-out/"primary" bit change). Note that changing from one
-  // account to another is exposed to observers as a sign-out + sign-in.
+    ActiveAccount(const ActiveAccount&) = delete;
+    ActiveAccount& operator=(const ActiveAccount&) = delete;
+
+    // To be called when the basic account info changes (e.g. sign in or sign
+    // out). Will kick off determining the managed-ness status, which may
+    // complete synchronously or asynchronously.
+    void Set(const SyncAccountInfo& new_account);
+
+    const SyncAccountInfo& Get() const;
+
+   private:
+    // Starts the process of determining the account type (managed or not). This
+    // may be synchronous or asynchronous.
+    void StartDeterminingAccountType();
+    // Callback for the async case.
+    void AccountTypeDeterminedAsynchronously();
+
+    const raw_ptr<signin::IdentityManager> identity_manager_;
+    base::RepeatingClosure account_changed_callback_;
+    SyncAccountInfo account_info_;
+    std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
+    base::Time managed_status_finder_start_time_;
+  };
+
+  // Updates `sync_account_` to the appropriate account (i.e.
+  // DetermineAccountToUse()) if necessary, and notifies observers of any
+  // changes (sign-in/sign-out/"primary" bit change). Note that changing from
+  // one account to another is exposed to observers as a sign-out + sign-in.
   // Returns whether the syncing account was updated.
   bool UpdateSyncAccountIfNecessary();
+
+  // Called by ActiveAccount when the account's managed-ness has been determined
+  // asynchronously.
+  void AccountManagednessDetermined();
 
   // Invalidates any current access token, which means invalidating it with the
   // IdentityManager and also dropping our own cached copy. Meant to be called
@@ -148,7 +199,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void ClearAccessTokenAndRequest();
 
   // Schedules a request for an access token according to the current
-  // |request_access_token_backoff_|. Usually called after some transient error.
+  // `request_access_token_backoff_`. Usually called after some transient error.
   void ScheduleAccessTokenRequest();
 
   // Immediately starts an access token request, unless one is already ongoing.
@@ -156,23 +207,24 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // we currently have is invalidated.
   void RequestAccessToken();
 
-  // Callback for |ongoing_access_token_fetch_|.
+  // Callback for `ongoing_access_token_fetch_`.
   void AccessTokenFetched(GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
 
   void SetLastAuthError(const GoogleServiceAuthError& error);
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  const AccountStateChangedCallback account_state_changed_callback_;
-  const CredentialsChangedCallback credentials_changed_callback_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  const raw_ptr<Delegate> delegate_;
 
   bool registered_for_auth_notifications_ = false;
 
   // The account which we are using to sync. If this is non-empty, that does
   // *not* necessarily imply that Sync is actually running, e.g. because of
   // delayed startup.
-  SyncAccountInfo sync_account_;
+  ActiveAccount sync_account_;
 
   // This is a cache of the last authentication response we received from
   // Chrome's identity/token management system.
@@ -187,7 +239,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   bool connection_open_ = false;
 
   // The current access token. This is mutually exclusive with
-  // |ongoing_access_token_fetch_| and |request_access_token_retry_timer_|:
+  // `ongoing_access_token_fetch_` and `request_access_token_retry_timer_`:
   // We have at most one of a) an access token OR b) a pending request OR c) a
   // pending retry i.e. a scheduled request.
   std::string access_token_;
@@ -203,7 +255,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
 
   // Info about the state of our access token, for display in the internals UI.
   // "Partial" because this instance is not fully populated - in particular,
-  // |has_token| and |next_token_request_time| get computed on demand.
+  // `has_token` and `next_token_request_time` get computed on demand.
   SyncTokenStatus partial_token_status_;
 
   // Whether there was a retry done to fetch the access token when the request

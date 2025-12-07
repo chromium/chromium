@@ -13,9 +13,10 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "build/buildflag.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -24,10 +25,15 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/base/backoff_entry.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "components/signin/public/identity_manager/access_token_info.h"
+#endif
+
 namespace signin {
 class IdentityManager;
 }
 
+struct AccountInfo;
 class PrefService;
 class PrefRegistrySimple;
 class OAuth2AccessTokenConsumer;
@@ -126,12 +132,23 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       const OAuth2AccessTokenManager::ScopeSet& scopes,
       OAuth2AccessTokenManager::Consumer* consumer);
 
-  // Try to get refresh token from delegate. If it is accessible (i.e. not
-  // empty), return it directly, otherwise start request to get access token.
-  // Used for getting tokens to send to Gaia Multilogin endpoint.
-  std::unique_ptr<OAuth2AccessTokenManager::Request> StartRequestForMultilogin(
+#if BUILDFLAG(IS_IOS)
+  void GetRefreshTokenFromDevice(
       const CoreAccountId& account_id,
-      OAuth2AccessTokenManager::Consumer* consumer);
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
+      base::OnceCallback<void(GoogleServiceAuthError,
+                              signin::AccessTokenInfo access_token_info)>
+          callback);
+#endif
+
+  // Try to get refresh token from delegate. If it is accessible (i.e. not
+  // empty), return it directly (possibly after asynchronously signing
+  // `token_binding_challenge`), otherwise start request to get access token.
+  // Used for getting tokens to send to Gaia Multilogin endpoint.
+  void StartRequestForMultilogin(
+      signin::OAuthMultiloginTokenRequest& request,
+      const std::string& token_binding_challenge = std::string(),
+      const std::string& ephemeral_public_key = std::string());
 
   // This method does the same as |StartRequest| except it uses |client_id| and
   // |client_secret| to identify OAuth client app instead of using
@@ -187,9 +204,7 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // For a regular profile, the primary account id comes from
   // PrimaryAccountManager.
   // For a supervised user, the id comes from SupervisedUserService.
-  // |is_syncing| whether the primary account has sync consent.
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing);
+  void LoadCredentials(const CoreAccountId& primary_account_id);
 
   // Returns true if LoadCredentials finished with no errors.
   bool HasLoadCredentialsFinishedWithNoErrors();
@@ -200,12 +215,8 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       const CoreAccountId& account_id,
       const std::string& refresh_token,
       signin_metrics::SourceForRefreshTokenOperation source =
-          signin_metrics::SourceForRefreshTokenOperation::kUnknown
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>());
 
   void RevokeCredentials(
       const CoreAccountId& account_id,
@@ -238,11 +249,20 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   }
 
   // Lists account IDs of all accounts with a refresh token maintained by this
-  // instance.
+  // instance, i.e. the accounts available in this profile.
   // Note: For each account returned by |GetAccounts|, |RefreshTokenIsAvailable|
   // will return true.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
+  // TODO(crbug.com/368409110): Rename to GetAccountsInProfile(), to distinguish
+  // from GetAccountsOnDevice().
   std::vector<CoreAccountId> GetAccounts() const;
+
+#if BUILDFLAG(IS_IOS)
+  // Returns a list of accounts that exist on the device, including those that
+  // are assigned to different profiles, in the order provided by the system
+  // (usually the order in which the accounts were added).
+  std::vector<AccountInfo> GetAccountsOnDevice() const;
+#endif  // BUILDFLAG(IS_IOS)
 
   // Returns true if a refresh token exists for |account_id|. If false, calls to
   // |StartRequest| will result in a Consumer::OnGetTokenFailure callback.
@@ -250,9 +270,12 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // the list returned by |GetAccounts|.
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const;
 
-  // Returns true if a refresh token exists for |account_id| and it is in a
-  // persistent error state.
-  bool RefreshTokenHasError(const CoreAccountId& account_id) const;
+#if BUILDFLAG(IS_IOS)
+  // Returns true if a refresh token exists for |account_id|.
+  // Note: This will return |true| if and only if |account_id| is contained in
+  // the list returned by |GetAccountsOnDevice|.
+  bool RefreshTokenIsAvailableOnDevice(const CoreAccountId& account_id) const;
+#endif  // BUILDFLAG(IS_IOS)
 
   // Returns the auth error associated with |account_id|. Only persistent errors
   // will be returned.
@@ -262,14 +285,21 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   void UpdateAuthErrorForTesting(const CoreAccountId& account_id,
                                  const GoogleServiceAuthError& error);
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns the wrapped binding key of a refresh token associated with
   // `account_id`, if any.
   // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
   // and (b) the refresh token is bound to a device.
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const;
-#endif
+
+  // Returns whether all bound refresh tokens share the same binding key.
+  //
+  // Unbound tokens are ignored in this check. Returns `true` if there are zero
+  // or one bound tokens, or if all bound tokens use the same key. Returns
+  // `false` only if there are multiple bound tokens with different keys.
+  bool AllBoundTokensShareSameBindingKey() const;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   void set_max_authorization_token_fetch_retries_for_testing(int max_retries);
 

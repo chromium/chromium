@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -17,12 +18,13 @@ import android.os.SystemClock;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.interpolators.Interpolators;
@@ -32,9 +34,11 @@ import org.chromium.ui.interpolators.Interpolators;
  * to be created with a {@link Painter} that does the actual drawing work based on the pulse
  * interpolation value.
  */
+@NullMarked
 public class PulseDrawable extends Drawable implements Animatable {
     private static final long PULSE_DURATION_MS = 2500;
     private static final long FRAME_RATE = 60;
+    private static @Nullable Long sFrameRateForTesting;
 
     /**
      * Informs the PulseDrawable about whether it can continue pulsing, and specifies a callback to
@@ -128,18 +132,18 @@ public class PulseDrawable extends Drawable implements Animatable {
 
     /**
      * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color.
+     *
      * @param context The {@link Context} under which the drawable is created.
-     * @param cornerRadius The corner radius in pixels of the highlight rectangle, 0 may be passed
-     *         if the rectangle should not be rounded.
-     * @param highlightExtension How far in pixels the highlight should be extended past the bounds
-     *         of the view. 0 should be passed if there should be no extension.
+     * @param topCornerRadius The top corner radius in pixels of the highlight rectangle. 0 may be
+     *     passed if the rectangle should not be rounded.
+     * @param bottomCornerRadius The bottom corner radius in pixels of the highlight rectangle.
      * @param pulseEndAuthority The {@link PulseEndAuthority} associated with this drawable.
      * @return A new {@link PulseDrawable} instance.
      */
     public static PulseDrawable createRoundedRectangle(
             Context context,
-            @Px int cornerRadius,
-            @Px int highlightExtension,
+            @Px int topCornerRadius,
+            @Px int bottomCornerRadius,
             PulseEndAuthority pulseEndAuthority) {
         Painter painter =
                 new Painter() {
@@ -155,15 +159,22 @@ public class PulseDrawable extends Drawable implements Animatable {
                             Canvas canvas,
                             float interpolation) {
                         Rect bounds = drawable.getBounds();
-                        if (highlightExtension != 0) {
-                            bounds =
-                                    new Rect(
-                                            bounds.left - highlightExtension,
-                                            bounds.top - highlightExtension,
-                                            bounds.right + highlightExtension,
-                                            bounds.bottom + highlightExtension);
+                        if (topCornerRadius == bottomCornerRadius) {
+                            canvas.drawRoundRect(
+                                    new RectF(bounds), topCornerRadius, topCornerRadius, paint);
+                        } else {
+                            float[] radii =
+                                    new float[] {
+                                        topCornerRadius, topCornerRadius,
+                                        topCornerRadius, topCornerRadius,
+                                        bottomCornerRadius, bottomCornerRadius,
+                                        bottomCornerRadius, bottomCornerRadius
+                                    };
+                            Path path = new Path();
+                            RectF rectF = new RectF(bounds);
+                            path.addRoundRect(rectF, radii, Path.Direction.CW);
+                            canvas.drawPath(path, paint);
                         }
-                        canvas.drawRoundRect(new RectF(bounds), cornerRadius, cornerRadius, paint);
                     }
                 };
 
@@ -175,27 +186,16 @@ public class PulseDrawable extends Drawable implements Animatable {
      * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color. The {@link
      * PulseDrawable} will continue pulsing forever (if this is not the desired behavior, please use
      * {@link PulseEndAuthority}).
+     *
      * @param context The {@link Context} under which the drawable is created.
-     * @param cornerRadius The corner radius in pixels of the highlight rectangle.
-     * @param highlightExtension How far in pixels the highlight should be extended past the bounds
-     *         of the view. 0 should be passed if there should be no extension.
+     * @param topCornerRadius The top corner radius in pixels of the highlight rectangle.
+     * @param bottomCornerRadius The bottom corner radius in pixels of the highlight rectangle.
      * @return A new {@link PulseDrawable} instance.
      */
     public static PulseDrawable createRoundedRectangle(
-            Context context, @Px int cornerRadius, @Px int highlightExtension) {
+            Context context, @Px int topCornerRadius, @Px int bottomCornerRadius) {
         return createRoundedRectangle(
-                context, cornerRadius, highlightExtension, new EndlessPulser());
-    }
-
-    /**
-     * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color. The {@link
-     * PulseDrawable} will continue pulsing forever (if this is not the desired behavior, please use
-     * {@link PulseEndAuthority}).
-     * @param context The {@link Context} under which the drawable is created.
-     * @return A new {@link PulseDrawable} instance.
-     */
-    public static PulseDrawable createRectangle(Context context) {
-        return createRoundedRectangle(context, 0, /* highlightExtension= */ 0);
+                context, topCornerRadius, bottomCornerRadius, new EndlessPulser());
     }
 
     /**
@@ -280,7 +280,7 @@ public class PulseDrawable extends Drawable implements Animatable {
                 public void run() {
                     stepPulse();
                     if (mRunning) {
-                        scheduleSelf(mNextFrame, SystemClock.uptimeMillis() + 1000 / FRAME_RATE);
+                        scheduleSelf(mNextFrame, calculateNextFrameTime());
                     }
                 }
             };
@@ -325,7 +325,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     /**
      * @param context The {@link Context} for accessing colors.
      * @param useLightPulseColor Whether or not to use a light or dark color for the pulse.
-     * */
+     */
     public void setUseLightPulseColor(Context context, boolean useLightPulseColor) {
         @ColorInt
         int color =
@@ -351,7 +351,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     public void start() {
         if (mRunning) {
             unscheduleSelf(mNextFrame);
-            scheduleSelf(mNextFrame, SystemClock.uptimeMillis() + 1000 / FRAME_RATE);
+            scheduleSelf(mNextFrame, calculateNextFrameTime());
         } else {
             mRunning = true;
             if (mState.startTime == 0) {
@@ -386,7 +386,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void draw(Canvas canvas) {
         mPaint.setColor(mState.drawColor);
         mState.painter.draw(this, mPaint, canvas, mState.progress);
     }
@@ -396,7 +396,7 @@ public class PulseDrawable extends Drawable implements Animatable {
         // Encode the alpha into the color.
         alpha += alpha >> 7; // make it 0..256
         final int baseAlpha = mState.color >>> 24;
-        final int useAlpha = baseAlpha * alpha >> 8;
+        final int useAlpha = (baseAlpha * alpha) >> 8;
         final int useColor = (mState.color << 8 >>> 8) | (useAlpha << 24);
         if (mState.drawColor != useColor) {
             mState.drawColor = useColor;
@@ -410,7 +410,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    public void setColorFilter(ColorFilter colorFilter) {
+    public void setColorFilter(@Nullable ColorFilter colorFilter) {
         mPaint.setColorFilter(colorFilter);
     }
 
@@ -431,7 +431,6 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    @NonNull
     public Drawable mutate() {
         if (!mMutated && super.mutate() == this) {
             mState = new PulseState(mState);
@@ -450,7 +449,7 @@ public class PulseDrawable extends Drawable implements Animatable {
         // If we are on a new pulse
         if ((mLastUpdateTime - mState.startTime) / PULSE_DURATION_MS
                 != (curTime - mState.startTime) / PULSE_DURATION_MS) {
-            if (!(mPulseEndAuthority.canPulseAgain())) {
+            if (!mPulseEndAuthority.canPulseAgain()) {
                 stop();
                 return;
             }
@@ -511,5 +510,17 @@ public class PulseDrawable extends Drawable implements Animatable {
         public int getChangingConfigurations() {
             return 0;
         }
+    }
+
+    public static void setFrameRateForTesting(long frameRateForTesting) {
+        sFrameRateForTesting = frameRateForTesting;
+        ResettersForTesting.register(() -> sFrameRateForTesting = null);
+    }
+
+    private static long calculateNextFrameTime() {
+        if (sFrameRateForTesting != null) {
+            return SystemClock.uptimeMillis() + 1000 / sFrameRateForTesting;
+        }
+        return SystemClock.uptimeMillis() + 1000 / FRAME_RATE;
     }
 }

@@ -4,12 +4,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 
-#include "base/containers/enum_set.h"
+#include <array>
+#include <utility>
+
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/liburlpattern/parse.h"
@@ -25,13 +29,9 @@ class URLPatternResult;
 
 class CORE_EXPORT URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
-  struct Options final {
-    bool ignore_case;
-  };
+
+  using Options = url_pattern::Options;
   using Component = url_pattern::Component;
-  using ComponentSet = base::EnumSet<Component::Type,
-                                     Component::Type::kProtocol,
-                                     Component::Type::kHash>;
 
  public:
   // Used to convert the convenience types that may be passed to WebIDL APIs in
@@ -76,24 +76,28 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
              Component* pathname,
              Component* search,
              Component* hash,
-             Options options,
+             const Options& options,
              base::PassKey<URLPattern> key);
 
-  bool test(ScriptState* script_state,
+  bool test(v8::Isolate*,
             const V8URLPatternInput* input,
             const String& base_url,
             ExceptionState& exception_state) const;
-  bool test(ScriptState* script_state,
+  bool test(v8::Isolate*,
             const V8URLPatternInput* input,
             ExceptionState& exception_state) const;
 
-  URLPatternResult* exec(ScriptState* script_state,
+  URLPatternResult* exec(v8::Isolate*,
                          const V8URLPatternInput* input,
                          const String& base_url,
                          ExceptionState& exception_state) const;
-  URLPatternResult* exec(ScriptState* script_state,
+  URLPatternResult* exec(v8::Isolate*,
                          const V8URLPatternInput* input,
                          ExceptionState& exception_state) const;
+
+  String generate(const V8URLPatternComponent& component,
+                  const VectorOfPairs<String, String>& groups,
+                  ExceptionState& exception_state) const;
 
   String protocol() const;
   String username() const;
@@ -124,11 +128,28 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   // A utility function to determine if a given `input` matches the pattern or
   // not.  Returns `true` if there is a match and `false` otherwise.  If
   // `result` is not nullptr then the URLPatternResult contents will be filled.
-  bool Match(ScriptState* script_state,
+  bool Match(v8::Isolate*,
              const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
+
+  std::array<std::pair<const Member<Component>&, const char*>, 8>
+  ComponentsWithNames() const {
+    return {{{protocol_, "protocol"},
+             {username_, "username"},
+             {password_, "password"},
+             {hostname_, "hostname"},
+             {port_, "port"},
+             {pathname_, "pathname"},
+             {search_, "search"},
+             {hash_, "hash"}}};
+  }
+
+  bool ShouldTreatAsStandardURL() const {
+    CHECK(protocol_);
+    return protocol_->ShouldTreatAsStandardURL();
+  }
 
   // The compiled patterns for each URL component.
   Member<Component> protocol_;
@@ -140,14 +161,6 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   Member<Component> search_;
   Member<Component> hash_;
   const Options options_;
-
-  // For data analysis: the components which would be wildcarded but are empty
-  // due to the string parsing.
-  ComponentSet wildcard_with_string_format_change_;
-
-  // For data analysis: the components which would be wildcarded but are
-  // replicated from the base URL.
-  ComponentSet wildcard_with_base_url_change_;
 };
 
 }  // namespace blink

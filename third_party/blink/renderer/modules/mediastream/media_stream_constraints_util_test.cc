@@ -44,48 +44,34 @@ class MediaStreamConstraintsUtilTest : public testing::Test {
 };
 
 TEST_F(MediaStreamConstraintsUtilTest, BooleanConstraints) {
-  static const String kValueTrue = "true";
-  static const String kValueFalse = "false";
-
   MockConstraintFactory constraint_factory;
   // Mandatory constraints.
-  constraint_factory.basic().echo_cancellation.SetExact(true);
-  constraint_factory.basic().goog_echo_cancellation.SetExact(false);
+  constraint_factory.basic().auto_gain_control.SetExact(true);
   MediaConstraints constraints = constraint_factory.CreateMediaConstraints();
-  bool value_true = false;
-  bool value_false = false;
+  bool constrain_value = false;
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &MediaTrackConstraintSetPlatform::echo_cancellation,
-      &value_true));
-  EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &MediaTrackConstraintSetPlatform::goog_echo_cancellation,
-      &value_false));
-  EXPECT_TRUE(value_true);
-  EXPECT_FALSE(value_false);
+      constraints, &MediaTrackConstraintSetPlatform::auto_gain_control,
+      &constrain_value));
+  EXPECT_TRUE(constrain_value);
 
   // Optional constraints, represented as "advanced"
   constraint_factory.Reset();
-  constraint_factory.AddAdvanced().echo_cancellation.SetExact(false);
-  constraint_factory.AddAdvanced().goog_echo_cancellation.SetExact(true);
+  constraint_factory.AddAdvanced().auto_gain_control.SetExact(false);
   constraints = constraint_factory.CreateMediaConstraints();
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &MediaTrackConstraintSetPlatform::echo_cancellation,
-      &value_false));
-  EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &MediaTrackConstraintSetPlatform::goog_echo_cancellation,
-      &value_true));
-  EXPECT_TRUE(value_true);
-  EXPECT_FALSE(value_false);
+      constraints, &MediaTrackConstraintSetPlatform::auto_gain_control,
+      &constrain_value));
+  EXPECT_FALSE(constrain_value);
 
   // A mandatory constraint should override an optional one.
   constraint_factory.Reset();
-  constraint_factory.AddAdvanced().echo_cancellation.SetExact(false);
-  constraint_factory.basic().echo_cancellation.SetExact(true);
+  constraint_factory.AddAdvanced().auto_gain_control.SetExact(false);
+  constraint_factory.basic().auto_gain_control.SetExact(true);
   constraints = constraint_factory.CreateMediaConstraints();
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &MediaTrackConstraintSetPlatform::echo_cancellation,
-      &value_true));
-  EXPECT_TRUE(value_true);
+      constraints, &MediaTrackConstraintSetPlatform::auto_gain_control,
+      &constrain_value));
+  EXPECT_TRUE(constrain_value);
 }
 
 TEST_F(MediaStreamConstraintsUtilTest, DoubleConstraints) {

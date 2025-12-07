@@ -5,6 +5,7 @@
 #ifndef UI_BASE_L10N_TIME_FORMAT_H_
 #define UI_BASE_L10N_TIME_FORMAT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -114,11 +115,12 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
   //
   // The second parameter is optional, it is midnight of "Now" for relative day
   // computations: Time::Now().LocalMidnight()
-  // If NULL, the current day's midnight will be retrieved, which can be
+  // If std::nullopt, the current day's midnight will be retrieved, which can be
   // slow. If many items are being processed, it is best to get the current
   // time once at the beginning and pass it for each computation.
-  static std::u16string RelativeDate(const base::Time& time,
-                                     const base::Time* optional_midnight_today);
+  static std::u16string RelativeDate(
+      base::Time time,
+      std::optional<base::Time> optional_midnight_today);
 };
 
 }  // namespace ui

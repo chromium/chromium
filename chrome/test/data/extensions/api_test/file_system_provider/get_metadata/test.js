@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -76,7 +78,7 @@ var TESTING_ONLY_SIZE_FILE_NAME = 'only-size.txt';
  * @param {function(string)} onError Error callback with an error code.
  */
 function onGetMetadataRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -118,7 +120,7 @@ function onGetMetadataRequested(options, onSuccess, onError) {
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       onGetMetadataRequested);
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -128,7 +130,7 @@ function runTests() {
   chrome.test.runTests([
     // Read metadata of the root.
     function getFileMetadataSuccess() {
-      test_util.fileSystem.root.getMetadata(
+      testUtil.fileSystem.root.getMetadata(
         chrome.test.callbackPass(function(metadata) {
           chrome.test.assertEq(TESTING_ROOT.size, metadata.size);
           chrome.test.assertEq(
@@ -141,7 +143,7 @@ function runTests() {
 
     // Read metadata of an existing testing file.
     function getFileMetadataSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -167,7 +169,7 @@ function runTests() {
     // should be passed to fileapi instead. The reason is, that there is no
     // easy way to verify an incorrect modification time at early stage.
     function getFileMetadataWrongTimeSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_WRONG_TIME_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -186,7 +188,7 @@ function runTests() {
     // Read metadata of a directory which does not exist, what should return an
     // error. DirectoryEntry.getDirectory() causes fetching metadata.
     function getFileMetadataNotFound() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           'cranberries',
           {create: false},
           function(dirEntry) {
@@ -201,7 +203,7 @@ function runTests() {
     // because of type mismatching. DirectoryEntry.getDirectory() causes
     // fetching metadata.
     function getFileMetadataWrongType() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_FILE.name,
           {create: false},
           function(fileEntry) {
@@ -214,7 +216,7 @@ function runTests() {
 
     // Resolving a file should only request is_directory and name fields.
     function getMetadataForGetFile() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_ONLY_BASIC_FILE_NAME,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -228,7 +230,7 @@ function runTests() {
     // Check that if a requested mandatory field is missing, then the error
     // callback is invoked.
     function getMetadataMissingFields() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_ONLY_SIZE_FILE_NAME,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -247,7 +249,7 @@ function runTests() {
 
     // Fetch only requested fields.
     function getEntryPropertiesFewFields() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_ONLY_SIZE_FILE_NAME,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -267,5 +269,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

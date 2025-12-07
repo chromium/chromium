@@ -16,18 +16,23 @@ ChromeWebAuthnClientAndroid::~ChromeWebAuthnClientAndroid() = default;
 
 void ChromeWebAuthnClientAndroid::OnWebAuthnRequestPending(
     content::RenderFrameHost* frame_host,
-    const std::vector<device::DiscoverableCredentialMetadata>& credentials,
-    bool is_conditional_request,
+    std::vector<device::DiscoverableCredentialMetadata> credentials,
+    webauthn::AssertionMediationType mediation_type,
     base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
-        getAssertionCallback,
-    base::RepeatingCallback<void()> hybridCallback) {
+        passkey_callback,
+    base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
+        password_callback,
+    base::RepeatingClosure hybrid_closure,
+    base::RepeatingCallback<void(webauthn::NonCredentialReturnReason)>
+        non_credential_callback) {
   WebAuthnRequestDelegateAndroid* delegate =
       WebAuthnRequestDelegateAndroid::GetRequestDelegate(
           content::WebContents::FromRenderFrameHost(frame_host));
 
   delegate->OnWebAuthnRequestPending(
-      frame_host, credentials, is_conditional_request,
-      std::move(getAssertionCallback), std::move(hybridCallback));
+      frame_host, std::move(credentials), mediation_type,
+      std::move(passkey_callback), std::move(password_callback),
+      std::move(hybrid_closure), std::move(non_credential_callback));
 }
 
 void ChromeWebAuthnClientAndroid::CleanupWebAuthnRequest(

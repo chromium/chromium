@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/system_cpu/host_processor_info_scanner.h"
 
 #include <mach/mach.h>
@@ -15,6 +10,7 @@
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/apple/scoped_mach_vm.h"
+#include "base/compiler_specific.h"
 #include "base/mac/mac_util.h"
 #include "base/system/sys_info.h"
 #include "components/system_cpu/core_times.h"
@@ -66,10 +62,14 @@ bool HostProcessorInfoScanner::Update() {
       core_times_[i] = std::move(core_time);
     }
 
-    core_times_[i].set_user(cpu_infos[i].cpu_ticks[CPU_STATE_USER]);
-    core_times_[i].set_nice(cpu_infos[i].cpu_ticks[CPU_STATE_NICE]);
-    core_times_[i].set_system(cpu_infos[i].cpu_ticks[CPU_STATE_SYSTEM]);
-    core_times_[i].set_idle(cpu_infos[i].cpu_ticks[CPU_STATE_IDLE]);
+    core_times_[i].set_user(
+        UNSAFE_TODO(cpu_infos[i]).cpu_ticks[CPU_STATE_USER]);
+    core_times_[i].set_nice(
+        UNSAFE_TODO(cpu_infos[i]).cpu_ticks[CPU_STATE_NICE]);
+    core_times_[i].set_system(
+        UNSAFE_TODO(cpu_infos[i]).cpu_ticks[CPU_STATE_SYSTEM]);
+    core_times_[i].set_idle(
+        UNSAFE_TODO(cpu_infos[i]).cpu_ticks[CPU_STATE_IDLE]);
   }
 
   return true;

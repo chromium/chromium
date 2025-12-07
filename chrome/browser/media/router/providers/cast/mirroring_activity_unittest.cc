@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -23,11 +24,10 @@
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
-#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "media/base/media_switches.h"
 #include "media/cast/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +42,8 @@ using testing::WithArgs;
 namespace media_router {
 namespace {
 
-constexpr int kFrameTreeNodeId = 123;
+constexpr content::FrameTreeNodeId kFrameTreeNodeId =
+    content::FrameTreeNodeId(123);
 constexpr int kTabId = 234;
 constexpr char kDescription[] = "";
 constexpr char kDesktopMediaId[] = "theDesktopMediaId";
@@ -102,7 +103,7 @@ class MockMirroringServiceHostFactory
  public:
   MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
               GetForTab,
-              (int32_t frame_tree_node_id));
+              (content::FrameTreeNodeId frame_tree_node_id));
   MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
               GetForDesktop,
               (const std::optional<std::string>& media_id));
@@ -110,28 +111,12 @@ class MockMirroringServiceHostFactory
               GetForOffscreenTab,
               (const GURL& presentation_url,
                const std::string& presentation_id,
-               int32_t frame_tree_node_id));
+               content::FrameTreeNodeId frame_tree_node_id));
 };
 
 class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {
  public:
   MOCK_METHOD(void, OnMessage, (mirroring::mojom::CastMessagePtr message));
-};
-
-class MockMediaRouterDebugger : public mojom::Debugger {
- public:
-  MOCK_METHOD(void,
-              ShouldFetchMirroringStats,
-              (base::OnceCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(void,
-              OnMirroringStats,
-              (const base::Value json_stats_cb),
-              (override));
-  MOCK_METHOD(void,
-              BindReceiver,
-              (mojo::PendingReceiver<mojom::Debugger> receiver),
-              (override));
 };
 
 }  // namespace
@@ -159,21 +144,15 @@ class MirroringActivityTest
         .WillByDefault(make_mirroring_service);
     ON_CALL(mirroring_service_host_factory_, GetForOffscreenTab)
         .WillByDefault(make_mirroring_service);
-
-    ON_CALL(media_router_, GetDebugger(_))
-        .WillByDefault([this](mojo::PendingReceiver<mojom::Debugger> receiver) {
-          auto debugger = std::make_unique<MockMediaRouterDebugger>();
-          debugger_object_ = debugger.get();
-          mojo::MakeSelfOwnedReceiver(std::move(debugger), std::move(receiver));
-        });
   }
 
   void MakeActivity() { MakeActivity(MediaSource::ForTab(kTabId)); }
 
-  void MakeActivity(const MediaSource& source,
-                    int frame_tree_node_id = kFrameTreeNodeId,
-                    CastDiscoveryType discovery_type = CastDiscoveryType::kMdns,
-                    bool enable_rtcp_reporting = false) {
+  void MakeActivity(
+      const MediaSource& source,
+      content::FrameTreeNodeId frame_tree_node_id = kFrameTreeNodeId,
+      CastDiscoveryType discovery_type = CastDiscoveryType::kMdns,
+      bool enable_rtcp_reporting = false) {
     CastSinkExtraData cast_data;
     cast_data.cast_channel_id = kChannelId;
     cast_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
@@ -182,14 +161,12 @@ class MirroringActivityTest
     MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_);
     route.set_presentation_id(kPresentationId);
     activity_ = std::make_unique<MirroringActivity>(
-        route, kAppId, &message_handler_, &session_tracker_, frame_tree_node_id,
-        cast_data, on_stop_.Get(), on_source_changed_.Get());
+        route, kAppId, &message_handler_, &session_tracker_, logger_, debugger_,
+        frame_tree_node_id, cast_data, on_stop_.Get(),
+        on_source_changed_.Get());
 
-    activity_->CreateMojoBindings(&media_router_);
-
-    // This needs to be called before the mojo bindings are created, since we
-    // are creating the debugger_object_ at that point.
-    ON_CALL(*debugger_object_, ShouldFetchMirroringStats)
+    activity_->BindChannelToServiceReceiver();
+    ON_CALL(mock_debugger_, ShouldFetchMirroringStats)
         .WillByDefault(
             [enable_rtcp_reporting](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(enable_rtcp_reporting);
@@ -222,8 +199,6 @@ class MirroringActivityTest
 
   bool route_is_local_ = true;
   raw_ptr<MockCastMessageChannel, DanglingUntriaged> channel_to_service_ =
-      nullptr;
-  raw_ptr<MockMediaRouterDebugger, DanglingUntriaged> debugger_object_ =
       nullptr;
   raw_ptr<MockMirroringServiceHost, DanglingUntriaged> mirroring_service_ =
       nullptr;
@@ -504,7 +479,8 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
       "type": "OFFER"
     })";
 
-  std::optional<base::Value> message_json = base::JSONReader::Read(message);
+  std::optional<base::Value> message_json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(message_json);
   EXPECT_TRUE(message_json.value().is_dict());
   EXPECT_THAT(scrubbed_message,
@@ -522,7 +498,8 @@ TEST_F(MirroringActivityTest, SendMessageToClient) {
   blink::mojom::PresentationConnectionMessagePtr message =
       blink::mojom::PresentationConnectionMessage::NewMessage("\"theMessage\"");
   auto* message_ptr = message.get();
-  auto* client = AddMockClient(activity_.get(), kClientId, 1);
+  auto* client =
+      AddMockClient(activity_.get(), kClientId, content::FrameTreeNodeId(1));
   EXPECT_CALL(*client, SendMessageToClient).WillOnce([=](auto arg) {
     EXPECT_EQ(message_ptr, arg.get());
   });
@@ -532,8 +509,8 @@ TEST_F(MirroringActivityTest, SendMessageToClient) {
 TEST_F(MirroringActivityTest, OnSourceChanged) {
   MakeActivity();
 
-  // A random int indicating the new tab source.
-  const int new_tab_source = 3;
+  // A random id indicating the new tab source.
+  const content::FrameTreeNodeId new_tab_source = content::FrameTreeNodeId(3);
 
   EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
 
@@ -565,8 +542,8 @@ TEST_F(MirroringActivityTest, OnSourceChangedNotifiesMediaStatusObserver) {
                                  std::move(observer_pending_remote));
   RunUntilIdle();
 
-  // A random int indicating the new tab source.
-  const int new_tab_source = 3;
+  // A random value indicating the new tab source.
+  const content::FrameTreeNodeId new_tab_source = content::FrameTreeNodeId(3);
 
   EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
 
@@ -603,10 +580,10 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
         std::move(callback).Run(base::Value("foo"));
       });
 
-  EXPECT_CALL(*debugger_object_, OnMirroringStats)
-      .WillOnce(testing::Invoke([&](const base::Value json_stats_cb) {
+  EXPECT_CALL(mock_debugger_, OnMirroringStats)
+      .WillOnce([&](const base::Value json_stats_cb) {
         EXPECT_EQ(base::Value("foo"), json_stats_cb);
-      }));
+      });
   // A call to fetch mirroring stats should have been posted at this point. Fast
   // forward past the delay of this posted task.
   task_environment_.FastForwardBy(media::cast::kRtcpReportInterval);
@@ -627,7 +604,7 @@ TEST_F(MirroringActivityTest, Pause) {
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
   expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
   EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_EQ(expected_status->play_state, status->play_state);
@@ -652,7 +629,7 @@ TEST_F(MirroringActivityTest, Play) {
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
   expected_status->play_state = mojom::MediaStatus::PlayState::PLAYING;
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(cb);
   EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_EQ(expected_status->play_state, status->play_state);
@@ -670,8 +647,8 @@ TEST_F(MirroringActivityTest, PauseAndPlay) {
   MakeActivity(source, kFrameTreeNodeId,
                CastDiscoveryType::kAccessCodeManualEntry);
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
-  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(cb);
 
   activity_->DidStart();
   activity_->Pause();
@@ -692,7 +669,7 @@ TEST_F(MirroringActivityTest, PauseAndReset) {
   MakeActivity(source, kFrameTreeNodeId,
                CastDiscoveryType::kAccessCodeManualEntry);
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
 
   activity_->DidStart();
   activity_->Pause();
@@ -767,7 +744,7 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
   expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
   EXPECT_CALL(media_status_observer_1, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_EQ(expected_status->play_state, status->play_state);
@@ -785,11 +762,9 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
 }
 
 TEST_F(MirroringActivityTest, TargetPlayoutDelaySetInRequest) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "300";
-  feature_list.InitAndEnableFeatureWithParameters(
-      media_router::kCastMirroringPlayoutDelay, feature_params);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "300");
 
   static constexpr char kUrl[] =
       "cast:0F5096E8?streamingCaptureAudio=1&streamingTargetPlayoutDelayMillis="
@@ -806,11 +781,9 @@ TEST_F(MirroringActivityTest, TargetPlayoutDelaySetInRequest) {
 }
 
 TEST_F(MirroringActivityTest, TargetPlayoutDelayFeatureFlagParam) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "300";
-  feature_list.InitAndEnableFeatureWithParameters(
-      media_router::kCastMirroringPlayoutDelay, feature_params);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "300");
 
   static constexpr char kUrl[] = "cast:0F5096E8?streamingCaptureAudio=1";
   GURL url(kUrl);
@@ -824,13 +797,11 @@ TEST_F(MirroringActivityTest, TargetPlayoutDelayFeatureFlagParam) {
 }
 
 TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
-  base::HistogramTester uma_recorder;
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "200";
-  feature_list.InitAndEnableFeatureWithParameters(
-      media_router::kCastMirroringPlayoutDelay, feature_params);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "200");
 
+  base::HistogramTester uma_recorder;
   static constexpr char kJsonStats[] = R"({
     "audio": {
       "TRANSMISSION_KBPS": 20.0,
@@ -866,7 +837,8 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
       ]
     }
     })";
-  std::optional<base::Value> stats = base::JSONReader::Read(kJsonStats);
+  std::optional<base::Value> stats =
+      base::JSONReader::Read(kJsonStats, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(stats.has_value());
 
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
@@ -880,11 +852,11 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
             std::move(callback).Run(stats->Clone());
           });
 
-  EXPECT_CALL(*debugger_object_, OnMirroringStats)
-      .WillOnce(testing::Invoke([&stats](const base::Value json_stats_cb) {
+  EXPECT_CALL(mock_debugger_, OnMirroringStats)
+      .WillOnce([&stats](const base::Value json_stats_cb) {
         ASSERT_TRUE(json_stats_cb.is_dict());
         EXPECT_EQ(stats, json_stats_cb.GetDict());
-      }));
+      });
 
   // A call to fetch mirroring stats should have been posted at this point. Fast
   // forward past the delay of this posted task.

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,7 @@ namespace {
 const char kSupportedProtocolAlpnsKey[] = "supported_protocol_alpns";
 const char kEchConfigListKey[] = "ech_config_list";
 const char kTargetNameKey[] = "target_name";
+const char kTrustAnchorIDsKey[] = "trust_anchor_ids_list";
 }  // namespace
 
 ConnectionEndpointMetadata::ConnectionEndpointMetadata() = default;
@@ -25,16 +27,26 @@ ConnectionEndpointMetadata::ConnectionEndpointMetadata() = default;
 ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     std::vector<std::string> supported_protocol_alpns,
     EchConfigList ech_config_list,
-    std::string target_name)
+    std::string target_name,
+    std::vector<std::vector<uint8_t>> trust_anchor_ids)
     : supported_protocol_alpns(std::move(supported_protocol_alpns)),
       ech_config_list(std::move(ech_config_list)),
-      target_name(std::move(target_name)) {}
+      target_name(std::move(target_name)),
+      trust_anchor_ids(std::move(trust_anchor_ids)) {}
 
 ConnectionEndpointMetadata::~ConnectionEndpointMetadata() = default;
 ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     const ConnectionEndpointMetadata&) = default;
 ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     ConnectionEndpointMetadata&&) = default;
+
+bool ConnectionEndpointMetadata::operator<(
+    const ConnectionEndpointMetadata& other) const {
+  return std::tie(supported_protocol_alpns, ech_config_list, target_name,
+                  trust_anchor_ids) <
+         std::tie(other.supported_protocol_alpns, other.ech_config_list,
+                  other.target_name, other.trust_anchor_ids);
+}
 
 base::Value ConnectionEndpointMetadata::ToValue() const {
   base::Value::Dict dict;
@@ -49,6 +61,14 @@ base::Value ConnectionEndpointMetadata::ToValue() const {
 
   if (!target_name.empty()) {
     dict.Set(kTargetNameKey, target_name);
+  }
+
+  base::Value::List trust_anchor_ids_list;
+  for (const auto& tai : trust_anchor_ids) {
+    trust_anchor_ids_list.Append(base::Base64Encode(tai));
+  }
+  if (!trust_anchor_ids_list.empty()) {
+    dict.Set(kTrustAnchorIDsKey, std::move(trust_anchor_ids_list));
   }
 
   return base::Value(std::move(dict));
@@ -87,6 +107,23 @@ std::optional<ConnectionEndpointMetadata> ConnectionEndpointMetadata::FromValue(
 
   if (target_name_value) {
     metadata.target_name = *target_name_value;
+  }
+
+  const base::Value::List* trust_anchor_ids =
+      dict->FindList(kTrustAnchorIDsKey);
+  if (trust_anchor_ids) {
+    for (const base::Value& tai : *trust_anchor_ids) {
+      const std::string* tai_string = tai.GetIfString();
+      if (!tai_string) {
+        return std::nullopt;
+      }
+      std::optional<std::vector<uint8_t>> decoded_tai =
+          base::Base64Decode(*tai_string);
+      if (!decoded_tai) {
+        return std::nullopt;
+      }
+      metadata.trust_anchor_ids.emplace_back(*decoded_tai);
+    }
   }
 
   return metadata;

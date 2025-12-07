@@ -133,7 +133,7 @@ void PreviewPageLoadMetricsObserver::RecordMetrics() {
   switch (page_visit_type) {
     case PageVisitType::kObsoleteIndependentVisit:
     case PageVisitType::kObsoleteOriginVisit:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PageVisitType::kPassingVisit:
       PAGE_LOAD_LONG_HISTOGRAM(
           "PageLoad.Experimental.TotalForegroundDuration.PassingVisit",
@@ -202,11 +202,11 @@ PreviewPageLoadMetricsObserver::ConvertStatusToPreviewFinalStatus(
     PreviewPageLoadMetricsObserver::Status status) {
   switch (status) {
     case Status::kNotPreviewed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Status::kPreviewed:
       return PreviewFinalStatus::kPreviewed;
     case Status::kPromoted:
       return PreviewFinalStatus::kPromoted;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

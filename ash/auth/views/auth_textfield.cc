@@ -15,8 +15,10 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -192,6 +194,14 @@ bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
   }
 
   return true;
+}
+
+void AuthTextfield::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  // Prevent context menu on input fields.
+  return;
 }
 
 void AuthTextfield::ContentsChanged(Textfield* sender,

@@ -59,7 +59,7 @@ void PaymentsWindowUserConsentDialogControllerImpl::OnDialogClosing(
 std::u16string PaymentsWindowUserConsentDialogControllerImpl::GetWindowTitle()
     const {
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_TITLE_VCN_3DS);
+      IDS_AUTOFILL_LOADING_AND_CONSENT_DIALOG_TITLE_VCN_3DS);
 }
 
 std::u16string
@@ -72,6 +72,12 @@ std::u16string PaymentsWindowUserConsentDialogControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_OK_BUTTON_LABEL_VCN_3DS);
+}
+
+std::u16string PaymentsWindowUserConsentDialogControllerImpl::
+    GetAcceptanceAccessibilityAnnouncement() const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_ACCEPTANCE_ACCESSIBILITY_ANNOUNCEMENT);
 }
 
 }  // namespace autofill::payments

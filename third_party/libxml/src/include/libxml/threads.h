@@ -1,11 +1,14 @@
 /**
- * Summary: interfaces for thread handling
- * Description: set of generic threading related routines
+ * @file
+ *
+ * @brief interfaces for thread handling
+ * 
+ * set of generic threading related routines
  *              should work with pthreads, Windows native or TLS threads
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 #ifndef __XML_THREADS_H__
@@ -17,38 +20,34 @@
 extern "C" {
 #endif
 
-/*
- * xmlMutex are a simple mutual exception locks.
- */
+/** Mutual exclusion object */
 typedef struct _xmlMutex xmlMutex;
 typedef xmlMutex *xmlMutexPtr;
 
-/*
- * xmlRMutex are reentrant mutual exception locks.
- */
+/** Reentrant mutual exclusion object */
 typedef struct _xmlRMutex xmlRMutex;
 typedef xmlRMutex *xmlRMutexPtr;
 
 XMLPUBFUN int
 			xmlCheckThreadLocalStorage(void);
 
-XMLPUBFUN xmlMutexPtr
+XMLPUBFUN xmlMutex *
 			xmlNewMutex	(void);
 XMLPUBFUN void
-			xmlMutexLock	(xmlMutexPtr tok);
+			xmlMutexLock	(xmlMutex *tok);
 XMLPUBFUN void
-			xmlMutexUnlock	(xmlMutexPtr tok);
+			xmlMutexUnlock	(xmlMutex *tok);
 XMLPUBFUN void
-			xmlFreeMutex	(xmlMutexPtr tok);
+			xmlFreeMutex	(xmlMutex *tok);
 
-XMLPUBFUN xmlRMutexPtr
+XMLPUBFUN xmlRMutex *
 			xmlNewRMutex	(void);
 XMLPUBFUN void
-			xmlRMutexLock	(xmlRMutexPtr tok);
+			xmlRMutexLock	(xmlRMutex *tok);
 XMLPUBFUN void
-			xmlRMutexUnlock	(xmlRMutexPtr tok);
+			xmlRMutexUnlock	(xmlRMutex *tok);
 XMLPUBFUN void
-			xmlFreeRMutex	(xmlRMutexPtr tok);
+			xmlFreeRMutex	(xmlRMutex *tok);
 
 /*
  * Library wide APIs.
@@ -61,23 +60,17 @@ XMLPUBFUN void
 XMLPUBFUN void
 			xmlUnlockLibrary(void);
 XML_DEPRECATED
-XMLPUBFUN int
-			xmlGetThreadId	(void);
-XML_DEPRECATED
-XMLPUBFUN int
-			xmlIsMainThread	(void);
-XML_DEPRECATED
 XMLPUBFUN void
 			xmlCleanupThreads(void);
 
-/** DOC_DISABLE */
+/** @cond IGNORE */
 #if defined(LIBXML_THREAD_ENABLED) && defined(_WIN32) && \
     defined(LIBXML_STATIC_FOR_DLL)
 int
 xmlDllMain(void *hinstDLL, unsigned long fdwReason,
            void *lpvReserved);
 #endif
-/** DOC_ENABLE */
+/** @endcond */
 
 #ifdef __cplusplus
 }

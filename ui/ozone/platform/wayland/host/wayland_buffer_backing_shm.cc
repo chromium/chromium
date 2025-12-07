@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_shm.h"
 
-#include "build/chromeos_buildflags.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
@@ -16,7 +15,10 @@ WaylandBufferBackingShm::WaylandBufferBackingShm(
     uint64_t length,
     const gfx::Size& size,
     uint32_t buffer_id)
-    : WaylandBufferBacking(connection, buffer_id, size),
+    : WaylandBufferBacking(connection,
+                           buffer_id,
+                           size,
+                           BufferBackingType::kShm),
       fd_(std::move(fd)),
       length_(length) {}
 
@@ -31,11 +33,6 @@ void WaylandBufferBackingShm::RequestBufferHandle(
       fd_, length_, size(), /*with_alpha_channel=*/true));
   if (UseExplicitSyncRelease())
     auto close = std::move(fd_);
-}
-
-WaylandBufferBacking::BufferBackingType
-WaylandBufferBackingShm::GetBackingType() const {
-  return WaylandBufferBacking::BufferBackingType::kShm;
 }
 
 }  // namespace ui

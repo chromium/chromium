@@ -15,25 +15,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/supervised_user/core/browser/permission_request_creator.h"
-#include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/common/features.h"
-
-namespace {
-
-// Produces a new instance of a PermissionRequestCreator, which
-// is used to allow remote approvals through ChildAccountService.
-std::unique_ptr<supervised_user::PermissionRequestCreator>
-CreatePermissionCreator(Profile* profile) {
-  std::unique_ptr<supervised_user::PermissionRequestCreator>
-      permission_creator =
-          std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
-              IdentityManagerFactory::GetForProfile(profile),
-              profile->GetURLLoaderFactory());
-  return permission_creator;
-}
-
-}  // namespace
 
 // static
 supervised_user::ChildAccountService* ChildAccountServiceFactory::GetForProfile(
@@ -54,26 +36,25 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
           supervised_user::BuildProfileSelectionsForRegularAndGuest()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  // Required to consume changes indicated by this service.
   DependsOn(SupervisedUserServiceFactory::GetInstance());
   DependsOn(ListFamilyMembersServiceFactory::GetInstance());
 }
 
 ChildAccountServiceFactory::~ChildAccountServiceFactory() = default;
 
-KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChildAccountServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 
   CHECK(profile->GetPrefs());
-  CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
   CHECK(ListFamilyMembersServiceFactory::GetForProfile(profile));
+  CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
 
-  return new supervised_user::ChildAccountService(
-      *profile->GetPrefs(),
-      *SupervisedUserServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile),
+  return std::make_unique<supervised_user::ChildAccountService>(
+      *profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(),
-      base::BindRepeating(&CreatePermissionCreator, profile),
       base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile),
       *ListFamilyMembersServiceFactory::GetForProfile(profile));
 }

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/devtools/device/devtools_android_bridge.h"
+
+#include <algorithm>
 #include <array>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,7 +31,7 @@ static void assign_from_callback(scoped_refptr<TCPDeviceProvider>* store,
 
 static std::string SetToString(const std::set<std::string>& values) {
   std::ostringstream result;
-  base::ranges::copy(values, std::ostream_iterator<std::string>(result, ", "));
+  std::ranges::copy(values, std::ostream_iterator<std::string>(result, ", "));
   std::string result_string = result.str();
   return result_string.substr(0, result_string.length() - 2);
 }

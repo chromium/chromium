@@ -5,27 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_
 
-#include <memory>
-
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ChromePasswordProtectionService;
 class KeyedService;
-
-namespace web {
-class BrowserState;
-}
+class ProfileIOS;
 
 // Singleton that owns ChromePasswordProtectionService objects, one for each
-// active BrowserState.
+// active Profile.
 class ChromePasswordProtectionServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
   // Returns the instance of ChromePasswordProtectionService associated with
-  // this browser state, creating one if none exists.
-  static ChromePasswordProtectionService* GetForBrowserState(
-      web::BrowserState* browser_state);
+  // this profile, creating one if none exists.
+  static ChromePasswordProtectionService* GetForProfile(ProfileIOS* profile);
 
   // Returns the singleton instance of ChromePasswordProtectionServiceFactory.
   static ChromePasswordProtectionServiceFactory* GetInstance();
@@ -36,12 +30,9 @@ class ChromePasswordProtectionServiceFactory
   ChromePasswordProtectionServiceFactory();
   ~ChromePasswordProtectionServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  web::BrowserState* GetBrowserStateToUse(web::BrowserState*) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_

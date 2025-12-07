@@ -129,12 +129,19 @@ const CGFloat kSymbolSize = 15;
   cell.textField.returnKeyType = self.returnKeyType;
   cell.textField.keyboardType = self.keyboardType;
   cell.textField.autocapitalizationType = self.autoCapitalizationType;
+  cell.textField.delegate = self.textFieldDelegate;
 
   [cell setIdentifyingIcon:self.identifyingIcon];
   cell.identifyingIconButton.enabled = self.identifyingIconEnabled;
   if ([self.identifyingIconAccessibilityLabel length]) {
     cell.identifyingIconButton.accessibilityLabel =
         self.identifyingIconAccessibilityLabel;
+  } else if (!self.identifyingIconEnabled) {
+    cell.identifyingIconButton.isAccessibilityElement = NO;
+  }
+
+  if ([self.cellAccessibilityLabel length]) {
+    cell.accessibilityLabelValue = self.cellAccessibilityLabel;
   }
 
   // If the TextField or IconButton are enabled, the cell needs to make its
@@ -147,8 +154,7 @@ const CGFloat kSymbolSize = 15;
 #pragma mark Actions
 
 - (void)textFieldChanged:(UITextField*)textField {
-  self.textFieldValue = textField.text;
-  [self.delegate tableViewItemDidChange:self];
+  [self updateTextFieldValue:textField.text];
 }
 
 - (void)textFieldBeginEditing:(UITextField*)textField {
@@ -166,6 +172,15 @@ const CGFloat kSymbolSize = 15;
     return;
   }
   _hasValidText = hasValidText;
+}
+
+- (void)updateTextFieldValue:(NSString*)textFieldValue {
+  if ((_textFieldValue == nil && textFieldValue == nil) ||
+      [_textFieldValue isEqualToString:textFieldValue]) {
+    return;
+  }
+  _textFieldValue = textFieldValue;
+  [self.delegate tableViewItemDidChange:self];
 }
 
 @end
@@ -299,6 +314,15 @@ const CGFloat kSymbolSize = 15;
     [self updateForAccessibilityContentSizeCategory:
               UIContentSizeCategoryIsAccessibilityCategory(
                   self.traitCollection.preferredContentSizeCategory)];
+
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -333,8 +357,7 @@ const CGFloat kSymbolSize = 15;
       _editIconHeightConstraint.constant = kErrorIconLength;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -360,19 +383,6 @@ const CGFloat kSymbolSize = 15;
   }
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isCurrentCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isCurrentCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateForAccessibilityContentSizeCategory:
-              isCurrentCategoryAccessibility];
-  }
-}
-
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
@@ -395,14 +405,19 @@ const CGFloat kSymbolSize = 15;
               forControlEvents:UIControlEventAllEvents];
   [self setIdentifyingIcon:nil];
   self.identifyingIconButton.enabled = NO;
+  self.identifyingIconButton.isAccessibilityElement = YES;
   [self.identifyingIconButton removeTarget:nil
                                     action:nil
                           forControlEvents:UIControlEventAllEvents];
 }
 
-#pragma mark Accessibility
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
+  if ([self.accessibilityLabelValue length]) {
+    return self.accessibilityLabelValue;
+  }
+
   // If `textFieldSecureTextEntry` is
   // YES, the voice over should not read the text value.
   NSString* textFieldText =
@@ -439,6 +454,20 @@ const CGFloat kSymbolSize = 15;
 // Returns the error icon image.
 - (UIImage*)errorImage {
   return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+}
+
+// Updates the view's accessiblity properties when the device's
+// UITraitPreferredContentSizeCategory is modified.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  BOOL isCurrentCategoryAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isCurrentCategoryAccessibility !=
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateForAccessibilityContentSizeCategory:
+              isCurrentCategoryAccessibility];
+  }
 }
 
 @end

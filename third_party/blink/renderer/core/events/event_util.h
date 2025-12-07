@@ -23,15 +23,6 @@ CORE_EXPORT bool IsPointerEventType(const AtomicString& event_type);
 
 CORE_EXPORT bool IsSnapEventType(const AtomicString& event_type);
 
-struct MutationEventInfo {
-  bool is_mutation_event;
-  WebFeature listener_feature;
-  WebFeature event_fired_feature;
-  Document::ListenerType listener_type;
-};
-
-MutationEventInfo IsDOMMutationEventType(const AtomicString& event_type);
-
 }  // namespace event_util
 
 }  // namespace blink

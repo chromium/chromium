@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -453,14 +452,26 @@ class PacLibraryTest : public testing::Test {
 
 // Tests for actual PacMyIpAddress() and PacMyIpAddressEx() (real socket
 // connections and DNS results rather than mocks)
-TEST_F(PacLibraryTest, ActualPacMyIpAddress) {
+// https://crbug.com/407547495
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ActualPacMyIpAddress DISABLED_ActualPacMyIpAddress
+#else
+#define MAYBE_ActualPacMyIpAddress ActualPacMyIpAddress
+#endif
+TEST_F(PacLibraryTest, MAYBE_ActualPacMyIpAddress) {
   SetRealTest();
   auto my_ip_addresses = PacMyIpAddressForTest();
 
   VerifyActualMyIpAddresses(my_ip_addresses);
 }
 
-TEST_F(PacLibraryTest, ActualPacMyIpAddressEx) {
+// https://crbug.com/407547495
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ActualPacMyIpAddressEx DISABLED_ActualPacMyIpAddressEx
+#else
+#define MAYBE_ActualPacMyIpAddressEx ActualPacMyIpAddressEx
+#endif
+TEST_F(PacLibraryTest, MAYBE_ActualPacMyIpAddressEx) {
   SetRealTest();
   auto my_ip_addresses = PacMyIpAddressExForTest();
 
@@ -998,7 +1009,7 @@ TEST_F(PacLibraryTest, DeleteMyIpAddressImpl) {
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote;
   // NOTREACHED() because the request below should never complete.
   MockClient client(remote.InitWithNewPipeAndPassReceiver(),
-                    base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
+                    base::BindOnce([]() { NOTREACHED(); }));
   impl_->AddRequest(std::move(remote));
   // Once all the tasks are run, `impl_` is guaranteed to be deleted.
   task_environment_.RunUntilIdle();
@@ -1108,9 +1119,9 @@ TEST_F(PacLibraryTest, ConnectMultipleRemotesOneDisconnects) {
   // This second client will be disconnected as MyIpAddressImpl runs and should
   // never receive results.
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote2;
-  std::unique_ptr<MockClient> client2 = std::make_unique<MockClient>(
-      remote2.InitWithNewPipeAndPassReceiver(),
-      base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
+  std::unique_ptr<MockClient> client2 =
+      std::make_unique<MockClient>(remote2.InitWithNewPipeAndPassReceiver(),
+                                   base::BindOnce([]() { NOTREACHED(); }));
 
   // Post a task that deletes |client2|.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1156,16 +1167,16 @@ TEST_F(PacLibraryTest, ConnectMultipleRemotesButAllDisconnect) {
   impl_->SetHostResolverProcForTest(host_resolver_proc_);
 
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote1;
-  std::unique_ptr<MockClient> client1 = std::make_unique<MockClient>(
-      remote1.InitWithNewPipeAndPassReceiver(),
-      base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
+  std::unique_ptr<MockClient> client1 =
+      std::make_unique<MockClient>(remote1.InitWithNewPipeAndPassReceiver(),
+                                   base::BindOnce([]() { NOTREACHED(); }));
 
   // This second client will be disconnected as MyIpAddressImpl runs and should
   // never receive results.
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote2;
-  std::unique_ptr<MockClient> client2 = std::make_unique<MockClient>(
-      remote2.InitWithNewPipeAndPassReceiver(),
-      base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
+  std::unique_ptr<MockClient> client2 =
+      std::make_unique<MockClient>(remote2.InitWithNewPipeAndPassReceiver(),
+                                   base::BindOnce([]() { NOTREACHED(); }));
 
   // Post a task that deletes |client1|.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1214,9 +1225,9 @@ TEST_F(PacLibraryTest, ConnectOneRemoteAndThenAnother) {
   // This client will be disconnected as MyIpAddressImpl runs and should never
   // receive results.
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote1;
-  std::unique_ptr<MockClient> client1 = std::make_unique<MockClient>(
-      remote1.InitWithNewPipeAndPassReceiver(),
-      base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); }));
+  std::unique_ptr<MockClient> client1 =
+      std::make_unique<MockClient>(remote1.InitWithNewPipeAndPassReceiver(),
+                                   base::BindOnce([]() { NOTREACHED(); }));
 
   // This client will receive the results.
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote2;

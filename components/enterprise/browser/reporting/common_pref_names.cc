@@ -24,8 +24,39 @@ const char kLastUploadTimestamp[] =
 const char kLastUploadSucceededTimestamp[] =
     "enterprise_reporting.last_upload_succeeded_timestamp";
 
+// The timestamp of when the last security signals upload is attempted.
+const char kLastSignalsUploadAttemptTimestamp[] =
+    "enterprise_reporting.last_signals_upload_attempt_timestamp";
+
+// The timestamp of when the last security signals upload is succeeded.
+const char kLastSignalsUploadSucceededTimestamp[] =
+    "enterprise_reporting.last_signals_upload_succeeded_timestamp";
+
+// The configuration for the latest successful security signals upload.
+const char kLastSignalsUploadSucceededConfig[] =
+    "enterprise_reporting.last_signals_upload_succeeded_config";
+
 // The report frequency
 const char kCloudReportingUploadFrequency[] =
     "enterprise_reporting.upload_frequency";
+
+// The state of the user security signals reporting feature.
+const char kUserSecuritySignalsReporting[] =
+    "enterprise_reporting.user_security_signals.enabled";
+
+// Whether user security signal reports should be uploaded with cookies or not.
+const char kUserSecurityAuthenticatedReporting[] =
+    "enterprise_reporting.user_security_signals.authenticated";
+
+// Initially false, and flips to true when we fetch policies WITH the
+// &profileid= query param.
+//
+// This is temporarily needed on iOS for the migration from no-profile-reporting
+// to profile reporting, to avoid uploading failing reports and causing a spike
+// in errors on the server side.
+//
+// TODO(crbug.com/385175028): Clean up and delete this pref after April 2026.
+const char kPoliciesEverFetchedWithProfileId[] =
+    "enterprise_reporting.policies_ever_fetched_with_profile_id";
 
 }  // namespace enterprise_reporting

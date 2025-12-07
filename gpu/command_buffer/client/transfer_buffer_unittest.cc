@@ -159,14 +159,13 @@ TEST_F(TransferBufferTest, Free) {
   EXPECT_EQ(base::UnguessableToken(), transfer_buffer_->shared_memory_guid());
 
   // See that it gets reallocated.
-  uint32_t size = 0;
-  void* data = transfer_buffer_->AllocUpTo(1, &size);
-  EXPECT_TRUE(data != nullptr);
+  base::span<uint8_t> data = transfer_buffer_->AllocUpTo(1);
+  EXPECT_FALSE(data.empty());
   EXPECT_TRUE(transfer_buffer_->HaveBuffer());
   EXPECT_NE(base::UnguessableToken(), transfer_buffer_->shared_memory_guid());
   int32_t token = helper_->InsertToken();
   int32_t put_offset = helper_->GetPutOffsetForTest();
-  transfer_buffer_->FreePendingToken(data, token);
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // Free buffer. Should cause an ordering barrier.
   EXPECT_CALL(*command_buffer(), OrderingBarrier(_)).Times(AtMost(1));
@@ -203,26 +202,33 @@ TEST_F(TransferBufferTest, Free) {
 TEST_F(TransferBufferTest, TooLargeAllocation) {
   Initialize();
   // Check that we can't allocate large than max size.
-  void* ptr = transfer_buffer_->Alloc(kTransferBufferSize + 1);
-  EXPECT_TRUE(ptr == nullptr);
+  base::span<uint8_t> data = transfer_buffer_->Alloc(kTransferBufferSize + 1);
+  EXPECT_TRUE(data.empty());
   // Check we if we try to allocate larger than max we get max.
-  uint32_t size_allocated = 0;
-  ptr = transfer_buffer_->AllocUpTo(
-      kTransferBufferSize + 1, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(kTransferBufferSize - kStartingOffset, size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, 1);
+  data = transfer_buffer_->AllocUpTo(kTransferBufferSize + 1);
+  EXPECT_EQ(kTransferBufferSize - kStartingOffset, data.size());
+  transfer_buffer_->FreePendingToken(data.data(), 1);
 }
 
 TEST_F(TransferBufferTest, MemoryAlignmentAfterZeroAllocation) {
   Initialize();
-  void* ptr = transfer_buffer_->Alloc(0);
-  EXPECT_TRUE(base::IsAligned(ptr, kAlignment));
-  transfer_buffer_->FreePendingToken(ptr, helper_->InsertToken());
+  base::span<uint8_t> data = transfer_buffer_->Alloc(0);
+  EXPECT_TRUE(base::IsAligned(data.data(), kAlignment));
+  transfer_buffer_->FreePendingToken(data.data(), helper_->InsertToken());
   // Check that the pointer is aligned on the following allocation.
-  ptr = transfer_buffer_->Alloc(4);
-  EXPECT_TRUE(base::IsAligned(ptr, kAlignment));
-  transfer_buffer_->FreePendingToken(ptr, helper_->InsertToken());
+  data = transfer_buffer_->Alloc(4);
+  EXPECT_TRUE(base::IsAligned(data.data(), kAlignment));
+  transfer_buffer_->FreePendingToken(data.data(), helper_->InsertToken());
+}
+
+TEST_F(TransferBufferTest, ScopedTransferBuffer) {
+  Initialize();
+  ScopedTransferBufferPtr scoped_transfer_buffer(1, helper_.get(), transfer_buffer_.get());
+  EXPECT_EQ(scoped_transfer_buffer.size(), 1u);
+  uint8_t* c = static_cast<uint8_t*>(scoped_transfer_buffer.address());
+  EXPECT_FALSE(scoped_transfer_buffer.BelongsToBuffer(UNSAFE_TODO(c - 1)));
+  EXPECT_TRUE(scoped_transfer_buffer.BelongsToBuffer(c));
+  EXPECT_FALSE(scoped_transfer_buffer.BelongsToBuffer(UNSAFE_TODO(c + 1)));
 }
 
 class MockClientCommandBufferCanFail : public MockClientCommandBufferMockFlush {
@@ -357,37 +363,31 @@ TEST_F(TransferBufferExpandContractTest, ExpandWithSmallAllocations) {
       transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc());
 
   // Fill the free space.
-  uint32_t size_allocated = 0;
-  void* ptr = transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize(),
-                                          &size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  base::span<uint8_t> data =
+      transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize());
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // Allocate one more byte to force expansion.
   ExpectCreateTransferBuffer(kStartTransferBufferSize * 2);
-  ptr = transfer_buffer_->AllocUpTo(1, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(1u, size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(1);
+  EXPECT_EQ(1u, data.size());
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // Fill free space and expand again.
-  ptr = transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize(),
-                                    &size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize());
+  transfer_buffer_->FreePendingToken(data.data(), token);
   ExpectCreateTransferBuffer(kStartTransferBufferSize * 4);
-  ptr = transfer_buffer_->AllocUpTo(1, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(1u, size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(1);
+  EXPECT_EQ(1u, data.size());
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // Try to expand again, no expansion should occur because we are at max.
-  ptr = transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize(),
-                                    &size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize());
+  transfer_buffer_->FreePendingToken(data.data(), token);
   EXPECT_CALL(*command_buffer(), Flush(_)).Times(1).RetiresOnSaturation();
-  ptr = transfer_buffer_->AllocUpTo(1, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(1u, size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(1);
+  EXPECT_EQ(1u, data.size());
+  transfer_buffer_->FreePendingToken(data.data(), token);
   EXPECT_EQ(kMaxTransferBufferSize - kStartingOffset,
             transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc());
 }
@@ -406,12 +406,11 @@ TEST_F(TransferBufferExpandContractTest, NoExpandWithInUseAllocation) {
   // Fill the free space in two blocks.
   uint32_t block_size_1 = transfer_buffer_->GetFreeSize() / 2;
   uint32_t block_size_2 = transfer_buffer_->GetFreeSize() - block_size_1;
-  uint32_t size_allocated = 0;
-  void* block1 = transfer_buffer_->AllocUpTo(block_size_1, &size_allocated);
-  EXPECT_EQ(block_size_1, size_allocated);
-  void* block2 = transfer_buffer_->AllocUpTo(block_size_2, &size_allocated);
-  EXPECT_EQ(block_size_2, size_allocated);
-  transfer_buffer_->FreePendingToken(block1, token);
+  base::span<uint8_t> block1 = transfer_buffer_->AllocUpTo(block_size_1);
+  EXPECT_EQ(block_size_1, block1.size());
+  base::span<uint8_t> block2 = transfer_buffer_->AllocUpTo(block_size_2);
+  EXPECT_EQ(block_size_2, block2.size());
+  transfer_buffer_->FreePendingToken(block1.data(), token);
 
   // Expansion tries to happens when GetFreeSize() is not enough for the
   // allocation.
@@ -419,11 +418,10 @@ TEST_F(TransferBufferExpandContractTest, NoExpandWithInUseAllocation) {
 
   // Allocate one more byte to try to force expansion, however there are
   // blocks in use, so this should not expand.
-  void* block3 = transfer_buffer_->AllocUpTo(1, &size_allocated);
-  ASSERT_TRUE(block3 != nullptr);
-  EXPECT_EQ(1u, size_allocated);
-  transfer_buffer_->FreePendingToken(block3, token);
-  transfer_buffer_->FreePendingToken(block2, token);
+  base::span<uint8_t> block3 = transfer_buffer_->AllocUpTo(1);
+  EXPECT_EQ(1u, block3.size());
+  transfer_buffer_->FreePendingToken(block3.data(), token);
+  transfer_buffer_->FreePendingToken(block2.data(), token);
 
   // No reallocs should have occurred.
   EXPECT_EQ(kStartTransferBufferSize - kStartingOffset,
@@ -453,27 +451,25 @@ TEST_F(TransferBufferExpandContractTest, ExpandWithLargeAllocations) {
             transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc());
 
   // Allocate one byte more than the free space to force expansion.
-  uint32_t size_allocated = 0;
   ExpectCreateTransferBuffer(kStartTransferBufferSize * 2);
-  void* ptr = transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize() + 1,
-                                          &size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  base::span<uint8_t> data =
+      transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize() + 1);
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // Expand again.
   ExpectCreateTransferBuffer(kStartTransferBufferSize * 4);
   uint32_t size_requested = transfer_buffer_->GetFreeSize() + 1;
-  ptr = transfer_buffer_->AllocUpTo(size_requested, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(size_requested, size_allocated);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(size_requested);
+  EXPECT_EQ(size_requested, data.size());
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // Try to expand again, no expansion should occur because we are at max.
   EXPECT_CALL(*command_buffer(), Flush(_)).Times(1).RetiresOnSaturation();
   size_requested =
       transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc() + 1;
-  ptr = transfer_buffer_->AllocUpTo(size_requested, &size_allocated);
-  EXPECT_LT(size_allocated, size_requested);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->AllocUpTo(size_requested);
+  EXPECT_LT(data.size(), size_requested);
+  transfer_buffer_->FreePendingToken(data.data(), token);
   EXPECT_EQ(kMaxTransferBufferSize - kStartingOffset,
             transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc());
 }
@@ -500,24 +496,25 @@ TEST_F(TransferBufferExpandContractTest, ShrinkRingBuffer) {
 
   // Expand the ring buffer to the maximum size.
   ExpectCreateTransferBuffer(kMaxTransferBufferSize);
-  void* ptr = transfer_buffer_->Alloc(kMaxTransferBufferSize - kStartingOffset);
-  EXPECT_TRUE(ptr != nullptr);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  base::span<uint8_t> data =
+      transfer_buffer_->Alloc(kMaxTransferBufferSize - kStartingOffset);
+  EXPECT_FALSE(data.empty());
+  transfer_buffer_->FreePendingToken(data.data(), token);
 
   // We shouldn't shrink before we reach the allocation threshold.
   for (uint32_t allocated = kMaxTransferBufferSize - kStartingOffset;
        allocated < (kStartTransferBufferSize + kStartingOffset) *
                        (TransferBuffer::kShrinkThreshold);) {
-    ptr = transfer_buffer_->Alloc(kStartTransferBufferSize);
-    EXPECT_TRUE(ptr != nullptr);
-    transfer_buffer_->FreePendingToken(ptr, token);
+    data = transfer_buffer_->Alloc(kStartTransferBufferSize);
+    EXPECT_FALSE(data.empty());
+    transfer_buffer_->FreePendingToken(data.data(), token);
     allocated += kStartTransferBufferSize;
   }
   // The next allocation should trip the threshold and shrink.
   ExpectCreateTransferBuffer(kStartTransferBufferSize * 2);
-  ptr = transfer_buffer_->Alloc(1);
-  EXPECT_TRUE(ptr != nullptr);
-  transfer_buffer_->FreePendingToken(ptr, token);
+  data = transfer_buffer_->Alloc(1);
+  EXPECT_FALSE(data.empty());
+  transfer_buffer_->FreePendingToken(data.data(), token);
 }
 
 TEST_F(TransferBufferExpandContractTest, Contract) {
@@ -552,12 +549,10 @@ TEST_F(TransferBufferExpandContractTest, Contract) {
 
   const uint32_t kSize1 = 256 - kStartingOffset;
   const uint32_t kSize2 = 128 - kStartingOffset;
-  uint32_t size_allocated = 0;
-  void* ptr = transfer_buffer_->AllocUpTo(kSize1, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(kSize2, size_allocated);
+  base::span<uint8_t> data = transfer_buffer_->AllocUpTo(kSize1);
+  EXPECT_EQ(kSize2, data.size());
   EXPECT_EQ(kSize2, transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc());
-  transfer_buffer_->FreePendingToken(ptr, 1);
+  transfer_buffer_->FreePendingToken(data.data(), 1);
 
   // Free buffer.
   EXPECT_CALL(*command_buffer(), DestroyTransferBuffer(_))
@@ -578,11 +573,10 @@ TEST_F(TransferBufferExpandContractTest, Contract) {
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
       .RetiresOnSaturation();
 
-  ptr = transfer_buffer_->AllocUpTo(kSize1, &size_allocated);
-  ASSERT_TRUE(ptr != nullptr);
-  EXPECT_EQ(kSize2, size_allocated);
+  data = transfer_buffer_->AllocUpTo(kSize1);
+  EXPECT_EQ(kSize2, data.size());
   EXPECT_EQ(kSize2, transfer_buffer_->GetCurrentMaxAllocationWithoutRealloc());
-  transfer_buffer_->FreePendingToken(ptr, 1);
+  transfer_buffer_->FreePendingToken(data.data(), 1);
 }
 
 TEST_F(TransferBufferExpandContractTest, OutOfMemory) {
@@ -608,9 +602,8 @@ TEST_F(TransferBufferExpandContractTest, OutOfMemory) {
       .RetiresOnSaturation();
 
   const uint32_t kSize1 = 512 - kStartingOffset;
-  uint32_t size_allocated = 0;
-  void* ptr = transfer_buffer_->AllocUpTo(kSize1, &size_allocated);
-  ASSERT_TRUE(ptr == nullptr);
+  base::span<uint8_t> data = transfer_buffer_->AllocUpTo(kSize1);
+  ASSERT_TRUE(data.empty());
   EXPECT_FALSE(transfer_buffer_->HaveBuffer());
 }
 
@@ -645,11 +638,10 @@ TEST_F(TransferBufferExpandContractTest, ReallocsToDefault) {
 TEST_F(TransferBufferExpandContractTest, Shrink) {
   uint32_t alloc_size = transfer_buffer_->GetFreeSize();
   EXPECT_EQ(kStartTransferBufferSize - kStartingOffset, alloc_size);
-  uint32_t size_allocated = 0;
-  void* ptr = transfer_buffer_->AllocUpTo(alloc_size, &size_allocated);
+  base::span<uint8_t> data = transfer_buffer_->AllocUpTo(alloc_size);
 
-  ASSERT_NE(ptr, nullptr);
-  EXPECT_EQ(alloc_size, size_allocated);
+  ASSERT_FALSE(data.empty());
+  EXPECT_EQ(alloc_size, data.size());
   EXPECT_GT(alloc_size, 0u);
   EXPECT_EQ(0u, transfer_buffer_->GetFreeSize());
 
@@ -669,7 +661,7 @@ TEST_F(TransferBufferExpandContractTest, Shrink) {
   transfer_buffer_->ShrinkLastBlock(0);
   EXPECT_EQ(alloc_size - kAlignment, transfer_buffer_->GetFreeSize());
 
-  transfer_buffer_->FreePendingToken(ptr, 1);
+  transfer_buffer_->FreePendingToken(data.data(), 1);
 }
 
 TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
@@ -681,24 +673,24 @@ TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFragmentedFreeSize(), original_free_size);
 
-  void* ptr1 = transfer_buffer_->Alloc(kArbitrarySize);
-  EXPECT_NE(ptr1, nullptr);
+  base::span<uint8_t> data1 = transfer_buffer_->Alloc(kArbitrarySize);
+  EXPECT_FALSE(data1.empty());
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(),
             original_free_size - kArbitrarySize);
   EXPECT_EQ(transfer_buffer_->GetFragmentedFreeSize(),
             original_free_size - kArbitrarySize);
 
-  void* ptr2 = transfer_buffer_->Alloc(kArbitrarySize);
-  EXPECT_NE(ptr2, nullptr);
+  base::span<uint8_t> data2 = transfer_buffer_->Alloc(kArbitrarySize);
+  EXPECT_FALSE(data2.empty());
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(),
             original_free_size - kArbitrarySize * 2);
   EXPECT_EQ(transfer_buffer_->GetFragmentedFreeSize(),
             original_free_size - kArbitrarySize * 2);
 
-  void* ptr3 = transfer_buffer_->Alloc(kArbitrarySize);
-  EXPECT_NE(ptr3, nullptr);
+  base::span<uint8_t> data3 = transfer_buffer_->Alloc(kArbitrarySize);
+  EXPECT_FALSE(data3.empty());
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(),
             original_free_size - kArbitrarySize * 3);
@@ -712,7 +704,7 @@ TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
   auto token4 = helper_->InsertToken();
 
   // Freeing the final block here, is not perceivable because it's a hole.
-  transfer_buffer_->FreePendingToken(ptr3, token3);
+  transfer_buffer_->FreePendingToken(data3.data(), token3);
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(),
             original_free_size - kArbitrarySize * 3);
@@ -723,7 +715,7 @@ TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
   // perceived two blocks not free yet.  The free size (no waiting) has not
   // changed because the free_offset_ has not moved, but the fragmented free
   // size gets bigger because in_use_offset_ has moved past the first block.
-  transfer_buffer_->FreePendingToken(ptr1, token1);
+  transfer_buffer_->FreePendingToken(data1.data(), token1);
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(),
             original_free_size - kArbitrarySize * 3);
@@ -731,7 +723,7 @@ TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
             original_free_size - kArbitrarySize * 2);
 
   // Allocate a 4th block.  This leaves the state as: Freed Used Freed Used
-  void* ptr4 = transfer_buffer_->Alloc(kArbitrarySize);
+  base::span<uint8_t> data4 = transfer_buffer_->Alloc(kArbitrarySize);
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(),
             original_free_size - kArbitrarySize * 4);
@@ -740,8 +732,8 @@ TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
 
   // Freeing the second and fourth block makes everything free, so back to
   // original size.
-  transfer_buffer_->FreePendingToken(ptr4, token4);
-  transfer_buffer_->FreePendingToken(ptr2, token2);
+  transfer_buffer_->FreePendingToken(data4.data(), token4);
+  transfer_buffer_->FreePendingToken(data2.data(), token2);
   EXPECT_EQ(transfer_buffer_->GetSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFreeSize(), original_free_size);
   EXPECT_EQ(transfer_buffer_->GetFragmentedFreeSize(), original_free_size);
@@ -755,9 +747,7 @@ TEST_F(TransferBufferTest, ResizeDuringScopedResultPtr) {
   // If an attempt is made to resize the transfer buffer while a result
   // pointer exists, we should hit a CHECK. Allocate just enough to force a
   // resize.
-  uint32_t size_allocated;
-  ASSERT_DEATH(transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize() + 1,
-                                           &size_allocated),
+  ASSERT_DEATH(transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize() + 1),
                "outstanding_result_pointer_");
 }
 
@@ -766,9 +756,7 @@ TEST_F(TransferBufferTest, AllocDuringScopedResultPtr) {
   ScopedResultPtr<int> ptr(transfer_buffer_.get());
   // If an attempt is made to allocate any amount in the transfer buffer while a
   // result pointer exists, we should hit a DCHECK.
-  uint32_t size_allocated;
-  ASSERT_DEATH(transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize() + 1,
-                                           &size_allocated),
+  ASSERT_DEATH(transfer_buffer_->AllocUpTo(transfer_buffer_->GetFreeSize() + 1),
                "outstanding_result_pointer_");
 }
 

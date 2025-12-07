@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/prefs/pref_service.h"
 #include "ios/web/public/browser_state.h"
 
 namespace web {
 class WebUIIOS;
+class SystemCookieStoreHandle;
 }  // namespace web
 
 namespace ios_web_view {
@@ -70,6 +71,9 @@ class WebViewBrowserState final : public web::BrowserState {
 
   // Handles browser downloads.
   std::unique_ptr<WebViewDownloadManager> download_manager_;
+
+  // Handle to the SystemCookieStore that must live on the UI thread.
+  std::unique_ptr<web::SystemCookieStoreHandle> cookie_store_handle_;
 };
 
 }  // namespace ios_web_view

@@ -6,6 +6,7 @@
 #define IOS_WEB_COMMON_REFERRER_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "ios/web/public/navigation/referrer.h"
 #include "net/url_request/referrer_policy.h"
@@ -30,7 +31,7 @@ net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
 // Returns the WebReferrerPolicy corresponding to the given policy string
 // (e.g., 'always', 'never', 'origin', 'default'). The string is assumed to
 // be lowercase already. Unrecognized values will be treated as Default.
-ReferrerPolicy ReferrerPolicyFromString(const std::string& policy);
+ReferrerPolicy ReferrerPolicyFromString(std::string_view policy);
 
 }  // namespace web
 

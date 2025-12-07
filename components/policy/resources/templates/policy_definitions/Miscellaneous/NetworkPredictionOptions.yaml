@@ -3,6 +3,7 @@ desc: |-
   This policy controls network prediction in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. It controls DNS prefetching, TCP, and SSL preconnection and prerendering of webpages.
 
         If you set the policy, users can't change it. Leaving it unset turns on network prediction, but the user can change it.
+default: null
 example_value: 1
 features:
   can_be_recommended: true

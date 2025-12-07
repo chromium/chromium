@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="timeout" content="long"/>
+  <title>
+    AudioParam automateRate property change - crbug.com/357391257
+  </title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    const t = async_test('audio-param-rate-change-357391257');
+
+    // The problematic value used in the reproduction code.
+    const testValue = 5;
+
+    // Number of iterations for triggering the issue. A high value can strain
+    // testing resources. Empirically determined: the reported repro case was
+    // aboe to crash in 3 iterations on average.
+    const maxIteration = 3;
+
+    // The original repro only has setValueAtTime() but the fix/test covers
+    // all methods.
+    const subtestTypes = [
+      'setValueAtTime',
+      'linearRampToValueAtTime',
+      'exponentialRampToValueAtTime',
+      'linearRampToValueAtTime',
+      'setTargetAtTime',
+      'setValueCurveAtTime'
+    ];
+
+    let subtestsCompleted = 0;
+
+    const runTest = (iteration, subtestType) => {
+      const context = new AudioContext({sampleRate: 768000});
+      const scriptNode = context.createScriptProcessor();
+      const delayNode = context.createDelay(1);
+
+      scriptNode.onaudioprocess = () => {
+        delayNode.delayTime.automationRate = 'k-rate';
+        delayNode.delayTime.automationRate = 'a-rate';
+      };
+      delayNode.delayTime.linearRampToValueAtTime(1, 2);
+      scriptNode.connect(delayNode).connect(context.destination);
+
+      switch (subtestTypes[subtestType]) {
+        case 'setValueAtTime':
+          delayNode.delayTime.setValueAtTime(testValue, context.currentTime);
+          break;
+        case 'linearRampToValueAtTime':
+          delayNode.delayTime.linearRampToValueAtTime(
+              testValue, context.currentTime);
+          break;
+        case 'exponentialRampToValueAtTime':
+          delayNode.delayTime.exponentialRampToValueAtTime(
+              testValue, context.currentTime);
+          break;
+        case 'setTargetAtTime':
+          delayNode.delayTime.setTargetAtTime(
+              testValue, context.currentTime, 0);
+          break;
+        case 'setValueCurveAtTime':
+          const curve = new Float32Array(2);
+          curve[0] = testValue;
+          curve[1] = 0;
+          // To avoid the schedule overlap with setValueAtTime() above, start
+          // the automation at 2.5s.
+          delayNode.delayTime.setValueCurveAtTime(curve, 2.5, 1);
+          break;
+        defaut:
+          assert_unreached('invalid method test type');
+      }
+
+      if (iteration < maxIteration) {
+        setTimeout(() => runTest(iteration + 1, subtestType), 100);
+      } else {
+        if (++subtestsCompleted === subtestTypes.length) {
+          context.close();
+          t.done();
+        }
+      }
+    };
+
+    window.addEventListener('load', t.step_func(() => {
+      subtestTypes.forEach((_, subtestType) => runTest(0, subtestType));
+    }));
+  </script>
+</body>
+</html>

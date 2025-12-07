@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip RetryOnFailure ]
 
@@ -21,19 +21,19 @@ crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_com
 # https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.mm;l=284;drc=72e88ec372c13cf0b6ee0a76fb639e2998399746
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
 
+# The test fails flakily on all platforms and should be investigated.
+crbug.com/419227949 wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-paint-invalidation-offscreen.https.html [ Skip ]
+
 # Mac gets invalid texture errors in SwiftShader.
 # Also, with a native GPU, sometimes R & B channels are incorrectly swapped in
 # texture readback. (Canvas readback does not exhibit this issue.)
 crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
-crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
 
-# Linux does not yet properly support readback on shared images.
+# Linux does not fully support WebGPU yet.
 crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.worker.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.worker.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-offscreen.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]
 
 # Test fails due to scaling precision issues
 crbug.com/1515185 wpt_internal/webgpu/web_platform/reftests/canvas_image_rendering.https.html [ Failure ]
@@ -50,3 +50,16 @@ crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
+
+# Test failus due to drop last frame after gpu device is destroyed/lost.
+crbug.com/370694819 wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+
+# Crashes due to the upgrade from Win10/old driver -> Win11/new driver for NVIDIA GTX 1660.
+crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Crash ]
+crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Crash ]
+
+# These tests are too flaky, skip before actively looking into them.
+crbug.com/440567017 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/440913790 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]
+crbug.com/440567017 [ Win ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/440913790 [ Win ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]

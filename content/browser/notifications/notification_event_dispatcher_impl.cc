@@ -82,8 +82,7 @@ PersistentNotificationStatus ConvertServiceWorkerStatus(
     case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       return PersistentNotificationStatus::kServiceWorkerError;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PersistentNotificationStatus::kServiceWorkerError;
+  NOTREACHED();
 }
 
 // To be called when a notification event has finished with a
@@ -152,8 +151,7 @@ void DispatchNotificationEventOnRegistration(
       status = PersistentNotificationStatus::kServiceWorkerError;
       break;
     case blink::ServiceWorkerStatusCode::kOk:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   GetUIThreadTaskRunner({})->PostTask(
@@ -460,8 +458,7 @@ NotificationEventDispatcherImpl::GetListenerIfNotifiable(
         return listener->second;
       }
       case RenderProcessHost::NotificationServiceCreatorType::kServiceWorker: {
-        NOTREACHED_IN_MIGRATION();
-        return std::nullopt;
+        NOTREACHED();
       }
     }
   }

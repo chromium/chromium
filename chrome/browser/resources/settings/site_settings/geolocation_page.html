@@ -1,0 +1,106 @@
+<style include="cr-hidden-style settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+<div class="content-settings-header secondary">
+  $i18n{siteSettingsLocationDescription}
+</div>
+<template is="dom-if"
+    if="[[!enablePermissionSiteSettingsRadioButton_]]">
+  <div id="locationRadioGroup" class="radio-group">
+    <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+    <div id="geolocationSubHeading"
+        class="secondary radio-sub-heading">
+        $i18n{siteSettingsDefaultBehaviorDescription}
+    </div>
+    <cr-radio-group
+        on-selected-changed="onLocationTopLevelRadioChanged_">
+      <cr-radio-button no-collapse
+          id="locationAskRadioButton"
+          name="location-ask-radio-button"
+          checked$="[[isLocationAllowed_]]">
+        <cr-icon icon="settings:location-on"></cr-icon>
+        $i18n{siteSettingsLocationAllowed}
+      </cr-radio-button>
+      <settings-radio-group
+          id="locationCpssRadioGroup"
+          pref="{{prefs.generated.geolocation}}"
+          selectable-elements="cr-radio-button"
+          hidden$="[[!isLocationAllowed_]]">
+        <cr-radio-button class="padded-radio-section"
+            name="[[settingsStateEnum_.QUIET]]"
+            pref="[[prefs.generated.geolocation]]"
+            label="$i18n{siteSettingsLocationAskQuiet}">
+        </cr-radio-button>
+        <cr-radio-button class="padded-radio-section"
+            name="[[settingsStateEnum_.CPSS]]"
+            pref="[[prefs.generated.geolocation]]"
+            label="$i18n{siteSettingsLocationAskCPSS}">
+        </cr-radio-button>
+        <cr-radio-button class="padded-radio-section"
+            name="[[settingsStateEnum_.LOUD]]"
+            pref="[[prefs.generated.geolocation]]"
+            label="$i18n{siteSettingsLocationAskLoud}">
+        </cr-radio-button>
+      </settings-radio-group>
+      <cr-radio-button class="two-line"
+          id="locationBlockRadioButton"
+          name="location-block-radio-button"
+          sub-label="$i18n{siteSettingsLocationBlockedSubLabel}"
+          checked$="[[!isLocationAllowed_]]">
+        <cr-icon icon="privacy:location-off"></cr-icon>
+        $i18n{siteSettingsLocationBlocked}
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+</template>
+<template is="dom-if"
+    if="[[enablePermissionSiteSettingsRadioButton_]]">
+  <settings-category-default-radio-group
+      id="locationDefaultRadioGroup"
+      category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
+      allow-option-label="$i18n{siteSettingsLocationAllowed}"
+      allow-option-icon="settings:location-on"
+      block-option-label="$i18n{siteSettingsLocationBlocked}"
+      block-option-icon="privacy:location-off"
+      on-selected-changed="onLocationTopLevelRadioChanged2_">
+  </settings-category-default-radio-group>
+  <div class="radio-group"
+      id="locationCpssRadioGroup"
+      hidden$="[[!isLocationAllowed_]]">
+    <h2 class="cpss-heading">
+      $i18n{siteSettingsHowToShowRequests}
+    </h2>
+    <settings-radio-group
+        pref="{{prefs.generated.geolocation}}"
+        selectable-elements="settings-collapse-radio-button">
+      <settings-collapse-radio-button
+          name="[[settingsStateEnum_.QUIET]]"
+          pref="[[prefs.generated.geolocation]]"
+          label="$i18n{siteSettingsLocationAskQuiet}"
+          no-collapse>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button
+          name="[[settingsStateEnum_.CPSS]]"
+          pref="[[prefs.generated.geolocation]]"
+          label="$i18n{siteSettingsLocationAskCPSS}"
+          no-collapse>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button
+          name="[[settingsStateEnum_.LOUD]]"
+          pref="[[prefs.generated.geolocation]]"
+          label="$i18n{siteSettingsLocationAskLoud}"
+          no-collapse>
+      </settings-collapse-radio-button>
+    </settings-radio-group>
+  </div>
+</template>
+<category-setting-exceptions
+    category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
+    read-only-list
+    allow-header="$i18n{siteSettingsLocationAllowedExceptions}"
+    block-header="$i18n{siteSettingsLocationBlockedExceptions}"
+    search-filter="[[searchTerm]]">
+</category-setting-exceptions>
+</settings-subpage>

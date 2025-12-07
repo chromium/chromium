@@ -7,7 +7,6 @@
  */
 
 import {nearbyShareMojom} from 'chrome://os-settings/os_settings.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type ReceiveObserverInterface = nearbyShareMojom.ReceiveObserverInterface;
@@ -53,10 +52,9 @@ export class FakeReceiveManager extends TestBrowserProxy implements
       name: string, connectionToken: string, _payloadDescription = '',
       _payloadType = 0): ShareTarget {
     const target: ShareTarget = {
-      id: {
-        low: BigInt(1),
-        high: BigInt(2),
-      },
+      id: (1n.toString(16).padStart(16, '0') +
+           2n.toString(16).padStart(16, '0'))
+              .toUpperCase(),
       name,
       type: 1,
       payloadPreview: {
@@ -83,12 +81,12 @@ export class FakeReceiveManager extends TestBrowserProxy implements
     this.observer_ = observer;
   }
 
-  async isInHighVisibility(): Promise<{inHighVisibility: boolean}> {
+  isInHighVisibility(): Promise<{inHighVisibility: boolean}> {
     this.methodCalled('isInHighVisibility');
-    return {inHighVisibility: this.inHighVisibility_};
+    return Promise.resolve({inHighVisibility: this.inHighVisibility_});
   }
 
-  async registerForegroundReceiveSurface():
+  registerForegroundReceiveSurface():
       Promise<{result: RegisterReceiveSurfaceResult}> {
     this.inHighVisibility_ = true;
     if (this.observer_) {
@@ -97,26 +95,26 @@ export class FakeReceiveManager extends TestBrowserProxy implements
     this.methodCalled('registerForegroundReceiveSurface');
     const result = this.nextResult_ ? RegisterReceiveSurfaceResult.kSuccess :
                                       RegisterReceiveSurfaceResult.kFailure;
-    return {result};
+    return Promise.resolve({result});
   }
 
-  async unregisterForegroundReceiveSurface(): Promise<{success: boolean}> {
+  unregisterForegroundReceiveSurface(): Promise<{success: boolean}> {
     this.inHighVisibility_ = false;
     if (this.observer_) {
       this.observer_.onHighVisibilityChanged(this.inHighVisibility_);
     }
     this.methodCalled('unregisterForegroundReceiveSurface');
-    return {success: this.nextResult_};
+    return Promise.resolve({success: this.nextResult_});
   }
 
-  async accept(shareTargetId: UnguessableToken): Promise<{success: boolean}> {
+  accept(shareTargetId: string): Promise<{success: boolean}> {
     this.methodCalled('accept', shareTargetId);
-    return {success: this.nextResult_};
+    return Promise.resolve({success: this.nextResult_});
   }
 
-  async reject(shareTargetId: UnguessableToken): Promise<{success: boolean}> {
+  reject(shareTargetId: string): Promise<{success: boolean}> {
     this.methodCalled('reject', shareTargetId);
-    return {success: this.nextResult_};
+    return Promise.resolve({success: this.nextResult_});
   }
 
   recordFastInitiationNotificationUsage(success: boolean): void {
@@ -132,5 +130,9 @@ export class FakeReceiveManager extends TestBrowserProxy implements
     if (this.observer_) {
       this.observer_.onHighVisibilityChanged(inHighVisibility);
     }
+  }
+
+  setNextResultForTest(nextResult: boolean): void {
+    this.nextResult_ = nextResult;
   }
 }

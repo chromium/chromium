@@ -9,11 +9,12 @@ namespace ui {
 const char kAXAutoCompleteTextViewClassname[] =
     "android.widget.AutoCompleteTextView";
 const char kAXAbsListViewClassname[] = "android.widget.AbsListView";
+const char kAXAlertDialogClassname[] = "android.app.AlertDialog";
 const char kAXButtonClassname[] = "android.widget.Button";
 const char kAXCheckBoxClassname[] = "android.widget.CheckBox";
 const char kAXCheckedTextViewClassname[] = " android.widget.CheckedTextView";
 const char kAXCompoundButtonClassname[] = "android.widget.CompoundButton";
-const char kAXDialogClassname[] = "android.app.Dialog";
+const char kAXDatePickerClassname[] = "android.widget.DatePicker";
 const char kAXEditTextClassname[] = "android.widget.EditText";
 const char kAXGridViewClassname[] = "android.widget.GridView";
 const char kAXHorizontalScrollViewClassname[] =
@@ -25,16 +26,20 @@ const char kAXListViewClassname[] = "android.widget.ListView";
 const char kAXMenuItemClassname[] = "android.view.MenuItem";
 const char kAXMultiAutoCompleteTextViewClassname[] =
     "android.widget.MultiAutoCompleteTextView";
+const char kAXNavigationViewClassname[] =
+    "com.google.android.material.navigation.NavigationView";
 const char kAXPagerClassname[] = "android.support.v4.view.ViewPager";
 const char kAXProgressBarClassname[] = "android.widget.ProgressBar";
 const char kAXRadioButtonClassname[] = "android.widget.RadioButton";
 const char kAXRadioGroupClassname[] = "android.widget.RadioGroup";
 const char kAXScrollViewClassname[] = "android.widget.ScrollView";
+const char kAXSearchViewClassname[] = "android.widget.SearchView";
 const char kAXSeekBarClassname[] = "android.widget.SeekBar";
 const char kAXSpinnerClassname[] = "android.widget.Spinner";
 const char kAXSwitchClassname[] = "android.widget.Switch";
 const char kAXTabWidgetClassname[] = "android.widget.TabWidget";
 const char kAXTextViewClassname[] = "android.widget.TextView";
+const char kAXTimePickerClassname[] = "android.widget.TimePicker";
 const char kAXToggleButtonClassname[] = "android.widget.ToggleButton";
 const char kAXViewClassname[] = "android.view.View";
 const char kAXViewGroupClassname[] = "android.view.ViewGroup";

@@ -14,10 +14,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class Document;
@@ -78,6 +74,8 @@ class SVGResource : public GarbageCollected<SVGResource> {
 
   virtual void Load(Document&, CrossOriginAttributeValue) {}
   virtual void LoadWithoutCSP(Document&) {}
+
+  virtual bool IsLoading() const { return false; }
 
   Element* Target() const { return target_.Get(); }
   // Returns the target's LayoutObject (if target exists and is attached to the
@@ -163,6 +161,7 @@ class ExternalSVGResourceDocumentContent final
   void Trace(Visitor*) const override;
 
  private:
+  bool IsLoading() const override;
   Element* ResolveTarget();
 
   // SVGResourceDocumentObserver:
@@ -188,11 +187,12 @@ class ExternalSVGResourceImageContent final : public SVGResource,
  private:
   void Prefinalize();
 
+  bool IsLoading() const override;
   Element* ResolveTarget();
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;
-  WTF::String DebugName() const override;
+  String DebugName() const override;
 
   Member<ImageResourceContent> image_content_;
   AtomicString fragment_;

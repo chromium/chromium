@@ -15,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"

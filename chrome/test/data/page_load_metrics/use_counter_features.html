@@ -18,6 +18,21 @@
           width: 100%;
         }
       }
+
+      .col {
+        column-count: 3;
+        column-rule-color: gray;
+      }
+
+      .col:visited {
+        column-rule-color: red;
+      }
+
+      #width-no-style {
+        border: 5px red;
+        column-rule: 5px green;
+        outline: 5px blue;
+      }
     </style>
   </head>
   <body>
@@ -25,6 +40,8 @@
     <link href="data:text/css,#foo { color: red; }" rel="stylesheet">
     <p id="para" style="font-size:50px; font-family:serif;">TEST</p>
     <div id="fullscreen">This is a div</div>
+    <a href="https://www.example.com" class="col-link">Test link with column rules</a>
+    <div id="width-no-style"></div>
   <script type="text/javascript">
   for (var i = 0; i < 3; i++) {
     document.getElementById("div").animate([

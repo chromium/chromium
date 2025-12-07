@@ -16,7 +16,7 @@ import java.util.List;
 
 /** Mock context that saves all intents given to {@code startService}. */
 public class IntentSavingContext extends AdvancedMockContext {
-    private final List<Intent> mStartedIntents = new ArrayList<Intent>();
+    private final List<Intent> mStartedIntents = new ArrayList<>();
 
     public IntentSavingContext(Context targetContext) {
         super(targetContext);

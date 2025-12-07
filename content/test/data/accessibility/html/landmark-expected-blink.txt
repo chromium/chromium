@@ -47,93 +47,93 @@ rootWebArea
 ++++++++staticText name='This is an ARIA search landmark.'
 ++++++++++inlineTextBox name='This is an ARIA search landmark.'
 ++++++article
-++++++++headerAsNonLandmark
+++++++++sectionHeader
 ++++++++++staticText name='This should NOT banner role.'
 ++++++++++++inlineTextBox name='This should NOT banner role.'
 ++++++complementary
-++++++++headerAsNonLandmark
+++++++++sectionHeader
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++navigation
-++++++++headerAsNonLandmark
+++++++++sectionHeader
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++sectionWithoutName
-++++++++headerAsNonLandmark
+++++++++sectionHeader
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++main
-++++++++headerAsNonLandmark
+++++++++sectionHeader
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++article
 ++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
+++++++++++sectionHeader
 ++++++++++++staticText name='This should NOT banner role.'
 ++++++++++++++inlineTextBox name='This should NOT banner role.'
 ++++++complementary
 ++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
+++++++++++sectionHeader
 ++++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++navigation
 ++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
+++++++++++sectionHeader
 ++++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++sectionWithoutName
 ++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
+++++++++++sectionHeader
 ++++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++main
 ++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
+++++++++++sectionHeader
 ++++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++article
-++++++++footerAsNonLandmark
+++++++++sectionFooter
 ++++++++++staticText name='This should NOT footer role.'
 ++++++++++++inlineTextBox name='This should NOT footer role.'
 ++++++complementary
-++++++++footerAsNonLandmark
+++++++++sectionFooter
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++navigation
-++++++++footerAsNonLandmark
+++++++++sectionFooter
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++sectionWithoutName
-++++++++footerAsNonLandmark
+++++++++sectionFooter
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++main
-++++++++footerAsNonLandmark
+++++++++sectionFooter
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++article
 ++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
+++++++++++sectionFooter
 ++++++++++++staticText name='This should NOT footer role.'
 ++++++++++++++inlineTextBox name='This should NOT footer role.'
 ++++++complementary
 ++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
+++++++++++sectionFooter
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++navigation
 ++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
+++++++++++sectionFooter
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++sectionWithoutName
 ++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
+++++++++++sectionFooter
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++main
 ++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
+++++++++++sectionFooter
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++article

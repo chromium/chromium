@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "crypto/rsa_private_key.h"
+#include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_platform_key_util.h"
@@ -44,16 +46,50 @@ class FailingSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
   }
 };
 
-}  // namespace
+class SSLPrivateKeyWithPreferences : public SSLPrivateKey {
+ public:
+  SSLPrivateKeyWithPreferences(scoped_refptr<SSLPrivateKey> key,
+                               base::span<const uint16_t> prefs)
+      : key_(std::move(key)), prefs_(base::ToVector(prefs)) {}
 
-scoped_refptr<SSLPrivateKey> WrapRSAPrivateKey(
-    crypto::RSAPrivateKey* rsa_private_key) {
-  return net::WrapOpenSSLPrivateKey(bssl::UpRef(rsa_private_key->key()));
-}
+  std::string GetProviderName() override { return key_->GetProviderName(); }
+
+  std::vector<uint16_t> GetAlgorithmPreferences() override { return prefs_; }
+
+  void Sign(uint16_t algorithm,
+            base::span<const uint8_t> input,
+            SignCallback callback) override {
+    if (!base::Contains(prefs_, algorithm)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
+                                    std::vector<uint8_t>()));
+      return;
+    }
+
+    key_->Sign(algorithm, input, std::move(callback));
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<SSLPrivateKeyWithPreferences>;
+  ~SSLPrivateKeyWithPreferences() override = default;
+
+  scoped_refptr<SSLPrivateKey> key_;
+  std::vector<uint16_t> prefs_;
+};
+
+}  // namespace
 
 scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey() {
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
       std::make_unique<FailingSSLPlatformKey>(), GetSSLPlatformKeyTaskRunner());
+}
+
+scoped_refptr<SSLPrivateKey> WrapSSLPrivateKeyWithPreferences(
+    scoped_refptr<SSLPrivateKey> key,
+    base::span<const uint16_t> prefs) {
+  return base::MakeRefCounted<SSLPrivateKeyWithPreferences>(std::move(key),
+                                                            prefs);
 }
 
 }  // namespace net

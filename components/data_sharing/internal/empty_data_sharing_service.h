@@ -28,12 +28,21 @@ class EmptyDataSharingService : public DataSharingService {
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
-  void ReadAllGroups(
-      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
+  bool IsGroupDataModelLoaded() override;
+  std::optional<GroupData> ReadGroup(const GroupId& group_id) override;
+  std::set<GroupData> ReadAllGroups() override;
+  std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const GaiaId& member_gaia_id) override;
+  std::optional<GroupData> GetPossiblyRemovedGroup(
+      const GroupId& group_id) override;
+  void ReadGroupDeprecated(
+      const GroupId& group_id,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
       override;
-  void ReadGroup(const GroupId& group_id,
-                 base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
-                     callback) override;
+  void ReadNewGroup(const GroupToken& token,
+                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
+                        callback) override;
   void CreateGroup(const std::string& group_name,
                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                        callback) override;
@@ -52,14 +61,41 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupId& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
-  bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
-  void HandleShareURLNavigationIntercepted(const GURL& url) override;
-  std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
-  ParseURLResult ParseDataSharingURL(const GURL& url) override;
+  void LeaveGroup(
+      const GroupId& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  bool IsLeavingOrDeletingGroup(const GroupId& group_id) override;
+  std::vector<GroupEvent> GetGroupEventsSinceStartup() override;
+  void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) override;
+  std::unique_ptr<GURL> GetDataSharingUrl(const GroupData& group_data) override;
   void EnsureGroupVisibility(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
       override;
+  void GetSharedEntitiesPreview(
+      const GroupToken& group_token,
+      base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+          callback) override;
+  void GetAvatarImageForURL(
+      const GURL& avatar_url,
+      int size,
+      base::OnceCallback<void(const gfx::Image&)> callback,
+      image_fetcher::ImageFetcher* image_fetcher) override;
+  void SetSDKDelegate(
+      std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
+  DataSharingSDKDelegate* GetSDKDelegate() override;
+  void SetUIDelegate(
+      std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
+  DataSharingUIDelegate* GetUiDelegate() override;
+  Logger* GetLogger() override;
+  void AddGroupDataForTesting(GroupData group_data) override;
+  void SetPreviewServerProxyForTesting(
+      std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
+  PreviewServerProxy* GetPreviewServerProxyForTesting() override;
+  void OnCollaborationGroupRemoved(const GroupId& group_id) override;
+  bool IsContextIdShared(const ContextId& context_id) override;
 };
 
 }  // namespace data_sharing

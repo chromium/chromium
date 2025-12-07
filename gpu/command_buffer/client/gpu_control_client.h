@@ -26,7 +26,7 @@ class GpuControlClient {
   // visible immediately while unwinding the call stack.
   virtual void OnGpuControlLostContextMaybeReentrant() = 0;
   virtual void OnGpuControlErrorMessage(const char* message, int32_t id) = 0;
-  virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
+  virtual void OnGpuSwitched() {}
   // Sent by the WebGPUDecoder
   virtual void OnGpuControlReturnData(base::span<const uint8_t> data) = 0;
 };

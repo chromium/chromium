@@ -82,7 +82,7 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
   // Intercepts all requests.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().query() == "syncreceived") {
+    if (request.GetURL().GetQuery() == "syncreceived") {
       time_when_sync_event_received_ = base::Time::Now();
     }
 

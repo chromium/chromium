@@ -8,17 +8,18 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeEmptyFeedbackContext, fakeFeedbackContext, fakeFeedbackContextWithExtraDiagnostics, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
-import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from 'chrome://os-feedback/feedback_flow.js';
+import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
-import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
+import type {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -52,7 +53,7 @@ suite('shareDataPageTestSuite', () => {
 
   function getElementContent(selector: string): string {
     const element = page.shadowRoot!.querySelector(selector);
-    return element!.textContent!.trim();
+    return element!.textContent.trim();
   }
 
   function verifyRecordPreSubmitActionCallCount(
@@ -237,13 +238,13 @@ suite('shareDataPageTestSuite', () => {
     assertEquals(2, emailDropdown.options.length);
 
     const firstOption = emailDropdown.options.item(0) as HTMLOptionElement;
-    assertEquals('test.user2@test.com', firstOption.textContent!.trim());
+    assertEquals('test.user2@test.com', firstOption.textContent.trim());
     assertEquals('test.user2@test.com', firstOption.value.trim());
 
     const secondOption = emailDropdown.options.item(1);
     assertEquals(
-        'Don\'t include email address', secondOption!.textContent!.trim());
-    assertEquals('', secondOption!.value!.trim());
+        'Don\'t include email address', secondOption!.textContent.trim());
+    assertEquals('', secondOption!.value.trim());
 
     // The user email section should be visible.
     const userEmailElement =
@@ -287,7 +288,7 @@ suite('shareDataPageTestSuite', () => {
   // Test that the pageUrl section is hidden when the url is empty string.
   test('pageUrlHidden', async () => {
     await initializePage();
-    fakeFeedbackContext!.pageUrl!.url = '';
+    fakeFeedbackContext.pageUrl!.url = '';
     page.feedbackContext = fakeFeedbackContext;
 
     // The pageUrl section should be hidden
@@ -296,7 +297,7 @@ suite('shareDataPageTestSuite', () => {
     assertFalse(isVisible(pageUrl));
 
     // Change it back otherwise it will effect other tests.
-    fakeFeedbackContext!.pageUrl!.url = 'chrome://tab/';
+    fakeFeedbackContext.pageUrl!.url = 'chrome://tab/';
   });
 
   // Test that the performanceTraceContainer section is hidden when the trace id
@@ -347,9 +348,9 @@ suite('shareDataPageTestSuite', () => {
     strictQuery('#sysInfoCheckbox', page.shadowRoot, CrCheckboxElement)
         .checked = false;
 
-    const report = (await clickSendAndWait(page)).detail!.report;
+    const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals('chrome://tab/', report!.feedbackContext!.pageUrl!.url);
+    assertEquals('chrome://tab/', report!.feedbackContext.pageUrl!.url);
     assertFalse(report!.includeSystemLogsAndHistograms);
   });
 
@@ -492,7 +493,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals(fakeFeedbackContext.traceId, report!.feedbackContext!.traceId);
+    assertEquals(fakeFeedbackContext.traceId, report!.feedbackContext.traceId);
   });
 
   /**
@@ -508,95 +509,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals(0, report!.feedbackContext!.traceId);
-  });
-
-  /**
-   * Test that when the send button is clicked, an on-continue is fired.
-   * Case 7: Report won't have assistant log flags if isInternalAccount
-   * and fromAssistant flag in feedbackContext is false.
-   */
-  test('ReportWillNotHaveAssistantLogIfFromAssistantSetFalse', async () => {
-    await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
-
-    // The report should not have assistant logs by default.
-    strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)
-        .hidden = true;
-    assertTrue(strictQuery(
-                   '#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-                   .checked);
-    const report = (await clickSendAndWait(page)).detail.report;
-
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext!.fromAssistant);
-  });
-
-  /**
-   * Test that when the send button is clicked, an on-continue is fired.
-   * Case 8: Send assistant log if assistant log checkbox is checked,
-   * the report should show assistant Debug Info allowed.
-   */
-  test('SendAssistantLogWithReport', async () => {
-    await initializePage();
-    page.feedbackContext = fakeInternalUserFeedbackContext;
-
-    assertTrue(
-        !!strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement));
-    strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)
-        .hidden = false;
-    strictQuery('#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-        .checked = true;
-
-    const report = (await clickSendAndWait(page)).detail.report;
-    assertTrue(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext!.fromAssistant);
-  });
-
-  /**
-   * Test that when the send button is clicked, an on-continue is fired.
-   * Case 9: Don't include assistant log if assistant log checkbox is unchecked,
-   * the report should show assistant Debug Info not allowed.
-   */
-  test('SendAssistantLogWithReport', async () => {
-    await initializePage();
-    page.feedbackContext = fakeInternalUserFeedbackContext;
-
-    assertTrue(
-        !!strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement));
-    strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)
-        .hidden = false;
-
-    // Uncheck the assistant logs checkbox.
-    strictQuery('#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-        .checked = false;
-
-    const report = (await clickSendAndWait(page)).detail.report;
-
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext!.fromAssistant);
-  });
-
-  /**
-   * Case 10: Test when user using internal account but feedback is not called
-   * from Assistant, and the report should not have fromAssistant and
-   * assistantDebugInfoAllowed flags set true.
-   */
-  test('SendReportWithInternalAccountButNotFromAssistant', async () => {
-    await initializePage();
-    page.feedbackContext = fakeInternalUserFeedbackContext;
-    page.feedbackContext.fromAssistant = false;
-
-    assertTrue(isVisible(
-        strictQuery('#assistantLogsContainer', page.shadowRoot, HTMLElement)));
-    assertTrue(strictQuery(
-                   '#assiatantLogsCheckbox', page.shadowRoot, CrCheckboxElement)
-                   .checked);
-
-    const report = (await clickSendAndWait(page)).detail.report;
-
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext!.fromAssistant);
+    assertEquals(0, report!.feedbackContext.traceId);
   });
 
   /**
@@ -778,12 +691,12 @@ suite('shareDataPageTestSuite', () => {
     const fileAttachment =
         strictQuery('file-attachment', page.shadowRoot, FileAttachmentElement);
     const fakeFileData = [11, 22, 99];
-    fileAttachment.getAttachedFile = async () => {
+    fileAttachment.getAttachedFile = () => {
       const data: BigBuffer = {bytes: fakeFileData} as any;
-      return {
+      return Promise.resolve({
         fileName: {path: {path: 'fake.zip'}},
         fileData: data,
-      };
+      });
     };
 
     const request = (await clickSendAndWait(page)).detail.report;
@@ -791,7 +704,7 @@ suite('shareDataPageTestSuite', () => {
     const attachedFile = request!.attachedFile;
     assertTrue(!!attachedFile);
     assertEquals('fake.zip', attachedFile.fileName.path.path);
-    assertArrayEquals(fakeFileData, attachedFile!.fileData!.bytes as number[]);
+    assertArrayEquals(fakeFileData, attachedFile.fileData.bytes as number[]);
   });
 
   /**
@@ -900,7 +813,7 @@ suite('shareDataPageTestSuite', () => {
     const reportWithoutExtraDiagnostics =
         (await clickSendAndWait(page)).detail.report;
     assertFalse(
-        !!reportWithoutExtraDiagnostics!.feedbackContext!.extraDiagnostics);
+        !!reportWithoutExtraDiagnostics!.feedbackContext.extraDiagnostics);
 
     page.reEnableSendReportButton();
     page.feedbackContext = fakeFeedbackContextWithExtraDiagnostics;
@@ -912,13 +825,13 @@ suite('shareDataPageTestSuite', () => {
         (await clickSendAndWait(page)).detail.report;
     assertEquals(
         fakeFeedbackContextWithExtraDiagnostics.extraDiagnostics,
-        reportWithExtraDiagnostics!.feedbackContext!.extraDiagnostics);
+        reportWithExtraDiagnostics!.feedbackContext.extraDiagnostics);
 
     strictQuery('#sysInfoCheckbox', page.shadowRoot, CrCheckboxElement)
         .checked = false;
     page.reEnableSendReportButton();
     const reportNoSysInfo = (await clickSendAndWait(page)).detail.report;
-    assertFalse(!!reportNoSysInfo!.feedbackContext!.extraDiagnostics);
+    assertFalse(!!reportNoSysInfo!.feedbackContext.extraDiagnostics);
   });
 
   test(
@@ -980,7 +893,7 @@ suite('shareDataPageTestSuite', () => {
     const reportWithCategoryTag = (await clickSendAndWait(page)).detail.report;
     assertEquals(
         fakeFeedbackContext.categoryTag,
-        reportWithCategoryTag!.feedbackContext!.categoryTag);
+        reportWithCategoryTag!.feedbackContext.categoryTag);
 
     // Check the bluetooth logs checkbox. The categoryTag
     // should be BluetoothReportWithLogs, not the tag from url.
@@ -994,7 +907,7 @@ suite('shareDataPageTestSuite', () => {
         (await clickSendAndWait(page)).detail.report;
     assertEquals(
         'BluetoothReportWithLogs',
-        reportWithCategoryTagAndBluetoothFlag!.feedbackContext!.categoryTag);
+        reportWithCategoryTagAndBluetoothFlag!.feedbackContext.categoryTag);
   });
 
   /**
@@ -1244,36 +1157,6 @@ suite('shareDataPageTestSuite', () => {
     strictQuery(
         '#linkCrossDeviceDogfoodFeedbackInfoLink', page.shadowRoot,
         HTMLAnchorElement)
-        .click();
-    assertTrue(isVisible(closeDialogButton));
-
-    // The preview dialog's close icon button is focused.
-    assertEquals(closeDialogButton, getDeepActiveElement());
-
-    // Press enter should close the preview dialog.
-    closeDialogButton.dispatchEvent(
-        new KeyboardEvent('keydown', {key: 'Enter'}));
-    await flushTasks();
-
-    // The preview dialog's close icon button is not visible now.
-    assertFalse(isVisible(closeDialogButton));
-  });
-
-  /**
-   * Test that clicking the #assistantLogsLink will open the dialog and set the
-   * focus on the close dialog icon button.
-   */
-  test('openAssistantLogsDialog', async () => {
-    await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
-
-    // The assistant dialog is not visible as default.
-    const closeDialogButton = strictQuery(
-        '#assistantDialogDoneButton', page.shadowRoot, CrButtonElement);
-    assertFalse(isVisible(closeDialogButton));
-
-    // After clicking the #bluetoothLogsLink, the dialog pops up.
-    strictQuery('#assistantLogsLink', page.shadowRoot, HTMLAnchorElement)
         .click();
     assertTrue(isVisible(closeDialogButton));
 

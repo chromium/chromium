@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/transferable_directory.h"
+
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -75,14 +77,11 @@ mojo::PlatformHandle TransferableDirectory::TakeHandle() {
 #if !BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 
 void TransferableDirectory::OpenForTransfer() {
-  NOTREACHED_IN_MIGRATION()
-      << "Directory transfer not supported on this platform.";
+  NOTREACHED() << "Directory transfer not supported on this platform.";
 }
 
 [[nodiscard]] base::OnceClosure TransferableDirectory::Mount() {
-  NOTREACHED_IN_MIGRATION()
-      << "Directory transfer not supported on this platform.";
-  return {};
+  NOTREACHED() << "Directory transfer not supported on this platform.";
 }
 
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)

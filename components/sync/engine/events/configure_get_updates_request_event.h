@@ -12,7 +12,10 @@
 #include "base/values.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+enum SyncEnums_GetUpdatesOrigin : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -21,7 +24,7 @@ class ConfigureGetUpdatesRequestEvent : public ProtocolEvent {
  public:
   ConfigureGetUpdatesRequestEvent(
       base::Time timestamp,
-      sync_pb::SyncEnums::GetUpdatesOrigin origin,
+      sync_pb::SyncEnums_GetUpdatesOrigin origin,
       const sync_pb::ClientToServerMessage& request);
 
   ConfigureGetUpdatesRequestEvent(const ConfigureGetUpdatesRequestEvent&) =
@@ -40,7 +43,7 @@ class ConfigureGetUpdatesRequestEvent : public ProtocolEvent {
   base::Value::Dict GetProtoMessage(bool include_specifics) const override;
 
   const base::Time timestamp_;
-  const sync_pb::SyncEnums::GetUpdatesOrigin origin_;
+  const sync_pb::SyncEnums_GetUpdatesOrigin origin_;
   const sync_pb::ClientToServerMessage request_;
 };
 

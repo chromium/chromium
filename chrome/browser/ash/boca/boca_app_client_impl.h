@@ -5,15 +5,24 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 
-#include "ash/webui/boca_ui/boca_app_client.h"
-#include "base/observer_list.h"
+#include <memory>
+
+#include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace ash {
-class BocaAppClientImpl : public ash::BocaAppClient {
+namespace signin {
+class IdentityManager;
+}
+
+namespace ash::boca {
+
+class SharedCrdSessionWrapper;
+
+class BocaAppClientImpl : public BocaAppClient {
  public:
   BocaAppClientImpl();
   BocaAppClientImpl(const BocaAppClientImpl&) = delete;
@@ -22,12 +31,14 @@ class BocaAppClientImpl : public ash::BocaAppClient {
 
   // ash::BocaAppClient
   signin::IdentityManager* GetIdentityManager() override;
-
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-
- private:
-  base::ObserverList<Observer> observers_;
+  std::string GetDeviceId() override;
+  void LaunchApp() override;
+  int GetAppInstanceCount() override;
+  void OpenFeedbackDialog() override;
+  std::unique_ptr<SharedCrdSessionWrapper> CreateSharedCrdSessionWrapper()
+      override;
 };
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_

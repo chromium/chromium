@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "ui/gl/gl_export.h"
@@ -26,6 +27,8 @@ GL_EXPORT extern const char kANGLEImplementationDefaultName[];
 GL_EXPORT extern const char kANGLEImplementationD3D9Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11on12Name[];
+GL_EXPORT extern const char kANGLEImplementationD3D11WarpName[];
+GL_EXPORT extern const char kANGLEImplementationD3D11WarpForWebGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLEGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLESName[];
@@ -49,6 +52,7 @@ GL_EXPORT extern const char kCmdDecoderPassthroughName[];
 GL_EXPORT extern const char kSwapChainFormatNV12[];
 GL_EXPORT extern const char kSwapChainFormatYUY2[];
 GL_EXPORT extern const char kSwapChainFormatBGRA[];
+GL_EXPORT extern const char kSwapChainFormatP010[];
 
 }  // namespace gl
 
@@ -70,17 +74,21 @@ GL_EXPORT extern const char kUseGpuInTests[];
 GL_EXPORT extern const char kEnableSgiVideoSync[];
 GL_EXPORT extern const char kDisableGLExtensions[];
 GL_EXPORT extern const char kEnableSwapBuffersWithBounds[];
+GL_EXPORT extern const char kDisableDirectComposition[];
 GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kUseAdapterLuid[];
+GL_EXPORT extern const char kEnableUnsafeSwiftShader[];
+GL_EXPORT extern const char kDisableD3D11Warp[];
 
 GL_EXPORT extern const char kDirectCompositionVideoSwapChainFormat[];
+GL_EXPORT extern const char kTintDcLayer[];
 
 // These flags are used by the test harness code, not passed in by users.
 GL_EXPORT extern const char kDisableGLDrawingForTests[];
 GL_EXPORT extern const char kOverrideUseSoftwareGLForTests[];
 
-GL_EXPORT extern const char* const kGLSwitchesCopiedFromGpuProcessHost[];
-GL_EXPORT extern const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
+GL_EXPORT extern const base::span<const char* const>
+    kGLSwitchesCopiedFromGpuProcessHost;
 
 #if BUILDFLAG(IS_ANDROID)
 GL_EXPORT extern const char kDisableAndroidNativeFenceSyncForTesting[];
@@ -91,22 +99,21 @@ GL_EXPORT extern const char kDisableAndroidNativeFenceSyncForTesting[];
 namespace features {
 
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompDebugVisualization);
-GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferRootSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
+GL_EXPORT BASE_DECLARE_FEATURE(kEarlyFullScreenVideoOptimization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLetterboxVideoOptimization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionUnlimitedOverlays);
+GL_EXPORT BASE_DECLARE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox);
 GL_EXPORT BASE_DECLARE_FEATURE(kEGLDualGPURendering);
 GL_EXPORT BASE_DECLARE_FEATURE(kIntelVpSuperResolution);
-GL_EXPORT BASE_DECLARE_FEATURE(kNvidiaVpSuperResolution);
-GL_EXPORT BASE_DECLARE_FEATURE(kNvidiaVpTrueHDR);
-GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEOpenGL);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEMetal);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEVulkan);
 GL_EXPORT BASE_DECLARE_FEATURE(kTrackCurrentShaders);
 GL_EXPORT BASE_DECLARE_FEATURE(kVulkanFromANGLE);
 GL_EXPORT BASE_DECLARE_FEATURE(kDXGIWaitableSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kGpuVsync);
+GL_EXPORT BASE_DECLARE_FEATURE(kSkipVulkanBlocklist);
 GL_EXPORT extern const base::FeatureParam<int>
     kDXGIWaitableSwapChainMaxQueuedFrames;
 GL_EXPORT BASE_DECLARE_FEATURE(kDXGISwapChainPresentInterval0);

@@ -39,50 +39,11 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
       return PreconditionState::kMustStopAndClearData;
     case signin::AccountManagedStatusFinder::Outcome::kPending:
     case signin::AccountManagedStatusFinder::Outcome::kError:
+    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
       // If the account status cannot be determined (immediately), keep the data
       // to prevent redownloding once the status was determined.
       return PreconditionState::kMustStopAndKeepData;
   }
-}
-
-// Determines if the `core_account_info` corresponds to a child account. Those
-// are excluded from the CONTACT_INFO data type.
-// If the status is not available yet, the data is kept to prevent redownloding
-// once the status was determined.
-PreconditionState GetPreconditionStateFromAccountChildStatus(
-    const signin::IdentityManager& identity_manager,
-    const CoreAccountInfo& core_account_info) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeForChildUsers)) {
-    return PreconditionState::kPreconditionsMet;
-  }
-  if (!identity_manager.AreRefreshTokensLoaded()) {
-    return PreconditionState::kMustStopAndKeepData;
-  }
-  const AccountCapabilities& capabilities =
-      identity_manager.FindExtendedAccountInfo(core_account_info).capabilities;
-  // TODO(crbug.com/40259988): Multiple types of child accounts exists, and this
-  // excludes all of them. Once it becomes clear which subset of child accounts
-  // actually needs to be excluded, this logic can be relaxed.
-  return capabilities.is_subject_to_parental_controls() ==
-                 signin::Tribool::kTrue
-             ? PreconditionState::kMustStopAndClearData
-             : PreconditionState::kPreconditionsMet;
-}
-
-PreconditionState GetStricterPreconditionState(PreconditionState a,
-                                               PreconditionState b) {
-  auto strictness = [](PreconditionState state) {
-    switch (state) {
-      case PreconditionState::kPreconditionsMet:
-        return 0;
-      case PreconditionState::kMustStopAndKeepData:
-        return 1;
-      case PreconditionState::kMustStopAndClearData:
-        return 2;
-    }
-  };
-  return strictness(a) > strictness(b) ? a : b;
 }
 
 }  // namespace
@@ -91,27 +52,21 @@ ContactInfoPreconditionChecker::ContactInfoPreconditionChecker(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     base::RepeatingClosure on_precondition_changed)
-    : sync_service_(CHECK_DEREF(sync_service)),
-      identity_manager_(CHECK_DEREF(identity_manager)),
+    : identity_manager_(CHECK_DEREF(identity_manager)),
       on_precondition_changed_(std::move(on_precondition_changed)) {
-  sync_service_observation_.Observe(&sync_service_.get());
-  // When support for child users is not enabled, the identity observer is
-  // necessary to react to change in the supervision status.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeForChildUsers)) {
-    identity_manager_observer_.Observe(&identity_manager_.get());
-  }
+  CHECK(sync_service);
+  sync_service_observation_.Observe(sync_service);
   // When support for Dasher users is not enabled, the managed-status of the
   // account needs to be determined.
   // Note that the controller is instantiated even when there's no signed-in
   // account.
-  CoreAccountInfo account = sync_service_->GetAccountInfo();
+  CoreAccountInfo account = GetSyncService()->GetAccountInfo();
   if (!account.IsEmpty() &&
       !base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeForDasherUsers)) {
     managed_status_finder_ =
         std::make_unique<signin::AccountManagedStatusFinder>(
-            &identity_manager_.get(), sync_service_->GetAccountInfo(),
+            &identity_manager_.get(), GetSyncService()->GetAccountInfo(),
             base::BindOnce(
                 &ContactInfoPreconditionChecker::AccountTypeDetermined,
                 base::Unretained(this)));
@@ -121,28 +76,32 @@ ContactInfoPreconditionChecker::ContactInfoPreconditionChecker(
 ContactInfoPreconditionChecker::~ContactInfoPreconditionChecker() = default;
 
 PreconditionState ContactInfoPreconditionChecker::GetPreconditionState() const {
+  const syncer::SyncService* sync_service = GetSyncService();
+  // Can happen if this gets called after `OnSyncShutdown()` - in that case,
+  // "stop and keep data" is a safe default.
+  if (!sync_service) {
+    return PreconditionState::kMustStopAndKeepData;
+  }
   // Exclude explicit passphrase users.
-  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
+  if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase() &&
       !base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers)) {
     return PreconditionState::kMustStopAndClearData;
   }
-  // Exclude child and Dasher accounts.
-  return GetStricterPreconditionState(
-      GetPreconditionStateFromAccountChildStatus(
-          *identity_manager_, sync_service_->GetAccountInfo()),
-      GetPreconditionStateFromAccountManagedStatus(
-          managed_status_finder_.get()));
+  // Exclude Dasher accounts.
+  return GetPreconditionStateFromAccountManagedStatus(
+      managed_status_finder_.get());
 }
 
 void ContactInfoPreconditionChecker::OnStateChanged(syncer::SyncService* sync) {
+  CHECK_EQ(sync, GetSyncService());
   // Recreate the status finder when the account has changed.
   if (!managed_status_finder_ ||
       managed_status_finder_->GetAccountInfo().account_id !=
-          sync_service_->GetAccountInfo().account_id) {
+          GetSyncService()->GetAccountInfo().account_id) {
     managed_status_finder_ =
         std::make_unique<signin::AccountManagedStatusFinder>(
-            &identity_manager_.get(), sync_service_->GetAccountInfo(),
+            &identity_manager_.get(), GetSyncService()->GetAccountInfo(),
             base::BindOnce(
                 &ContactInfoPreconditionChecker::AccountTypeDetermined,
                 base::Unretained(this)));
@@ -150,19 +109,17 @@ void ContactInfoPreconditionChecker::OnStateChanged(syncer::SyncService* sync) {
   on_precondition_changed_.Run();
 }
 
-void ContactInfoPreconditionChecker::OnRefreshTokensLoaded() {
-  on_precondition_changed_.Run();
-}
-
-void ContactInfoPreconditionChecker::OnExtendedAccountInfoUpdated(
-    const AccountInfo& info) {
-  if (info.account_id == sync_service_->GetAccountInfo().account_id) {
-    on_precondition_changed_.Run();
-  }
+void ContactInfoPreconditionChecker::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
 }
 
 void ContactInfoPreconditionChecker::AccountTypeDetermined() {
   on_precondition_changed_.Run();
+}
+
+const syncer::SyncService* ContactInfoPreconditionChecker::GetSyncService()
+    const {
+  return sync_service_observation_.GetSource();
 }
 
 }  // namespace autofill

@@ -17,6 +17,7 @@ enum WebViewPermissionType {
   WEB_VIEW_PERMISSION_TYPE_FULLSCREEN,
 
   WEB_VIEW_PERMISSION_TYPE_GEOLOCATION,
+
   // Permission to request access to Human Interface Devices.
   WEB_VIEW_PERMISSION_TYPE_HID,
 
@@ -37,7 +38,17 @@ enum WebViewPermissionType {
   // permission type for code reuse.
   WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW,
 
-  WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK
+  WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK,
+
+  // Supported only for Controlled Frame,
+  // which has additional permission types.
+  // They are implemented by webview's permission code,
+  // but webview does not expose them.
+  WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE,
+  WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_SANITIZED_WRITE,
+
+  WEB_VIEW_PERMISSION_TYPE_MAX_VALUE = WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK,
+  WEB_VIEW_PERMISSION_TYPE_MIN_VALUE = WEB_VIEW_PERMISSION_TYPE_UNKNOWN,
 };
 
 #endif  // EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_PERMISSION_TYPES_H_

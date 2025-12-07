@@ -16,13 +16,17 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -42,17 +46,24 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Android FYI Release (Motorola Moto G Power 5G)",
+              "builder": "Android FYI Release (Pixel 10)",
               "project": "chromium"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb",
+                  "download_xr_test_apks"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -67,38 +78,6 @@
                 "project": "chromium"
               },
               "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Android FYI Release (Nexus 5X)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "download_xr_test_apks"
-                ],
-                "config": "android",
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
-              }
             }
           },
           {
@@ -111,13 +90,17 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -144,10 +127,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -174,13 +163,17 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -208,12 +201,7 @@
         },
         {
           "bucket": "ci",
-          "builder": "Android FYI Release (Motorola Moto G Power 5G)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Android FYI Release (Nexus 5X)",
+          "builder": "Android FYI Release (Pixel 10)",
           "project": "chromium"
         },
         {
@@ -233,11 +221,7 @@
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "gpu-fyi-try-android-m-nexus-5x-64",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-fyi-try-android-moto-g-power-5g-64",
+          "builder": "gpu-fyi-try-android-pixel-10-64",
           "group": "tryserver.chromium.android"
         },
         {
@@ -252,21 +236,19 @@
           "builder": "gpu-fyi-try-android-s23-64",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Android arm64 Builder/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

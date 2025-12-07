@@ -6,9 +6,20 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 import("//components/optimization_guide/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("browser") {
   sources = [
+    "autofill_annotations_provider.cc",
+    "autofill_annotations_provider.h",
+    "media_transcript_provider.cc",
+    "media_transcript_provider.h",
+    "page_content_metadata_observer.cc",
+    "page_content_metadata_observer.h",
+    "page_content_proto_provider.cc",
+    "page_content_proto_provider.h",
+    "page_content_proto_util.cc",
+    "page_content_proto_util.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
@@ -21,32 +32,73 @@ static_library("browser") {
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:page_content",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
+    "//content/public/common",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
   ]
-  if (build_with_tflite_lib) {
-    public_deps += [
-      "//components/optimization_guide/core:machine_learning",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_android) {
+    sources += [ "page_content_proto_provider_bridge.cc" ]
+    public_deps += [ "android:jni_headers" ]
+  }
+}
+
+source_set("page_context_eligibility_api") {
+  public = [ "page_context_eligibility_api.h" ]
+  sources = [ "page_context_eligibility_api.cc" ]
+}
+
+static_library("page_context_eligibility") {
+  public = [ "page_context_eligibility.h" ]
+  sources = [ "page_context_eligibility.cc" ]
+
+  public_deps = [
+    ":browser",
+    ":page_context_eligibility_api",
+    "//base",
+    "//components/optimization_guide/core:optimization_guide_library_holder",
+  ]
+
+  if (build_with_internal_optimization_guide) {
+    data_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
     ]
   }
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_autofill_annotations_provider.cc",
+    "mock_autofill_annotations_provider.h",
+    "mock_media_transcript_provider.cc",
+    "mock_media_transcript_provider.h",
+  ]
+  public_deps = [
+    ":browser",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "media_transcript_provider_unittest.cc",
+    "page_content_proto_util_unittest.cc",
+    "page_context_eligibility_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
 
   deps = [
     ":browser",
+    ":page_context_eligibility",
+    ":test_support",
     "//components/optimization_guide/core:test_support",
     "//content/test:test_support",
     "//testing/gmock",

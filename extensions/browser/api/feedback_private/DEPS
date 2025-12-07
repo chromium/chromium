@@ -1,7 +1,11 @@
 include_rules = [
   "+ash/public/cpp",
   "+components/account_id",
+  "+components/embedder_support",
   "+components/feedback",
   "+components/user_manager",
+  "+components/variations/net",
+  "+services/data_decoder/public/cpp",
+  "+third_party/boringssl",
   "+third_party/cros_system_api"
 ]

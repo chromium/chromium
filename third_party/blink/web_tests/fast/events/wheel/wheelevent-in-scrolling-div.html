@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
   <div id="overflow" style="border:2px solid black;overflow:auto;height:200px;width:200px;">
     <div style="background-color:red;height:200px;width:400px;"></div>
     <div style="background-color:green;height:200px;width:400px;"></div>
@@ -15,12 +14,7 @@
 
   // scroll diagonally for 1 tick.
   const SCROLL_AMOUNT = pixelsPerTick();
-  const EXPECTED_DELTA = isPercentBasedScrollingEnabled() ?
-    WHEEL_DELTA : SCROLL_AMOUNT;
-
-  const { x: expectedScrollLeft, y: expectedScrollTop } = (
-    calculateExpectedScroll(overflowElement, SCROLL_AMOUNT, SCROLL_AMOUNT)
-  );
+  const EXPECTED_DELTA = SCROLL_AMOUNT;
 
   let eventHandlerResolve;
   eventHandlerPromise = new Promise(function(resolve) {
@@ -33,11 +27,11 @@
     await mouseMoveTo(x, y);
     await gestureScroll(() => {
       return smoothScroll(SCROLL_AMOUNT, x, y, GestureSourceType.MOUSE_INPUT,
-        "downright", SPEED_INSTANT, !isPercentBasedScrollingEnabled());
+        "downright", SPEED_INSTANT);
     }, overflowElement);
 
-    assert_approx_equals(overflowElement.scrollTop, expectedScrollTop, 0.001);
-    assert_approx_equals(overflowElement.scrollLeft, expectedScrollLeft, 0.001);
+    assert_approx_equals(overflowElement.scrollTop, EXPECTED_DELTA, 0.001);
+    assert_approx_equals(overflowElement.scrollLeft, EXPECTED_DELTA, 0.001);
     // The test will timeout if the event handler doesn't resolve this promise.
     await eventHandlerPromise;
   });

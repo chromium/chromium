@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "chrome/updater/updater_scope.h"
 
@@ -24,6 +25,13 @@ std::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
 // logged in user. For system installations returns
 // "/Library/Application Support".
 std::optional<base::FilePath> GetApplicationSupportDirectory(
+    UpdaterScope scope);
+
+// Returns the user Application Support directories associated with the given
+// scope. For system installations this is "/Library/Application Support" and
+// the local application support directory for all users. For the user scope,
+// this is only "~/Library/Application Support/".
+std::vector<base::FilePath> GetApplicationSupportDirectoriesForScope(
     UpdaterScope scope);
 
 // Returns the path to Keystone's root directory.
@@ -46,6 +54,9 @@ bool RemoveWakeJobFromLaunchd(UpdaterScope scope);
 // steps fail, this continues to run the rest anyway, preparing the bundle to
 // run as best as it can. Returns whether every applicable prep step succeeded.
 bool PrepareToRunBundle(const base::FilePath& bundle_path);
+
+// Recursively remove quarantine attributes on `path`. Returns false on error.
+bool RemoveQuarantineAttributes(const base::FilePath& path);
 
 std::string GetDomain(UpdaterScope scope);
 

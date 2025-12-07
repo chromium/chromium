@@ -43,6 +43,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kDownloadsUi, "downloads.ui"},
     {APIPermissionID::kExperimental, "experimental",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kExperimentalActor, "experimentalActor"},
+    {APIPermissionID::kExperimentalAiData, "experimentalAiData"},
     {APIPermissionID::kGcm, "gcm",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kGeolocation, "geolocation",
@@ -81,6 +83,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kEnterpriseKioskInput, "enterprise.kioskInput",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kEnterpriseLogin, "enterprise.login"},
     {APIPermissionID::kEnterpriseNetworkingAttributes,
      "enterprise.networkingAttributes",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
@@ -101,6 +104,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kMDns, "mdns",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kOmniboxDirectInput, "omnibox.directInput",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPlatformKeys, "platformKeys",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPrivacy, "privacy"},
@@ -171,8 +176,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kPdfViewerPrivate, "pdfViewerPrivate"},
     {APIPermissionID::kResourcesPrivate, "resourcesPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kRtcPrivate, "rtcPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kSafeBrowsingPrivate, "safeBrowsingPrivate"},
     {APIPermissionID::kSettingsPrivate, "settingsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
@@ -203,10 +206,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagImpliesFullURLAccess |
          APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagRequiresManagementUIWarning},
-    {APIPermissionID::kDevtools, "devtools",
-     APIPermissionInfo::kFlagImpliesFullURLAccess |
-         APIPermissionInfo::kFlagCannotBeOptional |
-         APIPermissionInfo::kFlagInternal},
     {APIPermissionID::kPageCapture, "pageCapture",
      APIPermissionInfo::kFlagImpliesFullURLAccess},
     {APIPermissionID::kProxy, "proxy",
@@ -239,7 +238,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
 }  // namespace
 
 base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos() {
-  return base::make_span(permissions_to_register);
+  return base::span(permissions_to_register);
 }
 
 base::span<const Alias> GetPermissionAliases() {
@@ -247,7 +246,7 @@ base::span<const Alias> GetPermissionAliases() {
   // real name. See also alias.h.
   static constexpr Alias aliases[] = {Alias("windows", "tabs")};
 
-  return base::make_span(aliases);
+  return base::span(aliases);
 }
 
 }  // namespace chrome_api_permissions

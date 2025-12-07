@@ -21,21 +21,22 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.creator.test.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Tests for {@link CreatorSnackbarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CreatorSnackbarControllerTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private SnackbarManager mSnackbarManager;
 
@@ -47,8 +48,7 @@ public class CreatorSnackbarControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         mContext = Robolectric.setupActivity(Activity.class);
         mTitle = "Example Title";
 

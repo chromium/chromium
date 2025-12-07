@@ -19,8 +19,8 @@
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
-#include "extensions/common/user_script.h"
 
 class GURL;
 
@@ -58,13 +58,6 @@ class ScriptExecutor {
   enum FrameScope {
     SPECIFIED_FRAMES,
     INCLUDE_SUB_FRAMES,
-  };
-
-  // Whether to insert the script in about: frames when its origin matches
-  // the extension's host permissions.
-  enum MatchAboutBlank {
-    DONT_MATCH_ABOUT_BLANK,
-    MATCH_ABOUT_BLANK,
   };
 
   // The type of process the target is.
@@ -115,23 +108,24 @@ class ScriptExecutor {
   // Executes a script. The arguments match mojom::ExecuteCodeParams in
   // frame.mojom (request_id is populated automatically).
   //
-  // The script will be executed in the frames identified by |frame_ids| (which
-  // are extension API frame IDs). If |frame_scope| is INCLUDE_SUB_FRAMES,
+  // The script will be executed in the frames identified by `frame_ids` (which
+  // are extension API frame IDs). If `frame_scope` is INCLUDE_SUB_FRAMES,
   // then the script will also be executed in all descendants of the specified
   // frames.
   //
-  // |callback| will always be called even if the IPC'd renderer is destroyed
+  // `callback` will always be called even if the IPC'd renderer is destroyed
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
-  void ExecuteScript(const mojom::HostID& host_id,
-                     mojom::CodeInjectionPtr injection,
-                     FrameScope frame_scope,
-                     const std::set<int>& frame_ids,
-                     MatchAboutBlank match_about_blank,
-                     mojom::RunLocation run_at,
-                     ProcessType process_type,
-                     const GURL& webview_src,
-                     ScriptFinishedCallback callback);
+  void ExecuteScript(
+      const mojom::HostID& host_id,
+      mojom::CodeInjectionPtr injection,
+      FrameScope frame_scope,
+      const std::set<int>& frame_ids,
+      mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback_behavior,
+      mojom::RunLocation run_at,
+      ProcessType process_type,
+      const GURL& webview_src,
+      ScriptFinishedCallback callback);
 
   // Set the observer for ScriptsExecutedNotification callbacks.
   void set_observer(ScriptsExecutedNotification observer) {

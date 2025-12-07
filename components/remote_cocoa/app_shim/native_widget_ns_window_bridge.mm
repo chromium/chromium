@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -25,9 +26,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
@@ -50,24 +51,40 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
+#include "ui/gfx/native_ui_types.h"
 
 using remote_cocoa::mojom::VisibilityTransition;
 using remote_cocoa::mojom::WindowVisibilityState;
 
+// Undocumented API used to prevent a window region from being screen captured.
+using CGSConnectionID = uint32_t;
+using CGSWindowID = NSInteger;
+using CGRegionRef = CFTypeRef;
+
+CG_EXTERN CGSConnectionID CGSMainConnectionID(void);
+CG_EXTERN CGError CGSSetWindowCaptureExcludeShape(CGSConnectionID cid,
+                                                  CGSWindowID wid,
+                                                  CGRegionRef region);
+CG_EXTERN CGRegionRef CGRegionCreateWithRect(CGRect rect);
+
 namespace {
-constexpr auto kUIPaintTimeout = base::Seconds(5);
+constexpr auto kUIPaintTimeout = base::Milliseconds(500);
 
 // Returns the display that the specified window is on.
 display::Display GetDisplayForWindow(NSWindow* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  return display::Screen::Get()->GetDisplayNearestWindow(
+      gfx::NativeWindow(window));
 }
 
 }  // namespace
@@ -209,8 +226,18 @@ NSComparisonResult SubviewSorter(__kindof NSView* lhs,
                                  void* rank_as_void) {
   DCHECK_NE(lhs, rhs);
 
-  if ([lhs isKindOfClass:[ViewsCompositorSuperview class]])
+  // Put `NSVisualEffectView` before `ViewsCompositorSuperview` otherwise when
+  // using `NSVisualEffectView` for `vibrancy` it will hide content displayed by
+  // the compositor.
+  if ([lhs isKindOfClass:[NSVisualEffectView class]]) {
     return NSOrderedAscending;
+  }
+  if ([lhs isKindOfClass:[ViewsCompositorSuperview class]]) {
+    if ([rhs isKindOfClass:[NSVisualEffectView class]]) {
+      return NSOrderedDescending;
+    }
+    return NSOrderedAscending;
+  }
 
   const RankMap* rank = static_cast<const RankMap*>(rank_as_void);
   auto left_rank = rank->find(lhs);
@@ -277,9 +304,8 @@ NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromId(
 }
 
 // static
-NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromNativeWindow(
-    gfx::NativeWindow native_window) {
-  NSWindow* window = native_window.GetNativeNSWindow();
+NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromNSWindow(
+    NSWindow* window) {
   if (NativeWidgetMacNSWindow* widget_window =
           base::apple::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);
@@ -351,7 +377,7 @@ NativeWidgetNSWindowBridge::NativeWidgetNSWindowBridge(
 
 NativeWidgetNSWindowBridge::~NativeWidgetNSWindowBridge() {
   SetLocalEventMonitorEnabled(false);
-  DCHECK(!key_down_event_monitor_);
+  DCHECK(!local_event_monitor_);
   GetPendingWindowTitleMap().erase(window_);
   // The delegate should be cleared already. Note this enforces the precondition
   // that -[NSWindow close] is invoked on the hosted window before the
@@ -396,27 +422,44 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
     parent_->RemoveChildWindow(this);
     parent_ = nullptr;
   }
-  if (!new_parent_id)
-    return;
 
-  // It is only valid to have a NativeWidgetMac be the parent of another
-  // NativeWidgetMac.
+  // Strip the managed/transient collection behavior bits; they will be reset
+  // later.
+  NSWindowCollectionBehavior collectionBehavior =
+      window_.collectionBehavior & ~(NSWindowCollectionBehaviorManaged |
+                                     NSWindowCollectionBehaviorTransient);
+
+  // If `new_parent_id` is 0 or is invalid, leave the window as a top-level
+  // window.
+  //
+  // Details: When the OS tells us a window is closing it is removed from the id
+  // map. Since nothing is stopping the browser process from still trying to use
+  // that id until the browser process has been informed that the window is
+  // gone, it is totally possible to be passed no longer valid ids.
   NativeWidgetNSWindowBridge* new_parent =
-      NativeWidgetNSWindowBridge::GetFromId(new_parent_id);
-  DCHECK(new_parent);
+      new_parent_id ? NativeWidgetNSWindowBridge::GetFromId(new_parent_id)
+                    : nil;
+  if (!new_parent_id || !new_parent) {
+    // When a window doesn't have a parent, it should have normal managed
+    // collection behavior.
+    window_.collectionBehavior =
+        collectionBehavior | NSWindowCollectionBehaviorManaged;
+    return;
+  }
 
   parent_ = new_parent;
   parent_->child_windows_.push_back(this);
 
+  // When a window has a parent, it must not have a fixed Space, otherwise
   // Widget::ShowInactive() could result in a Space switch when the widget has a
-  // parent, and we're calling -orderWindow:relativeTo:. Use Transient
-  // collection behaviour to prevent that.
-  // https://crbug.com/697829
-  [window_ setCollectionBehavior:[window_ collectionBehavior] |
-                                 NSWindowCollectionBehaviorTransient];
+  // parent, and we're calling -orderWindow:relativeTo:. Therefore, give it
+  // transient collection behavior. See https://crbug.com/41305285.
+  window_.collectionBehavior =
+      collectionBehavior | NSWindowCollectionBehaviorTransient;
 
-  if (wants_to_be_visible_)
+  if (wants_to_be_visible_) {
     parent_->OrderChildren();
+  }
 }
 
 void NativeWidgetNSWindowBridge::CreateSelectFileDialog(
@@ -470,6 +513,14 @@ void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
 void NativeWidgetNSWindowBridge::CreateWindow(
     mojom::CreateWindowParamsPtr params) {
   SetWindow(CreateNSWindow(params.get()));
+  if (window_set_callback_) {
+    std::move(window_set_callback_).Run(ns_window());
+  }
+}
+
+void NativeWidgetNSWindowBridge::OnWindowSetForTesting(  // IN-TEST
+    base::OnceCallback<void(NativeWidgetMacNSWindow*)> callback) {
+  window_set_callback_ = std::move(callback);
 }
 
 void NativeWidgetNSWindowBridge::InitWindow(
@@ -478,10 +529,11 @@ void NativeWidgetNSWindowBridge::InitWindow(
   is_translucent_window_ = params->is_translucent;
   pending_restoration_data_ = params->state_restoration_data;
 
-  if (params->is_headless_mode_window)
+  if (display::Screen::Get()->IsHeadless()) {
     headless_mode_window_ = std::make_optional<HeadlessModeWindow>();
+  }
 
-  [window_ setIsHeadless:params->is_headless_mode_window];
+  [window_ setIsHeadless:headless_mode_window_.has_value()];
 
   // Register for application hide notifications so that visibility can be
   // properly tracked. This is not done in the delegate so that the lifetime is
@@ -501,6 +553,16 @@ void NativeWidgetNSWindowBridge::InitWindow(
              name:NSSystemColorsDidChangeNotification
            object:nil];
 
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      addObserver:window_delegate_
+         selector:@selector(onActiveSpaceChanged:)
+             name:NSWorkspaceActiveSpaceDidChangeNotification
+           object:nil];
+
+  // Force update on initialization because the notification won't send
+  // until the active space changes.
+  OnSpaceActivationMayHaveChanged();
+
   // Validate the window's initial state, otherwise the bridge's initial
   // tracking state will be incorrect.
   DCHECK(![window_ isVisible]);
@@ -517,8 +579,9 @@ void NativeWidgetNSWindowBridge::InitWindow(
   [window_ setHasShadow:params->has_window_server_shadow];
 
   // Don't allow dragging sheets.
-  if (params->modal_type == ui::MODAL_TYPE_WINDOW)
+  if (params->modal_type == ui::mojom::ModalType::kWindow) {
     [window_ setMovable:NO];
+  }
   [window_ setIsTooltip:params->is_tooltip];
 }
 
@@ -607,10 +670,41 @@ void NativeWidgetNSWindowBridge::SetSizeAndCenter(
   new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
   SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
 
-  // Note that this is not the precise center of screen, but it is the standard
-  // location for windows like dialogs to appear on screen for Mac.
-  // TODO(tapted): If there is a parent window, center in that instead.
-  [window_ center];
+  if (!parent_) {
+    // Note that this is not the precise center of screen, but it is the
+    // standard location for windows like dialogs to appear on screen for Mac.
+    [window_ center];
+  } else {
+    NSWindow* parent_window = parent_->ns_view().window;
+    NSRect parent_rect = [parent_window frame];
+    NSRect window_rect = [window_ frame];
+
+    // Clamp to the visible area of the screen where the parent window resides.
+    // This ensures the window stays within viewable bounds and respects
+    // the menu bar and dock.
+    NSScreen* screen = [parent_window screen];
+    if (screen) {
+      NSRect visible_frame = [screen visibleFrame];
+      parent_rect = NSIntersectionRect(parent_rect, visible_frame);
+
+      // Calculate the centered position relative to the parent's visible area.
+      CGFloat x = NSMidX(parent_rect) - window_rect.size.width / 2;
+      CGFloat y = NSMidY(parent_rect) - window_rect.size.height / 2;
+
+      // Ensure the child window stays completely within the visible frame,
+      // even if the parent's visible area is smaller than the child window.
+      x = std::max(x, NSMinX(visible_frame));
+      x = std::min(x, NSMaxX(visible_frame) - window_rect.size.width);
+
+      y = std::max(y, NSMinY(visible_frame));
+      y = std::min(y, NSMaxY(visible_frame) - window_rect.size.height);
+
+      [window_ setFrameOrigin:NSMakePoint(x, y)];
+    } else {
+      // Fallback if no screen is available.
+      [window_ center];
+    }
+  }
 }
 
 void NativeWidgetNSWindowBridge::DestroyContentView() {
@@ -622,8 +716,10 @@ void NativeWidgetNSWindowBridge::DestroyContentView() {
   [window_ setContentView:nil];
 }
 
-void NativeWidgetNSWindowBridge::CreateContentView(uint64_t ns_view_id,
-                                                   const gfx::Rect& bounds) {
+void NativeWidgetNSWindowBridge::CreateContentView(
+    uint64_t ns_view_id,
+    const gfx::Rect& bounds,
+    std::optional<int> corner_radius) {
   DCHECK(!bridged_view_);
 
   bridged_view_ = [[BridgedContentView alloc] initWithBridge:this
@@ -656,6 +752,11 @@ void NativeWidgetNSWindowBridge::CreateContentView(uint64_t ns_view_id,
   [bridged_view_ addSubview:compositor_view];
 
   [bridged_view_ setWantsLayer:YES];
+  if (corner_radius) {
+    bridged_view_.layer.cornerRadius = *corner_radius;
+    bridged_view_.layer.masksToBounds = YES;
+  }
+
   [window_ setContentView:bridged_view_];
 }
 
@@ -688,10 +789,6 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
     return;
   }
 
-  // Destroy the content view so that it won't call back into |host_| while
-  // being torn down.
-  DestroyContentView();
-
   // If the window wants to be visible and has a parent, then the parent may
   // order it back in (in the period between orderOut: and close).
   wants_to_be_visible_ = false;
@@ -719,7 +816,7 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
 
 void NativeWidgetNSWindowBridge::CloseWindowNow() {
   // NSWindows must be retained until -[NSWindow close] returns.
-  NSWindow* __attribute__((objc_precise_lifetime)) window_retain = window_;
+  NS_VALID_UNTIL_END_OF_SCOPE NSWindow* window_retain = window_;
 
   // If there's a bridge at this point, it means there must be a window as well.
   DCHECK(window_);
@@ -734,9 +831,22 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   // expected visibility state and lie to the upper layer pretending the
   // window did change its visibility and activation state.
   if (headless_mode_window_) {
-    headless_mode_window_->visibility_state =
+    const bool new_visibility_state =
         new_state != WindowVisibilityState::kHideWindow;
-    host_->OnVisibilityChanged(headless_mode_window_->visibility_state);
+    if (headless_mode_window_->visibility_state != new_visibility_state) {
+      headless_mode_window_->visibility_state = new_visibility_state;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](const base::WeakPtr<NativeWidgetNSWindowBridge>& bridge,
+                 bool visibility_state) {
+                if (bridge && bridge->host_) {
+                  bridge->host_->OnVisibilityChanged(visibility_state);
+                }
+              },
+              factory_.GetWeakPtr(), new_visibility_state));
+    }
+
     if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -841,7 +951,9 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
 
   if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
     [window_ makeKeyAndOrderFront:nil];
-    [NSApp activateIgnoringOtherApps:YES];
+    if (![window_ activationIndependence]) {
+      [NSApp activateIgnoringOtherApps:YES];
+    }
   } else if (new_state == WindowVisibilityState::kShowInactive && !parent_ &&
              ![window_ isMiniaturized]) {
     if ([[NSApp mainWindow] screen] == [window_ screen] ||
@@ -913,7 +1025,7 @@ bool NativeWidgetNSWindowBridge::HasCapture() {
 void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
   if (enabled) {
     // Create the event monitor if it does not exist yet.
-    if (key_down_event_monitor_) {
+    if (local_event_monitor_) {
       return;
     }
 
@@ -927,20 +1039,27 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
       std::unique_ptr<ui::Event> ui_event =
           ui::EventFromNative(base::apple::OwnedNSEvent(event));
       bool event_handled = false;
-      weak_ptr->host_->DispatchMonitorEvent(std::move(ui_event),
-                                            &event_handled);
+      if (ui_event && ui_event->type() != ui::EventType::kUnknown) {
+        // Pass up whether or not the event is for this specific window. This
+        // allows consumers to filter events that are not for this window.
+        bool target_is_this_window = event.window == weak_ptr->window_;
+        weak_ptr->host_->DispatchMonitorEvent(
+            std::move(ui_event), target_is_this_window, &event_handled);
+      }
+
       return event_handled ? nil : event;
     };
-    key_down_event_monitor_ =
-        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
+    local_event_monitor_ =
+        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                               handler:block];
   } else {
     // Destroy the event monitor if it exists.
-    if (!key_down_event_monitor_)
+    if (!local_event_monitor_) {
       return;
+    }
 
-    [NSEvent removeMonitor:key_down_event_monitor_];
-    key_down_event_monitor_ = nil;
+    [NSEvent removeMonitor:local_event_monitor_];
+    local_event_monitor_ = nil;
   }
 }
 
@@ -1078,6 +1197,11 @@ void NativeWidgetNSWindowBridge::OnAutohidingMenuBarHeightChanged(
   host_->OnAutohidingMenuBarHeightChanged(menu_bar_height);
 }
 
+base::WeakPtr<NativeWidgetNSWindowBridge>
+NativeWidgetNSWindowBridge::GetWeakPtr() {
+  return factory_.GetWeakPtr();
+}
+
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }
@@ -1096,8 +1220,24 @@ void NativeWidgetNSWindowBridge::DisplayContextMenu(
 }
 
 void NativeWidgetNSWindowBridge::SetAllowScreenshots(bool allow) {
-  [ns_window()
-      setSharingType:allow ? NSWindowSharingReadOnly : NSWindowSharingNone];
+  CGSConnectionID connection_id = CGSMainConnectionID();
+  CGSWindowID window_id = ns_window().windowNumber;
+  CGRect frame = ns_window().frame;
+  frame.origin = CGPointZero;
+  base::apple::ScopedCFTypeRef<CGRegionRef> region;
+  if (!allow) {
+    region.reset(CGRegionCreateWithRect(frame));
+  }
+  CGSSetWindowCaptureExcludeShape(connection_id, window_id, region.get());
+}
+
+void NativeWidgetNSWindowBridge::SetColorMode(
+    ui::ColorProviderKey::ColorMode color_mode) {
+  NSAppearance* appearance =
+      color_mode == ui::ColorProviderKey::ColorMode::kLight
+          ? [NSAppearance appearanceNamed:NSAppearanceNameAqua]
+          : [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+  [window_ setAppearance:appearance];
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
@@ -1127,6 +1267,8 @@ void NativeWidgetNSWindowBridge::OnWindowWillClose() {
     parent_ = nullptr;
   }
   [[NSNotificationCenter defaultCenter] removeObserver:window_delegate_];
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      removeObserver:window_delegate_];
 
   [show_animation_ stopAnimation];  // If set, calls OnShowAnimationComplete().
   CHECK(!show_animation_);
@@ -1151,6 +1293,14 @@ void NativeWidgetNSWindowBridge::OnSizeChanged() {
 
 void NativeWidgetNSWindowBridge::OnPositionChanged() {
   UpdateWindowGeometry();
+}
+
+void NativeWidgetNSWindowBridge::OnWindowWillStartLiveResize() {
+  host_->OnWindowWillStartLiveResize();
+}
+
+void NativeWidgetNSWindowBridge::OnWindowDidEndLiveResize() {
+  host_->OnWindowDidEndLiveResize();
 }
 
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
@@ -1185,6 +1335,15 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
 
   NotifyVisibilityChangeDown();
   host_->OnVisibilityChanged(window_visible_);
+}
+
+void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
+  const bool window_on_active_space = window_.onActiveSpace;
+  if (window_on_active_space_ == window_on_active_space) {
+    return;
+  }
+  window_on_active_space_ = window_on_active_space;
+  host_->OnSpaceActivationChanged(window_on_active_space);
 }
 
 void NativeWidgetNSWindowBridge::OnSystemColorsChanged() {
@@ -1312,7 +1471,7 @@ bool NativeWidgetNSWindowBridge::RedispatchKeyEvent(NSEvent* event) {
   return [[window_ commandDispatcher] redispatchKeyEvent:event];
 }
 
-NSWindow* NativeWidgetNSWindowBridge::ns_window() {
+NativeWidgetMacNSWindow* NativeWidgetNSWindowBridge::ns_window() {
   return window_;
 }
 
@@ -1431,8 +1590,7 @@ int64_t NativeWidgetNSWindowBridge::FullscreenControllerGetDisplayId() const {
 gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrameForDisplay(
     int64_t display_id) const {
   display::Display display;
-  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                            &display)) {
+  if (display::Screen::Get()->GetDisplayWithDisplayId(display_id, &display)) {
     // Use the current window size to avoid unexpected window resizes on
     // subsequent cross-screen window drag and drops; see crbug.com/1338664
     return gfx::Rect(display.work_area().origin(),
@@ -1449,20 +1607,25 @@ gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrame() const {
 // NativeWidgetNSWindowBridge, ui::CATransactionObserver
 
 bool NativeWidgetNSWindowBridge::ShouldWaitInPreCommit() {
-  if (!window_visible_)
+  if (!window_visible_ || !wants_to_be_visible_) {
     return false;
-  if (ca_transaction_sync_suppressed_)
+  }
+  if (ca_transaction_sync_suppressed_) {
     return false;
-  if (!bridged_view_)
+  }
+  if (!bridged_view_) {
     return false;
-  if (content_dip_size_.IsEmpty())
+  }
+  if (content_dip_size_.IsEmpty()) {
     return false;
+  }
   // Suppress synchronous CA transactions during AppKit fullscreen transition
   // since there is no need for updates during such transition.
   // Re-layout and re-paint will be done after the transition. See
   // https://crbug.com/875707 for potential problems if we don't suppress.
-  if (fullscreen_controller_.IsInFullscreenTransition())
+  if (fullscreen_controller_.IsInFullscreenTransition()) {
     return false;
+  }
   return content_dip_size_ != compositor_frame_dip_size_;
 }
 
@@ -1590,6 +1753,16 @@ void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
   [window_ setCollectionBehavior:behavior];
 }
 
+void NativeWidgetNSWindowBridge::SetActivationIndependence(bool independence) {
+  for (NSWindow* window = window_; window; window = window.parentWindow) {
+    // This cast may fail, and if so, the message send to the nil pointer will
+    // (intentionally) silently fail.
+    NativeWidgetMacNSWindow* nwm_window =
+        base::apple::ObjCCast<NativeWidgetMacNSWindow>(window);
+    [nwm_window setActivationIndependence:independence];
+  }
+}
+
 void NativeWidgetNSWindowBridge::SetAspectRatio(
     const gfx::SizeF& aspect_ratio,
     const gfx::Size& excluded_margin) {
@@ -1665,7 +1838,7 @@ void NativeWidgetNSWindowBridge::UpdateTooltip() {
   NSPoint nspoint = [window_ convertPointFromScreen:NSEvent.mouseLocation];
   // Note: flip in the view's frame, which matches the window's contentRect.
   gfx::Point point(nspoint.x, NSHeight([bridged_view_ frame]) - nspoint.y);
-  [bridged_view_ updateTooltipIfRequiredAt:point];
+  [bridged_view_ updateTooltipIfRequiredAt:point bridge:this];
 }
 
 bool NativeWidgetNSWindowBridge::NeedsUpdateWindows() {
@@ -1682,7 +1855,7 @@ void NativeWidgetNSWindowBridge::RedispatchKeyEvent(
 
 void NativeWidgetNSWindowBridge::RemoveChildWindow(
     NativeWidgetNSWindowBridge* child) {
-  auto location = base::ranges::find(child_windows_, child);
+  auto location = std::ranges::find(child_windows_, child);
   DCHECK(location != child_windows_.end());
   child_windows_.erase(location);
 
@@ -1730,7 +1903,7 @@ void NativeWidgetNSWindowBridge::RemoveOrDestroyChildren() {
     // The NSWindow can only be destroyed after -[NSWindow close] is complete.
     // Retain the window, otherwise the reference count can reach zero when the
     // child calls back into RemoveChildWindow() via its OnWindowWillClose().
-    NSWindow* __attribute__((objc_precise_lifetime)) child =
+    NS_VALID_UNTIL_END_OF_SCOPE NSWindow* child =
         child_windows_.back()->ns_window();
     [child close];
   }
@@ -1801,7 +1974,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
 }
 
 bool NativeWidgetNSWindowBridge::IsWindowModalSheet() const {
-  return parent_ && modal_type_ == ui::MODAL_TYPE_WINDOW;
+  return parent_ && modal_type_ == ui::mojom::ModalType::kWindow;
 }
 
 void NativeWidgetNSWindowBridge::ShowAsModalSheet() {

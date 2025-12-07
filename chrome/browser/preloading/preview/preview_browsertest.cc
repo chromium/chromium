@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -26,15 +27,16 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
-class PreviewBrowserTest : public PlatformBrowserTest {
+class PreviewBrowserTest : public InProcessBrowserTest {
  public:
   PreviewBrowserTest()
       : helper_(std::make_unique<test::PreviewTestHelper>(
             base::BindRepeating(&PreviewBrowserTest::web_contents,
                                 base::Unretained(this)))) {}
 
-  void SetUp() override { PlatformBrowserTest::SetUp(); }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -110,9 +112,9 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, SecPurposeHeader) {
 
   net::test_server::HttpRequest::HeaderMap headers =
       GetObservedRequestHeadersFor(preview_url);
-  auto it = headers.find("Sec-Purpose");
+  auto it = headers.find(blink::kSecPurposeHeaderName);
   ASSERT_NE(it, headers.end());
-  EXPECT_EQ(it->second, "prefetch;prerender;preview");
+  EXPECT_EQ(it->second, blink::kSecPurposePrefetchPrerenderPreviewHeaderValue);
 }
 
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, CancelWhenPrimaryPageChanged) {

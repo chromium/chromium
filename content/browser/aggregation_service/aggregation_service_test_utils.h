@@ -27,7 +27,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
@@ -87,18 +86,20 @@ testing::AssertionResult SharedInfoEqual(
     const AggregatableReportSharedInfo& expected,
     const AggregatableReportSharedInfo& actual);
 
+// Returns a gtest matcher for `AggregatableReportRequest`. The returned matcher
+// owns a clone of `expected`.
+testing::Matcher<AggregatableReportRequest> ReportRequestIs(
+    const AggregatableReportRequest& expected);
+
 // Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
-    blink::mojom::AggregationServiceMode aggregation_mode =
-        blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
     std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt,
-    std::optional<AggregatableReportRequest::DelayType> = std::nullopt);
+    std::optional<AggregatableReportRequest::DelayType> =
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
-    blink::mojom::AggregationServiceMode aggregation_mode =
-        blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
     std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt,
     std::optional<AggregatableReportRequest::DelayType> = std::nullopt);
@@ -115,7 +116,7 @@ base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(
 std::vector<uint8_t> DecryptPayloadWithHpke(
     base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
-    const std::string& expected_serialized_shared_info);
+    std::string_view expected_serialized_shared_info);
 
 MATCHER_P(RequestIdIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.id, result_listener);
@@ -156,22 +157,6 @@ class MockAggregationService : public AggregationService {
               AssembleReport,
               (AggregatableReportRequest request,
                AggregationService::AssemblyCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              SendReport,
-              (const GURL& url,
-               const AggregatableReport& report,
-               std::optional<AggregatableReportRequest::DelayType> delay_type,
-               AggregationService::SendCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              SendReport,
-              (const GURL& url,
-               const base::Value& value,
-               std::optional<AggregatableReportRequest::DelayType> delay_type,
-               AggregationService::SendCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -248,8 +233,6 @@ class AggregatableReportRequestsAndIdsBuilder {
 std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation);
-std::ostream& operator<<(std::ostream& out,
-                         blink::mojom::AggregationServiceMode aggregation_mode);
 std::ostream& operator<<(std::ostream& out,
                          AggregatableReportSharedInfo::DebugMode debug_mode);
 

@@ -53,12 +53,12 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void TearDown() override { AshTestBase::TearDown(); }
 
-  AccessibilityController* GetAccessibilitController() {
+  AccessibilityController* GetAccessibilityController() {
     return Shell::Get()->accessibility_controller();
   }
 
   SelectToSpeakMenuBubbleController* GetBubbleController() {
-    return GetAccessibilitController()
+    return GetAccessibilityController()
         ->GetSelectToSpeakMenuBubbleControllerForTest();
   }
 
@@ -74,6 +74,10 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
     return GetBubbleController()->menu_view_;
   }
 
+  TrayBubbleView* GetBubbleView() {
+    return GetBubbleController()->bubble_view_;
+  }
+
   FloatingMenuButton* GetMenuButton(SelectToSpeakMenuView::ButtonId view_id) {
     SelectToSpeakMenuView* menu_view = GetMenuView();
     if (!menu_view)
@@ -84,8 +88,12 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void ShowSelectToSpeakPanel(bool is_paused) {
     gfx::Rect anchor_rect(10, 10, 0, 0);
-    GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect, is_paused,
-                                                        /*speech_rate=*/1.2);
+    GetAccessibilityController()->ShowSelectToSpeakPanel(anchor_rect, is_paused,
+                                                         /*speech_rate=*/1.2);
+  }
+
+  std::u16string GetAccessibleNameForBubble() {
+    return GetBubbleController()->GetAccessibleNameForBubble();
   }
 
   void ExpectButtonHistogramCount(SelectToSpeakPanelAction action,
@@ -150,7 +158,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest,
 TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
   ShowSelectToSpeakPanel(/*is_paused=*/false);
   ExpectTotalMenuBubbleDurationSamples(0);
-  GetAccessibilitController()->HideSelectToSpeakPanel();
+  GetAccessibilityController()->HideSelectToSpeakPanel();
   EXPECT_TRUE(GetMenuView());
   EXPECT_FALSE(GetBubbleWidget()->IsVisible());
   ExpectTotalMenuBubbleDurationSamples(1);
@@ -395,6 +403,17 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, RandomKeyPressIgnored) {
   ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 0);
   ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kExit, 0);
   ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 0);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, BubbleViewAccessibleName) {
+  ShowSelectToSpeakPanel(/*is_paused=*/true);
+
+  TrayBubbleView* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

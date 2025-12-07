@@ -5,11 +5,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/byte_count.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
@@ -58,8 +61,7 @@ class DrivePinningBaseScreenTest : public OobeBaseTest {
  public:
   DrivePinningBaseScreenTest() {
     feature_list_.InitWithFeatures(
-        {ash::features::kOobeChoobe, ash::features::kOobeDrivePinning,
-         ash::features::kDriveFsBulkPinning,
+        {ash::features::kOobeChoobe,
          ash::features::kFeatureManagementDriveFsBulkPinning},
         {});
   }
@@ -127,8 +129,8 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
   test::OobeJS().ExpectElementText(
       l10n_util::GetStringFUTF8(
           IDS_OOBE_DRIVE_PINNING_TOGGLE_SUBTITLE,
-          ui::FormatBytes(current_progress.required_space),
-          ui::FormatBytes(current_progress.free_space)),
+          ui::FormatBytes(base::ByteCount(current_progress.required_space)),
+          ui::FormatBytes(base::ByteCount(current_progress.free_space))),
       kSpaceInformationPath);
   test::OobeJS().TapOnPath(kNextButtonPath);
 
@@ -211,7 +213,7 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
     fake_drivefs_helpers_[profile] =
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     auto* integration_service = new drive::DriveIntegrationService(
-        profile, std::string(), mount_path,
+        g_browser_process->local_state(), profile, std::string(), mount_path,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }

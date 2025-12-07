@@ -10,9 +10,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_common.h"
 
@@ -50,6 +52,8 @@ const char BluetoothTestBase::kTestUUIDHeartRate[] =
     "0000180d-0000-1000-8000-00805f9b34fb";
 const char BluetoothTestBase::kTestUUIDU2f[] =
     "0000fffd-0000-1000-8000-00805f9b34fb";
+const char BluetoothTestBase::kTestUUIDSerial[] =
+    "00001101-0000-1000-8000-00805f9b34fb";
 // Characteristic UUIDs
 const char BluetoothTestBase::kTestUUIDDeviceName[] =
     "00002a00-0000-1000-8000-00805f9b34fb";
@@ -80,7 +84,9 @@ const uint8_t BluetoothTestBase::kTestCableEid[] = {
 const char BluetoothTestBase::kTestUuidFormattedClientEid[] =
     "00010203-0405-0607-0809-101112131415";
 
-BluetoothTestBase::BluetoothTestBase() {}
+BluetoothTestBase::BluetoothTestBase(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : task_environment_(time_source) {}
 
 BluetoothTestBase::~BluetoothTestBase() = default;
 void BluetoothTestBase::StartLowEnergyDiscoverySession() {
@@ -106,6 +112,15 @@ void BluetoothTestBase::TearDown() {
   EXPECT_EQ(expected_error_callback_calls_, actual_error_callback_calls_);
   EXPECT_FALSE(unexpected_success_callback_);
   EXPECT_FALSE(unexpected_error_callback_);
+
+  // Tear down the test before the destructor runs. By the time the destructor
+  // runs, the BluetoothTestBase subclass has been partially destructed, so
+  // any pointers to the subclass in these objects cannot be accessed.
+  notify_sessions_.clear();
+  gatt_connections_.clear();
+  discovery_sessions_.clear();
+  advertisements_.clear();
+  adapter_ = nullptr;
 }
 
 bool BluetoothTestBase::DenyPermission() {
@@ -663,7 +678,7 @@ BluetoothTestBase::GetLowEnergyDeviceData(int device_ordinal) const {
           BluetoothUUID(kTestUuidFormattedClientEid)};
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return device_data;

@@ -18,6 +18,7 @@
 #include "base/atomicops.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "gles2_impl_export.h"
@@ -55,7 +56,7 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
 
   struct QueryInfo {
     QueryInfo(Bucket* bucket, uint32_t index)
-        : bucket(bucket), sync(bucket->syncs + index) {}
+        : bucket(bucket), sync(UNSAFE_TODO(bucket->syncs + index)) {}
     QueryInfo() = default;
 
     uint32_t index() const { return sync - bucket->syncs.get(); }

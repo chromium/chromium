@@ -25,11 +25,18 @@ export class PrefDisplayElement extends CustomElement {
           undefined = defaultLogicalFn) {
     const nameElem = this.getElement('pref-name');
     nameElem.textContent = prefName;
-    const valueElem = this.getElement('pref-value');
 
+    // Hide the name of the pref from its usual position if the value of this
+    // pref is a list or a dictionary
+    if (!!value.dictionaryValue || !!value.listValue) {
+      const nameWrapperElem = this.getElement('pref-label');
+      nameWrapperElem.hidden = true;
+    }
+
+    const valueElem = this.getElement('pref-value');
     const v = document.createElement('value-display');
-    v.configure(value, valueLogicalFn);
-    valueElem.appendChild(v);
+    v.configure(value, valueLogicalFn, prefName);
+    valueElem.replaceChildren(v);
   }
 }
 

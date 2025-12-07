@@ -8,8 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 namespace {
 
@@ -82,8 +81,9 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
       continue;
     }
     std::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(*dict);
-    if (!entry)
+    if (!entry) {
       continue;
+    }
     active_times.push_back(entry.value());
   }
 
@@ -102,8 +102,9 @@ std::optional<PersistedAppInfo> PersistedAppInfo::PersistedAppInfoFromDict(
   }
 
   std::optional<AppId> app_id = policy::AppIdFromAppInfoDict(dict);
-  if (!app_id)
+  if (!app_id) {
     return std::nullopt;
+  }
 
   std::optional<AppState> state = GetAppStateFromDict(dict);
   if (!state) {
@@ -144,8 +145,9 @@ std::vector<PersistedAppInfo> PersistedAppInfo::PersistedAppInfosFromList(
   for (const auto& per_app_info : list) {
     std::optional<PersistedAppInfo> info = PersistedAppInfoFromDict(
         per_app_info.GetIfDict(), include_app_activity_array);
-    if (!info.has_value())
+    if (!info.has_value()) {
       continue;
+    }
 
     apps_info.push_back(std::move(info.value()));
   }
@@ -161,8 +163,9 @@ std::optional<AppState> PersistedAppInfo::GetAppStateFromDict(
   }
 
   std::optional<int> state = value->FindInt(kAppStateKey);
-  if (!state.has_value())
+  if (!state.has_value()) {
     return std::nullopt;
+  }
 
   return static_cast<AppState>(state.value());
 }
@@ -231,8 +234,9 @@ void PersistedAppInfo::UpdateAppActivityPreference(
         &dict.SetByDottedPath(kActiveTimesKey, base::Value::List())->GetList();
   }
 
-  if (active_times_.size() == 0)
+  if (active_times_.size() == 0) {
     return;
+  }
 
   // start index into |active_times_|
   size_t start_index = 0;
@@ -285,5 +289,4 @@ bool PersistedAppInfo::ShouldRemoveApp() const {
   return !ShouldRestoreApp() && active_times().empty();
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

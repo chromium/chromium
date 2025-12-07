@@ -8,8 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/accessibility_labels_bubble_model.h"
 #include "chrome/browser/ui/confirm_bubble.h"
@@ -19,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform.h"
 
 namespace settings {
 
@@ -44,12 +43,12 @@ void AccessibilityMainHandler::RegisterMessages() {
 }
 
 void AccessibilityMainHandler::OnJavascriptAllowed() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   accessibility_subscription_ =
       ash::AccessibilityManager::Get()->RegisterCallback(base::BindRepeating(
           &AccessibilityMainHandler::OnAccessibilityStatusChanged,
           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (features::IsMainNodeAnnotationsEnabled()) {
     CHECK(!component_ready_observer_.IsObserving());
@@ -59,9 +58,9 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
 }
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   accessibility_subscription_ = {};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (features::IsMainNodeAnnotationsEnabled()) {
     component_ready_observer_.Reset();
@@ -100,9 +99,9 @@ void AccessibilityMainHandler::HandleGetScreenReaderState(
   const base::Value& callback_id = args[0];
   AllowJavascript();
   // Get the current install state and send it back to a UI callback.
-  base::Value is_screen_reader_enabled(
-      accessibility_state_utils::IsScreenReaderEnabled());
-  ResolveJavascriptCallback(callback_id, is_screen_reader_enabled);
+  base::Value is_screen_reader_active(
+      ui::AXPlatform::GetInstance().IsScreenReaderActive());
+  ResolveJavascriptCallback(callback_id, is_screen_reader_active);
 }
 
 void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
@@ -123,18 +122,20 @@ void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
 }
 
 void AccessibilityMainHandler::SendScreenReaderStateChanged() {
-  base::Value result(accessibility_state_utils::IsScreenReaderEnabled());
+  base::Value result(ui::AXPlatform::GetInstance().IsScreenReaderActive());
   FireWebUIListener("screen-reader-state-changed", result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AccessibilityMainHandler::OnAccessibilityStatusChanged(
     const ash::AccessibilityStatusEventDetails& details) {
+  // TODO(accessibility): Listen to assistive tech changes across all platforms
+  // using AXModeObserver::OnAssistiveTechChanged().
   if (details.notification_type ==
       ash::AccessibilityNotificationType::kToggleSpokenFeedback) {
     SendScreenReaderStateChanged();
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace settings

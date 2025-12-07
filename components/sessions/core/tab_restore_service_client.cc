@@ -6,7 +6,7 @@
 
 namespace sessions {
 
-TabRestoreServiceClient::~TabRestoreServiceClient() {}
+TabRestoreServiceClient::~TabRestoreServiceClient() = default;
 
 void TabRestoreServiceClient::OnTabRestored(const GURL& url) {}
 

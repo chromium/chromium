@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -20,15 +21,18 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/thumbnail/generator/image_thumbnail_request.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_manager_bridge.h"
 #include "chrome/browser/download/android/download_manager_service.h"
@@ -41,7 +45,17 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/device_form_factor.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #endif
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using OfflineItemFilter = offline_items_collection::OfflineItemFilter;
 using OfflineItemState = offline_items_collection::OfflineItemState;
@@ -68,7 +82,7 @@ const int kInvalidSystemDownloadId = -1;
 #endif
 
 bool ShouldShowDownloadItem(const DownloadItem* item) {
-  return !item->IsTemporary() && !item->IsTransient() && !item->IsDangerous() &&
+  return !item->IsTemporary() && !item->IsTransient() &&
          !item->GetTargetFilePath().empty();
 }
 
@@ -116,7 +130,7 @@ AllDownloadObserver::AllDownloadObserver(
     DownloadOfflineContentProvider* provider)
     : provider_(provider) {}
 
-AllDownloadObserver::~AllDownloadObserver() {}
+AllDownloadObserver::~AllDownloadObserver() = default;
 
 void AllDownloadObserver::OnDownloadUpdated(
     SimpleDownloadManagerCoordinator* manager,
@@ -281,6 +295,27 @@ void DownloadOfflineContentProvider::ResumeDownload(const ContentId& id) {
     item->Resume(true /* user_resume */);
 }
 
+void DownloadOfflineContentProvider::ValidateDangerousDownload(
+    const ContentId& id) {
+  if (state_ == State::UNINITIALIZED) {
+    pending_actions_for_reduced_mode_.push_back(base::BindOnce(
+        &DownloadOfflineContentProvider::ValidateDangerousDownload,
+        weak_ptr_factory_.GetWeakPtr(), id));
+    return;
+  }
+
+  DownloadItem* item = GetDownload(id.id);
+  if (item && !item->IsDone() && item->IsDangerous()) {
+    item->ValidateDangerousDownload();
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
+    SendSafeBrowsingDownloadReport(
+        safe_browsing::ClientSafeBrowsingReportRequest::
+            DANGEROUS_DOWNLOAD_WARNING_ANDROID,
+        /*did_proceed=*/true, item);
+#endif
+  }
+}
+
 void DownloadOfflineContentProvider::GetItemById(
     const ContentId& id,
     OfflineContentProvider::SingleItemCallback callback) {
@@ -320,7 +355,7 @@ void DownloadOfflineContentProvider::GetVisualsForItem(
     VisualsCallback callback) {
   // TODO(crbug.com/40581903) Supply thumbnail if item is visible.
   DownloadItem* item = GetDownload(id.id);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!item || !options.get_icon || !screen) {
     // No favicon is available; run the callback without visuals.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -438,14 +473,37 @@ void DownloadOfflineContentProvider::OnDownloadStarted(DownloadItem* item) {
 }
 
 void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
+  // Notify user if this download is blocked.
+  bool should_notify =
+      item->GetState() == DownloadItem::INTERRUPTED &&
+      item->GetLastReason() ==
+          download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
+      item->GetInsecureDownloadStatus() !=
+          download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK;
   // Wait until the target path is determined or the download is canceled.
-  if (item->GetTargetFilePath().empty() &&
+  if (!should_notify && item->GetTargetFilePath().empty() &&
       item->GetState() != DownloadItem::CANCELLED) {
     return;
   }
 
-  if (!ShouldShowDownloadItem(item))
+  if (!should_notify && !ShouldShowDownloadItem(item)) {
     return;
+  }
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // On desktop Android, the extensions chrome.download.setUiOptions() function
+  // can disable UI updates.
+  // TODO(crbug.com/459823225): Expand the IsDangerous() check to other
+  // situations where UI should be forced on.
+  const bool always_show_ui = item->IsDangerous();
+  if (!should_notify && !always_show_ui && profile_) {
+    DownloadCoreService* service =
+        DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+    if (service && !service->IsDownloadUiEnabled()) {
+      return;
+    }
+  }
+#endif
 
   UpdateDelta update_delta;
   auto offline_item = OfflineItemUtils::CreateOfflineItem(name_space_, item);
@@ -459,6 +517,15 @@ void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
     update_delta.state_changed = true;
     if (item->GetState() == DownloadItem::COMPLETE)
       AddCompletedDownload(item);
+  }
+
+  // If the download was newly marked dangerous or validated, then visuals may
+  // change (e.g. new icon to denote dangerous status).
+  if (offline_item.state != OfflineItemState::CANCELLED &&
+      (item->IsDangerous() ||
+       item->GetDangerType() ==
+           download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED)) {
+    update_delta.visuals_changed = true;
   }
 
   UpdateObservers(offline_item, update_delta);
@@ -485,8 +552,8 @@ void DownloadOfflineContentProvider::AddCompletedDownload(DownloadItem* item) {
   base::OnceCallback<void(int64_t)> cb =
       base::BindOnce(&DownloadOfflineContentProvider::AddCompletedDownloadDone,
                      weak_ptr_factory_.GetWeakPtr(), item->GetGuid());
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
     DownloadManagerBridge::AddCompletedDownload(item, std::move(cb));
   } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

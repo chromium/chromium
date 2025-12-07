@@ -35,18 +35,16 @@ class MODULES_EXPORT ClipPathPaintDefinition final
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
+  static std::optional<gfx::RectF> GetAnimationBoundingRect(
+      const LayoutObject& obj);
+
   // static method that accepts a worklet id, for use in tests. The instance
   // version of this method calls this
   static scoped_refptr<Image> Paint(float zoom,
                                     const gfx::RectF& reference_box,
-                                    const gfx::SizeF& clip_area_size,
+                                    const gfx::RectF& clip_area_rect,
                                     const Node&,
                                     int worklet_id);
-  // The bounding rect for the entire animation, fitting the clip path at its
-  // largest extent
-  static gfx::RectF ClipAreaRect(const Node& node,
-                                 const gfx::RectF& reference_box,
-                                 float zoom);
   static Animation* GetAnimationIfCompositable(const Element* element);
   void Trace(Visitor* visitor) const override;
 };

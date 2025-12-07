@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -35,25 +40,40 @@ import java.util.Collections;
 import java.util.List;
 
 /** Contains the logic to set the state of the model and react to events like clicks. */
+@NullMarked
 public class RestoreTabsMediator {
-    private RestoreTabsControllerDelegate mDelegate;
+    // These fields are all effectively final and are set in initialize().
     private PropertyModel mModel;
-    private ForeignSessionHelper mForeignSessionHelper;
-    private TabCreatorManager mTabCreatorManager;
-    private BottomSheetController mBottomSheetController;
-    private BottomSheetObserver mBottomSheetDismissedObserver;
     private Profile mProfile;
-    private ForeignSession mDefaultSelectedSession;
+    private TabCreatorManager mTabCreatorManager;
+    private @Nullable BottomSheetController mBottomSheetController;
+    private BottomSheetObserver mBottomSheetDismissedObserver;
 
+    private @Nullable RestoreTabsControllerDelegate mDelegate;
+    private @Nullable ForeignSessionHelper mForeignSessionHelper;
+    private @Nullable ForeignSession mDefaultSelectedSession;
+
+    /**
+     * Initialize mediator with required dependencies.
+     *
+     * @param model A {@link PropertyModel} that holds the {@RestoreTabsProperties}.
+     * @param profile The {@link Profile} for the current user.
+     * @param tabCreatorManager A {@link TabCreatorManager} instance to restore tabs.
+     * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
+     *     Optional, as this class can be used as a base class for the {@link
+     *     RestoreTabsDialogMediator} that does not provide it.
+     */
+    @Initializer
     public void initialize(
             PropertyModel model,
             Profile profile,
             TabCreatorManager tabCreatorManager,
-            BottomSheetController bottomSheetController) {
+            @Nullable BottomSheetController bottomSheetController) {
+        mModel = model;
+        mProfile = profile;
         mTabCreatorManager = tabCreatorManager;
         mBottomSheetController = bottomSheetController;
-        mProfile = profile;
-        mModel = model;
+
         mModel.set(RestoreTabsProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
         mModel.set(
                 RestoreTabsProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
@@ -69,7 +89,8 @@ public class RestoreTabsMediator {
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                         super.onSheetClosed(reason);
                         dismiss();
-                        mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
+                        assumeNonNull(mBottomSheetController)
+                                .removeObserver(mBottomSheetDismissedObserver);
 
                         switch (reason) {
                             case BottomSheetController.StateChangeReason.SWIPE:
@@ -98,7 +119,7 @@ public class RestoreTabsMediator {
     }
 
     /** Returns an implementation the RestoreTabsPromoScreen.Delegate interface. */
-    private RestoreTabsPromoScreenCoordinator.Delegate createHomeScreenDelegate() {
+    RestoreTabsPromoScreenCoordinator.Delegate createHomeScreenDelegate() {
         return new RestoreTabsPromoScreenCoordinator.Delegate() {
             @Override
             public void onShowDeviceList() {
@@ -130,8 +151,8 @@ public class RestoreTabsMediator {
         }
 
         assert foreignSessionHelper != null && delegate != null && sessions.size() != 0;
-        mForeignSessionHelper = foreignSessionHelper;
         mDelegate = delegate;
+        mForeignSessionHelper = foreignSessionHelper;
         setDeviceListItems(sessions);
         setTabListItems();
 
@@ -145,11 +166,13 @@ public class RestoreTabsMediator {
 
     /**
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     *
      * @param isVisible A boolean indicating whether to show or hide the sheet.
      * @param content The bottom sheet content to show/hide.
      * @return True if the request was successful, false otherwise.
      */
     public boolean setVisible(boolean isVisible, BottomSheetContent content) {
+        assert mBottomSheetController != null;
         if (isVisible) {
             mBottomSheetController.addObserver(mBottomSheetDismissedObserver);
             if (!mBottomSheetController.requestShowContent(content, true)) {
@@ -382,9 +405,10 @@ public class RestoreTabsMediator {
         }
 
         // Get the tab switcher's current tab list model size.
+        assumeNonNull(mDelegate);
         int currentGTSTabListModelSize = mDelegate.getGTSTabListModelSize();
 
-        // TODO(crbug.com/40261552): Consider adding a spinner if restoring the tabs becomes
+        // TODO(crbug.com/464253696): Consider adding a spinner if restoring the tabs becomes
         // a batched process.
         assert tabs.size() > 0 && mForeignSessionHelper != null;
         mForeignSessionHelper.openForeignSessionTabsAsBackgroundTabs(

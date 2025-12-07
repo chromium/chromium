@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/core/payer_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
@@ -46,7 +45,7 @@ class PaymentApp {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Should be called with method name (e.g., "https://google.com/pay") and
     // json-serialized stringified details.
@@ -58,6 +57,25 @@ class PaymentApp {
     // Should be called with a developer-facing error message to be used when
     // rejecting PaymentRequest.show().
     virtual void OnInstrumentDetailsError(const std::string& error_message) = 0;
+  };
+
+  // Describes a PaymentEntityLogo composed of the accessibility label, and the
+  // icon and its url.
+  struct PaymentEntityLogo {
+    std::u16string label;
+    std::unique_ptr<SkBitmap> icon;
+    GURL url;
+    PaymentEntityLogo(std::u16string string,
+                      std::unique_ptr<SkBitmap> icon,
+                      GURL url);
+
+    // PaymentEntityLogo is a move-only type:
+    PaymentEntityLogo(const PaymentEntityLogo&) = delete;
+    PaymentEntityLogo& operator=(const PaymentEntityLogo&) = delete;
+    PaymentEntityLogo(PaymentEntityLogo&&);
+    PaymentEntityLogo& operator=(PaymentEntityLogo&&);
+
+    ~PaymentEntityLogo();
   };
 
   PaymentApp(const PaymentApp&) = delete;
@@ -81,8 +99,6 @@ class PaymentApp {
   virtual std::u16string GetMissingInfoLabel() const = 0;
   // Returns this app's answer for PaymentRequest.hasEnrolledInstrument().
   virtual bool HasEnrolledInstrument() const = 0;
-  // Records the use of this payment app.
-  virtual void RecordUse() = 0;
   // Check whether this payment app needs installation before it can be used.
   virtual bool NeedsInstallation() const = 0;
 
@@ -96,6 +112,8 @@ class PaymentApp {
 
   // Returns the icon bitmap or null.
   virtual const SkBitmap* icon_bitmap() const;
+  // Returns the payment entities logos to be displayed to the user.
+  virtual std::vector<PaymentEntityLogo*> GetPaymentEntitiesLogos();
 
   // Returns the identifier for another payment app that should be hidden when
   // this payment app is present.

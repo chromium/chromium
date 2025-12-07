@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -17,8 +18,9 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace viz {
 namespace {
@@ -48,13 +50,155 @@ class StubCopyOutputRequest : public CopyOutputRequest {
 
 }  // namespace
 
+namespace internal {
+
+template <class Self>
+AddQuads<Self>::AddQuads() : pass_(CompositorRenderPass::Create()) {}
+
+template <class Self>
+AddQuads<Self>::~AddQuads() = default;
+
+template <class Self>
+Self& AddQuads<Self>::AddSharedElementQuad(
+    const gfx::Rect& rect,
+    const ViewTransitionElementResourceId& id) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
+  quad->SetNew(sqs, rect, rect, id);
+
+  return ThisRef();
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddSolidColorQuad(const gfx::Rect& rect,
+                                        SkColor4f color,
+                                        SolidColorQuadParms params) {
+  return AddSolidColorQuad(rect, rect, color, params);
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddSolidColorQuad(const gfx::Rect& rect,
+                                        const gfx::Rect& visible_rect,
+                                        SkColor4f color,
+                                        SolidColorQuadParms params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  quad->SetNew(sqs, rect, visible_rect, color, params.force_anti_aliasing_off);
+
+  return ThisRef();
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddSurfaceQuad(const gfx::Rect& rect,
+                                     const SurfaceRange& surface_range,
+                                     const SurfaceQuadParams& params) {
+  return AddSurfaceQuad(rect, rect, surface_range, params);
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddSurfaceQuad(const gfx::Rect& rect,
+                                     const gfx::Rect& visible_rect,
+                                     const SurfaceRange& surface_range,
+                                     const SurfaceQuadParams& params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+  // TODO (crbug.com/1308932) Change SurfaceQuadParams to use SKColor4f
+  quad->SetNew(sqs, rect, visible_rect, surface_range,
+               params.default_background_color,
+               params.stretch_content_to_fill_bounds);
+  quad->is_reflection = params.is_reflection;
+  quad->allow_merge = params.allow_merge;
+
+  return ThisRef();
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddRenderPassQuad(const gfx::Rect& rect,
+                                        CompositorRenderPassId id,
+                                        const RenderPassQuadParams& params) {
+  return AddRenderPassQuad(rect, rect, id, params);
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddRenderPassQuad(const gfx::Rect& rect,
+                                        const gfx::Rect& visible_rect,
+                                        CompositorRenderPassId id,
+                                        const RenderPassQuadParams& params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+  quad->SetAll(
+      sqs, rect, visible_rect, params.needs_blending, id, kInvalidResourceId,
+      gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+      gfx::RectF(), params.force_anti_aliasing_off,
+      /*backdrop_filter_quality=*/1.0f, params.intersects_damage_under);
+
+  return ThisRef();
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddTextureQuad(const gfx::Rect& rect,
+                                     ResourceId resource_id,
+                                     const TextureQuadParams& params) {
+  return AddTextureQuad(rect, rect, resource_id, params);
+}
+
+template <class Self>
+Self& AddQuads<Self>::AddTextureQuad(const gfx::Rect& rect,
+                                     const gfx::Rect& visible_rect,
+                                     ResourceId resource_id,
+                                     const TextureQuadParams& params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  quad->SetAll(sqs, rect, visible_rect, params.needs_blending, resource_id,
+               gfx::PointF(0.0f, 0.0f), gfx::PointF(1.0f, 1.0f),
+               params.background_color, params.nearest_neighbor,
+               params.secure_output_only, params.protected_video_type);
+  return ThisRef();
+}
+
+template <class Self>
+bool AddQuads<Self>::IsValid() const {
+  return pass_ && !pass_->quad_list.empty();
+}
+
+template <class Self>
+Self& AddQuads<Self>::ThisRef() {
+  return static_cast<Self&>(*this);
+}
+
+template <class Self>
+SharedQuadState* AddQuads<Self>::AppendDefaultSharedQuadState(
+    const gfx::Rect rect,
+    const gfx::Rect visible_rect) {
+  SharedQuadState* sqs = pass_->CreateAndAppendSharedQuadState();
+  sqs->SetAll(gfx::Transform(), rect, visible_rect, gfx::MaskFilterInfo(),
+              /*clip=*/std::nullopt, /*contents_opaque=*/false,
+              /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, /*sorting_context=*/0,
+              /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+  return sqs;
+}
+
+}  // namespace internal
+
+// Instantiate known subclasses so they are available in other compile units.
+template class internal::AddQuads<QuadListBuilder>;
+template class internal::AddQuads<RenderPassBuilder>;
+
+QuadListBuilder::QuadListBuilder(const gfx::Rect& rect,
+                                 const std::optional<gfx::Rect>& visible_rect)
+    : rect_(rect), visible_rect_(visible_rect.value_or(rect)) {
+  CHECK(!visible_rect_.IsEmpty());
+  CHECK(rect.Contains(visible_rect_));
+}
+
+QuadListBuilder::~QuadListBuilder() = default;
+
 RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
                                      const gfx::Size& output_size)
     : RenderPassBuilder(id, gfx::Rect(output_size)) {}
 
 RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
-                                     const gfx::Rect& output_rect)
-    : pass_(CompositorRenderPass::Create()) {
+                                     const gfx::Rect& output_rect) {
   CHECK(!output_rect.IsEmpty());
   pass_->id = id;
   pass_->output_rect = output_rect;
@@ -68,10 +212,6 @@ RenderPassBuilder::RenderPassBuilder(const gfx::Rect& output_rect)
     : RenderPassBuilder(kInvalidRenderPassId, output_rect) {}
 
 RenderPassBuilder::~RenderPassBuilder() = default;
-
-bool RenderPassBuilder::IsValid() const {
-  return pass_ && !pass_->quad_list.empty();
-}
 
 std::unique_ptr<CompositorRenderPass> RenderPassBuilder::Build() {
   return std::move(pass_);
@@ -122,105 +262,6 @@ RenderPassBuilder& RenderPassBuilder::AddStubCopyOutputRequest(
   return *this;
 }
 
-RenderPassBuilder& RenderPassBuilder::AddSharedElementQuad(
-    const gfx::Rect& rect,
-    const ViewTransitionElementResourceId& id) {
-  auto* sqs = AppendDefaultSharedQuadState(rect, rect);
-  auto* quad = pass_->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
-  quad->SetNew(sqs, rect, rect, id);
-
-  return *this;
-}
-
-RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
-    const gfx::Rect& rect,
-    SkColor4f color,
-    SolidColorQuadParms params) {
-  return AddSolidColorQuad(rect, rect, color, params);
-}
-
-RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
-    const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    SkColor4f color,
-    SolidColorQuadParms params) {
-  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
-  auto* quad = pass_->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  quad->SetNew(sqs, rect, visible_rect, color, params.force_anti_aliasing_off);
-
-  return *this;
-}
-
-RenderPassBuilder& RenderPassBuilder::AddSurfaceQuad(
-    const gfx::Rect& rect,
-    const SurfaceRange& surface_range,
-    const SurfaceQuadParams& params) {
-  return AddSurfaceQuad(rect, rect, surface_range, params);
-}
-
-RenderPassBuilder& RenderPassBuilder::AddSurfaceQuad(
-    const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    const SurfaceRange& surface_range,
-    const SurfaceQuadParams& params) {
-  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
-  auto* quad = pass_->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
-  // TODO (crbug.com/1308932) Change SurfaceQuadParams to use SKColor4f
-  quad->SetNew(sqs, rect, visible_rect, surface_range,
-               params.default_background_color,
-               params.stretch_content_to_fill_bounds);
-  quad->is_reflection = params.is_reflection;
-  quad->allow_merge = params.allow_merge;
-
-  return *this;
-}
-
-RenderPassBuilder& RenderPassBuilder::AddRenderPassQuad(
-    const gfx::Rect& rect,
-    CompositorRenderPassId id,
-    const RenderPassQuadParams& params) {
-  return AddRenderPassQuad(rect, rect, id, params);
-}
-
-RenderPassBuilder& RenderPassBuilder::AddRenderPassQuad(
-    const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    CompositorRenderPassId id,
-    const RenderPassQuadParams& params) {
-  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
-  auto* quad = pass_->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-  quad->SetAll(
-      sqs, rect, visible_rect, params.needs_blending, id, kInvalidResourceId,
-      gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
-      gfx::RectF(), params.force_anti_aliasing_off,
-      /*backdrop_filter_quality=*/1.0f, params.intersects_damage_under);
-
-  return *this;
-}
-
-RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
-    const gfx::Rect& rect,
-    ResourceId resource_id,
-    const TextureQuadParams& params) {
-  return AddTextureQuad(rect, rect, resource_id, params);
-}
-
-RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
-    const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    ResourceId resource_id,
-    const TextureQuadParams& params) {
-  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
-  auto* quad = pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  quad->SetAll(sqs, rect, visible_rect, params.needs_blending, resource_id,
-               rect.size(), params.premultiplied_alpha, gfx::PointF(0.0f, 0.0f),
-               gfx::PointF(1.0f, 1.0f), params.background_color, params.flipped,
-               params.nearest_neighbor, params.secure_output_only,
-               params.protected_video_type);
-
-  return *this;
-}
-
 RenderPassBuilder& RenderPassBuilder::SetQuadToTargetTransform(
     const gfx::Transform& transform) {
   GetLastQuadSharedQuadState()->quad_to_target_transform = transform;
@@ -257,11 +298,8 @@ RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
   if (quad->material == DrawQuad::Material::kTextureContent) {
     auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
     texture_quad->damage_rect = damage_rect;
-  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
-    auto* yuv_video_quad = static_cast<YUVVideoDrawQuad*>(quad);
-    yuv_video_quad->damage_rect = damage_rect;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   pass_->has_per_quad_damage = true;
@@ -294,15 +332,32 @@ RenderPassBuilder& RenderPassBuilder::SetQuadOffsetTag(const OffsetTag& tag) {
   return *this;
 }
 
-SharedQuadState* RenderPassBuilder::AppendDefaultSharedQuadState(
-    const gfx::Rect rect,
-    const gfx::Rect visible_rect) {
-  SharedQuadState* sqs = pass_->CreateAndAppendSharedQuadState();
-  sqs->SetAll(gfx::Transform(), rect, visible_rect, gfx::MaskFilterInfo(),
-              /*clip=*/std::nullopt, /*contents_opaque=*/false,
-              /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, /*sorting_context=*/0,
-              /*layer_id=*/0u, /*fast_rounded_corner=*/false);
-  return sqs;
+RenderPassBuilder& RenderPassBuilder::SetQuadMaskFilterInfo(
+    const gfx::MaskFilterInfo& mask_filter_info) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->mask_filter_info = mask_filter_info;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddLayerQuads(
+    const QuadListBuilder& builder) {
+  CHECK(builder.IsValid());
+
+  const SharedQuadState* sqs =
+      AppendDefaultSharedQuadState(builder.rect_, builder.visible_rect_);
+  for (const DrawQuad* quad : builder.pass_->quad_list) {
+    CHECK(sqs->quad_layer_rect.Contains(quad->rect));
+    CHECK(sqs->visible_quad_layer_rect.Contains(quad->visible_rect));
+
+    if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
+      const auto* rpdq = CompositorRenderPassDrawQuad::MaterialCast(quad);
+      pass_->CopyFromAndAppendRenderPassDrawQuad(rpdq, rpdq->render_pass_id);
+    } else {
+      pass_->CopyFromAndAppendDrawQuad(quad)->shared_quad_state = sqs;
+    }
+  }
+
+  return *this;
 }
 
 SharedQuadState* RenderPassBuilder::GetLastQuadSharedQuadState() {
@@ -475,6 +530,14 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagDefinition(
   return *this;
 }
 
+CompositorFrameBuilder& CompositorFrameBuilder::SetValidTreesInVizTimestamps(
+    base::TimeTicks now) {
+  frame_->metadata.trees_in_viz_timing_details = {
+      now, now + base::Milliseconds(1), now + base::Milliseconds(2),
+      now + base::Milliseconds(3)};
+  return *this;
+}
+
 CompositorFrame CompositorFrameBuilder::MakeInitCompositorFrame() const {
   static FrameTokenGenerator next_token;
   CompositorFrame frame;
@@ -544,17 +607,19 @@ void PopulateTransferableResources(CompositorFrame& frame) {
   std::set<ResourceId> resources_added;
   for (auto& render_pass : frame.render_pass_list) {
     for (auto* quad : render_pass->quad_list) {
-      for (ResourceId resource_id : quad->resources) {
-        if (resource_id == kInvalidResourceId)
-          continue;
-
+      if (quad->resource_id != kInvalidResourceId) {
         // Adds a TransferableResource the first time seeing a ResourceId.
-        if (resources_added.insert(resource_id).second) {
-          frame.resource_list.push_back(
-              TransferableResource::MakeSoftwareSharedBitmap(
-                  SharedBitmap::GenerateId(), gpu::SyncToken(),
-                  quad->rect.size(), SinglePlaneFormat::kRGBA_8888));
-          frame.resource_list.back().id = resource_id;
+        if (resources_added.insert(quad->resource_id).second) {
+          auto shared_image =
+              gpu::ClientSharedImage::CreateSoftwareForTesting();
+          gpu::SyncToken sync_token;
+          sync_token.Set(gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1),
+                         1);
+          frame.resource_list.push_back(TransferableResource::Make(
+              shared_image,
+              TransferableResource::ResourceSource::kTileRasterTask,
+              sync_token));
+          frame.resource_list.back().id = quad->resource_id;
         }
       }
     }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_BAD_MESSAGE_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_BAD_MESSAGE_H_
 
+#include "content/public/browser/child_process_id.h"
+
 namespace content {
 class RenderProcessHost;
 }  // namespace content
@@ -39,8 +41,8 @@ enum BadMessageReason {
 // and terminates the process for |host| / |render_process_id|.
 void ReceivedBadMessage(content::RenderProcessHost* host,
                         BadMessageReason reason);
-void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
-
+void ReceivedBadMessage(content::ChildProcessId render_process_id,
+                        BadMessageReason reason);
 }  // namespace bad_message
 }  // namespace guest_view
 

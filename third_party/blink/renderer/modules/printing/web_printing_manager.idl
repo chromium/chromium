@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 [
-  Exposed=Window,
+  Exposed=(Window,Worker),
   RuntimeEnabled=WebPrinting,
   SecureContext,
   IsolatedContext

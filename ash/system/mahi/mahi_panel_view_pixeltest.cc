@@ -6,14 +6,19 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,22 +37,40 @@ namespace ash {
 
 // Pixel tests for Chrome OS Status Area. This relates to all tray buttons in
 // the bottom right corner.
-class MahiPanelViewPixelTest : public AshTestBase {
+class MahiPanelViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
     AshTestBase::SetUp();
 
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
         &mock_mahi_manager_);
 
+    CreatePanelWidget();
+  }
+
+  void TearDown() override {
+    panel_view_ = nullptr;
+    widget_.reset();
+    scoped_setter_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  void CreatePanelWidget() {
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(
         gfx::Rect(/*x=*/0, /*y=*/0,
@@ -57,12 +80,11 @@ class MahiPanelViewPixelTest : public AshTestBase {
         std::make_unique<MahiPanelView>(&ui_controller_));
   }
 
-  void TearDown() override {
+  void RecreatePanelWidget() {
     panel_view_ = nullptr;
     widget_.reset();
-    scoped_setter_.reset();
 
-    AshTestBase::TearDown();
+    CreatePanelWidget();
   }
 
   // Scroll the scroll view inside Mahi panel to the bottom.
@@ -91,7 +113,12 @@ class MahiPanelViewPixelTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 };
 
-TEST_F(MahiPanelViewPixelTest, MainPanel) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    MahiPanelViewPixelTest,
+    testing::Bool());
+
+TEST_P(MahiPanelViewPixelTest, MainPanel) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(testing::Return(u"Test content title"));
   ON_CALL(mock_mahi_manager(), GetContentIcon)
@@ -109,10 +136,12 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/6, panel_view()));
+      GenerateScreenshotName("panel_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 0,
+      panel_view()));
 }
 
-TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
+TEST_P(MahiPanelViewPixelTest, ContentSourceButton) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(testing::Return(base::StrCat(
           std::vector<std::u16string>(3, u"Long content title "))));
@@ -124,11 +153,12 @@ TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "content_source", /*revision_number=*/2,
+      GenerateScreenshotName("content_source"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kContentSourceButton)));
 }
 
-TEST_F(MahiPanelViewPixelTest, SummaryView) {
+TEST_P(MahiPanelViewPixelTest, SummaryView) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
         std::move(callback).Run(
@@ -140,11 +170,37 @@ TEST_F(MahiPanelViewPixelTest, SummaryView) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "summary_view", /*revision_number=*/4,
+      GenerateScreenshotName("summary_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
-TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
+TEST_P(MahiPanelViewPixelTest, PanelWithoutFeedbackButtons) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kHmrManagedSettings,
+      static_cast<int>(
+          mahi_utils::HmrEnterprisePolicy::kAllowedWithoutModelImprovement));
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
+        std::move(callback).Run(
+            base::StrCat(std::vector<std::u16string>(35, u"Summary text ")),
+            chromeos::MahiResponseStatus::kSuccess);
+      });
+
+  RecreatePanelWidget();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName("scroll_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName("footer"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel)));
+}
+
+TEST_P(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
@@ -163,6 +219,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   // Set a valid text in the question textfield.
   const std::u16string question(u"question");
   question_textfield->SetText(question);
+  send_button->SetEnabled(true);
 
   // Pressing the send button should create a question and answer text bubble.
   LeftClickOn(send_button);
@@ -170,11 +227,12 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_basic", /*revision_number=*/5,
+      GenerateScreenshotName("question_answer_view_basic"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
-TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
+TEST_P(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
@@ -195,6 +253,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   const std::u16string question =
       base::StrCat(std::vector<std::u16string>(25, u"Long Question "));
   question_textfield->SetText(question);
+  send_button->SetEnabled(true);
 
   // Pressing the send button should create a question and answer text bubble.
   LeftClickOn(send_button);
@@ -202,11 +261,12 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_long_text", /*revision_number=*/7,
+      GenerateScreenshotName("question_answer_view_long_text"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
-TEST_F(MahiPanelViewPixelTest, SummaryViewScrollToBottom) {
+TEST_P(MahiPanelViewPixelTest, SummaryViewScrollToBottom) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
         std::move(callback).Run(
@@ -220,11 +280,12 @@ TEST_F(MahiPanelViewPixelTest, SummaryViewScrollToBottom) {
   ScrollToBottom();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "summary_view_bottom", /*revision_number=*/3,
+      GenerateScreenshotName("summary_view_bottom"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
-TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
+TEST_P(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
   const std::u16string answer =
       base::StrCat(std::vector<std::u16string>(35, u"Long Answer "));
   ON_CALL(mock_mahi_manager(), AnswerQuestion)
@@ -244,15 +305,18 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
       ->SetText(question);
 
   // Pressing the send button should create a question and answer text bubble.
-  LeftClickOn(panel_view()->GetViewByID(
-      mahi_constants::ViewId::kAskQuestionSendButton));
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  send_button->SetEnabled(true);
+  LeftClickOn(send_button);
 
   views::test::RunScheduledLayout(widget());
 
   ScrollToBottom();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_bottom", /*revision_number=*/4,
+      GenerateScreenshotName("question_answer_bottom"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

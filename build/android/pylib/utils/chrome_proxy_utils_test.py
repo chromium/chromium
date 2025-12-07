@@ -2,12 +2,22 @@
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Tests for chrome_proxy_utils."""
+"""Tests for chrome_proxy_utils.
+
+Example usage:
+  vpython3 chrome_proxy_utils_test.py
+"""
 
 #pylint: disable=protected-access
 
 import os
 import unittest
+
+from pathlib import Path
+import sys
+
+build_android_path = Path(__file__).parents[2]
+sys.path.append(str(build_android_path))
 
 from pylib.utils import chrome_proxy_utils
 

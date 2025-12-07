@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=FormControlRange
+] interface FormControlRange : AbstractRange {
+    [CallWith=Document] constructor();
+
+    [RaisesException] void setFormControlRange(Node element,
+                              unsigned long start,
+                              unsigned long end);
+
+    DOMRectList getClientRects();
+    DOMRect getBoundingClientRect();
+    stringifier;
+};

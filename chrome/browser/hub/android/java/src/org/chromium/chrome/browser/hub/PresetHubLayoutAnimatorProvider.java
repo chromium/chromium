@@ -8,12 +8,14 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * An implementation of {@link HubLayoutAnimatorProvider} to wrap an already completed {@link
  * HubLayoutAnimator}. Use this if adding a {@link HubLayoutAnimator} that has no async
  * dependencies.
  */
+@NullMarked
 public class PresetHubLayoutAnimatorProvider implements HubLayoutAnimatorProvider {
     private final SyncOneshotSupplierImpl<HubLayoutAnimator> mPresetAnimatorSupplier;
 
@@ -23,13 +25,15 @@ public class PresetHubLayoutAnimatorProvider implements HubLayoutAnimatorProvide
      * @param animator The {@link HubLayoutAnimator} to use.
      */
     public PresetHubLayoutAnimatorProvider(@NonNull HubLayoutAnimator animator) {
-        mPresetAnimatorSupplier = new SyncOneshotSupplierImpl<HubLayoutAnimator>();
+        mPresetAnimatorSupplier = new SyncOneshotSupplierImpl<>();
         mPresetAnimatorSupplier.set(animator);
     }
 
     @Override
     public @HubLayoutAnimationType int getPlannedAnimationType() {
-        return mPresetAnimatorSupplier.get().getAnimationType();
+        HubLayoutAnimator animator = mPresetAnimatorSupplier.get();
+        if (animator == null) return HubLayoutAnimationType.NONE;
+        return animator.getAnimationType();
     }
 
     @Override

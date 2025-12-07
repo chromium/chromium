@@ -15,10 +15,16 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/data_type_state.pb.h"
+
+namespace sync_pb {
+class DataTypeState;
+class DataTypeState_Invalidation;
+class EntitySpecifics;
+class GarbageCollectionDirective;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -59,7 +65,7 @@ class MockDataTypeProcessor : public DataTypeProcessor {
       UpdateResponseDataList response_list,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
   // By default, this object behaves as if all messages are processed
@@ -179,7 +185,8 @@ class MockDataTypeProcessor : public DataTypeProcessor {
 
   // Latest responses received, indexed by tag_hash.
   std::map<ClientTagHash, CommitResponseData> commit_response_items_;
-  std::map<ClientTagHash, const UpdateResponseData*> update_response_items_;
+  std::map<ClientTagHash, raw_ptr<const UpdateResponseData, CtnExperimental>>
+      update_response_items_;
 
   // The per-item state maps.
   std::map<ClientTagHash, int64_t> sequence_numbers_;

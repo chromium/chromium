@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
+
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -13,12 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -31,6 +27,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 namespace ash {
 
@@ -49,9 +46,6 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
-    display_service_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
 
     session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
     bluetooth_revamp_trigger_ = static_cast<HatsBluetoothRevampTriggerImpl*>(
@@ -78,16 +72,13 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
   }
 
   void WaitForHatsNotification() {
-    base::RunLoop loop;
-    display_service()->SetNotificationAddedClosure(loop.QuitClosure());
     EXPECT_TRUE(timer()->IsRunning());
     EXPECT_EQ(timer()->GetCurrentDelay(), kExpectedTimeDelay);
     timer()->FireNow();
-    loop.Run();
+    message_center::MessageCenterWaiter(kNotificationId).WaitUntilAdded();
   }
-
-  NotificationDisplayServiceTester* display_service() const {
-    return display_service_.get();
+  message_center::MessageCenter* message_center() const {
+    return message_center::MessageCenter::Get();
   }
 
   base::OneShotTimer* timer() {
@@ -99,60 +90,54 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
   }
 
  private:
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   raw_ptr<HatsBluetoothRevampTriggerImpl, DanglingUntriaged>
       bluetooth_revamp_trigger_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest, ShouldShowSurveyTrue) {
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
   TryToShowSurvey();
   WaitForHatsNotification();
 
   // Ensure notification was launched to confirm initialization.
-  EXPECT_TRUE(display_service()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   // Simulate dismissing notification by the user to clean up the
   // notification.
-  display_service()->RemoveNotification(NotificationHandler::Type::TRANSIENT,
-                                        kNotificationId, /*by_user=*/true);
+  message_center()->RemoveNotification(kNotificationId, /*by_user=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfSessionLocked) {
   session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   TryToShowSurvey();
 
   EXPECT_FALSE(timer()->IsRunning());
   EXPECT_NE(timer()->GetCurrentDelay(), kExpectedTimeDelay);
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 }
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfPrefIsFalse) {
   browser()->profile()->GetPrefs()->SetBoolean(
       ash::prefs::kUserPairedWithFastPair, true);
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   TryToShowSurvey();
 
   EXPECT_FALSE(timer()->IsRunning());
   EXPECT_NE(timer()->GetCurrentDelay(), kExpectedTimeDelay);
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 }
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfTimerRunning) {
   TryToShowSurvey();
 
-  base::RunLoop loop;
-  display_service()->SetNotificationAddedClosure(loop.QuitClosure());
-
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   EXPECT_TRUE(timer()->IsRunning());
   EXPECT_EQ(timer()->GetCurrentDelay(), kExpectedTimeDelay);
@@ -160,41 +145,38 @@ IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
   TryToShowSurvey();
   EXPECT_TRUE(timer()->IsRunning());
   EXPECT_EQ(timer()->GetCurrentDelay(), kExpectedTimeDelay);
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 
-  timer()->FireNow();
-  loop.Run();
-  EXPECT_TRUE(display_service()->GetNotification(kNotificationId));
+  WaitForHatsNotification();
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   EXPECT_FALSE(timer()->IsRunning());
 
   // Simulate dismissing notification by the user to clean up the
   // notification.
-  display_service()->RemoveNotification(NotificationHandler::Type::TRANSIENT,
-                                        kNotificationId, /*by_user=*/true);
+  message_center()->RemoveNotification(kNotificationId, /*by_user=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledWithNoActiveProfile) {
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   SetNullProfileForTesting();
   TryToShowSurvey();
   EXPECT_FALSE(timer()->IsRunning());
   EXPECT_NE(timer()->GetCurrentDelay(), kExpectedTimeDelay);
-  EXPECT_FALSE(display_service()->GetNotification(kNotificationId));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   SetProfileForTesting();
   TryToShowSurvey();
   WaitForHatsNotification();
 
   // Ensure notification was launched to confirm initialization.
-  EXPECT_TRUE(display_service()->GetNotification(kNotificationId));
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(kNotificationId));
 
   // Simulate dismissing notification by the user to clean up the
   // notification.
-  display_service()->RemoveNotification(NotificationHandler::Type::TRANSIENT,
-                                        kNotificationId, /*by_user=*/true);
+  message_center()->RemoveNotification(kNotificationId, /*by_user=*/true);
 }
 
 }  // namespace ash

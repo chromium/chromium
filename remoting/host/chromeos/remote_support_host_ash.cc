@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,7 +17,6 @@
 #include "base/strings/stringize_macros.h"
 #include "remoting/host/chromeos/browser_interop.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/session_storage.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
@@ -30,41 +28,6 @@
 namespace remoting {
 
 namespace {
-
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
-
-base::Value::Dict EnterpriseParamsToDict(
-    const ChromeOsEnterpriseParams& params) {
-  return base::Value::Dict()
-      .Set(kSuppressUserDialogs, params.suppress_user_dialogs)
-      .Set(kSuppressNotifications, params.suppress_notifications)
-      .Set(kTerminateUponInput, params.terminate_upon_input)
-      .Set(kCurtainLocalUserSession, params.curtain_local_user_session)
-      .Set(kShowTroubleshootingTools, params.show_troubleshooting_tools)
-      .Set(kAllowTroubleshootingTools, params.allow_troubleshooting_tools)
-      .Set(kAllowReconnections, params.allow_reconnections)
-      .Set(kAllowFileTransfer, params.allow_file_transfer);
-}
-
-ChromeOsEnterpriseParams EnterpriseParamsFromDict(
-    const base::Value::Dict& dict) {
-  return ChromeOsEnterpriseParams{
-      .suppress_user_dialogs =
-          dict.FindBool(kSuppressUserDialogs).value_or(false),
-      .suppress_notifications =
-          dict.FindBool(kSuppressNotifications).value_or(false),
-      .terminate_upon_input =
-          dict.FindBool(kTerminateUponInput).value_or(false),
-      .curtain_local_user_session =
-          dict.FindBool(kCurtainLocalUserSession).value_or(false),
-      .show_troubleshooting_tools =
-          dict.FindBool(kShowTroubleshootingTools).value_or(false),
-      .allow_troubleshooting_tools =
-          dict.FindBool(kAllowTroubleshootingTools).value_or(false),
-      .allow_reconnections = dict.FindBool(kAllowReconnections).value_or(false),
-      .allow_file_transfer = dict.FindBool(kAllowFileTransfer).value_or(false),
-  };
-}
 
 base::Value::Dict SessionParamsToDict(
     const mojom::SupportSessionParams& params) {
@@ -148,7 +111,11 @@ void RemoteSupportHostAsh::StartSession(
 
   mojo::PendingReceiver<mojom::SupportHostObserver> pending_receiver =
       it2me_native_message_host_ash_->Start(
-          browser_interop_->CreateChromotingHostContext(),
+          // We don't have access to the BrowserContext in this class. Passing
+          // nullptr is fine as long as no URL requests require providing a
+          // certificate.
+          browser_interop_->CreateChromotingHostContext(
+              /* browser_context= */ nullptr),
           browser_interop_->CreatePolicyWatcher());
 
   mojom::StartSupportSessionResponsePtr response =
@@ -170,11 +137,6 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
                                               const std::string& access_token,
                                               StartSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    std::move(callback).Run(GetUnableToReconnectError());
-    return;
-  }
 
   if (session_id != kEnterpriseSessionId) {
     LOG(ERROR) << "CRD: No reconnectable session found with id " << session_id;
@@ -217,7 +179,8 @@ void RemoteSupportHostAsh::OnSessionRetrieved(
   LOG(INFO) << "CRD: Reconnectable session found - starting connection";
   StartSession(
       std::move(session_params),
-      EnterpriseParamsFromDict(*session->EnsureDict(kEnterpriseParamsDict)),
+      ChromeOsEnterpriseParams::FromDict(
+          *session->EnsureDict(kEnterpriseParamsDict)),
       ReconnectParams::FromDict(*session->EnsureDict(kReconnectParamsDict)),
       std::move(callback));
 }
@@ -235,10 +198,6 @@ void RemoteSupportHostAsh::OnHostStateConnected(
     std::optional<ReconnectParams> reconnect_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    return;
-  }
-
   if (reconnect_params.has_value()) {
     CHECK(enterprise_params.has_value());
     CHECK(enterprise_params->allow_reconnections);
@@ -247,8 +206,7 @@ void RemoteSupportHostAsh::OnHostStateConnected(
     session_storage_->StoreSession(
         base::Value::Dict()
             .Set(kSessionParamsDict, SessionParamsToDict(session_params))
-            .Set(kEnterpriseParamsDict,
-                 EnterpriseParamsToDict(*enterprise_params))
+            .Set(kEnterpriseParamsDict, enterprise_params->ToDict())
             .Set(kReconnectParamsDict,
                  ReconnectParams::ToDict(*reconnect_params)),
         base::DoNothing());

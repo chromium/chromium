@@ -13,7 +13,6 @@
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
-#include "ipc/ipc_message.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -38,7 +37,8 @@ v8::Local<v8::Value> SendMessageTester::TestSendMessage(
 
   v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_MESSAGE, output);
+                           expected_port_status,
+                           SendMessageTester::Method::kSendMessage, output);
   return output;
 }
 
@@ -51,7 +51,8 @@ v8::Local<v8::Value> SendMessageTester::TestSendRequest(
 
   v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_REQUEST, output);
+                           expected_port_status,
+                           SendMessageTester::Method::kSendRequest, output);
   return output;
 }
 
@@ -69,8 +70,9 @@ v8::Local<v8::Value> SendMessageTester::TestSendNativeMessage(
       MessageTarget::ForNativeApp(expected_application_name));
 
   v8::Local<v8::Value> output;
-  TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_NATIVE_MESSAGE, output);
+  TestSendMessageOrRequest(
+      args, expected_message, expected_target, expected_port_status,
+      SendMessageTester::Method::kSendNativeMessage, output);
   return output;
 }
 
@@ -124,17 +126,17 @@ void SendMessageTester::TestSendMessageOrRequest(
   mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage;
   const char* method_name = nullptr;
   switch (method) {
-    case SEND_MESSAGE:
+    case SendMessageTester::Method::kSendMessage:
       method_name = "sendMessage";
       expected_channel = messaging_util::kSendMessageChannel;
       channel_type = mojom::ChannelType::kSendMessage;
       break;
-    case SEND_REQUEST:
+    case SendMessageTester::Method::kSendRequest:
       method_name = "sendRequest";
       expected_channel = messaging_util::kSendRequestChannel;
       channel_type = mojom::ChannelType::kSendRequest;
       break;
-    case SEND_NATIVE_MESSAGE:
+    case SendMessageTester::Method::kSendNativeMessage:
       method_name = "sendNativeMessage";
       channel_type = mojom::ChannelType::kNative;
       // sendNativeMessage doesn't have name channels so we don't need to change
@@ -166,7 +168,10 @@ void SendMessageTester::TestSendMessageOrRequest(
       });
   if (expected_port_status == CLOSED) {
     EXPECT_CALL(mock_message_port_host, PostMessage(message));
-    EXPECT_CALL(mock_message_port_host, ClosePort(true))
+    EXPECT_CALL(mock_message_port_host,
+                ClosePort(
+                    /*close_channel=*/true,
+                    /*error_message=*/testing::Eq(std::nullopt)))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   } else {
     EXPECT_CALL(mock_message_port_host, PostMessage(message))

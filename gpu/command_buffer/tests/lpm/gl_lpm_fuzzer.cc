@@ -131,7 +131,7 @@ const char* acceptable_errors[] = {
 };
 
 // Filter errors which we don't think interfere with fuzzing everything.
-bool ErrorOk(const std::string_view line) {
+bool ErrorOk(std::string_view line) {
   for (const std::string_view acceptable_error : acceptable_errors) {
     if (base::Contains(line, acceptable_error)) {
       return true;
@@ -141,7 +141,7 @@ bool ErrorOk(const std::string_view line) {
   return false;
 }
 
-bool ErrorsOk(const std::string_view log) {
+bool ErrorsOk(std::string_view log) {
   std::vector<std::string> lines = base::SplitString(
       log, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {

@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -198,8 +199,10 @@ int SynchronizedMinidumpManager::GetNumDumps(bool delete_all_dumps) {
   }
 
   while (reader.Next()) {
-    if (strcmp(reader.name(), ".") == 0 || strcmp(reader.name(), "..") == 0)
+    if (UNSAFE_TODO(strcmp(reader.name(), ".")) == 0 ||
+        UNSAFE_TODO(strcmp(reader.name(), "..")) == 0) {
       continue;
+    }
 
     const base::FilePath dump_file(dump_path_.Append(reader.name()));
     // If file cannot be found, skip.
@@ -295,7 +298,8 @@ bool SynchronizedMinidumpManager::ParseFiles() {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    std::optional<base::Value> dump_info = base::JSONReader::Read(line);
+    std::optional<base::Value> dump_info =
+        base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     RCHECK(dump_info.has_value(), false);
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), false);
@@ -333,7 +337,7 @@ bool SynchronizedMinidumpManager::WriteFiles(
     lockfile += "\n";  // Add line seperatators
   }
 
-  if (WriteFile(lockfile_path_, lockfile.c_str(), lockfile.size()) < 0) {
+  if (!WriteFile(lockfile_path_, lockfile)) {
     return false;
   }
 
@@ -457,9 +461,10 @@ bool SynchronizedMinidumpManager::CanUploadDump() {
 
 bool SynchronizedMinidumpManager::HasDumps() {
   // Check if lockfile has entries.
-  int64_t size = 0;
-  if (base::GetFileSize(lockfile_path_, &size) && size > 0)
+  std::optional<int64_t> size = base::GetFileSize(lockfile_path_);
+  if (size.has_value() && size.value() > 0) {
     return true;
+  }
 
   // Check if any files are in minidump directory
   base::DirReaderPosix reader(dump_path_.value().c_str());
@@ -469,9 +474,10 @@ bool SynchronizedMinidumpManager::HasDumps() {
   }
 
   while (reader.Next()) {
-    if (strcmp(reader.name(), ".") == 0 || strcmp(reader.name(), "..") == 0)
+    if (UNSAFE_TODO(strcmp(reader.name(), ".")) == 0 ||
+        UNSAFE_TODO(strcmp(reader.name(), "..")) == 0) {
       continue;
-
+    }
     const base::FilePath file_path = dump_path_.Append(reader.name());
     if (file_path != lockfile_path_ && file_path != metadata_path_)
       return true;

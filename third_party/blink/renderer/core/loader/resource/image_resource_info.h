@@ -42,7 +42,6 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   };
   virtual bool IsAccessAllowed(
       DoesCurrentFrameHaveSingleSecurityOrigin) const = 0;
-  virtual bool HasCacheControlNoStoreHeader() const = 0;
   virtual std::optional<ResourceError> GetResourceError() const = 0;
 
   // TODO(hiroshige): Remove this once MemoryCache becomes further weaker.
@@ -55,7 +54,6 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   // TODO(hiroshige): Remove this. crbug.com/666214
   virtual void EmulateLoadStartedForInspector(
       ResourceFetcher*,
-      const KURL&,
       const AtomicString& initiator_name) = 0;
 
   virtual void LoadDeferredImage(ResourceFetcher* fetcher) = 0;

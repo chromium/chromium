@@ -83,6 +83,12 @@ const Vector<std::unique_ptr<IDBValue>>& IDBAny::Values() const {
   return idb_values_;
 }
 
+const IDBRecordArray& IDBAny::Records() const {
+  CHECK_EQ(type_, kIDBRecordArrayType);
+  CHECK(idb_records_.has_value());
+  return *idb_records_;
+}
+
 int64_t IDBAny::Integer() const {
   DCHECK_EQ(type_, kIntegerType);
   return integer_;
@@ -110,6 +116,16 @@ v8::Local<v8::Value> IDBAny::ToV8(ScriptState* script_state) {
       return v8::Number::New(isolate, Integer());
     case IDBAny::kKeyType:
       return Key()->ToV8(script_state);
+    case IDBAny::kIDBRecordArrayType: {
+      // `IDBAny` must not convert  `idb_records_` multiple times.  `ToV8()`
+      // consumes `idb_records_`.
+      CHECK(idb_records_.has_value());
+
+      v8::Local<v8::Value> v8_value =
+          IDBRecordArray::ToV8(script_state, *std::move(idb_records_));
+      idb_records_.reset();
+      return v8_value;
+    }
   }
 }
 
@@ -131,6 +147,9 @@ IDBAny::IDBAny(std::unique_ptr<IDBKey> key)
     : type_(kKeyType), idb_key_(std::move(key)) {}
 
 IDBAny::IDBAny(int64_t value) : type_(kIntegerType), integer_(value) {}
+
+IDBAny::IDBAny(IDBRecordArray idb_records)
+    : type_(kIDBRecordArrayType), idb_records_(std::move(idb_records)) {}
 
 void IDBAny::Trace(Visitor* visitor) const {
   visitor->Trace(idb_cursor_);

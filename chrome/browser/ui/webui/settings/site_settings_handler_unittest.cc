@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,6 +15,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/byte_count.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -27,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -34,7 +38,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
@@ -42,14 +45,16 @@
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
@@ -57,15 +62,16 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -91,7 +97,9 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -99,6 +107,7 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -111,16 +120,18 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
@@ -128,6 +139,7 @@
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -135,8 +147,10 @@
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -210,11 +224,12 @@ net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
                                  "/"));
 }
 
-// Validates that the list of sites are aligned with the first party sets
+// Validates that the list of sites are aligned with the related website sets
 // mapping.
-void ValidateSitesWithFps(
+void ValidateSitesWithRws(
     const base::Value::List& storage_and_cookie_list,
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>& first_party_sets) {
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>&
+        related_website_sets) {
   for (const base::Value& site_group_value : storage_and_cookie_list) {
     const base::Value::Dict& site_group = site_group_value.GetDict();
     GroupingKey grouping_key = GroupingKey::Deserialize(
@@ -225,25 +240,25 @@ void ValidateSitesWithFps(
     std::string etld_plus1 = *grouping_key.GetEtldPlusOne();
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
 
-    if (first_party_sets.count(schemeful_site)) {
-      // Ensure that the `fpsOwner` is set correctly and aligned with
-      // |first_party_sets| mapping of site group owners.
+    if (related_website_sets.count(schemeful_site)) {
+      // Ensure that the `rwsOwner` is set correctly and aligned with
+      // |related_website_sets| mapping of site group owners.
       std::string owner_etldplus1 =
-          first_party_sets[schemeful_site].GetURL().host();
-      ASSERT_EQ(owner_etldplus1, *site_group.FindString("fpsOwner"));
+          related_website_sets[schemeful_site].GetURL().GetHost();
+      ASSERT_EQ(owner_etldplus1, *site_group.FindString("rwsOwner"));
       if (owner_etldplus1 == "google.com") {
-        ASSERT_EQ(2, *site_group.FindInt("fpsNumMembers"));
-        ASSERT_EQ(false, *site_group.FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(2, *site_group.FindInt("rwsNumMembers"));
+        ASSERT_EQ(false, *site_group.FindBool("rwsEnterpriseManaged"));
       } else if (owner_etldplus1 == "example.com") {
-        ASSERT_EQ(1, *site_group.FindInt("fpsNumMembers"));
-        ASSERT_EQ(true, *site_group.FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(1, *site_group.FindInt("rwsNumMembers"));
+        ASSERT_EQ(true, *site_group.FindBool("rwsEnterpriseManaged"));
       }
     } else {
-      // The site is not part of a FPS therefore doesn't have `fpsOwner` or
-      // `fpsNumMembers` set. `FindString` and `FindInt` should return null.
-      ASSERT_FALSE(site_group.FindString("fpsOwner"));
-      ASSERT_FALSE(site_group.FindInt("fpsNumMembers"));
-      ASSERT_FALSE(site_group.FindBool("fpsEnterpriseManaged"));
+      // The site is not part of a RWS therefore doesn't have `rwsOwner` or
+      // `rwsNumMembers` set. `FindString` and `FindInt` should return null.
+      ASSERT_FALSE(site_group.FindString("rwsOwner"));
+      ASSERT_FALSE(site_group.FindInt("rwsNumMembers"));
+      ASSERT_FALSE(site_group.FindBool("rwsEnterpriseManaged"));
     }
   }
 }
@@ -284,9 +299,7 @@ void RemoveModelEntries(
     const std::vector<browsing_data_model_test_util::BrowsingDataEntry>&
         entries_to_remove) {
   for (const auto& entry : entries_to_remove) {
-    model_entries.erase(
-        std::remove(model_entries.begin(), model_entries.end(), entry),
-        model_entries.end());
+    std::erase(model_entries, entry);
   }
 }
 
@@ -319,8 +332,7 @@ class ContentSettingSourceSetter {
         return prefs::kManagedDefaultNotificationsSetting;
       default:
         // Add support as needed.
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
     }
   }
 
@@ -331,26 +343,26 @@ class ContentSettingSourceSetter {
 
 class SiteSettingsHandlerBaseTest : public testing::Test {
  public:
-  SiteSettingsHandlerBaseTest() {
-    // Fully initialize |profile_| in the constructor since some children
-    // classes need it right away for SetUp().
+  // Defer any initialization and setup to SetUp(). This is done so that
+  // subclasses can configure feature flags in their constructor, before the
+  // test environment is fully established.
+  SiteSettingsHandlerBaseTest() = default;
+
+  void SetUp() override {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = testing_profile_manager_->CreateTestingProfile(
-        kTestUserEmail,
-        {TestingProfile::TestingFactory{
-            HistoryServiceFactory::GetInstance(),
-            HistoryServiceFactory::GetDefaultFactory()}},
-        /*is_main_profile=*/true);
+        kTestUserEmail, {TestingProfile::TestingFactory{
+                            HistoryServiceFactory::GetInstance(),
+                            HistoryServiceFactory::GetDefaultFactory()}});
     EXPECT_TRUE(profile_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SetUpUserManager(profile_.get());
 #endif
-  }
 
-  void SetUp() override {
     browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(),
@@ -370,6 +382,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(profile()));
 
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
+    SetUpIsolatedWebApp();
+
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
@@ -383,17 +399,18 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void TearDown() override {
     if (profile_) {
       auto* partition = profile_->GetDefaultStoragePartition();
-      if (partition)
+      if (partition) {
         partition->WaitForDeletionTasksForTesting();
+      }
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUpUserManager(TestingProfile* profile) {
     // On ChromeOS a user account is needed in order to check whether the user
     // account is affiliated with the device owner for the purposes of applying
     // enterprise policy.
-    constexpr char kTestUserGaiaId[] = "1111111111";
+    constexpr GaiaId::Literal kTestUserGaiaId("1111111111");
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* fake_user_manager_ptr = fake_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -405,7 +422,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
                                                   /*is_affiliated=*/true);
     fake_user_manager_ptr->LoginUser(account_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   TestingProfile* profile() { return profile_.get(); }
   Profile* incognito_profile() { return incognito_profile_; }
@@ -448,7 +465,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void ValidateDefault(const ContentSetting expected_setting,
-                       const site_settings::SiteSettingSource expected_source,
+                       const std::string expected_source,
                        size_t expected_total_calls) {
     EXPECT_EQ(expected_total_calls, web_ui()->call_data().size());
 
@@ -464,12 +481,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value::Dict& default_value = data.arg3()->GetDict();
     const std::string* setting = default_value.FindString(kSetting);
     ASSERT_TRUE(setting);
-    EXPECT_EQ(content_settings::ContentSettingToString(expected_setting),
-              *setting);
+    EXPECT_EQ(*setting,
+              content_settings::ContentSettingToString(expected_setting));
     const std::string* source = default_value.FindString(kSource);
     if (source) {
-      EXPECT_EQ(site_settings::SiteSettingSourceToString(expected_source),
-                *source);
+      EXPECT_EQ(*source, expected_source);
+    } else {
+      EXPECT_TRUE(expected_source.empty());
     }
   }
 
@@ -535,7 +553,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     constraints.set_lifetime(lifetime);
     if (is_auto_granted) {
       constraints.set_session_model(
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+          content_settings::mojom::SessionModel::DURABLE);
+      constraints.set_decided_by_related_website_sets(true);
     }
 
     map->SetContentSettingCustomScope(
@@ -781,7 +800,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
   void ValidateZoom(const std::vector<ZoomLevel>& zoom_levels,
                     size_t expected_total_calls) {
-    EXPECT_EQ(expected_total_calls, web_ui()->call_data().size());
+    const size_t zoom_changed_count = std::ranges::count_if(
+        web_ui()->call_data(),
+        [](const std::unique_ptr<content::TestWebUI::CallData>& call_data_ptr) {
+          return call_data_ptr && call_data_ptr->arg1() &&
+                 *call_data_ptr->arg1() == "onZoomLevelsChanged";
+        });
+    EXPECT_EQ(expected_total_calls, zoom_changed_count);
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
@@ -823,8 +848,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void ValidateUsageInfo(const std::string& expected_usage_origin,
                          const std::string& expected_usage_string,
                          const std::string& expected_cookie_string,
-                         const std::string& expected_fps_member_count_string,
-                         const bool expected_fps_policy) {
+                         const std::string& expected_rws_member_count_string,
+                         const bool expected_rws_policy) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
@@ -841,10 +866,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     EXPECT_EQ(expected_cookie_string, data.arg_nth(3)->GetString());
 
     ASSERT_TRUE(data.arg_nth(4)->is_string());
-    EXPECT_EQ(expected_fps_member_count_string, data.arg_nth(4)->GetString());
+    EXPECT_EQ(expected_rws_member_count_string, data.arg_nth(4)->GetString());
 
     ASSERT_TRUE(data.arg_nth(5)->is_bool());
-    EXPECT_EQ(expected_fps_policy, data.arg_nth(5)->GetBool());
+    EXPECT_EQ(expected_rws_policy, data.arg_nth(5)->GetBool());
   }
 
   void CreateIncognitoProfile() {
@@ -923,13 +948,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     return data.arg2()->GetList().Clone();
   }
 
-  void SetupDefaultFirstPartySets(MockPrivacySandboxService* mock_service) {
-    EXPECT_CALL(*mock_service, GetFirstPartySetOwner(_))
+  void SetupDefaultRelatedWebsiteSets(MockPrivacySandboxService* mock_service) {
+    EXPECT_CALL(*mock_service, GetRelatedWebsiteSetOwner(_))
         .WillRepeatedly(
             [&](const GURL& url) -> std::optional<net::SchemefulSite> {
-              auto first_party_sets = GetTestFirstPartySets();
-              if (first_party_sets.count(net::SchemefulSite(url))) {
-                return first_party_sets[net::SchemefulSite(url)];
+              auto related_website_sets = GetTestRelatedWebsiteSets();
+              if (related_website_sets.count(net::SchemefulSite(url))) {
+                return related_website_sets[net::SchemefulSite(url)];
               }
 
               return std::nullopt;
@@ -937,18 +962,18 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetTestFirstPartySets() {
-    base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
-        {ConvertEtldToSchemefulSite("google.com"),
-         ConvertEtldToSchemefulSite("google.com")},
-        {ConvertEtldToSchemefulSite("google.com.au"),
-         ConvertEtldToSchemefulSite("google.com")},
-        {ConvertEtldToSchemefulSite("example.com"),
-         ConvertEtldToSchemefulSite("example.com")},
-        {ConvertEtldToSchemefulSite("unrelated.com"),
-         ConvertEtldToSchemefulSite("unrelated.com")}};
+  GetTestRelatedWebsiteSets() {
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>
+        related_website_sets = {{ConvertEtldToSchemefulSite("google.com"),
+                                 ConvertEtldToSchemefulSite("google.com")},
+                                {ConvertEtldToSchemefulSite("google.com.au"),
+                                 ConvertEtldToSchemefulSite("google.com")},
+                                {ConvertEtldToSchemefulSite("example.com"),
+                                 ConvertEtldToSchemefulSite("example.com")},
+                                {ConvertEtldToSchemefulSite("unrelated.com"),
+                                 ConvertEtldToSchemefulSite("unrelated.com")}};
 
-    return first_party_sets;
+    return related_website_sets;
   }
 
   scoped_refptr<const extensions::Extension> LoadExtension(
@@ -963,19 +988,16 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(profile()));
-    extensions::ExtensionService* extension_service =
-        extension_system->CreateExtensionService(
-            base::CommandLine::ForCurrentProcess(), base::FilePath(),
-            /*autoupdate_enabled=*/false);
-    extension_service->AddExtension(extension.get());
+    extension_system->CreateExtensionService(
+        base::CommandLine::ForCurrentProcess(), base::FilePath(),
+        /*autoupdate_enabled=*/false);
+    extensions::ExtensionRegistrar::Get(profile())->AddExtension(
+        extension.get());
     return extension;
   }
 
   void UnloadExtension(std::string extension_id) {
-    auto* extension_service =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    ASSERT_TRUE(extension_service);
-    extension_service->UnloadExtension(
+    extensions::ExtensionRegistrar::Get(profile())->RemoveExtension(
         extension_id, extensions::UnloadedExtensionReason::DISABLE);
   }
 
@@ -999,6 +1021,12 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const std::string_view kTrackingProtection =
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::TRACKING_PROTECTION);
+  const std::string_view kStorageAccess =
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::STORAGE_ACCESS);
+  const std::string_view kGeolocation =
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::GEOLOCATION);
 
   const ContentSettingsType kPermissionNotifications =
       ContentSettingsType::NOTIFICATIONS;
@@ -1155,6 +1183,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
        /*storage_size=*/0,
        /*cookie_count=*/1}};
 
+ protected:
+  virtual void SetUpIsolatedWebApp() {}
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -1163,7 +1194,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   raw_ptr<Profile, DanglingUntriaged> incognito_profile_ = nullptr;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
   raw_ptr<browsing_topics::MockBrowsingTopicsService>
@@ -1278,7 +1309,12 @@ TEST_P(SiteSettingsHandlerSchemeTest, HandleClearUnpartitionedUsage) {
       expected_browsing_data_model_entries);
 }
 
-class SiteSettingsHandlerTest : public SiteSettingsHandlerBaseTest {};
+class SiteSettingsHandlerTest : public SiteSettingsHandlerBaseTest {
+#if BUILDFLAG(IS_CHROMEOS)
+ private:
+  base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
   // Test the JS -> C++ -> JS callback path for getting and setting defaults.
@@ -1286,8 +1322,7 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
   get_args.Append(kCallbackId);
   get_args.Append(kNotifications);
   handler()->HandleGetDefaultValueForContentType(get_args);
-  ValidateDefault(CONTENT_SETTING_ASK,
-                  site_settings::SiteSettingSource::kDefault, 1U);
+  ValidateDefault(CONTENT_SETTING_ASK, "", 1U);
 
   // Set the default to 'Blocked'.
   base::Value::List set_args;
@@ -1300,8 +1335,19 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
 
   // Verify that the default has been set to 'Blocked'.
   handler()->HandleGetDefaultValueForContentType(get_args);
-  ValidateDefault(CONTENT_SETTING_BLOCK,
-                  site_settings::SiteSettingSource::kDefault, 3U);
+  ValidateDefault(CONTENT_SETTING_BLOCK, "", 3U);
+}
+
+TEST_F(SiteSettingsHandlerTest, GetEnforcedDefault) {
+  ContentSettingSourceSetter source_setter(profile(),
+                                           ContentSettingsType::NOTIFICATIONS);
+  source_setter.SetPolicyDefault(CONTENT_SETTING_ALLOW);
+
+  base::Value::List get_args;
+  get_args.Append(kCallbackId);
+  get_args.Append(kNotifications);
+  handler()->HandleGetDefaultValueForContentType(get_args);
+  ValidateDefault(CONTENT_SETTING_ALLOW, "policy", 1U);
 }
 
 // Flaky on CrOS and Linux. https://crbug.com/930481
@@ -1537,6 +1583,76 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(SiteSettingsHandlerTest, GetAllSitesIncludesStorage) {
+  SetupModel();
+
+  base::Value::List get_all_sites_args;
+  get_all_sites_args.Append(kCallbackId);
+
+  // Test all sites is empty when there are no preferences.
+  handler()->HandleGetAllSites(get_all_sites_args);
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+
+  // Add a couple of double-keyed exceptions and check that they appear for the
+  // primary (embedded) site using a representative URL.
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  const GURL embedded_url("https://altostrat.com");
+  const GURL embedding_url1("https://examplepetstore.com");
+  const GURL embedding_url2("https://cymbalgroup.com");
+  map->SetContentSettingDefaultScope(embedded_url, embedding_url1,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(embedded_url, embedding_url2,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  handler()->HandleGetAllSites(get_all_sites_args);
+
+  {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->GetBool());
+    const base::Value::List& site_groups = data.arg3()->GetList();
+    EXPECT_EQ(1UL, site_groups.size());
+    for (const base::Value& site_group_val : site_groups) {
+      const base::Value::Dict& site_group = site_group_val.GetDict();
+      const base::Value::List& origin_list =
+          CHECK_DEREF(site_group.FindList("origins"));
+      EXPECT_THAT(CHECK_DEREF(site_group.FindString("groupingKey")),
+                  IsEtldPlus1("altostrat.com"));
+      EXPECT_EQ(1UL, origin_list.size());
+    }
+  }
+
+  // Now remove the double-keyed exceptions using SetOriginPermissions and
+  // verify that the list is empty.
+  base::Value::List reset_args;
+  reset_args.Append(embedded_url.spec());
+  reset_args.Append(std::move(kStorageAccess));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
+
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  handler()->HandleGetAllSites(get_all_sites_args);
+
+  {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->GetBool());
+    const base::Value::List& site_groups = data.arg3()->GetList();
+    EXPECT_EQ(0UL, site_groups.size());
+  }
+
+  // Each call to HandleGetAllSites() above added a callback to the profile's
+  // browsing_data::LocalStorageHelper, so make sure these aren't stuck waiting
+  // to run at the end of the test.
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(SiteSettingsHandlerTest, Cookies) {
   base::Value::List get_all_sites_args;
   get_all_sites_args.Append(kCallbackId);
@@ -1710,9 +1826,10 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   // permissions are correctly transformed for usage by JS.
   const GURL url1("https://example.com");
   const GURL url2("http://example.com");
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
+  }
 
   clock.Advance(base::Hours(2));
   clock.Advance(base::Hours(1));
@@ -1725,9 +1842,10 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   incognito_auto_blocker->SetClockForTesting(&clock);
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     incognito_auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
+  }
 
   handler()->HandleGetRecentSitePermissions(get_recent_permissions_args);
   {
@@ -1952,11 +2070,11 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
   GURL start_url("http://abc.example.com/path");
-  RegisterWebApp(
-      profile(),
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url),
-              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
-              apps::InstallReason::kSync));
+  RegisterWebApp(profile(),
+                 MakeApp(web_app::GenerateAppId(
+                             /*manifest_id_path=*/std::nullopt, start_url),
+                         apps::AppType::kWeb, start_url.spec(),
+                         apps::Readiness::kReady, apps::InstallReason::kSync));
 
   SetupModel();
 
@@ -2145,6 +2263,64 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
   }
 }
 
+TEST_F(SiteSettingsHandlerTest, ClearHeuristicData) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {blink::features::kGeolocationElement,
+       permissions::features::kPermissionHeuristicAutoGrant},
+      {});
+  constexpr char kOrigin[] = "https://www.example.com:443";
+  auto* permission_actions_history =
+      PermissionActionsHistoryFactory::GetForProfile(profile());
+
+  {
+    // Grant a temporary permission to create heuristic data.
+    permission_actions_history->RecordTemporaryGrant(
+        GURL(kOrigin), ContentSettingsType::GEOLOCATION);
+
+    // Verify that heuristic data exists.
+    EXPECT_EQ(1, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+
+    // Reset permission for the origin.
+    base::Value::List reset_args;
+    reset_args.Append(kOrigin);
+    reset_args.Append(std::string());
+    reset_args.Append(kGeolocation);
+    reset_args.Append(false);  // Incognito.
+    handler()->HandleResetCategoryPermissionForPattern(reset_args);
+
+    // Heuristic data for the given origin should be cleared.
+    EXPECT_EQ(0, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+  }
+
+  const auto kContentSettings = std::to_array<ContentSetting>({
+      CONTENT_SETTING_BLOCK,
+      CONTENT_SETTING_ASK,
+  });
+  for (const ContentSetting content_setting : kContentSettings) {
+    // Grant a temporary permission to create heuristic data.
+    permission_actions_history->RecordTemporaryGrant(
+        GURL(kOrigin), ContentSettingsType::GEOLOCATION);
+
+    // Verify that heuristic data exists.
+    EXPECT_EQ(1, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+
+    base::Value::List reset_args;
+    reset_args.Append(kOrigin);
+    reset_args.Append(kGeolocation);
+    reset_args.Append(
+        content_settings::ContentSettingToString(content_setting));
+    handler()->HandleSetOriginPermissions(reset_args);
+
+    // Heuristic data for the given origin should be cleared.
+    EXPECT_EQ(0, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+  }
+}
+
 TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForInvalidOrigins) {
   constexpr char kInvalidOrigin[] = "example.com";
   auto url = GURL(kInvalidOrigin);
@@ -2293,55 +2469,6 @@ TEST_F(SiteSettingsHandlerTest, IncrementsTrackingProtectionMetrics) {
             1);
 }
 
-class Reset3pcCategoryPermissionTest
-    : public SiteSettingsHandlerBaseTest,
-      public testing::WithParamInterface<bool> {
- public:
-  Reset3pcCategoryPermissionTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          privacy_sandbox::kTrackingProtectionContentSettingInSettings);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, Reset3pcCategoryPermissionTest, testing::Bool());
-
-TEST_P(Reset3pcCategoryPermissionTest,
-       RemovesTrackingProtectionExceptionsWhenFeatureIsOff) {
-  constexpr char kOrigin[] = "https://www.test.com:443";
-  base::Value::List set_args;
-  set_args.Append("*");        // Primary pattern.
-  set_args.Append(kOrigin);  // Secondary pattern.
-  set_args.Append(kTrackingProtection);
-  set_args.Append(
-      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
-  set_args.Append(false);  // Incognito
-  handler()->HandleSetCategoryPermissionForPattern(set_args);
-  // We should have 1 Tracking Protection exception
-  base::Value::List initial_exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::TRACKING_PROTECTION, profile(), web_ui(),
-      /*incognito=*/false, &initial_exceptions);
-  EXPECT_EQ(initial_exceptions.size(), 1U);
-
-  base::Value::List reset_args;
-  reset_args.Append("*");      // Primary pattern.
-  reset_args.Append(kOrigin);  // Secondary pattern.
-  reset_args.Append(kCookies);
-  reset_args.Append(false);  // Incognito
-  handler()->HandleResetCategoryPermissionForPattern(reset_args);
-  base::Value::List actual_exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::TRACKING_PROTECTION, profile(), web_ui(),
-      /*incognito=*/false, &actual_exceptions);
-  // The exception should only have been removed if the feature is off.
-  EXPECT_EQ(actual_exceptions.size(), GetParam() ? 1U : 0U);
-}
-
 // TODO(crbug.com/40688152): Test flakes on TSAN and ASAN.
 #if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DefaultSettingSource DISABLED_DefaultSettingSource
@@ -2465,6 +2592,64 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
   ValidateOrigin(origin_with_port, origin_with_port, origin,
                  CONTENT_SETTING_ASK,
                  site_settings::SiteSettingSource::kDefault, 4U);
+}
+
+TEST_F(SiteSettingsHandlerTest, SetOriginPermissionsForStorageAccess) {
+  const GURL origin_a_with_port("https://www.example.com:443");
+  const GURL origin_b_with_port("https://www.examplepetstore.com:443");
+  // The display name won't show the port if it's default for that scheme.
+  const std::string origin_a_display_name("example.com");
+  const std::string origin_b_display_name("examplepetstore.com");
+  // The resulting pattern will be broadened to the scheme+eTLD+1 level.
+  const std::string origin_a_pattern("https://[*.]example.com");
+  const std::string origin_b_pattern("https://[*.]examplepetstore.com");
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Allow storage access for this origin/embedding pair, in both directions.
+  // This is an unlikely scenario in practice but we want users to be able to
+  // clear an embedding relationship between two sites from either site.
+  map->SetContentSettingDefaultScope(origin_a_with_port, origin_b_with_port,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(origin_b_with_port, origin_a_with_port,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that the group exception was created correctly.
+  ValidateStorageAccessList(/*expected_total_calls=*/3U,
+                            /*expected_num_groups=*/2U);
+
+  ValidateStorageAccessException(
+      origin_a_pattern, origin_a_display_name, CONTENT_SETTING_ALLOW,
+      {{origin_b_pattern, origin_b_display_name, /*incognito=*/false}},
+      /*index=*/0U);
+
+  ValidateStorageAccessException(
+      origin_b_pattern, origin_b_display_name, CONTENT_SETTING_ALLOW,
+      {{origin_a_pattern, origin_a_display_name, /*incognito=*/false}},
+      /*index=*/1U);
+
+  // Reset things to default for STORAGE_ACCESS on origin_a.
+  base::Value::List reset_args;
+  reset_args.Append(origin_a_with_port.spec());
+  reset_args.Append(std::move(kStorageAccess));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
+  handler()->HandleSetOriginPermissions(reset_args);
+  EXPECT_EQ(5U, web_ui()->call_data().size());
+
+  // Verify that there are no storage access exceptions after resetting.
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+  ValidateStorageAccessList(/*expected_total_calls=*/6U,
+                            /*expected_num_groups=*/0U);
 }
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetForInvalidURLs) {
@@ -2841,46 +3026,44 @@ TEST_F(SiteSettingsHandlerTest, TemporaryCookieExceptions) {
 
 class SiteSettingsHandlerIsolatedWebAppTest
     : public SiteSettingsHandlerBaseTest {
- public:
-  void SetUp() override {
+ protected:
+  void SetUpIsolatedWebApp() override {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-    InstallIsolatedWebApp(iwa_url(), "IWA Name");
-
-    SiteSettingsHandlerBaseTest::SetUp();
+    iwa_url_info_ = InstallIsolatedWebApp("IWA Name");
   }
 
  protected:
-  GURL iwa_url() {
-    return GURL(
-        "isolated-app://"
-        "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  std::optional<web_app::IsolatedWebAppUrlInfo> iwa_url_info_;
+
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      const std::string& name) {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder().SetName(name))
+            .BuildBundle();
+    bundle->FakeInstallPageState(profile());
+    bundle->TrustSigningKey();
+    return bundle->InstallChecked(profile());
   }
 
-  webapps::AppId InstallIsolatedWebApp(const GURL& iwa_url,
-                                       const std::string& name) {
-    webapps::AppId app_id =
-        web_app::AddDummyIsolatedAppToRegistry(profile(), iwa_url, name);
-    RegisterWebApp(profile(), MakeApp(app_id, apps::AppType::kWeb,
-                                      iwa_url.spec(), apps::Readiness::kReady,
-                                      apps::InstallReason::kUser));
-    return app_id;
-  }
-
-  content::HostZoomMap* GetIwaHostZoomMap(const GURL& url) {
-    auto url_info = *web_app::IsolatedWebAppUrlInfo::Create(url);
+  content::HostZoomMap* GetIwaHostZoomMap(
+      const web_app::IsolatedWebAppUrlInfo& url_info) {
     content::StoragePartition* iwa_partition = profile()->GetStoragePartition(
         url_info.storage_partition_config(profile()));
     return content::HostZoomMap::GetForStoragePartition(iwa_partition);
   }
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
-  GURL https_url("https://" + iwa_url().host());
+  GURL https_url("https://" + iwa_url_info_->origin().host());
+  GURL iwa_origin_url = iwa_url_info_->origin().GetURL();
 
-  SetupModelWithIsolatedWebAppData({{iwa_url().spec(), 50}});
+  SetupModelWithIsolatedWebAppData({{iwa_url_info_->origin().Serialize(), 50}});
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(iwa_url(), iwa_url(),
+  map->SetContentSettingDefaultScope(iwa_origin_url, iwa_origin_url,
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_BLOCK);
   map->SetContentSettingDefaultScope(https_url, https_url,
@@ -2894,28 +3077,30 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
   const base::Value::Dict& origin1 =
       CHECK_DEREF(group1.FindList("origins"))[0].GetDict();
   EXPECT_THAT(CHECK_DEREF(group1.FindString("groupingKey")),
-              IsOrigin(iwa_url()));
+              IsOrigin(iwa_origin_url));
   EXPECT_EQ(group1.FindString("etldPlus1"), nullptr);
   EXPECT_EQ(CHECK_DEREF(group1.FindString("displayName")), "IWA Name");
-  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_url());
+  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_origin_url);
   EXPECT_EQ(origin1.FindDouble("usage").value(), 50.0);
 
   const base::Value::Dict& group2 = site_groups[1].GetDict();
   const base::Value::Dict& origin2 =
       CHECK_DEREF(group2.FindList("origins"))[0].GetDict();
   EXPECT_THAT(CHECK_DEREF(group2.FindString("groupingKey")),
-              IsEtldPlus1(iwa_url().host()));
-  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")), iwa_url().host());
-  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")), iwa_url().host());
+              IsEtldPlus1(iwa_url_info_->origin().host()));
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")),
+            iwa_url_info_->origin().host());
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")),
+            iwa_url_info_->origin().host());
   EXPECT_EQ(CHECK_DEREF(origin2.FindString("origin")), https_url);
   EXPECT_EQ(origin2.FindDouble("usage").value(), 0.0);
 }
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
-  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(iwa_url());
+  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(*iwa_url_info_);
 
-  std::string host_or_spec = url::Origin::Create(iwa_url()).Serialize();
-  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  std::string host_or_spec = iwa_url_info_->origin().Serialize();
+  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url_info_->origin().host(), 1.1);
   ValidateZoom({{host_or_spec, "IWA Name", "122%"}}, 1U);
 
   base::Value::List args;
@@ -2928,40 +3113,35 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
 
   double default_level = iwa_host_zoom_map->GetDefaultZoomLevel();
   double level = iwa_host_zoom_map->GetZoomLevelForHostAndScheme(
-      "isolated-app", iwa_url().host());
+      "isolated-app", iwa_url_info_->origin().host());
   EXPECT_EQ(default_level, level);
 }
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevelsSortedByAppName) {
-  GetIwaHostZoomMap(iwa_url())->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  GetIwaHostZoomMap(*iwa_url_info_)
+      ->SetZoomLevelForHost(iwa_url_info_->origin().host(), 1.1);
 
   // Install 3 more IWAs.
-  GURL iwa3_url(
-      "isolated-app://"
-      "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa3_url, "IWA Name 3");
-  GetIwaHostZoomMap(iwa3_url)->SetZoomLevelForHost(iwa3_url.host(), 1.1);
+  web_app::IsolatedWebAppUrlInfo iwa3_url_info =
+      InstallIsolatedWebApp("IWA Name 3");
+  GetIwaHostZoomMap(iwa3_url_info)
+      ->SetZoomLevelForHost(iwa3_url_info.origin().host(), 1.1);
 
-  GURL iwa2_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa2_url, "IWA Name 2");
-  GetIwaHostZoomMap(iwa2_url)->SetZoomLevelForHost(iwa2_url.host(), 1.1);
+  web_app::IsolatedWebAppUrlInfo iwa2_url_info =
+      InstallIsolatedWebApp("IWA Name 2");
+  GetIwaHostZoomMap(iwa2_url_info)
+      ->SetZoomLevelForHost(iwa2_url_info.origin().host(), 1.1);
 
   // Don't set a zoom for this app to make sure it's not in the list.
-  GURL iwa4_url(
-      "isolated-app://"
-      "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa4_url, "IWA Name 4");
+  web_app::IsolatedWebAppUrlInfo iwa4_url = InstallIsolatedWebApp("IWA Name 4");
 
   base::Value::List args;
   handler()->HandleFetchZoomLevels(args);
 
-  ValidateZoom(
-      {{url::Origin::Create(iwa_url()).Serialize(), "IWA Name", "122%"},
-       {url::Origin::Create(iwa2_url).Serialize(), "IWA Name 2", "122%"},
-       {url::Origin::Create(iwa3_url).Serialize(), "IWA Name 3", "122%"}},
-      2U);
+  ValidateZoom({{iwa_url_info_->origin().Serialize(), "IWA Name", "122%"},
+                {iwa2_url_info.origin().Serialize(), "IWA Name 2", "122%"},
+                {iwa3_url_info.origin().Serialize(), "IWA Name 3", "122%"}},
+               2U);
 }
 
 class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
@@ -2972,6 +3152,7 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   SiteSettingsHandlerInfobarTest& operator=(
       const SiteSettingsHandlerInfobarTest&) = delete;
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     BrowserWithTestWindowTest::SetUp();
 
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
@@ -2979,18 +3160,14 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     handler()->AllowJavascript();
     web_ui()->ClearTrackedCalls();
 
-    window2_ = CreateBrowserWindow();
-    browser2_ =
-        CreateBrowser(profile(), browser()->type(), false, window2_.get());
-    window3_ = CreateBrowserWindow();
+    browser2_ = CreateBrowser(profile(), browser()->type(), false);
 
     // Creates the second profile used by this test.
     TestingProfile* profile2_ = profile_manager()->CreateTestingProfile(
         "testing_profile2@test", nullptr, std::u16string(), 0,
         GetTestingFactories());
 
-    browser3_ =
-        CreateBrowser(profile2_, browser()->type(), false, window3_.get());
+    browser3_ = CreateBrowser(profile2_, browser()->type(), false);
 
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(
@@ -3018,29 +3195,27 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS a user account is needed in order to check whether the user
   // account is affiliated with the device owner for the purposes of applying
   // enterprise policy.
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserPolicyStatus(
+        AccountId::FromUserEmailGaiaId(email, gaia_id),
+        /*is_managed=*/true,
+        /*is_affiliated=*/true);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   infobars::ContentInfoBarManager* GetInfoBarManagerForTab(Browser* browser,
                                                            int tab_index,
                                                            GURL* tab_url) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetWebContentsAt(tab_index);
-    if (tab_url)
+    if (tab_url) {
       *tab_url = web_contents->GetLastCommittedURL();
+    }
     return infobars::ContentInfoBarManager::FromWebContents(web_contents);
   }
 
@@ -3061,9 +3236,7 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
  private:
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
-  std::unique_ptr<BrowserWindow> window2_;
   std::unique_ptr<Browser> browser2_;
-  std::unique_ptr<BrowserWindow> window3_;
   std::unique_ptr<Browser> browser3_;
 };
 
@@ -3087,9 +3260,8 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
       extensions::ExtensionBuilder("Test")
           .SetID("fooooooooooooooooooooooooooooooo")
           .Build();
-  extensions::ExtensionSystem::Get(profile())
-      ->extension_service()
-      ->AddExtension(test_extension.get());
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(
+      test_extension.get());
 
   //               __________  ______________  ___________________  _______
   //   Window 2:  / insecure '/ origin_query \' example_subdomain \' about \
@@ -3312,15 +3484,16 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   const ContentSettingsType content_settings_type =
       ContentSettingsType::NOTIFICATIONS;
   // Register WebUIAllowlist auto-granted permissions.
-  const url::Origin kWebUIOrigins[] = {
+  const auto kWebUIOrigins = std::to_array<url::Origin>({
       url::Origin::Create(GURL("chrome://test")),
       url::Origin::Create(GURL("chrome-untrusted://test")),
       url::Origin::Create(GURL("devtools://devtools")),
-  };
+  });
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
-  for (const url::Origin& origin : kWebUIOrigins)
+  for (const url::Origin& origin : kWebUIOrigins) {
     allowlist->RegisterAutoGrantedPermission(origin, content_settings_type);
+  }
 
   // Verify the auto-granted permissions are registered, and they are indeed
   // provided by WebUIAllowlist.
@@ -3408,8 +3581,9 @@ TEST_F(SiteSettingsHandlerTest, IncludeWebUISchemesInGetOriginPermissions) {
   };
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
-  for (const url::Origin& origin : kWebUIOrigins)
+  for (const url::Origin& origin : kWebUIOrigins) {
     allowlist->RegisterAutoGrantedPermission(origin, content_settings_type);
+  }
 
   for (const url::Origin& origin : kWebUIOrigins) {
     base::Value::List get_origin_permissions_args;
@@ -3879,25 +4053,11 @@ TEST_P(StorageAccessSiteSettingsHandlerLifetimeTest,
 
 class PersistentPermissionsSiteSettingsHandlerTest
     : public SiteSettingsHandlerBaseTest {
-  void SetUp() override {
-    SiteSettingsHandlerBaseTest::SetUp();
-    handler_ = std::make_unique<SiteSettingsHandler>(&profile_);
-    handler_->set_web_ui(web_ui());
-    handler_->AllowJavascript();
-    web_ui()->ClearTrackedCalls();
-  }
-
-  void TearDown() override { handler_->DisallowJavascript(); }
-
  public:
   PersistentPermissionsSiteSettingsHandlerTest() {
     feature_list_.InitAndEnableFeature(
         features::kFileSystemAccessPersistentPermissions);
   }
-
- protected:
-  TestingProfile profile_;
-  std::unique_ptr<SiteSettingsHandler> handler_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -3908,7 +4068,7 @@ class PersistentPermissionsSiteSettingsHandlerTest
 TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleGetFileSystemGrants) {
   ChromeFileSystemAccessPermissionContext* context =
-      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile());
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -3924,17 +4084,17 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath,
+      kTestOrigin1, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto file_write_grant = context->GetExtendedWritePermissionGrantForTesting(
-      kTestOrigin2, kTestPath2,
+      kTestOrigin2, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto directory_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath3,
+      kTestOrigin1, content::PathInfo(kTestPath3),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath4,
+          kTestOrigin2, content::PathInfo(kTestPath4),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
 
   auto kTestOrigin1Grants =
@@ -3953,7 +4113,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List get_file_system_permissions_args;
   get_file_system_permissions_args.Append(kCallbackId);
 
-  handler_->HandleGetFileSystemGrants(get_file_system_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
@@ -4008,7 +4168,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleRevokeFileSystemGrant) {
   ChromeFileSystemAccessPermissionContext* context =
-      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile());
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -4024,18 +4184,18 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath,
+      kTestOrigin1, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto directory_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath2,
+      kTestOrigin1, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath3,
+          kTestOrigin2, content::PathInfo(kTestPath3),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto second_directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath4,
+          kTestOrigin2, content::PathInfo(kTestPath4),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
 
   base::Value::List revoke_origin1_grant_permissions_args;
@@ -4045,8 +4205,8 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List get_file_system_grants_permissions_args;
   get_file_system_grants_permissions_args.Append(kCallbackId);
 
-  handler_->HandleRevokeFileSystemGrant(revoke_origin1_grant_permissions_args);
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleRevokeFileSystemGrant(revoke_origin1_grant_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
@@ -4067,8 +4227,8 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   revoke_origin2_grant_permissions_args.Append("https://www.b.com");
   revoke_origin2_grant_permissions_args.Append("/e/");
 
-  handler_->HandleRevokeFileSystemGrant(revoke_origin2_grant_permissions_args);
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleRevokeFileSystemGrant(revoke_origin2_grant_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& updated_data =
       *web_ui()->call_data().back();
   const base::Value::List& updated_grants = updated_data.arg3()->GetList();
@@ -4090,7 +4250,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleRevokeFileSystemGrants) {
   ChromeFileSystemAccessPermissionContext* context =
-      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile());
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -4106,23 +4266,23 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath,
+      kTestOrigin1, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto file_write_grant = context->GetExtendedWritePermissionGrantForTesting(
-      kTestOrigin2, kTestPath2,
+      kTestOrigin2, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto directory_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath3,
+      kTestOrigin1, content::PathInfo(kTestPath3),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath4,
+          kTestOrigin2, content::PathInfo(kTestPath4),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
 
   base::Value::List get_file_system_grants_permissions_args;
   get_file_system_grants_permissions_args.Append(kCallbackId);
 
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
@@ -4133,9 +4293,9 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List revoke_origin1_grants_permissions_args;
   revoke_origin1_grants_permissions_args.Append("https://www.a.com");
 
-  handler_->HandleRevokeFileSystemGrants(
+  handler()->HandleRevokeFileSystemGrants(
       revoke_origin1_grants_permissions_args);
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& updated_data =
       *web_ui()->call_data().back();
   const base::Value::List& updated_grants = updated_data.arg3()->GetList();
@@ -4239,16 +4399,19 @@ class SiteSettingsHandlerChooserExceptionTest
   bool ChooserExceptionContainsSiteException(const base::Value::Dict& exception,
                                              std::string_view origin) {
     const base::Value::List* sites = exception.FindList(site_settings::kSites);
-    if (!sites)
+    if (!sites) {
       return false;
+    }
 
     for (const auto& site : *sites) {
       const std::string* exception_origin =
           site.GetDict().FindString(site_settings::kOrigin);
-      if (!exception_origin)
+      if (!exception_origin) {
         continue;
-      if (*exception_origin == origin)
+      }
+      if (*exception_origin == origin) {
         return true;
+      }
     }
     return false;
   }
@@ -4263,8 +4426,9 @@ class SiteSettingsHandlerChooserExceptionTest
     for (const auto& exception : exceptions) {
       const std::string* exception_display_name =
           exception.GetDict().FindString(site_settings::kDisplayName);
-      if (!exception_display_name)
+      if (!exception_display_name) {
         continue;
+      }
 
       if (*exception_display_name == display_name) {
         return ChooserExceptionContainsSiteException(exception.GetDict(),
@@ -4353,8 +4517,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                  GetDevicesFromVendor18D2DisplayName()));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // Don't include WebUI schemes.
@@ -4415,8 +4578,7 @@ class SiteSettingsHandlerChooserExceptionTest
                           GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
 
@@ -4456,8 +4618,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetDevicesFromVendor18D2DisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -4515,8 +4676,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetDevicesFromVendor18D2DisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
 
@@ -4570,8 +4730,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetDevicesFromVendor18D2DisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       // Ensure that the sites list does not contain the URLs of the removed
@@ -4634,8 +4793,7 @@ class SiteSettingsHandlerChooserExceptionTest
                           GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       // Ensure that the sites list still displays a site exception entry for an
@@ -4702,8 +4860,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       EXPECT_FALSE(ChooserExceptionContainsSiteException(
           exceptions, "user-granted-device", kAndroidOriginStr));
@@ -4745,8 +4902,7 @@ class SiteSettingsHandlerChooserExceptionTest
                           GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       EXPECT_TRUE(ChooserExceptionContainsSiteException(
           exceptions, "user-granted-device", kYoutubeOriginStr));
@@ -4789,8 +4945,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       EXPECT_FALSE(ChooserExceptionContainsSiteException(
           exceptions, "user-granted-device", kYoutubeOriginStr));
@@ -4827,8 +4982,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
 
@@ -4864,8 +5018,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -5937,8 +6090,12 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6020,8 +6177,12 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6098,8 +6259,12 @@ TEST_F(SiteSettingsHandlerTest, ClearDurableStorage) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6220,16 +6385,16 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
       expected_browsing_data_model_entries);
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleGetFpsMembershipLabel) {
+TEST_F(SiteSettingsHandlerTest, HandleGetRwsMembershipLabel) {
   base::Value::List args;
-  args.Append("getFpsMembershipLabel");
+  args.Append("getRwsMembershipLabel");
   args.Append(5);
   args.Append("google.com");
-  handler()->HandleGetFpsMembershipLabel(args);
+  handler()->HandleGetRwsMembershipLabel(args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
   EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("getFpsMembershipLabel", data.arg1()->GetString());
+  EXPECT_EQ("getRwsMembershipLabel", data.arg1()->GetString());
   ASSERT_TRUE(data.arg2()->GetBool());
   EXPECT_EQ("5 sites in google.com's group", data.arg3()->GetString());
 }
@@ -6246,19 +6411,20 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
   ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(int64_t(size))),
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(size))),
             data.arg3()->GetString());
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
-  SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
+  SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
 
-  EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(_))
       .Times(1)
       .WillOnce(Return(false));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("example.com")))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(
+                  ConvertEtldToSchemefulSite("example.com")))
       .Times(2)
       .WillRepeatedly(Return(true));
 
@@ -6305,15 +6471,16 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   ValidateUsageInfo("http://ungrouped.com//", "", "1 cookie", "", false);
 }
 
-TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
-  SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
+TEST_F(SiteSettingsHandlerTest, RelatedWebsiteSetsMembership) {
+  SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
 
-  EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(_))
       .Times(2)
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("example.com")))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(
+                  ConvertEtldToSchemefulSite("example.com")))
       .Times(1)
       .WillOnce(Return(true));
 
@@ -6332,9 +6499,9 @@ TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
   const base::Value::List& storage_and_cookie_list = data.arg2()->GetList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
 
-  auto first_party_sets = GetTestFirstPartySets();
+  auto related_website_sets = GetTestRelatedWebsiteSets();
 
-  ValidateSitesWithFps(storage_and_cookie_list, first_party_sets);
+  ValidateSitesWithRws(storage_and_cookie_list, related_website_sets);
 }
 
 TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
@@ -6349,9 +6516,9 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
   handler()->ServicePendingRequests();
 
   ValidateUsageInfo(
-      /*expected_usage_host=*/iwa_url, /*expected_usage_string=*/"1,000 B",
+      /*expected_usage_origin=*/iwa_url, /*expected_usage_string=*/"1,000 B",
       /*expected_cookie_string=*/"",
-      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
+      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 }
 
 TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearSiteGroupDataAndCookies) {
@@ -6405,7 +6572,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_usage_origin=*/iwa_url.spec(),
       /*expected_usage_string=*/"1,000 B",
       /*expected_cookie_string=*/"",
-      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
+      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 
   base::Value::List clear_args;
   clear_args.Append(iwa_url.spec());
@@ -6418,7 +6585,83 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_usage_origin=*/iwa_url.spec(),
       /*expected_usage_string=*/"",
       /*expected_cookie_string=*/"",
-      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
+      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
+}
+
+TEST_F(SiteSettingsHandlerTest, SiteExceptionScopeTypeMetrics) {
+  constexpr char kScopeTypeHistogram[] =
+      "Privacy.SiteExceptionsAdded.ScopeType";
+  constexpr char kContentSettingTypeHistogram[] =
+      "Privacy.SiteExceptionsAdded.ContentSettingType";
+  base::HistogramTester tester;
+  tester.ExpectTotalCount(kScopeTypeHistogram, 0);
+
+  {
+    base::Value::List set_args;
+    set_args.Append("https://www.blocked.com:443");  // Primary pattern.
+    set_args.Append(std::string());                  // Secondary pattern.
+    set_args.Append(kNotifications);
+    set_args.Append(
+        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+    set_args.Append(false);  // Incognito.
+
+    handler()->HandleSetCategoryPermissionForPattern(set_args);
+    ASSERT_EQ(2U, web_ui()->call_data().size());
+
+    tester.ExpectBucketCount(kScopeTypeHistogram,
+                             ContentSettingsPattern::Scope::kOriginScoped,
+                             1 /* expected_count */);
+    tester.ExpectBucketCount(
+        kContentSettingTypeHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(
+            ContentSettingsType::NOTIFICATIONS),
+        1 /* expected_count */);
+  }
+
+  {
+    base::Value::List set_args;
+    set_args.Append("https://[*.]blocked.com:443");  // Primary pattern.
+    set_args.Append(std::string());                  // Secondary pattern.
+    set_args.Append(kCookies);
+    set_args.Append(
+        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+    set_args.Append(false);  // Incognito.
+
+    handler()->HandleSetCategoryPermissionForPattern(set_args);
+    ASSERT_EQ(3U, web_ui()->call_data().size());
+
+    tester.ExpectBucketCount(kScopeTypeHistogram,
+                             ContentSettingsPattern::Scope::kWithDomainWildcard,
+                             1 /* expected_count */);
+    tester.ExpectBucketCount(
+        kContentSettingTypeHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(
+            ContentSettingsType::COOKIES),
+        1 /* expected_count */);
+  }
+
+  {
+    base::Value::List set_args;
+    set_args.Append("*");                        // Primary pattern.
+    set_args.Append("https://[*.]blocked.com");  // Secondary pattern.
+    set_args.Append(kTrackingProtection);
+    set_args.Append(
+        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+    set_args.Append(false);  // Incognito.
+
+    handler()->HandleSetCategoryPermissionForPattern(set_args);
+    ASSERT_EQ(4U, web_ui()->call_data().size());
+
+    tester.ExpectBucketCount(
+        kScopeTypeHistogram,
+        ContentSettingsPattern::Scope::kWithDomainAndPortWildcard,
+        1 /* expected_count */);
+    tester.ExpectBucketCount(
+        kContentSettingTypeHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(
+            ContentSettingsType::TRACKING_PROTECTION),
+        1 /* expected_count */);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -6431,7 +6674,7 @@ class SiteSettingsGlobalPermissionTest
   bool GeoBlocked() const { return std::get<2>(GetParam()); }
 };
 
-TEST_P(SiteSettingsGlobalPermissionTest, GetOSGlobalPermissionStatus) {
+TEST_P(SiteSettingsGlobalPermissionTest, GetSystemDeniedPermissions) {
   system_permission_settings::ScopedSettingsForTesting cam_settings(
       ContentSettingsType::MEDIASTREAM_CAMERA, CamBlocked());
   system_permission_settings::ScopedSettingsForTesting mic_settings(
@@ -6441,31 +6684,22 @@ TEST_P(SiteSettingsGlobalPermissionTest, GetOSGlobalPermissionStatus) {
 
   base::Value::List args;
   args.Append(kCallbackId);
-  handler()->HandleGetOSGlobalPermissionStatus(args);
+  handler()->HandleGetSystemDeniedPermissions(args);
   EXPECT_LT(0u, CHECK_DEREF(web_ui()).call_data().size());
   const auto& call_data = *(CHECK_DEREF(web_ui()).call_data().back());
   EXPECT_EQ(3u, call_data.args().size());
   EXPECT_EQ(base::Value(kCallbackId), CHECK_DEREF(call_data.arg1()));
   EXPECT_EQ(base::Value(true), CHECK_DEREF(call_data.arg2()));
 
-  base::Value::Dict expected_result;
+  base::Value::List expected_result;
   if (CamBlocked()) {
-    expected_result.Set(
-        "media-stream-camera",
-        base::Value(
-            "To use your camera, give Chrome access in system settings."));
+    expected_result.Append("media-stream-camera");
   }
   if (MicBlocked()) {
-    expected_result.Set(
-        "media-stream-mic",
-        base::Value("To use your microphone, give Chrome access in "
-                    "system settings."));
+    expected_result.Append("media-stream-mic");
   }
   if (GeoBlocked()) {
-    expected_result.Set(
-        "location",
-        base::Value(
-            "To use your location, give Chrome access in system settings."));
+    expected_result.Append("location");
   }
 
   EXPECT_EQ(expected_result, CHECK_DEREF(call_data.arg3()));
@@ -6476,6 +6710,449 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+
+class SiteSettingsOpenSystemSettingsTest
+    : public SiteSettingsHandlerBaseTest,
+      public testing::WithParamInterface<ContentSettingsType> {
+ public:
+  SiteSettingsOpenSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+  }
+  ~SiteSettingsOpenSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(nullptr);
+  }
+
+  ContentSettingsType PermissionType() const { return GetParam(); }
+
+  NiceMock<system_permission_settings::MockPlatformHandle> mock_platform_handle;
+};
+
+TEST_P(SiteSettingsOpenSystemSettingsTest, OpenSystemSettings) {
+  base::Value permission_type(
+      site_settings::ContentSettingsTypeToGroupName(PermissionType()));
+  auto args = base::Value::List().Append(std::move(permission_type));
+  EXPECT_CALL(mock_platform_handle, OpenSystemSettings(_, PermissionType()));
+  handler()->HandleOpenSystemPermissionSettings(args);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SiteSettingsOpenSystemSettingsTest,
+    testing::Values(ContentSettingsType::MEDIASTREAM_CAMERA,
+                    ContentSettingsType::MEDIASTREAM_MIC,
+                    ContentSettingsType::GEOLOCATION));
 #endif
+
+// Test suite for verifying that permissions granted through Site Settings
+// surfaces are correctly marked as eligible for Safety Hub auto-revocation
+// when the kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+//
+// Only permissions of certain `ContentSettingType` are eligible. They are
+// marked as such upon grant by initializing the `last_visited` timestamp from
+// a default null value to the (coarsened) current time. Once initialized, the
+// timestamp is updated on each navigation to the origin for which the
+// permission was granted. Then permissions with a `last_visited` timestamp
+// older than a certain threshold are eventually auto-revoked by Safety Hub.
+class SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest
+    : public SiteSettingsHandlerBaseTest {
+ public:
+  SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest() {
+    feature_list_.InitAndEnableFeature(
+        permissions::features::
+            kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedTracked) {
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+  base::Time now = base::Time::Now();
+
+  // Allow GEOLOCATION for an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kGeolocation));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` was recorded and lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedNotTracked_WrongValue) {
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+
+  // Block GEOLOCATION for an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kGeolocation));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` is not recorded unless the value is ALLOW.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedNotTracked_WrongType) {
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+
+  // Allow NOTIFICATIONS an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kNotifications));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` is not recorded for ineligible types
+  // (e.g. NOTIFICATIONS).
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::NOTIFICATIONS, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedNotTracked_FeatureOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+
+  // Allow GEOLOCATION an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kGeolocation));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked) {
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+  base::Time now = base::Time::Now();
+
+  // Allow GEOLOCATION for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kGeolocation);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` was recorded and lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked_WrongValue) {
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+
+  // Block GEOLOCATION for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kGeolocation);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` is not recorded unless the value is ALLOW.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked_WrongType) {
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+
+  // Allow NOTIFICATIONS for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kNotifications);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` is not recorded for ineligible types
+  // (e.g. NOTIFICATIONS).
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::NOTIFICATIONS, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked_FeatureOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+
+  // Allow GEOLOCATION for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kGeolocation);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+using SiteSettingsHandlerNotificationRevocationHistogramTest =
+    SiteSettingsHandlerTest;
+
+TEST_F(SiteSettingsHandlerNotificationRevocationHistogramTest,
+       HandleSetOriginPermissionsAllowToBlock) {
+  base::HistogramTester histograms;
+  const GURL primary_url("https://example.com");
+  base::Value::List allow_args;
+  allow_args.Append(primary_url.spec());
+  allow_args.Append(std::move(kNotifications));
+  allow_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(allow_args);
+
+  // Update NOTIFICATIONS to BLOCK.
+  base::Value::List block_args;
+  block_args.Append(primary_url.spec());
+  block_args.Append(std::move(kNotifications));
+  block_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleSetOriginPermissions(block_args);
+
+  // Verify histogram is logged as expected.
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+}
+
+TEST_F(SiteSettingsHandlerNotificationRevocationHistogramTest,
+       HandleSetOriginPermissionsAllowToAsk) {
+  base::HistogramTester histograms;
+  const GURL primary_url("https://example.com");
+  base::Value::List allow_args;
+  allow_args.Append(primary_url.spec());
+  allow_args.Append(std::move(kNotifications));
+  allow_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(allow_args);
+
+  // Update NOTIFICATIONS to ASK.
+  base::Value::List block_args;
+  block_args.Append(primary_url.spec());
+  block_args.Append(std::move(kNotifications));
+  block_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ASK));
+  handler()->HandleSetOriginPermissions(block_args);
+
+  // Verify histogram is logged as expected.
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+}
+
+TEST_F(SiteSettingsHandlerNotificationRevocationHistogramTest,
+       HandleSetOriginPermissionsAllowToDefault) {
+  base::HistogramTester histograms;
+  const GURL primary_url("https://example.com");
+  base::Value::List allow_args;
+  allow_args.Append(primary_url.spec());
+  allow_args.Append(std::move(kNotifications));
+  allow_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(allow_args);
+
+  // Update NOTIFICATIONS to DEFAULT.
+  base::Value::List block_args;
+  block_args.Append(primary_url.spec());
+  block_args.Append(std::move(kNotifications));
+  block_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
+  handler()->HandleSetOriginPermissions(block_args);
+
+  // Verify histogram is logged as expected.
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+}
+
+TEST_F(SiteSettingsHandlerNotificationRevocationHistogramTest,
+       HandleResetCategoryPermissionForPattern) {
+  base::HistogramTester histograms;
+
+  constexpr char kOrigin[] = "https://www.test.com:443";
+  base::Value::List set_args;
+  set_args.Append(kOrigin);        // Primary pattern.
+  set_args.Append(std::string());  // Secondary pattern.
+  set_args.Append(kNotifications);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  base::Value::List reset_args;
+  reset_args.Append(kOrigin);        // Primary pattern.
+  reset_args.Append(std::string());  // Secondary pattern.
+  reset_args.Append(kNotifications);
+  reset_args.Append(false);  // Incognito
+  handler()->HandleResetCategoryPermissionForPattern(reset_args);
+
+  // Verify histogram is logged as expected.
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+}
+
+TEST_F(SiteSettingsHandlerNotificationRevocationHistogramTest,
+       HandleSetCategoryPermissionForPatternAllowToAsk) {
+  base::HistogramTester histograms;
+
+  constexpr char kOrigin[] = "https://www.test.com:443";
+  base::Value::List set_args;
+  set_args.Append(kOrigin);        // Primary pattern.
+  set_args.Append(std::string());  // Secondary pattern.
+  set_args.Append(kNotifications);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  base::Value::List reset_args;
+  reset_args.Append(kOrigin);        // Primary pattern.
+  reset_args.Append(std::string());  // Secondary pattern.
+  reset_args.Append(kNotifications);
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ASK));
+  reset_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(reset_args);
+
+  // Verify histogram is logged as expected.
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+}
+
+TEST_F(SiteSettingsHandlerNotificationRevocationHistogramTest,
+       HandleSetCategoryPermissionForPatternAllowToBlock) {
+  base::HistogramTester histograms;
+
+  constexpr char kOrigin[] = "https://www.test.com:443";
+  base::Value::List set_args;
+  set_args.Append(kOrigin);        // Primary pattern.
+  set_args.Append(std::string());  // Secondary pattern.
+  set_args.Append(kNotifications);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  base::Value::List reset_args;
+  reset_args.Append(kOrigin);        // Primary pattern.
+  reset_args.Append(std::string());  // Secondary pattern.
+  reset_args.Append(kNotifications);
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  reset_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(reset_args);
+
+  // Verify histogram is logged as expected.
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kUserManuallyChangedSiteSetting,
+                                1);
+}
 
 }  // namespace settings

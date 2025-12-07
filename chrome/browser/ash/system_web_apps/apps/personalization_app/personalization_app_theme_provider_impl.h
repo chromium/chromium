@@ -72,6 +72,8 @@ class PersonalizationAppThemeProviderImpl
 
   void IsGeolocationEnabledForSystemServices(
       IsGeolocationEnabledForSystemServicesCallback callback) override;
+  void IsGeolocationUserModifiable(
+      IsGeolocationUserModifiableCallback callback) override;
 
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
@@ -96,6 +98,7 @@ class PersonalizationAppThemeProviderImpl
   void NotifyColorModeAutoScheduleChanged();
 
   bool IsGeolocationEnabledForSystemServices();
+  bool IsGeolocationUserModifiable();
 
   // Notify webUI the current state of system geolocation permission. Needed for
   // the color mode auto scheduler.

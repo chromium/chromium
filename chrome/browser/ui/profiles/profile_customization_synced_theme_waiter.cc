@@ -12,6 +12,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 
 ProfileCustomizationSyncedThemeWaiter::ProfileCustomizationSyncedThemeWaiter(
@@ -32,9 +33,9 @@ ProfileCustomizationSyncedThemeWaiter::
 // static
 bool ProfileCustomizationSyncedThemeWaiter::CanThemeSyncStart(
     syncer::SyncService* sync_service) {
-  return sync_service && sync_service->CanSyncFeatureStart() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kThemes);
+  return syncer::GetUploadToGoogleState(sync_service,
+                                        syncer::DataType::THEMES) !=
+         syncer::UploadState::NOT_ACTIVE;
 }
 
 void ProfileCustomizationSyncedThemeWaiter::Run() {
@@ -68,6 +69,12 @@ void ProfileCustomizationSyncedThemeWaiter::Run() {
 void ProfileCustomizationSyncedThemeWaiter::OnStateChanged(
     syncer::SyncService* sync) {
   CheckThemeSyncPreconditions();
+}
+
+void ProfileCustomizationSyncedThemeWaiter::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Unreachable: This object must be destroyed before SyncService shutdown.
+  NOTREACHED();
 }
 
 void ProfileCustomizationSyncedThemeWaiter::OnThemeSyncStarted(

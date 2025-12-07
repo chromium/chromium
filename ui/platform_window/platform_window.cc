@@ -58,6 +58,12 @@ bool PlatformWindow::CanSetDecorationInsets() const {
   return false;
 }
 
+void PlatformWindow::SetVideoCapture() {}
+
+void PlatformWindow::ReleaseVideoCapture() {}
+
+void PlatformWindow::ShowWindowControlsMenu(const gfx::Point& point) {}
+
 void PlatformWindow::SetOpaqueRegion(
     std::optional<std::vector<gfx::Rect>> region_px) {}
 

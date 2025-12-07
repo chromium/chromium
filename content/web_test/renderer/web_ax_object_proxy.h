@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -34,7 +35,10 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
     virtual blink::WebAXContext* GetAXContext() = 0;
   };
 
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kWebAXObjectProxy};
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   WebAXObjectProxy(const blink::WebAXObject& object, Factory* factory);
 
@@ -126,7 +130,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   bool IsVisible();
   // Exposes the visited state of a link.
   bool IsVisited();
-  bool IsOffScreen();
   bool IsCollapsed();
   bool IsValid();
   bool IsReadOnly();
@@ -250,14 +253,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   raw_ptr<Factory> factory_;
 
   v8::Global<v8::Function> notification_callback_;
-};
-
-class RootWebAXObjectProxy : public WebAXObjectProxy {
- public:
-  RootWebAXObjectProxy(const blink::WebAXObject&, Factory*);
-
-  v8::Local<v8::Object> GetChildAtIndex(unsigned index) override;
-  bool IsRoot() const override;
 };
 
 class WebAXObjectProxyList : public WebAXObjectProxy::Factory {

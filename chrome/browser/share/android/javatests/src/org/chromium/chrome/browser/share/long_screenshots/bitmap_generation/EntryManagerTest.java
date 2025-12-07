@@ -8,13 +8,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Size;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,11 +27,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -45,8 +48,7 @@ import org.chromium.url.GURL;
 public class EntryManagerTest {
     private static final long FAKE_CAPTURE_ADDR = 123L;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTabMock;
     @Mock private WebContents mWebContentsMock;
     @Mock private LongScreenshotsTabService mTabServiceMock;
@@ -68,11 +70,9 @@ public class EntryManagerTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         when(mTabMock.getWebContents()).thenReturn(mWebContentsMock);
 
-        mJniMocker.mock(
-                LongScreenshotsTabServiceFactoryJni.TEST_HOOKS,
+        LongScreenshotsTabServiceFactoryJni.setInstanceForTesting(
                 mLongScreenshotsTabServiceFactoryJniMock);
         mInOrder = inOrder(mTabServiceMock, mObserverMock);
         when(mLongScreenshotsTabServiceFactoryJniMock.getServiceInstanceForCurrentProfile())
@@ -83,7 +83,8 @@ public class EntryManagerTest {
                 ArgumentCaptor.forClass(LongScreenshotsTabService.CaptureProcessor.class);
         mInOrder.verify(mTabServiceMock).setCaptureProcessor(captor.capture());
         mProcessor = captor.getValue();
-        mInOrder.verify(mTabServiceMock).captureTab(eq(mTabMock), any(), eq(false));
+        mInOrder.verify(mTabServiceMock)
+                .captureTab(eq(mTabMock), any(), eq(false), anyInt(), anyInt());
         mInOrder.verify(mObserverMock).onStatusChange(eq(EntryStatus.CAPTURE_IN_PROGRESS));
         mGenerator = mEntryManager.getBitmapGeneratorForTesting();
         mGenerator.setCompositorFactoryForTesting(
@@ -103,6 +104,8 @@ public class EntryManagerTest {
         when(mLongScreenshotsCompositorMock.requestBitmap(
                         any(), anyFloat(), mErrorCaptor.capture(), mCompleteCaptor.capture()))
                 .thenReturn(0);
+        when(mLongScreenshotsCompositorMock.getContentSize()).thenReturn(new Size(50, 50));
+        when(mLongScreenshotsCompositorMock.getScrollOffset()).thenReturn(new Point(20, 20));
     }
 
     @After
@@ -114,6 +117,7 @@ public class EntryManagerTest {
     /** Tests capture through to generation of the fullpage entry. */
     @Test
     public void testGenerateFullpageEntry() {
+        when(mBoundsManagerMock.getFullEntryBounds()).thenReturn(new Rect(0, 100, 0, 100));
         mProcessor.processCapturedTab(FAKE_CAPTURE_ADDR, Status.OK);
         mOnCompositorResultCallback.onResult(CompositorStatus.OK);
         mInOrder.verify(mObserverMock).onStatusChange(eq(EntryStatus.CAPTURE_COMPLETE));

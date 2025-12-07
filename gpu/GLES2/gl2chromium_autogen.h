@@ -291,7 +291,6 @@
 #define glGetProgramResourceLocation GLES2_GET_FUN(GetProgramResourceLocation)
 #define glMemoryBarrierEXT GLES2_GET_FUN(MemoryBarrierEXT)
 #define glMemoryBarrierByRegion GLES2_GET_FUN(MemoryBarrierByRegion)
-#define glSwapBuffers GLES2_GET_FUN(SwapBuffers)
 #define glGetMaxValueInBufferCHROMIUM GLES2_GET_FUN(GetMaxValueInBufferCHROMIUM)
 #define glEnableFeatureCHROMIUM GLES2_GET_FUN(EnableFeatureCHROMIUM)
 #define glMapBufferCHROMIUM GLES2_GET_FUN(MapBufferCHROMIUM)
@@ -303,7 +302,6 @@
 #define glFlushMappedBufferRange GLES2_GET_FUN(FlushMappedBufferRange)
 #define glMapTexSubImage2DCHROMIUM GLES2_GET_FUN(MapTexSubImage2DCHROMIUM)
 #define glUnmapTexSubImage2DCHROMIUM GLES2_GET_FUN(UnmapTexSubImage2DCHROMIUM)
-#define glResizeCHROMIUM GLES2_GET_FUN(ResizeCHROMIUM)
 #define glGetRequestableExtensionsCHROMIUM \
   GLES2_GET_FUN(GetRequestableExtensionsCHROMIUM)
 #define glRequestExtensionCHROMIUM GLES2_GET_FUN(RequestExtensionCHROMIUM)
@@ -342,12 +340,6 @@
   GLES2_GET_FUN(BindFragDataLocationIndexedEXT)
 #define glBindFragDataLocationEXT GLES2_GET_FUN(BindFragDataLocationEXT)
 #define glGetFragDataIndexEXT GLES2_GET_FUN(GetFragDataIndexEXT)
-#define glInitializeDiscardableTextureCHROMIUM \
-  GLES2_GET_FUN(InitializeDiscardableTextureCHROMIUM)
-#define glUnlockDiscardableTextureCHROMIUM \
-  GLES2_GET_FUN(UnlockDiscardableTextureCHROMIUM)
-#define glLockDiscardableTextureCHROMIUM \
-  GLES2_GET_FUN(LockDiscardableTextureCHROMIUM)
 #define glWindowRectanglesEXT GLES2_GET_FUN(WindowRectanglesEXT)
 #define glCreateGpuFenceCHROMIUM GLES2_GET_FUN(CreateGpuFenceCHROMIUM)
 #define glCreateClientGpuFenceCHROMIUM \
@@ -365,12 +357,6 @@
   GLES2_GET_FUN(BeginSharedImageAccessDirectCHROMIUM)
 #define glEndSharedImageAccessDirectCHROMIUM \
   GLES2_GET_FUN(EndSharedImageAccessDirectCHROMIUM)
-#define glConvertRGBAToYUVAMailboxesINTERNAL \
-  GLES2_GET_FUN(ConvertRGBAToYUVAMailboxesINTERNAL)
-#define glConvertYUVAMailboxesToRGBINTERNAL \
-  GLES2_GET_FUN(ConvertYUVAMailboxesToRGBINTERNAL)
-#define glConvertYUVAMailboxesToTextureINTERNAL \
-  GLES2_GET_FUN(ConvertYUVAMailboxesToTextureINTERNAL)
 #define glCopySharedImageINTERNAL GLES2_GET_FUN(CopySharedImageINTERNAL)
 #define glCopySharedImageToTextureINTERNAL \
   GLES2_GET_FUN(CopySharedImageToTextureINTERNAL)

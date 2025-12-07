@@ -66,5 +66,10 @@ declare namespace chrome {
     export function create(createData?: CreateData): Promise<Window>;
 
     export function getAll(queryOptions?: QueryOptions): Promise<Window[]>;
+
+    export function getLastFocused(
+      queryOptions?: QueryOptions,
+      callback?: (window: Window) => void
+    ): Promise<Window>;
   }
 }

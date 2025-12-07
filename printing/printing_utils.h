@@ -14,12 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
-
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_handle_types.h"

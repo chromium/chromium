@@ -32,14 +32,9 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
-
-DraggedIsolatedFileSystemImpl::DraggedIsolatedFileSystemImpl(
-    DataObject& data_object)
-    : Supplement(data_object) {}
 
 DOMFileSystem* DraggedIsolatedFileSystemImpl::GetDOMFileSystem(
     DataObject* host,
@@ -60,28 +55,22 @@ DOMFileSystem* DraggedIsolatedFileSystemImpl::GetDOMFileSystem(
       .stored_value->value;
 }
 
-// static
-const char DraggedIsolatedFileSystemImpl::kSupplementName[] =
-    "DraggedIsolatedFileSystemImpl";
-
 DraggedIsolatedFileSystemImpl* DraggedIsolatedFileSystemImpl::From(
     DataObject* data_object) {
   DCHECK(IsMainThread());
-  return Supplement<DataObject>::From<DraggedIsolatedFileSystemImpl>(
-      data_object);
+  return data_object->GetDraggedIsolatedFileSystemImpl();
 }
 
 void DraggedIsolatedFileSystemImpl::Trace(Visitor* visitor) const {
   visitor->Trace(filesystems_);
-  Supplement<DataObject>::Trace(visitor);
 }
 
 void DraggedIsolatedFileSystemImpl::PrepareForDataObject(
     DataObject* data_object) {
   DCHECK(IsMainThread());
   DraggedIsolatedFileSystemImpl* file_system =
-      MakeGarbageCollected<DraggedIsolatedFileSystemImpl>(*data_object);
-  ProvideTo(*data_object, file_system);
+      MakeGarbageCollected<DraggedIsolatedFileSystemImpl>();
+  data_object->SetDraggedIsolatedFileSystemImpl(file_system);
 }
 
 }  // namespace blink

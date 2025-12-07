@@ -9,11 +9,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
@@ -51,8 +54,6 @@ int GetFlagsForConfig(const CertVerifier::Config& config) {
     flags |= CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS;
   if (config.enable_sha1_local_anchors)
     flags |= CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS;
-  if (config.disable_symantec_enforcement)
-    flags |= CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT;
 
   return flags;
 }
@@ -67,6 +68,7 @@ std::unique_ptr<ResultHelper> DoVerifyOnWorkerThread(
     int flags,
     const NetLogWithSource& net_log) {
   TRACE_EVENT0(NetTracingCategory(), "DoVerifyOnWorkerThread");
+  base::ElapsedTimer timer;
   auto verify_result = std::make_unique<ResultHelper>();
   verify_result->net_log = net_log;
   MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives
@@ -74,7 +76,32 @@ std::unique_ptr<ResultHelper> DoVerifyOnWorkerThread(
   verify_result->error =
       verify_proc->Verify(cert.get(), hostname, ocsp_response, sct_list, flags,
                           &verify_result->result, net_log);
+  base::TimeDelta elapsed_time = timer.Elapsed();
+  UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier.DoVerifyOnWorkerThreadTime",
+                             elapsed_time, base::Milliseconds(1),
+                             base::Minutes(10), 100);
+  if (IsGoogleHost(hostname)) {
+    if (IsGoogleHostWithAlpnH3(hostname)) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Net.CertVerifier.DoVerifyOnWorkerThreadTime.GoogleWithAlpnH3",
+          elapsed_time, base::Milliseconds(1), base::Minutes(10), 100);
+    }
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Net.CertVerifier.DoVerifyOnWorkerThreadTime.Google", elapsed_time,
+        base::Milliseconds(1), base::Minutes(10), 100);
+  }
   return verify_result;
+}
+
+scoped_refptr<X509Certificate> DoVerify2QwacBindingOnWorkerThread(
+    const scoped_refptr<CertVerifyProc>& verify_proc,
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<X509Certificate>& tls_cert,
+    const NetLogWithSource& net_log) {
+  TRACE_EVENT0(NetTracingCategory(), "DoVerify2QwacBindingOnWorkerThread");
+  return verify_proc->Verify2QwacBinding(binding, hostname,
+                                         tls_cert->cert_span(), net_log);
 }
 
 }  // namespace
@@ -103,6 +130,8 @@ class MultiThreadedCertVerifier::InternalRequest
   // method, so that PostTask will still run it even if the weakptr is no
   // longer valid.
   static void OnJobComplete(base::WeakPtr<InternalRequest> self,
+                            const std::string hostname,
+                            base::TimeTicks start_time,
                             std::unique_ptr<ResultHelper> verify_result);
 
   CompletionOnceCallback callback_;
@@ -140,6 +169,10 @@ void MultiThreadedCertVerifier::InternalRequest::Start(
   if (params.flags() & CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES) {
     flags |= CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES;
   }
+  if (params.flags() & CertVerifier::VERIFY_SXG_CT_REQUIREMENTS) {
+    flags |= CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS;
+  }
+  base::TimeTicks start_time = base::TimeTicks::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -147,15 +180,33 @@ void MultiThreadedCertVerifier::InternalRequest::Start(
                      params.hostname(), params.ocsp_response(),
                      params.sct_list(), flags, net_log),
       base::BindOnce(&MultiThreadedCertVerifier::InternalRequest::OnJobComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), params.hostname(),
+                     start_time));
 }
 
 // static
 void MultiThreadedCertVerifier::InternalRequest::OnJobComplete(
     base::WeakPtr<InternalRequest> self,
+    const std::string hostname,
+    base::TimeTicks start_time,
     std::unique_ptr<ResultHelper> verify_result) {
   // Always log the EndEvent, even if the Request has been destroyed.
   verify_result->net_log.EndEvent(NetLogEventType::CERT_VERIFIER_TASK);
+
+  base::TimeDelta verify_time = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_CUSTOM_TIMES("Net.MultiThreadedCertVerifier.RequestDuration",
+                             verify_time, base::Milliseconds(1),
+                             base::Minutes(10), 100);
+  if (IsGoogleHost(hostname)) {
+    if (IsGoogleHostWithAlpnH3(hostname)) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Net.MultiThreadedCertVerifier.RequestDuration.GoogleWithAlpnH3",
+          verify_time, base::Milliseconds(1), base::Minutes(10), 100);
+    }
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Net.MultiThreadedCertVerifier.RequestDuration.Google", verify_time,
+        base::Milliseconds(1), base::Minutes(10), 100);
+  }
 
   // Check |self| weakptr and don't continue if the Request was destroyed.
   if (!self)
@@ -220,6 +271,24 @@ int MultiThreadedCertVerifier::Verify(const RequestParams& params,
   request_list_.Append(request.get());
   *out_req = std::move(request);
   return ERR_IO_PENDING;
+}
+
+void MultiThreadedCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+    const NetLogWithSource& net_log) {
+  CHECK(!callback.is_null());
+
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&DoVerify2QwacBindingOnWorkerThread, verify_proc_, binding,
+                     hostname, tls_cert, net_log),
+      std::move(callback));
 }
 
 void MultiThreadedCertVerifier::UpdateVerifyProcData(

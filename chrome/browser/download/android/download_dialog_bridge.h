@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/download/download_dialog_types.h"
 #include "net/base/network_change_notifier.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 
@@ -53,10 +53,10 @@ class DownloadDialogBridge {
       DialogCallback dialog_callback);
 
   void OnComplete(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
-                  const base::android::JavaParamRef<jstring>& returned_path);
+                  std::string& returned_path,
+                  bool did_user_confirm);
 
-  void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnCanceled(JNIEnv* env);
 
  private:
   // Called when the user finished the selections from download dialog.

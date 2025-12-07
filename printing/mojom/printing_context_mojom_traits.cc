@@ -23,7 +23,46 @@
 #include "mojo/public/mojom/base/values.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "printing/printing_features.h"
+#endif
+
 namespace mojo {
+
+namespace {
+
+bool IsCustomOrPrecomputedMargins(printing::mojom::MarginType margin_type) {
+  if (margin_type == printing::mojom::MarginType::kCustomMargins) {
+    return true;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (margin_type ==
+          printing::mojom::MarginType::kPrecomputedMarginsForBackend &&
+      base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale)) {
+    return true;
+  }
+#endif
+  return false;
+}
+
+void SetMarginsToPrintSettings(printing::mojom::MarginType margin_type,
+                               const printing::PageMargins& margins,
+                               printing::PrintSettings* settings) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (margin_type ==
+          printing::mojom::MarginType::kPrecomputedMarginsForBackend &&
+      base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale)) {
+    settings->SetCustomMarginsForBackend(margins);
+    return;
+  }
+#endif
+  CHECK_EQ(margin_type, printing::mojom::MarginType::kCustomMargins);
+  settings->SetCustomMargins(margins);
+}
+
+}  // namespace
 
 // static
 bool StructTraits<printing::mojom::PageMarginsDataView, printing::PageMargins>::
@@ -93,7 +132,19 @@ bool StructTraits<
   out->set_ranges(ranges);
 
   out->set_selection_only(data.selection_only());
-  out->set_margin_type(data.margin_type());
+  // Precomputed margins for backend can be set only via
+  // SetCustomMarginsForBackend, which is done below.
+  bool must_set_margin_type = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  must_set_margin_type =
+      !base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale) ||
+      data.margin_type() !=
+          printing::mojom::MarginType::kPrecomputedMarginsForBackend;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  if (must_set_margin_type) {
+    out->set_margin_type(data.margin_type());
+  }
 
   std::u16string title;
   if (!data.ReadTitle(&title))
@@ -151,13 +202,18 @@ bool StructTraits<
 #endif  // BUILDFLAG(IS_WIN)
   out->set_is_modifiable(data.is_modifiable());
 
-  // `SetCustomMargins()` has side effect of explicitly setting `margin_type_`
-  // so only want to apply this if the type was for `kCustomMargins`.
-  if (data.margin_type() == printing::mojom::MarginType::kCustomMargins) {
+  // `SetCustomMargins()` and `SetCustomMarginsForBackend()` have side effect of
+  // explicitly setting `margin_type_` so only want to apply this if the type
+  // was for `kCustomMargins` or `kPrecomputedMarginsForBackend` (the last one
+  // is only available on ChromeOS).
+  const bool is_custom_or_precomputed_margins =
+      IsCustomOrPrecomputedMargins(data.margin_type());
+  if (is_custom_or_precomputed_margins) {
     printing::PageMargins requested_margins;
-    if (!data.ReadRequestedCustomMarginsInPoints(&requested_margins))
+    if (!data.ReadRequestedCustomMarginsInMicrons(&requested_margins)) {
       return false;
-    out->SetCustomMargins(requested_margins);
+    }
+    SetMarginsToPrintSettings(data.margin_type(), requested_margins, out);
   }
 
   out->set_pages_per_sheet(data.pages_per_sheet());

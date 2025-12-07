@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://gpuweb.github.io/gpuweb/
+// https://gpuweb.github.io/gpuweb/#navigator-gpu
 
 [
-    Exposed=Window,
     ImplementedAs=GPU
-] partial interface Navigator {
+] interface mixin NavigatorGPU {
     [SameObject, SecureContext] readonly attribute GPU gpu;
 };
+Navigator includes NavigatorGPU;
+WorkerNavigator includes NavigatorGPU;

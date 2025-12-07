@@ -5,7 +5,7 @@
 #include "remoting/host/active_display_monitor.h"
 
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace remoting {

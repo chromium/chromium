@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("off_hours") {
   sources = [
@@ -23,7 +23,7 @@ static_library("off_hours") {
     "//chrome/browser/ash/settings",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/system_clock",
-    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time",
     "//components/policy/proto",
     "//components/prefs",
     "//components/user_manager",
@@ -48,12 +48,16 @@ source_set("unit_tests") {
     ":off_hours",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/system_clock",
-    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time",
     "//components/policy/proto",
     "//components/user_manager",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

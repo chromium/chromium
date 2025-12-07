@@ -17,6 +17,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,7 +83,7 @@ TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
   // Create a logger with multiple tags and emit a message to it.
   ScopedFxLogger logger = ScopedFxLogger::CreateFromLogSink(
       std::move(log_sink_client_end.value()), kTags);
-  logger.LogMessage("", 0, kLogMessage, FUCHSIA_LOG_ERROR);
+  logger.LogMessage("", 0, kLogMessage, logging::LOGGING_ERROR);
 
   std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);

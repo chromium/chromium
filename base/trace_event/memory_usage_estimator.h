@@ -38,7 +38,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
-#include "base/types/always_false.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 // Composable memory usage estimators.
 //
@@ -85,11 +85,11 @@
 // then recursively fix compilation errors that are caused by types not
 // implementing EstimateMemoryUsage().
 //
-// Note that in the above example, the memory estimates for `id_` and `success_` are
-// intentionally omitted. This is because these members do not allocate any _dynamic_ memory.
-// If, for example, `MyClass` is declared as a heap-allocated `unique_ptr` member in some parent
-// class, then `EstimateMemoryUsage` on the `unique_ptr` will automatically take into account
-// `sizeof(MyClass)`.
+// Note that in the above example, the memory estimates for `id_` and `success_`
+// are intentionally omitted. This is because these members do not allocate any
+// _dynamic_ memory. If, for example, `MyClass` is declared as a heap-allocated
+// `unique_ptr` member in some parent class, then `EstimateMemoryUsage` on the
+// `unique_ptr` will automatically take into account `sizeof(MyClass)`.
 
 namespace base {
 namespace trace_event {
@@ -203,6 +203,10 @@ size_t EstimateMemoryUsage(const base::LRUCacheSet<V, C>& lru);
 template <class V, class C>
 size_t EstimateMemoryUsage(const base::HashingLRUCacheSet<V, C>& lru);
 
+// Abseil containers
+template <class K, class V, class H, class E, class A>
+size_t EstimateMemoryUsage(const absl::flat_hash_map<K, V, H, E, A>& map);
+
 // TODO(dskiba):
 //   std::forward_list
 
@@ -249,7 +253,7 @@ concept IsIteratorOfStandardContainer =
 
 template <typename T>
 concept IsKnownNonAllocatingType =
-    std::is_trivially_destructible_v<T> || base::IsRawPtrV<T> ||
+    std::is_trivially_destructible_v<T> || base::IsRawPtr<T> ||
     IsIteratorOfStandardContainer<T>;
 
 }  // namespace internal
@@ -268,7 +272,7 @@ size_t EstimateItemMemoryUsage(const T& value) {
   if constexpr (internal::HasEMU<T>) {
     return EstimateMemoryUsage(value);
   } else if constexpr (!internal::IsKnownNonAllocatingType<T>) {
-    static_assert(base::AlwaysFalse<T>,
+    static_assert(false,
                   "Neither global function 'size_t EstimateMemoryUsage(T)' "
                   "nor member function 'size_t T::EstimateMemoryUsage() const' "
                   "is defined for the type.");
@@ -392,8 +396,7 @@ size_t EstimateMemoryUsage(const std::list<T, A>& list) {
     raw_ptr<Node> next;
     value_type value;
   };
-  return sizeof(Node) * list.size() +
-         EstimateIterableMemoryUsage(list);
+  return sizeof(Node) * list.size() + EstimateIterableMemoryUsage(list);
 }
 
 template <class T>
@@ -553,8 +556,9 @@ size_t EstimateMemoryUsage(const std::deque<T, A>& deque) {
 
 #if defined(__GLIBCXX__)
   // libstdc++: deque always has at least one block
-  if (!blocks)
+  if (!blocks) {
     blocks = 1;
+  }
 #endif
 
 #if defined(_LIBCPP_VERSION)
@@ -564,8 +568,9 @@ size_t EstimateMemoryUsage(const std::deque<T, A>& deque) {
   // ever allocated (and hence has 1 or 2 blocks) is to check
   // iterator's pointer. Non-zero value means that deque has
   // at least one block.
-  if (!blocks && deque.begin().operator->())
+  if (!blocks && deque.begin().operator->()) {
     blocks = 1;
+  }
 #endif
 
   return (blocks * block_length * sizeof(T)) +
@@ -628,6 +633,18 @@ size_t EstimateMemoryUsage(const LRUCacheSet<V, C>& lru_cache) {
 template <class V, class C>
 size_t EstimateMemoryUsage(const HashingLRUCacheSet<V, C>& lru_cache) {
   return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+// Abseil containers
+template <class K, class V, class H, class E, class A>
+size_t EstimateMemoryUsage(const absl::flat_hash_map<K, V, H, E, A>& map) {
+  using value_type = typename absl::flat_hash_map<K, V, H, E, A>::value_type;
+  // `absl::flat_hash_map` stores its elements directly in an array.
+  // The memory usage includes the array itself (capacity * sizeof(value_type))
+  // plus control bytes (capacity * sizeof(char)). See
+  // https://abseil.io/docs/cpp/guides/container#memory-usage for details.
+  return map.capacity() * (sizeof(value_type) + sizeof(char)) +
+         EstimateIterableMemoryUsage(map);
 }
 
 }  // namespace trace_event

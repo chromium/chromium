@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/paint_ready_rect.h"
@@ -16,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -32,6 +34,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::NiceMock;
+
+constexpr char kRenderAndPaintTimeMetric[] = "PDF.RenderAndPaintTime";
+constexpr char kRenderPaintAndFlushTimeMetric[] = "PDF.RenderPaintAndFlushTime";
 
 base::FilePath GetTestDataFilePath(std::string_view filename) {
   return base::FilePath(FILE_PATH_LITERAL("paint_manager"))
@@ -88,6 +93,28 @@ class PaintManagerTest : public testing::Test {
     return saved_snapshot;
   }
 
+  // Generates the expectations for use with TestPaintImage().
+  //
+  // - `plugin_size`: The expected image size.
+  // - `paint_rect`: Expected to be painted white.
+  // - `overlapped_rect`: Expected to be painted red.
+  //                      May paint over `paint_rect`.
+  SkBitmap GeneratePaintImageExpectation(const gfx::Size& plugin_size,
+                                         const gfx::Rect& paint_rect,
+                                         const gfx::Rect& overlapped_rect) {
+    sk_sp<SkSurface> surface =
+        CreateSkiaSurfaceForTesting(plugin_size, SK_ColorMAGENTA);
+    SkCanvas* canvas = surface->getCanvas();
+    canvas->clipIRect(gfx::RectToSkIRect(paint_rect));
+    canvas->clear(SK_ColorWHITE);
+    canvas->clipIRect(gfx::RectToSkIRect(overlapped_rect));
+    canvas->clear(SK_ColorRED);
+
+    SkBitmap bitmap;
+    EXPECT_TRUE(surface->makeImageSnapshot()->asLegacyBitmap(&bitmap));
+    return bitmap;
+  }
+
   void TestPaintImage(const gfx::Size& plugin_size,
                       const gfx::Size& source_size,
                       const gfx::Rect& paint_rect,
@@ -105,25 +132,17 @@ class PaintManagerTest : public testing::Test {
         /*fake_pending=*/{});
     ASSERT_TRUE(snapshot);
 
-    // Check if snapshot has `overlapped_rect` painted red.
+    // Check if `snapshot` matches `expected_bitmap`.
     snapshot = snapshot->makeSubset(
-        static_cast<GrDirectContext*>(nullptr),
-        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
+        skcpu::Recorder::TODO(),
+        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
 
     SkBitmap snapshot_bitmap;
     ASSERT_TRUE(snapshot->asLegacyBitmap(&snapshot_bitmap));
 
-    sk_sp<SkSurface> expected_surface =
-        CreateSkiaSurfaceForTesting(plugin_size, SK_ColorMAGENTA);
-    expected_surface->getCanvas()->clipIRect(
-        gfx::RectToSkIRect(overlapped_rect));
-    expected_surface->getCanvas()->clear(SK_ColorRED);
-
-    SkBitmap expected_bitmap;
-    ASSERT_TRUE(expected_surface->makeImageSnapshot()->asLegacyBitmap(
-        &expected_bitmap));
-
+    SkBitmap expected_bitmap =
+        GeneratePaintImageExpectation(plugin_size, paint_rect, overlapped_rect);
     EXPECT_TRUE(cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
                                   cc::ExactPixelComparator()));
   }
@@ -161,12 +180,10 @@ class PaintManagerTest : public testing::Test {
 
     // Compare snapshot to `expected_png`.
     snapshot = snapshot->makeSubset(
-        static_cast<GrDirectContext*>(nullptr),
-        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
+        skcpu::Recorder::TODO(),
+        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
-
-    EXPECT_TRUE(
-        MatchesPngFile(snapshot.get(), GetTestDataFilePath(expected_png)));
+    EXPECT_TRUE(MatchesPngFile(*snapshot, GetTestDataFilePath(expected_png)));
   }
 
   NiceMock<FakeClient> client_;
@@ -248,6 +265,8 @@ TEST_F(PaintManagerTest, ClearTransform) {
 }
 
 TEST_F(PaintManagerTest, DoPaintFirst) {
+  base::HistogramTester histograms;
+
   paint_manager_.SetSize({400, 300}, 2.0f);
 
   sk_sp<SkImage> snapshot =
@@ -256,12 +275,17 @@ TEST_F(PaintManagerTest, DoPaintFirst) {
                    {{{25, 50, 200, 100},
                      CreateSkiaImageForTesting({200, 100}, SK_ColorGRAY)}},
                    /*fake_pending=*/{});
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(
+      MatchesPngFile(*snapshot, GetTestDataFilePath("do_paint_first.png")));
 
-  EXPECT_TRUE(MatchesPngFile(snapshot.get(),
-                             GetTestDataFilePath("do_paint_first.png")));
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 1);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 1);
 }
 
 TEST_F(PaintManagerTest, PaintImage) {
+  base::HistogramTester histograms;
+
   // Painted area is within the plugin area and the source image.
   TestPaintImage(/*plugin_size=*/{20, 20}, /*source_size=*/{15, 15},
                  /*paint_rect=*/{0, 0, 10, 10},
@@ -281,9 +305,14 @@ TEST_F(PaintManagerTest, PaintImage) {
   TestPaintImage(/*plugin_size=*/{15, 15}, /*source_size=*/{5, 5},
                  /*paint_rect=*/{10, 10, 5, 5},
                  /*overlapped_rect=*/{0, 0, 0, 0});
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 4);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 4);
 }
 
 TEST_F(PaintManagerTest, Scroll) {
+  base::HistogramTester histograms;
+
   paint_manager_.SetSize({4, 5}, 1.0f);
 
   TestScroll(/*scroll_amount=*/{1, 0}, /*expected_paint_rect=*/{0, 0, 1, 5},
@@ -294,9 +323,14 @@ TEST_F(PaintManagerTest, Scroll) {
              "scroll_down.png");
   TestScroll(/*scroll_amount=*/{0, -3}, /*expected_paint_rect=*/{0, 2, 4, 3},
              "scroll_up.png");
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 8);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 8);
 }
 
 TEST_F(PaintManagerTest, ScrollIgnored) {
+  base::HistogramTester histograms;
+
   paint_manager_.SetSize({4, 5}, 1.0f);
 
   // Scroll to the edge of the plugin area.
@@ -318,6 +352,9 @@ TEST_F(PaintManagerTest, ScrollIgnored) {
              "scroll_ignored.png");
   TestScroll(/*scroll_amount=*/{0, -9}, /*expected_paint_rect=*/{0, 0, 4, 5},
              "scroll_ignored.png");
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 16);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 16);
 }
 
 }  // namespace

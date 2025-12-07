@@ -104,8 +104,7 @@ class ThemeManagerTest : public WebEngineBrowserTest,
         return scheme;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   bool SetTheme(fuchsia::settings::ThemeType theme) {

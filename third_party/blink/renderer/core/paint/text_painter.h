@@ -9,8 +9,10 @@
 #include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -23,6 +25,7 @@ class LayoutSVGInlineText;
 class TextDecorationInfo;
 enum class TextEmphasisPosition : unsigned;
 struct AutoDarkMode;
+struct DecorationGeometry;
 struct PaintInfo;
 struct SvgContextPaints;
 struct TextFragmentPaintInfo;
@@ -77,14 +80,12 @@ class CORE_EXPORT TextPainter {
               const SvgContextPaints* svg_context_paints,
               const Font& font,
               const gfx::Rect& visual_rect,
-              const LineRelativeOffset& text_origin,
-              bool horizontal)
+              const LineRelativeOffset& text_origin)
       : graphics_context_(context),
         svg_context_paints_(svg_context_paints),
         font_(font),
         visual_rect_(visual_rect),
-        text_origin_(text_origin),
-        horizontal_(horizontal) {}
+        text_origin_(text_origin) {}
   ~TextPainter() = default;
 
   enum ShadowMode { kBothShadowsAndTextProper, kShadowsOnly, kTextProperOnly };
@@ -103,9 +104,12 @@ class CORE_EXPORT TextPainter {
                          DOMNodeId node_id,
                          const AutoDarkMode& auto_dark_mode);
 
+  virtual void ClipDecorationLine(const DecorationGeometry&,
+                                  float text_baseline,
+                                  const TextFragmentPaintInfo&);
   void PaintDecorationLine(const TextDecorationInfo& decoration_info,
                            const Color& line_color,
-                           const TextFragmentPaintInfo* fragment_paint_info);
+                           const AutoDarkMode& auto_dark_mode);
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,
@@ -122,7 +126,9 @@ class CORE_EXPORT TextPainter {
                                           const ComputedStyle&,
                                           const PaintInfo&);
 
-  void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
+  void SetEmphasisMark(const AtomicString&,
+                       LineLogicalSide,
+                       const FragmentItem* text_item = nullptr);
 
  protected:
   const Font& font() const { return font_; }
@@ -136,17 +142,11 @@ class CORE_EXPORT TextPainter {
                             DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);
 
-  virtual void ClipDecorationsStripe(const TextFragmentPaintInfo&,
-                                     float upper,
-                                     float stripe_width,
-                                     float dilation);
-
   GraphicsContext& graphics_context_;
   const SvgContextPaints* svg_context_paints_;
   const Font& font_;
   const gfx::Rect visual_rect_;
   const LineRelativeOffset text_origin_;
-  const bool horizontal_;
   std::optional<SvgTextPaintState> svg_text_paint_state_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;

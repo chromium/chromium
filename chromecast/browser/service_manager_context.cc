@@ -169,7 +169,7 @@ class BrowserServiceManagerDelegate
       const service_manager::Identity& identity) override {
     // Cast only uses the default kInProcessBuiltin mode. This function should
     // only be called for kOutOfProcessBuiltin mode.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::unique_ptr<service_manager::ServiceProcessHost>

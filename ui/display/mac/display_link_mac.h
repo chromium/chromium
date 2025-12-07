@@ -12,6 +12,10 @@
 #include "base/time/time.h"
 #include "ui/display/display_export.h"
 
+namespace gpu {
+class ImageTransportSurfaceOverlayMacTest;
+}
+
 namespace ui {
 
 // VSync parameters parsed from CVDisplayLinkOutputCallback's parameters.
@@ -39,10 +43,12 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   static constexpr int kMaxExtraVSyncs = 12;
 
  private:
-  friend class CVDisplayLinkMac;
   friend class CADisplayLinkMac;
-  friend class Wrapper;
+  friend struct ObjCState;
+  friend class CVDisplayLinkMac;
   friend class DisplayLinkMacSharedState;
+  friend class gpu::ImageTransportSurfaceOverlayMacTest;
+
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
 
   explicit VSyncCallbackMac(UnregisterCallback unregister_callback,
@@ -59,7 +65,8 @@ class DISPLAY_EXPORT VSyncCallbackMac {
 
 class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
  public:
-  // Create a DisplayLinkMac for the specified display.
+  // Create a DisplayLinkMac for the specified display. The returned object may
+  // only be accessed on the thread on which it was retrieved.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(int64_t display_id);
 
   // Register an observer callback.
@@ -71,8 +78,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   virtual std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) = 0;
 
-  // Get the panel/monitor refresh rate
-  virtual double GetRefreshRate() const = 0;
+  // Get the panel/monitor refresh interval
+  virtual base::TimeDelta GetRefreshInterval() const = 0;
   virtual void GetRefreshIntervalRange(base::TimeDelta& min_interval,
                                        base::TimeDelta& max_interval,
                                        base::TimeDelta& granularity) const = 0;

@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The signature corresponding to a public key in the payment portion of the
+// clientDataJson.
+//
+// The public key is encoded in COSE_Key format with the alg parameter set,
+// following the same rules for WebAuthn attested credential data's
+// credentialPublicKey parameter. See
+// https://w3c.github.io/webauthn/#sctn-attested-credential-data
+dictionary AuthenticationExtensionsPaymentBrowserBoundSignature {
+  // Output of the signature algorithm.
+  ArrayBuffer signature;
+};
+

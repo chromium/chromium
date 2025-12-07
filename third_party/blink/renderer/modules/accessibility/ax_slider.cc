@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
 namespace blink {
@@ -55,25 +56,24 @@ AccessibilityOrientation AXSlider::Orientation() const {
     return kAccessibilityOrientationHorizontal;
 
   // If CSS writing-mode is vertical, return kAccessibilityOrientationVertical.
-  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
+  if (!style->IsHorizontalWritingMode()) {
     return kAccessibilityOrientationVertical;
   }
 
   // Else, look at the CSS appearance property for slider orientation.
-  ControlPart style_appearance = style->EffectiveAppearance();
-  switch (style_appearance) {
-    case kSliderThumbHorizontalPart:
-    case kSliderHorizontalPart:
-    case kMediaSliderPart:
+  switch (style->EffectiveAppearance()) {
+    case AppearanceValue::kSliderThumbHorizontal:
+    case AppearanceValue::kSliderHorizontal:
+    case AppearanceValue::kMediaSlider:
       return kAccessibilityOrientationHorizontal;
 
-    case kSliderVerticalPart:
+    case AppearanceValue::kSliderVertical:
       return RuntimeEnabledFeatures::
                      NonStandardAppearanceValueSliderVerticalEnabled()
                  ? kAccessibilityOrientationVertical
                  : kAccessibilityOrientationHorizontal;
-    case kSliderThumbVerticalPart:
-    case kMediaVolumeSliderPart:
+    case AppearanceValue::kSliderThumbVertical:
+    case AppearanceValue::kMediaVolumeSlider:
       return kAccessibilityOrientationVertical;
 
     default:

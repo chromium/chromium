@@ -48,4 +48,4 @@ void ScopedTaskRunnerObserver::ObserveLoopDestruction(
     done->Signal();
 }
 
-}  // namespace media.
+}  // namespace media

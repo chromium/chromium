@@ -22,7 +22,6 @@
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/download_manager_delegate.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
@@ -120,28 +119,11 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Returns a .crdownload intermediate path for the |suggested_path|.
   static base::FilePath GetCrDownloadPath(const base::FilePath& suggested_path);
 
-#if BUILDFLAG(IS_WIN)
-  // Returns true if Adobe Reader is up to date. This information refreshed
-  // only when Start() gets called for a PDF and Adobe Reader is the default
-  // System PDF viewer.
-  static bool IsAdobeReaderUpToDate();
-#endif
-
-  // Determine if the file type can be handled safely by the browser if it were
-  // to be opened via a file:// URL. Execute the callback with the determined
-  // value.
-  static void DetermineIfHandledSafelyHelper(
-      download::DownloadItem* download,
-      const base::FilePath& local_path,
-      const std::string& mime_type,
-      base::OnceCallback<void(bool)> callback);
-
   // Determine if the file type can be handled safely by the browser if it were
   // to be opened via a file:// URL. Returns the determined value.
-  static bool DetermineIfHandledSafelyHelperSynchronous(
-      download::DownloadItem* download,
-      const base::FilePath& local_path,
-      const std::string& mime_type);
+  static bool DetermineIfHandledSafelyHelper(download::DownloadItem* download,
+                                             const base::FilePath& local_path,
+                                             const std::string& mime_type);
 
  private:
   // The main workflow is controlled via a set of state transitions. Each state
@@ -157,8 +139,6 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
     STATE_PROMPT_USER_FOR_DOWNLOAD_PATH,
     STATE_DETERMINE_LOCAL_PATH,
     STATE_DETERMINE_MIME_TYPE,
-    STATE_DETERMINE_IF_HANDLED_SAFELY_BY_BROWSER,
-    STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE,
     STATE_CHECK_DOWNLOAD_URL,
 #if BUILDFLAG(IS_ANDROID)
     STATE_CHECK_APP_VERIFICATION,
@@ -292,34 +272,12 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // resulting MIME type is only valid for determining whether the browser can
   // handle the download if it were opened via a file:// URL.
   // Next state:
-  // - STATE_DETERMINE_IF_HANDLED_SAFELY_BY_BROWSER.
+  // - STATE_CHECK_DOWNLOAD_URL.
   Result DoDetermineMimeType();
 
   // Callback invoked when the MIME type is available. Since determination of
   // the MIME type can involve disk access, it is done in the blocking pool.
   void DetermineMimeTypeDone(const std::string& mime_type);
-
-  // Determine if the file type can be handled safely by the browser if it were
-  // to be opened via a file:// URL.
-  // Next state:
-  // - STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE.
-  Result DoDetermineIfHandledSafely();
-
-  // Callback invoked when a decision is available about whether the file type
-  // can be handled safely by the browser.
-  void DetermineIfHandledSafelyDone(bool is_handled_safely);
-
-  // Determine if Adobe Reader is up to date. Only do the check on Windows for
-  // .pdf file targets.
-  // Next state:
-  // - STATE_CHECK_DOWNLOAD_URL.
-  Result DoDetermineIfAdobeReaderUpToDate();
-
-#if BUILDFLAG(IS_WIN)
-  // Callback invoked when a decision is available about whether Adobe Reader
-  // is up to date.
-  void DetermineIfAdobeReaderUpToDateDone(bool adobe_reader_up_to_date);
-#endif
 
   // Checks whether the downloaded URL is malicious. Invokes the
   // DownloadProtectionService via the delegate.

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    addEventListener("load", function() {
+        shouldBeTrue('document.getElementById("foo").clientWidth==400');
+    }, false);
+</script>
+<div>This test passes if this img tag below is a green square when scale factor is 2. It ensures that the selection algorithm does not change the behavior of the src attribute, even with a scale factor greater than 1</div>
+<img id="foo" src="../resources/green-400-px-square.png">

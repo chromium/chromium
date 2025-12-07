@@ -1065,8 +1065,8 @@ xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
 	return(NULL);
     }
 
-    oldNode = ctxt->node;
     oldInst = ctxt->inst;
+    oldNode = ctxt->xpathCtxt->node;
     oldPos = ctxt->xpathCtxt->proximityPosition;
     oldSize = ctxt->xpathCtxt->contextSize;
     oldNsNr = ctxt->xpathCtxt->nsNr;
@@ -1137,8 +1137,8 @@ xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
 	    results[i] = NULL;
 	}
     }
-    ctxt->node = oldNode;
     ctxt->inst = oldInst;
+    ctxt->xpathCtxt->node = oldNode;
     ctxt->xpathCtxt->contextSize = oldSize;
     ctxt->xpathCtxt->proximityPosition = oldPos;
     ctxt->xpathCtxt->nsNr = oldNsNr;
@@ -1884,8 +1884,6 @@ xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len,
             (xmlStrcasecmp(encoding, BAD_CAST "UTF8") != 0))
 	    encoder = xmlFindCharEncodingHandler((char *) encoding);
 	buf = xmlAllocOutputBuffer(encoder);
-        if (buf == NULL)
-            xmlCharEncCloseFunc(encoder);
     } else {
 	buf = xmlAllocOutputBuffer(NULL);
     }

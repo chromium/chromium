@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -60,8 +60,8 @@ const user_manager::User* GetActiveUser() {
 // The result is converted to lowercase to stay compatible with
 // CryptoLib::HexEncodeToBuffer().
 std::string HashUsername(std::string_view username) {
-  return base::ToLowerASCII(base::HexEncode(
-      base::SHA1Hash(base::as_byte_span(base::ToLowerASCII(username)))));
+  return base::HexEncodeLower(
+      base::SHA1Hash(base::as_byte_span(base::ToLowerASCII(username))));
 }
 
 const std::string& GetRequiredStringFromDict(const base::Value& dict,
@@ -128,7 +128,7 @@ bool MetadataTable::DeleteComponentForCurrentUser(
 
 bool MetadataTable::HasComponentForAnyUser(
     const std::string& component_name) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       installed_items_, [&component_name](const base::Value& item) {
         const std::string& name =
             GetRequiredStringFromDict(item, kMetadataContentItemComponentKey);

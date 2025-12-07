@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LensSidePanelPageHandlerInterface} from '../lens.mojom-webui.js';
-import {LensPageHandlerFactory, LensSidePanelPageCallbackRouter, LensSidePanelPageHandlerRemote} from '../lens.mojom-webui.js';
+import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
+import {LensSidePanelPageCallbackRouter, LensSidePanelPageHandlerFactory, LensSidePanelPageHandlerRemote} from '../lens_side_panel.mojom-webui.js';
 
 let instance: SidePanelBrowserProxy|null = null;
 
@@ -19,7 +19,7 @@ export class SidePanelBrowserProxyImpl implements SidePanelBrowserProxy {
       new LensSidePanelPageHandlerRemote();
 
   constructor() {
-    const factory = LensPageHandlerFactory.getRemote();
+    const factory = LensSidePanelPageHandlerFactory.getRemote();
     factory.createSidePanelPageHandler(
         this.handler.$.bindNewPipeAndPassReceiver(),
         this.callbackRouter.$.bindNewPipeAndPassRemote());

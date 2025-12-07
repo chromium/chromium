@@ -25,11 +25,11 @@ class MODULES_EXPORT Ads final : public ScriptWrappable {
   // createAdRequest call.
   bool IsValid() const;
 
-  WTF::String GetGuid() const;
+  String GetGuid() const;
 
  private:
   bool populated_ = false;
-  WTF::String guid_;
+  String guid_;
 };
 
 }  // namespace blink

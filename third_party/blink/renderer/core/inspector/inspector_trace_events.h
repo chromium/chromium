@@ -8,17 +8,20 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span_or_size.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/layout/layout_invalidation_reason.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
@@ -28,17 +31,13 @@ class UnguessableToken;
 }
 
 namespace gfx {
+class Rect;
 class RectF;
-class QuadF;
 }
 
 namespace v8 {
 class Function;
 }  // namespace v8
-
-namespace WTF {
-class TextPosition;
-}
 
 namespace blink {
 class Animation;
@@ -90,6 +89,8 @@ class CORE_EXPORT InspectorTraceEvents
   InspectorTraceEvents(const InspectorTraceEvents&) = delete;
   InspectorTraceEvents& operator=(const InspectorTraceEvents&) = delete;
 
+  static uint64_t GetNextSampleTraceId();
+
   void WillSendRequest(ExecutionContext*,
                        DocumentLoader*,
                        const KURL& fetch_context_url,
@@ -110,8 +111,7 @@ class CORE_EXPORT InspectorTraceEvents
                                   const Resource*);
   void DidReceiveData(uint64_t identifier,
                       DocumentLoader*,
-                      const char* data,
-                      uint64_t data_length);
+                      base::SpanOrSize<const char> encoded_data);
   void DidFinishLoading(uint64_t identifier,
                         DocumentLoader*,
                         base::TimeTicks monotonic_finish_time,
@@ -213,6 +213,10 @@ void Data(perfetto::TracedValue context,
           const StyleChangeReasonForTracing&);
 }
 
+namespace inspector_style_resolver_resolve_style_event {
+void Data(perfetto::TracedValue context, Element*, PseudoId);
+}
+
 String DescendantInvalidationSetToIdString(const InvalidationSet&);
 
 namespace inspector_style_invalidator_invalidate_event {
@@ -225,6 +229,7 @@ extern const char kInvalidationSetMatchedClass[];
 extern const char kInvalidationSetMatchedId[];
 extern const char kInvalidationSetMatchedTagName[];
 extern const char kInvalidationSetMatchedPart[];
+extern const char kInvalidationSetInvalidatesTreeCounting[];
 
 void Data(perfetto::TracedValue context, Element&, const char* reason);
 void SelectorPart(perfetto::TracedValue context,
@@ -257,55 +262,6 @@ void InvalidationList(perfetto::TracedValue context,
                                                  invalidationSet) \
   TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART(              \
       element, reason, invalidationSet, g_empty_atom)
-
-// From a web developer's perspective: what caused this layout? This is strictly
-// for tracing. Blink logic must not depend on these.
-namespace layout_invalidation_reason {
-extern const char kUnknown[];
-extern const char kSizeChanged[];
-extern const char kAncestorMoved[];
-extern const char kStyleChange[];
-extern const char kDomChanged[];
-extern const char kTextChanged[];
-extern const char kPrintingChanged[];
-extern const char kPaintPreview[];
-extern const char kAttributeChanged[];
-extern const char kColumnsChanged[];
-extern const char kChildAnonymousBlockChanged[];
-extern const char kAnonymousBlockChange[];
-extern const char kFontsChanged[];
-extern const char kFullscreen[];
-extern const char kChildChanged[];
-extern const char kListValueChange[];
-extern const char kListStyleTypeChange[];
-extern const char kCounterStyleChange[];
-extern const char kImageChanged[];
-extern const char kSliderValueChanged[];
-extern const char kAncestorMarginCollapsing[];
-extern const char kFieldsetChanged[];
-extern const char kTextAutosizing[];
-extern const char kSvgResourceInvalidated[];
-extern const char kFloatDescendantChanged[];
-extern const char kCountersChanged[];
-extern const char kGridChanged[];
-extern const char kMenuOptionsChanged[];
-extern const char kRemovedFromLayout[];
-extern const char kAddedToLayout[];
-extern const char kTableChanged[];
-extern const char kPaddingChanged[];
-extern const char kTextControlChanged[];
-// FIXME: This is too generic, we should be able to split out transform and
-// size related invalidations.
-extern const char kSvgChanged[];
-extern const char kScrollbarChanged[];
-extern const char kDisplayLock[];
-extern const char kDevtools[];
-extern const char kAnchorPositioning[];
-}  // namespace layout_invalidation_reason
-
-// LayoutInvalidationReasonForTracing is strictly for tracing. Blink logic must
-// not depend on this value.
-typedef const char LayoutInvalidationReasonForTracing[];
 
 namespace inspector_layout_invalidation_tracking_event {
 CORE_EXPORT
@@ -433,18 +389,11 @@ namespace inspector_xhr_load_event {
 void Data(perfetto::TracedValue context, ExecutionContext*, XMLHttpRequest*);
 }
 
-// We use this for two distincts types of paint-related events:
-//  1. A timed event showing how long we spent painting a LocalFrameView,
-//     including any iframes. The quad associated with this event is the cull
-//     rect used when painting the LocalFrameView.
-//  2. An instant event for each cc::Layer which had damage. The quad
-//     associated with this event is the bounding damage rect.
 namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
           LocalFrame*,
           const LayoutObject*,
-          const gfx::QuadF& quad,
-          int layer_id);
+          const gfx::Rect& contents_cull_rect);
 }
 
 namespace inspector_paint_image_event {
@@ -490,7 +439,7 @@ void Data(perfetto::TracedValue context,
           v8::Isolate*,
           LocalFrame*,
           const String& url,
-          const WTF::TextPosition&);
+          const TextPosition&);
 }
 
 namespace inspector_target_rundown_event {
@@ -525,7 +474,7 @@ struct V8ConsumeCacheResult {
 
 void Data(perfetto::TracedValue context,
           const String& url,
-          const WTF::TextPosition&,
+          const TextPosition&,
           std::optional<V8ConsumeCacheResult>,
           bool eager,
           bool streamed,
@@ -535,7 +484,7 @@ void Data(perfetto::TracedValue context,
 namespace inspector_produce_script_cache_event {
 void Data(perfetto::TracedValue context,
           const String& url,
-          const WTF::TextPosition&,
+          const TextPosition&,
           int cache_size);
 }
 
@@ -564,7 +513,8 @@ void Data(perfetto::TracedValue context, const Event&, v8::Isolate*);
 namespace inspector_time_stamp_event {
 void Data(perfetto::TracedValue context,
           ExecutionContext*,
-          const String& message);
+          const String& message,
+          const v8::LocalVector<v8::Value>& args);
 }
 
 namespace inspector_tracing_session_id_for_worker_event {
@@ -583,6 +533,10 @@ namespace inspector_set_layer_tree_id {
 void Data(perfetto::TracedValue context, LocalFrame* local_root);
 }
 
+namespace inspector_dom_stats {
+void Data(perfetto::TracedValue context, LocalFrame* local_root);
+}
+
 namespace inspector_animation_event {
 void Data(perfetto::TracedValue context, const Animation&);
 }
@@ -594,7 +548,7 @@ void Data(perfetto::TracedValue context, const Animation&);
 namespace inspector_animation_compositor_event {
 void Data(perfetto::TracedValue context,
           blink::CompositorAnimations::FailureReasons failure_reasons,
-          const blink::PropertyHandleSet& unsupported_properties);
+          const blink::PropertyHandleSet& unsupported_properties_for_tracing);
 }
 
 namespace inspector_hit_test_event {
@@ -618,6 +572,28 @@ namespace inspector_handle_post_message_event {
 void Data(perfetto::TracedValue context,
           ExecutionContext* execution_context,
           const MessageEvent& event);
+}
+
+namespace inspector_scheduler_schedule_event {
+void Data(perfetto::TracedValue trace_context,
+          ExecutionContext* execution_context,
+          uint64_t task_id,
+          WebSchedulingPriority priority,
+          std::optional<double> delay = std::nullopt);
+}
+
+namespace inspector_scheduler_run_event {
+void Data(perfetto::TracedValue trace_context,
+          ExecutionContext* execution_context,
+          uint64_t task_id,
+          WebSchedulingPriority priority,
+          std::optional<double> delay = std::nullopt);
+}
+
+namespace inspector_scheduler_abort_event {
+void Data(perfetto::TracedValue trace_context,
+          ExecutionContext* execution_context,
+          uint64_t task_id);
 }
 
 CORE_EXPORT String ToHexString(const void* p);

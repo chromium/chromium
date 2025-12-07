@@ -1,0 +1,18 @@
+[document web]
+++[section]
+++++[combo box]
+++++++[menu]
+++++++++[menu item] name='only text' selectable selected
+++++++++[menu item] name='with img ' selectable
+++++[combo box]
+++++++[menu]
+++++++++[menu item] name='only text' selectable selected
+++++++++[menu item] name='with img ' selectable
+++++[combo box]
+++++++[menu]
+++++++++[section]
+++++++++++[menu item] name='only text' selectable selected
+++++++++++[menu item] name='with img ' selectable
+++++++++++++[section]
+++++++++++++++[static] name='with img<newline>    '
+++++++++++++++[image]

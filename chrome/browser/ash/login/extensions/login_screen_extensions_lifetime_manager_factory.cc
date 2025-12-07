@@ -7,9 +7,10 @@
 #include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager_factory.h"
@@ -35,15 +36,13 @@ LoginScreenExtensionsLifetimeManagerFactory::
           "LoginScreenExtensionsLifetimeManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
-  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ProcessManagerFactory::GetInstance());
 }
 
@@ -63,11 +62,15 @@ std::unique_ptr<KeyedService> LoginScreenExtensionsLifetimeManagerFactory::
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
     return nullptr;
-  if (!ProfileHelper::IsSigninProfile(profile)) {
-    // The manager should only be created for the sign-in profile.
-    return nullptr;
+  // The manager should only be created for the sign-in or the lock profile.
+  bool should_create_service = ash::IsSigninBrowserContext(profile);
+  if (chromeos::features::IsLockScreenBadgeAuthEnabled()) {
+    should_create_service |= ash::IsLockScreenBrowserContext(profile);
   }
-  return std::make_unique<LoginScreenExtensionsLifetimeManager>(profile);
+  if (should_create_service) {
+    return std::make_unique<LoginScreenExtensionsLifetimeManager>(profile);
+  }
+  return nullptr;
 }
 
 bool LoginScreenExtensionsLifetimeManagerFactory::

@@ -9,11 +9,16 @@ enum DialogButton {
   "ErrorMoreDetails",
 };
 
+dictionary FedCmTitleAndSubtitle {
+  required DOMString title;
+  DOMString subtitle;
+};
+
 [
   ImplementedAs=InternalsFedCm
 ] partial interface Internals {
   [CallWith=ScriptState] Promise<DOMString> getFedCmDialogType();
-  [CallWith=ScriptState] Promise<DOMString> getFedCmTitle();
+  [CallWith=ScriptState] Promise<FedCmTitleAndSubtitle> getFedCmTitleAndSubtitle();
   [CallWith=ScriptState, RaisesException] Promise<undefined> selectFedCmAccount(long accountIndex);
   [CallWith=ScriptState] Promise<undefined> dismissFedCmDialog();
   [CallWith=ScriptState] Promise<undefined> clickFedCmDialogButton(DialogButton dialogButton);

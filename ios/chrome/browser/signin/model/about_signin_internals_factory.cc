@@ -4,13 +4,9 @@
 
 #include "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 
-#include <utility>
-
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/about_signin_internals.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #include "ios/chrome/browser/signin/model/signin_client_factory.h"
@@ -19,22 +15,20 @@
 namespace ios {
 
 AboutSigninInternalsFactory::AboutSigninInternalsFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AboutSigninInternals",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(AccountReconcilorFactory::GetInstance());
+    : ProfileKeyedServiceFactoryIOS("AboutSigninInternals") {
+  DependsOn(ios::AccountReconcilorFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
 }
 
-AboutSigninInternalsFactory::~AboutSigninInternalsFactory() {}
+AboutSigninInternalsFactory::~AboutSigninInternalsFactory() = default;
 
 // static
-AboutSigninInternals* AboutSigninInternalsFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AboutSigninInternals*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AboutSigninInternals* AboutSigninInternalsFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AboutSigninInternals>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -45,19 +39,17 @@ AboutSigninInternalsFactory* AboutSigninInternalsFactory::GetInstance() {
 
 std::unique_ptr<KeyedService>
 AboutSigninInternalsFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+    ProfileIOS* profile) const {
   std::unique_ptr<AboutSigninInternals> service(new AboutSigninInternals(
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
-      SigninErrorControllerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(profile),
+      SigninErrorControllerFactory::GetForProfile(profile),
       signin::AccountConsistencyMethod::kMirror,
-      SigninClientFactory::GetForBrowserState(chrome_browser_state),
-      AccountReconcilorFactory::GetForBrowserState(chrome_browser_state)));
+      SigninClientFactory::GetForProfile(profile),
+      ios::AccountReconcilorFactory::GetForProfile(profile)));
   return service;
 }
 
-void AboutSigninInternalsFactory::RegisterBrowserStatePrefs(
+void AboutSigninInternalsFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   AboutSigninInternals::RegisterPrefs(user_prefs);
 }

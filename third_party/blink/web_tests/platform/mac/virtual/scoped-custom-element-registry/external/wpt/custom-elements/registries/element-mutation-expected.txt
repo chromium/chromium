@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] An element with global registry should not change its registry when moved into a shadow tree with scoped registry.
+  assert_not_equals: got disallowed value object "[object CustomElementRegistry]"
+[FAIL] An element with scoped registry should not change its registry when moved out of the shadow tree.
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] An element with scoped registry should not change its registry when moved into another shadow tree with different scoped registry.
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Declarative shadow DOM with shadowrootcustomelementregistry attribute without registry initialized should remain null registry after adoption.
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
@@ -28,21 +27,29 @@ class InputDeviceCapabilities;
 class LocalFrame;
 class ScrollManager;
 
-enum class DragInitiator;
+enum class DragHandlingResult {
+  // The event was not handled and callers should try to use the mouse event for
+  // something else.
+  kNotHandled,
+  // The drag attempt event was handled, but a drag was not started. For
+  // example, if `event.preventDefault()` was called on drag start.
+  kHandledDragNotStarted,
+  // The drag attempt successfully initiated a drag.
+  kHandledDragStarted,
+};
 
 // This class takes care of dispatching all mouse events and keeps track of
 // positions and states of mouse.
 class CORE_EXPORT MouseEventManager final
-    : public GarbageCollected<MouseEventManager>,
-      public SynchronousMutationObserver {
+    : public GarbageCollected<MouseEventManager> {
  public:
   MouseEventManager(LocalFrame&, ScrollManager&);
   MouseEventManager(const MouseEventManager&) = delete;
   MouseEventManager& operator=(const MouseEventManager&) = delete;
-  virtual ~MouseEventManager();
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
-  WebInputEventResult DispatchMouseEvent(
+  // Returns the DOM event that was dispatched plus the result of dispatch.
+  std::pair<MouseEvent*, WebInputEventResult> DispatchMouseEvent(
       EventTarget*,
       const AtomicString&,
       const WebMouseEvent&,
@@ -52,7 +59,7 @@ class CORE_EXPORT MouseEventManager final
       const PointerId& pointer_id = PointerEventFactory::kInvalidId,
       const String& pointer_type = g_empty_string);
 
-  WebInputEventResult SetMousePositionAndDispatchMouseEvent(
+  WebInputEventResult SetElementUnderMouseAndDispatchMouseEvent(
       Element* target_element,
       const AtomicString& event_type,
       const WebMouseEvent&);
@@ -75,6 +82,9 @@ class CORE_EXPORT MouseEventManager final
   // Resets the internal state of this object.
   void Clear();
 
+  void NodeChildrenWillBeRemoved(ContainerNode&);
+  void NodeWillBeRemoved(Node&);
+
   void SendBoundaryEvents(EventTarget* exited_target,
                           bool original_exited_target_removed,
                           EventTarget* entered_target,
@@ -90,7 +100,9 @@ class CORE_EXPORT MouseEventManager final
   void SetLastKnownMousePosition(const WebMouseEvent&);
   void SetLastMousePositionAsUnknown();
 
-  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&);
+  DragHandlingResult HandleDragDropIfPossible(
+      const GestureEventWithHitTestResults&,
+      PointerId pointer_id);
 
   WebInputEventResult HandleMouseDraggedEvent(
       const MouseEventWithHitTestResults&);
@@ -130,19 +142,18 @@ class CORE_EXPORT MouseEventManager final
   bool MousePressed();
   void ReleaseMousePress();
 
-  bool CapturesDragging() const;
-  void SetCapturesDragging(bool);
-
   void SetMouseDownMayStartAutoscroll() {
     mouse_down_may_start_autoscroll_ = true;
   }
 
+  // TODO(crbug.com/40870245): Do we even need `mouse_press_node_` when we have
+  // `mouse_down_element_`?  The "node" version is used only in one place
+  // (`ScrollManager::LogicalScroll`) which could never see a non-element node,
+  // right?
   Node* MousePressNode();
   void SetMousePressNode(Node*);
 
-  Element* ClickElement();
-
-  void SetClickElement(Element*);
+  void SetMouseDownElement(Element*);
   void SetClickCount(int);
 
   bool MouseDownMayStartDrag();
@@ -151,6 +162,7 @@ class CORE_EXPORT MouseEventManager final
   void RecomputeMouseHoverState();
 
   void MarkHoverStateDirty();
+  void ReportDragEnd();
 
  private:
   class MouseEventBoundaryEventDispatcher : public BoundaryEventDispatcher {
@@ -172,23 +184,29 @@ class CORE_EXPORT MouseEventManager final
     const WebMouseEvent* web_mouse_event_;
   };
 
-  // If the given element is a shadow host and its root has delegatesFocus=false
-  // flag, slide focus to its inner element. Returns true if the resulting focus
-  // is different from the given element.
-  bool SlideFocusOnShadowHostIfNecessary(const Element&);
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DragAndDropToolType)
+  enum class DragAndDropToolType {
+    kUnknown = 0,
+    kMouse,
+    kFinger,
+    kStylusViaGesture,
+    kStylusViaButton,
+    kMaxValue = kStylusViaButton,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:DragAndDropToolType)
 
   bool DragThresholdExceeded(const gfx::Point&) const;
-  bool HandleDrag(const MouseEventWithHitTestResults&, DragInitiator);
+  DragHandlingResult HandleDrag(const MouseEventWithHitTestResults&,
+                                DragAndDropToolType);
   bool TryStartDrag(const MouseEventWithHitTestResults&);
   void ClearDragDataTransfer();
   DataTransfer* CreateDraggingDataTransfer() const;
 
+  void HandleRemoveSubtree(Node&, bool include_root);
   void ResetDragSource();
   bool HoverStateDirty();
-
-  // Implementations of |SynchronousMutationObserver|
-  void NodeChildrenWillBeRemoved(ContainerNode&) final;
-  void NodeWillBeRemoved(Node& node_to_be_removed) final;
 
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |MouseEventManager::clear()|.
@@ -217,13 +235,14 @@ class CORE_EXPORT MouseEventManager final
 
   unsigned mouse_down_may_start_autoscroll_ : 1;
   unsigned svg_pan_ : 1;
-  unsigned captures_dragging_ : 1;
   unsigned mouse_down_may_start_drag_ : 1;
 
+  // Tracks the element that received the last mousedown event.  This is cleared
+  // on mouseup.
+  Member<Element> mousedown_element_;
   Member<Node> mouse_press_node_;
 
   int click_count_ = 0;
-  Member<Element> click_element_;
 
   gfx::Point mouse_down_pos_;
   base::TimeTicks mouse_down_timestamp_;
@@ -235,6 +254,7 @@ class CORE_EXPORT MouseEventManager final
   // ends, and at each begin frame, we will dispatch a fake mouse move event to
   // update hover when this is true.
   bool hover_state_dirty_ = false;
+  DragAndDropToolType drag_initiator_ = DragAndDropToolType::kUnknown;
 };
 
 }  // namespace blink

@@ -31,15 +31,15 @@ WebDatabaseTable::TypeKey GetWebAppManifestKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-// Converts 2-dimensional vector |fingerprints| to 1-dimesional vector.
-std::unique_ptr<std::vector<uint8_t>> SerializeFingerPrints(
+// Converts 2-dimensional vector |fingerprints| to 1-dimensional vector.
+std::vector<uint8_t> SerializeFingerPrints(
     const std::vector<std::vector<uint8_t>>& fingerprints) {
-  auto serialized_fingerprints = std::make_unique<std::vector<uint8_t>>();
+  std::vector<uint8_t> serialized_fingerprints;
 
   for (const auto& fingerprint : fingerprints) {
     DCHECK_EQ(fingerprint.size(), kFingerPrintLength);
-    serialized_fingerprints->insert(serialized_fingerprints->end(),
-                                    fingerprint.begin(), fingerprint.end());
+    serialized_fingerprints.insert(serialized_fingerprints.end(),
+                                   fingerprint.begin(), fingerprint.end());
   }
 
   return serialized_fingerprints;
@@ -64,9 +64,9 @@ bool DeserializeFingerPrints(
 
 }  // namespace
 
-WebAppManifestSectionTable::WebAppManifestSectionTable() {}
+WebAppManifestSectionTable::WebAppManifestSectionTable() = default;
 
-WebAppManifestSectionTable::~WebAppManifestSectionTable() {}
+WebAppManifestSectionTable::~WebAppManifestSectionTable() = default;
 
 WebAppManifestSectionTable* WebAppManifestSectionTable::FromWebDatabase(
     WebDatabase* db) {
@@ -79,13 +79,12 @@ WebDatabaseTable::TypeKey WebAppManifestSectionTable::GetTypeKey() const {
 }
 
 bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
-  if (!db_->Execute("CREATE TABLE IF NOT EXISTS web_app_manifest_section ( "
-                    "expire_date INTEGER NOT NULL DEFAULT 0, "
-                    "id VARCHAR, "
-                    "min_version INTEGER NOT NULL DEFAULT 0, "
-                    "fingerprints BLOB) ")) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+  if (!db()->Execute("CREATE TABLE IF NOT EXISTS web_app_manifest_section ( "
+                     "expire_date INTEGER NOT NULL DEFAULT 0, "
+                     "id VARCHAR, "
+                     "min_version INTEGER NOT NULL DEFAULT 0, "
+                     "fingerprints BLOB) ")) {
+    NOTREACHED();
   }
 
   return true;
@@ -99,7 +98,7 @@ bool WebAppManifestSectionTable::MigrateToVersion(
 
 void WebAppManifestSectionTable::RemoveExpiredData() {
   const base::Time now = base::Time::NowFromSystemTime();
-  sql::Statement s(db_->GetUniqueStatement(
+  sql::Statement s(db()->GetUniqueStatement(
       "DELETE FROM web_app_manifest_section WHERE expire_date < ? "));
   s.BindTime(0, now);
   s.Run();
@@ -109,11 +108,11 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
     const std::vector<WebAppManifestSection>& manifest) {
   DCHECK_LT(0U, manifest.size());
 
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   if (!transaction.Begin())
     return false;
 
-  sql::Statement s1(db_->GetUniqueStatement(
+  sql::Statement s1(db()->GetUniqueStatement(
       "DELETE FROM web_app_manifest_section WHERE id=? "));
   for (const auto& section : manifest) {
     s1.BindString(0, section.id);
@@ -123,9 +122,9 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
   }
 
   sql::Statement s2(
-      db_->GetUniqueStatement("INSERT INTO web_app_manifest_section "
-                              "(expire_date, id, min_version, fingerprints) "
-                              "VALUES (?, ?, ?, ?)"));
+      db()->GetUniqueStatement("INSERT INTO web_app_manifest_section "
+                               "(expire_date, id, min_version, fingerprints) "
+                               "VALUES (?, ?, ?, ?)"));
   const base::Time expire_date =
       base::Time::FromTimeT(base::Time::NowFromSystemTime().ToTimeT() +
                             WEB_APP_MANIFEST_VALID_TIME_IN_SECONDS);
@@ -134,9 +133,7 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
     s2.BindTime(index++, expire_date);
     s2.BindString(index++, section.id);
     s2.BindInt64(index++, section.min_version);
-    std::unique_ptr<std::vector<uint8_t>> serialized_fingerprints =
-        SerializeFingerPrints(section.fingerprints);
-    s2.BindBlob(index, *serialized_fingerprints);
+    s2.BindBlob(index, SerializeFingerPrints(section.fingerprints));
     if (!s2.Run())
       return false;
     s2.Reset(true);
@@ -151,9 +148,9 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
 std::vector<WebAppManifestSection>
 WebAppManifestSectionTable::GetWebAppManifest(const std::string& web_app) {
   sql::Statement s(
-      db_->GetUniqueStatement("SELECT id, min_version, fingerprints "
-                              "FROM web_app_manifest_section "
-                              "WHERE id=?"));
+      db()->GetUniqueStatement("SELECT id, min_version, fingerprints "
+                               "FROM web_app_manifest_section "
+                               "WHERE id=?"));
   s.BindString(0, web_app);
 
   std::vector<WebAppManifestSection> manifest;
@@ -163,11 +160,7 @@ WebAppManifestSectionTable::GetWebAppManifest(const std::string& web_app) {
     section.id = s.ColumnString(index++);
     section.min_version = s.ColumnInt64(index++);
 
-    std::vector<uint8_t> fingerprints;
-    if (!s.ColumnBlobAsVector(index, &fingerprints)) {
-      manifest.clear();
-      break;
-    }
+    std::vector<uint8_t> fingerprints = s.ColumnBlobAsVector(index);
 
     if (!DeserializeFingerPrints(fingerprints, section.fingerprints)) {
       manifest.clear();

@@ -60,10 +60,10 @@ class IDBIndexMetadata : public RefCounted<IDBIndexMetadata> {
   static scoped_refptr<IDBIndexMetadata> Create();
 
   String name;
-  int64_t id;
+  int64_t id = kInvalidId;
   IDBKeyPath key_path;
-  bool unique;
-  bool multi_entry;
+  bool unique = false;
+  bool multi_entry = false;
 };
 
 class MODULES_EXPORT IDBObjectStoreMetadata
@@ -77,8 +77,7 @@ class MODULES_EXPORT IDBObjectStoreMetadata
   IDBObjectStoreMetadata(const String& name,
                          int64_t id,
                          const IDBKeyPath&,
-                         bool auto_increment,
-                         int64_t max_index_id);
+                         bool auto_increment);
 
   static scoped_refptr<IDBObjectStoreMetadata> Create();
 
@@ -87,10 +86,10 @@ class MODULES_EXPORT IDBObjectStoreMetadata
   scoped_refptr<IDBObjectStoreMetadata> CreateCopy() const;
 
   String name;
-  int64_t id;
+  int64_t id = kInvalidId;
   IDBKeyPath key_path;
-  bool auto_increment;
-  int64_t max_index_id;
+  bool auto_increment = false;
+  int64_t max_index_id = 0;
   HashMap<int64_t, scoped_refptr<IDBIndexMetadata>> indexes;
 };
 
@@ -101,22 +100,17 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   enum { kNoVersion = -1, kDefaultVersion = 0 };
 
   IDBDatabaseMetadata();
-  IDBDatabaseMetadata(const String& name,
-                      int64_t id,
-                      int64_t version,
-                      int64_t max_object_store_id,
-                      bool was_cold_open);
 
   // Overwrites the database metadata, but does not change the object store and
   // index metadata.
   void CopyFrom(const IDBDatabaseMetadata&);
 
   String name;
-  int64_t id;
-  int64_t version;
-  int64_t max_object_store_id;
+  int64_t version = kNoVersion;
+  int64_t max_object_store_id = 0;
   HashMap<int64_t, scoped_refptr<IDBObjectStoreMetadata>> object_stores;
-  bool was_cold_open;
+  bool was_cold_open = true;
+  bool is_sqlite = false;
 };
 
 }  // namespace blink

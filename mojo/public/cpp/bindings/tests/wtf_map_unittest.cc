@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/tests/rect_blink.h"
-#include "mojo/public/interfaces/bindings/tests/rect.mojom-blink.h"
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/rect.test-mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -12,7 +12,7 @@ namespace test {
 namespace {
 
 TEST(WTFMapTest, StructKey) {
-  WTF::HashMap<blink::RectPtr, int32_t> map;
+  ::blink::HashMap<blink::RectPtr, int32_t> map;
   map.insert(blink::Rect::New(1, 2, 3, 4), 123);
 
   blink::RectPtr key = blink::Rect::New(1, 2, 3, 4);
@@ -24,7 +24,7 @@ TEST(WTFMapTest, StructKey) {
 }
 
 TEST(WTFMapTest, TypemappedStructKey) {
-  WTF::HashMap<blink::ContainsHashablePtr, int32_t> map;
+  ::blink::HashMap<blink::ContainsHashablePtr, int32_t> map;
   map.insert(blink::ContainsHashable::New(RectBlink(1, 2, 3, 4)), 123);
 
   blink::ContainsHashablePtr key =

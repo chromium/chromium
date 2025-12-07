@@ -21,12 +21,6 @@ namespace headless {
 
 namespace {
 
-bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size(),
-      bitmap);
-}
-
 SkBitmap LoadTestImage(std::string_view file_name) {
   base::FilePath path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
@@ -37,11 +31,11 @@ SkBitmap LoadTestImage(std::string_view file_name) {
              .AppendASCII(file_name);
   CHECK(base::PathExists(path)) << path;
 
-  std::string png_data;
-  CHECK(base::ReadFileToString(path, &png_data)) << path;
+  std::optional<std::vector<uint8_t>> png_data = base::ReadFileToBytes(path);
+  CHECK(png_data) << path;
 
-  SkBitmap bitmap;
-  CHECK(DecodePNG(png_data, &bitmap)) << path;
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data.value());
+  CHECK(!bitmap.isNull()) << path;
 
   return bitmap;
 }

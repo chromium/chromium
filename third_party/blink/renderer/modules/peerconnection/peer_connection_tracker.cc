@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,15 +32,18 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_answer_options_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_offer_options_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -50,360 +54,238 @@ using webrtc::StatsReport;
 using webrtc::StatsReports;
 
 namespace blink {
+
 class InternalStandardStatsObserver;
-}
-
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<scoped_refptr<blink::InternalStandardStatsObserver>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<blink::InternalStandardStatsObserver>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<rtc::scoped_refptr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = rtc::scoped_refptr<T>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
-template <>
-struct CrossThreadCopier<base::Value::List>
-    : public CrossThreadCopierByValuePassThrough<base::Value::List> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace WTF
-
-namespace blink {
 
 // TODO(hta): This module should be redesigned to reduce string copies.
 
 namespace {
 
-String SerializeBoolean(bool value) {
-  return value ? "true" : "false";
-}
-
-String SerializeServers(
-    const std::vector<webrtc::PeerConnectionInterface::IceServer>& servers) {
-  StringBuilder result;
-  result.Append("[");
-
-  bool following = false;
-  for (const auto& server : servers) {
-    for (const auto& url : server.urls) {
-      if (following)
-        result.Append(", ");
-      else
-        following = true;
-
-      result.Append(String::FromUTF8(url));
-    }
-  }
-  result.Append("]");
-  return result.ToString();
-}
-
 String SerializeGetUserMediaMediaConstraints(
     const MediaConstraints& constraints) {
-  return String(constraints.ToString());
+  return constraints.ToString();
 }
 
 String SerializeOfferOptions(blink::RTCOfferOptionsPlatform* options) {
-  if (!options)
+  if (!options) {
     return "null";
+  }
 
-  StringBuilder result;
-  result.Append("offerToReceiveVideo: ");
-  result.AppendNumber(options->OfferToReceiveVideo());
-  result.Append(", offerToReceiveAudio: ");
-  result.AppendNumber(options->OfferToReceiveAudio());
-  result.Append(", voiceActivityDetection: ");
-  result.Append(SerializeBoolean(options->VoiceActivityDetection()));
-  result.Append(", iceRestart: ");
-  result.Append(SerializeBoolean(options->IceRestart()));
-  return result.ToString();
+  auto json = std::make_unique<JSONObject>();
+  if (options->OfferToReceiveAudio()) {
+    json->SetBoolean("offerToReceiveAudio", true);
+  }
+  if (options->OfferToReceiveVideo()) {
+    json->SetBoolean("offerToReceiveVideo", true);
+  }
+  if (options->VoiceActivityDetection()) {
+    json->SetBoolean("voiceActivityDetection", true);
+  }
+  if (options->IceRestart()) {
+    json->SetBoolean("iceRestart", true);
+  }
+  StringBuilder value;
+  json->WriteJSON(&value);
+  return value.ToString();
 }
 
 String SerializeAnswerOptions(blink::RTCAnswerOptionsPlatform* options) {
-  if (!options)
+  if (!options) {
     return "null";
-
-  StringBuilder result;
-  result.Append(", voiceActivityDetection: ");
-  result.Append(SerializeBoolean(options->VoiceActivityDetection()));
-  return result.ToString();
-}
-
-String SerializeMediaStreamIds(const Vector<String>& stream_ids) {
-  if (!stream_ids.size())
-    return "[]";
-  StringBuilder result;
-  result.Append("[");
-  for (const auto& stream_id : stream_ids) {
-    if (result.length() > 2u)
-      result.Append(",");
-    result.Append("'");
-    result.Append(stream_id);
-    result.Append("'");
   }
-  result.Append("]");
-  return result.ToString();
+
+  auto json = std::make_unique<JSONObject>();
+  if (options->VoiceActivityDetection()) {
+    json->SetBoolean("voiceActivityDetection", true);
+  }
+  StringBuilder value;
+  json->WriteJSON(&value);
+  return value.ToString();
 }
 
 String SerializeDirection(webrtc::RtpTransceiverDirection direction) {
   switch (direction) {
     case webrtc::RtpTransceiverDirection::kSendRecv:
-      return "'sendrecv'";
+      return "sendrecv";
     case webrtc::RtpTransceiverDirection::kSendOnly:
-      return "'sendonly'";
+      return "sendonly";
     case webrtc::RtpTransceiverDirection::kRecvOnly:
-      return "'recvonly'";
+      return "recvonly";
     case webrtc::RtpTransceiverDirection::kInactive:
-      return "'inactive'";
+      return "inactive";
     case webrtc::RtpTransceiverDirection::kStopped:
-      return "'stopped'";
+      return "stopped";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 
-String SerializeOptionalDirection(
-    const std::optional<webrtc::RtpTransceiverDirection>& direction) {
-  return direction ? SerializeDirection(*direction) : "null";
-}
-
-String SerializeTransceiverKind(const String& indent,
-                                const RTCRtpTransceiverPlatform& transceiver) {
+String SerializeTransceiverKind(const RTCRtpTransceiverPlatform& transceiver) {
   DCHECK(transceiver.Receiver());
   DCHECK(transceiver.Receiver()->Track());
 
-  auto kind = transceiver.Receiver()->Track()->GetSourceType();
-  StringBuilder result;
-  result.Append(indent);
-  result.Append("kind:");
-  if (kind == MediaStreamSource::StreamType::kTypeAudio) {
-    result.Append("'audio'");
-  } else if (kind == MediaStreamSource::StreamType::kTypeVideo) {
-    result.Append("'video'");
-  } else {
-    NOTREACHED_IN_MIGRATION();
+  switch (transceiver.Receiver()->Track()->GetSourceType()) {
+    case MediaStreamSource::StreamType::kTypeAudio:
+      return "audio";
+    case MediaStreamSource::StreamType::kTypeVideo:
+      return "video";
+    default:
+      NOTREACHED();
   }
-  result.Append(",\n");
-  return result.ToString();
 }
 
-String SerializeEncodingParameters(
-    const String& indent,
-    const std::vector<webrtc::RtpEncodingParameters>& encodings) {
-  StringBuilder result;
-  if (encodings.empty()) {
-    return result.ToString();
-  }
-  result.Append(indent);
-  result.Append("encodings: [\n");
-  for (const auto& encoding : encodings) {
-    result.Append(indent);
-    result.Append("    {");
-    result.Append("active: ");
-    result.Append(encoding.active ? "true" : "false");
-    result.Append(", ");
-    if (encoding.max_bitrate_bps) {
-      result.Append("maxBitrate: ");
-      result.AppendNumber(*encoding.max_bitrate_bps);
-      result.Append(", ");
-    }
-    if (encoding.scale_resolution_down_by) {
-      result.Append("scaleResolutionDownBy: ");
-      result.AppendNumber(*encoding.scale_resolution_down_by);
-      result.Append(", ");
-    }
+std::unique_ptr<JSONArray> SerializeEncodingParameters(
+    const std::vector<webrtc::RtpEncodingParameters>& send_encodings) {
+  auto encodings = std::make_unique<JSONArray>();
+  for (const auto& encoding : send_encodings) {
+    auto obj = std::make_unique<JSONObject>();
+    obj->SetBoolean("active", encoding.active);
     if (!encoding.rid.empty()) {
-      result.Append("rid: ");
-      result.Append(String(encoding.rid));
-      result.Append(", ");
+      obj->SetString("rid", String(encoding.rid));
     }
     if (encoding.max_framerate) {
-      result.Append("maxFramerate: ");
-      result.AppendNumber(*encoding.max_framerate);
-      result.Append(", ");
+      obj->SetDouble("maxFramerate", *encoding.max_framerate);
     }
-    if (encoding.adaptive_ptime) {
-      result.Append("adaptivePtime: true, ");
+    if (encoding.max_bitrate_bps) {
+      obj->SetInteger("maxBitrate", *encoding.max_bitrate_bps);
+    }
+    if (encoding.scale_resolution_down_by) {
+      obj->SetDouble("scaleResolutionDownBy",
+                     *encoding.scale_resolution_down_by);
+    }
+    if (encoding.scale_resolution_down_to) {
+      auto res = std::make_unique<JSONObject>();
+      res->SetInteger("width", encoding.scale_resolution_down_to->width);
+      res->SetInteger("height", encoding.scale_resolution_down_to->height);
+      obj->SetObject("scaleResolutionDownTo", std::move(res));
     }
     if (encoding.scalability_mode) {
-      result.Append("scalabilityMode: ");
-      result.Append(String(*encoding.scalability_mode));
+      obj->SetString("scalabilityMode", String(*encoding.scalability_mode));
     }
-    result.Append("},\n");
+    if (encoding.adaptive_ptime) {
+      obj->SetBoolean("adpativePtime", true);
+    }
+    encodings->PushObject(std::move(obj));
   }
-  result.Append(indent);
-  result.Append("  ],\n");
-  result.Append(indent);
-  return result.ToString();
+  return encodings;
 }
 
-String SerializeSender(const String& indent,
-                       const blink::RTCRtpSenderPlatform& sender) {
-  StringBuilder result;
-  result.Append(indent);
-  result.Append("sender:{\n");
-  // track:'id',
-  result.Append(indent);
-  result.Append("  track:");
-  if (!sender.Track()) {
-    result.Append("null");
+std::unique_ptr<JSONObject> SerializeSender(
+    const blink::RTCRtpSenderPlatform& sender) {
+  auto json = std::make_unique<JSONObject>();
+  if (sender.Track()) {
+    json->SetString("track", String(sender.Track()->Id()));
   } else {
-    result.Append("'");
-    result.Append(sender.Track()->Id());
-    result.Append("'");
+    json->SetValue("track", JSONValue::Null());
   }
-  result.Append(",\n");
-  // streams:['id,'id'],
-  result.Append(indent);
-  result.Append("  streams:");
-  result.Append(SerializeMediaStreamIds(sender.StreamIds()));
-  result.Append(",\n");
-  result.Append(indent);
-  result.Append(
-      SerializeEncodingParameters(indent, sender.GetParameters()->encodings));
-  result.Append("},\n");
 
-  return result.ToString();
+  auto stream_ids = std::make_unique<JSONArray>();
+  for (const auto& stream_id : sender.StreamIds()) {
+    stream_ids->PushString(String(stream_id));
+  }
+  json->SetArray("streams", std::move(stream_ids));
+
+  json->SetArray("encodings", SerializeEncodingParameters(
+                                  sender.GetParameters()->encodings));
+  return json;
 }
 
-String SerializeReceiver(const String& indent,
-                         const RTCRtpReceiverPlatform& receiver) {
-  StringBuilder result;
-  result.Append(indent);
-  result.Append("receiver:{\n");
-  // track:'id',
+std::unique_ptr<JSONObject> SerializeReceiver(
+    const RTCRtpReceiverPlatform& receiver) {
+  auto json = std::make_unique<JSONObject>();
   DCHECK(receiver.Track());
-  result.Append(indent);
-  result.Append("  track:'");
-  result.Append(receiver.Track()->Id());
-  result.Append("',\n");
-  // streams:['id,'id'],
-  result.Append(indent);
-  result.Append("  streams:");
-  result.Append(SerializeMediaStreamIds(receiver.StreamIds()));
-  result.Append(",\n");
-  result.Append(indent);
-  result.Append("},\n");
-  return result.ToString();
+  json->SetString("track", String(receiver.Track()->Id()));
+  auto stream_ids = std::make_unique<JSONArray>();
+  for (const auto& stream_id : receiver.StreamIds()) {
+    stream_ids->PushString(String(stream_id));
+  }
+  json->SetArray("streams", std::move(stream_ids));
+  return json;
 }
 
-String SerializeTransceiver(const RTCRtpTransceiverPlatform& transceiver) {
-  StringBuilder result;
-  result.Append("{\n");
-  // mid:'foo',
+std::unique_ptr<JSONObject> SerializeTransceiver(
+    const RTCRtpTransceiverPlatform& transceiver) {
+  auto json = std::make_unique<JSONObject>();
   if (transceiver.Mid().IsNull()) {
-    result.Append("  mid:null,\n");
+    json->SetValue("mid", JSONValue::Null());
   } else {
-    result.Append("  mid:'");
-    result.Append(String(transceiver.Mid()));
-    result.Append("',\n");
+    json->SetString("mid", String(transceiver.Mid()));
   }
-  // kind:audio|video
-  result.Append(SerializeTransceiverKind("  ", transceiver));
-  // sender:{...},
-  result.Append(SerializeSender("  ", *transceiver.Sender()));
-  // receiver:{...},
-  result.Append(SerializeReceiver("  ", *transceiver.Receiver()));
-  // direction:'sendrecv',
-  result.Append("  direction:");
-  result.Append(SerializeDirection(transceiver.Direction()));
-  result.Append(",\n");
-  // currentDirection:null,
-  result.Append("  currentDirection:");
-  result.Append(SerializeOptionalDirection(transceiver.CurrentDirection()));
-  result.Append(",\n");
-  result.Append("}");
-  return result.ToString();
-}
-
-String SerializeIceTransportType(
-    webrtc::PeerConnectionInterface::IceTransportsType type) {
-  String transport_type("");
-  switch (type) {
-    case webrtc::PeerConnectionInterface::kNone:
-      transport_type = "none";
-      break;
-    case webrtc::PeerConnectionInterface::kRelay:
-      transport_type = "relay";
-      break;
-    case webrtc::PeerConnectionInterface::kAll:
-      transport_type = "all";
-      break;
-    case webrtc::PeerConnectionInterface::kNoHost:
-      transport_type = "noHost";
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
+  json->SetString("kind", SerializeTransceiverKind(transceiver));
+  json->SetValue("sender", SerializeSender(*transceiver.Sender()));
+  json->SetValue("receiver", SerializeReceiver(*transceiver.Receiver()));
+  json->SetString("direction", SerializeDirection(transceiver.Direction()));
+  if (transceiver.CurrentDirection().has_value()) {
+    json->SetString("currentDirection",
+                    SerializeDirection(*transceiver.CurrentDirection()));
+  } else {
+    json->SetValue("currentDirection", JSONValue::Null());
   }
-  return transport_type;
-}
-
-String SerializeBundlePolicy(
-    webrtc::PeerConnectionInterface::BundlePolicy policy) {
-  String policy_str("");
-  switch (policy) {
-    case webrtc::PeerConnectionInterface::kBundlePolicyBalanced:
-      policy_str = "balanced";
-      break;
-    case webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle:
-      policy_str = "max-bundle";
-      break;
-    case webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat:
-      policy_str = "max-compat";
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
-  return policy_str;
-}
-
-String SerializeRtcpMuxPolicy(
-    webrtc::PeerConnectionInterface::RtcpMuxPolicy policy) {
-  String policy_str("");
-  switch (policy) {
-    case webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate:
-      policy_str = "negotiate";
-      break;
-    case webrtc::PeerConnectionInterface::kRtcpMuxPolicyRequire:
-      policy_str = "require";
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
-  return policy_str;
+  return json;
 }
 
 // Serializes things that are of interest from the RTCConfiguration.
 String SerializeConfiguration(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     bool usesInsertableStreams) {
-  StringBuilder result;
-  // TODO(hbos): Add serialization of certificate.
-  result.Append("{ iceServers: ");
-  result.Append(SerializeServers(config.servers));
-  result.Append(", iceTransportPolicy: ");
-  result.Append(SerializeIceTransportType(config.type));
-  result.Append(", bundlePolicy: ");
-  result.Append(SerializeBundlePolicy(config.bundle_policy));
-  result.Append(", rtcpMuxPolicy: ");
-  result.Append(SerializeRtcpMuxPolicy(config.rtcp_mux_policy));
-  result.Append(", iceCandidatePoolSize: ");
-  result.AppendNumber(config.ice_candidate_pool_size);
-  if (usesInsertableStreams) {
-    result.Append(", encodedInsertableStreams: true");
+  auto json = std::make_unique<JSONObject>();
+  // Serialize iceServers (without username and credential).
+  if (!config.servers.empty()) {
+    auto servers = std::make_unique<JSONArray>();
+    for (const auto& ice_server : config.servers) {
+      auto server = std::make_unique<JSONObject>();
+      auto urls = std::make_unique<JSONArray>();
+      for (const auto& url : ice_server.urls) {
+        urls->PushString(String(url));
+      }
+      server->SetArray("urls", std::move(urls));
+      servers->PushObject(std::move(server));
+    }
+    json->SetArray("iceServers", std::move(servers));
   }
-  result.Append(" }");
-  return result.ToString();
+  // Serialize iceTransportPolicy.
+  switch (config.type) {
+    case webrtc::PeerConnectionInterface::kRelay:
+      json->SetString("iceTransportPolicy", "relay");
+      break;
+    default:
+      // The other values are the default or not web-exposed.
+      break;
+  }
+  // Serialize iceCandidatePoolSize.
+  if (config.ice_candidate_pool_size > 0) {
+    json->SetInteger("iceCandidatePoolSize", config.ice_candidate_pool_size);
+  }
+  // Serialize bundlePolicy.
+  switch (config.bundle_policy) {
+    case webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle:
+      json->SetString("bundlePolicy", "max-bundle");
+      break;
+    case webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat:
+      json->SetString("bundlePolicy", "max-compat");
+      break;
+    default:
+      // "balanced" is the default and not serialized.
+      break;
+  }
+  // Serialize rtcpMuxPolicy.
+  switch (config.rtcp_mux_policy) {
+    case webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate:
+      // No longer standard.
+      json->SetString("rtcpMuxPolicy", "negotiate");
+      break;
+    default:
+      // "require" is the default and not serialized.
+      break;
+  }
+  // Serialize (non-standard and obsolete) encodedInsertableStreams.
+  if (usesInsertableStreams) {
+    json->SetBoolean("encodedInsertableStreams", true);
+  }
+  // TODO(hbos): Add serialization of certificate.
+  StringBuilder value;
+  json->WriteJSON(&value);
+  return value.ToString();
 }
 
 const char* GetTransceiverUpdatedReasonString(
@@ -420,8 +302,7 @@ const char* GetTransceiverUpdatedReasonString(
     case PeerConnectionTracker::TransceiverUpdatedReason::kSetRemoteDescription:
       return "setRemoteDescription";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 int GetNextProcessLocalID() {
@@ -439,17 +320,20 @@ int GetNextProcessLocalID() {
 class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
  public:
   InternalStandardStatsObserver(
+      const base::WeakPtr<RTCPeerConnectionHandler> pc_handler,
       int lid,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread,
       Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders,
       CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback)
-      : lid_(lid),
+      : pc_handler_(pc_handler),
+        lid_(lid),
         main_thread_(std::move(main_thread)),
         senders_(std::move(senders)),
         completion_callback_(std::move(completion_callback)) {}
 
   void OnStatsDelivered(
-      const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) override {
+      const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
+      override {
     // We're on the signaling thread.
     DCHECK(!main_thread_->BelongsToCurrentThread());
     PostCrossThreadTask(
@@ -464,12 +348,12 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 
  private:
   void OnStatsDeliveredOnMainThread(
-      rtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
+      webrtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
     std::move(completion_callback_).Run(lid_, ReportToList(report));
   }
 
   base::Value::List ReportToList(
-      const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
+      const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
     std::map<std::string, MediaStreamTrackPlatform*> tracks_by_id;
     for (const auto& sender : senders_) {
       MediaStreamComponent* track_component = sender->Track();
@@ -481,27 +365,33 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     }
 
     base::Value::List result_list;
+
+    if (!pc_handler_) {
+      return result_list;
+    }
+    auto* local_frame = To<WebLocalFrameImpl>(*pc_handler_->frame()).GetFrame();
+    DocumentLoadTiming& time_converter =
+        local_frame->Loader().GetDocumentLoader()->GetTiming();
     // Used for string comparisons with const char* below.
     const std::string kTypeMediaSource = "media-source";
     for (const auto& stats : *report) {
-      // The format of "stats_subdictionary" is:
-      // {timestamp:<milliseconds>, values: [<key-value pairs>]}
+      base::Value::Dict stats_dictionary;
+      stats_dictionary.Set("id", stats.id());
+      stats_dictionary.Set("type", stats.type());
       // The timestamp unit is milliseconds but we want decimal
       // precision so we convert ourselves.
-      base::Value::Dict stats_subdictionary;
-      stats_subdictionary.Set(
+      base::TimeDelta monotonic_time =
+          time_converter.MonotonicTimeToPseudoWallTime(
+              ConvertToBaseTimeTicks(stats.timestamp()));
+      stats_dictionary.Set(
           "timestamp",
-          stats.timestamp().us() /
+          monotonic_time.InMicrosecondsF() /
               static_cast<double>(base::Time::kMicrosecondsPerMillisecond));
-      // Values are reported as
-      // "values": ["attribute1", value, "attribute2", value...]
-      base::Value::List name_value_pairs;
       for (const auto& attribute : stats.Attributes()) {
         if (!attribute.has_value()) {
           continue;
         }
-        name_value_pairs.Append(attribute.name());
-        name_value_pairs.Append(AttributeToValue(attribute));
+        stats_dictionary.Set(attribute.name(), AttributeToValue(attribute));
       }
       // Modify "media-source" to also contain the result of the
       // MediaStreamTrack Statistics API, if applicable.
@@ -514,29 +404,24 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
           if (it != tracks_by_id.end()) {
             MediaStreamTrackPlatform::VideoFrameStats video_frame_stats =
                 it->second->GetVideoFrameStats();
-            name_value_pairs.Append("track.deliveredFrames");
-            name_value_pairs.Append(base::Value(
-                static_cast<int>(video_frame_stats.deliverable_frames)));
-            name_value_pairs.Append("track.discardedFrames");
-            name_value_pairs.Append(base::Value(
-                static_cast<int>(video_frame_stats.discarded_frames)));
-            name_value_pairs.Append("track.totalFrames");
-            name_value_pairs.Append(base::Value(
-                static_cast<int>(video_frame_stats.deliverable_frames +
-                                 video_frame_stats.discarded_frames +
-                                 video_frame_stats.dropped_frames)));
+            stats_dictionary.Set("track.deliveredFrames",
+                                 base::Value(static_cast<int>(
+                                     video_frame_stats.deliverable_frames)));
+            stats_dictionary.Set("track.discardedFrames",
+                                 base::Value(static_cast<int>(
+                                     video_frame_stats.discarded_frames)));
+            stats_dictionary.Set("track.totalFrames",
+                                 base::Value(static_cast<int>(
+                                     video_frame_stats.deliverable_frames +
+                                     video_frame_stats.discarded_frames +
+                                     video_frame_stats.dropped_frames)));
           }
         }
       }
-      stats_subdictionary.Set("values", std::move(name_value_pairs));
-
-      // The format of "stats_dictionary" is:
-      // {id:<string>, stats:<stats_subdictionary>, type:<string>}
-      base::Value::Dict stats_dictionary;
-      stats_dictionary.Set("stats", std::move(stats_subdictionary));
-      stats_dictionary.Set("id", stats.id());
-      stats_dictionary.Set("type", stats.type());
-      result_list.Append(std::move(stats_dictionary));
+      base::Value::List list;
+      list.Append(stats.id());
+      list.Append(std::move(stats_dictionary));
+      result_list.Append(std::move(list));
     }
     return result_list;
   }
@@ -546,36 +431,55 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     if (attribute.holds_alternative<bool>()) {
       return base::Value(attribute.get<bool>());
     }
+    if (attribute.holds_alternative<int>()) {
+      return base::Value(attribute.get<int>());
+    }
     if (attribute.holds_alternative<int32_t>()) {
       return base::Value(attribute.get<int32_t>());
     }
-    if (attribute.holds_alternative<std::string>()) {
-      return base::Value(attribute.get<std::string>());
+    if (attribute.holds_alternative<uint32_t>()) {
+      uint32_t value = attribute.get<uint32_t>();
+      return base::Value(static_cast<double>(value));
+    }
+    if (attribute.holds_alternative<int64_t>()) {
+      int64_t value = attribute.get<int64_t>();
+      return base::Value(static_cast<double>(value));
+    }
+    if (attribute.holds_alternative<uint64_t>()) {
+      uint64_t value = attribute.get<uint64_t>();
+      return base::Value(static_cast<double>(value));
     }
     if (attribute.holds_alternative<double>()) {
       return base::Value(attribute.get<double>());
     }
-    // Types not supported by `base::Value` are converted to string.
+    if (attribute.holds_alternative<std::string>()) {
+      return base::Value(attribute.get<std::string>());
+    }
+    if (attribute.holds_alternative<std::map<std::string, double>>()) {
+      base::Value::Dict dict;
+      for (auto& value : attribute.get<std::map<std::string, double>>()) {
+        dict.Set(value.first, value.second);
+      }
+      return base::Value(std::move(dict));
+    }
+    DCHECK(false) << "Unimplemented native stats type.";
     return base::Value(attribute.ToString());
   }
 
+  const base::WeakPtr<RTCPeerConnectionHandler> pc_handler_;
   const int lid_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   const Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders_;
   CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback_;
 };
 
-// static
-const char PeerConnectionTracker::kSupplementName[] = "PeerConnectionTracker";
-
 PeerConnectionTracker& PeerConnectionTracker::From(LocalDOMWindow& window) {
-  PeerConnectionTracker* tracker =
-      Supplement<LocalDOMWindow>::From<PeerConnectionTracker>(window);
+  PeerConnectionTracker* tracker = window.GetPeerConnectionTracker();
   if (!tracker) {
     tracker = MakeGarbageCollected<PeerConnectionTracker>(
         window, window.GetTaskRunner(TaskType::kNetworking),
         base::PassKey<PeerConnectionTracker>());
-    ProvideTo(window, tracker);
+    window.SetPeerConnectionTracker(tracker);
   }
   return *tracker;
 }
@@ -605,7 +509,7 @@ PeerConnectionTracker::PeerConnectionTracker(
     LocalDOMWindow& window,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     base::PassKey<PeerConnectionTracker>)
-    : Supplement<LocalDOMWindow>(window),
+    : local_dom_window_(window),
       // Do not set a lifecycle notifier for `peer_connection_tracker_host_` to
       // ensure that its mojo pipe stays alive until the execution context is
       // destroyed. `RTCPeerConnection`, which owns a `RTCPeerConnectionHandler`
@@ -626,7 +530,7 @@ PeerConnectionTracker::PeerConnectionTracker(
 PeerConnectionTracker::PeerConnectionTracker(
     mojo::PendingRemote<blink::mojom::blink::PeerConnectionTrackerHost> host,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-    : Supplement(nullptr),
+    : local_dom_window_(nullptr),
       peer_connection_tracker_host_(nullptr),
       receiver_(this, nullptr),
       main_thread_task_runner_(std::move(main_thread_task_runner)) {
@@ -639,8 +543,8 @@ void PeerConnectionTracker::Bind(
     mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
         receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
-                                          TaskType::kMiscPlatformAPI));
+  receiver_.Bind(std::move(receiver),
+                 local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void PeerConnectionTracker::OnSuspend() {
@@ -671,14 +575,6 @@ void PeerConnectionTracker::OnThermalStateChange(
   }
 }
 
-void PeerConnectionTracker::OnSpeedLimitChange(int32_t speed_limit) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  current_speed_limit_ = speed_limit;
-  for (auto& entry : peer_connection_local_id_map_) {
-    entry.key->OnSpeedLimitChange(speed_limit);
-  }
-}
-
 void PeerConnectionTracker::StartEventLog(int peer_connection_local_id,
                                           int output_period_ms) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
@@ -700,15 +596,36 @@ void PeerConnectionTracker::StopEventLog(int peer_connection_local_id) {
   }
 }
 
+void PeerConnectionTracker::StartDataChannelLog(int peer_connection_local_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  for (auto& it : peer_connection_local_id_map_) {
+    if (it.value == peer_connection_local_id) {
+      it.key->StartDataChannelLog();
+      return;
+    }
+  }
+}
+
+void PeerConnectionTracker::StopDataChannelLog(int peer_connection_local_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  for (auto& it : peer_connection_local_id_map_) {
+    if (it.value == peer_connection_local_id) {
+      it.key->StopDataChannelLog();
+      return;
+    }
+  }
+}
+
 void PeerConnectionTracker::GetStandardStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
   for (const auto& pair : peer_connection_local_id_map_) {
     Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders =
         pair.key->GetPlatformSenders();
-    rtc::scoped_refptr<InternalStandardStatsObserver> observer(
-        new rtc::RefCountedObject<InternalStandardStatsObserver>(
-            pair.value, main_thread_task_runner_, std::move(senders),
+    webrtc::scoped_refptr<InternalStandardStatsObserver> observer(
+        new webrtc::RefCountedObject<InternalStandardStatsObserver>(
+            pair.key->GetWeakPtr(), pair.value, main_thread_task_runner_,
+            std::move(senders),
             CrossThreadBindOnce(&PeerConnectionTracker::AddStandardStats,
                                 WrapCrossThreadWeakPersistent(this))));
     pair.key->GetStandardStatsForTracker(observer);
@@ -760,7 +677,7 @@ void PeerConnectionTracker::UnregisterPeerConnection(
   auto it = peer_connection_local_id_map_.find(pc_handler);
 
   if (it == peer_connection_local_id_map_.end()) {
-    // The PeerConnection might not have been registered if its initilization
+    // The PeerConnection might not have been registered if its initialization
     // failed.
     return;
   }
@@ -777,8 +694,7 @@ void PeerConnectionTracker::TrackCreateOffer(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "createOffer",
-                           "options: {" + SerializeOfferOptions(options) + "}");
+  SendPeerConnectionUpdate(id, "createOffer", SerializeOfferOptions(options));
 }
 
 void PeerConnectionTracker::TrackCreateAnswer(
@@ -788,8 +704,7 @@ void PeerConnectionTracker::TrackCreateAnswer(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(
-      id, "createAnswer", "options: {" + SerializeAnswerOptions(options) + "}");
+  SendPeerConnectionUpdate(id, "createAnswer", SerializeAnswerOptions(options));
 }
 
 void PeerConnectionTracker::TrackSetSessionDescription(
@@ -801,11 +716,17 @@ void PeerConnectionTracker::TrackSetSessionDescription(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String value = "type: " + type + ", sdp: " + sdp;
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("type", type);
+  if (!sdp.empty()) {
+    json->SetString("sdp", sdp);
+  }
+  StringBuilder value;
+  json->WriteJSON(&value);
   SendPeerConnectionUpdate(
       id,
       source == kSourceLocal ? "setLocalDescription" : "setRemoteDescription",
-      value);
+      value.ToString());
 }
 
 void PeerConnectionTracker::TrackSetSessionDescriptionImplicit(
@@ -839,25 +760,33 @@ void PeerConnectionTracker::TrackAddIceCandidate(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  std::optional<String> relay_protocol = candidate->RelayProtocol();
-  std::optional<String> url = candidate->Url();
-  String value =
-      "sdpMid: " + String(candidate->SdpMid()) + ", " + "sdpMLineIndex: " +
-      (candidate->SdpMLineIndex() ? String::Number(*candidate->SdpMLineIndex())
-                                  : "null") +
-      ", candidate: " + String(candidate->Candidate()) +
-      (relay_protocol ? ", relayProtocol: " + *relay_protocol : String()) +
-      (url ? ", url: " + *url : String());
+  String relay_protocol = candidate->RelayProtocol();
+  String url = candidate->Url();
+
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("sdpMid", candidate->SdpMid());
+  if (candidate->SdpMLineIndex()) {
+    json->SetInteger("sdpMLineIndex", *candidate->SdpMLineIndex());
+  }
+  json->SetString("candidate", candidate->Candidate());
+  if (!url.empty()) {
+    json->SetString("url", url);
+  }
+  if (!relay_protocol.empty()) {
+    json->SetString("relayProtocol", relay_protocol);
+  }
 
   // OnIceCandidate always succeeds as it's a callback from the browser.
   DCHECK(source != kSourceLocal || succeeded);
 
+  StringBuilder value;
+  json->WriteJSON(&value);
   const char* event =
       (source == kSourceLocal)
-          ? "icecandidate"
+          ? "onicecandidate"
           : (succeeded ? "addIceCandidate" : "addIceCandidateFailed");
 
-  SendPeerConnectionUpdate(id, event, value);
+  SendPeerConnectionUpdate(id, event, value.ToString());
 }
 
 void PeerConnectionTracker::TrackIceCandidateError(
@@ -872,14 +801,21 @@ void PeerConnectionTracker::TrackIceCandidateError(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String address_string = address ? "address: " + address + "\n" : String();
-  String port_string =
-      port.has_value() ? String::Format("port: %d\n", port.value()) : "";
-  String value = "url: " + url + "\n" + address_string + port_string +
-                 "host_candidate: " + host_candidate + "\n" +
-                 "error_text: " + error_text + "\n" +
-                 "error_code: " + String::Number(error_code);
-  SendPeerConnectionUpdate(id, "icecandidateerror", value);
+
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("url", url);
+  if (address) {
+    json->SetString("address", address);
+  }
+  if (port.has_value()) {
+    json->SetInteger("port", *port);
+  }
+  json->SetString("host_candidate", host_candidate);
+  json->SetString("error_text", error_text);
+  json->SetInteger("error_code", error_code);
+  StringBuilder value;
+  json->WriteJSON(&value);
+  SendPeerConnectionUpdate(id, "onicecandidateerror", value.ToString());
 }
 
 void PeerConnectionTracker::TrackAddTransceiver(
@@ -909,17 +845,15 @@ void PeerConnectionTracker::TrackTransceiver(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String callback_type = "transceiver" + String::FromUTF8(callback_type_ending);
-  StringBuilder result;
-  result.Append("Caused by: ");
-  result.Append(GetTransceiverUpdatedReasonString(reason));
-  result.Append("\n\n");
-  result.Append("getTransceivers()");
-  result.Append("[");
-  result.Append(String::Number(transceiver_index));
-  result.Append("]:");
-  result.Append(SerializeTransceiver(transceiver));
-  SendPeerConnectionUpdate(id, callback_type, result.ToString());
+  String callback_type =
+      StrCat({"transceiver", String::FromUTF8(callback_type_ending)});
+  std::unique_ptr<JSONObject> json = SerializeTransceiver(transceiver);
+  json->SetString("reason", GetTransceiverUpdatedReasonString(reason));
+  json->SetInteger("transceiverIndex", transceiver_index);
+
+  StringBuilder value;
+  json->WriteJSON(&value);
+  SendPeerConnectionUpdate(id, callback_type, value.ToString());
 }
 
 void PeerConnectionTracker::TrackCreateDataChannel(
@@ -931,38 +865,32 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   if (id == -1)
     return;
   // See https://w3c.github.io/webrtc-pc/#dom-rtcdatachannelinit
-  StringBuilder result;
-  result.Append("label: ");
-  result.Append(String::FromUTF8(data_channel->label()));
-  result.Append(", ordered: ");
-  result.Append(SerializeBoolean(data_channel->ordered()));
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("label", String::FromUTF8(data_channel->label()));
+  json->SetBoolean("ordered", data_channel->ordered());
   std::optional<uint16_t> maxPacketLifeTime = data_channel->maxPacketLifeTime();
   if (maxPacketLifeTime.has_value()) {
-    result.Append(", maxPacketLifeTime: ");
-    result.Append(String::Number(*maxPacketLifeTime));
+    json->SetInteger("maxPacketLifeTime", *maxPacketLifeTime);
   }
   std::optional<uint16_t> maxRetransmits = data_channel->maxRetransmitsOpt();
   if (maxRetransmits.has_value()) {
-    result.Append(", maxRetransmits: ");
-    result.Append(String::Number(*maxRetransmits));
+    json->SetInteger("maxRetransmits", *maxRetransmits);
   }
   if (!data_channel->protocol().empty()) {
-    result.Append(", protocol: \"");
-    result.Append(String::FromUTF8(data_channel->protocol()));
-    result.Append("\"");
+    json->SetString("protocol", String::FromUTF8(data_channel->protocol()));
   }
   bool negotiated = data_channel->negotiated();
-  result.Append(", negotiated: ");
-  result.Append(SerializeBoolean(negotiated));
   if (negotiated) {
-    result.Append(", id: ");
-    result.Append(String::Number(data_channel->id()));
+    json->SetBoolean("negotiated", true);
+    json->SetInteger("id", data_channel->id());
   }
   // TODO(crbug.com/1455847): add priority
   // https://w3c.github.io/webrtc-priority/#new-rtcdatachannelinit-member
+  StringBuilder value;
+  json->WriteJSON(&value);
   SendPeerConnectionUpdate(
-      id, source == kSourceLocal ? "createDataChannel" : "datachannel",
-      result.ToString());
+      id, source == kSourceLocal ? "createDataChannel" : "ondatachannel",
+      value.ToString());
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
@@ -970,7 +898,7 @@ void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "close", String(""));
+  SendPeerConnectionUpdate(id, "close", g_empty_string);
 }
 
 void PeerConnectionTracker::TrackSignalingStateChange(
@@ -981,8 +909,9 @@ void PeerConnectionTracker::TrackSignalingStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "signalingstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      id, "onsignalingstatechange",
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackIceConnectionStateChange(
@@ -993,8 +922,9 @@ void PeerConnectionTracker::TrackIceConnectionStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "iceconnectionstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      id, "oniceconnectionstatechange",
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackConnectionStateChange(
@@ -1005,8 +935,9 @@ void PeerConnectionTracker::TrackConnectionStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "connectionstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      id, "onconnectionstatechange",
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackIceGatheringStateChange(
@@ -1017,8 +948,9 @@ void PeerConnectionTracker::TrackIceGatheringStateChange(
   if (id == -1)
     return;
   SendPeerConnectionUpdate(
-      id, "icegatheringstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      id, "onicegatheringstatechange",
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackSessionDescriptionCallback(
@@ -1048,10 +980,9 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
       update_type = "createAnswer";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  update_type = update_type + callback_type;
+  update_type = StrCat({update_type, callback_type});
 
   SendPeerConnectionUpdate(id, update_type, value);
 }
@@ -1067,7 +998,7 @@ void PeerConnectionTracker::TrackSessionId(RTCPeerConnectionHandler* pc_handler,
   }
 
   String non_null_session_id =
-      session_id.IsNull() ? WTF::g_empty_string : session_id;
+      session_id.IsNull() ? g_empty_string : session_id;
   peer_connection_tracker_host_->OnPeerConnectionSessionIdSet(
       local_id, non_null_session_id);
 }
@@ -1078,7 +1009,7 @@ void PeerConnectionTracker::TrackOnRenegotiationNeeded(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "negotiationneeded", String(""));
+  SendPeerConnectionUpdate(id, "onnegotiationneeded", g_empty_string);
 }
 
 void PeerConnectionTracker::TrackGetUserMedia(
@@ -1099,19 +1030,30 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
     const MediaStream* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
-  // Serialize audio and video track information (id and label) or an
-  // empty string when there is no such track.
-  String audio_track_info =
-      stream->getAudioTracks().empty()
-          ? String("")
-          : String("id:") + stream->getAudioTracks()[0]->id() +
-                String(" label:") + stream->getAudioTracks()[0]->label();
-  String video_track_info =
-      stream->getVideoTracks().empty()
-          ? String("")
-          : String("id:") + stream->getVideoTracks()[0]->id() +
-                String(" label:") + stream->getVideoTracks()[0]->label();
-
+  // Serialize audio and video track information (id and label) or "null"
+  // when there is no such track.
+  String audio_track_info;
+  if (!stream->getAudioTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getAudioTracks()[0]->id());
+    json->SetString("label", stream->getAudioTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    audio_track_info = value.ToString();
+  } else {
+    audio_track_info = "null";
+  }
+  String video_track_info;
+  if (!stream->getVideoTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getVideoTracks()[0]->id());
+    json->SetString("label", stream->getVideoTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    video_track_info = value.ToString();
+  } else {
+    video_track_info = "null";
+  }
   peer_connection_tracker_host_->GetUserMediaSuccess(
       user_media_request->request_id(), stream->id(), audio_track_info,
       video_track_info);
@@ -1145,19 +1087,30 @@ void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
     MediaStream* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
-  // Serialize audio and video track information (id and label) or an
-  // empty string when there is no such track.
-  String audio_track_info =
-      stream->getAudioTracks().empty()
-          ? String("")
-          : String("id:") + stream->getAudioTracks()[0]->id() +
-                String(" label:") + stream->getAudioTracks()[0]->label();
-  String video_track_info =
-      stream->getVideoTracks().empty()
-          ? String("")
-          : String("id:") + stream->getVideoTracks()[0]->id() +
-                String(" label:") + stream->getVideoTracks()[0]->label();
-
+  // Serialize audio and video track information (id and label) or "null"
+  // when there is no such track.
+  String audio_track_info;
+  if (!stream->getAudioTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getAudioTracks()[0]->id());
+    json->SetString("label", stream->getAudioTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    audio_track_info = value.ToString();
+  } else {
+    audio_track_info = "null";
+  }
+  String video_track_info;
+  if (!stream->getVideoTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getVideoTracks()[0]->id());
+    json->SetString("label", stream->getVideoTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    video_track_info = value.ToString();
+  } else {
+    video_track_info = "null";
+  }
   peer_connection_tracker_host_->GetDisplayMediaSuccess(
       user_media_request->request_id(), stream->id(), audio_track_info,
       video_track_info);
@@ -1175,13 +1128,25 @@ void PeerConnectionTracker::TrackGetDisplayMediaFailure(
 
 void PeerConnectionTracker::TrackRtcEventLogWrite(
     RTCPeerConnectionHandler* pc_handler,
-    const WTF::Vector<uint8_t>& output) {
+    const Vector<uint8_t>& output) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
 
   peer_connection_tracker_host_->WebRtcEventLogWrite(id, output);
+}
+
+void PeerConnectionTracker::TrackRtcDataChannelLogWrite(
+    RTCPeerConnectionHandler* pc_handler,
+    const Vector<uint8_t>& output) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  int id = GetLocalIDForHandler(pc_handler);
+  if (id == -1) {
+    return;
+  }
+
+  peer_connection_tracker_host_->WebRtcDataChannelLogWrite(id, output);
 }
 
 int PeerConnectionTracker::GetNextLocalID() {
@@ -1193,8 +1158,9 @@ int PeerConnectionTracker::GetLocalIDForHandler(
     RTCPeerConnectionHandler* handler) const {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   const auto found = peer_connection_local_id_map_.find(handler);
-  if (found == peer_connection_local_id_map_.end())
+  if (found == peer_connection_local_id_map_.end()) {
     return -1;
+  }
   DCHECK_NE(found->value, -1);
   return found->value;
 }
@@ -1210,10 +1176,6 @@ void PeerConnectionTracker::SendPeerConnectionUpdate(
 
 void PeerConnectionTracker::AddStandardStats(int lid, base::Value::List value) {
   peer_connection_tracker_host_->AddStandardStats(lid, std::move(value));
-}
-
-void PeerConnectionTracker::AddLegacyStats(int lid, base::Value::List value) {
-  peer_connection_tracker_host_->AddLegacyStats(lid, std::move(value));
 }
 
 }  // namespace blink

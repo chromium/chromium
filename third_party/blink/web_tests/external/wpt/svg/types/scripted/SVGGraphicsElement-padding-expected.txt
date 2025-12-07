@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] getScreenCTM with padding-left, scale
+  assert_equals: expected 47 but got 41
+Harness: the test ran to completion.
+

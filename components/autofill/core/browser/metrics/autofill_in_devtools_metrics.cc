@@ -55,7 +55,7 @@ void OnDevtoolsTestAddressesAccepted(const std::u16string_view country) {
         AutofillInDevtoolsAvailableTestAddressesCountries::kGermany);
     return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill::autofill_metrics

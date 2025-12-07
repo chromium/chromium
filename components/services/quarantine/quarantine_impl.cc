@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/services/quarantine/quarantine.h"
+#include "url/gurl.h"
 
 namespace quarantine {
 
@@ -34,6 +35,7 @@ void QuarantineImpl::QuarantineFile(
     const base::FilePath& full_path,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     const std::string& client_guid,
     mojom::Quarantine::QuarantineFileCallback callback) {
 #if BUILDFLAG(IS_MAC)
@@ -50,7 +52,7 @@ void QuarantineImpl::QuarantineFile(
       FROM_HERE,
       base::BindOnce(
           &quarantine::QuarantineFile, full_path, source_url, referrer_url,
-          client_guid,
+          request_initiator, client_guid,
           base::BindOnce(&ReplyToCallback,
                          base::SingleThreadTaskRunner::GetCurrentDefault(),
                          std::move(callback))));

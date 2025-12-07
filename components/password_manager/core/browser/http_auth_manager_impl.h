@@ -13,6 +13,10 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
 
+namespace device_reauth {
+class DeviceAuthenticator;
+}
+
 namespace password_manager {
 
 class PasswordManagerClient;
@@ -40,11 +44,14 @@ class HttpAuthManagerImpl : public HttpAuthManager {
   void OnPasswordFormDismissed() override;
 
   // Called by a PasswordManagerClient when it decides that a HTTP auth dialog
-  // can be auto-filled. It notifies the observer about new credentials given
+  // can be auto-filled. If biometric auth before filling is enabled prompt
+  // authentication first. It notifies the observer about new credentials given
   // that the form manged by |form_manager| equals the one observed by the
-  // observer that is managed by |form_manager|.
+  // observer that is managed by |form_manager|. |on_filling_complete| is
+  // invoked after filling is completed.
   void Autofill(const PasswordForm& preferred_match,
-                const PasswordFormManagerForUI* form_manager) const;
+                const PasswordFormManagerForUI* form_manager,
+                base::OnceClosure on_filling_complete);
 
   // Handles successful navigation to the main frame.
   void OnDidFinishMainFrameNavigation();
@@ -60,6 +67,11 @@ class HttpAuthManagerImpl : public HttpAuthManager {
   // Initiates the saving of the password.
   void OnLoginSuccesfull();
 
+  void OnReauthCompleted(const std::u16string& username,
+                         const std::u16string& password,
+                         base::OnceClosure on_filling_complete,
+                         bool auth_result);
+
   // The embedder-level client. Must outlive this class.
   const raw_ptr<PasswordManagerClient> client_;
 
@@ -72,6 +84,11 @@ class HttpAuthManagerImpl : public HttpAuthManager {
   // When set to true, the password form has been dismissed and |form_manager_|
   // will be cleared on next navigation.
   bool form_dismissed_ = false;
+
+  // The authenticator used to trigger a biometric re-auth before filling.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+
+  base::WeakPtrFactory<HttpAuthManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

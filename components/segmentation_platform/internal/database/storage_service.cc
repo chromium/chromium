@@ -103,9 +103,7 @@ StorageService::StorageService(
       database_maintenance_(std::make_unique<DatabaseMaintenanceImpl>(
           config_holder_->all_segment_ids(),
           clock,
-          segment_info_database_.get(),
-          signal_database_.get(),
-          signal_storage_config_.get(),
+          this,
           profile_prefs)) {
   ukm_data_manager_->AddRef();
 }

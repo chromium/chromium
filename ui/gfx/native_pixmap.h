@@ -5,11 +5,14 @@
 #ifndef UI_GFX_NATIVE_PIXMAP_H_
 #define UI_GFX_NATIVE_PIXMAP_H_
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 struct OverlayPlaneData;
@@ -17,7 +20,8 @@ class GpuFence;
 
 // This represents a buffer that can be directly imported via GL for
 // rendering, or exported via dma-buf fds.
-class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
+class COMPONENT_EXPORT(GFX) NativePixmap
+    : public base::RefCountedThreadSafe<NativePixmap> {
  public:
   NativePixmap() {}
 
@@ -35,7 +39,7 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
 
   // The following methods return format, modifier and size of the buffer,
   // respectively.
-  virtual gfx::BufferFormat GetBufferFormat() const = 0;
+  virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
   virtual uint64_t GetBufferFormatModifier() const = 0;
   virtual gfx::Size GetBufferSize() const = 0;
 

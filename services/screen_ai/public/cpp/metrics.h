@@ -5,17 +5,17 @@
 #ifndef SERVICES_SCREEN_AI_PUBLIC_CPP_METRICS_H_
 #define SERVICES_SCREEN_AI_PUBLIC_CPP_METRICS_H_
 
+#include <optional>
 #include <string>
 
-namespace ui {
-struct AXTreeUpdate;
-}  // namespace ui
+#include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 
 namespace screen_ai {
 
-void RecordMostDetectedLanguageInOcrData(
-    const std::string& metric_name,
-    const ui::AXTreeUpdate& tree_update_with_ocr_data);
+// Counts detected languages in `ocr_data` and returns the hash code of the most
+// detected language. Returns empty if no language is found.
+std::optional<uint64_t> GetMostDetectedLanguageInOcrData(
+    const chrome_screen_ai::VisualAnnotation& ocr_data);
 
 }  // namespace screen_ai
 

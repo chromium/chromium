@@ -73,12 +73,7 @@ class DoubleTapToZoomBrowserTest
       public ::testing::WithParamInterface<
           std::tuple<std::string, bool, std::string>> {
  public:
-  DoubleTapToZoomBrowserTest() {
-    std::vector<base::test::FeatureRef> enable_features;
-    enable_features.push_back(features::kRemoveMobileViewportDoubleTap);
-    feature_list_.InitWithFeatures(enable_features,
-                                   std::vector<base::test::FeatureRef>());
-  }
+  DoubleTapToZoomBrowserTest() {}
   ~DoubleTapToZoomBrowserTest() override = default;
 
  protected:
@@ -91,9 +86,6 @@ class DoubleTapToZoomBrowserTest
   void LoadURL() {
     EXPECT_TRUE(NavigateToURL(shell(), HtmlAsDataUrl(std::get<0>(GetParam()))));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DoubleTapToZoomBrowserTest, MobileOptimizedStatus) {

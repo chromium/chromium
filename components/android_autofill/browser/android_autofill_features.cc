@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/android_autofill/browser/android_autofill_features.h"
 
 #include <jni.h>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -20,56 +16,53 @@ namespace autofill::features {
 
 namespace {
 
-const base::Feature* kFeaturesExposedToJava[] = {
-    &kAndroidAutofillBottomSheetWorkaround,
-    &kAndroidAutofillPrefillRequestsForLoginForms,
-};
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kAndroidAutofillLazyFrameworkWrapper,
+    &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
+    &kAndroidAutofillForwardIframeOrigin,
+    &kAndroidAutofillUpdateContextForWebContents,
+    &kAndroidAutofillImprovedVisibilityDetection};
 
 }  // namespace
 
-// If enabled, we send SparseArrayWithWorkaround class as the PrefillHints for
-// the platform API `AutofillManager.notifyViewReady()` as a workaround for the
-// platform bug, see the comment on the class. This works as a kill switch for
-// the workaround in case any unexpected thing goes wrong.
-BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
-             "AndroidAutofillBottomSheetWorkaround",
+// If enabled, at least one passkey must be present to forward passkey requests
+// to the Android Credential Manager. Users can then always (re-)trigger the
+// passkey request with a long-press action on webauthn-annotated fields.
+BASE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, we explicitly cancel the ongoing Android autofill session on new
-// document navigation by calling `AutofillManager.cancel()`, we clear the
-// request state in the java side as it works as an indicator to the current
-// session.
-BASE_FEATURE(kAndroidAutofillCancelSessionOnNavigation,
-             "AndroidAutofillCancelSessionOnNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, we stop relying on `known_success` in FormSubmitted signal to
-// decide whether to defer submission on not, and instead we directly inform the
-// provider of submission.
-BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
-             "AndroidAutofillDirectFormSubmission",
+// If enabled, the AutofillManagerWrapper class will not be initialized when the
+// AutofillProvider Java class is initialized. Some apps do not use Autofill at
+// all, yet they incur the latency cost of initializing the wrapper. This
+// experiment tests whether lazily initializing the wrapper will cause any
+// issues.
+BASE_FEATURE(kAndroidAutofillLazyFrameworkWrapper,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, prefill requests (i.e. calls to
-// `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill
-// requests are sent at most once per WebView session and are limited to forms
-// that are assumed to be login forms.
-// Future features may extend prefill requests to more form types.
-BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
-             "AndroidAutofillPrefillRequestsForLoginForms",
+// If enabled, the origin of a field is forwarded to the Autofill framework if
+// it differs from the origin of the main frame.
+BASE_FEATURE(kAndroidAutofillForwardIframeOrigin,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, an additional custom "visible" attribute in each node's HtmlInfo
+// is set and sent to the framework.
+BASE_FEATURE(kAndroidAutofillImprovedVisibilityDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, offer prefill requests (i.e. calls to
-// `AutofillManager.notifyVirtualViewsReady`) to change
-// password forms as well. A form can't be login and change password at the same
-// time so order of the check whether it's login or change password shouldn't
-// matter.
-BASE_FEATURE(kAndroidAutofillPrefillRequestsForChangePassword,
-             "AndroidAutofillPrefillRequestsForChangePassword",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, the native autofill provider is updated when the web contents
+// change.
+BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, the URL of the current page is passed to the HttpAuth dialog for
+// autofill purposes. Functions as a kill switch. Remove in or after M146.
+BASE_FEATURE(kAndroidAutofillSupportForHttpAuth,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
-  return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);
+  return reinterpret_cast<jlong>(UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
 }
 
 }  // namespace autofill::features
+
+DEFINE_JNI(AndroidAutofillFeatures)

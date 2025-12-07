@@ -28,7 +28,6 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
@@ -239,17 +238,18 @@ void SpinButtonElement::CalculateUpDownStateByMouseLocation(Event& event) {
       GetComputedStyle() ? GetComputedStyle()->GetWritingDirection()
                          : WritingDirectionMode(WritingMode::kHorizontalTb,
                                                 TextDirection::kLtr);
+  PhysicalSize size = box->StitchedSize();
   switch (writing_direction.LineOver()) {
     case PhysicalDirection::kUp:
-      up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
+      up_down_state_ = (local.y() < size.height / 2) ? kUp : kDown;
       break;
     case PhysicalDirection::kDown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PhysicalDirection::kLeft:
-      up_down_state_ = (local.x() < box->Size().width / 2) ? kUp : kDown;
+      up_down_state_ = (local.x() < size.width / 2) ? kUp : kDown;
       break;
     case PhysicalDirection::kRight:
-      up_down_state_ = (local.x() < box->Size().width / 2) ? kDown : kUp;
+      up_down_state_ = (local.x() < size.width / 2) ? kDown : kUp;
       break;
   }
   if (up_down_state_ != old_up_down_state)

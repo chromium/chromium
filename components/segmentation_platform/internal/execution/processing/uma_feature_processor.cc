@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -117,8 +118,7 @@ UkmDatabase::CustomSqlQuery MakeSqlQuery(
   bool is_bucketed = false;
   switch (aggregation) {
     case proto::Aggregation::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case proto::Aggregation::COUNT:
       query.query = base::StringPrintf(kQueryTemplate, "COUNT(metric_value)",
                                        name_hash, enum_matcher.c_str());

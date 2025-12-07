@@ -1,0 +1,13 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/ServiceWorker/#navigator-serviceworker
+[
+    ImplementedAs=WorkerNavigatorServiceWorker,
+    // TODO(https://crbug.com/422940475) Remove this Exposed once we also
+    // support SharedWorkers
+    Exposed(DedicatedWorker ServiceWorkerInDedicatedWorker)
+] partial interface WorkerNavigator {
+    [SecureContext, RaisesException, CallWith=ScriptState] readonly attribute ServiceWorkerContainer serviceWorker;
+};

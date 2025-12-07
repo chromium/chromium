@@ -6,10 +6,12 @@ import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import './trace_report_list.js';
 import './tracing_scenarios_config.js';
+import './trace_recorder.js';
 
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
 interface Tab {
@@ -17,13 +19,17 @@ interface Tab {
   path: string;
 }
 
-export class TraceReportAppElement extends CrLitElement {
+export class TracesAppElement extends CrLitElement {
   static get is() {
-    return 'trace-report-app';
+    return 'traces-app';
   }
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   static override get properties() {
@@ -43,9 +49,13 @@ export class TraceReportAppElement extends CrLitElement {
       name: 'Scenarios',
       path: 'scenarios',
     },
+    {
+      name: 'Recorder',
+      path: 'recorder',
+    },
   ];
-  protected selected_: number = 0;
-  protected tabNames_: string[] = this.tabs.map(tab => tab.name);
+  protected accessor selected_: number = 0;
+  protected accessor tabNames_: string[] = this.tabs.map(tab => tab.name);
 
   override firstUpdated() {
     const router = CrRouter.getInstance();
@@ -88,8 +98,8 @@ export class TraceReportAppElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'trace-report-app': TraceReportAppElement;
+    'traces-app': TracesAppElement;
   }
 }
 
-customElements.define(TraceReportAppElement.is, TraceReportAppElement);
+customElements.define(TracesAppElement.is, TracesAppElement);

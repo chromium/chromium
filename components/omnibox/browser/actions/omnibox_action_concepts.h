@@ -19,7 +19,27 @@ enum class OmniboxActionId {
   HISTORY_CLUSTERS,
   ACTION_IN_SUGGEST,
   TAB_SWITCH,
-  ANSWER_ACTION,
+  EXTENSION_ACTION,
+
+  // Takeover actions added to matches that are fulfilled via lens controller.
+  CONTEXTUAL_SEARCH_FULFILLMENT,
+
+  // Actions that enter @page scope for direct query or with lens selection.
+  CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE,  // Obsolete
+  CONTEXTUAL_SEARCH_SELECT_REGION,   // Obsolete
+
+  // An action to open lens with contextual search side panel ready.
+  CONTEXTUAL_SEARCH_OPEN_LENS,
+
+  // Keyword mode entry actions for builtin keywords, a.k.a. starter packs.
+  // These are specified concretely instead of with one abstract keyword entry
+  // action because most of the implementation consists of specifying details
+  // like the labels, icons, etc. This also avoids the need for metric slicing.
+  STARTER_PACK_BOOKMARKS,
+  STARTER_PACK_HISTORY,
+  STARTER_PACK_TABS,
+  STARTER_PACK_AI_MODE,
+
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

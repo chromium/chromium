@@ -26,8 +26,7 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
     dawn::platform::Platform* platform,
     const GpuPreferences& gpu_preferences,
     SafetyLevel safety,
-    WGPULoggingCallback logging_callback,
-    void* logging_callback_userdata) {
+    dawn::native::DawnInstanceDescriptor* dawn_instance_descriptor) {
   // Populate the WGSL blocklist based on the Finch feature.
   std::vector<std::string> wgsl_unsafe_features_owned;
   std::vector<const char*> wgsl_unsafe_features;
@@ -85,7 +84,7 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
     dawn_search_path = base::apple::FrameworkBundlePath()
                            .Append("Libraries")
                            .AsEndingWithSeparator()
-                           .MaybeAsASCII();
+                           .AsUTF8Unsafe();
   }
   if (dawn_search_path.empty())
 #endif
@@ -95,24 +94,30 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
 #else
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
 #endif
-      dawn_search_path = module_path.AsEndingWithSeparator().MaybeAsASCII();
+      dawn_search_path = module_path.AsEndingWithSeparator().AsUTF8Unsafe();
     }
   }
   const char* dawn_search_path_c_str = dawn_search_path.c_str();
 
   dawn::native::DawnInstanceDescriptor dawn_instance_desc;
+  if (dawn_instance_descriptor) {
+    dawn_instance_desc = *dawn_instance_descriptor;
+  }
   dawn_instance_desc.nextInChain = &dawn_toggle_desc;
   dawn_instance_desc.additionalRuntimeSearchPathsCount =
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
   dawn_instance_desc.platform = platform;
-  dawn_instance_desc.loggingCallback = logging_callback;
-  dawn_instance_desc.loggingCallbackUserdata = logging_callback_userdata;
 
   // Create the instance with all the previous descriptors chained.
   wgpu::InstanceDescriptor instance_desc;
   instance_desc.nextInChain = &dawn_instance_desc;
-  instance_desc.features.timedWaitAnyEnable = true;
+  static constexpr auto kInstanceFeatures = std::array{
+      wgpu::InstanceFeatureName::MultipleDevicesPerAdapter,
+      wgpu::InstanceFeatureName::TimedWaitAny,
+  };
+  instance_desc.requiredFeatureCount = kInstanceFeatures.size();
+  instance_desc.requiredFeatures = kInstanceFeatures.data();
 
   auto instance = std::make_unique<DawnInstance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));

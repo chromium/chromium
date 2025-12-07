@@ -8,9 +8,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -21,10 +23,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -145,19 +148,25 @@ void RecordUmaResult(SimpleGeolocationRequestResult result, size_t retries) {
 void RecordUmaNetworkLocationRequestSource() {
   base::UmaHistogramEnumeration(
       "Geolocation.NetworkLocationRequest.Source",
-      device::NetworkLocationRequestSource::kSimpleGeolocationProvider);
+      device::NetworkLocationRequestSource::kSystemLocationProvider);
 }
 
 // Creates the request url to send to the server.
 GURL GeolocationRequestURL(const GURL& url) {
-  if (url != SimpleGeolocationProvider::DefaultGeolocationProviderURL())
+  if (url != GURL(LocationFetcher::kDefaultGeolocationProviderUrl)) {
     return url;
+  }
 
-  std::string api_key = google_apis::GetAPIKey();
+  std::string api_key;
+  if (features::IsCrosSeparateGeoApiKeyEnabled()) {
+    api_key = google_apis::GetCrosSystemGeoAPIKey();
+  } else {
+    api_key = google_apis::GetAPIKey();
+  }
   if (api_key.empty())
     return url;
 
-  std::string query(url.query());
+  std::string query(url.GetQuery());
   if (!query.empty())
     query += "&";
   query += "key=" + base::EscapeQueryParamValue(api_key, true);
@@ -171,9 +180,9 @@ void PrintGeolocationError(const GURL& server_url,
                            Geoposition* position) {
   position->status = Geoposition::STATUS_SERVER_ERROR;
   position->error_message = base::StringPrintf(
-      "SimpleGeolocation provider at '%s' : %s.",
+      "SystemLocationProvider at '%s' : %s.",
       server_url.DeprecatedGetOriginAsURL().spec().c_str(), message.c_str());
-  VLOG(1) << "SimpleGeolocationRequest::GetGeolocationFromResponse() : "
+  VLOG(1) << "SystemLocationProvider::GetGeolocationFromResponse() : "
           << position->error_message;
 }
 
@@ -196,8 +205,8 @@ bool ParseServerResponse(const GURL& server_url,
           << response_body << "'";
 
   // Parse the response, ignoring comments.
-  auto response_result =
-      base::JSONReader::ReadAndReturnValueWithError(response_body);
+  auto response_result = base::JSONReader::ReadAndReturnValueWithError(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response_result.has_value()) {
     PrintGeolocationError(
         server_url, "JSONReader failed: " + response_result.error().message,
@@ -459,7 +468,8 @@ void SimpleGeolocationRequest::StartRequest() {
   RecordUmaNetworkLocationRequestSource();
 }
 
-void SimpleGeolocationRequest::MakeRequest(ResponseCallback callback) {
+void SimpleGeolocationRequest::MakeRequest(
+    LocationProvider::ResponseCallback callback) {
   callback_ = std::move(callback);
   request_url_ = GeolocationRequestURL(service_url_);
   timeout_timer_.Start(FROM_HERE, timeout_, this,
@@ -478,6 +488,10 @@ std::string SimpleGeolocationRequest::FormatRequestBodyForTesting() const {
   return FormatRequestBody();
 }
 
+GURL SimpleGeolocationRequest::GetServiceURLForTesting() const {
+  return request_url_;
+}
+
 void SimpleGeolocationRequest::Retry(bool server_error) {
   base::TimeDelta delay(server_error ? retry_sleep_on_server_error_
                                      : retry_sleep_on_bad_response_);
@@ -486,8 +500,8 @@ void SimpleGeolocationRequest::Retry(bool server_error) {
 }
 
 void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
-  bool is_success = !!response_body;
+    std::optional<std::string> response_body) {
+  bool is_success = response_body.has_value();
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -497,7 +511,8 @@ void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(
   RecordUmaResponseCode(response_code);
 
   const bool parse_success = GetGeolocationFromResponse(
-      is_success, response_code, response_body ? *response_body : std::string(),
+      is_success, response_code,
+      std::move(response_body).value_or(std::string()),
       simple_url_loader_->GetFinalURL(), &position_);
   // Note that SimpleURLLoader doesn't return a body for non-2xx
   // responses by default.
@@ -534,7 +549,7 @@ void SimpleGeolocationRequest::ReplyAndDestroySelf(
   timeout_timer_.Stop();
   request_scheduled_.Stop();
 
-  ResponseCallback callback = std::move(callback_);
+  LocationProvider::ResponseCallback callback = std::move(callback_);
 
   // Empty callback is used to identify "completed or not yet started request".
   callback_.Reset();

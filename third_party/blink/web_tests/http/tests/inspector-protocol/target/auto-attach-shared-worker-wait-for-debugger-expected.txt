@@ -1,0 +1,4 @@
+Tests auto-attach of shared workers.
+Console from worker: From CDP: shared_worker true
+Console from worker: From worker
+

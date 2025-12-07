@@ -29,7 +29,8 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
-#include "build/chromeos_buildflags.h"
+#include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -38,10 +39,13 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
-enum class BufferFormat : uint8_t;
 class NativePixmap;
 class NativePixmapDmaBuf;
 class Rect;
+}
+
+namespace viz {
+class SharedImageFormat;
 }
 
 #define MAYBE_ASSERT_ACQUIRED(lock) \
@@ -158,6 +162,8 @@ class VADisplayStateHandle {
 class MEDIA_GPU_EXPORT VaapiWrapper
     : public base::RefCountedThreadSafe<VaapiWrapper> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Whether it's okay or not to try to disable the VA-API global lock on the
   // current process. This is intended to be set only once during process
   // start-up.
@@ -165,7 +171,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   enum CodecMode {
     kDecode,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // NOTE: A kDecodeProtected VaapiWrapper is created using the actual video
     // profile and an extra VAProfileProtected, each with some special added
     // VAConfigAttribs. Then when CreateProtectedSession() is called, it will
@@ -225,6 +231,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                       EncryptionScheme encryption_scheme,
                       const ReportErrorToUMACB& report_error_to_uma_cb);
 
+  VaapiWrapper(base::PassKey<VaapiWrapper>,
+               VADisplayStateHandle va_display_state_handle,
+               CodecMode mode);
   VaapiWrapper(const VaapiWrapper&) = delete;
   VaapiWrapper& operator=(const VaapiWrapper&) = delete;
 
@@ -307,7 +316,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   static VAEntrypoint GetDefaultVaEntryPoint(CodecMode mode, VAProfile profile);
 
-  static uint32_t BufferFormatToVARTFormat(gfx::BufferFormat fmt);
+  static uint32_t SharedImageFormatToVARTFormat(viz::SharedImageFormat format);
 
   // Creates |num_surfaces| VASurfaceIDs of |va_format|, |size| and
   // |surface_usage_hints| and, if successful, creates a |va_context_id_| of the
@@ -351,7 +360,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // querying libva indicates that our protected session is no longer alive,
   // otherwise this will return false.
   bool IsProtectedSessionDead();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns true if and only if |va_protected_session_id| is not VA_INVALID_ID
   // and querying libva indicates that the protected session identified by
   // |va_protected_session_id| is no longer alive.
@@ -403,7 +412,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   // Creates a self-releasing ScopedVASurface from |frame|. The created object
   // shares the ownership of the underlying buffer represented by |frame|.
-  // |frame|->StorageType() must either be STORAGE_GPU_MEMORY_BUFFER or
+  // |frame|->StorageType() must either be STORAGE_MAPPABLE_SHARED_IMAGE or
   // STORAGE_DMABUFS. The ownership of the surface is transferred to the caller.
   // A caller can destroy |frame| after this method returns and the underlying
   // buffer will be kept alive by the ScopedVASurface. |protected_content|
@@ -549,14 +558,15 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       size_t* max_ref_frames);
 
   // Gets packed headers are supported for encoding. This is called for
-  // H264 encoding. |packed_sps|, |packed_pps| and |packed_slice| stands for
-  // whether packed slice parameter set, packed picture parameter set and packed
-  // slice header is supported, respectively.
+  // H264 encoding. |packed_sps|, |packed_pps|, |packed_slice| and |packed_raw|
+  // stands for whether packed slice parameter set, packed picture parameter
+  // set, packed slice header and packed raw data is supported, respectively.
   [[nodiscard]] virtual bool GetSupportedPackedHeaders(
       VideoCodecProfile profile,
       bool& packed_sps,
       bool& packed_pps,
-      bool& packed_slice);
+      bool& packed_slice,
+      bool& packed_raw);
 
   // Gets the minimum segment block size supported for AV1 encoding.
   [[nodiscard]] bool GetMinAV1SegmentSize(VideoCodecProfile profile,
@@ -575,7 +585,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const gfx::Size& va_surface_dst_size,
       std::optional<gfx::Rect> src_rect = std::nullopt,
       std::optional<gfx::Rect> dest_rect = std::nullopt
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
 #endif
@@ -590,11 +600,12 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   virtual void DestroySurface(VASurfaceID va_surface_id);
 
  protected:
-  VaapiWrapper(VADisplayStateHandle va_display_state_handle, CodecMode mode);
+  friend class base::RefCountedThreadSafe<VaapiWrapper>;
   virtual ~VaapiWrapper();
 
+  VaapiWrapper(VADisplayStateHandle va_display_state_handle, CodecMode mode);
+
  private:
-  friend class base::RefCountedThreadSafe<VaapiWrapper>;
   friend class VaapiWrapperTest;
   friend class VaapiVideoDecoderTest;
   friend class VaapiVideoEncodeAcceleratorTest;
@@ -634,19 +645,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Notes:
   //
   // - For VA_FOURCC_IMC3, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YVU_420 because we don't have a YUV_420 format. The
+  //   viz::MultiPlaneFormat::kYV12 because we don't have a YUV_420 format. The
   //   planes are flipped accordingly, i.e.,
   //   gfx::NativePixmapDmaBuf::GetDmaBufOffset(1) refers to the V plane.
   //   TODO(andrescj): revisit once crrev.com/c/1573718 lands.
-  //
-  // - For VA_FOURCC_NV12, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YUV_420_BIPLANAR.
-  //
-  // - For VA_FOURCC_P010, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::P010.
-  //
-  // - For VA_FOURCC_ARGB, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::BGRA_8888.
   //
   // Returns nullptr on failure, or if the exported surface can't contain
   // |va_surface_size|.
@@ -728,7 +730,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   std::unique_ptr<ScopedVABuffer> va_buffer_for_vpp_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // For protected decode mode.
   VAConfigID va_protected_config_id_ GUARDED_BY_CONTEXT(sequence_checker_){
       VA_INVALID_ID};

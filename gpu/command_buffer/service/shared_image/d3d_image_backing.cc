@@ -2,30 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 
 #include <d3d11_3.h>
+#include <wrl/client.h>
 
-#include <functional>
+#include "base/compiler_specific.h"
 
 // clang-format off
 #include <dawn/native/D3D11Backend.h>
+#include <dawn/native/D3D12Backend.h>
 #include <dawn/native/D3DBackend.h>
 // clang-format on
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
@@ -33,10 +31,12 @@
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "ui/gfx/color_space_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -82,7 +82,8 @@ bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
   for (size_t i = 1; i < pixmaps.size(); ++i) {
     // UpdateSubresource() cannot update planes individually, so the planes'
     // data has to be packed in one memory block.
-    if (static_cast<const uint8_t*>(pixmaps[i].addr()) != addr + plane_offset) {
+    if (static_cast<const uint8_t*>(pixmaps[i].addr()) !=
+        UNSAFE_TODO(addr + plane_offset)) {
       return false;
     }
     plane_offset += pixmaps[i].computeByteSize();
@@ -91,46 +92,41 @@ bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
-// Get the availability fence for |dcomp_texture|. Returns a fence if the
-// texture is soon-to-be available, meaning that the caller must wait on the
-// fence. Returns null if it would be immediately available, meaning there is no
-// need to wait. The return value is only valid until the next DComp commit
-// call.
-//
-// |dcomp_texture| must not be "unavailable", i.e. attached to a DComp tree.
-scoped_refptr<gfx::D3DSharedFence>
-DCompTextureGetAvailabilityFenceForCurrentFrame(
-    IDCompositionTexture* dcomp_texture) {
-  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-  uint64_t fence_value = 0;
-  HRESULT hr = dcomp_texture->GetAvailableFence(&fence_value,
-                                                IID_PPV_ARGS(&d3d11_fence));
-  CHECK_EQ(hr, S_OK) << ", GetAvailableFence failed: "
+Microsoft::WRL::ComPtr<IDCompositionTexture> CreateDCompTexture(
+    ID3D11Texture2D* d3d11_texture,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space) {
+  HRESULT hr = S_OK;
+
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
+      gl::GetDirectCompositionDevice();
+  Microsoft::WRL::ComPtr<IDCompositionDevice4> dcomp_device4;
+  hr = dcomp_device.As(&dcomp_device4);
+  CHECK_EQ(hr, S_OK) << ", QueryInterface failed: "
                      << logging::SystemErrorCodeToString(hr);
 
-  // |GetAvailableFence| will return a null fence if the texture is still
-  // attached to the DComp tree. We cannot end the read access at this point
-  // since DWM can still scanout from the texture. This is probably a bug where
-  // the output device returned an overlay access while the overlay image was
-  // still in the DComp tree.
-  //
-  // This can also trigger if we have multiple concurrent outstanding overlay
-  // read accesses, which is not currently supported.
-  CHECK(d3d11_fence) << "Overlay access is still in use by DWM.";
+  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+  hr = dcomp_device4->CreateCompositionTexture(d3d11_texture, &dcomp_texture);
+  CHECK_EQ(hr, S_OK) << ", CreateCompositionTexture failed: "
+                     << logging::SystemErrorCodeToString(hr);
 
-  // If the fence is already passed the wait value, we don't need to wait on it.
-  if (d3d11_fence->GetCompletedValue() >= fence_value) {
-    return nullptr;
-  }
+  hr = dcomp_texture->SetAlphaMode(SkAlphaTypeIsOpaque(alpha_type)
+                                       ? DXGI_ALPHA_MODE_IGNORE
+                                       : DXGI_ALPHA_MODE_PREMULTIPLIED);
+  CHECK_EQ(hr, S_OK) << ", SetAlphaMode failed: "
+                     << logging::SystemErrorCodeToString(hr);
 
-  // Note we're passing a null device since the DWM internal device will signal
-  // this fence.
-  return gfx::D3DSharedFence::CreateFromD3D11Fence(
-      /*d3d11_signal_device=*/nullptr, std::move(d3d11_fence), fence_value);
+  hr = dcomp_texture->SetColorSpace(
+      gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
+  CHECK_EQ(hr, S_OK) << ", SetColorSpace failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  return dcomp_texture;
 }
 
 }  // namespace
 
+// GLTextureHolder
 D3DImageBacking::GLTextureHolder::GLTextureHolder(
     base::PassKey<D3DImageBacking>,
     scoped_refptr<gles2::TexturePassthrough> texture_passthrough,
@@ -166,17 +162,219 @@ void D3DImageBacking::GLTextureHolder::MarkContextLost() {
 
 D3DImageBacking::GLTextureHolder::~GLTextureHolder() = default;
 
+// PersistentGraphiteDawnAccess. This is ref counted because it would out-live
+// the parent backing when its ref is kept inside a GraphiteTextureHolder.
+class D3DImageBacking::PersistentGraphiteDawnAccess
+    : public base::RefCountedThreadSafe<PersistentGraphiteDawnAccess> {
+ public:
+  PersistentGraphiteDawnAccess(scoped_refptr<SharedContextState> context_state,
+                               wgpu::Device device,
+                               wgpu::Texture texture,
+                               wgpu::SharedTextureMemory texture_memory);
+
+  // Must be called once after construction. Since constructor cannot return
+  // error, this provides a way to initialize the access and return a result.
+  bool BeginAccess(bool is_cleared,
+                   scoped_refptr<gfx::D3DSharedFence> wait_fence = nullptr);
+
+  // Force EndAccess and invalidate the persistent access. It's invalid to use
+  // this persistent access afterwards.
+  // This function is necessary to disable the persistent access even if its
+  // ref is still being held by GraphiteTextureHolder.
+  void Invalidate();
+
+  bool WaitForDCompBeforeWrite(
+      scoped_refptr<gfx::D3DSharedFence> dcomp_texture_available_fence);
+
+  const wgpu::Device& device() const { return device_; }
+  const wgpu::Texture& texture() const { return texture_; }
+  const wgpu::SharedTextureMemory& shared_texture_memory() const {
+    return texture_memory_;
+  }
+
+  void SetNeedFlushCommands(bool need) { need_flush_commands_ = need; }
+
+  // Return true if a flush was made.
+  bool FlushCommandsIfNeeded();
+
+  // Update the initialized status of the texture. Might return false if error.
+  bool SetCleared(bool is_cleared);
+
+  bool IsGraphiteDevice(const wgpu::Device& device) const;
+  bool IsGraphiteD3D11Device(
+      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) const;
+
+ private:
+  friend class base::RefCountedThreadSafe<PersistentGraphiteDawnAccess>;
+
+  ~PersistentGraphiteDawnAccess();
+
+  scoped_refptr<SharedContextState> context_state_;
+  wgpu::Device device_;
+  wgpu::Texture texture_;
+  wgpu::SharedTextureMemory texture_memory_;
+  // Flag indicates whether should flush graphite's submits before accessing
+  // the backing in ANGLE/WebGPU.
+  bool need_flush_commands_ = false;
+};
+
+D3DImageBacking::PersistentGraphiteDawnAccess::PersistentGraphiteDawnAccess(
+    scoped_refptr<SharedContextState> context_state,
+    wgpu::Device device,
+    wgpu::Texture texture,
+    wgpu::SharedTextureMemory texture_memory)
+    : context_state_(std::move(context_state)),
+      device_(std::move(device)),
+      texture_(std::move(texture)),
+      texture_memory_(std::move(texture_memory)) {}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::BeginAccess(
+    bool is_cleared,
+    scoped_refptr<gfx::D3DSharedFence> wait_fence) {
+  // In persistent access, we don't require Dawn to signal any fence.
+  wgpu::SharedTextureMemoryD3D11BeginState d3d11_begin_state = {};
+  d3d11_begin_state.requiresEndAccessFence = false;
+
+  wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
+  desc.initialized = is_cleared;
+  desc.nextInChain = &d3d11_begin_state;
+
+  wgpu::SharedFence shared_fence;
+  uint64_t signaled_value = 0;
+  if (wait_fence) {
+    shared_fence = CreateDawnSharedFence(device_, wait_fence);
+    signaled_value = wait_fence->GetFenceValue();
+
+    desc.fenceCount = 1;
+    desc.fences = &shared_fence;
+    desc.signaledValues = &signaled_value;
+  }
+
+  if (texture_memory_.BeginAccess(texture_, &desc) == wgpu::Status::Success) {
+    return true;
+  }
+
+  LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed.";
+  texture_memory_ = nullptr;
+  texture_ = nullptr;
+  return false;
+}
+
+D3DImageBacking::PersistentGraphiteDawnAccess::~PersistentGraphiteDawnAccess() {
+  Invalidate();
+}
+
+void D3DImageBacking::PersistentGraphiteDawnAccess::Invalidate() {
+  if (!texture_memory_ || texture_memory_.IsDeviceLost()) {
+    return;
+  }
+
+  wgpu::SharedTextureMemoryEndAccessState end_state = {};
+  texture_memory_.EndAccess(texture_, &end_state);
+
+  texture_memory_ = nullptr;
+  texture_ = nullptr;
+}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::FlushCommandsIfNeeded() {
+  if (!need_flush_commands_ || !context_state_) {
+    return false;
+  }
+
+  need_flush_commands_ = false;
+
+  if (texture_memory_.IsDeviceLost()) {
+    // This might happen if the device is lost. Skip submitting.
+    return false;
+  }
+
+  context_state_->SubmitIfNecessary({}, /*need_graphite_submit=*/true);
+
+  return true;
+}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::WaitForDCompBeforeWrite(
+    scoped_refptr<gfx::D3DSharedFence> dcomp_texture_available_fence) {
+  if (!dcomp_texture_available_fence) {
+    return true;
+  }
+
+  // Temporarily end Dawn's access.
+  wgpu::SharedTextureMemoryEndAccessState end_state = {};
+  texture_memory_.EndAccess(texture_, &end_state);
+
+  // Restart BeginAccess to pass the fence to Dawn.
+  // When Dawn's submit() is called after this point, it will wait for the fence
+  // before sending Dawn's related commands to the driver. Note that if there
+  // had been a wait fence being sent priorly and we hadn't submitted, that wait
+  // would have been lost. However such situation shouldn't exist. Because we
+  // only got here because of an exclusive write access, there shouldn't be any
+  // concurrent dcomp texture access in the middle between the prior write
+  // access and current write access.
+
+  // Sanity check that EndAccess() didn't forward prior fences because we din't
+  // submit. There should be only one fence exported (owned by Dawn).
+  CHECK_LE(end_state.fenceCount, 1u);
+  return BeginAccess(end_state.initialized,
+                     std::move(dcomp_texture_available_fence));
+}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::SetCleared(
+    bool is_cleared) {
+  // The only way to notify Dawn about init status is via STM.BeginAccess. So
+  // end Dawn's access temporarily and BeginAccess again.
+  wgpu::SharedTextureMemoryEndAccessState end_state = {};
+  texture_memory_.EndAccess(texture_, &end_state);
+
+  // Call Dawn's BeginAccess again.
+  return BeginAccess(is_cleared);
+}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::IsGraphiteDevice(
+    const wgpu::Device& device) const {
+  return device_.Get() == device.Get();
+}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::IsGraphiteD3D11Device(
+    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) const {
+  auto graphite_d3d11_device =
+      dawn::native::d3d11::GetD3D11Device(device_.Get());
+  return d3d11_device.Get() == graphite_d3d11_device.Get();
+}
+
+// GraphiteTextureHolder keeps a ref to DawnSharedTextureCache and
+// PersistentGraphiteDawnAccess to keep wgpu::Texture & and its access valid
+// until this holder is destroyed.
+class D3DImageBacking::GraphiteTextureHolder
+    : public SkiaImageRepresentation::GraphiteTextureHolder {
+ public:
+  using Base = SkiaImageRepresentation::GraphiteTextureHolder;
+
+  GraphiteTextureHolder(
+      scoped_refptr<DawnSharedTextureCache> shared_texture_cache,
+      scoped_refptr<PersistentGraphiteDawnAccess>
+          persistent_graphite_dawn_access,
+      skgpu::graphite::BackendTexture backend_texture)
+      : Base(std::move(backend_texture)),
+        shared_texture_cache_(std::move(shared_texture_cache)),
+        persistent_graphite_dawn_access_(
+            std::move(persistent_graphite_dawn_access)) {}
+
+ private:
+  ~GraphiteTextureHolder() override = default;
+
+  scoped_refptr<DawnSharedTextureCache> shared_texture_cache_;
+  scoped_refptr<PersistentGraphiteDawnAccess> persistent_graphite_dawn_access_;
+};
+
 // static
 scoped_refptr<D3DImageBacking::GLTextureHolder>
 D3DImageBacking::CreateGLTexture(
     const GLFormatDesc& gl_format_desc,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     GLenum texture_target,
     unsigned array_slice,
-    unsigned plane_index,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain) {
+    unsigned plane_index) {
   gl::GLApi* const api = gl::g_current_gl_context;
   gl::ScopedRestoreTexture scoped_restore(api, texture_target);
 
@@ -229,7 +427,7 @@ D3DImageBacking::CreateGLTexture(
 }
 
 // static
-std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffers(
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -237,16 +435,31 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     gpu::SharedImageUsageSet usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    const GLFormatCaps& gl_format_caps,
-    bool is_back_buffer) {
+    const GLFormatCaps& gl_format_caps) {
   DCHECK(format.is_single_plane());
-  return base::WrapUnique(new D3DImageBacking(
+  auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "SwapChainBuffer", std::move(d3d11_texture), /*dcomp_texture=*/nullptr,
+      "SwapChainBuffer", std::move(back_buffer_texture),
       /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
-      /*array_slice=*/0u, std::move(swap_chain), is_back_buffer));
+      /*array_slice=*/0u));
+  backing->swap_chain_ = std::move(swap_chain);
+  backing->swap_chain_front_buffer_texture_ = std::move(front_buffer_texture);
+  return backing;
+}
+
+// static
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromD3D12Resource(
+    const Mailbox& mailbox,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage,
+    std::string debug_label,
+    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource) {
+  auto backing = base::WrapUnique(new D3DImageBacking(
+      mailbox, size, usage, std::move(debug_label), std::move(d3d12_resource)));
+  return backing;
 }
 
 // static
@@ -260,13 +473,14 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
     bool use_update_subresource1,
-    bool is_thread_safe) {
+    bool want_dcomp_texture,
+    bool is_thread_safe,
+    bool share_dxgi_handle_with_other_backings) {
   const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
                                              SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
@@ -274,9 +488,9 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      std::move(dcomp_texture), std::move(dxgi_shared_handle_state),
-      gl_format_caps, texture_target, array_slice, /*swap_chain=*/nullptr,
-      /*is_back_buffer=*/false, use_update_subresource1, is_thread_safe));
+      std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
+      array_slice, use_update_subresource1, want_dcomp_texture, is_thread_safe,
+      share_dxgi_handle_with_other_backings));
   return backing;
 }
 
@@ -290,15 +504,14 @@ D3DImageBacking::D3DImageBacking(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    bool is_back_buffer,
     bool use_update_subresource1,
-    bool is_thread_safe)
+    bool want_dcomp_texture,
+    bool is_thread_safe,
+    bool share_dxgi_handle_with_other_backings)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -310,20 +523,49 @@ D3DImageBacking::D3DImageBacking(
                                       format.EstimatedSizeInBytes(size),
                                       is_thread_safe),
       d3d11_texture_(std::move(d3d11_texture)),
-      dcomp_texture_(std::move(dcomp_texture)),
+      dcomp_texture_(want_dcomp_texture && d3d11_texture_
+                         ? CreateDCompTexture(d3d11_texture_.Get(),
+                                              alpha_type,
+                                              color_space)
+                         : nullptr),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
       gl_format_caps_(gl_format_caps),
       texture_target_(texture_target),
       array_slice_(array_slice),
-      swap_chain_(std::move(swap_chain)),
-      is_back_buffer_(is_back_buffer),
       use_update_subresource1_(use_update_subresource1),
-      angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()) {
+      share_dxgi_handle_with_other_backings_(
+          dxgi_shared_handle_state_ && share_dxgi_handle_with_other_backings),
+      angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()),
+      dawn_shared_texture_cache_(
+          base::MakeRefCounted<DawnSharedTextureCache>()) {
   if (d3d11_texture_) {
     d3d11_texture_->GetDevice(&texture_d3d11_device_);
     d3d11_texture_->GetDesc(&d3d11_texture_desc_);
   }
 }
+
+D3DImageBacking::D3DImageBacking(
+    const Mailbox& mailbox,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage,
+    std::string debug_label,
+    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource)
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      viz::SharedImageFormat(),
+                                      size,
+                                      gfx::ColorSpace(),
+                                      GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+                                      SkAlphaType::kUnknown_SkAlphaType,
+                                      usage,
+                                      std::move(debug_label),
+                                      size.width(),
+                                      /*is_thread_safe=*/false),
+      d3d12_resource_(std::move(d3d12_resource)),
+      texture_target_(0),
+      array_slice_(0),
+      use_update_subresource1_(false),
+      dawn_shared_texture_cache_(
+          base::MakeRefCounted<DawnSharedTextureCache>()) {}
 
 D3DImageBacking::~D3DImageBacking() {
   if (!have_context()) {
@@ -420,7 +662,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
     const size_t source_stride = pixmap.rowBytes();
 
     uint8_t* dest_memory =
-        static_cast<uint8_t*>(mapped_resource.pData) + dest_offset;
+        UNSAFE_TODO(static_cast<uint8_t*>(mapped_resource.pData) + dest_offset);
     const size_t dest_stride = mapped_resource.RowPitch;
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
@@ -473,8 +715,8 @@ bool D3DImageBacking::ReadbackFromStagingTexture(
     uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
     const size_t dest_stride = pixmap.rowBytes();
 
-    const uint8_t* source_memory =
-        static_cast<uint8_t*>(mapped_resource.pData) + source_offset;
+    const uint8_t* source_memory = UNSAFE_TODO(
+        static_cast<uint8_t*>(mapped_resource.pData) + source_offset);
     const size_t source_stride = mapped_resource.RowPitch;
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
@@ -553,8 +795,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
       return nullptr;
     }
     return std::make_unique<DawnEGLImageRepresentation>(
-        std::move(gl_representation), egl_image, manager, this, tracker,
-        device);
+        std::move(gl_representation), egl_image, manager, this, tracker, device,
+        std::move(view_formats));
   }
 #endif
 
@@ -567,6 +809,11 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
 
   {
     AutoLock auto_lock(this);
+    auto* dawn_context_provider = context_state->dawn_context_provider();
+    const bool is_graphite_device =
+        dawn_context_provider &&
+        dawn_context_provider->GetDevice().Get() == device.Get();
+
     // Persistently open the shared handle by caching it on this backing.
     auto shared_texture_memory = GetSharedTextureMemory(device);
     if (!shared_texture_memory) {
@@ -593,23 +840,131 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         return nullptr;
       }
 
-      auto* dawn_context_provider = context_state->dawn_context_provider();
-      if (dawn_context_provider &&
-          dawn_context_provider->GetDevice().Get() == device.Get()) {
-        // Cache SharedTextureMemory only for Graphite device.
-        // TODO(crbug.com/345674550): Cache the textures for WebGPU device.
-        dawn_shared_texture_holder_.MaybeCacheSharedTextureMemory(
-            device, shared_texture_memory);
-      }
       if (dxgi_shared_handle_state_) {
         dxgi_shared_handle_state_->MaybeCacheSharedTextureMemory(
             device, shared_texture_memory);
       }
+
+      // If this is graphite device, open Dawn's persistent access initially so
+      // that we can defer submits. The persistent access will be disabled once
+      // a different device accesses this backing.
+      //
+      // Persistent access is currently ony enabled if:
+      // - Graphite dawn's backend is D3D11.
+      // - Multhreaded access is disabled. TODO(40239870): Make it work with
+      // multithreaded accesses. Typically used by DrDC or video decoding on
+      // another thread.
+      // - The shared handle must be exclusively owned by this backing.
+      // TODO(403773961): We currently disable persistent access if the dxgi
+      // handle could be shared with other backings. This is because the
+      // persistent access managed by this backing would mess up the other
+      // backings' access. It's possible to move the persistent access to be
+      // managed by DXGISharedHandleState. However, to make it simple for now,
+      // just disable the persistent access in this case.
+      const bool already_accessed_by_other_device =
+          d3d11_signaled_fence_map_[texture_d3d11_device_] != nullptr;
+      if (is_graphite_device && context_state->IsGraphiteDawnD3D11() &&
+          !is_thread_safe() && !share_dxgi_handle_with_other_backings_ &&
+          !already_accessed_by_other_device) {
+        InitPersistentGraphiteDawnAccess(context_state, device,
+                                         shared_texture_memory, view_formats);
+      }
     }
-  }
+
+    if (is_graphite_device) {
+      // Cache SharedTextureMemory only for Graphite device.
+      // TODO(crbug.com/345674550): Cache the textures for WebGPU device.
+      DCHECK(shared_texture_memory);
+      auto cached_shared_texture_memory =
+          dawn_shared_texture_cache_->GetSharedTextureMemory(device);
+      if (!cached_shared_texture_memory) {
+        // GetSharedTextureMemory() might return non-null while nothing is
+        // cached inside dawn_shared_texture_cache_. This can happen if a 2nd
+        // backing is created from an existing DXGISharedHandleState. The STM is
+        // stored inside DXGISharedHandleState but not in the 2nd backing's
+        // dawn_shared_texture_cache_ yet. In this case, we also need to cache
+        // the STM in dawn_shared_texture_cache_ to allow wgpu::Texture to be
+        // cached. Otherwise the wgpu::Texture would have been destroyed in
+        // EndAccessDawn.
+        dawn_shared_texture_cache_->MaybeCacheSharedTextureMemory(
+            device, shared_texture_memory);
+      } else {
+        CHECK_EQ(cached_shared_texture_memory.Get(),
+                 shared_texture_memory.Get());
+      }
+    }
+  }  // AutoLock scope
 
   return std::make_unique<DawnD3DImageRepresentation>(
       manager, this, tracker, device, backend_type, view_formats);
+}
+
+void D3DImageBacking::InitPersistentGraphiteDawnAccess(
+    scoped_refptr<SharedContextState> context_state,
+    const wgpu::Device device,
+    const wgpu::SharedTextureMemory& shared_texture_memory,
+    const std::vector<wgpu::TextureFormat>& view_formats) {
+  persistent_graphite_dawn_access_.reset();
+
+#if DCHECK_IS_ON()
+  // This is only supported if graphite and ANGLE shares the same D3D11 device.
+  auto dawn_d3d11_device = dawn::native::d3d11::GetD3D11Device(device.Get());
+  auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  DCHECK(dawn_d3d11_device == angle_d3d11_device);
+#endif
+
+  // Query all supported usage of the texture memory.
+  wgpu::SharedTextureMemoryProperties props;
+  CHECK(shared_texture_memory.GetProperties(&props) == wgpu::Status::Success);
+
+  // Make sure we cache the shared texture memory so that the texture will be
+  // properly cleaned up when the cache is destroyed.
+  dawn_shared_texture_cache_->MaybeCacheSharedTextureMemory(
+      device, shared_texture_memory);
+
+  // Create a single texture that has all supported usages.
+  wgpu::Texture texture = GetOrCreateDawnTexture(
+      device, shared_texture_memory, /*wgpu_usage=*/props.usage,
+      /*wgpu_internal_usage=*/wgpu::TextureUsage::None, view_formats);
+  if (!texture) {
+    return;
+  }
+
+  persistent_graphite_dawn_access_ =
+      base::MakeRefCounted<PersistentGraphiteDawnAccess>(
+          std::move(context_state), std::move(device), std::move(texture),
+          std::move(shared_texture_memory));
+
+  if (!persistent_graphite_dawn_access_->BeginAccess(
+          /*is_cleared=*/ClearedRectInternal() == gfx::Rect(size()))) {
+    persistent_graphite_dawn_access_.reset();
+  }
+}
+
+wgpu::Texture D3DImageBacking::GetOrCreateDawnTexture(
+    const wgpu::Device device,
+    const wgpu::SharedTextureMemory& shared_texture_memory,
+    wgpu::TextureUsage wgpu_usage,
+    wgpu::TextureUsage wgpu_internal_usage,
+    const std::vector<wgpu::TextureFormat>& view_formats) {
+  wgpu::Texture texture = dawn_shared_texture_cache_->GetCachedWGPUTexture(
+      device, wgpu_usage, wgpu_internal_usage, view_formats);
+  if (!texture) {
+    texture = CreateDawnSharedTexture(shared_texture_memory, wgpu_usage,
+                                      wgpu_internal_usage, view_formats);
+    if (!texture) {
+      LOG(ERROR) << "Failed to create WGPUTexture";
+      return nullptr;
+    }
+
+    std::string label = base::StrCat({GetName(), "_", debug_label()});
+    texture.SetLabel(label.c_str());
+
+    dawn_shared_texture_cache_->MaybeCacheWGPUTexture(
+        device, texture, wgpu_usage, wgpu_internal_usage, view_formats);
+  }
+
+  return texture;
 }
 
 void D3DImageBacking::UpdateExternalFence(
@@ -619,12 +974,23 @@ void D3DImageBacking::UpdateExternalFence(
   write_fences_.insert(std::move(external_fence));
 }
 
-std::unique_ptr<VideoDecodeImageRepresentation>
-D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
-                                    MemoryTypeTracker* tracker,
-                                    VideoDecodeDevice device) {
-  return std::make_unique<D3D11VideoDecodeImageRepresentation>(
-      manager, this, tracker, device, d3d11_texture_);
+std::unique_ptr<VideoImageRepresentation> D3DImageBacking::ProduceVideo(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VideoDevice device) {
+  D3D11TextureAndArrayIndex src_texture(d3d11_texture_, array_slice_);
+  if (texture_d3d11_device_ != device) {
+    // Readback is the only option for a caller cannot create a representation
+    // for this shared image.  When the caller cannot use a shared device
+    // (GL/Ganesh) create a copy since this is much more efficient than forcing
+    // readback.
+    return D3D11VideoImageCopyRepresentation::CreateFromD3D(
+        manager, this, tracker, device.Get(), src_texture, debug_label(),
+        texture_d3d11_device_.Get());
+  }
+
+  return std::make_unique<D3D11VideoImageRepresentation>(manager, this, tracker,
+                                                         device, src_texture);
 }
 
 std::vector<scoped_refptr<gfx::D3DSharedFence>>
@@ -681,15 +1047,12 @@ D3DImageBacking::GetPendingWaitFences(
   // Also wait for all previous reads for read-write access.
   if (write_access) {
     for (const auto& read_fence : read_fences_) {
-        wait_fences.push_back(read_fence);
+      wait_fences.push_back(read_fence);
     }
     // The presence of a DComp texture fence is considered an outstanding read
     // that must be waited on.
-    if (dcomp_texture_) {
-      if (auto fence = DCompTextureGetAvailabilityFenceForCurrentFrame(
-              dcomp_texture_.Get())) {
-        wait_fences.push_back(std::move(fence));
-      }
+    if (dcomp_texture_available_fence_) {
+      wait_fences.push_back(std::move(dcomp_texture_available_fence_));
     }
   }
   return wait_fences;
@@ -727,14 +1090,35 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
                            wgpu::TextureUsage::StorageBinding |
                            wgpu::TextureUsage::RenderAttachment;
   bool write_access = wgpu_usage & kWriteUsage;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-      (wgpu_internal_usage & kWriteUsage)) {
+  if (wgpu_internal_usage & kWriteUsage) {
     write_access = true;
   }
 
   if (!ValidateBeginAccess(write_access)) {
     return nullptr;
+  }
+
+  // If this is graphite access, we skip Dawn's BeginAccess here if the access
+  // is already open.
+  if (persistent_graphite_dawn_access_) {
+    if (persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
+      if (dcomp_texture_ && write_access) {
+        // For dcomp, we only need to wait for dcomp read fence before we write.
+        // We don't need to signal any fence after that so it's still safe to
+        // use persistent dawn's access.
+        if (!persistent_graphite_dawn_access_->WaitForDCompBeforeWrite(
+                std::move(dcomp_texture_available_fence_))) {
+          persistent_graphite_dawn_access_.reset();
+          return nullptr;
+        }
+      }
+      BeginAccessCommon(write_access);
+      return persistent_graphite_dawn_access_->texture();
+    }
+
+    // A different device tries to access this backing, flush graphite commands
+    // and disable persistent access.
+    InvalidatePersistentGraphiteDawnAccess();
   }
 
   Microsoft::WRL::ComPtr<ID3D11Device> dawn_d3d11_device;
@@ -756,18 +1140,19 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   std::vector<wgpu::SharedFence> shared_fences;
   std::vector<uint64_t> signaled_values;
   for (auto& wait_fence : wait_fences) {
-    wgpu::SharedFenceDXGISharedHandleDescriptor dxgi_desc;
-    dxgi_desc.handle = wait_fence->GetSharedHandle();
-    wgpu::SharedFenceDescriptor fence_desc;
-    fence_desc.nextInChain = &dxgi_desc;
     // TODO(crbug.com/335003893): Look into caching the wgpu::SharedFence object
     // in gfx::D3DSharedFence.
-    shared_fences.push_back(device.ImportSharedFence(&fence_desc));
+    shared_fences.push_back(CreateDawnSharedFence(device, wait_fence));
     signaled_values.push_back(wait_fence->GetFenceValue());
   }
   wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
   swapchain_begin_state.isSwapchain =
       usage().Has(SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
+
+  wgpu::SharedTextureMemoryD3D11BeginState d3d11_begin_state = {};
+  d3d11_begin_state.requiresEndAccessFence =
+      use_cross_device_fence_synchronization();
+  swapchain_begin_state.nextInChain = &d3d11_begin_state;
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
   const bool is_clear = ClearedRectInternal() == gfx::Rect(size());
@@ -781,15 +1166,10 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   desc.nextInChain = &swapchain_begin_state;
 
   wgpu::Texture texture =
-      dawn_shared_texture_holder_.GetCachedWGPUTexture(device, wgpu_usage);
+      GetOrCreateDawnTexture(device, shared_texture_memory, wgpu_usage,
+                             wgpu_internal_usage, view_formats);
   if (!texture) {
-    texture = CreateDawnSharedTexture(shared_texture_memory, wgpu_usage,
-                                      wgpu_internal_usage, view_formats);
-    if (!texture) {
-      LOG(ERROR) << "Failed to create WGPUTexture";
-      return nullptr;
-    }
-    dawn_shared_texture_holder_.MaybeCacheWGPUTexture(device, texture);
+    return nullptr;
   }
 
   // If there is already an ongoing Dawn access for this texture, then the
@@ -808,13 +1188,14 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   if (shared_texture_memory.BeginAccess(texture, &desc) !=
       wgpu::Status::Success) {
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed.";
-    dawn_shared_texture_holder_.RemoveWGPUTextureFromCache(device, texture);
+    dawn_shared_texture_cache_->RemoveWGPUTextureFromCache(device, texture);
     TrackEndAccessToWGPUTexture(texture);
     return nullptr;
   }
 
   // Clear fences and update state iff Dawn BeginAccess succeeds.
   BeginAccessCommon(write_access);
+
   return texture;
 }
 
@@ -826,6 +1207,20 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
     SetCleared();
   }
   AutoLock auto_lock(this);
+
+  // If this is graphite access, and the access is already open, skip EndAccess
+  // to keep it alive indefinitely.
+  if (persistent_graphite_dawn_access_ &&
+      persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
+    DCHECK_EQ(persistent_graphite_dawn_access_->texture().Get(), texture.Get());
+    persistent_graphite_dawn_access_->SetNeedFlushCommands(true);
+
+    CheckForDawnDeviceLoss(
+        device, persistent_graphite_dawn_access_->shared_texture_memory());
+    EndAccessCommon(/*signaled_fences=*/{});
+
+    return;
+  }
 
   auto shared_texture_memory = GetSharedTextureMemory(device);
   // Shared texture memory is removed from cache on first EndAccess after device
@@ -854,8 +1249,8 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
   if (use_cross_device_fence_synchronization()) {
     auto& cached_fences = dawn_signaled_fences_map_[device.Get()];
     for (size_t i = 0; i < end_state.fenceCount; ++i) {
-      auto& signaled_value = end_state.signaledValues[i];
-      auto& fence = end_state.fences[i];
+      auto& signaled_value = UNSAFE_TODO(end_state.signaledValues[i]);
+      auto& fence = UNSAFE_TODO(end_state.fences[i]);
       wgpu::SharedFenceDXGISharedHandleExportInfo shared_handle_info;
       wgpu::SharedFenceExportInfo export_info;
       export_info.nextInChain = &shared_handle_info;
@@ -885,17 +1280,74 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
     cached_fences = signaled_fences;
   }
 
+  CheckForDawnDeviceLoss(device, shared_texture_memory);
+
+  dawn_shared_texture_cache_->DestroyWGPUTextureIfNotCached(device, texture);
+
+  EndAccessCommon(signaled_fences);
+}
+
+std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
+D3DImageBacking::CreateGraphiteTextureHolders(
+    wgpu::Device device,
+    wgpu::Texture texture,
+    std::vector<skgpu::graphite::BackendTexture> backend_textures) {
+  AutoLock auto_lock(this);
+  // Make sure that the texture is cached inside the dawn_shared_texture_cache_
+  DCHECK(texture);
+  DCHECK(dawn_shared_texture_cache_
+             ->GetCachedWGPUTexture(device, texture.GetUsage(),
+                                    /*internal_usage=*/wgpu::TextureUsage::None,
+                                    /*view_formats=*/{})
+             .Get() == texture.Get());
+
+  std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
+      graphite_holders;
+  graphite_holders.reserve(backend_textures.size());
+
+  for (auto& backend_texture : backend_textures) {
+    graphite_holders.emplace_back(base::MakeRefCounted<GraphiteTextureHolder>(
+        dawn_shared_texture_cache_, persistent_graphite_dawn_access_,
+        std::move(backend_texture)));
+  }
+
+  return graphite_holders;
+}
+
+void D3DImageBacking::CheckForDawnDeviceLoss(
+    const wgpu::Device& device,
+    const wgpu::SharedTextureMemory& shared_texture_memory) {
+  if (!shared_texture_memory) {
+    return;
+  }
+
   // Erase from cache if shared texture memory is invalid i.e. device was lost.
   if (shared_texture_memory.IsDeviceLost()) {
-    dawn_shared_texture_holder_.EraseDataIfDeviceLost();
+    dawn_shared_texture_cache_->EraseDataIfDeviceLost();
     dawn_signaled_fences_map_.erase(device.Get());
     if (dxgi_shared_handle_state_) {
       dxgi_shared_handle_state_->EraseDawnSharedTextureMemory(device);
     }
+
+    if (persistent_graphite_dawn_access_ &&
+        persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
+      persistent_graphite_dawn_access_.reset();
+    }
+  }
+}
+
+void D3DImageBacking::NotifyGraphiteAboutInitializedStatus() {
+  // Since we keep Dawn's access open indefinitely for Graphite, we need to
+  // notify Dawn that the texture's content is already initialized externally or
+  // not (e.g by WebGL).
+  if (!persistent_graphite_dawn_access_) {
+    return;
   }
 
-  dawn_shared_texture_holder_.DestroyWGPUTextureIfNotCached(device, texture);
-  EndAccessCommon(signaled_fences);
+  if (!persistent_graphite_dawn_access_->SetCleared(
+          /*is_cleared=*/ClearedRectInternal() == gfx::Rect(size()))) {
+    persistent_graphite_dawn_access_.reset();
+  }
 }
 
 wgpu::SharedTextureMemory D3DImageBacking::GetSharedTextureMemory(
@@ -903,13 +1355,25 @@ wgpu::SharedTextureMemory D3DImageBacking::GetSharedTextureMemory(
   if (dxgi_shared_handle_state_) {
     return dxgi_shared_handle_state_->GetSharedTextureMemory(device);
   }
-  return dawn_shared_texture_holder_.GetSharedTextureMemory(device);
+  return dawn_shared_texture_cache_->GetSharedTextureMemory(device);
 }
 
 bool D3DImageBacking::BeginAccessD3D11(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    bool write_access) {
+    bool write_access,
+    bool is_overlay_access) {
   AutoLock auto_lock(this);
+
+  if (persistent_graphite_dawn_access_) {
+    if (persistent_graphite_dawn_access_->IsGraphiteD3D11Device(d3d11_device)) {
+      FlushGraphiteCommandsIfNeeded();
+    } else {
+      // A different D3D11 device is accessing this backing, disable graphite's
+      // persistent access.
+      InvalidatePersistentGraphiteDawnAccess();
+    }
+  }
+
   if (!ValidateBeginAccess(write_access)) {
     return false;
   }
@@ -932,13 +1396,19 @@ bool D3DImageBacking::BeginAccessD3D11(
     return false;
   }
 
+  if (is_overlay_access && dcomp_texture_) {
+    CHECK(!write_access);
+    BeginDCompTextureAccess();
+  }
+
   // Clear fences and update state iff D3D11 BeginAccess succeeds.
   BeginAccessCommon(write_access);
   return true;
 }
 
 void D3DImageBacking::EndAccessD3D11(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    bool is_overlay_access) {
   const bool is_texture_device = d3d11_device == texture_d3d11_device_;
   // If shared handle is not present, we can only access on the same device.
   AutoLock auto_lock(this);
@@ -949,13 +1419,12 @@ void D3DImageBacking::EndAccessD3D11(
   D3DSharedFenceSet signaled_fence;
   if (use_cross_device_fence_synchronization()) {
     auto& d3d11_signal_fence = d3d11_signaled_fence_map_[d3d11_device];
-    if (!d3d11_signal_fence) {
-      d3d11_signal_fence = gfx::D3DSharedFence::CreateForD3D11(d3d11_device);
-    }
-    if (d3d11_signal_fence && d3d11_signal_fence->IncrementAndSignalD3D11()) {
-      signaled_fence.insert(d3d11_signal_fence);
-    } else {
-      LOG(ERROR) << "Failed to signal D3D11 device fence on EndAccess";
+    if (d3d11_signal_fence) {
+      if (d3d11_signal_fence->IncrementAndSignalD3D11()) {
+        signaled_fence.insert(d3d11_signal_fence);
+      } else {
+        LOG(ERROR) << "Failed to signal D3D11 device fence on EndAccess";
+      }
     }
   }
 
@@ -963,21 +1432,247 @@ void D3DImageBacking::EndAccessD3D11(
     dxgi_shared_handle_state_->ReleaseKeyedMutex(d3d11_device);
   }
 
-#if DCHECK_IS_ON()
-  if (dcomp_texture_) {
-    // Sanity check that we can get the availability fence, meaning that the
-    // texture is either immediately available or soon-to-be available. We
-    // should not cache this since the eventual wait may be one or more frames
-    // later and the fence becomes invalidated by DComp commit.
-    std::ignore =
-        DCompTextureGetAvailabilityFenceForCurrentFrame(dcomp_texture_.Get());
+  if (is_overlay_access && dcomp_texture_) {
+    EndDCompTextureAccess();
   }
-#endif
+
+  if (in_write_access_) {
+    NotifyGraphiteAboutInitializedStatus();
+  }
 
   EndAccessCommon(signaled_fence);
 }
 
+void D3DImageBacking::BeginDCompTextureAccess() {
+  CHECK(dcomp_texture_);
+  num_dcomp_texture_readers_++;
+
+  if (num_dcomp_texture_readers_ > 1) {
+    // If the DComp texture is already in a visual tree, the available fence is
+    // invalid and should not be stored.
+    CHECK(!dcomp_texture_available_fence_);
+  }
+
+  if (dcomp_texture_available_fence_) {
+    // When we are putting the DComp texture back into a visual tree, we expect
+    // no other holders of the available fence (which can only be outstanding
+    // writers).
+    CHECK(dcomp_texture_available_fence_->HasOneRef());
+    // A new overlay access invalidates the available fence because it implies
+    // that `dcomp_texture_` is going back into the visual tree.
+    dcomp_texture_available_fence_.reset();
+  }
+}
+
+void D3DImageBacking::EndDCompTextureAccess() {
+  CHECK(dcomp_texture_);
+  CHECK_GT(num_dcomp_texture_readers_, 0);
+  num_dcomp_texture_readers_--;
+
+  if (num_dcomp_texture_readers_ > 0) {
+    // This DComp texture is in another tree.
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
+  uint64_t fence_value = 0;
+  HRESULT hr = dcomp_texture_->GetAvailableFence(&fence_value,
+                                                 IID_PPV_ARGS(&d3d11_fence));
+  CHECK_EQ(hr, S_OK) << ", GetAvailableFence failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  // |GetAvailableFence| will return a null fence if the texture is still
+  // attached to the DComp tree. We cannot end the read access at this point
+  // since DWM can still scanout from the texture. This is probably a bug where
+  // the output device returned an overlay access while the overlay image was
+  // still in the DComp tree.
+  //
+  // This can also trigger if we have multiple concurrent outstanding overlay
+  // read accesses, which is not currently supported.
+  CHECK(d3d11_fence) << "Overlay access is still in use by DWM.";
+
+  // If the fence is already passed the wait value, we don't need to wait on it.
+  if (d3d11_fence->GetCompletedValue() >= fence_value) {
+    return;
+  }
+
+  // Note we're passing a null device since the DWM internal device will signal
+  // this fence.
+  CHECK(!dcomp_texture_available_fence_);
+  dcomp_texture_available_fence_ = gfx::D3DSharedFence::CreateFromD3D11Fence(
+      /*d3d11_signal_device=*/nullptr, std::move(d3d11_fence), fence_value);
+}
+
+std::optional<scoped_refptr<gfx::D3DSharedFence>>
+D3DImageBacking::BeginAccessWebNN() {
+  AutoLock auto_lock(this);
+
+  // WebNNTensors only support exclusive read-write access.
+  if (!ValidateBeginAccess(true)) {
+    return std::nullopt;
+  }
+
+  scoped_refptr<gfx::D3DSharedFence> write_fence;
+  if (!write_fences_.empty()) {
+    // WebNNTensors expect to wait on 1 fence that originates from Dawn.
+    // If there was WebGPU work, this will be Dawn's submission fence.
+    // Otherwise, it will return WebNN's submission fence that was previously
+    // passed to BeginAccessDawn.
+    CHECK_EQ(write_fences_.size(), 1u);
+    write_fence = *write_fences_.begin();
+  }
+
+  BeginAccessCommon(true);
+  return write_fence;
+}
+
+void D3DImageBacking::EndAccessWebNN(
+    scoped_refptr<gfx::D3DSharedFence> signaled_fence) {
+  AutoLock auto_lock(this);
+  if (!signaled_fence) {
+    EndAccessCommon(/*signaled_fences=*/{});
+    return;
+  }
+  EndAccessCommon({signaled_fence});
+}
+
+std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    scoped_refptr<SharedContextState> context_state) {
+  DCHECK(usage().Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER));
+  DCHECK(d3d12_resource_.Get() != nullptr);
+
+  if (backend_type != wgpu::BackendType::D3D12) {
+    LOG(ERROR) << "Unsupported Dawn backend: "
+               << static_cast<WGPUBackendType>(backend_type);
+    return nullptr;
+  }
+
+  {
+    AutoLock auto_lock(this);
+    // Persistently open the shared handle by caching it on this backing.
+    if (!dawn_shared_buffer_memory_) {
+      Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device;
+      if (backend_type == wgpu::BackendType::D3D12) {
+        dawn_d3d12_device = dawn::native::d3d12::GetD3D12Device(device.Get());
+      }
+
+      dawn_shared_buffer_memory_ =
+          CreateDawnSharedBufferMemory(device, d3d12_resource_);
+
+      if (!dawn_shared_buffer_memory_) {
+        LOG(ERROR) << "Failed to create shared_buffer_memory.";
+        return nullptr;
+      }
+    }
+  }  // AutoLock scope
+
+  return std::make_unique<DawnD3DBufferRepresentation>(manager, this, tracker,
+                                                       device, backend_type);
+}
+
+wgpu::Buffer D3DImageBacking::BeginAccessDawnBuffer(
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    wgpu::BufferUsage usage) {
+  AutoLock auto_lock(this);
+  Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device;
+  if (backend_type == wgpu::BackendType::D3D12) {
+    dawn_d3d12_device = dawn::native::d3d12::GetD3D12Device(device.Get());
+    CHECK(dawn_d3d12_device);
+  }
+
+  CHECK(dawn_shared_buffer_memory_);
+
+  // Pass all fences on the backing to Dawn. In the future, consider optimizing
+  // this based on read/write usages and/or using the Dawn fence cache.
+  std::vector<wgpu::SharedFence> shared_fences;
+  shared_fences.reserve(read_fences_.size() + write_fences_.size());
+  std::vector<uint64_t> signaled_values;
+  signaled_values.reserve(read_fences_.size() + write_fences_.size());
+
+  for (auto& write_fence : write_fences_) {
+    shared_fences.push_back(CreateDawnSharedFence(device, write_fence));
+    signaled_values.push_back(write_fence->GetFenceValue());
+  }
+
+  for (const auto& read_fence : read_fences_) {
+    shared_fences.push_back(CreateDawnSharedFence(device, read_fence));
+    signaled_values.push_back(read_fence->GetFenceValue());
+  }
+
+  wgpu::SharedBufferMemoryBeginAccessDescriptor desc = {};
+  desc.initialized = true;
+  desc.fenceCount = shared_fences.size();
+  desc.fences = shared_fences.data();
+  desc.signaledValues = signaled_values.data();
+
+  wgpu::Buffer buffer =
+      CreateDawnSharedBuffer(dawn_shared_buffer_memory_, usage);
+  if (!buffer) {
+    LOG(ERROR) << "Failed to produce WGPUBuffer";
+    return nullptr;
+  }
+
+  if (dawn_shared_buffer_memory_.BeginAccess(buffer, &desc) !=
+      wgpu::Status::Success) {
+    LOG(ERROR) << "Failed to begin access on WGPUBuffer";
+    return nullptr;
+  }
+
+  // Clear fences and update state if Dawn BeginAccess succeeds.
+  BeginAccessCommon(true);
+  return buffer;
+}
+
+void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
+                                          wgpu::Buffer buffer) {
+  AutoLock auto_lock(this);
+  DCHECK(buffer);
+  CHECK(dawn_shared_buffer_memory_);
+
+  wgpu::SharedBufferMemoryEndAccessState end_state = {};
+  dawn_shared_buffer_memory_.EndAccess(buffer.Get(), &end_state);
+
+  D3DSharedFenceSet signaled_fences;
+  signaled_fences.reserve(end_state.fenceCount);
+  for (size_t i = 0; i < end_state.fenceCount; ++i) {
+    auto& signaled_value = UNSAFE_TODO(end_state.signaledValues[i]);
+    auto& fence = UNSAFE_TODO(end_state.fences[i]);
+    wgpu::SharedFenceDXGISharedHandleExportInfo shared_handle_info;
+    wgpu::SharedFenceExportInfo export_info;
+    export_info.nextInChain = &shared_handle_info;
+    fence.ExportInfo(&export_info);
+    DCHECK_EQ(export_info.type, wgpu::SharedFenceType::DXGISharedHandle);
+
+    scoped_refptr<gfx::D3DSharedFence> signaled_fence =
+        gfx::D3DSharedFence::CreateFromUnownedHandle(shared_handle_info.handle);
+
+    if (signaled_fence) {
+      signaled_fence->Update(signaled_value);
+      signaled_fences.insert(signaled_fence);
+    } else {
+      LOG(ERROR) << "Failed to import D3D fence from Dawn on EndAccess";
+    }
+  }
+
+  EndAccessCommon(signaled_fences);
+}
+
 bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
+  if (usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    // If this backing is being used for concurrent read/write, the only
+    // access pattern that's not allowed is concurrent writes.
+    if (in_write_access_ && write_access) {
+      LOG(ERROR) << "Already being accessed for write";
+      return false;
+    }
+    return true;
+  }
+
   if (in_write_access_) {
     LOG(ERROR) << "Already being accessed for write";
     return false;
@@ -987,6 +1682,14 @@ bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
     return false;
   }
   return true;
+}
+
+std::unique_ptr<WebNNTensorRepresentation> D3DImageBacking::ProduceWebNNTensor(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  CHECK(usage().Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
+  DCHECK(d3d12_resource_.Get() != nullptr);
+  return std::make_unique<WebNND3DTensorRepresentation>(manager, this, tracker);
 }
 
 void D3DImageBacking::BeginAccessCommon(bool write_access) {
@@ -1004,12 +1707,30 @@ void D3DImageBacking::BeginAccessCommon(bool write_access) {
 
 void D3DImageBacking::EndAccessCommon(
     const D3DSharedFenceSet& signaled_fences) {
-  DCHECK(base::ranges::all_of(signaled_fences, std::identity()));
+  DCHECK(std::ranges::all_of(
+      signaled_fences,
+      [](const scoped_refptr<gfx::D3DSharedFence>& fence) { return !!fence; }));
   if (in_write_access_) {
     DCHECK(write_fences_.empty());
     DCHECK(read_fences_.empty());
     in_write_access_ = false;
     write_fences_ = signaled_fences;
+
+    // If this backing is holding both buffers of a swapchain (i.e., being used
+    // for concurrent read/write), ensure that the contents of the write are
+    // presented as soon as possible by calling Present() on the swapchain. Note
+    // that it is necessary to do this here rather than in EndAccessD3D11() to
+    // ensure that this executes if Graphite is being used.
+    if (swap_chain_front_buffer_texture_) {
+      PresentSwapChain();
+
+      // Copy from front buffer to back buffer to ensure that contents are
+      // preserved for subsequent reads from the back buffer.
+      Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+      texture_d3d11_device_->GetImmediateContext(&device_context);
+      device_context->CopyResource(d3d11_texture_.Get(),
+                                   swap_chain_front_buffer_texture_.Get());
+    }
   } else {
     num_readers_--;
     for (const auto& signaled_fence : signaled_fences) {
@@ -1026,15 +1747,18 @@ void* D3DImageBacking::GetEGLImage() const {
 
 bool D3DImageBacking::PresentSwapChain() {
   AutoLock auto_lock(this);
-  TRACE_EVENT0("gpu", "D3DImageBacking::PresentSwapChain");
-  if (!swap_chain_ || !is_back_buffer_) {
-    LOG(ERROR) << "Backing does not correspond to back buffer of swap chain";
+  if (!swap_chain_) {
+    LOG(ERROR) << "Backing is not holding swap chain";
     return false;
   }
 
+  // Flush any deferred Graphite submits before presentation.
+  FlushGraphiteCommandsIfNeeded();
+
+  TRACE_EVENT1("gpu", "D3DImageBacking::PresentSwapChain", "has_alpha",
+               !SkAlphaTypeIsOpaque(alpha_type()));
   constexpr UINT kFlags = DXGI_PRESENT_ALLOW_TEARING;
   constexpr DXGI_PRESENT_PARAMETERS kParams = {};
-
   HRESULT hr = swap_chain_->Present1(/*interval=*/0, kFlags, &kParams);
   if (FAILED(hr)) {
     LOG(ERROR) << "Present1 failed with error " << std::hex << hr;
@@ -1045,6 +1769,8 @@ bool D3DImageBacking::PresentSwapChain() {
 
   // we're rebinding to ensure that underlying D3D11 resource views are
   // recreated in ANGLE.
+  // TODO(crbug.com/40074896): Determine whether we need to do something similar
+  // for Dawn when using Graphite.
   if (gl_texture_holders_[0]) {
     gl_texture_holders_[0]->set_needs_rebind(true);
   }
@@ -1104,12 +1830,10 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
             gl_format_caps_.ToGLFormatDesc(format(), /*plane_index=*/0);
       }
 
-      gfx::Size plane_size = format().GetPlaneSize(plane, size());
       // Creating the GL texture doesn't require exclusive access to the
       // underlying D3D11 texture.
-      holder = CreateGLTexture(gl_format_desc, plane_size, color_space(),
-                               d3d11_texture, texture_target_, array_slice_,
-                               plane, swap_chain_);
+      holder = CreateGLTexture(gl_format_desc, d3d11_texture, texture_target_,
+                               array_slice_, plane);
       if (!holder) {
         LOG(ERROR) << "Failed to create GL texture for plane: " << plane;
         return nullptr;
@@ -1154,7 +1878,7 @@ D3DImageBacking::ProduceSkiaGraphite(
     LOG(ERROR) << "Could not create Dawn Representation";
     return nullptr;
   }
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<D3DSkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
       array_slice_);
@@ -1182,9 +1906,46 @@ D3DImageBacking::GetDCLayerOverlayImage() {
                                                      array_slice_);
 }
 
+Microsoft::WRL::ComPtr<ID3D12Resource> D3DImageBacking::GetD3D12Buffer() const {
+  return d3d12_resource_;
+}
+
 bool D3DImageBacking::HasStagingTextureForTesting() const {
   AutoLock auto_lock(this);
   return !!staging_texture_;
+}
+
+void D3DImageBacking::FlushGraphiteCommandsIfNeeded() {
+  if (!persistent_graphite_dawn_access_) {
+    return;
+  }
+
+  if (!persistent_graphite_dawn_access_->FlushCommandsIfNeeded()) {
+    return;
+  }
+
+  if (dawn::native::IsTextureSubresourceInitialized(
+          persistent_graphite_dawn_access_->texture().Get(), 0, 1, 0, 1)) {
+    SetClearedRectInternal(gfx::Rect(size()));
+  }
+}
+
+void D3DImageBacking::InvalidatePersistentGraphiteDawnAccess() {
+  DCHECK(persistent_graphite_dawn_access_);
+
+  FlushGraphiteCommandsIfNeeded();
+
+  // Invalidate to force EndAccess(). PersistentGraphiteDawnAccess's dtor is not
+  // guaranteed to be triggered here as a ref might still be held by Graphite
+  // via GraphiteTextureHolder.
+  persistent_graphite_dawn_access_->Invalidate();
+  persistent_graphite_dawn_access_.reset();
+}
+
+bool D3DImageBacking::SupportsDeferredGraphiteSubmit() const {
+  // If we have long lived graphite's access then deferred submits are
+  // supported.
+  return persistent_graphite_dawn_access_ != nullptr;
 }
 
 }  // namespace gpu

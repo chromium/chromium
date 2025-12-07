@@ -4,11 +4,16 @@
 
 #include "content/browser/media/url_provision_fetcher.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -41,10 +46,6 @@ void URLProvisionFetcher::Retrieve(
 
   response_cb_ = std::move(response_cb);
 
-  const std::string request_string =
-      default_url.spec() + "&signedRequest=" + request_data;
-  DVLOG(1) << __func__ << ": request:" << request_string;
-
   DCHECK(!simple_url_loader_);
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("url_prevision_fetcher", R"(
@@ -76,13 +77,32 @@ void URLProvisionFetcher::Retrieve(
           policy_exception_justification: "Not implemented."
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(request_string);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->method = "POST";
-  resource_request->headers.SetHeader("User-Agent", "Widevine CDM v1.0");
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                      "Widevine CDM v1.0");
+
+  std::string post_body;
+  std::string content_type;
+
+  if (base::FeatureList::IsEnabled(media::kUsePostBodyForUrlProvisionFetcher)) {
+    resource_request->url = default_url;
+    post_body = "signedRequest=" + request_data;
+    content_type = "application/x-www-form-urlencoded";
+  } else {
+    const std::string request_string =
+        default_url.spec() + "&signedRequest=" + request_data;
+    resource_request->url = GURL(request_string);
+    post_body = "";
+    content_type = "application/json";
+  }
+  DVLOG(1) << __func__ << ": url:'" << resource_request->url
+           << "' content_type:'" << content_type << "' body:'" << post_body
+           << "'";
+
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
-  simple_url_loader_->AttachStringForUpload("", "application/json");
+  simple_url_loader_->AttachStringForUpload(post_body, content_type);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&URLProvisionFetcher::OnSimpleLoaderComplete,
@@ -90,7 +110,7 @@ void URLProvisionFetcher::Retrieve(
 }
 
 void URLProvisionFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   bool success = false;
   int response_code = simple_url_loader_->NetError();
   std::string response;
@@ -106,7 +126,7 @@ void URLProvisionFetcher::OnSimpleLoaderComplete(
 
   if (response_body) {
     success = true;
-    response = std::move(*response_body);
+    response = std::move(response_body).value();
   } else {
     DVLOG(1) << "CDM provision: server returned error code " << response_code;
   }

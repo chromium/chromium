@@ -47,7 +47,7 @@ class APIBindingsSystemTest : public APIBindingTest {
 
   // Returns the object to be used as the parent for the `lastError`, and,
   // optionally, the secondary parent. The default returns an empty JS object
-  // and does not populate |secondary_parent| (assumes no last errors will be
+  // and does not populate `secondary_parent` (assumes no last errors will be
   // set).
   virtual v8::Local<v8::Object> GetLastErrorParent(
       v8::Local<v8::Context> context,
@@ -69,17 +69,17 @@ class APIBindingsSystemTest : public APIBindingTest {
                                v8::Local<v8::Context> context);
 
   // Callback for an API request being made. Stores the request in
-  // |last_request_|.
+  // `last_request_`.
   void OnAPIRequest(std::unique_ptr<APIRequestHandler::Request> request,
                     v8::Local<v8::Context> context);
 
-  // Checks that |last_request_| exists and was provided with the
-  // |expected_name| and |expected_arguments|.
+  // Checks that `last_request_` exists and was provided with the
+  // `expected_name` and `expected_arguments`.
   void ValidateLastRequest(const std::string& expected_name,
                            const std::string& expected_arguments);
 
   // Wraps the given |script source| in (function(obj) { ... }) and executes
-  // the result function, passing in |object| for an argument. Returns the
+  // the result function, passing in `object` for an argument. Returns the
   // result of calling the function.
   v8::Local<v8::Value> CallFunctionOnObject(v8::Local<v8::Context> context,
                                             v8::Local<v8::Object> object,

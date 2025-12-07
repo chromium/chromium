@@ -54,8 +54,7 @@ std::string EntryStateToString(Entry::State state) {
     case Entry::State::COMPLETE:
       return "COMPLETE";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -70,8 +69,7 @@ std::string DriverEntryStateToString(DriverEntry::State state) {
     case DriverEntry::State::INTERRUPTED:
       return "INTERRUPTED";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -94,8 +92,7 @@ std::string CompletionTypeToString(CompletionType type) {
     case CompletionType::OUT_OF_RESUMPTIONS:
       return "OUT_OF_RESUMPTIONS";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -114,8 +111,7 @@ std::string StartResultToString(DownloadParams::StartResult result) {
     case DownloadParams::StartResult::INTERNAL_ERROR:
       return "INTERNAL_ERROR";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

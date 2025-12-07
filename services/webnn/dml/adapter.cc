@@ -10,6 +10,8 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "services/webnn/dml/command_queue.h"
@@ -36,6 +38,10 @@ base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
   }
   return base::unexpected(
       CreateError(error_code, "Unable to find a capable adapter."));
+}
+
+void RecordDMLCreateDeviceError(HRESULT hr) {
+  base::UmaHistogramSparse("WebNN.DMLCreateDevice.Error", hr);
 }
 
 }  // namespace
@@ -222,35 +228,39 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   }
 
   // Create dml device.
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device;
   auto dml_create_device1_proc = platform_functions->dml_create_device1_proc();
-  hr = dml_create_device1_proc(d3d12_device.Get(), flags,
-                               min_required_dml_feature_level,
+  hr = dml_create_device1_proc(d3d12_device.Get(), flags, DML_FEATURE_LEVEL_1_0,
                                IID_PPV_ARGS(&dml_device));
-  if (FAILED(hr)) {
-    if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
-      // DirectML debug layer can fail to load even when it has been installed
-      // on the system. Try again without the debug flag and see if we're
-      // successful.
-      flags = flags & ~DML_CREATE_DEVICE_FLAG_DEBUG;
-      hr = dml_create_device1_proc(d3d12_device.Get(), flags,
-                                   min_required_dml_feature_level,
-                                   IID_PPV_ARGS(&dml_device));
-    }
 
-    if (FAILED(hr)) {
-      if (hr == DXGI_ERROR_UNSUPPORTED) {
-        return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
-                                    "DML feature level not supported.", hr);
-      } else {
-        return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
-                                    "Failed to create DirectML device.", hr);
-      }
-    }
+  if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
+    // DirectML debug layer can fail to load even when it has been installed
+    // on the system. Try again without the debug flag and see if we're
+    // successful.
+    flags = flags & ~DML_CREATE_DEVICE_FLAG_DEBUG;
+    hr = dml_create_device1_proc(d3d12_device.Get(), flags,
+                                 DML_FEATURE_LEVEL_1_0,
+                                 IID_PPV_ARGS(&dml_device));
+  }
+
+  if (FAILED(hr)) {
+    RecordDMLCreateDeviceError(hr);
+    return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
+                                "Failed to create DirectML device.", hr);
   }
 
   const DML_FEATURE_LEVEL max_supported_dml_feature_level =
       GetMaxSupportedDMLFeatureLevel(dml_device.Get());
+  if (max_supported_dml_feature_level < min_required_dml_feature_level) {
+    RecordDMLCreateDeviceError(DXGI_ERROR_UNSUPPORTED);
+    return HandleAdapterFailure(
+        mojom::Error::Code::kNotSupportedError,
+        base::StrCat({"The current supported ",
+                      DMLFeatureLevelToString(max_supported_dml_feature_level),
+                      " is lower than the minimum required ",
+                      DMLFeatureLevelToString(min_required_dml_feature_level),
+                      "."}));
+  }
 
   // Create command queue.
   scoped_refptr<CommandQueue> command_queue =
@@ -295,7 +305,7 @@ void Adapter::EnableDebugLayerForTesting() {
 
 Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
                  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
-                 Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+                 Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
                  scoped_refptr<CommandQueue> command_queue,
                  scoped_refptr<CommandQueue> init_command_queue_for_npu,
                  DML_FEATURE_LEVEL max_supported_dml_feature_level,
@@ -322,7 +332,7 @@ Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -338,7 +348,7 @@ Adapter::~Adapter() {
     CHECK_EQ(npu_instance_, this);
     npu_instance_ = nullptr;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

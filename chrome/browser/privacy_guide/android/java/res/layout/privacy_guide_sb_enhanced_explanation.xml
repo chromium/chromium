@@ -22,6 +22,7 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/privacy_guide_safe_browsing_enhanced_title"
+            android:accessibilityHeading="true"
             style="@style/TextAppearance.Headline.Primary" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
@@ -46,7 +47,7 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_gshield_24"
+            app:iconImage="@drawable/secured_by_brand_shield_24"
             app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_three" />
 

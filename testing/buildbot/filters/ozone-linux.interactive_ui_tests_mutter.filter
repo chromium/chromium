@@ -1,0 +1,67 @@
+# TODO(crbug.com/40759171): implement the feature for Wayland.
+-GlobalCommandsApiTest.GlobalCommand
+
+# TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
+-BookmarkBarViewTest4.ContextMenus
+
+# Failing interactive ui tests
+-BookmarkBarViewTest29.DNDToEmptyMenu
+-BookmarkBarViewTest7.DNDToDifferentMenu
+-BookmarkBarViewTest8.DNDBackToOriginatingMenu
+-BrowserFocusTest.BackgroundBrowserDontStealFocus
+-CaptionBubbleControllerViewsTest.BubblePositioningSmallNonBrowserContext
+-ChromeVisibilityObserverInteractiveTest.VisibilityTest
+-DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
+-DesktopWindowTreeHostPlatformImplTest.CaptureEventForwarding
+-DesktopWindowTreeHostPlatformImplTest.Deactivate
+-DesktopWindowTreeHostPlatformImplTest.InputMethodFocus
+-ExtensionApiTest.WindowOpenFocus
+-GeolocationUsageObserverBrowsertest.GetCurrentPositionWhileWatchingPosition
+-MediaDialogViewBrowserTest.PictureInPicture
+-NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
+-PasswordBubbleInteractiveUiTest.AutoSigninNoFocus
+-PopupBlockerBrowserTest.ModalPopUnder
+-SettingsGlicPageFocusTest.GlicPageFocus
+-StartupBrowserCreatorTest.LastUsedProfileActivated
+-WebAppProfileSwitcherBrowserTest.SwitchWebAppProfileActivateWindowOnly
+-WidgetInputMethodInteractiveTest.Activation
+-WidgetInputMethodInteractiveTest.OneWindow
+-WidgetInputMethodInteractiveTest.TwoWindows
+
+# Extremely flaky.
+-BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
+
+# TODO(crbug.com/40758956): flaky fullscreen notification test
+-NotificationsTest.TestShouldDisplayMultiFullscreen
+
+# TODO(crbug.com/40175111): Flaky.
+-BrowserActionInteractiveTest.TestOpenPopup
+
+# TODO(crbug.com/40923067): Enable when feature isn't buggy any more. (Used to pass with Weston 9,
+# but doesn't pass with Weston 12. Flaky on mutter as well.)
+-FullscreenControlViewTest.MouseAndTouchInteraction_NoInterference
+-FullscreenControlViewTest.MouseExitFullscreen_TimeoutAndRetrigger
+
+# These cannot work because they rely on receiving key events during a DnD session, which isn't
+# possible on Linux Wayland.
+-TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
+-TabDragging/DetachToBrowserTabDragControllerTest.Revert*
+
+# TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
+-EyeDropperViewAuraInteractiveTest.*
+
+# TODO(crbug.com/414635394): Re-enable once right click for bookmark empty submenu works.
+-BookmarkBarViewTest21.ContextMenusForEmptyFolder
+
+# Failing on try bot due to DCHECK
+-AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
+
+# TODO(crbug.com/334413759) The test can fail due to delays in omnibox popup
+# being launched when it is an accelerated bubble and so the subsequent click
+# to unselect it can fail.
+-*/DragAndDropBrowserTest.DropUrlIntoOmnibox/*
+
+# TODO(crbug.com/456675144): Disable HandleReauth, fails due to unsupported
+# window activation on Wayland/Mutter.
+-All/AttemptLoginToolInteractiveUiTest.HandleReauth/1

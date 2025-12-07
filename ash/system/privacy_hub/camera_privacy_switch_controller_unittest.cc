@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -65,7 +65,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseAppAccessingCamera(const std::u16string& app_name) {
-    auto it = base::ranges::find(apps_accessing_camera_, app_name);
+    auto it = std::ranges::find(apps_accessing_camera_, app_name);
     if (it != apps_accessing_camera_.end()) {
       apps_accessing_camera_.erase(it);
     }
@@ -116,6 +116,10 @@ class MockFrontendAPI : public PrivacyHubDelegate {
  public:
   MOCK_METHOD(void, MicrophoneHardwareToggleChanged, (bool), (override));
   MOCK_METHOD(void, SetForceDisableCameraSwitch, (bool), (override));
+  MOCK_METHOD(void,
+              SystemGeolocationAccessLevelChanged,
+              (GeolocationAccessLevel),
+              (override));
 };
 
 }  // namespace
@@ -829,7 +833,8 @@ TEST_P(PrivacyHubCameraControllerTest,
 TEST_P(PrivacyHubCameraControllerTest,
        ForceDisableAccessShouldDisableUiSwitch) {
   ::testing::StrictMock<MockFrontendAPI> mock_frontend;
-  Shell::Get()->privacy_hub_controller()->SetFrontend(&mock_frontend);
+  Shell::Get()->privacy_hub_controller()->camera_controller()->SetFrontend(
+      &mock_frontend);
   auto& controller = *CameraPrivacySwitchController::Get();
 
   EXPECT_CALL(mock_frontend, SetForceDisableCameraSwitch(true));
@@ -842,7 +847,8 @@ TEST_P(PrivacyHubCameraControllerTest,
 TEST_P(PrivacyHubCameraControllerTest,
        StoppingForceDisableAccessShouldReenableUiSwitch) {
   ::testing::StrictMock<MockFrontendAPI> mock_frontend;
-  Shell::Get()->privacy_hub_controller()->SetFrontend(&mock_frontend);
+  Shell::Get()->privacy_hub_controller()->camera_controller()->SetFrontend(
+      &mock_frontend);
   auto& controller = *CameraPrivacySwitchController::Get();
 
   EXPECT_CALL(mock_frontend, SetForceDisableCameraSwitch(false));

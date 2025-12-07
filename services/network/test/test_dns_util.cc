@@ -22,14 +22,12 @@ namespace network {
 DnsLookupResult::DnsLookupResult(
     int32_t error,
     net::ResolveErrorInfo resolve_error_info,
-    std::optional<net::AddressList> resolved_addresses,
-    std::optional<net::HostResolverEndpointResults>
-        endpoint_results_with_metadata)
+    net::AddressList resolved_addresses,
+    net::HostResolverEndpointResults alternative_endpoints)
     : error(error),
       resolve_error_info(std::move(resolve_error_info)),
       resolved_addresses(std::move(resolved_addresses)),
-      endpoint_results_with_metadata(
-          std::move(endpoint_results_with_metadata)) {}
+      alternative_endpoints(std::move(alternative_endpoints)) {}
 
 DnsLookupResult::DnsLookupResult(const DnsLookupResult& dns_lookup_result) =
     default;
@@ -41,8 +39,8 @@ DnsLookupResult BlockingDnsLookup(
     network::mojom::ResolveHostParametersPtr params,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   base::test::TestFuture<int32_t, const net::ResolveErrorInfo&,
-                         const std::optional<net::AddressList>&,
-                         const std::optional<net::HostResolverEndpointResults>&>
+                         const net::AddressList&,
+                         const net::HostResolverEndpointResults&>
       future;
   auto resolver = SimpleHostResolver::Create(network_context);
   // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
@@ -50,11 +48,11 @@ DnsLookupResult BlockingDnsLookup(
   resolver->ResolveHost(
       mojom::HostResolverHost::NewHostPortPair(host_port_pair),
       network_anonymization_key, std::move(params), future.GetCallback());
-  auto [error, resolve_error_info, resolved_addresses,
-        endpoint_results_with_metadata] = future.Take();
+  auto [error, resolve_error_info, resolved_addresses, alternative_endpoints] =
+      future.Take();
   return DnsLookupResult(error, std::move(resolve_error_info),
                          std::move(resolved_addresses),
-                         std::move(endpoint_results_with_metadata));
+                         std::move(alternative_endpoints));
 }
 
 }  // namespace network

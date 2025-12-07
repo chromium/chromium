@@ -18,15 +18,12 @@ import org.mockito.Mockito;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwKeyboardShortcuts;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 
 /** {@link org.chromium.android_webview.AwKeyboardShortcuts} tests. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@Features.EnableFeatures({AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS})
 @Batch(Batch.PER_CLASS)
 public class AwKeyboardShortcutsTest extends AwParameterizedTest {
 

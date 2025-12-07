@@ -142,7 +142,7 @@ class ObserverStub : public RequestCoordinator::Observer {
 
 class ActiveTabInfoStub : public RequestCoordinator::ActiveTabInfo {
  public:
-  ~ActiveTabInfoStub() override {}
+  ~ActiveTabInfoStub() override = default;
   bool DoesActiveTabMatch(const GURL&) override {
     return does_active_tab_match_;
   }
@@ -284,10 +284,11 @@ class RequestCoordinatorTest : public testing::Test {
 
   void CallRequestNotPicked(bool non_user_requested_tasks_remaining,
                             bool disabled_tasks_remaining) {
-    if (disabled_tasks_remaining)
+    if (disabled_tasks_remaining) {
       coordinator()->disabled_requests_.insert(kRequestId1);
-    else
+    } else {
       coordinator()->disabled_requests_.clear();
+    }
 
     coordinator()->RequestNotPicked(non_user_requested_tasks_remaining, false,
                                     base::Time());
@@ -430,7 +431,7 @@ RequestCoordinatorTest::RequestCoordinatorTest()
                          kBatteryPercentageHigh,
                          net::NetworkChangeNotifier::CONNECTION_3G) {}
 
-RequestCoordinatorTest::~RequestCoordinatorTest() {}
+RequestCoordinatorTest::~RequestCoordinatorTest() = default;
 
 void RequestCoordinatorTest::SetUp() {
   coordinator_taco_ = std::make_unique<RequestCoordinatorStubTaco>();

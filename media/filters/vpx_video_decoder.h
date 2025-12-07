@@ -108,6 +108,9 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
   // with no alpha. |frame_pool_| is used for all other cases.
   scoped_refptr<FrameBufferPool> memory_pool_;
   VideoFramePool frame_pool_;
+
+  // More specific error code to surface after an error occurs during decoding.
+  DecoderStatus::Codes error_status_ = DecoderStatus::Codes::kFailed;
 };
 
 // Helper class for creating a VpxVideoDecoder which will offload > 720p VP9

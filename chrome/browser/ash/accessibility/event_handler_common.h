@@ -6,12 +6,17 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_EVENT_HANDLER_COMMON_H_
 
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/offscreen_document_host.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
 
 // Gets the extension host for the corresponding extension ID.
 extensions::ExtensionHost* GetAccessibilityExtensionHost(
+    const std::string& extension_id);
+
+// Gets the offscreen document host for the corresponding extension ID.
+extensions::OffscreenDocumentHost* GetAccessibilityOffscreenDocumentHost(
     const std::string& extension_id);
 
 // Forwards the key event to the extension background page for the

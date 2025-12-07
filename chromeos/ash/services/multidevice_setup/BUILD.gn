@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("multidevice_setup") {
   sources = [
@@ -77,7 +75,7 @@ static_library("multidevice_setup") {
     "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//components/pref_registry",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/session_manager/core",
     "//url",
   ]
@@ -87,12 +85,11 @@ static_library("multidevice_setup") {
   visibility = [
     ":*",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/multidevice_debug",
     "//chrome/browser/ash/multidevice_setup",
-    "//chrome/browser/chromeos",
+    "//chrome/browser/prefs:impl",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/shell_delegate",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
@@ -173,8 +170,13 @@ source_set("unit_tests") {
     "//chromeos/ash/services/multidevice_setup/public/mojom",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -7,9 +7,9 @@
 """Copies files to a directory."""
 
 
+import argparse
 import filecmp
 import itertools
-import optparse
 import os
 import shutil
 import sys
@@ -72,7 +72,7 @@ def DoRenaming(options, deps):
           action_helpers.parse_gn_list(f)
           for f in options.renaming_destinations))
 
-  if (len(src_files) != len(dest_files)):
+  if len(src_files) != len(dest_files):
     print('Renaming source and destination files not match.')
     sys.exit(-1)
 
@@ -86,27 +86,28 @@ def DoRenaming(options, deps):
 def main(args):
   args = build_utils.ExpandFileArgs(args)
 
-  parser = optparse.OptionParser()
+  parser = argparse.ArgumentParser()
   action_helpers.add_depfile_arg(parser)
 
-  parser.add_option('--dest', help='Directory to copy files to.')
-  parser.add_option('--files', action='append',
-                    help='List of files to copy.')
-  parser.add_option('--clear', action='store_true',
-                    help='If set, the destination directory will be deleted '
-                    'before copying files to it. This is highly recommended to '
-                    'ensure that no stale files are left in the directory.')
-  parser.add_option('--stamp', help='Path to touch on success.')
-  parser.add_option('--renaming-sources',
-                    action='append',
-                    help='List of files need to be renamed while being '
-                         'copied to dest directory')
-  parser.add_option('--renaming-destinations',
-                    action='append',
-                    help='List of destination file name without path, the '
-                         'number of elements must match rename-sources.')
+  parser.add_argument('--dest', help='Directory to copy files to.')
+  parser.add_argument('--files', action='append', help='List of files to copy.')
+  parser.add_argument(
+      '--clear',
+      action='store_true',
+      help='If set, the destination directory will be deleted '
+      'before copying files to it. This is highly recommended to '
+      'ensure that no stale files are left in the directory.')
+  parser.add_argument('--stamp', help='Path to touch on success.')
+  parser.add_argument('--renaming-sources',
+                      action='append',
+                      help='List of files need to be renamed while being '
+                      'copied to dest directory')
+  parser.add_argument('--renaming-destinations',
+                      action='append',
+                      help='List of destination file name without path, the '
+                      'number of elements must match rename-sources.')
 
-  options, _ = parser.parse_args(args)
+  options = parser.parse_args(args)
 
   if options.clear:
     build_utils.DeleteDirectory(options.dest)

@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/performance_manager/scenario_api/performance_scenarios.h",
+  "+components/performance_manager/scenario_api/performance_scenario_test_support.h",
+  "+sql"
+]

@@ -10,10 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
-namespace IPC {
-class Message;
-}
-
 namespace content {
 class BrowserChildProcessHostDelegate;
 class BrowserChildProcessHostImpl;
@@ -35,7 +31,6 @@ class CONTENT_EXPORT BrowserChildProcessHostIterator {
   bool operator++();
   bool Done();
   const ChildProcessData& GetData();
-  bool Send(IPC::Message* message);
   BrowserChildProcessHostDelegate* GetDelegate();
   ChildProcessHost* GetHost();
 

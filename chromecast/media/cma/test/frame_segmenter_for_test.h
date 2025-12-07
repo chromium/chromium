@@ -10,7 +10,7 @@
 
 #include <list>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 

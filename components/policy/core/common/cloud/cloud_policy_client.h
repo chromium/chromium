@@ -15,15 +15,20 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -33,8 +38,8 @@
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-namespace content {
-class BrowserContext;
+namespace chrome::cros::reporting::proto {
+class UploadEventsRequest;
 }
 
 namespace network {
@@ -48,6 +53,7 @@ class DMServerJobConfiguration;
 class RegistrationJobConfiguration;
 class SigningService;
 struct DMServerJobResult;
+enum class RemoteCommandsFetchReason;
 
 inline constexpr char kPolicyFetchingTimeHistogramName[] =
     "Enterprise.CloudManagement.PolicyFetchingTime";
@@ -66,7 +72,7 @@ class POLICY_EXPORT CloudPolicyClient {
  public:
   // Maps a (policy type, settings entity ID) pair to its corresponding
   // PolicyFetchResponse.
-  using ResponseMap = std::map<std::pair<std::string, std::string>,
+  using ResponseMap = base::flat_map<CloudPolicyClientTypeParams,
                                enterprise_management::PolicyFetchResponse>;
 
   // A callback which receives boolean status of an operation. If the
@@ -95,6 +101,9 @@ class POLICY_EXPORT CloudPolicyClient {
       const enterprise_management::ClientCertificateProvisioningResponse&
           response)>;
 
+  using PromotionEligibilityCallback = base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>;
+
   using MacAddress = std::array<uint8_t, 6>;
 
   // Observer interface for state and policy changes.
@@ -104,14 +113,14 @@ class POLICY_EXPORT CloudPolicyClient {
 
     // Called when a policy fetch completes successfully. If a policy fetch
     // triggers an error, OnClientError() will fire.
-    virtual void OnPolicyFetched(CloudPolicyClient* client) = 0;
+    virtual void OnPolicyFetched(CloudPolicyClient* client) {}
 
     // Called upon registration state changes. This callback is invoked for
     // successful completion of registration and unregistration requests.
-    virtual void OnRegistrationStateChanged(CloudPolicyClient* client) = 0;
+    virtual void OnRegistrationStateChanged(CloudPolicyClient* client) {}
 
     // Indicates there's been an error in a previously-issued request.
-    virtual void OnClientError(CloudPolicyClient* client) = 0;
+    virtual void OnClientError(CloudPolicyClient* client) {}
 
     // Called when the Service Account Identity is set on a policy data object
     // after a policy fetch. |service_account_email()| will return the new
@@ -120,25 +129,35 @@ class POLICY_EXPORT CloudPolicyClient {
                                      const std::string& account_email) {}
   };
 
-  using NotRegistered = absl::monostate;
+  using NotRegistered = std::monostate;
 
   class POLICY_EXPORT Result {
    public:
     explicit Result(DeviceManagementStatus);
+    explicit Result(DeviceManagementStatus, int);
+    explicit Result(DeviceManagementStatus, int, base::Value::Dict);
     explicit Result(NotRegistered);
+
+    Result(const Result& other);
+    Result& operator=(const Result& other);
 
     bool IsSuccess() const;
     bool IsClientNotRegisteredError() const;
     bool IsDMServerError() const;
 
     DeviceManagementStatus GetDMServerError() const;
-
+    int GetNetError() const;
     bool operator==(const Result& other) const {
-      return this->result_ == other.result_;
+      return this->result_ == other.result_ && net_error_ == other.net_error_ &&
+             response_ == other.response_;
     }
 
+    const base::Value::Dict& GetResponse() const;
+
    private:
-    absl::variant<NotRegistered, DeviceManagementStatus> result_;
+    std::variant<NotRegistered, DeviceManagementStatus> result_;
+    int net_error_ = 0;
+    base::Value::Dict response_;
   };
 
   // A callback which receives the operations result.
@@ -198,11 +217,14 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // If non-empty, |machine_id|, |machine_model|, |brand_code|,
   // |attested_device_id|, |ethernet_mac_address|, |dock_mac_address| and
-  // |manufacture_date| are passed to the server verbatim. As these reveal
-  // machine identity, they must only be used where this is appropriate (i.e.
-  // device policy, but not user policy). |service| is weak pointer and it's
-  // the caller's responsibility to keep it valid for the lifetime of
-  // CloudPolicyClient. |device_dm_token_callback| is used to retrieve device
+  // |manufacture_date| are passed to the server verbatim.
+  // Additionally, Flex devices will send |flex_sys_vendor|,
+  // |flex_product_name|, and |flex_product_version|.
+  // As these reveal machine identity, they must only be used where
+  // this is appropriate (i.e. device policy, but not user policy).
+  // |service| is weak pointer and it's the caller's responsibility to
+  // keep it valid for the lifetime of CloudPolicyClient.
+  // |device_dm_token_callback| is used to retrieve device
   // DMToken for affiliated users. Could be null if it's not possible to use
   // device DMToken for user policy fetches.
   CloudPolicyClient(
@@ -213,6 +235,9 @@ class POLICY_EXPORT CloudPolicyClient {
       std::optional<MacAddress> ethernet_mac_address,
       std::optional<MacAddress> dock_mac_address,
       std::string_view manufacture_date,
+      std::string_view flex_sys_vendor,
+      std::string_view flex_product_name,
+      std::string_view flex_product_version,
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);
@@ -290,6 +315,16 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& client_id,
       DMAuth enrollment_token_auth);
 
+  // Attempts to enroll a policy agent, (i.e. Omaha, Keystone, or the Chrome
+  // Enterprise Companion App) with the device management service using an
+  // enrollment token. Results in a registration change or error notification.
+  // To emphasize, this method is used to register browser (e.g. for
+  // machine-level policies).
+  virtual void RegisterPolicyAgentWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate);
+
   // Attempts to register the profile with the device management service using a
   // OIDC response from a third party IdP's authentication. Results in a
   // registration change or error notification.
@@ -297,7 +332,10 @@ class POLICY_EXPORT CloudPolicyClient {
       const RegistrationParameters& parameters,
       const std::string& oauth_token,
       const std::string& oidc_id_token,
-      const std::string& client_id);
+      const std::string& client_id,
+      const base::TimeDelta& timeout_duration,
+      bool is_token_encrypted,
+      ResultCallback callback);
 
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version
@@ -331,6 +369,15 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadPolicyValidationReport(
       CloudPolicyValidatorBase::Status status,
       const std::vector<ValueValidationIssue>& value_validation_issues,
+      ValidationAction action,
+      const std::string& policy_type,
+      const std::string& policy_token,
+      ResultCallback callback);
+
+  virtual void UploadPolicyValidationReport(
+      CloudPolicyValidatorBase::Status status,
+      const std::vector<ValueValidationIssue>& value_validation_issues,
+      ValidationAction action,
       const std::string& policy_type,
       const std::string& policy_token);
 
@@ -396,20 +443,28 @@ class POLICY_EXPORT CloudPolicyClient {
       ResultCallback callback);
 
   // Uploads Chrome profile report to the server. The user's DM token must be
-  // set. |chrome_profile_report| will be included in the upload request. The
-  // |callback| will be called when the operation completes.
+  // set. If |use_cookies| is true, the applicable user's cookies will be
+  // forwarded along with the request. |chrome_profile_report| will be included
+  // in the upload request. The |callback| will be called when the operation
+  // completes.
   virtual void UploadChromeProfileReport(
+      bool use_cookies,
       std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
           chrome_profile_report,
       ResultCallback callback);
 
   // Uploads a report containing enterprise connectors real-time security
-  // events for |context|. As above, the client must be in a registered state.
+  // events to the server. As above, the client must be in a registered state.
   // If |include_device_info| is true, information specific to the device such
   // as the device name, user, id and OS will be included in the report. The
   // |callback| will be called when the operation completes.
-  virtual void UploadSecurityEventReport(content::BrowserContext* context,
-                                         bool include_device_info,
+  virtual void UploadSecurityEvent(
+      bool include_device_info,
+      ::chrome::cros::reporting::proto::UploadEventsRequest request,
+      ResultCallback callback);
+
+  // DEPRECATED: Use |UploadSecurityEvent| instead.
+  virtual void UploadSecurityEventReport(bool include_device_info,
                                          base::Value::Dict report,
                                          ResultCallback callback);
 
@@ -440,6 +495,7 @@ class POLICY_EXPORT CloudPolicyClient {
           command_results,
       enterprise_management::PolicyFetchRequest::SignatureType signature_type,
       const std::string& request_type,
+      RemoteCommandsFetchReason reason,
       RemoteCommandCallback callback);
 
   // Sends a device attribute update permission request to the server, uses
@@ -480,6 +536,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // policy client and notify observers.
   void UpdateServiceAccount(const std::string& account_email);
 
+  virtual void DeterminePromotionEligibility(
+      PromotionEligibilityCallback callback);
+
   // Adds an observer to be called back upon policy and state changes.
   void AddObserver(Observer* observer);
 
@@ -514,6 +573,18 @@ class POLICY_EXPORT CloudPolicyClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return manufacture_date_;
   }
+  const std::string& flex_sys_vendor() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return flex_sys_vendor_;
+  }
+  const std::string& flex_product_name() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return flex_product_name_;
+  }
+  const std::string& flex_product_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return flex_product_version_;
+  }
   const std::string& oidc_user_display_name() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return oidc_user_display_name_;
@@ -531,6 +602,10 @@ class POLICY_EXPORT CloudPolicyClient {
   const std::vector<std::string>& user_affiliation_ids() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return user_affiliation_ids_;
+  }
+  std::optional<std::string>& profile_id() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return profile_id_;
   }
 
   void set_last_policy_timestamp(const base::Time& timestamp) {
@@ -560,10 +635,14 @@ class POLICY_EXPORT CloudPolicyClient {
   void AddPolicyTypeToFetch(const std::string& policy_type,
                             const std::string& settings_entity_id);
 
+  void AddPolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
+
   // FetchPolicy() calls won't request the given policy type and optional
   // |settings_entity_id| anymore.
   void RemovePolicyTypeToFetch(const std::string& policy_type,
                                const std::string& settings_entity_id);
+
+  void RemovePolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
 
   // Configures a set of device state keys to transfer to the server in the next
   // policy fetch. If the fetch is successful, the keys will be cleared so they
@@ -649,8 +728,10 @@ class POLICY_EXPORT CloudPolicyClient {
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
  protected:
-  // A set of (policy type, settings entity ID) pairs to fetch.
-  typedef std::set<std::pair<std::string, std::string>> PolicyTypeSet;
+  // A map of (policy type, settings entity ID) pairs to fetch to the set of
+  // settings entity IDs that should be fetched for the given policy type and
+  // settings entity ID.
+  typedef base::flat_set<CloudPolicyClientTypeParams> CloudPolicyClientTypeParamsSet;
 
   // Upload a certificate to the server.  Like FetchPolicy, this method
   // requires that the client is in a registered state.  |certificate_data| must
@@ -721,6 +802,9 @@ class POLICY_EXPORT CloudPolicyClient {
       ClientCertProvisioningRequestCallback callback,
       DMServerJobResult result);
 
+  void OnPromotionEligibilityDetermined(PromotionEligibilityCallback callback,
+                                        DMServerJobResult result);
+
   // Callback for `UploadFmRegistrationToken` request.
   void OnUploadFmRegistrationTokenResponse(ResultCallback callback,
                                            DMServerJobResult result);
@@ -745,13 +829,16 @@ class POLICY_EXPORT CloudPolicyClient {
   const std::string ethernet_mac_address_;
   const std::string dock_mac_address_;
   const std::string manufacture_date_;
+  const std::string flex_sys_vendor_;
+  const std::string flex_product_name_;
+  const std::string flex_product_version_;
 
   // Specific fields for oidc registration responses.
   std::string oidc_user_display_name_;
   std::string oidc_user_email_;
   bool is_dasherless_ = false;
 
-  PolicyTypeSet types_to_fetch_;
+  CloudPolicyClientTypeParamsSet types_to_fetch_;
   std::vector<std::string> state_keys_to_upload_;
 
   // OAuth token that if set is used as an additional form of authentication
@@ -823,6 +910,13 @@ class POLICY_EXPORT CloudPolicyClient {
   // enterprise connectors are added to the request uploading the report.
   // |callback| is invoked once the report is uploaded.
   DeviceManagementService::Job* CreateNewRealtimeReportingJob(
+      ::chrome::cros::reporting::proto::UploadEventsRequest request,
+      const std::string& server_url,
+      bool include_device_info,
+      ResultCallback callback);
+
+  // DEPRECATED: Use CreateNewRealtimeReportingJob instead.
+  DeviceManagementService::Job* CreateNewRealtimeReportingJobDeprecated(
       base::Value::Dict report,
       const std::string& server_url,
       bool include_device_info,
@@ -872,6 +966,15 @@ class POLICY_EXPORT CloudPolicyClient {
 
   enterprise_management::PolicyFetchRequest::SignatureType
   GetPolicyFetchRequestSignatureType();
+
+  // Fills a request and creates a job for browser or policy agent enrollment,
+  // which differ only by request type.
+  virtual void RegisterBrowserOrPolicyAgentWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
+      bool is_mandatory,
+      DeviceManagementService::JobConfiguration::JobType type);
 
 #if BUILDFLAG(IS_WIN)
   // Callback to get browser device identifier.

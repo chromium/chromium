@@ -5,7 +5,6 @@
 #include "chrome/browser/task_manager/providers/per_profile_worker_task_tracker.h"
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/task_manager/providers/worker_task.h"
 #include "chrome/browser/task_manager/providers/worker_task_provider.h"
 #include "content/public/browser/render_process_host.h"
@@ -148,9 +147,9 @@ void PerProfileWorkerTaskTracker::CreateWorkerTask(
     base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks) {
   DCHECK(worker_process_host);
   auto insertion_result = out_worker_tasks->emplace(
-      worker_id,
-      std::make_unique<WorkerTask>(worker_process_host->GetProcess().Handle(),
-                                   task_type, worker_process_host->GetID()));
+      worker_id, std::make_unique<WorkerTask>(
+                     worker_process_host->GetProcess().Handle(), task_type,
+                     worker_process_host->GetDeprecatedID()));
   DCHECK(insertion_result.second);
   worker_task_provider_->OnWorkerTaskAdded(
       insertion_result.first->second.get());
@@ -161,7 +160,7 @@ void PerProfileWorkerTaskTracker::DeleteWorkerTask(
     const WorkerId& worker_id,
     base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks) {
   auto it = out_worker_tasks->find(worker_id);
-  CHECK(it != out_worker_tasks->end(), base::NotFatalUntil::M130);
+  CHECK(it != out_worker_tasks->end());
   worker_task_provider_->OnWorkerTaskRemoved(it->second.get());
   out_worker_tasks->erase(it);
 }
@@ -172,7 +171,7 @@ void PerProfileWorkerTaskTracker::SetWorkerTaskScriptUrl(
     const GURL& script_url,
     base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks) {
   auto it = out_worker_tasks->find(worker_id);
-  CHECK(it != out_worker_tasks->end(), base::NotFatalUntil::M130);
+  CHECK(it != out_worker_tasks->end());
   it->second->SetScriptUrl(script_url);
 }
 

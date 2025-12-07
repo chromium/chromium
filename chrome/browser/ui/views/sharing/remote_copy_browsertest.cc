@@ -141,10 +141,10 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   }
 
   SkBitmap ReadClipboardImage() {
-    SkBitmap bitmap;
     std::vector<uint8_t> png_data =
         ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
-    gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+    CHECK(!bitmap.isNull());
     return bitmap;
   }
 
@@ -173,9 +173,10 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   size_t expected_size = 1u;
   ASSERT_EQ(expected_size, types.size());
-  ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
-  if (expected_size == 2u)
-    ASSERT_EQ(ui::kMimeTypeTextUtf8, base::UTF16ToASCII(types[1]));
+  ASSERT_EQ(ui::kMimeTypePlainText, base::UTF16ToASCII(types[0]));
+  if (expected_size == 2u) {
+    ASSERT_EQ(ui::kMimeTypeUtf8PlainText, base::UTF16ToASCII(types[1]));
+  }
   ASSERT_EQ(kText, ReadClipboardText());
   message_center::Notification notification = GetNotification();
   ASSERT_EQ(l10n_util::GetStringFUTF16(
@@ -195,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, ImageUrl) {
   // The image is in the clipboard and a notification is shown.
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   ASSERT_EQ(1u, types.size());
-  ASSERT_EQ(ui::kMimeTypePNG, base::UTF16ToASCII(types[0]));
+  ASSERT_EQ(ui::kMimeTypePng, base::UTF16ToASCII(types[0]));
   SkBitmap bitmap = ReadClipboardImage();
   ASSERT_FALSE(bitmap.drawsNothing());
   ASSERT_EQ(2560, bitmap.width());
@@ -219,9 +220,10 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   size_t expected_size = 1u;
   ASSERT_EQ(expected_size, types.size());
-  ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
-  if (expected_size == 2u)
-    ASSERT_EQ(ui::kMimeTypeTextUtf8, base::UTF16ToASCII(types[1]));
+  ASSERT_EQ(ui::kMimeTypePlainText, base::UTF16ToASCII(types[0]));
+  if (expected_size == 2u) {
+    ASSERT_EQ(ui::kMimeTypeUtf8PlainText, base::UTF16ToASCII(types[1]));
+  }
   ASSERT_EQ(kText, ReadClipboardText());
 
   // Send a message with an image url.
@@ -230,6 +232,6 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   // The image is in the clipboard and the text has been cleared.
   types = GetAvailableClipboardTypes();
   ASSERT_EQ(1u, types.size());
-  ASSERT_EQ(ui::kMimeTypePNG, base::UTF16ToASCII(types[0]));
+  ASSERT_EQ(ui::kMimeTypePng, base::UTF16ToASCII(types[0]));
   ASSERT_EQ(std::string(), ReadClipboardText());
 }

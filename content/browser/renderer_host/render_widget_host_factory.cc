@@ -30,8 +30,7 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostFactory::Create(
   }
   return RenderWidgetHostImpl::Create(
       {}, frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
-      routing_id, hidden, renderer_initiated_creation,
-      std::make_unique<FrameTokenMessageQueue>());
+      routing_id, hidden, renderer_initiated_creation);
 }
 
 // static
@@ -47,9 +46,9 @@ RenderWidgetHostImpl* RenderWidgetHostFactory::CreateSelfOwned(
         hidden);
   }
 
-  return RenderWidgetHostImpl::CreateSelfOwned(
-      {}, frame_tree, delegate, std::move(site_instance_group), routing_id,
-      hidden, std::make_unique<FrameTokenMessageQueue>());
+  return RenderWidgetHostImpl::CreateSelfOwned({}, frame_tree, delegate,
+                                               std::move(site_instance_group),
+                                               routing_id, hidden);
 }
 
 std::unique_ptr<RenderWidgetHostImpl>
@@ -63,8 +62,7 @@ RenderWidgetHostFactory::CreateRenderWidgetHost(
     bool renderer_initiated_creation) {
   return RenderWidgetHostImpl::Create(
       {}, frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
-      routing_id, hidden, renderer_initiated_creation,
-      std::make_unique<FrameTokenMessageQueue>());
+      routing_id, hidden, renderer_initiated_creation);
 }
 
 RenderWidgetHostImpl* RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
@@ -73,9 +71,9 @@ RenderWidgetHostImpl* RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden) {
-  return RenderWidgetHostImpl::CreateSelfOwned(
-      {}, frame_tree, delegate, std::move(site_instance_group), routing_id,
-      hidden, std::make_unique<FrameTokenMessageQueue>());
+  return RenderWidgetHostImpl::CreateSelfOwned({}, frame_tree, delegate,
+                                               std::move(site_instance_group),
+                                               routing_id, hidden);
 }
 
 // static

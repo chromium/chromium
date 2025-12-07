@@ -12,16 +12,15 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 using ::testing::_;
 using ::testing::An;
 using ::testing::ByRef;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace v8_compile_hints {
@@ -47,9 +46,7 @@ void V8CompileHintsTabHelperTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   CreateSessionServiceTabHelper(web_contents());
   scoped_feature_list_.InitWithFeatures(
-      {blink::features::kConsumeCompileHints,
-       optimization_guide::features::kOptimizationHints},
-      {});
+      {optimization_guide::features::kOptimizationHints}, {});
 
   mock_optimization_guide_keyed_service_ =
       static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
@@ -97,10 +94,8 @@ optimization_guide::OptimizationMetadata CreateMetadata(
   model.set_sample_count(1000);
   model.set_clear_zeros(clear_zeros);
   model.set_clear_ones(clear_ones);
-  optimization_guide::proto::Any any;
-  any.set_type_url(model.GetTypeName());
-  model.SerializeToString(any.mutable_value());
-  optimization_metadata.set_any_metadata(any);
+  optimization_metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(model));
   return optimization_metadata;
 }
 

@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,8 +59,9 @@ class LazySize {
   const gfx::Size* operator->() const { return get(); }
   const gfx::Size& operator*() const { return *get(); }
   const gfx::Size* get() const {
-    if (!size_)
+    if (!size_) {
       size_ = (view_->*size_func_)();
+    }
     return &size_.value();
   }
   LazyDimension width() const {
@@ -164,31 +166,11 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
     width = InterpolateSize(minimum_width_rule, maximum_width_rule,
                             minimum_size->width(), preferred.width(),
                             maximum_size.width(), size_bounds.width().value());
-  }
 
-  int preferred_height = preferred.height();
-  if (adjust_height_for_width) {
-    // The |adjust_height_for_width| flag is used in vertical layouts where we
-    // want views to be able to adapt to the horizontal available space by
-    // growing vertically. We therefore allow the horizontal size to shrink even
-    // if there's otherwise no flex allowed.
-    if (size_bounds.width() > 0)
+    // TODO(crbug.com/363806071): Delete this when we delete
+    // `adjust_height_for_width`
+    if (adjust_height_for_width && size_bounds.width() > 0) {
       width = size_bounds.width().min_of(width);
-
-    if (width < preferred.width()) {
-      // Allow views that need to grow vertically when they're compressed
-      // horizontally to do so.
-      //
-      // If we just went with GetHeightForWidth() we would have situations where
-      // an empty text control wanted no (or very little) height which could
-      // cause a layout to shrink vertically; we will always try to allocate at
-      // least the view's reported preferred height.
-      //
-      // Note that this is an adjustment made for practical considerations, and
-      // may not be "correct" in some absolute sense. Let's revisit at some
-      // point.
-      preferred_height =
-          std::max(preferred_height, view->GetHeightForWidth(width));
     }
   }
 
@@ -196,11 +178,12 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
   if (!size_bounds.height().is_bounded()) {
     // Not having a maximum size is different from having a large available
     // size; a view can't grow infinitely, so we go with its preferred size.
-    height = preferred_height;
+    height = preferred.height();
   } else {
-    height = InterpolateSize(
-        minimum_height_rule, maximum_height_rule, minimum_size->height(),
-        preferred_height, maximum_size.height(), size_bounds.height().value());
+    height =
+        InterpolateSize(minimum_height_rule, maximum_height_rule,
+                        minimum_size->height(), preferred.height(),
+                        maximum_size.height(), size_bounds.height().value());
   }
 
   return gfx::Size(width, height);
@@ -292,20 +275,6 @@ void Inset1D::Expand(int leading, int trailing) {
   trailing_ += trailing;
 }
 
-bool Inset1D::operator==(const Inset1D& other) const {
-  return std::tie(leading_, trailing_) ==
-         std::tie(other.leading_, other.trailing_);
-}
-
-bool Inset1D::operator!=(const Inset1D& other) const {
-  return !(*this == other);
-}
-
-bool Inset1D::operator<(const Inset1D& other) const {
-  return std::tie(leading_, trailing_) <
-         std::tie(other.leading_, other.trailing_);
-}
-
 std::string Inset1D::ToString() const {
   return base::StringPrintf("%d, %d", leading(), trailing());
 }
@@ -374,18 +343,6 @@ void Span::Align(const Span& container,
       NOTIMPLEMENTED();
       break;
   }
-}
-
-bool Span::operator==(const Span& other) const {
-  return std::tie(start_, length_) == std::tie(other.start_, other.length_);
-}
-
-bool Span::operator!=(const Span& other) const {
-  return !(*this == other);
-}
-
-bool Span::operator<(const Span& other) const {
-  return std::tie(start_, length_) < std::tie(other.start_, other.length_);
 }
 
 std::string Span::ToString() const {

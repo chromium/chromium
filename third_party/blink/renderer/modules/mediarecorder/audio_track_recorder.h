@@ -15,7 +15,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/decoder_buffer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -28,8 +30,6 @@ class AudioParameters;
 }  // namespace media
 
 namespace blink {
-
-class AudioTrackEncoder;
 class MediaStreamComponent;
 
 // AudioTrackRecorder is a MediaStreamAudioSink that encodes the audio buses
@@ -42,14 +42,6 @@ class MediaStreamComponent;
 class MODULES_EXPORT AudioTrackRecorder
     : public TrackRecorder<WebMediaStreamAudioSink> {
  public:
-  enum class CodecId {
-    // Do not change the order of codecs. Add new ones right before kLast.
-    kOpus,
-    kPcm,  // 32-bit little-endian float.
-    kAac,
-    kLast
-  };
-
   enum class BitrateMode { kConstant, kVariable };
 
   // Callback interface for AudioTrackRecorders. The methods here need to all be
@@ -59,25 +51,24 @@ class MODULES_EXPORT AudioTrackRecorder
     // Called to indicate there is encoded audio data available.
     virtual void OnEncodedAudio(
         const media::AudioParameters& params,
-        std::string encoded_data,
+        scoped_refptr<media::DecoderBuffer> encoded_data,
         std::optional<media::AudioEncoder::CodecDescription> codec_description,
         base::TimeTicks capture_time) = 0;
+
+    // Called when an error occurs during encoding. Once it is called, there
+    // is no more calling of `OnEncodedAudio()`.
+    virtual void OnAudioEncodingError(media::EncoderStatus error_status) = 0;
 
     // Called when a track's ready state changes.
     virtual void OnSourceReadyStateChanged() = 0;
   };
 
-  using OnEncodedAudioCB = base::RepeatingCallback<void(
-      const media::AudioParameters& params,
-      std::string encoded_data,
-      std::optional<media::AudioEncoder::CodecDescription> codec_description,
-      base::TimeTicks capture_time)>;
-
-  static CodecId GetPreferredCodecId(MediaTrackContainerType container_type);
+  static media::AudioCodec GetPreferredCodec(
+      MediaTrackContainerType container_type);
 
   AudioTrackRecorder(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-      CodecId codec,
+      media::AudioCodec codec,
       MediaStreamComponent* track,
       WeakCell<CallbackInterface>* callback_interface,
       uint32_t bits_per_second,
@@ -106,10 +97,10 @@ class MODULES_EXPORT AudioTrackRecorder
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
   // invalid.
-  static std::unique_ptr<AudioTrackEncoder> CreateAudioEncoder(
-      CodecId codec,
-      scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
-      OnEncodedAudioCB on_encoded_audio_cb,
+  SequenceBound<AudioTrackEncoder> CreateAudioEncoder(
+      media::AudioCodec codec,
+      AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
+      AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode);
 
@@ -125,7 +116,7 @@ class MODULES_EXPORT AudioTrackRecorder
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
   // Thin wrapper around the chosen encoder.
-  WTF::SequenceBound<std::unique_ptr<AudioTrackEncoder>> encoder_;
+  SequenceBound<AudioTrackEncoder> encoder_;
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;

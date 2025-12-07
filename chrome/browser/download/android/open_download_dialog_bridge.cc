@@ -26,7 +26,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/OpenDownloadDialogBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 OpenDownloadDialogBridge::OpenDownloadDialogBridge(
     OpenDownloadDialogBridgeDelegate* delegate)
@@ -53,3 +53,5 @@ void OpenDownloadDialogBridge::OnConfirmed(JNIEnv* env,
                                            jboolean accepted) {
   delegate_->OnConfirmed(guid, accepted);
 }
+
+DEFINE_JNI(OpenDownloadDialogBridge)

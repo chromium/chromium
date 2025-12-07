@@ -9,7 +9,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/layouts/layouts_jni_headers/SceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -18,8 +17,9 @@ namespace android {
 // static
 SceneLayer* SceneLayer::FromJavaObject(JNIEnv* env,
                                        const JavaRef<jobject>& jobj) {
-  if (jobj.is_null())
+  if (jobj.is_null()) {
     return nullptr;
+  }
   return reinterpret_cast<SceneLayer*>(Java_SceneLayer_getNativePtr(env, jobj));
 }
 
@@ -36,15 +36,15 @@ SceneLayer::SceneLayer(JNIEnv* env,
 SceneLayer::~SceneLayer() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = weak_java_scene_layer_.get(env);
-  if (jobj.is_null())
+  if (jobj.is_null()) {
     return;
+  }
 
   Java_SceneLayer_setNativePtr(
       env, jobj, reinterpret_cast<intptr_t>(static_cast<SceneLayer*>(nullptr)));
 }
 
-void SceneLayer::RemoveFromParent(JNIEnv* env,
-                                  const JavaParamRef<jobject>& jobj) {
+void SceneLayer::RemoveFromParent(JNIEnv* env) {
   layer()->RemoveFromParent();
 }
 
@@ -54,7 +54,7 @@ void SceneLayer::OnDetach() {
   layer()->RemoveFromParent();
 }
 
-void SceneLayer::Destroy(JNIEnv* env, const JavaParamRef<jobject>& jobj) {
+void SceneLayer::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -66,11 +66,12 @@ SkColor SceneLayer::GetBackgroundColor() {
   return SK_ColorWHITE;
 }
 
-static jlong JNI_SceneLayer_Init(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jobj) {
+static jlong JNI_SceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   SceneLayer* tree_provider = new SceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(tree_provider);
 }
 
 }  // namespace android
+
+DEFINE_JNI(SceneLayer)

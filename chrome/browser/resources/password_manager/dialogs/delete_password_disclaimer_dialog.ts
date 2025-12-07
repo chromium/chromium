@@ -48,8 +48,8 @@ export class DeletePasswordDisclaimerDialogElement extends
     };
   }
 
-  origin: string;
-  actionUrl: string;
+  declare origin: string;
+  declare actionUrl: string;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 

@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/types/always_false.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -22,10 +21,12 @@ namespace base {
 // do the best it can and put the result in the output buffer. The versions that
 // return strings ignore this error and just return the best conversion
 // possible.
-BASE_EXPORT bool WideToUTF8(const wchar_t* src, size_t src_len,
+BASE_EXPORT bool WideToUTF8(const wchar_t* src,
+                            size_t src_len,
                             std::string* output);
 [[nodiscard]] BASE_EXPORT std::string WideToUTF8(std::wstring_view wide);
-BASE_EXPORT bool UTF8ToWide(const char* src, size_t src_len,
+BASE_EXPORT bool UTF8ToWide(const char* src,
+                            size_t src_len,
                             std::wstring* output);
 [[nodiscard]] BASE_EXPORT std::wstring UTF8ToWide(std::string_view utf8);
 
@@ -71,19 +72,19 @@ BASE_EXPORT bool UTF16ToUTF8(const char16_t* src,
 // time.
 template <size_t N>
 [[noreturn]] std::u16string WideToUTF16(const wchar_t (&str)[N]) {
-  static_assert(AlwaysFalse<decltype(N)>,
+  static_assert(false,
                 "Error: Use u\"...\" to create a std::u16string literal.");
 }
 
 template <size_t N>
 [[noreturn]] std::u16string UTF8ToUTF16(const char (&str)[N]) {
-  static_assert(AlwaysFalse<decltype(N)>,
+  static_assert(false,
                 "Error: Use u\"...\" to create a std::u16string literal.");
 }
 
 template <size_t N>
 [[noreturn]] std::u16string ASCIIToUTF16(const char (&str)[N]) {
-  static_assert(AlwaysFalse<decltype(N)>,
+  static_assert(false,
                 "Error: Use u\"...\" to create a std::u16string literal.");
 }
 

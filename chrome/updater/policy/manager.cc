@@ -15,18 +15,6 @@
 
 namespace updater {
 
-bool UpdatesSuppressedTimes::operator==(
-    const UpdatesSuppressedTimes& other) const {
-  return start_hour_ == other.start_hour_ &&
-         start_minute_ == other.start_minute_ &&
-         duration_minute_ == other.duration_minute_;
-}
-
-bool UpdatesSuppressedTimes::operator!=(
-    const UpdatesSuppressedTimes& other) const {
-  return !(*this == other);
-}
-
 bool UpdatesSuppressedTimes::valid() const {
   return start_hour_ != kPolicyNotSet && start_minute_ != kPolicyNotSet &&
          duration_minute_ != kPolicyNotSet;
@@ -74,6 +62,10 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
   std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const override;
   std::optional<bool> IsRollbackToTargetVersionAllowed(
+      const std::string& app_id) const override;
+  std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const override;
+  std::optional<int> GetMinorVersionRolloutPolicy(
       const std::string& app_id) const override;
   std::optional<std::string> GetProxyMode() const override;
   std::optional<std::string> GetProxyPacUrl() const override;
@@ -148,6 +140,16 @@ std::optional<bool>
 DefaultValuesPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
   return false;
+}
+
+std::optional<int> DefaultValuesPolicyManager::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  return std::nullopt;
+}
+
+std::optional<int> DefaultValuesPolicyManager::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  return std::nullopt;
 }
 
 std::optional<std::string> DefaultValuesPolicyManager::GetProxyMode() const {

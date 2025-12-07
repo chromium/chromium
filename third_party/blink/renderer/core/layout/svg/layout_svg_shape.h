@@ -115,8 +115,14 @@ class LayoutSVGShape : public LayoutSVGModelObject {
     return rare_data_->non_scaling_stroke_transform_;
   }
 
+  enum class NonScalingStrokeTransformMode {
+    kClearTranslation,
+    kPreserveTranslation
+  };
+
   AffineTransform ComputeRootTransform() const;
-  AffineTransform ComputeNonScalingStrokeTransform() const;
+  AffineTransform ComputeNonScalingStrokeTransform(
+      NonScalingStrokeTransformMode mode) const;
   AffineTransform LocalSVGTransform() const final {
     NOT_DESTROYED();
     return local_transform_;
@@ -143,7 +149,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
  protected:
   explicit LayoutSVGShape(SVGGeometryElement*);
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void WillBeDestroyed() override;
 
   RasterEffectOutset VisualRectOutsetForRasterEffects() const override;
@@ -161,6 +169,11 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   void SetGeometryType(GeometryType geometry_type) {
     NOT_DESTROYED();
     geometry_type_ = geometry_type;
+  }
+
+  void SetGeometryDependsOnViewport(bool depends_on_viewport) {
+    NOT_DESTROYED();
+    geometry_depends_on_viewport_ = depends_on_viewport;
   }
 
   // Update (cached) shape data and the (object) bounding box.
@@ -234,6 +247,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   std::unique_ptr<Path> stroke_path_cache_;
 
   GeometryType geometry_type_;
+  bool geometry_depends_on_viewport_ : 1 = false;
   bool needs_boundaries_update_ : 1;
   bool needs_shape_update_ : 1;
   bool needs_transform_update_ : 1;

@@ -66,10 +66,7 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
       case AnnotationType::kDeprecatedTextEmbedding:
       case AnnotationType::kDeprecatedPageEntities:
       case AnnotationType::kUnknown:
-        NOTREACHED_IN_MIGRATION();
-        PostNewResult(
-            BatchAnnotationResult::CreateEmptyAnnotationsResult(input), i);
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -77,8 +74,7 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
 void PageContentAnnotationJob::OnComplete() {
   DCHECK(inputs_.empty());
   if (!on_complete_callback_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::move(on_complete_callback_).Run(results_);

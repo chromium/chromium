@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,8 +42,12 @@ const char kPathParameter[] = "path";
 const char kScaleFactorParameter[] = "scale";
 
 IconLoader::IconSize SizeStringToIconSize(std::string_view size_string) {
-  if (size_string == "small") return IconLoader::SMALL;
-  if (size_string == "large") return IconLoader::LARGE;
+  if (size_string == "small") {
+    return IconLoader::SMALL;
+  }
+  if (size_string == "large") {
+    return IconLoader::LARGE;
+  }
   // We default to NORMAL if we don't recognize the size_string. Including
   // size_string=="normal".
   return IconLoader::NORMAL;
@@ -71,8 +76,9 @@ void ParseQueryParams(const std::string& path,
 FileIconSource::IconRequestDetails::IconRequestDetails() = default;
 FileIconSource::IconRequestDetails::IconRequestDetails(
     IconRequestDetails&& other) = default;
-FileIconSource::IconRequestDetails& FileIconSource::IconRequestDetails::
-operator=(IconRequestDetails&& other) = default;
+FileIconSource::IconRequestDetails&
+FileIconSource::IconRequestDetails::operator=(IconRequestDetails&& other) =
+    default;
 FileIconSource::IconRequestDetails::~IconRequestDetails() = default;
 
 FileIconSource::FileIconSource() = default;
@@ -88,10 +94,14 @@ void FileIconSource::FetchFileIcon(
 
   if (icon) {
     scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
-    gfx::PNGCodec::EncodeBGRASkBitmap(
-        icon->ToImageSkia()->GetRepresentation(scale_factor).GetBitmap(), false,
-        &icon_data->as_vector());
 
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            icon->ToImageSkia()->GetRepresentation(scale_factor).GetBitmap(),
+            /*discard_transparency=*/false);
+    if (data) {
+      icon_data->as_vector() = std::move(data.value());
+    }
     std::move(callback).Run(icon_data.get());
   } else {
     // Attach the ChromeURLDataManager request ID to the history request.
@@ -136,14 +146,20 @@ bool FileIconSource::AllowCaching() {
 void FileIconSource::OnFileIconDataAvailable(IconRequestDetails details,
                                              gfx::Image icon) {
   if (!icon.IsEmpty()) {
-    scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
-    gfx::PNGCodec::EncodeBGRASkBitmap(
-        icon.ToImageSkia()->GetRepresentation(details.scale_factor).GetBitmap(),
-        false, &icon_data->as_vector());
-
-    std::move(details.callback).Run(icon_data.get());
-  } else {
-    // TODO(glen): send a dummy icon.
-    std::move(details.callback).Run(nullptr);
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            icon.ToImageSkia()
+                ->GetRepresentation(details.scale_factor)
+                .GetBitmap(),
+            /*discard_transparency=*/false);
+    if (data) {
+      std::move(details.callback)
+          .Run(base::MakeRefCounted<base::RefCountedBytes>(
+              std::move(data.value())));
+      return;
+    }
   }
+
+  // TODO(glen): send a dummy icon.
+  std::move(details.callback).Run(nullptr);
 }

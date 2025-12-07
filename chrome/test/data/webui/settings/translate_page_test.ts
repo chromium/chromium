@@ -53,14 +53,12 @@ suite('TranslatePage', function() {
       settingsLanguages.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
+      languageHelper = settingsLanguages;
 
       translatePage = document.createElement('settings-translate-page');
 
       translatePage.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, translatePage, 'prefs');
-
-      translatePage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, translatePage, 'language-helper');
 
       translatePage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, translatePage, 'languages');
@@ -68,8 +66,7 @@ suite('TranslatePage', function() {
       document.body.appendChild(translatePage);
       flush();
 
-      languageHelper = translatePage.languageHelper;
-      return languageHelper.whenReady();
+      return settingsLanguages.whenReady();
     });
   });
 
@@ -94,7 +91,7 @@ suite('TranslatePage', function() {
       assertEquals(translatePage.getPref(translateTarget).value, 'sw');
     });
 
-    test('test never translate display', function() {
+    test('never translate display', function() {
       // Disable a language not in fake_language_settings_private. The language
       // should not be shown in the never translate list.
       languageHelper.disableTranslateLanguage('eo');
@@ -129,7 +126,7 @@ suite('TranslatePage', function() {
           translatePage.getPref(neverTranslatePref).value);
     });
 
-    test('test always translate display', function() {
+    test('always translate display', function() {
       // Add a language not in fake_language_settings_private. The language
       // should not be shown in the always translate list.
       languageHelper.setLanguageAlwaysTranslateState('eo', true);
@@ -203,7 +200,7 @@ suite('TranslatePage', function() {
       assertTrue(deleteIcons[0]!.disabled);
     });
 
-    test('test translate.enable toggle', function() {
+    test('translate.enable toggle', function() {
       const settingsToggle =
           translatePage.shadowRoot!.querySelector<HTMLElement>(
               '#offerTranslateOtherLanguages');
@@ -269,7 +266,8 @@ suite('TranslatePage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            translatePage.shadowRoot!, {childList: true});
+            translatePage.shadowRoot!.querySelector('settings-section')!,
+            {childList: true});
 
         flush();
       });
@@ -339,7 +337,8 @@ suite('TranslatePage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            translatePage.shadowRoot!, {childList: true});
+            translatePage.shadowRoot!.querySelector('settings-section')!,
+            {childList: true});
 
         flush();
       });

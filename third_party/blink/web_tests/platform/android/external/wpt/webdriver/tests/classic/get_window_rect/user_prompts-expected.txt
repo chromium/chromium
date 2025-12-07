@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_accept_and_notify[capabilities0-confirm-True]
+  AssertionError: assert {'height': 515, 'width': 360, 'x': 0, 'y': 0} == {'height': 536, 'width': 360, 'x': 0, 'y': 0}
+[FAIL] test_dismiss_and_notify[capabilities0-confirm-False]
+  AssertionError: assert {'height': 515, 'width': 360, 'x': 0, 'y': 0} == {'height': 536, 'width': 360, 'x': 0, 'y': 0}
+[FAIL] test_default[confirm-False]
+  AssertionError: assert {'height': 515, 'width': 360, 'x': 0, 'y': 0} == {'height': 536, 'width': 360, 'x': 0, 'y': 0}
+Harness: the test ran to completion.
+

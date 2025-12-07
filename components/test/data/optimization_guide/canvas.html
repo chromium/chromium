@@ -1,0 +1,15 @@
+<body>
+  <style>
+    canvas {
+      width: 200px;
+      height: 300px;
+    }
+  </style>
+  <canvas id='myCanvas' width='100' height='200'></canvas>
+  <script>
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'pink';
+    ctx.fillRect(0, 0, 100, 200);
+  </script>
+</body>

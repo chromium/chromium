@@ -26,7 +26,19 @@ self.addEventListener('fetch', (e) => {
 });
 
 chrome.test.runTests([
+  // TODO(crbug.com/378916068): Enable the test on desktop android.
   async function createDocumentAndEnsureItExistsAndThenClose() {
+    // Skip this test on Android, which does not yet support messaging.
+    const isAndroid = await new Promise((resolve) => {
+      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+    });
+    if (isAndroid) {
+      // Skip this test on Android because the underlying call to
+      // com.google.android.gms.iid.InstanceID.deleteToken() always succeeds,
+      // even for non-existent tokens.
+      chrome.test.succeed('skipped');
+      return;
+    }
     chrome.test.assertFalse(await hasOffscreenDocument());
 
     await chrome.offscreen.createDocument(VALID_PARAMS);

@@ -28,7 +28,7 @@ const char kProxyPacUrl[] = "pac_url";
 // PAC script is not available.
 const char kProxyPacMandatory[] = "pac_mandatory";
 // String containing proxy bypass rules. For a specification of the
-// expected syntax see net::ProxyBypassRules::ParseFromString().
+// expected syntax see net::ProxyHostMatchingRules::ParseFromString().
 const char kProxyBypassList[] = "bypass_list";
 
 }  // namespace

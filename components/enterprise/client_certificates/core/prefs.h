@@ -13,9 +13,14 @@ namespace prefs {
 // Pref to which the "ProvisionManagedClientCertificateForUserPrefs" policy is
 // mapped.
 extern const char kProvisionManagedClientCertificateForUserPrefs[];
+
+// Pref to which the "ProvisionManagedClientCertificateForBrowserPrefs" policy
+// is mapped.
+extern const char kProvisionManagedClientCertificateForBrowserPrefs[];
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace client_certificates
 

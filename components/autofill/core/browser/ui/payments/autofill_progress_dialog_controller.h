@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
 namespace autofill {
+
+class AutofillProgressDialogView;
 
 // Interface that exposes controller functionality to
 // AutofillProgressDialogView. The interface exposes the title, description and
@@ -18,6 +22,22 @@ namespace autofill {
 // when contacting the bank during unmasking a virtual card.
 class AutofillProgressDialogController {
  public:
+  virtual ~AutofillProgressDialogController() = default;
+
+#if BUILDFLAG(IS_IOS)
+  using CreateAndShowViewCallback =
+      base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>;
+#else
+  using CreateAndShowViewCallback =
+      base::OnceCallback<std::unique_ptr<AutofillProgressDialogView>()>;
+#endif
+
+  // Show a progress dialog for underlying authorization processes. The
+  // `create_and_show_view_callback` will be invoked immediately to create a
+  // view implementation.
+  virtual void ShowDialog(
+      CreateAndShowViewCallback create_and_show_view_callback) = 0;
+
   // Callback received when the progress dialog is dismissed.
   // |is_canceled_by_user| is a boolean that is true if the user cancels the
   // progress dialog, false if the progress dialog closes automatically after a
@@ -37,9 +57,6 @@ class AutofillProgressDialogController {
   virtual std::u16string GetConfirmationMessage() const = 0;
 
   virtual base::WeakPtr<AutofillProgressDialogController> GetWeakPtr() = 0;
-
- protected:
-  virtual ~AutofillProgressDialogController() = default;
 };
 
 }  // namespace autofill

@@ -25,7 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_IMAGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -33,10 +33,6 @@
 namespace gfx {
 class SizeF;
 }  // namespace gfx
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -46,6 +42,7 @@ class ImageResourceContent;
 class Document;
 class ComputedStyle;
 class ImageResourceObserver;
+class Node;
 enum class CSSValuePhase;
 
 // A const pointer to either an ImageResource or a CSSImageGeneratorValue. It is
@@ -62,7 +59,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   virtual ~StyleImage() = default;
 
   bool operator==(const StyleImage& other) const { return IsEqual(other); }
-  bool operator!=(const StyleImage& other) const { return !(*this == other); }
 
   // Returns a CSSValue representing the origin <image> value. May not be the
   // actual CSSValue from which this StyleImage was originally created if the
@@ -90,17 +86,16 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // Any underlying resources this <image> references failed to load.
   virtual bool ErrorOccurred() const { return false; }
 
-  // Is the <image> considered same-origin? Can only be called if IsLoaded()
-  // returns true. |failing_url| is set to the (potentially formatted) URL of
-  // the first non-same-origin <image>.
-  virtual bool IsAccessAllowed(WTF::String& failing_url) const = 0;
+  // Is the <image> considered same-origin? `failing_url` is set to the
+  // (potentially formatted) URL of the first non-same-origin <image>.
+  virtual bool IsAccessAllowed(String& failing_url) const = 0;
 
   // Determine the natural dimensions (width, height, aspect ratio) of this
   // <image>, scaled by `multiplier`.
   //
   // The size will respect the image orientation if requested and if the image
   // supports it.
-  virtual IntrinsicSizingInfo GetNaturalSizingInfo(
+  virtual NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const = 0;
 
@@ -146,7 +141,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // `target_size` is not zoomed.
   virtual scoped_refptr<Image> GetImage(
       const ImageResourceObserver&,
-      const Document&,
+      const Node&,
       const ComputedStyle&,
       const gfx::SizeF& target_size) const = 0;
 
@@ -172,6 +167,9 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
     return default_orientation;
   }
 
+  // Whether this <image> depends on the current color.
+  virtual bool DependsOnCurrentColor() const { return false; }
+
   ALWAYS_INLINE bool IsImageResource() const { return is_image_resource_; }
   ALWAYS_INLINE bool IsPendingImage() const { return is_pending_image_; }
   ALWAYS_INLINE bool IsGeneratedImage() const { return is_generated_image_; }
@@ -186,6 +184,8 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   bool IsLazyloadPossiblyDeferred() const {
     return is_lazyload_possibly_deferred_;
   }
+
+  virtual bool IsLoadedAfterMouseover() const { return false; }
 
   virtual void Trace(Visitor* visitor) const {}
 

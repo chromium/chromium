@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("policy") {
   sources = [
@@ -23,14 +23,8 @@ static_library("policy") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/enterprise/cert_store",
@@ -42,8 +36,14 @@ static_library("policy") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/common:constants",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/components/onc",
     "//components/onc",
     "//components/policy/core/browser",
@@ -79,15 +79,13 @@ source_set("unit_tests") {
 
   deps = [
     ":policy",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc/enterprise/cert_store",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/arc:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
@@ -95,13 +93,20 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

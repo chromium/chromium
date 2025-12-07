@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "media/base/picture_in_picture_events_info.h"
 
 namespace media {
 enum class MediaContentType;
@@ -102,6 +103,12 @@ class MediaSessionPlayerObserver {
   virtual bool SupportsAudioOutputDeviceSwitching(int player_id) const = 0;
 
   virtual media::MediaContentType GetMediaContentType() const = 0;
+
+  // Called when the auto picture in picture information has changed.
+  virtual void OnAutoPictureInPictureInfoChanged(
+      int player_id,
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) = 0;
 
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.

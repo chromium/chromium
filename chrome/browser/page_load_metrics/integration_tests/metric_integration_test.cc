@@ -6,8 +6,10 @@
 
 #include <string_view>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/trace_event/trace_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -292,8 +294,8 @@ void MetricIntegrationTest::ExpectUniqueUMAWithinRange(
 
 void MetricIntegrationTest::ExpectUniqueUMABucketCount(
     std::string_view metric_name,
-    base::HistogramBase::Sample sample,
-    base::HistogramBase::Count count) {
+    base::HistogramBase::Sample32 sample,
+    base::HistogramBase::Count32 count) {
   histogram_tester_->ExpectBucketCount(metric_name, sample, count);
 }
 

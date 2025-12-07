@@ -4,9 +4,9 @@
 
 #include "chrome/updater/policy/policy_fetcher.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -14,142 +14,174 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "chrome/enterprise_companion/constants.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
-#include "chrome/updater/configurator.h"
+#include "chrome/enterprise_companion/enterprise_companion_client.h"
+#include "chrome/enterprise_companion/global_constants.h"
+#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management/dm_client.h"
-#include "chrome/updater/device_management/dm_response_validator.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
-#include "chrome/updater/policy/service.h"
-#include "chrome/updater/util/util.h"
-#include "url/gurl.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/usage_stats_permissions.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/update_client/timed_callback.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/isolated_connection.h"
 
 namespace updater {
 
-PolicyFetcher::PolicyFetcher(
-    const GURL& server_url,
-    const std::optional<PolicyServiceProxyConfiguration>& proxy_configuration,
-    const std::optional<bool>& override_is_managed_device)
-    : server_url_(server_url),
-      policy_service_proxy_configuration_(proxy_configuration),
+using PolicyFetchCompleteCallback =
+    base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>;
+
+// `OutOfProcessPolicyFetcher` launches the enterprise companion app and
+// delegates the policy fetch tasks to it through Mojom.
+class OutOfProcessPolicyFetcher : public PolicyFetcher {
+ public:
+  OutOfProcessPolicyFetcher(scoped_refptr<PersistedData> persisted_data,
+                            std::optional<bool> override_is_managed_device,
+                            base::TimeDelta connection_timeout);
+
+  // Overrides for `PolicyFetcher`.
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     PolicyFetchCompleteCallback callback) override;
+
+ private:
+  ~OutOfProcessPolicyFetcher() override;
+
+  void OnConnected(
+      policy::PolicyFetchReason reason,
+      std::unique_ptr<mojo::IsolatedConnection> connection,
+      mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote);
+  void OnPoliciesFetched(enterprise_companion::mojom::StatusPtr status);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote_;
+  std::unique_ptr<mojo::IsolatedConnection> connection_;
+  PolicyFetchCompleteCallback fetch_complete_callback_;
+  scoped_refptr<PersistedData> persisted_data_;
+  const std::optional<bool> override_is_managed_device_;
+  const base::TimeDelta connection_timeout_;
+};
+
+OutOfProcessPolicyFetcher::OutOfProcessPolicyFetcher(
+    scoped_refptr<PersistedData> persisted_data,
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta connection_timeout)
+    : persisted_data_(persisted_data),
       override_is_managed_device_(override_is_managed_device),
-      sequenced_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
-  VLOG(0) << "Policy server: " << server_url_.possibly_invalid_spec();
-}
+      connection_timeout_(connection_timeout) {}
 
-PolicyFetcher::~PolicyFetcher() = default;
+OutOfProcessPolicyFetcher::~OutOfProcessPolicyFetcher() = default;
 
-void PolicyFetcher::FetchPolicies(
-    base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
-        callback) {
+void OutOfProcessPolicyFetcher::FetchPolicies(
+    policy::PolicyFetchReason reason,
+    PolicyFetchCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
+  CHECK(!fetch_complete_callback_);
+  fetch_complete_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      update_client::MakeTimedCallback(std::move(callback), connection_timeout_,
+                                       kErrorIpcDisconnect,
+                                       scoped_refptr<PolicyManagerInterface>()),
+      kErrorIpcDisconnect, nullptr);
 
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce([] { return AnyAppEnablesUsageStats(GetUpdaterScope()); }),
       base::BindOnce(
-          &PolicyFetcher::RegisterDevice, this,
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(&PolicyFetcher::OnRegisterDeviceRequestComplete, this,
-                         std::move(callback))));
+          [](base::TimeDelta connection_timeout, const std::string& cohort_id,
+             base::OnceCallback<void(
+                 std::unique_ptr<mojo::IsolatedConnection>,
+                 mojo::Remote<
+                     enterprise_companion::mojom::EnterpriseCompanion>)>
+                 callback,
+             bool enable_usage_stats) {
+            enterprise_companion::ConnectAndLaunchServer(
+                base::DefaultClock::GetInstance(), connection_timeout,
+                enable_usage_stats, cohort_id, std::move(callback));
+          },
+          connection_timeout_,
+          persisted_data_->GetCohort(enterprise_companion::kCompanionAppId),
+          base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
+                         base::WrapRefCounted(this), reason)));
 }
 
-void PolicyFetcher::RegisterDevice(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    base::OnceCallback<void(bool, DMClient::RequestResult)> callback) {
+void OutOfProcessPolicyFetcher::OnConnected(
+    policy::PolicyFetchReason reason,
+    std::unique_ptr<mojo::IsolatedConnection> connection,
+    mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  scoped_refptr<device_management_storage::DMStorage> dm_storage =
-      device_management_storage::GetDefaultDMStorage();
-  if (!dm_storage) {
-    main_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), false,
-                       DMClient::RequestResult::kNoDefaultDMStorage));
+  if (!connection || !remote) {
+    VLOG(1) << "Failed to establish IPC connection with the companion app for "
+               "policy fetch.";
+    std::move(fetch_complete_callback_)
+        .Run(kErrorMojoConnectionFailure, nullptr);
     return;
   }
-  VLOG(1) << "Enrollment token: " << dm_storage->GetEnrollmentToken();
-  DMClient::RegisterDevice(
-      DMClient::CreateDefaultConfigurator(server_url_,
-                                          policy_service_proxy_configuration_),
-      dm_storage,
-      base::BindPostTask(main_task_runner,
-                         base::BindOnce(std::move(callback),
-                                        dm_storage->IsEnrollmentMandatory())));
+
+  connection_ = std::move(connection);
+  remote_ = std::move(remote);
+  remote_->FetchPolicies(
+      reason, base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
+                             base::WrapRefCounted(this)));
 }
 
-void PolicyFetcher::OnRegisterDeviceRequestComplete(
-    base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
-        callback,
-    bool is_enrollment_mandatory,
-    DMClient::RequestResult result) {
+void OutOfProcessPolicyFetcher::OnPoliciesFetched(
+    enterprise_companion::mojom::StatusPtr mojom_status) {
+  if (!mojom_status) {
+    VLOG(1) << "Received null status from out-of-process fetcher.";
+    std::move(fetch_complete_callback_).Run(kErrorIpcDisconnect, nullptr);
+    return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
-
-  if (result == DMClient::RequestResult::kSuccess ||
-      result == DMClient::RequestResult::kAlreadyRegistered) {
-    sequenced_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PolicyFetcher::FetchPolicy, this,
-                       base::BindPostTaskToCurrentDefault(
-                           base::BindOnce(std::move(callback), kErrorOk))));
+  VLOG(1) << "Policy fetch status: " << mojom_status->code
+          << ", space: " << mojom_status->space
+          << ", description: " << mojom_status->description;
+  if (mojom_status->space == enterprise_companion::kStatusOk) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        base::BindOnce(
+            [](std::optional<bool> override_is_managed_device) {
+              return CreateDMPolicyManager(override_is_managed_device);
+            },
+            override_is_managed_device_),
+        base::BindOnce(
+            [](PolicyFetchCompleteCallback callback,
+               scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
+              std::move(callback).Run(kErrorOk, dm_policy_manager);
+            },
+            std::move(fetch_complete_callback_)));
   } else {
-    VLOG(1) << "Device registration failed, skip fetching policies.";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            is_enrollment_mandatory ? kErrorDMRegistrationFailed : kErrorOk,
-            nullptr));
+    int result = kErrorPolicyFetchFailed;
+    if (mojom_status->space == enterprise_companion::kStatusApplicationError &&
+        mojom_status->code ==
+            static_cast<int>(enterprise_companion::ApplicationError::
+                                 kRegistrationPreconditionFailed)) {
+      scoped_refptr<device_management_storage::DMStorage> dm_storage =
+          device_management_storage::GetDefaultDMStorage();
+      result = (dm_storage && dm_storage->IsEnrollmentMandatory())
+                   ? kErrorDMRegistrationFailed
+                   : kErrorOk;
+    }
+    std::move(fetch_complete_callback_).Run(result, nullptr);
   }
 }
 
-void PolicyFetcher::FetchPolicy(
-    base::OnceCallback<void(scoped_refptr<PolicyManagerInterface>)> callback) {
-  VLOG(1) << __func__;
-
-  DMClient::FetchPolicy(
-      DMClient::CreateDefaultConfigurator(server_url_,
-                                          policy_service_proxy_configuration_),
-      device_management_storage::GetDefaultDMStorage(),
-      base::BindOnce(&PolicyFetcher::OnFetchPolicyRequestComplete, this)
-          .Then(std::move(callback)));
-}
-
-scoped_refptr<PolicyManagerInterface>
-PolicyFetcher::OnFetchPolicyRequestComplete(
-    DMClient::RequestResult result,
-    const std::vector<PolicyValidationResult>& validation_results) {
-  VLOG(1) << __func__;
-
-  if (result == DMClient::RequestResult::kSuccess) {
-    return CreateDMPolicyManager(override_is_managed_device_);
-  }
-
-  for (const auto& validation_result : validation_results) {
-    VLOG(1) << "Sending policy validation error, status: "
-            << validation_result.status
-            << ", issues cout: " << validation_result.issues.size();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &DMClient::ReportPolicyValidationErrors,
-            DMClient::CreateDefaultConfigurator(
-                server_url_, policy_service_proxy_configuration_),
-            device_management_storage::GetDefaultDMStorage(), validation_result,
-            base::BindOnce([](DMClient::RequestResult result) {
-              if (result != DMClient::RequestResult::kSuccess) {
-                LOG(WARNING)
-                    << "DMClient::ReportPolicyValidationErrors failed: "
-                    << result;
-              }
-            })));
-  }
-
-  return nullptr;
+scoped_refptr<PolicyFetcher> CreateOutOfProcessPolicyFetcher(
+    scoped_refptr<PersistedData> persisted_data,
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta override_ceca_connection_timeout) {
+  return base::MakeRefCounted<OutOfProcessPolicyFetcher>(
+      persisted_data, std::move(override_is_managed_device),
+      override_ceca_connection_timeout);
 }
 
 }  // namespace updater

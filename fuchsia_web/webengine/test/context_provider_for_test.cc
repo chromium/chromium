@@ -50,7 +50,7 @@ namespace {
                ::component_testing::Protocol{"fuchsia.hwinfo.Product"},
                ::component_testing::Protocol{"fuchsia.intl.PropertyProvider"},
                ::component_testing::Protocol{"fuchsia.kernel.VmexResource"},
-               ::component_testing::Protocol{"fuchsia.logger.LogSink"},
+               ::component_testing::Dictionary{"diagnostics"},
                ::component_testing::Protocol{"fuchsia.memorypressure.Provider"},
                ::component_testing::Protocol{"fuchsia.process.Launcher"},
                ::component_testing::Protocol{"fuchsia.sysmem.Allocator"},
@@ -58,6 +58,7 @@ namespace {
                // Optional capabilities offered to web-instance.cm:
                ::component_testing::Protocol{"fuchsia.camera3.DeviceWatcher"},
                ::component_testing::Protocol{"fuchsia.media.ProfileProvider"},
+               ::component_testing::Protocol{"fuchsia.scheduler.RoleManager"},
                ::component_testing::Protocol{"fuchsia.settings.Display"},
                ::component_testing::Protocol{
                    "fuchsia.tracing.perfetto.ProducerConnector"},

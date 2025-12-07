@@ -24,12 +24,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_BUTTON_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_BUTTON_ELEMENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_iterator.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 
 namespace blink {
-
-class HTMLSelectListElement;
 
 class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -47,12 +46,11 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
 
-  // This returns a <selectlist> if this button has type=selectlist and is a
-  // descendant of a <selectlist>.
-  HTMLSelectListElement* OwnerSelectList() const;
   // This returns a <select> if this button has type=select and is a direct
   // child of a <select>.
   HTMLSelectElement* OwnerSelect() const;
+
+  bool CanBeCommandInvoker() const override;
 
  private:
   // The type attribute of HTMLButtonElement is an enumerated attribute:
@@ -63,8 +61,6 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
     kSubmit = base::to_underlying(mojom::blink::FormControlType::kButtonSubmit),
     kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
     kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
-    kSelectlist =
-        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList)
   };
 
   mojom::blink::FormControlType FormControlType() const override;
@@ -107,6 +103,15 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   bool RecalcWillValidate() const override;
 
   int DefaultTabIndex() const override;
+
+  static Element* RetrieveCommandForTargetElement(const HTMLElement& invoker);
+  static AtomicString GetCommand(const AtomicString& action,
+                                 ExecutionContext* execution_context);
+  bool IsFormAssociatedSubmitButton() const;
+
+  static std::optional<Type> TypeFromString(const AtomicString&);
+
+  void SetTypeInternal(Type type);
 
   Type type_ = kSubmit;
   bool is_activated_submit_ = false;

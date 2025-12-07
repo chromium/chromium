@@ -29,13 +29,13 @@ class AddressAccessorySheetViewBinder {
             FaviconHelper faviconHelper) {
         switch (viewType) {
             case AccessorySheetDataPiece.Type.TITLE:
-                return new AccessorySheetTabViewBinder.TitleViewHolder(
-                        parent, R.layout.keyboard_accessory_sheet_tab_title);
+                return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION:
                 return new PlusAddressInfoViewHolder(parent, faviconHelper);
             case AccessorySheetDataPiece.Type.ADDRESS_INFO:
                 return new AddressInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
@@ -43,8 +43,7 @@ class AddressAccessorySheetViewBinder {
     }
 
     static class PlusAddressInfoViewHolder
-            extends ElementViewHolder<
-                    KeyboardAccessoryData.PlusAddressSection, PlusAddressInfoView> {
+            extends ElementViewHolder<KeyboardAccessoryData.PlusAddressInfo, PlusAddressInfoView> {
         private final FaviconHelper mFaviconHelper;
 
         PlusAddressInfoViewHolder(ViewGroup parent, FaviconHelper faviconHelper) {
@@ -54,12 +53,13 @@ class AddressAccessorySheetViewBinder {
 
         @Override
         protected void bind(
-                KeyboardAccessoryData.PlusAddressSection section, PlusAddressInfoView view) {
+                KeyboardAccessoryData.PlusAddressInfo section, PlusAddressInfoView view) {
             UserInfoField plusAddressField = section.getPlusAddress();
             ChipView chip = view.getPlusAddress();
             chip.getPrimaryTextView().setText(plusAddressField.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(plusAddressField.getA11yDescription());
-            chip.setIcon(R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+            chip.setIconWithTint(
+                    R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
             chip.setOnClickListener(src -> plusAddressField.triggerSelection());
 
             // Set the default icon, then try to get a better one.

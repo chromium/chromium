@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/mojom/account_id.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace mojo {
 
@@ -20,11 +22,8 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
         return signin::mojom::AccountType::UNKNOWN;
       case AccountType::GOOGLE:
         return signin::mojom::AccountType::GOOGLE;
-      case AccountType::ACTIVE_DIRECTORY:
-        return signin::mojom::AccountType::ACTIVE_DIRECTORY;
     }
-    NOTREACHED_IN_MIGRATION();
-    return signin::mojom::AccountType::UNKNOWN;
+    NOTREACHED();
   }
 
   static bool FromMojom(signin::mojom::AccountType input, AccountType* out) {
@@ -35,12 +34,8 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
       case signin::mojom::AccountType::GOOGLE:
         *out = AccountType::GOOGLE;
         return true;
-      case signin::mojom::AccountType::ACTIVE_DIRECTORY:
-        *out = AccountType::ACTIVE_DIRECTORY;
-        return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -52,17 +47,14 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
   static std::string id(const AccountId& r) {
     switch (r.GetAccountType()) {
       case AccountType::GOOGLE:
-        return r.GetGaiaId();
-      case AccountType::ACTIVE_DIRECTORY:
-        return r.GetObjGuid();
+        return r.GetGaiaId().ToString();
       case AccountType::UNKNOWN:
         // UNKNOWN type is used for users that have only email (e.g. in tests
         // or legacy users that have not run through migration code).
         // Return an empty string for such accounts.
         return std::string();
     }
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
   static std::string user_email(const AccountId& r) { return r.GetUserEmail(); }
 
@@ -77,10 +69,7 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
 
     switch (account_type) {
       case AccountType::GOOGLE:
-        *out = AccountId::FromUserEmailGaiaId(user_email, id);
-        break;
-      case AccountType::ACTIVE_DIRECTORY:
-        *out = AccountId::AdFromUserEmailObjGuid(user_email, id);
+        *out = AccountId::FromUserEmailGaiaId(user_email, GaiaId(id));
         break;
       case AccountType::UNKNOWN:
         // UNKNOWN type is used for users that have only email (e.g. in tests

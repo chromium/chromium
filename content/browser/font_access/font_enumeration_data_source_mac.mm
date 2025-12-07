@@ -7,6 +7,7 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 
+#include <set>
 #include <string>
 
 #include "base/apple/bridging.h"

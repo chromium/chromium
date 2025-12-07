@@ -7,12 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/session/connection_holder.h"
-#include "ash/components/arc/test/fake_arc_session.h"
-#include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +16,15 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "chromeos/ash/experiences/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -69,6 +72,7 @@ class UserCommandArcJobTest : public testing::Test {
   // (because BrowserContextKeyedServices are destroyed together with Profile,
   // and ArcPolicyBridge is such a service).
   const std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   const std::unique_ptr<TestingProfile> profile_;
   raw_ptr<arc::ArcPolicyBridge> arc_policy_bridge_;
@@ -79,9 +83,13 @@ UserCommandArcJobTest::UserCommandArcJobTest()
     : arc_service_manager_(std::make_unique<arc::ArcServiceManager>()),
       profile_(std::make_unique<TestingProfile>()) {
   ash::ConciergeClient::InitializeFake(nullptr);
-  arc_session_manager_ =
-      CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-          base::BindRepeating(arc::FakeArcSession::Create)));
+  ash::DlcserviceClient::InitializeFake();
+  arc_dlc_installer_ =
+      std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+  arc_session_manager_ = CreateTestArcSessionManager(
+      std::make_unique<arc::ArcSessionRunner>(
+          base::BindRepeating(arc::FakeArcSession::Create)),
+      arc_dlc_installer_.get());
   arc_policy_bridge_ =
       arc::ArcPolicyBridge::GetForBrowserContextForTesting(profile_.get());
   policy_instance_ = std::make_unique<arc::FakePolicyInstance>();
@@ -92,6 +100,10 @@ UserCommandArcJobTest::UserCommandArcJobTest()
 UserCommandArcJobTest::~UserCommandArcJobTest() {
   arc_service_manager_->arc_bridge_service()->policy()->CloseInstance(
       policy_instance_.get());
+  arc_session_manager_.reset();
+  arc_dlc_installer_.reset();
+  ash::DlcserviceClient::Shutdown();
+  ash::ConciergeClient::Shutdown();
 }
 
 TEST_F(UserCommandArcJobTest, TestPayloadReceiving) {

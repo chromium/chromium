@@ -6,6 +6,7 @@
 #define NET_QUIC_QUIC_PROXY_CLIENT_SOCKET_TEST_BASE_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -53,43 +54,8 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
-
-namespace {
-
-inline constexpr char kOriginHost[] = "www.google.com";
-inline constexpr int kOriginPort = 443;
-inline constexpr char kProxyUrl[] = "https://myproxy:6121/";
-inline constexpr char kProxyHost[] = "myproxy";
-inline constexpr int kProxyPort = 6121;
-inline constexpr char kUserAgent[] = "Mozilla/1.0";
-inline constexpr char kRedirectUrl[] = "https://example.com/";
-
-inline constexpr char kMsg1[] = "\0hello!\xff";
-inline constexpr int kLen1 = 8;
-inline constexpr char kMsg2[] = "\0a2345678\0";
-inline constexpr int kLen2 = 10;
-inline constexpr char kMsg3[] = "bye!";
-inline constexpr int kLen3 = 4;
-inline constexpr char kMsg33[] = "bye!bye!";
-inline constexpr int kLen33 = kLen3 + kLen3;
-inline constexpr char kMsg333[] = "bye!bye!bye!";
-inline constexpr int kLen333 = kLen3 + kLen3 + kLen3;
-
-inline constexpr char kDatagramPayload[] = "youveGotMail";
-inline constexpr int kDatagramLen = 12;
-
-static inline constexpr int k0ByteConnectionId = 0;
-static inline constexpr int k8ByteConnectionId = 8;
-
-inline constexpr char kTestHeaderName[] = "Foo";
-// Note: `kTestQuicHeaderName` should be a lowercase version of
-// `kTestHeaderName`.
-inline constexpr char kTestQuicHeaderName[] = "foo";
-
-}  // anonymous namespace
 
 namespace net {
 
@@ -97,6 +63,31 @@ class QuicProxyClientSocketTestBase
     : public ::testing::TestWithParam<quic::ParsedQuicVersion>,
       public WithTaskEnvironment {
  public:
+  static constexpr char kOriginHost[] = "www.google.com";
+  static constexpr int kOriginPort = 443;
+  static constexpr char kProxyUrl[] = "https://myproxy:6121/";
+  static constexpr char kProxyHost[] = "myproxy";
+  static constexpr int kProxyPort = 6121;
+  static constexpr char kUserAgent[] = "Mozilla/1.0";
+  static constexpr char kRedirectUrl[] = "https://example.com/";
+
+  static constexpr auto kMsg1 = base::span_from_cstring("\0hello!\xff");
+  static constexpr auto kMsg2 = base::span_from_cstring("\0a2345678\0");
+  static constexpr auto kMsg3 = base::span_from_cstring("bye!");
+  static constexpr auto kMsg33 = base::span_from_cstring("bye!bye!");
+  static constexpr auto kMsg333 = base::span_from_cstring("bye!bye!bye!");
+
+  static constexpr auto kDatagramPayload =
+      base::span_from_cstring("youveGotMail");
+
+  static constexpr int k0ByteConnectionId = 0;
+  static constexpr int k8ByteConnectionId = 8;
+
+  static constexpr char kTestHeaderName[] = "Foo";
+  // Note: `kTestQuicHeaderName` should be a lowercase version of
+  // `kTestHeaderName`.
+  static constexpr char kTestQuicHeaderName[] = "foo";
+
   QuicProxyClientSocketTestBase();
   QuicProxyClientSocketTestBase(const QuicProxyClientSocketTestBase&) = delete;
   QuicProxyClientSocketTestBase& operator=(
@@ -225,16 +216,16 @@ class QuicProxyClientSocketTestBase
 
   virtual void AssertConnectFails(int result) = 0;
 
-  virtual void AssertWriteReturns(const char* data, int len, int rv) = 0;
+  virtual void AssertWriteReturns(base::span<const char> data, int rv) = 0;
 
-  virtual void AssertSyncWriteSucceeds(const char* data, int len) = 0;
+  virtual void AssertSyncWriteSucceeds(base::span<const char> data) = 0;
 
-  virtual void AssertSyncReadEquals(const char* data, int len) = 0;
-  virtual void AssertAsyncReadEquals(const char* data, int len) = 0;
+  virtual void AssertSyncReadEquals(base::span<const char> data) = 0;
+  virtual void AssertAsyncReadEquals(base::span<const char> data) = 0;
 
-  virtual void AssertReadStarts(const char* data, int len) = 0;
+  virtual void AssertReadStarts(base::span<const char> data) = 0;
 
-  virtual void AssertReadReturns(const char* data, int len) = 0;
+  virtual void AssertReadReturns(base::span<const char> data) = 0;
 
   std::string ConstructDataHeader(size_t body_len);
 

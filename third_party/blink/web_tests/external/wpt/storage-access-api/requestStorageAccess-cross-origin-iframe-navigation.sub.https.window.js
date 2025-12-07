@@ -2,6 +2,7 @@
 // META: script=/cookies/resources/cookie-helper.sub.js
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
+// META: timeout=long
 'use strict';
 
 (async function() {
@@ -23,7 +24,12 @@
       await MaybeSetStorageAccess("*", "*", "allowed");
     });
 
-    assert_false(await FrameHasStorageAccess(frame), "frame initially does not have storage access.");
+    const hasStorageAccess = await FrameHasStorageAccess(frame);
+    if (hasStorageAccess) {
+      // Nothing to test here, since cookies are not blocked.
+      // See https://github.com/privacycg/storage-access/issues/162.
+      return null;
+    }
     assert_false(await HasUnpartitionedCookie(frame), "frame initially does not have access to cookies.");
 
     assert_true(await RequestStorageAccessInFrame(frame), "requestStorageAccess resolves without requiring a gesture.");
@@ -36,33 +42,47 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
+    if (!frame) {
+      return;
+    }
 
     await FrameInitiatedReload(frame);
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after refresh.");
     assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
+
+    let cookieOnLoad = await GetHTTPCookiesFromFrame(frame);
+    assert_true(cookieStringHasCookie("cookie", "unpartitioned", cookieOnLoad), "innermost frame has cookie in initial load");
   }, "Self-initiated reloads preserve storage access");
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
+    if (!frame) {
+      return;
+    }
 
     await FrameInitiatedNavigation(frame, altWwwResponder);
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after refresh.");
     assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
+    let cookieOnLoad = await GetHTTPCookiesFromFrame(frame);
+    assert_true(cookieStringHasCookie("cookie", "unpartitioned", cookieOnLoad), "innermost frame has cookie in initial load");
   }, "Self-initiated same-origin navigations preserve storage access");
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
+    if (!frame) {
+      return;
+    }
 
     await new Promise((resolve) => {
       frame.addEventListener("load", () => resolve());
@@ -71,17 +91,24 @@
 
     assert_false(await FrameHasStorageAccess(frame), "frame does not have storage access after refresh.");
     assert_false(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
+    let cookieOnLoad = await GetHTTPCookiesFromFrame(frame);
+    assert_false(cookieStringHasCookie("cookie", "unpartitioned", cookieOnLoad), "innermost frame has no cookie in initial load");
   }, "Non-self-initiated same-origin navigations do not preserve storage access");
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
+    await SetFirstPartyCookie(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
+    if (!frame) {
+      return;
+    }
 
     await FrameInitiatedNavigation(frame, altRootResponder);
 
     assert_false(await FrameHasStorageAccess(frame), "frame does not have storage access after refresh.");
     assert_false(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
+    let cookieOnLoad = await GetHTTPCookiesFromFrame(frame);
+    assert_false(cookieStringHasCookie("cookie", "unpartitioned", cookieOnLoad), "innermost frame has no cookie in initial load");
   }, "Self-initiated cross-origin navigations do not preserve storage access");
 })();

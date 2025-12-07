@@ -16,11 +16,10 @@ include_rules = [
   "+components/viz/service/display/render_pass_alpha_type.h",
   "+components/viz/service/display/renderer_utils.h",
   "+components/viz/service/display/resource_metadata.h",
-  "+components/viz/service/display/shared_bitmap_manager.h",
   "+components/viz/service/display/skia_output_surface.h",
   "+components/viz/service/display/software_output_device.h",
+  "+components/viz/service/gl/exit_code.h",
   "+components/viz/service/gl/gpu_service_impl.h",
-  "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
   "+gpu/command_buffer/common",
@@ -31,6 +30,7 @@ include_rules = [
   "+gpu/ipc",
   "+gpu/skia_bindings",
   "+gpu/vulkan",
+  "+media/base/win/test_utils.h",
   "+media/gpu/chromeos/vulkan_overlay_adaptor.h",
   "+media/gpu/buildflags.h",
   "+mojo/public/cpp/bindings",
@@ -68,4 +68,7 @@ specific_include_rules = {
     "+ui/gl",
     "+ui/platform_window",
   ],
+  "software_output_device_win_swapchain_unittest.cc": [
+    "+media/base/win/d3d11_mocks.h",
+  ]
 }

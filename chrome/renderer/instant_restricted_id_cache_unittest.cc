@@ -15,7 +15,7 @@
 namespace {
 
 struct TestData {
-  TestData() {}
+  TestData() = default;
   explicit TestData(const std::string& i_value) : value(i_value) {}
 
   bool operator==(const TestData& rhs) const {

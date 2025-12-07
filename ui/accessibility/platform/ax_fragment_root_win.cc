@@ -4,11 +4,21 @@
 
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 
-#include <unordered_map>
+#include <limits>
 
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/process_memory_dump.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/win/scoped_safearray.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
@@ -17,16 +27,17 @@ namespace ui {
 
 class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
                                       public IItemContainerProvider,
-                                      public IRawElementProviderFragmentRoot {
+                                      public IRawElementProviderFragmentRoot,
+                                      public IRawElementProviderAdviseEvents {
  public:
   BEGIN_COM_MAP(AXFragmentRootPlatformNodeWin)
   COM_INTERFACE_ENTRY(IItemContainerProvider)
   COM_INTERFACE_ENTRY(IRawElementProviderFragmentRoot)
+  COM_INTERFACE_ENTRY(IRawElementProviderAdviseEvents)
   COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
   END_COM_MAP()
 
-  static AXFragmentRootPlatformNodeWin* Create(
-      AXPlatformNodeDelegate* delegate) {
+  static Pointer Create(AXFragmentRootWin& delegate) {
     // Make sure ATL is initialized in this module.
     win::CreateATLModuleIfNeeded();
 
@@ -36,7 +47,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     CHECK(SUCCEEDED(hr));
     instance->Init(delegate);
     instance->AddRef();
-    return instance;
+    return Pointer(instance);
   }
 
   //
@@ -160,11 +171,11 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
       double screen_physical_pixel_x,
       double screen_physical_pixel_y,
       IRawElementProviderFragment** element_provider) override {
+    UIA_VALIDATE_CALL_1_ARG(element_provider);
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ELEMENT_PROVIDER_FROM_POINT);
     WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_ELEMENT_PROVIDER_FROM_POINT);
     WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
         UMA_API_ELEMENT_PROVIDER_FROM_POINT);
-    UIA_VALIDATE_CALL_1_ARG(element_provider);
 
     *element_provider = nullptr;
 
@@ -219,6 +230,48 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
 
     return S_OK;
   }
+
+  //
+  // IRawElementProviderAdviseEvents methods.
+  //
+
+  IFACEMETHODIMP AdviseEventAdded(EVENTID event_id,
+                                  SAFEARRAY* property_ids) override {
+    WIN_ACCESSIBILITY_API_TRACE_EVENT("AdviseEventAdded");
+    UIA_VALIDATE_CALL();
+    WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_ADDED);
+
+    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(GetDelegate());
+
+    base::win::ScopedSafearray safe_array(property_ids);
+    absl::Cleanup release_safe_array(
+        [&safe_array]() { (void)safe_array.Release(); });
+
+    auto lock = safe_array.CreateLockScope<VT_I4>();
+    root->OnEventListenerAdded(event_id,
+                               lock ? *lock : base::span<PROPERTYID>());
+
+    return S_OK;
+  }
+
+  IFACEMETHODIMP AdviseEventRemoved(EVENTID event_id,
+                                    SAFEARRAY* property_ids) override {
+    WIN_ACCESSIBILITY_API_TRACE_EVENT("AdviseEventRemoved");
+    UIA_VALIDATE_CALL();
+    WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_REMOVED);
+
+    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(GetDelegate());
+
+    base::win::ScopedSafearray safe_array(property_ids);
+    absl::Cleanup release_safe_array(
+        [&safe_array]() { (void)safe_array.Release(); });
+
+    auto lock = safe_array.CreateLockScope<VT_I4>();
+    root->OnEventListenerRemoved(event_id,
+                                 lock ? *lock : base::span<PROPERTYID>());
+
+    return S_OK;
+  }
 };
 
 class AXFragmentRootMapWin {
@@ -235,7 +288,7 @@ class AXFragmentRootMapWin {
 
   void RemoveFragmentRoot(gfx::AcceleratedWidget widget) { map_.erase(widget); }
 
-  ui::AXFragmentRootWin* GetFragmentRoot(gfx::AcceleratedWidget widget) const {
+  AXFragmentRootWin* GetFragmentRoot(gfx::AcceleratedWidget widget) const {
     const auto& entry = map_.find(widget);
     if (entry != map_.end())
       return entry->second;
@@ -243,7 +296,7 @@ class AXFragmentRootMapWin {
     return nullptr;
   }
 
-  ui::AXFragmentRootWin* GetFragmentRootParentOf(
+  AXFragmentRootWin* GetFragmentRootParentOf(
       gfx::NativeViewAccessible accessible) const {
     for (const auto& entry : map_) {
       AXPlatformNodeDelegate* child = entry.second->GetChildNodeDelegate();
@@ -254,20 +307,21 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  std::unordered_map<gfx::AcceleratedWidget, AXFragmentRootWin*> map_;
+  absl::flat_hash_map<gfx::AcceleratedWidget,
+                      raw_ptr<AXFragmentRootWin, CtnExperimental>>
+      map_;
 };
 
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,
                                      AXFragmentRootDelegateWin* delegate)
-    : widget_(widget), delegate_(delegate) {
-  platform_node_ = ui::AXFragmentRootPlatformNodeWin::Create(this);
+    : widget_(widget),
+      delegate_(delegate),
+      platform_node_(AXFragmentRootPlatformNodeWin::Create(*this)) {
   AXFragmentRootMapWin::GetInstance().AddFragmentRoot(widget, this);
 }
 
 AXFragmentRootWin::~AXFragmentRootWin() {
   AXFragmentRootMapWin::GetInstance().RemoveFragmentRoot(widget_);
-  platform_node_->Destroy();
-  platform_node_ = nullptr;
 }
 
 AXFragmentRootWin* AXFragmentRootWin::GetForAcceleratedWidget(
@@ -283,13 +337,12 @@ AXFragmentRootWin* AXFragmentRootWin::GetFragmentRootParentOf(
 }
 
 gfx::NativeViewAccessible AXFragmentRootWin::GetNativeViewAccessible() {
-  // The fragment root is the entry point from the operating system for UI
-  // Automation. Signal observers when we're asked for a platform object on it.
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    observer.OnBasicUIAutomationUsed();
+  if (!AXPlatformNodeWin::AreAXModeChangesPaused()) {
+    // The fragment root is the entry point from the operating system for UI
+    // Automation. Signal when we're asked for a platform object on it.
+    AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
   }
-  return platform_node_.Get();
+  return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }
 
 bool AXFragmentRootWin::IsControlElement() {
@@ -355,7 +408,7 @@ AXFragmentRootWin::GetTargetForNativeAccessibilityEvent() {
 }
 
 AXPlatformNode* AXFragmentRootWin::GetFromTreeIDAndNodeID(
-    const ui::AXTreeID& ax_tree_id,
+    const AXTreeID& ax_tree_id,
     int32_t node_id) {
   AXPlatformNodeDelegate* child_delegate = GetChildNodeDelegate();
   if (child_delegate)
@@ -367,7 +420,7 @@ AXPlatformNode* AXFragmentRootWin::GetFromTreeIDAndNodeID(
 AXPlatformNodeDelegate* AXFragmentRootWin::GetParentNodeDelegate() const {
   gfx::NativeViewAccessible parent = delegate_->GetParentOfAXFragmentRoot();
   if (parent)
-    return ui::AXPlatformNode::FromNativeViewAccessible(parent)->GetDelegate();
+    return AXPlatformNode::FromNativeViewAccessible(parent)->GetDelegate();
 
   return nullptr;
 }
@@ -375,9 +428,50 @@ AXPlatformNodeDelegate* AXFragmentRootWin::GetParentNodeDelegate() const {
 AXPlatformNodeDelegate* AXFragmentRootWin::GetChildNodeDelegate() const {
   gfx::NativeViewAccessible child = delegate_->GetChildOfAXFragmentRoot();
   if (child)
-    return ui::AXPlatformNode::FromNativeViewAccessible(child)->GetDelegate();
+    return AXPlatformNode::FromNativeViewAccessible(child)->GetDelegate();
 
   return nullptr;
+}
+
+void AXFragmentRootWin::OnEventListenerAdded(
+    EVENTID event_id,
+    base::span<const PROPERTYID> property_ids) {
+  CHECK_LT(event_listener_count_[event_id], std::numeric_limits<int>::max());
+  ++event_listener_count_[event_id];
+
+  for (PROPERTYID property_id : property_ids) {
+    CHECK_LT(property_listener_count_[property_id],
+             std::numeric_limits<int>::max());
+    ++property_listener_count_[property_id];
+  }
+}
+
+void AXFragmentRootWin::OnEventListenerRemoved(
+    EVENTID event_id,
+    base::span<const PROPERTYID> property_ids) {
+  auto event_it = event_listener_count_.find(event_id);
+  if (event_it != event_listener_count_.end() && (--event_it->second) <= 0) {
+    event_listener_count_.erase(event_it);
+  }
+
+  for (PROPERTYID property_id : property_ids) {
+    auto prop_it = property_listener_count_.find(property_id);
+    if (prop_it != property_listener_count_.end() && (--prop_it->second) <= 0) {
+      property_listener_count_.erase(prop_it);
+    }
+  }
+}
+
+bool AXFragmentRootWin::HasEventListenerForEvent(EVENTID event_id) {
+  return base::Contains(event_listener_count_, event_id);
+}
+
+bool AXFragmentRootWin::HasEventListenerForProperty(PROPERTYID property_id) {
+  return base::Contains(property_listener_count_, property_id);
+}
+
+IRawElementProviderSimple* AXFragmentRootWin::GetProvider() {
+  return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }
 
 size_t AXFragmentRootWin::GetIndexInParentOfChild() const {
@@ -390,10 +484,11 @@ size_t AXFragmentRootWin::GetIndexInParentOfChild() const {
   if (child) {
     size_t child_count = parent->GetChildCount();
     for (size_t child_index = 0; child_index < child_count; child_index++) {
-      if (ui::AXPlatformNode::FromNativeViewAccessible(
+      if (AXPlatformNode::FromNativeViewAccessible(
               parent->ChildAtIndex(child_index))
-              ->GetDelegate() == child)
+              ->GetDelegate() == child) {
         return child_index;
+      }
     }
   }
   return 0;

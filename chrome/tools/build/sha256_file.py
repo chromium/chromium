@@ -17,6 +17,11 @@ import hashlib
 import os.path
 import sys
 
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             os.path.pardir, os.path.pardir, os.path.pardir,
+                             'build'))
+import action_helpers
+
 
 def main(argv):
     if len(argv) < 3:
@@ -35,7 +40,8 @@ def main(argv):
         cc_contents += ', '.join(map(hex, value))
         cc_contents += '};\n\n'
 
-    with open(output_path_prefix + '.cc', 'w') as f:
+    with action_helpers.atomic_output(output_path_prefix + '.cc',
+                                      mode='w') as f:
         f.write(FILE_TEMPLATE.format(contents=cc_contents))
 
 

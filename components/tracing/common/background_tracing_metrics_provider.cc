@@ -18,34 +18,43 @@
 #include "third_party/metrics_proto/trace_log.pb.h"
 
 namespace tracing {
+namespace {
 
-BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() = default;
-BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
+base::RepeatingCallback<void(metrics::SystemProfileProto&)>&
+GetSystemProfileMetricsRecorder() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(metrics::SystemProfileProto&)>>
+      recorder;
+  return *recorder;
+}
 
-void BackgroundTracingMetricsProvider::Init() {
+}  // namespace
+
+base::RepeatingCallback<void(metrics::SystemProfileProto&)>
+BackgroundTracingMetricsProvider::GetSystemProfileMetricsRecorder() {
+  return tracing::GetSystemProfileMetricsRecorder();
+}
+
+BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() {
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::CPUMetricsProvider>());
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::GPUMetricsProvider>());
-
-  content::BackgroundTracingManager::GetInstance().SetSystemProfileRecorder(
-      base::BindRepeating(
-          [](base::WeakPtr<BackgroundTracingMetricsProvider> self) {
-            if (self) {
-              return self->RecordSystemProfileMetrics();
-            }
-            return std::string();
-          },
-          weak_factory_.GetWeakPtr()));
-
-  DoInit();
+  tracing::GetSystemProfileMetricsRecorder() = base::BindRepeating(
+      [](base::WeakPtr<BackgroundTracingMetricsProvider> self,
+         metrics::SystemProfileProto& system_profile_proto) {
+        if (self) {
+          self->RecordSystemProfileMetrics(system_profile_proto);
+        }
+      },
+      weak_factory_.GetWeakPtr());
 }
 
-std::string BackgroundTracingMetricsProvider::RecordSystemProfileMetrics() {
-  metrics::SystemProfileProto system_profile_proto;
-  RecordCoreSystemProfileMetrics(&system_profile_proto);
-  // RecordCoreSystemProfileMetrics is overridden by subclasses in
-  // Chrome/WebView to provide core system profile metrics.
+BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
+
+void BackgroundTracingMetricsProvider::RecordSystemProfileMetrics(
+    metrics::SystemProfileProto& system_profile_proto) {
+  RecordCoreSystemProfileMetrics(system_profile_proto);
   // BackgroundTracingManager stores the returned system profile together with
   // the trace in the trace database at trace recording time.
   // ProvideIndependentMetrics() later overrides the system_profile in the log
@@ -55,9 +64,6 @@ std::string BackgroundTracingMetricsProvider::RecordSystemProfileMetrics() {
     provider->ProvideSystemProfileMetricsWithLogCreationTime(
         base::TimeTicks::Now(), &system_profile_proto);
   }
-  std::string serialized_system_profile;
-  system_profile_proto.SerializeToString(&serialized_system_profile);
-  return serialized_system_profile;
 }
 
 bool BackgroundTracingMetricsProvider::HasIndependentMetrics() {
@@ -79,11 +85,12 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
              base::OnceCallback<void(bool)> done_callback,
              metrics::ChromeUserMetricsExtension* uma_proto,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::optional<std::string> compressed_trace,
-             std::optional<std::string> serialized_system_profile) {
-            if (!compressed_trace ||
+             std::optional<std::string> compressed_trace_content,
+             std::optional<std::string> serialized_system_profile,
+             base::OnceClosure upload_complete) {
+            if (!compressed_trace_content ||
                 !std::move(provide_embedder_metrics)
-                     .Run(uma_proto, std::move(*compressed_trace))) {
+                     .Run(uma_proto, std::move(*compressed_trace_content))) {
               task_runner->PostTask(
                   FROM_HERE, base::BindOnce(std::move(done_callback), false));
               return;
@@ -93,16 +100,18 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
               system_profile.ParsePartialFromString(*serialized_system_profile);
               uma_proto->mutable_system_profile()->MergeFrom(system_profile);
             }
-            // Serialize the log on the background instead of on the main
+            // Serialize the log on a worker thread instead of on the main
             // thread.
             base::ThreadPool::PostTask(
                 FROM_HERE,
-                {base::TaskPriority::BEST_EFFORT,
+                {base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
                 std::move(serialize_log_callback)
                     .Then(base::BindPostTask(
                         task_runner,
-                        base::BindOnce(std::move(done_callback), true))));
+                        base::BindOnce(std::move(done_callback)
+                                           .Then(std::move(upload_complete)),
+                                       true))));
           },
           std::move(provide_embedder_metrics),
           std::move(serialize_log_callback), std::move(done_callback),

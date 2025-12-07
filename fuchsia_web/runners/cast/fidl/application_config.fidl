@@ -4,7 +4,7 @@
 
 library chromium.cast;
 
-using fuchsia.diagnostics;
+using fuchsia.diagnostics.types;
 using fuchsia.media;
 using fuchsia.ui.gfx;
 using fuchsia.web;
@@ -46,7 +46,7 @@ type ApplicationConfig = resource table {
     /// [`fuchsia.logger/LogSink`] configured for this application. If not set, no
     /// messages will be logged.
     // TODO(crbug.com/42050112): Deprecate once there is another mechanism.
-    10: initial_min_console_log_severity fuchsia.diagnostics.Severity;
+    10: initial_min_console_log_severity fuchsia.diagnostics.types.Severity;
 
     /// The usage for [`fuchsia.media/AudioRenderer`] created by the app. If not
     /// specified, then audio will be played through

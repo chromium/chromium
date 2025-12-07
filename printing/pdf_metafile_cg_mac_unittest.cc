@@ -56,8 +56,9 @@ std::unique_ptr<PdfMetafileCg> GetPdfMetafile(
 
   // Initialize and check metafile.
   auto pdf_cg = std::make_unique<PdfMetafileCg>();
-  if (!pdf_cg->InitFromData(base::as_bytes(base::make_span(pdf_data))))
+  if (!pdf_cg->InitFromData(base::as_byte_span(pdf_data))) {
     return nullptr;
+  }
   return pdf_cg;
 }
 
@@ -85,7 +86,8 @@ void RenderedPdfSha1(const base::FilePath::StringType& pdf_filename,
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       rendered_bitmap.data(), dest_size.width(), dest_size.height(),
       kBitsPerComponent, kStride, color_space.get(),
-      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Little));
+      static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) |
+          kCGImageByteOrder32Little));
 
   // Render using metafile and calculate the output hash.
   ASSERT_TRUE(pdf_cg->RenderPage(page_number, context.get(),
@@ -99,20 +101,17 @@ void ExpectedPngSha1(const base::FilePath::StringType& expected_png_filename,
                      base::SHA1Digest* expected_hash) {
   base::FilePath expected_png_file = GetPrintingTestData(expected_png_filename);
   ASSERT_FALSE(expected_png_file.empty());
-  std::string expected_png_data;
-  ASSERT_TRUE(base::ReadFileToString(expected_png_file, &expected_png_data));
+  std::optional<std::vector<uint8_t>> expected_png_data =
+      base::ReadFileToBytes(expected_png_file);
+  ASSERT_TRUE(expected_png_data);
 
   // Decode expected PNG and calculate the output hash.
-  std::vector<uint8_t> expected_png_bitmap;
-  int png_width;
-  int png_height;
-  ASSERT_TRUE(gfx::PNGCodec::Decode(
-      reinterpret_cast<const uint8_t*>(expected_png_data.data()),
-      expected_png_data.size(), gfx::PNGCodec::FORMAT_BGRA,
-      &expected_png_bitmap, &png_width, &png_height));
-  ASSERT_EQ(expected_png_size.width(), png_width);
-  ASSERT_EQ(expected_png_size.height(), png_height);
-  *expected_hash = base::SHA1Hash(expected_png_bitmap);
+  std::optional<gfx::PNGCodec::DecodeOutput> decoded = gfx::PNGCodec::Decode(
+      expected_png_data.value(), gfx::PNGCodec::FORMAT_BGRA);
+  ASSERT_TRUE(decoded);
+  ASSERT_EQ(expected_png_size.width(), decoded->width);
+  ASSERT_EQ(expected_png_size.height(), decoded->height);
+  *expected_hash = base::SHA1Hash(decoded->output);
 }
 
 void TestRenderPageWithTransformParams(
@@ -175,8 +174,9 @@ TEST(PdfMetafileCgTest, Pdf) {
 
   // Test browser-side constructor.
   PdfMetafileCg pdf2;
-  // TODO(thestig): Make `buffer` uint8_t and avoid the base::as_bytes() call.
-  EXPECT_TRUE(pdf2.InitFromData(base::as_bytes(base::make_span(buffer))));
+  // TODO(thestig): Make `buffer` uint8_t and avoid the base::as_byte_span()
+  // call.
+  EXPECT_TRUE(pdf2.InitFromData(base::as_byte_span(buffer)));
 
   // Get the first 4 characters from pdf2.
   std::vector<char> buffer2(4, 0);
@@ -205,7 +205,7 @@ TEST(PdfMetafileCgTest, GetPageBounds) {
 
   // Initialize and check metafile.
   PdfMetafileCg pdf_cg;
-  ASSERT_TRUE(pdf_cg.InitFromData(base::as_bytes(base::make_span(pdf_data))));
+  ASSERT_TRUE(pdf_cg.InitFromData(base::as_byte_span(pdf_data)));
   ASSERT_EQ(5u, pdf_cg.GetPageCount());
 
   // Since the input into GetPageBounds() is a 1-indexed page number, 0 and 6

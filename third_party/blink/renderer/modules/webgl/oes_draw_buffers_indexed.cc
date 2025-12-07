@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/oes_draw_buffers_indexed.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-OESDrawBuffersIndexed::OESDrawBuffersIndexed(WebGLRenderingContextBase* context)
+OESDrawBuffersIndexed::OESDrawBuffersIndexed(
+    WebGLRenderingContextBase* context,
+    ExecutionContext* execution_context)
     : WebGLExtension(context) {
+  UseCounter::CountWebDXFeature(execution_context,
+                                WebDXFeature::kWebglOesDrawBuffersIndexed);
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_draw_buffers_indexed");
 }

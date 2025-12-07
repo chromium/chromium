@@ -1,5 +1,5 @@
 // META: title=test WebNN API clamp operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -19,15 +19,29 @@
 //
 // MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
 
-
-const getClampPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const clampTests = [
+  {
+    'name': 'clamp float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-9.817828178405762],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-9.817828178405762],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name': 'clamp float32 1D constant tensor default options',
     'graph': {
@@ -43,7 +57,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -64,7 +78,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -84,7 +98,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -104,7 +118,181 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp int8 1D tensor',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-128, 127, -4, -2, 1, 0, 2, 4],
+          'descriptor': {shape: [8], dataType: 'int8'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': -2, 'maxValue': 125}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-2, 125, -2, -2, 1, 0, 2, 4],
+          'descriptor': {shape: [8], dataType: 'int8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp uint8 1D tensor',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [255, 127, 5, 0],
+          'descriptor': {shape: [4], dataType: 'uint8'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'}, {'options': {'minValue': 5, 'maxValue': 200}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [200, 127, 5, 5],
+          'descriptor': {shape: [4], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp int32 1D tensor',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-2147483648, 2147483647, -4, -2, 1, 0, 2, 4],
+          'descriptor': {shape: [8], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': -2, 'maxValue': 2147483645}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-2, 2147483645, -2, -2, 1, 0, 2, 4],
+          'descriptor': {shape: [8], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp uint32 1D tensor',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [4294967295, 127, 5, 0],
+          'descriptor': {shape: [4], dataType: 'uint32'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': 5, 'maxValue': 4294967290}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [4294967290, 127, 5, 5],
+          'descriptor': {shape: [4], dataType: 'uint32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp int64 1D tensor with bigint max',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-41, 9007199254740995n, -4, -2, 1, 0, 2, 4],
+          'descriptor': {shape: [8], dataType: 'int64'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': -2, 'maxValue': 9007199254740992n}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-2, 9007199254740992n, -2, -2, 1, 0, 2, 4],
+          'descriptor': {shape: [8], dataType: 'int64'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp uint64 1D tensor with Number min and max',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [5294967295, 127, 5, 0],
+          'descriptor': {shape: [4], dataType: 'uint64'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': 5, 'maxValue': 5294967290}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [5294967290, 127, 5, 5],
+          'descriptor': {shape: [4], dataType: 'uint64'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp uint64 1D tensor with bigint max',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [9007199254740995n, 127, 5, 0],
+          'descriptor': {shape: [4], dataType: 'uint64'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': 5, 'maxValue': 9007199254740992n}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [9007199254740992n, 127, 5, 5],
+          'descriptor': {shape: [4], dataType: 'uint64'}
         }
       }
     }
@@ -124,7 +312,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -144,7 +332,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -164,7 +352,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -184,7 +372,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -204,7 +392,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 2, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -224,7 +412,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 2, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -244,7 +432,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [4, 1, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 1, 1, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -264,7 +452,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [4, 1, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 1, 1, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -285,7 +473,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -321,7 +509,7 @@ const clampTests = [
             7.409400463104248,
             -1
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 3], dataType: 'float32'}
         }
       }
     }
@@ -342,7 +530,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [6, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [6, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -378,7 +566,7 @@ const clampTests = [
             7.409400463104248,
             0
           ],
-          'descriptor': {'dimensions': [6, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [6, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -399,7 +587,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 8], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 8], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -435,7 +623,7 @@ const clampTests = [
             7.409400463104248,
             1
           ],
-          'descriptor': {'dimensions': [3, 8], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 8], dataType: 'float32'}
         }
       }
     }
@@ -456,7 +644,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -492,7 +680,7 @@ const clampTests = [
             -2,
             -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -513,7 +701,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -549,7 +737,7 @@ const clampTests = [
             0,
             -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -570,7 +758,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 4, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -606,7 +794,7 @@ const clampTests = [
             3,
             -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 4, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4, 2], dataType: 'float32'}
         }
       }
     }
@@ -627,7 +815,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 2, 1, 1, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 2, 1, 1, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -665,7 +853,7 @@ const clampTests = [
             -1,
             -2.123614549636841
           ],
-          'descriptor': {'dimensions': [3, 2, 1, 1, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 2, 1, 1, 4], dataType: 'float32'}
         }
       }
     }
@@ -686,7 +874,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [1, 4, 3, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 4, 3, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -724,7 +912,7 @@ const clampTests = [
             0,
             -2.123614549636841
           ],
-          'descriptor': {'dimensions': [1, 4, 3, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 4, 3, 2], dataType: 'float32'}
         }
       }
     }
@@ -745,7 +933,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 6, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 6, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -783,7 +971,7 @@ const clampTests = [
             4,
             -2.123614549636841
           ],
-          'descriptor': {'dimensions': [2, 6, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 6, 2], dataType: 'float32'}
         }
       }
     }
@@ -804,7 +992,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [6, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [6, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -842,7 +1030,7 @@ const clampTests = [
             6,
             0
           ],
-          'descriptor': {'dimensions': [6, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [6, 4], dataType: 'float32'}
         }
       }
     }
@@ -863,7 +1051,7 @@ const clampTests = [
             -2.3130595684051514, 9.549695014953613,  5.788925647735596,
             5.549378395080566,   7.409400463104248,  -2.123614549636841
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -901,18 +1089,840 @@ const clampTests = [
             7,
             2
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
-  }
+  },
+
+  // float16 tests
+  {
+    'name': 'clamp float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-9.8203125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-9.8203125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 1D tensor',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-64000, 64000, -2, 1, 0],
+          'descriptor': {shape: [5], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'minValue': -2}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-2, 64000, -2, 1, 0],
+          'descriptor': {shape: [5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 1D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 1D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'clamp float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [4, 1, 1, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [4, 1, 1, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 4D tensor default options.maxValue and specified negative options.minValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [2, 1, 4, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'minValue': -1}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -1,         -1,          -1,         -1,         -1,
+            9.5234375,  3.728515625, 6.48046875, -1,         -1,
+            7.87890625, -1,          6.34375,    5.52734375, 0.84326171875,
+            -1,         -1,          9.28125,    -1,         9.546875,
+            5.7890625,  5.55078125,  7.41015625, -1
+          ],
+          'descriptor': {shape: [2, 1, 4, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 3D tensor default options.maxValue and specified options.minValue=0.0',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [6, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'minValue': 0}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            0,          0,           0,          0,          0,
+            9.5234375,  3.728515625, 6.48046875, 0,          0,
+            7.87890625, 0,           6.34375,    5.52734375, 0.84326171875,
+            0,          0,           9.28125,    0,          9.546875,
+            5.7890625,  5.55078125,  7.41015625, 0
+          ],
+          'descriptor': {shape: [6, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 2D tensor default options.maxValue and specified positive options.minValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [3, 8], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'minValue': 1}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            1,          1,          1, 1,          1, 9.5234375, 3.728515625,
+            6.48046875, 1,          1, 7.87890625, 1, 6.34375,   5.52734375,
+            1,          1,          1, 9.28125,    1, 9.546875,  5.7890625,
+            5.55078125, 7.41015625, 1
+          ],
+          'descriptor': {shape: [3, 8], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 5D tensor default options.minValue and specified negative options.maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'maxValue': -2}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875, -7.75390625,
+            -2,         -2,           -2,          -2,          -7.34375,
+            -2,         -2.056640625, -2,          -2,          -2,
+            -8.203125,  -7.78515625,  -2,          -2.3125,     -2,
+            -2,         -2,           -2,          -2.123046875
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 1D tensor default options.minValue and specified options.maxValue=0.0',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'maxValue': 0}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125,  -6.0234375,  -4.07421875,
+            -6.57421875, -7.75390625, 0,
+            0,           0,           -1.537109375,
+            -7.34375,    0,           -2.056640625,
+            0,           0,           0,
+            -8.203125,   -7.78515625, 0,
+            -2.3125,     0,           0,
+            0,           0,           -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 3D tensor default options.minValue and specified positive options.maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [3, 4, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [{'input': 'clampInput'}, {'options': {'maxValue': 3}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -9.8203125,  -6.0234375,  -4.07421875,
+            -6.57421875, -7.75390625, 3,
+            3,           3,           -1.537109375,
+            -7.34375,    3,           -2.056640625,
+            3,           3,           0.84326171875,
+            -8.203125,   -7.78515625, 3,
+            -2.3125,     3,           3,
+            3,           3,           -2.123046875
+          ],
+          'descriptor': {shape: [3, 4, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 5D tensor specified both negative options.minValue and options.maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [3, 2, 1, 1, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'}, {'options': {'minValue': -8, 'maxValue': -1}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -8, -6.0234375,   -4.07421875, -6.57421875, -7.75390625,  -1, -1,
+            -1, -1.537109375, -7.34375,    -1,          -2.056640625, -1, -1,
+            -1, -8,           -7.78515625, -1,          -2.3125,      -1, -1,
+            -1, -1,           -2.123046875
+          ],
+          'descriptor': {shape: [3, 2, 1, 1, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 4D tensor specified negative options.minValue and options.maxValue=0.0',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [1, 4, 3, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'}, {'options': {'minValue': -6, 'maxValue': 0}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -6,      -6, -4.07421875,
+            -6,      -6, 0,
+            0,       0,  -1.537109375,
+            -6,      0,  -2.056640625,
+            0,       0,  0,
+            -6,      -6, 0,
+            -2.3125, 0,  0,
+            0,       0,  -2.123046875
+          ],
+          'descriptor': {shape: [1, 4, 3, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 3D tensor specified negative options.minValue and positive options.maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [2, 6, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'}, {'options': {'minValue': -3, 'maxValue': 4}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -3,          -3, -3,
+            -3,          -3, 4,
+            3.728515625, 4,  -1.537109375,
+            -3,          4,  -2.056640625,
+            4,           4,  0.84326171875,
+            -3,          -3, 4,
+            -2.3125,     4,  4,
+            4,           4,  -2.123046875
+          ],
+          'descriptor': {shape: [2, 6, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 2D tensor specified options.minValue=0.0 and positive options.maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [6, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'}, {'options': {'minValue': 0, 'maxValue': 6}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            0,         0,           0, 0,          0,
+            6,         3.728515625, 6, 0,          0,
+            6,         0,           6, 5.52734375, 0.84326171875,
+            0,         0,           6, 0,          6,
+            5.7890625, 5.55078125,  6, 0
+          ],
+          'descriptor': {shape: [6, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'clamp float16 1D tensor specified both positive options.minValue and options.maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [
+            -9.8203125, -6.0234375,   -4.07421875, -6.57421875,  -7.75390625,
+            9.5234375,  3.728515625,  6.48046875,  -1.537109375, -7.34375,
+            7.87890625, -2.056640625, 6.34375,     5.52734375,   0.84326171875,
+            -8.203125,  -7.78515625,  9.28125,     -2.3125,      9.546875,
+            5.7890625,  5.55078125,   7.41015625,  -2.123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'}, {'options': {'minValue': 2, 'maxValue': 7}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            2, 2, 2, 2, 2,         7,          3.728515625, 6.48046875,
+            2, 2, 7, 2, 6.34375,   5.52734375, 2,           2,
+            2, 7, 2, 7, 5.7890625, 5.55078125, 7,           2
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'minValue as -Infinity',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments':
+            [{'input': 'clampInput'}, {'options': {'minValue': -Infinity}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'minValue as Infinity',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments':
+            [{'input': 'clampInput'}, {'options': {'minValue': Infinity}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity
+          ],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'maxValue as -Infinity',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments':
+            [{'input': 'clampInput'}, {'options': {'maxValue': -Infinity}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [
+            -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity,
+            -Infinity
+          ],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'maxValue as Infinity',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments':
+            [{'input': 'clampInput'}, {'options': {'maxValue': Infinity}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'minValue == maxValue',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments': [
+          {'input': 'clampInput'},
+          {'options': {'minValue': 0.5, 'maxValue': 0.5}}
+        ],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'minValue as NaN',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments':
+            [{'input': 'clampInput'}, {'options': {'minValue': NaN}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'maxValue as NaN',
+    'graph': {
+      'inputs': {
+        'clampInput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'clamp',
+        'arguments':
+            [{'input': 'clampInput'}, {'options': {'maxValue': NaN}}],
+        'outputs': 'clampOutput'
+      }],
+      'expectedOutputs': {
+        'clampOutput': {
+          'data': [-Infinity, Infinity, -3e35, 2147483647, -2, 1, 0],
+          'descriptor': {shape: [7], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
-if (navigator.ml) {
-  clampTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getClampPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(clampTests, buildAndExecuteGraph, getPrecisionTolerance);

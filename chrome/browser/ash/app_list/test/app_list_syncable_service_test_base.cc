@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/extension_registrar.h"
 
 namespace test {
 
@@ -27,13 +28,13 @@ void AppListSyncableServiceTestBase::SetUp() {
       std::make_unique<ProfileManagerWithoutInit>(temp_dir_.GetPath()));
 
   app_list_syncable_service_ =
-      std::make_unique<app_list::AppListSyncableService>(profile_.get());
+      std::make_unique<app_list::AppListSyncableService>(profile());
   content::RunAllTasksUntilIdle();
 }
 
 void AppListSyncableServiceTestBase::RestartSyncableService() {
   app_list_syncable_service_ =
-      std::make_unique<app_list::AppListSyncableService>(profile_.get());
+      std::make_unique<app_list::AppListSyncableService>(profile());
   content::RunAllTasksUntilIdle();
 }
 
@@ -54,15 +55,15 @@ void AppListSyncableServiceTestBase::InstallExtension(
     extensions::Extension* extension) {
   const syncer::StringOrdinal& page_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  service()->OnExtensionInstalled(extension, page_ordinal,
-                                  extensions::kInstallFlagNone);
+  registrar()->OnExtensionInstalled(extension, page_ordinal,
+                                    extensions::kInstallFlagNone);
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 }
 
 void AppListSyncableServiceTestBase::RemoveExtension(const std::string& id) {
-  service()->UninstallExtension(id, extensions::UNINSTALL_REASON_FOR_TESTING,
-                                nullptr);
+  registrar()->UninstallExtension(id, extensions::UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();

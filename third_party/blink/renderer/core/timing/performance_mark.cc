@@ -11,9 +11,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -25,8 +24,9 @@ PerformanceMark::PerformanceMark(
     base::TimeTicks unsafe_time_for_traces,
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state,
-    DOMWindow* source)
-    : PerformanceEntry(name, start_time, start_time, source),
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(/*duration=*/0.0, name, start_time, source, navigation_id),
       serialized_detail_(std::move(serialized_detail)),
       unsafe_time_for_traces_(unsafe_time_for_traces) {}
 
@@ -38,10 +38,10 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   Performance* performance = nullptr;
   bool is_worker_global_scope = false;
   if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
-    performance = DOMWindowPerformance::performance(*window);
+    performance = GlobalPerformance::performance(*window);
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(
                  ExecutionContext::From(script_state))) {
-    performance = WorkerGlobalScopePerformance::performance(*scope);
+    performance = GlobalPerformance::performance(*scope);
     is_worker_global_scope = true;
   }
   DCHECK(performance);
@@ -53,8 +53,8 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
     if (mark_options->hasStartTime()) {
       start = mark_options->startTime();
       if (start < 0.0) {
-        exception_state.ThrowTypeError("'" + mark_name +
-                                       "' cannot have a negative start time.");
+        exception_state.ThrowTypeError(
+            StrCat({"'", mark_name, "' cannot have a negative start time."}));
         return nullptr;
       }
       // |start| is in milliseconds from the start of navigation.
@@ -79,9 +79,9 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
       PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "'" + mark_name +
-            "' is part of the PerformanceTiming interface, and "
-            "cannot be used as a mark name.");
+        StrCat({"'", mark_name,
+                "' is part of the PerformanceTiming interface, and cannot be "
+                "used as a mark name."}));
     return nullptr;
   }
 
@@ -99,7 +99,8 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
 
   return MakeGarbageCollected<PerformanceMark>(
       mark_name, start, unsafe_start_for_traces, std::move(serialized_detail),
-      exception_state, LocalDOMWindow::From(script_state));
+      exception_state, LocalDOMWindow::From(script_state),
+      performance->NavigationId());
 }
 
 const AtomicString& PerformanceMark::entryType() const {

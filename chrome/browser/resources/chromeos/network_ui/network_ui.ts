@@ -11,22 +11,24 @@ import 'chrome://resources/ash/common/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/ash/common/network/network_select.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './network_state_ui.js';
 import './network_logs_ui.js';
 import './network_metrics_ui.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
+import type {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
+import type {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfig, CrosNetworkConfigRemote, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_ui.html.js';
-import {NetworkUiBrowserProxy, NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
+import type {NetworkUiBrowserProxy} from './network_ui_browser_proxy.js';
+import {NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
 function stringifyJson(result: any): string {
   return JSON.stringify(result, null, '\t');
@@ -55,7 +57,7 @@ class NetworkUiElement extends NetworkUiElementBase {
        */
       tabNames_: {
         type: Array,
-        computed: 'computeTabNames_(isWifiDirectEnabled_)',
+        computed: 'computeTabNames_()',
       },
 
       /**
@@ -84,14 +86,6 @@ class NetworkUiElement extends NetworkUiElementBase {
         },
       },
 
-      isWifiDirectEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isWifiDirectEnabled') &&
-              loadTimeData.getBoolean('isWifiDirectEnabled');
-        },
-      },
-
       invalidJSON_: {
         type: Boolean,
         value: false,
@@ -109,7 +103,6 @@ class NetworkUiElement extends NetworkUiElementBase {
   private hostname_: string;
   private tetheringConfigToSet_: string;
   private isGuestModeActive_: boolean;
-  private isWifiDirectEnabled_: boolean;
   private invalidJSON_: boolean;
   private showNetworkSelect_: boolean;
   private onHashChange_: () => void = () => {
@@ -132,11 +125,10 @@ class NetworkUiElement extends NetworkUiElementBase {
     this.getTetheringConfig_();
     this.getTetheringStatus_();
 
-    if (this.isWifiDirectEnabled_) {
-      this.getWifiDirectCapabilities_();
-      this.getWifiDirectClientInfo_();
-      this.getWifiDirectOwnerInfo_();
-    }
+    this.getWifiDirectCapabilities_();
+    this.getWifiDirectClientInfo_();
+    this.getWifiDirectOwnerInfo_();
+
     this.getHostname_();
     this.selectTabFromHash_();
     window.addEventListener('hashchange', this.onHashChange_);
@@ -148,7 +140,7 @@ class NetworkUiElement extends NetworkUiElementBase {
   }
 
   private computeTabNames_(): string[] {
-    const values: string[] = [
+    return [
       this.i18n('generalTab'),
       this.i18n('networkHealthTab'),
       this.i18n('networkLogsTab'),
@@ -157,11 +149,8 @@ class NetworkUiElement extends NetworkUiElementBase {
       this.i18n('TrafficCountersTrafficCounters'),
       this.i18n('networkMetricsTab'),
       this.i18n('networkHotspotTab'),
+      this.i18n('networkWifiDirectTab'),
     ];
-    if (this.isWifiDirectEnabled_) {
-      values.push(this.i18n('networkWifiDirectTab'));
-    }
-    return values;
   }
 
   private selectTabFromHash_() {
@@ -423,7 +412,7 @@ class NetworkUiElement extends NetworkUiElementBase {
 
   private onCustomItemSelected_(event:
                                     CustomEvent<NetworkList.CustomItemState>) {
-    this.browserProxy_.addNetwork(event.detail!.customData as string);
+    this.browserProxy_.addNetwork(event.detail.customData as string);
   }
 }
 

@@ -1,2 +1,10 @@
-wjmaclean@chromium.org
 mcnee@chromium.org
+
+# The following sets of owners may be used for changes which primarily involve
+# their subject area.
+# IWA, webview, controlled frame.
+file://chrome/common/controlled_frame/OWNERS #{LAST_RESORT_SUGGESTION}
+# ChromeOS apps.
+file://apps/DEPRECATION_OWNERS #{LAST_RESORT_SUGGESTION}
+# Extensions, mime handler, extensionoptions.
+file://extensions/OWNERS #{LAST_RESORT_SUGGESTION}

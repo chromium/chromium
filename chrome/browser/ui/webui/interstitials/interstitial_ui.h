@@ -5,7 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERSTITIALS_INTERSTITIAL_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERSTITIALS_INTERSTITIAL_UI_H_
 
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
+
+class InterstitialUI;
+
+class InterstitialUIConfig
+    : public content::DefaultInternalWebUIConfig<InterstitialUI> {
+ public:
+  InterstitialUIConfig();
+};
 
 // Handler for chrome://interstitials demonstration pages. This class is not
 // used in displaying any real interstitials.

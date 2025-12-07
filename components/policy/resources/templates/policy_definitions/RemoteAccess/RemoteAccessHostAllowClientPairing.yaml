@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled or leaving it unset lets users pair clients and hosts at connection time, eliminating the need to enter a PIN every time.
 
         Setting the policy to Disabled makes this feature unavailable.
+default: true
 example_value: false
 features:
   dynamic_refresh: true

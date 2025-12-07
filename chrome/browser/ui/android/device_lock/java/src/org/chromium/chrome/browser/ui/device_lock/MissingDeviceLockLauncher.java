@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.device_lock;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.KeyguardManager;
 import android.content.Context;
 
@@ -10,6 +12,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -24,12 +29,13 @@ import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+@NullMarked
 public class MissingDeviceLockLauncher {
-    private Context mContext;
-    private Profile mProfile;
-    private ModalDialogManager mModalDialogManager;
-    private MissingDeviceLockCoordinator mMissingDeviceLockCoordinator;
-    private PasswordStoreBridge mPasswordStoreBridge;
+    private final Context mContext;
+    private final Profile mProfile;
+    private final ModalDialogManager mModalDialogManager;
+    private @Nullable MissingDeviceLockCoordinator mMissingDeviceLockCoordinator;
+    private @Nullable PasswordStoreBridge mPasswordStoreBridge;
 
     /**
      * Launcher to show and handle the Missing Device Lock dialog to the user to prompt them to
@@ -45,7 +51,6 @@ public class MissingDeviceLockLauncher {
         mContext = context;
         mProfile = profile;
         mModalDialogManager = modalDialogManager;
-        mMissingDeviceLockCoordinator = null;
     }
 
     /**
@@ -55,7 +60,7 @@ public class MissingDeviceLockLauncher {
      *
      * @return The {@link MissingDeviceLockCoordinator} for the Missing Device Lock UI being shown.
      */
-    public MissingDeviceLockCoordinator checkPrivateDataIsProtectedByDeviceLock() {
+    public @Nullable MissingDeviceLockCoordinator checkPrivateDataIsProtectedByDeviceLock() {
         KeyguardManager keyguardManager =
                 (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
 
@@ -82,13 +87,17 @@ public class MissingDeviceLockLauncher {
                 && ChromeSharedPreferences.getInstance()
                         .readBoolean(
                                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
+            Runnable hideDeviceLockDialogRunnable =
+                    () -> {
+                        if (mMissingDeviceLockCoordinator != null) {
+                            mMissingDeviceLockCoordinator.hideDialog(
+                                    DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                        }
+                    };
             Callback<Boolean> onContinueWithoutDeviceLock =
                     (wipeAllData) ->
                             ensureSignOutAndDeleteSensitiveData(
-                                    () ->
-                                            mMissingDeviceLockCoordinator.hideDialog(
-                                                    DialogDismissalCause.POSITIVE_BUTTON_CLICKED),
-                                    wipeAllData);
+                                    hideDeviceLockDialogRunnable, wipeAllData);
             mMissingDeviceLockCoordinator =
                     new MissingDeviceLockCoordinator(
                             onContinueWithoutDeviceLock, mContext, mModalDialogManager);
@@ -110,6 +119,8 @@ public class MissingDeviceLockLauncher {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(signinManager);
+        assumeNonNull(identityManager);
 
         signinManager.runAfterOperationInProgress(
                 () -> {
@@ -143,6 +154,7 @@ public class MissingDeviceLockLauncher {
     }
 
     @VisibleForTesting
+    @EnsuresNonNull("mPasswordStoreBridge")
     PasswordStoreBridge getPasswordStoreBridge() {
         if (mPasswordStoreBridge == null) {
             mPasswordStoreBridge = new PasswordStoreBridge(mProfile);

@@ -25,7 +25,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -82,7 +81,7 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
     return ExternalProtocolHandler::BlockState::DONT_BLOCK;
   }
 
-  void BlockRequest() override { NOTREACHED_IN_MIGRATION(); }
+  void BlockRequest() override { NOTREACHED(); }
 
   void RunExternalProtocolDialog(
       const GURL& url,
@@ -91,7 +90,7 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void LaunchUrlWithoutSecurityCheck(

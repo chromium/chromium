@@ -18,21 +18,6 @@ namespace blink {
 
 namespace {
 
-ScrollOrientation ToPhysicalScrollOrientation(ScrollAxis axis,
-                                              const LayoutBox& source_box) {
-  bool is_horizontal = source_box.IsHorizontalWritingMode();
-  switch (axis) {
-    case ScrollAxis::kBlock:
-      return is_horizontal ? kVerticalScroll : kHorizontalScroll;
-    case ScrollAxis::kInline:
-      return is_horizontal ? kHorizontalScroll : kVerticalScroll;
-    case ScrollAxis::kX:
-      return kHorizontalScroll;
-    case ScrollAxis::kY:
-      return kVerticalScroll;
-  }
-}
-
 Node* ResolveSource(Element* source) {
   if (source && source == source->GetDocument().ScrollingElementNoLayout()) {
     return &source->GetDocument();
@@ -160,12 +145,8 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
 void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
                                       ScrollOrientation physical_orientation,
                                       TimelineState* state) const {
-  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
-                                   scrollable_area->MinimumScrollOffset();
-  double end_offset = physical_orientation == kHorizontalScroll
-                          ? scroll_dimensions.x()
-                          : scroll_dimensions.y();
-  state->scroll_offsets = std::make_optional<ScrollOffsets>(0, end_offset);
+  CalculateScrollLimits(scrollable_area, physical_orientation, state);
+  state->scroll_offsets = state->scroll_limits;
 }
 
 Element* ScrollTimeline::source() const {
@@ -214,8 +195,7 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
   }
 
   if (!node) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   if (node->IsElementNode()) {
@@ -225,8 +205,7 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
     return DynamicTo<Document>(node)->ScrollingElementNoLayout();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
@@ -240,7 +219,7 @@ void ScrollTimeline::AnimationAttached(Animation* animation) {
 void ScrollTimeline::AnimationDetached(Animation* animation) {
   AnimationTimeline::AnimationDetached(animation);
 
-  if (RetainingElement() && !HasAnimations()) {
+  if (RetainingElement() && !HasAnimations() && triggers_.empty()) {
     RetainingElement()->UnregisterScrollTimeline(this);
   }
 }
@@ -286,6 +265,57 @@ std::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
       ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
   return physical_orientation == kHorizontalScroll ? scroll_dimensions.x()
                                                    : scroll_dimensions.y();
+}
+
+std::optional<double> ScrollTimeline::GetCurrentScrollPosition() const {
+  Node* source = ComputeResolvedSource();
+  LayoutBox* scroll_container = ComputeScrollContainer(source);
+  if (!scroll_container) {
+    return std::nullopt;
+  }
+
+  PaintLayerScrollableArea* scrollable_area =
+      scroll_container->GetScrollableArea();
+  if (!scrollable_area) {
+    return std::nullopt;
+  }
+
+  ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
+  auto physical_orientation =
+      ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
+  return (physical_orientation == kHorizontalScroll) ? scroll_offset.x()
+                                                     : scroll_offset.y();
+}
+
+void ScrollTimeline::AddTrigger(TimelineTrigger* trigger) {
+  AnimationTimeline::AddTrigger(trigger);
+  if (RetainingElement()) {
+    RetainingElement()->RegisterScrollTimeline(this);
+  }
+}
+
+void ScrollTimeline::RemoveTrigger(TimelineTrigger* trigger) {
+  AnimationTimeline::RemoveTrigger(trigger);
+  if (RetainingElement() && triggers_.empty() && !HasAnimations()) {
+    RetainingElement()->UnregisterScrollTimeline(this);
+  }
+}
+
+// static
+ScrollOrientation ScrollTimeline::ToPhysicalScrollOrientation(
+    ScrollAxis axis,
+    const LayoutBox& source_box) {
+  bool is_horizontal = source_box.IsHorizontalWritingMode();
+  switch (axis) {
+    case ScrollAxis::kBlock:
+      return is_horizontal ? kVerticalScroll : kHorizontalScroll;
+    case ScrollAxis::kInline:
+      return is_horizontal ? kHorizontalScroll : kVerticalScroll;
+    case ScrollAxis::kX:
+      return kHorizontalScroll;
+    case ScrollAxis::kY:
+      return kVerticalScroll;
+  }
 }
 
 }  // namespace blink

@@ -25,3 +25,5 @@ const SharedPreferencesManager GetChromeSharedPreferences() {
 }
 
 }  // namespace android::shared_preferences
+
+DEFINE_JNI(ChromeSharedPreferences)

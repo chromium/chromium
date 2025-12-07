@@ -9,7 +9,7 @@
 
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/sync_error.h"
+#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 
@@ -41,8 +41,15 @@ FakeDataTypeControllerDelegate* FakeDataTypeController::model(
 
 void FakeDataTypeController::SimulateControllerError(
     const base::Location& location) {
-  ReportModelError(SyncError::DATATYPE_POLICY_ERROR,
-                   ModelError(location, "Test error"));
+  ReportModelError(
+      ModelError(location, syncer::ModelError::Type::kGenericTestError));
+}
+
+void FakeDataTypeController::LoadModels(
+    const ConfigureContext& configure_context,
+    const ModelLoadCallback& model_load_callback) {
+  last_configure_context_ = configure_context;
+  DataTypeController::LoadModels(configure_context, model_load_callback);
 }
 
 DataTypeController::PreconditionState

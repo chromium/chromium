@@ -43,6 +43,7 @@ export class SettingsPrivacyHubSystemServiceRow extends PolymerElement {
 
   iconSource: string;
   name: string;
+  permissionState: string;
   permissionStatus: string;
 }
 

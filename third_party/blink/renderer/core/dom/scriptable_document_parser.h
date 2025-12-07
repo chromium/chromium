@@ -50,6 +50,9 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
   virtual bool IsWaitingForScripts() const = 0;
   virtual void DidAddPendingParserBlockingStylesheet() = 0;
   virtual void DidLoadAllPendingParserBlockingStylesheets() = 0;
+  virtual void NotifyParserPauseByUserTiming() {}
+  virtual void NotifyParserResumeByUserTiming() {}
+  virtual void ExecuteScriptsWaitingForPrerenderActivation() {}
 
   // These are used to expose the current line/column to the scripting system.
   virtual bool IsParsingAtLineNumber() const;

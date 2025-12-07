@@ -65,9 +65,16 @@ class BLINK_COMMON_EXPORT WebKeyboardEvent : public WebInputEvent {
   std::array<char16_t, kTextLengthCap> unmodified_text = {};
 
   WebKeyboardEvent(Type type, int modifiers, base::TimeTicks time_stamp)
-      : WebInputEvent(type, modifiers, time_stamp) {}
+      : WebInputEvent(type,
+                      Type::kKeyboardTypeFirst,
+                      Type::kKeyboardTypeLast,
+                      modifiers,
+                      time_stamp) {}
 
-  WebKeyboardEvent() = default;
+  WebKeyboardEvent()
+      : WebInputEvent(Type::kUndefined,
+                      Type::kKeyboardTypeFirst,
+                      Type::kKeyboardTypeLast) {}
 
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;

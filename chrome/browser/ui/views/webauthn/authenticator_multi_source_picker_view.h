@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_MULTI_SOURCE_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_MULTI_SOURCE_PICKER_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // Content view displaying one or two lists to select between multiple Web
 // Authentication accounts and mechanisms.
 class AuthenticatorMultiSourcePickerView : public views::View {
+  METADATA_HEADER(AuthenticatorMultiSourcePickerView, views::View)
+
  public:
   explicit AuthenticatorMultiSourcePickerView(
       AuthenticatorMultiSourcePickerSheetModel* model);

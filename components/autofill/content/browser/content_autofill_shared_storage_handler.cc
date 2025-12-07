@@ -6,12 +6,13 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/autofill_shared_storage.pb.h"
-#include "components/autofill/content/common/content_autofill_features.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
 namespace {

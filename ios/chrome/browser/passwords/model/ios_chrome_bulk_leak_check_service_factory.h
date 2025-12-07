@@ -6,24 +6,20 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_BULK_LEAK_CHECK_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-
-class ChromeBrowserState;
-enum class ServiceAccessType;
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace password_manager {
 class BulkLeakCheckServiceInterface;
 }
 
 // Singleton that owns all BulkLeakCheckServices and associates them with
-// ChromeBrowserState.
+// profile.
 class IOSChromeBulkLeakCheckServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
+  static password_manager::BulkLeakCheckServiceInterface* GetForProfile(
+      ProfileIOS* profile);
   static IOSChromeBulkLeakCheckServiceFactory* GetInstance();
-  static password_manager::BulkLeakCheckServiceInterface* GetForBrowserState(
-      ChromeBrowserState* browser_state);
 
  private:
   friend class base::NoDestructor<IOSChromeBulkLeakCheckServiceFactory>;
@@ -31,8 +27,9 @@ class IOSChromeBulkLeakCheckServiceFactory
   IOSChromeBulkLeakCheckServiceFactory();
   ~IOSChromeBulkLeakCheckServiceFactory() override;
 
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_BULK_LEAK_CHECK_SERVICE_FACTORY_H_

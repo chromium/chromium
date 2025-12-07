@@ -4,16 +4,15 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './advanced_settings_dialog.js';
-import './print_preview_shared.css.js';
 import './settings_section.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
-import type {Settings} from '../data/model.js';
 
-import {getTemplate} from './advanced_options_settings.html.js';
+import {getCss} from './advanced_options_settings.css.js';
+import {getHtml} from './advanced_options_settings.html.js';
 
 interface PrintPreviewAdvancedOptionsSettingsElement {
   $: {
@@ -21,42 +20,43 @@ interface PrintPreviewAdvancedOptionsSettingsElement {
   };
 }
 
-class PrintPreviewAdvancedOptionsSettingsElement extends PolymerElement {
+class PrintPreviewAdvancedOptionsSettingsElement extends CrLitElement {
   static get is() {
     return 'print-preview-advanced-options-settings';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      disabled: Boolean,
-      destination: Object,
-      settings: Object,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      showAdvancedDialog_: {
-        type: Boolean,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      disabled: {type: Boolean},
+      destination: {type: Object},
+      showAdvancedDialog_: {type: Boolean},
     };
   }
 
-  disabled: boolean;
-  destination: Destination;
-  settings: Settings;
-  private showAdvancedDialog_: boolean;
+  accessor disabled: boolean = false;
+  accessor destination: Destination|null = null;
+  protected accessor showAdvancedDialog_: boolean = false;
 
-  private onButtonClick_() {
+  protected onButtonClick_() {
     this.showAdvancedDialog_ = true;
   }
 
-  private onDialogClose_() {
+  protected onDialogClose_() {
     this.showAdvancedDialog_ = false;
     this.$.button.focus();
   }
 }
+
+export type AdvancedOptionsSettingsElement =
+    PrintPreviewAdvancedOptionsSettingsElement;
 
 customElements.define(
     PrintPreviewAdvancedOptionsSettingsElement.is,

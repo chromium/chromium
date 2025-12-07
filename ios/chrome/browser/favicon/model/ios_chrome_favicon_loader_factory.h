@@ -5,29 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_
 
-#include <memory>
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
 class FaviconLoader;
+class ProfileIOS;
 
 // Singleton that owns all FaviconLoaders and associates them with
-// ChromeBrowserState.
-class IOSChromeFaviconLoaderFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class IOSChromeFaviconLoaderFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static FaviconLoader* GetForBrowserState(ChromeBrowserState* browser_state);
-  static FaviconLoader* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static FaviconLoader* GetForProfile(ProfileIOS* profile);
+  static FaviconLoader* GetForProfileIfExists(ProfileIOS* profile);
+
   static IOSChromeFaviconLoaderFactory* GetInstance();
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
   static TestingFactory GetDefaultFactory();
-
-  IOSChromeFaviconLoaderFactory(const IOSChromeFaviconLoaderFactory&) = delete;
-  IOSChromeFaviconLoaderFactory& operator=(
-      const IOSChromeFaviconLoaderFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeFaviconLoaderFactory>;
@@ -35,12 +29,9 @@ class IOSChromeFaviconLoaderFactory : public BrowserStateKeyedServiceFactory {
   IOSChromeFaviconLoaderFactory();
   ~IOSChromeFaviconLoaderFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_

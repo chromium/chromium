@@ -28,9 +28,10 @@ class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
   // Show the cardholder name fix flow view. If another view is triggered
   // when the current view has not been dismissed by user yet, the current
   // view will be destroyed.
-  void Show(CardNameFixFlowView* card_name_fix_flow_view,
-            const std::u16string& inferred_cardholder_name,
-            base::OnceCallback<void(const std::u16string&)> name_callback);
+  void Show(
+      CardNameFixFlowView* card_name_fix_flow_view,
+      const std::u16string& inferred_cardholder_name,
+      base::OnceCallback<void(const std::u16string&)> name_accepted_callback);
 
   // CardNameFixFlowController implementation.
   void OnConfirmNameDialogClosed() override;

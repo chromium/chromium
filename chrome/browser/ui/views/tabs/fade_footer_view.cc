@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,7 +19,9 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
@@ -29,6 +35,41 @@ constexpr int kIconLabelSpacing = 8;
 constexpr auto kFooterMargins = gfx::Insets::VH(12, 12);
 // Spacing used to separate two footer rows.
 constexpr int kFooterRowSpacing = 8;
+
+ui::ColorId GetTabAlertColor(tabs::TabAlert alert_state) {
+  // Hover card background color isn't affected by third party themes so icons
+  // need to use a different color id from those used in the
+  // AlertIndicatorButton.
+  ui::ColorId icon_color = gfx::kPlaceholderColor;
+  switch (alert_state) {
+    case tabs::TabAlert::kMediaRecording:
+    case tabs::TabAlert::kAudioRecording:
+    case tabs::TabAlert::kVideoRecording:
+    case tabs::TabAlert::kDesktopCapturing:
+      icon_color = kColorHoverCardTabAlertMediaRecordingIcon;
+      break;
+    case tabs::TabAlert::kTabCapturing:
+    case tabs::TabAlert::kPipPlaying:
+    case tabs::TabAlert::kActorAccessing:
+    case tabs::TabAlert::kActorWaitingOnUser:
+    case tabs::TabAlert::kGlicAccessing:
+    case tabs::TabAlert::kGlicSharing:
+      icon_color = kColorHoverCardTabAlertPipPlayingIcon;
+      break;
+    case tabs::TabAlert::kAudioPlaying:
+    case tabs::TabAlert::kAudioMuting:
+    case tabs::TabAlert::kBluetoothConnected:
+    case tabs::TabAlert::kBluetoothScanActive:
+    case tabs::TabAlert::kUsbConnected:
+    case tabs::TabAlert::kHidConnected:
+    case tabs::TabAlert::kSerialConnected:
+    case tabs::TabAlert::kVrPresentingInHeadset:
+      icon_color = kColorHoverCardTabAlertAudioPlayingIcon;
+      break;
+  }
+
+  return icon_color;
+}
 }  // namespace
 
 template <typename T>
@@ -50,7 +91,7 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
   footer_label_ = views::View::AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
   icon_->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+      views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
   footer_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   footer_label_->SetMultiLine(true);
   footer_label_->SetProperty(
@@ -59,8 +100,8 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
-    footer_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
-    footer_label_->SetTextStyle(views::style::STYLE_BODY_4);
+  footer_label_->SetEnabledColor(kColorTabHoverCardSecondaryText);
+  footer_label_->SetTextStyle(views::style::STYLE_BODY_4);
 
   // Vertically align the icon to the top line of the label
   const int offset = (footer_label_->GetLineHeight() -
@@ -111,19 +152,25 @@ using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
 BEGIN_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow)
 END_METADATA
 
+using FooterRow_CollaborationMessagingRowData =
+    FooterRow<CollaborationMessagingRowData>;
+BEGIN_TEMPLATE_METADATA(FooterRow_CollaborationMessagingRowData, FooterRow)
+END_METADATA
+
 template class FooterRow<AlertFooterRowData>;
 template class FooterRow<PerformanceRowData>;
+template class FooterRow<CollaborationMessagingRowData>;
 
 // FadeAlertFooterRow
 // -----------------------------------------------------------------------
 
 void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
-  std::optional<TabAlertState> alert_state = data.alert_state;
+  std::optional<tabs::TabAlert> alert_state = data.alert_state;
   if (data.should_show_discard_status) {
     std::u16string row_text;
-    if (data.memory_savings_in_bytes > 0) {
+    if (data.memory_savings_in_bytes > base::ByteCount(0)) {
       const std::u16string formatted_memory_usage =
-          ui::FormatBytes(data.memory_savings_in_bytes);
+          ui::FormatBytes(base::ByteCount(data.memory_savings_in_bytes));
       row_text = l10n_util::GetStringFUTF16(
           IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS, formatted_memory_usage);
     } else {
@@ -135,9 +182,9 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
                    GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
                row_text);
   } else if (alert_state.has_value()) {
-    SetContent(AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
-                   alert_state.value()),
-               chrome::GetTabAlertStateText(alert_state.value()));
+    const tabs::TabAlert alert = alert_state.value();
+    SetContent(tabs::GetAlertImageModel(alert, GetTabAlertColor(alert)),
+               tabs::TabAlertController::GetTabAlertStateText(alert));
   } else {
     SetContent(ui::ImageModel(), std::u16string());
   }
@@ -173,6 +220,32 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 BEGIN_METADATA(FadePerformanceFooterRow)
 END_METADATA
 
+// FadeCollaborationMessagingFooterRow
+// -----------------------------------------------------------------------
+
+void FadeCollaborationMessagingFooterRow::SetData(
+    const CollaborationMessagingRowData& data) {
+  data_ = data;
+
+  if (!data_.should_show_collaboration_messaging) {
+    // Empty section if collaboration messaging should be hidden.
+    SetContent(ui::ImageModel(), std::u16string());
+    return;
+  }
+
+  SetContent(data_.avatar, data_.text);
+}
+
+CollaborationMessagingRowData::CollaborationMessagingRowData() = default;
+CollaborationMessagingRowData::~CollaborationMessagingRowData() = default;
+CollaborationMessagingRowData::CollaborationMessagingRowData(
+    const CollaborationMessagingRowData& other) = default;
+CollaborationMessagingRowData& CollaborationMessagingRowData::operator=(
+    const CollaborationMessagingRowData& other) = default;
+
+BEGIN_METADATA(FadeCollaborationMessagingFooterRow)
+END_METADATA
+
 // FooterView
 // -----------------------------------------------------------------------
 
@@ -195,6 +268,13 @@ FooterView::FooterView() {
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/false),
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/true)));
 
+  collaboration_messaging_row_ =
+      AddChildView(std::make_unique<CollaborationMessagingFadeView>(
+          std::make_unique<FadeCollaborationMessagingFooterRow>(
+              /* is_fade_out_view =*/false),
+          std::make_unique<FadeCollaborationMessagingFooterRow>(
+              /* is_fade_out_view =*/true)));
+
   alert_row_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -207,8 +287,13 @@ FooterView::FooterView() {
                                views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+  collaboration_messaging_row_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, true));
+
+  SetBackground(views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
 }
 
 void FooterView::SetAlertData(const AlertFooterRowData& data) {
@@ -221,14 +306,23 @@ void FooterView::SetPerformanceData(const PerformanceRowData& data) {
   UpdateVisibility();
 }
 
+void FooterView::SetCollaborationMessagingData(
+    const CollaborationMessagingRowData& data) {
+  collaboration_messaging_row_->SetData(data);
+  UpdateVisibility();
+}
+
 void FooterView::SetFade(double percent) {
   alert_row_->SetFade(percent);
   performance_row_->SetFade(percent);
+  collaboration_messaging_row_->SetFade(percent);
 }
 
 void FooterView::UpdateVisibility() {
   SetVisible(performance_row_->CalculatePreferredSize({}).height() > 0 ||
-             alert_row_->CalculatePreferredSize({}).height() > 0);
+             alert_row_->CalculatePreferredSize({}).height() > 0 ||
+             collaboration_messaging_row_->CalculatePreferredSize({}).height() >
+                 0);
 }
 
 using FadeWrapper_View_PerformanceRowData =
@@ -241,6 +335,13 @@ using FadeWrapper_View_AlertFooterRowData =
     FadeWrapper<views::View, AlertFooterRowData>;
 
 BEGIN_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper)
+END_METADATA
+
+using FadeWrapper_View_CollaborationMessagingRowData =
+    FadeWrapper<views::View, CollaborationMessagingRowData>;
+
+BEGIN_TEMPLATE_METADATA(FadeWrapper_View_CollaborationMessagingRowData,
+                        FadeWrapper)
 END_METADATA
 
 using FadeView_FadeAlertFooterRow_FadeAlertFooterRow_AlertFooterRowData =
@@ -258,6 +359,16 @@ using FadeView_FadePerformanceFooterRow_FadePerformanceFooterRow_PerformanceRowD
 
 BEGIN_TEMPLATE_METADATA(
     FadeView_FadePerformanceFooterRow_FadePerformanceFooterRow_PerformanceRowData,
+    FadeView)
+END_METADATA
+
+using FadeView_FadeCollaborationMessagingFooterRow_FadeCollaborationMessagingFooterRow_CollaborationMessagingRowData =
+    FadeView<FadeCollaborationMessagingFooterRow,
+             FadeCollaborationMessagingFooterRow,
+             CollaborationMessagingRowData>;
+
+BEGIN_TEMPLATE_METADATA(
+    FadeView_FadeCollaborationMessagingFooterRow_FadeCollaborationMessagingFooterRow_CollaborationMessagingRowData,
     FadeView)
 END_METADATA
 

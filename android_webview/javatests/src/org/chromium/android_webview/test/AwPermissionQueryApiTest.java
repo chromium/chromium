@@ -22,8 +22,8 @@ import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -39,26 +39,32 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({"enable-features=" + ContentFeatures.WEB_PERMISSIONS_API})
+@Features.EnableFeatures({ContentFeatures.WEB_PERMISSIONS_API})
 @Batch(Batch.PER_CLASS)
 public class AwPermissionQueryApiTest extends AwParameterizedTest {
 
     // Script template to query a permission and report the result back using the injected listener.
+    @SuppressWarnings("InlineFormatString")
     private static final String QUERY_API_PERMISSION =
             """
-          <html>
-          <script>
-          navigator.permissions.query(%s).then((result) => {
-            resultListener.postMessage(result.state);
-          }).catch(e => {
-            if (e instanceof TypeError && e.message.includes("is not enabled")) {
-                resultListener.postMessage("not_enabled");
-            } else {
-                resultListener.postMessage("" + e);
-            }
-          });
-          </script>
-      """;
+                <html>
+                <script>
+                navigator.permissions.query(%s).then((result) => {
+                  resultListener.postMessage(result.state);
+                }).catch(e => {
+                  if (e instanceof TypeError && e.message.includes("is not enabled")) {
+                      resultListener.postMessage("not_enabled");
+                  }
+                  else if (e instanceof TypeError &&
+                           e.message.includes("isn't available on Android")) {
+                      resultListener.postMessage("not_available");
+                  }
+                  else {
+                      resultListener.postMessage("" + e);
+                  }
+                });
+                </script>
+            """;
 
     /**
      * A page that queries geolocation, asks for a position, and then queries the permission state
@@ -66,32 +72,33 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
      */
     private static final String GEOLOCATION_PAGE_HTML =
             """
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Geolocation</title>
-            <script>
-              function gotPos(position) {
-                resultListener.postMessage("position");
-                navigator.permissions.query({"name": "geolocation"}).then((result) => {
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Geolocation</title>
+                <script>
+                  function gotPos(position) {
+                    resultListener.postMessage("position");
+                    navigator.permissions.query({"name": "geolocation"}).then((result) => {
+                        resultListener.postMessage(result.state);
+                    }).catch(e => resultListener.postMessage("" + e));
+                  }
+                  function errorCallback(error){
+                    resultListener.postMessage("" + error);
+                  }
+                  function initiate_getCurrentPosition() {
+                    navigator.geolocation.getCurrentPosition(gotPos, errorCallback, { });
+                  }
+                  navigator.permissions.query({"name": "geolocation"}).then((result) => {
                     resultListener.postMessage(result.state);
-                }).catch(e => resultListener.postMessage("" + e));
-              }
-              function errorCallback(error){
-                resultListener.postMessage("" + error);
-              }
-              function initiate_getCurrentPosition() {
-                navigator.geolocation.getCurrentPosition(gotPos, errorCallback, { });
-              }
-              navigator.permissions.query({"name": "geolocation"}).then((result) => {
-                resultListener.postMessage(result.state);
-                initiate_getCurrentPosition();
-              }).catch(e => resultListener.postMessage("" + e));
-            </script>
-          </head>
-          <body>
-          </body>
-        </html>""";
+                    initiate_getCurrentPosition();
+                  }).catch(e => resultListener.postMessage("" + e));
+                </script>
+              </head>
+              <body>
+              </body>
+            </html>
+            """;
 
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -173,6 +180,7 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("gyroscope", "granted");
         runTestCase("midi", "granted");
         runTestCase("magnetometer", "granted");
+        runTestCase("clipboard-write", "granted");
     }
 
     @Test
@@ -181,7 +189,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
     public void testPermissionsPrompt() throws Exception {
         // These permissions require a user prompt.
         runTestCase("camera", "prompt");
-        runTestCase("clipboard-write", "prompt");
         runTestCase("geolocation", "prompt");
         runTestCase("microphone", "prompt");
         runTestCase("midi-sysex", "prompt", "{\"name\": \"midi\", \"sysex\": true}");
@@ -198,7 +205,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("payment-handler", "denied");
         runTestCase("persistent-storage", "denied");
         runTestCase("screen-wake-lock", "denied");
-        runTestCase("storage-access", "denied");
         runTestCase("window-management", "denied");
         runTestCase("background-fetch", "denied");
         runTestCase("screen-wake-lock", "denied");
@@ -206,18 +212,17 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("display-capture", "denied");
         runTestCase("idle-detection", "denied");
         runTestCase("periodic-background-sync", "denied");
-        runTestCase("keyboard-lock", "denied");
         runTestCase("push", "denied", "{\"name\": \"push\", \"userVisibleOnly\": true}");
+        runTestCase(
+                "fullscreen",
+                "denied",
+                "{\"name\": \"fullscreen\", \"allowWithoutGesture\": true}");
+        runTestCase("storage-access", "denied");
         runTestCase(
                 "top-level-storage-access",
                 "denied",
                 "{\"name\": \"top-level-storage-access\", \"requestedOrigin\":"
                         + " \"https://example.com\"}");
-        runTestCase("pointer-lock", "denied");
-        runTestCase(
-                "fullscreen",
-                "denied",
-                "{\"name\": \"fullscreen\", \"allowWithoutGesture\": true}");
     }
 
     @Test
@@ -227,11 +232,19 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         // These permissions are blocked behind feature flags that are not enabled
         // in WebView.
         runTestCase("ambient-light-sensor", "not_enabled");
-        runTestCase("accessibility-events", "not_enabled");
         runTestCase("system-wake-lock", "not_enabled");
         runTestCase("local-fonts", "not_enabled");
         runTestCase("captured-surface-control", "not_enabled");
         runTestCase("speaker-selection", "not_enabled");
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testPermissionsNotAvailable() throws Exception {
+        // These permissions aren't available on Android.
+        runTestCase("pointer-lock", "not_available");
+        runTestCase("keyboard-lock", "not_available");
     }
 
     @Test

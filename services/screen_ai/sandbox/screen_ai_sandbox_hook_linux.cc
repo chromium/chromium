@@ -6,10 +6,14 @@
 
 #include <dlfcn.h>
 
-#include "base/files/file_util.h"
+#include "base/cpu.h"
+#include "base/debug/alias.h"
+#include "components/crash/core/common/crash_key.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/public/cpp/utilities.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
@@ -18,12 +22,14 @@ namespace screen_ai {
 
 namespace {
 
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
 NO_SANITIZE("cfi-icall")
 void CallPresandboxInitFunction(void* presandbox_init_function) {
   DCHECK(presandbox_init_function);
   typedef void (*PresandboxInitFn)();
   (*reinterpret_cast<PresandboxInitFn>(presandbox_init_function))();
 }
+#endif
 
 }  // namespace
 
@@ -32,6 +38,14 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
   if (binary_path.empty()) {
     VLOG(0) << "Screen AI component binary not found.";
   } else {
+    // TODO(crbug.com/418199684): Remove after the crash is fixed.
+    // Add CPU brand name as crash key and the entire CPU info in minidump in
+    // case details are needed.
+    base::CPU cpu;
+    base::debug::Alias(&cpu);
+    static crash_reporter::CrashKeyString<50> cpu_brand("cpu-brand");
+    cpu_brand.Set(absl::StrFormat("%.50s", cpu.cpu_brand()));
+
     void* screen_ai_library = dlopen(binary_path.value().c_str(),
                                      RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
     // The library is delivered by the component updater or DLC. If it is not
@@ -47,8 +61,10 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
         VLOG(0) << "PresandboxInit function of Screen AI library not found.";
         binary_path.clear();
       } else {
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
         VLOG(2) << "Screen AI library loaded pre-sandboxing: " << binary_path;
         CallPresandboxInitFunction(presandbox_init);
+#endif
       }
     }
   }
@@ -58,14 +74,13 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/proc/cpuinfo"),
-      BrokerFilePermission::ReadOnly("/proc/meminfo")};
+      BrokerFilePermission::ReadOnly("/proc/meminfo"),
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   permissions.push_back(BrokerFilePermission::ReadOnly("/proc/self/status"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/kernel_max"));
-  permissions.push_back(
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/present"));
 #endif

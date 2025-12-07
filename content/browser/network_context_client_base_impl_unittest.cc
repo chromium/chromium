@@ -4,12 +4,14 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/types/fixed_array.h"
@@ -44,12 +46,8 @@ void GrantAccess(const base::FilePath& file, int process_id) {
   ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(process_id, file);
 }
 
-void CreateFile(const base::FilePath& path, const char* content) {
-  base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  ASSERT_TRUE(file.IsValid());
-  int content_size = strlen(content);
-  int bytes_written = file.Write(0, content, content_size);
-  EXPECT_EQ(bytes_written, content_size);
+void CreateFile(const base::FilePath& path, std::string_view content) {
+  ASSERT_TRUE(base::WriteFile(path, content));
 }
 
 void ValidateFileContents(base::File& file, std::string_view expected_content) {

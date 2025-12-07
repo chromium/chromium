@@ -1,0 +1,43 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module customize_buttons.mojom;
+
+import "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom";
+
+enum SidePanelOpenTrigger {
+  kNewTabPage,
+  kNewTabFooter,
+};
+
+// Used by the WebUI document to bootstrap bidirectional communication.
+interface CustomizeButtonsHandlerFactory {
+  // The WebUI page's |BrowserProxy| singleton calls this method when the
+  // document is first initialized.
+  CreateCustomizeButtonsHandler(
+      pending_remote<CustomizeButtonsDocument> page,
+      pending_receiver<CustomizeButtonsHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI document.
+interface CustomizeButtonsHandler {
+  // Increment the number of times the user has opened the side panel
+  // with the customize chrome button.
+  IncrementCustomizeChromeButtonOpenCount();
+
+  // Increment the number of times the user has seen the wallpaper search
+  // button.
+  IncrementWallpaperSearchButtonShownCount();
+
+  // Shows or hides the customize chrome in unified side panel.
+  SetCustomizeChromeSidePanelVisible(bool visible,
+      side_panel.mojom.CustomizeChromeSection section,
+      SidePanelOpenTrigger trigger);
+};
+
+// WebUI-side handler for requests from the browser.
+interface CustomizeButtonsDocument {
+  // Sets Customize Chrome Side Panel visibility to |visible|.
+  SetCustomizeChromeSidePanelVisibility(bool visible);
+};

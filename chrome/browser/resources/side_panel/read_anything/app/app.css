@@ -1,0 +1,165 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=sp-shared-style-lit cr-hidden-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#empty-state-container {
+  background: var(--background-color);
+  border-radius: 12px;
+  height: 100%;
+  margin: 0 8px;
+  margin-bottom: var(--sp-card-block-padding);
+  min-width: var(--container-min-width);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.sp-scroller {
+  display: block;
+}
+
+#toolbar-container {
+  width: 100%;
+}
+
+#appFlexParent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-x: var(--app-overflow-x);
+  width: 100%;
+}
+
+#appFlexParent #containerParent {
+  background: var(--background-color);
+  display: flex;
+  flex-grow:1;
+  height: 100%;
+  margin-bottom: var(--sp-card-block-padding);
+  min-height:0px;
+  min-width: var(--container-min-width);
+  padding-top: 2px;
+  padding-left: var(--sp-card-block-padding);
+  padding-right: var(--sp-card-block-padding);
+  padding-bottom: var(--sp-card-block-padding);
+}
+
+/* Provides vertical and horizontal scrolling */
+#appFlexParent #containerScroller {
+  align-items: safe center;
+  background:transparent;
+  display:flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  /* Display the scroll bars in the gutters outside the card. */
+  margin-bottom:calc(var(--sp-card-block-padding) * -1);
+  margin-right: calc(var(--sp-card-block-padding) * -2);
+  overflow: auto;
+  padding-bottom: var(--sp-card-block-padding);
+  padding-right: calc(var(--sp-card-block-padding) * 2);
+}
+
+.sp-scroller::-webkit-scrollbar-track {
+  margin-bottom: 6px;
+  margin-top: 6px;
+}
+
+/* Hide the scrollbar corner */
+#containerScroller::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Set the horizontal scrollbar height to match the gutter space */
+#containerScroller::-webkit-scrollbar:horizontal {
+  height: var(--sp-card-block-padding);
+}
+
+/* User select should be disabled on the Read Anything panel when Read Aloud
+ * is playing audio and enabled otherwise. */
+.user-select-disabled-when-speech-active-true {
+  user-select: none;
+}
+
+.user-select-disabled-when-speech-active-false {
+  user-select: auto;
+}
+
+#appFlexParent #container {
+  background: var(--background-color);
+  color: var(--foreground-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  height:100%; /* Keeps content within containerParent */
+  letter-spacing: var(--letter-spacing);
+  line-height: var(--line-height);
+  margin: 0 auto;
+  max-width: var(--max-width);
+  overflow-wrap: break-word;
+  padding-left: 20px;
+  width: 100%; /* Wrap text to width even with horizontal scroll bar */
+}
+
+#appFlexParent a:link {
+  color: var(--link-color);
+}
+
+#appFlexParent a:visited {
+  color: var(--visited-link-color);
+}
+
+#appFlexParent sp-empty-state {
+  display: flex;
+  margin: 0 auto 16px auto;
+  font-family: var(--font-family);
+  --sp-empty-state-heading-font-size: calc(var(--font-size) * 1.2);
+  --sp-empty-state-body-font-size: var(--font-size);
+
+  --sp-empty-state-heading-line-height: var(--line-height);
+  --sp-empty-state-body-line-height: var(--line-height);
+}
+
+#appFlexParent ::selection {
+  background: var(--selection-color);
+  color: var(--selection-text-color);
+}
+
+#appFlexParent .current-read-highlight {
+  background-color: var(--current-highlight-bg-color);
+}
+
+@media (forced-colors: active) {
+  #appFlexParent .current-read-highlight {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}
+
+#appFlexParent .previous-read-highlight {
+  background-color: transparent;
+  color: var(--previous-highlight-color);
+}
+
+#appFlexParent canvas {
+  max-width: 100%;
+}
+
+#docs-load-more-button {
+  background: var(--color-sys-tonal-container);
+  margin: 0 auto;
+  border-width: 0px;
+  width: 10em;
+  max-width: 100%;
+  height: 3em;
+  font-size: var(--font-size);
+  color: var(--cr-primary-text-color);
+  display: flex;
+  justify-content: center;
+}

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_action_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -40,8 +41,8 @@ std::vector<views::View*> DescendantsMatchingPredicate(
   std::vector<views::View*> result;
 
   EnumerateDescendants(root, descendants);
-  base::ranges::copy_if(descendants, std::back_inserter(result),
-                        [=](views::View* view) { return predicate.Run(view); });
+  std::ranges::copy_if(descendants, std::back_inserter(result),
+                       [=](views::View* view) { return predicate.Run(view); });
   return result;
 }
 
@@ -79,12 +80,10 @@ views::View* FocusedViewOf(views::Widget* widget) {
   return widget->GetFocusManager()->GetFocusedView();
 }
 
-const gfx::VectorIcon kEmptyIcon;
-
 const std::vector<sharing_hub::SharingHubAction> kFirstPartyActions = {
-    {0, u"Feed to Dino", &kEmptyIcon, "feed-to-dino", 0},
-    {1, u"Reverse Star", &kEmptyIcon, "reverse-star", 0},
-    {2, u"Pastelify", &kEmptyIcon, "pastelify", 0},
+    {0, u"Feed to Dino", &gfx::VectorIcon::EmptyIcon(), "feed-to-dino", 0},
+    {1, u"Reverse Star", &gfx::VectorIcon::EmptyIcon(), "reverse-star", 0},
+    {2, u"Pastelify", &gfx::VectorIcon::EmptyIcon(), "pastelify", 0},
 };
 
 }  // namespace

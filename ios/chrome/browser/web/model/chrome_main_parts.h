@@ -14,6 +14,10 @@
 #include "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 #include "ios/web/public/init/web_main_parts.h"
 
+namespace display {
+class ScopedNativeScreen;
+}  // namespace display
+
 class ApplicationContextImpl;
 class PrefService;
 class IOSThreadProfiler;
@@ -26,6 +30,10 @@ class IOSChromeMainParts : public web::WebMainParts {
   IOSChromeMainParts& operator=(const IOSChromeMainParts&) = delete;
 
   ~IOSChromeMainParts() override;
+
+  // Initializes the field trials and feature list. This should be called early
+  // before features such as mojo are initialized.
+  void InitializeFieldTrialAndFeatureList();
 
  private:
   // web::WebMainParts implementation.
@@ -47,6 +55,12 @@ class IOSChromeMainParts : public web::WebMainParts {
   // Constructs the metrics service and initializes metrics recording.
   void SetupMetrics();
 
+  // Create the application context.
+  void CreateApplicationContext();
+
+  // Apply the command line to the feature list.
+  void ApplyFeatureList();
+
   // Starts recording of metrics. This can only be called after we have a file
   // thread.
   void StartMetricsRecording();
@@ -62,6 +76,8 @@ class IOSChromeMainParts : public web::WebMainParts {
   // A profiler that periodically samples stack traces. Used to understand
   // thread and process startup and normal behavior.
   std::unique_ptr<IOSThreadProfiler> sampling_profiler_;
+
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
 
   memory_system::MemorySystem memory_system_;
 };

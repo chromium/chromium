@@ -4,8 +4,9 @@
 
 module extensions.mojom;
 
-import "mojo/public/mojom/base/values.mojom";
+import "extensions/common/mojom/extension_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
 // Channel-associated interface implemented by the browser process. It should be
@@ -14,20 +15,20 @@ import "url/mojom/url.mojom";
 interface RendererHost {
   // Log an API action to the extension activity log.
   // `extra` holds extra logging information.
-  AddAPIActionToActivityLog(string extension_id,
+  AddAPIActionToActivityLog(ExtensionId? extension_id,
                             string call_name,
                             mojo_base.mojom.ListValue args,
                             string extra);
 
   // Log an event to the extension activity log.
   // `extra` holds extra logging information.
-  AddEventToActivityLog(string extension_id,
+  AddEventToActivityLog(ExtensionId? extension_id,
                         string call_name,
                         mojo_base.mojom.ListValue args,
                         string extra);
 
   // Log a DOM action to the extension activity log.
-  AddDOMActionToActivityLog(string extension_id,
+  AddDOMActionToActivityLog(ExtensionId extension_id,
                             string call_name,
                             mojo_base.mojom.ListValue args,
                             url.mojom.Url url,
@@ -36,5 +37,5 @@ interface RendererHost {
 
   // Retrieves the message bundle for an extension from the browser.
   [Sync]
-  GetMessageBundle(string extension_id) => (map<string, string> message_map);
+  GetMessageBundle(ExtensionId extension_id) => (map<string, string> message_map);
 };

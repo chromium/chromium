@@ -18,9 +18,9 @@ include_rules = [
   "+chrome/browser/pdf",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash",
   "+chrome/services/printing/public/mojom",
 
   # Dependencies outside of //chrome:
+  "+chromeos/ash/experiences/arc/custom_tab",
   "+components/printing/common",
 ]

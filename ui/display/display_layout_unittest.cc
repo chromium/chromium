@@ -122,6 +122,7 @@ TEST(DisplayLayoutTest, SwapPrimaryDisplayThreeDisplays) {
   EXPECT_EQ(Position::RIGHT, layout->placement_list[1].position);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Makes sure that only the least significant 8 bits of the display IDs in the
 // placement lists are used to validate their sort order.
 TEST(DisplayLayoutTest, PlacementSortOrder) {
@@ -147,6 +148,8 @@ TEST(DisplayLayoutTest, PlacementSortOrder) {
                                       DisplayPlacement::TOP_LEFT);
   EXPECT_TRUE(DisplayLayout::Validate({456, 0x0504, 0x0605, 0x0406}, *layout));
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 

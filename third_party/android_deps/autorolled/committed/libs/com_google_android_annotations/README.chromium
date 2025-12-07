@@ -1,0 +1,19 @@
+Name: Google Android Annotations Library
+Short Name: annotations
+URL: https://repo.maven.apache.org/maven2/com/google/android/annotations/4.1.1.4/annotations-4.1.1.4.jar
+Version: 4.1.1.4
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+A library jar that provides annotations for the Google Android Platform.
+
+See also: http://source.android.com/
+
+
+Local Modifications:
+No modifications.

@@ -8,11 +8,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUI;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUi;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
@@ -22,7 +21,10 @@ import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.function.Supplier;
+
 /** Class for controlling the {@link ChromePageInfo} "store info" section. */
+@NullMarked
 public class PageInfoStoreInfoController implements PageInfoSubpageController {
     public static final int STORE_INFO_ROW_ID = View.generateViewId();
 
@@ -32,7 +34,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         void onStoreInfoClicked(MerchantInfo merchantInfo);
     }
 
-    private final Supplier<StoreInfoActionHandler> mActionHandlerSupplier;
+    private final @Nullable Supplier<StoreInfoActionHandler> mActionHandlerSupplier;
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final Context mContext;
@@ -73,8 +75,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
             rowParams.visible = false;
         } else {
             rowParams.visible = true;
-            rowParams.title =
-                    mContext.getResources().getString(R.string.page_info_store_info_title);
+            rowParams.title = mContext.getString(R.string.page_info_store_info_title);
             rowParams.subtitle = getRowSubtitle(merchantInfo);
             // The icons in PageInfo are tinted automatically.
             rowParams.iconResId = R.drawable.ic_storefront_blue;
@@ -100,11 +101,10 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         if (merchantInfo.starRating > 0) {
             CharSequence subTitle =
                     MerchantTrustMessageViewModel.getMessageDescription(
-                            mContext, merchantInfo, MessageDescriptionUI.RATING_AND_REVIEWS);
+                            mContext, merchantInfo, MessageDescriptionUi.RATING_AND_REVIEWS);
             if (subTitle != null) return subTitle;
         } else if (merchantInfo.hasReturnPolicy) {
-            return mContext.getResources()
-                    .getString(R.string.page_info_store_info_description_with_no_rating);
+            return mContext.getString(R.string.page_info_store_info_description_with_no_rating);
         }
         assert false : "Invalid trust signal";
         return "";
@@ -117,7 +117,12 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     }
 
     @Override
-    public View createViewForSubpage(ViewGroup parent) {
+    public @Nullable View createViewForSubpage(ViewGroup parent) {
+        return null;
+    }
+
+    @Override
+    public @Nullable View getCurrentSubpageView() {
         return null;
     }
 
@@ -129,4 +134,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void updateSubpageIfNeeded() {}
 }

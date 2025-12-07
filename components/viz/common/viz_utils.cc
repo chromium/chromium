@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/viz_utils.h"
 
 #include <algorithm>
@@ -15,8 +10,10 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/render_pass_draw_quad_internal.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -25,7 +22,7 @@
 #include <array>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -34,12 +31,6 @@
 #endif
 
 namespace viz {
-
-#if BUILDFLAG(IS_ANDROID)
-bool PreferRGB565ResourcesForDisplay() {
-  return base::SysInfo::AmountOfPhysicalMemoryMB() <= 512;
-}
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 bool AlwaysUseWideColorGamut() {
@@ -54,13 +45,13 @@ bool AlwaysUseWideColorGamut() {
 
   // As it takes some work to compute this, cache the result.
   static bool is_always_use_wide_color_gamut_enabled = [] {
-    const char* current_model =
-        base::android::BuildInfo::GetInstance()->model();
+    const std::string& current_model = base::android::android_info::model();
     const std::array<std::string, 2> enabled_models = {
         std::string{"Pixel 4"}, std::string{"Pixel 4 XL"}};
     for (const std::string& model : enabled_models) {
-      if (model == current_model)
+      if (model == current_model) {
         return true;
+      }
     }
 
     return false;
@@ -69,54 +60,6 @@ bool AlwaysUseWideColorGamut() {
   return is_always_use_wide_color_gamut_enabled;
 }
 #endif
-
-bool GetScaledRegion(const gfx::Rect& rect,
-                     const gfx::QuadF* clip,
-                     gfx::QuadF* scaled_region) {
-  if (!clip)
-    return false;
-
-  gfx::PointF p1(((clip->p1().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p1().y() - rect.y()) / rect.height()) - 0.5f);
-  gfx::PointF p2(((clip->p2().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p2().y() - rect.y()) / rect.height()) - 0.5f);
-  gfx::PointF p3(((clip->p3().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p3().y() - rect.y()) / rect.height()) - 0.5f);
-  gfx::PointF p4(((clip->p4().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p4().y() - rect.y()) / rect.height()) - 0.5f);
-  *scaled_region = gfx::QuadF(p1, p2, p3, p4);
-  return true;
-}
-
-bool GetScaledRRectF(const gfx::Rect& space,
-                     const gfx::RRectF& rect,
-                     gfx::RRectF* scaled_rect) {
-  float x_scale = 1.0f / space.width();
-  float y_scale = 1.0f / space.height();
-  float new_x = (rect.rect().x() - space.x()) * x_scale - 0.5f;
-  float new_y = (rect.rect().y() - space.y()) * y_scale - 0.5f;
-  *scaled_rect = rect;
-  scaled_rect->Scale(x_scale, y_scale);
-  scaled_rect->Offset(-scaled_rect->rect().origin().x(),
-                      -scaled_rect->rect().origin().y());
-  scaled_rect->Offset(new_x, new_y);
-  return true;
-}
-
-bool GetScaledUVs(const gfx::Rect& rect, const gfx::QuadF* clip, float uvs[8]) {
-  if (!clip)
-    return false;
-
-  uvs[0] = ((clip->p1().x() - rect.x()) / rect.width());
-  uvs[1] = ((clip->p1().y() - rect.y()) / rect.height());
-  uvs[2] = ((clip->p2().x() - rect.x()) / rect.width());
-  uvs[3] = ((clip->p2().y() - rect.y()) / rect.height());
-  uvs[4] = ((clip->p3().x() - rect.x()) / rect.width());
-  uvs[5] = ((clip->p3().y() - rect.y()) / rect.height());
-  uvs[6] = ((clip->p4().x() - rect.x()) / rect.width());
-  uvs[7] = ((clip->p4().y() - rect.y()) / rect.height());
-  return true;
-}
 
 bool GatherFDStats(base::TimeDelta* delta_time_taken,
                    int* fd_max,
@@ -167,21 +110,32 @@ gfx::Rect ClippedQuadRectangle(const DrawQuad* quad) {
   return gfx::ToEnclosingRect(ClippedQuadRectangleF(quad));
 }
 
-gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
-    const DrawQuad& rpdq,
+gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
+    const RenderPassDrawQuadInternal& rpdq,
     const cc::FilterOperations& filters) {
   const SharedQuadState* shared_quad_state = rpdq.shared_quad_state;
-  gfx::Rect expanded_rect = filters.ExpandRectForPixelMovement(rpdq.rect);
-
-  // expanded_rect in the target space
+  gfx::Rect expanded_rect = GetExpandedRectForPixelMovingFilters(rpdq, filters);
   return cc::MathUtil::MapEnclosingClippedRect(
       shared_quad_state->quad_to_target_transform, expanded_rect);
+}
+
+gfx::Rect GetExpandedRectForPixelMovingFilters(
+    const RenderPassDrawQuadInternal& rpdq,
+    const cc::FilterOperations& filters) {
+  SkMatrix local_matrix =
+      SkMatrix::Translate(rpdq.filters_origin.x(), rpdq.filters_origin.y());
+  local_matrix.postScale(rpdq.filters_scale.x(), rpdq.filters_scale.y());
+
+  return filters.MapRect(rpdq.visible_rect, local_matrix);
 }
 
 gfx::Transform GetViewTransitionTransform(
     gfx::Rect shared_element_quad,
     gfx::Rect view_transition_content_output) {
   gfx::Transform view_transition_transform;
+
+  view_transition_transform.Translate(shared_element_quad.x(),
+                                      shared_element_quad.y());
 
   view_transition_transform.Scale(
       shared_element_quad.width() /
@@ -219,7 +173,7 @@ bool QuadRoundedCornersBoundsIntersects(const DrawQuad* quad,
   return false;
 }
 
-void SetCopyOutoutRequestResultSize(CopyOutputRequest* request,
+void SetCopyOutputRequestResultSize(CopyOutputRequest* request,
                                     const gfx::Rect& src_rect,
                                     const gfx::Size& output_size,
                                     const gfx::Size& surface_size_in_pixels) {

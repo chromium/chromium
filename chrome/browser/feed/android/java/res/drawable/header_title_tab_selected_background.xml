@@ -5,8 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:state_selected="false" >
     <shape android:shape="rectangle">
       <!-- This will show the main background color. -->
@@ -17,7 +16,7 @@ found in the LICENSE file.
     <shape android:shape="rectangle">
       <!-- The stroke will show the main background color. -->
       <stroke android:width="8dp" android:color="@android:color/transparent"/>
-      <solid android:color="@color/color_primary_with_alpha_15"/>
+      <solid android:color="@color/selected_feed_tab_color"/>
       <corners android:radius="@dimen/feed_header_background_corner_radius"/>
     </shape>
   </item>

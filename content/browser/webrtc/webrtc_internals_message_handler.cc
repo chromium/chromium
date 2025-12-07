@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -62,6 +63,18 @@ void WebRTCInternalsMessageHandler::RegisterMessages() {
           base::Unretained(this), false));
 
   web_ui()->RegisterMessageCallback(
+      "enableDataChannelRecordings",
+      base::BindRepeating(
+          &WebRTCInternalsMessageHandler::OnSetDataChannelRecordingsEnabled,
+          base::Unretained(this), true));
+
+  web_ui()->RegisterMessageCallback(
+      "disableDataChannelRecordings",
+      base::BindRepeating(
+          &WebRTCInternalsMessageHandler::OnSetDataChannelRecordingsEnabled,
+          base::Unretained(this), false));
+
+  web_ui()->RegisterMessageCallback(
       "finishedDOMLoad",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnDOMLoadDone,
                           base::Unretained(this)));
@@ -73,7 +86,7 @@ RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() {
     // Make sure we only ever execute the script in the webrtc-internals page.
     const GURL url(host->GetLastCommittedURL());
     if (!url.SchemeIs(kChromeUIScheme) ||
-        url.host() != kChromeUIWebRTCInternalsHost) {
+        url.GetHost() != kChromeUIWebRTCInternalsHost) {
       // Some other page is currently loaded even though we might be in the
       // process of loading webrtc-internals.  So, the current RFH is not the
       // one we're waiting for.
@@ -117,6 +130,20 @@ void WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled(
   }
 }
 
+void WebRTCInternalsMessageHandler::OnSetDataChannelRecordingsEnabled(
+    bool enable,
+    const base::Value::List& /* unused_list */) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebRtcAllowDataChannelRecordingInWebrtcInternals)) {
+    return;
+  }
+  if (enable) {
+    webrtc_internals_->EnableDataChannelRecordings(web_ui()->GetWebContents());
+  } else {
+    webrtc_internals_->DisableDataChannelRecordings();
+  }
+}
+
 void WebRTCInternalsMessageHandler::OnDOMLoadDone(
     const base::Value::List& args_list) {
   CHECK_GE(args_list.size(), 1u);
@@ -133,6 +160,8 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(
              webrtc_internals_->IsEventLogRecordingsEnabled());
   params.Set("eventLogRecordingsToggleable",
              webrtc_internals_->CanToggleEventLogRecordings());
+  params.Set("dataChannelRecordingsEnabled",
+             webrtc_internals_->IsDataChannelRecordingsEnabled());
 
   for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
     host->GetCurrentState();

@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/base/battery_power_status_traits.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
 namespace device {
 
 PowerMonitorBroadcastSource::PowerMonitorBroadcastSource(
@@ -35,8 +35,9 @@ void PowerMonitorBroadcastSource::Init(
   }
 }
 
-bool PowerMonitorBroadcastSource::IsOnBatteryPower() {
-  return client_->last_reported_on_battery_power_state();
+base::PowerStateObserver::BatteryPowerStatus
+PowerMonitorBroadcastSource::GetBatteryPowerStatus() const {
+  return client_->last_reported_battery_power_status();
 }
 
 PowerMonitorBroadcastSource::Client::Client() = default;
@@ -50,8 +51,8 @@ void PowerMonitorBroadcastSource::Client::Init(
 }
 
 void PowerMonitorBroadcastSource::Client::PowerStateChange(
-    bool on_battery_power) {
-  last_reported_on_battery_power_state_ = on_battery_power;
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  last_reported_battery_power_status_ = battery_power_status;
   ProcessPowerEvent(PowerMonitorSource::POWER_STATE_EVENT);
 }
 

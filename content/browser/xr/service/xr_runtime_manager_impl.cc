@@ -14,9 +14,9 @@
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -58,19 +58,6 @@ XrRuntimeManagerObservers& GetXrRuntimeManagerObservers() {
       xr_runtime_manager_observers;
   return *xr_runtime_manager_observers;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-bool IsEnabled(const base::CommandLine* command_line,
-               const base::Feature& feature,
-               const std::string& name) {
-  if (!command_line->HasSwitch(switches::kWebXrForceRuntime))
-    return base::FeatureList::IsEnabled(feature);
-
-  return (base::CompareCaseInsensitiveASCII(
-              command_line->GetSwitchValueASCII(switches::kWebXrForceRuntime),
-              name) == 0);
-}
-#endif
 
 bool IsForcedRuntime(const base::CommandLine* command_line,
                      const std::string& name) {
@@ -188,14 +175,20 @@ XRRuntimeManagerImpl::GetOrCreateRuntimeManagerInternal(
   providers.push_back(std::make_unique<IsolatedVRDeviceProvider>());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  bool orientation_provider_enabled = true;
+  const bool is_orientation_provider_forced =
+      IsForcedRuntime(base::CommandLine::ForCurrentProcess(),
+                      switches::kWebXrRuntimeOrientationSensors);
 
-#if !BUILDFLAG(IS_ANDROID)
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  orientation_provider_enabled =
-      IsEnabled(cmd_line, device::features::kWebXrOrientationSensorDevice,
-                ::switches::kWebXrRuntimeOrientationSensors);
-#endif
+  // We can use the orientation provider if it's forced, or if the feature is
+  // enabled and 2D chrome is not being rendered in a head-mounted display.
+  // On such displays inline sessions can cause "swimmy" behavior, because the
+  // content would move in response to the user's head motion, but in unexpected
+  // ways.
+  bool orientation_provider_enabled =
+      is_orientation_provider_forced ||
+      (base::FeatureList::IsEnabled(
+           device::features::kWebXROrientationSensorDevice) &&
+       !device::features::IsXrDevice());
 
   if (orientation_provider_enabled) {
     mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
@@ -239,6 +232,10 @@ void XRRuntimeManagerImpl::AddService(VRServiceImpl* service) {
     service->InitializationComplete();
 
   services_.insert(service);
+
+  for (const auto& runtime : runtimes_) {
+    runtime.second->OnServiceAdded(service);
+  }
 }
 
 void XRRuntimeManagerImpl::RemoveService(VRServiceImpl* service) {
@@ -357,7 +354,7 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetInlineRuntime() {
 
 BrowserXRRuntimeImpl*
 XRRuntimeManagerImpl::GetCurrentlyPresentingImmersiveRuntime() {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       runtimes_, [](const DeviceRuntimeMap::value_type& val) {
         return val.second->GetServiceWithActiveImmersiveSession() != nullptr;
       });
@@ -370,7 +367,7 @@ XRRuntimeManagerImpl::GetCurrentlyPresentingImmersiveRuntime() {
 }
 
 bool XRRuntimeManagerImpl::HasPendingImmersiveRequest() {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       runtimes_, [](const DeviceRuntimeMap::value_type& val) {
         return val.second->HasPendingImmersiveSessionRequest();
       });
@@ -455,7 +452,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 #else
     // MakeXrCompatible is not yet supported on other platforms so
     // IsInitializedOnCompatibleAdapter should have returned true.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   }
 
@@ -638,7 +635,7 @@ void XRRuntimeManagerImpl::RemoveRuntime(device::mojom::XRDeviceId id) {
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = runtimes_.find(id);
-  CHECK(it != runtimes_.end(), base::NotFatalUntil::M130);
+  CHECK(it != runtimes_.end());
 
   GetLoggerManager().RecordRuntimeRemoved(id);
 

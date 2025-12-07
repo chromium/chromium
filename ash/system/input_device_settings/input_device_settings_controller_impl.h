@@ -71,6 +71,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry);
 
+  // Refreshes keyboard info and settings. To be used when the feature is first
+  // forcibly enabled.
+  void ForceKeyboardSettingRefreshWhenFeatureEnabled();
+
   // InputDeviceSettingsController:
   std::vector<mojom::KeyboardPtr> GetConnectedKeyboards() override;
   std::vector<mojom::TouchpadPtr> GetConnectedTouchpads() override;
@@ -273,7 +277,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshCompanionAppInfoForConnectedDevices();
   void OnCompanionAppInfoReceived(
       DeviceId id,
-      const std::string& device_key,
+      const std::string device_key,
       const std::optional<mojom::CompanionAppInfo>& info);
 
   void DispatchMouseCompanionAppInfoChanged(const mojom::Mouse& mouse);
@@ -297,9 +301,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // current input method.
   void RefreshKeyDisplay();
 
-  // Refresh modifier keys when they potentially changed due to flags being
-  // enabled.
-  void RefreshModifierKeys();
+  // Refresh meta and modifier keys when they potentially changed due to flags
+  // being enabled.
+  void RefreshMetaAndModifierKeys();
 
   // Get the mouse button config based on the mouse metadata. Return
   // kDefault by default if there is no mouse metadata.

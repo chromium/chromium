@@ -19,8 +19,10 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/supervised_user/api_mock_setup_mixin.h"
 #include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
+#include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
@@ -54,9 +56,6 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   };
 
   SupervisionMixin() = delete;
-  SupervisionMixin(InProcessBrowserTestMixinHost& test_mixin_host,
-                   InProcessBrowserTest* test_base,
-                   const Options& options = Options::Default());
 
   // The `embedded_test_server` is used to configure FakeGaia handlers and to
   // add additional resolver rules.
@@ -70,6 +69,7 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   ~SupervisionMixin() override;
 
   // InProcessBrowserTestMixin:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
@@ -82,6 +82,10 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   // must not be `kSignedOut`.
   void SignIn(SignInMode mode);
 
+  // Invalidates the access token and Google cookie to put the primary user
+  // in the pending state.
+  void SetPendingStateForPrimaryAccount();
+
   EmbeddedTestServerSetupMixin& embedded_test_server_setup_mixin() {
     return *embedded_test_server_setup_mixin_;
   }
@@ -89,6 +93,11 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   KidsManagementApiMockSetupMixin& api_mock_setup_mixin() {
     return api_mock_setup_mixin_;
   }
+
+  // TODO(b/364011203): make this private once auth state waiting is handled by
+  // GoogleAuthStateWaiterMixin on Windows too.
+  static ChildAccountService::AuthState GetExpectedAuthState(
+      SignInMode sign_in_mode);
 
  private:
   void SetUpTestServer();
@@ -104,6 +113,7 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin fake_gaia_mixin_;
   std::optional<EmbeddedTestServerSetupMixin> embedded_test_server_setup_mixin_;
   KidsManagementApiMockSetupMixin api_mock_setup_mixin_;
+  GoogleAuthStateWaiterMixin google_auth_state_waiter_mixin_;
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   base::CallbackListSubscription subscription_;
@@ -116,7 +126,8 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
 
 // Enables user-readable output from gtest (instead of binary streams).
 std::ostream& operator<<(std::ostream& stream,
-                         const SupervisionMixin::SignInMode& account_type);
+                         SupervisionMixin::SignInMode sign_in_mode);
+std::string SignInModeAsString(SupervisionMixin::SignInMode sign_in_mode);
 
 }  // namespace supervised_user
 

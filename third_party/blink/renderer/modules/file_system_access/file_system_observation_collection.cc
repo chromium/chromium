@@ -11,21 +11,16 @@
 namespace blink {
 
 // static
-const char FileSystemObservationCollection::kSupplementName[] =
-    "FileSystemObservationCollection";
-
-// static
 FileSystemObservationCollection* FileSystemObservationCollection::From(
     ExecutionContext* context) {
   DCHECK(context);
   DCHECK(context->IsContextThread());
 
   FileSystemObservationCollection* data =
-      Supplement<ExecutionContext>::From<FileSystemObservationCollection>(
-          context);
+      context->GetFileSystemObservationCollection();
   if (!data) {
     data = MakeGarbageCollected<FileSystemObservationCollection>(*context);
-    Supplement<ExecutionContext>::ProvideTo(*context, data);
+    context->SetFileSystemObservationCollection(data);
   }
 
   return data;
@@ -33,7 +28,7 @@ FileSystemObservationCollection* FileSystemObservationCollection::From(
 
 FileSystemObservationCollection::FileSystemObservationCollection(
     ExecutionContext& context)
-    : Supplement<ExecutionContext>(context), execution_context_(context) {}
+    : execution_context_(context) {}
 
 void FileSystemObservationCollection::AddObservation(
     FileSystemObserver* observer,
@@ -42,7 +37,7 @@ void FileSystemObservationCollection::AddObservation(
   if (!observation_map_.Contains(observer)) {
     observation_map_.insert(
         observer,
-        MakeGarbageCollected<HeapHashSet<Member<FileSystemObservation>>>());
+        MakeGarbageCollected<GCedHeapHashSet<Member<FileSystemObservation>>>());
   }
   observation_map_.at(observer)->insert(
       MakeGarbageCollected<FileSystemObservation>(
@@ -82,7 +77,6 @@ void FileSystemObservationCollection::RemoveObserver(
 void FileSystemObservationCollection::Trace(Visitor* visitor) const {
   visitor->Trace(observation_map_);
   visitor->Trace(execution_context_);
-  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink

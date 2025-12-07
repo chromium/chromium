@@ -1,0 +1,23 @@
+# The code in this directory runs on bucket-specific threads (or, more
+# specifically, task runners that draw from the threadpool).
+# IndexedDBContextImpl, on the other hand, runs on its own task runner.
+# All inter-thread interaction should be routed through the
+# BucketContext and its delegate.
+#
+# Other than IndexedDBContextImpl, most code in the parent directory is
+# sequence-agnostic.
+include_rules = [
+  "-content/browser/indexed_db/indexed_db_context_impl.h",
+  # Don't directly depend on LevelDB code (even transitively).
+  "-content/browser/indexed_db/instance/leveldb",
+  "-components/services/storage/indexed_db/leveldb",
+  "-components/services/storage/indexed_db/transactional_leveldb",
+]
+
+# The BucketContext deals with initialization and shutdown of backing store
+# implementations; all other code should go through common interfaces.
+specific_include_rules = {
+  "bucket_context\\..*": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+}

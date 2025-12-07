@@ -9,17 +9,16 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "base/version.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -30,31 +29,6 @@ inline constexpr std::string_view kUpdateManifestChannelNameKey = "name";
 inline constexpr std::string_view kUpdateManifestVersionKey = "version";
 inline constexpr std::string_view kUpdateManifestSrcKey = "src";
 inline constexpr std::string_view kUpdateManifestChannelsKey = "channels";
-
-class UpdateChannelId {
- public:
-  // Returns an instance of the "default" update channel ID.
-  static const UpdateChannelId& default_id();
-
-  static base::expected<UpdateChannelId, absl::monostate> Create(
-      std::string input);
-
-  ~UpdateChannelId();
-
-  bool operator==(const UpdateChannelId& other) const;
-  auto operator<=>(const UpdateChannelId& other) const;
-  bool operator<(const UpdateChannelId& other) const;
-
-  const std::string& ToString() const { return id_; }
-
-  // For gtest
-  friend void PrintTo(const UpdateChannelId& id, std::ostream* os);
-
- private:
-  explicit UpdateChannelId(std::string id);
-
-  std::string id_;
-};
 
 // An Isolated Web App Update Manifest contains a list of versions and download
 // URLs of an Isolated Web App. The format is described in more detail here:
@@ -71,10 +45,11 @@ class UpdateManifest {
 
   class ChannelMetadata {
    public:
-    static base::expected<ChannelMetadata, absl::monostate> ParseFromJson(
+    static base::expected<ChannelMetadata, std::monostate> ParseFromJson(
         const base::Value::Dict& channel_metadata_dict);
 
-    ChannelMetadata(UpdateChannelId id, std::optional<std::string> name);
+    ChannelMetadata(UpdateChannel update_channel,
+                    std::optional<std::string> display_name);
 
     ChannelMetadata(const ChannelMetadata& other);
     ChannelMetadata& operator=(const ChannelMetadata& other);
@@ -87,28 +62,31 @@ class UpdateManifest {
     friend void PrintTo(const ChannelMetadata& channel_metadata,
                         std::ostream* os);
 
-    // Returns the channel's name if available, or the channel ID otherwise.
+    // Returns the channel's display name if available, or the channel name
+    // otherwise.
     std::string GetDisplayName() const {
-      return name_.value_or(id_.ToString());
+      return display_name_.value_or(channel_.ToString());
     }
 
-    const UpdateChannelId& id() const { return id_; }
-    const std::optional<std::string>& name() const { return name_; }
+    const UpdateChannel& channel() const { return channel_; }
+    const std::optional<std::string>& display_name() const {
+      return display_name_;
+    }
 
    private:
-    UpdateChannelId id_;
-    std::optional<std::string> name_;
+    UpdateChannel channel_;
+    std::optional<std::string> display_name_;
   };
 
   class VersionEntry {
    public:
-    static base::expected<VersionEntry, absl::monostate> ParseFromJson(
+    static base::expected<VersionEntry, std::monostate> ParseFromJson(
         const base::Value::Dict& version_entry_dict,
         const GURL& update_manifest_url);
 
     VersionEntry(GURL src,
-                 base::Version version,
-                 base::flat_set<UpdateChannelId> channel_ids);
+                 IwaVersion version,
+                 base::flat_set<UpdateChannel> channels);
 
     VersionEntry(const VersionEntry& other);
     VersionEntry& operator=(const VersionEntry& other);
@@ -116,36 +94,20 @@ class UpdateManifest {
     ~VersionEntry();
 
     GURL src() const;
-    base::Version version() const;
+    IwaVersion version() const;
 
     // Each version contains to a set of update channels, which are defined by
     // the IWA's developer. While the field is optional in the spec, it is
     // always present here and set to its spec-defined default value of
     // `["default"]` if not provided.
-    const base::flat_set<UpdateChannelId>& channel_ids() const;
+    const base::flat_set<UpdateChannel>& channels() const;
 
    private:
     friend bool operator==(const VersionEntry& a, const VersionEntry& b);
 
-    static base::expected<base::Version, absl::monostate>
-    ParseAndValidateVersion(
-        base::optional_ref<const base::Value> version_value);
-
-    static base::expected<GURL, absl::monostate> ParseAndValidateSrc(
-        base::optional_ref<const base::Value> src_value,
-        const GURL& update_manifest_url);
-
-    // Parses the `channels` field value of a version entry and either returns a
-    // set of channels on success or an error on failure. If `channels` is not
-    // set (i.e., `channels_value` is `std::nullopt`), then a set containing
-    // just the "default" channel is returned.
-    static base::expected<base::flat_set<UpdateChannelId>, absl::monostate>
-    ParseAndValidateChannels(
-        base::optional_ref<const base::Value> channels_value);
-
     GURL src_;
-    base::Version version_;
-    base::flat_set<UpdateChannelId> channel_ids_;
+    IwaVersion version_;
+    base::flat_set<UpdateChannel> channels_;
   };
 
   // Attempts to convert the provided JSON data into an instance of
@@ -167,23 +129,28 @@ class UpdateManifest {
   const std::vector<VersionEntry>& versions() const { return version_entries_; }
 
   // Returns the most up to date version contained in the `UpdateManifest` for a
-  // given `channel_id`. May return `std::nullopt` if no applicable version is
+  // given `channel`. May return `std::nullopt` if no applicable version is
   // found.
   std::optional<VersionEntry> GetLatestVersion(
-      const UpdateChannelId& channel_id) const;
+      const UpdateChannel& channel) const;
+
+  // Returns version entry for given version and channel. If there is no entry
+  // matching the criteria, then it returns `std::nullopt'.
+  std::optional<VersionEntry> GetVersion(const IwaVersion& version,
+                                         const UpdateChannel& channel) const;
 
   // Returns channel metadata for a provided update channel ID. If no metadata
   // for the provided channel ID is present in the Update Manifest, then this
   // will still return an empty `ChannelMetadata` instance for that channel ID.
-  ChannelMetadata GetChannelMetadata(const UpdateChannelId& channel_id) const;
+  ChannelMetadata GetChannelMetadata(const UpdateChannel& channel) const;
 
  private:
   explicit UpdateManifest(
       std::vector<VersionEntry> version_entries,
-      base::flat_map<UpdateChannelId, ChannelMetadata> channels_metadata);
+      base::flat_map<UpdateChannel, ChannelMetadata> channels_metadata);
 
   std::vector<VersionEntry> version_entries_;
-  base::flat_map<UpdateChannelId, ChannelMetadata> channels_metadata_;
+  base::flat_map<UpdateChannel, ChannelMetadata> channels_metadata_;
 };
 
 bool operator==(const UpdateManifest::VersionEntry& lhs,

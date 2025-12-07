@@ -11,9 +11,9 @@ namespace processes {
     renderer,
     extension,
     notification,
-    plugin,
+    plugin,  // Obsolete, will never be returned.
     worker,
-    nacl,
+    nacl,  // Obsolete, will never be returned.
     service_worker,
     utility,
     gpu,

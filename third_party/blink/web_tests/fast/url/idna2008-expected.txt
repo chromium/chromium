@@ -10,9 +10,9 @@ PASS canonicalize('http://ශ්‍රී.com/') is 'http://xn--10cl1a0b660p.com
 PASS canonicalize('http://نامه‌ای.com/') is 'http://xn--mgba3gch31f060k.com/'
 PASS canonicalize('http://♥.net/') is 'http://xn--g6h.net/'
 PASS canonicalize('http://͸.net/') is 'http://͸.net/'
-PASS canonicalize('http://Ӏ.com/') is 'http://Ӏ.com/'
-PASS canonicalize('http://㛼.com/') is 'http://㛼.com/'
-PASS canonicalize('http://Ↄ.com/') is 'http://Ↄ.com/'
+FAIL canonicalize('http://Ӏ.com/') should be http://Ӏ.com/. Was http://xn--s5a.com/.
+FAIL canonicalize('http://㛼.com/') should be http://㛼.com/. Was http://xn--snl.com/.
+FAIL canonicalize('http://Ↄ.com/') should be http://Ↄ.com/. Was http://xn--r5g.com/.
 PASS canonicalize('http://look͏out.net/') is 'http://lookout.net/'
 PASS canonicalize('http://gOoGle.com/') is 'http://google.com/'
 PASS canonicalize('http://ড়.com/') is 'http://xn--15b8c.com/'

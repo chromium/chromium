@@ -6,18 +6,20 @@ import 'chrome://cloud-upload/move_confirmation_page.js';
 
 import {OperationType, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {CloudProvider, MoveConfirmationPageElement} from 'chrome://cloud-upload/move_confirmation_page.js';
-import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {MoveConfirmationPageElement} from 'chrome://cloud-upload/move_confirmation_page.js';
+import {CloudProvider} from 'chrome://cloud-upload/move_confirmation_page.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrosLottieEvent} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
+import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
 
 suite('<move-confirmation-page>', () => {
   /* Holds the <move-confirmation-page> app. */
-  let container: HTMLDivElement;
+  let container: HTMLElement;
   /* The <move-confirmation-page> app. */
   let moveConfirmationPageApp: MoveConfirmationPageElement;
   /* The BrowserProxy element to make assertions on when mojo methods are
@@ -54,9 +56,7 @@ suite('<move-confirmation-page>', () => {
 
     // Creates and attaches the <move-confirmation-page> element to the DOM
     // tree.
-    moveConfirmationPageApp =
-        document.createElement('move-confirmation-page') as
-        MoveConfirmationPageElement;
+    moveConfirmationPageApp = document.createElement('move-confirmation-page');
     container.appendChild(moveConfirmationPageApp);
 
     // Initialise dialog
@@ -532,7 +532,7 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Google Drive'));
 
     // Body.
@@ -563,7 +563,7 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForOneDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Microsoft OneDrive'));
 
     // Body.
@@ -594,12 +594,12 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Move'));
 
     // Button.
     const actionButton =
-        moveConfirmationPageApp.$<HTMLElement>('.action-button')!;
+        moveConfirmationPageApp.$<HTMLElement>('.action-button');
     assertEquals('Move and open', actionButton.innerText);
   });
 
@@ -620,12 +620,12 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Copy'));
 
     // Button.
     const actionButton =
-        moveConfirmationPageApp.$<HTMLElement>('.action-button')!;
+        moveConfirmationPageApp.$<HTMLElement>('.action-button');
     assertEquals('Copy and open', actionButton.innerText);
   });
 

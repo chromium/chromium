@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_FILE_SUGGESTION_DRIVE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -58,7 +60,8 @@ class DriveService : public KeyedService {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  using GetFilesCallback = file_suggestion::mojom::FileSuggestionHandler::GetFilesCallback;
+  using GetFilesCallback =
+      file_suggestion::mojom::DriveSuggestionHandler::GetFilesCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
   void GetDriveFiles(GetFilesCallback get_files_callback);
   // Retrieves classification result from segmentation platform before
@@ -76,7 +79,7 @@ class DriveService : public KeyedService {
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
   void OnJsonReceived(const std::string& token,
-                      std::unique_ptr<std::string> json_response);
+                      std::optional<std::string> json_response);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
@@ -90,7 +93,7 @@ class DriveService : public KeyedService {
       segmentation_platform_service_;
   std::string application_locale_;
   raw_ptr<PrefService> pref_service_;
-  std::unique_ptr<std::string> cached_json_;
+  std::optional<std::string> cached_json_;
   base::Time cached_json_time_;
   std::string cached_json_token_;
   SEQUENCE_CHECKER(sequence_checker_);

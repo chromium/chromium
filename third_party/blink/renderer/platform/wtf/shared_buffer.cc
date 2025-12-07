@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 #include <cstddef>
@@ -41,11 +36,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
-  DCHECK(!IsEnd());
-  ++segment_it_;
+  CHECK(!IsEnd());
+  // SAFETY: The above CHECK ensures it's safe.
+  UNSAFE_BUFFERS(++segment_it_);
   Init(0);
   return *this;
 }
@@ -112,23 +108,26 @@ SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
                         [](const size_t& position, const Segment& segment) {
                           return position < segment.start_position();
                         });
-  --it;
+  // SAFETY: The above `if` handles a case for the first segment, so `it` must
+  // not be `begin()`.
+  UNSAFE_BUFFERS(--it);
   return Iterator(it, position - it->start_position(), this);
 }
 
-bool SegmentedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
-  if (!dest)
+bool SegmentedBuffer::GetBytes(base::span<uint8_t> buffer) const {
+  if (!buffer.data()) {
     return false;
-
-  size_t offset = 0;
-  for (const auto& span : *this) {
-    if (offset >= dest_size)
-      break;
-    size_t to_be_written = std::min(span.size(), dest_size - offset);
-    memcpy(static_cast<char*>(dest) + offset, span.data(), to_be_written);
-    offset += to_be_written;
   }
-  return offset == dest_size;
+
+  for (const auto& span : *this) {
+    if (buffer.empty()) {
+      break;
+    }
+    const size_t to_be_written = std::min(span.size(), buffer.size());
+    buffer.take_first(to_be_written)
+        .copy_from(base::as_bytes(span.first(to_be_written)));
+  }
+  return buffer.empty();
 }
 
 void SegmentedBuffer::GetMemoryDumpNameAndSize(String& dump_name,
@@ -183,4 +182,4 @@ scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
   return buffer;
 }
 
-}  // namespace WTF
+}  // namespace blink

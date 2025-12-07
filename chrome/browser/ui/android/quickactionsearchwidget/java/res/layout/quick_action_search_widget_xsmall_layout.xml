@@ -14,7 +14,8 @@ found in the LICENSE file.
     android:clipToOutline="true"
     android:orientation="horizontal"
     android:layout_gravity="center"
-    android:paddingHorizontal="@dimen/quick_action_search_widget_xsmall_margin">
+    android:paddingHorizontal="@dimen/quick_action_search_widget_xsmall_margin"
+    android:theme="@style/Theme.Chromium.Widget" >
 
     <LinearLayout
         android:id="@+id/quick_action_search_widget_search_bar_container"

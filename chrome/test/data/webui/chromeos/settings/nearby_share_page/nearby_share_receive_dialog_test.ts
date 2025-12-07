@@ -4,13 +4,14 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {NearbyShareReceiveDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrCardRadioButtonElement, CrDialogElement, NearbyProgressElement, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/os_settings.js';
+import type {NearbyShareReceiveDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrCardRadioButtonElement, CrDialogElement, NearbyProgressElement} from 'chrome://os-settings/os_settings.js';
+import {setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/os_settings.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
-import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {FakeContactManager} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_share_settings.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -108,7 +109,7 @@ suite('<nearby-share-receive-dialog>', () => {
       const connectionToken =
           confirmPage.shadowRoot!.querySelector('#connectionToken');
       assertTrue(!!connectionToken);
-      assertStringContains(connectionToken.textContent!, '1234');
+      assertStringContains(connectionToken.textContent, '1234');
       assertTrue(isChildVisible(confirmPage, 'nearby-preview'));
 
       const page =
@@ -145,7 +146,7 @@ suite('<nearby-share-receive-dialog>', () => {
       const connectionToken =
           confirmPage.shadowRoot!.querySelector('#connectionToken');
       assertTrue(!!connectionToken);
-      assertStringContains(connectionToken.textContent!, '1234');
+      assertStringContains(connectionToken.textContent, '1234');
       assertTrue(isChildVisible(confirmPage, 'nearby-preview'));
 
       const page =
@@ -203,7 +204,7 @@ suite('<nearby-share-receive-dialog>', () => {
 
       const errorTitle =
           highVisibilityPage.shadowRoot!.querySelector('#errorTitle');
-      assertTrue(!!errorTitle && errorTitle.textContent!.length > 0);
+      assertTrue(!!errorTitle && errorTitle.textContent.length > 0);
     });
   });
 
@@ -220,8 +221,6 @@ suite('<nearby-share-receive-dialog>', () => {
       dialog.showHighVisibilityPage(60);
       await waitAfterNextRender(dialog);
 
-      assertFalse(isVisible(
-          dialog.shadowRoot!.querySelector('nearby-onboarding-page')));
       assertTrue(isVisible(
           dialog.shadowRoot!.querySelector('nearby-onboarding-one-page')));
       // Finish onboarding
@@ -239,8 +238,6 @@ suite('<nearby-share-receive-dialog>', () => {
       dialog.showOnboarding();
       await waitAfterNextRender(dialog);
 
-      assertFalse(isVisible(
-          dialog.shadowRoot!.querySelector('nearby-onboarding-page')));
       assertTrue(isVisible(
           dialog.shadowRoot!.querySelector('nearby-onboarding-one-page')));
       // Select visibility button and advance to the next page.

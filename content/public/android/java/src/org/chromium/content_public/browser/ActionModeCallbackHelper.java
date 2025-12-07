@@ -4,7 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import android.content.Intent;
 import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -12,8 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 
 /**
@@ -21,6 +20,7 @@ import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
  * {@link android.view.ActionMode}. Exposes the functionality of the class
  * for embedder to provide with the callback instance that interacts with it.
  */
+@NullMarked
 public abstract class ActionModeCallbackHelper {
     private static final String TAG = "ActionModeHelper";
 
@@ -67,11 +67,7 @@ public abstract class ActionModeCallbackHelper {
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {}
 
         @Override
-        public boolean onDropdownItemClicked(
-                int groupId,
-                int id,
-                @Nullable Intent intent,
-                @Nullable View.OnClickListener clickListener) {
+        public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
             return false;
         }
     }
@@ -100,16 +96,7 @@ public abstract class ActionModeCallbackHelper {
      * @return {@link RenderFrameHost} object only available during page selection,
      *      if there is a valid ActionMode available.
      */
-    @Nullable
-    public abstract RenderFrameHost getRenderFrameHost();
-
-    /**
-     * Called when the processed text is replied from an activity that supports
-     * Intent.ACTION_PROCESS_TEXT.
-     * @param resultCode the code that indicates if the activity successfully processed the text
-     * @param data the reply that contains the processed text.
-     */
-    public abstract void onReceivedProcessTextResult(int resultCode, Intent data);
+    public abstract @Nullable RenderFrameHost getRenderFrameHost();
 
     /**
      * Set the action mode menu items allowed on the content.
@@ -148,11 +135,7 @@ public abstract class ActionModeCallbackHelper {
     public abstract boolean onActionItemClicked(ActionMode mode, MenuItem item);
 
     /** Callback for when a drop-down menu item is clicked. */
-    public abstract boolean onDropdownItemClicked(
-            int groupId,
-            int id,
-            @Nullable Intent intent,
-            @Nullable View.OnClickListener clickListener);
+    public abstract boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu);
 
     /**
      * @see {@link ActionMode.Callback#onDestroyActionMode(ActionMode)}

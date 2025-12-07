@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -23,10 +22,9 @@ class ScreenDetails;
 // Supplements LocalDOMWindow with a ScreenDetails interface.
 // https://w3c.github.io/window-management/
 class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
-                                  public ExecutionContextLifecycleObserver,
-                                  public Supplement<LocalDOMWindow> {
+                                  public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit WindowScreenDetails(LocalDOMWindow* window);
 
@@ -60,6 +58,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
       bool permission_requested,
       mojom::blink::PermissionStatus status);
 
+  Member<LocalDOMWindow> local_dom_window_;
   Member<ScreenDetails> screen_details_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };

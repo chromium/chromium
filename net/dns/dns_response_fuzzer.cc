@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
@@ -82,8 +83,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   auto response_packet =
       base::MakeRefCounted<net::IOBufferWithSize>(response_string.size());
-  memcpy(response_packet->data(), response_string.data(),
-         response_string.size());
+  UNSAFE_TODO(memcpy(response_packet->data(), response_string.data(),
+                     response_string.size()));
 
   net::DnsResponse received_response(response_packet, response_string.size());
   received_response.InitParseWithoutQuery(response_string.size());

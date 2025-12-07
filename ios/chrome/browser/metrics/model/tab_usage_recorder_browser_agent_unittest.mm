@@ -15,7 +15,7 @@
 #import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -48,8 +48,8 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
  protected:
   TabUsageRecorderBrowserAgentTest()
       : application_(OCMClassMock([UIApplication class])) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
     tab_usage_recorder_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
@@ -93,7 +93,7 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_;

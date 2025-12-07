@@ -26,7 +26,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/DuplicateDownloadDialogBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // static
 DuplicateDownloadDialogBridge* DuplicateDownloadDialogBridge::GetInstance() {
@@ -91,3 +91,5 @@ void DuplicateDownloadDialogBridge::OnConfirmed(JNIEnv* env,
       reinterpret_cast<DuplicateDownloadDialogCallback*>(callback_id));
   std::move(*cb).Run(accepted);
 }
+
+DEFINE_JNI(DuplicateDownloadDialogBridge)

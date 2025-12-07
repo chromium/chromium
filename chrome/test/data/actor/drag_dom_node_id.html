@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Test Page</title>
+    <style>
+      #fromTarget {
+        width: 100px;
+        height: 100px;
+        background-color: lightblue;
+      }
+
+      #toTarget {
+        position: absolute;
+        top: 400px;
+        left: 200px;
+        width: 100px;
+        height: 100px;
+        background-color: coral;
+      }
+    </style>
+  </head>
+    <div id="fromTarget" aria-label="fromTarget">Drag Me</div>
+    <div id="toTarget" aria-label="toTarget">Drop Here</div>
+
+    <script>
+      let event_log = [];
+      let log_handler =
+          e => event_log.push(`${e.type}#${e.target.id}`);
+
+      const fromTarget = document.getElementById('fromTarget');
+      fromTarget.addEventListener('mousedown', log_handler);
+      fromTarget.addEventListener('mousemove', log_handler);
+      fromTarget.addEventListener('mouseup', log_handler);
+
+      const toTarget = document.getElementById('toTarget');
+      toTarget.addEventListener('mousedown', log_handler);
+      toTarget.addEventListener('mousemove', log_handler);
+      toTarget.addEventListener('mouseup', log_handler);
+    </script>
+  </body>
+</html>

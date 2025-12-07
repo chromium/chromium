@@ -1,24 +1,24 @@
-From 843d9366447f03115fe80d73679c0ba73f2d58ee Mon Sep 17 00:00:00 2001
+From 690b61c7627db0a839a9345075b65b6b618eff99 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:10 -0800
-Subject: [PATCH 03/10] do not use absl any
+Subject: [PATCH 03/11] do not use absl any
 
 ---
  .../cc/task/vision/core/frame_buffer.h        | 27 -------------------
  1 file changed, 27 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
-index 344879341479f..77a41e081b72b 100644
+index ed44a1cae05b6..0a888f18d4d00 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
-@@ -27,7 +27,6 @@ limitations under the License.
+@@ -28,7 +28,6 @@ limitations under the License.
  #include "absl/strings/str_cat.h"  // from @com_google_absl
  #include "absl/time/clock.h"  // from @com_google_absl
  #include "absl/time/time.h"  // from @com_google_absl
 -#include "absl/types/any.h"  // from @com_google_absl
  #include "absl/types/optional.h"  // from @com_google_absl
- #include "tensorflow_lite_support/cc/port/integral_types.h"
  #include "tensorflow_lite_support/cc/port/statusor.h"
+ 
 @@ -277,31 +276,6 @@ class FrameBuffer {
      return {};
    }
@@ -60,5 +60,5 @@ index 344879341479f..77a41e081b72b 100644
    Format format_;
    Orientation orientation_;
 -- 
-2.42.0.515.g380fc7ccd1-goog
+2.49.0.777.g153de2bbd5-goog
 

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("signin") {
   sources = [
@@ -14,6 +12,8 @@ static_library("signin") {
     "auth_error_observer_factory.h",
     "authentication_flow_auto_reload_manager.cc",
     "authentication_flow_auto_reload_manager.h",
+    "legacy_token_handle_fetcher.cc",
+    "legacy_token_handle_fetcher.h",
     "merge_session_navigation_throttle.cc",
     "merge_session_navigation_throttle.h",
     "merge_session_throttling_utils.cc",
@@ -34,8 +34,18 @@ static_library("signin") {
     "signin_error_notifier.h",
     "signin_error_notifier_factory.cc",
     "signin_error_notifier_factory.h",
+    "token_handle_checker.cc",
+    "token_handle_checker.h",
     "token_handle_fetcher.cc",
     "token_handle_fetcher.h",
+    "token_handle_service.cc",
+    "token_handle_service.h",
+    "token_handle_service_factory.cc",
+    "token_handle_service_factory.h",
+    "token_handle_store_factory.cc",
+    "token_handle_store_factory.h",
+    "token_handle_store_impl.cc",
+    "token_handle_store_impl.h",
     "token_handle_util.cc",
     "token_handle_util.h",
   ]
@@ -71,10 +81,11 @@ static_library("signin") {
     "//chrome/browser/ash/login/lock/online_reauth",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/notifications",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/ash/multi_user",
-    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",
@@ -89,6 +100,7 @@ static_library("signin") {
     "//components/vector_icons",
     "//services/network/public/cpp",
     "//ui/base",
+    "//ui/base/idle",
     "//ui/message_center/public/cpp",
     "//url",
   ]
@@ -96,8 +108,6 @@ static_library("signin") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 
@@ -119,11 +129,14 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/signin",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -154,6 +167,9 @@ source_set("unit_tests") {
   sources = [
     "offline_signin_limiter_unittest.cc",
     "signin_error_notifier_unittest.cc",
+    "token_handle_checker_unittest.cc",
+    "token_handle_fetcher_unittest.cc",
+    "token_handle_store_unittest.cc",
   ]
 
   deps = [
@@ -164,14 +180,17 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
     "//components/user_manager",

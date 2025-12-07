@@ -30,7 +30,7 @@ rootWebArea
 ++++++++++++treeItem name='Tree item at level 2' hierarchicalLevel=2 selected=false
 ++++++++++++++staticText name='Tree item at level 2'
 ++++++++++++++++inlineTextBox name='Tree item at level 2'
-++++++++++++treeItem name='Tree item at level 2, aria-level is 0' hierarchicalLevel=2 selected=false
+++++++++++++treeItem name='Tree item at level 2, aria-level is 0' hierarchicalLevel=1 selected=false
 ++++++++++++++staticText name='Tree item at level 2, aria-level is 0'
 ++++++++++++++++inlineTextBox name='Tree item at level 2, aria-level is 0'
 ++++++++treeItem name='Tree item at level 3' hierarchicalLevel=3 selected=false

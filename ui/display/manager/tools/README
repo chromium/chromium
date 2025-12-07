@@ -1,0 +1,6 @@
+This page is used to check if a new panel satisfies the ChromeOS PPI(PixelPerInch)
+equirement. The condition must be in sync with the spec implemented in
+i/display/manager as there are several exceptions (such as we use 2.25x only for
+Nocturne's 3000x2000 panel).
+
+

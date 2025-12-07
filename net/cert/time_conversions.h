@@ -28,7 +28,7 @@ namespace net {
 // the time is not representable as a Generalized time.The millisecond component
 // of |time| is discarded.
 NET_EXPORT bool EncodeTimeAsGeneralizedTime(
-    const base::Time& time,
+    base::Time time,
     bssl::der::GeneralizedTime* generalized_time);
 
 // Converts a GeneralizedTime struct to a base::Time, returning true on success

@@ -10,6 +10,8 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -97,10 +99,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
                                    SkClipOp::kIntersect, false);
     display_list->push<DrawImageOp>(
         it->image, static_cast<float>(it->point.x()),
-        static_cast<float>(it->point.y()),
-        PaintFlags::FilterQualityToSkSamplingOptions(
-            it->flags.getFilterQuality()),
-        &it->flags);
+        static_cast<float>(it->point.y()), it->sampling, &it->flags);
     display_list->push<RestoreOp>();
     display_list->EndPaintOfUnpaired(paint_bounds);
 
@@ -122,9 +121,8 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
 
   if (contains_slow_paths_) {
     // Add 6 slow paths, passing the reporting threshold.
-    SkPath path;
-    path.addCircle(2, 2, 5);
-    path.addCircle(3, 4, 2);
+    const SkPath path =
+        SkPathBuilder().addCircle(2, 2, 5).addCircle(3, 4, 2).detach();
     display_list->StartPaint();
     for (int i = 0; i < 6; ++i) {
       display_list->push<ClipPathOp>(path, SkClipOp::kIntersect, true);

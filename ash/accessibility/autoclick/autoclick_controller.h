@@ -16,7 +16,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class RetainingOneShotTimer;
@@ -29,7 +29,7 @@ class Widget;
 namespace ash {
 
 class AccessibilityFeatureDisableDialog;
-class AutoclickDragEventRewriter;
+class DragEventRewriter;
 class AutoclickMenuBubbleController;
 class AutoclickRingHandler;
 class AutoclickScrollPositionHandler;
@@ -223,7 +223,7 @@ class ASH_EXPORT AutoclickController
   std::unique_ptr<AutoclickRingHandler> autoclick_ring_handler_;
   std::unique_ptr<AutoclickScrollPositionHandler>
       autoclick_scroll_position_handler_;
-  std::unique_ptr<AutoclickDragEventRewriter> drag_event_rewriter_;
+  std::unique_ptr<DragEventRewriter> drag_event_rewriter_;
   std::unique_ptr<AutoclickMenuBubbleController> menu_bubble_controller_;
 
   // Holds a weak pointer to the dialog shown when autoclick is being disabled.

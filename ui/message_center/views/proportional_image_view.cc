@@ -8,13 +8,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/message_center/message_center_style.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace message_center {
 
@@ -51,17 +48,14 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
                 rasterized, skia::ImageOperations::RESIZE_BEST, draw_size);
 
   if (apply_rounded_corners_) {
-    SkPath path;
     SkScalar corner_radius = SkIntToScalar(message_center::kImageCornerRadius);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     corner_radius = SkIntToScalar(message_center::kJellyImageCornerRadius);
 #endif
 
-    const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
-                                 corner_radius, corner_radius, corner_radius,
-                                 corner_radius, corner_radius};
-    path.addRoundRect(gfx::RectToSkRect(draw_bounds), kRadius);
+    const SkPath path = SkPath::RRect(gfx::RectToSkRect(draw_bounds),
+                                      corner_radius, corner_radius);
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

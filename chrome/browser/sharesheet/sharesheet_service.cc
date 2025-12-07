@@ -4,18 +4,22 @@
 
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/sharesheet/share_action/example_action.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
+#include "chrome/browser/sharesheet/share_action/share_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,7 +52,7 @@ gfx::NativeWindow GetNativeWindowFromWebContents(
 }
 
 bool HasHostedDocument(const apps::Intent& intent) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       intent.files, [](const apps::IntentFilePtr& file) {
         return drive::util::HasHostedDocumentExtension(
             base::FilePath(file->url.ExtractFileName()));
@@ -99,7 +103,7 @@ SharesheetController* SharesheetService::GetSharesheetController(
   return delegator->GetSharesheetController();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SharesheetService::ShowNearbyShareBubbleForArc(
     gfx::NativeWindow native_window,
     apps::IntentPtr intent,
@@ -129,7 +133,11 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void SharesheetService::AddShareActionForTest(ShareActionType type) {
+  share_action_cache_->AddShareActionForTest(type);  // IN-TEST
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Cleanup delegator when bubble closes.
 void SharesheetService::OnBubbleClosed(
@@ -221,11 +229,11 @@ void SharesheetService::ShowBubbleForTesting(
     LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
-    int num_actions_to_add) {
+    std::vector<::sharesheet::ShareActionType> actions) {
   CHECK(views::Widget::GetWidgetForNativeWindow(native_window));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
-  for (int i = 0; i < num_actions_to_add; ++i) {
-    share_action_cache_->AddShareActionForTesting();  // IN-TEST
+  for (auto action : actions) {
+    share_action_cache_->AddShareActionForTest(action);  // IN-TEST
   }
   auto targets = GetActionsForIntent(intent);
   OnReadyToShowBubble(native_window, std::move(intent),
@@ -386,7 +394,7 @@ void SharesheetService::OnReadyToShowBubble(
   const std::u16string selected_app = GetSelectedApp();
   if (!selected_app.empty()) {
     SharesheetResult result = SharesheetResult::kCancel;
-    if (base::ranges::any_of(targets, [selected_app](const auto& target) {
+    if (std::ranges::any_of(targets, [selected_app](const auto& target) {
           return (target.type == TargetType::kArcApp ||
                   target.type == TargetType::kWebApp) &&
                  target.launch_name == selected_app;
@@ -464,7 +472,7 @@ void SharesheetService::RecordUserActionMetrics(
             SharesheetMetrics::UserAction::kCopyAction);
         return;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -484,19 +492,15 @@ void SharesheetService::RecordUserActionMetrics(
         SharesheetMetrics::RecordSharesheetActionMetrics(
             SharesheetMetrics::UserAction::kWeb);
         return;
-      case apps::AppType::kBuiltIn:
       case apps::AppType::kCrostini:
       case apps::AppType::kChromeApp:
       case apps::AppType::kPluginVm:
-      case apps::AppType::kStandaloneBrowser:
       case apps::AppType::kRemote:
       case apps::AppType::kBorealis:
       case apps::AppType::kBruschetta:
-      case apps::AppType::kStandaloneBrowserChromeApp:
       case apps::AppType::kExtension:
-      case apps::AppType::kStandaloneBrowserExtension:
       case apps::AppType::kUnknown:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -516,7 +520,7 @@ void SharesheetService::RecordTargetCountMetrics(
       case TargetType::kAction:
         break;
       case TargetType::kUnknown:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   SharesheetMetrics::RecordSharesheetArcAppCount(arc_app_count);

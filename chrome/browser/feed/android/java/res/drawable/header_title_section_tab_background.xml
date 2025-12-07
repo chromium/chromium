@@ -5,13 +5,12 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:state_enabled="true">
-    <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-        android:shape="rectangle"
-        app:surfaceElevation="@dimen/feed_header_section_tab_bg_elevation_enabled">
+    <shape
+        android:shape="rectangle">
+      <solid android:color="@color/feed_header_section_tab_bg_enabled"/>
       <corners android:radius="@dimen/feed_header_background_corner_radius_feed_containment"/>
-    </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+    </shape>
   </item>
 </selector>

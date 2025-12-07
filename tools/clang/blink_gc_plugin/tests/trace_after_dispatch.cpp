@@ -19,7 +19,10 @@ void A::Trace(Visitor* visitor) const {
       static_cast<const C*>(this)->TraceAfterDispatch(visitor);
       break;
     case TD:
-      // Missing static_cast<D*>(this)->TraceAfterDispatch(visitor);
+      // Missing static_cast<const D*>(this)->TraceAfterDispatch(visitor);
+      break;
+    case TE:
+      static_cast<const E*>(this)->TraceAfterDispatch(visitor);
       break;
   }
 }
@@ -41,5 +44,15 @@ void C::TraceAfterDispatch(Visitor* visitor) const {
 void D::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(m_a);
   Abstract::TraceAfterDispatch(visitor);
+}
+
+void E::TraceAfterDispatch(Visitor* visitor) const {
+  visitor->Trace(m_a);
+  A::TraceAfterDispatch(visitor);
+}
+
+void E::Trace(Visitor* visitor) const {
+  visitor->Trace(m_a);
+  A::Trace(visitor);
 }
 }

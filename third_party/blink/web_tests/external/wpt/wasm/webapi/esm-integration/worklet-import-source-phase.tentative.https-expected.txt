@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Import a source phase module to a worklet
+  Uncaught SyntaxError: Unexpected identifier 'modSource'
+Harness: the test ran to completion.
+

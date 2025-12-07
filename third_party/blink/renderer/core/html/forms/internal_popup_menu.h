@@ -7,14 +7,15 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class AXObject;
 class ChromeClient;
+class ComputedStyle;
 class CSSFontSelector;
 class PagePopup;
 class HTMLElement;
@@ -59,7 +60,9 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   // PagePopupClient functions:
   void WriteDocument(SegmentedBuffer&) override;
   CSSFontSelector* CreateCSSFontSelector(Document& popup_document) override;
-  void SetValueAndClosePopup(int, const String&) override;
+  void SetValueAndClosePopup(int,
+                             const String&,
+                             bool is_keyboard_event) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
   Element& OwnerElement() override;
@@ -67,14 +70,13 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   float ZoomFactor() override { return 1.0; }
   Locale& GetLocale() override;
   void DidClosePopup() override;
-  void SetMenuListOptionsBoundsInAXTree(WTF::Vector<gfx::Rect>&,
+  void SetMenuListOptionsBoundsInAXTree(Vector<gfx::Rect>&,
                                         gfx::Point) override;
 
   Member<ChromeClient> chrome_client_;
   Member<HTMLSelectElement> owner_element_;
   PagePopup* popup_;
   bool needs_update_;
-  bool taller_options_ = false;
 };
 
 }  // namespace blink

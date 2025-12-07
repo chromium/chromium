@@ -14,7 +14,7 @@ LoadErrorWaiter::~LoadErrorWaiter() = default;
 
 void LoadErrorWaiter::OnLoadFailure(content::BrowserContext* browser_context,
                                     const base::FilePath& file_path,
-                                    const std::string& error) {
+                                    const std::u16string& error) {
   load_error_seen_ = true;
   run_loop_.Quit();
 }

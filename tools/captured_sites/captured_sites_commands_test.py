@@ -100,66 +100,65 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'wpr', ['record', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rec'
-             'ord --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --https_ce'
-             'rt_file=components/test/data/autofill/web_page_replay_support_fil'
-             'es/ecdsa_cert.pem,components/test/data/autofill/web_page_replay_s'
-             'upport_files/wpr_cert.pem --https_key_file=components/test/data/a'
-             'utofill/web_page_replay_support_files/ecdsa_key.pem,components/te'
-             'st/data/autofill/web_page_replay_support_files/wpr_key.pem chrome'
-             '/test/data/autofill/captured_sites/artifacts/google.wpr')
+             'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --https_cert_file=components/test/data/au'
+             'tofill/web_page_replay_support_files/ecdsa_cert.pem,components/te'
+             'st/data/autofill/web_page_replay_support_files/wpr_cert.pem --htt'
+             'ps_key_file=components/test/data/autofill/web_page_replay_support'
+             '_files/ecdsa_key.pem,components/test/data/autofill/web_page_repla'
+             'y_support_files/wpr_key.pem chrome/test/data/autofill/captured_si'
+             'tes/artifacts/google.wpr')
         ],
         [
             'wpr', ['record', '-c', 'rsa', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rec'
-             'ord --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --https_ce'
-             'rt_file=components/test/data/autofill/web_page_replay_support_fil'
-             'es/wpr_cert.pem --https_key_file=components/test/data/autofill/we'
-             'b_page_replay_support_files/wpr_key.pem chrome/test/data/autofill'
-             '/captured_sites/artifacts/google.wpr')
+             'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --https_cert_file=components/test/data/au'
+             'tofill/web_page_replay_support_files/wpr_cert.pem --https_key_fil'
+             'e=components/test/data/autofill/web_page_replay_support_files/wpr'
+             '_key.pem chrome/test/data/autofill/captured_sites/artifacts/googl'
+             'e.wpr')
         ],
         [
             'wpr', ['replay', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --serve_re'
-             'sponse_in_chronological_sequence --https_cert_file=components/tes'
-             't/data/autofill/web_page_replay_support_files/ecdsa_cert.pem,comp'
-             'onents/test/data/autofill/web_page_replay_support_files/wpr_cert.'
-             'pem --https_key_file=components/test/data/autofill/web_page_repla'
-             'y_support_files/ecdsa_key.pem,components/test/data/autofill/web_p'
-             'age_replay_support_files/wpr_key.pem chrome/test/data/autofill/ca'
-             'ptured_sites/artifacts/google.wpr')
+             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --serve_response_in_chronological_sequenc'
+             'e --https_cert_file=components/test/data/autofill/web_page_replay'
+             '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
+             'age_replay_support_files/wpr_cert.pem --https_key_file=components'
+             '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
+             'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
+             'y.pem chrome/test/data/autofill/captured_sites/artifacts/google.w'
+             'pr')
         ],
         [
             'wpr', ['replay', 'sign_in_pass', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --serve_re'
-             'sponse_in_chronological_sequence --https_cert_file=components/tes'
-             't/data/autofill/web_page_replay_support_files/ecdsa_cert.pem,comp'
-             'onents/test/data/autofill/web_page_replay_support_files/wpr_cert.'
-             'pem --https_key_file=components/test/data/autofill/web_page_repla'
-             'y_support_files/ecdsa_key.pem,components/test/data/autofill/web_p'
-             'age_replay_support_files/wpr_key.pem chrome/test/data/password/ca'
-             'ptured_sites/artifacts/sign_in_pass/google.wpr')
+             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --serve_response_in_chronological_sequenc'
+             'e --https_cert_file=components/test/data/autofill/web_page_replay'
+             '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
+             'age_replay_support_files/wpr_cert.pem --https_key_file=components'
+             '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
+             'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
+             'y.pem chrome/test/data/password/captured_sites/artifacts/sign_in_'
+             'pass/google.wpr')
         ],
         [
             'wpr', ['replay', '-c', 'rsa', 'google'],
             ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=third_par'
-             'ty/catapult/web_page_replay_go/deterministic.js,chrome/test/data/'
-             'web_page_replay_go_helper_scripts/automation_helper.js --serve_re'
-             'sponse_in_chronological_sequence --https_cert_file=components/tes'
-             't/data/autofill/web_page_replay_support_files/wpr_cert.pem --http'
-             's_key_file=components/test/data/autofill/web_page_replay_support_'
-             'files/wpr_key.pem chrome/test/data/autofill/captured_sites/artifa'
-             'cts/google.wpr')
+             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+             'no_archive_certificates --serve_response_in_chronological_sequenc'
+             'e --https_cert_file=components/test/data/autofill/web_page_replay'
+             '_support_files/wpr_cert.pem --https_key_file=components/test/data'
+             '/autofill/web_page_replay_support_files/wpr_key.pem chrome/test/d'
+             'ata/autofill/captured_sites/artifacts/google.wpr')
         ],
     ]
     self.helpCompareInputsToExpected(actual_input_and_output)
@@ -169,32 +168,32 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'refresh', ['google'],
             ('out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --test-launcher-interac'
-             'tive --enable-pixel-output-in-tests --vmodule=captured_sites_test'
+             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
              '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
              'est=1')
         ],
         [
             'refresh', ['-r', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --test-launcher-interac'
-             'tive --enable-pixel-output-in-tests --vmodule=captured_sites_test'
+             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
              '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
              'est=1')
         ],
         [
             'refresh', ['-b', 'google'],
             ('testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --test-'
-             'launcher-interactive --enable-pixel-output-in-tests --vmodule=cap'
+             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
+             'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
              'tured_sites_test_utils=2,cache_replayer=1,autofill_captured_sites'
              '_interactive_uitest=1')
         ],
         [
             'refresh', ['-r', '-s', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --test-launcher-interac'
-             'tive --enable-pixel-output-in-tests --vmodule=captured_sites_test'
+             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
              '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
              'est=1 --test-launcher-summary-output=/tmp/captured_sites/local_te'
              'st_results/google_output.json 2>&1 | tee /tmp/captured_sites/loca'
@@ -207,8 +206,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
                 'pipe', '-w', 'google'
             ],
             ('testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --test-'
-             'launcher-interactive --enable-pixel-output-in-tests --vmodule=cap'
+             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
+             'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
              'tured_sites_test_utils=2,autofill_download_manager=1,form_cache=1'
              ',autofill_agent=1,autofill_handler=1,form_structure=1,cache_repla'
              'yer=2,autofill_captured_sites_interactive_uitest=1 --gtest_also_r'
@@ -226,16 +225,16 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'run', ['google'],
             ('out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --test-launcher'
-             '-interactive --enable-pixel-output-in-tests --vmodule=captured_si'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
              'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
              'tive_uitest=1')
         ],
         [
             'run', ['-r', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --test-launcher'
-             '-interactive --enable-pixel-output-in-tests --vmodule=captured_si'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
              'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
              'tive_uitest=1')
         ],
@@ -243,19 +242,30 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
             'run', ['-b', 'google'],
             ('testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
              'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
-             ' --test-launcher-interactive --enable-pixel-output-in-tests --vmo'
+             ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
              'dule=captured_sites_test_utils=2,cache_replayer=1,autofill_captur'
              'ed_sites_interactive_uitest=1')
         ],
         [
             'run', ['-r', '-s', 'google'],
             ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --test-launcher'
-             '-interactive --enable-pixel-output-in-tests --vmodule=captured_si'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
              'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
              'tive_uitest=1 --test-launcher-summary-output=/tmp/captured_sites/'
              'local_test_results/google_output.json 2>&1 | tee /tmp/captured_si'
              'tes/local_test_results/google_capture.log')
+        ],
+        [
+            'run', ['-r', '-s', '-u', 'google'],
+            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+             'output-in-tests --ui-test-action-max-timeout=180000 --test-launch'
+             'er-timeout=180000 --vmodule=captured_sites_test_utils=2,cache_rep'
+             'layer=1,autofill_captured_sites_interactive_uitest=1 --test-launc'
+             'her-summary-output=/tmp/captured_sites/local_test_results/google_'
+             'output.json 2>&1 | tee /tmp/captured_sites/local_test_results/goo'
+             'gle_capture.log')
         ],
         [
             'run',
@@ -265,7 +275,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
             ],
             ('testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
              'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
-             ' --test-launcher-interactive --enable-pixel-output-in-tests --vmo'
+             ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
              'dule=captured_sites_test_utils=2,autofill_download_manager=1,form'
              '_cache=1,autofill_agent=1,autofill_handler=1,form_structure=1,cac'
              'he_replayer=2,autofill_captured_sites_interactive_uitest=1 --gtes'

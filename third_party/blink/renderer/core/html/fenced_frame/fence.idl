@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/shivanigithub/fenced-frame/issues/14
+// https://wicg.github.io/fenced-frame/#fence-interface
 
 typedef (FenceEvent or DOMString) ReportEventType;
 
@@ -11,6 +11,6 @@ interface Fence {
     [RaisesException] void reportEvent(ReportEventType event);
     [RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
     [RaisesException] sequence<FencedFrameConfig> getNestedConfigs();
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess] Promise<undefined> disableUntrustedNetwork();
-    [RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess] void notifyEvent(Event triggering_event);
+    [CallWith=ScriptState, RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess, MeasureAs=FencedFrameDisableUntrustedNetwork] Promise<undefined> disableUntrustedNetwork();
+    [RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess, MeasureAs=FencedFrameNotifyEvent] void notifyEvent(Event triggering_event);
 };

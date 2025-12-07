@@ -10,8 +10,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
@@ -91,11 +90,10 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<MultideviceSetupStateUpdater> updater_;
-
   TestingPrefServiceSimple pref_service_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
+  std::unique_ptr<MultideviceSetupStateUpdater> updater_;
 };
 
 TEST_F(MultideviceSetupStateUpdaterTest, EnablePhoneHub) {
@@ -381,5 +379,4 @@ TEST_F(MultideviceSetupStateUpdaterTest, InvokePhoneHubCameraRollAccess) {
       /*success=*/true);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

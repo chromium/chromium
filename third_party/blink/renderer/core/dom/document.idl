@@ -35,8 +35,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [CallWith=Document] constructor();
     [SameObject] readonly attribute DOMImplementation implementation;
     [ImplementedAs=urlForBinding] readonly attribute USVString URL;
-    // FIXME: documentURI should not be nullable.
-    [ImplementedAs=urlForBinding] readonly attribute USVString? documentURI;
+    [ImplementedAs=urlForBinding] readonly attribute USVString documentURI;
     readonly attribute DOMString compatMode;
 
     readonly attribute DOMString characterSet;
@@ -59,6 +58,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [NewObject, RaisesException] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
 
     [NewObject, CEReactions, RaisesException] Node importNode(Node node, optional boolean deep = false);
+
+    // TODO(https://crbug.com/399124619): Merge all importnode variants, once Scoped Custom Element Registries
+    // are shipped unflagged
+    [NewObject, CEReactions, RaisesException, RuntimeEnabled=ScopedCustomElementRegistry] Node importNode(Node node, ImportNodeOptions options);
+
     [RaisesException, CEReactions] Node adoptNode(Node node);
 
     [NewObject, RaisesException, MeasureAs=DocumentCreateAttribute] Attr createAttribute(DOMString localName);
@@ -81,7 +85,12 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://html.spec.whatwg.org/C/#the-document-object
 
     // https://github.com/whatwg/html/pull/9538
-    [RuntimeEnabled=HTMLUnsafeMethods,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe(HTMLString html);
+    [CallWith=ExecutionContext,RaisesException,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe((DOMString or TrustedHTML) html);
+   // https://wicg.github.io/sanitizer-api/#sanitizer-api
+    // TODO(356601280): Merge the two setHTMLUnsafe variants into one, once the
+    //   different RuntimeEnabled flags are both perma-enabled.
+    [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe,CEReactions] static Document parseHTMLUnsafe((DOMString or TrustedHTML) html, SetHTMLUnsafeOptions options);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLSafe,CEReactions] static Document parseHTML(DOMString html, optional SetHTMLOptions options = {});
 
     // resource metadata management
 
@@ -119,6 +128,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // TrustedTypes variants of the above.
     [CallWith=Isolate, CEReactions, RaisesException] void write(TrustedHTML text);
     [CallWith=Isolate, CEReactions, RaisesException] void writeln(TrustedHTML text);
+
+    // TODO(330516530): Merge all write/writeln variants, once TrustedTypesHTML
+    // is perma-enabled.
+    [CallWith=Isolate, CEReactions, RaisesException, RuntimeEnabled=TrustedTypesHTML] undefined write(TrustedHTML text1, (TrustedHTML or DOMString)... text);
+    [CallWith=Isolate, CEReactions, RaisesException, RuntimeEnabled=TrustedTypesHTML] undefined writeln(TrustedHTML text1, (TrustedHTML or DOMString)... text);
 
     // user interaction
     readonly attribute Window? defaultView;
@@ -177,14 +191,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://wicg.github.io/nav-speculation/prerendering.html#dom-document-prerendering
     [Measure] readonly attribute boolean prerendering;
 
-    // Non-exposed API, used to evaluate and test soft navigation heuristics
-    [RuntimeEnabled=SoftNavigationHeuristics] readonly attribute unsigned long softNavigations;
-
     // Non-standard APIs
     [MeasureAs=DocumentCaretRangeFromPoint] Range caretRangeFromPoint(optional long x = 0, optional long y = 0);
 
     // https://www.w3.org/TR/cssom-view/#dom-document-caretpositionfrompoint
-    [NewObject, MeasureAs=CaretPositionFromPoint, RuntimeEnabled=CaretPositionFromPoint] CaretPosition? caretPositionFromPoint(float x, float y, optional CaretPositionFromPointOptions options = {});
+    [NewObject, MeasureAs=CaretPositionFromPoint] CaretPosition? caretPositionFromPoint(float x, float y, optional CaretPositionFromPointOptions options = {});
 
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
@@ -196,7 +207,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Deprecated prefixed page visibility API.
     // TODO(davidben): This is a property so attaching a deprecation warning results in false positives when outputting
     // document in the console. It's possible https://crbug.com/43394 will resolve this.
-    [MeasureAs=PrefixedPageVisibility, ImplementedAs=visibilityState] readonly attribute DOMString webkitVisibilityState;
+    [MeasureAs=PrefixedPageVisibility, ImplementedAs=visibilityStateAsString] readonly attribute DOMString webkitVisibilityState;
     [MeasureAs=PrefixedPageVisibility, ImplementedAs=hidden] readonly attribute boolean webkitHidden;
 
     // Private Token API (https://github.com/wicg/trust-token-api)
@@ -206,10 +217,12 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // ARIA Notify API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
-    [RuntimeEnabled=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
+    [RuntimeEnabled=AriaNotify,MeasureAs=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
     // The (experimental) DOM Parts API.
     [RuntimeEnabled=DOMPartsAPI] DocumentPartRoot getPartRoot();
+
+    [RuntimeEnabled=RouteMatching] readonly attribute RouteMap routeMap;
 
     // Event handler attributes
     attribute EventHandler onbeforecopy;

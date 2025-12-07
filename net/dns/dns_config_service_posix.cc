@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_config_service_posix.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -268,8 +264,8 @@ std::optional<DnsConfig> ConvertResStateToDnsConfig(
 
   dns_config.nameservers = std::move(*nameservers);
   dns_config.search.clear();
-  for (int i = 0; (i < MAXDNSRCH) && res.dnsrch[i]; ++i) {
-    dns_config.search.emplace_back(res.dnsrch[i]);
+  for (int i = 0; (i < MAXDNSRCH) && UNSAFE_TODO(res.dnsrch[i]); ++i) {
+    dns_config.search.emplace_back(UNSAFE_TODO(res.dnsrch[i]));
   }
 
   dns_config.ndots = res.ndots;

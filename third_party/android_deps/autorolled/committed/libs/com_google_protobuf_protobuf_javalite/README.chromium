@@ -1,0 +1,16 @@
+Name: Protocol Buffers [Lite]
+Short Name: protobuf-javalite
+URL: https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/4.33.1/protobuf-javalite-4.33.1.jar
+Version: 4.33.1
+Update Mechanism: Autoroll
+License: BSD-3-Clause
+License File: LICENSE
+CPEPrefix: cpe:/a:google:protobuf-javalite
+Security Critical: yes
+Shipped: yes
+
+Description:
+Lite version of Protocol Buffers library. This version is optimized for code size, but does not guarantee API/ABI stability.
+
+Local Modifications:
+No modifications.

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
-namespace WTF {
+namespace blink {
 
-StringUTF8Adaptor::StringUTF8Adaptor(StringView string,
-                                     UTF8ConversionMode mode) {
+StringUtf8Adaptor::StringUtf8Adaptor(StringView string,
+                                     Utf8ConversionMode mode) {
   if (string.empty())
     return;
   // Unfortunately, 8 bit WTFStrings are encoded in Latin-1 and GURL uses
@@ -15,15 +15,13 @@ StringUTF8Adaptor::StringUTF8Adaptor(StringView string,
   // luck out and can avoid mallocing a new buffer to hold the UTF-8 data
   // because UTF-8 and Latin-1 use the same code units for ASCII code points.
   if (string.Is8Bit() && string.ContainsOnlyASCIIOrEmpty()) {
-    data_ = reinterpret_cast<const char*>(string.Characters8());
-    size_ = string.length();
+    span_ = base::as_chars(string.Span8());
   } else {
     utf8_buffer_ = string.Utf8(mode);
-    data_ = utf8_buffer_.c_str();
-    size_ = utf8_buffer_.length();
+    span_ = base::span(utf8_buffer_);
   }
 }
 
-StringUTF8Adaptor::~StringUTF8Adaptor() = default;
+StringUtf8Adaptor::~StringUtf8Adaptor() = default;
 
-}  // namespace WTF
+}  // namespace blink

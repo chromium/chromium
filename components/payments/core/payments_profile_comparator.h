@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 
 // Utility functions used for processing and filtering address profiles
 // (AutofillProfile).

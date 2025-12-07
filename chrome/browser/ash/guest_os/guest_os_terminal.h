@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent.h"

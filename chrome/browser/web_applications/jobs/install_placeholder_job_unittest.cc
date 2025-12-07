@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -138,12 +139,12 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-            proto::RunOnOsLoginMode::NOT_RUN);
+            proto::os_state::RunOnOsLogin::MODE_NOT_RUN);
 }
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
@@ -156,8 +157,6 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   auto data_retriever =
       std::make_unique<testing::StrictMock<MockDataRetriever>>();
 
-  bool skip_page_favicons = true;
-  bool fail_all_if_any_fail = false;
   SkBitmap bitmap;
   std::vector<gfx::Size> icon_sizes(1, gfx::Size(kIconSize, kIconSize));
   bitmap.allocN32Pixels(kIconSize, kIconSize);
@@ -167,10 +166,11 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
       IconUrlWithSize::CreateForUnspecifiedSize(icon_url);
   DownloadedIconsHttpResults http_result = {
       {icon_metadata, net::HttpStatusCode::HTTP_OK}};
-  EXPECT_CALL(*data_retriever,
-              GetIcons(testing::_, testing::ElementsAre(icon_metadata),
-                       skip_page_favicons, fail_all_if_any_fail,
-                       base::test::IsNotNullCallback()))
+  EXPECT_CALL(
+      *data_retriever,
+      GetIcons(testing::_, testing::ElementsAre(icon_metadata),
+               /*download_page_favicons=*/false, /*fail_all_if_any_fail=*/false,
+               base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<4>(
           IconsDownloadedResult::kCompleted, std::move(icons), http_result));
 
@@ -182,7 +182,7 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());

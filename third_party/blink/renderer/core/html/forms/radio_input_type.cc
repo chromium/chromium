@@ -44,8 +44,9 @@ using mojom::blink::FormControlType;
 namespace {
 
 HTMLInputElement* NextInputElement(const HTMLInputElement& element,
-                                   const HTMLFormElement* stay_within,
+                                   const HTMLFormElement* form,
                                    bool forward) {
+  const Node* stay_within = form ? form->GetListedElementsScope() : nullptr;
   return forward ? Traversal<HTMLInputElement>::Next(element, stay_within)
                  : Traversal<HTMLInputElement>::Previous(element, stay_within);
 }
@@ -56,8 +57,8 @@ void RadioInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRadio);
 }
 
-ControlPart RadioInputType::AutoAppearance() const {
-  return kRadioPart;
+AppearanceValue RadioInputType::AutoAppearance() const {
+  return AppearanceValue::kRadio;
 }
 
 bool RadioInputType::ValueMissing(const String&) const {
@@ -190,9 +191,9 @@ void RadioInputType::HandleKeyupEvent(KeyboardEvent& event) {
   }
 }
 
-bool RadioInputType::IsKeyboardFocusable(
+bool RadioInputType::IsKeyboardFocusableSlow(
     Element::UpdateBehavior update_behavior) const {
-  if (!InputType::IsKeyboardFocusable(update_behavior)) {
+  if (!InputType::IsKeyboardFocusableSlow(update_behavior)) {
     return false;
   }
 
@@ -200,23 +201,44 @@ bool RadioInputType::IsKeyboardFocusable(
   if (IsSpatialNavigationEnabled(GetElement().GetDocument().GetFrame()))
     return true;
 
-  // Never allow keyboard tabbing to leave you in the same radio group. Always
-  // skip any other elements in the group.
-  Element* current_focused_element =
-      GetElement().GetDocument().FocusedElement();
-  if (auto* focused_input =
-          DynamicTo<HTMLInputElement>(current_focused_element)) {
-    if (focused_input->FormControlType() == FormControlType::kInputRadio &&
-        focused_input->GetTreeScope() == GetElement().GetTreeScope() &&
-        focused_input->Form() == GetElement().Form() &&
-        focused_input->GetName() == GetElement().GetName()) {
+  // Optimize keyboard focusable for the radio button. Making the focus
+  // navigation of the radio group more reasonable and consistent with the
+  // Firefox. The focus navigation behavior:
+  // - If any radio button in the group is checked, tab navigation always
+  //   focuses the checked button, regardless of the group's current focus
+  //   state.
+  // - When focus is on a radio button in the group, tab navigation skips the
+  //   remaining buttons in the group.
+  // - Both forward and backward tab navigation  target the first
+  //   radio button in the group when entering the group.
+
+  // Returns true when `GetElement()` is checked.
+  if (GetElement().Checked()) {
+    return true;
+  }
+  // Returns false if the group has the checked radio that is keyboard
+  // focusable.
+  HTMLInputElement* checked_radio_button = CheckedRadioButtonForGroup();
+  CHECK_NE(checked_radio_button, &GetElement());
+  if (checked_radio_button &&
+      checked_radio_button->IsKeyboardFocusableSlow(update_behavior)) {
+    return false;
+  }
+  // Ensures proper focus navigation within radio groups containing
+  // intermediate nodes:
+  // - Focusable elements between radios remain tabbable.
+  // - When any radio button within the group receives focus, tabbing
+  //   will skip over the entire rest of the group.
+  if (auto* scope = GetElement().GetRadioButtonGroupScope()) {
+    HTMLInputElement* last_focused_radio_button =
+        scope->LastFocusedButtonForGroup(GetElement().GetName());
+    if (last_focused_radio_button &&
+        last_focused_radio_button != &GetElement()) {
       return false;
     }
   }
 
-  // Allow keyboard focus if we're checked or if nothing in the group is
-  // checked.
-  return GetElement().Checked() || !CheckedRadioButtonForGroup();
+  return true;
 }
 
 bool RadioInputType::ShouldSendChangeEventAfterCheckedChanged() {
@@ -225,7 +247,7 @@ bool RadioInputType::ShouldSendChangeEventAfterCheckedChanged() {
   return GetElement().Checked();
 }
 
-ClickHandlingState* RadioInputType::WillDispatchClick() {
+ClickHandlingState* RadioInputType::LegacyPreActivationBehavior() {
   // An event handler can use preventDefault or "return false" to reverse the
   // selection we do here.  The ClickHandlingState object contains what we need
   // to undo what we did here in didDispatchClick.
@@ -237,6 +259,14 @@ ClickHandlingState* RadioInputType::WillDispatchClick() {
 
   ClickHandlingState* state = MakeGarbageCollected<ClickHandlingState>();
 
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior:
+  //
+  // The legacy-pre-activation behavior for input elements are these steps:
+  //
+  //   2. If this element's type attribute is in the Radio Button state, then
+  //      get a reference to the element in this element's radio button group
+  //      that has its checkedness set to true, if any, and then set this
+  //      element's checkedness to true.
   state->checked = GetElement().Checked();
   state->checked_radio_button = CheckedRadioButtonForGroup();
   GetElement().SetChecked(true, TextFieldEventBehavior::kDispatchChangeEvent);
@@ -244,8 +274,9 @@ ClickHandlingState* RadioInputType::WillDispatchClick() {
   return state;
 }
 
-void RadioInputType::DidDispatchClick(Event& event,
-                                      const ClickHandlingState& state) {
+void RadioInputType::RunInputActivationBehavior(
+    Event& event,
+    const ClickHandlingState& state) {
   if (event.defaultPrevented() || event.DefaultHandled()) {
     // Restore the original selected radio button if possible.
     // Make sure it is still a radio button and only do the restoration if it
@@ -260,6 +291,15 @@ void RadioInputType::DidDispatchClick(Event& event,
       checked_radio_button->SetChecked(true);
     }
   } else if (state.checked != GetElement().Checked()) {
+    // https://html.spec.whatwg.org/C#radio-button-state-(type=radio):input-activation-behavior.
+    //
+    // The input activation behavior is to run the following steps:
+    //
+    //   1. If the element is not connected, then return.
+    //   2. Fire an event named input at the element with the bubbles and
+    //      composed attributes initialized to true.
+    //   3. Fire an event named change at the element with the bubbles attribute
+    //      initialized to true.
     GetElement().DispatchInputAndChangeEventIfNeeded();
   }
   is_in_click_handler_ = false;
@@ -274,9 +314,6 @@ bool RadioInputType::ShouldAppearIndeterminate() const {
 HTMLInputElement* RadioInputType::NextRadioButtonInGroup(
     HTMLInputElement* current,
     bool forward) {
-  // TODO(https://crbug.com/323953913): Staying within form() is
-  // incorrect.  This code ignore input elements associated by |form|
-  // content attribute.
   // TODO(tkent): Comparing name() with == is incorrect.  It should be
   // case-insensitive.
   for (HTMLInputElement* input_element =

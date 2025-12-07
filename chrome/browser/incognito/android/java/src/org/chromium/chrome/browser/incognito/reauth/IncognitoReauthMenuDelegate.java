@@ -4,20 +4,24 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.incognito.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,10 +30,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A delegate for the menu button present inside the Incognito re-auth view full page. */
+@NullMarked
 class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     /**
-     * An enum interface denoting the various options (in-order) present in the
-     * three dots menu in the incognito re-auth full page view.
+     * An enum interface denoting the various options (in-order) present in the three dots menu in
+     * the incognito re-auth full page view.
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MenuItemType.CLOSE_INCOGNITO_TABS, MenuItemType.SETTINGS})
@@ -47,8 +52,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      * @param closeAllIncognitoTabRunnable The {@link Runnable} which would be used to close the
      *     Incognito tabs when the user clicks on "Close Incognito tabs" option.
      */
-    IncognitoReauthMenuDelegate(
-            @NonNull Context context, @NonNull Runnable closeAllIncognitoTabRunnable) {
+    IncognitoReauthMenuDelegate(Context context, Runnable closeAllIncognitoTabRunnable) {
         mContext = context;
         mCloseAllIncognitoTabsRunnable = closeAllIncognitoTabRunnable;
         mIncognitoReauthMenu = buildIncognitoReauthMenu();
@@ -59,7 +63,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      * with the menu items.
      */
     @Override
-    public void onItemSelected(PropertyModel item) {
+    public void onItemSelected(PropertyModel item, View view) {
         int textId = item.get(ListMenuItemProperties.TITLE_ID);
         if (textId == R.string.menu_close_all_incognito_tabs) {
             onCloseAllIncognitoTabsMenuItemClicked();
@@ -78,16 +82,20 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     /**
-     * @return {@link ListMenuButtonDelegate} which returns the underlying menu delegate.
+     * @return {@link ListMenuDelegate} which returns the underlying menu delegate.
      */
-    ListMenuButtonDelegate getListMenuButtonDelegate() {
+    ListMenuDelegate getListMenuDelegate() {
         return () -> mIncognitoReauthMenu;
     }
 
     private BasicListMenu buildIncognitoReauthMenu() {
         MVCListAdapter.ModelList itemList = buildMenuItems();
         return BrowserUiListMenuUtils.getBasicListMenu(
-                mContext, itemList, this, R.color.menu_item_bg_color_dark_baseline);
+                mContext,
+                itemList,
+                this,
+                R.color.menu_item_bg_color_dark_baseline,
+                mContext.getColor(R.color.divider_line_bg_color_dark));
     }
 
     private MVCListAdapter.ModelList buildMenuItems() {
@@ -121,7 +129,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
                         /* textEllipsizedAtEnd= */ true);
             default:
                 assert false : "Not implemented yet.";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -130,7 +138,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     private void onSettingsMenuItemClicked() {
-        SettingsLauncherFactory.createSettingsLauncher().launchSettingsActivity(mContext);
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(mContext);
     }
 
     /**
@@ -156,7 +164,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
             int textAppearanceStyle,
             boolean textEllipsizedAtEnd) {
         return new MVCListAdapter.ListItem(
-                BasicListMenu.ListMenuItemType.MENU_ITEM,
+                ListItemType.MENU_ITEM,
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE_ID, titleId)
                         .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)

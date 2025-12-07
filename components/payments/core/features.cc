@@ -5,31 +5,21 @@
 #include "components/payments/core/features.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(USE_BLINK)
-#include "third_party/blink/public/common/features_generated.h"
-#endif
 
 namespace payments {
 namespace features {
 
 BASE_FEATURE(kWebPaymentsExperimentalFeatures,
-             "WebPaymentsExperimentalFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(rouslan): Remove this.
-BASE_FEATURE(kWebPaymentsSingleAppUiSkip,
-             "WebPaymentsSingleAppUiSkip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebPaymentsSingleAppUiSkip, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(rouslan): Remove this.
 BASE_FEATURE(kWebPaymentsJustInTimePaymentApp,
-             "WebPaymentsJustInTimePaymentApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppStoreBilling,
-             "AppStoreBilling",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -37,24 +27,20 @@ BASE_FEATURE(kAppStoreBilling,
 #endif
 );
 
-BASE_FEATURE(kAppStoreBillingDebug,
-             "AppStoreBillingDebug",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAppStoreBillingDebug, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCanMakePaymentTrueWhenPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowJITInstallationWhenAppIconIsMissing,
-             "AllowJITInstallationWhenAppIconIsMissing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnforceFullDelegation,
-             "EnforceFullDelegation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnforceFullDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGPayAppDynamicUpdate,
-             "GPayAppDynamicUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGPayAppDynamicUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRestrictIsReadyToPayQuery, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
-             "SecurePaymentConfirmationUseCredentialStoreAPIs",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -62,45 +48,8 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPaymentHandlerWindowInTaskManager,
-             "PaymentHandlerWindowInTaskManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kPaymentHandlerAlwaysRefreshIcon,
-             "PaymentHandlerAlwaysRefreshIcon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPaymentHandlerRequireLinkHeader,
-             "PaymentHandlerRequireLinkHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(USE_BLINK)
-const base::FeatureParam<std::string>
-    kSecurePaymentConfirmationNetworkAndIssuerIconsOptions(
-        &blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
-        /*name=*/"spc_network_and_issuer_icons_option",
-        /*default_value=*/"rows");
-
-SecurePaymentConfirmationNetworkAndIssuerIconsTreatment
-GetNetworkAndIssuerIconsTreatment() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
-    return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kNone;
-  }
-
-  std::string option =
-      kSecurePaymentConfirmationNetworkAndIssuerIconsOptions.Get();
-  if (option == "inline") {
-    return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline;
-  } else if (option == "rows") {
-    return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kRows;
-  }
-
-  NOTREACHED_NORETURN();
-}
-#endif
+BASE_FEATURE(kSecurePaymentConfirmationFallback,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace payments

@@ -29,8 +29,8 @@
 
 namespace history {
 
-const std::string kTestAppId1 = "org.chromium.dino.Pteranodon";
-const std::string kTestAppId2 = "org.chromium.dino.Trext";
+constexpr char kTestAppId1[] = "org.chromium.dino.Pteranodon";
+constexpr char kTestAppId2[] = "org.chromium.dino.Trext";
 
 namespace {
 
@@ -53,9 +53,7 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
       std::unique_ptr<InMemoryHistoryBackend> backend) override {}
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override {}
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row,
-                        std::optional<int64_t> local_navigation_id) override {}
+  void NotifyURLVisited(VisitedURLInfo visited_url_info) override {}
   void NotifyURLsModified(const URLRows& changed_urls) override {}
   void NotifyDeletions(DeletionInfo deletion_info) override {}
   void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override {}
@@ -116,7 +114,7 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
 
   void AddPage(const GURL& url,
                base::Time t,
-               std::optional<std::string> app_id = kNoAppIdFilter) {
+               std::optional<std::string> app_id = std::nullopt) {
     history::HistoryAddPageArgs args;
     args.url = url;
     args.time = t;
@@ -126,8 +124,9 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
     history_backend_->AddPage(args);
   }
 
-  QueryURLResult QueryURL(const GURL& url) {
-    return history_backend_->QueryURL(url, /*want_visits=*/true);
+  QueryURLAndVisitsResult QueryURLAndVisits(const GURL& url) {
+    return history_backend_->QueryURLAndVisits(
+        url, VisitQuery404sPolicy::kInclude404s);
   }
 
   HistoryDeleteDirectiveHandlerTest(const HistoryDeleteDirectiveHandlerTest&) =
@@ -220,7 +219,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
   }
 
   {
-    QueryURLResult query = QueryURL(test_url);
+    QueryURLAndVisitsResult query = QueryURLAndVisits(test_url);
     EXPECT_TRUE(query.success);
     EXPECT_EQ(20, query.row.visit_count());
   }
@@ -264,7 +263,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
                                 &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
-  QueryURLResult query = QueryURL(test_url);
+  QueryURLAndVisitsResult query = QueryURLAndVisits(test_url);
   EXPECT_TRUE(query.success);
   ASSERT_EQ(5, query.row.visit_count());
   EXPECT_EQ(UnixUsecToTime(1), query.visits[0].visit_time);
@@ -289,7 +288,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
   }
 
   {
-    QueryURLResult query = QueryURL(test_url);
+    QueryURLAndVisitsResult query = QueryURLAndVisits(test_url);
     EXPECT_TRUE(query.success);
     EXPECT_EQ(10, query.row.visit_count());
   }
@@ -329,7 +328,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
                                 &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
-  QueryURLResult query = QueryURL(test_url);
+  QueryURLAndVisitsResult query = QueryURLAndVisits(test_url);
   EXPECT_TRUE(query.success);
   ASSERT_EQ(3, query.row.visit_count());
   EXPECT_EQ(UnixUsecToTime(1), query.visits[0].visit_time);
@@ -353,7 +352,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest,
   }
 
   {
-    QueryURLResult query = QueryURL(test_url);
+    QueryURLAndVisitsResult query = QueryURLAndVisits(test_url);
     ASSERT_TRUE(query.success);
     ASSERT_EQ(10, query.row.visit_count());
   }
@@ -404,7 +403,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest,
                                 &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
-  QueryURLResult query = QueryURL(test_url);
+  QueryURLAndVisitsResult query = QueryURLAndVisits(test_url);
   EXPECT_TRUE(query.success);
   ASSERT_EQ(5, query.row.visit_count());
   EXPECT_EQ(UnixUsecToTime(1), query.visits[0].visit_time);
@@ -432,10 +431,10 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
   AddPage(test_url1, UnixUsecToTime(10));
 
   {
-    QueryURLResult query = QueryURL(test_url1);
+    QueryURLAndVisitsResult query = QueryURLAndVisits(test_url1);
     EXPECT_TRUE(query.success);
     ASSERT_EQ(2, query.row.visit_count());
-    EXPECT_TRUE(QueryURL(test_url2).success);
+    EXPECT_TRUE(QueryURLAndVisits(test_url2).success);
   }
 
   // Delete the first visit of url1 and all visits of url2.
@@ -472,10 +471,10 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
                                 &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
-  QueryURLResult query = QueryURL(test_url1);
+  QueryURLAndVisitsResult query = QueryURLAndVisits(test_url1);
   EXPECT_TRUE(query.success);
   EXPECT_EQ(UnixUsecToTime(10), query.visits[0].visit_time);
-  EXPECT_FALSE(QueryURL(test_url2).success);
+  EXPECT_FALSE(QueryURLAndVisits(test_url2).success);
 
   // Expect a sync change for deleting processed directives.
   const syncer::SyncChangeList& sync_changes = change_processor.changes();

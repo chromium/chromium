@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link DownloadBroadcastManagerImpl}. */
+@NullMarked
 public class DownloadBroadcastManager extends SplitCompatService {
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.download.DownloadBroadcastManagerImpl";
 

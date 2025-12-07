@@ -9,12 +9,14 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_hglobal.h"
 #include "remoting/base/constants.h"
@@ -48,8 +50,7 @@ class ScopedClipboard {
     const base::TimeDelta kSleepTimeBetweenAttempts = base::Milliseconds(5);
 
     if (opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
 
     // This code runs on the UI thread, so we can block only very briefly.
@@ -67,16 +68,14 @@ class ScopedClipboard {
 
   BOOL Empty() {
     if (!opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     return ::EmptyClipboard();
   }
 
   void SetData(UINT uFormat, HANDLE hMem) {
     if (!opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     // The caller must not close the handle that ::SetClipboardData returns.
     ::SetClipboardData(uFormat, hMem);
@@ -87,8 +86,7 @@ class ScopedClipboard {
   // before this ScopedClipboard is destroyed.
   HANDLE GetData(UINT format) {
     if (!opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
     return ::GetClipboardData(format);
   }
@@ -188,8 +186,9 @@ void ClipboardWin::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
 
   LPWSTR text_global_locked =
       reinterpret_cast<LPWSTR>(::GlobalLock(text_global));
-  memcpy(text_global_locked, text.data(), text.size() * sizeof(WCHAR));
-  text_global_locked[text.size()] = (WCHAR)0;
+  UNSAFE_TODO(
+      memcpy(text_global_locked, text.data(), text.size() * sizeof(WCHAR)));
+  UNSAFE_TODO(text_global_locked[text.size()]) = (WCHAR)0;
   ::GlobalUnlock(text_global);
 
   clipboard.SetData(CF_UNICODETEXT, text_global);

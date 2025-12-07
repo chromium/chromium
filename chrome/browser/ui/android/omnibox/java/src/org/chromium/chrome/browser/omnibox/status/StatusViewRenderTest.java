@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
@@ -18,17 +19,21 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -41,27 +46,38 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
+import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
 
 /** Render tests for {@link StatusView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
+public class StatusViewRenderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+    // Revision history:
+    // 1: Initial set of tests
+    // 2: Applied fixed size to StatusView.
+    private static final int RENDER_TEST_REVISION = 2;
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock private Profile mProfile;
@@ -70,30 +86,33 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
     private LocationBarModel mLocationBarModel;
+    private Drawable mBackground;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(
-                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() {
+        ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
 
         runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup view = new LinearLayout(getActivity());
+                    ViewGroup view = new LinearLayout(sActivity);
 
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                    getActivity().setContentView(view, params);
+                    sActivity.setContentView(view, params);
 
                     mStatusView =
-                            getActivity()
+                            sActivity
                                     .getLayoutInflater()
                                     .inflate(R.layout.location_status, view, true)
                                     .findViewById(R.id.location_bar_status);
@@ -103,7 +122,8 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                                     mStatusView.getContext(),
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
-                                    ToolbarUnitTestUtils.OFFLINE_STATUS);
+                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
+                                    new ObservableSupplierImpl(ControlsPosition.TOP));
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(
@@ -112,6 +132,15 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                     // Increases visibility for manual parsing of diffs. Status view matches the
                     // parent height, so this white will stretch vertically.
                     mStatusView.setBackgroundColor(Color.WHITE);
+
+                    int size =
+                            mStatusView
+                                    .getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.small_icon_background_size);
+                    mBackground =
+                            DrawableUtils.getIconBackground(
+                                    mStatusView.getContext(), false, size, size);
                 });
     }
 
@@ -155,6 +184,10 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(
                 () -> {
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
@@ -173,12 +206,16 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                             ContentSettingsResources.getIconForOmnibox(
                                     mStatusView.getContext(),
                                     ContentSettingsType.GEOLOCATION,
-                                    ContentSettingValues.ALLOW,
+                                    ContentSetting.ALLOW,
                                     false);
                     PermissionIconResource statusIcon =
                             new PermissionIconResource(locationIcon, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
@@ -193,13 +230,17 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                 () -> {
                     Drawable storeIconDrawable =
                             ResourcesCompat.getDrawable(
-                                    getActivity().getResources(),
+                                    sActivity.getResources(),
                                     R.drawable.ic_storefront_blue,
-                                    getActivity().getTheme());
+                                    sActivity.getTheme());
                     StatusIconResource statusIcon =
                             new PermissionIconResource(storeIconDrawable, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });

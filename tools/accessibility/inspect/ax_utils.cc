@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -20,6 +19,7 @@ char kPatternSwitch[] = "pattern";
 char kSafariSwitch[] = "safari";
 
 char kFiltersSwitch[] = "filters";
+char kSubtreeSwitch[] = "subtree";
 
 #if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
 char kIdSwitch[] = "pid";
@@ -83,6 +83,9 @@ void PrintHelpFilters() {
       "  --filters\tfile containing property filters used to filter out\n"
       "  \t\taccessible tree, for example:\n"
       "  \t\t--filters=/absolute/path/to/filters/file\n");
+  printf(
+      "  --subtree\tpattern to match for dumping only a subtree, for example:\n"
+      "  \t\t--subtree=\"++[embedded]\"\n");
 }
 
 void PrintHelpFooter() {
@@ -153,8 +156,11 @@ std::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
 
   // Return with the default filter scenario if no file is provided.
   if (filters_path.empty()) {
-    return ui::AXInspectScenario::From(directive_prefix,
-                                       std::vector<std::string>());
+    ui::AXInspectScenario scenario = ui::AXInspectScenario::From(
+        directive_prefix, std::vector<std::string>());
+    // Set subtree pattern if provided.
+    scenario.subtree_pattern = command_line.GetSwitchValueASCII(kSubtreeSwitch);
+    return scenario;
   }
 
   std::optional<ui::AXInspectScenario> scenario =
@@ -165,6 +171,8 @@ std::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
                   "for security reasons";
     return std::nullopt;
   }
+  // Set subtree pattern if provided.
+  scenario->subtree_pattern = command_line.GetSwitchValueASCII(kSubtreeSwitch);
   return scenario;
 }
 

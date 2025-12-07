@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
 #define CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,7 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
@@ -24,7 +23,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 class Profile;
@@ -72,19 +71,10 @@ namespace chrome {
 // Shows or hides the Task Manager. |browser| can be NULL when called from Ash.
 // Returns a pointer to the underlying TableModel, which can be ignored, or used
 // for testing.
-task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser);
+task_manager::TaskManagerTableModel* ShowTaskManager(
+    Browser* browser,
+    task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void HideTaskManager();
-
-// Creates and shows an HTML dialog with the given delegate and context.
-// The window is automatically destroyed when it is closed.
-// Returns the created window.
-//
-// Make sure to use the returned window only when you know it is safe
-// to do so, i.e. before OnDialogClosed() is called on the delegate.
-gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
-                                content::BrowserContext* context,
-                                ui::WebDialogDelegate* delegate,
-                                bool show = true);
 
 // Show `dialog_model` as a modal dialog to `browser`.
 views::Widget* ShowBrowserModal(Browser* browser,
@@ -95,7 +85,7 @@ views::Widget* ShowBrowserModal(Browser* browser,
 // TODO(pbos): Make utility functions for querying whether an anchor_element is
 // present in `browser` or `browser_window` and then refer to those here so that
 // a call site can provide fallback options for `anchor_element`.
-void ShowBubble(Browser* browser,
+void ShowBubble(ui::ElementContext element_context,
                 ui::ElementIdentifier anchor_element,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
@@ -115,10 +105,30 @@ void ShowCreateChromeAppShortcutsDialog(
     const std::string& web_app_id,
     base::OnceCallback<void(bool /* created */)> close_callback);
 
+// Shows a tab modal dialog based on `dialog_model`.
+// Please use tabs::TabDialogManager for showing dialogs on desktop platforms.
+void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents);
+
+// Creates and shows an HTML dialog with the given delegate and context.
+// The window is automatically destroyed when it is closed.
+// Returns the created window.
+//
+// Make sure to use the returned window only when you know it is safe
+// to do so, i.e. before OnDialogClosed() is called on the delegate.
+//
+// Please use tabs::TabDialogManager for showing dialogs on desktop platforms.
+gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
+                                content::BrowserContext* context,
+                                ui::WebDialogDelegate* delegate,
+                                bool show = true);
+
 #if BUILDFLAG(IS_MAC)
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.
-task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser);
+task_manager::TaskManagerTableModel* ShowTaskManagerViews(
+    Browser* browser,
+    task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void HideTaskManagerViews();
 
 #endif  // BUILDFLAG(IS_MAC)

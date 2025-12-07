@@ -4,6 +4,8 @@
 
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
+assert(is_chromeos)
+
 static_library("desks_storage") {
   output_name = "desks_storage_lib"
 
@@ -32,7 +34,6 @@ static_library("desks_storage") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chromeos/crosapi/cpp",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
@@ -96,6 +97,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/coral/public/mojom",
     "//components/app_constants",
     "//components/prefs:test_support",
     "//components/sync:test_support",
@@ -113,6 +115,7 @@ if (use_libfuzzer) {
     deps = [
       ":desks_storage",
       ":test_support",
+      "//chromeos/ash/services/coral/public/mojom",
       "//components/account_id",
       "//components/services/app_service",
       "//components/sync:test_support",

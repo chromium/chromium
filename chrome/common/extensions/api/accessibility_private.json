@@ -23,6 +23,40 @@
         }
       },
       {
+        "id": "KeyboardEvent",
+        "type": "object",
+        "description": "An object that resembles a web KeyboardEvent object, with the addition of a unique ID property.",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "altKey": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "string"
+          },
+          "ctrlKey": {
+            "type": "boolean"
+          },
+          "key": {
+            "type": "string"
+          },
+          "keyCode": {
+            "type": "number"
+          },
+          "metaKey": {
+            "type": "boolean"
+          },
+          "repeat": {
+            "type": "boolean"
+          },
+          "shiftKey": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
         "id": "ScreenRect",
         "type": "object",
         "description": "Bounding rectangle in global screen coordinates.",
@@ -170,6 +204,21 @@
             "type": "boolean",
             "description": "True if the double click flag should be set.",
             "optional": true
+          },
+          "isTripleClick": {
+            "type": "boolean",
+            "description": "True if the triple click flag should be set.",
+            "optional": true
+          },
+          "useRewriters": {
+            "type": "boolean",
+            "description": "If true, uses rewriters for the mouse event; only allowed if used from FaceGaze. Otherwise indicates that rewriters should be skipped.",
+            "optional": true
+          },
+          "forceNotSynthetic": {
+            "type": "boolean",
+            "description": "If true, forces mouse event to appear as a real mouse event; only allowed if used from FaceGaze. Otherwise indicates that this mouse event should be marked as synthetic.",
+            "optional": true
           }
         }
       },
@@ -245,7 +294,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices"],
+        "enum": ["dictationContextChecking", "googleTtsHighQualityVoices", "captionsOnBrailleDisplay"],
         "description": "Subset of accessibility features."
       },
       {
@@ -424,6 +473,50 @@
           "wasm": {
             "type": "binary",
             "description": "The contents of the vision_wasm_internal.wasm file as a Uint8Array."
+          }
+        }
+      },
+      {
+        "id": "ScrollDirection",
+        "type": "string",
+        "enum": [ "up", "down", "left", "right" ],
+        "description": "The four directions for scrolling."
+      },
+      {
+        "id": "FacialGesture",
+        "type": "string",
+        "description": "The facial gestures supported by FaceGaze. Keep this in sync with facial_gestures.ts, FacialGesturesToMediapipeGestures in facegaze/gesture_detector.ts, and ConvertFacialGestureType in accessibility_extension_api_ash.cc.",
+        "enum": ["browInnerUp",
+            "browsDown",
+            "eyeSquintLeft",
+            "eyeSquintRight",
+            "eyesBlink",
+            "eyesLookDown",
+            "eyesLookLeft",
+            "eyesLookRight",
+            "eyesLookUp",
+            "jawLeft",
+            "jawOpen",
+            "jawRight",
+            "mouthFunnel",
+            "mouthLeft",
+            "mouthPucker",
+            "mouthRight",
+            "mouthSmile",
+            "mouthUpperUp"]
+      },
+      {
+        "id": "GestureInfo",
+        "type": "object",
+        "description": "Information about a detected facial gesture.",
+        "properties": {
+          "gesture": {
+            "$ref": "FacialGesture",
+            "description": "The detected facial gesture."
+          },
+          "confidence": {
+            "type": "number",
+            "description": "The confidence value."
           }
         }
       }
@@ -669,17 +762,17 @@
             "description": "True for ChromeVox (native), false for TalkBack."
           }
         ],
-	"returns_async": {
-	  "name": "callback",
-	  "desctiprion": "Callback function.",
-	  "parameters": [
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback function.",
+          "parameters": [
             {
-	      "name": "response",
-	      "$ref": "SetNativeChromeVoxResponse",
-	      "description": "Return Success if successfully toggled. Return error description otherwise."
-	    }
-	  ]
-	}
+              "name": "response",
+              "$ref": "SetNativeChromeVoxResponse",
+              "description": "Return Success if successfully toggled. Return error description otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -694,7 +787,13 @@
           {
             "name": "useRewriters",
             "type": "boolean",
-            "description": "If true, uses rewriters for the key event; only allowed if used from Dictation. Otherwise indicates that rewriters should be skipped.",
+            "description": "If true, uses rewriters for the key event; only allowed if used from Dictation or FaceGaze. Otherwise indicates that rewriters should be skipped.",
+            "optional": true
+          },
+          {
+            "name": "isRepeat",
+            "type": "boolean",
+            "description": "If true, sets the key event to repeat, which should occur if the key event should be held. Otherwise, the key event should not repeat.",
             "optional": true
           }
         ]
@@ -710,6 +809,23 @@
             "description": "True if accessibility component extensions should receive mouse events."
           }
         ]
+      },
+      {
+        "name": "enableLiveCaption",
+        "type": "function",
+        "description": "Enables or disables live captioning",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if live caption should be turned on."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "setCursorPosition",
@@ -743,17 +859,6 @@
           {
             "name": "state",
             "$ref": "SelectToSpeakState"
-          }
-        ]
-      },
-      {
-        "name": "clipboardCopyInActiveLacrosGoogleDoc",
-        "type": "function",
-        "description": "Called by the Select-to-Speak extension to request a clipboard copy in the active Lacros Google Docs tab for the copy-paste fallback.",
-        "parameters": [ {
-            "name": "url",
-            "type": "string",
-            "description": "URL of the Google Docs tab."
           }
         ]
       },
@@ -1025,23 +1130,6 @@
         }
       },
       {
-        "name": "isLacrosPrimary",
-        "type": "function",
-        "description": "Gets whether new browser windows and tabs should be in Lacros browser.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "A callback that is run when the result is returned.",
-          "parameters": [
-            {
-              "type": "boolean",
-              "name": "useLacros",
-              "description": "True if new browser windows and tabs should be in Lacros."
-            }
-          ]
-        }
-      },
-      {
         "name": "showToast",
         "type": "function",
         "description": "Displays an accessibility-related toast.",
@@ -1050,6 +1138,87 @@
           "$ref": "ToastType",
           "description": "The type of toast to show."
         }]
+      },
+      {
+        "name": "scrollAtPoint",
+        "type": "function",
+        "description": "Scrolls at the target location in the specified direction.",
+        "parameters": [
+          {
+            "name": "target",
+            "$ref": "ScreenPoint"
+          },
+          {
+            "name": "direction",
+            "$ref": "ScrollDirection"
+          }
+        ]
+      },
+      {
+        "name": "sendGestureInfoToSettings",
+        "type": "function",
+        "description": "Fired when FaceGaze processes a video frame, detects facial gestures from the frame, then sends information about the recognized facial gesture to the settings.",
+        "parameters": [
+          {
+            "name": "gestureInfo",
+            "type": "array",
+            "items": { "$ref": "GestureInfo" },
+            "description": "The recognized facial gestures and their associated confidence values."
+          }
+        ]
+      },
+      {
+        "name": "updateFaceGazeBubble",
+        "type": "function",
+        "description": "Updates FaceGaze's bubble UI.",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "description": "The text to be displayed in the bubble UI."
+          },
+          {
+            "name": "isWarning",
+            "type": "boolean",
+            "description": "True if the bubble UI contains a warning about state.",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "enableDragEventRewriter",
+        "type": "function",
+        "description": "Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into kMouseDragged events.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "Whether or not the DragEventRewriter should be enabled."
+          }
+        ]
+      },
+      {
+        "name": "enableSpokenFeedbackMv3KeyHandling",
+        "type": "function",
+        "description": "Used by the ChromeVox extension to enable key handling for the Manifest V3 version of the extension.",
+        "parameters": []
+      },
+      {
+        "name": "processPendingSpokenFeedbackEvent",
+        "type": "function",
+        "description": "Used by the ChromeVox extension to process a pending spoken feedback event.",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The ID of the key event."
+          },
+          {
+            "name": "propagate",
+            "type": "boolean",
+            "description": "Whether or not to propagate the key."
+          }
+        ]
       }
     ],
     "events": [
@@ -1266,6 +1435,40 @@
             "name": "activated",
             "type": "boolean",
             "description": "True if Dictation was activated, false if it was deactivated."
+          }
+        ]
+      },
+      {
+        "name": "onToggleGestureInfoForSettings",
+        "type": "function",
+        "description": "Fired only from the FaceGaze settings when the settings page requests to receive or stop receiving gesture detection information from FaceGaze.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if FaceGaze should start sending gesture detection information, false if FaceGaze should stop."
+          }
+        ]
+      },
+      {
+        "name": "onKeyDown",
+        "type": "function",
+        "description": "Fired when a key is pressed.",
+        "parameters": [
+          {
+            "name": "event",
+            "$ref": "KeyboardEvent"
+          }
+        ]
+      },
+      {
+        "name": "onKeyUp",
+        "type": "function",
+        "description": "Fired when a key is released.",
+        "parameters": [
+          {
+            "name": "event",
+            "$ref": "KeyboardEvent"
           }
         ]
       }

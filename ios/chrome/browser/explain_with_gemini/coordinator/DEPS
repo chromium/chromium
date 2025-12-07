@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/browser_container/model/edit_menu_builder.h",
+  "+ios/chrome/browser/browser_container/ui_bundled",
+  "+ios/chrome/browser/web_selection/model",
+  "+ios/chrome/browser/explain_with_gemini/coordinator",
+  "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/signin/model",
+]

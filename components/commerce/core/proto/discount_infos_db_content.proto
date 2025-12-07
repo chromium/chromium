@@ -1,0 +1,48 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package discount_infos_db;
+
+option optimize_for = LITE_RUNTIME;
+
+// Used for storing discounts.
+message DiscountInfosContentProto {
+  // Original key for data, i.e. the url.
+  optional string key = 1;
+  repeated DiscountInfoContent discounts = 2;
+}
+
+message DiscountInfoContent {
+  // The unique ID that identifies the discount.
+  optional uint64 id = 1;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    FREE_LISTING_WITH_CODE = 1;
+    CRAWLED_PROMOTION = 2;
+  }
+  // Type of the discount.
+  optional Type type = 2;
+
+  // Format: "en-US", "en-GB", "es", "es-419", "fr", "pt-BR", etc.
+  optional string language_code = 3;
+
+  // The discount text details.
+  optional string description_detail = 4;
+
+  // The text of any terms and conditions that apply to the discount. The
+  // maximum length is 500 characters.
+  optional string terms_and_conditions = 5;
+
+  // The expiry timestamp in second.
+  optional double expiry_time_sec = 6;
+
+  // The discount code that is used to redeem the discount.
+  optional string discount_code = 7;
+
+  // The discount associated offer id.
+  optional uint64 offer_id = 8;
+}

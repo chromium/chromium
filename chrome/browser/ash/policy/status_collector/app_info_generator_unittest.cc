@@ -14,17 +14,19 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/apps/app_service/publisher_host.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -269,7 +271,6 @@ class AppInfoGeneratorTest : public ::testing::Test {
 
  private:
   apps::ScopedOmitBorealisAppsForTesting scoped_omit_borealis_apps_for_testing_;
-  apps::ScopedOmitBuiltInAppsForTesting scoped_omit_built_in_apps_for_testing_;
   apps::ScopedOmitPluginVmAppsForTesting
       scoped_omit_plugin_vm_apps_for_testing_;
   content::BrowserTaskEnvironment task_environment_;
@@ -280,7 +281,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   TestingPrefServiceSimple pref_service_;
 
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   base::SimpleTestClock test_clock_;
   apps::AppServiceTest app_service_test_;

@@ -7,7 +7,10 @@
     "symbol_level": 1,
     "target_cpu": "x64",
     "target_os": "linux",
+    "treat_warnings_as_errors": false,
     "use_clang_coverage": true,
+    "use_reclient": false,
+    "use_remoteexec": true,
     "use_siso": true
   }
 }

@@ -32,8 +32,3 @@ void BrowserProcessPlatformPartTestApi::ShutdownComponentManager() {
   platform_part_->using_testing_component_manager_ash_ = false;
   platform_part_->component_manager_ash_.reset();
 }
-
-bool BrowserProcessPlatformPartTestApi::CanRestoreUrlsForProfile(
-    const Profile* profile) {
-  return platform_part_->CanRestoreUrlsForProfile(profile);
-}

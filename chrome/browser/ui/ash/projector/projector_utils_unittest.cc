@@ -10,10 +10,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -25,6 +25,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
 
@@ -32,7 +33,7 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class ScopedLogIn {
  public:
@@ -44,8 +45,9 @@ class ScopedLogIn {
     // Prevent access to DBus. This switch is reset in case set from test SetUp
     // due massive usage of InitFromArgv.
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(switches::kTestType))
+    if (!command_line.HasSwitch(switches::kTestType)) {
       command_line.AppendSwitch(switches::kTestType);
+    }
 
     switch (user_type) {
       case user_manager::UserType::kRegular:  // fallthrough
@@ -54,7 +56,7 @@ class ScopedLogIn {
       case user_manager::UserType::kPublicAccount:
         LogInAsPublicAccount();
         break;
-      case user_manager::UserType::kWebKioskApp:
+      case user_manager::UserType::kKioskWebApp:
         LogInWebKioskApp();
         break;
       case user_manager::UserType::kChild:
@@ -64,7 +66,7 @@ class ScopedLogIn {
         LogInGuestUser();
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -85,7 +87,7 @@ class ScopedLogIn {
   }
 
   void LogInWebKioskApp() {
-    fake_user_manager_->AddWebKioskAppUser(account_id_);
+    fake_user_manager_->AddKioskWebAppUser(account_id_);
     fake_user_manager_->LoginUser(account_id_);
   }
 
@@ -122,8 +124,9 @@ class ProjectorUtilsTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile::Builder builder;
     builder.SetPrefService(std::move(prefs));
-    if (is_child())
+    if (is_child()) {
       builder.SetIsSupervisedProfile();
+    }
     builder.OverridePolicyConnectorIsManagedForTesting(is_managed());
     profile_ = builder.Build();
   }
@@ -216,7 +219,7 @@ TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_DemoAccount) {
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_KioskAppAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::UserType::kWebKioskApp);
+                    user_manager::UserType::kKioskWebApp);
   EXPECT_FALSE(IsProjectorAllowedForProfile(profile()));
 }
 
@@ -259,7 +262,7 @@ TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_DemoAccount) {
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_KioskAppAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::UserType::kWebKioskApp);
+                    user_manager::UserType::kKioskWebApp);
   EXPECT_FALSE(IsProjectorAppEnabled(profile()));
 }
 

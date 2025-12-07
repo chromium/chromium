@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Wrapper of the native PolicyService class in the Java layer.
@@ -25,10 +26,11 @@ import org.chromium.base.ObserverList;
  * functions will be added once needed.
  */
 @JNINamespace("policy::android")
+@NullMarked
 public class PolicyService {
     private static final String TAG = "PolicyService";
 
-    private long mNativePolicyService;
+    private final long mNativePolicyService;
     private final ObserverList<Observer> mObservers = new ObserverList<Observer>();
 
     /**
@@ -59,12 +61,11 @@ public class PolicyService {
     }
 
     /**
-     * @param observer The {@link Observer} to be notified for Chrome policy
-     * update.
+     * @param observer The {@link Observer} to be notified for Chrome policy update.
      */
     public void addObserver(Observer observer) {
         if (mObservers.isEmpty()) {
-            PolicyServiceJni.get().addObserver(mNativePolicyService, PolicyService.this);
+            PolicyServiceJni.get().addObserver(mNativePolicyService);
         }
         mObservers.addObserver(observer);
     }
@@ -76,19 +77,18 @@ public class PolicyService {
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
         if (mObservers.isEmpty()) {
-            PolicyServiceJni.get().removeObserver(mNativePolicyService, PolicyService.this);
+            PolicyServiceJni.get().removeObserver(mNativePolicyService);
         }
     }
 
     /** Returns true if Chrome policy domain has been initialized. */
     public boolean isInitializationComplete() {
-        return PolicyServiceJni.get()
-                .isInitializationComplete(mNativePolicyService, PolicyService.this);
+        return PolicyServiceJni.get().isInitializationComplete(mNativePolicyService);
     }
 
     /** Returns {@link PolicyMap} that contains all Chrome policies. */
     public PolicyMap getPolicies() {
-        return PolicyServiceJni.get().getPolicies(mNativePolicyService, PolicyService.this);
+        return PolicyServiceJni.get().getPolicies(mNativePolicyService);
     }
 
     /** Pass the onPolicyServiceInitialized event to the |mObservers|. */
@@ -116,15 +116,15 @@ public class PolicyService {
     @NativeMethods
     public interface Natives {
         @NativeClassQualifiedName("PolicyServiceAndroid")
-        void addObserver(long nativePolicyService, PolicyService caller);
+        void addObserver(long nativePolicyService);
 
         @NativeClassQualifiedName("PolicyServiceAndroid")
-        void removeObserver(long nativePolicyService, PolicyService caller);
+        void removeObserver(long nativePolicyService);
 
         @NativeClassQualifiedName("PolicyServiceAndroid")
-        boolean isInitializationComplete(long nativePolicyService, PolicyService caller);
+        boolean isInitializationComplete(long nativePolicyService);
 
         @NativeClassQualifiedName("PolicyServiceAndroid")
-        PolicyMap getPolicies(long nativePolicyService, PolicyService caller);
+        PolicyMap getPolicies(long nativePolicyService);
     }
 }

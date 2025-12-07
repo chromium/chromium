@@ -1,0 +1,279 @@
+{
+  "../../base/lazy_instance.h": [
+    [
+      122,
+      28,
+      "static void Delete(Type* instance) {}",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ]
+  ],
+  "../../third_party/angle/src/libANGLE/renderer/vulkan/ContextVk.cpp": [
+    [
+      3556,
+      30,
+      "memset(mVulkanCacheStats.data(), 0, sizeof(CacheStats) * mVulkanCacheStats.size());",
+      [
+        "sample_warnings_win.txt"
+      ]
+    ]
+  ],
+  "../../third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/rsa_bssa_public_metadata_client.cc": [
+    [
+      99,
+      32,
+      "/*context=*/context};",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ]
+  ],
+  "../../third_party/libjpeg_turbo/jdatasrc.c": [
+    [
+      61,
+      34,
+      "init_mem_source(j_decompress_ptr cinfo)",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      204,
+      30,
+      "term_source(j_decompress_ptr cinfo)",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ]
+  ],
+  "../../third_party/skia/src/gpu/tessellate/MiddleOutPolygonTriangulator.h": [
+    [
+      93,
+      20,
+      "memcpy(this, &that, sizeof(*this));",
+      [
+        "sample_warnings_win.txt"
+      ]
+    ]
+  ],
+  "../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc": [
+    [
+      38,
+      38,
+      "void* Allocate(size_t size, size_t alignment_hint) override {",
+      [
+        "sample_warnings_1.txt",
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      66,
+      55,
+      "OpSignatureTensorSpec tensor_spec = {kTfLiteNoType};",
+      [
+        "sample_warnings_1.txt",
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      114,
+      37,
+      "OpSignature op_sig = {builtin_code};",
+      [
+        "sample_warnings_1.txt",
+        "sample_warnings_2.txt"
+      ]
+    ]
+  ],
+  "../../ui/accessibility/platform/ax_platform_node_auralinux.cc": [
+    [
+      552,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      724,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      761,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      814,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      915,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      941,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      993,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      1515,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      1521,
+      27,
+      "void Init(AtkWindowIface* iface) {}",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      1522,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      1706,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      1910,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ],
+    [
+      2053,
+      30,
+      "const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),",
+      [
+        "sample_warnings_1.txt"
+      ]
+    ]
+  ],
+  "../../v8/include/v8-persistent-handle.h": [
+    [
+      493,
+      26,
+      "reinterpret_cast<Callback>(callback), type);",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ]
+  ],
+  "../../v8/src/inspector/value-mirror.h": [
+    [
+      60,
+      30,
+      "v8::Local<v8::Context> context, const String16& name,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      60,
+      55,
+      "v8::Local<v8::Context> context, const String16& name,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      63,
+      30,
+      "v8::Local<v8::Context> context, bool generatePreviewForTable,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      63,
+      44,
+      "v8::Local<v8::Context> context, bool generatePreviewForTable,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      64,
+      12,
+      "int* nameLimit, int* indexLimit,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      64,
+      28,
+      "int* nameLimit, int* indexLimit,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      67,
+      30,
+      "v8::Local<v8::Context> context, int* nameLimit, int* indexLimit,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      67,
+      44,
+      "v8::Local<v8::Context> context, int* nameLimit, int* indexLimit,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ],
+    [
+      67,
+      60,
+      "v8::Local<v8::Context> context, int* nameLimit, int* indexLimit,",
+      [
+        "sample_warnings_2.txt"
+      ]
+    ]
+  ]
+}

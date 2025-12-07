@@ -8,10 +8,10 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -33,105 +34,6 @@ namespace {
 
 using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 using OmniboxScoringSignals = ::metrics::OmniboxScoringSignals;
-
-// Keep up to date with ClientSummarizedResultType in
-// //tools/metrics/histograms/enums.xml.
-enum class ClientSummarizedResultType : int {
-  kUrl = 0,
-  kSearch = 1,
-  kApp = 2,
-  kContact = 3,
-  kOnDevice = 4,
-  kUnknown = 5,
-  kMaxValue = kUnknown
-};
-
-ClientSummarizedResultType GetClientSummarizedResultType(
-    const OmniboxEventProto::Suggestion::ResultType type) {
-  static const base::NoDestructor<base::flat_map<
-      OmniboxEventProto::Suggestion::ResultType, ClientSummarizedResultType>>
-      kResultTypesToClientSummarizedResultTypes({
-          {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_URL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_TITLE,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_BODY,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_KEYWORD,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::NAVSUGGEST,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::NAVSUGGEST_PERSONALIZED,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_URL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PHYSICAL_WEB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PHYSICAL_WEB_OVERFLOW,
-           ClientSummarizedResultType::kUrl},  // More like a URL than a search.
-          {OmniboxEventProto::Suggestion::DOCUMENT,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_HISTORY,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_OTHER_ENGINE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ENTITY,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_TAIL,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PERSONALIZED,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PROFILE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ANSWER,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CALCULATOR,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_TEXT,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::EXTENSION_APP,
-           ClientSummarizedResultType::kApp},
-          {OmniboxEventProto::Suggestion::APP,
-           ClientSummarizedResultType::kApp},
-          {OmniboxEventProto::Suggestion::CONTACT,
-           ClientSummarizedResultType::kContact},
-          {OmniboxEventProto::Suggestion::APP_RESULT,
-           ClientSummarizedResultType::kOnDevice},
-          {OmniboxEventProto::Suggestion::LEGACY_ON_DEVICE,
-           ClientSummarizedResultType::kOnDevice},
-          {OmniboxEventProto::Suggestion::TILE_SUGGESTION,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::HISTORY_CLUSTER,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::OPEN_TAB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::STARTER_PACK,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::TAB_SWITCH,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PEDAL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
-           ClientSummarizedResultType::kSearch},
-      });
-
-  const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
-  return it == kResultTypesToClientSummarizedResultTypes->cend()
-             ? ClientSummarizedResultType::kUnknown
-             : it->second;
-}
 
 // Extracts the subset of signals which must be logged by the client in order to
 // train the Omnibox ML Scoring model using server-side training logic.
@@ -254,11 +156,13 @@ void GetScoringSignalsForLogging(const OmniboxScoringSignals& scoring_signals,
   }
 }
 
+constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
+
 }  // namespace
 
-OmniboxMetricsProvider::OmniboxMetricsProvider() {}
+OmniboxMetricsProvider::OmniboxMetricsProvider() = default;
 
-OmniboxMetricsProvider::~OmniboxMetricsProvider() {}
+OmniboxMetricsProvider::~OmniboxMetricsProvider() = default;
 
 void OmniboxMetricsProvider::OnRecordingEnabled() {
   subscription_ = OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
@@ -276,12 +180,105 @@ void OmniboxMetricsProvider::ProvideCurrentSessionData(
       omnibox_events_cache.mutable_omnibox_event());
 }
 
-void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  RecordOmniboxOpenedURL(*log);
-  RecordOmniboxOpenedURLClientSummarizedResultType(*log);
+// static
+ClientSummarizedResultType
+OmniboxMetricsProvider::GetClientSummarizedResultType(
+    metrics::OmniboxEventProto::Suggestion::ResultType type) {
+  static constexpr auto kResultTypesToClientSummarizedResultTypes =
+      base::MakeFixedFlatMap<OmniboxEventProto::Suggestion::ResultType,
+                             ClientSummarizedResultType>({
+          {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_URL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_TITLE,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_BODY,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_KEYWORD,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::NAVSUGGEST,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::NAVSUGGEST_PERSONALIZED,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_URL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PHYSICAL_WEB,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PHYSICAL_WEB_OVERFLOW,
+           ClientSummarizedResultType::kUrl},  // More like a URL than a search.
+          {OmniboxEventProto::Suggestion::DOCUMENT,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_HISTORY,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_OTHER_ENGINE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ENTITY,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_TAIL,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PERSONALIZED,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PROFILE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ANSWER,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CALCULATOR,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_TEXT,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::EXTENSION_APP,
+           ClientSummarizedResultType::kApp},
+          {OmniboxEventProto::Suggestion::APP,
+           ClientSummarizedResultType::kApp},
+          {OmniboxEventProto::Suggestion::CONTACT,
+           ClientSummarizedResultType::kContact},
+          {OmniboxEventProto::Suggestion::APP_RESULT,
+           ClientSummarizedResultType::kOnDevice},
+          {OmniboxEventProto::Suggestion::LEGACY_ON_DEVICE,
+           ClientSummarizedResultType::kOnDevice},
+          {OmniboxEventProto::Suggestion::TILE_SUGGESTION,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_CLUSTER,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::OPEN_TAB,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::STARTER_PACK,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::TAB_SWITCH,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PEDAL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER,
+           ClientSummarizedResultType::kUrl},
+      });
+
+  const auto it = kResultTypesToClientSummarizedResultTypes.find(type);
+  return it == kResultTypesToClientSummarizedResultTypes.cend()
+             ? ClientSummarizedResultType::kUnknown
+             : it->second;
 }
 
-void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
+void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  RecordOmniboxEvent(*log);
+  RecordMetrics(*log);
+  RecordZeroPrefixPrecisionRecallUsage(*log);
+  RecordContextualSearchPrecisionRecallUsage(*log);
+}
+
+void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
   std::vector<std::u16string_view> terms =
       base::SplitStringPiece(log.text, base::kWhitespaceUTF16,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -300,15 +297,14 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
                                         WindowOpenDisposition::SWITCH_TO_TAB);
   if (log.completed_length != std::u16string::npos)
     omnibox_event->set_completed_length(log.completed_length);
-  const base::TimeDelta default_time_delta = base::Milliseconds(-1);
-  if (log.elapsed_time_since_user_first_modified_omnibox !=
-      default_time_delta) {
-    // Only upload the typing duration if it is set/valid.
+  // Set the typing duration only if set/valid.
+  if (log.elapsed_time_since_user_first_modified_omnibox != kDefaultTimeDelta) {
     omnibox_event->set_typing_duration_ms(
         log.elapsed_time_since_user_first_modified_omnibox.InMilliseconds());
   }
+  // Set the time since the last change to default match only if set/valid.
   if (log.elapsed_time_since_last_change_to_default_match !=
-      default_time_delta) {
+      kDefaultTimeDelta) {
     omnibox_event->set_duration_since_last_default_match_update_ms(
         log.elapsed_time_since_last_change_to_default_match.InMilliseconds());
   }
@@ -351,14 +347,10 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
     suggestion->set_is_keyword_suggestion(match.from_keyword);
 
     // Scoring signals are not logged when the client is in incognito mode or
-    // when the `force_skip_ml_scoring` flag as been set (exceptions for Search
-    // and URL_WHAT_YOU_TYPED suggestions are made here in order to support
-    // logging of these types of suggestions for ML model training).
+    // when the particular suggestion type is considered ineligible for signal
+    // logging.
     if (OmniboxFieldTrial::IsReportingUrlScoringSignalsEnabled() &&
-        !log.is_incognito &&
-        (!match.force_skip_ml_scoring ||
-         AutocompleteMatch::IsSearchType(match.type) ||
-         match.IsVerbatimType()) &&
+        !log.is_incognito && match.IsMlSignalLoggingEligible() &&
         match.scoring_signals) {
       ScoringSignals scoring_signals_for_logging;
       GetScoringSignalsForLogging(*match.scoring_signals,
@@ -384,25 +376,194 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
   }
 }
 
-void OmniboxMetricsProvider::RecordOmniboxOpenedURLClientSummarizedResultType(
-    const OmniboxLog& log) {
-  if (log.selection.line < 0 || log.selection.line >= log.result->size()) {
+void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
+  if (log.selection.line < 0 || log.selection.line >= log.result->size() ||
+      !log.session) {
     return;
   }
 
   auto autocomplete_match = log.result->match_at(log.selection.line);
-  auto omnibox_event_result_type = autocomplete_match.GetOmniboxEventResultType(
-      log.selection.IsAction() ? log.selection.action_index : -1);
+  const int action_index =
+      log.selection.IsAction() ? log.selection.action_index : -1;
+  auto provider_type =
+      autocomplete_match.GetOmniboxEventProviderType(action_index);
+  auto omnibox_event_result_type =
+      autocomplete_match.GetOmniboxEventResultType(action_index);
   auto client_summarized_result_type =
       GetClientSummarizedResultType(omnibox_event_result_type);
-  // Log UMA histogram.
+
+  const std::string page_context = OmniboxEventProto::PageClassification_Name(
+      log.current_page_classification);
+
+  // Log UMA histograms.
   base::UmaHistogramEnumeration(
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
       client_summarized_result_type);
-  // Log UKM event.
-  if (log.ukm_source_id != ukm::kInvalidSourceId) {
-    ukm::builders::Omnibox_SuggestionUsed(log.ukm_source_id)
-        .SetResultType(static_cast<int64_t>(client_summarized_result_type))
-        .Record(ukm::UkmRecorder::Get());
+
+  if (log.session->zero_prefix_search_suggestions_shown_in_session ||
+      log.session->typed_search_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ClientSummarizedResultType."
+                      "ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kSearch);
   }
+  if (log.session->zero_prefix_url_suggestions_shown_in_session ||
+      log.session->typed_url_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ClientSummarizedResultType."
+                      "ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kUrl);
+  }
+
+  if (log.session->zero_prefix_search_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ZeroSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kSearch);
+  }
+  if (log.session->zero_prefix_url_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ZeroSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kUrl);
+  }
+
+  if (log.session->typed_search_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.TypedSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kSearch);
+  }
+  if (log.session->typed_url_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.TypedSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kUrl);
+  }
+
+  // Log UKM event.
+  if (log.ukm_source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+  ukm::builders::Omnibox_SuggestionUsed event(log.ukm_source_id);
+  event.SetPageClassification(
+      static_cast<int64_t>(log.current_page_classification));
+  event.SetProviderType(static_cast<int64_t>(provider_type));
+  event.SetResultType(static_cast<int64_t>(omnibox_event_result_type));
+  event.SetResultTypeGroup(static_cast<int64_t>(client_summarized_result_type));
+  event.SetSelectedIndex(log.selection.line);
+  // Set the time since the user last focused the omnibox only if set/valid.
+  if (log.elapsed_time_since_user_focused_omnibox != kDefaultTimeDelta) {
+    event.SetTimeSinceLastFocusMs(ukm::GetExponentialBucketMinForUserTiming(
+        log.elapsed_time_since_user_focused_omnibox.InMilliseconds()));
+  }
+  event.SetTypedLength(log.text.length());
+  // Set the typing duration only if set/valid.
+  if (log.elapsed_time_since_user_first_modified_omnibox != kDefaultTimeDelta) {
+    event.SetTypingDurationMs(ukm::GetExponentialBucketMinForUserTiming(
+        log.elapsed_time_since_user_first_modified_omnibox.InMilliseconds()));
+  }
+  event.SetZeroPrefixSearchShown(
+      log.session->zero_prefix_search_suggestions_shown_in_session);
+  event.SetZeroPrefixUrlShown(
+      log.session->zero_prefix_url_suggestions_shown_in_session);
+  event.SetZeroPrefixContextualSearchShown(
+      log.session->contextual_search_suggestions_shown_in_session);
+  event.SetZeroPrefixLensActionShown(log.session->lens_action_shown_in_session);
+  event.Record(ukm::UkmRecorder::Get());
+}
+
+void OmniboxMetricsProvider::RecordZeroPrefixPrecisionRecallUsage(
+    const OmniboxLog& log) {
+  if (!log.session) {
+    return;
+  }
+
+  const std::string page_context = OmniboxEventProto::PageClassification_Name(
+      log.current_page_classification);
+
+  bool zero_prefix_shown =
+      log.session->zero_prefix_suggestions_shown_in_session;
+  bool zero_prefix_selected = log.text.empty();
+
+  if (zero_prefix_shown) {
+    base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Precision",
+                              zero_prefix_selected);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Omnibox.ZeroSuggest.Precision.ByPageContext.", page_context}),
+        zero_prefix_selected);
+  }
+
+  base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Recall", zero_prefix_shown);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Omnibox.ZeroSuggest.Recall.ByPageContext.", page_context}),
+      zero_prefix_shown);
+
+  base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Usage", zero_prefix_selected);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Omnibox.ZeroSuggest.Usage.ByPageContext.", page_context}),
+      zero_prefix_selected);
+}
+
+void OmniboxMetricsProvider::RecordContextualSearchPrecisionRecallUsage(
+    const OmniboxLog& log) {
+  if (log.selection.line < 0 || log.selection.line >= log.result->size() ||
+      !log.session) {
+    return;
+  }
+
+  const auto& autocomplete_match = log.result->match_at(log.selection.line);
+
+  bool contextual_search_selected =
+      autocomplete_match.takeover_action &&
+      autocomplete_match.takeover_action->ActionId() ==
+          OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT;
+  bool contextual_search_shown =
+      log.session->contextual_search_suggestions_shown_in_session;
+
+  if (contextual_search_shown) {
+    base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Precision",
+                              contextual_search_selected);
+  }
+  base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Recall",
+                            contextual_search_shown);
+  base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Usage",
+                            contextual_search_selected);
+
+  bool lens_action_selected = autocomplete_match.takeover_action &&
+                              autocomplete_match.takeover_action->ActionId() ==
+                                  OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS;
+  bool lens_action_shown = log.session->lens_action_shown_in_session;
+
+  if (lens_action_shown) {
+    base::UmaHistogramBoolean("Omnibox.LensAction.Precision",
+                              lens_action_selected);
+  }
+  base::UmaHistogramBoolean("Omnibox.LensAction.Recall", lens_action_shown);
+  base::UmaHistogramBoolean("Omnibox.LensAction.Usage", lens_action_selected);
 }

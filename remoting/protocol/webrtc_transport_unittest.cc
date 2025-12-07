@@ -81,7 +81,9 @@ class TestTransportEventHandler : public WebrtcTransport::EventHandler {
       connected_callback_.Run();
     }
   }
-  void OnWebrtcTransportError(ErrorCode error) override {
+  void OnWebrtcTransportError(ErrorCode error,
+                              std::string_view error_details,
+                              const base::Location& error_location) override {
     error_callback_.Run(error);
   }
   void OnWebrtcTransportProtocolChanged() override {}
@@ -95,9 +97,9 @@ class TestTransportEventHandler : public WebrtcTransport::EventHandler {
     }
   }
   void OnWebrtcTransportMediaStreamAdded(
-      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
+      webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
   void OnWebrtcTransportMediaStreamRemoved(
-      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
+      webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
   void OnWebrtcTransportRouteChanged(const TransportRoute& route) override {}
 
  private:
@@ -208,7 +210,7 @@ class WebrtcTransportTest : public testing::Test {
     // If offer_to_receive_video and offer_to_receive_audio are both false,
     // there must be a stream present in order to generate a valid SDP offer.
     host_transport_->peer_connection()->AddTransceiver(
-        cricket::MEDIA_TYPE_VIDEO);
+        webrtc::MediaType::VIDEO);
 
     host_authenticator_ =
         std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
@@ -244,6 +246,9 @@ class WebrtcTransportTest : public testing::Test {
         client_authenticator_.get(),
         base::BindRepeating(&WebrtcTransportTest::ProcessTransportInfo,
                             base::Unretained(this), &host_transport_, false));
+
+    host_transport_->ApplyNetworkSettings(network_settings_);
+    client_transport_->ApplyNetworkSettings(network_settings_);
   }
 
   void WaitUntilConnected() {

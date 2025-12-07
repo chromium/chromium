@@ -11,7 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
-class ChromeSecurityStateClientTest : public PlatformBrowserTest {
+class ChromeSecurityStateClientTest : public AndroidBrowserTest {
  public:
   ChromeSecurityStateClientTest() = default;
   ~ChromeSecurityStateClientTest() override = default;
@@ -39,6 +39,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSecurityStateClientTest,
     EXPECT_EQ(helper->GetSecurityLevel(),
               security_state_client->MaybeCreateSecurityStateModelDelegate()
                   ->GetSecurityLevel(contents));
+    EXPECT_EQ(helper->GetMaliciousContentStatus(),
+              security_state_client->MaybeCreateSecurityStateModelDelegate()
+                  ->GetMaliciousContentStatus(contents));
 
     // The test won't finish until SecurityStateTabHelper::GetSecurityLevel()
     // is called.

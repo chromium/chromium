@@ -24,7 +24,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -63,6 +62,12 @@ void CaptureModeBarView::SetSettingsMenuShown(bool shown) {
   settings_button_->SetToggled(shown);
 }
 
+bool CaptureModeBarView::IsEventOnSettingsButton(
+    gfx::Point screen_location) const {
+  return settings_button_ &&
+         settings_button_->GetBoundsInScreen().Contains(screen_location);
+}
+
 void CaptureModeBarView::AddedToWidget() {
   // Since the layer of the shadow has to be added as a sibling to this view's
   // layer, we need to wait until the view is added to the widget.
@@ -81,18 +86,26 @@ void CaptureModeBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   shadow_->SetContentBounds(layer()->bounds());
 }
 
+// TODO(hewer): Add a check and/or test so that the behavior sets
+// `ShouldShowUserNudge()` to false if the `settings_button_` doesn't exist.
 CaptureModeBarView::CaptureModeBarView()
     // Use the `ShadowOnTextureLayer` for the view with fully rounded corners.
     : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   const int border_radius = capture_mode::kCaptureBarHeight / 2;
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(border_radius));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kBarPadding,
@@ -107,7 +120,7 @@ CaptureModeBarView::CaptureModeBarView()
   shadow_->SetRoundedCornerRadius(border_radius);
 }
 
-void CaptureModeBarView::AppendCommonElements() {
+void CaptureModeBarView::AppendSettingsButton() {
   settings_button_ = AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CaptureModeBarView::OnSettingsButtonPressed,
                           base::Unretained(this)),
@@ -115,21 +128,26 @@ void CaptureModeBarView::AppendCommonElements() {
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS),
       /*is_togglable=*/true,
       /*has_border=*/true));
-  close_button_ = AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
-                          base::Unretained(this)),
-      IconButton::Type::kMediumFloating, &kCaptureModeCloseIcon,
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE),
-      /*is_togglable=*/false,
-      /*has_border=*/true));
 
   // Customize the settings button toggled color.
   settings_button_->SetIconToggledColor(kColorAshButtonIconColor);
   settings_button_->SetBackgroundToggledColor(
       kColorAshControlBackgroundColorInactive);
 
-  // Add highlight helper to settings button and close button.
+  // Add highlight helper to the settings button.
   CaptureModeSessionFocusCycler::HighlightHelper::Install(settings_button_);
+}
+
+void CaptureModeBarView::AppendCloseButton(int accessible_name_id) {
+  close_button_ = AddChildView(std::make_unique<IconButton>(
+      base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
+                          base::Unretained(this)),
+      IconButton::Type::kMediumFloating, &kCaptureModeCloseIcon,
+      l10n_util::GetStringUTF16(accessible_name_id),
+      /*is_togglable=*/false,
+      /*has_border=*/true));
+
+  // Add highlight helper to the close button.
   CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
 }
 

@@ -22,7 +22,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
@@ -37,37 +36,39 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/save_page_type.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/json/values_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#endif
+
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 using safe_browsing::FileTypePolicies;
+#endif
 
 namespace {
 
@@ -82,7 +83,7 @@ bool DownloadPathIsDangerous(const base::FilePath& download_path) {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Neither Fuchsia nor Android have a desktop dir.
+  // Android does not have a desktop dir.
   return false;
 #else
   base::FilePath desktop_dir;
@@ -138,7 +139,7 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   PrefService* prefs = profile->GetPrefs();
   pref_change_registrar_.Init(prefs);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the default download directory is different for each profile.
   // If the profile-unaware default path (from GetDefaultDownloadDirectory())
   // is set (this happens during the initial preference registration in static
@@ -177,7 +178,7 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   content::DownloadManager::GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(base::IgnoreResult(&base::CreateDirectory),
                                 GetDefaultDownloadDirectoryForProfile()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
@@ -218,7 +219,8 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   save_file_type_.Init(prefs::kSaveFileType, prefs);
   safebrowsing_for_trusted_sources_enabled_.Init(
       prefs::kSafeBrowsingForTrustedSourcesEnabled, prefs);
-  download_restriction_.Init(prefs::kDownloadRestrictions, prefs);
+  download_restriction_.Init(policy::policy_prefs::kDownloadRestrictions,
+                             prefs);
 
   pref_change_registrar_.Add(
       prefs::kDownloadExtensionsToOpenByPolicy,
@@ -261,18 +263,21 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
         base::FilePath::StringType(1, base::FilePath::kExtensionSeparator) +
         extension);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     // Note that the list of file types that are not allowed to open
     // automatically can change in the future. When the list is tightened, it is
     // expected that some entries in the users' auto open list will get dropped
     // permanently as a result.
-    if (FileTypePolicies::GetInstance()->IsAllowedToOpenAutomatically(
+    if (!FileTypePolicies::GetInstance()->IsAllowedToOpenAutomatically(
             filename_with_extension)) {
-      auto_open_by_user_.insert(extension);
+      continue;
     }
+#endif
+    auto_open_by_user_.insert(extension);
   }
 }
 
-DownloadPrefs::~DownloadPrefs() {}
+DownloadPrefs::~DownloadPrefs() = default;
 
 // static
 void DownloadPrefs::RegisterProfilePrefs(
@@ -287,10 +292,9 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDownloadDirUpgraded, false);
   registry->RegisterIntegerPref(prefs::kSaveFileType,
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
-  registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
-  // The following two prefs are ignored on ChromeOS Lacros if SysUI integration
-  // is enabled.
-  // TODO(chlily): Clean them up once SysUI integration is enabled by default.
+  registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);
+  // TODO(chlily): Clean up the following two prefs once SysUI integration is
+  // enabled by default.
   registry->RegisterBooleanPref(prefs::kDownloadBubblePartialViewEnabled, true);
   registry->RegisterIntegerPref(prefs::kDownloadBubblePartialViewImpressions,
                                 0);
@@ -324,7 +328,7 @@ void DownloadPrefs::RegisterProfilePrefs(
 }
 
 base::FilePath DownloadPrefs::GetDefaultDownloadDirectoryForProfile() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return file_manager::util::GetDownloadsFolderForProfile(profile_);
 #else
   return GetDefaultDownloadDirectory();
@@ -446,12 +450,18 @@ bool DownloadPrefs::IsAutoOpenByPolicy(const GURL& url,
 bool DownloadPrefs::EnableAutoOpenByUserBasedOnExtension(
     const base::FilePath& file_name) {
   base::FilePath::StringType extension = file_name.Extension();
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!FileTypePolicies::GetInstance()->IsAllowedToOpenAutomatically(
           file_name)) {
     return false;
   }
 
   DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
+#else
+  if (extension[0] != base::FilePath::kExtensionSeparator) {
+    return false;
+  }
+#endif
   extension.erase(0, 1);
 
   auto_open_by_user_.insert(extension);
@@ -481,12 +491,6 @@ void DownloadPrefs::SetShouldOpenPdfInSystemReader(bool should_open) {
 }
 
 bool DownloadPrefs::ShouldOpenPdfInSystemReader() const {
-#if BUILDFLAG(IS_WIN)
-  if (IsAdobeReaderDefaultPDFViewer() &&
-      !DownloadTargetDeterminer::IsAdobeReaderUpToDate()) {
-      return false;
-  }
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, there is always an "app" to handle PDF files. E.g., a "View"
   // app which configures a file handler to open in a browser tab. However,
@@ -522,7 +526,7 @@ bool DownloadPrefs::IsAutoOpenPdfEnabled() {
 
 void DownloadPrefs::SaveAutoOpenState() {
   std::string extensions;
-  for (auto it : auto_open_by_user_) {
+  for (const auto& it : auto_open_by_user_) {
 #if BUILDFLAG(IS_WIN)
     // TODO(phajdan.jr): Why we're using Sys conversion here, but not in ctor?
     std::string this_extension = base::SysWideToUTF8(it);
@@ -552,77 +556,7 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   if (skip_sanitize_download_target_path_for_testing_)
     return path;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40731523): Sort out path sanitization for Lacros.
-  // This will require refactoring the ash-only code below so it can be shared.
-  base::FilePath migrated_drive_path;
-  if (download_dir_util::ExpandDrivePolicyVariable(profile_, path,
-                                                   &migrated_drive_path)) {
-    return SanitizeDownloadTargetPath(migrated_drive_path);
-  }
-
-  base::FilePath onedrive_path;
-  if (download_dir_util::ExpandOneDrivePolicyVariable(profile_, path,
-                                                      &onedrive_path)) {
-    return SanitizeDownloadTargetPath(onedrive_path);
-  }
-
-  const base::FilePath default_downloads_path =
-      GetDefaultDownloadDirectoryForProfile();
-  // Relative paths might be unsafe, so use the default path.
-  if (!path.IsAbsolute() || path.ReferencesParent())
-    return default_downloads_path;
-
-  // Allow downloads directory and subdirectories. Subdirectories may not seem
-  // useful, but many tests assume they can download files into a subdirectory,
-  // and allowing subdirectories doesn't hurt.
-  if (default_downloads_path == path || default_downloads_path.IsParent(path))
-    return path;
-
-  // Allow documents directory ("MyFiles") and subdirectories.
-  base::FilePath documents_path =
-      base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-  if (documents_path == path || documents_path.IsParent(path))
-    return path;
-
-  // Allow paths under the drive mount point.
-  base::FilePath drivefs;
-  bool drivefs_mounted = chrome::GetDriveFsMountPointPath(&drivefs);
-  if (drivefs_mounted && drivefs.IsParent(path))
-    return path;
-
-  // Allow paths under OneDrive mount point if the feature flag is enabled.
-  base::FilePath odfs_path;
-  bool odfs_mounted = chrome::GetOneDriveMountPointPath(&odfs_path);
-  if (base::FeatureList::IsEnabled(features::kSkyVault) && odfs_mounted &&
-      ((odfs_path == path) || odfs_path.IsParent(path))) {
-    return path;
-  }
-
-  // Allow paths for removable media devices.
-  base::FilePath removable_media_path;
-  if (chrome::GetRemovableMediaPath(&removable_media_path) &&
-      removable_media_path.IsParent(path)) {
-    return path;
-  }
-
-  // Allow paths under the Android files mount point.
-  base::FilePath android_files_path;
-  if (chrome::GetAndroidFilesPath(&android_files_path) &&
-      android_files_path.IsParent(path)) {
-    return path;
-  }
-
-  // Allow Linux files mount point and subdirs.
-  base::FilePath linux_files_path;
-  if (chrome::GetLinuxFilesPath(&linux_files_path) &&
-      (linux_files_path == path || linux_files_path.IsParent(path))) {
-    return path;
-  }
-
-  // Otherwise, return the safe default.
-  return default_downloads_path;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath migrated_drive_path;
   // Managed prefs may force a legacy Drive path as the download path. Ensure
   // the path is valid when DriveFS is enabled.

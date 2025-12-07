@@ -21,6 +21,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -36,6 +37,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
@@ -189,11 +191,18 @@ SystemNudgeView::SystemNudgeView(
   // Painted to layer so the view can be semi-transparent and set rounded
   // corners.
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  SetBackground(views::CreateThemedSolidBackground(
-      nudge_data.background_color_id.value_or(kColorAshShieldAndBase80)));
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
+  const ui::ColorId default_background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
+  SetBackground(views::CreateSolidBackground(
+      nudge_data.background_color_id.value_or(default_background_color_id)));
   SetNotifyEnterExitOnChild(true);
   SetProperty(views::kElementIdentifierKey, kBubbleIdForTesting);
 
@@ -291,8 +300,8 @@ SystemNudgeView::SystemNudgeView(
         gfx::RoundedCornersF(kImageViewCornerRadius));
 
     if (nudge_data.image_background_color_id) {
-      image_view->SetBackground(views::CreateThemedSolidBackground(
-          *nudge_data.image_background_color_id));
+      image_view->SetBackground(
+          views::CreateSolidBackground(*nudge_data.image_background_color_id));
     }
 
     AddPaddingView(image_and_text_container, kImageViewTrailingPadding,
@@ -325,7 +334,7 @@ SystemNudgeView::SystemNudgeView(
             .SetText(nudge_data.title_text)
             .SetTooltipText(nudge_data.title_text)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+            .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
             .SetAutoColorReadabilityEnabled(false)
             .SetSubpixelRenderingEnabled(false)
             .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -342,7 +351,7 @@ SystemNudgeView::SystemNudgeView(
           .SetText(nudge_data.body_text)
           .SetTooltipText(nudge_data.body_text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
           .SetSubpixelRenderingEnabled(false)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -352,8 +361,6 @@ SystemNudgeView::SystemNudgeView(
           .SizeToFit(label_width)
           .Build());
 
-  // TODO(b/302368860): Add support for a view to display keyboard shortcuts in
-  // the same style as the launcher and the new keyboard shortcut app.
   if (!nudge_data.keyboard_codes.empty()) {
     AddPaddingView(text_container, image_and_text_container->width(),
                    kTitleBottomPadding);
@@ -441,11 +448,11 @@ SystemNudgeView::~SystemNudgeView() {
 void SystemNudgeView::AddedToWidget() {
   GetWidget()->AddObserver(this);
 
-  // Attach the shadow at the bottom of the widget layer.
+  // Attach the shadow at the bottom of the parent layer.
   auto* shadow_layer = shadow_->GetLayer();
-  auto* widget_layer = GetWidget()->GetLayer();
-  widget_layer->Add(shadow_layer);
-  widget_layer->StackAtBottom(shadow_layer);
+  auto* parent_layer = layer()->parent();
+  parent_layer->Add(shadow_layer);
+  parent_layer->StackAtBottom(shadow_layer);
 }
 
 void SystemNudgeView::RemovedFromWidget() {

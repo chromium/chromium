@@ -1,4 +1,5 @@
 include_rules = [
+  "+absl/cleanup",
   "+components/apdu",
   "+components/cbor",
   "+components/gcm_driver",
@@ -16,6 +17,7 @@ include_rules = [
   "+services/network",
   "+third_party/blink/public/mojom/webauthn",
   "+third_party/boringssl/src/include",
+  "+third_party/boringssl/src/pki",
   "+third_party/cros_system_api",
   "+third_party/microsoft_webauthn",
   "+ui/base/l10n",
@@ -25,3 +27,4 @@ include_rules = [
   "+mojo/core/embedder",
   "+services/cert_verifier",
 ]
+new_usages_require_review = True

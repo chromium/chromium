@@ -105,7 +105,7 @@ class DefaultAshProxy : public AshProxy {
   }
 
  private:
-  const display::Screen* screen() const { return display::Screen::GetScreen(); }
+  const display::Screen* screen() const { return display::Screen::Get(); }
   // We can not return a const reference, as the ash shell has no const getter
   // for the display manager :/
   ash::Shell& shell() const {
@@ -123,15 +123,9 @@ class DefaultAshProxy : public AshProxy {
   }
 
   aura::Window* GetWindowToCaptureForId(DisplayId id) {
-    aura::Window* root_window = GetRootWindowForId(id);
-    if (base::FeatureList::IsEnabled(
-            remoting::features::kEnableCrdAdminRemoteAccess)) {
-      // Capture the uncurtained window.
-      return ash::Shell::GetContainer(
-          root_window, ash::kShellWindowId_ScreenAnimationContainer);
-    }
-
-    return root_window;
+    // Capture the uncurtained window.
+    return ash::Shell::GetContainer(
+        GetRootWindowForId(id), ash::kShellWindowId_ScreenAnimationContainer);
   }
 };
 

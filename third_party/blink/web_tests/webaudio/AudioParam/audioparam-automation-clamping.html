@@ -7,99 +7,94 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      // Some arbitrary sample rate for the offline context.
-      let sampleRate = 48000;
+    <script>
+      promise_test(async () => {
+        // Some arbitrary sample rate for the offline context.
+        const sampleRate = 48000;
 
-      // Duration of test (fairly arbitrary).
-      let renderDuration = 1;
-      let renderFrames = renderDuration * sampleRate;
+        // Duration of test (fairly arbitrary).
+        const renderDuration = 1;
+        const renderFrames = renderDuration * sampleRate;
 
-      let audit = Audit.createTaskRunner();
-
-      audit.define('clamp', (task, should) => {
         // Test clamping of automations.  Most AudioParam limits are essentially
         // unbounded, so clamping doesn't happen.  For most other AudioParams,
         // the behavior is sufficiently complicated with complicated outputs
         // that testing them is hard.  However the output behavior of the
         // frequency parameter for a BiquadFilter is relatively simple.  Use
         // that as the test.
-        let context = new OfflineAudioContext(1, renderFrames, sampleRate);
+        const context = new OfflineAudioContext(1, renderFrames, sampleRate);
 
-        let source = context.createBufferSource();
+        const source = new AudioBufferSourceNode(context);
         source.buffer = createConstantBuffer(context, 1, 1);
         source.loop = true;
 
-        let filter = context.createBiquadFilter();
-        filter.type = 'lowpass';
+        const filter = new BiquadFilterNode(context, {type: 'lowpass'});
+
 
         source.connect(filter);
         filter.connect(context.destination);
 
-        let V0 = 880;
-        let T0 = 0;
+        const V0 = 880;
+        const T0 = 0;
         filter.frequency.setValueAtTime(V0, T0);
 
-        let V1 = -1000;
-        let T1 = renderDuration / 4;
+        const V1 = -1000;
+        const T1 = renderDuration / 4;
         filter.frequency.linearRampToValueAtTime(V1, T1);
 
-        let V2 = 880;
-        let T2 = renderDuration / 2;
+        const V2 = 880;
+        const T2 = renderDuration / 2;
         filter.frequency.linearRampToValueAtTime(V2, T2);
 
         source.start();
 
-        context.startRendering()
-            .then(function(buffer) {
-              let result = buffer.getChannelData(0);
+        const buffer = await context.startRendering();
+        const result = buffer.getChannelData(0);
 
-              // When the cutoff frequency of a lowpass filter is 0, nothing
-              // gets through.  Hence the output of the filter between the
-              // clamping period should be exactly zero. This tests passes if
-              // the output is 0 during the expected range.
-              //
-              // Compute when the frequency value of the biquad goes to 0.  In
-              // general, t = (T0*V1 -T1*V0)/(V1-V0) (using the notation from
-              // the spec.)
-              let clampStartTime = solveLinearRamp(0, V0, T0, V1, T1);
-              let clampEndTime = solveLinearRamp(0, V1, T1, V2, T2);
+        // When the cutoff frequency of a lowpass filter is 0, nothing
+        // gets through.  Hence the output of the filter between the
+        // clamping period should be exactly zero. This tests passes if
+        // the output is 0 during the expected range.
+        //
+        // Compute when the frequency value of the biquad goes to 0.  In
+        // general, t = (T0*V1 -T1*V0)/(V1-V0) (using the notation from
+        // the spec.)
+        const clampStartTime = solveLinearRamp(0, V0, T0, V1, T1);
+        const clampEndTime = solveLinearRamp(0, V1, T1, V2, T2);
 
-              let clampStartFrame = Math.ceil(clampStartTime * sampleRate);
-              let clampEndFrame = Math.floor(clampEndTime * sampleRate);
+        const clampStartFrame = Math.ceil(clampStartTime * sampleRate);
+        const clampEndFrame = Math.floor(clampEndTime * sampleRate);
 
-              let clampedSignal =
-                  result.slice(clampStartFrame, clampEndFrame + 1);
-              let expectedSignal = new Float32Array(clampedSignal.length);
-              expectedSignal.fill(0);
+        const clampedSignal = result.slice(clampStartFrame, clampEndFrame + 1);
+        const expectedSignal = new Float32Array(clampedSignal.length);
 
-              // Output should be zero.
-              should(
-                  clampedSignal,
-                  'Clamped signal in frame range [' + clampStartFrame + ', ' +
-                      clampEndFrame + ']')
-                  .beCloseToArray(expectedSignal, 0);
+        // Output should be zero.
+        assert_array_approx_equals(
+            clampedSignal,
+            expectedSignal,
+            0,
+            `Clamped signal in frame range [${clampStartFrame}, ` +
+                `${clampEndFrame}]`);
 
-              // Find the actual clamp range based on the output values.
-              let actualClampStart = result.findIndex(x => x === 0);
-              let actualClampEnd = actualClampStart +
-                  result.slice(actualClampStart).findIndex(x => x != 0);
-
-              // Verify that the expected clamping range is a subset of the
-              // actual range.
-              should(actualClampStart, 'Actual Clamp start')
-                  .beLessThanOrEqualTo(clampStartFrame);
-              should(actualClampEnd, 'Actual Clamp end')
-                  .beGreaterThanOrEqualTo(clampEndFrame);
-
-            })
-            .then(() => task.done());
-      });
-
-      audit.run();
+        // Find the actual clamp range based on the output values.
+        const actualClampStart = result.findIndex(x => x === 0);
+        const actualClampEnd = actualClampStart +
+            result.slice(actualClampStart).findIndex(x => x !== 0);
+        // Verify that the expected clamping range is a subset of
+        // the actual range.
+        assert_less_than_equal(
+            actualClampStart,
+            clampStartFrame,
+            `Actual clamp start (${actualClampStart}) is before or `+
+                `equal to expected clamp start (${clampStartFrame})`);
+        assert_greater_than_equal(
+            actualClampEnd,
+            clampEndFrame,
+            `Actual clamp end (${actualClampEnd}) is after or equal `+
+                `to expected clamp end (${clampEndFrame})`);
+      }, 'Clamping behavior for frequency automation on BiquadFilterNode');
 
       function solveLinearRamp(v, v0, t0, v1, t1) {
         // Solve the linear ramp equation for the time t at which the ramp

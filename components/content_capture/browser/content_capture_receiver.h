@@ -44,6 +44,7 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
           pending_receiver);
 
   // mojom::ContentCaptureReceiver
+  void DidCompleteBatchCaptureContent() override;
   void DidCaptureContent(const ContentCaptureData& data,
                          bool first_data) override;
   void DidUpdateContent(const ContentCaptureData& data) override;

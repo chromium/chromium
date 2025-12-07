@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_TEST_CAST_STREAMING_TEST_SENDER_H_
 
 #include <optional>
+#include <vector>
 
 #include "components/cast/message_port/message_port.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -13,7 +14,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_decoder_config.h"
 #include "net/base/ip_address.h"
-#include "third_party/openscreen/src/cast/streaming/sender_session.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender_session.h"
 
 namespace cast_streaming {
 

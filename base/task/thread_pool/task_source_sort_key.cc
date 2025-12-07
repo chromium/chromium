@@ -4,18 +4,11 @@
 
 #include "base/task/thread_pool/task_source_sort_key.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 static_assert(sizeof(TaskSourceSortKey) <= 2 * sizeof(uint64_t),
               "Members in TaskSourceSortKey should be ordered to be compact.");
 
-TaskSourceSortKey::TaskSourceSortKey(TaskPriority priority,
-                                     TimeTicks ready_time,
-                                     uint8_t worker_count)
-    : priority_(priority),
-      worker_count_(worker_count),
-      ready_time_(ready_time) {}
 
 bool TaskSourceSortKey::operator<(const TaskSourceSortKey& other) const {
   // This TaskSourceSortKey is considered more important than |other| if it has
@@ -24,16 +17,17 @@ bool TaskSourceSortKey::operator<(const TaskSourceSortKey& other) const {
   // posted sooner than |other|'s.
 
   // A lower priority is considered less important.
-  if (priority_ != other.priority_)
+  if (priority_ != other.priority_) {
     return priority_ < other.priority_;
+  }
 
   // A greater worker count is considered less important.
-  if (worker_count_ != other.worker_count_)
+  if (worker_count_ != other.worker_count_) {
     return worker_count_ > other.worker_count_;
+  }
 
   // Lastly, a greater ready time is considered less important.
   return ready_time_ > other.ready_time_;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

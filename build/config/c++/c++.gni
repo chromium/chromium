@@ -2,18 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/nacl/config.gni")
+import("//build/config/clang/clang.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/rbe.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
   # Use in-tree libc++ (buildtools/third_party/libc++ and
   # buildtools/third_party/libc++abi) instead of the system C++ library for C++
   # standard library support.
-  # Don't check in changes that set this to false for more platforms; doing so
-  # is not supported.
-  use_custom_libcxx = is_fuchsia || is_android || is_apple || is_linux ||
-                      is_chromeos || (is_win && is_clang)
+  #
+  # WARNING: Bringing your own C++ standard library is deprecated and will not
+  # be supported in the future. This flag will be removed.
+  use_custom_libcxx = true
 
   # Use libc++ instead of stdlibc++ when using the host_cpu toolchain, even if
   # use_custom_libcxx is false. This is useful for cross-compiles where a custom
@@ -21,7 +22,10 @@ declare_args() {
   # use_custom_libcxx should still be true when building for the host.  The
   # expected usage is to set use_custom_libcxx=false and
   # use_custom_libcxx_for_host=true in the passed in buildargs.
-  use_custom_libcxx_for_host = false
+  #
+  # WARNING: Bringing your own C++ standard library is deprecated and will not
+  # be supported in the future. This flag will be removed.
+  use_custom_libcxx_for_host = true
 
   # Builds libcxx Natvis into the symbols for type visualization.
   # Set to false to workaround http://crbug.com/966676 and
@@ -39,19 +43,16 @@ declare_args() {
   # defaults to off.
   enable_iterator_debugging = false
 
-  # Use Clang header modules for libc++.
-  # This is experimental only (see crbug.com/543704).
-  # For details on the current state of modules in Chromium see
-  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  use_libcxx_modules = false
+  # Build atomic support from in-tree compiler-rt.
+  #
+  # Apple platforms provide the intrinsics from a different library, and the
+  # implementations in compiler-rt are outdated, so avoid building them in this
+  # case.
+  use_llvm_libatomic = !is_apple
 }
-
-assert(!use_libcxx_modules || !use_remoteexec,
-       "Implicit Clang header modules don't work with remote execution.")
 
 use_custom_libcxx =
     use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
-use_custom_libcxx = use_custom_libcxx && !is_nacl
 
 declare_args() {
   # WARNING: Setting this to a non-default value is highly discouraged.
@@ -65,13 +66,16 @@ declare_args() {
   # In case the C++ standard library implementation used is libstdc++, then
   # enable its own hardening checks. As we cannot determine in GN if libstdc++
   # is used or not, by default enable it for Linux without the custom libc++.
+  #
+  # WARNING: Bringing your own C++ standard library is deprecated and will not
+  # be supported in the future. This flag will be removed.
   use_safe_libstdcxx = is_linux && !use_custom_libcxx
 }
 
 # The saigo libc++ is distinct from the custom hermetic libc++. However, since
 # the Chrome team controls the saigo toolchain, it is safe to unconditionally
 # enable libc++ hardening there as well.
-use_safe_libcxx = (use_custom_libcxx && enable_safe_libcxx) || is_nacl_saigo
+use_safe_libcxx = use_custom_libcxx && enable_safe_libcxx
 
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.
@@ -95,9 +99,89 @@ if (is_android && export_libcxxabi_from_executables) {
   libcxx_is_shared = true
 }
 
-libcxx_prefix = "//third_party/libc++/src"
+if (use_clang_modules) {
+  libcxx_prefix = "${root_build_dir}/gen/third_party/libc++/src"
+  libcxx_modulemap =
+      read_file("//third_party/libc++/src/include/module.modulemap.in",
+                "string")
+  libcxx_modulemap = string_replace(libcxx_modulemap,
+                                    "@LIBCXX_CONFIG_SITE_MODULE_ENTRY@",
+                                    "textual header \"__config_site\"")
+
+  # vcruntime_exception.h is where std::bad_alloc is declared on windows, for
+  # example. Thus, it needs to be re-exported from the standard library.
+  # Since it's used in multiple places and has #pragma once it can't be textual.
+  # Note: Clang doesn't complain when you attempt to export a nonexistent
+  # module, so this still works fine on non-windows platforms.
+  libcxx_modulemap =
+      string_replace(libcxx_modulemap,
+                     "header \"__exception/exception.h\"",
+                     "header \"__exception/exception.h\"" +
+                         " export sys_stage1.vcruntime_exception_h")
+  libcxx_modulemap = string_replace(libcxx_modulemap,
+                                    "header \"__new/align_val_t.h\"",
+                                    "header \"__new/align_val_t.h\"" +
+                                        " export sys_stage1.vcruntime_new_h")
+  libcxx_modulemap =
+      string_replace(libcxx_modulemap,
+                     "header \"__new/exceptions.h\"",
+                     "header \"__new/exceptions.h\"" +
+                         " export sys_stage1.vcruntime_exception_h")
+  libcxx_modulemap =
+      string_replace(libcxx_modulemap,
+                     "header \"__new/new_handler.h\"",
+                     "header \"__new/new_handler.h\" export sys_stage1.new_h")
+
+  write_file("${libcxx_prefix}/include/module.modulemap", libcxx_modulemap)
+} else {
+  libcxx_prefix = "//third_party/libc++/src"
+}
 libcxxabi_prefix = "//third_party/libc++abi/src"
-libcxx_module_prefix = "$root_gen_dir/libcxx"
 
 assert(!(is_ios && libcxx_is_shared),
        "Can't build libc++ as a shared library on iOS.")
+
+if (libcxx_is_shared) {
+  libcxx_target_type = "shared_library"
+} else if (is_win) {
+  libcxx_target_type = "source_set"
+} else {
+  # Build as a static_library instead of a source_set when possible. Static
+  # library semantics are more ideal for libc++, because they ensure that only
+  # libc++ object files needed to satisfy unresolved symbols at link time are
+  # actually linked into the output. Especially for small targets with minimal
+  # use of libc++, this can provide space savings and a more predictable result,
+  # and cut down on the number of unnecessary static initializers.
+  libcxx_target_type = "static_library"
+}
+
+if (libcxx_target_type == "shared_library" ||
+    export_libcxxabi_from_executables) {
+  # libc++'s target type follows that of libc++, except:
+  #  - When libc++ is built as a shared_library, libc++abi should be a
+  #    source_set, so that libc++abi can be be linked into the libc++
+  #    shared_library in full.
+  #  - When exporting libc++abi from executables, libc++abi should be a
+  #    source_set, so that all of libc++abi is linked into executables
+  #    regardless of whether they directly depend on any particular portion of
+  #    it.
+  libcxxabi_target_type = "source_set"
+} else {
+  libcxxabi_target_type = libcxx_target_type
+}
+
+# Chromium will require using its libc++ library implementation. Warn if the
+# current configuration is not using it.
+if ((!use_custom_libcxx || !use_custom_libcxx_for_host) &&
+    # Standalone use of //build outside of Chromium can disable libc++.
+    build_with_chromium &&
+    # Try to avoid spamming the console lots. It's not actually
+    # toolchain-specific.
+    current_toolchain == default_toolchain) {
+  print("*********************************************************************")
+  print("WARNING: Support for linking against a C++ standard library other ")
+  print("  than the one in-tree (buildtools/third_party/libc++) is deprecated")
+  print("  and support for this will end. We plan to remove this option in ")
+  print("  M138.")
+  print("*********************************************************************")
+}

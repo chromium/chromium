@@ -93,7 +93,7 @@ public class JSONTestUtils {
 
     /** Matcher to determine whether a JSON string is equal to the expected one. */
     public static class JSONStringLike implements ArgumentMatcher<String> {
-        private JSONObject mExpected;
+        private final JSONObject mExpected;
 
         public JSONStringLike(JSONObject expected) {
             mExpected = expected;

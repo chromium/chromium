@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>subframe loading background images</title>
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <style>
+  #child {
+    width: 100px;
+    height: 200px;
+    background: green;
+  }
+  #sameOrigin {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100px;
+    height: 100px;
+    background-image: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png");
+  }
+  #crossOrigin {
+    position: absolute;
+    left: 0px;
+    top: 100px;
+    width: 100px;
+    height: 100px;
+    background-image: url("https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png");
+  }
+  </style>
+</head>
+<body>
+  <canvas id=canvas width="100" height="200" layoutsubtree>
+    <div id=child>
+      <div id=sameOrigin></div>
+      <div id=crossOrigin></div>
+    </div>
+  </canvas>
+
+  <script>
+    window.onload = () => {
+      test(function(t) {
+        var context = canvas.getContext("2d", { willReadFrequently: true });
+        context.drawElementImage(child, 0, 0);
+
+        pixel = context.getImageData(50, 50, 1, 1).data;
+        assert_equals(pixel[0], 255, "Same origin should draw");
+        assert_equals(pixel[1], 0, "Same origin should draw");
+        assert_equals(pixel[2], 0, "Same origin should draw");
+
+        pixel = context.getImageData(50, 150, 1, 1).data;
+        assert_equals(pixel[0], 0, "Cross origin should not draw");
+        assert_equals(pixel[1], 128, "Cross origin should not draw");
+        assert_equals(pixel[2], 0, "Cross origin should not draw");
+
+        t.done();
+      });
+    }
+  </script>
+</body>
+</html>

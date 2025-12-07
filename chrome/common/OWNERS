@@ -32,21 +32,14 @@ per-file chrome_content_client_constants.h=*
 per-file chrome_content_client.h=*
 per-file chrome_content_client_unittest.cc=*
 
-# Lacros
-per-file *_lacros*=file://chromeos/LACROS_OWNERS
-
 # PDF files.
 per-file pdf_*=file://pdf/OWNERS
-
-# Pepper files.
-per-file pepper_*=file://ppapi/OWNERS
 
 # WebUI. See also chrome/browser/ui/webui/OWNERS.
 per-file webui_url_constants.cc=file://ui/webui/PLATFORM_OWNERS
 per-file webui_url_constants.h=file://ui/webui/PLATFORM_OWNERS
+per-file webui_util*=file://ui/webui/PLATFORM_OWNERS
 
 # Other stuff.
 per-file autocomplete_match_type.*=mpearson@chromium.org
-per-file autocomplete_match_type.*=pkasting@chromium.org
-per-file autocomplete_match_type.*=sky@chromium.org
 per-file crash_keys*=file://components/crash/OWNERS

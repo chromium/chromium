@@ -56,7 +56,7 @@ TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Success) {
   url_loader_factory_.AddResponse(url, std::move(head), body, status);
 
   http_fetcher_->ExecuteGetRequest(
-      url, base::BindOnce([](std::unique_ptr<std::string> response,
+      url, base::BindOnce([](std::optional<std::string> response,
                              std::unique_ptr<FastPairHttpResult> result) {
         ASSERT_EQ(kBody, *response);
         ASSERT_TRUE(result->IsSuccess());
@@ -70,9 +70,9 @@ TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Failure) {
 
   http_fetcher_->ExecuteGetRequest(
       GURL(kTestUrl),
-      base::BindOnce([](std::unique_ptr<std::string> response,
+      base::BindOnce([](std::optional<std::string> response,
                         std::unique_ptr<FastPairHttpResult> result) {
-        ASSERT_EQ(nullptr, response);
+        ASSERT_EQ(std::nullopt, response);
         ASSERT_FALSE(result->IsSuccess());
         ASSERT_EQ(result->http_response_error(),
                   net::HTTP_INTERNAL_SERVER_ERROR);
@@ -86,9 +86,9 @@ TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Failure_NoUrlLoader) {
 
   http_fetcher_->ExecuteGetRequest(
       GURL(kTestUrl),
-      base::BindOnce([](std::unique_ptr<std::string> response,
+      base::BindOnce([](std::optional<std::string> response,
                         std::unique_ptr<FastPairHttpResult> result) {
-        ASSERT_EQ(nullptr, response);
+        ASSERT_EQ(std::nullopt, response);
         ASSERT_EQ(nullptr, result);
       }));
   task_environment_.RunUntilIdle();

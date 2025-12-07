@@ -16,13 +16,12 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -135,6 +134,10 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     return;
   }
 
+  // Note: we considered an implementation that would also be correct if the key
+  // is on multiple tokens in https://crrev.com/c/2784967 but decided to keep
+  // the simple implementation for now, as corporate keys can only exist on one
+  // token on ChromeOS at the moment, and there are no plans to change it.
   bool key_on_user_token_only = false;
   for (const auto key_location : key_locations) {
     switch (key_location) {

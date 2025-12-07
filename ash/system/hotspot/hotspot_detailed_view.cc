@@ -20,6 +20,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -140,7 +141,7 @@ void HotspotDetailedView::CreateContainer() {
   const std::u16string text_label = l10n_util::GetStringFUTF16(
       IDS_ASH_HOTSPOT_DETAILED_VIEW_TITLE, ui::GetChromeOSDeviceName());
   entry_row_->text_label()->SetText(text_label);
-  entry_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  entry_row_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *entry_row_->text_label());
   entry_row_->GetViewAccessibility().SetName(text_label);
@@ -247,15 +248,10 @@ void HotspotDetailedView::UpdateSubText(const HotspotInfoPtr& hotspot_info) {
       return;
     }
     // Set color for the subtext that shows hotspot is connected.
-    if (chromeos::features::IsJellyEnabled()) {
-      entry_row_->sub_text_label()->SetEnabledColorId(
-          cros_tokens::kCrosSysPositive);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *entry_row_->sub_text_label());
-    } else {
-      entry_row_->sub_text_label()->SetEnabledColorId(
-          kColorAshTextColorPositive);
-    }
+    entry_row_->sub_text_label()->SetEnabledColor(
+        cros_tokens::kCrosSysPositive);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *entry_row_->sub_text_label());
     return;
   }
   // If no subtext is set, previous subtext should be hidden.

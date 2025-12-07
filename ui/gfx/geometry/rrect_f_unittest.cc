@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f_builder.h"
 
 namespace gfx {
@@ -209,6 +211,19 @@ TEST(RRectFTest, Contains) {
   EXPECT_FALSE(a.Contains(b));
   b = RectF(40, 50, 60, 70);
   EXPECT_FALSE(a.Contains(b));
+}
+
+TEST(RRectFTest, HasRoundedCorners) {
+  RRectF a;
+  EXPECT_FALSE(a.HasRoundedCorners());
+  a = gfx::RRectF(gfx::RectF(10, 10));
+  EXPECT_FALSE(a.HasRoundedCorners());
+  a = gfx::RRectF(gfx::RectF(), gfx::RoundedCornersF(1.0f));
+  EXPECT_FALSE(a.HasRoundedCorners());
+  a = gfx::RRectF(gfx::RectF(10, 10), gfx::RoundedCornersF(1.0f));
+  EXPECT_TRUE(a.HasRoundedCorners());
+  a = gfx::RRectF(gfx::RectF(10, 10), gfx::RoundedCornersF(1, 0, 0, 0));
+  EXPECT_TRUE(a.HasRoundedCorners());
 }
 
 TEST(RRectFTest, Scale) {

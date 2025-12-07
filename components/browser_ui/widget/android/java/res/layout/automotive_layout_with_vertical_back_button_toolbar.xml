@@ -4,26 +4,40 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/automotive_base_linear_layout"
-    android:orientation="horizontal"
+    android:id="@+id/automotive_base_frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/back_button_toolbar"
-        android:layout_width="?attr/actionBarSize"
-        android:layout_height="match_parent"
-        android:background="@android:color/black"
-        app:theme="@style/DarkModeActionBarTheme"
-        app:navigationIcon="@drawable/ic_arrow_back_24dp"
-        app:navigationContentDescription="@string/back"/>
-
-    <ViewStub
-        android:id="@+id/original_layout"
+    <LinearLayout
+        android:id="@+id/automotive_base_linear_layout"
+        android:orientation="horizontal"
+        android:gravity="end"
         android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/back_button_toolbar"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            app:theme="@style/DarkModeActionBarTheme"
+            app:navigationIcon="@drawable/ic_arrow_back_24dp"
+            app:navigationContentDescription="@string/back"/>
+
+        <ViewStub
+            android:id="@+id/original_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+    <!--    TODO(https://crbug.com/376737727): Cleanup on swipe toolbar's ViewStub if not needed. -->
+    <ViewStub
+        android:id="@+id/automotive_on_swipe_back_button_toolbar_stub"
+        android:layout="@layout/automotive_on_swipe_back_button_toolbar"
+        android:layout_gravity="start"
+        android:layout_width="?attr/actionBarSize"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+</FrameLayout>

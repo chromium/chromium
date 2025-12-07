@@ -106,10 +106,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   phone_model_->AddObserver(this);
 
   phone_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  phone_name_label_->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  phone_name_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
                                         *phone_name_label_);
 
@@ -127,9 +124,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   battery_label_->SetAutoColorReadabilityEnabled(false);
   battery_label_->SetSubpixelRenderingEnabled(false);
 
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  battery_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  battery_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
 
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                         *battery_label_);
@@ -191,8 +186,8 @@ void PhoneStatusView::UpdateMobileStatus() {
   const PhoneStatusModel& phone_status =
       phone_model_->phone_status_model().value();
 
-  const SkColor primary_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor primary_color =
+      GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary);
 
   gfx::ImageSkia signal_image;
   std::u16string tooltip_text;
@@ -227,7 +222,7 @@ void PhoneStatusView::UpdateMobileStatus() {
       break;
   }
 
-  signal_icon_->SetImage(signal_image);
+  signal_icon_->SetImage(ui::ImageModel::FromImageSkia(signal_image));
   signal_icon_->SetTooltipText(tooltip_text);
 }
 
@@ -235,14 +230,14 @@ void PhoneStatusView::UpdateBatteryStatus() {
   const PhoneStatusModel& phone_status =
       phone_model_->phone_status_model().value();
 
-  const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
-      IsBatterySaverModeOn(phone_status)
-          ? AshColorProvider::ContentLayerType::kIconColorWarning
-          : AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor icon_fg_color = GetColorProvider()->GetColor(
+      IsBatterySaverModeOn(phone_status) ? cros_tokens::kIconColorWarning
+                                         : cros_tokens::kIconColorPrimary);
 
-  battery_icon_->SetImage(PowerStatus::GetBatteryImage(
-      CalculateBatteryInfo(icon_fg_color), kUnifiedTrayBatteryIconSize,
-      battery_icon_->GetColorProvider()));
+  battery_icon_->SetImage(
+      ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
+          CalculateBatteryInfo(icon_fg_color), kUnifiedTrayBatteryIconSize,
+          battery_icon_->GetColorProvider())));
   SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
@@ -318,10 +313,10 @@ void PhoneStatusView::SetBatteryTooltipText() {
 
 void PhoneStatusView::ClearExistingStatus() {
   // Clear mobile status.
-  signal_icon_->SetImage(gfx::ImageSkia());
+  signal_icon_->SetImage(ui::ImageModel());
 
   // Clear battery status.
-  battery_icon_->SetImage(gfx::ImageSkia());
+  battery_icon_->SetImage(ui::ImageModel());
   battery_label_->SetText(std::u16string());
 
   // TODO(b/281844561): When the phone is disconnected the |phone_name_label_|

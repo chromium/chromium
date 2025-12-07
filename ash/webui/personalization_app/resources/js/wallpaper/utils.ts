@@ -7,13 +7,15 @@
 import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import type {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {getNumberOfGridItemsPerRow, isNonEmptyString} from '../utils.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
-import {DailyRefreshState} from './wallpaper_state.js';
+import type {DefaultImageSymbol, DisplayableImage} from './constants.js';
+import {kDefaultImageSymbol} from './constants.js';
+import type {DailyRefreshState} from './wallpaper_state.js';
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
   return !!obj && typeof obj.unitId === 'bigint';

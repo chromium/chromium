@@ -36,14 +36,12 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ui {
-class ColorProvider;
-}  // namespace ui
-
 namespace blink {
 
 class GraphicsContext;
+class ScrollableArea;
 class WebMouseEvent;
+class WebViewImpl;
 
 class CORE_EXPORT ScrollbarTheme {
   USING_FAST_MALLOC(ScrollbarTheme);
@@ -109,18 +107,13 @@ class CORE_EXPORT ScrollbarTheme {
   }
 
   virtual void PaintScrollCorner(GraphicsContext&,
-                                 const Scrollbar* vertical_scrollbar,
+                                 const ScrollableArea&,
                                  const DisplayItemClient&,
-                                 const gfx::Rect& corner_rect,
-                                 mojom::blink::ColorScheme color_scheme,
-                                 bool in_forced_colors,
-                                 const ui::ColorProvider* color_provider);
+                                 const gfx::Rect& corner_rect);
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const gfx::Rect&);
-  virtual SkColor4f ThumbColor(const Scrollbar&) const {
-    NOTREACHED_NORETURN();
-  }
+  virtual SkColor4f ThumbColor(const Scrollbar&) const { NOTREACHED(); }
 
   virtual bool ShouldCenterOnThumb(const Scrollbar&,
                                    const WebMouseEvent&) const {
@@ -148,7 +141,7 @@ class CORE_EXPORT ScrollbarTheme {
   // scroll position.
   virtual int ThumbPosition(const Scrollbar&, float scroll_position) const;
   // The length of the thumb along the axis of the scrollbar.
-  virtual int ThumbLength(const Scrollbar&) const;
+  int ThumbLength(const Scrollbar&) const;
   // The position of the track relative to the scrollbar.
   virtual int TrackPosition(const Scrollbar&) const;
   // The length of the track along the axis of the scrollbar.
@@ -190,10 +183,6 @@ class CORE_EXPORT ScrollbarTheme {
                             const Scrollbar&,
                             const gfx::Rect&);
 
-  virtual int MaxOverlapBetweenPages() const {
-    return std::numeric_limits<int>::max();
-  }
-
   virtual base::TimeDelta InitialAutoscrollTimerDelay() const;
   virtual base::TimeDelta AutoscrollTimerDelay() const;
 
@@ -210,7 +199,7 @@ class CORE_EXPORT ScrollbarTheme {
   virtual bool UsesNinePatchThumbResource() const { return false; }
   virtual bool UsesSolidColorThumb() const { return false; }
   virtual gfx::Insets SolidColorThumbInsets(const Scrollbar& scrollbar) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   virtual bool UsesNinePatchTrackAndButtonsResource() const { return false; }
 
@@ -219,15 +208,13 @@ class CORE_EXPORT ScrollbarTheme {
   // dimensions will be ignored for purposes of painting since the resource can
   // be then resized without a repaint.
   virtual gfx::Size NinePatchThumbCanvasSize(const Scrollbar&) const {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::Size();
+    NOTREACHED();
   }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
   virtual gfx::Rect NinePatchThumbAperture(const Scrollbar&) const {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::Rect();
+    NOTREACHED();
   }
 
   // For a nine-patch scrollbar, this defines the painting canvas size which the
@@ -235,13 +222,21 @@ class CORE_EXPORT ScrollbarTheme {
   // dimensions will be ignored for purposes of painting since the resource can
   // be then resized without a repaint.
   virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
+  }
+  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&,
+                                                       float scale) const {
+    NOTREACHED();
   }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
   virtual gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
+  }
+  virtual gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&,
+                                                     float scale) const {
+    NOTREACHED();
   }
 
   virtual bool AllowsHitTest() const { return true; }
@@ -269,6 +264,8 @@ class CORE_EXPORT ScrollbarTheme {
   friend class MockScrollableArea;
   friend class MockScrollableAreaForAnimatorTest;
   friend class Page;
+  // For MockScrollbarsEnabled().
+  friend class WebViewImpl;
 
   // Get the theme based on global scrollbar settings. We should always use
   // Page::GetScrollbarTheme() to get scrollbar theme because we support

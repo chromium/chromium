@@ -9,7 +9,15 @@ android_library("native_test_instrumentation_test_runner_java") {
   sources = [
     "java/src/org/chromium/build/gtest_apk/NativeTestInstrumentationTestRunner.java",
     "java/src/org/chromium/build/gtest_apk/NativeTestIntent.java",
+    "java/src/org/chromium/build/gtest_apk/ProcessKeepaliveService.java",
     "java/src/org/chromium/build/gtest_apk/TestStatusIntent.java",
     "java/src/org/chromium/build/gtest_apk/TestStatusReceiver.java",
   ]
+  srcjar_deps = [ ":aidl" ]
+}
+
+android_aidl("aidl") {
+  testonly = true
+  sources =
+      [ "java/src/org/chromium/build/gtest_apk/IProcessKeepaliveService.aidl" ]
 }

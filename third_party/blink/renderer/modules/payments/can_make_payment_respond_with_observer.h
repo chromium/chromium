@@ -13,7 +13,6 @@
 namespace blink {
 
 class ExecutionContext;
-class ScriptValue;
 class WaitUntilObserver;
 
 // Implementation for CanMakePaymentEvent.respondWith(), which is used by the
@@ -26,19 +25,11 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
                                     WaitUntilObserver*);
   ~CanMakePaymentRespondWithObserver() override = default;
 
+  void OnResponseFulfilled(ScriptState*, bool);
   void OnResponseRejected(mojom::blink::ServiceWorkerResponseError) override;
-  void OnResponseFulfilled(ScriptState*,
-                           const ScriptValue&,
-                           const ExceptionContext&) override;
   void OnNoResponse(ScriptState*) override;
 
   void Trace(Visitor*) const override;
-
-  // Observes the given promise and calls OnResponseRejected() or
-  // OnResponseFulfilled().
-  void ObservePromiseResponse(ScriptState*,
-                              ScriptPromiseUntyped,
-                              ExceptionState&);
 
  private:
   void Respond(

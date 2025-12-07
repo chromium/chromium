@@ -37,6 +37,6 @@ It consists of the following parts:
    mostly the same, hopefully we will be able to migrate the old implementation
    to the new mojom API as well.
 
- * `showOpenFilePicker`, `showSaveFilePicker` and `showDirectorPicker`: Entry points
+ * `showOpenFilePicker`, `showSaveFilePicker` and `showDirectoryPicker`: Entry points
    on `window`, that let a website pop-up a file or directory picker, prompting the
    user to select one or more files or directories, to which the website than gets access.

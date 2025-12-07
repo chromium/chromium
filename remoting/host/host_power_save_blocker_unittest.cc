@@ -12,6 +12,10 @@
 #include "remoting/host/host_status_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace remoting {
 
 class HostPowerSaveBlockerTest : public testing::Test {
@@ -23,23 +27,28 @@ class HostPowerSaveBlockerTest : public testing::Test {
 
   void SetUp() override;
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  base::Thread blocking_thread_;
+  void TearDown() override;
+
+  base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<HostStatusMonitor> monitor_;
   std::unique_ptr<HostPowerSaveBlocker> blocker_;
 };
 
 HostPowerSaveBlockerTest::HostPowerSaveBlockerTest()
-    : blocking_thread_("block-thread"), monitor_(new HostStatusMonitor()) {}
+    : monitor_(new HostStatusMonitor()) {}
 
 void HostPowerSaveBlockerTest::SetUp() {
-  ASSERT_TRUE(blocking_thread_.StartWithOptions(
-                  base::Thread::Options(base::MessagePumpType::IO, 0)) &&
-              blocking_thread_.WaitUntilThreadStarted());
   blocker_ = std::make_unique<HostPowerSaveBlocker>(
-      monitor_, task_environment_.GetMainThreadTaskRunner(),
-      blocking_thread_.task_runner());
+      monitor_, task_environment_.GetMainThreadTaskRunner());
+}
+
+void HostPowerSaveBlockerTest::TearDown() {
+  blocker_.reset();
+  task_environment_.RunUntilIdle();
+#if BUILDFLAG(IS_LINUX)
+  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 bool HostPowerSaveBlockerTest::is_activated() const {

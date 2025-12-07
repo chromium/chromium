@@ -32,10 +32,6 @@ enum class FactoryPingEmbargoState {
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-FactoryPingEmbargoState GetEnterpriseManagementPingEmbargoState(
-    StatisticsProvider* statistics_provider);
-
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 FactoryPingEmbargoState GetRlzPingEmbargoState(
     StatisticsProvider* statistics_provider);
 

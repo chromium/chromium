@@ -38,12 +38,12 @@ class RemoteChangeProcessor {
                               const SyncFileMetadata& metadata,
                               const FileChangeList& changes)>;
 
-  RemoteChangeProcessor() {}
+  RemoteChangeProcessor() = default;
 
   RemoteChangeProcessor(const RemoteChangeProcessor&) = delete;
   RemoteChangeProcessor& operator=(const RemoteChangeProcessor&) = delete;
 
-  virtual ~RemoteChangeProcessor() {}
+  virtual ~RemoteChangeProcessor() = default;
 
   // This must be called before processing the change for the |url|.
   // This tries to lock the target |url| and returns the local changes

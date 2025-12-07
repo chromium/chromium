@@ -13,7 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +25,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -46,17 +47,6 @@ using ::chromeos::ImmersiveFullscreenController;
 using ::chromeos::ImmersiveFullscreenControllerTestApi;
 using ::chromeos::ImmersiveRevealedLock;
 
-class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
- public:
-  explicit TestBubbleDialogDelegate(views::View* anchor)
-      : BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {}
-
-  TestBubbleDialogDelegate(const TestBubbleDialogDelegate&) = delete;
-  TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
-
-  ~TestBubbleDialogDelegate() override = default;
-};
-
 class ConsumeEventHandler : public ui::test::TestEventHandler {
  public:
   ConsumeEventHandler() = default;
@@ -75,6 +65,17 @@ class ConsumeEventHandler : public ui::test::TestEventHandler {
 };
 
 }  // namespace
+
+class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
+ public:
+  explicit TestBubbleDialogDelegate(views::View* anchor)
+      : BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {}
+
+  TestBubbleDialogDelegate(const TestBubbleDialogDelegate&) = delete;
+  TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
+
+  ~TestBubbleDialogDelegate() override = default;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -106,7 +107,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   }
 
   views::View* top_container() {
-    return NonClientFrameViewAsh::Get(window())->GetHeaderView();
+    return FrameViewAsh::Get(window())->GetHeaderView();
   }
 
   views::Widget* widget() { return widget_; }
@@ -114,7 +115,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   aura::Window* window() { return widget_->GetNativeWindow(); }
 
   chromeos::HeaderView* immersive_delegate() {
-    return NonClientFrameViewAsh::Get(window())->GetHeaderView();
+    return FrameViewAsh::Get(window())->GetHeaderView();
   }
 
   // Access to private data from the controller.
@@ -141,11 +142,11 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+    SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
     gfx::Size window_size = widget_->GetWindowBoundsInScreen().size();
     content_view_ = new views::NativeViewHost();
     content_view_->SetBounds(0, 0, window_size.width(), window_size.height());
-    widget_->client_view()->AddChildView(content_view_.get());
+    widget_->client_view()->AddChildViewRaw(content_view_.get());
 
     test_api_ =
         std::make_unique<ImmersiveFullscreenControllerTestApi>(controller());
@@ -193,7 +194,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     }
   }
 
-  void SetWindowShowState(ui::WindowShowState show_state) {
+  void SetWindowShowState(ui::mojom::WindowShowState show_state) {
     window()->SetProperty(aura::client::kShowStateKey, show_state);
   }
 
@@ -250,7 +251,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 // Test the initial state and that the delegate gets notified of the
 // top-of-window views getting hidden and revealed.
 TEST_F(ImmersiveFullscreenControllerTest, Delegate) {
-  SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
+  SetWindowShowState(ui::mojom::WindowShowState::kMaximized);
 
   // Initial state.
   EXPECT_FALSE(controller()->IsEnabled());
@@ -280,7 +281,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Delegate) {
 
 // GetRevealedLock() specific tests.
 TEST_F(ImmersiveFullscreenControllerTest, RevealedLock) {
-  SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
+  SetWindowShowState(ui::mojom::WindowShowState::kMaximized);
 
   std::unique_ptr<ImmersiveRevealedLock> lock1;
   std::unique_ptr<ImmersiveRevealedLock> lock2;
@@ -682,7 +683,7 @@ TEST_F(ImmersiveFullscreenControllerTest, WindowsInTabletMode) {
   // Top-of-window views will not be revealed for full-screened window in tablet
   // mode either.
   EnableTabletMode(true);
-  SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+  SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
   AttemptReveal(MODALITY_GESTURE_SCROLL);
   EXPECT_FALSE(controller()->IsRevealed());
 
@@ -736,9 +737,9 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
 
   aura::test::TestWindowDelegate child_delegate;
   std::unique_ptr<aura::Window> child(
-      CreateTestWindowInShellWithDelegateAndType(
-          &child_delegate, aura::client::WINDOW_TYPE_CONTROL, 1234,
-          gfx::Rect()));
+      CreateTestWindowInShell({.delegate = &child_delegate,
+                               .window_type = aura::client::WINDOW_TYPE_CONTROL,
+                               .window_id = 1234}));
   content_view()->Attach(child.get());
   views::test::RunScheduledLayout(content_view());
 
@@ -762,8 +763,10 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
 TEST_F(ImmersiveFullscreenControllerTest, EventsDoNotLeakToWindowUnderneath) {
   gfx::Rect window_bounds = window()->GetBoundsInScreen();
   aura::test::TestWindowDelegate child_delegate;
-  std::unique_ptr<aura::Window> behind(CreateTestWindowInShellWithDelegate(
-      &child_delegate, 1234, window_bounds));
+  std::unique_ptr<aura::Window> behind(
+      CreateTestWindowInShell({.delegate = &child_delegate,
+                               .bounds = window_bounds,
+                               .window_id = 1234}));
   behind->Show();
   behind->SetBounds(window_bounds);
   widget()->StackAbove(behind.get());
@@ -795,7 +798,7 @@ TEST_F(ImmersiveFullscreenControllerTest, EventsDoNotLeakToWindowUnderneath) {
 // Check that the window state gets properly marked for immersive fullscreen.
 TEST_F(ImmersiveFullscreenControllerTest, WindowStateImmersiveFullscreen) {
   WindowState* window_state = WindowState::Get(window());
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
 
   EXPECT_FALSE(window_state->IsInImmersiveFullscreen());
   SetEnabled(true);
@@ -815,11 +818,11 @@ TEST_F(ImmersiveFullscreenControllerTest, Focus) {
   views::View* child_view = new views::View();
   child_view->SetBounds(0, 0, 10, 10);
   child_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  top_container()->AddChildView(child_view);
+  top_container()->AddChildViewRaw(child_view);
   views::View* unrelated_view = new views::View();
   unrelated_view->SetBounds(0, 100, 10, 10);
   unrelated_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  top_container()->parent()->AddChildView(unrelated_view);
+  top_container()->parent()->AddChildViewRaw(unrelated_view);
   views::FocusManager* focus_manager =
       top_container()->GetWidget()->GetFocusManager();
 
@@ -927,10 +930,10 @@ TEST_F(ImmersiveFullscreenControllerTest, Bubbles) {
   // Add views to the view hierarchy to which we will anchor bubbles.
   views::View* child_view = new views::View();
   child_view->SetBounds(0, 0, 10, 10);
-  top_container()->AddChildView(child_view);
+  top_container()->AddChildViewRaw(child_view);
   views::View* unrelated_view = new views::View();
   unrelated_view->SetBounds(0, 100, 10, 10);
-  top_container()->parent()->AddChildView(unrelated_view);
+  top_container()->parent()->AddChildViewRaw(unrelated_view);
 
   SetEnabled(true);
   ASSERT_FALSE(controller()->IsRevealed());
@@ -1050,12 +1053,12 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
   Shelf* shelf = GetPrimaryShelf();
 
   // Shelf is visible by default.
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
   ASSERT_FALSE(controller()->IsEnabled());
   ASSERT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   // Entering immersive fullscreen sets the shelf to auto hide.
-  SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+  SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
   SetEnabled(true);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
@@ -1078,7 +1081,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
 
   // Disabling immersive fullscreen puts it back.
   SetEnabled(false);
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
   ASSERT_FALSE(controller()->IsEnabled());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
@@ -1087,13 +1090,13 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // Entering immersive fullscreen keeps auto-hide.
-  SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+  SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
   SetEnabled(true);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // Disabling immersive fullscreen maintains the user's auto-hide selection.
   SetEnabled(false);
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 }
 

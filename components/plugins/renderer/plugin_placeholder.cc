@@ -5,7 +5,6 @@
 #include "components/plugins/renderer/plugin_placeholder.h"
 
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -19,6 +18,8 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace plugins {
 
@@ -141,22 +142,30 @@ void PluginPlaceholderBase::NotifyPlaceholderReadyForTestingCallback() {
 
 void PluginPlaceholderBase::OnDestruct() {}
 
-// static
-gin::WrapperInfo PluginPlaceholder::kWrapperInfo = {gin::kEmbedderNativeGin};
-
 PluginPlaceholder::PluginPlaceholder(content::RenderFrame* render_frame,
                                      const blink::WebPluginParams& params)
-    : PluginPlaceholderBase(render_frame, params) {}
+    : PluginPlaceholderBase(render_frame, params) {
+  self_ = this;
+}
 
 PluginPlaceholder::~PluginPlaceholder() {
 }
 
+const gin::WrapperInfo* PluginPlaceholder::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 v8::Local<v8::Value> PluginPlaceholder::GetV8Handle(v8::Isolate* isolate) {
-  return gin::CreateHandle(isolate, this).ToV8();
+  return GetWrapper(isolate).ToLocalChecked();
 }
 
 bool PluginPlaceholderBase::IsErrorPlaceholder() {
   return false;
+}
+
+void PluginPlaceholder::OnDestruct() {
+  PluginPlaceholderBase::OnDestruct();
+  self_.Clear();
 }
 
 gin::ObjectTemplateBuilder PluginPlaceholder::GetObjectTemplateBuilder(
@@ -171,7 +180,13 @@ PluginPlaceholder* PluginPlaceholder::Create(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
     const std::string& html_data) {
-  auto* placeholder = new PluginPlaceholder(render_frame, params);
+  auto* placeholder = cppgc::MakeGarbageCollected<PluginPlaceholder>(
+      render_frame->GetWebFrame()
+          ->GetAgentGroupScheduler()
+          ->Isolate()
+          ->GetCppHeap()
+          ->GetAllocationHandle(),
+      render_frame, params);
   placeholder->Init(html_data);
   return placeholder;
 }

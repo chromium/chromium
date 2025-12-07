@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
 #define CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
 
-#include "base/time/default_clock.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
-#include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
+#include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -30,7 +30,9 @@ class PlusAddressCreationControllerDesktop
 
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
+                     bool is_manual_fallback,
                      PlusAddressCallback callback) override;
+  void TryAgainToReservePlusAddress() override;
   void OnRefreshClicked() override;
   void OnConfirmed() override;
   void OnCanceled() override;
@@ -43,9 +45,6 @@ class PlusAddressCreationControllerDesktop
   void set_suppress_ui_for_testing(bool should_suppress);
   // Used to validate storage and clearing of `maybe_plus_profile_`.
   std::optional<PlusProfile> get_plus_profile_for_testing();
-
-  // For setting custom `clock_` during test.
-  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
  private:
   // WebContentsUserData:
@@ -66,6 +65,9 @@ class PlusAddressCreationControllerDesktop
   void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);
   // Autofills `plus_address` in the targeted field by running callback_.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
+  // Shows an applicable user perception survey after the generated plus address
+  // was accepted.
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type);
 
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
@@ -79,12 +81,11 @@ class PlusAddressCreationControllerDesktop
   // Records the time between `modal_shown_time_` and now as modal shown
   // duration and the number of refresh attempts. Resets both
   // `modal_shown_time_` and `reserve_response_count_`.
-  void RecordModalShownOutcome(
-      metrics::PlusAddressModalCompletionStatus status);
+  void RecordModalShownOutcome(metrics::PlusAddressModalCompletionStatus status,
+                               bool was_notice_shown);
 
-  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   // This is set on `OfferCreation`.
-  std::optional<base::Time> modal_shown_time_;
+  std::optional<base::TimeTicks> modal_shown_time_;
   std::optional<metrics::PlusAddressModalCompletionStatus> modal_error_status_;
   // The number of responses from calls to reserve a plus address that a user
   // has made. This equals 1 + number of refreshes.

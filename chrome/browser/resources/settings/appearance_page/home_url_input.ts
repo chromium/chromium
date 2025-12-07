@@ -63,11 +63,11 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
     };
   }
 
-  pref: chrome.settingsPrivate.PrefObject<string>|undefined;
-  disabled: boolean;
-  canTab: boolean;
-  invalid: boolean;
-  value: string;
+  declare pref: chrome.settingsPrivate.PrefObject<string>|undefined;
+  declare disabled: boolean;
+  declare canTab: boolean;
+  declare invalid: boolean;
+  declare value: string;
   private browserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
 

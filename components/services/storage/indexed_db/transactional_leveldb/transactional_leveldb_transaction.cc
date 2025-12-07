@@ -20,7 +20,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-namespace content {
+namespace content::indexed_db {
 
 TransactionalLevelDBTransaction::TransactionalLevelDBTransaction(
     TransactionalLevelDBDatabase* db,
@@ -110,10 +110,6 @@ TransactionalLevelDBTransaction::CreateIterator(leveldb::Status& s) {
   return it;
 }
 
-uint64_t TransactionalLevelDBTransaction::GetTransactionSize() const {
-  return scope_->GetMemoryUsage() + scope_->GetApproximateBytesWritten();
-}
-
 leveldb::Status TransactionalLevelDBTransaction::ForceWriteChangesAndUndoLog() {
   return scope_->WriteChangesAndUndoLog();
 }
@@ -199,4 +195,4 @@ leveldb::Status LevelDBDirectTransaction::Commit() {
   return s;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

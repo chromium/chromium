@@ -8,14 +8,12 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromeos/browser_interop.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/session_storage.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_host.h"
@@ -31,7 +29,6 @@ namespace remoting {
 namespace {
 
 using base::test::TestFuture;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 constexpr char kRemoteAdminEmail[] = "admin@domain.com";
 
@@ -49,6 +46,13 @@ auto IsSuccessful() {
   return testing::Pointee(testing::Property(
       &mojom::StartSupportSessionResponse::is_support_session_error,
       testing::Eq(false)));
+}
+
+ChromeOsEnterpriseParams GetEnterpriseParams() {
+  ChromeOsEnterpriseParams params;
+  params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+  return params;
 }
 
 class FakeIt2MeHost : public It2MeHost {
@@ -139,8 +143,8 @@ class FakeBrowserInterop : public BrowserInterop {
   FakeBrowserInterop& operator=(const FakeBrowserInterop&) = delete;
 
   // `BrowserInterop` implementation:
-  std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext()
-      override {
+  std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext(
+      content::BrowserContext*) override {
     return ChromotingHostContext::CreateForTesting(
         auto_thread_task_runner_, url_loader_factory_.GetSafeWeakWrapper());
   }
@@ -194,7 +198,7 @@ class InMemorySessionStorage : public SessionStorage {
       base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
       override {
     if (session_.has_value()) {
-      std::move(on_done).Run(session_.value().Clone());
+      std::move(on_done).Run(session_->Clone());
     } else {
       std::move(on_done).Run(std::nullopt);
     }
@@ -274,9 +278,16 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   InMemorySessionStorage& session_storage() { return session_storage_; }
 
   bool StoreReconnectableSessionInformation(
+      mojom::SupportSessionParams params) {
+    ChromeOsEnterpriseParams enterprise_params(GetEnterpriseParams());
+    enterprise_params.allow_reconnections = true;
+    return StoreReconnectableSessionInformation(std::move(params),
+                                                std::move(enterprise_params));
+  }
+
+  bool StoreReconnectableSessionInformation(
       mojom::SupportSessionParams params,
-      ChromeOsEnterpriseParams enterprise_params = {
-          .allow_reconnections = true}) {
+      ChromeOsEnterpriseParams enterprise_params) {
     // Reconnectable sessions can only be stored if reconnections are allowed.
     CHECK(enterprise_params.allow_reconnections);
 
@@ -299,19 +310,8 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
     return HasSession(session_storage());
   }
 
-  void EnableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndEnableFeature(feature);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndDisableFeature(feature);
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList feature_;
 
   scoped_refptr<FakeBrowserInterop> browser_interop_{
       base::MakeRefCounted<FakeBrowserInterop>()};
@@ -324,16 +324,15 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 };
 
 TEST_F(RemoteSupportHostAshTest, ShouldSendConnectMessageWhenStarting) {
-  support_host().StartSession(GetSupportSessionParams(),
-                              ChromeOsEnterpriseParams{}, base::DoNothing());
+  support_host().StartSession(GetSupportSessionParams(), GetEnterpriseParams(),
+                              base::DoNothing());
 
   EXPECT_TRUE(it2me_host().WaitForConnectCall());
 }
 
 TEST_F(RemoteSupportHostAshTest, ShouldInvokeConnectCallbackWhenStarted) {
   TestFuture<mojom::StartSupportSessionResponsePtr> connect_result;
-  support_host().StartSession(GetSupportSessionParams(),
-                              ChromeOsEnterpriseParams{},
+  support_host().StartSession(GetSupportSessionParams(), GetEnterpriseParams(),
                               connect_result.GetCallback());
 
   ASSERT_TRUE(connect_result.Wait());
@@ -344,7 +343,7 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameToIt2MeHostWhenStarting) {
   mojom::SupportSessionParams params = GetSupportSessionParams();
   params.user_name = "<the-user-name>";
 
-  StartSession(params, ChromeOsEnterpriseParams{});
+  StartSession(params, GetEnterpriseParams());
 
   EXPECT_EQ(it2me_host().user_name(), params.user_name);
 }
@@ -354,7 +353,7 @@ TEST_F(RemoteSupportHostAshTest, ValidLegacyAccessTokenFormatSucceeds) {
   mojom::SupportSessionParams params = GetSupportSessionParams();
   params.oauth_access_token = "oauth2:<the-oauth-token>";
 
-  StartSession(params, ChromeOsEnterpriseParams{});
+  StartSession(params, GetEnterpriseParams());
 
   EXPECT_TRUE(it2me_host().WaitForConnectCall());
 }
@@ -363,7 +362,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressNotificationsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.suppress_notifications = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.suppress_notifications = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().suppress_notifications, value);
 }
@@ -371,7 +372,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassTerminateUponInputToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.terminate_upon_input = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.terminate_upon_input = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().terminate_upon_input, value);
 }
@@ -380,7 +383,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassCurtainLocalUserSessionToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.curtain_local_user_session = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.curtain_local_user_session = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().curtain_local_user_session, value);
 }
@@ -389,7 +394,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassShowTroubleshootingToolsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.show_troubleshooting_tools = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.show_troubleshooting_tools = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().show_troubleshooting_tools, value);
 }
@@ -398,7 +405,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowTroubleshootingToolsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.allow_troubleshooting_tools = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_troubleshooting_tools = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().allow_troubleshooting_tools,
             value);
@@ -408,7 +417,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowReconnectionsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().allow_reconnections, value);
 }
@@ -417,7 +428,9 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowFileTransferToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.allow_file_transfer = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_file_transfer = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().allow_file_transfer, value);
 }
@@ -426,42 +439,39 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressUserDialogsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  StartSession(ChromeOsEnterpriseParams{.suppress_user_dialogs = value});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.suppress_user_dialogs = value;
+  StartSession(std::move(params));
 
   EXPECT_EQ(it2me_host().enterprise_params().suppress_user_dialogs, value);
 }
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoBeforeClientConnects) {
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  StartSession(std::move(params));
 
   ASSERT_FALSE(HasSession(session_storage()));
 }
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldStoreSessionInfoWhenClientConnectsToReconnectableSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  StartSession(std::move(params));
 
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
   SignalHostStateConnected();
 
   ASSERT_TRUE(HasSession(session_storage()));
 }
 
-TEST_F(RemoteSupportHostAshTest, ShouldNotStoreSessionInfoIfFeatureIsDisabled) {
-  DisableFeature(kEnableCrdAdminRemoteAccessV2);
-
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
-  SignalHostStateConnected();
-
-  ASSERT_FALSE(HasSession(session_storage()));
-}
-
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfSessionIsNotReconnectable) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = false;
+  StartSession(std::move(params));
 
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = false});
   SignalHostStateConnected();
 
   ASSERT_FALSE(HasSession(session_storage()));
@@ -469,8 +479,6 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfEnterpriseParamsAreUnset) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   StartSession(std::nullopt);
   SignalHostStateConnected();
 
@@ -479,30 +487,13 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldAllowReconnectingToStoredReconnectableSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
 
   EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsSuccessful());
 }
 
 TEST_F(RemoteSupportHostAshTest,
-       ShouldNotAllowReconnectingIfFeatureIsDisabled) {
-  // We start by enabling the feature so we can store the reconnectable session
-  // information...
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
-
-  // ... so we can test that the reconnect code itself also checks the feature
-  // flag.
-  DisableFeature(kEnableCrdAdminRemoteAccessV2);
-  EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsError());
-}
-
-TEST_F(RemoteSupportHostAshTest,
        ShouldFailReconnectingIfThereIsNoStoredReconnectableSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   // Not setting up any reconnectable session.
   ASSERT_FALSE(HasSession(session_storage()));
 
@@ -510,16 +501,12 @@ TEST_F(RemoteSupportHostAshTest,
 }
 
 TEST_F(RemoteSupportHostAshTest, ShouldFailReconnectingIfTheSessionIdIsWrong) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
 
   EXPECT_THAT(ReconnectToSession(SessionId{666}), IsError());
 }
 
 TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   auto params = GetSupportSessionParams();
   params.user_name = "the-user";
   ASSERT_TRUE(StoreReconnectableSessionInformation(params));
@@ -531,13 +518,14 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameWhenReconnectingToSession) {
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressUserDialogsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.suppress_user_dialogs = value, .allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.suppress_user_dialogs = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -546,13 +534,14 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressNotificationsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.suppress_notifications = value, .allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.suppress_notifications = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -561,13 +550,14 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassTerminateUponInputFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.terminate_upon_input = value, .allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.terminate_upon_input = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -576,13 +566,14 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassCurtainLocalUserSessionFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.curtain_local_user_session = value, .allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.curtain_local_user_session = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -591,13 +582,14 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassShowTroubleshootingToolsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.show_troubleshooting_tools = value, .allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.show_troubleshooting_tools = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -606,13 +598,14 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowTroubleshootingToolsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.allow_troubleshooting_tools = value, .allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.allow_troubleshooting_tools = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -622,14 +615,15 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldPassAllowReconnectionsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   // We can't test 'false' since there is no way to reconnect to a session
   // with `allow_reconnections` set to false.
   const bool value = true;
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(), {.allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -638,13 +632,14 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowFileTransferFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(),
-      {.allow_reconnections = true, .allow_file_transfer = value}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  params.allow_file_transfer = value;
+
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -653,10 +648,10 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldUseRemoteUserAsAuthorizedHelperWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
-  ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(), {.allow_reconnections = true}));
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
+                                                   std::move(params)));
 
   ReconnectToSession(kEnterpriseSessionId);
 
@@ -665,9 +660,9 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldClearReconnectableInformationWhenClientDisconnectsCleanly) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  StartSession(std::move(params));
   SignalHostStateConnected();
   ASSERT_TRUE(HasSession(session_storage()));
 
@@ -677,9 +672,9 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldClearReconnectableInformationWhenAnotherSessionIsStarted) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
-  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
+  params.allow_reconnections = true;
+  StartSession(std::move(params));
   SignalHostStateConnected();
   it2me_host().WaitForConnectCall();
   ASSERT_TRUE(HasSession(session_storage()));

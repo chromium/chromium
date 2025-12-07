@@ -4,6 +4,9 @@
 
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,13 +16,13 @@
 #include "chrome/browser/shortcuts/document_icon_fetcher_task.h"
 #include "chrome/browser/shortcuts/icon_badging.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace shortcuts {
 
@@ -146,9 +149,8 @@ void CreateShortcutForCurrentWebContentsTask::
 void CreateShortcutForCurrentWebContentsTask::OnShortcutDialogResultObtained(
     gfx::ImageFamily images,
     GURL shortcut_url,
-    bool dialog_result,
-    std::u16string title) {
-  if (!dialog_result) {
+    std::optional<std::u16string> dialog_result) {
+  if (!dialog_result.has_value()) {
     OnMetadataFetchCompleteSelfDestruct(base::unexpected(
         ShortcutCreationTaskResult::kUserCancelledShortcutCreationFromDialog));
     return;
@@ -157,6 +159,7 @@ void CreateShortcutForCurrentWebContentsTask::OnShortcutDialogResultObtained(
   // The title returned from the dialog is expected to be non-empty if
   // dialog_result is true, which is an invariant of how the create shortcut
   // view works.
+  std::u16string title = dialog_result.value();
   CHECK(!title.empty());
 
   ShortcutMetadata metadata;
@@ -188,9 +191,7 @@ void CreateShortcutForCurrentWebContentsTask::
         base::BindOnce([](const base::FilePath& shortcut_path,
                           ShortcutCreatorResult result) {
           base::UmaHistogramEnumeration("Shortcuts.Creation.Result", result);
-          if (result != ShortcutCreatorResult::kError &&
-              base::FeatureList::IsEnabled(
-                  features::kShortcutsNotAppsRevealDesktop)) {
+          if (result != ShortcutCreatorResult::kError) {
             CHECK(!shortcut_path.empty());
             // Profile information is not needed to show the created shortcut in
             // the path on Windows, Mac and Linux.

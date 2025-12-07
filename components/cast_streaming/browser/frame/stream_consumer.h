@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_FRAME_STREAM_CONSUMER_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_FRAME_STREAM_CONSUMER_H_
 
+#include <array>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -12,8 +14,8 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "third_party/openscreen/src/cast/streaming/receiver.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_session.h"
 
 namespace cast_streaming {
 
@@ -77,7 +79,7 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
     static constexpr size_t kMaxFrameSize = 512 * 1024;
 
     // Buffer backing the spans created by this class.
-    uint8_t pending_buffer_[kMaxFrameSize];
+    std::array<uint8_t, kMaxFrameSize> pending_buffer_;
 
     // Current offset for data in |pending_buffer_|.
     uint32_t pending_buffer_offset_ = 0;

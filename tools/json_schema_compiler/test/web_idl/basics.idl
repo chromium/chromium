@@ -4,12 +4,155 @@
 
 // Example WebIDL compatible schema for testing API definition features.
 // This will be added to as support for each features is implemented.
+
+// This comment is an example of a top level API description, which will be
+// extracted and added to the processed python dictionary as a description.
+//
+// Note: All comment lines preceding the thing they are attached to will be part
+// of the description, until a blank new line or non-comment is reached.
 interface TestWebIdl {
 
-  static void returnsVoid();
+  static undefined returnsUndefined();
   static boolean returnsBoolean();
   static double returnsDouble();
   static long returnsLong();
+  static DOMString returnsDOMString();
+  static sequence<DOMString> returnsDOMStringSequence();
+  static sequence<ExampleType> returnsCustomTypeSequence();
+
+  static undefined takesNoArguments();
+  static undefined takesDOMString(DOMString stringArgument);
+  static undefined takesOptionalBoolean(optional boolean optionalBoolean);
+  static undefined takesMultipleArguments(
+      DOMString argument1, optional double argument2);
+  static undefined takesOptionalInnerArgument(
+      DOMString first, optional DOMString optionalInner, DOMString last);
+  static undefined takesSequenceArgument(sequence<boolean> sequenceArgument);
+  static undefined takesOptionalSequenceArgument(
+      optional sequence<boolean> optionalSequenceArgument);
+  static undefined takesEnum(EnumType enumArgument);
+
+  static ExampleType returnsCustomType();
+  static undefined takesCustomType(ExampleType customTypeArgument);
+  static undefined takesOptionalCustomType(
+  optional ExampleType optionalCustomTypeArgument);
+
+  static Promise<DOMString> stringPromiseReturn();
+  static Promise<DOMString?> nullablePromiseReturn();
+  static Promise<ExampleType> customTypePromiseReturn();
+  static Promise<undefined> undefinedPromiseReturn();
+  static Promise<sequence<long>> longSequencePromiseReturn();
+  static Promise<sequence<ExampleType>> customTypeSequencePromiseReturn();
+
+  const long CONSTANT_LONG = 39;
+  const double CONSTANT_DOUBLE = 3.9;
+  [StringValue="Foo"] const DOMString CONSTANT_STRING = 0;
+
+  // Items for testing the processing of IDL comments to schema descriptions:
+
+  static undefined noDescription();
+  // One line description.
+  static undefined oneLineDescription();
+  // Multi line description.
+  // Split over.
+  // Multiple lines.
+  static undefined multiLineDescription();
+  // Paragraphed description.
+  //
+  // With blank comment line for paragraph tags.
+  static undefined paragraphedDescription();
+  // This function has parameter comments.
+  //
+  // |arg1|: This comment about the argument
+  // is split across multiple lines
+  // and contains <em>HTML tags</em>.
+  // |arg2|: This second argument uses a custom type.
+  static undefined parameterComments(boolean arg1, ExampleType arg2);
+
+  // Comment that acts as a description for onTestOne. Parameter specific
+  // comments are down below before the associated callback definition.
+  static attribute OnTestOneEvent onTestOne;
+
+  // Comment for onTestTwo.
+  static attribute OnTestTwoEvent onTestTwo;
+
+  // Promise returning function, with a comment that provides the name and
+  // description of the value the promise resolves to.
+  // |arg1|: This is a normal argument comment.
+  // |Returns|: General description for the promise return.
+  // |PromiseValue|: returnValueName: A description for the value the promise
+  // resolves to: with an extra colon for good measure.
+  static Promise<ExampleType> describedPromiseReturn(boolean arg1);
+
+  // |PromiseValue|: justAName
+  static Promise<boolean> namedPromiseReturn();
+
+  // General function description for the describedReturnFunction.
+  // |Returns|: Description for the returns object itself.
+  static DOMString describedReturnFunction();
+
+  // Comment on a constant property with a value.
+  const long DESCRIBED_CONSTANT = 9;
+};
+
+// Comment for parameter descriptions on the onTestOne event. The first part of
+// this comment is actually disregarded and all that is consumed is the
+// parameter comments below.
+// |argument1|: Parameter description for argument1.
+// |argument2|: Another description, this time for argment2.
+callback OnTestOneListener = undefined (
+    DOMString argument1, optional double argument2);
+// Callback listener for onTestTwo.
+// |customType|: An ExampleType passed to the event listener.
+callback OnTestTwoListener = undefined (ExampleType customType);
+
+interface OnTestOneEvent : ExtensionEvent {
+  static void addListener(OnTestOneListener listener);
+  static void removeListener(OnTestOneListener listener);
+  static void hasListener(OnTestOneListener listener);
+};
+interface OnTestTwoEvent : ExtensionEvent {
+  static void addListener(OnTestTwoListener listener);
+  static void removeListener(OnTestTwoListener listener);
+  static void hasListener(OnTestTwoListener listener);
+};
+
+dictionary ExampleType {
+  // Attribute comment attached to ExampleType.someString.
+  required DOMString someString;
+  // Comment where <var>someNumber</var> has some markup.
+  required double someNumber;
+  // Comment with HTML comment. <!-- Which should get through -->
+  boolean optionalBoolean;
+  // Comment on sequence type.
+  required sequence<boolean> booleanSequence;
+};
+
+dictionary UnionTypes {
+  required (DOMString or long or boolean) stringLongOrBoolean;
+  required (DOMString or EnumType) stringOrEnum;
+  (EnumType or DOMString) optionalEnumOrString;
+  (DOMString or sequence<DOMString>) optionalStringOrStringSequence;
+  required (ExampleType or long) dictTypeOrLong;
+};
+
+callback DictionaryCallback = undefined(DOMString stringArgument);
+dictionary DictionaryWithCallbackMember {
+  required DictionaryCallback callbackMember;
+};
+
+// Enum description.
+enum EnumType {
+  // Comment1.
+  "name1",
+  "name2"
+};
+
+partial dictionary ExtensionManifest {
+  // Description of a manifest key.
+  required DOMString string_key;
+  required ExampleType custom_type_key;
+  required (DOMString or long) union_type_key;
 };
 
 partial interface Browser {

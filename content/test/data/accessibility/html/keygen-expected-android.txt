@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.view.View clickable focusable
-++++++android.widget.Spinner role_description='pop up button' clickable focusable name='2048 (High Grade)'

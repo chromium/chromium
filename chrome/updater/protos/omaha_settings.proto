@@ -60,6 +60,17 @@ enum RollbackToTargetVersionValue {
   ROLLBACK_TO_TARGET_VERSION_ENABLED = 1;
 }
 
+enum RolloutValue {
+  // Participate in gradual rollout.
+  ROLLOUT_DEFAULT = 0;
+
+  // Update after gradual rollout completes.
+  ROLLOUT_SLOW = 1;
+
+  // Update when gradual rollout begins.
+  ROLLOUT_FAST = 2;
+}
+
 message UpdatesSuppressed {
   optional int64 start_hour = 1;
   optional int64 start_minute = 2;
@@ -149,6 +160,18 @@ message ApplicationSettings {
   // binaries for the specified channel. If this policy is not set, the default
   // channel will be used.
   optional string target_channel = 8;
+
+  // Major Version Rollout
+  //
+  // If a major update for the application is gradually rollout out, this policy
+  // controls when in the gradual rollout this device will update.
+  optional RolloutValue major_version_rollout_policy = 9;
+
+  // Minor Version Rollout
+  //
+  // If a minor update for the application is gradually rollout out, this policy
+  // controls when in the gradual rollout this device will update.
+  optional RolloutValue minor_version_rollout_policy = 10;
 }
 
 message GcpwSpecificApplicationSettings {

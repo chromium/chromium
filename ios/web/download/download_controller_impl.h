@@ -10,7 +10,7 @@
 #include <set>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "ios/web/download/download_task_impl.h"
@@ -42,6 +42,7 @@ class DownloadControllerImpl : public DownloadController,
   void CreateNativeDownloadTask(WebState* web_state,
                                 NSString* identifier,
                                 const GURL& original_url,
+                                NSString* originating_host,
                                 NSString* http_method,
                                 const std::string& content_disposition,
                                 int64_t total_bytes,

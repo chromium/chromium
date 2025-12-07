@@ -8,6 +8,7 @@
 #include "net/socket/stream_socket.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/logging.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/internal.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -90,16 +91,34 @@ void HostControlDispatcher::SetCursorShape(
   message_pipe()->Send(&message, {});
 }
 
+void HostControlDispatcher::SetHostCursorPosition(
+    const HostCursorPosition& position) {
+  ControlMessage message;
+  message.mutable_host_cursor_position()->CopyFrom(position);
+  message_pipe()->Send(&message, {});
+}
+
 void HostControlDispatcher::SetKeyboardLayout(const KeyboardLayout& layout) {
   ControlMessage message;
   message.mutable_keyboard_layout()->CopyFrom(layout);
   message_pipe()->Send(&message, {});
 }
 
+void HostControlDispatcher::set_host_stub(HostStub* host_stub) {
+  host_stub_ = host_stub;
+  while (!pending_messages_.empty()) {
+    OnIncomingMessage(std::move(pending_messages_.front()));
+    pending_messages_.pop();
+  }
+}
+
 void HostControlDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> buffer) {
-  DCHECK(clipboard_stub_);
-  DCHECK(host_stub_);
+  if (!host_stub_) {
+    HOST_LOG << "Received control message before host stub is set.";
+    pending_messages_.push(std::move(buffer));
+    return;
+  }
 
   std::unique_ptr<ControlMessage> message =
       ParseMessage<ControlMessage>(buffer.get());
@@ -109,7 +128,12 @@ void HostControlDispatcher::OnIncomingMessage(
 
   // TODO(sergeyu): Move message validation from the message handlers here.
   if (message->has_clipboard_event()) {
-    clipboard_stub_->InjectClipboardEvent(message->clipboard_event());
+    if (clipboard_stub_) {
+      clipboard_stub_->InjectClipboardEvent(message->clipboard_event());
+    } else {
+      LOG(WARNING)
+          << "Clipboard event ignored because no clipboard stub is set.";
+    }
   } else if (message->has_client_resolution()) {
     const ClientResolution& resolution = message->client_resolution();
     if ((resolution.has_width_pixels() && resolution.width_pixels() <= 0) ||

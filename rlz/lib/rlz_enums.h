@@ -127,9 +127,13 @@ enum Event {
   SET_TO_GOOGLE,  // Point set from non-Google provider to Google.
   FIRST_SEARCH,   // First search from point since INSTALL
   REPORT_RLS,     // Report old system "RLS" financial value for this point.
+  ACTIVATE,       // Product being used for a period of time.
+  ENTERPRISE_ENROLLMENT,             // A machine is enrolled.
+  ENTERPRISE_UNENROLLMENT,           // A machine is no longer enrolled.
+  ENTERPRISE_ENROLLED_ACTIVATE,      // A machine is enrolled and activated.
+  ENTERPRISE_ENROLLED_FIRST_SEARCH,  // First search after enrollment.
   // New Events should be added here without changing existing enums,
   // before LAST_EVENT.
-  ACTIVATE,       // Product being used for a period of time.
   LAST_EVENT
 };
 

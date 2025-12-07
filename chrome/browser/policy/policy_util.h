@@ -5,10 +5,19 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 #define CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 
+#include <stdint.h>
+
+#include "components/invalidation/invalidation_constants.h"
+
 class GURL;
 class PrefService;
 
 namespace policy {
+
+// GCP number to be used for policy invalidations. Policy update is not
+// considered critical to receive invalidation.
+inline constexpr int64_t kPolicyInvalidationProjectNumber =
+    invalidation::kNonCriticalInvalidationsProjectNumber;
 
 // Check if the origin provided by `url` is in the allowlist for a given
 // policy-controlled feature by its `allowlist_pref_name`. The optional

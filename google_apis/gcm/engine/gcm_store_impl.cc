@@ -4,6 +4,7 @@
 
 #include "google_apis/gcm/engine/gcm_store_impl.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/gcm_constants.h"
-#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -261,8 +261,7 @@ class GCMStoreImpl::Backend
   bool LoadRegistrations(std::map<std::string, std::string>* registrations);
   bool LoadIncomingMessages(std::vector<std::string>* incoming_messages);
   bool LoadOutgoingMessages(OutgoingMessageMap* outgoing_messages);
-  bool LoadLastCheckinInfo(base::Time* last_checkin_time,
-                           std::set<std::string>* accounts);
+  bool LoadLastCheckinInfo(base::Time* last_checkin_time);
   bool LoadGServicesSettings(std::map<std::string, std::string>* settings,
                              std::string* digest);
   bool LoadAccountMappingInfo(AccountMappings* account_mappings);
@@ -334,8 +333,7 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
     return LOADING_INCOMING_MESSAGES_FAILED;
   if (!LoadOutgoingMessages(&result->outgoing_messages))
     return LOADING_OUTGOING_MESSAGES_FAILED;
-  if (!LoadLastCheckinInfo(&result->last_checkin_time,
-                           &result->last_checkin_accounts)) {
+  if (!LoadLastCheckinInfo(&result->last_checkin_time)) {
     return LOADING_LAST_CHECKIN_INFO_FAILED;
   }
   if (!LoadGServicesSettings(&result->gservices_settings,
@@ -381,10 +379,10 @@ void GCMStoreImpl::Backend::Load(StoreOpenMode open_mode,
 
   // Only record histograms if GCM had already been set up for this device.
   if (result->device_android_id != 0 && result->device_security_token != 0) {
-    int64_t file_size = 0;
-    if (base::GetFileSize(path_, &file_size)) {
+    std::optional<int64_t> file_size = base::GetFileSize(path_);
+    if (file_size.has_value()) {
       UMA_HISTOGRAM_COUNTS_1M("GCM.StoreSizeKB",
-                              static_cast<int>(file_size / 1024));
+                              static_cast<int>(file_size.value() / 1024));
     }
   }
 
@@ -1014,14 +1012,7 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
         expired_incoming_messages.push_back(std::move(persistent_id));
       }
     } else {
-      if (base::FeatureList::IsEnabled(
-              features::kGCMDeleteIncomingMessagesWithoutTTL)) {
-        // No expiration time can be found from |data|. The messeage should be
-        // added with the legacy non-TTL path. Treat it as expired.
-        expired_incoming_messages.push_back(std::move(data));
-      } else {
-        incoming_messages->push_back(std::move(data));
-      }
+      incoming_messages->push_back(std::move(data));
     }
   }
   if (!expired_incoming_messages.empty()) {
@@ -1064,9 +1055,7 @@ bool GCMStoreImpl::Backend::LoadOutgoingMessages(
   return true;
 }
 
-bool GCMStoreImpl::Backend::LoadLastCheckinInfo(
-    base::Time* last_checkin_time,
-    std::set<std::string>* accounts) {
+bool GCMStoreImpl::Backend::LoadLastCheckinInfo(base::Time* last_checkin_time) {
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
 
@@ -1083,15 +1072,6 @@ bool GCMStoreImpl::Backend::LoadLastCheckinInfo(
   // In case we cannot read last checkin time, we default it to 0, as we don't
   // want that situation to cause the whole load to fail.
   *last_checkin_time = base::Time::FromInternalValue(time_internal);
-
-  accounts->clear();
-  s = db_->Get(read_options, MakeSlice(kLastCheckinAccountsKey), &result);
-  if (!s.ok())
-    DVLOG(1) << "No accounts where stored during last run.";
-
-  base::StringTokenizer t(result, ",");
-  while (t.GetNext())
-    accounts->insert(t.token());
 
   return true;
 }
@@ -1369,11 +1349,12 @@ void GCMStoreImpl::RemoveOutgoingMessages(
 }
 
 void GCMStoreImpl::SetLastCheckinInfo(const base::Time& time,
-                                      const std::set<std::string>& accounts,
                                       UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetLastCheckinInfo,
-                                backend_, time, accounts, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::SetLastCheckinInfo, backend_, time,
+                     /*accounts*/ std::set<std::string>(),
+                     std::move(callback)));
 }
 
 void GCMStoreImpl::SetGServicesSettings(

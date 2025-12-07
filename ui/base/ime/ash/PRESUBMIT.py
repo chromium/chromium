@@ -18,3 +18,33 @@ def CheckTastIsRequested(input_api, output_api):
         + ' to your CL description')]
 
   return []
+
+def CheckPotentialImpactOnOobe(input_api, output_api):
+  """Warns user about potential implications of changes in the
+  input_method_util.* in context of OOBE.
+  """
+
+  if input_api.no_diffs:
+    return []
+
+  target_files = ("input_method_util.h", "input_method_util.cc")
+
+  # Iterate through all files affected by this change, including deleted files.
+  # We only care if the content of these specific files might have changed.
+  affected_target_file_found = False
+  for f in input_api.AffectedFiles(include_deletes=True):
+      if f.LocalPath().endswith(target_files):
+          affected_target_file_found = True
+          break
+
+  # If one of the target files was found in the changeset, return the warning.
+  if affected_target_file_found:
+      return [output_api.PresubmitPromptWarning(
+          'Potential OOBE Impact: Please verify that your changes do not '
+          'break input methods in OOBE. Specifically, check if your changes '
+          'affect the input method allowlist or modify which input method '
+          'data is prebundled into the system image.'
+      )]
+
+  # If none of the target files were affected, return an empty list (no warning).
+  return []

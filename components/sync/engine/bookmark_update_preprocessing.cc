@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -95,14 +94,14 @@ std::string InferGuidForLegacyBookmark(
 
   static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer UUID");
 
-  const std::string guid = ComputeUuidFromBytes(base::make_span(hash));
+  const std::string guid = ComputeUuidFromBytes(base::span(hash));
   DCHECK(base::Uuid::ParseLowercase(guid).is_valid());
   return guid;
 }
 
 // Legacy method to calculate unique position suffix for the bookmarks which did
 // not have client tag hash.
-std::string GenerateUniquePositionSuffixForBookmark(
+UniquePosition::Suffix GenerateUniquePositionSuffixForBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
   // Blank PB with just the field in it has termination symbol,
@@ -112,8 +111,12 @@ std::string GenerateUniquePositionSuffixForBookmark(
   std::string hash_input;
   serialized_type.AppendToString(&hash_input);
   hash_input.append(originator_cache_guid + originator_client_item_id);
-
-  return base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
+  UniquePosition::Suffix suffix;
+  std::string suffix_str =
+      base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
+  CHECK_EQ(suffix.size(), suffix_str.size());
+  std::ranges::copy(suffix_str, suffix.begin());
+  return suffix;
 }
 
 sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
@@ -122,7 +125,7 @@ sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
     return update_entity.unique_position();
   }
 
-  std::string suffix;
+  UniquePosition::Suffix suffix;
   if (update_entity.has_originator_cache_guid() &&
       update_entity.has_originator_client_item_id()) {
     suffix = GenerateUniquePositionSuffixForBookmark(
@@ -186,7 +189,7 @@ void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
   }
   // Remaining cases should be unreachable today. In case SyncEntity.folder gets
   // removed in the future, with legacy data still being around prior to M94,
-  // infer folderness based on the present of field |url| (only populated for
+  // infer folderness based on the present of field `url` (only populated for
   // URL bookmarks).
   specifics->mutable_bookmark()->set_type(
       specifics->bookmark().has_url() ? sync_pb::BookmarkSpecifics::URL

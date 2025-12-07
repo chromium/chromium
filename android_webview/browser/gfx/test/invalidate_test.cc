@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -182,11 +181,7 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& feedbacks,
-                    bool frame_ack,
                     std::vector<viz::ReturnedResource> resources) override {
-    if (features::IsOnBeginFrameAcksEnabled() && pending_frames_) {
-      DidReceiveCompositorFrameAck(std::move(resources));
-    }
     for (const auto& feedback : feedbacks) {
       DCHECK(!feedbacks_.contains(feedback.first));
       feedbacks_[feedback.first] = feedback.second;
@@ -351,7 +346,7 @@ class InvalidateTest
                          // `client` leaves scope.
                        },
                        std::move(client_)));
-    render_thread_manager_->DestroyHardwareRendererOnRT(false, false);
+    render_thread_manager_->DestroyHardwareRendererOnRT(false);
     TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
   }
 
@@ -390,7 +385,7 @@ class InvalidateTest
     auto child_frame = std::make_unique<ChildFrame>(
         future, kRootClientSinkId, kFrameSize, gfx::Transform(), false, 1.0f,
         CopyOutputRequestQueue(), /*did_invalidate=*/invalidated, args,
-        /*renderer_thread_ids=*/base::flat_set<base::PlatformThreadId>(),
+        /*renderer_thread_ids=*/std::vector<viz::Thread>(),
         /*browser_io_thread_id=*/base::kInvalidThreadId);
     return child_frame;
   }
@@ -414,8 +409,7 @@ class InvalidateTest
     params.transform[15] = 1.0f;
     params.color_space = gfx::ColorSpace::CreateSRGB();
 
-    render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
-                                     OverlaysParams(),
+    render_thread_manager_->DrawOnRT(params, OverlaysParams(),
                                      ReportRenderingThreadsCallback());
 
     if (invalidated)

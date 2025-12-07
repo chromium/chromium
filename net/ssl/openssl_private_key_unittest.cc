@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -15,7 +16,6 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {
@@ -48,23 +48,21 @@ class OpenSSLPrivateKeyTest : public testing::TestWithParam<TestKey>,
 TEST_P(OpenSSLPrivateKeyTest, KeyMatches) {
   const TestKey& test_key = GetParam();
 
-  std::string pkcs8;
   base::FilePath pkcs8_path =
       GetTestCertsDirectory().AppendASCII(test_key.key_file);
-  ASSERT_TRUE(base::ReadFileToString(pkcs8_path, &pkcs8));
+  std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
+  ASSERT_TRUE(pkcs8);
 
   // Create an EVP_PKEY from the PKCS#8 buffer.
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pkcs8.data()), pkcs8.size());
-  bssl::UniquePtr<EVP_PKEY> openssl_key(EVP_parse_private_key(&cbs));
+  bssl::UniquePtr<EVP_PKEY> openssl_key =
+      crypto::evp::PrivateKeyFromBytes(*pkcs8);
   ASSERT_TRUE(openssl_key);
-  EXPECT_EQ(0u, CBS_len(&cbs));
 
   scoped_refptr<SSLPrivateKey> private_key =
       WrapOpenSSLPrivateKey(std::move(openssl_key));
   ASSERT_TRUE(private_key);
-  net::TestSSLPrivateKeyMatches(private_key.get(), pkcs8);
+  net::TestSSLPrivateKeyMatches(private_key.get(), *pkcs8);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

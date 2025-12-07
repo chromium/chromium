@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
@@ -19,18 +22,17 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+@NullMarked
 public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
-    private final Context mContext;
     private final Delegate mDelegate;
     private boolean mSheetVisible;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
-                private BottomSheetContent mTrackedContent;
+                private @Nullable BottomSheetContent mTrackedContent;
 
                 @Override
                 public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
@@ -74,6 +76,8 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
                     if (mSheetContent != null) {
                         BottomSheetContent closingSheet =
                                 mDelegate.getBottomSheetController().getCurrentSheetContent();
+                        assumeNonNull(closingSheet);
+
                         mSheetContent.notifySheetClosed(closingSheet);
                         // If we're dismissing for a reason other than showing a menu sheet, notify
                         // about closing.
@@ -89,14 +93,12 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
                     return (content != null
                             && (content instanceof OptionsMenuSheetContent
                                     || content instanceof SpeedMenuSheetContent
-                                    || content instanceof VoiceMenuSheetContent));
+                                    || content instanceof NegativeFeedbackMenuSheetContent));
                 }
             };
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
     private ExpandedPlayerSheetContent mSheetContent;
-    private PropertyModelChangeProcessor<PropertyModel, ExpandedPlayerSheetContent, PropertyKey>
-            mModelChangeProcessor;
-    private ExpandedPlayerMediator mMediator;
+    private final ExpandedPlayerMediator mMediator;
 
     public ExpandedPlayerCoordinator(Context context, Delegate delegate, PropertyModel model) {
         this(
@@ -105,7 +107,10 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
                 model,
                 new ExpandedPlayerMediator(model),
                 new ExpandedPlayerSheetContent(
-                        context, delegate.getBottomSheetController(), model));
+                        context,
+                        delegate.getBottomSheetController(),
+                        model,
+                        new PlaybackModeIphController(delegate.getUserEducationHelper())));
     }
 
     @VisibleForTesting
@@ -115,15 +120,12 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
             PropertyModel model,
             ExpandedPlayerMediator mediator,
             ExpandedPlayerSheetContent content) {
-        mContext = context;
         mDelegate = delegate;
         mModel = model;
         mMediator = mediator;
         mSheetContent = content;
         mDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
-        mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
     }
 
     public void show() {

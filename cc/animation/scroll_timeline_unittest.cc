@@ -38,7 +38,7 @@ void SetScrollOffset(PropertyTrees* property_trees,
   TransformNode* transform_node =
       property_trees->transform_tree_mutable().FindNodeFromElementId(
           scroller_id);
-  transform_node->scroll_offset = offset;
+  transform_node->SetScrollOffset(offset, DamageReason::kUntracked);
   transform_node->needs_local_transform_update = true;
 }
 

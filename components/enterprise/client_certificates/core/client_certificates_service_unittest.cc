@@ -69,7 +69,8 @@ class ClientCertificatesServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  MockCertificateProvisioningService mock_provisioning_service_;
+  MockCertificateProvisioningService mock_profile_provisioning_service_;
+  MockCertificateProvisioningService mock_browser_provisioning_service_;
 };
 
 // Tests that only the platform identity is returned when there are no managed
@@ -81,11 +82,14 @@ TEST_F(ClientCertificatesServiceTest, GetClientCertsNoManagedIdentity) {
 
   auto mocked_store = CreateMockedStore(std::move(platform_identities));
 
-  EXPECT_CALL(mock_provisioning_service_, GetManagedIdentity(_))
+  EXPECT_CALL(mock_profile_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+  EXPECT_CALL(mock_browser_provisioning_service_, GetManagedIdentity(_))
       .WillOnce(RunOnceCallback<0>(std::nullopt));
 
-  auto service = ClientCertificatesService::Create(&mock_provisioning_service_,
-                                                   std::move(mocked_store));
+  auto service = ClientCertificatesService::Create(
+      &mock_profile_provisioning_service_, &mock_browser_provisioning_service_,
+      std::move(mocked_store));
 
   auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   base::test::TestFuture<net::ClientCertIdentityList> test_future;
@@ -96,9 +100,60 @@ TEST_F(ClientCertificatesServiceTest, GetClientCertsNoManagedIdentity) {
   EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
 }
 
-// Tests that both the platform identity and managed identity are returned.
+// Tests that only the platform identity is returned when there are no managed
+// identities and only the browser provisioning service was present.
 TEST_F(ClientCertificatesServiceTest,
-       GetClientCerts_WithManagedIdentity_NoSSLKey) {
+       GetClientCertsNoManagedIdentity_MissingProfileProvisioningService) {
+  auto platform_cert = LoadTestPlatformCert();
+  auto platform_identities =
+      net::FakeClientCertIdentityListFromCertificateList({platform_cert});
+
+  auto mocked_store = CreateMockedStore(std::move(platform_identities));
+
+  EXPECT_CALL(mock_browser_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+
+  auto service = ClientCertificatesService::Create(
+      nullptr, &mock_browser_provisioning_service_, std::move(mocked_store));
+
+  auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  base::test::TestFuture<net::ClientCertIdentityList> test_future;
+  service->GetClientCerts(request_info, test_future.GetCallback());
+
+  const auto& certs = test_future.Get();
+  ASSERT_EQ(certs.size(), 1U);
+  EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
+}
+
+// Tests that only the platform identity is returned when there are no managed
+// identities and only the profile provisioning service was present.
+TEST_F(ClientCertificatesServiceTest,
+       GetClientCertsNoManagedIdentity_MissingBrowserProvisioningService) {
+  auto platform_cert = LoadTestPlatformCert();
+  auto platform_identities =
+      net::FakeClientCertIdentityListFromCertificateList({platform_cert});
+
+  auto mocked_store = CreateMockedStore(std::move(platform_identities));
+
+  EXPECT_CALL(mock_profile_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+
+  auto service = ClientCertificatesService::Create(
+      &mock_profile_provisioning_service_, nullptr, std::move(mocked_store));
+
+  auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  base::test::TestFuture<net::ClientCertIdentityList> test_future;
+  service->GetClientCerts(request_info, test_future.GetCallback());
+
+  const auto& certs = test_future.Get();
+  ASSERT_EQ(certs.size(), 1U);
+  EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
+}
+
+// Tests that both the platform identity and managed profile identity are
+// returned.
+TEST_F(ClientCertificatesServiceTest,
+       GetClientCerts_WithManagedProfileIdentity_NoSSLKey) {
   auto platform_cert = LoadTestPlatformCert();
   auto platform_identities =
       net::FakeClientCertIdentityListFromCertificateList({platform_cert});
@@ -109,11 +164,14 @@ TEST_F(ClientCertificatesServiceTest,
   ClientIdentity managed_identity(
       "managed", base::MakeRefCounted<StrictMock<MockPrivateKey>>(),
       managed_cert);
-  EXPECT_CALL(mock_provisioning_service_, GetManagedIdentity(_))
+  EXPECT_CALL(mock_profile_provisioning_service_, GetManagedIdentity(_))
       .WillOnce(RunOnceCallback<0>(managed_identity));
+  EXPECT_CALL(mock_browser_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
 
-  auto service = ClientCertificatesService::Create(&mock_provisioning_service_,
-                                                   std::move(mocked_store));
+  auto service = ClientCertificatesService::Create(
+      &mock_profile_provisioning_service_, &mock_browser_provisioning_service_,
+      std::move(mocked_store));
 
   auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   base::test::TestFuture<net::ClientCertIdentityList> test_future;
@@ -124,8 +182,76 @@ TEST_F(ClientCertificatesServiceTest,
   EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
 }
 
-// Tests that both the platform identity and managed identity are returned when
-// the managed identity has a valid key to be used with TLS.
+// Tests that both the platform identity and managed browser identity are
+// returned.
+TEST_F(ClientCertificatesServiceTest,
+       GetClientCerts_WithManagedBrowserIdentity_NoSSLKey) {
+  auto platform_cert = LoadTestPlatformCert();
+  auto platform_identities =
+      net::FakeClientCertIdentityListFromCertificateList({platform_cert});
+
+  auto mocked_store = CreateMockedStore(std::move(platform_identities));
+
+  auto managed_cert = LoadTestManagedCert();
+  ClientIdentity managed_identity(
+      "managed", base::MakeRefCounted<StrictMock<MockPrivateKey>>(),
+      managed_cert);
+  EXPECT_CALL(mock_profile_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+  EXPECT_CALL(mock_browser_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(managed_identity));
+
+  auto service = ClientCertificatesService::Create(
+      &mock_profile_provisioning_service_, &mock_browser_provisioning_service_,
+      std::move(mocked_store));
+
+  auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  base::test::TestFuture<net::ClientCertIdentityList> test_future;
+  service->GetClientCerts(request_info, test_future.GetCallback());
+
+  const auto& certs = test_future.Get();
+  ASSERT_EQ(certs.size(), 1U);
+  EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
+}
+
+// Tests that the platform identity, managed profile, and managed browser
+// identity are returned.
+TEST_F(ClientCertificatesServiceTest,
+       GetClientCerts_WithAllManagedIdentities_NoSSLKey) {
+  auto platform_cert = LoadTestPlatformCert();
+  auto platform_identities =
+      net::FakeClientCertIdentityListFromCertificateList({platform_cert});
+
+  auto mocked_store = CreateMockedStore(std::move(platform_identities));
+
+  auto managed_cert = LoadTestManagedCert();
+  ClientIdentity managed_identity1(
+      "managed1", base::MakeRefCounted<StrictMock<MockPrivateKey>>(),
+      managed_cert);
+  ClientIdentity managed_identity2(
+      "managed2", base::MakeRefCounted<StrictMock<MockPrivateKey>>(),
+      managed_cert);
+  EXPECT_CALL(mock_profile_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(managed_identity1));
+  EXPECT_CALL(mock_browser_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(managed_identity2));
+
+  auto service = ClientCertificatesService::Create(
+      &mock_profile_provisioning_service_, &mock_browser_provisioning_service_,
+      std::move(mocked_store));
+
+  auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  base::test::TestFuture<net::ClientCertIdentityList> test_future;
+  service->GetClientCerts(request_info, test_future.GetCallback());
+
+  const auto& certs = test_future.Get();
+  ASSERT_EQ(certs.size(), 1U);
+  EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
+}
+
+// Tests that the platform identity and both the managed profile and browser
+// identities are returned when the managed identity has a valid key to be used
+// with TLS.
 TEST_F(ClientCertificatesServiceTest, GetClientCerts_WithManagedIdentity) {
   auto platform_cert = LoadTestPlatformCert();
   auto platform_identities =
@@ -138,25 +264,34 @@ TEST_F(ClientCertificatesServiceTest, GetClientCerts_WithManagedIdentity) {
   // Make sure the mocked PrivateKey has a SSLPrivateKey.
   // net::CreateFailSigningSSLPrivateKey is being used as signing won't be
   // tested here.
-  auto mock_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>(
+  auto mock_private_key1 = base::MakeRefCounted<StrictMock<MockPrivateKey>>(
       PrivateKeySource::kUnexportableKey,
       net::CreateFailSigningSSLPrivateKey());
-  ClientIdentity managed_identity("managed", std::move(mock_private_key),
-                                  managed_cert);
-  EXPECT_CALL(mock_provisioning_service_, GetManagedIdentity(_))
-      .WillOnce(RunOnceCallback<0>(managed_identity));
+  auto mock_private_key2 = base::MakeRefCounted<StrictMock<MockPrivateKey>>(
+      PrivateKeySource::kUnexportableKey,
+      net::CreateFailSigningSSLPrivateKey());
+  ClientIdentity managed_identity1("managed1", std::move(mock_private_key1),
+                                   managed_cert);
+  ClientIdentity managed_identity2("managed2", std::move(mock_private_key2),
+                                   managed_cert);
+  EXPECT_CALL(mock_profile_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(managed_identity1));
+  EXPECT_CALL(mock_browser_provisioning_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(managed_identity2));
 
-  auto service = ClientCertificatesService::Create(&mock_provisioning_service_,
-                                                   std::move(mocked_store));
+  auto service = ClientCertificatesService::Create(
+      &mock_profile_provisioning_service_, &mock_browser_provisioning_service_,
+      std::move(mocked_store));
 
   auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   base::test::TestFuture<net::ClientCertIdentityList> test_future;
   service->GetClientCerts(request_info, test_future.GetCallback());
 
   const auto& certs = test_future.Get();
-  ASSERT_EQ(certs.size(), 2U);
+  ASSERT_EQ(certs.size(), 3U);
   EXPECT_EQ(certs[0]->certificate(), platform_cert.get());
   EXPECT_EQ(certs[1]->certificate(), managed_cert.get());
+  EXPECT_EQ(certs[2]->certificate(), managed_cert.get());
 }
 
 }  // namespace client_certificates

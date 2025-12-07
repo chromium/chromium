@@ -25,7 +25,8 @@ class CORE_EXPORT LineTruncator final {
   STACK_ALLOCATED();
 
  public:
-  LineTruncator(const LineInfo& line_info);
+  explicit LineTruncator(const LineInfo& line_info,
+                         bool is_ellipsis_caused_by_line_clamp = false);
 
   // Truncate |line_box| and place ellipsis. Returns the new inline-size of the
   // |line_box|.
@@ -43,6 +44,8 @@ class CORE_EXPORT LineTruncator final {
  private:
   const ComputedStyle& EllipsisStyle() const;
 
+  String ComputeEllipsisText() const;
+
   // Initialize four ellipsis_*_ data members.
   void SetupEllipsis();
 
@@ -50,7 +53,7 @@ class CORE_EXPORT LineTruncator final {
   LayoutUnit PlaceEllipsisNextTo(LogicalLineItems* line_box,
                                  LogicalLineItem* ellipsized_child);
 
-  static constexpr wtf_size_t kDidNotAddChild = WTF::kNotFound;
+  static constexpr wtf_size_t kDidNotAddChild = kNotFound;
   // Add a child with truncated text of (*line_box)[source_index].
   // This function returns the index of the new child.
   // If the truncated text is empty, kDidNotAddChild is returned.
@@ -98,6 +101,9 @@ class CORE_EXPORT LineTruncator final {
   // This data member is available between SetupEllipsis() and
   // PlaceEllipsisNextTo().
   ShapeResultView* ellipsis_shape_result_ = nullptr;
+
+  bool use_first_line_style_ = false;
+  bool is_ellipsis_caused_by_line_clamp_ = false;
 };
 
 }  // namespace blink

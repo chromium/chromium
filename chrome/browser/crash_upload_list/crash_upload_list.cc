@@ -4,17 +4,13 @@
 
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "components/crash/core/browser/crash_upload_list_crashpad.h"
-#else
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/crash/core/app/crashpad.h"
+#include "components/upload_list/combining_upload_list.h"
 #include "components/upload_list/crash_upload_list.h"
-#endif
+#include "components/upload_list/text_log_upload_list.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
@@ -23,11 +19,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/browser/crash_upload_list_crashpad.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-#include "components/upload_list/combining_upload_list.h"
-#include "components/upload_list/text_log_upload_list.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -42,14 +33,15 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
       cache_dir.Append("Crash Reports")
           .AppendASCII(CrashUploadList::kReporterLogFilename);
   return new CrashUploadListAndroid(upload_log_path);
-#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
+#else
   base::FilePath crash_dir_path;
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);
   base::FilePath upload_log_path =
       crash_dir_path.AppendASCII(CrashUploadList::kReporterLogFilename);
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::MakeRefCounted<CrashUploadListChromeOS>(upload_log_path);
+#else
   // Crashpad keeps the records of C++ crashes (segfaults, etc) in its
   // internal database. The JavaScript error reporter writes JS error upload
   // records to the older text format. Combine the two to present a complete
@@ -58,12 +50,6 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
       base::MakeRefCounted<CrashUploadListCrashpad>(),
       base::MakeRefCounted<TextLogUploadList>(upload_log_path)};
   return base::MakeRefCounted<CombiningUploadList>(std::move(uploaders));
-#elif BUILDFLAG(IS_CHROMEOS)
-  return base::MakeRefCounted<CrashUploadListChromeOS>(upload_log_path);
-#else  // BUILDFLAG(IS_LINUX)
-#error "This code snippet must be compiled for either Linux or ChromeOS."
-#endif  // BUILDFLAG(IS_LINUX)
-#else
-  return new CrashUploadListCrashpad();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -492,7 +492,7 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
       }
 
       // If all the expected calls have been logged for this test case then
-      // mark as suceeded and move to the next. Otherwise look for the next
+      // mark as succeeded and move to the next. Otherwise look for the next
       // expected api call.
       if (callIndx == testCase.expected_activity.length - 1) {
         chrome.test.succeed();

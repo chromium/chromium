@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<p>Check if a validation bubble is shown at a correct position.</p>
+<input style="position:absolute; bottom:20px;">
+<script>
+runAfterLayoutAndPaint(() => {
+  const input = document.querySelector('input');
+  input.setCustomValidity('This is a test validation message.');
+  input.reportValidity();
+}, true);
+</script>

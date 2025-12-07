@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/bind.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -27,10 +22,12 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
+#include "third_party/blink/renderer/platform/media/create_cdm_uma_helper.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 #include "url/origin.h"
 
 namespace blink {
+
 namespace {
 
 const char kCreateSessionSessionTypeUMAName[] = "CreateSession.SessionType";
@@ -50,19 +47,20 @@ void WebContentDecryptionModuleImpl::Create(
   const auto key_system = cdm_config.key_system;
   DCHECK(!key_system.empty());
 
+  auto key_system_uma_prefix = GetUMAPrefixForCdm(cdm_config);
+
   // TODO(ddorwin): Guard against this in supported types check and remove this.
   // Chromium only supports ASCII key systems.
   if (!base::IsStringASCII(key_system)) {
-    NOTREACHED_IN_MIGRATION();
-    std::move(web_cdm_created_cb)
-        .Run(nullptr, media::CreateCdmStatus::kUnsupportedKeySystem);
-    return;
+    NOTREACHED();
   }
 
   // TODO(ddorwin): This should be a DCHECK.
   if (!key_systems->IsSupportedKeySystem(key_system)) {
     DVLOG(1) << __func__ << "Keysystem '" << key_system
              << "' is not supported.";
+    ReportCreateCdmStatusUMA(key_system_uma_prefix, false,
+                             media::CreateCdmStatus::kUnsupportedKeySystem);
     std::move(web_cdm_created_cb)
         .Run(nullptr, media::CreateCdmStatus::kUnsupportedKeySystem);
     return;
@@ -70,6 +68,8 @@ void WebContentDecryptionModuleImpl::Create(
 
   // If opaque security origin, don't try to create the CDM.
   if (security_origin.IsOpaque() || security_origin.ToString() == "null") {
+    ReportCreateCdmStatusUMA(key_system_uma_prefix, false,
+                             media::CreateCdmStatus::kNotAllowedOnUniqueOrigin);
     std::move(web_cdm_created_cb)
         .Run(nullptr, media::CreateCdmStatus::kNotAllowedOnUniqueOrigin);
     return;
@@ -101,16 +101,13 @@ WebContentDecryptionModuleImpl::CreateSession(
 }
 
 void WebContentDecryptionModuleImpl::SetServerCertificate(
-    const uint8_t* server_certificate,
-    size_t server_certificate_length,
+    base::span<const uint8_t> server_certificate,
     WebContentDecryptionModuleResult result) {
-  DCHECK(server_certificate);
-  adapter_->SetServerCertificate(
-      std::vector<uint8_t>(server_certificate,
-                           server_certificate + server_certificate_length),
-      std::make_unique<CdmResultPromise<>>(result,
-                                           adapter_->GetKeySystemUMAPrefix(),
-                                           kSetServerCertificateUMAName));
+  DCHECK(server_certificate.data());
+  adapter_->SetServerCertificate(base::ToVector(server_certificate),
+                                 std::make_unique<CdmResultPromise<>>(
+                                     result, adapter_->GetKeySystemUMAPrefix(),
+                                     kSetServerCertificateUMAName));
 }
 
 void WebContentDecryptionModuleImpl::GetStatusForPolicy(

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] XRDepthInformation.data matches raw device data when matchDepthView is false with offset depth (CPU) - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRDepthInformation.data matches raw device data when matchDepthView is false with offset depth (CPU) - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRDepthInformation.data does NOT match raw device data when matchDepthView is true with offset depth (CPU) - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRDepthInformation.data does NOT match raw device data when matchDepthView is true with offset depth (CPU) - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

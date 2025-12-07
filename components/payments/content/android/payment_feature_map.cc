@@ -4,6 +4,8 @@
 
 #include "components/payments/content/android/payment_feature_map.h"
 
+#include <jni.h>
+
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -28,17 +30,26 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &::features::kWebPayments,
     &features::kAppStoreBilling,
     &features::kAppStoreBillingDebug,
+    &features::kCanMakePaymentTrueWhenPrivate,
     &features::kEnforceFullDelegation,
     &features::kGPayAppDynamicUpdate,
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsSingleAppUiSkip,
+    &features::kRestrictIsReadyToPayQuery,
+    &features::kSecurePaymentConfirmationFallback,
+    &kAndroidPaymentIntentsOmitDeprecatedParameters,
+    &kGooglePayViaAndroidIntents,
     &kOmitParametersInReadyToPay,
+    &kAllowShowWithoutReadyToPay,
+    &kReconnectOnLostConnectionToUpdatePaymentDetailsService,
+    &kShowReadyToPayDebugInfo,
+    &kUpdatePaymentDetailsIntentFilterInPaymentApp,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -49,8 +60,17 @@ static jlong JNI_PaymentFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 // Android only features.
-BASE_FEATURE(kOmitParametersInReadyToPay,
-             "OmitParametersInReadyToPay",
+BASE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGooglePayViaAndroidIntents, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOmitParametersInReadyToPay, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowShowWithoutReadyToPay, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kShowReadyToPayDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUpdatePaymentDetailsIntentFilterInPaymentApp,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace payments::android
+
+DEFINE_JNI(PaymentFeatureMap)

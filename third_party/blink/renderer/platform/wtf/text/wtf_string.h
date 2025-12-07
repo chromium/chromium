@@ -20,24 +20,21 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_
 
 // This file would be called String.h, but that conflicts with <string.h>
 // on systems without case-sensitive file systems.
 
+#include <array>
 #include <iosfwd>
 #include <string_view>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -46,16 +43,13 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-namespace WTF {
+namespace blink {
 
 class CodePointIterator;
 
-#define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
-  ((caseSensitivity == kTextCaseSensitive)              \
-       ? op args                                        \
-       : (caseSensitivity == kTextCaseASCIIInsensitive) \
-             ? op##IgnoringASCIICase args               \
-             : op##IgnoringCase args)
+#define DISPATCH_CASE_OP(case_sensitivity, op, args)  \
+  ((case_sensitivity == kTextCaseSensitive) ? op args \
+                                            : op##IgnoringASCIICase args)
 
 // You can find documentation about this class in README.md in this directory.
 class WTF_EXPORT String {
@@ -67,7 +61,6 @@ class WTF_EXPORT String {
 
   // Construct a string with UTF-16 data.
   explicit String(base::span<const UChar> utf16_data);
-  String(const UChar* characters, unsigned length);
 
   // Construct a string by copying the contents of a vector.
   // This method will never create a null string. Vectors with size() == 0
@@ -84,16 +77,9 @@ class WTF_EXPORT String {
 
   // Construct a string with latin1 data.
   explicit String(base::span<const LChar> latin1_data);
-  String(const LChar* characters, unsigned length);
-  String(const char* characters, unsigned length);
-  explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
-
-#if defined(ARCH_CPU_64_BITS)
-  // Only define size_t constructors if size_t is 64 bit otherwise
-  // we'd have a duplicate define.
-  String(const UChar* characters, size_t length);
-  String(const char* characters, size_t length);
-#endif  // defined(ARCH_CPU_64_BITS)
+  explicit String(base::span<const char> latin1_data)
+      : String(base::as_bytes(latin1_data)) {}
+  explicit String(const std::string& s) : String(base::as_byte_span(s)) {}
 
   // Construct a string with latin1 data, from a null-terminated source. The
   // `LChar` constructor is explicit to avoid misinterpreting byte arrays.
@@ -102,8 +88,9 @@ class WTF_EXPORT String {
   // `uint8_t[N]`.
   explicit String(const LChar* characters)
       : String(reinterpret_cast<const char*>(characters)) {}
-  String(const char* characters)
-      : String(characters, characters ? strlen(characters) : 0) {}
+  String(const char* characters)  // NOLINT(google-explicit-constructor)
+      : String(characters ? base::span(std::string_view(characters))
+                          : base::span<const char>()) {}
 
   // Construct a string referencing an existing StringImpl.
   String(StringImpl* impl) : impl_(impl) {}
@@ -154,37 +141,55 @@ class WTF_EXPORT String {
     return impl_->Span16();
   }
 
-  const LChar* Characters8() const {
+  base::span<const uint16_t> SpanUint16() const {
+    if (!impl_) {
+      return {};
+    }
+    DCHECK(!impl_->Is8Bit());
+    return impl_->SpanUint16();
+  }
+
+  // This exposes the underlying representation of the string. Use with
+  // care. When interpreting the string as a sequence of code units
+  // Span8()/Span16() should be used.
+  base::span<const uint8_t> RawByteSpan() const {
+    if (!impl_) {
+      return {};
+    }
+    return impl_->RawByteSpan();
+  }
+
+  // Use Span8() instead.
+  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
     if (!impl_)
       return nullptr;
     DCHECK(impl_->Is8Bit());
     return impl_->Characters8();
   }
 
-  const UChar* Characters16() const {
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
     if (!impl_)
       return nullptr;
     DCHECK(!impl_->Is8Bit());
     return impl_->Characters16();
   }
 
-  ALWAYS_INLINE const void* Bytes() const {
-    if (!impl_)
-      return nullptr;
-    return impl_->Bytes();
-  }
-
-  // Return characters8() or characters16() depending on CharacterType.
-  template <typename CharacterType>
-  inline const CharacterType* GetCharacters() const;
-
   bool Is8Bit() const { return impl_->Is8Bit(); }
 
   [[nodiscard]] std::string Ascii() const;
   [[nodiscard]] std::string Latin1() const;
   [[nodiscard]] std::string Utf8(
-      UTF8ConversionMode mode = kLenientUTF8Conversion) const {
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
+  }
+  // Returns a std::u16string_view pointing this string.
+  // This should be called only if !Is8Bit().
+  //
+  // This function should be removed after enabling C++23 because
+  // std::u16string_view(Span16()) will work with C++23.
+  std::u16string_view View16() const LIFETIME_BOUND {
+    return base::as_string_view(Span16());
   }
 
   UChar operator[](wtf_size_t index) const {
@@ -201,8 +206,10 @@ class WTF_EXPORT String {
   template <typename IntegerType>
   static String Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    return StringImpl::Create(converter.Characters8(), converter.length());
+    return StringImpl::Create(converter.Span());
   }
+
+  static String Boolean(bool value) { return String(value ? "true" : "false"); }
 
   [[nodiscard]] static String Number(float);
 
@@ -231,10 +238,12 @@ class WTF_EXPORT String {
                   wtf_size_t index = 0) const;
 
   // Find substrings.
-  wtf_size_t Find(
-      const StringView& value,
-      wtf_size_t start = 0,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  wtf_size_t Find(const StringView& value, wtf_size_t start = 0) const {
+    return impl_ ? impl_->Find(value, start) : kNotFound;
+  }
+  wtf_size_t Find(const StringView& value,
+                  wtf_size_t start,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))
                : kNotFound;
@@ -242,10 +251,10 @@ class WTF_EXPORT String {
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
-  // platform features.
-  wtf_size_t FindIgnoringCase(const StringView& value,
-                              unsigned start = 0) const {
-    return impl_ ? impl_->FindIgnoringCase(value, start) : kNotFound;
+  // platform features.  See crbug.com/40476285.
+  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
+                                        unsigned start = 0) const {
+    return impl_ ? impl_->DeprecatedFindIgnoringCase(value, start) : kNotFound;
   }
 
   // ASCII case insensitive string matching.
@@ -275,15 +284,21 @@ class WTF_EXPORT String {
   // 0.
   UChar32 CharacterStartingAt(unsigned) const;
 
-  bool StartsWith(
-      const StringView& prefix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool StartsWith(const StringView& prefix) const {
+    return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
+  }
+  bool StartsWith(const StringView& prefix,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->StartsWith, (prefix))
                : prefix.empty();
   }
-  bool StartsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->StartsWithIgnoringCase(prefix) : prefix.empty();
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedStartsWithIgnoringCase(const StringView& prefix) const {
+    return impl_ ? impl_->DeprecatedStartsWithIgnoringCase(prefix)
+                 : prefix.empty();
   }
   bool StartsWithIgnoringCaseAndAccents(const StringView& prefix) const {
     return impl_ ? impl_->StartsWithIgnoringCaseAndAccents(prefix)
@@ -296,14 +311,20 @@ class WTF_EXPORT String {
     return impl_ ? impl_->StartsWith(character) : false;
   }
 
-  bool EndsWith(
-      const StringView& suffix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool EndsWith(const StringView& suffix) const {
+    return impl_ ? impl_->EndsWith(suffix) : suffix.empty();
+  }
+  bool EndsWith(const StringView& suffix,
+                TextCaseSensitivity case_sensitivity) const {
     return impl_ ? DISPATCH_CASE_OP(case_sensitivity, impl_->EndsWith, (suffix))
                  : suffix.empty();
   }
-  bool EndsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->EndsWithIgnoringCase(prefix) : prefix.empty();
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedEndsWithIgnoringCase(const StringView& prefix) const {
+    return impl_ ? impl_->DeprecatedEndsWithIgnoringCase(prefix)
+                 : prefix.empty();
   }
   bool EndsWithIgnoringASCIICase(const StringView& prefix) const {
     return impl_ ? impl_->EndsWithIgnoringASCIICase(prefix) : prefix.empty();
@@ -397,14 +418,14 @@ class WTF_EXPORT String {
   [[nodiscard]] String EncodeForDebugging() const;
 
   // Returns an uninitialized string. The characters needs to be written
-  // into the buffer returned in data before the returned string is used.
+  // into the buffer returned in `data` before the returned string is used.
   // Failure to do this will have unpredictable results.
   [[nodiscard]] static String CreateUninitialized(unsigned length,
-                                                  UChar*& data) {
+                                                  base::span<UChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
   [[nodiscard]] static String CreateUninitialized(unsigned length,
-                                                  LChar*& data) {
+                                                  base::span<LChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
 
@@ -422,17 +443,13 @@ class WTF_EXPORT String {
   }
 
   // Copy characters out of the string. See StringImpl.h for detailed docs.
-  unsigned CopyTo(UChar* buffer, unsigned start, unsigned max_length) const {
-    return impl_ ? impl_->CopyTo(buffer, start, max_length) : 0;
+  size_t CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+    return impl_ ? impl_->CopyTo(buffer, start) : 0;
   }
   template <typename BufferType>
   void AppendTo(BufferType&,
                 unsigned start = 0,
                 unsigned length = UINT_MAX) const;
-  template <typename BufferType>
-  void PrependTo(BufferType&,
-                 unsigned start = 0,
-                 unsigned length = UINT_MAX) const;
 
   // Convert the string into a number.
 
@@ -515,35 +532,24 @@ class WTF_EXPORT String {
   }
 #endif
 
-  [[nodiscard]] static String Make8BitFrom16BitSource(const UChar*, wtf_size_t);
-  template <wtf_size_t inlineCapacity>
-  [[nodiscard]] static String Make8BitFrom16BitSource(
-      const Vector<UChar, inlineCapacity>& buffer) {
-    return Make8BitFrom16BitSource(buffer.data(), buffer.size());
-  }
+  [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
+  [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
 
-  [[nodiscard]] static String Make16BitFrom8BitSource(const LChar*, wtf_size_t);
-
-  // String::fromUTF8 will return a null string if
+  // String::FromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
   // Does not strip BOMs.
-  [[nodiscard]] static String FromUTF8(const LChar*, size_t);
-  [[nodiscard]] static String FromUTF8(const LChar*);
-  [[nodiscard]] static String FromUTF8(const char* s, size_t length) {
-    return FromUTF8(reinterpret_cast<const LChar*>(s), length);
+  [[nodiscard]] static String FromUTF8(base::span<const uint8_t>);
+  [[nodiscard]] static String FromUTF8(const char* s);
+  [[nodiscard]] static String FromUTF8(std::string_view s) {
+    return FromUTF8(base::as_byte_span(s));
   }
-  [[nodiscard]] static String FromUTF8(const char* s) {
-    return FromUTF8(reinterpret_cast<const LChar*>(s));
-  }
-  [[nodiscard]] static String FromUTF8(std::string_view);
 
   // Tries to convert the passed in string to UTF-8, but will fall back to
   // Latin-1 if the string is not valid UTF-8.
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(const LChar*, size_t);
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(const char* s,
-                                                         size_t length) {
-    return FromUTF8WithLatin1Fallback(reinterpret_cast<const LChar*>(s),
-                                      length);
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(
+      base::span<const uint8_t>);
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view s) {
+    return FromUTF8WithLatin1Fallback(base::as_byte_span(s));
   }
 
   bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
@@ -576,8 +582,8 @@ class WTF_EXPORT String {
 #undef DISPATCH_CASE_OP
 
 inline bool operator==(const String& a, const String& b) {
-  // We don't use equalStringView here since we want the isAtomic() fast path
-  // inside WTF::equal.
+  // We don't use EqualStringView here since we want the IsAtomic() fast path
+  // inside blink::Equal.
   return Equal(a.Impl(), b.Impl());
 }
 inline bool operator==(const String& a, const char* b) {
@@ -585,16 +591,6 @@ inline bool operator==(const String& a, const char* b) {
 }
 inline bool operator==(const char* a, const String& b) {
   return b == a;
-}
-
-inline bool operator!=(const String& a, const String& b) {
-  return !(a == b);
-}
-inline bool operator!=(const String& a, const char* b) {
-  return !(a == b);
-}
-inline bool operator!=(const char* a, const String& b) {
-  return !(a == b);
 }
 
 inline bool EqualIgnoringNullity(const String& a, const String& b) {
@@ -615,20 +611,7 @@ inline void swap(String& a, String& b) {
 
 template <wtf_size_t inlineCapacity>
 String::String(const Vector<UChar, inlineCapacity>& vector)
-    : impl_(vector.size() ? StringImpl::Create(vector.data(), vector.size())
-                          : StringImpl::empty_) {}
-
-template <>
-inline const LChar* String::GetCharacters<LChar>() const {
-  DCHECK(Is8Bit());
-  return Characters8();
-}
-
-template <>
-inline const UChar* String::GetCharacters<UChar>() const {
-  DCHECK(!Is8Bit());
-  return Characters16();
-}
+    : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
 
 inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (empty())
@@ -637,11 +620,7 @@ inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (Is8Bit())
     return true;
 
-  const UChar* characters = Characters16();
-  UChar ored = 0;
-  for (wtf_size_t i = 0; i < impl_->length(); ++i)
-    ored |= characters[i];
-  return !(ored & 0xFF00);
+  return std::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
 }
 
 #ifdef __OBJC__
@@ -682,21 +661,6 @@ void String::AppendTo(BufferType& result,
   impl_->AppendTo(result, position, length);
 }
 
-template <typename BufferType>
-void String::PrependTo(BufferType& result,
-                       unsigned position,
-                       unsigned length) const {
-  if (!impl_)
-    return;
-  impl_->PrependTo(result, position, length);
-}
-
-template <typename T>
-struct HashTraits;
-// Defined in string_hash.h.
-template <>
-struct HashTraits<String>;
-
 // Shared global empty string.
 WTF_EXPORT extern const String& g_empty_string;
 WTF_EXPORT extern const String& g_empty_string16_bit;
@@ -708,49 +672,44 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
   // The constant is kept small to minimize the overhead of the table (496
   // bytes).
   static constexpr size_t kTableSize = 32;
+  using TableType = std::array<String, kTableSize>;
 
   static void Init();
 
   static inline String GetStringForLength(size_t string_length) {
-    DCHECK_NE(string_length, 0u);
-    DCHECK_LT(string_length, kTableSize);
     return g_table_[string_length];
   }
 
   static bool IsNewlineThenWhitespaces(const StringView& view);
 
  private:
-  static const String (&g_table_)[kTableSize];
+  static const TableType& g_table_;
 };
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const String&);
 
-inline StringView::StringView(const String& string
-                                  ABSL_ATTRIBUTE_LIFETIME_BOUND,
+inline StringView::StringView(const String& string LIFETIME_BOUND,
                               unsigned offset,
                               unsigned length)
     : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const String& string
-                                  ABSL_ATTRIBUTE_LIFETIME_BOUND,
+inline StringView::StringView(const String& string LIFETIME_BOUND,
                               unsigned offset)
     : StringView(string.Impl(), offset) {}
-inline StringView::StringView(
-    const String& string ABSL_ATTRIBUTE_LIFETIME_BOUND)
+inline StringView::StringView(const String& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
-}  // namespace WTF
+template <typename T>
+struct HashTraits;
+// Defined in string_hash.h.
+template <>
+struct HashTraits<String>;
+
+}  // namespace blink
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(String)
 
-using WTF::kStrictUTF8Conversion;
-using WTF::kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD;
-using WTF::String;
-using WTF::g_empty_string;
-using WTF::g_empty_string16_bit;
-using WTF::Equal;
-using WTF::Find;
-
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

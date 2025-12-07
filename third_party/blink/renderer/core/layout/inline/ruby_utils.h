@@ -20,18 +20,15 @@ class InlineItem;
 class LineInfo;
 class LogicalLineContainer;
 class LogicalLineItems;
-class PhysicalBoxFragment;
-class ShapeResultView;
 struct InlineItemResult;
 struct LogicalRubyColumn;
-struct PhysicalRect;
 
 struct RubyItemIndexes {
   // Points a kOpenRubyColumn item.
   wtf_size_t column_start;
   // Points a kOpenTag for <rt> item or a kCloseRubyColumn item.
   wtf_size_t base_end;
-  // Points a kOpenTag for <rt> item, or WTF::kNotFound.
+  // Points a kOpenTag for <rt> item, or kNotFound.
   wtf_size_t annotation_start;
   // Points a kCloseRubyColumn item.
   wtf_size_t column_end;
@@ -39,17 +36,9 @@ struct RubyItemIndexes {
 
 // Get item indexes for a ruby column starting at `start_item_index`.
 // `start_item_index` must point to kOpenRubyColumn item.
-RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
-                                       wtf_size_t start_item_index);
-
-// Adjust the specified |rect| of a text fragment for 'em' height.
-// This is called on computing scrollable overflow with kEmHeight.
-PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
-                                       const ComputedStyle& style,
-                                       const ShapeResultView* shape_view,
-                                       WritingMode writing_mode);
-
-PhysicalRect ComputeRubyEmHeightBox(const PhysicalBoxFragment& box_fragment);
+RubyItemIndexes ParseRubyInInlineItems(
+    const HeapVector<Member<InlineItem>>& items,
+    wtf_size_t start_item_index);
 
 struct AnnotationOverhang {
   LayoutUnit start;
@@ -57,7 +46,7 @@ struct AnnotationOverhang {
 };
 
 // Returns overhang values of the specified InlineItemResult representing
-// LayoutRubyColumn.
+// a ruby column.
 //
 // This is used by LineBreaker.
 AnnotationOverhang GetOverhang(const InlineItemResult& item);
@@ -226,8 +215,10 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   }
 
  private:
-  void HandleRubyLine(const RubyLine& current_ruby_line,
-                      const HeapVector<Member<LogicalRubyColumn>>& column_list);
+  // Returns the maximum metrics of the ruby annotations from the |column_list|.
+  FontHeight HandleRubyLine(
+      const RubyLine& current_ruby_line,
+      const HeapVector<Member<LogicalRubyColumn>>& column_list);
   RubyLine& EnsureRubyLine(const RubyLevel& level);
 
   HeapVector<Member<RubyLine>, 2> ruby_lines_;

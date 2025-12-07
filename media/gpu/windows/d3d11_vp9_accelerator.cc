@@ -211,7 +211,8 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     return false;
   }
 
-  memcpy(pic_params_buffer.data(), &pic_params, sizeof(pic_params));
+  pic_params_buffer.data().copy_prefix_from(
+      base::byte_span_from_ref(pic_params));
 
   if (!pic_params_buffer.Commit()) {
     return false;
@@ -220,7 +221,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   bool ok =
       client_->GetWrapper()
           ->AppendBitstreamAndSliceDataWithStartCode<DXVA_Slice_VPx_Short>(
-              {pic.frame_hdr->data, pic.frame_hdr->frame_size});
+              pic.frame_hdr->data);
 
   return ok && client_->GetWrapper()->SubmitSlice();
 }
@@ -257,10 +258,6 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
 bool D3D11VP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {
   D3D11VP9Picture* pic = static_cast<D3D11VP9Picture*>(picture.get());
   return client_->OutputResult(picture.get(), pic->picture_buffer());
-}
-
-bool D3D11VP9Accelerator::NeedsCompressedHeaderParsed() const {
-  return false;
 }
 
 }  // namespace media

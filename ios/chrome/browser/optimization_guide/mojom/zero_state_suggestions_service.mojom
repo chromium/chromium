@@ -1,0 +1,22 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ai.mojom;
+
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+
+// Represents the result of a Zero State Suggestions response. Only one of
+// these fields can hold a value.
+union ZeroStateSuggestionsResponseResult {
+  mojo_base.mojom.ProtoWrapper response;
+  string error;
+};
+
+// Service for fetching zero-state suggestions. The service is called to get
+// contextual suggestions.
+interface ZeroStateSuggestionsService {
+  // Fetches zero-state suggestions for the current page context. Returns a
+  // result containing either the suggestions proto or an error string.
+  FetchZeroStateSuggestions() => (ZeroStateSuggestionsResponseResult result);
+};

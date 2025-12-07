@@ -12,7 +12,7 @@ namespace exo {
 // Handles events for a specific gamepad.
 class GamepadDelegate {
  public:
-  virtual ~GamepadDelegate() {}
+  virtual ~GamepadDelegate() = default;
   // Called when the gamepad has been removed.
   virtual void OnRemoved() = 0;
 

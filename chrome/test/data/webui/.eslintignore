@@ -1,5 +1,0 @@
-# Ignore because of https://crbug.com/1033337
-async_gen.js
-cr_focus_row_behavior_interactive_test.js
-polymer_browser_test_base.js
-**/*_browsertest.js

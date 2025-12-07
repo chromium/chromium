@@ -15,7 +15,7 @@
 #include <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #include "ios/web/public/thread/web_thread_delegate.h"
@@ -99,11 +99,6 @@ class IOSIOThread : public web::WebThreadDelegate {
   // Can only be called on the IO thread.
   Globals* globals();
 
-  // Allows overriding Globals in tests where IOSIOThread::Init() and
-  // IOSIOThread::CleanUp() are not called.  This allows for injecting mocks
-  // into IOSIOThread global objects.
-  void SetGlobalsForTesting(Globals* globals);
-
   net::NetLog* net_log();
 
   // Handles changing to On The Record mode, discarding confidential data.
@@ -157,15 +152,9 @@ class IOSIOThread : public web::WebThreadDelegate {
   // threads during shutdown, but is used most frequently on the IO thread.
   raw_ptr<net::NetLog> net_log_;
 
-  // These member variables are basically global, but their lifetimes are tied
-  // to the IOSIOThread.  IOSIOThread owns them all, despite not using
-  // scoped_ptr. This is because the destructor of IOSIOThread runs on the
-  // wrong thread.  All member variables should be deleted in CleanUp().
-
-  // These member variables are initialized in Init() and do not change for the
-  // lifetime of the IO thread.
-
-  raw_ptr<Globals> globals_;
+  // These member variables are initialized in Init() and destroyed in
+  // Cleanup(). They do not change for the lifetime of the IO thread.
+  std::unique_ptr<Globals> globals_;
 
   net::HttpNetworkSessionParams params_;
 

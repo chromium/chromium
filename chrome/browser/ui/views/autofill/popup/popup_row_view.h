@@ -95,7 +95,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   void OnPaint(gfx::Canvas* canvas) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* focused_now) override;
@@ -116,6 +115,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // parent no longer needs to handle it).
   virtual bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
+  // Returns if the popup row is available for selection.
+  bool IsSelectable() const;
+
   // Returns the view representing the content area of the row.
   PopupRowContentView& GetContentView() { return *content_view_; }
 
@@ -124,35 +126,28 @@ class PopupRowView : public views::View, public views::ViewObserver {
     return expand_child_suggestions_view_.get();
   }
 
-  views::View* GetExpandChildSuggestionsIconViewForTesting() {
-    return expand_child_suggestions_view_icon_.get();
-  }
-
  protected:
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
   int line_number() const { return line_number_; }
 
- private:
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
     return a11y_selection_delegate_.get();
   }
 
+  // Calls `selection_delegate_` when an event leading to selection is
+  // triggered on the view, e.g. `ui::EventType::kMouseEntered` or the root
+  // view is focused. `type` == `std::nullopt` means deselection.
+  virtual void OnCellSelected(std::optional<CellType> type,
+                              PopupCellSelectionSource source);
+
+ private:
   // Updates all UI parts that may have changed based on the current state,
   // for now they are the background and expand control visibility.
   void UpdateUI();
 
   // Updates the background according to the control cell highlighting state.
   void UpdateBackground();
-
-  // Updates the expand subpopup icon visibility. By default the icon is
-  // always visible in the case children suggestion exist. The exception is when
-  // `CanUpdateOpenSubPopupIconVisibilityOnHover()` returns true. In this case
-  // the icon is visible only when a cell is selected (e.g. when the row is
-  // hovered) or the sub-popup is open.
-  // TODO(crbug.com/40274514): Maybe remove this method once experiment is
-  // complete.
-  void UpdateOpenSubPopupIconVisibility();
 
   // This method is just a getter for the `barrier_for_accepting_` which is
   // set `true` when the view's visible part is big enough and was present on
@@ -179,7 +174,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
       content_view_observer_{this};
   // The view wrapping the control area of the row.
   raw_ptr<views::View> expand_child_suggestions_view_ = nullptr;
-  raw_ptr<views::View> expand_child_suggestions_view_icon_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       expand_child_suggestions_view_observer_{this};
 

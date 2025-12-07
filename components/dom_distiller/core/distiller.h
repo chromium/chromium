@@ -51,7 +51,7 @@ class Distiller {
 
 class DistillerFactory {
  public:
-  virtual std::unique_ptr<Distiller> CreateDistillerForUrl(const GURL& url) = 0;
+  virtual std::unique_ptr<Distiller> CreateDistiller() = 0;
   virtual ~DistillerFactory() = default;
 };
 
@@ -62,7 +62,7 @@ class DistillerFactoryImpl : public DistillerFactory {
       std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
       const dom_distiller::proto::DomDistillerOptions& dom_distiller_options);
   ~DistillerFactoryImpl() override;
-  std::unique_ptr<Distiller> CreateDistillerForUrl(const GURL& url) override;
+  std::unique_ptr<Distiller> CreateDistiller() override;
 
  private:
   std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory_;
@@ -83,8 +83,6 @@ class DistillerImpl : public Distiller {
                    const DistillationUpdateCallback& update_cb) override;
 
   void SetMaxNumPagesInArticle(size_t max_num_pages);
-
-  static bool DoesFetchImages();
 
   DistillerImpl(const DistillerImpl&) = delete;
   DistillerImpl& operator=(const DistillerImpl&) = delete;

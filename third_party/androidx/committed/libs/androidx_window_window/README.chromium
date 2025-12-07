@@ -1,0 +1,20 @@
+Name: WindowManager
+Short Name: window
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/window/window/1.6.0-SNAPSHOT/window-1.6.0-20251126.133552-1.aar
+Version: 1.6.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+WindowManager Jetpack library. Currently only provides additional functionality on foldable devices.
+
+See also: https://developer.android.com/jetpack/androidx/releases/window#1.6.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

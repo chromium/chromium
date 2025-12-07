@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
@@ -102,6 +102,8 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
  private:
   bool InitializeDawn();
   bool InitializeVulkan();
+  void SetSkiaBackendType();
+  void RecordUMA();
 
   raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/blink/blink_event_util.h"
+
+#include <array>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,12 +32,12 @@ TEST(BlinkEventUtilTest, NoScalingWith1DSF) {
   EXPECT_TRUE(ScaleWebInputEvent(event, 2.f));
 }
 
-void RunTest(ui::ScrollGranularity granularity) {
+TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEvent) {
   blink::WebMouseWheelEvent event(
       blink::WebInputEvent::Type::kMouseWheel,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
-  event.delta_units = granularity;
+  event.delta_units = ui::ScrollGranularity::kScrollByPixel;
   event.delta_x = 1.f;
   event.delta_y = 1.f;
   event.wheel_ticks_x = 1.f;
@@ -54,14 +51,6 @@ void RunTest(ui::ScrollGranularity granularity) {
   EXPECT_EQ(2.f, mouseWheelEvent->delta_y);
   EXPECT_EQ(2.f, mouseWheelEvent->wheel_ticks_x);
   EXPECT_EQ(2.f, mouseWheelEvent->wheel_ticks_y);
-}
-
-TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEvent) {
-  RunTest(ui::ScrollGranularity::kScrollByPixel);
-}
-
-TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEventPercentBased) {
-  RunTest(ui::ScrollGranularity::kScrollByPercentage);
 }
 
 TEST(BlinkEventUtilTest, PaginatedWebMouseWheelEvent) {
@@ -161,15 +150,15 @@ TEST(BlinkEventUtilTest, PaginatedScrollUpdateEvent) {
 }
 
 TEST(BlinkEventUtilTest, LineAndDocumentScrollEvents) {
-  static const ui::EventType types[] = {
+  static const auto types = std::to_array<ui::EventType>({
       ui::EventType::kGestureScrollBegin,
       ui::EventType::kGestureScrollUpdate,
-  };
+  });
 
-  static const ui::ScrollGranularity units[] = {
+  static const auto units = std::to_array<ui::ScrollGranularity>({
       ui::ScrollGranularity::kScrollByLine,
       ui::ScrollGranularity::kScrollByDocument,
-  };
+  });
 
   for (size_t i = 0; i < std::size(types); i++) {
     ui::EventType type = types[i];

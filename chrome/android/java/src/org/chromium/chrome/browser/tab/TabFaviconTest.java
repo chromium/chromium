@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 
@@ -14,19 +17,19 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -51,8 +54,7 @@ public class TabFaviconTest {
         public void rewind() {}
     }
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabFavicon.Natives mTabFaviconJni;
     @Mock private TabImpl mTab;
     @Mock private Context mContext;
@@ -64,8 +66,7 @@ public class TabFaviconTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(TabFaviconJni.TEST_HOOKS, mTabFaviconJni);
+        TabFaviconJni.setInstanceForTesting(mTabFaviconJni);
 
         mUserDataHost = new UserDataHost();
         doReturn(mUserDataHost).when(mTab).getUserDataHost();
@@ -92,17 +93,21 @@ public class TabFaviconTest {
     }
 
     private void onFaviconAvailable(Bitmap bitmap) {
-        mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
+        // Mimic the behavior of the native call, where `TabFavicon#shouldUpdateFaviconForBrowserUi`
+        // is checked first before sending the bitmap into Java layer.
+        if (mTabFavicon.shouldUpdateFaviconForBrowserUi(bitmap.getWidth(), bitmap.getHeight())) {
+            mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
+        }
     }
 
     @Test
     public void testOnFaviconAvailable_ReturnsBitmap() {
-        Assert.assertNull(TabFavicon.getBitmap(mTab));
+        assertNull(TabFavicon.getBitmap(mTab));
 
         onFaviconAvailable(makeBitmap(1, Color.GREEN));
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
-        Assert.assertNotNull(bitmap);
-        Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
     }
 
     @Test
@@ -113,8 +118,8 @@ public class TabFaviconTest {
         onFaviconAvailable(makeBitmap(IDEAL_SIZE * 2, Color.BLUE));
 
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
-        Assert.assertNotNull(bitmap);
-        Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
     }
 
     @Test
@@ -126,7 +131,16 @@ public class TabFaviconTest {
         onFaviconAvailable(makeBitmap(1, Color.GREEN));
 
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
-        Assert.assertNotNull(bitmap);
-        Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+    }
+
+    @Test
+    public void testGetBitmap_frozenTabWithPendingLoad() {
+        // A frozen tab can have a pending load but no WebContents.
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(new LoadUrlParams("foo.com")).when(mTab).getPendingLoadParams();
+
+        assertNull(TabFavicon.getBitmap(mTab));
     }
 }

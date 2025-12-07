@@ -8,6 +8,9 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 
@@ -20,16 +23,22 @@ enum class CSSValueID {
 {% endfor %}
 };
 
-const int numCSSValueKeywords = {{value_keywords_count}};
-const size_t maxCSSValueKeywordLength = {{max_value_keyword_length}};
+constexpr int kNumCSSValueKeywords = {{value_keywords_count}};
+constexpr size_t kMaxCSSValueKeywordLength = {{max_value_keyword_length}};
 
 inline bool IsValidCSSValueID(CSSValueID id)
 {
     return id != CSSValueID::kInvalid;
 }
 
-CORE_EXPORT const char* getValueName(CSSValueID);
-bool isValueAllowedInMode(CSSValueID id, CSSParserMode mode);
+CORE_EXPORT std::string_view GetCSSValueName(CSSValueID);
+
+template <typename StringType>
+inline StringType GetCSSValueNameAs(CSSValueID value_id) {
+  return StringType(base::as_byte_span(GetCSSValueName(value_id)));
+}
+
+bool IsValueAllowedInMode(CSSValueID id, CSSParserMode mode);
 
 }  // namespace blink
 

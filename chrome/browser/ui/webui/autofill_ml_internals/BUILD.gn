@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+source_set("autofill_ml_internals") {
+  sources = [
+    "autofill_ml_internals_page_handler.cc",
+    "autofill_ml_internals_page_handler.h",
+    "autofill_ml_internals_ui.cc",
+    "autofill_ml_internals_ui.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/autofill",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/autofill_ml_internals:resources",
+    "//chrome/common",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "autofill_ml_internals_page_handler_browsertest.cc" ]
+  deps = [
+    ":autofill_ml_internals",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

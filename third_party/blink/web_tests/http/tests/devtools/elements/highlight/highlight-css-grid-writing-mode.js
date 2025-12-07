@@ -28,6 +28,9 @@ import {ElementsTestRunner} from 'elements_test_runner';
       #sidewaysRl {
         writing-mode: sideways-rl;
       }
+      #sidewaysLr {
+        writing-mode: sideways-lr;
+      }
       </style>
 
       <p id="description">This test verifies that similarly-sized grids with different writing-modes share the same grid information but have a different writingMode value.</p>
@@ -56,6 +59,12 @@ import {ElementsTestRunner} from 'elements_test_runner';
             <div style="background: aquamarine">3</div>
             <div style="background: peachpuff">4</div>
           </div>
+          <div class="grid" id="sidewaysLr">
+            <div style="background: burlywood">1</div>
+            <div style="background: cadetblue">2</div>
+            <div style="background: aquamarine">3</div>
+            <div style="background: peachpuff">4</div>
+          </div>
       </div>
   `);
 
@@ -70,15 +79,16 @@ import {ElementsTestRunner} from 'elements_test_runner';
   }
 
   const horizontalTbNode = await ElementsTestRunner.nodeWithIdPromise('horizontalTb');
-  const horizontalTbHighlight = await TestRunner.OverlayAgent.getHighlightObjectForTest(horizontalTbNode.id);
+  const {highlight: horizontalTbHighlight} =
+      await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: horizontalTbNode.id});
   const horizontalTbInfo = getGridInfo(horizontalTbHighlight);
 
   TestRunner.addResult(`Node id #horizontalTb writing-mode: ${getWritingMode(horizontalTbHighlight)}`);
   TestRunner.addResult(`Grid info: ${horizontalTbInfo}`);
 
-  for (const id of ['verticalRl', 'verticalLr', 'sidewaysRl']) {
+  for (const id of ['verticalRl', 'verticalLr', 'sidewaysRl', 'sidewaysLr']) {
     const node = await ElementsTestRunner.nodeWithIdPromise(id);
-    const result = await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id);
+    const {highlight: result} = await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: node.id});
     const gridInfo = getGridInfo(result);
 
     TestRunner.addResult(`Node id #${id} writing-mode: ${getWritingMode(result)}`);

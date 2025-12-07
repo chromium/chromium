@@ -15,18 +15,15 @@ NullHandle::NullHandle() = default;
 NullHandle::~NullHandle() = default;
 
 size_t NullHandle::mapped_size() const {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return 0;
+  NOTREACHED() << "Unsupported operation";
 }
 
-uint8_t* NullHandle::data() const {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return nullptr;
+base::span<uint8_t> NullHandle::data() {
+  NOTREACHED() << "Unsupported operation";
 }
 
-const uint8_t* NullHandle::const_data() const {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return nullptr;
+base::span<const uint8_t> NullHandle::const_data() const {
+  NOTREACHED() << "Unsupported operation";
 }
 
 }  // namespace media

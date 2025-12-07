@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/public/cpp/gamepad_mojom_traits.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
@@ -30,20 +28,20 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   GamepadButton wgb(true, false, 1.0f);
 
   GamepadVector wgv;
-  memset(&wgv, 0, sizeof(GamepadVector));
+  UNSAFE_TODO(memset(&wgv, 0, sizeof(GamepadVector)));
   wgv.not_null = true;
   wgv.x = wgv.y = wgv.z = 1.0f;
 
   GamepadQuaternion wgq;
-  memset(&wgq, 0, sizeof(GamepadQuaternion));
+  UNSAFE_TODO(memset(&wgq, 0, sizeof(GamepadQuaternion)));
   wgq.not_null = true;
   wgq.x = wgq.y = wgq.z = wgq.w = 2.0f;
 
   GamepadPose wgp;
-  memset(&wgp, 0, sizeof(GamepadPose));
+  UNSAFE_TODO(memset(&wgp, 0, sizeof(GamepadPose)));
 
   GamepadTouch wgt;
-  memset(&wgt, 0, sizeof(GamepadTouch));
+  UNSAFE_TODO(memset(&wgt, 0, sizeof(GamepadTouch)));
 
   if (type == GamepadPose_Null) {
     wgp.not_null = false;
@@ -64,29 +62,43 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
     wgp.angular_acceleration = wgv;
   }
 
-  constexpr char16_t kTestIdString[] = {L'M', L'o', L'c', L'k', L'S',
-                                        L't', L'i', L'c', L'k', L' ',
-                                        L'3', L'0', L'0', L'0', L'\0'};
+  constexpr auto kTestIdString = std::to_array<char16_t>({
+      L'M',
+      L'o',
+      L'c',
+      L'k',
+      L'S',
+      L't',
+      L'i',
+      L'c',
+      L'k',
+      L' ',
+      L'3',
+      L'0',
+      L'0',
+      L'0',
+      L'\0',
+  });
   constexpr size_t kTestIdStringLength = std::size(kTestIdString);
 
   Gamepad send;
-  memset(&send, 0, sizeof(Gamepad));
+  UNSAFE_TODO(memset(&send, 0, sizeof(Gamepad)));
 
   send.connected = true;
   for (size_t i = 0; i < kTestIdStringLength; i++) {
-    send.id[i] = kTestIdString[i];
+    UNSAFE_TODO(send.id[i]) = kTestIdString[i];
   }
   send.mapping = GamepadMapping::kNone;
   send.timestamp = base::TimeTicks::Now().since_origin().InMicroseconds();
   send.axes_length = 0U;
   for (size_t i = 0; i < Gamepad::kAxesLengthCap; i++) {
     send.axes_length++;
-    send.axes[i] = 1.0;
+    UNSAFE_TODO(send.axes[i]) = 1.0;
   }
   send.buttons_length = 0U;
   for (size_t i = 0; i < Gamepad::kButtonsLengthCap; i++) {
     send.buttons_length++;
-    send.buttons[i] = wgb;
+    UNSAFE_TODO(send.buttons[i]) = wgb;
   }
   send.pose = wgp;
   send.hand = GamepadHand::kRight;
@@ -95,7 +107,7 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   send.touch_events_length = 0U;
   for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
     send.touch_events_length++;
-    send.touch_events[i] = wgt;
+    UNSAFE_TODO(send.touch_events[i]) = wgt;
   }
   return send;
 }
@@ -160,23 +172,25 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
     return false;
   }
   for (size_t i = 0; i < Gamepad::kIdLengthCap; i++) {
-    if (send.id[i] != echo.id[i]) {
+    if (UNSAFE_TODO(send.id[i]) != UNSAFE_TODO(echo.id[i])) {
       return false;
     }
   }
   for (size_t i = 0; i < Gamepad::kAxesLengthCap; i++) {
-    if (send.axes[i] != echo.axes[i]) {
+    if (UNSAFE_TODO(send.axes[i]) != UNSAFE_TODO(echo.axes[i])) {
       return false;
     }
   }
   for (size_t i = 0; i < Gamepad::kButtonsLengthCap; i++) {
-    if (!isWebGamepadButtonEqual(send.buttons[i], echo.buttons[i])) {
+    if (!isWebGamepadButtonEqual(UNSAFE_TODO(send.buttons[i]),
+                                 UNSAFE_TODO(echo.buttons[i]))) {
       return false;
     }
   }
 
   for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
-    if (!isWebGamepadTouchEqual(send.touch_events[i], echo.touch_events[i])) {
+    if (!isWebGamepadTouchEqual(UNSAFE_TODO(send.touch_events[i]),
+                                UNSAFE_TODO(echo.touch_events[i]))) {
       return false;
     }
   }

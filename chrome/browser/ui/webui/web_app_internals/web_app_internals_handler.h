@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/types/optional_ref.h"
 #include "base/values.h"
+#include "chrome/browser/ui/webui/web_app_internals/iwa_internals_handler.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -17,11 +16,7 @@ class Profile;
 
 namespace content {
 class WebUI;
-}
-
-namespace web_app {
-class IwaSourceDevModeWithFileOp;
-}
+}  // namespace content
 
 // Handles API requests from chrome://web-app-internals page by implementing
 // mojom::WebAppInternalsHandler.
@@ -46,16 +41,18 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void InstallIsolatedWebAppFromDevProxy(
       const GURL& url,
       InstallIsolatedWebAppFromDevProxyCallback callback) override;
+  void ParseUpdateManifestFromUrl(
+      const GURL& update_manifest_url,
+      ParseUpdateManifestFromUrlCallback callback) override;
+  void InstallIsolatedWebAppFromBundleUrl(
+      mojom::InstallFromBundleUrlParamsPtr params,
+      InstallIsolatedWebAppFromBundleUrlCallback callback) override;
   void SelectFileAndInstallIsolatedWebAppFromDevBundle(
       SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback)
       override;
   void SelectFileAndUpdateIsolatedWebAppFromDevBundle(
       const webapps::AppId& app_id,
       SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void ClearExperimentalWebAppIsolationData(
-      ClearExperimentalWebAppIsolationDataCallback callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   void SearchForIsolatedWebAppUpdates(
       SearchForIsolatedWebAppUpdatesCallback callback) override;
   void GetIsolatedWebAppDevModeAppInfo(
@@ -63,35 +60,33 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void UpdateDevProxyIsolatedWebApp(
       const webapps::AppId& app_id,
       UpdateDevProxyIsolatedWebAppCallback callback) override;
+  void RotateKey(
+      const std::string& web_bundle_id,
+      const std::optional<std::vector<uint8_t>>& public_key) override;
+  void UpdateManifestInstalledIsolatedWebApp(
+      const webapps::AppId& app_id,
+      UpdateManifestInstalledIsolatedWebAppCallback callback) override;
+  void SetUpdateChannelForIsolatedWebApp(
+      const webapps::AppId& app_id,
+      const std::string& update_channel,
+      SetUpdateChannelForIsolatedWebAppCallback callback) override;
+  void SetPinnedVersionForIsolatedWebApp(
+      const webapps::AppId& app_id,
+      const std::string& pinned_version,
+      SetPinnedVersionForIsolatedWebAppCallback callback) override;
+  void ResetPinnedVersionForIsolatedWebApp(
+      const webapps::AppId& app_id) override;
+  void SetAllowDowngradesForIsolatedWebApp(
+      bool allow_downgrades,
+      const webapps::AppId& app_id) override;
+  void DeleteIsolatedWebApp(const webapps::AppId& app_id,
+                            DeleteIsolatedWebAppCallback callback) override;
 
  private:
-  class IsolatedWebAppDevBundleSelectListener;
-
-  void OnIsolatedWebAppDevModeBundleSelected(
-      SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,
-      std::optional<base::FilePath> path);
-  void OnIsolatedWebAppDevModeBundleSelectedForUpdate(
-      const webapps::AppId& app_id,
-      SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback,
-      std::optional<base::FilePath> path);
-
-  void OnInstallIsolatedWebAppInDevMode(
-      base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
-      web_app::IsolatedWebAppInstallationManager::
-          MaybeInstallIsolatedWebAppCommandSuccess result);
-
-  // Discovers and applies an update for a dev mode Isolated Web App identified
-  // by its app id. If `location` is set, then the update will be read from the
-  // provided location, otherwise the existing location will be used.
-  void ApplyDevModeUpdate(
-      const webapps::AppId& app_id,
-      base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
-      base::OnceCallback<void(const std::string&)> callback);
-
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
   mojo::Receiver<mojom::WebAppInternalsHandler> receiver_;
-  base::WeakPtrFactory<WebAppInternalsHandler> weak_ptr_factory_{this};
+  std::optional<web_app::IwaInternalsHandler> iwa_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_

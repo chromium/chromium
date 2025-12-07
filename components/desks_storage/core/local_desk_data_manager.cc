@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 #include <utility>
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -52,10 +49,12 @@ constexpr size_t kMaxDeskTemplateCount = 6u;
 // Currently, the save for later button is dependent on the the max number of
 // entries total.
 constexpr size_t kMaxSaveAndRecallDeskCount = 6u;
+constexpr size_t kMaxCoralDeskCount = 6u;
 
 // Set of valid desk types.
 constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
-    {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall});
+    {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall,
+     ash::DeskTemplateType::kCoral});
 
 // Reads a file at `fully_qualified_path` into a
 // `ash::DeskTemplate` or as `SavedDeskParseError` code. This function returns a
@@ -92,7 +91,8 @@ bool EndsWith(const char* input, const char* suffix) {
   size_t input_length = strlen(input);
   size_t suffix_length = strlen(suffix);
   if (suffix_length <= input_length) {
-    return strcmp(input + input_length - suffix_length, suffix) == 0;
+    return UNSAFE_TODO(strcmp(input + input_length - suffix_length, suffix)) ==
+           0;
   }
   return false;
 }
@@ -397,7 +397,8 @@ void LocalDeskDataManager::DeleteAllEntries(DeleteEntryCallback callback) {
 // TODO(crbug.com/1320805): Remove this function once both desk models support
 // desk type counts.
 size_t LocalDeskDataManager::GetEntryCount() const {
-  return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount();
+  return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount() +
+         GetCoralEntryCount();
 }
 
 size_t LocalDeskDataManager::GetSaveAndRecallDeskEntryCount() const {
@@ -409,12 +410,20 @@ size_t LocalDeskDataManager::GetDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
+size_t LocalDeskDataManager::GetCoralEntryCount() const {
+  return saved_desks_list_.at(ash::DeskTemplateType::kCoral).size();
+}
+
 size_t LocalDeskDataManager::GetMaxSaveAndRecallDeskEntryCount() const {
   return kMaxSaveAndRecallDeskCount;
 }
 
 size_t LocalDeskDataManager::GetMaxDeskTemplateEntryCount() const {
   return kMaxDeskTemplateCount + policy_entries_.size();
+}
+
+size_t LocalDeskDataManager::GetMaxCoralEntryCount() const {
+  return kMaxCoralDeskCount;
 }
 
 std::set<base::Uuid> LocalDeskDataManager::GetAllEntryUuids() const {
@@ -550,8 +559,7 @@ DeskModel::AddOrUpdateEntryStatus LocalDeskDataManager::AddOrUpdateEntryTask(
   const base::FilePath fully_qualified_path =
       GetFullyQualifiedPath(local_saved_desk_path, uuid);
   if (WriteTemplateFile(fully_qualified_path, std::move(entry_base_value))) {
-    int64_t file_size;
-    GetFileSize(fully_qualified_path, &file_size);
+    int64_t file_size = GetFileSize(fully_qualified_path).value_or(0);
     RecordSavedDeskTemplateSizeHistogram(desk_type, file_size);
     return AddOrUpdateEntryStatus::kOk;
   }
@@ -652,6 +660,8 @@ size_t LocalDeskDataManager::GetMaxEntryCountByDeskType(
       return kMaxDeskTemplateCount + policy_entries_.size();
     case ash::DeskTemplateType::kSaveAndRecall:
       return kMaxSaveAndRecallDeskCount;
+    case ash::DeskTemplateType::kCoral:
+      return kMaxCoralDeskCount;
     case ash::DeskTemplateType::kFloatingWorkspace:
     case ash::DeskTemplateType::kUnknown:
       return 0;

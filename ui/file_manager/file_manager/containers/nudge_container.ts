@@ -4,7 +4,6 @@
 
 import '../widgets/xf_nudge.js';
 
-import {isNewDirectoryTreeEnabled} from '../common/js/flags.js';
 import {storage} from '../common/js/storage.js';
 import {str} from '../common/js/translations.js';
 import type {XfNudge} from '../widgets/xf_nudge.js';
@@ -386,12 +385,8 @@ function treeDismissOnKeyDownOnTreeItem(
   }
 
   // When the anchor (tree item) is selected we dismiss.
-  let parentTreeItem: Element|null|undefined;
-  if (isNewDirectoryTreeEnabled()) {
-    parentTreeItem = (anchor?.getRootNode() as ShadowRoot)?.host;
-  } else {
-    parentTreeItem = anchor?.parentElement?.parentElement;
-  }
+  const parentTreeItem: Element|null|undefined =
+      (anchor?.getRootNode() as ShadowRoot)?.host;
   if (parentTreeItem?.hasAttribute('selected')) {
     return true;
   }
@@ -404,29 +399,13 @@ function treeDismissOnKeyDownOnTreeItem(
  */
 export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   [NudgeType['TEST_NUDGE']]: {
-    anchor: () => document.querySelector<HTMLDivElement>('div#test'),
+    anchor: () => document.querySelector<HTMLElement>('div#test'),
     content: () => 'Test content',
     direction: NudgeDirection.BOTTOM_ENDWARD,
     expiryDate: new Date(2999, 1, 1),
   },
   [NudgeType['MANUAL_TEST_NUDGE']]: {
     anchor: () => {
-      if (!isNewDirectoryTreeEnabled()) {
-        const children = Array.from(document.querySelectorAll<HTMLElement>(
-            '.tree-item[section-start="my_files"] > .tree-children > .tree-item .entry-name'));
-
-        for (const child of children) {
-          if (child.innerText !== 'Downloads') {
-            continue;
-          }
-
-          return child.parentElement?.querySelector<HTMLSpanElement>(
-                     '.item-icon') ??
-              null;
-        }
-
-        return null;
-      }
       const downloadsTreeItem =
           document.querySelector<XfTreeItem>('xf-tree-item[icon="downloads"]')!;
       return downloadsTreeItem.shadowRoot!.querySelector('xf-icon');
@@ -439,13 +418,6 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   },
   [NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
-      if (!isNewDirectoryTreeEnabled()) {
-        return document
-                   .querySelector<HTMLSpanElement>(
-                       '.tree-item[one-drive] .file-row .item-icon')
-                   ?.parentElement ||
-            null;
-      }
       const oneDriveTreeItem =
           document.querySelector<XfTreeItem>('xf-tree-item[one-drive]');
       return oneDriveTreeItem?.shadowRoot!.querySelector('.tree-row') || null;
@@ -458,13 +430,6 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   },
   [NudgeType['DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
-      if (!isNewDirectoryTreeEnabled()) {
-        return document
-                   .querySelector<HTMLSpanElement>(
-                       '.tree-item .item-icon[volume-type-icon="drive"]')
-                   ?.parentElement ||
-            null;
-      }
       const driveTreeItem = document.querySelector<XfTreeItem>(
           'xf-tree-item[icon="service_drive"]');
       return driveTreeItem?.shadowRoot!.querySelector('.tree-row') || null;
@@ -476,8 +441,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     dismissOnKeyDown: treeDismissOnKeyDownOnTreeItem,
   },
   [NudgeType['SEARCH_V2_EDUCATION_NUDGE']]: {
-    anchor: () =>
-        document.querySelector<HTMLDivElement>('#search-button > .icon'),
+    anchor: () => document.querySelector<HTMLElement>('#search-button > .icon'),
     content: () => str('SEARCH_V2_EDUCATION_NUDGE'),
     direction: NudgeDirection.BOTTOM_STARTWARD,
     // Expire after 4 releases (expires when M120 hits Stable).

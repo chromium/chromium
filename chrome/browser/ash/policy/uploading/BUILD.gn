@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("uploading") {
   sources = [
@@ -25,6 +25,7 @@ static_library("uploading") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/device_identity",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
@@ -68,12 +69,11 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/prefs",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chromeos/ash/components/settings",
@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//google_apis",
     "//google_apis:test_support",

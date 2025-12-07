@@ -4,20 +4,27 @@
 
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 
-#include <set>
-
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sync/base/features.h"
 
-BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(Browser* browser)
-    : browser_(browser) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    browser->tab_strip_model()->AddObserver(this);
-  }
+BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(
+    BrowserWindowInterface* browser,
+    TabStripModel* tab_strip_model,
+    SessionID session_id,
+    BrowserWindowInterface::Type type)
+    : browser_(CHECK_DEREF(browser)),
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+      session_id_(session_id),
+      type_(type) {
+  // There should be a window in the browser.
+  CHECK(browser->GetWindow());
+  tab_strip_model_->AddObserver(this);
 }
 
 BrowserSyncedWindowDelegate::~BrowserSyncedWindowDelegate() = default;
@@ -43,10 +50,10 @@ void BrowserSyncedWindowDelegate::OnTabStripModelChanged(
 
 bool BrowserSyncedWindowDelegate::IsTabPinned(
     const sync_sessions::SyncedTabDelegate* tab) const {
-  for (int i = 0; i < browser_->tab_strip_model()->count(); i++) {
+  for (int i = 0; i < tab_strip_model_->count(); ++i) {
     sync_sessions::SyncedTabDelegate* current = GetTabAt(i);
     if (tab == current) {
-      return browser_->tab_strip_model()->IsTabPinned(i);
+      return tab_strip_model_->IsTabPinned(i);
     }
   }
   // The window and tab are not always updated atomically, so it's possible
@@ -57,7 +64,7 @@ bool BrowserSyncedWindowDelegate::IsTabPinned(
 sync_sessions::SyncedTabDelegate* BrowserSyncedWindowDelegate::GetTabAt(
     int index) const {
   return BrowserSyncedTabDelegate::FromWebContents(
-      browser_->tab_strip_model()->GetWebContentsAt(index));
+      tab_strip_model_->GetWebContentsAt(index));
 }
 
 SessionID BrowserSyncedWindowDelegate::GetTabIdAt(int index) const {
@@ -65,23 +72,23 @@ SessionID BrowserSyncedWindowDelegate::GetTabIdAt(int index) const {
 }
 
 bool BrowserSyncedWindowDelegate::HasWindow() const {
-  return browser_->window() != nullptr;
+  return true;
 }
 
 SessionID BrowserSyncedWindowDelegate::GetSessionId() const {
-  return browser_->session_id();
+  return session_id_;
 }
 
 int BrowserSyncedWindowDelegate::GetTabCount() const {
-  return browser_->tab_strip_model()->count();
+  return tab_strip_model_->count();
 }
 
 bool BrowserSyncedWindowDelegate::IsTypeNormal() const {
-  return browser_->is_type_normal();
+  return type_ == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 bool BrowserSyncedWindowDelegate::IsTypePopup() const {
-  return browser_->is_type_popup();
+  return type_ == BrowserWindowInterface::TYPE_POPUP;
 }
 
 bool BrowserSyncedWindowDelegate::IsSessionRestoreInProgress() const {
@@ -94,5 +101,5 @@ bool BrowserSyncedWindowDelegate::ShouldSync() const {
   }
 
   // Do not sync windows which are about to be closed.
-  return !browser_->IsAttemptingToCloseBrowser();
+  return !browser_->capabilities()->IsAttemptingToCloseBrowser();
 }

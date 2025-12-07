@@ -6,21 +6,21 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::HasSubstr;
 
 namespace autofill::payments {
-
 namespace {
 
-int kAllDetectableValues =
+constexpr int kAllDetectableValues =
     CreditCardSaveManager::DetectedValue::CVC |
     CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME |
     CreditCardSaveManager::DetectedValue::ADDRESS_NAME |
@@ -32,8 +32,7 @@ int kAllDetectableValues =
     CreditCardSaveManager::DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
 
 struct GetCardUploadDetailsOptions {
-  GetCardUploadDetailsOptions& with_upload_card_source(
-      PaymentsNetworkInterface::UploadCardSource u) {
+  GetCardUploadDetailsOptions& with_upload_card_source(UploadCardSource u) {
     upload_card_source = u;
     return *this;
   }
@@ -49,8 +48,7 @@ struct GetCardUploadDetailsOptions {
     return *this;
   }
 
-  PaymentsNetworkInterface::UploadCardSource upload_card_source =
-      PaymentsNetworkInterface::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
+  UploadCardSource upload_card_source = UploadCardSource::kUnknown;
   int64_t billing_customer_number = 111222333444L;
   std::vector<ClientBehaviorConstants> client_behavior_signals;
 };
@@ -67,8 +65,6 @@ std::unique_ptr<GetCardUploadDetailsRequest> CreateGetCardUploadDetailsRequest(
       get_card_upload_details_options.upload_card_source);
 }
 
-}  // namespace
-
 TEST(GetCardUploadDetailsRequestTest, GetDetailsRemovesNonLocationData) {
   std::unique_ptr<GetCardUploadDetailsRequest> request =
       CreateGetCardUploadDetailsRequest(GetCardUploadDetailsOptions());
@@ -76,8 +72,7 @@ TEST(GetCardUploadDetailsRequestTest, GetDetailsRemovesNonLocationData) {
   // Verify that the recipient name field and test names appear nowhere in the
   // upload data.
   EXPECT_TRUE(request->GetRequestContent().find(
-                  PaymentsNetworkInterface::kRecipientName) ==
-              std::string::npos);
+                  PaymentsRequest::kRecipientName) == std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("John") == std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("Smith") == std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("Pat") == std::string::npos);
@@ -86,7 +81,7 @@ TEST(GetCardUploadDetailsRequestTest, GetDetailsRemovesNonLocationData) {
   // Verify that the phone number field and test numbers appear nowhere in the
   // upload data.
   EXPECT_TRUE(request->GetRequestContent().find(
-                  PaymentsNetworkInterface::kPhoneNumber) == std::string::npos);
+                  PaymentsRequest::kPhoneNumber) == std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("212") == std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("555") == std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("0162") == std::string::npos);
@@ -146,8 +141,7 @@ TEST(GetCardUploadDetailsRequestTest,
   std::unique_ptr<GetCardUploadDetailsRequest> request =
       CreateGetCardUploadDetailsRequest(
           GetCardUploadDetailsOptions().with_upload_card_source(
-              PaymentsNetworkInterface::UploadCardSource::
-                  UPSTREAM_CHECKOUT_FLOW));
+              UploadCardSource::kUpstreamCheckoutFlow));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(request->GetRequestContent().find("UPSTREAM_CHECKOUT_FLOW") !=
@@ -159,8 +153,7 @@ TEST(GetCardUploadDetailsRequestTest,
   std::unique_ptr<GetCardUploadDetailsRequest> request =
       CreateGetCardUploadDetailsRequest(
           GetCardUploadDetailsOptions().with_upload_card_source(
-              PaymentsNetworkInterface::UploadCardSource::
-                  UPSTREAM_SETTINGS_PAGE));
+              UploadCardSource::kUpstreamSettingsPage));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(request->GetRequestContent().find("UPSTREAM_SETTINGS_PAGE") !=
@@ -172,39 +165,11 @@ TEST(GetCardUploadDetailsRequestTest,
   std::unique_ptr<GetCardUploadDetailsRequest> request =
       CreateGetCardUploadDetailsRequest(
           GetCardUploadDetailsOptions().with_upload_card_source(
-              PaymentsNetworkInterface::UploadCardSource::UPSTREAM_CARD_OCR));
+              UploadCardSource::kUpstreamCardOcr));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(request->GetRequestContent().find("UPSTREAM_CARD_OCR") !=
               std::string::npos);
-}
-
-TEST(
-    GetCardUploadDetailsRequestTest,
-    GetDetailsIncludesLocalCardMigrationCheckoutFlowUploadCardSourceInRequest) {
-  std::unique_ptr<GetCardUploadDetailsRequest> request =
-      CreateGetCardUploadDetailsRequest(
-          GetCardUploadDetailsOptions().with_upload_card_source(
-              PaymentsNetworkInterface::UploadCardSource::
-                  LOCAL_CARD_MIGRATION_CHECKOUT_FLOW));
-
-  // Verify that the correct upload card source was included in the request.
-  EXPECT_TRUE(request->GetRequestContent().find(
-                  "LOCAL_CARD_MIGRATION_CHECKOUT_FLOW") != std::string::npos);
-}
-
-TEST(
-    GetCardUploadDetailsRequestTest,
-    GetDetailsIncludesLocalCardMigrationSettingsPageUploadCardSourceInRequest) {
-  std::unique_ptr<GetCardUploadDetailsRequest> request =
-      CreateGetCardUploadDetailsRequest(
-          GetCardUploadDetailsOptions().with_upload_card_source(
-              PaymentsNetworkInterface::UploadCardSource::
-                  LOCAL_CARD_MIGRATION_SETTINGS_PAGE));
-
-  // Verify that the correct upload card source was included in the request.
-  EXPECT_TRUE(request->GetRequestContent().find(
-                  "LOCAL_CARD_MIGRATION_SETTINGS_PAGE") != std::string::npos);
 }
 
 TEST(GetCardUploadDetailsRequestTest,
@@ -252,4 +217,5 @@ TEST(GetCardUploadDetailsRequestTest,
               std::string::npos);
 }
 
+}  // namespace
 }  // namespace autofill::payments

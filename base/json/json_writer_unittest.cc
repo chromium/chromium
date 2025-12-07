@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/json/json_writer.h"
 
@@ -107,7 +103,7 @@ TEST(JsonWriterTest, KeysWithPeriods) {
 }
 
 TEST(JsonWriterTest, BinaryValues) {
-  const auto kBinaryData = base::as_bytes(base::make_span("asdf", 4u));
+  const auto kBinaryData = byte_span_from_cstring("asdf");
 
   // Binary values should return errors unless suppressed via the
   // `OPTIONS_OMIT_BINARY_VALUES` flag.

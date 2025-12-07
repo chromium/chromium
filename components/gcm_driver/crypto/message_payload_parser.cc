@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"

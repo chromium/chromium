@@ -37,8 +37,8 @@ if (!window.internals) {
     assert_equals(internals.suggestedValue(input), '');
   }, 'Test that setting the suggested value of a radio button clears the old suggested value.');
 
-  // This loop tests several values for 'type'. Except for 'month' and
-  // 'text', they do not support suggested values and SetSuggestedValue()
+  // This loop tests several values for 'type'. Except for 'month', 'date',
+  // 'text' and 'tel', they do not support suggested values and SetSuggestedValue()
   // should hence clear the suggested value.
   const testcases = [
     // These do not support suggested values.
@@ -50,10 +50,10 @@ if (!window.internals) {
     ['radio', 'select-me', ''],
     ['range', '3', ''],
     ['week', '2075-W33', ''],
-    ['date', '2075-05-01', ''],
     ['datetime-local', '2075-05-01T19:30', ''],
     // These do support suggested values.
     ['month', '2075-02', '2075-02'],
+    ['date', '2075-05-01', '2075-05-01'],
     ['text', 'blabla', 'blabla'],
     ['tel', '3', '3'],
   ];

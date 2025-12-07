@@ -1,0 +1,11 @@
+Name: temporal_rs
+URL: https://crates.io/crates/temporal_rs
+Version: 0.1.2
+Revision: 86c213a4463484c8124df5b851a2a127943f9098
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/LICENSE-Apache
+Shipped: yes
+Security Critical: yes
+
+Description: Temporal in Rust is an implementation of the TC39 Temporal Builtin Proposal in Rust.

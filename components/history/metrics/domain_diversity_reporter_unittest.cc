@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -28,6 +29,8 @@ constexpr base::TimeDelta kScheduleInterval = base::Days(1);
 // Should be in sync with similar name in the reporter's impl.
 constexpr char kDomainDiversityReportingTimestamp[] =
     "domain_diversity.last_reporting_timestamp";
+constexpr char kDomainDiversityReportingTimestampV4[] =
+    "domain_diversity.last_reporting_timestamp_v4";
 }  // namespace
 
 namespace history {
@@ -82,12 +85,21 @@ class DomainDiversityReporterTest : public testing::Test {
   // Wait for separate background task runner in HistoryService to complete
   // all tasks and then all the tasks on the current one to complete as well.
   void Wait() {
+    task_environment_.RunUntilIdle();
     history::BlockUntilHistoryProcessesPendingRequests(history_service());
   }
 
   // Fast-forward some time before Wait.
   void FastForwardAndWait(base::TimeDelta time_delta) {
     task_environment_.FastForwardBy(time_delta);
+    Wait();
+  }
+
+  // Simulate time passing while the machine was suspended. Meaning wall clock
+  // time updates but not TimeTicks.
+  void FastForwardPowerSuspendedAndWait(base::TimeDelta time_delta) {
+    fake_power_monitor_source_.Suspend();
+    fake_power_monitor_source_.Resume();
     Wait();
   }
 
@@ -125,6 +137,7 @@ class DomainDiversityReporterTest : public testing::Test {
 
   // The mock clock used by DomainDiversity internally.
   TestClock test_clock_;
+  base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
 };
 
 TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
@@ -140,6 +153,9 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
   histograms().ExpectTotalCount("History.DomainCount1Day_V3", 0);
   histograms().ExpectTotalCount("History.DomainCount7Day_V3", 0);
   histograms().ExpectTotalCount("History.DomainCount28Day_V3", 0);
+  histograms().ExpectTotalCount("History.DomainCount1Day_V4", 0);
+  histograms().ExpectTotalCount("History.DomainCount7Day_V4", 0);
+  histograms().ExpectTotalCount("History.DomainCount28Day_V4", 0);
 
   // Load history. This should trigger reporter, via HistoryService observer.
   ASSERT_TRUE(LoadHistory());
@@ -153,6 +169,9 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 7);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 7);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 7);
+  histograms().ExpectUniqueSample("History.DomainCount1Day_V4", 0, 7);
+  histograms().ExpectUniqueSample("History.DomainCount7Day_V4", 0, 7);
+  histograms().ExpectUniqueSample("History.DomainCount28Day_V4", 0, 7);
 }
 
 TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
@@ -161,6 +180,8 @@ TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
 
   // Set the last reporting date to 1 day ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
+                   MidnightNDaysLater(test_clock().Now(), -1));
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4,
                    MidnightNDaysLater(test_clock().Now(), -1));
 
   CreateDomainDiversityReporter();
@@ -173,6 +194,9 @@ TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount1Day_V4", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount7Day_V4", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount28Day_V4", 0, 1);
 }
 
 TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
@@ -180,6 +204,8 @@ TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
 
   // The last report was 3 days ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
+                   MidnightNDaysLater(test_clock().Now(), -3));
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4,
                    MidnightNDaysLater(test_clock().Now(), -3));
 
   // A domain was visited 2 days ago.
@@ -198,16 +224,22 @@ TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
   histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 2);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 1, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 2);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 1, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 2);
 
   histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V2", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 0, 1);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 0, 1);
 
   histograms().ExpectBucketCount("History.DomainCount28Day_V2", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 0, 1);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 0, 1);
 }
 
 TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
@@ -217,6 +249,8 @@ TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
   base::Time time_31_days_ago = MidnightNDaysLater(test_clock().Now(), -31);
   // The last report was 3 days ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
+                   MidnightNDaysLater(test_clock().Now(), -3));
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4,
                    MidnightNDaysLater(test_clock().Now(), -3));
 
   // The visit occurring on the same day as the reporting time
@@ -247,6 +281,8 @@ TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
   histograms().ExpectUniqueSample("History.DomainCount7Day_V2", 0, 3);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 3);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 3);
+  histograms().ExpectUniqueSample("History.DomainCount1Day_V4", 0, 3);
+  histograms().ExpectUniqueSample("History.DomainCount7Day_V4", 0, 3);
 
   // Two of the three DomainCount28Day samples should reflect the
   // 4 domain visits 29 days ago.
@@ -254,6 +290,8 @@ TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
   histograms().ExpectBucketCount("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 0, 1);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 0, 1);
 }
 
 TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
@@ -263,6 +301,8 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   // Last report was emitted 4 days ago. So the report emitted today
   // will emit one set of histogram values of each of the last 4 days.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
+                   MidnightNDaysLater(test_clock().Now(), -4));
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4,
                    MidnightNDaysLater(test_clock().Now(), -4));
   history_service()->AddPage(GURL("http://www.google.com"),
                              MidnightNDaysLater(test_clock().Now(), -2),
@@ -310,6 +350,12 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 3, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 2, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
 
   test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 1) +
                        base::Hours(10));
@@ -323,6 +369,9 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 4, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 4, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 3);
 
   histograms().ExpectBucketCount("History.DomainCount7Day_V2", 5, 1);
   histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
@@ -330,6 +379,9 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 5, 1);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 5, 1);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 3, 2);
 
   histograms().ExpectBucketCount("History.DomainCount28Day_V2", 6, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
@@ -337,14 +389,116 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 6, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 2, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 6, 1);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
+}
+
+TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
+  // Test if the next domain metrics reporting task is scheduled every 24 hours,
+  // even if the computer is sleeping.
+  ASSERT_TRUE(LoadHistory());
+
+  // Last report was emitted 4 days ago. So the report emitted today
+  // will emit one set of histogram values of each of the last 4 days.
+  prefs()->SetTime(kDomainDiversityReportingTimestamp,
+                   MidnightNDaysLater(test_clock().Now(), -4));
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4,
+                   MidnightNDaysLater(test_clock().Now(), -4));
+  history_service()->AddPage(GURL("http://www.google.com"),
+                             MidnightNDaysLater(test_clock().Now(), -2),
+                             history::VisitSource::SOURCE_BROWSED);
+  history_service()->AddPage(GURL("http://www.example.com"),
+                             MidnightNDaysLater(test_clock().Now(), -2),
+                             history::VisitSource::SOURCE_BROWSED);
+
+  // These visits are ignored in the initial DomainCount1Day values,
+  // but will show in the one scheduled 24 hours later.
+  history_service()->AddPage(GURL("http://www.example1.com"),
+                             test_clock().Now(),
+                             history::VisitSource::SOURCE_BROWSED);
+  history_service()->AddPage(GURL("http://www.example2.com"),
+                             test_clock().Now(),
+                             history::VisitSource::SOURCE_BROWSED);
+  history_service()->AddPage(GURL("http://www.example3.com"),
+                             test_clock().Now(),
+                             history::VisitSource::SOURCE_BROWSED);
+  history_service()->AddPage(GURL("http://www.google.com"), test_clock().Now(),
+                             history::VisitSource::SOURCE_BROWSED);
+
+  // These visits are included in the DomainCount7Day and DomainCount28Day
+  // values of the first report, but will expire for the second report.
+  history_service()->AddPage(GURL("http://www.visited-7-days-ago1.com"),
+                             MidnightNDaysLater(test_clock().Now(), -7),
+                             history::VisitSource::SOURCE_BROWSED);
+  history_service()->AddPage(GURL("http://www.visited-28-days-ago.com"),
+                             MidnightNDaysLater(test_clock().Now(), -28),
+                             history::VisitSource::SOURCE_BROWSED);
+
+  CreateDomainDiversityReporter();
+  task_environment_.RunUntilIdle();
+
+  // Two domains visited two days ago.
+  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V3", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V3", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
+
+  test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 1) +
+                       base::Hours(10));
+  FastForwardPowerSuspendedAndWait(kScheduleInterval);  // fast-forward 24 hours
+
+  // No change to V2 and V3 histograms because their 24h timer didn't advance
+  // during suspend.
+  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V3", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V3", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
+
+  // V4 should have updated as it's aware of the passage of time while
+  // sleeping.
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 4, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 2, 1);
+  histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 3);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 5, 1);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
+  histograms().ExpectBucketCount("History.DomainCount7Day_V4", 3, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 6, 1);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 2, 2);
+  histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
 }
 
 TEST_F(DomainDiversityReporterTest, SaveTimestampInPreference) {
   ASSERT_TRUE(LoadHistory());
   base::Time last_midnight = MidnightNDaysLater(test_clock().Now(), -1);
   prefs()->SetTime(kDomainDiversityReportingTimestamp, last_midnight);
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4, last_midnight);
   EXPECT_EQ(last_midnight,
             prefs()->GetTime(kDomainDiversityReportingTimestamp));
+  EXPECT_EQ(last_midnight,
+            prefs()->GetTime(kDomainDiversityReportingTimestampV4));
 
   CreateDomainDiversityReporter();
   task_environment_.RunUntilIdle();
@@ -352,6 +506,8 @@ TEST_F(DomainDiversityReporterTest, SaveTimestampInPreference) {
   // Reporter should have updated the pref to the time of the request.
   EXPECT_EQ(test_clock().Now(),
             prefs()->GetTime(kDomainDiversityReportingTimestamp));
+  EXPECT_EQ(test_clock().Now(),
+            prefs()->GetTime(kDomainDiversityReportingTimestampV4));
 }
 
 TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
@@ -360,6 +516,7 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
   base::Time last_midnight = MidnightNDaysLater(test_clock().Now(), -1);
 
   prefs()->SetTime(kDomainDiversityReportingTimestamp, last_midnight);
+  prefs()->SetTime(kDomainDiversityReportingTimestampV4, last_midnight);
 
   CreateDomainDiversityReporter();
   task_environment_.RunUntilIdle();
@@ -370,6 +527,9 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount1Day_V4", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount7Day_V4", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount28Day_V4", 0, 1);
 
   history_service()->AddPage(GURL("http://www.google.com"), test_clock().Now(),
                              history::VisitSource::SOURCE_BROWSED);
@@ -392,5 +552,8 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount1Day_V4", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount7Day_V4", 0, 1);
+  histograms().ExpectUniqueSample("History.DomainCount28Day_V4", 0, 1);
 }
 }  // namespace history

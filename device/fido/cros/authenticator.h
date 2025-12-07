@@ -19,7 +19,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 
@@ -55,11 +55,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   // enterprise policy or debug u2f_flags.
   static void IsPowerButtonModeEnabled(
       base::OnceCallback<void(bool is_enabled)> callback);
-
-  // Invokes |callback| with a bool indicating whether u2fd supports WebAuthn
-  // requests from the lacros browser.
-  static void IsLacrosSupported(
-      base::OnceCallback<void(bool supported)> callback);
 
   // FidoAuthenticator
 

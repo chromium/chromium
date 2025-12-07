@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
 
@@ -13,10 +9,10 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "content/common/features.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 
 namespace content {
 RaceNetworkRequestReadBufferManager::RaceNetworkRequestReadBufferManager(
@@ -60,19 +56,18 @@ RaceNetworkRequestReadBufferManager::ReadData() {
     // here to avoid receiving |MOJO_RESULT_INVALID_ARGUMENT| from
     // DataPipe::ReadData(), which happens if the |num_bytes| is zero.
     if (num_bytes == 0) {
-      num_bytes = network::features::GetDataPipeDefaultAllocationSize();
+      num_bytes = network::GetDataPipeDefaultAllocationSize();
       CHECK_GT(num_bytes, 0u);
     }
   } else {
     num_bytes = base::GetFieldTrialParamByFeatureAsInt(
         features::kServiceWorkerAutoPreload, "read_buffer_size",
-        network::features::GetDataPipeDefaultAllocationSize(
-            network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+        network::GetDataPipeDefaultAllocationSize(
+            network::DataPipeAllocationSize::kLargerSizeIfPossible));
   }
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);
-  result = consumer_handle_->ReadData(MOJO_READ_DATA_FLAG_NONE,
-                                      base::as_writable_bytes(buffer->span()),
+  result = consumer_handle_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer->span(),
                                       num_bytes);
 
   if (result == MOJO_RESULT_OK) {
@@ -80,8 +75,8 @@ RaceNetworkRequestReadBufferManager::ReadData() {
                                                            num_bytes);
   }
 
-  return std::make_pair(result,
-                        buffer_ ? buffer_->span() : base::span<const char>());
+  return std::make_pair(result, buffer_ ? base::as_chars(buffer_->span())
+                                        : base::span<const char>());
 }
 
 void RaceNetworkRequestReadBufferManager::ConsumeData(size_t num_bytes_read) {
@@ -100,6 +95,6 @@ base::span<const char> RaceNetworkRequestReadBufferManager::RemainingBuffer()
   // base::span with the actual data size. IOBuffer::span() returns the span
   // with the size of the whole buffer, even if data is partially consumed. So
   // subspan it with the remaining data size.
-  return buffer_->span().subspan(0, buffer_->BytesRemaining());
+  return base::as_chars(buffer_->span()).first(BytesRemaining());
 }
 }  // namespace content

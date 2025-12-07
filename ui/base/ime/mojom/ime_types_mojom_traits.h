@@ -73,6 +73,10 @@ struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
   static std::vector<std::string> suggestions(const ui::ImeTextSpan& c) {
     return c.suggestions;
   }
+  static bool should_hide_suggestion_menu(const ui::ImeTextSpan& c) {
+    return c.should_hide_suggestion_menu;
+  }
+
   static bool Read(ui::mojom::ImeTextSpanDataView data, ui::ImeTextSpan* out);
 };
 

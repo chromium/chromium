@@ -7,7 +7,18 @@ import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestM
 
 import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
-import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, OFFLINE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
+import {BASIC_LOCAL_ENTRY_SET, OFFLINE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
+
+// Do not use BASIC_DRIVE_ENTRY_SET because that list contains too many files
+// which might cause the file list can't show all files (some are hidden until
+// it scrolls), and end up with `waitForFiles` failing.
+const DRIVE_ENTRY_SET = [
+  ENTRIES.hello,
+  ENTRIES.photos,
+  ENTRIES.testDocument,
+  ENTRIES.testSharedDocument,
+  ENTRIES.testSharedFile,
+];
 
 interface TransferLocationOptions {
   volumeName: string;
@@ -133,7 +144,7 @@ async function transferBetweenVolumes(transferInfo: TransferInfo) {
   const driveFiles = (transferInfo.source.isTeamDrive ||
                       transferInfo.destination.isTeamDrive) ?
       SHARED_DRIVE_ENTRY_SET :
-      BASIC_DRIVE_ENTRY_SET.concat([
+      DRIVE_ENTRY_SET.concat([
         ENTRIES.sharedDirectory,
         ENTRIES.sharedDirectoryFile,
         ENTRIES.docxFile,
@@ -243,7 +254,7 @@ const TRANSFER_LOCATIONS = {
   drive: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
-    initialEntries: BASIC_DRIVE_ENTRY_SET.concat([
+    initialEntries: DRIVE_ENTRY_SET.concat([
       ENTRIES.sharedDirectory,
       ENTRIES.docxFile,
     ]),

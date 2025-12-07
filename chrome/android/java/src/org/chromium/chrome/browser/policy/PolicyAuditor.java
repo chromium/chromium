@@ -10,13 +10,18 @@ import androidx.annotation.IntDef;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Base class for policy auditors providing an empty implementation. */
+@NullMarked
 public class PolicyAuditor {
+
     /** Events that a policy administrator may want to track. */
     @IntDef({
         AuditEvent.OPEN_URL_SUCCESS,
@@ -32,6 +37,10 @@ public class PolicyAuditor {
         int OPEN_URL_BLOCKED = 2;
         int OPEN_POPUP_URL_SUCCESS = 3;
         int AUTOFILL_SELECTED = 4;
+    }
+
+    public static @Nullable PolicyAuditor maybeCreate() {
+        return ServiceLoaderUtil.maybeCreate(PolicyAuditor.class);
     }
 
     /** Make it non-obvious to accidentally instantiate this outside of ChromeApplicationImpl. */

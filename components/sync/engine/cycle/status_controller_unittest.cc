@@ -12,7 +12,7 @@ class StatusControllerTest : public testing::Test {};
 
 // This test is useful, as simple as it sounds, due to the copy-paste prone
 // nature of status_controller.cc (we have had bugs in the past where a set_foo
-// method was actually setting |bar_| instead!).
+// method was actually setting `bar_` instead!).
 TEST_F(StatusControllerTest, ReadYourWrites) {
   StatusController status;
 
@@ -24,18 +24,19 @@ TEST_F(StatusControllerTest, ReadYourWrites) {
   EXPECT_EQ(status.model_neutral_state().commit_result.type(),
             SyncerError::Type::kHttpError);
 
-  for (int i = 0; i < 14; i++)
+  for (int i = 0; i < 14; i++) {
     status.increment_num_successful_commits();
+  }
   EXPECT_EQ(14, status.model_neutral_state().num_successful_commits);
 }
 
-// Test TotalNumConflictingItems
-TEST_F(StatusControllerTest, TotalNumConflictingItems) {
+// Test num_server_conflicts.
+TEST_F(StatusControllerTest, NumServerConflicts) {
   StatusController status;
-  EXPECT_EQ(0, status.TotalNumConflictingItems());
+  EXPECT_EQ(0, status.num_server_conflicts());
 
   status.increment_num_server_conflicts();
-  EXPECT_EQ(1, status.TotalNumConflictingItems());
+  EXPECT_EQ(1, status.num_server_conflicts());
 }
 
 }  // namespace syncer

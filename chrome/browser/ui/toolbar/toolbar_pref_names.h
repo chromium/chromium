@@ -24,6 +24,15 @@ inline constexpr char kPinnedSearchCompanionMigrationComplete[] =
 inline constexpr char kPinnedChromeLabsMigrationComplete[] =
     "toolbar.pinned_chrome_labs_migration_complete";
 
+// Indicates whether the Cast pin state pref has been migrated to
+// the new toolbar container.
+inline constexpr char kPinnedCastMigrationComplete[] =
+    "toolbar.pinned_cast_migration_complete";
+
+// Indicates whether tab search has been migrated to the new toolbar container.
+inline constexpr char kTabSearchMigrationComplete[] =
+    "toolbar.tab_search_migration_complete";
+
 }  // namespace prefs
 
 namespace toolbar {

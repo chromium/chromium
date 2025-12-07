@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
@@ -142,7 +143,6 @@ class AccessibleInputField : public SystemTextfield {
   bool IsGroupFocusTraversable() const override;
   View* GetSelectedViewForGroup(int group) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 // Digital access code input view for variable length of input codes.
@@ -225,8 +225,6 @@ class FixedLengthCodeInput : public AccessCodeInput {
   // Returns current selected text range of |text_value_for_a11y_|.
   gfx::Range GetSelectedRangeOfTextValueForA11y();
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
@@ -260,6 +258,12 @@ class FixedLengthCodeInput : public AccessCodeInput {
 
   int active_input_index() { return active_input_index_; }
 
+  base::CallbackListSubscription AddActiveInputIndexChanged(
+      views::PropertyChangedCallback callback) {
+    return AddPropertyChangedCallback(&active_input_index_,
+                                      std::move(callback));
+  }
+
  private:
   // Moves focus to the current input field.
   void FocusActiveField();
@@ -280,7 +284,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   AccessibleInputField* ActiveField() const;
 
   // Returns text in the active input field.
-  const std::u16string& ActiveInput() const;
+  std::u16string_view ActiveInput() const;
 
   // To be called when access input code changes (digit is inserted, deleted or
   // updated). Passes true when code is complete (all digits have input value)

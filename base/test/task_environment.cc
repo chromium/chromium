@@ -7,10 +7,11 @@
 #include <algorithm>
 #include <memory>
 #include <ostream>
+#include <type_traits>
 
 #include "base/check.h"
+#include "base/containers/enum_set.h"
 #include "base/debug/stack_trace.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -21,6 +22,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
@@ -31,6 +33,7 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -46,6 +49,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,12 +59,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/trace_event/trace_log.h"  // nogncheck
-#endif                                   // BUILDFLAG(ENABLE_BASE_TRACING)
-
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -84,20 +83,26 @@ base::MessagePumpType GetMessagePumpTypeForMainThreadType(
     case TaskEnvironment::MainThreadType::IO:
       return MessagePumpType::IO;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MessagePumpType::DEFAULT;
+  NOTREACHED();
 }
 
 std::unique_ptr<sequence_manager::SequenceManager>
 CreateSequenceManagerForMainThreadType(
     TaskEnvironment::MainThreadType main_thread_type,
-    sequence_manager::SequenceManager::PrioritySettings priority_settings) {
+    sequence_manager::SequenceManager::PrioritySettings priority_settings,
+    TaskEnvironment::ScopedExecutionFenceBehaviour
+        scoped_execution_fence_behaviour) {
   auto type = GetMessagePumpTypeForMainThreadType(main_thread_type);
   return sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(type),
       base::sequence_manager::SequenceManager::Settings::Builder()
           .SetMessagePumpType(type)
           .SetPrioritySettings(std::move(priority_settings))
+          .SetIsMainThread(true)
+          .SetShouldBlockOnScopedFences(
+              scoped_execution_fence_behaviour ==
+              TaskEnvironment::ScopedExecutionFenceBehaviour::
+                  MAIN_THREAD_AND_THREAD_POOL)
           .Build());
 }
 
@@ -422,16 +427,19 @@ TaskEnvironment::TaskEnvironment(
     ThreadPoolExecutionMode thread_pool_execution_mode,
     ThreadingMode threading_mode,
     ThreadPoolCOMEnvironment thread_pool_com_environment,
+    ScopedExecutionFenceBehaviour scoped_execution_fence_behaviour,
     bool subclass_creates_default_taskrunner,
     trait_helpers::NotATraitTag)
     : main_thread_type_(main_thread_type),
       thread_pool_execution_mode_(thread_pool_execution_mode),
       threading_mode_(threading_mode),
       thread_pool_com_environment_(thread_pool_com_environment),
+      scoped_execution_fence_behaviour_(scoped_execution_fence_behaviour),
       subclass_creates_default_taskrunner_(subclass_creates_default_taskrunner),
-      sequence_manager_(
-          CreateSequenceManagerForMainThreadType(main_thread_type,
-                                                 std::move(priority_settings))),
+      sequence_manager_(CreateSequenceManagerForMainThreadType(
+          main_thread_type,
+          std::move(priority_settings),
+          scoped_execution_fence_behaviour)),
       mock_time_domain_(
           time_source != TimeSource::SYSTEM_TIME
               ? std::make_unique<TaskEnvironment::MockTimeDomain>(
@@ -502,9 +510,13 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
   auto task_tracker = std::make_unique<TestTaskTracker>();
   TestTaskTracker* raw_task_tracker = task_tracker.get();
   // Disable background threads to avoid hangs when flushing background tasks.
+  // Also disable thread priority monitoring so that creating worker threads
+  // does not interfere with tests that are sensitive to creation of new
+  // histograms.
   auto thread_pool = std::make_unique<internal::ThreadPoolImpl>(
       std::string(), std::move(task_tracker),
-      /*use_background_threads=*/false);
+      /*use_background_threads=*/false,
+      /*monitor_worker_thread_priorities=*/false);
   ThreadPoolInstance::Set(std::move(thread_pool));
   DCHECK(!g_task_tracker);
   g_task_tracker = raw_task_tracker;
@@ -512,11 +524,9 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
 }
 
 void TaskEnvironment::InitializeThreadPool() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Force the creation of TraceLog instance before starting ThreadPool and
   // creating additional threads to avoid race conditions.
   trace_event::TraceLog::GetInstance();
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   task_tracker_ = CreateThreadPool();
   if (mock_time_domain_) {
@@ -1090,5 +1100,82 @@ void TaskEnvironment::TestTaskTracker::AssertFlushForTestingAllowed() {
          "under it should thus never FlushForTesting().";
 }
 
-}  // namespace test
-}  // namespace base
+TaskEnvironmentWithMainThreadPriorities::
+    ~TaskEnvironmentWithMainThreadPriorities() = default;
+
+scoped_refptr<base::SingleThreadTaskRunner>
+TaskEnvironmentWithMainThreadPriorities::GetMainThreadTaskRunnerWithPriority(
+    TaskPriority task_priority) {
+  return task_queues_[BaseTaskPriorityToQueuePriority(task_priority)]
+      ->task_runner();
+}
+
+// static
+sequence_manager::SequenceManager::PrioritySettings
+TaskEnvironmentWithMainThreadPriorities::CreateBaseTaskPrioritySettings() {
+  return sequence_manager::SequenceManager::PrioritySettings(
+      kMaxPriority + 1, GetDefaultQueuePriority());
+}
+
+// static
+constexpr sequence_manager::TaskQueue::QueuePriority
+TaskEnvironmentWithMainThreadPriorities::GetDefaultQueuePriority() {
+  return BaseTaskPriorityToQueuePriority(TaskPriority::USER_BLOCKING);
+}
+
+// static
+constexpr sequence_manager::TaskQueue::QueuePriority
+TaskEnvironmentWithMainThreadPriorities::BaseTaskPriorityToQueuePriority(
+    TaskPriority task_priority) {
+  static_assert(
+      std::is_same_v<std::underlying_type_t<TaskPriority>, QueuePriority>,
+      "base::TaskPriority must have the same underlying type as "
+      "TaskQueue::QueuePriority");
+
+  // TaskPriority assigns higher values to higher-priority tasks, QueuePriority
+  // is the opposite.
+  return kMaxPriority - (static_cast<QueuePriority>(task_priority) -
+                         static_cast<QueuePriority>(TaskPriority::LOWEST));
+}
+
+void TaskEnvironmentWithMainThreadPriorities::InitTaskQueues() {
+  if (GetMockTimeDomain()) {
+    sequence_manager()->SetTimeDomain(GetMockTimeDomain());
+  }
+
+  static_assert(BaseTaskPriorityToQueuePriority(TaskPriority::HIGHEST) == 0u,
+                "TaskPriority::HIGHEST should map to smallest QueuePriority.");
+  static_assert(
+      BaseTaskPriorityToQueuePriority(TaskPriority::LOWEST) == kMaxPriority,
+      "TaskPriority::LOWEST should map to largest QueuePriority.");
+  static_assert(
+      BaseTaskPriorityToQueuePriority(TaskPriority::BEST_EFFORT) ==
+          kMaxPriority,
+      "ScopedBestEffortExecutionFence won't block TaskPriority::BEST_EFFORT "
+      "unless it maps to the largest QueuePriority.");
+
+  for (TaskPriority task_priority : EnumSet<TaskPriority, TaskPriority::LOWEST,
+                                            TaskPriority::HIGHEST>::All()) {
+    QueuePriority queue_priority =
+        BaseTaskPriorityToQueuePriority(task_priority);
+    sequence_manager::QueueName queue_name;
+    switch (task_priority) {
+      case TaskPriority::USER_BLOCKING:
+        queue_name = sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ;
+        break;
+      case TaskPriority::USER_VISIBLE:
+        queue_name = sequence_manager::QueueName::TEST_TQ;
+        break;
+      case TaskPriority::BEST_EFFORT:
+        queue_name = sequence_manager::QueueName::TEST2_TQ;
+        break;
+    }
+    task_queues_[queue_priority] = sequence_manager()->CreateTaskQueue(
+        sequence_manager::TaskQueue::Spec(queue_name));
+    task_queues_[queue_priority]->SetQueuePriority(queue_priority);
+  }
+  DeferredInitFromSubclass(
+      task_queues_[GetDefaultQueuePriority()]->task_runner());
+}
+
+}  // namespace base::test

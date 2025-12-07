@@ -22,26 +22,22 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   ~GtkUiPlatformWayland() override;
 
   // GtkUiPlatform:
-  void OnInitialized(GtkWidget* widget) override;
-  GdkKeymap* GetGdkKeymap() override;
-  GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
-  int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
+  void OnInitialized() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  void SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const override;
   bool IncludeFontScaleInDeviceScale() const override;
+  bool IncludeScaleInCursorSize() const override;
 
  private:
-  GdkDisplay* GetDefaultGdkDisplay();
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
-  void OnHandleSetTransient(GtkWidget* widget, const std::string& handle);
+  void OnHandleSetTransient(GtkWidget* widget, std::string handle);
 
-  raw_ptr<GdkDisplay> default_display_ = nullptr;
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };
 

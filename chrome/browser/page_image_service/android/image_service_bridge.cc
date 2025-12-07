@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/page_image_service/android/jni_headers/ImageServiceBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -61,12 +61,11 @@ void ImageServiceBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void ImageServiceBridge::FetchImageUrlFor(
-    JNIEnv* env,
-    const bool is_account_data,
-    const jint client_id,
-    const GURL& page_url,
-    const JavaParamRef<jobject>& j_callback) {
+void ImageServiceBridge::FetchImageUrlFor(JNIEnv* env,
+                                          const bool is_account_data,
+                                          const jint client_id,
+                                          const GURL& page_url,
+                                          const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   FetchImageUrlForImpl(
       is_account_data,
@@ -87,13 +86,26 @@ void ImageServiceBridge::FetchImageUrlForImpl(
   // The caller must either be (1) syncing or (2) the underlying data-type
   // being fetched for is account-bound. If neither of these conditions are
   // met, then return early with an empty result.
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      !is_account_data) {
+  if (!HasConsentToFetchImagesImpl(is_account_data)) {
     std::move(callback).Run(GURL());
     return;
   }
   image_service_->FetchImageFor(client_id, page_url,
                                 page_image_service::mojom::Options(),
                                 std::move(callback));
+}
 
-}  // namespace page_image_service
+jboolean ImageServiceBridge::HasConsentToFetchImages(
+    JNIEnv* env,
+    const bool is_account_data) {
+  return HasConsentToFetchImagesImpl(is_account_data);
+}
+
+bool ImageServiceBridge::HasConsentToFetchImagesImpl(
+    const bool is_account_data) {
+  // The basic pre-conditions used before issuing the request to the component.
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+         is_account_data;
+}
+
+DEFINE_JNI(ImageServiceBridge)

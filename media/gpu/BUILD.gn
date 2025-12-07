@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/logging.gni")
 import("//build/config/ui.gni")
@@ -18,11 +17,17 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [
+    "USE_AV1_HW_DECODER=$use_av1_hw_decoder",
     "USE_VAAPI=$use_vaapi",
     "USE_VAAPI_IMAGE_CODECS=$use_vaapi_image_codecs",
     "USE_V4L2_CODEC=$use_v4l2_codec",
     "USE_LIBV4L2=$use_v4lplugin",
+    "USE_LINUX_VIDEO_ACCELERATION=$use_linux_video_acceleration",
   ]
+}
+
+if (use_linux_video_acceleration) {
+  assert(is_linux || is_chromeos)
 }
 
 component("gpu") {
@@ -32,17 +37,18 @@ component("gpu") {
   # media-related content code should access //media/gpu.
   visibility = [
     ":*",
-    "//ash/components/arc/mojom:media",
-    "//ash/components/arc/mojom:media_mojolpm",
-    "//ash/components/arc/video_accelerator:common",
     "//chrome/gpu",
     "//chromecast/*",
+    "//chromeos/ash/experiences/arc/mojom:media",
+    "//chromeos/ash/experiences/arc/mojom:media_mojolpm",
+    "//chromeos/ash/experiences/arc/video_accelerator:common",
     "//components/chromeos_camera/*",
     "//components/mirroring/service:mirroring_service",
     "//components/viz/service/main",
     "//content/gpu:*",
     "//content/renderer:*",
     "//media/audio:unit_tests",
+    "//media/gpu/fuzzers/av1_builder/*",
     "//media/gpu/ipc/*",
     "//media/gpu/test/*",
     "//media/gpu/vaapi/*",
@@ -51,9 +57,6 @@ component("gpu") {
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules/mediarecorder",
     "//ui/gl:gl_unittests",
-
-    # TODO(crbug.com/40752360): Remove //remoting/host:common when the usage is removed.
-    "//remoting/host:common",
   ]
 
   if (is_apple) {
@@ -78,12 +81,16 @@ component("gpu") {
     "gpu_video_encode_accelerator_factory.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     ":buildflags",
     ":command_buffer_helper",
     ":common",
     "//base",
-    "//gpu",
     "//media",
     "//third_party/angle:includes",
     "//ui/gfx/geometry",
@@ -101,8 +108,7 @@ component("gpu") {
   # V4L2 and VAAPI for video acceleration should not be enabled simultaneously.
   assert(!(use_v4l2_codec && use_vaapi))
 
-  # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-  if (use_v4l2_codec || use_vaapi) {
+  if (use_linux_video_acceleration) {
     public_deps += [
       ":video_frame_mapper",
       "//media/gpu/chromeos",
@@ -115,8 +121,6 @@ component("gpu") {
 
   if (is_android) {
     sources += [
-      "android/android_video_encode_accelerator.cc",
-      "android/android_video_encode_accelerator.h",
       "android/android_video_surface_chooser.cc",
       "android/android_video_surface_chooser.h",
       "android/android_video_surface_chooser_impl.cc",
@@ -163,6 +167,8 @@ component("gpu") {
       "android/video_frame_factory.h",
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",
+      "android/video_frame_gl_surface_renderer.cc",
+      "android/video_frame_gl_surface_renderer.h",
     ]
     if (proprietary_codecs) {
       sources += [
@@ -178,11 +184,11 @@ component("gpu") {
       # TODO(crbug.com/40552063): This can be removed once CdmManager is removed.
       "//gpu/ipc/common",
       "//media/mojo:buildflags",
-      "//services/service_manager/public/cpp:cpp",
-      "//ui/gl:gl_jni_headers",
+      "//services/service_manager/public/cpp",
+      "//third_party/libgav1:libgav1_parser",
     ]
     if (enable_vulkan) {
-      deps += [ "//gpu/vulkan:vulkan" ]
+      deps += [ "//gpu/vulkan" ]
     }
   }
 
@@ -204,6 +210,8 @@ component("gpu") {
   if (is_win) {
     sources += [
       "windows/av1_guids.h",
+      "windows/av1_video_rate_control_wrapper.cc",
+      "windows/av1_video_rate_control_wrapper.h",
       "windows/d3d11_av1_accelerator.cc",
       "windows/d3d11_av1_accelerator.h",
       "windows/d3d11_copying_texture_wrapper.cc",
@@ -234,12 +242,28 @@ component("gpu") {
       "windows/d3d11_vp9_accelerator.h",
       "windows/d3d11_vp9_picture.cc",
       "windows/d3d11_vp9_picture.h",
+      "windows/d3d12_copy_command_list_wrapper.cc",
+      "windows/d3d12_copy_command_list_wrapper.h",
       "windows/d3d12_fence.cc",
       "windows/d3d12_fence.h",
       "windows/d3d12_helpers.cc",
       "windows/d3d12_helpers.h",
+      "windows/d3d12_video_decode_task.cc",
+      "windows/d3d12_video_decode_task.h",
       "windows/d3d12_video_decoder_wrapper.cc",
       "windows/d3d12_video_decoder_wrapper.h",
+      "windows/d3d12_video_encode_accelerator.cc",
+      "windows/d3d12_video_encode_accelerator.h",
+      "windows/d3d12_video_encode_av1_delegate.cc",
+      "windows/d3d12_video_encode_av1_delegate.h",
+      "windows/d3d12_video_encode_delegate.cc",
+      "windows/d3d12_video_encode_delegate.h",
+      "windows/d3d12_video_encode_h264_delegate.cc",
+      "windows/d3d12_video_encode_h264_delegate.h",
+      "windows/d3d12_video_encoder_wrapper.cc",
+      "windows/d3d12_video_encoder_wrapper.h",
+      "windows/d3d12_video_helpers.cc",
+      "windows/d3d12_video_helpers.h",
       "windows/d3d12_video_processor_wrapper.cc",
       "windows/d3d12_video_processor_wrapper.h",
       "windows/d3d_com_defs.h",
@@ -254,12 +278,19 @@ component("gpu") {
       "windows/media_foundation_video_encode_accelerator_win.h",
       "windows/mf_audio_encoder.cc",
       "windows/mf_audio_encoder.h",
+      "windows/mf_video_encoder_shared_state.cc",
+      "windows/mf_video_encoder_shared_state.h",
+      "windows/mf_video_encoder_switches.cc",
+      "windows/mf_video_encoder_switches.h",
+      "windows/mf_video_encoder_util.cc",
+      "windows/mf_video_encoder_util.h",
       "windows/mf_video_processor_accelerator.cc",
       "windows/mf_video_processor_accelerator.h",
       "windows/scoped_d3d_buffers.cc",
       "windows/scoped_d3d_buffers.h",
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
+      "windows/video_rate_control_wrapper.cc",
       "windows/video_rate_control_wrapper.h",
       "windows/vp9_video_rate_control_wrapper.cc",
       "windows/vp9_video_rate_control_wrapper.h",
@@ -268,20 +299,15 @@ component("gpu") {
       sources += [
         "windows/d3d11_h265_accelerator.cc",
         "windows/d3d11_h265_accelerator.h",
+        "windows/d3d12_video_encode_h265_delegate.cc",
+        "windows/d3d12_video_encode_h265_delegate.h",
       ]
     }
-    if (enable_libaom) {
-      sources += [
-        "windows/av1_video_rate_control_wrapper.cc",
-        "windows/av1_video_rate_control_wrapper.h",
-      ]
-      deps += [ "//third_party/libaom:libaomrc" ]
-    }
-    configs += [ "//third_party/khronos:khronos_headers" ]
     deps += [
-      "//gpu/ipc/common:common",
+      "//gpu/ipc/common",
       "//media/base/win:color_space_util_win",
       "//third_party/angle:includes",
+      "//third_party/libaom:libaomrc",
       "//third_party/libvpx:libvpxrc",
       "//ui/display",
     ]
@@ -291,6 +317,7 @@ component("gpu") {
       "d3d12.lib",
       "dxgi.lib",
       "dxva2.lib",
+      "dxgi.lib",
       "strmiids.lib",
       "mf.lib",
       "mfplat.lib",
@@ -301,6 +328,7 @@ component("gpu") {
       "/DELAYLOAD:d3d11.dll",
       "/DELAYLOAD:d3d12.dll",
       "/DELAYLOAD:dxva2.dll",
+      "/DELAYLOAD:dxgi.dll",
       "/DELAYLOAD:mf.dll",
       "/DELAYLOAD:mfplat.dll",
     ]
@@ -355,13 +383,17 @@ source_set("common") {
     ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   visibility = [
     ":gpu",
     "//media/gpu/*",
   ]
 
-  # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-  if (use_v4l2_codec || use_vaapi) {
+  if (use_linux_video_acceleration) {
     sources += [
       "vp8_decoder.cc",
       "vp8_decoder.h",
@@ -376,7 +408,6 @@ source_set("common") {
   deps = [
     ":buildflags",
     "//base",
-    "//build:chromeos_buildflags",
     "//media",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
@@ -389,8 +420,8 @@ source_set("common") {
       "av1_builder.h",
       "h264_builder.cc",
       "h264_builder.h",
-      "vp9_svc_layers.cc",
-      "vp9_svc_layers.h",
+      "svc_layers.cc",
+      "svc_layers.h",
     ]
     if (enable_hevc_parser_and_hw_decoder) {
       sources += [
@@ -412,26 +443,20 @@ source_set("common") {
   }
 }
 
-# The buffer validation functionality is in its own component so that it can be
-# depended on without pulling the entire //media/gpu target.
-component("buffer_validation") {
-  defines = [ "IS_MEDIA_GPU_BUFFER_VALIDATION_IMPL" ]
-  sources = [
-    "buffer_validation.cc",
-    "buffer_validation.h",
-  ]
+if (is_linux || is_chromeos) {
+  # The buffer validation functionality is in its own component so that it can be
+  # depended on without pulling the entire //media/gpu target.
+  component("buffer_validation") {
+    defines = [ "IS_MEDIA_GPU_BUFFER_VALIDATION_IMPL" ]
+    sources = [
+      "buffer_validation.cc",
+      "buffer_validation.h",
+    ]
 
-  public_deps = [
-    "//base",
-    "//media",
-  ]
-
-  if (is_linux || is_chromeos) {
-    deps = [ "//build/config/linux/libdrm" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//ui/gfx:gfx_switches" ]
+    public_deps = [
+      "//base",
+      "//media",
+    ]
   }
 }
 
@@ -440,6 +465,11 @@ source_set("command_buffer_helper") {
   sources = [
     "command_buffer_helper.cc",
     "command_buffer_helper.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   public_deps = [
@@ -453,18 +483,14 @@ source_set("command_buffer_helper") {
   ]
 }
 
-# TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   source_set("video_frame_mapper") {
     defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
     sources = [ "video_frame_mapper_factory.cc" ]
     public_deps = [ ":video_frame_mapper_common" ]
-    deps = []
 
     # generic_dmabuf_video_frame_mapper
-    if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//media/gpu/chromeos:video_frame_mapper" ]
-    }
+    deps = [ "//media/gpu/chromeos:video_frame_mapper" ]
 
     # vaapi_dmabuf_video_frame_mapper
     if (use_vaapi) {
@@ -481,6 +507,11 @@ if (use_v4l2_codec || use_vaapi) {
       "video_frame_mapper.cc",
       "video_frame_mapper.h",
       "video_frame_mapper_factory.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     public_deps = [
@@ -511,6 +542,7 @@ if (is_android) {
       "//media/test:run_all_unittests",
       "//mojo/core/embedder",
       "//testing/gtest",
+      "//third_party/angle:includes",
       "//ui/android:ui_java",
       "//ui/base",
       "//ui/gfx",
@@ -520,8 +552,6 @@ if (is_android) {
       "//ui/gl:test_support",
       "//ui/gl/init",
     ]
-
-    configs += [ "//third_party/khronos:khronos_headers" ]
   }
 }
 
@@ -557,6 +587,7 @@ source_set("android_video_decode_accelerator_unittests") {
       "android/promotion_hint_aggregator_impl_unittest.cc",
       "android/surface_chooser_helper_unittest.cc",
       "android/video_frame_factory_impl_unittest.cc",
+      "android/video_frame_gl_surface_renderer_test.cc",
     ]
     deps = [
       ":gpu",
@@ -567,7 +598,8 @@ source_set("android_video_decode_accelerator_unittests") {
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/libyuv:libyuv",
+      "//third_party/libvpx",
+      "//third_party/libyuv",
       "//ui/gl",
       "//ui/gl/init",
     ]
@@ -637,10 +669,7 @@ source_set("unit_tests") {
 
   if (use_av1_hw_decoder && media_use_ffmpeg) {
     sources += [ "av1_decoder_unittest.cc" ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//third_party/ffmpeg",
-    ]
+    deps += [ "//third_party/ffmpeg" ]
   }
 
   if (is_win) {
@@ -654,12 +683,28 @@ source_set("unit_tests") {
       "windows/d3d11_video_device_format_support_unittest.cc",
       "windows/d3d11_video_processor_proxy_unittest.cc",
       "windows/d3d12_helpers_unittest.cc",
+      "windows/d3d12_video_encode_accelerator_unittest.cc",
+      "windows/d3d12_video_encode_av1_delegate_unittest.cc",
+      "windows/d3d12_video_encode_delegate_unittest.cc",
+      "windows/d3d12_video_encode_delegate_unittest.h",
+      "windows/d3d12_video_encode_h264_delegate_unittest.cc",
       "windows/mf_audio_encoder_unittest.cc",
       "windows/mf_video_processor_accelerator_unittest.cc",
       "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
-    libs = [ "dxguid.lib" ]
+    deps += [ "//gpu:test_support" ]
+    libs = [
+      "dxguid.lib",
+      "d3d12.lib",
+    ]
+
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_builder_unittest.cc",
+        "windows/d3d12_video_encode_h265_delegate_unittest.cc",
+      ]
+    }
   }
 
   if (is_apple) {
@@ -670,9 +715,13 @@ source_set("unit_tests") {
     sources += [
       "av1_builder_unittest.cc",
       "h264_builder_unittest.cc",
-      "vp9_svc_layers_unittest.cc",
+      "svc_layers_unittest.cc",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (enable_hevc_parser_and_hw_decoder) {
@@ -729,4 +778,11 @@ fuzzer_test("media_vp9_decoder_fuzzer") {
     "//media:test_support",
   ]
   seed_corpuses = [ "//media/test/data" ]
+}
+
+if (is_win || use_vaapi) {
+  group("stream_builder_fuzzers") {
+    testonly = true
+    public_deps = [ "//media/gpu/fuzzers/av1_builder:av1_builder_fuzzer" ]
+  }
 }

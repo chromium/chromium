@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.holder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -17,6 +19,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -26,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * A {@link RecyclerView.ViewHolder} specifically meant to display a generic {@code OfflineItem}.
  */
+@NullMarked
 public class GenericViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mCaption;
@@ -65,7 +70,9 @@ public class GenericViewHolder extends OfflineItemViewHolder {
 
             Drawable drawable =
                     org.chromium.ui.UiUtils.getTintedDrawable(
-                            itemView.getContext(), iconId, R.color.default_icon_color_tint_list);
+                            itemView.getContext(),
+                            iconId,
+                            UiUtils.getIconColorForItem(offlineItem.item));
 
             mThumbnail.setUnavailableDrawable(drawable);
             mThumbnail.setWaitingDrawable(drawable);
@@ -77,13 +84,15 @@ public class GenericViewHolder extends OfflineItemViewHolder {
     }
 
     @Override
-    protected Drawable onThumbnailRetrieved(OfflineItemVisuals visuals) {
+    protected @Nullable Drawable onThumbnailRetrieved(@Nullable OfflineItemVisuals visuals) {
         boolean hasThumbnail = visuals != null && visuals.icon != null;
         updateThumbnailBackground(hasThumbnail);
 
         RoundedBitmapDrawable drawable = null;
         if (hasThumbnail) {
-            drawable = RoundedBitmapDrawableFactory.create(itemView.getResources(), visuals.icon);
+            drawable =
+                    RoundedBitmapDrawableFactory.create(
+                            itemView.getResources(), assumeNonNull(visuals).icon);
             drawable.setCircular(true);
         }
         return drawable;

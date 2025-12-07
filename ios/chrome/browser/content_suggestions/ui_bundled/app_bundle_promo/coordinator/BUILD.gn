@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "app_bundle_promo_mediator.h",
+    "app_bundle_promo_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/ntp_tiles:pref_names",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//ios/chrome/browser/app_store_bundle/model",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_bundle_promo_mediator_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//components/ntp_tiles:pref_names",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test/providers/app_store_bundle",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

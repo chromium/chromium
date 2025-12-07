@@ -11,12 +11,16 @@ import android.content.Intent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** Service that handles the actions on tracing notifications. */
-public class TracingNotificationServiceImpl extends TracingNotificationService.Impl {
+@NullMarked
+public class TracingNotificationServiceImpl extends SplitCompatIntentService.Impl {
     private static final String ACTION_STOP_RECORDING =
             "org.chromium.chrome.browser.tracing.STOP_RECORDING";
 
@@ -64,9 +68,9 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
      * @return the intent.
      */
     public static PendingIntent getOpenSettingsIntent(Context context) {
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        Intent intent =
-                settingsLauncher.createSettingsActivityIntent(context, TracingSettings.class);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        Intent intent = settingsNavigation.createSettingsIntent(context, TracingSettings.class);
         return PendingIntent.getActivity(
                 context,
                 0,
@@ -76,7 +80,7 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(@Nullable Intent intent) {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -87,6 +91,7 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
                         return;
                     }
 
+                    if (intent == null) return;
                     if (ACTION_STOP_RECORDING.equals(intent.getAction())) {
                         TracingController.getInstance().stopRecording();
                     } else if (ACTION_DISCARD_TRACE.equals(intent.getAction())) {

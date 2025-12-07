@@ -34,16 +34,16 @@ TEST_F(GetHitTestComponentTest, BasicTests) {
   View* left = new View;
   left->SetProperty(views::kHitTestComponentKey, static_cast<int>(HTLEFT));
   left->SetBounds(10, 10, 30, 80);
-  root->AddChildView(left);
+  root->AddChildViewRaw(left);
 
   View* nowhere = new View;
   nowhere->SetBounds(60, 10, 30, 80);
-  root->AddChildView(nowhere);
+  root->AddChildViewRaw(nowhere);
 
   View* right = new View;
   right->SetProperty(views::kHitTestComponentKey, static_cast<int>(HTRIGHT));
   right->SetBounds(10, 10, 10, 60);
-  nowhere->AddChildView(right);
+  nowhere->AddChildViewRaw(right);
 
   // Hit the root view.
   EXPECT_EQ(GetHitTestComponent(root, gfx::Point(50, 50)), HTCLIENT);

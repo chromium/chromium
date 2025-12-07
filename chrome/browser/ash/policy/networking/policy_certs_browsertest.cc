@@ -19,7 +19,6 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
@@ -41,8 +39,11 @@
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -50,12 +51,12 @@
 #include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
@@ -139,7 +140,7 @@ class WebTrustedCertsChangedObserver
 // cert change has occurred.
 class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
  public:
-  CertDatabaseChangedObserver() {}
+  CertDatabaseChangedObserver() = default;
 
   CertDatabaseChangedObserver(const CertDatabaseChangedObserver&) = delete;
   CertDatabaseChangedObserver& operator=(const CertDatabaseChangedObserver&) =
@@ -475,15 +476,13 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
   StartLogin();
   ash::test::WaitForPrimaryUserSessionStart();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
-  Browser* browser = browser_list->get(0);
-  ASSERT_TRUE(browser);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  ASSERT_TRUE(browser());
 
-  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser->profile(),
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser()->GetProfile(),
                                                      &user_policy_provider_);
   EXPECT_EQ(net::OK,
-            VerifyTestServerCert(browser->profile(),
+            VerifyTestServerCert(browser()->GetProfile(),
                                  user_policy_certs_helper_.server_cert()));
 }
 
@@ -495,7 +494,7 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
       const PolicyProvidedCertsOnUserSessionInitTest&) = delete;
 
  protected:
-  PolicyProvidedCertsOnUserSessionInitTest() {}
+  PolicyProvidedCertsOnUserSessionInitTest() = default;
 
   void GetPolicySettings(em::CloudPolicySettings* policy) const override {
     std::string user_policy_blob = GetTestCertsFileContents(kRootCaCertOnc);
@@ -532,8 +531,8 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsOnUserSessionInitTest,
 // Testing policy-provided client cert import.
 class PolicyProvidedClientCertsTest : public DevicePolicyCrosBrowserTest {
  protected:
-  PolicyProvidedClientCertsTest() {}
-  ~PolicyProvidedClientCertsTest() override {}
+  PolicyProvidedClientCertsTest() = default;
+  ~PolicyProvidedClientCertsTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     // Set up the mock policy provider.

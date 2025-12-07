@@ -17,14 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -32,44 +29,40 @@
 namespace blink {
 
 // Helper class that coalesces writes to a SVGPathByteStream to a local buffer.
-class CoalescingBuffer {
+class SVGPathByteStreamBuilder::CoalescingBuffer {
  public:
-  CoalescingBuffer(SVGPathByteStream& byte_stream)
-      : current_offset_(0), byte_stream_(byte_stream) {}
-  ~CoalescingBuffer() { byte_stream_.Append(bytes_, current_offset_); }
+  explicit CoalescingBuffer(SVGPathByteStreamBuilderStorage& result)
+      : remaining_(bytes_), result_(result) {}
+  ~CoalescingBuffer() { result_.AppendRange(bytes_, remaining_.data()); }
 
-  template <typename DataType>
-  void WriteType(DataType value) {
-    ByteType<DataType> data;
-    data.value = value;
-    wtf_size_t type_size = sizeof(ByteType<DataType>);
-    DCHECK_LE(current_offset_ + type_size, sizeof(bytes_));
-    memcpy(bytes_ + current_offset_, data.bytes, type_size);
-    current_offset_ += type_size;
+  template <size_t N>
+  void WriteBytes(std::array<uint8_t, N> value) {
+    remaining_.take_first<N>().copy_from(value);
   }
 
-  void WriteFlag(bool value) { WriteType<bool>(value); }
-  void WriteFloat(float value) { WriteType<float>(value); }
+  void WriteFlag(bool value) { WriteBytes(base::U8ToNativeEndian(value)); }
+  void WriteFloat(float value) { WriteBytes(base::FloatToNativeEndian(value)); }
   void WritePoint(const gfx::PointF& point) {
     WriteFloat(point.x());
     WriteFloat(point.y());
   }
-  void WriteSegmentType(uint16_t value) { WriteType<uint16_t>(value); }
+  void WriteSegmentType(uint16_t value) {
+    WriteBytes(base::U16ToNativeEndian(value));
+  }
 
  private:
   // Adjust size to fit the largest command (in serialized/byte-stream format).
   // Currently a cubic segment.
-  wtf_size_t current_offset_;
   unsigned char bytes_[sizeof(uint16_t) + sizeof(gfx::PointF) * 3];
-  SVGPathByteStream& byte_stream_;
+  // A span pointing to the unused part of `bytes_`.
+  base::span<uint8_t> remaining_;
+  SVGPathByteStreamBuilderStorage& result_;
 };
 
-SVGPathByteStreamBuilder::SVGPathByteStreamBuilder(
-    SVGPathByteStream& byte_stream)
-    : byte_stream_(byte_stream) {}
+SVGPathByteStreamBuilder::SVGPathByteStreamBuilder() = default;
 
 void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
-  CoalescingBuffer buffer(byte_stream_);
+  CoalescingBuffer buffer(result_);
   buffer.WriteSegmentType(segment.command);
 
   switch (segment.command) {
@@ -116,8 +109,12 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
       buffer.WritePoint(segment.target_point);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
+}
+
+SVGPathByteStream SVGPathByteStreamBuilder::CopyByteStream() {
+  return SVGPathByteStream(result_);
 }
 
 }  // namespace blink

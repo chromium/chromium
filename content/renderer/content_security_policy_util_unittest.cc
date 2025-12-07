@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -128,18 +129,26 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
         source_list.nonces.emplace_back("nonce-cde");
       },
       [](CSPSourceList& source_list) {
-        source_list.hashes.emplace_back(network::mojom::CSPHashSource::New(
-            network::mojom::CSPHashAlgorithm::SHA256,
-            std::vector<uint8_t>({'a', 'd'})));
-        source_list.hashes.emplace_back(network::mojom::CSPHashSource::New(
-            network::mojom::CSPHashAlgorithm::SHA384,
-            std::vector<uint8_t>({'c', 'd', 'e'})));
+        source_list.hashes.emplace_back(
+            network::mojom::IntegrityAlgorithm::kSha256,
+            std::vector<uint8_t>({'a', 'd'}));
+        source_list.hashes.emplace_back(
+            network::mojom::IntegrityAlgorithm::kSha384,
+            std::vector<uint8_t>({'c', 'd', 'e'}));
+      },
+      [](CSPSourceList& source_list) {
+        source_list.hashes.emplace_back(
+            network::mojom::IntegrityAlgorithm::kSha256,
+            std::vector<uint8_t>({'a', 'd'}));
+        source_list.url_hashes.emplace_back(
+            network::mojom::IntegrityAlgorithm::kSha384,
+            std::vector<uint8_t>({'c', 'd', 'e'}));
+        source_list.eval_hashes.emplace_back(
+            network::mojom::IntegrityAlgorithm::kSha384,
+            std::vector<uint8_t>({'f', 'g', 'h'}));
       },
       [](CSPSourceList& source_list) { source_list.allow_self = true; },
       [](CSPSourceList& source_list) { source_list.allow_star = true; },
-      [](CSPSourceList& source_list) {
-        source_list.allow_response_redirects = true;
-      },
       [](CSPSourceList& source_list) { source_list.allow_inline = true; },
       [](CSPSourceList& source_list) { source_list.allow_eval = true; },
       [](CSPSourceList& source_list) { source_list.allow_wasm_eval = true; },

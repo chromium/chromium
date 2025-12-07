@@ -25,6 +25,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +41,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
@@ -50,9 +50,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -84,15 +85,15 @@ public class MostVisitedTilesTest {
     private static final int MV_TILE_CAROUSEL_MATCH_POSITION = 1;
     private static final long MV_TILE_NATIVE_HANDLE = 0xfce2;
 
-    public final @Rule ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final @Rule FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock AutocompleteController mController;
     private @Captor ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
 
+    private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
     private LocationBarLayout mLocationBarLayout;
 
@@ -109,27 +110,28 @@ public class MostVisitedTilesTest {
 
     @Before
     public void setUp() throws Exception {
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         doReturn(mController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mPage = mActivityTestRule.startOnTestServerUrl(START_PAGE_LOCATION);
 
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = mPage.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
-        mTab = mActivity.getActivityTab();
+        mTab = mPage.loadedTabElement.value();
         mStartUrl = mActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
-        ChromeTabUtils.waitForInteractable(mTab);
-        ChromeTabUtils.loadUrlOnUiThread(mTab, mStartUrl);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, null);
         verify(mController).addOnSuggestionsReceivedListener(mListener.capture());
 
         setUpSuggestionsToShow();
 
         mCarousel = mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
+    }
+
+    @After
+    public void tearDown() {
+        AutocompleteControllerJni.setInstanceForTesting(null);
     }
 
     /**
@@ -200,18 +202,6 @@ public class MostVisitedTilesTest {
         mOmnibox.checkSuggestionsShown();
     }
 
-    private void clickTileAtPosition(int position) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LayoutManager manager = mCarousel.view.getLayoutManager();
-                    Assert.assertTrue(position < manager.getItemCount());
-                    manager.scrollToPosition(position);
-                    View view = manager.findViewByPosition(position);
-                    Assert.assertNotNull(view);
-                    view.performClick();
-                });
-    }
-
     private void longClickTileAtPosition(int position) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -263,51 +253,6 @@ public class MostVisitedTilesTest {
         // suggestion.
         mOmnibox.sendKey(KeyEvent.KEYCODE_TAB, KeyEvent.META_SHIFT_ON);
         mOmnibox.checkText(equalTo(START_PAGE_LOCATION), null);
-    }
-
-    @Test
-    @MediumTest
-    public void keyboardNavigation_highlightAlwaysStartsWithFirstElement()
-            throws InterruptedException {
-        // Skip past the 'what-you-typed' suggestion.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
-
-        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
-
-        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
-
-        // Move to the search suggestion skipping the header.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(SEARCH_QUERY), null);
-
-        // Move back to the MV Tiles. Observe that the first element is again highlighted.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_UP);
-        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
-    }
-
-    @Test
-    @MediumTest
-    public void touchNavigation_clickOnFirstMVTile() throws Exception {
-        clickTileAtPosition(0);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch1.getUrl().getSpec());
-    }
-
-    @Test
-    @MediumTest
-    public void touchNavigation_clickOnMiddleMVTile() throws Exception {
-        clickTileAtPosition(1);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch2.getUrl().getSpec());
-    }
-
-    @Test
-    @MediumTest
-    public void touchNavigation_clickOnLastMVTile() throws Exception {
-        clickTileAtPosition(2);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch3.getUrl().getSpec());
     }
 
     @Test

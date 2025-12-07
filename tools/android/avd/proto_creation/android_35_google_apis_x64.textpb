@@ -2,24 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Configuration for an Android V Developer Preview AVD on google_apis on x86_64
+# Configuration for an Android 15 (V, API 35) AVD on google_apis on x86_64
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "97gAPeXJa7zT-JcddyV8fpQtsx6kJjwqfmLe8FhZD1kC"  # 34.2.14 (Stable)
-  dest_path: "android_35_google_apis_x64"
+  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis/x86_64"
-  version: "lbE3tmhSwAT8SKxgShTPEnc8VZQi-S4f7jD6D-s3Hw8C"  # AP31.240617.003
-  dest_path: "android_35_google_apis_x64"
+  version: "RlhGUPY3gzHBfmiZuOqMu1uuznsnr5mbavafY8kK73AC"  # (r9) AE3A.240806.043
 }
 system_image_name: "system-images;android-35;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
-  dest_path: "android_35_google_apis_x64"
 }
 avd_name: "android_35_google_apis_x64"
 
@@ -33,11 +30,88 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # 4GB RAM for 34+ API AVDs
+  ram_size: 4096
+}
+avd_variants {
+  key: "swarming"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "local"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
+avd_variants {
+  key: "tablet_swarming"
+  value {
+    screen {
+      density: 320
+      height: 2560
+      width: 1600
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "tablet_local"
+  value {
+    screen {
+      density: 320
+      height: 2560
+      width: 1600
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
+avd_variants {
+  key: "tablet_landscape_swarming"
+  value {
+    # Medium Tablet - 10.05", 2560x1600, xhdpi
+    screen {
+      density: 320
+      height: 1600
+      width: 2560
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "tablet_landscape_local"
+  value {
+    # Medium Tablet - 10.05", 2560x1600, xhdpi
+    screen {
+      density: 320
+      height: 1600
+      width: 2560
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
 }
 
 min_sdk: 35
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86_64"
-  version: "5mF806AbGnsm29dfwLgz7FkLBXv2l2POLvQ2nojUlhgC" # 24.26.32
-  dest_path: "android_35_google_apis_x64/gmscore_apks"
+  version: "7mVKXdcmxohe1QaWUiYV47oHeioRAWJ6_s_LxYbd9I0C" # 25.07.33
 }

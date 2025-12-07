@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -37,7 +39,7 @@ void WebUIURLFetcher::Start() {
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
-      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.scheme(),
+      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.GetScheme(),
                                            {}));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

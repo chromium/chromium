@@ -8,10 +8,8 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="modal_dialog_scrim_color">@color/black_alpha_65</color>
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
-    <color name="toolbar_text_box_background">@color/omnibox_bg_color</color>
     <macro name="search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
     <macro name="ntp_search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color</macro>
-    <color name="search_box_hint_baseline">@color/default_text_color_secondary_baseline</color>
 
     <!-- Chip Colors -->
     <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>
@@ -25,7 +23,7 @@ found in the LICENSE file.
     <color name="chip_state_layer_color_light">@color/baseline_neutral_variant_80</color>
     <color name="chip_state_layer_color_baseline" tools:ignore="UnusedResources">@color/chip_state_layer_color_dark</color>
     <!-- Same as ?attr/colorOnSecondaryContainer -->
-    <color name="chip_state_layer_selected_color_dark">@color/baseline_secondary_10</color>
+    <color name="chip_state_layer_selected_color_dark">@color/baseline_secondary_30</color>
     <color name="chip_state_layer_selected_color_light">@color/baseline_secondary_90</color>
     <color name="chip_state_layer_selected_color_baseline" tools:ignore="UnusedResources">@color/chip_state_layer_selected_color_dark</color>
     <!-- Same as ?attr/colorOutline. -->

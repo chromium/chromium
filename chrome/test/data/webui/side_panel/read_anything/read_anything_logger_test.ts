@@ -4,11 +4,9 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, SpeechControls, TimeFrom, TimeTo} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE} from 'chrome-untrusted://webui-test/chai_assert.js';
-// <if expr="chromeos_ash">
-import {ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-// </if>
+
 import {createSpeechSynthesisVoice} from './common.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -19,9 +17,9 @@ suite('Logger', () => {
   let metrics: TestMetricsBrowserProxy;
 
   async function assertTimeMetricIsCalled(
-      from: TimeFrom, to: TimeTo, expectedMetric: string) {
+      from: TimeFrom, expectedMetric: string) {
     metrics.reset();
-    logger.logTimeBetween(from, to, 100, 175);
+    logger.logTimeFrom(from, 100, 175);
     assertEquals(expectedMetric, (await metrics.whenCalled('recordTime'))[0]);
   }
 
@@ -61,20 +59,11 @@ suite('Logger', () => {
     assertEquals(0, metrics.getCallCount('recordNewPageWithSpeech'));
   });
 
-  test('highlight on', () => {
-    logger.logHighlightState(true);
-    logger.logHighlightState(true);
+  test('highlight granularity change', () => {
+    logger.logHighlightGranularity(0);
+    logger.logHighlightGranularity(4);
 
-    assertEquals(2, metrics.getCallCount('recordHighlightOn'));
-    assertEquals(0, metrics.getCallCount('recordHighlightOff'));
-  });
-
-  test('highlight off', () => {
-    logger.logHighlightState(false);
-    logger.logHighlightState(false);
-
-    assertEquals(0, metrics.getCallCount('recordHighlightOn'));
-    assertEquals(2, metrics.getCallCount('recordHighlightOff'));
+    assertEquals(2, metrics.getCallCount('recordHighlightGranularity'));
   });
 
   test('text settings', async () => {
@@ -108,6 +97,17 @@ suite('Logger', () => {
     assertEquals(0, metrics.getCallCount('recordTextSettingsChange'));
   });
 
+  test('speech stop source', async () => {
+    const source = 123;
+    logger.logSpeechStopSource(source);
+    assertEquals(source, await metrics.whenCalled('recordSpeechStopSource'));
+  });
+
+  test('empty state', () => {
+    logger.logEmptyState();
+    assertEquals(1, metrics.getCallCount('recordEmptyState'));
+  });
+
   test('logVoiceSpeed', () => {
     logger.logVoiceSpeed(1);
     logger.logVoiceSpeed(2);
@@ -118,7 +118,6 @@ suite('Logger', () => {
     assertEquals(5, metrics.getCallCount('recordVoiceSpeed'));
   });
 
-  // <if expr="chromeos_ash">
   test('logSpeechPlaySession with natural voice', async () => {
     logger.logSpeechPlaySession(
         defaultSpeechStartTime,
@@ -139,12 +138,24 @@ suite('Logger', () => {
         await metrics.whenCalled('recordVoiceType'));
   });
 
-  test('logSpeechPlaySession with other voice', async () => {
+  // <if expr="is_chromeos">
+  test('logSpeechPlaySession with other voice on ChromeOS', async () => {
     logger.logSpeechPlaySession(
         defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Sleepy'}));
 
     assertEquals(
         ReadAnythingVoiceType.CHROMEOS,
+        await metrics.whenCalled('recordVoiceType'));
+  });
+  // </if>
+
+  // <if expr="not is_chromeos">
+  test('logSpeechPlaySession with other voice on Desktop', async () => {
+    logger.logSpeechPlaySession(
+        defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Dopey'}));
+
+    assertEquals(
+        ReadAnythingVoiceType.SYSTEM,
         await metrics.whenCalled('recordVoiceType'));
   });
   // </if>
@@ -185,7 +196,7 @@ suite('Logger', () => {
     const expectedTime = 100;
 
     await new Promise(resolve => setTimeout(resolve, expectedTime));
-    logger.logSpeechPlaySession(startTime, undefined);
+    logger.logSpeechPlaySession(startTime, null);
 
     // The playback length should be at least the amount of time we waited above
     // and less than the starting time (i.e. we should be recording length of
@@ -195,35 +206,21 @@ suite('Logger', () => {
     assertGT(startTime, recordedTime);
   });
 
-  test('logTimeBetween uses correct uma name', async () => {
+  test('logTimeFrom uses correct uma name', () => {
     assertTimeMetricIsCalled(
-        TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');
-    assertTimeMetricIsCalled(
-        TimeFrom.APP, TimeTo.CONSTRUCTOR,
+        TimeFrom.APP,
         'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
     assertTimeMetricIsCalled(
-        TimeFrom.APP_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.' +
-            'TimeFromAppConstructorStartedToConnectedCallback');
-    assertTimeMetricIsCalled(
-        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.TimeFromToolbarStartedToConnectedCallback');
-    assertTimeMetricIsCalled(
-        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR,
+        TimeFrom.TOOLBAR,
         'Accessibility.ReadAnything.TimeFromToolbarStartedToConstructor');
-    assertTimeMetricIsCalled(
-        TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.' +
-            'TimeFromToolbarConstructorStartedToConnectedCallback');
   });
 
-  test('logTimeBetween logs time difference', async () => {
+  test('logTimeFrom logs time difference', async () => {
     const startTime = 50;
     const endTime = 125;
     const expectedTime = endTime - startTime;
 
-    logger.logTimeBetween(TimeFrom.APP, TimeTo.CONSTRUCTOR, startTime, endTime);
+    logger.logTimeFrom(TimeFrom.APP, startTime, endTime);
 
     assertEquals(expectedTime, (await metrics.whenCalled('recordTime'))[1]);
   });

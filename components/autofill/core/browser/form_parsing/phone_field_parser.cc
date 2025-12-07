@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -14,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -143,7 +143,7 @@ PhoneFieldParser::GetPhoneGrammars() {
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
        {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: <cc>:3 - <phone>
+      // Phone: <cc>:3 <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
       // Phone: <ac> - <phone>
       {{REGEX_PHONE, FIELD_AREA_CODE}, {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
@@ -155,32 +155,31 @@ PhoneFieldParser::GetPhoneGrammars() {
 
 // static
 bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
-    AutofillScanner* scanner,
-    raw_ptr<AutofillField>* matched_field) {
-  AutofillField* field = scanner->Cursor();
+    AutofillScanner& scanner,
+    std::optional<FieldAndMatchInfo>* match) {
+  const FormFieldData& field = scanner.Cursor();
 
   // Return false if the field is not a selection box.
-  if (!MatchesFormControlType(
-          field->form_control_type(),
-          {FormControlType::kSelectOne, FormControlType::kSelectList})) {
+  if (!MatchesFormControlType(field.form_control_type(),
+                              {FormControlType::kSelectOne})) {
     return false;
   }
 
   // If the number of the options is less than the minimum limit or more than
   // the maximum limit, return false.
-  if (field->options().size() < kMinSelectOptionsForCountryCode ||
-      field->options().size() >= kMaxSelectOptionsForCountryCode) {
+  if (field.options().size() < kMinSelectOptionsForCountryCode ||
+      field.options().size() >= kMaxSelectOptionsForCountryCode) {
     return false;
   }
 
   // |total_covered_options| stores the count of the options that are
   // compared with the regex.
-  int total_num_options = static_cast<int>(field->options().size());
+  int total_num_options = static_cast<int>(field.options().size());
 
   // |total_positive_options| stores the count of the options that match the
   // regex.
   int total_positive_options =
-      base::ranges::count_if(field->options(), [](const SelectOption& option) {
+      std::ranges::count_if(field.options(), [](const SelectOption& option) {
         return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.text);
       });
 
@@ -200,10 +199,13 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
           total_num_options * kMinCandidatePercentageForCountryCode)
     return false;
 
-  // Assign the |matched_field| and advance the cursor.
-  if (matched_field)
-    *matched_field = field;
-  scanner->Advance();
+  // Assign the `match` and advance the cursor.
+  if (match) {
+    *match = {
+        &field,
+        {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
+  }
+  scanner.Advance();
   return true;
 }
 
@@ -211,7 +213,7 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
                                     const PhoneGrammar& grammar,
                                     ParsedPhoneFields& parsed_fields,
-                                    AutofillScanner* scanner) {
+                                    AutofillScanner& scanner) {
   for (const auto& rule : grammar) {
     const bool is_country_code_field = rule.phone_part == FIELD_COUNTRY_CODE;
 
@@ -229,8 +231,8 @@ bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
     }
 
     if (rule.max_size != 0 &&
-        (parsed_fields[rule.phone_part]->max_length() == 0 ||
-         rule.max_size < parsed_fields[rule.phone_part]->max_length())) {
+        (parsed_fields[rule.phone_part]->field->max_length() == 0 ||
+         rule.max_size < parsed_fields[rule.phone_part]->field->max_length())) {
       return false;
     }
   }
@@ -240,29 +242,30 @@ bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
 // static
 std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd())
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
+  }
 
-  size_t start_cursor = scanner->SaveCursor();
+  const AutofillScanner::Position start_cursor = scanner.GetPosition();
   ParsedPhoneFields parsed_fields;
 
   // Find the first matching grammar.
   bool found_matching_grammar = false;
   int grammar_id = 0;
   for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
-    base::ranges::fill(parsed_fields, nullptr);
+    std::ranges::fill(parsed_fields, std::nullopt);
     if (ParseGrammar(context, grammar, parsed_fields, scanner)) {
       found_matching_grammar = true;
       break;
     }
-    scanner->RewindTo(start_cursor);
+    scanner.Restore(start_cursor);
     grammar_id++;
   }
   if (!found_matching_grammar)
     return nullptr;
   // No grammar without FIELD_PHONE should be defined.
-  DCHECK(parsed_fields[FIELD_PHONE] != nullptr);
+  DCHECK(parsed_fields[FIELD_PHONE].has_value());
 
   // If this CHECK fails, the number of grammar rules has changed and you need
   // to increment the version counter in the histogram name and its enum.
@@ -284,7 +287,7 @@ void PhoneFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   DCHECK(parsed_phone_fields_[FIELD_PHONE]);  // Phone was correctly parsed.
 
-  bool has_country_code = parsed_phone_fields_[FIELD_COUNTRY_CODE] != nullptr;
+  bool has_country_code = parsed_phone_fields_[FIELD_COUNTRY_CODE].has_value();
   if (has_country_code || parsed_phone_fields_[FIELD_AREA_CODE] ||
       parsed_phone_fields_[FIELD_SUFFIX]) {
     if (has_country_code) {
@@ -319,21 +322,16 @@ void PhoneFieldParser::AddClassifications(
     AddClassification(parsed_phone_fields_[FIELD_PHONE], field_number_type,
                       kBasePhoneParserScore, field_candidates);
   } else {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillDefaultToCityAndNumber)) {
-      const AutofillField* field = parsed_phone_fields_[FIELD_PHONE];
-      if (field->label().find(u"+") != std::u16string::npos ||
-          field->placeholder().find(u"+") != std::u16string::npos ||
-          field->aria_description().find(u"+") != std::u16string::npos) {
-        AddClassification(field, PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
-                          field_candidates);
-      } else {
-        AddClassification(field, PHONE_HOME_CITY_AND_NUMBER,
-                          kBasePhoneParserScore, field_candidates);
-      }
-    } else {
+    const FormFieldData& field = *parsed_phone_fields_[FIELD_PHONE]->field;
+    if (field.label().find(u"+") != std::u16string::npos ||
+        field.placeholder().find(u"+") != std::u16string::npos ||
+        field.aria_description().find(u"+") != std::u16string::npos) {
       AddClassification(parsed_phone_fields_[FIELD_PHONE],
                         PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
+                        field_candidates);
+    } else {
+      AddClassification(parsed_phone_fields_[FIELD_PHONE],
+                        PHONE_HOME_CITY_AND_NUMBER, kBasePhoneParserScore,
                         field_candidates);
     }
   }
@@ -371,38 +369,30 @@ std::string PhoneFieldParser::GetJSONFieldType(RegexType phonetype_id) {
     case REGEX_EXTENSION:
       return "PHONE_EXTENSION";
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::string();
 }
 
 // static
 bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
-                                       AutofillScanner* scanner,
-                                       raw_ptr<AutofillField>* field,
+                                       AutofillScanner& scanner,
+                                       std::optional<FieldAndMatchInfo>* match,
                                        const bool is_country_code_field,
                                        const std::string& json_field_type) {
-  base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      json_field_type, context.page_language, context.pattern_source);
-
   // Phone country code fields can be discovered via the generic "PHONE" regex
   // (see e.g. the "Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4" grammar rule).
   // However, for phone country code fields, <select> elements should also be
   // considered.
   if (is_country_code_field) {
-    return ParseField(context, scanner, patterns, field,
-                      /*regex_name=*/json_field_type.c_str(),
+    return ParseField(context, scanner, json_field_type.c_str(), match,
                       [](const MatchParams& p) {
                         return MatchParams(p.attributes,
                 kDefaultMatchParamsWith<
         FormControlType::kInputTelephone, FormControlType::kInputNumber,
-        FormControlType::kSelectOne, FormControlType::kSelectList>.field_types);
+        FormControlType::kSelectOne>.field_types);
                       });
   }
-
-  return ParseField(context, scanner, patterns, field,
-                    /*regex_name=*/json_field_type.c_str());
+  return ParseField(context, scanner, json_field_type.c_str(), match);
 }
 
 }  // namespace autofill

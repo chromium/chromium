@@ -5,11 +5,16 @@
 package org.chromium.content.browser.input;
 
 import android.os.Build;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.inputmethod.SurroundingText;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -17,6 +22,7 @@ import java.util.Locale;
  * An immutable class to contain text, selection range, composition range, and whether
  * it's single line or multiple lines that are being edited.
  */
+@NullMarked
 public class TextInputState {
     private final CharSequence mText;
     private final Range mSelection;
@@ -83,7 +89,7 @@ public class TextInputState {
         return mReplyToRequest;
     }
 
-    public CharSequence getSelectedText() {
+    public @Nullable CharSequence getSelectedText() {
         if (mSelection.start() == mSelection.end()) return null;
         return TextUtils.substring(mText, mSelection.start(), mSelection.end());
     }
@@ -118,11 +124,25 @@ public class TextInputState {
             int beforeLength, int afterLength) {
         beforeLength = Math.max(0, Math.min(beforeLength, mSelection.start()));
         afterLength = Math.max(0, Math.min(afterLength, mText.length() - mSelection.end()));
-        CharSequence text =
-                TextUtils.substring(
-                        mText, mSelection.start() - beforeLength, mSelection.end() + afterLength);
+        CharSequence text;
+        if (mText instanceof Spanned) {
+            text =
+                    new SpannableStringBuilder(
+                            mText,
+                            mSelection.start() - beforeLength,
+                            mSelection.end() + afterLength);
+        } else {
+            text =
+                    TextUtils.substring(
+                            mText,
+                            mSelection.start() - beforeLength,
+                            mSelection.end() + afterLength);
+        }
+
         return new SurroundingTextInternal(
-                text, beforeLength, mSelection.end() - (mSelection.start() - beforeLength), -1);
+                text, /* selectionStart= */ beforeLength,
+                /* selectionEnd= */ beforeLength + mSelection.end() - mSelection.start(),
+                /* offset= */ mSelection.start() - beforeLength);
     }
 
     @Override

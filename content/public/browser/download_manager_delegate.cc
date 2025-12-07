@@ -59,6 +59,11 @@ bool DownloadManagerDelegate::ShouldOpenDownload(
   return true;
 }
 
+bool DownloadManagerDelegate::ShouldObfuscateDownload(
+    download::DownloadItem* item) {
+  return false;
+}
+
 bool DownloadManagerDelegate::InterceptDownloadIfApplicable(
     const GURL& url,
     const std::string& user_agent,
@@ -67,6 +72,7 @@ bool DownloadManagerDelegate::InterceptDownloadIfApplicable(
     const std::string& request_origin,
     int64_t content_length,
     bool is_transient,
+    bool is_content_initiated,
     WebContents* web_contents) {
   return false;
 }
@@ -145,6 +151,10 @@ bool DownloadManagerDelegate::IsFromExternalApp(download::DownloadItem* item) {
 }
 
 bool DownloadManagerDelegate::ShouldOpenPdfInline() {
+  return false;
+}
+
+bool DownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
   return false;
 }
 #endif  // BUILDFLAG(IS_ANDROID)

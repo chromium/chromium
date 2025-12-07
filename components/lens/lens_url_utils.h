@@ -5,67 +5,106 @@
 #ifndef COMPONENTS_LENS_LENS_URL_UTILS_H_
 #define COMPONENTS_LENS_LENS_URL_UTILS_H_
 
+#include <array>
+#include <map>
 #include <string>
+#include <vector>
 
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_metadata.mojom.h"
-#include "components/lens/lens_rendering_environment.h"
-#include "ui/gfx/geometry/size_f.h"
+#include "components/lens/lens_overlay_mime_type.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 class GURL;
 
 namespace lens {
 
-// Query parameter for the payload.
-constexpr char kPayloadQueryParameter[] = "p";
-// Query parameter for the translate source language.
-constexpr char kTranslateSourceQueryParameter[] = "sourcelang";
-// Query parameter for the translate target language.
-constexpr char kTranslateTargetQueryParameter[] = "targetlang";
+// Query parameter for denoting a search companion request.
+inline constexpr char kChromeSidePanelParameterKey[] = "gsc";
+
+inline constexpr char kContextualVisualInputTypeQueryParameterValue[] = "video";
+
+inline constexpr char kDarkModeParameterKey[] = "cs";
+inline constexpr char kDarkModeParameterLightValue[] = "0";
+inline constexpr char kDarkModeParameterDarkValue[] = "1";
+
 // Query parameter for the filter type.
-constexpr char kFilterTypeQueryParameter[] = "filtertype";
-constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
+inline constexpr char kFilterTypeQueryParameter[] = "filtertype";
+
+inline constexpr char kImageVisualInputTypeQueryParameterValue[] = "img";
+
+// Query parameter for the language code.
+inline constexpr char kLanguageCodeParameterKey[] = "hl";
+
+inline constexpr char kLensRequestQueryParameter[] = "vsrid";
+inline constexpr char kLensSurfaceQueryParameter[] = "lns_surface";
+
+// Query parameter for the payload.
+inline constexpr char kPayloadQueryParameter[] = "p";
+
+inline constexpr char kPdfVisualInputTypeQueryParameterValue[] = "pdf";
+
+// Query parameter for the search text query.
+inline constexpr char kTextQueryParameterKey[] = "q";
+
+// Query parameter for the translate source language.
+inline constexpr char kTranslateSourceQueryParameter[] = "sourcelang";
+
+inline constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
+
+// Query parameter for the translate target language.
+inline constexpr char kTranslateTargetQueryParameter[] = "targetlang";
+
+inline constexpr char kUnifiedDrillDownQueryParameter[] = "udm";
+inline constexpr char kWebpageVisualInputTypeQueryParameterValue[] = "wp";
+
+inline constexpr std::array<lens::MimeType, 3> kUnsupportedVitMimeTypes = {
+    lens::MimeType::kVideo, lens::MimeType::kAudio};
 
 // Appends logs to query param as a string
-extern void AppendLogsQueryParam(
+void AppendLogsQueryParam(
     std::string* query_string,
     const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 
-// Appends or updates the start time query param with the current time if the
-// given url is a Lens url.
-extern GURL AppendOrReplaceStartTimeIfLensRequest(const GURL& url);
-
-// Appends the viewport width and height query params to the Lens or companion
-// request GURL if the width and height of the input size is not zero,
-// respectively.
-extern GURL AppendOrReplaceViewportSizeForRequest(
-    const GURL& url,
-    const gfx::Size& viewport_size);
-
-// Returns a modified GURL with appended or replaced parameters depending on the
-// entrypoint and other parameters.
-extern GURL AppendOrReplaceQueryParametersForLensRequest(
-    const GURL& url,
-    lens::EntryPoint ep,
-    lens::RenderingEnvironment re,
-    bool is_side_panel_request);
-
 // Returns a query string with all relevant query parameters. Needed for when a
 // GURL is unavailable to append to.
-extern std::string GetQueryParametersForLensRequest(
-    lens::EntryPoint ep,
-    bool is_lens_side_panel_request,
-    bool is_full_screen_request,
-    bool is_companion_request = false);
+std::string GetQueryParametersForLensRequest(EntryPoint ep);
 
-// Check if the lens URL is a valid results page. This is done by checking if
-// the URL has a payload parameter.
-bool IsValidLensResultUrl(const GURL& url);
+// Returns true if the given URL corresponds to a Lens mWeb result page. This is
+// done by checking the URL and its parameters.
+bool IsLensMWebResult(const GURL& url);
 
-// Returns true if the given URL corresponds to any Lens webpage. This is done
-// by checking if the given URL and lens::features::kHomepageURLForLens have
-// matching domains
-bool IsLensUrl(const GURL& url);
+std::string Base64EncodeRequestId(LensOverlayRequestId request_id);
+
+// Returns the vit query parameter value for the given mime type.
+std::string VitQueryParamValueForMimeType(MimeType mime_type);
+
+// Returns the vit query parameter value for the given media type.
+std::string VitQueryParamValueForMediaType(
+    LensOverlayRequestId::MediaType media_type);
+
+// Returns a key-value map of all parameters in `url` except the query
+// parameter.
+std::map<std::string, std::string> GetParametersMapWithoutQuery(
+    const GURL& url);
+
+// Returns |url_to_modify| with all the common search query parameters required
+// to enable the lens overlay results in the side panel.
+GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
+                                       const std::string& country_code,
+                                       bool use_dark_mode);
+
+// Returns whether the given |url| contains all the common search query
+// parameters required to properly enable the lens overlay results in the side
+// panel. This does not check the value of these query parameters.
+bool HasCommonSearchQueryParameters(const GURL& url);
+
+// Append the dark mode param to the provided |url_to_modify|.
+GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
+
+// Remove parameters that cause the SRP to be rendered for the side panel. Used
+// when opening the SRP in a new tab.
+GURL RemoveSidePanelURLParameters(const GURL& url);
 
 }  // namespace lens
 

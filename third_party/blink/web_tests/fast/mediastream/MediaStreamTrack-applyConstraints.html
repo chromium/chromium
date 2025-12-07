@@ -7,6 +7,18 @@
 <body>
 <script>
 
+function waitForMetadataloaded(stream) {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.muted = true;
+    video.autoplay = true;
+    video.addEventListener('loadedmetadata', () => {
+      resolve();
+    });
+    video.srcObject = stream;
+  });
+}
+
 // If a constraint is set with applyConstraints, it should come back in
 // getConstraints().
 promise_test(() => {
@@ -202,6 +214,8 @@ promise_test(async t => {
     {video: {width: 639, height: 479}});
   let track = stream.getVideoTracks()[0];
   t.add_cleanup(()=>track.stop());
+
+  await waitForMetadataloaded(stream);
   let settings = track.getSettings();
   assert_equals(settings.width, 639);
   assert_equals(settings.height, 479);

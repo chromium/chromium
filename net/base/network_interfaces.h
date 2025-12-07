@@ -67,7 +67,6 @@ struct NET_EXPORT NetworkInterface {
   ~NetworkInterface();
 
   bool operator==(const NetworkInterface& that) const = default;
-  bool operator!=(const NetworkInterface& that) const = default;
 
   std::string name;
   std::string friendly_name;  // Same as |name| on non-Windows.

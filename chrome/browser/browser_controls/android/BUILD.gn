@@ -8,12 +8,16 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsLayer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStacker.java",
-    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomOverscrollHandler.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginAdapter.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsOffsetTagsInfo.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsSizer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtils.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsVisibilityManager.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegate.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/TopControlLayer.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/TopControlsStacker.java",
   ]
 
   deps = [
@@ -22,6 +26,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//components/browser_ui/util/android:java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -30,7 +35,9 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStackerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomOverscrollHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegateTest.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/TopControlsStackerUnitTest.java",
   ]
   deps = [
     ":java",
@@ -40,7 +47,9 @@ robolectric_library("junit") {
     "//cc:cc_java",
     "//chrome/browser/flags:java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

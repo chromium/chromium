@@ -1,0 +1,55 @@
+// Imported from
+// //depot/google3/google/internal/chrome/cros/edu/schooltools/v1/receiver.proto
+syntax = "proto3";
+
+package boca;
+
+import "chromeos/ash/components/boca/proto/roster.proto";
+import "chromeos/ash/components/boca/proto/session.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message ConnectionDetails {
+  UserDeviceInfo presenter = 1;
+
+  UserDeviceInfo initiator = 2;
+
+  ConnectionParameter connection_code = 3;
+}
+
+message KioskReceiverConnection {
+  string connection_id = 1;
+
+  ReceiverConnectionState receiver_connection_state = 2;
+
+  ConnectionDetails connection_details = 3;
+
+  Timestamp request_time = 4;
+}
+
+message KioskReceiver {
+  string robot_email = 1;
+  ReceiverConnectionState state = 2;
+}
+
+message UserDeviceInfo {
+  UserIdentity user_identity = 1;
+
+  DeviceInfo device_info = 2;
+}
+
+enum ReceiverConnectionState {
+  RECEIVER_CONNECTION_STATE_UNKNOWN = 0;
+
+  START_REQUESTED = 1;
+
+  STOP_REQUESTED = 2;
+
+  CONNECTING = 3;
+
+  CONNECTED = 4;
+
+  DISCONNECTED = 5;
+
+  ERROR = 6;
+}

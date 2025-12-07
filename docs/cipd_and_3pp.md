@@ -62,7 +62,8 @@ For more on third-party dependencies, see [adding_to_third_party.md].
 
 The 3pp subdirectory will store all the 3pp related files, including a 3pp spec
 (`3pp.pb`), as well as scripts, patches and/or tools to build the software
-from source. It should be placed directly under the package directory.
+from source. It should be placed directly under the directory path that matches
+the desired name of the cipd package.
 
 Staying with the example from above, the `sample_cipd_dep` directory may be
 like the following.

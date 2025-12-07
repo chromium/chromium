@@ -37,21 +37,22 @@ source_set("ui_bundled") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
-    "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/settings/password:title_view",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
@@ -70,6 +71,20 @@ source_set("constants") {
   ]
 }
 
+source_set("password_suggestion_utils") {
+  sources = [
+    "password_suggestion_utils.h",
+    "password_suggestion_utils.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/passwords/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/gfx",
+  ]
+}
+
 source_set("eg_app_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -80,7 +95,6 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test/app:test_support",
   ]
@@ -112,27 +126,30 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/ui",
     "//components/password_manager/core/common:features",
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/settings/password:eg_test_support",
-    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/settings/password:features",
-    "//ios/chrome/browser/ui/settings/password:password_constants",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test/http_server",
     "//net:test_support",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
   ]
   frameworks = [
     "UIKit.framework",

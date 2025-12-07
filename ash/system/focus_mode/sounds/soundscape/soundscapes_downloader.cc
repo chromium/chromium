@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/soundscape/soundscape_types.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -22,13 +24,16 @@ namespace ash {
 
 namespace {
 
-constexpr size_t kMaxDownloadBytes = 20 * 1024;
+constexpr size_t kMaxDownloadBytes = 50 * 1024;
+
+// Max number of retries for fetching the configuration.
+constexpr int kMaxRetries = 3;
 
 SoundscapesDownloader::Urls ProductionConfiguration(const std::string& locale) {
   SoundscapesDownloader::Urls configuration;
   configuration.locale = locale;
   configuration.host = GURL("https://gstatic.com/chromeos-focusmode/");
-  configuration.config_path = "config.json";
+  configuration.config_path = "config_v2.json";
   return configuration;
 }
 
@@ -90,7 +95,12 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
     pending_request_ = CreateSimpleURLLoader(destination);
     network::SimpleURLLoader::BodyAsStringCallback handler =
         base::BindOnce(&SoundscapesDownloaderImpl::HandleConfigurationString,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
+                       weak_factory_.GetWeakPtr(),
+                       /*start_time=*/base::Time::Now(), std::move(callback));
+    const int retry_mode = network::SimpleURLLoader::RETRY_ON_5XX |
+                           network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                           network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
+    pending_request_->SetRetryOptions(kMaxRetries, retry_mode);
     pending_request_->DownloadToString(url_loader_factory_.get(),
                                        std::move(handler), kMaxDownloadBytes);
   }
@@ -107,13 +117,20 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
   }
 
  private:
-  void HandleConfigurationString(ConfigurationCallback callback,
+  void HandleConfigurationString(const base::Time start_time,
+                                 ConfigurationCallback callback,
                                  std::optional<std::string> response_body) {
+    const std::string method = "FocusSounds.FetchConfiguration";
+    focus_mode_util::RecordHistogramForApiLatency(
+        method, base::Time::Now() - start_time);
+
     // Move the pending request here so it's deleted when this function ends.
     std::unique_ptr<network::SimpleURLLoader> request =
         std::move(pending_request_);
 
-    if (!response_body) {
+    if (!response_body || response_body->empty()) {
+      focus_mode_util::RecordHistogramForApiResult(method,
+                                                   /*successful=*/false);
       std::move(callback).Run(std::nullopt);
       return;
     }
@@ -130,6 +147,10 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
   void HandleParsedConfiguration(
       ConfigurationCallback callback,
       std::optional<SoundscapeConfiguration> configuration) {
+    focus_mode_util::RecordHistogramForApiResult(
+        "FocusSounds.FetchConfiguration",
+        /*successful=*/configuration.has_value() &&
+            !configuration.value().playlists.empty());
     std::move(callback).Run(std::move(configuration));
   }
 

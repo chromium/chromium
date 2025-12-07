@@ -14,7 +14,7 @@ enum WebPrintJobState {
 };
 
 dictionary WebPrintJobAttributes {
-  DOMString jobName;
+  USVString jobName;
   unsigned long jobPages;
   unsigned long jobPagesCompleted;
   WebPrintJobState jobState;

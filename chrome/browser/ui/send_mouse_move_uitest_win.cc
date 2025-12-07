@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "base/run_loop.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -36,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(SendMouseMoveUITest, DISABLED_Fullscreen) {
   // current process.
   chrome::ToggleFullscreenMode(browser());
 
-  display::Screen* const screen = display::Screen::GetScreen();
+  display::Screen* const screen = display::Screen::Get();
   const gfx::Rect screen_bounds = screen->GetPrimaryDisplay().bounds();
   for (int scan_y = screen_bounds.y(); scan_y < screen_bounds.bottom();
        ++scan_y) {
@@ -65,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(SendMouseMoveUITest, DISABLED_Probe) {
   // current process.
   chrome::ToggleFullscreenMode(browser());
 
-  display::Screen* const screen = display::Screen::GetScreen();
+  display::Screen* const screen = display::Screen::Get();
   const gfx::Rect screen_bounds = screen->GetPrimaryDisplay().bounds();
 
   // Position the mouse at the corners and the center.

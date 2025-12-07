@@ -5,7 +5,6 @@
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
@@ -46,7 +45,7 @@ void ImeLoggerBridge(int severity, const char* message) {
     default:
       // There's no LOGGING_VERBOSE level in absl logging. Nothing should reach
       // here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

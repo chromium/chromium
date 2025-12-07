@@ -13,7 +13,6 @@
 namespace content {
 
 using COOP = network::mojom::CrossOriginOpenerPolicyValue;
-using Result = CoopSwapResult;
 using CrossOriginOpenerPolicyStatusTest = testing::Test;
 
 TEST(CrossOriginOpenerPolicyStatusTest,
@@ -21,93 +20,36 @@ TEST(CrossOriginOpenerPolicyStatusTest,
   struct TestCase {
     COOP coop_from;
     COOP coop_to;
-    CoopSwapResult expect_swap_same_origin;
-    CoopSwapResult expect_swap_cross_origin;
-    CoopSwapResult expect_swap_new_popup;
+    bool expect_swap_same_origin;
+    bool expect_swap_cross_origin;
+    bool expect_swap_new_popup;
   } cases[] = {
       // 'unsafe-none' -> *
-      {COOP::kUnsafeNone, COOP::kUnsafeNone, Result::kNoSwap, Result::kNoSwap,
-       Result::kNoSwap},
-      {COOP::kUnsafeNone, COOP::kSameOrigin, Result::kSwap, Result::kSwap,
-       Result::kSwap},
-      {COOP::kUnsafeNone, COOP::kSameOriginPlusCoep, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kUnsafeNone, COOP::kSameOriginAllowPopups, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kUnsafeNone, COOP::kRestrictProperties, Result::kSwapRelated,
-       Result::kSwapRelated, Result::kSwapRelated},
-      {COOP::kUnsafeNone, COOP::kRestrictPropertiesPlusCoep,
-       Result::kSwapRelated, Result::kSwapRelated, Result::kSwapRelated},
+      {COOP::kUnsafeNone, COOP::kUnsafeNone, false, false, false},
+      {COOP::kUnsafeNone, COOP::kSameOrigin, true, true, true},
+      {COOP::kUnsafeNone, COOP::kSameOriginPlusCoep, true, true, true},
+      {COOP::kUnsafeNone, COOP::kSameOriginAllowPopups, true, true, true},
 
       // 'same-origin' -> *
-      {COOP::kSameOrigin, COOP::kUnsafeNone, Result::kSwap, Result::kSwap,
-       Result::kSwap},
-      {COOP::kSameOrigin, COOP::kSameOrigin, Result::kNoSwap, Result::kSwap,
-       Result::kSwap},
-      {COOP::kSameOrigin, COOP::kSameOriginPlusCoep, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOrigin, COOP::kSameOriginAllowPopups, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOrigin, COOP::kRestrictProperties, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOrigin, COOP::kRestrictPropertiesPlusCoep, Result::kSwap,
-       Result::kSwap, Result::kSwap},
+      {COOP::kSameOrigin, COOP::kUnsafeNone, true, true, true},
+      {COOP::kSameOrigin, COOP::kSameOrigin, false, true, true},
+      {COOP::kSameOrigin, COOP::kSameOriginPlusCoep, true, true, true},
+      {COOP::kSameOrigin, COOP::kSameOriginAllowPopups, true, true, true},
 
       // 'same-origin' + COEP -> *
-      {COOP::kSameOriginPlusCoep, COOP::kUnsafeNone, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginPlusCoep, COOP::kSameOrigin, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginPlusCoep, COOP::kSameOriginPlusCoep, Result::kNoSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginPlusCoep, COOP::kSameOriginAllowPopups, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginPlusCoep, COOP::kRestrictProperties, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginPlusCoep, COOP::kRestrictPropertiesPlusCoep,
-       Result::kSwap, Result::kSwap, Result::kSwap},
+      {COOP::kSameOriginPlusCoep, COOP::kUnsafeNone, true, true, true},
+      {COOP::kSameOriginPlusCoep, COOP::kSameOrigin, true, true, true},
+      {COOP::kSameOriginPlusCoep, COOP::kSameOriginPlusCoep, false, true, true},
+      {COOP::kSameOriginPlusCoep, COOP::kSameOriginAllowPopups, true, true,
+       true},
 
       // 'same-origin-allow-popups' -> *
-      {COOP::kSameOriginAllowPopups, COOP::kUnsafeNone, Result::kSwap,
-       Result::kSwap, Result::kNoSwap},
-      {COOP::kSameOriginAllowPopups, COOP::kSameOrigin, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginAllowPopups, COOP::kSameOriginPlusCoep, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginAllowPopups, COOP::kSameOriginAllowPopups,
-       Result::kNoSwap, Result::kSwap, Result::kSwap},
-      {COOP::kSameOriginAllowPopups, COOP::kRestrictProperties, Result::kSwap,
-       Result::kSwap, Result::kSwapRelated},
-      {COOP::kSameOriginAllowPopups, COOP::kRestrictPropertiesPlusCoep,
-       Result::kSwap, Result::kSwap, Result::kSwapRelated},
-
-      // 'restrict-properties' -> *
-      {COOP::kRestrictProperties, COOP::kUnsafeNone, Result::kSwapRelated,
-       Result::kSwapRelated, Result::kSwapRelated},
-      {COOP::kRestrictProperties, COOP::kSameOrigin, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kRestrictProperties, COOP::kSameOriginPlusCoep, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kRestrictProperties, COOP::kSameOriginAllowPopups, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kRestrictProperties, COOP::kRestrictProperties, Result::kNoSwap,
-       Result::kSwapRelated, Result::kSwapRelated},
-      {COOP::kRestrictProperties, COOP::kRestrictPropertiesPlusCoep,
-       Result::kSwapRelated, Result::kSwapRelated, Result::kSwapRelated},
-
-      // 'restrict-properties' + COEP -> *
-      {COOP::kRestrictPropertiesPlusCoep, COOP::kUnsafeNone,
-       Result::kSwapRelated, Result::kSwapRelated, Result::kSwapRelated},
-      {COOP::kRestrictPropertiesPlusCoep, COOP::kSameOrigin, Result::kSwap,
-       Result::kSwap, Result::kSwap},
-      {COOP::kRestrictPropertiesPlusCoep, COOP::kSameOriginPlusCoep,
-       Result::kSwap, Result::kSwap, Result::kSwap},
-      {COOP::kRestrictPropertiesPlusCoep, COOP::kSameOriginAllowPopups,
-       Result::kSwap, Result::kSwap, Result::kSwap},
-      {COOP::kRestrictPropertiesPlusCoep, COOP::kRestrictProperties,
-       Result::kSwapRelated, Result::kSwapRelated, Result::kSwapRelated},
-      {COOP::kRestrictPropertiesPlusCoep, COOP::kRestrictPropertiesPlusCoep,
-       Result::kNoSwap, Result::kSwapRelated, Result::kSwapRelated},
+      {COOP::kSameOriginAllowPopups, COOP::kUnsafeNone, true, true, false},
+      {COOP::kSameOriginAllowPopups, COOP::kSameOrigin, true, true, true},
+      {COOP::kSameOriginAllowPopups, COOP::kSameOriginPlusCoep, true, true,
+       true},
+      {COOP::kSameOriginAllowPopups, COOP::kSameOriginAllowPopups, false, true,
+       true},
   };
   for (const auto& test : cases) {
     url::Origin A = url::Origin::Create(GURL("https://www.a.com"));

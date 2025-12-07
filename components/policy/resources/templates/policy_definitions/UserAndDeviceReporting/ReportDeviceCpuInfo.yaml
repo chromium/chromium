@@ -5,6 +5,7 @@ desc: |-
 
         Setting the policy to Disabled means enrolled devices don’t report any CPU information.
         Exception CPU utilization and temperature reporting is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 and below.
+default: true
 device_only: true
 example_value: false
 features:

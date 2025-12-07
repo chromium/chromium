@@ -62,6 +62,7 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
 
   // MostVisitedSites::Observer.
   void OnURLsAvailable(
+      bool is_user_triggered,
       const std::map<SectionType, NTPTilesVector>& sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
 

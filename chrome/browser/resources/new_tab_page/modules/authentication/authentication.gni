@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that should be passed to html_to_wrapper().
+authentication_web_component_files =
+    [ "modules/authentication/microsoft_auth_module.ts" ]
+
+# List of files that don't need to be passed to html_to_wrapper().
+authentication_ts_files =
+    [ "modules/authentication/microsoft_auth_module_proxy.ts" ]
+
+authentication_css_files =
+    [ "modules/authentication/microsoft_auth_module.css" ]

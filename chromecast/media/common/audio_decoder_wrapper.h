@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/common/audio_decoder_software_wrapper.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"

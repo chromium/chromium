@@ -4,7 +4,16 @@
 
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 
+#include <cstdint>
+#include <optional>
+#include <utility>
 #include <vector>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
 
 namespace blink {
 
@@ -45,7 +54,7 @@ void CoalescedTasks::RunScheduledTasks(
     base::AutoLock auto_lock(lock_);
     // `scheduled_time` is no longer scheduled.
     auto scheduled_ticks_it = scheduled_ticks_.find(scheduled_time);
-    DCHECK(scheduled_ticks_it != scheduled_ticks_.end());
+    CHECK(scheduled_ticks_it != scheduled_ticks_.end());
     scheduled_ticks_.erase(scheduled_ticks_it);
     // Obtain ready tasks so that we can run them whilst not holding the lock.
     while (!delayed_tasks_.empty()) {

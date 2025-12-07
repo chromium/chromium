@@ -16,11 +16,11 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -33,7 +33,7 @@ using testing::Return;
 
 namespace {
 // Fake dispatch response InfoType for use in tests.
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(DispatchInfo);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(DispatchInfo);
 
 // Fake OverlayRequestSupport that supports requests configured with
 // InfobarOverlayRequestConfigs with a specified InfobarOverlayType.
@@ -60,8 +60,8 @@ class InfobarOverlayBrowserAgentTest
     : public testing::TestWithParam<InfobarOverlayType> {
  public:
   InfobarOverlayBrowserAgentTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+      : profile_(TestProfileIOS::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
         interaction_handler_builder_(InfobarType::kInfobarTypeConfirm) {
     // Add an activated WebState into whose queues infobar OverlayRequests will
     // be added.
@@ -143,7 +143,7 @@ class InfobarOverlayBrowserAgentTest
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   std::map<InfobarOverlayType, FakeInfobarOverlayRequestSupport>

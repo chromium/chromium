@@ -36,16 +36,11 @@
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "components/soda/soda_installer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#else  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -60,9 +55,8 @@ ChromeSpeechRecognitionManagerDelegate
 ::ChromeSpeechRecognitionManagerDelegate() {
 }
 
-ChromeSpeechRecognitionManagerDelegate
-::~ChromeSpeechRecognitionManagerDelegate() {
-}
+ChromeSpeechRecognitionManagerDelegate ::
+    ~ChromeSpeechRecognitionManagerDelegate() = default;
 
 void ChromeSpeechRecognitionManagerDelegate::OnRecognitionStart(
     int session_id) {
@@ -131,29 +125,21 @@ ChromeSpeechRecognitionManagerDelegate::GetEventListener() {
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-        recognition_receiver) {
+        recognition_receiver,
+    const std::string& language) {
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+          [](const std::string& language,
+             mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
                  receiver) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-            // On LaCrOS, forward to Ash.
-            auto* service = chromeos::LacrosService::Get();
-            if (service &&
-                service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
-              service->GetRemote<crosapi::mojom::SpeechRecognition>()
-                  ->BindSpeechRecognitionContext(std::move(receiver));
-            }
-#else  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On other platforms (Ash, desktop), bind via the appropriate factory.
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
             auto* profile = ProfileManager::GetLastUsedProfileIfLoaded();
             auto* factory =
                 SpeechRecognitionServiceFactory::GetForProfile(profile);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
             auto* profile = ProfileManager::GetPrimaryUserProfile();
             auto* factory =
                 CrosSpeechRecognitionServiceFactory::GetForProfile(profile);
@@ -165,13 +151,11 @@ void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
             }
             // Reset the SODA uninstall timer when used by the Web Speech API.
             if (profile) {
-              PrefService* pref_service = profile->GetPrefs();
-              speech::SodaInstaller::GetInstance()->SetUninstallTimer(
-                  pref_service, g_browser_process->local_state());
+              SodaInstaller::GetInstance()->SetUninstallTimer(
+                  g_browser_process->local_state(), language);
             }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
           },
-          std::move(recognition_receiver)));
+          language, std::move(recognition_receiver)));
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -213,16 +197,16 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  extensions::mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  extensions::mojom::ViewType view_type =
+      extensions::GetViewType(render_frame_host);
 
   if (view_type == extensions::mojom::ViewType::kTabContents ||
       view_type == extensions::mojom::ViewType::kAppWindow ||
       view_type == extensions::mojom::ViewType::kComponent ||
       view_type == extensions::mojom::ViewType::kExtensionPopup ||
       view_type == extensions::mojom::ViewType::kExtensionBackgroundPage ||
-      view_type == extensions::mojom::ViewType::kExtensionSidePanel) {
+      view_type == extensions::mojom::ViewType::kExtensionSidePanel ||
+      view_type == extensions::mojom::ViewType::kDeveloperTools) {
     // If it is a tab, we can check for permission. For apps, this means
     // manifest would be checked for permission.
     allowed = true;

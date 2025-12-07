@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR kodas</translation>
 <translation id="2244252133441425811">Įgalinti vaizdo įrašų KPS rinkiklį</translation>
 <translation id="2271433936731426666">Įgalinti viso dydžio momentinę vaizdo įrašo nuotrauką</translation>
-<translation id="2281736597583450397">Ryškesnės detalės naudojant patobulintą mastelio keitimo funkciją</translation>
 <translation id="2320741269052147773">Pastumti kairėn</translation>
 <translation id="2360840973209616515">Fotoaparato programą tvarko administratorius.
         Jei reikia išsamios informacijos, susisiekite su administratoriumi.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Tolinti</translation>
 <translation id="5976160379964388480">Kita</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
-<translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6197807149213783179">Išsaugoti metaduomenis</translation>
 <translation id="6233780560267770709">3 iš 3</translation>
 <translation id="6243827288366940320">Geriausias įvertinimas</translation>
@@ -122,7 +120,6 @@
 Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotraukos ar vaizdo įrašo pavyzdį ir apibūdinkite, kad negerai. (Pavyzdžiui, nuotrauka pernelyg tamsi arba objektas nesufokusuotas.)</translation>
 <translation id="6519884562954018934">Prisijungti prie „<ph name="WIFINAME" />“</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
-<translation id="6586509689874700895">Pirmiausia paspauskite <ph name="BUTTON_NAME" />, kad priartintumėte. Tada nufotografavę matysite aiškesnes detales.</translation>
 <translation id="659539649712855529">Nukopijuotas turinys „<ph name="CONTENT" />“.</translation>
 <translation id="6617916774429601017">Rodyti visas skyras</translation>
 <translation id="6631515515009660915">Veidrodinis vaizdas išjungtas</translation>
@@ -168,7 +165,6 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8609951387004618906">Atidaryti <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 taškų</translation>
 <translation id="8711011893539266636">Perjungti mikrofono nutildymą. Nutildymas įjungtas</translation>
-<translation id="8712637175834984815">Supratau</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8732462232047530626">Peržiūrėti metaduomenis</translation>
 <translation id="874854738381978209">Aptiktas „Wi-Fi“ tinklas.</translation>

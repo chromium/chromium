@@ -28,7 +28,7 @@ TEST_F(TextFinderTest, FoundTextTest) {
   TextFinder finder("abc,def");
   finder.SetDidFinishHandler(
       base::BindOnce(&TextFinderTest::SetFindingState, base::Unretained(this)));
-  finder.DidFinishAttachment(rect);
+  finder.DidFinishAttachment(rect, blink::mojom::AttachmentResult::kSuccess);
   EXPECT_TRUE(is_found_);
 }
 
@@ -38,7 +38,8 @@ TEST_F(TextFinderTest, NotFoundTextTest) {
   TextFinder finder("abc,def");
   finder.SetDidFinishHandler(
       base::BindOnce(&TextFinderTest::SetFindingState, base::Unretained(this)));
-  finder.DidFinishAttachment(rect);
+  finder.DidFinishAttachment(
+      rect, blink::mojom::AttachmentResult::kSelectorNotMatched);
   EXPECT_FALSE(is_found_);
 }
 

@@ -7,8 +7,11 @@
 #include <stddef.h>
 
 #include "base/strings/strcat.h"
+#include "extensions/buildflags/buildflags.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -19,17 +22,17 @@ static const size_t kMaximumCacheSize = 1000;
 DatabaseStringTable::DatabaseStringTable(const std::string& table)
     : table_(table) {}
 
-DatabaseStringTable::~DatabaseStringTable() {}
+DatabaseStringTable::~DatabaseStringTable() = default;
 
 bool DatabaseStringTable::Initialize(sql::Database* connection) {
   if (!connection->DoesTableExist(table_.c_str())) {
     return connection->Execute(base::StrCat(
-        {"CREATE TABLE ", table_,
-         "(id INTEGER PRIMARY KEY, value TEXT NOT NULL);",
-         "CREATE UNIQUE INDEX ", table_, "_index ON ", table_, "(value)"}));
-  } else {
-    return true;
+               {"CREATE TABLE ", table_,
+                "(id INTEGER PRIMARY KEY, value TEXT NOT NULL)"})) &&
+           connection->Execute(base::StrCat({"CREATE UNIQUE INDEX ", table_,
+                                             "_index ON ", table_, "(value)"}));
   }
+  return true;
 }
 
 bool DatabaseStringTable::StringToInt(sql::Database* connection,

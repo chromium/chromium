@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] contenteditable=plaintext-only in the design mode should not prevent the style edit
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><b>ABC</b></div>" but got "<div contenteditable=\\"plaintext-only\\">ABC</div>"
+[FAIL] contenteditable=plaintext-only in the design mode should not cause inserting line break at typing Enter
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><p>A</p><p>B</p></div>" but got "<div contenteditable=\\"plaintext-only\\"><p>\\nAB</p></div>"
+Harness: the test ran to completion.
+

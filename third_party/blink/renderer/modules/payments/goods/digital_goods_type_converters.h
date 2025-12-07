@@ -17,10 +17,10 @@ template <typename T, typename U>
 struct TypeConverter;
 
 template <>
-struct MODULES_EXPORT
-    TypeConverter<WTF::String,
-                  payments::mojom::blink::CreateDigitalGoodsResponseCode> {
-  static WTF::String Convert(
+struct MODULES_EXPORT TypeConverter<
+    blink::String,
+    payments::mojom::blink::CreateDigitalGoodsResponseCode> {
+  static blink::String Convert(
       const payments::mojom::blink::CreateDigitalGoodsResponseCode& input);
 };
 
@@ -34,9 +34,10 @@ struct MODULES_EXPORT
 };
 
 template <>
-struct MODULES_EXPORT
-    TypeConverter<WTF::String, payments::mojom::blink::BillingResponseCode> {
-  static WTF::String Convert(
+struct MODULES_EXPORT TypeConverter<
+    blink::String,
+    payments::mojom::blink::BillingResponseCode> {
+  static blink::String Convert(
       const payments::mojom::blink::BillingResponseCode& input);
 };
 

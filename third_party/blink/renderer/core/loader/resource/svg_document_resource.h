@@ -26,6 +26,8 @@ class SVGDocumentResource final : public TextResource {
                       const TextResourceDecoderOptions&,
                       SVGResourceDocumentContent*);
 
+  bool CanUseCacheValidator() const override;
+
   void NotifyStartLoad() override;
   void Finish(base::TimeTicks finish_time,
               base::SingleThreadTaskRunner*) override;
@@ -38,6 +40,8 @@ class SVGDocumentResource final : public TextResource {
 
  private:
   void DestroyDecodedDataForFailedRevalidation() override;
+
+  bool UpdateContent();
 
   Member<SVGResourceDocumentContent> content_;
 };

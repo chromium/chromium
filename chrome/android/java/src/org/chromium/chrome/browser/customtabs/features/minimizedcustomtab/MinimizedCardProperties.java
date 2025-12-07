@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties of the minimized card. */
+@NullMarked
 public class MinimizedCardProperties {
     /** The title of the minimized webpage. */
     public static final WritableObjectPropertyKey<String> TITLE =

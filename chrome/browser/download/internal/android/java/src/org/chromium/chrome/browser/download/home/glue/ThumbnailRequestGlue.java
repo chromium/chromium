@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.download.home.glue;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProviderImpl;
@@ -21,6 +25,7 @@ import org.chromium.ui.display.DisplayAndroid;
  * Glue class responsible for connecting the current downloads and {@link OfflineContentProvider}
  * thumbnail work to the {@link ThumbnailProvider} via a custom {@link ThumbnailProviderImpl}.
  */
+@NullMarked
 public class ThumbnailRequestGlue implements ThumbnailRequest {
     private final OfflineContentProvider mProvider;
     private final OfflineItem mItem;
@@ -49,22 +54,22 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
 
     // ThumbnailRequest implementation.
     @Override
-    public String getFilePath() {
+    public @Nullable String getFilePath() {
         return mItem.filePath;
     }
 
     @Override
-    public String getMimeType() {
+    public @Nullable String getMimeType() {
         return mItem.mimeType;
     }
 
     @Override
-    public String getContentId() {
-        return mItem.id.id;
+    public @Nullable String getContentId() {
+        return assumeNonNull(mItem.id).id;
     }
 
     @Override
-    public void onThumbnailRetrieved(String contentId, Bitmap thumbnail) {
+    public void onThumbnailRetrieved(String contentId, @Nullable Bitmap thumbnail) {
         OfflineItemVisuals visuals = null;
         if (thumbnail != null) {
             visuals = new OfflineItemVisuals();
@@ -82,11 +87,9 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
     @Override
     public boolean getThumbnail(Callback<Bitmap> callback) {
         mProvider.getVisualsForItem(
-                mItem.id,
+                assumeNonNull(mItem.id),
                 (id, visuals) -> {
-                    if (visuals == null || visuals.icon == null) {
-                        callback.onResult(null);
-                    } else {
+                    if (visuals != null && visuals.icon != null) {
                         Bitmap bitmap = visuals.icon;
                         int newWidth = bitmap.getWidth();
                         int newHeight = bitmap.getHeight();

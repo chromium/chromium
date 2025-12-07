@@ -10,7 +10,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/task/bind_post_task.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
@@ -27,28 +27,6 @@ using QueryScheduler = internal::QueryScheduler;
 // Copied from ProcessMetricsDecorator::kMinImmediateRefreshDelay.
 // TODO(crbug.com/40926264): Manage timing centrally in QueryScheduler.
 base::TimeDelta g_min_memory_query_delay = base::Seconds(2);
-
-void AddScopedQueryToScheduler(QueryParams* query_params,
-                               QueryScheduler* scheduler) {
-  scheduler->AddScopedQuery(query_params);
-}
-
-void RemoveScopedQueryFromScheduler(std::unique_ptr<QueryParams> query_params,
-                                    QueryScheduler* scheduler) {
-  scheduler->RemoveScopedQuery(std::move(query_params));
-}
-
-void StartRepeatingQueryInScheduler(QueryParams* query_params,
-                                    QueryScheduler* scheduler) {
-  scheduler->StartRepeatingQuery(query_params);
-}
-
-void RequestResultsFromScheduler(
-    QueryParams* query_params,
-    base::OnceCallback<void(const QueryResultMap&)> callback,
-    QueryScheduler* scheduler) {
-  scheduler->RequestResults(*query_params, std::move(callback));
-}
 
 }  // namespace
 
@@ -106,12 +84,11 @@ void ScopedResourceUsageQuery::ThrottledTimer::SendRequestToScheduler(
     scoped_refptr<ObserverList> observer_list,
     bool timer_fired) {
   if (ShouldSendRequest(params, timer_fired)) {
-    // Unretained is safe because the ScopedResourceUsageQuery destructor passes
-    // `params` to the scheduler sequence to delete.
-    QueryScheduler::CallWithScheduler(base::BindOnce(
-        &RequestResultsFromScheduler, base::Unretained(params),
-        base::BindOnce(&ScopedResourceUsageQuery::NotifyObservers,
-                       observer_list)));
+    if (auto* scheduler = QueryScheduler::Get()) {
+      scheduler->RequestResults(
+          *params, base::BindOnce(&ScopedResourceUsageQuery::NotifyObservers,
+                                  observer_list));
+    }
   }
 }
 
@@ -174,8 +151,11 @@ ScopedResourceUsageQuery::~ScopedResourceUsageQuery() {
   // Notify the scheduler this query no longer exists. Sends the QueryParams to
   // the scheduler to delete to be sure they're valid until the scheduler reads
   // them.
-  QueryScheduler::CallWithScheduler(
-      base::BindOnce(&RemoveScopedQueryFromScheduler, std::move(params_)));
+  // TODO(crbug.com/40755583): No need to pass ownership of params since this is
+  // no longer asynchronous.
+  if (auto* scheduler = QueryScheduler::Get()) {
+    scheduler->RemoveScopedQuery(std::move(params_));
+  }
 }
 
 ScopedResourceUsageQuery::ScopedResourceUsageQuery(ScopedResourceUsageQuery&&) =
@@ -195,13 +175,20 @@ void ScopedResourceUsageQuery::RemoveObserver(QueryResultObserver* observer) {
   observer_list_->RemoveObserver(observer);
 }
 
-void ScopedResourceUsageQuery::Start(base::TimeDelta delay) {
+void ScopedResourceUsageQuery::Start(base::TimeDelta delay,
+                                     bool observe_other_queries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Unretained is safe because the destructor passes `params_` to the scheduler
-  // sequence to delete.
-  QueryScheduler::CallWithScheduler(base::BindOnce(
-      &StartRepeatingQueryInScheduler, base::Unretained(params_.get())));
-  throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
+  if (auto* scheduler = QueryScheduler::Get()) {
+    scheduler->StartRepeatingQuery(
+        params_.get(),
+        observe_other_queries
+            ? base::BindRepeating(&ScopedResourceUsageQuery::NotifyObservers,
+                                  observer_list_)
+            : base::NullCallback());
+  }
+  if (delay.is_positive()) {
+    throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
+  }
 }
 
 void ScopedResourceUsageQuery::QueryOnce() {
@@ -225,10 +212,9 @@ ScopedResourceUsageQuery::ScopedResourceUsageQuery(
     std::unique_ptr<QueryParams> params)
     : params_(std::move(params)),
       throttled_timer_(std::make_unique<ThrottledTimer>()) {
-  // Unretained is safe because the destructor passes `params_` to the scheduler
-  // sequence to delete.
-  QueryScheduler::CallWithScheduler(base::BindOnce(
-      &AddScopedQueryToScheduler, base::Unretained(params_.get())));
+  if (auto* scheduler = QueryScheduler::Get()) {
+    scheduler->AddScopedQuery(params_.get());
+  }
 }
 
 // static
@@ -271,16 +257,13 @@ ScopedResourceUsageQuery QueryBuilder::CreateScopedQuery() {
 }
 
 void QueryBuilder::QueryOnce(
-    base::OnceCallback<void(const QueryResultMap&)> callback,
-    scoped_refptr<base::TaskRunner> task_runner) {
+    base::OnceCallback<void(const QueryResultMap&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ValidateQuery();
-  // Pass ownership of `params_` to the scheduler, to avoid copying the
-  // parameter contents. QueryScheduler::RequestResult() will consume what it
-  // needs from the params, which will then be deleted by the Owned() wrapper.
-  QueryScheduler::CallWithScheduler(base::BindOnce(
-      &RequestResultsFromScheduler, base::Owned(params_.release()),
-      base::BindPostTask(task_runner, std::move(callback))));
+  if (auto* scheduler = QueryScheduler::Get()) {
+    scheduler->RequestResults(*params_, std::move(callback));
+  }
+  params_.reset();
 }
 
 QueryBuilder QueryBuilder::Clone() const {

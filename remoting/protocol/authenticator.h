@@ -7,8 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/protocol/credentials_type.h"
 
 namespace jingle_xmpp {
@@ -70,9 +73,6 @@ class Authenticator {
     // The client JID was not valid (i.e. violated a policy or was malformed).
     INVALID_ACCOUNT_ID,
 
-    // Generic error used when something goes wrong establishing a session.
-    PROTOCOL_ERROR,
-
     // Session was rejected by the user (i.e. via the confirmation dialog).
     REJECTED_BY_USER,
 
@@ -98,6 +98,52 @@ class Authenticator {
     // Failed to find an authentication method that is supported by both the
     // host and the client.
     NO_COMMON_AUTH_METHOD,
+
+    // A local network issue has prevented the remote connection.
+    NETWORK_FAILURE,
+
+    // The authenticator is not in a valid state.
+    INVALID_STATE,
+
+    // The peer has sent an invalid message. E.g. fields are missing in the
+    // message.
+    INVALID_ARGUMENT,
+
+    // Generic error used when something goes wrong establishing a session.
+    UNEXPECTED_ERROR,
+  };
+
+  // Details explaining why authentication was rejected.
+  struct RejectionDetails {
+    RejectionDetails();
+    RejectionDetails(RejectionDetails&&);
+    RejectionDetails(const RejectionDetails&);
+
+    // Creates a RejectionDetails object with the message and the location. If
+    // |location| is omitted, the current location where the object is
+    // constructed will be used.
+    explicit RejectionDetails(
+        std::string_view message,
+        // Current() takes location info with default parameters, which is
+        // filled when this constructor is called.
+        const base::Location& location = base::Location::Current());
+    ~RejectionDetails();
+
+    RejectionDetails& operator=(RejectionDetails&&);
+    RejectionDetails& operator=(const RejectionDetails&);
+
+    // Returns whether the RejectionDetails is null, i.e. there is no location
+    // info and no rejection message.
+    inline bool is_null() const {
+      return location.program_counter() == nullptr && message.empty();
+    }
+
+    // A free-form human-readable string that describes the reason for the
+    // rejection.
+    std::string message;
+
+    // Denotes where the error occurs in the code.
+    base::Location location;
   };
 
   // Callback used for layered Authenticator implementations, particularly
@@ -145,6 +191,10 @@ class Authenticator {
   // Returns rejection reason. Can be called only when in REJECTED state.
   virtual RejectionReason rejection_reason() const = 0;
 
+  // Returns the rejection details, or null if no details are available.
+  // Can be called only when in REJECTED state.
+  virtual RejectionDetails rejection_details() const = 0;
+
   // Called in response to incoming message received from the peer.
   // Should only be called when in WAITING_MESSAGE state. Caller retains
   // ownership of |message|. |resume_callback| will be called when processing is
@@ -159,6 +209,10 @@ class Authenticator {
 
   // Returns the auth key received as result of the authentication handshake.
   virtual const std::string& GetAuthKey() const = 0;
+
+  // Returns the session policies, or nullptr if no session policies are
+  // specified. Must be called in the ACCEPTED state.
+  virtual const SessionPolicies* GetSessionPolicies() const = 0;
 
   // Creates new authenticator for a channel. Can be called only in
   // the ACCEPTED state.

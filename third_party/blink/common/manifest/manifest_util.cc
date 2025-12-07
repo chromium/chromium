@@ -7,9 +7,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -41,6 +40,34 @@ bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
   return manifest && IsDefaultManifest(*manifest, document_url);
 }
 
+std::optional<blink::mojom::Manifest_TextDirection> TextDirectionFromString(
+    const std::string& dir) {
+  using TextDirection = blink::mojom::Manifest_TextDirection;
+  if (base::EqualsCaseInsensitiveASCII(dir, "auto")) {
+    return TextDirection::kAuto;
+  }
+  if (base::EqualsCaseInsensitiveASCII(dir, "ltr")) {
+    return TextDirection::kLTR;
+  }
+  if (base::EqualsCaseInsensitiveASCII(dir, "rtl")) {
+    return TextDirection::kRTL;
+  }
+  return std::nullopt;
+}
+
+std::string TextDirectionToString(
+    blink::mojom::Manifest_TextDirection direction) {
+  switch (direction) {
+    case blink::mojom::Manifest_TextDirection::kAuto:
+      return "auto";
+    case blink::mojom::Manifest_TextDirection::kLTR:
+      return "ltr";
+    case blink::mojom::Manifest_TextDirection::kRTL:
+      return "rtl";
+  }
+  NOTREACHED();
+}
+
 std::string DisplayModeToString(blink::mojom::DisplayMode display) {
   switch (display) {
     case blink::mojom::DisplayMode::kUndefined:
@@ -62,7 +89,7 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
     case blink::mojom::DisplayMode::kPictureInPicture:
       return "picture-in-picture";
   }
-  return "";
+  NOTREACHED();
 }
 
 blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
@@ -141,17 +168,6 @@ device::mojom::ScreenOrientationLockType WebScreenOrientationLockTypeFromString(
   if (base::EqualsCaseInsensitiveASCII(orientation, "natural"))
     return device::mojom::ScreenOrientationLockType::NATURAL;
   return device::mojom::ScreenOrientationLockType::DEFAULT;
-}
-
-mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
-  if (base::EqualsCaseInsensitiveASCII(capture_links, "none"))
-    return mojom::CaptureLinks::kNone;
-  if (base::EqualsCaseInsensitiveASCII(capture_links, "new-client"))
-    return mojom::CaptureLinks::kNewClient;
-  if (base::EqualsCaseInsensitiveASCII(capture_links,
-                                       "existing-client-navigate"))
-    return mojom::CaptureLinks::kExistingClientNavigate;
-  return mojom::CaptureLinks::kUndefined;
 }
 
 std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(

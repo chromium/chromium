@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/optimization_guide/core/model_info.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 
 namespace page_content_annotations {

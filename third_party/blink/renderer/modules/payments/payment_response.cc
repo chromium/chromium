@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_complete.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.h"
@@ -23,11 +24,10 @@
 namespace blink {
 namespace {
 
-v8::Local<v8::Value> BuildDetails(
-    ScriptState* script_state,
-    const String& json,
-    mojom::blink::GetAssertionAuthenticatorResponsePtr
-        get_assertion_authentication_response) {
+ScriptObject BuildDetails(ScriptState* script_state,
+                          const String& json,
+                          mojom::blink::GetAssertionAuthenticatorResponsePtr
+                              get_assertion_authentication_response) {
   if (get_assertion_authentication_response) {
     const auto& info = get_assertion_authentication_response->info;
     auto* authenticator_response =
@@ -39,31 +39,25 @@ v8::Local<v8::Value> BuildDetails(
 
     auto* result = MakeGarbageCollected<PublicKeyCredential>(
         get_assertion_authentication_response->info->id,
-        DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
-                               info->raw_id.size()),
-        authenticator_response,
+        DOMArrayBuffer::Create(info->raw_id), authenticator_response,
         get_assertion_authentication_response->authenticator_attachment,
         ConvertTo<AuthenticationExtensionsClientOutputs*>(
             get_assertion_authentication_response->extensions));
-    return result->ToV8(script_state);
+    return ScriptObject(script_state->GetIsolate(), result->ToV8(script_state));
   }
 
   if (json.empty()) {
-    return V8ObjectBuilder(script_state).V8Value();
+    return V8ObjectBuilder(script_state).ToScriptObject();
   }
 
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kConstructor,
-                                 "PaymentResponse");
-  v8::Local<v8::Value> parsed_value =
-      FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                     json, exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
-    return V8ObjectBuilder(script_state).V8Value();
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  v8::Local<v8::Value> parsed_value = FromJSONString(script_state, json);
+  if (try_catch.HasCaught()) {
+    return V8ObjectBuilder(script_state).ToScriptObject();
   }
 
-  return parsed_value;
+  CHECK(parsed_value->IsObject());
+  return ScriptObject(script_state->GetIsolate(), parsed_value);
 }
 
 }  // namespace
@@ -86,10 +80,9 @@ PaymentResponse::PaymentResponse(
       payment_state_resolver_(payment_state_resolver) {
   DCHECK(payment_state_resolver_);
   ScriptState::Scope scope(script_state);
-  details_.Set(
-      script_state->GetIsolate(),
+  details_ =
       BuildDetails(script_state, response->stringified_details,
-                   std::move(response->get_assertion_authenticator_response)));
+                   std::move(response->get_assertion_authenticator_response));
 }
 
 PaymentResponse::~PaymentResponse() = default;
@@ -107,10 +100,9 @@ void PaymentResponse::Update(
   payer_email_ = response->payer->email;
   payer_phone_ = response->payer->phone;
   ScriptState::Scope scope(script_state);
-  details_.Set(
-      script_state->GetIsolate(),
+  details_ =
       BuildDetails(script_state, response->stringified_details,
-                   std::move(response->get_assertion_authenticator_response)));
+                   std::move(response->get_assertion_authenticator_response));
 }
 
 void PaymentResponse::UpdatePayerDetail(
@@ -121,16 +113,17 @@ void PaymentResponse::UpdatePayerDetail(
   payer_phone_ = detail->phone;
 }
 
-ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject PaymentResponse::toJSONForBinding(
+    ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("requestId", requestId());
   result.AddString("methodName", methodName());
-  result.AddV8Value("details", details(script_state).V8Value());
+  result.AddV8Value("details", details().V8Object());
 
   if (shippingAddress()) {
     result.AddV8Value(
         "shippingAddress",
-        shippingAddress()->toJSONForBinding(script_state).V8Value());
+        shippingAddress()->toJSONForBinding(script_state).V8Object());
   } else {
     result.AddNull("shippingAddress");
   }
@@ -140,26 +133,28 @@ ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
       .AddStringOrNull("payerEmail", payerEmail())
       .AddStringOrNull("payerPhone", payerPhone());
 
-  return result.GetScriptValue();
-}
-
-ScriptValue PaymentResponse::details(ScriptState* script_state) const {
-  return ScriptValue(script_state->GetIsolate(),
-                     details_.GetAcrossWorld(script_state));
+  return result.ToScriptObject();
 }
 
 ScriptPromise<IDLUndefined> PaymentResponse::complete(
     ScriptState* script_state,
-    const String& result,
+    const V8PaymentComplete& result,
     ExceptionState& exception_state) {
   VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8()
-          << "): complete(" << result << ")";
+          << "): complete(" << result.AsStringView() << ")";
   PaymentStateResolver::PaymentComplete converted_result =
       PaymentStateResolver::PaymentComplete::kUnknown;
-  if (result == "success")
-    converted_result = PaymentStateResolver::PaymentComplete::kSuccess;
-  else if (result == "fail")
-    converted_result = PaymentStateResolver::PaymentComplete::kFail;
+  switch (result.AsEnum()) {
+    case V8PaymentComplete::Enum::kUnknown:
+      converted_result = PaymentStateResolver::PaymentComplete::kUnknown;
+      break;
+    case V8PaymentComplete::Enum::kSuccess:
+      converted_result = PaymentStateResolver::PaymentComplete::kSuccess;
+      break;
+    case V8PaymentComplete::Enum::kFail:
+      converted_result = PaymentStateResolver::PaymentComplete::kFail;
+      break;
+  }
   return payment_state_resolver_->Complete(script_state, converted_result,
                                            exception_state);
 }

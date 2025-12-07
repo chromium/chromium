@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] type attribute on SVG <style> elements should reflect correctly
+  assert_equals: missing type reflects as empty string IDL attribute on the style element expected "" but got "text/css"
+Harness: the test ran to completion.
+

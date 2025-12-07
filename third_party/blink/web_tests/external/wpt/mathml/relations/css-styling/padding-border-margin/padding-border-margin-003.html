@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <title>Padding/border/margin on an operator, stretchy along the block axis</title>
 <link rel="help" href="https://w3c.github.io/mathml-core/#layout-algorithms">
-<link rel="help" href="https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-block-axis">
+<link rel="help" href="https://w3c.github.io/mathml-core/#algorithm-for-stretching-operators-along-the-block-axis">
 <link rel="help" href="https://w3c.github.io/mathml-core/#layout-of-operators">
 <link rel="match" href="padding-border-margin-003-ref.html"/>
 <meta name="assert" content="Verify visual rendering of padding/border/margin on an operator, stretchy along the block axis.">
@@ -25,8 +25,10 @@
     surrounded by a 10px pink margin.</p>
   <div style="background: pink; position: absolute; left: 10px; top: 4em;">
     <math>
-      <mspace height="750px" depth="750px"/>
-      <mo lspace="0" rspace="0" style="background: blue; border: 10px dashed yellow; padding: 10px; margin: 10px; color: cyan;">⥜</mo>
+      <mrow>
+        <mspace height="750px" depth="750px"/>
+        <mo lspace="0" rspace="0" style="background: blue; border: 10px dashed yellow; padding: 10px; margin: 10px; color: cyan;">⥜</mo>
+      </mrow>
     </math>
   </div>
 </body>

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 
 #include "ash/webui/common/trusted_types_util.h"
@@ -14,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/app_install_resources.h"
 #include "chrome/grit/app_install_resources_map.h"
@@ -27,7 +21,7 @@
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::app_install {
 
@@ -64,10 +58,8 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       l10n_util::GetStringFUTF8(IDS_APP_INSTALL_DIALOG_INSTALL_TITLE,
                                 ui::GetChromeOSDeviceName()));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kAppInstallResources, kAppInstallResourcesSize),
-      IDR_APP_INSTALL_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kAppInstallResources,
+                              IDR_APP_INSTALL_MAIN_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,
@@ -101,12 +93,6 @@ void AppInstallDialogUI::BindInterface(
     factory_receiver_.reset();
   }
   factory_receiver_.Bind(std::move(pending_receiver));
-}
-
-void AppInstallDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void AppInstallDialogUI::CreatePageHandler(

@@ -11,16 +11,15 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 
 namespace ash::babelorca {
 
-class SignInGaiaResponse;
 class TachyonAuthedClient;
+class TachyonResponse;
 
 // Register user with Tachyon and store tachyon token to be used by other
 // tachyon requests.
@@ -33,18 +32,18 @@ class TachyonRegistrar {
 
   ~TachyonRegistrar();
 
-  void Register(const std::string& device_id,
+  void Register(const std::string& client_uuid,
                 base::OnceCallback<void(bool)> success_cb);
 
   // Tachyon token fetched from registration response. `nullopt` if registration
   // did not start or still in progress, of if registration request failed.
-  std::optional<std::string> GetTachyonToken();
+  std::optional<std::string> GetTachyonToken() const;
+
+  void ResetToken();
 
  private:
-  void OnResponse(
-      base::OnceCallback<void(bool)> success_cb,
-      base::expected<SignInGaiaResponse,
-                     ResponseCallbackWrapper::TachyonRequestError> response);
+  void OnResponse(base::OnceCallback<void(bool)> success_cb,
+                  TachyonResponse response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -27,9 +26,16 @@ using testing::Le;
 
 namespace {
 
-class SingleClientPollingSyncTest : public SyncTest {
+class SingleClientPollingSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientPollingSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientPollingSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   SingleClientPollingSyncTest(const SingleClientPollingSyncTest&) = delete;
   SingleClientPollingSyncTest& operator=(const SingleClientPollingSyncTest&) =
@@ -37,34 +43,33 @@ class SingleClientPollingSyncTest : public SyncTest {
 
   ~SingleClientPollingSyncTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     SyncTest::SetUpOnMainThread();
   }
-};
-
-// Some tests are flaky on Chromeos when run with IP Protection enabled.
-// TODO(crbug.com/40935754): Fix flakes.
-class SingleClientPollingSyncTestNoIpProt : public SingleClientPollingSyncTest {
- public:
-  SingleClientPollingSyncTestNoIpProt() {
-    feature_list_.InitAndDisableFeature(
-        net::features::kEnableIpProtectionProxy);
-  }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPollingSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 // This test verifies that the poll interval in prefs gets initialized if no
 // data is available yet.
-IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
+  ASSERT_TRUE(SetupClients());
 
   // Execute a sync cycle and verify the client set up (and persisted) the
   // default value.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   syncer::SyncTransportDataPrefs transport_data_prefs(
       GetProfile(0)->GetPrefs(),
       GetClient(0)->GetGaiaIdHashForPrimaryAccount());
@@ -75,9 +80,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
 // This test verifies that updates of the poll interval get persisted
 // That's important make sure clients with short live times will eventually poll
 // (e.g. Android).
-IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        PRE_ShouldUsePollIntervalFromPrefs) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::ClientCommand client_command;
   client_command.set_set_sync_poll_interval(67);
@@ -98,12 +103,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
   EXPECT_THAT(transport_data_prefs.GetPollInterval().InSeconds(), Eq(67));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        ShouldUsePollIntervalFromPrefs) {
   // Execute a sync cycle and verify this cycle used that interval.
   // This test assumes the SyncScheduler reads the actual interval from the
   // context. This is covered in the SyncSchedulerImpl's unittest.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   EXPECT_THAT(GetClient(0)->GetLastCycleSnapshot().poll_interval().InSeconds(),
               Eq(67));
 }
@@ -112,11 +117,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
 // It first starts up a client, executes a sync cycle and stops it. After a
 // simulated pause, the client gets started up again and we expect a sync cycle
 // to happen (which would be caused by polling).
-IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        PRE_ShouldPollWhenIntervalExpiredAcrossRestarts) {
   base::Time start = base::Time::Now();
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   syncer::SyncTransportDataPrefs remote_prefs(
       GetProfile(0)->GetPrefs(),
@@ -140,9 +145,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                                remote_prefs.GetPollInterval());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        ShouldPollWhenIntervalExpiredAcrossRestarts) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   syncer::SyncTransportDataPrefs remote_prefs(

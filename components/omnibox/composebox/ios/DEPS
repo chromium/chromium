@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/contextual_search/internal",
+  "+components/contextual_search",
+]

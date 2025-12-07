@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/first_run/first_run.h"
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/initial_preferences.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,21 +39,14 @@ base::FilePath GetSentinelFilePath() {
 }  // namespace
 
 class FirstRunTest : public testing::Test {
- public:
-  FirstRunTest(const FirstRunTest&) = delete;
-  FirstRunTest& operator=(const FirstRunTest&) = delete;
-
  protected:
-  FirstRunTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
-  ~FirstRunTest() override {}
-
   void TearDown() override {
     first_run::ResetCachedSentinelDataForTesting();
     Test::TearDown();
   }
 
  private:
-  base::ScopedPathOverride user_data_dir_override_;
+  base::ScopedPathOverride user_data_dir_override_{chrome::DIR_USER_DATA};
 };
 
 TEST_F(FirstRunTest, SetupInitialPrefsFromInstallPrefs_NoVariationsSeed) {

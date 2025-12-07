@@ -53,7 +53,7 @@ HitTestOpaqueness UnionHitTestOpaqueness(const gfx::Rect& rect1,
       return rect1.Contains(rect2) ? HitTestOpaqueness::kOpaque
                                    : HitTestOpaqueness::kMixed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace cc

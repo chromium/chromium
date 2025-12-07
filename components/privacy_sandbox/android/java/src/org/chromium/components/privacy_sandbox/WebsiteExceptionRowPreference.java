@@ -4,6 +4,8 @@
 
 package org.chromium.components.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -11,15 +13,17 @@ import android.widget.ImageView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.browser_ui.site_settings.Website;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
 /** Represents a row element for the 3PCD exceptions site list. */
+@NullMarked
 public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
     /** Interface for the callback when the exception is deleted. */
     public interface WebsiteExceptionDeletedCallback {
@@ -29,13 +33,13 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetchInProgress;
 
-    private Website mSite;
+    private final Website mSite;
 
-    private TrackingProtectionDelegate mDelegate;
+    private final TrackingProtectionDelegate mDelegate;
 
-    private Context mContext;
+    private final Context mContext;
 
-    private WebsiteExceptionDeletedCallback mCallback;
+    private final WebsiteExceptionDeletedCallback mCallback;
 
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 
@@ -51,10 +55,10 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
         mContext = context;
         mCallback = callback;
 
-        setTitle(site.getTitle());
+        setTitle(mSite.getTitleForContentSetting(ContentSettingsType.COOKIES));
         var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
         if (exception != null && exception.hasExpiration()) {
-            var expirationInDays = exception.getExpirationInDays();
+            int expirationInDays = assumeNonNull(exception.getExpirationInDays());
             setSummary(
                     (expirationInDays == 0)
                             ? getContext()
@@ -113,9 +117,7 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
 
     private void deleteException() {
         mSite.setContentSetting(
-                mDelegate.getBrowserContext(),
-                ContentSettingsType.COOKIES,
-                ContentSettingValues.DEFAULT);
+                mDelegate.getBrowserContext(), ContentSettingsType.COOKIES, ContentSetting.DEFAULT);
         mCallback.refreshBlockingExceptions();
     }
 }

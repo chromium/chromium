@@ -49,6 +49,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
+
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format_base.h"
 
@@ -64,9 +66,10 @@ const uint32_t kCurrentVersion = kVersion3_0;
 struct LruData {
   int32_t pad1[2];
   int32_t filled;  // Flag to tell when we filled the cache.
-  int32_t sizes[5];
-  CacheAddr heads[5];
-  CacheAddr tails[5];
+
+  std::array<int32_t, 5> sizes;
+  std::array<CacheAddr, 5> heads;
+  std::array<CacheAddr, 5> tails;
   CacheAddr transaction;     // In-flight operation target.
   int32_t operation;         // Actual in-flight operation.
   int32_t operation_list;    // In-flight operation list.
@@ -83,26 +86,32 @@ struct NET_EXPORT_PRIVATE IndexHeader {
   int32_t old_v2_num_bytes;  // Total size of the stored data, in versions 2.x
   int32_t last_file;         // Last external file created.
   int32_t this_id;           // Id for all entries being changed (dirty flag).
-  CacheAddr   stats;         // Storage for usage data.
+  CacheAddr stats;           // Storage for usage data.
   int32_t table_len;         // Actual size of the table (0 == kIndexTablesize).
   int32_t crash;             // Signals a previous crash.
   int32_t experiment;        // Id of an ongoing test.
   uint64_t create_time;      // Creation time for this set of files.
   int64_t num_bytes;         // Total size of the stored data, in version 3.0
-  int32_t pad[50];
+
+  // Set if a problem is detected; discards cache on next open.
+  int32_t corruption_detected = 0;
+  int32_t pad[49];
   LruData     lru;           // Eviction control data.
 };
 
 // The structure of the whole index file.
 struct Index {
   IndexHeader header;
-  CacheAddr   table[kIndexTablesize];  // Default size. Actual size controlled
-                                       // by header.table_len.
+  // Default size. Actual size controlled by header.table_len, and may be bigger
+  // or lower than this. Do not make this an std::array as the bound would be
+  // incorrect; see `BackendImpl::index_table_` for how boundary checking of
+  // this works.
+  CacheAddr table[kIndexTablesize];
 };
 
 // Main structure for an entry on the backing storage. If the key is longer than
 // what can be stored on this structure, it will be extended on consecutive
-// blocks (adding 256 bytes each time), up to 4 blocks (1024 - 32 - 1 chars).
+// blocks (adding 256 bytes each time), up to 4 blocks (1024 - 96 - 1 chars).
 // After that point, the whole key will be stored as a data block or external
 // file.
 struct EntryStore {
@@ -115,8 +124,8 @@ struct EntryStore {
   uint64_t creation_time;
   int32_t key_len;
   CacheAddr   long_key;           // Optional address of a long key.
-  int32_t data_size[4];           // We can store up to 4 data streams for each
-  CacheAddr   data_addr[4];       // entry.
+  std::array<int32_t, 4> data_size;    // We can store up to 4 data streams for
+  std::array<CacheAddr, 4> data_addr;  // each entry.
   uint32_t flags;                 // Any combination of EntryFlags.
   int32_t pad[4];
   uint32_t self_hash;             // The hash of EntryStore up to this point.
@@ -143,13 +152,13 @@ enum EntryFlags {
 #pragma pack(push, 4)
 // Rankings information for a given entry.
 struct RankingsNode {
-  uint64_t last_used;           // LRU info.
-  uint64_t last_modified;       // LRU info.
-  CacheAddr   next;             // LRU list.
-  CacheAddr   prev;             // LRU list.
-  CacheAddr   contents;         // Address of the EntryStore.
-  int32_t dirty;                // The entry is being modifyied.
-  uint32_t self_hash;           // RankingsNode's hash.
+  uint64_t last_used = 0;  // LRU info.
+  uint64_t no_longer_used_last_modified = 0;
+  CacheAddr next = 0;      // LRU list.
+  CacheAddr prev = 0;      // LRU list.
+  CacheAddr contents = 0;  // Address of the EntryStore.
+  int32_t dirty = 0;       // The entry is being modifyied.
+  uint32_t self_hash = 0;  // RankingsNode's hash.
 };
 #pragma pack(pop)
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context_getter.h"
 
@@ -21,6 +21,7 @@ class SystemCookieStore;
 namespace web {
 
 class BrowserState;
+class SystemCookieStoreHandle;
 
 class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
@@ -52,6 +53,7 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   // created in constructor and cleared in GetURLRequestContext() where
   // net::URLRequestContext is created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
+  std::unique_ptr<web::SystemCookieStoreHandle> cookie_store_handle_;
 };
 
 }  // namespace web

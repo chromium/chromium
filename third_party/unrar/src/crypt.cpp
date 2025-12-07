@@ -54,6 +54,10 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
 
   wchar PwdW[MAXPASSWORD];
   Password->Get(PwdW,ASIZE(PwdW));
+
+  if (wcslen(PwdW)>=MAXPASSWORD_RAR)
+    uiMsg(UIERROR_TRUNCPSW,MAXPASSWORD_RAR-1);
+
   PwdW[Min(MAXPASSWORD_RAR,MAXPASSWORD)-1]=0; // For compatibility with existing archives.
 
   char PwdA[MAXPASSWORD];

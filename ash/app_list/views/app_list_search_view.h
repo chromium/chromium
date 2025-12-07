@@ -26,9 +26,8 @@ class SearchBoxView;
 class SearchResultPageDialogController;
 class SearchResultImageListView;
 
-// The search results view for productivity launcher. Contains a scrolling list
-// of search results. Does not include the search box, which is owned by a
-// parent view.
+// Contains a scrolling list of search results. Does not include the search box,
+// which is owned by a parent view.
 class ASH_EXPORT AppListSearchView : public views::View,
                                      public SearchResultContainerView::Delegate,
                                      public AppListModelProvider::Observer {
@@ -47,7 +46,6 @@ class ASH_EXPORT AppListSearchView : public views::View,
   void OnSearchResultContainerResultsChanged() override;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // AppListModelProvider::Observer:
@@ -124,6 +122,8 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // A callback that is triggered when the toast button of the search notifier
   // is pressed.
   void OnSearchNotifierButtonPressed();
+
+  void UpdateAccessibleValue();
 
   const raw_ptr<SearchResultPageDialogController, DanglingUntriaged>
       dialog_controller_;

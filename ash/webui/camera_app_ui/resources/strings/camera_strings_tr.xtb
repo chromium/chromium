@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR Kodu</translation>
 <translation id="2244252133441425811">Video FPS seçiciyi etkinleştirin</translation>
 <translation id="2271433936731426666">Videonun tam boyutlu anlık görüntüsünü etkinleştir</translation>
-<translation id="2281736597583450397">İyileştirilmiş yakınlaştırma ile ayrıntıların keskinliğini artırın</translation>
 <translation id="2320741269052147773">Sola kaydır</translation>
 <translation id="2360840973209616515">Kamera uygulaması, yöneticiniz tarafından yönetiliyor.
         Ayrıntılar için yöneticiyle iletişime geçin.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Uzaklaştır</translation>
 <translation id="5976160379964388480">Diğerleri</translation>
 <translation id="6073451960410192870">Kaydı durdur</translation>
-<translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6197807149213783179">Meta veriyi kaydet</translation>
 <translation id="6233780560267770709">3'e 3</translation>
 <translation id="6243827288366940320">Altın oran</translation>
@@ -122,7 +120,6 @@
 Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fotoğraf veya video ekleyip sorunun ne olduğunu açıklayın. (Örneğin, fotoğraf çok karanlık veya özne net değil.)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" /> ağına katılın</translation>
 <translation id="6527303717912515753">Paylaş</translation>
-<translation id="6586509689874700895">Öncelikle, yakınlaştırmak için <ph name="BUTTON_NAME" /> tuşuna basın. Fotoğraf çektikten sonra, iyileştirilmiş ayrıntıları görürsünüz.</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> kopyalandı</translation>
 <translation id="6617916774429601017">Tüm çözünürlükleri göster</translation>
 <translation id="6631515515009660915">Yansıtma kapalı</translation>
@@ -168,7 +165,6 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="8609951387004618906"><ph name="URL" /> bağlantısını aç</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonun sesini aç/kapat Ses kapalı</translation>
-<translation id="8712637175834984815">Anladım</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8732462232047530626">Meta veriyi önizle</translation>
 <translation id="874854738381978209">Kablosuz ağ algılandı.</translation>

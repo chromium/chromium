@@ -15,7 +15,8 @@ mallFrame.setAttribute('hidden', 'true');
 document.body.appendChild(mallFrame);
 
 async function loadMall() {
-  mallFrame.src = (await pageHandler.getMallEmbedUrl()).url.url;
+  mallFrame.src =
+      (await pageHandler.getMallEmbedUrl(window.location.pathname)).url.url;
 }
 
 // Load now and attempt every 30s if network fails.

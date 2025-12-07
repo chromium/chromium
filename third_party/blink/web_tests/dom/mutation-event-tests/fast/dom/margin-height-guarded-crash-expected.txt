@@ -1,5 +1,0 @@
-CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
-CONSOLE ERROR: Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
-This is a testharness.js-based test.
-Harness: the test ran to completion.
-

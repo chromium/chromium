@@ -10,8 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Wrapper around the native content::ResourceRequestBody. */
 @JNINamespace("content")
+@NullMarked
 public final class ResourceRequestBody {
     /**
      * Result of EncodeResourceRequestBody call from page_state_serialization.h.
@@ -21,7 +24,7 @@ public final class ResourceRequestBody {
      * different from the value passed as an argument of
      * ResourceRequestBody.createFromBytes method below).
      */
-    private byte[] mEncodedNativeForm;
+    private final byte[] mEncodedNativeForm;
 
     // ResourceRequestBody Java objects can only be constructed by
     // - ResourceRequestBody::createFromBytes(byte[])
@@ -42,7 +45,7 @@ public final class ResourceRequestBody {
         return new ResourceRequestBody(encodedNativeForm);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public byte[] getEncodedNativeForm() {
         return mEncodedNativeForm;

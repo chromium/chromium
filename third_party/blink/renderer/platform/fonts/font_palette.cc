@@ -12,51 +12,38 @@
 
 namespace blink {
 
-namespace {
-
-// This converts -0.0 to 0.0, so that they have the same hash value. This
-// ensures that equal FontDescription have the same hash value.
-float NormalizeSign(float number) {
-  if (number == 0.0) [[unlikely]] {
-    return 0.0;
-  }
-  return number;
-}
-
-}  // namespace
-
 unsigned FontPalette::GetHash() const {
   unsigned computed_hash = 0;
-  WTF::AddIntToHash(computed_hash, palette_keyword_);
+  AddIntToHash(computed_hash, palette_keyword_);
 
   if (palette_keyword_ == kInterpolablePalette) {
-    WTF::AddFloatToHash(computed_hash, NormalizeSign(percentages_.start));
-    WTF::AddFloatToHash(computed_hash, NormalizeSign(percentages_.end));
-    WTF::AddFloatToHash(computed_hash, NormalizeSign(normalized_percentage_));
-    WTF::AddFloatToHash(computed_hash, NormalizeSign(alpha_multiplier_));
-    WTF::AddIntToHash(computed_hash,
-                      static_cast<uint8_t>(color_interpolation_space_));
+    AddFloatToHash(computed_hash, percentages_.start);
+    AddFloatToHash(computed_hash, percentages_.end);
+    AddFloatToHash(computed_hash, normalized_percentage_);
+    AddFloatToHash(computed_hash, alpha_multiplier_);
+    AddIntToHash(computed_hash,
+                 static_cast<uint8_t>(color_interpolation_space_));
     if (hue_interpolation_method_.has_value()) {
-      WTF::AddIntToHash(computed_hash,
-                        static_cast<uint8_t>(*hue_interpolation_method_));
+      AddIntToHash(computed_hash,
+                   static_cast<uint8_t>(*hue_interpolation_method_));
     }
 
-    WTF::AddIntToHash(computed_hash, start_->GetHash());
-    WTF::AddIntToHash(computed_hash, end_->GetHash());
+    AddIntToHash(computed_hash, start_->GetHash());
+    AddIntToHash(computed_hash, end_->GetHash());
   }
 
   if (palette_keyword_ != kCustomPalette)
     return computed_hash;
 
-  WTF::AddIntToHash(computed_hash, WTF::GetHash(palette_values_name_));
-  WTF::AddIntToHash(computed_hash, match_font_family_.empty()
-                                       ? 0
-                                       : WTF::GetHash(match_font_family_));
-  WTF::AddIntToHash(computed_hash, base_palette_.type);
-  WTF::AddIntToHash(computed_hash, base_palette_.index);
+  AddIntToHash(computed_hash, blink::GetHash(palette_values_name_));
+  AddIntToHash(computed_hash, match_font_family_.empty()
+                                  ? 0
+                                  : blink::GetHash(match_font_family_));
+  AddIntToHash(computed_hash, base_palette_.type);
+  AddIntToHash(computed_hash, base_palette_.index);
 
   for (auto& override_entry : palette_overrides_) {
-    WTF::AddIntToHash(computed_hash, override_entry.index);
+    AddIntToHash(computed_hash, override_entry.index);
   }
   return computed_hash;
 }
@@ -72,7 +59,6 @@ String FontPalette::ToString() const {
     case kCustomPalette:
       return palette_values_name_.GetString();
     case kInterpolablePalette:
-      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
       StringBuilder builder;
       builder.Append("palette-mix(in ");
       if (hue_interpolation_method_.has_value()) {
@@ -97,11 +83,9 @@ String FontPalette::ToString() const {
 
 bool FontPalette::operator==(const FontPalette& other) const {
   if (IsInterpolablePalette() != other.IsInterpolablePalette()) {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return false;
   }
   if (IsInterpolablePalette() && other.IsInterpolablePalette()) {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return *start_.get() == *other.start_.get() &&
            *end_.get() == *other.end_.get() &&
            percentages_ == other.percentages_ &&

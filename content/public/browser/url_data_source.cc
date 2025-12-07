@@ -101,6 +101,7 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::Sandbox:
     case network::mojom::CSPDirectiveName::ScriptSrcAttr:
     case network::mojom::CSPDirectiveName::ScriptSrcElem:
+    case network::mojom::CSPDirectiveName::ScriptSrcV2:
     case network::mojom::CSPDirectiveName::StyleSrc:
     case network::mojom::CSPDirectiveName::StyleSrcAttr:
     case network::mojom::CSPDirectiveName::StyleSrcElem:
@@ -108,7 +109,6 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::TreatAsPublicAddress:
     case network::mojom::CSPDirectiveName::WorkerSrc:
     case network::mojom::CSPDirectiveName::ReportTo:
-    case network::mojom::CSPDirectiveName::NavigateTo:
     case network::mojom::CSPDirectiveName::Unknown:
       return std::string();
   }

@@ -12,6 +12,8 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/cronet/cronet_context.h"
+#include "components/cronet/proto/request_context_config.pb.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_handle.h"
 #include "net/cert/cert_verifier.h"
@@ -104,6 +106,7 @@ struct URLRequestContextConfig {
   // Configures |context_builder| based on |this|.
   void ConfigureURLRequestContextBuilder(
       net::URLRequestContextBuilder* context_builder,
+      CronetContext::NetworkTasks* network_tasks,
       net::handles::NetworkHandle bound_network =
           net::handles::kInvalidNetworkHandle);
 
@@ -175,6 +178,8 @@ struct URLRequestContextConfig {
   // period of the heartbeat signal.
   base::TimeDelta heartbeat_interval;
 
+  const std::optional<cronet::proto::ProxyOptions> proxy_options;
+
   static bool ExperimentalOptionsParsingIsAllowedToFail() {
     return DCHECK_IS_ON();
   }
@@ -210,7 +215,8 @@ struct URLRequestContextConfig {
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. Do not specify for other targets.
-      std::optional<int> network_thread_priority);
+      std::optional<int> network_thread_priority,
+      std::optional<cronet::proto::ProxyOptions> proxy_options);
 
  private:
   URLRequestContextConfig(
@@ -244,7 +250,8 @@ struct URLRequestContextConfig {
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. Do not specify for other targets.
-      std::optional<int> network_thread_priority);
+      std::optional<int> network_thread_priority,
+      std::optional<cronet::proto::ProxyOptions> proxy_options);
 
   // Parses experimental options from their JSON format to the format used
   // internally.

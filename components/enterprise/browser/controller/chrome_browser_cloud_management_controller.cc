@@ -20,8 +20,12 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
+#include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -51,9 +55,15 @@ ChromeBrowserCloudManagementController::Delegate::
   return nullptr;
 }
 
+std::unique_ptr<client_certificates::CertificateProvisioningService>
+ChromeBrowserCloudManagementController::Delegate::
+    CreateCertificateProvisioningService() {
+  return nullptr;
+}
+
 void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
     base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ChromeBrowserCloudManagementController::ChromeBrowserCloudManagementController(
@@ -345,16 +355,6 @@ void ChromeBrowserCloudManagementController::UnenrollCallback(
   NotifyBrowserUnenrolled(success);
 }
 
-void ChromeBrowserCloudManagementController::OnPolicyFetched(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
-void ChromeBrowserCloudManagementController::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
 void ChromeBrowserCloudManagementController::OnClientError(
     CloudPolicyClient* client) {
   // DM_STATUS_SERVICE_DEVICE_NOT_FOUND being the last status implies the
@@ -388,6 +388,16 @@ ChromeBrowserCloudManagementController::GetDeviceTrustKeyManager() {
     device_trust_key_manager_ = delegate_->CreateDeviceTrustKeyManager();
   }
   return device_trust_key_manager_.get();
+}
+
+client_certificates::CertificateProvisioningService*
+ChromeBrowserCloudManagementController::GetCertificateProvisioningService() {
+  if (!certificate_provisioning_service_) {
+    certificate_provisioning_service_ =
+        delegate_->CreateCertificateProvisioningService();
+  }
+
+  return certificate_provisioning_service_.get();
 }
 
 void ChromeBrowserCloudManagementController::SetGaiaURLLoaderFactory(

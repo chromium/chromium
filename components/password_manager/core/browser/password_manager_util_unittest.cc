@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,26 +13,25 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -45,9 +45,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace password_manager_util {
 namespace {
@@ -74,12 +71,6 @@ class MockPasswordManagerClient
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(void,
-              TriggerReauthForPrimaryAccount,
-              (signin_metrics::ReauthAccessPoint,
-               base::OnceCallback<void(
-                   password_manager::PasswordManagerClient::ReauthSucceeded)>),
-              (override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
@@ -148,17 +139,12 @@ class PasswordManagerUtilTest : public testing::Test {
         password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        false);
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
 #endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kHadBiometricsAvailable, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
     ON_CALL(mock_client_, GetLocalStatePrefs())
         .WillByDefault(Return(&pref_service_));
     ON_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
@@ -168,7 +154,7 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(mock_client_, GetSyncService).WillByDefault(Return(&sync_service_));
   }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void SetBiometricAuthenticationBeforeFilling(bool available) {
     pref_service_.SetBoolean(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling,
@@ -395,7 +381,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
             test_case.expected_best_matches_indices.at(username);
         size_t actual_index = std::distance(
             matches.begin(),
-            base::ranges::find_if(matches, [&match](const auto& non_federated) {
+            std::ranges::find_if(matches, [&match](const auto& non_federated) {
               return non_federated == match;
             }));
         EXPECT_EQ(expected_index, actual_index);
@@ -490,6 +476,28 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
   stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = u"new_password";
+
+  EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
+}
+
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_PasswordChangeCredentialPSLAnotherPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kPSL;
+  PasswordForm parsed = GetTestCredential();
+  parsed.password_value = u"new_password";
+  parsed.type = PasswordForm::Type::kChangeSubmission;
+
+  EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
+}
+
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_PasswordChangeCredentialGroupedAnotherPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kGrouped;
+  PasswordForm parsed = GetTestCredential();
+  parsed.password_value = u"new_password";
+  parsed.type = PasswordForm::Type::kChangeSubmission;
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
 }
@@ -606,63 +614,10 @@ TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Proxy) {
   EXPECT_EQ(GURL(kTestProxyOrigin), blocklisted_credential.url);
 }
 
-TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {
+TEST(PasswordManagerUtil, ManualGeneration) {
   MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(false));
 
-  EXPECT_CALL(mock_client, TriggerReauthForPrimaryAccount).Times(0);
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
-
-  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
-}
-
-TEST(PasswordManagerUtil,
-     ManualGenerationShouldGeneratePasswordIfReauthSucessful) {
-  MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(
-      mock_client,
-      TriggerReauthForPrimaryAccount(
-          signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu, _))
-      .WillOnce(
-          [](signin_metrics::ReauthAccessPoint,
-             base::OnceCallback<void(
-                 password_manager::PasswordManagerClient::ReauthSucceeded)>
-                 callback) {
-            std::move(callback).Run(
-                password_manager::PasswordManagerClient::ReauthSucceeded(true));
-          });
-  EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
-
-  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
-}
-
-TEST(PasswordManagerUtil,
-     ManualGenerationShouldNotGeneratePasswordIfReauthFailed) {
-  MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(
-      mock_client,
-      TriggerReauthForPrimaryAccount(
-          signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu, _))
-      .WillOnce(
-          [](signin_metrics::ReauthAccessPoint,
-             base::OnceCallback<void(
-                 password_manager::PasswordManagerClient::ReauthSucceeded)>
-                 callback) {
-            std::move(callback).Run(
-                password_manager::PasswordManagerClient::ReauthSucceeded(
-                    false));
-          });
-  EXPECT_CALL(mock_client, GeneratePassword).Times(0);
 
   UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }
@@ -674,18 +629,19 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
 
   test_autofill_client.ShowAutofillSuggestions(
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
-  test_autofill_client.ShowAutofillFieldIphForManualFallbackFeature(
-      autofill::FormFieldData());
+  test_autofill_client.ShowAutofillFieldIphForFeature(
+      autofill::FormFieldData(),
+      autofill::AutofillClient::IphFeature::kAutofillAi);
 
   ASSERT_TRUE(test_autofill_client.IsShowingAutofillPopup());
-  ASSERT_TRUE(test_autofill_client.IsShowingManualFallbackIph());
+  ASSERT_TRUE(test_autofill_client.IsShowingAutofillAiIph());
 
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &test_autofill_client);
   EXPECT_EQ(test_autofill_client.popup_hiding_reason(),
             autofill::SuggestionHidingReason::
                 kOverlappingWithPasswordGenerationPopup);
-  EXPECT_FALSE(test_autofill_client.IsShowingManualFallbackIph());
+  EXPECT_FALSE(test_autofill_client.IsShowingAutofillAiIph());
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {
@@ -716,57 +672,76 @@ TEST(PasswordManagerUtil, GetSignonRealm) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswordsAfterStoreSplit_Syncing) {
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
+TEST(PasswordManagerUtil, FindLoginWithChangedPassword) {
+  PasswordForm submitted_form;
+  submitted_form.username_value = u"username";
+  submitted_form.password_value = u"password";
+  PasswordForm backup_password_match(submitted_form);
+  backup_password_match.SetPasswordBackupNote(u"backup_password");
+  backup_password_match.type =
+      password_manager::PasswordForm::Type::kChangeSubmission;
+  auto form_manager = std::make_unique<
+      testing::StrictMock<password_manager::MockPasswordFormManagerForUI>>();
+  EXPECT_CALL(*form_manager, GetBestMatches())
+      .WillOnce(
+          testing::Return(std::vector<PasswordForm>{backup_password_match}));
+  EXPECT_CALL(*form_manager, GetPendingCredentials())
+      .WillOnce(testing::ReturnRef(submitted_form));
+
+  EXPECT_EQ(*FindChangedPasswordLoginWithBackup(*form_manager.get()),
+            backup_password_match);
+}
+
+TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords_Syncing) {
   EnableSyncForTestAccount();
 
-  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store(
+      new password_manager::MockPasswordStoreInterface);
+  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store(
       new password_manager::MockPasswordStoreInterface);
   EXPECT_CALL(mock_client_, GetAccountPasswordStore)
-      .WillRepeatedly(testing::Return(store.get()));
+      .WillRepeatedly(testing::Return(account_store.get()));
+  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
+      .WillRepeatedly(testing::Return(profile_store.get()));
 
-  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
+  password_manager::MockPasswordStoreInterface* used_store =
+      profile_store.get();
+  password_manager::MockPasswordStoreInterface* unused_store =
+      account_store.get();
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, users with ConsentLevel::kSync save to the account store
+  // instead of the profile store. See go/upm-local-passwords for context
+  // (sorry, Googlers only).
+  std::swap(used_store, unused_store);
+#endif
+  EXPECT_CALL(*used_store, IsAbleToSavePasswords).WillOnce(Return(true));
+  EXPECT_CALL(*unused_store, IsAbleToSavePasswords).Times(0);
 
   EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
+
+  EXPECT_CALL(*used_store, IsAbleToSavePasswords).WillOnce(Return(false));
+
+  EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
 }
 
-TEST_F(PasswordManagerUtilTest,
-       IsAbleToSavePasswordsAfterStoreSplit_NotSyncing) {
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
+TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords_NotSyncing) {
   DisableSyncFeature();
 
-  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store(
       new password_manager::MockPasswordStoreInterface);
+  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store(
+      new password_manager::MockPasswordStoreInterface);
+  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
+      .WillRepeatedly(testing::Return(account_store.get()));
   EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(store.get()));
+      .WillRepeatedly(testing::Return(profile_store.get()));
 
-  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
+  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(true));
+  EXPECT_CALL(*account_store, IsAbleToSavePasswords).Times(0);
 
   EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
-}
-#endif
 
-TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords) {
-  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
-      new password_manager::MockPasswordStoreInterface);
-  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(store.get()));
-
-  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
-
-  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest, IsNotAbleToSavePasswords) {
-  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
-      new password_manager::MockPasswordStoreInterface);
-  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(store.get()));
-
-  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(false));
+  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(false));
 
   EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
 }

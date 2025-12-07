@@ -6,6 +6,7 @@
 #define COMPONENTS_DRIVE_FILE_ERRORS_H_
 
 #include "base/files/file.h"
+#include "components/drive/drive_export.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace drive {
@@ -13,6 +14,9 @@ namespace drive {
 // These values are persisted to UMA histograms (see UMA enum DriveFileError).
 // The histogram values are positive (1=OK, 2=FAILED, 3=IN_USE, etc).
 // Entries should not be renumbered and numeric values should never be reused.
+//
+// Consider using `IsFileErrorOk` to check for successful operations, as it
+// includes both `FILE_ERROR_OK` and `FILE_ERROR_OK_WITH_MORE_RESULTS`.
 enum FileError {
   FILE_ERROR_OK = 0,
   FILE_ERROR_FAILED = -1,
@@ -38,15 +42,23 @@ enum FileError {
   FILE_ERROR_MAX = FILE_ERROR_OK_WITH_MORE_RESULTS,
 };
 
+COMPONENTS_DRIVE_EXPORT
 std::ostream& operator<<(std::ostream& out, FileError error);
 
+// Returns whether a `FileError` represents a successful operation.
+COMPONENTS_DRIVE_EXPORT
+bool IsFileErrorOk(FileError error);
+
 // Returns a string representation of FileError.
+COMPONENTS_DRIVE_EXPORT
 std::string FileErrorToString(FileError error);
 
 // Returns a base::File::Error that corresponds to the FileError provided.
+COMPONENTS_DRIVE_EXPORT
 base::File::Error FileErrorToBaseFileError(FileError error);
 
 // Converts GData error code into Drive file error code.
+COMPONENTS_DRIVE_EXPORT
 FileError GDataToFileError(google_apis::ApiErrorCode status);
 
 }  // namespace drive

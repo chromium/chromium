@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstring>
 #include <string>
 #include <string_view>
@@ -20,7 +21,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -111,18 +111,17 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
   return out;
 }
 
-std::string CreateNamePointer(uint16_t offset) {
+std::array<uint8_t, 2> CreateNamePointer(uint16_t offset) {
   DCHECK_EQ(offset & ~dns_protocol::kOffsetMask, 0);
   std::array<uint8_t, 2> buf = base::U16ToBigEndian(offset);
   buf[0u] |= dns_protocol::kLabelPointer;
-  return std::string(buf.begin(), buf.end());
+  return buf;
 }
 
 uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {
   switch (dns_query_type) {
     case DnsQueryType::UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     case DnsQueryType::A:
       return dns_protocol::kTypeA;
     case DnsQueryType::AAAA:
@@ -147,8 +146,7 @@ DnsQueryType AddressFamilyToDnsQueryType(AddressFamily address_family) {
     case ADDRESS_FAMILY_IPV6:
       return DnsQueryType::AAAA;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return DnsQueryType::UNSPECIFIED;
+      NOTREACHED();
   }
 }
 
@@ -178,23 +176,23 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
   const auto entries = GetDohProviderEntriesFromNameservers(dns_servers);
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
-  base::ranges::transform(entries, std::back_inserter(doh_servers),
-                          &DohProviderEntry::doh_server_config);
+  std::ranges::transform(entries, std::back_inserter(doh_servers),
+                         &DohProviderEntry::doh_server_config);
   return doh_servers;
 }
 
 std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server) {
   const auto& entries = DohProviderEntry::GetList();
-  const auto it = base::ranges::find(entries, doh_server,
-                                     &DohProviderEntry::doh_server_config);
-  return it != entries.end() ? (*it)->provider : "Other";
+  const auto it = std::ranges::find(entries, doh_server,
+                                    &DohProviderEntry::doh_server_config);
+  return it != entries.end() ? std::string((*it)->provider) : "Other";
 }
 
 std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver) {
   const auto entries = GetDohProviderEntriesFromNameservers({nameserver});
-  return entries.empty() ? "Other" : entries[0]->provider;
+  return entries.empty() ? "Other" : std::string(entries[0]->provider);
 }
 
 std::string SecureDnsModeToString(const SecureDnsMode secure_dns_mode) {

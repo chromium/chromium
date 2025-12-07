@@ -7,17 +7,20 @@
 
 Sample usage:
   ./run.py \
-  -a src/xcodebuild/Release-iphoneos/base_unittests.app \
+  -a /path/to/Release-iphoneos/base_unittests.app \
   -o /tmp/out \
-  -p iPhone 5s \
+  -p "iPhone 5s" \
   -v 9.3 \
-  -b 9b46
+  -b 9b46 \
+  -i /path/to/Release-iphoneos/iossim
 
-  Installs base_unittests.app in an iPhone 5s simulator running iOS 9.3 under
-  Xcode build version 9b46, runs it, and captures all test data in /tmp/out.
-  """
+Installs base_unittests.app in an iPhone 5s simulator running iOS 9.3 under
+Xcode build version 9b46, runs it, and captures all test data in /tmp/out.
+"""
 
 import argparse
+import datetime
+import glob
 import json
 import logging
 import os
@@ -33,11 +36,19 @@ import shard_util
 import test_runner
 import test_runner_errors
 import variations_runner
-import wpr_runner
 import xcodebuild_runner
 import xcode_util as xcode
 
-from result_sink_util import ExceptionResults, ResultSinkClient
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.extend([
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')),
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/'))
+])
+import measures
+import exception_recorder
+
+from result_sink_util import ResultSinkClient
 
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
@@ -96,15 +107,24 @@ class Runner():
     """
     summary = {}
     tr = None
-    is_legacy_xcode = True
     self.parse_args(args)
+
+    # If xcode already exists in /Applications, then use that instead of
+    # trying to cache another xcode in the work directory
+    if xcode.check_xcode_exists_in_apps(self.args.xcode_build_version.lower()):
+      self.args.xcode_path = ("/Applications/"
+                              f"xcode_{self.args.xcode_build_version.lower()}"
+                              ".app")
+
     try:
-      # This logic is run by default before the otool command is invoked such
-      # that otool has the correct Xcode selected for command line dev tools.
-      install_success, is_legacy_xcode = xcode.install_xcode(
-          self.args.mac_toolchain_cmd, self.args.xcode_build_version,
-          self.args.xcode_path, self.args.runtime_cache_prefix,
-          self.args.version)
+      with measures.time_consumption('mac_toolchain', 'Download and Install',
+                                     'Xcode and Runtime'):
+        install_success = xcode.install_xcode(self.args.mac_toolchain_cmd,
+                                              self.args.xcode_build_version,
+                                              self.args.xcode_path,
+                                              self.args.runtime_cache_prefix,
+                                              self.args.platform,
+                                              self.args.version)
       if not install_success:
         raise test_runner_errors.XcodeInstallFailedError(
             self.args.xcode_build_version)
@@ -112,6 +132,8 @@ class Runner():
       # Sharding env var is required to shard GTest.
       env_vars = self.args.env_var + self.sharding_env_vars()
 
+      if xcode.is_local_run():
+        self.maybe_rotate_out_dir(self.args.out_dir)
       if not os.path.exists(self.args.out_dir):
         os.makedirs(self.args.out_dir)
 
@@ -149,24 +171,6 @@ class Runner():
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             env_vars=env_vars)
-      elif self.args.replay_path != 'NO_PATH':
-        tr = wpr_runner.WprProxySimulatorTestRunner(
-            self.args.app,
-            self.args.host_app,
-            self.args.iossim,
-            self.args.replay_path,
-            self.args.platform,
-            self.args.version,
-            self.args.wpr_tools_path,
-            self.args.out_dir,
-            env_vars=env_vars,
-            readline_timeout=self.args.readline_timeout,
-            retries=self.args.retries,
-            clones=self.args.clones,
-            test_args=self.test_args,
-            test_cases=self.args.test_cases,
-            xctest=self.args.xctest,
-        )
       elif self.args.iossim and self.args.platform and self.args.version:
         tr = test_runner.SimulatorTestRunner(
             self.args.app,
@@ -182,7 +186,6 @@ class Runner():
             test_args=self.test_args,
             test_cases=self.args.test_cases,
             use_clang_coverage=self.args.use_clang_coverage,
-            wpr_tools_path=self.args.wpr_tools_path,
             xctest=self.args.xctest,
             output_disabled_tests=self.args.output_disabled_tests,
         )
@@ -223,7 +226,7 @@ class Runner():
       summary['step_text'] = format_exception_step_text(e)
       # Swarming infra marks device status unavailable for any device related
       # issue using this return code.
-      ExceptionResults.add_result(e)
+      exception_recorder.register(e)
       return 3
     except Exception as e:
       sys.stderr.write(traceback.format_exc())
@@ -231,7 +234,11 @@ class Runner():
       # test_runner.Launch returns 0 on success, 1 on failure, so return 2
       # on exception to distinguish between a test failure, and a failure
       # to launch the test at all.
-      ExceptionResults.add_result(e)
+      exception_recorder.register(e)
+      if isinstance(e, test_runner_errors.XcodeInstallFailedError
+                   ) and not xcode.check_xcode_exists_in_apps(
+                       self.args.xcode_build_version.lower()):
+        self.should_delete_xcode_cache = True
       return 2
     finally:
       if tr:
@@ -262,15 +269,16 @@ class Runner():
       with open(output_json_path, 'w') as f:
         json.dump(test_results, f)
 
-      if self.should_delete_xcode_cache:
+      if self.should_delete_xcode_cache and os.path.exists(
+          self.args.xcode_path):
         shutil.rmtree(self.args.xcode_path)
 
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')
 
-      if ExceptionResults.results:
+      if exception_recorder.size() > 0 or measures.size() > 0:
         result_sink_client = ResultSinkClient()
-        result_sink_client.post_exceptions(ExceptionResults.results)
+        result_sink_client.post_extended_properties()
 
   def parse_args(self, args):
     """Parse the args into args and test_args.
@@ -290,7 +298,6 @@ class Runner():
         '-b',
         '--xcode-build-version',
         help='Xcode build version to install.',
-        required=True,
         metavar='build_id',
     )
     parser.add_argument(
@@ -363,6 +370,7 @@ class Runner():
         '-o',
         '--out-dir',
         help='Directory to store all test data in.',
+        type=os.path.normpath,
         metavar='dir',
         required=True,
     )
@@ -455,14 +463,6 @@ class Runner():
         metavar='variations-seed-path',
     )
     parser.add_argument(
-        '--wpr-tools-path',
-        help=(
-            'Location of WPR test tools (should be preinstalled, e.g. as part '
-            'of a swarming task requirement). Default: %(default)s.'),
-        default='NO_PATH',
-        metavar='wpr-tools-path',
-    )
-    parser.add_argument(
         '--xcode-path',
         metavar='PATH',
         help=('Path to <Xcode>.app folder where contents of the app will be '
@@ -530,6 +530,8 @@ class Runner():
       """
       Runs argument validation
       """
+      if not args.xcode_build_version:
+        parser.error('must specify --xcode-build-version on bot')
       if (not use_xcodebuild_runner(args) and
           (args.iossim or args.platform or args.version)):
         # If any of --iossim, --platform, or --version
@@ -573,6 +575,8 @@ class Runner():
 
     args, test_args = parser.parse_known_args(args)
     load_from_json(args)
+    if xcode.is_local_run():
+      self._maybe_set_arg_defaults(args)
     validate(args)
     merge_test_cases(args)
     # TODO(crbug.com/40120476): |app| won't contain "Debug" or "Release" after
@@ -580,6 +584,76 @@ class Runner():
     args.release = args.release or (args.app and "Release" in args.app)
     self.args = args
     self.test_args = test_args
+
+  def _maybe_set_arg_defaults(self, args: argparse.Namespace):
+    """Pick some reasonable Xcode/simulator defaults.
+
+    Useful for locally running tests that are runtime/device-agnostic.
+    """
+    if not args.xcode_build_version:
+      _, args.xcode_build_version = xcode.version()
+      logging.info('Defaulting to Xcode build version %s',
+                   args.xcode_build_version)
+
+    if not args.xcodebuild_sim_runner and not args.iossim:
+      # No need to pick a `--platform` or `--version` for on-device runs.
+      return
+    if args.version and args.platform:
+      # Parameters already provided explicitly.
+      return
+
+    try:
+      runtimes = iossim_util.get_simulator_list()['runtimes']
+      if len(runtimes) != 1:
+        # Don't try to pick between iOS versions, which can affect many tests.
+        return
+      runtime = runtimes[0]
+      if not args.version:
+        args.version = runtime['version']
+        logging.info('Defaulting to simulating iOS %s', args.version)
+
+      # Within each product family, the device type list already seems to be
+      # sorted from least to most recent models. Try to pick the latest
+      # iPhone. `reversed()` is needed for `max()` to tiebreak as intended.
+      device_type = max(
+          reversed(runtime['supportedDeviceTypes']),
+          key=lambda device: device['productFamily'] == 'iPhone')
+      if not args.platform:
+        args.platform = device_type['name']
+        logging.info('Defaulting to simulating %s', args.platform)
+    except (subprocess.CalledProcessError, KeyError, IndexError):
+      # Give up if:
+      # * `xcrun simctl` fails because `xcode-select` hasn't run yet.
+      # * The JSON doesn't have the right shape.
+      pass
+
+  def maybe_rotate_out_dir(self,
+                           out_dir: os.PathLike,
+                           archive_limit: int = 100):
+    try:
+      mtime_ts = os.path.getmtime(out_dir)
+    except FileNotFoundError:
+      return
+    if any(
+        os.path.exists(os.path.join(out_dir, filename))
+        for filename in ['args.gn', 'build.ninja']):
+      # Don't move build directories under `//out/`, which users generally
+      # depend on to be stable.
+      logging.warning(
+          'Skipping archival of %s, which appears to be a build directory',
+          out_dir)
+      return
+    mtime = datetime.datetime.fromtimestamp(mtime_ts)
+    dirname, basename = os.path.split(out_dir)
+    dest = os.path.join(dirname,
+                        f'{basename}_{mtime.strftime("%Y-%m-%d-%H%M%S")}')
+    os.rename(out_dir, dest)
+    logging.info('Archived old test results to %s', dest)
+
+    archived_dirs = sorted(glob.iglob(f'{out_dir}_*'))
+    for excess_dir in archived_dirs[:-archive_limit]:
+      shutil.rmtree(excess_dir)
+      logging.warning('Removed excess test results %s', excess_dir)
 
 
 def main(args):

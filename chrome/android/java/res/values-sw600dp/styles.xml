@@ -7,6 +7,16 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode">
-        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceContainerHighest</item>
+    </style>
+
+    <style name="Theme.Chromium.WithWindowAnimation" parent="Base.Theme.Chromium.WithWindowAnimation">
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.Theme.Chromium.Activity.Fullscreen">
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
     </style>
 </resources>

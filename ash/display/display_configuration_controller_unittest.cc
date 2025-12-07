@@ -46,7 +46,7 @@ class DisplayConfigurationControllerSmoothRotationTest : public AshTestBase {
 using DisplayConfigurationControllerTest = AshTestBase;
 
 TEST_F(DisplayConfigurationControllerTest, OnlyHasOneAnimator) {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   DisplayConfigurationControllerTestApi testapi(
       Shell::Get()->display_configuration_controller());
   ScreenRotationAnimator* old_screen_rotation_animator =
@@ -68,7 +68,7 @@ TEST_F(DisplayConfigurationControllerTest, OnlyHasOneAnimator) {
 }
 
 TEST_F(DisplayConfigurationControllerTest, GetTargetRotationWithAnimation) {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   DisplayConfigurationController* controller =
       Shell::Get()->display_configuration_controller();
   DisplayConfigurationControllerTestApi(controller).SetDisplayAnimator(true);
@@ -83,7 +83,7 @@ TEST_F(DisplayConfigurationControllerTest, GetTargetRotationWithAnimation) {
 
 TEST_F(DisplayConfigurationControllerSmoothRotationTest,
        GetTargetRotationWithAnimation) {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   DisplayConfigurationController* controller =
       Shell::Get()->display_configuration_controller();
   DisplayConfigurationControllerTestApi(controller).SetDisplayAnimator(true);

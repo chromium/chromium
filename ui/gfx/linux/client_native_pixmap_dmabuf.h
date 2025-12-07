@@ -10,20 +10,21 @@
 #include <array>
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace gfx {
 
 class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
  public:
-  static GFX_EXPORT bool IsConfigurationSupported(gfx::BufferFormat format,
-                                                  gfx::BufferUsage usage);
+  static COMPONENT_EXPORT(GFX) bool IsConfigurationSupported(
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage);
 
   // Note: |handle| is expected to have been validated as in
   // ClientNativePixmapFactoryDmabuf::ImportFromHandle().
@@ -31,8 +32,7 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
   // client_native_pixmap_factory_dmabuf.cc.
   static std::unique_ptr<gfx::ClientNativePixmap> ImportFromDmabuf(
       gfx::NativePixmapHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format);
+      const gfx::Size& size);
 
   ClientNativePixmapDmaBuf(const ClientNativePixmapDmaBuf&) = delete;
   ClientNativePixmapDmaBuf& operator=(const ClientNativePixmapDmaBuf&) = delete;

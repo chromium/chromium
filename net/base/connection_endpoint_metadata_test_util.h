@@ -21,7 +21,9 @@ ExpectConnectionEndpointMetadata(
         supported_protocol_alpns_matcher = testing::IsEmpty(),
     testing::Matcher<ConnectionEndpointMetadata::EchConfigList>
         ech_config_list_matcher = testing::IsEmpty(),
-    testing::Matcher<std::string> target_name_matcher = testing::IsEmpty());
+    testing::Matcher<std::string> target_name_matcher = testing::IsEmpty(),
+    testing::Matcher<std::vector<std::vector<uint8_t>>>
+        trust_anchor_ids_matcher = testing::IsEmpty());
 
 std::ostream& operator<<(
     std::ostream& os,

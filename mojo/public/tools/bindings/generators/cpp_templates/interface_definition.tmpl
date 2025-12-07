@@ -8,7 +8,7 @@
 {%- set qualified_class_name = ("::" ~ namespace_as_string_with_variant if namespace_as_string_with_variant) ~ "::" ~ class_name %}
 
 {%- macro alloc_params(struct, params, message, method_number, is_response) %}
-  {# Allow people to search for deserialization error strings #}
+{#   Allow people to search for deserialization error strings #}
   // Validation for {{class_name}}.{{method_number}}
   bool success = true;
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
@@ -85,16 +85,14 @@ bool ValidateWithRuntimeFeature_{{class_name}}_{{method.name}}(
 {%- endmacro -%}
 
 {#--- Begin #}
-const char {{class_name}}::Name_[] = "{{module_namespace}}.{{class_name}}";
+// The declaration includes the definition on other builds.
 {%-  if interface.uuid %}
 constexpr base::Token {{class_name}}::Uuid_;
 {%-  endif %}
 
 {#--- Constants #}
 {%-  for constant in interface.constants %}
-{%-   if constant.kind|is_string_kind %}
-const char {{interface.name}}::{{constant.name}}[] = {{constant|constant_value}};
-{%-   else %}
+{%-   if not constant.kind|is_string_kind %}
 constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {%-   endif %}
 {%- endfor %}
@@ -149,14 +147,14 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)
 {%-   for method in interface.methods %}
 uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
-  // This method's address is used for indetifiying the mojo method name after
+  // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique accross different mojo modules.
+  // __LINE__ value, which is not unique across different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
-  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
-          "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
+{%-     set message_name = "%s::%s::%s"|format(namespace_as_string, interface.name, method.name) %}
+  static constexpr uint32_t kHash = {{message_name|ipc_hash}};  // IPCStableHash for {{message_name}}
   const uint32_t hash = kHash;
   base::debug::Alias(&hash);
   return hash;
@@ -171,8 +169,7 @@ uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
 {%- for method in interface.methods %}
 {%-   if method.sync %}
 bool {{class_name}}::{{method.name}}({{interface_macros.declare_sync_method_params("", method)}}) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 {%-   endif %}
 {%- endfor %}
@@ -186,13 +183,18 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
  public:
   {{class_name}}_{{method.name}}_HandleSyncResponse(
       bool* result
-{%-       for param in method.response_parameters -%}
+{%-       if method.result_response != None %}
+{%-         set param = method.response_parameters[0] %}
+      , {{interface_macros.result_response_to_expected(method.result_response)}}* out_{{param.name}})
+{%-       else %}
+{%-         for param in method.response_parameters -%}
       , {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}
-{%-       endfor %})
+{%-         endfor %})
+{%-       endif  %}
       : result_(result)
-{%-       for param in method.response_parameters -%}
+{%-     for param in method.response_parameters -%}
         , out_{{param.name}}_(out_{{param.name}})
-{%-       endfor %} {
+{%-     endfor %} {
     DCHECK(!*result_);
   }
 
@@ -202,11 +204,16 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
   bool Accept(mojo::Message* message) override;
  private:
   bool* result_;
+{%-     if method.result_response != None %}
+{%-       set param = method.response_parameters[0] %}
+  {{interface_macros.result_response_to_expected(method.result_response)}}* out_{{param.name}}_;
+{%-     else -%}
 {%-       for param in method.response_parameters %}
   {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}_;
 {%-       endfor -%}
+{%-     endif -%}
 };
-{%-     endif %}
+{%-   endif %}
 
 class {{class_name}}_{{method.name}}_ForwardToCallback
     : public mojo::MessageReceiver {
@@ -229,15 +236,13 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 {{proxy_name}}::{{proxy_name}}(mojo::MessageReceiverWithResponder* receiver)
     : receiver_(receiver) {
 {%- if interface|has_estimate_size_methods %}
-  if (base::FeatureList::IsEnabled(mojo::features::kMojoPredictiveAllocation)) {
 {%-   for method in interface.methods %}
 {%-     if method.estimate_message_size %}
 {%-       set message_name =
               "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
-    size_estimator_.EnablePredictiveAllocation({{message_name}});
+  size_estimator_.EnablePredictiveAllocation({{message_name}});
 {%-     endif %}
 {%-   endfor %}
-  }
 {%- endif %}
 }
 
@@ -250,6 +255,7 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 {%-   set params_description =
           "%s.%s request"|format(interface.name, method.name) %}
 {%-   set message_typename = "%s_%s_Message"|format(proxy_name, method.name) %}
+{%-   set send_validation = method.send_validation %}
 
 {%-   if method.sync %}
 bool {{proxy_name}}::{{method.name}}(
@@ -282,7 +288,7 @@ bool {{proxy_name}}::{{method.name}}(
                                         "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "param_%s", params_struct, params_description,
-    "kFlags", "message")}}
+    "kFlags", "message", send_validation)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -337,7 +343,7 @@ void {{proxy_name}}::{{method.name}}(
                                        "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "in_%s", params_struct, params_description,
-    "kFlags", "message", True)}}
+    "kFlags", "message", method.send_validation, True)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -373,6 +379,25 @@ void {{proxy_name}}::{{method.name}}(
             "%s_%s_Response_Message"|format(interface.name, method.name) %}
 class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
+{%-      if method.result_response != None -%}
+{%        set response_type = method.response_parameters[0].kind %}
+  static {{class_name}}::{{method.name}}Callback CreateCallback(
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
+        new {{class_name}}_{{method.name}}_ProxyToResponder(
+            message, std::move(responder)));
+    return base::BindOnce(&Transform)
+      .Then(base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
+                          std::move(proxy)));
+  }
+
+  static {{response_type|cpp_wrapper_call_type}} Transform({{interface_macros.result_response_to_expected(method.result_response)}} in) {
+    return in.has_value() ? {{response_type|get_qualified_name_for_kind}}::NewSuccess(std::move(in.value())) :
+                            {{response_type|get_qualified_name_for_kind}}::NewFailure(std::move(in.error()));
+  }
+
+{%      else %}
   static {{class_name}}::{{method.name}}Callback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
@@ -382,6 +407,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
     return base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
                           std::move(proxy));
   }
+{%-      endif %}
 
   ~{{class_name}}_{{method.name}}_ProxyToResponder() {
 #if DCHECK_IS_ON()
@@ -430,8 +456,17 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
 
 {%-     set desc = class_name~"::"~method.name~" response" %}
   {{alloc_params(method.response_param_struct, "params", "message", method.sequential_ordinal, "true")}}
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
+{%-     if method.result_response != None %}
+    if (p_result->is_success()) {
+      std::move(callback_).Run(base::ok(std::move(p_result->get_success())));
+    } else {
+      std::move(callback_).Run(base::unexpected(std::move(p_result->get_failure())));
+    }
+{%-     else %}
     std::move(callback_).Run({{pass_params(method.response_parameters)}});
+{%-     endif %}
+  }
   return true;
 }
 
@@ -450,7 +485,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
                                        "false", "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "in_%s", response_params_struct,
-    response_params_description, "kFlags", "message")}}
+    response_params_description, "kFlags", "message", method.send_validation)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -481,9 +516,18 @@ bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
 {%-       set desc = class_name~"::"~method.name~" response" %}
   {{alloc_params(method.response_param_struct, "params", "message", method.sequential_ordinal, "true")}}
 
-{%-       for param in method.response_parameters %}
+{%-       if method.result_response != None %}
+{%-         set param = method.response_parameters[0] -%}
+    if (p_result->is_success()) {
+      *out_{{param.name}}_ = base::ok(std::move(p_result->get_success()));
+    } else {
+      *out_{{param.name}}_ = base::unexpected(std::move(p_result->get_failure()));
+    }
+{%-       else %}
+{%-         for param in method.response_parameters %}
   *out_{{param.name}}_ = std::move(p_{{param.name}});
-{%-       endfor %}
+{%-         endfor %}
+{%-       endif %}
   *result_ = true;
   return true;
 }
@@ -553,7 +597,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
 {%-       set desc = class_name~"::"~method.name %}
       {{alloc_params(method.param_struct, "params", "message", method.sequential_ordinal, "false")|
           indent(4)}}
-      {{class_name}}::{{method.name}}Callback callback =
+      auto callback =
           {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
       // A null |impl| means no implementation was bound.
@@ -616,25 +660,37 @@ static const std::pair<uint32_t, mojo::internal::GenericValidationInfo> k{{class
 {#--- Request validator definitions #}
 
 bool {{class_name}}RequestValidator::Accept(mojo::Message* message) {
-  {#- Not simply Name_ because there is a mojom interface called MessageReceiver #}
-  const char* name = {{qualified_class_name}}::Name_;
 {%- if not interface.methods %}
-  return mojo::internal::ValidateRequestGeneric(message, name, {});
+  return mojo::internal::ValidateRequestGeneric(
+    message,
+    {{qualified_class_name}}::Name_,
+    {});
 {%- elif interface | has_packed_method_ordinals %}
-  return mojo::internal::ValidateRequestGenericPacked(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateRequestGenericPacked(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%- else %}
-  return mojo::internal::ValidateRequestGeneric(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateRequestGeneric(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%- endif %}
 }
 
 {#--- Response validator definitions #}
 {% if interface|has_callbacks %}
 bool {{class_name}}ResponseValidator::Accept(mojo::Message* message) {
-  const char* name = {{qualified_class_name}}::Name_;
 {%-  if interface | has_packed_method_ordinals %}
-  return mojo::internal::ValidateResponseGenericPacked(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateResponseGenericPacked(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%-  else %}
-  return mojo::internal::ValidateResponseGeneric(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateResponseGeneric(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%   endif %}
 }
 {%- endif -%}

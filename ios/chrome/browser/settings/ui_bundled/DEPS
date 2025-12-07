@@ -1,0 +1,84 @@
+include_rules = [
+  "+components/data_sharing/public/features.h",
+  "+ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h",
+  "+ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h",
+  "+ios/chrome/browser/autofill/model/personal_data_manager_factory.h",
+  "+ios/chrome/browser/autofill/ui_bundled",
+  "+ios/chrome/browser/browsing_data/model",
+  "+ios/chrome/browser/bubble/ui_bundled",
+  "+ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h",
+  "+ios/chrome/browser/commerce/model/shopping_service_factory.h",
+  "+ios/chrome/browser/content_notification/model",
+  "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
+  "+ios/chrome/browser/credential_exchange/coordinator",
+  "+ios/chrome/browser/credential_provider/model/features.h",
+  "+ios/chrome/browser/default_browser/model/promo_source.h",
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/default_promo/ui_bundled",
+  "+ios/chrome/browser/discover_feed/model",
+  "+ios/chrome/browser/download/ui/auto_deletion",
+  "+ios/chrome/browser/download/coordinator/auto_deletion",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/history/model/web_history_service_factory.h",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/intelligence/features/features.h",
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/keyboard/ui_bundled",
+  "+ios/chrome/browser/language/model/language_model_manager_factory.h",
+  "+ios/chrome/browser/mailto_handler/model",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/omaha/model/omaha_service.h",
+  "+ios/chrome/browser/parcel_tracking",
+  "+ios/chrome/browser/passwords/model",
+  "+ios/chrome/browser/photos/model",
+  "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/policy/ui_bundled/management_util.h",
+  "+ios/chrome/browser/prerender/model/prerender_pref.h",
+  "+ios/chrome/browser/push_notification/model",
+  "+ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h",
+  "+ios/chrome/browser/regional_capabilities/model",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
+  "+ios/chrome/browser/safari_data_import/public",
+  "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+  "+ios/chrome/browser/search_engine_choice/coordinator",
+  "+ios/chrome/browser/search_engine_choice/ui",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/supervised_user/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/tabs/model/inactive_tabs",
+  "+ios/chrome/browser/translate/model",
+  "+ios/chrome/browser/authentication",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_feature.h",
+  "+ios/chrome/browser/upgrade/model",
+  "+ios/chrome/browser/voice/model",
+  "+ios/chrome/browser/web/model/annotations/annotations_util.h",
+  "+ios/chrome/browser/web/model/features.h",
+  "+ios/chrome/browser/webauthn",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "block_popups_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "passwords_settings_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "settings_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "search_engine_settings_test_case_base\.mm": [
+    "+ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h",
+  ],
+  "table_cell_catalog_view_controller\.mm": [
+    "+ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h",
+  ]
+}

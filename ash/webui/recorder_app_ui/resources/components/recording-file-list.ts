@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/card/card.js';
-import 'chrome://resources/cros_components/menu/menu_item.js';
 import 'chrome://resources/mwc/@material/web/divider/divider.js';
 import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
@@ -13,14 +12,15 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-image.js';
 import './cra/cra-menu.js';
+import './cra/cra-menu-item.js';
 import './recording-file-list-item.js';
 import './recording-search-box.js';
 
 import {
+  classMap,
   createRef,
   css,
   html,
-  live,
   PropertyDeclarations,
   ref,
   repeat,
@@ -35,15 +35,22 @@ import {
   RecordingMetadataMap,
 } from '../core/recording_data_manager.js';
 import {RecordingSortType, settings} from '../core/state/settings.js';
-import {assertExhaustive} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 import {
   getMonthLabel,
   getToday,
   getYesterday,
   isInThisMonth,
 } from '../core/utils/datetime.js';
+import {isObjectEmpty} from '../core/utils/utils.js';
 
 import {CraMenu} from './cra/cra-menu.js';
+import {withTooltip} from './directives/with-tooltip.js';
+import {RecordingFileListItem} from './recording-file-list-item.js';
 
 interface RecordingSearchResult {
   highlight: [number, number]|null;
@@ -67,12 +74,35 @@ type RenderRecordingItem = {
   recording: RecordingMetadata,
 });
 
+interface InlinePlayingItemInfo {
+  /**
+   * The id of the current playing recording.
+   */
+  id: string;
+
+  /**
+   * Progress of the playback in range [0, 100].
+   */
+  progress: number;
+
+  /**
+   * Whether the playback is ongoing.
+   */
+  playing: boolean;
+}
+
 /**
  * A list of recording files.
  */
 export class RecordingFileList extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --container-padding-horizontal: 32px;
+
+      @container style(--small-viewport: 1) {
+        --container-padding-horizontal: 24px;
+      }
+
       background-color: var(--cros-sys-app_base_shaded);
       border-radius: 16px;
       display: flex;
@@ -86,12 +116,17 @@ export class RecordingFileList extends ReactiveLitElement {
       box-sizing: border-box;
       display: flex;
       flex-flow: row;
-      height: 80px;
-      padding: 20px 16px 8px 32px;
+      padding: 20px 16px 8px var(--container-padding-horizontal);
 
-      & > span {
+      @container style(--small-viewport: 1) {
+        padding: 12px 12px 0 var(--container-padding-horizontal);
+      }
+
+
+      & > h1 {
         flex: 1;
         font: var(--cros-display-7-font);
+        margin: 0;
       }
     }
 
@@ -101,7 +136,7 @@ export class RecordingFileList extends ReactiveLitElement {
       flex-flow: column;
       gap: 16px;
       overflow-y: auto;
-      padding: 8px 0 24px;
+      padding: 8px 0 calc(24px + var(--scroll-bottom-extra-padding, 0px));
     }
 
     #sort-recording-menu {
@@ -111,7 +146,7 @@ export class RecordingFileList extends ReactiveLitElement {
     .section-heading {
       color: var(--cros-sys-on_surface);
       font: var(--cros-title-1-font);
-      margin: 16px 32px 0;
+      margin: 16px var(--container-padding-horizontal) 0;
     }
 
     .illustration-container {
@@ -133,9 +168,12 @@ export class RecordingFileList extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     recordingMetadataMap: {attribute: false},
+    inlinePlayingItem: {attribute: false},
   };
 
   recordingMetadataMap: RecordingMetadataMap = {};
+
+  inlinePlayingItem: InlinePlayingItemInfo|null = null;
 
   private readonly searchQuery = signal('');
 
@@ -144,6 +182,35 @@ export class RecordingFileList extends ReactiveLitElement {
   private readonly sortMenuOpened = signal(false);
 
   private readonly platformHandler = usePlatformHandler();
+
+  get firstRecordingForTest(): RecordingFileListItem {
+    return assertExists(
+      this.shadowRoot?.querySelector('recording-file-list-item'),
+    );
+  }
+
+  recordingFileCountForTest(): number {
+    return Object.keys(this.recordingMetadataMap).length;
+  }
+
+  /**
+   * Try to focus onto the "more options" button of the recording.
+   *
+   * Does nothing if the specific recording doesn't exist.
+   */
+  focusOnOptionOfRecordingId(recordingId: string|null): void {
+    if (recordingId === null) {
+      return;
+    }
+    const item =
+      this.shadowRoot?.querySelector(
+        `recording-file-list-item[data-recording-id="${recordingId}"]`,
+      ) ??
+      null;
+    if (item !== null) {
+      assertInstanceof(item, RecordingFileListItem).focusOnOption();
+    }
+  }
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {
@@ -167,22 +234,24 @@ export class RecordingFileList extends ReactiveLitElement {
       @opened=${onMenuOpen}
       @closed=${onMenuClose}
     >
-      <cros-menu-item
+      <cra-menu-item
         headline=${i18n.recordingListSortByDateOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.DATE}
+        data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
       this.onSortingTypeClick(RecordingSortType.DATE);
     }}
       >
-      </cros-menu-item>
-      <cros-menu-item
-        headline=${i18n.recordingListSortByNameOption}
+      </cra-menu-item>
+      <cra-menu-item
+        headline=${i18n.recordingListSortByTitleOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.NAME}
+        data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
       this.onSortingTypeClick(RecordingSortType.NAME);
     }}
       >
-      </cros-menu-item>
+      </cra-menu-item>
     </cra-menu>`;
   }
 
@@ -195,19 +264,26 @@ export class RecordingFileList extends ReactiveLitElement {
       this.searchQuery.value = ev.detail;
     };
 
+    const classes = {
+      selected: this.sortMenuOpened.value,
+    };
     return html`<div id="header">
-        <span>${i18n.recordingListHeader}</span>
-        <recording-search-box @query-changed=${onQueryChange}>
+        <h1>${i18n.recordingListHeader}</h1>
+        <recording-search-box
+          aria-label=${i18n.mainSearchLandmarkAriaLabel}
+          role="search"
+          @query-changed=${onQueryChange}
+        >
         </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
-          buttonstyle="toggle"
+          buttonstyle="filled"
+          class="with-toggle-style ${classMap(classes)}"
           @click=${this.toggleSortMenu}
-          .selected=${live(this.sortMenuOpened.value)}
+          aria-label=${i18n.recordingListSortButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
-          <cra-icon slot="selectedIcon" name="sort_by"></cra-icon>
-          <!-- TODO: b/336963138 - Add button tooltip -->
         </cra-icon-button>
       </div>
       ${this.renderSortMenu()}`;
@@ -348,15 +424,30 @@ export class RecordingFileList extends ReactiveLitElement {
       (item) => {
         switch (item.kind) {
           case 'header':
-            return html`<div class="section-heading">${item.label}</div>`;
-          case 'recording':
+            return html`<h2 class="section-heading">${item.label}</h2>`;
+          case 'recording': {
+            const {recording, searchHighlight} = item;
+            const [playing, progress] = (() => {
+              if (this.inlinePlayingItem === null ||
+                  this.inlinePlayingItem.id !== recording.id) {
+                return [false, null];
+              }
+              return [
+                this.inlinePlayingItem.playing,
+                this.inlinePlayingItem.progress,
+              ];
+            })();
             return html`
               <recording-file-list-item
-                .recording=${item.recording}
-                .searchHighlight=${item.searchHighlight}
+                data-recording-id=${recording.id}
+                .recording=${recording}
+                .searchHighlight=${searchHighlight}
+                .playing=${playing}
+                .playProgress=${progress}
               >
               </recording-file-list-item>
             `;
+          }
           default:
             assertExhaustive(item);
         }
@@ -365,7 +456,7 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    if (Object.keys(this.recordingMetadataMap).length === 0) {
+    if (isObjectEmpty(this.recordingMetadataMap)) {
       return html`
         <div class="illustration-container">
           <cra-image
@@ -377,7 +468,13 @@ export class RecordingFileList extends ReactiveLitElement {
     }
     return [
       this.renderHeader(),
-      html`<div id="list">${this.renderRecordingList()}</div>`,
+      html`<div
+        id="list"
+        aria-label=${i18n.mainRecordingsListLandmarkAriaLabel}
+        role="main"
+      >
+        ${this.renderRecordingList()}
+      </div>`,
     ];
   }
 }

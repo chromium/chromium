@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/raw_ptr.h"
-#include "components/autofill/ios/form_util/form_activity_observer.h"
+#import "base/memory/raw_ptr.h"
+#import "components/autofill/ios/form_util/form_activity_observer.h"
 
 @protocol FormActivityObserver<NSObject>
 @optional
@@ -19,10 +19,10 @@
 
 // Invoked by FormActivityObserverBridge::DidSubmitDocument.
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame;
+    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling;
 
 // Invoked by FormActivityObserverBridge::FormRemoved.
 - (void)webState:(web::WebState*)webState
@@ -59,9 +59,9 @@ class FormActivityObserverBridge : public FormActivityObserver {
 
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
-                         const std::string& form_name,
-                         const std::string& form_data,
-                         bool has_user_gesture) override;
+                         const FormData& form_data,
+                         bool has_user_gesture,
+                         bool perfect_filling) override;
 
   void FormRemoved(web::WebState* web_state,
                    web::WebFrame* sender_frame,

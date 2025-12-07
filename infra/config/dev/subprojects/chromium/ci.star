@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "siso")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/gn_args.star", "gn_args")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "builder", "cpu", "defaults", "os")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/siso.star", "siso")
 
 luci.bucket(
     name = "ci",
@@ -31,7 +33,7 @@ luci.bucket(
     name = "ci.shadow",
     shadows = "ci",
     constraints = luci.bucket_constraints(
-        pools = ["luci.chromium.ci"],
+        pools = ["luci.chromium.ci", "luci.chromium.btrfs"],
         service_accounts = ["chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com"],
     ),
     bindings = [
@@ -72,6 +74,12 @@ defaults.service_account.set(
     "chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com",
 )
 
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-dev-service-account",
+    ],
+)
+
 def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     resultdb_bigquery_exports = resultdb_bigquery_exports or []
     resultdb_bigquery_exports.extend([
@@ -99,7 +107,8 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
 ###############################################################################
 
 ci_builder(
-    name = "android-pie-arm64-rel-dev",
+    name = "android-arm64-rel-dev",
+    description_html = "Run chromium tests on Android arm64 devices.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -108,27 +117,49 @@ ci_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
+            apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder_mb",
+            config = "base_config",
         ),
     ),
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
-            "webview_monochrome",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_dev_android_gtests",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "os": "Android",
+                    },
+                    expiration_sec = 10800,
+                ),
+            ),
+            "chromium_tests_pool",
+            "has_native_resultdb_integration",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 ci_builder(
@@ -142,6 +173,9 @@ ci_builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -150,6 +184,14 @@ ci_builder(
             "devtools_do_typecheck",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_dev_linux_gtests",
+        ],
+        mixins = [
+            "linux-jammy",
         ],
     ),
 )
@@ -176,6 +218,7 @@ ci_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     builderless = False,
     ssd = True,
 )
@@ -202,6 +245,7 @@ ci_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     builderless = False,
     ssd = True,
 )
@@ -227,6 +271,14 @@ ci_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_dev_mac_gtests",
+        ],
+        mixins = [
+            "mac_default_x64",
+        ],
+    ),
     os = os.MAC_DEFAULT,
 )
 
@@ -249,6 +301,14 @@ ci_builder(
             "minimal_symbols",
             "mac",
             "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_dev_mac_gtests",
+        ],
+        mixins = [
+            "mac_default_arm64",
         ],
     ),
     os = os.MAC_DEFAULT,
@@ -277,6 +337,7 @@ ci_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     builderless = False,
     os = os.WINDOWS_10,
     ssd = 1,
@@ -303,6 +364,14 @@ ci_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_dev_win_gtests",
+        ],
+        mixins = [
+            "win10",
+        ],
+    ),
     os = os.WINDOWS_10,
     ssd = 0,
 )
@@ -326,6 +395,14 @@ ci_builder(
             "minimal_symbols",
             "win",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_dev_win_gtests",
+        ],
+        mixins = [
+            "win11-any",
         ],
     ),
     os = os.WINDOWS_11,

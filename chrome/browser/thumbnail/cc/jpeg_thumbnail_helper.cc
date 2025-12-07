@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 
@@ -40,12 +36,10 @@ void CompressTask(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
   constexpr int kCompressionQuality = 97;
-  std::vector<uint8_t> data;
-  const bool result =
-      gfx::JPEGCodec::Encode(ResizeBitmap(bitmap), kCompressionQuality, &data);
-  DCHECK(result);
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(ResizeBitmap(bitmap), kCompressionQuality);
 
-  std::move(post_processing_task).Run(std::move(data));
+  std::move(post_processing_task).Run(std::move(data.value()));
 }
 
 void WriteTask(base::FilePath file_path,
@@ -53,11 +47,7 @@ void WriteTask(base::FilePath file_path,
                base::OnceCallback<void(bool)> post_write_task) {
   DCHECK(!compressed_data.empty());
 
-  int bytes_written = base::WriteFile(
-      file_path, reinterpret_cast<const char*>(compressed_data.data()),
-      compressed_data.size());
-
-  if (bytes_written != static_cast<int>(compressed_data.size())) {
+  if (!base::WriteFile(file_path, compressed_data)) {
     base::DeleteFile(file_path);
     std::move(post_write_task).Run(false);
     return;

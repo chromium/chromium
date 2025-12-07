@@ -36,8 +36,9 @@ namespace {
 void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
                     WindowOpenDisposition disposition,
                     Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return;  // Failed to load profile, ignore.
+  }
   // If this item can be restored using TabRestoreService, do so. Otherwise,
   // just load the URL.
   if (node.session_id.is_valid()) {
@@ -51,8 +52,9 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
     // bridge, target the active profile. Without this, history menu items open
     // in the nearest non-incognito window, or create one.
     if (auto* active_browser = chrome::FindBrowserWithActiveWindow()) {
-      if (active_browser->profile()->GetOriginalProfile() == target_profile)
+      if (active_browser->profile()->GetOriginalProfile() == target_profile) {
         target_profile = active_browser->profile();
+      }
     }
 
     NavigateParams params(target_profile, node.url,

@@ -6,8 +6,10 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -30,22 +32,26 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  void BuildGridItemsAndTrackCollections(GridLayoutAlgorithm& algorithm) {
-    LayoutUnit unused_intrinsic_block_size;
+  void BuildGridGeometry(const GridLayoutAlgorithm& algorithm) {
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
 
-    algorithm.ComputeGridGeometry(grid_sizing_tree,
-                                  &unused_intrinsic_block_size);
+    algorithm.InitializeTrackSizes(&grid_sizing_tree);
+    algorithm.CompleteTrackSizingAlgorithm(
+        kForColumns, SizingConstraint::kLayout, &grid_sizing_tree);
+    algorithm.CompleteTrackSizingAlgorithm(kForRows, SizingConstraint::kLayout,
+                                           &grid_sizing_tree);
 
-    auto& [grid_items, layout_data, tree_size] =
-        grid_sizing_tree.TreeRootData();
+    layout_data_ = std::move(grid_sizing_tree.LayoutData());
+    for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {
+      GridItemCachedData item_data;
 
-    cached_grid_items_ = std::move(grid_items);
-    layout_data_ = std::move(layout_data);
-  }
-
-  const GridItemData& GridItem(wtf_size_t index) {
-    return cached_grid_items_.At(index);
+      item_data.available_row_size =
+          grid_item.CalculateAvailableSize(layout_data_.Rows());
+      item_data.column_span_properties = grid_item.column_span_properties;
+      item_data.row_span_properties = grid_item.row_span_properties;
+      item_data.resolved_position = grid_item.resolved_position;
+      grid_items_data_.emplace_back(std::move(item_data));
+    }
   }
 
   const GridSizingTrackCollection& TrackCollection(
@@ -60,29 +66,33 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return TrackCollection(track_direction).ranges_;
   }
 
-  LayoutUnit BaseRowSizeForChild(const GridLayoutAlgorithm& algorithm,
-                                 wtf_size_t index) {
-    return algorithm.ComputeGridItemAvailableSize(GridItem(index),
-                                                  layout_data_.Rows());
-  }
+  // Helper methods to access private data on `GridLayoutAlgorithm`. This class
+  // is a friend of `GridLayoutAlgorithm` but the individual tests are not.
+  wtf_size_t GridItemCount() { return grid_items_data_.size(); }
 
-  // Helper methods to access private data on GridLayoutAlgorithm. This class
-  // is a friend of GridLayoutAlgorithm but the individual tests are not.
-  wtf_size_t GridItemCount() { return cached_grid_items_.Size(); }
+  Vector<LayoutUnit> GridItemsAvailableRowSize() {
+    Vector<LayoutUnit> results;
+    for (const auto& item_data : grid_items_data_) {
+      results.push_back(item_data.available_row_size);
+    }
+    return results;
+  }
 
   Vector<GridArea> GridItemGridAreas() {
     Vector<GridArea> results;
-    for (const auto& grid_item : cached_grid_items_)
-      results.push_back(grid_item.resolved_position);
+    for (const auto& item_data : grid_items_data_) {
+      results.push_back(item_data.resolved_position);
+    }
     return results;
   }
 
   Vector<wtf_size_t> GridItemsWithColumnSpanProperty(
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
-    for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (GridItem(i).column_span_properties.HasProperty(property))
+    for (wtf_size_t i = 0; i < grid_items_data_.size(); ++i) {
+      if (grid_items_data_[i].column_span_properties.HasProperty(property)) {
         results.push_back(i);
+      }
     }
     return results;
   }
@@ -90,9 +100,10 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   Vector<wtf_size_t> GridItemsWithRowSpanProperty(
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
-    for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (GridItem(i).row_span_properties.HasProperty(property))
+    for (wtf_size_t i = 0; i < grid_items_data_.size(); ++i) {
+      if (grid_items_data_[i].row_span_properties.HasProperty(property)) {
         results.push_back(i);
+      }
     }
     return results;
   }
@@ -141,11 +152,19 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return fragment->DumpFragmentTree(flags);
   }
 
-  GridItems cached_grid_items_;
+ private:
+  struct GridItemCachedData {
+    LayoutUnit available_row_size;
+    TrackSpanProperties column_span_properties;
+    TrackSpanProperties row_span_properties;
+    GridArea resolved_position;
+  };
+
+  Vector<GridItemCachedData> grid_items_data_;
   GridLayoutData layout_data_;
 };
 
-TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmBaseSetSizes) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAvailableRowSizes) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -176,12 +195,408 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmBaseSetSizes) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  BuildGridItemsAndTrackCollections(algorithm);
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), LayoutUnit(0));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), LayoutUnit(110));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 2), LayoutUnit(210));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 3), LayoutUnit(100));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), LayoutUnit(110));
+  BuildGridGeometry(algorithm);
+
+  EXPECT_EQ(GridItemsAvailableRowSize(),
+            Vector<LayoutUnit>({LayoutUnit(0), LayoutUnit(110), LayoutUnit(210),
+                                LayoutUnit(100), LayoutUnit(110)}));
+}
+
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+      column-gap: 14px;
+      row-gap: 12px;
+      grid-template-columns: 80px 120px 90px;
+      grid-template-rows: 90px 130px 110px 140px;
+      column-rule-color: red;
+      column-rule-style: solid;
+    }
+    .item {
+      /* Intentionally not matching track sizes to ensure geometry comes from tracks. */
+      width: 70px;
+      height: 60px;
+      background: red;
+    }
+    </style>
+    <div id="grid1">
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  BlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+  ASSERT_NE(gap_geometry, nullptr);
+  EXPECT_EQ(gap_geometry->GetContainerType(),
+            GapGeometry::ContainerType::kGrid);
+  EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(14));
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(12));
+
+  // With 12 items (3 columns), we have 4 rows and 3 row (main) gaps.
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 3u);
+  // Row midpoints based on grid-template-rows [90,130,110,140] and row-gap 12:
+  // row track lines: [0, 102, 244, 366, 506]; midpoints: [96, 238, 360].
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(96));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(238));
+  EXPECT_EQ(main_gaps[2].GetGapOffset(), LayoutUnit(360));
+
+  // CrossGaps are column gap midpoints stored as LogicalOffsets.
+  const auto& cross_gaps = gap_geometry->GetCrossGaps();
+  ASSERT_EQ(cross_gaps.size(), 2u);  // 3 columns -> 2 column gaps
+  // Column midpoints based on grid-template-columns [80,120,90] and column-gap 14:
+  // column track lines: [0, 94, 228, 318]; midpoints: [87, 221].
+  EXPECT_EQ(cross_gaps[0].GetGapOffset().inline_offset, LayoutUnit(87));
+  EXPECT_EQ(cross_gaps[1].GetGapOffset().inline_offset, LayoutUnit(221));
+
+  // Content edges should span the content box of the grid:
+  // Inline: 0 -> 318 (80+14+120+14+90), Block: 0 -> 506 (90+12+130+12+110+12+140).
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit());
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(318));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(506));
+}
+
+TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItems) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: 100px 100px 100px;
+      column-rule: red solid;
+      width: 320px;
+      height: 320px;
+    }
+    .item {
+      background: red;
+    }
+    .item1 {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+    }
+    .item3 {
+      grid-column: 3 / 4;
+      grid-row: 1 / 3;
+    }
+    .item8 {
+      grid-column: 2 / 4;
+      grid-row: 3 / 4;
+    }
+    </style>
+    <div id="grid1">
+      <div class="item item1"></div>
+      <div class="item item3"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item item8"></div>
+    </div>
+  )HTML");
+
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  BlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+  ASSERT_NE(gap_geometry, nullptr);
+
+  // Verify basic gap geometry properties.
+  EXPECT_EQ(gap_geometry->GetContainerType(),
+            GapGeometry::ContainerType::kGrid);
+  EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(10));
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(10));
+
+  // The rendered version of this grid looks like:
+  // +---+---+---+
+  // |       |   |
+  // +---+---+   +
+  // |   |   |   |
+  // +---+---+---+
+  // |   |       |
+  // +---+---+---+
+
+  // Main Gaps (row gaps in the MC model).
+  // Grid has 3 rows and so 2 row gaps.
+  // Row track lines: [0, 110, 220, 330]; gap midpoints: [105, 215].
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 2u);
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(105));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(215));
+
+  // Test Cross Gaps (column gaps in the MC model).
+  // With 3 columns, we have 2 column gaps.
+  // Column track lines: [0, 110, 220, 320]; gap midpoints: [105, 215].
+  const auto& cross_gaps = gap_geometry->GetCrossGaps();
+  ASSERT_EQ(cross_gaps.size(), 2u);
+  EXPECT_EQ(cross_gaps[0].GetGapOffset().inline_offset,
+            LayoutUnit(105));  // gap between cols 1-2
+  EXPECT_EQ(cross_gaps[1].GetGapOffset().inline_offset,
+            LayoutUnit(215));  // gap between cols 2-3
+
+  // Test Content Start/End Edges
+  // Inline: 0 -> 320 (column track sizes + column gaps).
+  // Block: 0 -> 320 (row track sizes + row gaps).
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(0));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(0));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(320));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(320));
+
+  // Expected column gap blocked ranges:
+  // Cross gap 0 (between cols 0-1): spanned by item1 covering row tracks [0,1].
+  {
+    ASSERT_TRUE(cross_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+    EXPECT_EQ(ranges[0].start, 0u);
+    EXPECT_EQ(ranges[0].end, 1u);
+    // Ensure the recorded segment is marked blocked.
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+  // Cross gap 1 (between cols 1-2): spanned by item8 covering row tracks [2,3].
+  {
+    ASSERT_TRUE(cross_gaps[1].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[1].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+    EXPECT_EQ(ranges[0].start, 2u);
+    EXPECT_EQ(ranges[0].end, 3u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+
+  // Expected row gap blocked ranges:
+  // Main gap 0 (between rows 0-1): spanned by item3 covering column tracks
+  // [2,3].
+  {
+    ASSERT_TRUE(main_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = main_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+    EXPECT_EQ(ranges[0].start, 2u);
+    EXPECT_EQ(ranges[0].end, 3u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+  // Main gap 1 should have no blocked column ranges.
+  EXPECT_FALSE(main_gaps[1].HasGapSegmentStateRanges());
+}
+
+TEST_F(GridLayoutAlgorithmTest, GapGeometryWithEmptyCellsAndSpanningItems) {
+  SetBodyInnerHTML(R"HTML(
+  <style>
+    #grid1 {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: 100px 100px 100px;
+      column-rule: red solid;
+      width: 320px;
+      height: 320px;
+    }
+    .item {
+      background: red;
+    }
+    .item1 {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+    }
+    .item3 {
+      grid-column: 3 / 4;
+      grid-row: 1 / 4;
+    }
+    </style>
+    <div id="grid1">
+      <div class="item item1"></div>
+      <div class="item item3"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  BlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+  ASSERT_NE(gap_geometry, nullptr);
+
+  // Verify basic gap geometry properties.
+  EXPECT_EQ(gap_geometry->GetContainerType(),
+            GapGeometry::ContainerType::kGrid);
+  EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(10));
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(10));
+
+  // The rendered version of this grid looks like, empty cell marked 'E':
+  // +---+---+---+
+  // |       |   |
+  // +---+---+   +
+  // |   | E |   |
+  // +---+---+   +
+  // | E | E |   |
+  // +---+---+---+
+
+  // Main Gaps (row gaps in the MC model).
+  // Grid has 3 rows and so 2 row gaps.
+  // Row track lines: [0, 110, 220, 330]; gap midpoints: [105, 215].
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 2u);
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(105));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(215));
+
+  // Test Cross Gaps (column gaps in the MC model).
+  // With 3 columns, we have 2 column gaps.
+  // Column track lines: [0, 110, 220, 320]; gap midpoints: [105, 215].
+  const auto& cross_gaps = gap_geometry->GetCrossGaps();
+  ASSERT_EQ(cross_gaps.size(), 2u);
+  EXPECT_EQ(cross_gaps[0].GetGapOffset().inline_offset,
+            LayoutUnit(105));  // gap between cols 1-2
+  EXPECT_EQ(cross_gaps[1].GetGapOffset().inline_offset,
+            LayoutUnit(215));  // gap between cols 2-3
+
+  // Test Content Start/End Edges
+  // Inline: 0 -> 320 (column track sizes + column gaps).
+  // Block: 0 -> 320 (row track sizes + row gaps).
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(0));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(0));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(320));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(320));
+
+  // Expected column gap segment state ranges:
+  // Cross gap 0 (between cols 0-1):
+  // Row 0: item1 spans both sides → kBlocked
+  // Row 1: occupied vs empty → kEmptyAfter
+  // Row 2: empty vs empty → kEmptyBoth
+  {
+    ASSERT_TRUE(cross_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 3u);
+
+    // Row 0: blocked by item1 spanning
+    EXPECT_EQ(ranges[0].start, 0u);
+    EXPECT_EQ(ranges[0].end, 1u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+
+    // Row 1: occupied before, empty after
+    EXPECT_EQ(ranges[1].start, 1u);
+    EXPECT_EQ(ranges[1].end, 2u);
+    EXPECT_FALSE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Row 2: empty on both sides
+    EXPECT_EQ(ranges[2].start, 2u);
+    EXPECT_EQ(ranges[2].end, 3u);
+    EXPECT_TRUE(ranges[2].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[2].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+  }
+
+  // Cross gap 1 (between cols 1-2):
+  // Row 0: item1 vs item3 → kNone (different items, not included)
+  // Row 1: empty vs item3 → kEmptyBefore
+  // Row 2: empty vs item3 → kEmptyBefore
+  {
+    ASSERT_TRUE(cross_gaps[1].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[1].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+
+    // Rows 1-2: empty before, spanner after
+    EXPECT_EQ(ranges[0].start, 1u);
+    EXPECT_EQ(ranges[0].end, 3u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_FALSE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+  }
+
+  // Expected row gap segment state ranges:
+  // Main gap 0 (between rows 0-1):
+  // Column 0: item1 vs occupied → kNone (no empty states)
+  // Column 1: item1 vs empty → kEmptyAfter
+  // Column 2: item3 vs item3 → kBlocked
+  {
+    ASSERT_TRUE(main_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = main_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 2u);
+
+    // Column 1: spanner before, empty after
+    EXPECT_EQ(ranges[0].start, 1u);
+    EXPECT_EQ(ranges[0].end, 2u);
+    EXPECT_FALSE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Column 2: blocked by item3 spanning
+    EXPECT_EQ(ranges[1].start, 2u);
+    EXPECT_EQ(ranges[1].end, 3u);
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+
+  // Main gap 1 (between rows 1-2):
+  // Column 0: occupied vs empty → kEmptyAfter
+  // Column 1: empty vs empty → kEmptyBoth
+  // Column 2: item3 vs item3 → kBlocked
+  {
+    ASSERT_TRUE(main_gaps[1].HasGapSegmentStateRanges());
+    const auto& ranges = main_gaps[1].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 3u);
+
+    // Column 0: occupied before, empty after
+    EXPECT_EQ(ranges[0].start, 0u);
+    EXPECT_EQ(ranges[0].end, 1u);
+    EXPECT_FALSE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Column 1: empty on both sides
+    EXPECT_EQ(ranges[1].start, 1u);
+    EXPECT_EQ(ranges[1].end, 2u);
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Column 2: blocked by item3 spanning
+    EXPECT_EQ(ranges[2].start, 2u);
+    EXPECT_EQ(ranges[2].end, 3u);
+    EXPECT_TRUE(ranges[2].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
 }
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {
@@ -214,7 +629,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
   const auto& row_ranges = Ranges(kForRows);
@@ -261,7 +676,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesWithAutoRepeater) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
   const auto& row_ranges = Ranges(kForRows);
@@ -330,7 +745,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicit) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
   const auto& column_ranges = Ranges(kForColumns);
@@ -389,7 +804,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicitAutoColumns) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
   const auto& column_ranges = Ranges(kForColumns);
@@ -447,7 +862,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicitAutoRows) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
   const auto& column_ranges = Ranges(kForColumns);
@@ -495,7 +910,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicitMixed) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 5U);
 
   const auto& column_ranges = Ranges(kForColumns);
@@ -572,11 +987,11 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAutoGridPositions) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
-  Vector<GridArea> grid_positions = GridItemGridAreas();
-  ASSERT_EQ(grid_positions.size(), 4U);
+  const Vector<GridArea> grid_positions = GridItemGridAreas();
+  EXPECT_EQ(grid_positions.size(), 4U);
 
   EXPECT_GRID_AREA(grid_positions[0], 1U, 2U, 1U, 2U);
   EXPECT_GRID_AREA(grid_positions[1], 1U, 2U, 0U, 1U);
@@ -698,11 +1113,11 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAutoDense) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 16U);
 
-  Vector<GridArea> grid_positions = GridItemGridAreas();
-  ASSERT_EQ(grid_positions.size(), 16U);
+  const Vector<GridArea> grid_positions = GridItemGridAreas();
+  EXPECT_EQ(grid_positions.size(), 16U);
 
   // Expected placements:
   //   0 1 2 3 4 5 6 7 8 9
@@ -780,7 +1195,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGridPositions) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
   EXPECT_EQ(GridItemCount(), 3U);
 
   const auto& column_ranges = Ranges(kForColumns);
@@ -821,7 +1236,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmResolveFixedTrackSizes) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
 
   Vector<LayoutUnit> expected_column_base_sizes = {
       LayoutUnit(25), LayoutUnit(60), LayoutUnit(15)};
@@ -898,7 +1313,7 @@ TEST_F(GridLayoutAlgorithmTest,
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  BuildGridItemsAndTrackCollections(algorithm);
+  BuildGridGeometry(algorithm);
 
   // Test grid items spanning intrinsic/flexible columns.
   Vector<wtf_size_t> expected_grid_items_spanning_intrinsic_track = {0, 1, 3};
@@ -1544,13 +1959,13 @@ TEST_F(GridLayoutAlgorithmTest, NGGridAxisType) {
   const ComputedStyle& grid_style = grid_node.Style();
   const ComputedStyle& subgrid_style = subgrid_node.Style();
 
-  EXPECT_EQ(grid_style.GridTemplateColumns().axis_type,
+  EXPECT_EQ(grid_style.GridTemplateColumns().GetGridAxisType(),
             GridAxisType::kStandaloneAxis);
-  EXPECT_EQ(grid_style.GridTemplateRows().axis_type,
+  EXPECT_EQ(grid_style.GridTemplateRows().GetGridAxisType(),
             GridAxisType::kStandaloneAxis);
-  EXPECT_EQ(subgrid_style.GridTemplateColumns().axis_type,
+  EXPECT_EQ(subgrid_style.GridTemplateColumns().GetGridAxisType(),
             GridAxisType::kSubgriddedAxis);
-  EXPECT_EQ(subgrid_style.GridTemplateRows().axis_type,
+  EXPECT_EQ(subgrid_style.GridTemplateRows().GetGridAxisType(),
             GridAxisType::kSubgriddedAxis);
 }
 
@@ -1579,15 +1994,16 @@ TEST_F(GridLayoutAlgorithmTest, SubgridLineNameList) {
   const ComputedGridTrackList& computed_grid_row_track_list =
       subgrid_style.GridTemplateRows();
 
-  EXPECT_EQ(computed_grid_column_track_list.axis_type,
+  EXPECT_EQ(computed_grid_column_track_list.GetGridAxisType(),
             GridAxisType::kSubgriddedAxis);
-  EXPECT_EQ(computed_grid_row_track_list.axis_type,
+  EXPECT_EQ(computed_grid_row_track_list.GetGridAxisType(),
             GridAxisType::kSubgriddedAxis);
 
-  EXPECT_TRUE(computed_grid_column_track_list.ordered_named_grid_lines.empty());
+  EXPECT_TRUE(
+      computed_grid_column_track_list.GetOrderedNamedGridLines().empty());
 
   const OrderedNamedGridLines& ordered_named_grid_row_lines =
-      computed_grid_row_track_list.ordered_named_grid_lines;
+      computed_grid_row_track_list.GetOrderedNamedGridLines();
   EXPECT_EQ(ordered_named_grid_row_lines.size(), 3u);
 
   const Vector<NamedGridLine> row_named_lines = {
@@ -1624,15 +2040,15 @@ TEST_F(GridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
   const ComputedGridTrackList& computed_grid_row_track_list =
       subgrid_style.GridTemplateRows();
 
-  EXPECT_EQ(computed_grid_column_track_list.axis_type,
+  EXPECT_EQ(computed_grid_column_track_list.GetGridAxisType(),
             GridAxisType::kSubgriddedAxis);
-  EXPECT_EQ(computed_grid_row_track_list.axis_type,
+  EXPECT_EQ(computed_grid_row_track_list.GetGridAxisType(),
             GridAxisType::kSubgriddedAxis);
 
   const OrderedNamedGridLines& ordered_named_grid_column_lines =
-      computed_grid_column_track_list.ordered_named_grid_lines;
+      computed_grid_column_track_list.GetOrderedNamedGridLines();
   const OrderedNamedGridLines& auto_repeat_ordered_named_grid_column_lines =
-      computed_grid_column_track_list.auto_repeat_ordered_named_grid_lines;
+      computed_grid_column_track_list.GetOrderedAutoRepeatNamedGridLines();
 
   EXPECT_EQ(ordered_named_grid_column_lines.size(), 2u);
   EXPECT_EQ(auto_repeat_ordered_named_grid_column_lines.size(), 2u);
@@ -1651,7 +2067,7 @@ TEST_F(GridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
   }
 
   const OrderedNamedGridLines& ordered_named_grid_row_lines =
-      computed_grid_row_track_list.ordered_named_grid_lines;
+      computed_grid_row_track_list.GetOrderedNamedGridLines();
   EXPECT_EQ(ordered_named_grid_row_lines.size(), 6u);
 
   const Vector<NamedGridLine> row_named_lines = {

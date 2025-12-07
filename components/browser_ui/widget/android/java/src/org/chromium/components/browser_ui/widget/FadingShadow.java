@@ -12,20 +12,23 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class draws a variable-sized shadow at the top or bottom edge of a view. This is just like
  * a fading edge, except that the shadow color can have an alpha component, whereas a fading edge
  * color must be opaque.
  */
+@NullMarked
 public class FadingShadow {
     public static final int POSITION_TOP = 0;
     public static final int POSITION_BOTTOM = 1;
 
     private static final int SMOOTH_ALGORITHM_INTERPOLATION_POINTS_NUM = 8;
 
-    private Paint mShadowPaint = new Paint();
-    private Matrix mShadowMatrix = new Matrix();
-    private Shader mShadowShader;
+    private final Paint mShadowPaint = new Paint();
+    private final Matrix mShadowMatrix = new Matrix();
+    private final Shader mShadowShader;
 
     /** @param shadowColor The color of the shadow, e.g. 0x11000000. */
     FadingShadow(int shadowColor) {

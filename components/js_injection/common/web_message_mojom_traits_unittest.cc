@@ -4,6 +4,8 @@
 
 #include "components/js_injection/common/web_message_mojom_traits.h"
 
+#include <variant>
+
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +21,7 @@ TEST(WebMessageMojomTraitsTest, StringRoundTrip) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JsWebMessage>(payload,
                                                                        output));
 
-  EXPECT_EQ(kString, absl::get<std::u16string>(output));
+  EXPECT_EQ(kString, std::get<std::u16string>(output));
 }
 
 TEST(WebMessageMojomTraitsTest, ArrayBufferRoundTrip) {
@@ -32,7 +34,7 @@ TEST(WebMessageMojomTraitsTest, ArrayBufferRoundTrip) {
                                                                        output));
 
   auto& array_buffer_output =
-      absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(output);
+      std::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(output);
   std::vector<uint8_t> output_vector(array_buffer_output->GetLength());
   array_buffer_output->CopyInto(output_vector);
   EXPECT_EQ(kArrayBuffer, output_vector);

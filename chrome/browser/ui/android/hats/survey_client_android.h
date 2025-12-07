@@ -6,17 +6,18 @@
 #define CHROME_BROWSER_UI_ANDROID_HATS_SURVEY_CLIENT_ANDROID_H_
 
 #include <jni.h>
+
 #include <memory>
 #include <string>
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
+
+class Profile;
 
 namespace ui {
 class WindowAndroid;
@@ -37,7 +38,8 @@ class SurveyClientAndroid {
       const std::string& trigger,
       SurveyUiDelegateAndroid* ui_delegate,
       Profile* profile,
-      const std::optional<std::string>& supplied_trigger_id);
+      const std::optional<std::string>& supplied_trigger_id,
+      ui::WindowAndroid* window);
 
   SurveyClientAndroid(const SurveyClientAndroid&) = delete;
   SurveyClientAndroid& operator=(const SurveyClientAndroid&) = delete;

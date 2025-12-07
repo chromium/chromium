@@ -17,7 +17,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/window_cache.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
@@ -162,8 +162,15 @@ gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
   gfx::Point point_in_pixels =
       gfx::ToFlooredPoint(PointDipToPx(GetAllDisplays(), point));
-  return static_cast<gfx::AcceleratedWidget>(
+  auto widget = static_cast<gfx::AcceleratedWidget>(
       x11::GetWindowAtPoint(point_in_pixels));
+  auto* window = window_manager_->GetWindow(widget);
+  if (window && !window->IsVisible()) {
+    // The window cache may be out of sync with respect to recently changed
+    // window state. This can happen if the window was recently hidden.
+    return gfx::kNullAcceleratedWidget;
+  }
+  return widget;
 }
 
 gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(

@@ -1,17 +1,14 @@
 include_rules = [
   "+cc/trees/layer_tree_frame_sink.h",
   "+cc/trees/layer_tree_frame_sink_client.h",
+  "+chromeos/ash/grit/ash_resources.h",
   "+chromeos/ash/services/recording/public/mojom",
   "+chromeos/ash/services/recording/recording_service_test_api.h",
   "+components/capture_mode/camera_video_frame_handler.h",
   "+components/viz/client/client_resource_provider.h",
-  "+gpu/command_buffer/client/client_shared_image.h",
-  "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
-  "+gpu/command_buffer/client/shared_image_interface.h",
+  "+google_apis",
   "+gpu/command_buffer/common/context_result.h",
-  "+gpu/command_buffer/common/shared_image_usage.h",
-  "+gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h",
-  "+gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h",
+  "+gpu/command_buffer/common/shared_image_capabilities.h",
   "+gpu/ipc/common/surface_handle.h",
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+services/video_capture/public",
@@ -21,5 +18,8 @@ include_rules = [
 specific_include_rules = {
   "capture_mode_camera_unittests\.cc": [
     "+components/viz/test/test_in_process_context_provider.h",
+  ],
+  "sunfish_unittest\.cc": [
+    "+chromeos/ash/components/specialized_features",
   ],
 }

@@ -50,7 +50,8 @@ std::unique_ptr<webrtc::DesktopFrame> CreateUnchangedFrame(
     webrtc::SharedMemoryFactory* shared_memory_factory) {
   const webrtc::DesktopSize kSize(800, 640);
   // updated_region() is already empty by default in new BasicDesktopFrames.
-  return std::make_unique<webrtc::BasicDesktopFrame>(kSize);
+  return std::make_unique<webrtc::BasicDesktopFrame>(kSize,
+                                                     webrtc::FOURCC_ARGB);
 }
 
 class MockVideoEncoder : public VideoEncoder {
@@ -118,8 +119,8 @@ class ThreadCheckDesktopCapturer : public DesktopCapturer {
   void CaptureFrame() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
 
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(kWidth, kHeight)));
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(kWidth, kHeight), webrtc::FOURCC_ARGB);
     frame->mutable_updated_region()->SetRect(
         webrtc::DesktopRect::MakeXYWH(0, 0, 10, 10));
     callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,

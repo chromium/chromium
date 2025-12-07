@@ -42,7 +42,7 @@ export const RelaunchMixin = dedupingMixin(
           };
         }
 
-        protected shouldShowRelaunchDialog: boolean;
+        declare protected shouldShowRelaunchDialog: boolean;
 
         constructor(...args: any[]) {
           super(...args);
@@ -63,7 +63,7 @@ export const RelaunchMixin = dedupingMixin(
           }
         }
 
-        // <if expr="not chromeos_ash">
+        // <if expr="not is_chromeos">
         private async performRestartForNonChromeOs_(
             restartType: RestartType, alwaysShowDialog: boolean) {
           const shouldShowDialog =
@@ -96,11 +96,11 @@ export const RelaunchMixin = dedupingMixin(
             alwaysShowDialog = false;
           }
 
-          // <if expr="chromeos_ash">
+          // <if expr="is_chromeos">
           this.performRestartInternal_(restartType);
           // </if>
 
-          // <if expr="not chromeos_ash">
+          // <if expr="not is_chromeos">
           this.performRestartForNonChromeOs_(restartType, alwaysShowDialog);
           // </if>
         }

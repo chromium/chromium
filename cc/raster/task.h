@@ -90,7 +90,6 @@ class CC_EXPORT Task : public base::RefCountedThreadSafe<Task> {
   // Unique trace flow id for the given task, used to connect the places where
   // the task was posted from and the task itself.
   uint64_t trace_task_id() { return trace_task_id_; }
-  void set_trace_task_id(uint64_t id) { trace_task_id_ = id; }
 
   // Subclasses should implement this method. RunOnWorkerThread may be called
   // on any thread, and subclasses are responsible for locking and thread
@@ -106,7 +105,7 @@ class CC_EXPORT Task : public base::RefCountedThreadSafe<Task> {
  private:
   TaskState state_;
   int64_t frame_number_ = -1;
-  int64_t trace_task_id_ = 0;
+  uint64_t trace_task_id_;
 };
 
 // A task dependency graph describes the order in which to execute a set
@@ -124,7 +123,8 @@ struct CC_EXPORT TaskGraph {
     Node(scoped_refptr<Task> new_task,
          uint16_t category,
          uint16_t priority,
-         uint32_t dependencies);
+         uint32_t dependencies,
+         bool has_external_dependency = false);
     Node(const Node&) = delete;
     Node(Node&& other);
     ~Node();
@@ -136,6 +136,7 @@ struct CC_EXPORT TaskGraph {
     uint16_t category;
     uint16_t priority;
     uint32_t dependencies;
+    bool has_external_dependency;
   };
 
   struct Edge {
@@ -144,8 +145,8 @@ struct CC_EXPORT TaskGraph {
     Edge(const Task* task, Task* dependent)
         : task(task), dependent(dependent) {}
 
-    raw_ptr<const Task, AcrossTasksDanglingUntriaged> task;
-    raw_ptr<Task, AcrossTasksDanglingUntriaged> dependent;
+    raw_ptr<const Task> task;
+    raw_ptr<Task> dependent;
   };
 
   TaskGraph();

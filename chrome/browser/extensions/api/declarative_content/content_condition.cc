@@ -10,7 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -31,7 +34,7 @@ ContentCondition::ContentCondition(
     std::vector<std::unique_ptr<const ContentPredicate>> predicates)
     : predicates(std::move(predicates)) {}
 
-ContentCondition::~ContentCondition() {}
+ContentCondition::~ContentCondition() = default;
 
 std::unique_ptr<ContentCondition> CreateContentCondition(
     const Extension* extension,

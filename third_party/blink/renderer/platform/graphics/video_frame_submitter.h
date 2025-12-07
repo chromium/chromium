@@ -16,9 +16,7 @@
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
-#include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,6 +30,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace blink {
 
 // This single-threaded class facilitates the communication between the media
@@ -43,7 +45,6 @@ namespace blink {
 class PLATFORM_EXPORT VideoFrameSubmitter
     : public WebVideoFrameSubmitter,
       public viz::ContextLostObserver,
-      public viz::SharedBitmapReporter,
       public gpu::GpuChannelLostObserver,
       public viz::mojom::blink::CompositorFrameSinkClient {
  public:
@@ -78,21 +79,15 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // cc::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      WTF::Vector<viz::ReturnedResource> resources) override;
+      Vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs&,
-                    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-                    bool frame_ack,
-                    WTF::Vector<viz::ReturnedResource> resources) override;
+                    const HashMap<uint32_t, viz::FrameTimingDetails>&,
+                    Vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override {}
-  void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) override;
+  void ReclaimResources(Vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
-
-  // viz::SharedBitmapReporter implementation.
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion,
-                               const viz::SharedBitmapId&) override;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId&) override;
 
  private:
   friend class VideoFrameSubmitterTest;
@@ -103,7 +98,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
       scoped_refptr<viz::RasterContextProvider> context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
 
   // Adopts `context_provider` if it's non-null and in a usable state. Returns
   // true on success and false on failure, implying that a new ContextProvider
@@ -151,10 +146,28 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       scoped_refptr<media::VideoFrame> video_frame,
       media::VideoTransformation transform);
 
+  // Opacity state with respect to what we've told `surface_embedder_`.
+  enum class Opacity {
+    // We have not told the embedder anything yet.
+    kNotReported,
+
+    // We told the embedder that we have submitted an opaque frame.
+    kIsOpaque,
+
+    // We told the embedder that we have submitted a non-opaque frame.
+    kIsNotOpaque
+  };
+
+  // Notify `surface_embedder_` if the opacity of the most recent video frame
+  // has changed.
+  void NotifyOpacityIfNeeded(Opacity new_opacity);
+
+  void ClearFrameResources();
+
   raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> remote_frame_sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};
@@ -240,6 +253,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // The average delta between receiving a frame and presenting it. Can be used
   // to estimate the expected display time of a frame.
   base::TimeDelta average_delta_between_receive_and_present_;
+
+  Opacity opacity_ = Opacity::kNotReported;
 
   THREAD_CHECKER(thread_checker_);
 

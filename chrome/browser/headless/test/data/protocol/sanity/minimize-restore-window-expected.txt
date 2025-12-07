@@ -1,4 +1,0 @@
-Tests browser window minimize and restore.
-Initial: normal visible
-Minimized: minimized hidden
-Restored: normal visible

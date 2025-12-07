@@ -33,7 +33,7 @@ base::FilePath GetActiveDutySocketPath(UpdaterScope scope) {
 }
 
 base::FilePath GetActiveDutyInternalSocketPath(UpdaterScope scope) {
-  return GetSocketsDir(scope).AppendASCII(
+  return GetSocketsDir(scope).Append(
       base::StrCat({PRODUCT_FULLNAME_STRING, kUpdaterVersion, ".sk"}));
 }
 

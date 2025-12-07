@@ -11,14 +11,15 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler_delegate.h"
-#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
+#include "components/affiliations/core/browser/affiliation_fetcher_manager.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager_host.h"
@@ -46,6 +47,9 @@ class AffiliationFetcherFactory;
 class AffiliationFetchThrottler;
 class FacetManager;
 
+// Enables fetching of change-password urls on startup or later on demand.
+BASE_DECLARE_FEATURE(kFetchChangePasswordUrl);
+
 // The AffiliationBackend is the part of the AffiliationService that
 // lives on a background thread suitable for performing blocking I/O. As most
 // tasks require I/O, the backend ends up doing most of the work for the
@@ -56,11 +60,8 @@ class FacetManager;
 // and then transfer it to the background thread for the rest of its life.
 // Initialize() must be called already on the final (background) thread.
 class AffiliationBackend : public FacetManagerHost,
-                           public AffiliationFetcherDelegate,
                            public AffiliationFetchThrottlerDelegate {
  public:
-  using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
-
   // Constructs an instance that will use |url_loader_factory| for all
   // network requests, use |task_runner| for asynchronous tasks, and will rely
   // on |time_source| and |time_tick_source| to tell the current time/ticks.
@@ -85,7 +86,6 @@ class AffiliationBackend : public FacetManagerHost,
   // details:
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
-      StrategyOnCacheMiss cache_miss_strategy,
       AffiliationService::ResultCallback callback,
       const scoped_refptr<base::TaskRunner>& callback_task_runner);
   void Prefetch(const FacetURI& facet_uri, const base::Time& keep_fresh_until);
@@ -98,28 +98,33 @@ class AffiliationBackend : public FacetManagerHost,
       std::vector<FacetURI> facet_uris) const;
   std::vector<std::string> GetPSLExtensions() const;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
-                                     base::OnceClosure callback);
+                                     base::OnceClosure update_complete_closure);
 
   // Deletes the cache database file at |db_path|, and all auxiliary files. The
   // database must be closed before calling this.
   static void DeleteCache(const base::FilePath& db_path);
 
+#if defined(UNIT_TEST)
   // Replaces already initialized |fetcher_factory_| implemented by
   // AffiliationFetcherFactoryImpl with a new instance of
   // AffilationFetcherInterface.
   void SetFetcherFactoryForTesting(
-      std::unique_ptr<AffiliationFetcherFactory> fetcher_factory);
-
- private:
-  friend class AffiliationBackendTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      AffiliationBackendTest,
-      DiscardCachedDataIfNoLongerNeededWithEmptyAffiliation);
+      std::unique_ptr<AffiliationFetcherFactory> fetcher_factory) {
+    fetcher_manager_->SetFetcherFactoryForTesting(std::move(fetcher_factory));
+  }
 
   // Retrieves the affiliation database. This should only be called after
   // Initialize(...).
-  AffiliationDatabase& GetAffiliationDatabaseForTesting();
+  AffiliationDatabase& GetAffiliationDatabaseForTesting() {
+    CHECK(cache_);
+    return *cache_;
+  }
 
+  // Returns the number of in-memory FacetManagers. Used only for testing.
+  size_t facet_manager_count() { return facet_managers_.size(); }
+#endif
+
+ private:
   // Retrieves the FacetManager corresponding to |facet_uri|, creating it and
   // storing it into |facet_managers_| if it did not exist.
   FacetManager* GetOrCreateFacetManager(const FacetURI& facet_uri);
@@ -141,27 +146,18 @@ class AffiliationBackend : public FacetManagerHost,
   void RequestNotificationAtTime(const FacetURI& facet_uri,
                                  base::Time time) override;
 
-  // AffiliationFetcherDelegate:
-  void OnFetchSucceeded(
-      AffiliationFetcherInterface* fetcher,
-      std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
-  void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
-  void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
+  void OnFetchFinished(AffiliationFetcherInterface::FetchResult result);
+
+  void RetryRequestIfNeeded();
+  void ProcessSuccessfulFetch(
+      AffiliationFetcherInterface::ParsedFetchResponse result);
 
   // AffiliationFetchThrottlerDelegate:
   bool OnCanSendNetworkRequest() override;
 
-  // Returns the number of in-memory FacetManagers. Used only for testing.
-  size_t facet_manager_count_for_testing() { return facet_managers_.size(); }
-
   // Reports the |requested_facet_uri_count| in a single fetch; and the elapsed
   // time before the first fetch, and in-between subsequent fetches.
   void ReportStatistics(size_t requested_facet_uri_count);
-
-  // To be called after Initialize() to use |throttler| instead of the default
-  // one. Used only for testing.
-  void SetThrottlerForTesting(
-      std::unique_ptr<AffiliationFetchThrottler> throttler);
 
   // Ensures that all methods, excluding construction, are called on the same
   // sequence.
@@ -172,9 +168,8 @@ class AffiliationBackend : public FacetManagerHost,
   raw_ptr<base::Clock> clock_;
   raw_ptr<const base::TickClock> tick_clock_;
 
-  std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   std::unique_ptr<AffiliationDatabase> cache_;
-  std::unique_ptr<AffiliationFetcherInterface> fetcher_;
+  std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   std::unique_ptr<AffiliationFetchThrottler> throttler_;
 
   base::Time construction_time_;

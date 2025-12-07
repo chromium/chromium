@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include <thread>
+#include <utility>
 #include <vector>
 
 #import "Service/Sources/EDOHostNamingService.h"
@@ -41,6 +42,7 @@
 #include "client/ring_buffer_annotation.h"
 #include "client/simple_string_dictionary.h"
 #include "client/simulate_crash.h"
+#include "minidump/test/minidump_user_extension_stream_util.h"
 #include "snapshot/minidump/process_snapshot_minidump.h"
 #include "test/file.h"
 #import "test/ios/host/cptest_crash_view_controller.h"
@@ -54,6 +56,36 @@ using OperationStatus = crashpad::CrashReportDatabase::OperationStatus;
 using Report = crashpad::CrashReportDatabase::Report;
 
 namespace {
+
+class ReadToString : public crashpad::MemorySnapshot::Delegate {
+ public:
+  std::string result;
+
+  bool MemorySnapshotDelegateRead(void* data, size_t size) override {
+    result = std::string(reinterpret_cast<const char*>(data), size);
+    return true;
+  }
+};
+
+static constexpr char kExpectedStreamData[] = "Injected extension stream!";
+
+class TestUserStreamDataSource : public crashpad::UserStreamDataSource {
+ public:
+  TestUserStreamDataSource() {}
+
+  TestUserStreamDataSource(const TestUserStreamDataSource&) = delete;
+  TestUserStreamDataSource& operator=(const TestUserStreamDataSource&) = delete;
+
+  std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
+  ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
+};
+
+std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
+TestUserStreamDataSource::ProduceStreamData(
+    crashpad::ProcessSnapshot* process_snapshot) {
+  return std::make_unique<crashpad::test::BufferExtensionStreamDataSource>(
+      0xCAFEBABE, kExpectedStreamData, sizeof(kExpectedStreamData));
+}
 
 constexpr crashpad::Annotation::Type kRingBufferType =
     crashpad::Annotation::UserDefinedType(42);
@@ -108,7 +140,7 @@ UIWindow* GetAnyWindow() {
 #if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
   UIWindowScene* scene = reinterpret_cast<UIWindowScene*>(
       [UIApplication sharedApplication].connectedScenes.anyObject);
-  if (@available(iOS 15.0, *)) {
+  if (@available(iOS 15.0, tvOS 15.0, *)) {
     return scene.keyWindow;
   } else {
     return [scene.windows firstObject];
@@ -138,6 +170,8 @@ UIWindow* GetAnyWindow() {
 @implementation CPTestApplicationDelegate {
   crashpad::CrashpadClient client_;
   crashpad::ScopedFileHandle raw_logging_file_;
+  crashpad::SimpleAddressRangeBag extra_ranges_;
+  std::unique_ptr<std::string> extra_memory_string_;
 }
 
 @synthesize window = _window;
@@ -173,7 +207,19 @@ UIWindow* GetAnyWindow() {
           annotations,
           crashpad::CrashpadClient::
               ProcessPendingReportsObservationCallback())) {
-    client_.ProcessIntermediateDumps();
+    crashpad::UserStreamDataSources user_stream_data_sources;
+    if ([arguments containsObject:@"--test-extension-streams"]) {
+      user_stream_data_sources.push_back(
+          std::make_unique<TestUserStreamDataSource>());
+    }
+    client_.ProcessIntermediateDumps({}, &user_stream_data_sources);
+  }
+
+  if ([arguments containsObject:@"--test-extra_memory"]) {
+    crashpad::CrashpadInfo::GetCrashpadInfo()->set_extra_memory_ranges(
+        &extra_ranges_);
+    extra_memory_string_ = std::make_unique<std::string>("hello world");
+    extra_ranges_.Insert((void*)extra_memory_string_->c_str(), 11);
   }
 
   self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -284,6 +330,43 @@ UIWindow* GetAnyWindow() {
   return [dict passByValue];
 }
 
+- (NSDictionary*)getExtraMemory {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot)
+    return @{};
+
+  NSDictionary* dict = [@{} mutableCopy];
+
+  for (auto memory : process_snapshot->ExtraMemory()) {
+    ReadToString delegate;
+    if (memory->Size() > 0 && memory->Read(&delegate) &&
+        !delegate.result.empty()) {
+      NSString* key = [@(memory->Address()) stringValue];
+      NSString* value = @(delegate.result.c_str());
+      if (value.length) {
+        [dict setValue:value forKey:key];
+      }
+    }
+  }
+  return [dict passByValue];
+}
+
+- (BOOL)hasExtensionStream {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot)
+    return NO;
+
+  auto streams = process_snapshot->CustomMinidumpStreams();
+  for (const auto& stream : streams) {
+    if (stream->stream_type() == 0xCAFEBABE) {
+      return memcmp(kExpectedStreamData,
+                    stream->data().data(),
+                    sizeof(kExpectedStreamData)) == 0;
+    }
+  }
+  return NO;
+}
+
 - (NSDictionary*)getProcessAnnotations {
   auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
   if (!process_snapshot)
@@ -320,7 +403,7 @@ UIWindow* GetAnyWindow() {
 
 - (void)crashException {
   std::vector<int> empty_vector = {};
-  empty_vector.at(42);
+  std::ignore = empty_vector.at(42);
 }
 
 - (void)crashNSException {
@@ -534,9 +617,9 @@ class ThrowNSExceptionThread : public crashpad::Thread {
 
 - (void)crashInHandlerReentrant {
   crashpad::CrashpadClient client_;
-  client_.SetMachExceptionCallbackForTesting(abort);
+  client_.SetExceptionCallbackForTesting(abort);
 
-  // Trigger a Mach exception.
+  // Trigger an exception.
   [self crashTrap];
 }
 

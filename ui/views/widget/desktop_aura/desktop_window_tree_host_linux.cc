@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -23,8 +25,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/platform_window/extensions/desk_extension.h"
-#include "ui/platform_window/extensions/pinned_mode_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 #include "ui/platform_window/platform_window.h"
@@ -47,36 +47,33 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
   using HelperCallback = base::RepeatingCallback<void(const gfx::Size&)>;
   SwapWithNewSizeObserverHelper(ui::Compositor* compositor,
                                 const HelperCallback& callback)
-      : compositor_(compositor), callback_(callback) {
-    compositor_->AddObserver(this);
+      : callback_(callback) {
+    compositor_observation_.Observe(compositor);
   }
 
   SwapWithNewSizeObserverHelper(const SwapWithNewSizeObserverHelper&) = delete;
   SwapWithNewSizeObserverHelper& operator=(
       const SwapWithNewSizeObserverHelper&) = delete;
 
-  ~SwapWithNewSizeObserverHelper() override {
-    if (compositor_)
-      compositor_->RemoveObserver(this);
-  }
+  ~SwapWithNewSizeObserverHelper() override = default;
 
  private:
   // ui::CompositorObserver:
 #if BUILDFLAG(IS_OZONE_X11)
   void OnCompositingCompleteSwapWithNewSize(ui::Compositor* compositor,
                                             const gfx::Size& size) override {
-    DCHECK_EQ(compositor, compositor_);
+    DCHECK(compositor_observation_.IsObservingSource(compositor));
     callback_.Run(size);
   }
 #endif  // BUILDFLAG(IS_OZONE_X11)
 
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
-    DCHECK_EQ(compositor, compositor_);
-    compositor_->RemoveObserver(this);
-    compositor_ = nullptr;
+    DCHECK(compositor_observation_.IsObservingSource(compositor));
+    compositor_observation_.Reset();
   }
 
-  raw_ptr<ui::Compositor> compositor_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
+      compositor_observation_{this};
   const HelperCallback callback_;
 };
 
@@ -104,10 +101,11 @@ gfx::Rect DesktopWindowTreeHostLinux::GetXRootWindowOuterBounds() const {
 }
 
 void DesktopWindowTreeHostLinux::LowerWindow() {
-  if (GetX11Extension())
+  if (GetX11Extension()) {
     GetX11Extension()->LowerXWindow();
-  else
+  } else {
     NOTIMPLEMENTED_LOG_ONCE();
+  }
 }
 
 base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {
@@ -160,9 +158,10 @@ void DesktopWindowTreeHostLinux::OnNativeWidgetCreated(
   DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(params);
 }
 
-void DesktopWindowTreeHostLinux::InitModalType(ui::ModalType modal_type) {
+void DesktopWindowTreeHostLinux::InitModalType(
+    ui::mojom::ModalType modal_type) {
   switch (modal_type) {
-    case ui::MODAL_TYPE_NONE:
+    case ui::mojom::ModalType::kNone:
       break;
     default:
       // TODO(erg): Figure out under what situations |modal_type| isn't
@@ -188,8 +187,9 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
 
   Widget::MoveLoopResult result = DesktopWindowTreeHostPlatform::RunMoveLoop(
       drag_offset, source, escape_behavior);
-  if (weak_this.get())
+  if (weak_this.get()) {
     GetContentWindow()->ReleaseCapture();
+  }
 
   return result;
 }
@@ -221,8 +221,9 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
           GetRootTransform().InverseMapPoint(location).value_or(location);
       hit_test_code = GetContentWindow()->delegate()->GetNonClientComponent(
           gfx::ToRoundedPoint(location_in_dip));
-      if (hit_test_code != HTCLIENT && hit_test_code != HTNOWHERE)
+      if (hit_test_code != HTCLIENT && hit_test_code != HTNOWHERE) {
         flags |= ui::EF_IS_NON_CLIENT;
+      }
       located_event->SetFlags(flags);
     }
 
@@ -230,8 +231,9 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
     // it on mouse clicks because we can call FlashFrame() on an active window.
     if (located_event->IsMouseEvent() &&
         (located_event->AsMouseEvent()->IsAnyButton() ||
-         located_event->IsMouseWheelEvent()))
+         located_event->IsMouseWheelEvent())) {
       FlashFrame(false);
+    }
   }
 
   // Prehandle the event as long as as we are not able to track if it is handled
@@ -244,8 +246,9 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
         hit_test_code, event->AsLocatedEvent());
   }
 
-  if (!event->handled())
+  if (!event->handled()) {
     WindowTreeHostPlatform::DispatchEvent(event);
+  }
 }
 
 void DesktopWindowTreeHostLinux::OnClosed() {
@@ -278,20 +281,22 @@ const ui::X11Extension* DesktopWindowTreeHostLinux::GetX11Extension() const {
 #if BUILDFLAG(USE_ATK)
 bool DesktopWindowTreeHostLinux::OnAtkKeyEvent(AtkKeyEventStruct* atk_event,
                                                bool transient) {
-  if (!transient && !IsActive() && !HasCapture())
+  if (!transient && !IsActive() && !HasCapture()) {
     return false;
+  }
   return ui::AtkUtilAuraLinux::HandleAtkKeyEvent(atk_event) ==
          ui::DiscardAtkKeyEvent::Discard;
 }
 #endif
 
-bool DesktopWindowTreeHostLinux::IsOverrideRedirect() const {
+bool DesktopWindowTreeHostLinux::IsOverrideRedirect(
+    const ui::X11Extension& x11_extension) const {
   // BrowserDesktopWindowTreeHostLinux implements this for browser windows.
   return false;
 }
 
 gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayMatching(GetWindowBoundsInScreen());
   return gfx::Rect(gfx::ScaleToFlooredPoint(display.bounds().origin(),
@@ -331,19 +336,23 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
 
   DCHECK(!properties->x11_extension_delegate);
   properties->x11_extension_delegate = this;
+
+  properties->prefer_dark_theme = ui::LinuxUiTheme::GetForProfile(nullptr);
 }
 
 base::flat_map<std::string, std::string>
 DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
-  if (auto* linux_ui = ui::LinuxUi::instance())
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
     return linux_ui->GetKeyboardLayoutMap();
+  }
   return WindowTreeHostPlatform::GetKeyboardLayoutMap();
 }
 
 void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(
     const gfx::Size& size) {
-  if (GetX11Extension())
-    GetX11Extension()->OnCompleteSwapAfterResize();
+  if (GetX11Extension()) {
+    GetX11Extension()->OnCompleteSwapAfterResize(size);
+  }
 }
 
 void DesktopWindowTreeHostLinux::CreateNonClientEventFilter() {
@@ -362,8 +371,9 @@ void DesktopWindowTreeHostLinux::OnLostMouseGrab() {
 
 void DesktopWindowTreeHostLinux::EnableEventListening() {
   DCHECK_GT(modal_dialog_counter_, 0UL);
-  if (!--modal_dialog_counter_)
+  if (!--modal_dialog_counter_) {
     targeter_for_modal_.reset();
+  }
 }
 
 // static

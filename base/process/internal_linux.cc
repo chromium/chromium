@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/process/internal_linux.h"
 
 #include <limits.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <string_view>
@@ -33,19 +29,7 @@
 #define NAME_MAX 255
 #endif
 
-namespace base {
-namespace internal {
-
-namespace {
-
-void TrimKeyValuePairs(StringPairs* pairs) {
-  for (auto& pair : *pairs) {
-    TrimWhitespaceASCII(pair.first, TRIM_ALL, &pair.first);
-    TrimWhitespaceASCII(pair.second, TRIM_ALL, &pair.second);
-  }
-}
-
-}  // namespace
+namespace base::internal {
 
 const char kProcDir[] = "/proc";
 
@@ -55,22 +39,16 @@ FilePath GetProcPidDir(pid_t pid) {
   return FilePath(kProcDir).Append(NumberToString(pid));
 }
 
-pid_t ProcDirSlotToPid(const char* d_name) {
-  int i;
-  for (i = 0; i < NAME_MAX && d_name[i]; ++i) {
-    if (!IsAsciiDigit(d_name[i])) {
-      return 0;
-    }
-  }
-  if (i == NAME_MAX)
+pid_t ProcDirSlotToPid(std::string_view d_name) {
+  if (d_name.size() >= NAME_MAX ||
+      !std::ranges::all_of(d_name, &IsAsciiDigit<char>)) {
     return 0;
+  }
 
   // Read the process's command line.
   pid_t pid;
-  std::string pid_string(d_name);
-  if (!StringToInt(pid_string, &pid)) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+  if (!StringToInt(d_name, &pid)) {
+    NOTREACHED();
   }
   return pid;
 }
@@ -87,28 +65,32 @@ bool ReadProcFile(const FilePath& file, std::string* buffer) {
   return !buffer->empty();
 }
 
-bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      std::string_view filename,
-                                      StringPairs* key_value_pairs) {
-  std::string status_data;
+std::optional<StringViewPairs> ReadProcFileToTrimmedStringPairs(
+    pid_t pid,
+    std::string_view filename,
+    std::string* buffer) {
   FilePath status_file = GetProcPidDir(pid).Append(filename);
-  if (!ReadProcFile(status_file, &status_data)) {
-    return false;
+  if (!ReadProcFile(status_file, buffer)) {
+    return std::nullopt;
   }
-  SplitStringIntoKeyValuePairs(status_data, ':', '\n', key_value_pairs);
-  TrimKeyValuePairs(key_value_pairs);
-  return true;
+  StringViewPairs key_value_pairs;
+  SplitStringIntoKeyValueViewPairs(*buffer, ':', '\n', &key_value_pairs);
+  for (auto& [key, value] : key_value_pairs) {
+    key = TrimWhitespaceASCII(key, TRIM_ALL);
+    value = TrimWhitespaceASCII(value, TRIM_ALL);
+  }
+  return key_value_pairs;
 }
 
 size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
-  StringPairs pairs;
-  if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
+  std::string buffer;
+  std::optional<StringViewPairs> pairs =
+      ReadProcFileToTrimmedStringPairs(pid, "status", &buffer);
+  if (!pairs) {
     return 0;
   }
 
-  for (const auto& pair : pairs) {
-    const std::string& key = pair.first;
-    const std::string& value_str = pair.second;
+  for (const auto& [key, value_str] : *pairs) {
     if (key != field) {
       continue;
     }
@@ -116,13 +98,11 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
     std::vector<std::string_view> split_value_str =
         SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
     size_t value;
     if (!StringToSizeT(split_value_str[0], &value)) {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
     return value;
   }
@@ -134,14 +114,14 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
 bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
                                        std::string_view field,
                                        uint64_t* result) {
-  StringPairs pairs;
-  if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
+  std::string buffer;
+  std::optional<StringViewPairs> pairs =
+      ReadProcFileToTrimmedStringPairs(pid, "status", &buffer);
+  if (!pairs) {
     return false;
   }
 
-  for (const auto& pair : pairs) {
-    const std::string& key = pair.first;
-    const std::string& value_str = pair.second;
+  for (const auto& [key, value_str] : *pairs) {
     if (key != field) {
       continue;
     }
@@ -161,12 +141,13 @@ bool ReadProcStats(pid_t pid, std::string* buffer) {
   return ReadProcFile(stat_file, buffer);
 }
 
-bool ParseProcStats(const std::string& stats_data,
-                    std::vector<std::string>* proc_stats) {
+bool ParseProcStats(std::string_view stats_data,
+                    std::vector<std::string_view>* proc_stats) {
   // |stats_data| may be empty if the process disappeared somehow.
   // e.g. http://crbug.com/145811
-  if (stats_data.empty())
+  if (stats_data.empty()) {
     return false;
+  }
 
   // The stat file is formatted as:
   // pid (process name) data1 data2 .... dataN
@@ -178,8 +159,7 @@ bool ParseProcStats(const std::string& stats_data,
       close_parens_idx == std::string::npos ||
       open_parens_idx > close_parens_idx) {
     DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   open_parens_idx++;
 
@@ -187,61 +167,50 @@ bool ParseProcStats(const std::string& stats_data,
   // PID.
   proc_stats->push_back(stats_data.substr(0, open_parens_idx));
   // Process name without parentheses.
-  proc_stats->push_back(
-      stats_data.substr(open_parens_idx + 1,
-                        close_parens_idx - (open_parens_idx + 1)));
+  proc_stats->push_back(stats_data.substr(
+      open_parens_idx + 1, close_parens_idx - (open_parens_idx + 1)));
 
   // Split the rest.
-  std::vector<std::string> other_stats = SplitString(
-      stats_data.substr(close_parens_idx + 2), " ",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& i : other_stats)
-    proc_stats->push_back(i);
+  std::vector<std::string_view> other_stats =
+      SplitStringPiece(stats_data.substr(close_parens_idx + 2), " ",
+                       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  proc_stats->insert(proc_stats->end(), other_stats.begin(), other_stats.end());
   return true;
 }
 
-typedef std::map<std::string, std::string> ProcStatMap;
-void ParseProcStat(const std::string& contents, ProcStatMap* output) {
-  StringPairs key_value_pairs;
-  SplitStringIntoKeyValuePairs(contents, ' ', '\n', &key_value_pairs);
-  for (auto& i : key_value_pairs) {
-    output->insert(std::move(i));
-  }
-}
-
-int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats,
+int64_t GetProcStatsFieldAsInt64(base::span<std::string_view> proc_stats,
                                  ProcStatsFields field_num) {
   DCHECK_GE(field_num, VM_PPID);
   return GetProcStatsFieldAsOptionalInt64(proc_stats, field_num).value_or(0);
 }
 
 std::optional<int64_t> GetProcStatsFieldAsOptionalInt64(
-    base::span<const std::string> proc_stats,
+    base::span<std::string_view> proc_stats,
     ProcStatsFields field_num) {
   int64_t value;
-  if (StringToInt64(proc_stats[size_t{field_num}], &value)) {
+  if (StringToInt64(proc_stats.at(field_num), &value)) {
     return value;
   }
   return std::nullopt;
 }
 
-size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
+size_t GetProcStatsFieldAsSizeT(base::span<std::string_view> proc_stats,
                                 ProcStatsFields field_num) {
   DCHECK_GE(field_num, VM_PPID);
-  CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
-
   size_t value;
-  return StringToSizeT(proc_stats[field_num], &value) ? value : 0;
+  return StringToSizeT(proc_stats.at(field_num), &value) ? value : 0;
 }
 
 int64_t ReadStatFileAndGetFieldAsInt64(const FilePath& stat_file,
                                        ProcStatsFields field_num) {
   std::string stats_data;
-  if (!ReadProcFile(stat_file, &stats_data))
+  if (!ReadProcFile(stat_file, &stats_data)) {
     return 0;
-  std::vector<std::string> proc_stats;
-  if (!ParseProcStats(stats_data, &proc_stats))
+  }
+  std::vector<std::string_view> proc_stats;
+  if (!ParseProcStats(stats_data, &proc_stats)) {
     return 0;
+  }
   return GetProcStatsFieldAsInt64(proc_stats, field_num);
 }
 
@@ -257,54 +226,63 @@ int64_t ReadProcSelfStatsAndGetFieldAsInt64(ProcStatsFields field_num) {
 
 size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num) {
   std::string stats_data;
-  if (!ReadProcStats(pid, &stats_data))
+  if (!ReadProcStats(pid, &stats_data)) {
     return 0;
-  std::vector<std::string> proc_stats;
-  if (!ParseProcStats(stats_data, &proc_stats))
+  }
+  std::vector<std::string_view> proc_stats;
+  if (!ParseProcStats(stats_data, &proc_stats)) {
     return 0;
+  }
   return GetProcStatsFieldAsSizeT(proc_stats, field_num);
 }
 
 Time GetBootTime() {
   FilePath path("/proc/stat");
   std::string contents;
-  if (!ReadProcFile(path, &contents))
+  if (!ReadProcFile(path, &contents)) {
     return Time();
-  ProcStatMap proc_stat;
-  ParseProcStat(contents, &proc_stat);
-  ProcStatMap::const_iterator btime_it = proc_stat.find("btime");
-  if (btime_it == proc_stat.end())
-    return Time();
-  int btime;
-  if (!StringToInt(btime_it->second, &btime))
-    return Time();
-  return Time::FromTimeT(btime);
+  }
+  StringViewPairs key_value_pairs;
+  SplitStringIntoKeyValueViewPairs(contents, ' ', '\n', &key_value_pairs);
+  for (const auto& [key, value] : key_value_pairs) {
+    if (key == "btime") {
+      int btime;
+      if (!StringToInt(value, &btime)) {
+        return Time();
+      }
+      return Time::FromTimeT(btime);
+    }
+  }
+  return Time();
 }
 
 TimeDelta GetUserCpuTimeSinceBoot() {
   FilePath path("/proc/stat");
   std::string contents;
-  if (!ReadProcFile(path, &contents))
+  if (!ReadProcFile(path, &contents)) {
     return TimeDelta();
+  }
 
-  ProcStatMap proc_stat;
-  ParseProcStat(contents, &proc_stat);
-  ProcStatMap::const_iterator cpu_it = proc_stat.find("cpu");
-  if (cpu_it == proc_stat.end())
-    return TimeDelta();
+  StringViewPairs key_value_pairs;
+  SplitStringIntoKeyValueViewPairs(contents, ' ', '\n', &key_value_pairs);
+  for (const auto& [key, value] : key_value_pairs) {
+    if (key == "cpu") {
+      std::vector<std::string_view> cpu = SplitStringPiece(
+          value, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+      if (cpu.size() < 2 || cpu[0] != "cpu") {
+        return TimeDelta();
+      }
 
-  std::vector<std::string> cpu = SplitString(
-      cpu_it->second, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+      uint64_t user;
+      uint64_t nice;
+      if (!StringToUint64(cpu[0], &user) || !StringToUint64(cpu[1], &nice)) {
+        return TimeDelta();
+      }
 
-  if (cpu.size() < 2 || cpu[0] != "cpu")
-    return TimeDelta();
-
-  uint64_t user;
-  uint64_t nice;
-  if (!StringToUint64(cpu[0], &user) || !StringToUint64(cpu[1], &nice))
-    return TimeDelta();
-
-  return ClockTicksToTimeDelta(checked_cast<int64_t>(user + nice));
+      return ClockTicksToTimeDelta(checked_cast<int64_t>(user + nice));
+    }
+  }
+  return TimeDelta();
 }
 
 TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
@@ -321,5 +299,4 @@ TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
   return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

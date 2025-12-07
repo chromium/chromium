@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -12,6 +14,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -20,9 +26,12 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 /** Handles the Link To Text action in the Sharing Hub. */
+@NullMarked
 public class LinkToTextCoordinator extends EmptyTabObserver {
     @IntDef({LinkGeneration.TEXT, LinkGeneration.LINK, LinkGeneration.FAILURE, LinkGeneration.MAX})
     public @interface LinkGeneration {
@@ -58,10 +67,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private long mShareStartTime;
 
     private String mShareUrl;
-    private TextFragmentReceiver mProducer;
+    private @Nullable TextFragmentReceiver mProducer;
     private String mSelectedText;
-    private ShareParams mShareLinkParams;
-    private ShareParams mShareTextParams;
+    private @Nullable ShareParams mShareLinkParams;
+    private @MonotonicNonNull ShareParams mShareTextParams;
     private boolean mIncludeOriginInTitle;
     public @RemoteRequestStatus int mRemoteRequestStatus;
 
@@ -86,6 +95,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 includeOriginInTitle);
     }
 
+    @Initializer
     @VisibleForTesting
     void initLinkToTextCoordinator(
             Tab tab,
@@ -111,7 +121,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         if (linkToggleState == LinkToggleState.LINK && mShareLinkParams != null) {
             return mShareLinkParams;
         }
-        return mShareTextParams;
+        return assumeNonNull(mShareTextParams);
     }
 
     public void shareLinkToText() {
@@ -129,7 +139,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 isSelectorEmpty
                         ? null
                         : new ShareParams.Builder(
-                                        mTab.getWindowAndroid(),
+                                        assumeNonNull(mTab.getWindowAndroid()),
                                         getTitle(),
                                         LinkToTextHelper.getUrlToShare(mShareUrl, selector))
                                 .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
@@ -137,7 +147,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                                 .setLinkToTextSuccessful(true)
                                 .build();
         mShareTextParams =
-                new ShareParams.Builder(mTab.getWindowAndroid(), mTab.getTitle(), /* url= */ "")
+                new ShareParams.Builder(
+                                assumeNonNull(mTab.getWindowAndroid()),
+                                mTab.getTitle(),
+                                /* url= */ "")
                         .setText(mSelectedText)
                         .setLinkToTextSuccessful(!isSelectorEmpty)
                         .build();
@@ -162,7 +175,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
+        if (assumeNonNull(mTab.getWebContents()).getMainFrame()
+                != mTab.getWebContents().getFocusedFrame()) {
             if (!LinkToTextBridge.supportsLinkGenerationInIframe(new GURL(mShareUrl))) {
                 completeRequestWithFailure(LinkGenerationError.I_FRAME);
                 return;
@@ -230,7 +244,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     // Discard results if tab content is changed by typing new URL in omnibox.
     @Override
-    public void onUpdateUrl(Tab tab, GURL url) {
+    public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
+        // Only cancel if the navigation was user-initiated from the omnibox.
+        if ((navigationHandle.pageTransition() & PageTransition.CORE_MASK)
+                != PageTransition.TYPED) {
+            return;
+        }
+        if (navigationHandle.isSameDocument()) return;
+
         if (mChromeShareExtras.isReshareHighlightedText()) {
             completeReshareWithFailure(LinkToTextReshareStatus.OMNIBOX_NAVIGATION);
         } else {

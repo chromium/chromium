@@ -7,6 +7,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.PersistableBundle;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.components.minidump_uploader.MinidumpUploaderDelegate;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
@@ -15,6 +16,7 @@ import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
 import java.io.File;
 
 /** Chrome-specific implementations for minidump uploading logic. */
+@NullMarked
 public class ChromeMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     // PersistableBundle keys:
     static final String IS_CLIENT_IN_SAMPLE_FOR_CRASHES = "isClientInSampleForCrashes";

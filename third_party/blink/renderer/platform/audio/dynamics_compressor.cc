@@ -26,16 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/dynamics_compressor.h"
 
 #include <algorithm>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -134,23 +130,22 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       source_channels_[0] = source_bus->Channel(0)->Data();
 
       if (number_of_source_channels > 1) {
-        source_channels_[1] = source_bus->Channel(1)->Data();
+        UNSAFE_TODO(source_channels_[1]) = source_bus->Channel(1)->Data();
       } else {
         // Simply duplicate mono channel input data to right channel for stereo
         // processing.
-        source_channels_[1] = source_channels_[0];
+        UNSAFE_TODO(source_channels_[1]) = source_channels_[0];
       }
 
       break;
     default:
       // FIXME : support other number of channels.
-      NOTREACHED_IN_MIGRATION();
-      destination_bus->Zero();
-      return;
+      NOTREACHED();
   }
 
   for (unsigned i = 0; i < number_of_channels; ++i) {
-    destination_channels_[i] = destination_bus->Channel(i)->MutableData();
+    UNSAFE_TODO(destination_channels_[i]) =
+        destination_bus->Channel(i)->MutableData();
   }
 
   const float db_threshold = ParameterValue(kParamThreshold);
@@ -296,8 +291,9 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       // version.
       for (unsigned j = 0; j < number_of_channels; ++j) {
         float* const delay_buffer = pre_delay_buffers_[j]->Data();
-        const float undelayed_source = source_channels[j][frame_index];
-        delay_buffer[pre_delay_write_index] = undelayed_source;
+        const float undelayed_source =
+            UNSAFE_TODO(source_channels[j][frame_index]);
+        UNSAFE_TODO(delay_buffer[pre_delay_write_index]) = undelayed_source;
 
         const float abs_undelayed_source =
             undelayed_source > 0 ? undelayed_source : -undelayed_source;
@@ -369,8 +365,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       // Apply final gain.
       for (unsigned j = 0; j < number_of_channels; ++j) {
         const float* const delay_buffer = pre_delay_buffers_[j]->Data();
-        destination_channels[j][frame_index] =
-            delay_buffer[pre_delay_read_index] * total_gain;
+        UNSAFE_TODO(destination_channels[j][frame_index]) =
+            UNSAFE_TODO(delay_buffer[pre_delay_read_index]) * total_gain;
       }
 
       frame_index++;

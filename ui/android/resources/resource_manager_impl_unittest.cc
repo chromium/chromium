@@ -53,7 +53,7 @@ class TestResourceManagerImpl : public ResourceManagerImpl {
     canvas.drawColor(SK_ColorWHITE);
     small_bitmap.setImmutable();
 
-    OnResourceReady(nullptr, nullptr, res_type, res_id,
+    OnResourceReady(nullptr, res_type, res_id,
                     gfx::ConvertToJavaBitmap(small_bitmap), 1, 1,
                     reinterpret_cast<intptr_t>(new Resource()));
   }

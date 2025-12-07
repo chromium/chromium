@@ -105,7 +105,7 @@ function runEventTest(params, description) {
   runBfcacheTest(params, description);
 }
 
-async function navigateAndThenBack(pageA, pageB, urlB,
+async function navigateAndThenBack(pageA, pageB, urlB, scripts = [],
                                    funcBeforeBackNavigation,
                                    argsBeforeBackNavigation) {
   await pageA.execute_script(
@@ -118,6 +118,16 @@ async function navigateAndThenBack(pageA, pageB, urlB,
   );
 
   await pageB.execute_script(waitForPageShow);
+
+  for (const src of scripts) {
+    await pageB.execute_script((src) => {
+      const script = document.createElement("script");
+      script.src = src;
+      document.head.append(script);
+      return new Promise(resolve => script.onload = resolve);
+    }, [src]);
+  }
+
   if (funcBeforeBackNavigation) {
     await pageB.execute_script(funcBeforeBackNavigation,
                                argsBeforeBackNavigation);
@@ -172,7 +182,7 @@ function runBfcacheTest(params, description) {
 
     await pageA.execute_script(params.funcBeforeNavigation,
                                params.argsBeforeNavigation);
-    await navigateAndThenBack(pageA, pageB, urlB,
+    await navigateAndThenBack(pageA, pageB, urlB, params.scripts,
                               params.funcBeforeBackNavigation,
                               params.argsBeforeBackNavigation);
 
@@ -191,33 +201,33 @@ function runBfcacheTest(params, description) {
 // Call clients.claim() on the service worker
 async function claim(t, worker) {
   const channel = new MessageChannel();
-  const saw_message = new Promise(function(resolve) {
+  const sawMessage = new Promise(function(resolve) {
     channel.port1.onmessage = t.step_func(function(e) {
       assert_equals(e.data, 'PASS', 'Worker call to claim() should fulfill.');
       resolve();
     });
   });
   worker.postMessage({type: "claim", port: channel.port2}, [channel.port2]);
-  await saw_message;
+  await sawMessage;
 }
 
 // Assigns the current client to a local variable on the service worker.
 async function storeClients(t, worker) {
   const channel = new MessageChannel();
-  const saw_message = new Promise(function(resolve) {
+  const sawMessage = new Promise(function(resolve) {
     channel.port1.onmessage = t.step_func(function(e) {
       assert_equals(e.data, 'PASS', 'storeClients');
       resolve();
     });
   });
   worker.postMessage({type: "storeClients", port: channel.port2}, [channel.port2]);
-  await saw_message;
+  await sawMessage;
 }
 
 // Call storedClients.postMessage("") on the service worker
 async function postMessageToStoredClients(t, worker) {
   const channel = new MessageChannel();
-  const saw_message = new Promise(function(resolve) {
+  const sawMessage = new Promise(function(resolve) {
     channel.port1.onmessage = t.step_func(function(e) {
       assert_equals(e.data, 'PASS', 'postMessageToStoredClients');
       resolve();
@@ -225,5 +235,5 @@ async function postMessageToStoredClients(t, worker) {
   });
   worker.postMessage({type: "postMessageToStoredClients",
                       port: channel.port2}, [channel.port2]);
-  await saw_message;
+  await sawMessage;
 }

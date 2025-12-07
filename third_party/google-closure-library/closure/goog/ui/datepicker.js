@@ -739,7 +739,10 @@ goog.ui.DatePicker.prototype.nextYear = function() {
  */
 goog.ui.DatePicker.prototype.selectToday = function() {
   'use strict';
-  this.setDate(new goog.date.Date());
+  const today = new goog.date.Date();
+  if (this.isUserSelectableDate_(today)) {
+    this.setDate(today);
+  }
 };
 
 

@@ -26,6 +26,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"

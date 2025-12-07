@@ -7,22 +7,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "components/webui/flags/flags_state.h"
+#include "components/webui/flags/flags_storage.h"
+#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 
 class Browser;
 class ChromeLabsBubbleView;
 class ChromeLabsViewController;
+class PinnedActionToolbarButton;
 
-namespace views {
-class Button;
-}
-
-class ChromeLabsCoordinator {
+class ChromeLabsCoordinator : public PinnedToolbarActionsModel::Observer {
  public:
   enum class ShowUserType {
     // The default user type that accounts for most users.
@@ -33,9 +31,9 @@ class ChromeLabsCoordinator {
   };
 
   explicit ChromeLabsCoordinator(Browser* browser);
-  ChromeLabsCoordinator(Browser* browser,
-                        std::unique_ptr<ChromeLabsModel> model);
-  ~ChromeLabsCoordinator();
+  ~ChromeLabsCoordinator() override;
+
+  void TearDown();
 
   bool BubbleExists();
 
@@ -46,9 +44,18 @@ class ChromeLabsCoordinator {
   // Toggles the visibility of the bubble.
   void ShowOrHide();
 
-  views::Button* GetChromeLabsButton();
+  PinnedActionToolbarButton* GetChromeLabsButton();
 
   ChromeLabsBubbleView* GetChromeLabsBubbleView();
+
+  void OnChromeLabsBubbleClosing();
+
+  void MaybeInstallDotIndicator();
+
+  views::DotIndicator* GetDotIndicator();
+
+  // PinnedToolbarActionsModel::Observer:
+  void OnActionsChanged() override;
 
   flags_ui::FlagsState* GetFlagsStateForTesting() { return flags_state_; }
 
@@ -56,7 +63,7 @@ class ChromeLabsCoordinator {
     return controller_.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetShouldCircumventDeviceCheckForTesting(bool should_circumvent) {
     should_circumvent_device_check_for_testing_ = should_circumvent;
   }
@@ -66,10 +73,13 @@ class ChromeLabsCoordinator {
   raw_ptr<Browser, DanglingUntriaged> browser_;
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
-  std::unique_ptr<ChromeLabsModel> model_;
   std::unique_ptr<ChromeLabsViewController> controller_;
   views::ViewTracker chrome_labs_bubble_view_tracker_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  raw_ptr<actions::ActionItem> chrome_labs_action_item_;
+  base::ScopedObservation<PinnedToolbarActionsModel,
+                          PinnedToolbarActionsModel::Observer>
+      pinned_actions_observation_{this};
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_waiting_to_show_ = false;
   bool should_circumvent_device_check_for_testing_ = false;
 #endif

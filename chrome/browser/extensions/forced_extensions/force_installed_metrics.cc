@@ -10,20 +10,27 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/management/management_util.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -34,31 +41,49 @@ namespace {
 // Timeout to report UMA if not all force-installed extension were loaded.
 constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Returns whether the management environment for the profile is low-trust.
+bool IsLowTrustEnvironment(Profile* profile) {
+  switch (GetHigherManagementAuthorityTrustworthiness(profile)) {
+    case policy::ManagementAuthorityTrustworthiness::NONE:
+    case policy::ManagementAuthorityTrustworthiness::LOW:
+      return true;
+    case policy::ManagementAuthorityTrustworthiness::TRUSTED:
+    case policy::ManagementAuthorityTrustworthiness::FULLY_TRUSTED:
+      return false;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS)
 // Converts user_manager::UserType to InstallStageTracker::UserType for
 // histogram purposes.
 ForceInstalledMetrics::UserType ConvertUserType(
     InstallStageTracker::UserInfo user_info) {
   switch (user_info.user_type) {
     case user_manager::UserType::kRegular: {
-      if (user_info.is_new_user)
+      if (user_info.is_new_user) {
         return ForceInstalledMetrics::UserType::USER_TYPE_REGULAR_NEW;
+      }
       return ForceInstalledMetrics::UserType::USER_TYPE_REGULAR_EXISTING;
     }
     case user_manager::UserType::kGuest:
       return ForceInstalledMetrics::UserType::USER_TYPE_GUEST;
     case user_manager::UserType::kPublicAccount:
       return ForceInstalledMetrics::UserType::USER_TYPE_PUBLIC_ACCOUNT;
-    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_APP;
     case user_manager::UserType::kChild:
       return ForceInstalledMetrics::UserType::USER_TYPE_CHILD;
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
+    case user_manager::UserType::kKioskIWA:
+      return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_IWA;
+    case user_manager::UserType::kKioskArcvmApp:
+      return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_ARCVM_APP;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ForceInstalledMetrics::UserType::kMaxValue;
 }
 
 // Reports type of user in case Force Installed Extensions fail to
@@ -81,7 +106,7 @@ void ReportUserType(Profile* profile, bool is_stuck_in_initial_creation_stage) {
         user_type);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Reports time taken for force installed extension during different
 // installation stages.
@@ -364,9 +389,7 @@ void ReportDetailedFailureReasons(
     base::UmaHistogramBoolean(
         "Extensions."
         "ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled",
-        ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->extensions_enabled());
+        ExtensionRegistrar::Get(profile)->extensions_enabled());
   }
 }
 
@@ -383,7 +406,7 @@ bool IsStatusGood(ExtensionStatus status) {
     case ExtensionStatus::kFailed:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -412,13 +435,36 @@ ForceInstalledMetrics::~ForceInstalledMetrics() = default;
 
 void ForceInstalledMetrics::ReportDisableReason(
     const ExtensionId& extension_id) {
-  int disable_reasons =
+  DisableReasonSet all_disable_reasons =
       ExtensionPrefs::Get(profile_)->GetDisableReasons(extension_id);
-  // Choose any disable reason among the disable reasons for this extension.
-  disable_reasons = disable_reasons & ~(disable_reasons - 1);
+  // Choose the disable reason with the lowest value.
+  int smallest_disable_reason =
+      all_disable_reasons.empty()
+          ? 0
+          : *std::ranges::min_element(all_disable_reasons);
   base::UmaHistogramSparse("Extensions.ForceInstalledNotLoadedDisableReason",
-                           disable_reasons);
+                           smallest_disable_reason);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void ForceInstalledMetrics::ReportGreylistedStateByTrustLevel(
+    const ExtensionId& extension_id,
+    bool is_low_trust_environment) {
+  if (!blocklist_prefs::IsExtensionGreylisted(extension_id,
+                                              ExtensionPrefs::Get(profile_))) {
+    return;
+  }
+  if (is_low_trust_environment) {
+    base::UmaHistogramBoolean(
+        "Extensions.GreylistedForceInstalled.LowTrust.Enabled",
+        registry_->enabled_extensions().Contains(extension_id));
+  } else {
+    base::UmaHistogramBoolean(
+        "Extensions.GreylistedForceInstalled.HighTrust.Enabled",
+        registry_->enabled_extensions().Contains(extension_id));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
   for (const auto& extension : tracker_->extensions()) {
@@ -427,11 +473,26 @@ void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
   }
   base::UmaHistogramLongTimes("Extensions.ForceInstalledReadyTime",
                               base::Time::Now() - start_time_);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::UmaHistogramEnumeration(
+      "Extensions.ForceInstalledManagementAuthorityTrustworthiness",
+      GetHigherManagementAuthorityTrustworthiness(profile_));
+#endif
 }
 
 void ForceInstalledMetrics::ReportMetrics() {
   base::UmaHistogramCounts100("Extensions.ForceInstalledTotalCandidateCount",
                               tracker_->extensions().size());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const bool is_low_trust_environment = IsLowTrustEnvironment(profile_);
+  for (const auto& extension : tracker_->extensions()) {
+    ReportGreylistedStateByTrustLevel(extension.first,
+                                      is_low_trust_environment);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
   std::set<ExtensionId> missing_forced_extensions;
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
@@ -502,7 +563,7 @@ void ForceInstalledMetrics::ReportMetrics() {
           "Extensions.OffStore_ForceInstalledFailureReason3", failure_reason);
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool is_stuck_in_initial_creation_stage =
         failure_reason == FailureReason::IN_PROGRESS &&
         installation.install_stage == InstallStageTracker::Stage::CREATED &&
@@ -510,7 +571,7 @@ void ForceInstalledMetrics::ReportMetrics() {
             InstallStageTracker::InstallCreationStage::
                 NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED;
     ReportUserType(profile_, is_stuck_in_initial_creation_stage);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     LOG(WARNING) << "Forced extension " << extension_id
                  << " failed to install with data="
                  << InstallStageTracker::GetFormattedInstallationData(

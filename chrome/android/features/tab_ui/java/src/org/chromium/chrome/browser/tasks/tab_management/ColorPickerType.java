@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The different color picker types. */
 @IntDef({ColorPickerType.TAB_GROUP})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface ColorPickerType {
     /** The tab group color picker component. */
     int TAB_GROUP = 1;

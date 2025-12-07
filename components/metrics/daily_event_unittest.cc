@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,6 +54,8 @@ class DailyEventTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   DailyEvent event_;  // Owns and outlives `observer_`
   raw_ptr<TestDailyObserver> observer_;
+  base::test::TaskEnvironment env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 }  // namespace
@@ -96,6 +99,30 @@ TEST_F(DailyEventTest, TestSoonNotFired) {
   prefs_.SetInt64(kTestPrefName, last_time.since_origin().InMicroseconds());
   event_.CheckInterval();
   EXPECT_FALSE(observer_->fired());
+}
+
+void TestCallback(bool* fired) {
+  *fired = true;
+}
+
+TEST_F(DailyEventTest, TestClosureFired) {
+  // Verify the event fires on the first check.
+  bool fired = false;
+  event_.AddObserverClosure(base::BindRepeating(&TestCallback, &fired));
+  event_.CheckInterval();
+  EXPECT_TRUE(fired);
+  EXPECT_EQ(DailyEvent::IntervalType::FIRST_RUN, observer_->type());
+
+  // Reset the flag. A check on the same day should not fire the event.
+  fired = false;
+  event_.CheckInterval();
+  EXPECT_FALSE(fired);
+
+  // Advance time by 25 hours to verify the event fires again.
+  env_.FastForwardBy(base::Hours(25));
+  event_.CheckInterval();
+  EXPECT_TRUE(fired);
+  EXPECT_EQ(DailyEvent::IntervalType::DAY_ELAPSED, observer_->type());
 }
 
 }  // namespace metrics

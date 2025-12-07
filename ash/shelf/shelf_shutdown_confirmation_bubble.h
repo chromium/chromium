@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf_bubble.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -56,7 +55,6 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   ~ShelfShutdownConfirmationBubble() override;
 
   // views::View:
-  void OnThemeChanged() override;
   std::u16string GetAccessibleWindowTitle() const override;
 
  protected:
@@ -75,6 +73,8 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Report bubble action metrics
   void ReportBubbleAction(BubbleAction action);
 
+  void OnTitleTextChanged();
+
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::LabelButton> cancel_ = nullptr;
@@ -85,6 +85,8 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
 
   // A simple state machine to keep track of the dialog result.
   DialogResult dialog_result_{DialogResult::kNone};
+
+  base::CallbackListSubscription title_text_changed_subscription_;
 };
 
 }  // namespace ash

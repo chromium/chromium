@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
 
 import com.google.android.play.core.splitinstall.SplitInstallManager;
@@ -12,16 +14,15 @@ import com.google.android.play.core.splitinstall.SplitInstallRequest;
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.ui.base.ResourceBundle;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -30,8 +31,9 @@ import java.util.Set;
  * Store downloads. |SplitCompatEngine| should be modified to support language split installs,
  * https://crbug.com/1186903, or a test suite should be added to this class.
  */
+@NullMarked
 public class LanguageSplitInstaller {
-    private static LanguageSplitInstaller sLanguageSplitInstaller;
+    private static @Nullable LanguageSplitInstaller sLanguageSplitInstaller;
     private static final String TAG = "LanguageInstaller";
 
     // Constants used to log UMA enum histogram, must stay in sync with
@@ -65,8 +67,8 @@ public class LanguageSplitInstaller {
     }
 
     private final SplitInstallStateUpdatedListener mStateUpdateListener = getStatusUpdateListener();
-    private InstallListener mInstallListener;
-    private SplitInstallManager mSplitInstallManager;
+    private @Nullable InstallListener mInstallListener;
+    private final SplitInstallManager mSplitInstallManager;
     private int mInstallSessionId;
     private boolean mIsLanguageSplitInstalled;
 
@@ -77,13 +79,10 @@ public class LanguageSplitInstaller {
 
     /**
      * Get the set of installed languages as language code strings.
+     *
      * @return Set<String> of installed languages code strings.
      */
     public Set<String> getInstalledLanguages() {
-        // On non-bundle builds return all packaged locales.
-        if (!BundleUtils.isBundle()) {
-            return new HashSet<String>(Arrays.asList(ResourceBundle.getAvailableLocales()));
-        }
         return mSplitInstallManager.getInstalledLanguages();
     }
 
@@ -99,12 +98,13 @@ public class LanguageSplitInstaller {
     }
 
     /**
-     * Start the install of a language split for |languageName| and use |listener| as a callback
-     * for when the install is completed or has failed. Note: The API instantly considers the
-     * request as completed if it detects the language is already installed and the Play Store
-     * will automatically update the language split in the background.
+     * Start the install of a language split for |languageName| and use |listener| as a callback for
+     * when the install is completed or has failed. Note: The API instantly considers the request as
+     * completed if it detects the language is already installed and the Play Store will
+     * automatically update the language split in the background.
+     *
      * @param languageName String BCP-47 code for language to be installed.
-     * @param InstallListener Callback to handle install success or failure.
+     * @param listener Callback to handle install success or failure.
      */
     public void installLanguage(String languageName, InstallListener listener) {
         if (mInstallListener != null) {
@@ -140,9 +140,11 @@ public class LanguageSplitInstaller {
 
     /**
      * Run cleanup and call install listener when the install has finished.
+     *
      * @param success True if the install was successful.
      */
     private void installFinished(boolean success) {
+        assumeNonNull(mInstallListener);
         mInstallListener.onComplete(success);
         mSplitInstallManager.unregisterListener(mStateUpdateListener);
         mInstallListener = null;
@@ -185,7 +187,7 @@ public class LanguageSplitInstaller {
             @SplitInstallSessionStatus int status) {
         switch (status) {
             case SplitInstallSessionStatus.INSTALLED:
-                return (mIsLanguageSplitInstalled)
+                return mIsLanguageSplitInstalled
                         ? LanguageSplitInstallStatus.ALREADY_INSTALLED
                         : LanguageSplitInstallStatus.SUCCESS;
             case SplitInstallSessionStatus.CANCELED:

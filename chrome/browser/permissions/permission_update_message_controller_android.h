@@ -28,9 +28,10 @@ class PermissionUpdateMessageController
   // Creates a message to resolve conflicts in Android runtime permissions.
   //
   // This function can only be called with |content_settings_types| as follow:
-  // // ContentSettingsType::MEDIASTREAM_MIC,
+  // ContentSettingsType::MEDIASTREAM_MIC,
   // ContentSettingsType::MEDIASTREAM_CAMERA,
-  // ContentSettingsType::GEOLOCATION, or
+  // ContentSettingsType::GEOLOCATION,
+  // ContentSettingsType::GEOLOCATION_WITH_OPTIONS, or
   // ContentSettingsType::AR or with both
   // ContentSettingsType::MEDIASTREAM_MIC and
   // ContentSettingsType::MEDIASTREAM_CAMERA.
@@ -42,12 +43,6 @@ class PermissionUpdateMessageController
       const std::vector<std::string>& required_permissions,
       const std::vector<std::string>& optional_permissions,
       PermissionUpdatedCallback callback);
-
-  void ShowMessage(const std::vector<std::string>& required_android_permissions,
-                   int permission_icon_id,
-                   int permission_msg_title_id,
-                   int permission_msg_description_id,
-                   PermissionUpdatedCallback callback);
 
   ~PermissionUpdateMessageController() override;
 

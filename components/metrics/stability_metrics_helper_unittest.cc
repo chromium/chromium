@@ -81,6 +81,10 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   helper.LogRendererCrash(RendererHostedContentType::kForegroundMainFrame,
                           base::TERMINATION_STATUS_OOM, 1);
 
+  // Proactive memory eviction should increment renderer crash count.
+  helper.LogRendererCrash(RendererHostedContentType::kForegroundMainFrame,
+                          base::TERMINATION_STATUS_EVICTED_FOR_MEMORY, 1);
+
   // Kill does not increment renderer crash count.
   helper.LogRendererCrash(RendererHostedContentType::kForegroundMainFrame,
                           base::TERMINATION_STATUS_PROCESS_WAS_KILLED, 1);
@@ -89,11 +93,11 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   helper.LogRendererCrash(RendererHostedContentType::kForegroundMainFrame,
                           base::TERMINATION_STATUS_LAUNCH_FAILED, 1);
 
-  histogram_tester.ExpectUniqueSample("CrashExitCodes.Renderer", 1, 3);
+  histogram_tester.ExpectUniqueSample("CrashExitCodes.Renderer", 1, 4);
   histogram_tester.ExpectBucketCount("BrowserRenderProcessHost.ChildCrashes",
-                                     RENDERER_TYPE_RENDERER, 3);
+                                     RENDERER_TYPE_RENDERER, 4);
   histogram_tester.ExpectBucketCount("Stability.Counts2",
-                                     StabilityEventType::kRendererCrash, 3);
+                                     StabilityEventType::kRendererCrash, 4);
   histogram_tester.ExpectBucketCount(
       "Stability.Counts2", StabilityEventType::kRendererFailedLaunch, 1);
   histogram_tester.ExpectBucketCount("Stability.Counts2",
@@ -177,6 +181,7 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
 #endif
            base::TERMINATION_STATUS_LAUNCH_FAILED,
            base::TERMINATION_STATUS_OOM,
+           base::TERMINATION_STATUS_EVICTED_FOR_MEMORY,
 #if BUILDFLAG(IS_WIN)
            base::TERMINATION_STATUS_INTEGRITY_FAILURE,
 #endif

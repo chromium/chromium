@@ -2,33 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
 
 #include <stddef.h>
 
 #include <atomic>
+#include <iterator>
 #include <map>
 #include <ostream>
 #include <utility>
 
 #include "apps/launcher.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/mojom/file_system.mojom-forward.h"
-#include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/components/arc/mojom/intent_common.mojom-forward.h"
-#include "ash/components/arc/mojom/intent_common.mojom-shared.h"
-#include "ash/components/arc/mojom/intent_common.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -47,14 +33,20 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/note_taking/note_taking_controller_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_common.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -69,7 +61,6 @@
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/util/display_util.h"
@@ -88,15 +79,13 @@ NoteTakingHelper* g_helper = nullptr;
 // regardless of the app metadata, and will be shown in this order at the top of
 // the list of note-taking apps.
 const char* const kDefaultAllowedAppIds[] = {
-    web_app::kCursiveAppId,
+    ash::kCursiveAppId,
     NoteTakingHelper::kDevKeepExtensionId,
     NoteTakingHelper::kProdKeepExtensionId,
     NoteTakingHelper::kNoteTakingWebAppIdTest,
 };
 
-// Types of App Service apps that support note taking. Note that Note Taking
-// Chrome Apps are not supported in Lacros, so kStandaloneBrowserChromeApp is
-// not included.
+// Types of App Service apps that support note taking.
 // TODO (crbug.com/1336120): Add Android here.
 const apps::AppType kNoteTakingAppTypes[] = {apps::AppType::kWeb,
                                              apps::AppType::kChromeApp};
@@ -281,8 +270,6 @@ void NoteTakingHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// TODO(crbug.com/40227659): Remove this method and observe LockScreenHelper for
-// app updates instead.
 void NoteTakingHelper::NotifyAppUpdated(Profile* profile,
                                         const std::string& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -301,11 +288,8 @@ std::vector<NoteTakingAppInfo> NoteTakingHelper::GetAvailableApps(
 
   std::vector<std::string> app_ids = GetNoteTakingAppIds(profile);
   for (const auto& app_id : app_ids) {
-    LockScreenAppSupport lock_screen_support =
-        LockScreenApps::GetSupport(profile, app_id);
     infos.push_back(NoteTakingAppInfo{GetAppName(profile, app_id), app_id,
-                                      /*preferred=*/false,
-                                      lock_screen_support});
+                                      /*preferred=*/false});
   }
 
   if (arc::IsArcAllowedForProfile(profile))
@@ -343,30 +327,6 @@ void NoteTakingHelper::SetPreferredApp(Profile* profile,
 
   for (Observer& observer : observers_)
     observer.OnPreferredNoteTakingAppUpdated(profile);
-}
-
-bool NoteTakingHelper::SetPreferredAppEnabledOnLockScreen(Profile* profile,
-                                                          bool enabled) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
-
-  std::string app_id = profile->GetPrefs()->GetString(prefs::kNoteTakingAppId);
-  if (app_id.empty())
-    return false;
-
-  LockScreenApps* lock_screen_apps =
-      LockScreenAppsFactory::GetInstance()->Get(profile);
-  if (!lock_screen_apps)
-    return false;
-
-  bool changed = lock_screen_apps->SetAppEnabledOnLockScreen(app_id, enabled);
-  if (!changed)
-    return false;
-
-  for (Observer& observer : observers_)
-    observer.OnPreferredNoteTakingAppUpdated(profile);
-
-  return true;
 }
 
 bool NoteTakingHelper::IsAppAvailable(Profile* profile) {
@@ -467,9 +427,9 @@ NoteTakingHelper::NoteTakingHelper()
     force_allowed_app_ids_ = base::SplitString(
         switch_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
-  force_allowed_app_ids_.insert(
-      force_allowed_app_ids_.end(), kDefaultAllowedAppIds,
-      kDefaultAllowedAppIds + std::size(kDefaultAllowedAppIds));
+  force_allowed_app_ids_.insert(force_allowed_app_ids_.end(),
+                                std::begin(kDefaultAllowedAppIds),
+                                std::end(kDefaultAllowedAppIds));
 
   // Track profiles so we can observe their app registries.
   profile_manager_observation_.Observe(g_browser_process->profile_manager());
@@ -599,8 +559,7 @@ void NoteTakingHelper::OnGotAndroidApps(
   android_apps_.reserve(handlers.size());
   for (const auto& it : handlers) {
     android_apps_.emplace_back(
-        NoteTakingAppInfo{it->name, it->package_name, false,
-                          LockScreenAppSupport::kNotSupported});
+        NoteTakingAppInfo{it->name, it->package_name, false});
   }
   android_apps_received_ = true;
 
@@ -675,9 +634,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     LOG(WARNING) << "Failed to find note-taking app " << app_id;
     return LaunchResult::CHROME_APP_MISSING;
   }
-  app_runtime::ActionData action_data;
-  action_data.action_type = app_runtime::ActionType::kNewNote;
-  launch_chrome_app_callback_.Run(profile, app, std::move(action_data));
+  launch_chrome_app_callback_.Run(profile, app);
   return LaunchResult::CHROME_SUCCESS;
 }
 

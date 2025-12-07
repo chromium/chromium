@@ -9,8 +9,9 @@ DIR_SRC_ROOT=${DIR_SRC_ROOT%/src/*}/src
 SUBDIR=$(cd $(dirname $0); pwd)
 SUBDIR="${SUBDIR#$DIR_SRC_ROOT/}"
 CIPD_PACKAGE=chromium/$SUBDIR
+CIPD_SUBDIR=$SUBDIR/cipd
 
 exec $DIR_SRC_ROOT/build/3pp_common/print_cipd_version.py \
-    --subdir "$SUBDIR" \
+    --subdir "$CIPD_SUBDIR" \
     --cipd-package "$CIPD_PACKAGE" \
     "$@"

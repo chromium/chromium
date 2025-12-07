@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_H_
 
+#include <map>
 #include <optional>
 
 #include "base/functional/callback_forward.h"
@@ -39,7 +40,8 @@ class OneGoogleBarLoader {
   virtual GURL GetLoadURLForTesting() const = 0;
 
   // Sets ogdeb value to be used as a query param.
-  virtual bool SetAdditionalQueryParams(const std::string& value) = 0;
+  virtual void SetAdditionalQueryParams(
+      const std::map<std::string, std::string>& params) = 0;
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_H_

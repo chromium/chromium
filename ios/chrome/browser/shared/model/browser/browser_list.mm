@@ -16,6 +16,7 @@ bool IsBrowserOfType(Browser* browser, BrowserList::BrowserType type) {
       switch (type) {
         case BrowserList::BrowserType::kRegular:
         case BrowserList::BrowserType::kRegularAndInactive:
+        case BrowserList::BrowserType::kRegularAndIncognito:
         case BrowserList::BrowserType::kAll:
           return true;
 
@@ -27,6 +28,7 @@ bool IsBrowserOfType(Browser* browser, BrowserList::BrowserType type) {
     case Browser::Type::kIncognito:
       switch (type) {
         case BrowserList::BrowserType::kIncognito:
+        case BrowserList::BrowserType::kRegularAndIncognito:
         case BrowserList::BrowserType::kAll:
           return true;
 
@@ -45,6 +47,7 @@ bool IsBrowserOfType(Browser* browser, BrowserList::BrowserType type) {
 
         case BrowserList::BrowserType::kRegular:
         case BrowserList::BrowserType::kIncognito:
+        case BrowserList::BrowserType::kRegularAndIncognito:
           return false;
       }
 
@@ -94,7 +97,7 @@ void BrowserList::RemoveBrowser(Browser* browser) {
 std::set<Browser*> BrowserList::BrowsersOfType(
     BrowserList::BrowserType type) const {
   std::set<Browser*> browsers;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       browsers_, std::inserter(browsers, browsers.end()),
       [type](Browser* browser) { return IsBrowserOfType(browser, type); });
   return browsers;

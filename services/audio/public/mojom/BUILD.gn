@@ -11,6 +11,7 @@ mojom("mojom") {
     "debug_recording.mojom",
     "device_notifications.mojom",
     "log_factory_manager.mojom",
+    "ml_model_manager.mojom",
     "system_info.mojom",
     "testing_api.mojom",
   ]
@@ -37,34 +38,6 @@ mojom("mojom") {
         "//services/audio/public/cpp/audio_device_description_mojom_traits.cc",
       ]
       traits_public_deps = [ "//media" ]
-    },
-    {
-      types = [
-        {
-          mojom = "audio.mojom.AudioProcessingSettings"
-          cpp = "::media::AudioProcessingSettings"
-        },
-        {
-          mojom = "audio.mojom.AudioProcessingStats"
-          cpp = "::webrtc::AudioProcessorInterface::AudioProcessorStatistics"
-        },
-        {
-          mojom = "audio.mojom.AutomaticGainControlType"
-          cpp = "::media::AutomaticGainControlType"
-        },
-        {
-          mojom = "audio.mojom.EchoCancellationType"
-          cpp = "::media::EchoCancellationType"
-        },
-        {
-          mojom = "audio.mojom.NoiseSuppressionType"
-          cpp = "::media::NoiseSuppressionType"
-        },
-      ]
-      traits_public_deps = [
-        "//media",
-        "//third_party/webrtc_overrides:webrtc_component",
-      ]
     },
     {
       types = [

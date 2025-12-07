@@ -11,14 +11,20 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/stack_allocated.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 enum class WindowOpenDisposition;
 struct NavigateParams;
@@ -32,6 +38,17 @@ class WebContents;
 }
 
 namespace web_app {
+// This function moves `contents` from the `source_browser` to the
+// `target_browser`. In doing so, it attempts to ensure that any logic that
+// needs to occur when transitioning between 'app' and 'browser' windows occurs,
+// and the all session restore logic is correctly updated. `contents` is not
+// required to be the active web contents in `source_browser`.
+//
+// Note: This will CHECK-fail if `contents` is not in `source_browser`.
+void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
+                                        content::WebContents* contents,
+                                        BrowserWindowInterface* target_browser,
+                                        bool insert_as_pinned_home_tab = false);
 
 class AppBrowserController;
 class WithAppResources;
@@ -53,38 +70,42 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 // Invokes ReparentWebContentsIntoAppBrowser() for the active tab for the
 // web app that has the tab's URL in its scope. Does nothing if there is no web
 // app in scope.
-Browser* ReparentWebAppForActiveTab(Browser* browser);
+BrowserWindowInterface* ReparentWebAppForActiveTab(Browser* browser);
 
-// Reparents |contents| into a standalone web app window for |app_id|.
+// Reparents `contents` into a standalone web app window for `app_id`.
 // - If the web app has a launch_handler set to reuse existing windows and there
 // are existing web app windows around this will launch the web app into the
-// existing window and close |contents|.
+// existing window and close `contents`.
 // - If the web app is in experimental tabbed mode and has and existing web app
-// window, |contents| will be reparented into the existing window.
-// - Otherwise a new browser window is created for |contents| to be reparented
+// window, `contents` will be reparented into the existing window.
+// - Otherwise a new browser window is created for `contents` to be reparented
 // into.
-Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
-                                           const webapps::AppId& app_id);
-
-// Tags `contents` with the given app id and marks it as an app. This
-// differentiates it from a `WebContents` which happens to be hosting a page
-// that is part of an app.
-void SetWebContentsActingAsApp(content::WebContents* contents,
-                               const webapps::AppId& app_id);
+// Returns the browser instance where the reparenting has happened, nullptr
+// otherwise. Runs `completion_callback` synchronously with the existing
+// `contents`, if it was reparented, or with the new `web_contents` that was
+// created if the behavior deemed it necessary (like for focus existing and
+// navigate-existing use-cases).
+BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback =
+        base::DoNothingAs<void(content::WebContents*)>());
 
 // Marks the web contents as being the pinned home tab of a tabbed web app.
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
 
-// Set preferences that are unique to app windows.
-void SetAppPrefsForWebContents(content::WebContents* web_contents);
-
-// Clear preferences that are unique to app windows.
-void ClearAppPrefsForWebContents(content::WebContents* web_contents);
-
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
-    Browser* browser);
+    BrowserWindowInterface* bwi);
 
-void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id);
+void MaybeAddPinnedHomeTab(BrowserWindowInterface* browser,
+                           const std::string& app_id);
+
+// Shows the navigation capturing IPH if the situation warrants it (e.g. the
+// WebAppProvider is available, guardrail metrics are not suppressing it and
+// the IPH is permitted to show).
+void MaybeShowNavigationCaptureIph(webapps::AppId app_id,
+                                   Profile* profile,
+                                   Browser* browser);
 
 // This creates appropriate CreateParams for creating a PWA window or PWA popup
 // window.
@@ -99,14 +120,7 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
     const webapps::AppId& app_id,
     const Browser::CreateParams& params);
 
-content::WebContents* NavigateWebApplicationWindow(
-    Browser* browser,
-    const std::string& app_id,
-    const GURL& url,
-    WindowOpenDisposition disposition);
-
-content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
-                                                NavigateParams& nav_params);
+content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params);
 
 // RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
 // side-effects (e.g. updating app launch time).
@@ -130,20 +144,18 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Encapsulates web_app capturing and launching during navigation requests.
-// Returns a valid Browser and tab index if web app handling is appropriate,
-// otherwise nullopt. May create a browser, app window or tab as needed.
-//
-// A value of std::nullopt means that the web app system cannot handle the
-// navigation, and as such, would allow the "normal" workflow to identify a
-// browser to perform navigation in to proceed. See
-// `GetBrowserAndTabForDisposition()` for more information.
-//
-// TODO(crbug.com/351775835): Integrate with web_applications system to
-// determine which browser to complete navigation in based on launch handlers.
-std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
-    Profile* profile,
-    const NavigateParams& navigate_params);
+// Will enqueue the given url in the launch params for this web contents. Does
+// not check if the url is within scope of the app.
+void EnqueueLaunchParams(content::WebContents* contents,
+                         const webapps::AppId& app_id,
+                         const GURL& url,
+                         bool wait_for_navigation_to_complete,
+                         base::TimeTicks time_navigation_started);
+
+// Focus the app container depending on whether the `browser` is an app window
+// or if it is a normal tabbed browser. `browser` shouldn't be a nullptr, and
+// the `tab_index` should be a valid index for a tab inside `browser`.
+void FocusAppContainer(BrowserWindowInterface* browser, int tab_index);
 
 }  // namespace web_app
 

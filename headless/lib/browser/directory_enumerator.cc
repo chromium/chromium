@@ -35,7 +35,9 @@ void DirectoryEnumerator::OnListFile(const DirectoryListerData& data) {
   if (data.info.IsDirectory())
     return;
   entries_.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
-      blink::mojom::NativeFileInfo::New(data.path, /*display_name=*/u"")));
+      blink::mojom::NativeFileInfo::New(
+          data.path, /*display_name=*/u"",
+          /*base_subdirs=*/std::vector<std::u16string>())));
 }
 
 void DirectoryEnumerator::OnListDone(int error) {

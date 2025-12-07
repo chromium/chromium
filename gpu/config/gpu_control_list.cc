@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/config/gpu_control_list.h"
 
 #include <utility>
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,21 +18,25 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/re2/src/re2/re2.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace gpu {
 namespace {
 
 // Break a version string into segments.  Return true if each segment is
 // a valid number, and not all segment is 0.
-bool ProcessVersionString(const std::string& version_string,
+bool ProcessVersionString(std::string_view version_string,
                           char splitter,
                           std::vector<std::string>* version) {
   DCHECK(version);
-  *version = base::SplitString(
-      version_string, std::string(1, splitter),
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  *version = base::SplitString(version_string, std::string_view(&splitter, 1),
+                               base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (version->size() == 0)
     return false;
   // If the splitter is '-', we assume it's a date with format "mm-dd-yyyy";
@@ -67,8 +65,8 @@ bool ProcessVersionString(const std::string& version_string,
 // Return  0 if number = number_ref,
 //         1 if number > number_ref,
 //        -1 if number < number_ref.
-int CompareNumericalNumberStrings(
-    const std::string& number, const std::string& number_ref) {
+int CompareNumericalNumberStrings(std::string_view number,
+                                  std::string_view number_ref) {
   unsigned value1 = 0;
   unsigned value2 = 0;
   bool valid = base::StringToUint(number, &value1);
@@ -90,8 +88,8 @@ int CompareNumericalNumberStrings(
 // If number_ref is xxx, it's considered as xxx*
 // For example: CompareLexicalNumberStrings("121", "12") returns 0,
 //              CompareLexicalNumberStrings("12", "121") returns -1.
-int CompareLexicalNumberStrings(
-    const std::string& number, const std::string& number_ref) {
+int CompareLexicalNumberStrings(std::string_view number,
+                                std::string_view number_ref) {
   for (size_t i = 0; i < number_ref.length(); ++i) {
     unsigned value1 = 0;
     if (i < number.length())
@@ -106,7 +104,7 @@ int CompareLexicalNumberStrings(
 }
 
 // A mismatch is identified only if both |input| and |pattern| are not empty.
-bool StringMismatch(const std::string& input, const std::string& pattern) {
+bool StringMismatch(std::string_view input, std::string_view pattern) {
   if (input.empty() || pattern.empty())
     return false;
   static crash_reporter::CrashKeyString<128> crash_key(
@@ -115,27 +113,16 @@ bool StringMismatch(const std::string& input, const std::string& pattern) {
   return !RE2::FullMatch(input, pattern);
 }
 
-bool StringMismatch(const std::string& input, const char* pattern) {
+bool StringMismatch(std::string_view input, const char* pattern) {
   if (!pattern)
     return false;
-  std::string pattern_string(pattern);
+  std::string_view pattern_string(pattern);
   return StringMismatch(input, pattern_string);
-}
-
-bool ProcessANGLEGLRenderer(const std::string& gl_renderer,
-                            std::string* vendor,
-                            std::string* renderer,
-                            std::string* version) {
-  DCHECK(vendor);
-  DCHECK(renderer);
-  DCHECK(version);
-  return RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)", vendor,
-                        renderer, version);
 }
 
 }  // namespace
 
-bool GpuControlList::Version::Contains(const std::string& version_string,
+bool GpuControlList::Version::Contains(std::string_view version_string,
                                        char splitter) const {
   if (op == kUnknown)
     return false;
@@ -212,16 +199,14 @@ bool GpuControlList::Version::Contains(const std::string& version_string,
         return false;
       return Version::Compare(version, ref_version2, style) <= 0;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
 // static
-int GpuControlList::Version::Compare(
-    const std::vector<std::string>& version,
-    const std::vector<std::string>& version_ref,
-    VersionStyle version_style) {
+int GpuControlList::Version::Compare(base::span<const std::string> version,
+                                     base::span<const std::string> version_ref,
+                                     VersionStyle version_style) {
   DCHECK(version.size() > 0 && version_ref.size() > 0);
   DCHECK(version_style != kVersionStyleUnknown);
   for (size_t i = 0; i < version_ref.size(); ++i) {
@@ -240,71 +225,38 @@ int GpuControlList::Version::Compare(
 }
 
 bool GpuControlList::More::GLVersionInfoMismatch(
-    const std::string& gl_version_string) const {
-  if (gl_version_string.empty())
+    std::string_view gl_version_string) const {
+  if (gl_version_string.empty()) {
     return false;
-  if (!gl_version.IsSpecified() && gl_type == kGLTypeNone)
-    return false;
+  }
   std::vector<std::string> segments = base::SplitString(
       gl_version_string, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   std::string number;
-  GLType target_gl_type = kGLTypeNone;
   if (segments.size() > 2 &&
       segments[0] == "OpenGL" && segments[1] == "ES") {
     bool full_match = RE2::FullMatch(segments[2], "([\\d.]+).*", &number);
-    DCHECK(full_match);
-
-    target_gl_type = kGLTypeGLES;
-    if (segments.size() > 3 &&
-        base::StartsWith(segments[3], "(ANGLE",
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      target_gl_type = kGLTypeANGLE;
+    if (!full_match) {
+      // Bad version string from driver (or ANGLE, or tests).
+      return true;
     }
   } else {
+    // Desktop GL.
     number = segments[0];
-    target_gl_type = kGLTypeGL;
   }
 
-  GLType entry_gl_type = gl_type;
-  if (entry_gl_type == kGLTypeNone && gl_version.IsSpecified()) {
-    entry_gl_type = GetDefaultGLType();
-  }
-  if (entry_gl_type != kGLTypeNone && entry_gl_type != target_gl_type) {
-    return true;
-  }
-  if (gl_version.IsSpecified() && !gl_version.Contains(number)) {
-    return true;
-  }
-  return false;
-}
-
-// static
-GpuControlList::GLType GpuControlList::More::GetDefaultGLType() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return kGLTypeGL;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
-  return kGLTypeGL;
-#elif BUILDFLAG(IS_MAC)
-  return kGLTypeGL;
-#elif BUILDFLAG(IS_WIN)
-  return kGLTypeANGLE;
-#elif BUILDFLAG(IS_ANDROID)
-  return kGLTypeGLES;
-#else
-  return kGLTypeNone;
-#endif
+  return !gl_version.Contains(number);
 }
 
 void GpuControlList::Entry::LogControlListMatch(
-    const std::string& control_list_logging_name) const {
+    std::string_view control_list_logging_name) const {
   static const char kControlListMatchMessage[] =
       "Control list match for rule #%u in %s.";
   VLOG(1) << base::StringPrintf(kControlListMatchMessage, id,
-                                control_list_logging_name.c_str());
+                                control_list_logging_name);
 }
 
 bool GpuControlList::DriverInfo::Contains(
-    const std::vector<GPUInfo::GPUDevice>& gpus) const {
+    base::span<const GPUInfo::GPUDevice> gpus) const {
   for (auto& gpu : gpus) {
     if (StringMismatch(gpu.driver_vendor, driver_vendor))
       continue;
@@ -323,32 +275,38 @@ bool GpuControlList::GLStrings::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
 
-  std::string vendor;
-  std::string renderer;
-  std::string version;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
+  std::string gl_vendor_string = gpu_info.gl_vendor;
+  std::string gl_renderer_string = gpu_info.gl_renderer;
+  std::string gl_version_string = gpu_info.gl_version;
+  if (!gl_renderer_string.empty()) {
+    std::string vendor, renderer, version;
+    GLType gl_type = ProcessANGLEGLRenderer(gl_renderer_string, &vendor,
                                             &renderer, &version);
-  if (StringMismatch(is_angle_gl ? vendor : gpu_info.gl_vendor, gl_vendor)) {
+    if (gl_type == kGLTypeANGLE_GL || gl_type == kGLTypeANGLE_GLES) {
+      gl_vendor_string = vendor;
+      gl_renderer_string = renderer;
+      gl_version_string = version;
+    }
+  }
+  if (StringMismatch(gl_vendor_string, gl_vendor)) {
     return false;
   }
-  if (StringMismatch(is_angle_gl ? renderer : gpu_info.gl_renderer,
-                     gl_renderer)) {
+  if (StringMismatch(gl_renderer_string, gl_renderer)) {
     return false;
   }
-  if (StringMismatch(is_angle_gl ? version : gpu_info.gl_version, gl_version)) {
+  if (StringMismatch(gl_version_string, gl_version)) {
     return false;
   }
   return true;
 }
 
 bool GpuControlList::MachineModelInfo::Contains(const GPUInfo& gpu_info) const {
-  if (machine_model_name_size > 0) {
+  if (machine_model_names.size() > 0) {
     if (gpu_info.machine_model_name.empty())
       return false;
     bool found_match = false;
-    for (size_t ii = 0; ii < machine_model_name_size; ++ii) {
-      if (RE2::FullMatch(gpu_info.machine_model_name,
-                         machine_model_names[ii])) {
+    for (auto* const machine_model_name : machine_model_names) {
+      if (RE2::FullMatch(gpu_info.machine_model_name, machine_model_name)) {
         found_match = true;
         break;
       }
@@ -365,11 +323,32 @@ bool GpuControlList::MachineModelInfo::Contains(const GPUInfo& gpu_info) const {
 }
 
 bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
-  std::string vendor, renderer, version;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
-                                            &renderer, &version);
-  if (GLVersionInfoMismatch(is_angle_gl ? version : gpu_info.gl_version)) {
-    return false;
+  GLType gl_backend_type = kGLTypeNone;
+  std::string gl_version_string = gpu_info.gl_version;
+  if (!gpu_info.gl_renderer.empty()) {
+    std::string version;
+    gl_backend_type = ProcessANGLEGLRenderer(gpu_info.gl_renderer,
+                                             /*vendor=*/nullptr,
+                                             /*renderer=*/nullptr, &version);
+    if (gl_type != kGLTypeNone && gl_type != gl_backend_type) {
+      return false;
+    }
+    if (gl_backend_type == kGLTypeANGLE_GL ||
+        gl_backend_type == kGLTypeANGLE_GLES) {
+      gl_version_string = version;
+    }
+  }
+  switch (gl_backend_type) {
+    case kGLTypeANGLE_GL:
+    case kGLTypeANGLE_GLES:
+    case kGLTypeGLES:
+      if (gl_version.IsSpecified() &&
+          GLVersionInfoMismatch(gl_version_string)) {
+        return false;
+      }
+      break;
+    default:
+      break;
   }
 
   if (gl_reset_notification_strategy != 0 &&
@@ -378,7 +357,7 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
   if (gpu_count.IsSpecified()) {
-    if (!gpu_count.Contains(std::to_string(gpu_info.GpuCount()))) {
+    if (!gpu_count.Contains(base::NumberToString(gpu_info.GpuCount()))) {
       return false;
     }
   }
@@ -418,8 +397,69 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
   return true;
 }
 
+bool GpuControlList::IntelConditions::Contains(
+    base::span<const GPUInfo::GPUDevice> candidates,
+    const GPUInfo& gpu_info) const {
+  if (intel_gpu_series_list.size() > 0) {
+    DCHECK(!intel_gpu_generation.IsSpecified());
+    for (auto& candidate : candidates) {
+      IntelGpuSeriesType candidate_series =
+          GetIntelGpuSeriesType(candidate.vendor_id, candidate.device_id);
+      if (candidate_series == IntelGpuSeriesType::kUnknown) {
+        continue;
+      }
+      for (auto intel_gpu_series : intel_gpu_series_list) {
+        if (candidate_series == intel_gpu_series) {
+          return true;
+        }
+      }
+    }
+  } else {
+    DCHECK(intel_gpu_generation.IsSpecified());
+    for (auto& candidate : candidates) {
+      IntelGpuGeneration gen =
+          GetIntelGpuGeneration(candidate.vendor_id, candidate.device_id);
+      if (gen <= IntelGpuGeneration::kUnknownIntel) {
+        continue;
+      }
+      std::string candidate_generation =
+          base::NumberToString(static_cast<int>(gen));
+      if (intel_gpu_generation.Contains(candidate_generation)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+GpuControlList::Conditions::Conditions(
+    OsType os_type,
+    Version os_version,
+    uint32_t vendor_id,
+    base::span<const Device> devices,
+    MultiGpuCategory multi_gpu_category,
+    MultiGpuStyle multi_gpu_style,
+    const DriverInfo* driver_info,
+    const GLStrings* gl_strings,
+    const MachineModelInfo* machine_model_info,
+    const IntelConditions* intel_conditions,
+    const More* more)
+    : os_type(os_type),
+      os_version(os_version),
+      vendor_id(vendor_id),
+      devices(devices),
+      multi_gpu_category(multi_gpu_category),
+      multi_gpu_style(multi_gpu_style),
+      driver_info(driver_info),
+      gl_strings(gl_strings),
+      machine_model_info(machine_model_info),
+      intel_conditions(intel_conditions),
+      more(more) {}
+
+GpuControlList::Conditions::Conditions(const Conditions& other) = default;
+
 bool GpuControlList::Conditions::Contains(OsType target_os_type,
-                                          const std::string& target_os_version,
+                                          std::string_view target_os_version,
                                           const GPUInfo& gpu_info) const {
   DCHECK(target_os_type != kOsAny);
   if (os_type != kOsAny) {
@@ -457,35 +497,12 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
         candidates.push_back(gpu_info.gpu);
   }
 
-  if (vendor_id != 0 || intel_gpu_series_list_size > 0 ||
-      intel_gpu_generation.IsSpecified()) {
+  if (vendor_id != 0 || intel_conditions) {
     bool found = false;
-    if (intel_gpu_series_list_size > 0) {
-      for (size_t ii = 0; !found && ii < candidates.size(); ++ii) {
-        IntelGpuSeriesType candidate_series = GetIntelGpuSeriesType(
-            candidates[ii].vendor_id, candidates[ii].device_id);
-        if (candidate_series == IntelGpuSeriesType::kUnknown)
-          continue;
-        for (size_t jj = 0; jj < intel_gpu_series_list_size; ++jj) {
-          if (candidate_series == intel_gpu_series_list[jj]) {
-            found = true;
-            break;
-          }
-        }
-      }
-    } else if (intel_gpu_generation.IsSpecified()) {
-      for (auto& candidate : candidates) {
-        std::string candidate_generation =
-            GetIntelGpuGeneration(candidate.vendor_id, candidate.device_id);
-        if (candidate_generation.empty())
-          continue;
-        if (intel_gpu_generation.Contains(candidate_generation)) {
-          found = true;
-          break;
-        }
-      }
+    if (intel_conditions) {
+      found = intel_conditions->Contains(candidates, gpu_info);
     } else {
-      if (device_size == 0) {
+      if (devices.size() == 0) {
         for (auto& candidate : candidates) {
           if (vendor_id == candidate.vendor_id) {
             found = true;
@@ -493,7 +510,7 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
           }
         }
       } else {
-        for (size_t ii = 0; !found && ii < device_size; ++ii) {
+        for (size_t ii = 0; !found && ii < devices.size(); ++ii) {
           uint32_t device_id = devices[ii].device_id;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
           uint32_t revision = devices[ii].revision;
@@ -573,7 +590,7 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
 }
 
 bool GpuControlList::Entry::Contains(OsType target_os_type,
-                                     const std::string& target_os_version,
+                                     std::string_view target_os_version,
                                      const GPUInfo& gpu_info) const {
   static crash_reporter::CrashKeyString<8> crash_key(
       "GpuControlList::Entry::id");
@@ -582,9 +599,9 @@ bool GpuControlList::Entry::Contains(OsType target_os_type,
   if (!conditions.Contains(target_os_type, target_os_version, gpu_info)) {
     return false;
   }
-  for (size_t ii = 0; ii < exception_size; ++ii) {
-    if (exceptions[ii].Contains(target_os_type, target_os_version, gpu_info) &&
-        !exceptions[ii].NeedsMoreInfo(gpu_info)) {
+  for (const auto& exception : exceptions) {
+    if (exception.Contains(target_os_type, target_os_version, gpu_info) &&
+        !exception.NeedsMoreInfo(gpu_info)) {
       return false;
     }
   }
@@ -638,9 +655,10 @@ bool GpuControlList::Entry::NeedsMoreInfo(const GPUInfo& gpu_info,
   if (conditions.NeedsMoreInfo(gpu_info))
     return true;
   if (consider_exceptions) {
-    for (size_t ii = 0; ii < exception_size; ++ii) {
-      if (exceptions[ii].NeedsMoreInfo(gpu_info))
+    for (const auto& exception : exceptions) {
+      if (exception.NeedsMoreInfo(gpu_info)) {
         return true;
+      }
     }
   }
   return false;
@@ -649,14 +667,13 @@ bool GpuControlList::Entry::NeedsMoreInfo(const GPUInfo& gpu_info,
 base::Value::List GpuControlList::Entry::GetFeatureNames(
     const FeatureMap& feature_map) const {
   base::Value::List feature_names;
-  for (size_t ii = 0; ii < feature_size; ++ii) {
-    auto iter = feature_map.find(features[ii]);
-    CHECK(iter != feature_map.end(), base::NotFatalUntil::M130);
+  for (auto feature : features) {
+    auto iter = feature_map.find(feature);
+    CHECK(iter != feature_map.end());
     feature_names.Append(iter->second);
   }
-  for (size_t ii = 0; ii < disabled_extension_size; ++ii) {
-    std::string name =
-        base::StringPrintf("disable(%s)", disabled_extensions[ii]);
+  for (auto* const extension : disabled_extensions) {
+    std::string name = base::StringPrintf("disable(%s)", extension);
     feature_names.Append(name);
   }
   return feature_names;
@@ -671,13 +688,13 @@ GpuControlList::GpuControlList(base::span<const Entry> data) : entries_(data) {
 GpuControlList::~GpuControlList() = default;
 
 std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
-                                               const std::string& os_version,
+                                               std::string_view os_version,
                                                const GPUInfo& gpu_info) {
   return MakeDecision(os, os_version, gpu_info, 0);
 }
 
 std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
-                                               const std::string& os_version,
+                                               std::string_view os_version,
                                                const GPUInfo& gpu_info,
                                                uint32_t target_test_group) {
   active_entries_.clear();
@@ -693,9 +710,18 @@ std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
 
   if (os == kOsAny)
     os = GetOsType();
-  std::string processed_os_version = os_version;
-  if (processed_os_version.empty())
+  std::string processed_os_version(os_version);
+  if (processed_os_version.empty()) {
+#if BUILDFLAG(IS_WIN)
+    base::win::OSInfo::VersionNumber version_number =
+        base::win::OSInfo::GetInstance()->version_number();
+    processed_os_version = base::StringPrintf(
+        "%d.%d.%d.%d", version_number.major, version_number.minor,
+        version_number.build, version_number.patch);
+#else
     processed_os_version = base::SysInfo::OperatingSystemVersion();
+#endif
+  }
   // Get rid of the non numbers because later processing expects a valid
   // version string in the format of "a.b.c".
   size_t pos = processed_os_version.find_first_not_of("0123456789.");
@@ -716,8 +742,7 @@ std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
       // Only look at main entry info when deciding what to add to "features"
       // set. If we don't have enough info for an exception, it's safer if we
       // just ignore the exception and assume the exception doesn't apply.
-      for (size_t jj = 0; jj < entry.feature_size; ++jj) {
-        int32_t feature = entry.features[jj];
+      for (auto feature : entry.features) {
         if (needs_more_info_main) {
           if (!features.count(feature))
             potential_features.insert(feature);
@@ -744,8 +769,9 @@ const std::vector<uint32_t>& GpuControlList::GetActiveEntries() const {
 }
 
 std::vector<uint32_t> GpuControlList::GetEntryIDsFromIndices(
-    const std::vector<uint32_t>& entry_indices) const {
+    base::span<const uint32_t> entry_indices) const {
   std::vector<uint32_t> ids;
+  ids.reserve(entry_indices.size());
   for (auto index : entry_indices) {
     ids.push_back(entries_[index].id);
   }
@@ -756,8 +782,8 @@ std::vector<std::string> GpuControlList::GetDisabledExtensions() {
   std::set<std::string> disabled_extensions;
   for (auto index : active_entries_) {
     const Entry& entry = entries_[index];
-    for (size_t ii = 0; ii < entry.disabled_extension_size; ++ii) {
-      disabled_extensions.insert(entry.disabled_extensions[ii]);
+    for (auto* const extension : entry.disabled_extensions) {
+      disabled_extensions.insert(extension);
     }
   }
   return std::vector<std::string>(disabled_extensions.begin(),
@@ -768,8 +794,8 @@ std::vector<std::string> GpuControlList::GetDisabledWebGLExtensions() {
   std::set<std::string> disabled_webgl_extensions;
   for (auto index : active_entries_) {
     const Entry& entry = entries_[index];
-    for (size_t ii = 0; ii < entry.disabled_webgl_extension_size; ++ii) {
-      disabled_webgl_extensions.insert(entry.disabled_webgl_extensions[ii]);
+    for (auto* const extension : entry.disabled_webgl_extensions) {
+      disabled_webgl_extensions.insert(extension);
     }
   }
   return std::vector<std::string>(disabled_webgl_extensions.begin(),
@@ -777,8 +803,8 @@ std::vector<std::string> GpuControlList::GetDisabledWebGLExtensions() {
 }
 
 void GpuControlList::GetReasons(base::Value::List& problem_list,
-                                const std::string& tag,
-                                const std::vector<uint32_t>& entries) const {
+                                std::string_view tag,
+                                base::span<const uint32_t> entries) const {
   for (auto index : entries) {
     const Entry& entry = entries_[index];
     base::Value::Dict problem;
@@ -786,9 +812,9 @@ void GpuControlList::GetReasons(base::Value::List& problem_list,
     problem.Set("description", entry.description);
 
     base::Value::List cr_bugs;
-    for (size_t jj = 0; jj < entry.cr_bug_size; ++jj)
-      cr_bugs.Append(
-          base::Int64ToValue(static_cast<int64_t>(entry.cr_bugs[jj])));
+    for (auto cr_bug : entry.cr_bugs) {
+      cr_bugs.Append(base::Int64ToValue(static_cast<int64_t>(cr_bug)));
+    }
     problem.Set("crBugs", std::move(cr_bugs));
 
     base::Value::List features = entry.GetFeatureNames(feature_map_);
@@ -830,14 +856,47 @@ GpuControlList::OsType GpuControlList::GetOsType() {
 #endif
 }
 
-void GpuControlList::AddSupportedFeature(
-    const std::string& feature_name, int feature_id) {
-  feature_map_[feature_id] = feature_name;
+// static
+GpuControlList::GLType GpuControlList::ProcessANGLEGLRenderer(
+    std::string_view gl_renderer,
+    std::string* vendor,
+    std::string* renderer,
+    std::string* version) {
+  std::array<std::string, 3> parts;
+  DCHECK(!gl_renderer.empty());
+  bool is_angle = RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)",
+                                 &(parts[0]), &(parts[1]), &(parts[2]));
+  if (!is_angle) {
+    return kGLTypeGLES;
+  }
+  if (base::StartsWith(parts[1], "Vulkan",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return kGLTypeANGLE_VULKAN;
+  }
+  if (vendor) {
+    *vendor = parts[0];
+  }
+  if (renderer) {
+    *renderer = parts[1];
+  }
+  if (version) {
+    *version = parts[2];
+  }
+  if (base::StartsWith(parts[2], "OpenGL ES ", base::CompareCase::SENSITIVE)) {
+    return kGLTypeANGLE_GLES;
+  } else {
+    return kGLTypeANGLE_GL;
+  }
+}
+
+void GpuControlList::AddSupportedFeature(std::string_view feature_name,
+                                         int feature_id) {
+  feature_map_[feature_id] = std::string(feature_name);
 }
 
 // static
 bool GpuControlList::AreEntryIndicesValid(
-    const std::vector<uint32_t>& entry_indices,
+    base::span<const uint32_t> entry_indices,
     size_t total_entries) {
   for (auto index : entry_indices) {
     if (index >= total_entries)

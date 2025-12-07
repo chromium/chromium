@@ -4,11 +4,6 @@
 //
 // This file defines the methods useful for uninstalling Chrome.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/uninstall.h"
 
 #include <windows.h>
@@ -24,6 +19,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -67,6 +63,7 @@
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
+#include "chrome/windows_services/elevated_tracing_service/service_integration.h"
 #include "content/public/common/result_codes.h"
 #include "rlz/lib/rlz_lib_clear.h"
 #include "rlz/lib/supplementary_branding.h"
@@ -153,7 +150,7 @@ bool RemoveInstallerFiles(const base::FilePath& installer_directory) {
 class ProcessPathPrefixFilter : public base::ProcessFilter {
  public:
   explicit ProcessPathPrefixFilter(
-      const base::FilePath::StringPieceType& process_path_prefix)
+      base::FilePath::StringViewType process_path_prefix)
       : process_path_prefix_(process_path_prefix) {}
 
   // base::ProcessFilter:
@@ -178,7 +175,7 @@ class ProcessPathPrefixFilter : public base::ProcessFilter {
   }
 
  private:
-  const base::FilePath::StringPieceType process_path_prefix_;
+  const base::FilePath::StringViewType process_path_prefix_;
 };
 
 // Kills all Chrome processes in |target_path|, immediately.
@@ -196,8 +193,7 @@ void RetargetUserShortcutsWithArgs(const InstallerState& installer_state,
                                    const base::FilePath& old_target_exe,
                                    const base::FilePath& new_target_exe) {
   if (installer_state.system_install()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   ShellUtil::ShellChange install_level = ShellUtil::CURRENT_USER;
 
@@ -375,13 +371,15 @@ InstallStatus IsChromeActiveOrUserCancelled(
   if (LaunchChromeAndWait(installer_state.target_path(), options, &exit_code)) {
     VLOG(1) << "chrome.exe launched for uninstall confirmation returned: "
             << exit_code;
-    if ((exit_code == chrome::RESULT_CODE_UNINSTALL_CHROME_ALIVE) ||
-        (exit_code == chrome::RESULT_CODE_UNINSTALL_USER_CANCEL) ||
-        (exit_code == content::RESULT_CODE_HUNG))
+    if ((exit_code == CHROME_RESULT_CODE_UNINSTALL_CHROME_ALIVE) ||
+        (exit_code == CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL) ||
+        (exit_code == content::RESULT_CODE_HUNG)) {
       return installer::UNINSTALL_CANCELLED;
+    }
 
-    if (exit_code == chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE)
+    if (exit_code == CHROME_RESULT_CODE_UNINSTALL_DELETE_PROFILE) {
       return installer::UNINSTALL_DELETE_PROFILE;
+    }
   } else {
     PLOG(ERROR) << "Failed to launch chrome.exe for uninstall confirmation.";
   }
@@ -420,7 +418,7 @@ void RemoveFiletypeRegistration(const InstallerState& installer_state,
     ValueEquals prog_id_pred(prog_id);
     for (const wchar_t* const* filetype =
              &ShellUtil::kPotentialFileAssociations[0];
-         *filetype != nullptr; ++filetype) {
+         *filetype != nullptr; UNSAFE_TODO(++filetype)) {
       if (DeleteRegistryValueIf(
               root, (classes_path + *filetype).c_str(), WorkItem::kWow64Default,
               nullptr, prog_id_pred) == ConditionalDeleteResult::DELETED) {
@@ -635,6 +633,26 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
       LOG(WARNING) << "Failed to delete "
                    << install_static::GetElevationServiceName();
     }
+    if (!InstallServiceWorkItem::DeleteService(
+            install_static::GetTracingServiceName(),
+            install_static::GetClientStateKeyPath(),
+            {install_static::GetTracingServiceClsid()},
+            {install_static::GetTracingServiceIid()})) {
+      LOG(WARNING) << "Failed to delete "
+                   << install_static::GetTracingServiceName();
+    }
+    // Delete any storage written by the elevated tracing service.
+    base::FilePath path;
+    if (base::PathService::Get(base::DIR_SYSTEM_TEMP, &path)) {
+      path = path.Append(
+          base::FilePath(elevated_tracing_service::GetStorageDirBasename()));
+      if (base::DeletePathRecursively(path)) {
+        VLOG(1) << "Deleted elevated_tracing_service state in " << path;
+      } else {
+        PLOG(WARNING) << "Error deleting elevated_tracing_service state in "
+                      << path;
+      }
+    }
   }
 
   // Delete all Start Menu Internet registrations that refer to this Chrome.
@@ -697,10 +715,12 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   std::wstring file_assoc_key;
   std::wstring open_with_list_key;
   std::wstring open_with_progids_key;
-  for (int i = 0; ShellUtil::kPotentialFileAssociations[i] != nullptr; ++i) {
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]) != nullptr; ++i) {
     file_assoc_key.assign(ShellUtil::kRegClasses);
     file_assoc_key.push_back(base::FilePath::kSeparators[0]);
-    file_assoc_key.append(ShellUtil::kPotentialFileAssociations[i]);
+    file_assoc_key.append(
+        UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]));
     file_assoc_key.push_back(base::FilePath::kSeparators[0]);
 
     open_with_list_key.assign(file_assoc_key);
@@ -734,7 +754,7 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   std::wstring child_key;
   for (const wchar_t* const* proto =
            &ShellUtil::kPotentialProtocolAssociations[0];
-       *proto != nullptr; ++proto) {
+       *proto != nullptr; UNSAFE_TODO(++proto)) {
     parent_key.resize(base_length);
     parent_key.append(*proto);
     child_key.assign(parent_key).append(ShellUtil::kRegShellOpen);
@@ -762,21 +782,24 @@ void RemoveChromeLegacyRegistryKeys(const base::FilePath& chrome_exe) {
   HKEY roots[] = {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER};
   for (size_t i = 0; i < std::size(roots); ++i) {
     std::wstring suffix;
-    if (roots[i] == HKEY_LOCAL_MACHINE)
+    if (UNSAFE_TODO(roots[i]) == HKEY_LOCAL_MACHINE) {
       suffix = ShellUtil::GetCurrentInstallationSuffix(chrome_exe);
+    }
 
     // Delete Software\Classes\ChromeExt,
     std::wstring ext_prog_id(ShellUtil::kRegClasses);
     ext_prog_id.push_back(base::FilePath::kSeparators[0]);
     ext_prog_id.append(kChromeExtProgId);
     ext_prog_id.append(suffix);
-    DeleteRegistryKey(roots[i], ext_prog_id, WorkItem::kWow64Default);
+    DeleteRegistryKey(UNSAFE_TODO(roots[i]), ext_prog_id,
+                      WorkItem::kWow64Default);
 
     // Delete Software\Classes\.crx,
     std::wstring ext_association(ShellUtil::kRegClasses);
     ext_association.append(L"\\");
     ext_association.append(L".crx");
-    DeleteRegistryKey(roots[i], ext_association, WorkItem::kWow64Default);
+    DeleteRegistryKey(UNSAFE_TODO(roots[i]), ext_association,
+                      WorkItem::kWow64Default);
   }
 }
 
@@ -796,18 +819,14 @@ void UninstallOsUpdateHandler(const base::FilePath& installer_dir,
                               const InstallerState& installer_state) {
   const base::FilePath os_update_handler_exe =
       installer_dir.DirName().Append(installer::kOsUpdateHandlerExe);
-  if (!base::PathExists(os_update_handler_exe)) {
-    return;
-  }
-  constexpr base::TimeDelta kOsUpdateUninstallTimeout =
-      base::Milliseconds(5000);
+  constexpr base::TimeDelta kOsUpdateUninstallTimeout = base::Seconds(5);
   base::CommandLine uninstall_cmd(os_update_handler_exe);
   uninstall_cmd.AppendSwitch(installer::switches::kUninstall);
   if (installer_state.system_install()) {
     uninstall_cmd.AppendSwitch(installer::switches::kSystemLevel);
   }
   const std::wstring cmd_string = uninstall_cmd.GetCommandLineString();
-  VLOG(0) << "Launching: " << cmd_string;
+  VLOG(1) << "Launching: " << cmd_string;
   const base::Process process = base::LaunchProcess(uninstall_cmd, {});
   int exit_code = 0;
   if (!process.IsValid()) {
@@ -817,7 +836,8 @@ void UninstallOsUpdateHandler(const base::FilePath& installer_dir,
     // The GetExitCodeProcess failed or timed-out.
     LOG(ERROR) << "Command (" << cmd_string << ") is taking more than "
                << kOsUpdateUninstallTimeout.InMilliseconds()
-               << " milliseconds to complete.";
+               << " milliseconds to complete. Terminating it.";
+    process.Terminate(0, /*wait=*/true);
   } else if (exit_code != 0) {
     LOG(ERROR) << "Command (" << cmd_string << ") exited with code "
                << exit_code;
@@ -894,7 +914,7 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
   // in case of errors.
   ClearRlzProductState();
 
-  auto_launch_util::DisableBackgroundStartAtLogin();
+  auto_launch_util::DisableStartAtLogin();
 
   base::FilePath chrome_proxy_exe(
       installer_state.target_path().Append(installer::kChromeProxyExe));
@@ -1166,10 +1186,10 @@ bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe) {
 
   base::FilePath tmp_dir;
   base::FilePath temp_file;
-  if (!(::IsUserAnAdmin() ? base::GetSecureSystemTemp(&tmp_dir)
-                          : base::PathService::Get(base::DIR_TEMP, &tmp_dir))) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+  if (!(::IsUserAnAdmin()
+            ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &tmp_dir)
+            : base::PathService::Get(base::DIR_TEMP, &tmp_dir))) {
+    NOTREACHED();
   }
 
   // Change the current directory to the TMP directory. See method comment

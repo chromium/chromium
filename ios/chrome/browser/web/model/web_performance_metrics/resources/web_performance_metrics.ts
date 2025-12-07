@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWebKitMessage} from "//ios/web/public/js_messaging/resources/utils.js";
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const EVENT_TYPES = [
   'mousedown',
   'keydown',
   'touchstart',
-  'pointerdown'
+  'pointerdown',
 ];
 const FIRST_CONTENTFUL_PAINT = 'first-contentful-paint';
 const WEB_PERFORMANCE_METRICS_HANDLER_NAME = 'WebPerformanceMetricsHandler';
@@ -27,14 +27,12 @@ function processPaintEvents(paintEvents: PerformanceObserverEntryList,
     // The performance.timing.navigationStart property has been deprecated.
     // TODO(crbug.com/40806748)
     const response = {
-      'metric' : 'FirstContentfulPaint',
-      'frameNavigationStartTime' : performance.timing.navigationStart,
-      'value'  : event.startTime,
-    }
+      'metric': 'FirstContentfulPaint',
+      'frameNavigationStartTime': performance.timing.navigationStart,
+      'value': event.startTime,
+    };
 
-   sendWebKitMessage(
-        WEB_PERFORMANCE_METRICS_HANDLER_NAME,
-        response);
+    sendWebKitMessage(WEB_PERFORMANCE_METRICS_HANDLER_NAME, response);
 
     observer.disconnect();
   }
@@ -46,10 +44,10 @@ function processInputEvent(inputEvent: Event): void {
   const currentTime = performance.now();
   const delta = currentTime - inputEvent.timeStamp;
   const response = {
-    'metric' : 'FirstInputDelay',
-    'value' : delta,
-    'cached' : loadedFromCache
-  }
+    'metric': 'FirstInputDelay',
+    'value': delta,
+    'cached': loadedFromCache,
+  };
 
   sendWebKitMessage(
     WEB_PERFORMANCE_METRICS_HANDLER_NAME,

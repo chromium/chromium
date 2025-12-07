@@ -31,34 +31,32 @@ HashRealTimeMechanism::~HashRealTimeMechanism() {
 SafeBrowsingLookupMechanism::StartCheckResult
 HashRealTimeMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<
-      SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-      logging_details = database_manager_->CheckUrlForHighConfidenceAllowlist(
-          url_,
-          base::BindOnce(
-              &HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
-              weak_factory_.GetWeakPtr()));
-
-  if (logging_details.has_value()) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.HPRT.AllStoresAvailable",
-        logging_details.value().were_all_stores_available);
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.HPRT.AllowlistSizeTooSmall",
-        logging_details.value().was_allowlist_size_too_small);
-  }
+  database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_, base::BindOnce(
+                &HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
+                weak_factory_.GetWeakPtr()));
 
   return StartCheckResult(
       /*is_safe_synchronously=*/false, /*threat_source=*/std::nullopt);
 }
 
 void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
-    bool did_match_allowlist) {
+    bool did_match_allowlist,
+    std::optional<
+        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::UmaHistogramEnumeration(
       "SafeBrowsing.HPRT.LocalMatch.Result",
       did_match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH);
+
+  if (logging_details) {
+    base::UmaHistogramBoolean("SafeBrowsing.HPRT.AllStoresAvailable",
+                              logging_details->were_all_stores_available);
+    base::UmaHistogramBoolean("SafeBrowsing.HPRT.AllowlistSizeTooSmall",
+                              logging_details->was_allowlist_size_too_small);
+  }
 
   if (did_match_allowlist) {
     // If the URL matches the high-confidence allowlist, still do the hash based
@@ -129,7 +127,8 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
-      url, threat_types_, database_manager_, CheckBrowseUrlType::kHashDatabase);
+      url, threat_types_, database_manager_, CheckBrowseUrlType::kHashDatabase,
+      /*check_allowlist=*/false);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
                      weak_factory_.GetWeakPtr(), fallback_trigger));

@@ -784,43 +784,24 @@ pixel test failures are actual failures or need to be rebaselined." step.
 
 [pixel wrangling triage]: http://go/gpu-pixel-wrangler-info#how-to-keep-the-bots-green
 
-If you are adding a new pixel test, it is beneficial to set the
-`grace_period_end` argument in the test's definition. This will allow the test
-to run for a period without actually failing on the waterfall bots, giving you
-some time to triage any additional images that show up on them. This helps
-prevent new tests from making the bots red because they're producing slightly
-different but valid images from the ones triaged while the CL was in review.
-Example:
+If you are adding a new pixel test, you should do one of the following to ensure
+that the CI builders remain green:
+1. Add all of the `gpu-fyi-try-*` trybots  to your CL and ensure your new test
+   passes. In the event that a test fails due to an untriaged image, triage the
+   image and try again. Repeat until the new test passes on all trybots.
+2. Add a `Failure` expectation for your test to the
+   [expectations file][pixel_expectations]. After your CL lands, triage any new
+   images regularly until the test is only producing known good images. Then,
+   land a CL that removes the `Failure` expectation.
 
-```
-from datetime import date
+The former is generally preferred since it is harder to miss untriaged images.
 
-...
-
-PixelTestPage(
-  'foo_pixel_test.html',
-  ...
-  grace_period_end=date(2020, 1, 1)
-)
-```
-
-You should typically set the grace period to end 1-2 days after the the CL will
-land.
-
-Once your CL passes the CQ, you should be mostly good to go, although you should
-keep an eye on the waterfall bots for a short period after your CL lands in case
-any configurations not covered by the CQ need to have images approved, as well.
 All untriaged images for your test can be found by substituting your test name
 into:
 
-`https://chrome-gpu-gold.skia.org/search?query=name%3D<test name>`
+`https://chrome-gold.skia.org/search?query=name%3D<test name>`
 
-**NOTE** If you have a grace period active for your test, then Gold will be told
-to ignore results for the test. This is so that it does not comment on unrelated
-CLs about untriaged images if your test is noisy. Images will still be uploaded
-to Gold and can be triaged, but will not show up on the main page's untriaged
-image list, and you will need to enable the "Ignored" toggle at the top of the
-page when looking at the triage page specific to your test.
+[pixel_expectations]: https://source.chromium.org/chromium/chromium/src/+/main:content/test/gpu/gpu_tests/test_expectations/pixel_expectations.txt
 
 ## Stamping out Flakiness
 

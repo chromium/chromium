@@ -26,11 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TIMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TIMER_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/single_thread_task_runner.h"
@@ -63,7 +64,7 @@ class PLATFORM_EXPORT TimerBase {
   // If |precise|, the task is scheduled with a precise delay policy to run
   // preferably as close as possible to the specified delay.
   void Start(base::TimeDelta next_fire_interval,
-             base::TimeDelta repeat_interval,
+             std::optional<base::TimeDelta> repeat_interval,
              const base::Location&,
              bool precise = false);
 
@@ -78,7 +79,7 @@ class PLATFORM_EXPORT TimerBase {
   void StartOneShot(base::TimeDelta interval,
                     const base::Location& caller,
                     bool precise = false) {
-    Start(interval, base::TimeDelta(), caller, precise);
+    Start(interval, std::nullopt, caller, precise);
   }
 
   // Timer cancellation is fast enough that you shouldn't have to worry
@@ -88,12 +89,15 @@ class PLATFORM_EXPORT TimerBase {
   const base::Location& GetLocation() const { return location_; }
 
   base::TimeDelta NextFireInterval() const;
-  base::TimeDelta RepeatInterval() const { return repeat_interval_; }
+  std::optional<base::TimeDelta> RepeatInterval() const {
+    return repeat_interval_;
+  }
 
   void AugmentRepeatInterval(base::TimeDelta delta) {
     SetNextFireTime(next_fire_time_.is_null() ? TimerCurrentTimeTicks() + delta
                                               : next_fire_time_ + delta);
-    repeat_interval_ += delta;
+    DCHECK(repeat_interval_);
+    *repeat_interval_ += delta;
   }
 
   void MoveToNewTaskRunner(scoped_refptr<base::SingleThreadTaskRunner>);
@@ -105,7 +109,7 @@ class PLATFORM_EXPORT TimerBase {
   virtual void Fired() = 0;
 
   virtual base::OnceClosure BindTimerClosure() {
-    return WTF::BindOnce(&TimerBase::RunInternal, WTF::Unretained(this));
+    return BindOnce(&TimerBase::RunInternal, Unretained(this));
   }
 
   void RunInternal();
@@ -117,7 +121,7 @@ class PLATFORM_EXPORT TimerBase {
 
   base::TimeTicks next_fire_time_ =
       base::TimeTicks::Max();        // Max() if inactive
-  base::TimeDelta repeat_interval_;  // 0 if not repeating
+  std::optional<base::TimeDelta> repeat_interval_;
   base::Location location_;
   scoped_refptr<base::SingleThreadTaskRunner> web_task_runner_;
   // The tick clock used to calculate the run time for scheduled tasks.
@@ -140,7 +144,7 @@ class TaskRunnerTimer : public TimerBase {
                   TimerFiredClass* o,
                   TimerFiredFunction f)
       : TimerBase(std::move(web_task_runner)), object_(o), function_(f) {
-    static_assert(!WTF::IsGarbageCollectedType<TimerFiredClass>::value,
+    static_assert(!IsGarbageCollectedTypeV<TimerFiredClass>,
                   "Use HeapTaskRunnerTimer with garbage-collected types.");
   }
 
@@ -169,7 +173,7 @@ class HeapTaskRunnerTimer final : public TimerBase {
         object_(object),
         function_(function) {
     static_assert(
-        WTF::IsGarbageCollectedType<TimerFiredClass>::value,
+        IsGarbageCollectedTypeV<TimerFiredClass>,
         "HeapTaskRunnerTimer can only be used with garbage-collected types.");
   }
 
@@ -181,9 +185,9 @@ class HeapTaskRunnerTimer final : public TimerBase {
   void Fired() final { (object_->*function_)(this); }
 
   base::OnceClosure BindTimerClosure() final {
-    return WTF::BindOnce(&HeapTaskRunnerTimer::RunInternalTrampoline,
-                         WTF::Unretained(this),
-                         WrapWeakPersistent(object_.Get()));
+    return blink::BindOnce(&HeapTaskRunnerTimer::RunInternalTrampoline,
+                           blink::Unretained(this),
+                           WrapWeakPersistent(object_.Get()));
   }
 
  private:

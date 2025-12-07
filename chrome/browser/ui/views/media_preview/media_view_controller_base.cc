@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -60,9 +61,9 @@ MediaViewControllerBase::MediaViewControllerBase(
     const int kBorderThickness =
         provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
-    base_view_->SetBorder(views::CreateThemedRoundedRectBorder(
+    base_view_->SetBorder(views::CreateRoundedRectBorder(
         kBorderThickness, kRoundedRadius, ui::kColorMenuBackground));
-    base_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+    base_view_->SetBackground(views::CreateRoundedRectBackground(
         ui::kColorMenuBackground, kRoundedRadius));
   }
 
@@ -112,8 +113,7 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
     live_feed_container_->SetVisible(false);
     no_devices_found_label_->SetVisible(true);
     device_name_label_->SetText(no_devices_found_combobox_text_);
-    device_name_label_->SetEnabledColorId(
-        ui::ColorIds::kColorSysOnSurfaceSubtle);
+    device_name_label_->SetEnabledColor(ui::ColorIds::kColorSysOnSurfaceSubtle);
     device_name_label_->SetVisible(true);
     device_selector_combobox_->SetVisible(false);
     AnnounceDynamicChangeIfNeeded(no_devices_found_label_->GetText());
@@ -129,7 +129,7 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   device_selector_combobox_->SetVisible(allow_device_selection_);
   AnnounceDynamicChangeIfNeeded(l10n_util::GetStringFUTF16(
       IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
-      device_name_label_->GetText()));
+      std::u16string(device_name_label_->GetText())));
   OnComboboxSelection(/*due_to_user_action=*/false);
   base_view_->RefreshSize();
 }
@@ -157,11 +157,11 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
   CHECK(index);
   device_name_label_->SetText(
       device_selector_combobox_->GetModel()->GetItemAt(index.value()));
-  device_name_label_->SetEnabledColorId(ui::ColorIds::kColorSysOnSurface);
+  device_name_label_->SetEnabledColor(ui::ColorIds::kColorSysOnSurface);
 }
 
 void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
-    std::u16string announcement) {
+    std::u16string_view announcement) {
   if (!has_device_list_changed_before_) {
     has_device_list_changed_before_ = true;
     return;

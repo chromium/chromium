@@ -27,7 +27,7 @@ struct PaymentDetailsValidationTestCase {
       : details(details),
         require_total(require_total),
         expect_valid(expect_valid) {}
-  ~PaymentDetailsValidationTestCase() {}
+  ~PaymentDetailsValidationTestCase() = default;
 
   const char* const details;
   const bool require_total;
@@ -44,7 +44,8 @@ class PaymentDetailsValidationTest
     : public ::testing::TestWithParam<PaymentDetailsValidationTestCase> {};
 
 TEST_P(PaymentDetailsValidationTest, Test) {
-  std::optional<base::Value> value = base::JSONReader::Read(GetParam().details);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      GetParam().details, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value()) << "Should be in JSON format";
   ASSERT_TRUE(value->is_dict());
   PaymentDetails details;

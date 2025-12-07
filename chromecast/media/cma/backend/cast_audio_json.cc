@@ -29,9 +29,10 @@ void ReadFileRunCallback(CastAudioJsonProvider::TuningChangedCallback callback,
 
   std::string contents;
   base::ReadFileToString(path, &contents);
-  std::optional<base::Value> value = base::JSONReader::Read(contents);
-  if (value && value->is_dict()) {
-    callback.Run(std::move(*value).TakeDict());
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (value) {
+    callback.Run(std::move(*value));
     return;
   }
   LOG(ERROR) << "Unable to parse JSON in " << path;
@@ -80,12 +81,13 @@ std::optional<base::Value::Dict>
 CastAudioJsonProviderImpl::GetCastAudioConfig() {
   std::string contents;
   base::ReadFileToString(CastAudioJson::GetFilePath(), &contents);
-  std::optional<base::Value> value = base::JSONReader::Read(contents);
-  if (!value || value->is_dict()) {
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value) {
     return std::nullopt;
   }
 
-  return std::move(*value).TakeDict();
+  return std::move(*value);
 }
 
 void CastAudioJsonProviderImpl::SetTuningChangedCallback(

@@ -11,7 +11,7 @@
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_constraints.h"
 
 namespace cast_streaming {
 
@@ -136,7 +136,6 @@ void ReceiverSessionImpl::OnSessionInitialization(
                                            std::move(video_info));
 
   PreloadBuffersAndStartPlayback();
-  InformClientOfConfigChange();
 }
 
 void ReceiverSessionImpl::OnAudioBufferReceived(
@@ -202,20 +201,6 @@ void ReceiverSessionImpl::OnSessionReinitialization(
   }
 
   PreloadBuffersAndStartPlayback();
-  InformClientOfConfigChange();
-}
-
-void ReceiverSessionImpl::InformClientOfConfigChange() {
-  if (client_) {
-    if (audio_demuxer_stream_data_provider_) {
-      client_->OnAudioConfigUpdated(
-          audio_demuxer_stream_data_provider_->config());
-    }
-    if (video_demuxer_stream_data_provider_) {
-      client_->OnVideoConfigUpdated(
-          video_demuxer_stream_data_provider_->config());
-    }
-  }
 }
 
 void ReceiverSessionImpl::OnSessionEnded() {
@@ -231,6 +216,10 @@ void ReceiverSessionImpl::OnSessionEnded() {
 
   if (client_) {
     client_->OnStreamingSessionEnded();
+    // OnSessionEnded may be called multiple times. Avoid using client_ after
+    // OnstreamingSessionEnded has been called, since it may have been
+    // destroyed in the shutdown process.
+    client_ = nullptr;
   }
 }
 

@@ -1,16 +1,18 @@
 Name: grpc-java
 URL: https://github.com/grpc/grpc-java
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
-Version: v1.49.0
-Revision: dfbdfe82278a717896fac584fe0dd090493cd6a4
+Version: v1.73.0
+Revision: b0794e4fb64faaf9af10fa86e85018edfd433056
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: no
 
 Description:
 This directory contains build rules and the grpc-java protoc plugin source code.
 
-The gRPC runtime lives in //third_party/android_deps/libs/io_grpc_grpc_*
+The gRPC runtime lives in
+//third_party/android_deps/autorolled/cipd/libs/io_grpc_grpc_*.
 
 Please note that the use of gRPC is not generally allowed within Chromium.
 Before integrating with this library, consult with the security team.
@@ -19,16 +21,15 @@ See go/chrome-grpc-advice for more details.
 The only currently allowed use case is for inter-app communication in android
 using on-device binder channel transport.
 
-Steps to upgrade:
-- Follow the instructions in //third_party/android_deps/README.md to update the
-  runtime.
+Steps to upgrade (e.g. after the gRPC runtime gets autorolled):
 - Download the source code of the same version and copy the files from
   <grpc-java root>/compiler/src/java_plugin/cpp/ to
   //third_party/grpc-java/compiler_plugin/
 - You might need to update the compiler plugin's build configuration
-  (//third_party/grpc-java/BUILD), for example if files were added or renamed.
+  (//third_party/grpc-java/BUILD.gn), for example if files were added or
+  renamed.
 - Update this file (README.chromium) with the new metadata (version, revision,
   source url and SHA-512 hash).
 
-Source: https://github.com/grpc/grpc-java/archive/refs/tags/v1.49.0.tar.gz
-SHA-512: ff65a31246566ceb3a4dd9d5a2245693a74e46e8f9d7d47ba55a8ed08ab6e77a8260fdce6c3a4e3357463e5deb120bdb21f895e9a8a3414fd4779b1814710d95
+Source: https://github.com/grpc/grpc-java/archive/refs/tags/v1.73.0.tar.gz
+SHA-512: 7c20980b0886fcb0febdcc2b5143beafe1321766687e213f9a37ae7a9f2e33d184037b727433255ee984a8b1ed3143594f2b53b894554652d71d8ddc512b22d8

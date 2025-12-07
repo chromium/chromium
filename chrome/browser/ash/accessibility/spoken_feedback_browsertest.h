@@ -8,10 +8,11 @@
 #include "ash/public/cpp/accelerators.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ui::test {
 class EventGenerator;
@@ -21,8 +22,40 @@ namespace ash {
 
 using ::extensions::api::braille_display_private::StubBrailleController;
 
+// Spoken feedback tests in both a logged in browser window and guest mode.
+enum SpokenFeedbackTestVariant { kTestAsNormalUser, kTestAsGuestUser };
+
+// A class used to define the parameters of a spoken feedback test case.
+class SpokenFeedbackTestConfig {
+ public:
+  explicit SpokenFeedbackTestConfig(ManifestVersion manifest_version)
+      : manifest_version_(manifest_version) {}
+
+  SpokenFeedbackTestConfig(ManifestVersion manifest_version,
+                           SpokenFeedbackTestVariant variant)
+      : manifest_version_(manifest_version), variant_(variant) {}
+
+  SpokenFeedbackTestConfig(ManifestVersion manifest_version,
+                           SpokenFeedbackTestVariant variant,
+                           bool tablet_mode)
+      : manifest_version_(manifest_version),
+        variant_(variant),
+        tablet_mode_(tablet_mode) {}
+
+  ManifestVersion manifest_version() const { return manifest_version_; }
+  std::optional<SpokenFeedbackTestVariant> variant() const { return variant_; }
+  std::optional<bool> tablet_mode() const { return tablet_mode_; }
+
+ private:
+  ManifestVersion manifest_version_;
+  std::optional<SpokenFeedbackTestVariant> variant_;
+  std::optional<bool> tablet_mode_;
+};
+
 // Spoken feedback tests only in a logged in user's window.
-class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
+class LoggedInSpokenFeedbackTest
+    : public AccessibilityFeatureBrowserTest,
+      public ::testing::WithParamInterface<SpokenFeedbackTestConfig> {
  public:
   LoggedInSpokenFeedbackTest();
 
@@ -34,6 +67,7 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
 
   // AccessibilityFeatureBrowserTest:
   void SetUpInProcessBrowserTestFixture() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
@@ -56,27 +90,25 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
 
   bool PerformAcceleratorAction(AcceleratorAction action);
 
-  void DisableEarcons();
-
-  void EnableChromeVox(bool check_for_intro = true);
-
   void StablizeChromeVoxState();
-
-  void ExecuteCommandHandlerCommand(std::string command);
 
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
-  void RunJSForChromeVox(const std::string& script);
-  void ImportJSModuleForChromeVox(std::string name, std::string path);
 
-  test::SpeechMonitor sm_;
+  ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
+
+  ChromeVoxTestUtils* chromevox_test_utils() {
+    return chromevox_test_utils_.get();
+  }
+
+  test::SpeechMonitor* sm() { return chromevox_test_utils()->sm(); }
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  std::unique_ptr<ChromeVoxTestUtils> chromevox_test_utils_;
 
   StubBrailleController braille_controller_;
-  ui::ScopedAnimationDurationScaleMode animation_mode_;
-  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  gfx::ScopedAnimationDurationScaleMode animation_mode_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

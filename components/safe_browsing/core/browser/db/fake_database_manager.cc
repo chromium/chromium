@@ -9,10 +9,8 @@
 namespace safe_browsing {
 
 FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : TestSafeBrowsingDatabaseManager(std::move(ui_task_runner),
-                                      std::move(io_task_runner)) {}
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : TestSafeBrowsingDatabaseManager(std::move(ui_task_runner)) {}
 
 FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() = default;
 
@@ -59,7 +57,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     pattern_type = it1->second;
   }
 
-  sb_task_runner()->PostTask(
+  ui_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync, url,
                      result_threat_type, pattern_type, client));
@@ -81,7 +79,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckDownloadUrl(
       continue;
     }
 
-    sb_task_runner()->PostTask(
+    ui_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckDownloadURLAsync,
                        url_chain, result_threat_type, client));
@@ -97,19 +95,14 @@ bool FakeSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-std::optional<
-    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-FakeSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void FakeSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    CheckUrlForHighConfidenceAllowlistCallback callback) {
   const auto it = high_confidence_allowlist_match_urls_.find(url);
-  if (it == high_confidence_allowlist_match_urls_.end()) {
-    std::move(callback).Run(false);
-    return std::nullopt;
-  }
-  bool matched_allowlist = it->second;
-  std::move(callback).Run(matched_allowlist);
-  return std::nullopt;
+  bool on_high_confidence_allowlist =
+      (it != high_confidence_allowlist_match_urls_.end() && it->second);
+  std::move(callback).Run(on_high_confidence_allowlist,
+                          /*logging_details=*/std::nullopt);
 }
 
 bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(

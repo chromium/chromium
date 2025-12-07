@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 
@@ -65,8 +66,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid event type for constructor: "
-                                << base::to_underlying(type);
+      NOTREACHED() << "Invalid event type for constructor: "
+                   << base::to_underlying(type);
   }
 }
 
@@ -103,7 +104,7 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
 }
 
 GestureEventDetails::Details::Details() {
-  memset(this, 0, sizeof(Details));
+  UNSAFE_TODO(memset(this, 0, sizeof(Details)));
 }
 
 }  // namespace ui

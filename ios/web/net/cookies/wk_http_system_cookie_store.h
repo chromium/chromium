@@ -8,20 +8,20 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+#import <optional>
+
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/net/cookies/system_cookie_store.h"
+#import "ios/web/net/cookies/crw_wk_http_cookie_store.h"
 
 namespace web {
-
-class WKWebViewConfigurationProvider;
 
 // This class is an implementation of SystemCookieStore, WKHTTPSystemCookieStore
 // uses WKHTTPCookieStore as the underlying system cookie store.
 class WKHTTPSystemCookieStore : public net::SystemCookieStore {
  public:
-  explicit WKHTTPSystemCookieStore(
-      WKWebViewConfigurationProvider* config_provider);
+  explicit WKHTTPSystemCookieStore(CRWWKHTTPCookieStore* cookie_store);
 
   WKHTTPSystemCookieStore(const WKHTTPSystemCookieStore&) = delete;
   WKHTTPSystemCookieStore& operator=(const WKHTTPSystemCookieStore&) = delete;
@@ -41,7 +41,7 @@ class WKHTTPSystemCookieStore : public net::SystemCookieStore {
 
   void SetCookieAsync(
       NSHTTPCookie* cookie,
-      const base::Time* optional_creation_time,
+      std::optional<base::Time> optional_creation_time,
       net::SystemCookieStore::SystemCookieCallback callback) override;
 
   void ClearStoreAsync(

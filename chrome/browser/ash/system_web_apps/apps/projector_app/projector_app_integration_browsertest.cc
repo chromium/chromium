@@ -6,6 +6,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/webui/annotator/annotator_client_impl.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
@@ -13,9 +14,9 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -38,7 +39,7 @@ constexpr base::FilePath::CharType kTestLibraryPath[] =
 
 void PrepareAnnotatorForTest(content::WebContents* web_contents) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             EvalJsInMainFrame(web_contents,
                               SandboxedWebUiAppTestBase::LoadJsTestLibrary(
                                   base::FilePath(kTestLibraryPath))));

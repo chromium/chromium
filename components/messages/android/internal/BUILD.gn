@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/messages/MessageAnimationCoordinator.java",
-    "java/src/org/chromium/components/messages/MessageAutoDismissTimer.java",
     "java/src/org/chromium/components/messages/MessageBannerCoordinator.java",
     "java/src/org/chromium/components/messages/MessageBannerMediator.java",
     "java/src/org/chromium/components/messages/MessageBannerView.java",
@@ -41,6 +40,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
@@ -50,7 +50,6 @@ robolectric_library("junit") {
   resources_package = "org.chromium.components.messages"
   sources = [
     "java/src/org/chromium/components/messages/MessageAnimationCoordinatorUnitTest.java",
-    "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
     "java/src/org/chromium/components/messages/MessageBannerCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageDispatcherUnitTest.java",
@@ -99,6 +98,7 @@ android_library("unit_device_javatests") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -109,10 +109,12 @@ android_library("unit_device_javatests") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-v23/message_bg_tinted.xml",
+    "java/res/color-night/message_bg_color.xml",
+    "java/res/color/message_bg_color.xml",
     "java/res/drawable-v31/message_bg_tinted.xml",
+    "java/res/drawable/message_bg_tinted.xml",
+    "java/res/drawable/message_close_button_bg.xml",
     "java/res/layout/message_banner_view.xml",
-    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

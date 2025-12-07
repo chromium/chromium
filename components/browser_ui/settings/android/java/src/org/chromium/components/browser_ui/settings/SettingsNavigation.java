@@ -1,0 +1,203 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.components.browser_ui.settings;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.annotation.IntDef;
+import androidx.fragment.app.Fragment;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/** Interface for navigating Settings. */
+@NullMarked
+public interface SettingsNavigation {
+    @IntDef({
+        SettingsFragment.MAIN,
+        SettingsFragment.CLEAR_BROWSING_DATA,
+        SettingsFragment.PAYMENT_METHODS,
+        SettingsFragment.SAFETY_CHECK,
+        SettingsFragment.SITE,
+        SettingsFragment.ACCESSIBILITY,
+        SettingsFragment.GOOGLE_SERVICES,
+        SettingsFragment.MANAGE_SYNC,
+        SettingsFragment.FINANCIAL_ACCOUNTS,
+        SettingsFragment.NON_CARD_PAYMENT_METHODS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface SettingsFragment {
+        /// Main settings page.
+        int MAIN = 0;
+        /// Browsing Data management.
+        int CLEAR_BROWSING_DATA = 1;
+        /// Payment methods and autofill settings.
+        int PAYMENT_METHODS = 2;
+        /// Safety check, automatically running the action.
+        int SAFETY_CHECK = 3;
+        /// Site settings and permissions.
+        int SITE = 4;
+        /// Accessibility settings.
+        int ACCESSIBILITY = 5;
+        /// Google services.
+        int GOOGLE_SERVICES = 6;
+        /// Manage sync.
+        int MANAGE_SYNC = 7;
+        /// Financial accounts.
+        int FINANCIAL_ACCOUNTS = 8;
+        /// Non-card payment methods.
+        int NON_CARD_PAYMENT_METHODS = 9;
+    }
+
+    /**
+     * Starts settings with the default (top-level) fragment.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     */
+    void startSettings(Context context);
+
+    /**
+     * Starts a specific settings fragment. This can be used by code that does not supply its own
+     * settings page, but instead needs to redirect the user to an appropriate page that is out of
+     * reach.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param settingsFragment The {@link SettingsFragment} to run.
+     */
+    void startSettings(Context context, @SettingsFragment int settingsFragment);
+
+    /**
+     * Starts a specific settings fragment. This can be used by code that does not supply its own
+     * settings page, but instead needs to redirect the user to an appropriate page that is out of
+     * reach.
+     * This takes additional {@code addToBackStack} param to control fragment stack.
+     * Note: unlike {@code Class<?> fragment} variations, this does not support {@code
+     * fragmentArgs}, because it is (sometimes) automatically derived from {@code context} and
+     * {@code settingsFragment}
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param settingsFragment The {@link SettingsFragment} to run.
+     * @param addToBackStack If true, the fragment will be stack on the backstack of the fragment
+     *     manager.
+     */
+    void startSettings(
+            Context context, @SettingsFragment int settingsFragment, boolean addToBackStack);
+
+    /**
+     * Starts settings with the specified fragment.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show, or null to show the default fragment.
+     */
+    void startSettings(Context context, @Nullable Class<? extends Fragment> fragment);
+
+    /**
+     * Starts settings with the specified fragment and arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     */
+    void startSettings(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs);
+
+    /**
+     * Starts settings with the specified fragment and arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     * @param addToBackStack If true, the fragment will be stack on the backstack of the fragment
+     *     manager.
+     */
+    void startSettings(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs,
+            boolean addToBackStack);
+
+    /**
+     * Creates an intent for starting settings with the specified fragment.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
+     */
+    Intent createSettingsIntent(Context context, @Nullable Class<? extends Fragment> fragment);
+
+    /**
+     * Creates an intent for starting settings with the specified fragment and arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     */
+    Intent createSettingsIntent(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs);
+
+    /**
+     * Creates an intent for starting settings with the specified fragment and arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     * @param addToBackStack If true, the fragment will be stack on the backstack of the fragment
+     *     manager.
+     */
+    Intent createSettingsIntent(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs,
+            boolean addToBackStack);
+
+    /**
+     * Creates an intent for starting settings with the specified fragment and arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     */
+    Intent createSettingsIntent(
+            Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs);
+
+    /**
+     * Finishes the current settings.
+     *
+     * <p>Call this method when the user is done with the current settings page and should go back
+     * to the previous page (e.g. selected a language from the language list).
+     *
+     * <p>If the given page is not the current one, or the page is already finished, this method
+     * does nothing. In other words, this method is idempotent.
+     *
+     * <p>This method executes navigations asynchronously. It means that it is safe to call this
+     * method on the UI thread in most cases, particularly even in the middle of executing fragment
+     * transactions. On the other hand, you have to be careful when you want to go back multiple
+     * pages using this method; it may not work as you expect to call this method multiple times in
+     * a row because the subsequent method calls are ignored due to fragment mismatch. Use {@link
+     * executePendingNavigations} to synchronously execute pending navigations to work around this
+     * problem.
+     *
+     * @param fragment The expected current fragment.
+     */
+    void finishCurrentSettings(Fragment fragment);
+
+    /**
+     * Executes pending navigations immediately.
+     *
+     * <p>See {@link finishCurrentSettings} for a valid use case of this method.
+     *
+     * @param activity The settings activity.
+     */
+    void executePendingNavigations(Activity activity);
+}

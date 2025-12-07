@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
@@ -81,17 +82,17 @@ InlineLoginDialogOnboarding* InlineLoginDialogOnboarding::Show(
   return dialog;
 }
 
-ui::ModalType InlineLoginDialogOnboarding::GetDialogModalType() const {
+ui::mojom::ModalType InlineLoginDialogOnboarding::GetDialogModalType() const {
   // Override the default system-modal behavior of the dialog so that the
   // shelf can be accessed during onboarding.
-  return ui::ModalType::MODAL_TYPE_WINDOW;
+  return ui::mojom::ModalType::kWindow;
 }
 
 InlineLoginDialogOnboarding::InlineLoginDialogOnboarding(
     const gfx::Size& size,
     base::OnceCallback<void(void)> dialog_closed_callback)
     : size_(size), dialog_closed_callback_(std::move(dialog_closed_callback)) {
-  set_dialog_modal_type(ui::MODAL_TYPE_CHILD);
+  set_dialog_modal_type(ui::mojom::ModalType::kChild);
 }
 
 InlineLoginDialogOnboarding::~InlineLoginDialogOnboarding() = default;

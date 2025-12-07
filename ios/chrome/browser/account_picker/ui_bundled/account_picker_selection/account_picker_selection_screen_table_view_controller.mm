@@ -7,15 +7,16 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_model_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_model_delegate.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -38,8 +39,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Table view header/footer height.
-CGFloat kSectionHeaderHeight = 8.;
-CGFloat kSectionFooterHeight = 8.;
+constexpr CGFloat kSectionHeaderHeight = 8.;
+constexpr CGFloat kSectionFooterHeight = 8.;
 
 }  // namespace
 
@@ -78,7 +79,7 @@ CGFloat kSectionFooterHeight = 8.;
       DCHECK(identityItem);
       [self.actionDelegate
           accountPickerListTableViewController:self
-                   didSelectIdentityWithGaiaID:identityItem.gaiaID];
+                   didSelectIdentityWithGaiaID:GaiaId(identityItem.gaiaID)];
       break;
     }
     case AddAccountItemType:
@@ -86,8 +87,7 @@ CGFloat kSectionFooterHeight = 8.;
           accountPickerListTableViewControllerDidTapOnAddAccount:self];
       break;
     case ItemTypeRestrictedAccountsFooter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -150,6 +150,8 @@ CGFloat kSectionFooterHeight = 8.;
       [[TableViewImageItem alloc] initWithType:AddAccountItemType];
   item.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT);
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.isAccessibilityElement = YES;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:item toSectionWithIdentifier:AddAccountSectionIdentifier];
 }
 
@@ -206,7 +208,7 @@ CGFloat kSectionFooterHeight = 8.;
     TableViewIdentityItem* item =
         base::apple::ObjCCastStrict<TableViewIdentityItem>(
             [model itemAtIndexPath:path]);
-    if ([item.gaiaID isEqualToString:configurator.gaiaID]) {
+    if (item.gaiaID == configurator.gaiaID) {
       [configurator configureIdentityChooser:item];
       [self reconfigureCellsForItems:@[ item ]];
       [self.tableView reloadRowsAtIndexPaths:@[ path ]

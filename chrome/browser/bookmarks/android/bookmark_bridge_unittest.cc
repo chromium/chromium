@@ -13,9 +13,9 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/partnerbookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -33,7 +33,6 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -47,7 +46,7 @@
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::ManagedBookmarkService;
@@ -96,11 +95,11 @@ class BookmarkBridgeTest : public testing::Test {
 
   BookmarkBridge* bookmark_bridge() { return bookmark_bridge_.get(); }
 
-  ReadingListManager* local_or_syncable_reading_list_manager() {
+  reading_list::ReadingListManager* local_or_syncable_reading_list_manager() {
     return bookmark_bridge_->GetLocalOrSyncableReadingListManagerForTesting();
   }
 
-  ReadingListManager* account_reading_list_manager() {
+  reading_list::ReadingListManager* account_reading_list_manager() {
     return bookmark_bridge_
         ->GetAccountReadingListManagerIfAvailableForTesting();
   }
@@ -181,11 +180,6 @@ class BookmarkBridgeTest : public testing::Test {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 
     if (enable_account_bookmarks) {
-      features_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kSyncEnableBookmarksInTransportMode,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn},
-          /*disabled_features=*/{});
       bookmark_model_->CreateAccountPermanentFolders();
       if (load_reading_list_model) {
         // If the `account_reading_list_model` is not loaded, StartSyncing()
@@ -219,8 +213,6 @@ class BookmarkBridgeTest : public testing::Test {
         &clock_);
     return reading_list_model;
   }
-
-  base::test::ScopedFeatureList features_;
   base::SimpleTestClock clock_;
   content::BrowserTaskEnvironment task_environment_;
 
@@ -318,18 +310,19 @@ TEST_F(BookmarkBridgeTest, TestIsBookmarked) {
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
   std::vector<const BookmarkNode*> folders =
       bookmark_bridge()->GetTopLevelFolderIdsImpl(
-          /*ignore_visibility=*/false);
+          /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
 
   // The 2 folders should be: mobile bookmarks, reading list.
   EXPECT_EQ(2u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
 
-  // When ignoring visibility, all top-level folders should be visible.
+  // When forcing visibility, all top-level folders should be visible.
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*ignore_visibility=*/true);
+      /*force_visible_mask=*/BookmarkNodeMaskBit::ALL);
 
-  // The 2 folders should be: mobile bookmarks, reading list.
+  // The 4 folders should be: mobile bookmarks, bookmarks bar, other bookmarks,
+  // and reading list.
   EXPECT_EQ(4u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
@@ -341,7 +334,7 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
   AddURL(bookmark_model()->bookmark_bar_node(), 0, u"first",
          GURL("http://foo.com"));
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*ignore_visibility=*/false);
+      /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
   EXPECT_EQ(3u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
@@ -356,7 +349,6 @@ TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
   EXPECT_TRUE(bookmark_bridge()->GetAccountReadingListFolder(env).is_null());
 }
 
-// TODO(crbug.com/41481802): Also enable bookmark account folders here.
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
 
@@ -364,7 +356,7 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   // mobile bookmarks folder (which contains partner bookmarks).
   std::vector<const BookmarkNode*> folders =
       bookmark_bridge()->GetTopLevelFolderIdsImpl(
-          /*ignore_visibility=*/false);
+          /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
   EXPECT_EQ(3u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
@@ -376,17 +368,17 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   // When there are no partner bookmarks, the local mobile node will be hidden.
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(nullptr);
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*ignore_visibility=*/false);
+      /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
   EXPECT_EQ(2u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
   EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
 
-  // All account and some local folders should be included when ignore
-  // visibility is true.
+  // All account and some local folders should be included when forcing
+  // visibility.
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*ignore_visibility=*/true);
+      /*force_visible_mask=*/BookmarkNodeMaskBit::ALL);
   EXPECT_EQ(6u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
@@ -406,14 +398,14 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   AddURL(bookmark_model()->bookmark_bar_node(), 0, u"first",
          GURL("http://foo.com"));
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*ignore_visibility=*/false);
+      /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
   // Adding a bookmark node to mobile bookmarks will include it in the list.
   AddURL(bookmark_model()->mobile_node(), 0, u"second", GURL("http://foo.com"));
   // Adding to the local reading list will include it in the list.
   local_or_syncable_reading_list_manager()->Add(GURL("http://foo.com"),
                                                 "third");
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*ignore_visibility=*/false);
+      /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
   EXPECT_EQ(5u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
@@ -457,18 +449,14 @@ TEST_F(BookmarkBridgeTest, GetUnreadCountLocalOrSyncable) {
   local_or_syncable_reading_list_manager()->Add(GURL("http://bar.com"), "bar");
 
   JNIEnv* const env = AttachCurrentThread();
-  ASSERT_EQ(2, bookmark_bridge()->GetUnreadCount(
-                   env, JavaParamRef<jobject>(
-                            env, bookmark_bridge()
-                                     ->GetLocalOrSyncableReadingListFolder(env)
-                                     .obj())));
+  ASSERT_EQ(
+      2, bookmark_bridge()->GetUnreadCount(
+             env, bookmark_bridge()->GetLocalOrSyncableReadingListFolder(env)));
 
   local_or_syncable_reading_list_manager()->SetReadStatus(url, true);
-  ASSERT_EQ(1, bookmark_bridge()->GetUnreadCount(
-                   env, JavaParamRef<jobject>(
-                            env, bookmark_bridge()
-                                     ->GetLocalOrSyncableReadingListFolder(env)
-                                     .obj())));
+  ASSERT_EQ(
+      1, bookmark_bridge()->GetUnreadCount(
+             env, bookmark_bridge()->GetLocalOrSyncableReadingListFolder(env)));
 }
 
 TEST_F(BookmarkBridgeTest, SetReadStatus) {

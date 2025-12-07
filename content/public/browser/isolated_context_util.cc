@@ -19,21 +19,21 @@ bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
   const ProcessLock& process_lock = process->GetProcessLock();
   return !process_lock.is_sandboxed() &&
          GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-             process->GetBrowserContext(), process_lock.lock_url());
+             process->GetBrowserContext(), process_lock.GetProcessLockURL());
 }
 
 }  // namespace
-
-bool IsIsolatedContext(RenderProcessHost* process) {
-  return (process->GetWebExposedIsolationLevel() ==
-          WebExposedIsolationLevel::kIsolatedApplication) ||
-         IsIsolatedContextAllowedByEmbedder(process);
-}
 
 bool HasIsolatedContextCapability(RenderFrameHost* frame) {
   return (frame->GetWebExposedIsolationLevel() ==
           WebExposedIsolationLevel::kIsolatedApplication) ||
          IsIsolatedContextAllowedByEmbedder(frame->GetProcess());
+}
+
+bool IsIsolatedContext(RenderProcessHost* process) {
+  return (process->GetWebExposedIsolationLevel() ==
+          WebExposedIsolationLevel::kIsolatedApplication) ||
+         IsIsolatedContextAllowedByEmbedder(process);
 }
 
 }  // namespace content

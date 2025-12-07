@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_types.h"
 
@@ -35,7 +36,7 @@ class AppListMenuModelAdapterTest
 
     return std::make_unique<AppListMenuModelAdapter>(
         "test-app-id", std::move(menu_model), nullptr,
-        ui::MenuSourceType::MENU_SOURCE_MOUSE, metric_params, type,
+        ui::mojom::MenuSourceType::kMouse, metric_params, type,
         base::OnceClosure(), is_tablet_mode, AppCollection::kUnknown);
   }
 
@@ -88,13 +89,13 @@ TEST_P(AppListMenuModelAdapterTest, RecordsHistogramOnMenuClosed) {
         ".");
 
     if (test_case.has_non_tablet_clamshell_histograms) {
-      histogram_tester.ExpectUniqueSample(
-          show_source_histogram_name, ui::MenuSourceType::MENU_SOURCE_MOUSE, 1);
+      histogram_tester.ExpectUniqueSample(show_source_histogram_name,
+                                          ui::mojom::MenuSourceType::kMouse, 1);
       histogram_tester.ExpectTotalCount(user_journey_time_histogram_name, 1);
     }
     histogram_tester.ExpectUniqueSample(
         AppendClamshellOrTabletModePostfix(show_source_histogram_name),
-        ui::MenuSourceType::MENU_SOURCE_MOUSE, 1);
+        ui::mojom::MenuSourceType::kMouse, 1);
     histogram_tester.ExpectTotalCount(
         AppendClamshellOrTabletModePostfix(user_journey_time_histogram_name),
         1);

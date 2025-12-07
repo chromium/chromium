@@ -14,15 +14,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
+#include "crypto/keypair.h"
 
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace crypto {
-class ECPrivateKey;
-}  // namespace crypto
 
 namespace gcm {
 
@@ -119,11 +116,11 @@ class GCMEncryptionProvider {
   void DidGetEncryptionInfo(const std::string& app_id,
                             const std::string& authorized_entity,
                             EncryptionInfoCallback callback,
-                            std::unique_ptr<crypto::ECPrivateKey> key,
+                            std::optional<crypto::keypair::PrivateKey> key,
                             const std::string& auth_secret);
 
   void DidCreateEncryptionInfo(EncryptionInfoCallback callback,
-                               std::unique_ptr<crypto::ECPrivateKey> key,
+                               std::optional<crypto::keypair::PrivateKey> key,
                                const std::string& auth_secret);
 
   void DecryptMessageWithKey(const std::string& message_id,
@@ -135,7 +132,7 @@ class GCMEncryptionProvider {
                              const std::string& ciphertext,
                              GCMMessageCryptographer::Version version,
                              DecryptMessageCallback callback,
-                             std::unique_ptr<crypto::ECPrivateKey> key,
+                             std::optional<crypto::keypair::PrivateKey> key,
                              const std::string& auth_secret);
 
   void EncryptMessageWithKey(const std::string& app_id,
@@ -144,7 +141,7 @@ class GCMEncryptionProvider {
                              const std::string& auth_secret,
                              const std::string& message,
                              EncryptMessageCallback callback,
-                             std::unique_ptr<crypto::ECPrivateKey> key,
+                             std::optional<crypto::keypair::PrivateKey> key,
                              const std::string& sender_auth_secret);
 
   std::unique_ptr<GCMKeyStore> key_store_;

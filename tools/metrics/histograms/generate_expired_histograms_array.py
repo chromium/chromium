@@ -71,7 +71,7 @@ def _GetExpiredHistograms(histograms, base_date, current_milestone):
   """
   expired_histograms_names = []
   for name, content in histograms.items():
-    if "obsolete" in content or "expires_after" not in content:
+    if "expires_after" not in content:
       continue
     expiry_str = content["expires_after"]
     if expiry_str == "never":

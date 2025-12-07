@@ -7,21 +7,27 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/touch_selection/longpress_drag_selector.h"
 #include "ui/touch_selection/selection_event_type.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
-#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
+
+#if BUILDFLAG(IS_ANDROID)
+namespace cc::slim {
+class Layer;
+}
+#endif
 
 namespace ui {
 class MotionEvent;
-class Event;
 
 // Interface through which |TouchSelectionController| issues selection-related
 // commands, notifications and requests.
@@ -113,12 +119,21 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   // long-press drag.
   void OnScrollBeginEvent();
 
-  // To be called when a menu command has been requested, to dismiss touch
-  // handles and record metrics if needed.
-  void OnMenuCommand(bool should_dismiss_handles);
+#if BUILDFLAG(IS_ANDROID)
+  void OnUpdateNativeViewTree(gfx::NativeView parent_native_view,
+                              cc::slim::Layer* parent_layer);
+#endif
 
-  // To be called when an event occurs to deactivate touch selection.
-  void OnSessionEndEvent(const Event& event);
+// TODO(crbug.com/375388841): Remove once Aura also uses
+// TouchSelectionControllerInputObserver for receiving inputs.
+#if BUILDFLAG(IS_ANDROID)
+  // Called when a scroll event ack is received.
+  void HandleSwipeToMoveCursorGestureAck(
+      ui::EventType type,
+      const gfx::PointF& point,
+      const std::optional<bool>& cursor_control,
+      bool is_in_root_view);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Hide the handles and suppress bounds updates until the next explicit
   // showing allowance.
@@ -275,7 +290,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   bool show_touch_handles_;
 
-  TouchSelectionSessionMetricsRecorder session_metrics_recorder_;
+  // Whether a swipe-to-move-cursor gesture is activated.
+  bool swipe_to_move_cursor_activated_ = false;
 };
 
 }  // namespace ui

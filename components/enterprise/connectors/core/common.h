@@ -9,23 +9,34 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
 #include "build/blink_buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "ui/gfx/range/range.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_BLINK)
-#include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_danger_type.h"  // nogncheck
 
 namespace download {
 class DownloadItem;
 }  // namespace download
 #endif  // BUILDFLAG(USE_BLINK)
+
+namespace gfx {
+class Range;
+}  // namespace gfx
+
+namespace signin {
+class IdentityManager;
+}
 
 namespace enterprise_connectors {
 
@@ -35,60 +46,100 @@ using TriggeredRule = ContentAnalysisResponse::Result::TriggeredRule;
 // Pair to specify the source and destination.
 using SourceDestinationStringPair = std::pair<std::string, std::string>;
 
+// Alias to reduce verbosity when using Event::EventCase.
+using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
+
 // Keys used to read a connector's policy values.
-constexpr char kKeyServiceProvider[] = "service_provider";
-constexpr char kKeyLinuxVerification[] = "verification.linux";
-constexpr char kKeyMacVerification[] = "verification.mac";
-constexpr char kKeyWindowsVerification[] = "verification.windows";
-constexpr char kKeyEnable[] = "enable";
-constexpr char kKeyDisable[] = "disable";
-constexpr char kKeyUrlList[] = "url_list";
-constexpr char kKeySourceDestinationList[] = "source_destination_list";
-constexpr char kKeyTags[] = "tags";
-constexpr char kKeyBlockUntilVerdict[] = "block_until_verdict";
-constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
-constexpr char kKeyBlockLargeFiles[] = "block_large_files";
-constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
-constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
-constexpr char kKeyCustomMessages[] = "custom_messages";
-constexpr char kKeyRequireJustificationTags[] = "require_justification_tags";
-constexpr char kKeyCustomMessagesTag[] = "tag";
-constexpr char kKeyCustomMessagesMessage[] = "message";
-constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
-constexpr char kKeyMimeTypes[] = "mime_types";
-constexpr char kKeyEnterpriseId[] = "enterprise_id";
-constexpr char kKeyDefaultAction[] = "default_action";
-constexpr char kKeyDomain[] = "domain";
-constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
-constexpr char kKeyOptInEventName[] = "name";
-constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
+inline constexpr char kKeyServiceProvider[] = "service_provider";
+inline constexpr char kKeyLinuxVerification[] = "verification.linux";
+inline constexpr char kKeyMacVerification[] = "verification.mac";
+inline constexpr char kKeyWindowsVerification[] = "verification.windows";
+inline constexpr char kKeyEnable[] = "enable";
+inline constexpr char kKeyDisable[] = "disable";
+inline constexpr char kKeyUrlList[] = "url_list";
+inline constexpr char kKeySourceDestinationList[] = "source_destination_list";
+inline constexpr char kKeyTags[] = "tags";
+inline constexpr char kKeyBlockUntilVerdict[] = "block_until_verdict";
+inline constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
+inline constexpr char kKeyBlockLargeFiles[] = "block_large_files";
+inline constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
+inline constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
+inline constexpr char kKeyCustomMessages[] = "custom_messages";
+inline constexpr char kKeyRequireJustificationTags[] =
+    "require_justification_tags";
+inline constexpr char kKeyCustomMessagesTag[] = "tag";
+inline constexpr char kKeyCustomMessagesMessage[] = "message";
+inline constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
+inline constexpr char kKeyMimeTypes[] = "mime_types";
+inline constexpr char kKeyEnterpriseId[] = "enterprise_id";
+inline constexpr char kKeyDefaultAction[] = "default_action";
+inline constexpr char kKeyDomain[] = "domain";
+inline constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
+inline constexpr char kKeyOptInEventName[] = "name";
+inline constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
 
 // Available tags.
-constexpr char kDlpTag[] = "dlp";
-constexpr char kMalwareTag[] = "malware";
+inline constexpr char kDlpTag[] = "dlp";
+inline constexpr char kMalwareTag[] = "malware";
 
-// A MIME type string that matches all MIME types.
-constexpr char kWildcardMimeType[] = "*";
-
-// The reporting connector subdirectory in User_Data_Directory
-constexpr base::FilePath::CharType RC_BASE_DIR[] =
-    FILE_PATH_LITERAL("Enterprise/ReportingConnector/");
-
-enum class ReportingConnector {
-  SECURITY_EVENT,
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep this enum in sync with
+// EnterpriseReportingEventType in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.enterprise.connectors
+enum class EnterpriseReportingEventType {
+  kUnknownEvent = 0,
+  kPasswordReuseEvent = 1,
+  kPasswordChangedEvent = 2,
+  kDangerousDownloadEvent = 3,
+  kInterstitialEvent = 4,
+  kSensitiveDataEvent = 5,
+  kUnscannedFileEvent = 6,
+  kLoginEvent = 7,
+  kPasswordBreachEvent = 8,
+  kUrlFilteringInterstitialEvent = 9,
+  kExtensionInstallEvent = 10,
+  kBrowserCrashEvent = 11,
+  kExtensionTelemetryEvent = 12,
+  kMaxValue = kExtensionTelemetryEvent,
 };
+
+// Mapping from event name to UMA enum for logging histogram.
+inline constexpr auto kEventNameToUmaEnumMap =
+    base::MakeFixedFlatMap<std::string_view, EnterpriseReportingEventType>({
+        {kKeyPasswordReuseEvent,
+         EnterpriseReportingEventType::kPasswordReuseEvent},
+        {kKeyPasswordChangedEvent,
+         EnterpriseReportingEventType::kPasswordChangedEvent},
+        {kKeyDangerousDownloadEvent,
+         EnterpriseReportingEventType::kDangerousDownloadEvent},
+        {kKeyInterstitialEvent,
+         EnterpriseReportingEventType::kInterstitialEvent},
+        {kKeySensitiveDataEvent,
+         EnterpriseReportingEventType::kSensitiveDataEvent},
+        {kKeyUnscannedFileEvent,
+         EnterpriseReportingEventType::kUnscannedFileEvent},
+        {kKeyLoginEvent, EnterpriseReportingEventType::kLoginEvent},
+        {kKeyPasswordBreachEvent,
+         EnterpriseReportingEventType::kPasswordBreachEvent},
+        {kKeyUrlFilteringInterstitialEvent,
+         EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
+        {kExtensionInstallEvent,
+         EnterpriseReportingEventType::kExtensionInstallEvent},
+        {kBrowserCrashEvent, EnterpriseReportingEventType::kBrowserCrashEvent},
+        {kExtensionTelemetryEvent,
+         EnterpriseReportingEventType::kExtensionTelemetryEvent},
+    });
 
 // Struct holding the necessary data to tweak the behavior of the reporting
 // Connector.
 struct ReportingSettings {
   ReportingSettings();
-  ReportingSettings(GURL url, const std::string& dm_token, bool per_profile);
+  ReportingSettings(const std::string& dm_token, bool per_profile);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings(const ReportingSettings&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 
-  GURL reporting_url;
   std::set<std::string> enabled_event_names;
   std::map<std::string, std::vector<std::string>> enabled_opt_in_events;
   std::string dm_token;
@@ -98,11 +149,9 @@ struct ReportingSettings {
   bool per_profile = false;
 };
 
-// Returns the pref path corresponding to a connector.
-const char* ConnectorPref(AnalysisConnector connector);
-const char* ConnectorPref(ReportingConnector connector);
-const char* ConnectorScopePref(AnalysisConnector connector);
-const char* ConnectorScopePref(ReportingConnector connector);
+// Returns the pref path corresponding to an analysis connector.
+const char* AnalysisConnectorPref(AnalysisConnector connector);
+const char* AnalysisConnectorScopePref(AnalysisConnector connector);
 
 // Returns the highest precedence action in the given parameters. Writes the tag
 // field of the result containing the highest precedence action into |tag|.
@@ -169,6 +218,9 @@ enum class FinalContentAnalysisResult {
 
   // Show that no issue was found and that the user may proceed.
   SUCCESS = 5,
+
+  // Show that the download is blocked and may proceed to cloud storage.
+  FORCE_SAVE_TO_CLOUD = 6,
 };
 
 // Result for a single request of the RequestHandler classes.
@@ -180,8 +232,8 @@ struct RequestHandlerResult {
   RequestHandlerResult(const RequestHandlerResult&);
   RequestHandlerResult& operator=(const RequestHandlerResult&);
 
-  bool complies;
-  FinalContentAnalysisResult final_result;
+  bool complies = false;
+  FinalContentAnalysisResult final_result = FinalContentAnalysisResult::FAILURE;
   std::string tag;
   std::string request_token;
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
@@ -225,10 +277,94 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);
 
-enum EnterpriseRealTimeUrlCheckMode {
-  REAL_TIME_CHECK_DISABLED = 0,
-  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
+// Helper enum to get the corresponding regional url in service provider config
+// for data region setting policy.
+// LINT.IfChange(DataRegion)
+enum class DataRegion { NO_PREFERENCE = 0, UNITED_STATES = 1, EUROPE = 2 };
+// LINT.ThenChange(//components/enterprise/connectors/core/service_provider_config.cc:DlpRegionEndpoints)
+GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
+                             DataRegion data_region);
+DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
+
+EnterpriseReportingEventType GetUmaEnumFromEventName(
+    std::string_view eventName);
+
+EnterpriseReportingEventType GetUmaEnumFromEventCase(EventCase eventCase);
+
+//  The resulting action that chrome performed in response to a scan request.
+//  This maps to the event result in the real-time reporting.
+enum class EventResult {
+  UNKNOWN,
+
+  // The user was allowed to use the data without restriction.
+  ALLOWED,
+
+  // The user was allowed to use the data but was warned that it may violate
+  // enterprise rules.
+  WARNED,
+
+  // The user was not allowed to use the data.
+  BLOCKED,
+
+  // The user has chosen to use the data even though it violated enterprise
+  // rules.
+  BYPASSED,
+
+  // The user was not allowed to download the file locally. Download will
+  // proceed directly to cloud storage, if the user is logged in.
+  FORCED_SAVE_TO_CLOUD,
 };
+
+// Helper function to convert a EventResult to a string that.  The format of
+// string returned is processed by the sever.
+std::string EventResultToString(EventResult result);
+
+// Returns the email address of the unconsented account signed in to the profile
+// or an empty string if no account is signed in.  If `identity_manager` is null
+// then the empty string is returned.
+std::string GetProfileEmail(signin::IdentityManager* identity_manager);
+
+// Returns the UMA metrics for tracking the successful uploaded event duration.
+std::string GetSuccessfulUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type);
+
+// Returns the UMA metrics for tracking the failed-to-upload event duration.
+std::string GetFailedUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type);
+
+// Access points used to record UMA metrics and specify which code location is
+// initiating a deep scan. Any new caller of
+// ContentAnalysisDelegate::CreateForWebContents should add an access point
+// here instead of reusing an existing value. histograms.xml should also be
+// updated by adding histograms with names
+//   "SafeBrowsing.DeepScan.<access-point>.BytesPerSeconds"
+//   "SafeBrowsing.DeepScan.<access-point>.Duration"
+//   "SafeBrowsing.DeepScan.<access-point>.<result>.Duration"
+// for the new access point and every possible result.
+// LINT.IfChange(DeepScanAccessPoint)
+enum class DeepScanAccessPoint {
+  // A deep scan was initiated from downloading 1+ file(s).
+  DOWNLOAD,
+
+  // A deep scan was initiated from uploading 1+ file(s) via a system dialog.
+  UPLOAD,
+
+  // A deep scan was initiated from drag-and-dropping text or 1+ file(s).
+  DRAG_AND_DROP,
+
+  // A deep scan was initiated from pasting text.
+  PASTE,
+
+  // A deep scan was initiated from printing a page.
+  PRINT,
+
+  // A deep scan was initiated from transferring 1+ file(s) within ChromeOS.
+  FILE_TRANSFER,
+
+  kMaxValue = FILE_TRANSFER,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DeepScanAccessPoint)
+std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 
 }  // namespace enterprise_connectors
 

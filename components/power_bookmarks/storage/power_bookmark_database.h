@@ -10,15 +10,23 @@
 
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/common/power_overview.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "url/gurl.h"
 
 namespace power_bookmarks {
 
 struct SearchParams;
 
+// Transaction wraps a database transaction. When it's out of scope the
+// underlying transaction will be cancelled if not committed.
+// TODO(crbug.com/40247772): Find a better layout for this class.
+class Transaction {
+ public:
+  virtual bool Commit() = 0;
+  virtual ~Transaction() = default;
+};
+
 // Interface for the database layer of the Power Bookmark database.
-class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
+class PowerBookmarkDatabase {
  public:
   virtual ~PowerBookmarkDatabase() = default;
 
@@ -68,6 +76,10 @@ class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
       std::vector<std::string>* deleted_guids = nullptr) = 0;
+
+  // Start a transaction. This is used to make sure power bookmark data
+  // and metadata are stored atomically.
+  virtual std::unique_ptr<Transaction> BeginTransaction() = 0;
 };
 
 }  // namespace power_bookmarks

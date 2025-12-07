@@ -4,15 +4,16 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
  * IdentityMutator is the write interface of IdentityManager, see identity_mutator.h for more
  * information.
  */
+@NullMarked
 public class IdentityMutator {
     // Pointer to native IdentityMutator, not final because of destroy().
     private long mNativeIdentityMutator;
@@ -72,44 +74,35 @@ public class IdentityMutator {
     }
 
     /**
-     * Reloads the accounts in the token service from the system accounts. This API calls
-     * ProfileOAuth2TokenServiceDelegate::ReloadAllAccountsFromSystemWithPrimaryAccount.
+     * Seeds and reloads the given `accounts`. If `primaryAccountId` is not null then it must exist
+     * in the given `accounts`.
      */
-    public void reloadAllAccountsFromSystemWithPrimaryAccount(@Nullable CoreAccountId accountId) {
-        IdentityMutatorJni.get()
-                .reloadAllAccountsFromSystemWithPrimaryAccount(mNativeIdentityMutator, accountId);
-    }
-
     public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId primaryAccountId) {
+            List<AccountInfo> accounts, @Nullable CoreAccountId primaryAccountId) {
         IdentityMutatorJni.get()
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                         mNativeIdentityMutator,
-                        coreAccountInfos.toArray(new CoreAccountInfo[0]),
+                        accounts.toArray(new AccountInfo[0]),
                         primaryAccountId);
     }
 
     @NativeMethods
     interface Natives {
-        public @PrimaryAccountError int setPrimaryAccount(
+        @PrimaryAccountError
+        int setPrimaryAccount(
                 long nativeJniIdentityMutator,
-                CoreAccountId accountId,
+                @JniType("CoreAccountId") CoreAccountId accountId,
                 @ConsentLevel int consentLevel,
                 @SigninAccessPoint int accessPoint,
                 Runnable prefsSavedCallback);
 
-        public boolean clearPrimaryAccount(
-                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
+        boolean clearPrimaryAccount(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
-        public void revokeSyncConsent(
-                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
+        void revokeSyncConsent(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
-        public void reloadAllAccountsFromSystemWithPrimaryAccount(
-                long nativeJniIdentityMutator, @Nullable CoreAccountId accountId);
-
-        public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+        void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 long nativeJniIdentityMutator,
-                CoreAccountInfo[] coreAccountInfos,
+                AccountInfo[] accounts,
                 @Nullable CoreAccountId primaryAccountId);
     }
 }

@@ -54,6 +54,7 @@ using ::chromeos::network_config::mojom::DeviceStateProperties;
 using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::GlobalPolicy;
+using ::chromeos::network_config::mojom::InhibitReason;
 using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStateProperties;
@@ -136,14 +137,6 @@ bool IsESimSupported() {
   return false;
 }
 
-bool IsCellularSimLocked() {
-  const DeviceStateProperties* cellular_device =
-      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
-          NetworkType::kCellular);
-  return cellular_device &&
-         !cellular_device->sim_lock_status->lock_type.empty();
-}
-
 NetworkType GetMobileSectionNetworkType() {
   if (features::IsInstantHotspotRebrandEnabled()) {
     return NetworkType::kCellular;
@@ -191,6 +184,10 @@ void NetworkListViewControllerImpl::ActiveNetworkStateChanged() {
 
 void NetworkListViewControllerImpl::NetworkListChanged() {
   GetNetworkStateList();
+}
+
+void NetworkListViewControllerImpl::DeviceStateListChanged() {
+  UpdateMobileSection();
 }
 
 void NetworkListViewControllerImpl::GlobalPolicyChanged() {
@@ -287,7 +284,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
         &previous_network_views);
 
     // Add mobile status message to NetworkDetailedNetworkView's
-    // `mobile_network_list_view_` if it exist.
+    // `mobile_network_list_view_` if it exists.
     if (mobile_status_message_) {
       network_detailed_network_view()
           ->GetNetworkList(GetMobileSectionNetworkType())
@@ -586,10 +583,9 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
   // Set 'info' icon on left side.
   std::unique_ptr<views::ImageView> image_view = base::WrapUnique(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  image_view->SetImage(gfx::CreateVectorIcon(
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
       use_managed_icon ? kSystemTrayManagedIcon : kSystemMenuInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      cros_tokens::kIconColorPrimary));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   image_view->SetID(newIconId);
   connection_warning_icon_ = image_view.get();
@@ -683,7 +679,7 @@ size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
                : IDS_ASH_QUICK_SETTINGS_UNKNOWN_NETWORKS));
   header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   header->SetBorder(views::CreateEmptyBorder(kWifiGroupLabelPadding));
-  header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  header->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *header);
 
   if (is_known) {
@@ -815,6 +811,19 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
                                           /*animate_toggle=*/true);
       network_detailed_network_view()->UpdateMobileStatus(true);
 
+      if (has_cellular_networks_ || has_tether_networks_) {
+        RemoveAndResetViewIfExists(&mobile_status_message_);
+        return;
+      }
+      const InhibitReason inhibit_reason = GetCellularInhibitReason();
+      if (inhibit_reason == InhibitReason::kInstallingProfile ||
+          inhibit_reason == InhibitReason::kRefreshingProfileList ||
+          inhibit_reason == InhibitReason::kRequestingAvailableProfiles) {
+        CreateInfoLabelIfMissingAndUpdate(
+            GetCellularInhibitReasonMessageId(inhibit_reason),
+            &mobile_status_message_);
+        return;
+      }
       RemoveAndResetViewIfExists(&mobile_status_message_);
       return;
     }
@@ -844,13 +853,6 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
     // The toggle will never be enabled during cellular state transitions.
     toggle_enabled &=
         cellular_enabled || cellular_state == DeviceStateType::kDisabled;
-
-    // The toggle will never be enabled if the device is SIM locked and we
-    // cannot open the Settings UI.
-    toggle_enabled &=
-        cellular_enabled ||
-        Shell::Get()->session_controller()->ShouldEnableSettings() ||
-        !IsCellularSimLocked();
 
     mobile_header_view_->SetToggleVisibility(/*visibility=*/true);
     mobile_header_view_->SetToggleState(/*enabled=*/toggle_enabled,
@@ -960,7 +962,7 @@ void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
                           ->GetNetworkList(NetworkType::kTether)
                           ->AddChildView(std::move(info));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -1036,8 +1038,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
       base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
   label->SetText(GenerateLabelText());
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   label->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
   label->SetID(static_cast<int>(

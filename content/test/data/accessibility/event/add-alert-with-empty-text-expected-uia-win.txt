@@ -1,2 +1,0 @@
-LiveRegionChanged on role=alert
-SystemAlert on role=alert

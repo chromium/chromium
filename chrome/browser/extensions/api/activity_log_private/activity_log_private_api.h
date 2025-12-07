@@ -20,6 +20,9 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -72,7 +75,7 @@ class ActivityLogPrivateGetExtensionActivitiesFunction
                              ACTIVITYLOGPRIVATE_GETEXTENSIONACTIVITIES)
 
  protected:
-  ~ActivityLogPrivateGetExtensionActivitiesFunction() override {}
+  ~ActivityLogPrivateGetExtensionActivitiesFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -89,7 +92,7 @@ class ActivityLogPrivateDeleteActivitiesFunction : public ExtensionFunction {
                              ACTIVITYLOGPRIVATE_DELETEACTIVITIES)
 
  protected:
-  ~ActivityLogPrivateDeleteActivitiesFunction() override {}
+  ~ActivityLogPrivateDeleteActivitiesFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -103,7 +106,7 @@ class ActivityLogPrivateDeleteActivitiesByExtensionFunction
                              ACTIVITYLOGPRIVATE_DELETEACTIVITIESBYEXTENSION)
 
  protected:
-  ~ActivityLogPrivateDeleteActivitiesByExtensionFunction() override {}
+  ~ActivityLogPrivateDeleteActivitiesByExtensionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -116,7 +119,7 @@ class ActivityLogPrivateDeleteDatabaseFunction : public ExtensionFunction {
                              ACTIVITYLOGPRIVATE_DELETEDATABASE)
 
  protected:
-  ~ActivityLogPrivateDeleteDatabaseFunction() override {}
+  ~ActivityLogPrivateDeleteDatabaseFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -129,7 +132,7 @@ class ActivityLogPrivateDeleteUrlsFunction : public ExtensionFunction {
                              ACTIVITYLOGPRIVATE_DELETEURLS)
 
  protected:
-  ~ActivityLogPrivateDeleteUrlsFunction() override {}
+  ~ActivityLogPrivateDeleteUrlsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

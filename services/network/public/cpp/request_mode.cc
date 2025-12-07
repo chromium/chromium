@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/request_mode.h"
 
+#include "base/notreached.h"
+
 namespace network {
 
 const char* RequestModeToString(network::mojom::RequestMode mode) {
@@ -18,8 +20,7 @@ const char* RequestModeToString(network::mojom::RequestMode mode) {
     case network::mojom::RequestMode::kNavigate:
       return "navigate";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace network

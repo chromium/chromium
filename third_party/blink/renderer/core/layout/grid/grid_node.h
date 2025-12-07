@@ -7,11 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
 namespace blink {
 
+class GridItems;
 class GridSizingSubtree;
 
 // Grid specific extensions to `BlockNode`.
@@ -20,6 +20,10 @@ class CORE_EXPORT GridNode final : public BlockNode {
   explicit GridNode(LayoutBox* box) : BlockNode(box) {
     DCHECK(box);
     DCHECK(box->IsLayoutGrid());
+  }
+
+  bool HasCachedPlacementData() const {
+    return To<LayoutGrid>(box_.Get())->HasCachedPlacementData();
   }
 
   const GridPlacementData& CachedPlacementData() const {

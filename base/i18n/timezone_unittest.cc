@@ -28,8 +28,9 @@ TEST(TimezoneTest, CountryCodeForTimezones) {
     // returns '001' (world) for region-agnostic timezones such as Etc/UTC and
     // |CountryCodeForCurrentTimezone| returns an empty string so that the next
     // fallback can be tried by a customer.
-    if (!country_code.empty())
+    if (!country_code.empty()) {
       EXPECT_EQ(2U, country_code.size()) << "country_code = " << country_code;
+    }
   }
 
   icu::TimeZone::adoptDefault(nullptr);

@@ -4,14 +4,20 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Adapter used to provide First Run pages to the FirstRunActivity ViewPager. */
+@NullMarked
 class FirstRunPagerAdapter extends FragmentStateAdapter {
     private final List<FirstRunPage> mPages;
 
@@ -28,14 +34,14 @@ class FirstRunPagerAdapter extends FragmentStateAdapter {
      * Returns the FirstRunFragment at the passed-in position. Returns null if the fragment has not
      * yet been instantiated by RecyclerView.
      */
-    public FirstRunFragment getFirstRunFragment(int position) {
+    public @Nullable FirstRunFragment getFirstRunFragment(int position) {
         return (position < mFragments.size()) ? mFragments.get(position) : null;
     }
 
     @Override
     public Fragment createFragment(int position) {
         assert position >= 0 && position < mPages.size();
-        Fragment fragment = mPages.get(position).instantiateFragment();
+        Fragment fragment = assertNonNull(mPages.get(position).instantiateFragment());
 
         for (int i = mFragments.size(); i <= position; i++) {
             mFragments.add(null);

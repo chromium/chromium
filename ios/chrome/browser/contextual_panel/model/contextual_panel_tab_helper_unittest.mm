@@ -54,7 +54,9 @@ class ContextualPanelTabHelperTest : public PlatformTest {
     observer_.run_loop_ = &run_loop_;
     sample_model_ = std::make_unique<SamplePanelModel>();
 
-    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+        models;
     models.emplace(ContextualPanelItemType::SamplePanelItem,
                    sample_model_.get());
     ContextualPanelTabHelper::CreateForWebState(&web_state_, models);

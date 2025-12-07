@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="id">
+<translation id="1293272072740285747">Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.
+
+Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_GROUP" />", dan grup tersebut akan dihapus dari semua perangkat.</translation>
+<translation id="1340839264183302272">Keluar dari grup</translation>
+<translation id="1419023007528516122">Tindakan ini akan menghapus permanen grup dari perangkat Anda</translation>
+<translation id="1501480321619201731">Hapus grup</translation>
+<translation id="2677748264148917807">Keluar</translation>
+<translation id="3547352561153509682">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Pisahkan grup tab?</translation>
+<translation id="4139634748112164403">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus secara permanen</translation>
+<translation id="4431937619879060901">Anda akan langsung kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan grup tersebut akan dihapus dari semua perangkat Anda</translation>
+<translation id="4460014764210899310">Pisahkan</translation>
+<translation id="4777866634702576038">Hapus grup tab?</translation>
+<translation id="5094423602314093681">Hapus tab dan grup?</translation>
+<translation id="5647702255748985085">Keluar dari grup?</translation>
+<translation id="742664698522525515">Simpan grup?</translation>
+<translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>
+<translation id="8261506727792406068">Hapus</translation>
+<translation id="870736955561925754">Tutup tab dan hapus grup?</translation>
+<translation id="8804742093141782941">Simpan grup</translation>
+<translation id="9169141410816678175">Semua orang akan langsung kehilangan akses ke grup tab "<ph name="GROUP_NAME" />", dan grup tersebut akan dihapus dari semua perangkat</translation>
+<translation id="9216898458513705996">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Hapus grup?</translation>
+</translationbundle>

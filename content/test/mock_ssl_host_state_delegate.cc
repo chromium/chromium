@@ -51,14 +51,12 @@ SSLHostStateDelegate::CertJudgment MockSSLHostStateDelegate::QueryPolicy(
 
 void MockSSLHostStateDelegate::HostRanInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
   hosts_ran_insecure_content_.insert(host);
 }
 
 bool MockSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
   return base::Contains(hosts_ran_insecure_content_, host);
 }
@@ -90,10 +88,10 @@ bool MockSSLHostStateDelegate::IsHttpsEnforcedForUrl(
     const GURL& url,
     StoragePartition* storage_partition) {
   // HTTPS-First Mode is never auto-enabled for URLs with non-default ports.
-  if (!url.port().empty()) {
+  if (!url.GetPort().empty()) {
     return false;
   }
-  return base::Contains(enforce_https_hosts_, url.host());
+  return base::Contains(enforce_https_hosts_, url.GetHost());
 }
 
 void MockSSLHostStateDelegate::RevokeUserAllowExceptions(

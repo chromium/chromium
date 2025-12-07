@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "gcm_internals"
+
+  static_files = [
+    "gcm_internals.css",
+    "gcm_internals.html",
+  ]
+
+  ts_files = [ "gcm_internals.ts" ]
+
+  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
+  webui_context_type = "trusted"
+
+  grit_output_dir = "$root_gen_dir/components"
+}

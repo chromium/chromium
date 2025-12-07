@@ -13,3 +13,22 @@ source_set("mica_titlebar") {
     "//ui/native_theme",
   ]
 }
+
+source_set("cloud_synced_folder_checker") {
+  sources = [
+    "cloud_synced_folder_checker.cc",
+    "cloud_synced_folder_checker.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+  ]
+}
+
+source_set("registry_watcher") {
+  sources = [
+    "registry_watcher.cc",
+    "registry_watcher.h",
+  ]
+  deps = [ "//base" ]
+}

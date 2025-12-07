@@ -1,0 +1,19 @@
+Name: Material Components for Android
+Short Name: material
+URL: https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.14.0-alpha07/material-1.14.0-alpha07.aar
+Version: 1.14.0-alpha07
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Material Components for Android is a static library that you can add to your Android application in order to use APIs that provide implementations of the Material Design specification. Compatible on devices running API 21 or later.
+
+See also: https://github.com/material-components/material-components-android
+
+
+Local Modifications:
+No modifications.

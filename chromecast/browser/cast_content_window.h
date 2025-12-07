@@ -33,6 +33,7 @@ class CastContentWindow : public mojom::CastContentWindow,
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnVisibilityChange(VisibilityType visibility_type) = 0;
+    virtual void OnWindowDestroyed() = 0;
   };
 
   explicit CastContentWindow(mojom::CastWebViewParamsPtr params);

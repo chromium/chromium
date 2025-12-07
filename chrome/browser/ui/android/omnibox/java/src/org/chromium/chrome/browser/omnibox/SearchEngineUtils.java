@@ -4,47 +4,74 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /** Common Default Search Engine functions. */
+@NullMarked
 public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserver {
+    private static final int MAX_IMAGE_CACHE_SIZE_BYTES = 4096;
     private static final String TAG = "DSEUtils";
-    private static ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils =
+    private static final ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils =
             ProfileKeyedMap.createMapOfDestroyables();
-    private static SearchEngineUtils sInstanceForTesting;
+    private static @Nullable SearchEngineUtils sInstanceForTesting;
 
-    private final @NonNull Profile mProfile;
+    private final Context mContext;
+    private final Profile mProfile;
     private final boolean mIsOffTheRecord;
-    private final @NonNull TemplateUrlService mTemplateUrlService;
-    private final @NonNull FaviconHelper mFaviconHelper;
+    private final TemplateUrlService mTemplateUrlService;
+    private final FaviconHelper mFaviconHelper;
+    private final ImageFetcher mImageFetcher;
     private final int mSearchEngineLogoTargetSizePixels;
-    private Boolean mNeedToCheckForSearchEnginePromo;
+    private final ObserverList<SearchBoxHintTextObserver> mSearchBoxHintTextObservers =
+            new ObserverList<>();
+    private final ObserverList<SearchEngineIconObserver> mSearchEngineIconObservers =
+            new ObserverList<>();
+    private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
+    private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
-    private @Nullable StatusIconResource mSearchEngineLogo;
+    private @Nullable StatusIconResource mFavicon;
+    private @Nullable String mSearchEngineName;
 
     /**
      * AndroidSearchEngineLogoEvents defined in tools/metrics/histograms/enums.xml. These values are
@@ -72,20 +99,65 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         int MAX = 6;
     }
 
-    @VisibleForTesting
-    SearchEngineUtils(Profile profile, FaviconHelper faviconHelper) {
+    @FunctionalInterface
+    public interface SearchBoxHintTextObserver {
+        /**
+         * Invoked when the Search Box hint text changes.
+         *
+         * @param newHintText the new hint text to apply
+         */
+        void onSearchBoxHintTextChanged();
+    }
+
+    @FunctionalInterface
+    public interface SearchEngineIconObserver {
+        /**
+         * Invoked when the Search Engine icon changes.
+         *
+         * @param newIcon the new search engine icon to apply
+         */
+        void onSearchEngineIconChanged(@Nullable StatusIconResource newIcon);
+    }
+
+    private SearchEngineUtils(
+            Profile profile, FaviconHelper faviconHelper, ImageFetcher imageFetcher) {
         mProfile = profile;
         mIsOffTheRecord = profile.isOffTheRecord();
         mFaviconHelper = faviconHelper;
+        mContext = ContextUtils.getApplicationContext();
+
+        mImageFetcher = imageFetcher;
 
         mSearchEngineLogoTargetSizePixels =
-                ContextUtils.getApplicationContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_favicon_size);
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
+
+        // Apply safe fallback values.
+        setSearchBoxHintText(null);
+        resetFavicon();
 
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);
+        mDefaultSearchEngineMetadata = CachedZeroSuggestionsManager.readSearchEngineMetadata();
+
         onTemplateURLServiceChanged();
+    }
+
+    @VisibleForTesting
+    SearchEngineUtils(Profile profile, FaviconHelper faviconHelper) {
+        this(
+                profile,
+                faviconHelper,
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool(),
+                        MAX_IMAGE_CACHE_SIZE_BYTES));
+    }
+
+    public static SearchEngineUtils createSearchEngineUtilsForTesting(
+            Profile profile, FaviconHelper faviconHelper, ImageFetcher imageFetcher) {
+        return new SearchEngineUtils(profile, faviconHelper, imageFetcher);
     }
 
     /** Get the instance of SearchEngineUtils associated with the supplied Profile. */
@@ -104,77 +176,167 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     @Override
     public void destroy() {
         mTemplateUrlService.removeObserver(this);
+        mFaviconHelper.destroy();
+        mImageFetcher.destroy();
+        mSearchEngineIconObservers.clear();
+        mSearchBoxHintTextObservers.clear();
     }
 
     @Override
     public void onTemplateURLServiceChanged() {
         mDoesDefaultSearchEngineHaveLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
 
-        if (mTemplateUrlService.isDefaultSearchEngineGoogle()) {
-            mSearchEngineLogo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
-        } else {
-            mSearchEngineLogo = null;
-            recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
+        var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
+        if (templateUrl == null) {
+            recordEvent(Events.FETCH_FAILED_NULL_URL);
+            setSearchBoxHintText(null);
+            return;
+        }
 
-            var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
-            if (templateUrl == null) {
-                recordEvent(Events.FETCH_FAILED_NULL_URL);
+        if (!TextUtils.isEmpty(templateUrl.getShortName())) {
+            setSearchBoxHintText(templateUrl.getShortName());
+        } else {
+            setSearchBoxHintText(null);
+        }
+
+        if (mDefaultSearchEngineMetadata == null
+                || !TextUtils.equals(
+                        mDefaultSearchEngineMetadata.keyword, templateUrl.getKeyword())) {
+            mDefaultSearchEngineMetadata = new SearchEngineMetadata(templateUrl.getKeyword());
+            CachedZeroSuggestionsManager.eraseCachedData();
+            CachedZeroSuggestionsManager.saveSearchEngineMetadata(mDefaultSearchEngineMetadata);
+        }
+
+        retrieveFaviconFromBrandedResources(templateUrl);
+    }
+
+    /** Add observer to be notified whenever the Omnibox hint text changes. */
+    public void addSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
+        mSearchBoxHintTextObservers.addObserver(observer);
+        observer.onSearchBoxHintTextChanged();
+    }
+
+    /** Remove previously registered Omnibox hint text observer. */
+    public void removeSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
+        mSearchBoxHintTextObservers.removeObserver(observer);
+    }
+
+    @Initializer
+    private void setSearchBoxHintText(@Nullable String engineName) {
+        // mSearchBoxHintText may be null when this method is invoked from constructor.
+        // This may generate a warning that this field is null. This is fine.
+        if (Objects.equals(engineName, mSearchEngineName)) return;
+        mSearchEngineName = engineName;
+        for (var observer : mSearchBoxHintTextObservers) {
+            observer.onSearchBoxHintTextChanged();
+        }
+    }
+
+    /**
+     * Returns the Omnibox Hint Text appropriate for specific AutocompleteRequestType.
+     *
+     * @param type the type of the AutocompleteRequestType to get the hint text for
+     * @return Hint text appropriate for the specific AutocompleteRequestType.
+     */
+    public String getOmniboxHintText(@AutocompleteRequestType int type) {
+        if (TextUtils.isEmpty(mSearchEngineName)) {
+            return OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
+        }
+
+        @StringRes
+        int res =
+                switch (type) {
+                    case AutocompleteRequestType.AI_MODE ->
+                            R.string.omnibox_empty_hint_with_dse_name_for_ai_mode;
+                    case AutocompleteRequestType.IMAGE_GENERATION ->
+                            R.string.omnibox_empty_hint_for_image_generation;
+                    default -> R.string.omnibox_empty_hint_with_dse_name;
+                };
+
+        return OmniboxResourceProvider.getString(mContext, res, mSearchEngineName);
+    }
+
+    /** Add observer to be notified whenever the Search Enigne Icon changes. */
+    public void addIconObserver(SearchEngineIconObserver observer) {
+        mSearchEngineIconObservers.addObserver(observer);
+        observer.onSearchEngineIconChanged(mFavicon);
+    }
+
+    /** Remove previously registered Search Engine Icon observer. */
+    public void removeIconObserver(SearchEngineIconObserver observer) {
+        mSearchEngineIconObservers.removeObserver(observer);
+    }
+
+    @VisibleForTesting
+    public void setSearchEngineIcon(@Nullable StatusIconResource newIcon) {
+        if (Objects.equals(mFavicon, newIcon)) return;
+        mFavicon = newIcon;
+        for (var observer : mSearchEngineIconObservers) {
+            observer.onSearchEngineIconChanged(newIcon);
+            recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
+        }
+    }
+
+    @VisibleForTesting
+    void retrieveFaviconFromDefaultResources(TemplateUrl templateUrl) {
+        if (!mTemplateUrlService.isDefaultSearchEngineGoogle()) {
+            // Fall back to next source.
+            recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
+            retrieveFaviconFromOriginUrl(templateUrl);
+            return;
+        }
+
+        setSearchEngineIcon(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
+    }
+
+    private void retrieveFaviconFromBrandedResources(TemplateUrl templateUrl) {
+        // Branded resources are only available on Chrome branded builds.
+        if (BuildConfig.IS_CHROME_BRANDED
+                && OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
+            @Nullable Bitmap bm = templateUrl.getBuiltInSearchEngineIcon();
+            if (bm != null) {
+                onFaviconRetrieveCompleted(templateUrl.getFaviconURL(), bm);
                 return;
             }
-
-            var logoUrl = new GURL(templateUrl.getURL()).getOrigin();
-
-            boolean willCall =
-                    mFaviconHelper.getLocalFaviconImageForURL(
-                            mProfile,
-                            logoUrl,
-                            mSearchEngineLogoTargetSizePixels,
-                            (image, iconUrl) -> {
-                                if (image == null) {
-                                    recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
-                                    return;
-                                }
-                                mSearchEngineLogo =
-                                        new StatusIconResource(logoUrl.getSpec(), image, 0);
-                                recordEvent(Events.FETCH_SUCCESS);
-                            });
-
-            if (!willCall) recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
         }
+
+        retrieveFaviconFromDefaultResources(templateUrl);
+    }
+
+    private void retrieveFaviconFromOriginUrl(TemplateUrl templateUrl) {
+        var originUrl = new GURL(templateUrl.getURL()).getOrigin();
+        boolean willCall =
+                mFaviconHelper.getLocalFaviconImageForURL(
+                        mProfile,
+                        originUrl,
+                        mSearchEngineLogoTargetSizePixels,
+                        (image, iconUrl) -> {
+                            if (image == null) {
+                                recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
+                                resetFavicon();
+                            } else {
+                                onFaviconRetrieveCompleted(originUrl, image);
+                            }
+                        });
+
+        if (!willCall) {
+            recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
+            resetFavicon();
+        }
+    }
+
+    private void resetFavicon() {
+        setSearchEngineIcon(null);
+    }
+
+    private void onFaviconRetrieveCompleted(GURL faviconUrl, Bitmap bitmap) {
+        setSearchEngineIcon(new StatusIconResource(faviconUrl.getSpec(), bitmap, 0));
+        recordEvent(Events.FETCH_SUCCESS);
     }
 
     /** Returns whether the search engine logo should be shown. */
     public boolean shouldShowSearchEngineLogo() {
         return !mIsOffTheRecord;
-    }
-
-    /**
-     * Get the search engine logo favicon. This can return a null bitmap under certain
-     * circumstances, such as: no logo url found, network/cache error, etc.
-     *
-     * @param brandedColorScheme The {@link BrandedColorScheme}, used to tint icons.
-     */
-    public StatusIconResource getSearchEngineLogo(@BrandedColorScheme int brandedColorScheme) {
-        if (needToCheckForSearchEnginePromo() || mSearchEngineLogo == null) {
-            return getFallbackSearchIcon(brandedColorScheme);
-        }
-        recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
-        return mSearchEngineLogo;
-    }
-
-    /** Returns an icon to be shown as a fallback Search icon. */
-    public static StatusIconResource getFallbackSearchIcon(
-            @BrandedColorScheme int brandedColorScheme) {
-        return new StatusIconResource(
-                R.drawable.ic_search, ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme));
-    }
-
-    /** Returns an icon to be shown as a fallback Navigation icon. */
-    public static StatusIconResource getFallbackNavigationIcon(
-            @BrandedColorScheme int brandedColorScheme) {
-        return new StatusIconResource(
-                R.drawable.ic_globe_24dp,
-                ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme));
     }
 
     /**
@@ -197,7 +359,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
      * Performs a (potentially expensive) lookup of whether we need to check for a search engine
      * promo. In rare cases this can fail; in these cases it will return null.
      */
-    private Boolean fetchCheckForSearchEnginePromo() {
+    private @Nullable Boolean fetchCheckForSearchEnginePromo() {
         // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
         // risk throwing exceptions. See the exception cases below for details.
         try {
@@ -218,7 +380,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
      * @param event The {@link Events} to be reported.
      */
     @VisibleForTesting
-    void recordEvent(@Events int event) {
+    static void recordEvent(@Events int event) {
         RecordHistogram.recordEnumeratedHistogram(
                 "AndroidSearchEngineLogo.Events", event, Events.MAX);
     }
@@ -232,7 +394,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     /*
      * Returns whether the current search provider has Logo.
      */
-    boolean doesDefaultSearchEngineHaveLogo() {
+    public boolean doesDefaultSearchEngineHaveLogo() {
         return mDoesDefaultSearchEngineHaveLogo;
     }
 }

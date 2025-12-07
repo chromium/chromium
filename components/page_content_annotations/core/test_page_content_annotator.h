@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATOR_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATOR_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
 
 namespace page_content_annotations {
 

@@ -21,10 +21,12 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
@@ -50,6 +52,7 @@ public class OfflinePageTabObserverTest {
     // Using a null tab, as it cannot be mocked. TabHelper will help return proper mocked responses.
     private static final int TAB_ID = 77;
     private static final GURL TAB_URL = JUnitTestGURLs.EXAMPLE_URL;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeActivity mActivity;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SnackbarManager mSnackbarManager;
@@ -76,7 +79,6 @@ public class OfflinePageTabObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mActivityRef = new WeakReference<>(mActivity);
 

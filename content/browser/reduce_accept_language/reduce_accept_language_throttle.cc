@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -41,14 +41,12 @@ void LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart status) {
 }  // namespace
 
 ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
-    ReduceAcceptLanguageControllerDelegate& accept_language_delegate,
+    ReduceAcceptLanguageUtils reduce_accept_language_utils,
     OriginTrialsControllerDelegate* origin_trials_delegate,
-    int frame_tree_node_id)
-    : accept_language_delegate_(accept_language_delegate),
+    FrameTreeNodeId frame_tree_node_id)
+    : reduce_accept_language_utils_(std::move(reduce_accept_language_utils)),
       origin_trials_delegate_(origin_trials_delegate),
       frame_tree_node_id_(frame_tree_node_id) {
-  DCHECK(
-      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage));
   LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart::kNavigationStarted);
 }
 
@@ -127,7 +125,6 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
     return;
   }
 
-  ReduceAcceptLanguageUtils reduce_language_utils(*accept_language_delegate_);
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   // Skip if origin opted-in ReduceAcceptLanguage deprecation origin trial.
@@ -141,7 +138,7 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
     return;
 
   bool need_restart =
-      reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
+      reduce_accept_language_utils_.ReadAndPersistAcceptLanguageForNavigation(
           last_request_origin, initial_request_headers_,
           response_head.parsed_headers);
 

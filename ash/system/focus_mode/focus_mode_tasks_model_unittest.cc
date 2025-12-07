@@ -20,6 +20,7 @@ using testing::_;
 using testing::AllOf;
 using testing::Eq;
 using testing::Field;
+using testing::IsNull;
 using testing::Optional;
 using testing::Pointee;
 using testing::SizeIs;
@@ -211,11 +212,11 @@ TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_TaskIsCompleted) {
   TaskId task_id = {.list_id = kTaskListId, .id = "from_prefs"};
 
   // Setup.
-  FakeDelegate delgate;
-  model().SetDelegate(delgate.AsWeakPtr());
+  FakeDelegate delegate;
+  model().SetDelegate(delegate.AsWeakPtr());
 
   FocusModeTasksModel::Delegate::FetchTaskCallback callback;
-  EXPECT_CALL(delgate, FetchTask(Eq(task_id), _))
+  EXPECT_CALL(delegate, FetchTask(Eq(task_id), _))
       .WillOnce(
           [&callback](
               const TaskId& task_id,
@@ -241,11 +242,11 @@ TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_TaskIsCompleted) {
 
 TEST_F(FocusModeTasksModelObserverTest,
        SelectedTaskFromPrefs_UpdateFromDelegate_TaskIsNew) {
-  FakeDelegate delgate;
-  model().SetDelegate(delgate.AsWeakPtr());
+  FakeDelegate delegate;
+  model().SetDelegate(delegate.AsWeakPtr());
 
   FocusModeTasksModel::Delegate::FetchTaskCallback callback;
-  EXPECT_CALL(delgate, FetchTask(_, _))
+  EXPECT_CALL(delegate, FetchTask(_, _))
       .WillOnce(
           [&callback](
               const TaskId& task_id,
@@ -271,11 +272,11 @@ TEST_F(FocusModeTasksModelObserverTest,
 
 TEST_F(FocusModeTasksModelObserverTest,
        SelectedTaskFromPrefs_UpdateFromDelegate_TaskInList) {
-  FakeDelegate delgate;
-  model().SetDelegate(delgate.AsWeakPtr());
+  FakeDelegate delegate;
+  model().SetDelegate(delegate.AsWeakPtr());
 
   FocusModeTasksModel::Delegate::FetchTaskCallback callback;
-  EXPECT_CALL(delgate, FetchTask(_, _))
+  EXPECT_CALL(delegate, FetchTask(_, _))
       .WillOnce(
           [&callback](
               const TaskId& task_id,
@@ -356,6 +357,115 @@ TEST_F(FocusModeTasksModelObserverTest, CompleteTask) {
   EXPECT_THAT(observer().last_completed_task(), Optional(SameId("task1")));
 }
 
+// Tests that we fetch the selected task data when `RequestUpdate()` is called
+// and update the selected task title if it is updated.
+TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_TaskTitleUpdated) {
+  // Setup.
+  FakeDelegate delegate;
+  model().SetDelegate(delegate.AsWeakPtr());
+  TaskId task_id = {.list_id = kTaskListId, .id = "selected_task"};
+  model().SetTaskList(
+      {TestTask("task0"), TestTask("task1"), TestTask(task_id.id)});
+  model().SetSelectedTask(task_id);
+
+  FocusModeTasksModel::Delegate::FetchTaskCallback callback;
+  EXPECT_CALL(delegate, FetchTask(Eq(task_id), _))
+      .WillOnce(
+          [&callback](
+              const TaskId& task_id,
+              FocusModeTasksModel::Delegate::FetchTaskCallback task_callback) {
+            callback = std::move(task_callback);
+          });
+  EXPECT_CALL(delegate, FetchTasks());
+
+  // Requesting an update immediately triggers observers to be called.
+  model().RequestUpdate();
+
+  // Simulate response with an updated task title.
+  FocusModeTask updated_task = TestTask(task_id.id);
+  updated_task.title = "Updated task title";
+  updated_task.completed = false;
+  ASSERT_FALSE(callback.is_null());
+  std::move(callback).Run({updated_task});
+
+  EXPECT_THAT(observer().last_selected_task(), Optional(SameId(task_id.id)));
+  EXPECT_THAT(model().selected_task(),
+              Pointee(Field(&FocusModeTask::title, "Updated task title")));
+}
+
+// Tests that if a selected task was completed remotely, it is marked as
+// completed and removed from the list for `RequestUpdate()`.
+TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_TaskIsCompleted) {
+  // Setup.
+  FakeDelegate delegate;
+  model().SetDelegate(delegate.AsWeakPtr());
+  TaskId task_id = {.list_id = kTaskListId, .id = "selected_task"};
+  model().SetTaskList(
+      {TestTask("task0"), TestTask("task1"), TestTask(task_id.id)});
+  model().SetSelectedTask(task_id);
+
+  FocusModeTasksModel::Delegate::FetchTaskCallback callback;
+  EXPECT_CALL(delegate, FetchTask(Eq(task_id), _))
+      .WillOnce(
+          [&callback](
+              const TaskId& task_id,
+              FocusModeTasksModel::Delegate::FetchTaskCallback task_callback) {
+            callback = std::move(task_callback);
+          });
+  EXPECT_CALL(delegate, UpdateTask(_));
+  EXPECT_CALL(delegate, FetchTasks());
+
+  // Requesting an update immediately triggers observers to be called.
+  model().RequestUpdate();
+
+  // Simulate response with completed task.
+  FocusModeTask completed_task = TestTask(task_id.id);
+  completed_task.title = "Completed Task";
+  completed_task.completed = true;
+  ASSERT_FALSE(callback.is_null());
+  std::move(callback).Run({completed_task});
+
+  // The previously selected task should now be completed.
+  EXPECT_THAT(observer().last_selected_task(), Eq(std::nullopt));
+  EXPECT_THAT(observer().last_task_list(), Optional(SizeIs(2)));
+  EXPECT_THAT(observer().last_completed_task(), Optional(SameId(task_id.id)));
+}
+
+// Tests that `FetchTasks()` is still called even if the selected task request
+// fails.
+TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_RequestFails) {
+  // Setup.
+  FakeDelegate delegate;
+  model().SetDelegate(delegate.AsWeakPtr());
+  TaskId task_id = {.list_id = kTaskListId, .id = "selected_task"};
+  model().SetTaskList(
+      {TestTask("task0"), TestTask("task1"), TestTask(task_id.id)});
+  model().SetSelectedTask(task_id);
+
+  FocusModeTasksModel::Delegate::FetchTaskCallback callback;
+  EXPECT_CALL(delegate, FetchTask(Eq(task_id), _))
+      .WillOnce(
+          [&callback](
+              const TaskId& task_id,
+              FocusModeTasksModel::Delegate::FetchTaskCallback task_callback) {
+            callback = std::move(task_callback);
+          });
+  // We want to make sure that `FetchTasks()` is called every time, even when we
+  // encounter a failure to keep the cache up to date.
+  EXPECT_CALL(delegate, FetchTasks());
+
+  // Requesting an update immediately triggers observers to be called.
+  model().RequestUpdate();
+
+  // Simulate a failed response.
+  ASSERT_FALSE(callback.is_null());
+  std::move(callback).Run(FocusModeTask{});
+
+  // Verify that nothing has changed.
+  EXPECT_THAT(observer().last_selected_task(), Optional(SameId(task_id.id)));
+  EXPECT_THAT(observer().last_task_list(), Optional(SizeIs(3)));
+}
+
 TEST(FocusModeTasksModelTest, RequestUpdate_CallsDelegate) {
   FakeDelegate delegate;
 
@@ -394,6 +504,19 @@ TEST(FocusModeTasksModelTest, SetSelectedTask_ReorderList) {
       model.tasks(),
       testing::ElementsAre(SameId("task3"), SameId("task0"), SameId("task1"),
                            SameId("task2"), SameId("task4")));
+}
+
+TEST(FocusModeTasksModelTest, SetSelectedTask_EmptyId) {
+  FocusModeTasksModel model;
+
+  FakeDelegate delegate;
+  model.SetDelegate(delegate.AsWeakPtr());
+
+  // If selected task has an empty `TaskId` the delegate should not be called.
+  EXPECT_CALL(delegate, FetchTask).Times(0);
+
+  TaskId empty_id;
+  model.SetSelectedTaskFromPrefs(empty_id);
 }
 
 TEST(FocusModeTasksModelTest, UpdateTask_NewTask) {
@@ -488,6 +611,57 @@ TEST(FocusModeTasksModelTest, UpdateTask_EditTitle) {
               Pointee(Field(&FocusModeTask::title, "Updated task title")));
   // Task list size should remain the same for an edit of an existing task.
   EXPECT_THAT(model.tasks(), SizeIs(3));
+}
+
+// Verify that we don't try to fetch non-existent tasks if an update is
+// requested while the new task is still pending (b/371634351).
+TEST(FocusModeTasksModelTest, NewTaskThenRequest) {
+  FocusModeTasksModel model;
+
+  FakeDelegate delegate;
+  model.SetDelegate(delegate.AsWeakPtr());
+
+  // The pending task will still be pending when `RequestUpdate()` so we
+  // shouldn't attempt to fetch it (it doesn't have a valid id).
+  EXPECT_CALL(delegate, FetchTask).Times(0);
+
+  EXPECT_CALL(delegate, AddTask);
+  model.UpdateTask(
+      FocusModeTasksModel::TaskUpdate::NewTask("This is a new task"));
+
+  // All tasks are requested.
+  EXPECT_CALL(delegate, FetchTasks);
+  model.RequestUpdate();
+}
+
+// Verify that pending selected tasks are removed from the model when it is
+// cleared to prevent having multiple pending tasks (crbug.com/368118881).
+TEST(FocusModeTasksModelTest, NewTaskThenClear) {
+  FocusModeTasksModel model;
+
+  FakeDelegate delegate;
+  model.SetDelegate(delegate.AsWeakPtr());
+
+  EXPECT_THAT(model.tasks(), SizeIs(0));
+
+  // Add the new task.
+  EXPECT_CALL(delegate, AddTask);
+  model.UpdateTask(
+      FocusModeTasksModel::TaskUpdate::NewTask("This is a new task"));
+
+  // The new task is added to the list immediately.
+  EXPECT_THAT(model.tasks(), SizeIs(1));
+
+  // Verify that the selected task is still pending.
+  EXPECT_THAT(model.selected_task()->task_id.pending, Eq(true));
+  EXPECT_TRUE(model.PendingTaskForTesting());
+
+  // Clear the selected task while it is still pending and verify that this
+  // removes the task from the model.
+  model.ClearSelectedTask();
+  EXPECT_THAT(model.selected_task(), IsNull());
+  EXPECT_THAT(model.PendingTaskForTesting(), IsNull());
+  EXPECT_THAT(model.tasks(), SizeIs(0));
 }
 
 }  // namespace

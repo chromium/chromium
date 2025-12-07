@@ -15,4 +15,5 @@ enum BlockedByResponseReason {
   kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
   kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
   kCorpNotSameSite,
+  kSRIMessageSignatureMismatch,
 };

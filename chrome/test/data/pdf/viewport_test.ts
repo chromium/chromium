@@ -58,7 +58,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testOverlayScrollbarWidth_local() {
+  function testOverlayScrollbarWidthLocal() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 43, 1);
 
@@ -66,7 +66,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testOverlayScrollbarWidth_remote() {
+  function testOverlayScrollbarWidthRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 43, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -123,6 +123,27 @@ const tests = [
     scrollbars = viewport.documentNeedsScrollbars(0.5);
     chrome.test.assertTrue(scrollbars.vertical);
     chrome.test.assertFalse(scrollbars.horizontal);
+    chrome.test.succeed();
+  },
+
+  function testIsPointOnScrollbar() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 10, 1);
+
+    viewport.setDocumentDimensions(new MockDocumentDimensions(90, 90));
+    // No scrollbars, so this should return false for any point in the viewport.
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 100, y: 100}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 0, y: 100}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 100, y: 0}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 0, y: 0}));
+
+    viewport.setDocumentDimensions(new MockDocumentDimensions(110, 110));
+    // Now both dimensions have scrollbars that are 10px wide.
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 89, y: 89}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 90, y: 89}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 89, y: 90}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 0, y: 90}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 90, y: 0}));
     chrome.test.succeed();
   },
 
@@ -1597,6 +1618,18 @@ const tests = [
     chrome.test.assertEq(40, viewport.position.x);
     chrome.test.assertEq(30, viewport.position.y);
 
+    mockCallback.reset();
+    viewport.scrollTo({x: 10, y: 20, forceSmoothScroll: true});
+    chrome.test.assertTrue(mockCallback.wasCalled);
+    chrome.test.assertEq(10, viewport.position.x);
+    chrome.test.assertEq(20, viewport.position.y);
+
+    mockCallback.reset();
+    viewport.scrollTo({forceSmoothScroll: true});
+    chrome.test.assertFalse(mockCallback.wasCalled);
+    chrome.test.assertEq(10, viewport.position.x);
+    chrome.test.assertEq(20, viewport.position.y);
+
     chrome.test.succeed();
   },
 
@@ -1691,6 +1724,120 @@ const tests = [
     chrome.test.succeed();
   },
 
+  function testGetPageScreenRectTwoUpView() {
+    const mockWindow = new MockElement(400, 500, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+
+    const documentDimensions = new MockDocumentDimensions(
+        100, 100,
+        {direction: 0, defaultPageOrientation: 0, twoUpViewEnabled: true});
+    documentDimensions.addPageForTwoUpView(100, 0, 300, 400);
+    documentDimensions.addPageForTwoUpView(400, 0, 400, 300);
+    documentDimensions.addPageForTwoUpView(0, 400, 400, 250);
+    documentDimensions.addPageForTwoUpView(400, 400, 200, 400);
+    documentDimensions.addPageForTwoUpView(50, 800, 350, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+    viewport.setZoom(1);
+
+    mockWindow.scrollTo(0, 0);
+
+    // First page screen rectangle
+    let rect1 = viewport.getPageScreenRect(0);
+    chrome.test.assertEq(PAGE_SHADOW.left + 100, rect1.x);
+    chrome.test.assertEq(PAGE_SHADOW.top, rect1.y);
+    chrome.test.assertEq(
+        300 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect1.width);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect1.height);
+
+    // Second page
+    let rect2 = viewport.getPageScreenRect(1);
+    chrome.test.assertEq(PAGE_SHADOW.left + 400, rect2.x);
+    chrome.test.assertEq(PAGE_SHADOW.top, rect2.y);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect2.width);
+    chrome.test.assertEq(
+        300 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect2.height);
+
+    // Third page
+    let rect3 = viewport.getPageScreenRect(2);
+    chrome.test.assertEq(PAGE_SHADOW.left, rect3.x);
+    chrome.test.assertEq(PAGE_SHADOW.top + 400, rect3.y);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect3.width);
+    chrome.test.assertEq(
+        250 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect3.height);
+
+    // Fourth page
+    let rect4 = viewport.getPageScreenRect(3);
+    chrome.test.assertEq(PAGE_SHADOW.left + 400, rect4.x);
+    chrome.test.assertEq(PAGE_SHADOW.top + 400, rect4.y);
+    chrome.test.assertEq(
+        200 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect4.width);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect4.height);
+
+    // Fifth page
+    let rect5 = viewport.getPageScreenRect(4);
+    chrome.test.assertEq(PAGE_SHADOW.left + 50, rect5.x);
+    chrome.test.assertEq(PAGE_SHADOW.top + 800, rect5.y);
+    chrome.test.assertEq(
+        350 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect5.width);
+    chrome.test.assertEq(
+        200 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect5.height);
+
+    // Check that when we scroll and zoom the rectangles are updated correctly.
+    viewport.setZoom(0.5);
+    mockWindow.scrollTo(100, 10);
+
+    // First page screen rectangle
+    rect1 = viewport.getPageScreenRect(0);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 100 * 0.5 - 100, rect1.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 - 10, rect1.y);
+    chrome.test.assertEq(
+        0.5 * (300 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect1.width);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect1.height);
+
+    // Second page
+    rect2 = viewport.getPageScreenRect(1);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 400 * 0.5 - 100, rect2.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 - 10, rect2.y);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect2.width);
+    chrome.test.assertEq(
+        0.5 * (300 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect2.height);
+
+    // Third page
+    rect3 = viewport.getPageScreenRect(2);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 - 100, rect3.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 + 400 * 0.5 - 10, rect3.y);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect3.width);
+    chrome.test.assertEq(
+        0.5 * (250 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect3.height);
+
+    // Fourth page
+    rect4 = viewport.getPageScreenRect(3);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 400 * 0.5 - 100, rect4.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 + 400 * 0.5 - 10, rect4.y);
+    chrome.test.assertEq(
+        0.5 * (200 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect4.width);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect4.height);
+
+    // Fifth page
+    rect5 = viewport.getPageScreenRect(4);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 50 * 0.5 - 100, rect5.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 + 800 * 0.5 - 10, rect5.y);
+    chrome.test.assertEq(
+        0.5 * (350 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect5.width);
+    chrome.test.assertEq(
+        0.5 * (200 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect5.height);
+
+    chrome.test.succeed();
+  },
+
   function testBeforeZoomAfterZoom() {
     const mockWindow = new MockElement(100, 100, null);
     const mockSizer = new MockSizer();
@@ -1750,7 +1897,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetContent_showLocalSizer() {
+  function testSetContentShowLocalSizer() {
     const mockSizer = new MockSizer();
     const viewport =
         getZoomableViewport(new MockElement(100, 100, null), mockSizer, 0, 1);
@@ -1763,7 +1910,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetContent_sizeToLocal() {
+  function testSetContentSizeToLocal() {
     const mockSizer = new MockSizer();
     const viewport =
         getZoomableViewport(new MockElement(100, 100, null), mockSizer, 0, 1);
@@ -1780,7 +1927,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetContent_scrollToLocal() {
+  function testSetContentScrollToLocal() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -1798,7 +1945,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetRemoteContent_attachContent() {
+  function testSetRemoteContentAttachContent() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
 
@@ -1810,7 +1957,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetRemoteContent_hideLocalSizer() {
+  function testSetRemoteContentHideLocalSizer() {
     const mockSizer = new MockSizer();
     const viewport =
         getZoomableViewport(new MockElement(100, 100, null), mockSizer, 0, 1);
@@ -1821,7 +1968,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetRemoteContent_sizeToRemote() {
+  function testSetRemoteContentSizeToRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     viewport.setDocumentDimensions(new MockDocumentDimensions(20, 30));
@@ -1835,7 +1982,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetRemoteContent_scrollToRemote() {
+  function testSetRemoteContentScrollToRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     viewport.setDocumentDimensions(new MockDocumentDimensions(200, 200));
@@ -1851,7 +1998,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetDocumentDimensions_remote() {
+  function testSetDocumentDimensionsRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -1868,7 +2015,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote() {
+  function testSetPositionRemote() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -1887,7 +2034,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_modifiedByAck() {
+  function testSetPositionRemoteModifiedByAck() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -1906,7 +2053,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_modifiedByAck_ignoreOverlapping() {
+  function testSetPositionRemoteModifiedByAckIgnoreOverlapping() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -1926,7 +2073,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_modifiedByAck_multiple() {
+  function testSetPositionRemoteModifiedByAckMultiple() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -1947,7 +2094,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_NaN() {
+  function testSetPositionRemoteNaN() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -1959,7 +2106,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_underflow_leftAndTop() {
+  function testSetPositionRemoteUnderflowLeftAndTop() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -1973,7 +2120,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_underflow_rightAndTop() {
+  function testSetPositionRemoteUnderflowRightAndTop() {
     const mockWindow = new MockElement(100, 100, null);
     mockWindow.dir = 'rtl';
     const viewport =
@@ -1989,7 +2136,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_overflow_rightAndBottom() {
+  function testSetPositionRemoteOverflowRightAndBottom() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -2003,7 +2150,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_overflow_leftAndBottom() {
+  function testSetPositionRemoteOverflowLeftAndBottom() {
     const mockWindow = new MockElement(100, 100, null);
     mockWindow.dir = 'rtl';
     const viewport =
@@ -2019,7 +2166,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_overflowWithoutVerticalScrollbar_right() {
+  function testSetPositionRemoteOverflowWithoutVerticalScrollbarRight() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -2033,7 +2180,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_overflowWithoutVerticalScrollbar_left() {
+  function testSetPositionRemoteOverflowWithoutVerticalScrollbarLeft() {
     const mockWindow = new MockElement(100, 100, null);
     mockWindow.dir = 'rtl';
     const viewport =
@@ -2049,7 +2196,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSetPosition_remote_overflowWithoutHorizontalScrollbar_bottom() {
+  function testSetPositionRemoteOverflowWithoutHorizontalScrollbarBottom() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), SCROLLBAR_WIDTH, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
@@ -2079,7 +2226,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSyncScrollFromRemote_duplicateScroll() {
+  function testSyncScrollFromRemoteDuplicateScroll() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -2096,7 +2243,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSyncScrollFromRemote_scrollToRemoteUnacked() {
+  function testSyncScrollFromRemoteScrollToRemoteUnacked() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 0, 1);
     const mockPlugin = createMockPdfPluginForTest();
@@ -2109,6 +2256,254 @@ const tests = [
     chrome.test.assertEq(0, scrollCounter.count);
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(0, viewport.position.y);
+    chrome.test.succeed();
+  },
+
+  function testGetPageAtPoint() {
+    const mockWindow = new MockElement(100, 100, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+
+    const documentDimensions = new MockDocumentDimensions(100, 100);
+    documentDimensions.addPage(50, 100);
+    documentDimensions.addPage(100, 100);
+    documentDimensions.addPage(100, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+    viewport.setZoom(1);
+
+    // Scrolled to the start of the first page.
+    mockWindow.scrollTo(0, 0);
+    // In the margins returns -1. The page is centered in the viewport.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 24, y: 0}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 76, y: 0}));
+    // On the page, returns page 0.
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 25, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 75, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 50, y: 50}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 50, y: 99}));
+
+    // Scrolled to almost the start of the second page.
+    mockWindow.scrollTo(0, 100);
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 0, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 50, y: 50}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 99, y: 99}));
+
+    // Scrolled half way through the first page.
+    mockWindow.scrollTo(0, 50);
+    // There are horizontal margins on the first page but not the second,
+    // because the second page is full width.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 24, y: 25}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 25, y: 25}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 24, y: 50}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 1, y: 99}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 99, y: 99}));
+
+    // Zoom out so that more than one page fits and scroll to the end.
+    // Total height = 400 * .4 = 160, so scroll to 70 for the rest to
+    // fit in the viewport while leaving a 10px gap at the bottom to test.
+    viewport.setZoom(0.4);
+    mockWindow.scrollTo(0, 70);
+    // Top of the viewport. The second page now has a width of 100 * .4 = 40
+    // centered in the 100px window.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 29, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 30, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 70, y: 0}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 71, y: 0}));
+    // Bottom of second page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 29, y: 10}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 30, y: 10}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 70, y: 10}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 71, y: 10}));
+    // Top of the last page, which has the same width as the second.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 29, y: 11}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 30, y: 11}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 70, y: 11}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 71, y: 11}));
+    // Bottom of the last page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 29, y: 90}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 30, y: 90}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 70, y: 90}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 71, y: 90}));
+    // Past the bottom of the document.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 30, y: 91}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 70, y: 99}));
+    chrome.test.succeed();
+  },
+
+  function testGetPageAtPointForTwoUpView() {
+    const mockWindow = new MockElement(400, 500, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+
+    const documentDimensions = new MockDocumentDimensions(
+        100, 100,
+        {direction: 0, defaultPageOrientation: 0, twoUpViewEnabled: true});
+    documentDimensions.addPageForTwoUpView(100, 0, 300, 400);
+    documentDimensions.addPageForTwoUpView(400, 0, 400, 300);
+    documentDimensions.addPageForTwoUpView(0, 400, 400, 250);
+    documentDimensions.addPageForTwoUpView(400, 400, 200, 400);
+    documentDimensions.addPageForTwoUpView(50, 800, 350, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+    viewport.setZoom(1);
+
+    // Scrolled to the start of the first page.
+    mockWindow.scrollTo(0, 0);
+    // The first page is 300 wide, so it runs from x = 100 to x = 400 (which is
+    // the midpoint.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 99, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 100, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 400, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 100, y: 100}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 399, y: 399}));
+
+    // Scrolled such that only the first and third pages are visible.
+    mockWindow.scrollTo(0, 200);
+    // Top of the first page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 99, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 100, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 400, y: 0}));
+    // Bottom of the first page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 99, y: 199}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 100, y: 199}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 400, y: 199}));
+    // Top of third page. The third page is full width, so has no left margin.
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 0, y: 200}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 200, y: 200}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 400, y: 200}));
+    // Bottom of the third page.
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 0, y: 450}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 200, y: 450}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 400, y: 450}));
+    // There is a gap below the third page, because it is shorter than the
+    // fourth.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 0, y: 451}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 200, y: 499}));
+
+    // Scrolled such that only the second and fourth pages are visible.
+    mockWindow.scrollTo(400, 200);
+    // Top of the second page.
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 1, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 400, y: 0}));
+    // Bottom of second page.
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 1, y: 100}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 400, y: 100}));
+    // Below the second page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 1, y: 101}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 400, y: 101}));
+    // The fourth page is only half width. It starts 100px below the second.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 1, y: 199}));
+    // Top of the fourth page.
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 1, y: 200}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 200, y: 200}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 201, y: 200}));
+    // Bottom of the viewport (still on the fourth page).
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 1, y: 499}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 200, y: 499}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 201, y: 499}));
+
+    // Scroll such that first to fourth pages are visible.
+    mockWindow.scrollTo(200, 200);
+    // The first page now runs from the far left of the viewport (since scroll
+    // is 200) to the midpoint (200).
+    // Four corners of the first page.
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 0, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 200, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 0, y: 199}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 200, y: 199}));
+    // Four corners of the second page. There is no gap from the first page,
+    // but there is a 100px gap at the bottom to the fourth page.
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 201, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 400, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 201, y: 100}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 400, y: 100}));
+    // Gap below the second page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 201, y: 101}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 400, y: 101}));
+    // Four corners of the third page. There is no gap to the first or fourth
+    // page. There is a 50px gap at the bottom of the viewport, since it is
+    // only 250px tall.
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 0, y: 200}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 200, y: 200}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 0, y: 450}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 200, y: 450}));
+    // Gap below the third page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 0, y: 451}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 200, y: 451}));
+    // Four corners of the fourth page.
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 201, y: 200}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 400, y: 200}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 201, y: 500}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 400, y: 500}));
+    // Gap above the fourth page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 201, y: 199}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 400, y: 199}));
+
+    // Zoomed out with the entire document visible.
+    viewport.setZoom(0.25);
+    mockWindow.scrollTo(0, 0);
+    // The document will be centered on the viewport horizontally. It has a
+    // total size of 800 wide by 1000 tall, which is now 200 x 250 at 0.25
+    // zoom. This means there is a (400 - 200) / 2 = 100 px offset to the left
+    // side of the document. Page coordinates can then be deduced by using the
+    // page rectangles, multiplying by zoom, and adding the 100px offset in x.
+    // First page: x = 125 to 200, y = 0 to 100
+    // Second page: x = 200 to 300, y = 0 to 75
+    // Third page: x = 100 to 200, y = 100 to 162.5
+    // Fourth page: x = 200 to 250, y = 100 to 200
+    // Fifth page: x = 112.5 to 200, y = 200 to 250
+
+    // First page corners.
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 125, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 200, y: 0}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 125, y: 99}));
+    chrome.test.assertEq(0, viewport.getPageAtPoint({x: 200, y: 99}));
+    // Gap left of first page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 124, y: 0}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 124, y: 99}));
+    // Second page corners.
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 201, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 300, y: 0}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 201, y: 75}));
+    chrome.test.assertEq(1, viewport.getPageAtPoint({x: 300, y: 75}));
+    // Gap below second page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 201, y: 76}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 300, y: 76}));
+    // Gap right of second page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 301, y: 0}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 301, y: 75}));
+    // Third page corners.
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 100, y: 100}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 200, y: 100}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 100, y: 162}));
+    chrome.test.assertEq(2, viewport.getPageAtPoint({x: 200, y: 162}));
+    // Gap left of third page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 99, y: 100}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 99, y: 162}));
+    // Gap below third page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 100, y: 163}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 200, y: 163}));
+    // Fourth page corners.
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 201, y: 100}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 250, y: 100}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 201, y: 200}));
+    chrome.test.assertEq(3, viewport.getPageAtPoint({x: 250, y: 200}));
+    // Gap right of fourth page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 251, y: 100}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 251, y: 200}));
+    // Gap below fourth page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 201, y: 201}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 250, y: 201}));
+    // Fifth page corners.
+    chrome.test.assertEq(4, viewport.getPageAtPoint({x: 113, y: 201}));
+    chrome.test.assertEq(4, viewport.getPageAtPoint({x: 200, y: 201}));
+    chrome.test.assertEq(4, viewport.getPageAtPoint({x: 113, y: 250}));
+    chrome.test.assertEq(4, viewport.getPageAtPoint({x: 200, y: 250}));
+    // Gap left of fifth page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 112, y: 201}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 112, y: 250}));
+    // Gap below fifth page.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 113, y: 251}));
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 200, y: 251}));
+    // Far out of bounds.
+    chrome.test.assertEq(-1, viewport.getPageAtPoint({x: 300, y: 400}));
     chrome.test.succeed();
   },
 

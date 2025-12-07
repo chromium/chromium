@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
@@ -55,6 +55,12 @@ struct MessageHeaderV2 : MessageHeaderV1 {
 };
 static_assert(sizeof(MessageHeaderV2) == 48, "Bad sizeof(MessageHeaderV2)");
 
+struct MessageHeaderV3 : MessageHeaderV2 {
+  MessageHeaderV3();
+  int64_t creation_timeticks_us;
+};
+static_assert(sizeof(MessageHeaderV3) == 56, "Bad sizeof(MessageHeaderV3)");
+
 #pragma pack(pop)
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
@@ -76,8 +82,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 };
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-size_t ComputeSerializedMessageSize(uint32_t flags,
-                                    size_t payload_size,
+size_t ComputeSerializedMessageSize(size_t payload_size,
                                     size_t payload_interface_id_count);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)

@@ -44,7 +44,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     json_string = data_provider.ConsumeRemainingBytesAsString();
   }
 
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     return 0;
   }

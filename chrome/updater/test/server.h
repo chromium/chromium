@@ -77,14 +77,22 @@ class ScopedServer {
                   const std::string& response_body,
                   net::HttpStatusCode response_status_code = net::HTTP_OK);
 
+  // Similar to ExpectOnce, but accepts a callback that provides response
+  // bodies. The callback accepts a bool indicating whether the request is a
+  // protocol 4.0 request.
+  void ExpectOnce(
+      request::MatcherGroup request_matcher_group,
+      base::RepeatingCallback<std::string(bool)> response_body_provider,
+      net::HttpStatusCode response_status_code = net::HTTP_OK);
+
+  GURL base_url() const { return test_server_->base_url(); }
+
   std::string update_path() const { return "/update"; }
   GURL update_url() const { return test_server_->GetURL(update_path()); }
 
   std::string download_path() const { return "/download"; }
   GURL download_url() const { return test_server_->GetURL(download_path()); }
-  void set_download_delay(const base::TimeDelta& delay) {
-    download_delay_ = delay;
-  }
+  void set_download_delay(base::TimeDelta delay) { download_delay_ = delay; }
 
   std::string crash_report_path() const { return "/crash"; }
   GURL crash_upload_url() const {
@@ -99,6 +107,11 @@ class ScopedServer {
   std::string app_logo_path() const { return "/applogo/"; }
   GURL app_logo_url() const { return test_server_->GetURL(app_logo_path()); }
 
+  std::string event_logging_path() const { return "/event_logging/"; }
+  GURL event_logging_url() const {
+    return test_server_->GetURL(event_logging_path());
+  }
+
   std::string proxy_pac_path() const { return "/pac_script.pac"; }
   GURL proxy_pac_url() const { return test_server_->GetURL(proxy_pac_path()); }
 
@@ -112,6 +125,9 @@ class ScopedServer {
     return proxy;
   }
 
+  bool gzip_response() const { return gzip_response_; }
+  void set_gzip_response(bool gzip_response) { gzip_response_ = gzip_response; }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
@@ -120,8 +136,11 @@ class ScopedServer {
       std::make_unique<net::test_server::EmbeddedTestServer>();
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   std::list<request::MatcherGroup> request_matcher_groups_;
-  std::list<std::pair<net::HttpStatusCode, std::string>> responses_;
+  std::list<std::pair<net::HttpStatusCode,
+                      base::RepeatingCallback<std::string(bool)>>>
+      responses_;
   base::TimeDelta download_delay_;
+  bool gzip_response_ = false;
 };
 
 }  // namespace updater::test

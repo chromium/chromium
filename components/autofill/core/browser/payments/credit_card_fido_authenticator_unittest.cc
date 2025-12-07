@@ -27,10 +27,15 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -39,13 +44,9 @@
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -58,8 +59,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "components/variations/variations_associated_data.h"
-#include "components/variations/variations_params_manager.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -93,25 +92,29 @@ std::vector<uint8_t> Base64ToBytes(std::string base64) {
 std::string BytesToBase64(const std::vector<uint8_t> bytes) {
   return base::Base64Encode(bytes);
 }
-}  // namespace
 
-class CreditCardFidoAuthenticatorTest : public testing::Test {
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
+
+class CreditCardFidoAuthenticatorTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   void SetUp() override {
-    personal_data_manager().SetPrefService(autofill_client_.GetPrefs());
+    InitAutofillClient();
 
-    autofill_driver_.SetAuthenticator(new TestInternalAuthenticator());
+    CreateAutofillDriver();
+    autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
 
-    autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
-            std::make_unique<payments::TestPaymentsNetworkInterface>(
-                autofill_client_.GetURLLoaderFactory(),
-                autofill_client_.GetIdentityManager(),
-                &personal_data_manager()));
-    autofill_client_.set_test_strike_database(
+    payments_autofill_client().set_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
+            autofill_client().GetURLLoaderFactory(),
+            autofill_client().GetIdentityManager(), &personal_data_manager()));
+    autofill_client().set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     fido_authenticator_ = std::make_unique<CreditCardFidoAuthenticator>(
-        &autofill_driver_, &autofill_client_);
+        &autofill_driver(), &autofill_client());
   }
 
   CreditCard CreateServerCard(std::string guid, std::string number) {
@@ -172,7 +175,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
                   const std::string& real_pan,
                   bool is_virtual_card = false) {
     DCHECK(fido_authenticator().full_card_request_);
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? payments::PaymentsAutofillClient::
                                                PaymentsRpcCardType::kVirtualCard
                                          : payments::PaymentsAutofillClient::
@@ -186,7 +189,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
                  bool user_is_opted_in,
                  bool include_creation_options = false,
                  bool include_request_options = false) {
-    payments::PaymentsNetworkInterface::OptChangeResponseDetails response;
+    payments::OptChangeResponseDetails response;
     response.user_is_opted_in = user_is_opted_in;
     if (include_creation_options) {
       response.fido_creation_options =
@@ -200,8 +203,8 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
   }
 
   void SetUserOptInPreference(bool user_is_opted_in) {
-    ::autofill::prefs::SetCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs(),
-                                                    user_is_opted_in);
+    ::autofill::prefs::SetCreditCardFIDOAuthEnabled(
+        autofill_client().GetPrefs(), user_is_opted_in);
     fido_authenticator().user_is_opted_in_ =
         fido_authenticator().IsUserOptedIn();
   }
@@ -211,17 +214,14 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
     return *fido_authenticator_;
   }
   TestPersonalDataManager& personal_data_manager() {
-    return static_cast<TestPersonalDataManager&>(
-        *autofill_client_.GetPersonalDataManager());
+    return autofill_client().GetPersonalDataManager();
   }
   TestAuthenticationRequester& requester() { return requester_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  TestAutofillClient autofill_client_;
-  TestAutofillDriver autofill_driver_{&autofill_client_};
   TestAuthenticationRequester requester_;
   std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator_;
 };
@@ -241,8 +241,8 @@ TEST_F(CreditCardFidoAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Android) {
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
-  unmask_details.offer_fido_opt_in = true;
+  payments::UnmaskDetails unmask_details;
+  unmask_details.server_denotes_fido_eligible_but_not_opted_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page, and Payments did not update the status in time.
   SetUserOptInPreference(true);
@@ -259,8 +259,8 @@ TEST_F(CreditCardFidoAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Desktop) {
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
-  unmask_details.offer_fido_opt_in = true;
+  payments::UnmaskDetails unmask_details;
+  unmask_details.server_denotes_fido_eligible_but_not_opted_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page and Payments did not update the status in time, or
   // something updated on the server side which caused Chrome to be out of sync.
@@ -279,7 +279,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
 TEST_F(CreditCardFidoAuthenticatorTest, GetUserOptInIntention_IntentToOptOut) {
   // If payments is requesting a FIDO auth, then that means user is opted in
   // from payments.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
+  payments::UnmaskDetails unmask_details;
   unmask_details.unmask_auth_method =
       payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido;
   // Set the local preference to be disabled, which denotes user manually opted
@@ -307,7 +307,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseRequestOptions) {
 
   blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_ptr =
       fido_authenticator().ParseRequestOptions(std::move(request_options_json));
-  EXPECT_EQ(kTestChallenge, BytesToBase64(request_options_ptr->challenge));
+  EXPECT_EQ(kTestChallenge, BytesToBase64(*request_options_ptr->challenge));
   EXPECT_EQ(kTestRelyingPartyId, request_options_ptr->relying_party_id);
   EXPECT_EQ(kTestCredentialId,
             BytesToBase64(request_options_ptr->allow_credentials.front().id));
@@ -392,7 +392,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
       card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kAuthenticationFlow,
             fido_authenticator().current_flow());
 
   // Mock user verification.
@@ -412,7 +412,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
       card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kAuthenticationFlow,
             fido_authenticator().current_flow());
 
   // Mock user verification.
@@ -435,7 +435,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, AuthenticateCard_Success) {
       card, requester().GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kAuthenticationFlow,
             fido_authenticator().current_flow());
 
   // Mock user verification and payments response.
@@ -456,7 +456,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, OptIn_PaymentsResponseError) {
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
 
   fido_authenticator().Register(kTestAuthToken);
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_FETCH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInFetchChallengeFlow,
             fido_authenticator().current_flow());
 
   // Mock payments response.
@@ -476,7 +476,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, OptIn_Success) {
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
 
   fido_authenticator().Register(kTestAuthToken);
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_FETCH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInFetchChallengeFlow,
             fido_authenticator().current_flow());
 
   // Mock payments response.
@@ -504,7 +504,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, Register_UserResponseFailure) {
   fido_authenticator().Register(
       kTestAuthToken,
       GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInWithChallengeFlow,
             fido_authenticator().current_flow());
 
   // Mock user response and payments response.
@@ -523,7 +523,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, Register_Success) {
   fido_authenticator().Register(
       kTestAuthToken,
       GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInWithChallengeFlow,
             fido_authenticator().current_flow());
 
   // Mock user response and payments response.
@@ -547,13 +547,13 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
 
   fido_authenticator().Register(kTestAuthToken);
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_FETCH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInFetchChallengeFlow,
             fido_authenticator().current_flow());
 
   // Mock payments response with challenge to invoke enrollment flow.
   OptChange(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false, /*include_creation_options=*/true);
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInWithChallengeFlow,
             fido_authenticator().current_flow());
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
 
@@ -580,14 +580,14 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
 
   fido_authenticator().Register(kTestAuthToken);
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_FETCH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInFetchChallengeFlow,
             fido_authenticator().current_flow());
 
   // Mock payments response with challenge to invoke opt-in flow.
   OptChange(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false, /*include_creation_options=*/false,
             /*include_request_options=*/true);
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptInWithChallengeFlow,
             fido_authenticator().current_flow());
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
 
@@ -608,7 +608,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, Register_NewCardAuthorization) {
       requester().GetWeakPtr(), kTestAuthToken,
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::FOLLOWUP_AFTER_CVC_AUTH_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kFollowupAfterCvcAuthFlow,
             fido_authenticator().current_flow());
 
   // Mock user response and second payments response.
@@ -659,7 +659,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, OptOut_Success) {
   EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
 
   fido_authenticator().OptOut();
-  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_OUT_FLOW,
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kOptOutFlow,
             fido_authenticator().current_flow());
 
   // Mock payments response.

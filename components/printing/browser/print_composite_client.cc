@@ -11,6 +11,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "components/strings/grit/components_strings.h"
@@ -27,12 +28,17 @@
 #include "printing/printing_utils.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "components/enterprise/watermarking/content/watermark_text_container.h"  // nogncheck
+#include "components/enterprise/watermarking/mojom/watermark.mojom.h"
+#endif
+
 namespace printing {
 
 namespace {
 
 uint64_t GenerateFrameGuid(content::RenderFrameHost* render_frame_host) {
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   int frame_id = render_frame_host->GetRoutingID();
   return static_cast<uint64_t>(process_id) << 32 | frame_id;
 }
@@ -47,7 +53,7 @@ ContentToFrameMap ConvertContentInfoMap(
     content::RenderFrameHost* render_frame_host,
     const ContentToProxyTokenMap& content_proxy_map) {
   ContentToFrameMap content_frame_map;
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   for (const auto& entry : content_proxy_map) {
     auto content_id = entry.first;
     auto proxy_token = entry.second;
@@ -72,7 +78,7 @@ PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<PrintCompositeClient>(*web_contents),
       content::WebContentsObserver(web_contents) {}
 
-PrintCompositeClient::~PrintCompositeClient() {}
+PrintCompositeClient::~PrintCompositeClient() = default;
 
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
@@ -370,6 +376,14 @@ mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
   compositor_->SetWebContentsURL(web_contents()->GetLastCommittedURL());
   compositor_->SetUserAgent(user_agent_);
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  auto* watermark_text_container =
+      enterprise_watermark::WatermarkTextContainer::FromWebContents(
+          web_contents());
+  if (watermark_text_container) {
+    compositor_->SetWatermarkBlock(watermark_text_container->Serialize());
+  }
+#endif
   return compositor_.get();
 }
 

@@ -1,0 +1,44 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+source_set("runtime") {
+  sources = [
+    "chrome_runtime_api_delegate.cc",
+    "chrome_runtime_api_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/browser",
+    "//extensions/browser/api/runtime",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chrome/browser/devtools",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//components/update_client",
+    "//extensions/common:common_constants",
+    "//extensions/common/api",
+    "//net",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
+  }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  }
+}

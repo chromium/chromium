@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -119,7 +120,7 @@ class AlarmManager {
       next_alarm_;
 
   // Poller for wall clock time.
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
   base::RepeatingTimer clock_tick_timer_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

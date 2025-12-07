@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+<title>Makes sure that the browser preloads resources in the presence of CSP meta tag that doesn't prevent it</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<script>
+/* Note: Do *NOT* try to change internals.runtimeFlags.allowPreloadingWithCSPMetaTagEnabled within this HTML, because it may be too late (things may be already preloading). */
+</script>
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+</head>
+<body>
+<script>
+setup({single_test: true});
+if (internals) {
+    if (internals.runtimeFlags.allowPreloadingWithCSPMetaTagEnabled) {
+        assert_true(internals.isPreloaded("resources/square.png"));
+    } else {
+        assert_false(internals.isPreloaded("resources/square.png"));
+    }
+}
+done();
+</script>
+<img src="resources/square.png">
+

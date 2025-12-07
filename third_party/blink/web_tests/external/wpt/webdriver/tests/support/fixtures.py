@@ -10,6 +10,7 @@ from urllib.parse import urlunsplit
 
 from tests.support import defaults
 from tests.support.helpers import cleanup_session, deep_update
+from tests.support.web_extension import EXTENSION_DATA
 from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
 from tests.support.keys import Keys
@@ -41,16 +42,24 @@ def pytest_sessionfinish():
 
 
 @pytest.fixture
-def capabilities():
+def default_capabilities():
     """Default capabilities to use for a new WebDriver session."""
     return {}
 
 
-def pytest_generate_tests(metafunc):
-    if "capabilities" in metafunc.fixturenames:
-        marker = metafunc.definition.get_closest_marker(name="capabilities")
-        if marker:
-            metafunc.parametrize("capabilities", marker.args, ids=None)
+@pytest.fixture
+def capabilities(request, default_capabilities):
+    """Merges default capabilities with any test-specific capabilities from a marker."""
+    marker = request.node.get_closest_marker("capabilities")
+    if marker and marker.args:
+        # Ensure the first positional argument is a dictionary
+        assert isinstance(
+            marker.args[0], dict), "capabilities marker must use a dictionary"
+        caps = copy.deepcopy(default_capabilities)
+        deep_update(caps, marker.args[0])
+        return caps
+
+    return default_capabilities  # Use defaults if no marker is present
 
 
 @pytest.fixture
@@ -170,22 +179,28 @@ async def session(capabilities, configuration):
             configuration["port"],
             capabilities=caps)
 
-    _current_session.start()
+    try:
+        _current_session.start()
 
-    # Enforce a fixed default window size and position
-    if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
+        # Enforce a fixed default window size and position
+        if _current_session.capabilities.get("setWindowRect"):
+            _current_session.window.size = defaults.WINDOW_SIZE
+            _current_session.window.position = defaults.WINDOW_POSITION
 
-    # Set default timeouts
-    multiplier = configuration["timeout_multiplier"]
-    _current_session.timeouts.implicit = IMPLICIT_WAIT_TIMEOUT * multiplier
-    _current_session.timeouts.page_load = PAGE_LOAD_TIMEOUT * multiplier
-    _current_session.timeouts.script = SCRIPT_TIMEOUT * multiplier
+        # Set default timeouts
+        multiplier = configuration["timeout_multiplier"]
+        _current_session.timeouts.implicit = IMPLICIT_WAIT_TIMEOUT * multiplier
+        _current_session.timeouts.page_load = PAGE_LOAD_TIMEOUT * multiplier
+        _current_session.timeouts.script = SCRIPT_TIMEOUT * multiplier
 
-    yield _current_session
+        yield _current_session
 
-    cleanup_session(_current_session)
+        cleanup_session(_current_session)
+
+    except Exception:
+        # Make sure we end up in a known state if something goes wrong.
+        _current_session.end()
+        raise
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -217,18 +232,27 @@ async def bidi_session(capabilities, configuration):
             capabilities=caps,
             enable_bidi=True)
 
-    _current_session.start()
-    await _current_session.bidi_session.start()
+    try:
+        _current_session.start()
 
-    # Enforce a fixed default window size and position
-    if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
+        try:
+            await _current_session.bidi_session.start()
 
-    yield _current_session.bidi_session
+            # Enforce a fixed default window size and position
+            if _current_session.capabilities.get("setWindowRect"):
+                _current_session.window.size = defaults.WINDOW_SIZE
+                _current_session.window.position = defaults.WINDOW_POSITION
 
-    await _current_session.bidi_session.end()
-    cleanup_session(_current_session)
+            yield _current_session.bidi_session
+
+        finally:
+            await _current_session.bidi_session.end()
+
+        cleanup_session(_current_session)
+
+    except Exception:
+        # Make sure we end up in a known state if something goes wrong.
+        _current_session.end()
 
 
 @pytest.fixture(scope="function")
@@ -289,6 +313,13 @@ def inline(url):
 
 
 @pytest.fixture
+def extension_data(current_session):
+    browser_name = current_session.capabilities["browserName"]
+
+    return EXTENSION_DATA[browser_name]
+
+
+@pytest.fixture
 def iframe(inline):
     """Inline document extract as the source document of an <iframe>."""
     def iframe(src, **kwargs):
@@ -299,12 +330,13 @@ def iframe(inline):
 
 @pytest.fixture
 def get_actions_origin_page(inline):
-    """Create a test pagefor action origin tests, recording mouse coordinates
+    """Create a test page for action origin tests, recording mouse coordinates
     automatically on window.coords."""
 
     def get_actions_origin_page(inner_style, outer_style=""):
         return inline(
             f"""
+          <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
           <div id="outer" style="{outer_style}"
                onmousemove="window.coords = {{x: event.clientX, y: event.clientY}}">
             <div id="inner" style="{inner_style}"></div>

@@ -18,11 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.WindowAndroid;
@@ -35,6 +37,8 @@ import java.util.ArrayList;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.UNIT_TESTS)
 public class QrCodeDialogTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -49,8 +53,8 @@ public class QrCodeDialogTest {
     }
 
     public static class CustomQrCodeDialogTab implements QrCodeDialogTab {
-        private View mView;
-        private boolean mEnabled;
+        private final View mView;
+        private final boolean mEnabled;
 
         CustomQrCodeDialogTab(View view, boolean enabled) {
             mView = view;
@@ -82,7 +86,6 @@ public class QrCodeDialogTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.setFinishActivity(true);
     }
 
@@ -98,8 +101,8 @@ public class QrCodeDialogTest {
         qrCodeDialog.setTabs(tabs);
 
         View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
-        ViewPager viewPager = dialog.findViewById(org.chromium.chrome.R.id.qrcode_view_pager);
-        TabLayout tabLayout = dialog.findViewById(org.chromium.chrome.R.id.tab_layout);
+        ViewPager viewPager = dialog.findViewById(R.id.qrcode_view_pager);
+        TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
 
         assertEquals(
                 "Tab is disabled and should not be in adapter.",
@@ -121,8 +124,8 @@ public class QrCodeDialogTest {
         qrCodeDialog.setTabs(tabs);
 
         View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
-        ViewPager viewPager = dialog.findViewById(org.chromium.chrome.R.id.qrcode_view_pager);
-        TabLayout tabLayout = dialog.findViewById(org.chromium.chrome.R.id.tab_layout);
+        ViewPager viewPager = dialog.findViewById(R.id.qrcode_view_pager);
+        TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
 
         assertEquals("Tab views should be in the viewPager.", 1, viewPager.getAdapter().getCount());
         assertEquals("Tabs should be in the tabLayout.", 1, tabLayout.getTabCount());

@@ -5,21 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 class TabsSearchService;
 
 // Singleton that owns all TabsSearchServices and associates them with
-// ChromeBrowserState.
-class TabsSearchServiceFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class TabsSearchServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  TabsSearchServiceFactory(const TabsSearchServiceFactory&) = delete;
-  TabsSearchServiceFactory& operator=(const TabsSearchServiceFactory&) = delete;
-
-  static TabsSearchService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static TabsSearchService* GetForProfile(ProfileIOS* profile);
   static TabsSearchServiceFactory* GetInstance();
 
  private:
@@ -28,11 +24,9 @@ class TabsSearchServiceFactory : public BrowserStateKeyedServiceFactory {
   TabsSearchServiceFactory();
   ~TabsSearchServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_

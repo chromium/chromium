@@ -5,10 +5,10 @@
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './session_statistics_table.html.js';
-import type {XrFrameStatistics} from './xr_session.mojom-webui.js';
+import type {XrFrameStatistics, XrLogMessage} from './xr_session.mojom-webui.js';
 
 
-const COLUMN_NAMES = ['Total Duration (ms)', 'Frame Rate', 'Dropped Frames'];
+const COLUMN_NAMES = ['Logs'];
 
 export class SessionStatisticsTable extends CustomElement {
   textLines: string[];
@@ -22,7 +22,6 @@ export class SessionStatisticsTable extends CustomElement {
 
     this.totalDuration = 0n;
     this.textLines = [COLUMN_NAMES.join(', ')];
-
     const table =
         this.getRequiredElement<HTMLTableElement>('#session-statistics-table');
 
@@ -49,10 +48,29 @@ export class SessionStatisticsTable extends CustomElement {
 
     const fps = xrSessionStatistics.numFrames / durationInSeconds;
     const droppedFrames = xrSessionStatistics.droppedFrames / durationInSeconds;
-    const cellValues = [`${this.totalDuration}`, `${fps}`, `${droppedFrames}`];
+    const frameDataTime = this.getDisplayMillisecondsFromMicroSeconds(
+        xrSessionStatistics.frameDataTime.microseconds);
+    const animationFrameTime = this.getDisplayMillisecondsFromMicroSeconds(
+        xrSessionStatistics.pageAnimationFrameTime.microseconds);
+    const submitFrameTime = this.getDisplayMillisecondsFromMicroSeconds(
+        xrSessionStatistics.submitFrameTime.microseconds);
+    const cellValues = [
+      `${this.totalDuration}`,
+      `${fps}`,
+      `${droppedFrames}`,
+      `${frameDataTime}`,
+      `${animationFrameTime}`,
+      `${submitFrameTime}`,
+    ];
 
     this.textLines.push(cellValues.join(', '));
-    this.addRow(cellValues);
+
+    const cellValuesString = `Duration:${this.totalDuration}ms, Frame Rate:${
+        fps}, Dropped Frames:${droppedFrames}, Frame Data Time:${
+        frameDataTime}ms/frame, Animation Frame Time:${
+        animationFrameTime}ms/frame, Submit Frame Time:${
+        submitFrameTime}ms/frame`;
+    this.addRow([cellValuesString]);
   }
 
   addRow(cellValues: string[]) {
@@ -70,6 +88,18 @@ export class SessionStatisticsTable extends CustomElement {
   async copyToClipboard(): Promise<void> {
     const textToCopy = this.textLines.join('\n');
     await navigator.clipboard.writeText(textToCopy);
+  }
+
+  addConsoleMessageRow(xrLogMessage: XrLogMessage) {
+    const message = xrLogMessage.message;
+    this.addRow([message]);
+  }
+
+  // Method to convert microseconds to milliseconds and round to 2 decimal
+  // places and return  it as a string
+  getDisplayMillisecondsFromMicroSeconds(time: bigint): string {
+    const timeInMilliseconds = Number(time) / 1000;
+    return timeInMilliseconds.toFixed(2);
   }
 }
 

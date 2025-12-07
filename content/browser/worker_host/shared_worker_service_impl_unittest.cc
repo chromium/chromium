@@ -49,8 +49,6 @@ namespace {
 
 using ::testing::ElementsAre;
 
-const ukm::SourceId kClientUkmSourceId = 1;
-
 void ConnectToSharedWorker(
     mojo::Remote<blink::mojom::SharedWorkerConnector> connector,
     const GURL& url,
@@ -65,7 +63,8 @@ void ConnectToSharedWorker(
       blink::mojom::FetchClientSettingsObject::New(
           network::mojom::ReferrerPolicy::kDefault, GURL(),
           blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-      blink::mojom::SharedWorkerSameSiteCookies::kAll));
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false));
 
   blink::MessagePortDescriptorPair pipe;
   *local_port = MessagePortChannel(pipe.TakePort0());
@@ -75,7 +74,7 @@ void ConnectToSharedWorker(
 
   connector->Connect(std::move(info), std::move(client_proxy),
                      blink::mojom::SharedWorkerCreationContextType::kSecure,
-                     pipe.TakePort1(), mojo::NullRemote(), kClientUkmSourceId);
+                     pipe.TakePort1(), mojo::NullRemote());
 }
 
 }  // namespace
@@ -94,9 +93,10 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
 
     void BindReceiver(mojo::GenericPendingReceiver receiver) override {
       if (*receiver.interface_name() !=
-          blink::mojom::SharedWorkerFactory::Name_)
+          blink::mojom::SharedWorkerFactory::Name_) {
         return;
-      test_->BindSharedWorkerFactory(GetID(), receiver.PassPipe());
+      }
+      test_->BindSharedWorkerFactory(GetDeprecatedID(), receiver.PassPipe());
     }
 
     const raw_ptr<SharedWorkerServiceImplTest> test_;
@@ -109,28 +109,16 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
         SharedWorkerServiceImplTest* test)
         : test_(test) {}
 
-    RenderProcessHost* CreateRenderProcessHost(
+   protected:
+    std::unique_ptr<MockRenderProcessHost> BuildRenderProcessHost(
         BrowserContext* browser_context,
         SiteInstance* site_instance) override {
-      auto host = std::make_unique<MockRenderProcessHostForSharedWorker>(
+      return std::make_unique<MockRenderProcessHostForSharedWorker>(
           browser_context, test_);
-      processes_.push_back(std::move(host));
-      return processes_.back().get();
-    }
-
-    void Remove(MockRenderProcessHostForSharedWorker* host) {
-      for (auto it = processes_.begin(); it != processes_.end(); ++it) {
-        if (it->get() == host) {
-          processes_.erase(it);
-          break;
-        }
-      }
     }
 
    private:
     const raw_ptr<SharedWorkerServiceImplTest> test_;
-    std::vector<std::unique_ptr<MockRenderProcessHostForSharedWorker>>
-        processes_;
   };
 
   SharedWorkerServiceImplTest(const SharedWorkerServiceImplTest&) = delete;
@@ -164,8 +152,9 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   // Receives a PendingReceiver<blink::mojom::SharedWorkerFactory>.
   void BindSharedWorkerFactory(int process_id,
                                mojo::ScopedMessagePipeHandle handle) {
-    if (factory_receiver_callback_)
+    if (factory_receiver_callback_) {
       std::move(factory_receiver_callback_).Run();
+    }
 
     factorys_receivers_.emplace(std::move(handle), process_id);
   }
@@ -199,8 +188,9 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
-    if (url_loader_factory_wrapper_)
+    if (url_loader_factory_wrapper_) {
       url_loader_factory_wrapper_->Detach();
+    }
     render_process_host_factory_.reset();
 
     browser_context_.reset();
@@ -233,7 +223,7 @@ TEST_F(SharedWorkerServiceImplTest, BasicTest) {
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
-  const int process_id = renderer_host->GetID();
+  const int process_id = renderer_host->GetDeprecatedID();
   renderer_host->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -326,7 +316,7 @@ TEST_F(SharedWorkerServiceImplTest, WebContentsDestroyed) {
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
-  const int process_id = renderer_host->GetID();
+  const int process_id = renderer_host->GetDeprecatedID();
   renderer_host->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -373,7 +363,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   auto [factory_receiver, process_id] = WaitForFactoryReceiver();
   // Currently shared worker is created in the same process with the creator's
   // process by default.
-  EXPECT_EQ(renderer_host0->GetID(), process_id);
+  EXPECT_EQ(renderer_host0->GetDeprecatedID(), process_id);
 
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
@@ -504,7 +494,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase) {
   TestRenderFrameHost* render_frame_host0 =
       web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
+  const int process_id0 = renderer_host0->GetDeprecatedID();
   renderer_host0->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -652,7 +642,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_NameMismatch) {
   TestRenderFrameHost* render_frame_host0 =
       web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
+  const int process_id0 = renderer_host0->GetDeprecatedID();
   renderer_host0->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -664,7 +654,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_NameMismatch) {
   TestRenderFrameHost* render_frame_host1 =
       web_contents1->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
+  const int process_id1 = renderer_host1->GetDeprecatedID();
   renderer_host1->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -740,7 +730,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase) {
   TestRenderFrameHost* render_frame_host0 =
       web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
+  const int process_id0 = renderer_host0->GetDeprecatedID();
   renderer_host0->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -752,7 +742,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase) {
   TestRenderFrameHost* render_frame_host1 =
       web_contents1->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
+  const int process_id1 = renderer_host1->GetDeprecatedID();
   renderer_host1->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -901,7 +891,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_NameMismatch) {
   TestRenderFrameHost* render_frame_host0 =
       web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
+  const int process_id0 = renderer_host0->GetDeprecatedID();
   renderer_host0->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -1172,7 +1162,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
   TestRenderFrameHost* render_frame_host0 =
       web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
+  const int process_id0 = renderer_host0->GetDeprecatedID();
   renderer_host0->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
@@ -1281,8 +1271,9 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
 
   size_t GetClientCount() {
     size_t client_count = 0;
-    for (const auto& worker : shared_workers_)
+    for (const auto& worker : shared_workers_) {
       client_count += worker.second.size();
+    }
     return client_count;
   }
 
@@ -1308,7 +1299,7 @@ TEST_F(SharedWorkerServiceImplTest, Observer) {
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
-  const int process_id = renderer_host->GetID();
+  const int process_id = renderer_host->GetDeprecatedID();
   renderer_host->OverrideBinderForTesting(
       blink::mojom::SharedWorkerFactory::Name_,
       base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,

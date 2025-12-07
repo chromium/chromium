@@ -33,7 +33,14 @@ enum class FrameType {
   kPrerenderMainFrame,
   // A root of an isolated frame tree created on behalf of a <fencedframe>
   // element.
-  kFencedFrameRoot
+  kFencedFrameRoot,
+  // The main frame of a guest page. Guests are kinds of embedded pages, but
+  // their semantics are mostly delegated outside of the content/ layer. See
+  // components/guest_view/README.md.
+  // The implementation of guests is being migrated from using a separate
+  // WebContents to using this FrameType. This type is used with the
+  // `features::kGuestViewMPArch` flag.
+  kGuestMainFrame,
 };
 
 }  // namespace content

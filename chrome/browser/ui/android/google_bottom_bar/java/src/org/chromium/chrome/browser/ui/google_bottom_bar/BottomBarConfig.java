@@ -8,8 +8,9 @@ import android.app.PendingIntent;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 
 import java.lang.annotation.Retention;
@@ -20,6 +21,7 @@ import java.util.List;
  * Container for all relevant parameters to creating a customizable button list in Google Bottom
  * Bar.
  */
+@NullMarked
 class BottomBarConfig {
 
     // LINT.IfChange
@@ -79,7 +81,7 @@ class BottomBarConfig {
     private final int mHeightDp;
 
     BottomBarConfig(
-            @Nullable @ButtonId Integer spotlightId,
+            @ButtonId @Nullable Integer spotlightId,
             List<ButtonConfig> buttonList,
             @GoogleBottomBarVariantLayoutType int variantLayoutType,
             int heightDp) {
@@ -92,9 +94,8 @@ class BottomBarConfig {
     /**
      * @return the id of the spotlit button in the bottom bar or null is there is none set.
      */
-    @Nullable
     @ButtonId
-    Integer getSpotlightId() {
+    @Nullable Integer getSpotlightId() {
         return mSpotlightId;
     }
 
@@ -158,8 +159,7 @@ class BottomBarConfig {
             return mDescription;
         }
 
-        @Nullable
-        public PendingIntent getPendingIntent() {
+        public @Nullable PendingIntent getPendingIntent() {
             return mPendingIntent;
         }
     }

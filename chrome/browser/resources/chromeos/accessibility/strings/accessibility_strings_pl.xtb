@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="100421257800558142">Naciśnij klawisz strzałki w prawo</translation>
 <translation id="100506692671054486">brak poprzedniego polecenia</translation>
 <translation id="1009046985747440431">Naciśnij strzałkę w górę lub w dół, by się poruszać, i Enter, by wybrać opcję</translation>
 <translation id="1011903154582639569">Znajdź klawisz, a potem unieś palec, by wpisać znak</translation>
@@ -21,14 +22,17 @@
 <translation id="1120743664840974483">{"a": "alfa", "b": "brawo", "c": "czarli", "d": "delta", "e": "eko", "f": "fokstrot", "g": "golf", "h": "hotel", "i": "india", "j": "dżuliet","k": "kilo", "l": "lima", "m": "majk", "n": "nowember", "o": "oskar","p": "papa", "q": "kebek", "r": "romeo", "s": "sjera", "t": "tango", "u": "juniform", "v": "wiktor", "w": "łyski","x": "eks-rej", "y": "janki", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Przesuń dwoma palcami w górę</translation>
 <translation id="1126928665165112660">Bez kursywy</translation>
+<translation id="1133751489735776037">Kliknij trzykrotnie myszą</translation>
 <translation id="113582498867142724">Kolekcja elementów <ph name="TAG" />. Liczba elementów: <ph name="NUM" /></translation>
 <translation id="1146441463334103638">Włącz/wyłącz ekran</translation>
 <translation id="1156488781945104845">Bieżąca godzina</translation>
 <translation id="1161762950103988776">Przejdź</translation>
 <translation id="1164857107703583584">Polecenia nawigacyjne ułatwiają poruszanie się po stronach internetowych.</translation>
 <translation id="1175914831232945926">Cyfry</translation>
+<translation id="1186712907912748007">Trwa przeciąganie i upuszczanie. Aby je zakończyć, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="1188858454923323853">pomocniczy</translation>
 <translation id="1189258430971676908">Obszar ćwiczenia: listy</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{poziom zagnieżdżenia {$$COUNT}}}</translation>
 <translation id="1195238899008218998">Posłowie</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
 <translation id="1198865190323699001">Kliknięcia</translation>
@@ -51,17 +55,21 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Chabrowy</translation>
 <translation id="1246424317317450637">Pogrubienie</translation>
+<translation id="1250181918001045969">Próbuję połączyć się z kamerą. Sterowanie za pomocą twarzy wyłączy się za <ph name="SECONDS" /> s.</translation>
 <translation id="1251750620252348585">Następny nagłówek poziomu 6</translation>
+<translation id="1264956950255940376">Zmrużenie lewego oka</translation>
 <translation id="1268366246392928616">Nie ma poprzedniego wyrażenia matematycznego</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1284576163386164372">Do samouczków możesz przejść w każdej chwili, otwierając menu dotknięciem czterema palcami. Następnie uaktywnij samouczek w sekcji „ChromeVox”.</translation>
 <translation id="1291286136605998134">Przycisk przełączania</translation>
 <translation id="1299774449519412690">Jasny błękit</translation>
 <translation id="1303806948938513162">Kliknij czterema palcami, by otworzyć menu ChromeVoxa</translation>
+<translation id="1304162325618937178">Naciśnij spację</translation>
 <translation id="1313373992684326101">Przejdź do poprzedniej sekcji. Przykłady: pasek stanu i Menu z aplikacjami.</translation>
 <translation id="1315077335264761176">Orientacja ekranu dotykowego</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, niewybrany przycisk pozycji menu</translation>
 <translation id="1325946044405407859">Pastelowobrązowy</translation>
+<translation id="1328928545650070438">Obniżenie brwi</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> z <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">odczytywanie znaków i słów</translation>
 <translation id="1334570596456017464">Indeks dolny</translation>
@@ -70,6 +78,7 @@
 <translation id="1346059596910821859">Wskazówka</translation>
 <translation id="1354356357730355833">kopiuj</translation>
 <translation id="1360699455582016846">Kliknij element pod klawiszem sterującym <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Uniesienie brwi</translation>
 <translation id="1376703628032300005">przejdź do następnego znaku</translation>
 <translation id="1377925789329510816">To jest ostatni nagłówek. Kliknij klawisz wyszukiwania + H, by wrócić do pierwszego nagłówka na tej stronie, lub klawisz wyszukiwania + Shift + H, by przejść do drugiego.</translation>
 <translation id="138218114945450791">Jasnoniebieski</translation>
@@ -92,6 +101,7 @@
 <translation id="1506187449813838456">Podnieś tonację.</translation>
 <translation id="151784044608172266">Następne zdanie</translation>
 <translation id="1524531499102321782">Pismo Braille'a – następny wiersz</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{tylda}} *{{tyldy: {$$COUNT}}}</translation>
 <translation id="1542513807034338907">Przewiń do poprzedniej strony</translation>
 <translation id="1546370775711804143">Pasek przewijania</translation>
 <translation id="1551572888042734032">Lato</translation>
@@ -109,7 +119,6 @@
 <translation id="1616111909442424068">Pszenica</translation>
 <translation id="1618597272655350600">Przedstawia pełny opis aktualnej pozycji</translation>
 <translation id="1627222324347828322">Białawy</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{większy niż}few{# znaki większości}many{# znaków większości}other{# greater than signs}}</translation>
 <translation id="1653266918374749391">Poprzedni nagłówek poziomu 3</translation>
 <translation id="1657616855184033958">Pokaż filtry strumienia wydarzenia</translation>
 <translation id="1659072772017912254">Niezaznaczone</translation>
@@ -128,9 +137,12 @@
 <translation id="1756785467854861272">Ciemnopurpurowy</translation>
 <translation id="1758693804775271377">Aby przeglądać lekcje na ten temat, przesuwaj palcem w lewo lub w prawo</translation>
 <translation id="1765245556747822181">Przesuń jednym palcem w górę</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{znak funta}} *{{znaki funta: {$$COUNT}}}</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{kwadratowy punktor}} *{{kwadratowe punktory: {$$COUNT}}}</translation>
 <translation id="1781173782405573156">Klawisz przejścia</translation>
 <translation id="1787176709638001873">Edytowanie tekstu, hasło</translation>
+<translation id="1795438342141780114">Przywróć kursor do środka</translation>
 <translation id="180203835522132923">Wyszukaj + O, a następnie W</translation>
 <translation id="1810107444790159527">Pole listy</translation>
 <translation id="1812527064848182527">orientacja pozioma</translation>
@@ -144,43 +156,49 @@
 <translation id="1902396333223336119">Komórka</translation>
 <translation id="1903683160884433981">Średni zielony wiosenny</translation>
 <translation id="1905379170753160525">Pokaż listę nagłówków</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{znak et}} *{{znaki et: {$$COUNT}}}</translation>
 <translation id="1913761808037590218">#ed</translation>
 <translation id="1914424852593176649">Rozmiar <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Średni storczykowy</translation>
+<translation id="1926147969119007125">Wstrzymaj sterowanie za pomocą twarzy</translation>
 <translation id="1928932365747995741">Nie ma poprzedniego pola tekstowego do edytowania</translation>
 <translation id="1964135212174907577">Następny obiekt</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{znak równości}} *{{znaki równości: {$$COUNT}}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Pokazuj polecenia klawiatury brajlowskiej w menu ChromeVoxa</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{lewy nawias kwadratowy}few{# lewe nawiasy kwadratowe}many{# lewych nawiasów kwadratowych}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Nie jest indeksem górnym</translation>
 <translation id="2010555995361223825">Menu ChromeVox</translation>
 <translation id="203030071582665758">Nie ma poprzedniego nagłówka poziomu 4</translation>
 <translation id="2045055672832940894">Nie ma poprzedniego elementu sterującego</translation>
 <translation id="2045606329038304310">Sterowanie na poziomie pola formularza</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{minuta}} *{{minuty}}</translation>
 <translation id="2063539687800151747">Epigraf</translation>
 <translation id="2086961585857038472">Następne słowo</translation>
 <translation id="2087981446621639008">szczeg listyopisu</translation>
 <translation id="2089387485033699258">pl</translation>
 <translation id="2091933974477985526">Poprzedni obszar tekstowy do edytowania</translation>
 <translation id="2100350898815792233">Pełna interpunkcja</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{przecinek}} *{{przecinki: {$$COUNT}}}</translation>
 <translation id="2110480898214777136">Zawijaj od początku do końca lub od końca do początku w obrębie strony, w oknie dialogowym lub innym kontenerze</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">klawisz dostępu:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Brak tekstu dla tego elementu</translation>
 <translation id="2127747486437921899">Kursywa</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Zamknij obszar ćwiczenia</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Kliknij bieżący element</translation>
 <translation id="2179452035581866348">ChromeVox przekazuje ważne informacje dodatkowe za pomocą dźwięków. Gdy poznasz ich znaczenie, możesz przy ich użyciu szybciej się poruszać. Gdy już zyskasz więcej pewności, możesz wyłączyć wyczerpujące opisy głosowe i uzyskiwać ważne informacje o stronie na podstawie samych dźwięków. Oto kompletna lista dźwięków i ich znaczeń.</translation>
 <translation id="2183409941723714159">Nawigacja na kartach</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{nawias okrągły zamykający}few{# nawiasy okrągłe zamykające}many{# nawiasów okrągłych zamykających}other{# close parens}}</translation>
 <translation id="2197863150503783129">Siodlany brązowy</translation>
 <translation id="2199994615414171367">Poprzednie wyrażenie matematyczne</translation>
 <translation id="2203046366315513658">Zmniejsz wartość</translation>
+<translation id="2206580811360135054">Pokaż lub ukryj przegląd okien</translation>
 <translation id="2216790501338699346">URL linku: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Przejdź jeden znak wstecz</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
+<translation id="2239819015858077439">Naciśnij klawisz strzałki w dół</translation>
 <translation id="2243633977138166243">Aby przechodzić między elementami menu, naciskaj strzałki w lewo lub w prawo. Aby aktywować, naciśnij Enter.</translation>
 <translation id="224426591676115802">Brak dostępnego głosu dla języka: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Wyłączam tryb informacyjny</translation>
@@ -188,6 +206,7 @@
 <translation id="2267538686624070261">Pozostał błąd pisowni</translation>
 <translation id="2267945578749931355">Następny znak</translation>
 <translation id="2278490101488436824">Przesuń trzema palcami w lewo</translation>
+<translation id="228059581448666199">Kliknij lewym przyciskiem myszy</translation>
 <translation id="2303873575703885770">Uaktywnianie elementu</translation>
 <translation id="2305942658236913680">Nie ma następnego nagłówka</translation>
 <translation id="2311237334957139798">Przejdź do poprzedniego elementu na tym poziomie szczegółowości</translation>
@@ -197,8 +216,10 @@
 <translation id="2347456970887948350">Link</translation>
 <translation id="2363753371702255035">punktor</translation>
 <translation id="2365384324219615024">Możesz też aktywować elementy, naciskając Enter. Naciskając ten klawisz, możesz na przykład przesłać tekst w formularzu. Aby przejść dalej, naciśnij Enter.</translation>
+<translation id="2371402123699727805">Dyktowanie jest aktywne. Aby je zatrzymać, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="2381733276052567791">Włącz lub wyłącz mowę</translation>
 <translation id="2390264819538553347">Aby kontynuować, naciśnij Enter. Aby się cofnąć, naciśnij Backspace.</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{gwiazdka}} *{{gwiazdki: {$$COUNT}}}</translation>
 <translation id="2398579267367951220">Wpisz, by przeszukać stronę. Naciśnij Enter, by przejść do wyniku. Naciskaj strzałki w górę i w dół, by przeglądać wyniki. Pisz dalej, by zmienić wyszukiwane hasło. Aby anulować, naciśnij Escape.</translation>
 <translation id="240709722712693803">Niebieskofioletowy</translation>
 <translation id="2416512023405990736">Niezaznaczone pole</translation>
@@ -216,7 +237,6 @@
 <translation id="2462626033734746142">Grupa przycisków radiowych</translation>
 <translation id="2467741090055146971">odznacz</translation>
 <translation id="2471138580042810658">Nagłówek 6</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{gwiazdka}few{# znaki gwiazdki}many{# znaków gwiazdki}other{# asterisks}}</translation>
 <translation id="2490721194269245365">Różanobrązowy</translation>
 <translation id="249330843868392562">Otwórz ustawienia zamiany tekstu na mowę</translation>
 <translation id="2497706219848005458">Zielonożółty</translation>
@@ -227,6 +247,7 @@
 <translation id="2556326187583116255">Dotknij ekranu 2 palcami, by zatrzymać odczytywanie</translation>
 <translation id="2573256689920773241">Nawigacja podstawowa</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="2577127557293415225">Zamknij na chwilę oboje oczu</translation>
 <translation id="2582407057977008361">Z boku</translation>
 <translation id="2592212930811759050">Kliknij dwukrotnie, by rozpocząć edycję</translation>
 <translation id="2598495320872286378">Błąd gramatyczny</translation>
@@ -250,19 +271,20 @@
 <translation id="2692503699962701720">Zmieniaj ton w przypadku typów elementów oraz tekstu sformatowanego</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Kandydat do konwersji tekstu</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{nawias okrągły otwierający}few{# nawiasy okrągłe otwierające}many{# nawiasów okrągłych otwierających}other{# open parens}}</translation>
 <translation id="270523456882008230">Wskazówka: aby aktywować bieżący element, kliknij dwukrotnie jednym palcem.</translation>
 <translation id="2705875883745373140">Nienaciśnięte</translation>
 <translation id="2708078563826046398">Brzoskwiniowy obłoczek</translation>
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2717271541250958000">tabpnl</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{ukośnik wsteczny}} *{{ukośniki wsteczne: {$$COUNT}}}</translation>
 <translation id="2723001399770238859">dźwięk</translation>
 <translation id="2737898226590637227">Nie ma następnego punktu orientacyjnego ARIA</translation>
 <translation id="2749275490991666823">Zaznaczony</translation>
+<translation id="2751454300227269244">Porusz ustami w prawo</translation>
 <translation id="27527859628328957">Przejdź do następnego elementu, który można zaznaczyć</translation>
 <translation id="2756452585631602151">Dodaj etykietę własną</translation>
 <translation id="2766299274563946262">Nie ma komórki z lewej strony</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{+ #}few{+ #}many{+ #}other{+ #}}</translation>
+<translation id="2770947749427257887">Włącz tryb przewijania</translation>
 <translation id="2792200646155001340">Możesz też przesunąć jednym palcem z prawej do lewej, aby przejść do poprzedniego elementu. Zrób to teraz.</translation>
 <translation id="280499067616661124">ChromeVox – znajdź na stronie</translation>
 <translation id="2811204574343810641">Wiersz</translation>
@@ -272,15 +294,16 @@
 <translation id="2843432675592278677">Nie ma poprzedniego punktu orientacyjnego ARIA</translation>
 <translation id="2843814945404750166">Ciemnooliwkowy</translation>
 <translation id="2843837985843789981">Poprzednia grupa</translation>
+<translation id="2849035674501872372">Znajdź</translation>
+<translation id="2860710618359053450">Przesunięcie żuchwy w prawo</translation>
 <translation id="2864481629947106776">Poprzedni link</translation>
 <translation id="2867808975387772810">Bibliografia</translation>
 <translation id="2873259058405069099">Przejdź na początek tabeli.</translation>
 <translation id="287383510823843610">Ciemnopomarańczowy</translation>
+<translation id="2876760662374103627">Sterowanie za pomocą twarzy jest aktywne</translation>
 <translation id="2879867157561757640">Przesuń trzema palcami w dół</translation>
 <translation id="288178314850623291">Użyj poleceń nawigacji, by przejść do elementu określonego typu. Aby przejść do następnego nagłówka, naciśnij Wyszukaj + H. Aby przejść do poprzedniego nagłówka, naciśnij Wyszukaj + Shift + H.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{minuta}few{minuty}many{minut}other{minuty}}</translation>
 <translation id="2894654529758326923">Informacje</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{lewy nawias klamrowy}few{# lewe nawiasy klamrowe}many{# lewych nawiasów klamrowych}other{# left braces}}</translation>
 <translation id="2909584066358367921">Nie ma następnego przycisku</translation>
 <translation id="2911433807131383493">Otwórz samouczek ChromeVox</translation>
 <translation id="2912405967290226587">Przesuń trzema palcami w prawo</translation>
@@ -290,7 +313,6 @@
 <translation id="2943596527105977722">Ciemnozłoty</translation>
 <translation id="2964026537669811554">Grupa nagłówka</translation>
 <translation id="2968634799764242930">Zielony morski</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{tabulator}few{# tabulatory}many{# tabulatorów}other{# tabs}}</translation>
 <translation id="2972205263822847197">Wskazówka do elementu</translation>
 <translation id="2976476721782829799">Możesz też poruszać się po ekranie, przeciągając po nim jednym palcem. Ta funkcja nazywa się Czytanie dotykiem. Przeciągnij palcem, aby przeczytać resztę tej lekcji.</translation>
 <translation id="297825089465017871">Przesuń dwoma palcami w lewo</translation>
@@ -301,13 +323,13 @@
 <translation id="3014130421870723208">@ed 8pt</translation>
 <translation id="3018210433491759145">Wczytuję ChromeVoksa</translation>
 <translation id="3030432017085518523">Przycisk opcji elementu menu</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{apostrof}few{# apostrofy}many{# apostrofów}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Wskaźnik postępu</translation>
 <translation id="3046838483509668188">Opcje ChromeVox</translation>
 <translation id="3060756054951570867">otwarte menu <ph name="TITLE" /></translation>
 <translation id="3060880924447482063">Przesuwaj palcem w lewo lub w prawo, by przechodzić między elementami</translation>
 <translation id="3070245424257836917">Przesuń trzema palcami w górę</translation>
 <translation id="307516670110542567">Szybkie wprowadzenie</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Następny nagłówek poziomu 2</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3082249673510793544">Przewiń do tyłu</translation>
@@ -317,6 +339,7 @@
 <translation id="3090227230165225418">Powiadamiaj głosowo o pobieraniu</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Następny punkt orientacyjny</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{sekunda}} *{{sekundy}}</translation>
 <translation id="3096671415663099226">cbo</translation>
 <translation id="309749186376891736">Przesuwanie kursora</translation>
 <translation id="3103579948980282461">Średni fioletowoczerwony</translation>
@@ -335,8 +358,9 @@
 <translation id="3153928844647607688">Tabela <ph name="TABLENAME" />, <ph name="TABLEROWS" /> na <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beżowy</translation>
 <translation id="316542773973815724">Nawigacja</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{spacja}few{# spacje}many{# spacji}other{# spaces}}</translation>
+<translation id="3167446923957429259">Porusz ustami w lewo</translation>
 <translation id="3179119189286472195">To nie link</translation>
+<translation id="3180990259147710757">Przesunięcie żuchwy w lewo</translation>
 <translation id="320041337977930740">Zmień styl wyświetlania na Przeplatany</translation>
 <translation id="3206698050650195442">Zamknij samouczek</translation>
 <translation id="3208346789712025453">Nie ma następnego elementu sterującego</translation>
@@ -349,10 +373,12 @@
 <translation id="3241052487511142956">Poprzedni kliknięty link</translation>
 <translation id="3241638166094654466">Komórki w każdym wierszu:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera jest niedostępna. Sprawdź, czy jesteś zalogowany(-a) i czy kamera jest włączona.</translation>
 <translation id="3260949043575829030">Poprzedni podobny element</translation>
 <translation id="3270069636408109001">Nie ma następnej tabeli</translation>
 <translation id="3273791280096244679">Zapisz etykietę</translation>
 <translation id="3283583562490372694">nie zaznaczono</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{z {$$COUNT} elementem}} * {{z {$$COUNT} elementami}}</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
 <translation id="3286390186030710347">Suwak</translation>
 <translation id="3300733168898541351">cofnij</translation>
@@ -364,14 +390,15 @@
 <translation id="3322936298410871309">Poprzedni nagłówek poziomu 1</translation>
 <translation id="3323447499041942178">Pole tekstowe</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
+<translation id="334252345105450327">Zrób zrzut ekranu</translation>
 <translation id="335581015389089642">Mowa</translation>
 <translation id="3356951775008366684">Przedstawiaj fonetyczną wymowę słowa</translation>
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">Możesz też użyć klawisza Tab, by przejść do następnego interaktywnego elementu na ekranie. Znajdź klawisz Tab, który znajduje się bezpośrednio nad klawiszem wyszukiwania. Aby przejść dalej, naciśnij klawisz Tab.</translation>
 <translation id="3366946046494222386">Samouczek <ph name="TOPIC" />, lekcje: <ph name="LESSONS" /></translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{znak plus}few{# znaki plus}many{# znaków plus}other{# plus signs}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Poprzednie pole formularza</translation>
+<translation id="3390740059150071453">Spojrzenie w lewo</translation>
 <translation id="3393605254399152980">Przeciągnij jednym palcem, by usłyszeć, czego dotykasz</translation>
 <translation id="3406283310380167331">Pokaż listę formularzy</translation>
 <translation id="3407726812456125464">Odsłuchaj zaznaczony tekst</translation>
@@ -385,13 +412,11 @@
 <translation id="3466530247399808663">Naciśnięcie niewłaściwego klawisza</translation>
 <translation id="3468959318854349468">Bez tytułu</translation>
 <translation id="3469413619751135069">Bladozielony</translation>
+<translation id="3473744269398144689">Zacznij dyktować</translation>
 <translation id="3490765818161916458">Siatka listy</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{prawy nawias kwadratowy}few{# prawe nawiasy kwadratowe}many{# prawych nawiasów kwadratowych}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{pytajnik}few{# pytajniki}many{# pytajników}other{# question marks}}</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{dwukropek}} *{{dwukropki: {$$COUNT}}}</translation>
 <translation id="3505359110822747654">Zwiń menu ChromeVoxa</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{kareta}few{# znaki karety}many{# znaków karety}other{# carets}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{biały punktor}few{# białe punktory}many{# białych punktorów}other{# białego punktora}}</translation>
 <translation id="352577523970648069">Pole tekstowe z możliwością edytowania</translation>
 <translation id="3538907380453898475">listaopisu</translation>
 <translation id="3549141990712742152">wytnij <ph name="TEXT" />.</translation>
@@ -408,9 +433,7 @@
 <translation id="3616016838842055984">Gdy dotrzesz do elementu, który chcesz kliknąć, naciśnij klawisz wyszukiwania + spacja. Spróbuj teraz, by przejść dalej.</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3622350485154495700">Kliknij dwukrotnie jednym palcem</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{grawis}few{# grawisy}many{# grawisów}other{# backticks}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{dolar}few{# znaki dolara}many{# znaków dolara}other{# dollar signs}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">Wskazówka: jeśli zechcesz zamknąć ten samouczek, naciśnij klawisz Esc.</translation>
 <translation id="3676062394766691318">Gdy już skonfigurujesz swoje urządzenie, możesz tu wrócić i wyświetlić kolejne samouczki, naciskając najpierw klawisz wyszukiwania + O, a następnie T.</translation>
@@ -426,8 +449,10 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Śnieg</translation>
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Pokaż dziennik</translation>
 <translation id="3801735343383419236">Autouzupełnianie list</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{znak procentu}} *{{znaki procentu: {$$COUNT}}}</translation>
 <translation id="3806327402890551732">Przejdź do następnego lub poprzedniego elementu</translation>
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3813387282697781382">Jasnokoralowy</translation>
@@ -438,8 +463,10 @@
 <translation id="3856075812838139784">Tylko do odczytu</translation>
 <translation id="3857141338659865495">Średni turkusowy</translation>
 <translation id="3870295413168340326">Nie ma poprzedniego nagłówka poziomu 3</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{znak at}} *{{znaki at: {$$COUNT}}}</translation>
 <translation id="3887399638190992181">Klawisze podstawowe</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Sterowanie za pomocą twarzy zostało wstrzymane. Aby je wznowić, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">siatkalisty</translation>
 <translation id="3909320334364316587">Poprzedni nagłówek poziomu 6</translation>
@@ -467,15 +494,16 @@
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Trwa ładowanie strony</translation>
 <translation id="4065205963140826639">Naciśnij Wyszukaj + strzałkę w prawo, by znaleźć przycisk Dalej, a następnie naciśnij Wyszukaj + spację, by go kliknąć.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{tylda}few{# tylda}many{# tyld}other{# tildes}}</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{kursor}} *{{kursory: {$$COUNT}}}</translation>
 <translation id="409334809956508737">Poprzedni obiekt</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{znak „plus”}} *{{znaki „plus”: {$$COUNT}}}</translation>
 <translation id="4099274309791143834">z menu podrzędnym</translation>
 <translation id="4101527861445851766">Zaznaczone pole</translation>
+<translation id="410225014223200513">Ułożenie warg w kółko</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{kropka}} 3{{wielokropek}} *{{kropki: {$$COUNT}}}</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alert</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{prawy nawias klamrowy}few{# prawe nawiasy klamrowe}many{# prawych nawiasów klamrowych}other{# right braces}}</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{sekunda}few{sekundy}many{sekund}other{sekundy}}</translation>
 <translation id="4161663686871496107">Czytnik ChromeVox jest gotowy</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
 <translation id="4187322598335821254">Przesuwaj palcem w górę lub w dół, by przechodzić z wiersza do wiersza</translation>
@@ -487,7 +515,6 @@
 <translation id="4204864733111726379">Biały kwiatowy</translation>
 <translation id="42164919740161077">Szaroniebieski</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{pauza}few{# pauzy}many{# pauz}other{# dashes}}</translation>
 <translation id="4220024144662591089">Zaznacz od: <ph name="START_PHRASE" /> do: <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">Nie ma poprzedniej listy</translation>
 <translation id="4225355998815256469">Elementy sterujące formularzy</translation>
@@ -498,6 +525,8 @@
 <translation id="4246217262268234757">Stalowy błękit</translation>
 <translation id="4253168017788158739">Notatka</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4255016471934258618">Szerokie otwarcie ust</translation>
+<translation id="4259220820964911921">Włączyć sterowanie twarzą?</translation>
 <translation id="4271220233568730077">Następne wyrażenie matematyczne</translation>
 <translation id="4275397969489577657">Włącz rejestrowanie strumienia wydarzenia</translation>
 <translation id="4278486392851938658">Nie ma poprzedniego klikniętego linku</translation>
@@ -505,9 +534,11 @@
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4294967782363273192">Sortowanie rosnąco</translation>
 <translation id="4300318234632215983">Przeczytaj URL linku</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{znak większości}} *{{znaki większości: {$$COUNT}}}</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sjena</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{kropka}=3{wielokropek}few{# kropki}many{# kropek}other{# dots}}</translation>
 <translation id="4352022650330571548">wpisz <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">Kliknij prawym przyciskiem myszy</translation>
 <translation id="4372435075475052704">minimalnie: <ph name="X" /></translation>
 <translation id="4372705107434148843">Zakończ mowę</translation>
 <translation id="4376316291247992553">Wyświetl grafikę w systemie brajlowskim</translation>
@@ -517,9 +548,12 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Głęboki błękit nieba</translation>
 <translation id="4406249099130339147">Czytanie znaków interpunkcyjnych:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Pokaż wszystkie zęby</translation>
 <translation id="4432457053224379116">Indiański czerwony</translation>
 <translation id="4432896207833262240">Oznaczona treść</translation>
 <translation id="4437615272777527928">Zacznij pisać, by wyszukiwać w menu. Użyj strzałek w górę i w dół, by przeglądać wyniki. Używaj strzałek w lewo i w prawo, by ustawić kursor tekstu i poruszać się między różnymi menu.</translation>
+<translation id="4441677939526091190">Naciśnij klawisz strzałki w górę</translation>
 <translation id="4453530046591759283">Aby przejść do innego elementu ekranu, np. paska narzędzi lub obszaru powiadomień, naciśnij Control + F1. F1 to pierwszy klawisz na prawo od klawisza Escape.</translation>
 <translation id="4457472090507035117">Wybierz bieżący głos:</translation>
 <translation id="4476183483923481720">nowy wiersz</translation>
@@ -531,16 +565,18 @@
 <translation id="4511186779140817916">Blanszowane migdały</translation>
 <translation id="451510441928265982">Nie ma poprzedniego nagłówka poziomu 2</translation>
 <translation id="4517854969512651305">Zwiększ wartość</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{ukośnik}few{# ukośniki}many{# ukośników}other{# slashes}}</translation>
 <translation id="4537277403911487429">Następny podobny element</translation>
 <translation id="4547556996012970016">Następny nagłówek poziomu 5</translation>
 <translation id="4562381607973973258">Nagłówek</translation>
 <translation id="4597532268155981612">formularz</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{znak mniejszości}} *{{znaki mniejszości: {$$COUNT}}}</translation>
 <translation id="4601367666219428522">tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Niestandardowa kombinacja klawiszy: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Ignorowanie następnego naciśnięcia klawisza</translation>
 <translation id="4617384941327705512">Inteligentny tryb klawiszy trwałych jest wyłączony</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">Funkcji TalkBack na Chromebookach nie można już dostosowywać. Możesz jej nadal używać, ale obsługa jest możliwa tylko za pomocą tych skrótów klawiszowych, które są w niej zdefiniowane. Aby zobaczyć dostępne skróty klawiszowe, naciśnij Wyszukaj + A, a następnie K. Jeśli nadal chcesz używać TalkBack, naciśnij to polecenie ponownie.</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{punktor}} *{{punktory: {$$COUNT}}}</translation>
 <translation id="4649220074413114917">Dotknięcie ekranu dwoma palcami zatrzymuje odczytywanie. Jest to przydatne, gdy nie chcesz, aby ChromeVox coś czytał. Aby kontynuować, dotknij ekranu dwoma palcami.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
@@ -565,6 +601,7 @@
 <translation id="4815668758102003883">Bladoturkusowy</translation>
 <translation id="4826415162591436065">Przejdź dalej</translation>
 <translation id="4827410568042294688">nie wybrano</translation>
+<translation id="4835598628985424375">Zaciśnięcie i zmarszczenie warg</translation>
 <translation id="4838490795649708173">Kliknij czterema palcami</translation>
 <translation id="4839925464551908214">Przejdź do poprzedniego wiersza</translation>
 <translation id="4841614409681890122">Intensywny różowy</translation>
@@ -573,6 +610,8 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Nie ma widżetu poprzedniego pliku multimedialnego</translation>
 <translation id="4855927945655956315">Klawisze podstawowe: Ctrl</translation>
+<translation id="485806788160414322">Odtwórz lub wstrzymaj multimedia</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{nawias zamykający}} *{{nawiasy zamykające: {$$COUNT}}}</translation>
 <translation id="4862744964787595316">Bez pogrubienia</translation>
 <translation id="4865995900839719272">przejdź do poprzedniego wiersza</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -598,6 +637,7 @@
 <translation id="4993152509206108683">Szybkość: <ph name="PERCENT" /> procent</translation>
 <translation id="4994420463726586413">Informuj głosowo o stanie baterii</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, wybrany przycisk opcji</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{pytajnik}} *{{pytajniki: {$$COUNT}}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, wybrany przycisk opcji pozycji menu</translation>
 <translation id="5014131807708055994">Nie można wykonać polecenia <ph name="COMMAND" />. <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Włącz rejestrowanie mowy</translation>
@@ -619,6 +659,7 @@
 <translation id="5138912041966667164">Średni niebieski łupkowy</translation>
 <translation id="5140016802771803559">Fioletowy Rebecca</translation>
 <translation id="5142101052131610456">Wszystkie lekcje</translation>
+<translation id="514387318601895731">Spojrzenie w dół</translation>
 <translation id="5158275234811857234">Okładka</translation>
 <translation id="516076699907426116">Aby przejść dalej, użyj funkcji Czytanie dotykiem i znajdź przycisk Następna lekcja. Potem dotknij dwukrotnie ekranu, aby przejść dalej.</translation>
 <translation id="5170206230005240598">Napisy brajlowskie włączone</translation>
@@ -628,6 +669,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Zakończ</translation>
 <translation id="5290220123487191192">Zacznijmy od kilku gestów, których będziesz często używać. Gdy dotrzesz do elementu, który chcesz uaktywnić, dotknij dwukrotnie ekranu jednym palcem. Aby kontynuować, dotknij dwukrotnie ekranu teraz.</translation>
+<translation id="5291860916305032607">Wznów sterowanie za pomocą twarzy</translation>
 <translation id="5302089807023311274">Odniesienie bibliograficzne</translation>
 <translation id="530391007967514163">Spróbuj poruszać się po poniższym tekście metodą przechodzenia między nagłówkami.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, karta</translation>
@@ -635,7 +677,6 @@
 <translation id="5310788376443009632">usunięto:</translation>
 <translation id="5316825363044614340">przejdź do następnego wiersza</translation>
 <translation id="5320727453979144100">Tryb klawiszy trwałych włączony</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{przecinek}few{# przecinki}many{# przecinków}other{# commas}}</translation>
 <translation id="532485153932049746">Formatowanie tekstu
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -653,15 +694,15 @@
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
 <translation id="5402791055281059602">Alert w oknie modalnym</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{średnik}few{# średniki}many{# średników}other{# semicolons}}</translation>
+<translation id="5406272775687194041">Rozpocznij przeciąganie i upuszczanie</translation>
 <translation id="5420259671171615858">Przeszukaj menu</translation>
 <translation id="5435274640623994081">Włącz rejestrowanie ikony audio</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{mniejszy niż}few{# znaki mniejszości}many{# znaków mniejszości}other{# less than signs}}</translation>
 <translation id="5444587279251314700">(aktywna)</translation>
 <translation id="5451268436205074266">punkty <ph name="DOT" /></translation>
 <translation id="5452267669091857717">Nie ma następnego nagłówka poziomu 1</translation>
 <translation id="5455441614648621694">Pomocniczy</translation>
 <translation id="5462510922370980473">Lista stron</translation>
+<translation id="5489460663499094917">Tryb przewijania jest aktywny. Aby go zamknąć, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="5495517933067991341">Klawisze podstawowe: Shift</translation>
 <translation id="549602578321198708">Słowo</translation>
 <translation id="5513242761114685513">Menu kontekstowe</translation>
@@ -681,7 +722,6 @@
 <translation id="5597170376237141345">Następne pole wyboru</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, niewybrany przycisk opcji</translation>
 <translation id="5601172225407283979">Wykonaj domyślne działanie</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{punktor kwadratowy}few{# punktory kwadratowe}many{# punktorów kwadratowych}other{# punktora kwadratowego}}</translation>
 <translation id="5608798115546226984">Autouzupełnianie w tekście</translation>
 <translation id="5616029807486814372">Następna lekcja</translation>
 <translation id="561939826962581046">time</translation>
@@ -689,14 +729,16 @@
 <translation id="5623842676595125836">Dziennik</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Symbol graficzny</translation>
-<translation id="5648939288050772726">Gratulacje! Znasz już podstawy korzystania z czytnika ChromeVox. Pamiętaj, że menu poleceń ChromeVoxa możesz otworzyć w każdej chwili, naciskając Wyszukaj + kropkę. Aby dowiedzieć się więcej o czytniku ChromeVox i systemie operacyjnym Chrome, przeczytaj poniższe artykuły.
-    Jeśli nie korzystasz już z samouczka, za pomocą czytnika ChromeVox przejdź do przycisku Zamknij i kliknij go.</translation>
+<translation id="5648939288050772726">Gratulacje! Znasz już podstawy korzystania z czytnika ChromeVox. Pamiętaj, że jego menu poleceń możesz otworzyć w każdej chwili, naciskając Wyszukaj + kropkę. Aby dowiedzieć się więcej o czytniku ChromeVox i systemie ChromeOS, zapoznaj się z artykułami poniżej.
+Jeśli nie korzystasz już z samouczka, użyj czytnika ChromeVox, by przejść do przycisku Zamknij, i kliknij go.</translation>
 <translation id="5653397561111110475">Korzystanie z ułatwień dostępu na ekranie dotykowym Chromebooka</translation>
 <translation id="5655682562155942719">Polecenia nawigacyjne</translation>
 <translation id="56637627897541303">Obszar tekstu</translation>
+<translation id="5666746275818170484">Naciśnij klawisz strzałki w lewo</translation>
 <translation id="5669637233317991674">Aby poruszać się po modułach tej lekcji, naciśnij klawisz wyszukiwania i strzałkę w prawo lub klawisz wyszukiwania i strzałkę w lewo</translation>
 <translation id="5677240841070992068">Bieżąca lokalizacja</translation>
 <translation id="5678161956734658133">mled</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{nawias klamrowy prawy}} *{{nawiasy klamrowe prawe: {$$COUNT}}}</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Punkt orientacyjny</translation>
 <translation id="5683155931978483559">Poprzednie pole wyboru</translation>
@@ -711,12 +753,16 @@
 <translation id="5760594853119905566">Dodatek</translation>
 <translation id="5761219715606611783">Brawo! Znasz już podstawy korzystania z czytnika ChromeVox. Możesz przejść samouczek ponownie lub wyłączyć go, klikając odpowiedni przycisk poniżej.</translation>
 <translation id="5776001898637896684">Rozszerzenie do zamiany tekstu na mowę przy użyciu zaawansowanej usługi sieciowej Google</translation>
+<translation id="5783252477644995371">Sterowanie twarzą pozwala sterować kursorem za pomocą wskazywania twarzą i wykonywać czynności takie jak klikanie lewym przyciskiem myszy za pomocą gestów z wykorzystaniem twarzy, np. uśmiechu</translation>
 <translation id="5805940204952508776">Kliknij dwoma palcami</translation>
+<translation id="5807774529265708172">Pokaż lub ukryj klawiaturę ekranową</translation>
 <translation id="5819072574982403430">Element drzewa</translation>
 <translation id="5822819874379903994">Ciemny turkusowy</translation>
 <translation id="5824976764713185207">Automatycznie zacznij czytać stronę po jej załadowaniu</translation>
 <translation id="5826479389509458994">wiersz <ph name="ROW" />, kolumna <ph name="COL" /></translation>
 <translation id="5833044594931167190">Brak punktów orientacyjnych ARIA</translation>
+<translation id="5836800981500311517">Brak dostępu do kamery. Włącz kamerę i upewnij się, że nic jej nie blokuje.</translation>
+<translation id="584044465500042213">Wyłącz tryb przewijania</translation>
 <translation id="5842625257683688671">Nie ma następnej grafiki</translation>
 <translation id="5847883414085148048">Dedykacja</translation>
 <translation id="5850707923114094062">Przesuń do tyłu</translation>
@@ -733,22 +779,22 @@
 <translation id="5899860758576822363">Zmniejsz głośność odtwarzania, gdy ChromeVox mówi</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5906974869830879618">Podaj kod PIN</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{średnik}} *{{średniki: {$$COUNT}}}</translation>
 <translation id="5921587111466148855">Rozdział</translation>
 <translation id="5923780477617566089">Bieżąca data</translation>
 <translation id="5926889058434275234">Pełną listę gestów znajdziesz w Centrum pomocy.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{równy}few{# znaki równości}many{# znaków równości}other{# equal signs}}</translation>
+<translation id="5947651424015173580">Kliknij dwukrotnie myszą</translation>
 <translation id="5948123859135882163">Włącz/wyłącz strukturalne lub semantyczne interpretowanie wyrażeń matematycznych</translation>
 <translation id="5955304353782037793">aplikacja</translation>
 <translation id="5956928062748260866">Okno dialogowe</translation>
 <translation id="5963413905009737549">Sekcja</translation>
 <translation id="5968607524793740041">Pokaż menu kontekstowe</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{z # elementem}few{z # elementami}many{z # elementami}other{z # elementami}}</translation>
 <translation id="5981446804259161541">Jasny cyjan</translation>
 <translation id="5983179082906765664">Zwiększ dokładność nawigacji.</translation>
+<translation id="5988563937187882754">Spojrzenie w prawo</translation>
 <translation id="5992285135956208197">Dokument graficzny</translation>
 <translation id="5999630716831179808">Głosy</translation>
 <translation id="6006050241733874051">Formularz</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{ukośnik wsteczny}few{# ukośniki wsteczne}many{# ukośników wstecznych}other{# backslashes}}</translation>
 <translation id="6010616110396250088">Sortowanie malejąco</translation>
 <translation id="6017514345406065928">Zielony</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
@@ -762,7 +808,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktywuj</translation>
 <translation id="6122013438240733403">btn</translation>
-<translation id="6132506484792346370">Pole listy lub pole złożone</translation>
+<translation id="6132506484792346370">Pole listy lub pole kombi</translation>
 <translation id="613344593214611552">Usuń poprzednie zdanie</translation>
 <translation id="6142308968191113180">Nagłówek 4</translation>
 <translation id="6150023170003443621">Żółtozielony</translation>
@@ -774,21 +820,21 @@
 <translation id="6197361807490522975">Ciemnoniebieski</translation>
 <translation id="6218813441317556731">Zastąp: <ph name="DELETE_PHRASE" /> tekstem: <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Następny nagłówek</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{kreska pionowa}} *{{kreski pionowe: {$$COUNT}}}</translation>
 <translation id="6254901459154107917">Następny obszar tekstowy do edytowania</translation>
 <translation id="6259464875943891919">Zamknięto <ph name="TYPE" />.</translation>
 <translation id="6280088282605782512">Kliknij dwukrotnie</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Klawisze podstawowe: klawisz wyszukiwania</translation>
 <translation id="6305702903308659374">Nie zmieniaj głośności odtwarzania, gdy ChromeVox mówi</translation>
-<translation id="6307969636681130414">Naciśnięty</translation>
+<translation id="6307969636681130414">Naciśnięto</translation>
 <translation id="6315652249189065725">Otwórz menu skrótów klawiszowych</translation>
 <translation id="6320690422100602757">Nie ma następnego elementu listy</translation>
 <translation id="6322856989298155004">Dźwięki</translation>
 <translation id="6324551002951139333">Wykryto błąd gramatyczny</translation>
 <translation id="6325241889020214828">skopiuj <ph name="TEXT" />.</translation>
-<translation id="6348657800373377022">Pole złożone</translation>
+<translation id="6348657800373377022">Pole kombi</translation>
 <translation id="6348869651006731065">Przyćmiony szary</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{punktor}few{# punktory}many{# punktorów}other{# punktora}}</translation>
 <translation id="6357433033180746873">Nie ma komórki z prawej strony</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">Poprzedni nagłówek</translation>
@@ -797,9 +843,9 @@
 <translation id="6385591741672306837">kol.</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Wyłącz wszystkie filtry zdarzeń</translation>
+<translation id="6406989068857078334">Zmniejszono prędkość myszy. Aby kliknąć, wykonaj ponownie gest <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Jesień</translation>
 <translation id="6417265370957905582">Asystent Google</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{dwukropek}few{# dwukropki}many{# dwukropków}other{# colons}}</translation>
 <translation id="6444046323172968959">Okno dialogowe alertu</translation>
 <translation id="6452403590345320472">Spis treści</translation>
 <translation id="6468049171101508116">Następny przycisk</translation>
@@ -807,6 +853,7 @@
 <translation id="6493991254603208962">Zmniejsz jasność</translation>
 <translation id="6501595918865591267">Turkusowy</translation>
 <translation id="6508059270146105198">Przenieś wyświetlacz brajlowski na dół strony</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{nawias otwierający}} *{{nawiasy otwierające: {$$COUNT}}}</translation>
 <translation id="6521550811716689390">Ciemnofioletowy</translation>
 <translation id="6536157907112457272">Lniany</translation>
 <translation id="6540201937398578274">W czytniku ChromeVox klawisz wyszukiwania jest klawiszem modyfikującym. Większość skrótów klawiszowych ChromeVoxa zaczyna się właśnie od niego. Do nawigacji używa się klawiszy strzałek.</translation>
@@ -819,6 +866,7 @@
 <translation id="6584162722998608255">Teraz dowiesz się, jak poruszać się po ekranie. Możesz przesunąć jednym palcem z lewej do prawej, aby przejść do następnego elementu. Zrób to teraz, aby przejść do następnego kroku.</translation>
 <translation id="6609828810966525877">Więcej gestów możesz poznać w Trybie informacyjnym i w Centrum pomocy Chromebooków</translation>
 <translation id="6628427060004938651">Część</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">dziennik</translation>
 <translation id="6657128831881431364">Pasek postępu</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -826,8 +874,7 @@
 <translation id="6689672606256159458">Ciemny łososiowy</translation>
 <translation id="669617842401078250">Pobieranie wstrzymane: <ph name="FILE_NAME" /></translation>
 <translation id="6696967141280706829">Wstęp</translation>
-<translation id="6697092096875747123">Poprzednie pole złożone</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{wykrzyknik}few{# wykrzykniki}many{# wykrzykników}other{# wykrzyknika}}</translation>
+<translation id="6697092096875747123">Poprzednie pole kombi</translation>
 <translation id="670717715607710284">Ekran wyłączony</translation>
 <translation id="6714813999819678458">Poprzedni nagłówek poziomu 2</translation>
 <translation id="6730312624811567147">Klawisz wyszukiwania i strzałka w lewo lub prawo to klawisz Home lub End. Klawisz wyszukiwania, Control i strzałka w lewo lub prawo to Control z klawiszem Home lub End. Klawisz wyszukiwania i strzałka w górę lub w dół to klawisz Page Up lub Page Down</translation>
@@ -847,6 +894,7 @@
 <translation id="6859876496651143278">Przesuń jednym palcem w lewo</translation>
 <translation id="6865519907510167493">Błędny zapis</translation>
 <translation id="6873188295213080042">Wskazówka: przytrzymaj klawisz wyszukiwania i naciskaj klawisze strzałek, by poruszać się po ekranie.</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">Powiedz bieżącą godzinę i datę</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6897341342232909480">Przejdź w lewo</translation>
@@ -860,14 +908,16 @@
 <translation id="6951482098621102657">Nie ma następnego nagłówka poziomu 5</translation>
 <translation id="6955705049214951590">Mglisty różany</translation>
 <translation id="696356426651109308">Przeskocz na początek</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{godzina}} *{{godziny}}</translation>
 <translation id="6994042831499278539">Odniesienie do słownika</translation>
-<translation id="6996566555547746822">Następne pole złożone</translation>
+<translation id="6996566555547746822">Następne pole kombi</translation>
 <translation id="6997224546856374593">Czytając wielkie litery:</translation>
 <translation id="6999752561504308105">Witamy w samouczku czytnika ChromeVox. Aby w dowolnej chwili zamknąć samouczek, przesuń dwoma palcami z prawej do lewej. Aby w dowolnej chwili włączyć lub wyłączyć czytnik ChromeVox, naciśnij i przytrzymaj przez 5 sekund oba przyciski głośności. Gdy zechcesz przejść do następnej lekcji, dotknij dwukrotnie ekranu jednym palcem.</translation>
 <translation id="700202842116345659">Pozycja bibliograficzna</translation>
 <translation id="7005146664810010831">Nie znaleziono URL-a</translation>
 <translation id="7026338066939101231">Zmniejsz</translation>
 <translation id="7031651751836475482">lstitm</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{biały punktor}} *{{białe punktory: {$$COUNT}}}</translation>
 <translation id="7037042857287298941">Poprzednia lista</translation>
 <translation id="7039555289296502784">Oliwkowozielony</translation>
 <translation id="7041173719775863268">Zakończ wybieranie</translation>
@@ -877,15 +927,18 @@
 <translation id="7086377898680121060">Zwiększ jasność</translation>
 <translation id="7088743565397416204">Kliknij dwukrotnie, by aktywować zaznaczony element</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{podkreślenie}} *{{podkreślenia: {$$COUNT}}}</translation>
 <translation id="7090715360595433170">Może to też być szybsze niż przesuwanie jednym palcem w lewo i w prawo.</translation>
 <translation id="7091296112653361280">Jasny żółtopomarańczowy</translation>
 <translation id="7095834689119144465">Edytowanie tekstu, tylko liczby</translation>
 <translation id="7096001299300236431">Poprzedni plik multimedialny</translation>
 <translation id="7096668131290451939">Aby wyjść z trybu uczenia, naciśnij ponownie klawisz Escape</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">odczytywanie słów</translation>
 <translation id="7137397390322864165">Łososiowy</translation>
 <translation id="7140168702531682811">Indeks górny</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{znak tabulacji}} *{{znaki tabulacji: {$$COUNT}}}</translation>
 <translation id="7143034430156387447">Przełącz między pismem brajlowskim 6- i 8-punktowym</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7153618581592392745">Lawendowy</translation>
@@ -893,6 +946,7 @@
 <translation id="7161771961008409533">Przycisk wyskakującego okienka</translation>
 <translation id="7167657087543110">odczytywanie znaków</translation>
 <translation id="7173102181852295013">Ciemnogranatowy</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Rozwinięty</translation>
 <translation id="7209751026933045237">Nie ma następnego suwaka</translation>
 <translation id="7218782500591078391">Złotawy</translation>
@@ -909,10 +963,12 @@
 <translation id="7271278495464744706">Włącz szczegółowe opisy</translation>
 <translation id="7273174640290488576">Pusty</translation>
 <translation id="7274770952766771364">Odsyłacz</translation>
-<translation id="7275004401821193978">Nie ma poprzedniego pola wyboru</translation>
+<translation id="7275004401821193978">Nie ma poprzedniego pola kombi</translation>
 <translation id="7285387653379749618">Tabele</translation>
 <translation id="7289186959554153431">Nagłówek 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Zakończ przeciąganie i upuszczanie</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{spacja}} *{{spacje: {$$COUNT}}}</translation>
 <translation id="7308519659008003150">Nie ma poprzedniego pola formularza</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">pomoc</translation>
@@ -921,7 +977,6 @@
 <translation id="7344012264516629579">Dodatkowe polecenia nawigacyjne obejmują na przykład przejście za pomocą linku, przycisku lub pola wyboru. Pełną listę poleceń nawigacyjnych znajdziesz w różnych menu programu ChromeVox, które otworzysz, naciskając jednocześnie klawisz wyszukiwania i kropkę.</translation>
 <translation id="7356165926712028380">Przełącz na pismo 8-punktowe Braille'a</translation>
 <translation id="7356610683936413584">Szczegół z listy opisu</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{et}few{# znaki et}many{# znaków et}other{# ampersands}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Szaroniebieski</translation>
 <translation id="7393979322571982935">Dźwięki i ustawienia</translation>
@@ -943,6 +998,7 @@
 <translation id="7543255924852002459">Odrzuć etykietę</translation>
 <translation id="7552432549459840808">Przydatne skróty Chrome</translation>
 <translation id="7553679324939294712">Wstaw: <ph name="INSERT_PHRASE" /> przed: <ph name="BEFORE_PHRASE" /></translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apostrof}} *{{apostrofy: {$$COUNT}}}</translation>
 <translation id="7569983096843329377">Czarny</translation>
 <translation id="7579911500627256166">punkt <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Niektórych</translation>
@@ -959,7 +1015,7 @@
 <translation id="7637342083105831460">Naciśnij klawisz wyszukiwania + strzałka w prawo, by znaleźć obszar ćwiczenia lub przycisk Następna lekcja. Następnie naciśnij klawisz wyszukiwania + spacja, by aktywować element.</translation>
 <translation id="7639968568612851608">Ciemnoszary</translation>
 <translation id="7663318257180412551">Nagłówek 2</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{godzina}few{godziny}many{godzin}other{godziny}}</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{znak dolara}} *{{znaki dolara: {$$COUNT}}}</translation>
 <translation id="7674576868851035240">Następny link</translation>
 <translation id="7674768236845044097">zaznaczenie</translation>
 <translation id="7676847077928500578">Zresetuj ustawienia zamiany tekstu na mowę</translation>
@@ -969,8 +1025,11 @@
 <translation id="7696631298608145306">Przejdź do następnego słowa</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701196182766842984">autolst</translation>
-<translation id="7714340021005120797">Nie ma następnego pola wyboru</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{myślnik}} *{{myślniki: {$$COUNT}}}</translation>
+<translation id="7714340021005120797">Nie ma następnego pola kombi</translation>
+<translation id="7715455358521357192">Zmrużenie prawego oka</translation>
 <translation id="7724603315864178912">Wytnij</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{grawis}} *{{grawisy: {$$COUNT}}}</translation>
 <translation id="7731785449856576010">Nie ma widżetu następnego pliku multimedialnego</translation>
 <translation id="7735498529470878067">Czytanie dotykiem może pomóc Ci szybko zorientować się, co jest na ekranie.</translation>
 <translation id="773906353055481349">Naciśnij klawisz wyszukiwania + Ctrl + Alt i przechodź między komórkami za pomocą strzałek</translation>
@@ -987,14 +1046,15 @@
 <translation id="7839679365527550018">Poprzednie słowo</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7851816175263618915">Częściowa interpunkcja</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{nawias lewy}} *{{nawiasy lewe: {$$COUNT}}}</translation>
 <translation id="7871691770940645922">Wirtualny monitor brajlowski</translation>
 <translation id="7882421473871500483">Brązowy</translation>
 <translation id="78826985582142166">sldr</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{cudzysłów}} *{{cudzysłowy: {$$COUNT}}}</translation>
 <translation id="7913106023953875143">Nie ma następnego nagłówka poziomu 2</translation>
 <translation id="7927711904086083099">Niewybrany</translation>
 <translation id="7935627501098484003">Kontrola czasu</translation>
 <translation id="7939428177581522200">dodano do zaznaczenia</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{małpa}few{# małpy}many{# małp}other{# at signs}}</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7948364528129376623">Nie ma następnego klikniętego linku</translation>
 <translation id="7952460583030260752">Polecenia – materiały referencyjne</translation>
@@ -1005,7 +1065,6 @@
 <translation id="8004507136466386272">Słowa</translation>
 <translation id="8004512796067398576">Zwiększ</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{cudzysłów}few{# cudzysłowy}many{# cudzysłówów}other{# quotes}}</translation>
 <translation id="8017588669690167134">Wyłącz mowę</translation>
 <translation id="801990297710781303">Przypis</translation>
 <translation id="8028833145828956995">Możesz używać ChromeVoxa z ekranem dotykowym</translation>
@@ -1024,16 +1083,17 @@
 <translation id="8098587210054821856">Szaroniebieski</translation>
 <translation id="8121539003537428024">Włącz wszystkie filtry zdarzeń</translation>
 <translation id="8123975449645947908">Przewiń do tyłu</translation>
+<translation id="8126355825906412872">Uśmiech</translation>
 <translation id="8126386426083591964">Nie ma poprzedniego nagłówka poziomu 5</translation>
 <translation id="812886159861361726">Zatrzymano pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nie ma komórki powyżej</translation>
 <translation id="8132248161074464367">Poprzedni nieprawidłowy element</translation>
 <translation id="8138880386467279117">Kliknij</translation>
 <translation id="8146613869421949343">Teraz zajmiemy się klawiszem wyszukiwania Klawisza wyszukiwania używa się w połączeniu z innymi klawiszami do wydawania poleceń w ChromeVox. Klawisz wyszukiwania znajduje się tuż nad lewym klawiszem Shift. Aby przejść dalej, naciśnij klawisz wyszukiwania.</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{nawias prawy}} *{{nawiasy prawe: {$$COUNT}}}</translation>
 <translation id="8158033275290782295">wybierz wszystko</translation>
 <translation id="816818801578874684">To jest pierwszy nagłówek. Aby przejść do następnego, naciśnij klawisz wyszukiwania + H.</translation>
 <translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
 <translation id="817529114347680055">Ekran włączony</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">wiersz</translation>
@@ -1044,6 +1104,7 @@
 <translation id="8205922869661890178">Otwórz stronę dziennika dla dewelopera</translation>
 <translation id="8212109599554677485">Zmień styl wyświetlania na Obok siebie</translation>
 <translation id="8215202828671303819">Wybór wielokrotny</translation>
+<translation id="822316432305106615">Rozpocznij precyzyjne klikanie</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, przezroczystość <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="826825447994856889">Wprowadzenie</translation>
@@ -1057,7 +1118,7 @@
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Stare koronki</translation>
 <translation id="8326783648485765113">Zielony trawiasty</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{funt}few{# znaki funta}many{# znaków funta}other{# pound signs}}</translation>
+<translation id="8351821207686449674">Włącz lub wyłącz napisy</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autouzupełnianie tekstu i listy</translation>
 <translation id="8394908167088220973">Odtwórz/wstrzymaj multimedia</translation>
@@ -1099,10 +1160,8 @@
 <translation id="8659501358298941449">Listy</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> koniec</translation>
 <translation id="867187640362843212">Nagłówek 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}few{poziom umieszczony #}many{poziom umieszczony #}other{poziom umieszczony #}}</translation>
 <translation id="8693391540059827073">Moja ulubiona pora roku</translation>
 <translation id="8696284982970258155">Spadziowy</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{kreska pionowa}few{# kreski pionowe}many{# kresek pionowych}other{# vertical pipes}}</translation>
 <translation id="8741370088760768424">Wskazówka: naciśnij klawisz wyszukiwania i spację, by aktywować bieżący element.</translation>
 <translation id="8743786158317878347">otwórz treści strukturalne, na przykład tabele</translation>
 <translation id="8746846427395705317">Przejdź do poprzedniego słowa</translation>
@@ -1114,6 +1173,7 @@
 <translation id="8775203254697638994">Czasem trzeba wybrać element z listy. Aby to zrobić, najpierw rozwiń listę, naciskając klawisz wyszukiwania + spacja. Następnie użyj klawiszy strzałek w górę i w dół, by wybrać element. Na koniec zwiń listę, naciskając klawisz wyszukiwania + spacja.</translation>
 <translation id="8779057862865475116">Nie ma poprzedniego linku</translation>
 <translation id="8796411681063377102">Następny nagłówek poziomu 3</translation>
+<translation id="8821891849214789910">Przestań dyktować</translation>
 <translation id="8823311177246872527">Strona <ph name="CURRENTPAGE" /> z <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">główny</translation>
@@ -1123,6 +1183,7 @@
 <translation id="8897030325301866860">Czcionka <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Włącz/wyłącz odczytywanie interpunkcji</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{nawias lewy}} *{{nawiasy lewe: {$$COUNT}}}</translation>
 <translation id="8910180774920883033">Dostępne działania. Aby je wyświetlić, naciśnij klawisz wyszukiwania + Ctrl + A.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Klawisze modyfikujące</translation>
@@ -1151,14 +1212,15 @@
 <translation id="9099429023611373837">wytnij</translation>
 <translation id="9108370397979208512">matematyczny</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{procent}few{# znaki procent}many{# znaków procent}other{# percent signs}}</translation>
 <translation id="9128414153595658330">dlg</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{wykrzyknik}} *{{wykrzykniki: {$$COUNT}}}</translation>
 <translation id="9133928141873682933">Khaki</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">Karta</translation>
 <translation id="9151249085738989067">Automatycznie zmieniaj głos ChromeVoxa na podstawie wykrytego języka</translation>
 <translation id="9153606228985488238">Ton: <ph name="PERCENT" /> procent</translation>
 <translation id="9160096769946561184">Przejdź na koniec bieżącej kolumny</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{ukośnik}} *{{ukośniki: {$$COUNT}}}</translation>
 <translation id="9173115498289768110">Głośność: <ph name="PERCENT" /> procent</translation>
 <translation id="9185200690645120087">ChromeVox – samouczek na temat funkcji dotyku</translation>
 <translation id="9192904702577636854">Transparent</translation>

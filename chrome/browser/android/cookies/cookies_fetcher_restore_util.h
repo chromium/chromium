@@ -9,32 +9,34 @@
 #include "base/android/jni_string.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 
+class Profile;
+
 namespace cookie_fetcher_restore_util {
 
 // Returns the cookie service at the client end of the mojo pipe.
-network::mojom::CookieManager* GetCookieServiceClient();
+network::mojom::CookieManager* GetCookieServiceClient(Profile* profile);
 
 // Creates and sets a canonical cookie for the off-the-record session (i.e.
 // incognito mode). It is a no-op for the standard session. Typically associated
 // with the #onResume of Android's activity lifecycle.
-void CookiesFetcherRestoreCookiesImpl(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jstring>& name,
-    const jni_zero::JavaParamRef<jstring>& value,
-    const jni_zero::JavaParamRef<jstring>& domain,
-    const jni_zero::JavaParamRef<jstring>& path,
-    jlong creation,
-    jlong expiration,
-    jlong last_access,
-    jlong last_update,
-    jboolean secure,
-    jboolean httponly,
-    jint same_site,
-    jint priority,
-    const jni_zero::JavaParamRef<jstring>& partition_key,
-    jint source_scheme,
-    jint source_port,
-    jint source_type);
+void CookiesFetcherRestoreCookiesImpl(JNIEnv* env,
+                                      Profile* profile,
+                                      const std::string& name,
+                                      const std::string& value,
+                                      const std::string& domain,
+                                      const std::string& path,
+                                      jlong creation,
+                                      jlong expiration,
+                                      jlong last_access,
+                                      jlong last_update,
+                                      jboolean secure,
+                                      jboolean httponly,
+                                      jint same_site,
+                                      jint priority,
+                                      const std::string& partition_key,
+                                      jint source_scheme,
+                                      jint source_port,
+                                      jint source_type);
 
 }  // namespace cookie_fetcher_restore_util
 

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -64,10 +65,12 @@ void LayoutSVGInlineText::TextDidChange() {
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
-void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
-                                         const ComputedStyle* old_style) {
+void LayoutSVGInlineText::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutText::StyleDidChange(diff, old_style);
+  LayoutText::StyleDidChange(diff, old_style, style_change_context);
   UpdateScaledFont();
 
   const bool new_collapse = StyleRef().ShouldCollapseWhiteSpaces();
@@ -163,54 +166,60 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
 
 void LayoutSVGInlineText::UpdateScaledFont() {
   NOT_DESTROYED();
-  ComputeNewScaledFontForStyle(*this, scaling_factor_, scaled_font_);
+  scaled_font_ = ComputeNewScaledFontForStyle(*this, scaling_factor_);
 }
 
-void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+float LayoutSVGInlineText::ComputeFontScale(const LayoutObject& layout_object) {
+  const ComputedStyle& style = layout_object.StyleRef();
+  if (style.GetFontDescription().TextRendering() == kGeometricPrecision) {
+    return 1;
+  }
+  const float scaling_factor =
+      SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(&layout_object);
+  return !scaling_factor ? 1 : scaling_factor;
+}
+
+const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
     const LayoutObject& layout_object,
-    float& scaling_factor,
-    Font& scaled_font) {
+    float& scaling_factor) {
   const ComputedStyle& style = layout_object.StyleRef();
 
   // Alter font-size to the right on-screen value to avoid scaling the glyphs
   // themselves, except when GeometricPrecision is specified.
-  scaling_factor =
-      SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(&layout_object);
-  if (!scaling_factor) {
-    scaling_factor = 1;
-    scaled_font = style.GetFont();
-    return;
-  }
+  scaling_factor = ComputeFontScale(layout_object);
 
   const FontDescription& unscaled_font_description = style.GetFontDescription();
-  if (unscaled_font_description.TextRendering() == kGeometricPrecision)
-    scaling_factor = 1;
-
   Document& document = layout_object.GetDocument();
   float scaled_font_size = FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
       &document, scaling_factor, unscaled_font_description.IsAbsoluteSize(),
       unscaled_font_description.SpecifiedSize(), kDoNotApplyMinimumForFontSize);
   if (scaled_font_size == unscaled_font_description.ComputedSize()) {
-    scaled_font = style.GetFont();
-    return;
+    // This is a hack. TextDecorationInfo's constructor wants to compare
+    // Font objects _by pointer_ to verify that it's a true override;
+    // otherwise, it sets the underline the wrong place. So we need to
+    // give it a pointer that is distinct from style.GetFont(), even though
+    // it contains the same information.
+    return MakeGarbageCollected<Font>(*style.GetFont());
   }
 
   FontDescription font_description = unscaled_font_description;
   font_description.SetComputedSize(scaled_font_size);
+  if (font_description.HasSizeAdjust()) {
+    if (auto adjusted_size =
+            FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+                style.GetFont()->PrimaryFont(), font_description)) {
+      font_description.SetAdjustedSize(adjusted_size.value());
+    }
+  }
+
   const float zoom = style.EffectiveZoom();
-  font_description.SetLetterSpacing(font_description.LetterSpacing() *
-                                    scaling_factor / zoom);
-  font_description.SetWordSpacing(font_description.WordSpacing() *
-                                  scaling_factor / zoom);
+  font_description.SetLetterSpacing(
+      Length::Fixed(font_description.LetterSpacing() * scaling_factor / zoom));
+  font_description.SetWordSpacing(
+      Length::Fixed(font_description.WordSpacing() * scaling_factor / zoom));
 
-  scaled_font =
-      Font(font_description, document.GetStyleEngine().GetFontSelector());
-}
-
-PhysicalRect LayoutSVGInlineText::VisualRectInDocument(
-    VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  return Parent()->VisualRectInDocument(flags);
+  return MakeGarbageCollected<Font>(
+      font_description, document.GetStyleEngine().GetFontSelector());
 }
 
 gfx::RectF LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {

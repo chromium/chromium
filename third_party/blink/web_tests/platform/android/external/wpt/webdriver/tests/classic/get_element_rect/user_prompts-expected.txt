@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_accept[alert-None]
+  AssertionError: assert {'height': 22, 'width': 193, 'x': 8, 'y': 8} == {'height': 21.666667938232422, 'width': 192.6666717529297, 'x': 8, 'y': 8}
+[FAIL] test_accept[confirm-True]
+  AssertionError: assert {'height': 22, 'width': 193, 'x': 8, 'y': 8} == {'height': 21.666667938232422, 'width': 192.6666717529297, 'x': 8, 'y': 8}
+[FAIL] test_accept[prompt-]
+  AssertionError: assert {'height': 22, 'width': 193, 'x': 8, 'y': 8} == {'height': 21.666667938232422, 'width': 192.6666717529297, 'x': 8, 'y': 8}
+[FAIL] test_dismiss[alert-None]
+  AssertionError: assert {'height': 22, 'width': 193, 'x': 8, 'y': 8} == {'height': 21.666667938232422, 'width': 192.6666717529297, 'x': 8, 'y': 8}
+[FAIL] test_dismiss[confirm-False]
+  AssertionError: assert {'height': 22, 'width': 193, 'x': 8, 'y': 8} == {'height': 21.666667938232422, 'width': 192.6666717529297, 'x': 8, 'y': 8}
+[FAIL] test_dismiss[prompt-None]
+  AssertionError: assert {'height': 22, 'width': 193, 'x': 8, 'y': 8} == {'height': 21.666667938232422, 'width': 192.6666717529297, 'x': 8, 'y': 8}
+Harness: the test ran to completion.
+

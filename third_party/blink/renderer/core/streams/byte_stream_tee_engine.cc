@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/streams/byte_stream_tee_engine.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_into_request.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
@@ -22,7 +17,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -36,22 +30,19 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
-    // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
-    // This implements both pull1Algorithm and pull2Algorithm as they are
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
     // identical except for the index they operate on. Standard comments are
     // from pull1Algorithm.
     // 17. Let pull1Algorithm be the following steps:
     //   a. If reading is true,
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    ExceptionState exception_state(script_state->GetIsolate());
     if (engine_->reading_) {
       //     i. Set readAgainForBranch1 to true.
       engine_->read_again_for_branch_[branch_] = true;
       //     ii. Return a promise resolved with undefined.
-      return PromiseResolveWithUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     //   b. Set reading to true.
     engine_->reading_ = true;
@@ -70,7 +61,7 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
                                   exception_state);
     }
     //   f. Return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -90,9 +81,9 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -103,7 +94,7 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     //   a. Set canceled1 to true.
     engine_->canceled_[branch_] = true;
     //   b. Set reason1 to reason.
-    DCHECK_EQ(argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
     engine_->reason_[branch_].Reset(isolate, argv[0]);
     //   c. If canceled2 is true,
     const int other_branch = 1 - branch_;
@@ -119,11 +110,10 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       auto cancel_result = ReadableStream::Cancel(
           script_state, engine_->stream_, composite_reason);
       //     iii. Resolve cancelPromise with cancelResult.
-      engine_->cancel_promise_->Resolve(script_state,
-                                        cancel_result.V8Promise());
+      engine_->cancel_promise_->Resolve(cancel_result);
     }
     //   d. Return cancelPromise.
-    return engine_->cancel_promise_->V8Promise(isolate);
+    return engine_->cancel_promise_->Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -142,37 +132,35 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
 
   void ChunkSteps(ScriptState* script_state,
                   v8::Local<v8::Value> chunk,
-                  ExceptionState& exception_state) const override {
+                  ExceptionState&) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
     event_loop->EnqueueMicrotask(
-        WTF::BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                      WrapPersistent(script_state), std::move(value),
-                      exception_state.GetContext()));
+        BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
+                 WrapPersistent(script_state), std::move(value)));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
     // 1. Set reading to false.
     engine_->reading_ = false;
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
     // 2. If canceled1 is false, perform !
     // ReadableByteStreamControllerClose(branch1.[[controller]]).
     // 3. If canceled2 is false, perform !
     // ReadableByteStreamControllerClose(branch2.[[controller]]).
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->canceled_[branch]) {
-        engine_->controller_[branch]->Close(
-            script_state, engine_->controller_[branch], exception_state);
-        if (exception_state.HadException()) {
+        engine_->controller_[branch]->Close(script_state,
+                                            engine_->controller_[branch]);
+        if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
           // happens synchronously, but that should not be observable.
           ReadableByteStreamController::Error(script_state,
                                               engine_->controller_[branch],
-                                              exception_state.GetException());
-          exception_state.ClearException();
+                                              try_catch.Exception());
           return;
         }
       }
@@ -183,16 +171,16 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // ! ReadableByteStreamControllerRespond(branch2.[[controller]], 0).
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->controller_[branch]->pending_pull_intos_.empty()) {
-        ReadableByteStreamController::Respond(
-            script_state, engine_->controller_[branch], 0, exception_state);
-        if (exception_state.HadException()) {
+        ReadableByteStreamController::Respond(script_state,
+                                              engine_->controller_[branch], 0,
+                                              PassThroughException(isolate));
+        if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
           // happens synchronously, but that should not be observable.
           ReadableByteStreamController::Error(script_state,
                                               engine_->controller_[branch],
-                                              exception_state.GetException());
-          exception_state.ClearException();
+                                              try_catch.Exception());
           return;
         }
       }
@@ -200,7 +188,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 6. If canceled1 is false or canceled2 is false, resolve cancelPromise
     // with undefined.
     if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-      engine_->cancel_promise_->ResolveWithUndefined(script_state);
+      engine_->cancel_promise_->Resolve();
     }
   }
 
@@ -217,25 +205,21 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
 
  private:
   void ChunkStepsBody(ScriptState* script_state,
-                      v8::Global<v8::Value> value,
-                      const ExceptionContext& exception_context) const {
+                      v8::Global<v8::Value> value) const {
     ScriptState::Scope scope(script_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
     // 2. Set readAgainForBranch2 to false.
     engine_->read_again_for_branch_[1] = false;
 
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context);
+    ExceptionState exception_state(isolate);
 
     // 3. Let chunk1 and chunk2 be chunk.
-    NotShared<DOMUint8Array> chunk[2];
     NotShared<DOMUint8Array> buffer_view =
         NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
-            script_state->GetIsolate(), value.Get(script_state->GetIsolate()),
-            exception_state);
-    chunk[0] = buffer_view;
-    chunk[1] = buffer_view;
+            isolate, value.Get(isolate), exception_state);
+    std::array<NotShared<DOMUint8Array>, 2> chunk = {buffer_view, buffer_view};
 
     // 4. If canceled1 is false and canceled2 is false,
     if (!engine_->canceled_[0] && !engine_->canceled_[1]) {
@@ -265,17 +249,17 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // ReadableByteStreamControllerEnqueue(branch2.[[controller]], chunk2).
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->canceled_[branch]) {
-        ReadableByteStreamController::Enqueue(script_state,
-                                              engine_->controller_[branch],
-                                              chunk[branch], exception_state);
-        if (exception_state.HadException()) {
+        v8::TryCatch try_catch(isolate);
+        ReadableByteStreamController::Enqueue(
+            script_state, engine_->controller_[branch], chunk[branch],
+            PassThroughException(isolate));
+        if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
           // happens synchronously, but that should not be observable.
           ReadableByteStreamController::Error(script_state,
                                               engine_->controller_[branch],
-                                              exception_state.GetException());
-          exception_state.ClearException();
+                                              try_catch.Exception());
           return;
         }
       }
@@ -287,11 +271,11 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 8. If readAgainForBranch1 is true, perform pull1Algorithm.
     if (engine_->read_again_for_branch_[0]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 0);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, {});
       // 9. Otherwise, if readAgainForBranch2 is true, perform pull2Algorithm.
     } else if (engine_->read_again_for_branch_[1]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 1);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, {});
     }
   }
 
@@ -312,13 +296,12 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
 
   void ChunkSteps(ScriptState* script_state,
                   DOMArrayBufferView* chunk,
-                  ExceptionState& exception_state) const override {
+                  ExceptionState&) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     event_loop->EnqueueMicrotask(
-        WTF::BindOnce(&ByteTeeReadIntoRequest::ChunkStepsBody,
-                      WrapPersistent(this), WrapPersistent(script_state),
-                      WrapPersistent(chunk), exception_state.GetContext()));
+        BindOnce(&ByteTeeReadIntoRequest::ChunkStepsBody, WrapPersistent(this),
+                 WrapPersistent(script_state), WrapPersistent(chunk)));
   }
 
   void CloseSteps(ScriptState* script_state,
@@ -335,15 +318,12 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 4. If byobCanceled is false, perform !
     //    ReadableByteStreamControllerClose(byobBranch.[[controller]]).
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
     if (!byob_canceled) {
       ReadableStreamController* controller =
           byob_branch_->readable_stream_controller_;
       ReadableByteStreamController* byte_controller =
           To<ReadableByteStreamController>(controller);
-      byte_controller->Close(script_state, byte_controller, exception_state);
-      DCHECK(!exception_state.HadException());
+      byte_controller->Close(script_state, byte_controller);
     }
     // 5. If otherCanceled is false, perform !
     //    ReadableByteStreamControllerClose(otherBranch.[[controller]]).
@@ -352,8 +332,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
           other_branch_->readable_stream_controller_;
       ReadableByteStreamController* byte_controller =
           To<ReadableByteStreamController>(controller);
-      byte_controller->Close(script_state, byte_controller, exception_state);
-      DCHECK(!exception_state.HadException());
+      byte_controller->Close(script_state, byte_controller);
     }
     // 6. If chunk is not undefined,
     if (chunk) {
@@ -362,6 +341,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
       //   b. If byobCanceled is false, perform !
       //      ReadableByteStreamControllerRespondWithNewView(byobBranch.[[controller]],
       //      chunk).
+      ExceptionState exception_state(script_state->GetIsolate());
       if (!byob_canceled) {
         ReadableStreamController* controller =
             byob_branch_->readable_stream_controller_;
@@ -388,7 +368,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     // 7. If byobCanceled is false or otherCanceled is false, resolve
     //    cancelPromise with undefined.
     if (!byob_canceled || !other_canceled) {
-      engine_->cancel_promise_->ResolveWithUndefined(script_state);
+      engine_->cancel_promise_->Resolve();
     }
   }
 
@@ -407,8 +387,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
 
  private:
   void ChunkStepsBody(ScriptState* script_state,
-                      DOMArrayBufferView* chunk,
-                      const ExceptionContext& exception_context) const {
+                      DOMArrayBufferView* chunk) const {
     // This is called in a microtask, the ScriptState needs to be put back
     // in scope.
     ScriptState::Scope scope(script_state);
@@ -425,8 +404,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     auto other_canceled =
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 5. If otherCanceled is false,
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context);
+    ExceptionState exception_state(script_state->GetIsolate());
     if (!other_canceled) {
       //   a. Let cloneResult be CloneAsUint8Array(chunk).
       auto* clone_result = engine_->CloneAsUint8Array(chunk);
@@ -484,11 +462,11 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     // 8. If readAgainForBranch1 is true, perform pull1Algorithm.
     if (engine_->read_again_for_branch_[0]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 0);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, {});
       // 9. Otherwise, if readAgainForBranch2 is true, perform pull2Algorithm.
     } else if (engine_->read_again_for_branch_[1]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 1);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, {});
     }
   }
 
@@ -503,14 +481,13 @@ void ByteStreamTeeEngine::ForwardReaderError(
     ReadableStreamGenericReader* this_reader) {
   // 14. Let forwardReaderError be the following steps, taking a thisReader
   // argument:
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(ByteStreamTeeEngine* engine,
                             ReadableStreamGenericReader* reader)
         : engine_(engine), reader_(reader) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       //   a. Upon rejection of thisReader.[[closedPromise]] with reason r,
       //     i. If thisReader is not reader, return.
       if (engine_->reader_ != reader_) {
@@ -519,22 +496,22 @@ void ByteStreamTeeEngine::ForwardReaderError(
       //     ii. Perform !
       //     ReadableByteStreamControllerError(branch1.[[controller]], r).
       ReadableByteStreamController::Error(script_state, engine_->controller_[0],
-                                          r);
+                                          r.V8Value());
       //     iii. Perform !
       //     ReadableByteStreamControllerError(branch2.[[controller]], r).
       ReadableByteStreamController::Error(script_state, engine_->controller_[1],
-                                          r);
+                                          r.V8Value());
       //     iv. If canceled1 is false or canceled2 is false, resolve
       //     cancelPromise with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(engine_);
       visitor->Trace(reader_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
@@ -542,11 +519,9 @@ void ByteStreamTeeEngine::ForwardReaderError(
     Member<ReadableStreamGenericReader> reader_;
   };
 
-  StreamThenPromise(script_state->GetContext(),
-                    this_reader->closed(script_state).V8Promise(), nullptr,
-                    MakeGarbageCollected<ScriptFunction>(
-                        script_state, MakeGarbageCollected<RejectFunction>(
-                                          this, this_reader)));
+  this_reader->closed(script_state)
+      .Catch(script_state,
+             MakeGarbageCollected<RejectFunction>(this, this_reader));
 }
 
 void ByteStreamTeeEngine::PullWithDefaultReader(
@@ -609,21 +584,19 @@ void ByteStreamTeeEngine::PullWithBYOBReader(ScriptState* script_state,
   //   d. Let readIntoRequest be a read-into request with the following items:
   auto* read_into_request = MakeGarbageCollected<ByteTeeReadIntoRequest>(
       this, byob_branch, other_branch, for_branch_2);
-  //   e. Perform ! ReadableStreamBYOBReaderRead(reader, view,
+  //   e. Perform ! ReadableStreamBYOBReaderRead(reader, view, 1,
   //   readIntoRequest).
   ReadableStreamGenericReader* reader = reader_;
-  ReadableStreamBYOBReader::Read(script_state,
-                                 To<ReadableStreamBYOBReader>(reader), view,
-                                 read_into_request, exception_state);
+  ReadableStreamBYOBReader::Read(
+      script_state, To<ReadableStreamBYOBReader>(reader), view,
+      /*min_read_length=*/1, read_into_request, exception_state);
   DCHECK(!exception_state.HadException());
 }
 
 DOMUint8Array* ByteStreamTeeEngine::CloneAsUint8Array(
     DOMArrayBufferView* chunk) {
-  auto* cloned_buffer =
-      DOMArrayBuffer::Create(chunk->buffer()->Data(), chunk->byteLength());
-  return DOMUint8Array::Create(cloned_buffer, chunk->byteOffset(),
-                               chunk->byteLength());
+  auto* cloned_buffer = DOMArrayBuffer::Create(chunk->ByteSpan());
+  return DOMUint8Array::Create(cloned_buffer, 0, chunk->byteLength());
 }
 
 void ByteStreamTeeEngine::Start(ScriptState* script_state,
@@ -641,6 +614,11 @@ void ByteStreamTeeEngine::Start(ScriptState* script_state,
   // 3. Let reader be ? AcquireReadableStreamDefaultReader(stream).
   reader_ = ReadableStream::AcquireDefaultReader(script_state, stream,
                                                  exception_state);
+
+  if (exception_state.HadException()) {
+    return;
+  }
+  CHECK(reader_);
 
   // 4. Let reading be false.
   DCHECK(!reading_);
@@ -670,7 +648,8 @@ void ByteStreamTeeEngine::Start(ScriptState* script_state,
   DCHECK(!branch_[1]);
 
   // 13. Let cancelPromise be a new promise.
-  cancel_promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  cancel_promise_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // 17. Let pull1Algorithm be the following steps:
   // (See PullAlgorithm::Run()).

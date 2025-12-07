@@ -9,12 +9,15 @@
 
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 
-class ChromeBrowserState;
 @class NewTabPageCoordinator;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabConsumer;
 class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
+
+namespace feature_engagement {
+class Tracker;
+}
 
 // Mediator that handles tab events.
 // The required dependencies are injected into the mediator instance on init,
@@ -34,11 +37,10 @@ class WebStateList;
 // into or removed from the web state list.
 // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and remove this
 // dependency.
-// TODO(crbug.com/40901519): TabEventsMediator should not have knoledge of
-// browserState.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator
-                        browserState:(ChromeBrowserState*)browserState
+                             tracker:(feature_engagement::Tracker*)tracker
+                           incognito:(BOOL)incognito
                      loadingNotifier:
                          (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier;
 

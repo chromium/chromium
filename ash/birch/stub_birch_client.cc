@@ -18,6 +18,10 @@ StubBirchClient::StubDataProvider::StubDataProvider() = default;
 
 StubBirchClient::StubDataProvider::~StubDataProvider() = default;
 
+void StubBirchClient::StubDataProvider::RunDataProviderChangedCallback() {
+  NotifyDataProviderChanged();
+}
+
 void StubBirchClient::StubDataProvider::RequestBirchDataFetch() {
   did_request_birch_data_fetch_ = true;
 }
@@ -45,6 +49,15 @@ StubBirchClient::InstallStubWeatherDataProvider() {
   Shell::Get()->birch_model()->OverrideWeatherProviderForTest(
       std::move(weather_provider));
   return weather_provider_ptr;
+}
+
+StubBirchClient::StubDataProvider*
+StubBirchClient::InstallStubCoralDataProvider() {
+  auto coral_provider = std::make_unique<StubDataProvider>();
+  auto* coral_provider_ptr = coral_provider.get();
+  Shell::Get()->birch_model()->OverrideCoralProviderForTest(
+      std::move(coral_provider));
+  return coral_provider_ptr;
 }
 
 bool StubBirchClient::DidRequestCalendarDataFetch() const {
@@ -131,4 +144,9 @@ void StubBirchClient::GetFaviconImage(
   did_get_favicon_image_ = true;
   std::move(callback).Run(ui::ImageModel());
 }
+
+ui::ImageModel StubBirchClient::GetChromeBackupIcon() {
+  return ui::ImageModel();
+}
+
 }  // namespace ash

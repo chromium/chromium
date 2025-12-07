@@ -4,17 +4,16 @@
 
 #include "extensions/renderer/script_injection_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -31,7 +30,6 @@
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/web_ui_injection_host.h"
-#include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -62,7 +60,7 @@ std::optional<mojom::RunLocation> NextRunLocation(
     case mojom::RunLocation::kBrowserDriven:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -421,13 +419,13 @@ void ScriptInjectionManager::TryToInject(
       run_location, scripts_run_info,
       base::BindOnce(&ScriptInjectionManager::OnInjectionStatusUpdated,
                      base::Unretained(this)))) {
-    case ScriptInjection::INJECTION_WAITING:
+    case ScriptInjection::InjectionResult::kWaiting:
       pending_injections_.push_back(std::move(injection));
       break;
-    case ScriptInjection::INJECTION_BLOCKED:
+    case ScriptInjection::InjectionResult::kBlocked:
       running_injections_.push_back(std::move(injection));
       break;
-    case ScriptInjection::INJECTION_FINISHED:
+    case ScriptInjection::InjectionResult::kFinished:
       break;
   }
 }
@@ -490,8 +488,8 @@ void ScriptInjectionManager::ExecuteDeclarativeScript(
 
 void ScriptInjectionManager::OnPermitScriptInjectionHandled(
     ScriptInjection* injection) {
-  auto iter = base::ranges::find(pending_injections_, injection,
-                                 &std::unique_ptr<ScriptInjection>::get);
+  auto iter = std::ranges::find(pending_injections_, injection,
+                                &std::unique_ptr<ScriptInjection>::get);
   if (iter == pending_injections_.end())
     return;
   DCHECK((*iter)->host_id().type == mojom::HostID::HostType::kExtensions);
@@ -507,8 +505,9 @@ void ScriptInjectionManager::OnPermitScriptInjectionHandled(
                                   mojom::RunLocation::kRunDeferred);
   ScriptInjection::InjectionResult res =
       script_injection->OnPermissionGranted(&scripts_run_info);
-  if (res == ScriptInjection::INJECTION_BLOCKED)
+  if (res == ScriptInjection::InjectionResult::kBlocked) {
     running_injections_.push_back(std::move(script_injection));
+  }
   scripts_run_info.LogRun(activity_logging_enabled_);
 }
 

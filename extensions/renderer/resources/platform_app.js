@@ -214,8 +214,9 @@ function disableDeprectatedDocumentFunction() {
 // created.
 disableDeprectatedDocumentFunction();
 window.addEventListener('readystatechange', function(event) {
-  if (document.readyState == 'loading')
+  if (document.readyState == 'loading') {
     disableDeprectatedDocumentFunction();
+  }
 }, true);
 
 // Disable onunload, onbeforeunload.
@@ -226,8 +227,9 @@ EventTarget.prototype.addEventListener = function(type) {
   // Note: Force conversion to a string in order to catch any funny attempts
   // to pass in something that evals to 'unload' but wouldn't === 'unload'.
   var type = (args[0] += '');
-  if (type === 'unload' || type === 'beforeunload')
+  if (type === 'unload' || type === 'beforeunload') {
     generateDisabledMethodStub(type)();
-  else
+  } else {
     return $Function.apply(eventTargetAddEventListener, this, args);
+  }
 };

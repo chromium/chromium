@@ -12,10 +12,10 @@
 
 namespace blink {
 
-PLATFORM_EXPORT rtc::scoped_refptr<webrtc::AudioEncoderFactory>
+PLATFORM_EXPORT webrtc::scoped_refptr<webrtc::AudioEncoderFactory>
 CreateWebrtcAudioEncoderFactory();
 
-PLATFORM_EXPORT rtc::scoped_refptr<webrtc::AudioDecoderFactory>
+PLATFORM_EXPORT webrtc::scoped_refptr<webrtc::AudioDecoderFactory>
 CreateWebrtcAudioDecoderFactory();
 
 }  // namespace blink

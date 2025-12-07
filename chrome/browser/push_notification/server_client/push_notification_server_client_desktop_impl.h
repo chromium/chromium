@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow.h"
 #include "chrome/browser/push_notification/server_client/push_notification_server_client.h"

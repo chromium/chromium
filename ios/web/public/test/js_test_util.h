@@ -18,6 +18,20 @@ class WebState;
 
 namespace test {
 
+// These functions synchronously execute `script` in `web_view` and wait for its
+// completion. Prefer these variants over those below returning `id` when
+// the caller is not interested in the return value.
+void ExecuteJavaScriptInWebView(WKWebView* web_view, NSString* script);
+void ExecuteJavaScriptInWebView(WKWebView* web_view,
+                                NSString* script,
+                                NSError* __autoreleasing* error);
+
+// Synchronously executes JavaScript in the content world associated with
+// `feature`.
+void ExecuteJavaScriptForFeature(web::WebState* web_state,
+                                 NSString* script,
+                                 JavaScriptFeature* feature);
+
 // These functions synchronously execute JavaScript and return result as id.
 // id will be backed up by different classes depending on resulting JS type:
 // NSString (string), NSNumber (number or boolean), NSDictionary (object),
@@ -26,19 +40,20 @@ namespace test {
 
 // Executes JavaScript on `web_view` and returns the result as an id.
 // `error` can be null and will be updated only if script execution fails.
-id ExecuteJavaScript(WKWebView* web_view,
-                     NSString* script,
-                     NSError* __autoreleasing* error);
+[[nodiscard]] id ExecuteJavaScript(WKWebView* web_view,
+                                   NSString* script,
+                                   NSError* __autoreleasing* error);
 
 // Executes JavaScript on `web_view` and returns the result as an id.
 // Fails if there was an error during script execution.
-id ExecuteJavaScript(WKWebView* web_view, NSString* script);
+[[nodiscard]] id ExecuteJavaScript(WKWebView* web_view, NSString* script);
 
 // Synchronously executes JavaScript in the content world associated with
 // `feature` and returns the result as id.
-id ExecuteJavaScriptForFeature(web::WebState* web_state,
-                               NSString* script,
-                               JavaScriptFeature* feature);
+[[nodiscard]] id ExecuteJavaScriptForFeatureAndReturnResult(
+    web::WebState* web_state,
+    NSString* script,
+    JavaScriptFeature* feature);
 
 // Synchronously loads `html` into `web_view`. Returns true is successful or
 // false if the `web_view` never finishes loading.
@@ -52,10 +67,6 @@ id ExecuteJavaScriptForFeature(web::WebState* web_state,
 // Returns an autoreleased string containing the JavaScript loaded from a
 // bundled resource file with the given name (excluding extension).
 NSString* GetPageScript(NSString* script_file_name);
-
-// Returns the JavaScript which defines __gCrWeb, __gCrWeb.common, and
-// __gCrWeb.message.
-NSString* GetSharedScripts();
 
 // Manually overrides the built in JavaScriptFeatures and those from
 // `GetWebClient()::GetJavaScriptFeatures()`. This is intended to be used to

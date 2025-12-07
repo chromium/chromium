@@ -14,6 +14,16 @@ function test_sub() {
     document.getSelection().addRange(range);
 
     assert_equals(document.queryCommandState('subscript'), true);
+
+    document.getSelection().removeAllRanges();
+    assert_false(document.queryCommandState('subscript'));
+
+    // Test command state after collapsing the selection to the end of the first
+    // <i> element.
+    const textNode = document.querySelector('i').firstChild;
+    document.getSelection().collapse(textNode, textNode.textContent.length);
+
+    assert_true(document.queryCommandState('subscript'));
 }
 
 function test_sup() {
@@ -23,6 +33,16 @@ function test_sup() {
     document.getSelection().addRange(range);
 
     assert_equals(document.queryCommandState('superscript'), true);
+
+    document.getSelection().removeAllRanges();
+    assert_false(document.queryCommandState('superscript'));
+
+    // Test command state after collapsing the selection to the end of the second
+    // <i> element.
+    const textNode = document.querySelectorAll('i')[1].firstChild;
+    document.getSelection().collapse(textNode, textNode.textContent.length);
+
+    assert_true(document.queryCommandState('superscript'));
 }
 
 function test_all(platform) {

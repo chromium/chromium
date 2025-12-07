@@ -126,6 +126,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(BlobBuildFromStreamResult)
   enum class Result {
     kSuccess = 0,
     kAborted = 1,
@@ -134,9 +135,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
     kFileWriteFailed = 4,
     kMaxValue = kFileWriteFailed
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:BlobBuildFromStreamResult)
 
   void OnError(Result result);
   void OnSuccess();
+  void RecordResult(Result result);
 
   bool ShouldStoreNextBlockOnDisk(uint64_t length_hint);
 

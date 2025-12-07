@@ -60,7 +60,7 @@ const NameMapElement<JingleMessage::Reason> kReasons[] = {
 // used them from the start. So in order to remain backwards compatible,
 // we check specifically for those types and override the candidate type name
 // in those cases.
-std::string_view GetLegacyTypeName(const cricket::Candidate& c) {
+std::string_view GetLegacyTypeName(const webrtc::Candidate& c) {
   if (c.is_local()) {
     return "local";
   }
@@ -143,7 +143,7 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
   // deprecated.
   candidate->candidate = {candidate->candidate.component(),
                           protocol,
-                          rtc::SocketAddress(address, port),
+                          webrtc::SocketAddress(address, port),
                           priority,
                           candidate->candidate.username(),
                           candidate->candidate.password(),
@@ -292,6 +292,18 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     }
   }
 
+  const XmlElement* error_details_tag =
+      jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "error-details"));
+  if (error_details_tag) {
+    error_details = error_details_tag->BodyText();
+  }
+
+  const XmlElement* error_location_tag =
+      jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "error-location"));
+  if (error_location_tag) {
+    error_location = error_location_tag->BodyText();
+  }
+
   if (action == SESSION_TERMINATE) {
     return true;
   }
@@ -394,6 +406,20 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
           new XmlElement(QName(kChromotingXmlNamespace, "error-code"));
       jingle_tag->AddElement(error_code_tag);
       error_code_tag->SetBodyText(ErrorCodeToString(error_code));
+    }
+
+    if (!error_details.empty()) {
+      XmlElement* error_details_tag =
+          new XmlElement(QName(kChromotingXmlNamespace, "error-details"));
+      jingle_tag->AddElement(error_details_tag);
+      error_details_tag->SetBodyText(error_details);
+    }
+
+    if (!error_location.empty()) {
+      XmlElement* error_location_tag =
+          new XmlElement(QName(kChromotingXmlNamespace, "error-location"));
+      jingle_tag->AddElement(error_location_tag);
+      error_location_tag->SetBodyText(error_location);
     }
   }
 
@@ -505,7 +531,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
       name = QName(kJabberNamespace, "feature-not-implemented");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (!text.empty()) {
@@ -537,7 +563,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
 
 IceTransportInfo::NamedCandidate::NamedCandidate(
     const std::string& name,
-    const cricket::Candidate& candidate)
+    const webrtc::Candidate& candidate)
     : name(name), candidate(candidate) {}
 
 IceTransportInfo::IceCredentials::IceCredentials(std::string channel,

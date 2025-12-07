@@ -26,12 +26,12 @@ GURL EncodeToChromeContentProviderUrl(const GURL& url) {
 
 GURL DecodeFromChromeContentProviderUrl(
     const GURL& chrome_content_provider_url) {
-  const std::string spec = chrome_content_provider_url.spec();
-  if (!base::StartsWith(spec, kChromeContentProviderUrl,
-                        base::CompareCase::SENSITIVE))
+  const std::string& spec = chrome_content_provider_url.spec();
+  auto remainder = base::RemovePrefix(spec, kChromeContentProviderUrl);
+  if (!remainder) {
     return GURL();
-  const std::string escaped = spec.substr(strlen(kChromeContentProviderUrl));
-  return GURL(base::UnescapeBinaryURLComponent(escaped));
+  }
+  return GURL(base::UnescapeBinaryURLComponent(*remainder));
 }
 
 }  // namespace arc

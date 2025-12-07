@@ -5,7 +5,34 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_ATTESTATIONS_PRIVACY_SANDBOX_ATTESTATIONS_HISTOGRAMS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_ATTESTATIONS_PRIVACY_SANDBOX_ATTESTATIONS_HISTOGRAMS_H_
 
+#include "build/buildflag.h"
+
 namespace privacy_sandbox {
+
+#if BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// This enum is used for recording the status of loading attestations component
+// from Android APK assets. The differences between this histogram and the
+// parsing status histogram `kAttestationsFileParsingStatusUMA` are:
+// 1. The parsing status only concerns the parsing of the attestations list. The
+// manifest parsing is done by the component updater. However, for loading from
+// APK assets, both manifest and attestations list parsing are done by the
+// attestations class.
+// 2. This histogram has more granular error conditions since there are more
+// steps required to open files from APK assets.
+enum class LoadAPKAssetStatus {
+  kSuccess = 0,
+  kCannotOpenList = 1,
+  kCannotMemoryMapList = 2,
+  kCannotParseList = 3,
+  kMaxValue = kCannotParseList,
+};
+
+inline constexpr char kAttestationsLoadAPKAssetStatusUMA[] =
+    "PrivacySandbox.Attestations.LoadAPKAssetStatus";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

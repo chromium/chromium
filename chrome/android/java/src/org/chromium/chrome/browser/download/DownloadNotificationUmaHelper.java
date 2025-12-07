@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Helper to track necessary stats in UMA related to downloads notifications. */
+@NullMarked
 public final class DownloadNotificationUmaHelper {
     // NOTE: Keep these lists/classes in sync with DownloadNotification[...] in enums.xml.
     @IntDef({ForegroundLifecycle.START, ForegroundLifecycle.UPDATE, ForegroundLifecycle.STOP})
@@ -33,7 +35,7 @@ public final class DownloadNotificationUmaHelper {
         int NUM_ENTRIES = 3;
     }
 
-    private static List<String> sInteractions =
+    private static final List<String> sInteractions =
             Arrays.asList(
                     ACTION_NOTIFICATION_CLICKED, // Opening a download where
                     // LegacyHelpers.isLegacyDownload.

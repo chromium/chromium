@@ -12,7 +12,6 @@
 #import "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
@@ -47,7 +46,6 @@ extern const char kBreadcrumbOverlayJsPrompt[];
 
 class BreadcrumbManagerBrowserAgent
     : public breadcrumbs::BreadcrumbManagerBrowserAgent,
-      public BrowserObserver,
       public OverlayPresenterObserver,
       public BrowserUserData<BreadcrumbManagerBrowserAgent>,
       public WebStateListObserver {
@@ -59,15 +57,11 @@ class BreadcrumbManagerBrowserAgent
 
  private:
   friend class BrowserUserData<BreadcrumbManagerBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit BreadcrumbManagerBrowserAgent(Browser* browser);
 
   // breadcrumbs::BreadcrumbManagerBrowserAgent:
   void PlatformLogEvent(const std::string& event) override;
-
-  // BrowserObserver:
-  void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver:
   void WebStateListDidChange(WebStateList* web_state_list,
@@ -81,8 +75,6 @@ class BreadcrumbManagerBrowserAgent
                        OverlayRequest* request,
                        bool initial_presentation) override;
   void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   // Keeps track of WebState mutation count to avoid logging every event.
   // Created in WillBeginBatchOperation and destroyed in BatchOperationEnded.

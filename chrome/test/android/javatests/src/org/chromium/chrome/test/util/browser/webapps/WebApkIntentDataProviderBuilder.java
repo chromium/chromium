@@ -23,8 +23,8 @@ import java.util.Map;
 
 /** Builder class for WebAPK {@link BrowserServicesIntentDataProvider} objects. */
 public class WebApkIntentDataProviderBuilder {
-    private String mWebApkPackageName;
-    private String mUrl;
+    private final String mWebApkPackageName;
+    private final String mUrl;
     private String mScope;
     private @DisplayMode.EnumType int mDisplayMode = DisplayMode.STANDALONE;
     private String mManifestUrl;
@@ -33,7 +33,7 @@ public class WebApkIntentDataProviderBuilder {
     private String mName;
     private String mShortName;
     private WebappIcon mPrimaryIcon;
-    private Map<String, String> mIconUrlToMurmur2HashMap = new HashMap<String, String>();
+    private Map<String, String> mIconUrlToMurmur2HashMap = new HashMap<>();
     private long mToolbarColor;
     private int mShellApkVersion = 1;
 

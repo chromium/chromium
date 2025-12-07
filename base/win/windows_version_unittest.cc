@@ -46,7 +46,9 @@ TEST(WindowsVersion, CheckDbgHelpVersion) {
 TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(11, 0, 0), Version::WIN11);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 32767),
-            Version::WIN11_23H2);
+            Version::WIN11_24H2);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 26100),
+            Version::WIN11_24H2);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 22631),
             Version::WIN11_23H2);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 22621),

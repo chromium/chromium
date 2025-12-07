@@ -1,0 +1,23 @@
+
+------ Set details relation when target is rich:
+AXRole: AXGenericContainer, name , description undefined (isValid) (isVisible)
+  AXRole: AXGroup, name , description undefined (isValid) (isVisible)
+    AXRole: AXTextField, name , description undefined (isFocusable) (isValid) (isVisible)
+  AXRole: AXButton, name Button #1, description undefined (isFocusable) (isFocused) (isValid) (isVisible) (has ariaDetails)
+
+------ No details relation when interest for is next in the dom:
+AXRole: AXGenericContainer, name , description undefined (isValid) (isVisible)
+  AXRole: AXButton, name Button #2, description undefined (isFocusable) (isFocused) (isValid) (isVisible)
+  AXRole: AXGroup, name , description undefined (isValid) (isVisible)
+    AXRole: AXTextField, name , description undefined (isFocusable) (isValid) (isVisible)
+
+------ No details relation when target is not rich, will use as name:
+AXRole: AXGenericContainer, name , description undefined (isValid) (isVisible)
+  AXRole: AXGroup, name , description undefined (isValid) (isVisible)
+  AXRole: AXButton, name Button #3, description undefined (isFocusable) (isFocused) (isValid) (isVisible)
+
+------ Use as description if there's already a name:
+AXRole: AXGenericContainer, name , description undefined (isValid) (isVisible)
+  AXRole: AXGroup, name , description undefined (isValid) (isVisible)
+  AXRole: AXButton, name Button #4, description undefined (isFocusable) (isFocused) (isValid) (isVisible)
+

@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/constants.h"
@@ -46,12 +45,8 @@ class UserHostRestrictionsBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  content::WebContents* GetActiveTab() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   int GetActiveTabId() {
-    return sessions::SessionTabHelper::IdForTab(GetActiveTab()).id();
+    return sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   }
 
   // Withholds host permissions from `extension` and waits for the withholding
@@ -131,10 +126,11 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
   permissions_manager->AddUserRestrictedSite(
       url::Origin::Create(restricted_url));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, allowed_url));
   EXPECT_EQ(allowed_url.spec(), try_execute_script(GetActiveTabId()));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, restricted_url));
 
   // The extension should not be able to run on the user-restricted site iff
   // the feature is enabled.
@@ -183,18 +179,19 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
   permissions_manager->AddUserRestrictedSite(
       url::Origin::Create(restricted_url));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, allowed_url));
   static constexpr char16_t kInjectedTitle[] = u"Injected";
-  EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+  EXPECT_EQ(kInjectedTitle, web_contents->GetTitle());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, restricted_url));
 
   // The extension should not be able to run on the user-restricted site iff
   // the feature is enabled.
   if (GetParam()) {
-    EXPECT_EQ(u"Title Of Awesomeness", GetActiveTab()->GetTitle());
+    EXPECT_EQ(u"Title Of Awesomeness", web_contents->GetTitle());
   } else {
-    EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+    EXPECT_EQ(kInjectedTitle, web_contents->GetTitle());
   }
 }
 
@@ -264,6 +261,66 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ("TypeError: Failed to fetch", try_fetch_url(restricted_url));
   } else {
     EXPECT_EQ("fetch2 - dog\n", try_fetch_url(restricted_url));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       PRE_UserRestrictedSitesArePersisted) {
+  // Note: We need a "real" extension here (instead of just a TestExtensionDir)
+  // because it needs to persist for the next test.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_all_urls"));
+  ASSERT_TRUE(extension);
+
+  // Note: We don't use `embedded_test_server` to grab a URL here because the
+  // port would (potentially) change between the PRE_ test and the second test.
+  // Instead, just use a constructed URL. Since all we check is the permissions
+  // data, we don't need the URL to actually load in the browsertest.
+  const GURL restricted_url("https://example.com");
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            extension->permissions_data()->GetPageAccess(
+                restricted_url, extension_misc::kUnknownTabId, nullptr));
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  permissions_manager->AddUserRestrictedSite(
+      url::Origin::Create(restricted_url));
+
+  if (GetParam()) {
+    EXPECT_EQ(PermissionsData::PageAccess::kDenied,
+              extension->permissions_data()->GetPageAccess(
+                  restricted_url, extension_misc::kUnknownTabId, nullptr));
+  } else {
+    // Technically, 'AddUserRestrictedSite' should only happen if the feature is
+    // enabled. We can't DCHECK that (because then the version of these tests
+    // without the feature don't work), so we somewhat awkwardly just allow it,
+    // though it would not take effect when feature is disabled.
+    EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+              extension->permissions_data()->GetPageAccess(
+                  restricted_url, extension_misc::kUnknownTabId, nullptr));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       UserRestrictedSitesArePersisted) {
+  const Extension* found_extension = nullptr;
+  for (const auto& extension :
+       ExtensionRegistry::Get(profile())->enabled_extensions()) {
+    if (extension->name() == "All Urls Extension") {
+      found_extension = extension.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(found_extension);
+
+  const GURL restricted_url("https://example.com");
+  if (GetParam()) {
+    EXPECT_EQ(PermissionsData::PageAccess::kDenied,
+              found_extension->permissions_data()->GetPageAccess(
+                  restricted_url, extension_misc::kUnknownTabId, nullptr));
+  } else {
+    EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+              found_extension->permissions_data()->GetPageAccess(
+                  restricted_url, extension_misc::kUnknownTabId, nullptr));
   }
 }
 
@@ -384,15 +441,16 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
   // Verify permissions access in the renderer. `allowed_url`'s title should be
   // changed, while `restricted_url` and `unrequested_url` should remain at
   // their original (awesome) titles.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, allowed_url));
   static constexpr char16_t kInjectedTitle[] = u"Injected";
-  EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+  EXPECT_EQ(kInjectedTitle, web_contents->GetTitle());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
-  EXPECT_EQ(u"Title Of Awesomeness", GetActiveTab()->GetTitle());
+  ASSERT_TRUE(NavigateToURL(web_contents, restricted_url));
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents->GetTitle());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unrequested_url));
-  EXPECT_EQ(u"Title Of More Awesomeness", GetActiveTab()->GetTitle());
+  ASSERT_TRUE(NavigateToURL(web_contents, unrequested_url));
+  EXPECT_EQ(u"Title Of More Awesomeness", web_contents->GetTitle());
 
   // Finally, remove the user-permitted `allowed_url`. Since the extension
   // only had access to this URL via it being a user-permitted URL (and not
@@ -410,12 +468,12 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
             extension->permissions_data()->GetContentScriptAccess(
                 allowed_url, kTabId, nullptr));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, allowed_url));
   // Note that title1.html has no title, so it defaults to the URL - but it's
   // sanitized for display (e.g. stripping HTTPS) so to avoid tying this too
   // closely with the UI, we just check that it's not equal to the injected
   // title.
-  EXPECT_NE(kInjectedTitle, GetActiveTab()->GetTitle());
+  EXPECT_NE(kInjectedTitle, web_contents->GetTitle());
 
   // TODO(crbug.com/40803363): We could add more checks here to
   // exercise the network service path, as we do for user restricted sites

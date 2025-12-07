@@ -15,16 +15,4 @@ TabLifecycleUnitExternal* TabLifecycleUnitExternal::FromWebContents(
   return GetTabLifecycleUnitSource()->GetTabLifecycleUnitExternal(web_contents);
 }
 
-// static
-void TabLifecycleUnitExternal::AddTabLifecycleObserver(
-    TabLifecycleObserver* observer) {
-  GetTabLifecycleUnitSource()->AddTabLifecycleObserver(observer);
-}
-
-// static
-void TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
-    TabLifecycleObserver* observer) {
-  GetTabLifecycleUnitSource()->RemoveTabLifecycleObserver(observer);
-}
-
 }  // namespace resource_coordinator

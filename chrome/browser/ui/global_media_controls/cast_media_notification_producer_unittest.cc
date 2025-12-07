@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/test/base/testing_profile.h"

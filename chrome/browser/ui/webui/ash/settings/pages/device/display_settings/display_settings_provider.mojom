@@ -98,8 +98,10 @@ interface DisplayConfigurationObserver {
 // settings change.
 interface DisplayBrightnessSettingsObserver {
   // OnDisplayBrightnessChanged calls are triggered when the display brightness
-  // of the internal screen has changed.
-  OnDisplayBrightnessChanged(double brightness_percent);
+  // of the internal screen has changed. `brightness_percent` is the new
+  // brightness level, and `triggered_by_als` is true if the change was caused
+  // by the Ambient Light Sensor (ALS).
+  OnDisplayBrightnessChanged(double brightness_percent, bool triggered_by_als);
 };
 
 // Implemented by clients that wish to be notified when the status of the
@@ -149,6 +151,10 @@ interface DisplaySettingsProvider {
   // Sets whether the internal display should use the device's ambient light
   // sensor to automatically set the display brightness.
   SetInternalDisplayAmbientLightSensorEnabled(bool enabled);
+
+  // Initiates the native experience to map all touchscreen devices to the
+  // correct display.
+  StartNativeTouchscreenMappingExperience();
 
   // Returns whether the device has at least one ambient light sensor.
   // In case of error, |callback| will be run with |false|.

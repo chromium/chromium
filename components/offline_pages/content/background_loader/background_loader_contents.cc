@@ -21,14 +21,16 @@ BackgroundLoaderContents::BackgroundLoaderContents(
   // CreateParams::initially_hidden == false, and that we never change the
   // visibility after that.  If we did change it, then background throttling
   // could kill the background offliner while it was running.
-  web_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(browser_context_));
+  content::WebContents::CreateParams create_params(browser_context_);
+  // Background, so not user-visible.
+  create_params.is_never_composited = true;
+  web_contents_ = content::WebContents::Create(create_params);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetAudioMuted(true);
   web_contents_->SetDelegate(this);
 }
 
-BackgroundLoaderContents::~BackgroundLoaderContents() {}
+BackgroundLoaderContents::~BackgroundLoaderContents() = default;
 
 void BackgroundLoaderContents::LoadPage(const GURL& url) {
   web_contents_->GetController().LoadURL(
@@ -46,15 +48,13 @@ void BackgroundLoaderContents::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-bool BackgroundLoaderContents::IsNeverComposited(
-    content::WebContents* web_contents) {
-  // Background, so not user-visible.
-  return true;
-}
-
 void BackgroundLoaderContents::CloseContents(content::WebContents* source) {
   // Do nothing. Other pages should not be able to close a background page.
-  NOTREACHED_IN_MIGRATION();
+  //
+  // TODO(crbug.com/374382473): This used to be NOTREACHED() but is reachable as
+  // of 2024-11-20. It should either be made not reachable (and the NOTREACHED()
+  // added back) or document why this should be reachable (as opposed to the
+  // "should not be able to close" in the comment above).
 }
 
 bool BackgroundLoaderContents::ShouldSuppressDialogs(
@@ -82,6 +82,7 @@ void BackgroundLoaderContents::CanDownload(
 }
 
 bool BackgroundLoaderContents::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
@@ -91,7 +92,7 @@ bool BackgroundLoaderContents::IsWebContentsCreationOverridden(
   return true;
 }
 
-void BackgroundLoaderContents::AddNewContents(
+content::WebContents* BackgroundLoaderContents::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -101,8 +102,10 @@ void BackgroundLoaderContents::AddNewContents(
     bool* was_blocked) {
   // Pop-ups should be blocked;
   // background pages should not create other contents
-  if (was_blocked != nullptr)
+  if (was_blocked != nullptr) {
     *was_blocked = true;
+  }
+  return nullptr;
 }
 
 #if BUILDFLAG(IS_ANDROID)

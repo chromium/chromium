@@ -95,27 +95,6 @@ TEST_F(DataTypeRegistryTest, GetInitialSyncEndedTypes) {
   EXPECT_EQ(DataTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
 }
 
-TEST_F(DataTypeRegistryTest, GetTypesWithUnsyncedData) {
-  // Create workers for PREFERENCES and BOOKMARKS.
-  registry()->ConnectDataType(
-      PREFERENCES,
-      MakeDataTypeActivationResponse(MakeInitialDataTypeState(PREFERENCES)));
-  registry()->ConnectDataType(
-      BOOKMARKS,
-      MakeDataTypeActivationResponse(MakeInitialDataTypeState(BOOKMARKS)));
-
-  // Simulate a local BOOKMARKS change. In production, the DataTypeProcessor
-  // would call NudgeForCommit() on the worker.
-  for (const std::unique_ptr<DataTypeWorker>& worker :
-       registry()->GetConnectedDataTypeWorkersForTest()) {
-    if (worker->GetDataType() == BOOKMARKS) {
-      worker->NudgeForCommit();
-    }
-  }
-
-  EXPECT_EQ(DataTypeSet({BOOKMARKS}), registry()->GetTypesWithUnsyncedData());
-}
-
 }  // namespace
 
 }  // namespace syncer

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
@@ -14,8 +14,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -24,14 +22,14 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/wm/core/window_util.h"
 
 using chromeos::DefaultFrameHeader;
@@ -40,24 +38,12 @@ using chromeos::FrameCaptionButtonContainerView;
 using chromeos::FrameHeader;
 using chromeos::kFrameActiveColorKey;
 using chromeos::kFrameInactiveColorKey;
-using views::NonClientFrameView;
+using views::FrameView;
 using views::Widget;
 
 namespace ash {
 
-class DefaultFrameHeaderTest : public AshTestBase {
- public:
-  DefaultFrameHeaderTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  DefaultFrameHeaderTest(const DefaultFrameHeaderTest&) = delete;
-  DefaultFrameHeaderTest& operator=(const DefaultFrameHeaderTest&) = delete;
-  ~DefaultFrameHeaderTest() override = default;
-
-  void AdvanceClock(base::TimeDelta delay) {
-    task_environment()->AdvanceClock(delay);
-    task_environment()->RunUntilIdle();
-  }
-};
+using DefaultFrameHeaderTest = AshTestBase;
 
 // Ensure the title text is vertically aligned with the window icon.
 TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
@@ -209,11 +195,11 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   // Waits until `FrameHeader` gets painted.
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(win0->GetHost()->compositor()));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   wm::ActivateWindow(win0.get());
 
-  auto* frame_view = NonClientFrameViewAsh::Get(win0.get());
+  auto* frame_view = FrameViewAsh::Get(win0.get());
   auto* animating_layer_holding_view = frame_view->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view));
@@ -245,17 +231,17 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   EXPECT_TRUE(
       ui::WaitForNextFrameToBePresented(win_0->GetHost()->compositor()));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto* frame_view_0 = NonClientFrameViewAsh::Get(win_0.get());
+  auto* frame_view_0 = FrameViewAsh::Get(win_0.get());
   auto* animating_layer_holding_view_0 = frame_view_0->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view_0));
   size_t original_layers_count_0 =
       animating_layer_holding_view_0->layer()->parent()->children().size();
 
-  auto* frame_view_1 = NonClientFrameViewAsh::Get(win_1.get());
+  auto* frame_view_1 = FrameViewAsh::Get(win_1.get());
   auto* extra_view_1 =
       frame_view_1->AddChildView(std::make_unique<views::View>());
 
@@ -324,8 +310,8 @@ TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
 
   EXPECT_TRUE(wm::IsActiveWindow(win_1.get()));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto layer_bounds = win_0->layer()->bounds();
   lock.reset();
@@ -333,35 +319,6 @@ TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
   EXPECT_TRUE(wm::IsActiveWindow(win_0.get()));
   // Makes sure that the layer has full damaged bounds.
   EXPECT_TRUE(win_0->layer()->damaged_region().Contains(layer_bounds));
-}
-
-// Ensure that the number of frame color changes is recorded as metrics.
-TEST_F(DefaultFrameHeaderTest, FrameColorChangeMetrics) {
-  const auto app_type = chromeos::AppType::ARC_APP;
-  auto win0 = CreateAppWindow(gfx::Rect(300, 300), app_type);
-  Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
-  DefaultFrameHeader* frame_header =
-      static_cast<DefaultFrameHeader*>(FrameHeader::Get(widget));
-
-  const auto frame_color_change_histogram =
-      chromeos::FrameColorMetricsHelper::GetFrameColorChangeHistogramName(
-          app_type);
-  base::HistogramTester histogram_tester;
-
-  win0->SetProperty(kFrameActiveColorKey, SkColorSetRGB(70, 70, 70));
-  win0->SetProperty(kFrameInactiveColorKey, SkColorSetRGB(70, 70, 70));
-  frame_header->UpdateFrameColors();
-
-  constexpr base::TimeDelta kFrameColorTracingTime = base::Seconds(3);
-  // Advances the mock clock in the task environment because the metrics is
-  // recorded `kFrameColorTracingTime` after the `frame_header` is instantiated.
-  AdvanceClock(kFrameColorTracingTime);
-
-  histogram_tester.ExpectTotalCount(frame_color_change_histogram, 1);
-
-  // The recorded number of frame color changes should be at least 1.
-  EXPECT_GE(histogram_tester.GetAllSamples(frame_color_change_histogram)[0].min,
-            1);
 }
 
 }  // namespace ash

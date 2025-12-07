@@ -8,8 +8,7 @@
 #include <stdint.h>
 #include <sys/system_properties.h>
 
-#include "base/android/sys_utils.h"
-#include "base/lazy_instance.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -19,12 +18,11 @@
 namespace {
 
 // Default version of Android to fall back to when actual version numbers
-// cannot be acquired. Use the latest Android release with a higher bug fix
-// version to avoid unnecessarily comparison errors with the latest release.
-// This should be manually kept up to date on each Android release.
-const int kDefaultAndroidMajorVersion = 12;
+// cannot be acquired. Use a super high number in this case, as we assume
+// it's due to being a pre-release version.
+const int kDefaultAndroidMajorVersion = 9999;
 const int kDefaultAndroidMinorVersion = 0;
-const int kDefaultAndroidBugfixVersion = 99;
+const int kDefaultAndroidBugfixVersion = 0;
 
 // Get and parse out the OS version numbers from the system properties.
 // Note if parse fails, the "default" version is returned as fallback.
@@ -38,15 +36,17 @@ void GetOsVersionStringAndNumbers(std::string* version_string,
 
   if (os_version_str[0]) {
     // Try to parse out the version numbers from the string.
-    int num_read = sscanf(os_version_str, "%d.%d.%d", major_version,
-                          minor_version, bugfix_version);
+    int num_read = UNSAFE_TODO(sscanf(os_version_str, "%d.%d.%d", major_version,
+                                      minor_version, bugfix_version));
 
     if (num_read > 0) {
       // If we don't have a full set of version numbers, make the extras 0.
-      if (num_read < 2)
+      if (num_read < 2) {
         *minor_version = 0;
-      if (num_read < 3)
+      }
+      if (num_read < 3) {
         *bugfix_version = 0;
+      }
       *version_string = std::string(os_version_str);
       return;
     }
@@ -74,6 +74,12 @@ std::string SysInfo::HardwareModelName() {
   char device_model_str[PROP_VALUE_MAX];
   __system_property_get("ro.product.model", device_model_str);
   return std::string(device_model_str);
+}
+
+std::string SysInfo::SocManufacturer() {
+  char soc_manufacturer_str[PROP_VALUE_MAX];
+  __system_property_get("ro.soc.manufacturer", soc_manufacturer_str);
+  return std::string(soc_manufacturer_str);
 }
 
 std::string SysInfo::OperatingSystemName() {
@@ -107,30 +113,22 @@ std::string SysInfo::GetAndroidBuildID() {
   return std::string(os_build_id_str);
 }
 
+std::string SysInfo::GetAndroidHardware() {
+  char os_hardware_str[PROP_VALUE_MAX];
+  __system_property_get("ro.hardware", os_hardware_str);
+  return std::string(os_hardware_str);
+}
+
 std::string SysInfo::GetAndroidHardwareEGL() {
   char os_hardware_egl_str[PROP_VALUE_MAX];
   __system_property_get("ro.hardware.egl", os_hardware_egl_str);
   return std::string(os_hardware_egl_str);
 }
 
-static base::LazyInstance<base::internal::LazySysInfoValue<
-    bool,
-    android::SysUtils::IsLowEndDeviceFromJni>>::Leaky g_lazy_low_end_device =
-    LAZY_INSTANCE_INITIALIZER;
-
-bool SysInfo::IsLowEndDeviceImpl() {
-  // This code might be used in some environments
-  // which might not have a Java environment.
-  // Note that we need to call the Java version here.
-  // There exists a complete native implementation in
-  // sys_info.cc but calling that here would mean that
-  // the Java code and the native code would call different
-  // implementations which could give different results.
-  // Also the Java code cannot depend on the native code
-  // since it might not be loaded yet.
-  if (!base::android::IsVMInitialized())
-    return false;
-  return g_lazy_low_end_device.Get().value();
+std::string SysInfo::GetAndroidHardwareClass() {
+  char os_hardware_id_str[PROP_VALUE_MAX];
+  __system_property_get("ro.boot.product.hardware.id", os_hardware_id_str);
+  return std::string(os_hardware_id_str);
 }
 
 // static

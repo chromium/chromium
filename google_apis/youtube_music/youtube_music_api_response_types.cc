@@ -26,6 +26,8 @@ constexpr char kApiResponsePlaybackReportingTokenKey[] =
 constexpr char kApiResponseDescriptionKey[] = "description";
 constexpr char kApiResponseItemCountKey[] = "itemCount";
 constexpr char kApiResponseImagesKey[] = "images";
+constexpr char kApiResponseArtistKey[] = "artist";
+constexpr char kApiResponseArtistReferencesKey[] = "artistReferences";
 constexpr char kApiResponseOwnerKey[] = "owner";
 constexpr char kApiResponsePlaylistKey[] = "playlist";
 constexpr char kApiResponseContextKey[] = "context";
@@ -226,6 +228,35 @@ std::string TopLevelMusicRecommendations::ToString() const {
       s.c_str());
 }
 
+ArtistReference::ArtistReference() = default;
+ArtistReference::~ArtistReference() = default;
+
+// static
+void ArtistReference::RegisterJSONConverter(
+    JSONValueConverter<ArtistReference>* converter) {
+  converter->RegisterStringField(kApiResponseArtistKey,
+                                 &ArtistReference::artist_);
+  converter->RegisterStringField(kApiResponseTitleKey,
+                                 &ArtistReference::title_);
+}
+
+// static
+std::unique_ptr<ArtistReference> ArtistReference::CreateFrom(
+    const base::Value& value) {
+  auto artist_reference = std::make_unique<ArtistReference>();
+  JSONValueConverter<ArtistReference> converter;
+  if (!converter.Convert(value, artist_reference.get())) {
+    DVLOG(1) << "Unable to construct `ArtistReference` from parsed json.";
+    return nullptr;
+  }
+  return artist_reference;
+}
+
+std::string ArtistReference::ToString() const {
+  return base::StringPrintf("ArtistReference(artist=\"%s\", title=\"%s\"",
+                            artist_.c_str(), title_.c_str());
+}
+
 Track::Track() = default;
 Track::~Track() = default;
 
@@ -238,6 +269,8 @@ void Track::RegisterJSONConverter(JSONValueConverter<Track>* converter) {
                                  &Track::explicit_type_);
   converter->RegisterRepeatedMessage<Image>(kApiResponseImagesKey,
                                             &Track::images_);
+  converter->RegisterRepeatedMessage<ArtistReference>(
+      kApiResponseArtistReferencesKey, &Track::artist_references_);
 }
 
 // static

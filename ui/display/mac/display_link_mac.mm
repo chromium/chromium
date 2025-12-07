@@ -11,9 +11,7 @@
 
 namespace ui {
 
-BASE_FEATURE(kCADisplayLink,
-             "CADisplayLink",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCADisplayLink, base::FEATURE_DISABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayLinkMac

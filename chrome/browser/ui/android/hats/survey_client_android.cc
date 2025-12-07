@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/android/hats/survey_client_android.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/ranges/algorithm.h"
+#include "base/containers/heap_array.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/survey_config_android.h"
 #include "ui/android/window_android.h"
@@ -29,7 +30,8 @@ SurveyClientAndroid::SurveyClientAndroid(
     const std::string& trigger,
     SurveyUiDelegateAndroid* ui_delegate,
     Profile* profile,
-    const std::optional<std::string>& supplied_trigger_id) {
+    const std::optional<std::string>& supplied_trigger_id,
+    ui::WindowAndroid* window) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_trigger =
       ConvertUTF8ToJavaString(env, trigger);
@@ -38,9 +40,9 @@ SurveyClientAndroid::SurveyClientAndroid(
                                        ? supplied_trigger_id.value()
                                        : std::string_view());
   jobj_ = Java_SurveyClientBridge_create(
-      env, reinterpret_cast<int64_t>(this), java_trigger,
-      ui_delegate->GetJavaObject(env), profile->GetJavaObject(),
-      java_supplied_trigger_id);
+      env, java_trigger, ui_delegate->GetJavaObject(env),
+      profile->GetJavaObject(), java_supplied_trigger_id,
+      window->GetJavaObject());
 }
 
 SurveyClientAndroid::~SurveyClientAndroid() = default;
@@ -58,9 +60,9 @@ void SurveyClientAndroid::LaunchSurvey(
   // Parse bit PSDs.
   std::vector<std::string> bits_fields;
   auto bits_values =
-      std::make_unique<bool[]>(product_specific_bits_data.size());
-  int value_iterator = 0;
-  base::ranges::for_each(
+      base::HeapArray<bool>::WithSize(product_specific_bits_data.size());
+  size_t value_iterator = 0u;
+  std::ranges::for_each(
       product_specific_bits_data.begin(), product_specific_bits_data.end(),
       [&bits_fields, &bits_values,
        &value_iterator](const SurveyBitsData::value_type& pair) {
@@ -70,13 +72,12 @@ void SurveyClientAndroid::LaunchSurvey(
   ScopedJavaLocalRef<jobjectArray> jpsd_bits_data_fields =
       base::android::ToJavaArrayOfStrings(env, bits_fields);
   ScopedJavaLocalRef<jbooleanArray> jpsd_bits_data_vals =
-      base::android::ToJavaBooleanArray(env, bits_values.get(),
-                                        bits_fields.size());
+      base::android::ToJavaBooleanArray(env, bits_values);
 
   // Parse string PSDs.
   std::vector<std::string> string_fields;
   std::vector<std::string> string_values;
-  base::ranges::for_each(
+  std::ranges::for_each(
       product_specific_string_data.begin(), product_specific_string_data.end(),
       [&string_fields,
        &string_values](const SurveyStringData::value_type& pair) {
@@ -98,3 +99,5 @@ void SurveyClientAndroid::Destroy() {
 }
 
 }  // namespace hats
+
+DEFINE_JNI(SurveyClientBridge)

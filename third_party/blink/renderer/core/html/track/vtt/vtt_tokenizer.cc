@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_tokenizer.h"
 
 #include "base/notreached.h"
@@ -102,7 +97,7 @@ VTTTokenizer::VTTTokenizer(const String& input)
     : input_(input), input_stream_preprocessor_(this) {
   // Append a EOF marker and close the input "stream".
   DCHECK(!input_.IsClosed());
-  input_.Append(SegmentedString(String(&kEndOfFileMarker, 1)));
+  input_.Append(SegmentedString(String(base::span_from_ref(kEndOfFileMarker))));
   input_.Close();
 }
 
@@ -170,7 +165,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
         WEBVTT_ADVANCE_TO(kStartTagClassState);
       } else if (cc == '/') {
         WEBVTT_ADVANCE_TO(kEndTagState);
-      } else if (WTF::IsASCIIDigit(cc)) {
+      } else if (IsASCIIDigit(cc)) {
         result.Append(cc);
         WEBVTT_ADVANCE_TO(kTimestampTagState);
       } else if (cc == '>' || cc == kEndOfFileMarker) {
@@ -261,8 +256,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
     END_STATE()
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace blink

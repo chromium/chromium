@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The requiredCallback API. This exists to test the requiredCallback extended
+// attribute on function definitions.
+interface RequiredCallbackAPI {
+
+  // Callback not required.
+  static Promise<DOMString> notRequiredCallbackFunction();
+
+  // Callback required.
+  [requiredCallback] static Promise<DOMString> requiredCallbackFunction();
+};
+
+partial interface Browser {
+  static attribute RequiredCallbackAPI requiredCallback;
+};

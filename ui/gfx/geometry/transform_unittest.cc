@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/transform.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <numbers>
 #include <optional>
 #include <ostream>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/angle_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -1639,7 +1638,7 @@ double ComputeDecompRecompError(const Transform& transform) {
   composed.GetColMajorF(actual);
   double sse = 0;
   for (int i = 0; i < 16; i++) {
-    double diff = expected[i] - actual[i];
+    double diff = UNSAFE_TODO(expected[i]) - UNSAFE_TODO(actual[i]);
     sse += diff * diff;
   }
   return sse;
@@ -1969,7 +1968,7 @@ TEST(XFormTest, verifyCopyConstructor) {
 TEST(XFormTest, GetColMajor) {
   auto transform = GetTestMatrix1();
 
-  double data[16];
+  std::array<double, 16> data;
   transform.GetColMajor(data);
   for (int i = 0; i < 16; i++) {
     EXPECT_EQ(i + 10.0, data[i]);
@@ -2034,7 +2033,7 @@ TEST(XFormTest, ColMajorF) {
   float data1[16];
   transform.GetColMajorF(data1);
   for (int i = 0; i < 16; i++)
-    EXPECT_EQ(data1[i], data[i]);
+    UNSAFE_TODO(EXPECT_EQ(data1[i], data[i]));
   EXPECT_EQ(transform, Transform::ColMajorF(data1));
 }
 
@@ -3610,6 +3609,43 @@ TEST(XFormTest, Round2dTranslationComponents) {
   EXPECT_EQ(expected.ToString(), translation.ToString());
 }
 
+TEST(XFormTest, Floor2dTranslationComponents) {
+  Transform translation;
+  Transform expected;
+
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(1.0f, 1.0f);
+  expected.Translate(1.0f, 1.0f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(0.5f, 0.4f);
+  expected.Translate(0.0f, 0.0f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  // Flooring should only affect 2d translation components.
+  translation.Translate3d(0.f, 0.f, 0.5f);
+  expected.Translate3d(0.f, 0.f, 0.5f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(3.9f, 4.4f);
+  expected.Translate(3.0f, 4.0f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(3.9f, 4.4f);
+  translation.EnsureFullMatrixForTesting();
+  expected.Translate(3.0f, 4.0f);
+  translation.EnsureFullMatrixForTesting();
+
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+}
+
 TEST(XFormTest, BackFaceVisiblilityTolerance) {
   Transform backface_invisible;
   backface_invisible.set_rc(0, 3, 1.f);
@@ -3642,7 +3678,7 @@ TEST(XFormTest, TransformVector4) {
   std::array<float, 4> input = {11.5f, 22.5f, 33.5f, 44.5f};
   auto vector = input;
   std::array<float, 4> expected = {28.75f, 78.75f, 150.75f, 244.75f};
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 
   // With translations and perspectives.
@@ -3654,7 +3690,7 @@ TEST(XFormTest, TransformVector4) {
   transform.set_rc(3, 2, 60);
   vector = input;
   expected = {473.75f, 968.75f, 1485.75f, 3839.75f};
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 
   // TransformVector4 with simple 2d transform.
@@ -3662,12 +3698,12 @@ TEST(XFormTest, TransformVector4) {
       Transform::MakeTranslation(10, 20) * Transform::MakeScale(2.5f, 3.5f);
   vector = input;
   expected = {473.75f, 968.75f, 33.5f, 44.5f};
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 
   vector = input;
   transform.EnsureFullMatrixForTesting();
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 }
 
@@ -3886,7 +3922,7 @@ TEST(XFormTest, ClampOutput) {
 
   for (double* entry : entries) {
     const float mv = entry[0];
-    const float factor = entry[1];
+    const float factor = UNSAFE_TODO(entry[1]);
 
     auto is_valid_point = [&](const PointF& p) -> bool {
       return std::isfinite(p.x()) && std::isfinite(p.y());
@@ -3906,10 +3942,11 @@ TEST(XFormTest, ClampOutput) {
       return is_valid_point(r.origin()) && std::isfinite(r.width()) &&
              std::isfinite(r.height());
     };
-    auto is_valid_array = [&](const float* a, size_t size) -> bool {
-      for (size_t i = 0; i < size; i++) {
-        if (!std::isfinite(a[i]))
+    auto is_valid_array = [&](base::span<const float> a) -> bool {
+      for (const float& val : a) {
+        if (!std::isfinite(val)) {
           return false;
+        }
       }
       return true;
     };
@@ -3931,7 +3968,7 @@ TEST(XFormTest, ClampOutput) {
 
       float v4[4] = {factor, factor, factor, factor};
       m.TransformVector4(v4);
-      EXPECT_TRUE(is_valid_array(v4, 4));
+      EXPECT_TRUE(is_valid_array(v4));
 
       auto v2 = m.To2dTranslation();
       EXPECT_TRUE(is_valid_vector2(v2)) << v2.ToString();

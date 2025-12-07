@@ -30,7 +30,7 @@ fuzzable_proto_library("cloud_policy_full_runtime_proto") {
   import_dirs = [ "//components/policy/proto" ]
 
   proto_deps = [ "//components/policy:policy_code_generate" ]
-  link_deps = [ ":policy_common_definitions_full_runtime_proto" ]
+  deps = [ ":policy_common_definitions_full_runtime_proto" ]
 }
 
 fuzzable_proto_library("chrome_device_policy_full_runtime_proto") {
@@ -38,5 +38,5 @@ fuzzable_proto_library("chrome_device_policy_full_runtime_proto") {
 
   sources = [ "../chrome_device_policy.proto" ]
 
-  link_deps = [ ":policy_common_definitions_full_runtime_proto" ]
+  deps = [ ":policy_common_definitions_full_runtime_proto" ]
 }

@@ -4,11 +4,13 @@
 
 #include "printing/print_settings.h"
 
+#include "base/notreached.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -39,7 +41,7 @@ TEST(PrintSettingsTest, IsColorModelSelected) {
 
 TEST(PrintSettingsDeathTest, IsColorModelSelectedEdges) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       IsColorModelSelected(mojom::ColorModel::kUnknownColorModel));
 }
 #if BUILDFLAG(USE_CUPS)
@@ -67,5 +69,119 @@ TEST(PrintSettingsTest, GetIppColorModelForModel) {
   }
 }
 #endif  // BUILDFLAG(USE_CUPS_IPP)
+
+TEST(PrintSettingsTest, SetPrinterPrintableArea) {
+  static constexpr gfx::Size kPhysicalSizeDeviceUnits(600, 800);
+  static constexpr gfx::Rect kPrintableAreaDeviceUnits(50, 50, 500, 700);
+
+  struct TestCase {
+    int dpi;
+    PageMargins margins;
+    mojom::MarginType expected_margin_type;
+  } static const kTestCases[] = {
+      {
+          300,
+          PageMargins(),
+          mojom::MarginType::kDefaultMargins,
+      },
+      {250, PageMargins(0, 0, 10000, 10000, 5000, 5000),
+       mojom::MarginType::kCustomMargins},
+      {426, PageMargins(0, 0, 20000, 20000, 25400, 25400),
+       mojom::MarginType::kCustomMargins},
+      {300, PageMargins(0, 0, 10000, 20000, 5000, 15000),
+       mojom::MarginType::kCustomMargins},
+#if BUILDFLAG(IS_CHROMEOS)
+      {300, PageMargins(0, 0, 10000, 10000, 5000, 5000),
+       mojom::MarginType::kPrecomputedMarginsForBackend}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
+
+  for (const auto& test_case : kTestCases) {
+    PrintSettings settings;
+    settings.set_dpi(test_case.dpi);
+
+    if (test_case.expected_margin_type == mojom::MarginType::kCustomMargins) {
+      settings.SetCustomMargins(test_case.margins);
+    }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (test_case.expected_margin_type ==
+        mojom::MarginType::kPrecomputedMarginsForBackend) {
+      settings.SetCustomMarginsForBackend(test_case.margins);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    settings.SetPrinterPrintableArea(kPhysicalSizeDeviceUnits,
+                                     kPrintableAreaDeviceUnits,
+                                     /*landscape_needs_flip=*/false);
+
+    EXPECT_EQ(test_case.expected_margin_type, settings.margin_type());
+    EXPECT_EQ(test_case.margins.top,
+              settings.requested_custom_margins_in_microns().top);
+    EXPECT_EQ(test_case.margins.bottom,
+              settings.requested_custom_margins_in_microns().bottom);
+    EXPECT_EQ(test_case.margins.left,
+              settings.requested_custom_margins_in_microns().left);
+    EXPECT_EQ(test_case.margins.right,
+              settings.requested_custom_margins_in_microns().right);
+
+    const PageSetup& page_setup = settings.page_setup_device_units();
+
+    switch (test_case.expected_margin_type) {
+      case mojom::MarginType::kDefaultMargins: {
+#if BUILDFLAG(IS_MAC)
+      EXPECT_EQ(PageMargins(50, 50, 50, 50, 50, 50),
+                page_setup.effective_margins());
+#else
+      EXPECT_EQ(PageMargins(50, 50, 118, 118, 118, 118),
+                page_setup.effective_margins());
+#endif
+      break;
+      }
+      case mojom::MarginType::kCustomMargins: {
+        const int device_units_per_inch = settings.device_units_per_inch();
+        PageMargins expected_custom_margins;
+        expected_custom_margins.header = 0;
+        expected_custom_margins.footer = 0;
+        expected_custom_margins.top = ConvertUnit(
+            test_case.margins.top, kMicronsPerInch, device_units_per_inch);
+        expected_custom_margins.bottom = ConvertUnit(
+            test_case.margins.bottom, kMicronsPerInch, device_units_per_inch);
+        expected_custom_margins.left = ConvertUnit(
+            test_case.margins.left, kMicronsPerInch, device_units_per_inch);
+        expected_custom_margins.right = ConvertUnit(
+            test_case.margins.right, kMicronsPerInch, device_units_per_inch);
+
+        EXPECT_EQ(expected_custom_margins, page_setup.effective_margins());
+        break;
+      }
+#if BUILDFLAG(IS_CHROMEOS)
+      case mojom::MarginType::kPrecomputedMarginsForBackend: {
+        EXPECT_TRUE(page_setup.effective_margins().IsEmpty());
+        EXPECT_TRUE(page_setup.requested_margins().IsEmpty());
+        break;
+      }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      default: {
+        NOTREACHED();
+      }
+    }
+  }
+}
+
+TEST(PrintSettingsTest, SetCustomMarginsForBackend) {
+  PrintSettings settings;
+  settings.SetCustomMargins(PageMargins(0, 0, 10000, 10000, 5000, 5000));
+  EXPECT_EQ(settings.margin_type(), mojom::MarginType::kCustomMargins);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(PrintSettingsTest, SetPrecomputedMarginsForBackend) {
+  PrintSettings settings;
+  settings.SetCustomMarginsForBackend({0, 0, 10000, 10000, 5000, 5000});
+  EXPECT_EQ(settings.margin_type(),
+            mojom::MarginType::kPrecomputedMarginsForBackend);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

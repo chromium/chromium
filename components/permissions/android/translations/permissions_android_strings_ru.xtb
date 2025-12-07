@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Этот сайт не может запросить разрешение</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">Чтобы разрешить подключение, <ph name="BEGIN_LINK" />включите Bluetooth<ph name="END_LINK" /></translation>
+<translation id="3878792656892132392">Приложению "<ph name="APP_NAME" />" необходимо разрешение на отслеживание рук</translation>
 <translation id="4915549754973153784">Поиск устройств… <ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> запрашивает доступ к микрофону для этого сайта.</translation>
 <translation id="5230560987958996918">Сайт <ph name="SITE" /> ищет устройства Bluetooth поблизости. Обнаружены следующие устройства:</translation>

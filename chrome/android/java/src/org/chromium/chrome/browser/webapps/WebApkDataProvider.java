@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,17 +11,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.WebApkDetailsForDefaultOfflinePage;
@@ -35,14 +34,20 @@ import java.util.List;
 import java.util.Set;
 
 /** Provides access to more detail about webapks. */
+@NullMarked
 public class WebApkDataProvider {
     // Contains the details to return for an offline app when testing.
-    private static WebappInfo sWebappInfoForTesting;
+    private static @Nullable WebappInfo sWebappInfoForTesting;
 
     // Keeps track of the data needed for the custom offline page data.
     private static class OfflineData {
-        private @NonNull String mName;
-        private @NonNull String mIcon;
+        private final String mName;
+        private final String mIcon;
+
+        private OfflineData(String name, String icon) {
+            mName = name;
+            mIcon = icon;
+        }
     }
 
     public static void setWebappInfoForTesting(WebappInfo webappInfo) {
@@ -50,11 +55,15 @@ public class WebApkDataProvider {
         ResettersForTesting.register(() -> sWebappInfoForTesting = null);
     }
 
-    public static WebappInfo getPartialWebappInfo(String url) {
+    public static @Nullable WebappInfo getPartialWebappInfo(String url) {
         if (sWebappInfoForTesting != null) return sWebappInfoForTesting;
 
         Context appContext = ContextUtils.getApplicationContext();
         String packageName = WebApkValidator.queryFirstWebApkPackage(appContext, url);
+        if (packageName == null) {
+            return null;
+        }
+
         return WebappInfo.create(
                 WebApkIntentDataProviderFactory.create(
                         new Intent(),
@@ -67,32 +76,30 @@ public class WebApkDataProvider {
                         /* shareDataActivityClassName= */ null));
     }
 
-    private static OfflineData getOfflinePageInfoForPwa(String url) {
+    private static @Nullable OfflineData getOfflinePageInfoForPwa(String url) {
         WebappInfo webAppInfo = getPartialWebappInfo(url);
         if (webAppInfo == null) return null;
 
-        OfflineData result = new OfflineData();
-        result.mName = webAppInfo.shortName();
+        String shortName = webAppInfo.shortName();
+        if (shortName == null) shortName = "";
+
         // Encoding the image is marked as a slow method, but this call is intentional,
         // we're encoding only a single small icon (the app icon) and the code path is
         // triggered only when the device is offline. We therefore shouldn't bother
         // jumping through hoops to make it fast.
-        result.mIcon = webAppInfo.icon().encoded();
+        String encodedIcon = webAppInfo.icon().encoded();
+
+        OfflineData result = new OfflineData(shortName, encodedIcon);
 
         return result;
     }
 
-    private static OfflineData getOfflinePageInfoForTwa(CustomTabActivity customTabActivity) {
-        BrowserServicesIntentDataProvider dataProvider = customTabActivity.getIntentDataProvider();
-        if (dataProvider == null) return null;
-
-        String clientPackageName = dataProvider.getClientPackageName();
+    private static @Nullable OfflineData getOfflinePageInfoForTwa(String clientPackageName) {
         if (clientPackageName == null) return null;
 
-        OfflineData result = new OfflineData();
         PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
         try {
-            result.mName =
+            String name =
                     packageManager
                             .getApplicationLabel(
                                     packageManager.getApplicationInfo(
@@ -105,20 +112,18 @@ public class WebApkDataProvider {
             Canvas canvas = new Canvas(bitmap);
             d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             d.draw(canvas);
-            result.mIcon = BitmapHelper.encodeBitmapAsString(bitmap);
+            String icon = BitmapHelper.encodeBitmapAsString(bitmap);
+            return new OfflineData(name, icon);
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
-
-        return result;
     }
 
-    private static boolean isWithinScope(String url, CustomTabActivity customTabActivity) {
-        BrowserServicesIntentDataProvider dataProvider = customTabActivity.getIntentDataProvider();
+    private static boolean isWithinScope(
+            String url, String initialUrl, @Nullable List<String> additionalOrigins) {
         Set<Origin> origins = new HashSet<>();
-        origins.add(Origin.create(dataProvider.getUrlToLoad()));
+        origins.add(Origin.create(initialUrl));
 
-        List<String> additionalOrigins = dataProvider.getTrustedWebActivityAdditionalOrigins();
         if (additionalOrigins != null) {
             for (String origin : additionalOrigins) {
                 origins.add(Origin.create(origin));
@@ -129,14 +134,17 @@ public class WebApkDataProvider {
     }
 
     @CalledByNative
-    public static String[] getOfflinePageInfo(int[] fields, String url, WebContents webContents) {
-        Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
-
+    public static String @Nullable [] getOfflinePageInfo(
+            int[] fields, @JniType("std::string") String url, WebContents webContents) {
         OfflineData offlineData = null;
-        if (activity instanceof CustomTabActivity) {
-            CustomTabActivity customTabActivity = (CustomTabActivity) activity;
-            if (isWithinScope(url, customTabActivity)) {
-                offlineData = getOfflinePageInfoForTwa(customTabActivity);
+        TwaOfflineDataProvider twaProvider =
+                TwaOfflineDataProvider.from(TabUtils.fromWebContents(webContents));
+        if (twaProvider != null) {
+            if (isWithinScope(
+                    url,
+                    twaProvider.getInitialUrlToLoad(),
+                    twaProvider.getAdditionalTwaOrigins())) {
+                offlineData = getOfflinePageInfoForTwa(twaProvider.getClientPackageName());
             }
         } else {
             offlineData = getOfflinePageInfoForPwa(url);
@@ -144,7 +152,7 @@ public class WebApkDataProvider {
 
         if (offlineData == null) return null;
 
-        List<String> fieldValues = new ArrayList<String>();
+        List<String> fieldValues = new ArrayList<>();
         for (int field : fields) {
             switch (field) {
                 case WebApkDetailsForDefaultOfflinePage.SHORT_NAME:

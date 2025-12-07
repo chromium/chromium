@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_TEST_UI_UTILS_H_
 #define CHROME_BROWSER_VR_TEST_UI_UTILS_H_
 
-#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"

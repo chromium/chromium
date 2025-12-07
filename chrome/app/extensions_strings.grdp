@@ -64,6 +64,9 @@
   <message name="IDS_EXTENSIONS_REPAIR_CORRUPTED" desc="The link for repairing corrupted extensions.">
     Repair
   </message>
+  <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_ICON_TOOLTIP" desc="The tooltip displayed when the user hovers the button to move the extension to their account.">
+    Save in your Google Account
+  </message>
   <message name="IDS_EXTENSIONS_VIEW_IFRAME" desc="Text that signifies that the extension view is an iframe.">
     (iframe)
   </message>
@@ -75,6 +78,15 @@
   </message>
   <message name="IDS_EXTENSIONS_DEVELOPER_MODE" desc="The text displayed next to the checkbox to toggle developer mode in the extensions page.">
     Developer mode
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE" desc="Text shown in the extension card for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS" desc="Text shown in the details extension view for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, but only if you trust the extension. It may contain experimental features and hasn't been reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST" desc="Text displayed in a toast popup message when extensions are disabled due to unsupported developer mode.">
+    Developer Mode Off. Some extensions were disabled.
   </message>
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
@@ -144,6 +156,9 @@
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ERRORS" desc="The label of the button to bring the user to the page showing an extension's errors.">
     Errors
+  </message>
+  <message name="IDS_EXTENSIONS_ITEM_WARNINGS" desc="The label of the button to bring the user to the page showing an extension's warnings.">
+    Warnings
   </message>
   <message name="IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on.">
     Allow this extension to read and change all your data on websites you visit:
@@ -250,6 +265,12 @@
   <message name="IDS_EXTENSIONS_ITEM_ALLOW_INCOGNITO" desc="The text next to the checkbox to enable an extension in Incognito mode.">
     Allow in Incognito
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_ALLOW_USER_SCRIPTS" desc="The text next to the checkbox to enable an extension to run user scripts.">
+    Allow User Scripts
+  </message>
+  <message name="IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING" desc="Warns the user that the extension will be able to run code not review by Google. Displayed in extensions management UI after an extension is selected to allow these scripts.">
+    The extension will be able to run code which has not been reviewed by Google. It may be unsafe and you should only enable this if you know what you are doing.
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_DEPENDENCIES" desc="The label above a list of any extensions that depend on this extension.">
     The following extensions depend on this extension:
   </message>
@@ -297,6 +318,9 @@
   </message>
   <message name="IDS_EXTENSIONS_ITEM_CHROME_WEB_STORE" desc="Label for button to visit the Chrome web store.">
     View in Chrome Web Store
+  </message>
+  <message name="IDS_EXTENSIONS_VIEW_IN_DEVTOOLS" desc="Label for a button that opens DevTools for a specific error context">
+    View in DevTools
   </message>
   <message name="IDS_EXTENSIONS_ITEM_OPTIONS" desc="The label on the button to open an extension options page.">
     Extension options
@@ -487,8 +511,8 @@
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT_BUTTON_LABEL" desc="The label for a button to edit the shortcut.">
     Edit shortcut <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
   </message>
-  <message name="IDS_EXTENSIONS_SHORTCUT_NOT_SET" desc="The label to indicate that an extension has no shortcut set for a given command.">
-    Not set
+  <message name="IDS_EXTENSIONS_SET_SHORTCUT_IN_SYSTEM_SETTINGS" desc="The label to indicate that shortcuts are managed in system settings instead of within Chrome.">
+    Set in system settings
   </message>
   <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL" desc="The label for the dropdown menu that lets the user choose the scope of an extension command (within chrome or global).">
     Scope of <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
@@ -517,8 +541,11 @@
   <message name="IDS_EXTENSIONS_SIDEBAR_EXTENSIONS" desc="The text displayed in the sidebar to go to the extensions section of the page.">
     My extensions
   </message>
-  <message name="IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE" desc="The text displayed in the sidebar to open the Chrome Web Store to get more extensions.">
+  <message name="IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE" desc="The text displayed in the sidebar of the chrome://extensions page to open the Chrome Web Store to get more extensions.">
     Discover more extensions and themes on the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
+  </message>
+  <message name="IDS_EXTENSIONS_WHATS_NEW_SIDEBAR_PROMO" desc="The text displayed in the sidebar of the chrome://extensions page to promote the extension documenation, for when the user is in developer mode.">
+    Developing extensions? Stay up to date on <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>What's New<ph name="END_LINK">&lt;/a&gt;</ph> with Chrome Extension developer documentation.
   </message>
   <message name="IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS" desc="The text for the link to manage keyboard shortcuts for extensions.">
     Keyboard shortcuts
@@ -544,12 +571,6 @@
   <message name="IDS_EXTENSIONS_TOOLBAR_UPDATING_TOAST" desc="Text displayed in a toast popup message while extensions are updating.">
     Updating...
   </message>
-  <message name="IDS_EXTENSIONS_SHORTCUT_SET" desc="Text used to notify screen readers when a shortcut is successfully set.">
-    Shortcut set: <ph name="IDS_SHORT_SET_COMMAND">$1<ex>Ctrl + S</ex></ph>
-  </message>
-  <message name="IDS_EXTENSIONS_TYPE_A_SHORTCUT" desc="The prompt to the user to enter a keyboard shortcut in order to assign it to an extension.">
-    Type a shortcut
-  </message>
   <message name="IDS_EXTENSIONS_SUBPAGE_BUTTON" is_accessibility_with_no_ui="true" desc="Accessibility description for a button navigating the user from an extension's settings page to its settings subpage.">
     Subpage button
   </message>
@@ -557,6 +578,9 @@
     All Extensions
   </message>
   <!-- Extension Safety Check Review Panel strings -->
+  <message name="IDS_EXTENSIONS_SAFETY_HUB_HEADER" desc="Name of a section in chrome://extensions that gives users an overview over their safety status and where users can take action to improve their safety.">
+    Safety Check
+  </message>
   <message name="IDS_EXTENSIONS_SC_MALWARE" desc="The text explaining the reason for extension being potentially unsafe. The extension in question contains malware.">
     Off • This extension contains malware
   </message>
@@ -587,6 +611,9 @@
   <message name="IDS_EXTENSIONS_SC_KEEP_EXT" desc="The label on the overflow menu to keep an extension.">
     Keep this extension
   </message>
+  <message name="IDS_EXTENSIONS_SC_THREEDOT_DETAILS" desc="The label on the overflow menu to go to the extensions detail page.">
+    Get more details
+  </message>
   <message name="IDS_EXTENSIONS_SC_REMOVE_ALL" desc="The generic label for a button to remove all extensions.">
     Remove all
   </message>
@@ -613,8 +640,8 @@
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the warning stage.">
     {NUM_EXTENSIONS, plural,
-      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
-      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
+      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
     }
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the disabled stage.">
@@ -627,7 +654,7 @@
     This extension may soon no longer be supported
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
-    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
+    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
     This extension was turned off because it is no longer supported
@@ -653,16 +680,9 @@
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_UNSUPPORTED_EXTENSION_OFF_TEXT" desc="The text that informs the user the extension was turned off because it's no longer supported.">
     This extension was turned off because it is no longer supported
   </message>
-<if expr="is_macosx">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
-    Include Ctrl, Alt, or ⌘
+  <message name="IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION" desc="The text shown to a user when they try to install an extension that is no longer supported by the browser.">
+    Cannot install extension because it uses an unsupported manifest version.
   </message>
-</if>
-<if expr="chromeos_ash">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Search key.">
-    Include Ctrl, Alt, or Search
-  </message>
-</if>
 <if expr="is_chromeos">
   <message name="IDS_EXTENSIONS_WFH_PERMISSION_HANDLER_FILES" desc="Label showing file names in singular or plural form.">
     {FILE_COUNT, plural,
@@ -671,24 +691,8 @@
     }
   </message>
 </if>
-<if expr="is_macosx or chromeos_ash">
-  <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use so many modifiers in a shortcut.">
-    Invalid combination
-  </message>
-</if>
-<if expr="not is_macosx and not chromeos_ash">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control key or the Alt key.">
-    Include either Ctrl or Alt
-  </message>
-  <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use both Ctrl and Alt in a shortcut.">
-    Use either Ctrl or Alt
-  </message>
-</if>
-<message name="IDS_EXTENSIONS_NEED_CHARACTER" desc="Error message explaining that a shortcut needs a character. This is only shown if a valid modifier is already entered.">
-  Type a letter
-</message>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
   <!-- Extensions Kiosk apps -->
   <message name="IDS_EXTENSIONS_MANAGE_KIOSK_APP" desc="Label of the button to bring up kiosk management overlay on chrome extensions page.">
     Manage kiosk applications
@@ -719,6 +723,60 @@
   </message>
   <message name="IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY" desc="Warning text of disabling kiosk application launch bail out shortcut.">
     The only way to undo this is to re-install <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph>
+  </message>
+</if>
+<if expr="enable_extensions">
+  <!-- Extensions Zero State Promo IPH -->
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER" desc="Header of the extensions zero state in-product help promo.">
+    Enhance your browser with extensions
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER_V2" desc="Header of the extensions zero state in-product help promo.">
+    Supercharge your browser with extensions and themes
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
+    Extensions are add-ons for Chrome that can help you do more
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_LINK_LABEL" desc="A label of extensions links to chrome web store home page.">
+    Extensions
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo with links to chrome web store home page.">
+    are add-ons for Chrome that can help you do more
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_PLAIN_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
+    Extensions are add-ons to Chrome that can help you
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LABEL" desc="Label for the button that opens the Chrome Web Store shopping category page.">
+    Find coupons
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WRITING_HELP_COLLECTION_LABEL" desc="Label for the button that opens the Chrome Web Store writing help collection page.">
+    Help me write
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_PRODUCTIVITY_CATEGORY_LABEL" desc="Label for the button that opens the Chrome Web Store producitivty category page.">
+    Boost productivity
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LABEL" desc="Label for the button that opens the Chrome Web Store ai productivity collection page.">
+    Enhance with AI
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TITLE" desc="Title attribute for the button that dismisses the extensions zero state in-product-help promo.">
+    Close
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LINK" desc="Link text for the button that opens the Chrome Web Store shopping category page.">
+    Find coupons
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WRITING_HELP_COLLECTION_LINK" desc="Link text for the button that opens the Chrome Web Store writing help collection page.">
+    Write better
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_PRODUCTIVITY_CATEGORY_LINK" desc="Link text for the button that opens the Chrome Web Store producitivty category page.">
+    Boost productivity
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LINK" desc="Link text for the button that opens the Chrome Web Store ai productivity collection page.">
+    Enhance with AI
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WEB_STORE_LINK" desc="Link text for the button that opens the Chrome Web Store page.">
+    Visit Web Store
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TEXT" desc="Text on the button that dismisses the extensions zero state promo IPH.">
+    Got it
   </message>
 </if>
 </grit-part>

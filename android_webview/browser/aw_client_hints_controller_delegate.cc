@@ -8,6 +8,7 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"
@@ -41,9 +42,6 @@ AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() = default;
 blink::UserAgentMetadata
 AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
     bool only_low_entropy_ch) {
-  // embedder_support::GetUserAgentMetadata() can accept a browser local_state
-  // PrefService argument, but doesn't need one. Either way, it shouldn't be the
-  // context_pref_service_ that this class holds.
   auto metadata = embedder_support::GetUserAgentMetadata(only_low_entropy_ch);
   std::string major_version = version_info::GetMajorVersionNumber();
 
@@ -52,21 +50,16 @@ AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
   bool parse_result = base::StringToInt(major_version, &major_version_number);
   DCHECK(parse_result);
 
-  // The old grease brand algorithm will removed soon, we should always use the
-  // updated algorithm.
-  bool enable_updated_grease_by_policy = true;
   // Regenerate the brand version lists with Android WebView product name.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
       major_version_number, kAndroidWebViewProductName, major_version,
-      std::nullopt, std::nullopt, enable_updated_grease_by_policy,
       blink::UserAgentBrandVersionType::kMajorVersion);
 
   if (!only_low_entropy_ch) {
     metadata.brand_full_version_list =
         embedder_support::GenerateBrandVersionList(
             major_version_number, kAndroidWebViewProductName,
-            metadata.full_version, std::nullopt, std::nullopt,
-            enable_updated_grease_by_policy,
+            metadata.full_version,
             blink::UserAgentBrandVersionType::kFullVersion);
   }
 
@@ -132,15 +125,6 @@ bool AwClientHintsControllerDelegate::IsJavaScriptAllowed(
     return true;
   }
   return aw_contents->IsJavaScriptAllowed();
-}
-
-bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url,
-    content::RenderFrameHost* rfh) {
-  // This function is related to an OT for the Sec-CH-UA-Reduced client hint
-  // and as this doesn't affect WebView at the moment, we have no reason to
-  // implement it.
-  return false;
 }
 
 blink::UserAgentMetadata

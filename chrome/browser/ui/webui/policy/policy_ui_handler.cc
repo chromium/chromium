@@ -14,7 +14,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +23,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -30,9 +31,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -46,14 +47,15 @@
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -63,6 +65,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_details.h"
@@ -71,6 +74,7 @@
 #include "components/policy/core/common/policy_scheduler.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/policy_utils.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
@@ -79,6 +83,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -88,8 +93,9 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -102,6 +108,12 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // LINT.IfChange
 
 namespace {
@@ -110,6 +122,11 @@ namespace {
 constexpr char kExtensionsKey[] = "extensions";
 
 }  // namespace
+
+namespace features {
+BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace features
 
 PolicyUIHandler::PolicyUIHandler() = default;
 
@@ -142,6 +159,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"future", IDS_POLICY_LABEL_FUTURE},
       {"info", IDS_POLICY_LABEL_INFO},
       {"ignored", IDS_POLICY_LABEL_IGNORED},
+      {"ignoredByExtension", IDS_POLICY_IGNORED_EXTENSION},
       {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
       {"ok", IDS_POLICY_OK},
       {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
@@ -235,11 +253,33 @@ void PolicyUIHandler::RegisterMessages() {
       "getAppliedTestPolicies",
       base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "shouldShowPromotion",
+      base::BindRepeating(&PolicyUIHandler::HandleShouldShowPromotion,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setBannerDismissed",
+      base::BindRepeating(&PolicyUIHandler::HandleSetBannerDismissed,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordBannerRedirected",
+      base::BindRepeating(&PolicyUIHandler::HandleRecordBannerRedirected,
+                          base::Unretained(this)));
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
                                           base::Unretained(this)));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+void PolicyUIHandler::AddPolicyPromotionObserver(
+    PolicyPromotionObserver* observer) {
+  promotion_eligibility_observers_.AddObserver(observer);
+}
+
+void PolicyUIHandler::RemovePolicyPromotionObserver(
+    PolicyPromotionObserver* observer) {
+  promotion_eligibility_observers_.RemoveObserver(observer);
 }
 
 void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
@@ -284,7 +324,7 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(
 
 void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
   reload_policies_count_ += 1;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allow user to manually fetch remote commands. Useful for testing or when
   // the invalidation service is not working properly.
   policy::CloudPolicyManager* const device_manager =
@@ -302,7 +342,8 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
       policy::RemoteCommandsService* const remote_commands_service =
           manager->core()->remote_commands_service();
       if (remote_commands_service) {
-        remote_commands_service->FetchRemoteCommands();
+        remote_commands_service->FetchRemoteCommands(
+            policy::RemoteCommandsFetchReason::kUserRequest);
       }
     }
   }
@@ -319,7 +360,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
-  std::string policies = args[1].GetString();
+  const std::string& policies = args[1].GetString();
   AllowJavascript();
 
   if (!PolicyUI::ShouldLoadTestPage(Profile::FromWebUI(web_ui()))) {
@@ -335,7 +376,7 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
   CHECK(local_test_provider);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  std::string profile_separation_policy_response = args[2].GetString();
+  const std::string& profile_separation_policy_response = args[2].GetString();
   Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
   Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
@@ -370,7 +411,7 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
 
 void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   CHECK(args.size() == 2);
-  std::string policies = args[1].GetString();
+  const std::string& policies = args[1].GetString();
 
   // Set policies to preference
   PrefService* prefs = g_browser_process->local_state();
@@ -382,7 +423,7 @@ void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
-  CHECK_EQ(static_cast<int>(args.size()), 2);
+  CHECK_EQ(args.size(), 2u);
   bool affiliated = args[1].GetBool();
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
@@ -395,7 +436,7 @@ void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleGetAppliedTestPolicies(
     const base::Value::List& args) {
-  CHECK_EQ(static_cast<int>(args.size()), 1);
+  CHECK_EQ(args.size(), 1u);
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
       g_browser_process->browser_policy_connector()
@@ -415,7 +456,7 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   auto* report_scheduler = g_browser_process->browser_policy_connector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
@@ -452,7 +493,6 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   // scheduler are ready. On at least show an error message to ask people
   // to try again.
   OnReportUploaded(callback_id);
-
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -478,6 +518,54 @@ void PolicyUIHandler::SendStatus() {
       policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
 }
 
+void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
+  AllowJavascript();
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile = Profile::FromWebUI(web_ui());
+  const std::string& callback_id = args[0].GetString();
+
+  bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
+      policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
+
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner);
+
+  promotion_eligibility_checker_ =
+      policy::CreatePromotionEligibilityChecker(
+          profile, dismissed_banner_pref, feature_enabled);
+  if (!promotion_eligibility_checker_) {
+    OnPromotionEligibilityFetched(
+        callback_id,
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
+  promotion_eligibility_checker_->MaybeCheckPromotionEligibility(
+      base::BindOnce(&PolicyUIHandler::OnPromotionEligibilityFetched,
+                     weak_factory_.GetWeakPtr(), callback_id));
+  return;
+
+#else
+  // If the build is on Android, still handle the request but return false
+  // so the banner does not show.
+  ResolveJavascriptCallback(args[0], false);
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void PolicyUIHandler::HandleSetBannerDismissed(const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.PolicyPromotionBannerAction",
+      policy::PolicyPromotionBannerAction::kBannerDismissed);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner, true);
+}
+
+void PolicyUIHandler::HandleRecordBannerRedirected(
+    const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.PolicyPromotionBannerAction",
+      policy::PolicyPromotionBannerAction::kBannerRedirected);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
   if (!IsJavascriptAllowed()) {
@@ -488,6 +576,27 @@ void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
   SendStatus();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+void PolicyUIHandler::OnPromotionEligibilityFetched(
+    const std::string& callback_id,
+    enterprise_management::GetUserEligiblePromotionsResponse response) {
+  AllowJavascript();
+  bool should_show_promotion = response.promotions().policy_page_promotion() ==
+                               enterprise_management::CHROME_ENTERPRISE_CORE;
+  // Log the UMA metric for the promotion banner displayed.
+  base::UmaHistogramBoolean("Enterprise.PolicyPromotionBannerDisplayed",
+                            should_show_promotion);
+
+  ResolveJavascriptCallback(base::Value(callback_id), should_show_promotion);
+
+  for (PolicyPromotionObserver& observer : promotion_eligibility_observers_) {
+    observer.OnPromotionEligibilityFetched(callback_id, response);
+  }
+
+  promotion_checked_ = true;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::string PolicyUIHandler::GetPoliciesAsJson() {
   base::Value::Dict policy_values =

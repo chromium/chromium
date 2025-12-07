@@ -6,8 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_COMPONENT_H_
 
 #include <optional>
+#include <unordered_map>
+#include <utility>
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -84,12 +87,29 @@ class Component final : public GarbageCollected<Component> {
 
   // Method to determine if the URL associated with this component should be
   // treated as a "standard" URL like `https://foo` vs a "path" URL like
-  // `data:foo`.  This should only be called for kProtocol components.
+  // `data:foo`.  This should only be called for `kProtocol` components.
+  //
+  // This function checks if the protocol pattern matches any of the known
+  // standard protocol strings.  So an exact pattern of `http` will match, but
+  // so will `http{s}?` and `*`.  Typical non-standard protocols are `data`,
+  // `javascript`, `about`, and any other custom protocol strings.  The
+  // computation cost of this function may be a bit expensive for the first
+  // call, but the result is cached once computed.
   bool ShouldTreatAsStandardURL() const;
 
   // Returns if this component has at least one part that uses an ECMAScript
   // regular expression.
   bool HasRegExpGroups() const { return pattern_.HasRegexGroups(); }
+
+  // Generates a valid component string by filling non-fixed-text parts using
+  // `groups` as a look-up table from names to substituting strings.  `groups`
+  // should not have overlaps in their names (first elements).
+  // `should_treat_as_standard_url` must be the result of calling
+  // `ShouldTreatAsStandardURL()` for the corresponding "protocol" object.
+  std::optional<String> Generate(
+      const Vector<std::pair<String, String>>& groups,
+      bool should_treat_as_standard_url,
+      ExceptionState& exception_state) const;
 
   const std::vector<liburlpattern::Part>& PartList() const;
 

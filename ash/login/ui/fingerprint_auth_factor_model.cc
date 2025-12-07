@@ -8,7 +8,6 @@
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -96,6 +95,8 @@ FingerprintAuthFactorModel::GetAuthFactorState() const {
       [[fallthrough]];
     case FingerprintState::DISABLED_FROM_TIMEOUT:
       return AuthFactorState::kErrorPermanent;
+    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+      NOTREACHED();
   }
 }
 
@@ -124,8 +125,10 @@ int FingerprintAuthFactorModel::GetLabelId() const {
     case FingerprintState::DISABLED_FROM_TIMEOUT:
       return can_use_pin_ ? IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED
                           : IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED;
+    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FingerprintAuthFactorModel::ShouldAnnounceLabel() const {
@@ -156,6 +159,8 @@ void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon) {
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       icon->SetIcon(kLockScreenFingerprintIcon);
       break;
+    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+      NOTREACHED();
     case FingerprintState::UNAVAILABLE:
       [[fallthrough]];
     case FingerprintState::DISABLED_FROM_TIMEOUT:

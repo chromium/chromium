@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -87,7 +88,7 @@ void OnscreenContentProvider::RemoveConsumer(ContentCaptureConsumer& consumer) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ContentCaptureReceiver* OnscreenContentProvider::ContentCaptureReceiverForFrame(
@@ -147,6 +148,17 @@ void OnscreenContentProvider::TitleWasSet(content::NavigationEntry* entry) {
     // To match what the user sees, intentionally get the title from WebContents
     // instead of NavigationEntry, though they might be same.
     receiver->SetTitle(web_contents()->GetTitle());
+  }
+}
+
+void OnscreenContentProvider::FlushCaptureContent(
+    ContentCaptureReceiver* content_capture_receiver,
+    const ContentCaptureFrame& data) {
+  ContentCaptureSession parent_session;
+  BuildContentCaptureSession(content_capture_receiver, true /* ancestor_only */,
+                             &parent_session);
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->FlushCaptureContent(parent_session, data);
   }
 }
 
@@ -249,6 +261,18 @@ void OnscreenContentProvider::DidUpdateFavicon(
   DCHECK(session.size() == 1);
   for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
     consumer->DidUpdateFavicon(*session.begin());
+  }
+}
+
+void OnscreenContentProvider::DidUpdateSensitivityScore(
+    float sensitivity_score) {
+  if (!content_capture::features::ShouldSendMetadataForDataShare() ||
+      !ShouldCapture(web_contents()->GetLastCommittedURL())) {
+    return;
+  }
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->DidUpdateSensitivityScore(web_contents()->GetLastCommittedURL(),
+                                        sensitivity_score);
   }
 }
 

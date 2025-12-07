@@ -1,12 +1,30 @@
 include_rules = [
-  "+components/data_sharing",
+  "+components/data_sharing/public/data_sharing_utils.h",
+  "+components/data_sharing/public/data_type_controller",
+  "+components/data_sharing/public/logger.h",
+  "+components/data_sharing/public/logger_utils.h",
+  "+components/data_sharing/public/logger_common.mojom.h",
+  "+components/data_sharing/public/personal_collaboration_data",
+  "+components/data_sharing/migration/public/migratable_entity_converter.h",
+  "+components/data_sharing/test_support",
   "+components/keyed_service",
+  "+components/optimization_guide",
   "+components/prefs",
   "+components/pref_registry",
   "+components/tab_groups",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
   "+components/strings",
   "+components/sync",
   "+components/sync_device_info",
+  "+components/ukm/test_ukm_recorder.h",
+  "+components/url_formatter/url_formatter.h",
+  "+google_apis/gaia/gaia_id.h",
+  "+services/metrics/public/cpp",
   "+ui/base/l10n",
   "+ui/gfx",
+
+  # Allow inclusion of features.h from //components/data_sharing to be able to
+  # check whether sharing functionality should be available.
+  "+components/data_sharing/public/features.h",
 ]

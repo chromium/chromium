@@ -1,0 +1,9 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # The popular debugging tool pernosco (pernos.co) can't handle avx512
+  # instructions. Overriding this flag to `false` will suppress them.
+  allow_avx512 = true
+}

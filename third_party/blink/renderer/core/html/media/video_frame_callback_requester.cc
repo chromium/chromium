@@ -10,21 +10,10 @@ namespace blink {
 
 VideoFrameCallbackRequester::VideoFrameCallbackRequester(
     HTMLVideoElement& element)
-    : Supplement<HTMLVideoElement>(element) {}
-
-// static
-VideoFrameCallbackRequester* VideoFrameCallbackRequester::From(
-    HTMLVideoElement& element) {
-  return Supplement<HTMLVideoElement>::From<VideoFrameCallbackRequester>(
-      element);
-}
+    : element_(element) {}
 
 void VideoFrameCallbackRequester::Trace(Visitor* visitor) const {
-  Supplement<HTMLVideoElement>::Trace(visitor);
+  visitor->Trace(element_);
 }
-
-// static
-const char VideoFrameCallbackRequester::kSupplementName[] =
-    "VideoFrameCallbackRequester";
 
 }  // namespace blink

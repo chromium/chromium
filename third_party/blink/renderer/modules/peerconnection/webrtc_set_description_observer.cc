@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 
 namespace blink {
 
@@ -52,7 +53,7 @@ WebRtcSetDescriptionObserverHandlerImpl::
     WebRtcSetDescriptionObserverHandlerImpl(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)
@@ -68,9 +69,10 @@ WebRtcSetDescriptionObserverHandlerImpl::
 void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
     webrtc::RTCError error) {
   CHECK(signaling_task_runner_->BelongsToCurrentThread());
-  std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+  std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       receiver_only_transceivers;
-  std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
+  std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      transceivers;
   // Only surface transceiver states if the peer connection is not closed. If
   // the peer connection is closed, the peer connection handler may have been
   // destroyed along with any track adapters that TransceiverStateSurfacer
@@ -95,15 +97,17 @@ void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
   std::unique_ptr<webrtc::SessionDescriptionInterface>
       current_remote_description =
           CopySessionDescription(pc_->current_remote_description());
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcSetDescriptionObserverHandlerImpl::
-                                    OnSetDescriptionCompleteOnMainThread,
-                                this, std::move(error), pc_->signaling_state(),
-                                std::move(transceiver_state_surfacer),
-                                std::move(pending_local_description),
-                                std::move(current_local_description),
-                                std::move(pending_remote_description),
-                                std::move(current_remote_description)));
+  PostCrossThreadTask(
+      *main_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&WebRtcSetDescriptionObserverHandlerImpl::
+                              OnSetDescriptionCompleteOnMainThread,
+                          blink::RetainedRef(this), std::move(error),
+                          pc_->signaling_state(),
+                          std::move(transceiver_state_surfacer),
+                          std::move(pending_local_description),
+                          std::move(current_local_description),
+                          std::move(pending_remote_description),
+                          std::move(current_remote_description)));
 }
 
 void WebRtcSetDescriptionObserverHandlerImpl::
@@ -136,10 +140,10 @@ scoped_refptr<WebRtcSetLocalDescriptionObserverHandler>
 WebRtcSetLocalDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
     scoped_refptr<WebRtcSetDescriptionObserver> observer) {
-  return new rtc::RefCountedObject<WebRtcSetLocalDescriptionObserverHandler>(
+  return new webrtc::RefCountedObject<WebRtcSetLocalDescriptionObserverHandler>(
       std::move(main_task_runner), std::move(signaling_task_runner),
       std::move(pc), std::move(track_adapter_map), std::move(observer));
 }
@@ -148,7 +152,7 @@ WebRtcSetLocalDescriptionObserverHandler::
     WebRtcSetLocalDescriptionObserverHandler(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)
@@ -172,10 +176,11 @@ scoped_refptr<WebRtcSetRemoteDescriptionObserverHandler>
 WebRtcSetRemoteDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
     scoped_refptr<WebRtcSetDescriptionObserver> observer) {
-  return new rtc::RefCountedObject<WebRtcSetRemoteDescriptionObserverHandler>(
+  return new webrtc::RefCountedObject<
+      WebRtcSetRemoteDescriptionObserverHandler>(
       std::move(main_task_runner), std::move(signaling_task_runner),
       std::move(pc), std::move(track_adapter_map), std::move(observer));
 }
@@ -184,7 +189,7 @@ WebRtcSetRemoteDescriptionObserverHandler::
     WebRtcSetRemoteDescriptionObserverHandler(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)

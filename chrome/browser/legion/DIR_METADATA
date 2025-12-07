@@ -1,0 +1,6 @@
+monorail: {
+  component: "Privacy"
+}
+buganizer_public: {
+  component_id: 1457231
+}

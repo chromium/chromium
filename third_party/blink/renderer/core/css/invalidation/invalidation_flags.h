@@ -11,16 +11,7 @@ namespace blink {
 // process. This is just a struct with some good behaviour.
 class InvalidationFlags {
  public:
-  InvalidationFlags()
-      : invalidate_custom_pseudo_(false),
-        whole_subtree_invalid_(false),
-        tree_boundary_crossing_(false),
-        insertion_point_crossing_(false),
-        invalidates_slotted_(false),
-        invalidates_parts_(false) {}
-
   bool operator==(const InvalidationFlags&) const;
-  bool operator!=(const InvalidationFlags& o) const { return !(*this == o); }
 
   // Merges two sets of flags together by orring all fields.
   void Merge(const InvalidationFlags& other);
@@ -47,21 +38,29 @@ class InvalidationFlags {
   bool InvalidatesParts() const { return invalidates_parts_; }
   void SetInvalidatesParts(bool value) { invalidates_parts_ = value; }
 
+  bool InvalidatesTreeCounting() const { return invalidates_tree_counting_; }
+  void SetInvalidatesTreeCounting(bool value) {
+    invalidates_tree_counting_ = value;
+  }
+
  private:
-  // If true, all descendants which are custom pseudo elements must be
+  // If true, all descendants which are custom pseudo-elements must be
   // invalidated.
-  bool invalidate_custom_pseudo_ : 1;
+  bool invalidate_custom_pseudo_ : 1 = false;
   // If true, all descendants might be invalidated, so a full subtree recalc is
   // required.
-  bool whole_subtree_invalid_ : 1;
+  bool whole_subtree_invalid_ : 1 = false;
   // If true, the invalidation must traverse into ShadowRoots with this set.
-  bool tree_boundary_crossing_ : 1;
+  bool tree_boundary_crossing_ : 1 = false;
   // If true, insertion point descendants must be invalidated.
-  bool insertion_point_crossing_ : 1;
+  bool insertion_point_crossing_ : 1 = false;
   // If true, distributed nodes of <slot> elements need to be invalidated.
-  bool invalidates_slotted_ : 1;
+  bool invalidates_slotted_ : 1 = false;
   // If true, parts inside this node's shadow tree need to be invalidated.
-  bool invalidates_parts_ : 1;
+  bool invalidates_parts_ : 1 = false;
+  // If true, elements whose style depends on tree-counting functions need to be
+  // invalidated.
+  bool invalidates_tree_counting_ : 1 = false;
 };
 
 }  // namespace blink

@@ -101,9 +101,12 @@ BackgroundFetchDataManager::GetOrOpenCacheStorage(
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   network::DocumentIsolationPolicy document_isolation_policy;
 
+  // Background Fetches are not submitted to COEP and DocumentIsolationPolicy,
+  // which is why we pass default COEP and DIP values, and null COEP and DIP
+  // reporters.
   storage_partition_->GetCacheStorageControl()->AddReceiver(
-      cross_origin_embedder_policy, mojo::NullRemote(),
-      document_isolation_policy,
+      cross_origin_embedder_policy, /*coep_reporter=*/mojo::NullRemote(),
+      document_isolation_policy, /*dip_reporter=*/mojo::NullRemote(),
       storage::BucketLocator::ForDefaultBucket(storage_key),
       storage::mojom::CacheStorageOwner::kBackgroundFetch,
       remote.BindNewPipeAndPassReceiver());

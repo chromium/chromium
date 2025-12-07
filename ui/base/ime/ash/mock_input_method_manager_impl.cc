@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {

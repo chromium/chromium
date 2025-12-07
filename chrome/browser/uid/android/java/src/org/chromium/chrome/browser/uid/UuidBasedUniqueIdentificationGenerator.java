@@ -4,24 +4,22 @@
 
 package org.chromium.chrome.browser.uid;
 
-import android.content.Context;
-
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.UUID;
 
 /** Generates unique IDs that are {@link UUID} strings. */
+@NullMarked
 public class UuidBasedUniqueIdentificationGenerator implements UniqueIdentificationGenerator {
     public static final String GENERATOR_ID = "UUID";
-    private final Context mContext;
     private final String mPreferenceKey;
 
-    public UuidBasedUniqueIdentificationGenerator(Context context, String preferenceKey) {
-        mContext = context;
+    public UuidBasedUniqueIdentificationGenerator(String preferenceKey) {
         mPreferenceKey = preferenceKey;
     }
 

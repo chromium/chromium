@@ -17,7 +17,6 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "ipc/ipc_message.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {

@@ -6,11 +6,13 @@
 
 #include <objbase.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,7 +25,8 @@
 #include "base/version.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/install_static/install_util.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "chrome/windows_services/service_program/scoped_client_impersonation.h"
+#include "components/crx_file/crx_verifier.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace elevation_service {
@@ -71,11 +74,10 @@ HRESULT OpenCallingProcess(uint32_t proc_id, base::Process* process) {
   DCHECK(proc_id);
   DCHECK(process);
 
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-
-  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
+  ScopedClientImpersonation impersonate_client;
+  if (!impersonate_client.is_valid()) {
+    return impersonate_client.result();
+  }
 
   *process = base::Process::OpenWithAccess(proc_id, PROCESS_DUP_HANDLE);
   return process->IsValid() ? S_OK : HRESULTFromLastError();
@@ -89,11 +91,10 @@ HRESULT OpenFileImpersonated(const base::FilePath& file_path,
                              base::File* file) {
   DCHECK(file);
 
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-
-  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
+  ScopedClientImpersonation impersonate_client;
+  if (!impersonate_client.is_valid()) {
+    return impersonate_client.result();
+  }
 
   file->Initialize(file_path, flags);
   if (!file->IsValid())
@@ -131,26 +132,31 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
   std::vector<char> buffer(kBufferSize);
 
   for (uint64_t total_bytes_read = 0;;) {
-    const int bytes_read =
-        from_file.ReadAtCurrentPos(buffer.data(), buffer.size());
-    if (bytes_read < 0)
+    const std::optional<size_t> bytes_read =
+        from_file.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read) {
       return HRESULTFromLastError();
-    if (bytes_read == 0)
+    }
+    if (bytes_read == 0) {
       return S_OK;
+    }
 
-    total_bytes_read += bytes_read;
-    if (total_bytes_read > kMaxFileSize)
+    total_bytes_read += *bytes_read;
+    if (total_bytes_read > kMaxFileSize) {
       return E_INVALIDARG;
+    }
 
-    const int bytes_written = to_file.WriteAtCurrentPos(&buffer[0], bytes_read);
-    if (bytes_written < 0)
+    const std::optional<size_t> bytes_written = to_file.WriteAtCurrentPos(
+        base::as_byte_span(buffer).first(*bytes_read));
+    if (!bytes_written) {
       return HRESULTFromLastError();
-    if (bytes_written != bytes_read)
+    }
+    if (bytes_written != bytes_read) {
       return E_UNEXPECTED;
+    }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return S_OK;
+  NOTREACHED();
 }
 
 // Validates the provided CRX using the |crx_hash|, and if validation succeeds,
@@ -185,9 +191,13 @@ HRESULT ValidateAndUnpackCRX(const base::FilePath& from_crx_path,
   if (!zip::Unzip(to_crx_path, to_dir.GetPath()))
     return E_UNEXPECTED;
 
-  LOG_IF(WARNING, !base::DeleteFile(to_crx_path));
+  if (!base::DeleteFile(to_crx_path)) {
+    PLOG(WARNING) << "Failed to delete " << to_crx_path;
+  }
 
-  LOG_IF(WARNING, !unpacked_crx_dir->Set(to_dir.Take()));
+  if (!unpacked_crx_dir->Set(to_dir.Take())) {
+    LOG(WARNING) << "Failed to transfer ownership of " << to_dir.GetPath();
+  }
   return S_OK;
 }
 

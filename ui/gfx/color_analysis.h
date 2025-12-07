@@ -10,10 +10,10 @@
 #include <optional>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/gfx_export.h"
 
 class SkBitmap;
 
@@ -33,7 +33,7 @@ struct HSL;
 // Note: Samplers should be deterministic, as the same image may be analyzed
 // twice with two sampler instances and the results displayed side-by-side
 // to the user.
-class GFX_EXPORT KMeanImageSampler {
+class COMPONENT_EXPORT(GFX) KMeanImageSampler {
  public:
   virtual int GetSample(int width, int height) = 0;
 
@@ -43,24 +43,25 @@ class GFX_EXPORT KMeanImageSampler {
 };
 
 // This sampler will pick pixels from an evenly spaced grid.
-class GFX_EXPORT GridSampler : public KMeanImageSampler {
-  public:
-   GridSampler();
-   ~GridSampler() override;
+class COMPONENT_EXPORT(GFX) GridSampler : public KMeanImageSampler {
+ public:
+  GridSampler();
+  ~GridSampler() override;
 
-   int GetSample(int width, int height) override;
+  int GetSample(int width, int height) override;
 
-  private:
-   // The number of times GetSample has been called.
-   int calls_;
+ private:
+  // The number of times GetSample has been called.
+  int calls_;
 };
 
 // Returns the color in an ARGB |image| that is closest in RGB-space to the
 // provided |color|. Exported for testing.
-GFX_EXPORT SkColor FindClosestColor(base::span<const uint8_t> image,
-                                    int width,
-                                    int height,
-                                    SkColor color);
+COMPONENT_EXPORT(GFX)
+SkColor FindClosestColor(base::span<const uint8_t> image,
+                         int width,
+                         int height,
+                         SkColor color);
 
 // Returns an SkColor that represents the calculated dominant color in the
 // image. This uses a KMean clustering algorithm to find clusters of pixel
@@ -95,28 +96,32 @@ GFX_EXPORT SkColor FindClosestColor(base::span<const uint8_t> image,
 //   |upper_bound|. Return that color.
 //   If no color fulfills that requirement return the color with the largest
 //   weight regardless of whether or not it fulfills the equation above.
-GFX_EXPORT SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
-                                            const HSL& lower_bound,
-                                            const HSL& upper_bound,
-                                            KMeanImageSampler* sampler);
+COMPONENT_EXPORT(GFX)
+SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
+                                 const HSL& lower_bound,
+                                 const HSL& upper_bound,
+                                 KMeanImageSampler* sampler);
 // Computes a dominant color using the above algorithm and reasonable defaults
 // for |lower_bound|, |upper_bound| and |sampler|.
-GFX_EXPORT SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png);
+COMPONENT_EXPORT(GFX)
+SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png);
 
 // Computes a dominant color for the first |height| rows of |bitmap| using the
 // above algorithm and a reasonable default sampler. If |find_closest| is true,
 // the returned color will be the closest color to the true K-mean color that
 // actually appears in the image; if false, the true color is returned
 // regardless of whether it actually appears.
-GFX_EXPORT SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
-                                               int height,
-                                               const HSL& lower_bound,
-                                               const HSL& upper_bound,
-                                               bool find_closest);
+COMPONENT_EXPORT(GFX)
+SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
+                                    int height,
+                                    const HSL& lower_bound,
+                                    const HSL& upper_bound,
+                                    bool find_closest);
 
 // Computes a dominant color using the above algorithm and reasonable defaults
 // for |lower_bound|, |upper_bound| and |sampler|.
-GFX_EXPORT SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap);
+COMPONENT_EXPORT(GFX)
+SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap);
 
 // These enums specify general values to look for when calculating prominent
 // colors from an image. For example, a "light vibrant" prominent color would
@@ -165,7 +170,7 @@ struct Swatch {
 using ColorSwatchFilter = base::RepeatingCallback<bool(const SkColor&)>;
 
 // The maximum number of pixels to consider when generating swatches.
-GFX_EXPORT extern const int kMaxConsideredPixelsForSwatches;
+COMPONENT_EXPORT(GFX) extern const int kMaxConsideredPixelsForSwatches;
 
 // Returns a vector of |Swatch| that represent the prominent colors of the
 // bitmap within |region|. The |max_swatches| is the maximum number of swatches.
@@ -174,7 +179,8 @@ GFX_EXPORT extern const int kMaxConsideredPixelsForSwatches;
 // 24-32. |filter| is an optional filter that can filter out unwanted colors.
 // This is an implementation of the Android Palette API:
 // https://developer.android.com/reference/android/support/v7/graphics/Palette
-GFX_EXPORT std::vector<Swatch> CalculateColorSwatches(
+COMPONENT_EXPORT(GFX)
+std::vector<Swatch> CalculateColorSwatches(
     const SkBitmap& bitmap,
     size_t max_swatches,
     const gfx::Rect& region,
@@ -187,7 +193,8 @@ GFX_EXPORT std::vector<Swatch> CalculateColorSwatches(
 // the bitmap. |filter| is an optional filter that can filter out unwanted
 // colors. If |filter| is not provided then we will filter out uninteresting
 // colors.
-GFX_EXPORT std::vector<Swatch> CalculateProminentColorsOfBitmap(
+COMPONENT_EXPORT(GFX)
+std::vector<Swatch> CalculateProminentColorsOfBitmap(
     const SkBitmap& bitmap,
     const std::vector<ColorProfile>& color_profiles,
     gfx::Rect* region,

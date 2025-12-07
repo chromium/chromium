@@ -11,17 +11,13 @@
 
 namespace language {
 // Features:
-BASE_FEATURE(kDetailedLanguageSettings,
-             "DetailedLanguageSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kContentLanguagesInLanguagePicker,
-             "ContentLanguagesInLanguagePicker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDetailedLanguageSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCctAutoTranslate,
              "CCTAutoTranslate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Params:
-const char kContentLanguagesDisableObserversParam[] = "disable_observers";
+BASE_FEATURE(kTranslateOpenSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableGeoLanguageModel, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace language

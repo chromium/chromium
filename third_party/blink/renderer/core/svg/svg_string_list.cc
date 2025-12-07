@@ -18,13 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_string_list.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -55,17 +51,17 @@ void SVGStringListBase::Replace(uint32_t index, const String& new_item) {
 }
 
 template <typename CharType>
-void SVGStringListBase::ParseInternal(const CharType* ptr,
-                                      const CharType* end,
+void SVGStringListBase::ParseInternal(const base::span<const CharType> chars,
                                       char list_delimiter) {
-  while (ptr < end) {
-    const CharType* start = ptr;
-    while (ptr < end && *ptr != list_delimiter && !IsHTMLSpace<CharType>(*ptr))
-      ptr++;
-    if (ptr == start)
+  size_t position = 0;
+  while (position < chars.size()) {
+    auto token = TokenUntilSvgSpaceOrDelimiter(chars, position, list_delimiter);
+    if (token.empty()) {
       break;
-    values_.push_back(String(start, static_cast<wtf_size_t>(ptr - start)));
-    SkipOptionalSVGSpacesOrDelimiter(ptr, end, list_delimiter);
+    }
+    values_.push_back(String(token));
+    position = SkipOptionalSVGSpacesOrDelimiter(chars, position + token.size(),
+                                                list_delimiter);
   }
 }
 
@@ -78,9 +74,8 @@ SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
   if (data.empty())
     return SVGParseStatus::kNoError;
 
-  WTF::VisitCharacters(data, [&](const auto* chars, unsigned length) {
-    ParseInternal(chars, chars + length, list_delimiter);
-  });
+  VisitCharacters(data,
+                  [&](auto chars) { ParseInternal(chars, list_delimiter); });
   return SVGParseStatus::kNoError;
 }
 
@@ -90,26 +85,15 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
     return String();
 
   StringBuilder builder;
-
-  Vector<String>::const_iterator it = values_.begin();
-  Vector<String>::const_iterator it_end = values_.end();
-  if (it != it_end) {
-    builder.Append(*it);
-    ++it;
-
-    for (; it != it_end; ++it) {
-      builder.Append(list_delimiter);
-      builder.Append(*it);
-    }
-  }
-
-  return builder.ToString();
+  builder.AppendRange(values_,
+                      StringView(base::byte_span_from_ref(list_delimiter)));
+  return builder.ReleaseString();
 }
 
 void SVGStringListBase::Add(const SVGPropertyBase* other,
                             const SVGElement* context_element) {
   // SVGStringList is never animated.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGStringListBase::CalculateAnimatedValue(
@@ -121,14 +105,13 @@ void SVGStringListBase::CalculateAnimatedValue(
     const SVGPropertyBase*,
     const SVGElement*) {
   // SVGStringList is never animated.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGStringListBase::CalculateDistance(const SVGPropertyBase*,
                                            const SVGElement*) const {
   // SVGStringList is never animated.
-  NOTREACHED_IN_MIGRATION();
-  return -1.0f;
+  NOTREACHED();
 }
 
 }  // namespace blink

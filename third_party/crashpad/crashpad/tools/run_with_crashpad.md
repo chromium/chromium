@@ -33,9 +33,9 @@ along with any arguments specified (_ARG…_) with the new exception port in
 effect.
 
 On macOS, the exception port is configured to receive exceptions of type
-`EXC_CRASH`, `EXC_RESOURCE`, and `EXC_GUARD`. The exception behavior is
-configured as `EXCEPTION_STATE_IDENTITY | MACH_EXCEPTION_CODES`. The thread
-state flavor is set to `MACHINE_THREAD_STATE`.
+`EXC_CRASH`, `EXC_RESOURCE`, and `EXC_GUARD` (until macOS 13). The exception
+behavior is configured as `EXCEPTION_STATE_IDENTITY | MACH_EXCEPTION_CODES`. The
+thread state flavor is set to `MACHINE_THREAD_STATE`.
 
 Programs that use the Crashpad client library directly will not normally use
 this tool. This tool exists to allow programs that are unaware of Crashpad to be

@@ -4,20 +4,23 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.hub.HubLayout;
@@ -30,23 +33,26 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager.ThumbnailChangeListe
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.util.AccessibilityUtil;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A {@link Layout} controller for the more complicated Chrome browser. This is currently a superset
  * of {@link LayoutManagerImpl}.
  */
-public class LayoutManagerChrome extends LayoutManagerImpl
-        implements ChromeAccessibilityUtil.Observer {
+@NullMarked
+public class LayoutManagerChrome extends LayoutManagerImpl implements AccessibilityUtil.Observer {
     // Layouts
     /** A {@link Layout} that should be used when the user is swiping sideways on the toolbar. */
     protected ToolbarSwipeLayout mToolbarSwipeLayout;
@@ -55,7 +61,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * A {@link Layout} that should be used when the user is in the tab switcher when the hub flag
      * is enabled.
      */
-    protected Layout mHubLayout;
+    protected @Nullable Layout mHubLayout;
 
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
@@ -65,7 +71,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private boolean mFinishNativeInitialization;
-    private TabContentManager mTabContentManager;
+    private @Nullable TabContentManager mTabContentManager;
 
     // Lazy Tab Switcher Init
     private final Supplier<TabSwitcher> mTabSwitcherSupplier;
@@ -74,8 +80,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
     private final Callback<TabContentManager> mOnTabContentManager = this::onTabContentManager;
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
-    protected @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    protected @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -99,7 +106,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
         // Build Event Filter Handlers
-        mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown= */ true);
+        mToolbarSwipeHandler =
+                createToolbarSwipeHandler(/* supportsSwipeToShowTabSwitcher= */ true);
 
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabContentManagerSupplier.addObserver(mOnTabContentManager);
@@ -110,7 +118,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     /** Creates {@link org.chromium.chrome.browser.hub.HubLayout}. */
-    protected void createHubLayout(@NonNull HubLayoutDependencyHolder hubLayoutDependencyHolder) {
+    protected void createHubLayout(HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
@@ -122,9 +130,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         /* layoutStateProvider= */ this,
                         hubLayoutDependencyHolder,
                         mTabModelSelectorSupplier,
-                        mDesktopWindowStateProvider);
-        if (mTabContentManagerSupplier.hasValue()) {
-            mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
+                        mDesktopWindowStateManager);
+        TabContentManager content = mTabContentManagerSupplier.get();
+        if (content != null) {
+            mHubLayout.setTabContentManager(content);
         }
         if (getTabModelSelector() != null) {
             mHubLayout.setTabModelSelector(getTabModelSelector());
@@ -151,17 +160,19 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
-    public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
-        return new ToolbarSwipeHandler(supportSwipeDown);
+    public SwipeHandler createToolbarSwipeHandler(boolean supportsSwipeToShowTabSwitcher) {
+        return new ToolbarSwipeHandler(supportsSwipeToShowTabSwitcher);
     }
 
     @Override
+    @Initializer
     public void init(
             TabModelSelector selector,
             TabCreatorManager creator,
-            ControlContainer controlContainer,
+            @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
+            TopUiThemeColorProvider topUiColorProvider,
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =
@@ -175,9 +186,17 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         renderHost,
                         browserControlsStateProvider,
                         this,
-                        topUiColorProvider);
+                        topUiColorProvider,
+                        bottomControlsOffsetSupplier,
+                        getContentContainer());
 
-        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
+        super.init(
+                selector,
+                creator,
+                controlContainer,
+                dynamicResourceLoader,
+                topUiColorProvider,
+                bottomControlsOffsetSupplier);
 
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();
@@ -193,6 +212,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     public void showLayout(int layoutType, boolean animate) {
+        if (mDestroyChecker.isDestroyed()) return;
+
         if (layoutType == LayoutType.TAB_SWITCHER && mHubLayout == null) {
             initTabSwitcher();
         }
@@ -204,7 +225,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * switcher is shown on tablets and phones.
      */
     private void initTabSwitcher() {
-        if (mTabSwitcherSupplier.hasValue()) {
+        var tabSwitcher = mTabSwitcherSupplier.get();
+        if (tabSwitcher != null) {
             return;
         }
 
@@ -222,8 +244,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         super.destroy();
+        mDestroyChecker.destroy();
 
         if (mTabContentManagerSupplier != null) {
             mTabContentManagerSupplier.removeObserver(mOnTabContentManager);
@@ -256,7 +280,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         } else {
             layout = super.getLayoutForType(layoutType);
         }
-        return layout;
+        return assumeNonNull(layout);
     }
 
     @Override
@@ -275,17 +299,47 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         boolean animate = !tabRemoved && animationsEnabled();
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
                 && showOverview
-                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
+                && getNextLayoutType() != LayoutType.TAB_SWITCHER
+                && !DeviceInfo.isXr()) {
+            showLayout(LayoutType.TAB_SWITCHER, animate);
+        } else if (getActiveLayoutType() == LayoutType.TAB_SWITCHER
+                && assumeNonNull(getActiveLayout()).isStartingToHide()
+                && showOverview
+                && getNextLayoutType() == LayoutType.BROWSING
+                && !DeviceInfo.isXr()) {
             showLayout(LayoutType.TAB_SWITCHER, animate);
         }
         super.tabClosed(id, nextId, incognito, tabRemoved);
     }
 
     @Override
-    public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout) return;
+    public void tabsAllClosing(boolean incognito) {
+        if (getActiveLayout() == mStaticLayout && !incognito && !DeviceInfo.isXr()) {
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+        }
+        super.tabsAllClosing(incognito);
+    }
 
-        super.onTabsAllClosing(incognito);
+    @Override
+    protected void tabModelSwitched(boolean incognito) {
+        super.tabModelSwitched(incognito);
+        TabModelSelector selector = getTabModelSelector();
+        selector.commitAllTabClosures();
+
+        // Skip forcing the tab switcher to show with 0 tabs until tab state is fully restored in
+        // the event it is slow.
+        TabModelUtils.runOnTabStateInitialized(
+                selector,
+                (tabModelSelector) -> {
+                    boolean incognitoActive = tabModelSelector.isIncognitoBrandedModelSelected();
+
+                    if (getActiveLayout() == mStaticLayout
+                            && !incognitoActive
+                            && tabModelSelector.getModel(false).getCount() == 0
+                            && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
+                        showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+                    }
+                });
     }
 
     /** Initializes HubLayout without needing to open the Tab Switcher. */
@@ -297,18 +351,14 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * Returns the Hub {@link Layout} managed by this class. This should be non-null if init has
      * finished.
      */
-    public Layout getHubLayoutForTesting() {
+    public @Nullable Layout getHubLayoutForTesting() {
         return mHubLayout;
-    }
-
-    /** Returns the {@link StripLayoutHelperManager} managed by this class. */
-    public StripLayoutHelperManager getStripLayoutHelperManager() {
-        return null;
     }
 
     /**
      * @param enabled Whether or not to allow model-reactive animations (tab creation, closing,
-     *     etc.).
+     *     etc.). Note that on an XR device the this param value is ignored and animation is
+     *     disabled.
      */
     public void setEnableAnimations(boolean enabled) {
         mEnableAnimations = enabled;
@@ -339,10 +389,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
          */
         private static final float SWIPE_RANGE_DEG = 25;
 
-        private final boolean mSupportSwipeDown;
+        private final boolean mSupportsSwipeToShowTabSwitcher;
 
-        public ToolbarSwipeHandler(boolean supportSwipeDown) {
-            mSupportSwipeDown = supportSwipeDown;
+        public ToolbarSwipeHandler(boolean supportsSwipeToShowTabSwitcher) {
+            mSupportsSwipeToShowTabSwitcher = supportsSwipeToShowTabSwitcher;
         }
 
         @Override
@@ -370,12 +420,13 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             mScrollDirection = computeScrollDirection(dx, dy);
             if (mScrollDirection == ScrollDirection.UNKNOWN) return;
 
-            if (mSupportSwipeDown && mScrollDirection == ScrollDirection.DOWN) {
-                RecordUserAction.record("MobileToolbarSwipeOpenStackView");
-                showLayout(LayoutType.TAB_SWITCHER, true);
-            } else if (mScrollDirection == ScrollDirection.LEFT
+            if (mScrollDirection == ScrollDirection.LEFT
                     || mScrollDirection == ScrollDirection.RIGHT) {
                 startShowing(mToolbarSwipeLayout, true);
+            } else if (mSupportsSwipeToShowTabSwitcher) {
+                // No need to test scroll direction here, as we've ruled out other possibilities.
+                RecordUserAction.record("MobileToolbarSwipeOpenStackView");
+                showLayout(LayoutType.TAB_SWITCHER, true);
             }
 
             mToolbarSwipeLayout.swipeStarted(time(), mScrollDirection, x, y);
@@ -424,6 +475,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 direction = ScrollDirection.RIGHT;
             } else if (swipeAngle < 270 + SWIPE_RANGE_DEG && swipeAngle > 270 - SWIPE_RANGE_DEG) {
                 direction = ScrollDirection.DOWN;
+            } else if (swipeAngle < 90 + SWIPE_RANGE_DEG && swipeAngle > 90 - SWIPE_RANGE_DEG) {
+                direction = ScrollDirection.UP;
             }
 
             return direction;
@@ -438,7 +491,13 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 return false;
             }
 
-            return direction == ScrollDirection.DOWN
+            Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
+            boolean toolbarShownOnTop = ToolbarPositionController.shouldShowToolbarOnTop(tab);
+            @ScrollDirection
+            int showTabSwitcherScrollDirection =
+                    toolbarShownOnTop ? ScrollDirection.DOWN : ScrollDirection.UP;
+
+            return direction == showTabSwitcherScrollDirection
                     || direction == ScrollDirection.LEFT
                     || direction == ScrollDirection.RIGHT;
         }
@@ -448,13 +507,13 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * @param id The id of the {@link Tab} to search for.
      * @return A {@link Tab} instance or {@code null} if it could be found.
      */
-    protected Tab getTabById(int id) {
+    protected @Nullable Tab getTabById(int id) {
         TabModelSelector selector = getTabModelSelector();
         return selector == null ? null : selector.getTabById(id);
     }
 
     @Override
-    protected void switchToTab(Tab tab, int lastTabId) {
+    protected void switchToTab(@Nullable Tab tab, int lastTabId) {
         if (tab == null || lastTabId == Tab.INVALID_TAB_ID) {
             super.switchToTab(tab, lastTabId);
             return;

@@ -12,10 +12,11 @@
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
@@ -47,16 +48,14 @@ ContextualNudge::ContextualNudge(views::View* anchor,
                                       GetArrowForPosition(position),
                                       views::BubbleBorder::NO_SHADOW),
       tap_callback_(tap_callback) {
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
-  set_color(SK_ColorTRANSPARENT);
+  SetBackgroundColor(SK_ColorTRANSPARENT);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
   set_accept_events(!tap_callback.is_null());
   SetCanActivate(false);
   set_shadow(views::BubbleBorder::NO_SHADOW);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  set_layer_type(ui::LAYER_NOT_DRAWN);
 
   if (parent_window) {
     set_parent_window(parent_window);
@@ -74,13 +73,9 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_->SetBorder(views::CreateEmptyBorder(margins));
-  if (chromeos::features::IsJellyEnabled()) {
-    label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                          *label_);
-  } else {
-    label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  }
+  label_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *label_);
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 
@@ -99,10 +94,6 @@ ContextualNudge::~ContextualNudge() = default;
 
 void ContextualNudge::UpdateAnchorRect(const gfx::Rect& rect) {
   SetAnchorRect(rect);
-}
-
-ui::LayerType ContextualNudge::GetLayerType() const {
-  return ui::LAYER_NOT_DRAWN;
 }
 
 void ContextualNudge::OnGestureEvent(ui::GestureEvent* event) {

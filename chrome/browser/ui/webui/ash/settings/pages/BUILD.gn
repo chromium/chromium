@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("pages") {
   sources = [
@@ -27,6 +25,7 @@ static_library("pages") {
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/a11y",
     "//chrome/browser/ui/webui/ash/settings/pages/about",

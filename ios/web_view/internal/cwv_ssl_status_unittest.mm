@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
-
-#include "net/test/test_certificate_data.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "net/test/test_certificate_data.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

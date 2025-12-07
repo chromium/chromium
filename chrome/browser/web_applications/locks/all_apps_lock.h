@@ -5,17 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_ALL_APPS_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_ALL_APPS_LOCK_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "components/webapps/common/web_app_id.h"
-
-namespace content {
-struct PartitionedLockHolder;
-}
 
 namespace web_app {
 
@@ -31,28 +25,28 @@ class AllAppsLockDescription : public LockDescription {
   ~AllAppsLockDescription();
 };
 
-// Holding this lock means that no other lock-compatible operations are touching
-// the same app id/s. This does not ensure that the app/s are installed when the
-// lock is granted. Checks for that will need to be handled by the user of
-// the lock.
+// Holding this lock means that no other lock-compatible operations can run on
+// any app. This is useful for operations that need to inspect or modify the
+// entire set of web apps. This does not ensure that any apps are installed when
+// the lock is granted.
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
 //
-// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
-// shutdown (or the profile has shut down).
+// Note: Accessing a lock before it is granted or after the WebAppProvider
+// system has shutdown (or the profile has shut down) will CHECK-fail.
 class AllAppsLock : public Lock, public WithAppResources {
  public:
   using LockDescription = AllAppsLockDescription;
 
-  ~AllAppsLock();
+  AllAppsLock();
+  ~AllAppsLock() override;
 
   base::WeakPtr<AllAppsLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
   friend class WebAppLockManager;
-  AllAppsLock(base::WeakPtr<WebAppLockManager> lock_manager,
-              std::unique_ptr<content::PartitionedLockHolder> holder);
+  void GrantLock(WebAppLockManager& lock_manager);
 
   base::WeakPtrFactory<AllAppsLock> weak_factory_{this};
 };

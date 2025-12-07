@@ -46,8 +46,8 @@ base::TimeDelta BackOffUploadInterval(base::TimeDelta interval) {
 
 MetricsUploadScheduler::MetricsUploadScheduler(
     const base::RepeatingClosure& upload_callback,
-    bool fast_startup_for_testing)
-    : MetricsScheduler(upload_callback, fast_startup_for_testing),
+    bool fast_startup)
+    : MetricsScheduler(upload_callback, fast_startup),
       unsent_logs_interval_(GetUnsentLogsInterval()),
       initial_backoff_interval_(GetInitialBackoffInterval()),
       backoff_interval_(initial_backoff_interval_) {}
@@ -80,6 +80,14 @@ void MetricsUploadScheduler::UploadFinished(bool server_is_healthy) {
 void MetricsUploadScheduler::StopAndUploadCancelled() {
   Stop();
   TaskDone(unsent_logs_interval_);
+}
+
+void MetricsUploadScheduler::RestartWithUnsentLogsInterval() {
+  CHECK(IsRunning());
+  CHECK(!IsCallbackPending());
+  Stop();
+  SetInterval(unsent_logs_interval_);
+  Start();
 }
 
 void MetricsUploadScheduler::UploadOverDataUsageCap() {

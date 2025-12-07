@@ -49,45 +49,38 @@ class FormatResourceMapUnittest(unittest.TestCase):
          </includes>
        </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
-#include <stddef.h>
 #include "ui/base/webui/resource_path.h"
-extern const webui::ResourcePath kTheRcHeader[];
-extern const size_t kTheRcHeaderSize;''', output)
+extern const webui::ResourcePath kTheRcHeader[5];''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[5] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
   {"IDS_FIRSTPRESENT", IDS_FIRSTPRESENT},
   {"IDS_WITHRESOURCEPATH", IDS_WITHRESOURCEPATH},
   {"IDS_LANGUAGESPECIFIC", IDS_LANGUAGESPECIFIC},
   {"IDS_THIRDPRESENT", IDS_THIRDPRESENT},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[5] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
   {"abc", IDS_FIRSTPRESENT},
   {"new_path/rst_resource", IDS_WITHRESOURCEPATH},
   {"ghi", IDS_LANGUAGESPECIFIC},
   {"mno", IDS_THIRDPRESENT},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
 
   def testFormatResourceMapWithGeneratedFile(self):
     os.environ["root_gen_dir"] = "gen"
@@ -110,9 +103,57 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
     with self.assertRaises(AssertionError) as assertion_error:
       formatter = resource_map.GetFormatter('resource_file_map_source')
-      util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
+      util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', None, '.')))
     self.assertTrue(str(assertion_error.exception). \
         startswith('resource_path attribute missing for IDR_FOO_BAR_BAZ_JS'))
+
+  def testFormatWithAddFilepathToResourceMapEnvVariable(self):
+    grd = util.ParseGrdForUnittest('''\
+        <outputs>
+          <output type="rc_header" filename="the_rc_header.h" />
+          <output type="resource_map_header"
+                  filename="resource_map_header.h" />
+        </outputs>
+        <release seq="3">
+          <includes first_id="10000">
+            <include type="BINDATA"
+                     file="a/b/c/baz.js"
+                     resource_path="d/e/f/baz.js"
+                     name="IDR_D_E_F_BAZ_JS" />
+            <include type="BINDATA"
+                     file="${root_gen_dir}/g/h/i/baz.js"
+                     resource_path="j/k/l/baz.js"
+                     name="IDR_G_H_I_BAZ_JS"
+                     use_base_dir="false" />
+         </includes>
+        </release>''',
+                                   run_gatherers=True)
+    grd.base_dir = '.'
+    os.environ["root_gen_dir"] = "gen"
+
+    os.environ["add_filepath_to_resource_map"] = "true"
+    output = util.StripBlankLinesAndComments(''.join(
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
+    self.assertMultiLineEqual(
+        output, '''#include "resource_map_header.h"
+#include "the_rc_header.h"
+const webui::ResourcePath kTheRcHeader[2] = {
+  {"d/e/f/baz.js", IDR_D_E_F_BAZ_JS, "a/b/c/baz.js"},
+  {"j/k/l/baz.js", IDR_G_H_I_BAZ_JS, "gen/g/h/i/baz.js"},
+};''')
+
+    os.environ["add_filepath_to_resource_map"] = "false"
+    output = util.StripBlankLinesAndComments(''.join(
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
+    self.assertMultiLineEqual(
+        output, '''#include "resource_map_header.h"
+#include "the_rc_header.h"
+const webui::ResourcePath kTheRcHeader[2] = {
+  {"d/e/f/baz.js", IDR_D_E_F_BAZ_JS},
+  {"j/k/l/baz.js", IDR_G_H_I_BAZ_JS},
+};''')
 
   def testFormatResourceMapWithOutputAllEqualsFalseForStructures(self):
     grd = util.ParseGrdForUnittest('''
@@ -156,43 +197,35 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
          </structures>
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
-#include <stddef.h>
 #include "ui/base/webui/resource_path.h"
-extern const webui::ResourcePath kTheRcHeader[];
-extern const size_t kTheRcHeaderSize;''', output)
+extern const webui::ResourcePath kTheRcHeader[4];''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[4] = {
   {"IDR_KLONKMENU", IDR_KLONKMENU},
   {"IDR_BLOB", IDR_BLOB},
   {"IDR_METEOR", IDR_METEOR},
   {"IDR_LAST", IDR_LAST},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[4] = {
   {"IDR_KLONKMENU", IDR_KLONKMENU},
   {"IDR_BLOB", IDR_BLOB},
   {"IDR_METEOR", IDR_METEOR},
   {"IDR_LAST", IDR_LAST},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
 
   def testFormatResourceMapWithOutputAllEqualsFalseForIncludes(self):
     grd = util.ParseGrdForUnittest('''
@@ -232,47 +265,40 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
          </includes>
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
-#include <stddef.h>
 #include "ui/base/webui/resource_path.h"
-extern const webui::ResourcePath kTheRcHeader[];
-extern const size_t kTheRcHeaderSize;''', output)
+extern const webui::ResourcePath kTheRcHeader[6];''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[6] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
   {"IDS_FIRSTPRESENT", IDS_FIRSTPRESENT},
   {"IDS_THIRDPRESENT", IDS_THIRDPRESENT},
   {"IDS_BLOB", IDS_BLOB},
   {"IDS_METEOR", IDS_METEOR},
   {"IDS_LAST", IDS_LAST},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[6] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
   {"abc", IDS_FIRSTPRESENT},
   {"mno", IDS_THIRDPRESENT},
   {"blob", IDS_BLOB},
   {"meteor", IDS_METEOR},
   {"xyz", IDS_LAST},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
 
   def testFormatStringResourceMap(self):
     grd = util.ParseGrdForUnittest('''
@@ -302,26 +328,21 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
         </release>''', run_gatherers=True)
     grd.InitializeIds()
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
-#include <stddef.h>
 #include "ui/base/webui/resource_path.h"
-extern const webui::ResourcePath kTheRcHeader[];
-extern const size_t kTheRcHeaderSize;''', output)
+extern const webui::ResourcePath kTheRcHeader[2];''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_rc_map_header.h"
-#include <stddef.h>
-#include <iterator>
 #include "the_rc_header.h"
-const webui::ResourcePath kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[2] = {
   {"IDS_PRODUCT_NAME", IDS_PRODUCT_NAME},
   {"IDS_DEFAULT_TAB_TITLE_TITLE_CASE", IDS_DEFAULT_TAB_TITLE_TITLE_CASE},
-};
-const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
+};''', output)
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "remoting/host/setup/host_starter.h"
@@ -68,13 +69,6 @@ void HostStarterOAuthHelper::OnGetTokensResponse(
   oauth_client_->GetUserEmail(access_token, 1, this);
 }
 
-void HostStarterOAuthHelper::OnRefreshTokenResponse(
-    const std::string& access_token,
-    int expires_in_seconds) {
-  // We never request a new access token using a refresh token.
-  NOTREACHED_IN_MIGRATION();
-}
-
 void HostStarterOAuthHelper::OnGetUserEmailResponse(
     const std::string& user_email) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -91,7 +85,7 @@ void HostStarterOAuthHelper::OnGetUserEmailResponse(
     return;
   }
 
-  std::move(done_callback_).Run(user_email, access_token_, refresh_token_);
+  std::move(done_callback_).Run(user_email, access_token_, refresh_token_, "");
 }
 
 void HostStarterOAuthHelper::OnOAuthError() {

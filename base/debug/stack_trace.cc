@@ -7,11 +7,15 @@
 #include <string.h>
 
 #include <algorithm>
+#include <optional>
 #include <sstream>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/features.h"
+#include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -35,8 +39,7 @@ extern "C" void* __libc_stack_end;
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -51,6 +54,13 @@ constexpr size_t kStackFrameAdjustment = sizeof(uintptr_t);
 constexpr size_t kStackFrameAdjustment = 0;
 #endif
 
+// The max gap threshold in bytes for stack scanning. If the gap between a frame
+// pointer to stack end is beyond this threshold, stack end is deemed as
+// unreliable and stack scan stops. The value is initialized from the param of
+// `kStackScanMaxFramePointerToStackEndGap` feature if the feature is enabled.
+constinit std::optional<size_t> g_stack_scan_max_fp_to_stack_end_gap_bytes{
+    std::nullopt};
+
 // On Arm-v8.3+ systems with pointer authentication codes (PAC), signature bits
 // are set in the top bits of the pointer, which confuses test assertions.
 // Because the signature size can vary based on the system configuration, use
@@ -61,7 +71,7 @@ static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
   // with and without pointer authentication). xpaclri is used here because it's
   // in the HINT space and treated as a no-op on older Arm cores (unlike the
   // more generic xpaci which has a new encoding). The downside is that ptr has
-  // to be moved to x30 to use this instruction. TODO(richard.townsend@arm.com):
+  // to be moved to x30 to use this instruction. TODO(ritownsend@google.com):
   // replace with an intrinsic once that is available.
   register uintptr_t x30 __asm("x30") = ptr;
   asm("xpaclri" : "+r"(x30));
@@ -95,20 +105,30 @@ uintptr_t GetStackFramePC(uintptr_t fp) {
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
   // With the stack growing downwards, older stack frame must be
   // at a greater address that the current one.
-  if (fp <= prev_fp) return false;
+  if (fp <= prev_fp) {
+    return false;
+  }
 
   // Assume huge stack frames are bogus.
-  if (fp - prev_fp > 100000) return false;
+  if (fp - prev_fp > 100000) {
+    return false;
+  }
 
   // Check alignment.
-  if (fp & (sizeof(uintptr_t) - 1)) return false;
+  if (fp & (sizeof(uintptr_t) - 1)) {
+    return false;
+  }
 
   if (stack_end) {
     // Both fp[0] and fp[1] must be within the stack.
-    if (fp > stack_end - 2 * sizeof(uintptr_t)) return false;
+    if (fp > stack_end - 2 * sizeof(uintptr_t)) {
+      return false;
+    }
 
     // Additional check to filter out false positives.
-    if (GetStackFramePC(fp) < 32768) return false;
+    if (GetStackFramePC(fp) < 32768) {
+      return false;
+    }
   }
 
   return true;
@@ -140,10 +160,23 @@ uintptr_t ScanStackForNextFrame(uintptr_t fp, uintptr_t stack_end) {
     return 0;
   }
 
+  if (g_stack_scan_max_fp_to_stack_end_gap_bytes.has_value()) {
+    // If `stack_end` is below `fp`, or is too far above `fp`, do not scan since
+    // `stack_end` is likely not a good indication of stack end and it is too
+    // dangerous to scan without knowing the stack end.
+    // See https://crbug.com/402542102 for the context.
+    if (stack_end < fp ||
+        (stack_end - fp) > *g_stack_scan_max_fp_to_stack_end_gap_bytes) {
+      return 0;
+    }
+  }
+
   fp += sizeof(uintptr_t);  // current frame is known to be invalid
-  uintptr_t last_fp_to_scan = std::min(fp + kMaxStackScanArea, stack_end) -
-                                  sizeof(uintptr_t);
-  for (;fp <= last_fp_to_scan; fp += sizeof(uintptr_t)) {
+  uintptr_t last_fp_to_scan =
+      (base::ClampedNumeric<uintptr_t>(fp) + kMaxStackScanArea).Min(stack_end) -
+      sizeof(uintptr_t);
+
+  for (; fp <= last_fp_to_scan; fp += sizeof(uintptr_t)) {
     uintptr_t next_fp = GetNextStackFrame(fp);
     if (IsStackFrameValid(next_fp, fp, stack_end)) {
       // Check two frames deep. Since stack frame is just a pointer to
@@ -197,7 +230,7 @@ uintptr_t GetStackEnd() {
   // values from its pthread_t argument.
   static uintptr_t main_stack_end = 0;
 
-  bool is_main_thread = GetCurrentProcId() == PlatformThread::CurrentId();
+  bool is_main_thread = GetCurrentProcId() == PlatformThread::CurrentId().raw();
   if (is_main_thread && main_stack_end) {
     return main_stack_end;
   }
@@ -225,7 +258,8 @@ uintptr_t GetStackEnd() {
 #else
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
-  if (GetCurrentProcId() == PlatformThread::CurrentId()) {
+  static_assert(std::is_same_v<ProcessId, PlatformThreadId::UnderlyingType>);
+  if (GetCurrentProcId() == PlatformThread::CurrentId().raw()) {
     // For the main thread we have a shortcut.
     return reinterpret_cast<uintptr_t>(__libc_stack_end);
   }
@@ -254,7 +288,7 @@ StackTrace::StackTrace(span<const void* const> trace)
 
 // static
 bool StackTrace::WillSymbolizeToStreamForTesting() {
-#if BUILDFLAG(SYMBOL_LEVEL) == 0
+#if BUILDFLAG(HAS_SYMBOLS) == 0
   // Symbols are not expected to be reliable when gn args specifies
   // symbol_level=0.
   return false;
@@ -283,6 +317,18 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
 #else
   return true;
 #endif
+}
+
+// static
+void StackTrace::InitializeFeatures() {
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+  if (FeatureList::IsEnabled(
+          features::kStackScanMaxFramePointerToStackEndGap)) {
+    g_stack_scan_max_fp_to_stack_end_gap_bytes =
+        MiB(features::kStackScanMaxFramePointerToStackEndGapThresholdMB.Get())
+            .InBytesUnsigned();
+  }
+#endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 }
 
 void StackTrace::Print() const {
@@ -378,6 +424,17 @@ bool IsWithinRange(uintptr_t address, const AddressRange& range) {
 NOINLINE size_t TraceStackFramePointers(span<const void*> out_trace,
                                         size_t skip_initial,
                                         bool enable_scanning) {
+  // Since the stack frame contains the return address (meaning the
+  // address of the next instruction in relation to the caller), it
+  // is necessary to decrement the size of the call instruction, in
+  // order to obtain the address to the call instruction.
+#if defined(ARCH_CPU_ARM64)
+  static constexpr uintptr_t kCallInstructionSize = 4;
+#else
+  // For all other ARCH, the call stack may be sightly off by 1 instruction
+  static constexpr uintptr_t kCallInstructionSize = 0;
+#endif
+
   uintptr_t fp = reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
                  kStackFrameAdjustment;
   uintptr_t stack_end = GetStackEnd();
@@ -387,7 +444,8 @@ NOINLINE size_t TraceStackFramePointers(span<const void*> out_trace,
     if (skip_initial != 0) {
       skip_initial--;
     } else {
-      out_trace[depth++] = reinterpret_cast<const void*>(pc);
+      out_trace[depth++] =
+          reinterpret_cast<const void*>(pc - kCallInstructionSize);
     }
 
     uintptr_t next_fp = GetNextStackFrame(fp);
@@ -424,5 +482,4 @@ ScopedStackFrameLinker::~ScopedStackFrameLinker() {
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

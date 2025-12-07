@@ -17,11 +17,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/features.h"
 #include "services/device/geolocation/fake_location_provider.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
@@ -37,68 +39,6 @@ namespace {
 
 using ::base::test::TestFuture;
 using ::device::LocationSystemPermissionStatus;
-using ::testing::MakeMatcher;
-using ::testing::Matcher;
-using ::testing::MatcherInterface;
-using ::testing::MatchResultListener;
-
-std::string kSystemPermissoinDeniedErrorMessage =
-    GeolocationProviderImpl::kSystemPermissionDeniedErrorMessage;
-
-class GeolocationObserver {
- public:
-  virtual ~GeolocationObserver() = default;
-  virtual void OnLocationUpdate(const mojom::GeopositionResult& result) = 0;
-};
-
-class MockGeolocationObserver : public GeolocationObserver {
- public:
-  MOCK_METHOD1(OnLocationUpdate, void(const mojom::GeopositionResult& result));
-};
-
-class AsyncMockGeolocationObserver : public MockGeolocationObserver {
- public:
-  void OnLocationUpdate(const mojom::GeopositionResult& result) override {
-    MockGeolocationObserver::OnLocationUpdate(result);
-  }
-};
-
-class MockGeolocationCallbackWrapper {
- public:
-  MOCK_METHOD1(Callback, void(const mojom::GeopositionResult& result));
-};
-
-class GeopositionResultEqMatcher
-    : public MatcherInterface<const mojom::GeopositionResult&> {
- public:
-  explicit GeopositionResultEqMatcher(mojom::GeopositionResultPtr expected)
-      : expected_(std::move(expected)) {}
-
-  GeopositionResultEqMatcher(const GeopositionResultEqMatcher&) = delete;
-  GeopositionResultEqMatcher& operator=(const GeopositionResultEqMatcher&) =
-      delete;
-
-  bool MatchAndExplain(const mojom::GeopositionResult& actual,
-                       MatchResultListener* listener) const override {
-    return expected_->Equals(actual);
-  }
-
-  void DescribeTo(::std::ostream* os) const override {
-    *os << "which matches the expected position";
-  }
-
-  void DescribeNegationTo(::std::ostream* os) const override {
-    *os << "which does not match the expected position";
-  }
-
- private:
-  mojom::GeopositionResultPtr expected_;
-};
-
-Matcher<const mojom::GeopositionResult&> GeopositionResultEq(
-    const mojom::GeopositionResult& expected) {
-  return MakeMatcher(new GeopositionResultEqMatcher(expected.Clone()));
-}
 
 }  // namespace
 
@@ -162,10 +102,15 @@ class GeolocationProviderTest : public testing::Test {
   }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+ protected:
   // Called on test thread.
   void SetFakeLocationProviderManager();
   bool ProvidersStarted();
   void SendMockLocation(const mojom::GeopositionResult& result);
+
+  bool GetIsRunningPrecise() {
+    return provider()->is_running_precise_for_testing();
+  }
 
   device::mojom::GeopositionResultPtr position_result1_ =
       mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
@@ -176,12 +121,12 @@ class GeolocationProviderTest : public testing::Test {
   device::mojom::GeopositionResultPtr error_result_ =
       mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
           mojom::GeopositionErrorCode::kPermissionDenied,
-          kSystemPermissoinDeniedErrorMessage,
-          ""));
+          GeolocationProviderImpl::kSystemPermissionDeniedErrorMessage,
+          GeolocationProviderImpl::kSystemPermissionDeniedErrorTechnical));
 
  private:
   // Called on provider thread.
-  void GetProvidersStarted();
+  bool GetProvidersStarted();
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   std::unique_ptr<FakeGeolocationSystemPermissionManager>
@@ -205,6 +150,40 @@ class GeolocationProviderTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class GeolocationProviderApproxGeoTest : public GeolocationProviderTest {
+ protected:
+  GeolocationProviderApproxGeoTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{content_settings::features::
+                                  kApproximateGeolocationPermission},
+        /*disabled_features=*/{});
+
+    // Create a precise position result.
+    precise_position_result_ =
+        mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+    precise_position_result_->get_position()->latitude = 1.0;
+    precise_position_result_->get_position()->longitude = 2.0;
+    precise_position_result_->get_position()->accuracy = 10.0;
+    precise_position_result_->get_position()->is_precise = true;
+    precise_position_result_->get_position()->timestamp = base::Time::Now();
+
+    // Create an approximate position result.
+    approximate_position_result_ =
+        mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+    approximate_position_result_->get_position()->latitude = 3.0;
+    approximate_position_result_->get_position()->longitude = 4.0;
+    approximate_position_result_->get_position()->accuracy = 100.0;
+    approximate_position_result_->get_position()->is_precise = false;
+    approximate_position_result_->get_position()->timestamp = base::Time::Now();
+  }
+
+  device::mojom::GeopositionResultPtr precise_position_result_;
+  device::mojom::GeopositionResultPtr approximate_position_result_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 void GeolocationProviderTest::SetFakeLocationProviderManager() {
   ASSERT_FALSE(location_provider_manager_);
   auto location_provider_manager = std::make_unique<FakeLocationProvider>();
@@ -217,20 +196,20 @@ bool GeolocationProviderTest::ProvidersStarted() {
   DCHECK(provider()->IsRunning());
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  base::RunLoop run_loop;
-  provider()->task_runner()->PostTaskAndReply(
+  TestFuture<bool> future;
+  provider()->task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GeolocationProviderTest::GetProvidersStarted,
                      base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-  return is_started_;
+      future.GetCallback());
+  return future.Get();
 }
 
-void GeolocationProviderTest::GetProvidersStarted() {
+bool GeolocationProviderTest::GetProvidersStarted() {
   DCHECK(provider()->task_runner()->BelongsToCurrentThread());
   is_started_ = location_provider_manager()->state() !=
                 mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  return is_started_;
 }
 
 void GeolocationProviderTest::SendMockLocation(
@@ -272,41 +251,41 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
   {
-    base::RunLoop run_loop;
+    TestFuture<mojom::GeopositionResultPtr> future1;
 
-    AsyncMockGeolocationObserver first_observer;
-    GeolocationProviderImpl::LocationUpdateCallback first_callback =
-        base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                            base::Unretained(&first_observer));
-    EXPECT_CALL(first_observer,
-                OnLocationUpdate(GeopositionResultEq(*position_result1_)))
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+        mock_callback1;
+    EXPECT_CALL(mock_callback1, Run)
+        .WillOnce([&](const mojom::GeopositionResult& result) {
+          future1.SetValue(result.Clone());
+        });
+
     base::CallbackListSubscription subscription =
-        provider()->AddLocationUpdateCallback(first_callback, false);
+        provider()->AddLocationUpdateCallback(mock_callback1.Get(), false);
     SendMockLocation(*position_result1_);
-    run_loop.Run();
+    EXPECT_EQ(future1.Get()->get_position(), position_result1_->get_position());
     subscription = {};
   }
 
   {
-    base::RunLoop run_loop;
-    AsyncMockGeolocationObserver second_observer;
-    // After adding a second observer, check that no unexpected position update
-    // is sent.
-    EXPECT_CALL(second_observer, OnLocationUpdate(testing::_)).Times(0);
-    GeolocationProviderImpl::LocationUpdateCallback second_callback =
-        base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                            base::Unretained(&second_observer));
-    base::CallbackListSubscription subscription2 =
-        provider()->AddLocationUpdateCallback(second_callback, false);
-    run_loop.RunUntilIdle();
+    base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+        mock_callback2;
 
-    // The second observer should receive the new position now.
-    EXPECT_CALL(second_observer,
-                OnLocationUpdate(GeopositionResultEq(*position_result2_)))
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    // After adding a second callback, check that no unexpected position update
+    // is sent.
+    EXPECT_CALL(mock_callback2, Run).Times(0);
+    base::CallbackListSubscription subscription2 =
+        provider()->AddLocationUpdateCallback(mock_callback2.Get(), false);
+    base::RunLoop().RunUntilIdle();
+
+    // The second callback should receive the new position now.
+    TestFuture<mojom::GeopositionResultPtr> future2;
+    EXPECT_CALL(mock_callback2, Run)
+        .WillOnce([&](const mojom::GeopositionResult& result) {
+          future2.SetValue(result.Clone());
+        });
     SendMockLocation(*position_result2_);
-    run_loop.Run();
+    EXPECT_EQ(future2.Get()->get_position(), position_result2_->get_position());
     subscription2 = {};
   }
 
@@ -318,16 +297,13 @@ TEST_F(GeolocationProviderTest, OverrideLocationForTesting) {
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
   provider()->OverrideLocationForTesting(error_result_->Clone());
-  // Adding an observer when the location is overridden should synchronously
-  // update the observer with our overridden position.
-  MockGeolocationObserver mock_observer;
-  EXPECT_CALL(mock_observer,
-              OnLocationUpdate(GeopositionResultEq(*error_result_)));
-  GeolocationProviderImpl::LocationUpdateCallback callback =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&mock_observer));
+  // Adding a callback when the location is overridden should synchronously
+  // invoke the callback with our overridden position.
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run);
   base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(callback, false);
+      provider()->AddLocationUpdateCallback(mock_callback.Get(), false);
   subscription = {};
   // Wait for the providers to be stopped now that all clients are gone.
   EXPECT_FALSE(ProvidersStarted());
@@ -485,36 +461,127 @@ TEST_F(GeolocationProviderTest, MultipleDiagnosticsObservers) {
   }
 }
 
-TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
-  // Disable the diagnostics observer feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
-  base::RunLoop loop;
+TEST_F(GeolocationProviderApproxGeoTest, PreciseOnlyMode) {
   SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
-  // Add a subscription so the provider will be started.
-  base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(base::DoNothing(),
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
                                             /*enable_high_accuracy=*/true);
-  EXPECT_TRUE(ProvidersStarted());
 
-  // Add an observer. The initial diagnostics are null.
-  MockGeolocationInternalsObserver observer;
-  mojo::PendingRemote<mojom::GeolocationInternalsObserver> remote;
-  observer.Bind(remote.InitWithNewPipeAndPassReceiver());
-  TestFuture<mojom::GeolocationDiagnosticsPtr> future;
-  provider()->AddInternalsObserver(std::move(remote), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(GetIsRunningPrecise());
 
-  // Call OnInternalsUpdated. The observer is not notified.
-  EXPECT_CALL(observer, OnDiagnosticsChanged).Times(0);
-  provider()->SimulateInternalsUpdatedForTesting();
-  loop.RunUntilIdle();
+  SendMockLocation(*precise_position_result_);
+  EXPECT_TRUE(high_accuracy_future.Get()->is_position());
+  EXPECT_EQ(high_accuracy_future.Get()->get_position(),
+            precise_position_result_->get_position());
+}
 
-  observer.Disconnect();
+TEST_F(GeolocationProviderApproxGeoTest, ApproximateOnlyMode) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  EXPECT_FALSE(GetIsRunningPrecise());
+
+  SendMockLocation(*approximate_position_result_);
+  EXPECT_TRUE(low_accuracy_future.Get()->is_position());
+  EXPECT_EQ(low_accuracy_future.Get()->get_position(),
+            approximate_position_result_->get_position());
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, ErrorBroadcast) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  // When there are both high and low accuracy callbacks, it should use
+  // approximate accuracy.
+  EXPECT_FALSE(GetIsRunningPrecise());
+
+  SendMockLocation(*error_result_);
+  EXPECT_EQ(high_accuracy_future.Get()->get_error(),
+            error_result_->get_error());
+  EXPECT_EQ(low_accuracy_future.Get()->get_error(), error_result_->get_error());
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, ConcurrentMode) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  // Add a high accuracy client.
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+  EXPECT_TRUE(GetIsRunningPrecise());
+
+  // Add a low accuracy client.
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  // Ensure that we are running approximate accuracy in concurrent mode.
+  EXPECT_FALSE(GetIsRunningPrecise());
+
+  // Send an approximate location update. Both low-accuracy and high-accuracy
+  // clients should receive it.
+  SendMockLocation(*approximate_position_result_);
+  EXPECT_EQ(low_accuracy_future.Get()->get_position()->latitude,
+            approximate_position_result_->get_position()->latitude);
+  EXPECT_EQ(high_accuracy_future.Get()->get_position()->latitude,
+            approximate_position_result_->get_position()->latitude);
 }
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -522,15 +589,13 @@ TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
   SetFakeLocationProviderManager();
 
   // The default system permission state is kUndetermined. Adding a location
-  // observer should not start provider and observer's callback should not be
+  // callback should not start provider and the callback should not be
   // called.
-  MockGeolocationObserver mock_observer;
-  EXPECT_CALL(mock_observer, OnLocationUpdate).Times(0);
-  GeolocationProviderImpl::LocationUpdateCallback callback =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&mock_observer));
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run).Times(0);
   base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(callback,
+      provider()->AddLocationUpdateCallback(mock_callback.Get(),
                                             /*enable_high_accuracy=*/true);
 
   // Verify that the provider hasn't started yet due to permission is not
@@ -542,7 +607,7 @@ TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
   EXPECT_TRUE(ProvidersStarted());
 
   TestFuture<mojom::GeopositionResultPtr> future;
-  EXPECT_CALL(mock_observer, OnLocationUpdate)
+  EXPECT_CALL(mock_callback, Run)
       .WillOnce([&](const mojom::GeopositionResult& result) {
         future.SetValue(result.Clone());
       });
@@ -563,27 +628,58 @@ TEST_F(GeolocationProviderTest, AddCallbackWhenSystemPermissionDenied) {
   // Set system permission state from kUndetermined to kDenied.
   SetSystemPermission(LocationSystemPermissionStatus::kDenied);
 
-  MockGeolocationObserver mock_observer;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback;
   TestFuture<mojom::GeopositionResultPtr> future;
 
-  // Expect that the observer should be notified with permission denied error
+  // Expect that the callback should be invoked with permission denied error
   // when subscription is created.
-  EXPECT_CALL(mock_observer, OnLocationUpdate)
+  EXPECT_CALL(mock_callback, Run)
       .WillOnce([&](const mojom::GeopositionResult& result) {
         future.SetValue(result.Clone());
       });
 
-  GeolocationProviderImpl::LocationUpdateCallback callback =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&mock_observer));
   base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(callback,
+      provider()->AddLocationUpdateCallback(mock_callback.Get(),
                                             /*enable_high_accuracy=*/true);
 
   // Verify that callback should be invoked with permission denied error and
   // provider is not started.
   EXPECT_EQ(future.Take()->get_error(), error_result_->get_error());
   EXPECT_FALSE(ProvidersStarted());
+}
+
+TEST_F(GeolocationProviderTest, AddCallbackOnPermissionGrantAfterDenied) {
+  SetFakeLocationProviderManager();
+
+  // Initially set system permission to denied, then grant it.
+  SetSystemPermission(LocationSystemPermissionStatus::kDenied);
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback;
+
+  // Expect that the observer should NOT be notified with permission denied
+  // error because the cached |result_| should has been cleared when system
+  // permission state changed from kDenied to kAllowed.
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  base::CallbackListSubscription subscription =
+      provider()->AddLocationUpdateCallback(mock_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // Expect that the observer is notified now when location update is simulated.
+  // TestFuture<mojom::GeopositionResultPtr> future;
+  TestFuture<mojom::GeopositionResultPtr> future;
+  EXPECT_CALL(mock_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        future.SetValue(result.Clone());
+      });
+
+  //  Now simulate a location update and expect that position result to be
+  //  equal.
+  SendMockLocation(*position_result1_);
+  EXPECT_EQ(future.Get()->get_position(), position_result1_->get_position());
 }
 
 TEST_F(GeolocationProviderTest,
@@ -593,12 +689,10 @@ TEST_F(GeolocationProviderTest,
   // Set system permission state from kUndetermined to kAllowed.
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
-  MockGeolocationObserver mock_observer;
-  GeolocationProviderImpl::LocationUpdateCallback callback =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&mock_observer));
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback;
   base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(callback,
+      provider()->AddLocationUpdateCallback(mock_callback.Get(),
                                             /*enable_high_accuracy=*/true);
 
   // Verify that provider is started when subscription is created when system
@@ -606,7 +700,7 @@ TEST_F(GeolocationProviderTest,
   EXPECT_TRUE(ProvidersStarted());
 
   TestFuture<mojom::GeopositionResultPtr> position_future;
-  EXPECT_CALL(mock_observer, OnLocationUpdate)
+  EXPECT_CALL(mock_callback, Run)
       .WillOnce([&](const mojom::GeopositionResult& result) {
         position_future.SetValue(result.Clone());
       });
@@ -620,7 +714,7 @@ TEST_F(GeolocationProviderTest,
 
   // Set system permission state from kAllowed to kDenied. Expect that callback
   // is invoked with permission denied error.
-  EXPECT_CALL(mock_observer, OnLocationUpdate)
+  EXPECT_CALL(mock_callback, Run)
       .WillOnce([&](const mojom::GeopositionResult& result) {
         error_future.SetValue(result.Clone());
       });
@@ -641,19 +735,17 @@ TEST_F(GeolocationProviderTest,
 
   TestFuture<mojom::GeopositionResultPtr> error_future;
 
-  // Create 1st observer and expected the callback1 is invoked with permission
+  // Create 1st callback and expected to be invoked with permission
   // denied error when system permission is denied.
-  MockGeolocationObserver mock_observer1;
-  GeolocationProviderImpl::LocationUpdateCallback callback1 =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&mock_observer1));
-  EXPECT_CALL(mock_observer1, OnLocationUpdate)
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback1;
+  EXPECT_CALL(mock_callback1, Run)
       .WillOnce([&](const mojom::GeopositionResult& result) {
         error_future.SetValue(result.Clone());
       });
 
   base::CallbackListSubscription subscription1 =
-      provider()->AddLocationUpdateCallback(callback1,
+      provider()->AddLocationUpdateCallback(mock_callback1.Get(),
                                             /*enable_high_accuracy=*/true);
   EXPECT_EQ(error_future.Get()->get_error(), error_result_->get_error());
   subscription1 = {};
@@ -662,14 +754,12 @@ TEST_F(GeolocationProviderTest,
   // Set system permission state from kDenied to kAllowed.
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
-  // Created 2nd observer and subscription after system permission is set to
+  // Created 2nd callback and subscription after system permission is set to
   // kAllowed.
-  MockGeolocationObserver mock_observer2;
-  GeolocationProviderImpl::LocationUpdateCallback callback2 =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&mock_observer2));
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback2;
   base::CallbackListSubscription subscription2 =
-      provider()->AddLocationUpdateCallback(callback2,
+      provider()->AddLocationUpdateCallback(mock_callback2.Get(),
                                             /*enable_high_accuracy=*/true);
 
   // Verify that provider is started when subscription2 is created when system
@@ -677,7 +767,7 @@ TEST_F(GeolocationProviderTest,
   EXPECT_TRUE(ProvidersStarted());
 
   TestFuture<mojom::GeopositionResultPtr> position_future;
-  EXPECT_CALL(mock_observer2, OnLocationUpdate)
+  EXPECT_CALL(mock_callback2, Run)
       .WillOnce([&](const mojom::GeopositionResult& result) {
         position_future.SetValue(result.Clone());
       });

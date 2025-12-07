@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 

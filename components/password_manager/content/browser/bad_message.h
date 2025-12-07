@@ -22,30 +22,32 @@ namespace password_manager {
 // end. Items may be renamed but do not change the values. We rely on the enum
 // values in histograms.
 enum class BadMessageReason {
-  CPMD_BAD_ORIGIN_FORMS_PARSED_OBSOLETE = 1,    // obsolete
-  CPMD_BAD_ORIGIN_FORMS_RENDERED_OBSOLETE = 2,  // obsolete
+  // Deprecated: CPMD_BAD_ORIGIN_FORMS_PARSED = 1,
+  // Deprecated: CPMD_BAD_ORIGIN_FORMS_RENDERED = 2,
   CPMD_BAD_ORIGIN_FORM_SUBMITTED = 3,
-  CPMD_BAD_ORIGIN_FOCUSED_PASSWORD_FORM_FOUND_OBSOLETE = 4,  // obsolete
-  CPMD_BAD_ORIGIN_IN_PAGE_NAVIGATION_OBSOLETE = 5,           // obsolete
+  // Deprecated: CPMD_BAD_ORIGIN_FOCUSED_PASSWORD_FORM_FOUND = 4,
+  // Deprecated: CPMD_BAD_ORIGIN_IN_PAGE_NAVIGATION = 5,
   CPMD_BAD_ORIGIN_PASSWORD_NO_LONGER_GENERATED = 6,
   CPMD_BAD_ORIGIN_PRESAVE_GENERATED_PASSWORD = 7,
-  CPMD_BAD_ORIGIN_SAVE_GENERATION_FIELD_DETECTED_BY_CLASSIFIER_OBSOLETE =
-      8,                                                // obsolete
-  CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE_OBSOLETE = 9,  // obsolete
+  // Deprecated: CPMD_BAD_ORIGIN_SAVE_GENERATION_FIELD_DETECTED_BY_CLASSIFIER =
+  // 8,
+  // Deprecated: CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE = 9,
   CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED = 10,
   CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP = 11,
-  CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP_OBSOLETE = 12,    // obsolete
-  CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM_OBSOLETE = 13,  // obsolete
+  // Deprecated: CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP = 12,
+  // Deprecated: CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM = 13,
   CPMD_BAD_ORIGIN_PRERENDERING = 14,
+  CPMD_BAD_ORIGIN_NO_GENERATED_PASSWORD_TO_EDIT = 15,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ContentPasswordManagerDriver becomes CPMD) plus a unique
   // description of the reason. After making changes, you MUST update
   // histograms.xml by running:
-  // "python tools/metrics/histograms/update_bad_message_reasons.py"
+  // "python3 tools/metrics/histograms/update_bad_message_reasons.py"
   BAD_MESSAGE_MAX
 };
 
+// TODO(crbug.com/398857496): Add unit tests for the functions.
 namespace bad_message {
 
 // Returns true if a password form operation is allowed to be performed on the
@@ -76,6 +78,11 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
 // Returns true if frame is not prerendering (when password manager updates
 // are disallowed). Kills the renderer if we are prerendering.
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame);
+
+// Returns true if the generated_password isn't empty. Otherwise, kills the
+// renderer.
+bool CheckGeneratedPassword(content::RenderFrameHost* frame,
+                            const std::u16string& generated_password);
 
 }  // namespace bad_message
 }  // namespace password_manager

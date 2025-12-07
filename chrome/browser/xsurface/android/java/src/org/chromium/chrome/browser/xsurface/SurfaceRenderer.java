@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import java.util.Map;
  *
  * Interface to call a rendering service to render a View sent by a server.
  */
+@NullMarked
 public interface SurfaceRenderer {
     /** Update the card renderer with shared data bytes. */
     default void update(byte[] data) {}

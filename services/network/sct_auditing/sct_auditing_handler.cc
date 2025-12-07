@@ -4,6 +4,8 @@
 
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -13,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -114,7 +115,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
   // a valid signature, and thus are expected to be public certificates. If
   // there are no valid SCTs, there's no need to report anything.
   net::SignedCertificateTimestampAndStatusList validated_scts;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       signed_certificate_timestamps, std::back_inserter(validated_scts),
       [](const auto& sct) { return sct.status == net::ct::SCT_STATUS_OK; });
   if (validated_scts.empty()) {
@@ -140,8 +141,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     // Do not report if this is a known popular SCT.
     if (owner_network_context_->network_service()
             ->sct_auditing_cache()
-            ->IsPopularSCT(
-                base::as_bytes(base::make_span(sct_metadata->leaf_hash)))) {
+            ->IsPopularSCT(base::as_byte_span(sct_metadata->leaf_hash))) {
       RecordPopularSCTSkippedMetrics(true);
       return;
     }
@@ -150,7 +150,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     // Find the corresponding log entry metadata.
     const std::vector<mojom::CTLogInfoPtr>& logs =
         owner_network_context_->network_service()->log_list();
-    auto log = base::ranges::find(logs, sct->log_id, &mojom::CTLogInfo::id);
+    auto log = std::ranges::find(logs, sct->log_id, &mojom::CTLogInfo::id);
     // It's possible that log entry metadata may not exist for a few reasons:
     //
     // 1) The PKI Metadata component has not yet been loaded and no log list
@@ -214,18 +214,15 @@ std::optional<std::string> SCTAuditingHandler::SerializeData() {
     reports.Append(std::move(report_entry));
   }
 
-  std::string output;
-  if (!base::JSONWriter::Write(reports, &output)) {
-    return std::nullopt;
-  }
-  return output;
+  return base::WriteJson(reports);
 }
 
 void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   // Parse the serialized reports.
-  std::optional<base::Value> value = base::JSONReader::Read(serialized);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_list()) {
     base::UmaHistogramCounts100(
         "Security.SCTAuditing.NumPersistedReportsLoaded", 0);

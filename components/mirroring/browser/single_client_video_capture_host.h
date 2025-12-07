@@ -21,8 +21,8 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-using media::VideoCaptureParams;
 using media::VideoCaptureDevice;
+using media::VideoCaptureParams;
 
 namespace mirroring {
 
@@ -86,8 +86,7 @@ class SingleClientVideoCaptureHost final
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(media::CaptureVersion capture_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;

@@ -7,6 +7,7 @@ import {AutomationUtil} from './automation_util.js';
 import {constants} from './constants.js';
 import {ParagraphUtils} from './paragraph_utils.js';
 import {RectUtil} from './rect_util.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
 const PositionType = chrome.automation.PositionType;
@@ -185,8 +186,8 @@ export class NodeUtils {
       node: AutomationNode,
       rect: {left: number, top: number, width: number, height: number},
       nodes: AutomationNode[]): boolean {
-    var found = false;
-    for (var c = node.firstChild; c; c = c.nextSibling) {
+    let found = false;
+    for (let c = node.firstChild; c; c = c.nextSibling) {
       if (NodeUtils.findAllMatching(c, rect, nodes)) {
         found = true;
       }
@@ -325,7 +326,7 @@ export class NodeUtils {
       nodesToCheck = parent.children.slice().reverse();
     }
     let index = 0;
-    var node = parent;
+    let node = parent;
     // Delve down into the children recursively to find the
     // one at this offset.
     while (nodesToCheck.length > 0) {
@@ -588,3 +589,5 @@ export namespace NodeUtils {
     offset: number;
   }
 }
+
+TestImportManager.exportForTesting(NodeUtils);

@@ -64,9 +64,7 @@ std::string ContentCaptureReceiver::ToJSON(
     }
     favicon_array.Append(std::move(favicon));
   }
-  std::string result;
-  base::JSONWriter::Write(favicon_array, &result);
-  return result;
+  return base::WriteJson(favicon_array).value_or("");
 }
 
 ContentCaptureReceiver::ContentCaptureReceiver(content::RenderFrameHost* rfh)
@@ -75,7 +73,7 @@ ContentCaptureReceiver::ContentCaptureReceiver(content::RenderFrameHost* rfh)
 ContentCaptureReceiver::~ContentCaptureReceiver() = default;
 
 int64_t ContentCaptureReceiver::GetIdFrom(content::RenderFrameHost* rfh) {
-  return static_cast<int64_t>(rfh->GetProcess()->GetID()) << 32 |
+  return static_cast<int64_t>(rfh->GetProcess()->GetDeprecatedID()) << 32 |
          (rfh->GetRoutingID() & 0xFFFFFFFF);
 }
 
@@ -83,6 +81,16 @@ void ContentCaptureReceiver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::ContentCaptureReceiver>
         pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
+}
+
+void ContentCaptureReceiver::DidCompleteBatchCaptureContent() {
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider) {
+    return;
+  }
+
+  ContentCaptureFrame frame(frame_content_capture_data_);
+  provider->FlushCaptureContent(this, frame);
 }
 
 void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,

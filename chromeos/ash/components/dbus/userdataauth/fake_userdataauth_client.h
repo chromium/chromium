@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -47,6 +48,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kStartMigrateToDircrypto,
     kRemove,
     kGetRecoverableKeyStores,
+    kLockFactorUntilReboot,
+    kGenerateFreshRecoveryId,
   };
 
   // The method by which a user's home directory can be encrypted.
@@ -89,6 +92,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void set_enable_auth_check(bool enable_auth_check) {
       FakeUserDataAuthClient::Get()->enable_auth_check_ = enable_auth_check;
     }
+
+    void SetPinType(const cryptohome::AccountIdentifier& account_id,
+                    const std::string& label,
+                    bool legacy_pin);
 
     // Sets whether ARC disk quota is supported or not.
     void set_arc_quota_supported(bool supported) {
@@ -221,6 +228,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       PrepareAuthFactorProgressObserver* observer) override;
   void RemovePrepareAuthFactorProgressObserver(
       PrepareAuthFactorProgressObserver* observer) override;
+  void AddAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override;
+  void RemoveAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override;
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void IsMounted(const ::user_data_auth::IsMountedRequest& request,
@@ -290,6 +301,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void GetAuthFactorExtendedInfo(
       const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
       GetAuthFactorExtendedInfoCallback callback) override;
+  void GenerateFreshRecoveryId(
+      const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+      GenerateFreshRecoveryIdCallback callback) override;
   void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
       GetAuthSessionStatusCallback callback) override;
@@ -308,6 +322,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void SetUserDataStorageWriteEnabled(
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) override;
+  void LockFactorUntilReboot(
+      const ::user_data_auth::LockFactorUntilRebootRequest& request,
+      FakeUserDataAuthClient::LockFactorUntilRebootCallback callback) override;
 
   int get_prepare_guest_request_count() const {
     return prepare_guest_request_count_;
@@ -344,6 +361,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FUDAC_OPERATION_TYPES(kRemove, RemoveRequest);
   FUDAC_OPERATION_TYPES(kGetRecoverableKeyStores,
                         GetRecoverableKeyStoresRequest);
+  FUDAC_OPERATION_TYPES(kLockFactorUntilReboot, LockFactorUntilRebootRequest);
+  FUDAC_OPERATION_TYPES(kGenerateFreshRecoveryId,
+                        GenerateFreshRecoveryIdRequest);
 
 #undef FUDAC_OPERATION_TYPES
 
@@ -383,6 +403,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Reads synchronously from disk, so must only be called in a scope that
   // allows blocking IO.
   void SetUserDataDir(base::FilePath path);
+
+  // Adds a default Gaia password factor if none other auth factors exist
+  // when AuthSession starts.
+  void set_add_default_password_factor(bool add_default_password_factor) {
+    add_default_password_factor_ = add_default_password_factor;
+  }
 
  private:
   enum class AuthResult {
@@ -485,6 +511,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // List of PrepareAuthFactorProgress event observers.
   base::ObserverList<PrepareAuthFactorProgressObserver> progress_observers_;
 
+  // List of observers for dbus signal AuthFactorStatusUpdate.
+  base::ObserverList<AuthFactorStatusUpdateObserver>
+      auth_factor_status_observer_list_;
+
   // Do we run the dircrypto migration, as in, emit signals, when
   // StartMigrateToDircrypto() is called?
   bool run_default_dircrypto_migration_ = true;
@@ -506,6 +536,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // service is not available (instead of adding the callback to pending
   // callback list).
   bool service_reported_not_available_ = false;
+
+  // If set, adds a default Gaia password factor when AuthSession starts.
+  bool add_default_password_factor_ = false;
 };
 
 }  // namespace ash

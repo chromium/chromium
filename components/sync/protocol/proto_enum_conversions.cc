@@ -19,6 +19,15 @@ namespace syncer {
   case enum_parent::enum_value:            \
     return #enum_value
 
+const char* ProtoEnumToString(sync_pb::AiThreadSpecifics::ThreadType type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::AiThreadSpecifics, ThreadType, UNKNOWN, AI_MODE);
+  switch (type) {
+    ENUM_CASE(sync_pb::AiThreadSpecifics, UNKNOWN);
+    ENUM_CASE(sync_pb::AiThreadSpecifics, AI_MODE);
+  }
+  NOTREACHED();
+}
+
 const char* ProtoEnumToString(
     sync_pb::AppListSpecifics::AppListItemType item_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AppListSpecifics, AppListItemType, TYPE_APP,
@@ -30,8 +39,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::AppListSpecifics, TYPE_OBSOLETE_URL);
     ENUM_CASE(sync_pb::AppListSpecifics, TYPE_PAGE_BREAK);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::AppSpecifics::LaunchType launch_type) {
@@ -42,8 +50,7 @@ const char* ProtoEnumToString(sync_pb::AppSpecifics::LaunchType launch_type) {
     ENUM_CASE(sync_pb::AppSpecifics, FULLSCREEN);
     ENUM_CASE(sync_pb::AppSpecifics, WINDOW);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -59,14 +66,13 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::AutofillProfileSpecifics, USER_VERIFIED);
     ENUM_CASE(sync_pb::AutofillProfileSpecifics, SERVER_PARSED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
     sync_pb::AutofillWalletSpecifics::WalletInfoType wallet_info_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AutofillWalletSpecifics, WalletInfoType, UNKNOWN,
-                     MASKED_IBAN);
+                     PAYMENT_INSTRUMENT_CREATION_OPTION);
   switch (wallet_info_type) {
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, UNKNOWN);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, MASKED_CREDIT_CARD);
@@ -75,9 +81,10 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, CREDIT_CARD_CLOUD_TOKEN_DATA);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, PAYMENT_INSTRUMENT);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, MASKED_IBAN);
+    ENUM_CASE(sync_pb::AutofillWalletSpecifics,
+              PAYMENT_INSTRUMENT_CREATION_OPTION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -92,8 +99,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::BankAccountDetails, SALARY);
     ENUM_CASE(sync_pb::BankAccountDetails, TRANSACTING_ACCOUNT);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type) {
@@ -103,8 +109,7 @@ const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type) {
     ENUM_CASE(sync_pb::BookmarkSpecifics, URL);
     ENUM_CASE(sync_pb::BookmarkSpecifics, FOLDER);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -119,8 +124,18 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CommitResponse, OVER_QUOTA);
     ENUM_CASE(sync_pb::CommitResponse, TRANSIENT_ERROR);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::AddressType address_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, AddressType, REGULAR, WORK);
+  switch (address_type) {
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, REGULAR);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, HOME);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, WORK);
+  }
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -135,8 +150,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::ContactInfoSpecifics, USER_VERIFIED);
     ENUM_CASE(sync_pb::ContactInfoSpecifics, SERVER_PARSED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -151,8 +165,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::TrustedVaultAutoUpgradeExperimentGroup, CONTROL);
     ENUM_CASE(sync_pb::TrustedVaultAutoUpgradeExperimentGroup, VALIDATION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
@@ -166,22 +179,32 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
     ENUM_CASE(sync_pb::NigoriSpecifics, CUSTOM_PASSPHRASE);
     ENUM_CASE(sync_pb::NigoriSpecifics, TRUSTED_VAULT_PASSPHRASE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
     sync_pb::PaymentInstrument::SupportedRail supported_rail) {
   ASSERT_ENUM_BOUNDS(sync_pb::PaymentInstrument, SupportedRail,
-                     SUPPORTED_RAIL_UNKNOWN, PAYMENT_HYPERLINK);
+                     SUPPORTED_RAIL_UNKNOWN, CARD_NUMBER);
   switch (supported_rail) {
     ENUM_CASE(sync_pb::PaymentInstrument, SUPPORTED_RAIL_UNKNOWN);
     ENUM_CASE(sync_pb::PaymentInstrument, PIX);
     ENUM_CASE(sync_pb::PaymentInstrument, IBAN);
     ENUM_CASE(sync_pb::PaymentInstrument, PAYMENT_HYPERLINK);
+    ENUM_CASE(sync_pb::PaymentInstrument, CARD_NUMBER);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::PaymentInstrument::ActionRequired action_required) {
+  ASSERT_ENUM_BOUNDS(sync_pb::PaymentInstrument, ActionRequired,
+                     ACTION_REQUIRED_UNKNOWN, ACCEPT_TOS);
+  switch (action_required) {
+    ENUM_CASE(sync_pb::PaymentInstrument, ACTION_REQUIRED_UNKNOWN);
+    ENUM_CASE(sync_pb::PaymentInstrument, ACCEPT_TOS);
+  }
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -193,8 +216,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::PowerBookmarkSpecifics, POWER_TYPE_MOCK);
     ENUM_CASE(sync_pb::PowerBookmarkSpecifics, POWER_TYPE_NOTE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::NoteEntity::TargetType target_type) {
@@ -204,8 +226,7 @@ const char* ProtoEnumToString(sync_pb::NoteEntity::TargetType target_type) {
     ENUM_CASE(sync_pb::NoteEntity, TARGET_TYPE_UNSPECIFIED);
     ENUM_CASE(sync_pb::NoteEntity, TARGET_TYPE_PAGE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -217,8 +238,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::ReadingListSpecifics, READ);
     ENUM_CASE(sync_pb::ReadingListSpecifics, UNSEEN);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -238,8 +258,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_CYAN);
     ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_ORANGE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -251,16 +270,14 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_TRUE);
     ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_FALSE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SessionTab, FaviconType, TYPE_WEB_FAVICON,
                      TYPE_WEB_FAVICON);
   switch (favicon_type) { ENUM_CASE(sync_pb::SessionTab, TYPE_WEB_FAVICON); }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SharedTabGroup::Color color) {
@@ -277,22 +294,20 @@ const char* ProtoEnumToString(sync_pb::SharedTabGroup::Color color) {
     ENUM_CASE(sync_pb::SharedTabGroup, CYAN);
     ENUM_CASE(sync_pb::SharedTabGroup, ORANGE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, BROWSER_TYPE_UNKNOWN,
-                     TYPE_AUTH_VIEW);
+                     TYPE_AUTH_TAB);
   switch (browser_type) {
     ENUM_CASE(sync_pb::SyncEnums, BROWSER_TYPE_UNKNOWN);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_TABBED);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_POPUP);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_CUSTOM_TAB);
-    ENUM_CASE(sync_pb::SyncEnums, TYPE_AUTH_VIEW);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_AUTH_TAB);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::Action action) {
@@ -302,8 +317,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::Action action) {
     ENUM_CASE(sync_pb::SyncEnums, UPGRADE_CLIENT);
     ENUM_CASE(sync_pb::SyncEnums, UNKNOWN_ACTION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::DeviceType device_type) {
@@ -318,8 +332,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::DeviceType device_type) {
     ENUM_CASE(sync_pb::SyncEnums, TYPE_PHONE);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_TABLET);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::OsType os_type) {
@@ -336,22 +349,23 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::OsType os_type) {
     ENUM_CASE(sync_pb::SyncEnums, OS_TYPE_CHROME_OS_LACROS);
     ENUM_CASE(sync_pb::SyncEnums, OS_TYPE_FUCHSIA);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
     sync_pb::SyncEnums::DeviceFormFactor device_form_factor) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, DeviceFormFactor,
-                     DEVICE_FORM_FACTOR_UNSPECIFIED, DEVICE_FORM_FACTOR_TABLET);
+                     DEVICE_FORM_FACTOR_UNSPECIFIED, DEVICE_FORM_FACTOR_TV);
   switch (device_form_factor) {
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_UNSPECIFIED);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_DESKTOP);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_PHONE);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_TABLET);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_AUTOMOTIVE);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_WEARABLE);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_TV);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::ErrorType error_type) {
@@ -368,8 +382,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::ErrorType error_type) {
     ENUM_CASE(sync_pb::SyncEnums, ENCRYPTION_OBSOLETE);
     ENUM_CASE(sync_pb::SyncEnums, UNKNOWN);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::GetUpdatesOrigin origin) {
@@ -383,11 +396,9 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::GetUpdatesOrigin origin) {
     ENUM_CASE(sync_pb::SyncEnums, NEW_CLIENT);
     ENUM_CASE(sync_pb::SyncEnums, RECONFIGURATION);
     ENUM_CASE(sync_pb::SyncEnums, GU_TRIGGER);
-    ENUM_CASE(sync_pb::SyncEnums, RETRY);
     ENUM_CASE(sync_pb::SyncEnums, PROGRAMMATIC);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -407,8 +418,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums, KEYWORD);
     ENUM_CASE(sync_pb::SyncEnums, KEYWORD_GENERATED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -419,8 +429,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums, CLIENT_REDIRECT);
     ENUM_CASE(sync_pb::SyncEnums, SERVER_REDIRECT);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -434,8 +443,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums,
               SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -458,8 +466,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums, TRUSTED_VAULT_KEY_REQUIRED);
     ENUM_CASE(sync_pb::SyncEnums, TRUSTED_VAULT_KEY_ACCEPTED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state) {
@@ -469,8 +476,7 @@ const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state) {
     ENUM_CASE(sync_pb::TabNavigation, STATE_ALLOWED);
     ENUM_CASE(sync_pb::TabNavigation, STATE_BLOCKED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::PasswordState state) {
@@ -481,8 +487,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::PasswordState state) {
     ENUM_CASE(sync_pb::SyncEnums, NO_PASSWORD_FIELD);
     ENUM_CASE(sync_pb::SyncEnums, HAS_PASSWORD_FIELD);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::UserConsentTypes::ConsentStatus status) {
@@ -493,8 +498,7 @@ const char* ProtoEnumToString(sync_pb::UserConsentTypes::ConsentStatus status) {
     ENUM_CASE(sync_pb::UserConsentTypes, NOT_GIVEN);
     ENUM_CASE(sync_pb::UserConsentTypes, GIVEN);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -521,8 +525,7 @@ const char* ProtoEnumToString(
         sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus,
         ENHANCED_PROTECTION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -543,8 +546,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction,
               WARNING_ACTION_TAKEN_ON_SETTINGS);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -564,8 +566,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordReuseLookup,
               TURNED_OFF_BY_POLICY);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -580,8 +581,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordReuseLookup, LOW_REPUTATION);
     ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordReuseLookup, PHISHING);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -595,8 +595,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::UserEventSpecifics::GaiaPasswordCaptured,
               EXPIRED_28D_TIMER);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -609,8 +608,51 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::UserEventSpecifics::FlocIdComputed, REFRESHED);
     ENUM_CASE(sync_pb::UserEventSpecifics::FlocIdComputed, HISTORY_DELETE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState
+        card_info_retrieval_enrollment_state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard,
+                     CardInfoRetrievalEnrollmentState, RETRIEVAL_UNSPECIFIED,
+                     RETRIEVAL_UNENROLLED_AND_ELIGIBLE);
+  switch (card_info_retrieval_enrollment_state) {
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, RETRIEVAL_UNSPECIFIED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, RETRIEVAL_ENROLLED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard,
+              RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard,
+              RETRIEVAL_UNENROLLED_AND_ELIGIBLE);
+  }
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardBenefitSource card_benefit_source) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, CardBenefitSource, SOURCE_UNKNOWN,
+                     SOURCE_CURINOS);
+  switch (card_benefit_source) {
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, SOURCE_UNKNOWN);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, SOURCE_AMEX);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, SOURCE_BMO);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, SOURCE_CURINOS);
+  }
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardCreationSource card_creation_source) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, CardCreationSource,
+                     CREATION_SOURCE_UNSPECIFIED,
+                     CREATION_SOURCE_NON_CHROME_PAYMENTS);
+  switch (card_creation_source) {
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, CREATION_SOURCE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, CREATION_SOURCE_CHROME_PAYMENTS);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard,
+              CREATION_SOURCE_NON_CHROME_PAYMENTS);
+  }
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -626,8 +668,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED_AND_NOT_ELIGIBLE);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED_AND_ELIGIBLE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -640,8 +681,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, ISSUER);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, NETWORK);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -652,8 +692,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, VALID);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, EXPIRED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -674,14 +713,13 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, ELO);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, VERVE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
     sync_pb::CardBenefit::CategoryBenefitType category_benefit_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::CardBenefit, CategoryBenefitType,
-                     CATEGORY_BENEFIT_TYPE_UNKNOWN, GROCERY_STORES);
+                     CATEGORY_BENEFIT_TYPE_UNKNOWN, WHOLESALE_CLUBS);
   switch (category_benefit_type) {
     ENUM_CASE(sync_pb::CardBenefit, CATEGORY_BENEFIT_TYPE_UNKNOWN);
     ENUM_CASE(sync_pb::CardBenefit, SUBSCRIPTION);
@@ -690,9 +728,16 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CardBenefit, ENTERTAINMENT);
     ENUM_CASE(sync_pb::CardBenefit, STREAMING);
     ENUM_CASE(sync_pb::CardBenefit, GROCERY_STORES);
+    ENUM_CASE(sync_pb::CardBenefit, AIR_MILES_PARTNER);
+    ENUM_CASE(sync_pb::CardBenefit, ALCOHOL_STORES);
+    ENUM_CASE(sync_pb::CardBenefit, DRUGSTORES);
+    ENUM_CASE(sync_pb::CardBenefit, OFFICE_SUPPLIES);
+    ENUM_CASE(sync_pb::CardBenefit, RECURRING_BILLS);
+    ENUM_CASE(sync_pb::CardBenefit, TRANSIT);
+    ENUM_CASE(sync_pb::CardBenefit, TRAVEL);
+    ENUM_CASE(sync_pb::CardBenefit, WHOLESALE_CLUBS);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer) {
@@ -703,8 +748,7 @@ const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer) {
     ENUM_CASE(sync_pb::CardIssuer, GOOGLE);
     ENUM_CASE(sync_pb::CardIssuer, EXTERNAL_ISSUER);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -716,8 +760,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMetadataSpecifics, ADDRESS);
     ENUM_CASE(sync_pb::WalletMetadataSpecifics, IBAN);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::WebApkIconInfo::Purpose purpose) {
@@ -728,7 +771,7 @@ const char* ProtoEnumToString(sync_pb::WebApkIconInfo::Purpose purpose) {
     ENUM_CASE(sync_pb::WebApkIconInfo, MASKABLE);
     ENUM_CASE(sync_pb::WebApkIconInfo, MONOCHROME);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose) {
@@ -739,8 +782,7 @@ const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose) {
     ENUM_CASE(sync_pb::WebAppIconInfo, MASKABLE);
     ENUM_CASE(sync_pb::WebAppIconInfo, MONOCHROME);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -753,8 +795,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WebAppSpecifics, STANDALONE);
     ENUM_CASE(sync_pb::WebAppSpecifics, TABBED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -767,8 +808,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics, SECURITY_TYPE_WEP);
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics, SECURITY_TYPE_PSK);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -785,8 +825,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics,
               AUTOMATICALLY_CONNECT_ENABLED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -799,8 +838,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics, IS_PREFERRED_DISABLED);
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics, IS_PREFERRED_ENABLED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -813,8 +851,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics, METERED_OPTION_YES);
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics, METERED_OPTION_AUTO);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -835,8 +872,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WifiConfigurationSpecifics::ProxyConfiguration,
               PROXY_OPTION_MANUAL);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -853,8 +889,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SECONDARY_SNAPPED);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, FLOATED);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -869,8 +904,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_TAB);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_NONE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -891,8 +925,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SWITCH_TO_TAB);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_PICTURE_IN_PICTURE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -909,8 +942,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::UserConsentTypes::AssistantActivityControlConsent,
               DEVICE_APPS);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
@@ -922,8 +954,7 @@ const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SAVE_AND_RECALL);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, FLOATING_WORKSPACE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -943,8 +974,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, CYAN);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, ORANGE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::DataTypeState::InitialSyncState state) {
@@ -956,8 +986,7 @@ const char* ProtoEnumToString(sync_pb::DataTypeState::InitialSyncState state) {
     ENUM_CASE(sync_pb::DataTypeState, INITIAL_SYNC_DONE);
     ENUM_CASE(sync_pb::DataTypeState, INITIAL_SYNC_UNNECESSARY);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -970,8 +999,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CookieSpecifics, LAX_MODE);
     ENUM_CASE(sync_pb::CookieSpecifics, STRICT_MODE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -984,8 +1012,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CookieSpecifics, MEDIUM);
     ENUM_CASE(sync_pb::CookieSpecifics, HIGH);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -997,8 +1024,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CookieSpecifics, NON_SECURE);
     ENUM_CASE(sync_pb::CookieSpecifics, SECURE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -1011,8 +1037,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CookieSpecifics, SCRIPT);
     ENUM_CASE(sync_pb::CookieSpecifics, OTHER);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(
@@ -1029,8 +1054,45 @@ const char* ProtoEnumToString(
                   ChimeChannelConfiguration,
               APPLE_PUSH);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::UserColorTheme::BrowserColorVariant browser_color_variant) {
+  ASSERT_ENUM_BOUNDS(sync_pb::UserColorTheme, BrowserColorVariant,
+                     BROWSER_COLOR_VARIANT_UNSPECIFIED, EXPRESSIVE);
+  switch (browser_color_variant) {
+    ENUM_CASE(sync_pb::UserColorTheme, BROWSER_COLOR_VARIANT_UNSPECIFIED);
+    ENUM_CASE(sync_pb::UserColorTheme, SYSTEM);
+    ENUM_CASE(sync_pb::UserColorTheme, TONAL_SPOT);
+    ENUM_CASE(sync_pb::UserColorTheme, NEUTRAL);
+    ENUM_CASE(sync_pb::UserColorTheme, VIBRANT);
+    ENUM_CASE(sync_pb::UserColorTheme, EXPRESSIVE);
+  }
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ThemeSpecifics, BrowserColorScheme,
+                     BROWSER_COLOR_SCHEME_UNSPECIFIED, DARK);
+  switch (browser_color_scheme) {
+    ENUM_CASE(sync_pb::ThemeSpecifics, BROWSER_COLOR_SCHEME_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ThemeSpecifics, SYSTEM);
+    ENUM_CASE(sync_pb::ThemeSpecifics, LIGHT);
+    ENUM_CASE(sync_pb::ThemeSpecifics, DARK);
+  }
+}
+
+const char* ProtoEnumToString(sync_pb::SharedUrlContext::Source source) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SharedUrlContext, Source, SOURCE_UNSPECIFIED,
+                     CANONICAL_URL);
+  switch (source) {
+    ENUM_CASE(sync_pb::SharedUrlContext, SOURCE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SharedUrlContext, OMNIBOX);
+    ENUM_CASE(sync_pb::SharedUrlContext, FROM_SYNC);
+    ENUM_CASE(sync_pb::SharedUrlContext, CANONICAL_URL);
+  }
 }
 
 #undef ASSERT_ENUM_BOUNDS

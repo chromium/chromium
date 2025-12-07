@@ -40,6 +40,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onchange;
   attribute EventHandler onclick;
   attribute EventHandler onclose;
+  attribute EventHandler oncommand;
   attribute EventHandler oncontentvisibilityautostatechange;
   attribute EventHandler oncontextlost;
   attribute EventHandler oncontextmenu;
@@ -87,7 +88,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onreset;
   attribute EventHandler onresize;
   attribute EventHandler onscroll;
-  [RuntimeEnabled=ScrollEndEvents] attribute EventHandler onscrollend;
+  attribute EventHandler onscrollend;
   attribute EventHandler onsecuritypolicyviolation;
   attribute EventHandler onseeked;
   attribute EventHandler onseeking;
@@ -119,7 +120,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onlostpointercapture;
   attribute EventHandler onpointerdown;
   attribute EventHandler onpointermove;
-  attribute EventHandler onpointerrawupdate;
+  [SecureContext] attribute EventHandler onpointerrawupdate;
   attribute EventHandler onpointerup;
   attribute EventHandler onpointercancel;
   attribute EventHandler onpointerover;

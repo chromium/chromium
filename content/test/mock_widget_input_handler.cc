@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -102,6 +102,8 @@ void MockWidgetInputHandler::RequestCompositionUpdates(bool immediate_request,
 
 void MockWidgetInputHandler::DispatchEvent(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
+    std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+        original_event_for_gesture,
     DispatchEventCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedEventMessage>(
       std::move(event), std::move(callback)));
@@ -115,7 +117,7 @@ void MockWidgetInputHandler::DispatchNonBlockingEvent(
 
 void MockWidgetInputHandler::WaitForInputProcessed(
     WaitForInputProcessedCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 MockWidgetInputHandler::MessageVector
@@ -142,7 +144,13 @@ void MockWidgetInputHandler::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {}
+    const std::optional<cc::BrowserControlsOffsetTagModifications>&
+        offset_tag_modifications) {}
+
+void MockWidgetInputHandler::FlushReceiverForTesting() {
+  DCHECK(receiver_.is_bound());
+  receiver_.FlushForTesting();
+}
 
 MockWidgetInputHandler::DispatchedMessage::DispatchedMessage(
     const std::string& name)

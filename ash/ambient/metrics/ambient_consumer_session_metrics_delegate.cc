@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -28,7 +29,7 @@ void AmbientConsumerSessionMetricsDelegate::RecordActivation() {
   ambient::RecordAmbientModeActivation(
       /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi
                                             : AmbientUiMode::kInSessionUi,
-      /*tablet_mode=*/Shell::Get()->IsInTabletMode());
+      /*tablet_mode=*/display::Screen::Get()->InTabletMode());
 }
 
 void AmbientConsumerSessionMetricsDelegate::RecordInitStatus(bool success) {
@@ -45,7 +46,7 @@ void AmbientConsumerSessionMetricsDelegate::RecordStartupTime(
 void AmbientConsumerSessionMetricsDelegate::RecordEngagementTime(
     base::TimeDelta engagement_time) {
   ambient::RecordAmbientModeTimeElapsed(
-      engagement_time, Shell::Get()->IsInTabletMode(), ui_settings_);
+      engagement_time, display::Screen::Get()->InTabletMode(), ui_settings_);
 }
 
 void AmbientConsumerSessionMetricsDelegate::RecordScreenCount(int num_screens) {

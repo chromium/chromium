@@ -6,10 +6,13 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_REQUEST_UTILS_H_
 
 #include "base/functional/callback.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/task/task_runner.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
+
+namespace base {
+class CancelableTaskTracker;
+}
 
 namespace password_manager {
 
@@ -23,7 +26,8 @@ enum class LeakDetectionInitiator {
   kClientUseCaseUnspecified = 4,
   kDesktopProactivePasswordCheckup = 5,
   kIosProactivePasswordCheckup = 6,
-  kMaxValue = kIosProactivePasswordCheckup,
+  kIOSWebViewSignInCheck = 7,
+  kMaxValue = kIOSWebViewSignInCheck,
 };
 
 // Contains the payload for analysing one credential against the leaks.

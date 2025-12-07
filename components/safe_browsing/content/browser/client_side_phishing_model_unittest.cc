@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -25,9 +27,10 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/model_util.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/model_util.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/client_side_phishing_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
@@ -39,12 +42,19 @@
 
 namespace safe_browsing {
 
+namespace {
+
+using ::optimization_guide::AnyWrapProto;
+
+}
+
 class ClientSidePhishingModelObserverTracker
     : public optimization_guide::TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
@@ -63,19 +73,6 @@ class ClientSidePhishingModelObserverTracker
     }
   }
 
-  optimization_guide::proto::Any WrapMetadata(
-      std::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
-          metadata) {
-    std::string serialized_metadata;
-    metadata->SerializeToString(&serialized_metadata);
-    optimization_guide::proto::Any any;
-    any.set_value(serialized_metadata);
-    any.set_type_url(
-        "type.googleapis.com/"
-        "optimization_guide.proto.ClientSidePhishingModelMetadata");
-    return any;
-  }
-
   // Notifies the model validation observer about the model file update.
   void NotifyModelFileUpdate(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -90,7 +87,7 @@ class ClientSidePhishingModelObserverTracker
           optimization_guide::TestModelInfoBuilder()
               .SetModelFilePath(model_file_path)
               .SetAdditionalFiles(additional_files_path)
-              .SetModelMetadata(WrapMetadata(trigger_model_metadata))
+              .SetModelMetadata(AnyWrapProto(trigger_model_metadata))
               .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     } else if (optimization_target ==
@@ -102,7 +99,8 @@ class ClientSidePhishingModelObserverTracker
       auto model_metadata =
           optimization_guide::TestModelInfoBuilder()
               .SetModelFilePath(model_file_path)
-              .SetModelMetadata(WrapMetadata(image_embedding_model_metadata))
+              .SetAdditionalFiles(additional_files_path)
+              .SetModelMetadata(AnyWrapProto(image_embedding_model_metadata))
               .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     }
@@ -128,11 +126,8 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
 
     model_observer_tracker_ =
         std::make_unique<ClientSidePhishingModelObserverTracker>();
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     client_side_phishing_model_ = std::make_unique<ClientSidePhishingModel>(
-        model_observer_tracker_.get(), background_task_runner);
+        model_observer_tracker_.get());
   }
 
   void TearDown() override {
@@ -157,13 +152,36 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
   }
 
   void ValidateImageEmbeddingModel(
-      const base::FilePath& image_embedding_model_file_path) {
+      const base::FilePath& image_embedding_model_file_path,
+      const base::flat_set<base::FilePath>& additional_file_path = {}) {
     model_observer_tracker_->NotifyModelFileUpdate(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
-        image_embedding_model_file_path, {});
+        image_embedding_model_file_path, additional_file_path);
     task_environment()->RunUntilIdle();
   }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  void ValidateTargetEmbeddings(
+      const std::vector<TargetEmbedding>& target_embeddings) {
+    ASSERT_EQ(target_embeddings.size(), static_cast<size_t>(3));
+    // Verify thresholds match.
+    EXPECT_FLOAT_EQ(target_embeddings[0].threshold, .9);
+    EXPECT_FLOAT_EQ(target_embeddings[1].threshold, .9);
+    EXPECT_FLOAT_EQ(target_embeddings[2].threshold, .9);
+    // Verify embeddings match.
+    int EXPECTED_SIZE = 64;
+    EXPECT_THAT(target_embeddings[0].embedding.value_float(),
+                testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
+                               testing::Each(testing::FloatEq(.1))));
+    EXPECT_THAT(target_embeddings[1].embedding.value_float(),
+                testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
+                               testing::Each(testing::FloatEq(.2))));
+    EXPECT_THAT(target_embeddings[2].embedding.value_float(),
+                testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
+                               testing::Each(testing::FloatEq(.3))));
+  }
+#endif
 
   ClientSidePhishingModel* service() {
     return client_side_phishing_model_.get();
@@ -265,6 +283,28 @@ TEST_F(ClientSidePhishingModelTest, ValidModel) {
   EXPECT_TRUE(image_embedding_file_2.IsValid());
   EXPECT_TRUE(service()->IsModelMetadataImageEmbeddingVersionMatching());
 
+  base::FilePath image_additional_files_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                         &image_additional_files_path);
+  image_additional_files_path =
+      image_additional_files_path.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("safe_browsing")
+          .AppendASCII("image_embeddings.pb.gz");
+  ValidateImageEmbeddingModel(image_embedding_model_file_path,
+                              {image_additional_files_path});
+  // Loading the model again, should increment the counter.
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 3);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Verify the loaded image embeddings.
+  ValidateTargetEmbeddings(service()->GetTargetImageEmbeddings());
+  histogram_tester().ExpectBucketCount(
+      "SBClientPhishing.ImageEmbeddingList.Version", 25112401, 1);
+  histogram_tester().ExpectBucketCount(
+      "SBClientPhishing.ImageEmbeddingList.Size", 3, 1);
+#endif
   // Now we're going to get rid of the image embedding model in file by sending
   // an empty model info.
   SendEmptyModelInfoUpdate(
@@ -275,6 +315,17 @@ TEST_F(ClientSidePhishingModelTest, ValidModel) {
   EXPECT_TRUE(service()->IsEnabled());
   EXPECT_FALSE(service()->HasImageEmbeddingModel());
   EXPECT_FALSE(service()->IsModelMetadataImageEmbeddingVersionMatching());
+}
+
+TEST_F(ClientSidePhishingModelTest, CorrectHashGeneratedFromEmbeddingValues) {
+  std::vector<float> embedding_values = {
+      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
+  EXPECT_EQ(ClientSidePhishingModel::GetHashFromEmbedding(embedding_values),
+            "d3885ce7b154516376162c72e6f0a970da75929ffa38aacf3abcb749710809e4");
 }
 
 TEST_F(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
@@ -457,8 +508,8 @@ TEST_F(ClientSidePhishingModelTest, NotifiesForFile) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   const std::string model_str = CreateFlatBufferString();
   service()->SetModelStringForTesting(model_str, std::move(file));
@@ -507,8 +558,8 @@ TEST_F(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   const std::string model_str = CreateFlatBufferString();
   service()->SetModelStringForTesting(model_str, std::move(file));
@@ -572,7 +623,7 @@ TEST_F(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
                       base::File::FLAG_WRITE);
 
   const std::string file_contents = CreateFlatBufferString();
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   base::RunLoop run_loop;
   bool called = false;
@@ -621,8 +672,8 @@ TEST_F(ClientSidePhishingModelTest, AcceptsValidFlatbuffer) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
   service()->SetModelStringForTesting(model_str, std::move(file));
   run_loop.Run();
 
@@ -652,8 +703,8 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
   service()->SetModelStringForTesting(model_str1, std::move(file));
 
   run_loop.RunUntilIdle();
@@ -668,7 +719,7 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   // Should be able to write to memory with WritableSharedMemoryMapping field.
   void* memory_addr = service()->GetFlatBufferMemoryAddressForTesting();
 
-  EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr);
+  UNSAFE_TODO(EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr));
 
   bool called = false;
   base::CallbackListSubscription subscription =
@@ -687,8 +738,8 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   base::File file2(file_path2, base::File::FLAG_OPEN_ALWAYS |
                                    base::File::FLAG_READ |
                                    base::File::FLAG_WRITE);
-  const std::string file_contents2 = "visual model file";
-  file2.WriteAtCurrentPos(file_contents2.data(), file_contents2.size());
+  const std::string_view file_contents2 = "visual model file";
+  file2.WriteAtCurrentPos(base::as_byte_span(file_contents2));
   service()->SetModelStringForTesting(model_str2, std::move(file2));
 
   run_loop.RunUntilIdle();
@@ -705,7 +756,7 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   // Can remove this if flaky.
   // Windows ASAN flake: crbug.com/1234652
 #if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-  BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), "");
+  UNSAFE_TODO(BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), ""));
 #endif
 }
 

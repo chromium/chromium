@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_UTILS_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -171,12 +171,6 @@ class OfflinePageUtils {
 
   // Returns true if |web_contents| is showing a trusted offline page.
   static bool IsShowingTrustedOfflinePage(content::WebContents* web_contents);
-
-  // Tries to acquires the file access permission. |callback| will be called
-  // to inform if the file access permission is granted.
-  static void AcquireFileAccessPermission(
-      content::WebContents* web_contents,
-      base::OnceCallback<void(bool)> callback);
 };
 
 }  // namespace offline_pages

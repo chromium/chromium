@@ -12,6 +12,13 @@ if (!is_android && !is_ios) {
       "caption_bubble_context_remote.h",
       "caption_bubble_controller.h",
       "caption_bubble_session_observer.h",
+      "caption_bubble_settings.h",
+      "caption_controller_base.cc",
+      "caption_controller_base.h",
+      "live_caption_bubble_settings.cc",
+      "live_caption_bubble_settings.h",
+      "live_caption_controller.cc",
+      "live_caption_controller.h",
     ]
 
     deps = [
@@ -38,34 +45,30 @@ if (!is_android && !is_ios) {
         "views/caption_bubble_controller_views.h",
         "views/caption_bubble_model.cc",
         "views/caption_bubble_model.h",
+        "views/format_constants.h",
+        "views/translation_view_wrapper.cc",
+        "views/translation_view_wrapper.h",
+        "views/translation_view_wrapper_base.cc",
+        "views/translation_view_wrapper_base.h",
       ]
 
+      public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
       deps += [
+        "//components/language/core/common",
         "//components/strings",
+        "//components/translate/core/browser",
         "//components/vector_icons",
         "//third_party/re2",
         "//ui/accessibility",
         "//ui/base",
         "//ui/compositor",
         "//ui/gfx",
+        "//ui/menus",
         "//ui/strings:ui_strings_grit",
         "//ui/views",
       ]
     }  # toolkit_views
-
-    if (is_chromeos_ash) {
-      sources += [
-        "live_caption_ui_remote_driver.cc",
-        "live_caption_ui_remote_driver.h",
-      ]
-    }  # is_chromeos_ash
-
-    if (!is_chromeos_lacros) {
-      sources += [
-        "live_caption_controller.cc",
-        "live_caption_controller.h",
-      ]
-    }
   }
 
   static_library("live_translate") {
@@ -74,6 +77,8 @@ if (!is_android && !is_ios) {
       "greedy_text_stabilizer.h",
       "live_translate_controller.cc",
       "live_translate_controller.h",
+      "translation_dispatcher.cc",
+      "translation_dispatcher.h",
     ]
 
     deps = [
@@ -87,11 +92,12 @@ if (!is_android && !is_ios) {
       "//components/soda:constants",
       "//components/sync_preferences",
       "//content/public/browser",
-      "//google_apis:google_apis",
+      "//google_apis",
       "//media",
       "//media/mojo/mojom",
-      "//services/data_decoder/public/cpp:cpp",
-      "//services/data_decoder/public/mojom:mojom",
+      "//net",
+      "//services/data_decoder/public/cpp",
+      "//services/data_decoder/public/mojom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//ui/native_theme",
@@ -101,23 +107,51 @@ if (!is_android && !is_ios) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "greedy_text_stabilizer_unittest.cc" ]
-
-    if (is_chromeos_ash) {
-      sources += [ "caption_bubble_context_remote_unittest.cc" ]
-    }
+    sources = [
+      "caption_controller_base_unittest.cc",
+      "greedy_text_stabilizer_unittest.cc",
+      "live_caption_bubble_settings_unittest.cc",
+      "translation_util_unittest.cc",
+    ]
 
     deps = [
       ":live_caption",
       ":live_translate",
+      ":utils",
       "//base",
       "//base/test:test_support",
+      "//components/live_caption:constants",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
       "//media/mojo/mojom:speech_recognition",
-      "//mojo/public/cpp/bindings:bindings",
+      "//mojo/public/cpp/bindings",
       "//testing/gmock",
       "//testing/gtest",
-      "//ui/gfx/geometry:geometry",
+      "//ui/gfx/geometry",
     ]
+
+    if (is_chromeos) {
+      sources += [
+        "caption_bubble_context_remote_unittest.cc",
+
+        # This test verifies behavior of the controller
+        # in an ash environment and requires ash dependencies.
+        "live_caption_controller_unittest.cc",
+        "live_translate_controller_unittest.cc",
+      ]
+
+      deps += [
+        ":constants",
+        "//ash/constants",
+        "//components/pref_registry",
+        "//components/soda",
+        "//components/soda:constants",
+        "//components/soda:test_support",
+        "//ui/native_theme",
+        "//ui/views",
+      ]
+    }
   }
 }  # !is_android
 
@@ -152,7 +186,7 @@ source_set("utils") {
     "//components/prefs",
     "//media",
     "//third_party/icu",
-    "//third_party/re2:re2",
+    "//third_party/re2",
     "//ui/base",
     "//ui/native_theme",
   ]

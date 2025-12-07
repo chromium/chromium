@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_POLICIES_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_POLICIES_H_
 
-#include "chrome/browser/ui/tabs/organization/trigger.h"
-
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+#include "chrome/browser/ui/tabs/organization/trigger.h"
 
 namespace content {
 class BrowserContext;
@@ -120,6 +120,12 @@ class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
   base::TimeTicks cycle_start_time_;
   std::optional<float> best_score = std::nullopt;
   bool has_triggered_ = false;
+};
+
+// Never trigger. Useful for disabling the trigger under certain conditions.
+class NeverTriggerPolicy final : public TriggerPolicy {
+ public:
+  bool ShouldTrigger(float score) override;
 };
 
 // Trigger every time. Very spammy, but suitable for testing or demoing.

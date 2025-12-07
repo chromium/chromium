@@ -25,9 +25,9 @@ const char AppListTestBase::kPackagedApp1Id[] =
 const char AppListTestBase::kPackagedApp2Id[] =
     "jlklkagmeajbjiobondfhiekepofmljl";
 
-AppListTestBase::AppListTestBase() {}
+AppListTestBase::AppListTestBase() = default;
 
-AppListTestBase::~AppListTestBase() {}
+AppListTestBase::~AppListTestBase() = default;
 
 void AppListTestBase::SetUp() {
   SetUp(/*guest_mode=*/false);
@@ -46,7 +46,7 @@ void AppListTestBase::SetUp(bool guest_mode) {
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("app_list")));
   params.profile_is_guest = guest_mode;
   InitializeExtensionService(std::move(params));
-  service_->Init();
+  service()->Init();
 
   ConfigureWebAppProvider();
 
@@ -57,8 +57,14 @@ void AppListTestBase::SetUp(bool guest_mode) {
   ASSERT_EQ(4U, registry()->enabled_extensions().size());
 }
 
+Profile* AppListTestBase::GetAppServiceProfile() {
+  return profile()->IsGuestSession()
+             ? profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+             : profile();
+}
+
 void AppListTestBase::ConfigureWebAppProvider() {
-  Profile* testing_profile = profile();
+  Profile* testing_profile = GetAppServiceProfile();
 
   auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
   url_loader_ = url_loader.get();
@@ -86,7 +92,7 @@ scoped_refptr<extensions::Extension> MakeApp(
     const std::string& name,
     const std::string& id,
     extensions::Extension::InitFromValueFlags flags) {
-  std::string err;
+  std::u16string err;
   base::Value::Dict value;
   value.Set("name", name);
   value.Set("version", "0.0");
@@ -94,7 +100,7 @@ scoped_refptr<extensions::Extension> MakeApp(
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       flags, id, &err);
-  EXPECT_EQ(err, "");
+  EXPECT_EQ(err, u"");
   return app;
 }
 
@@ -117,7 +123,6 @@ syncer::SyncData CreateAppRemoteData(
     const std::string& item_ordinal,
     const std::string& item_pin_ordinal,
     sync_pb::AppListSpecifics_AppListItemType item_type,
-    std::optional<bool> is_user_pinned,
     const std::string& promise_package_id) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::AppListSpecifics* app_list = specifics.mutable_app_list();
@@ -132,9 +137,6 @@ syncer::SyncData CreateAppRemoteData(
     app_list->set_item_ordinal(item_ordinal);
   if (item_pin_ordinal != kUnset)
     app_list->set_item_pin_ordinal(item_pin_ordinal);
-  if (is_user_pinned.has_value()) {
-    app_list->set_is_user_pinned(*is_user_pinned);
-  }
   if (promise_package_id != kUnset) {
     app_list->set_promise_package_id(promise_package_id);
   }

@@ -13,11 +13,6 @@
 
 namespace base {
 
-// ToVector() doesn't implicitly deduce initializer lists.
-void InitializerList() {
-  std::ignore = ToVector({"aaa", "bbb", "ccc"}); // expected-error@*:* {{no matching function for call to 'ToVector'}}
-}
-
 // Lambdas operating on rvalue ranges of move-only elements expect lvalue
 // references to the element type.
 void MoveOnlyProjections() {

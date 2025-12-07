@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/spdy/spdy_http_utils.h"
 
@@ -18,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "net/base/features.h"
@@ -85,8 +82,8 @@ SpdyHeadersToHttpResponseHeadersUsingRawString(
 
   const auto status = it->second;
 
-  std::string raw_headers =
-      base::StrCat({"HTTP/1.1 ", status, std::string_view("\0", 1)});
+  std::string raw_headers = base::StrCat(
+      {"HTTP/1.1 ", status, base::MakeStringViewWithNulChars("\0")});
   raw_headers.reserve(kExpectedRawHeaderSize);
   for (const auto& [name, value] : headers) {
     DCHECK_GT(name.size(), 0u);
@@ -113,8 +110,8 @@ SpdyHeadersToHttpResponseHeadersUsingRawString(
       } else {
         tval = value.substr(start);
       }
-      base::StrAppend(&raw_headers,
-                      {name, ":", tval, std::string_view("\0", 1)});
+      base::StrAppend(&raw_headers, {name, ":", tval,
+                                     base::MakeStringViewWithNulChars("\0")});
       start = end + 1;
     } while (end != value.npos);
   }
@@ -208,7 +205,7 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
   } else {
     headers->insert(
         {spdy::kHttp2AuthorityHeader, GetHostAndOptionalPort(info.url)});
-    headers->insert({spdy::kHttp2SchemeHeader, info.url.scheme()});
+    headers->insert({spdy::kHttp2SchemeHeader, info.url.GetScheme()});
     headers->insert({spdy::kHttp2PathHeader, info.url.PathForRequest()});
   }
 
@@ -227,7 +224,6 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
   // quic helpers but the header values for HTTP extensible priorities are
   // independent of quic.
   if (priority &&
-      base::FeatureList::IsEnabled(net::features::kPriorityHeader) &&
       headers->find(kHttp2PriorityHeader) == headers->end()) {
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority.value());
     bool incremental = info.priority_incremental;
@@ -250,7 +246,7 @@ void CreateSpdyHeadersFromHttpRequestForExtendedConnect(
 
   // Extended CONNECT, unlike CONNECT, requires scheme and path, and uses the
   // default port in the authority header.
-  headers->insert({spdy::kHttp2SchemeHeader, info.url.scheme()});
+  headers->insert({spdy::kHttp2SchemeHeader, info.url.GetScheme()});
   headers->insert({spdy::kHttp2PathHeader, info.url.PathForRequest()});
   headers->insert({spdy::kHttp2ProtocolHeader, ext_connect_protocol});
 
@@ -303,22 +299,6 @@ ConvertSpdyPriorityToRequestPriority(spdy::SpdyPriority priority) {
              ? IDLE
              : static_cast<RequestPriority>(
                    MAXIMUM_PRIORITY - (priority - spdy::kV3HighestPriority));
-}
-
-NET_EXPORT_PRIVATE void ConvertHeaderBlockToHttpRequestHeaders(
-    const quiche::HttpHeaderBlock& spdy_headers,
-    HttpRequestHeaders* http_headers) {
-  for (const auto& it : spdy_headers) {
-    std::string_view key = it.first;
-    if (key[0] == ':') {
-      key.remove_prefix(1);
-    }
-    std::vector<std::string_view> values = base::SplitStringPiece(
-        it.second, "\0", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    for (const auto& value : values) {
-      http_headers->SetHeader(key, value);
-    }
-  }
 }
 
 }  // namespace net

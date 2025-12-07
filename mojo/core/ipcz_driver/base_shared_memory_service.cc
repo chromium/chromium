@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_hooks.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -26,9 +27,8 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
-#define SHARED_MEMORY_SERVICE_REQUIRED()                                \
-  BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE) && \
-      !BUILDFLAG(IS_ANDROID)
+#define SHARED_MEMORY_SERVICE_REQUIRED() \
+  BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 
 namespace mojo::core::ipcz_driver {
 
@@ -184,8 +184,7 @@ base::WritableSharedMemoryRegion BaseSharedMemoryService::CreateWritableRegion(
 #else
   // The shared memory service is not needed on other platforms, so this method
   // should never be called.
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 #endif
 }
 

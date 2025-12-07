@@ -6,6 +6,7 @@
 #define CC_ANIMATION_ANIMATION_EVENTS_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -71,12 +72,12 @@ class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {
     needs_time_updated_events_ = value;
   }
 
-  // TODO(gerchiko): Make events_ a private member variable with methods to add
-  // and retrieve the events.
-  std::vector<AnimationEvent> events_;
+  const std::vector<AnimationEvent>& events() const { return events_; }
+  std::vector<AnimationEvent>& events() { return events_; }
 
  private:
-  bool needs_time_updated_events_;
+  std::vector<AnimationEvent> events_;
+  bool needs_time_updated_events_ = false;
 };
 
 }  // namespace cc

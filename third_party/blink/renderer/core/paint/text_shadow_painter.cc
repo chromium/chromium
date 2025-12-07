@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/paint/text_shadow_painter.h"
 
+#include <algorithm>
+
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
 
@@ -56,9 +58,8 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style) {
   }
   // Reverse to get the proper paint order (last shadow painted first).
   base::span<sk_sp<PaintFilter>> used_filters(shadow_filters.first(count));
-  base::ranges::reverse(used_filters);
-  return sk_make_sp<MergePaintFilter>(
-      used_filters.data(), base::saturated_cast<int>(used_filters.size()));
+  std::ranges::reverse(used_filters);
+  return sk_make_sp<MergePaintFilter>(used_filters);
 }
 
 }  // namespace

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test FetchEvent.request passed to onfetch
+  assert_true: Default User-Agent header should not be passed to onfetch event. expected true got false
+Harness: the test ran to completion.
+

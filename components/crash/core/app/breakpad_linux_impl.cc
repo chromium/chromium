@@ -6,6 +6,6 @@
 
 namespace breakpad {
 
-BreakpadInfo::BreakpadInfo() {}
+BreakpadInfo::BreakpadInfo() = default;
 
 }  // namespace breakpad

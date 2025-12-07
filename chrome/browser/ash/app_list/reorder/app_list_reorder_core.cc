@@ -30,8 +30,7 @@ struct SubsequenceStatus {
 bool IsIncreasingOrder(ash::AppListSortOrder order) {
   switch (order) {
     case ash::AppListSortOrder::kCustom:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case ash::AppListSortOrder::kNameAlphabetical:
       return true;
     case ash::AppListSortOrder::kNameReverseAlphabetical:
@@ -172,7 +171,7 @@ std::vector<int> SortAndGetLis(
   // Note that before reversal the elements in `lis` are in reverse order.
   // Although reversal isn't necessary, `lis` is reversed to make coding
   // easier.
-  std::reverse(lis.begin(), lis.end());
+  std::ranges::reverse(lis);
 
   return lis;
 }
@@ -506,8 +505,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
-      NOTREACHED_IN_MIGRATION();
-      return std::vector<reorder::ReorderParam>();
+      NOTREACHED();
   }
 }
 
@@ -536,8 +534,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
-      NOTREACHED_IN_MIGRATION();
-      return std::vector<reorder::ReorderParam>();
+      NOTREACHED();
   }
 }
 
@@ -615,8 +612,7 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kColor:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED_IN_MIGRATION();
-      return 0.f;
+      NOTREACHED();
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical:
       std::vector<reorder::SyncItemWrapper<std::u16string>>

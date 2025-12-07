@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.magic_boost_handler.mojom;
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// that enables communication between a renderer and the browser process.
+interface PageHandlerFactory {
+  // Creates a PageHandler and connects it up to the Page.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer uses this to invoke methods that
+// are implemented in the browser process.
+interface PageHandler {
+  // Show the notice terms and conditions from Magic Boost.
+  ShowNotice();
+};

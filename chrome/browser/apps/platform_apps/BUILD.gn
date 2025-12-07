@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -15,6 +14,8 @@ source_set("platform_apps") {
     "app_load_service_factory.h",
     "app_termination_observer.cc",
     "app_termination_observer.h",
+    "app_termination_observer_factory.cc",
+    "app_termination_observer_factory.h",
     "app_window_registry_util.cc",
     "app_window_registry_util.h",
     "audio_focus_web_contents_observer.cc",
@@ -48,18 +49,22 @@ source_set("platform_apps") {
     "//apps",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/platform_apps/api:api_registration",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/common/apps/platform_apps/api",
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/extensions",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
     "//chrome/common",
@@ -76,17 +81,21 @@ source_set("platform_apps") {
     "//extensions/common",
     "//extensions/common/api",
     "//net",
-    "//services/preferences/public/cpp:cpp",
+    "//services/preferences/public/cpp",
     "//ui/gfx",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/extensions" ]
 
   if (is_mac) {
-    deps += [ "//chrome/browser/apps/app_shim" ]
+    deps += [
+      "//chrome/browser/apps/app_shim",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+    ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",

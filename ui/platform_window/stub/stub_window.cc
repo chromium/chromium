@@ -5,7 +5,7 @@
 #include "ui/platform_window/stub/stub_window.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/platform_window/platform_window_delegate.h"

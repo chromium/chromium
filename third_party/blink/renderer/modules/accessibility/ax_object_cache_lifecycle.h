@@ -8,10 +8,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -88,7 +85,7 @@ class AXObjectCacheLifecycle {
   void AdvanceTo(LifecycleState);
   void EnsureStateAtMost(LifecycleState);
 
-  WTF::String ToString() const;
+  String ToString() const;
 
 #if DCHECK_IS_ON()
   bool CanAdvanceTo(LifecycleState) const;

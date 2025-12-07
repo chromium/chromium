@@ -6,7 +6,6 @@
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_MENU_RUNNER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_util.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
 
 namespace aura {

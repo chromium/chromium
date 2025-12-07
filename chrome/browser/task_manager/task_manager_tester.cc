@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/task_manager/task_manager_tester.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
+#include <string_view>
 
+#include "base/byte_count.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,10 +98,6 @@ std::u16string TaskManagerTester::GetRowTitle(size_t row) {
   return model_->GetText(row, IDS_TASK_MANAGER_TASK_COLUMN);
 }
 
-std::optional<size_t> TaskManagerTester::GetRowForActiveTask() {
-  return model_->GetRowForActiveTask();
-}
-
 void TaskManagerTester::ToggleColumnVisibility(ColumnSpecifier column) {
   int column_id = 0;
   switch (column) {
@@ -132,47 +129,33 @@ void TaskManagerTester::ToggleColumnVisibility(ColumnSpecifier column) {
 
 int64_t TaskManagerTester::GetColumnValue(ColumnSpecifier column, size_t row) {
   TaskId task_id = model_->tasks_[row];
-  int64_t value = 0;
-  int64_t ignored = 0;
-  bool success = false;
-
   switch (column) {
     case ColumnSpecifier::COLUMN_NONE:
-      break;
+      return 0;
     case ColumnSpecifier::MEMORY_FOOTPRINT:
-      value = task_manager()->GetMemoryFootprintUsage(task_id);
-      success = true;
-      break;
+      return task_manager()->GetMemoryFootprintUsage(task_id).InBytes();
     case ColumnSpecifier::PROCESS_ID:
-      value = static_cast<int64_t>(task_manager()->GetProcessId(task_id));
-      success = true;
-      break;
+      return task_manager()->GetProcessId(task_id);
     case ColumnSpecifier::V8_MEMORY:
-      success = task_manager()->GetV8Memory(task_id, &value, &ignored);
-      break;
-    case ColumnSpecifier::V8_MEMORY_USED:
-      success = task_manager()->GetV8Memory(task_id, &ignored, &value);
-      break;
+    case ColumnSpecifier::V8_MEMORY_USED: {
+      base::ByteCount allocated;
+      base::ByteCount used;
+      bool success = task_manager()->GetV8Memory(task_id, &allocated, &used);
+      if (!success) {
+        return 0;
+      }
+      return column == ColumnSpecifier::V8_MEMORY ? allocated.InBytes()
+                                                  : used.InBytes();
+    }
     case ColumnSpecifier::SQLITE_MEMORY_USED:
-      value = task_manager()->GetSqliteMemoryUsed(task_id);
-      success = true;
-      break;
+      return task_manager()->GetSqliteMemoryUsed(task_id).InBytes();
     case ColumnSpecifier::IDLE_WAKEUPS:
-      value = task_manager()->GetIdleWakeupsPerSecond(task_id);
-      success = true;
-      break;
+      return task_manager()->GetIdleWakeupsPerSecond(task_id);
     case ColumnSpecifier::NETWORK_USE:
-      value = task_manager()->GetNetworkUsage(task_id);
-      success = true;
-      break;
+      return task_manager()->GetNetworkUsage(task_id).InBytes();
     case ColumnSpecifier::TOTAL_NETWORK_USE:
-      value = task_manager()->GetCumulativeNetworkUsage(task_id);
-      success = true;
-      break;
+      return task_manager()->GetCumulativeNetworkUsage(task_id).InBytes();
   }
-  if (!success)
-    return 0;
-  return value;
 }
 
 SessionID TaskManagerTester::GetTabId(size_t row) {
@@ -203,6 +186,11 @@ std::vector<std::u16string> TaskManagerTester::GetWebContentsTaskTitles() {
       titles.push_back(GetRowTitle(row));
   }
   return titles;
+}
+
+bool TaskManagerTester::UpdateModel(const DisplayCategory display_category,
+                                    std::u16string_view search_term) {
+  return model_->UpdateModel(display_category, search_term);
 }
 
 TaskManagerInterface* TaskManagerTester::task_manager() {

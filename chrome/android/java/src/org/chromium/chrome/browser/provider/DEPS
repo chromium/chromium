@@ -1,0 +1,8 @@
+specific_include_rules = {
+    "PageContentProviderImpl\.java": [
+        "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
+    ],
+    "PageContentProviderImplUnitTest\.java": [
+        "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
+    ],
+}

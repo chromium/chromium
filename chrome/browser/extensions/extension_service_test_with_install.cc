@@ -4,21 +4,35 @@
 
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 
+#include <algorithm>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/sync/extension_sync_data.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_creator.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/verifier_formats.h"
+#include "components/sync/model/sync_change.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 
@@ -51,7 +65,7 @@ ExtensionServiceTestWithInstall::ExtensionServiceTestWithInstall(
           FeatureSwitch::prompt_for_external_extensions(),
           false) {}
 
-ExtensionServiceTestWithInstall::~ExtensionServiceTestWithInstall() {}
+ExtensionServiceTestWithInstall::~ExtensionServiceTestWithInstall() = default;
 
 void ExtensionServiceTestWithInstall::InitializeExtensionService(
     ExtensionServiceInitParams params) {
@@ -281,7 +295,12 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   CRXFileInfo crx_info(path, GetTestVerifierFormat());
   crx_info.extension_id = id;
 
-  auto installer = service()->CreateUpdateInstaller(crx_info, true);
+  // Create an ExtensionUpdater and use it to create a CrxInstaller.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ExtensionUpdater updater(profile());
+  updater.InitAndEnable(prefs, prefs->pref_service(), base::Minutes(10),
+                        /*cache=*/nullptr, ExtensionDownloader::Factory());
+  auto installer = updater.CreateUpdateInstaller(crx_info, true);
 
   if (installer) {
     base::RunLoop run_loop;
@@ -328,7 +347,8 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
 
 void ExtensionServiceTestWithInstall::UninstallExtension(
     const std::string& id,
-    UninstallExtensionFileDeleteType delete_type) {
+    UninstallExtensionFileDeleteType delete_type,
+    extensions::UninstallReason reason) {
   // Verify that the extension is installed.
   const Extension* extension =
       registry()->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
@@ -342,8 +362,7 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
   // once it's uninstalled.
   std::string extension_id = id;
   // Uninstall it.
-  EXPECT_TRUE(service()->UninstallExtension(
-      id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr));
+  EXPECT_TRUE(registrar()->UninstallExtension(id, reason, nullptr));
   --expected_extensions_count_;
 
   // We should get an unload notification.
@@ -357,13 +376,14 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
 
   switch (delete_type) {
     case kDeleteAllVersions:
-      EXPECT_FALSE(base::PathExists(extension_path.DirName()));
+      EXPECT_FALSE(base::PathExists(extension_path.DirName()))
+          << extension_path.value();
       break;
     case kDeletePath:
-      EXPECT_FALSE(base::PathExists(extension_path));
+      EXPECT_FALSE(base::PathExists(extension_path)) << extension_path.value();
       break;
     case kDoNotDelete:
-      EXPECT_TRUE(base::PathExists(extension_path));
+      EXPECT_TRUE(base::PathExists(extension_path)) << extension_path.value();
       break;
   }
 }
@@ -374,11 +394,11 @@ void ExtensionServiceTestWithInstall::TerminateExtension(
     ADD_FAILURE();
     return;
   }
-  service()->TerminateExtension(id);
+  registrar()->TerminateExtension(id);
 }
 
 void ExtensionServiceTestWithInstall::BlockAllExtensions() {
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 }
 
 void ExtensionServiceTestWithInstall::ClearLoadedExtensions() {
@@ -401,7 +421,7 @@ void ExtensionServiceTestWithInstall::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   unloaded_id_ = extension->id();
   unloaded_reason_ = reason;
-  auto i = base::ranges::find(loaded_extensions_, extension);
+  auto i = std::ranges::find(loaded_extensions_, extension);
   // TODO(erikkay) fix so this can be an assert.  Right now the tests
   // are manually calling `ClearLoadedExtensions` since this method is not
   // called by reloads, so this isn't doable.
@@ -441,6 +461,53 @@ void ExtensionServiceTestWithInstall::InstallCRXInternal(
   extension_loader.set_ignore_manifest_warnings(true);
   extension_loader.set_wait_for_renderers(false);
   extension_loader.LoadExtension(crx_path);
+}
+
+// StatefulChangeProcessor --------------------------------------------
+
+StatefulChangeProcessor::StatefulChangeProcessor(syncer::DataType expected_type)
+    : expected_type_(expected_type) {
+  DCHECK(expected_type == syncer::DataType::EXTENSIONS ||
+         expected_type == syncer::DataType::APPS);
+}
+
+StatefulChangeProcessor::~StatefulChangeProcessor() = default;
+
+std::optional<syncer::ModelError> StatefulChangeProcessor::ProcessSyncChanges(
+    const base::Location& from_here,
+    const syncer::SyncChangeList& change_list) {
+  syncer::FakeSyncChangeProcessor::ProcessSyncChanges(from_here, change_list);
+  for (const auto& change : change_list) {
+    syncer::SyncData sync_data = change.sync_data();
+    DCHECK_EQ(expected_type_, sync_data.GetDataType());
+
+    std::unique_ptr<ExtensionSyncData> modified =
+        ExtensionSyncData::CreateFromSyncData(sync_data);
+
+    // Start by removing any existing entry for this extension id.
+    for (auto iter = data_.begin(); iter != data_.end(); ++iter) {
+      std::unique_ptr<ExtensionSyncData> existing =
+          ExtensionSyncData::CreateFromSyncData(*iter);
+      if (existing->id() == modified->id()) {
+        data_.erase(iter);
+        break;
+      }
+    }
+
+    // Now add in the new data for this id, if appropriate.
+    if (change.change_type() == syncer::SyncChange::ACTION_ADD ||
+        change.change_type() == syncer::SyncChange::ACTION_UPDATE) {
+      data_.push_back(sync_data);
+    } else if (change.change_type() != syncer::SyncChange::ACTION_DELETE) {
+      NOTREACHED() << "Unexpected change type " << change.change_type();
+    }
+  }
+  return std::nullopt;
+}
+
+std::unique_ptr<syncer::SyncChangeProcessor>
+StatefulChangeProcessor::GetWrapped() {
+  return std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(this);
 }
 
 }  // namespace extensions

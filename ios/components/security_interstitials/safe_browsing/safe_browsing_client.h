@@ -8,9 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
+
 namespace safe_browsing {
 class HashRealTimeService;
-class RealTimeUrlLookupService;
+class RealTimeUrlLookupServiceBase;
 }  // namespace safe_browsing
 
 namespace security_interstitials {
@@ -33,10 +35,12 @@ class SafeBrowsingClient : public KeyedService {
  public:
   // Returns this as a weak pointer.
   virtual base::WeakPtr<SafeBrowsingClient> AsWeakPtr() = 0;
+  // Returns the PrefService.
+  virtual PrefService* GetPrefs() = 0;
   // Gets the safe browsing service for this client. Must not be nullptr.
   virtual SafeBrowsingService* GetSafeBrowsingService() = 0;
   // Gets the real time url look up service. Clients may return nullptr.
-  virtual safe_browsing::RealTimeUrlLookupService*
+  virtual safe_browsing::RealTimeUrlLookupServiceBase*
   GetRealTimeUrlLookupService() = 0;
   // Gets the hash-real-time service factory. Client may return nullptr.
   virtual safe_browsing::HashRealTimeService* GetHashRealTimeService() = 0;
@@ -46,10 +50,17 @@ class SafeBrowsingClient : public KeyedService {
   virtual bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const = 0;
   // Called when safe browsing decided to cancel loading in the main frame.
+  // Returns a boolean to indicate if the `web_state` cancelled should display
+  // an error page. If the `web_state` is prerendered, logic shouldn't display
+  // an error page since displaying an error page for a prerendered web state
+  // may cause a crash.
   // `web_state` The associated web state.
   // `url` The url which was cancelled.
-  virtual void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
+  virtual bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                                       const GURL& url) = 0;
+  // Returns whether or not real time url checks allow navigation to continue
+  // while awaiting for the results.
+  virtual bool ShouldForceSyncRealTimeUrlChecks() const = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_

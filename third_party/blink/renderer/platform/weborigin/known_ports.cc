@@ -45,7 +45,7 @@ base::Lock& ExplicitlyAllowedPortsLock() {
 
 }  // namespace
 
-bool IsDefaultPortForProtocol(uint16_t port, const WTF::String& protocol) {
+bool IsDefaultPortForProtocol(uint16_t port, const String& protocol) {
   if (protocol.empty())
     return false;
 
@@ -62,7 +62,7 @@ bool IsDefaultPortForProtocol(uint16_t port, const WTF::String& protocol) {
 
 // Please keep blink::DefaultPortForProtocol and url::DefaultPortForProtocol in
 // sync.
-uint16_t DefaultPortForProtocol(const WTF::String& protocol) {
+uint16_t DefaultPortForProtocol(const String& protocol) {
   if (protocol == "http" || protocol == "ws")
     return 80;
   if (protocol == "https" || protocol == "wss")
@@ -84,7 +84,7 @@ bool IsPortAllowedForScheme(const KURL& url) {
   uint16_t effective_port = url.Port();
   if (!effective_port)
     effective_port = DefaultPortForProtocol(protocol);
-  StringUTF8Adaptor utf8(protocol);
+  StringUtf8Adaptor utf8(protocol);
   base::AutoLock locker(ExplicitlyAllowedPortsLock());
   return net::IsPortAllowedForScheme(effective_port, utf8.AsStringView());
 }

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -37,8 +38,9 @@ QRCodeGeneratorBubbleController::~QRCodeGeneratorBubbleController() {
 
 // static
 bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
+  }
 
   // Check policy.
   if (!IsQRCodeGeneratorEnabledByPolicy()) {
@@ -60,8 +62,9 @@ QRCodeGeneratorBubbleController* QRCodeGeneratorBubbleController::Get(
 void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
                                                  bool show_back_button) {
   // Ignore subsequent calls to open the dialog if it already is open.
-  if (bubble_shown_)
+  if (bubble_shown_) {
     return;
+  }
 
   // Check policy.
   if (!IsQRCodeGeneratorEnabledByPolicy()) {
@@ -69,8 +72,9 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   }
 
   Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
-  if (!browser || !browser->window())
+  if (!browser || !browser->window()) {
     return;
+  }
 
   bubble_shown_ = true;
   qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(

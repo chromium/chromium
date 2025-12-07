@@ -1,0 +1,78 @@
+<style include="cr-shared-style settings-shared settings-columned-section">
+  :host {
+    --cr-icon-size: 16px;
+    --info-card-background-color: var(--google-blue-50);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --info-card-background-color: var(--google-grey-800);
+    }
+  }
+
+  .settings-columned-section {
+    background-color: var(--info-card-background-color);
+  }
+
+  .title {
+    color: var(--cr-primary-text-color);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: .25px;
+  }
+
+  .settings-columned-section h3.description-header {
+    color: var(--cr-primary-text-color);
+    font-weight: 500;
+  }
+
+  .icon-bulleted-list li {
+    margin: 8px 0;
+  }
+
+  settings-section {
+    --cr-card-shadow: none;
+  }
+
+  @media (forced-colors: active) {
+    settings-section {
+      --cr-border-hcm: none;
+    }
+  }
+</style>
+
+<settings-section>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="title first">$i18n{aiPageMainTitle}</h2>
+    <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiPageMainSublabel1}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiPageMainSublabel2}</div>
+      </li>
+      <li>
+        <cr-icon icon="[[icon3_]]" aria-hidden="true"></cr-icon>
+        <div class="secondary">
+        <template is="dom-if" if="[[!isManaged_()]]" restamp>
+          $i18n{aiPageMainSublabel3}
+        </template>
+        <template is="dom-if" if="[[isManaged_()]]" restamp>
+          $i18n{aiPageMainManagedSublabel3}
+          <a href="$i18n{aiPageMainManagedLearnMoreUrl}"
+              aria-label="$i18n{aiPageMainManagedLearnMoreAccessibiltyLabel}"
+              aria-description="$i18n{opensInNewTab}"
+              target="_blank">
+            $i18n{learnMore}
+          </a>
+        </template>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+</settings-section>

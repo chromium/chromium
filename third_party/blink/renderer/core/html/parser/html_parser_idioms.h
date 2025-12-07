@@ -33,11 +33,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
-class TextEncoding;
-}
-
 namespace blink {
+
+class TextEncoding;
 
 // Strip leading and trailing whitespace as defined by the HTML specification.
 CORE_EXPORT String StripLeadingAndTrailingHTMLSpaces(const String&);
@@ -80,7 +78,7 @@ CORE_EXPORT Vector<double> ParseHTMLListOfFloatingPointNumbers(const String&);
 
 typedef Vector<std::pair<String, String>> HTMLAttributeList;
 // The returned encoding might not be valid.
-WTF::TextEncoding EncodingFromMetaAttributes(const HTMLAttributeList&);
+TextEncoding EncodingFromMetaAttributes(const HTMLAttributeList&);
 
 // Space characters as defined by the HTML specification.
 template <typename CharType>
@@ -142,29 +140,20 @@ bool ThreadSafeMatch(const String&, const QualifiedName&);
 
 enum CharacterWidth { kLikely8Bit, kForce8Bit, kForce16Bit };
 
-String AttemptStaticStringCreation(const LChar*, wtf_size_t);
-
-String AttemptStaticStringCreation(const UChar*, wtf_size_t, CharacterWidth);
+String AttemptStaticStringCreation(base::span<const LChar>);
+String AttemptStaticStringCreation(base::span<const UChar>, CharacterWidth);
 
 template <wtf_size_t inlineCapacity>
 inline static String AttemptStaticStringCreation(
     const UCharLiteralBuffer<inlineCapacity>& vector) {
   return AttemptStaticStringCreation(
-      vector.data(), vector.size(), vector.Is8Bit() ? kForce8Bit : kForce16Bit);
-}
-
-template <wtf_size_t inlineCapacity>
-inline static String AttemptStaticStringCreation(
-    const Vector<UChar, inlineCapacity>& vector,
-    CharacterWidth width) {
-  return AttemptStaticStringCreation(vector.data(), vector.size(), width);
+      vector, vector.Is8Bit() ? kForce8Bit : kForce16Bit);
 }
 
 inline static String AttemptStaticStringCreation(const String& str) {
   if (!str.Is8Bit())
-    return AttemptStaticStringCreation(str.Characters16(), str.length(),
-                                       kForce16Bit);
-  return AttemptStaticStringCreation(str.Characters8(), str.length());
+    return AttemptStaticStringCreation(str.Span16(), kForce16Bit);
+  return AttemptStaticStringCreation(str.Span8());
 }
 
 }  // namespace blink

@@ -5,12 +5,11 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/metrics/histogram_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -22,7 +21,7 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
  protected:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    prefs_ = chrome_browser_state_->GetPrefs();
+    prefs_ = profile_->GetPrefs();
     account_folder_node_ =
         AddFolder(bookmark_model_->account_mobile_node(), u"Account folder");
     local_folder_node_ =
@@ -43,10 +42,12 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
   }
 
   raw_ptr<PrefService> prefs_ = nullptr;
-  raw_ptr<const bookmarks::BookmarkNode> account_folder_node_ = nullptr;
-  raw_ptr<const bookmarks::BookmarkNode> local_folder_node_ = nullptr;
-  raw_ptr<const bookmarks::BookmarkNode> local_bookmark_node_ = nullptr;
-  base::HistogramTester histogram_tester_;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>
+      account_folder_node_ = nullptr;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged> local_folder_node_ =
+      nullptr;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>
+      local_bookmark_node_ = nullptr;
 };
 
 // Tests GetDefaultBookmarkFolder() when no default folder was set and account
@@ -57,9 +58,6 @@ TEST_F(BookmarksUtilsTest,
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, bookmark_model_->account_mobile_node());
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kUnset, 1);
 }
 
 // Tests GetDefaultBookmarkFolder() when no default folder was set and account
@@ -71,9 +69,6 @@ TEST_F(BookmarksUtilsTest,
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, bookmark_model_->mobile_node());
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kUnset, 1);
 }
 
 // Tests when an id of -1 (kLastUsedBookmarkFolderNone) is set as the default
@@ -83,9 +78,6 @@ TEST_F(BookmarksUtilsTest, GetDefaultBookmarkFolderWithValueSetToMinusOne) {
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, bookmark_model_->account_mobile_node());
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kUnset, 1);
 }
 
 // Tests when an unknown id is set as the default folder.
@@ -94,9 +86,6 @@ TEST_F(BookmarksUtilsTest, GetDefaultBookmarkFolderWithWrongValue) {
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, bookmark_model_->account_mobile_node());
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet, 1);
 }
 
 // Tests when the folder is set to a local bookmark.
@@ -106,9 +95,6 @@ TEST_F(BookmarksUtilsTest,
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, local_folder_node_);
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kExistingLocalFolderSet, 1);
 }
 
 // Tests when the folder is set to a local bookmark.
@@ -118,9 +104,6 @@ TEST_F(BookmarksUtilsTest,
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, account_folder_node_);
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kExistingAccountFolderSet, 1);
 }
 
 // Test when a bookmark node is set as the default folder.
@@ -130,9 +113,6 @@ TEST_F(BookmarksUtilsTest, GetDefaultBookmarkFolderWithDefaultBookmarkSet) {
   const bookmarks::BookmarkNode* default_folder_node =
       GetDefaultBookmarkFolderHelper();
   EXPECT_EQ(default_folder_node, bookmark_model_->account_mobile_node());
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-      DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet, 1);
 }
 
 TEST_F(BookmarksUtilsTest, PrimaryPermanentNodes) {

@@ -24,21 +24,21 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/input_hint_checker.h"
+#include "base/android/yield_to_looper_checker.h"
 #include "base/test/test_support_android.h"
+#endif
+
+#if !BUILDFLAG(IS_IOS)
+#include "base/message_loop/message_pump_default.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-#include "base/message_loop/message_pump_libevent.h"
-#endif
-
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace base {
@@ -80,8 +80,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
 
   void BeforeWait() override {}
   void BeginNativeWorkBeforeDoWork() override {}
-  MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
-  MOCK_METHOD0(DoIdleWork, void());
+  MOCK_METHOD(MessagePump::Delegate::NextWorkInfo, DoWork, ());
+  MOCK_METHOD(void, DoIdleWork, ());
 
   // Functions invoked directly by the message pump.
   void OnBeginWorkItem() override {
@@ -124,8 +124,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   }
 
   // Mock functions for asserting.
-  MOCK_METHOD0(MockOnBeginWorkItem, void(void));
-  MOCK_METHOD1(MockOnEndWorkItem, void(int));
+  MOCK_METHOD(void, MockOnBeginWorkItem, ());
+  MOCK_METHOD(void, MockOnEndWorkItem, (int));
 
   // If native events are covered in the current configuration it's not
   // possible to precisely test all assertions related to work items. This is
@@ -184,12 +184,6 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-    // MessagePumpLibEvent checks for native notifications once after processing
-    // a DoWork() but only instantiates a ScopedDoWorkItem that triggers
-    // MessagePumpLibevent::OnLibeventNotification() which this test does not
-    // so there are no post-work expectations at the moment.
-#endif
 #if defined(USE_GLIB)
     if (GetParam() == MessagePumpType::UI) {
       // The GLib MessagePump can create and destroy work items between DoWorks
@@ -213,10 +207,10 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
 
   // Not expecting any calls to DoIdleWork after quitting, nor any of the
   // PostDoWorkExpectations, quitting should be instantaneous.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   // MessagePumpGlib uses a work item between a HandleDispatch() call and
   // passing control back to the chrome loop, which handles the Quit() despite
@@ -252,25 +246,26 @@ TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
   uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
 
   // Override the first DoWork() to return an immediate next.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([] {
     auto work_info =
         MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
     CHECK(work_info.is_immediate());
     return work_info;
-  }));
+  });
 
   if (pump_type == MessagePumpType::UI) {
     // Override the following InputHintChecker::HasInput() to return true.
-    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling())
-        .WillOnce(Invoke([] { return true; }));
+    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling()).WillOnce([] {
+      return true;
+    });
   }
 
   // Override the second DoWork() to quit the loop.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
                                                    TimeTicks::Max()};
-  }));
+  });
 
   // No immediate next_work_info remaining before the yield. Not expecting
   // to observe an input hint check.
@@ -287,7 +282,58 @@ TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
   EXPECT_EQ(initial_work_enters + work_loop_entered,
             GetAndroidNonDelayedWorkEnterCount());
 }
-#endif
+
+TEST_P(MessagePumpTest, YieldDuringStartup) {
+  testing::InSequence sequence;
+  MessagePumpType pump_type = GetParam();
+  testing::StrictMock<MockMessagePumpDelegate> delegate(pump_type);
+
+  uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
+
+  // Override the first DoWork() to return an immediate next. Also set startup
+  // as running.
+  EXPECT_CALL(delegate, DoWork).WillOnce([pump_type] {
+    if (pump_type == MessagePumpType::UI) {
+      android::YieldToLooperChecker::GetInstance().SetStartupRunning(true);
+    }
+    auto work_info =
+        MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
+    CHECK(work_info.is_immediate());
+    return work_info;
+  });
+
+  // Override the second DoWork() and mark startup as complete so we don't yield
+  // again.
+  EXPECT_CALL(delegate, DoWork).WillOnce([pump_type] {
+    if (pump_type == MessagePumpType::UI) {
+      // Mark startup as done so we don't yield again
+      android::YieldToLooperChecker::GetInstance().SetStartupRunning(false);
+    }
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
+  });
+
+  // Override the third DoWork() to quit the loop.
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
+    message_pump_->Quit();
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
+                                                   TimeTicks::Max()};
+  });
+
+  // No immediate next_work_info remaining before the yield.
+  EXPECT_CALL(delegate, DoIdleWork()).Times(0);
+
+  message_pump_->Run(&delegate);
+
+  // Expect two calls to DoNonDelayedLooperWork(). The first one occurs as a
+  // result of MessagePump::Run(). The second one is the result of yielding
+  // after YieldDuringStartup() returns true. For non-UI MessagePumpType the
+  // MessagePump::Create() does not intercept entering DoNonDelayedLooperWork(),
+  // so it remains 0 instead of 1.
+  uint32_t work_loop_entered = (pump_type == MessagePumpType::UI) ? 2 : 0;
+  EXPECT_EQ(initial_work_enters + work_loop_entered,
+            GetAndroidNonDelayedWorkEnterCount());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   testing::InSequence sequence;
@@ -300,21 +346,21 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   // the nested loop exits, we schedule another DoWork which quits the outer
   // (original) run loop. The test verifies that there are no extra calls to
   // DoWork after the outer loop quits.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([&] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([&] {
     message_pump_->Run(&nested_delegate);
     // A null NextWorkInfo indicates immediate follow-up work.
     return MessagePump::Delegate::NextWorkInfo();
-  }));
+  });
 
   AddPreDoWorkExpectations(nested_delegate);
-  EXPECT_CALL(nested_delegate, DoWork).WillOnce(Invoke([&] {
+  EXPECT_CALL(nested_delegate, DoWork).WillOnce([&] {
     // Quit the nested run loop.
     message_pump_->Quit();
     // The underlying pump should process the next task in the first run-level
     // regardless of whether the nested run-level indicates there's no more work
     // (e.g. can happen when the only remaining tasks are non-nestable).
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   // The `nested_delegate` will quit first.
   AddPostDoWorkExpectations(nested_delegate);
@@ -324,42 +370,10 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
 
   AddPreDoWorkExpectations(delegate);
 
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
-
-  message_pump_->ScheduleWork();
-  message_pump_->Run(&delegate);
-}
-
-TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
-  // The handling of the "yield_to_native" boolean in the NextWorkInfo is only
-  // implemented on the MessagePumpAndroid. However since we inject a fake one
-  // for testing this is hard to test. This test ensures that setting this
-  // boolean doesn't cause any MessagePump to explode.
-  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
-
-  testing::InSequence sequence;
-
-  // Return an immediate task with |yield_to_native| set.
-  AddPreDoWorkExpectations(delegate);
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
-    return MessagePump::Delegate::NextWorkInfo{TimeTicks(), TimeDelta(),
-                                               TimeTicks(),
-                                               /* yield_to_native = */ true};
-  }));
-  AddPostDoWorkExpectations(delegate);
-
-  AddPreDoWorkExpectations(delegate);
-  // Return a delayed task with |yield_to_native| set, and exit.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
-    message_pump_->Quit();
-    auto now = TimeTicks::Now();
-    return MessagePump::Delegate::NextWorkInfo{now + Milliseconds(1),
-                                               TimeDelta(), now, true};
-  }));
-  EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
+  });
 
   message_pump_->ScheduleWork();
   message_pump_->Run(&delegate);
@@ -376,12 +390,12 @@ TEST_P(MessagePumpTest, LeewaySmokeTest) {
 
   AddPreDoWorkExpectations(delegate);
   // Return a delayed task with |yield_to_native| set, and exit.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     auto now = TimeTicks::Now();
     return MessagePump::Delegate::NextWorkInfo{now + Milliseconds(1),
                                                Milliseconds(8), now};
-  }));
+  });
   EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
 
   message_pump_->ScheduleWork();
@@ -394,10 +408,10 @@ TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
 
   AddPreDoWorkExpectations(delegate);
 
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   AddPostDoWorkExpectations(delegate);
 
@@ -415,18 +429,18 @@ TEST_P(MessagePumpTest, NestedRunWithoutScheduleWorkInvokesDoWork) {
 
   AddPreDoWorkExpectations(delegate);
 
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this, &nested_delegate] {
+  EXPECT_CALL(delegate, DoWork).WillOnce([this, &nested_delegate] {
     message_pump_->Run(&nested_delegate);
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   AddPreDoWorkExpectations(nested_delegate);
 
-  EXPECT_CALL(nested_delegate, DoWork).WillOnce(Invoke([this] {
+  EXPECT_CALL(nested_delegate, DoWork).WillOnce([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
-  }));
+  });
 
   // We quit `nested_delegate` before `delegate`
   AddPostDoWorkExpectations(nested_delegate);
@@ -446,5 +460,41 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(MessagePumpType::DEFAULT,
                                            MessagePumpType::UI,
                                            MessagePumpType::IO));
+
+// On iOS, MessagePumpDefault is not used.
+#if !BUILDFLAG(IS_IOS)
+TEST(MessagePumpDefaultTest, BusyLoop) {
+  MessagePumpDefault message_pump;
+
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  base::TimeDelta busy_loop_for = base::Milliseconds(1);
+  message_pump.SetBusyLoop(busy_loop_for);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+
+  // Many long waits, no more busy looping.
+  for (int i = 0; i < 10; i++) {
+    message_pump.RecordWaitTime(busy_loop_for * 10);
+  }
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  // One short wait, busy loop.
+  message_pump.RecordWaitTime(busy_loop_for / 1.5);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  // But as long as the moving average is high enough, don't loop.
+  message_pump.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  // Eventually, the moving average gets low enough
+  for (int i = 0; i < 100; i++) {
+    message_pump.RecordWaitTime(busy_loop_for / 10);
+  }
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+
+  // Even if the last wait time was higher than the limit.
+  message_pump.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace base

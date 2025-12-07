@@ -5,17 +5,21 @@
 #import "ios/chrome/browser/metrics/model/ios_family_link_user_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/values.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_log_record.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
@@ -35,24 +39,22 @@ const char kProfileName2[] = "profile2";
 class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
  protected:
   IOSFamilyLinkUserMetricsProviderTest() {
-    default_browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
-        CreateBrowserStateBuilder(/*name=*/std::string()));
+    default_profile_ = profile_manager_.AddProfileWithBuilder(
+        CreateProfileBuilder(/*name=*/std::string()));
   }
 
   IOSFamilyLinkUserMetricsProvider* metrics_provider() {
     return &metrics_provider_;
   }
 
-  TestChromeBrowserStateManager* browser_state_manager() {
-    return &browser_state_manager_;
-  }
+  TestProfileManagerIOS* profile_manager() { return &profile_manager_; }
 
-  void SignIn(ChromeBrowserState* browser_state,
+  void SignIn(ProfileIOS* profile,
               const std::string& email,
               bool is_subject_to_parental_controls,
               bool is_opted_in_to_parental_supervision) {
     AccountInfo account = signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state), email,
+        IdentityManagerFactory::GetForProfile(profile), email,
         signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
@@ -61,10 +63,28 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     mutator.set_is_opted_in_to_parental_supervision(
         is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForBrowserState(browser_state), account);
+        IdentityManagerFactory::GetForProfile(profile), account);
 
     if (is_subject_to_parental_controls) {
-      supervised_user::EnableParentalControls(*browser_state->GetPrefs());
+      // Note: in prod environment, prefs::kSupervisedUserSafeSites and
+      // kDefaultSupervisedUserFilteringBehavioris are set to true in the
+      // managed pref store automatically after enabling parental controls.
+      // However, this testing profile lacks this infrastructure (supervised
+      // user service and settings service), so we're setting this *before*
+      // enabling parental controls. After EnableParentalControls call, system
+      // is correctly supervised.
+      sync_preferences::TestingPrefServiceSyncable* pref_service =
+          static_cast<TestProfileIOS*>(profile)->GetTestingPrefService();
+      pref_service->SetSupervisedUserPref(
+          prefs::kDefaultSupervisedUserFilteringBehavior,
+          base::Value(
+              static_cast<int>(supervised_user::FilteringBehavior::kAllow)));
+      pref_service->SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                          base::Value(true));
+
+      // Enable parental controls only after, so that the system is in
+      // consistent state.
+      supervised_user::EnableParentalControls(*profile->GetPrefs());
     }
   }
 
@@ -73,36 +93,45 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   void SignIn(const std::string& email,
               bool is_subject_to_parental_controls,
               bool is_opted_in_to_parental_supervision) {
-    SignIn(default_browser_state(), email, is_subject_to_parental_controls,
+    SignIn(default_profile(), email, is_subject_to_parental_controls,
            is_opted_in_to_parental_supervision);
   }
 
-  // Adds a pre-configured test browser state to the manager.
-  void AddTestBrowserState(const std::string& name) {
-    browser_state_manager_.AddBrowserStateWithBuilder(
-        CreateBrowserStateBuilder(name));
+  // Adds a pre-configured test profile to the manager.
+  void AddTestProfile(const std::string& name) {
+    profile_manager_.AddProfileWithBuilder(CreateProfileBuilder(name));
   }
 
-  void RestrictAllSitesForSupervisedUser(ChromeBrowserState* browser_state) {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(browser_state);
-    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::FilteringBehavior::kBlock);
+  void RestrictAllSitesForSupervisedUser(ProfileIOS* profile) {
+    // Note: overrides the setting in the user pref store in the context of user
+    // managed by family link.
+    static_cast<TestProfileIOS*>(profile)
+        ->GetTestingPrefService()
+        ->SetSupervisedUserPref(
+            prefs::kDefaultSupervisedUserFilteringBehavior,
+            base::Value(
+                static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
   }
 
-  void AllowUnsafeSitesForSupervisedUser(ChromeBrowserState* browser_state) {
-    browser_state->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites,
-                                          false);
+  void AllowUnsafeSitesForSupervisedUser(ProfileIOS* profile) {
+    // Note: overrides the setting in the user pref store in the context of user
+    // managed by family link. In true environment, for these users, this
+    // happens in the supervised user pref store.
+    sync_preferences::TestingPrefServiceSyncable* pref_service =
+        static_cast<TestProfileIOS*>(profile)->GetTestingPrefService();
+    pref_service->SetSupervisedUserPref(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        base::Value(
+            static_cast<int>(supervised_user::FilteringBehavior::kAllow)));
+    pref_service->SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                        base::Value(false));
   }
 
-  ChromeBrowserState* default_browser_state() {
-    return default_browser_state_.get();
-  }
+  ProfileIOS* default_profile() { return default_profile_.get(); }
 
  private:
-  TestChromeBrowserState::Builder CreateBrowserStateBuilder(
-      const std::string& name) {
-    TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder CreateProfileBuilder(const std::string& name) {
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
@@ -115,8 +144,8 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
-  raw_ptr<ChromeBrowserState> default_browser_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<ProfileIOS> default_profile_;
 
   IOSFamilyLinkUserMetricsProvider metrics_provider_;
 };
@@ -124,8 +153,8 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
        ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
   AccountInfo account = signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForBrowserState(default_browser_state()),
-      kTestEmail, signin::ConsentLevel::kSignin);
+      IdentityManagerFactory::GetForProfile(default_profile()), kTestEmail,
+      signin::ConsentLevel::kSignin);
   // Does not set account capabilities, default is unknown.
 
   base::HistogramTester histogram_tester;
@@ -150,8 +179,8 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByPolicy,
+      supervised_user::SupervisedUserLogRecord::Segment::
+          kSupervisionEnabledByFamilyLinkPolicy,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -171,8 +200,8 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByUser,
+      supervised_user::SupervisedUserLogRecord::Segment::
+          kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -192,7 +221,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
+      supervised_user::SupervisedUserLogRecord::Segment::kUnsupervised,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -207,9 +236,8 @@ TEST_F(
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
   // Profile with supervision set by policy
-  AddTestBrowserState(kProfileName1);
-  SignIn(browser_state_manager()->GetBrowserStateByName(kProfileName1),
-         kTestEmail1,
+  AddTestProfile(kProfileName1);
+  SignIn(profile_manager()->GetProfileWithName(kProfileName1), kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
 
@@ -217,7 +245,7 @@ TEST_F(
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      supervised_user::SupervisedUserLogRecord::Segment::kMixedProfile,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -234,16 +262,14 @@ TEST_F(
          /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by user
-  AddTestBrowserState(kProfileName1);
-  SignIn(browser_state_manager()->GetBrowserStateByName(kProfileName1),
-         kTestEmail1,
+  AddTestProfile(kProfileName1);
+  SignIn(profile_manager()->GetProfileWithName(kProfileName1), kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by policy
-  AddTestBrowserState(kProfileName2);
-  SignIn(browser_state_manager()->GetBrowserStateByName(kProfileName2),
-         kTestEmail2,
+  AddTestProfile(kProfileName2);
+  SignIn(profile_manager()->GetProfileWithName(kProfileName2), kTestEmail2,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
 
@@ -251,7 +277,7 @@ TEST_F(
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      supervised_user::SupervisedUserLogRecord::Segment::kMixedProfile,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -265,7 +291,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest, NotSignedInLoggedAsUnsupervised) {
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
+      supervised_user::SupervisedUserLogRecord::Segment::kUnsupervised,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -278,15 +304,15 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
-  RestrictAllSitesForSupervisedUser(default_browser_state());
+  RestrictAllSitesForSupervisedUser(default_profile());
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByUser,
+      supervised_user::SupervisedUserLogRecord::Segment::
+          kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -300,15 +326,15 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
-  AllowUnsafeSitesForSupervisedUser(default_browser_state());
+  AllowUnsafeSitesForSupervisedUser(default_profile());
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByUser,
+      supervised_user::SupervisedUserLogRecord::Segment::
+          kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -319,28 +345,26 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
        ProfilesWithMixedSupervisedUsersLoggedAsMixedFilter) {
   // Profile with supervision set by user
-  AddTestBrowserState(kProfileName1);
-  SignIn(browser_state_manager()->GetBrowserStateByName(kProfileName1),
-         kTestEmail1,
+  AddTestProfile(kProfileName1);
+  SignIn(profile_manager()->GetProfileWithName(kProfileName1), kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
   AllowUnsafeSitesForSupervisedUser(
-      browser_state_manager()->GetBrowserStateByName(kProfileName1));
+      profile_manager()->GetProfileWithName(kProfileName1));
 
   // Profile with supervision set by policy
-  AddTestBrowserState(kProfileName2);
-  SignIn(browser_state_manager()->GetBrowserStateByName(kProfileName2),
-         kTestEmail2,
+  AddTestProfile(kProfileName2);
+  SignIn(profile_manager()->GetProfileWithName(kProfileName2), kTestEmail2,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
   RestrictAllSitesForSupervisedUser(
-      browser_state_manager()->GetBrowserStateByName(kProfileName2));
+      profile_manager()->GetProfileWithName(kProfileName2));
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      supervised_user::SupervisedUserLogRecord::Segment::kMixedProfile,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,

@@ -5,9 +5,8 @@
 #include <dlfcn.h>
 #include <unistd.h>
 
-#include <cassert>
-#include <iostream>
-
+#include "base/check.h"
+#include "base/logging.h"
 #include "chromecast/public/cast_egl_platform.h"
 #include "chromecast/public/cast_egl_platform_shlib.h"
 #include "chromecast/public/graphics_types.h"
@@ -29,30 +28,22 @@ namespace {
 // Starboard CastEglPlatform implementation.
 class CastEglPlatformStarboard : public CastEglPlatform {
  public:
-  CastEglPlatformStarboard()
-#if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
-      : sb_adapter_(CastStarboardApiAdapter::GetInstance())
-#endif
-  {
-  }
+  CastEglPlatformStarboard() = default;
 
   const int* GetEGLSurfaceProperties(const int* desired) override {
     return desired;
   }
 
-  ~CastEglPlatformStarboard() override {}
+  ~CastEglPlatformStarboard() override = default;
 
   bool InitializeHardware() override {
 #if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
     return false;
 #else
-    if (!sb_adapter_->EnsureInitialized()) {
-      return false;
-    }
     graphics_lib_ =
         dlopen(kGraphicsLibraryName, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
     if (!graphics_lib_) {
-      std::cerr << "Failed to dlopen " << kGraphicsLibraryName << std::endl;
+      LOG(ERROR) << "Failed to dlopen " << kGraphicsLibraryName;
       return false;
     }
 
@@ -60,8 +51,8 @@ class CastEglPlatformStarboard : public CastEglPlatform {
         dlsym(graphics_lib_, "Sb_eglGetProcAddress"));
 
     if (!get_proc_address_) {
-      std::cerr << "Failed to dlsym Sb_eglGetProcAddress from "
-                << kGraphicsLibraryName << std::endl;
+      LOG(ERROR) << "Failed to dlsym Sb_eglGetProcAddress from "
+                 << kGraphicsLibraryName;
       return false;
     }
     return true;
@@ -85,16 +76,21 @@ class CastEglPlatformStarboard : public CastEglPlatform {
     // visible and GlOzoneEglCast always couples the call to CreateDisplayType
     // and CreateWindow, so there is no downside to creating |window_| early.
     if (!SbWindowIsValid(window_)) {
+      auto* sb_adapter = CastStarboardApiAdapter::GetInstance();
+      LOG(INFO) << "Subscribing to CastStarboardApiAdapter. this=" << this;
+      sb_adapter->Subscribe(this, nullptr);
       SbWindowOptions options{};
       options.name = "cast";
       options.size.width = size.width;
       options.size.height = size.height;
-      window_ = sb_adapter_->GetWindow(&options);
+      window_ = sb_adapter->GetWindow(&options);
+      ndt_ = reinterpret_cast<NativeDisplayType>(
+          sb_adapter->GetEglNativeDisplayType());
+      LOG(INFO) << "Unsubscribing from CastStarboardApiAdapter. this=" << this;
+      sb_adapter->Unsubscribe(this);
     }
 
-    NativeDisplayType ndt = reinterpret_cast<NativeDisplayType>(
-        sb_adapter_->GetEglNativeDisplayType());
-    return ndt;
+    return ndt_;
 #endif
   }
 
@@ -103,7 +99,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
 #if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
     return nullptr;
 #else
-    assert(SbWindowIsValid(window_));
+    CHECK(SbWindowIsValid(window_));
     auto* result =
         static_cast<NativeWindowType>(SbWindowGetPlatformHandle(window_));
 
@@ -116,7 +112,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
 #if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
   void* graphics_lib_ = nullptr;
   SbWindow window_ = nullptr;
-  CastStarboardApiAdapter* sb_adapter_;
+  NativeDisplayType ndt_ = nullptr;
 #endif
 };
 }  // namespace

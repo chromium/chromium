@@ -35,13 +35,8 @@ bool DualMediaSinkService::HasInstance() {
   return g_dual_media_sink_service;
 }
 
-// static
 DialMediaSinkServiceImpl* DualMediaSinkService::GetDialMediaSinkServiceImpl() {
   return dial_media_sink_service_->impl();
-}
-
-MediaSinkServiceBase* DualMediaSinkService::GetCastMediaSinkServiceBase() {
-  return cast_media_sink_service_->impl();
 }
 
 CastMediaSinkServiceImpl* DualMediaSinkService::GetCastMediaSinkServiceImpl() {
@@ -55,6 +50,11 @@ base::CallbackListSubscription DualMediaSinkService::AddSinksDiscoveredCallback(
     callback.Run(provider_and_sinks.first, provider_and_sinks.second);
   }
   return sinks_discovered_callbacks_.Add(callback);
+}
+
+void DualMediaSinkService::SetDiscoveryPermissionRejectedCallback(
+    base::RepeatingClosure discovery_permission_rejected_cb) {
+  discovery_permission_rejected_cb_ = discovery_permission_rejected_cb;
 }
 
 void DualMediaSinkService::DiscoverSinksNow() {
@@ -116,6 +116,8 @@ DualMediaSinkService::DualMediaSinkService() {
   cast_media_sink_service_->Initialize(
       base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
                           base::Unretained(this), "cast"),
+      base::BindRepeating(&DualMediaSinkService::OnDiscoveryPermissionRejected,
+                          base::Unretained(this)),
       dial_media_sink_service_ ? dial_media_sink_service_->impl() : nullptr);
 
   cast_channel::CastSocketService* cast_socket_service =
@@ -143,6 +145,10 @@ void DualMediaSinkService::OnSinksDiscovered(
   auto& sinks_for_provider = current_sinks_[provider_name];
   sinks_for_provider = std::move(sinks);
   sinks_discovered_callbacks_.Notify(provider_name, sinks_for_provider);
+}
+
+void DualMediaSinkService::OnDiscoveryPermissionRejected() {
+  discovery_permission_rejected_cb_.Run();
 }
 
 void DualMediaSinkService::AddLogger(LoggerImpl* logger_impl) {

@@ -8,13 +8,15 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace network {
 class TestURLLoaderFactory;
@@ -40,7 +42,7 @@ namespace signin {
 
 struct CookieParamsForTest {
   std::string email;
-  std::string gaia_id;
+  GaiaId gaia_id;
   bool signed_out = false;
 };
 
@@ -113,7 +115,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         const std::string& email,
                                         ConsentLevel consent_level);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Revokes sync consent from the primary account: the primary account is left
 // at ConsentLevel::kSignin.
 // NOTE: See disclaimer at top of file re: direct usage.
@@ -122,7 +124,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 // TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Clears the primary account, removes all accounts and revokes the sync
 // consent (if applicable). Blocks until the primary account is cleared.
@@ -148,7 +150,7 @@ struct AccountAvailabilityOptions {
   // Gaia ID for the account to be created. if empty, the existing ID should be
   // kept for known accounts, or a new one generated from the email for totally
   // new accounts.
-  const std::string gaia_id;
+  const GaiaId gaia_id;
 
   // If present, the account to be created should be set as primary at
   // `consent_level`.
@@ -160,6 +162,9 @@ struct AccountAvailabilityOptions {
   // used as the token.
   const std::optional<std::string> refresh_token = std::string();
 
+  // If non-empty, a refresh token will be bound to device with this key.
+  const std::vector<uint8_t> wrapped_binding_key;
+
   // If non-null, the account to be created will be marked as present in the
   // Gaia cookie, by using `url_loader_factory_for_cookies` to mock the
   // LIST_ACCOUNTS response.
@@ -167,7 +172,7 @@ struct AccountAvailabilityOptions {
       nullptr;
 
   const signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
 
   explicit AccountAvailabilityOptions(std::string_view email);
   ~AccountAvailabilityOptions();
@@ -178,9 +183,10 @@ struct AccountAvailabilityOptions {
   // For complex options, prefer using `AccountAvailabilityOptionsBuilder`.
   AccountAvailabilityOptions(
       std::string_view email,
-      std::string_view gaia_id,
+      const GaiaId& gaia_id,
       std::optional<ConsentLevel> consent_level,
       std::optional<std::string> refresh_token,
+      const std::vector<uint8_t>& wrapped_binding_key,
       raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
       signin_metrics::AccessPoint access_point);
 };
@@ -207,7 +213,7 @@ class AccountAvailabilityOptionsBuilder {
   AccountAvailabilityOptionsBuilder& AsPrimary(ConsentLevel);
 
   // Provide a custom `gaia_id` to use for the new account.
-  AccountAvailabilityOptionsBuilder& WithGaiaId(std::string_view gaia_id);
+  AccountAvailabilityOptionsBuilder& WithGaiaId(const GaiaId& gaia_id);
 
   // Whether to add the new account to the Gaia cookie. See
   // `signin::AddCookieAccount()` for more context.
@@ -221,6 +227,11 @@ class AccountAvailabilityOptionsBuilder {
   AccountAvailabilityOptionsBuilder& WithRefreshToken(
       std::string_view refresh_token);
 
+  // Request a refresh token that is bound to a `wrapped_binding_key`.
+  // `WithoutRefreshToken()` must not be called if this option is set.
+  AccountAvailabilityOptionsBuilder& WithRefreshTokenBindingKey(
+      const std::vector<uint8_t>& wrapped_binding_key);
+
   // Request that we should not attempt to set a refresh token for the account.
   AccountAvailabilityOptionsBuilder& WithoutRefreshToken();
 
@@ -233,12 +244,13 @@ class AccountAvailabilityOptionsBuilder {
   raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies_ =
       nullptr;
 
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::optional<ConsentLevel> primary_account_consent_level_;
   std::optional<std::string> refresh_token_ = std::string();
+  std::vector<uint8_t> wrapped_binding_key_;
   bool with_cookie_ = false;
   signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
 };
 
 // Sets up an account identified by `email` according to options provided. See
@@ -266,9 +278,11 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
 // Blocks until the refresh token is set. If |token_value| is empty a default
 // value will be used instead.
 // NOTE: See disclaimer at top of file re: direct usage.
-void SetRefreshTokenForAccount(IdentityManager* identity_manager,
-                               const CoreAccountId& account_id,
-                               const std::string& token_value = std::string());
+void SetRefreshTokenForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    const std::string& token_value = std::string(),
+    const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>());
 
 // Sets a special invalid refresh token for the given account (which must
 // already be available). Blocks until the refresh token is set.
@@ -326,7 +340,7 @@ void SimulateAccountImageFetch(IdentityManager* identity_manager,
 void SetFreshnessOfAccountsInGaiaCookie(IdentityManager* identity_manager,
                                         bool accounts_are_fresh);
 
-std::string GetTestGaiaIdForEmail(const std::string& email);
+GaiaId GetTestGaiaIdForEmail(const std::string& email);
 
 // Returns a new `AccountInfo` object that completes the info from
 // `base_account_info` with generated extended info (the one normally obtained
@@ -356,10 +370,8 @@ void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
 
 #if BUILDFLAG(IS_ANDROID)
 // Stubs AccountManagerFacade, which requires special initialization of the java
-// subsystems. By default sets up a mock with no real method implementation
-// using Mockito. If `useFakeImpl` is `true` uses FakeAccountManagerFacade
-// instead which has fake method implementations.
-void SetUpMockAccountManagerFacade(bool useFakeImpl = false);
+// subsystems. Uses FakeAccountManagerFacade.
+void SetUpFakeAccountManagerFacade();
 #endif
 
 // Cancels all ongoing operations related to the accounts in the Gaia cookie.
@@ -370,7 +382,7 @@ void CancelAllOngoingGaiaCookieOperations(IdentityManager* identity_manager);
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const CoreAccountId& account_id,
                                           const std::string& email,
-                                          const std::string& gaia,
+                                          const GaiaId& gaia,
                                           const std::string& hosted_domain,
                                           const std::string& full_name,
                                           const std::string& given_name,
@@ -381,6 +393,10 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     IdentityManager* identity_manager);
 #endif
+
+// Allows testing some features gated by the official Chrome API keys and OAuth
+// client IDs in builds lacking those keys.
+void SetIgnoreNonOfficialApiKeys();
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_

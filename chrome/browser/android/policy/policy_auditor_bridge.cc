@@ -66,3 +66,5 @@ void PolicyAuditorBridge::DidFinishLoad(RenderFrameHost* render_frame_host,
         android_policy_auditor_);
   }
 }
+
+DEFINE_JNI(PolicyAuditorBridge)

@@ -1,0 +1,126 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// An ordered list of headers and derived components that are used as input
+// to the signature. The order matters, as the signature is validated over
+// a string whose contents are order-dependent.
+//
+// While RFC9421 and its related registries create a very flexible system that
+// allows signature components to be pulled from a variety of sources and
+// serialized in many ways, the subset of components supported by SRI is much
+// narrower. See https://wicg.github.io/signature-based-sri/#profile.
+//
+// Signature inputs specifying invalid components or invalid parameters for
+// valid components will be ignored.
+struct SRIMessageSignatureComponentParameter {
+  enum Type {
+    kName,                              // `name`
+    kRequest,                           // `req`
+    kStrictStructuredFieldSerialization, // `sf`
+    kBinaryRepresentation               // `bs`
+  };
+
+  Type type;
+
+  // The `@query-param` component requires a `name` parameter with a string
+  // value. All other params are boolean; we'll simply evaluate their
+  // presence or absence.
+  string? value;
+};
+
+struct SRIMessageSignatureComponent {
+  string name;
+  array<SRIMessageSignatureComponentParameter> params;
+};
+
+
+// Represents the contents of a response's HTTP Message Signature headers
+// (RFC9421), insofar as those contents match the validation requirements for
+// use in integrity checks performed against HTTP responses. as
+//
+// This struct weaves together data from `Signature` and `Signature-Input`
+// headers, capturing the set of inputs necessary to validate a signature
+// delivered with a given response.
+//
+// * Signature-Input: https://www.rfc-editor.org/rfc/rfc9421.html#section-4.1
+// * Signature: https://www.rfc-editor.org/rfc/rfc9421.html#section-4.2
+// * Validation requirements: https://wicg.github.io/signature-based-sri/#profile
+struct SRIMessageSignature {
+  string label;
+
+  // The asserted signature, stored as an array<uint8> rather than a string for
+  // consistency with the Blink-side implementation of SRI.
+  array<uint8> signature;
+
+  array<SRIMessageSignatureComponent> components;
+
+  // Signature metadata, as defined in the HTTP Signature Metadata Parameters
+  // registry:
+  //
+  // https://www.iana.org/assignments/http-message-signature/http-message-signature.xhtml#signature-metadata-parameters
+  //
+  // Note: `alg` must not be present, per the SRI HTTP Message Signature profile
+  // https://wicg.github.io/signature-based-sri/#profile
+  int64? created;
+  int64? expires;
+  array<uint8>? keyid;
+  string? nonce;
+  string? tag;
+
+  // The serialized `@signature-params` component of the signature base. We'll
+  // generate this when parsing the header, as we have all the context necessary
+  // (in particular, the order in which the signature metadata was delivered in
+  // the response headers).
+  string serialized_signature_params;
+};
+
+// Possible errors which can occur during parsing and validation:
+enum SRIMessageSignatureError {
+  kMissingSignatureHeader,
+  kMissingSignatureInputHeader,
+  kInvalidSignatureHeader,
+  kInvalidSignatureInputHeader,
+  kSignatureHeaderValueIsNotByteSequence,
+  kSignatureHeaderValueIsParameterized,
+  kSignatureHeaderValueIsIncorrectLength,
+  kSignatureInputHeaderMissingLabel,
+  kSignatureInputHeaderValueNotInnerList,
+  kSignatureInputHeaderValueMissingComponents,
+  kSignatureInputHeaderInvalidComponentType,
+  kSignatureInputHeaderInvalidComponentName,
+  kSignatureInputHeaderInvalidHeaderComponentParameter,
+  kSignatureInputHeaderInvalidDerivedComponentParameter,
+  kSignatureInputHeaderKeyIdLength,
+  kSignatureInputHeaderInvalidParameter,
+  kSignatureInputHeaderMissingRequiredParameters,
+  kValidationFailedSignatureExpired,
+  kValidationFailedInvalidLength,
+  kValidationFailedSignatureMismatch,
+  kValidationFailedIntegrityMismatch,
+};
+
+// Represents an issue we'll deliver to devtools to help developers
+// debug their code.
+struct SRIMessageSignatureIssue {
+  SRIMessageSignatureError error;
+
+  // kValidationFailedSignatureMismatch will populate the signature base over
+  // which signature verification failed.
+  string? signature_base;
+
+  // kValidationFailedIntegrityMismatch will populate the expected public keys
+  // which failed to match any signatures' public key, stored as base64-encoded
+  // strings that we'll render to developers in devtools issues.
+  array<string>? integrity_assertions;
+};
+
+// Contains the set of valid message signatures for a given response, along with
+// any parsing errors which were handled while parsing `Signature-Input` and
+// `Signature` headers.
+struct SRIMessageSignatures {
+  array<SRIMessageSignature> signatures;
+  array<SRIMessageSignatureIssue> issues;
+};

@@ -12,8 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/extensions/install_observer.h"
-#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -21,6 +19,8 @@
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/install_observer.h"
+#include "extensions/browser/install_tracker.h"
 
 class Profile;
 
@@ -144,8 +144,9 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
                               extensions::UninstallReason reason) override;
 
   // extensions::ExtensionPrefsObserver implementation.
-  void OnExtensionDisableReasonsChanged(const std::string& extension_id,
-                                        int disabled_reasons) override;
+  void OnExtensionDisableReasonsChanged(
+      const std::string& extension_id,
+      extensions::DisableReasonSet disabled_reasons) override;
   void OnExtensionRegistered(const std::string& extension_id,
                              const base::Time& install_time,
                              bool is_enabled) override;

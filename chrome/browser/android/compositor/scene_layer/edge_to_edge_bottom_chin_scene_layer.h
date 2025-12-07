@@ -9,6 +9,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
+#include "components/viz/common/quads/offset_tag.h"
 
 namespace cc::slim {
 class Layer;
@@ -30,17 +31,18 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
   ~EdgeToEdgeBottomChinSceneLayer() override;
 
   // Update the compositor version of the view.
-  void UpdateEdgeToEdgeBottomChinLayer(JNIEnv* env,
-                                       jint container_width,
-                                       jint container_height,
-                                       jint color_argb,
-                                       jint divider_color,
-                                       jfloat y_offset);
-
-  void SetContentTree(
+  void UpdateEdgeToEdgeBottomChinLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
-      const base::android::JavaParamRef<jobject>& jcontent_tree);
+      jint container_width,
+      jint container_height,
+      jint color_argb,
+      jint divider_color,
+      jfloat y_offset,
+      jboolean hasConstraint,
+      const base::android::JavaRef<jobject>& joffset_tag);
+
+  void SetContentTree(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;
 

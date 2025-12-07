@@ -10,16 +10,16 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Show a bubble informing the user that IdleTimeoutActions just ran.
-void ShowIdleBubble(Browser* browser,
+void ShowIdleBubble(BrowserWindowInterface* bwi,
                     base::TimeDelta threshold,
                     IdleDialog::ActionSet actions,
                     base::OnceClosure on_close);
 
 // TODO(crbug.com/40266853): Convert idle_service_browsertest.cc to an
 // InteractiveTest, and get rid of this.
-views::BubbleFrameView* GetIdleBubble(Browser* browser);
+views::BubbleFrameView* GetIdleBubble(BrowserWindowInterface* bwi);
 
 #endif  // CHROME_BROWSER_UI_IDLE_BUBBLE_H_

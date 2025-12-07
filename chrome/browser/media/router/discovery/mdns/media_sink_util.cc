@@ -33,19 +33,22 @@ SinkIconType GetCastSinkIconType(
 CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
                                               MediaSinkInternal* cast_sink) {
   DCHECK(cast_sink);
-  if (service.service_name.find(kCastServiceType) == std::string::npos)
+  if (service.service_name.find(kCastServiceType) == std::string::npos) {
     return CreateCastMediaSinkResult::kNotCastDevice;
+  }
 
   net::IPAddress ip_address;
-  if (!ip_address.AssignFromIPLiteral(service.ip_address))
+  if (!ip_address.AssignFromIPLiteral(service.ip_address)) {
     return CreateCastMediaSinkResult::kMissingOrInvalidIPAddress;
+  }
 
   std::map<std::string, std::string> service_data;
   for (const auto& item : service.service_data) {
     // |item| format should be "id=xxxxxx", etc.
     size_t split_idx = item.find('=');
-    if (split_idx == std::string::npos)
+    if (split_idx == std::string::npos) {
       continue;
+    }
 
     std::string key = item.substr(0, split_idx);
     std::string val =
@@ -54,11 +57,13 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
   }
 
   std::string unique_id = service_data["id"];
-  if (unique_id.empty())
+  if (unique_id.empty()) {
     return CreateCastMediaSinkResult::kMissingID;
+  }
   std::string friendly_name = service_data["fn"];
-  if (friendly_name.empty())
+  if (friendly_name.empty()) {
     return CreateCastMediaSinkResult::kMissingFriendlyName;
+  }
 
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint =
@@ -89,8 +94,9 @@ std::vector<MediaSinkInternal> GetFixedIPSinksFromCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::string ips_string =
       command_line->GetSwitchValueASCII(kFixedCastDeviceIps);
-  if (ips_string.empty())
+  if (ips_string.empty()) {
     return std::vector<MediaSinkInternal>();
+  }
 
   std::vector<MediaSinkInternal> sinks;
   std::vector<std::string> ips = base::SplitString(
@@ -98,15 +104,18 @@ std::vector<MediaSinkInternal> GetFixedIPSinksFromCommandLine() {
   for (const auto& ip : ips) {
     std::string host;
     int port = -1;
-    if (!net::ParseHostAndPort(ip, &host, &port))
+    if (!net::ParseHostAndPort(ip, &host, &port)) {
       continue;
+    }
 
     net::IPAddress ip_address;
-    if (!ip_address.AssignFromIPLiteral(host))
+    if (!ip_address.AssignFromIPLiteral(host)) {
       continue;
+    }
 
-    if (port == -1)
+    if (port == -1) {
       port = kCastControlPort;
+    }
 
     std::string instance_name;
     base::ReplaceChars(host, ".", "_", &instance_name);

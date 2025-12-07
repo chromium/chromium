@@ -10,7 +10,6 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 
 namespace password_manager {
-class PasskeyCredential;
 class UiCredential;
 }  // namespace password_manager
 
@@ -24,22 +23,19 @@ class TouchToFillViewImpl : public TouchToFillView {
   ~TouchToFillViewImpl() override;
 
   // TouchToFillView:
-  bool Show(
-      const GURL& url,
-      IsOriginSecure is_origin_secure,
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<const password_manager::PasskeyCredential> passkey_credentials,
-      int flags) override;
+  bool Show(const GURL& url,
+            IsOriginSecure is_origin_secure,
+            base::span<const Credential> credentials,
+            int flags) override;
   void OnCredentialSelected(
       const password_manager::UiCredential& credential) override;
   void OnDismiss() override;
 
-  void OnCredentialSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+  void OnCredentialSelected(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& credential);
   void OnWebAuthnCredentialSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+      const base::android::JavaRef<jobject>& credential);
   void OnManagePasswordsSelected(JNIEnv* env, jboolean passkeys_shown);
   void OnHybridSignInSelected(JNIEnv* env);
   void OnShowCredManSelected(JNIEnv* env);

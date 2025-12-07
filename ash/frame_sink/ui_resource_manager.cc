@@ -25,58 +25,24 @@ UiResourceManager::~UiResourceManager() {
          "delete the resource manager. ";
 }
 
-viz::ResourceId UiResourceManager::FindResourceToReuse(
+std::unique_ptr<UiResource> UiResourceManager::GetResourceToReuse(
     const gfx::Size& size,
     viz::SharedImageFormat format,
-    UiSourceId ui_source_id) const {
+    UiSourceId ui_source_id) {
   // UiResourceManager is expected to handle a few resources at a given time (
   // less than 30), therefore just using a simple linear search to find the
   // available resource.
-  for (const auto& iter : available_resources_pool_) {
-    const auto& resource = iter.second;
+  for (auto it = available_resources_pool_.begin();
+       it != available_resources_pool_.end(); ++it) {
+    const auto& resource = it->second;
 
     if (resource->ui_source_id == ui_source_id &&
-        resource->resource_size == size && resource->format == format) {
-      return iter.first;
+        resource->client_shared_image()->size() == size &&
+        resource->client_shared_image()->format() == format) {
+      auto to_be_release_resource = std::move(it->second);
+      available_resources_pool_.erase(it);
+      return to_be_release_resource;
     }
-  }
-
-  return viz::kInvalidResourceId;
-}
-
-std::unique_ptr<UiResource> UiResourceManager::ReleaseAvailableResource(
-    viz::ResourceId resource_id) {
-  auto iter = available_resources_pool_.find(resource_id);
-
-  if (iter == available_resources_pool_.end()) {
-    return nullptr;
-  }
-
-  auto to_be_release_resource = std::move(iter->second);
-  available_resources_pool_.erase(iter);
-
-  return to_be_release_resource;
-}
-
-viz::ResourceId UiResourceManager::OfferResource(
-    std::unique_ptr<UiResource> resource) {
-  if (!resource) {
-    return viz::kInvalidResourceId;
-  }
-
-  viz::ResourceId new_id = id_generator_.GenerateNextId();
-  resource->resource_id = new_id;
-  available_resources_pool_[new_id] = std::move(resource);
-
-  return new_id;
-}
-
-const UiResource* UiResourceManager::PeekAvailableResource(
-    viz::ResourceId resource_id) const {
-  auto iter = available_resources_pool_.find(resource_id);
-
-  if (iter != available_resources_pool_.end()) {
-    return iter->second.get();
   }
 
   return nullptr;
@@ -111,28 +77,28 @@ void UiResourceManager::ReclaimResources(
   }
 }
 
-viz::TransferableResource UiResourceManager::PrepareResourceForExport(
-    viz::ResourceId resource_id) {
-  auto resource_iter = available_resources_pool_.find(resource_id);
+void UiResourceManager::OfferResourceForTesting(
+    std::unique_ptr<UiResource> resource) {
+  CHECK(resource);
+  viz::ResourceId new_id = id_generator_.GenerateNextId();
+  available_resources_pool_[new_id] = std::move(resource);
+}
 
-  if (resource_iter == available_resources_pool_.end()) {
-    return viz::TransferableResource();
-  }
-
-  auto to_be_exported_resource = std::move(resource_iter->second);
-  available_resources_pool_.erase(resource_iter);
+viz::TransferableResource UiResourceManager::OfferAndPrepareResourceForExport(
+    std::unique_ptr<UiResource> resource) {
+  CHECK(resource);
 
   viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGpu(
-          to_be_exported_resource->mailbox(), GL_TEXTURE_2D,
-          to_be_exported_resource->sync_token,
-          to_be_exported_resource->resource_size,
-          to_be_exported_resource->format,
-          to_be_exported_resource->is_overlay_candidate,
-          viz::TransferableResource::ResourceSource::kUI);
+      viz::TransferableResource::Make(
+          resource->client_shared_image(),
+          viz::TransferableResource::ResourceSource::kUI, resource->sync_token,
+          /*override=*/
+          {
+              .is_overlay_candidate = resource->is_overlay_candidate,
+          });
 
-  transferable_resource.id = resource_id;
-  exported_resources_pool_[resource_id] = std::move(to_be_exported_resource);
+  transferable_resource.id = id_generator_.GenerateNextId();
+  exported_resources_pool_[transferable_resource.id] = std::move(resource);
 
   return transferable_resource;
 }

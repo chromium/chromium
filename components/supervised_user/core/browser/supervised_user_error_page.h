@@ -5,26 +5,31 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_ERROR_PAGE_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_ERROR_PAGE_H_
 
-#include <string>
+#include <optional>
 
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 namespace supervised_user {
+class Custodian;
 
 int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent);
 
-std::string BuildErrorPageHtml(bool allow_access_requests,
-                               const std::string& profile_image_url,
-                               const std::string& profile_image_url2,
-                               const std::string& custodian,
-                               const std::string& custodian_email,
-                               const std::string& second_custodian,
-                               const std::string& second_custodian_email,
-                               FilteringBehaviorReason reason,
-                               const std::string& app_locale,
-                               bool already_sent_remote_request,
-                               bool is_main_frame,
-                               bool show_banner);
+int GetInterstitialMessageID(FilteringBehaviorReason reason);
+
+#if BUILDFLAG(IS_ANDROID)
+std::string BuildErrorPageHtmlWithoutApprovals(const GURL& url,
+                                               const std::string& app_locale);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+std::string BuildErrorPageHtmlWithApprovals(
+    bool allow_access_requests,
+    std::optional<Custodian> custodian,
+    std::optional<Custodian> second_custodian,
+    FilteringBehaviorReason reason,
+    const std::string& app_locale,
+    bool already_sent_remote_request,
+    bool is_main_frame,
+    std::optional<float> ios_font_size_multiplier);
 
 }  //  namespace supervised_user
 

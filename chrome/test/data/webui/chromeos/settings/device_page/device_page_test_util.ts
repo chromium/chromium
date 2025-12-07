@@ -4,7 +4,8 @@
 
 /** @fileoverview Utils for device page browser tests. */
 
-import {CrSliderElement, GeolocationAccessLevel} from 'chrome://os-settings/os_settings.js';
+import type {CrSliderElement} from 'chrome://os-settings/os_settings.js';
+import {GeolocationAccessLevel} from 'chrome://os-settings/os_settings.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -57,8 +58,20 @@ export function getFakePrefs() {
         geolocation_access_level: {
           key: 'ash.user.geolocation_access_level',
           type: GeolocationAccessLevel,
+          enforcement:
+              undefined as chrome.settingsPrivate.Enforcement | undefined,
           value: GeolocationAccessLevel.ALLOWED,
         },
+      },
+      input_voice_isolation_enabled: {
+        key: 'ash.input_voice_isolation_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      input_voice_isolation_preferred_effect: {
+        key: 'ash.input_voice_isolation_preferred_effect',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 0,
       },
     },
     gdata: {
@@ -80,6 +93,11 @@ export function getFakePrefs() {
         key: 'power.cros_battery_saver_active',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
+      },
+      optimized_charging_strategy: {
+        key: 'power.optimized_charging_strategy',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 0,  // STRATEGY_ADAPTIVE_CHARGING
       },
     },
     settings: {
@@ -253,6 +271,13 @@ export function getFakePrefs() {
           key: 'settings.language.xkb_auto_repeat_interval_r2',
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: 500,
+        },
+      },
+      display: {
+        allow_exclude_display_in_mirror_mode: {
+          key: 'settings.display.allow_exclude_display_in_mirror_mode',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
         },
       },
     },

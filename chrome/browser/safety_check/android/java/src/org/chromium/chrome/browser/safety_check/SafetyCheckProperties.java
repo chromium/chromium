@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_check;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 class SafetyCheckProperties {
     /** State of the Safe Browsing check, one of the {@link SafeBrowsingState} values. */
     static final WritableIntPropertyKey SAFE_BROWSING_STATE = new WritableIntPropertyKey();

@@ -26,7 +26,7 @@ namespace {
 
 // Returns a pointer to the initialized Mach timebase info struct.
 mach_timebase_info_data_t* MachTimebaseInfo() {
-  static mach_timebase_info_data_t timebase_info = []() {
+  static mach_timebase_info_data_t timebase_info = [] {
     mach_timebase_info_data_t info;
     kern_return_t kr = mach_timebase_info(&info);
     MACH_DCHECK(kr == KERN_SUCCESS, kr) << "mach_timebase_info";
@@ -165,6 +165,11 @@ TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
   return TimeTicks() + Microseconds(ComputeCurrentTicks());
+}
+
+TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
+  return TimeTicks() + Microseconds(MachTimeToMicroseconds(
+                           clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW_APPROX)));
 }
 }  // namespace subtle
 

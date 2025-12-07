@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("display") {
   sources = [
@@ -46,14 +46,15 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ui/ash/login",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//components/policy/proto",
     "//content/test:test_support",
-    "//extensions/browser",
+    "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/common/api",
     "//testing/gtest",
     "//ui/display",

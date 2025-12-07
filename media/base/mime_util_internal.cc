@@ -23,7 +23,6 @@
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 
 // TODO(dalecurtis): This include is not allowed by media/base since
 // media/base/android is technically a different component. We should move
@@ -151,14 +150,6 @@ MimeUtil::MimeUtil() {
 #if BUILDFLAG(IS_ANDROID)
   platform_info_.has_platform_vp8_decoder =
       MediaCodecUtil::IsVp8DecoderAvailable();
-  platform_info_.has_platform_vp9_decoder =
-      MediaCodecUtil::IsVp9DecoderAvailable();
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  platform_info_.has_platform_hevc_decoder =
-      MediaCodecUtil::IsHEVCDecoderAvailable();
-#endif
-  platform_info_.has_platform_opus_decoder =
-      MediaCodecUtil::IsOpusDecoderAvailable();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   InitializeMimeTypeMaps();
@@ -266,7 +257,7 @@ SupportsType MimeUtil::AreSupportedCodecs(
           // Nothing to do for AAC; no notion of profile / level to guess.
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Only VP9, H264, and AAC codec strings can be ambiguous.";
       }
     }
@@ -407,35 +398,23 @@ void MimeUtil::AddSupportedMediaFormats() {
   video_3gpp_codecs.emplace(H264);
   AddContainerWithCodecs("video/3gpp", video_3gpp_codecs);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  bool can_play_hls = false;
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  can_play_hls |= base::FeatureList::IsEnabled(kHlsPlayer);
-#endif
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  can_play_hls |= base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
-#endif
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (can_play_hls) {
-    // HTTP Live Streaming (HLS).
-    CodecSet hls_codecs{H264,
-                        // TODO(ddorwin): Is any MP3 codec string variant
-                        // included in real queries?
-                        MP3,
-                        // Android HLS only supports MPEG4_AAC (missing demuxer
-                        // support for MPEG2_AAC)
-                        MPEG4_AAC};
-    AddContainerWithCodecs("application/x-mpegurl", hls_codecs);
-    AddContainerWithCodecs("application/vnd.apple.mpegurl", hls_codecs);
-    AddContainerWithCodecs("audio/mpegurl", hls_codecs);
-    // Not documented by Apple, but unfortunately used extensively by Apple and
-    // others for both audio-only and audio+video playlists. See
-    // https://crbug.com/675552 for details and examples.
-    AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
-  }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  CodecSet hls_codecs{
+      H264,
+      MP3,
+      MPEG4_AAC,
+  };
+  AddContainerWithCodecs("application/x-mpegurl", hls_codecs);
+  AddContainerWithCodecs("application/vnd.apple.mpegurl", hls_codecs);
+  AddContainerWithCodecs("audio/mpegurl", hls_codecs);
+  // Not documented by Apple, but unfortunately used extensively by Apple and
+  // others for both audio-only and audio+video playlists. See
+  // https://crbug.com/675552 for details and examples.
+  // TODO(crbug.com/455656766): It's possible that this should not count.
+  // Add a metric to see how often this mimetype is served to the HLS player
+  // with success/failure playback.
+  AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
@@ -501,13 +480,10 @@ std::optional<VideoType> MimeUtil::ParseVideoCodecString(
   return parsed_results[0].video;
 }
 
-bool MimeUtil::ParseAudioCodecString(std::string_view mime_type,
-                                     std::string_view codec_id,
-                                     bool* out_is_ambiguous,
-                                     AudioCodec* out_codec) const {
-  DCHECK(out_is_ambiguous);
-  DCHECK(out_codec);
-
+std::optional<AudioType> MimeUtil::ParseAudioCodecString(
+    std::string_view mime_type,
+    std::string_view codec_id,
+    bool allow_ambiguous_matches) const {
   // Internal parsing API expects a vector of codecs.
   std::vector<ParsedCodecResult> parsed_results;
   std::vector<std::string> codec_strings;
@@ -519,20 +495,26 @@ bool MimeUtil::ParseAudioCodecString(std::string_view mime_type,
     DVLOG(3) << __func__ << " Failed to parse mime/codec pair:"
              << (mime_type.empty() ? "<empty mime>" : mime_type) << "; "
              << codec_id;
-    return false;
+    return std::nullopt;
   }
 
   CHECK_EQ(1U, parsed_results.size());
-  *out_is_ambiguous = parsed_results[0].is_ambiguous;
-  *out_codec = MimeUtilToAudioCodec(parsed_results[0].codec);
-
-  if (*out_codec == AudioCodec::kUnknown) {
+  auto codec = MimeUtilToAudioCodec(parsed_results[0].codec);
+  if (codec == AudioCodec::kUnknown) {
     DVLOG(3) << __func__ << " Codec string " << codec_id
              << " is not an AUDIO codec.";
-    return false;
+    return std::nullopt;
   }
 
-  return true;
+  if (!allow_ambiguous_matches && parsed_results[0].is_ambiguous) {
+    DVLOG(3) << __func__ << " Refusing to return ambiguous codec string match.";
+    return std::nullopt;
+  }
+
+  return AudioType{.codec = codec,
+                   .profile = parsed_results[0].codec == MimeUtil::MPEG4_XHE_AAC
+                                  ? AudioCodecProfile::kXHE_AAC
+                                  : AudioCodecProfile::kUnknown};
 }
 
 SupportsType MimeUtil::IsSupportedMediaFormat(
@@ -548,9 +530,7 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   }
 
   if (parsed_results.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << __func__ << " Successful parsing should output results.";
-    return SupportsType::kNotSupported;
+    NOTREACHED() << __func__ << " Successful parsing should output results.";
   }
 
   // We get here if the mime type expects to get a codecs parameter
@@ -605,6 +585,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
     case MPEG4_AAC:
     case FLAC:
     case VORBIS:
+    case OPUS:
       // These codecs are always supported; via a platform decoder (when used
       // with MSE/EME) or with a software decoder (the unified pipeline).
       return true;
@@ -615,52 +596,19 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
     case MPEG_H_AUDIO:
       return false;
 
-    case OPUS:
-      // If clear, the unified pipeline can always decode Opus in software.
-      if (!is_encrypted)
-        return true;
-
-      // Otherwise, platform support is required.
-      if (!platform_info.has_platform_opus_decoder) {
-        DVLOG(3) << "Platform does not support opus";
-        return false;
-      }
-
-      return true;
-
     case H264:
       return true;
 
     case HEVC:
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      return platform_info.has_platform_hevc_decoder;
-#else
-      return false;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      return BUILDFLAG(ENABLE_PLATFORM_HEVC);
 
     case VP8:
       // If clear, the unified pipeline can always decode VP8 in software.
       return is_encrypted ? platform_info.has_platform_vp8_decoder : true;
 
     case VP9: {
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kReportVp9AsAnUnsupportedMimeType)) {
-        return false;
-      }
-
-      // If clear, the unified pipeline can always decode VP9.0,1 in software.
-      // If we don't know the profile, then support is ambiguous, but default to
-      // true for historical reasons.
-      if (!is_encrypted && (video_profile == VP9PROFILE_PROFILE0 ||
-                            video_profile == VP9PROFILE_PROFILE1 ||
-                            video_profile == VIDEO_CODEC_PROFILE_UNKNOWN)) {
-        return true;
-      }
-
-      if (!platform_info.has_platform_vp9_decoder)
-        return false;
-
-      return true;
+      return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kReportVp9AsAnUnsupportedMimeType);
     }
 
     case DOLBY_VISION:
@@ -729,10 +677,8 @@ bool MimeUtil::ParseCodecStrings(
       // Determine implied codec for mime type.
       ParsedCodecResult implied_result = MakeDefaultParsedCodecResult();
       if (!GetDefaultCodec(mime_type_lower_case, &implied_result.codec)) {
-        NOTREACHED_IN_MIGRATION()
-            << " Mime types must offer a default codec if no explicit "
-               "codecs are expected";
-        return false;
+        NOTREACHED() << " Mime types must offer a default codec if no explicit "
+                        "codecs are expected";
       }
       out_results->push_back(implied_result);
       return true;
@@ -916,6 +862,8 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
 
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
   if (ParseIamfCodecId(codec_id.data(), nullptr, nullptr)) {
+    // TODO(crbug.com/438106645): We'll need to handle IAMF profiles correctly
+    // here. Especially if they end up containing xHE-AAC audio.
     out_result->codec = MimeUtil::IAMF;
     return true;
   }
@@ -960,7 +908,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
         break;
       // Only supported on some hardware and via ffmpeg.
       case H264PROFILE_HIGH10PROFILE:
-        if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+        if (IsDecoderBuiltInVideoCodec(VideoCodec::kH264)) {
           // FFmpeg is not generally used for encrypted videos, so we do not
           // know whether 10-bit is supported.
           ambiguous_platform_support = is_encrypted;
@@ -978,12 +926,13 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
     if (codec == MPEG4_XHE_AAC)
       audio_profile = AudioCodecProfile::kXHE_AAC;
 
-    if (!IsSupportedAudioType({audio_codec, audio_profile, false}))
+    if (!IsDecoderSupportedAudioType({audio_codec, audio_profile, false})) {
       return SupportsType::kNotSupported;
+    }
   }
 
   if (video_codec != VideoCodec::kUnknown) {
-    if (!IsSupportedVideoType(
+    if (!IsDecoderSupportedVideoType(
             {video_codec, video_profile, video_level, color_space})) {
       return SupportsType::kNotSupported;
     }
@@ -991,7 +940,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(chcunningham): Delete this. Android platform support should be
-  // handled by (android specific) media::IsSupportedVideoType() above.
+  // handled by (android specific) media::IsDecoderSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,
                                  video_profile, platform_info_)) {
     return SupportsType::kNotSupported;

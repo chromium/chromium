@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript">
+if (window.testRunner) {
+  testRunner.setHighlightAds();
+
+  // Tag 'alpha.png' as an ad resource.
+  testRunner.setDisallowedSubresourcePathSuffixes(["alpha.png"], false /* block_subresources */);
+}
+
+const img = document.createElement('img');
+img.width = 100;
+img.height = 200;
+img.src = "resources/alpha.png";
+
+img.onload = function () {
+  // Finish the test after the ad highlight is drawn.
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      if (window.testRunner)
+        testRunner.notifyDone();
+    });
+  });
+}
+
+document.body.appendChild(img);
+
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+</script>
+</body>
+</html>

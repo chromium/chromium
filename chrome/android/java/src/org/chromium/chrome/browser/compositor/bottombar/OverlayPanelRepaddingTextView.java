@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -15,10 +19,11 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * This implementation simply does a binary transition when the panel is 50% of the way
  * between peek and expanded states.
  */
+@NullMarked
 public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater {
     private static final float REPADDING_THRESHOLD = 0.5f;
 
-    private final float mPeekedEndButtonsWidth;
+    private float mPeekedEndButtonsWidth;
     private final float mExpandedEndButtonsWidth;
 
     private int mPaddingStart;
@@ -43,8 +48,8 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
             int layoutResource,
             int layoutId,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader,
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader,
             int peekedDimension,
             int expandedDimension) {
         super(panel, layoutResource, layoutId, context, container, resourceLoader);
@@ -55,9 +60,20 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
     }
 
     /**
+     * Sets the end padding to use when the overlay is peeking.
+     *
+     * @param paddingPx The padding in pixels.
+     */
+    public void setPeekedEndPadding(int paddingPx) {
+        mPeekedEndButtonsWidth = paddingPx;
+        invalidate();
+    }
+
+    /**
      * Updates the text view during the transition of the Overlay from Peeked to Expanded states.
-     * @param percentage A value from 0 to 1 that indicates the degree to which the panel has
-     *        been expanded.
+     *
+     * @param percentage A value from 0 to 1 that indicates the degree to which the panel has been
+     *     expanded.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
         mIsPanelExpandedBeyondHalf = percentage > REPADDING_THRESHOLD;
@@ -78,7 +94,8 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
     protected void invalidateIfNeeded(boolean alwaysInvalidate) {
         View view = getView();
         if (view == null
-                || !alwaysInvalidate && mIsPanelExpandedBeyondHalf == mWasPanelExpandedBeyondHalf) {
+                || (!alwaysInvalidate
+                        && mIsPanelExpandedBeyondHalf == mWasPanelExpandedBeyondHalf)) {
             return;
         }
 
@@ -95,7 +112,7 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        View view = getView();
+        View view = assumeNonNull(getView());
         mPaddingStart = view.getPaddingStart();
         mPaddingTop = view.getPaddingTop();
         mPaddingBottom = view.getPaddingBottom();

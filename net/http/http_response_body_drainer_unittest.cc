@@ -6,17 +6,20 @@
 
 #include <stdint.h>
 
-#include <cstring>
+#include <algorithm>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/completion_once_callback.h"
@@ -216,9 +219,8 @@ int MockHttpStream::ReadResponseBodyImpl(IOBuffer* buf, int buf_len) {
   if (is_last_chunk_zero_size_ && num_chunks_ == 1) {
     buf_len = 0;
   } else {
-    if (buf_len > kMagicChunkSize)
-      buf_len = kMagicChunkSize;
-    std::memset(buf->data(), 1, buf_len);
+    buf_len = std::min(buf_len, kMagicChunkSize);
+    std::ranges::fill(buf->first(base::checked_cast<size_t>(buf_len)), 1);
   }
   num_chunks_--;
   if (!num_chunks_)

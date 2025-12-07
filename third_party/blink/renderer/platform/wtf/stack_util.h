@@ -11,10 +11,11 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 WTF_EXPORT size_t GetUnderestimatedStackSize();
 WTF_EXPORT void* GetStackStart();
+WTF_EXPORT bool IsOnStack(void* address);
 
 // Returns the current stack position such that it works correctly with ASAN and
 // SafeStack. Must be marked noinline because it relies on compiler intrinsics
@@ -35,21 +36,19 @@ size_t ThreadStackSize();
 
 }  // namespace internal
 
-// Returns true if the function is not called on the main thread. Note carefully
-// that this function may have false positives, i.e. it can return true even if
-// we are on the main thread. If the function returns false, we are certainly
-// on the main thread.
-inline bool MayNotBeMainThread() {
+// Returns true if the function is not called on the main thread. May return
+// false positives. Returning false guarantees execution on the main thread
+// though.
+ALWAYS_INLINE bool MayNotBeMainThread() {
   uintptr_t dummy;
-  uintptr_t address_diff =
+  const uintptr_t address_diff =
       internal::g_main_thread_stack_start - reinterpret_cast<uintptr_t>(&dummy);
-  // This is a fast way to judge if we are in the main thread.
-  // If |&dummy| is within |s_mainThreadUnderestimatedStackSize| byte from
-  // the stack start of the main thread, we judge that we are in
-  // the main thread.
+  // This is a fast way to judge if we are in the main thread. If |&dummy| is
+  // within |g_main_thread_underestimated_stack_size| byte from the stack start
+  // of the main thread, we judge that we are in the main thread.
   return address_diff >= internal::g_main_thread_underestimated_stack_size;
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STACK_UTIL_H_

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_RENDER_FRAME_DEVTOOLS_AGENT_HOST_H_
 #define CONTENT_BROWSER_DEVTOOLS_RENDER_FRAME_DEVTOOLS_AGENT_HOST_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -52,11 +51,18 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   // Returns appropriate agent host for given frame tree node, traversing
   // up to local root as needed.
   static DevToolsAgentHostImpl* GetFor(FrameTreeNode* frame_tree_node);
+
   // Returns appropriate agent host for given RenderFrameHost, traversing
   // up to local root as needed. This will have an effect different from
   // calling the above overload as GetFor(rfh->frame_tree_node()) when
   // given RFH is a pending local root.
   static DevToolsAgentHostImpl* GetFor(RenderFrameHostImpl* rfh);
+
+  // Returns appropriate agent host for given frame tree node, traversing
+  // up to local root as needed. If no agent host exists for the local root,
+  // use the (potentially cross-process) root of the FTNs parent.
+  static DevToolsAgentHostImpl* GetForWithAncestorFallback(
+      FrameTreeNode* frame_tree_node);
 
   // Similar to GetFor(), but creates a host if it doesn't exist yet.
   static scoped_refptr<DevToolsAgentHost> GetOrCreateFor(
@@ -98,6 +104,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   std::string GetParentId() override;
   std::string GetOpenerId() override;
   std::string GetOpenerFrameId() override;
+  std::string GetParentFrameId() override;
   bool CanAccessOpener() override;
   std::string GetType() override;
   std::string GetTitle() override;
@@ -135,7 +142,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   ~RenderFrameDevToolsAgentHost() override;
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
   void DetachSession(DevToolsSession* session) override;
   void InspectElement(RenderFrameHost* frame_host, int x, int y) override;
   void UpdateRendererChannel(bool force) override;
@@ -151,7 +158,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(FrameTreeNodeId frame_tree_node_id) override;
   void RenderFrameDeleted(RenderFrameHost* rfh) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 

@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -9,7 +10,7 @@
 // META: variant=?15-19
 // META: variant=?20-last
 
-"use strict;"
+"use strict";
 
 // This test repeatedly runs auctions to verify an update. A modified bidding script
 // continuously throws errors until it detects the expected change in the interest group
@@ -31,7 +32,7 @@ const makeTestForUpdate = ({
 }) => {
   subsetTest(promise_test, async test => {
     const uuid = generateUuid(test);
-    extraBiddingLogic = ``;
+    let extraBiddingLogic = ``;
 
     let replacePlaceholders = (ads) => ads.forEach(element => {
       element.renderURL = element.renderURL.replace(`UUID-PLACEHOLDER`, uuid);
@@ -80,6 +81,12 @@ const makeTestForUpdate = ({
     };
     interestGroupOverrides.updateURL = createUpdateURL(updateParams);
     await joinInterestGroup(test, uuid, interestGroupOverrides);
+    if (interestGroupFieldName === `ads`) {
+      let interestGroup = createInterestGroupForOrigin(
+          uuid, window.location.origin, interestGroupOverrides);
+      interestGroup.ads = responseOverride;
+      await makeInterestGroupKAnonymous(interestGroup);
+    }
 
     // Run an auction until there's a winner, which means update occurred.
     let auctionResult = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
@@ -403,4 +410,3 @@ makeTestForNoUpdate({
     trustedBiddingSignalsKeys: ['key'],
   },
 });
-

@@ -42,7 +42,7 @@ GainNode::GainNode(BaseAudioContext& context)
       gain_(AudioParam::Create(
           context,
           Uuid(),
-          AudioParamHandler::kParamTypeGainGain,
+          AudioParamHandler::AudioParamType::kParamTypeGainGain,
           kDefaultGainValue,
           AudioParamHandler::AutomationRate::kAudio,
           AudioParamHandler::AutomationRateMode::kVariable)) {

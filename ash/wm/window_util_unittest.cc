@@ -104,8 +104,8 @@ TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {
 TEST_F(WindowUtilTest, MoveWindowToDisplay) {
   UpdateDisplay("500x400, 600x400");
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(12, 20, 100, 100)));
-  display::Screen* screen = display::Screen::GetScreen();
+      CreateTestWindowInShell({.bounds = {12, 20, 100, 100}}));
+  display::Screen* screen = display::Screen::Get();
   const int64_t original_display_id =
       screen->GetDisplayNearestWindow(window.get()).id();
   EXPECT_EQ(screen->GetPrimaryDisplay().id(), original_display_id);
@@ -133,7 +133,7 @@ TEST_F(WindowUtilTest, MoveWindowToDisplay) {
 TEST_F(WindowUtilTest, MoveWindowToDisplayAndLockScreen) {
   UpdateDisplay("500x400, 600x400");
   auto window = CreateTestWindow(gfx::Rect(12, 20, 100, 100));
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(2, screen->GetNumDisplays());
   const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
@@ -272,11 +272,15 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   WindowState::Get(window.get())->Maximize();
   InstallResizeHandleWindowTargeterForWindow(window.get());
 
-  auto* child = aura::test::CreateTestWindowWithDelegateAndType(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-      aura::client::WINDOW_TYPE_UNKNOWN, 1, gfx::Rect(window->bounds().size()),
-      window.get(),
-      /*show_on_creation=*/true);
+  auto* child =
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = window.get(),
+           .bounds = gfx::Rect(window->bounds().size()),
+           .window_type = aura::client::WINDOW_TYPE_UNKNOWN,
+           .window_id = 1})
+          .release();
 
   ui::EventTarget* root_target = window->GetRootWindow();
   auto* targeter = root_target->GetEventTargeter();
@@ -308,18 +312,18 @@ TEST_F(WindowUtilTest, PinWindow) {
   window_state->SetDelegate(std::move(window_state_delegate));
   window_util::PinWindow(window.get(), /* trusted */ false);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 1);
 
   WindowState::Get(window.get())->Restore();
 
   EXPECT_FALSE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 2);
 
   window_util::PinWindow(window.get(), /* trusted */ true);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_TRUE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
 }
 
@@ -335,18 +339,18 @@ TEST_F(WindowUtilTest, PinWindow_TabletMode) {
   window_state->SetDelegate(std::move(window_state_delegate));
   window_util::PinWindow(window.get(), /* trusted */ false);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 1);
 
   WindowState::Get(window.get())->Restore();
 
   EXPECT_FALSE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_FALSE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 2);
 
   window_util::PinWindow(window.get(), /* trusted */ true);
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
-  EXPECT_TRUE(WindowState::Get(window.get())->IsTrustedPinned());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsLockedFullscreen());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
 }
 

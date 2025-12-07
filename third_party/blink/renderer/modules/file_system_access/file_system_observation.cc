@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observation.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/file_system_access/file_system_change_record.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observation_collection.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observer.h"
@@ -25,7 +25,7 @@ FileSystemObservation::FileSystemObservation(
                  execution_context_->GetTaskRunner(TaskType::kStorage));
 
   // Add a disconnect handler so we can cleanup appropriately.
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &FileSystemObservation::OnRemoteDisconnected, WrapWeakPersistent(this)));
 }
 
@@ -40,7 +40,7 @@ void FileSystemObservation::DisconnectReceiver() {
 }
 
 void FileSystemObservation::OnFileChanges(
-    WTF::Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) {
+    Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) {
   observer_->OnFileChanges(std::move(mojo_changes));
 }
 

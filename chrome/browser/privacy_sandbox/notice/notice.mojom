@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module privacy_sandbox.notice.mojom;
+
+
+// LINT.IfChange(PrivacySandboxNoticeEvent)
+enum PrivacySandboxNoticeEvent {
+  // ACK'ed the notice using 'GotIt' or some other form of acknowledgement.
+  kAck = 0,
+  // Action taken clicking the 'x' button.
+  kClosed = 1,
+  // Opted in/Consented to the notice using 'Turn it on' or some other form of
+  // explicit consent.
+  kOptIn = 2,
+  // Action taken to dismiss or opt out of the notice using 'No Thanks' or some
+  // other form of dismissal.
+  kOptOut = 3,
+  // Action taken clicking the settings button.
+  kSettings = 4,
+  // Notice shown.
+  kShown = 5,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxNoticeEvent)
+
+// An identifier for the different notices.
+enum PrivacySandboxNotice {
+  kTopicsConsentNotice = 0,
+  kProtectedAudienceMeasurementNotice = 1,
+  kThreeAdsApisNotice = 2,
+  kMeasurementNotice = 3,
+};

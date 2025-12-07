@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 
@@ -46,25 +47,27 @@ std::unique_ptr<GlobalError> GlobalErrorService::RemoveGlobalError(
 
 void GlobalErrorService::RemoveUnownedGlobalError(GlobalError* error) {
   DCHECK(owned_errors_.find(error) == owned_errors_.end());
-  all_errors_.erase(base::ranges::find(all_errors_, error));
+  all_errors_.erase(std::ranges::find(all_errors_, error));
   GlobalErrorBubbleViewBase* bubble = error->GetBubbleView();
-  if (bubble)
+  if (bubble) {
     bubble->CloseBubbleView();
+  }
   NotifyErrorsChanged();
 }
 
 GlobalError* GlobalErrorService::GetGlobalErrorByMenuItemCommandID(
     int command_id) const {
   for (GlobalError* error : all_errors_) {
-    if (error->HasMenuItem() && command_id == error->MenuItemCommandID())
+    if (error->HasMenuItem() && command_id == error->MenuItemCommandID()) {
       return error;
+    }
   }
 
   return nullptr;
 }
 
-GlobalError*
-GlobalErrorService::GetHighestSeverityGlobalErrorWithAppMenuItem() const {
+GlobalError* GlobalErrorService::GetHighestSeverityGlobalErrorWithAppMenuItem()
+    const {
   GlobalError::Severity highest_severity = GlobalError::SEVERITY_LOW;
   GlobalError* highest_severity_error = nullptr;
 
@@ -82,13 +85,15 @@ GlobalErrorService::GetHighestSeverityGlobalErrorWithAppMenuItem() const {
 
 GlobalError* GlobalErrorService::GetFirstGlobalErrorWithBubbleView() const {
   for (GlobalError* error : all_errors_) {
-    if (error->HasBubbleView() && !error->HasShownBubbleView())
+    if (error->HasBubbleView() && !error->HasShownBubbleView()) {
       return error;
+    }
   }
   return nullptr;
 }
 
 void GlobalErrorService::NotifyErrorsChanged() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnGlobalErrorsChanged();
+  }
 }

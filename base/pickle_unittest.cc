@@ -22,6 +22,7 @@
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -39,9 +40,10 @@ const uint64_t testuint64 = 0xCE8CA925'3104BDF7ULL;
 const float testfloat = 3.1415926935f;
 const double testdouble = 2.71828182845904523;
 const std::string teststring("Hello world");  // note non-aligned string length
+const std::string testemptystring("");
 const std::wstring testwstring(L"Hello, world");
 const std::u16string teststring16(u"Hello, world");
-const char testrawstring[] = "Hello new world"; // Test raw string writing
+const char testrawstring[] = "Hello new world";  // Test raw string writing
 // Test raw char16_t writing, assumes UTF16 encoding is ANSI for alpha chars.
 const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
 const char testdata[] = "AAA\0BBB\0";
@@ -93,6 +95,10 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_TRUE(iter.ReadString(&outstring));
   EXPECT_EQ(teststring, outstring);
 
+  std::string outstring2;
+  EXPECT_TRUE(iter.ReadString(&outstring2));
+  EXPECT_EQ(testemptystring, outstring2);
+
   std::u16string outstring16;
   EXPECT_TRUE(iter.ReadString16(&outstring16));
   EXPECT_EQ(teststring16, outstring16);
@@ -141,6 +147,7 @@ TEST(PickleTest, EncodeDecode) {
   pickle.WriteFloat(testfloat);
   pickle.WriteDouble(testdouble);
   pickle.WriteString(teststring);
+  pickle.WriteString(testemptystring);
   pickle.WriteString16(teststring16);
   pickle.WriteString(testrawstring);
   pickle.WriteString16(testrawstring16);
@@ -243,7 +250,7 @@ TEST(PickleTest, CopyWithInvalidHeader) {
 }
 
 TEST(PickleTest, UnalignedSize) {
-  int buffer[] = { 10, 25, 40, 50 };
+  int buffer[] = {10, 25, 40, 50};
 
   Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(buffer));
 
@@ -304,34 +311,25 @@ TEST(PickleTest, PeekNext) {
   size_t pickle_size;
 
   // Data range doesn't contain header
-  EXPECT_FALSE(Pickle::PeekNext(
-      sizeof(CustomHeader),
-      pickle_data,
-      pickle_data + sizeof(CustomHeader) - 1,
-      &pickle_size));
+  EXPECT_FALSE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
+                                pickle_data + sizeof(CustomHeader) - 1,
+                                &pickle_size));
 
   // Data range contains header
-  EXPECT_TRUE(Pickle::PeekNext(
-      sizeof(CustomHeader),
-      pickle_data,
-      pickle_data + sizeof(CustomHeader),
-      &pickle_size));
+  EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
+                               pickle_data + sizeof(CustomHeader),
+                               &pickle_size));
   EXPECT_EQ(pickle_size, pickle.size());
 
   // Data range contains header and some other data
-  EXPECT_TRUE(Pickle::PeekNext(
-      sizeof(CustomHeader),
-      pickle_data,
-      pickle_data + sizeof(CustomHeader) + 1,
-      &pickle_size));
+  EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
+                               pickle_data + sizeof(CustomHeader) + 1,
+                               &pickle_size));
   EXPECT_EQ(pickle_size, pickle.size());
 
   // Data range contains full pickle
-  EXPECT_TRUE(Pickle::PeekNext(
-      sizeof(CustomHeader),
-      pickle_data,
-      pickle_data + pickle.size(),
-      &pickle_size));
+  EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
+                               pickle_data + pickle.size(), &pickle_size));
   EXPECT_EQ(pickle_size, pickle.size());
 }
 
@@ -343,32 +341,29 @@ TEST(PickleTest, PeekNextOverflow) {
   CustomHeader header;
 
   // Check if we can wrap around at all
-  if (sizeof(size_t) > sizeof(header.payload_size))
+  if (sizeof(size_t) > sizeof(header.payload_size)) {
     return;
+  }
 
   const char* pickle_data = reinterpret_cast<const char*>(&header);
 
   size_t pickle_size;
 
   // Wrapping around is detected and reported as maximum size_t value
-  header.payload_size = static_cast<uint32_t>(
-      1 - static_cast<int32_t>(sizeof(CustomHeader)));
-  EXPECT_TRUE(Pickle::PeekNext(
-      sizeof(CustomHeader),
-      pickle_data,
-      pickle_data + sizeof(CustomHeader),
-      &pickle_size));
+  header.payload_size =
+      static_cast<uint32_t>(1 - static_cast<int32_t>(sizeof(CustomHeader)));
+  EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
+                               pickle_data + sizeof(CustomHeader),
+                               &pickle_size));
   EXPECT_EQ(pickle_size, std::numeric_limits<size_t>::max());
 
   // Ridiculous pickle sizes are fine (callers are supposed to
   // verify them)
   header.payload_size =
       std::numeric_limits<uint32_t>::max() / 2 - sizeof(CustomHeader);
-  EXPECT_TRUE(Pickle::PeekNext(
-      sizeof(CustomHeader),
-      pickle_data,
-      pickle_data + sizeof(CustomHeader),
-      &pickle_size));
+  EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
+                               pickle_data + sizeof(CustomHeader),
+                               &pickle_size));
   EXPECT_EQ(pickle_size, std::numeric_limits<uint32_t>::max() / 2);
 }
 
@@ -398,7 +393,7 @@ TEST(PickleTest, FindNextWithIncompleteHeader) {
 
 #if defined(COMPILER_MSVC)
 #pragma warning(push)
-#pragma warning(disable: 4146)
+#pragma warning(disable : 4146)
 #endif
 TEST(PickleTest, FindNextOverflow) {
   size_t header_size = sizeof(Pickle::Header);
@@ -410,8 +405,9 @@ TEST(PickleTest, FindNextOverflow) {
   const char* end = start + header_size2 + payload_received;
   // It is impossible to construct an overflow test otherwise.
   if (sizeof(size_t) > sizeof(header->payload_size) ||
-      sizeof(uintptr_t) > sizeof(header->payload_size))
+      sizeof(uintptr_t) > sizeof(header->payload_size)) {
     return;
+  }
 
   header->payload_size = -(reinterpret_cast<uintptr_t>(start) + header_size2);
   EXPECT_EQ(nullptr, Pickle::FindNext(header_size2, start, end));
@@ -449,16 +445,16 @@ TEST(PickleTest, GetReadPointerAndAdvance) {
 TEST(PickleTest, Resize) {
   size_t unit = Pickle::kPayloadUnit;
   auto data = base::HeapArray<char>::Uninit(unit);
-  char* data_ptr = data.data();
-  for (size_t i = 0; i < unit; i++)
-    data_ptr[i] = 'G';
+  for (size_t i = 0; i < unit; i++) {
+    data[i] = 'G';
+  }
 
   // construct a message that will be exactly the size of one payload unit,
   // note that any data will have a 4-byte header indicating the size
   const size_t payload_size_after_header = unit - sizeof(uint32_t);
   Pickle pickle;
-  pickle.WriteData(
-      std::string_view(data_ptr, payload_size_after_header - sizeof(uint32_t)));
+  pickle.WriteData(std::string_view(
+      data.data(), payload_size_after_header - sizeof(uint32_t)));
   size_t cur_payload = payload_size_after_header;
 
   // note: we assume 'unit' is a power of 2
@@ -466,13 +462,13 @@ TEST(PickleTest, Resize) {
   EXPECT_EQ(pickle.payload_size(), payload_size_after_header);
 
   // fill out a full page (noting data header)
-  pickle.WriteData(std::string_view(data_ptr, unit - sizeof(uint32_t)));
+  pickle.WriteData(std::string_view(data.data(), unit - sizeof(uint32_t)));
   cur_payload += unit;
   EXPECT_EQ(unit * 2, pickle.capacity_after_header());
   EXPECT_EQ(cur_payload, pickle.payload_size());
 
   // one more byte should double the capacity
-  pickle.WriteData(std::string_view(data_ptr, 1u));
+  pickle.WriteData(std::string_view(data.data(), 1u));
   cur_payload += 8;
   EXPECT_EQ(unit * 4, pickle.capacity_after_header());
   EXPECT_EQ(cur_payload, pickle.payload_size());
@@ -570,8 +566,9 @@ TEST(PickleTest, ReadBytes) {
 // needed.
 TEST(PickleTest, DeepCopyResize) {
   Pickle pickle;
-  while (pickle.capacity_after_header() != pickle.payload_size())
+  while (pickle.capacity_after_header() != pickle.payload_size()) {
     pickle.WriteBool(true);
+  }
 
   // Make a deep copy.
   Pickle pickle2(pickle);
@@ -662,6 +659,34 @@ TEST(PickleTest, NonCanonicalBool) {
   bool b;
   ASSERT_TRUE(iter.ReadBool(&b));
   EXPECT_TRUE(b);
+}
+
+// Tests the ReadData() overload that returns a span.
+TEST(PickleTest, ReadDataAsSpan) {
+  constexpr auto kWriteData =
+      std::to_array<uint8_t>({0x01, 0x02, 0x03, 0x61, 0x62, 0x63});
+
+  Pickle pickle;
+  pickle.WriteData(kWriteData);
+  pickle.WriteData(base::span<const uint8_t>());
+
+  PickleIterator iter(pickle);
+  EXPECT_THAT(iter.ReadData(), testing::Optional(kWriteData));
+  EXPECT_THAT(iter.ReadData(), testing::Optional(base::span<const uint8_t>()));
+  EXPECT_FALSE(iter.ReadData());
+}
+
+// Tests the ReadBytes() overload that returns a span.
+TEST(PickleTest, ReadBytesAsSpan) {
+  constexpr auto kWriteData =
+      std::to_array<uint8_t>({0x01, 0x02, 0x03, 0x61, 0x62, 0x63});
+
+  Pickle pickle;
+  pickle.WriteBytes(kWriteData);
+
+  PickleIterator iter(pickle);
+  EXPECT_THAT(iter.ReadBytes(kWriteData.size()), testing::Optional(kWriteData));
+  EXPECT_FALSE(iter.ReadBytes(kWriteData.size()));
 }
 
 }  // namespace base

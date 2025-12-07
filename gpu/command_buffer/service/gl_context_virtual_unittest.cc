@@ -90,11 +90,11 @@ TEST_F(GLContextVirtualTest, CheckStickyGraphicsResetStatus) {
   // If reset, GLContextVirtual should report an error, but with an unknown
   // guilty context.
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
-      .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_ARB));
-  EXPECT_EQ(unsigned{GL_UNKNOWN_CONTEXT_RESET_ARB},
+      .WillOnce(Return(GL_GUILTY_CONTEXT_RESET));
+  EXPECT_EQ(unsigned{GL_UNKNOWN_CONTEXT_RESET},
             context->CheckStickyGraphicsResetStatus());
   // The underlying real context still knows, though.
-  EXPECT_EQ(unsigned{GL_GUILTY_CONTEXT_RESET_ARB},
+  EXPECT_EQ(unsigned{GL_GUILTY_CONTEXT_RESET},
             base_context->CheckStickyGraphicsResetStatus());
 }
 

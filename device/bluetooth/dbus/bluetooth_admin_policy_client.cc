@@ -102,12 +102,10 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
       return;
     }
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothAdminPolicyClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdminPolicyClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothAdminPolicyClientImpl::OnSetServiceAllowList,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -148,26 +146,25 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
       observer.AdminPolicyPropertyChanged(object_path, property_name);
   }
 
-  // Called when a response for successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
-    DCHECK(response);
-    std::move(callback).Run();
-  }
-
-  // Called when a response for a failed method call is received.
-  void OnError(ErrorCallback error_callback, dbus::ErrorResponse* response) {
-    // Error response has optional error message argument.
-    std::string error_name;
-    std::string error_message;
-    if (response) {
-      dbus::MessageReader reader(response);
-      error_name = response->GetErrorName();
-      reader.PopString(&error_message);
-    } else {
-      error_name = kNoResponseError;
-      error_message = "";
+  void OnSetServiceAllowList(base::OnceClosure callback,
+                             ErrorCallback error_callback,
+                             dbus::Response* response,
+                             dbus::ErrorResponse* error_response) {
+    if (!response) {
+      std::string error_name;
+      std::string error_message;
+      if (error_response) {
+        dbus::MessageReader reader(error_response);
+        error_name = error_response->GetErrorName();
+        reader.PopString(&error_message);
+      } else {
+        error_name = kNoResponseError;
+      }
+      std::move(error_callback).Run(error_name, error_message);
+      return;
     }
-    std::move(error_callback).Run(error_name, error_message);
+
+    std::move(callback).Run();
   }
 
   raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;

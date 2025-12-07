@@ -4,25 +4,29 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Exposes the data of a suggestion that can be saved offline. */
+@NullMarked
 public interface OfflinableSuggestion {
-    /** @return The URL of this suggestion. */
+    /**
+     * @return The URL of this suggestion.
+     */
     GURL getUrl();
 
     /** Assigns an offline page id to the suggestion. Set to {@code null} to clear. */
     void setOfflinePageOfflineId(@Nullable Long offlineId);
 
-    /** @return current offline id assigned to the suggestion, or {@code null} if there is none. */
-    @Nullable
-    Long getOfflinePageOfflineId();
+    /**
+     * @return current offline id assigned to the suggestion, or {@code null} if there is none.
+     */
+    @Nullable Long getOfflinePageOfflineId();
 
     /**
      * @return whether a suggestion has to be matched with the exact offline page or with the most
-     * recent offline page found by the suggestion's URL.
+     *     recent offline page found by the suggestion's URL.
      */
     boolean requiresExactOfflinePage();
 }

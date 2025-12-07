@@ -30,8 +30,7 @@ std::string BucketizeUsername(std::string_view canonicalized_username);
 
 // Produces the username/password pair hash using scrypt algorithm.
 // |canonicalized_username| and |password| are UTF-8 strings.
-// Returns nullopt in case of encryption failure.
-std::optional<std::string> ScryptHashUsernameAndPassword(
+std::string ScryptHashUsernameAndPassword(
     std::string_view canonicalized_username,
     std::string_view password);
 

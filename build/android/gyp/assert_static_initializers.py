@@ -21,8 +21,8 @@ _DUMP_STATIC_INITIALIZERS_PATH = os.path.join(build_utils.DIR_SOURCE_ROOT,
 
 def _RunReadelf(so_path, options, tool_prefix=''):
   return subprocess.check_output(
-      [tool_prefix + 'readobj', '--elf-output-style=GNU'] + options +
-      [so_path]).decode('utf8')
+      [tool_prefix + 'readobj', '--elf-output-style=GNU'] + options + [so_path],
+      encoding='utf-8')
 
 
 def _DumpStaticInitializers(so_path):
@@ -96,7 +96,8 @@ def main():
     sys.exit(1)
 
   if args.touch:
-    open(args.touch, 'w')
+    with open(args.touch, 'w', encoding='utf-8'):
+      pass
 
 
 if __name__ == '__main__':

@@ -4,6 +4,9 @@
 
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -47,11 +50,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests are controlled by a feature flag that is off by "
-            "default currently. When enabled, they can be disabled by the "
-            "Privacy Sandbox setting."
-          policy_exception_justification:
-            "These requests are triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 }  // namespace
@@ -165,7 +170,7 @@ void InterestGroupPermissionsChecker::ClearCache() {
 
 void InterestGroupPermissionsChecker::OnRequestComplete(
     ActiveRequestMap::iterator active_request,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const auto* response_info =
       active_request->second->simple_url_loader->ResponseInfo();
   if (!response_body || !response_info ||

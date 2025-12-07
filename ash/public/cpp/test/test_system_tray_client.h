@@ -80,14 +80,15 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowAudioSettings() override;
   bool IsUserFeedbackEnabled() override;
   void ShowEolInfoPage() override;
-  void RecordEolNoticeShown() override;
   void ShowGraphicsTabletSettings() override;
   void ShowMouseSettings() override;
   void ShowTouchpadSettings() override;
   void ShowRemapKeysSubpage(int device_id) override;
   void ShowYouTubeMusicPremiumPage() override;
+  void ShowChromebookPerksYouTubePage() override;
   void ShowKeyboardSettings() override;
   void ShowPointingStickSettings() override;
+  void ShowNearbyShareSettings() override;
 
   int show_account_settings_count() const {
     return show_account_settings_count_;
@@ -227,12 +228,20 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_youtube_music_premium_page_count_;
   }
 
+  int show_chromebook_perks_youtube_page_count() const {
+    return show_chromebook_perks_youtube_page_count_;
+  }
+
   int show_keyboard_settings_count() const {
     return show_keyboard_settings_count_;
   }
 
   int show_pointing_stick_settings_count() const {
     return show_pointing_stick_settings_count_;
+  }
+
+  int show_nearby_share_settings_count() const {
+    return show_nearby_share_settings_count_;
   }
 
  private:
@@ -276,8 +285,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_touchpad_settings_count_ = 0;
   int show_remap_keys_subpage_count_ = 0;
   int show_youtube_music_premium_page_count_ = 0;
+  int show_chromebook_perks_youtube_page_count_ = 0;
   int show_keyboard_settings_count_ = 0;
   int show_pointing_stick_settings_count_ = 0;
+  int show_nearby_share_settings_count_ = 0;
 };
 
 }  // namespace ash

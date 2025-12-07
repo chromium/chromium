@@ -28,7 +28,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
-#include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

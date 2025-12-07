@@ -1,0 +1,13 @@
+This is a wdspec test.
+[FAIL] test_stress[0]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_stress[1]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_stress[2]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_stress[3]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_stress[4]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+Harness: the test ran to completion.
+

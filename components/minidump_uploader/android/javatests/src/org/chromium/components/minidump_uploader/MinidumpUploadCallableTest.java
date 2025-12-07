@@ -38,7 +38,7 @@ public class MinidumpUploadCallableTest {
     private File mExpectedFileAfterUpload;
 
     private static class MockMinidumpUploader extends MinidumpUploader {
-        private Result mMockResult;
+        private final Result mMockResult;
 
         public static MinidumpUploader returnsSuccess() {
             return new MockMinidumpUploader(
@@ -433,7 +433,7 @@ public class MinidumpUploadCallableTest {
         Assert.assertTrue(time <= now);
         Assert.assertTrue(time > now - 60 * 60);
 
-        Assert.assertEquals(uploadId, MinidumpUploaderTestConstants.UPLOAD_CRASH_ID);
-        Assert.assertEquals(localId, LOCAL_CRASH_ID);
+        Assert.assertEquals(MinidumpUploaderTestConstants.UPLOAD_CRASH_ID, uploadId);
+        Assert.assertEquals(LOCAL_CRASH_ID, localId);
     }
 }

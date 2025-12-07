@@ -17,13 +17,10 @@
 
 namespace errors = extensions::manifest_errors;
 
-using extensions::Extension;
-using extensions::ExtensionBuilder;
-
+namespace extensions {
 namespace {
 
-class StreamsPrivateManifestTest : public ChromeManifestTest {
-};
+using StreamsPrivateManifestTest = ChromeManifestTest;
 
 TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
   scoped_refptr<const Extension> extension =
@@ -33,7 +30,7 @@ TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
               base::Value::Dict()
                   .Set("name", "MIME type handler test")
                   .Set("version", "1.0.0")
-                  .Set("manifest_version", 2)
+                  .Set("manifest_version", 3)
                   .Set("mime_types", base::Value::List().Append("text/plain")))
           .Build();
 
@@ -52,7 +49,7 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
               base::Value::Dict()
                   .Set("name", "MIME types test")
                   .Set("version", "1.0.0")
-                  .Set("manifest_version", 2)
+                  .Set("manifest_version", 3)
                   .Set("mime_types", base::Value::List().Append("text/plain")))
           .Build();
 
@@ -63,3 +60,4 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
 }
 
 }  // namespace
+}  // namespace extensions

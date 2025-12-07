@@ -28,131 +28,65 @@
 </template>
 
 <div id="cameraSection">
-  <template is="dom-if" if="[[!showAppPermissions_]]">
-    <div class="hr"></div>
-    <settings-toggle-button
-        id="cameraToggle"
-        pref="{{prefs.ash.user.camera_allowed}}"
+  <div id="cameraRow" class="settings-box no-padding">
+    <cr-link-row id="cameraSubpageLink"
+        start-icon="app-management:camera"
         label="$i18n{cameraToggleTitle}"
-        sub-label="[[cameraSubLabel_]]"
-        deep-link-focus-id$="[[Setting.kCameraOnOff]]"
-        disabled="[[shouldDisableCameraToggle_]]"
-        on-change="onCameraToggleChanged_">
-    </settings-toggle-button>
-    <div class="list-frame">
-      <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>
-        <div id="noCamera" class="list-item">
-          $i18n{noCameraConnectedText}
-        </div>
-      </template>
-      <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
-        <template id="cameraList" is="dom-repeat"
-            items="[[connectedCameraNames_]]">
-          <div class="list-item">
-            [[item]]
-          </div>
-        </template>
-      </template>
+        sub-label="[[cameraRowSubtext_]]"
+        on-click="onCameraSubpageLinkClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div class="separator"></div>
+    <div id="cameraToggleWrapper">
+      <cr-toggle
+          id="cameraToggle"
+          class="margin-matches-padding"
+          checked="{{prefs.ash.user.camera_allowed.value}}"
+          disabled="[[shouldDisableCameraToggle_]]"
+          aria-label="$i18n{cameraToggleTitle}"
+          aria-description="[[cameraRowSubtext_]]">
+      </cr-toggle>
     </div>
-  </template>
-  <template is="dom-if" if="[[showAppPermissions_]]">
-    <div id="cameraRow" class="settings-box no-padding">
-      <cr-link-row id="cameraSubpageLink"
-          start-icon="app-management:camera"
-          label="$i18n{cameraToggleTitle}"
-          sub-label="[[cameraRowSubtext_]]"
-          on-click="onCameraSubpageLinkClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="separator"></div>
-      <div id="cameraToggleWrapper">
-        <cr-toggle
-            id="cameraToggle"
-            class="margin-matches-padding"
-            checked="{{prefs.ash.user.camera_allowed.value}}"
-            disabled="[[shouldDisableCameraToggle_]]"
-            aria-label="$i18n{cameraToggleTitle}"
-            aria-description="[[cameraRowSubtext_]]">
-        </cr-toggle>
-      </div>
-      <paper-tooltip
-          id="cameraToggleTooltip"
-          hidden="[[!isCameraListEmpty_]]"
-          aria-hidden="true"
-          for="cameraToggleWrapper"
-          fit-to-visible-bounds>
-        $i18n{privacyHubNoCameraConnectedTooltipText}
-      </paper-tooltip>
-    </div>
-  </template>
+    <paper-tooltip
+        id="cameraToggleTooltip"
+        hidden="[[!isCameraListEmpty_]]"
+        aria-hidden="true"
+        for="cameraToggleWrapper"
+        fit-to-visible-bounds>
+      $i18n{privacyHubNoCameraConnectedTooltipText}
+    </paper-tooltip>
+  </div>
 </div>
 
 <div id="microphoneSection">
-  <template is="dom-if" if="[[!showAppPermissions_]]">
-    <div class="hr"></div>
-    <settings-toggle-button
-        id="microphoneToggle"
-        pref="{{prefs.ash.user.microphone_allowed}}"
+  <div id="microphoneRow" class="settings-box no-padding">
+    <cr-link-row id="microphoneSubpageLink"
+        start-icon="app-management:microphone"
         label="$i18n{microphoneToggleTitle}"
-        deep-link-focus-id$="[[Setting.kMicrophoneOnOff]]"
-        sub-label="$i18n{microphoneToggleSubtext}"
-        disabled="[[shouldDisableMicrophoneToggle_]]"
-        on-change="onMicrophoneToggleChanged_">
-      <cr-tooltip-icon
-        hidden$="[[!microphoneHardwareToggleActive_]]"
-        tooltip-text="$i18n{microphoneHwToggleTooltip}"
-        icon-class="cr:info-outline"
-        slot="more-actions">
-      </cr-tooltip-icon>
-    </settings-toggle-button>
-    <div class="list-frame">
-      <template is="dom-if" if="[[isMicListEmpty_]]" restamp>
-        <div id="noMic" class="list-item">
-          $i18n{noMicrophoneConnectedText}
-        </div>
-      </template>
-      <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
-        <template
-            id="micList"
-            is="dom-repeat"
-            items="[[connectedMicrophoneNames_]]">
-          <div class="list-item">
-            [[item]]
-          </div>
-        </template>
-      </template>
+        sub-label="[[microphoneRowSubtext_]]"
+        on-click="onMicrophoneSubpageLinkClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div class="separator"></div>
+    <div id="microphoneToggleWrapper">
+      <cr-toggle
+          id="microphoneToggle"
+          class="margin-matches-padding"
+          checked="{{prefs.ash.user.microphone_allowed.value}}"
+          disabled="[[shouldDisableMicrophoneToggle_]]"
+          aria-label="$i18n{microphoneToggleTitle}"
+          aria-description="[[microphoneRowSubtext_]]">
+      </cr-toggle>
     </div>
-  </template>
-  <template is="dom-if" if="[[showAppPermissions_]]">
-    <div id="microphoneRow" class="settings-box no-padding">
-      <cr-link-row id="microphoneSubpageLink"
-          start-icon="app-management:microphone"
-          label="$i18n{microphoneToggleTitle}"
-          sub-label="[[microphoneRowSubtext_]]"
-          on-click="onMicrophoneSubpageLinkClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="separator"></div>
-      <div id="microphoneToggleWrapper">
-        <cr-toggle
-            id="microphoneToggle"
-            class="margin-matches-padding"
-            checked="{{prefs.ash.user.microphone_allowed.value}}"
-            disabled="[[shouldDisableMicrophoneToggle_]]"
-            aria-label="$i18n{microphoneToggleTitle}"
-            aria-description="[[microphoneRowSubtext_]]">
-        </cr-toggle>
-      </div>
-      <paper-tooltip
-          id="microphoneToggleTooltip"
-          hidden="[[!shouldDisableMicrophoneToggle_]]"
-          aria-hidden="true"
-          for="microphoneToggleWrapper"
-          fit-to-visible-bounds>
-        [[microphoneToggleTooltipText_]]
-      </paper-tooltip>
-    </div>
-  </template>
+    <paper-tooltip
+        id="microphoneToggleTooltip"
+        hidden="[[!shouldDisableMicrophoneToggle_]]"
+        aria-hidden="true"
+        for="microphoneToggleWrapper"
+        fit-to-visible-bounds>
+      [[microphoneToggleTooltipText_]]
+    </paper-tooltip>
+  </div>
 </div>
 
 <template is="dom-if" if="[[showSpeakOnMuteDetectionPage_]]" restamp>

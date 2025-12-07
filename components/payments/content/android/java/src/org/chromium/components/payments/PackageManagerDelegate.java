@@ -17,18 +17,24 @@ import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Abstraction of Android's package manager to enable testing. */
+@NullMarked
 public class PackageManagerDelegate {
+    private static final String TAG = "PkgManagerDelegate";
+
     /**
      * Checks whether the system has the given feature.
+     *
      * @param feature The feature to check.
      * @return Whether the system has the given feature.
      */
@@ -43,22 +49,37 @@ public class PackageManagerDelegate {
      * @return The package information of the installed application.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    public PackageInfo getPackageInfoWithSignatures(String packageName) {
+    public @Nullable PackageInfo getPackageInfoWithSignatures(String packageName) {
         return PackageUtils.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
     }
 
     /**
-     * Retrieves package information of an installed application.
+     * Retrieves package information of an installed application, based on the UID. On Android,
+     * multiple packages can share the same UID, so more than one {@link PackageInfo} may be
+     * returned.
      *
      * @param uid The uid of an installed application.
-     * @return The package information of the installed application.
+     * @return The package information of installed applications with the input uid, or null if no
+     *     matching applications are found.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    public PackageInfo getPackageInfoWithSignatures(int uid) {
-        String packageName =
-                ContextUtils.getApplicationContext().getPackageManager().getNameForUid(uid);
-        if (packageName == null) return null;
-        return getPackageInfoWithSignatures(packageName);
+    public @Nullable List<PackageInfo> getPackageInfosWithSignatures(int uid) {
+        String[] packageNames =
+                ContextUtils.getApplicationContext().getPackageManager().getPackagesForUid(uid);
+        if (packageNames == null) {
+            return null;
+        }
+
+        List<PackageInfo> packageInfos = new ArrayList<>();
+        for (String packageName : packageNames) {
+            PackageInfo result = getPackageInfoWithSignatures(packageName);
+            if (result == null) {
+                Log.e(TAG, "No package info found for %s", packageName);
+                continue;
+            }
+            packageInfos.add(result);
+        }
+        return packageInfos;
     }
 
     /**
@@ -72,7 +93,7 @@ public class PackageManagerDelegate {
 
     /**
      * Retrieves the list of activities that can respond to the given intent. And returns the
-     * activites' meta data in ResolveInfo.
+     * activities' meta data in ResolveInfo.
      *
      * @param intent The intent to query.
      * @return The list of activities that can respond to the intent.
@@ -122,8 +143,7 @@ public class PackageManagerDelegate {
      * @param resourceId      The identifier of the string array resource.
      * @return The string array resource, or null if not found.
      */
-    @Nullable
-    public String[] getStringArrayResourceForApplication(
+    public String @Nullable [] getStringArrayResourceForApplication(
             ApplicationInfo applicationInfo, int resourceId) {
         Resources resources;
         try {
@@ -147,8 +167,7 @@ public class PackageManagerDelegate {
      * @param packageName The package name of the specified package. Not allowed to be null.
      * @return The package name of the installer app.
      */
-    @Nullable
-    public String getInstallerPackage(String packageName) {
+    public @Nullable String getInstallerPackage(String packageName) {
         assert packageName != null;
         return ContextUtils.getApplicationContext()
                 .getPackageManager()

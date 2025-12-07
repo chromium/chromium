@@ -9,20 +9,19 @@
  * the transition to a more granular approach to roaming configuration.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {CrosNetworkConfigInterface, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -98,14 +97,13 @@ export class CellularRoamingToggleButtonElement extends
         !this.managedProperties.typeProperties.cellular!.allowRoaming) {
       return;
     }
-    const config =
-        OncMojo.getDefaultConfigProperties(this.managedProperties.type);
+    const config = OncMojo.getBaselineConfigProperties(this.managedProperties);
     config.typeConfig.cellular = {
       roaming: {
         allowRoaming: this.isRoamingAllowedForNetwork_,
       },
-      apn: undefined,
-      textMessageAllowState: undefined,
+      apn: null,
+      textMessageAllowState: null,
     };
     this.networkConfig_.setProperties(this.managedProperties.guid, config)
         .then(response => {
@@ -145,7 +143,7 @@ export class CellularRoamingToggleButtonElement extends
 
   private managedPropertiesChanged_(): void {
     if (!this.managedProperties ||
-        !this.managedProperties!.typeProperties.cellular!.allowRoaming) {
+        !this.managedProperties.typeProperties.cellular!.allowRoaming) {
       return;
     }
 

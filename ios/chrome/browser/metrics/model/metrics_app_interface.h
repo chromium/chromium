@@ -15,6 +15,9 @@ namespace syncher {
 // Constant for timeout while waiting for asynchronous sync and UKM operations.
 constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 
+// Constant for timeout while waiting for asynchronous sync and DWA operations.
+constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
+
 }  // namespace syncher
 
 // MetricsAppInterface contains the app-side implementation for helpers. These
@@ -87,6 +90,30 @@ constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 // Returns YES if the UMA log has user demographics.
 + (BOOL)UMALogHasUserDemographics;
 
+// Returns whether DWA recording is `enabled`.
++ (BOOL)checkDWARecordingEnabled:(BOOL)enabled;
+
+// Returns YES if the DWA recorder has entries.
++ (BOOL)DWARecorderHasEntries:(BOOL)state;
+
+// Returns YES if the DWA service has logs to send.
++ (BOOL)hasUnsentDWALogs:(BOOL)state;
+
+// Records a new entry metric for DWA.
++ (void)recordTestDWAEntryMetric;
+
+// Returns true iff DWA is allowed for all profiles.
++ (BOOL)DWARecorderAllowedForAllProfiles:(BOOL)state;
+
+// Flushes the DWA service with a periodic trigger.
++ (void)DWAServiceFlushCall;
+
+// Purges DWA recorder.
++ (void)clearDWARecorder;
+
+// Returns the country id from the PUMA service for testing.
++ (NSString*)pumaCountryIdForTesting;
+
 // Creates a chrome_test_util::HistogramTester that will record every histogram
 // sent during test.
 + (NSError*)setupHistogramTester [[nodiscard]];
@@ -117,6 +144,17 @@ constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 // Checks the sum of all samples recorder for `histogram`.
 + (NSError*)expectSum:(NSInteger)sum
          forHistogram:(NSString*)histogram [[nodiscard]];
+
+// Creates a chrome_test_util::UserActionTester that will record every user
+// action sent during test.
++ (NSError*)setupUserActionTester [[nodiscard]];
+
+// Releases the chrome_test_util::UserActionTester.
++ (NSError*)releaseUserActionTester [[nodiscard]];
+
+// Checks the count of the `userAction`.
++ (NSError*)expectCount:(int)expectedCount
+          forUserAction:(NSString*)userAction [[nodiscard]];
 
 @end
 

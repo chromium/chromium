@@ -75,23 +75,19 @@ UChar TextIteratorTextState::CharacterAt(unsigned index) const {
 
 String TextIteratorTextState::GetTextForTesting() const {
   if (single_character_buffer_)
-    return String(&single_character_buffer_, 1u);
+    return String(base::span_from_ref(single_character_buffer_));
   return text_.Substring(text_start_offset_, length());
 }
 
 void TextIteratorTextState::AppendTextToStringBuilder(
-    StringBuilder& builder,
-    unsigned position,
-    unsigned max_length) const {
-  SECURITY_DCHECK(position <= this->length());
-  unsigned length_to_append = std::min(length() - position, max_length);
-  if (!length_to_append)
+    StringBuilder& builder) const {
+  if (!text_length_) {
     return;
+  }
   if (single_character_buffer_) {
-    DCHECK_EQ(position, 0u);
     builder.Append(single_character_buffer_);
   } else {
-    builder.Append(text_, text_start_offset_ + position, length_to_append);
+    builder.Append(text_, text_start_offset_, text_length_);
   }
 }
 
@@ -140,10 +136,9 @@ void TextIteratorTextState::UpdatePositionOffsets(
     case PositionNodeType::kBeforeChildren:
     case PositionNodeType::kInText:
     case PositionNodeType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(position_node_type_);
+  NOTREACHED() << static_cast<int>(position_node_type_);
 }
 
 void TextIteratorTextState::EmitAltText(const HTMLElement& element) {

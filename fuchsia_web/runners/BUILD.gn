@@ -6,6 +6,7 @@ assert(is_fuchsia)
 
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
+import("//fuchsia_web/common/swiftshader_exclude.gni")
 import("//testing/test.gni")
 import("//third_party/fuchsia-gn-sdk/src/component.gni")
 import("//third_party/fuchsia-gn-sdk/src/package.gni")
@@ -60,7 +61,7 @@ source_set("cast_runner_core") {
     "//base",
     "//components/cast/common:constants",
     "//components/cast/message_port",
-    "//components/cast/named_message_port_connector:named_message_port_connector",
+    "//components/cast/named_message_port_connector",
     "//components/fuchsia_component_support",
     "//components/fuchsia_component_support:dynamic_component_host",
     "//fuchsia_web/cast_streaming",
@@ -124,13 +125,11 @@ _web_instance_host_deps_files_to_exclude = [
   "lib/libEGL.so",
   "lib/libGLESv2.so",
   "lib/libvulkan.so",
-
-  # TODO(crbug.com/42050042): SwiftShader is not used in cast_runner.
-  # This list should match the list of SwiftShader files excluded from the
-  # web_engine package (see fuchsia_web/webengine/BUILD.gn).
-  "lib/libvk_swiftshader.so",
-  "vk_swiftshader_icd.json",
 ]
+
+# TODO(crbug.com/42050042): SwiftShader is used only in tests. It should
+# not be included in the WebEngine package.
+_web_instance_host_deps_files_to_exclude += swiftshader_files_to_exclude
 
 # This file is required for both component and coverage builds.
 if (!is_component_build && !fuchsia_code_coverage) {

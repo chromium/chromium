@@ -7,14 +7,8 @@
 
 #include <iosfwd>
 
-namespace base {
-class TimeDelta;
-}
-
 namespace content {
 class WebContents;
-enum class OfflineCapability;
-enum class ServiceWorkerCapability;
 }  // namespace content
 
 namespace webapps {
@@ -157,8 +151,14 @@ enum class WebappInstallSource {
   // Recommended apps screen in the ChromeOS Out Of Box Experience.
   OOBE_APP_RECOMMENDATIONS = 35,
 
-  // Add any new values above this one.
-  COUNT,
+  // Installed from web content via Web Install API.
+  WEB_INSTALL = 36,
+
+  // Installed via the ChromeOS help app directing the user to a page and
+  // displaying the install dialog for that page.
+  CHROMEOS_HELP_APP = 37,
+
+  kMaxValue = CHROMEOS_HELP_APP,
 };
 
 std::ostream& operator<<(std::ostream& os, WebappInstallSource source);
@@ -252,21 +252,6 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source);
 
 bool IsUserUninstall(WebappUninstallSource source);
 
-// This is the result of the promotability check that is recorded in the
-// Webapp.CheckServiceWorker.Status histogram.
-// Do not reorder or reuse any values in this enum. New values must be added to
-// the end only.
-enum class ServiceWorkerOfflineCapability {
-  kNoServiceWorker,
-  kServiceWorkerNoFetchHandler,
-  // Service worker with a fetch handler but no offline support.
-  kServiceWorkerNoOfflineSupport,
-  // Service worker with a fetch handler with offline support.
-  kServiceWorkerWithOfflineSupport,
-  // Note: kMaxValue is needed only for histograms.
-  kMaxValue = kServiceWorkerWithOfflineSupport,
-};
-
 class InstallableMetrics {
  public:
   InstallableMetrics() = delete;
@@ -286,21 +271,6 @@ class InstallableMetrics {
   static WebappInstallSource GetInstallSource(
       content::WebContents* web_contents,
       InstallTrigger trigger);
-
-  // Records |time| in the Webapp.CheckServiceWorker.Time histogram.
-  static void RecordCheckServiceWorkerTime(base::TimeDelta time);
-
-  // Records |status| in the Webapp.CheckServiceWorker.Status histogram.
-  static void RecordCheckServiceWorkerStatus(
-      ServiceWorkerOfflineCapability status);
-
-  // Converts ServiceWorkerCapability to ServiceWorkerOfflineCapability.
-  static ServiceWorkerOfflineCapability ConvertFromServiceWorkerCapability(
-      content::ServiceWorkerCapability capability);
-
-  // Converts OfflineCapability to ServiceWorkerOfflineCapability.
-  static ServiceWorkerOfflineCapability ConvertFromOfflineCapability(
-      content::OfflineCapability capability);
 
   // Records |source| in the Webapp.Install.UninstallEvent histogram.
   static void TrackUninstallEvent(WebappUninstallSource source);

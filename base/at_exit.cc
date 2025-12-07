@@ -5,6 +5,7 @@
 #include "base/at_exit.h"
 
 #include <stddef.h>
+
 #include <ostream>
 #include <utility>
 
@@ -29,21 +30,20 @@ AtExitManager::AtExitManager() : next_manager_(g_top_manager) {
 // If multiple modules instantiate AtExitManagers they'll end up living in this
 // module... they have to coexist.
 #if !defined(COMPONENT_BUILD)
-  DCHECK(!g_top_manager);
+  DCHECK(!g_top_manager || g_top_manager->allow_shadowing_);
 #endif
   g_top_manager = this;
 }
 
 AtExitManager::~AtExitManager() {
   if (!g_top_manager) {
-    NOTREACHED_IN_MIGRATION()
-        << "Tried to ~AtExitManager without an AtExitManager";
-    return;
+    NOTREACHED() << "Tried to ~AtExitManager without an AtExitManager";
   }
   DCHECK_EQ(this, g_top_manager);
 
-  if (!g_disable_managers)
+  if (!g_disable_managers) {
     ProcessCallbacksNow();
+  }
   g_top_manager = next_manager_;
 }
 
@@ -56,9 +56,7 @@ void AtExitManager::RegisterCallback(AtExitCallbackType func, void* param) {
 // static
 void AtExitManager::RegisterTask(base::OnceClosure task) {
   if (!g_top_manager) {
-    NOTREACHED_IN_MIGRATION()
-        << "Tried to RegisterCallback without an AtExitManager";
-    return;
+    NOTREACHED() << "Tried to RegisterCallback without an AtExitManager";
   }
 
   AutoLock lock(g_top_manager->lock_);
@@ -71,9 +69,7 @@ void AtExitManager::RegisterTask(base::OnceClosure task) {
 // static
 void AtExitManager::ProcessCallbacksNow() {
   if (!g_top_manager) {
-    NOTREACHED_IN_MIGRATION()
-        << "Tried to ProcessCallbacksNow without an AtExitManager";
-    return;
+    NOTREACHED() << "Tried to ProcessCallbacksNow without an AtExitManager";
   }
 
   // Callbacks may try to add new callbacks, so run them without holding
@@ -108,6 +104,11 @@ void AtExitManager::ProcessCallbacksNow() {
 void AtExitManager::DisableAllAtExitManagers() {
   AutoLock lock(g_top_manager->lock_);
   g_disable_managers = true;
+}
+
+void AtExitManager::AllowShadowingForTesting() {
+  CHECK(g_top_manager);
+  g_top_manager->allow_shadowing_ = true;
 }
 
 AtExitManager::AtExitManager(bool shadow) : next_manager_(g_top_manager) {

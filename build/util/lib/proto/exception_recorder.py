@@ -54,13 +54,15 @@ class _Formatter(Formatter):
 # Default formatter
 _default_formatter = _Formatter()
 
+def _record_time(exc: ExceptionOccurrence):
+  exc.occurred_time.GetCurrentTime()
 
 def register(exc: Exception,
              formatter: Formatter = _default_formatter) -> ExceptionOccurrence:
   """Create and register an ExceptionOccurrence record."""
   ret = ExceptionOccurrence(name=formatter.format_name(exc),
                             stacktrace=formatter.format_stacktrace(exc))
-  ret.occurred_time.GetCurrentTime()
+  _record_time(ret)
   _records.append(ret)
   return ret
 
@@ -73,6 +75,16 @@ def size() -> int:
 def clear() -> None:
   """Clear all the registered ExceptionOccurrence records."""
   _records.clear()
+
+
+def clear_stacktrace() -> None:
+  """Clear the stacktrace from all the records while keeping the records.
+
+  This can be called to reduce the size of the overall records and avoid
+  the size issue when uploaded to other services, e.g. RDB.
+  """
+  for record in _records:
+    record.ClearField('stacktrace')
 
 
 def to_dict() -> dict:

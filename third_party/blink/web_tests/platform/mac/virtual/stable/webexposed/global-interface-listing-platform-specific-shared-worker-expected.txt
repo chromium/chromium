@@ -1,0 +1,18 @@
+This test documents all interface attributes and methods on SharedWorkerGlobalScope.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Starting worker: resources/global-interface-listing-worker.js
+[Worker] [INTERFACES]
+[Worker] interface BarcodeDetector
+[Worker]     static method getSupportedFormats
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method detect
+[Worker] interface Notification : EventTarget
+[Worker] [NAMESPACES]
+[Worker] [GLOBAL OBJECT]
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

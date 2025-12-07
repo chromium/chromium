@@ -1,26 +1,22 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 source_set("media_effects") {
-  public_deps = [
-    "//media/capture/mojom:video_effects_manager",
-    "//services/video_effects/public/mojom:mojom",
-  ]
   deps = [
     "//base",
     "//components/keyed_service/content",
     "//components/user_prefs",
-    "//components/viz/host:host",
+    "//components/viz/host",
     "//content/public/browser",
     "//services/audio/public/mojom",
     "//services/video_capture/public/mojom",
     "//third_party/abseil-cpp:absl",
   ]
+
   sources = [
     "media_device_info.cc",
     "media_device_info.h",
-    "media_effects_model_provider.h",
-    "media_effects_service.cc",
-    "media_effects_service.h",
-    "video_effects_manager_impl.cc",
-    "video_effects_manager_impl.h",
   ]
 }
 
@@ -33,15 +29,9 @@ source_set("unit_tests") {
     "//components/media_effects/test:test_support",
     "//components/user_prefs/test:test_support",
     "//content/test:test_support",
-    "//services/video_effects/test:test_support",
     "//testing/gtest",
     "//third_party/mediapipe",
   ]
-  sources = [
-    "media_device_info_unittest.cc",
-    "media_effects_mediapipe_unittests.cc",
-    "media_effects_service_unittest.cc",
-    "video_effects_manager_impl_unittest.cc",
-  ]
-  configs += [ "//third_party/mediapipe:mediapipe_internal_config" ]
+
+  sources = [ "media_device_info_unittest.cc" ]
 }

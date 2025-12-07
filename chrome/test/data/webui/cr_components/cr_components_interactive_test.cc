@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/history_clusters/core/features.h"
 #include "content/public/test/browser_test.h"
 
 typedef WebUIMochaFocusTest CrComponentsFocusTest;
@@ -15,22 +14,25 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, MostVisited) {
   RunTest("cr_components/most_visited_focus_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-class CrComponentsCertManagerV2FocusTest : public WebUIMochaBrowserTest {
+IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, CrShortcutInput) {
+  set_test_loader_host(chrome::kChromeUIExtensionsHost);
+  RunTest("cr_components/cr_shortcut_input/cr_shortcut_input_test.js",
+          "mocha.run()");
+}
+
+class CrComponentsHistoryClustersFocusTest : public WebUIMochaFocusTest {
  protected:
-  CrComponentsCertManagerV2FocusTest() {
+  CrComponentsHistoryClustersFocusTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableCertManagementUIV2);
-    set_test_loader_host(chrome::kChromeUICertificateManagerHost);
+        history_clusters::internal::kJourneysImages);
+    set_test_loader_host(chrome::kChromeUIHistoryHost);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2FocusTest,
-                       CertificateManagerV2) {
-  RunTest(
-      "cr_components/certificate_manager/certificate_manager_v2_focus_test.js",
-      "mocha.run()");
+
+IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersFocusTest, All) {
+  RunTest("cr_components/history_clusters/history_clusters_test.js",
+          "runMochaSuite('HistoryClustersFocusTest')");
 }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

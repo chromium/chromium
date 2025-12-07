@@ -14,7 +14,7 @@ const char kClientIdKey[] = "type_id";
 
 namespace push_notification {
 
-PushNotificationClientManager::PushNotificationClientManager() {}
+PushNotificationClientManager::PushNotificationClientManager() = default;
 
 PushNotificationClientManager::~PushNotificationClientManager() = default;
 
@@ -34,6 +34,7 @@ void PushNotificationClientManager::RemovePushNotificationClient(
 std::vector<const PushNotificationClient*>
 PushNotificationClientManager::GetPushNotificationClients() {
   std::vector<const PushNotificationClient*> client_list;
+  client_list.reserve(client_id_to_client_map_.size());
   for (const auto& pair : client_id_to_client_map_) {
     client_list.push_back(pair.second);
   }
@@ -51,8 +52,9 @@ void PushNotificationClientManager::NotifyPushNotificationClientOfMessage(
     return;
   }
 
-  if (client_id_to_client_map_.contains(client_id)) {
-    client_id_to_client_map_.at(client_id)->OnMessageReceived(message.data);
+  if (auto it = client_id_to_client_map_.find(client_id);
+      it != client_id_to_client_map_.end()) {
+    it->second->OnMessageReceived(message.data);
   } else {
     pending_message_store_.push_back(std::move(message));
   }

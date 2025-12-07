@@ -105,7 +105,7 @@ void TestWaylandClientThread::DoInit(
 
   const bool result = base::CurrentIOThread::Get().WatchFileDescriptor(
       wl_display_get_fd(client_->display()), /*persistent=*/true,
-      base::MessagePumpLibevent::WATCH_READ, &controller_, this);
+      base::MessagePumpEpoll::WATCH_READ, &controller_, this);
 
   if (!result)
     client_.reset();

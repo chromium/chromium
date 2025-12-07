@@ -34,7 +34,7 @@ class MockMahiMediaAppContentManager
               OnMahiContextMenuClicked,
               (int64_t,
                chromeos::mahi::ButtonType,
-               const std::u16string&,
+               std::u16string_view,
                const gfx::Rect&),
               (override));
   MOCK_METHOD(void,
@@ -47,6 +47,8 @@ class MockMahiMediaAppContentManager
               ActivateClientWindow,
               (const base::UnguessableToken),
               (override));
+  MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
+  MOCK_METHOD(std::string, GetSelectedText, (), (const override));
 };
 }  // namespace mahi
 

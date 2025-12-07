@@ -9,8 +9,8 @@
 
 class PrefRegistrySimple;
 
-// The agent that manages the init stage transition for InitStageVariationsSeed.
-// See comment for InitStageVariationsSeed for more information.
+// The agent that manages the transition for AppInitStage::kVariationsSeed. See
+// comment in AppInitStage enum definition for more information.
 @interface VariationsAppStateAgent : SceneObservingAppAgent
 
 // Registers the prefs required for this agent.

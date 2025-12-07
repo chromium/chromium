@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_encoder.h"
@@ -107,7 +106,7 @@ class MockPipeline : public Pipeline {
   }
   MOCK_METHOD2(OnResume, void(base::TimeDelta, PipelineStatusCallback&));
   MOCK_METHOD2(OnEnabledAudioTracksChanged,
-               void(const std::vector<MediaTrack::Id>&, base::OnceClosure));
+               void(std::optional<MediaTrack::Id>, base::OnceClosure));
   MOCK_METHOD2(OnSelectedVideoTrackChanged,
                void(std::optional<MediaTrack::Id>, base::OnceClosure));
   MOCK_METHOD0(OnExternalVideoFrameRequest, void());
@@ -125,7 +124,8 @@ class MockPipeline : public Pipeline {
   MOCK_METHOD1(SetVolume, void(float));
   MOCK_METHOD1(SetLatencyHint, void(std::optional<base::TimeDelta>));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
-  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivationAndHighMediaEngagement,
+               void(bool));
 
   // TODO(sandersd): These should probably have setters too.
   MOCK_CONST_METHOD0(GetMediaTime, base::TimeDelta());
@@ -147,10 +147,8 @@ class MockMediaResource : public MediaResource {
   ~MockMediaResource() override;
 
   // MediaResource implementation.
-  MOCK_CONST_METHOD0(GetType, MediaResource::Type());
   MOCK_METHOD0(GetAllStreams, std::vector<DemuxerStream*>());
   MOCK_METHOD1(GetFirstStream, DemuxerStream*(DemuxerStream::Type type));
-  MOCK_CONST_METHOD0(GetMediaUrlParams, const MediaUrlParams&());
 };
 
 class MockDemuxer : public Demuxer {
@@ -195,14 +193,9 @@ class MockDemuxer : public Demuxer {
               (),
               (const, override));
   MOCK_METHOD(void,
-              OnEnabledAudioTracksChanged,
-              (const std::vector<MediaTrack::Id>&,
-               base::TimeDelta,
-               TrackChangeCB),
-              (override));
-  MOCK_METHOD(void,
-              OnSelectedVideoTrackChanged,
-              (const std::vector<MediaTrack::Id>&,
+              OnTracksChanged,
+              (DemuxerStream::Type,
+               std::optional<MediaTrack::Id>,
                base::TimeDelta,
                TrackChangeCB),
               (override));
@@ -500,7 +493,8 @@ class MockAudioRenderer : public AudioRenderer {
   MOCK_METHOD1(SetLatencyHint,
                void(std::optional<base::TimeDelta> latency_hint));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
-  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivationAndHighMediaEngagement,
+               void(bool));
 };
 
 class MockRenderer : public Renderer {
@@ -524,7 +518,8 @@ class MockRenderer : public Renderer {
                     PipelineStatusCallback& init_cb));
   MOCK_METHOD1(SetLatencyHint, void(std::optional<base::TimeDelta>));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
-  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivationAndHighMediaEngagement,
+               void(bool));
   void Flush(base::OnceClosure flush_cb) override { OnFlush(flush_cb); }
   MOCK_METHOD1(OnFlush, void(base::OnceClosure& flush_cb));
   MOCK_METHOD1(StartPlayingFrom, void(base::TimeDelta timestamp));
@@ -675,9 +670,9 @@ class MockCdmContext : public CdmContext {
   MOCK_METHOD0(GetMediaFoundationCdmProxy,
                scoped_refptr<MediaFoundationCdmProxy>());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD0(GetChromeOsCdmContext, chromeos::ChromeOsCdmContext*());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::optional<base::UnguessableToken> GetCdmId() const override;
 
   void set_cdm_id(const base::UnguessableToken& cdm_id);
@@ -873,9 +868,11 @@ class MockMediaClient : public media::MediaClient {
   ~MockMediaClient() override;
 
   // MediaClient implementation.
-  MOCK_METHOD1(IsSupportedAudioType, bool(const media::AudioType& type));
-  MOCK_METHOD1(IsSupportedVideoType, bool(const media::VideoType& type));
+  MOCK_METHOD1(IsDecoderSupportedAudioType, bool(const media::AudioType& type));
+  MOCK_METHOD1(IsDecoderSupportedVideoType, bool(const media::VideoType& type));
+  MOCK_METHOD1(IsEncoderSupportedVideoType, bool(const media::VideoType& type));
   MOCK_METHOD1(IsSupportedBitstreamAudioCodec, bool(media::AudioCodec codec));
+  MOCK_METHOD0(ShouldSuppressAudioTracks, bool());
   MOCK_METHOD1(GetAudioRendererAlgorithmParameters,
                std::optional<::media::AudioRendererAlgorithmParameters>(
                    media::AudioParameters audio_parameters));

@@ -10,7 +10,6 @@
 #include "base/path_service.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/focused_node_details.h"
@@ -74,8 +74,9 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     int count = 0;
     for (int x = 0; x < bitmap.width(); ++x) {
       for (int y = 0; y < bitmap.height(); ++y) {
-        if (ColorsApproximatelyEqual(color, bitmap.getColor(x, y)))
+        if (ColorsApproximatelyEqual(color, bitmap.getColor(x, y))) {
           count++;
+        }
       }
     }
     return count * 100.0f / (bitmap.width() * bitmap.height());
@@ -227,9 +228,10 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator;
 
-// TODO(crbug.com/40817482): Fix flaky test on Lacros.
 // TODO(crbug.com/40924319): Fix flaky test on Mac.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/373535999): Fix flaky test on Windows.
+// TODO(crbug.com/446071321): Fix flaky test on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance

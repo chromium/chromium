@@ -8,6 +8,8 @@
 
 #include "components/sessions/core/session_command.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace sessions {
 
@@ -27,7 +29,13 @@ SessionTab::~SessionTab() {
 
 SessionTabGroup::SessionTabGroup(const tab_groups::TabGroupId& id) : id(id) {}
 
-SessionTabGroup::~SessionTabGroup() {}
+SessionTabGroup::~SessionTabGroup() = default;
+
+// SessionSplitTab -------------------------------------------------------------
+
+SessionSplitTab::SessionSplitTab(const split_tabs::SplitTabId& id) : id_(id) {}
+
+SessionSplitTab::~SessionSplitTab() = default;
 
 // SessionWindow ---------------------------------------------------------------
 
@@ -37,8 +45,8 @@ SessionWindow::SessionWindow()
       selected_tab_index(-1),
       type(TYPE_NORMAL),
       is_constrained(true),
-      show_state(ui::SHOW_STATE_DEFAULT) {}
+      show_state(ui::mojom::WindowShowState::kDefault) {}
 
-SessionWindow::~SessionWindow() {}
+SessionWindow::~SessionWindow() = default;
 
 }  // namespace sessions

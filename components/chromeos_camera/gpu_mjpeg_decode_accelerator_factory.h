@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CHROMEOS_CAMERA_GPU_MJPEG_DECODE_ACCELERATOR_FACTORY_H_
 #define COMPONENTS_CHROMEOS_CAMERA_GPU_MJPEG_DECODE_ACCELERATOR_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 
 namespace base {

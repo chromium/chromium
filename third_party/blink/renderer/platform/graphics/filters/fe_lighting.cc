@@ -133,8 +133,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
           std::move(input), rect);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

@@ -8,12 +8,15 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/base/scheme_host_port_matcher_result.h"
-#include "net/base/scheme_host_port_matcher_rule.h"
-#include "net/base/url_util.h"
+#include "net/device_bound_sessions/host_patterns.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_error.h"
 
 namespace net::device_bound_sessions {
 
@@ -27,18 +30,32 @@ bool IsIncludeSiteAllowed(const url::Origin& origin) {
   return !domain_and_registry.empty() && origin.host() == domain_and_registry;
 }
 
-SessionInclusionRules::InclusionResult AsInclusionResult(bool should_include) {
-  return should_include ? SessionInclusionRules::kInclude
-                        : SessionInclusionRules::kExclude;
+proto::RuleType GetRuleTypeProto(
+    SessionInclusionRules::InclusionResult result) {
+  return result == SessionInclusionRules::InclusionResult::kInclude
+             ? proto::RuleType::INCLUDE
+             : proto::RuleType::EXCLUDE;
 }
 
-// Types of characters valid in IPv6 addresses.
-// Derived from logic in url::DoIPv6AddressToNumber() and url::DoParseIPv6().
-bool IsValidIPv6Char(char c) {
-  return c == ':' || base::IsHexDigit(c) || c == '.' ||
-         // 'x' or 'X' is used in IPv4 to denote hex values, and can be used in
-         // parts of IPv6 addresses.
-         c == 'x' || c == 'X';
+std::optional<SessionParams::Scope::Specification::Type> GetInclusionResult(
+    proto::RuleType proto) {
+  if (proto == proto::RuleType::INCLUDE) {
+    return SessionParams::Scope::Specification::Type::kInclude;
+  } else if (proto == proto::RuleType::EXCLUDE) {
+    return SessionParams::Scope::Specification::Type::kExclude;
+  }
+
+  // proto = RULE_TYPE_UNSPECIFIED
+  return std::nullopt;
+}
+
+std::string RuleTypeToString(SessionInclusionRules::InclusionResult rule_type) {
+  switch (rule_type) {
+    case SessionInclusionRules::InclusionResult::kExclude:
+      return "exclude";
+    case SessionInclusionRules::InclusionResult::kInclude:
+      return "include";
+  }
 }
 
 }  // namespace
@@ -51,41 +68,82 @@ struct SessionInclusionRules::UrlRule {
 
   // Domain or pattern that the URL must match. This must either be a
   // full domain (host piece) or a pattern containing a wildcard in the
-  // most-specific (leftmost) label position followed by a dot and a non-eTLD.
+  // most-specific (leftmost) label position followed by a dot.
   // The matched strings follow SchemeHostPortMatcherRule's logic, but with
   // some extra requirements for validity:
-  // - A leading wildcard * must be followed by a dot, so "*ple.com" is not
-  //   acceptable.
-  // - "*.com" is not accepted because com is an eTLD. Same with "*.co.uk" and
-  //   similar.
+  // - If the pattern has a leading wildcard *, it must be "*" itself or
+  //   the * must be followed by a dot, so "*ple.com" is not acceptable.
   // - Multiple wildcards are not allowed.
   // - Internal wildcards are not allowed, so "sub.*.example.com" does not
   //   work because the wildcard is not the leftmost component.
-  // - IP addresses also work if specified as the exact host, as described in
-  //   SchemeHostPortMatcherRule.
-  std::unique_ptr<SchemeHostPortMatcherRule> host_matcher_rule;
+  // - IP addresses also work. IPv4 addresses can contain wildcards.
+  std::string host_pattern;
 
   // Prefix consisting of path components that the URL must match. Must begin
   // with '/'. Wildcards are not allowed. Simply use "/" to match all paths.
   std::string path_prefix;
+
+  friend bool operator==(const UrlRule& lhs, const UrlRule& rhs) = default;
 
   // Returns whether the given `url` matches this rule. Note that this
   // function does not check the scheme and port portions of the URL/origin.
   bool MatchesHostAndPath(const GURL& url) const;
 };
 
+// static
+base::expected<SessionInclusionRules, SessionError>
+SessionInclusionRules::Create(const url::Origin& origin,
+                              const SessionParams::Scope& scope_params,
+                              const GURL& refresh_endpoint) {
+  SessionInclusionRules rules(origin);
+
+  if (scope_params.include_site && !rules.may_include_site_) {
+    return base::unexpected(
+        SessionError{SessionError::kInvalidScopeIncludeSite});
+  }
+
+  rules.SetIncludeSite(scope_params.include_site);
+
+  for (const auto& spec : scope_params.specifications) {
+    const auto inclusion_result =
+        spec.type == SessionParams::Scope::Specification::Type::kExclude
+            ? SessionInclusionRules::InclusionResult::kExclude
+            : SessionInclusionRules::InclusionResult::kInclude;
+    SessionError::ErrorType add_url_rule_result =
+        rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path);
+    if (add_url_rule_result != SessionError::kSuccess) {
+      return base::unexpected(SessionError{add_url_rule_result});
+    }
+  }
+
+  if (refresh_endpoint.is_valid()) {
+    // Sessions should never include the refresh endpoint, since that would
+    // prevent them from ever refreshing when a cookie expires. We intentionally
+    // don't return an error if the rule is not valid or add a CHECK, because a
+    // refresh URL is allowed to be outside an origin-scoped session.
+    rules.AddUrlRuleIfValid(SessionInclusionRules::InclusionResult::kExclude,
+                            refresh_endpoint.GetHost(),
+                            refresh_endpoint.GetPath());
+  }
+
+  return rules;
+}
+
 SessionInclusionRules::SessionInclusionRules(const url::Origin& origin)
     : origin_(origin), may_include_site_(IsIncludeSiteAllowed(origin)) {}
 
-SessionInclusionRules::SessionInclusionRules() = default;
-
 SessionInclusionRules::~SessionInclusionRules() = default;
 
-void SessionInclusionRules::SetIncludeSite(bool include_site) {
-  if (!may_include_site_) {
-    return;
-  }
+SessionInclusionRules::SessionInclusionRules(SessionInclusionRules&& other) =
+    default;
 
+SessionInclusionRules& SessionInclusionRules::operator=(
+    SessionInclusionRules&& other) = default;
+
+bool SessionInclusionRules::operator==(
+    const SessionInclusionRules& other) const = default;
+
+void SessionInclusionRules::SetIncludeSite(bool include_site) {
   if (!include_site) {
     include_site_.reset();
     return;
@@ -94,111 +152,59 @@ void SessionInclusionRules::SetIncludeSite(bool include_site) {
   include_site_ = SchemefulSite(origin_);
 }
 
-bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
-                                              const std::string& host_pattern,
-                                              const std::string& path_prefix) {
+SessionError::ErrorType SessionInclusionRules::AddUrlRuleIfValid(
+    InclusionResult rule_type,
+    const std::string& host_pattern,
+    const std::string& path_prefix) {
   if (path_prefix.empty() || path_prefix.front() != '/') {
-    return false;
-  }
-  if (host_pattern.empty()) {
-    return false;
+    return SessionError::kInvalidScopeRulePath;
   }
 
-  // If only the origin is allowed, the host_pattern must be precisely its host.
-  bool host_pattern_is_host = host_pattern == origin_.host();
-  if (!may_include_site_ && !host_pattern_is_host) {
-    return false;
+  if (!IsValidHostPattern(host_pattern)) {
+    return SessionError::kInvalidScopeRuleHostPattern;
   }
 
-  // Don't allow '*' anywhere besides the first character of the pattern.
-  size_t star_pos = host_pattern.rfind('*');
-  if (star_pos != std::string::npos && star_pos != 0) {
-    return false;
-  }
-  // Only allow wildcard if immediately followed by a dot.
-  bool has_initial_wildcard_label = host_pattern.starts_with("*.");
-  if (star_pos != std::string::npos && !has_initial_wildcard_label) {
-    return false;
+  // Return early if the rule can't match anything. For origin-scoped
+  // sessions, the origin must match the host pattern.
+  if (!include_site_ && !MatchesHostPattern(host_pattern, origin_.host())) {
+    return SessionError::kScopeRuleOriginScopedHostPatternMismatch;
   }
 
-  std::string_view hostlike_part{host_pattern};
-  if (has_initial_wildcard_label) {
-    hostlike_part = hostlike_part.substr(2);
-  }
-
-  bool presumed_ipv6 = host_pattern.front() == '[';
-  if (presumed_ipv6 && host_pattern.back() != ']') {
-    return false;
-  }
-
-  // Allow only specific characters into SchemeHostPortMatcherRule parsing.
-  if (presumed_ipv6) {
-    // Leave out the brackets, but everything else must be a valid char.
-    std::string_view ipv6_address{host_pattern.begin() + 1,
-                                  host_pattern.end() - 1};
-    if (std::find_if_not(ipv6_address.begin(), ipv6_address.end(),
-                         &IsValidIPv6Char) != ipv6_address.end()) {
-      return false;
+  // For site-scoped sessions, either the site itself matches the
+  // pattern (e.g. a pattern of "*") or the hostlike part of the pattern
+  // is same-site.
+  if (include_site_ && !MatchesHostPattern(host_pattern, origin_.host())) {
+    std::string_view hostlike_part = host_pattern;
+    if (hostlike_part.starts_with("*.")) {
+      hostlike_part = hostlike_part.substr(2);
     }
-  } else {
-    // Note that this excludes a ':' character specifying a port number, even
-    // though SchemeHostPortMatcherRule supports it. Same for '/' (for the
-    // scheme or an IP block).
-    // TODO(chlily): Consider supporting port numbers.
-    if (!IsCanonicalizedHostCompliant(hostlike_part)) {
-      return false;
+
+    std::string hostlike_part_domain =
+        registry_controlled_domains::GetDomainAndRegistry(
+            hostlike_part,
+            registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    std::string domain_and_registry =
+        registry_controlled_domains::GetDomainAndRegistry(
+            origin_, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    if (hostlike_part_domain != domain_and_registry) {
+      return SessionError::kScopeRuleSiteScopedHostPatternMismatch;
     }
   }
 
-  // Delegate the rest of the parsing to SchemeHostPortMatcherRule.
-  std::unique_ptr<SchemeHostPortMatcherRule> host_matcher_rule =
-      SchemeHostPortMatcherRule::FromUntrimmedRawString(host_pattern);
-  if (!host_matcher_rule) {
-    return false;
-  }
-
-  // Now that we know the host_pattern is at least the right shape, validate the
-  // remaining restrictions.
-
-  // Skip the eTLD lookups if the host pattern is an exact match.
-  if (host_pattern_is_host) {
-    url_rules_.emplace_back(rule_type, std::move(host_matcher_rule),
-                            path_prefix);
-    return true;
-  }
-
-  std::string hostlike_part_domain =
-      registry_controlled_domains::GetDomainAndRegistry(
-          hostlike_part,
-          registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  // If there is a wildcard, we require the pattern to be a normal domain and
-  // not an eTLD.
-  if (has_initial_wildcard_label && hostlike_part_domain.empty()) {
-    return false;
-  }
-
-  // Validate that the host pattern is on the right origin/site.
-  // TODO(chlily): Perhaps we should use a cached value, but surely URL rule
-  // parsing only happens a small number of times.
-  std::string domain_and_registry =
-      registry_controlled_domains::GetDomainAndRegistry(
-          origin_, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  // The origin_ must have an eTLD+1, because if it didn't, then we'd know that
-  // !may_include_site_, and that would mean we'd have already returned early
-  // and would never get here.
-  CHECK(!domain_and_registry.empty());
-  if (hostlike_part_domain != domain_and_registry) {
-    return false;
-  }
-
-  url_rules_.emplace_back(rule_type, std::move(host_matcher_rule), path_prefix);
-  return true;
+  url_rules_.emplace_back(rule_type, host_pattern, path_prefix);
+  return SessionError::kSuccess;
 }
 
 SessionInclusionRules::InclusionResult
 SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
   bool same_origin = origin_.IsSameOriginWith(url);
-  if (!may_include_site_ && !same_origin) {
+  if (include_site_ && !include_site_->IsSameSiteWith(url)) {
+    return SessionInclusionRules::kExclude;
+  }
+
+  if (!include_site_ && !same_origin) {
     return SessionInclusionRules::kExclude;
   }
 
@@ -208,26 +214,33 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
     // port here, because in the !may_include_site_ case that's already covered
     // by being same-origin, and in the may_include_site_ case it's ok for the
     // port to differ.
-    if (rule.MatchesHostAndPath(url) &&
-        url.scheme_piece() == origin_.scheme()) {
+    if (rule.MatchesHostAndPath(url) && url.scheme() == origin_.scheme()) {
       return rule.rule_type;
     }
   }
 
-  // None of the specific rules apply. Evaluate against the basic include rule.
-  if (include_site_) {
-    return AsInclusionResult(SchemefulSite(url) == *include_site_);
+  return SessionInclusionRules::kInclude;
+}
+
+bool SessionInclusionRules::AllowsRefreshForInitiator(
+    const url::Origin& initiator) const {
+  if (include_site_ && include_site_->IsSameSiteWith(initiator)) {
+    return true;
   }
-  return AsInclusionResult(same_origin);
+
+  if (!include_site_ && origin_.IsSameOriginWith(initiator)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
-  if (host_matcher_rule->Evaluate(url) ==
-      SchemeHostPortMatcherResult::kNoMatch) {
+  if (!MatchesHostPattern(host_pattern, url.GetHost())) {
     return false;
   }
 
-  std::string_view url_path = url.path_piece();
+  std::string_view url_path = url.path();
   if (!url_path.starts_with(path_prefix)) {
     return false;
   }
@@ -251,6 +264,71 @@ bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
 
 size_t SessionInclusionRules::num_url_rules_for_testing() const {
   return url_rules_.size();
+}
+
+proto::SessionInclusionRules SessionInclusionRules::ToProto() const {
+  proto::SessionInclusionRules proto;
+  proto.set_origin(origin_.Serialize());
+  proto.set_do_include_site(include_site_.has_value());
+
+  // Note that the ordering of the rules (in terms of when they were added to
+  // the session) is preserved in the proto. Preserving the ordering is
+  // important to handle rules overlap - the latest rule wins.
+  for (auto& rule : url_rules_) {
+    proto::UrlRule rule_proto;
+    rule_proto.set_rule_type(GetRuleTypeProto(rule.rule_type));
+    rule_proto.set_host_pattern(rule.host_pattern);
+    rule_proto.set_path_prefix(rule.path_prefix);
+    proto.mutable_url_rules()->Add(std::move(rule_proto));
+  }
+
+  return proto;
+}
+
+// static:
+std::optional<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
+    const proto::SessionInclusionRules& proto) {
+  if (!proto.has_origin() || !proto.has_do_include_site()) {
+    return std::nullopt;
+  }
+  url::Origin origin = url::Origin::Create(GURL(proto.origin()));
+  if (origin.opaque()) {
+    DLOG(ERROR) << "proto origin parse error: " << origin.GetDebugString();
+    return std::nullopt;
+  }
+
+  SessionParams::Scope params;
+  params.include_site = proto.do_include_site();
+  for (const auto& rule_proto : proto.url_rules()) {
+    std::optional<SessionParams::Scope::Specification::Type> rule_type =
+        GetInclusionResult(rule_proto.rule_type());
+    if (!rule_type.has_value()) {
+      return std::nullopt;
+    }
+
+    params.specifications.emplace_back(*rule_type, rule_proto.host_pattern(),
+                                       rule_proto.path_prefix());
+  }
+
+  // We use an empty refresh URL because the implicit refresh rule is already
+  // among those in `url_rules()`.
+  auto inclusion_rules_or_error =
+      Create(origin, std::move(params), /*refresh_endpoint=*/GURL());
+  if (!inclusion_rules_or_error.has_value()) {
+    return std::nullopt;
+  }
+
+  return std::move(*inclusion_rules_or_error);
+}
+
+std::string SessionInclusionRules::DebugString() const {
+  std::string result;
+  for (const UrlRule& rule : url_rules_) {
+    base::StrAppend(&result, {"Type=", RuleTypeToString(rule.rule_type),
+                              "; Domain=", rule.host_pattern,
+                              "; Path=", rule.path_prefix, "\n"});
+  }
+  return result;
 }
 
 }  // namespace net::device_bound_sessions

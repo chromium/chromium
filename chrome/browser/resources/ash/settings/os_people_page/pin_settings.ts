@@ -66,11 +66,11 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
   }
 
   authToken: string|null;
-  /* eslint-disable @typescript-eslint/naming-convention */
   private hasPin_: boolean;
   private showSetPinDialog_: boolean;
   private showPinAutosubmitDialog_: boolean;
   private quickUnlockDisabledByPolicy_: boolean;
+  private hasPassword_: boolean;
 
   override ready(): void {
     super.ready();
@@ -97,12 +97,23 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
 
   onFactorChanged(factor: AuthFactor): void {
     switch (factor) {
-      case AuthFactor.kPin:
+      case AuthFactor.kPrefBasedPin:
+      case AuthFactor.kCryptohomePin:
+      case AuthFactor.kCryptohomePinV2:
+      case AuthFactor.kGaiaPassword:
+      case AuthFactor.kLocalPassword:
         this.updatePinState_();
         break;
       default:
         return;
     }
+  }
+
+  // Remove pin is disabled when pin is the only factor available, or
+  // in other words, when there is no password available.
+  // Remove can also be disabled by then the QuickUnlock policy disallows it.
+  private removeDisabled_(): boolean {
+    return !this.hasPassword_ || this.quickUnlockDisabledByPolicy_;
   }
 
   private moreButton_(): CrIconButtonElement {
@@ -135,16 +146,34 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
 
   /**
    * Fetches the state of the pin factor and updates the corresponding
-   * property.
+   * property. It also updates the fact that there is another knowledge factor
+   * present or not. This will help with logic of removal.
    */
   private async updatePinState_(): Promise<void> {
+    if (!this.authToken) {
+      return;
+    }
+
     if (typeof this.authToken !== 'string') {
       return;
     }
 
-    const pfe = AuthFactorConfig.getRemote();
-    this.hasPin_ =
-        (await pfe.isConfigured(this.authToken, AuthFactor.kPin)).configured;
+    const authToken = this.authToken;
+
+    const afc = AuthFactorConfig.getRemote();
+    const pfe = PinFactorEditor.getRemote();
+    // clang-format off
+    const [{configured: hasGaiaPassword},
+      {configured: hasLocalPassword},
+      {pinFactor}] =
+        await Promise.all([
+          afc.isConfigured(authToken, AuthFactor.kGaiaPassword),
+          afc.isConfigured(authToken, AuthFactor.kLocalPassword),
+          pfe.getConfiguredPinFactor(authToken),
+        ]);
+    // clang-format off
+    this.hasPin_ = pinFactor !== null;
+    this.hasPassword_ = hasGaiaPassword || hasLocalPassword;
   }
 
   private onSetPinButtonClicked_(): void {
@@ -217,6 +246,8 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
         break;
       case ConfigureResult.kFatalError:
         console.error('Error removing PIN');
+        break;
+      default:
         break;
     }
 

@@ -12,8 +12,7 @@
 #include "base/test/perf_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace mp2t {
+namespace media::mp2t {
 
 static std::vector<int64_t> TruncateTimestamps(
     const std::vector<int64_t>& timestamps) {
@@ -40,7 +39,7 @@ TEST(TimestampUnrollerTest, SingleStream) {
   // Array of 64 bit timestamps.
   // This is the expected result from unrolling these timestamps
   // truncated to 33 bits.
-  int64_t timestamps[] = {
+  const std::vector<int64_t> timestamps_vector = {
       INT64_C(0x0000000000000000),
       INT64_C(-190),                // - 190
       INT64_C(0x00000000aaaaa9ed),  // + 0xaaaaaaab
@@ -51,10 +50,7 @@ TEST(TimestampUnrollerTest, SingleStream) {
       INT64_C(0x00000003ffffff44),  // + 0xaaaaaaab
   };
 
-  std::vector<int64_t> timestamps_vector(timestamps,
-                                         timestamps + std::size(timestamps));
   RunUnrollTest(timestamps_vector);
 }
 
-}  // namespace mp2t
-}  // namespace media
+}  // namespace media::mp2t

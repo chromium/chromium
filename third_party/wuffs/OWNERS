@@ -1,5 +1,5 @@
 nigeltao@chromium.org
-scroggo@google.com
+cblume@chromium.org
 
 # See the comment at the top of the BUILD.gn file for the rationale.
 per-file BUILD.gn=file://ATL_OWNERS

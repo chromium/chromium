@@ -27,6 +27,7 @@ class CORE_EXPORT PositionTryFallback {
   DISALLOW_NEW();
 
  public:
+  PositionTryFallback() = default;
   PositionTryFallback(const ScopedCSSName* name, TryTacticList tactic_list)
       : position_try_name_(name), tactic_list_(tactic_list) {}
   explicit PositionTryFallback(PositionArea position_area)
@@ -38,11 +39,21 @@ class CORE_EXPORT PositionTryFallback {
 
   bool operator==(const PositionTryFallback& other) const;
 
+  // Returns true if this fallback matches 'other' for anchored(fallback)
+  // container queries. This differs from operator== in that this method handles
+  // tree-scoped names per spec, and does not require the TreeScopes to be the
+  // same when matching @position-try names.
+  bool Matches(const PositionTryFallback& other) const;
+
+  bool IsNone() const {
+    return !position_try_name_ && tactic_list_[0] == TryTactic::kNone &&
+           position_area_.IsNone();
+  }
   void Trace(Visitor* visitor) const;
 
  private:
   Member<const ScopedCSSName> position_try_name_;
-  TryTacticList tactic_list_;
+  TryTacticList tactic_list_ = kNoTryTactics;
   PositionArea position_area_;
 };
 
@@ -65,19 +76,15 @@ class CORE_EXPORT PositionTryFallbacks
   HeapVector<PositionTryFallback> fallbacks_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::PositionTryFallback>
-    : VectorTraitsBase<blink::PositionTryFallback> {
+struct VectorTraits<PositionTryFallback>
+    : VectorTraitsBase<PositionTryFallback> {
   static const bool kCanClearUnusedSlotsWithMemset = true;
   static const bool kCanInitializeWithMemset = true;
   static const bool kCanMoveWithMemcpy = true;
   static const bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_POSITION_TRY_FALLBACKS_H_

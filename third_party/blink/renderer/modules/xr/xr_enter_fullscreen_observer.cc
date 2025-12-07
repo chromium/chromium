@@ -70,7 +70,7 @@ void XrEnterFullscreenObserver::RequestFullscreen(
   // Use the event-generating unprefixed version of RequestFullscreen to ensure
   // that the fullscreen event listener is informed once this completes.
   FullscreenOptions* options = FullscreenOptions::Create();
-  options->setNavigationUI("hide");
+  options->setNavigationUI(V8FullscreenNavigationUI::Enum::kHide);
 
   // Grant fullscreen API permission for the following call. Requesting the
   // immersive session had required a user activation state, but that may have

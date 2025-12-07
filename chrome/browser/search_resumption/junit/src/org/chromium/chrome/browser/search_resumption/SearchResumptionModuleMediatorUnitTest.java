@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.search_resumption;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,14 +25,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -64,9 +64,10 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
+@Features.DisableFeatures(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
 public class SearchResumptionModuleMediatorUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTabToTrack;
     @Mock private Tab mTab;
     @Mock private ViewStub mParent;
@@ -93,18 +94,11 @@ public class SearchResumptionModuleMediatorUnitTest {
     private UserActionTester mActionTester;
     private UserDataHost mUserDataHost;
     private SearchResumptionModuleMediator mMediator;
-    private FeatureList.TestValues mFeatureListValues;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mFeatureListValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(mFeatureListValues);
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, false);
-
         mUserDataHost = new UserDataHost();
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
+        AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
         mUrlToTrack = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(mUrlToTrack).when(mTabToTrack).getUrl();
@@ -162,6 +156,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithEnoughResults() {
         createMediator(null, /* useNewServiceEnabled= */ false);
         List<AutocompleteMatch> list =
@@ -179,6 +174,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithCachedResults() {
         List<AutocompleteMatch> list =
                 Arrays.asList(mNonSearchSuggest1, mSearchSuggest1, mSearchSuggest2);
@@ -216,6 +212,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithEnoughResults_newServiceAPI() {
         initSuggestions();
 
@@ -228,17 +225,18 @@ public class SearchResumptionModuleMediatorUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
 
-        mMediator.onExpandedOrCollapsed(/* expand= */ true);
+        mMediator.onExpandedOrCollapsed(/* expanded= */ true);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_EXPAND));
 
-        mMediator.onExpandedOrCollapsed(/* expand= */ false);
+        mMediator.onExpandedOrCollapsed(/* expanded= */ false);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_COLLAPSE));
     }
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithCachedResults_newServiceAPI() {
         initSuggestions();
         SuggestionResult suggestionResult = createCachedSuggestions();
@@ -255,6 +253,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testModuleVisibility() {
         testShowModuleWithEnoughResults();
         mMediator.onSignedOut();
@@ -300,16 +299,15 @@ public class SearchResumptionModuleMediatorUnitTest {
                         cachedSuggestions);
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
-            verify(mAutocompleteController, times(1))
-                    .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
+            var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+            verify(mAutocompleteController, times(1)).startZeroSuggest(captor.capture());
+            Assert.assertEquals(mUrlToTrack.getSpec(), captor.getValue().getPageUrl().getSpec());
         }
 
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
-                SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
-                String.valueOf(useNewServiceEnabled));
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
+                .param(SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM, useNewServiceEnabled)
+                .apply();
     }
 
     private void initSuggestions() {

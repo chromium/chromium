@@ -14,8 +14,6 @@
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace soda {
 class CrosSodaClient;
@@ -62,7 +60,7 @@ class CrosSpeechRecognitionRecognizerImpl
       const std::vector<std::string>& live_caption_languages);
 
  private:
-  std::unique_ptr<soda::CrosSodaClient> cros_soda_client_;
+  std::unique_ptr<::soda::CrosSodaClient> cros_soda_client_;
 
   const base::FilePath binary_path_;
   base::WeakPtrFactory<CrosSpeechRecognitionRecognizerImpl> weak_factory_{this};

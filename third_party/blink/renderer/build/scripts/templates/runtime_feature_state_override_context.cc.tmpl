@@ -4,9 +4,10 @@
 {{source_files_for_generated_file(template_file, input_files)}}
 
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_state_host.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -53,18 +54,7 @@ void RuntimeFeatureStateOverrideContext::Set{{feature.name}}ForceEnabled() {
 
 {% if feature in origin_trial_controlled_features %}
 bool RuntimeFeatureStateOverrideContext::
-    Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
-{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning2' %}
-  UseCounter::Count(use_counter_,
-                          WebFeature::kDisableThirdPartyStoragePartitioning2);
-  // If the base::Feature for the deprecation trial is disabled, we should
-  // not send any overrides to the browser, so we return false immediately,
-  // skipping any mojom messaging.
-  if(!base::FeatureList::IsEnabled(
-    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial2)){
-    return false;
-  }
-{% endif %}
+    Set{{feature.name}}Enabled(const Vector<String>& tokens) {
   // Origin Trial feature values should not override any sent from
   // the browser, so we only add a value if has not already been set
   // in the override_values_ map with an identical token set. Return
@@ -90,7 +80,7 @@ bool RuntimeFeatureStateOverrideContext::
 
 void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
     const blink::mojom::blink::OriginTrialFeature& origin_trial_feature,
-    const WTF::Vector<WTF::String>& tokens) {
+    const Vector<String>& tokens) {
   // Determine which of the overrideable features has been set
   // via Origin Trial.
   bool overridden = false;
@@ -103,11 +93,11 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
 {% endfor %}
   // Send the newly overriden values to the browser via IPC.
   if(overridden){
-    // We must convert from std:: types to WTF:: types.
+    // We must convert from std:: types to WTF types.
     // TODO(https://crbug.com/1377000): make origin_trial_overrides_ a
-    // WTF:: type in a follow-up CL.
-    WTF::HashMap<mojom::blink::RuntimeFeature,
-                 mojom::blink::OriginTrialFeatureStatePtr>
+    // WTF type in a follow-up CL.
+    HashMap<mojom::blink::RuntimeFeature,
+            mojom::blink::OriginTrialFeatureStatePtr>
         blink_overrides;
     for (auto& o : origin_trial_overrides_){
       blink_overrides.insert(o.first, std::move(o.second));
@@ -115,20 +105,17 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
     // Feature overrides and origin trial information should only be
     // sent to the browser process if the corresponding base::Feature
     // is enabled.
-    if (base::FeatureList::IsEnabled(
-            blink::features::kOriginTrialStateHostApplyFeatureDiff)) {
-      GetOrBindOriginTrialStateHost()->ApplyFeatureDiffForOriginTrial(
-          std::move(blink_overrides));
-    }
-    // TODO(https://crbug.com/1377000): when we convert to WTF:: types,
+    GetOrBindOriginTrialStateHost()->ApplyFeatureDiffForOriginTrial(
+        std::move(blink_overrides));
+    // TODO(https://crbug.com/1377000): when we convert to WTF types,
     // we use std::move, so we have to do some cleanup.
     origin_trial_overrides_.clear();
   }
 }
 
 void RuntimeFeatureStateOverrideContext::EnablePersistentTrial(
-      const WTF::String& raw_token,
-      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+      const String& raw_token,
+      const Vector<scoped_refptr<const blink::SecurityOrigin>>&
           script_origins) {
     GetOrBindOriginTrialStateHost()->EnablePersistentTrial(
         raw_token, script_origins);

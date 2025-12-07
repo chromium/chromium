@@ -18,3 +18,5 @@ MultipleUserProfilesState GetMultipleUserProfilesState() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(SystemStateUtil)

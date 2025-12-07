@@ -296,7 +296,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Deletes all timers, if any, associated with |tag|.
   void DeleteArcTimersInternal(const std::string& tag);
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   std::optional<bool> service_availability_ = true;
 
@@ -368,7 +368,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   bool backlights_forced_off_ = false;
 
   // True if the device has a keyboard backlight.
-  bool has_keyboard_backlight_ = false;
+  bool has_keyboard_backlight_ = true;
 
   // Last battery saver mode state set in SetBatterySaverModeState().
   bool battery_saver_mode_enabled_ = false;

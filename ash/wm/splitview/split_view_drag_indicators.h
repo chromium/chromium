@@ -122,6 +122,14 @@ class ASH_EXPORT SplitViewDragIndicators {
   void OnDisplayBoundsChanged();
   gfx::Rect GetLeftHighlightViewBounds() const;
 
+  // Constructs the internal widget and its contents view. No-op if already
+  // constructed.
+  //
+  // The widget is also automatically constructed internally if
+  // `SetDraggedWindow|WindowDraggingState()`, so the caller is not required
+  // to explicitly call this beforehand.
+  void InitWidget();
+
   gfx::Rect GetRightHighlightViewBoundsForTesting() const;
   bool GetIndicatorTypeVisibilityForTesting(IndicatorType type) const;
 
@@ -131,17 +139,21 @@ class ASH_EXPORT SplitViewDragIndicators {
   class RotatedImageLabelView;
   class SplitViewDragIndicatorsView;
 
-  // The root content view of |widget_|.
-  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged> indicators_view_ =
-      nullptr;
+  SplitViewDragIndicatorsView& GetOrCreateIndicatorsView();
 
+  const raw_ptr<aura::Window> root_window_ = nullptr;
   WindowDraggingState current_window_dragging_state_ =
       WindowDraggingState::kNoDrag;
 
   // The SplitViewDragIndicators widget. It covers the entire root window
   // and displays regions and text indicating where users should drag windows
   // enter split view.
+  //
+  // Both the widget and view are lazily constructed for performance reasons.
   std::unique_ptr<views::Widget> widget_;
+  // The root content view of |widget_|.
+  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged> indicators_view_ =
+      nullptr;
 };
 
 }  // namespace ash

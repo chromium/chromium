@@ -6,84 +6,60 @@
 
 #include <math.h>
 
-#include <cstdint>
-#include <optional>
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/dcheck_is_on.h"
-#include "base/ranges/algorithm.h"
-#include "base/types/expected.h"
+#include "base/task/bind_post_task.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
-#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/public/mojom/webnn_error.mojom.h"
-#include "services/webnn/webnn_buffer_impl.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
-#include "services/webnn/webnn_utils.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "services/webnn/dml/graph_impl_dml.h"
-#endif
+#include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn {
 
 namespace {
 
-// Return false if the named inputs for computation don't match the built
+// Return false if the named tensors for dispatch don't match the built
 // graph's expectation.
-bool ValidateInputsForComputation(
-    const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
+bool ValidateWebNNTensors(
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_tensors,
     const base::flat_map<std::string, OperandDescriptor>&
         names_to_descriptors) {
-  return base::ranges::equal(
-      named_inputs, names_to_descriptors,
-      [](const auto& input, const auto& input_spec) {
-        const auto& [input_name, input_buffer] = input;
-        const auto& [input_spec_name, input_spec_descriptor] = input_spec;
-        return input_name == input_spec_name &&
-               input_buffer.size() == input_spec_descriptor.PackedByteLength();
+  return std::ranges::equal(
+      named_tensors, names_to_descriptors,
+      [](const auto& named_tensor, const auto& tensor_spec) {
+        const auto& [tensor_name, tensor_impl] = named_tensor;
+        const auto& [tensor_spec_name, tensor_spec_descriptor] = tensor_spec;
+        return tensor_name == tensor_spec_name &&
+               tensor_impl->data_type() == tensor_spec_descriptor.data_type() &&
+               tensor_impl->shape() == tensor_spec_descriptor.shape();
       });
 }
 
-// Return false if the named buffers for dispatch don't match the built
-// graph's expectation.
-bool ValidateWebNNBuffers(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_buffers,
-    const base::flat_map<std::string, OperandDescriptor>&
-        names_to_descriptors) {
-  return base::ranges::equal(
-      named_buffers, names_to_descriptors,
-      [](const auto& named_buffer, const auto& buffer_spec) {
-        const auto& [buffer_name, buffer_impl] = named_buffer;
-        const auto& [buffer_spec_name, buffer_spec_descriptor] = buffer_spec;
-        return buffer_name == buffer_spec_name &&
-               buffer_impl->data_type() == buffer_spec_descriptor.data_type() &&
-               buffer_impl->shape() == buffer_spec_descriptor.shape();
-      });
-}
-
-// Return false if the same buffer was specified in inputs and outputs.
-bool ValidateWebNNBuffersUsage(
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs) {
-  // Validate that output buffers are unique.
-  std::set<blink::WebNNBufferToken> output_buffers;
+// Return false if the same tensor was specified in inputs and outputs.
+bool ValidateWebNNTensorsUsage(
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
+  // Validate that output tensors are unique.
+  std::set<blink::WebNNTensorToken> output_tensors;
   for (const auto& named_output : named_outputs) {
-    output_buffers.insert(named_output.second);
+    output_tensors.insert(named_output.second);
   }
 
-  if (output_buffers.size() != named_outputs.size()) {
+  if (output_tensors.size() != named_outputs.size()) {
     return false;
   }
 
-  // Validate buffers used for input and output are unique.
+  // Validate tensors used for input and output are unique.
   for (const auto& named_input : named_inputs) {
-    if (output_buffers.contains(named_input.second)) {
+    if (output_tensors.contains(named_input.second)) {
       return false;
     }
   }
@@ -96,15 +72,16 @@ bool ValidateWebNNBuffersUsage(
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
+    base::flat_map<OperandId, base::flat_set<OperationId>>
+        operand_to_dependent_operations,
+    base::flat_map<OperandId, OperationId> operand_to_producing_operation,
     base::PassKey<WebNNGraphBuilderImpl> pass_key)
     : input_names_to_descriptors(std::move(input_names_to_descriptors)),
-      output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
-
-WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
-    const ComputeResourceInfo&) = default;
-WebNNGraphImpl::ComputeResourceInfo&
-WebNNGraphImpl::ComputeResourceInfo::operator=(const ComputeResourceInfo&) =
-    default;
+      output_names_to_descriptors(std::move(output_names_to_descriptors)),
+      operand_to_dependent_operations(
+          std::move(operand_to_dependent_operations)),
+      operand_to_producing_operation(
+          std::move(operand_to_producing_operation)) {}
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     ComputeResourceInfo&&) = default;
@@ -113,95 +90,137 @@ WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;
 
 WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
 
-WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl* context,
-                               ComputeResourceInfo compute_resource_info)
-    : compute_resource_info_(std::move(compute_resource_info)),
-      context_(context) {
+WebNNGraphImpl::WebNNGraphImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    base::WeakPtr<WebNNContextImpl> context,
+    ComputeResourceInfo compute_resource_info,
+    std::vector<mojom::Device> devices)
+    : WebNNObjectImpl<mojom::WebNNGraph,
+                      blink::WebNNGraphToken,
+                      mojo::AssociatedReceiver<mojom::WebNNGraph>>(
+          std::move(receiver),
+          context->scheduler_task_runner(),
+          context->owning_task_runner()),
+      context_(std::move(context)),
+      compute_resource_info_(std::move(compute_resource_info)),
+      devices_(std::move(devices)) {
   CHECK(context_);
-#if DCHECK_IS_ON()
-  context_->AssertCalledOnValidSequence();
-#endif
 }
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
-void WebNNGraphImpl::Compute(
-    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-    mojom::WebNNGraph::ComputeCallback callback) {
-  if (!ValidateInputsForComputation(
-          named_inputs, compute_resource_info_.input_names_to_descriptors)) {
-    mojo::ReportBadMessage(
-        "The inputs for computation don't match the built graph's "
-        "expectation.");
-
-    // `mojo::ReportBadMessage()` will kill the renderer process, but Mojo
-    // complains if the callback is not run. Just run it with nonsense
-    // arguments.
-    std::move(callback).Run(mojom::ComputeResult::NewError(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Unexpected inputs received from the caller.")));
-    return;
-  }
-
-  // Call ComputeImpl() implemented by an `mojom::WebNNGraph` backend.
-  ComputeImpl(std::move(named_inputs), std::move(callback));
+void WebNNGraphImpl::OnDisconnect() {
+  context_->RemoveWebNNGraphImpl(handle());
 }
 
 void WebNNGraphImpl::Dispatch(
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs) {
-  if (!ValidateWebNNBuffersUsage(named_inputs, named_outputs)) {
-    mojo::ReportBadMessage(kBadMessageInvalidBuffer);
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
+  ScopedTrace scoped_trace("WebNNGraphImpl::Dispatch");
+
+  if (!ValidateWebNNTensorsUsage(named_inputs, named_outputs)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
-  // Resolve the token of a input MLBuffer to the corresponding `WebNNBuffer`
+  // Resolve the token of a input MLTensor to the corresponding `WebNNTensor`
   // instance.
-  std::vector<std::pair<std::string_view, WebNNBufferImpl*>>
-      name_to_input_buffers;
-  name_to_input_buffers.reserve(named_inputs.size());
-  for (const auto& [name, buffer_handle] : named_inputs) {
-    base::optional_ref<WebNNBufferImpl> input_buffer =
-        context_->GetWebNNBufferImpl(buffer_handle);
-    if (!input_buffer.has_value()) {
+  std::vector<std::pair<std::string, scoped_refptr<WebNNTensorImpl>>>
+      name_to_input_tensors;
+  name_to_input_tensors.reserve(named_inputs.size());
+  for (const auto& [name, tensor_handle] : named_inputs) {
+    scoped_refptr<WebNNTensorImpl> input_tensor =
+        context_->GetWebNNTensorImpl(tensor_handle);
+    if (!input_tensor) {
       return;
     }
-    name_to_input_buffers.emplace_back(name, input_buffer.as_ptr());
+
+    // Input MLTensor is always dispatchable, which isn’t allowed when used as
+    // a graph constant.
+    if (input_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
+    name_to_input_tensors.emplace_back(name, std::move(input_tensor));
   }
-  base::flat_map<std::string_view, WebNNBufferImpl*> name_to_input_buffer_map(
-      std::move(name_to_input_buffers));
-  if (!ValidateWebNNBuffers(
-          name_to_input_buffer_map,
+  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+      name_to_input_tensor_map(std::move(name_to_input_tensors));
+  if (!ValidateWebNNTensors(
+          name_to_input_tensor_map,
           compute_resource_info_.input_names_to_descriptors)) {
-    mojo::ReportBadMessage(kBadMessageInvalidBuffer);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
-  // Resolve the token of a output MLBuffer to the corresponding `WebNNBuffer`
+  // Resolve the token of a output MLTensor to the corresponding `WebNNTensor`
   // instance.
-  std::vector<std::pair<std::string_view, WebNNBufferImpl*>>
-      name_to_output_buffers;
-  name_to_output_buffers.reserve(named_outputs.size());
-  for (const auto& [name, buffer_handle] : named_outputs) {
-    base::optional_ref<WebNNBufferImpl> output_buffer =
-        context_->GetWebNNBufferImpl(buffer_handle);
-    if (!output_buffer.has_value()) {
+  std::vector<std::pair<std::string, scoped_refptr<WebNNTensorImpl>>>
+      name_to_output_tensors;
+  name_to_output_tensors.reserve(named_outputs.size());
+  for (const auto& [name, tensor_handle] : named_outputs) {
+    scoped_refptr<WebNNTensorImpl> output_tensor =
+        context_->GetWebNNTensorImpl(tensor_handle);
+    if (!output_tensor) {
       return;
     }
-    name_to_output_buffers.emplace_back(name, output_buffer.as_ptr());
+
+    // Output MLTensor is always dispatchable, which isn’t allowed when used as
+    // a graph constant.
+    if (output_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
+    name_to_output_tensors.emplace_back(name, std::move(output_tensor));
   }
 
-  base::flat_map<std::string_view, WebNNBufferImpl*> name_to_output_buffer_map(
-      std::move(name_to_output_buffers));
-  if (!ValidateWebNNBuffers(
-          name_to_output_buffer_map,
+  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+      name_to_output_tensor_map(std::move(name_to_output_tensors));
+  if (!ValidateWebNNTensors(
+          name_to_output_tensor_map,
           compute_resource_info_.output_names_to_descriptors)) {
-    mojo::ReportBadMessage(kBadMessageInvalidBuffer);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   // Call DispatchImpl() implemented by an `mojom::WebNNGraph` backend.
-  DispatchImpl(name_to_input_buffer_map, name_to_output_buffer_map);
+  context_->scheduler_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](WebNNGraphImpl* self,
+             base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+                 name_to_input_tensor_map,
+             base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+                 name_to_output_tensor_map,
+             ScopedTrace scoped_trace,
+             mojo::ReportBadMessageCallback bad_message_cb) {
+            for (auto& [name, tensor] : name_to_input_tensor_map) {
+              if (tensor->is_exported()) {
+                LOG(ERROR)
+                    << "[WebNN] Invalid to dispatch graph when input tensor (" +
+                           name + ") is exported.";
+                std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+                return;
+              }
+            }
+
+            for (auto& [name, tensor] : name_to_output_tensor_map) {
+              if (tensor->is_exported()) {
+                LOG(ERROR) << "[WebNN] Invalid to dispatch graph when output "
+                              "tensor (" +
+                                  name + ") is exported.";
+                std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+                return;
+              }
+            }
+
+            self->DispatchImpl(std::move(name_to_input_tensor_map),
+                               std::move(name_to_output_tensor_map));
+          },
+          base::RetainedRef(this), std::move(name_to_input_tensor_map),
+          std::move(name_to_output_tensor_map), std::move(scoped_trace),
+          GetMojoReceiver().GetBadMessageCallback()));
 }
 
 }  // namespace webnn

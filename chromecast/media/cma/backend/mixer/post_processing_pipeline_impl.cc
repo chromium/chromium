@@ -102,7 +102,8 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
     if (processor_config_val) {
       DCHECK(processor_config_val->is_dict() ||
              processor_config_val->is_string());
-      base::JSONWriter::Write(*processor_config_val, &processor_config_string);
+      processor_config_string =
+          base::WriteJson(*processor_config_val).value_or("");
     }
 
     LOG(INFO) << "Creating '" << processor_name << "', an instance of "

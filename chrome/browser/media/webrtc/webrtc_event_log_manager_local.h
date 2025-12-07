@@ -19,9 +19,9 @@
 namespace webrtc_event_logging {
 
 class WebRtcLocalEventLogManager final {
-  using LogFilesMap =
-      std::map<WebRtcEventLogPeerConnectionKey, std::unique_ptr<LogFileWriter>>;
+  struct LogFiles;
   using PeerConnectionKey = WebRtcEventLogPeerConnectionKey;
+  using LogFilesMap = std::map<PeerConnectionKey, LogFiles>;
 
  public:
   explicit WebRtcLocalEventLogManager(WebRtcLocalEventLogsObserver* observer);
@@ -35,11 +35,18 @@ class WebRtcLocalEventLogManager final {
   bool OnPeerConnectionAdded(const PeerConnectionKey& key);
   bool OnPeerConnectionRemoved(const PeerConnectionKey& key);
 
-  bool EnableLogging(const base::FilePath& base_path,
-                     size_t max_file_size_bytes);
-  bool DisableLogging();
+  bool EnableEventLogging(const base::FilePath& base_path,
+                          size_t max_file_size_bytes);
+  bool DisableEventLogging();
 
   bool EventLogWrite(const PeerConnectionKey& key, const std::string& message);
+
+  bool EnableDataChannelLogging(const base::FilePath& base_path,
+                                size_t max_file_size_bytes);
+  bool DisableDataChannelLogging();
+
+  bool DataChannelLogWrite(const PeerConnectionKey& key,
+                           const std::string& message);
 
   void RenderProcessHostExitedDestroyed(int render_process_id);
 
@@ -49,12 +56,32 @@ class WebRtcLocalEventLogManager final {
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  // Create a local log file.
-  void StartLogFile(const PeerConnectionKey& key);
+  struct LogTypeState {
+    LogTypeState(const base::FilePath& base_path,
+                 std::optional<size_t> max_size_bytes,
+                 std::optional<size_t> max_logs_active,
+                 std::optional<size_t> max_logs_created)
+        : base_path(base_path),
+          max_size_bytes(max_size_bytes),
+          max_logs_active(max_logs_active),
+          max_logs_created(max_logs_created) {}
+    const base::FilePath base_path;
+    const std::optional<size_t> max_size_bytes;
+    const std::optional<size_t> max_logs_active;
+    const std::optional<size_t> max_logs_created;
+    size_t logs_active = 0;
+    size_t logs_created = 0;
+  };
 
-  // Closes an active log file.
-  // Returns an iterator to the next active log file.
-  LogFilesMap::iterator CloseLogFile(LogFilesMap::iterator it);
+  void MaybeStartEventLogFile(LogFilesMap::iterator log_it);
+  void StopEventLogFileIfStarted(LogFilesMap::iterator);
+  void MaybeStartDataChannelLogFile(LogFilesMap::iterator log_it);
+  void StopDataChannelLogFileIfStarted(LogFilesMap::iterator);
+
+  std::unique_ptr<LogFileWriter> CreateLogFile(
+      const PeerConnectionKey& key,
+      const base::FilePath& base_path,
+      std::optional<size_t> max_log_size_bytes);
 
   // Derives the name of a local log file. The format is:
   // [user_defined]_[date]_[time]_[render_process_id]_[lid].[extension]
@@ -80,21 +107,11 @@ class WebRtcLocalEventLogManager final {
   // (namely WebRtcEventLogManager) and the time it's read by the test.
   raw_ptr<base::Clock> clock_for_testing_;
 
-  // Currently active peer connections. PeerConnections which have been closed
-  // are not considered active, regardless of whether they have been torn down.
-  std::set<PeerConnectionKey> active_peer_connections_;
-
   // Local log files, stored at the behest of the user (via WebRTCInternals).
   LogFilesMap log_files_;
 
-  // If |base_path_| is empty, local logging is disabled.
-  // If nonempty, local logging is enabled, and all local logs will be saved
-  // to this directory.
-  base::FilePath base_path_;
-
-  // The maximum size for local logs, in bytes.
-  // If !has_value(), the value is unlimited.
-  std::optional<size_t> max_log_file_size_bytes_;
+  std::optional<LogTypeState> event_log_state_;
+  std::optional<LogTypeState> data_channel_log_state_;
 };
 
 }  // namespace webrtc_event_logging

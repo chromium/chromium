@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -132,6 +133,8 @@ TEST(GoogleUtilTest, BadHomePages) {
 }
 
 TEST(GoogleUtilTest, GoodSearches) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(google_util::kIsViewerGoogleSearchUrl);
   constexpr struct {
     const char* before_query_param;
     const char* after_query_param;
@@ -155,6 +158,9 @@ TEST(GoogleUtilTest, GoodSearches) {
       {"www.google.com/webhp#name=bob&", "=something"},
       {"www.google.com/webhp?name=bob#", "=something"},
       {"www.google.com/webhp?name=bob#age=24&", "=thing"},
+
+      // Viewing a google search card is still considered a search
+      {"www.google.com/viewer/places?", "=something"},
 
       {"www.google.com/#", "=something"},
       {"www.google.com/#name=bob&", "=something"},
@@ -243,6 +249,13 @@ TEST(GoogleUtilTest, BadSearches) {
       }
     }
   }
+}
+
+TEST(GoogleUtilTest, GoodSearchesWithoutViewer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(google_util::kIsViewerGoogleSearchUrl);
+  EXPECT_FALSE(IsSearch("https://www.google.com/viewer/places?q=something"));
+  EXPECT_TRUE(IsSearch("https://www.google.com/search?q=something"));
 }
 
 TEST(GoogleUtilTest, GoogleDomains) {

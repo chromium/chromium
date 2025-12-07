@@ -10,9 +10,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_factory.h"
@@ -21,14 +21,10 @@
 #include "content/public/common/content_constants.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace data_controls {
 // TODO(1187477, marcgrimme): revisit if this should be refactored.
@@ -64,6 +60,7 @@ DlpPolicyEvent_Restriction RuleRestriction2DlpEventRestriction(
     case Rule::Restriction::kFiles:
       return DlpPolicyEvent_Restriction_FILES;
     case Rule::Restriction::kUnknownRestriction:
+    case Rule::Restriction::kFileDownload:
       return DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION;
   }
 }
@@ -86,11 +83,14 @@ Rule::Restriction DlpEventRestriction2RuleRestriction(
       return Rule::Restriction::kFiles;
     case DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION:
       return Rule::Restriction::kUnknownRestriction;
+    case DlpPolicyEvent_Restriction_DlpPolicyEvent_Restriction_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_Restriction_DlpPolicyEvent_Restriction_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
 }
 
 DlpPolicyEvent_UserType GetCurrentUserType() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Could be not initialized in tests.
   if (!user_manager::UserManager::IsInitialized() ||
       !user_manager::UserManager::Get()->GetPrimaryUser()) {
@@ -104,31 +104,19 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
       return DlpPolicyEvent_UserType_REGULAR;
     case user_manager::UserType::kPublicAccount:
       return DlpPolicyEvent_UserType_MANAGED_GUEST;
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return DlpPolicyEvent_UserType_KIOSK;
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kChild:
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  switch (chromeos::BrowserParamsProxy::Get()->SessionType()) {
-    case crosapi::mojom::SessionType::kRegularSession:
-      return DlpPolicyEvent_UserType_REGULAR;
-    case crosapi::mojom::SessionType::kPublicSession:
-      return DlpPolicyEvent_UserType_MANAGED_GUEST;
-    case crosapi::mojom::SessionType::kWebKioskSession:
-    case crosapi::mojom::SessionType::kAppKioskSession:
-      return DlpPolicyEvent_UserType_KIOSK;
-    case crosapi::mojom::SessionType::kUnknown:
-    case crosapi::mojom::SessionType::kGuestSession:
-    case crosapi::mojom::SessionType::kChildSession:
-      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
-  }
 #else
   // TODO(b/303640183): Revisit what this should return for non-CrOS platforms.
   return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -383,8 +371,9 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
           DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_UNDEFINED_MODE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case DlpPolicyEvent_Mode_DlpPolicyEvent_Mode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_Mode_DlpPolicyEvent_Mode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
   report_queue_->Enqueue(std::make_unique<DlpPolicyEvent>(std::move(event)),
                          reporting::Priority::SLOW_BATCH, std::move(callback));

@@ -38,7 +38,6 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kImageSearch:
     case ProviderType::kHelpApp:
       return true;
-    case ProviderType::kInternalApp:
     case ProviderType::kArcAppShortcut:
     case ProviderType::kDriveSearch:
     case ProviderType::kGames:
@@ -86,7 +85,7 @@ BestMatchRanker::BestMatchRanker() = default;
 BestMatchRanker::~BestMatchRanker() = default;
 
 void BestMatchRanker::Start(const std::u16string& query,
-                            CategoriesList& categories) {
+                            const CategoriesList& categories) {
   is_pre_burnin_ = true;
   best_matches_.clear();
 }

@@ -27,6 +27,8 @@ constexpr char kApiResponseCourseWorkItemDueDateKey[] = "dueDate";
 constexpr char kApiResponseCourseWorkItemDueTimeKey[] = "dueTime";
 constexpr char kApiResponseCourseWorkItemStateKey[] = "state";
 constexpr char kApiResponseCourseWorkItemTitleKey[] = "title";
+constexpr char kApiResponseCourseWorkItemMaterialsKey[] = "materials";
+constexpr char kApiResponseCourseWorkItemTypeKey[] = "workType";
 
 constexpr char kDueDateYearComponent[] = "year";
 constexpr char kDueDateMonthComponent[] = "month";
@@ -38,12 +40,31 @@ constexpr char kDueTimeSecondsComponent[] = "seconds";
 constexpr char kDueTimeNanosComponent[] = "nanos";
 
 constexpr char kPublishedCourseWorkItemState[] = "PUBLISHED";
+constexpr char kAssignmentCourseWorkItemType[] = "ASSIGNMENT";
+constexpr char kShortAnswerQuestionCourseWorkItemType[] =
+    "SHORT_ANSWER_QUESTION";
+constexpr char kMultipleChoiceQuestionCourseWorkItemType[] =
+    "MULTIPLE_CHOICE_QUESTION";
 
 bool ConvertCourseWorkItemState(std::string_view input,
                                 CourseWorkItem::State* output) {
   *output = input == kPublishedCourseWorkItemState
                 ? CourseWorkItem::State::kPublished
                 : CourseWorkItem::State::kOther;
+  return true;
+}
+
+bool ConvertCourseWorkItemType(std::string_view input,
+                               CourseWorkItem::Type* output) {
+  if (input == kAssignmentCourseWorkItemType) {
+    *output = CourseWorkItem::Type::kAssignment;
+  } else if (input == kShortAnswerQuestionCourseWorkItemType) {
+    *output = CourseWorkItem::Type::kShortAnswerQuestion;
+  } else if (input == kMultipleChoiceQuestionCourseWorkItemType) {
+    *output = CourseWorkItem::Type::kMultipleChoiceQuestion;
+  } else {
+    *output = CourseWorkItem::Type::kUnspecified;
+  }
   return true;
 }
 
@@ -119,6 +140,12 @@ void CourseWorkItem::RegisterJSONConverter(
   converter->RegisterCustomField<base::Time>(
       kApiResponseCourseWorkItemUpdateTimeKey, &CourseWorkItem::last_update_,
       &util::GetTimeFromString);
+  converter->RegisterCustomField<CourseWorkItem::Type>(
+      kApiResponseCourseWorkItemTypeKey, &CourseWorkItem::type_,
+      &ConvertCourseWorkItemType);
+  converter->RegisterRepeatedCustomValue<Material>(
+      kApiResponseCourseWorkItemMaterialsKey, &CourseWorkItem::materials_,
+      &Material::ConvertMaterial);
 }
 
 // static

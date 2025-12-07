@@ -11,14 +11,11 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
-
-// When enabled, abortOnLoadForNonInteractive and timeoutMsForNonInteractive
-// arguments to launchWebAuthFlow will be used to allow the loaded auth page to
-// wait before failing with an 'interaction required' error. This allows JS to
-// run and redirects to happen after page load.
-BASE_DECLARE_FEATURE(kNonInteractiveTimeoutForWebAuthFlow);
 
 class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
                                           public WebAuthFlow::Delegate {
@@ -40,7 +37,8 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kPageLoadTimedOut = 6,
     kCannotCreateWindow = 7,
     kInvalidURLScheme = 8,
-    kMaxValue = kInvalidURLScheme,
+    kBrowserContextShutDown = 9,
+    kMaxValue = kBrowserContextShutDown,
   };
 
   IdentityLaunchWebAuthFlowFunction();
@@ -58,7 +56,8 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   ~IdentityLaunchWebAuthFlowFunction() override;
   ResponseAction Run() override;
   bool ShouldKeepWorkerAliveIndefinitely() override;
-
+  void OnBrowserContextShutdown() override;
+  void CompleteAsyncRun(ResponseValue response);
   void StartAuthFlow(Profile* profile,
                      GURL auth_url,
                      WebAuthFlow::Mode mode,

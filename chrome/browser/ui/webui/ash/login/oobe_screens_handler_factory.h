@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
@@ -47,6 +46,10 @@ class OobeScreensHandlerFactory
           receiver,
       EstablishDrivePinningScreenPipeCallback callback) override;
 
+  void EstablishFjordStationSetupScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::FjordStationSetupPageHandler>
+          receiver) override;
+
   void EstablishGaiaInfoScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
           receiver,
@@ -78,17 +81,6 @@ class OobeScreensHandlerFactory
       mojo::PendingReceiver<
           screens_login::mojom::EncryptionMigrationPageHandler> receiver,
       EstablishEncryptionMigrationScreenPipeCallback callback) override;
-
-  void EstablishLacrosDataBackwardMigrationScreenPipe(
-      mojo::PendingReceiver<
-          screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
-          receiver,
-      EstablishLacrosDataBackwardMigrationScreenPipeCallback callback) override;
-
-  void EstablishLacrosDataMigrationScreenPipe(
-      mojo::PendingReceiver<
-          screens_login::mojom::LacrosDataMigrationPageHandler> receiver,
-      EstablishLacrosDataMigrationScreenPipeCallback callback) override;
 
   void EstablishLocalDataLossWarningScreenPipe(
       mojo::PendingReceiver<

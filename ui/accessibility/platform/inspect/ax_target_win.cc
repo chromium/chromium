@@ -52,7 +52,7 @@ std::string AXTargetWin::ToString() const {
 
   if (Is<ScopedCoMemArray<LONG>>()) {
     std::string str;
-    for (LONG value : As<ScopedCoMemArray<LONG>>()) {
+    for (LONG value : As<ScopedCoMemArray<LONG>>().as_span()) {
       if (!str.empty()) {
         str += ", ";
       }
@@ -64,7 +64,7 @@ std::string AXTargetWin::ToString() const {
   if (Is<ScopedCoMemArray<IA2TextSelection>>()) {
     std::string str;
     for (const IA2TextSelection& selection :
-         As<ScopedCoMemArray<IA2TextSelection>>()) {
+         As<ScopedCoMemArray<IA2TextSelection>>().as_span()) {
       if (!str.empty()) {
         str += ", ";
       }

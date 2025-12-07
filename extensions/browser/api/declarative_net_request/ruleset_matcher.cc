@@ -372,8 +372,7 @@ size_t RulesetMatcher::GetRulesCount(RulesetMatchingStage stage) const {
              regex_matcher_.GetHeadersReceivedRulesCount();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0u;
+  NOTREACHED();
 }
 
 size_t RulesetMatcher::GetRegexRulesCount(RulesetMatchingStage stage) const {
@@ -384,8 +383,7 @@ size_t RulesetMatcher::GetRegexRulesCount(RulesetMatchingStage stage) const {
       return regex_matcher_.GetHeadersReceivedRulesCount();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0u;
+  NOTREACHED();
 }
 
 }  // namespace extensions::declarative_net_request

@@ -16,8 +16,10 @@ static void EmitBuffer(scoped_refptr<media::StreamParserBuffer> buffer) {}
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media::mp2t::EsParserH264 es_parser(base::BindRepeating(&NewVideoConfig),
                                       base::BindRepeating(&EmitBuffer));
-  if (!es_parser.Parse(data, size, media::kNoTimestamp,
-                       media::kNoDecodeTimestamp)) {
+  if (!es_parser.Parse(
+          // SAFETY: This is guaranteed by the fuzzer API.
+          UNSAFE_BUFFERS(base::span(data, size)), media::kNoTimestamp,
+          media::kNoDecodeTimestamp)) {
     return 0;
   }
   return 0;

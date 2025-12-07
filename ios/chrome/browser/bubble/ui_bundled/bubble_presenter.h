@@ -12,9 +12,12 @@
 @protocol BubblePresenterDelegate;
 @class BubbleViewControllerPresenter;
 @class FeedMetricsRecorder;
+class FullscreenController;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
+@protocol PageActionMenuEntryPointCommands;
+@protocol PopupMenuCommands;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
 class WebStateList;
@@ -38,6 +41,8 @@ class DeviceSwitcherResultDispatcher;
                 engagementTracker:
                     (raw_ptr<feature_engagement::Tracker>)engagementTracker
                      webStateList:(raw_ptr<WebStateList>)webStateList
+             fullscreenController:
+                 (raw_ptr<FullscreenController>)fullscreenController
     overlayPresenterForWebContent:
         (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
                     infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter
@@ -49,6 +54,10 @@ class DeviceSwitcherResultDispatcher;
 // Delegate object to handle interactions.
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
 
+// Command handler for dispatching page action menu entry point commands.
+@property(nonatomic, weak) id<PageActionMenuEntryPointCommands>
+    pageActionMenuEntryPointHandler;
+
 // The view controller that presents the bubbles.
 @property(nonatomic, weak) UIViewController* rootViewController;
 
@@ -57,29 +66,32 @@ class DeviceSwitcherResultDispatcher;
 // configuration and the display history of the bubble, etc.
 - (void)presentDiscoverFeedMenuTipBubble;
 
-// Optionally presents a relevant Follow help bubble while browsing a site.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-    (FeedMetricsRecorder*)recorder;
+// Optionally presents a help bubble associated with the NTP customization
+// menu's entrypoint. The eligibility can depend on the UI hierarchy at the
+// moment, the configuration and the display history of the bubble, etc.
+- (void)presentHomeCustomizationTipBubble;
 
 // Optionally presents a help bubble to let the user know that they can change
 // the default mode (Desktop/Mobile) of the websites. The eligibility can depend
 // on the UI hierarchy at the moment, the configuration and the display history
 // of the bubble, etc.
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
-    (raw_ptr<HostContentSettingsMap>)settingsMap;
+            (raw_ptr<HostContentSettingsMap>)settingsMap
+                                      popupMenuHandler:(id<PopupMenuCommands>)
+                                                           popupMenuHandler;
 
 // Optionally presents a help bubble for What's New.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
-- (void)presentWhatsNewBottomToolbarBubble;
+- (void)presentWhatsNewBottomToolbarBubbleWithPopupMenuHandler:
+    (id<PopupMenuCommands>)popupMenuHandler;
 
 // Optionally presents a help bubble to inform the user that they can track the
 // price of the item on the current website. The eligibility can depend on the
 // UI hierarchy at the moment, the configuration and the display history of the
 // bubble, etc.
-- (void)presentPriceNotificationsWhileBrowsingTipBubble;
+- (void)presentPriceNotificationsWhileBrowsingTipBubbleWithPopupMenuHandler:
+    (id<PopupMenuCommands>)popupMenuHandler;
 
 // Optionally presents a help bubble to inform the user that they can tap the
 // Lens button in the omnibox keyboard to search with their camera. The
@@ -87,40 +99,18 @@ class DeviceSwitcherResultDispatcher;
 // and the display history of the bubble, etc.
 - (void)presentLensKeyboardTipBubble;
 
-// Optionally presents a help bubble to inform the user that their tracked
-// packages will appear in the Magic Stack. The eligibility can depend on the UI
-// hierarchy at the moment, the configuration and the display history of the
-// bubble, etc.
-- (void)presentParcelTrackingTipBubble;
-
-// Optionally presents a help bubble for the share button.
+// Optionally present a bubble associated with the lens overlay.
 // The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentShareButtonHelpBubbleWithDeviceSwitcherResultDispatcher:
-    (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
-        deviceSwitcherResultDispatcher;
+// configuration and the display history of the bubble.
+- (void)presentLensOverlayTipBubble;
 
-// Optionally presents a bubble associated with the tab grid iph.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentTabGridToolbarItemTipWithToolbarHandler:
-            (id<ToolbarCommands>)toolbarHandler
-                        deviceSwitcherResultDispatcher:
-                            (raw_ptr<segmentation_platform::
-                                         DeviceSwitcherResultDispatcher>)
-                                deviceSwitcherResultDispatcher;
+// Optionally presents a bubble informing the user that they can find Chrome
+// settings in the overflow menu.
+- (void)presentOverflowMenuSettingsBubble;
 
-// Optionally presents a bubble associated with the new tab iph.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentNewTabToolbarItemTipWithHandlerForToolbar:
-            (id<ToolbarCommands>)toolbarHandler
-                                             forTabStrip:(id<TabStripCommands>)
-                                                             tabStripHandler
-                          deviceSwitcherResultDispatcher:
-                              (raw_ptr<segmentation_platform::
-                                           DeviceSwitcherResultDispatcher>)
-                                  deviceSwitcherResultDispatcher;
+// Optionally presents a bubble informing the user that they can use the
+// identity disc on the New Tab page to switch accounts.
+- (void)presentSwitchAccountsWithNTPAccountParticleDiscBubble;
 
 // Optionally presents a gesture IPH associated with the pull-to-refresh
 // feature. The eligibility can depend on the UI hierarchy at the moment, the
@@ -142,6 +132,24 @@ class DeviceSwitcherResultDispatcher;
 // configuration and the display history of the bubble, etc.
 - (void)presentToolbarSwipeGestureInProductHelp;
 
+// Optionally presents a full screen IPH associated with the swipe to scroll on
+// the Feed. The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentFeedSwipeGestureInProductHelp;
+
+// Optionally present a bubble associated with scrolling on the Feed.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble.
+- (void)presentFeedSwipeBubble;
+
+// Optionally present a bubble associated with the page action menu icon in the
+// Omnibox. The eligibility is based off if the BWG Promo was shown and
+// dismissed.
+- (void)presentPageActionMenuBubble;
+
+// Optionally presents a bubble associated with the reader mode options.
+- (void)presentReaderModeOptionsBubble;
+
 // Delegate method to be invoked when the user has performed a swipe on the
 // toolbar to switch tabs. Remove `toolbarSwipeGestureIPH` if visible.
 - (void)handleToolbarSwipeGesture;
@@ -153,6 +161,9 @@ class DeviceSwitcherResultDispatcher;
 
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
+
+// Dismisses Omnibox relative bubbles.
+- (void)hideBubblesPointingToOmnibox;
 
 // Stops observing all objects.
 - (void)disconnect;

@@ -58,12 +58,15 @@
     IDBRequest getKey(any key);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest getAll(optional any query = null,
+    IDBRequest getAll(optional any query_or_options = null,
                       optional [EnforceRange] unsigned long count);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest getAllKeys(optional any query = null,
+    IDBRequest getAllKeys(optional any query_or_options = null,
                           optional [EnforceRange] unsigned long count);
+
+    [RuntimeEnabled=IndexedDbGetAllRecords, CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
+    IDBRequest getAllRecords(optional IDBGetAllOptions options = {});
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
     IDBRequest count(optional any key = null);

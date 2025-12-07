@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 66;
+  reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -218,8 +218,6 @@ enum OptimizationType {
   PRICE_INSIGHTS = 30;
   // Information about which JavaScript functions should be eager compiled.
   V8_COMPILE_HINTS = 31;
-  // Provides Page Insights features for a URL.
-  PAGE_INSIGHTS = 32;
   // This optimization provides information about shoppinge page types of this
   // page.
   SHOPPING_PAGE_TYPES = 33;
@@ -278,6 +276,109 @@ enum OptimizationType {
   // This optimization helps determine if this merchant page is a good candidate
   // for enabling price/amount extraction.
   AMOUNT_EXTRACTION_ALLOWLIST = 67;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Affirm on desktop.
+  BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM = 69;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Zip on desktop.
+  BUY_NOW_PAY_LATER_ALLOWLIST_ZIP = 70;
+  // Provides information about whether a URL can be synced across devices for
+  // saved tab groups feature.
+  SAVED_TAB_GROUP = 71;
+  // This optimization provides information about whether a page is eligible for
+  // text classifier entity detection. This feature is iOS only.
+  TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
+  // This optimization provides information about merchants origins for which
+  // eWallet push payments should be allowed.
+  EWALLET_MERCHANT_ALLOWLIST = 75;
+  // Provides information for what to show in the debug icon view.
+  OPTIMIZATION_GUIDE_ICON_VIEW = 76;
+  // This optimization provides information about whether a page is a privacy
+  // policy page.
+  PRIVACY_POLICY_ANNOTATION = 77;
+  // The below optimizations provide information about merchant URLs that only
+  // BMO supports for credit card category benefits.
+  BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS = 78;
+  BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS = 79;
+  BMO_CREDIT_CARD_DINING_BENEFITS = 80;
+  BMO_CREDIT_CARD_DRUGSTORE_BENEFITS = 81;
+  BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 82;
+  BMO_CREDIT_CARD_GROCERY_BENEFITS = 83;
+  BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS = 84;
+  BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS = 85;
+  BMO_CREDIT_CARD_TRANSIT_BENEFITS = 86;
+  BMO_CREDIT_CARD_TRAVEL_BENEFITS = 87;
+  BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS = 88;
+  // Provides information about whether a page is eligible to cue for GLIC.
+  GLIC_CONTEXTUAL_CUEING = 90;
+  // Provides information about the contextual zero state suggestions for a
+  // page.
+  GLIC_ZERO_STATE_SUGGESTIONS = 91;
+  // Provides information about whether GLIC may act on a page.
+  GLIC_ACTION_PAGE_BLOCK = 92;
+  // Provides information about FedCM API clickthrough rate aggregated across
+  // all users on the page.
+  FEDCM_CLICKTHROUGH_RATE = 93;
+  // Provides information about whether the page is eligible for Digital
+  // Credentials low friction.
+  DIGITAL_CREDENTIALS_LOW_FRICTION = 97;
+  // This optimization provides information about merchant URLs that are
+  // eligible for A2A payments.
+  A2A_MERCHANT_ALLOWLIST = 98;
+  // Provides information about whether a page is eligible for walletable pass
+  // detection.
+  WALLETABLE_PASS_DETECTION_ALLOWLIST = 99;
+  // Merchant blocklist for card flat rate benefits.
+  SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST = 100;
+
+  // TODO(crbug.com/423826272): Add enum 101 for READALOUD_AUDIO_OVERVIEWS.
+
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Klarna on desktop.
+  BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA = 102;
+
+  // This optimization helps determine if this merchant page should be blocked
+  // for the buy now pay later flow with Affirm.
+  BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM = 103;
+  // This optimization helps determine if this merchant page should be blocked
+  // for the buy now pay later flow with Zip.
+  BUY_NOW_PAY_LATER_BLOCKLIST_ZIP = 104;
+  // This optimization helps determine if this merchant page should be blocked
+  // for the buy now pay later flow with Klarna.
+  BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA = 105;
+
+  // Blocklist for the Lens Overlay EDU action chip.
+  LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST = 106;
+  // Allowlist for the Lens Overlay EDU action chip.
+  LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST = 107;
+  // Provides information about whether a page is eligible for walletable
+  // loyalty pass detection.
+  WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST = 108;
+  // Provides information about whether a page is eligible for walletable
+  // boarding pass detection.
+  WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST = 109;
+
+  // Blocklist for the NTP-Next deep dive action chip.
+  NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST = 110;
+  // Allowlist for the NTP-Next deep dive action chip.
+  NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST = 111;
+
+  // This optimization provides information about the eligibility of a URL
+  // for Reader Mode.
+  READER_MODE_ELIGIBLE = 112;
+
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Affirm on Android OS.
+  BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID = 113;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Zip on Android OS.
+  BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID = 114;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Klarna on Android OS.
+  BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID = 115;
+  // Provides information about whether we may trigger Autofill on a page
+  // element in an iframe with this origin during an actor task.
+  AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST = 116;
 }
 
 // Presents semantics for how page load URLs should be matched.

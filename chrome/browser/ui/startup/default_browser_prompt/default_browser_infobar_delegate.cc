@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,31 +32,40 @@
 #include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chrome {
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif
+
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+void PinToTaskbarResult(bool pinned) {
+  // TODO(crbug.com/343734031): Emit a metric with the pin result. Initially,
+  // taskbar_manager.cc metrics will suffice, but taskbar_manager will most
+  // likely get used by other code.
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace
 
 // static
 infobars::InfoBar* DefaultBrowserInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
-    Profile* profile) {
+    Profile* profile,
+    bool can_pin_to_taskbar) {
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<DefaultBrowserInfoBarDelegate>(
-          base::PassKey<DefaultBrowserInfoBarDelegate>(), profile)));
+          base::PassKey<DefaultBrowserInfoBarDelegate>(), profile,
+          can_pin_to_taskbar)));
 }
 
 DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(
     base::PassKey<DefaultBrowserInfoBarDelegate>,
-    Profile* profile)
-    : profile_(profile) {
-  if (!base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
-    // We want the info-bar to stick-around for few seconds and then be hidden
-    // on the next navigation after that.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DefaultBrowserInfoBarDelegate::AllowExpiry,
-                       weak_factory_.GetWeakPtr()),
-        base::Seconds(8));
-  }
-}
+    Profile* profile,
+    bool can_pin_to_taskbar)
+    : profile_(profile), can_pin_to_taskbar_(can_pin_to_taskbar) {}
 
 DefaultBrowserInfoBarDelegate::~DefaultBrowserInfoBarDelegate() {
   if (!action_taken_) {
@@ -67,10 +76,6 @@ DefaultBrowserInfoBarDelegate::~DefaultBrowserInfoBarDelegate() {
   }
 }
 
-void DefaultBrowserInfoBarDelegate::AllowExpiry() {
-  should_expire_ = true;
-}
-
 infobars::InfoBarDelegate::InfoBarIdentifier
 DefaultBrowserInfoBarDelegate::GetIdentifier() const {
   return DEFAULT_BROWSER_INFOBAR_DELEGATE;
@@ -78,12 +83,12 @@ DefaultBrowserInfoBarDelegate::GetIdentifier() const {
 
 const gfx::VectorIcon& DefaultBrowserInfoBarDelegate::GetVectorIcon() const {
   return dark_mode() ? omnibox::kProductChromeRefreshIcon
-                     : vector_icons::kProductIcon;
+                     : vector_icons::kProductRefreshIcon;
 }
 
 bool DefaultBrowserInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
-  return should_expire_ && ConfirmInfoBarDelegate::ShouldExpire(details);
+  return false;
 }
 
 void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
@@ -101,11 +106,9 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
 }
 
 std::u16string DefaultBrowserInfoBarDelegate::GetMessageText() const {
-  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) &&
-      features::kUpdatedInfoBarCopy.Get()) {
-    return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_TEXT);
-  }
-  return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_TEXT);
+  return l10n_util::GetStringUTF16(can_pin_to_taskbar_
+                                       ? IDS_DEFAULT_BROWSER_PIN_INFOBAR_TEXT
+                                       : IDS_DEFAULT_BROWSER_INFOBAR_TEXT);
 }
 
 int DefaultBrowserInfoBarDelegate::GetButtons() const {
@@ -115,11 +118,6 @@ int DefaultBrowserInfoBarDelegate::GetButtons() const {
 std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
-  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) &&
-      features::kUpdatedInfoBarCopy.Get()) {
-    return l10n_util::GetStringUTF16(
-        IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_OK_BUTTON_LABEL);
-  }
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL);
 }
 
@@ -140,8 +138,24 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   // finished.
   base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
       ->StartSetAsDefault(base::DoNothing());
+  if (can_pin_to_taskbar_) {
+#if BUILDFLAG(IS_WIN)
+    // Attempt the pin to taskbar in parallel with bringing up the Windows
+    // settings UI. Serializing the operations is an option, but since the user
+    // might not complete the first operation, serializing would probably make
+    // the second operation less likely to happen.
+    browser_util::PinAppToTaskbar(
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
+        base::BindOnce(&PinToTaskbarResult));
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(IS_WIN)
+  }
 
   return ConfirmInfoBarDelegate::Accept();
 }
 
-}  // namespace chrome
+bool DefaultBrowserInfoBarDelegate::ShouldHideInFullscreen() const {
+  return true;
+}

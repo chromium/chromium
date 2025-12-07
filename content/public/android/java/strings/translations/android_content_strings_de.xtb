@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1412240523210238692">Textauswahl</translation>
-<translation id="1542044944667958430">Websuche</translation>
+<translation id="1542044944667958430">Im Web suchen</translation>
 <translation id="1768717197362323622">Millisekunde</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="2094750046714988961">Profiler kann nicht gestartet werden, da der externe Speicher nicht bereit ist.</translation>
@@ -10,6 +10,7 @@
 <translation id="2520230379124234395">Profiler gestartet</translation>
 <translation id="2732718972699418926">AM</translation>
 <translation id="2841013758207633010">Zeit</translation>
+<translation id="3252174836838062892">Zum Einblenden des Cursors drücke die Esc-Taste</translation>
 <translation id="376869769528291915">:</translation>
 <translation id="3845599764535987402">Stunde</translation>
 <translation id="4247305538398689241">Woche festlegen</translation>
@@ -29,6 +30,7 @@
 <translation id="7102218676258945610">Minute</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
 <translation id="7575803462290353686">Uhrzeit festlegen</translation>
+<translation id="7648133459447652947">Zum Einblenden des Cursors wechsle zu einer anderen App, lade die Seite neu oder gehe zurück</translation>
 <translation id="7781164152564914424">Monat festlegen</translation>
 <translation id="7821540960913969614">Datum festlegen</translation>
 <translation id="8261506727792406068">Löschen</translation>

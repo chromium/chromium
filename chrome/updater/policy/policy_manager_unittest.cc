@@ -23,10 +23,19 @@ constexpr char kTestAppIDForceInstall[] = "appidforceinstall";
 
 class PolicyManagerTests : public ::testing::Test {};
 
-TEST_F(PolicyManagerTests, NoPolicySet) {
-  auto policy_manager =
-      base::MakeRefCounted<PolicyManager>(base::Value::Dict());
-  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
+TEST_F(PolicyManagerTests, NoPolicies) {
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager({});
+  EXPECT_FALSE(policy_manager);
+}
+
+TEST_F(PolicyManagerTests, InvalidPolicies) {
+  base::Value::Dict policies;
+  policies.Set("autoupdatecheckperiodminutes", "NotAnInteger");
+
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager(std::move(policies));
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
 
@@ -84,9 +93,11 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   policies.Set(base::StrCat({"rollbacktotargetversion", kTestAppID}), 1);
   policies.Set(base::StrCat({"install", kTestAppIDForceInstall}),
                kPolicyForceInstallUser);
+  policies.Set(base::StrCat({"majorversionrollout", kTestAppID}), 1);
+  policies.Set(base::StrCat({"minorversionrollout", kTestAppID}), 2);
 
-  auto policy_manager =
-      base::MakeRefCounted<PolicyManager>(std::move(policies));
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager(std::move(policies));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
@@ -130,6 +141,11 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   EXPECT_FALSE(
       policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"));
 
+  EXPECT_EQ(policy_manager->GetMajorVersionRolloutPolicy(kTestAppID), 1);
+  EXPECT_EQ(policy_manager->GetMinorVersionRolloutPolicy(kTestAppID), 2);
+  EXPECT_FALSE(policy_manager->GetMajorVersionRolloutPolicy("non-exist-app"));
+  EXPECT_FALSE(policy_manager->GetMajorVersionRolloutPolicy("non-exist-app"));
+
   std::optional<std::vector<std::string>> force_install_apps =
       policy_manager->GetForceInstallApps();
   ASSERT_EQ(force_install_apps.has_value(), !IsSystemInstall());
@@ -165,8 +181,8 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
   policies.Set(base::StrCat({"targetchannel", kTestAppID}), 10);
   policies.Set(base::StrCat({"rollbacktotargetversion", kTestAppID}), "1");
 
-  auto policy_manager =
-      base::MakeRefCounted<PolicyManager>(std::move(policies));
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager(std::move(policies));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 

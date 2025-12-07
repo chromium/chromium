@@ -82,7 +82,7 @@ class AppBannerManagerAndroid
     // Called when an install event occurs, allowing specializations to record
     // additional metrics.
     virtual void RecordExtraMetricsForInstallEvent(
-        AddToHomescreenInstaller::Event event,
+        AddToHomescreenEvent event,
         const AddToHomescreenParams& a2hs_params) = 0;
   };
 
@@ -105,14 +105,13 @@ class AppBannerManagerAndroid
   // determined (and blank if not).
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppName(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppManifestId(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
 
   // Returns true if the banner pipeline is currently running.
-  bool IsRunningForTesting(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& jobj);
+  bool IsRunningForTesting(JNIEnv* env);
 
   // Returns the state of the processing pipeline for testing purposes.
   int GetPipelineStatusForTesting(JNIEnv* env);
@@ -123,22 +122,13 @@ class AppBannerManagerAndroid
   // Returns |false| if an icon fetch couldn't be kicked off.
   void OnAppDetailsRetrieved(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       int request_id,
-      const base::android::JavaParamRef<jobject>& japp_data,
-      const base::android::JavaParamRef<jstring>& japp_title,
-      const base::android::JavaParamRef<jstring>& japp_package,
-      const base::android::JavaParamRef<jstring>& jicon_url);
+      const base::android::JavaRef<jobject>& japp_data,
+      const base::android::JavaRef<jstring>& japp_title,
+      const base::android::JavaRef<jstring>& japp_package,
+      const base::android::JavaRef<jstring>& jicon_url);
 
   void ShowBannerFromBadge(const InstallBannerConfig& config);
-
-  // Installs the app referenced by the data in |a2hs_params|.
-  // |a2hs_event_callback| will be run to inform the caller of the progress of
-  // the installation.
-  void Install(const AddToHomescreenParams& a2hs_params,
-               base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
-                                            const AddToHomescreenParams&)>
-                   a2hs_event_callback);
 
   // Returns false if the bottom sheet can't be shown. In that case an
   // alternative UI should be shown.
@@ -187,13 +177,12 @@ class AppBannerManagerAndroid
   base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override;
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
-
-  void CheckEngagementForAmbientBadge();
+  void InstallableWebAppStatusUpdate() override;
 
   // Use as a callback to notify |this| after an install event such as a dialog
   // being cancelled or an app being installed has occurred.
   void OnInstallEvent(GURL validated_url,
-                      AddToHomescreenInstaller::Event event,
+                      AddToHomescreenEvent event,
                       const AddToHomescreenParams& a2hs_params);
 
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();

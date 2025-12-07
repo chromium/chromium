@@ -7,10 +7,12 @@
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -30,8 +32,8 @@ ReclaimableCodec::ReclaimableCodec(CodecType type, ExecutionContext* context)
   // Do this last, it will immediately re-enter via OnLifecycleStateChanged().
   observer_handle_ = context->GetScheduler()->AddLifecycleObserver(
       FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
-      WTF::BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
-                         WrapWeakPersistent(this)));
+      BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
+                    WrapWeakPersistent(this)));
 }
 
 void ReclaimableCodec::Trace(Visitor* visitor) const {
@@ -127,8 +129,13 @@ void ReclaimableCodec::SimulateLifecycleStateForTesting(
 }
 
 void ReclaimableCodec::SimulateCodecReclaimedForTesting() {
-  OnCodecReclaimed(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kQuotaExceededError, "Codec reclaimed for testing."));
+  auto* message = "Codec reclaimed for testing.";
+  if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    OnCodecReclaimed(MakeGarbageCollected<QuotaExceededError>(message));
+  } else {
+    OnCodecReclaimed(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kQuotaExceededError, message));
+  }
 }
 
 void ReclaimableCodec::SimulateActivityTimerFiredForTesting() {
@@ -182,9 +189,13 @@ void ReclaimableCodec::OnActivityTimerFired(TimerBase*) {
   // immediately after being resumed.
   if (is_inactive && last_tick_was_inactive_) {
     activity_timer_.Stop();
-    OnCodecReclaimed(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kQuotaExceededError,
-        "Codec reclaimed due to inactivity."));
+    auto* message = "Codec reclaimed due to inactivity.";
+    if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+      OnCodecReclaimed(MakeGarbageCollected<QuotaExceededError>(message));
+    } else {
+      OnCodecReclaimed(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kQuotaExceededError, message));
+    }
   }
 
   last_tick_was_inactive_ = time_inactive >= (inactivity_threshold_ / 2);

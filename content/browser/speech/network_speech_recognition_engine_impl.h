@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/speech/audio_encoder.h"
 #include "components/speech/chunked_byte_buffer.h"
@@ -85,10 +85,8 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
   // Duration of each audio packet.
   static const int kAudioPacketIntervalMs;
 
-  // |accept_language| is the default Accept-Language header.
-  NetworkSpeechRecognitionEngineImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      const std::string& accept_language);
+  explicit NetworkSpeechRecognitionEngineImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   NetworkSpeechRecognitionEngineImpl(
       const NetworkSpeechRecognitionEngineImpl&) = delete;
@@ -106,6 +104,9 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
 
   // content::SpeechRecognitionEngine:
   void StartRecognition() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
   void EndRecognition() override;
   void TakeAudioChunk(const AudioChunk& data) override;
   void AudioChunksEnded() override;
@@ -187,7 +188,6 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
   FSMState DoNothing(const FSMEventArgs& event_args);
   FSMState NotFeasible(const FSMEventArgs& event_args);
 
-  std::string GetAcceptedLanguages() const;
   std::string GenerateRequestKey() const;
 
   // Upload a single chunk of audio data. Handles both unframed and framed
@@ -201,7 +201,6 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
   std::unique_ptr<speech::UpstreamLoader> upstream_loader_;
   std::unique_ptr<speech::DownstreamLoader> downstream_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  const std::string accept_language_;
   std::unique_ptr<AudioEncoder> encoder_;
   std::unique_ptr<AudioEncoder> preamble_encoder_;
   speech::ChunkedByteBuffer chunked_byte_buffer_;

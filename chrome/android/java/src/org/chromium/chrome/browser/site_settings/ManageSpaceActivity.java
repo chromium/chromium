@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -11,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -21,12 +22,14 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
@@ -37,9 +40,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -51,12 +54,13 @@ import java.util.Collection;
 
 /**
  * This is the target activity for the "Manage Storage" button in the Android Settings UI. This is
- * configured in AndroidManifest.xml by setting android:manageSpaceActivity for the application.
- * The browser process must be started here because this Activity may be started explicitly from
- * Android settings, when Android is restoring ManageSpaceActivity after Chrome was killed, or for
- * tests.
+ * configured in AndroidManifest.xml by setting android:manageSpaceActivity for the application. The
+ * browser process must be started here because this Activity may be started explicitly from Android
+ * settings, when Android is restoring ManageSpaceActivity after Chrome was killed, or for tests.
  */
-public class ManageSpaceActivity extends AppCompatActivity implements View.OnClickListener {
+@NullMarked
+public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
+        implements View.OnClickListener {
     private static final String TAG = "ManageSpaceActivity";
 
     private TextView mUnimportantSiteDataSizeText;
@@ -65,7 +69,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     private Button mManageSiteDataButton;
     private Button mClearAllDataButton;
     // Stored for testing.
-    private AlertDialog mUnimportantDialog;
+    private @Nullable AlertDialog mUnimportantDialog;
 
     private static boolean sActivityNotExportedChecked;
 
@@ -73,7 +77,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
 
     @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         ensureActivityNotExported();
 
         setContentView(R.layout.manage_space_activity);
@@ -82,7 +86,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                 String.format(
                         r.getString(R.string.storage_management_activity_label),
                         r.getString(R.string.app_name)));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         mSiteDataSizeText = findViewById(R.id.site_data_storage_size_text);
         mSiteDataSizeText.setText(R.string.storage_management_computing_size);
@@ -112,7 +116,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                     }
 
                     @Override
-                    public void onStartupFailure(Exception failureCause) {
+                    public void onStartupFailure(@Nullable Exception failureCause) {
                         mSiteDataSizeText.setText(R.string.storage_management_startup_failure);
                         mUnimportantSiteDataSizeText.setText(
                                 R.string.storage_management_startup_failure);
@@ -184,7 +188,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     }
 
     @VisibleForTesting
-    public AlertDialog getUnimportantConfirmDialog() {
+    public @Nullable AlertDialog getUnimportantConfirmDialog() {
         return mUnimportantDialog;
     }
 
@@ -242,8 +246,9 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             initialArguments.putString(
                     SingleCategorySettings.EXTRA_TITLE,
                     getString(R.string.website_settings_storage));
-            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-            settingsLauncher.launchSettingsActivity(this, AllSiteSettings.class, initialArguments);
+            SettingsNavigation settingsNavigation =
+                    SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(this, AllSiteSettings.class, initialArguments);
         } else if (view == mClearAllDataButton) {
             final ActivityManager activityManager =
                     (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -254,9 +259,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             SearchActivityPreferencesManager.resetCachedValues();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                SiteChannelsManager.getInstance().deleteAllSiteChannels();
-                            }
+                            SiteChannelsManager.getInstance().deleteAllSiteChannels();
                             activityManager.clearApplicationUserData();
                         }
                     });

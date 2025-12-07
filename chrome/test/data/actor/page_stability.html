@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page Stability Tests</title>
+    <script>
+      onload = () => {
+        // Note: this file doesn't exist. Tests intercept and manually provide a
+        // response. This must match kFetchPath in
+        // page_stability_browsertest.cc.
+        const fetch_path = '/fetchtarget.html';
+
+        const fetch_button = document.getElementById('btnFetch');
+        const fetch_and_work_button = document.getElementById('btnFetchAndWork');
+        const work_forever_button = document.getElementById('btnWorkForever');
+        const paint_button = document.getElementById('btnPaint');
+        const output = document.getElementById('output');
+
+        window.doFetch = function(afterFetch) {
+          window.fetch(fetch_path)
+              .then((res) => {
+                if (!res.ok) {
+                  output.innerText = `FAILED: ${res.status}`;
+                } else {
+                  res.text().then((str) => {
+                    output.innerText = str;
+                    afterFetch();
+                  });
+                }
+              })
+              .catch(error => { output.innerText = error; });
+        }
+
+        window.doBusyWork = function(tasks_to_run = 3, task_duration_ms = 300) {
+          // Use 0 delay to keep the main thread busy.
+          const task_delay_ms = 0;
+
+          let task = (num_tasks) => {
+            start_time = performance.now();
+            while(performance.now() - start_time < task_duration_ms) {
+              // spin
+            }
+            num_tasks--;
+            if (num_tasks > 0) {
+              setTimeout(() => task(num_tasks), task_delay_ms)
+            } else {
+              output.innerText = "WORK DONE";
+            }
+          }
+
+          setTimeout(() => task(tasks_to_run), task_delay_ms);
+        }
+
+        // This button performs a fetch
+        fetch_button.onclick = () => doFetch(() => {});
+
+        // This button performs a fetch but then follows it up by multiple long
+        // running tasks.
+        fetch_and_work_button.onclick = () => doFetch(doBusyWork);
+
+        // This button endlessly queues more work. Used to test timeouts.
+        work_forever_button.onclick = () => {
+          doBusyWork(10000);
+        };
+
+        let paint_count = 0;
+        paint_button.onclick = () => {
+          paint_count++;
+          output.innerText = 'PAINT ' + paint_count;
+        };
+
+        // Add a handler for new same-document navigations. This will cause a
+        // fetch.
+        window.navigation.addEventListener('navigate', (e) => {
+          if (!e.hashChange) {
+            return;
+          }
+
+          const hash = e.destination.url.split('#').slice(-1);
+          if (hash.length == 0) {
+            console.log("Unexpected URL: ", e.destination.url);
+            return;
+          }
+
+          if (hash[0] === 'fetch') {
+            doFetch(() => {})
+          } else {
+            console.log("Unexpected fragment: ", hash[0]);
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <button id="btnFetch">Fetch</button>
+    <button id="btnFetchAndWork">Fetch and Work</button>
+    <button id="btnWorkForever">Work Forever</button>
+    <button id="btnPaint">Paint</button>
+    <p id="output">INITIAL</p>
+  </body>
+</html>

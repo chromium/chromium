@@ -26,7 +26,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -215,7 +215,7 @@ TEST_F(AppsCollectionsControllerTest, AppsCollectionsDismissedAfterRestart) {
   // Logout and simulate that the user logs back in again.
   helper->Dismiss();
   ClearLogin();
-  SimulateUserLogin("primary@test");
+  SimulateUserLogin({"primary@test"});
 
   // The bubble should not be shown.
   helper->ShowAppList();
@@ -274,10 +274,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_managed_user=*/::testing::Bool(),
         ::testing::Values(user_manager::UserType::kChild,
                           user_manager::UserType::kGuest,
-                          user_manager::UserType::kKioskApp,
+                          user_manager::UserType::kKioskChromeApp,
                           user_manager::UserType::kPublicAccount,
                           user_manager::UserType::kRegular,
-                          user_manager::UserType::kWebKioskApp),
+                          user_manager::UserType::kKioskWebApp),
         /*is_user_first_login_to_chromeos=*/
         ::testing::Values(std::make_optional(true),
                           std::make_optional(false),
@@ -294,18 +294,12 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, EnforcesUserEligibility) {
       IsNewUserLocally() && !IsManagedUser() &&
       GetUserType() == user_manager::UserType::kRegular &&
       IsUserFirstLogInToChromeOS().value_or(false);
-  // Add a user based on test parameterization.
-  const AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
-  TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession(primary_account_id.GetUserEmail(), GetUserType(),
-                          /*provide_pref_service=*/true,
-                          /*is_new_profile=*/IsNewUserLocally(),
-                          /*given_name=*/std::string(), IsManagedUser());
-  session->SwitchActiveUser(primary_account_id);
 
-  // Activate the user session.
-  session->SetSessionState(session_manager::SessionState::ACTIVE);
-
+  // Login based on test parameterization.
+  SimulateUserLogin({.display_email = "primary@test",
+                     .user_type = GetUserType(),
+                     .is_new_profile = IsNewUserLocally(),
+                     .is_account_managed = IsManagedUser()});
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -317,18 +311,11 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, EnforcesUserEligibility) {
 // are not presented with apps collections. This is a self-imposed restriction.
 TEST_P(AppsCollectionsControllerUserElegibilityTest, SecondaryUserNotElegible) {
   SimulateNewUserFirstLogin("primary@test");
-  // Add a user based on test parameterization.
-  const AccountId secondary_account_id =
-      AccountId::FromUserEmail("secondary@test");
-  TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession(secondary_account_id.GetUserEmail(), GetUserType(),
-                          /*provide_pref_service=*/true,
-                          /*is_new_profile=*/IsNewUserLocally(),
-                          /*given_name=*/std::string(), IsManagedUser());
-  session->SwitchActiveUser(secondary_account_id);
-
-  // Activate the user session.
-  session->SetSessionState(session_manager::SessionState::ACTIVE);
+  // ogin a user based on test parameterization.
+  SimulateUserLogin({.display_email = "secondary@test",
+                     .user_type = GetUserType(),
+                     .is_new_profile = IsNewUserLocally(),
+                     .is_account_managed = IsManagedUser()});
 
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
@@ -365,23 +352,8 @@ class AppsCollectionsControllerPrefTest
     NoSessionAshTestBase::SetUp();
 
     GetTestAppListClient()->set_is_new_user(true);
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-    session_controller->Reset();
-
-    const AccountId& account_id = AccountId::FromUserEmail("primary@test");
-
-    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    session_controller->AddUserSession("primary@test",
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false,
-                                       /*is_new_profile=*/true);
-    GetSessionControllerClient()->SetUserPrefService(account_id,
-                                                     std::move(user_prefs));
-    session_controller->SwitchActiveUser(account_id);
-    session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
+    SimulateUserLogin(
+        {.display_email = "primary@test", .is_new_profile = true});
   }
 
   // Returns whether apps collectionns feature is enabled.

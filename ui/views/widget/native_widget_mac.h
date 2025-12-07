@@ -12,8 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -66,6 +69,12 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // Called when the backing NSWindow gains or loses key status.
   void OnWindowKeyStatusChanged(bool is_key, bool is_content_first_responder);
 
+  // Called when the user will start resizing the window.
+  void OnWindowWillStartLiveResize();
+
+  // Called when the user ends resizing the window.
+  void OnWindowDidEndLiveResize();
+
   // The vertical position from which sheets should be anchored, from the top
   // of the content view.
   virtual int32_t SheetOffsetY();
@@ -114,11 +123,14 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
         const_cast<const NativeWidgetMac*>(this)->GetCompositor());
   }
 
+  gfx::NativeViewAccessible GetNativeViewAccessibleForNSView() const;
+  gfx::NativeViewAccessible GetNativeViewAccessibleForNSWindow() const;
+
   // internal::NativeWidgetPrivate:
   void InitNativeWidget(Widget::InitParams params) override;
   void OnWidgetInitDone() override;
   void ReparentNativeViewImpl(gfx::NativeView new_parent) override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
+  std::unique_ptr<FrameView> CreateFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
@@ -139,14 +151,17 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   bool HasCapture() const override;
   ui::InputMethod* GetInputMethod() override;
   void CenterWindow(const gfx::Size& size) override;
-  void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const override;
+  void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
   bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
-  const gfx::ImageSkia* GetWindowIcon() override;
-  const gfx::ImageSkia* GetWindowAppIcon() override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
+  // Suppress warning about hiding virtual WidgetObserver::OnWidgetThemeChanged.
+  // TODO(kerenzhu): Do not observe Widget in this class.
+  using WidgetObserver::OnWidgetThemeChanged;
+  void SetBackgroundColor(SkColor background_color) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
@@ -160,15 +175,17 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void SetShape(std::unique_ptr<Widget::ShapeRects> shape) override;
   void Close() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   void Hide() override;
   bool IsVisible() const override;
+  bool IsVisibleOnScreen() const override;
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
   ui::ZOrderLevel GetZOrderLevel() const override;
+  void SetActivationIndependence(bool independence) override;
   void SetVisibleOnAllWorkspaces(bool always_visible) override;
   bool IsVisibleOnAllWorkspaces() const override;
   void Maximize() override;
@@ -213,6 +230,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void OnNativeViewHierarchyChanged() override;
   bool SetAllowScreenshots(bool allow) override;
   bool AreScreenshotsAllowed() override;
+  bool IsDesktopNativeWidget() const override;
   std::string GetName() const override;
   base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 
@@ -270,6 +288,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // FocusChangeListener:
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
+  void OnFocusManagerDestroying(FocusManager* focus_manager) override;
 
   // ui::ImeKeyEventDispatcher:
   ui::EventDispatchDetails DispatchKeyEventPostIME(ui::KeyEvent* key) override;

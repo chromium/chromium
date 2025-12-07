@@ -5,10 +5,10 @@
 #include "ui/base/l10n/time_format.h"
 
 #include <limits>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/component_export.h"
-#include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -18,13 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-using ui::TimeFormat;
-
 namespace ui {
-
-COMPONENT_EXPORT(UI_BASE)
-base::LazyInstance<FormatterContainer>::Leaky g_container =
-    LAZY_INSTANCE_INITIALIZER;
 
 // static
 std::u16string TimeFormat::Simple(TimeFormat::Format format,
@@ -79,7 +73,7 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
   // Rationale: Start by determining major (first) unit, then add minor (second)
   // unit if mandated by |cutoff|.
   icu::UnicodeString time_string;
-  const Formatter* formatter = g_container.Get().Get(format, length);
+  const Formatter* formatter = GetFormatter(format, length);
   if (delta < kMinute - kHalfSecond) {
     // Anything up to 59.500 seconds is formatted as seconds.
     const int seconds = base::ClampRound(delta.InSecondsF());
@@ -151,8 +145,8 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
 
 // static
 std::u16string TimeFormat::RelativeDate(
-    const base::Time& time,
-    const base::Time* optional_midnight_today) {
+    base::Time time,
+    std::optional<base::Time> optional_midnight_today) {
   const base::Time midnight_today = optional_midnight_today
                                         ? *optional_midnight_today
                                         : base::Time::Now().LocalMidnight();

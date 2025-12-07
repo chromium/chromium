@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.coverage",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -51,25 +50,23 @@
           "builder": "chromeos-js-coverage-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/chromeos-js-code-coverage/targets"
     }
   },
   "$build/code_coverage": {
     "export_coverage_to_zoss": true,
     "use_javascript_coverage": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

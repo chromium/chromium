@@ -120,7 +120,7 @@ class _Speedometer3Story(press_story.PressStory):
           startButton.click();
         }
         """)
-    action_runner.WaitForJavaScriptCondition('testDone', timeout=900)
+    action_runner.WaitForJavaScriptCondition('testDone', timeout=1800)
     if self._take_memory_measurement:
       action_runner.MeasureMemory(deterministic_mode=True)
 
@@ -156,7 +156,11 @@ class Speedometer30Story(_Speedometer3Story):
   NAME = 'Speedometer30'
 
 
-class Speedometer3Story(Speedometer30Story):
+class Speedometer31Story(_Speedometer3Story):
+  NAME = 'Speedometer31'
+
+
+class Speedometer3Story(Speedometer31Story):
   NAME = 'Speedometer3'
 
 
@@ -168,5 +172,3 @@ class Speedometer30CrossbenchStory(story.StorySet):
         base_dir=_PAGE_SET_DIR,
         archive_data_file='data/crossbench_android_speedometer_3.0.json',
         cloud_storage_bucket=story.PARTNER_BUCKET)
-
-    self.AddStory(_Speedometer3Story(self, should_filter_suites=False))

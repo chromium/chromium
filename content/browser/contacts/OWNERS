@@ -1,2 +1,13 @@
+# This file also covers ownership of the following:
+#
+#   //chrome/android/java/src/org/chromium/chrome/browser/contacts_picker
+#   //components/browser_ui/contacts_picker/android
+#   //third_party/blink/public/mojom/contacts
+#   //third_party/blink/renderer/modules/contacts_picker
+#   //third_party/blink/web_tests/external/wpt/contacts
+
+mattreynolds@chromium.org
+
+# Emeritus
 finnur@chromium.org
 peter@chromium.org

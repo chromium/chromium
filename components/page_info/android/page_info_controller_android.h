@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/page_info/page_info_ui.h"
 
 namespace content {
@@ -21,21 +22,20 @@ class WebContents;
 // Android implementation of the page info UI.
 class PageInfoControllerAndroid : public PageInfoUI {
  public:
-  PageInfoControllerAndroid(JNIEnv* env,
-                            jobject java_page_info,
-                            content::WebContents* web_contents);
+  PageInfoControllerAndroid(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_page_info,
+      content::WebContents* web_contents);
 
   PageInfoControllerAndroid(const PageInfoControllerAndroid&) = delete;
   PageInfoControllerAndroid& operator=(const PageInfoControllerAndroid&) =
       delete;
 
   ~PageInfoControllerAndroid() override;
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
   void RecordPageInfoAction(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
                             jint action);
-  void UpdatePermissions(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void UpdatePermissions(JNIEnv* env);
 
   // PageInfoUI implementations.
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
@@ -50,7 +50,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
   // displayed in Page Info. Most permissions will only be displayed if they are
   // set to some non-default value, but there are some permissions which require
   // customized behavior.
-  std::optional<ContentSetting> GetSettingToDisplay(
+  std::optional<PermissionSetting> GetSettingToDisplay(
       const PageInfo::PermissionInfo& permission);
 
   // The presenter that controlls the Page Info UI.

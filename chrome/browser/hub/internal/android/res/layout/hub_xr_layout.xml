@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <FrameLayout
+    android:id="@+id/hub_main_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:id="@+id/hub_pane_host_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:layout_marginTop="@dimen/toolbar_height_no_shadow">
+
+      <Space
+        android:layout_height="@dimen/hub_xr_vertical_gap_between_toolbar_and_host_pane"
+        android:layout_width="0dp" />
+
+      <include
+          layout="@layout/hub_pane_host_layout"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1" />
+    </LinearLayout>
+
+    <include layout="@layout/hub_xr_toolbar_layout" />
+
+  </FrameLayout>
+
+  <!-- z-index above everything else. -->
+  <include layout="@layout/hub_overlay_container" />
+</FrameLayout>

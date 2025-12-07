@@ -20,16 +20,21 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandlerImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemIcon.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/DividerLineMenuItemViewBinder.java",
   ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -40,12 +45,13 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/menu_action_bar_bg.xml",
+    "java/res/layout/divider_line_menu_item.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
     "java/res/layout/menu_item_start_with_icon.xml",
+    "java/res/layout/menu_item_with_submenu.xml",
+    "java/res/layout/submenu_header.xml",
     "java/res/layout/title_button_menu_item.xml",
-    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
   ]
 
@@ -53,6 +59,8 @@ android_resources("java_resources") {
   # all be accessed through the same custom_package.
   deps = [
     "//chrome/browser/ui/android/appmenu:java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]
 }
@@ -74,15 +82,22 @@ android_library("unit_device_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
@@ -91,6 +106,7 @@ android_library("unit_device_javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
   ]
 }
 
@@ -101,10 +117,12 @@ android_resources("test_java_resources") {
     "test/java/res/layout/test_app_menu_activity_layout.xml",
     "test/java/res/layout/test_menu_footer.xml",
     "test/java/res/layout/test_menu_header.xml",
-    "test/java/res/menu/test_menu.xml",
+    "test/java/res/values/ids.xml",
   ]
   deps = [
     ":java_resources",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/widget/android:java_test_resources",
   ]
 }

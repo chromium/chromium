@@ -7,8 +7,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -19,16 +20,16 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
-using web::test::TapWebViewElementWithId;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using web::test::SelectWebViewElementWithId;
+using web::test::TapWebViewElementWithId;
 
 namespace {
 // This is for cases where no message should be sent back from Js.
 constexpr base::TimeDelta kWaitForJsNotReturnTimeout = base::Milliseconds(500);
 
-NSString* kSearchableForm =
+NSString* const kSearchableForm =
     @"<html>"
     @"  <form id='f' action='index.html' method='get'>"
     @"    <input type='search' name='q'>"
@@ -48,7 +49,7 @@ NSString* kSearchableForm =
     @"  </form>"
     @"  <input type='hidden' form='f' name='outside form' value='i3'>"
     @"</html>";
-}
+}  // namespace
 
 // Test fixture for search_engine.js testing.
 class SearchEngineJsTest : public PlatformTest,
@@ -59,9 +60,9 @@ class SearchEngineJsTest : public PlatformTest,
 
  protected:
   SearchEngineJsTest() : web_client_(std::make_unique<ChromeWebClient>()) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -112,9 +113,10 @@ class SearchEngineJsTest : public PlatformTest,
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   // Details about the last received `SetSearchableUrl` call.
   ReceivedSearchableUrl last_received_searchable_url_;

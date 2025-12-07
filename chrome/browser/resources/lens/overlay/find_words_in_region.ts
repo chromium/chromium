@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '//resources/js/assert.js';
+
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {Word} from './text.mojom-webui.js';
 
@@ -180,6 +182,8 @@ export function isInsideEdge(
       return vertex.y >= selectionBounds.top;
     case ClippingEdge.BOTTOM:
       return vertex.y <= selectionBounds.bottom;
+    default:
+      assertNotReached();
   }
 }
 
@@ -211,5 +215,7 @@ export function intersectionWithEdge(
             (v1.x - v0.x) * (selectionBounds.bottom - v0.y) / (v1.y - v0.y),
         y: selectionBounds.bottom,
       };
+    default:
+      assertNotReached();
   }
 }

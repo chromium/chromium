@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using ManualFillLabeledChipiOSTest = PlatformTest;
@@ -24,12 +24,7 @@ int BOTTOM_BUTTON_2_INDEX = 2;
 
 // Returns the title of the given `button`.
 NSString* ButtonTitle(UIButton* button) {
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    UIButtonConfiguration* button_configuration = button.configuration;
-    return button_configuration.attributedTitle.string;
-  }
-
-  return button.currentTitle;
+  return button.configuration.attributedTitle.string;
 }
 
 }  // namespace
@@ -86,8 +81,7 @@ TEST_F(ManualFillLabeledChipiOSTest, SetText_SingleChip) {
 
   // Confirm the label has the correct text.
   NSArray<UIView*>* chipSubviews = labeledChip.arrangedSubviews;
-  EXPECT_TRUE([((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text
-      isEqualToString:TOP_LABEL_TEXT]);
+  EXPECT_NSEQ(((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text, TOP_LABEL_TEXT);
 
   // Confirm the button has the correct text.
   EXPECT_EQ(ButtonTitle((UIButton*)chipSubviews[BOTTOM_BUTTONS_INDEX]),
@@ -107,8 +101,7 @@ TEST_F(ManualFillLabeledChipiOSTest, SetText_ExpirationDateChip) {
 
   // Confirm the top label has the correct text.
   NSArray<UIView*>* chipSubviews = labeledChip.arrangedSubviews;
-  EXPECT_TRUE([((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text
-      isEqualToString:TOP_LABEL_TEXT]);
+  EXPECT_NSEQ(((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text, TOP_LABEL_TEXT);
 
   // Confirm the bottom button, label and other button have the correct text.
   NSArray<UIView*>* buttonStackViewSubviews =
@@ -136,8 +129,7 @@ TEST_F(ManualFillLabeledChipiOSTest, PrepareForReuse_SingleChip) {
 
   // Confirm the label has the correct text.
   NSArray<UIView*>* chipSubviews = labeledChip.arrangedSubviews;
-  EXPECT_TRUE(
-      [((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text isEqualToString:@""]);
+  EXPECT_NSEQ(((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text, @"");
 
   // Confirm the button has the correct text.
   EXPECT_EQ(ButtonTitle((UIButton*)chipSubviews[BOTTOM_BUTTONS_INDEX]), @"");
@@ -159,8 +151,7 @@ TEST_F(ManualFillLabeledChipiOSTest, PrepareForReuse_ExpirationDateChip) {
 
   // Confirm the top label has the correct text.
   NSArray<UIView*>* chipSubviews = labeledChip.arrangedSubviews;
-  EXPECT_TRUE(
-      [((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text isEqualToString:@""]);
+  EXPECT_NSEQ(((UILabel*)chipSubviews[TOP_LABEL_INDEX]).text, @"");
 
   // Confirm the bottom button, label and other button have the correct text.
   NSArray<UIView*>* buttonStackViewSubviews =

@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] Property color value 'rgb(from color(display-p3 0 1 0) r g b / alpha)'
+  Colors do not match.\nActual:   color(srgb -0.511788 1.0183 -0.310674)\nExpected: color(srgb -0.5116 1.01827 -0.31067).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected -0.5116 +/- 0.0001, expected -0.5116 but got -0.511788
+[FAIL] Property color value 'rgb(from lab(100 104.3 -50.9) r g b)'
+  Colors do not match.\nActual:   color(srgb 1.59338 0.587955 1.40555)\nExpected: color(srgb 1.5935 0.58776 1.40555).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1.5935 +/- 0.0001, expected 1.5935 but got 1.59338
+[FAIL] Property color value 'rgb(from lch(100 116 334) r g b)'
+  Colors do not match.\nActual:   color(srgb 1.59324 0.588217 1.40517)\nExpected: color(srgb 1.59336 0.58802 1.40517).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1.59336 +/- 0.0001, expected 1.59336 but got 1.59324
+[FAIL] Property color value 'rgb(from oklab(1 0.365 -0.16) r g b)'
+  Colors do not match.\nActual:   color(srgb 1.5929 0.360336 1.38564)\nExpected: color(srgb 1.59297 0.3602 1.38555).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.3602 +/- 0.0001, expected 0.3602 but got 0.360336
+[FAIL] Property color value 'rgb(from oklch(1 0.399 336.3) r g b)'
+  Colors do not match.\nActual:   color(srgb 1.59323 0.358701 1.38656)\nExpected: color(srgb 1.59331 0.35856 1.38647).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.35856 +/- 0.0001, expected 0.35856 but got 0.358701
+[FAIL] Property color value 'hsl(from color(display-p3 0 1 0) h s l / alpha)'
+  Colors do not match.\nActual:   color(srgb -0.511788 1.0183 -0.310674)\nExpected: color(srgb -0.5116 1.01827 -0.31067).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected -0.5116 +/- 0.0001, expected -0.5116 but got -0.511788
+[FAIL] Property color value 'hsl(from lab(100 104.3 -50.9) h s l)'
+  Colors do not match.\nActual:   color(srgb 1.59338 0.587955 1.40555)\nExpected: color(srgb 1.5935 0.58776 1.40555).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1.5935 +/- 0.0001, expected 1.5935 but got 1.59338
+[FAIL] Property color value 'hsl(from lch(100 116 334) h s l)'
+  Colors do not match.\nActual:   color(srgb 1.59324 0.588217 1.40517)\nExpected: color(srgb 1.59336 0.58802 1.40517).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1.59336 +/- 0.0001, expected 1.59336 but got 1.59324
+[FAIL] Property color value 'hsl(from oklab(1 0.365 -0.16) h s l)'
+  Colors do not match.\nActual:   color(srgb 1.5929 0.360336 1.38564)\nExpected: color(srgb 1.59297 0.3602 1.38555).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.3602 +/- 0.0001, expected 0.3602 but got 0.360336
+[FAIL] Property color value 'hsl(from oklch(1 0.399 336.3) h s l)'
+  Colors do not match.\nActual:   color(srgb 1.59323 0.3587 1.38656)\nExpected: color(srgb 1.59331 0.35856 1.38647).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.35856 +/- 0.0001, expected 0.35856 but got 0.3587
+[FAIL] Property color value 'hwb(from color(display-p3 0 1 0) h w b / alpha)'
+  Colors do not match.\nActual:   color(srgb -0.511788 1.0183 -0.310674)\nExpected: color(srgb -0.5116 1.01827 -0.31067).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected -0.5116 +/- 0.0001, expected -0.5116 but got -0.511788
+[FAIL] Property color value 'hwb(from lab(100 104.3 -50.9) h w b)'
+  Colors do not match.\nActual:   color(srgb 1.59338 0.587955 1.40555)\nExpected: color(srgb 1.5935 0.58776 1.40555).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1.5935 +/- 0.0001, expected 1.5935 but got 1.59338
+[FAIL] Property color value 'hwb(from lch(100 116 334) h w b)'
+  Colors do not match.\nActual:   color(srgb 1.59324 0.588217 1.40517)\nExpected: color(srgb 1.59336 0.58802 1.40517).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1.59336 +/- 0.0001, expected 1.59336 but got 1.59324
+[FAIL] Property color value 'hwb(from oklab(1 0.365 -0.16) h w b)'
+  Colors do not match.\nActual:   color(srgb 1.5929 0.360336 1.38564)\nExpected: color(srgb 1.59297 0.3602 1.38555).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.3602 +/- 0.0001, expected 0.3602 but got 0.360336
+[FAIL] Property color value 'hwb(from oklch(1 0.399 336.3) h w b)'
+  Colors do not match.\nActual:   color(srgb 1.59323 0.358701 1.38656)\nExpected: color(srgb 1.59331 0.35856 1.38647).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.35856 +/- 0.0001, expected 0.35856 but got 0.358701
+Harness: the test ran to completion.
+

@@ -1,0 +1,26 @@
+include_rules = [
+  "+ios/chrome/browser/tabs/model",
+  "+ios/chrome/browser/contextual_panel/model",
+  "+ios/chrome/browser/dom_distiller/model",
+  "+ios/chrome/browser/crash_report/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/language/model",
+  "+ios/chrome/browser/link_to_text/model",
+  "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/translate/model",
+  "+third_party/dom_distiller_js",
+  "+ios/web/navigation/wk_navigation_util.h",
+  "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h",
+  "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
+  "+ios/chrome/browser/find_in_page/model/find_tab_helper.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
+]
+specific_include_rules = {
+  "^reader_mode_test.mm" : [
+    "+ios/web/js_messaging/java_script_feature_manager.h",
+  ]
+}

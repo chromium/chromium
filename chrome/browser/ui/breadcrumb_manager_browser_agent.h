@@ -5,22 +5,28 @@
 #ifndef CHROME_BROWSER_UI_BREADCRUMB_MANAGER_BROWSER_AGENT_H_
 #define CHROME_BROWSER_UI_BREADCRUMB_MANAGER_BROWSER_AGENT_H_
 
-#include <string>
-
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
 
-class Browser;
 class TabStripModel;
 class TabStripModelChange;
 struct TabStripSelectionChange;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace breadcrumbs {
+class BreadcrumbManagerKeyedService;
+}  // namespace breadcrumbs
 
 class BreadcrumbManagerBrowserAgent
     : public breadcrumbs::BreadcrumbManagerBrowserAgent,
       public TabStripModelObserver {
  public:
-  explicit BreadcrumbManagerBrowserAgent(Browser* browser);
+  BreadcrumbManagerBrowserAgent(TabStripModel* tab_strip_model,
+                                content::BrowserContext* browser_context);
   BreadcrumbManagerBrowserAgent(const BreadcrumbManagerBrowserAgent&) = delete;
   BreadcrumbManagerBrowserAgent& operator=(
       const BreadcrumbManagerBrowserAgent&) = delete;
@@ -36,9 +42,7 @@ class BreadcrumbManagerBrowserAgent
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // The browser whose tab strip this agent observes. Can't be nullptr because
-  // |browser_| owns this object.
-  raw_ptr<Browser> browser_;
+  const raw_ref<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_BREADCRUMB_MANAGER_BROWSER_AGENT_H_

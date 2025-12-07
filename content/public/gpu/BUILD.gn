@@ -34,6 +34,7 @@ target(link_target_type, "gpu_sources") {
     "//content/gpu:gpu_sources",
     "//content/public/common:common_sources",
     "//gpu/command_buffer/service",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/config",
   ]
 

@@ -1,0 +1,83 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("tab_sharing") {
+    sources = [
+      "tab_sharing_infobar_delegate.h",
+      "tab_sharing_ui.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/media/webrtc",
+      "//components/infobars/core",
+      "//content/public/browser",
+    ]
+
+    # Both modules are intrinsically connected.
+    allow_circular_includes_from = [ "//chrome/browser/media/webrtc" ]
+  }
+
+  source_set("impl") {
+    sources = [ "tab_sharing_infobar_delegate.cc" ]
+    deps = [
+      ":tab_sharing",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_info",
+      "//components/infobars/content",
+      "//components/page_load_metrics/browser",
+      "//components/strings:components_strings",
+      "//components/tabs:public",
+      "//components/url_formatter",
+      "//components/vector_icons",
+      "//content/public/common",
+      "//media/capture:capture_switches",
+      "//net",
+      "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+      "//ui/base",
+      "//ui/strings:ui_strings",
+      "//ui/strings:ui_strings_grit",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_tab_sharing_ui.cc",
+      "mock_tab_sharing_ui.h",
+    ]
+    public_deps = [
+      ":tab_sharing",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/views",
+      "//testing/gmock",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "tab_sharing_infobar_delegate_unittest.cc" ]
+    deps = [
+      ":tab_sharing",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui/tab_sharing:test_support",
+      "//chrome/test:test_support",
+      "//components/infobars/content",
+      "//components/url_formatter",
+      "//components/vector_icons",
+      "//content/public/common",
+      "//media/capture:capture_switches",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/gfx",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}

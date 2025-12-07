@@ -2,12 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("metrics") {
+component("metrics") {
+  defines = [ "IS_COMPONENTS_ACCESS_CODE_CAST_COMMON_IMPL" ]
+
   sources = [
     "access_code_cast_metrics.cc",
     "access_code_cast_metrics.h",
   ]
-  deps = [ "//base" ]
+
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

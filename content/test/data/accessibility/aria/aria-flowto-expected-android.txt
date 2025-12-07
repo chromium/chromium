@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='region' interesting name='Lorem ipsum' container_title='current'
+++android.view.View role_description='footer' interesting name='next'

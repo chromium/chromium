@@ -14,12 +14,17 @@ source_set("controlled_frame") {
     "controlled_frame_extensions_browser_api_provider.h",
     "controlled_frame_menu_icon_loader.cc",
     "controlled_frame_menu_icon_loader.h",
+    "controlled_frame_user_agent_util.cc",
+    "controlled_frame_user_agent_util.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
+    "//chrome/common/controlled_frame/api",
+    "//components/embedder_support:user_agent",
+    "//components/guest_view/browser",
     "//content/public/common",
     "//extensions/browser",
     "//extensions/common",
@@ -32,6 +37,22 @@ source_set("controlled_frame") {
   ]
 
   public_deps = [ "//chrome/browser/controlled_frame/api:api_registration" ]
+}
+
+source_set("media_access_handler") {
+  sources = [ "controlled_frame_media_access_handler.h" ]
+  public_deps = [ "//chrome/browser/media:access_handler" ]
+}
+
+source_set("media_access_handler_impl") {
+  sources = [ "controlled_frame_media_access_handler.cc" ]
+  public_deps = [ "//chrome/browser/media:access_handler" ]
+  deps = [
+    ":media_access_handler",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//extensions/browser",
+  ]
 }
 
 source_set("test_support") {
@@ -51,6 +72,8 @@ source_set("test_support") {
     "//base",
     "//base/version_info",
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/preloading:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -66,4 +89,8 @@ source_set("test_support") {
     "//testing/gtest",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

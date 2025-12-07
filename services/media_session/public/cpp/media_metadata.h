@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "services/media_session/public/cpp/chapter_information.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -31,8 +30,7 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaMetadata {
 
   MediaMetadata(const MediaMetadata& other);
 
-  bool operator==(const MediaMetadata& other) const;
-  bool operator!=(const MediaMetadata& other) const;
+  friend bool operator==(const MediaMetadata&, const MediaMetadata&) = default;
 
 #if BUILDFLAG(IS_ANDROID)
   // Creates a Java MediaMetadata instance and returns the JNI ref.

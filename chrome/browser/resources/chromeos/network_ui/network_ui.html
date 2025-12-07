@@ -209,25 +209,24 @@
     </cr-button>
   </div>
 
-  <template is="dom-if" if="[[isWifiDirectEnabled_]]">
-    <div class="tabpanel" id="wifi-direct">
-      <h2>$i18n{wifiDirectCapabilitiesLabel}</h2>
-      <div id="wifi-direct-capabilities-div"></div>
-      <cr-button class="action-button" on-click="getWifiDirectCapabilities_">
-        $i18n{refreshWifiDirectCapabilitiesButtonText}
-      </cr-button>
+  <div class="tabpanel" id="wifi-direct">
+    <h2>$i18n{wifiDirectCapabilitiesLabel}</h2>
+    <div id="wifi-direct-capabilities-div"></div>
+    <cr-button class="action-button" on-click="getWifiDirectCapabilities_">
+      $i18n{refreshWifiDirectCapabilitiesButtonText}
+    </cr-button>
 
-      <h2>$i18n{wifiDirectOwnerInfoLabel}</h2>
-      <div id="wifi-direct-owner-info-div"></div>
-      <cr-button class="action-button" on-click="getWifiDirectOwnerInfo_">
-        $i18n{refreshWifiDirectOwnerInfoButtonText}
-      </cr-button>
+    <h2>$i18n{wifiDirectOwnerInfoLabel}</h2>
+    <div id="wifi-direct-owner-info-div"></div>
+    <cr-button class="action-button" on-click="getWifiDirectOwnerInfo_">
+      $i18n{refreshWifiDirectOwnerInfoButtonText}
+    </cr-button>
 
-      <h2>$i18n{wifiDirectClientInfoLabel}</h2>
-      <div id="wifi-direct-client-info-div"></div>
-      <cr-button class="action-button" on-click="getWifiDirectClientInfo_">
-        $i18n{refreshWifiDirectClientInfoButtonText}
-      </cr-button>
-    </div>
-  </template>
+    <h2>$i18n{wifiDirectClientInfoLabel}</h2>
+    <div id="wifi-direct-client-info-div"></div>
+    <cr-button class="action-button" on-click="getWifiDirectClientInfo_">
+      $i18n{refreshWifiDirectClientInfoButtonText}
+    </cr-button>
+  </div>
+
 </iron-pages>

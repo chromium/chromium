@@ -1,4 +1,6 @@
 include_rules = [
+  "+crypto",
   "+third_party/skia/include/core/SkColorSpace.h",
   "+components/device_event_log/device_event_log.h",
+  "+components/viz/common/resources/shared_image_format.h",
 ]

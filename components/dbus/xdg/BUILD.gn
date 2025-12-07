@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("xdg") {
+  visibility = [ "//components/dbus/*" ]
+  sources = [
+    "portal.cc",
+    "portal.h",
+    "portal_constants.h",
+    "request.cc",
+    "request.h",
+    "systemd.cc",
+    "systemd.h",
+    "systemd_constants.h",
+  ]
+  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
+  deps = [
+    "//base",
+    "//base/version_info",
+    "//build:branding_buildflags",
+    "//components/dbus/properties",
+    "//components/dbus/utils",
+    "//dbus",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility = [ "//components/dbus:unit_tests" ]
+  sources = [
+    "portal_unittest.cc",
+    "systemd_unittest.cc",
+  ]
+  deps = [
+    ":xdg",
+    "//base",
+    "//base/test:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

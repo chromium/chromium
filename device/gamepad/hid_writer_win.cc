@@ -10,6 +10,7 @@
 #include <WinDef.h>
 #include <stdint.h>
 
+#include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 
 namespace device {
@@ -36,8 +37,9 @@ HidWriterWin::~HidWriterWin() = default;
 
 size_t HidWriterWin::WriteOutputReport(base::span<const uint8_t> report) {
   DCHECK_GE(report.size_bytes(), 1U);
-  if (!hid_handle_.IsValid())
+  if (!hid_handle_.is_valid()) {
     return 0;
+  }
 
   base::win::ScopedHandle event_handle(
       ::CreateEvent(nullptr, false, false, L""));

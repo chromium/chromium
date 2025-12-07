@@ -154,6 +154,11 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Get the list of ignored protocol handlers.
   ProtocolHandlerList GetIgnoredHandlers();
 
+  // Get all the handlers registered by extensions, or if passed as argument,
+  // the ones associated to an ExtendionId
+  ProtocolHandlerList GetExtensionProtocolHandlers(
+      std::optional<std::string> extension_id = std::nullopt);
+
   // Yields a list of the protocols that have handlers registered in this
   // registry.
   void GetRegisteredProtocols(std::vector<std::string>* output) const;
@@ -256,6 +261,10 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Makes this ProtocolHandler the default handler for its protocol.
   void SetDefault(const ProtocolHandler& handler);
+
+  // Determines whether the handler should be promoted to default, in order to
+  // resolve conflicts with registrations performed through different APIs.
+  bool ShouldPromoteToDefault(const ProtocolHandler& handler) const;
 
   // Insert the given ProtocolHandler into the registry.
   void InsertHandler(const ProtocolHandler& handler);

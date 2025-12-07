@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.night_mode;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Holds an instance of {@link NightModeStateProvider} that provides night mode state for the entire
  * application.
  */
+@NullMarked
 public class GlobalNightModeStateProviderHolder {
-    private static NightModeStateProvider sInstance;
+    private static @Nullable NightModeStateProvider sInstance;
 
     /** Created when night mode is not available or not supported. */
     private static class PlaceholderNightModeStateProvider implements NightModeStateProvider {
@@ -40,10 +41,10 @@ public class GlobalNightModeStateProviderHolder {
         }
 
         @Override
-        public void addObserver(@NonNull Observer observer) {}
+        public void addObserver(Observer observer) {}
 
         @Override
-        public void removeObserver(@NonNull Observer observer) {}
+        public void removeObserver(Observer observer) {}
     }
 
     /**
@@ -58,11 +59,7 @@ public class GlobalNightModeStateProviderHolder {
                     || !NightModeUtils.isNightModeSupported()) {
                 sInstance = new PlaceholderNightModeStateProvider();
             } else {
-                sInstance =
-                        new GlobalNightModeStateController(
-                                SystemNightModeMonitor.getInstance(),
-                                PowerSavingModeMonitor.getInstance(),
-                                ChromeSharedPreferences.getInstance());
+                sInstance = new GlobalNightModeStateController();
             }
             // Do not cache the singleton between tests since the creation logic depends on flags.
             ResettersForTesting.register(() -> sInstance = null);

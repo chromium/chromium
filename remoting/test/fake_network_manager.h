@@ -14,22 +14,22 @@ namespace remoting {
 
 // FakeNetworkManager always returns one interface with the IP address
 // specified in the constructor.
-class FakeNetworkManager : public rtc::NetworkManager {
+class FakeNetworkManager : public webrtc::NetworkManager {
  public:
-  explicit FakeNetworkManager(const rtc::IPAddress& address);
+  explicit FakeNetworkManager(const webrtc::IPAddress& address);
   ~FakeNetworkManager() override;
 
-  // rtc::NetworkManager interface.
+  // webrtc::NetworkManager interface.
   void StartUpdating() override;
   void StopUpdating() override;
-  std::vector<const rtc::Network*> GetNetworks() const override;
-  std::vector<const rtc::Network*> GetAnyAddressNetworks() override;
+  std::vector<const webrtc::Network*> GetNetworks() const override;
+  std::vector<const webrtc::Network*> GetAnyAddressNetworks() override;
 
  protected:
   void SendNetworksChangedSignal();
 
   bool started_;
-  std::unique_ptr<rtc::Network> network_;
+  std::unique_ptr<webrtc::Network> network_;
 
   base::WeakPtrFactory<FakeNetworkManager> weak_factory_{this};
 };

@@ -12,10 +12,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -30,7 +30,7 @@ TextDetector::TextDetector(ExecutionContext* context) : text_service_(context) {
   context->GetBrowserInterfaceBroker().GetInterface(
       text_service_.BindNewPipeAndPassReceiver(task_runner));
 
-  text_service_.set_disconnect_handler(WTF::BindOnce(
+  text_service_.set_disconnect_handler(BindOnce(
       &TextDetector::OnTextServiceConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -38,8 +38,8 @@ ScriptPromise<IDLSequence<DetectedText>> TextDetector::detect(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
     ExceptionState& exception_state) {
-  std::optional<SkBitmap> bitmap =
-      GetBitmapFromSource(script_state, image_source, exception_state);
+  std::optional<SkBitmap> bitmap = GetBitmapFromV8ImageBitmapSource(
+      script_state, image_source, exception_state);
   if (!bitmap) {
     return ScriptPromise<IDLSequence<DetectedText>>();
   }
@@ -60,8 +60,8 @@ ScriptPromise<IDLSequence<DetectedText>> TextDetector::detect(
   text_service_requests_.insert(resolver);
   text_service_->Detect(
       std::move(*bitmap),
-      WTF::BindOnce(&TextDetector::OnDetectText, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&TextDetector::OnDetectText, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -114,7 +114,7 @@ void TextDetector::OnTextServiceConnectionError() {
 }
 
 void TextDetector::Trace(Visitor* visitor) const {
-  ShapeDetector::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
   visitor->Trace(text_service_);
   visitor->Trace(text_service_requests_);
 }

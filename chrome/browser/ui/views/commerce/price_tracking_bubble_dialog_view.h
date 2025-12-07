@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_BUBBLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_BUBBLE_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -40,13 +41,15 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
     TYPE_NORMAL
   };
 
-  PriceTrackingBubbleDialogView(View* anchor_view,
-                                content::WebContents* web_contents,
-                                Profile* profile,
-                                const GURL& url,
-                                ui::ImageModel image_model,
-                                OnTrackPriceCallback on_track_price_callback,
-                                Type type);
+  PriceTrackingBubbleDialogView(
+      View* anchor_view,
+      content::WebContents* web_contents,
+      Profile* profile,
+      const GURL& url,
+      ui::ImageModel image_model,
+      OnTrackPriceCallback on_track_price_callback,
+      Type type,
+      std::optional<std::u16string> bookmark_folder_name = std::nullopt);
   ~PriceTrackingBubbleDialogView() override;
 
   Type GetTypeForTesting() { return type_; }
@@ -79,7 +82,8 @@ class PriceTrackingBubbleCoordinator : public views::WidgetObserver {
             ui::ImageModel image_model,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
             base::OnceClosure on_dialog_closing_callback,
-            PriceTrackingBubbleDialogView::Type type);
+            PriceTrackingBubbleDialogView::Type type,
+            std::optional<std::u16string> bookmark_folder_name = std::nullopt);
   void Hide();
 
   PriceTrackingBubbleDialogView* GetBubble() const;

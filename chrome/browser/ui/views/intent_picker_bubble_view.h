@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/gfx/image/image.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/scroll_view.h"
 #include "url/origin.h"
@@ -98,6 +97,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   static base::AutoReset<bool> SetAutoAcceptIntentPickerBubbleForTesting();
 
+  static base::AutoReset<bool> SetAutoCancelIntentPickerBubbleForTesting();
+
   static void CloseCurrentBubble();
 
   // LocationBarBubbleDelegateView overrides:
@@ -125,7 +126,6 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
 
- protected:
   // LocationBarBubbleDelegateView overrides:
   std::u16string GetWindowTitle() const override;
   void CloseBubble() override;

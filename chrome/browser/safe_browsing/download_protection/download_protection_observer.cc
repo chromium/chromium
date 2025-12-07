@@ -7,22 +7,32 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
+#endif
 
 namespace safe_browsing {
 
@@ -40,6 +50,7 @@ bool DangerTypeIsDangerous(download::DownloadDangerType danger_type) {
 }
 
 void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // If |download| has a deep scanning malware verdict, then it means the
   // dangerous file has already been reported.
   auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
@@ -53,87 +64,117 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
 
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile)
-    return;
 
   auto* router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          browser_context);
   if (!router)
     return;
+
+  ReferrerChain referrer_chain;
+  if (base::FeatureList::IsEnabled(kEnhancedFieldsForSecOps)) {
+    referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*download);
+  }
 
   router->OnDangerousDownloadEvent(
       download->GetURL(), download->GetTabUrl(),
       download->GetTargetFilePath().AsUTF8Unsafe(),
       base::HexEncode(download->GetHash()), download->GetDangerType(),
-      download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-      EventResult::WARNED);
+      download->GetMimeType(),
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+      /*scan_id=*/"", download->GetTotalBytes(), referrer_chain,
+      enterprise_connectors::CollectFrameUrls(
+          content::DownloadItemUtils::GetWebContents(download),
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD),
+      enterprise_connectors::EventResult::WARNED);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void ReportDangerousDownloadWarningBypassed(
     download::DownloadItem* download,
     download::DownloadDangerType original_danger_type) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile)
-    return;
 
   auto* router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          browser_context);
   if (!router)
     return;
+
+  ReferrerChain referrer_chain;
+  if (base::FeatureList::IsEnabled(kEnhancedFieldsForSecOps)) {
+    referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*download);
+  }
+
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain =
+      enterprise_connectors::CollectFrameUrls(
+          content::DownloadItemUtils::GetWebContents(download),
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
 
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
-      router->OnDangerousDownloadWarningBypassed(
+      router->OnDangerousDownloadEvent(
           download->GetURL(), download->GetTabUrl(), metadata.filename,
           metadata.sha256, original_danger_type, metadata.mime_type,
-          metadata.scan_response.request_token(), metadata.size);
+          enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+          metadata.scan_response.request_token(), metadata.size, referrer_chain,
+          frame_url_chain, enterprise_connectors::EventResult::BYPASSED);
     }
   } else {
-    router->OnDangerousDownloadWarningBypassed(
+    router->OnDangerousDownloadEvent(
         download->GetURL(), download->GetTabUrl(),
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), original_danger_type,
         download->GetMimeType(),
-        /*scan_id*/ "", download->GetTotalBytes());
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ "", download->GetTotalBytes(), referrer_chain,
+        frame_url_chain, enterprise_connectors::EventResult::BYPASSED);
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile)
     return;
 
+  ReferrerChain referrer_chain;
+  if (base::FeatureList::IsEnabled(kEnhancedFieldsForSecOps)) {
+    referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*download);
+  }
+
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
 
+  enterprise_connectors::DownloadContentAreaUserProvider info(*download);
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
       ReportAnalysisConnectorWarningBypass(
-          profile, download->GetURL(), download->GetTabUrl(), "", "",
-          metadata.filename, metadata.sha256, metadata.mime_type,
-          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
+          profile, info, "", "", metadata.filename, metadata.sha256,
+          metadata.mime_type,
+          enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
+          metadata.size, referrer_chain, metadata.scan_response,
           stored_result->user_justification);
     }
   } else {
     ReportAnalysisConnectorWarningBypass(
-        profile, download->GetURL(), download->GetTabUrl(), "", "",
-        download->GetTargetFilePath().AsUTF8Unsafe(),
+        profile, info, "", "", download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), download->GetMimeType(),
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-        DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
+        download->GetTotalBytes(), referrer_chain,
         enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace

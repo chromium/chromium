@@ -26,10 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SUFFIX_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SUFFIX_TREE_H_
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -101,7 +101,7 @@ class SuffixTree {
     }
 
     typename Vector<std::pair<int, Node*>>::iterator Find(int key) {
-      return base::ranges::find(children_, key, &std::pair<int, Node*>::first);
+      return std::ranges::find(children_, key, &std::pair<int, Node*>::first);
     }
 
     typename Vector<std::pair<int, Node*>>::iterator End() {

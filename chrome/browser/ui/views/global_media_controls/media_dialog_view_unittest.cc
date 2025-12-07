@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -82,7 +83,7 @@ class MediaDialogViewTest : public ChromeViewsTestBase,
         content::MediaSession::GetRequestIdFromWebContents(web_contents())
             .ToString(),
         "source_name", std::nullopt, controller_.CreateMediaControllerRemote(),
-        std::move(session_info));
+        std::move(session_info), /*always_hidden=*/false);
   }
 
   void SimulateMediaRouteUpdate(std::vector<media_router::MediaRoute> routes) {

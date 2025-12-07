@@ -4,119 +4,206 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 
-#include "base/containers/contains.h"
-#include "base/containers/to_vector.h"
-#include "base/test/run_until.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/controls/styled_label.h"
-#include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/lacros/lacros_service.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "content/public/test/browser_test_utils.h"
-#endif
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace web_app {
 
-using SubAppsInstallDialogControllerBrowserTest =
-    IsolatedWebAppBrowserTestHarness;
+namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool IsGetAllOpenTabURLsSupported() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
-    return false;
+using DialogViewIDForTesting =
+    SubAppsInstallDialogController::SubAppsInstallDialogViewID;
+
+constexpr const char kParentAppName[] = "Parent App";
+constexpr const char kParentAppScope[] = "https://www.parent-app.com/";
+
+constexpr const char kSubAppStartURL[] = "https://www.parent-app.com/sub-app";
+constexpr const char kSubAppIconURL[] =
+    "https://www.parent-app.com/sub-app/icon";
+
+const std::u16string kSubAppName1 = u"Sub App 1";
+const std::u16string kSubAppName2 = u"Sub App 2";
+const std::u16string kSubAppName3 = u"Sub App 3";
+
+class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
+ public:
+  SubAppsInstallDialogControllerBrowserTest() = default;
+  SubAppsInstallDialogControllerBrowserTest(
+      const SubAppsInstallDialogControllerBrowserTest&) = delete;
+  SubAppsInstallDialogControllerBrowserTest& operator=(
+      const SubAppsInstallDialogControllerBrowserTest&) = delete;
+  ~SubAppsInstallDialogControllerBrowserTest() override = default;
+
+ protected:
+  std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
+      base::OnceCallback<void(bool)> callback) {
+    const webapps::AppId parent_app_id =
+        web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
+
+    auto controller = std::make_unique<SubAppsInstallDialogController>();
+    controller->Init(std::move(callback), /*sub_apps=*/{}, kParentAppName,
+                     parent_app_id, browser()->profile(),
+                     browser()->window()->GetNativeWindow());
+    return controller;
   }
 
-  return lacros_service
-             ->GetInterfaceVersion<crosapi::mojom::TestController>() >=
-         static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                              kGetAllOpenTabURLsMinVersion);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<WebAppInstallInfo> CreateInstallInfoWithIconForSubApp(
+      const std::u16string& name) {
+    const GeneratedIconsInfo any_icon_info1(IconPurpose::ANY, {icon_size::k32},
+                                            {SK_ColorBLACK});
+    const GeneratedIconsInfo any_icon_info2(IconPurpose::MASKABLE,
+                                            {icon_size::k32}, {SK_ColorBLUE});
+    std::unique_ptr<WebAppInstallInfo> sub_app_install_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+    sub_app_install_info->title = name;
+    web_app::AddIconsToWebAppInstallInfo(sub_app_install_info.get(),
+                                         GURL(kSubAppIconURL),
+                                         {any_icon_info1, any_icon_info2});
+    return sub_app_install_info;
+  }
+
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
+};
 
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
-                       ManageLinkOpensSettingsPage) {
-  test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::SystemWebAppManager::Get(browser()->profile())
-      ->InstallSystemAppsForTesting();
-#endif
+                       DialogViewSetUpCorrectly) {
+  std::vector<std::unique_ptr<WebAppInstallInfo>> sub_apps;
+  sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName1));
+  sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName2));
+  sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
-  std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server =
-      CreateAndStartDevServer(
-          FILE_PATH_LITERAL("web_apps/subapps_isolated_app"));
+  views::Widget* widget = SubAppsInstallDialogController::CreateWidget(
+      base::ASCIIToUTF16(std::string(kParentAppName)), sub_apps,
+      base::DoNothing(), browser()->window()->GetNativeWindow());
+  views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 
-  IsolatedWebAppUrlInfo parent_app = web_app::InstallDevModeProxyIsolatedWebApp(
-      browser()->profile(), iwa_dev_server->GetOrigin());
-  const webapps::AppId parent_app_id = parent_app.app_id();
+  EXPECT_FALSE(dialog->ShouldShowCloseButton());
+  EXPECT_TRUE(dialog->owned_by_widget());
 
-  auto controller = std::make_unique<SubAppsInstallDialogController>();
-  controller->Init(base::DoNothing(), {},
-                   provider().registrar_unsafe().GetAppShortName(parent_app_id),
-                   parent_app_id, profile(),
-                   browser()
-                       ->tab_strip_model()
-                       ->GetActiveWebContents()
-                       ->GetTopLevelNativeWindow());
-  views::Widget* widget = controller->GetWidgetForTesting();
-  views::View* manage_permissions_link =
-      widget->GetContentsView()->GetViewByID(base::to_underlying(
-          SubAppsInstallDialogController::SubAppsInstallDialogViewID::
-              MANAGE_PERMISSIONS_LINK));
+  // Confirm that all sub app names and icons were added to the view.
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
+  widget->GetContentsView()->GetViewsInGroup(
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
+      &sub_app_labels);
+  EXPECT_EQ(sub_app_labels.size(), 3u);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  content::WebContentsAddedObserver new_tab_observer;
-#endif
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
+  widget->GetContentsView()->GetViewsInGroup(
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
+      &sub_app_icons);
+  EXPECT_EQ(sub_app_icons.size(), 3u);
 
-  static_cast<views::StyledLabel*>(manage_permissions_link)
-      ->ClickFirstLinkForTesting();
-
-  std::string app_settings_url = "chrome://os-settings/app-management";
-  GURL parent_app_settings_url(app_settings_url +
-                               "/detail?id=" + parent_app_id);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsGetAllOpenTabURLsSupported()) {
-    std::vector<GURL> open_urls;
-    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
-      waiter.GetAllOpenTabURLs(&open_urls);
-      return base::Contains(open_urls, parent_app_settings_url);
-    })) << "Timeout waiting for settings page at "
-        << parent_app_settings_url << " to open in Ash. Open Ash windows:\n"
-        << base::JoinString(base::ToVector(open_urls, &GURL::spec), "\n");
-  } else {
-    bool open;
-    waiter.CheckAtLeastOneAshBrowserWindowOpen(&open);
-    EXPECT_TRUE(open) << "Timout waiting for settings page to open.";
-  }
-  CloseAllAshBrowserWindows();
-
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
-    return parent_app_settings_url ==
-           new_tab_observer.GetWebContents()->GetLastCommittedURL();
-  }));
-#endif
+  widget->CloseNow();
 }
+
+IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
+                       SubAppConvertedCorrectly) {
+  std::unique_ptr<WebAppInstallInfo> sub_app_install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+  sub_app_install_info->title = kSubAppName1;
+  const GeneratedIconsInfo icon_info(
+      IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
+  web_app::AddIconsToWebAppInstallInfo(sub_app_install_info.get(),
+                                       GURL(kSubAppIconURL), {icon_info});
+
+  std::vector<std::unique_ptr<WebAppInstallInfo>> sub_apps;
+  sub_apps.emplace_back(std::move(sub_app_install_info));
+
+  webapps::AppId parent_app_id =
+      web_app::GenerateAppIdFromManifestId(GURL(kParentAppScope));
+  auto controller = std::make_unique<SubAppsInstallDialogController>();
+  controller->Init(base::DoNothing(), sub_apps, kParentAppName, parent_app_id,
+                   browser()->profile(),
+                   browser()->window()->GetNativeWindow());
+  views::Widget* widget = controller->GetWidgetForTesting();
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
+  widget->GetContentsView()->GetViewsInGroup(
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
+      &sub_app_labels);
+  EXPECT_EQ(sub_app_labels.size(), 1u);
+  EXPECT_EQ(static_cast<views::Label*>(sub_app_labels[0])->GetText(),
+            kSubAppName1);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
+  widget->GetContentsView()->GetViewsInGroup(
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
+      &sub_app_icons);
+  EXPECT_EQ(sub_app_icons.size(), 1u);
+  views::ImageView* icon_view =
+      static_cast<views::ImageView*>(sub_app_icons[0]);
+  EXPECT_FALSE(icon_view->GetImageModel().IsEmpty());
+  EXPECT_EQ(icon_view->GetVisibleBounds().size(), gfx::Size(32, 32));
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
+                       DialogAccepted) {
+  base::test::TestFuture<bool> future;
+  auto controller = CreateDefaultController(future.GetCallback());
+  auto* dialog =
+      controller->GetWidgetForTesting()->widget_delegate()->AsDialogDelegate();
+
+  dialog->AcceptDialog();
+
+  EXPECT_TRUE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
+                       DialogCancelled) {
+  base::test::TestFuture<bool> future;
+  auto controller = CreateDefaultController(future.GetCallback());
+  auto* dialog =
+      controller->GetWidgetForTesting()->widget_delegate()->AsDialogDelegate();
+
+  dialog->CancelDialog();
+
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest, EscPressed) {
+  base::test::TestFuture<bool> future;
+  auto controller = CreateDefaultController(future.GetCallback());
+  views::Widget* widget = controller->GetWidgetForTesting();
+
+  // Simulate esc key press.
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, ui::EF_NONE);
+  widget->OnKeyEvent(&event);
+
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
+                       WidgetLifetimeIsTiedToControllerLifetime) {
+  views::Widget* widget;
+
+  {
+    auto controller = CreateDefaultController(base::DoNothing());
+    widget = controller->GetWidgetForTesting();
+    EXPECT_TRUE(widget->IsVisible());
+  }
+
+  views::test::WidgetDestroyedWaiter widget_observer(widget);
+  widget_observer.Wait();
+}
+
+}  // namespace
 
 }  // namespace web_app

@@ -22,6 +22,9 @@ import time
 
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+
 import chrome_helper
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -88,8 +91,9 @@ def CreateChromedriver(args):
     chrome_options.add_argument('v=1')
     emit_log = False
     try:
-        driver = webdriver.Chrome(args.chromedriver_path,
-                                  chrome_options=chrome_options)
+        chromedriver_service = Service(executable_path=args.chromedriver_path)
+        driver = webdriver.Chrome(service=chromedriver_service,
+                                  options=chrome_options)
         yield driver
     except:
         emit_log = True
@@ -175,7 +179,7 @@ def main():
         driver.get(TEST_HTML_FILE)
         assert driver.title == 'Chromedriver Test Page', (
             'The page title was not correct.')
-        element = driver.find_element_by_tag_name('body')
+        element = driver.find_element(By.TAG_NAME, 'body')
         assert element.text == 'This is the test page', (
             'The page body was not correct')
     return 0

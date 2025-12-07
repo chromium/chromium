@@ -17,21 +17,22 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
-#include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/kcer/extra_instances.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
-#include "chromeos/components/kcer/extra_instances.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_context.h"
 #include "net/cert/nss_cert_database.h"
+#include "net/ssl/client_cert_store_nss.h"
 
 namespace ash {
 namespace platform_keys {
@@ -77,33 +78,34 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
     Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-    if (ash::features::ShouldUseKcerClientCertStore()) {
-      return std::make_unique<ClientCertStoreKcer>(
-          nullptr,  // no additional provider
-          kcer::KcerFactoryAsh::GetKcer(profile));
-    } else {
-      const user_manager::User* user =
-          ProfileHelper::Get()->GetUserByProfile(profile);
-      // Use the device-wide system key slot only if the user is affiliated on
-      // the
-      // device.
-      const bool use_system_key_slot = user->IsAffiliated();
-      return std::make_unique<ClientCertStoreAsh>(
-          nullptr,  // no additional provider
-          use_system_key_slot, user->username_hash(),
-          ClientCertStoreAsh::PasswordDelegateFactory());
-    }
+    return std::make_unique<ClientCertStoreKcer>(
+        nullptr,  // no additional provider
+        kcer::KcerFactoryAsh::GetKcer(profile),
+        ProfileNetworkContextServiceFactory::GetForContext(profile)
+            ->GetClientCertIssuerSourceFactory());
   }
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;
 };
 
+void ClientCertIssuerSourceGetterForDevice(
+    net::ClientCertIssuerSourceGetterCallback callback) {
+  // TODO(https://crbug.com/40554868): remove dependency on NSS and
+  // NSSTempCertsCacheChromeOS and pass the device policy certs directly. (A
+  // bit tricky since accessing the DeviceNetworkConfigurationUpdaterAsh here
+  // to get the ONC certs causes a dependency cycle.)
+  net::ClientCertIssuerSourceCollection sources;
+  sources.push_back(
+      std::make_unique<net::ClientCertStoreNSS::IssuerSourceNSS>());
+  std::move(callback).Run(std::move(sources));
+}
+
 class DelegateForDevice : public PlatformKeysServiceImplDelegate,
                           public SystemTokenCertDbStorage::Observer {
  public:
   DelegateForDevice() {
-    scoped_observeration_.Observe(SystemTokenCertDbStorage::Get());
+    scoped_observation_.Observe(SystemTokenCertDbStorage::Get());
   }
 
   ~DelegateForDevice() override = default;
@@ -113,26 +115,20 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    if (ash::features::ShouldUseKcerClientCertStore()) {
       return std::make_unique<ClientCertStoreKcer>(
           nullptr,  // no additional provider
-          kcer::ExtraInstances::GetDeviceKcer());
-    } else {
-      return std::make_unique<ClientCertStoreAsh>(
-          nullptr,  // no additional provider
-          /*use_system_key_slot=*/true, /*username_hash=*/std::string(),
-          ClientCertStoreAsh::PasswordDelegateFactory());
-    }
+          kcer::ExtraInstances::GetDeviceKcer(),
+          base::BindOnce(&ClientCertIssuerSourceGetterForDevice));
   }
 
  private:
   base::ScopedObservation<SystemTokenCertDbStorage,
                           SystemTokenCertDbStorage::Observer>
-      scoped_observeration_{this};
+      scoped_observation_{this};
 
   // SystemTokenCertDbStorage::Observer
   void OnSystemTokenCertDbDestroyed() override {
-    scoped_observeration_.Reset();
+    scoped_observation_.Reset();
     ShutDown();
   }
 };
@@ -154,8 +150,9 @@ PlatformKeysServiceFactory* PlatformKeysServiceFactory::GetInstance() {
 
 // static
 PlatformKeysService* PlatformKeysServiceFactory::GetDeviceWideService() {
-  if (device_wide_service_for_testing_)
+  if (device_wide_service_for_testing_) {
     return device_wide_service_for_testing_;
+  }
 
   if (!device_wide_service_) {
     device_wide_service_ = std::make_unique<PlatformKeysServiceImpl>(
@@ -177,6 +174,7 @@ void PlatformKeysServiceFactory::SetDeviceWideServiceForTesting(
 
 void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
   map_to_softoken_attrs_for_testing_ = is_testing_mode;
+  allow_alternative_params_for_testing_ = is_testing_mode;
 }
 
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
@@ -211,6 +209,8 @@ PlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<PlatformKeysServiceImpl>(std::move(delegate));
   platform_keys_service_impl->SetMapToSoftokenAttrsForTesting(
       map_to_softoken_attrs_for_testing_);
+  platform_keys_service_impl->SetAllowAlternativeParamsForTesting(
+      allow_alternative_params_for_testing_);
 
   return platform_keys_service_impl;
 }

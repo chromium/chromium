@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.price_tracking;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 
 import java.util.concurrent.TimeUnit;
 
 /** Flag configuration for Price Tracking Notification experience. */
+@NullMarked
 public class PriceTrackingNotificationConfig {
     private static final String TAG = "PriceTrackNotif";
     private static final String NOTIFICATION_TIMEOUT_PARAM = "notification_timeout_ms";
@@ -27,7 +29,7 @@ public class PriceTrackingNotificationConfig {
         int defaultTimeout = (int) TimeUnit.HOURS.toMillis(3);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     NOTIFICATION_TIMEOUT_PARAM,
                     defaultTimeout);
         }
@@ -39,7 +41,7 @@ public class PriceTrackingNotificationConfig {
         int defaultWindow = (int) TimeUnit.DAYS.toMillis(1);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     NOTIFICATION_TIMESTAMPS_STORE_WINDOW_PARAM,
                     defaultWindow);
         }
@@ -60,7 +62,7 @@ public class PriceTrackingNotificationConfig {
                 return defaultNumber;
             }
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, param, defaultNumber);
+                    ChromeFeatureList.PRICE_ANNOTATIONS, param, defaultNumber);
         }
         return defaultNumber;
     }

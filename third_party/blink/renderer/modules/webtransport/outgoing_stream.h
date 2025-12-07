@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -144,24 +143,6 @@ class MODULES_EXPORT OutgoingStream final
   // Prepares the object for destruction.
   void Dispose();
 
-  class CachedDataBuffer {
-   public:
-    CachedDataBuffer(v8::Isolate* isolate, const uint8_t* data, size_t length);
-
-    ~CachedDataBuffer();
-
-    size_t length() const { return length_; }
-
-    uint8_t* data() { return buffer_; }
-
-   private:
-    // We need the isolate to call |AdjustAmountOfExternalAllocatedMemory| for
-    // the memory stored in |buffer_|.
-    raw_ptr<v8::Isolate> isolate_;
-    size_t length_ = 0u;
-    raw_ptr<uint8_t> buffer_ = nullptr;
-  };
-
   const Member<ScriptState> script_state_;
   Member<Client> client_;
   mojo::ScopedDataPipeProducerHandle data_pipe_;
@@ -175,8 +156,9 @@ class MODULES_EXPORT OutgoingStream final
   // Data which has been passed to write() but still needs to be written
   // asynchronously.
   // Uses a custom CachedDataBuffer rather than a Vector because
-  // WTF::Vector is currently limited to 2GB.
+  // Vector is currently limited to 2GB.
   // TODO(ricea): Change this to a Vector when it becomes 64-bit safe.
+  class CachedDataBuffer;
   std::unique_ptr<CachedDataBuffer> cached_data_;
 
   // The offset into |cached_data_| of the first byte that still needs to be

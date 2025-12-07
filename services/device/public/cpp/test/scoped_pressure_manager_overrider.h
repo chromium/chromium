@@ -8,8 +8,8 @@
 #include <map>
 
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
@@ -31,6 +31,7 @@ class FakePressureManager : public mojom::PressureManager {
   // mojom::PressureManager implementation.
   void AddClient(mojom::PressureSource source,
                  const std::optional<base::UnguessableToken>& token,
+                 mojo::PendingAssociatedRemote<mojom::PressureClient> client,
                  AddClientCallback callback) override;
 
   void UpdateClients(const mojom::PressureUpdate& update);
@@ -47,15 +48,17 @@ class FakePressureManager : public mojom::PressureManager {
       const base::UnguessableToken& token,
       mojom::PressureSource source,
       RemoveVirtualPressureSourceCallback callback) override {}
-  void UpdateVirtualPressureSourceState(
+  void UpdateVirtualPressureSourceData(
       const base::UnguessableToken& token,
       mojom::PressureSource source,
       mojom::PressureState state,
-      UpdateVirtualPressureSourceStateCallback callback) override {}
+      double own_contribution_estimate,
+      UpdateVirtualPressureSourceDataCallback callback) override {}
 
   bool is_supported_ = true;
-  mojo::ReceiverSet<mojom::PressureManager> receivers_;
-  std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>
+  mojo::ReceiverSet<mojom::PressureManager> manager_receivers_;
+  std::map<mojom::PressureSource,
+           mojo::AssociatedRemoteSet<mojom::PressureClient>>
       clients_;
 };
 

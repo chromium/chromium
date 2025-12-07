@@ -60,19 +60,3 @@ TEST_F(MiniInstallerStringTest, StackStringOverflow) {
   EXPECT_EQ(0, compare_str.compare(str.get()));
   EXPECT_EQ(str.length(), compare_str.length());
 }
-
-// Tests the case insensitive find support of the StackString class.
-TEST_F(MiniInstallerStringTest, StackStringFind) {
-  static const wchar_t kTestStringSource[] = L"1234ABcD567890";
-  static const wchar_t kTestStringFind[] = L"abcd";
-  static const wchar_t kTestStringNotFound[] = L"80";
-
-  StackString<MAX_PATH> str;
-  EXPECT_TRUE(str.assign(kTestStringSource));
-  EXPECT_EQ(str.get(), str.findi(kTestStringSource));
-  EXPECT_EQ(nullptr, str.findi(kTestStringNotFound));
-  const wchar_t* found = str.findi(kTestStringFind);
-  EXPECT_NE(nullptr, found);
-  std::wstring check(found, _countof(kTestStringFind) - 1);
-  EXPECT_EQ(0, lstrcmpi(check.c_str(), kTestStringFind));
-}

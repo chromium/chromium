@@ -1,0 +1,65 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+import {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
+
+{% for path, types in converter_imports.items()|sort -%}
+import type {
+{%- for type in types|sort %}
+  {{type}}
+{%- if not loop.last -%},{% endif -%}
+{%- endfor %}
+} from '{{path}}';
+{% endfor %}
+
+{%- for struct in typemapped_structs %}
+
+export class {{struct.name}}DataView {
+  private readonly decoder_: mojo.internal.Decoder;
+  private readonly version_: number;
+  private readonly fieldSpecs_: Array<mojo.internal.StructFieldSpec<any, any>>;
+
+  constructor(decoder: mojo.internal.Decoder,
+              version: number,
+              fieldSpecs: Array<mojo.internal.StructFieldSpec<any, any>>) {
+    this.decoder_ = decoder;
+    this.version_ = version;
+    this.fieldSpecs_ = fieldSpecs;
+  }
+{%-    for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+{%-      if packed_field|is_nullable_value_kind_packed_field %}
+{#         We only have to generate one getter for nullable value. Use the primary to generate #}
+{%-        if packed_field|is_primary_nullable_value_kind_packed_field %}
+  get {{packed_field.original_field.name}}(): {{packed_field.original_field.kind|ts_type_maybe_nullable}} {
+    const flagField = this.fieldSpecs_[{{loop.index0}}];
+    return mojo.internal.decodeStructNullableValueField(this.decoder_, flagField!, this.fieldSpecs_, this.version_);
+  }
+{%-        endif %}
+{%-      else %}
+{%-        set f = packed_field.field %}
+  get {{f.name}}(): {{f.kind|ts_type_maybe_nullable}} {
+    const field = this.fieldSpecs_[{{loop.index0}}];
+    return mojo.internal.decodeStructField(this.decoder_, field!, this.version_);
+  }
+{%-      endif %}
+{%-   endfor %}
+}
+
+export interface {{struct.name}}TypeMapper<T> {
+  // Encoding:
+  {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+{%-      if packed_field|is_nullable_value_kind_packed_field %}
+{%-        if packed_field|is_primary_nullable_value_kind_packed_field %}
+  {{packed_field.original_field.name}}(mappedTyped: T): {{packed_field.original_field.kind|ts_type_maybe_nullable}};
+{%-        endif %}
+{%-      else %}
+    {%- set f = packed_field.field %}
+  {{f.name}}(mappedTyped: T): {{f.kind|ts_type_maybe_nullable}};
+{%-      endif %}
+  {%- endfor %}
+
+  // Decoding:
+  convert(dataView: {{struct.name}}DataView): T;
+}
+
+{% endfor -%}

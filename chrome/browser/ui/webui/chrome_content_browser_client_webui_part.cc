@@ -8,6 +8,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -56,8 +57,9 @@ ChromeContentBrowserClientWebUiPart::ChromeContentBrowserClientWebUiPart() =
 ChromeContentBrowserClientWebUiPart::~ChromeContentBrowserClientWebUiPart() =
     default;
 
-void ChromeContentBrowserClientWebUiPart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientWebUiPart::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   // This logic is invoked at startup, and anytime the default prefs change.
   GURL url = GetVisibleURL(web_contents);
@@ -74,7 +76,7 @@ void ChromeContentBrowserClientWebUiPart::OverrideWebkitPrefs(
   // Set some non-font prefs for webui tabstrip. The tabstrip renderer is never
   // navigated to or from, so we don't need to replicate this logic in
   // OverrideWebPreferencesAfterNavigation.
-  if (url.host_piece() == chrome::kChromeUITabStripHost) {
+  if (url.host() == chrome::kChromeUITabStripHost) {
     web_prefs->touch_drag_drop_enabled = true;
     web_prefs->touch_dragend_context_menu = true;
   }
@@ -83,6 +85,7 @@ void ChromeContentBrowserClientWebUiPart::OverrideWebkitPrefs(
 
 bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   // This logic is invoked once on each navigation.
 
@@ -92,8 +95,7 @@ bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
   }
 
   // Extensions are handled by ChromeContentBrowserClientExtensionsPart.
-  const GURL& site_url =
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL();
+  const GURL& site_url = main_frame_site.GetSiteURL();
   if (site_url.SchemeIs(extensions::kExtensionScheme)) {
     return false;
   }

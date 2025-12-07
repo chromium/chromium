@@ -30,10 +30,6 @@ AwVariationsServiceClient::GetNetworkTimeTracker() {
   return nullptr;
 }
 
-Channel AwVariationsServiceClient::GetChannel() {
-  return version_info::android::GetChannel();
-}
-
 bool AwVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
   return false;
@@ -47,5 +43,9 @@ bool AwVariationsServiceClient::IsEnterprise() {
 // is nothing to do here.
 void AwVariationsServiceClient::RemoveGoogleGroupsFromPrefsForDeletedProfiles(
     PrefService* local_state) {}
+
+Channel AwVariationsServiceClient::GetChannel() {
+  return version_info::android::GetChannel();
+}
 
 }  // namespace android_webview

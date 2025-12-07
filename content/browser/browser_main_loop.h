@@ -12,11 +12,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/execution_fence.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_process_io_thread.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -55,7 +54,6 @@ class SystemMessageWindowWin;
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 class DeviceMonitorLinux;
 #endif
-class UserInputMonitor;
 }  // namespace media
 
 namespace midi {
@@ -115,7 +113,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   // BrowserMainLoop.
   explicit BrowserMainLoop(
       MainFunctionParams parameters,
-      std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence> fence);
+      std::unique_ptr<base::ScopedThreadPoolExecutionFence> fence);
 
   BrowserMainLoop(const BrowserMainLoop&) = delete;
   BrowserMainLoop& operator=(const BrowserMainLoop&) = delete;
@@ -170,9 +168,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   MediaStreamManager* media_stream_manager() const {
     return media_stream_manager_.get();
   }
-  media::UserInputMonitor* user_input_monitor() const {
-    return user_input_monitor_.get();
-  }
   MediaKeysListenerManagerImpl* media_keys_listener_manager() const {
     return media_keys_listener_manager_.get();
   }
@@ -196,7 +191,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   gpu::GpuChannelEstablishFactory* gpu_channel_establish_factory() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  void SynchronouslyFlushStartupTasks();
+  void SynchronouslyFlushStartupTasks(bool was_posted);
 
   // |enabled| Whether or not CreateStartupTasks() posts any tasks. This is
   // useful because some javatests want to test native task posting without the
@@ -252,8 +247,6 @@ class CONTENT_EXPORT BrowserMainLoop {
       base::StrongAlias<class ProceedWithMainMessageLoopRunTag, bool>;
   ProceedWithMainMessageLoopRun InterceptMainMessageLoopRun();
 
-  void MainMessageLoopRun();
-
   void InitializeMojo();
 
   void InitializeAudio();
@@ -290,19 +283,19 @@ class CONTENT_EXPORT BrowserMainLoop {
   // //content must be initialized single-threaded until
   // BrowserMainLoop::CreateThreads() as things initialized before it require an
   // initialize-once happens-before relationship with all eventual content tasks
-  // running on other threads. This ScopedExecutionFence ensures that no tasks
-  // posted to ThreadPool gets to run before CreateThreads(); satisfying this
-  // requirement even though the ThreadPoolInstance is created and started
-  // before content is entered.
-  std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence>
-      scoped_execution_fence_;
+  // running on other threads. This ScopedThreadPoolExecutionFence ensures that
+  // no tasks posted to ThreadPool gets to run before CreateThreads();
+  // satisfying this requirement even though the ThreadPoolInstance is created
+  // and started before content is entered.
+  std::unique_ptr<base::ScopedThreadPoolExecutionFence> scoped_execution_fence_;
 
   // BEST_EFFORT tasks are not allowed to run between //content initialization
   // and startup completion.
   //
-  // TODO(fdoray): Move this to a more elaborate class that prevents BEST_EFFORT
-  // tasks from running when resources are needed to respond to user actions.
-  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  // TODO(crbug.com/441949788): Move this to a more elaborate class that
+  // prevents BEST_EFFORT tasks from running when resources are needed to
+  // respond to user actions.
+  std::optional<base::ScopedBestEffortExecutionFence>
       scoped_best_effort_execution_fence_;
 
   // Members initialized in |Init()| -------------------------------------------
@@ -347,9 +340,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   // BEGIN Members initialized in |PostCreateThreads()| ------------------------
   // ***************************************************************************
   std::unique_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
-
-  // |user_input_monitor_| has to outlive |audio_manager_|, so declared first.
-  std::unique_ptr<media::UserInputMonitor> user_input_monitor_;
 
   // Support for out-of-process Data Decoder.
   std::unique_ptr<data_decoder::ServiceProvider> data_decoder_service_provider_;

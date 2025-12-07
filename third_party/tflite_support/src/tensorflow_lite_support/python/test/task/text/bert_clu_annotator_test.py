@@ -140,7 +140,7 @@ class BertCLUAnnotatorTest(parameterized.TestCase, tf.test.TestCase):
     # Annotates CLU request using the given model.
     text_clu_response = annotator.annotate(clu_request)
     self.assertProtoEquals(text_clu_response.to_pb2(),
-                           expected_clu_response.to_pb2())
+                           expected_clu_response.to_pb2(), None, 1e-4)
 
   @parameterized.parameters(
       (_CLU_REQUEST,
@@ -201,7 +201,7 @@ class BertCLUAnnotatorTest(parameterized.TestCase, tf.test.TestCase):
     # Annotates CLU request using the given model.
     text_clu_response = annotator.annotate(clu_request)
     self.assertProtoEquals(text_clu_response.to_pb2(),
-                           expected_clu_response.to_pb2())
+                           expected_clu_response.to_pb2(), None, 1e-4)
 
   def test_max_history_turns(self):
     # Creates annotator.
@@ -233,7 +233,7 @@ class BertCLUAnnotatorTest(parameterized.TestCase, tf.test.TestCase):
         ])
     text_clu_response = annotator.annotate(_CLU_REQUEST)
     self.assertProtoEquals(text_clu_response.to_pb2(),
-                           expected_clu_response.to_pb2())
+                           expected_clu_response.to_pb2(), None, 1e-4)
 
 
 if __name__ == '__main__':

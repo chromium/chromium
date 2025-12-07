@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -33,7 +33,7 @@ class WIFI_EXPORT WiFiService {
   WiFiService(const WiFiService&) = delete;
   WiFiService& operator=(const WiFiService&) = delete;
 
-  virtual ~WiFiService() {}
+  virtual ~WiFiService() = default;
 
   // Initialize WiFiService, store |task_runner| for posting worker tasks.
   virtual void Initialize(
@@ -126,7 +126,7 @@ class WIFI_EXPORT WiFiService {
                                        std::string* error) = 0;
 
  protected:
-  WiFiService() {}
+  WiFiService() = default;
 
   // Error constants.
   static const char kErrorAssociateToNetwork[];

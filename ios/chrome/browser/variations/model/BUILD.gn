@@ -16,7 +16,9 @@ source_set("model") {
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/browser/metrics/model:accessor",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/common",
     "//ios/web/public",
   ]
@@ -35,7 +37,7 @@ source_set("fetcher") {
     "//base",
     "//build:branding_buildflags",
     "//components/variations",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//ios/chrome/common",
     "//net",
   ]
@@ -51,6 +53,10 @@ source_set("store") {
     ":store_private",
     "//components/variations",
   ]
+
+  # Required because ":store_private" exists to restrict which targets
+  # have access to "ios_chrome_variations_seed_store+fetcher.h" header.
+  allow_circular_includes_from = [ ":store_private" ]
 }
 
 source_set("store_private") {
@@ -100,6 +106,7 @@ source_set("eg_app_support+eg2") {
     "//components/prefs",
     "//components/variations",
     "//components/variations:test_support",
+    "//components/variations/service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/test/app:test_support",
   ]
@@ -124,6 +131,7 @@ source_set("eg2_tests") {
   sources = [
     "variations_safe_mode_egtest.mm",
     "variations_safe_mode_end_to_end_egtest.mm",
+    "variations_safe_mode_seedfile_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
@@ -132,13 +140,17 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/metrics",
     "//components/prefs",
+    "//components/variations",
     "//components/variations:test_support",
-    "//components/variations:variations",
-    "//components/variations/service:service",
+    "//components/variations/service",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
   frameworks = [ "UIKit.framework" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -161,7 +173,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations:test_support",
     "//components/variations/service",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//ios/chrome/browser/flags:client_side",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/test:test_support",

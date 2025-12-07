@@ -10,25 +10,20 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/scoped_refptr.h"
-#include "cc/trees/property_tree.h"
+#include "base/memory/stack_allocated.h"
+#include "cc/trees/property_ids.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #if DCHECK_IS_ON()
-#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #endif
 
 namespace blink {
-
-class ClipPaintPropertyNodeOrAlias;
-class EffectPaintPropertyNodeOrAlias;
-class ScrollPaintPropertyNode;
-class TransformPaintPropertyNodeOrAlias;
 
 // Used to report whether and how paint properties have changed. The order is
 // important - it must go from no change to the most significant change.
@@ -38,11 +33,11 @@ enum class PaintPropertyChangeType : unsigned char {
   // We only changed values that are either mutated by compositor animations
   // which are updated automatically during the compositor-side animation tick,
   // or have been updated directly on the associated compositor node during the
-  // PrePaint lifecycle phase.
+  // PrePaint lifecycle phase. Note: Raster-inducing scrolls may also use this
+  // value, but they can affect main-thread generated raster invalidations
+  // which are handled specially (See: PaintArtifactCompositor::UpdateType::
+  // kRasterInducingScroll).
   kChangedOnlyCompositedValues,
-  // We only changed values that don't require re-raster (e.g. compositor
-  // element id changed).
-  kChangedOnlyNonRerasterValues,
   // We only changed values and not the hierarchy of the tree, and we know that
   // the value changes are 'simple' in that they don't cause cascading changes.
   // For example, they do not cause a new render surface to be created, which
@@ -65,14 +60,15 @@ enum class PaintPropertyChangeType : unsigned char {
 PLATFORM_EXPORT const char* PaintPropertyChangeTypeToString(
     PaintPropertyChangeType);
 
-class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
-  USING_FAST_MALLOC(PaintPropertyNode);
-
+class PLATFORM_EXPORT PaintPropertyNode
+    : public GarbageCollected<PaintPropertyNode> {
  public:
   PaintPropertyNode(const PaintPropertyNode&) = delete;
   PaintPropertyNode& operator=(const PaintPropertyNode&) = delete;
 
   virtual ~PaintPropertyNode() = default;
+
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
 
   bool IsRoot() const { return !parent_; }
 
@@ -102,10 +98,6 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
   }
 
   PaintPropertyChangeType NodeChanged() const { return changed_; }
-  bool NodeChangeAffectsRaster() const {
-    return changed_ != PaintPropertyChangeType::kUnchanged &&
-           changed_ != PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-  }
 
 #if DCHECK_IS_ON()
   String ToTreeString() const;
@@ -114,23 +106,30 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
   void SetDebugName(const String& name) { debug_name_ = name; }
 #endif
 
-  // In this class the tag is to distinguish the constructor for parent alias.
-  // In subclasses for parent alias types, the tag is to distinguish the
-  // constructors from the copy constructors (deleted in this class).
-  enum ParentAliasTag { kParentAlias };
-
  protected:
-  explicit PaintPropertyNode(const PaintPropertyNode* parent)
-      : changed_(parent ? PaintPropertyChangeType::kNodeAddedOrRemoved
-                        : PaintPropertyChangeType::kUnchanged),
-        parent_(parent) {}
+  // The tags have the following purposes:
+  // 1. Distinguish the constructors in parent alias subclasses from the copy
+  //    constructors (deleted in this class);
+  // 2. Prevent the subclass constructors (which are public required by
+  //    MakeGarbageCollected) from being called from outside (which is required
+  //    by 1 for parent alias subclasses, and for consistency for
+  //    non-parent-alias subclasses).
+  enum RootTag { kRoot };
+  enum ParentAliasTag { kParentAlias };
+  enum NonParentAliasTag { kNonParentAlias };
 
-  // A parent alias node must have a parent, so ensure that we can always find
-  // a unaliased ancestor for any node.
-  PaintPropertyNode(const PaintPropertyNode& parent, ParentAliasTag)
+  explicit PaintPropertyNode(RootTag)
+      : is_parent_alias_(false),
+        changed_(PaintPropertyChangeType::kUnchanged),
+        parent_(nullptr) {}
+  PaintPropertyNode(ParentAliasTag, const PaintPropertyNode& parent)
       : is_parent_alias_(true),
         changed_(PaintPropertyChangeType::kNodeAddedOrRemoved),
-        parent_(&parent) {}
+        parent_(parent) {}
+  PaintPropertyNode(NonParentAliasTag, const PaintPropertyNode& parent)
+      : is_parent_alias_(false),
+        changed_(PaintPropertyChangeType::kNodeAddedOrRemoved),
+        parent_(parent) {}
 
   PaintPropertyChangeType SetParent(const PaintPropertyNode& parent) {
     DCHECK(!IsRoot());
@@ -144,7 +143,7 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
   }
 
   // Parent property node, or nullptr if this is the root node.
-  const PaintPropertyNode* Parent() const { return parent_.get(); }
+  const PaintPropertyNode* Parent() const { return parent_.Get(); }
 
   // Returns the first node up the parent chain that is not an alias; return the
   // root node if every node is an alias.
@@ -212,7 +211,7 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
   // Indicates whether this node is an alias for its parent. Parent aliases are
   // nodes that do not affect rendering and are ignored for the purposes of
   // display item list generation.
-  bool is_parent_alias_ = false;
+  bool is_parent_alias_;
 
   // Indicates that the paint property value changed in the last update in the
   // prepaint lifecycle step. This is used for raster invalidation and damage
@@ -230,7 +229,7 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
   mutable int cc_node_id_ = cc::kInvalidPropertyNodeId;
   mutable int cc_sequence_number_ = 0;
 
-  scoped_refptr<const PaintPropertyNode> parent_;
+  Member<const PaintPropertyNode> parent_;
 
 #if DCHECK_IS_ON()
   String debug_name_;
@@ -267,10 +266,7 @@ class PaintPropertyNodeBase : public PaintPropertyNode {
   }
 
  protected:
-  explicit PaintPropertyNodeBase(const NodeTypeOrAlias* parent)
-      : PaintPropertyNode(parent) {}
-  PaintPropertyNodeBase(const NodeTypeOrAlias& parent, ParentAliasTag tag)
-      : PaintPropertyNode(parent, tag) {}
+  using PaintPropertyNode::PaintPropertyNode;
 };
 
 #if DCHECK_IS_ON()
@@ -289,7 +285,7 @@ class PLATFORM_EXPORT PropertyTreePrinter {
                        unsigned indent);
   const PaintPropertyNode& RootNode();
 
-  LinkedHashSet<const PaintPropertyNode*> nodes_;
+  HeapLinkedHashSet<Member<const PaintPropertyNode>> nodes_;
 };
 
 #endif  // DCHECK_IS_ON()

@@ -17,12 +17,15 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/cbor/writer.h"
 #include "device/fido/bio/enrollment.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -174,6 +177,59 @@ TEST_F(BioEnrollmentHandlerTest, Enroll) {
   auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_FALSE(template_id.empty());
+}
+
+// Regression test for https://crbug.com/442489275.
+// Tests that removing the authenticator does not leave a dangling pointer.
+TEST_F(BioEnrollmentHandlerTest, RemoveAuthenticator) {
+  // Set up an authenticator.
+  VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.bio_enrollment_preview_support = true;
+  base::test::TestFuture<void> finger_touch_future;
+  virtual_device_factory_.SetCtap2Config(config);
+
+  auto handler = MakeHandler();
+  EXPECT_TRUE(ready_future_.Wait());
+
+  // Hang the fingerprint enrollment request.
+  virtual_device_factory_.mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
+        finger_touch_future.SetValue();
+        return false;
+      });
+
+  // Start enrollment and wait for the touch request.
+  base::test::TestFuture<CtapDeviceResponseCode,
+                         BioEnrollmentHandler::TemplateId>
+      enroll_future;
+  handler->EnrollTemplate(MakeSampleCallback(), enroll_future.GetCallback());
+  ASSERT_TRUE(finger_touch_future.Wait());
+
+  // Disconnect the device. This should result in an error.
+  virtual_device_factory_.DisconnectDevice();
+  ASSERT_TRUE(error_future_.Wait());
+  EXPECT_EQ(error_future_.Get(),
+            BioEnrollmentHandler::Error::kAuthenticatorRemoved);
+}
+
+// Regression test for https://crbug.com/435417121.
+// Tests that a malformed bio enrollment response doesn't crash or hang the
+// request.
+TEST_F(BioEnrollmentHandlerTest, EnrollBadResponse) {
+  VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.bio_enrollment_preview_support = true;
+  config.override_response_map
+      [CtapRequestCommand::kAuthenticatorBioEnrollmentPreview] =
+      std::make_pair(CtapDeviceResponseCode::kSuccess,
+                     cbor::Writer::Write(cbor::Value("not a valid response")));
+  virtual_device_factory_.SetCtap2Config(config);
+
+  auto handler = MakeHandler();
+  EXPECT_TRUE(error_future_.Wait());
+  EXPECT_EQ(error_future_.Get(),
+            BioEnrollmentHandler::Error::kAuthenticatorResponseInvalid);
 }
 
 // Tests enrolling multiple fingerprints.

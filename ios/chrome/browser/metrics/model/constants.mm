@@ -17,3 +17,9 @@ const char kTipsNotifClientStatusByProviderHistogram[] =
     "IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider";
 const char kSafetyCheckNotifClientStatusByProviderHistogram[] =
     "IOS.Notifications.SafetyCheck.ClientStatus.Enabled.ByProvider";
+const char kSendTabNotifClientStatusByProviderHistogram[] =
+    "IOS.Notifications.SendTab.ClientStatus.Enabled.ByProvider";
+const char kPriceTrackingClientStatusByProviderHistogram[] =
+    "IOS.Notifications.PriceTracking.ClientStatus.Enabled.ByProvider";
+const char kRemindersClientStatusByProviderHistogram[] =
+    "IOS.Notifications.Reminders.ClientStatus.Enabled.ByProvider";

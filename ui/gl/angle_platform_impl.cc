@@ -22,8 +22,6 @@ namespace angle {
 
 namespace {
 
-ResetDisplayPlatformFunc g_angle_reset_platform = nullptr;
-
 double ANGLEPlatformImpl_currentTime(PlatformMethods* platform) {
   return base::Time::Now().InSecondsFSinceUnixEpoch();
 }
@@ -66,8 +64,7 @@ TraceEventHandle ANGLEPlatformImpl_addTraceEvent(
                                          arg_values);
   base::trace_event::TraceEventHandle handle =
       TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
-          phase, category_group_enabled, name,
-          trace_event_internal::kGlobalScope, id, trace_event_internal::kNoId,
+          phase, category_group_enabled, name, id,
           base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
   TraceEventHandle result;
   memcpy(&result, &handle, sizeof(result));
@@ -137,61 +134,21 @@ void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
       base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
 }
 
-int g_cache_hit_count = 0;
-int g_cache_miss_count = 0;
-
-base::Lock& GetCacheStatsLock() {
-  static base::NoDestructor<base::Lock> lock;
-  return *lock;
-}
-
-void RecordCacheUse() {
-  base::AutoLock lock(GetCacheStatsLock());
-  base::UmaHistogramCounts100("GPU.ANGLE.MetalShader.CacheHitCount",
-                              g_cache_hit_count);
-  base::UmaHistogramCounts100("GPU.ANGLE.MetalShader.CacheMissCount",
-                              g_cache_miss_count);
-}
-
 void ANGLEPlatformImpl_recordShaderCacheUse(bool in_cache) {
-  static bool did_schedule_log = false;
-  bool post_task = false;
-  {
-    base::AutoLock lock(GetCacheStatsLock());
-    if (!did_schedule_log) {
-      did_schedule_log = true;
-      post_task = true;
-    }
-    if (in_cache) {
-      ++g_cache_hit_count;
-    } else {
-      ++g_cache_miss_count;
-    }
-  }
-  if (post_task) {
-    // Record the stats soonish after the first call. Ideally this would be
-    // logged along with startup, but that's rather complex to determine from
-    // here (as well as pluming through to browser side).
-    // The 90 seconds comes from the 99 percentile of startup time on macos.
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&RecordCacheUse), base::Seconds(90));
-  }
+  // Metrics were no longer required, we can remove once Angle no longer
+  // requires the method.
 }
 
 }  // anonymous namespace
 
 NO_SANITIZE("cfi-icall")
-bool InitializePlatform(EGLDisplay display) {
+bool InitializePlatform(EGLDisplay display,
+                        GLGetProcAddressProc get_proc_address) {
   GetDisplayPlatformFunc angle_get_platform =
       reinterpret_cast<GetDisplayPlatformFunc>(
-          eglGetProcAddress("ANGLEGetDisplayPlatform"));
+          get_proc_address("ANGLEGetDisplayPlatform"));
   if (!angle_get_platform)
     return false;
-
-  // Save the pointer to the destroy function here to avoid crash.
-  g_angle_reset_platform = reinterpret_cast<ResetDisplayPlatformFunc>(
-      eglGetProcAddress("ANGLEResetDisplayPlatform"));
 
   PlatformMethods* platformMethods = nullptr;
   if (!angle_get_platform(static_cast<EGLDisplayType>(display),
@@ -225,10 +182,14 @@ bool InitializePlatform(EGLDisplay display) {
 }
 
 NO_SANITIZE("cfi-icall")
-void ResetPlatform(EGLDisplay display) {
-  if (!g_angle_reset_platform)
+void ResetPlatform(EGLDisplay display, GLGetProcAddressProc get_proc_address) {
+  ResetDisplayPlatformFunc angle_reset_platform =
+      reinterpret_cast<ResetDisplayPlatformFunc>(
+          get_proc_address("ANGLEResetDisplayPlatform"));
+  if (!angle_reset_platform) {
     return;
-  g_angle_reset_platform(static_cast<EGLDisplayType>(display));
+  }
+  angle_reset_platform(static_cast<EGLDisplayType>(display));
 }
 
 }  // namespace angle

@@ -11,6 +11,8 @@
 
 namespace performance_manager {
 
+ProcessPriorityAggregatorData::ProcessPriorityAggregatorData() = default;
+
 void ProcessPriorityAggregatorData::Decrement(base::TaskPriority priority) {
   switch (priority) {
     case base::TaskPriority::LOWEST:
@@ -33,7 +35,7 @@ void ProcessPriorityAggregatorData::Decrement(base::TaskPriority priority) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProcessPriorityAggregatorData::Increment(base::TaskPriority priority) {
@@ -55,7 +57,7 @@ void ProcessPriorityAggregatorData::Increment(base::TaskPriority priority) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ProcessPriorityAggregatorData::IsEmpty() const {

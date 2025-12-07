@@ -29,13 +29,23 @@ PasswordBubbleControllerBase::~PasswordBubbleControllerBase() {
 }
 
 void PasswordBubbleControllerBase::OnBubbleClosing() {
-  // This method can be reentered from OnBubbleHidden() below. Reset the things
-  // before calling it.
   if (!std::exchange(interaction_reported_, true)) {
     ReportInteractions();
   }
   if (delegate_) {
     std::exchange(delegate_, nullptr)->OnBubbleHidden();
+  }
+}
+
+void PasswordBubbleControllerBase::OnMouseEntered() {
+  if (delegate_) {
+    delegate_->OnMouseEntered();
+  }
+}
+
+void PasswordBubbleControllerBase::OnMouseExited() {
+  if (delegate_) {
+    delegate_->OnMouseExited();
   }
 }
 

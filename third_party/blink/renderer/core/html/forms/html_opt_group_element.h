@@ -42,7 +42,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
 
   bool IsDisabledFormControl() const override;
   String DefaultToolTip() const override;
-  HTMLSelectElement* OwnerSelectElement() const;
+  HTMLSelectElement* OwnerSelectElement(bool skip_check = false) const;
 
   String GroupLabelText() const;
   HTMLDivElement& OptGroupLabelElement() const;
@@ -52,8 +52,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   void ChildrenChanged(const ChildrenChange& change) override;
   bool ChildrenChangedAllChildrenRemovedNeedsList() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -63,9 +62,19 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
+  String LabelAttributeText() const;
   void UpdateGroupLabel();
 
   Member<HTMLSlotElement> opt_group_slot_;
+  Member<HTMLDivElement> label_;
+  Member<HTMLSelectElement> owner_select_;
+
+  // customizable_select_rendering_ is set to true when the CustomizableSelect
+  // flag is enabled and this element is in the DOM subtree of a <select> which
+  // UsesMenuList.
+  // TODO(crbug.com/357649033): Remove this flag, it should effectively always
+  // be enabled when CustomizableSelectInPage is enabled.
+  bool customizable_select_rendering_;
 };
 
 }  // namespace blink

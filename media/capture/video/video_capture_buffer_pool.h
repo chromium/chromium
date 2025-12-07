@@ -13,7 +13,7 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace media {
 
@@ -42,6 +42,8 @@ class VideoCaptureBufferHandle;
 class CAPTURE_EXPORT VideoCaptureBufferPool
     : public base::RefCountedThreadSafe<VideoCaptureBufferPool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   static constexpr int kInvalidId = -1;
 
   // Provides a duplicate region referring to the buffer. Destruction of this
@@ -124,10 +126,8 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   virtual void RelinquishConsumerHold(int buffer_id, int num_clients) = 0;
 
  protected:
-  virtual ~VideoCaptureBufferPool() {}
-
- private:
   friend class base::RefCountedThreadSafe<VideoCaptureBufferPool>;
+  virtual ~VideoCaptureBufferPool() = default;
 };
 
 }  // namespace media

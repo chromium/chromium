@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace base {
@@ -21,12 +21,10 @@ namespace autofill::payments {
 class UploadCardRequest : public PaymentsRequest {
  public:
   UploadCardRequest(
-      const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
+      const UploadCardRequestDetails& request_details,
       const bool full_sync_enabled,
-      base::OnceCallback<
-          void(PaymentsAutofillClient::PaymentsRpcResult,
-               const PaymentsNetworkInterface::UploadCardResponseDetails&)>
-          callback);
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const UploadCardResponseDetails&)> callback);
   UploadCardRequest(const UploadCardRequest&) = delete;
   UploadCardRequest& operator=(const UploadCardRequest&) = delete;
   ~UploadCardRequest() override;
@@ -43,14 +41,12 @@ class UploadCardRequest : public PaymentsRequest {
   std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
-  const PaymentsNetworkInterface::UploadCardRequestDetails request_details_;
+  const UploadCardRequestDetails request_details_;
   const bool full_sync_enabled_;
-  base::OnceCallback<void(
-      PaymentsAutofillClient::PaymentsRpcResult,
-      const PaymentsNetworkInterface::UploadCardResponseDetails&)>
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                          const UploadCardResponseDetails&)>
       callback_;
-  PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details_;
+  UploadCardResponseDetails upload_card_response_details_;
 };
 
 }  // namespace autofill::payments

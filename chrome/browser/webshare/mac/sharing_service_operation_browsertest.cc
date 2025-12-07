@@ -5,10 +5,8 @@
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -21,16 +19,9 @@ namespace webshare {
 
 class SharingServiceOperationBrowserTest : public InProcessBrowserTest {
  public:
-  SharingServiceOperationBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kWebShare);
-  }
-
   GURL GetAppUrl() const {
     return embedded_test_server()->GetURL("/webshare/index.html");
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharingServiceOperationBrowserTest,

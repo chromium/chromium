@@ -25,7 +25,7 @@
       await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'div'});
 
   const styles = await dp.CSS.getMatchedStylesForNode({nodeId});
-  const {result: {cssFontPaletteValuesRule: {style: {range}, styleSheetId}}} = styles;
+  const {result: {cssAtRules: [{style: {range}, styleSheetId}]}} = styles;
 
   const edit = {
     styleSheetId,

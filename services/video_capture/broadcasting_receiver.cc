@@ -4,12 +4,12 @@
 
 #include "services/video_capture/broadcasting_receiver.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -137,18 +137,15 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
 
   switch (target_buffer_type) {
     case media::VideoCaptureBufferType::kMailboxHolder:
-      NOTREACHED_IN_MIGRATION()
-          << "Cannot convert buffer type to kMailboxHolder from "
-             "handle type other than mailbox handles.";
-      break;
+      NOTREACHED() << "Cannot convert buffer type to kMailboxHolder from "
+                      "handle type other than mailbox handles.";
     case media::VideoCaptureBufferType::kSharedMemory:
       if (buffer_handle_->is_unsafe_shmem_region()) {
         return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
             buffer_handle_->get_unsafe_shmem_region().Duplicate());
       } else {
-        NOTREACHED_IN_MIGRATION() << "Unexpected video buffer handle type";
+        NOTREACHED() << "Unexpected video buffer handle type";
       }
-      break;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
 #if BUILDFLAG(IS_WIN)
       // On windows with MediaFoundationD3D11VideoCapture if the
@@ -157,8 +154,7 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
       return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
           buffer_handle_->get_unsafe_shmem_region().Duplicate());
 #else
-      NOTREACHED_IN_MIGRATION() << "Unexpected GpuMemoryBuffer handle type";
-      break;
+      NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
 #endif
   }
   return media::mojom::VideoBufferHandlePtr();
@@ -350,12 +346,11 @@ void BroadcastingReceiver::OnFrameDropped(
   }
 }
 
-void BroadcastingReceiver::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void BroadcastingReceiver::OnNewCaptureVersion(
+    media::CaptureVersion capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_) {
-    client.second.client()->OnNewSubCaptureTargetVersion(
-        sub_capture_target_version);
+    client.second.client()->OnNewCaptureVersion(capture_version);
   }
 }
 
@@ -410,7 +405,7 @@ void BroadcastingReceiver::OnStopped() {
 void BroadcastingReceiver::OnClientFinishedConsumingFrame(
     int32_t buffer_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto buffer_context_iter = base::ranges::find(
+  auto buffer_context_iter = std::ranges::find(
       buffer_contexts_, buffer_context_id, &BufferContext::buffer_context_id);
   CHECK(buffer_context_iter != buffer_contexts_.end());
   buffer_context_iter->DecreaseConsumerCount();
@@ -419,8 +414,7 @@ void BroadcastingReceiver::OnClientFinishedConsumingFrame(
     auto it =
         scoped_access_permissions_by_buffer_context_id_.find(buffer_context_id);
     if (it == scoped_access_permissions_by_buffer_context_id_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     scoped_access_permissions_by_buffer_context_id_.erase(it);
   }
@@ -440,7 +434,7 @@ std::vector<BroadcastingReceiver::BufferContext>::iterator
 BroadcastingReceiver::FindUnretiredBufferContextFromBufferId(
     int32_t buffer_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       buffer_contexts_, [buffer_id](const BufferContext& entry) {
         return !entry.is_retired() && entry.buffer_id() == buffer_id;
       });

@@ -11,7 +11,7 @@
 #include <atomic>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "media/base/data_source.h"
 
 namespace media {
@@ -20,9 +20,9 @@ namespace media {
 // system to read data for a media pipeline.
 class MEDIA_EXPORT MemoryDataSource final : public DataSource {
  public:
-  // Construct MemoryDataSource with |data| and |size|. The data is guaranteed
-  // to be valid during the lifetime of MemoryDataSource.
-  MemoryDataSource(const uint8_t* data, size_t size);
+  // Construct MemoryDataSource with |data|. The data is guaranteed to be valid
+  // during the lifetime of MemoryDataSource.
+  explicit MemoryDataSource(base::span<const uint8_t> data);
 
   // Similar to the above, but takes ownership of the std::string.
   explicit MemoryDataSource(std::string data);
@@ -34,8 +34,7 @@ class MEDIA_EXPORT MemoryDataSource final : public DataSource {
 
   // Implementation of DataSource.
   void Read(int64_t position,
-            int size,
-            uint8_t* data,
+            base::span<uint8_t> data,
             DataSource::ReadCB read_cb) final;
   void Stop() final;
   void Abort() final;
@@ -47,8 +46,7 @@ class MEDIA_EXPORT MemoryDataSource final : public DataSource {
 
  private:
   const std::string data_string_;
-  raw_ptr<const uint8_t, AllowPtrArithmetic> data_ = nullptr;
-  const size_t size_ = 0;
+  base::raw_span<const uint8_t> data_;
 
   // Stop may be called from the render thread while this class is being used by
   // the media thread. It's harmless if we fulfill a read after Stop() has been

@@ -7,16 +7,18 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/X509Util_jni.h"
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 
 namespace net {
 
-void JNI_X509Util_NotifyTrustStoreChanged(JNIEnv* env) {
+static void JNI_X509Util_NotifyTrustStoreChanged(JNIEnv* env) {
   CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
 }
 
-void JNI_X509Util_NotifyClientCertStoreChanged(JNIEnv* env) {
+static void JNI_X509Util_NotifyClientCertStoreChanged(JNIEnv* env) {
   CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
 }
 
 }  // namespace net
+
+DEFINE_JNI(X509Util)

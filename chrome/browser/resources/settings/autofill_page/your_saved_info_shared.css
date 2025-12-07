@@ -1,0 +1,26 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.multi-card > .card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  margin-top: var(--cr-section-vertical-margin);
+}
+
+.multi-card > .card:first-of-type {
+  margin-top: 0;
+}
+
+/* TODO(crbug.com/454617005): this is a quick fix, remove */
+.card h2 {
+  align-self: auto;
+  padding-bottom: 0;
+  padding-top: 12px;
+}

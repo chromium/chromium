@@ -6,29 +6,33 @@
 #define CHROME_BROWSER_ANDROID_PRELOADING_ANDROID_PRERENDER_MANAGER_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "url/android/gurl_android.h"
 
+class NewTabPagePreloadPipelineManager;
+class TabAndroid;
+
+// This object is owned through a Java-side singletone object, and the object
+// can be shared by multiple tabs (WebContents).
 class AndroidPrerenderManager {
  public:
-  AndroidPrerenderManager(JNIEnv* env, jobject obj);
+  explicit AndroidPrerenderManager(JNIEnv* env);
 
   AndroidPrerenderManager(const AndroidPrerenderManager&) = delete;
   AndroidPrerenderManager& operator=(const AndroidPrerenderManager&) = delete;
 
   virtual ~AndroidPrerenderManager();
 
-  bool StartPrerendering(
-      JNIEnv* env,
-      const GURL& prerender_url,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+  void StartPrerendering(JNIEnv* env,
+                         const GURL& prerender_url,
+                         TabAndroid* tab);
 
-  void StopPrerendering(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+  void StopPrerendering(JNIEnv* env, TabAndroid* tab);
 
  private:
-  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
+  NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager(
+      TabAndroid* tab);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PRELOADING_ANDROID_PRERENDER_MANAGER_H_

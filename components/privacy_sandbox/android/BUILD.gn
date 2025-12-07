@@ -6,9 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/privacy_sandbox/CustomTabIntentHelper.java",
-    "java/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragment.java",
-    "java/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragment.java",
+    "java/src/org/chromium/components/privacy_sandbox/PrivacySandboxBaseFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionDelegate.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettings.java",
     "java/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreference.java",
@@ -17,9 +15,11 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/embedder_support/android:util_java",
     "//components/prefs/android:java",
@@ -31,6 +31,7 @@ android_library("java") {
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -38,22 +39,24 @@ android_library("java") {
 
 android_library("javatests") {
   testonly = true
-  sources = [
-    "javatests/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragmentTest.java",
-    "javatests/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragmentTest.java",
-    "javatests/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettingsTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreferenceTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/site_settings/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
@@ -61,13 +64,15 @@ android_library("javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 
 android_resources("java_resources") {
   sources = [
-    "java/res/xml/fp_protection_preferences.xml",
-    "java/res/xml/ip_protection_preferences.xml",
+    "java/res/menu/tracking_protection_menu.xml",
+    "java/res/values/ids.xml",
     "java/res/xml/tracking_protection_preferences.xml",
   ]
   deps = [

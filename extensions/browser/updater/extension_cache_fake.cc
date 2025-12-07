@@ -35,10 +35,12 @@ bool ExtensionCacheFake::GetExtension(const std::string& id,
   if (it == cache_.end()) {
     return false;
   } else {
-    if (version)
+    if (version) {
       *version = it->second.first;
-    if (file_path)
+    }
+    if (file_path) {
       *file_path = it->second.second;
+    }
     return true;
   }
 }

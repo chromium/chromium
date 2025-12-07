@@ -5,19 +5,28 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_H_
 
+#include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 class GoogleServiceAuthError;
 
 namespace network::mojom {
 class CookieManager;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class DeviceBoundSessionManager;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 namespace signin {
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class BoundSessionOAuthMultiLoginDelegate;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 struct MultiloginParameters;
 enum class SetAccountsInCookieResult;
 
@@ -36,6 +45,19 @@ class AccountsCookieMutator {
 
     // Returns the CookieManager for the partition.
     virtual network::mojom::CookieManager* GetCookieManagerForPartition() = 0;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    // Creates a new BoundSessionOAuthMultiLoginDelegate for the partition. If
+    // prototype cookie binding is not supported for the partition, returns
+    // nullptr.
+    virtual std::unique_ptr<BoundSessionOAuthMultiLoginDelegate>
+    CreateBoundSessionOAuthMultiLoginDelegateForPartition();
+
+    // Returns the DeviceBoundSessionManager for the partition. If the
+    // partition does not support standard cookie binding, returns nullptr.
+    virtual network::mojom::DeviceBoundSessionManager*
+    GetDeviceBoundSessionManagerForPartition() = 0;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   };
 
   // Task handle for SetAccountsInCookieForPartition. Deleting this object
@@ -75,6 +97,21 @@ class AccountsCookieMutator {
       base::OnceCallback<void(SetAccountsInCookieResult)>
           set_accounts_in_cookies_completed_callback) = 0;
 
+  // This is similar to SetAccountsInCookie, but allow specifying the partition
+  // where the cookies are set. This function must not be used with the default
+  // partition (use SetAccountsInCookie instead).
+  //
+  // The returned SetAccountsInCookieTask must not outlive the
+  // AccountsCookieMutator. If the task is deleted, all network requests are
+  // cancelled; the partition delegate and the callback will not be called.
+  virtual std::unique_ptr<SetAccountsInCookieTask>
+  SetAccountsInCookieForPartition(
+      PartitionDelegate* partition_delegate,
+      const MultiloginParameters& parameters,
+      gaia::GaiaSource source,
+      base::OnceCallback<void(SetAccountsInCookieResult)>
+          set_accounts_in_cookies_completed_callback) = 0;
+
   // Triggers a ListAccounts fetch. Can be used in circumstances where clients
   // know that the contents of the Gaia cookie might have changed.
   virtual void TriggerCookieJarUpdate() = 0;
@@ -99,7 +136,7 @@ class AccountsCookieMutator {
 
   // Indicates that an account previously listed via ListAccounts should now
   // be removed.
-  virtual void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) = 0;
+  virtual void RemoveLoggedOutAccountByGaiaId(const GaiaId& gaia_id) = 0;
 };
 
 }  // namespace signin

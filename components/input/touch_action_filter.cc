@@ -51,11 +51,12 @@ void SetCursorControlIfNecessary(WebGestureEvent* event,
 
 }  // namespace
 
-TouchActionFilter::TouchActionFilter() {
+TouchActionFilter::TouchActionFilter(TouchActionFilterClient* client)
+    : client_(client) {
   ResetTouchAction();
 }
 
-TouchActionFilter::~TouchActionFilter() {}
+TouchActionFilter::~TouchActionFilter() = default;
 
 FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     WebGestureEvent* gesture_event) {
@@ -167,8 +168,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     case WebInputEvent::Type::kGestureFlingStart:
       // Fling controller processes FlingStart event, and we should never get
       // it here.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case WebInputEvent::Type::kGestureScrollEnd:
       // Do not reset |compositor_allowed_touch_action_|. In the fling cancel
@@ -223,6 +223,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           cc::TouchAction::kNone;
       if (!allow_current_double_tap_event_) {
         gesture_event->SetType(WebInputEvent::Type::kGestureTap);
+        client_->OnUnconfirmedTapConvertedToTap();
         drop_current_tap_ending_event_ = true;
       }
       break;

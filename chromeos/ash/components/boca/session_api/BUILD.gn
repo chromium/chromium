@@ -1,0 +1,84 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("session_api") {
+  sources = [
+    "add_students_request.cc",
+    "add_students_request.h",
+    "constants.h",
+    "create_session_request.cc",
+    "create_session_request.h",
+    "get_session_request.cc",
+    "get_session_request.h",
+    "join_session_request.cc",
+    "join_session_request.h",
+    "json_proto_converters.cc",
+    "json_proto_converters.h",
+    "remove_student_request.cc",
+    "remove_student_request.h",
+    "renotify_student_request.cc",
+    "renotify_student_request.h",
+    "session_client_impl.cc",
+    "session_client_impl.h",
+    "session_parser.cc",
+    "session_parser.h",
+    "student_heartbeat_request.cc",
+    "student_heartbeat_request.h",
+    "update_session_config_request.cc",
+    "update_session_config_request.h",
+    "update_session_request.cc",
+    "update_session_request.h",
+    "update_student_activities_request.cc",
+    "update_student_activities_request.h",
+    "upload_token_request.cc",
+    "upload_token_request.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/boca/proto",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//google_apis/common",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "add_students_request_unittest.cc",
+    "create_session_request_unittest.cc",
+    "get_session_request_unittest.cc",
+    "join_session_request_unittest.cc",
+    "json_proto_converters_unittest.cc",
+    "remove_student_request_unittest.cc",
+    "renotify_student_request_unittest.cc",
+    "session_client_impl_unittest.cc",
+    "session_parser_unittest.cc",
+    "student_heartbeat_request_unittest.cc",
+    "update_session_config_request_unittest.cc",
+    "update_session_request_unittest.cc",
+    "update_student_activities_request_unittest.cc",
+    "upload_token_request_unittest.cc",
+  ]
+
+  deps = [
+    ":session_api",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//google_apis/common",
+    "//google_apis/common:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

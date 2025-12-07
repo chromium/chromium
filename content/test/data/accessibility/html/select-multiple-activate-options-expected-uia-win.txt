@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++List Selection.CanSelectMultiple=true Selection.IsSelectionRequired=false
+++++++ListItem Name='one' SelectionItem.IsSelected=true
+++++++ListItem Name='two' SelectionItem.IsSelected=true

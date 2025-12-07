@@ -70,7 +70,7 @@ def main():
     mc_help = subprocess.check_output(['mc.exe', '/?'], env=env_dict,
                                       stderr=subprocess.STDOUT, shell=True)
     version = re.search(br'Message Compiler\s+Version (\S+)', mc_help).group(1)
-    if version != '10.0.15063':
+    if version != b'10.0.22621':
       return
 
   # mc writes to stderr, so this explicitly redirects to stdout and eats it.
@@ -107,9 +107,9 @@ def main():
       with open(header_file, 'rb') as f:
         define_block = []  # The current contiguous block of #defines.
         for line in f.readlines():
-          if line.startswith('//') and '?' in line:
+          if line.startswith(b'//') and b'?' in line:
             continue
-          if line.startswith('#define '):
+          if line.startswith(b'#define '):
             define_block.append(line)
             continue
           # On the first non-#define line, emit the sorted preceding #define
@@ -120,7 +120,7 @@ def main():
         # If the .h file ends with a #define block, flush the final block.
         header_contents += sorted(define_block, key=lambda s: s.split()[-1])
       with open(header_file, 'wb') as f:
-        f.write(''.join(header_contents))
+        f.write(b''.join(header_contents))
 
     # mc.exe invocation and post-processing are complete, now compare the output
     # in tmp_dir to the checked-in outputs.
@@ -135,8 +135,8 @@ def main():
         tofile = os.path.join(tmp_dir, f)
         print(''.join(
             difflib.unified_diff(
-                open(fromfile, 'U').readlines(),
-                open(tofile, 'U').readlines(), fromfile, tofile)))
+                open(fromfile).readlines(),
+                open(tofile).readlines(), fromfile, tofile)))
       delete_tmp_dir = False
       sys.exit(1)
   except subprocess.CalledProcessError as e:

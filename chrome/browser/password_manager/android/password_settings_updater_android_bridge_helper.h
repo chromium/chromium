@@ -26,8 +26,6 @@ class PasswordSettingsUpdaterAndroidBridgeHelper {
 
   // Factory function for creating the helper. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
-  // Ensure `password_manager_android_util::AreMinUpmRequirementsMet`
-  // returns true before calling this method.
   static std::unique_ptr<PasswordSettingsUpdaterAndroidBridgeHelper> Create();
 
   // Sets the `consumer` that is notified on operation completion as defined in

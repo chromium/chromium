@@ -32,6 +32,9 @@ struct BASE_EXPORT CpuFrequencyInfo {
   // A best effort guess at whether the associated CPU core is a performance
   // core, an efficiency core, or something in between (balanced).
   CoreType type;
+
+  // The number of CPU cores that are in the C0 state (active).
+  size_t num_active_cpus;
 };
 
 struct BASE_EXPORT CpuThroughputEstimationResult {

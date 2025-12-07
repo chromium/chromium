@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 
 namespace em = enterprise_management;
@@ -91,11 +92,6 @@ WeeklyTime WeeklyTime::ConvertToTimezone(int timezone_offset) const {
       .AddMilliseconds(timezone_offset - timezone_offset_.value());
 }
 
-WeeklyTime WeeklyTime::ConvertToCustomTimezone(int timezone_offset) const {
-  DCHECK(!timezone_offset_);
-  return WeeklyTime(day_of_week_, milliseconds_, timezone_offset);
-}
-
 // static
 WeeklyTime WeeklyTime::GetGmtWeeklyTime(base::Time time) {
   base::Time::Exploded exploded;
@@ -145,7 +141,7 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromDict(
     return nullptr;
   }
   int day_of_week_value =
-      base::ranges::find(kWeekDays, *day_of_week) - kWeekDays.begin();
+      std::ranges::find(kWeekDays, *day_of_week) - kWeekDays.begin();
   if (day_of_week_value <= 0 || day_of_week_value > 7) {
     LOG(ERROR) << "Invalid day_of_week: " << day_of_week;
     return nullptr;

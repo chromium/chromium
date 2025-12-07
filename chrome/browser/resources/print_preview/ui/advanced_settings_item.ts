@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/search_highlight_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
-import './print_preview_shared.css.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
-import {getTemplate} from './advanced_settings_item.html.js';
+import {getCss} from './advanced_settings_item.css.js';
+import {getHtml} from './advanced_settings_item.html.js';
 import {updateHighlights} from './highlight_utils.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-const PrintPreviewAdvancedSettingsItemElementBase =
-    SettingsMixin(PolymerElement);
+const PrintPreviewAdvancedSettingsItemElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewAdvancedSettingsItemElement extends
     PrintPreviewAdvancedSettingsItemElementBase {
@@ -30,25 +27,39 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     return 'print-preview-advanced-settings-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      capability: Object,
-      currentValue_: String,
+      capability: {type: Object},
+      currentValue_: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updateFromSettings_(capability, settings.vendorItems.value)',
-    ];
+  accessor capability: VendorCapability = {id: '', type: ''};
+  private accessor currentValue_: string = '';
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver(
+        'vendorItems.value', () => this.updateFromSettings_());
+    this.updateFromSettings_();
   }
 
-  capability: VendorCapability;
-  private currentValue_: string;
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('capability')) {
+      this.updateFromSettings_();
+    }
+  }
 
   private updateFromSettings_() {
     const settings = this.getSetting('vendorItems').value;
@@ -69,18 +80,18 @@ export class PrintPreviewAdvancedSettingsItemElement extends
       }
     } else {
       this.currentValue_ = value;
-      this.shadowRoot!.querySelector('cr-input')!.value = this.currentValue_;
+      this.shadowRoot.querySelector('cr-input')!.value = this.currentValue_;
     }
   }
 
   /**
    * @return The display name for the setting.
    */
-  private getDisplayName_(item: VendorCapability|
-                          VendorCapabilitySelectOption): string {
+  protected getDisplayName_(
+      item: VendorCapability|VendorCapabilitySelectOption): string {
     let displayName = item.display_name;
     if (!displayName && item.display_name_localized) {
-      displayName = getStringForCurrentLocale(item.display_name_localized!);
+      displayName = getStringForCurrentLocale(item.display_name_localized);
     }
     return displayName || '';
   }
@@ -88,7 +99,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   /**
    * @return Whether the capability represented by this item is of type select.
    */
-  private isCapabilityTypeSelect_(): boolean {
+  protected isCapabilityTypeSelect_(): boolean {
     return this.capability.type === 'SELECT';
   }
 
@@ -96,7 +107,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
    * @return Whether the capability represented by this item is of type
    *     checkbox.
    */
-  private isCapabilityTypeCheckbox_(): boolean {
+  protected isCapabilityTypeCheckbox_(): boolean {
     return this.capability.type === 'TYPED_VALUE' &&
         this.capability.typed_value_cap!.value_type === 'BOOLEAN';
   }
@@ -104,14 +115,14 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   /**
    * @return Whether the capability represented by this item is of type input.
    */
-  private isCapabilityTypeInput_(): boolean {
+  protected isCapabilityTypeInput_(): boolean {
     return !this.isCapabilityTypeSelect_() && !this.isCapabilityTypeCheckbox_();
   }
 
   /**
    * @return Whether the checkbox setting is checked.
    */
-  private isChecked_(): boolean {
+  protected isChecked_(): boolean {
     return this.currentValue_ === 'true';
   }
 
@@ -119,7 +130,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
    * @param option The option for a select capability.
    * @return Whether the option is selected.
    */
-  private isOptionSelected_(option: VendorCapabilitySelectOption): boolean {
+  protected isOptionSelected_(option: VendorCapabilitySelectOption): boolean {
     return this.currentValue_ === undefined ?
         !!option.is_default :
         option.value === this.currentValue_;
@@ -128,23 +139,23 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   /**
    * @return The placeholder value for the capability's text input.
    */
-  private getCapabilityPlaceholder_(): string {
+  protected getCapabilityPlaceholder_(): string {
     if (this.capability.type === 'TYPED_VALUE' &&
         this.capability.typed_value_cap &&
-        this.capability.typed_value_cap!.default !== undefined) {
-      return this.capability.typed_value_cap!.default.toString() || '';
+        this.capability.typed_value_cap.default !== undefined) {
+      return this.capability.typed_value_cap.default.toString() || '';
     }
     if (this.capability.type === 'RANGE' && this.capability.range_cap &&
-        this.capability.range_cap!.default !== undefined) {
-      return this.capability.range_cap!.default.toString() || '';
+        this.capability.range_cap.default !== undefined) {
+      return this.capability.range_cap.default.toString() || '';
     }
     return '';
   }
 
   private hasOptionWithValue_(value: string): boolean {
     return !!this.capability.select_cap &&
-        !!this.capability.select_cap!.option &&
-        this.capability.select_cap!.option.some(
+        !!this.capability.select_cap.option &&
+        this.capability.select_cap.option.some(
             option => option.value === value);
   }
 
@@ -153,7 +164,13 @@ export class PrintPreviewAdvancedSettingsItemElement extends
    * @return Whether the item has a match for the query.
    */
   hasMatch(query: RegExp|null): boolean {
-    if (!query || this.getDisplayName_(this.capability).match(query)) {
+    if (!query) {
+      return true;
+    }
+
+    const strippedCapabilityName =
+        stripDiacritics(this.getDisplayName_(this.capability));
+    if (strippedCapabilityName.match(query)) {
       return true;
     }
 
@@ -162,18 +179,19 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     }
 
     for (const option of this.capability.select_cap!.option!) {
-      if (this.getDisplayName_(option).match(query)) {
+      const strippedOptionName = stripDiacritics(this.getDisplayName_(option));
+      if (strippedOptionName.match(query)) {
         return true;
       }
     }
     return false;
   }
 
-  private onUserInput_(e: Event) {
+  protected onUserInput_(e: Event) {
     this.currentValue_ = (e.target! as CrInputElement).value;
   }
 
-  private onCheckboxInput_(e: Event) {
+  protected onCheckboxInput_(e: Event) {
     this.currentValue_ =
         (e.target! as CrCheckboxElement).checked ? 'true' : 'false';
   }
@@ -202,6 +220,9 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     return updateHighlights(this, query, bubbles);
   }
 }
+
+export type AdvancedSettingsItemElement =
+    PrintPreviewAdvancedSettingsItemElement;
 
 declare global {
   interface HTMLElementTagNameMap {

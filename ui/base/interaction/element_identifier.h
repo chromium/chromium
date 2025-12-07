@@ -7,13 +7,23 @@
 
 #include <stdint.h>
 
+#include <concepts>
+#include <cstdint>
 #include <ostream>
 #include <set>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
-#include "ui/base/class_property.h"
+#include "base/types/pass_key.h"
+
+namespace views {
+class ElementTrackerViews;
+}
+
+namespace user_education {
+class HelpBubbleHandler;
+}
 
 // Overview:
 // ElementIdentifier provides a named opaque value that can be used to identify
@@ -87,6 +97,9 @@
 
 namespace ui {
 
+template <typename T>
+class ClassPropertyCaster;
+
 namespace internal {
 
 // Defines the underlying value that an ElementIdentifier holds (namely, the
@@ -113,7 +126,7 @@ class ElementTracker;
 // default-constructed instances have false value and all other values evaluate
 // as true. It can also be used as the key in std::set, std::map, and similar
 // collections.
-class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementIdentifier final {
  public:
   // Creates a null identifier.
   constexpr ElementIdentifier() = default;
@@ -128,14 +141,14 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
 
   constexpr bool operator!() const { return !handle_; }
 
-  constexpr bool operator==(const ElementIdentifier& other) const = default;
+  friend constexpr bool operator==(const ElementIdentifier&,
+                                   const ElementIdentifier&) = default;
 
   // TODO(crbug.com/333028921): Operator < cannot be constexpr because memory
   // order of Impl objects is not strictly known at compile time. Fix this...
   // somehow? Possibilities include compile-time hashing of identifier string.
-  bool operator<(const ElementIdentifier& other) const {
-    return handle_ < other.handle_;
-  }
+  friend auto operator<=>(const ElementIdentifier&,
+                          const ElementIdentifier&) = default;
 
   // Retrieves the element name, or the empty string if none.
   std::string GetName() const;
@@ -158,7 +171,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
   friend class ElementTracker;
   friend class ElementIdentifierTest;
   friend class ElementTrackerIdentifierTest;
-  friend COMPONENT_EXPORT(UI_BASE) void PrintTo(
+  friend COMPONENT_EXPORT(UI_BASE_INTERACTION) void PrintTo(
       ElementIdentifier element_identifier,
       std::ostream* os);
 
@@ -175,7 +188,8 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
   // The value of the identifier. Because all non-null values point to static
   // ElementIdentifierImpl objects this can be treated as a value from a set of
   // unique, opaque handles.
-  // RAW_PTR_EXCLUSION: #union, #global-scope
+  // RAW_PTR_EXCLUSION: Since all ElementIdentifierImpl instances are
+  // statically-allocated, this pointer can never dangle.
   RAW_PTR_EXCLUSION const internal::ElementIdentifierImpl* handle_ = nullptr;
 };
 
@@ -198,16 +212,17 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
 // ElementContext objects are assignable, have boolean value based on whether
 // the underlying value is null, and support operator < for use in maps and
 // sets.
-class COMPONENT_EXPORT(UI_BASE) ElementContext {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementContext {
  public:
   ElementContext() = default;
 
-  template <class T>
-  explicit ElementContext(T* value)
+  // Only specific classes are allowed to be authoritative sources of element
+  // contexts. All other code should defer to these classes.
+  template <class T, class U>
+    requires std::same_as<U, views::ElementTrackerViews> ||
+             std::same_as<U, user_education::HelpBubbleHandler>
+  explicit ElementContext(T* value, base::PassKey<U>)
       : value_(reinterpret_cast<uintptr_t>(value)) {}
-
-  template <class T>
-  explicit ElementContext(T value) : value_(static_cast<uintptr_t>(value)) {}
 
   explicit operator const void*() const {
     return reinterpret_cast<const void*>(value_);
@@ -216,31 +231,40 @@ class COMPONENT_EXPORT(UI_BASE) ElementContext {
   explicit operator intptr_t() const { return static_cast<intptr_t>(value_); }
   explicit operator bool() const { return value_ != 0; }
   bool operator!() const { return !value_; }
-  bool operator==(const ElementContext& other) const {
-    return value_ == other.value_;
+  friend bool operator==(const ElementContext&,
+                         const ElementContext&) = default;
+  friend auto operator<=>(const ElementContext&,
+                          const ElementContext&) = default;
+
+  // Use this to create a fake context for testing. For normal contexts, rely
+  // on one of the classes explicitly allowed by `ElementContext(T*)` above.
+  template <typename T>
+  static ElementContext CreateFakeContextForTesting(T* value) {
+    return ElementContext(reinterpret_cast<uintptr_t>(value));
   }
-  bool operator!=(const ElementContext& other) const {
-    return value_ != other.value_;
-  }
-  bool operator<(const ElementContext& other) const {
-    return value_ < other.value_;
+  template <typename T>
+    requires std::convertible_to<T, uintptr_t>
+  static consteval ElementContext CreateFakeContextForTesting(T value) {
+    return ElementContext(static_cast<uintptr_t>(value));
   }
 
  private:
+  explicit constexpr ElementContext(uintptr_t value) : value_(value) {}
+
   uintptr_t value_ = 0;
 };
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(ElementIdentifier element_identifier, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(ElementContext element_context, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 ElementIdentifier element_identifier);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 ElementContext element_context);
 
@@ -262,15 +286,15 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // DECLARE/DEFINE_EXPORTED_... below.
 
 // Use this code in the .h file to declare a new identifier.
-#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                     \
-  extern const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
-  inline constexpr ui::ElementIdentifier IdentifierName(                     \
+#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                       \
+  extern const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  inline constexpr ::ui::ElementIdentifier IdentifierName(                     \
       &IdentifierName##Provider)
 
 // Use this code in the .cc file to define a new identifier.
-#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                \
-  const ui::internal::ElementIdentifierImpl IdentifierName##Provider { \
-    #IdentifierName                                                    \
+#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                  \
+  const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider { \
+    #IdentifierName                                                      \
   }
 
 // Declaring identifiers that can be used in other components:
@@ -280,32 +304,32 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 
 // Use this code in the .h file to declare a new exported identifier.
 #define DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, IdentifierName) \
-  ExportName extern const ui::internal::ElementIdentifierImpl                 \
+  ExportName extern const ::ui::internal::ElementIdentifierImpl               \
       IdentifierName##Provider;                                               \
-  ExportName extern const ui::ElementIdentifier IdentifierName
+  ExportName extern const ::ui::ElementIdentifier IdentifierName
 
 // Use this code in the .cc file to define a new exported identifier.
-#define DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(IdentifierName)      \
-  const ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
-      #IdentifierName};                                               \
-  const ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+#define DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(IdentifierName)        \
+  const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
+      #IdentifierName};                                                 \
+  const ::ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
 
 // Declaring identifiers in a class:
 
 // Use this code in your class declaration in its .h file to declare an
 // identifier that is scoped to your class.
-#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)               \
-  static const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
-  static constexpr ui::ElementIdentifier IdentifierName {             \
-    &IdentifierName##Provider                                                \
+#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                 \
+  static const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  static constexpr ::ui::ElementIdentifier IdentifierName {                    \
+    &IdentifierName##Provider                                                  \
   }
 
 // Use this code in your class definition .cc file to define the member
 // variables
 #define DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName)    \
-  const ui::internal::ElementIdentifierImpl                                 \
+  const ::ui::internal::ElementIdentifierImpl                               \
       ClassName::IdentifierName##Provider{#ClassName "::" #IdentifierName}; \
-  constexpr ui::ElementIdentifier ClassName::IdentifierName
+  constexpr ::ui::ElementIdentifier ClassName::IdentifierName
 
 // Declaring local identifiers in functions, class methods, or local to a .cc
 // file (often used in tests). File and line are included to guarantee that the
@@ -323,10 +347,10 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // mangled with the file and line so that it can be used in local or module
 // scope (typically in tests) without having to worry about name collisions.
 #define DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(File, Line, IdentifierName) \
-  static constexpr ui::internal::ElementIdentifierImpl                    \
+  static constexpr ::ui::internal::ElementIdentifierImpl                  \
       IdentifierName##Provider{                                           \
           LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, IdentifierName)};     \
-  constexpr ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+  constexpr ::ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
 
 // Use this code to declare a local identifier in a function body or module
 // scope. The name will be mangled with the file and line so that it can be used

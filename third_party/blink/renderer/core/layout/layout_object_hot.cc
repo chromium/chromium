@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -26,35 +25,35 @@ void LayoutObject::Trace(Visitor* visitor) const {
   DisplayItemClient::Trace(visitor);
 }
 
-LayoutBox* LayoutObject::DeprecatedEnclosingScrollableBox() const {
+LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  for (LayoutObject* ancestor = Parent(); ancestor;
-       ancestor = ancestor->Parent()) {
-    if (!ancestor->IsBox())
-      continue;
 
-    auto* ancestor_box = To<LayoutBox>(ancestor);
-    if (ancestor_box->IsUserScrollable()) {
-      return ancestor_box;
-    }
+#if DCHECK_IS_ON()
+  if (skip_info)
+    skip_info->AssertClean();
+#endif
+
+  if (IsTextOrSVGChild())
+    return Parent();
+
+  EPosition pos = style_->GetPosition();
+  if (pos == EPosition::kFixed)
+    return ContainerForFixedPosition(skip_info);
+
+  if (pos == EPosition::kAbsolute) {
+    return ContainerForAbsolutePosition(skip_info);
   }
 
-  return nullptr;
+  if (IsColumnSpanAll()) {
+    return ContainerForColumnSpanner(skip_info);
+  }
+
+  return Parent();
 }
 
 void LayoutObject::SetNeedsOverflowRecalc(
     OverflowRecalcType overflow_recalc_type) {
   NOT_DESTROYED();
-  if (UNLIKELY(IsLayoutFlowThread())) {
-    // If we're a flow thread inside an NG multicol container, just redirect to
-    // the multicol container, since the overflow recalculation walks down the
-    // NG fragment tree, and the flow thread isn't represented there.
-    if (auto* multicol_container = DynamicTo<LayoutBlockFlow>(Parent())) {
-      multicol_container->SetNeedsOverflowRecalc(overflow_recalc_type);
-      return;
-    }
-  }
   bool mark_container_chain_scrollable_overflow_recalc =
       !SelfNeedsScrollableOverflowRecalc();
 
@@ -99,13 +98,15 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), child->StyleRef().Display());
 
-    if (UNLIKELY(IsA<LayoutTextCombine>(child))) {
-      if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
+    if (IsA<LayoutTextCombine>(child)) [[unlikely]] {
+      if (!LayoutTextCombine::IsSupportedMode(
+              new_style_builder.GetWritingMode())) {
         // |LayoutTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
         DCHECK(child->SlowFirstChild()->IsBR() ||
                To<LayoutText>(child->SlowFirstChild())->IsWordBreak() ||
+               !child->SlowFirstChild()->GetNode() ||
                child->SlowFirstChild()->GetNode()->NeedsReattachLayoutTree());
       } else {
         // "text-combine-width-after-style-change.html" reaches here.
@@ -127,19 +128,19 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
   if (pseudo_id == kPseudoIdMarker && StyleRef().ContentBehavesAsNormal())
     return;
 
-  // Propagate style from pseudo elements to generated content. We skip children
-  // with pseudo element StyleType() in the for-loop above and skip over
+  // Propagate style from pseudo-elements to generated content. We skip children
+  // with pseudo-element StyleType() in the for-loop above and skip over
   // descendants which are not generated content in this subtree traversal.
   //
-  // TODO(futhark): It's possible we could propagate anonymous style from pseudo
-  // elements through anonymous table layout objects in the recursive
+  // TODO(futhark): It's possible we could propagate anonymous style from
+  // pseudo- elements through anonymous table layout objects in the recursive
   // implementation above, but it would require propagating the StyleType()
   // somehow because there is code relying on generated content having a certain
   // StyleType().
   LayoutObject* child = NextInPreOrder(this);
   while (child) {
     if (!child->IsAnonymous()) {
-      // Don't propagate into non-anonymous descendants of pseudo elements. This
+      // Don't propagate into non-anonymous descendants of pseudo-elements. This
       // can typically happen for ::first-letter inside ::before. The
       // ::first-letter will propagate to its anonymous children separately.
       child = child->NextInPreOrderAfterChildren(this);
@@ -207,7 +208,7 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   }
   LayoutObject* object;
   if (IsColumnSpanAll()) {
-    object = SpannerPlaceholder()->ContainingBlock();
+    object = ContainerForColumnSpanner(skip_info);
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {

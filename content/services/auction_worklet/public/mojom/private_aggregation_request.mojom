@@ -10,13 +10,30 @@ import "third_party/blink/public/mojom/private_aggregation/private_aggregation_h
 
 // Indicates which value the browser should use to calculate the resulting
 // bucket or value.
+// Warning: this is used for UMA histograms, so values should not be
+// renumbered.
+// LINT.IfChange(BaseValue)
 enum BaseValue {
   kWinningBid = 0,
   kHighestScoringOtherBid = 1,
   kScriptRunTime = 2,
   kSignalsFetchTime = 3,
   kBidRejectReason = 4,
+  // Values after this point require the feature
+  // kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be on.
+  kParticipatingInterestGroupCount = 5,
+  kAverageCodeFetchTime = 6,
+  kPercentScriptsTimeout = 7,
+  kPercentInterestGroupsCumulativeTimeout = 8,
+  kCumulativeBuyerTime = 9,
+  kRegularInterestGroupsUsed = 10,
+  kPercentRegularInterestGroupQuotaUsed = 11,
+  kNegativeInterestGroupsUsed = 12,
+  kPercentNegativeInterestGroupQuotaUsed = 13,
+  kInterestGroupStorageUsed = 14,
+  kPercentInterestGroupStorageQuotaUsed = 15,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AdAuctionPABaseValue)
 
 // Bucket's offset to add/subtract to the auction result value. Offset's `value`
 // should be Uint128. We need to support negative offset value, so adding a
@@ -50,11 +67,32 @@ struct SignalValue {
   int32 offset = 0;
 };
 
-// Designations of events that are automatically triggered by the browser.
-enum ReservedEventType {
+// Designations of events that are automatically triggered by the browser and
+// do not measure the occurrence of an error.
+enum ReservedNonErrorEventType {
   kReservedAlways,
   kReservedWin,
-  kReservedLoss
+  kReservedLoss,
+  kReservedOnce,
+};
+
+// Designations of events that are automatically triggered by the browser to
+// measure errors. See `PrivateAggregationErrorEvent`, which this set will be
+// eventually mapped to by the browser. A different type is used to allow
+// certain errors to be ignored and Protected Audience-specific ones to be
+// defined.
+enum ReservedErrorEventType {
+  // These are defined identically to `PrivateAggregationErrorEvent`.
+  kReportSuccess,
+  kTooManyContributions,
+  kEmptyReportDropped,
+  kPendingReportLimitReached,
+  kInsufficientBudget,
+  // kContributionTimeoutReached is intentionally omitted as it does not
+  // currently apply to Protected Audience.
+
+  // An exception or other error occurred and was not caught.
+  kUncaughtError,
 };
 
 // A bucket which is a 128bit ID or a SignalBucket which tells the browser how
@@ -76,7 +114,8 @@ union ForEventSignalValue {
 // reserved one automatically triggered by the browser, or a custom user-
 // defined one.
 union EventType {
-  ReservedEventType reserved;
+  ReservedNonErrorEventType reserved_non_error;
+  ReservedErrorEventType reserved_error;
   string non_reserved;
 };
 
@@ -95,17 +134,28 @@ struct AggregatableReportForEventContribution {
 };
 
 // `histogram_contribution` for contributeToHistogram(), and
-// `for_event_contribution` for reportPrivateAggregationEvent().
+// `for_event_contribution` for contributeToHistogramOnEvent().
 union AggregatableReportContribution {
   blink.mojom.AggregatableReportHistogramContribution histogram_contribution;
   AggregatableReportForEventContribution for_event_contribution;
 };
 
-// Represents a request made to Private Aggregation API. It can be either
-// contributeToHistogram() or reportPrivateAggregationEvent(), depending on the
-// type of contribution.
+// Represents a request made to Private Aggregation API. It can be made by
+// either contributeToHistogram() or contributeToHistogramOnEvent(), depending
+// on the type of contribution.
 struct PrivateAggregationRequest {
   AggregatableReportContribution contribution;
-  blink.mojom.AggregationServiceMode aggregation_mode;
   blink.mojom.DebugModeDetails debug_mode_details;
+};
+
+// Represents a PrivateAggregationRequest that has been finalized, i.e. it has
+// been 'filled in' if necessary and it is no longer conditional on an event (or
+// that condition is tracked outside this type).
+struct FinalizedPrivateAggregationRequest {
+  blink.mojom.AggregatableReportHistogramContribution contribution;
+  blink.mojom.DebugModeDetails debug_mode_details;
+
+  // If null, this contribution is unconditional. If populated, this
+  // contribution is conditional on that error event.
+  blink.mojom.PrivateAggregationErrorEvent? error_event;
 };

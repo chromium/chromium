@@ -1,0 +1,39 @@
+# These owners approve changes to content_shell.filter
+#
+# The point of this list of owners is just to make sure there is specific review
+# for changes made to content_shell.filter, so that changes aren't made without
+# an understanding of the implications. If there is a good reason for a change,
+# it should be approved.
+#
+# Specific guidelines for *new tests* being added:
+# - Newly-created web platform tests should *not* be added to the
+#   content_shell.filter file. Tests run in headless shell by default, or can be
+#   made to run in full chrome with chrome.filter. WPT tests are expected to
+#   pass in normal chrome builds and so should not be built to depend on
+#   content_shell behavior.
+#
+# - New tests that for whatever reason *cannot* be made compatible with
+#   headless or chrome (e.g. due to missing test infra or something) can also be
+#   added to this list. Note that this doesn't include new tests that are flaky
+#   for unknown reasons - an attempt should be made to identify the source of
+#   the flakiness and address it, rather than simply adding it to the
+#   content_shell.filter file.
+#
+# Specific guidelines for *existing tests*:
+#
+# - If a test becomes flaky, one key thing to check is whether it became flaky
+#   as the result of starting to be run with the headless/chrome test infra. If
+#   so, it is a likely candidate for addition to content_shell.filter, because
+#   the flakiness was *triggered* by the switch to headless. On the other hand,
+#   if it has been running via headless all along, and then became flaky, then
+#   the root cause is something else, and the test should be marked in
+#   TestExpectations instead.
+
+
+rbyers@chromium.org
+masonf@chromium.org
+pdr@chromium.org
+futhark@chromium.org
+ikilpatrick@chromium.org
+cbiesinger@chromium.org
+# Other owners are welcome

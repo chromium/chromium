@@ -2,6 +2,10 @@ Test that matching styles report nested pseudo element styles.
 
 === Dump matching styles for #for-pseudo::before::marker ===
 
+*#for-pseudo::before::marker* {    regular
+    content: "MARKER"; @[13:2-13:20]
+    content: "MARKER"; @[undefined-undefined]
+}
 
 === Dump matching styles for #for-pseudo::after::marker ===
 

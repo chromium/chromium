@@ -69,6 +69,7 @@ VariationsSeed LayerStudySeed(const LayerStudySeedOptions& options) {
   Study* study = seed.add_study();
   study->set_name(kStudyName);
   study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   if (options.layer_constrain_study) {
     LayerMemberReference* layer_membership = study->mutable_layer();
@@ -144,10 +145,12 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
   VariationsLayers layers(seed, entropy_providers);
   // This should mimic the call through SetUpFieldTrials from
   // android_webview/browser/aw_feature_list_creator.cc
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, layers, &feature_list);
-  testing::ClearAllVariationIDs();
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(seed, *client_state,
+                            base::BindRepeating(NoopUIStringOverrideCallback),
+                            entropy_providers, layers, &feature_list);
+  test::ClearAllVariationIDs();
   return base::FieldTrialList::FindFullName(kStudyName);
 }
 

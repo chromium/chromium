@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

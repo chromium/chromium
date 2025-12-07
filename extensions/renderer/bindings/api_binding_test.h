@@ -43,10 +43,10 @@ class APIBindingTest : public testing::Test {
   v8::Local<v8::Context> MainContext();
 
   // Creates a new context (maintaining it with a holder in
-  // |additional_context_holders_| and returns a local.
+  // `additional_context_holders_` and returns a local.
   v8::Local<v8::Context> AddContext();
 
-  // Disposes the context pointed to by |context|.
+  // Disposes the context pointed to by `context`.
   //
   // When the main context is disposed, it will be exited. This balances the
   // call to Context::Enter in APIBindingTest::SetUp. This will not work

@@ -10,14 +10,19 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -35,14 +40,19 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -73,7 +83,8 @@
           "builder": "dawn-android-arm64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Android arm64 DEPS Release (Pixel 6)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -84,6 +95,7 @@
     ]
   },
   "builder_group": "chromium.dawn",
+  "dawn_ref": "refs/heads/main",
   "gardener_rotations": [
     "dawn"
   ],

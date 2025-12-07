@@ -8,9 +8,9 @@
 #include <limits>
 
 #include "base/i18n/case_conversion.h"
+#include "base/notimplemented.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"
@@ -96,6 +96,21 @@ gfx::Rect PrefixSelector::GetSelectionBoundingBox() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
+
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> PrefixSelector::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+
+std::optional<size_t> PrefixSelector::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& screen_point_in_dips,
+    ui::IndexFromPointFlags flags) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool PrefixSelector::GetCompositionCharacterBounds(size_t index,
                                                    gfx::Rect* rect) const {
@@ -213,23 +228,23 @@ void PrefixSelector::SetActiveCompositionForAccessibility(
     bool is_composition_committed) {}
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void PrefixSelector::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {}
-#endif
 
 void PrefixSelector::OnTextInput(const std::u16string& text) {
   // Small hack to filter out 'tab' and 'enter' input, as the expectation is
   // that they are control characters and will not affect the currently-active
   // prefix.
   if (text.length() == 1 &&
-      (text[0] == L'\t' || text[0] == L'\r' || text[0] == L'\n'))
+      (text[0] == L'\t' || text[0] == L'\r' || text[0] == L'\n')) {
     return;
+  }
 
   const size_t row_count = prefix_delegate_->GetRowCount();
-  if (row_count == 0)
+  if (row_count == 0) {
     return;
+  }
 
   // Search for |text| if it has been a while since the user typed, otherwise
   // append |text| to |current_text_| and search for that. If it has been a
@@ -240,8 +255,9 @@ void PrefixSelector::OnTextInput(const std::u16string& text) {
     current_text_ += text;
   } else {
     current_text_ = text;
-    if (prefix_delegate_->GetSelectedRow().has_value())
+    if (prefix_delegate_->GetSelectedRow().has_value()) {
       row = (row + 1) % row_count;
+    }
   }
   time_of_last_key_ = tick_clock_->NowTicks();
 

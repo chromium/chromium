@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("page_capture") {
   sources = [
@@ -13,15 +13,19 @@ source_set("page_capture") {
     "page_capture_api.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/browser/extensions",
     "//chrome/common/extensions/api",
+    "//extensions/browser",
+    "//storage/browser",
+  ]
+
+  deps = [
+    "//chrome/browser/extensions",
     "//components/sessions",
     "//content/public/browser",
-    "//extensions/browser",
+    "//content/public/common",
     "//extensions/common",
-    "//storage/browser",
+    "//url",
   ]
 }

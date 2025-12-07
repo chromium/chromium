@@ -17,6 +17,9 @@ cargo_crate("{{this.name}}") {
   {{#if epoch}}
   epoch = "{{epoch}}"
   {{/if}}
+  {{#if cond}}
+  enabled = {{cond}}
+  {{/if}}
   crate_type = "{{crate_type}}"
   crate_root = "{{crate_root}}"
   sources = [
@@ -32,20 +35,32 @@ cargo_crate("{{this.name}}") {
 
   build_native_rust_unit_tests = false
   edition = "{{edition}}"
-  cargo_pkg_version = "{{cargo_pkg_version}}"
-  {{#with cargo_pkg_authors}}
-  cargo_pkg_authors = "{{gn_escape this}}"
-  {{/with}}
+  {{#if cargo_pkg_authors}}
+    {{#with cargo_pkg_authors}}
+      cargo_pkg_authors = "{{gn_escape this}}"
+    {{/with}}
+  {{/if}}
   cargo_pkg_name = "{{cargo_pkg_name}}"
-  {{#with cargo_pkg_description}}
-  cargo_pkg_description = "{{gn_escape this}}"
-  {{/with}}
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  {{#if cargo_pkg_description}}
+    {{#with cargo_pkg_description}}
+      cargo_pkg_description = "{{gn_escape this}}"
+    {{/with}}
+  {{/if}}
+  {{#if cargo_pkg_repository}}
+    {{#with cargo_pkg_repository}}
+      cargo_pkg_repository = "{{this}}"
+    {{/with}}
+  {{/if}}
+  cargo_pkg_version = "{{cargo_pkg_version}}"
+
+  {{! `cargo_pkg_version` changes during minor version updates, so (to help
+      reviewers see important crate properties at a glance) we try to include
+      review-relevant information (e.g. `allow_unsafe`) right below
+      `cargo_pkg_version`.  }}
+  {{#if_key_present "allow_unsafe" extra_kv}}
+    allow_unsafe = {{#if extra_kv.allow_unsafe}} true {{else}} false {{/if}}
+  {{/if_key_present}}
+
   {{#each deps}}
   {{#if @first}}
   deps = [
@@ -66,10 +81,17 @@ cargo_crate("{{this.name}}") {
   }
   {{/if}}
   {{/each}}
+  {{#if extra_kv.extra_deps}}
+  deps += [
+    {{#each extra_kv.extra_deps}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
   {{#if aliased_deps}}
   aliased_deps = {
     {{#each aliased_deps}}
-    {{this.0}} = "{{this.1}}"
+    {{this.0}} = "//third_party/rust/{{this.1.name}}/{{this.1.epoch}}:lib"
     {{/each}}
   }
   {{/if}}
@@ -98,40 +120,26 @@ cargo_crate("{{this.name}}") {
   ]
   {{/if}}
   {{#if build_root}}
-  build_root = "{{build_root}}"
-  build_sources = [
-    {{#each build_script_sources}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{#with build_script_inputs}}
-  build_script_inputs = [
-    {{#each this}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{/with}}
-  {{#with build_script_outputs}}
-  build_script_outputs = [
-    {{#each this}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{/with}}
-  {{/if}}
-  {{#if rustenv}}
-  rustenv = [
-    {{#each rustenv}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{/if}}
-  {{#if rustflags}}
-  rustflags = [
-    {{#each rustflags}}
-    "{{this}}",
-    {{/each}}
-  ]
+    build_root = "{{build_root}}"
+    build_sources = [
+      {{#each build_script_sources}}
+        "{{this}}",
+      {{/each}}
+    ]
+    {{#if build_script_inputs}}
+      build_script_inputs = [
+        {{#each build_script_inputs}}
+          "{{this}}",
+        {{/each}}
+      ]
+    {{/if}}
+    {{#if build_script_outputs}}
+      build_script_outputs = [
+        {{#each build_script_outputs}}
+          "{{this}}",
+        {{/each}}
+      ]
+    {{/if}}
   {{/if}}
   {{#if output_dir}}
   output_dir = "{{output_dir}}"
@@ -155,11 +163,69 @@ cargo_crate("{{this.name}}") {
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   {{/if}}
-  {{#each detail.extra_kv.visibility}}
-  visibility += [ "{{this}}" ]
-  {{/each}}
+  {{#if detail.extra_kv.visibility}}
+    {{#each detail.extra_kv.visibility}}
+      visibility += [ "{{this}}" ]
+    {{/each}}
+  {{/if}}
   {{#if gn_visibility.testonly}}
   testonly = true
   {{/if}}
+
+  {{#if detail.extra_kv.allow_unstable_features}}
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  rustflags = [
+    {{#each detail.extra_kv.allow_unstable_features}}
+      "-Zallow-features={{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  {{#if detail.extra_kv.allow_unstable_features}}
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+  {{/if}}
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += [
+    {{#if detail.extra_kv.configs_to_remove}}
+      {{#each detail.extra_kv.configs_to_remove}}
+        "{{this}}",
+      {{/each}}
+    {{/if}}
+  ]
+  _configs_to_add += [
+    {{#if detail.extra_kv.configs_to_add}}
+      {{#each detail.extra_kv.configs_to_add}}
+        "{{this}}",
+      {{/each}}
+    {{/if}}
+  ]
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }
 {{/each}}

@@ -16,7 +16,7 @@ RemoveRequestsTask::RemoveRequestsTask(
       request_ids_(request_ids),
       callback_(std::move(callback)) {}
 
-RemoveRequestsTask::~RemoveRequestsTask() {}
+RemoveRequestsTask::~RemoveRequestsTask() = default;
 
 void RemoveRequestsTask::Run() {
   RemoveRequests();

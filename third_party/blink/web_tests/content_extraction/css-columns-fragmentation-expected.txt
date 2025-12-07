@@ -1,0 +1,6 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x40]
+    <Container> [box: 0,0 800x40]
+      <Container> [box: 0,0 160x40]
+        <Text> "     ABC DEF GHI JKL   " [box: 0,0 70x20] [fragmentBox#0 0,0 70x10] [fragmentBox#1 0,10 70x10]
+

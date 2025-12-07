@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_unsupported_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -66,7 +62,7 @@ const CSSValue* CSSProperty::CSSValueFromComputedStyle(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   const CSSProperty& resolved_property =
-      ResolveDirectionAwareProperty(style.GetWritingDirection());
+      ToPhysical(style.GetWritingDirection());
   return resolved_property.CSSValueFromComputedStyleInternal(
       style, layout_object, allow_visited_style, value_phase);
 }
@@ -79,7 +75,7 @@ void CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
   DCHECK(out_vector.empty());
   out_vector.reserve(property_count);
   for (unsigned i = 0; i < property_count; i++) {
-    const CSSProperty& property = Get(properties[i]);
+    const CSSProperty& property = Get(UNSAFE_TODO(properties[i]));
     if (property.IsWebExposed(execution_context)) {
       out_vector.push_back(&property);
     }

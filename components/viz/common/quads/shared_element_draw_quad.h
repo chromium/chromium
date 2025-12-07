@@ -32,7 +32,7 @@ class VIZ_COMMON_EXPORT SharedElementDrawQuad : public DrawQuad {
               bool needs_blending,
               const ViewTransitionElementResourceId& id);
 
-  ViewTransitionElementResourceId resource_id;
+  ViewTransitionElementResourceId element_resource_id;
 
   static const SharedElementDrawQuad* MaterialCast(const DrawQuad* quad);
 

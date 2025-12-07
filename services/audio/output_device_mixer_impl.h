@@ -14,6 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
@@ -79,7 +80,6 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
  private:
   class MixTrack;
   class MixableOutputStream;
-  class MixingStats;
 
   struct StreamAutoClose {
     void operator()(media::AudioOutputStream* stream) {
@@ -124,7 +124,7 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 
   // Helpers to manage audio playback.
   bool HasListeners() const;
-  bool MixingInProgress() const { return !!mixing_session_stats_; }
+  bool MixingInProgress() const { return mixing_in_progress_; }
   void EnsureMixingGraphOutputStreamOpen();
   void StartMixingGraphPlayback();
   void StopMixingGraphPlayback(MixingError mixing_error);
@@ -166,11 +166,6 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   base::OneShotTimer switch_to_unmixed_playback_delay_timer_
       GUARDED_BY_CONTEXT(owning_sequence_);
 
-  // Non-null when the playback is being mixed. Collects mixing statistics.
-  // Logs them upon the destruction when mixing stops. Non-null while mixing
-  // is in progress, and is used as an indicator of that.
-  std::unique_ptr<MixingStats> mixing_session_stats_;
-
 #if DCHECK_IS_ON()
   bool device_changed_ = false;
 #endif
@@ -180,6 +175,8 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   // mixer cannot be stopped/closed synchronously from AudioSourceCallback
   // provided to it on AudioOutputStream::Start().
   REENTRANCY_CHECKER(reentrancy_checker_);
+
+  bool mixing_in_progress_ = false;
 
   // Supplies weak pointers to |this| for MixableOutputStream instances.
   base::WeakPtrFactory<OutputDeviceMixerImpl> weak_factory_{this};

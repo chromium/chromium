@@ -13,13 +13,17 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
+#include "net/net_buildflags.h"
 #include "url/gurl.h"
 
 namespace {
@@ -48,7 +52,255 @@ constexpr net::NetworkTrafficAnnotationTag
           "Using 'ProxySettings' policy can set Chrome to use specific "
           "proxy settings."
       })");
+
+std::optional<net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition>
+ValueToDnsCondition(const base::Value& value) {
+  if (!value.is_dict()) {
+    return std::nullopt;
+  }
+
+  // Expected schema:
+  // {
+  //   "DnsProbe": {
+  //     "Host": "corp.ads",
+  //     "Result": "resolved", // or "not_found"
+  //   }
+  // }
+  // For now "DnsProbe" is always expected, but eventually other types of
+  // conditions will be possible.
+  const base::Value::Dict& dict = value.GetDict();
+  auto* dns_probe_value = dict.FindDict("DnsProbe");
+  if (!dns_probe_value) {
+    return std::nullopt;
+  }
+
+  const std::string* host_value = dns_probe_value->FindString("Host");
+  const std::string* result_value = dns_probe_value->FindString("Result");
+  if (!host_value || !result_value ||
+      (*result_value != "resolved" && *result_value != "not_found")) {
+    return std::nullopt;
+  }
+
+  net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition dns_probe_condition;
+  dns_probe_condition.host = url::SchemeHostPort(GURL(*host_value));
+  dns_probe_condition.result =
+      *result_value == "resolved"
+          ? net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved
+          : net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound;
+  return dns_probe_condition;
+}
+
+// Generic parser for a list of URL patterns to populate into the passed
+// `rules`. Returns false if an unexpected value was found in the passed
+// `value`. `optional_field` indicates if the matcher list is required to be
+// present in the rule or not, and will be returned directly if `value` doesn't
+// have an entry for `key`.
+//
+// Implicit rules are not applied to URL pattern listsof the
+// "ProxyOverrideRules" policy, so on a valid `value` there is always an extra
+// rule added to subtract them from the matcher evaluation.
+bool AddUrlMatcher(const base::Value::Dict& value,
+                   net::ProxyHostMatchingRules& rules,
+                   const std::string& key,
+                   bool optional_field) {
+  // Expected schema:
+  // {
+  //   ...
+  //   "<key>": [ "https://app1.com", "https://app2.com" ],
+  //   ...
+  // }
+  auto* matchers_value = value.FindList(key);
+  if (!matchers_value) {
+    rules.AddRulesToSubtractImplicit();
+    return optional_field;
+  }
+
+  for (const auto& matcher : *matchers_value) {
+    if (matcher.is_string()) {
+      rules.AddRuleFromString(matcher.GetString());
+    } else {
+      return false;
+    }
+  }
+
+  rules.AddRulesToSubtractImplicit();
+  return true;
+}
+
+// Returns false if an unexpected value was found in the passed `value`.
+bool AddDestinationMatchers(const base::Value::Dict& value,
+                            net::ProxyConfig::ProxyOverrideRule& rule) {
+  return AddUrlMatcher(value, rule.destination_matchers, "DestinationMatchers",
+                       /*optional_field=*/false);
+}
+
+// Returns false if an unexpected value was found in the passed `value`.
+bool AddExcludeDestinationMatchers(const base::Value::Dict& value,
+                                   net::ProxyConfig::ProxyOverrideRule& rule) {
+  return AddUrlMatcher(value, rule.exclude_destination_matchers,
+                       "ExcludeDestinationMatchers", /*optional_field=*/true);
+}
+
+// Returns false if an unexpected value was found in the passed `value`, or if
+// the "ProxyList" key is missing.
+bool AddProxyChain(const base::Value::Dict& value,
+                   net::ProxyConfig::ProxyOverrideRule& rule) {
+  // Expected schema:
+  // {
+  //   ...
+  //   "ProxyList": [ "HTTPS proxy.app:443", "DIRECT" ],
+  //   ...
+  // }
+  //
+  // The entries of the list can have the PAC format as above, or a regular URL
+  // format of "scheme://host:port".
+  auto* proxy_list_value = value.FindList("ProxyList");
+  if (!proxy_list_value) {
+    return false;
+  }
+
+  // Invalid entries don't return false since it's possible the received policy
+  // is meant for a future version of Chrome, so they are just discarded.
+  for (const auto& entry : *proxy_list_value) {
+    if (!entry.is_string()) {
+      return false;
+    }
+
+    net::ProxyChain chain;
+    GURL url(entry.GetString());
+    if (url.is_valid()) {
+      net::ProxyServer::Scheme scheme =
+          net::GetSchemeFromUriScheme(url.scheme());
+      if (scheme == net::ProxyServer::SCHEME_INVALID) {
+        continue;
+      }
+      chain = net::ProxyChain::FromSchemeHostAndPort(scheme, url.host(),
+                                                     url.port());
+    } else {
+      chain = net::PacResultElementToProxyChain(entry.GetString());
+    }
+
+    if (chain.IsValid()) {
+      rule.proxy_list.AddProxyChain(std::move(chain));
+    }
+  }
+
+  // If none of the entries of `proxy_list_value` were valid, then the overall
+  // rule is not considered valid as it cannot be applied even if other fields
+  // are present.
+  return !rule.proxy_list.IsEmpty();
+}
+
+// Returns false if an unexpected value was found in the passed `value`.
+bool AddConditions(const base::Value::Dict& value,
+                   net::ProxyConfig::ProxyOverrideRule& rule) {
+  // Expected schema:
+  // {
+  //   ...
+  //   "Conditions": [
+  //        {
+  //            "DnsProbe": {
+  //                "Host": "corp.ads",
+  //                "Result": "resolved"
+  //            }
+  //        }
+  //   ]
+  //   ...
+  // }
+  auto* conditions_value = value.FindList("Conditions");
+  if (!conditions_value) {
+    // This field is optional, so it being missing isn't considered an error.
+    return true;
+  }
+
+  for (const auto& condition_value : *conditions_value) {
+    auto condition = ValueToDnsCondition(condition_value);
+    if (condition) {
+      rule.dns_conditions.push_back(std::move(*condition));
+    } else {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
+    const base::Value& value) {
+  if (!value.is_dict()) {
+    return std::nullopt;
+  }
+
+  // Expected schema:
+  // {
+  //   "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
+  //   "ExcludeDestinationMatchers: ["https://exception.com"],
+  //   "ProxyList": [ "HTTPS proxy.app:443", "DIRECT" ],
+  //   "Conditions": [
+  //        {
+  //            "DnsProbe": {
+  //                "Host": "corp.ads",
+  //                "Result": "resolved"
+  //            }
+  //        }
+  //   ]
+  // }
+  const base::Value::Dict& dict = value.GetDict();
+  net::ProxyConfig::ProxyOverrideRule rule;
+
+  if (!AddDestinationMatchers(dict, rule) ||
+      !AddExcludeDestinationMatchers(dict, rule) ||
+      !AddProxyChain(dict, rule) || !AddConditions(dict, rule)) {
+    return std::nullopt;
+  }
+
+  return rule;
+}
+
+// Returns true if proxy override rules were written to `config`.
+bool SetProxyOverrideRules(const PrefService* pref_service,
+                           net::ProxyConfigWithAnnotation* config) {
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
+  DCHECK(pref);
+
+  if (!pref->GetValue() || !pref->GetValue()->is_list()) {
+    return false;
+  }
+
+  const base::Value::List& rules_list =
+      pref_service->GetList(proxy_config::prefs::kProxyOverrideRules);
+  if (rules_list.empty() ||
+      !base::FeatureList::IsEnabled(kEnableProxyOverrideRules)) {
+    return false;
+  }
+
+  // TODO(crbug.com/419548922): Check affiliation status is allowed by the
+  // "EnableProxyOverrideRulesForAllUsers" policy and return "false" if it's
+  // not.
+
+  net::ProxyConfig new_config(config->value());
+  std::vector<net::ProxyConfig::ProxyOverrideRule> proxy_override_rules;
+  for (const auto& value : rules_list) {
+    auto rule = ValueToOverrideRule(value);
+    if (rule) {
+      proxy_override_rules.push_back(std::move(*rule));
+    }
+  }
+
+  if (proxy_override_rules.empty()) {
+    return false;
+  }
+
+  new_config.set_proxy_override_rules(std::move(proxy_override_rules));
+  *config =
+      net::ProxyConfigWithAnnotation(new_config, config->traffic_annotation());
+  return true;
+}
+
 }  // namespace
+
+BASE_FEATURE(kEnableProxyOverrideRules, base::FEATURE_ENABLED_BY_DEFAULT);
 
 //============================= ProxyConfigServiceImpl =======================
 
@@ -66,8 +318,9 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
 }
 
 ProxyConfigServiceImpl::~ProxyConfigServiceImpl() {
-  if (registered_observer_ && base_service_.get())
+  if (registered_observer_ && base_service_.get()) {
     base_service_->RemoveObserver(this);
+  }
 }
 
 void ProxyConfigServiceImpl::AddObserver(
@@ -90,8 +343,9 @@ ProxyConfigServiceImpl::GetLatestProxyConfig(
   net::ProxyConfigWithAnnotation system_config;
   ConfigAvailability system_availability =
       net::ProxyConfigService::CONFIG_UNSET;
-  if (base_service_)
+  if (base_service_) {
     system_availability = base_service_->GetLatestProxyConfig(&system_config);
+  }
 
   ProxyPrefs::ConfigState config_state;
   return PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
@@ -100,8 +354,9 @@ ProxyConfigServiceImpl::GetLatestProxyConfig(
 }
 
 void ProxyConfigServiceImpl::OnLazyPoll() {
-  if (base_service_)
+  if (base_service_) {
     base_service_->OnLazyPoll();
+  }
 }
 
 bool ProxyConfigServiceImpl::UsesPolling() {
@@ -115,8 +370,9 @@ void ProxyConfigServiceImpl::UpdateProxyConfig(
   pref_config_state_ = config_state;
   pref_config_ = config;
 
-  if (observers_.empty())
+  if (observers_.empty()) {
     return;
+  }
 
   // Evaluate the proxy configuration. If GetLatestProxyConfig returns
   // CONFIG_PENDING, we are using the system proxy service, but it doesn't have
@@ -129,8 +385,9 @@ void ProxyConfigServiceImpl::UpdateProxyConfig(
   net::ProxyConfigWithAnnotation new_config;
   ConfigAvailability availability = GetLatestProxyConfig(&new_config);
   if (availability != CONFIG_PENDING) {
-    for (net::ProxyConfigService::Observer& observer : observers_)
+    for (net::ProxyConfigService::Observer& observer : observers_) {
       observer.OnProxyConfigChanged(new_config, availability);
+    }
   }
 }
 
@@ -145,8 +402,9 @@ void ProxyConfigServiceImpl::OnProxyConfigChanged(
   if (!PrefProxyConfigTrackerImpl::PrefPrecedes(pref_config_state_)) {
     net::ProxyConfigWithAnnotation actual_config;
     availability = GetLatestProxyConfig(&actual_config);
-    for (net::ProxyConfigService::Observer& observer : observers_)
+    for (net::ProxyConfigService::Observer& observer : observers_) {
       observer.OnProxyConfigChanged(actual_config, availability);
+    }
   }
 }
 
@@ -176,6 +434,12 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
       proxy_config::prefs::kProxy,
       base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
                           base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(kEnableProxyOverrideRules)) {
+    proxy_prefs_.Add(
+        proxy_config::prefs::kProxyOverrideRules,
+        base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
+                            base::Unretained(this)));
+  }
 }
 
 PrefProxyConfigTrackerImpl::~PrefProxyConfigTrackerImpl() {
@@ -229,15 +493,25 @@ PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
 
   if (system_availability == net::ProxyConfigService::CONFIG_UNSET) {
     // If there's no system proxy config, fall back to prefs or default.
-    if (pref_state == ProxyPrefs::CONFIG_FALLBACK && !ignore_fallback_config)
+    if (pref_state == ProxyPrefs::CONFIG_FALLBACK && !ignore_fallback_config) {
       *effective_config = pref_config;
-    else
+    } else {
       *effective_config = net::ProxyConfigWithAnnotation::CreateDirect();
+    }
     return net::ProxyConfigService::CONFIG_VALID;
   }
 
   *effective_config_state = ProxyPrefs::CONFIG_SYSTEM;
-  *effective_config = system_config;
+  if (pref_config.value().proxy_override_rules().empty()) {
+    *effective_config = system_config;
+  } else {
+    net::ProxyConfig new_config = system_config.value();
+    new_config.set_proxy_override_rules(
+        pref_config.value().proxy_override_rules());
+    *effective_config = net::ProxyConfigWithAnnotation(
+        new_config, system_config.traffic_annotation());
+  }
+
   return system_availability;
 }
 
@@ -245,6 +519,11 @@ PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
 void PrefProxyConfigTrackerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(proxy_config::prefs::kProxy,
                                    ProxyConfigDictionary::CreateSystem());
+  registry->RegisterListPref(proxy_config::prefs::kProxyOverrideRules);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterIntegerPref(
+      proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 // static
@@ -253,6 +532,11 @@ void PrefProxyConfigTrackerImpl::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(proxy_config::prefs::kProxy,
                                    ProxyConfigDictionary::CreateSystem());
   registry->RegisterBooleanPref(proxy_config::prefs::kUseSharedProxies, false);
+  registry->RegisterListPref(proxy_config::prefs::kProxyOverrideRules);
+#if !BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterIntegerPref(proxy_config::prefs::kProxyOverrideRulesScope,
+                                0);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -269,33 +553,31 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
       pref_service->GetDict(proxy_config::prefs::kProxy);
   ProxyConfigDictionary proxy_dict(dict.Clone());
 
+  ProxyPrefs::ConfigState state = ProxyPrefs::CONFIG_OTHER_PRECEDE;
   if (!PrefConfigToNetConfig(proxy_dict, config)) {
-    return ProxyPrefs::CONFIG_UNSET;
+    state = ProxyPrefs::CONFIG_UNSET;
+  } else if (pref->IsUserModifiable() && !pref->HasUserSetting()) {
+    state = ProxyPrefs::CONFIG_FALLBACK;
+  } else if (pref->IsManaged()) {
+    state = ProxyPrefs::CONFIG_POLICY;
+  } else if (pref->IsExtensionControlled()) {
+    state = ProxyPrefs::CONFIG_EXTENSION;
   }
-  if (pref->IsUserModifiable() && !pref->HasUserSetting()) {
-    return ProxyPrefs::CONFIG_FALLBACK;
+
+  if (SetProxyOverrideRules(pref_service, config) &&
+      state == ProxyPrefs::CONFIG_UNSET) {
+    state = ProxyPrefs::CONFIG_POLICY_OVERRIDE;
   }
-  if (pref->IsManaged()) {
-    return ProxyPrefs::CONFIG_POLICY;
-  }
-  if (pref->IsExtensionControlled()) {
-    return ProxyPrefs::CONFIG_EXTENSION;
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (pref->IsStandaloneBrowserControlled()) {
-    // The proxy config is controlled by an extension active in the Lacros
-    // primary profile.
-    return ProxyPrefs::CONFIG_EXTENSION;
-  }
-#endif
-  return ProxyPrefs::CONFIG_OTHER_PRECEDE;
+
+  return state;
 }
 
 ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::GetProxyConfig(
     net::ProxyConfigWithAnnotation* config) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET)
+  if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET) {
     *config = pref_config_;
+  }
   return pref_config_state_;
 }
 
@@ -310,11 +592,13 @@ void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
   }
 
   active_config_state_ = config_state;
-  if (active_config_state_ != ProxyPrefs::CONFIG_UNSET)
+  if (active_config_state_ != ProxyPrefs::CONFIG_UNSET) {
     active_config_ = config;
+  }
 
-  if (!proxy_config_service_impl_)
+  if (!proxy_config_service_impl_) {
     return;
+  }
 
   // If the ProxyConfigService lives on the current thread, just synchronously
   // tell it about the new configuration.
@@ -382,7 +666,19 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
                    << "specify their URLs. Falling back to direct connection.";
         return true;
       }
-      proxy_config.proxy_rules().ParseFromString(proxy_server);
+
+      bool allow_bracketed_proxy_chains = false;
+      bool allow_quic_proxy_support = false;
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+      allow_bracketed_proxy_chains = true;
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+      allow_quic_proxy_support = true;
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+      proxy_config.proxy_rules().ParseFromString(
+          proxy_server, allow_bracketed_proxy_chains, allow_quic_proxy_support);
 
       std::string proxy_bypass;
       if (proxy_dict.GetBypassList(&proxy_bypass)) {
@@ -396,9 +692,7 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
       // Fall through to NOTREACHED().
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown proxy mode, falling back to system settings.";
-  return false;
+  NOTREACHED() << "Unknown proxy mode, falling back to system settings.";
 }
 
 void PrefProxyConfigTrackerImpl::OnProxyPrefChanged() {
@@ -410,8 +704,9 @@ void PrefProxyConfigTrackerImpl::OnProxyPrefChanged() {
       (pref_config_state_ != ProxyPrefs::CONFIG_UNSET &&
        !pref_config_.value().Equals(new_config.value()))) {
     pref_config_state_ = config_state;
-    if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET)
+    if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET) {
       pref_config_ = new_config;
+    }
     OnProxyConfigChanged(config_state, new_config);
   }
 }

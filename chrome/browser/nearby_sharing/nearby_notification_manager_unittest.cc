@@ -42,11 +42,12 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
-#include "chrome/browser/ui/ash/test_session_controller.h"
+#include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
@@ -137,11 +138,9 @@ std::string GetClipboardText() {
 }
 
 SkBitmap GetClipboardImage() {
-  SkBitmap bitmap;
   std::vector<uint8_t> png_data =
       ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  return bitmap;
+  return gfx::PNGCodec::Decode(png_data);
 }
 
 SkBitmap CreateTestSkBitmap() {
@@ -178,10 +177,9 @@ class NearbyNotificationManagerTest : public testing::Test {
     manager_->SetSettingsOpenerForTesting(std::move(settings_opener));
 
     EXPECT_CALL(*nearby_service_, GetNotificationDelegate(testing::_))
-        .WillRepeatedly(
-            testing::Invoke([&](const std::string& notification_id) {
-              return manager_->GetNotificationDelegate(notification_id);
-            }));
+        .WillRepeatedly([&](const std::string& notification_id) {
+          return manager_->GetNotificationDelegate(notification_id);
+        });
 
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(
@@ -236,10 +234,10 @@ class NearbyNotificationManagerTest : public testing::Test {
       base::FilePath file_path = temp_dir_.GetPath().AppendASCII(name);
       SkBitmap image = CreateTestSkBitmap();
 
-      std::vector<unsigned char> png_data;
-      EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
-          image, /*discard_transparency=*/true, &png_data));
-      base::WriteFile(file_path, png_data);
+      std::optional<std::vector<uint8_t>> png_data =
+          gfx::PNGCodec::EncodeBGRASkBitmap(image,
+                                            /*discard_transparency=*/true);
+      base::WriteFile(file_path, png_data.value());
 
       FileAttachment attachment(file_path);
       share_target.file_attachments.push_back(std::move(attachment));
@@ -1994,15 +1992,18 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   NearbyFilesHoldingSpaceTest()
       : session_controller_(std::make_unique<TestSessionController>()),
         user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
-
     holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>();
     profile_manager_ = CreateTestingProfileManager();
     constexpr char kEmail[] = "test@test";
+
     const AccountId account_id(AccountId::FromUserEmail(kEmail));
     user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
+    user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
+
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
+    ash::AnnotatedAccountId::Set(profile_, account_id);
+    user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
+
     static_cast<ash::SessionObserver*>(holding_space_controller_.get())
         ->OnActiveUserSessionChanged(account_id);
   }
@@ -2025,7 +2026,6 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;

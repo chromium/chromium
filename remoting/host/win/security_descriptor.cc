@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -22,7 +23,7 @@ ScopedSd ConvertSddlToSd(const std::string& sddl) {
   }
 
   ScopedSd sd(length);
-  memcpy(sd.get(), raw_sd, length);
+  UNSAFE_TODO(memcpy(sd.get(), raw_sd, length));
 
   LocalFree(raw_sd);
   return sd;
@@ -55,11 +56,12 @@ ScopedSid GetLogonSid(HANDLE token) {
   }
 
   for (uint32_t i = 0; i < groups->GroupCount; ++i) {
-    if ((groups->Groups[i].Attributes & SE_GROUP_LOGON_ID) ==
+    if ((UNSAFE_TODO(groups->Groups[i]).Attributes & SE_GROUP_LOGON_ID) ==
         SE_GROUP_LOGON_ID) {
-      length = GetLengthSid(groups->Groups[i].Sid);
+      length = GetLengthSid(UNSAFE_TODO(groups->Groups[i]).Sid);
       ScopedSid logon_sid(length);
-      if (!CopySid(length, logon_sid.get(), groups->Groups[i].Sid)) {
+      if (!CopySid(length, logon_sid.get(),
+                   UNSAFE_TODO(groups->Groups[i]).Sid)) {
         return ScopedSid();
       }
 
@@ -71,20 +73,24 @@ ScopedSid GetLogonSid(HANDLE token) {
 }
 
 bool MakeScopedAbsoluteSd(const ScopedSd& relative_sd,
-                          ScopedSd* absolute_sd,
-                          ScopedAcl* dacl,
-                          ScopedSid* group,
-                          ScopedSid* owner,
-                          ScopedAcl* sacl) {
+                          ScopedSd& absolute_sd,
+                          ScopedAcl& dacl,
+                          ScopedSid& group,
+                          ScopedSid& owner,
+                          ScopedAcl& sacl) {
   // Get buffer sizes.
   DWORD absolute_sd_size = 0;
   DWORD dacl_size = 0;
   DWORD group_size = 0;
   DWORD owner_size = 0;
   DWORD sacl_size = 0;
-  if (MakeAbsoluteSD(relative_sd.get(), nullptr, &absolute_sd_size, nullptr,
-                     &dacl_size, nullptr, &sacl_size, nullptr, &owner_size,
-                     nullptr, &group_size) ||
+
+  // `MakeAbsoluteSD()` requires a non-const pointer.
+  ScopedSd& non_const_relative_sd = const_cast<ScopedSd&>(relative_sd);
+
+  if (MakeAbsoluteSD(non_const_relative_sd.get(), nullptr, &absolute_sd_size,
+                     nullptr, &dacl_size, nullptr, &sacl_size, nullptr,
+                     &owner_size, nullptr, &group_size) ||
       GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
     return false;
   }
@@ -97,18 +103,18 @@ bool MakeScopedAbsoluteSd(const ScopedSd& relative_sd,
   ScopedAcl local_sacl(sacl_size);
 
   // Do the conversion.
-  if (!MakeAbsoluteSD(relative_sd.get(), local_absolute_sd.get(),
+  if (!MakeAbsoluteSD(non_const_relative_sd.get(), local_absolute_sd.get(),
                       &absolute_sd_size, local_dacl.get(), &dacl_size,
                       local_sacl.get(), &sacl_size, local_owner.get(),
                       &owner_size, local_group.get(), &group_size)) {
     return false;
   }
 
-  absolute_sd->Swap(local_absolute_sd);
-  dacl->Swap(local_dacl);
-  group->Swap(local_group);
-  owner->Swap(local_owner);
-  sacl->Swap(local_sacl);
+  absolute_sd.Swap(local_absolute_sd);
+  dacl.Swap(local_dacl);
+  group.Swap(local_group);
+  owner.Swap(local_owner);
+  sacl.Swap(local_sacl);
   return true;
 }
 

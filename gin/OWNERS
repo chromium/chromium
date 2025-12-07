@@ -1,4 +1,5 @@
 set noparent
+ahaas@chromium.org
 cbruni@chromium.org
 haraken@chromium.org
 hpayer@chromium.org
@@ -7,14 +8,11 @@ leszeks@chromium.org
 mlippautz@chromium.org
 
 # For adding JS/Wasm feature kill-switches.
-per-file gin_features.*=adamk@chromium.org
-per-file gin_features.*=syg@chromium.org
-per-file v8_initializer.cc=adamk@chromium.org
-per-file v8_initializer.cc=syg@chromium.org
 
 # For ThreadIsolation related changes.
-per-file thread_isolation.*=sroettger@google.com
-per-file v8_platform_thread_isolated_allocator.*=sroettger@google.com
 
 # For PartitionAlloc related changes.
 per-file array_buffer.cc=file://base/allocator/partition_allocator/OWNERS
+
+# New users of gin::Wrappable can pick a new tag by themselves.
+per-file public/wrappable_pointer_tags.h=*

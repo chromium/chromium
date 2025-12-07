@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -27,10 +28,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -60,11 +63,10 @@ import java.util.Collection;
 @LooperMode(LooperMode.Mode.PAUSED)
 @Batch(UNIT_TESTS)
 public class IncognitoReauthCoordinatorFactoryTest {
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
-
-    private final OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
 
     @Mock private Context mContextMock;
     @Mock private TabModelSelector mTabModelSelectorMock;
@@ -80,7 +82,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
     @Mock private HubManager mHubManagerMock;
     @Mock private PaneManager mPaneManagerMock;
 
-    private OnBackPressedCallback mOnBackPressedCallbackMock =
+    private final OnBackPressedCallback mOnBackPressedCallbackMock =
             new OnBackPressedCallback(false) {
                 @Override
                 public void handleOnBackPressed() {}
@@ -88,6 +90,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
     private final boolean mIsTabbedActivity;
 
+    private OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
     private IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactory;
 
     @ParameterizedRobolectricTestRunner.Parameters
@@ -101,8 +104,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mHubManagerMock.getPaneManager()).thenReturn(mPaneManagerMock);
         mHubManagerSupplier.set(mHubManagerMock);
 
@@ -183,12 +184,49 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
             verify(mLayoutManagerMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
             verify(mTabModelSelectorMock, times(1)).selectModel(/* incognito= */ eq(false));
+            verify(mPaneManagerMock).getDefaultPaneId();
             verify(mPaneManagerMock).focusPane(PaneId.TAB_SWITCHER);
         } else {
             doNothing().when(mContextMock).startActivity(mIntentMock);
             seeOtherTabsRunnable.run();
             verify(mContextMock, times(1)).startActivity(mIntentMock);
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testSeeOtherTabsRunnable_IsInvokedCorrectly_LayoutVisible_DelayedHubInit() {
+        if (!mIsTabbedActivity) return;
+
+        mHubManagerSupplier = new OneshotSupplierImpl<>();
+        mIncognitoReauthCoordinatorFactory =
+                new IncognitoReauthCoordinatorFactory(
+                        mContextMock,
+                        mTabModelSelectorMock,
+                        mModalDialogManagerMock,
+                        mIncognitoReauthManagerMock,
+                        mLayoutManagerMock,
+                        mHubManagerSupplier,
+                        mIntentMock,
+                        /* isTabbedActivity= */ true);
+        Runnable seeOtherTabsRunnable =
+                mIncognitoReauthCoordinatorFactory.getSeeOtherTabsRunnable();
+        when(mLayoutManagerMock.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(true);
+
+        doNothing().when(mTabModelSelectorMock).selectModel(/* incognito= */ false);
+        doNothing()
+                .when(mLayoutManagerMock)
+                .showLayout(eq(LayoutType.TAB_SWITCHER), /* animate= */ eq(false));
+
+        seeOtherTabsRunnable.run();
+        verify(mLayoutManagerMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        verify(mTabModelSelectorMock, times(1)).selectModel(/* incognito= */ eq(false));
+        verifyNoInteractions(mPaneManagerMock);
+
+        mHubManagerSupplier.set(mHubManagerMock);
+        ShadowLooper.idleMainLooper();
+        verify(mPaneManagerMock).getDefaultPaneId();
+        verify(mPaneManagerMock).focusPane(PaneId.TAB_SWITCHER);
     }
 
     @Test
@@ -243,6 +281,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
             verify(mLayoutManagerMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
             verify(mTabModelSelectorMock, times(1)).selectModel(/* incognito= */ eq(false));
+            verify(mPaneManagerMock).getDefaultPaneId();
             verify(mPaneManagerMock).focusPane(PaneId.TAB_SWITCHER);
         } else {
             doNothing().when(mContextMock).startActivity(mIntentMock);
@@ -254,31 +293,20 @@ public class IncognitoReauthCoordinatorFactoryTest {
     @Test
     @SmallTest
     public void testCreateIncognitoReauthCoordinator_ForFullScreen_ReturnsFullScreenCoordinator() {
-        if (mIsTabbedActivity) {
-            IncognitoReauthCoordinator coordinator =
-                    mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock,
-                            /* showFullScreen= */ true,
-                            mOnBackPressedCallbackMock);
-            assertTrue(
-                    "Wrong coordinator instance created!",
-                    coordinator instanceof FullScreenIncognitoReauthCoordinator);
-        } else {
-            IncognitoReauthCoordinator coordinator =
-                    mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock,
-                            /* showFullScreen= */ true,
-                            mOnBackPressedCallbackMock);
-            assertTrue(
-                    "Wrong coordinator instance created!",
-                    coordinator instanceof FullScreenIncognitoReauthCoordinator);
-        }
+        IncognitoReauthCoordinator coordinator =
+                mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
+                        mIncognitoReauthCallbackMock,
+                        /* showFullScreen= */ true,
+                        mOnBackPressedCallbackMock);
+        assertTrue(
+                "Wrong coordinator instance created!",
+                coordinator instanceof FullScreenIncognitoReauthCoordinator);
     }
 
     @Test
     @SmallTest
     public void
-            testCreateIncognitoReauthCoordinator_ForTabSwitcher_ReturnsTabSwitcherCoordinator_ExceptForCCT() {
+            testCreateIncognitoReauthCoordinator_ForTabSwitcher_ReturnsTabSwitcherCoordinator_ExceptForCct() {
         if (mIsTabbedActivity) {
             IncognitoReauthCoordinator coordinator =
                     mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(

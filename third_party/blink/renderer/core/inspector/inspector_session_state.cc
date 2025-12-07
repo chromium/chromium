@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 
 namespace blink {
@@ -34,11 +35,11 @@ const mojom::blink::DevToolsSessionState* InspectorSessionState::ReattachState()
   return reattach_state_.get();
 }
 
-void InspectorSessionState::EnqueueUpdate(const WTF::String& key,
-                                          const WebVector<uint8_t>* value) {
-  std::optional<WTF::Vector<uint8_t>> updated_value;
+void InspectorSessionState::EnqueueUpdate(const String& key,
+                                          const std::vector<uint8_t>* value) {
+  std::optional<Vector<uint8_t>> updated_value;
   if (value) {
-    WTF::Vector<uint8_t> payload;
+    Vector<uint8_t> payload;
     payload.AppendRange(value->begin(), value->end());
     updated_value = std::move(payload);
   }
@@ -55,7 +56,7 @@ mojom::blink::DevToolsSessionStatePtr InspectorSessionState::TakeUpdates() {
 // Encoding / Decoding routines.
 //
 /*static*/
-void InspectorAgentState::Serialize(bool v, WebVector<uint8_t>* out) {
+void InspectorAgentState::Serialize(bool v, std::vector<uint8_t>* out) {
   out->emplace_back(v ? EncodeTrue() : EncodeFalse());
 }
 
@@ -74,10 +75,8 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, bool* v) {
 }
 
 /*static*/
-void InspectorAgentState::Serialize(int32_t v, WebVector<uint8_t>* out) {
-  auto encode = out->ReleaseVector();
-  EncodeInt32(v, &encode);
-  *out = std::move(encode);
+void InspectorAgentState::Serialize(int32_t v, std::vector<uint8_t>* out) {
+  EncodeInt32(v, out);
 }
 
 /*static*/
@@ -91,10 +90,8 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, int32_t* v) {
 }
 
 /*static*/
-void InspectorAgentState::Serialize(double v, WebVector<uint8_t>* out) {
-  auto encode = out->ReleaseVector();
-  EncodeDouble(v, &encode);
-  *out = std::move(encode);
+void InspectorAgentState::Serialize(double v, std::vector<uint8_t>* out) {
+  EncodeDouble(v, out);
 }
 
 /*static*/
@@ -108,35 +105,32 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, double* v) {
 }
 
 /*static*/
-void InspectorAgentState::Serialize(const WTF::String& v,
-                                    WebVector<uint8_t>* out) {
-  auto encode = out->ReleaseVector();
+void InspectorAgentState::Serialize(const blink::String& v,
+                                    std::vector<uint8_t>* out) {
   if (v.Is8Bit()) {
     auto span8 = v.Span8();
-    EncodeFromLatin1(span<uint8_t>(span8.data(), span8.size()), &encode);
+    EncodeFromLatin1(span<uint8_t>(span8.data(), span8.size()), out);
   } else {
     auto span16 = v.Span16();
     EncodeFromUTF16(
         span<uint16_t>(reinterpret_cast<const uint16_t*>(span16.data()),
                        span16.size()),
-        &encode);
+        out);
   }
-  *out = std::move(encode);
 }
 
 /*static*/
-bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
+bool InspectorAgentState::Deserialize(span<uint8_t> in, blink::String* v) {
   CBORTokenizer tokenizer(in);
   if (tokenizer.TokenTag() == CBORTokenTag::STRING8) {
-    *v = WTF::String::FromUTF8(
-        reinterpret_cast<const char*>(tokenizer.GetString8().data()),
-        static_cast<size_t>(tokenizer.GetString8().size()));
+    *v = blink::String::FromUTF8(tokenizer.GetString8());
     return true;
   }
   if (tokenizer.TokenTag() == CBORTokenTag::STRING16) {
-    *v = WTF::String(
-        reinterpret_cast<const UChar*>(tokenizer.GetString16WireRep().data()),
-        tokenizer.GetString16WireRep().size() / 2);
+    const crdtp::span<uint8_t> data = tokenizer.GetString16WireRep();
+    // SAFETY: GetString16WireRep guarantees `data` is safe.
+    *v = blink::String(UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const UChar*>(data.data()), data.size() / 2)));
     return true;
   }
   return false;
@@ -144,11 +138,11 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
 
 /*static*/
 void InspectorAgentState::Serialize(const std::vector<uint8_t>& v,
-                                    WebVector<uint8_t>* out) {
+                                    std::vector<uint8_t>* out) {
   // We could CBOR encode this, but since we never look at the contents
   // anyway (except for decoding just below), we just cheat and use the
   // blob directly.
-  out->Assign(v.data(), v.size());
+  *out = v;
 }
 
 /*static*/
@@ -161,12 +155,12 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in,
 //
 // InspectorAgentState
 //
-InspectorAgentState::InspectorAgentState(const WTF::String& domain_name)
+InspectorAgentState::InspectorAgentState(const blink::String& domain_name)
     : domain_name_(domain_name) {}
 
-WTF::String InspectorAgentState::RegisterField(Field* field) {
-  WTF::String prefix_key =
-      domain_name_ + "." + WTF::String::Number(fields_.size()) + "/";
+blink::String InspectorAgentState::RegisterField(Field* field) {
+  blink::String prefix_key =
+      StrCat({domain_name_, ".", blink::String::Number(fields_.size()), "/"});
   fields_.push_back(field);
   return prefix_key;
 }

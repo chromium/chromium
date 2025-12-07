@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/data_type_processor.h"
@@ -36,7 +36,7 @@ class DataTypeProcessorProxy : public DataTypeProcessor {
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
  private:

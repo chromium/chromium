@@ -7,12 +7,38 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
+
+class TabGroup;
+
 // Command protocol related to the Tab Grid.
 @protocol TabGridCommands
 
 // Brings `group` into view by making it part of the visible element of its
 // grid.
 - (void)bringGroupIntoView:(const TabGroup*)group animated:(BOOL)animated;
+
+// Shows the history searching for `text`.
+- (void)showHistoryForText:(NSString*)text;
+
+// Shows a non-incognito web page searching for `text`.
+- (void)showWebSearchForText:(NSString*)text;
+
+// Shows the tab grid according to `page`.
+- (void)showPage:(TabGridPage)page animated:(BOOL)animated;
+
+// Exits the tab grid, opening the selected tab of the current page (if
+// relevant).
+- (void)exitTabGrid;
+
+// Displays the Guided Tour step that highlights the active tab. `completion`
+// will be executed after the step dismisses.
+- (void)showGuidedTourLongPressStepWithDismissalCompletion:
+    (ProceduralBlock)completion;
+
+// Presents the page action menu from the tab grid, registering the source.
+- (void)showPageActionMenuFromTabGrid;
 
 @end
 

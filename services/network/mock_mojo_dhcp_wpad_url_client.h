@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
 
 namespace network {

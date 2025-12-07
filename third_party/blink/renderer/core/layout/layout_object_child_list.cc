@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 
@@ -64,7 +65,7 @@ void InvalidateInlineItems(LayoutObject* object) {
   // be prohibited when moved to different parent as if it were destroyed.
   if (object->FirstInlineFragmentItemIndex()) {
     if (auto* text = DynamicTo<LayoutText>(object))
-      text->DetachAbstractInlineTextBoxesIfNeeded();
+      text->DetachAxHooksIfNeeded();
     FragmentItems::LayoutObjectWillBeMoved(*object);
   }
   object->SetIsInLayoutNGInlineFormattingContext(false);
@@ -164,8 +165,7 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   // where child->parent() ends up being owner but
   // child->nextSibling()->parent() is not owner.
   if (before_child && before_child->Parent() != owner) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (!owner->DocumentBeingDestroyed() &&

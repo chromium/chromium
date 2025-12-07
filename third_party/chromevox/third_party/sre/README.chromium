@@ -2,7 +2,8 @@ Name: Speech Rule Engine
 URL: https://github.com/zorkow/speech-rule-engine
 Version: 2.3.0-beta
 Revision: eefaee8bfe5639bbfa936fda1009e4682433a6af
-License: Apache 2.0
+Update Mechanism: Manual
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: yes
@@ -19,3 +20,8 @@ enrichment of MathML expressions.
 Local Modifications:
 - The lone js file is the packed browser version of SRE.
 - All XMLHttpRequest calls were removed.
+- One instance of `$jscomp.global` was changed to `globalThis` to avoid runtime
+errors.
+- We added a call to Object.defineProperty(d,"parentNode",...) to avoid runtime
+errors when setting the `parentNode` property.
+- SRE is explicitly exported since it is imported into ChromeVox as a module.

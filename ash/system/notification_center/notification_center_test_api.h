@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/system/unified/notification_icons_controller.h"
-#include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"

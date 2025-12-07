@@ -9,20 +9,12 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_DEVICE_H_
 #define MEDIA_GPU_V4L2_V4L2_DEVICE_H_
 
+#include <linux/videodev2.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/av1-ctrls.h>
-#endif
-#include <linux/videodev2.h>
-
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
@@ -30,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -76,6 +69,8 @@ struct V4L2ExtCtrl;
 class MEDIA_GPU_EXPORT V4L2Device
     : public base::RefCountedThreadSafe<V4L2Device> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Utility format conversion functions
   // Calculates the largest plane's allocation size requested by a V4L2 device.
   static gfx::Size AllocatedSizeFromV4L2Format(
@@ -99,6 +94,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Return true on success.
   // The device will be closed in the destructor.
   [[nodiscard]] bool Open(Type type, uint32_t v4l2_pixfmt);
+  static base::ScopedFD OpenFDForType(Type type);
 
   // Returns whether Open() has been succeeded.
   bool IsValid();
@@ -224,11 +220,11 @@ class MEDIA_GPU_EXPORT V4L2Device
 
  private:
   friend class base::RefCountedThreadSafe<V4L2Device>;
+  ~V4L2Device();
+
   // Vector of video device node paths and corresponding pixelformats supported
   // by each device node.
   using Devices = std::vector<std::pair<std::string, std::vector<uint32_t>>>;
-
-  ~V4L2Device();
 
   VideoDecodeAccelerator::SupportedProfiles EnumerateSupportedDecodeProfiles(
       const std::vector<uint32_t>& pixelformats);

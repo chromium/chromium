@@ -3,27 +3,26 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Callback;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -35,6 +34,7 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
  * <p>Subclasses have to call super.onCreatePreferences(bundle, s) when overriding
  * onCreatePreferences.
  */
+@NullMarked
 public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSettingsFragment {
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
@@ -42,18 +42,21 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     public static final String PRIVACY_SANDBOX_REFERRER = "privacy-sandbox-referrer";
 
     private PrivacySandboxBridge mPrivacySandboxBridge;
-    private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
-    private SnackbarManager mSnackbarManager;
-    private Callback<Context> mCookieSettingsLauncher;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
+    private @Nullable Callback<Context> mCookieSettingsNavigation;
 
     /** Launches the right version of PrivacySandboxSettings depending on feature flags. */
     public static void launchPrivacySandboxSettings(
             Context context, @PrivacySandboxReferrer int referrer) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(
-                        context, PrivacySandboxSettingsFragment.class, fragmentArgs);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        context,
+                        PrivacySandboxSettingsFragment.class,
+                        fragmentArgs,
+                        // If this comes from "Privacy and security" page, open it as a child of it.
+                        /* addToBackStack= */ referrer == PrivacySandboxReferrer.PRIVACY_SETTINGS);
     }
 
     @Override
@@ -77,38 +80,17 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+            getCustomTabLauncher()
+                    .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
             return true;
         }
         return false;
     }
 
-    /**
-     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
-     * helpers are not modularized.
-     */
-    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
-        mCustomTabHelper = tabHelper;
-    }
-
-    protected void openUrlInCct(String url) {
-        assert (mCustomTabHelper != null)
-                : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a "
-                        + "link.";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
-    }
-
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    @Initializer
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     protected void showSnackbar(
@@ -121,7 +103,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
 
     protected void showSnackbar(
             int stringResId,
-            SnackbarManager.SnackbarController controller,
+            SnackbarManager.@Nullable SnackbarController controller,
             int type,
             int identifier,
             int actionStringResId,
@@ -131,8 +113,9 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         if (actionStringResId != 0) {
             snackbar.setAction(getResources().getString(actionStringResId), null);
         }
-        if (multiLine) snackbar.setSingleLine(false);
-        mSnackbarManager.showSnackbar(snackbar);
+        if (multiLine) snackbar.setDefaultLines(false);
+        SnackbarManager snackbarManager = assumeNonNull(mSnackbarManagerSupplier.get());
+        snackbarManager.showSnackbar(snackbar);
     }
 
     protected void parseAndRecordReferrer() {
@@ -155,13 +138,12 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         }
     }
 
-    protected void launchSettingsActivity(Class<? extends Fragment> fragment) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(getContext(), fragment);
+    protected void startSettings(Class<? extends Fragment> fragment) {
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
     }
 
     @Override
-    public void setProfile(@NonNull Profile profile) {
+    public void setProfile(Profile profile) {
         super.setProfile(profile);
         mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
     }
@@ -177,12 +159,12 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     }
 
     protected void launchCookieSettings() {
-        if (mCookieSettingsLauncher != null) {
-            mCookieSettingsLauncher.onResult(getContext());
+        if (mCookieSettingsNavigation != null) {
+            mCookieSettingsNavigation.onResult(getContext());
         }
     }
 
-    public void setCookieSettingsIntentHelper(Callback<Context> cookieSettingsLauncher) {
-        mCookieSettingsLauncher = cookieSettingsLauncher;
+    public void setCookieSettingsIntentHelper(Callback<Context> cookieSettingsNavigation) {
+        mCookieSettingsNavigation = cookieSettingsNavigation;
     }
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/desks/desks_util.h"
 
 #include <array>
@@ -15,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
@@ -25,6 +21,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -79,19 +76,26 @@ std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
 }
 
 const char* GetDeskContainerName(int container_id) {
-  if (!IsDeskContainerId(container_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return "";
-  }
+  CHECK(IsDeskContainerId(container_id));
 
-  static const char* kDeskContainerNames[] = {
-      "Desk_Container_A", "Desk_Container_B", "Desk_Container_C",
-      "Desk_Container_D", "Desk_Container_E", "Desk_Container_F",
-      "Desk_Container_G", "Desk_Container_H", "Desk_Container_I",
-      "Desk_Container_J", "Desk_Container_K", "Desk_Container_L",
-      "Desk_Container_M", "Desk_Container_N", "Desk_Container_O",
+  static constexpr auto kDeskContainerNames = std::to_array<const char*>({
+      "Desk_Container_A",
+      "Desk_Container_B",
+      "Desk_Container_C",
+      "Desk_Container_D",
+      "Desk_Container_E",
+      "Desk_Container_F",
+      "Desk_Container_G",
+      "Desk_Container_H",
+      "Desk_Container_I",
+      "Desk_Container_J",
+      "Desk_Container_K",
+      "Desk_Container_L",
+      "Desk_Container_M",
+      "Desk_Container_N",
+      "Desk_Container_O",
       "Desk_Container_P",
-  };
+  });
   return kDeskContainerNames[container_id - kShellWindowId_DeskContainerA];
 }
 
@@ -123,13 +127,21 @@ aura::Window* GetActiveDeskContainerForRoot(aura::Window* root) {
 }
 
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
+  auto* controller = DesksController::Get();
+  DCHECK(controller);
+
+  return BelongsToDesk(window, controller->active_desk());
+}
+
+ASH_EXPORT bool BelongsToDesk(aura::Window* window, const Desk* desk) {
   DCHECK(window);
 
   // This function may be called early on during window construction. If there
   // is no parent, then it's not part of any desk yet. See b/260851890 for more
   // details.
-  if (!window->parent())
+  if (!window->parent()) {
     return false;
+  }
 
   auto* window_state = WindowState::Get(window);
   // A floated window may be associated with a desk, but they would be parented
@@ -140,24 +152,14 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
     // exists.
     // Note: in above case, `window` still belongs to desk container and
     // can be checked in statements below.
-    if (auto* desk =
+    if (auto* associated_desk =
             Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window)) {
-      return desk->is_active();
+      return associated_desk->container_id() == desk->container_id();
     }
   }
 
-  const int active_desk_id = GetActiveDeskContainerId();
   aura::Window* desk_container = GetDeskContainerForContext(window);
-  return desk_container && desk_container->GetId() == active_desk_id;
-}
-
-std::optional<uint64_t> GetActiveDeskLacrosProfileId() {
-  std::optional<uint64_t> id;
-  if (auto* desk_controller = DesksController::Get();
-      desk_controller && chromeos::features::IsDeskProfilesEnabled()) {
-    id = desk_controller->active_desk()->lacros_profile_id();
-  }
-  return id;
+  return desk_container && desk_container->GetId() == desk->container_id();
 }
 
 aura::Window* GetDeskContainerForContext(aura::Window* context) {
@@ -200,7 +202,7 @@ bool ShouldDesksBarBeCreated() {
 
   // If it is in tablet mode, hide the desk bar in split view. Otherwise, only
   // show desk bar with more than one desks.
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     for (auto& root : Shell::GetAllRootWindows()) {
       if (SplitViewController::Get(root)->InSplitViewMode()) {
         return false;
@@ -212,6 +214,12 @@ bool ShouldDesksBarBeCreated() {
   // If in clamshell mode, and overview was started by faster splitscreen setup,
   // don't show the desk bar.
   return !window_util::IsInFasterSplitScreenSetupSession();
+}
+
+bool ShouldRenderDeskBarWithMiniViews() {
+  return ShouldDesksBarBeCreated() &&
+         DeskBarViewBase::GetPreferredState(DeskBarViewBase::Type::kOverview) ==
+             DeskBarViewBase::State::kExpanded;
 }
 
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {

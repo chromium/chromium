@@ -8,17 +8,17 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/video_capture/public/mojom/testing_controls.mojom";
 import "services/video_capture/public/mojom/video_source_provider.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "media/capture/video/chromeos/mojom/camera_app.mojom";
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "chromeos/crosapi/mojom/video_capture.mojom";
 
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 interface AcceleratorFactory {
   // Creates a new JpegDecodeAccelerator and binds it to |jda|.
   CreateJpegDecodeAccelerator(
@@ -45,17 +45,17 @@ const sandbox.mojom.Sandbox kVideoCaptureSandbox
 // decoding will be performed without gpu acceleration.
 [ServiceSandbox=kVideoCaptureSandbox]
 interface VideoCaptureService  {
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   InjectGpuDependencies(pending_remote<AcceleratorFactory> accelerator_factory);
 
   // Binds a bridge for Chrome OS camera app and device.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   ConnectToCameraAppDeviceBridge(
       pending_receiver<cros.mojom.CameraAppDeviceBridge> receiver);
 
   // Interface to expose the internal DeviceFactory to be passed from ash
   // to lacros.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindVideoCaptureDeviceFactory(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
 

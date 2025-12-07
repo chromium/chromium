@@ -13,7 +13,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
-#include "components/enterprise/common/proto/legacy_tech_events.pb.h"
+#include "components/enterprise/common/proto/synced/legacy_tech_events.pb.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,13 +26,12 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/enterprise/reporting/real_time_report_controller_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
+#include "components/enterprise/common/proto/synced/extensions_workflow_events.pb.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -104,12 +103,12 @@ TEST_F(RealTimeReportControllerTest, ExtensionRequest) {
               Generate(RealTimeReportType::kExtensionRequest, _))
       .WillOnce(DoAll(
           WithArgs<1>(
-              Invoke([profile](const MockRealTimeReportGenerator::Data& data) {
+              [profile](const MockRealTimeReportGenerator::Data& data) {
                 EXPECT_EQ(profile,
                           static_cast<const ExtensionRequestReportGenerator::
                                           ExtensionRequestData&>(data)
                               .profile);
-              })),
+              }),
           Return(ByMove(std::move(reports)))));
   EXPECT_CALL(*report_uploader, Upload(_, _)).Times(2);
 
@@ -139,13 +138,13 @@ TEST_F(RealTimeReportControllerTest, LegacyTech) {
   EXPECT_CALL(*report_generator.get(),
               Generate(RealTimeReportType::kLegacyTech, _))
       .WillOnce(DoAll(
-          WithArgs<1>(Invoke([](const MockRealTimeReportGenerator::Data& data) {
+          WithArgs<1>([](const MockRealTimeReportGenerator::Data& data) {
             EXPECT_EQ(
                 kLegacyTechType,
                 static_cast<const LegacyTechReportGenerator::LegacyTechData&>(
                     data)
                     .type);
-          })),
+          }),
           Return(ByMove(std::move(reports)))));
   EXPECT_CALL(*report_uploader, Upload(_, _)).Times(1);
 

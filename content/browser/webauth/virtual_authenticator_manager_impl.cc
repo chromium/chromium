@@ -15,19 +15,6 @@
 
 namespace content {
 
-namespace {
-
-mojo::PendingRemote<blink::test::mojom::VirtualAuthenticator>
-GetMojoToVirtualAuthenticator(VirtualAuthenticator* authenticator) {
-  mojo::PendingRemote<blink::test::mojom::VirtualAuthenticator>
-      mojo_authenticator;
-  authenticator->AddReceiver(
-      mojo_authenticator.InitWithNewPipeAndPassReceiver());
-  return mojo_authenticator;
-}
-
-}  // namespace
-
 VirtualAuthenticatorManagerImpl::VirtualAuthenticatorManagerImpl() = default;
 VirtualAuthenticatorManagerImpl::~VirtualAuthenticatorManagerImpl() = default;
 
@@ -39,15 +26,9 @@ void VirtualAuthenticatorManagerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void VirtualAuthenticatorManagerImpl::AddReceiver(
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-        receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
 VirtualAuthenticator*
 VirtualAuthenticatorManagerImpl::AddAuthenticatorAndReturnNonOwningPointer(
-    const blink::test::mojom::VirtualAuthenticatorOptions& options) {
+    const VirtualAuthenticator::Options& options) {
   const bool known_version =
       options.protocol == device::ProtocolVersion::kU2f ||
       options.protocol == device::ProtocolVersion::kCtap2;
@@ -75,8 +56,7 @@ VirtualAuthenticator* VirtualAuthenticatorManagerImpl::AddAuthenticator(
   std::tie(std::ignore, was_inserted) = authenticators_.insert(
       {authenticator_ptr->unique_id(), std::move(authenticator)});
   if (!was_inserted) {
-    NOTREACHED_IN_MIGRATION() << "unique_id() must be unique";
-    return nullptr;
+    NOTREACHED() << "unique_id() must be unique";
   }
 
   for (Observer& observer : observers_) {
@@ -105,54 +85,10 @@ bool VirtualAuthenticatorManagerImpl::RemoveAuthenticator(
   return removed;
 }
 
-void VirtualAuthenticatorManagerImpl::CreateAuthenticator(
-    blink::test::mojom::VirtualAuthenticatorOptionsPtr options,
-    CreateAuthenticatorCallback callback) {
-  VirtualAuthenticator* const authenticator =
-      AddAuthenticatorAndReturnNonOwningPointer(*options);
-  if (!authenticator) {
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-  authenticator->SetUserPresence(options->is_user_present);
-
-  std::move(callback).Run(GetMojoToVirtualAuthenticator(authenticator));
-}
-
-void VirtualAuthenticatorManagerImpl::GetAuthenticators(
-    GetAuthenticatorsCallback callback) {
-  auto authenticators = GetAuthenticators();
-  std::vector<mojo::PendingRemote<blink::test::mojom::VirtualAuthenticator>>
-      mojo_authenticators;
-  for (VirtualAuthenticator* authenticator : authenticators) {
-    mojo_authenticators.push_back(GetMojoToVirtualAuthenticator(authenticator));
-  }
-
-  std::move(callback).Run(std::move(mojo_authenticators));
-}
-
-void VirtualAuthenticatorManagerImpl::RemoveAuthenticator(
-    const std::string& id,
-    RemoveAuthenticatorCallback callback) {
-  std::move(callback).Run(RemoveAuthenticator(id));
-}
-
 std::unique_ptr<VirtualFidoDiscoveryFactory>
 VirtualAuthenticatorManagerImpl::MakeDiscoveryFactory() {
   return std::make_unique<VirtualFidoDiscoveryFactory>(
       weak_factory_.GetWeakPtr());
-}
-
-void VirtualAuthenticatorManagerImpl::ClearAuthenticators(
-    ClearAuthenticatorsCallback callback) {
-  for (auto& authenticator : authenticators_) {
-    for (Observer& observer : observers_) {
-      observer.AuthenticatorRemoved(authenticator.second->unique_id());
-    }
-  }
-  authenticators_.clear();
-
-  std::move(callback).Run();
 }
 
 }  // namespace content

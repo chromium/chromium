@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/field_type_utils.h"
 
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,26 +13,8 @@ namespace autofill {
 
 namespace {
 
-TEST(AutofillFieldTypeUtils, NumberOfPossibleTypesInGroup) {
-  autofill::AutofillField field;
-  field.set_possible_types({NAME_FIRST, NAME_LAST, CREDIT_CARD_NAME_FIRST});
-
-  EXPECT_EQ(NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kName),
-            2U);
-
-  EXPECT_EQ(
-      NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kCreditCard),
-      1U);
-
-  EXPECT_EQ(NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kAddress),
-            0U);
-
-  EXPECT_EQ(NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kPhone),
-            0U);
-}
-
 TEST(AutofillFieldTypeUtils, FieldHasMeaningfulFieldTypes) {
-  autofill::AutofillField field;
+  AutofillField field;
 
   // Test that a meaningful type correctly detected.
   field.set_possible_types({NAME_FIRST, NAME_LAST, CREDIT_CARD_NAME_FIRST});

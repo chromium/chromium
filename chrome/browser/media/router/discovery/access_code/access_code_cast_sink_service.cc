@@ -4,17 +4,20 @@
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
@@ -31,11 +34,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
-#include "chromeos/lacros/crosapi_pref_observer.h"
-#endif
 
 namespace media_router {
 
@@ -58,8 +56,9 @@ constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
 
 bool IsAccessCodeCastEnabled() {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   return GetAccessCodeCastEnabledPref(profile);
 }
@@ -139,20 +138,13 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       prefs::kAccessCodeCastEnabled,
       base::BindRepeating(&AccessCodeCastSinkService::OnEnabledPrefChange,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_prefs_registrar_->Add(
-      prefs::kAccessCodeCastDevices,
-      base::BindRepeating(&AccessCodeCastSinkService::OnDevicesPrefChange,
-                          base::Unretained(this)));
-#endif
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
     : AccessCodeCastSinkService(
           profile,
           MediaRouterFactory::GetApiForBrowserContext(profile),
-          media_router::DualMediaSinkService::GetInstance()
-              ->GetCastMediaSinkServiceImpl(),
+          DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceImpl(),
           DiscoveryNetworkMonitor::GetInstance(),
           profile->GetPrefs(),
           /* pref_updater */ nullptr) {}
@@ -226,8 +218,9 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
   }
 
   // No routes were removed.
-  if (removed_routes.empty())
+  if (removed_routes.empty()) {
     return;
+  }
 
   // There should only be 1 element in the |removed_routes| set.
   DCHECK(removed_routes.size() < 2)
@@ -264,8 +257,9 @@ bool AccessCodeCastSinkService::IsSinkValidAccessCodeSink(
     const MediaSinkInternal* sink) {
   // The route Id did not correspond to a sink for some reason. Return to
   // avoid nullptr issues.
-  if (!sink || !sink->is_cast_sink())
+  if (!sink || !sink->is_cast_sink()) {
     return false;
+  }
 
   // Check to see if route was created by an access code sink.
   CastDiscoveryType type = sink->cast_data().discovery_type;
@@ -300,8 +294,9 @@ void AccessCodeCastSinkService::HandleMediaRouteAdded(
     const bool is_route_local,
     const MediaSource media_source,
     const MediaSinkInternal* sink) {
-  if (!IsSinkValidAccessCodeSink(sink))
+  if (!IsSinkValidAccessCodeSink(sink)) {
     return;
+  }
 
   if (is_route_local) {
     current_route_start_times_[route_id] = base::Time::Now();
@@ -335,8 +330,9 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
 
   // If there is no active route, check manually if the device should be
   // instantly expired.
-  if (!route.has_value())
+  if (!route.has_value()) {
     CheckMediaSinkForExpiration(sink->id());
+  }
 }
 
 void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
@@ -499,13 +495,15 @@ void AccessCodeCastSinkService::OpenChannelWithParams(
 
 std::optional<const MediaRoute> AccessCodeCastSinkService::GetActiveRoute(
     const MediaSink::Id& sink_id) {
-  if (!media_router_)
+  if (!media_router_) {
     return std::nullopt;
+  }
   auto routes = media_router_->GetCurrentRoutes();
   auto route_it =
-      base::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
-  if (route_it == routes.end())
+      std::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
+  if (route_it == routes.end()) {
     return std::nullopt;
+  }
   return *route_it;
 }
 
@@ -542,10 +540,6 @@ void AccessCodeCastSinkService::CheckMediaSinkForExpiration(
       sink_id,
       base::BindOnce(&AccessCodeCastSinkService::DoCheckMediaSinkForExpiration,
                      GetWeakPtr(), sink_id));
-}
-
-bool AccessCodeCastSinkService::IsAccessCodeCastLacrosSyncEnabledForTesting() {
-  return IsAccessCodeCastLacrosSyncEnabled();
 }
 
 void AccessCodeCastSinkService::ShutdownForTesting() {
@@ -673,19 +667,6 @@ void AccessCodeCastSinkService::OnStoredDevicesValidated(
   InitExpirationTimers(validated_devices);
 }
 
-void AccessCodeCastSinkService::OnSyncedDevicesValidated(
-    const std::vector<MediaSinkInternal>& validated_sinks) {
-  for (auto sink : validated_sinks) {
-    AddSinkToMediaRouter(sink, base::DoNothing());
-    // This function is called after a new sink is stored in the prefs service.
-    // In that case, we don't need to set the expiration timer again.
-    auto existing_timer = current_session_expiration_timers_.find(sink.id());
-    if (existing_timer == current_session_expiration_timers_.end()) {
-      SetExpirationTimer(sink.id());
-    }
-  }
-}
-
 void AccessCodeCastSinkService::FetchAndValidateStoredDevices(
     base::OnceCallback<void(const std::vector<MediaSinkInternal>&)>
         on_device_validated_callback) {
@@ -752,7 +733,7 @@ void AccessCodeCastSinkService::ValidateStoredDevices(
 
 void AccessCodeCastSinkService::InitExpirationTimers(
     const std::vector<MediaSinkInternal>& cast_sinks) {
-  for (auto cast_sink : cast_sinks) {
+  for (const auto& cast_sink : cast_sinks) {
     SetExpirationTimer(cast_sink.id());
   }
 }
@@ -862,11 +843,7 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSink::Id& sink_id) {
 }
 
 void AccessCodeCastSinkService::ExpireSink(const MediaSink::Id& sink_id) {
-  // There is no need to remove sinks from the prefs service from the Lacros
-  // side if Lacros is using prefs stored in Ash.
-  if (!IsAccessCodeCastLacrosSyncEnabled()) {
-    RemoveSinkIdFromAllEntries(sink_id);
-  }
+  RemoveSinkIdFromAllEntries(sink_id);
 
   // Must find the sink from media router for removal since it has more total
   // information.
@@ -909,7 +886,7 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
         sink->id());
     return;
   }
-  // Enforce the ordering of updating the pref service so that when Ash/Lacros
+  // Enforce the ordering of updating the pref service so that when ChromeOS
   // gets notified of changes in the devices dict, it's guaranteed that the
   // device added time dict has been updated and can be used to set proper
   // expiration timers.
@@ -936,7 +913,7 @@ void AccessCodeCastSinkService::StoreSinkAndSetExpirationTimer(
 void AccessCodeCastSinkService::AddStoredDevicesToMediaRouter(
     const std::vector<MediaSinkInternal>& cast_sinks) {
   std::vector<MediaSinkInternal> cast_sinks_to_add;
-  for (auto cast_sink : cast_sinks) {
+  for (const auto& cast_sink : cast_sinks) {
     AddSinkResultCallback callback =
         base::BindOnce(AddRememberedSinkMetricsCallback);
     AddSinkToMediaRouter(cast_sink, std::move(callback));
@@ -949,8 +926,9 @@ void AccessCodeCastSinkService::UpdateExistingSink(
   // AddOrUpdate takes time, so avoid calling it if we can
   if (existing_sink->sink().name() == new_sink.sink().name() &&
       existing_sink->cast_data().capabilities ==
-          new_sink.cast_data().capabilities)
+          new_sink.cast_data().capabilities) {
     return;
+  }
 
   MediaSinkInternal existing_sink_copy = *existing_sink;
   existing_sink_copy.sink().set_name(new_sink.sink().name());
@@ -1030,8 +1008,9 @@ void AccessCodeCastSinkService::RemoveAndDisconnectExistingSinksOnNetwork() {
 
 void AccessCodeCastSinkService::LogInfo(const std::string& log_message,
                                         const std::string& sink_id) {
-  if (!media_router_ || !media_router_->GetLogger())
+  if (!media_router_ || !media_router_->GetLogger()) {
     return;
+  }
   media_router_->GetLogger()->LogInfo(mojom::LogCategory::kDiscovery,
                                       kLoggerComponent, log_message, sink_id,
                                       "", "");
@@ -1039,8 +1018,9 @@ void AccessCodeCastSinkService::LogInfo(const std::string& log_message,
 
 void AccessCodeCastSinkService::LogWarning(const std::string& log_message,
                                            const std::string& sink_id) {
-  if (!media_router_ || !media_router_->GetLogger())
+  if (!media_router_ || !media_router_->GetLogger()) {
     return;
+  }
   media_router_->GetLogger()->LogWarning(mojom::LogCategory::kDiscovery,
                                          kLoggerComponent, log_message, sink_id,
                                          "", "");
@@ -1048,8 +1028,9 @@ void AccessCodeCastSinkService::LogWarning(const std::string& log_message,
 
 void AccessCodeCastSinkService::LogError(const std::string& log_message,
                                          const std::string& sink_id) {
-  if (!media_router_ || !media_router_->GetLogger())
+  if (!media_router_ || !media_router_->GetLogger()) {
     return;
+  }
   media_router_->GetLogger()->LogError(mojom::LogCategory::kDiscovery,
                                        kLoggerComponent, log_message, sink_id,
                                        "", "");
@@ -1058,6 +1039,17 @@ void AccessCodeCastSinkService::LogError(const std::string& log_message,
 void AccessCodeCastSinkService::OnNetworksChanged(
     const std::string& network_id) {
   RemoveAndDisconnectExistingSinksOnNetwork();
+  // TODO: b/370067417 - Investigate if it is possible to remove this delay by
+  // refactoring this file and/or media_router
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccessCodeCastSinkService::
+                         ResetExpirationTimersAndInitAllStoredDevices,
+                     GetWeakPtr()),
+      kExpirationDelay + kNetworkChangeBuffer);
+}
+
+void AccessCodeCastSinkService::ResetExpirationTimersAndInitAllStoredDevices() {
   ResetExpirationTimers();
   InitAllStoredDevices();
 }
@@ -1080,12 +1072,6 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
   }
 }
 
-void AccessCodeCastSinkService::OnDevicesPrefChange() {
-  FetchAndValidateStoredDevices(
-      base::BindOnce(&AccessCodeCastSinkService::OnSyncedDevicesValidated,
-                     base::Unretained(this)));
-}
-
 void AccessCodeCastSinkService::Shutdown() {
   network_monitor_->RemoveObserver(this);
   // There's no guarantee that MediaRouter is still in the
@@ -1093,8 +1079,9 @@ void AccessCodeCastSinkService::Shutdown() {
   // dtor. Since MediaRouter and |this| are both KeyedServices, we must not
   // access MediaRouter in the dtor of |this|, so we do it here.
   media_routes_observer_.reset();
-  if (user_prefs_registrar_)
+  if (user_prefs_registrar_) {
     user_prefs_registrar_->RemoveAll();
+  }
   user_prefs_registrar_.reset();
   media_router_ = nullptr;
   ResetExpirationTimers();
@@ -1109,65 +1096,10 @@ void AccessCodeCastSinkService::SetIdentityManagerForTesting(
 void AccessCodeCastSinkService::InitializePrefUpdater() {
   // If `pref_updater_` has been instantiated (i.e. for testing), do not
   // overwrite its value.
-  if (pref_updater_) {
-    InitAllStoredDevices();
-    return;
-  }
-
-// On Lacros, we should check if kAccessCodeCastDevices pref is synced from Ash
-// and then instantiate `pref_updater_` with the corresponding proper
-// implementation. Since querying the prefs stored in Ash is asynchronous,
-// `InitAllStoredDevices()` has to be called in
-// `MaybeCreateAccessCodePrefUpdaterLacros()`.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  AccessCodeCastPrefUpdaterLacros::IsAccessCodeCastDevicePrefAvailable(
-      base::BindOnce(
-          &AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros,
-          GetWeakPtr()));
-#else
-  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
-  InitAllStoredDevices();
-#endif
-}
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros(
-    bool is_pref_registered) {
-  // If the access code prefs are registered for crosapi, replace the current
-  // `pref_updater_` with the AccessCodeCastPrefUpdaterLacros and run the
-  // callback to continue validating stored devices.
-  if (is_pref_registered) {
-    lacros_device_sync_enabled_ = true;
-    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterLacros>();
-    access_code_cast_devices_observer_ = std::make_unique<CrosapiPrefObserver>(
-        crosapi::mojom::PrefPath::kAccessCodeCastDevices,
-        base::BindRepeating(
-            &AccessCodeCastSinkService::OnAccessCodeCastDevicesChanged,
-            base::Unretained(this)));
-  } else {
+  if (!pref_updater_) {
     pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
   }
-
   InitAllStoredDevices();
-}
-
-void AccessCodeCastSinkService::OnAccessCodeCastDevicesChanged(
-    base::Value value) {
-  if (value.is_dict()) {
-    ValidateStoredDevices(
-        base::BindOnce(&AccessCodeCastSinkService::OnSyncedDevicesValidated,
-                       weak_ptr_factory_.GetWeakPtr()),
-        std::move(value).TakeDict());
-  }
-}
-#endif
-
-bool AccessCodeCastSinkService::IsAccessCodeCastLacrosSyncEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return lacros_device_sync_enabled_;
-#else
-  return false;
-#endif
 }
 
 }  // namespace media_router

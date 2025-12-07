@@ -54,13 +54,14 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   const String& ClassId() const { return class_id_; }
 
   HTMLFormElement* formOwner() const override;
+  HTMLElement* formForBinding() const override;
 
   bool ContainsJavaApplet() const;
 
   bool HasFallbackContent() const override;
   bool UseFallbackContent() const override;
 
-  bool IsFormControlElement() const override { return false; }
+  bool IsObjectElement() const override { return true; }
 
   bool IsEnumeratable() const override { return true; }
 
@@ -72,10 +73,8 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
 
   // Implementations of constraint validation API.
   // Note that the object elements are always barred from constraint validation.
-  String validationMessage() const override { return String(); }
   bool checkValidity() { return true; }
   bool reportValidity() { return true; }
-  void setCustomValidity(const String&) override {}
 
   bool CanContainRangeEndPoint() const override { return UseFallbackContent(); }
 
@@ -96,13 +95,18 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   };
   void RenderFallbackContent(ErrorEventPolicy should_dispatch_error_event);
 
+  V8UnionTrustedScriptURLOrUSVString* data();
+  void setData(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
+  V8UnionTrustedScriptURLOrUSVString* codeBase();
+  void setCodeBase(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -141,13 +145,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   bool use_fallback_content_ : 1;
 };
 
-// Like To<HTMLObjectElement>() but accepts a ListedElement as input
-// instead of a Node.
-const HTMLObjectElement* ToHTMLObjectElementFromListedElement(
-    const ListedElement*);
-const HTMLObjectElement& ToHTMLObjectElementFromListedElement(
-    const ListedElement&);
-
 template <>
 struct DowncastTraits<HTMLObjectElement> {
   static bool AllowFrom(const HTMLFrameOwnerElement& element) {
@@ -164,6 +161,9 @@ struct DowncastTraits<HTMLObjectElement> {
     // true if `node` is derived from `Element`.
     return node.IsHTMLElement() &&
            IsA<HTMLObjectElement>(UnsafeTo<HTMLElement>(node));
+  }
+  static bool AllowFrom(const ListedElement& control) {
+    return control.IsObjectElement();
   }
 };
 

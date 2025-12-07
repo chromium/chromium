@@ -29,7 +29,8 @@ std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 
-void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void MirrorLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                  viz::CompositorRenderPass* render_pass,
                                   AppendQuadsData* append_quads_data) {
   // TODO(mohsen): Currently, effects on the mirrored layer (e.g mask and
   // opacity) are ignored. Consider applying them here.
@@ -83,9 +84,10 @@ void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, content_rect, unoccluded_content_rect,
                mirrored_layer_render_pass_id(), mask_resource_id, mask_uv_rect,
-               mask_texture_size, mirrored_effect_node->surface_contents_scale,
-               gfx::PointF(), gfx::RectF(gfx::Rect(content_rect.size())),
-               !layer_tree_impl()->settings().enable_edge_anti_aliasing, 0.f);
+               mask_texture_size, gfx::RectF(gfx::Rect(content_rect.size())),
+               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+  quad->SetFilters(mirrored_effect_node->surface_contents_scale, gfx::PointF(),
+                   0.f);
 }
 
 void MirrorLayerImpl::PushPropertiesTo(LayerImpl* layer) {

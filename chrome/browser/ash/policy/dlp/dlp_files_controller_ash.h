@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
@@ -58,15 +59,8 @@ class DlpFilesControllerAsh : public DlpFilesController,
                     bool is_dlp_restricted,
                     bool is_restricted_for_destination);
 
-    friend bool operator==(const DlpFileMetadata& a, const DlpFileMetadata& b) {
-      return a.is_dlp_restricted == b.is_dlp_restricted &&
-             a.is_restricted_for_destination ==
-                 b.is_restricted_for_destination &&
-             a.source_url == b.source_url && a.referrer_url == b.referrer_url;
-    }
-    friend bool operator!=(const DlpFileMetadata& a, const DlpFileMetadata& b) {
-      return !(a == b);
-    }
+    friend bool operator==(const DlpFileMetadata&,
+                           const DlpFileMetadata&) = default;
 
     // Source URL from which the file was downloaded.
     std::string source_url;
@@ -218,7 +212,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
       std::vector<std::string> warned_src_patterns,
       std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
       const DlpFileDestination& dst,
-      const std::optional<std::string>& dst_pattern,
       dlp::FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
       std::optional<std::u16string> user_justification,
@@ -241,14 +234,12 @@ class DlpFilesControllerAsh : public DlpFilesController,
                          const ::dlp::GetFilesSourcesResponse response);
 
   // Reports an event if a `DlpReportingManager` instance exists. When
-  // `dst_pattern` is missing, we report `dst.component.value()` instead. When
   // `level` is missing, we report a warning proceeded event.
   void MaybeReportEvent(ino64_t inode,
                         time_t crtime,
                         const base::FilePath& path,
                         const std::string& source_url,
                         const DlpFileDestination& dst,
-                        const std::optional<std::string>& dst_pattern,
                         const DlpRulesManager::RuleMetadata& rule_metadata,
                         std::optional<DlpRulesManager::Level> level);
 

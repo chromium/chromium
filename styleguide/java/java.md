@@ -206,12 +206,32 @@ public class ValueClass {
 
 ### Enums
 
-Banned. Use [`@IntDef`](#intdefs) instead.
+Banned. Use [`@IntDef`](#intdefs) / `@LongDef` / `@StringDef` instead.
 
 **Rationale:**
 
-Java enums generate a lot of bytecode. Use constants where possible. When a
-custom type hierarchy is required, use explicit classes with inheritance.
+Java enums generate a lot of bytecode and some of their APIs rely on reflection
+under-the-hood. They also implement `Serializable`, which can lead to the
+inability to every change them.
+
+* Use constants where possible.
+* When a custom type is required, use explicit classes with inheritance.
+* When serialization is required, use explicit serialization / deserialization
+  logic.
+
+### Optional
+
+Avoid it if possible. Use `@Nullable` instead.
+
+## Rationale:
+
+`Optional` adds binary size overhead and requires an extra allocation for each
+use. It may still be a good choice if you need to distinguish between "null"
+and "unset", but prefer `null` or a sentinel value when possible. The same
+applies to `OptionalInt`, etc.
+
+[NullAway](#Nullability-Annotations) warnings will ensure that null checks are
+not missed.
 
 ### Finalizers
 
@@ -224,11 +244,21 @@ Custom finalizers:
 * causes additional garbage collector jank.
 
 Classes that need destructor logic should provide an explicit `destroy()`
-method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/LifetimeAssert.java)
+method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/lifetime/LifetimeAssert.java)
 to ensure in debug builds and tests that `destroy()` is called.
 
 [Google's Java style guide]: https://google.github.io/styleguide/javaguide.html#s6.4-finalizers
 [Android's Java style guide]: https://source.android.com/docs/setup/contribute/code-style#dont-use-finalizers
+
+## Nullability Annotations
+
+All non-test Java files within the main repository should use `@NullMarked`.
+Tests are encouraged to use them, but there is currently no effort to annotate
+existing ones.
+
+See [nullaway.md] for how to use `@Nullable` and related annotations.
+
+[nullaway.md]: nullaway.md
 
 ## Java Library APIs
 
@@ -261,25 +291,41 @@ Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
 
 ### Streams
 
-Most uses of [Java streams] are discouraged. If you can write your code as an
-explicit loop, then do so. The primary reason for this guidance is because the
-lambdas (and method references) needed for streams almost always result in
-larger binary size ([example](https://chromium-review.googlesource.com/c/chromium/src/+/4329952).
+Using [Java streams] outside of tests is strongly discouraged. If you can write
+your code as an explicit loop, then do so. The primary reason for this guidance
+is because the lambdas and method references needed for streams almost always
+result in larger binary size than their loop equivalents (see
+[crbug.com/344943957] for examples).
 
 The `parallel()` and `parallelStream()` APIs are simpler than their loop
-equivalents, but are are currently banned due to a lack of a compelling use case
-in Chrome. If you find one, please discuss on `java@chromium.org`.
+equivalents, but are banned due to a lack of a compelling use case in Chrome.
+If you find one, please discuss on `java@chromium.org`.
+
+Use of `stream()` without a lambda / method reference is allowed. E.g.:
+
+```java
+@SuppressWarnings("NoStreams")
+private static List<Integer> boxInts(int[] arr) {
+    return Arrays.stream(arr).boxed().collect(Collectors.toList());
+}
+
+@SuppressWarnings("NoStreams")
+private static List<String> readLines(BufferedReader bufferedReader) {
+    return bufferedReader.lines().collect(Collectors.toList());
+}
+```
 
 [Java streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
+[crbug.com/344943957]: https://crbug.com/344943957
 
 ### AndroidX Annotations {#annotations}
 
 * Use them liberally. They are [documented here](https://developer.android.com/studio/write/annotations).
   * They generally improve readability.
   * Many make lint more useful.
-* `javax.annotation.Nullable` vs `androidx.annotation.Nullable`
-  * Always prefer `androidx.annotation.Nullable`.
-  * It uses `@Retention(SOURCE)` rather than `@Retention(RUNTIME)`.
+* What about `androidx.annotation.Nullable`?
+  * We are migrating away from it (see [nullaway.md]).
+  * Keep using it in files that have not yet been migrated.
 
 #### IntDefs {#intdefs}
 

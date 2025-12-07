@@ -405,12 +405,8 @@ std::string AppDiscoveryMetrics::GetAppStringToRecord(
 
     // These app types have app names that are hashed before the URLs are
     // generated.
-    case AppType::kBuiltIn:
     case AppType::kChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserChromeApp:
-    case AppType::kStandaloneBrowserExtension:
     case AppType::kSystemWeb:
       return url.spec();
 

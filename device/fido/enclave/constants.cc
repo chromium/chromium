@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device::enclave {
 
@@ -56,7 +56,7 @@ EnclaveIdentity GetEnclaveIdentity() {
   if (command_line->HasSwitch(kEnclaveUrlSwitch)) {
     GURL enclave_url(command_line->GetSwitchValueASCII(kEnclaveUrlSwitch));
     CHECK(enclave_url.is_valid());
-    ret.url = enclave_url;
+    ret.url = std::move(enclave_url);
     ret.public_key = kLocalPublicKey;
   } else {
     ret.url = GURL(kEnclaveUrl);
@@ -75,6 +75,14 @@ ScopedEnclaveOverride::ScopedEnclaveOverride(EnclaveIdentity identity)
 ScopedEnclaveOverride::~ScopedEnclaveOverride() {
   CHECK(g_enclave_override == enclave_identity_.get());
   g_enclave_override = prev_;
+}
+
+RequestError GetRequestError(int code) {
+  if (static_cast<int>(RequestError::kMinValue) <= code &&
+      code <= static_cast<int>(RequestError::kMaxValue)) {
+    return static_cast<RequestError>(code);
+  }
+  return RequestError::kUnknown;
 }
 
 const char kCommandEncodedRequestsKey[] = "encoded_requests";
@@ -100,6 +108,8 @@ const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
 const char kPasskeysWrapPinCommandName[] = "passkeys/wrap_pin";
 const char kRecoveryKeyStoreWrapAsMemberCommandName[] =
     "recovery_key_store/wrap_as_member";
+const char kRecoveryKeyStoreWrapPinAndSecretCommandName[] =
+    "recovery_key_store/wrap_pin_and_secret";
 const char kRecoveryKeyStoreRewrapCommandName[] = "recovery_key_store/rewrap";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
@@ -117,6 +127,7 @@ const char kWrappingKeyToWrap[] = "key";
 const char kPinHash[] = "pin_hash";
 const char kGeneration[] = "pin_generation";
 const char kClaimKey[] = "pin_claim_key";
+const char kWrappedPinKey[] = "wrapped_pin";
 
 const char kWrappingResponsePublicKey[] = "pub_key";
 const char kWrappingResponseWrappedPrivateKey[] = "priv_key";
@@ -127,6 +138,7 @@ const char kKeyPurposeSecurityDomainSecret[] = "security domain secret";
 const char kRecoveryKeyStorePinHash[] = "pin_hash";
 const char kRecoveryKeyStoreCertXml[] = "cert_xml";
 const char kRecoveryKeyStoreSigXml[] = "sig_xml";
+const char kRecoveryKeyStoreCreateNewVault[] = "create_new_vault";
 
 const char kRecoveryKeyStoreURL[] =
     "https://cryptauthvault.googleapis.com/v1/vaults/0";

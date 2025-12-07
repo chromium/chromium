@@ -1,0 +1,19 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL
+++++ROLE_SYSTEM_PAGETAB name='your-file-name.pdf Close' has-actions:true
+++++++ROLE_SYSTEM_STATICTEXT name='your-file-name.pdf '
+++++++ROLE_SYSTEM_PUSHBUTTON name='Edit' FOCUSABLE
+++++++ROLE_SYSTEM_LINK name='Open' FOCUSABLE
+++++++++ROLE_SYSTEM_STATICTEXT name='Open'
+++++++IA2_ROLE_TOGGLE_BUTTON name='Close' IA2_STATE_CHECKABLE checkable:true
+++ROLE_SYSTEM_PUSHBUTTON name='Delete' FOCUSABLE
+=== Start Continuation ===
+ROLE_SYSTEM_DOCUMENT name='change-aria-action-id' READONLY FOCUSABLE
+++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL
+++++ROLE_SYSTEM_PAGETAB name='your-file-name.pdf Edit Open' has-actions:true
+++++++ROLE_SYSTEM_STATICTEXT name='your-file-name.pdf '
+++++++ROLE_SYSTEM_PUSHBUTTON name='Edit' FOCUSABLE
+++++++ROLE_SYSTEM_LINK name='Open' FOCUSABLE
+++++++++ROLE_SYSTEM_STATICTEXT name='Open'
+++++++IA2_ROLE_TOGGLE_BUTTON name='Close' IA2_STATE_CHECKABLE checkable:true
+++ROLE_SYSTEM_PUSHBUTTON name='Delete' FOCUSABLE

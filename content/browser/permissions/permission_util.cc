@@ -31,9 +31,9 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-#if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
+#if BUILDFLAG(IS_ANDROID)
   // If `allow_universal_access_from_file_urls` flag is enabled, a file:/// can
   // change its url via history.pushState/replaceState to any other url,
   // including about:blank. To avoid user confusion we should always use a
@@ -48,6 +48,11 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   }
 #endif
 
+  if (render_frame_host->GetLastCommittedOrigin().GetURL().is_empty()) {
+    if (!web_contents->GetVisibleURL().is_empty()) {
+      return web_contents->GetVisibleURL();
+    }
+  }
   return render_frame_host->GetLastCommittedOrigin().GetURL();
 }
 
@@ -66,7 +71,7 @@ const url::Origin& PermissionUtil::ExtractDomainOverride(
 }
 
 bool PermissionUtil::ValidateDomainOverride(
-    const std::vector<blink::PermissionType>& types,
+    const std::vector<blink::mojom::PermissionDescriptorPtr>& types,
     RenderFrameHost* rfh,
     const blink::mojom::PermissionDescriptorPtr& descriptor) {
   if (types.size() > 1) {
@@ -90,6 +95,21 @@ bool PermissionUtil::ValidateDomainOverride(
   }
 
   return true;
+}
+
+bool PermissionUtil::IsDevicePermission(
+    const blink::mojom::PermissionDescriptorPtr& descriptor) {
+  return descriptor->name == blink::mojom::PermissionName::VIDEO_CAPTURE ||
+         descriptor->name == blink::mojom::PermissionName::AUDIO_CAPTURE ||
+         descriptor->name == blink::mojom::PermissionName::GEOLOCATION;
+}
+
+bool PermissionUtil::IsEmbeddablePermission(
+    const blink::mojom::PermissionDescriptorPtr& descriptor) {
+  return descriptor->name == blink::mojom::PermissionName::VIDEO_CAPTURE ||
+         descriptor->name == blink::mojom::PermissionName::AUDIO_CAPTURE ||
+         descriptor->name == blink::mojom::PermissionName::GEOLOCATION ||
+         descriptor->name == blink::mojom::PermissionName::WEB_APP_INSTALLATION;
 }
 
 }  // namespace content

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
@@ -46,7 +45,7 @@ BackgroundSyncContextImpl::~BackgroundSyncContextImpl() {
 void BackgroundSyncContext::FireBackgroundSyncEventsAcrossPartitions(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,
-    const base::android::JavaParamRef<jobject>& j_runnable) {
+    const base::android::JavaRef<jobject>& j_runnable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
   BackgroundSyncLauncher::FireBackgroundSyncEvents(browser_context, sync_type,
@@ -99,7 +98,7 @@ void BackgroundSyncContextImpl::OneShotSyncServiceHadConnectionError(
   DCHECK(service);
 
   auto iter = one_shot_sync_services_.find(service);
-  CHECK(iter != one_shot_sync_services_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != one_shot_sync_services_.end());
   one_shot_sync_services_.erase(iter);
 }
 
@@ -109,7 +108,7 @@ void BackgroundSyncContextImpl::PeriodicSyncServiceHadConnectionError(
   DCHECK(service);
 
   auto iter = periodic_sync_services_.find(service);
-  CHECK(iter != periodic_sync_services_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != periodic_sync_services_.end());
   periodic_sync_services_.erase(iter);
 }
 

@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_SCHEDULING_PRIORITY_H_
 #define GPU_COMMAND_BUFFER_COMMON_SCHEDULING_PRIORITY_H_
 
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
@@ -22,7 +22,8 @@ enum class SchedulingPriority {
   kLast = kLow
 };
 
-GPU_EXPORT const char* SchedulingPriorityToString(SchedulingPriority priority);
+GPU_COMMAND_BUFFER_COMMON_EXPORT const char* SchedulingPriorityToString(
+    SchedulingPriority priority);
 
 }  // namespace gpu
 

@@ -119,10 +119,9 @@ void HistogramAlgorithmAndKey(ExecutionContext*,
                               const WebCryptoAlgorithm&,
                               const WebCryptoKey&);
 
-BLINK_EXPORT void
-HistogramDeriveBitsTruncation(ExecutionContext*,
-                              unsigned int,
-                              WebCryptoWarningType);
+BLINK_EXPORT void HistogramDeriveBitsTruncation(ExecutionContext*,
+                                                std::optional<unsigned int>,
+                                                WebCryptoWarningType);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_HISTOGRAMS_H_

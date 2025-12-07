@@ -63,7 +63,7 @@ class PLATFORM_EXPORT ThreadPoolManager {
   void WaitForAllThreads();
 
   // (Thread Safe)
-  Vector<ThreadManager*> GetAllThreadManagers();
+  blink::Vector<ThreadManager*> GetAllThreadManagers();
 
   // (Thread Safe) Used to return the thread manager of the |thread_id|'s entry
   // in |threads_| (modulo the number of entries).
@@ -142,14 +142,14 @@ class PLATFORM_EXPORT ThreadPoolManager {
   // Threads that are being managed/synchronized. For unit testing purposes,
   // make sure not to create threads at the same time (if the ordering matters)
   // since in this case the order will not be deterministic.
-  Vector<std::unique_ptr<SimpleThread>> threads_;
+  blink::Vector<std::unique_ptr<SimpleThread>> threads_;
 
   // ThreadManager instances associated to the managed threads. Values are not
   // stored in any particular order and there might not exist a manager for all
   // managed threads at any point in time (SimpleThread instances are created
   // before their corresponding ThreadManager, as this must happen on the actual
   // thread).
-  Vector<ThreadManager*> thread_managers_;
+  blink::Vector<ThreadManager*> thread_managers_;
 };
 
 }  // namespace sequence_manager

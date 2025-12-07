@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
 
@@ -172,6 +172,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // offering whatever means the system has of recording media (audio, video,
   // etc) as a "file" choice.
   virtual void SetUseMediaCapture(bool use_media_capture);
+
+  // Set whether files should be opened as writable using the
+  // ACTION_OPEN_DOCUMENT Intent rather than ACTION_GET_CONTENT.
+  virtual void SetOpenWritable(bool open_writable);
 #endif
 
   // Selects a File.

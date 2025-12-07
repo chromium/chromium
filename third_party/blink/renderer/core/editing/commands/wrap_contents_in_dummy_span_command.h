@@ -43,6 +43,7 @@ class WrapContentsInDummySpanCommand final : public SimpleEditCommand {
   void DoUnapply() override;
   void DoReapply() override;
   void ExecuteApply();
+  String ToString() const override;
 
   Member<Element> element_;
   Member<HTMLSpanElement> dummy_span_;

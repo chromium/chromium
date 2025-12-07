@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.gcm_driver.GCMDriver;
 import org.chromium.components.gcm_driver.GCMMessage;
 import org.chromium.components.gcm_driver.instance_id.FakeInstanceIDWithSubtype;
@@ -104,7 +104,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     public void testNotificationsPermissionDenied() throws TimeoutException {
         // Deny Notifications permission before trying to subscribe Push.
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.BLOCK, mEmbeddedTestServerRule.getOrigin());
+                ContentSetting.BLOCK, mEmbeddedTestServerRule.getOrigin());
         Assert.assertEquals("\"denied\"", runScriptBlocking("Notification.permission"));
 
         // Reload page to ensure the block is persisted.
@@ -126,6 +126,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @Test
     @MediumTest
     @Feature({"Browser", "PushMessaging"})
+    @DisableFeatures("PermissionsAndroidClapperLoud")
     public void testPushPermissionDenied() throws TimeoutException {
         // Notifications permission should initially be prompt.
         Assert.assertEquals("\"default\"", runScriptBlocking("Notification.permission"));
@@ -144,7 +145,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
                 });
 
         waitForTitle(
-                mNotificationTestRule.getActivity().getActivityTab(),
+                mNotificationTestRule.getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
 
         // Notifications permission should still be prompt.
@@ -160,7 +161,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.DENY, mNotificationTestRule.getActivity());
         waitForTitle(
-                mNotificationTestRule.getActivity().getActivityTab(),
+                mNotificationTestRule.getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
 
         // This should have caused notifications permission to become denied.
@@ -201,7 +202,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.ALLOW, mNotificationTestRule.getActivity());
-        waitForTitle(mNotificationTestRule.getActivity().getActivityTab(), "subscribe ok");
+        waitForTitle(mNotificationTestRule.getActivityTab(), "subscribe ok");
 
         // This should have caused notifications permission to become granted.
         Assert.assertEquals("\"granted\"", runScriptBlocking("Notification.permission"));
@@ -216,7 +217,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @DisabledTest(message = "https://crbug.com/707528")
     public void testPushAndShowNotification() throws TimeoutException {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mEmbeddedTestServerRule.getOrigin());
+                ContentSetting.ALLOW, mEmbeddedTestServerRule.getOrigin());
         runScriptAndWaitForTitle("subscribePush()", "subscribe ok");
 
         Pair<String, String> appIdAndSenderId =
@@ -239,13 +240,13 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     public void testDefaultNotification() throws TimeoutException {
         // Start off using the tab loaded in setUp().
         Assert.assertEquals(1, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Tab tab = mNotificationTestRule.getActivity().getActivityTab();
+        Tab tab = mNotificationTestRule.getActivityTab();
         Assert.assertEquals(mPushTestPage, tab.getUrl().getSpec());
         Assert.assertFalse(tab.isHidden());
 
         // Set up the push subscription and capture its details.
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mEmbeddedTestServerRule.getOrigin());
+                ContentSetting.ALLOW, mEmbeddedTestServerRule.getOrigin());
         runScriptAndWaitForTitle("subscribePush()", "subscribe ok");
         Pair<String, String> appIdAndSenderId =
                 FakeInstanceIDWithSubtype.getSubtypeAndAuthorizedEntityOfOnlyToken();
@@ -253,9 +254,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         // Make the tab invisible by opening another one with a different origin.
         mNotificationTestRule.loadUrlInNewTab(ABOUT_BLANK);
         Assert.assertEquals(2, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Assert.assertEquals(
-                ABOUT_BLANK,
-                mNotificationTestRule.getActivity().getActivityTab().getUrl().getSpec());
+        Assert.assertEquals(ABOUT_BLANK, mNotificationTestRule.getActivityTab().getUrl().getSpec());
         Assert.assertTrue(tab.isHidden());
 
         // The first time a push event is fired and no notification is shown from the service
@@ -296,8 +295,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
      * expectedTitle}.
      */
     private void runScriptAndWaitForTitle(String script, String expectedTitle) {
-        runScriptAndWaitForTitle(
-                script, expectedTitle, mNotificationTestRule.getActivity().getActivityTab());
+        runScriptAndWaitForTitle(script, expectedTitle, mNotificationTestRule.getActivityTab());
     }
 
     /**

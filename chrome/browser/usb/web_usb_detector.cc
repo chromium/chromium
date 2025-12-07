@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
@@ -21,10 +22,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
@@ -41,9 +44,8 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #endif
 
 namespace {
@@ -140,23 +142,27 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     disposition_ = WEBUSB_NOTIFICATION_CLOSED_CLICKED;
 
     // If the URL is already open, activate that tab.
-    content::WebContents* tab_to_activate = nullptr;
-    Browser* browser = nullptr;
-    auto& all_tabs = AllTabContentses();
-    for (auto it = all_tabs.begin(), end = all_tabs.end(); it != end; ++it) {
-      if (base::StartsWith(it->GetVisibleURL().spec(), landing_page_.spec(),
+    tabs::TabInterface* tab_to_activate = nullptr;
+    BrowserWindowInterface* browser = nullptr;
+    tabs::ForEachTabInterface([&](tabs::TabInterface* tab) {
+      content::WebContents* const tab_contents = tab->GetContents();
+      if (base::StartsWith(tab_contents->GetVisibleURL().spec(),
+                           landing_page_.spec(),
                            base::CompareCase::INSENSITIVE_ASCII) &&
-          (!tab_to_activate || it->GetLastActiveTimeTicks() >
-                                   tab_to_activate->GetLastActiveTimeTicks())) {
-        tab_to_activate = *it;
-        browser = it.browser();
+          (!tab_to_activate ||
+           tab_contents->GetLastActiveTimeTicks() >
+               tab_to_activate->GetContents()->GetLastActiveTimeTicks())) {
+        tab_to_activate = tab;
+        browser = tab->GetBrowserWindowInterface();
+        return false;
       }
-    }
+      return true;
+    });
     if (tab_to_activate) {
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
+      TabStripModel* tab_strip_model = browser->GetTabStripModel();
       tab_strip_model->ActivateTabAt(
-          tab_strip_model->GetIndexOfWebContents(tab_to_activate));
-      browser->window()->Activate();
+          tab_strip_model->GetIndexOfTab(tab_to_activate));
+      browser->GetWindow()->Activate();
       return;
     }
 
@@ -195,13 +201,6 @@ void WebUsbDetector::Initialize() {
   // buggy devices and drivers.
   if (!base::FeatureList::IsEnabled(features::kWebUsbDeviceDetection))
     return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    // Delegate to the Lacros browser to prevent duplicate notifications.
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Tests may set a fake manager.
   if (!device_manager_) {
@@ -252,14 +251,14 @@ void WebUsbDetector::OnDeviceAdded(
       ui::ImageModel::FromVectorIcon(vector_icons::kUsbIcon, ui::kColorIcon,
                                      64),
       std::u16string(), GURL(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWebUsb,
                                  ash::NotificationCatalogName::kWebUsb),
 #else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWebUsb),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       rich_notification_data,
       base::MakeRefCounted<WebUsbNotificationDelegate>(
           weak_factory_.GetWeakPtr(), landing_page, notification_id));

@@ -4,16 +4,21 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 
 /** Abstract class for controllers that use a BaseSiteSettingsFragment as subpage. */
+@NullMarked
 public abstract class PageInfoPreferenceSubpageController implements PageInfoSubpageController {
     private final PageInfoControllerDelegate mDelegate;
-    private BaseSiteSettingsFragment mSubPage;
+    private @Nullable BaseSiteSettingsFragment mSubPage;
 
     public PageInfoPreferenceSubpageController(PageInfoControllerDelegate delegate) {
         mDelegate = delegate;
@@ -27,12 +32,12 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
      * @param fragment The fragment that should be added.
      * @return The view for the fragment or null if the fragment couldn't get added.
      */
-    protected View addSubpageFragment(BaseSiteSettingsFragment fragment) {
+    protected @Nullable View addSubpageFragment(BaseSiteSettingsFragment fragment) {
         assert mSubPage == null;
 
         FragmentManager fragmentManager = mDelegate.getFragmentManager();
         // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager.isStateSaved()) return null;
+        if (assumeNonNull(fragmentManager).isStateSaved()) return null;
 
         mSubPage = fragment;
         mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
@@ -53,6 +58,11 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
 
     /** @return Whether it is possible to add preference fragments. */
     protected boolean canCreateSubpageFragment() {
-        return !mDelegate.getFragmentManager().isStateSaved();
+        return !assumeNonNull(mDelegate.getFragmentManager()).isStateSaved();
+    }
+
+    @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mSubPage != null ? mSubPage.requireView() : null;
     }
 }

@@ -4,16 +4,15 @@
 
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <ostream>
 
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
@@ -244,8 +243,7 @@ void WebFeedSubscriptionCoordinator::UpdatePendingOperationBeforeAttempt(
     case WebFeedInFlightChangeStrategy::kRetry:
       break;
     case WebFeedInFlightChangeStrategy::kPending:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -868,8 +866,9 @@ WebFeedSubscriptionCoordinator::GetAllWebFeedSubscriptionStatus() const {
   }
 
   // Remove duplicates, and fetch WebFeed status.
-  base::ranges::sort(result);
-  result.erase(base::ranges::unique(result), result.end());
+  std::ranges::sort(result);
+  auto repeated = std::ranges::unique(result);
+  result.erase(repeated.begin(), repeated.end());
   for (auto& entry : result) {
     entry.second = GetWebFeedSubscriptionStatus(entry.first);
   }
@@ -930,8 +929,7 @@ void WebFeedSubscriptionCoordinator::RetryPendingOperations() {
             op.operation.change_reason(), base::DoNothing());
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported operation kind " << op.operation.kind();
+        NOTREACHED() << "Unsupported operation kind " << op.operation.kind();
     }
   }
 }

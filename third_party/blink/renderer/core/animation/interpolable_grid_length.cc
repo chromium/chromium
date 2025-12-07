@@ -37,8 +37,7 @@ Length CreateContentSizedLength(
     case InterpolableGridLength::kMaxContent:
       return Length(Length::kMaxContent);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Length(Length::kFixed);
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -57,11 +56,8 @@ InterpolableGridLength* InterpolableGridLength::Create(
   InterpolableGridLengthType type = GetInterpolableGridLengthType(length);
   InterpolableValue* value = nullptr;
   if (length.IsFlex()) {
-    value = MakeGarbageCollected<InterpolableNumber>(length.GetFloatValue());
+    value = MakeGarbageCollected<InterpolableNumber>(length.Flex());
   } else {
-    // TODO(https://crbug.com/40339056): We need to propagate
-    // interpolate-size through here when we add support to grid track
-    // sizes.
     value = InterpolableLength::MaybeConvertLength(
         length, property, zoom,
         /*interpolate_size=*/std::nullopt);

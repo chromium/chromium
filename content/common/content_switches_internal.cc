@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/process/process_handle.h"
@@ -65,14 +66,6 @@ std::string FromNativeString(const std::string& string) {
 
 }  // namespace
 
-bool IsPinchToZoomEnabled() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  // Enable pinch everywhere unless it's been explicitly disabled.
-  return !command_line.HasSwitch(switches::kDisablePinch);
-}
-
 blink::mojom::V8CacheOptions GetV8CacheOptions() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -116,8 +109,7 @@ void WaitForDebugger(const std::string& label) {
              << ") paused waiting for debugger to attach. "
              << "Send SIGUSR1 to unpause.";
   // Install a signal handler so that pause can be woken.
-  struct sigaction sa;
-  memset(&sa, 0, sizeof(sa));
+  struct sigaction sa = {};
   sa.sa_handler = SigUSR1Handler;
   sigaction(SIGUSR1, &sa, nullptr);
 

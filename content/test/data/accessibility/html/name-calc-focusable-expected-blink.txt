@@ -12,7 +12,7 @@ rootWebArea focusable name='not-focusable-no-name'
 rootWebArea focusable name='tabindex-0-has-name'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer focusable name='Cats Dogs'
+++++++genericContainer focusable
 ++++++++paragraph
 ++++++++++staticText name='Cats'
 ++++++++++++inlineTextBox name='Cats'

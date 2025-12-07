@@ -12,11 +12,8 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "content/public/browser/web_ui.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-
-using policy::URLBlocklist;
 
 namespace download_internals {
 
@@ -24,8 +21,9 @@ DownloadInternalsUIMessageHandler::DownloadInternalsUIMessageHandler()
     : download_service_(nullptr) {}
 
 DownloadInternalsUIMessageHandler::~DownloadInternalsUIMessageHandler() {
-  if (download_service_)
+  if (download_service_) {
     download_service_->GetLogger()->RemoveObserver(this);
+  }
 }
 
 void DownloadInternalsUIMessageHandler::RegisterMessages() {
@@ -53,40 +51,45 @@ void DownloadInternalsUIMessageHandler::RegisterMessages() {
 
 void DownloadInternalsUIMessageHandler::OnServiceStatusChanged(
     const base::Value::Dict& service_status) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   FireWebUIListener("service-status-changed", service_status);
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceDownloadsAvailable(
     const base::Value::List& service_downloads) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   FireWebUIListener("service-downloads-available", service_downloads);
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceDownloadChanged(
     const base::Value::Dict& service_download) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   FireWebUIListener("service-download-changed", service_download);
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceDownloadFailed(
     const base::Value::Dict& service_download) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   FireWebUIListener("service-download-failed", service_download);
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceRequestMade(
     const base::Value::Dict& service_request) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   FireWebUIListener("service-request-made", service_request);
 }
@@ -113,16 +116,6 @@ void DownloadInternalsUIMessageHandler::HandleStartDownload(
   GURL url = GURL(args[1].GetString());
   if (!url.is_valid()) {
     LOG(WARNING) << "Can't parse download URL, try to enter a valid URL.";
-    return;
-  }
-
-  Profile* profile = Profile::FromWebUI(web_ui());
-  PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile);
-  URLBlocklist::URLBlocklistState blocklist_state =
-      service->GetURLBlocklistState(url);
-  if (blocklist_state == URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-    LOG(WARNING) << "URL is blocked by a policy.";
     return;
   }
 

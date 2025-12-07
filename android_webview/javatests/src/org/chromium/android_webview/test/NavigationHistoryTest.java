@@ -21,7 +21,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwFeatureMap;
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -54,7 +54,7 @@ public class NavigationHistoryTest extends AwParameterizedTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private TestPageLoadedNotifier mLoadedNotifier;
-    private String mLoadedFutureName = "awFullyLoadedFuture";
+    private final String mLoadedFutureName = "awFullyLoadedFuture";
 
     public NavigationHistoryTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

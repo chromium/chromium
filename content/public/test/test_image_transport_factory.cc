@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -57,11 +58,6 @@ scoped_refptr<viz::RasterContextProvider>
 TestImageTransportFactory::SharedMainThreadRasterContextProvider() {
   NOTIMPLEMENTED();
   return nullptr;
-}
-
-gpu::GpuMemoryBufferManager*
-TestImageTransportFactory::GetGpuMemoryBufferManager() {
-  return &gpu_memory_buffer_manager_;
 }
 
 cc::TaskGraphRunner* TestImageTransportFactory::GetTaskGraphRunner() {

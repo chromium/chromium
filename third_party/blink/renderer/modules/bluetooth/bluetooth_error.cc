@@ -64,8 +64,7 @@ DOMException* BluetoothError::CreateDOMException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotFoundError, detailed_message);
   }
-  NOTREACHED_IN_MIGRATION();
-  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
+  NOTREACHED();
 }
 
 // static
@@ -80,9 +79,7 @@ DOMException* BluetoothError::CreateDOMException(
       // an error and the others have a detailed message and are
       // expected to be redirected to the switch above that handles
       // BluetoothErrorCode.
-      NOTREACHED_IN_MIGRATION();
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError);
+      NOTREACHED();
 #define MAP_ERROR(enumeration, name, message)         \
   case mojom::blink::WebBluetoothResult::enumeration: \
     return MakeGarbageCollected<DOMException>(name, message);
@@ -238,12 +235,15 @@ DOMException* BluetoothError::CreateDOMException(
                 "Connection Error: An internal error has occurred.");
       MAP_ERROR(CONNECT_WAKELOCK, DOMExceptionCode::kUnknownError,
                 "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_UNEXPECTED_STATE, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_SOCKET_ERROR, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
 
 #undef MAP_ERROR
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
+  NOTREACHED();
 }
 
 }  // namespace blink

@@ -31,14 +31,16 @@ class ArcAppShortcutsRequestTest : public testing::Test {
   ~ArcAppShortcutsRequestTest() override = default;
 
   void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     IconDecodeRequest::DisableSafeDecodingForTesting();
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
  private:

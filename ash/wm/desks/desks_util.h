@@ -59,9 +59,7 @@ ASH_EXPORT aura::Window* GetActiveDeskContainerForRoot(aura::Window* root);
 
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window);
 
-// Returns active desk's associated lacros profile ID when Desk Profiles feature
-// is enabled; returns null otherwise.
-ASH_EXPORT std::optional<uint64_t> GetActiveDeskLacrosProfileId();
+ASH_EXPORT bool BelongsToDesk(aura::Window* window, const Desk* desk);
 
 // If `context` is a descendent window of a desk container, return that desk
 // container, otherwise return nullptr. Note that this will return nullptr if
@@ -77,6 +75,10 @@ ASH_EXPORT const Desk* GetDeskForContext(aura::Window* context);
 
 // Returns true if the DesksBar widget should be created in overview mode.
 ASH_EXPORT bool ShouldDesksBarBeCreated();
+
+// Returns true if the DesksBar widget should be created in overview mode and
+// the desk bar should contain "mini views" of each desk.
+ASH_EXPORT bool ShouldRenderDeskBarWithMiniViews();
 
 // Selects and returns the compositor to measure performance metrics.
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics();

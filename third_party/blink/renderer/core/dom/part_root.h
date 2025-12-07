@@ -60,20 +60,20 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   }
 
   // PartRoot API
-  typedef HeapVector<Member<Node>, 20> PartNodeList;
-  typedef HeapVector<Member<Part>, 20> PartList;
+  using PartNodeList = GCedHeapVector<Member<Node>, 20>;
+  using PartList = GCedHeapVector<Member<Part>, 20>;
   const PartList& getParts();
   const PartNodeList& getNodePartNodes();
   const PartNodeList& getChildNodePartNodes();
   virtual ContainerNode* rootContainer() const = 0;
 
  protected:
-  PartRoot() = default;
+  PartRoot();
   virtual const PartRoot* GetParentPartRoot() const = 0;
 
  private:
   void RebuildPartsList();
-  PartList cached_ordered_parts_;
+  Member<PartList> cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };
 

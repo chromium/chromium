@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/url_fetcher.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -21,7 +20,7 @@ class SimpleURLLoader;
 namespace extensions {
 
 // ControlledFrameEmbedderURLFetcher downloads the content of a file by giving
-// its |url| in the app.  Each ControlledFrameEmbedderURLFetcher is associated
+// its `url` in the app.  Each ControlledFrameEmbedderURLFetcher is associated
 // with a given |render_process_id, render_view_id| pair.
 class ControlledFrameEmbedderURLFetcher : public extensions::URLFetcher {
  public:

@@ -17,12 +17,12 @@ class TickClock;
 namespace media {
 class GpuVideoAcceleratorFactories;
 
-// Interface to a pool of GpuMemoryBuffers/textures/images that can be used to
+// Interface to a pool of MappableSI/textures/images that can be used to
 // transform software VideoFrames to VideoFrames backed by native textures.
 // The resources used by the VideoFrame created by the pool will be
 // automatically put back into the pool once the frame is destroyed.
 // The pool recycles resources to a void unnecessarily allocating and
-// destroying textures, images and GpuMemoryBuffer that could result
+// destroying textures, images and MappableSI that could result
 // in a round trip to the browser/GPU process.
 //
 // NOTE: While destroying the pool will abort any uncompleted copies, it will
@@ -45,11 +45,11 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   virtual ~GpuMemoryBufferVideoFramePool();
 
   // Callback used by MaybeCreateHardwareFrame to deliver a new VideoFrame
-  // after it has been copied to GpuMemoryBuffers.
+  // after it has been copied to MappableSI.
   using FrameReadyCB = base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
 
-  // Calls |cb| with a new VideoFrame containing only mailboxes to native
-  // resources. The content of the new object is copied from the
+  // Calls |cb| with a new VideoFrame containing only mailbox to native
+  // resource. The content of the new object is copied from the
   // software-allocated |video_frame|.
   //
   // If it's not possible to create a new hardware VideoFrame, |video_frame|
@@ -63,10 +63,6 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
 
   // Allows injection of a base::SimpleTestClock for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
-
-  // Returns true if SharedImages should be bound for each individual plane
-  // of a multiplanar GpuMemoryBuffer. Exposed externally for testing.
-  static bool MultiPlaneVideoSharedImagesEnabled();
 
   // This is currently used to suppress some tests when MappableSI is
   // enabled.

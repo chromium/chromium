@@ -62,14 +62,6 @@ std::string ProviderId::ToString() const {
   }
 }
 
-bool ProviderId::operator==(const ProviderId& other) const {
-  return type_ == other.type_ && internal_id_ == other.internal_id_;
-}
-
-bool ProviderId::operator!=(const ProviderId& other) const {
-  return !operator==(other);
-}
-
 bool ProviderId::operator<(const ProviderId& other) const {
   return std::tie(type_, internal_id_) <
          std::tie(other.type_, other.internal_id_);

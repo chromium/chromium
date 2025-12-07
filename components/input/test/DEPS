@@ -1,4 +1,5 @@
 include_rules = [
+  "+content/public/browser/web_contents.h",
   "+content/public/test",
   "+content/shell",
 ]

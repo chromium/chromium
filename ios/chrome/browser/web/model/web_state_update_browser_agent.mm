@@ -7,10 +7,8 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebStateUpdateBrowserAgent)
-
 WebStateUpdateBrowserAgent::WebStateUpdateBrowserAgent(Browser* browser)
-    : web_state_list_(browser->GetWebStateList()) {
+    : BrowserUserData(browser), web_state_list_(browser->GetWebStateList()) {
   web_state_list_observation_.Observe(web_state_list_.get());
 
   // All the BrowserAgent are attached to the Browser during the creation,
@@ -42,23 +40,32 @@ void WebStateUpdateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
-  if (change.type() == WebStateListChange::Type::kDetach) {
-    // Inform the detached web state that it is no longer visible.
-    const WebStateListChangeDetach& detach_change =
-        change.As<WebStateListChangeDetach>();
-    web::WebState* detached_web_state = detach_change.detached_web_state();
-    if (detached_web_state->IsRealized()) {
-      detached_web_state->WasHidden();
-      detached_web_state->SetKeepRenderProcessAlive(false);
-    }
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kMove:
+    case WebStateListChange::Type::kInsert:
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
+    case WebStateListChange::Type::kGroupDelete:
+      // Nothing to do.
+      break;
+
+    case WebStateListChange::Type::kDetach:
+      WebStateRemoved(
+          change.As<WebStateListChangeDetach>().detached_web_state());
+      break;
+
+    case WebStateListChange::Type::kReplace:
+      WebStateRemoved(
+          change.As<WebStateListChangeReplace>().replaced_web_state());
+      break;
   }
 
   if (status.active_web_state_change()) {
     // Inform the old web state that it is no longer visible.
-    if (web::WebState* old_active = status.old_active_web_state;
-        old_active && old_active->IsRealized()) {
-      old_active->WasHidden();
-      old_active->SetKeepRenderProcessAlive(false);
+    if (status.old_active_web_state) {
+      WebStateRemoved(status.old_active_web_state);
     }
     if (web::WebState* new_active = status.new_active_web_state;
         new_active && new_active->IsRealized()) {
@@ -71,4 +78,11 @@ void WebStateUpdateBrowserAgent::WebStateListDestroyed(
     WebStateList* web_state_list) {
   // Stop observing web state list.
   web_state_list_observation_.Reset();
+}
+
+void WebStateUpdateBrowserAgent::WebStateRemoved(web::WebState* web_state) {
+  if (web_state->IsRealized()) {
+    web_state->WasHidden();
+    web_state->SetKeepRenderProcessAlive(false);
+  }
 }

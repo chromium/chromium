@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -59,8 +60,6 @@ void FakeServiceWorker::InitializeGlobalScope(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
     blink::mojom::FetchHandlerExistence fetch_handler_existence,
-    mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        reporting_observer_receiver,
     blink::mojom::AncestorFrameType ancestor_frame_type,
     const blink::StorageKey& storage_key) {
   host_.Bind(std::move(service_worker_host));
@@ -170,6 +169,13 @@ void FakeServiceWorker::DispatchPushEvent(
     const std::optional<std::string>& payload,
     DispatchPushEventCallback callback) {
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
+}
+
+void FakeServiceWorker::DispatchPushEventRecordingNetworkRequests(
+    const std::optional<std::string>& payload,
+    DispatchPushEventRecordingNetworkRequestsCallback callback) {
+  std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
+                          std::nullopt);
 }
 
 void FakeServiceWorker::DispatchPushSubscriptionChangeEvent(

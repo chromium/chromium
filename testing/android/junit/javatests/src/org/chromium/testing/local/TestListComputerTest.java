@@ -28,6 +28,7 @@ public class TestListComputerTest {
     @Config(shadows = {Shadow.class})
     public static class FakeTestClass {
         @Test
+        @Config(qualifiers = "sw600dp")
         public void someTest() {}
     }
 
@@ -42,7 +43,7 @@ public class TestListComputerTest {
         core.run(Request.classes(computer, classes));
         String expected =
                 """
-            {"configs":{"PAUSED":{"org.chromium.testing.local.TestListComputerTest$FakeTestClass":\
+            {"configs":{"PAUSED.sw600dp":{"org.chromium.testing.local.TestListComputerTest$FakeTestClass":\
             ["someTest"]}},"instrumentedPackages":[],"instrumentedClasses":\
             ["org.chromium.testing.local.TestListComputerTest"]}""";
         Assert.assertEquals(expected, computer.createJson().toString());

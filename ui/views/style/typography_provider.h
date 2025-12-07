@@ -39,6 +39,9 @@ class VIEWS_EXPORT TypographyProvider {
   ui::ColorId GetColorId(int context, int style) const;
   int GetLineHeight(int context, int style) const;
 
+  // Returns the font list to use in the title bar on Windows.
+  gfx::FontList GetWindowTitleFontList() const;
+
  protected:
   // Returns the weight that will result in the ResourceBundle returning an
   // appropriate "medium" weight for UI. This caters for systems that are known

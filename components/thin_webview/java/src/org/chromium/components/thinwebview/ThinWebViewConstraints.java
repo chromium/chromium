@@ -6,7 +6,10 @@ package org.chromium.components.thinwebview;
 
 import android.graphics.Color;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Various constraints associated with the thin webview based on the usage. */
+@NullMarked
 public class ThinWebViewConstraints implements Cloneable {
     /** Whether this view will support opacity. */
     public boolean supportsOpacity;

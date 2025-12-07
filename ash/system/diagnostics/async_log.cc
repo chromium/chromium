@@ -18,6 +18,8 @@ namespace {
 
 // Create the log file. Called on the first write to the file.
 void CreateFile(const base::FilePath& file_path) {
+  // Regarding this DCHECK(), please see AsyncLogTest.NoUseAfterFreeCrash for
+  // more comments.
   DCHECK(!base::PathExists(file_path));
 
   if (!base::PathExists(file_path.DirName())) {

@@ -22,7 +22,7 @@ public class HubShowPaneHelperUnitTest {
 
     @Before
     public void setUp() {
-        mHubShowPaneHelper = new HubShowPaneHelper();
+        mHubShowPaneHelper = new HubShowPaneHelper(/* defaultPaneId= */ PaneId.TAB_SWITCHER);
     }
 
     @Test

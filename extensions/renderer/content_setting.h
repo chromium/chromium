@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/argument_spec.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8-forward.h"
 
@@ -26,8 +27,18 @@ class BindingAccessChecker;
 // to APIs.
 class ContentSetting final : public gin::Wrappable<ContentSetting> {
  public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kContentSetting};
+
   ContentSetting(const ContentSetting&) = delete;
+
   ContentSetting& operator=(const ContentSetting&) = delete;
+
+  ContentSetting(APIRequestHandler* request_handler,
+                 const APITypeReferenceMap* type_refs,
+                 const BindingAccessChecker* access_checker,
+                 const std::string& pref_name,
+                 const base::Value::Dict& argument_spec);
 
   ~ContentSetting() override;
 
@@ -41,18 +52,14 @@ class ContentSetting final : public gin::Wrappable<ContentSetting> {
       APITypeReferenceMap* type_refs,
       const BindingAccessChecker* access_checker);
 
-  static gin::WrapperInfo kWrapperInfo;
-
-  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override;
-  const char* GetTypeName() override;
-
  private:
-  ContentSetting(APIRequestHandler* request_handler,
-                 const APITypeReferenceMap* type_refs,
-                 const BindingAccessChecker* access_checker,
-                 const std::string& pref_name,
-                 const base::Value::Dict& argument_spec);
+  // gin::Wrappable:
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) final;
+
+  const char* GetHumanReadableName() const override;
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   // JS function handlers:
   void Get(gin::Arguments* arguments);

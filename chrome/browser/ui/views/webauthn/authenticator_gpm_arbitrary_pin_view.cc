@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"

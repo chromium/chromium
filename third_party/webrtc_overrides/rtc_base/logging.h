@@ -24,9 +24,7 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_LOGGING_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_LOGGING_H_
 
-#include <ostream>
-#include <string>
-#include <type_traits>
+#include <cstddef>
 
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 
@@ -39,7 +37,7 @@
 
 #include <errno.h>
 
-namespace rtc {
+namespace webrtc {
 
 // Note that |N| is the size *with* the null terminator.
 bool CheckVlogIsOnHelper(LoggingSeverity severity, const char* file, size_t N);
@@ -49,27 +47,27 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
   return CheckVlogIsOnHelper(severity, file, N);
 }
 
-}  // namespace rtc
+}  // namespace webrtc
 
 // The LogMessageVoidify() call suppresses -Wunreachable-code diagnostics
 // in certain conditions (see https://crbug.com/1065568)
 // TODO(thakis): Make the warning smarter and then remove this again.
-#define DIAGNOSTIC_LOG(sev, ctx, err, ...)                                     \
-  rtc::LogMessageVoidify() & rtc::DiagnosticLogMessage(__FILE__, __LINE__,     \
-                                                       sev, rtc::ERRCTX_##ctx, \
-                                                       err, ##__VA_ARGS__)     \
-                                 .stream()
+#define DIAGNOSTIC_LOG(sev, ctx, err, ...)                                   \
+  webrtc::LogMessageVoidify() &                                              \
+      webrtc::DiagnosticLogMessage(__FILE__, __LINE__, sev,                  \
+                                   webrtc::ERRCTX_##ctx, err, ##__VA_ARGS__) \
+          .stream()
 
-#define RTC_LOG_CHECK_LEVEL(sev) CheckVlogIsOn(rtc::sev, __FILE__)
+#define RTC_LOG_CHECK_LEVEL(sev) CheckVlogIsOn(webrtc::sev, __FILE__)
 #define RTC_LOG_CHECK_LEVEL_V(sev) CheckVlogIsOn(sev, __FILE__)
 
 #define RTC_LOG_V(sev) DIAGNOSTIC_LOG(sev, NONE, 0)
 #undef RTC_LOG
-#define RTC_LOG(sev) DIAGNOSTIC_LOG(rtc::sev, NONE, 0)
+#define RTC_LOG(sev) DIAGNOSTIC_LOG(webrtc::sev, NONE, 0)
 // Log if condition evaluates to true. DIAGNOSTIC_LOG comes second in the
 // expression so users can properly stream log message to the logger.
 #define RTC_LOG_IF(sev, condition) \
-  !(condition) ? (void)0 : DIAGNOSTIC_LOG(rtc::sev, NONE, 0)
+  !(condition) ? (void)0 : DIAGNOSTIC_LOG(webrtc::sev, NONE, 0)
 
 // The _F version prefixes the message with the current function name.
 #if defined(__GNUC__) && defined(_DEBUG)
@@ -83,7 +81,7 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
 #endif
 
 #define RTC_LOG_E(sev, ctx, err, ...) \
-  DIAGNOSTIC_LOG(rtc::sev, ctx, err, ##__VA_ARGS__)
+  DIAGNOSTIC_LOG(webrtc::sev, ctx, err, ##__VA_ARGS__)
 
 #undef RTC_LOG_ERRNO_EX
 #define RTC_LOG_ERRNO_EX(sev, err) RTC_LOG_E(sev, ERRNO, err)
@@ -121,27 +119,19 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
 #define RTC_DLOG_F(sev) RTC_LOG_F(sev)
 #define RTC_DLOG_IF_F(sev, condition) RTC_LOG_IF_F(sev, condition)
 #else
-#define RTC_DLOG_EAT_STREAM_PARAMS(sev) \
-  (true ? true : ((void)(rtc::sev), true)) \
-      ? static_cast<void>(0)          \
-      : rtc::LogMessageVoidify() &    \
-        rtc::DiagnosticLogMessage(__FILE__, __LINE__, rtc::sev, \
-                                  rtc::ERRCTX_NONE, 0).stream()
+#define RTC_DLOG_EAT_STREAM_PARAMS(sev)                                   \
+  (true ? true : ((void)(webrtc::sev), true))                             \
+      ? static_cast<void>(0)                                              \
+      : webrtc::LogMessageVoidify() &                                     \
+            webrtc::DiagnosticLogMessage(__FILE__, __LINE__, webrtc::sev, \
+                                         webrtc::ERRCTX_NONE, 0)          \
+                .stream()
 #define RTC_DLOG(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_IF(sev, condition) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_V(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_F(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_IF_F(sev, condition) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #endif
-
-// Add operator<< for WebRTC types with the ToLogString method.
-template <typename T,
-          typename = std::enable_if_t<
-              std::is_convertible<decltype(ToLogString(std::declval<T>())),
-                                  std::string>::value>>
-std::ostream& operator<<(std::ostream& os, T val) {
-  return os << ToLogString(val);
-}
 
 #endif  // LOGGING_INSIDE_WEBRTC
 

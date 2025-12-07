@@ -74,8 +74,7 @@ void MagnifierKeyScroller::OnKeyHold(const ui::KeyEvent* event) {
           FullscreenMagnifierController::SCROLL_RIGHT);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown keyboard_code:" << event->key_code();
+      NOTREACHED() << "Unknown keyboard_code:" << event->key_code();
   }
 }
 

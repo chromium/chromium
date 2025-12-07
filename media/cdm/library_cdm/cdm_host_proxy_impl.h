@@ -6,9 +6,59 @@
 #define MEDIA_CDM_LIBRARY_CDM_CDM_HOST_PROXY_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 
 namespace media {
+
+namespace {
+
+cdm::KeyStatus ToKeyStatus(const cdm::KeyStatus_2& key_status) {
+  switch (key_status) {
+    case cdm::KeyStatus_2::kUsable:
+      return cdm::KeyStatus::kUsable;
+    case cdm::KeyStatus_2::kInternalError:
+    // Return UsableInFuture as error for KeyStatus as it should not be handled.
+    case cdm::KeyStatus_2::kUsableInFuture:
+      return cdm::KeyStatus::kInternalError;
+    case cdm::KeyStatus_2::kExpired:
+      return cdm::KeyStatus::kExpired;
+    case cdm::KeyStatus_2::kOutputRestricted:
+      return cdm::KeyStatus::kOutputRestricted;
+    case cdm::KeyStatus_2::kOutputDownscaled:
+      return cdm::KeyStatus::kOutputDownscaled;
+    case cdm::KeyStatus_2::kStatusPending:
+      return cdm::KeyStatus::kStatusPending;
+    case cdm::KeyStatus_2::kReleased:
+      return cdm::KeyStatus::kReleased;
+    default:
+      return cdm::KeyStatus::kInternalError;
+  }
+}
+
+std::vector<cdm::KeyInformation> ConvertKeyInformation(
+    const cdm::KeyInformation_2* keys_info,
+    uint32_t keys_info_count) {
+  std::vector<cdm::KeyInformation> keys_vector;
+  keys_vector.reserve(keys_info_count);
+
+  UNSAFE_BUFFERS({
+    // SAFETY: The loop iterates exactly keys_info_count times, which is the
+    // size of the buffer passed in.
+    for (uint32_t i = 0; i < keys_info_count; ++i) {
+      cdm::KeyInformation key = {};
+      key.key_id = keys_info[i].key_id;
+      key.key_id_size = keys_info[i].key_id_size;
+      key.status = ToKeyStatus(keys_info[i].status);
+      key.system_code = keys_info[i].system_code;
+      keys_vector.push_back(key);
+    }
+  });
+
+  return keys_vector;
+}
+
+}  // namespace
 
 // A templated implementation of CdmHostProxy to forward Host calls to the
 // correct CDM Host.
@@ -38,6 +88,12 @@ class CdmHostProxyImpl : public CdmHostProxy {
 
   void OnResolveKeyStatusPromise(uint32_t promise_id,
                                  cdm::KeyStatus key_status) final {
+    // Use cdm::KeyStatus_2 function instead.
+    NOTIMPLEMENTED();
+  }
+
+  void OnResolveKeyStatusPromise(uint32_t promise_id,
+                                 cdm::KeyStatus_2 key_status) final {
     host_->OnResolveKeyStatusPromise(promise_id, key_status);
   }
 
@@ -73,6 +129,15 @@ class CdmHostProxyImpl : public CdmHostProxy {
                            uint32_t session_id_size,
                            bool has_additional_usable_key,
                            const cdm::KeyInformation* keys_info,
+                           uint32_t keys_info_count) final {
+    // Use cdm::KeyInformation_2 function instead.
+    NOTIMPLEMENTED();
+  }
+
+  void OnSessionKeysChange(const char* session_id,
+                           uint32_t session_id_size,
+                           bool has_additional_usable_key,
+                           const cdm::KeyInformation_2* keys_info,
                            uint32_t keys_info_count) final {
     host_->OnSessionKeysChange(session_id, session_id_size,
                                has_additional_usable_key, keys_info,
@@ -116,9 +181,66 @@ class CdmHostProxyImpl : public CdmHostProxy {
     host_->RequestStorageId(version);
   }
 
+  void ReportMetrics(cdm::MetricName metric_name, uint64_t value) final {
+    host_->ReportMetrics(metric_name, value);
+  }
+
  private:
   const raw_ptr<HostInterface> host_ = nullptr;
 };
+
+template <>
+void CdmHostProxyImpl<cdm::Host_10>::ReportMetrics(cdm::MetricName metric_name,
+                                                   uint64_t value) {
+  // cdm::ContentDecryptionModule_10 CDM should never call this.
+  NOTIMPLEMENTED();
+}
+
+// Specialization for Host_10's OnResolveKeyStatusPromise with KeyStatus_2
+template <>
+void CdmHostProxyImpl<cdm::Host_10>::OnResolveKeyStatusPromise(
+    uint32_t promise_id,
+    cdm::KeyStatus_2 key_status) {
+  host_->OnResolveKeyStatusPromise(promise_id, ToKeyStatus(key_status));
+}
+
+// Specialization for Host_11's OnResolveKeyStatusPromise with KeyStatus_2
+template <>
+void CdmHostProxyImpl<cdm::Host_11>::OnResolveKeyStatusPromise(
+    uint32_t promise_id,
+    cdm::KeyStatus_2 key_status) {
+  host_->OnResolveKeyStatusPromise(promise_id, ToKeyStatus(key_status));
+}
+
+// Specialization for Host_10's OnSessionKeysChange with KeyInformation_2
+template <>
+void CdmHostProxyImpl<cdm::Host_10>::OnSessionKeysChange(
+    const char* session_id,
+    uint32_t session_id_size,
+    bool has_additional_usable_key,
+    const cdm::KeyInformation_2* keys_info,
+    uint32_t keys_info_count) {
+  std::vector<cdm::KeyInformation> keys_vector =
+      ConvertKeyInformation(keys_info, keys_info_count);
+  host_->OnSessionKeysChange(session_id, session_id_size,
+                             has_additional_usable_key, keys_vector.data(),
+                             keys_vector.size());
+}
+
+// Specialization for Host_11's OnSessionKeysChange with KeyInformation_2
+template <>
+void CdmHostProxyImpl<cdm::Host_11>::OnSessionKeysChange(
+    const char* session_id,
+    uint32_t session_id_size,
+    bool has_additional_usable_key,
+    const cdm::KeyInformation_2* keys_info,
+    uint32_t keys_info_count) {
+  std::vector<cdm::KeyInformation> keys_vector =
+      ConvertKeyInformation(keys_info, keys_info_count);
+  host_->OnSessionKeysChange(session_id, session_id_size,
+                             has_additional_usable_key, keys_vector.data(),
+                             keys_vector.size());
+}
 
 }  // namespace media
 

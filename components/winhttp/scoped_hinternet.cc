@@ -6,10 +6,9 @@
 
 #include <windows.h>
 
-#include <versionhelpers.h>
-
-#include <string_view>
 #include <utility>
+
+#include "base/logging.h"
 
 namespace winhttp {
 
@@ -22,17 +21,16 @@ ScopedHInternet CreateSessionHandle(std::wstring_view user_agent,
       proxy.empty() ? WINHTTP_NO_PROXY_NAME : proxy.data(),
       proxy_bypass.empty() ? WINHTTP_NO_PROXY_BYPASS : proxy_bypass.data(),
       WINHTTP_FLAG_ASYNC));
-
-  // Allow TLS1.2 on Windows 7 and Windows 8. See KB3140245. TLS 1.2 is enabled
-  // by default on Windows 8.1 and Windows 10.
-  if (session_handle.is_valid() && ::IsWindows7OrGreater() &&
-      !::IsWindows8Point1OrGreater()) {
-    DWORD protocols = WINHTTP_FLAG_SECURE_PROTOCOL_TLS1 |
-                      WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_1 |
-                      WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2;
-    ::WinHttpSetOption(session_handle.get(), WINHTTP_OPTION_SECURE_PROTOCOLS,
-                       &protocols, sizeof(protocols));
+  if (!session_handle.is_valid()) {
+    return session_handle;
   }
+
+  if (DWORD decompression_flag = WINHTTP_DECOMPRESSION_FLAG_ALL;
+      !::WinHttpSetOption(session_handle.get(), WINHTTP_OPTION_DECOMPRESSION,
+                          &decompression_flag, sizeof(decompression_flag))) {
+    VLOG(1) << "Failed to configure WINHTTP_DECOMPRESSION_FLAG_ALL";
+  }
+
   return session_handle;
 }
 

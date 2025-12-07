@@ -31,22 +31,29 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
       base::OnceCallback<void(const std::optional<std::string>& error)>;
 
   struct PathAndLocaleInfo {
+    PathAndLocaleInfo(
+        base::FilePath file_path,
+        base::Version version,
+        std::string default_locale,
+        extension_l10n_util::GzippedMessagesPermission gzip_permission);
+    PathAndLocaleInfo(const PathAndLocaleInfo& other);
+    ~PathAndLocaleInfo();
+
     base::FilePath file_path;
+    base::Version version;
     std::string default_locale;
     extension_l10n_util::GzippedMessagesPermission gzip_permission;
   };
 
-  // The `listen_for_extension_system_loaded` is only set true when initializing
-  // the Extension System, e.g, when constructs UserScriptManager in
-  // ExtensionSystemImpl.
+  // Constructs a loader associated with the given `extension`. If the
+  // ExtensionSystem is not ready, it will wait for the ExtensionSystem to be
+  // ready before loading scripts.
+  ExtensionUserScriptLoader(content::BrowserContext* browser_context,
+                            const Extension& extension,
+                            StateStore* state_store);
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
                             const Extension& extension,
                             StateStore* state_store,
-                            bool listen_for_extension_system_loaded);
-  ExtensionUserScriptLoader(content::BrowserContext* browser_context,
-                            const Extension& extension,
-                            StateStore* state_store,
-                            bool listen_for_extension_system_loaded,
                             scoped_refptr<ContentVerifier> content_verifier);
 
   ExtensionUserScriptLoader(const ExtensionUserScriptLoader&) = delete;

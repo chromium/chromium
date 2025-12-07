@@ -25,37 +25,38 @@ import("//build/buildflag_header.gni")
 import("//build/config/arm.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
-import("//build/config/ios/config.gni")
 import("//build/config/logging.gni")
-import("//build/config/nacl/config.gni")
 import("//build/config/profiling/profiling.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
-import("//build/timestamp.gni")
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_ios) {
+  # Used to access target_environment and target_platform.
+  import("//build/config/apple/mobile_config.gni")
+
   # Used to access ios_is_app_extension variable definition.
   import("//build/config/ios/ios_sdk.gni")
 }
 
-if (is_mac) {
-  # Used to generate fuzzer corpus :base_mach_port_rendezvous_convert_corpus.
-  import("//third_party/protobuf/proto_library.gni")
-}
-
 if (is_win) {
   import("//build/config/win/control_flow_guard.gni")
+}
+
+if (is_android) {
+  import("//build/config/android/config.gni")
 }
 
 declare_args() {
@@ -70,12 +71,20 @@ declare_args() {
   # Set to true to enable mutex priority inheritance. See the comments in
   # LockImpl::PriorityInheritanceAvailable() in lock_impl_posix.cc for the
   # platform requirements to safely enable priority inheritance.
-  enable_mutex_priority_inheritance = false
+  #
+  # Enabled only on 64-bit Android. On 32 bit Android, PI mutexes have an extra
+  # level of indirection, so we don't bother enabling it. See:
+  # https://cs.android.com/android/platform/superproject/+/android14-qpr3-release:bionic/libc/bionic/pthread_mutex.cpp;drc=9108f258adad329a537e10461fbd526d5b9ad8bf;l=242
+  enable_mutex_priority_inheritance =
+      is_android && (current_cpu == "x64" || current_cpu == "arm64")
 
   # Control whether the ios stack sampling profiler is enabled. This flag is
   # only supported on iOS 64-bit architecture, but some project build //base
   # for 32-bit architecture.
   ios_stack_profiler_enabled = true
+
+  # Set to true to enable icu4x transliterator
+  enable_rust_translit = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -83,22 +92,18 @@ declare_args() {
 # Chromecast builds have full control over the platform and ensure that
 # the kernel and glibc versions used have patched the vulnerabilities,
 # so it is safe to use mutex priority inheritance on Chromecast platform.
-assert(!enable_mutex_priority_inheritance || is_castos || is_cast_android,
+assert(!enable_mutex_priority_inheritance ||
+           (is_castos || is_cast_android || is_android),
        "Do not enable PI mutexes without consulting the security team")
 
-assert(!is_nacl || is_nacl_saigo,
-       "base must not be built in most nacl toolchains")
+# Prevent //base having to support a toolchain that uses a different
+# llvm/libc++ version.
+assert(!is_wasm, "base must not be built in most wasm toolchains")
 
 # This is here instead of in //build because //build is DEPS'd in by a few
 # subprojects that still support MSVC.
 assert(!is_win || is_clang,
        "only clang-cl is supported on Windows, see https://crbug.com/988071")
-
-# Determines whether libevent should be dep.
-dep_libevent = !is_fuchsia && !is_win && !is_mac && !is_nacl
-
-# Determines whether message_pump_libevent should be used.
-use_libevent = dep_libevent && !is_ios
 
 if (is_android || is_robolectric) {
   import("//build/config/android/rules.gni")
@@ -109,29 +114,7 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-gn-sdk/src/fidl_library.gni")
 }
 
-# The Rust implementation of base::JSONReader. NaCl depends on base and doesn't
-# have a Rust toolchain, so we need a fallback to C++ for it until it removes
-# its dependency on //base.
-#
-# TODO(crbug.com/40811643): Drop toolchain_has_rust and move the C++ parser into
-# components/nacl to just run in-process there. Don't compile base::JSONReader
-# on NaCL at all.
-build_rust_json_reader = toolchain_has_rust && enable_rust_json
-
-# Rust to C++ type conversions. Also can not be enabled while NaCl depends on
-# //base.
-build_rust_base_conversions = toolchain_has_rust && enable_rust_base_conversions
-
-assert(build_rust_base_conversions || !build_rust_json_reader,
-       "Cannot enable Rust JSON decoder without also base conversions")
-
-buildflag_header("rust_buildflags") {
-  header = "rust_buildflags.h"
-  flags = [
-    "BUILD_RUST_JSON_READER=$build_rust_json_reader",
-    "BUILD_RUST_BASE_CONVERSIONS=$build_rust_base_conversions",
-  ]
-}
+_build_date_header = "$target_gen_dir/generated_build_date.h"
 
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.
@@ -176,12 +159,7 @@ buildflag_header("ios_cronet_buildflags") {
   flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
-enable_message_pump_epoll = is_linux || is_chromeos || is_android
-buildflag_header("message_pump_buildflags") {
-  header = "message_pump_buildflags.h"
-  header_dir = "base/message_loop"
-  flags = [ "ENABLE_MESSAGE_PUMP_EPOLL=$enable_message_pump_epoll" ]
-}
+use_epoll = is_linux || is_chromeos || is_android
 
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
@@ -207,8 +185,6 @@ component("base") {
     "allocator/dispatcher/internal/dispatch_data.h",
     "allocator/dispatcher/internal/dispatcher_internal.h",
     "allocator/dispatcher/internal/tools.h",
-    "allocator/dispatcher/memory_tagging.cc",
-    "allocator/dispatcher/memory_tagging.h",
     "allocator/dispatcher/notification_data.h",
     "allocator/dispatcher/reentry_guard.cc",
     "allocator/dispatcher/reentry_guard.h",
@@ -219,6 +195,7 @@ component("base") {
     "at_exit.h",
     "atomic_ref_count.h",
     "atomic_sequence_num.h",
+    "atomicops.cc",
     "atomicops.h",
     "atomicops_internals_atomicword_compat.h",
     "atomicops_internals_portable.h",
@@ -234,7 +211,10 @@ component("base") {
     "big_endian.h",
     "bit_cast.h",
     "bits.h",
-    "build_time.h",
+    "byte_count.cc",
+    "byte_count.h",
+    "byte_size.cc",
+    "byte_size.h",
     "callback_list.cc",
     "callback_list.h",
     "cancelable_callback.h",
@@ -250,11 +230,12 @@ component("base") {
     "compiler_specific.h",
     "component_export.h",
     "containers/adapters.h",
+    "containers/adapters_internal.h",
+    "containers/auto_spanification_helper.h",
     "containers/buffer_iterator.h",
     "containers/checked_iterators.h",
     "containers/circular_deque.h",
     "containers/contains.h",
-    "containers/dynamic_extent.h",
     "containers/enum_set.h",
     "containers/extend.h",
     "containers/fixed_flat_map.h",
@@ -270,8 +251,10 @@ component("base") {
     "containers/linked_list.h",
     "containers/lru_cache.h",
     "containers/map_util.h",
+    "containers/ring_buffer.h",
     "containers/small_map.h",
     "containers/span.h",
+    "containers/span_forward_internal.h",
     "containers/span_or_size.h",
     "containers/span_reader.h",
     "containers/span_writer.h",
@@ -279,10 +262,9 @@ component("base") {
     "containers/to_value_list.h",
     "containers/to_vector.h",
     "containers/unique_ptr_adapters.h",
-    "containers/util.h",
+    "containers/variant_map.cc",
+    "containers/variant_map.h",
     "containers/vector_buffer.h",
-    "cpu_reduction_experiment.cc",
-    "cpu_reduction_experiment.h",
     "critical_closure.h",
     "dcheck_is_on.h",
     "debug/alias.cc",
@@ -305,6 +287,7 @@ component("base") {
     "export_template.h",
     "feature_list.cc",
     "feature_list.h",
+    "feature_visitor.h",
     "features.cc",
     "features.h",
     "file_version_info.h",
@@ -340,7 +323,7 @@ component("base") {
     "functional/concurrent_closures.h",
     "functional/disallow_unretained.h",
     "functional/function_ref.h",
-    "functional/overloaded.h",
+    "functional/is_callback.h",
     "functional/unretained_traits.h",
     "gtest_prod_util.h",
     "hash/hash.cc",
@@ -348,8 +331,6 @@ component("base") {
     "hash/legacy_hash.cc",
     "hash/legacy_hash.h",
     "json/json_common.h",
-    "json/json_parser.cc",
-    "json/json_parser.h",
     "json/json_reader.cc",
     "json/json_reader.h",
     "json/json_string_value_serializer.cc",
@@ -371,16 +352,24 @@ component("base") {
     "location.h",
     "logging.cc",
     "logging.h",
+    "logging/log_severity.h",
+    "logging/logging_settings.h",
     "macros/concat.h",
     "macros/if.h",
     "macros/is_empty.h",
     "macros/remove_parens.h",
     "macros/uniquify.h",
+    "memory/advanced_memory_safety_checks.cc",
+    "memory/advanced_memory_safety_checks.h",
     "memory/aligned_memory.cc",
     "memory/aligned_memory.h",
+    "memory/asan_interface.h",
     "memory/free_deleter.h",
+    "memory/memory_pressure_level.h",
     "memory/memory_pressure_listener.cc",
     "memory/memory_pressure_listener.h",
+    "memory/memory_pressure_listener_registry.cc",
+    "memory/memory_pressure_listener_registry.h",
     "memory/memory_pressure_monitor.cc",
     "memory/memory_pressure_monitor.h",
     "memory/page_size.h",
@@ -403,7 +392,6 @@ component("base") {
     "memory/raw_ptr_cast.h",
     "memory/raw_ptr_exclusion.h",
     "memory/raw_ref.h",
-    "memory/raw_scoped_refptr_mismatch_checker.h",
     "memory/raw_span.h",
     "memory/read_only_shared_memory_region.cc",
     "memory/read_only_shared_memory_region.h",
@@ -414,6 +402,7 @@ component("base") {
     "memory/ref_counted_memory.h",
     "memory/safe_ref.h",
     "memory/safe_ref_traits.h",
+    "memory/safety_checks.cc",
     "memory/safety_checks.h",
     "memory/scoped_policy.h",
     "memory/scoped_refptr.h",
@@ -422,12 +411,14 @@ component("base") {
     "memory/shared_memory_mapper.h",
     "memory/shared_memory_mapping.cc",
     "memory/shared_memory_mapping.h",
+    "memory/shared_memory_safety_checker.h",
     "memory/shared_memory_security_policy.cc",
     "memory/shared_memory_security_policy.h",
     "memory/shared_memory_tracker.cc",
     "memory/shared_memory_tracker.h",
     "memory/singleton.h",
     "memory/stack_allocated.h",
+    "memory/structured_shared_memory.h",
     "memory/unsafe_shared_memory_pool.cc",
     "memory/unsafe_shared_memory_pool.h",
     "memory/unsafe_shared_memory_region.cc",
@@ -438,6 +429,16 @@ component("base") {
     "memory/weak_ptr.h",
     "memory/writable_shared_memory_region.cc",
     "memory/writable_shared_memory_region.h",
+    "memory_coordinator/async_memory_consumer_registration.cc",
+    "memory_coordinator/async_memory_consumer_registration.h",
+    "memory_coordinator/memory_consumer.cc",
+    "memory_coordinator/memory_consumer.h",
+    "memory_coordinator/memory_consumer_registry.cc",
+    "memory_coordinator/memory_consumer_registry.h",
+    "memory_coordinator/memory_consumer_registry_destruction_observer.h",
+    "memory_coordinator/traits.h",
+    "message_loop/io_watcher.cc",
+    "message_loop/io_watcher.h",
     "message_loop/message_pump.cc",
     "message_loop/message_pump.h",
     "message_loop/message_pump_default.cc",
@@ -455,6 +456,8 @@ component("base") {
     "metrics/dummy_histogram.h",
     "metrics/field_trial.cc",
     "metrics/field_trial.h",
+    "metrics/field_trial_entry.cc",
+    "metrics/field_trial_entry.h",
     "metrics/field_trial_list_including_low_anonymity.cc",
     "metrics/field_trial_list_including_low_anonymity.h",
     "metrics/field_trial_param_associator.cc",
@@ -470,6 +473,7 @@ component("base") {
     "metrics/histogram_flattener.h",
     "metrics/histogram_functions.cc",
     "metrics/histogram_functions.h",
+    "metrics/histogram_functions_internal_overloads.h",
     "metrics/histogram_macros.h",
     "metrics/histogram_macros_internal.h",
     "metrics/histogram_macros_local.h",
@@ -485,11 +489,14 @@ component("base") {
     "metrics/persistent_memory_allocator.h",
     "metrics/persistent_sample_map.cc",
     "metrics/persistent_sample_map.h",
+    "metrics/puma_histogram_functions.cc",
+    "metrics/puma_histogram_functions.h",
     "metrics/ranges_manager.cc",
     "metrics/ranges_manager.h",
     "metrics/record_histogram_checker.h",
     "metrics/sample_map.cc",
     "metrics/sample_map.h",
+    "metrics/sample_map_iterator.h",
     "metrics/sample_vector.cc",
     "metrics/sample_vector.h",
     "metrics/single_sample_metrics.cc",
@@ -549,16 +556,18 @@ component("base") {
     "process/process_info.h",
     "process/set_process_title.cc",
     "process/set_process_title.h",
-    "profiler/call_stack_profile_params.h",
+    "profiler/core_unwinders.h",
     "profiler/frame.cc",
     "profiler/frame.h",
     "profiler/metadata_recorder.cc",
     "profiler/metadata_recorder.h",
     "profiler/module_cache.cc",
     "profiler/module_cache.h",
-    "profiler/process_type.h",
+    "profiler/periodic_sampling_scheduler.cc",
+    "profiler/periodic_sampling_scheduler.h",
     "profiler/profile_builder.h",
     "profiler/register_context.h",
+    "profiler/register_context_registers.h",
     "profiler/sample_metadata.cc",
     "profiler/sample_metadata.h",
     "profiler/sampling_profiler_thread_token.cc",
@@ -577,18 +586,18 @@ component("base") {
     "profiler/stack_unwind_data.h",
     "profiler/suspendable_thread_delegate.h",
     "profiler/thread_delegate.h",
+    "profiler/thread_group_profiler.cc",
+    "profiler/thread_group_profiler.h",
+    "profiler/thread_group_profiler_client.h",
     "profiler/unwinder.cc",
     "profiler/unwinder.h",
     "rand_util.cc",
     "rand_util.h",
-    "ranges/algorithm.h",
-    "ranges/from_range.h",
-    "ranges/functional.h",
-    "ranges/ranges.h",
     "run_loop.cc",
     "run_loop.h",
     "sampling_heap_profiler/lock_free_address_hash_set.cc",
     "sampling_heap_profiler/lock_free_address_hash_set.h",
+    "sampling_heap_profiler/lock_free_bloom_filter.h",
     "sampling_heap_profiler/poisson_allocation_sampler.cc",
     "sampling_heap_profiler/poisson_allocation_sampler.h",
     "sampling_heap_profiler/sampling_heap_profiler.cc",
@@ -613,22 +622,27 @@ component("base") {
     "strings/abseil_string_number_conversions.cc",
     "strings/abseil_string_number_conversions.h",
     "strings/cstring_view.h",
+    "strings/durable_string_view.h",
     "strings/escape.cc",
     "strings/escape.h",
     "strings/latin1_string_conversions.cc",
     "strings/latin1_string_conversions.h",
+    "strings/lazy_string_builder.cc",
+    "strings/lazy_string_builder.h",
     "strings/levenshtein_distance.cc",
     "strings/levenshtein_distance.h",
     "strings/pattern.cc",
     "strings/pattern.h",
     "strings/safe_sprintf.cc",
     "strings/safe_sprintf.h",
+    "strings/span_printf.h",
     "strings/strcat.cc",
     "strings/strcat.h",
     "strings/strcat_internal.h",
     "strings/string_number_conversions.cc",
     "strings/string_number_conversions.h",
     "strings/string_number_conversions_internal.h",
+    "strings/string_slice.h",
     "strings/string_split.cc",
     "strings/string_split.h",
     "strings/string_split_internal.h",
@@ -638,10 +652,12 @@ component("base") {
     "strings/string_util_constants.cc",
     "strings/string_util_impl_helpers.h",
     "strings/string_util_internal.h",
+    "strings/string_view_util.h",
     "strings/stringize_macros.h",
     "strings/stringprintf.cc",
     "strings/stringprintf.h",
     "strings/sys_string_conversions.h",
+    "strings/to_string.cc",
     "strings/to_string.h",
     "strings/utf_offset_string_conversions.cc",
     "strings/utf_offset_string_conversions.h",
@@ -659,10 +675,14 @@ component("base") {
     "supports_user_data.h",
     "synchronization/atomic_flag.cc",
     "synchronization/atomic_flag.h",
+    "synchronization/cancelable_event.cc",
+    "synchronization/cancelable_event.h",
     "synchronization/condition_variable.h",
     "synchronization/lock.cc",
     "synchronization/lock.h",
     "synchronization/lock_impl.h",
+    "synchronization/lock_metrics_recorder.cc",
+    "synchronization/lock_metrics_recorder.h",
     "synchronization/lock_subtle.h",
     "synchronization/waitable_event.cc",
     "synchronization/waitable_event.h",
@@ -696,6 +716,8 @@ component("base") {
     "task/delay_policy.h",
     "task/delayed_task_handle.cc",
     "task/delayed_task_handle.h",
+    "task/execution_fence.cc",
+    "task/execution_fence.h",
     "task/lazy_thread_pool_task_runner.cc",
     "task/lazy_thread_pool_task_runner.h",
     "task/post_job.cc",
@@ -714,7 +736,6 @@ component("base") {
     "task/sequence_manager/enqueue_order_generator.h",
     "task/sequence_manager/fence.cc",
     "task/sequence_manager/fence.h",
-    "task/sequence_manager/lazily_deallocated_deque.h",
     "task/sequence_manager/sequence_manager.cc",
     "task/sequence_manager/sequence_manager.h",
     "task/sequence_manager/sequence_manager_impl.cc",
@@ -788,7 +809,6 @@ component("base") {
     "task/thread_pool/pooled_task_runner_delegate.h",
     "task/thread_pool/priority_queue.cc",
     "task/thread_pool/priority_queue.h",
-    "task/thread_pool/semaphore.h",
     "task/thread_pool/sequence.cc",
     "task/thread_pool/sequence.h",
     "task/thread_pool/service_thread.cc",
@@ -805,10 +825,6 @@ component("base") {
     "task/thread_pool/thread_group.h",
     "task/thread_pool/thread_group_impl.cc",
     "task/thread_pool/thread_group_impl.h",
-    "task/thread_pool/thread_group_semaphore.cc",
-    "task/thread_pool/thread_group_semaphore.h",
-    "task/thread_pool/thread_group_worker_delegate.cc",
-    "task/thread_pool/thread_group_worker_delegate.h",
     "task/thread_pool/thread_pool_impl.cc",
     "task/thread_pool/thread_pool_impl.h",
     "task/thread_pool/thread_pool_instance.cc",
@@ -817,28 +833,20 @@ component("base") {
     "task/thread_pool/worker_thread.cc",
     "task/thread_pool/worker_thread.h",
     "task/thread_pool/worker_thread_observer.h",
-    "task/thread_pool/worker_thread_semaphore.cc",
-    "task/thread_pool/worker_thread_semaphore.h",
     "task/thread_pool/worker_thread_set.cc",
     "task/thread_pool/worker_thread_set.h",
-    "task/thread_pool/worker_thread_waitable_event.cc",
-    "task/thread_pool/worker_thread_waitable_event.h",
     "task/updateable_sequenced_task_runner.h",
     "test/scoped_logging_settings.h",
     "test/spin_wait.h",
-    "third_party/cityhash/city.cc",
-    "third_party/cityhash/city.h",
-    "third_party/cityhash_v103/src/city_v103.cc",
-    "third_party/cityhash_v103/src/city_v103.h",
-    "third_party/icu/icu_utf.h",
     "third_party/nspr/prtime.cc",
     "third_party/nspr/prtime.h",
-    "third_party/superfasthash/superfasthash.c",
     "thread_annotations.h",
     "threading/hang_watcher.cc",
     "threading/hang_watcher.h",
     "threading/platform_thread.cc",
     "threading/platform_thread.h",
+    "threading/platform_thread_metrics.cc",
+    "threading/platform_thread_metrics.h",
     "threading/platform_thread_ref.cc",
     "threading/platform_thread_ref.h",
     "threading/post_task_and_reply_impl.cc",
@@ -901,13 +909,14 @@ component("base") {
     "timer/wall_clock_timer.h",
     "token.cc",
     "token.h",
-    "trace_event/base_tracing.h",
     "trace_event/base_tracing_forward.h",
     "trace_event/common/trace_event_common.h",
     "trace_event/heap_profiler_allocation_context.cc",
     "trace_event/heap_profiler_allocation_context.h",
     "trace_event/heap_profiler_allocation_context_tracker.cc",
     "trace_event/heap_profiler_allocation_context_tracker.h",
+    "trace_event/histogram_scope.cc",
+    "trace_event/histogram_scope.h",
     "trace_event/memory_allocator_dump_guid.cc",
     "trace_event/memory_allocator_dump_guid.h",
     "trace_event/named_trigger.cc",
@@ -916,7 +925,7 @@ component("base") {
     "trace_event/trace_id_helper.h",
     "traits_bag.h",
     "tuple.h",
-    "types/always_false.h",
+    "types/cxx23_from_range.h",
     "types/cxx23_is_scoped_enum.h",
     "types/cxx23_to_underlying.h",
     "types/expected.h",
@@ -924,16 +933,20 @@ component("base") {
     "types/expected_macros.h",
     "types/fixed_array.h",
     "types/id_type.h",
+    "types/is_arc_pointer.h",
     "types/is_complete.h",
     "types/is_instantiation.h",
     "types/optional_ref.h",
     "types/optional_util.h",
     "types/pass_key.h",
+    "types/same_as_any.h",
     "types/strong_alias.h",
     "types/supports_ostream_operator.h",
+    "types/supports_to_string.h",
     "types/to_address.h",
     "types/token_type.h",
     "types/variant_util.h",
+    "types/zip.h",
     "unguessable_token.cc",
     "unguessable_token.h",
     "uuid.cc",
@@ -944,6 +957,7 @@ component("base") {
     "values.h",
     "version.cc",
     "version.h",
+    "version_info/channel.h",
     "vlog.cc",
     "vlog.h",
   ]
@@ -977,6 +991,7 @@ component("base") {
       "files/dir_reader_posix.h",
       "files/file_posix.cc",
       "files/memory_mapped_file_posix.cc",
+      "memory/protected_memory_posix.cc",
       "message_loop/watchable_io_message_pump_posix.cc",
       "message_loop/watchable_io_message_pump_posix.h",
       "posix/eintr_wrapper.h",
@@ -1012,6 +1027,7 @@ component("base") {
       "process/process_metrics_linux.cc",
       "threading/platform_thread_linux.cc",
       "threading/platform_thread_linux_base.cc",
+      "threading/platform_thread_metrics_linux.cc",
       "threading/thread_type_delegate.cc",
       "threading/thread_type_delegate.h",
     ]
@@ -1023,10 +1039,6 @@ component("base") {
       "threading/cross_process_platform_thread_delegate.h",
       "threading/platform_thread_cros.cc",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "feature_visitor.h" ]
   }
 
   if (is_linux || is_chromeos || is_android) {
@@ -1052,69 +1064,66 @@ component("base") {
 
   deps = [
     ":check_version_internal",
-    ":message_pump_buildflags",
     "//base/allocator:buildflags",
+    "//base/third_party/cityhash",
+    "//base/third_party/cityhash_v103",
     "//base/third_party/double_conversion",
+    "//base/third_party/superfasthash",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:ios_buildflags",
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",
   ]
-  if (!is_nacl) {
-    # Used by metrics/crc32, except on NaCl builds.
-    deps += [ "//third_party/zlib" ]
-  }
+
+  # Used by metrics/crc32
+  deps += [ "//third_party/zlib" ]
+
+  deps += [
+    ":rust_logger",
+    "//third_party/rust/serde_json_lenient/v0_2/wrapper",
+  ]
 
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
   # Its gateway to being a component is through `//base`, so we have
   # to provide the appropriate `#define` here.
   defines += [ "IS_RAW_PTR_IMPL" ]
 
-  if (build_rust_json_reader) {
-    deps += [ "//third_party/rust/serde_json_lenient/v0_2/wrapper" ]
-  }
-
-  # native_unwinder_android is intended for use solely via a dynamic feature
-  # module, to avoid increasing Chrome's executable size.
+  # native_unwinder_android is split into a separate target to avoid pulling
+  # libunwindstack dependencies into cronet's base.
   assert_no_deps = [ ":native_unwinder_android" ]
 
   public_deps = [
     ":anchor_functions_buildflags",
     ":base_static",
-    ":build_date",
     ":cfi_buildflags",
     ":clang_profiling_buildflags",
     ":debugging_buildflags",
     ":feature_list_buildflags",
     ":ios_cronet_buildflags",
-    ":logging_buildflags",
     ":orderfile_buildflags",
     ":power_monitor_buildflags",
     ":profiler_buildflags",
     ":protected_memory_buildflags",
-    ":rust_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
     "//base/allocator/partition_allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/numerics:base_numerics",
+    "//base/third_party/icu",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (build_rust_base_conversions) {
-    sources += [
-      "containers/span_rust.h",
-      "strings/string_piece_rust.h",
-    ]
+  sources += [
+    "containers/span_rust.h",
+    "strings/string_view_rust.h",
+  ]
 
-    # Base provides conversions between CXX types and base types (e.g.
-    # std::string_view).
-    public_deps += [ "//build/rust:cxx_cppdeps" ]
-  }
+  # Base provides conversions between CXX types and base types (e.g.
+  # std::string_view).
+  public_deps += [ "//build/rust:cxx_cppdeps" ]
 
   # Needed for <atomic> if using newer C++ library than sysroot, except if
   # building inside the cros_sdk environment - use host_toolchain as a
@@ -1150,24 +1159,29 @@ component("base") {
   # Android.
   if (is_android) {
     sources += [
-      "android/android_hardware_buffer_compat.cc",
-      "android/android_hardware_buffer_compat.h",
-      "android/android_image_reader_compat.cc",
-      "android/android_image_reader_compat.h",
+      "android/android_info.cc",
+      "android/android_info.h",
+      "android/android_input_receiver_compat.cc",
+      "android/android_input_receiver_compat.h",
       "android/apk_assets.cc",
       "android/apk_assets.h",
+      "android/apk_info.cc",
+      "android/apk_info.h",
       "android/application_status_listener.cc",
       "android/application_status_listener.h",
+      "android/background_thread_pool_field_trial.cc",
+      "android/background_thread_pool_field_trial.h",
       "android/base_feature_map.cc",
-      "android/build_info.cc",
-      "android/build_info.h",
       "android/bundle_utils.cc",
       "android/bundle_utils.h",
       "android/child_process_binding_types.h",
       "android/child_process_service.cc",
+      "android/child_process_service.h",
       "android/content_uri_utils.cc",
       "android/content_uri_utils.h",
       "android/cpu_features.cc",
+      "android/device_info.cc",
+      "android/device_info.h",
       "android/early_trace_event_binding.cc",
       "android/early_trace_event_binding.h",
       "android/event_log.cc",
@@ -1180,21 +1194,12 @@ component("base") {
       "android/important_file_writer_android.cc",
       "android/input_hint_checker.cc",
       "android/input_hint_checker.h",
-      "android/int_string_callback.cc",
-      "android/int_string_callback.h",
-      "android/jank_metric_uma_recorder.cc",
-      "android/jank_metric_uma_recorder.h",
       "android/java_handler_thread.cc",
       "android/java_handler_thread.h",
       "android/java_heap_dump_generator.cc",
       "android/java_heap_dump_generator.h",
       "android/java_runtime.cc",
       "android/java_runtime.h",
-      "android/library_loader/anchor_functions.cc",
-      "android/library_loader/anchor_functions.h",
-      "android/library_loader/library_prefetcher.cc",
-      "android/library_loader/library_prefetcher.h",
-      "android/library_loader/library_prefetcher_hooks.cc",
       "android/locale_utils.cc",
       "android/locale_utils.h",
       "android/meminfo_dump_provider.cc",
@@ -1213,13 +1218,14 @@ component("base") {
       "android/radio_utils.cc",
       "android/radio_utils.h",
       "android/requires_api.h",
-      "android/scoped_hardware_buffer_fence_sync.cc",
-      "android/scoped_hardware_buffer_fence_sync.h",
-      "android/scoped_hardware_buffer_handle.cc",
-      "android/scoped_hardware_buffer_handle.h",
+      "android/scoped_input_event.cc",
+      "android/scoped_input_event.h",
+      "android/scoped_service_binding_batch.cc",
+      "android/scoped_service_binding_batch.h",
+      "android/self_compaction_manager.cc",
+      "android/self_compaction_manager.h",
       "android/shared_preferences/shared_preferences_manager.cc",
       "android/shared_preferences/shared_preferences_manager.h",
-      "android/statistics_recorder_android.cc",
       "android/sys_utils.cc",
       "android/sys_utils.h",
       "android/task_scheduler/post_task_android.cc",
@@ -1229,9 +1235,13 @@ component("base") {
       "android/task_scheduler/task_traits_android.h",
       "android/thread_instruction_count.cc",
       "android/thread_instruction_count.h",
-      "android/timezone_utils.cc",
-      "android/timezone_utils.h",
+      "android/virtual_document_path.cc",
+      "android/virtual_document_path.h",
+      "android/yield_to_looper_checker.cc",
+      "android/yield_to_looper_checker.h",
       "debug/stack_trace_android.cc",
+      "files/file_android.cc",
+      "files/file_android.h",
       "files/file_util_android.cc",
       "files/scoped_file_android.cc",
       "memory/platform_shared_memory_mapper_android.cc",
@@ -1240,12 +1250,15 @@ component("base") {
       "message_loop/message_pump_android.h",
       "os_compat_android.cc",
       "os_compat_android.h",
+      "power_monitor/energy_monitor_android.h",
       "process/process_android.cc",
       "profiler/native_unwinder_android_map_delegate.h",
       "profiler/native_unwinder_android_memory_regions_map.h",
       "profiler/stack_sampler_android.cc",
       "system/sys_info_android.cc",
       "threading/platform_thread_android.cc",
+      "version_info/android/channel_getter.cc",
+      "version_info/android/channel_getter.h",
 
       # Android uses some Linux sources.
       "debug/elf_reader.cc",
@@ -1260,40 +1273,54 @@ component("base") {
       "process/process_iterator_linux.cc",
       "process/process_metrics_linux.cc",
       "system/sys_info_linux.cc",
+      "threading/platform_thread_metrics_linux.cc",
     ]
 
     deps += [
       ":base_jni",
       ":base_shared_preferences_jni",
-      ":callback_jni",
-      ":command_line_jni",
-      ":jank_tracker_jni",
-      ":library_loader_jni",
+      ":build_info_jni",
+      ":bundle_utils_jni",
+      ":content_uri_utils_jni",
+      ":features_jni",
+      ":file_utils_jni",
       ":memory_jni",
-      ":metrics_jni",
+      ":path_utils_jni",
       ":process_launcher_jni",
       ":sys_utils_jni",
       ":tasks_jni",
-      "//third_party/ashmem",
+      ":virtual_document_path_jni",
+      "//base/android/linker:ashmem",
+      "//base/version_info/android:version_constants_bridge_jni",
       "//third_party/cpu_features:ndk_compat",
     ]
+
+    if (android_ndk_api_level >= 29) {
+      deps += [ ":build_info_aidl_native" ]
+      sources += [
+        # Cronet uses lower NDK API level than is required for these files,
+        # but it doesn't need AHardwareBuffer anyway.
+        "android/scoped_hardware_buffer_fence_sync.cc",
+        "android/scoped_hardware_buffer_fence_sync.h",
+        "android/scoped_hardware_buffer_handle.cc",
+        "android/scoped_hardware_buffer_handle.h",
+      ]
+    }
+
+    if (use_clang_profiling) {
+      deps += [ ":clang_profiler_jni" ]
+    }
 
     # Needs to be a public config so that dependent targets link against it as
     # well when doing a component build.
     public_configs = [ ":android_system_libs" ]
 
-    if (can_unwind_with_cfi_table) {
-      sources += [
-        "trace_event/cfi_backtrace_android.cc",
-        "trace_event/cfi_backtrace_android.h",
-      ]
-    }
     if (current_cpu == "arm") {
       sources += [
-        "profiler/chrome_unwind_info_android.cc",
-        "profiler/chrome_unwind_info_android.h",
-        "profiler/chrome_unwinder_android.cc",
-        "profiler/chrome_unwinder_android.h",
+        "profiler/chrome_unwind_info_android_32.cc",
+        "profiler/chrome_unwind_info_android_32.h",
+        "profiler/chrome_unwinder_android_32.cc",
+        "profiler/chrome_unwinder_android_32.h",
       ]
     }
 
@@ -1319,15 +1346,17 @@ component("base") {
   if (is_robolectric) {
     # Make jni.h available.
     configs += [ "//third_party/jdk" ]
-    deps += [ ":base_robolectric_jni" ]
   }
   if (is_android || is_robolectric) {
     sources += [
-      "android/base_jni_onload.cc",
-      "android/base_jni_onload.h",
+      "android/base_jni_init.cc",
+      "android/base_jni_init.h",
       "android/callback_android.cc",
       "android/callback_android.h",
       "android/command_line_android.cc",
+      "android/command_line_android.h",
+      "android/int_string_callback.cc",
+      "android/int_string_callback.h",
       "android/java_exception_reporter.cc",
       "android/java_exception_reporter.h",
       "android/jni_android.cc",
@@ -1336,6 +1365,8 @@ component("base") {
       "android/jni_array.h",
       "android/jni_bytebuffer.cc",
       "android/jni_bytebuffer.h",
+      "android/jni_callback.cc",
+      "android/jni_callback.h",
       "android/jni_registrar.cc",
       "android/jni_registrar.h",
       "android/jni_string.cc",
@@ -1343,10 +1374,16 @@ component("base") {
       "android/jni_utils.cc",
       "android/jni_utils.h",
       "android/jni_weak_ref.h",
+      "android/library_loader/anchor_functions.cc",
+      "android/library_loader/anchor_functions.h",
       "android/library_loader/library_loader_hooks.cc",
       "android/library_loader/library_loader_hooks.h",
+      "android/library_loader/library_prefetcher.cc",
+      "android/library_loader/library_prefetcher.h",
+      "android/library_loader/library_prefetcher_hooks.cc",
       "android/native_uma_recorder.cc",
       "android/scoped_java_ref.h",
+      "android/statistics_recorder_android.cc",
       "android/token_android.cc",
       "android/token_android.h",
       "android/trace_event_binding.cc",
@@ -1354,20 +1391,18 @@ component("base") {
       "android/unguessable_token_android.cc",
       "android/unguessable_token_android.h",
     ]
-    deps += [ "//build:robolectric_buildflags" ]
-    public_deps += [ "//third_party/jni_zero:jni_zero" ]
-  }  # is_android || is_robolectric
-
-  if (is_android && !is_robolectric) {
-    # The robolectic toolchain doesn't provide the NDK headers required for data
-    # and function type definitions used by BinderApi et al.
-    sources += [
-      "android/binder.cc",
-      "android/binder.h",
-      "android/binder_box.cc",
-      "android/binder_box.h",
+    deps += [
+      ":base_minimal_jni($default_toolchain)",
+      ":callback_jni($default_toolchain)",
+      ":command_line_jni($default_toolchain)",
+      ":jni_android_jni($default_toolchain)",
+      ":library_loader_jni($default_toolchain)",
+      ":metrics_jni($default_toolchain)",
+      ":tasks_minimal_jni($default_toolchain)",
+      "//build:robolectric_buildflags",
     ]
-  }
+    public_deps += [ "//third_party/jni_zero" ]
+  }  # is_android || is_robolectric
 
   # Chromeos.
   if (is_chromeos) {
@@ -1431,6 +1466,7 @@ component("base") {
       "fuchsia/system_info.h",
       "memory/platform_shared_memory_mapper_fuchsia.cc",
       "memory/platform_shared_memory_region_fuchsia.cc",
+      "memory/protected_memory_posix.cc",
       "message_loop/message_pump_fuchsia.cc",
       "message_loop/message_pump_fuchsia.h",
       "message_loop/watchable_io_message_pump_posix.cc",
@@ -1460,6 +1496,7 @@ component("base") {
       "synchronization/waitable_event_watcher_posix.cc",
       "system/sys_info_fuchsia.cc",
       "threading/platform_thread_fuchsia.cc",
+      "threading/platform_thread_metrics_fuchsia.cc",
       "threading/platform_thread_posix.cc",
       "threading/thread_local_storage_posix.cc",
       "time/time_conversion_posix.cc",
@@ -1510,239 +1547,203 @@ component("base") {
     public_configs = [ ":fuchsia_sync_lib" ]
   }
 
-  # Several helpers in //base are backed by BoringSSL; however, NaCl builds
-  # cannot easily depend on BoringSSL due to the nacl_io library, so NaCl builds
-  # still retain a dedicated local implementation of the functionality.
-  #
-  # TODO(crbug.com/40511454) Use only boringssl when NaCl is removed.
   sources += [
-    "hash/md5.h",
-    "hash/md5_constexpr.h",
-    "hash/md5_constexpr_internal.h",
+    "hash/sha1.cc",
     "hash/sha1.h",
   ]
-  if (is_nacl) {
+  public_deps += [ "//third_party/boringssl" ]
+
+  sources += [
+    "base_paths.cc",
+    "base_paths.h",
+    "cpu.cc",
+    "cpu.h",
+    "debug/crash_logging.cc",
+    "debug/crash_logging.h",
+    "debug/stack_trace.cc",
+    "debug/stack_trace.h",
+    "files/drive_info.cc",
+    "files/drive_info.h",
+    "files/file_enumerator.cc",
+    "files/file_enumerator.h",
+    "files/file_proxy.cc",
+    "files/file_proxy.h",
+    "files/file_util.cc",
+    "files/file_util.h",
+    "files/important_file_writer.cc",
+    "files/important_file_writer.h",
+    "files/important_file_writer_cleaner.cc",
+    "files/important_file_writer_cleaner.h",
+    "files/scoped_temp_dir.cc",
+    "files/scoped_temp_dir.h",
+    "files/scoped_temp_file.cc",
+    "files/scoped_temp_file.h",
+    "json/json_file_value_serializer.cc",
+    "json/json_file_value_serializer.h",
+    "logging/rust_log_integration.cc",
+    "logging/rust_log_integration.h",
+    "memory/discardable_memory.cc",
+    "memory/discardable_memory.h",
+    "memory/discardable_memory_allocator.cc",
+    "memory/discardable_memory_allocator.h",
+    "memory/discardable_memory_internal.h",
+    "metrics/persistent_histogram_storage.cc",
+    "metrics/persistent_histogram_storage.h",
+    "native_library.h",
+    "path_service.cc",
+    "path_service.h",
+    "process/process_metrics.cc",
+    "process/process_metrics.h",
+    "scoped_native_library.cc",
+    "scoped_native_library.h",
+    "system/sys_info.cc",
+    "system/sys_info.h",
+    "system/sys_info_internal.h",
+    "task/thread_pool/initialization_util.cc",
+    "task/thread_pool/initialization_util.h",
+  ]
+
+  if (is_win) {
     sources += [
-      "hash/md5_nacl.cc",
-      "hash/md5_nacl.h",
-      "hash/sha1_nacl.cc",
-      "hash/sha1_nacl.h",
+      "base_paths_win.cc",
+      "base_paths_win.h",
     ]
-  } else {
-    sources += [
-      "hash/md5_boringssl.cc",
-      "hash/md5_boringssl.h",
-      "hash/sha1_boringssl.cc",
-      "hash/sha1_boringssl.h",
-    ]
-    public_deps += [ "//third_party/boringssl" ]
   }
 
-  # NaCl.
-  if (is_nacl) {
-    # Explicitly include the linux file.
+  if (is_apple) {
     sources += [
-      "debug/stack_trace_nacl.cc",
-      "files/file_path_watcher_stub.cc",
-      "memory/page_size_nacl.cc",
-      "os_compat_nacl.cc",
-      "os_compat_nacl.h",
-      "process/process_stubs.cc",
-      "rand_util_nacl.cc",
-      "sync_socket_nacl.cc",
-      "system/sys_info_nacl.cc",
-      "task/thread_pool/semaphore/semaphore_default.cc",
-      "threading/platform_thread_linux_base.cc",
-      "threading/platform_thread_nacl.cc",
+      "base_paths_apple.cc",
+      "base_paths_apple.h",
     ]
-  } else {
+  }
+
+  if (is_mac) {
     sources += [
-      "base_paths.cc",
-      "base_paths.h",
-      "cpu.cc",
-      "cpu.h",
-      "debug/crash_logging.cc",
-      "debug/crash_logging.h",
-      "debug/stack_trace.cc",
-      "debug/stack_trace.h",
-      "files/file_enumerator.cc",
-      "files/file_enumerator.h",
-      "files/file_proxy.cc",
-      "files/file_proxy.h",
-      "files/file_util.cc",
-      "files/file_util.h",
-      "files/important_file_writer.cc",
-      "files/important_file_writer.h",
-      "files/important_file_writer_cleaner.cc",
-      "files/important_file_writer_cleaner.h",
-      "files/scoped_temp_dir.cc",
-      "files/scoped_temp_dir.h",
-      "files/scoped_temp_file.cc",
-      "files/scoped_temp_file.h",
-      "json/json_file_value_serializer.cc",
-      "json/json_file_value_serializer.h",
-      "memory/discardable_memory.cc",
-      "memory/discardable_memory.h",
-      "memory/discardable_memory_allocator.cc",
-      "memory/discardable_memory_allocator.h",
-      "memory/discardable_memory_internal.h",
-      "metrics/persistent_histogram_storage.cc",
-      "metrics/persistent_histogram_storage.h",
-      "native_library.cc",
-      "native_library.h",
-      "path_service.cc",
-      "path_service.h",
-      "process/process_metrics.cc",
-      "process/process_metrics.h",
-      "scoped_native_library.cc",
-      "scoped_native_library.h",
-      "system/sys_info.cc",
-      "system/sys_info.h",
-      "system/sys_info_internal.h",
-      "task/thread_pool/initialization_util.cc",
-      "task/thread_pool/initialization_util.h",
+      "base_paths_mac.h",
+      "base_paths_mac.mm",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "base_paths_android.cc",
+      "base_paths_android.h",
+    ]
+  }
+
+  if (is_posix) {
+    sources += [
+      "base_paths_posix.h",
+      "memory/madv_free_discardable_memory_allocator_posix.cc",
+      "memory/madv_free_discardable_memory_allocator_posix.h",
+      "memory/madv_free_discardable_memory_posix.cc",
+      "memory/madv_free_discardable_memory_posix.h",
+      "posix/unix_domain_socket.cc",
+      "posix/unix_domain_socket.h",
+      "rand_util_posix.cc",
+      "system/sys_info_posix.cc",
+    ]
+  }
+
+  if (is_posix || is_fuchsia) {
+    sources += [
+      "files/file_descriptor_watcher_posix.cc",
+      "files/file_descriptor_watcher_posix.h",
+      "files/file_enumerator_posix.cc",
+      "files/file_util_posix.cc",
+      "memory/page_size_posix.cc",
     ]
 
-    if (is_win) {
-      sources += [
-        "base_paths_win.cc",
-        "base_paths_win.h",
-      ]
+    if (!is_apple) {
+      sources += [ "files/drive_info_posix.cc" ]
     }
+  }
 
-    if (is_apple) {
-      sources += [
-        "base_paths_apple.cc",
-        "base_paths_apple.h",
-      ]
-    }
+  if ((is_posix && !is_ios) || is_fuchsia) {
+    sources += [
+      "process/process_metrics_posix.cc",
+      "sync_socket_posix.cc",
+    ]
+  }
 
-    if (is_mac) {
-      sources += [
-        "base_paths_mac.h",
-        "base_paths_mac.mm",
-      ]
-    }
+  if (is_posix && !is_apple) {
+    sources += [
+      "native_library_posix.cc",
+      "posix/can_lower_nice_to.cc",
+      "posix/can_lower_nice_to.h",
+      "process/launch_posix.cc",
+      "profiler/module_cache_posix.cc",
+      "profiler/stack_base_address_posix.cc",
+      "profiler/stack_base_address_posix.h",
+      "profiler/stack_copier_signal.cc",
+      "profiler/stack_copier_signal.h",
+      "profiler/thread_delegate_posix.cc",
+      "profiler/thread_delegate_posix.h",
+    ]
+  }
 
-    if (is_android) {
-      sources += [
-        "base_paths_android.cc",
-        "base_paths_android.h",
-      ]
-    }
+  if (is_posix && !is_android) {
+    sources += [ "debug/stack_trace_posix.cc" ]
+  }
 
-    if (is_linux || is_chromeos || is_android || is_fuchsia) {
-      sources += [ "task/thread_pool/semaphore/semaphore_posix.cc" ]
-    }
+  if (is_posix && !is_ios) {
+    sources += [ "process/process_posix.cc" ]
+  }
+  if (!is_win && !is_chromeos && !is_android && !is_linux) {
+    sources += [ "synchronization/cancelable_event_default.cc" ]
+  }
+
+  if (is_linux || is_chromeos || is_android) {
+    sources += [ "synchronization/cancelable_event_posix.cc" ]
+  }
+
+  if (use_blink) {
+    sources += [
+      "memory/discardable_shared_memory.cc",
+      "memory/discardable_shared_memory.h",
+      "memory/shared_memory_switch.cc",
+      "memory/shared_memory_switch.h",
+      "metrics/histogram_shared_memory.cc",
+      "metrics/histogram_shared_memory.h",
+      "process/kill.cc",
+      "process/kill.h",
+      "process/launch.cc",
+      "process/launch.h",
+      "process/memory.cc",
+      "process/memory.h",
+      "process/process_iterator.cc",
+      "process/process_iterator.h",
+    ]
 
     if (is_posix) {
-      sources += [
-        "base_paths_posix.h",
-        "memory/madv_free_discardable_memory_allocator_posix.cc",
-        "memory/madv_free_discardable_memory_allocator_posix.h",
-        "memory/madv_free_discardable_memory_posix.cc",
-        "memory/madv_free_discardable_memory_posix.h",
-        "posix/unix_domain_socket.cc",
-        "posix/unix_domain_socket.h",
-        "rand_util_posix.cc",
-        "system/sys_info_posix.cc",
-      ]
+      sources += [ "process/kill_posix.cc" ]
     }
+  }
 
-    if (is_posix || is_fuchsia) {
-      sources += [
-        "files/file_descriptor_watcher_posix.cc",
-        "files/file_descriptor_watcher_posix.h",
-        "files/file_enumerator_posix.cc",
-        "files/file_util_posix.cc",
-        "memory/page_size_posix.cc",
-      ]
-    }
-
-    if ((is_posix && !is_ios) || is_fuchsia) {
-      sources += [
-        "process/process_metrics_posix.cc",
-        "sync_socket_posix.cc",
-      ]
-    }
-
-    if (is_posix && !is_apple) {
-      sources += [
-        "native_library_posix.cc",
-        "posix/can_lower_nice_to.cc",
-        "posix/can_lower_nice_to.h",
-        "process/launch_posix.cc",
-        "profiler/module_cache_posix.cc",
-        "profiler/stack_base_address_posix.cc",
-        "profiler/stack_base_address_posix.h",
-        "profiler/stack_copier_signal.cc",
-        "profiler/stack_copier_signal.h",
-        "profiler/thread_delegate_posix.cc",
-        "profiler/thread_delegate_posix.h",
-      ]
-    }
-
-    if (is_posix && !is_android) {
-      sources += [ "debug/stack_trace_posix.cc" ]
-    }
-
-    if (is_posix && !is_ios) {
-      sources += [ "process/process_posix.cc" ]
-    }
-
-    if (use_blink) {
-      sources += [
-        "memory/discardable_shared_memory.cc",
-        "memory/discardable_shared_memory.h",
-        "memory/shared_memory_switch.cc",
-        "memory/shared_memory_switch.h",
-        "metrics/histogram_shared_memory.cc",
-        "metrics/histogram_shared_memory.h",
-        "process/kill.cc",
-        "process/kill.h",
-        "process/launch.cc",
-        "process/launch.h",
-        "process/memory.cc",
-        "process/memory.h",
-        "process/process_iterator.cc",
-        "process/process_iterator.h",
-      ]
-
-      if (is_posix) {
-        sources += [ "process/kill_posix.cc" ]
-      }
-    }
-
-    if (is_linux || is_chromeos) {
-      sources += [
-        "base_paths_posix.cc",
-        "debug/elf_reader.cc",
-        "debug/elf_reader.h",
-        "stack_canary_linux.cc",
-        "stack_canary_linux.h",
-      ]
-    }
-    if (use_partition_alloc) {
-      # Add stuff that doesn't work in NaCl.
-      sources += [
-        # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
-        "allocator/miracle_parameter.cc",
-        "allocator/miracle_parameter.h",
-        "allocator/partition_alloc_features.cc",
-        "allocator/partition_alloc_features.h",
-        "allocator/partition_alloc_support.cc",
-        "allocator/partition_alloc_support.h",
-      ]
-    }
-
-    # Need this to pass gn check, because gn check doesn't see
-    # BUILDFLAG(USE_PARTITION_ALLOC). A linker will remove all
-    # partition_alloc code if use_partition_alloc = false because no code uses
-    # partition_alloc.
-    public_deps += [
-      "allocator/partition_allocator:partition_alloc",
-      "allocator/partition_allocator:raw_ptr",
+  if (is_linux || is_chromeos) {
+    sources += [
+      "base_paths_posix.cc",
+      "debug/elf_reader.cc",
+      "debug/elf_reader.h",
+      "stack_canary_linux.cc",
+      "stack_canary_linux.h",
     ]
+  }
+  if (use_partition_alloc) {
+    sources += [
+      "allocator/dispatcher/memory_tagging.cc",
+      "allocator/dispatcher/memory_tagging.h",
+      "allocator/partition_alloc_features.cc",
+      "allocator/partition_alloc_features.h",
+      "allocator/partition_alloc_support.cc",
+      "allocator/partition_alloc_support.h",
+      "allocator/scheduler_loop_quarantine_config.cc",
+      "allocator/scheduler_loop_quarantine_config.h",
+      "allocator/scheduler_loop_quarantine_support.h",
+    ]
+  }
+  if (use_allocator_shim) {
+    public_deps += [ "allocator/partition_allocator:allocator_shim" ]
   }
 
   # Windows.
@@ -1761,6 +1762,7 @@ component("base") {
       "enterprise_util_win.cc",
       "file_version_info_win.cc",
       "file_version_info_win.h",
+      "files/drive_info_win.cc",
       "files/file_enumerator_win.cc",
       "files/file_path_watcher_win.cc",
       "files/file_util_win.cc",
@@ -1788,6 +1790,7 @@ component("base") {
       "process/process_iterator_win.cc",
       "process/process_metrics_win.cc",
       "process/process_win.cc",
+      "profiler/core_unwinders_win.cc",
       "profiler/module_cache_win.cc",
       "profiler/native_unwinder_win.cc",
       "profiler/native_unwinder_win.h",
@@ -1808,12 +1811,13 @@ component("base") {
       "strings/string_util_win.h",
       "strings/sys_string_conversions_win.cc",
       "sync_socket_win.cc",
+      "synchronization/cancelable_event_win.cc",
       "synchronization/condition_variable_win.cc",
       "synchronization/lock_impl_win.cc",
       "synchronization/waitable_event_watcher_win.cc",
       "synchronization/waitable_event_win.cc",
       "system/sys_info_win.cc",
-      "task/thread_pool/semaphore/semaphore_win.cc",
+      "threading/platform_thread_metrics_win.cc",
       "threading/platform_thread_win.cc",
       "threading/platform_thread_win.h",
       "threading/thread_local_storage_win.cc",
@@ -1840,6 +1844,9 @@ component("base") {
       "win/dark_mode_support.h",
       "win/default_apps_util.cc",
       "win/default_apps_util.h",
+      "win/delayload_helpers.h",
+      "win/elevation_util.cc",
+      "win/elevation_util.h",
       "win/embedded_i18n/language_selector.cc",
       "win/embedded_i18n/language_selector.h",
       "win/enum_variant.cc",
@@ -1849,21 +1856,27 @@ component("base") {
       "win/event_trace_controller.h",
       "win/event_trace_provider.cc",
       "win/event_trace_provider.h",
+      "win/hardware_check.cc",
+      "win/hardware_check.h",
       "win/hstring_reference.cc",
       "win/hstring_reference.h",
       "win/i18n.cc",
       "win/i18n.h",
       "win/iat_patch_function.cc",
       "win/iat_patch_function.h",
+      "win/limited_access_features.cc",
+      "win/limited_access_features.h",
       "win/map.h",
       "win/message_window.cc",
       "win/message_window.h",
       "win/nt_status.cc",
       "win/nt_status.h",
+      "win/ntsecapi_shim.h",
       "win/object_watcher.cc",
       "win/object_watcher.h",
       "win/patch_util.cc",
       "win/patch_util.h",
+      "win/pdh_shim.h",
       "win/pe_image_reader.cc",
       "win/pe_image_reader.h",
       "win/post_async_results.h",
@@ -1882,6 +1895,7 @@ component("base") {
       "win/scoped_co_mem.h",
       "win/scoped_com_initializer.cc",
       "win/scoped_com_initializer.h",
+      "win/scoped_gdi_object.cc",
       "win/scoped_gdi_object.h",
       "win/scoped_handle.cc",
       "win/scoped_handle.h",
@@ -1921,15 +1935,19 @@ component("base") {
       "win/variant_vector.h",
       "win/vector.cc",
       "win/vector.h",
+      "win/wbemidl_shim.h",
       "win/win_handle_types.h",
       "win/win_handle_types_list.inc",
       "win/win_util.cc",
       "win/win_util.h",
+      "win/winbase_shim.h",
+      "win/wincred_shim.h",
       "win/wincrypt_shim.h",
       "win/window_enumerator.cc",
       "win/window_enumerator.h",
       "win/windows_defines.inc",
       "win/windows_h_disallowed.h",
+      "win/windows_handle_util.h",
       "win/windows_types.h",
       "win/windows_undefines.inc",
       "win/windows_version.cc",
@@ -1938,6 +1956,7 @@ component("base") {
       "win/winrt_foundation_helpers.h",
       "win/winrt_storage_util.cc",
       "win/winrt_storage_util.h",
+      "win/wintrust_shim.h",
       "win/wmi.cc",
       "win/wmi.h",
       "win/wrapped_window_proc.cc",
@@ -1993,8 +2012,8 @@ component("base") {
       "apple/call_with_eh_frame.cc",
       "apple/call_with_eh_frame.h",
       "apple/call_with_eh_frame_asm.S",
-      "apple/dispatch_source_mach.cc",
-      "apple/dispatch_source_mach.h",
+      "apple/dispatch_source.cc",
+      "apple/dispatch_source.h",
       "apple/foundation_util.h",
       "apple/foundation_util.mm",
       "apple/mach_logging.cc",
@@ -2016,6 +2035,7 @@ component("base") {
       "apple/scoped_objc_class_swizzler.h",
       "apple/scoped_objc_class_swizzler.mm",
       "apple/scoped_typeref.h",
+      "apple/swift_interop_util.h",
       "file_version_info_apple.h",
       "file_version_info_apple.mm",
       "files/file_util_apple.mm",
@@ -2023,13 +2043,13 @@ component("base") {
       "memory/platform_shared_memory_region_apple.cc",
       "message_loop/message_pump_apple.h",
       "message_loop/message_pump_apple.mm",
-      "process/process_metrics_apple.cc",
+      "native_library_apple.mm",
+      "process/process_metrics_apple.mm",
       "profiler/module_cache_apple.cc",
       "strings/sys_string_conversions_apple.mm",
-      "synchronization/waitable_event_apple.cc",
       "system/sys_info_apple.mm",
-      "task/thread_pool/semaphore/semaphore_apple.cc",
       "threading/platform_thread_apple.mm",
+      "threading/platform_thread_metrics_apple.mm",
       "time/time_apple.mm",
     ]
     frameworks += [
@@ -2039,14 +2059,23 @@ component("base") {
       "Foundation.framework",
       "Security.framework",
     ]
+
+    if (!is_ios || !use_blink) {
+      sources += [ "synchronization/waitable_event_apple.cc" ]
+    }
   }
 
   # Desktop Mac.
   if (is_mac) {
     sources += [
+      "apple/mach_port_rendezvous.cc",
+      "apple/mach_port_rendezvous.h",
+      "apple/mach_port_rendezvous_mac.cc",
+      "apple/mach_port_rendezvous_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
+      "files/drive_info_mac.cc",
       "files/file_path_watcher_fsevents.cc",
       "files/file_path_watcher_fsevents.h",
       "files/file_path_watcher_kqueue.cc",
@@ -2055,6 +2084,11 @@ component("base") {
       "mac/authorization_util.h",
       "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
+      "mac/code_signature.cc",
+      "mac/code_signature.h",
+      "mac/code_signature_spi.h",
+      "mac/info_plist_data.h",
+      "mac/info_plist_data.mm",
       "mac/launch_application.h",
       "mac/launch_application.mm",
       "mac/launch_services_spi.h",
@@ -2064,10 +2098,12 @@ component("base") {
       "mac/login_util.h",
       "mac/mac_util.h",
       "mac/mac_util.mm",
-      "mac/mach_port_rendezvous.cc",
-      "mac/mach_port_rendezvous.h",
       "mac/os_crash_dumps.cc",
       "mac/os_crash_dumps.h",
+      "mac/pasteboard_changed_observation.h",
+      "mac/pasteboard_changed_observation.mm",
+      "mac/process_requirement.cc",
+      "mac/process_requirement.h",
       "mac/scoped_aedesc.h",
       "mac/scoped_authorizationref.h",
       "mac/scoped_authorizationref.mm",
@@ -2080,7 +2116,6 @@ component("base") {
       "mac/scoped_sending_event.mm",
       "message_loop/message_pump_kqueue.cc",
       "message_loop/message_pump_kqueue.h",
-      "native_library_mac.mm",
       "power_monitor/battery_level_provider_mac.mm",
       "power_monitor/battery_state_sampler_mac.cc",
       "power_monitor/iopm_power_source_sampling_event_source.cc",
@@ -2094,10 +2129,11 @@ component("base") {
       "process/port_provider_mac.cc",
       "process/port_provider_mac.h",
       "process/process_handle_mac.cc",
-      "process/process_info_mac.cc",
+      "process/process_info_mac.mm",
       "process/process_iterator_mac.cc",
       "process/process_mac.cc",
       "process/process_metrics_mac.cc",
+      "profiler/core_unwinders_mac.cc",
       "profiler/frame_pointer_unwinder.cc",
       "profiler/frame_pointer_unwinder.h",
       "profiler/stack_sampler_mac.cc",
@@ -2126,6 +2162,7 @@ component("base") {
     sources += [
       "base_paths_ios.h",
       "base_paths_ios.mm",
+      "files/drive_info_ios.cc",
       "ios/block_types.h",
       "ios/crb_protocol_observers.h",
       "ios/crb_protocol_observers.mm",
@@ -2136,10 +2173,9 @@ component("base") {
       "ios/ns_error_util.h",
       "ios/ns_error_util.mm",
       "ios/ns_range.h",
-      "native_library_ios.mm",
-      "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
       "process/process_metrics_posix.cc",
+      "profiler/core_unwinders_ios.cc",
       "profiler/stack_sampler_ios.cc",
       "system/sys_info_ios.mm",
     ]
@@ -2158,8 +2194,6 @@ component("base") {
         "files/file_path_watcher_kqueue.h",
         "files/file_path_watcher_mac.cc",
         "ios/sim_header_shims.h",
-        "mac/mach_port_rendezvous.cc",
-        "mac/mach_port_rendezvous.h",
         "process/kill_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
@@ -2167,14 +2201,41 @@ component("base") {
         "process/process_handle_mac.cc",
         "process/process_ios.cc",
         "process/process_iterator_mac.cc",
-        "process/process_mac.cc",
         "process/process_posix.cc",
         "sync_socket_posix.cc",
-        "synchronization/waitable_event_watcher_mac.cc",
+        "synchronization/waitable_event_posix.cc",
+        "synchronization/waitable_event_watcher_posix.cc",
       ]
 
-      # We include launch_mac on simulator builds so unittests can fork.
-      if (target_environment == "simulator") {
+      if (target_platform == "iphoneos") {
+        sources += [
+          "apple/mach_port_rendezvous.cc",
+          "apple/mach_port_rendezvous.h",
+          "apple/mach_port_rendezvous_ios.cc",
+          "apple/mach_port_rendezvous_ios.h",
+          "power_monitor/power_monitor_device_source_ios.mm",
+          "process/process_mac.cc",
+        ]
+      } else {
+        sources += [
+          "power_monitor/power_monitor_device_source_stub.cc",
+
+          # tvOS apps must be single-process. Build a Process version that does
+          # the bare minimum and does not use Mach ports.
+          "process/process_tvos.cc",
+        ]
+      }
+
+      # We include launch_mac on simulator builds so unit and browser tests can
+      # fork.
+      # iOS-based platforms like tvOS need special treatment in launch_mac.cc
+      # due to some symbols being marked unavailable despite being present,
+      # which is why this condition is restricted to specific `target_platform`
+      # values.
+      # In all cases, this is restricted to simulator builds because App Store
+      # restrictions forbid the use of multiple processes in applications.
+      if (target_environment == "simulator" &&
+          (target_platform == "iphoneos" || target_platform == "tvos")) {
         sources += [
           "process/kill_mac.cc",
           "process/launch_mac.cc",
@@ -2184,13 +2245,14 @@ component("base") {
       }
     } else {
       sources += [
+        "power_monitor/power_monitor_device_source_ios.mm",
         "process/launch_ios.cc",
         "process/memory_stubs.cc",
         "process/process_stubs.cc",
       ]
     }
 
-    if (is_cronet_build) {
+    if (is_cronet_build || target_platform == "tvos") {
       sources += [
         "message_loop/message_pump_io_ios.cc",
         "message_loop/message_pump_io_ios.h",
@@ -2200,6 +2262,9 @@ component("base") {
         "message_loop/message_pump_kqueue.cc",
         "message_loop/message_pump_kqueue.h",
       ]
+      if (use_blink) {
+        frameworks += [ "BrowserEngineCore.framework" ]
+      }
     }
 
     if (ios_stack_profiler_enabled) {
@@ -2275,18 +2340,7 @@ component("base") {
     ]
   }
 
-  if (dep_libevent) {
-    deps += [ "//third_party/libevent" ]
-  }
-
-  if (use_libevent) {
-    sources += [
-      "message_loop/message_pump_libevent.cc",
-      "message_loop/message_pump_libevent.h",
-    ]
-  }
-
-  if (enable_message_pump_epoll) {
+  if (use_epoll) {
     sources += [
       "message_loop/message_pump_epoll.cc",
       "message_loop/message_pump_epoll.h",
@@ -2299,6 +2353,8 @@ component("base") {
     sources += [
       "memory/platform_shared_memory_mapper_posix.cc",
       "memory/platform_shared_memory_region_posix.cc",
+      "version_info/nix/version_extra_utils.cc",
+      "version_info/nix/version_extra_utils.h",
     ]
   }
 
@@ -2314,7 +2370,12 @@ component("base") {
 
     # TODO(b/167763382) Find an alternate solution for Chromecast devices, since
     # adding the icui18n and icuuc deps significantly increases the binary size.
-    if (!is_castos && !is_cast_android) {
+    # This dependency was added to deal with Y2038 problem where time_t is
+    # represented via int32. However, Android builds specifically have time64
+    # headers which allows representing time as int64, which makes this entire
+    # problem moot. Hence, why `!is_cronet_build` flag has been added.
+    # See crbug.com/431972096#comment10 for more information.
+    if (!is_castos && !is_cast_android && !is_cronet_build) {
       sources += [ "time/time_exploded_icu.cc" ]
 
       # The ICU dependency is only needed on systems with a 32-bit time_t.
@@ -2335,7 +2396,10 @@ component("base") {
   }
 
   if ((is_posix && !is_apple && !is_android) || is_fuchsia) {
-    sources += [ "profiler/stack_sampler_posix.cc" ]
+    sources += [
+      "profiler/core_unwinders_posix.cc",
+      "profiler/stack_sampler_posix.cc",
+    ]
   }
 
   if ((is_posix && !is_apple && !is_android && !is_chromeos) || is_fuchsia) {
@@ -2355,121 +2419,107 @@ component("base") {
     ]
   }
 
-  if (enable_base_tracing) {
+  sources += [
+    "trace_event/auto_open_close_event.h",
+    "trace_event/builtin_categories.h",
+    "trace_event/heap_profiler.h",
+    "trace_event/interned_args_helper.cc",
+    "trace_event/interned_args_helper.h",
+    "trace_event/log_message.cc",
+    "trace_event/log_message.h",
+    "trace_event/malloc_dump_provider.cc",
+    "trace_event/malloc_dump_provider.h",
+    "trace_event/memory_allocator_dump.cc",
+    "trace_event/memory_allocator_dump.h",
+    "trace_event/memory_dump_manager.cc",
+    "trace_event/memory_dump_manager.h",
+    "trace_event/memory_dump_manager_test_utils.h",
+    "trace_event/memory_dump_provider.h",
+    "trace_event/memory_dump_provider_info.cc",
+    "trace_event/memory_dump_provider_info.h",
+    "trace_event/memory_dump_request_args.cc",
+    "trace_event/memory_dump_request_args.h",
+    "trace_event/memory_dump_scheduler.cc",
+    "trace_event/memory_dump_scheduler.h",
+    "trace_event/memory_infra_background_allowlist.cc",
+    "trace_event/memory_infra_background_allowlist.h",
+    "trace_event/memory_pressure_level_proto.cc",
+    "trace_event/memory_pressure_level_proto.h",
+    "trace_event/memory_usage_estimator.cc",
+    "trace_event/memory_usage_estimator.h",
+    "trace_event/optional_trace_event.h",
+    "trace_event/perfetto_proto_appender.cc",
+    "trace_event/perfetto_proto_appender.h",
+    "trace_event/process_memory_dump.cc",
+    "trace_event/process_memory_dump.h",
+    "trace_event/trace_arguments.cc",
+    "trace_event/trace_arguments.h",
+    "trace_event/trace_buffer.cc",
+    "trace_event/trace_buffer.h",
+    "trace_event/trace_config.cc",
+    "trace_event/trace_config.h",
+    "trace_event/trace_config_category_filter.cc",
+    "trace_event/trace_config_category_filter.h",
+    "trace_event/trace_event.h",
+    "trace_event/trace_event_impl.cc",
+    "trace_event/trace_event_impl.h",
+    "trace_event/trace_log.cc",
+    "trace_event/trace_log.h",
+    "trace_event/traced_value.cc",
+    "trace_event/traced_value.h",
+    "trace_event/traced_value_support.h",
+    "trace_event/tracing_agent.cc",
+    "trace_event/tracing_agent.h",
+    "trace_event/typed_macros.h",
+    "trace_event/typed_macros_embedder_support.h",
+    "trace_event/user_action.cc",
+    "trace_event/user_action.h",
+    "tracing/perfetto_platform.cc",
+    "tracing/perfetto_platform.h",
+    "tracing/perfetto_task_runner.cc",
+    "tracing/perfetto_task_runner.h",
+    "tracing/trace_time.cc",
+    "tracing/trace_time.h",
+    "tracing/tracing_tls.cc",
+    "tracing/tracing_tls.h",
+  ]
+
+  public_deps += [
+    "//base/tracing/protos:chrome_track_event_zero",
+    "//third_party/perfetto:libperfetto",
+  ]
+
+  deps += [
+    "//base/tracing/protos:chrome_track_event",
+    "//third_party/perfetto/include/perfetto/protozero",
+  ]
+
+  all_dependent_configs += [ "//third_party/perfetto/gn:public_config" ]
+
+  if (is_win) {
     sources += [
-      "trace_event/auto_open_close_event.h",
-      "trace_event/builtin_categories.cc",
-      "trace_event/builtin_categories.h",
-      "trace_event/category_registry.cc",
-      "trace_event/category_registry.h",
-      "trace_event/heap_profiler.h",
-      "trace_event/interned_args_helper.cc",
-      "trace_event/interned_args_helper.h",
-      "trace_event/log_message.cc",
-      "trace_event/log_message.h",
-      "trace_event/malloc_dump_provider.cc",
-      "trace_event/malloc_dump_provider.h",
-      "trace_event/memory_allocator_dump.cc",
-      "trace_event/memory_allocator_dump.h",
-      "trace_event/memory_dump_manager.cc",
-      "trace_event/memory_dump_manager.h",
-      "trace_event/memory_dump_manager_test_utils.h",
-      "trace_event/memory_dump_provider.h",
-      "trace_event/memory_dump_provider_info.cc",
-      "trace_event/memory_dump_provider_info.h",
-      "trace_event/memory_dump_request_args.cc",
-      "trace_event/memory_dump_request_args.h",
-      "trace_event/memory_dump_scheduler.cc",
-      "trace_event/memory_dump_scheduler.h",
-      "trace_event/memory_infra_background_allowlist.cc",
-      "trace_event/memory_infra_background_allowlist.h",
-      "trace_event/memory_pressure_level_proto.cc",
-      "trace_event/memory_pressure_level_proto.h",
-      "trace_event/memory_usage_estimator.cc",
-      "trace_event/memory_usage_estimator.h",
-      "trace_event/optional_trace_event.h",
-      "trace_event/process_memory_dump.cc",
-      "trace_event/process_memory_dump.h",
-      "trace_event/trace_arguments.cc",
-      "trace_event/trace_arguments.h",
-      "trace_event/trace_buffer.cc",
-      "trace_event/trace_buffer.h",
-      "trace_event/trace_category.h",
-      "trace_event/trace_config.cc",
-      "trace_event/trace_config.h",
-      "trace_event/trace_config_category_filter.cc",
-      "trace_event/trace_config_category_filter.h",
-      "trace_event/trace_event.h",
-      "trace_event/trace_event_impl.cc",
-      "trace_event/trace_event_impl.h",
-      "trace_event/trace_event_memory_overhead.cc",
-      "trace_event/trace_event_memory_overhead.h",
-      "trace_event/trace_log.cc",
-      "trace_event/trace_log.h",
-      "trace_event/trace_log_constants.cc",
-      "trace_event/traced_value.cc",
-      "trace_event/traced_value.h",
-      "trace_event/traced_value_support.h",
-      "trace_event/tracing_agent.cc",
-      "trace_event/tracing_agent.h",
-      "trace_event/typed_macros.h",
-      "trace_event/typed_macros_embedder_support.h",
-      "trace_event/typed_macros_internal.cc",
-      "trace_event/typed_macros_internal.h",
-      "tracing/perfetto_platform.cc",
-      "tracing/perfetto_platform.h",
-      "tracing/perfetto_task_runner.cc",
-      "tracing/perfetto_task_runner.h",
-      "tracing/trace_time.cc",
-      "tracing/trace_time.h",
-      "tracing/tracing_tls.cc",
-      "tracing/tracing_tls.h",
+      "trace_event/etw_interceptor_win.cc",
+      "trace_event/etw_interceptor_win.h",
+      "trace_event/trace_logging_minimal_win.cc",
+      "trace_event/trace_logging_minimal_win.h",
     ]
+  }
 
-    public_deps += [
-      "//base/tracing/protos:chrome_track_event_zero",
-      "//third_party/perfetto:libperfetto",
-    ]
-
-    deps += [
-      "//base/tracing/protos:chrome_track_event",
-      "//third_party/perfetto/include/perfetto/protozero",
-    ]
-
-    all_dependent_configs += [ "//third_party/perfetto/gn:public_config" ]
-
-    if (is_win) {
-      sources += [
-        "trace_event/etw_interceptor_win.cc",
-        "trace_event/etw_interceptor_win.h",
-        "trace_event/trace_event_etw_export_win.cc",
-        "trace_event/trace_event_etw_export_win.h",
-        "trace_event/trace_logging_minimal_win.cc",
-        "trace_event/trace_logging_minimal_win.h",
-      ]
-    }
-
-    if (is_android) {
-      sources += [
-        "trace_event/application_state_proto_android.cc",
-        "trace_event/application_state_proto_android.h",
-        "trace_event/cpufreq_monitor_android.cc",
-        "trace_event/cpufreq_monitor_android.h",
-        "trace_event/java_heap_dump_provider_android.cc",
-        "trace_event/java_heap_dump_provider_android.h",
-      ]
-    }
-
-    if (use_partition_alloc_as_malloc) {
-      sources += [
-        "trace_event/address_space_dump_provider.cc",
-        "trace_event/address_space_dump_provider.h",
-      ]
-    }
-  } else {
+  if (is_android) {
     sources += [
-      "trace_event/trace_event_stub.cc",
-      "trace_event/trace_event_stub.h",
+      "trace_event/application_state_proto_android.cc",
+      "trace_event/application_state_proto_android.h",
+      "trace_event/cpufreq_monitor_android.cc",
+      "trace_event/cpufreq_monitor_android.h",
+      "trace_event/java_heap_dump_provider_android.cc",
+      "trace_event/java_heap_dump_provider_android.h",
+    ]
+  }
+
+  if (use_partition_alloc_as_malloc) {
+    sources += [
+      "trace_event/address_space_dump_provider.cc",
+      "trace_event/address_space_dump_provider.h",
     ]
   }
 
@@ -2483,6 +2533,72 @@ component("base") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+}
+
+if (is_android) {
+  # This source_set must end up in the root component of a shared library, and
+  # the NativeInitializationHook definition must also be in the root component.
+  source_set("jni_onload") {
+    sources = [ "android/jni_onload.cc" ]
+    deps = [ ":base" ]
+  }
+}
+
+rust_bindgen("logging_log_severity_bindgen") {
+  # TODO(danakj): Maybe combine all base bindgen targets, or all base/logging
+  # ones even) into a single GN target? But the GN rule needs to handle multiple
+  # headers then.
+  header = "logging/log_severity.h"
+  cpp = true
+  visibility = [ ":*" ]
+
+  # Transitive generated header dependency.
+  deps = [ ":debugging_buildflags" ]
+}
+
+rust_static_library("rust_logger") {
+  allow_unsafe = true  # Unsafe needed for FFI.
+  deps = [
+    ":logging_log_severity_bindgen",
+    ":tracing_buildflags",
+    "//build:chromeos_buildflags",
+    "//third_party/rust/log/v0_4:lib",
+
+    # Needed because of circular dependency: base depends on this target and by
+    # extension the cxx-generated C++ code, but the cxx-generated code includes
+    # base headers and calls base code. This seems to generally not cause
+    # issues, except for partition_alloc which applies configs when depended on.
+    #
+    # This allows the generated C++ code to transitively include partition alloc
+    # headers without issue.
+    #
+    # TODO(collinbaker): determine how to handle these cxx bindings-induced
+    # circular dependencies more robustly.
+    "//base/allocator/partition_allocator:raw_ptr",
+
+    # Needed because logging/rust_logger.rs contains:
+    #   include!("base/logging/rust_log_integration.h");
+    # rust_log_integration.h ends up transitively #including
+    # debug/debugging_buildflags.h, which is a generated header that needs to
+    # be written first.
+    #
+    # Technically it would be more correct to depend on :base, which is the
+    # target for rust_log_integration.h, but that's not possible due to circular
+    # dependencies.
+    #
+    # Note if this is removed the build may still work by accident because
+    # debug/debugging_buildflags.h still ends up being generated through a
+    # dependency chain via :logging_log_severity_bindgen. But we should not
+    # rely on that.
+    #
+    # See also https://crbug.com/406267472.
+    ":debugging_buildflags",
+  ]
+  visibility = [ ":base" ]
+  sources = [ "logging/rust_logger.rs" ]
+  crate_root = "logging/rust_logger.rs"
+
+  cxx_bindings = [ "logging/rust_logger.rs" ]
 }
 
 if (is_linux || is_chromeos) {
@@ -2518,14 +2634,38 @@ if (is_linux || is_chromeos) {
 buildflag_header("cfi_buildflags") {
   header = "cfi_buildflags.h"
 
-  flags = [
-    # TODO(pcc): remove CFI_CAST_CHECK, see https://crbug.com/626794.
-    "CFI_CAST_CHECK=$is_cfi && $use_cfi_cast",
-    "CFI_DIAG=$is_cfi && $use_cfi_diag",
-    "CFI_ICALL_CHECK=$is_cfi && $use_cfi_icall",
-    "CFI_ENFORCEMENT_TRAP=$is_cfi && !$use_cfi_diag",
-    "CFI_ENFORCEMENT_DIAGNOSTIC=$is_cfi && $use_cfi_diag && !$use_cfi_recover",
-  ]
+  flags = []
+
+  # TODO(pcc): remove CFI_CAST_CHECK, see https://crbug.com/626794.
+  if (is_cfi && use_cfi_cast) {
+    flags += [ "CFI_CAST_CHECK=true" ]
+  } else {
+    flags += [ "CFI_CAST_CHECK=false" ]
+  }
+
+  if (is_cfi && use_cfi_diag) {
+    flags += [ "CFI_DIAG=true" ]
+  } else {
+    flags += [ "CFI_DIAG=false" ]
+  }
+
+  if (is_cfi && use_cfi_icall) {
+    flags += [ "CFI_ICALL_CHECK=true" ]
+  } else {
+    flags += [ "CFI_ICALL_CHECK=false" ]
+  }
+
+  if (is_cfi && !use_cfi_diag) {
+    flags += [ "CFI_ENFORCEMENT_TRAP=true" ]
+  } else {
+    flags += [ "CFI_ENFORCEMENT_TRAP=false" ]
+  }
+
+  if (is_cfi && use_cfi_diag && !use_cfi_recover) {
+    flags += [ "CFI_ENFORCEMENT_DIAGNOSTIC=true" ]
+  } else {
+    flags += [ "CFI_ENFORCEMENT_DIAGNOSTIC=false" ]
+  }
 }
 
 buildflag_header("debugging_buildflags") {
@@ -2569,7 +2709,7 @@ buildflag_header("debugging_buildflags") {
 buildflag_header("feature_list_buildflags") {
   header = "feature_list_buildflags.h"
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     flags = [
       "ENABLE_BANNED_BASE_FEATURE_PREFIX=true",
       "BANNED_BASE_FEATURE_PREFIX=\"CrOSLateBoot\"",
@@ -2579,18 +2719,11 @@ buildflag_header("feature_list_buildflags") {
   }
 }
 
-buildflag_header("logging_buildflags") {
-  header = "logging_buildflags.h"
-
-  flags = [ "ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached" ]
-}
-
 buildflag_header("orderfile_buildflags") {
   header = "orderfile_buildflags.h"
   header_dir = "base/android/orderfile"
   using_order_profiling = is_android && use_order_profiling
-  using_devtools_dumping =
-      is_android && devtools_instrumentation_dumping && enable_base_tracing
+  using_devtools_dumping = is_android && devtools_instrumentation_dumping
 
   flags = [
     "DEVTOOLS_INSTRUMENTATION_DUMPING=$using_devtools_dumping",
@@ -2603,8 +2736,8 @@ buildflag_header("protected_memory_buildflags") {
   header = "protected_memory_buildflags.h"
   header_dir = "base/memory"
 
-  # Currently Protected Memory is only supported on Windows.
-  protected_memory_enabled = !is_component_build && is_win
+  protected_memory_enabled = !is_component_build && is_clang &&
+                             (is_win || is_linux || is_android || is_mac)
 
   flags = [ "PROTECTED_MEMORY_ENABLED=$protected_memory_enabled" ]
 }
@@ -2657,7 +2790,6 @@ buildflag_header("tracing_buildflags") {
   header = "tracing_buildflags.h"
 
   flags = [
-    "ENABLE_BASE_TRACING=$enable_base_tracing",
     "USE_PERFETTO_TRACE_PROCESSOR=$use_perfetto_trace_processor",
     "OPTIONAL_TRACE_EVENTS_ENABLED=$optional_trace_events_enabled",
   ]
@@ -2697,10 +2829,7 @@ static_library("base_static") {
     "immediate_crash.h",
   ]
 
-  deps = [
-    ":fuzzing_buildflags",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ ":fuzzing_buildflags" ]
 
   if (is_win) {
     sources += [
@@ -2720,6 +2849,34 @@ static_library("base_static") {
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  }
+}
+
+buildflag_header("i18n_transliterator") {
+  header = "transliterator_buildflags.h"
+  header_dir = "base/i18n"
+  flags = [ "BUILD_RUST_TRANSLIT=$enable_rust_translit" ]
+}
+
+if (enable_rust_translit) {
+  rust_static_library("i18n_transliterator_ffi") {
+    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    crate_root = "i18n/transliterator.rs"
+    sources = [
+      "i18n/translit/custom_transliterator.rs",
+      "i18n/translit/mod.rs",
+      "i18n/transliterator.rs",
+    ]
+    cxx_bindings = [ "i18n/transliterator.rs" ]
+    visibility = [ ":i18n" ]
+    deps = [
+      "//third_party/rust/icu_casemap/v2:lib",
+      "//third_party/rust/icu_experimental/v0_4:lib",
+      "//third_party/rust/icu_locale_core/v2:lib",
+      "//third_party/rust/icu_normalizer/v2:lib",
+      "//third_party/rust/icu_properties/v2:lib",
+      "//third_party/rust/icu_provider/v2:lib",
+    ]
   }
 }
 
@@ -2763,6 +2920,8 @@ component("i18n") {
     "i18n/time_formatting.h",
     "i18n/timezone.cc",
     "i18n/timezone.h",
+    "i18n/transliterator.cc",
+    "i18n/transliterator.h",
     "i18n/unicodestring.h",
     "i18n/utf8_validator_tables.cc",
     "i18n/utf8_validator_tables.h",
@@ -2775,20 +2934,16 @@ component("i18n") {
     "//third_party/icu",
   ]
   deps = [
+    ":i18n_transliterator",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
   ]
 
+  if (enable_rust_translit) {
+    deps += [ ":i18n_transliterator_ffi" ]
+  }
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "i18n/icu_mergeable_data_file.cc",
-      "i18n/icu_mergeable_data_file.h",
-    ]
   }
 
   if (is_mac) {
@@ -2846,6 +3001,10 @@ test("base_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+
+  if (is_win) {
+    sources += [ "time/time_win_perftest.cc" ]
+  }
 
   if (is_android) {
     deps += [ "//testing/android/native_test:native_test_native_code" ]
@@ -2943,7 +3102,6 @@ if ((is_win && (current_cpu == "x64" || current_cpu == "arm64")) || is_mac ||
     no_default_deps = true
     if (!toolchain_for_rust_host_build_tools) {
       deps = [ "//build/config:common_deps_without_libcxx" ]
-      configs += [ "//build/config/sanitizers:link_shared_library" ]
     }
   }
 }
@@ -2964,21 +3122,12 @@ if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
     no_default_deps = true
     if (!toolchain_for_rust_host_build_tools) {
       deps = [ "//build/config:common_deps_without_libcxx" ]
-      configs += [ "//build/config/sanitizers:link_shared_library" ]
     }
   }
 }
 
 if (is_android) {
   source_set("native_unwinder_android") {
-    # This target is intended to be used only within the stack_unwinder dynamic
-    # feature module, to avoid binary size increase in Chrome due to the
-    # libunwindstack dependency. The additional :* visibility is needed to allow
-    # use by base test targets.
-    visibility = [
-      ":*",
-      "//chrome/android/modules/stack_unwinder/internal:*",
-    ]
     sources = [
       "profiler/libunwindstack_unwinder_android.cc",
       "profiler/libunwindstack_unwinder_android.h",
@@ -3064,7 +3213,7 @@ generated_file("generate_file_for_test") {
 if (is_ios) {
   bundle_data("base_test_proto_bundle_data") {
     testonly = true
-    public_deps = [ "//base/test:test_proto_descriptor" ]
+    public_deps = [ "//base/test:test_proto_descriptor_gen" ]
     sources = [ "$root_gen_dir/base/test/test_proto.descriptor" ]
     outputs = [ "{{bundle_resources_dir}}/gen/base/test/{{source_file_part}}" ]
   }
@@ -3093,7 +3242,7 @@ if (is_apple) {
   }
 }
 
-if (!is_nacl && (is_linux || is_chromeos)) {
+if (is_linux || is_chromeos) {
   # This test must compile with -fstack-protector-all
   source_set("stack_canary_linux_unittests") {
     testonly = true
@@ -3185,6 +3334,44 @@ source_set("path_service_unittest") {
   }
 }
 
+if (is_win) {
+  # Used by win/delayload_helpers_unittest.cc to test delayload helpers.
+  config("delayload_esent_dll") {
+    ldflags = [ "/DELAYLOAD:esent.dll" ]
+  }
+}
+
+if (is_android) {
+  # On Android, Death Tests must be ran on raw executables, but the default base_unittests target will run from an APK.
+  # So any test that contains at least one case that uses the Death Test mechanism must be moved here to be ran properly on Android.
+  test("base_unittests_android_death_tests") {
+    use_raw_android_executable = true
+
+    deps = [
+      ":base",
+
+      # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
+      "allocator/partition_allocator/src/partition_alloc:test_support",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/gtest:gtest_main",
+    ]
+
+    # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
+    #
+    # Note: This requires checking `build_with_chromium` because partition_alloc
+    # do not provide ":unittests" when built outside of chromium.
+    # "//base" is a dependency of WebRTC where `build_with_chromium` is false.
+    # TODO(42223878): Remove standalone WebRTC dependency on //base.
+    if (build_with_chromium) {
+      deps += [
+        "allocator/partition_allocator/src/partition_alloc:death_unittests",
+      ]
+    }
+  }
+}
+
 test("base_unittests") {
   sources = [
     "allocator/dispatcher/dispatcher_unittest.cc",
@@ -3205,13 +3392,17 @@ test("base_unittests") {
     "bit_cast_unittest.cc",
     "bits_unittest.cc",
     "build_time_unittest.cc",
+    "byte_count_unittest.cc",
+    "byte_size_unittest.cc",
     "callback_list_unittest.cc",
     "cancelable_callback_unittest.cc",
+    "check_deref_unittest.cc",
     "check_is_test_unittest.cc",
     "check_unittest.cc",
     "command_line_unittest.cc",
     "component_export_unittest.cc",
     "containers/adapters_unittest.cc",
+    "containers/auto_spanification_helper_unittest.cc",
     "containers/buffer_iterator_unittest.cc",
     "containers/checked_iterators_unittest.cc",
     "containers/circular_deque_unittest.cc",
@@ -3237,6 +3428,7 @@ test("base_unittests") {
     "containers/to_value_list_unittest.cc",
     "containers/to_vector_unittest.cc",
     "containers/unique_ptr_adapters_unittest.cc",
+    "containers/variant_map_unittest.cc",
     "containers/vector_buffer_unittest.cc",
     "cpu_unittest.cc",
     "debug/alias_unittest.cc",
@@ -3249,6 +3441,7 @@ test("base_unittests") {
     "environment_unittest.cc",
     "feature_list_unittest.cc",
     "files/block_tests_writing_to_special_dirs_unittest.cc",
+    "files/drive_info_unittest.cc",
     "files/file_enumerator_unittest.cc",
     "files/file_error_or_unittest.cc",
     "files/file_path_unittest.cc",
@@ -3268,12 +3461,10 @@ test("base_unittests") {
     "functional/concurrent_callbacks_unittest.cc",
     "functional/concurrent_closures_unittest.cc",
     "functional/function_ref_unittest.cc",
-    "functional/overloaded_unittest.cc",
+    "functional/is_callback_unittest.cc",
     "gmock_unittest.cc",
     "hash/hash_unittest.cc",
     "hash/legacy_hash_unittest.cc",
-    "hash/md5_constexpr_unittest.cc",
-    "hash/md5_unittest.cc",
     "hash/sha1_unittest.cc",
     "i18n/break_iterator_unittest.cc",
     "i18n/case_conversion_unittest.cc",
@@ -3290,8 +3481,6 @@ test("base_unittests") {
     "i18n/time_formatting_unittest.cc",
     "i18n/timezone_unittest.cc",
     "i18n/transliterator_unittest.cc",
-    "immediate_crash_unittest.cc",
-    "json/json_parser_unittest.cc",
     "json/json_reader_unittest.cc",
     "json/json_value_converter_unittest.cc",
     "json/json_value_serializer_unittest.cc",
@@ -3299,7 +3488,9 @@ test("base_unittests") {
     "json/string_escape_unittest.cc",
     "json/values_util_unittest.cc",
     "lazy_instance_unittest.cc",
+    "logging/rust_log_integration_unittest.cc",
     "logging_unittest.cc",
+    "macros/is_empty_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/discardable_memory_backing_field_trial_unittest.cc",
     "memory/discardable_shared_memory_unittest.cc",
@@ -3318,10 +3509,14 @@ test("base_unittests") {
     "memory/shared_memory_mapping_unittest.cc",
     "memory/shared_memory_region_unittest.cc",
     "memory/singleton_unittest.cc",
+    "memory/structured_shared_memory_unittest.cc",
     "memory/unsafe_shared_memory_pool_unittest.cc",
     "memory/values_equivalent_unittest.cc",
     "memory/weak_auto_reset_unittest.cc",
     "memory/weak_ptr_unittest.cc",
+    "memory_coordinator/async_memory_consumer_registration_unittest.cc",
+    "memory_coordinator/memory_consumer_registry_unittest.cc",
+    "memory_coordinator/memory_consumer_unittest.cc",
     "message_loop/message_pump_glib_unittest.cc",
     "message_loop/message_pump_unittest.cc",
     "message_loop/work_id_provider_unittest.cc",
@@ -3342,6 +3537,7 @@ test("base_unittests") {
     "metrics/persistent_histogram_storage_unittest.cc",
     "metrics/persistent_memory_allocator_unittest.cc",
     "metrics/persistent_sample_map_unittest.cc",
+    "metrics/puma_histogram_functions_unittest.cc",
     "metrics/ranges_manager_unittest.cc",
     "metrics/sample_map_unittest.cc",
     "metrics/sample_vector_unittest.cc",
@@ -3363,24 +3559,26 @@ test("base_unittests") {
     "power_monitor/power_monitor_unittest.cc",
     "power_monitor/timer_sampling_event_source_unittest.cc",
     "process/environment_internal_unittest.cc",
+    "process/launch_unittest.cc",
     "process/memory_unittest.cc",
     "process/process_metrics_unittest.cc",
     "process/process_unittest.cc",
     "process/process_util_unittest.cc",
     "profiler/metadata_recorder_unittest.cc",
     "profiler/module_cache_unittest.cc",
+    "profiler/periodic_sampling_scheduler_unittest.cc",
     "profiler/sample_metadata_unittest.cc",
     "profiler/stack_buffer_unittest.cc",
     "profiler/stack_copier_suspend_unittest.cc",
     "profiler/stack_copier_unittest.cc",
     "profiler/stack_sampler_unittest.cc",
     "profiler/stack_sampling_profiler_unittest.cc",
+    "profiler/thread_group_profiler_unittest.cc",
     "rand_util_unittest.cc",
-    "ranges/algorithm_unittest.cc",
-    "ranges/functional_unittest.cc",
     "run_loop_unittest.cc",
     "safe_numerics_unittest.cc",
     "sampling_heap_profiler/lock_free_address_hash_set_unittest.cc",
+    "sampling_heap_profiler/lock_free_bloom_filter_unittest.cc",
     "scoped_add_feature_flags_unittest.cc",
     "scoped_clear_last_error_unittest.cc",
     "scoped_generic_unittest.cc",
@@ -3396,15 +3594,19 @@ test("base_unittests") {
     "strings/abseil_string_number_conversions_unittest.cc",
     "strings/cstring_view_unittest.cc",
     "strings/escape_unittest.cc",
+    "strings/lazy_string_builder_unittest.cc",
     "strings/levenshtein_distance_unittest.cc",
     "strings/no_trigraphs_unittest.cc",
     "strings/pattern_unittest.cc",
     "strings/safe_sprintf_unittest.cc",
+    "strings/span_printf_unittest.cc",
     "strings/strcat_unittest.cc",
     "strings/string_number_conversions_unittest.cc",
+    "strings/string_slice_unittest.cc",
     "strings/string_split_unittest.cc",
     "strings/string_tokenizer_unittest.cc",
     "strings/string_util_unittest.cc",
+    "strings/string_view_util_unittest.cc",
     "strings/stringize_macros_unittest.cc",
     "strings/stringprintf_unittest.cc",
     "strings/sys_string_conversions_unittest.cc",
@@ -3417,7 +3619,9 @@ test("base_unittests") {
     "supports_user_data_unittest.cc",
     "sync_socket_unittest.cc",
     "synchronization/atomic_flag_unittest.cc",
+    "synchronization/cancelable_event_unittest.cc",
     "synchronization/condition_variable_unittest.cc",
+    "synchronization/lock_metrics_recorder_unittest.cc",
     "synchronization/lock_unittest.cc",
     "synchronization/waitable_event_unittest.cc",
     "synchronization/waitable_event_watcher_unittest.cc",
@@ -3432,11 +3636,11 @@ test("base_unittests") {
     "task/default_delayed_task_handle_delegate_unittest.cc",
     "task/deferred_sequenced_task_runner_unittest.cc",
     "task/delayed_task_handle_unittest.cc",
+    "task/execution_fence_unittest.cc",
     "task/lazy_thread_pool_task_runner_unittest.cc",
     "task/post_job_unittest.cc",
     "task/scoped_set_task_priority_for_current_thread_unittest.cc",
     "task/sequence_manager/atomic_flag_set_unittest.cc",
-    "task/sequence_manager/lazily_deallocated_deque_unittest.cc",
     "task/sequence_manager/sequence_manager_impl_unittest.cc",
     "task/sequence_manager/task_order_unittest.cc",
     "task/sequence_manager/task_queue_selector_unittest.cc",
@@ -3461,7 +3665,6 @@ test("base_unittests") {
     "task/thread_pool/job_task_source_unittest.cc",
     "task/thread_pool/pooled_single_thread_task_runner_manager_unittest.cc",
     "task/thread_pool/priority_queue_unittest.cc",
-    "task/thread_pool/semaphore/semaphore_unittest.cc",
     "task/thread_pool/sequence_unittest.cc",
     "task/thread_pool/service_thread_unittest.cc",
     "task/thread_pool/task_source_sort_key_unittest.cc",
@@ -3471,24 +3674,23 @@ test("base_unittests") {
     "task/thread_pool/test_utils.cc",
     "task/thread_pool/test_utils.h",
     "task/thread_pool/thread_group_impl_unittest.cc",
-    "task/thread_pool/thread_group_semaphore_unittest.cc",
     "task/thread_pool/thread_group_unittest.cc",
     "task/thread_pool/thread_pool_impl_unittest.cc",
     "task/thread_pool/tracked_ref_unittest.cc",
     "task/thread_pool/worker_thread_set_unittest.cc",
-    "task/thread_pool/worker_thread_waitable_event_unittest.cc",
     "task/thread_pool_unittest.cc",
     "test/gmock_callback_support_unittest.cc",
     "test/gmock_expected_support_unittest.cc",
     "test/gmock_move_support_unittest.cc",
     "test/gtest_links_unittest.cc",
+    "test/gtest_sub_test_results_unittest.cc",
     "test/gtest_tags_unittest.cc",
     "test/gtest_xml_unittest_result_printer_unittest.cc",
     "test/launcher/test_launcher_unittest.cc",
     "test/launcher/test_results_tracker_unittest.cc",
     "test/memory/dangling_ptr_instrumentation.cc",
     "test/memory/dangling_ptr_instrumentation.h",
-    "test/metrics/action_suffix_reader_unittest.cc",
+    "test/metrics/action_variants_reader_unittest.cc",
     "test/metrics/histogram_enum_reader_unittest.cc",
     "test/metrics/histogram_tester_unittest.cc",
     "test/metrics/histogram_variants_reader_unittest.cc",
@@ -3508,8 +3710,10 @@ test("base_unittests") {
     "test/test_pending_task_unittest.cc",
     "test/test_proto_loader_unittest.cc",
     "test/test_waitable_event_unittest.cc",
+    "test/values_test_util_unittest.cc",
     "thread_annotations_unittest.cc",
     "threading/hang_watcher_unittest.cc",
+    "threading/platform_thread_metrics_unittest.cc",
     "threading/platform_thread_unittest.cc",
     "threading/post_task_and_reply_impl_unittest.cc",
     "threading/scoped_blocking_call_unittest.cc",
@@ -3545,17 +3749,20 @@ test("base_unittests") {
     "types/expected_unittest.cc",
     "types/fixed_array_unittest.cc",
     "types/id_type_unittest.cc",
+    "types/integral_constant_like_unittest.cc",
     "types/is_complete_unittest.cc",
     "types/is_instantiation_unittest.cc",
     "types/optional_ref_unittest.cc",
     "types/optional_unittest.cc",
     "types/optional_util_unittest.cc",
     "types/pass_key_unittest.cc",
+    "types/same_as_any_unittest.cc",
     "types/strong_alias_unittest.cc",
     "types/supports_ostream_operator_unittest.cc",
     "types/to_address_unittest.cc",
     "types/token_type_unittest.cc",
     "types/variant_util_unittest.cc",
+    "types/zip_unittest.cc",
     "unguessable_token_unittest.cc",
     "unsafe_buffers_unittest.cc",
     "uuid_unittest.cc",
@@ -3577,30 +3784,35 @@ test("base_unittests") {
     sources += [ "location_unittest.cc" ]
   }
 
-  if (build_rust_base_conversions) {
-    sources += [
-      "containers/span_rust_unittest.cc",
-      "strings/string_piece_rust_unittest.cc",
-    ]
+  if (!(current_cpu == "riscv64" || current_cpu == "loong64" ||
+        current_cpu == "ppc64")) {
+    # On unofficial CPU architectures, there are no defined TRAP_SEQUENCE to test
+    # and building immediate_crash_unittest would fail.
+    sources += [ "immediate_crash_unittest.cc" ]
   }
 
-  if (use_safe_libcxx || use_safe_libstdcxx) {
-    sources += [ "libcpp_hardening_test.cc" ]
-  }
+  sources += [
+    "containers/span_rust_unittest.cc",
+    "strings/string_piece_rust_unittest.cc",
+  ]
+
+  fuzztests = [ "JSONReaderTest.CanParseAnythingWithoutCrashing" ]
 
   defines = []
+  frameworks = []
 
   deps = [
     ":base",
     ":base_stack_sampling_profiler_test_util",
+    ":build_time",
     ":check_version_internal",
     ":feature_list_buildflags",
+    ":hardening_tests",
     ":i18n",
     ":path_service_unittest",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
     "//base/numerics:unittests",
-    "//base/test:native_library_test_utils",
     "//base/test:proto_test_support",
     "//base/test:run_all_unittests",
     "//base/test:test_proto",
@@ -3612,6 +3824,7 @@ test("base_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
+    "//third_party/abseil-cpp:test_support",
     "//third_party/icu",
     "//third_party/modp_b64",
 
@@ -3629,12 +3842,17 @@ test("base_unittests") {
     deps += [ "allocator/partition_allocator/src/partition_alloc:unittests" ]
   }
 
+  deps += [ "//build/rust:cxx_cppdeps" ]
+
   data_deps = [
     "//base/test:immediate_crash_test_helper",
     "//base/test:test_child_process",
     "//base/test:test_shared_library",
     "//testing/buildbot/filters:base_unittests_filters",
   ]
+  if (is_ios) {
+    deps += [ "//base/test:test_shared_library_ios+bundle" ]
+  }
 
   if (is_android && enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:base_unittests_filters" ]
@@ -3646,14 +3864,22 @@ test("base_unittests") {
     "//base/allocator/partition_allocator/src/partition_alloc:memory_tagging",
   ]
 
-  if (build_rust_base_conversions) {
-    deps += [ "//build/rust:cxx_cppdeps" ]
-  }
-
   if (is_apple) {
     public_deps = [
       ":base_unittests_bundle_data",
       ":base_unittests_noarc",
+    ]
+  }
+
+  if (is_mac) {
+    # Embed an Info.plist in the `base_unittests` executable.
+    # This allows //base/apple/mach_port_rendezvous_unittest.cc to exercise code
+    # paths that depend on the executable having an Info.plist
+    ldflags = [
+      "-sectcreate",
+      "__TEXT",
+      "__info_plist",
+      rebase_path("mac/base_unittests-Info.plist", root_build_dir),
     ]
   }
 
@@ -3699,16 +3925,20 @@ test("base_unittests") {
       "win/com_init_check_hook_unittest.cc",
       "win/com_init_util_unittest.cc",
       "win/dark_mode_support_unittest.cc",
+      "win/delayload_helpers_unittest.cc",
       "win/dispatch_stub.cc",
       "win/dispatch_stub.h",
       "win/dllmain.cc",
+      "win/elevation_util_unittest.cc",
       "win/embedded_i18n/language_selector_unittest.cc",
       "win/enum_variant_unittest.cc",
       "win/event_trace_consumer_unittest.cc",
       "win/event_trace_controller_unittest.cc",
       "win/event_trace_provider_unittest.cc",
+      "win/hardware_check_unittest.cc",
       "win/hstring_reference_unittest.cc",
       "win/i18n_unittest.cc",
+      "win/limited_access_features_unittest.cc",
       "win/map_unittest.cc",
       "win/message_window_unittest.cc",
       "win/object_watcher_unittest.cc",
@@ -3747,9 +3977,11 @@ test("base_unittests") {
     }
 
     libs = [
+      "esent.lib",
       "ntdll.lib",
       "onecore.lib",
     ]
+    configs += [ ":delayload_esent_dll" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -3758,16 +3990,13 @@ test("base_unittests") {
       "files/scoped_file_linux_unittest.cc",
       "nix/mime_util_xdg_unittest.cc",
       "process/set_process_title_linux_unittest.cc",
+      "version_info/nix/version_extra_utils_unittest.cc",
     ]
 
-    if (!is_nacl) {
-      deps += [ ":stack_canary_linux_unittests" ]
-    }
+    deps += [ ":stack_canary_linux_unittests" ]
   }
 
-  if (enable_base_tracing) {
-    sources += [ "test/test_trace_processor_example_unittest.cc" ]
-  }
+  sources += [ "test/test_trace_processor_example_unittest.cc" ]
 
   if (is_posix) {
     sources += [
@@ -3776,10 +4005,11 @@ test("base_unittests") {
       "memory/madv_free_discardable_memory_allocator_posix_unittest.cc",
       "memory/madv_free_discardable_memory_posix_unittest.cc",
       "message_loop/fd_watch_controller_posix_unittest.cc",
+      "message_loop/io_watcher_fd_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",
       "posix/unix_domain_socket_unittest.cc",
     ]
-    if (!is_nacl && !is_apple) {
+    if (!is_apple) {
       sources += [
         "profiler/stack_base_address_posix_unittest.cc",
         "profiler/stack_copier_signal_unittest.cc",
@@ -3808,13 +4038,10 @@ test("base_unittests") {
       }
       add_unwind_tables_in_apk = true
     }
-    if (can_unwind_with_cfi_table) {
-      sources += [ "trace_event/cfi_backtrace_android_unittest.cc" ]
-    }
     if (current_cpu == "arm") {
       sources += [
-        "profiler/chrome_unwind_info_android_unittest.cc",
-        "profiler/chrome_unwinder_android_unittest.cc",
+        "profiler/chrome_unwind_info_android_32_unittest.cc",
+        "profiler/chrome_unwinder_android_32_unittest.cc",
       ]
     }
     if (current_cpu == "arm64") {
@@ -3832,21 +4059,20 @@ test("base_unittests") {
         ":base_profiler_test_support_jni",
         ":base_profiler_test_support_library",
         ":native_unwinder_android",
+        "//third_party/libunwindstack",
       ]
     }
 
     sources += [
+      "android/android_input_receiver_compat_unittest.cc",
       "android/application_status_listener_unittest.cc",
-      "android/binder_unittest.cc",
       "android/child_process_unittest.cc",
       "android/content_uri_utils_unittest.cc",
-      "android/jank_metric_uma_recorder_unittest.cc",
       "android/java_handler_thread_unittest.cc",
       "android/jni_android_unittest.cc",
       "android/jni_array_unittest.cc",
       "android/jni_bytebuffer_unittest.cc",
       "android/jni_string_unittest.cc",
-      "android/library_loader/library_prefetcher_unittest.cc",
       "android/linker/linker_jni.cc",
       "android/linker/linker_jni.h",
       "android/linker/linker_unittest.cc",
@@ -3874,6 +4100,7 @@ test("base_unittests") {
     deps += [
       ":base_unittest_support_java",
       ":base_unittest_support_jni",
+      "//base/android/linker:ashmem",
       "//base/test:test_support_java",
       "//third_party/jni_zero",
     ]
@@ -3890,9 +4117,10 @@ test("base_unittests") {
     sources += [
       "apple/backup_util_unittest.mm",
       "apple/bind_objc_block_unittest.mm",
-      "apple/dispatch_source_mach_unittest.cc",
+      "apple/dispatch_source_unittest.cc",
       "apple/foundation_util_unittest.mm",
       "strings/sys_string_conversions_apple_unittest.mm",
+      "types/is_arc_pointer_unittest.mm",
     ]
   }
 
@@ -3903,6 +4131,7 @@ test("base_unittests") {
   if (is_mac) {
     sources += [
       "apple/call_with_eh_frame_unittest.mm",
+      "apple/mach_port_rendezvous_unittest.cc",
       "apple/scoped_cftyperef_unittest.cc",
       "apple/scoped_mach_vm_unittest.cc",
       "apple/scoped_nsautorelease_pool_unittest.mm",
@@ -3910,7 +4139,8 @@ test("base_unittests") {
       "enterprise_util_mac_unittest.mm",
       "mac/launch_application_unittest.mm",
       "mac/mac_util_unittest.mm",
-      "mac/mach_port_rendezvous_unittest.cc",
+      "mac/pasteboard_changed_observation_unittest.mm",
+      "mac/process_requirement_unittest.cc",
       "mac/scoped_sending_event_unittest.mm",
       "message_loop/message_pump_apple_unittest.mm",
       "power_monitor/thermal_state_observer_mac_unittest.mm",
@@ -3919,6 +4149,7 @@ test("base_unittests") {
       "system/sys_info_mac_unittest.mm",
     ]
     data_deps += [ "//base/mac:launch_application_test_helper" ]
+    frameworks += [ "Security.framework" ]
   }
 
   if (is_ios) {
@@ -3933,7 +4164,7 @@ test("base_unittests") {
       bundle_deps +=
           [ "//testing/buildbot/filters:base_unittests_filters_bundle_data" ]
     }
-    if (is_cronet_build) {
+    if (is_cronet_build || target_platform == "tvos") {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
     } else {
       sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
@@ -3968,8 +4199,9 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
-    frameworks = [
+    frameworks += [
       "CoreFoundation.framework",
+      "IOKit.framework",
       "Foundation.framework",
     ]
     deps += [ ":base_profiler_test_support_library" ]
@@ -3994,11 +4226,7 @@ test("base_unittests") {
     }
   }
 
-  if (is_chromeos_lacros) {
-    sources += [ "i18n/icu_mergeable_data_file_unittest.cc" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "linux_util_unittest.cc",
       "nix/xdg_util_unittest.cc",
@@ -4009,12 +4237,8 @@ test("base_unittests") {
     sources -= [ "message_loop/message_pump_glib_unittest.cc" ]
   }
 
-  if (use_libevent) {
-    sources += [ "message_loop/message_pump_libevent_unittest.cc" ]
-    deps += [
-      ":message_pump_buildflags",
-      "//third_party/libevent",
-    ]
+  if (use_epoll) {
+    sources += [ "message_loop/message_pump_epoll_unittest.cc" ]
   }
 
   if (is_fuchsia) {
@@ -4079,7 +4303,7 @@ test("base_unittests") {
   }
 
   if (is_win) {
-    deps += [ "//base:scoped_handle_test_dll" ]
+    deps += [ ":scoped_handle_test_dll" ]
     if (current_cpu == "x64" || current_cpu == "arm64") {
       sources += [ "profiler/win32_stack_frame_unwinder_unittest.cc" ]
       deps += [ ":base_profiler_test_support_library" ]
@@ -4112,50 +4336,79 @@ test("base_unittests") {
       # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
       "allocator/partition_alloc_support_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_unittest.cc",
+      "allocator/scheduler_loop_quarantine_config_unittest.cc",
     ]
   }
 
-  if (enable_base_tracing) {
+  sources += [
+    "test/trace_event_analyzer_unittest.cc",
+    "trace_event/memory_allocator_dump_unittest.cc",
+    "trace_event/memory_dump_manager_unittest.cc",
+    "trace_event/memory_dump_scheduler_unittest.cc",
+    "trace_event/memory_infra_background_allowlist_unittest.cc",
+    "trace_event/memory_usage_estimator_unittest.cc",
+    "trace_event/process_memory_dump_unittest.cc",
+    "trace_event/trace_arguments_unittest.cc",
+    "trace_event/trace_config_unittest.cc",
+    "trace_event/trace_event_unittest.cc",
+    "trace_event/traced_value_support_unittest.cc",
+    "trace_event/traced_value_unittest.cc",
+    "tracing/perfetto_task_runner_unittest.cc",
+  ]
+
+  if (is_android) {
     sources += [
-      "test/trace_event_analyzer_unittest.cc",
-      "trace_event/memory_allocator_dump_unittest.cc",
-      "trace_event/memory_dump_manager_unittest.cc",
-      "trace_event/memory_dump_scheduler_unittest.cc",
-      "trace_event/memory_infra_background_allowlist_unittest.cc",
-      "trace_event/memory_usage_estimator_unittest.cc",
-      "trace_event/process_memory_dump_unittest.cc",
-      "trace_event/trace_arguments_unittest.cc",
-      "trace_event/trace_category_unittest.cc",
-      "trace_event/trace_config_unittest.cc",
-      "trace_event/trace_event_unittest.cc",
-      "trace_event/traced_value_support_unittest.cc",
-      "trace_event/traced_value_unittest.cc",
-      "trace_event/typed_macros_unittest.cc",
-      "tracing/perfetto_task_runner_unittest.cc",
-    ]
-
-    if (is_android) {
-      sources += [
-        "trace_event/cpufreq_monitor_android_unittest.cc",
-        "trace_event/java_heap_dump_provider_android_unittest.cc",
-      ]
-    }
-
-    if (is_win) {
-      sources += [ "trace_event/trace_logging_minimal_win_unittest.cc" ]
-    }
-
-    deps += [
-      "//third_party/perfetto/include/perfetto/trace_processor:storage",
-      "//third_party/perfetto/protos/perfetto/trace:lite",
-      "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
-      "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
+      "trace_event/cpufreq_monitor_android_unittest.cc",
+      "trace_event/java_heap_dump_provider_android_unittest.cc",
     ]
   }
+
+  if (is_win) {
+    sources += [ "trace_event/trace_logging_minimal_win_unittest.cc" ]
+  }
+
+  deps += [
+    "//third_party/perfetto:perfetto_test_support",
+    "//third_party/perfetto/include/perfetto/trace_processor:storage",
+    "//third_party/perfetto/protos/perfetto/trace:lite",
+    "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
+    "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
+  ]
 
   if (enable_nocompile_tests) {
     deps += [ ":base_nocompile_tests" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("hardening_tests") {
+  testonly = true
+
+  sources = [ "protobuf_hardening_test.cc" ]
+
+  if (use_safe_libcxx || use_safe_libstdcxx) {
+    sources += [ "libcpp_hardening_test.cc" ]
+  }
+
+  if (is_clang) {
+    sources += [ "compiler_hardening_test.cc" ]
+  }
+
+  deps = [
+    ":base",
+    ":protobuf_hardening_test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("protobuf_hardening_test_support") {
+  testonly = true
+  sources = [ "protobuf_hardening_test_support.proto" ]
+  generate_python = false
 }
 
 # Test that CFG is enabled in Rust code.
@@ -4171,15 +4424,38 @@ if (is_win && toolchain_has_rust) {
   }
 }
 
-action("build_date") {
-  script = "write_build_date_header.py"
+if (current_toolchain == default_toolchain) {
+  # Without guarding this, we would run write_build_date_header.py once per
+  # toolchain, while getting the same output. This is expensive, so expose
+  # the per-toolchain one via :build_date, which is a cheap copy.
+  import("//build/timestamp.gni")
+  _build_date_header_internal =
+      "$target_gen_dir/generated_build_date_internal.h"
 
-  outputs = [ "$target_gen_dir/generated_build_date.h" ]
+  action("build_date_internal") {
+    script = "write_build_date_header.py"
+    outputs = [ _build_date_header_internal ]
+    args = [
+      rebase_path(_build_date_header_internal, root_build_dir),
+      build_timestamp,
+    ]
+  }
+}
 
-  args = [
-    rebase_path("$target_gen_dir/generated_build_date.h", root_build_dir),
-    build_timestamp,
+copy("build_date_header") {
+  sources = [ "$root_build_dir/gen/base/generated_build_date_internal.h" ]
+  outputs = [ _build_date_header ]
+  deps = [ ":build_date_internal($default_toolchain)" ]
+}
+
+source_set("build_time") {
+  # This is a header, but it should be private.
+  sources = [ _build_date_header ]
+  public_deps = [
+    ":base",
+    ":build_date_header",
   ]
+  public = [ "build_time.h" ]
 }
 
 if (enable_nocompile_tests) {
@@ -4188,7 +4464,10 @@ if (enable_nocompile_tests) {
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_nocompile.nc",
+      "byte_size_nocompile.nc",
       "callback_list_nocompile.nc",
+      "check_deref_nocompile.nc",
+      "check_nocompile.nc",
       "containers/buffer_iterator_nocompile.nc",
       "containers/checked_iterators_nocompile.nc",
       "containers/contains_nocompile.nc",
@@ -4203,18 +4482,24 @@ if (enable_nocompile_tests) {
       "functional/bind_nocompile.nc",
       "functional/callback_nocompile.nc",
       "functional/function_ref_nocompile.nc",
-      "functional/overloaded_nocompile.nc",
       "logging_nocompile.nc",
       "memory/protected_memory_nocompile.nc",
       "memory/ref_counted_nocompile.nc",
+      "memory/shared_memory_mapping_nocompile.nc",
+      "memory/structured_shared_memory_nocompile.nc",
       "memory/weak_ptr_nocompile.nc",
       "metrics/field_trial_params_nocompile.nc",
       "metrics/histogram_nocompile.nc",
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
+      "run_loop_nocompile.nc",
+      "safe_numerics_nocompile.nc",
       "sequence_checker_nocompile.nc",
       "strings/cstring_view_nocompile.nc",
-      "strings/stringprintf_nocompile.nc",
+      "strings/lazy_string_builder_nocompile.nc",
+      "strings/span_printf_nocompile.nc",
+      "strings/string_split_nocompile.nc",
+      "strings/string_view_util_nocompile.nc",
       "synchronization/lock_nocompile.nc",
       "task/bind_post_task_nocompile.nc",
       "task/task_traits_nocompile.nc",
@@ -4222,94 +4507,22 @@ if (enable_nocompile_tests) {
       "thread_annotations_nocompile.nc",
       "traits_bag_nocompile.nc",
       "types/expected_macros_nocompile.nc",
+      "types/optional_util_nocompile.nc",
       "types/pass_key_nocompile.nc",
       "types/variant_util_nocompile.nc",
       "unsafe_buffers_nocompile.nc",
       "values_nocompile.nc",
     ]
+    if (use_cxx23) {
+      sources += [ "containers/adapters_nocompile_cpp23.nc" ]
+    } else {
+      sources += [ "containers/adapters_nocompile.nc" ]
+    }
     deps = [ ":base" ]
   }
 }
 
 if (is_android || is_robolectric) {
-  # This is a subset of the main "base_jni", used in the robolectric toolchain.
-  # While it would be nice to just make 2 unique generate_jnis, we can't because
-  # we will have 2 GEN_JNI classes in one compilation unit. This is fixable, see
-  # crbug.com/330173100.
-  generate_jni("base_robolectric_jni") {
-    sources = [
-      "android/java/src/org/chromium/base/Callback.java",
-      "android/java/src/org/chromium/base/CommandLine.java",
-      "android/java/src/org/chromium/base/JNIUtils.java",
-      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
-      "android/java/src/org/chromium/base/JniAndroid.java",
-      "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
-      "android/java/src/org/chromium/base/TraceEvent.java",
-      "android/java/src/org/chromium/base/UnguessableToken.java",
-      "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
-      "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
-    ]
-    public_deps = [ ":android_runtime_jni_headers" ]
-  }
-
-  generate_jni("base_jni") {
-    sources = [
-      "android/java/src/org/chromium/base/ApkAssets.java",
-      "android/java/src/org/chromium/base/BaseFeatureMap.java",
-      "android/java/src/org/chromium/base/BuildInfo.java",
-      "android/java/src/org/chromium/base/BundleUtils.java",
-      "android/java/src/org/chromium/base/ContentUriUtils.java",
-      "android/java/src/org/chromium/base/CpuFeatures.java",
-      "android/java/src/org/chromium/base/EventLog.java",
-      "android/java/src/org/chromium/base/FeatureList.java",
-      "android/java/src/org/chromium/base/FeatureMap.java",
-      "android/java/src/org/chromium/base/Features.java",
-      "android/java/src/org/chromium/base/FieldTrialList.java",
-      "android/java/src/org/chromium/base/FileUtils.java",
-      "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
-      "android/java/src/org/chromium/base/InputHintChecker.java",
-      "android/java/src/org/chromium/base/IntStringCallback.java",
-      "android/java/src/org/chromium/base/JNIUtils.java",
-      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
-      "android/java/src/org/chromium/base/JavaHandlerThread.java",
-      "android/java/src/org/chromium/base/JniAndroid.java",
-      "android/java/src/org/chromium/base/LocaleUtils.java",
-      "android/java/src/org/chromium/base/PathService.java",
-      "android/java/src/org/chromium/base/PathUtils.java",
-      "android/java/src/org/chromium/base/PowerMonitor.java",
-      "android/java/src/org/chromium/base/RadioUtils.java",
-      "android/java/src/org/chromium/base/TimezoneUtils.java",
-      "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
-      "android/java/src/org/chromium/base/UnguessableToken.java",
-    ]
-
-    if (use_clang_profiling) {
-      sources += [
-        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
-      ]
-    }
-
-    public_deps = [ ":android_runtime_jni_headers" ]
-  }
-
-  generate_jar_jni("android_runtime_jni_headers") {
-    classes = [
-      "java/lang/Runnable.class",
-      "java/lang/Runtime.class",
-      "java/lang/Throwable.class",
-    ]
-  }
-
-  generate_jni("process_launcher_jni") {
-    sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
-  }
-
-  generate_jni("base_shared_preferences_jni") {
-    sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
-  }
-
   shared_library_with_jni("libbase_junit_tests") {
     testonly = true
     enable_target = is_robolectric
@@ -4324,6 +4537,53 @@ if (is_android || is_robolectric) {
 }  # is_android || is_robolectric
 
 if (is_android) {
+  # JNI supported in Robolectric tests.
+  generate_jni("base_minimal_jni") {
+    enable_definition_macros = true
+    sources = [
+      "android/java/src/org/chromium/base/IntStringCallback.java",
+      "android/java/src/org/chromium/base/JNIUtils.java",
+      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
+      "android/java/src/org/chromium/base/JniCallbackImpl.java",
+      "android/java/src/org/chromium/base/Token.java",
+      "android/java/src/org/chromium/base/TokenBase.java",
+      "android/java/src/org/chromium/base/UnguessableToken.java",
+    ]
+    public_deps = [ ":android_runtime_jni_headers" ]
+  }
+
+  # JNI not supported in Robolectric.
+  generate_jni("base_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/ApkAssets.java",
+      "android/java/src/org/chromium/base/BaseFeatureMap.java",
+      "android/java/src/org/chromium/base/CpuFeatures.java",
+      "android/java/src/org/chromium/base/EventLog.java",
+      "android/java/src/org/chromium/base/FieldTrialList.java",
+      "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
+      "android/java/src/org/chromium/base/InputHintChecker.java",
+      "android/java/src/org/chromium/base/JavaHandlerThread.java",
+      "android/java/src/org/chromium/base/LocaleUtils.java",
+      "android/java/src/org/chromium/base/PathService.java",
+      "android/java/src/org/chromium/base/PowerMonitor.java",
+      "android/java/src/org/chromium/base/PowerMonitorReading.java",
+      "android/java/src/org/chromium/base/RadioUtils.java",
+    ]
+
+    public_deps = [
+      ":android_runtime_jni_headers",
+      ":base_minimal_jni",
+    ]
+  }
+
+  generate_jar_jni("android_runtime_jni_headers") {
+    classes = [
+      "java/lang/Runnable.class",
+      "java/lang/Runtime.class",
+      "java/lang/Throwable.class",
+    ]
+  }
+
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
@@ -4332,7 +4592,7 @@ if (is_android) {
       "features.cc",
       "task/task_features.cc",
     ]
-    template = "android/java/src/org/chromium/base/BaseFeatures.java.tmpl"
+    class_name = "org.chromium.base.BaseFeatures"
   }
 
   android_library("base_switches_java") {
@@ -4346,6 +4606,62 @@ if (is_android) {
     template = "android/java/src/org/chromium/base/BaseSwitches.java.tmpl"
   }
 
+  generate_jni("process_launcher_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatch.java",
+    ]
+  }
+
+  generate_jni("clang_profiler_jni") {
+    sources = [
+      "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
+    ]
+  }
+
+  android_library("clang_profiler_java") {
+    if (use_clang_profiling) {
+      srcjar_deps = [ ":clang_profiler_jni" ]
+      sources = [
+        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
+      ]
+    } else {
+      sources = [ "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java" ]
+    }
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
+  }
+
+  generate_jni("path_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/PathUtils.java" ]
+  }
+
+  android_library("path_utils_java") {
+    srcjar_deps = [ ":path_utils_jni" ]
+    sources = [ "android/java/src/org/chromium/base/PathUtils.java" ]
+    deps = [
+      ":log_java",
+      ":resetters_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("file_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/FileUtils.java" ]
+  }
+
+  android_library("file_utils_java") {
+    srcjar_deps = [ ":file_utils_jni" ]
+    sources = [ "android/java/src/org/chromium/base/FileUtils.java" ]
+    deps = [
+      ":file_provider_utils_java",
+      ":log_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
   android_library("process_launcher_java") {
     srcjar_deps = [
       ":process_launcher_aidl",
@@ -4353,8 +4669,11 @@ if (is_android) {
     ]
     deps = [
       ":base_java",
-      "//build/android:build_java",
+      ":build_info_java",
+      ":flagged_apis_java",
+      "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
@@ -4365,27 +4684,32 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/BindService.java",
       "android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
+      "android/java/src/org/chromium/base/process_launcher/ChildProcessConnectionState.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessConstants.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessLauncher.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessServiceDelegate.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnection.java",
+      "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionController.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionDelegate.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionFactory.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
-      "android/java/src/org/chromium/base/process_launcher/FileDescriptorInfo.java",
+      "android/java/src/org/chromium/base/process_launcher/LegacyChildServiceConnectionController.java",
+      "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
+      "android/java/src/org/chromium/base/process_launcher/RebindingChildServiceConnectionController.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatch.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchDuration.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchImpl.java",
     ]
   }
 
   android_library("base_java") {
     srcjar_deps = [
       ":base_android_java_enums_srcjar",
-      ":base_jni",
       ":java_features_srcjar",
     ]
 
     deps = [
-      "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -4393,80 +4717,82 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
     ]
 
+    # New additions should have their own independent android_library. Please
+    # do no append to this list.
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
+      "android/java/src/org/chromium/base/BaseFeatureList.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
-      "android/java/src/org/chromium/base/BuildInfo.java",
-      "android/java/src/org/chromium/base/BundleUtils.java",
+      "android/java/src/org/chromium/base/BinderCallsListener.java",
       "android/java/src/org/chromium/base/CallbackController.java",
+      "android/java/src/org/chromium/base/CancelableRunnable.java",
       "android/java/src/org/chromium/base/CollectionUtil.java",
-      "android/java/src/org/chromium/base/CommandLineInitUtil.java",
-      "android/java/src/org/chromium/base/ContentUriUtils.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
       "android/java/src/org/chromium/base/DiscardableReferencePool.java",
       "android/java/src/org/chromium/base/EventLog.java",
-      "android/java/src/org/chromium/base/FeatureList.java",
-      "android/java/src/org/chromium/base/FeatureMap.java",
-      "android/java/src/org/chromium/base/FeatureParam.java",
-      "android/java/src/org/chromium/base/Features.java",
       "android/java/src/org/chromium/base/FieldTrialList.java",
-      "android/java/src/org/chromium/base/FileUtils.java",
-      "android/java/src/org/chromium/base/Flag.java",
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
       "android/java/src/org/chromium/base/InputHintChecker.java",
       "android/java/src/org/chromium/base/IntStringCallback.java",
       "android/java/src/org/chromium/base/IntentUtils.java",
-      "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
-      "android/java/src/org/chromium/base/JniAndroid.java",
+      "android/java/src/org/chromium/base/JniCallbackImpl.java",
+      "android/java/src/org/chromium/base/JniOnceCallback.java",
+      "android/java/src/org/chromium/base/JniOnceRunnable.java",
+      "android/java/src/org/chromium/base/JniRepeatingCallback.java",
+      "android/java/src/org/chromium/base/JniRepeatingRunnable.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/MathUtils.java",
-      "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
-      "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
-      "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
-      "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
-      "android/java/src/org/chromium/base/PackageUtils.java",
       "android/java/src/org/chromium/base/PathService.java",
-      "android/java/src/org/chromium/base/PathUtils.java",
-      "android/java/src/org/chromium/base/PiiElider.java",
+      "android/java/src/org/chromium/base/PostNativeFlag.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
-      "android/java/src/org/chromium/base/PowerMonitorForQ.java",
+      "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/RequiredCallback.java",
-      "android/java/src/org/chromium/base/TimezoneUtils.java",
       "android/java/src/org/chromium/base/Token.java",
       "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
       "android/java/src/org/chromium/base/UserData.java",
       "android/java/src/org/chromium/base/UserDataHost.java",
       "android/java/src/org/chromium/base/ValueChangedCallback.java",
-      "android/java/src/org/chromium/base/WrappedClassLoader.java",
     ]
-
-    if (use_clang_profiling) {
-      sources += [
-        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
-      ]
-    } else {
-      sources += [ "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java" ]
-    }
 
     resources_package = "org.chromium.base"
 
     proguard_configs = [ "android/proguard/shared_with_cronet.flags" ]
+
+    # DO NOT ADD TO THIS LIST.
+    # base_java is a blob of targets that are being consumed by almost every product and
+    # library in Chromium, adding new java modules here means that all consumers will be
+    # impacted (eg: This could have severe consequences as Cronet can't depend on Guava /
+    # AndroidX).
+    #
+    # The current list were grandfathered during the refactoring of base_java.
     public_deps = [
       ":activity_state_java",
+      ":base_jni_java",
+      ":base_minimal_jni_java",
       ":base_switches_java",
+      ":build_info_java",
+      ":bundle_utils_java",
       ":callback_java",
+      ":clang_profiler_java",
+      ":command_line_init_utils_java",
       ":command_line_java",
-      ":jank_tracker_java",
+      ":features_java",
+      ":file_provider_utils_java",
+      ":file_utils_java",
+      ":jni_android_java",
+      ":jni_utils_java",
       ":library_loader_java",
       ":lifetime_java",
       ":log_java",
       ":memory_java",
       ":metrics_java",
+      ":path_utils_java",
+      ":pii_elider_java",
       ":promise_java",
       ":resetters_java",
       ":stream_util_java",
@@ -4475,7 +4801,9 @@ if (is_android) {
       ":tasks_java",
       ":time_utils_java",
       ":unowned_user_data_java",
+      ":wrapped_class_loader_java",
     ]
+
     if (!is_cronet_build) {
       proguard_configs += [
         "android/proguard/chromium_apk.flags",
@@ -4495,11 +4823,108 @@ if (is_android) {
     sources = [ "metrics/histogram_base.h" ]
   }
 
-  android_library("metrics_java") {
-    srcjar_deps = [
-      ":metrics_enum_srcjar",
-      ":metrics_jni",
+  generate_jni("jni_android_jni") {
+    sources = [ "android/java/src/org/chromium/base/JniAndroid.java" ]
+  }
+
+  android_library("pii_elider_java") {
+    sources = [ "android/java/src/org/chromium/base/PiiElider.java" ]
+    deps = [ ":tasks_java" ]
+  }
+
+  android_library("jni_android_java") {
+    srcjar_deps = [ ":jni_android_jni" ]
+    sources = [ "android/java/src/org/chromium/base/JniAndroid.java" ]
+    deps = [
+      ":log_java",
+      ":pii_elider_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
+  }
+
+  # Separated out for cronet.
+  android_library("metrics_ScopedSysTraceEvent_java") {
+    sources = [
+      "android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
+    ]
+  }
+
+  android_library("command_line_init_utils_java") {
+    sources = [ "android/java/src/org/chromium/base/CommandLineInitUtil.java" ]
+    deps = [
+      ":build_info_java",
+      ":command_line_java",
+      ":supplier_java",
+      ":tasks_java",
+    ]
+  }
+  android_library("file_provider_utils_java") {
+    sources = [ "android/java/src/org/chromium/base/FileProviderUtils.java" ]
+  }
+  generate_jni("features_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/FeatureList.java",
+      "android/java/src/org/chromium/base/FeatureMap.java",
+      "android/java/src/org/chromium/base/Features.java",
+    ]
+  }
+  android_library("features_java") {
+    srcjar_deps = [ ":features_jni" ]
+    sources = [
+      "android/java/src/org/chromium/base/FeatureList.java",
+      "android/java/src/org/chromium/base/FeatureMap.java",
+      "android/java/src/org/chromium/base/FeatureOverrides.java",
+      "android/java/src/org/chromium/base/FeatureParam.java",
+      "android/java/src/org/chromium/base/Features.java",
+      "android/java/src/org/chromium/base/Flag.java",
+      "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
+    ]
+    deps = [
+      ":library_loader_java",
+      ":resetters_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("wrapped_class_loader_java") {
+    sources = [ "android/java/src/org/chromium/base/WrappedClassLoader.java" ]
+  }
+
+  generate_jni("bundle_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
+  }
+  android_library("bundle_utils_java") {
+    srcjar_deps = [ ":bundle_utils_jni" ]
+    sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
+    deps = [
+      ":log_java",
+      ":metrics_java",
+      ":resetters_java",
+      ":tasks_java",
+      ":wrapped_class_loader_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("jni_utils_java") {
+    sources = [ "android/java/src/org/chromium/base/JNIUtils.java" ]
+    deps = [
+      ":bundle_utils_java",
+      ":log_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("metrics_java") {
+    srcjar_deps = [ ":metrics_enum_srcjar" ]
     sources = [
       "android/java/src/org/chromium/base/metrics/CachingUmaRecorder.java",
       "android/java/src/org/chromium/base/metrics/HistogramBucket.java",
@@ -4507,7 +4932,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/metrics/NoopUmaRecorder.java",
       "android/java/src/org/chromium/base/metrics/RecordHistogram.java",
       "android/java/src/org/chromium/base/metrics/RecordUserAction.java",
-      "android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
       "android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java",
       "android/java/src/org/chromium/base/metrics/TimingMetric.java",
       "android/java/src/org/chromium/base/metrics/UmaRecorder.java",
@@ -4517,49 +4941,19 @@ if (is_android) {
       ":callback_java",
       ":log_java",
       ":time_utils_java",
-      "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
-  }
-
-  generate_jni("jank_tracker_jni") {
-    sources = [ "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java" ]
-  }
-
-  android_library("jank_tracker_java") {
-    srcjar_deps = [ ":jank_tracker_jni" ]
-    sources = [
-      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
-      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankActivityTracker.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankEndScenarioTime.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetrics.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankReportingRunnable.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankReportingScheduler.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankScenario.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTracker.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTrackerStateController.java",
-      "android/java/src/org/chromium/base/jank_tracker/PlaceholderJankTracker.java",
-    ]
-    deps = [
-      ":activity_state_java",
-      ":lifetime_java",
-      ":log_java",
-      ":tasks_java",
-      ":time_utils_java",
-      "//build/android:build_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/jni_zero:jni_zero_java",
+    public_deps = [
+      ":metrics_ScopedSysTraceEvent_java",
+      ":metrics_jni_java",
     ]
   }
 
   java_cpp_enum("memory_pressure_level_enum_srcjar") {
-    sources = [ "memory/memory_pressure_listener.h" ]
+    sources = [ "memory/memory_pressure_level.h" ]
   }
 
   generate_jni("memory_jni") {
@@ -4584,6 +4978,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",
       "android/java/src/org/chromium/base/memory/MemoryPressureUma.java",
       "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
+      "android/java/src/org/chromium/base/memory/SelfFreezeCallback.java",
     ]
     deps = [
       ":library_loader_java",
@@ -4600,13 +4995,12 @@ if (is_android) {
 
   android_library("lifetime_java") {
     sources = [
-      "android/java/src/org/chromium/base/LifetimeAssert.java",
       "android/java/src/org/chromium/base/lifetime/DestroyChecker.java",
       "android/java/src/org/chromium/base/lifetime/Destroyable.java",
+      "android/java/src/org/chromium/base/lifetime/LifetimeAssert.java",
     ]
     deps = [
-      "//base:tasks_java",
-      "//build/android:build_java",
+      ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
@@ -4621,34 +5015,37 @@ if (is_android) {
 
   android_library("unowned_user_data_java") {
     sources = [
-      "android/java/src/org/chromium/base/UnownedUserData.java",
       "android/java/src/org/chromium/base/UnownedUserDataHost.java",
       "android/java/src/org/chromium/base/UnownedUserDataKey.java",
+      "android/java/src/org/chromium/base/UnownedUserDataListener.java",
     ]
     deps = [
       ":lifetime_java",
       ":tasks_java",
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
   android_library("supplier_java") {
     sources = [
-      "android/java/src/org/chromium/base/supplier/DestroyableObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/BaseObservableSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/NonNullObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/NullableObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/ObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/ObservableSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/ObservableSuppliers.java",
       "android/java/src/org/chromium/base/supplier/OneShotCallback.java",
       "android/java/src/org/chromium/base/supplier/OneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/OneshotSupplierImpl.java",
-      "android/java/src/org/chromium/base/supplier/Supplier.java",
+      "android/java/src/org/chromium/base/supplier/SettableNonNullObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/SettableNullableObservableSupplier.java",
+      "android/java/src/org/chromium/base/supplier/SettableObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/SupplierUtils.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/TransitiveObservableSupplier.java",
-      "android/java/src/org/chromium/base/supplier/UnownedUserDataSupplier.java",
       "android/java/src/org/chromium/base/supplier/UnwrapObservableSupplier.java",
     ]
     deps = [
@@ -4658,12 +5055,13 @@ if (is_android) {
       ":resetters_java",
       ":tasks_java",
       ":unowned_user_data_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
+
   android_library("time_utils_java") {
     sources = [ "android/java/src/org/chromium/base/TimeUtils.java" ]
-    deps = [ "//build/android:build_java" ]
   }
 
   generate_jni("callback_jni") {
@@ -4671,9 +5069,12 @@ if (is_android) {
   }
 
   android_library("callback_java") {
-    sources = [ "android/java/src/org/chromium/base/Callback.java" ]
+    sources = [
+      "android/java/src/org/chromium/base/Callback.java",
+      "android/java/src/org/chromium/base/CallbackUtils.java",
+    ]
     deps = [
-      "//build/android:build_java",
+      ":callback_jni_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -4693,12 +5094,16 @@ if (is_android) {
     ]
   }
 
+  # JNI that is also supported in the Robolectric toolchain.
+  generate_jni("tasks_minimal_jni") {
+    sources = [ "android/java/src/org/chromium/base/TraceEvent.java" ]
+  }
+
   generate_jni("tasks_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApplicationStatus.java",
       "android/java/src/org/chromium/base/EarlyTraceEvent.java",
       "android/java/src/org/chromium/base/ThreadUtils.java",
-      "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/task/PostTask.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
     ]
@@ -4711,11 +5116,18 @@ if (is_android) {
     ]
   }
 
-  android_library("tasks_java") {
-    srcjar_deps = [
-      ":task_trait_enum_srcjar",
-      ":tasks_jni",
+  # This is a separate target because it depends on guava.
+  android_library("task_executor_java") {
+    sources = [ "android/java/src/org/chromium/base/task/ChromiumExecutorServiceFactory.java" ]
+
+    deps = [
+      ":tasks_java",
+      "//third_party/android_deps:guava_android_java",
     ]
+  }
+
+  android_library("tasks_java") {
+    srcjar_deps = [ ":task_trait_enum_srcjar" ]
     sources = [
       # Dependencies added after this comment is tech-debt, should be untangled
       # and moved to their own separate android_library.
@@ -4738,16 +5150,20 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/BackgroundOnlyAsyncTask.java",
       "android/java/src/org/chromium/base/task/ChainedTasks.java",
       "android/java/src/org/chromium/base/task/ChromeThreadPoolExecutor.java",
+      "android/java/src/org/chromium/base/task/Location.java",
+      "android/java/src/org/chromium/base/task/LocationAwareExecutor.java",
       "android/java/src/org/chromium/base/task/PostTask.java",
       "android/java/src/org/chromium/base/task/SequencedTaskRunner.java",
       "android/java/src/org/chromium/base/task/SequencedTaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/SerialExecutor.java",
-      "android/java/src/org/chromium/base/task/SingleThreadTaskRunner.java",
-      "android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/TaskOriginException.java",
       "android/java/src/org/chromium/base/task/TaskRunner.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/UiThreadTaskRunnerImpl.java",
+    ]
+    public_deps = [
+      ":tasks_jni_java",
+      ":tasks_minimal_jni_java",
     ]
     deps = [
       ":activity_state_java",
@@ -4757,7 +5173,6 @@ if (is_android) {
       ":metrics_java",
       ":resetters_java",
       ":time_utils_java",
-      "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -4768,14 +5183,13 @@ if (is_android) {
       "android/java/src/org/chromium/base/JavaUtils.java",
       "android/java/src/org/chromium/base/Log.java",
     ]
-    deps = [ "//build/android:build_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 
   generate_jni("command_line_jni") {
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
   }
   android_library("command_line_java") {
-    srcjar_deps = [ ":command_line_jni" ]
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
     deps = [
       ":log_java",
@@ -4784,6 +5198,38 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    public_deps = [ ":command_line_jni_java" ]
+  }
+
+  generate_jni("content_uri_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
+  }
+  android_library("content_uri_utils_java") {
+    srcjar_deps = [ ":content_uri_utils_jni" ]
+    deps = [
+      ":base_java",
+      ":log_java",
+      ":stream_util_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_documentfile_documentfile_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
+  }
+
+  generate_jni("virtual_document_path_jni") {
+    sources = [ "android/java/src/org/chromium/base/VirtualDocumentPath.java" ]
+  }
+  android_library("virtual_document_path_java") {
+    srcjar_deps = [ ":virtual_document_path_jni" ]
+    deps = [
+      ":log_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/VirtualDocumentPath.java" ]
   }
 
   android_library("activity_state_java") {
@@ -4799,13 +5245,54 @@ if (is_android) {
     sources = [ "android/application_status_listener.h" ]
   }
 
+  android_library("service_loader_java") {
+    deps = [
+      ":resetters_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/ServiceLoaderUtil.java" ]
+  }
+
   android_library("resetters_java") {
     deps = [
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     sources = [ "android/java/src/org/chromium/base/ResettersForTesting.java" ]
+  }
+
+  generate_jni("build_info_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/AndroidInfo.java",
+      "android/java/src/org/chromium/base/ApkInfo.java",
+      "android/java/src/org/chromium/base/DeviceInfo.java",
+    ]
+  }
+
+  android_library("build_info_java") {
+    srcjar_deps = [
+      ":build_info_aidl",
+      ":build_info_jni",
+    ]
+    deps = [
+      ":base_switches_java",
+      ":command_line_java",
+      ":log_java",
+      ":resetters_java",
+      ":tasks_java",
+      "//base/version_info/android:version_constants_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    sources = [
+      "android/java/src/org/chromium/base/AndroidInfo.java",
+      "android/java/src/org/chromium/base/ApkInfo.java",
+      "android/java/src/org/chromium/base/DeviceInfo.java",
+      "android/java/src/org/chromium/base/PackageUtils.java",
+    ]
   }
 
   generate_jni("sys_utils_jni") {
@@ -4823,8 +5310,11 @@ if (is_android) {
     ]
     sources = [ "android/java/src/org/chromium/base/SysUtils.java" ]
     deps = [
+      ":base_switches_java",
+      ":command_line_java",
+      ":log_java",
+      ":resetters_java",
       ":tasks_java",
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -4834,10 +5324,34 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/StreamUtil.java" ]
   }
 
+  android_aidl("relro_aidl") {
+    import_include = [ "android/java/src" ]
+    sources = [
+      "android/java/src/org/chromium/base/library_loader/IRelroLibInfo.aidl",
+    ]
+    cpp_root_names = [ "RelroLibInfo" ]
+    cpp_package_name = "org/chromium/base/library_loader"
+  }
+
+  # These files would make more sense to be in //ui/android but are required by
+  # other files in //base.
+  if (!is_cronet_build) {
+    android_library("ui_java") {
+      sources = [ "android/java/src/org/chromium/base/ui/KeyboardUtils.java" ]
+      deps = [
+        ":build_info_java",
+        ":log_java",
+        ":tasks_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_core_core_java",
+      ]
+    }
+  }
+
   android_library("library_loader_java") {
     srcjar_deps = [
       ":library_loader_java_enums_srcjar",
-      ":library_loader_jni",
+      ":relro_aidl",
     ]
     sources = [
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
@@ -4853,6 +5367,7 @@ if (is_android) {
       ":base_switches_java",
       ":callback_java",
       ":command_line_java",
+      ":library_loader_jni_java",
       ":log_java",
       ":metrics_java",
       ":resetters_java",
@@ -4860,7 +5375,6 @@ if (is_android) {
       ":sys_utils_java",
       ":tasks_java",
       ":time_utils_java",
-      "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -4869,10 +5383,14 @@ if (is_android) {
     ]
   }
 
+  generate_jni("base_shared_preferences_jni") {
+    sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
+  }
+
   android_library("base_shared_preferences_java") {
     deps = [
       ":base_java",
-      "//build/android:build_java",
+      ":base_shared_preferences_jni_java",
       "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -4888,37 +5406,80 @@ if (is_android) {
     ]
   }
 
+  android_library("flagged_apis_java") {
+    alternative_android_sdk_dep =
+        "//third_party/android_sdk:public_framework_system_java"
+
+    deps = [
+      ":promise_java",
+      ":service_loader_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+    ]
+    sources = [
+      "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
+      "android/java/src/org/chromium/base/BindingRequestQueue.java",
+      "android/java/src/org/chromium/base/SelectionActionMenuClientWrapper.java",
+    ]
+  }
+
+  # Most cached_flags code is in components/cached_flags. These classes are
+  # needed by :base_java_test_support to set and reset overrides and values
+  # returned.
   android_library("base_cached_flags_java") {
     deps = [
       ":base_java",
       ":base_shared_preferences_java",
-      "//base/version_info/android:version_constants_java",
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
     sources = [
-      "android/java/src/org/chromium/base/cached_flags/AllCachedFieldTrialParameters.java",
-      "android/java/src/org/chromium/base/cached_flags/BooleanCachedFieldTrialParameter.java",
-      "android/java/src/org/chromium/base/cached_flags/CachedFieldTrialParameter.java",
-      "android/java/src/org/chromium/base/cached_flags/CachedFlag.java",
-      "android/java/src/org/chromium/base/cached_flags/CachedFlagUtils.java",
-      "android/java/src/org/chromium/base/cached_flags/CachedFlagsSafeMode.java",
-      "android/java/src/org/chromium/base/cached_flags/CachedFlagsSharedPreferences.java",
-      "android/java/src/org/chromium/base/cached_flags/DoubleCachedFieldTrialParameter.java",
-      "android/java/src/org/chromium/base/cached_flags/IntCachedFieldTrialParameter.java",
-      "android/java/src/org/chromium/base/cached_flags/PostNativeFlag.java",
-      "android/java/src/org/chromium/base/cached_flags/StringCachedFieldTrialParameter.java",
-      "android/java/src/org/chromium/base/cached_flags/ValuesOverridden.java",
       "android/java/src/org/chromium/base/cached_flags/ValuesReturned.java",
     ]
+  }
+
+  android_library("holder_java") {
+    sources = [ "android/java/src/org/chromium/base/Holder.java" ]
+
+    deps = [
+      ":callback_java",
+      ":supplier_java",
+    ]
+  }
+
+  android_aidl("build_info_aidl") {
+    import_include = [ "android/java/src" ]
+    sources = [
+      "android/java/src/org/chromium/base/IAndroidInfo.aidl",
+      "android/java/src/org/chromium/base/IApkInfo.aidl",
+      "android/java/src/org/chromium/base/IDeviceInfo.aidl",
+    ]
+    cpp_root_names = [
+      "AndroidInfo",
+      "ApkInfo",
+      "DeviceInfo",
+    ]
+    cpp_package_name = "org/chromium/base"
   }
 
   android_aidl("process_launcher_aidl") {
     import_include = [ "android/java/src" ]
     sources = [
+      "android/java/src/org/chromium/base/process_launcher/IChildProcessArgs.aidl",
       "android/java/src/org/chromium/base/process_launcher/IChildProcessService.aidl",
+      "android/java/src/org/chromium/base/process_launcher/IFileDescriptorInfo.aidl",
       "android/java/src/org/chromium/base/process_launcher/IParentProcess.aidl",
+    ]
+    cpp_root_names = [
+      "ChildProcessArgs",
+      "ChildProcessService",
+      "FileDescriptorInfo",
+      "ParentProcess",
+    ]
+    cpp_package_name = "org/chromium/base/process_launcher"
+    deps = [
+      ":build_info_aidl",
+      ":relro_aidl",
     ]
   }
 
@@ -4929,15 +5490,16 @@ if (is_android) {
       ":base_java",
       ":base_java_test_support",
       ":base_java_test_support_uncommon",
+      ":virtual_document_path_java",
       "//base/test:test_support_java",
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_rules_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
     ]
 
@@ -4946,6 +5508,7 @@ if (is_android) {
       # stick it here than create another target for a single test.
       "android/javatests/src/org/chromium/base/AdvancedMockContextTest.java",
       "android/javatests/src/org/chromium/base/AssertsTest.java",
+      "android/javatests/src/org/chromium/base/BinderCallsListenerTest.java",
       "android/javatests/src/org/chromium/base/CommandLineFlagsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",
@@ -4955,10 +5518,12 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/PackageUtilsTest.java",
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
-      "android/javatests/src/org/chromium/base/jank_tracker/JankTrackerTest.java",
+      "android/javatests/src/org/chromium/base/VirtualDocumentPathTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
       "android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java",
+      "android/javatests/src/org/chromium/base/metrics/ScopedSysTraceEventTest.java",
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",
+      "android/javatests/src/org/chromium/base/task/ChainedTasksTest.java",
       "android/javatests/src/org/chromium/base/task/PostTaskTest.java",
       "android/javatests/src/org/chromium/base/task/SequencedTaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTestBase.java",
@@ -4992,10 +5557,9 @@ if (is_android) {
 
     deps = [
       ":base_java",
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
     ]
   }
 
@@ -5003,11 +5567,9 @@ if (is_android) {
     testonly = true
 
     deps = [
-      ":base_cached_flags_java",
       ":base_java",
-      "//build/android:build_java",
       "//testing/android/instrumentation:test_runner_java",
-      "//third_party/accessibility_test_framework:accessibility_core_java",
+      "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_deps:guava_android_java",
@@ -5023,15 +5585,18 @@ if (is_android) {
       "//third_party/junit",
     ]
 
+    if (!is_cronet_build) {
+      deps += [ ":ui_java" ]
+    }
+
     public_deps = [
+      ":base_cached_flags_java",
       ":base_java_url_utils_for_test",
       ":tasks_java",
     ]
 
     sources = [
-      "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
       "test/android/javatests/src/org/chromium/base/test/ActivityFinisher.java",
-      "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
@@ -5066,6 +5631,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/Criteria.java",
       "test/android/javatests/src/org/chromium/base/test/util/CriteriaHelper.java",
       "test/android/javatests/src/org/chromium/base/test/util/CriteriaNotSatisfiedException.java",
+      "test/android/javatests/src/org/chromium/base/test/util/DestroyableHolder.java",
       "test/android/javatests/src/org/chromium/base/test/util/DisableIf.java",
       "test/android/javatests/src/org/chromium/base/test/util/DisableIfSkipCheck.java",
       "test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java",
@@ -5076,16 +5642,17 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/Feature.java",
       "test/android/javatests/src/org/chromium/base/test/util/Features.java",
       "test/android/javatests/src/org/chromium/base/test/util/FieldTrials.java",
+      "test/android/javatests/src/org/chromium/base/test/util/ForgivingClickAction.java",
       "test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java",
+      "test/android/javatests/src/org/chromium/base/test/util/ImportantFormFactors.java",
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferences.java",
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
       "test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
-      "test/android/javatests/src/org/chromium/base/test/util/JniMocker.java",
+      "test/android/javatests/src/org/chromium/base/test/util/KeyUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/LooperUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/Manual.java",
       "test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
       "test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
-      "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
       "test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
       "test/android/javatests/src/org/chromium/base/test/util/RawFailureHandler.java",
       "test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
@@ -5101,6 +5668,14 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
+    if (is_cronet_for_aosp_build) {
+      sources += [ "//components/cronet/android/platform-only/org/chromium/base/test/util/PackageManagerWrapper.java" ]
+    } else {
+      sources += [ "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java" ]
+    }
+    if (!is_cronet_build) {
+      sources += [ "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java" ]
+    }
     if (use_clang_coverage) {
       mergeable_android_manifests = [
         "test/android/javatests/AndroidManifest_NativeCoverageListener.xml",
@@ -5117,18 +5692,17 @@ if (is_android) {
     testonly = true
 
     deps = [
-      "//base:base_java",
+      ":base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
     ]
 
     srcjar_deps = [ ":base_java_test_support_uncommon_jni" ]
     sources = [
       "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
-      "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpStatement.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/task/SchedulerTestHelpers.java",
@@ -5142,6 +5716,8 @@ if (is_android) {
   android_library("base_java_process_launcher_test_support") {
     testonly = true
 
+    srcjar_deps = [ ":base_android_java_enums_srcjar" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
     public_deps = [ ":process_launcher_java" ]
 
     sources = [ "test/android/javatests/src/org/chromium/base/process_launcher/TestChildProcessConnection.java" ]
@@ -5153,13 +5729,12 @@ if (is_android) {
       "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTaskBridge.java",
       "test/android/junit/src/org/chromium/base/task/test/BackgroundShadowAsyncTask.java",
       "test/android/junit/src/org/chromium/base/task/test/CustomShadowAsyncTask.java",
-      "test/android/junit/src/org/chromium/base/task/test/PausedExecutorTestRule.java",
       "test/android/junit/src/org/chromium/base/task/test/ShadowPostTask.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricAndroidConfigurer.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestListener.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRule.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRunner.java",
-      "test/android/junit/src/org/chromium/base/test/ShadowBuildInfo.java",
+      "test/android/junit/src/org/chromium/base/test/BaseTimeLimitedStatement.java",
       "test/android/junit/src/org/chromium/base/test/util/BaseFlagTestRule.java",
       "test/android/junit/src/org/chromium/base/test/util/TestRunnerTestRule.java",
     ]
@@ -5168,18 +5743,15 @@ if (is_android) {
     # jar_excluded_patterns.
     srcjar_deps = [ "//build/android:native_libraries_gen" ]
 
-    annotation_processor_deps =
-        [ "//third_party/android_deps:auto_service_processor" ]
     deps = [
       ":base_java",
       ":base_java_test_support",
-      "//base:base_cached_flags_java",
       "//testing/android/junit:junit_test_support",
-      "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/hamcrest:hamcrest_java",
-      "//third_party/junit:junit",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
     ]
   }
 
@@ -5187,20 +5759,19 @@ if (is_android) {
     shared_libraries = [ ":libbase_junit_tests($robolectric_toolchain)" ]
     sources = [
       "android/junit/src/org/chromium/base/ApplicationStatusTest.java",
-      "android/junit/src/org/chromium/base/BuildInfoTest.java",
       "android/junit/src/org/chromium/base/CallbackControllerTest.java",
       "android/junit/src/org/chromium/base/CollectionUtilTest.java",
       "android/junit/src/org/chromium/base/CommandLineTest.java",
       "android/junit/src/org/chromium/base/DiscardableReferencePoolTest.java",
-      "android/junit/src/org/chromium/base/FeatureListUnitTest.java",
+      "android/junit/src/org/chromium/base/FeatureOverridesUnitTest.java",
       "android/junit/src/org/chromium/base/FileUtilsTest.java",
       "android/junit/src/org/chromium/base/FlagUnitTest.java",
-      "android/junit/src/org/chromium/base/LifetimeAssertTest.java",
       "android/junit/src/org/chromium/base/LogTest.java",
       "android/junit/src/org/chromium/base/MathUtilsTest.java",
       "android/junit/src/org/chromium/base/MutableBooleanParamWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/MutableFlagWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/MutableIntParamWithSafeDefaultUnitTest.java",
+      "android/junit/src/org/chromium/base/PackageUtilsUnitTest.java",
       "android/junit/src/org/chromium/base/PathUtilsTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
       "android/junit/src/org/chromium/base/PostNativeFlagUnitTest.java",
@@ -5213,21 +5784,14 @@ if (is_android) {
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
       "android/junit/src/org/chromium/base/ValueChangedCallbackTest.java",
-      "android/junit/src/org/chromium/base/cached_flags/CachedFeatureFlagsSafeModeUnitTest.java",
-      "android/junit/src/org/chromium/base/cached_flags/CachedFieldTrialParameterUnitTest.java",
-      "android/junit/src/org/chromium/base/cached_flags/CachedFlagUnitTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsListenerTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsStoreTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankActivityTrackerTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankMetricUMARecorderTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankReportingRunnableTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankReportingSchedulerTest.java",
       "android/junit/src/org/chromium/base/library_loader/LinkerTest.java",
+      "android/junit/src/org/chromium/base/lifetime/LifetimeAssertUnitTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPressureMonitorTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPurgeManagerTest.java",
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",
+      "android/junit/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchImplTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/KeyPrefixTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistriesTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/SharedPreferencesManagerTest.java",
@@ -5240,9 +5804,9 @@ if (is_android) {
       "android/junit/src/org/chromium/base/supplier/SupplierUtilsTest.java",
       "android/junit/src/org/chromium/base/supplier/SyncOneshotSupplierImplTest.java",
       "android/junit/src/org/chromium/base/supplier/TransitiveObservableSupplierTest.java",
-      "android/junit/src/org/chromium/base/supplier/UnownedUserDataSupplierTest.java",
       "android/junit/src/org/chromium/base/supplier/UnwrapObservableSupplierTest.java",
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
+      "android/junit/src/org/chromium/base/task/ChromiumExecutorServiceFactoryTest.java",
       "android/junit/src/org/chromium/base/task/SequencedTaskRunnerTaskMigrationTest.java",
       "android/junit/src/org/chromium/base/util/GarbageCollectionTestUtilsUnitTest.java",
       "test/android/junit/src/org/chromium/base/test/SetUpStatementTest.java",
@@ -5263,13 +5827,16 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/test/util/SkipCheckTest.java",
     ]
     deps = [
-      ":base_cached_flags_java",
       ":base_java",
       ":base_java_process_launcher_test_support",
       ":base_java_test_support",
       ":base_java_test_support_uncommon",
       ":base_junit_test_support",
       ":base_shared_preferences_java",
+      ":features_java",
+      ":flagged_apis_java",
+      ":location_junit_tests",
+      ":task_executor_java",
       "//base/test:public_transit_robolectric_tests_java",
       "//base/test:test_support_java",
       "//testing/android/instrumentation:test_runner_java",
@@ -5277,20 +5844,35 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  # LocationTest.java needs to always be processed by the Java location rewriter
+  # so separate it out to its own robolectric library
+  robolectric_library("location_junit_tests") {
+    force_java_location_rewrite = true
+    sources = [ "android/junit/src/org/chromium/base/task/LocationTest.java" ]
+    deps = [
+      ":base_java",
+      ":base_java_test_support",
+      ":base_junit_test_support",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/junit",
     ]
   }
 
   java_cpp_enum("base_android_java_enums_srcjar") {
     sources = [
       "android/child_process_binding_types.h",
+      "files/file_enumerator.h",
+      "power_monitor/power_observer.h",
       "process/kill.h",
       "task/task_traits.h",
+      "trace_event/trace_config.h",
     ]
-    if (enable_base_tracing) {
-      sources += [ "trace_event/trace_config.h" ]
-    }
   }
 
   generate_jni("base_profiler_test_support_jni") {
@@ -5305,10 +5887,7 @@ if (is_android) {
         [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
     srcjar_deps = [ ":base_profiler_test_support_jni" ]
 
-    deps = [
-      "//build/android:build_java",
-      "//third_party/jni_zero:jni_zero_java",
-    ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 
   generate_jni("base_unittest_support_jni") {
@@ -5323,6 +5902,8 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":content_uri_utils_java",
+      ":virtual_document_path_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [ ":base_unittest_support_jni" ]
@@ -5379,12 +5960,12 @@ if (is_mac) {
     args = [
       "--encode=mach_fuzzer.MachMessage",
       "-I",
-      rebase_path("//"),
-      rebase_path(inputs[0]),
+      rebase_path("//", root_build_dir),
+      rebase_path(inputs[0], root_build_dir),
     ]
   }
   fuzzer_test("base_mach_port_rendezvous_fuzzer") {
-    sources = [ "mac/mach_port_rendezvous_fuzzer.cc" ]
+    sources = [ "apple/mach_port_rendezvous_fuzzer.cc" ]
     deps = [
       "//base",
       "//testing/libfuzzer/fuzzers/mach:converter",
@@ -5474,13 +6055,11 @@ fuzzer_test("pickle_fuzzer") {
   ]
 }
 
-if (enable_base_tracing) {
-  # This group makes visible those targets in subdirectories that are not
-  # explicitly depended on.
-  group("gn_all") {
-    testonly = true
-    deps = [ "//base/tracing:perfetto_diff_tests" ]
-  }
+# This group makes visible those targets in subdirectories that are not
+# explicitly depended on.
+group("gn_all") {
+  testonly = true
+  deps = [ "//base/tracing:perfetto_diff_tests" ]
 }
 
 process_version("check_version_internal") {

@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"
@@ -44,10 +44,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
       base::win::AssertComInitialized();
       return std::make_unique<ui::AXTreeFormatterUia>();
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported API type " << std::string_view(type);
+      NOTREACHED() << "Unsupported API type " << std::string_view(type);
   }
-  return nullptr;
 }
 
 // static
@@ -81,10 +79,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     case ui::AXApiType::kWinUIA:
       return std::make_unique<ui::AXEventRecorderWinUia>(selector);
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported API type " << std::string_view(type);
+      NOTREACHED() << "Unsupported API type " << std::string_view(type);
   }
-  return nullptr;
 }
 
 std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {

@@ -5,5 +5,5 @@
 // Represents the optional parameters described in
 // https://w3c.github.io/compute-pressure/#create-virtual-pressure-source
 dictionary CreateVirtualPressureSourceOptions {
-  boolean available = true;
+  boolean supported = true;
 };

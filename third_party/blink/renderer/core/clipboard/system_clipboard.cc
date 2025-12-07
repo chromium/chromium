@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 
+#include <variant>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -11,28 +13,25 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
-#include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
+#endif
 
 namespace blink {
 
@@ -62,7 +61,8 @@ CloneFsaToken(
 }  // namespace
 
 SystemClipboard::SystemClipboard(LocalFrame* frame)
-    : clipboard_(frame->DomWindow()) {
+    : clipboard_(frame->DomWindow()),
+      clipboard_listener_receiver_(this, frame->DomWindow()) {
   frame->GetBrowserInterfaceBroker().GetInterface(
       clipboard_.BindNewPipeAndPassReceiver(
           frame->GetTaskRunner(TaskType::kUserInteraction)));
@@ -89,10 +89,10 @@ bool SystemClipboard::IsFormatAvailable(blink::mojom::ClipboardFormat format) {
   return result;
 }
 
-ClipboardSequenceNumberToken SystemClipboard::SequenceNumber() {
+absl::uint128 SystemClipboard::SequenceNumber() {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
-    return ClipboardSequenceNumberToken();
-  ClipboardSequenceNumberToken result;
+    return 0;
+  absl::uint128 result;
   clipboard_->GetSequenceNumber(buffer_, &result);
   return result;
 }
@@ -138,7 +138,7 @@ void SystemClipboard::ReadPlainText(
 
 void SystemClipboard::WritePlainText(const String& plain_text,
                                      SmartReplaceOption) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -146,7 +146,7 @@ void SystemClipboard::WritePlainText(const String& plain_text,
   // currently under-specified.
   String text = plain_text;
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(text);
+  text = NormalizeLineEndingsToCRLF(text);
 #endif
   clipboard_->WriteText(NonNullString(text));
 }
@@ -203,7 +203,7 @@ void SystemClipboard::ReadHTML(
 void SystemClipboard::WriteHTML(const String& markup,
                                 const KURL& document_url,
                                 SmartReplaceOption smart_replace_option) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -222,7 +222,7 @@ void SystemClipboard::ReadSvg(
 }
 
 void SystemClipboard::WriteSvg(const String& markup) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -273,7 +273,8 @@ String SystemClipboard::ReadImageAsImageMarkup(
 void SystemClipboard::WriteImageWithTag(Image* image,
                                         const KURL& url,
                                         const String& title) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
+
   DCHECK(image);
 
   if (!clipboard_.is_bound())
@@ -282,9 +283,9 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   // Orient the data.
   if (!image->HasDefaultOrientation()) {
-    paint_image = Image::ResizeAndOrientImage(
-        paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
-        kInterpolationNone);
+    paint_image = Image::ResizeAndOrientImage(paint_image, image->Orientation(),
+                                              gfx::Vector2dF(1, 1), 1,
+                                              kInterpolationNone);
   }
   SkBitmap bitmap;
   if (sk_sp<SkImage> sk_image = paint_image.GetSwSkImage())
@@ -318,7 +319,7 @@ void SystemClipboard::WriteImageWithTag(Image* image,
 }
 
 void SystemClipboard::WriteImage(const SkBitmap& bitmap) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -360,7 +361,8 @@ String SystemClipboard::ReadDataTransferCustomData(const String& type) {
 }
 
 void SystemClipboard::WriteDataObject(DataObject* data_object) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
+
   DCHECK(data_object);
   if (!clipboard_.is_bound())
     return;
@@ -377,13 +379,12 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   HashMap<String, String> custom_data;
   WebDragData data = data_object->ToWebDragData();
   for (const WebDragData::Item& item : data.Items()) {
-    if (const auto* string_item =
-            absl::get_if<WebDragData::StringItem>(&item)) {
-      if (string_item->type == kMimeTypeTextPlain) {
+    if (const auto* string_item = std::get_if<WebDragData::StringItem>(&item)) {
+      if (string_item->type == ui::kMimeTypePlainText) {
         clipboard_->WriteText(NonNullString(string_item->data));
-      } else if (string_item->type == kMimeTypeTextHTML) {
+      } else if (string_item->type == ui::kMimeTypeHtml) {
         clipboard_->WriteHtml(NonNullString(string_item->data), KURL());
-      } else if (string_item->type != kMimeTypeDownloadURL) {
+      } else if (string_item->type != ui::kMimeTypeDownloadUrl) {
         custom_data.insert(string_item->type, NonNullString(string_item->data));
       }
     }
@@ -394,7 +395,8 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
 }
 
 void SystemClipboard::CommitWrite() {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
+
   if (!clipboard_.is_bound())
     return;
   clipboard_->CommitWrite();
@@ -407,6 +409,18 @@ void SystemClipboard::CopyToFindPboard(const String& text) {
   clipboard_->WriteStringToFindPboard(text);
 #endif
 }
+
+#if BUILDFLAG(IS_MAC)
+void SystemClipboard::GetPlatformPermissionState(
+    mojom::blink::ClipboardHost::GetPlatformPermissionStateCallback callback) {
+  if (!clipboard_.is_bound()) {
+    std::move(callback).Run(
+        mojom::blink::PlatformClipboardPermissionState::kDeny);
+    return;
+  }
+  clipboard_->GetPlatformPermissionState(std::move(callback));
+}
+#endif
 
 void SystemClipboard::ReadAvailableCustomAndStandardFormats(
     mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
@@ -431,7 +445,7 @@ void SystemClipboard::ReadUnsanitizedCustomFormat(
 
 void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
                                                    mojo_base::BigBuffer data) {
-  DCHECK(!snapshot_);
+  ResetSnapshot();
 
   if (!clipboard_.is_bound() ||
       data.size() >= mojom::blink::ClipboardHost::kMaxDataSize) {
@@ -443,7 +457,9 @@ void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
 }
 
 void SystemClipboard::Trace(Visitor* visitor) const {
+  PlatformEventDispatcher::Trace(visitor);
   visitor->Trace(clipboard_);
+  visitor->Trace(clipboard_listener_receiver_);
 }
 
 bool SystemClipboard::IsValidBufferType(mojom::blink::ClipboardBuffer buffer) {
@@ -469,6 +485,12 @@ void SystemClipboard::DropSnapshot() {
   --snapshot_count_;
   if (snapshot_count_ == 0) {
     snapshot_.reset();
+  }
+}
+
+void SystemClipboard::ResetSnapshot() {
+  if (snapshot_) {
+    snapshot_ = std::make_unique<Snapshot>();
   }
 }
 
@@ -561,7 +583,7 @@ mojo_base::BigBuffer SystemClipboard::Snapshot::Png(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasPng(buffer));
   // Make an owning copy of the png to return to user.
-  base::span<const uint8_t> span = base::make_span(png_.value());
+  base::span<const uint8_t> span = base::span(png_.value());
   return mojo_base::BigBuffer(span);
 }
 
@@ -570,7 +592,7 @@ void SystemClipboard::Snapshot::SetPng(mojom::blink::ClipboardBuffer buffer,
                                        const mojo_base::BigBuffer& png) {
   BindToBuffer(buffer);
   // Make an owning copy of the png to save locally.
-  base::span<const uint8_t> span = base::make_span(png);
+  base::span<const uint8_t> span = base::span(png);
   png_ = mojo_base::BigBuffer(span);
 }
 
@@ -613,6 +635,34 @@ void SystemClipboard::Snapshot::SetCustomData(
   custom_data_.Set(type, data);
 }
 
+void SystemClipboard::OnClipboardDataChanged(const Vector<String>& types,
+                                             const absl::uint128& change_id) {
+  clipboard_change_data_.emplace(types, BigInt(change_id));
+
+  // TODO(crbug.com/457463706): Reevaluate whether this is the right
+  // abstraction, possibly use a clipboard-specific interface here.
+  NotifyControllers();
+}
+
+const SystemClipboard::ClipboardChangeData&
+SystemClipboard::GetClipboardChangeEventData() {
+  CHECK(!!clipboard_change_data_);
+  return clipboard_change_data_.value();
+}
+
+void SystemClipboard::StartListening(LocalDOMWindow* window) {
+  // If we're already listening (receiver is bound), no need to register again
+  if (!clipboard_listener_receiver_.is_bound() && clipboard_.is_bound()) {
+    clipboard_->RegisterClipboardListener(
+        clipboard_listener_receiver_.BindNewPipeAndPassRemote(
+            window->GetTaskRunner(TaskType::kUserInteraction)));
+  }
+}
+
+void SystemClipboard::StopListening() {
+  clipboard_listener_receiver_.reset();
+}
+
 // static
 mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
     mojom::blink::ClipboardFilesPtr& files) {
@@ -620,7 +670,7 @@ mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
     return {};
   }
 
-  WTF::Vector<mojom::blink::DataTransferFilePtr> vec;
+  Vector<mojom::blink::DataTransferFilePtr> vec;
   for (auto& dtf : files->files) {
     auto clones = CloneFsaToken(std::move(dtf->file_system_access_token));
     dtf->file_system_access_token = std::move(clones.first);

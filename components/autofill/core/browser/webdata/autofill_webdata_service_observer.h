@@ -32,8 +32,24 @@ class AutofillWebDataServiceObserverOnDBSequence {
   // the WebDatabase.
   virtual void ServerCvcChanged(const ServerCvcChange& change) {}
 
+  // Called on DB sequence when a entity instance has been added/updated/deleted
+  // in the WebDatabase.
+  virtual void EntityInstanceChanged(const EntityInstanceChange& change) {}
+
+  // Called on DB sequence when a server entity instance's metadata has been
+  // added/updated/deleted in the WebDatabase.
+  // It's called when the metadata is changed (a) due to a change to the entity
+  // (via AutofillWebdataBackendImpl), or (b) due to the entity being deleted
+  // (via ValuableSyncBridge, for some reason). But it's not called when the
+  // metadata is changed directly (not through the entity), by
+  // ValuableMetadataSyncBridge.
+  // TODO(crbug.com/436551488): Provide consistent notifications from all points
+  // were server metadata is changed.
+  virtual void ServerEntityInstanceMetadataChanged(
+      const EntityInstanceMetadataChange& change) {}
+
  protected:
-  virtual ~AutofillWebDataServiceObserverOnDBSequence() {}
+  virtual ~AutofillWebDataServiceObserverOnDBSequence() = default;
 };
 
 class AutofillWebDataServiceObserverOnUISequence {
@@ -43,7 +59,7 @@ class AutofillWebDataServiceObserverOnUISequence {
   virtual void OnAutofillChangedBySync(syncer::DataType data_type) {}
 
  protected:
-  virtual ~AutofillWebDataServiceObserverOnUISequence() {}
+  virtual ~AutofillWebDataServiceObserverOnUISequence() = default;
 };
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -35,7 +36,7 @@ class WindowSizerChromeOS : public WindowSizer {
   void DetermineWindowBoundsAndShowState(
       const gfx::Rect& specified_bounds,
       gfx::Rect* bounds,
-      ui::WindowShowState* show_state) override;
+      ui::mojom::WindowShowState* show_state) override;
   gfx::Rect GetDefaultWindowBounds(
       const display::Display& display) const override;
 
@@ -45,19 +46,20 @@ class WindowSizerChromeOS : public WindowSizer {
   // is too big to fit in the display work area then the |bounds| are adjusted
   // to default bounds and the |show_state| is adjusted to SHOW_STATE_MAXIMIZED.
   bool GetBrowserBounds(gfx::Rect* bounds,
-                        ui::WindowShowState* show_state) const;
+                        ui::mojom::WindowShowState* show_state) const;
 
   // Determines the position and size for a tabbed browser window as it gets
   // created. This will be called before other standard placement logic.
   // |show_state| will only be changed if it was set to SHOW_STATE_DEFAULT.
   void GetTabbedBrowserBounds(gfx::Rect* bounds,
-                              ui::WindowShowState* show_state) const;
+                              ui::mojom::WindowShowState* show_state) const;
 
   // Determines the position and size for an app browser window as it gets
   // created, basing its position on existing browser windows for the same app.
   // Returns false, if no last active app browsers were found.
-  bool GetAppBrowserBoundsFromLastActive(gfx::Rect* bounds,
-                                         ui::WindowShowState* show_state) const;
+  bool GetAppBrowserBoundsFromLastActive(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const;
 };
 
 #endif  // CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_CHROMEOS_H_

@@ -71,6 +71,8 @@ GesturePropertiesService::GesturePropertiesService(
     mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver)
     : prop_provider_(provider), receiver_(this, std::move(receiver)) {}
 
+GesturePropertiesService::~GesturePropertiesService() = default;
+
 void GesturePropertiesService::ListDevices(ListDevicesCallback reply) {
   base::flat_map<int, std::string> response = {};
   std::vector<int> ids;

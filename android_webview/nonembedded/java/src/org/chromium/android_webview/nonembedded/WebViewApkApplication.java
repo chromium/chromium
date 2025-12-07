@@ -5,9 +5,7 @@
 package org.chromium.android_webview.nonembedded;
 
 import android.app.Application;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.pm.PackageManager;
 
 import com.android.webview.chromium.WebViewLibraryPreloader;
 
@@ -15,12 +13,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwLocaleConfig;
-import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeController;
-import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.NonembeddedSafeModeActionsList;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -28,8 +25,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.crash.CustomAssertionHandler;
@@ -58,16 +53,19 @@ public class WebViewApkApplication extends Application {
     @Override
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
+        ContextUtils.initApplicationContext(this);
+
         Log.i(
                 TAG,
-                "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s",
+                "version=%s (%s) minSdkVersion=%s processName=%s splits=%s",
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
-                ProductConfig.IS_BUNDLE,
-                ContextUtils.getProcessName());
+                ContextUtils.getProcessName(),
+                // BundleUtils uses getApplicationContext, so logging after we init it.
+                BundleUtils.getInstalledSplitNamesForLogging());
 
-        ContextUtils.initApplicationContext(this);
+        maybeSetPreloader();
         maybeInitProcessGlobals();
 
         // MonochromeApplication has its own locale configuration already, so call this here
@@ -92,8 +90,8 @@ public class WebViewApkApplication extends Application {
      * Initializes globals needed for components that run in the "webview_apk" or "webview_service"
      * process.
      *
-     * This is also called by MonochromeApplication, so the initialization here will run
-     * for those processes regardless of whether the WebView is standalone or Monochrome.
+     * <p>This is also called by MonochromeApplication, so the initialization here will run for
+     * those processes regardless of whether the WebView is standalone or Monochrome.
      */
     public static void maybeInitProcessGlobals() {
         if (isWebViewProcess()) {
@@ -114,7 +112,15 @@ public class WebViewApkApplication extends Application {
             SafeModeController controller = SafeModeController.getInstance();
             controller.registerActions(NonembeddedSafeModeActionsList.sList);
         }
+    }
 
+    /**
+     * Sets the native library preloader.
+     *
+     * <p>This is also called by MonochromeApplication, so the initialization here will run for
+     * those processes regardless of whether the WebView is standalone or Monochrome.
+     */
+    public static void maybeSetPreloader() {
         if (!LibraryLoader.getInstance().isLoadedByZygote()) {
             LibraryLoader.getInstance().setNativeLibraryPreloader(new WebViewLibraryPreloader());
         }
@@ -128,55 +134,8 @@ public class WebViewApkApplication extends Application {
     }
 
     /**
-     * Post a non-blocking, low priority background task that shows a launcher icon for WebView
-     * DevTools if this Monochrome package is the current selected WebView provider for the system
-     * otherwise it hides that icon. This works only for Monochrome and shouldn't be used for other
-     * WebView providers. Other WebView Providers (Standalone and Trichrome) will always have
-     * launcher icons whether they are the current selected providers or not.
-     *
-     * Should be guarded by process type checks and should only be called if it's a webview process
-     * or a browser process.
-     */
-    public static void postDeveloperUiLauncherIconTask() {
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT,
-                () -> {
-                    Context context = ContextUtils.getApplicationContext();
-                    try {
-                        ComponentName devToolsLauncherActivity =
-                                new ComponentName(
-                                        context,
-                                        "org.chromium.android_webview.devui.MonochromeLauncherActivity");
-                        int oldIconState =
-                                context.getPackageManager()
-                                        .getComponentEnabledSetting(devToolsLauncherActivity);
-
-                        // Enable the icon if this is the current WebView provider, otherwise set
-                        // the icon back to default (disabled) state.
-                        boolean shouldShowIcon =
-                                WebViewPackageHelper.isCurrentSystemWebViewImplementation(context);
-                        int newIconState =
-                                shouldShowIcon
-                                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                                        : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
-
-                        if (oldIconState == newIconState) return;
-
-                        context.getPackageManager()
-                                .setComponentEnabledSetting(
-                                        devToolsLauncherActivity,
-                                        newIconState,
-                                        PackageManager.DONT_KILL_APP);
-                    } catch (IllegalArgumentException e) {
-                        // If MonochromeLauncherActivity doesn't exist, Dynamically showing/hiding
-                        // DevTools launcher icon is not enabled in this package; e.g when it is a
-                        // stable channel.
-                    }
-                });
-    }
-
-    /**
      * Performs minimal native library initialization required when running as a stand-alone APK.
+     *
      * @return True if the library was loaded, false if running as webview stub.
      */
     static synchronized boolean ensureNativeInitialized() {

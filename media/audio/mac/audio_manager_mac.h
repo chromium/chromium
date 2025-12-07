@@ -20,6 +20,7 @@
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 
@@ -55,7 +56,7 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
       const std::string& device_id) override;
   std::string GetAssociatedOutputDeviceID(
       const std::string& input_device_id) override;
-  const char* GetName() override;
+  const std::string_view GetName() override;
 
   // Implementation of AudioManagerBase.
   AudioOutputStream* MakeLinearOutputStream(
@@ -128,6 +129,8 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   static AudioDeviceID FindFirstOutputSubdevice(
       AudioDeviceID aggregate_device_id);
 
+  static int GetMinAudioBufferSizeMacOS(int min_buffer_size, int sample_rate);
+
   // Returns a vector with the IDs of all devices related to the given
   // |device_id|. The vector is empty if there are no related devices or
   // if there is an error.
@@ -141,8 +144,8 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // Streams should consult ShouldDeferStreamStart() and if true check the value
   // again after |kStartDelayInSecsForPowerEvents| has elapsed. If false, the
   // stream may be started immediately.
-  // TODO(henrika): track UMA statistics related to defer start to come up with
-  // a suitable delay value.
+  //
+  // As of Nov 2025, this is still helpful, see https://crbug.com/447640763.
   enum { kStartDelayInSecsForPowerEvents = 5 };
   bool ShouldDeferStreamStart() const override;
 
@@ -167,20 +170,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   bool DeviceSupportsAmbientNoiseReduction(AudioDeviceID device_id) override;
   bool SuppressNoiseReduction(AudioDeviceID device_id) override;
   void UnsuppressNoiseReduction(AudioDeviceID device_id) override;
-
-  // The state of a single device for which we've tried to disable Ambient Noise
-  // Reduction. If the device initially has ANR enabled, it will be turned off
-  // as the suppression count goes from 0 to 1 and turned on again as the count
-  // returns to 0.
-  struct NoiseReductionState {
-    enum State { DISABLED, ENABLED };
-    State initial_state = DISABLED;
-    int suppression_count = 0;
-  };
-
-  // Keep track of the devices that we've changed the Ambient Noise Reduction
-  // setting on.
-  std::map<AudioDeviceID, NoiseReductionState> device_noise_reduction_states_;
 
  protected:
   AudioParameters GetPreferredOutputStreamParameters(
@@ -252,9 +241,9 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // We no longer close the streams, so we may be able to get rid of these
   // member variables. They are currently used by MaybeChangeBufferSize().
   // Investigate if we can remove these.
-  std::unordered_set<AudioInputStream*> basic_input_streams_;
-  std::unordered_set<AUAudioInputStream*> low_latency_input_streams_;
-  std::unordered_set<AUHALStream*> output_streams_;
+  absl::flat_hash_set<AudioInputStream*> basic_input_streams_;
+  absl::flat_hash_set<AUAudioInputStream*> low_latency_input_streams_;
+  absl::flat_hash_set<AUHALStream*> output_streams_;
 
   // Used to swizzle SCStreamManager when performing loopback capture.
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
@@ -263,6 +252,20 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // Set to true in the destructor. Ensures that methods that touches native
   // Core Audio APIs are not executed during shutdown.
   bool in_shutdown_;
+
+  // The state of a single device for which we've tried to disable Ambient Noise
+  // Reduction. If the device initially has ANR enabled, it will be turned off
+  // as the suppression count goes from 0 to 1 and turned on again as the count
+  // returns to 0.
+  struct NoiseReductionState {
+    enum State { DISABLED, ENABLED };
+    State initial_state = DISABLED;
+    int suppression_count = 0;
+  };
+
+  // Keep track of the devices that we've changed the Ambient Noise Reduction
+  // setting on.
+  std::map<AudioDeviceID, NoiseReductionState> device_noise_reduction_states_;
 
   base::WeakPtrFactory<AudioManagerMac> weak_ptr_factory_;
 };

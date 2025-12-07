@@ -13,18 +13,59 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/features.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time_delta_from_string.h"
 
 namespace base {
+
+namespace internal {
+
+bool IsFeatureParamWithCacheEnabled() {
+  return FeatureList::IsEnabled(features::kFeatureParamWithCache);
+}
+
+}  // namespace internal
+
+template <>
+bool FeatureParam<bool>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
+}
+
+template <>
+int FeatureParam<int>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
+}
+
+template <>
+size_t FeatureParam<size_t>::GetWithoutCache() const {
+  return checked_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
+      *feature, name, checked_cast<int>(default_value)));
+}
+
+template <>
+double FeatureParam<double>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
+}
+
+template <>
+std::string FeatureParam<std::string>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
+}
+
+template <>
+base::TimeDelta FeatureParam<base::TimeDelta>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
+}
 
 void LogInvalidValue(const Feature& feature,
                      const char* type,
@@ -55,6 +96,14 @@ std::string UnescapeValue(const std::string& value) {
   return UnescapeURLComponent(
       value, UnescapeRule::PATH_SEPARATORS |
                  UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+}
+
+void LogInvalidEnumValue(const Feature& feature,
+                         const std::string& param_name,
+                         const std::string& value_as_string,
+                         int default_value_as_int) {
+  LogInvalidValue(feature, "an enum", param_name, value_as_string,
+                  base::NumberToString(default_value_as_int));
 }
 
 bool AssociateFieldTrialParams(const std::string& trial_name,
@@ -126,8 +175,9 @@ bool GetFieldTrialParams(const std::string& trial_name,
 
 bool GetFieldTrialParamsByFeature(const Feature& feature,
                                   FieldTrialParams* params) {
-  if (!FeatureList::IsEnabled(feature))
+  if (!FeatureList::IsEnabled(feature)) {
     return false;
+  }
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);
   return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
@@ -139,8 +189,9 @@ std::string GetFieldTrialParamValue(const std::string& trial_name,
   FieldTrialParams params;
   if (GetFieldTrialParams(trial_name, &params)) {
     auto it = params.find(param_name);
-    if (it != params.end())
+    if (it != params.end()) {
       return it->second;
+    }
   }
   return std::string();
 }
@@ -150,10 +201,26 @@ std::string GetFieldTrialParamValueByFeature(const Feature& feature,
   FieldTrialParams params;
   if (GetFieldTrialParamsByFeature(feature, &params)) {
     auto it = params.find(param_name);
-    if (it != params.end())
+    if (it != params.end()) {
       return it->second;
+    }
   }
   return std::string();
+}
+
+std::string GetFieldTrialParamByFeatureAsString(
+    const Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value) {
+  FieldTrialParams params;
+  if (!GetFieldTrialParamsByFeature(feature, &params)) {
+    return default_value;
+  }
+  auto it = params.find(param_name);
+  if (it == params.end()) {
+    return default_value;
+  }
+  return it->second;
 }
 
 int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
@@ -193,14 +260,16 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
                                        bool default_value) {
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
-  if (value_as_string == "true")
+  if (value_as_string == "true") {
     return true;
-  if (value_as_string == "false")
+  }
+  if (value_as_string == "false") {
     return false;
+  }
 
   if (!value_as_string.empty()) {
     LogInvalidValue(feature, "a bool", param_name, value_as_string,
-                    default_value ? "true" : "false");
+                    base::ToString(default_value));
   }
   return default_value;
 }
@@ -212,8 +281,9 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
 
-  if (value_as_string.empty())
+  if (value_as_string.empty()) {
     return default_value;
+  }
 
   std::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
   if (!ret.has_value()) {
@@ -223,43 +293,6 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   }
 
   return ret.value();
-}
-
-std::string FeatureParam<std::string>::Get() const {
-  // We don't use `GetFieldTrialParamValueByFeature()` to handle empty values in
-  // the map.
-  FieldTrialParams params;
-  if (GetFieldTrialParamsByFeature(*feature, &params)) {
-    auto it = params.find(name);
-    if (it != params.end()) {
-      return it->second;
-    }
-  }
-  return default_value;
-}
-
-double FeatureParam<double>::Get() const {
-  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
-}
-
-int FeatureParam<int>::Get() const {
-  return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
-}
-
-bool FeatureParam<bool>::Get() const {
-  return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
-}
-
-base::TimeDelta FeatureParam<base::TimeDelta>::Get() const {
-  return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
-}
-
-void LogInvalidEnumValue(const Feature& feature,
-                         const std::string& param_name,
-                         const std::string& value_as_string,
-                         int default_value_as_int) {
-  LogInvalidValue(feature, "an enum", param_name, value_as_string,
-                  base::NumberToString(default_value_as_int));
 }
 
 }  // namespace base

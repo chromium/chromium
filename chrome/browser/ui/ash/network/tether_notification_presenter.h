@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -62,7 +61,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   class SettingsUiDelegate {
    public:
-    virtual ~SettingsUiDelegate() {}
+    virtual ~SettingsUiDelegate() = default;
 
     // Displays the settings page (opening a new window if necessary) at the
     // provided subpage for the user with the Profile |profile|.

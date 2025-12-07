@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 class TestingProfile;
@@ -24,14 +24,14 @@ namespace arc {
 
 class OverviewTracingTestHandler;
 
-constexpr inline char kBasicSystrace[] =
+inline constexpr char kBasicSystrace[] =
     "{\"traceEvents\":[],\"systemTraceEvents\":\""
     // clang-format off
     "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
     // clang-format on
     "\"}";
 
-class OverviewTracingTestBase : public ash::AshTestBase {
+class OverviewTracingTestBase : public ChromeAshTestBase {
  public:
   OverviewTracingTestBase();
 
@@ -40,7 +40,7 @@ class OverviewTracingTestBase : public ash::AshTestBase {
   OverviewTracingTestBase(const OverviewTracingTestBase&) = delete;
   OverviewTracingTestBase& operator=(const OverviewTracingTestBase&) = delete;
 
-  // ash::AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override;
   void TearDown() override;
 

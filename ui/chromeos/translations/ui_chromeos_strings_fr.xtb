@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangûl ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Serveurs de noms Google</translation>
+<translation id="1170788066030116158">Date de prise de vue</translation>
 <translation id="1172970565351728681">Temps restant : environ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1173916544412572294">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
 <translation id="1272293450992660632">Les valeurs de code PIN sont différentes.</translation>
+<translation id="1279040297980392566">En attente de la fin de l'analyse. Réessayez plus tard.</translation>
 <translation id="1280820357415527819">Recherche de réseaux mobiles…</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1297922636971898492">Google Drive n'est pas disponible pour le moment. L'importation reprendra lorsque Google Drive sera à nouveau disponible.</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">Consulter la règle de l'administrateur</translation>
 <translation id="158849752021629804">Réseau domestique requis</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Po</translation>
+<translation id="1601786938618212857">Compresser</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="162175252992296058">Portugais avec clavier international américain</translation>
 <translation id="1629521517399325891">Le certificat utilisateur n'est pas disponible pour l'authentification réseau.</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
 <translation id="1813278315230285598">Services</translation>
+<translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez un autre prompt.</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations…</translation>
 <translation id="1832073788765803750">Katakana de demi-chasse</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">Dit merci en langue des signes</translation>
 <translation id="2088690981887365033">Réseau VPN</translation>
 <translation id="209653272837065803">Espace de stockage insuffisant pour continuer la synchronisation des fichiers</translation>
-<translation id="2111134541987263231">Activez l'option <ph name="BEGIN_BOLD" />Autoriser en navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> éléments seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet à d'autres personnes de voir votre appareil, ainsi que certains paramètres du réseau, ce qui n'est pas recommandé.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a été éjecté.</translation>
 <translation id="2307462900900812319">Configurer le réseau</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}one{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}other{Impossible de trouver les extensions associées aux ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}}</translation>
 <translation id="2325650632570794183">Ce type de fichier n'est pas compatible. Veuillez accéder au Chrome Web Store pour trouver une application pouvant l'ouvrir.</translation>
 <translation id="2326539130272988168">Bulgare</translation>
 <translation id="233822363739146957">Espace de stockage insuffisant pour synchroniser tous vos fichiers</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
 <translation id="2938685643439809023">Mongol</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Extension introuvable}one{Extension introuvable}other{Extensions introuvables}}</translation>
 <translation id="2943503720238418293">Utilisez un nom plus court.</translation>
 <translation id="2949781154072577687">Formatage de <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Méduse</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">Terminé</translation>
 <translation id="3358452157379365236">Guitare</translation>
 <translation id="3368922792935385530">Connecté</translation>
-<translation id="3372635229069101468">Cliquez sur <ph name="BEGIN_BOLD" />Détails<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Népalais avec clavier InScript</translation>
 <translation id="338691029516748599">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="3408072735282270043">Activer <ph name="NETWORK_NAME" /></translation>
@@ -321,7 +321,7 @@
 <translation id="3557414470514932909">Déplacement de <ph name="FILE_NAME" /> vers la corbeille…</translation>
 <translation id="3567221313191587603">Sélectionnez un fichier, puis activez/désactivez <ph name="OFFLINE_CHECKBOX_NAME" /> pour qu'il soit accessible ou non hors connexion.</translation>
 <translation id="357479282490346887">Lituanien</translation>
-<translation id="3587482841069643663">Tous</translation>
+<translation id="3587482841069643663">Complète</translation>
 <translation id="3592251141500063301">Impossible de mettre <ph name="FILE_NAME" /> à disposition hors connexion</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Français canadien</translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">1 fichier sélectionné</translation>
 <translation id="3817579325494460411">Non indiqué</translation>
 <translation id="3819448694985509187">Code PIN incorrect. Il vous reste 1 tentative.</translation>
-<translation id="3822559385185038546">Ce proxy est appliqué par votre administrateur</translation>
 <translation id="3830674330436234648">Aucune lecture disponible</translation>
 <translation id="383652340667548381">Serbe</translation>
 <translation id="3839045880592694915">Votre opérateur n'autorise pas votre modem à se connecter. Contactez votre opérateur pour en savoir plus.</translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4131235941541910880">Placez dans la corbeille les éléments dont vous n'avez pas besoin</translation>
 <translation id="4134804435730168042">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activer après la configuration de l'appareil</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Activez l'extension suivante en mode navigation privée :}one{Activez l'extension suivante en mode navigation privée :}other{Activez les extensions suivantes en mode navigation privée :}}</translation>
 <translation id="4153015322587141338">Effectuez un clic droit sur un fichier, puis sélectionnez "<ph name="PIN_COMMAND" />" pour y accéder rapidement sur l'étagère.</translation>
 <translation id="4157569377477607576">Une règle de l'administrateur déconseille :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Cet élément se trouve dans la corbeille</translation>
 <translation id="4186579485882418952">Activer le mode hors connexion</translation>
 <translation id="4193154014135846272">Document Google</translation>
-<translation id="4197674956721858839">Compresser les fichiers sélectionnés au format .zip</translation>
 <translation id="4202378258276439759">Espagnol (Amérique latine)</translation>
 <translation id="4202977638116331303">Géorgien</translation>
 <translation id="421017592316736757">Pour accéder à ce fichier, vous devez être connecté à Internet.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Certificat d'authentification rejeté à distance.</translation>
 <translation id="4394214039309501350">Lien externe</translation>
 <translation id="4394980935660306080">Plus tôt cette semaine</translation>
+<translation id="4397435965699247285">OneDrive n'est pas disponible hors connexion</translation>
 <translation id="4398096759193130964">Restaurez les éléments ou faites-les glisser vers un nouveau dossier hors de la corbeille</translation>
 <translation id="4401287888955153199">Tout extraire</translation>
 <translation id="4410695710508688828">Échec de l'opération d'extraction. <ph name="ERROR_MESSAGE" /></translation>
@@ -434,7 +432,7 @@
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465725236958772856">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, géré par votre administrateur, connexion</translation>
 <translation id="4470564870223067757">Hangûl, dubeol-sik</translation>
-<translation id="4472575034687746823">Premiers pas</translation>
+<translation id="4472575034687746823">Commencer</translation>
 <translation id="4474142134969976028">Aucun résultat</translation>
 <translation id="4477002475007461989">Roumain</translation>
 <translation id="4477219268485577442">Phonétique bulgare</translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Garder les deux</translation>
 <translation id="4804827417948292437">Avocat</translation>
 <translation id="4805966553127040832">Restauration de <ph name="COUNT" /> éléments…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Pour utiliser la navigation privée, votre organisation requiert une extension}one{Pour utiliser la navigation privée, votre organisation requiert une extension}other{Pour utiliser la navigation privée, votre organisation requiert certaines extensions}}</translation>
 <translation id="4826849268470072925">Tamoul (ITRANS)</translation>
-<translation id="482932175346970750">Saisissez <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dans votre navigateur</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="485316830061041779">Allemand</translation>
@@ -558,7 +554,6 @@
     des fichiers depuis une seule et même interface.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés sur Google Drive</translation>
 <translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier hors de la corbeille. Le dossier d'origine de cet élément, "<ph name="PARENT_FOLDER_NAME" />", a été supprimé.</translation>
-<translation id="5283101102242354279">Pour activer une extension en mode navigation privée :</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Une règle de l'administrateur a bloqué le déplacement de ce fichier</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
+<translation id="560739212255190568">Votre administrateur a défini des règles de remplacement de proxy en plus d'appliquer le proxy suivant</translation>
 <translation id="5618330573454123917">Ce fichier est conçu pour un ordinateur Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="5625294776298156701">Tamoul (avec clavier Tamil99)</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec toute personne pouvant voir le dossier partagé "<ph name="DESTINATION_NAME" />".</translation>
@@ -792,7 +788,7 @@
 <translation id="7075931588889865715">Thaï avec clavier TIS 820-2531</translation>
 <translation id="708278670402572152">Déconnecter pour permettre la recherche</translation>
 <translation id="7086590977277044826">Tamoul (avec clavier InScript)</translation>
-<translation id="7088615885725309056">Ancien</translation>
+<translation id="7088615885725309056">Page plus ancienne</translation>
 <translation id="7103992300314999525">Macédonien</translation>
 <translation id="7104338189998813914">Un problème est survenu lors de l'accès à votre compte OneDrive</translation>
 <translation id="7106346894903675391">Acheter de l'espace de stockage supplémentaire…</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Application</translation>
-<translation id="7252604552361840748">Repérez l'extension ci-dessus</translation>
 <translation id="7256405249507348194">Erreur non reconnue : <ph name="DESC" />.</translation>
 <translation id="7268659760406822741">Services disponibles</translation>
 <translation id="7291818353625820805">Vous souhaitez utiliser la répétition des touches ? Désactivez les accents dans les paramètres du clavier.</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="8545476925160229291">Anglais (États-Unis)</translation>
 <translation id="854655314928502177">URL du proxy Web Auto Discovery :</translation>
+<translation id="8547747809824590510">Votre administrateur a défini des règles de remplacement de proxy</translation>
 <translation id="8549186985808798022">Italien</translation>
 <translation id="8551494947769799688">Letton</translation>
 <translation id="8560515948038859357">Cantonais</translation>
@@ -1061,10 +1057,11 @@
 <translation id="9038620279323455325">Le nom "<ph name="FILE_NAME" />" est déjà attribué à un fichier. Veuillez en choisir un autre.</translation>
 <translation id="9046895021617826162">Échec de la connexion</translation>
 <translation id="9065512565307033593">En cas d'échec de la validation, votre accès réseau sera désactivé.</translation>
+<translation id="9079844694307518094">Votre administrateur applique le proxy suivant</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
 <translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>
-<translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
+<translation id="9100610230175265781">Phrase secrète requise</translation>
 <translation id="9110990317705400362">Nous recherchons constamment à rendre votre navigation plus sûre. Auparavant, vous pouviez être invité à ajouter une extension dans votre navigateur par n'importe quel site Web. Dans les dernières versions de Google Chrome, vous devez explicitement indiquer que vous souhaitez installer une extension en l'ajoutant via la page "Extensions". <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9116909380156770361">Transfert de fichier vers l'<ph name="RESTRICTED_COMPONENTS" /></translation>
@@ -1075,7 +1072,7 @@
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">Code PIN incorrect. Il vous reste 1 tentative.</translation>
 <translation id="9153934054460603056">Enregistrer le nom d'utilisateur et le mot de passe</translation>
-<translation id="9171921933192916600">Ver de livre</translation>
+<translation id="9171921933192916600">Mange-livres</translation>
 <translation id="9172592259078059678">Gujarati (translittération)</translation>
 <translation id="9173120999827300720">Anglais (États-Unis) avec clavier international</translation>
 <translation id="9183302530794969518">Google Docs</translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">Installation démarrée avec succès.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Paysage lunaire</translation>
+<translation id="931652069802536959">Le réseau est bloqué par une règle</translation>
 <translation id="938470336146445890">Veuillez installer un certificat utilisateur.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="943972244133411984">Modifié par</translation>

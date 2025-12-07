@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -142,7 +142,7 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
   } else if (context->IsServiceWorkerGlobalScope()) {
     security_origin = context->GetSecurityOrigin();
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   if (security_origin->IsOpaque()) {
     if (exception_state) {
@@ -153,7 +153,7 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
     return true;
   }
 
-  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kUsb,
+  if (!context->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kUsb,
                                  ReportOptions::kReportOnFailure)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(kFeaturePolicyBlocked);
@@ -166,20 +166,18 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
 
 }  // namespace
 
-const char USB::kSupplementName[] = "USB";
-
 USB* USB::usb(NavigatorBase& navigator) {
-  USB* usb = Supplement<NavigatorBase>::From<USB>(navigator);
+  USB* usb = navigator.GetUSB();
   if (!usb) {
     usb = MakeGarbageCollected<USB>(navigator);
-    ProvideTo(navigator, usb);
+    navigator.SetUSB(usb);
   }
   return usb;
 }
 
 USB::USB(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()),
       client_receiver_(this, navigator.GetExecutionContext()) {}
 
@@ -193,7 +191,7 @@ USB::~USB() {
 ScriptPromise<IDLSequence<USBDevice>> USB::getDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockUsbServiceCall(navigator_base_->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
     return ScriptPromise<IDLSequence<USBDevice>>();
   }
@@ -203,8 +201,8 @@ ScriptPromise<IDLSequence<USBDevice>> USB::getDevices(
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<USBDevice>>>(
           script_state, exception_state.GetContext());
   get_devices_requests_.insert(resolver);
-  service_->GetDevices(WTF::BindOnce(&USB::OnGetDevices, WrapPersistent(this),
-                                     WrapPersistent(resolver)));
+  service_->GetDevices(BindOnce(&USB::OnGetDevices, WrapPersistent(this),
+                                WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -220,7 +218,7 @@ ScriptPromise<USBDevice> USB::requestDevice(
     return EmptyPromise();
   }
 
-  if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockUsbServiceCall(navigator_base_->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
     return EmptyPromise();
   }
@@ -261,7 +259,7 @@ ScriptPromise<USBDevice> USB::requestDevice(
          mojo_options->exclusion_filters.size());
   get_permission_requests_.insert(resolver);
   service_->GetPermission(std::move(mojo_options),
-                          resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                          resolver->WrapCallbackInScriptScope(BindOnce(
                               &USB::OnGetPermission, WrapPersistent(this))));
   return promise;
 }
@@ -387,7 +385,7 @@ void USB::AddedEventListener(const AtomicString& event_type,
   }
 
   auto* context = GetExecutionContext();
-  if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(), context,
+  if (ShouldBlockUsbServiceCall(navigator_base_->DomWindow(), context,
                                 nullptr)) {
     return;
   }
@@ -423,7 +421,7 @@ void USB::EnsureServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&USB::OnServiceConnectionError, WrapWeakPersistent(this)));
+      BindOnce(&USB::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   DCHECK(!client_receiver_.is_bound());
 
@@ -433,7 +431,7 @@ void USB::EnsureServiceConnection() {
 
 bool USB::IsFeatureEnabled(ReportOptions report_options) const {
   return GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kUsb, report_options);
+      network::mojom::PermissionsPolicyFeature::kUsb, report_options);
 }
 
 void USB::Trace(Visitor* visitor) const {
@@ -443,7 +441,7 @@ void USB::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(device_cache_);
   EventTarget::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

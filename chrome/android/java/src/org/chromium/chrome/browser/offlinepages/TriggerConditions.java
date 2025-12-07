@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Set of system conditions to trigger background processing. */
+@NullMarked
 public class TriggerConditions {
     private final boolean mRequirePowerConnected;
     private final int mMinimumBatteryPercentage;

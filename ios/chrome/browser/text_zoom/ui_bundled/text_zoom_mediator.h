@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_view_controller.h"
 
+namespace dom_distiller {
+class DistilledPagePrefs;
+}
+
 @protocol TextZoomCommands;
 @protocol TextZoomConsumer;
 class WebStateList;
@@ -19,6 +23,8 @@ class WebStateList;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       commandHandler:(id<TextZoomCommands>)commandHandler
+                  distilledPagePrefs:
+                      (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

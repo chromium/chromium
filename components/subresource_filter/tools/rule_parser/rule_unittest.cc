@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 
 #include <stddef.h>
+
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -107,15 +104,17 @@ TEST(RuleTest, CanonicalizeDomainList) {
   for (const auto& test_case : kTestCases) {
     std::vector<std::string> domains;
     size_t count = 0;
-    for (; count < kMaxDomainsCount && test_case[count]; ++count)
-      domains.push_back(test_case[count]);
+    for (; count < kMaxDomainsCount && UNSAFE_TODO(test_case[count]); ++count) {
+      domains.push_back(UNSAFE_TODO(test_case[count]));
+    }
 
     CanonicalizeDomainList(&domains);
     EXPECT_EQ(count, domains.size());
     for (size_t i = 1; i < domains.size(); ++i) {
       EXPECT_GE(domains[i - 1].size(), domains[i].size());
-      if (domains[i - 1].size() == domains[i].size())
+      if (domains[i - 1].size() == domains[i].size()) {
         EXPECT_LE(domains[i - 1], domains[i]);
+      }
     }
   }
 }

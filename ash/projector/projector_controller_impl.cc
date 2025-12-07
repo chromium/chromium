@@ -145,7 +145,7 @@ NewScreencastPrecondition ServerBasedRecognitionAvailabilityToPrecondition(
   }
 }
 
-const base::FilePath::StringPieceType getMetadataFileExtension() {
+const base::FilePath::StringViewType getMetadataFileExtension() {
   return ash::kProjectorV2MetadataFileExtension;
 }
 
@@ -227,7 +227,7 @@ void ProjectorControllerImpl::OnTranscriptionError() {
           : SpeechRecognitionEndState::kSpeechRecognitionEnounteredError;
   RecordSpeechRecognitionEndState(end_state, use_on_device_speech_recognition);
 
-  force_stop_recognition_timer_.AbandonAndStop();
+  force_stop_recognition_timer_.Stop();
 
   // TODO(b/261093550) Investigate the real reason why
   // we get a speech recognition error after we notify it to
@@ -264,7 +264,7 @@ void ProjectorControllerImpl::OnSpeechRecognitionStopped(bool forced) {
 
   // Try to wrap up recording. This can be no-op if DLP check is not completed.
   MaybeWrapUpRecording();
-  force_stop_recognition_timer_.AbandonAndStop();
+  force_stop_recognition_timer_.Stop();
 }
 
 NewScreencastPrecondition
@@ -631,7 +631,7 @@ std::vector<base::FilePath> ProjectorControllerImpl::GetScreencastFilePaths()
   DCHECK(container_folder);
   const base::FilePath path_with_no_extension =
       projector_session_->GetScreencastFilePathNoExtension();
-  const base::FilePath::StringPieceType metadata_file_extension =
+  const base::FilePath::StringViewType metadata_file_extension =
       getMetadataFileExtension();
   return {path_with_no_extension.AddExtension(metadata_file_extension),
           path_with_no_extension.AddExtension(kProjectorMediaFileExtension),

@@ -10,8 +10,12 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2447485272386224171">Chrome su omogućili <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chromeov logotip</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje isključivo informacije o nedavnim padovima aplikacija ako <ph name="BEGIN_LINK" />omogućite izvještaj o padovima aplikacije<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Ove stranice su namijenjene za korištenje programerima Chromea i možda se neće aktivno održavati ili testirati. Da ih omogućite, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da omogućite stranice za otklanjanje grešaka, zatim se vratite na ovu stranicu.</translation>
 <translation id="3875312571075912821">Dozvolite Chromeu da pristupi mreži u postavkama vašeg zaštitnog zida ili
           antivirusnog programa.</translation>
+<translation id="4949828774841497663">Idite u Aplikacije &gt; Postavke sistema &gt; Mreža, odaberite
+          aktivnu mrežu, kliknite na dugme Detalji… i poništite odabir svih proksi servera
+          koji su možda odabrani.</translation>
 <translation id="5005121315113832363">Ovu stranicu je blokirao Chrome</translation>
 <translation id="6011049234605203654">Idite u
           Kontekstni meni &gt;
@@ -29,20 +33,17 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
           i poništite odabir za "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Ako ovo ne riješi problem, preporučujemo vam da ponovo odaberete
           ovu opciju zbog unapređenja performansi.</translation>
-<translation id="6855094794438142393">Idite u
+<translation id="6581867098636731226">Idite u
           Chrome meni &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          Postavke za LAN
-          i poništite odabir opcije "Koristi proksi server za LAN".</translation>
+          Mreža i internet &gt; Proksi server
+          i poništite odabir opcije "Automatski otkrivaj postavke".</translation>
 <translation id="7230956101631259640">Gledate sigurnu stranicu Chromea</translation>
-<translation id="8187289872471304532">Idite na
-          Aplikacije &gt; Postavke sistema &gt; Mreža &gt; Napredno &gt; Proksiji
-          i poništite odabir svih odabranih proksija.</translation>
 <translation id="8232971017369963250">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda.</translation>
 <translation id="8279509328145658601">Chrom su omogućili i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>

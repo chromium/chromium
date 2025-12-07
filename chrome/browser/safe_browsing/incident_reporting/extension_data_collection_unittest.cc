@@ -12,9 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/install_signer.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -27,8 +24,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_signer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -36,10 +36,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 using ::testing::StrictMock;
@@ -56,13 +59,12 @@ class ExtensionTestingProfile : public TestingProfile {
       std::string description = "Test extension",
       std::string update_url =
           "https://clients2.google.com/service/update2/crx",
-      int state_value = 0);
+      const extensions::DisableReasonSet& disable_reasons = {});
 
   void SetInstallSignature(extensions::InstallSignature signature);
 
  private:
   raw_ptr<TestingProfile> profile_;
-  raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
 };
 
@@ -73,19 +75,20 @@ ExtensionTestingProfile::ExtensionTestingProfile(TestingProfile* profile)
   extensions::TestExtensionSystem* test_extension_system =
       static_cast<extensions::TestExtensionSystem*>(
           extensions::ExtensionSystem::Get(profile_));
-  extension_service_ = test_extension_system->CreateExtensionService(
+  test_extension_system->CreateExtensionService(
       &command_line, base::FilePath() /* install_directory */,
       false /* autoupdate_enabled */);
   extension_prefs_ = extensions::ExtensionPrefs::Get(profile_);
 }
 
-void ExtensionTestingProfile::AddExtension(std::string extension_id,
-                                           std::string extension_name,
-                                           base::Time install_time,
-                                           std::string version,
-                                           std::string description,
-                                           std::string update_url,
-                                           int state_value) {
+void ExtensionTestingProfile::AddExtension(
+    std::string extension_id,
+    std::string extension_name,
+    base::Time install_time,
+    std::string version,
+    std::string description,
+    std::string update_url,
+    const extensions::DisableReasonSet& disable_reasons) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID(extension_id)
@@ -97,14 +100,17 @@ void ExtensionTestingProfile::AddExtension(std::string extension_id,
                            .Set("update_url", update_url))
           .Build();
 
-  // Install the extension on the faked extension service.
-  extension_service_->AddExtension(extension.get());
+  // Install the extension.
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
+  extension_registrar->AddExtension(extension);
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",
       base::Value(base::NumberToString(install_time.ToInternalValue())));
-  extension_prefs_->UpdateExtensionPref(extension_id, "state",
-                                        base::Value(state_value));
+
+  if (!disable_reasons.empty()) {
+    extension_registrar->DisableExtension(extension_id, disable_reasons);
+  }
 }
 
 void ExtensionTestingProfile::SetInstallSignature(
@@ -135,17 +141,18 @@ class ExtensionDataCollectionTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_.Reset(
-        ash::ChromeUserManagerImpl::CreateChromeUserManager());
+#if BUILDFLAG(IS_CHROMEOS)
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<ash::UserManagerDelegateImpl>(),
+        g_browser_process->local_state(), ash::CrosSettings::Get()));
 #endif
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // UserManager should be destroyed before TestingBrowserProcess as it
     // uses it in destructor.
-    test_user_manager_.Reset();
+    user_manager_.Reset();
     // Finish any pending tasks before deleting the TestingBrowserProcess.
     task_environment_.RunUntilIdle();
 #endif
@@ -189,9 +196,9 @@ class ExtensionDataCollectionTest : public testing::Test {
  private:
   int profile_number_ = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  user_manager::ScopedUserManager test_user_manager_;
+  user_manager::ScopedUserManager user_manager_;
 #endif
 };
 
@@ -234,12 +241,11 @@ TEST_F(ExtensionDataCollectionTest, CollectExtensionDataWithExtension) {
   std::string version = "1.4.2";
   std::string description = "Test Extension";
   std::string update_url = "https://www.chromium.org";
-  int state = extensions::Extension::State::ENABLED;
 
   std::unique_ptr<ExtensionTestingProfile> profile =
       CreateProfile(SAFE_BROWSING_AND_EXTENDED_REPORTING);
   profile->AddExtension(extension_id, extension_name, install_time, version,
-                        description, update_url, state);
+                        description, update_url, /*disable_reasons=*/{});
 
   extensions::ExtensionIdSet valid_ids;
   extensions::ExtensionIdSet invalid_ids;
@@ -265,7 +271,8 @@ TEST_F(ExtensionDataCollectionTest, CollectExtensionDataWithExtension) {
   ASSERT_EQ(extension_info.update_url(), update_url);
   ASSERT_EQ(extension_info.has_signature_validation(), true);
   ASSERT_EQ(extension_info.signature_is_valid(), false);
-  ASSERT_EQ(extension_info.state(), state);
+  ASSERT_EQ(extension_info.state(),
+            ClientIncidentReport_ExtensionData_ExtensionInfo::STATE_ENABLED);
   std::string expected_manifest =
       "{\"description\":\"Test Extension\",\""
       "manifest_version\":2,\"name\":\"my_test_extension\",\"update_url\":\""

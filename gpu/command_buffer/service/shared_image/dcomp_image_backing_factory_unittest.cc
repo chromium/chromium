@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/dcomp_image_backing_factory.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -20,8 +21,8 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -78,6 +79,7 @@ class DCompImageBackingFactoryTest : public testing::Test {
     context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
 
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
+    gl::InitializeDirectComposition(d3d11_device_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
@@ -352,32 +354,9 @@ TEST_F(DCompImageBackingFactoryTest, DXGISwapChainAlphaPremultiplied) {
   RunDXGISwapChainAlphaTest(/*has_alpha=*/true);
 }
 
-class DCompImageBackingFactoryBufferCountTest
-    : public DCompImageBackingFactoryTest,
-      public testing::WithParamInterface<bool> {
- public:
-  static const char* GetParamName(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "DCompTripleBufferRootSwapChain" : "default";
-  }
+using DCompImageBackingFactoryBufferCountTest = DCompImageBackingFactoryTest;
 
- protected:
-  void SetUp() override {
-    if (GetParam()) {
-      enabled_features_.InitWithFeatures(
-          {features::kDCompTripleBufferRootSwapChain}, {});
-    } else {
-      enabled_features_.InitWithFeatures(
-          {}, {features::kDCompTripleBufferRootSwapChain});
-    }
-
-    DCompImageBackingFactoryTest::SetUp();
-  }
-
-  base::test::ScopedFeatureList enabled_features_;
-};
-
-TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
+TEST_F(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
   Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
@@ -403,29 +382,19 @@ TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
   ASSERT_HRESULT_SUCCEEDED(content.As(&swap_chain));
   DXGI_SWAP_CHAIN_DESC1 desc;
   ASSERT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
-  if (GetParam()) {
-    EXPECT_EQ(3u, desc.BufferCount);
-  } else {
-    EXPECT_EQ(2u, desc.BufferCount);
-  }
+  EXPECT_EQ(2u, desc.BufferCount);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DCompImageBackingFactoryBufferCountTest,
-    testing::Bool(),
-    &DCompImageBackingFactoryBufferCountTest::GetParamName);
 
 class DCompImageBackingFactoryVisualTreeTest
     : public DCompImageBackingFactoryTest {
  protected:
   DCompImageBackingFactoryVisualTreeTest()
       : window_size_(100, 100),
-        window_(&platform_delegate_, gfx::Rect(window_size_)),
-        dcomp_device_(gl::GetDirectCompositionDevice()) {}
+        window_(&platform_delegate_, gfx::Rect(window_size_)) {}
 
   void SetUp() override {
     DCompImageBackingFactoryTest::SetUp();
+    dcomp_device_ = gl::GetDirectCompositionDevice();
 
     static_cast<ui::PlatformWindow*>(&window_)->Show();
     child_window_.Initialize();
@@ -670,7 +639,7 @@ class DCompImageBackingFactoryVisualTreeTest
     void OnWillDestroyAcceleratedWidget() override {}
     void OnAcceleratedWidgetDestroyed() override {}
     void OnActivationChanged(bool active) override {}
-    void OnMouseEnter() override {}
+    void OnCursorUpdate() override {}
   };
 
   gfx::Size window_size_;

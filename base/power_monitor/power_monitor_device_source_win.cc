@@ -75,18 +75,19 @@ void PowerMonitorDeviceSource::PlatformDestroy() {
   speed_limit_observer_.reset();
 }
 
-// Function to query the system to see if it is currently running on
-// battery power.  Returns true if running on battery.
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   SYSTEM_POWER_STATUS status;
   if (!::GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";
-    return false;
+    return PowerStateObserver::BatteryPowerStatus::kUnknown;
   }
-  return (status.ACLineStatus == 0);
+  return (status.ACLineStatus == 0)
+             ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
+             : PowerStateObserver::BatteryPowerStatus::kExternalPower;
 }
 
-int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
+int PowerMonitorDeviceSource::GetInitialSpeedLimit() const {
   // Returns the maximum value once at start. Subsequent actual values will be
   // provided asynchronously via callbacks instead.
   return PowerThermalObserver::kSpeedLimitMax;
@@ -123,8 +124,9 @@ PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow() {
 
 PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
   if (message_hwnd_) {
-    if (power_notify_handle_)
+    if (power_notify_handle_) {
       ::UnregisterSuspendResumeNotification(power_notify_handle_);
+    }
 
     ::DestroyWindow(message_hwnd_);
     ::UnregisterClass(kWindowClassName, instance_);
@@ -132,11 +134,11 @@ PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
 }
 
 // static
-LRESULT CALLBACK PowerMonitorDeviceSource::PowerMessageWindow::WndProcThunk(
-    HWND hwnd,
-    UINT message,
-    WPARAM wparam,
-    LPARAM lparam) {
+LRESULT CALLBACK
+PowerMonitorDeviceSource::PowerMessageWindow::WndProcThunk(HWND hwnd,
+                                                           UINT message,
+                                                           WPARAM wparam,
+                                                           LPARAM lparam) {
   switch (message) {
     case WM_POWERBROADCAST:
       ProcessWmPowerBroadcastMessage(wparam);

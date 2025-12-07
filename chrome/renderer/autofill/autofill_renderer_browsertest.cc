@@ -5,6 +5,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/core/common/form_data.h"
@@ -63,7 +64,7 @@ TEST_F(AutofillRendererTest, SendForms) {
   LoadHTML(R"(<form method='POST'>
                 <input type='text' id='firstname'/>
                 <input type='text' id='middlename'/>
-                <input type='text' id='lastname' autoComplete='off'/>
+                <input type='text' id='lastname' autocomplete='off'/>
                 <input type='hidden' id='email'/>
                 <select id='state'/>
                   <option>?</option>
@@ -144,7 +145,7 @@ TEST_F(AutofillRendererTest, DynamicallyAddedUnownedFormElements) {
 }
 
 TEST_F(AutofillRendererTest, IgnoreNonUserGestureTextFieldChanges) {
-  EXPECT_CALL(autofill_driver(), TextFieldDidChange).Times(0);
+  EXPECT_CALL(autofill_driver(), TextFieldValueChanged).Times(0);
   LoadHTML(R"(<form method='post'>
                 <input type='text' id='full_name'/>
               </form>)");
@@ -158,10 +159,10 @@ TEST_F(AutofillRendererTest, IgnoreNonUserGestureTextFieldChanges) {
     GetMainFrame()->View()->AdvanceFocus(false);
 
   full_name.SetValue("Alice", true);
-  GetMainFrame()->AutofillClient()->TextFieldDidChange(full_name);
+  GetMainFrame()->AutofillClient()->TextFieldValueChanged(full_name);
 
-  EXPECT_CALL(autofill_driver(), TextFieldDidChange);
-  SimulateUserInputChangeForElement(&full_name, "Alice");
+  EXPECT_CALL(autofill_driver(), TextFieldValueChanged);
+  SimulateUserInputChangeForElement(full_name, "Alice");
 }
 
 }  // namespace

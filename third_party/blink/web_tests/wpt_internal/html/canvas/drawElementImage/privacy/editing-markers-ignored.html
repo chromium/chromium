@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>drawElementImage does not draw editing markers</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="editing-markers-ignored-ref.html">
+<meta name="assert" value="When preserving privacy for readback, do not draw markers for editing.">
+<script src="/wpt_internal/css/support/markers.js"></script>
+<style>
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #canvas {
+    background: grey;
+  }
+</style>
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="editable" contenteditable="true">Composition with an active-suggestion and a suggestion.</div>
+  </div>
+</canvas>
+<script>
+  function runTest() {
+    if (typeof internals !== 'undefined') {
+      // To run this test from content_shell you can use
+      // "--expose-internals-for-testing" command flag.
+      const composition_range = createRangeForTextOnly(editable, 0, 12);
+      internals.addCompositionMarker(composition_range, "blue", "thin", "solid",
+                                     "lightblue", "darkblue");
+
+      const active_suggestion_range = createRangeForTextOnly(editable, 20, 37);
+      internals.addActiveSuggestionMarker(active_suggestion_range, "green",
+                                          "thin", "darkgreen");
+
+      const suggestion_range = createRangeForTextOnly(editable, 44, 54);
+      internals.addSuggestionMarker(suggestion_range, ["suggestion"], "red",
+                                    "pink", "thin", "darkred");
+    }
+
+    canvas.getContext("2d").drawElementImage(child, 0, 0);
+  }
+
+  onload = () => runTest();
+</script>

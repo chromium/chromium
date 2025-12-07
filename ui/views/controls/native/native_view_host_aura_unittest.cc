@@ -58,10 +58,7 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
     EventType type;
     int window_id;
     gfx::Rect bounds;
-    bool operator!=(const EventDetails& rhs) {
-      return type != rhs.type || window_id != rhs.window_id ||
-             bounds != rhs.bounds;
-    }
+    bool operator==(const EventDetails& rhs) const = default;
   };
 
   NativeViewHostWindowObserver() = default;
@@ -81,8 +78,9 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
 
     // Dedupe events as a single Hide() call can result in several
     // notifications.
-    if (events_.size() == 0u || events_.back() != event)
+    if (events_.size() == 0u || events_.back() != event) {
       events_.push_back(event);
+    }
   }
 
   void OnWindowBoundsChanged(aura::Window* window,
@@ -126,9 +124,8 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
   void CreateHost() {
     CreateTopLevel();
     CreateTestingHost();
-    child_.reset(CreateChildForHost(toplevel()->GetNativeView(),
-                                    toplevel()->client_view(), new View,
-                                    host()));
+    child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                                toplevel()->client_view(), new View, host());
   }
 
   // test::NativeViewHostTestBase:
@@ -508,9 +505,10 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
 
   std::unique_ptr<NativeViewHost> native_view_host =
       std::make_unique<NativeViewHost>();
-  toplevel()->GetContentsView()->AddChildView(native_view_host.get());
+  toplevel()->GetContentsView()->AddChildViewRaw(native_view_host.get());
 
-  auto widget_delegate_view = std::make_unique<WidgetDelegateView>();
+  auto widget_delegate_view =
+      std::make_unique<WidgetDelegateView>(WidgetDelegateView::CreatePassKey());
   Widget::InitParams params =
       CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_CONTROL);
@@ -657,7 +655,7 @@ TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
   widget_delegate.set_window(window.get());
 
   CreateTestingHost();
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
   host()->SetVisible(true);
   host()->SetBoundsRect(gfx::Rect(0, 0, 200, 200));
   host()->Attach(window.get());

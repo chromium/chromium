@@ -12,7 +12,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
@@ -52,11 +51,12 @@ struct ThreadIsolationOption {
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
   bool enabled = false;
-  static ThreadIsolationSettings settings PA_CONSTINIT;
+  PA_CONSTINIT static ThreadIsolationSettings settings;
 };
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
@@ -64,7 +64,8 @@ struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
 using LiftThreadIsolationScope = LiftPkeyRestrictionsScope;
 
 #endif  // PA_BUILDFLAG(ENABLE_PKEYS)
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation);
 void UnprotectThreadIsolatedGlobals();

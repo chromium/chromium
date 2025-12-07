@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "net/http/http_status_code.h"
@@ -154,7 +155,7 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoParsed(
         LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
         kLoggerComponent,
         base::StringPrintf("DIAL sink supports disconnect: %s",
-                           parsed_app_info->allow_stop ? "true" : "false"),
+                           base::ToString(parsed_app_info->allow_stop)),
         sink_id_, "", "");
 
     RecordDialFetchAppInfo(DialAppInfoResultCode::kOk);

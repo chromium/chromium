@@ -6,33 +6,38 @@
 
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/process_resource_usage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/common/process_type.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"  // nogncheck
+#include "extensions/browser/extension_registry.h"  // nogncheck
+#include "extensions/common/extension_set.h"        // nogncheck
+#endif
 
 namespace task_manager {
 
@@ -42,18 +47,6 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
                                  int process_type,
                                  ChildProcessTask::ProcessSubtype subtype) {
   std::u16string result_title = title;
-  if (result_title.empty()) {
-    switch (process_type) {
-      case content::PROCESS_TYPE_PPAPI_PLUGIN:
-      case content::PROCESS_TYPE_PPAPI_BROKER:
-        result_title = l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME);
-        break;
-      default:
-        // Nothing to do for non-plugin processes.
-        break;
-    }
-  }
 
   // Explicitly mark name as LTR if there is no strong RTL character,
   // to avoid the wrong concatenation result similar to "!Yahoo Mail: the
@@ -67,45 +60,19 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
                                         result_title);
     case content::PROCESS_TYPE_GPU:
       return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_GPU_PREFIX);
-    case content::PROCESS_TYPE_PPAPI_PLUGIN:
-      return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX,
-                                        result_title);
-    case content::PROCESS_TYPE_PPAPI_BROKER:
-      return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX,
-                                        result_title);
-    case PROCESS_TYPE_NACL_BROKER:
-      return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_NACL_BROKER_PREFIX);
-    case PROCESS_TYPE_NACL_LOADER: {
-      auto* profile_manager = g_browser_process->profile_manager();
-      if (profile_manager) {
-        // TODO(afakhry): Fix the below looping by plumbing a way to get the
-        // profile or the profile path from the child process host if any.
-        auto loaded_profiles = profile_manager->GetLoadedProfiles();
-        for (auto* profile : loaded_profiles) {
-          // Some profiles cannot have extensions, such as the System Profile.
-          if (extensions::ChromeContentBrowserClientExtensionsPart::
-                  AreExtensionsDisabledForProfile(profile)) {
-            continue;
-          }
-
-          const extensions::ExtensionSet& enabled_extensions =
-              extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
-          const extensions::Extension* extension =
-              enabled_extensions.GetExtensionOrAppByURL(GURL(result_title));
-          if (extension) {
-            result_title = base::UTF8ToUTF16(extension->name());
-            break;
-          }
-        }
-      }
-      return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_NACL_PREFIX,
-                                        result_title);
-    }
+    case content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED:
+    case content::PROCESS_TYPE_PPAPI_BROKER_DEPRECATED:
+      NOTREACHED();
     case content::PROCESS_TYPE_RENDERER: {
       switch (subtype) {
         case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
           return l10n_util::GetStringUTF16(
               IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX);
+#if BUILDFLAG(ENABLE_GLIC)
+        case ChildProcessTask::ProcessSubtype::kGlicRenderProcess:
+          return l10n_util::GetStringUTF16(
+              IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX);
+#endif
         case ChildProcessTask::ProcessSubtype::kUnknownRenderProcess:
           return l10n_util::GetStringUTF16(
               IDS_TASK_MANAGER_UNKNOWN_RENDERER_PREFIX);
@@ -121,8 +88,7 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
     case content::PROCESS_TYPE_MAX:
       break;
     case content::PROCESS_TYPE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION()
-          << "Need localized name for child process type.";
+      NOTREACHED() << "Need localized name for child process type.";
   }
 
   return result_title;
@@ -165,14 +131,12 @@ ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
            FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
            data.GetProcess().Handle()),
       process_resources_sampler_(CreateProcessResourcesSampler(data.id)),
-      v8_memory_allocated_(-1),
-      v8_memory_used_(-1),
       unique_child_process_id_(data.id),
       process_type_(data.process_type),
+      process_subtype_(subtype),
       uses_v8_memory_(UsesV8Memory(process_type_)) {}
 
-ChildProcessTask::~ChildProcessTask() {
-}
+ChildProcessTask::~ChildProcessTask() = default;
 
 void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
                                int64_t refresh_flags) {
@@ -190,18 +154,18 @@ void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
   // potentially having valid values).
   process_resources_sampler_->Refresh(base::DoNothing());
 
-  v8_memory_allocated_ = base::saturated_cast<int64_t>(
-      process_resources_sampler_->GetV8MemoryAllocated());
-  v8_memory_used_ = base::saturated_cast<int64_t>(
-      process_resources_sampler_->GetV8MemoryUsed());
+  v8_memory_allocated_ =
+      base::ByteCount(process_resources_sampler_->GetV8MemoryAllocated());
+  v8_memory_used_ =
+      base::ByteCount(process_resources_sampler_->GetV8MemoryUsed());
 }
 
 Task::Type ChildProcessTask::GetType() const {
   // Convert |content::ProcessType| to |task_manager::Task::Type|.
   switch (process_type_) {
-    case content::PROCESS_TYPE_PPAPI_PLUGIN:
-    case content::PROCESS_TYPE_PPAPI_BROKER:
-      return Task::PLUGIN;
+    case content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED:
+    case content::PROCESS_TYPE_PPAPI_BROKER_DEPRECATED:
+      NOTREACHED();
     case content::PROCESS_TYPE_UTILITY:
       return Task::UTILITY;
     case content::PROCESS_TYPE_ZYGOTE:
@@ -210,9 +174,6 @@ Task::Type ChildProcessTask::GetType() const {
       return Task::SANDBOX_HELPER;
     case content::PROCESS_TYPE_GPU:
       return Task::GPU;
-    case PROCESS_TYPE_NACL_LOADER:
-    case PROCESS_TYPE_NACL_BROKER:
-      return Task::NACL;
     case content::PROCESS_TYPE_RENDERER:
       return Task::RENDERER;
     default:
@@ -220,15 +181,30 @@ Task::Type ChildProcessTask::GetType() const {
   }
 }
 
+Task::SubType ChildProcessTask::GetSubType() const {
+  // Please consult Task Manager OWNERs when adding a new ProcessSubType.
+  switch (process_subtype_) {
+    case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
+      return Task::SubType::kSpareRenderer;
+#if BUILDFLAG(ENABLE_GLIC)
+    case ChildProcessTask::ProcessSubtype::kGlicRenderProcess:
+#endif
+    case ChildProcessTask::ProcessSubtype::kUnknownRenderProcess:
+      return Task::SubType::kUnknownRenderer;
+    default:
+      return Task::SubType::kNoSubType;
+  }
+}
+
 int ChildProcessTask::GetChildProcessUniqueID() const {
   return unique_child_process_id_;
 }
 
-int64_t ChildProcessTask::GetV8MemoryAllocated() const {
+base::ByteCount ChildProcessTask::GetV8MemoryAllocated() const {
   return v8_memory_allocated_;
 }
 
-int64_t ChildProcessTask::GetV8MemoryUsed() const {
+base::ByteCount ChildProcessTask::GetV8MemoryUsed() const {
   return v8_memory_used_;
 }
 

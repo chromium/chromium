@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/atomic_flag.h"
@@ -48,6 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
     base::FilePath machine_info_filepath;
     base::FilePath oem_manifest_filepath;
     base::FilePath cros_regions_filepath;
+    base::FilePath vpd_cache_filepath;
   };
 
   // Constructs a provider with given `testing_sources` for testing purposes.
@@ -85,6 +87,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   VpdStatus GetVpdStatus() const override;
 
+  LoadingState GetLoadingState() const override;
+
  private:
   using MachineFlags = base::flat_map<std::string, bool>;
 
@@ -121,9 +125,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   std::optional<std::string_view> GetRegionalInformation(
       std::string_view name) const;
 
+  // Shorthand to check internal state if loading has already started.
+  bool HasLoadingStarted() const;
+
+  // Starts the file path watcher to monitor VPD change.
+  void StartVpdWatcher();
+
+  // A callback function when there is a VPD change.
+  virtual void OnVpdChange(const base::FilePathWatcher::ChangeInfo& change_info,
+                           const base::FilePath& file_path,
+                           bool error);
+
   StatisticsSources sources_;
 
-  bool load_statistics_started_;
+  LoadingState loading_state_;
   NameValuePairsParser::NameValueMap machine_info_;
   MachineFlags machine_flags_;
   // Statistics extracted from region file and associated with `kRegionKey`
@@ -151,6 +166,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   std::vector<
       std::pair<base::OnceClosure, scoped_refptr<base::SequencedTaskRunner>>>
       statistics_loaded_callbacks_;
+
+  // A file path watcher to monitor VPD change.
+  std::unique_ptr<base::FilePathWatcher> vpd_change_watcher_;
+
+  scoped_refptr<base::SequencedTaskRunner> vpd_change_task_runner_;
+
+  // Allows a peer class in unit test to access private functions.
+  friend class StatisticsProviderImplPeer;
 };
 
 }  // namespace ash::system

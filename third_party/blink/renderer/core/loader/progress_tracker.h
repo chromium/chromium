@@ -84,6 +84,7 @@ class CORE_EXPORT ProgressTracker final
 
   void MaybeSendProgress();
   void SendFinalProgress();
+  void NotifyLoadProgressChanged();
   void Reset();
 
   bool HaveParsedAndPainted();

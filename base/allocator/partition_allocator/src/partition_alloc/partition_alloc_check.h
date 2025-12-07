@@ -61,11 +61,11 @@
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
-#if !defined(NDEBUG)
+#if PA_BUILDFLAG(IS_DEBUG)
 #define PA_SCAN_DCHECK_IS_ON() PA_BUILDFLAG(DCHECKS_ARE_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
-#endif
+#endif  // PA_BUILDFLAG(IS_DEBUG)
 
 #if PA_SCAN_DCHECK_IS_ON()
 #define PA_SCAN_DCHECK(expr) PA_DCHECK(expr)
@@ -118,12 +118,12 @@ struct PA_DEBUGKV_ALIGN DebugKv {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
     for (size_t index = 0; index < sizeof k; index++) {
-      k[index] = ' ';
+      PA_UNSAFE_TODO(k[index]) = ' ';
     }
 
     for (size_t index = 0; index < sizeof k; index++) {
-      k[index] = key[index];
-      if (key[index] == '\0') {
+      PA_UNSAFE_TODO(k[index]) = PA_UNSAFE_TODO(key[index]);
+      if (PA_UNSAFE_TODO(key[index]) == '\0') {
         break;
       }
     }

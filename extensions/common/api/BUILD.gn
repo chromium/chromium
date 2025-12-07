@@ -2,14 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//extensions/common/api/schema.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 ################################################################################
 # Public Targets
@@ -52,7 +51,7 @@ generated_json_strings("generated_api_json_strings") {
 }
 
 generated_types("generated_api_types") {
-  sources = extensions_api_schema_files + extensions_manifest_only_schema_files
+  sources = extensions_api_schema_files + extensions_types_only_schema_files
   root_namespace = extensions_api_root_namespace
   deps = [
     "//base",
@@ -65,6 +64,7 @@ json_features("api_features") {
   feature_type = "APIFeature"
   method_name = "AddCoreAPIFeatures"
   sources = [ "_api_features.json" ]
+  inputs = [ "_api_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 
@@ -72,6 +72,7 @@ json_features("permission_features") {
   feature_type = "PermissionFeature"
   method_name = "AddCorePermissionFeatures"
   sources = [ "_permission_features.json" ]
+  inputs = [ "_permission_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 
@@ -79,6 +80,7 @@ json_features("manifest_features") {
   feature_type = "ManifestFeature"
   method_name = "AddCoreManifestFeatures"
   sources = [ "_manifest_features.json" ]
+  inputs = [ "_manifest_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 

@@ -47,7 +47,7 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   // (0,0).
   // Registers with a fullscreen controller identified by |web_contents| to
   // close the bubble if the fullscreen state changes.
-  LocationBarBubbleDelegateView(views::View* anchor_view,
+  LocationBarBubbleDelegateView(views::BubbleAnchor anchor_view,
                                 content::WebContents* web_contents,
                                 bool autosize = false);
 

@@ -10,7 +10,6 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
-#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 
 namespace crash_keys {
 
@@ -38,11 +37,13 @@ char const kVideoPlaying[] = "avplay";
 char const kIncognitoTabCount[] = "OTRTabs";
 char const kRegularTabCount[] = "regTabs";
 char const kInactiveTabCount[] = "inactiveTabs";
+char const kBookmarkNodesCount[] = "bookmarks";
 char const kConnectedScenes[] = "scenes";
 char const kForegroundScenes[] = "fgScenes";
 char const kDestroyingAndRebuildingIncognitoBrowserState[] =
     "destroyingAndRebuildingOTR";
 char const kVoiceOverRunning[] = "voiceOver";
+char const kIsReaderModeActive[] = "readerMode";
 
 }  // namespace
 
@@ -50,13 +51,11 @@ void SetCurrentlyInBackground(bool background) {
   static crash_reporter::CrashKeyString<4> key(kCrashedInBackground);
   if (background) {
     key.Set("yes");
-    [[MainThreadFreezeDetector sharedInstance] stop];
     [[PreviousSessionInfo sharedInstance]
         setReportParameterValue:@"yes"
                          forKey:base::SysUTF8ToNSString(kCrashedInBackground)];
   } else {
     key.Clear();
-    [[MainThreadFreezeDetector sharedInstance] start];
     [[PreviousSessionInfo sharedInstance]
         removeReportParameterForKey:base::SysUTF8ToNSString(
                                         kCrashedInBackground)];
@@ -214,6 +213,11 @@ void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress) {
   }
 }
 
+void SetBookmarkNodesCount(int bookmarks_count, ProfileIOS* profile) {
+  [[CrashReportUserApplicationState sharedInstance] setValue:kBookmarkNodesCount
+                                                   withValue:bookmarks_count];
+}
+
 void SetGridToVisibleTabAnimation(NSString* to_view_controller,
                                   NSString* presenting_view_controller,
                                   NSString* presented_view_controller,
@@ -248,6 +252,22 @@ void SetVoiceOverRunning(bool running) {
   } else {
     [[CrashReportUserApplicationState sharedInstance]
         removeValue:kVoiceOverRunning];
+  }
+}
+
+void SetCurrentlyInReaderMode(bool is_reader_mode_active) {
+  static crash_reporter::CrashKeyString<4> key(kIsReaderModeActive);
+  if (is_reader_mode_active) {
+    key.Set("yes");
+    [[PreviousSessionInfo sharedInstance]
+        setReportParameterValue:@"yes"
+                         forKey:base::SysUTF8ToNSString(kIsReaderModeActive)];
+
+  } else {
+    key.Clear();
+    [[PreviousSessionInfo sharedInstance]
+        removeReportParameterForKey:base::SysUTF8ToNSString(
+                                        kIsReaderModeActive)];
   }
 }
 

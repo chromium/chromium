@@ -5,10 +5,10 @@
 #include "ui/views/controls/scrollbar/scroll_bar_button.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -35,8 +35,9 @@ ScrollBarButton::~ScrollBarButton() = default;
 
 gfx::Size ScrollBarButton::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return gfx::Size();
+  }
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }
@@ -85,7 +86,7 @@ ui::NativeTheme::Part ScrollBarButton::GetNativeThemePart() const {
       return ui::NativeTheme::kScrollbarRightArrow;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
@@ -102,12 +103,11 @@ ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ScrollBarButton::RepeaterNotifyClick() {
-  gfx::Point cursor_point =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point cursor_point = display::Screen::Get()->GetCursorScreenPoint();
   ui::MouseEvent event(ui::EventType::kMouseReleased, cursor_point,
                        cursor_point, ui::EventTimeForNow(),
                        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);

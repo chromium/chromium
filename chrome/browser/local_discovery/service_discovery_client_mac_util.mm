@@ -4,10 +4,12 @@
 
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "net/base/ip_endpoint.h"
@@ -81,8 +83,7 @@ void ParseTxtRecord(NSData* record, std::vector<std::string>& output) {
 
   VLOG(1) << "ParseTxtRecord: " << size;
 
-  base::span<const uint8_t> bytes_span(
-      reinterpret_cast<const uint8_t*>(record.bytes), size);
+  base::span<const uint8_t> bytes_span = base::apple::NSDataToSpan(record);
   size_t offset = 0;
   while (offset < size) {
     size_t record_size = static_cast<size_t>(bytes_span[offset++]);

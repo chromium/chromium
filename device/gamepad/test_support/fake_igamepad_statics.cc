@@ -4,7 +4,7 @@
 
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -188,6 +188,13 @@ size_t FakeIGamepadStatics::GetGamepadAddedEventHandlerCount() const {
 
 size_t FakeIGamepadStatics::GetGamepadRemovedEventHandlerCount() const {
   return gamepad_removed_event_handler_map_.size();
+}
+
+void FakeIGamepadStatics::Reset() {
+  gamepad_added_event_handler_map_.clear();
+  gamepad_removed_event_handler_map_.clear();
+  fake_gamepad_map_.clear();
+  fake_raw_game_controller_map_.clear();
 }
 
 void FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread(

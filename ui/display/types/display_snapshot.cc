@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 
 namespace display {
 
@@ -155,8 +156,8 @@ std::string DisplaySnapshot::ToString() const {
 }
 
 // static
-gfx::BufferFormat DisplaySnapshot::PrimaryFormat() {
-  return gfx::BufferFormat::BGRA_8888;
+viz::SharedImageFormat DisplaySnapshot::PrimaryFormat() {
+  return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 void DisplaySnapshot::AddIndexToDisplayId() {
@@ -165,11 +166,12 @@ void DisplaySnapshot::AddIndexToDisplayId() {
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {
-  return variable_refresh_rate_state_ != display::kVrrNotCapable;
+  return variable_refresh_rate_state_ !=
+         VariableRefreshRateState::kVrrNotCapable;
 }
 
 bool DisplaySnapshot::IsVrrEnabled() const {
-  return variable_refresh_rate_state_ == display::kVrrEnabled;
+  return variable_refresh_rate_state_ == VariableRefreshRateState::kVrrEnabled;
 }
 
 void DisplaySnapshot::set_current_mode(const DisplayMode* mode) {

@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/scoped_refptr.h"
+#import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 enum class PromoStyleImageType {
@@ -17,6 +20,7 @@ enum class PromoStyleImageType {
 };
 
 enum class BannerImageSizeType {
+  kExtraShort,
   kShort,
   kStandard,
   kTall,
@@ -36,19 +40,56 @@ enum class ActionButtonsVisibility {
 };
 
 // A base view controller for the common UI controls in the new Promo
-// Style screens.
-@interface PromoStyleViewController : UIViewController <UITextViewDelegate>
+// Style screens. The main content consists of a banner, a header image, a
+// title, a subtitle, and screen-specific content. It can have action buttons at
+// the bottom, and a disclaimer above them.
+//
+// The layout is structured as follows:
+//
+// +--------------------------------+
+// |          navigationBar         |
+// |  +--------------------------+  |
+// |  |  dismissBtn |  helpBtn   |  |
+// |  +--------------------------+  |
+// +--------------------------------+
+// |           scrollView           |
+// |  +--------------------------+  |
+// |  |          banner          |  |
+// |  +--------------------------+  |
+// |  |       headerImage        |  |
+// |  +--------------------------+  |
+// |  |         titleText        |  |
+// |  +--------------------------+  |
+// |  |        subtitleText      |  |
+// |  +--------------------------+  |
+// |  |     specificContentView  |  |
+// |  +--------------------------+  |
+// +--------------------------------+
+// |        disclaimerText          |
+// +--------------------------------+
+// |      primaryActionButton       |
+// +--------------------------------+
+// |     secondaryActionButton      |
+// +--------------------------------+
+@interface PromoStyleViewController
+    : ButtonStackViewController <UITextViewDelegate>
+
+- (instancetype)initWithTaskRunner:
+    (scoped_refptr<base::SequencedTaskRunner>)taskRunner;
+
+- (instancetype)init;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil
-    NS_DESIGNATED_INITIALIZER;
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The name of the banner image. Must be set before the view is loaded.
-@property(nonatomic, strong) NSString* bannerName;
+@property(nonatomic, copy) NSString* bannerName;
 
 // The ratio of the view covered by the banner.
+// - kExtraShort: 15%,
+// - kShort: 20%,
 // - kStandard: 25%,
 // - kTall: 35%,
 // - kExtraTall: 50%.
@@ -151,25 +192,6 @@ enum class ActionButtonsVisibility {
 // Indicates that the specificContentView will not be used and must be hidden.
 @property(nonatomic, assign) BOOL hideSpecificContentView;
 
-// The text for the primary action. Must be set before the view is loaded.
-@property(nonatomic, copy) NSString* primaryActionString;
-
-// The configuration update handler for the primaryActionButton. Must be set
-// before the view is loaded.
-@property(nonatomic, copy) UIButtonConfigurationUpdateHandler updateHandler;
-
-// The primary action button is enabled when set to YES, disabled when NO. The
-// button is enabled by default.
-@property(nonatomic, assign) BOOL primaryButtonEnabled;
-
-// The text for the secondary action. Must be set before the view is loaded. If
-// not set, there won't be a secondary action button.
-@property(nonatomic, copy) NSString* secondaryActionString;
-
-// The text for the tertiary action. Must be set before the view is loaded. If
-// not set, there won't be a tertiary action button.
-@property(nonatomic, copy) NSString* tertiaryActionString;
-
 // The delegate to invoke when buttons are tapped. Can be derived by screen-
 // specific view controllers if additional buttons are used.
 @property(nonatomic, weak) id<PromoStyleViewControllerDelegate> delegate;
@@ -179,6 +201,12 @@ enum class ActionButtonsVisibility {
 // the content. If set to NO, the primary button behaves normally. Defaults to
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
+
+// Whether the view controller should prefer to compress low resistance subviews
+// (UILayoutPriorityDefaultLow) to keep them in the visible area before making
+// the content scrollable. Must be set before the view is loaded. Defaults to
+// NO.
+@property(nonatomic, assign) BOOL preferToCompressContent;
 
 // The text for the "More" button. Must be set before the view is loaded
 // for views with "scrollToMandatory = YES."
@@ -191,18 +219,22 @@ enum class ActionButtonsVisibility {
 // The help button item in the top left of the view. Nil if not available.
 @property(nonatomic, readonly) UIButton* learnMoreButton;
 
+// Controls if there is a dismiss button in the top right of the view. Must be
+// set before the view is loaded. Defaults to NO.
+@property(nonatomic, assign) BOOL shouldShowDismissButton;
+
+// The dismiss button item in the top right of the view. Nil if not available.
+@property(nonatomic, readonly) UIButton* dismissButton;
+
+// The text for the dismiss button.
+@property(nonatomic, copy) NSString* dismissButtonString;
+
 // Whether the bottom of the view controller is reached. This value will always
 // be YES when `self.scrollToEndMandatory` is NO.
 @property(nonatomic, assign, readonly) BOOL didReachBottom;
 
 // Adds a rounded corner limit to the banner view to mimic a two card view.
 @property(nonatomic, assign) BOOL bannerLimitWithRoundedCorner;
-
-// If YES, constrains the scroll view to the top of the view (outside
-// safeAreaLayoutGuide), putting it behind any navigation bars. By default,
-// scroll view is constrained within the safeAreaLayoutGuide.
-// Must be set before view is loaded.
-@property(nonatomic, assign) BOOL layoutBehindNavigationBar;
 
 // Aligns the elements to the top of the view.
 @property(nonatomic, assign) BOOL topAlignedLayout;
@@ -211,9 +243,8 @@ enum class ActionButtonsVisibility {
 @property(nonatomic, assign, readwrite)
     ActionButtonsVisibility actionButtonsVisibility;
 
-// Whether the primary button should be disabled and have its button text
-// replaced with a spinner. Should be set only after the view is loaded.
-@property(nonatomic, assign) BOOL primaryButtonSpinnerEnabled;
+// Determines the font text style to use for the title.
+- (UIFontTextStyle)titleLabelFontTextStyle;
 
 @end
 

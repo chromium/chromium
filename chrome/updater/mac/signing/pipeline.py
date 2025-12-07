@@ -26,7 +26,6 @@ def _sign_app(paths, config, dest_dir):
     commands.copy_files(
         os.path.join(paths.input, "{.app_product}Util".format(config)),
         paths.work)
-    commands.copy_files(os.path.join(paths.input, "UpdaterSetup"), paths.work)
     parts.sign_all(paths, config)
     commands.make_dir(dest_dir)
     commands.move_file(os.path.join(paths.work, config.app_dir),
@@ -34,8 +33,6 @@ def _sign_app(paths, config, dest_dir):
     commands.move_file(
         os.path.join(paths.work, "{.app_product}Util".format(config)),
         os.path.dirname(dest_dir))
-    commands.move_file(os.path.join(paths.work, "UpdaterSetup"),
-                       os.path.dirname(dest_dir))
 
 
 def _package_and_sign_dmg(paths, config):
@@ -117,6 +114,8 @@ def _package_and_sign_pkg(paths, config):
                      '%s.app' % config.app_product),
         '--scripts',
         os.path.join(paths.input, config.packaging_dir, 'signing', 'pkg'),
+        '--version',
+        config.version,
         '--timestamp',
         pkg_path,
     ]
@@ -150,11 +149,11 @@ def _package_zip(paths, config):
     return zip_path
 
 
-def sign_all(orig_paths,
-             config,
-             disable_packaging=False,
-             skip_brands=[],
-             channels=[]):
+async def sign_all(orig_paths,
+                   config,
+                   disable_packaging=False,
+                   skip_brands=[],
+                   channels=[]):
     """Code signs, packages, and signs the package, placing the result into
     |orig_paths.output|. |orig_paths.input| must contain the products to
     customize and sign.
@@ -168,7 +167,6 @@ def sign_all(orig_paths,
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign and optionally submit the notarization requests.
-        uuid = None
         with commands.WorkDirectory(orig_paths) as paths:
             dest_dir = os.path.join(notary_paths.work,
                                     config.packaging_basename)
@@ -182,27 +180,21 @@ def sign_all(orig_paths,
                     zip_file, config.app_dir
                 ],
                                      cwd=dest_dir)
-                uuid = notarize.submit(zip_file, config)
+                await notarize.submit(zip_file, config)
 
-        # Wait for the app notarization result to come back and staple.
-        if config.notarize.should_wait():
-            for _ in notarize.wait_for_results([uuid], config):
-                pass  # We are only waiting for a single notarization.
-            if config.notarize.should_staple():
-                notarize.staple_bundled_parts(
-                    # Only staple to the outermost app.
-                    parts.get_parts(config)[-1:],
-                    notary_paths.replace_work(
-                        os.path.join(notary_paths.work,
-                                     config.packaging_basename)))
+        if config.notarize.should_staple():
+            notarize.staple_bundled_parts(
+                # Only staple to the outermost app.
+                parts.get_parts(config)[-1:],
+                notary_paths.replace_work(
+                    os.path.join(notary_paths.work,
+                                 config.packaging_basename)))
 
         # Package.
         commands.move_file(
             os.path.join(notary_paths.work,
                          "{.app_product}Util".format(config)),
             orig_paths.output)
-        commands.move_file(os.path.join(notary_paths.work, "UpdaterSetup"),
-                           orig_paths.output)
         package_paths = orig_paths.replace_work(
             os.path.join(notary_paths.work, config.packaging_basename))
         _package_zip(package_paths, config)
@@ -211,8 +203,7 @@ def sign_all(orig_paths,
 
         # Notarize the packages, then staple.
         if config.notarize.should_notarize():
-            uuid_to_path = {}
-            uuid_to_path[notarize.submit(pkg_path, config)] = pkg_path
-            uuid_to_path[notarize.submit(dmg_path, config)] = dmg_path
-            for uuid in notarize.wait_for_results(uuid_to_path.keys(), config):
-                notarize.staple(uuid_to_path[uuid])
+            await notarize.submit(pkg_path, config)
+            await notarize.submit(dmg_path, config)
+            notarize.staple(dmg_path)
+            notarize.staple(pkg_path)

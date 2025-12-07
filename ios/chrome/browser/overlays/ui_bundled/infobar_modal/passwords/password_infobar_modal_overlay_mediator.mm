@@ -15,10 +15,10 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -29,7 +29,7 @@
 @end
 
 @implementation PasswordInfobarModalOverlayMediator {
-  raw_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
+  raw_ptr<IOSChromeSavePasswordInfoBarDelegate, DanglingUntriaged> delegate_;
   InfobarType infobarType_;
 }
 
@@ -55,7 +55,7 @@
       self.config->delegate());
   infobarType_ = self.config->infobar_type();
 
-  [_consumer setUsername:delegate_->GetUserNameText()];
+  [_consumer setOriginalUsername:delegate_->GetUserNameText()];
   NSString* password = delegate_->GetPasswordText();
   [_consumer setMaskedPassword:[@"" stringByPaddingToLength:password.length
                                                  withString:@"•"
@@ -130,8 +130,7 @@
 
   id<SettingsCommands> settings_command_handler =
       HandlerForProtocol(delegate_->GetDispatcher(), SettingsCommands);
-  [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                        showCancelButton:YES];
+  [settings_command_handler showSavedPasswordsSettingsFromViewController:nil];
 
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",

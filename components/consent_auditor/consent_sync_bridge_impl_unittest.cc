@@ -17,6 +17,7 @@
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,8 @@ using testing::UnorderedElementsAre;
 using testing::WithArg;
 using WriteBatch = DataTypeStore::WriteBatch;
 
+constexpr GaiaId::Literal kDefaultGaiaId("gaia_id");
+
 MATCHER_P(MatchesUserConsent, expected, "") {
   if (!arg.has_user_consent()) {
     *result_listener << "which is not a user consent";
@@ -67,7 +70,7 @@ MATCHER_P(MatchesUserConsent, expected, "") {
 UserConsentSpecifics CreateSpecifics(int64_t client_consent_time_usec) {
   UserConsentSpecifics specifics;
   specifics.set_client_consent_time_usec(client_consent_time_usec);
-  specifics.set_account_id("account_id");
+  specifics.set_obfuscated_gaia_id(kDefaultGaiaId.ToString());
   return specifics;
 }
 
@@ -97,7 +100,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
         std::move(store_factory), mock_processor_.CreateForwardingProcessor());
   }
 
-  void WaitUntilModelReadyToSync(const std::string& account_id) {
+  void WaitUntilModelReadyToSync(const GaiaId& gaia_id) {
     base::RunLoop loop;
     base::RepeatingClosure quit_closure = loop.QuitClosure();
     // Let the bridge initialize fully, which should run ModelReadyToSync().
@@ -105,7 +108,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
         .WillByDefault(InvokeWithoutArgs([=]() { quit_closure.Run(); }));
     loop.Run();
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-    ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return(account_id));
+    ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(gaia_id));
   }
 
   static std::string GetStorageKey(const UserConsentSpecifics& specifics) {
@@ -152,11 +155,11 @@ class ConsentSyncBridgeImplTest : public testing::Test {
 
 TEST_F(ConsentSyncBridgeImplTest, ShouldCallModelReadyToSyncOnStartup) {
   EXPECT_CALL(*processor(), ModelReadyToSync(NotNull()));
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
 }
 
 TEST_F(ConsentSyncBridgeImplTest, ShouldGetDataForCommit) {
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
   const UserConsentSpecifics specifics(
       CreateSpecifics(/*client_consent_time_usec=*/1u));
   std::string storage_key;
@@ -172,7 +175,7 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldGetDataForCommit) {
 }
 
 TEST_F(ConsentSyncBridgeImplTest, ShouldRecordSingleConsent) {
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
   const UserConsentSpecifics specifics(
       CreateSpecifics(/*client_consent_time_usec=*/1u));
   std::string storage_key;
@@ -187,7 +190,7 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldRecordSingleConsent) {
 }
 
 TEST_F(ConsentSyncBridgeImplTest, ShouldNotDeleteConsentsWhenSyncIsDisabled) {
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
   UserConsentSpecifics user_consent_specifics(
       CreateSpecifics(/*client_consent_time_usec=*/2u));
   bridge()->RecordConsent(
@@ -205,7 +208,7 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldNotDeleteConsentsWhenSyncIsDisabled) {
 
 TEST_F(ConsentSyncBridgeImplTest,
        ShouldRecordMultipleConsentsAndDeduplicateByTime) {
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
   std::set<std::string> unique_storage_keys;
   EXPECT_CALL(*processor(), Put(_, _, _))
       .Times(4)
@@ -227,7 +230,7 @@ TEST_F(ConsentSyncBridgeImplTest,
 
 TEST_F(ConsentSyncBridgeImplTest,
        ShouldDeleteCommitedConsentsAfterApplyIncrementalSyncChanges) {
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
   std::string first_storage_key;
   std::string second_storage_key;
   EXPECT_CALL(*processor(), Put(_, _, _))
@@ -239,7 +242,8 @@ TEST_F(ConsentSyncBridgeImplTest,
   ASSERT_THAT(GetAllDataForDebugging(), SizeIs(2));
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete(first_storage_key));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete(first_storage_key, syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
@@ -249,14 +253,14 @@ TEST_F(ConsentSyncBridgeImplTest,
 }
 
 TEST_F(ConsentSyncBridgeImplTest, ShouldRecordConsentsBeforeSyncEnabled) {
-  WaitUntilModelReadyToSync(/*account_id=*/"");
+  WaitUntilModelReadyToSync(GaiaId());
   // The consent must be recorded, but not propagated anywhere while the
   // initialization is in progress and sync is still disabled.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   bridge()->RecordConsent(SpecificsUniquePtr(/*client_consent_time_usec=*/1u));
   // When sync is enabled, the consent should be reported to the processor.
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-  ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return("account_id"));
+  ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(kDefaultGaiaId));
   EXPECT_CALL(*processor(), Put(_, _, _));
   bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
                               EntityChangeList());
@@ -271,10 +275,10 @@ TEST_F(ConsentSyncBridgeImplTest,
 
   UserConsentSpecifics first_consent =
       CreateSpecifics(/*client_consent_time_usec=*/1u);
-  first_consent.set_account_id("account_id");
+  first_consent.set_obfuscated_gaia_id(kDefaultGaiaId.ToString());
   UserConsentSpecifics second_consent =
       CreateSpecifics(/*client_consent_time_usec=*/2u);
-  second_consent.set_account_id("account_id");
+  second_consent.set_obfuscated_gaia_id(kDefaultGaiaId.ToString());
 
   // Record consent before the store is initialized (ModelReadyToSync() not
   // called yet).
@@ -283,7 +287,7 @@ TEST_F(ConsentSyncBridgeImplTest,
 
   // Wait until the store is initialized.
   EXPECT_CALL(*processor(), ModelReadyToSync(NotNull()));
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
 
   // Record consent after initializaiton is done.
   bridge()->RecordConsent(
@@ -300,11 +304,11 @@ TEST_F(ConsentSyncBridgeImplTest,
 
 TEST_F(ConsentSyncBridgeImplTest,
        ShouldReportPreviouslyPersistedConsentsWhenSyncIsReenabled) {
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
 
   UserConsentSpecifics consent =
       CreateSpecifics(/*client_consent_time_usec=*/1u);
-  consent.set_account_id("account_id");
+  consent.set_obfuscated_gaia_id(kDefaultGaiaId.ToString());
 
   bridge()->RecordConsent(std::make_unique<UserConsentSpecifics>(consent));
 
@@ -318,7 +322,7 @@ TEST_F(ConsentSyncBridgeImplTest,
 
   // Reenable sync.
   EXPECT_CALL(*processor(), Put(GetStorageKey(consent), _, _));
-  ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return("account_id"));
+  ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(kDefaultGaiaId));
   bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
                               EntityChangeList());
 
@@ -329,10 +333,10 @@ TEST_F(ConsentSyncBridgeImplTest,
 TEST_F(ConsentSyncBridgeImplTest,
        ShouldReportPersistedConsentsOnStartupWithSyncAlreadyEnabled) {
   // Persist a consent while sync is enabled.
-  WaitUntilModelReadyToSync("account_id");
+  WaitUntilModelReadyToSync(kDefaultGaiaId);
   UserConsentSpecifics consent =
       CreateSpecifics(/*client_consent_time_usec=*/1u);
-  consent.set_account_id("account_id");
+  consent.set_obfuscated_gaia_id(kDefaultGaiaId.ToString());
   bridge()->RecordConsent(std::make_unique<UserConsentSpecifics>(consent));
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(GetAllDataForDebugging(), SizeIs(1));
@@ -347,10 +351,10 @@ TEST_F(ConsentSyncBridgeImplTest,
 
 TEST_F(ConsentSyncBridgeImplTest, ShouldReportPersistedConsentsOnSyncEnabled) {
   // Persist a consent before sync is enabled.
-  WaitUntilModelReadyToSync(/*account=id=*/"");
+  WaitUntilModelReadyToSync(GaiaId());
   UserConsentSpecifics consent =
       CreateSpecifics(/*client_consent_time_usec=*/1u);
-  consent.set_account_id("account_id");
+  consent.set_obfuscated_gaia_id(kDefaultGaiaId.ToString());
   bridge()->RecordConsent(std::make_unique<UserConsentSpecifics>(consent));
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(GetAllDataForDebugging(), SizeIs(1));
@@ -359,11 +363,11 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldReportPersistedConsentsOnSyncEnabled) {
   // until sync is enabled.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   ResetBridge();
-  WaitUntilModelReadyToSync(/*account_id=*/"");
+  WaitUntilModelReadyToSync(GaiaId());
 
   // Enable sync.
   EXPECT_CALL(*processor(), Put(GetStorageKey(consent), _, _));
-  ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return("account_id"));
+  ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(kDefaultGaiaId));
   bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
                               EntityChangeList());
   base::RunLoop().RunUntilIdle();
@@ -371,10 +375,13 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldReportPersistedConsentsOnSyncEnabled) {
 
 TEST_F(ConsentSyncBridgeImplTest,
        ShouldResubmitPersistedConsentOnlyIfSameAccount) {
-  WaitUntilModelReadyToSync("first_account");
+  const GaiaId kFirstGaiaId("first_gaia_id");
+  const GaiaId kSecondGaiaId("second_gaia_id");
+
+  WaitUntilModelReadyToSync(kFirstGaiaId);
   UserConsentSpecifics user_consent_specifics(
       CreateSpecifics(/*client_consent_time_usec=*/2u));
-  user_consent_specifics.set_account_id("first_account");
+  user_consent_specifics.set_obfuscated_gaia_id(kFirstGaiaId.ToString());
   bridge()->RecordConsent(
       std::make_unique<UserConsentSpecifics>(user_consent_specifics));
   ASSERT_THAT(GetAllDataForDebugging(), SizeIs(1));
@@ -390,8 +397,7 @@ TEST_F(ConsentSyncBridgeImplTest,
   // The previous account consent should not be resubmited, because the new sync
   // account is different.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
-  ON_CALL(*processor(), TrackedAccountId())
-      .WillByDefault(Return("second_account"));
+  ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(kSecondGaiaId));
   bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
                               EntityChangeList());
   base::RunLoop().RunUntilIdle();
@@ -402,8 +408,7 @@ TEST_F(ConsentSyncBridgeImplTest,
   // This time their consent should be resubmitted, because it is for the same
   // account.
   EXPECT_CALL(*processor(), Put(GetStorageKey(user_consent_specifics), _, _));
-  ON_CALL(*processor(), TrackedAccountId())
-      .WillByDefault(Return("first_account"));
+  ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(kFirstGaiaId));
   bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
                               EntityChangeList());
   // The bridge may asynchronously query the store to choose what to resubmit.

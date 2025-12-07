@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 
+#include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
@@ -49,6 +50,11 @@ base::flat_map<GURL, base::flat_set<webapps::AppId>> BuildInstallUrlToAppIdsMap(
   return result;
 }
 
+// Selects the best app to merge other apps with the same install URL into.
+// The criteria for "best" is:
+// 1. A non-placeholder app is better than a placeholder-like app.
+// 2. If both are placeholder-like or not, the one with the most recent
+//    install time is better.
 const webapps::AppId& SelectWebAppToDedupeInto(
     const WebAppRegistrar& registrar,
     const base::flat_set<webapps::AppId>& app_ids_with_common_install_url) {
@@ -138,7 +144,8 @@ DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     base::Value::Dict& debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
-    base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps) {
+    const base::flat_map<GURL, base::flat_set<webapps::AppId>>&
+        install_url_to_apps) {
   DedupeOperations result;
 
   for (const auto& [install_url, app_ids] : install_url_to_apps) {

@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -27,6 +28,11 @@ SessionRestorationWebStateListObserver::
   }
 
   web_state_list_->RemoveObserver(this);
+}
+
+void SessionRestorationWebStateListObserver::AddExpectedWebState(
+    web::WebStateID expected_web_state_id) {
+  expected_web_states_.insert(expected_web_state_id);
 }
 
 void SessionRestorationWebStateListObserver::ClearDirty() {
@@ -119,7 +125,20 @@ void SessionRestorationWebStateListObserver::BatchOperationEnded(
 
 void SessionRestorationWebStateListObserver::WebStateListDestroyed(
     WebStateList* web_state_list) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+#pragma mark - web::WebStateObserver
+
+void SessionRestorationWebStateListObserver::WebStateRealized(
+    web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
+  AttachObserver(web_state);
+}
+
+void SessionRestorationWebStateListObserver::WebStateDestroyed(
+    web::WebState* web_state) {
+  NOTREACHED();
 }
 
 #pragma mark - Private methods
@@ -135,7 +154,7 @@ void SessionRestorationWebStateListObserver::DetachWebState(
   // If the detached WebState is still listed as recently inserted, then it
   // means it will still be considered up-for-adoption by another Browser.
   // In that case, remove the WebState from the list of inserted WebStates,
-  // otherwise, add it to the list of detached WebState.
+  // otherwise, add it to the list of detached WebState if unrealized.
   //
   // If the WebState is closed, always add it to the list of closed WebStates
   // (this allow deleting data when a WebState is moved between Browsers and
@@ -143,7 +162,7 @@ void SessionRestorationWebStateListObserver::DetachWebState(
   const web::WebStateID identifier = detached_web_state->GetUniqueIdentifier();
   if (base::Contains(inserted_web_states_, identifier)) {
     inserted_web_states_.erase(identifier);
-  } else if (!is_closing) {
+  } else if (!is_closing && !detached_web_state->IsRealized()) {
     detached_web_states_.insert(identifier);
   }
 
@@ -151,19 +170,27 @@ void SessionRestorationWebStateListObserver::DetachWebState(
     closed_web_states_.insert(identifier);
   }
 
+  DetachObserver(detached_web_state);
+}
+
+void SessionRestorationWebStateListObserver::DetachObserver(
+    web::WebState* web_state) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.RemoveObservation(web_state);
+      return;
+    }
+  }
+
   // Stop observing the detached WebState. If it is inserted in another
   // Browser, its state will be observed there.
-  SessionRestorationWebStateObserver::RemoveFromWebState(detached_web_state);
+  SessionRestorationWebStateObserver::RemoveFromWebState(web_state);
 }
 
 void SessionRestorationWebStateListObserver::AttachWebState(
     web::WebState* attached_web_state) {
   // Start observing the attached WebState for change of its state.
-  SessionRestorationWebStateObserver::CreateForWebState(
-      attached_web_state,
-      base::BindRepeating(
-          &SessionRestorationWebStateListObserver::MarkWebStateDirty,
-          base::Unretained(this)));
+  AttachObserver(attached_web_state);
 
   // If the newly attached `WebState` can be serialized, then mark it as dirty
   // to force its serialization, otherwise adopt it (this will allow re-using
@@ -171,8 +198,30 @@ void SessionRestorationWebStateListObserver::AttachWebState(
   if (attached_web_state->IsRealized()) {
     MarkWebStateDirty(attached_web_state);
   } else {
-    inserted_web_states_.insert(attached_web_state->GetUniqueIdentifier());
+    const auto web_state_id = attached_web_state->GetUniqueIdentifier();
+    if (base::Contains(expected_web_states_, web_state_id)) {
+      expected_web_states_.erase(web_state_id);
+    } else if (base::Contains(detached_web_states_, web_state_id)) {
+      detached_web_states_.erase(web_state_id);
+    } else {
+      inserted_web_states_.insert(web_state_id);
+    }
   }
+}
+
+void SessionRestorationWebStateListObserver::AttachObserver(
+    web::WebState* web_state) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.AddObservation(web_state);
+      return;
+    }
+  }
+
+  SessionRestorationWebStateObserver::CreateForWebState(
+      web_state, base::BindRepeating(
+                     &SessionRestorationWebStateListObserver::MarkWebStateDirty,
+                     base::Unretained(this)));
 }
 
 void SessionRestorationWebStateListObserver::MarkWebStateDirty(

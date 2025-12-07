@@ -11,6 +11,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -56,6 +57,7 @@ public class AwWebContentsObserver extends WebContentsObserver {
 
     @Override
     public void didFinishLoadInPrimaryMainFrame(
+            Page page,
             GlobalRenderFrameHostId rfhId,
             GURL url,
             boolean isKnownValid,
@@ -64,6 +66,28 @@ public class AwWebContentsObserver extends WebContentsObserver {
         String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
         if (getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
+        }
+
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            awContents.getNavigationClient().onPageLoadEventFired(page);
+        }
+    }
+
+    @Override
+    public void documentLoadedInPrimaryMainFrame(
+            Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            awContents.getNavigationClient().onPageDOMContentLoadedEventFired(page);
+        }
+    }
+
+    @Override
+    public void firstContentfulPaintInPrimaryMainFrame(Page page, long durationUs) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            awContents.getNavigationClient().onFirstContentfulPaint(page, durationUs);
         }
     }
 
@@ -134,10 +158,35 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
+    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            awContents.getNavigationClient().onNavigationStarted(navigation);
+        }
+    }
+
+    @Override
+    public void didRedirectNavigation(NavigationHandle navigation) {
+        if (navigation.isInPrimaryMainFrame()) {
+            AwContents awContents = mAwContents.get();
+            if (awContents != null) {
+                awContents.getNavigationClient().onNavigationRedirected(navigation);
+            }
+        }
+    }
+
+    @Override
     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
         String url = navigation.getUrl().getPossiblyInvalidSpec();
         if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
             processFailedLoad(true, navigation.errorCode(), navigation.getUrl());
+        }
+
+        if (navigation.isInPrimaryMainFrame()) {
+            AwContents awContents = mAwContents.get();
+            if (awContents != null) {
+                awContents.getNavigationClient().onNavigationCompleted(navigation);
+            }
         }
 
         if (!navigation.hasCommitted()) return;
@@ -168,9 +217,9 @@ public class AwWebContentsObserver extends WebContentsObserver {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
-                        AwContents awContents = mAwContents.get();
-                        if (awContents != null) {
-                            awContents.insertVisualStateCallbackIfNotDestroyed(
+                        AwContents awContents2 = mAwContents.get();
+                        if (awContents2 != null) {
+                            awContents2.insertVisualStateCallbackIfNotDestroyed(
                                     0,
                                     new VisualStateCallback() {
                                         @Override
@@ -187,6 +236,18 @@ public class AwWebContentsObserver extends WebContentsObserver {
         if (client != null && navigation.isPrimaryMainFrameFragmentNavigation()) {
             // Note fragment navigations do not have a matching onPageStarted.
             client.getCallbackHelper().postOnPageFinished(url);
+        }
+    }
+
+    @Override
+    public void primaryPageChanged(Page page) {
+        // The page has become the primary page. If it was a prerendered page before, make sure we
+        // no longer consider it as one.
+        page.setIsPrerendering(false);
+        // Make sure we track the deletion of this new page.
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            page.setPageDeletionListener(awContents.getNavigationClient());
         }
     }
 

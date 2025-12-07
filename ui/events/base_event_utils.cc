@@ -7,10 +7,8 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_switches.h"
 
@@ -18,7 +16,7 @@ namespace ui {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kSystemKeyModifierMask = EF_ALT_DOWN | EF_COMMAND_DOWN;
 #elif BUILDFLAG(IS_APPLE)
 // Alt modifier is used to input extended characters on Mac.
@@ -26,6 +24,8 @@ const int kSystemKeyModifierMask = EF_COMMAND_DOWN;
 #else
 const int kSystemKeyModifierMask = EF_ALT_DOWN;
 #endif
+
+const base::TickClock* g_tick_clock = nullptr;
 
 }  // namespace
 
@@ -48,16 +48,12 @@ bool IsSystemKeyModifier(int flags) {
          (EF_ALTGR_DOWN & flags) == 0;
 }
 
-base::LazyInstance<const base::TickClock*>::Leaky g_tick_clock =
-    LAZY_INSTANCE_INITIALIZER;
-
 base::TimeTicks EventTimeForNow() {
-  return g_tick_clock.Get() ? g_tick_clock.Get()->NowTicks()
-                            : base::TimeTicks::Now();
+  return g_tick_clock ? g_tick_clock->NowTicks() : base::TimeTicks::Now();
 }
 
 void SetEventTickClockForTesting(const base::TickClock* tick_clock) {
-  g_tick_clock.Get() = tick_clock;
+  g_tick_clock = tick_clock;
 }
 
 double EventTimeStampToSeconds(base::TimeTicks time_stamp) {

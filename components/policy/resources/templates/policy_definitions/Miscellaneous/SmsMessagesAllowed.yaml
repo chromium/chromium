@@ -6,6 +6,7 @@ desc: |-
         Setting the policy to Disabled means users can't set up text syncing.
 
         Leaving the policy unset means that by default, the feature isn't allowed for managed users but is allowed for other users.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

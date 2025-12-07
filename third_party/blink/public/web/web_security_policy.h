@@ -81,6 +81,11 @@ class BLINK_EXPORT WebSecurityPolicy {
   // Callers should use
   // network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority as the
   // default priority unless overriding existing entries is explicitly needed.
+  //
+  // Adding an allowlist entry here has a couple practical (renderer-side)
+  // implications for fetch(). It can allow the `source_origin` to:
+  //   1) bypass the same-origin policy when fetch()ing the destination
+  //   2) set forbidden headers on the fetch() request
   static void AddOriginAccessAllowListEntry(
       const WebURL& source_origin,
       const WebString& destination_protocol,
@@ -127,10 +132,20 @@ class BLINK_EXPORT WebSecurityPolicy {
   // Registers an URL scheme as trusted browser UI.
   static void RegisterURLSchemeAsWebUI(const WebString&);
 
+  // Registers an URL scheme as an Isolated Web App.
+  static void RegisterURLSchemeAsIsolatedApp(const WebString&);
+
   // Registers an URL scheme which can use code caching but must check in the
   // renderer whether the script content has changed rather than relying on a
   // response time match from the network cache.
   static void RegisterURLSchemeAsCodeCacheWithHashing(const WebString&);
+
+  // Registers a WebUI URL scheme which can use bundled resource bytecode,
+  // retrieved from the application's static resource bundle. This is only used
+  // for renderer-side checks (the concept does not generalize beyond the
+  // renderer). As a result there is no need to mirror this policy into
+  // ChildProcessSecurityPolicy or browser-side scheme registration.
+  static void RegisterURLSchemeAsWebUIBundledBytecode(const WebString&);
 
  private:
   WebSecurityPolicy() = delete;

@@ -1,0 +1,41 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "traces_internals.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+
+  if (is_win) {
+    public_deps += [ "//url/mojom:url_mojom_gurl" ]
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "traces_internals.mojom.ReportUploadState"
+          cpp = "::content::ReportUploadState"
+        },
+        {
+          mojom = "traces_internals.mojom.SkipUploadReason"
+          cpp = "::content::SkipUploadReason"
+        },
+        {
+          mojom = "traces_internals.mojom.TracingScenarioState"
+          cpp = "::content::TracingScenario::State"
+        },
+      ]
+      traits_headers = [
+        "//content/browser/tracing/traces_internals/traces_internals_mojom_traits.h",
+        "//content/browser/tracing/trace_report_database.h",
+        "//content/browser/tracing/tracing_scenario.h",
+      ]
+      traits_sources = [ "//content/browser/tracing/traces_internals/traces_internals_mojom_traits.cc" ]
+      traits_deps = [ "//sql:sql_name_variants" ]
+    },
+  ]
+}

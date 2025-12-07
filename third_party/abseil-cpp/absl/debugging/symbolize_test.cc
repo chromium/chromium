@@ -107,8 +107,6 @@ static ABSL_PER_THREAD_TLS_KEYWORD char
 #endif
 
 #if !defined(__EMSCRIPTEN__)
-static void *GetPCFromFnPtr(void *ptr) { return ptr; }
-
 // Used below to hopefully inhibit some compiler/linker optimizations
 // that may remove kHpageTextPadding, kPadding0, and kPadding1 from
 // the binary.
@@ -118,12 +116,6 @@ static volatile bool volatile_bool = false;
 static constexpr size_t kHpageSize = 1 << 21;
 const char kHpageTextPadding[kHpageSize * 4] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         .text) = "";
-
-#else
-static void *GetPCFromFnPtr(void *ptr) {
-  return EM_ASM_PTR(
-      { return wasmOffsetConverter.convert(wasmTable.get($0).name, 0); }, ptr);
-}
 
 #endif  // !defined(__EMSCRIPTEN__)
 
@@ -167,20 +159,17 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
 #if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
   void *return_address = __builtin_return_address(0);
   const char *symbol = TrySymbolize(return_address);
-  CHECK_NE(symbol, nullptr) << "TestWithReturnAddress failed";
-  CHECK_STREQ(symbol, "main") << "TestWithReturnAddress failed";
-  std::cout << "TestWithReturnAddress passed" << std::endl;
+  ASSERT_NE(symbol, nullptr) << "TestWithReturnAddress failed";
+  EXPECT_STREQ(symbol, "main") << "TestWithReturnAddress failed";
 #endif
 }
 
 TEST(Symbolize, Cached) {
   // Compilers should give us pointers to them.
-  EXPECT_STREQ("nonstatic_func",
-               TrySymbolize(GetPCFromFnPtr((void *)(&nonstatic_func))));
+  EXPECT_STREQ("nonstatic_func", TrySymbolize((void*)(&nonstatic_func)));
   // The name of an internal linkage symbol is not specified; allow either a
   // mangled or an unmangled name here.
-  const char *static_func_symbol =
-      TrySymbolize(GetPCFromFnPtr((void *)(&static_func)));
+  const char* static_func_symbol = TrySymbolize((void*)(&static_func));
   EXPECT_TRUE(strcmp("static_func", static_func_symbol) == 0 ||
               strcmp("static_func()", static_func_symbol) == 0);
 
@@ -190,50 +179,38 @@ TEST(Symbolize, Cached) {
 TEST(Symbolize, Truncation) {
   constexpr char kNonStaticFunc[] = "nonstatic_func";
   EXPECT_STREQ("nonstatic_func",
-               TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)),
+               TrySymbolizeWithLimit((void*)(&nonstatic_func),
                                      strlen(kNonStaticFunc) + 1));
   EXPECT_STREQ("nonstatic_...",
-               TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)),
+               TrySymbolizeWithLimit((void*)(&nonstatic_func),
                                      strlen(kNonStaticFunc) + 0));
   EXPECT_STREQ("nonstatic...",
-               TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)),
+               TrySymbolizeWithLimit((void*)(&nonstatic_func),
                                      strlen(kNonStaticFunc) - 1));
-  EXPECT_STREQ("n...", TrySymbolizeWithLimit(
-                           GetPCFromFnPtr((void *)(&nonstatic_func)), 5));
-  EXPECT_STREQ("...", TrySymbolizeWithLimit(
-                          GetPCFromFnPtr((void *)(&nonstatic_func)), 4));
-  EXPECT_STREQ("..", TrySymbolizeWithLimit(
-                         GetPCFromFnPtr((void *)(&nonstatic_func)), 3));
-  EXPECT_STREQ(
-      ".", TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)), 2));
-  EXPECT_STREQ(
-      "", TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)), 1));
-  EXPECT_EQ(nullptr, TrySymbolizeWithLimit(
-                         GetPCFromFnPtr((void *)(&nonstatic_func)), 0));
+  EXPECT_STREQ("n...", TrySymbolizeWithLimit((void*)(&nonstatic_func), 5));
+  EXPECT_STREQ("...", TrySymbolizeWithLimit((void*)(&nonstatic_func), 4));
+  EXPECT_STREQ("..", TrySymbolizeWithLimit((void*)(&nonstatic_func), 3));
+  EXPECT_STREQ(".", TrySymbolizeWithLimit((void*)(&nonstatic_func), 2));
+  EXPECT_STREQ("", TrySymbolizeWithLimit((void*)(&nonstatic_func), 1));
+  EXPECT_EQ(nullptr, TrySymbolizeWithLimit((void*)(&nonstatic_func), 0));
 }
 
 TEST(Symbolize, SymbolizeWithDemangling) {
   Foo::func(100);
 #ifdef __EMSCRIPTEN__
   // Emscripten's online symbolizer is more precise with arguments.
-  EXPECT_STREQ("Foo::func(int)",
-               TrySymbolize(GetPCFromFnPtr((void *)(&Foo::func))));
+  EXPECT_STREQ("Foo::func(int)", TrySymbolize((void*)(&Foo::func)));
 #else
-  EXPECT_STREQ("Foo::func()",
-               TrySymbolize(GetPCFromFnPtr((void *)(&Foo::func))));
+  EXPECT_STREQ("Foo::func()", TrySymbolize((void*)(&Foo::func)));
 #endif
 }
 
 TEST(Symbolize, SymbolizeSplitTextSections) {
-  EXPECT_STREQ("unlikely_func()",
-               TrySymbolize(GetPCFromFnPtr((void *)(&unlikely_func))));
-  EXPECT_STREQ("hot_func()", TrySymbolize(GetPCFromFnPtr((void *)(&hot_func))));
-  EXPECT_STREQ("startup_func()",
-               TrySymbolize(GetPCFromFnPtr((void *)(&startup_func))));
-  EXPECT_STREQ("exit_func()",
-               TrySymbolize(GetPCFromFnPtr((void *)(&exit_func))));
-  EXPECT_STREQ("regular_func()",
-               TrySymbolize(GetPCFromFnPtr((void *)(&regular_func))));
+  EXPECT_STREQ("unlikely_func()", TrySymbolize((void*)(&unlikely_func)));
+  EXPECT_STREQ("hot_func()", TrySymbolize((void*)(&hot_func)));
+  EXPECT_STREQ("startup_func()", TrySymbolize((void*)(&startup_func)));
+  EXPECT_STREQ("exit_func()", TrySymbolize((void*)(&exit_func)));
+  EXPECT_STREQ("regular_func()", TrySymbolize((void*)(&regular_func)));
 }
 
 // Tests that verify that Symbolize stack footprint is within some limit.
@@ -490,10 +467,9 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideNonInlineFunction() {
     (defined(__i386__) || defined(__x86_64__))
   void *pc = non_inline_func();
   const char *symbol = TrySymbolize(pc);
-  CHECK_NE(symbol, nullptr) << "TestWithPCInsideNonInlineFunction failed";
-  CHECK_STREQ(symbol, "non_inline_func")
+  ASSERT_NE(symbol, nullptr) << "TestWithPCInsideNonInlineFunction failed";
+  EXPECT_STREQ(symbol, "non_inline_func")
       << "TestWithPCInsideNonInlineFunction failed";
-  std::cout << "TestWithPCInsideNonInlineFunction passed" << std::endl;
 #endif
 }
 
@@ -502,9 +478,8 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideInlineFunction() {
     (defined(__i386__) || defined(__x86_64__))
   void *pc = inline_func();  // Must be inlined.
   const char *symbol = TrySymbolize(pc);
-  CHECK_NE(symbol, nullptr) << "TestWithPCInsideInlineFunction failed";
-  CHECK_STREQ(symbol, __FUNCTION__) << "TestWithPCInsideInlineFunction failed";
-  std::cout << "TestWithPCInsideInlineFunction passed" << std::endl;
+  ASSERT_NE(symbol, nullptr) << "TestWithPCInsideInlineFunction failed";
+  EXPECT_STREQ(symbol, __FUNCTION__) << "TestWithPCInsideInlineFunction failed";
 #endif
 }
 }
@@ -545,9 +520,8 @@ __attribute__((target("arm"))) int ArmThumbOverlapArm(int x) {
 void ABSL_ATTRIBUTE_NOINLINE TestArmThumbOverlap() {
 #if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
   const char *symbol = TrySymbolize((void *)&ArmThumbOverlapArm);
-  CHECK_NE(symbol, nullptr) << "TestArmThumbOverlap failed";
-  CHECK_STREQ("ArmThumbOverlapArm()", symbol) << "TestArmThumbOverlap failed";
-  std::cout << "TestArmThumbOverlap passed" << std::endl;
+  ASSERT_NE(symbol, nullptr) << "TestArmThumbOverlap failed";
+  EXPECT_STREQ("ArmThumbOverlapArm()", symbol) << "TestArmThumbOverlap failed";
 #endif
 }
 
@@ -634,5 +608,12 @@ int main(int argc, char **argv) {
 #endif
 #endif
 
+#if !defined(__EMSCRIPTEN__)
+  // All of these test cases rely on symbolizing function pointers.
+  // On most platforms, function pointers directly map to PC.
+  // In WebAssembly, function pointers are indices into the function table
+  // and there is no longer a mapping from function index back into the
+  // file offset for symbolization.
   return RUN_ALL_TESTS();
+#endif  // !defined(__EMSCRIPTEN__)
 }

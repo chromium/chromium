@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -11,7 +12,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
@@ -59,14 +61,16 @@ constexpr char kUpdateAppPrefix[] = "update";
 constexpr char kTargetVersionPrefix[] = "targetversionprefix";
 constexpr char kTargetChannel[] = "targetchannel";
 constexpr char kRollbackToTargetVersion[] = "RollbackToTargetVersion";
+constexpr char kMajorVersionRolloutPrefix[] = "MajorVersionRollout";
+constexpr char kMinorVersionRolloutPrefix[] = "MinorVersionRollout";
 
 }  // namespace
 
 PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
-  constexpr size_t kInstallAppPrefixLength =
+  static constexpr size_t kInstallAppPrefixLength =
       std::string_view(kInstallAppPrefix).length();
-  base::ranges::for_each(policies_, [&](const auto& policy) {
+  std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
     VLOG_IF(1, policy_name != base::ToLowerASCII(policy_name))
         << "Policy [" << policy_name
@@ -99,7 +103,7 @@ std::optional<bool> PolicyManager::CloudPolicyOverridesPlatformPolicy() const {
 }
 
 bool PolicyManager::HasActiveDevicePolicies() const {
-  return !policies_.empty();
+  return true;
 }
 
 std::string PolicyManager::source() const {
@@ -147,40 +151,43 @@ std::optional<int> PolicyManager::GetPackageCacheExpirationTimeDays() const {
 
 std::optional<int> PolicyManager::GetEffectivePolicyForAppInstalls(
     const std::string& app_id) const {
-  std::string app_value_name(kInstallAppPrefix);
-  app_value_name.append(app_id);
-  std::optional<int> policy = GetIntegerPolicy(app_value_name);
+  std::optional<int> policy =
+      GetIntegerPolicy(base::StrCat({kInstallAppPrefix, app_id}));
   return policy ? policy : GetIntegerPolicy(kInstallAppsDefault);
 }
 
 std::optional<int> PolicyManager::GetEffectivePolicyForAppUpdates(
     const std::string& app_id) const {
-  std::string app_value_name(kUpdateAppPrefix);
-  app_value_name.append(app_id);
-  std::optional<int> policy = GetIntegerPolicy(app_value_name);
+  std::optional<int> policy =
+      GetIntegerPolicy(base::StrCat({kUpdateAppPrefix, app_id}));
   return policy ? policy : GetIntegerPolicy(kUpdateAppsDefault);
 }
 
 std::optional<std::string> PolicyManager::GetTargetChannel(
     const std::string& app_id) const {
-  std::string app_value_name(kTargetChannel);
-  app_value_name.append(app_id);
-  return GetStringPolicy(app_value_name.c_str());
+  return GetStringPolicy(base::StrCat({kTargetChannel, app_id}));
 }
 
 std::optional<std::string> PolicyManager::GetTargetVersionPrefix(
     const std::string& app_id) const {
-  std::string app_value_name(kTargetVersionPrefix);
-  app_value_name.append(app_id);
-  return GetStringPolicy(app_value_name.c_str());
+  return GetStringPolicy(base::StrCat({kTargetVersionPrefix, app_id}));
 }
 
 std::optional<bool> PolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
-  std::string app_value_name(kRollbackToTargetVersion);
-  app_value_name.append(app_id);
-  std::optional<int> policy = GetIntegerPolicy(app_value_name);
+  std::optional<int> policy =
+      GetIntegerPolicy(base::StrCat({kRollbackToTargetVersion, app_id}));
   return policy ? std::optional<bool>(policy.value()) : std::nullopt;
+}
+
+std::optional<int> PolicyManager::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  return GetIntegerPolicy(base::StrCat({kMajorVersionRolloutPrefix, app_id}));
+}
+
+std::optional<int> PolicyManager::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  return GetIntegerPolicy(base::StrCat({kMinorVersionRolloutPrefix, app_id}));
 }
 
 std::optional<std::string> PolicyManager::GetProxyMode() const {
@@ -210,13 +217,15 @@ std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
       base::ToLowerASCII(kUpdatesSuppressedDurationMin),
   };
   static constexpr const char* kAppPolicyPrefixes[] = {
-      kInstallAppsDefault,     kInstallAppPrefix,    kUpdateAppsDefault,
-      kUpdateAppPrefix,        kTargetVersionPrefix, kTargetChannel,
-      kRollbackToTargetVersion};
+      kInstallAppsDefault,       kInstallAppPrefix,
+      kUpdateAppsDefault,        kUpdateAppPrefix,
+      kTargetVersionPrefix,      kTargetChannel,
+      kRollbackToTargetVersion,  kMajorVersionRolloutPrefix,
+      kMinorVersionRolloutPrefix};
   std::vector<std::string> apps_with_policy;
-  base::ranges::for_each(policies_, [&](const auto& policy) {
+  std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
-    base::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
+    std::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
       if (base::StartsWith(policy_name, base::ToLowerASCII(prefix)) &&
           !prefixed_policy_names.contains(policy_name)) {
         apps_with_policy.push_back(
@@ -238,4 +247,12 @@ std::optional<std::string> PolicyManager::GetStringPolicy(
   const std::string* policy = policies_.FindString(base::ToLowerASCII(key));
   return policy ? std::make_optional(*policy) : std::nullopt;
 }
+
+scoped_refptr<PolicyManagerInterface> CreateDictPolicyManager(
+    base::Value::Dict policies) {
+  return policies.empty()
+             ? nullptr
+             : base::MakeRefCounted<PolicyManager>(std::move(policies));
+}
+
 }  // namespace updater

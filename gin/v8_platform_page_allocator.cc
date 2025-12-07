@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "v8_platform_page_allocator.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
@@ -105,7 +101,8 @@ bool PageAllocator::ReleasePages(void* address,
                                  size_t length,
                                  size_t new_length) {
   DCHECK_LT(new_length, length);
-  uint8_t* release_base = reinterpret_cast<uint8_t*>(address) + new_length;
+  uint8_t* release_base =
+      UNSAFE_TODO(reinterpret_cast<uint8_t*>(address) + new_length);
   size_t release_size = length - new_length;
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On POSIX, we can unmap the trailing pages.
@@ -159,7 +156,12 @@ bool PageAllocator::DiscardSystemPages(void* address, size_t size) {
 bool PageAllocator::DecommitPages(void* address, size_t size) {
   // V8 expects the pages to be inaccessible and zero-initialized upon next
   // access.
-  return partition_alloc::DecommitAndZeroSystemPages(address, size);
+  return partition_alloc::DecommitAndZeroSystemPages(
+      address, size, partition_alloc::PageTag::kV8);
+}
+
+bool PageAllocator::SealPages(void* address, size_t size) {
+  return partition_alloc::SealSystemPages(address, size);
 }
 
 partition_alloc::PageAccessibilityConfiguration::Permissions

@@ -5,7 +5,11 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -51,8 +55,7 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
       access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ScopedSharedBufferHandle();
+      NOTREACHED();
   }
 
   base::subtle::ScopedPlatformSharedMemoryHandle handle =
@@ -179,8 +182,14 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
     return base::subtle::PlatformSharedMemoryRegion();
   }
 
-  return base::subtle::PlatformSharedMemoryRegion::Take(
+  auto maybe_region = base::subtle::PlatformSharedMemoryRegion::TakeOrFail(
       std::move(region_handle), mode, size, guid.value());
+  if (!maybe_region.has_value()) {
+    LOG(ERROR) << "Failed to deserialize platform shared memory region: "
+               << static_cast<int>(maybe_region.error());
+    return base::subtle::PlatformSharedMemoryRegion();
+  }
+  return *std::move(maybe_region);
 }
 
 ScopedHandle WrapPlatformHandle(PlatformHandle handle) {

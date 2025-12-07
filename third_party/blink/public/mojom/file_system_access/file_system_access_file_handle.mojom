@@ -15,6 +15,7 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_err
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 
 // Representation of a regular file for an AccessHandle.
@@ -67,13 +68,13 @@ enum FileSystemAccessWritableFileStreamLockMode {
 // API.
 interface FileSystemAccessFileHandle {
   // Queries the current permission status for this handle.
-  GetPermissionStatus(bool writable) => (PermissionStatus status);
+  GetPermissionStatus(FileSystemAccessPermissionMode mode) => (PermissionStatus status);
 
   // Requests read and/or write permission for this handle. Returns the new
   // permission status for this handle.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
-  RequestPermission(bool writable) => (FileSystemAccessError result, PermissionStatus status);
+  RequestPermission(FileSystemAccessPermissionMode mode) => (FileSystemAccessError result, PermissionStatus status);
 
   // Returns a blob representing the current state of this file.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when

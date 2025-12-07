@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_view_controller.h"
 
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mutator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_util.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_option_item_view.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -46,15 +46,13 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
   AddressBarOptionView* _topAddressBar;
   /// The view for the bottom address bar preference option.
   AddressBarOptionView* _bottomAddressBar;
-  /// Whether the screen is being shown in the FRE.
-  BOOL _isFirstRun;
 }
 
 @synthesize feedbackGenerator = _feedbackGenerator;
 
 #pragma mark - UIViewController
 
-- (instancetype)initWithFirstRun:(BOOL)isFirstRun {
+- (instancetype)init {
   self = [super init];
   if (self) {
     _topAddressBar = [[AddressBarOptionView alloc]
@@ -65,14 +63,11 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
         initWithSymbolName:kBottomOmniboxOptionSymbol
                  labelText:l10n_util::GetNSString(
                                IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)];
-    _isFirstRun = isFirstRun;
   }
   return self;
 }
 
 - (void)viewDidLoad {
-  CHECK(IsIOSTipsNotificationsEnabled() ||
-        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   self.view.accessibilityIdentifier =
       first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier;
 
@@ -96,19 +91,12 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
   self.titleHorizontalMargin = 0;
   self.subtitleBottomMargin = kSubtitleBottomMargin;
   self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE);
-  if (_isFirstRun) {
-    self.subtitleText =
-        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_FRE_SUBTITLE);
-    self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_SKIP);
-  } else {
-    self.subtitleText =
-        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_IPH_SUBTITLE);
-    self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_DISCARD);
-  }
+  self.subtitleText =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_IPH_SUBTITLE);
+  self.configuration.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_DISCARD);
 
   [_topAddressBar addTarget:self
                      action:@selector(didTapTopAddressBarView)
@@ -125,9 +113,6 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
               forControlEvents:UIControlEventTouchDown];
 
   NSArray* addressBarOptions = @[ _topAddressBar, _bottomAddressBar ];
-  if (DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary) {
-    addressBarOptions = @[ _bottomAddressBar, _topAddressBar ];
-  }
 
   UIStackView* addressBarView =
       [[UIStackView alloc] initWithArrangedSubviews:addressBarOptions];

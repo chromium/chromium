@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/browser/win/app_icon.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -41,16 +42,19 @@ bool MonitorHasAutohideTaskbarForEdge(UINT edge, HMONITOR monitor) {
   if (!::IsWindow(taskbar)) {
     APPBARDATA taskbar_data = {sizeof(APPBARDATA), 0, 0, 0};
     unsigned int taskbar_state = SHAppBarMessage(ABM_GETSTATE, &taskbar_data);
-    if (!(taskbar_state & ABS_AUTOHIDE))
+    if (!(taskbar_state & ABS_AUTOHIDE)) {
       return false;
+    }
 
     taskbar_data.hWnd = ::FindWindow(L"Shell_TrayWnd", NULL);
-    if (!::IsWindow(taskbar_data.hWnd))
+    if (!::IsWindow(taskbar_data.hWnd)) {
       return false;
+    }
 
     SHAppBarMessage(ABM_GETTASKBARPOS, &taskbar_data);
-    if (taskbar_data.uEdge == edge)
+    if (taskbar_data.uEdge == edge) {
       taskbar = taskbar_data.hWnd;
+    }
   }
 
   // There is a potential race condition here:
@@ -72,16 +76,18 @@ bool MonitorHasAutohideTaskbarForEdge(UINT edge, HMONITOR monitor) {
   // window style on the taskbar, as starting from Windows 7, the topmost
   // style is always set. We don't support XP and Vista anymore.
   if (::IsWindow(taskbar)) {
-    if (MonitorFromWindow(taskbar, MONITOR_DEFAULTTONEAREST) == monitor)
+    if (MonitorFromWindow(taskbar, MONITOR_DEFAULTTONEAREST) == monitor) {
       return true;
+    }
     // In some cases like when the autohide taskbar is on the left of the
     // secondary monitor, the MonitorFromWindow call above fails to return the
     // correct monitor the taskbar is on. We fallback to MonitorFromPoint for
     // the cursor position in that case, which seems to work well.
     POINT cursor_pos = {0};
     GetCursorPos(&cursor_pos);
-    if (MonitorFromPoint(cursor_pos, MONITOR_DEFAULTTONEAREST) == monitor)
+    if (MonitorFromPoint(cursor_pos, MONITOR_DEFAULTTONEAREST) == monitor) {
       return true;
+    }
   }
   return false;
 }
@@ -90,14 +96,18 @@ int GetAppbarAutohideEdgesOnWorkerThread(HMONITOR monitor) {
   DCHECK(monitor);
 
   int edges = 0;
-  if (MonitorHasAutohideTaskbarForEdge(ABE_LEFT, monitor))
+  if (MonitorHasAutohideTaskbarForEdge(ABE_LEFT, monitor)) {
     edges |= views::ViewsDelegate::EDGE_LEFT;
-  if (MonitorHasAutohideTaskbarForEdge(ABE_TOP, monitor))
+  }
+  if (MonitorHasAutohideTaskbarForEdge(ABE_TOP, monitor)) {
     edges |= views::ViewsDelegate::EDGE_TOP;
-  if (MonitorHasAutohideTaskbarForEdge(ABE_RIGHT, monitor))
+  }
+  if (MonitorHasAutohideTaskbarForEdge(ABE_RIGHT, monitor)) {
     edges |= views::ViewsDelegate::EDGE_RIGHT;
-  if (MonitorHasAutohideTaskbarForEdge(ABE_BOTTOM, monitor))
+  }
+  if (MonitorHasAutohideTaskbarForEdge(ABE_BOTTOM, monitor)) {
     edges |= views::ViewsDelegate::EDGE_BOTTOM;
+  }
   return edges;
 }
 
@@ -121,8 +131,8 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
   NativeWidgetType native_widget_type =
       (params->parent && params->child && !params->force_software_compositing &&
        params->type != views::Widget::InitParams::TYPE_TOOLTIP)
-          ? NativeWidgetType::NATIVE_WIDGET_AURA
-          : NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+          ? NativeWidgetType::kNativeWidgetAura
+          : NativeWidgetType::kDesktopNativeWidgetAura;
 
   if (params->shadow_type == views::Widget::InitParams::ShadowType::kDrop &&
       params->shadow_elevation.has_value()) {
@@ -131,7 +141,7 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     // as the native window manager has no concept of elevation based shadows.
     // TODO: This may no longer be needed if we get proper elevation-based
     // shadows on toplevel windows. See https://crbug.com/838667.
-    native_widget_type = NativeWidgetType::NATIVE_WIDGET_AURA;
+    native_widget_type = NativeWidgetType::kNativeWidgetAura;
   } else {
     // Otherwise, we can use a toplevel window (they get blended via
     // WS_EX_COMPOSITED, which allows for animation effects, and for exceeding
@@ -139,9 +149,14 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     if (params->parent &&
         params->type != views::Widget::InitParams::TYPE_CONTROL &&
         params->type != views::Widget::InitParams::TYPE_WINDOW) {
-      native_widget_type = NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+      native_widget_type = NativeWidgetType::kDesktopNativeWidgetAura;
     }
   }
+
+  if (params->delegate && params->delegate->use_desktop_widget_override()) {
+    native_widget_type = NativeWidgetType::kDesktopNativeWidgetAura;
+  }
+
   return ::CreateNativeWidget(native_widget_type, params, delegate);
 }
 
@@ -153,8 +168,9 @@ int ChromeViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
   // in us thinking there is no auto-hide edges. By returning at least one edge
   // we don't initially go fullscreen until we figure out the real auto-hide
   // edges.
-  if (!appbar_autohide_edge_map_.count(monitor))
+  if (!appbar_autohide_edge_map_.count(monitor)) {
     appbar_autohide_edge_map_[monitor] = EDGE_BOTTOM;
+  }
 
   // We use the SHAppBarMessage API to get the taskbar autohide state. This API
   // spins a modal loop which could cause callers to be reentered. To avoid
@@ -179,8 +195,9 @@ void ChromeViewsDelegate::OnGotAppbarAutohideEdges(base::OnceClosure callback,
                                                    int returned_edges,
                                                    int edges) {
   appbar_autohide_edge_map_[monitor] = edges;
-  if (returned_edges == edges)
+  if (returned_edges == edges) {
     return;
+  }
 
   base::AutoReset<bool> in_callback_setter(&in_autohide_edges_callback_, true);
   std::move(callback).Run();

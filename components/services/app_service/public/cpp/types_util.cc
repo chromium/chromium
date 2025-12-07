@@ -73,6 +73,8 @@ bool IsHumanLaunch(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromInstaller:
     case apps::LaunchSource::kFromWelcomeTour:
     case apps::LaunchSource::kFromFocusMode:
+    case apps::LaunchSource::kFromNavigationCapturing:
+    case apps::LaunchSource::kFromWebInstallApi:
       return true;
     case apps::LaunchSource::kUnknown:
     case apps::LaunchSource::kFromChromeInternal:
@@ -90,7 +92,7 @@ bool IsHumanLaunch(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromSparky:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool AppTypeUsesWebContents(apps::AppType app_type) {
@@ -102,18 +104,14 @@ bool AppTypeUsesWebContents(apps::AppType app_type) {
       return true;
     case apps::AppType::kUnknown:
     case apps::AppType::kArc:
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace apps_util

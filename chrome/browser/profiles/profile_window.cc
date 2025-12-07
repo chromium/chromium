@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,27 +31,21 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
+#include "chrome/browser/ui/startup/startup_tab_provider.h"
+#include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_factory.h"
-#include "extensions/browser/extension_system.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
@@ -60,26 +55,14 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #endif  // !defined (OS_ANDROID)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/profiles/profiles_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 using base::UserMetricsAction;
 using content::BrowserThread;
 
 namespace {
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void UnblockExtensions(Profile* profile) {
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  extension_service->UnblockAllExtensions();
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Helper function to run a callback on a profile once it's initialized.
 void ProfileLoadedCallback(base::OnceCallback<void(Profile*)> callback,
@@ -101,7 +84,8 @@ void FindOrCreateNewWindowForProfile(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
-    bool always_create) {
+    bool always_create,
+    bool open_command_line_urls) {
   DCHECK(profile);
   TRACE_EVENT1("browser", "FindOrCreateNewWindowForProfile", "profile_path",
                profile->GetPath());
@@ -117,16 +101,31 @@ void FindOrCreateNewWindowForProfile(
   base::RecordAction(UserMetricsAction("NewWindow"));
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreator browser_creator;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (open_command_line_urls) {
+    auto* current_command_line = base::CommandLine::ForCurrentProcess();
+    StartupTabProviderImpl startup_tab_provider;
+    StartupTabs tabs = startup_tab_provider.GetCommandLineTabs(
+        *current_command_line, base::FilePath(), profile);
+    for (const auto& tab : tabs) {
+      if (tab.url.is_valid()) {
+        command_line.AppendArg(tab.url.spec());
+      }
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   // This is not a browser launch from the user; don't record the launch mode.
-  browser_creator.LaunchBrowser(
-      command_line, profile, base::FilePath(), process_startup, is_first_run,
-      /*launch_mode_recorder=*/nullptr, /*restore_tabbed_browser=*/true);
+  browser_creator.LaunchBrowser(command_line, profile, base::FilePath(),
+                                process_startup, is_first_run,
+                                /*restore_tabbed_browser=*/true);
 }
 
 void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
-                                 bool unblock_extensions,
+                                 bool open_command_line_urls,
                                  Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser", "OpenBrowserWindowForProfile", "profile_path",
@@ -150,7 +149,7 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
     is_first_run = chrome::startup::IsFirstRun::kYes;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!profile->IsGuestSession()) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
@@ -162,21 +161,7 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
       return;
     }
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!AreSecondaryProfilesAllowed() && !profile->IsMainProfile()) {
-    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kProfileLocked));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (unblock_extensions) {
-    UnblockExtensions(profile);
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // If |always_create| is false, and we have a |callback| to run, check
   // whether a browser already exists so that we can run the callback. We don't
@@ -209,8 +194,8 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
   // existed, which means that here a browser definitely needs to be created.
   // Passing true for |always_create| means we won't duplicate the code that
   // tries to find a browser.
-  profiles::FindOrCreateNewWindowForProfile(profile, process_startup,
-                                            is_first_run, true);
+  profiles::FindOrCreateNewWindowForProfile(
+      profile, process_startup, is_first_run, true, open_command_line_urls);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -223,12 +208,12 @@ void LoadProfileAsync(const base::FilePath& path,
 
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
-                     base::OnceCallback<void(Browser*)> callback) {
+                     base::OnceCallback<void(Browser*)> callback,
+                     bool open_command_line_urls) {
   base::OnceCallback<void(Profile*)> open_browser_callback =
       base::BindOnce(&profiles::OpenBrowserWindowForProfile,
                      std::move(callback), always_create,
-                     /*is_new_profile=*/false,
-                     /*unblock_extensions=*/false);
+                     /*is_new_profile=*/false, open_command_line_urls);
   g_browser_process->profile_manager()->CreateProfileAsync(
       path,
       base::BindOnce(&ProfileLoadedCallback, std::move(open_browser_callback)));
@@ -262,7 +247,7 @@ BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
   browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
-BrowserAddedForProfileObserver::~BrowserAddedForProfileObserver() {}
+BrowserAddedForProfileObserver::~BrowserAddedForProfileObserver() = default;
 
 void BrowserAddedForProfileObserver::OnBrowserAdded(Browser* browser) {
   if (browser_) {

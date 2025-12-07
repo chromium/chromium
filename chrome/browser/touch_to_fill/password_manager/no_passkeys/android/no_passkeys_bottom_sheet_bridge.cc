@@ -5,8 +5,6 @@
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 
 #include "base/android/jni_string.h"
-#include "ui/android/window_android.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android/jni/NoPasskeysBottomSheetBridge_jni.h"
 
@@ -22,11 +20,11 @@ class JniDelegateImpl : public JniDelegate {
   JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
   ~JniDelegateImpl() override = default;
 
-  void Create(ui::WindowAndroid* window_android) override {
+  void Create(ui::WindowAndroid& window_android) override {
     java_object_.Reset(Java_NoPasskeysBottomSheetBridge_Constructor(
         jni_zero::AttachCurrentThread(),
         reinterpret_cast<intptr_t>(bridge_.get()),
-        window_android->GetJavaObject()));
+        window_android.GetJavaObject()));
   }
 
   void Show(const std::string& origin) override {
@@ -65,10 +63,12 @@ NoPasskeysBottomSheetBridge::NoPasskeysBottomSheetBridge(
     std::unique_ptr<JniDelegate> jni_delegate)
     : jni_delegate_(std::move(jni_delegate)) {}
 
-NoPasskeysBottomSheetBridge::~NoPasskeysBottomSheetBridge() = default;
+NoPasskeysBottomSheetBridge::~NoPasskeysBottomSheetBridge() {
+  Dismiss();
+}
 
 void NoPasskeysBottomSheetBridge::Show(
-    ui::WindowAndroid* window_android,
+    const gfx::NativeWindow window_android,
     const std::string& origin,
     base::OnceClosure on_dismissed_callback,
     base::OnceClosure on_click_use_another_device_callback) {
@@ -80,7 +80,7 @@ void NoPasskeysBottomSheetBridge::Show(
   on_dismissed_callback_ = std::move(on_dismissed_callback);
   on_click_use_another_device_callback_ =
       std::move(on_click_use_another_device_callback);
-  jni_delegate_->Create(window_android);
+  jni_delegate_->Create(*window_android);
   jni_delegate_->Show(origin);
 }
 
@@ -99,3 +99,5 @@ void NoPasskeysBottomSheetBridge::OnClickUseAnotherDevice(JNIEnv* env) {
   CHECK(on_click_use_another_device_callback_);
   std::move(on_click_use_another_device_callback_).Run();
 }
+
+DEFINE_JNI(NoPasskeysBottomSheetBridge)

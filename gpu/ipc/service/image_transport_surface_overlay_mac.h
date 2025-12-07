@@ -23,6 +23,10 @@
 #include "ui/display/types/display_constants.h"
 #endif
 
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+#include <BrowserEngineKit/BrowserEngineKit.h>
+#endif
+
 @class CAContext;
 @class CALayer;
 
@@ -36,7 +40,17 @@ namespace gpu {
 class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
  public:
   ImageTransportSurfaceOverlayMacEGL(
-      DawnContextProvider* dawn_context_provider);
+      scoped_refptr<SharedContextState> context_state,
+      SurfaceHandle surface_handle);
+
+  // For testing
+  ImageTransportSurfaceOverlayMacEGL(
+      std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator
+#if BUILDFLAG(IS_MAC)
+      ,
+      std::unique_ptr<ui::VSyncCallbackMac> vsync_callback_mac
+#endif
+  );
 
   // Presenter implementation
   bool Resize(const gfx::Size& size,
@@ -48,12 +62,9 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
 
-  bool ScheduleOverlayPlane(
-      gl::OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
-      const gfx::OverlayPlaneData& overlay_plane_data) override;
-
-  bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
+  bool ScheduleCALayer(
+      const ui::CARendererLayerParams& params,
+      std::vector<gfx::MTLSharedEventFence> backpressure_fences) override;
 
   void SetMaxPendingSwaps(int max_pending_swaps) override;
 
@@ -105,9 +116,11 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   base::TimeDelta frame_interval_;
 #endif
 
-  int cap_max_pending_swaps_ = 1;
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+  BELayerHierarchy* __strong layer_hierarchy_;
+#endif
 
-  raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
+  int cap_max_pending_swaps_ = 1;
 
   base::WeakPtrFactory<ImageTransportSurfaceOverlayMacEGL> weak_ptr_factory_;
 };

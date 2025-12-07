@@ -29,7 +29,7 @@ void PasswordsNavigationObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!wait_for_path_.empty()) {
-    if (validated_url.path() == wait_for_path_) {
+    if (validated_url.GetPath() == wait_for_path_) {
       waiter_helper_.OnEvent();
     }
   } else if (!render_frame_host->GetParent()) {

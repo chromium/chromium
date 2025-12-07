@@ -6,14 +6,14 @@
 # pylint: disable=protected-access
 
 import unittest
-import unittest.mock as mock
+from unittest import mock
+
+from flake_suppressor_common import data_types
+from flake_suppressor_common import tag_utils as common_tag_utils
 
 from flake_suppressor import gpu_expectations
 from flake_suppressor import gpu_results
 from flake_suppressor import gpu_tag_utils as tag_utils
-
-from flake_suppressor_common import data_types
-from flake_suppressor_common import tag_utils as common_tag_utils
 
 GENERIC_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win ]

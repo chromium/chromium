@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,7 +21,7 @@ namespace {
 using ::testing::ContainerEq;
 
 std::unique_ptr<FormStructure> CreateFormStructure(
-    const DenseSet<FieldType>& field_types) {
+    const FieldTypeSet& field_types) {
   test::FormDescription form_description;
   for (FieldType field_type : field_types) {
     form_description.fields.emplace_back(
@@ -30,7 +31,8 @@ std::unique_ptr<FormStructure> CreateFormStructure(
       std::make_unique<FormStructure>(test::GetFormData(form_description));
   for (size_t i = 0; i < form_structure->field_count(); i++) {
     form_structure->field(i)->SetTypeTo(
-        AutofillType(form_description.fields[i].role));
+        AutofillType(form_description.fields[i].role),
+        AutofillPredictionSource::kHeuristics);
   }
   return form_structure;
 }
@@ -40,7 +42,7 @@ class AutofillMetricsUtilsTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-using IsCertainFormTypeTestData = std::tuple<DenseSet<FieldType>, bool>;
+using IsCertainFormTypeTestData = std::tuple<FieldTypeSet, bool>;
 
 // Test fixture for testing `internal::IsEmailOnlyForm()`.
 class IsEmailOnlyFormTest
@@ -116,11 +118,11 @@ INSTANTIATE_TEST_SUITE_P(
                                    ADDRESS_HOME_CITY},
                                   true)));
 
-// Given a form consisting of fields of types `DenseSet<FieldType>`, expect
+// Given a form consisting of fields of types `FieldTypeSet`, expect
 // `DenseSet<FormTypeNameForLogging>` to be returned from `Get{Address,
 // CreditCard}FormTypesForLogging()`.
 using FormTypesForLoggingTestData =
-    std::tuple<DenseSet<FieldType>, DenseSet<FormTypeNameForLogging>>;
+    std::tuple<FieldTypeSet, DenseSet<FormTypeNameForLogging>>;
 
 // Test fixture for testing `GetAddressFormTypesForLogging()`.
 class AddressFormTypesForLoggingTest
@@ -189,12 +191,21 @@ INSTANTIATE_TEST_SUITE_P(
         FormTypesForLoggingTestData(
             {CREDIT_CARD_STANDALONE_VERIFICATION_CODE},
             {FormTypeNameForLogging::kStandaloneCvcForm}),
-        // An address form has no credit card form types.
+        // A standalone CVC form (with legacy CREDIT_CARD_VERIFICATION_CODE
+        // field) is not considered a credit card form.
+        FormTypesForLoggingTestData(
+            {CREDIT_CARD_VERIFICATION_CODE},
+            {FormTypeNameForLogging::kStandaloneCvcForm}),
+        // A single field address form has no credit card form types.
         FormTypesForLoggingTestData({NAME_FIRST}, {}),
         // A form containing an address field and a credit card field, has one
         // credit card form type.
+        FormTypesForLoggingTestData({CREDIT_CARD_NUMBER, ADDRESS_HOME_LINE1},
+                                    {FormTypeNameForLogging::kCreditCardForm}),
+        // A form containing an address field and a cvc field, has one credit
+        // card form type.
         FormTypesForLoggingTestData(
-            {CREDIT_CARD_NUMBER, ADDRESS_HOME_LINE1},
+            {CREDIT_CARD_VERIFICATION_CODE, ADDRESS_HOME_LINE1},
             {FormTypeNameForLogging::kCreditCardForm})));
 
 // Test fixture for testing `GetFormTypesForLogging()`.

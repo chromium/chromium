@@ -17,23 +17,19 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace autofill {
-
-namespace {
-constexpr int64_t kCreditCardInstrumentId = 0x4444;
-}  // namespace
 
 // Test base class for the OfferNotificationBubbleViews related tests. Provides
 // helper function and common setups.
@@ -44,7 +40,7 @@ class OfferNotificationBubbleViewsTestBase
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -102,7 +98,7 @@ class OfferNotificationBubbleViewsTestBase
 
   OfferNotificationBubbleViews* GetOfferNotificationBubbleViews();
 
-  OfferNotificationIconView* GetOfferNotificationIconView();
+  IconLabelBubbleView* GetOfferNotificationPageActionView();
 
   bool IsIconVisible();
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
@@ -31,8 +31,8 @@ export class ConnectOneDriveElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'});
 
     shadowRoot.innerHTML = getTemplate();
-    const connectButton = this.$('.action-button')!;
-    const closeButton = this.$('.cancel-button')!;
+    const connectButton = this.$('.action-button');
+    const closeButton = this.$('.cancel-button');
 
     connectButton.addEventListener('click', () => this.onConnectButtonClick());
     closeButton.addEventListener('click', () => this.onCloseButtonClick());
@@ -65,7 +65,7 @@ export class ConnectOneDriveElement extends HTMLElement {
           loadTimeData.getString('oneDriveConnectedTitle');
       this.$('#body-text').innerText =
           loadTimeData.getString('oneDriveConnectedBodyText');
-      this.$('.action-button')!.remove();
+      this.$('.action-button').remove();
     } else {
       this.$('#error-message').toggleAttribute('hidden', false);
     }

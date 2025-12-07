@@ -113,9 +113,10 @@ void AutoSpeculationRulesConfig::ParseUrlMatchPatternConfig(
 const AutoSpeculationRulesConfig& AutoSpeculationRulesConfig::GetInstance() {
   CHECK(base::FeatureList::IsEnabled(features::kAutoSpeculationRules));
 
-  const String config_string =
-      String::FromUTF8(features::kAutoSpeculationRulesConfig.Get());
-  DEFINE_STATIC_LOCAL(AutoSpeculationRulesConfig, instance, (config_string));
+  DEFINE_STATIC_LOCAL(
+      AutoSpeculationRulesConfig, instance,
+      (String::FromUTF8(base::GetFieldTrialParamByFeatureAsString(
+          features::kAutoSpeculationRules, "config", "{}"))));
 
   if (g_override) {
     return *g_override;

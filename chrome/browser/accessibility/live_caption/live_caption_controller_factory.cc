@@ -5,12 +5,11 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/live_caption_controller.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 

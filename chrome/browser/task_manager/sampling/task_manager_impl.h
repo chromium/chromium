@@ -8,17 +8,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/lazy_instance.h"
+#include "base/byte_count.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
@@ -27,13 +27,12 @@
 #include "gpu/ipc/common/memory_stats.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace task_manager {
 
-class CrosapiTaskProviderAsh;
 class SharedSampler;
 
 // Defines a concrete implementation of the TaskManagerInterface.
@@ -50,17 +49,16 @@ class TaskManagerImpl : public TaskManagerInterface,
   // task_manager::TaskManagerInterface:
   void ActivateTask(TaskId task_id) override;
   bool IsTaskKillable(TaskId task_id) override;
-  void KillTask(TaskId task_id) override;
+  bool KillTask(TaskId task_id) override;
   double GetPlatformIndependentCPUUsage(TaskId task_id) const override;
   base::Time GetStartTime(TaskId task_id) const override;
   base::TimeDelta GetCpuTime(TaskId task_id) const override;
-  int64_t GetMemoryFootprintUsage(TaskId task_id) const override;
-  int64_t GetSwappedMemoryUsage(TaskId task_id) const override;
-  int64_t GetGpuMemoryUsage(TaskId task_id,
-                            bool* has_duplicates) const override;
+  base::ByteCount GetMemoryFootprintUsage(TaskId task_id) const override;
+  base::ByteCount GetSwappedMemoryUsage(TaskId task_id) const override;
+  base::ByteCount GetGpuMemoryUsage(TaskId task_id,
+                                    bool* has_duplicates) const override;
   int GetIdleWakeupsPerSecond(TaskId task_id) const override;
   int GetHardFaultsPerSecond(TaskId task_id) const override;
-  int GetNaClDebugStubPort(TaskId task_id) const override;
   void GetGDIHandles(TaskId task_id,
                      int64_t* current,
                      int64_t* peak) const override;
@@ -74,20 +72,23 @@ class TaskManagerImpl : public TaskManagerInterface,
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
+  TaskId GetRootTaskId(TaskId task_id) const override;
   Task::Type GetType(TaskId task_id) const override;
+  Task::SubType GetSubType(TaskId task_id) const override;
   SessionID GetTabId(TaskId task_id) const override;
   int GetChildProcessUniqueId(TaskId task_id) const override;
   void GetTerminationStatus(TaskId task_id,
                             base::TerminationStatus* out_status,
                             int* out_error_code) const override;
-  int64_t GetNetworkUsage(TaskId task_id) const override;
-  int64_t GetCumulativeNetworkUsage(TaskId task_id) const override;
-  int64_t GetProcessTotalNetworkUsage(TaskId task_id) const override;
-  int64_t GetCumulativeProcessTotalNetworkUsage(TaskId task_id) const override;
-  int64_t GetSqliteMemoryUsed(TaskId task_id) const override;
+  base::ByteCount GetNetworkUsage(TaskId task_id) const override;
+  base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const override;
+  base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const override;
+  base::ByteCount GetCumulativeProcessTotalNetworkUsage(
+      TaskId task_id) const override;
+  base::ByteCount GetSqliteMemoryUsed(TaskId task_id) const override;
   bool GetV8Memory(TaskId task_id,
-                   int64_t* allocated,
-                   int64_t* used) const override;
+                   base::ByteCount* allocated,
+                   base::ByteCount* used) const override;
   bool GetWebCacheStats(TaskId task_id,
                         blink::WebCacheResourceTypeStats* stats) const override;
   int GetKeepaliveCount(TaskId task_id) const override;
@@ -97,35 +98,35 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool IsRunningInVM(TaskId task_id) const override;
   TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const override;
+  bool IsTaskValid(TaskId task_id) const override;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override;
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
-  void ActiveTaskFetched(TaskId active_task_id) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void TaskIdsListToBeInvalidated() override;
 #endif
 
   void UpdateAccumulatedStatsNetworkForRoute(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      int64_t recv_bytes,
-      int64_t sent_bytes);
+      base::ByteCount recv_bytes,
+      base::ByteCount sent_bytes);
 
   bool is_running() const { return is_running_; }
 
  private:
   using PidToTaskGroupMap =
-      std::map<base::ProcessId, std::unique_ptr<TaskGroup>>;
+      base::flat_map<base::ProcessId, std::unique_ptr<TaskGroup>>;
 
-  friend struct base::LazyInstanceTraitsBase<TaskManagerImpl>;
+  friend class base::NoDestructor<TaskManagerImpl>;
 
   TaskManagerImpl();
 
   void OnVideoMemoryUsageStatsUpdate(
       const gpu::VideoMemoryUsageStats& gpu_memory_stats);
   void OnReceivedMemoryDump(
-      bool success,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
   // task_manager::TaskManagerInterface:
@@ -157,14 +158,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   // PIDs.
   PidToTaskGroupMap arc_vm_task_groups_by_proc_id_;
 
-  // Map Lacros TaskGroups received from crosapi by the IDs of the processes
-  // they represent.
-  PidToTaskGroupMap crosapi_task_groups_by_proc_id_;
-
   // Map each task by its ID to the TaskGroup on which it resides.
   // Keys are unique but values will have duplicates (i.e. multiple tasks
   // running on the same process represented by a single TaskGroup).
-  std::map<TaskId, TaskGroup*> task_groups_by_task_id_;
+  base::flat_map<TaskId, raw_ptr<TaskGroup, CtnExperimental>>
+      task_groups_by_task_id_;
 
   // A cached sorted list of the task IDs.
   mutable std::vector<TaskId> sorted_task_ids_;
@@ -185,24 +183,19 @@ class TaskManagerImpl : public TaskManagerInterface,
   // subset of resources for all processes at once.
   scoped_refptr<SharedSampler> shared_sampler_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // A sampler shared with all instances of TaskGroup that hold ARC tasks and
   // calculates memory footprint for all processes at once.
   std::unique_ptr<ArcSharedSampler> arc_shared_sampler_;
-
-  // Task provider handling crosapi task data.
-  // Once CrosapiTaskProvider is created and added to the task_providers_, it
-  // should never be removed from task_providers_ unless in the destructor.
-  raw_ptr<CrosapiTaskProviderAsh> crosapi_task_provider_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // This will be set to true while there are observers and the task manager is
   // running.
-  bool is_running_;
+  bool is_running_ = false;
 
   // This is set to true while waiting for a global memory dump from
   // memory_instrumentation.
-  bool waiting_for_memory_dump_;
+  bool waiting_for_memory_dump_ = false;
 
   base::WeakPtrFactory<TaskManagerImpl> weak_ptr_factory_{this};
 };

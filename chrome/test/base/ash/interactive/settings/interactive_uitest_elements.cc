@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 
+#include "base/strings/stringprintf.h"
+
 namespace ash::settings {
 
 WebContentsInteractionTestUtil::DeepQuery InternetPage() {
@@ -33,11 +35,16 @@ WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle() {
-  return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
+  return InternetPage() + "os-settings-subpage.iron-selected" +
+         "h1#subpageTitle";
 }
 
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState() {
   return InternetDetailsSubpage() + "div#networkState";
+}
+
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpagePolicyIcon() {
+  return InternetDetailsSubpage() + "div#titleDiv" + "cr-policy-indicator";
 }
 
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageConfigureButton() {
@@ -64,6 +71,10 @@ WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton() {
 
 WebContentsInteractionTestUtil::DeepQuery AddWiFiRow() {
   return InternetPage() + "div#add-wifi-label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery AddWifiIcon() {
+  return InternetPage() + "cr-icon-button.icon-add-wifi";
 }
 
 WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow() {
@@ -155,6 +166,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnListNthItemEnableButton(int n) {
   return ApnListNthItem(n) + "button#enableButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnListItemAutoDetectedDiv() {
+  return ApnListFirstItem() + "div#autoDetected";
+}
+
 WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton() {
   return ApnSelectionDialog() + "cr-button#apnSelectionActionBtn";
 }
@@ -179,6 +194,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
   return InternetPage() + "button#createCustomApnButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnSubpagePolicyIcon() {
+  return InternetPage() + "cr-tooltip-icon#apnManagedIcon";
+}
+
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton() {
   return InternetPage() + "button#discoverMoreApnsButton";
 }
@@ -190,6 +209,11 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent() {
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
   return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
          "div#networkSummaryItemRow";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularInhibitedItem() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cellular-networks-list" + "div#inhibitedSubtext";
 }
 
 WebContentsInteractionTestUtil::DeepQuery AddEsimButton() {
@@ -255,12 +279,18 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworksList() {
          "cellular-networks-list";
 }
 
+WebContentsInteractionTestUtil::DeepQuery CellularNetworkListItemPolicyIcon() {
+  return CellularNetworksList() + "network-list" + "network-list-item" +
+         "cr-policy-indicator";
+}
+
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle() {
   return CellularNetworksList() + "div#pSimLabel";
 }
 
-WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle() {
-  return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsSubpageApnPolicyIcon() {
+  return InternetDetailsSubpage() + "cr-policy-indicator#apnManagedIcon";
 }
 
 WebContentsInteractionTestUtil::DeepQuery
@@ -271,6 +301,12 @@ CellularDetailsSubpageAutoConnectToggle() {
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsAllowDataRoamingToggle() {
   return InternetDetailsSubpage() + "cellular-roaming-toggle-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsAllowDataRoamingTogglePolicyIcon() {
+  return InternetDetailsSubpage() + "cellular-roaming-toggle-button" +
+         "network-config-toggle" + "cr-policy-network-indicator-mojo";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsNetworkOperator() {
@@ -288,6 +324,98 @@ WebContentsInteractionTestUtil::DeepQuery CellularDetailsConfigurableSection() {
 
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection() {
   return InternetDetailsSubpage() + "cr-expand-button#proxySectionToggle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockToggle() {
+  return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
+         "cr-toggle#simLockButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockTogglePolicyIcon() {
+  return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
+         "cr-policy-indicator#simLockPolicyIcon";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinButton() {
+  return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
+         "cr-button#changePinButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockDialogs() {
+  return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
+         "sim-lock-dialogs";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogPolicySubtitle() {
+  return CellularSimLockDialogs() + "div#adminSubtitle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogButton() {
+  return CellularSimLockDialogs() + "cr-button#enterPinButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogSubtext() {
+  return CellularSimLockDialogs() + "div#pinEntrySubtext";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogPin() {
+  return CellularSimLockDialogs() + "network-password-input#enterPin" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockChangePinDialogButton() {
+  return CellularSimLockDialogs() + "cr-button#changePinButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogNew() {
+  return CellularSimLockDialogs() + "network-password-input#changePinNew1" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockChangePinDialogNewConfirm() {
+  return CellularSimLockDialogs() + "network-password-input#changePinNew2" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogOld() {
+  return CellularSimLockDialogs() + "network-password-input#changePinOld" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPinDialogButton() {
+  return CellularSimLockDialogs() + "cr-button#unlockPinButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogPin() {
+  return CellularSimLockDialogs() + "network-password-input#unlockPin" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPukDialogButton() {
+  return CellularSimLockDialogs() + "cr-button#unlockPukButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPin() {
+  return CellularSimLockDialogs() + "network-password-input#unlockPin1" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPuk() {
+  return CellularSimLockDialogs() + "network-password-input#unlockPuk" +
+         "cr-input#input" + "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPukDialogPinConfirm() {
+  return CellularSimLockDialogs() + "network-password-input#unlockPin2" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton() {
@@ -310,8 +438,7 @@ CellularSubpageMenuRenameDialogInputField() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageApnRow() {
-  return InternetPage() + "settings-internet-detail-subpage" +
-         "cr-link-row#apnSubpageButton";
+  return InternetDetailsSubpage() + "cr-link-row#apnSubpageButton";
 }
 
 }  // namespace cellular
@@ -352,6 +479,11 @@ WebContentsInteractionTestUtil::DeepQuery HotspotConfigureButton() {
          "cr-button#configureButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery HotspotClientCountItem() {
+  return InternetPage() + "settings-hotspot-subpage" +
+         "div#connectedDeviceCountRow";
+}
+
 WebContentsInteractionTestUtil::DeepQuery HotspotConfigDialog() {
   return InternetPage() + "hotspot-config-dialog";
 }
@@ -373,9 +505,154 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput() {
 
 namespace wifi {
 
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksList() {
+  return InternetPage() + "settings-internet-subpage" +
+         "network-list#networkList";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksListDiv() {
+  return InternetPage() + "settings-internet-subpage" + "div#networkListDiv";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemToggle() {
+  return InternetPage() + "network-summary" + "network-summary-item#WiFi" +
+         "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemNetworkState() {
+  return WifiSummaryItem() + "div#networkState";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemSubpageArrow() {
+  return WifiSummaryItem() + "cr-icon-button.subpage-arrow";
+}
+
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem() {
   return InternetPage() + "network-summary" + "network-summary-item#WiFi" +
          "div#networkSummaryItemRow";
+}
+
+WebContentsInteractionTestUtil::DeepQuery AddWifiButton() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cr-icon-button#addWifiButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialog() {
+  return InternetPage() + "internet-config#configDialog" +
+         "network-config#networkConfig";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogSsidInput() {
+  return ConfigureWifiDialog() + "network-config-input#ssid" + "cr-input" +
+         "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogShareToggle() {
+  return ConfigureWifiDialog() + "network-config-toggle#share";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogConnectButton() {
+  return InternetPage() + "internet-config#configDialog" +
+         "cr-button#connectButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiKnownNetworksSubpageButton() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cr-link-row#knownNetworksSubpageButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery KnownNetworksSubpage() {
+  return InternetPage() + "settings-internet-known-networks-subpage";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointSubsciptions() {
+  return KnownNetworksSubpage() + "div#passpointSubscriptionList";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointSubscriptionItem() {
+  return KnownNetworksSubpage() + "cr-link-row#subscriptionItem" + "div#label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointMoreButton() {
+  return KnownNetworksSubpage() + "cr-icon-button#subscriptionMoreButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointDotsMenu() {
+  return KnownNetworksSubpage() + "cr-action-menu#subscriptionDotsMenu";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointSubscriptionForget() {
+  return KnownNetworksSubpage() + "button#subscriptionForget";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageExpirationDate() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "div#passpointExpirationDate";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageProviderSource() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "div#passpointSourceText";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+PasspointSubpageAssociatedNetworksListItem() {
+  return InternetPage() + "settings-passpoint-subpage" + "cr-link-row" +
+         "div#label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+PasspointSubpageDomainExpansionButton() {
+  return InternetPage() + "settings-passpoint-subpage" + "cr-expand-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainList() {
+  return InternetPage() + "settings-passpoint-subpage" + "iron-collapse";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainListItem() {
+  return InternetPage() + "settings-passpoint-subpage" + "div#domainName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveButton() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "cr-button#removeButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveDialog() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "cr-dialog#removalDialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+PasspointSubpageRemoveDialogConfirmButton() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "cr-button#removalConfirmButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageNetworkListDiv() {
+  return InternetPage() + "settings-internet-subpage" + "#networkListDiv";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworks() {
+  return InternetPage() + "settings-internet-subpage" + "#networkListDiv" +
+         "localized-link" + "#container";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+WiFiSubpageSearchForNetworksSpinner() {
+  return InternetPage() + "os-settings-subpage.iron-selected" +
+         "paper-spinner-lite";
 }
 
 }  // namespace wifi
@@ -479,12 +756,24 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList() {
          "os-settings-paired-bluetooth-list";
 }
 
+WebContentsInteractionTestUtil::DeepQuery BluetoothSubpageToggle() {
+  return BluetoothPage() + "os-settings-bluetooth-devices-subpage" +
+         "cr-toggle#enableBluetoothToggle";
+}
+
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage() {
   return BluetoothPage() + "os-settings-bluetooth-device-detail-subpage";
 }
 
 WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton() {
   return BluetoothDeviceDetailSubpage() + "cr-button#changeNameBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothBatteryPercentage() {
+  return BluetoothDeviceDetailSubpage() +
+         "bluetooth-device-battery-info#batteryInfo" +
+         "bluetooth-battery-icon-percentage#defaultBattery" +
+         "span#batteryPercentage";
 }
 
 WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton() {

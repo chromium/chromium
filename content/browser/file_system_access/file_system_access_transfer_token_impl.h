@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -31,6 +32,7 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   FileSystemAccessTransferTokenImpl(
       const storage::FileSystemURL& url,
       const url::Origin& origin,
+      const std::string& display_name,
       const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessManagerImpl* manager,
@@ -79,6 +81,7 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   const storage::FileSystemURL url_;
   const url::Origin origin_;
+  const std::string display_name_;
   const FileSystemAccessManagerImpl::SharedHandleState handle_state_;
   mojo::ReceiverSet<blink::mojom::FileSystemAccessTransferToken> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);

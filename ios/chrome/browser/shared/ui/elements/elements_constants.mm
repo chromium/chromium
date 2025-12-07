@@ -6,8 +6,3 @@
 
 NSString* const kActivityOverlayViewAccessibilityIdentifier =
     @"ActivityOverlayViewAccessibilityIdentifier";
-
-NSString* InstructionViewRowAccessibilityIdentifier(int index) {
-  return [NSString
-      stringWithFormat:@"InstructionViewRowAccessibilityIdentifier%i", index];
-}

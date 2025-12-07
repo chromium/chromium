@@ -19,9 +19,10 @@ class GPUMemoryHeapInfo : public ScriptWrappable {
   GPUMemoryHeapInfo(const GPUMemoryHeapInfo&) = delete;
   GPUMemoryHeapInfo& operator=(const GPUMemoryHeapInfo&) = delete;
 
-  // gpu_memory_heap_info.idl
+  // gpu_memory_heap_info.idl {{{
   uint64_t size() const;
   uint32_t properties() const;
+  // }}} End of WebIDL binding implementation.
 
  private:
   wgpu::MemoryHeapInfo info_;

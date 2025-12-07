@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/symlink.gni")
+
+  group("devil_util") {
+    data_deps = [
+      ":devil_util_dist($default_toolchain)",
+      ":devil_util_host($default_toolchain)",
+    ]
+  }
+
+  if (current_toolchain == default_toolchain) {
+    import("//build/config/android/rules.gni")
+
+    create_native_executable_dist("devil_util_dist") {
+      dist_dir = "$root_build_dir/devil_util_dist"
+      binary = "$root_build_dir/devil_util_bin"
+      deps = [ ":devil_util_bin" ]
+    }
+
+    binary_symlink("devil_util_host") {
+      binary_label = ":devil_util_bin($host_toolchain)"
+      output_name = "devil_util_host"
+    }
+  }
+}
+
+executable("devil_util_bin") {
+  sources = [
+    "archive_helper.h",
+    "archive_reader.cc",
+    "archive_reader.h",
+    "archive_writer.cc",
+    "archive_writer.h",
+    "crc32_hasher.cc",
+    "crc32_hasher.h",
+    "main.cc",
+    "zst_compressor.cc",
+    "zst_compressor.h",
+    "zst_decompressor.cc",
+    "zst_decompressor.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/zlib",
+    "//third_party/zstd:compress",
+    "//third_party/zstd:decompress",
+  ]
+}

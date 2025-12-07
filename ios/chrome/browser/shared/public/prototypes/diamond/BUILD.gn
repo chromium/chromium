@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("diamond") {
+  sources = [
+    "chrome_app_bar_prototype.h",
+    "chrome_app_bar_prototype.mm",
+    "diamond_grid_button.h",
+    "diamond_grid_button.mm",
+    "new_tab_prototype_view_controller.h",
+    "new_tab_prototype_view_controller.mm",
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser:location_bar",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/location_bar/model",
+    "//ios/chrome/browser/location_bar/ui_bundled:location_bar_model_delegate",
+    "//ios/chrome/browser/location_bar/ui_bundled:protocols",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/omnibox/coordinator",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/ui/popup",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/translate/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+  ]
+}

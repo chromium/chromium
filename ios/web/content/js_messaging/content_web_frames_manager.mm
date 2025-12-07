@@ -7,6 +7,7 @@
 #import <set>
 
 #import "base/no_destructor.h"
+#import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/unguessable_token.h"
 #import "components/js_injection/browser/js_communication_host.h"

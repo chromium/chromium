@@ -9,15 +9,8 @@
 #include "chrome/common/apps/platform_apps/api/enterprise_remote_apps.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros.h"
-#include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
-#else
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
-#endif
 
 namespace chrome_apps::api {
 
@@ -26,18 +19,12 @@ namespace {
 chromeos::remote_apps::mojom::RemoteApps* GetEnterpriseRemoteAppsApi(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This also validates that the Remote Apps Mojo interface is available in
-  // Ash via the factory.
-  return chromeos::RemoteAppsProxyLacrosFactory::GetForBrowserContext(profile);
-#else
   ash::RemoteAppsManager* remote_apps_manager =
       ash::RemoteAppsManagerFactory::GetForProfile(profile);
   if (remote_apps_manager == nullptr)
     return nullptr;
 
   return &remote_apps_manager->GetRemoteAppsImpl();
-#endif
 }
 
 }  // namespace

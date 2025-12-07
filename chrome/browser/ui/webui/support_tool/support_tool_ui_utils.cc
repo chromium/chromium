@@ -17,7 +17,6 @@
 #include "base/containers/to_value_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
@@ -72,10 +71,6 @@ std::string GetDataCollectorName(
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_INTEL_WIFI_DEBUG_DUMP);
     case support_tool::CHROMEOS_TOUCH_EVENTS:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_TOUCH_EVENTS);
-    case support_tool::CHROMEOS_CROS_API:
-      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_LACROS_SYSTEM_INFO);
-    case support_tool::CHROMEOS_LACROS:
-      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_LACROS);
     case support_tool::CHROMEOS_REVEN:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CHROMEOS_FLEX_LOGS);
     case support_tool::CHROMEOS_DBUS:
@@ -113,6 +108,9 @@ std::string GetDataCollectorName(
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_PERFORMANCE);
     case support_tool::CHROMEOS_APP_SERVICE:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CHROMEOS_APP_SERVICE);
+    case support_tool::CHROMEOS_KIOSK_APP_LEVEL_LOGS:
+      return l10n_util::GetStringUTF8(
+          IDS_SUPPORT_TOOL_CHROMEOS_KIOSK_APP_LEVEL_LOGS);
     default:
       return "Error: Undefined";
   }

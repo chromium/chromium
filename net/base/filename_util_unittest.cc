@@ -5,12 +5,10 @@
 #include "net/base/filename_util.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -766,7 +764,7 @@ TEST(FilenameUtilTest, GenerateFileName) {
     {__LINE__, "http://www.example.com/goat.tgz?wearing_hat=true", "", "", "",
      "application/x-gzip", L"", L"goat.tgz"},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {// http://crosbug.com/26028
      __LINE__, "http://www.example.com/fooa%cc%88.txt", "", "", "",
      "image/jpeg", L"foo\xe4", L"foo\xe4.txt"},

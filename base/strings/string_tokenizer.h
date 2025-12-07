@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_STRINGS_STRING_TOKENIZER_H_
 #define BASE_STRINGS_STRING_TOKENIZER_H_
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -30,12 +27,12 @@ namespace base {
 // EXAMPLE 1:
 //
 //   char input[] = "this is a test";
-//   CStringTokenizer t(input, input + strlen(input), " ");
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   CStringTokenizer t(input, " ");
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   this
 //   is
@@ -48,11 +45,11 @@ namespace base {
 //   std::string input = "no-cache=\"foo, bar\", private";
 //   StringTokenizer t(input, ", ");
 //   t.set_quote_chars("\"");
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   no-cache="foo, bar"
 //   private
@@ -64,9 +61,9 @@ namespace base {
 //   std::string input = "text/html; charset=UTF-8; foo=bar";
 //   StringTokenizer t(input, "; =");
 //   t.set_options(StringTokenizer::RETURN_DELIMS);
-//   while (t.GetNext()) {
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
 //     if (t.token_is_delim()) {
-//       switch (*t.token_begin()) {
+//       switch (token.value().front()) {
 //         case ';':
 //           next_is_option = true;
 //           break;
@@ -85,7 +82,7 @@ namespace base {
 //       } else {
 //         label = "mime-type";
 //       }
-//       printf("%s: %s\n", label, t.token().c_str());
+//       LOG(ERROR) << label << " " << token.value();
 //     }
 //   }
 //
@@ -95,11 +92,11 @@ namespace base {
 //   std::string input = "this, \t is, \t a, \t test";
 //   StringTokenizer t(input, ",",
 //       StringTokenizer::WhitespacePolicy::kSkipOver);
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   this
 //   is
@@ -111,7 +108,7 @@ namespace base {
 // but it strictly only needs to care about the `CharType`. However many users
 // expect to work with string and string::iterator for historical reasons. When
 // they are all working with `string_view`, then this class can be made to
-// unconditoinally use `std::basic_string_view<CharType>` and vend iterators of
+// unconditionally use `std::basic_string_view<CharType>` and vend iterators of
 // that type, and we can drop the `str` and `const_iterator` aliases.
 template <class str, class const_iterator>
 class StringTokenizerT {
@@ -177,20 +174,29 @@ class StringTokenizerT {
   // within a quoted string, then the next character is skipped.
   void set_quote_chars(const owning_str& quotes) { quotes_ = quotes; }
 
+  // Advance the tokenizer to the next delimiter and return the token value. If
+  // the tokenizer is complete, this returns std::nullopt.
+  std::optional<std::basic_string_view<char_type>> GetNextTokenView() {
+    if (!GetNext()) {
+      return std::nullopt;
+    }
+
+    return token_piece();
+  }
+
   // Call this method to advance the tokenizer to the next delimiter.  This
   // returns false if the tokenizer is complete.  This method must be called
   // before calling any of the token* methods.
   bool GetNext() {
-    if (quotes_.empty() && options_ == 0)
+    if (quotes_.empty() && options_ == 0) {
       return QuickGetNext();
-    else
+    } else {
       return FullGetNext();
+    }
   }
 
   // Start iterating through tokens from the beginning of the string.
-  void Reset() {
-    token_end_ = start_pos_;
-  }
+  void Reset() { token_end_ = start_pos_; }
 
   // Returns true if token is a delimiter.  When the tokenizer is constructed
   // with the RETURN_DELIMS option, this method can be used to check if the
@@ -204,7 +210,7 @@ class StringTokenizerT {
   const_iterator token_end() const { return token_end_; }
   str token() const { return str(token_begin_, token_end_); }
   std::basic_string_view<char_type> token_piece() const {
-    return MakeBasicStringPiece<char_type>(token_begin_, token_end_);
+    return std::basic_string_view(token_begin_, token_end_);
   }
 
  private:
@@ -230,8 +236,9 @@ class StringTokenizerT {
   // Skip over any contiguous whitespace characters according to the whitespace
   // policy.
   void SkipWhitespace() {
-    while (token_end_ != end_ && ShouldSkip(*token_end_))
-      ++token_end_;
+    while (token_end_ != end_ && ShouldSkip(*token_end_)) {
+      UNSAFE_TODO(++token_end_);
+    }
   }
 
   // Implementation of GetNext() for when we have no quote characters. We have
@@ -245,7 +252,7 @@ class StringTokenizerT {
         token_is_delim_ = true;
         return false;
       }
-      ++token_end_;
+      UNSAFE_TODO(++token_end_);
       if (delims_.find(*token_begin_) == str::npos &&
           !ShouldSkip(*token_begin_)) {
         break;
@@ -254,7 +261,7 @@ class StringTokenizerT {
     }
     while (token_end_ != end_ && delims_.find(*token_end_) == str::npos &&
            !ShouldSkip(*token_end_)) {
-      ++token_end_;
+      UNSAFE_TODO(++token_end_);
     }
     return true;
   }
@@ -282,12 +289,13 @@ class StringTokenizerT {
 
         // Slurp all non-delimiter characters into the token.
         while (token_end_ != end_ && AdvanceOne(&state, *token_end_)) {
-          ++token_end_;
+          UNSAFE_TODO(++token_end_);
         }
 
         // If it's non-empty, or empty tokens were requested, return the token.
-        if (token_begin_ != token_end_ || (options_ & RETURN_EMPTY_TOKENS))
+        if (token_begin_ != token_end_ || (options_ & RETURN_EMPTY_TOKENS)) {
           return true;
+        }
       }
 
       DCHECK(!token_is_delim_);
@@ -308,13 +316,15 @@ class StringTokenizerT {
       token_is_delim_ = true;
       token_begin_ = token_end_;
 
-      if (token_end_ == end_)
+      if (token_end_ == end_) {
         return false;
+      }
 
       // Look at the delimiter.
-      ++token_end_;
-      if (options_ & RETURN_DELIMS)
+      UNSAFE_TODO(++token_end_);
+      if (options_ & RETURN_DELIMS) {
         return true;
+      }
     }
 
     return false;
@@ -347,8 +357,9 @@ class StringTokenizerT {
         state->in_quote = false;
       }
     } else {
-      if (IsDelim(c) || ShouldSkip(c))
+      if (IsDelim(c) || ShouldSkip(c)) {
         return false;
+      }
       state->in_quote = IsQuote(state->quote_char = c);
     }
     return true;

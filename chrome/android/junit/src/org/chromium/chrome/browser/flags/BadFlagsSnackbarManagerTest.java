@@ -16,22 +16,20 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 
 /** Unit tests for {@link BadFlagsSnackbarManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK})
 public class BadFlagsSnackbarManagerTest {
     Activity mActivity;
 
     @Before
     public void setup() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test

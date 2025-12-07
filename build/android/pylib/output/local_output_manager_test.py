@@ -23,8 +23,9 @@ class LocalOutputManagerTest(output_manager_test_case.OutputManagerTestCase):
 
   def testUsableTempFile(self):
     self.assertUsableTempFile(
-        self._output_manager._CreateArchivedFile(
-            'test_file', 'test_subdir', output_manager.Datatype.TEXT))
+        self._output_manager._CreateArchivedFile('test_file', 'test_subdir',
+                                                 output_manager.Datatype.TEXT,
+                                                 None))
 
   def tearDown(self):
     shutil.rmtree(self._output_dir)

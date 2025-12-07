@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 
 #include "base/check.h"
-#include "components/enterprise/connectors/device_trust/prefs.h"
+#include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
@@ -42,7 +42,7 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
 DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
 
 bool DeviceTrustConnectorService::IsConnectorEnabled() const {
-  return !GetEnabledInlinePolicyLevels().empty();
+  return !GetSignalsPolicyScope().empty();
 }
 
 const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
@@ -71,7 +71,7 @@ void DeviceTrustConnectorService::AddObserver(
 }
 
 const std::set<DTCPolicyLevel>
-DeviceTrustConnectorService::GetEnabledInlinePolicyLevels() const {
+DeviceTrustConnectorService::GetSignalsPolicyScope() const {
   std::set<DTCPolicyLevel> levels;
   for (auto const& policy_details : policy_details_map_) {
     if (policy_details.second.enabled) {
@@ -108,8 +108,8 @@ void DeviceTrustConnectorService::OnPolicyUpdated(const DTCPolicyLevel& level,
 
   if (policy_details.enabled) {
     // Add the new endpoints to the conditions.
-    url_matcher::util::AddAllowFilters(policy_details.matcher.get(),
-                                       *url_patterns);
+    url_matcher::util::AddAllowFiltersWithLimit(policy_details.matcher.get(),
+                                                *url_patterns);
     OnInlinePolicyEnabled(level);
   } else {
     OnInlinePolicyDisabled(level);

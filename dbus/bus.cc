@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -14,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -156,10 +158,7 @@ Error ToError(const internal::ScopedDBusError& error) {
 
 }  // namespace
 
-Bus::Options::Options()
-  : bus_type(SESSION),
-    connection_type(PRIVATE) {
-}
+Bus::Options::Options() = default;
 
 Bus::Options::~Options() = default;
 
@@ -167,7 +166,7 @@ Bus::Options::Options(Bus::Options&&) = default;
 
 Bus::Options& Bus::Options::operator=(Bus::Options&&) = default;
 
-Bus::Bus(const Options& options)
+Bus::Bus(Options options)
     : bus_type_(options.bus_type),
       connection_type_(options.connection_type),
       dbus_task_runner_(options.dbus_task_runner),
@@ -201,20 +200,20 @@ Bus::~Bus() {
   // DCHECK_EQ(0, num_pending_timeouts_);
 }
 
-ObjectProxy* Bus::GetObjectProxy(const std::string& service_name,
+ObjectProxy* Bus::GetObjectProxy(std::string_view service_name,
                                  const ObjectPath& object_path) {
   return GetObjectProxyWithOptions(service_name, object_path,
                                    ObjectProxy::DEFAULT_OPTIONS);
 }
 
-ObjectProxy* Bus::GetObjectProxyWithOptions(const std::string& service_name,
+ObjectProxy* Bus::GetObjectProxyWithOptions(std::string_view service_name,
                                             const ObjectPath& object_path,
                                             int options) {
   AssertOnOriginThread();
 
   // Check if we already have the requested object proxy.
-  const ObjectProxyTable::key_type key(service_name + object_path.value(),
-                                       options);
+  const ObjectProxyTable::key_type key(
+      base::StrCat({service_name, object_path.value()}), options);
   ObjectProxyTable::iterator iter = object_proxy_table_.find(key);
   if (iter != object_proxy_table_.end()) {
     return iter->second.get();
@@ -227,7 +226,7 @@ ObjectProxy* Bus::GetObjectProxyWithOptions(const std::string& service_name,
   return object_proxy.get();
 }
 
-bool Bus::RemoveObjectProxy(const std::string& service_name,
+bool Bus::RemoveObjectProxy(std::string_view service_name,
                             const ObjectPath& object_path,
                             base::OnceClosure callback) {
   return RemoveObjectProxyWithOptions(service_name, object_path,
@@ -235,15 +234,15 @@ bool Bus::RemoveObjectProxy(const std::string& service_name,
                                       std::move(callback));
 }
 
-bool Bus::RemoveObjectProxyWithOptions(const std::string& service_name,
+bool Bus::RemoveObjectProxyWithOptions(std::string_view service_name,
                                        const ObjectPath& object_path,
                                        int options,
                                        base::OnceClosure callback) {
   AssertOnOriginThread();
 
   // Check if we have the requested object proxy.
-  const ObjectProxyTable::key_type key(service_name + object_path.value(),
-                                       options);
+  const ObjectProxyTable::key_type key(
+      base::StrCat({service_name, object_path.value()}), options);
   ObjectProxyTable::iterator iter = object_proxy_table_.find(key);
   if (iter != object_proxy_table_.end()) {
     scoped_refptr<ObjectProxy> object_proxy = iter->second;
@@ -594,7 +593,8 @@ bool Bus::ReleaseOwnership(const std::string& service_name) {
   internal::ScopedDBusError error;
   const int result = dbus_bus_release_name(connection_, service_name.c_str(),
                                            error.get());
-  if (result == DBUS_RELEASE_NAME_REPLY_RELEASED) {
+  if (result == DBUS_RELEASE_NAME_REPLY_RELEASED ||
+      result == DBUS_RELEASE_NAME_REPLY_NON_EXISTENT) {
     owned_service_names_.erase(found);
     return true;
   } else {

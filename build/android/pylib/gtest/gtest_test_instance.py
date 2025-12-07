@@ -18,6 +18,7 @@ from pylib import constants
 from pylib.constants import host_paths
 from pylib.base import base_test_result
 from pylib.base import test_instance
+from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import test_filter
 
@@ -29,11 +30,10 @@ BROWSER_TEST_SUITES = [
     'android_sync_integration_tests',
     'components_browsertests',
     'content_browsertests',
-    'weblayer_browsertests',
 ]
 
-# The max number of tests to run on a shard during the test run.
-MAX_SHARDS = 256
+# The max number of tests to run on a batch during the test run.
+MAX_BATCH_SIZE = 256
 
 RUN_IN_SUB_THREAD_TEST_SUITES = [
     # Multiprocess tests should be run outside of the main thread.
@@ -82,6 +82,10 @@ _EXTRA_SHARD_SIZE_LIMIT = (
     'org.chromium.native_test.NativeTestInstrumentationTestRunner.'
         'ShardSizeLimit')
 
+_PREFIX_DISABLED = 'DISABLED_'
+_PREFIX_FLAKY = 'FLAKY_'
+_PREFIX_PRE = 'PRE_'
+
 # TODO(jbudorick): Remove these once we're no longer parsing stdout to generate
 # results.
 _RE_TEST_STATUS = re.compile(
@@ -105,8 +109,11 @@ _RE_TEST_ERROR = re.compile(r'FAILURES!!! Tests run: \d+,'
 _RE_TEST_CURRENTLY_RUNNING = re.compile(
     r'\[.*ERROR:.*?\] Currently running: (.*)')
 _RE_TEST_DCHECK_FATAL = re.compile(r'\[.*:FATAL:.*\] (.*)')
-_RE_DISABLED = re.compile(r'DISABLED_')
-_RE_FLAKY = re.compile(r'FLAKY_')
+
+# Detect a new launcher invocation. When encountered, the output parser will
+# stop recording logs for a suddenly crashed test (if one was running) in the
+# previous invocation.
+_RE_LAUNCHER_MAIN_START = re.compile(r'>>ScopedMainEntryLogger')
 
 # Regex that matches the printout when there are test failures.
 # matches "[  FAILED  ] 1 test, listed below:"
@@ -192,6 +199,7 @@ def ParseGTestOutput(output, symbolizer, device_abi):
 
   for l in output:
     matcher = _RE_TEST_STATUS.match(l)
+    launcher_main_start_match = _RE_LAUNCHER_MAIN_START.match(l)
     if matcher:
       if matcher.group(1) == 'RUN':
         handle_possibly_unknown_test()
@@ -221,15 +229,14 @@ def ParseGTestOutput(output, symbolizer, device_abi):
         test_name = currently_running_matcher.group(1)
         result_type = base_test_result.ResultType.CRASH
         duration = None  # Don't know. Not using 0 as this is unknown vs 0.
-      elif dcheck_matcher:
+      elif dcheck_matcher or launcher_main_start_match:
         result_type = base_test_result.ResultType.CRASH
         duration = None  # Don't know.  Not using 0 as this is unknown vs 0.
 
-    if log is not None:
+    if not launcher_main_start_match:
+      log.append(l)
       if not matcher and _STACK_LINE_RE.match(l):
         stack.append(l)
-      else:
-        log.append(l)
 
     if _RE_ANY_TESTS_FAILED.match(l):
       break
@@ -310,19 +317,59 @@ def ParseGTestJSON(json_content):
   return results
 
 
-def TestNameWithoutDisabledPrefix(test_name):
-  """Modify the test name without disabled prefix if prefix 'DISABLED_' or
-  'FLAKY_' presents.
+def _TestNameWithoutPrefix(full_test_name, prefixes):
+  """Get full test name without any prefix from the given list of prefixes.
 
   Args:
-    test_name: The name of a test.
+    full_test_name: A string containing the full name of a test, e.g.
+        TestSuite1.TestName1
+    prefixes: A list of prefixes to remove from the test name.
   Returns:
-    A test name without prefix 'DISABLED_' or 'FLAKY_'.
+    A full test name without any given prefix.
   """
-  disabled_prefixes = [_RE_DISABLED, _RE_FLAKY]
-  for dp in disabled_prefixes:
-    test_name = dp.sub('', test_name)
-  return test_name
+  for prefix in prefixes:
+    full_test_name = full_test_name.replace(prefix, '')
+  return full_test_name
+
+
+def TestNameWithoutDisabledPrefix(full_test_name):
+  """Get full test name without disabled prefixes 'DISABLED_' or 'FLAKY_'."""
+  return _TestNameWithoutPrefix(full_test_name,
+                                [_PREFIX_DISABLED, _PREFIX_FLAKY])
+
+
+def TestNameWithoutPrefixes(full_test_name):
+  """Get full test name without prefixes 'DISABLED_', 'FLAKY_', or 'PRE_'."""
+  return _TestNameWithoutPrefix(full_test_name,
+                                [_PREFIX_DISABLED, _PREFIX_FLAKY, _PREFIX_PRE])
+
+
+def TestNameWithPrePrefix(full_test_name):
+  """Get full test name with PRE_ added to the test name.
+
+  Note that the DISABLED_ prefix will be stripped if present.
+
+  For example:
+   - TestSuite1.TestName1 -> TestSuite1.PRE_TestName1
+   - TestSuite1.PRE_TestName2 -> TestSuite1.PRE_PRE_TestName2
+   - TestSuite1.DISABLED_TestName3 -> TestSuite1.PRE_TestName3
+  """
+  full_test_name = TestNameWithoutDisabledPrefix(full_test_name)
+  test_suite, test_name = full_test_name.split('.', maxsplit=1)
+  return f'{test_suite}.{_PREFIX_PRE}{test_name}'
+
+
+def IsPreTest(full_test_name):
+  """Check if a full test name is a PRE_ test.
+
+  Since both of the following are valid PRE_ tests, we just check if PRE_ exists
+  in the test name:
+   - TestSuite1.PRE_TestName2
+   - TestSuite1.DISABLED_PRE_TestName3
+  """
+  _, test_name = full_test_name.split('.', maxsplit=1)
+  return _PREFIX_PRE in test_name
+
 
 class GtestTestInstance(test_instance.TestInstance):
 
@@ -349,6 +396,9 @@ class GtestTestInstance(test_instance.TestInstance):
     self._total_external_shards = args.test_launcher_total_shards
     self._wait_for_java_debugger = args.wait_for_java_debugger
     self._use_existing_test_data = args.use_existing_test_data
+    self._deploy_mock_openxr_runtime = args.deploy_mock_openxr_runtime
+    self._proguard_mapping_path = args.proguard_mapping_path
+    self._deobfuscator = None
 
     # GYP:
     if args.executable_dist_dir:
@@ -365,9 +415,9 @@ class GtestTestInstance(test_instance.TestInstance):
     if args.test_apk_incremental_install_json:
       incremental_part = '_incremental'
 
-    self._test_launcher_batch_limit = MAX_SHARDS
+    self._test_launcher_batch_limit = MAX_BATCH_SIZE
     if (args.test_launcher_batch_limit
-        and 0 < args.test_launcher_batch_limit < MAX_SHARDS):
+        and 0 < args.test_launcher_batch_limit < MAX_BATCH_SIZE):
       self._test_launcher_batch_limit = args.test_launcher_batch_limit
 
     apk_path = os.path.join(
@@ -469,6 +519,10 @@ class GtestTestInstance(test_instance.TestInstance):
   @property
   def coverage_dir(self):
     return self._coverage_dir
+
+  @property
+  def deploy_mock_openxr_runtime(self):
+    return self._deploy_mock_openxr_runtime
 
   @property
   def enable_xml_result_parsing(self):
@@ -581,6 +635,14 @@ class GtestTestInstance(test_instance.TestInstance):
     """Map data dependencies via isolate."""
     self._data_deps.extend(
         self._data_deps_delegate(self._runtime_deps_path))
+    if self._proguard_mapping_path:
+      self._deobfuscator = deobfuscator.DeobfuscatorPool(
+          self._proguard_mapping_path)
+
+  def MaybeDeobfuscateLines(self, lines):
+    if not self._deobfuscator:
+      return lines
+    return self._deobfuscator.TransformLines(lines)
 
   def GetDataDependencies(self):
     """Returns the test suite's data dependencies.
@@ -637,8 +699,6 @@ class GtestTestInstance(test_instance.TestInstance):
         disabled_prefixes += ['MANUAL_']
       if not self._run_disabled:
         disabled_prefixes += ['DISABLED_', 'FLAKY_']
-      if not self._run_pre_tests:
-        disabled_prefixes += ['PRE_']
 
     disabled_filter_items += ['%s*' % dp for dp in disabled_prefixes]
     disabled_filter_items += ['*.%s*' % dp for dp in disabled_prefixes]
@@ -657,3 +717,7 @@ class GtestTestInstance(test_instance.TestInstance):
   #override
   def TearDown(self):
     """Do nothing."""
+    self.symbolizer.CleanUp()
+    if self._deobfuscator:
+      self._deobfuscator.Close()
+      self._deobfuscator = None

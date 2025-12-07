@@ -2,32 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/generic_sensor/platform_sensor_provider_chromeos.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
 #include "chromeos/components/sensors/fake_sensor_hal_server.h"
 #include "services/device/generic_sensor/sensor_impl.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {
 
@@ -69,19 +61,14 @@ class FakeClient : public PlatformSensor::Client {
 class PlatformSensorProviderChromeOSTest : public ::testing::Test {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::sensors::SensorHalDispatcher::Initialize();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     sensor_hal_server_ =
         std::make_unique<chromeos::sensors::FakeSensorHalServer>();
     provider_ = std::make_unique<PlatformSensorProviderChromeOS>();
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::sensors::SensorHalDispatcher::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void AddDevice(int32_t iio_device_id,
@@ -124,7 +111,7 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
         kNumberOfAxes + 1);
     for (uint32_t i = 0; i < kNumberOfAxes; ++i) {
-      channels_data[i].id = channels[i];
+      channels_data[i].id = UNSAFE_TODO(channels[i]);
       channels_data[i].sample_data = kFakeSampleData;
     }
     channels_data.back().id = chromeos::sensors::mojom::kTimestampChannel;
@@ -152,22 +139,11 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
   }
 
   void RegisterSensorHalServer() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // MojoConnectionServiceProvider::BootstrapMojoConnectionForIioService is
     // responsible for calling this outside unit tests.
     // This will eventually call PlatformSensorProviderChromeOS::SetUpChannel().
     chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
         sensor_hal_server_->PassRemote());
-#else
-    // As SensorHalDispatcher is only defined in ash, manually setting up Mojo
-    // connection between |fake_sensor_hal_server_| and |provider_|.
-    // This code is duplicating what SensorHalDispatcher::EstablishMojoChannel()
-    // does.
-    mojo::PendingRemote<chromeos::sensors::mojom::SensorService> pending_remote;
-    sensor_hal_server_->CreateChannel(
-        pending_remote.InitWithNewPipeAndPassReceiver());
-    provider_->SetUpChannel(std::move(pending_remote));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
@@ -501,11 +477,6 @@ TEST_F(PlatformSensorProviderChromeOSTest, ReconnectClient) {
 
   // Simulate a disconnection between |provider_| and SensorHalDispatcher.
   provider_->OnSensorHalClientFailure(base::TimeDelta());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Need to manually re-connect the Mojo as SensorHalDispatcher doesn't exist
-  // in Lacros-Chrome.
-  RegisterSensorHalServer();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }

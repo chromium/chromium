@@ -219,9 +219,10 @@ std::wstring GetChannelIdentifier(version_info::Channel channel,
     case version_info::Channel::UNKNOWN:
     case version_info::Channel::CANARY:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      NOTREACHED_IN_MIGRATION();
-#endif
+      NOTREACHED();
+#else
       return std::wstring();
+#endif
 
     case version_info::Channel::DEV:
       if (!include_arch)

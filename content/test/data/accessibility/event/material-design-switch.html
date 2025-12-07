@@ -1,0 +1,65 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Switch Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-switch"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const switch1 = document.createElement("md-switch");
+            switch1.id = "test-switch";
+            switch1.setAttribute("aria-label", "Test Switch");
+            statusDiv.appendChild(switch1);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const switch1 = document.getElementById("test-switch");
+            if (switch1) {
+                switch1.selected = true;
+                await waitForStable(switch1);
+            }
+        },
+        async () => {
+            const switch1 = document.getElementById("test-switch");
+            if (switch1) {
+                switch1.selected = false;
+                await waitForStable(switch1);
+            }
+        },
+        async () => {
+            const switch1 = document.getElementById("test-switch");
+            if (switch1) {
+                switch1.selected = true;
+                await waitForStable(switch1);
+            }
+        }
+    ];
+</script>
+</html>

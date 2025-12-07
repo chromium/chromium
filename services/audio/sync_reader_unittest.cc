@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -75,7 +76,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   auto socket = std::make_unique<base::CancelableSyncSocket>();
   SyncReader reader(base::BindRepeating(&NoLog), params, socket.get());
   ASSERT_TRUE(reader.IsValid());
-  const base::WritableSharedMemoryMapping shmem =
+  base::WritableSharedMemoryMapping shmem =
       reader.TakeSharedMemoryRegion().Map();
   ASSERT_TRUE(shmem.IsValid());
   auto* const buffer = shmem.GetMemoryAs<media::AudioOutputBuffer>();
@@ -83,7 +84,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   reader.RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
 
   uint32_t signal;
-  EXPECT_EQ(socket->Receive(&signal, sizeof(signal)), sizeof(signal));
+  EXPECT_EQ(socket->Receive(base::byte_span_from_ref(signal)), sizeof(signal));
 
   // So far, this is an ordinary stream.
   // Now |reader| expects data to be written to the shared memory. The renderer
@@ -111,7 +112,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   }
 
   ++signal;
-  EXPECT_EQ(socket->Send(&signal, sizeof(signal)), sizeof(signal));
+  EXPECT_EQ(socket->Send(base::byte_span_from_ref(signal)), sizeof(signal));
 
   // The purpose of the test is to ensure this call doesn't result in undefined
   // behavior, which should be verified by sanitizers.
@@ -191,13 +192,14 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     ++buffer_index;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ false,
@@ -208,13 +210,14 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     ++buffer_index;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ false,
@@ -225,14 +228,15 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     // Send an incorrect buffer index, which will count as a missed callback.
     buffer_index = 123;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ true,
@@ -243,14 +247,15 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     // Send an incorrect buffer index, which will count as a missed callback.
     buffer_index = 123;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ true,
@@ -265,7 +270,7 @@ TEST_F(SyncReaderTest, PropagatesDelay) {
 
   reader_->RequestMoreData(delay, delay_timestamp, {});
   uint32_t signal;
-  EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+  EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)), sizeof(signal));
   buffer_->params.bitstream_data_size =
       shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
   std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -282,7 +287,8 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -295,7 +301,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
     // assume it's got the wrong data back from the Renderer process, and will
     // proceed to drop it. This causes a glitch.
     uint32_t buffer_index = 321;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     reader_->Read(output_bus.get(), false);
   }
@@ -306,7 +312,8 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -320,7 +327,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     // This time, send the correct buffer index.
     uint32_t buffer_index = 2;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     reader_->Read(output_bus.get(), false);
   }
@@ -331,7 +338,8 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);

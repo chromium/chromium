@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(UI_BASE) GlobalMediaKeysListenerWin
   void StopWatchingMediaKey(KeyboardCode key_code) override;
 
  private:
-  // Called by SingletonHwndObserver.
+  // Called by SingletonHwnd.
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   static bool has_instance_;

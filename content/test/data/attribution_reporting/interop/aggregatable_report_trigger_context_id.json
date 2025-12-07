@@ -168,7 +168,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "0",
-            "source_registration_time": "0",
             "version": "1.0"
           },
           "trigger_context_id": ""
@@ -215,7 +214,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "0",
-            "source_registration_time": "0",
             "version": "1.0"
           },
           "trigger_context_id": "456"
@@ -236,7 +234,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "0",
-            "source_registration_time": "0",
             "version": "1.0"
           },
           "trigger_context_id": "654"

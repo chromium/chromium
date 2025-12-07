@@ -8,12 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
-#include "third_party/blink/public/common/features.h"
+#include "gin/public/gin_embedders.h"
 #include "url/url_util.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -28,13 +27,8 @@ RegisterAdMacroBindings::RegisterAdMacroBindings(AuctionV8Helper* v8_helper)
 RegisterAdMacroBindings::~RegisterAdMacroBindings() = default;
 
 void RegisterAdMacroBindings::AttachToContext(v8::Local<v8::Context> context) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdAuctionReportingWithMacroApi)) {
-    return;
-  }
-
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kRegisterAdMacroBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(context, &RegisterAdMacroBindings::RegisterAdMacro,
                         v8_this)
@@ -52,7 +46,8 @@ void RegisterAdMacroBindings::Reset() {
 void RegisterAdMacroBindings::RegisterAdMacro(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   RegisterAdMacroBindings* bindings = static_cast<RegisterAdMacroBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())
+          ->Value(gin::kRegisterAdMacroBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
@@ -69,18 +64,15 @@ void RegisterAdMacroBindings::RegisterAdMacro(
   }
 
   auto ContainsDisallowedCharacters = [](const std::string& str) -> bool {
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         str, [](char c) { return !url::IsURIComponentChar(c) && c != '%'; });
   };
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart1)) {
-    if (ContainsDisallowedCharacters(macro_name) ||
-        ContainsDisallowedCharacters(macro_value)) {
-      args.GetIsolate()->ThrowException(
-          v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-              "registerAdMacro macro key and value must be URL-encoded")));
-    }
+  if (ContainsDisallowedCharacters(macro_name) ||
+      ContainsDisallowedCharacters(macro_value)) {
+    args.GetIsolate()->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "registerAdMacro macro key and value must be URL-encoded")));
   }
 
   bindings->ad_macro_map_[macro_name] = macro_value;

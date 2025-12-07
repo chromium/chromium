@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -39,9 +34,9 @@ bool IsMemoryAvailable(size_t required_memory) {
   // This function is not implemented on FUCHSIA, yet. (crbug.com/986608)
   return true;
 #else
-  uint64_t max_allocatable =
-      std::min(base::SysInfo::AmountOfAvailablePhysicalMemory(),
-               static_cast<uint64_t>(partition_alloc::MaxDirectMapped()));
+  uint64_t max_allocatable = std::min(
+      base::SysInfo::AmountOfAvailablePhysicalMemory().InBytesUnsigned(),
+      static_cast<uint64_t>(partition_alloc::MaxDirectMapped()));
 
   return max_allocatable >= required_memory;
 #endif
@@ -508,20 +503,23 @@ int ObfuscatedFileUtilMemoryDelegate::ReadFile(const base::FilePath& path,
   if (!dp || dp->entry->type != Entry::kFile)
     return net::ERR_FILE_NOT_FOUND;
 
-  int64_t remaining = dp->entry->file_content.size() - offset;
-  if (offset < 0)
+  if (offset < 0 || buf_len < 0) {
     return net::ERR_INVALID_ARGUMENT;
+  }
 
   // Seeking past the end of the file is ok, but returns nothing.
   // This matches FileStream::Context behavior.
-  if (remaining < 0)
+  int64_t remaining = dp->entry->file_content.size() - offset;
+  if (remaining < 0) {
     return 0;
+  }
 
   if (buf_len > remaining)
     buf_len = static_cast<int>(remaining);
 
-  base::ranges::copy(
-      base::span(dp->entry->file_content).subspan(offset, buf_len),
+  std::ranges::copy(
+      base::span(dp->entry->file_content)
+          .subspan(static_cast<size_t>(offset), static_cast<size_t>(buf_len)),
       buf->data());
 
   return buf_len;
@@ -575,14 +573,15 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
 
   if (offset_u == dp->entry->file_content.size()) {
     dp->entry->file_content.insert(dp->entry->file_content.end(), buf->data(),
-                                   buf->data() + buf_len);
+                                   UNSAFE_TODO(buf->data() + buf_len));
   } else {
     if (last_position > dp->entry->file_content.size())
       dp->entry->file_content.resize(last_position);
 
     // if |offset_u| is larger than the original file size, there will be null
     // bytes between the end of the file and |offset_u|.
-    memcpy(dp->entry->file_content.data() + offset, buf->data(), buf_len);
+    UNSAFE_TODO(
+        memcpy(dp->entry->file_content.data() + offset, buf->data(), buf_len));
   }
   return buf_len;
 }

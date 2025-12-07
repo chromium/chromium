@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_utterance.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -51,7 +52,7 @@ SpeechSynthesisUtterance::SpeechSynthesisUtterance(ExecutionContext* context,
       mojom_utterance_(mojom::blink::SpeechSynthesisUtterance::New()) {
   // Set default values. |voice| intentionally left null.
   mojom_utterance_->text = text;
-  mojom_utterance_->lang = String("");
+  mojom_utterance_->lang = g_empty_string;
   mojom_utterance_->volume = mojom::blink::kSpeechSynthesisDoublePrefNotSet;
   mojom_utterance_->rate = mojom::blink::kSpeechSynthesisDoublePrefNotSet;
   mojom_utterance_->pitch = mojom::blink::kSpeechSynthesisDoublePrefNotSet;
@@ -156,9 +157,9 @@ void SpeechSynthesisUtterance::Start(SpeechSynthesis* synthesis) {
   mojom::blink::SpeechSynthesisUtterancePtr mojom_utterance_to_send =
       mojom_utterance_->Clone();
   if (mojom_utterance_to_send->voice.IsNull())
-    mojom_utterance_to_send->voice = String("");
+    mojom_utterance_to_send->voice = g_empty_string;
   if (mojom_utterance_to_send->text.IsNull())
-    mojom_utterance_to_send->text = String("");
+    mojom_utterance_to_send->text = g_empty_string;
 
   receiver_.reset();
 
@@ -169,7 +170,7 @@ void SpeechSynthesisUtterance::Start(SpeechSynthesis* synthesis) {
           context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
   // Add a disconnect handler so we can cleanup appropriately.
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &SpeechSynthesisUtterance::OnDisconnected, WrapWeakPersistent(this)));
 }
 

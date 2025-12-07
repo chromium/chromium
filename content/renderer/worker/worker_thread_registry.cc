@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "content/public/renderer/worker_thread.h"
 
 namespace content {
@@ -35,7 +36,7 @@ struct WorkerThreadData {
   WorkerThreadObservers observers;
 };
 
-ABSL_CONST_INIT thread_local WorkerThreadData* worker_data = nullptr;
+constinit thread_local WorkerThreadData* worker_data = nullptr;
 
 // A task-runner that refuses to run any tasks.
 class DoNothingTaskRunner : public base::SequencedTaskRunner {

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 
@@ -27,7 +28,8 @@ class ASH_EXPORT RefreshRateController
       public aura::WindowObserver,
       public display::DisplayObserver,
       public display::DisplayConfigurator::Observer,
-      public DisplayPerformanceModeController::Observer {
+      public DisplayPerformanceModeController::Observer,
+      public aura::WindowTreeHostObserver {
  public:
   RefreshRateController(
       display::DisplayConfigurator* display_configurator,
@@ -57,11 +59,17 @@ class ASH_EXPORT RefreshRateController
   void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& displays) override;
 
-  // DisplayPerformanceModeController::Observer:
+  // DisplayPerformanceModeController::Observer implementation.
   void OnDisplayPerformanceModeChanged(
       DisplayPerformanceModeController::ModeState new_state) override;
 
+  // WindowTreeHostObserver implementation.
+  void OnSetPreferredRefreshRate(aura::WindowTreeHost* host,
+                                 float preferred_refresh_rate) override;
+
   void StopObservingPowerStatusForTest();
+
+  void OnWindowTreeHostCreated(aura::WindowTreeHost* host);
 
  private:
   // The requested state for refresh rate throttling.
@@ -76,10 +84,13 @@ class ASH_EXPORT RefreshRateController
       const std::optional<std::vector<float>>& refresh_rates);
 
   void UpdateStates();
-  void RefreshThrottleState();
+  void RefreshOverrideState();
   void RefreshVrrState();
   ThrottleState GetDesiredThrottleState();
   ThrottleState GetDynamicThrottleState();
+  // Returns a refresh rates override map populated according to the desired
+  // throttle state.
+  display::DisplayConfigurator::RefreshRateOverrideMap GetThrottleOverrides();
 
   // Not owned.
   raw_ptr<display::DisplayConfigurator> display_configurator_;
@@ -94,6 +105,7 @@ class ASH_EXPORT RefreshRateController
   bool force_throttle_ = false;
 
   std::unordered_map<int64_t, std::vector<float>> display_refresh_rates_;
+  std::unordered_map<int64_t, float> refresh_rate_preferences_;
 
   base::ScopedObservation<ash::PowerStatus, ash::PowerStatus::Observer>
       power_status_observer_{this};

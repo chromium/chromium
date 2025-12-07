@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<html>
+  <head>
+    <title>
+      Unlistifying with empty span should not freeze renderer in any writing
+      mode
+    </title>
+    <style>
+      section {
+        border: 1px solid #000;
+        margin: 20px;
+        padding: 10px;
+      }
+      h2 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2>LTR Horizontal</h2>
+      <div id="compose1" contenteditable="true">
+        <ul>
+          <li>a<br /><span></span></li>
+          <li>b</li>
+        </ul>
+      </div>
+    </section>
+    <section>
+      <h2>RTL Horizontal</h2>
+      <div id="compose2" contenteditable="true" dir="rtl">
+        <ul>
+          <li>a<br /><span></span></li>
+          <li>b</li>
+        </ul>
+      </div>
+    </section>
+    <section>
+      <h2>LTR Vertical (vertical-rl)</h2>
+      <div
+        id="compose3"
+        contenteditable="true"
+        style="writing-mode: vertical-rl"
+      >
+        <ul>
+          <li>a<br /><span></span></li>
+          <li>b</li>
+        </ul>
+      </div>
+    </section>
+    <section>
+      <h2>RTL Vertical (vertical-rl)</h2>
+      <div
+        id="compose4"
+        contenteditable="true"
+        dir="rtl"
+        style="writing-mode: vertical-rl"
+      >
+        <ul>
+          <li>a<br /><span></span></li>
+          <li>b</li>
+        </ul>
+      </div>
+    </section>
+    <script>
+      function applyCommand(id) {
+        const ul = document.querySelector(`#${id} ul`);
+        const range = document.createRange();
+        range.selectNode(ul);
+        const selection = getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("insertUnorderedList", false);
+      }
+      test(() => {
+        applyCommand("compose1");
+      }, "Unlistifying with empty span should not freeze renderer in LTR Horizontal mode");
+      test(() => {
+        applyCommand("compose2");
+      }, "Unlistifying with empty span should not freeze renderer in RTL Horizontal mode");
+      test(() => {
+        applyCommand("compose3");
+      }, "Unlistifying with empty span should not freeze renderer in LTR Vertical mode");
+      test(() => {
+        applyCommand("compose4");
+      }, "Unlistifying with empty span should not freeze renderer in RTL Vertical mode");
+    </script>
+  </body>
+</html>

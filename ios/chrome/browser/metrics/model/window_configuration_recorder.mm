@@ -33,14 +33,16 @@ NSArray<UIWindow*>* ForegroundWindowsForApplication(
   NSMutableArray<UIWindow*>* windows = [NSMutableArray arrayWithCapacity:3];
 
   for (UIScene* scene in application.connectedScenes) {
-    if (scene.activationState != UISceneActivationStateForegroundActive)
+    if (scene.activationState != UISceneActivationStateForegroundActive) {
       continue;
+    }
 
     UIWindowScene* windowScene = base::apple::ObjCCast<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
       // Skip other windows (like keyboard) that keep showing up.
-      if (![window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")])
+      if (![window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")]) {
         continue;
+      }
 
       [windows addObject:window];
       break;  // Stop after one window per scene. This may be wrong.

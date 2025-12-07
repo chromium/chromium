@@ -1,0 +1,20 @@
+Name: VectorDrawable
+Short Name: vectordrawable
+URL: https://dl.google.com/dl/android/maven2/androidx/vectordrawable/vectordrawable/1.2.0/vectordrawable-1.2.0.aar
+Version: 1.2.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Android Support VectorDrawable
+
+See also: https://developer.android.com/jetpack/androidx/releases/vectordrawable#1.2.0
+
+
+Local Modifications:
+No modifications.

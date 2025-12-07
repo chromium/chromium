@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <unordered_set>
@@ -12,8 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -77,8 +78,8 @@ void ParseTagAndAttributeParams(
   for (size_t i = 0; i < split.size(); i += 2) {
     const std::string& tag_name = split[i];
     const std::string& attribute = split[i + 1];
-    auto item_iter = base::ranges::find(*tag_and_attributes_list, tag_name,
-                                        &TagAndAttributesItem::tag_name);
+    auto item_iter = std::ranges::find(*tag_and_attributes_list, tag_name,
+                                       &TagAndAttributesItem::tag_name);
     if (item_iter == tag_and_attributes_list->end()) {
       TagAndAttributesItem item;
       item.tag_name = tag_name;
@@ -146,7 +147,7 @@ void HandleElement(
   }
   // Populate the element's attributes, but only collect the ones that are
   // configured in the finch study.
-  const auto& tag_attribute_iter = base::ranges::find(
+  const auto& tag_attribute_iter = std::ranges::find(
       tag_and_attributes_list, base::ToLowerASCII(child_node->tag_name),
       &TagAndAttributesItem::tag_name);
   if (tag_attribute_iter != tag_and_attributes_list.end()) {
@@ -213,7 +214,7 @@ bool ShouldHandleElement(
       element.HasAttribute("src")) {
     return true;
   }
-  const auto& tag_attribute_iter = base::ranges::find(
+  const auto& tag_attribute_iter = std::ranges::find(
       tag_and_attributes_list, base::ToLowerASCII(element.TagName().Ascii()),
       &TagAndAttributesItem::tag_name);
   if (tag_attribute_iter == tag_and_attributes_list.end()) {
@@ -232,7 +233,7 @@ bool ShouldHandleElement(
 
 }  // namespace
 
-TagAndAttributesItem::TagAndAttributesItem() {}
+TagAndAttributesItem::TagAndAttributesItem() = default;
 
 TagAndAttributesItem::TagAndAttributesItem(
     const std::string& tag_name_param,
@@ -242,7 +243,7 @@ TagAndAttributesItem::TagAndAttributesItem(
 TagAndAttributesItem::TagAndAttributesItem(const TagAndAttributesItem& item)
     : tag_name(item.tag_name), attributes(item.attributes) {}
 
-TagAndAttributesItem::~TagAndAttributesItem() {}
+TagAndAttributesItem::~TagAndAttributesItem() = default;
 
 uint32_t ThreatDOMDetails::kMaxNodes = 500;
 uint32_t ThreatDOMDetails::kMaxAttributes = 100;
@@ -272,7 +273,7 @@ ThreatDOMDetails::ThreatDOMDetails(content::RenderFrame* render_frame,
       &ThreatDOMDetails::OnThreatReporterReceiver, base::Unretained(this)));
 }
 
-ThreatDOMDetails::~ThreatDOMDetails() {}
+ThreatDOMDetails::~ThreatDOMDetails() = default;
 
 void ThreatDOMDetails::GetThreatDOMDetails(
     GetThreatDOMDetailsCallback callback) {

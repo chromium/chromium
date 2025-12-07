@@ -7,7 +7,6 @@
 
 #include "base/time/time.h"
 #include "components/compose/core/browser/compose_enums.mojom.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
@@ -39,6 +38,7 @@ extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
 extern const char kComposeContextMenuCtr[];
 extern const char kComposeProactiveNudgeCtr[];
+extern const char kComposeSelectionNudgeCtr[];
 extern const char kComposeProactiveNudgeShowStatus[];
 extern const char kOpenComposeDialogResult[];
 extern const char kComposeStartSessionEntryPoint[];
@@ -58,6 +58,10 @@ enum class ComposeContextMenuCtrEvent {
 // Keep in sync with ComposeRequestReason in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeRequestReason {
+  // When the ComposeUpfrontInputModes featuer is enabled, the "first request"
+  // is split between one of three input modes.
+  // TODO(b/371054228): Deprecate the kFirstRequest bucket when upfront inputs
+  // launches.
   kFirstRequest = 0,
   kRetryRequest = 1,
   kUpdateRequest = 2,
@@ -65,7 +69,10 @@ enum class ComposeRequestReason {
   kLengthElaborateRequest = 4,
   kToneCasualRequest = 5,
   kToneFormalRequest = 6,
-  kMaxValue = kToneFormalRequest,
+  kFirstRequestPolishMode = 7,
+  kFirstRequestElaborateMode = 8,
+  kFirstRequestFormalizeMode = 9,
+  kMaxValue = kFirstRequestFormalizeMode,
 };
 
 // Close reasons for sessions that start with FRE or MSBB dialogs.
@@ -77,7 +84,8 @@ enum class ComposeFreOrMsbbSessionCloseReason {
   kAckedOrAcceptedWithoutInsert = 2,
   kAckedOrAcceptedWithInsert = 3,
   kReplacedWithNewSession = 4,
-  kMaxValue = kReplacedWithNewSession,
+  kExceededMaxDuration = 5,
+  kMaxValue = kExceededMaxDuration,
 };
 
 // Keep in sync with ComposeSessionCloseReasonType in
@@ -85,10 +93,15 @@ enum class ComposeFreOrMsbbSessionCloseReason {
 enum class ComposeSessionCloseReason {
   kInsertedResponse = 0,
   kCloseButtonPressed = 1,
-  kAbandoned = 2,
+  kAbandoned = 2,  // Tab closed or navigated away with an open session.
   kReplacedWithNewSession = 3,
-  kCanceledBeforeResponseReceived = 4,
-  kMaxValue = kCanceledBeforeResponseReceived,
+  kCanceledBeforeResponseReceived =
+      4,  // Close button pressed with pending navigation.
+  kExceededMaxDuration = 5,
+  kEndedAtFre = 6,
+  kAckedFreEndedAtMsbb = 7,
+  kEndedAtMsbb = 8,
+  kMaxValue = kEndedAtMsbb,
 };
 
 // Keep in sync with ComposeSessionEventCounts in
@@ -163,9 +176,9 @@ enum class ComposeShowStatus {
 };
 
 // Enum for calculating the CTR of the Compose proactive nudge.
-// Keep in sync with ComposeProactiveNudgeCtrEvent in
+// Keep in sync with ComposeNudgeCtrEvent in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeProactiveNudgeCtrEvent {
+enum class ComposeNudgeCtrEvent {
   kNudgeDisplayed = 0,
   kDialogOpened = 1,
   kUserDisabledProactiveNudge = 2,
@@ -314,6 +327,11 @@ struct ComposeSessionEvents {
   unsigned int on_device_responses = 0;
   // Number of server responses received.
   unsigned int server_responses = 0;
+
+  // True if amy compose response was filtered
+  bool session_contained_filtered_response = false;
+  // True if any compose response contained error
+  bool session_contained_any_error = false;
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose
@@ -414,7 +432,9 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 
-void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event);
+void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event);
+
+void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event);
 
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status);
 
@@ -438,6 +458,8 @@ void LogComposeRequestStatus(EvalLocation eval_location,
 void LogComposeRequestDuration(base::TimeDelta duration,
                                EvalLocation eval_location,
                                bool is_ok);
+
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
 
 void LogComposeFirstRunSessionCloseReason(
     ComposeFreOrMsbbSessionCloseReason reason);

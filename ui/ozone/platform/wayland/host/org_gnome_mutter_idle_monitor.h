@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 
@@ -76,7 +75,6 @@ class OrgGnomeMutterIdleMonitor {
   uint32_t active_watch_id_ = 0;
 
   scoped_refptr<dbus::Bus> bus_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   THREAD_CHECKER(main_thread_checker_);

@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "dbus/bus.h"
@@ -64,6 +64,9 @@ class TestService : public base::Thread {
 
   // Returns true if the bus has the D-Bus thread.
   bool HasDBusThread();
+
+  // Returns the unique name of the connection to D-Bus.
+  std::string GetConnectionName();
 
   // Sends "Test" signal with the given message from the exported object.
   void SendTestSignal(const std::string& message);

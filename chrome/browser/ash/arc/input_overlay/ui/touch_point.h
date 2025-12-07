@@ -64,7 +64,6 @@ class TouchPoint : public views::View {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void OnFocus() override;
-  void OnBlur() override;
 
  protected:
   void PaintBackground(gfx::Canvas* canvas, ActionType action_type);

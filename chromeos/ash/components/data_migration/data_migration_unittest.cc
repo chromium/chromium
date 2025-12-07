@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/data_migration/data_migration.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -101,10 +101,10 @@ class DataMigrationTest : public ::testing::Test {
 
   bool FileIsReady(int64_t payload_id) {
     base::FilePath file_path = BuildFilePayloadPath(payload_id);
-    int64_t file_size_in_bytes = 0;
-    return base::PathExists(file_path) &&
-           base::GetFileSize(file_path, &file_size_in_bytes) &&
-           file_size_in_bytes >=
+    std::optional<int64_t> file_size_in_bytes = base::GetFileSize(file_path);
+
+    return file_size_in_bytes.has_value() &&
+           file_size_in_bytes.value() >=
                nearby_process_manager_.fake_nearby_connections()
                    .test_file_size_in_bytes();
   }
@@ -131,7 +131,7 @@ TEST_F(DataMigrationTest, CompletesAllFileTransfers) {
 
   ASSERT_TRUE(base::test::RunUntil([this]() {
     // All expected files have been written to disc.
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         requested_file_payload_ids_,
         [this](int64_t payload_id) { return FileIsReady(payload_id); });
   }));

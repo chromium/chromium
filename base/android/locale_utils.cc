@@ -15,22 +15,20 @@ namespace android {
 
 std::string GetDefaultCountryCode() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return ConvertJavaStringToUTF8(Java_LocaleUtils_getDefaultCountryCode(env));
+  return Java_LocaleUtils_getDefaultCountryCode(env);
 }
 
 std::string GetDefaultLocaleString() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> locale =
-      Java_LocaleUtils_getDefaultLocaleString(env);
-  return ConvertJavaStringToUTF8(locale);
+  return Java_LocaleUtils_getDefaultLocaleString(env);
 }
 
 std::string GetDefaultLocaleListString() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> locales =
-      Java_LocaleUtils_getDefaultLocaleListString(env);
-  return ConvertJavaStringToUTF8(locales);
+  return Java_LocaleUtils_getDefaultLocaleListString(env);
 }
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(LocaleUtils)

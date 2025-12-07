@@ -4,46 +4,33 @@
 
 package org.chromium.chrome.browser.xsurface_provider;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface_provider.hooks.XSurfaceHooks;
-import org.chromium.chrome.browser.xsurface_provider.hooks.XSurfaceHooksImpl;
-
-import java.lang.reflect.InvocationTargetException;
 
 /** Holds and provides an instance of {@link ProcessScope}. */
+@NullMarked
 public final class XSurfaceProcessScopeProvider {
-    private static ProcessScope sProcessScope;
+    private static @Nullable ProcessScope sProcessScope;
 
-    public static ProcessScope getProcessScope() {
+    public static @Nullable ProcessScope getProcessScope() {
         if (sProcessScope != null) {
             return sProcessScope;
         }
-        XSurfaceHooks hooks = XSurfaceHooksImpl.getInstance();
-        if (!hooks.isEnabled()) {
+        XSurfaceHooks hooks = ServiceLoaderUtil.maybeCreate(XSurfaceHooks.class);
+        if (hooks == null) {
             return null;
         }
-        sProcessScope = hooks.createProcessScope(getDependencyProviderFactory().create());
-        return sProcessScope;
-    }
 
-    private static ProcessScopeDependencyProviderFactory getDependencyProviderFactory() {
-        Class<?> dependencyProviderFactoryClazz;
-        try {
-            dependencyProviderFactoryClazz =
-                    Class.forName(
-                            "org.chromium.chrome.browser.app.xsurface_provider."
-                                    + "ProcessScopeDependencyProviderFactoryImpl");
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-        try {
-            return (ProcessScopeDependencyProviderFactory)
-                    dependencyProviderFactoryClazz.getDeclaredMethod("getInstance").invoke(null);
-        } catch (NoSuchMethodException e) {
-        } catch (InvocationTargetException e) {
-        } catch (IllegalAccessException e) {
-        }
-        return null;
+        ProcessScopeDependencyProviderFactory dependencyProviderFactory =
+                ServiceLoaderUtil.maybeCreate(ProcessScopeDependencyProviderFactory.class);
+        assumeNonNull(dependencyProviderFactory);
+        sProcessScope = hooks.createProcessScope(dependencyProviderFactory.create());
+        return sProcessScope;
     }
 
     public static void setProcessScopeForTesting(ProcessScope processScope) {

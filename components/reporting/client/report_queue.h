@@ -6,7 +6,6 @@
 #define COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl_shader_pixel_local_storage.h"
 
 #include <array>
@@ -27,13 +22,17 @@ const char* WebGLShaderPixelLocalStorage::ExtensionName() {
 }
 
 WebGLShaderPixelLocalStorage::WebGLShaderPixelLocalStorage(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext* execution_context)
     : WebGLExtension(context),
       coherent_(context->ExtensionsUtil()->SupportsExtension(
           "GL_ANGLE_shader_pixel_local_storage_coherent")) {
-  context->EnableExtensionIfSupported("OES_draw_buffers_indexed");
-  context->EnableExtensionIfSupported("EXT_color_buffer_float");
-  context->EnableExtensionIfSupported("EXT_color_buffer_half_float");
+  context->EnableExtensionIfSupported("OES_draw_buffers_indexed",
+                                      execution_context);
+  context->EnableExtensionIfSupported("EXT_color_buffer_float",
+                                      execution_context);
+  context->EnableExtensionIfSupported("EXT_color_buffer_half_float",
+                                      execution_context);
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_shader_pixel_local_storage");
   context->ContextGL()->GetIntegerv(GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE,
@@ -44,7 +43,7 @@ WebGLExtensionName WebGLShaderPixelLocalStorage::GetName() const {
   return kWebGLShaderPixelLocalStorageName;
 }
 
-GLboolean WebGLShaderPixelLocalStorage::isCoherent() const {
+bool WebGLShaderPixelLocalStorage::isCoherent() const {
   return coherent_;
 }
 
@@ -146,7 +145,7 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValuefvWEBGL(
     return;
   }
   context->ContextGL()->FramebufferPixelLocalClearValuefvANGLE(
-      plane, value.data() + src_offset);
+      plane, value.subspan(src_offset).data());
 }
 
 void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
@@ -165,7 +164,7 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
     return;
   }
   context->ContextGL()->FramebufferPixelLocalClearValueivANGLE(
-      plane, value.data() + src_offset);
+      plane, value.subspan(src_offset).data());
 }
 
 void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueuivWEBGL(
@@ -184,7 +183,7 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueuivWEBGL(
     return;
   }
   context->ContextGL()->FramebufferPixelLocalClearValueuivANGLE(
-      plane, value.data() + src_offset);
+      plane, value.subspan(src_offset).data());
 }
 
 void WebGLShaderPixelLocalStorage::beginPixelLocalStorageWEBGL(

@@ -7,9 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer_impl.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
-#include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_registry_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_metadata_syncer_impl.h"
@@ -23,20 +21,12 @@ namespace device_sync {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   CryptAuthGCMManager::RegisterPrefs(registry);
-  CryptAuthDeviceManager::RegisterPrefs(registry);
-  if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
-    CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
-    CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
-    CryptAuthSchedulerImpl::RegisterPrefs(registry);
-  } else {
-    CryptAuthEnrollmentManagerImpl::RegisterPrefs(registry);
-  }
-
-  if (features::ShouldUseV2DeviceSync()) {
-    CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
-    CryptAuthMetadataSyncerImpl::RegisterPrefs(registry);
-    SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
-  }
+  CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
+  CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
+  CryptAuthSchedulerImpl::RegisterPrefs(registry);
+  CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
+  CryptAuthMetadataSyncerImpl::RegisterPrefs(registry);
+  SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
 
   if (features::IsCryptauthAttestationSyncingEnabled()) {
     AttestationCertificatesSyncerImpl::RegisterPrefs(registry);

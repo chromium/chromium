@@ -124,9 +124,8 @@ BubbleView::BubbleView(const InitParams& init_params,
 BubbleView::~BubbleView() = default;
 
 void BubbleView::AddedToWidget() {
-  if (features::IsVcTrayTitleHeaderEnabled()) {
-    AddChildView(std::make_unique<TitleView>());
-  }
+  AddChildView(std::make_unique<TitleView>(base::BindOnce(
+      &BubbleView::CloseBubbleView, weak_factory_.GetWeakPtr())));
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).
@@ -191,7 +190,7 @@ void BubbleView::AddedToWidget() {
         std::make_unique<SetValueEffectsView>(controller_));
   }
 
-  if (GetCameraEffectsController()->is_eligible_for_background_replace()) {
+  if (GetCameraEffectsController()->IsEligibleForBackgroundReplace()) {
     set_camera_background_view_ = scroll_contents_view->AddChildView(
         std::make_unique<SetCameraBackgroundView>(this, controller_.get()));
   }

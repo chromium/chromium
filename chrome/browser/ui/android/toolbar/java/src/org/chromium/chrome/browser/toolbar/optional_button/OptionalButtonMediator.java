@@ -9,9 +9,12 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class OptionalButtonMediator {
     private final PropertyModel mModel;
 
@@ -19,7 +22,7 @@ class OptionalButtonMediator {
         mModel = model;
     }
 
-    void updateButton(ButtonData buttonData) {
+    void updateButton(@Nullable ButtonData buttonData) {
         mModel.set(OptionalButtonProperties.BUTTON_DATA, buttonData);
         if (buttonData != null) {
             mModel.set(OptionalButtonProperties.IS_ENABLED, buttonData.isEnabled());
@@ -30,8 +33,12 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK, transitionStartedCallback);
     }
 
-    void setIconForegroundColor(ColorStateList colorStateList) {
+    void setIconForegroundColor(@Nullable ColorStateList colorStateList) {
         mModel.set(OptionalButtonProperties.ICON_TINT_LIST, colorStateList);
+    }
+
+    void setOnBeforeWidthTransitionCallback(OnBeforeWidthTransitionCallback callback) {
+        mModel.set(OptionalButtonProperties.ON_BEFORE_WIDTH_TRANSITION_CALLBACK, callback);
     }
 
     void setBackgroundColorFilter(@ColorInt int backgroundColor) {
@@ -42,6 +49,14 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.ICON_BACKGROUND_ALPHA, alpha);
     }
 
+    void setIsIncognitoBranded(boolean isIncognitoBranded) {
+        mModel.set(OptionalButtonProperties.IS_INCOGNITO_BRANDED, isIncognitoBranded);
+    }
+
+    void setCanChangeVisibility(boolean canChange) {
+        mModel.set(OptionalButtonProperties.CAN_CHANGE_VISIBILITY, canChange);
+    }
+
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mModel.set(
                 OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
@@ -50,6 +65,10 @@ class OptionalButtonMediator {
 
     public void setPaddingStart(int paddingStart) {
         mModel.set(OptionalButtonProperties.PADDING_START, paddingStart);
+    }
+
+    public void setCollapsedStateWidth(int width) {
+        mModel.set(OptionalButtonProperties.COLLAPSED_STATE_WIDTH, width);
     }
 
     public void cancelTransition() {

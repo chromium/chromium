@@ -58,5 +58,7 @@
 	<string>Allow content_shell access to location</string>
 	<key>com.apple.developer.web-browser-engine.host</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>Allow content_shell access to NFC</string>
 </dict>
 </plist>

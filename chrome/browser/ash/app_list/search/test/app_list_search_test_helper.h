@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -88,7 +87,7 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   void StartSearch(const std::string& query);
 
   void SearchAndWaitForProviders(const std::string& query,
-                                 const std::set<ResultType> providers);
+                                 const std::set<ResultType>& providers);
 
   std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
   PublishedResults();

@@ -35,6 +35,19 @@ constexpr char kChromotingHostServicesIpcName[] =
     "chromoting.host_services_mojo_ipc";
 #endif
 
+#if BUILDFLAG(IS_MAC)
+
+#if !defined(NDEBUG)
+constexpr char kAgentProcessBrokerIpcName[] =
+    "chromoting.agent_process_broker_debug_mojo_ipc";
+#else
+// Must match the `MachServices` key in org.chromium.chromoting.broker.plist.
+constexpr char kAgentProcessBrokerIpcName[] =
+    "chromoting.agent_process_broker_mojo_ipc";
+#endif
+
+#endif
+
 }  // namespace
 
 const base::FilePath::CharType kHostBinaryName[] =
@@ -78,10 +91,27 @@ GetChromotingHostServicesServerName() {
               // None of the core Windows processes runs as the host owner so we
               // can't just put username in the path. This is fine since the
               // named pipe is accessible by all authenticated users.
+              // On Mac, the channel is managed by the AgentProcessBroker, which
+              // runs as root, so we can't put the username in the path either.
               kChromotingHostServicesIpcName
 #endif
                   ));
   return *server_name;
 }
+
+#if BUILDFLAG(IS_MAC)
+
+const char kAgentProcessBrokerMessagePipeId[] = "agent-process-broker";
+
+const mojo::NamedPlatformChannel::ServerName&
+GetAgentProcessBrokerServerName() {
+  static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
+      server_name(
+          named_mojo_ipc_server::WorkingDirectoryIndependentServerNameFromUTF8(
+              kAgentProcessBrokerIpcName));
+  return *server_name;
+}
+
+#endif
 
 }  // namespace remoting

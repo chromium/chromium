@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -35,13 +35,12 @@ namespace {
 // aborted.
 constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(10);
 
-extensions::file_system_provider::ServiceWorkerLifetimeManager*
-GetServiceWorkerLifetimeManager(Profile* profile) {
+ServiceWorkerLifetimeManager* GetServiceWorkerLifetimeManager(
+    Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
-  return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-      profile);
+  return ServiceWorkerLifetimeManager::Get(profile);
 }
 
 IconSet DefaultIconSet(const extensions::ExtensionId& extension_id) {
@@ -172,8 +171,6 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
           icon_set.value_or(DefaultIconSet(provider_id_.GetExtensionId()))) {
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       provider_id_.GetExtensionId(), extensions::EventRouter::Get(profile),
-      base::BindRepeating(&ExtensionProvider::OnLacrosOperationForwarded,
-                          weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile));
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
       provider_id_.GetExtensionId() == extension_misc::kODFSExtensionId) {
@@ -218,11 +215,6 @@ void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
 void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
-}
-
-void ExtensionProvider::OnLacrosOperationForwarded(int request_id,
-                                                   base::File::Error error) {
-  request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
 }  // namespace ash::file_system_provider

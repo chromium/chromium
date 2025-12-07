@@ -134,16 +134,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Enable Following Feed background refresh</string>
-			<key>Key</key>
-			<string>FollowingFeedBackgroundRefreshEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Enable server-driven schedule</string>
 			<key>Key</key>
 			<string>FeedServerDrivenBackgroundRefreshScheduleEnabled</string>

@@ -34,6 +34,7 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -48,6 +49,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -100,6 +104,10 @@ int CalculatePingDays(const base::Time& last_ping_day) {
   return last_ping_day.is_null()
              ? update_client::kDaysFirstTime
              : std::max((base::Time::Now() - last_ping_day).InDays(), 0);
+}
+
+PrefService* GetPrefService(base::WeakPtr<content::BrowserContext> context) {
+  return context ? ExtensionPrefs::Get(context.get())->pref_service() : nullptr;
 }
 
 ExtensionActivityDataService::ExtensionActivityDataService(
@@ -171,38 +179,47 @@ void ExtensionActivityDataService::OnExtensionPrefsWillBeDestroyed(
 ChromeUpdateClientConfig::ChromeUpdateClientConfig(
     content::BrowserContext* context,
     std::optional<GURL> url_override)
-    : context_(context),
+    : context_(context->GetWeakPtr()),
       impl_(ExtensionUpdateClientCommandLineConfigPolicy(
                 base::CommandLine::ForCurrentProcess()),
             /*require_encryption=*/true),
-      pref_service_(ExtensionPrefs::Get(context)->pref_service()),
       persisted_data_(update_client::CreatePersistedData(
-          pref_service_,
+          base::BindRepeating(&extensions::GetPrefService, context_),
           std::make_unique<ExtensionActivityDataService>(
               ExtensionPrefs::Get(context)))),
       url_override_(url_override) {
-  DCHECK(pref_service_);
+  base::FilePath path;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
+  crx_cache_ = base::MakeRefCounted<update_client::CrxCache>(
+      result ? std::optional<base::FilePath>(
+                   path.AppendASCII("extensions_crx_cache"))
+             : std::nullopt);
 }
 
 ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
 
 base::TimeDelta ChromeUpdateClientConfig::InitialDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.InitialDelay();
 }
 
 base::TimeDelta ChromeUpdateClientConfig::NextCheckDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.NextCheckDelay();
 }
 
 base::TimeDelta ChromeUpdateClientConfig::OnDemandDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.OnDemandDelay();
 }
 
 base::TimeDelta ChromeUpdateClientConfig::UpdateDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.UpdateDelay();
 }
 
 std::vector<GURL> ChromeUpdateClientConfig::UpdateUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_override_.has_value()) {
     return {*url_override_};
   }
@@ -210,6 +227,7 @@ std::vector<GURL> ChromeUpdateClientConfig::UpdateUrl() const {
 }
 
 std::vector<GURL> ChromeUpdateClientConfig::PingUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_override_.has_value()) {
     return {*url_override_};
   }
@@ -217,37 +235,45 @@ std::vector<GURL> ChromeUpdateClientConfig::PingUrl() const {
 }
 
 std::string ChromeUpdateClientConfig::GetProdId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return update_client::UpdateQueryParams::GetProdIdString(
       update_client::UpdateQueryParams::ProdId::CRX);
 }
 
 base::Version ChromeUpdateClientConfig::GetBrowserVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.GetBrowserVersion();
 }
 
 std::string ChromeUpdateClientConfig::GetChannel() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetChannelForExtensionUpdates();
 }
 
 std::string ChromeUpdateClientConfig::GetLang() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ChromeUpdateQueryParamsDelegate::GetLang();
 }
 
 std::string ChromeUpdateClientConfig::GetOSLongName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.GetOSLongName();
 }
 
 base::flat_map<std::string, std::string>
 ChromeUpdateClientConfig::ExtraRequestParams() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.ExtraRequestParams();
 }
 
 std::string ChromeUpdateClientConfig::GetDownloadPreference() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::string();
 }
 
 scoped_refptr<update_client::NetworkFetcherFactory>
 ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ =
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
@@ -265,6 +291,7 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
 
 scoped_refptr<update_client::CrxDownloaderFactory>
 ChromeUpdateClientConfig::GetCrxDownloaderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!crx_downloader_factory_) {
     crx_downloader_factory_ =
         update_client::MakeCrxDownloaderFactory(GetNetworkFetcherFactory());
@@ -274,6 +301,7 @@ ChromeUpdateClientConfig::GetCrxDownloaderFactory() {
 
 scoped_refptr<update_client::UnzipperFactory>
 ChromeUpdateClientConfig::GetUnzipperFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!unzip_factory_) {
     unzip_factory_ = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
@@ -284,6 +312,7 @@ ChromeUpdateClientConfig::GetUnzipperFactory() {
 
 scoped_refptr<update_client::PatcherFactory>
 ChromeUpdateClientConfig::GetPatcherFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!patch_factory_) {
     patch_factory_ = base::MakeRefCounted<update_client::PatchChromiumFactory>(
@@ -292,11 +321,8 @@ ChromeUpdateClientConfig::GetPatcherFactory() {
   return patch_factory_;
 }
 
-bool ChromeUpdateClientConfig::EnabledDeltas() const {
-  return impl_.EnabledDeltas();
-}
-
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Historically, Chrome hasn't used background downloaders like BITS for
   // extension updates. In theory, they should work in most cases. When they
   // don't (for example because they don't pass the credentials necessary to
@@ -307,6 +333,7 @@ bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
 }
 
 bool ChromeUpdateClientConfig::EnabledCupSigning() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_override_.has_value()) {
     return false;
   }
@@ -314,30 +341,36 @@ bool ChromeUpdateClientConfig::EnabledCupSigning() const {
 }
 
 PrefService* ChromeUpdateClientConfig::GetPrefService() const {
-  return pref_service_;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return extensions::GetPrefService(context_);
 }
 
 update_client::PersistedData* ChromeUpdateClientConfig::GetPersistedData()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return persisted_data_.get();
 }
 
 bool ChromeUpdateClientConfig::IsPerUserInstall() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::IsPerUserInstall();
 }
 
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 ChromeUpdateClientConfig::GetProtocolHandlerFactory() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.GetProtocolHandlerFactory();
 }
 
 std::optional<bool> ChromeUpdateClientConfig::IsMachineExternallyManaged()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.IsMachineExternallyManaged();
 }
 
 update_client::UpdaterStateProvider
 ChromeUpdateClientConfig::GetUpdaterStateProvider() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_.GetUpdaterStateProvider();
 }
 
@@ -358,13 +391,9 @@ void ChromeUpdateClientConfig::SetChromeUpdateClientConfigFactoryForTesting(
   GetFactoryCallback() = factory;
 }
 
-std::optional<base::FilePath> ChromeUpdateClientConfig::GetCrxCachePath()
+scoped_refptr<update_client::CrxCache> ChromeUpdateClientConfig::GetCrxCache()
     const {
-  base::FilePath path;
-  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
-  return result ? std::optional<base::FilePath>(
-                      path.AppendASCII("extensions_crx_cache"))
-                : std::nullopt;
+  return crx_cache_;
 }
 
 bool ChromeUpdateClientConfig::IsConnectionMetered() const {

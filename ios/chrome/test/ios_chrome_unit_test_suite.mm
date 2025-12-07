@@ -10,7 +10,7 @@
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
-#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -65,6 +65,17 @@ IOSChromeUnitTestSuite::~IOSChromeUnitTestSuite() {}
 void IOSChromeUnitTestSuite::Initialize() {
   url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
 
+  // Force unittests to run using en-US so if testing string output will work
+  // regardless of the system language.
+  ui::ResourceBundle::InitSharedInstanceWithLocale(
+      "en-US", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+  base::FilePath resources_pack_path;
+  base::PathService::Get(base::DIR_ASSETS, &resources_pack_path);
+  resources_pack_path =
+      resources_pack_path.Append(FILE_PATH_LITERAL("resources.pak"));
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      resources_pack_path, ui::kScaleFactorNone);
+
   // Add an additional listener to do the extra initialization for unit tests.
   // It will be started before the base class listeners and ended after the
   // base class listeners.
@@ -75,9 +86,9 @@ void IOSChromeUnitTestSuite::Initialize() {
   // Call the superclass Initialize() method after adding the listener.
   web::WebTestSuite::Initialize();
 
-  // Ensure that all BrowserStateKeyedServiceFactories are built before any
-  // test is run so that the dependencies are correctly resolved.
-  EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  // Ensure that all KeyedServiceFactories are built before any test is run so
+  // that the dependencies are correctly resolved.
+  EnsureProfileKeyedServiceFactoriesBuilt();
 
   // Register a SingleThreadTaskRunner for base::RecordAction as overridding
   // it in individual tests is unsafe (as there is no way to unregister).

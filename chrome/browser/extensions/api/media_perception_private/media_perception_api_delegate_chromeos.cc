@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/chromeos/delegate_to_browser_gpu_service_accelerator_factory.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,15 +35,13 @@ std::string GetComponentNameForComponentType(
       LOG(ERROR) << "No component type requested.";
       return "";
   }
-  NOTREACHED_IN_MIGRATION() << "Reached component type not in switch.";
-  return "";
+  NOTREACHED() << "Reached component type not in switch.";
 }
 
 api::media_perception_private::ComponentInstallationError
 GetComponentInstallationErrorForComponentManagerAshError(
     const component_updater::ComponentManagerAsh::Error error) {
   switch (error) {
-    case component_updater::ComponentManagerAsh::Error::ERROR_MAX:
     case component_updater::ComponentManagerAsh::Error::NONE:
       return api::media_perception_private::ComponentInstallationError::kNone;
     case component_updater::ComponentManagerAsh::Error::UNKNOWN_COMPONENT:
@@ -64,8 +62,7 @@ GetComponentInstallationErrorForComponentManagerAshError(
       return api::media_perception_private::ComponentInstallationError::
           kNotFound;
   }
-  NOTREACHED_IN_MIGRATION() << "Reached component error type not in switch.";
-  return api::media_perception_private::ComponentInstallationError::kNone;
+  NOTREACHED() << "Reached component error type not in switch.";
 }
 
 void OnLoadComponent(
@@ -82,7 +79,8 @@ void OnLoadComponent(
 MediaPerceptionAPIDelegateChromeOS::MediaPerceptionAPIDelegateChromeOS() =
     default;
 
-MediaPerceptionAPIDelegateChromeOS::~MediaPerceptionAPIDelegateChromeOS() {}
+MediaPerceptionAPIDelegateChromeOS::~MediaPerceptionAPIDelegateChromeOS() =
+    default;
 
 void MediaPerceptionAPIDelegateChromeOS::LoadCrOSComponent(
     const extensions::api::media_perception_private::ComponentType& type,

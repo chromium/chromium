@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
+
 #import "ios/chrome/browser/find_in_page/model/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
@@ -16,12 +18,28 @@ FindTabHelper::FindTabHelper(web::WebState* web_state) {
   }
 }
 
-FindTabHelper::~FindTabHelper() {}
+FindTabHelper::~FindTabHelper() {
+  // If there is a controller then it needs to be detached from `web_state`
+  // before the call to `-dealloc`.
+  [controller_ detachFromWebState];
+  controller_ = nil;
+}
 
 void FindTabHelper::DismissFindNavigator() {
   // Same as `StopFinding()` except the UI is not marked as inactive so it can
   // be set back up if needed later.
   [controller_ disableFindInPage];
+}
+
+void FindTabHelper::SetFullscreenController(
+    FullscreenController* fullscreen_controller) {
+  if (!fullscreen_controller) {
+    // If the tab helper is being disconnected from the browser then stop the
+    // find session.
+    StopFinding();
+  }
+  DCHECK(controller_);
+  controller_.fullscreenController = fullscreen_controller;
 }
 
 void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {
@@ -50,11 +68,14 @@ void FindTabHelper::ContinueFinding(FindDirection direction) {
     [controller_ findPreviousStringInPage];
 
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
 void FindTabHelper::StopFinding() {
+  if (!IsFindUIActive()) {
+    return;
+  }
   SetFindUIActive(false);
   [controller_ disableFindInPage];
 }
@@ -101,9 +122,5 @@ void FindTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (IsFindUIActive()) {
-    StopFinding();
-  }
+  StopFinding();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(FindTabHelper)

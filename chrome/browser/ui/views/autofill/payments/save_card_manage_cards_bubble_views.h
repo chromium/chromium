@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_MANAGE_CARDS_BUBBLE_VIEWS_H_
 
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace autofill {
 
@@ -16,9 +17,13 @@ namespace autofill {
 // credit card that was just saved, a [Manage cards] button that links to the
 // Autofill settings page, and a [Done] button that closes the bubble.
 class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
+  METADATA_HEADER(SaveCardManageCardsBubbleViews, SaveCardBubbleViews)
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveCardBubbleManageCardsButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveCardBubbleManageCardsViewId);
+
   // Bubble will be anchored to |anchor_view|.
-  SaveCardManageCardsBubbleViews(views::View* anchor_view,
+  SaveCardManageCardsBubbleViews(views::BubbleAnchor anchor_view,
                                  content::WebContents* web_contents,
                                  SaveCardBubbleController* controller);
 
@@ -26,11 +31,10 @@ class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
       delete;
   SaveCardManageCardsBubbleViews& operator=(
       const SaveCardManageCardsBubbleViews&) = delete;
+  ~SaveCardManageCardsBubbleViews() override;
 
  private:
   std::unique_ptr<views::View> CreateMainContentView() override;
-
-  ~SaveCardManageCardsBubbleViews() override;
 };
 
 }  // namespace autofill

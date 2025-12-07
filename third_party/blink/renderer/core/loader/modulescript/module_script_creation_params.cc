@@ -9,16 +9,23 @@ namespace blink {
 String ModuleScriptCreationParams::ModuleTypeToString(
     const ModuleType module_type) {
   switch (module_type) {
-    case ModuleType::kJavaScript:
-      return "JavaScript";
+    case ModuleType::kJavaScriptOrWasm:
+      return "JavaScript-or-Wasm";
     case ModuleType::kJSON:
       return "JSON";
     case ModuleType::kCSS:
       return "CSS";
     case ModuleType::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
+}
+
+std::variant<ParkableString, base::HeapArray<uint8_t>>
+ModuleScriptCreationParams::CopySource() const {
+  if (module_type_ == ResolvedModuleType::kWasm) {
+    return base::HeapArray<uint8_t>::CopiedFrom(GetWasmSource());
+  }
+  return GetSourceText();
 }
 
 }  // namespace blink

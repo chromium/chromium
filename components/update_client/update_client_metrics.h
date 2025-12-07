@@ -6,22 +6,11 @@
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
 
 #include <cstddef>
+#include <string>
 
 #include "base/time/time.h"
 
 namespace update_client::metrics {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Changes should be reflected in
-// "UpdateClientBackgroundDownloaderMacStartDownloadOutcome" in enums.xml.
-enum class BDMStartDownloadOutcome {
-  kImmediateError = 0,
-  kDownloadRecoveredFromCache = 1,
-  kSessionHasOngoingDownload = 2,
-  kNewDownloadTaskCreated = 3,
-  kTooManyTasks = 4,
-  kMaxValue = kTooManyTasks
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Changes should be reflected in
@@ -34,36 +23,15 @@ enum class UpdateCheckResult {
   kMaxValue = kNoUpdate
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Changes should be reflected in
-// "UpdateClientCanUpdateResult" in enums.xml.
-enum class CanUpdateResult {
-  kUpdatesDisabled = 0,
-  kCanceled = 1,
-  kCheckForUpdateOnly = 2,
-  kCanUpdate = 3,
-  kMaxValue = kCanUpdate
-};
-
-void RecordBDMStartDownloadOutcome(BDMStartDownloadOutcome outcome);
-
-void RecordBDMResultRequestorKnown(bool requestor_known);
-
-void RecordBDWNumJobsCleaned(size_t num_jobs_cleaned);
-
-void RecordBDWStaleDownloadAge(base::TimeDelta download_age);
-
-void RecordBDWExistingJobUsed(bool existing_job_used);
-
 void RecordCRXDownloadComplete(bool had_error);
-
-void RecordCRXDownloaderFallback();
 
 void RecordUpdateCheckResult(UpdateCheckResult result);
 
-void RecordCanUpdateResult(CanUpdateResult result);
-
 void RecordComponentUpdated();
+
+void RecordCRXDownloadTime(base::TimeDelta time, const std::string& app_id);
+
+void RecordCRXUnzipTime(base::TimeDelta time, const std::string& app_id);
 
 }  // namespace update_client::metrics
 

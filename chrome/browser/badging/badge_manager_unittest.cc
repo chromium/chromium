@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/common/web_app_id.h"
@@ -57,9 +55,6 @@ class BadgeManagerUnittest : public ::testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = builder.Build();
 
     provider_ = web_app::FakeWebAppProvider::Get(profile());
@@ -194,7 +189,6 @@ TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
   EXPECT_EQ(kAppId, delegate()->cleared_badges().front());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   std::unique_ptr<Profile> other_profile = std::make_unique<TestingProfile>();
   web_app::FakeWebAppProvider* new_provider =
@@ -253,7 +247,6 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   EXPECT_FALSE(other_updated_apps.empty());
   EXPECT_EQ(kAppId, other_updated_apps[0]);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests methods which call into the badge manager delegate do not crash when
 // the delegate is unset.

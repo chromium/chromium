@@ -4,6 +4,8 @@
 
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 
+#include "base/containers/map_util.h"
+
 namespace net {
 
 FirstPartySetsCacheFilter::MatchInfo::MatchInfo() = default;
@@ -43,8 +45,9 @@ FirstPartySetsCacheFilter::MatchInfo FirstPartySetsCacheFilter::GetMatchInfo(
   FirstPartySetsCacheFilter::MatchInfo res;
   if (browser_run_id_ > 0) {
     res.browser_run_id = browser_run_id_;
-    if (const auto it = filter_.find(site); it != filter_.end())
-      res.clear_at_run_id = it->second;
+    if (const int64_t* run_id = base::FindOrNull(filter_, site); run_id) {
+      res.clear_at_run_id = *run_id;
+    }
   }
   return res;
 }

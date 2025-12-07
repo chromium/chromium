@@ -13,30 +13,15 @@ GtkUiPlatformStub::GtkUiPlatformStub() = default;
 
 GtkUiPlatformStub::~GtkUiPlatformStub() = default;
 
-void GtkUiPlatformStub::OnInitialized(GtkWidget* widget) {}
-
-GdkKeymap* GtkUiPlatformStub::GetGdkKeymap() {
-  return nullptr;
-}
-
-GdkModifierType GtkUiPlatformStub::GetGdkKeyEventState(
-    const ui::KeyEvent& key_event) {
-  return static_cast<GdkModifierType>(0);
-}
-
-int GtkUiPlatformStub::GetGdkKeyEventGroup(const ui::KeyEvent& key_event) {
-  return 0;
-}
+void GtkUiPlatformStub::OnInitialized() {}
 
 GdkWindow* GtkUiPlatformStub::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return nullptr;
 }
 
-bool GtkUiPlatformStub::SetGtkWidgetTransientFor(
+void GtkUiPlatformStub::SetGtkWidgetTransientFor(
     GtkWidget* widget,
-    gfx::AcceleratedWidget parent) {
-  return false;
-}
+    gfx::AcceleratedWidget parent) {}
 
 void GtkUiPlatformStub::ClearTransientFor(gfx::AcceleratedWidget parent) {}
 
@@ -51,6 +36,10 @@ GtkUiPlatformStub::CreateInputMethodContext(
 }
 
 bool GtkUiPlatformStub::IncludeFontScaleInDeviceScale() const {
+  return false;
+}
+
+bool GtkUiPlatformStub::IncludeScaleInCursorSize() const {
   return false;
 }
 

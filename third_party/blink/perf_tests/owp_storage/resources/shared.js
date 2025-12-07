@@ -48,6 +48,130 @@ function createIncrementalBarrier(callback) {
   }
 }
 
+// These begin a readonly transaction on `db` scoped to `storeName`.
+function getStore(db, storeName) {
+  const transaction = db.transaction(storeName, 'readonly');
+  return transaction.objectStore(storeName);
+}
+function getIndex(db, storeName, indexName) {
+  const store = getStore(db, storeName);
+  return store.index(indexName);
+}
+
+// Promise wrapper for an IDBRequest.
+function wrapRequest(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () =>
+        reject(`Request failed with error: ${request.error}`);
+  });
+}
+
+/**
+ * Retrieves a value from an IndexedDB object store.
+ *
+ * This function queries the object store for a given key and returns a promise
+ * that resolves with the result of the get operation or rejects with an error
+ * message.
+ *
+ * @param {IDBTransaction} transaction The IndexedDB transaction to perform the
+ *     operation within.
+ * @param {string} storeName The name of the object store to query.
+ * @param {string|number} key The key used to retrieve the value from the store.
+ * @return {Promise} A promise that resolves with the value from the store, or
+ *     rejects with an error message.
+ */
+function getIDBValue(transaction, storeName, key) {
+  const store = transaction.objectStore(storeName);
+  return wrapRequest(store.get(key));
+}
+
+/**
+ * Retrieves multiple values from an IndexedDB object store.
+ *
+ * This function fetches data using an optional key range and batch size. If
+ * both `range` and `batchSize` are omitted or null, it retrieves all records
+ * from the store.
+ *
+ * @param {IDBTransaction} transaction The active IndexedDB transaction.
+ * @param {string} storeName The name of the object store to query.
+ * @param {IDBKeyRange|null} range Optional key range for filtering records.
+ *     Defaults to null.
+ * @param {number} batchSize Optional maximum number of records to retrieve. If
+ *     omitted or 0, fetches all records.
+ * @return {Promise<Array>} A promise that resolves with the retrieved records,
+ *     or rejects on error.
+ */
+function getAllIDBValues(transaction, storeName, range = null, batchSize) {
+    const store = transaction.objectStore(storeName);
+    return wrapRequest(store.getAll(range, batchSize));
+}
+
+/**
+ * Puts (inserts or updates) a value into an IndexedDB object store.
+ *
+ * This function inserts or updates the given value into the specified object
+ * store. It returns a promise that resolves with the result of the put
+ * operation or rejects with an error message if the operation fails.
+ *
+ * @param {IDBTransaction} transaction The IndexedDB transaction to perform the
+ *     operation within.
+ * @param {string} storeName The name of the object store to update.
+ * @param {Object} value The value to insert or update in the store.
+ * @return {Promise} A promise that resolves with the result of the put
+ *     operation, or rejects with an error message
+ */
+function putIDBValue(transaction, storeName, value) {
+  const store = transaction.objectStore(storeName);
+  return wrapRequest(store.put(value));
+}
+
+/**
+ * Retrieves multiple values from an IndexedDB object store by their keys.
+ *
+ * This function fetches records corresponding to the provided keys from the
+ * given object store. If any request fails, the promise is rejected.
+ *
+ * @param {IDBObjectStore} store The object store to query.
+ * @param {Array<IDBValidKey>} keys The keys to retrieve.
+ * @return {Promise<Array<Object|undefined>>} Promise resolving to an array of
+ *     retrieved values in the same order as input keys, or rejecting on
+ * failure.
+ */
+function bulkGetIDBValues(store, keys) {
+  return Promise.all(keys.map(key => wrapRequest(store.get(key))));
+}
+
+/**
+ * Inserts or updates multiple values in an IndexedDB object store.
+ *
+ * This function puts each value into the given object store and resolves when
+ * all operations succeed.
+ *
+ * @param {IDBObjectStore} store The object store to update.
+ * @param {Array<Object>} values The values to insert or update.
+ * @return {Promise<void>} Promise that resolves on success or rejects on
+ *     failure.
+ */
+function bulkPutIDBValues(store, values) {
+  return Promise.all(values.map(value => wrapRequest(store.put(value))));
+}
+
+/**
+ * Deletes multiple entries from an IndexedDB object store by their keys.
+ *
+ * This function removes the records for the given keys from the object store.
+ * If any delete operation fails, the promise is rejected.
+ *
+ * @param {IDBObjectStore} store The object store to delete from.
+ * @param {Array<IDBValidKey>} keys The keys to delete.
+ * @return {Promise<void>} Promise that resolves on success or rejects on
+ *     failure.
+ */
+function bulkDeleteIDBValues(store, keys) {
+  return Promise.all(keys.map(key => wrapRequest(store.delete(key))));
+}
+
 function transactionCompletePromise(txn) {
   return new Promise((resolve, reject) => {
     txn.oncomplete = resolve;

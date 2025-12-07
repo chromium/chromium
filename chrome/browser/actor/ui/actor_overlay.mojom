@@ -1,0 +1,36 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module actor.ui.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface ActorOverlayPageHandlerFactory {
+  // Create a page handler for the Actor Overlay and link it to the UI.
+  CreatePageHandler(pending_remote<ActorOverlayPage> page,
+    pending_receiver<ActorOverlayPageHandler> receiver);
+};
+
+// Renderer -> Browser
+interface ActorOverlayPageHandler {
+  // Notifies the Actor UI Tab Controller that the user's hovering status has
+  // changed.
+  OnHoverStatusChanged(bool is_hovering);
+
+  // Retrieves the current glow visibility state.
+  GetCurrentBorderGlowVisibility() => (bool is_visible);
+};
+
+// Browser -> Renderer
+interface ActorOverlayPage {
+  // Notifies the webui if the scrim background should be visible. This is based
+  // on if the mouse is hovering over the overlay or the handoff button.
+  SetScrimBackground(bool is_visible);
+
+  // Notifies the webui if the border glow should be visible.
+  SetBorderGlowVisibility(bool is_visible);
+};

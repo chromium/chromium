@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.screenshot_monitor;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Base class for detecting screenshots and notifying the {@code ScreenshotMonitorDelegate}. */
+@NullMarked
 public abstract class ScreenshotMonitor {
     private final ScreenshotMonitorDelegate mDelegate;
     private boolean mIsMonitoring;

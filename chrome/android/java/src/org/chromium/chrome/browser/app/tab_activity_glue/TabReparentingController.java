@@ -4,15 +4,15 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.List;
  * - The layout switches between tablet/phone.
  * - (Keep this list up to date by adding future conditions here)
  */
+@NullMarked
 public class TabReparentingController {
     /** Provides data to {@link TabReparentingController} facilitate reparenting tabs. */
     public interface Delegate {
@@ -45,7 +46,7 @@ public class TabReparentingController {
 
     /** Constructs a {@link TabReparentingController} with the given delegate. */
     public TabReparentingController(
-            @NonNull Delegate delegate, @NonNull AsyncTabParamsManager asyncTabParamsManager) {
+            Delegate delegate, AsyncTabParamsManager asyncTabParamsManager) {
         mDelegate = delegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
     }
@@ -80,7 +81,10 @@ public class TabReparentingController {
             Tab tab = tabs.get(i);
             if (tab.isLoading()) {
                 tab.stopLoading();
-                tab.getWebContents().getNavigationController().setNeedsReload();
+                WebContents webContents = tab.getWebContents();
+                if (webContents != null) {
+                    webContents.getNavigationController().setNeedsReload();
+                }
                 tabsStillLoading++;
             }
 
@@ -113,8 +117,8 @@ public class TabReparentingController {
 
     protected static void populateComprehensiveTabsFromModel(TabModel model, List<Tab> outputTabs) {
         TabList tabList = model.getComprehensiveModel();
-        for (int i = 0; i < tabList.getCount(); i++) {
-            outputTabs.add(tabList.getTabAt(i));
+        for (Tab tab : tabList) {
+            outputTabs.add(tab);
         }
     }
 }

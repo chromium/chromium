@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("os_feedback_ui") {
   sources = [
@@ -18,18 +17,18 @@ static_library("os_feedback_ui") {
   public_deps = [ ":url_constants" ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/os_feedback_ui/backend",
     "//ash/webui/os_feedback_ui/mojom",
-    "//ash/webui/os_feedback_ui/resources:resources",
+    "//ash/webui/os_feedback_ui/resources",
     "//ash/webui/os_feedback_ui/untrusted_resources:resources",
     "//chromeos/strings/",
     "//content/public/browser",
-    "//ui/resources",
     "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

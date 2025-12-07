@@ -37,13 +37,13 @@ void MathMLPainter::PaintStretchyOrLargeOperator(const PaintInfo& info,
   const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   UChar operator_character = parameters.operator_character;
   TextFragmentPaintInfo text_fragment_paint_info = {
-      StringView(&operator_character, 1), 0, 1,
+      StringView(base::span_from_ref(operator_character)), 0, 1,
       parameters.operator_shape_result_view.Get()};
   GraphicsContextStateSaver state_saver(info.context);
   info.context.SetFillColor(style.VisitedDependentColor(GetCSSPropertyColor()));
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
-  info.context.DrawText(style.GetFont(), text_fragment_paint_info,
+  info.context.DrawText(*style.GetFont(), text_fragment_paint_info,
                         gfx::PointF(paint_offset), kInvalidDOMNodeId,
                         auto_dark_mode);
 }
@@ -89,10 +89,12 @@ void MathMLPainter::PaintOperator(const PaintInfo& info,
   // box fragment, which relies on the min-max sizes instead. Shift the paint
   // offset to work around that issue, splitting the size error symmetrically.
   DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
+  bool is_ltr = style.GetWritingDirection().IsLtr() ||
+                !RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled();
   physical_offset.left +=
       (box_fragment_.Size().width - borders.HorizontalSum() -
        padding.HorizontalSum() - parameters.operator_inline_size) /
-      2;
+      2 * (is_ltr ? 1 : -1);
 
   PaintStretchyOrLargeOperator(info, paint_offset + physical_offset);
 }
@@ -101,7 +103,7 @@ void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
                                        PhysicalOffset paint_offset) {
   LayoutUnit base_child_width;
   LayoutUnit base_child_ascent;
-  if (box_fragment_.Children().size() > 0) {
+  if (!box_fragment_.Children().empty()) {
     const auto& base_child =
         To<PhysicalBoxFragment>(*box_fragment_.Children()[0]);
     base_child_width = base_child.Size().width;
@@ -134,7 +136,9 @@ void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
   auto radical_symbol_physical_offset = radical_symbol_offset.ConvertToPhysical(
       style.GetWritingDirection(),
       PhysicalSize(box_fragment_.Size().width, box_fragment_.Size().height),
-      PhysicalSize(parameters.operator_ascent,
+      PhysicalSize(RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled()
+                       ? parameters.operator_inline_size
+                       : parameters.operator_ascent,
                    parameters.operator_ascent + parameters.operator_descent));
   PaintStretchyOrLargeOperator(info,
                                paint_offset + radical_symbol_physical_offset);

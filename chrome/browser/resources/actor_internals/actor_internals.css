@@ -1,0 +1,59 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+th, td {
+  border: 1px solid #ccc;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+th {
+  background-color: #C0C0C0;
+}
+
+td {
+  background-color: #F0F0F0;
+    --initial-background-color: #F0F0F0;
+}
+
+#stop-logging {
+  display: none;
+}
+
+.type-b {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+.type-e {
+  color: darkred;
+  font-weight: bold;
+}
+
+.frontend-track {
+  background-color: #cacaca;
+  --initial-background-color: #cacaca;
+}
+
+.error-cell {
+  background-color: #ffb6b6;
+  font-weight: bold;
+}
+
+.whitespace-pre {
+  white-space: pre-wrap;
+}
+
+@keyframes newly-uncollapsed-fade-out {
+  from {
+    background-color: lightblue;
+  }
+  to {
+    background-color: var(--initial-background-color);
+  }
+}
+
+.newly-uncollapsed td {
+  animation: newly-uncollapsed-fade-out 2s;
+}

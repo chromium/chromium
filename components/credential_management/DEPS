@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/back_forward_cache/back_forward_cache_disable.h",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/mojom",
+  "+components/password_manager/core/common/credential_manager_types.h",
+  "+components/password_manager/core/browser/credential_manager_impl.h",
+  "+third_party/jni_zero/jni_zero.h",
+  "+content/public/browser",
+]

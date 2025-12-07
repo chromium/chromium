@@ -78,6 +78,12 @@ class WebRtcEventLogManager final
 
     virtual void DisableWebRtcEventLogging(
         const WebRtcEventLogPeerConnectionKey& key) = 0;
+
+    virtual void EnableWebRtcDataChannelLogging(
+        const WebRtcEventLogPeerConnectionKey& key) = 0;
+
+    virtual void DisableWebRtcDataChannelLogging(
+        const WebRtcEventLogPeerConnectionKey& key) = 0;
   };
 
   // Ensures that no previous instantiation of the class was performed, then
@@ -127,10 +133,15 @@ class WebRtcEventLogManager final
   void OnWebRtcEventLogWrite(content::GlobalRenderFrameHostId frame_id,
                              int lid,
                              const std::string& message) override;
+  void OnWebRtcDataChannelLogWrite(content::GlobalRenderFrameHostId frame_id,
+                                   int lid,
+                                   const std::string& message) override;
 
   // content::WebRtcEventLogger implementation.
   void EnableLocalLogging(const base::FilePath& base_path) override;
   void DisableLocalLogging() override;
+  void EnableDataChannelLogging(const base::FilePath& base_path) override;
+  void DisableDataChannelLogging() override;
 
   // Start logging a peer connection's WebRTC events to a file, which will
   // later be uploaded to a remote server. If a reply is provided, it will be
@@ -270,6 +281,13 @@ class WebRtcEventLogManager final
       const std::string& message,
       base::OnceCallback<void(std::pair<bool, bool>)> reply);
 
+  // An overload for testing which replies with a bool whether the message was
+  // successfully written to file or not.
+  void OnWebRtcDataChannelLogWrite(content::GlobalRenderFrameHostId frame_id,
+                                   int lid,
+                                   const std::string& message,
+                                   base::OnceCallback<void(bool)> reply);
+
   // An overload of EnableLocalLogging() replies true if the logging was
   // actually enabled. i.e. The logging was not already enabled before the call.
   void EnableLocalLogging(const base::FilePath& base_path,
@@ -285,10 +303,22 @@ class WebRtcEventLogManager final
   // actually disabled. i.e. The logging was enabled before the call.
   void DisableLocalLogging(base::OnceCallback<void(bool)> reply);
 
+  // For testing, replies with a bool indicating whether logging was
+  // successfully enabled or not.
+  void EnableDataChannelLogging(const base::FilePath& base_path,
+                                size_t max_file_size_bytes,
+                                base::OnceCallback<void(bool)> reply);
+  // For testing, replies with a bool indicating whether logging was
+  // successfully disabled or not.
+  void DisableDataChannelLogging(base::OnceCallback<void(bool)> reply);
+
   // WebRtcLocalEventLogsObserver implementation:
-  void OnLocalLogStarted(PeerConnectionKey peer_connection,
-                         const base::FilePath& file_path) override;
-  void OnLocalLogStopped(PeerConnectionKey peer_connection) override;
+  void OnLocalEventLogStarted(PeerConnectionKey peer_connection,
+                              const base::FilePath& file_path) override;
+  void OnLocalEventLogStopped(PeerConnectionKey peer_connection) override;
+  void OnLocalDataChannelLogStarted(PeerConnectionKey peer_connection,
+                                    const base::FilePath& file_path) override;
+  void OnLocalDataChannelLogStopped(PeerConnectionKey peer_connection) override;
 
   // WebRtcRemoteEventLogsObserver implementation:
   void OnRemoteLogStarted(PeerConnectionKey key,
@@ -353,6 +383,16 @@ class WebRtcEventLogManager final
       PeerConnectionKey key,
       const std::string& message,
       base::OnceCallback<void(std::pair<bool, bool>)> reply);
+
+  void EnableDataChannelLoggingInternal(const base::FilePath& base_path,
+                                        size_t max_file_size_bytes,
+                                        base::OnceCallback<void(bool)> reply);
+  void DisableDataChannelLoggingInternal(base::OnceCallback<void(bool)> reply);
+
+  void OnWebRtcDataChannelLogWriteInternal(
+      PeerConnectionKey key,
+      const std::string& message,
+      base::OnceCallback<void(bool)> reply);
 
   void StartRemoteLoggingInternal(
       int render_process_id,

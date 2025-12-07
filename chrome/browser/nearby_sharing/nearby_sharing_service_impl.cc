@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 
+#include <array>
 #include <utility>
 
 #include "ash/public/cpp/new_window_delegate.h"
@@ -15,6 +16,7 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
@@ -47,8 +50,6 @@
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
@@ -214,7 +215,7 @@ std::string GetDeviceId(
   std::optional<std::vector<uint8_t>> mac_address =
       GetBluetoothMacAddressFromCertificate(*certificate);
   if (mac_address) {
-    return base::NumberToString(base::FastHash(base::make_span(*mac_address)));
+    return base::NumberToString(base::FastHash(base::span(*mac_address)));
   }
 
   if (!certificate->id().empty()) {
@@ -245,7 +246,7 @@ bool IsOutOfStorage(const base::FilePath& file_path,
                     int64_t storage_required,
                     std::optional<int64_t> free_disk_space_for_testing) {
   int64_t free_space = free_disk_space_for_testing.value_or(
-      base::SysInfo::AmountOfFreeDiskSpace(file_path));
+      base::SysInfo::AmountOfFreeDiskSpace(file_path).value_or(-1));
   return free_space < storage_required;
 }
 
@@ -295,18 +296,27 @@ bool isVisibleForAdvertising(nearby_share::mojom::Visibility visibility) {
          visibility == nearby_share::mojom::Visibility::kYourDevices;
 }
 
+NearbyShareEncryptedMetadataKey AdvertisementToKey(
+    const sharing::mojom::AdvertisementPtr& advertisement) {
+  return NearbyShareEncryptedMetadataKey(
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>(
+          advertisement->salt),
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>(
+          advertisement->encrypted_metadata_key));
+}
+
 }  // namespace
 
 NearbySharingServiceImpl::NearbySharingServiceImpl(
-    PrefService* prefs,
-    NotificationDisplayService* notification_display_service,
+    user_manager::User& user,
     Profile* profile,
+    NotificationDisplayService* notification_display_service,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client,
     std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler)
-    : prefs_(prefs),
-      profile_(profile),
+    : profile_(profile),
+      prefs_(profile_->GetPrefs()),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
       power_client_(std::move(power_client)),
@@ -315,30 +325,27 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           IdentityManagerFactory::GetForProfile(profile),
           profile->GetURLLoaderFactory(),
           &nearby_share_http_notifier_)),
-      profile_info_provider_(
-          std::make_unique<NearbyShareProfileInfoProviderImpl>(profile_)),
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-              prefs,
-              http_client_factory_.get(),
-              profile_info_provider_.get())),
+              user,
+              http_client_factory_.get())),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
-          prefs,
+          profile_->GetProfileUserName(),
+          prefs_,
           http_client_factory_.get(),
-          local_device_data_manager_.get(),
-          profile_info_provider_.get())),
+          local_device_data_manager_.get())),
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
+          profile_->GetProfileUserName(),
+          profile->GetPath(),
+          prefs_,
           local_device_data_manager_.get(),
           contact_manager_.get(),
-          profile_info_provider_.get(),
-          prefs,
           profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
-          profile->GetPath(),
           http_client_factory_.get())),
       transfer_profiler_(std::make_unique<NearbyShareTransferProfiler>()),
       logger_(std::make_unique<NearbyShareLogger>()),
-      settings_(prefs, local_device_data_manager_.get()),
-      feature_usage_metrics_(prefs),
+      settings_(prefs_, local_device_data_manager_.get()),
+      feature_usage_metrics_(prefs_),
       on_network_changed_delay_timer_(
           FROM_HERE,
           kProcessNetworkChangeTimerDelay,
@@ -387,7 +394,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   GetBluetoothAdapter();
 
   nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
-      notification_display_service, this, prefs, profile_);
+      notification_display_service, this, prefs_, profile_);
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
@@ -686,20 +693,6 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
       << __func__ << ": A ReceiveSurface(" << ReceiveSurfaceStateToString(state)
       << ") has been registered";
 
-  // TODO(crbug.com/40753805): Remove these logs. They are only needed to help
-  // debug crbug.com/1186559.
-  if (state == ReceiveSurfaceState::kForeground) {
-    if (!IsBluetoothPresent()) {
-      CD_LOG(ERROR, Feature::NS) << __func__ << ": Bluetooth is not present.";
-    } else if (!IsBluetoothPowered()) {
-      CD_LOG(WARNING, Feature::NS) << __func__ << ": Bluetooth is not powered.";
-    } else {
-      CD_LOG(VERBOSE, Feature::NS)
-          << __func__ << ": This device's MAC address is: "
-          << bluetooth_adapter_->GetAddress();
-    }
-  }
-
   InvalidateReceiveSurfaceState();
   return StatusCodes::kOk;
 }
@@ -770,7 +763,11 @@ NearbySharingServiceImpl::ClearForegroundReceiveSurfaces() {
 }
 
 bool NearbySharingServiceImpl::IsInHighVisibility() const {
-  return in_high_visibility;
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    return prefs_->GetBoolean(prefs::kNearbySharingInHighVisibilityPrefName);
+  }
+
+  return in_high_visibility_;
 }
 
 bool NearbySharingServiceImpl::IsTransferring() const {
@@ -1053,7 +1050,7 @@ void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
 
 void NearbySharingServiceImpl::OpenURL(GURL url) {
   DCHECK(profile_);
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -1567,8 +1564,7 @@ NearbySharingServiceImpl::GetReceiveCallbacksFromState(
     case ReceiveSurfaceState::kBackground:
       return background_receive_callbacks_;
     case ReceiveSurfaceState::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return foreground_receive_callbacks_;
+      NOTREACHED();
   }
 }
 
@@ -1580,16 +1576,22 @@ bool NearbySharingServiceImpl::IsVisibleInBackground(
 const std::optional<std::vector<uint8_t>>
 NearbySharingServiceImpl::CreateEndpointInfo(
     const std::optional<std::string>& device_name) {
-  std::vector<uint8_t> salt;
-  std::vector<uint8_t> encrypted_key;
+  std::array<uint8_t, sharing::Advertisement::kSaltSize> salt;
+  salt = GenerateRandomBytes<sharing::Advertisement::kSaltSize>();
+  std::array<uint8_t,
+             sharing::Advertisement::kMetadataEncryptionKeyHashByteSize>
+      encrypted_key;
+  encrypted_key = GenerateRandomBytes<
+      sharing::Advertisement::kMetadataEncryptionKeyHashByteSize>();
 
   nearby_share::mojom::Visibility visibility = settings_.GetVisibility();
   if (isVisibleForAdvertising(visibility)) {
     std::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
         certificate_manager_->EncryptPrivateCertificateMetadataKey(visibility);
     if (encrypted_metadata_key) {
-      salt = encrypted_metadata_key->salt();
-      encrypted_key = encrypted_metadata_key->encrypted_key();
+      base::span(salt).copy_from(encrypted_metadata_key->salt());
+      base::span(encrypted_key)
+          .copy_from(encrypted_metadata_key->encrypted_key());
     } else {
       CD_LOG(WARNING, Feature::NS)
           << __func__ << ": Failed to encrypt private certificate metadata key "
@@ -1597,24 +1599,14 @@ NearbySharingServiceImpl::CreateEndpointInfo(
     }
   }
 
-  if (salt.empty() || encrypted_key.empty()) {
-    // Generate random metadata key.
-    salt = GenerateRandomBytes(sharing::Advertisement::kSaltSize);
-    encrypted_key = GenerateRandomBytes(
-        sharing::Advertisement::kMetadataEncryptionKeyHashByteSize);
-  }
-
   nearby_share::mojom::ShareTargetType device_type =
       nearby_share::mojom::ShareTargetType::kLaptop;
 
   std::unique_ptr<sharing::Advertisement> advertisement =
-      sharing::Advertisement::NewInstance(
-          std::move(salt), std::move(encrypted_key), device_type, device_name);
-  if (advertisement) {
-    return advertisement->ToEndpointInfo();
-  } else {
-    return std::nullopt;
-  }
+      sharing::Advertisement::NewInstance(salt, encrypted_key, device_type,
+                                          device_name);
+  return advertisement ? std::make_optional(advertisement->ToEndpointInfo())
+                       : std::nullopt;
 }
 
 void NearbySharingServiceImpl::GetBluetoothAdapter() {
@@ -1818,8 +1810,8 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
 
   // Once we get the advertisement, the first thing to do is decrypt the
   // certificate.
-  NearbyShareEncryptedMetadataKey encrypted_metadata_key(
-      advertisement->salt, advertisement->encrypted_metadata_key);
+  NearbyShareEncryptedMetadataKey encrypted_metadata_key =
+      AdvertisementToKey(advertisement);
   GetCertificateManager()->GetDecryptedPublicCertificate(
       std::move(encrypted_metadata_key),
       base::BindOnce(&NearbySharingServiceImpl::OnOutgoingDecryptedCertificate,
@@ -3043,8 +3035,8 @@ void NearbySharingServiceImpl::SendIntroduction(
   v1_frame->set_type(sharing::nearby::V1Frame::INTRODUCTION);
   v1_frame->set_allocated_introduction(introduction.release());
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
   connection->Write(std::move(data));
 
   // We've successfully written the introduction, so we now have to wait for the
@@ -3150,7 +3142,6 @@ void NearbySharingServiceImpl::OnCreatePayloads(
   // For metrics.
   all_cancelled_share_target_ids_.clear();
 
-  // TODO(crbug.com/1111458): Add preferred transfer type.
   nearby_connections_manager_->Connect(
       std::move(endpoint_info), *info->endpoint_id(),
       std::move(bluetooth_mac_address), settings_.GetDataUsage(),
@@ -3221,8 +3212,8 @@ void NearbySharingServiceImpl::WriteResponse(
   v1_frame->set_type(sharing::nearby::V1Frame::RESPONSE);
   v1_frame->mutable_connection_response()->set_status(status);
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection.Write(std::move(data));
 }
@@ -3235,8 +3226,8 @@ void NearbySharingServiceImpl::WriteCancel(NearbyConnection& connection) {
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
   v1_frame->set_type(sharing::nearby::V1Frame::CANCEL);
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection.Write(std::move(data));
 }
@@ -3320,8 +3311,8 @@ void NearbySharingServiceImpl::OnIncomingAdvertisementDecoded(
   transfer_profiler_->OnIncomingEndpointDecoded(endpoint_id,
                                                 IsInHighVisibility());
 
-  NearbyShareEncryptedMetadataKey encrypted_metadata_key(
-      advertisement->salt, advertisement->encrypted_metadata_key);
+  NearbyShareEncryptedMetadataKey encrypted_metadata_key =
+      AdvertisementToKey(advertisement);
   GetCertificateManager()->GetDecryptedPublicCertificate(
       std::move(encrypted_metadata_key),
       base::BindOnce(&NearbySharingServiceImpl::OnIncomingDecryptedCertificate,
@@ -4208,8 +4199,6 @@ void NearbySharingServiceImpl::OnFrameRead(
 void NearbySharingServiceImpl::HandleCertificateInfoFrame(
     const sharing::mojom::CertificateInfoFramePtr& certificate_frame) {
   DCHECK(certificate_frame);
-
-  // TODO(crbug.com/1113858): Allow saving certificates from remote devices.
 }
 
 void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(
@@ -4883,13 +4872,19 @@ void NearbySharingServiceImpl::OnStartDiscoveryResult(
 
 void NearbySharingServiceImpl::SetInHighVisibility(
     bool new_in_high_visibility) {
-  if (in_high_visibility == new_in_high_visibility) {
+  if (IsInHighVisibility() == new_in_high_visibility) {
     return;
   }
 
-  in_high_visibility = new_in_high_visibility;
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    prefs_->SetBoolean(prefs::kNearbySharingInHighVisibilityPrefName,
+                       /*value=*/new_in_high_visibility);
+  } else {
+    in_high_visibility_ = new_in_high_visibility;
+  }
+
   for (auto& observer : observers_) {
-    observer.OnHighVisibilityChanged(in_high_visibility);
+    observer.OnHighVisibilityChanged(new_in_high_visibility);
   }
 }
 

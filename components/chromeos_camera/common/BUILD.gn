@@ -12,7 +12,7 @@ mojom("common") {
   ]
 
   public_deps = [
-    "//media/mojo/mojom",
+    "//media/mojo/mojom:media_types",
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
   ]

@@ -18,8 +18,8 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
   TableViewItem* item = [[TableViewItem alloc] initWithType:0];
   item.accessibilityIdentifier = @"test_identifier";
   item.accessibilityTraits = UIAccessibilityTraitButton;
-  TableViewCell* cell = [[[item cellClass] alloc] init];
-  EXPECT_TRUE([cell isMemberOfClass:[TableViewCell class]]);
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  EXPECT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
   EXPECT_EQ(UIAccessibilityTraitNone, [cell accessibilityTraits]);
   EXPECT_FALSE([cell accessibilityIdentifier]);
 
@@ -27,22 +27,6 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
   [item configureCell:cell withStyler:styler];
   EXPECT_EQ(UIAccessibilityTraitButton, [cell accessibilityTraits]);
   EXPECT_NSEQ(@"test_identifier", [cell accessibilityIdentifier]);
-}
-
-TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
-  TableViewItem* item = [[TableViewItem alloc] initWithType:0];
-  TableViewCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewCell class]]);
-
-  // If a background view is present on the cell, the styler's background color
-  // should be ignored.
-  cell.backgroundView = [[UIView alloc] init];
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = UIColor.redColor;
-  styler.tableViewBackgroundColor = testColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_FALSE([testColor isEqual:cell.backgroundColor]);
 }
 
 TEST_F(TableViewItemTest, ConfigureCellAccessoryViewProperties) {
@@ -53,7 +37,7 @@ TEST_F(TableViewItemTest, ConfigureCellAccessoryViewProperties) {
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessoryView = expectedImage;
 
-  TableViewCell* cell = [[[item cellClass] alloc] init];
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
   // Internally in UITableViewCell, accessoryView takes precedence over

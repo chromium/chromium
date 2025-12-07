@@ -1,0 +1,59 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package permissions;
+
+option optimize_for = LITE_RUNTIME;
+
+// This message is used to provide metadata that is important for AIv4 models to
+// the chromium client. Please update the google3 version of this proto as well
+// if you change this file.
+message PermissionsAiv4ModelMetadata {
+  // Message used to store the thresholds to convert the ML output to the
+  // PermissionRequestRelevance values defined in:
+  // components/permissions/permission_request_enums.h
+  message RelevanceThresholds {
+    // The likelihood will be discretized to "kVeryLow" for scores in range
+    // [ 0, min_low_relevance ).
+    optional float min_low_relevance = 1;
+
+    // The likelihood will be discretized to "kLow" for scores in range
+    // [ min_low_relevance, min_medium_relevance ).
+    optional float min_medium_relevance = 2;
+
+    // The likelihood will be discretized to "kMedium" for scores in range
+    // [ min_medium_relevance, min_high_relevance ).
+    optional float min_high_relevance = 3;
+
+    // The likelihood will be discretized to "kHigh" for scores in range
+    // [ min_high_relevance, min_very_high_relevance ).
+    optional float min_very_high_relevance = 4;
+
+    // The likelihood will be discretized to "kVeryHigh" for scores in range
+    // [ min_very_high_relevance, 1 ].
+  }
+
+  // Enum used to specify the web permission that the model is trained on.
+  enum PermissionType {
+    // Unspecified permission type.
+    PERMISSION_TYPE_UNSPECIFIED = 0;
+    // The model has been trained on notification permissions.
+    NOTIFICATIONS_PERMISSION = 1;
+    // The model has been trained on geolocation permissions.
+    GEOLOCATION_PERMISSION = 2;
+  }
+
+  // The permission type that the model is trained on.
+  optional PermissionType permission_type = 1;
+
+  // Thresholds used to discretized the permission relevance scores.
+  optional RelevanceThresholds relevance_thresholds = 2;
+
+  // The input size that we expect the text embeddings to have for Aiv4.
+  // Depends on the output size of the passage embeddings model:
+  // services/passage_embeddings/passage_embedder.h
+  optional int32 text_embeddings_input_size = 3;
+}

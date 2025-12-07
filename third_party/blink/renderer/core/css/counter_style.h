@@ -7,13 +7,15 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
+#include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
-class StyleRuleCounterStyle;
 class CSSValue;
 
 enum class CounterStyleSystem {
@@ -53,9 +55,14 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   static CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value);
 
   // Returns nullptr if the @counter-style rule is invalid.
-  static CounterStyle* Create(const StyleRuleCounterStyle&);
+  static CounterStyle* Create(
+      const CascadeLayered<const StyleRuleCounterStyle>&);
 
   const StyleRuleCounterStyle& GetStyleRule() const { return *style_rule_; }
+  CascadeLayered<const StyleRuleCounterStyle> GetLayeredStyleRule() const {
+    return CascadeLayered<const StyleRuleCounterStyle>(style_rule_,
+                                                       cascade_layer_);
+  }
 
   AtomicString GetName() const;
   CounterStyleSystem GetSystem() const { return system_; }
@@ -89,7 +96,7 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   String GetSuffix() const { return suffix_; }
 
   String GenerateRepresentationWithPrefixAndSuffix(int value) const {
-    return prefix_ + GenerateRepresentation(value) + suffix_;
+    return StrCat({prefix_, GenerateRepresentation(value), suffix_});
   }
 
   AtomicString GetExtendsName() const { return extends_name_; }
@@ -131,7 +138,8 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   void Trace(Visitor*) const;
 
-  explicit CounterStyle(const StyleRuleCounterStyle& rule);
+  explicit CounterStyle(
+      const CascadeLayered<const StyleRuleCounterStyle>& rule);
   ~CounterStyle();
 
  private:
@@ -155,8 +163,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   String GenerateTextAlternativeWithoutPrefixSuffix(int value) const;
 
-  // The corresponding style rule in CSS.
+  // The corresponding style rule in CSS (and its associated CascadeLayer).
   Member<const StyleRuleCounterStyle> style_rule_;
+  Member<const CascadeLayer> cascade_layer_;
 
   // Tracks mutations of |style_rule_|.
   int style_rule_version_;

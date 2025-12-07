@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] pasting in contenteditable="plaintext-only" in contenteditable="true": beforeinput
+  assert_equals: beforeinput.data should be null expected (object) null but got (string) "abc"
+[FAIL] pasting in contenteditable="plaintext-only" in contenteditable="true": innerHTML
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><b>abc</b></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\">abc</div></div>"
+[FAIL] pasting in contenteditable="plaintext-only" in contenteditable="true" and contenteditable="false": beforeinput
+  assert_equals: beforeinput.data should be null expected (object) null but got (string) "abc"
+[FAIL] pasting in contenteditable="true" in contenteditable="plaintext-only": beforeinput
+  assert_true: beforeinput.dataTransfer should have the styled text as text/html expected true got false
+[FAIL] pasting in contenteditable="true" in contenteditable="plaintext-only" and contenteditable="false": beforeinput
+  assert_true: beforeinput.dataTransfer should have the styled text as text/html expected true got false
+[FAIL] pasting in contenteditable="true" in contenteditable="plaintext-only" and contenteditable="false": innerHTML
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><b>abc</b></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><b style=\\"white-space-collapse: collapse;\\">abc</b></div></div></div>"
+Harness: the test ran to completion.
+

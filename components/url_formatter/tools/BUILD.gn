@@ -7,7 +7,7 @@ executable("format_url") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/url_formatter:url_formatter",
-    "//url:url",
+    "//components/url_formatter",
+    "//url",
   ]
 }

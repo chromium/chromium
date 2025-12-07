@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/test/ash_test_suite.h"
 
+#include "ash/constants/ash_paths.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
-#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -39,14 +39,16 @@ void AshTestSuite::Initialize() {
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
+  ash::RegisterPathProvider();
+  CHECK(user_data_dir_.CreateUniqueTempDir());
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ash::DIR_USER_DATA, user_data_dir_.GetPath(),
+      /*is_absolute=*/true, /*create=*/false));
   ui::RegisterPathProvider();
 
   // Force unittests to run using en-US so if we test against string output,
   // it'll pass regardless of the system language.
   base::i18n::SetICUDefaultLocale("en_US");
-
-  ui::ResourceBundle::SetLottieParsingFunctions(
-      &lottie::ParseLottieAsStillImage, &lottie::ParseLottieAsThemedStillImage);
 
   LoadTestResources();
 

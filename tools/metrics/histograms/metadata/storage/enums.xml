@@ -26,6 +26,50 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActivateStorageAccessLoadOutcome) -->
+
+<enum name="ActivateStorageAccessLoadOutcome">
+  <int value="0" label="Failure: header disabled"/>
+  <int value="1" label="Failure: invalid storage access status"/>
+  <int value="2" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessLoadOutcome) -->
+
+<!-- LINT.IfChange(ActivateStorageAccessRetryOutcome) -->
+
+<enum name="ActivateStorageAccessRetryOutcome">
+  <int value="0" label="Failure: header disabled"/>
+  <int value="1"
+      label="Failure: ineffective retry, would not change cookie access"/>
+  <int value="2" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessRetryOutcome) -->
+
+<!-- LINT.IfChange(AdProtoDecompressionOutcome) -->
+
+<enum name="AdProtoDecompressionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
+
+<enum name="AllowedByStorageAccessType">
+  <int value="0"
+      label="kNone: The cookie was not accessible through
+             TopLevelStorageAccess or StorageAccess."/>
+  <int value="1"
+      label="kTopLevelOnly: The cookie was accessible via
+             TopLevelStorageAccess."/>
+  <int value="2"
+      label="kStorageAccessOnly: The cookie was accessible via StorageAccess."/>
+  <int value="3"
+      label="kTopLevelAndStorageAccess: The cookie was accessible via
+             TopLevelStorageAccess and StorageAccess"/>
+</enum>
+
 <enum name="AutograntViaFedCmOutcome">
   <int value="0" label="Allowed"/>
   <int value="1" label="Denied by permissions policy"/>
@@ -33,20 +77,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Denied by preventSilentAccess"/>
 </enum>
 
+<!-- LINT.IfChange(BlobBuildFromStreamResult) -->
+
+<enum name="BlobBuildFromStreamResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted while building"/>
+  <int value="2" label="Failed to allocate memory for blob"/>
+  <int value="3" label="Failed to allocate file space for blob"/>
+  <int value="4" label="Failed writing to file"/>
+</enum>
+
+<!-- LINT.ThenChange(//storage/browser/blob/blob_builder_from_stream.h:BlobBuildFromStreamResult) -->
+
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>
-</enum>
-
-<enum name="ClearDataSiteBlacklistCrossedReason">
-  <int value="0" label="Durable"/>
-  <int value="1" label="Notifications"/>
-  <int value="2" label="Engagement"/>
-  <int value="3" label="Notifications and Engagement"/>
-  <int value="4" label="Durable and Engagement"/>
-  <int value="5" label="Notifications and Durable"/>
-  <int value="6" label="Notifications, Durable, and Engagement"/>
-  <int value="7" label="Unknown"/>
 </enum>
 
 <enum name="ClearSiteDataParameters">
@@ -111,6 +156,26 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Svg"/>
   <int value="9" label="Filenames"/>
 </enum>
+
+<!-- LINT.IfChange(FileErrorCode) -->
+
+<enum name="FileErrorCode">
+  <int value="0" label="kOK"/>
+  <int value="1" label="kNotFoundErr"/>
+  <int value="2" label="kSecurityErr"/>
+  <int value="3" label="kAbortErr"/>
+  <int value="4" label="kNotReadableErr"/>
+  <int value="5" label="kEncodingErr"/>
+  <int value="6" label="kNoModificationAllowedErr"/>
+  <int value="7" label="kInvalidStateErr"/>
+  <int value="8" label="kSyntaxErr"/>
+  <int value="9" label="kInvalidModificationErr"/>
+  <int value="10" label="kQuotaExceededErr"/>
+  <int value="11" label="kTypeMismatchErr"/>
+  <int value="12" label="kPathExistsErr"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/fileapi/file_error.h:FileErrorCode) -->
 
 <enum name="FileReaderLoaderFailureType">
   <int value="0" label="Mojo pipe creation failed"/>
@@ -178,7 +243,19 @@ chromium-metrics-reviews@google.com.
       label="Windows, reached the root directory and couldn't watch it"/>
   <int value="4" label="Windows, error when calling CreateIoCompletionPort"/>
   <int value="5" label="Windows, error when calling ReadDirectoryChangesW"/>
+  <int value="6" label="Mac, error when the resolved target path is empty"/>
+  <int value="7" label="Mac, error when starting the FSEvents event stream"/>
 </enum>
+
+<!-- LINT.IfChange(IDBTransactionMode) -->
+
+<enum name="IDBTransactionMode">
+  <int value="0" label="ReadOnly"/>
+  <int value="1" label="ReadWrite"/>
+  <int value="2" label="VersionChange"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/indexeddb/indexeddb.mojom:IDBTransactionMode) -->
 
 <enum name="ImportantSitesReason">
   <int value="0" label="Engagement"/>
@@ -187,6 +264,70 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Home Screen"/>
   <int value="4" label="Notifications"/>
 </enum>
+
+<!-- LINT.IfChange(IndexedDbLevelDbCleanupVerificationEvent) -->
+
+<enum name="IndexedDbLevelDbCleanupVerificationEvent">
+  <int value="0"
+      label="Cleanup was started and a verification snapshot was taken (or at
+             least attempted)"/>
+  <int value="1"
+      label="Error while trying to open the databases before cleanup"/>
+  <int value="2"
+      label="Error while trying to create the snapshot before cleanup"/>
+  <int value="3"
+      label="Error while trying to open the databases after cleanup"/>
+  <int value="4"
+      label="Error while trying to create the snapshot after cleanup"/>
+  <int value="5" label="Snapshots matched before and after cleanup"/>
+  <int value="6" label="Snapshots didn't match"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/leveldb/backing_store.h:InSessionCleanupVerificationEvent) -->
+
+<!-- LINT.IfChange(IndexedDbSqliteSpecificEvent) -->
+
+<enum name="IndexedDbSqliteSpecificEvent">
+  <int value="0" label="Database opened"/>
+  <int value="1"
+      label="Database had at least one SQLite error in connection lifetime"/>
+  <int value="2"
+      label="Error when updating active blob bookkeeping after txn rollback"/>
+  <int value="3" label="Failed to retrieve streaming handle to blob in DB"/>
+  <int value="4" label="Failed to increment refcount to a streaming blob"/>
+  <int value="5" label="Failed to decrement refcount for a streaming blob"/>
+  <int value="6" label="pragma to get page count failed"/>
+  <int value="7" label="pragma to get page size failed"/>
+  <int value="8" label="Metadata table was missing"/>
+  <int value="9" label="Database compatible version indicated DB too new"/>
+  <int value="10" label="Database version indicated DB too new"/>
+  <int value="11" label="Database stored name didn't match hash"/>
+  <int value="12" label="A requested blob overflow chunk was missing"/>
+  <int value="13" label="Object store unexpectedly not found in DB"/>
+  <int value="14" label="Invalid type found for blob"/>
+  <int value="15"
+      label="V8 data format version too new or missing from metadata"/>
+  <int value="16"
+      label="A value in the DB that represents a UTF16 string was the wrong
+             length"/>
+  <int value="17"
+      label="Failed to decompress a value when reading from the DB"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->
+
+<!-- LINT.IfChange(IndexedDbStatusType) -->
+
+<enum name="IndexedDbStatusType">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Corrupted or inconsistent database state"/>
+  <int value="3" label="Invalid argument"/>
+  <int value="4" label="IO error"/>
+  <int value="5" label="Database engine detected and reported an error"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/status.h:Type) -->
 
 <!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
 
@@ -255,6 +396,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
 
+<!-- LINT.IfChange(LevelDBCleanupSchedulerPhase) -->
+
+<enum name="LevelDBCleanupSchedulerPhase">
+  <int value="0" label="Run scheduled"/>
+  <int value="1" label="Tombstone sweeper"/>
+  <int value="2" label="Database compaction"/>
+  <int value="3" label="Logging and cleanup"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h:Phase) -->
+
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>
   <int value="1" label="Approved with new grant"/>
@@ -272,6 +424,14 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Approved with a new or existing grant"/>
   <int value="13" label="Rejected due to fenced frame"/>
   <int value="14" label="Rejected due to invalid origin"/>
+</enum>
+
+<enum name="SecFetchStorageAccessOutcome">
+  <int value="0" label="Omitted: storage access status missing"/>
+  <int value="1" label="Omitted: request credentials mode is not 'include'"/>
+  <int value="2" label="Value: none"/>
+  <int value="3" label="Value: inactive"/>
+  <int value="4" label="Value: active"/>
 </enum>
 
 <enum name="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus">
@@ -318,6 +478,13 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SharedStorageInterestGroupsResultStatus">
+  <int value="0" label="FailureDuringAddModule"/>
+  <int value="1" label="FailurePermissionsPolicyDenied"/>
+  <int value="2" label="FailureBrowserDenied"/>
+  <int value="3" label="Success"/>
+</enum>
+
 <enum name="SharedStorageSelectUrlBudgetStatus">
   <int value="0" label="SufficientBudget"/>
   <int value="1" label="InsufficientSiteNavigationBudget"/>
@@ -360,20 +527,19 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="AddModuleNonWebVisibleMulipleWorkletsDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     browser received message from renderer trying to create multiple worklets
-    when &quot;SharedStorageAPIM125&quot; feature disabled.
+    when &quot;SharedStorageAPI&quot; feature disabled.
   </int>
   <int value="8" label="AddModuleNonWebVisibleCrossOriginWorkletsDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     browser received message from renderer trying to cross-origin worklet when
-    &quot;SharedStorageAPIM125&quot; feature disabled.
+    &quot;SharedStorageAPI&quot; feature disabled.
   </int>
-  <int value="9"
-      label="kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
+  <int value="9" label="AddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     cross-origin worklet cannot be created because shared storage is disabled
     for the origin's site.
   </int>
-  <int value="10" label="kAddModuleNonWebVisibleOther">
+  <int value="10" label="AddModuleNonWebVisibleOther">
     Other errors in `addModule()` or `createWorklet()` not visible to the
     document.
   </int>
@@ -483,6 +649,123 @@ chromium-metrics-reviews@google.com.
     Error in `selectURL()` not visible to the document: browser received message
     from renderer with invalid filtering ID byte size.
   </int>
+  <int value="38" label="AddModuleNonWebVisibleCustomDataOriginDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    custom data origin worklet cannot be created because
+    SharedStorageCreateWorkletCustomDataOrigin is disabled.
+  </int>
+</enum>
+
+<enum name="SqliteResultCode">
+  <summary>
+    Result codes as reported by the sqlite library. See also
+    sql/sqlite_result_code_values.h and https://www.sqlite.org/rescode.html
+  </summary>
+  <int value="0" label="kOk"/>
+  <int value="1" label="kError"/>
+  <int value="2" label="kInternal"/>
+  <int value="3" label="kPermission"/>
+  <int value="4" label="kAbort"/>
+  <int value="5" label="kBusy"/>
+  <int value="6" label="kLocked"/>
+  <int value="7" label="kNoMemory"/>
+  <int value="8" label="kReadOnly"/>
+  <int value="9" label="kInterrupt"/>
+  <int value="10" label="kIo"/>
+  <int value="11" label="kCorrupt"/>
+  <int value="12" label="kNotFound"/>
+  <int value="13" label="kFullDisk"/>
+  <int value="14" label="kCantOpen"/>
+  <int value="15" label="kLockingProtocol"/>
+  <int value="16" label="kEmpty"/>
+  <int value="17" label="kSchemaChanged"/>
+  <int value="18" label="kTooBig"/>
+  <int value="19" label="kConstraint"/>
+  <int value="20" label="kTypeMismatch"/>
+  <int value="21" label="kApiMisuse"/>
+  <int value="22" label="kNoLargeFileSupport"/>
+  <int value="23" label="kUnauthorized"/>
+  <int value="24" label="kFormat"/>
+  <int value="25" label="kIndexRange"/>
+  <int value="26" label="kNotADatabase"/>
+  <int value="27" label="kLoggingNotice"/>
+  <int value="28" label="kLoggingWarning"/>
+  <int value="100" label="kRow"/>
+  <int value="101" label="kDone"/>
+  <int value="256" label="kLoadPermanently"/>
+  <int value="257" label="kMissingCollatingSequence"/>
+  <int value="261" label="kBusyRecovery"/>
+  <int value="262" label="kLockedSharedCache"/>
+  <int value="264" label="kReadOnlyRecovery"/>
+  <int value="266" label="kIoRead"/>
+  <int value="267" label="kCorruptVirtualTable"/>
+  <int value="270" label="kCantOpenNoTemporaryDirectory"/>
+  <int value="275" label="kConstraintCheck"/>
+  <int value="279" label="kUnauthorizedUser"/>
+  <int value="283" label="kLoggingNoticeRecoverWal"/>
+  <int value="284" label="kLoggingWarningAutoIndex"/>
+  <int value="513" label="kRetryPreparedStatement"/>
+  <int value="516" label="kAbortRollback"/>
+  <int value="517" label="kBusySnapshot"/>
+  <int value="518" label="kLockedVirtualTable"/>
+  <int value="520" label="kReadOnlyCantLock"/>
+  <int value="522" label="kIoShortRead"/>
+  <int value="523" label="kCorruptSequence"/>
+  <int value="526" label="kCantOpenIsDir"/>
+  <int value="531" label="kConstraintCommitHook"/>
+  <int value="539" label="kLoggingNoticeRecoverRollback"/>
+  <int value="769" label="kErrorSnapshot"/>
+  <int value="773" label="kBusyTimeout"/>
+  <int value="776" label="kReadOnlyRollback"/>
+  <int value="778" label="kIoWrite"/>
+  <int value="779" label="kCorruptIndex"/>
+  <int value="782" label="kCantOpenFullPath"/>
+  <int value="787" label="kConstraintForeignKey"/>
+  <int value="1032" label="kReadOnlyDbMoved"/>
+  <int value="1034" label="kIoFsync"/>
+  <int value="1038" label="kCantOpenConvertPath"/>
+  <int value="1043" label="kConstraintFunction"/>
+  <int value="1288" label="kReadOnlyCantInit"/>
+  <int value="1290" label="kIoDirFsync"/>
+  <int value="1294" label="kCantOpenDirtyWal"/>
+  <int value="1299" label="kConstraintNotNull"/>
+  <int value="1544" label="kReadOnlyDirectory"/>
+  <int value="1546" label="kIoTruncate"/>
+  <int value="1550" label="kCantOpenSymlink"/>
+  <int value="1555" label="kConstraintPrimaryKey"/>
+  <int value="1802" label="kIoFstat"/>
+  <int value="1811" label="kConstraintTrigger"/>
+  <int value="2058" label="kIoUnlock"/>
+  <int value="2067" label="kConstraintUnique"/>
+  <int value="2314" label="kIoReadLock"/>
+  <int value="2323" label="kConstraintVirtualTable"/>
+  <int value="2570" label="kIoDelete"/>
+  <int value="2579" label="kConstraintRowId"/>
+  <int value="2826" label="kIoBlocked"/>
+  <int value="2835" label="kConstraintPinned"/>
+  <int value="3082" label="kIoNoMemory"/>
+  <int value="3091" label="kConstraintDataType"/>
+  <int value="3338" label="kIoAccess"/>
+  <int value="3594" label="kIoCheckReservedLock"/>
+  <int value="3850" label="kIoLock"/>
+  <int value="4106" label="kIoClose"/>
+  <int value="4362" label="kIoDirClose"/>
+  <int value="4618" label="kIoSharedMemoryOpen"/>
+  <int value="4874" label="kIoSharedMemorySize"/>
+  <int value="5130" label="kIoSharedMemoryLock"/>
+  <int value="5386" label="kIoSharedMemoryMap"/>
+  <int value="5642" label="kIoSeek"/>
+  <int value="5898" label="kIoDeleteNoEntry"/>
+  <int value="6154" label="kIoMemoryMapping"/>
+  <int value="6410" label="kIoGetTemporaryPath"/>
+  <int value="6666" label="kIoConvertPath"/>
+  <int value="6922" label="kIoVfsNode"/>
+  <int value="7178" label="kIoUnauthorized"/>
+  <int value="7434" label="kIoBeginAtomic"/>
+  <int value="7690" label="kIoCommitAtomic"/>
+  <int value="7946" label="kIoRollbackAtomic"/>
+  <int value="8202" label="kIoData"/>
+  <int value="8458" label="kIoCorruptFileSystem"/>
 </enum>
 
 <enum name="SqlRecoveryResult">
@@ -525,6 +808,7 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="Denied due to an abort by browser (e.g. RenderFrameHost was
              deleted)"/>
+  <int value="14" label="Allowed by FedCM connection"/>
 </enum>
 
 <enum name="StorageAccessResult">
@@ -540,9 +824,26 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Storage access allowed by 3PCD metadata grants content settings"/>
   <int value="7" label="Temporary storage access allowed by 3PCD heuristics"/>
-  <int value="8" label="Storage access allowed due to CORS opt in"/>
+  <int value="8"
+      label="Storage access allowed due to CORS opt in (deprecated)"/>
   <int value="9" label="Storage access allowed by top-level 3PCD setting"/>
+  <int value="10" label="Storage access allowed by first-party URL scheme"/>
+  <int value="11"
+      label="Storage access allowed by 'allow-same-site-none-cookies' value
+             present in sandbox"/>
 </enum>
+
+<!-- LINT.IfChange(StorageAccessStatusOutcome) -->
+
+<enum name="StorageAccessStatusOutcome">
+  <int value="0" label="Omitted: feature disabled"/>
+  <int value="1" label="Omitted: same-site request"/>
+  <int value="2" label="Value: none"/>
+  <int value="3" label="Value: inactive"/>
+  <int value="4" label="Value: active"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:StorageAccessStatusOutcome) -->
 
 <enum name="StorageBucketDurabilityParameter">
   <int value="0" label="Not provided"/>
@@ -560,18 +861,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="The bubble was shown."/>
   <int value="1" label="The user ignored the bubble."/>
   <int value="2" label="The user clicked on the positive button."/>
-</enum>
-
-<enum name="SyncFileSystemNotificationSource">
-  <int value="0" label="XMPP"/>
-  <int value="1" label="Polling"/>
-</enum>
-
-<enum name="SyncFileSystemSyncAction">
-  <int value="0" label="None"/>
-  <int value="1" label="Added"/>
-  <int value="2" label="Updated"/>
-  <int value="3" label="Deleted"/>
 </enum>
 
 <enum name="TopLevelStorageAccessRequestOutcome">

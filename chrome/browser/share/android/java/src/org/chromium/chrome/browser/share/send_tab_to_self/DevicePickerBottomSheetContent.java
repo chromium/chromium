@@ -14,12 +14,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.widget.Toast;
 
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.List;
  * Bottom sheet content to display a list of devices a user can send a tab to after they have chosen
  * to share it with themselves through the send-tab-to-self feature.
  */
+@NullMarked
 class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private final Context mContext;
     private final BottomSheetController mController;
@@ -114,12 +116,6 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     }
 
     @Override
-    public int getPeekHeight() {
-        // Return DISABLED to ensure that the entire bottom sheet is shown.
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         // Return WRAP_CONTENT to have the bottom sheet only open as far as it needs to display the
         // list of devices and nothing beyond that.
@@ -127,22 +123,22 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.send_tab_to_self_content_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.send_tab_to_self_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.send_tab_to_self_sheet_half_height;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.send_tab_to_self_sheet_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.send_tab_to_self_sheet_closed;
     }
 
@@ -155,21 +151,9 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
 
         Resources res = mContext.getResources();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_V2)) {
-            String deviceType = res.getString(R.string.send_tab_to_self_device_type_generic);
-            if (targetDeviceInfo.formFactor == FormFactor.PHONE) {
-                deviceType = res.getString(R.string.send_tab_to_self_device_type_phone);
-            } else if (targetDeviceInfo.formFactor == FormFactor.DESKTOP) {
-                deviceType = res.getString(R.string.send_tab_to_self_device_type_computer);
-            }
-
-            String toastMessage = res.getString(R.string.send_tab_to_self_v2_toast, deviceType);
-            Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
-        } else {
-            String toastMessage =
-                    res.getString(R.string.send_tab_to_self_toast, targetDeviceInfo.deviceName);
-            Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
-        }
+        String toastMessage =
+                res.getString(R.string.send_tab_to_self_toast, targetDeviceInfo.deviceName);
+        Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
 
         mController.hideContent(this, true);
     }

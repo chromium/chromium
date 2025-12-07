@@ -5,10 +5,12 @@
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("dbus") {
   sources = [
+    "arc_crosh_service_provider.cc",
+    "arc_crosh_service_provider.h",
     "arc_tracing_service_provider.cc",
     "arc_tracing_service_provider.h",
     "ash_dbus_helper.cc",
@@ -25,6 +27,8 @@ static_library("dbus") {
     "drive_file_stream_service_provider.h",
     "encrypted_reporting_service_provider.cc",
     "encrypted_reporting_service_provider.h",
+    "fjord_oobe_service_provider.cc",
+    "fjord_oobe_service_provider.h",
     "fusebox_service_provider.cc",
     "fusebox_service_provider.h",
     "kiosk_info_service_provider.cc",
@@ -35,8 +39,6 @@ static_library("dbus") {
     "lock_to_single_user_service_provider.h",
     "machine_learning_decision_service_provider.cc",
     "machine_learning_decision_service_provider.h",
-    "metrics_event_service_provider.cc",
-    "metrics_event_service_provider.h",
     "mojo_connection_service_provider.cc",
     "mojo_connection_service_provider.h",
     "printers_service_provider.cc",
@@ -54,11 +56,8 @@ static_library("dbus") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/dbus/vm",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/policy/messaging_layer/storage_selector",
-    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
-    "//chromeos/ash/components/dbus:metrics_event_proto",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/dbus/missive",
     "//components/reporting/proto:record_proto",
@@ -71,18 +70,18 @@ static_library("dbus") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_features",
     "//ash/constants",
     "//ash/webui/shimless_rma",
-    "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/tracing",
-    "//chrome/browser/ash/arc/video",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/certificate_provider",
     "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/net/rollback_network_config",
@@ -93,7 +92,7 @@ static_library("dbus") {
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -114,13 +113,11 @@ static_library("dbus") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/cups_proxy",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/device_management",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/easy_unlock",
     "//chromeos/ash/components/dbus/featured",
-    "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/human_presence",
@@ -156,6 +153,9 @@ static_library("dbus") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/video",
     "//chromeos/ash/services/rollback_network_config/public/mojom",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus/constants",
@@ -186,6 +186,8 @@ static_library("dbus") {
     "//url",
   ]
 
+  data_deps = [ ":dbus_service_files" ]
+
   if (is_cfm) {
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",
@@ -196,6 +198,7 @@ static_library("dbus") {
 
 action("dbus_service_files") {
   sources = [
+    "org.chromium.ArcCroshServiceProvider.conf",
     "org.chromium.ArcTracing.conf",
     "org.chromium.ChromeFeaturesService.conf",
     "org.chromium.ComponentUpdaterService.conf",
@@ -203,12 +206,12 @@ action("dbus_service_files") {
     "org.chromium.DlpFilesPolicyService.conf",
     "org.chromium.DriveFileStreamService.conf",
     "org.chromium.EncryptedReportingUploadService.conf",
+    "org.chromium.FjordOobeService.conf",
     "org.chromium.FuseBoxService.conf",
     "org.chromium.KioskAppService.conf",
     "org.chromium.LibvdaService.conf",
     "org.chromium.LockToSingleUser.conf",
     "org.chromium.MachineLearningDecisionService.conf",
-    "org.chromium.MetricsEventService.conf",
     "org.chromium.MojoConnectionService.conf",
     "org.chromium.NetworkProxyService.conf",
     "org.chromium.PrintersService.conf",
@@ -235,6 +238,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "arc_crosh_service_provider_unittest.cc",
     "arc_tracing_service_provider_unittest.cc",
     "chrome_features_service_provider_unittest.cc",
     "dlp_files_policy_service_provider_unittest.cc",
@@ -244,29 +248,33 @@ source_set("unit_tests") {
 
   deps = [
     ":dbus",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/arc/tracing/test:test_support",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/test:test_support",
-    "//chrome/browser/chromeos",
-    "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/services:test_support",
     "//chromeos/ash/components/dbus/system_proxy",
+    "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/dbus/dlp:dlp_proto",
     "//chromeos/dbus/missive",
     "//components/exo",
     "//components/policy/core/common:test_support",
     "//components/reporting/proto:interface_proto",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//dbus",
     "//mojo/public/cpp/bindings",
@@ -294,8 +302,8 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/certificate_provider",
+    "//chrome/browser/ash/certificate_provider:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles:profile",

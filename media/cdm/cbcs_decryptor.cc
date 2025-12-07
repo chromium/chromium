@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/cdm/cbcs_decryptor.h"
 
@@ -19,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
@@ -36,15 +31,16 @@ constexpr size_t kAesBlockSizeInBytes = 16;
 // |pattern|. |pattern| only applies to full blocks. Any partial block at
 // the end is considered unencrypted. |output_data| must have enough room to
 // hold |input_data|.size() bytes.
-bool DecryptWithPattern(const crypto::SymmetricKey& key,
+bool DecryptWithPattern(base::span<const uint8_t> key,
                         base::span<const uint8_t> iv,
                         const EncryptionPattern& pattern,
                         base::span<const uint8_t> input_data,
-                        uint8_t* output_data) {
+                        base::span<uint8_t> output_data) {
   // The AES_CBC decryption is reset for each subsample.
   AesCbcCrypto aes_cbc_crypto;
-  if (!aes_cbc_crypto.Initialize(key, iv))
+  if (!aes_cbc_crypto.Initialize(key, iv)) {
     return false;
+  }
 
   // |total_blocks| is the number of blocks in the buffer, ignoring any
   // partial block at the end. |remaining_bytes| is the number of bytes
@@ -77,8 +73,7 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
   // repeat until the end. Note that the input does not have to contain
   // a full pattern or even |crypt_byte_block| blocks at the end.
   size_t blocks_processed = 0;
-  const uint8_t* src = input_data.data();
-  uint8_t* dest = output_data;
+  size_t offset = 0;
   bool is_encrypted_blocks = false;
   while (blocks_processed < total_blocks) {
     is_encrypted_blocks = !is_encrypted_blocks;
@@ -90,6 +85,8 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
       continue;
 
     size_t bytes_to_process = blocks_to_process * kAesBlockSizeInBytes;
+    auto src = input_data.subspan(offset, bytes_to_process);
+    auto dest = output_data.subspan(offset, bytes_to_process);
 
     // From ISO/IEC 23001-7:2016(E), section 10.4.2:
     // For a typical pattern length of 10 (e.g. 1:9) "the pattern is repeated
@@ -100,40 +97,40 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
     // remain where the pattern is terminated by the byte length of the range
     // BytesOfProtectedData, is left unencrypted."
     if (is_encrypted_blocks) {
-      if (!aes_cbc_crypto.Decrypt(base::make_span(src, bytes_to_process),
-                                  dest)) {
+      if (!aes_cbc_crypto.Decrypt(src, dest)) {
         return false;
       }
     } else {
-      memcpy(dest, src, bytes_to_process);
+      dest.copy_from(src);
     }
 
     blocks_processed += blocks_to_process;
-    src += bytes_to_process;
-    dest += bytes_to_process;
+    offset += bytes_to_process;
   }
 
   // Any partial block data remaining in this subsample is considered
   // unencrypted so simply copy it into |dest|.
-  if (remaining_bytes > 0)
-    memcpy(dest, src, remaining_bytes);
+  if (remaining_bytes > 0) {
+    auto src = input_data.subspan(offset, remaining_bytes);
+    auto dest = output_data.subspan(offset, remaining_bytes);
+    dest.copy_from(src);
+  }
 
   return true;
 }
 
 }  // namespace
 
-scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& key) {
+scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
+                                               base::span<const uint8_t> key) {
   const size_t sample_size = input.size();
-  DCHECK(sample_size) << "No data to decrypt.";
+  CHECK(sample_size) << "No data to decrypt.";
 
   const DecryptConfig* decrypt_config = input.decrypt_config();
-  DCHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
+  CHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
   DCHECK_EQ(EncryptionScheme::kCbcs, decrypt_config->encryption_scheme());
 
-  DCHECK(decrypt_config->HasPattern());
+  CHECK(decrypt_config->HasPattern());
   const EncryptionPattern pattern =
       decrypt_config->encryption_pattern().value();
 
@@ -143,13 +140,15 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
   buffer->set_timestamp(input.timestamp());
   buffer->set_duration(input.duration());
   buffer->set_is_key_frame(input.is_key_frame());
-  buffer->set_side_data(input.side_data());
+  if (input.side_data()) {
+    buffer->set_side_data(input.side_data()->Clone());
+  }
 
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {
     // Assume the whole buffer is encrypted.
     return DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
-                              pattern, base::span(input), output_data.data())
+                              pattern, base::span(input), output_data)
                ? buffer
                : nullptr;
   }
@@ -179,9 +178,8 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
       auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
       src = src_rem;
       dest = dest_rem;
-      if (!DecryptWithPattern(
-              key, base::as_bytes(base::make_span(decrypt_config->iv())),
-              pattern, src_cypher, dest_cypher.data())) {
+      if (!DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
+                              pattern, src_cypher, dest_cypher)) {
         return nullptr;
       }
     }

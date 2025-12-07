@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("file_system_provider") {
+  sources = [
+    "file_system_provider_api.cc",
+    "file_system_provider_api.h",
+    "provider_function.cc",
+    "provider_function.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common/extensions/api",
+    "//extensions/browser",
+    "//storage/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "file_system_provider_apitest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//ui/message_center/public/cpp",
+  ]
+}

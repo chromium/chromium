@@ -4,15 +4,16 @@
 
 #include "base/trace_event/cpufreq_monitor_android.h"
 
-#include <list>
-
 #include <fcntl.h>
+
+#include <list>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,8 +32,7 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   base::TimeDelta delay) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool RunsTasksInCurrentSequence() const override { return true; }
@@ -40,8 +40,9 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
   // Returns the delay in ms for this task if there was a task to be run,
   // and -1 if there are no tasks in the queue.
   int64_t RunNextTask() {
-    if (delayed_tasks_.size() == 0)
+    if (delayed_tasks_.size() == 0) {
       return -1;
+    }
     auto time_delta = delayed_tasks_.front().first;
     std::move(delayed_tasks_.front().second).Run();
     delayed_tasks_.pop_front();
@@ -49,7 +50,7 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
   }
 
  private:
-  ~TestTaskRunner() override {}
+  ~TestTaskRunner() override = default;
 
   std::list<std::pair<base::TimeDelta, OnceClosure>> delayed_tasks_;
 };
@@ -167,7 +168,10 @@ class CPUFreqMonitorTest : public testing::Test {
 
   void InitBasicCPUInfo() {
     std::vector<std::pair<unsigned int, unsigned int>> frequencies = {
-        {0, 500}, {2, 1000}, {4, 800}, {6, 750},
+        {0, 500},
+        {2, 1000},
+        {4, 800},
+        {6, 750},
     };
     std::vector<unsigned int> cpu_ids;
     for (auto& pair : frequencies) {

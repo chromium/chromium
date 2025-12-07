@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 
 // Called when the interstitial calls the installed JS methods.
 class SupervisedUserErrorPageControllerDelegate {
@@ -24,8 +25,13 @@ class SupervisedUserErrorPageControllerDelegate {
   // Called to initiate local URL approval flow.
   virtual void RequestUrlAccessLocal(UrlAccessRequestInitiated callback) = 0;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Called to open the learn more page for the user.
+  virtual void LearnMore(base::OnceClosure open_help_page) = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
+
  protected:
-  virtual ~SupervisedUserErrorPageControllerDelegate() {}
+  virtual ~SupervisedUserErrorPageControllerDelegate() = default;
 };
 
 #endif  // CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_DELEGATE_H_

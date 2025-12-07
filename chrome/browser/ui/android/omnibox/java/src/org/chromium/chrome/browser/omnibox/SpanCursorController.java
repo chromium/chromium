@@ -14,9 +14,8 @@ import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.view.inputmethod.BaseInputConnection;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
@@ -27,13 +26,14 @@ import java.util.Locale;
  * text that will be appended to the user text. In addition, cursor will be hidden whenever we are
  * showing span to the user.
  */
+@NullMarked
 class SpanCursorController {
     private static final String TAG = "SpanCursorController";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
-    private final @NonNull AutocompleteEditTextModelBase.Delegate mDelegate;
-    private final @NonNull BackgroundColorSpan mAutocompleteBgColorSpan;
-    private final @NonNull ForegroundColorSpan mAdditionalTextFgColorSpan;
+    private final AutocompleteEditTextModelBase.Delegate mDelegate;
+    private final BackgroundColorSpan mAutocompleteBgColorSpan;
+    private final ForegroundColorSpan mAdditionalTextFgColorSpan;
 
     public SpanCursorController(AutocompleteEditTextModelBase.Delegate delegate, Context context) {
         mDelegate = delegate;
@@ -47,22 +47,24 @@ class SpanCursorController {
 
         Editable editable = mDelegate.getEditableText();
 
-        if (state.getAutocompleteText().isPresent()) {
-            SpannableString spanString = new SpannableString(state.getAutocompleteText().get());
+        String autocompleteText = state.getAutocompleteText();
+        if (autocompleteText != null) {
+            SpannableString spanString = new SpannableString(autocompleteText);
             // The flag here helps make sure that span does not get spill to other part of the
             // text.
             spanString.setSpan(
                     mAutocompleteBgColorSpan,
                     0,
-                    state.getAutocompleteText().map(t -> t.length()).orElse(0),
+                    autocompleteText.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             editable.append(spanString);
         }
 
-        if (state.getAdditionalText().isPresent()
+        String additionalTextStr = state.getAdditionalText();
+        if (additionalTextStr != null
                 && OmniboxFeatures.shouldShowRichInlineAutocompleteUrl(
                         state.getUserText().length())) {
-            String additionalText = " - " + state.getAdditionalText().get();
+            String additionalText = " - " + additionalTextStr;
             SpannableString additionalTextSpanString = new SpannableString(additionalText);
             additionalTextSpanString.setSpan(
                     mAdditionalTextFgColorSpan,

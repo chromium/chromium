@@ -12,6 +12,7 @@ fuzzer_test("sql_recovery_lpm_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//sql",
+    "//sql:test_support",
     "//third_party/libprotobuf-mutator",
     "//third_party/sqlite:sql_query_proto_to_string",
     "//third_party/sqlite:sqlite3_lpm_fuzzer_input",
@@ -23,5 +24,5 @@ fuzzer_test("sql_recovery_lpm_fuzzer") {
 fuzzable_proto_library("sql_disk_corruption_proto") {
   import_dirs = [ "//third_party/sqlite/fuzz/" ]
   sources = [ "sql_disk_corruption.proto" ]
-  deps = [ "//third_party/sqlite:sqlite3_lpm_fuzzer_input" ]
+  proto_library_deps = [ "//third_party/sqlite:sqlite3_lpm_fuzzer_input" ]
 }

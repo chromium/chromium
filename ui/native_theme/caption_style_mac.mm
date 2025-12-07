@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/native_theme/caption_style.h"
+
 #include <AppKit/AppKit.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 
@@ -11,9 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/caption_style.h"
 
 namespace ui {
 
@@ -134,14 +134,16 @@ void GetMAFontAsCSSFontSpecifiers(std::string* font_family,
   base::apple::ScopedCFTypeRef<CFStringRef> ct_font_family_name(
       base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
           ct_font_desc.get(), kCTFontFamilyNameAttribute)));
-  if (ct_font_family_name)
+  if (ct_font_family_name) {
     *font_family = base::SysCFStringRefToUTF8(ct_font_family_name.get());
+  }
 
   base::apple::ScopedCFTypeRef<CFStringRef> ct_font_face_name(
       base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
           ct_font_desc.get(), kCTFontNameAttribute)));
-  if (ct_font_face_name)
+  if (ct_font_face_name) {
     *font_variant = base::SysCFStringRefToUTF8(ct_font_face_name.get());
+  }
 }
 
 std::string GetMAWindowColorAsCSSColor() {
@@ -170,9 +172,6 @@ std::string GetMAWindowRadiusAsCSSNumberInPixels() {
 
 // static
 std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
-  if (!base::FeatureList::IsEnabled(features::kSystemCaptionStyle))
-    return std::nullopt;
-
   CaptionStyle style;
 
   style.text_color = GetMAForegroundColorAndOpacityAsCSSColor();

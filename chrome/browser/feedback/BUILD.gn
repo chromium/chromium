@@ -28,7 +28,9 @@ source_set("feedback") {
       "//base",
       "//chrome/browser/feedback/android:jni_headers",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
       "//content/public/browser",
+      "//google_apis",
       "//services/network/public/cpp",
     ]
   } else {
@@ -47,10 +49,10 @@ source_set("feedback") {
     public_deps += [
       "//base",
       "//build/config/chromebox_for_meetings:buildflags",
+      "//chrome/browser/device_identity",
       "//chrome/browser/feedback:feedback_enum",
       "//components/feedback",
       "//components/feedback/content:factory",
-      "//components/invalidation/public",
       "//components/sessions:session_id",
       "//components/signin/public/identity_manager",
     ]
@@ -98,13 +100,19 @@ source_set("feedback_impl") {
       "//base",
       "//chrome/browser:browser_process",
       "//chrome/browser/crash_upload_list",
+      "//chrome/browser/device_identity",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/first_party_sets",
       "//chrome/browser/google",
+      "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
       "//components/device_event_log",
       "//components/feedback",
@@ -120,48 +128,37 @@ source_set("feedback_impl") {
   }
   if (is_chromeos) {
     deps += [
+      "//ash",
+      "//ash/constants",
+      "//ash/webui/os_feedback_ui:url_constants",
+      "//ash/webui/system_apps/public:system_web_app_type",
+      "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
+      "//chrome/browser/ash/arc/policy",
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/policy/enrollment",
+      "//chrome/browser/ash/system_logs",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ui/ash/multi_user",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chromeos/ash/components/dbus/debug_daemon",
+      "//chromeos/ash/components/dbus/spaced",
+      "//chromeos/ash/components/login/auth",
+      "//chromeos/ash/components/settings",
+      "//chromeos/ash/components/system",
       "//chromeos/components/kiosk",
       "//chromeos/version",
     ]
-    if (is_chromeos_lacros) {
-      sources += [
-        "show_feedback_page_lacros.cc",
-        "system_logs/log_sources/ozone_wayland_state_dump_source.cc",
-        "system_logs/log_sources/ozone_wayland_state_dump_source.h",
-      ]
-      deps += [
-        "//chromeos/lacros",
-        "//chromeos/startup",
-        "//ui/ozone",
-      ]
-    }
-    if (is_chromeos_ash) {
-      sources += [
-        "system_logs/log_sources/lacros_log_files_log_source.cc",
-        "system_logs/log_sources/lacros_log_files_log_source.h",
-      ]
-      deps += [
-        "//ash",
-        "//ash/constants",
-        "//ash/webui/os_feedback_ui:url_constants",
-        "//ash/webui/system_apps/public:system_web_app_type",
-        "//chrome/browser/ash/arc",
-        "//chrome/browser/ash/arc/policy",
-        "//chrome/browser/ash/crosapi",
-        "//chrome/browser/ash/crosapi:browser_util",
-        "//chrome/browser/ash/login",
-        "//chrome/browser/ash/login/demo_mode",
-        "//chrome/browser/ash/policy/enrollment",
-        "//chrome/browser/ash/system_logs",
-        "//chrome/browser/ash/system_web_apps",
-        "//chrome/browser/ui/ash/multi_user",
-        "//chrome/browser/ui/ash/system_web_apps",
-        "//chromeos/ash/components/dbus/debug_daemon",
-        "//chromeos/ash/components/dbus/spaced",
-        "//chromeos/ash/components/login/auth",
-        "//chromeos/ash/components/settings",
-        "//chromeos/ash/components/system",
-      ]
-    }
+  }
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/updater:browser_updater_client" ]
+  }
+  if (is_linux) {
+    sources += [
+      "system_logs/log_sources/ozone_platform_state_dump_source.cc",
+      "system_logs/log_sources/ozone_platform_state_dump_source.h",
+    ]
+    deps += [ "//ui/ozone" ]
   }
 }

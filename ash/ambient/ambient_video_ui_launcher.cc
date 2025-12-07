@@ -31,6 +31,8 @@ std::string_view GetVideoFile(AmbientVideo video) {
       return kTimeOfDayNewMexicoVideo;
     case AmbientVideo::kClouds:
       return kTimeOfDayCloudsVideo;
+    case AmbientVideo::kJupiter:
+      return kTimeOfDayJupiterVideo;
   }
 }
 

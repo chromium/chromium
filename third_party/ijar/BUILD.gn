@@ -4,7 +4,7 @@
 
 # A tool that removes all non-interface-specific parts from a .jar file.
 
-if (is_linux || is_chromeos) {
+if (is_linux || is_chromeos || target_os == "android") {
   config("ijar_compiler_flags") {
     if (is_clang) {
       cflags = [
@@ -38,5 +38,9 @@ if (is_linux || is_chromeos) {
       configs -= [ "//build/config:debug" ]
       configs += [ "//build/config:release" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

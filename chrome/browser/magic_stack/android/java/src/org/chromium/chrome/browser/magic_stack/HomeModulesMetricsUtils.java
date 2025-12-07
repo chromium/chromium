@@ -4,26 +4,44 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TIPS_NOTIFICATIONS_PROMO;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
-/** The utility class for magic stack. */
+import java.util.HashSet;
+
+/** The utility class for logging the magic stack's metrics. */
+@NullMarked
 public class HomeModulesMetricsUtils {
-    @VisibleForTesting static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
+    @VisibleForTesting public static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
+    @VisibleForTesting public static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
+
+    @VisibleForTesting
+    public static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION =
+            ".Impression";
+
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click";
-    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_HOST_SURFACE_REGULAR = ".Regular";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_HOST_SURFACE_STARTUP = ".Startup";
 
@@ -31,7 +49,6 @@ public class HomeModulesMetricsUtils {
     static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION = ".Click";
 
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_BUILD = ".Build";
-    static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION = ".Impression";
 
     @VisibleForTesting
     static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpressionV2";
@@ -84,27 +101,11 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
 
-    private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
+    @VisibleForTesting
+    static final String HISTOGRAM_EDUCATIONAL_TIP_MODULE_IMPRESSION_COUNT_BEFORE_INTERACTION =
+            ".ImpressionCountBeforeInteraction";
 
-    private static final String PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT = "price_change_freshness";
-
-    private static final String TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT = "tab_resumption_freshness";
-
-    private static final String SAFETY_HUB_FRESHNESS_INPUT_CONTEXT = "safety_hub_freshness";
-
-    private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
-    public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.MAGIC_STACK_ANDROID,
-                    HOME_MODULES_SHOW_ALL_MODULES_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_COMBINE_TABS_PARAM = "show_tabs_in_one_module";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_COMBINE_TABS =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_COMBINE_TABS_PARAM,
-                    false);
+    private static final String TAG = "HomeModules";
 
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in
@@ -114,53 +115,69 @@ public class HomeModulesMetricsUtils {
         switch (moduleType) {
             case SINGLE_TAB:
                 return "SingleTab";
-            case (PRICE_CHANGE):
+            case PRICE_CHANGE:
                 return "PriceChange";
-            case (TAB_RESUMPTION):
-                return "TabResumption";
-            case (SAFETY_HUB):
+            case SAFETY_HUB:
                 return "SafetyHub";
+            case AUXILIARY_SEARCH:
+                return "AuxiliarySearch";
+            case DEFAULT_BROWSER_PROMO:
+                return "DefaultBrowserPromo";
+            case TAB_GROUP_PROMO:
+                return "TabGroupPromo";
+            case TAB_GROUP_SYNC_PROMO:
+                return "TabGroupSyncPromo";
+            case QUICK_DELETE_PROMO:
+                return "QuickDeletePromo";
+            case HISTORY_SYNC_PROMO:
+                return "HistorySyncPromo";
+            case TIPS_NOTIFICATIONS_PROMO:
+                return "TipsNotificationsPromo";
             default:
                 assert false : "Module type not supported!";
-                return null;
-        }
-    }
-
-    /**
-     * Returns the freshness score key used by InputContext for the given module. Remember to update
-     * the variant ModuleType in tools/metrics/histograms/metadata/magic_stack/histograms.xml when
-     * adding a new module type
-     */
-    public static String getFreshnessInputContextString(@ModuleType int moduleType) {
-        switch (moduleType) {
-            case SINGLE_TAB:
-                return SINGLE_TAB_FRESHNESS_INPUT_CONTEXT;
-            case (PRICE_CHANGE):
-                return PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT;
-            case (TAB_RESUMPTION):
-                return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
-            case (SAFETY_HUB):
-                return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
-            default:
-                assert false : "Module type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
     public static Integer convertLabelToModuleType(String label) {
         switch (label) {
             case "SingleTab":
-                return ModuleType.SINGLE_TAB;
+                return SINGLE_TAB;
             case "PriceChange":
-                return ModuleType.PRICE_CHANGE;
-            case "TabResumption":
-                return ModuleType.TAB_RESUMPTION;
+                return PRICE_CHANGE;
             case "SafetyHub":
-                return ModuleType.SAFETY_HUB;
+                return SAFETY_HUB;
+            case "AuxiliarySearch":
+                return AUXILIARY_SEARCH;
+            case "DefaultBrowserPromo":
+                return DEFAULT_BROWSER_PROMO;
+            case "TabGroupPromo":
+                return TAB_GROUP_PROMO;
+            case "TabGroupSyncPromo":
+                return TAB_GROUP_SYNC_PROMO;
+            case "QuickDeletePromo":
+                return QUICK_DELETE_PROMO;
+            case "HistorySyncPromo":
+                return HISTORY_SYNC_PROMO;
+            case "TipsNotificationsPromo":
+                return TIPS_NOTIFICATIONS_PROMO;
             default:
-                assert false : "Module type not supported!";
+                Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;
         }
+    }
+
+    /** Returns a list of all modules that are not deprecated. */
+    static HashSet<Integer> getAllActiveModulesForTesting() {
+        HashSet<Integer> set = new HashSet<>();
+        for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
+            if (moduleType == DEPRECATED_EDUCATIONAL_TIP
+                    || moduleType == DEPRECATED_TAB_RESUMPTION) {
+                continue;
+            }
+            set.add(moduleType);
+        }
+        return set;
     }
 
     /**
@@ -356,6 +373,29 @@ public class HomeModulesMetricsUtils {
     /** Returns whether a magic stack is enabled on Start surface. */
     public static boolean useMagicStack() {
         return ChromeFeatureList.sMagicStackAndroid.isEnabled();
+    }
+
+    /**
+     * Records how many times an educational tip module appears to the user before it is clicked.
+     *
+     * @param moduleType The type of module.
+     * @param isShownAtStartup Whether the host surface is a home surface which is shown at startup.
+     * @param count The number of times the module has appeared to the user.
+     */
+    public static void recordEducationalTipModuleImpressionCountBeforeInteraction(
+            @ModuleType int moduleType, boolean isShownAtStartup, int count) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(HISTOGRAM_PREFIX);
+        if (isShownAtStartup) {
+            builder.append(HISTOGRAM_MAGIC_STACK_HOST_SURFACE_STARTUP);
+        } else {
+            builder.append(HISTOGRAM_MAGIC_STACK_HOST_SURFACE_REGULAR);
+        }
+        builder.append(HISTOGRAM_MAGIC_STACK_MODULE);
+        builder.append(getModuleName(moduleType));
+        builder.append(HISTOGRAM_EDUCATIONAL_TIP_MODULE_IMPRESSION_COUNT_BEFORE_INTERACTION);
+        String name = builder.toString();
+        RecordHistogram.recordCount100Histogram(name, count);
     }
 
     private static void recordUmaWithPosition(

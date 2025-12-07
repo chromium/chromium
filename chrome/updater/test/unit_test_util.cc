@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -17,11 +18,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
@@ -73,7 +74,6 @@ class CustomLogPrinter : public testing::TestEventListener {
  public:
   // Takes ownership of impl.
   explicit CustomLogPrinter(testing::TestEventListener* impl) : impl_(impl) {}
-  ~CustomLogPrinter() override = default;
   CustomLogPrinter(const CustomLogPrinter&) = delete;
   CustomLogPrinter& operator=(const CustomLogPrinter&) = delete;
 
@@ -160,7 +160,7 @@ void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
 
   if (should_create_updater_executable) {
     // Create a fake `updater.exe` inside the install folder.
-    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendASCII("prefs.json"),
+    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendUTF8("prefs.json"),
                                updater_executable_path));
   }
 }
@@ -175,22 +175,23 @@ void SetupFakeUpdater(UpdaterScope scope,
 
 }  // namespace
 
-const char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
-
-bool IsProcessRunning(const base::FilePath::StringType& executable_name) {
-  return base::GetProcessCount(executable_name, nullptr) != 0;
+bool IsProcessRunning(const base::FilePath::StringType& executable_name,
+                      const base::ProcessFilter* filter) {
+  return base::GetProcessCount(executable_name, filter) != 0;
 }
 
 bool WaitForProcessesToExit(const base::FilePath::StringType& executable_name,
-                            base::TimeDelta wait) {
-  return base::WaitForProcessesToExit(executable_name, wait, nullptr);
+                            base::TimeDelta wait,
+                            const base::ProcessFilter* filter) {
+  return base::WaitForProcessesToExit(executable_name, wait, filter);
 }
 
 bool KillProcesses(const base::FilePath::StringType& executable_name,
-                   int exit_code) {
+                   int exit_code,
+                   const base::ProcessFilter* filter) {
   bool result = true;
   for (const base::ProcessEntry& entry :
-       base::NamedProcessIterator(executable_name, nullptr).Snapshot()) {
+       base::NamedProcessIterator(executable_name, filter).Snapshot()) {
     base::Process process = base::Process::Open(entry.pid());
     if (!process.IsValid()) {
       PLOG(ERROR) << "Process invalid for PID: " << executable_name << ": "
@@ -215,9 +216,9 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 }
 
 scoped_refptr<PolicyService> CreateTestPolicyService() {
-  PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetDefaultValuesPolicyManager());
-  return base::MakeRefCounted<PolicyService>(std::move(managers));
+  return base::MakeRefCounted<PolicyService>(
+      /*external_constants=*/nullptr,
+      /*persisted_data=*/nullptr);
 }
 
 std::string GetTestName() {
@@ -229,7 +230,7 @@ std::string GetTestName() {
 }
 
 bool DeleteFileAndEmptyParentDirectories(
-    const std::optional<base::FilePath>& file_path) {
+    std::optional<base::FilePath> file_path) {
   struct Local {
     // Deletes recursively `dir` and its parents up, if dir is empty
     // and until one non-empty parent directory is found.
@@ -287,47 +288,6 @@ namespace {
 const wchar_t kProcmonPath[] = L"C:\\tools\\Procmon.exe";
 }  // namespace
 
-void MaybeExcludePathsFromWindowsDefender() {
-  constexpr char kTestLauncherExcludePathsFromWindowDefender[] =
-      "exclude-paths-from-win-defender";
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kTestLauncherExcludePathsFromWindowDefender)) {
-    return;
-  }
-
-  if (!IsServiceRunning(L"WinDefend")) {
-    VLOG(1) << "WinDefend is not running, no need to add exclusion paths.";
-    return;
-  }
-
-  base::FilePath program_files;
-  base::FilePath program_files_x86;
-  base::FilePath local_app_data;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files) ||
-      !base::PathService::Get(base::DIR_PROGRAM_FILESX86, &program_files_x86) ||
-      !base::PathService::Get(base::DIR_LOCAL_APP_DATA, &local_app_data)) {
-    return;
-  }
-
-  const auto quote_path_value = [](const base::FilePath& path) {
-    return base::StrCat({L"'", path.value(), L"'"});
-  };
-  const std::wstring cmdline =
-      base::StrCat({L"PowerShell.exe Add-MpPreference -ExclusionPath ",
-                    base::JoinString({quote_path_value(program_files),
-                                      quote_path_value(program_files_x86),
-                                      quote_path_value(local_app_data)},
-                                     L", ")});
-
-  base::LaunchOptions options;
-  options.start_hidden = true;
-  options.wait = true;
-  VLOG(1) << "Running: " << cmdline;
-  base::Process process = base::LaunchProcess(cmdline, options);
-  LOG_IF(ERROR, !process.IsValid())
-      << "Failed to disable Windows Defender: " << cmdline;
-}
-
 base::FilePath StartProcmonLogging() {
   if (!::IsUserAnAdmin()) {
     LOG(WARNING) << __func__
@@ -347,7 +307,7 @@ base::FilePath StartProcmonLogging() {
     return {};
   }
 
-  dest_dir = dest_dir.AppendASCII(GetTestName());
+  dest_dir = dest_dir.AppendUTF8(GetTestName());
   if (!base::CreateDirectory(dest_dir)) {
     LOG(ERROR) << __func__
                << ": failed to create log destination dir: " << dest_dir;
@@ -358,7 +318,7 @@ base::FilePath StartProcmonLogging() {
   CHECK(base::PathExists(pmc_path));
 
   const base::FilePath pml_file(
-      dest_dir.Append(base::ASCIIToWide(base::UnlocalizedTimeFormatWithPattern(
+      dest_dir.Append(base::UTF8ToWide(base::UnlocalizedTimeFormatWithPattern(
           base::Time::Now(), "yyMMdd-HHmmss.'PML'"))));
 
   const std::wstring& cmdline = base::StrCat(
@@ -420,15 +380,18 @@ EventHolder CreateWaitableEventForTest() {
 #endif  // BUILDFLAG(IS_WIN)
 
 const base::ProcessIterator::ProcessEntries FindProcesses(
-    const base::FilePath::StringType& executable_name) {
-  return base::NamedProcessIterator(executable_name, nullptr).Snapshot();
+    const base::FilePath::StringType& executable_name,
+    const base::ProcessFilter* filter) {
+  return base::NamedProcessIterator(executable_name, filter).Snapshot();
 }
 
-std::string PrintProcesses(const base::FilePath::StringType& executable_name) {
+std::string PrintProcesses(const base::FilePath::StringType& executable_name,
+                           const base::ProcessFilter* filter) {
   const std::string demarcation(72, '=');
   std::stringstream message;
   message << "Found processes:" << std::endl << demarcation << std::endl;
-  for (const base::ProcessEntry& entry : FindProcesses(executable_name)) {
+  for (const base::ProcessEntry& entry :
+       FindProcesses(executable_name, filter)) {
     message << entry.exe_file() << ", pid=" << entry.pid()
             << ", creation time=" << [](base::ProcessId pid) {
                  const base::Process process = base::Process::Open(pid);
@@ -452,7 +415,7 @@ std::string PrintProcesses(const base::FilePath::StringType& executable_name) {
 
 bool WaitFor(base::FunctionRef<bool()> predicate,
              base::FunctionRef<void()> still_waiting) {
-  constexpr base::TimeDelta kOutputInterval = base::Seconds(10);
+  static constexpr base::TimeDelta kOutputInterval = base::Seconds(10);
   auto notify_next = base::TimeTicks::Now() + kOutputInterval;
   const auto deadline = base::TimeTicks::Now() + TestTimeouts::action_timeout();
   while (base::TimeTicks::Now() < deadline) {
@@ -471,11 +434,11 @@ bool WaitFor(base::FunctionRef<bool()> predicate,
 base::FilePath GetTestFilePath(const char* file_name) {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
-  return test_data_root.AppendASCII("chrome")
-      .AppendASCII("updater")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII(file_name);
+  return test_data_root.AppendUTF8("chrome")
+      .AppendUTF8("updater")
+      .AppendUTF8("test")
+      .AppendUTF8("data")
+      .AppendUTF8(file_name);
 }
 
 void SetupFakeUpdaterVersion(UpdaterScope scope,

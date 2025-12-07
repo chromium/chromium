@@ -28,11 +28,6 @@ class MediaTiming : public GarbageCollectedMixin {
   // for animated media.)
   virtual bool IsSufficientContentLoadedForPaint() const = 0;
 
-  // True if the Timing-Allow-Origin headers have been received and indicate
-  // that the timing information for this resource are allowed to be observed
-  // by its cross-origin embedder.
-  virtual bool TimingAllowPassed() const = 0;
-
   // Returns the number of bytes of data used to represent the image (or to
   // represent enough of the content that it can be displayed on screen.) This
   // is used to approximate the entropy of the image so that very-low-entropy
@@ -47,9 +42,7 @@ class MediaTiming : public GarbageCollectedMixin {
   // TODO(iclelland): Change this so that it applies to static images as well.
   virtual bool IsPaintedFirstFrame() const = 0;
 
-  virtual void SetFirstVideoFrameTime(base::TimeTicks) {
-    NOTREACHED_IN_MIGRATION();
-  }
+  virtual void SetFirstVideoFrameTime(base::TimeTicks) { NOTREACHED(); }
   virtual base::TimeTicks GetFirstVideoFrameTime() const = 0;
 
   // Returns the loading priority used for the image.
@@ -68,10 +61,6 @@ class MediaTiming : public GarbageCollectedMixin {
   virtual base::TimeTicks LoadStart() const = 0;
 
   virtual base::TimeTicks LoadEnd() const = 0;
-
-  virtual bool IsLoadedFromMemoryCache() const = 0;
-
-  virtual bool IsPreloadedWithEarlyHints() const = 0;
 };
 
 }  // namespace blink

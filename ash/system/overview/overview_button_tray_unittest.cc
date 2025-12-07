@@ -14,6 +14,7 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -32,8 +33,9 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -43,6 +45,8 @@
 #include "ui/events/event.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/wm/core/window_util.h"
 
@@ -114,8 +118,14 @@ class OverviewButtonTrayTest : public AshTestBase {
 };
 
 // Ensures that creation doesn't cause any crashes and adds the image icon.
+// Ensures that the accessible name gets set on construction.
 TEST_F(OverviewButtonTrayTest, BasicConstruction) {
   EXPECT_TRUE(GetImageView(GetTray()));
+
+  ui::AXNodeData node_data;
+  GetTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME));
 }
 
 // Test that tablet mode toggle changes visibility.
@@ -124,23 +134,23 @@ TEST_F(OverviewButtonTrayTest, BasicConstruction) {
 TEST_F(OverviewButtonTrayTest, VisibilityTest) {
   ASSERT_FALSE(GetTray()->GetVisible());
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(GetTray()->GetVisible());
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // When there is an window, it'll take an screenshot and
   // switch becomes asynchronous, but the display tablet state is synchronously
   // updated.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   ASSERT_FALSE(GetTray()->GetVisible());
   TabletMode::Waiter waiter(/*enable=*/true);
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   waiter.Wait();
@@ -148,7 +158,7 @@ TEST_F(OverviewButtonTrayTest, VisibilityTest) {
   EXPECT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
@@ -158,7 +168,7 @@ TEST_F(OverviewButtonTrayTest, PerformAction) {
 
   // Overview Mode only works when there is a window
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   GetTray()->SetVisiblePreferred(true);
   GestureTapOn(GetTray());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -187,9 +197,9 @@ TEST_F(OverviewButtonTrayTest, PerformDoubleTapAction) {
 
   // Add two windows and activate the second one to test quick switch.
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   wm::ActivateWindow(window2.get());
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 
@@ -237,7 +247,7 @@ TEST_F(OverviewButtonTrayTest, TrayOverviewUserAction) {
   // should record the user action.
   base::UserActionTester user_action_tester;
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   GestureTapOn(GetTray());
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kTrayOverview));
@@ -286,7 +296,7 @@ TEST_F(OverviewButtonTrayTest, VisibilityChangesForLoginStatus) {
   ClearLogin();
   Shell::Get()->UpdateAfterLoginStatusChange(LoginStatus::NOT_LOGGED_IN);
   EXPECT_FALSE(GetTray()->GetVisible());
-  CreateUserSessions(1);
+  SimulateUserLogin(kRegularUserLoginInfo);
   Shell::Get()->UpdateAfterLoginStatusChange(LoginStatus::USER);
   EXPECT_TRUE(GetTray()->GetVisible());
   SetUserAddingScreenRunning(true);
@@ -305,7 +315,7 @@ TEST_F(OverviewButtonTrayTest, ActiveStateOnlyDuringOverviewMode) {
 
   // Overview Mode only works when there is a window
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -330,13 +340,13 @@ TEST_F(OverviewButtonTrayTest, HideAnimationAlwaysCompletesOnDelete) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   // Long duration for hide animation, to allow it to be interrupted.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> hide_duration(
-      new ui::ScopedAnimationDurationScaleMode(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> hide_duration(
+      new gfx::ScopedAnimationDurationScaleMode(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION));
   GetTray()->SetVisiblePreferred(false);
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::Get()->GetPrimaryDisplay().id());
   // Colone and delete the old layer tree.
   std::unique_ptr<ui::LayerTreeOwner> old_layer_tree_owner =
       ::wm::RecreateLayers(root_window);
@@ -351,7 +361,7 @@ TEST_F(OverviewButtonTrayTest, HideAnimationAlwaysCompletesOnDelete) {
 TEST_F(OverviewButtonTrayTest, VisibilityChangesForSystemModalWindow) {
   std::unique_ptr<aura::Window> window =
       CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_NORMAL);
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   window->Show();
   ParentWindowInPrimaryRootWindow(window.get());
 
@@ -424,11 +434,11 @@ TEST_F(OverviewButtonTrayTest, LeaveTabletModeBecauseExternalMouse) {
   TabletModeControllerTestApi().DetachAllMice();
 
   TabletModeControllerTestApi().OpenLidToAngle(315.0f);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   ASSERT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().AttachExternalMouse();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 }
 
@@ -439,18 +449,18 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   TabletModeControllerTestApi().DetachAllMice();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(TabletModeControllerTestApi().AreEventsBlocked());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // When there is a window, a screenshot will be taken before shelf enters
   // tablet mode state.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   EXPECT_FALSE(GetTray()->GetVisible());
   TabletMode::Waiter waiter(/*enable=*/true);
@@ -459,12 +469,12 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
 
   waiter.Wait();
 
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   // When disabling tablet mode, shelf state updates synchronously.
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
@@ -548,39 +558,39 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
   SetTestA11yFeatureEnabled(true);
 
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(GetTray()->GetVisible());
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // When there is an window, it'll take an screenshot and the tablet mode
   // switch becomes asynchronous.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   ASSERT_FALSE(GetTray()->GetVisible());
 
   TabletMode::Waiter waiter(/*enable=*/true);
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   waiter.Wait();
 
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   // Disable the accessibility feature while in tablet mode - the button should
   // be hidden.
   SetTestA11yFeatureEnabled(false);
 
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
@@ -589,40 +599,40 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
 TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
        AccessibilityFeatureEnabledWhileInTabletMode) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // The button should be shown if the feature gets enabled.
   SetTestA11yFeatureEnabled(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
 TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
        AccessibilityFeaturesChangeWhileInOverview) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // Create a window to show in overview.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // The button should be shown if the feature gets enabled.
   SetTestA11yFeatureEnabled(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(HasTestingAccessibilityFeature(), GetTray()->GetVisible());
 
   // The button should be hidden if the feature gets disabled.
   SetTestA11yFeatureEnabled(false);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 

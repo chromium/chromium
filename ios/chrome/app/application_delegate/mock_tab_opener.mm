@@ -44,8 +44,7 @@
 }
 
 - (void)openTabFromLaunchWithParams:(URLOpenerParams*)params
-                 startupInformation:(id<StartupInformation>)startupInformation
-                           appState:(AppState*)appState {
+                 startupInformation:(id<StartupInformation>)startupInformation {
   // Stub.
 }
 

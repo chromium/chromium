@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/util/process_version.gni")
+import("//chrome/updater/branding.gni")
+import("//chrome/updater/updater_process_version_rc_template.gni")
 import("//testing/test.gni")
 
 source_set("test_strings") {
   testonly = true
 
-  sources = [
-    "test_strings.cc",
-    "test_strings.h",
-  ]
+  sources = [ "test_strings.h" ]
 }
 
 source_set("test_common") {
@@ -46,6 +46,11 @@ source_set("test_executables") {
   ]
 }
 
+updater_process_version_rc_template("version") {
+  original_filename = "updater_test_process.exe"
+  rc = "updater_test_process.rc"
+}
+
 executable("updater_test_process") {
   testonly = true
 
@@ -54,10 +59,11 @@ executable("updater_test_process") {
   deps = [
     ":test_common",
     ":test_strings",
+    ":version",
     "//base",
     "//base/test:test_support",
-    "//build/win:default_exe_manifest",
     "//chrome/updater:base",
     "//chrome/updater:constants_header",
+    "//chrome/updater:updater_exe_manifest",
   ]
 }

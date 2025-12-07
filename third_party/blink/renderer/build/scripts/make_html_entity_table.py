@@ -47,10 +47,6 @@ def convert_value_to_int(value):
     return "0x" + value[2:]
 
 
-def offset_table_entry(offset):
-    return "    &staticEntityTable[%s]," % offset
-
-
 def check_ascii(entity_string):
     for ch in entity_string:
         code = ord(ch)
@@ -114,11 +110,12 @@ def main():
 namespace blink {
 
 namespace {
+
 """)
 
     assert len(entries) > 0, "Code assumes a non-empty entity array."
 
-    output_file.write("static const LChar staticEntityStringStorage[] = {\n")
+    output_file.write("const LChar kStaticEntityStringStorage[] = {\n")
     output_file.write("'")
     all_data = ""
     entity_offset = 0
@@ -170,8 +167,7 @@ namespace {
             index[starting_letter] = offset
 
     output_file.write("""
-static const HTMLEntityTableEntry staticEntityTable[%s] = {\n""" %
-                      entity_count)
+const HTMLEntityTableEntry kStaticEntityTable[%s] = {\n""" % entity_count)
 
     for entry in entries:
         values = entry[VALUE].split(' ')
@@ -185,58 +181,46 @@ static const HTMLEntityTableEntry staticEntityTable[%s] = {\n""" %
         ))
 
     output_file.write("};\n\n")
-    output_file.write("\n}\n")
 
-    output_file.write("static const int16_t uppercaseOffset[] = {\n")
+    output_file.write("const uint16_t kUppercaseOffset[] = {\n")
     for letter in range(ord('A'), ord('Z') + 1):
         output_file.write("%d,\n" % index[chr(letter)])
     output_file.write("%d\n" % index['a'])
-    output_file.write("};\n\nstatic const int16_t lowercaseOffset[] = {\n")
+    output_file.write("};\n\nconst uint16_t kLowercaseOffset[] = {\n")
     for letter in range(ord('a'), ord('z') + 1):
         output_file.write("%d,\n" % index[chr(letter)])
     output_file.write("%d\n" % entity_count)
-    output_file.write("""};
-
-const LChar* HTMLEntityTable::EntityString(const HTMLEntityTableEntry& entry)
-{
-    return staticEntityStringStorage + entry.entity_offset;
+    output_file.write("};\n\n")
+    output_file.write("}  // namespace\n")
+    output_file.write("""
+base::span<const LChar> HTMLEntityTable::EntityString(const HTMLEntityTableEntry& entry) {
+  return base::span(kStaticEntityStringStorage).subspan(entry.entity_offset, entry.length);
 }
 
-LChar HTMLEntityTableEntry::LastCharacter() const
-{
-    return HTMLEntityTable::EntityString(*this)[length - 1];
+LChar HTMLEntityTableEntry::LastCharacter() const {
+  return HTMLEntityTable::EntityString(*this).back();
 }
 
-const HTMLEntityTableEntry* HTMLEntityTable::FirstEntryStartingWith(UChar c)
-{
-    if (c >= 'A' && c <= 'Z')
-        return &staticEntityTable[uppercaseOffset[c - 'A']];
-    if (c >= 'a' && c <= 'z')
-        return &staticEntityTable[lowercaseOffset[c - 'a']];
-    return 0;
+base::span<const HTMLEntityTableEntry> HTMLEntityTable::EntriesStartingWith(UChar c) {
+  if (c >= 'A' && c <= 'Z') {
+    const size_t first = kUppercaseOffset[c - 'A'];
+    const size_t last = kUppercaseOffset[c - 'A' + 1];
+    return AllEntries().subspan(first, last - first);
+  }
+  if (c >= 'a' && c <= 'z') {
+    const size_t first = kLowercaseOffset[c - 'a'];
+    const size_t last = kLowercaseOffset[c - 'a' + 1];
+    return AllEntries().subspan(first, last - first);
+  }
+  return {};
 }
 
-const HTMLEntityTableEntry* HTMLEntityTable::LastEntryStartingWith(UChar c)
-{
-    if (c >= 'A' && c <= 'Z')
-        return &staticEntityTable[uppercaseOffset[c - 'A' + 1]] - 1;
-    if (c >= 'a' && c <= 'z')
-        return &staticEntityTable[lowercaseOffset[c - 'a' + 1]] - 1;
-    return 0;
+base::span<const HTMLEntityTableEntry> HTMLEntityTable::AllEntries() {
+  return base::span(kStaticEntityTable);
 }
 
-const HTMLEntityTableEntry* HTMLEntityTable::FirstEntry()
-{
-    return &staticEntityTable[0];
-}
-
-const HTMLEntityTableEntry* HTMLEntityTable::LastEntry()
-{
-    return &staticEntityTable[%s - 1];
-}
-
-}
-""" % entity_count)
+}  // namespace blink
+""")
 
 
 if __name__ == "__main__":

@@ -10,10 +10,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -86,11 +88,12 @@ void ParseModalias(const dbus::ObjectPath& object_path,
   BluetoothDevice::VendorIDSource source_value;
   int vendor_value, product_value, device_value;
 
-  if (sscanf(modalias.c_str(), "bluetooth:v%04xp%04xd%04x", &vendor_value,
-             &product_value, &device_value) == 3) {
+  if (UNSAFE_TODO(sscanf(modalias.c_str(), "bluetooth:v%04xp%04xd%04x",
+                         &vendor_value, &product_value, &device_value)) == 3) {
     source_value = BluetoothDevice::VENDOR_ID_BLUETOOTH;
-  } else if (sscanf(modalias.c_str(), "usb:v%04xp%04xd%04x", &vendor_value,
-                    &product_value, &device_value) == 3) {
+  } else if (UNSAFE_TODO(sscanf(modalias.c_str(), "usb:v%04xp%04xd%04x",
+                                &vendor_value, &product_value,
+                                &device_value)) == 3) {
     source_value = BluetoothDevice::VENDOR_ID_USB;
   } else {
     return;
@@ -240,8 +243,7 @@ device::BluetoothTransport BluetoothDeviceBlueZ::GetType() const {
     return device::BLUETOOTH_TRANSPORT_DUAL;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::BLUETOOTH_TRANSPORT_INVALID;
+  NOTREACHED();
 }
 
 void BluetoothDeviceBlueZ::CreateGattConnectionImpl(
@@ -568,8 +570,7 @@ void BluetoothDeviceBlueZ::SetConnectionLatency(
       max_connection_interval = MAX_CONNECTION_INTERVAL_HIGH;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   BLUETOOTH_LOG(EVENT) << "Setting LE connection parameters: min="

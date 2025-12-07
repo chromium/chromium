@@ -4,6 +4,26 @@
 
 #import "ios/chrome/browser/drive/model/drive_list.h"
 
+#import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
+namespace {
+
+// The size of the drive file picker item icon.
+constexpr CGFloat kDriveFilePickerItemIconSize = 18;
+// Prefix of MIME types associated with images.
+NSString* const kImageMIMETypePrefix = @"image/";
+// Prefix of the icon link for shortcuts.
+NSString* const kShortcutImageLinkPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/64/type/";
+// Prefix of links to icons in the Drive third-party icon repository.
+NSString* const kDriveIconRepositoryPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/";
+// MIME type for folder items.
+NSString* const kFolderMIMEType = @"application/vnd.google-apps.folder";
+
+}  // namespace
+
 #pragma mark - DriveItem
 
 DriveItem::DriveItem() = default;
@@ -23,12 +43,22 @@ DriveItem& DriveItem::operator=(const DriveItem& other) {
   name = [other.name copy];
   icon_link = [other.icon_link copy];
   thumbnail_link = [other.thumbnail_link copy];
+  background_image_link = [other.background_image_link copy];
+  created_time = other.created_time;
   modified_time = other.modified_time;
+  modified_by_me_time = other.modified_by_me_time;
+  viewed_by_me_time = other.viewed_by_me_time;
+  shared_with_me_time = other.shared_with_me_time;
   parent_identifier = [other.parent_identifier copy];
+  is_shortcut = other.is_shortcut;
+  shortcut_target_identifier = [other.shortcut_target_identifier copy];
+  shortcut_target_mime_type = [other.shortcut_target_mime_type copy];
+  is_shared_drive = other.is_shared_drive;
   is_folder = other.is_folder;
   mime_type = [other.mime_type copy];
   size = other.size;
   can_download = other.can_download;
+  md5_checksum = [other.md5_checksum copy];
   return *this;
 }
 
@@ -37,13 +67,84 @@ DriveItem& DriveItem::operator=(DriveItem&& other) {
   std::swap(name, other.name);
   std::swap(icon_link, other.icon_link);
   std::swap(thumbnail_link, other.thumbnail_link);
+  std::swap(background_image_link, other.background_image_link);
+  std::swap(created_time, other.created_time);
   std::swap(modified_time, other.modified_time);
+  std::swap(modified_by_me_time, other.modified_by_me_time);
+  std::swap(viewed_by_me_time, other.viewed_by_me_time);
+  std::swap(shared_with_me_time, other.shared_with_me_time);
   std::swap(parent_identifier, other.parent_identifier);
+  std::swap(is_shortcut, other.is_shortcut);
+  std::swap(shortcut_target_identifier, other.shortcut_target_identifier);
+  std::swap(shortcut_target_mime_type, other.shortcut_target_mime_type);
+  std::swap(is_shared_drive, other.is_shared_drive);
   std::swap(is_folder, other.is_folder);
   std::swap(mime_type, other.mime_type);
   std::swap(size, other.size);
   std::swap(can_download, other.can_download);
+  std::swap(md5_checksum, other.md5_checksum);
   return *this;
+}
+
+bool DriveItem::CanBeBrowsed() const {
+  return is_folder || is_shared_drive ||
+         (is_shortcut &&
+          [shortcut_target_mime_type isEqualToString:kFolderMIMEType]);
+}
+
+UIImage* DriveItem::GetPlaceholderImage() const {
+  if (is_shared_drive) {
+    return CustomSymbolWithPointSize(kSharedDrivesSymbol,
+                                     kDriveFilePickerItemIconSize);
+  } else if (is_folder) {
+    return DefaultSymbolWithPointSize(kFolderSymbol,
+                                      kDriveFilePickerItemIconSize);
+  } else if (is_shortcut) {
+    return DefaultSymbolWithPointSize(kArrowUTurnForwardSymbol,
+                                      kDriveFilePickerItemIconSize);
+  } else {
+    return DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
+  }
+}
+
+DriveItem::ImageType DriveItem::GetImageType() const {
+  if (is_shared_drive) {
+    // If this is a shared drive, the background image link should be fetched.
+    return ImageType::kBackground;
+  } else if ([mime_type hasPrefix:kImageMIMETypePrefix] && thumbnail_link) {
+    return ImageType::kThumbnail;
+  } else if (is_shortcut && shortcut_target_mime_type) {
+    return ImageType::kShortcut;
+  }
+  // Otherwise the icon link should be fetched.
+  return ImageType::kIcon;
+}
+
+NSString* DriveItem::GetImageLink() const {
+  switch (GetImageType()) {
+    case ImageType::kIcon: {
+      // By default drive api provides a 16 resolution icons, replacing 16 by 64
+      // in the icon URLs provide better sized icons e.g. the URL
+      // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4
+      // becomes
+      // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
+      NSString* target =
+          [kDriveIconRepositoryPrefix stringByAppendingString:@"16"];
+      NSString* replacement =
+          [kDriveIconRepositoryPrefix stringByAppendingString:@"64"];
+      return [icon_link stringByReplacingOccurrencesOfString:target
+                                                  withString:replacement];
+    }
+    case ImageType::kThumbnail:
+      return thumbnail_link;
+    case ImageType::kBackground:
+      return background_image_link;
+    case ImageType::kShortcut:
+      // Icon links are expected to have the following format:
+      // https://drive-thirdparty.googleusercontent.com/64/type/<MIME type>
+      return [kShortcutImageLinkPrefix
+          stringByAppendingString:shortcut_target_mime_type];
+  }
 }
 
 #pragma mark - DriveListResult
@@ -80,3 +181,19 @@ DriveListResult& DriveListResult::operator=(DriveListResult&& other) {
 DriveList::DriveList() = default;
 
 DriveList::~DriveList() = default;
+
+void DriveList::ListItems(const DriveListQuery& query,
+                          DriveListCompletionCallback completion_callback) {
+  NOTREACHED();
+}
+
+void DriveList::ListFiles(const DriveListQuery& query,
+                          DriveListCompletionCallback completion_callback) {
+  ListItems(query, std::move(completion_callback));
+}
+
+void DriveList::ListSharedDrives(
+    const DriveListQuery& query,
+    DriveListCompletionCallback completion_callback) {
+  NOTREACHED();
+}

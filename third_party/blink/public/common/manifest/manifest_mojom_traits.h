@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -72,6 +72,26 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::ManifestLocalizedTextObjectDataView,
+    blink::Manifest::ManifestLocalizedTextObject> {
+  static const std::optional<std::u16string>& value(
+      const blink::Manifest::ManifestLocalizedTextObject& obj) {
+    return obj.value;
+  }
+  static const std::optional<std::u16string>& lang(
+      const blink::Manifest::ManifestLocalizedTextObject& obj) {
+    return obj.lang;
+  }
+  static const std::optional<blink::mojom::Manifest_TextDirection>& dir(
+      const blink::Manifest::ManifestLocalizedTextObject& obj) {
+    return obj.dir;
+  }
+  static bool Read(blink::mojom::ManifestLocalizedTextObjectDataView data,
+                   blink::Manifest::ManifestLocalizedTextObject* out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestShortcutItemDataView,
                  ::blink::Manifest::ShortcutItem> {
@@ -99,8 +119,30 @@ struct BLINK_COMMON_EXPORT
     return shortcut.icons;
   }
 
+  static const std::map<std::u16string,
+                        std::vector<blink::Manifest::ImageResource>>&
+  icons_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.icons_localized;
+  }
+
   static bool Read(blink::mojom::ManifestShortcutItemDataView data,
                    ::blink::Manifest::ShortcutItem* out);
+
+  static const std::map<std::u16string,
+                        blink::Manifest::ManifestLocalizedTextObject>&
+  name_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.name_localized;
+  }
+  static const std::map<std::u16string,
+                        blink::Manifest::ManifestLocalizedTextObject>&
+  short_name_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.short_name_localized;
+  }
+  static const std::map<std::u16string,
+                        blink::Manifest::ManifestLocalizedTextObject>&
+  description_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.description_localized;
+  }
 };
 
 template <>
@@ -202,9 +244,9 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
                  ::blink::Manifest::LaunchHandler> {
-  static blink::mojom::ManifestLaunchHandler::ClientMode client_mode(
-      const ::blink::Manifest::LaunchHandler& launch_handler) {
-    return launch_handler.client_mode;
+  static std::optional<blink::mojom::ManifestLaunchHandler::ClientMode>
+  client_mode(const ::blink::Manifest::LaunchHandler& launch_handler) {
+    return launch_handler.client_mode_;
   }
 
   static bool Read(blink::mojom::ManifestLaunchHandlerDataView data,
@@ -272,12 +314,12 @@ struct BLINK_COMMON_EXPORT UnionTraits<blink::mojom::HomeTabUnionDataView,
 
   static ::blink::mojom::TabStripMemberVisibility visibility(
       const ::blink::Manifest::TabStrip::HomeTab& value) {
-    return absl::get<blink::mojom::TabStripMemberVisibility>(value);
+    return std::get<blink::mojom::TabStripMemberVisibility>(value);
   }
 
   static const ::blink::Manifest::HomeTabParams& params(
       const ::blink::Manifest::TabStrip::HomeTab& value) {
-    return absl::get<blink::Manifest::HomeTabParams>(value);
+    return std::get<blink::Manifest::HomeTabParams>(value);
   }
 
   static bool Read(blink::mojom::HomeTabUnionDataView data,

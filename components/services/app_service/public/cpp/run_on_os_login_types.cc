@@ -22,14 +22,6 @@ RunOnOsLogin::RunOnOsLogin(RunOnOsLoginMode login_mode, bool is_managed)
 
 RunOnOsLogin::~RunOnOsLogin() = default;
 
-bool RunOnOsLogin::operator==(const RunOnOsLogin& other) const {
-  return login_mode == other.login_mode && is_managed == other.is_managed;
-}
-
-bool RunOnOsLogin::operator!=(const RunOnOsLogin& other) const {
-  return !(*this == other);
-}
-
 base::Value::Dict ConvertRunOnOsLoginToDict(
     const RunOnOsLogin& run_on_os_login) {
   base::Value::Dict dict;

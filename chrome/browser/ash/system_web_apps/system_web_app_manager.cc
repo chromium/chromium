@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -32,7 +33,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -47,13 +47,13 @@
 #include "chrome/browser/ash/system_web_apps/apps/eche_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/file_manager_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/firmware_update_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/graduation_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/mall_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_feedback_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_settings_web_app_info.h"
-#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_system_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/print_management_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/print_preview_cros_system_web_app_info.h"
@@ -69,8 +69,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -78,6 +76,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -85,6 +84,8 @@
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_background_task_info.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -102,18 +103,10 @@
 
 namespace ash {
 
-const constexpr char kIconHealthMetricName[] =
-    "Webapp.SystemApps.IconsAreHealthyInSession";
-const constexpr char kIconsFixedOnReinstallMetricName[] =
-    "Webapp.SystemApps.IconsFixedOnReinstall";
-
 namespace {
 
 SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
-  // TODO(crbug.com/40118385): Currently unused, will be hooked up
-  // post-migration. We're making delegates for everything, and will then use
-  // them in place of SystemAppInfos.
   info_vec.push_back(std::make_unique<CameraSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<DiagnosticsSystemAppDelegate>(profile));
@@ -137,17 +130,14 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(std::make_unique<FileManagerSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<ProjectorSystemWebAppDelegate>(profile));
   info_vec.push_back(
-      std::make_unique<OsUrlHandlerSystemWebAppDelegate>(profile));
-  info_vec.push_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
   info_vec.push_back(
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
   info_vec.push_back(std::make_unique<PrintPreviewCrosDelegate>(profile));
-  if (features::IsBocaEnabled()) {
-    info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
-  }
+  info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<MallSystemAppDelegate>(profile));
   if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
     info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
@@ -157,8 +147,9 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
     info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kConch)) {
-    info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
+  if (features::IsGraduationEnabled()) {
+    info_vec.push_back(
+        std::make_unique<graduation::GraduationAppDelegate>(profile));
   }
 
 #if !defined(OFFICIAL_BUILD)
@@ -167,8 +158,7 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
 
   SystemWebAppDelegateMap delegate_map;
   for (auto& info : info_vec) {
-    if (info->IsAppEnabled() ||
-        base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
+    if (info->IsAppEnabled()) {
       // Gets `type` before std::move().
       SystemWebAppType type = info->GetType();
       delegate_map.emplace(type, std::move(info));
@@ -187,8 +177,8 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
     const SystemWebAppDelegate& delegate,
     bool force_update,
     bool is_disabled) {
-  DCHECK(delegate.GetInstallUrl().scheme() == content::kChromeUIScheme ||
-         delegate.GetInstallUrl().scheme() ==
+  DCHECK(delegate.GetInstallUrl().GetScheme() == content::kChromeUIScheme ||
+         delegate.GetInstallUrl().GetScheme() ==
              content::kChromeUIUntrustedScheme);
 
   web_app::ExternalInstallOptions install_options(
@@ -206,7 +196,8 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.add_to_search = delegate.ShouldShowInSearchAndShelf();
   install_options.add_to_management = false;
   install_options.is_disabled = is_disabled;
-  install_options.force_reinstall = force_update;
+  install_options.force_reinstall =
+      force_update || delegate.ShouldForceReinstall();
   install_options.uninstall_and_replace =
       delegate.GetAppIdsToUninstallAndReplace();
   install_options.system_app_type = type;
@@ -214,17 +205,13 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
       delegate.ShouldHandleFileOpenIntents();
 
   const auto& search_terms = delegate.GetAdditionalSearchTerms();
-  base::ranges::transform(
+  std::ranges::transform(
       search_terms, std::back_inserter(install_options.additional_search_terms),
       &l10n_util::GetStringUTF8);
   return install_options;
 }
 
 }  // namespace
-
-// static
-const char SystemWebAppManager::kInstallResultHistogramName[];
-const char SystemWebAppManager::kInstallDurationHistogramName[];
 
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
     : profile_(profile),
@@ -325,10 +312,6 @@ void SystemWebAppManager::StopBackgroundTasksForTesting() {
 }
 
 bool SystemWebAppManager::IsAppEnabled(SystemWebAppType type) const {
-  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
-    return true;
-  }
-
   const SystemWebAppDelegate* delegate =
       GetSystemWebApp(system_app_delegates_, type);
   if (!delegate) {
@@ -557,7 +540,8 @@ std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
   }
 
   std::optional<webapps::AppId> app_id =
-      provider_->registrar_unsafe().FindAppWithUrlInScope(url);
+      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+          url, web_app::WebAppFilter::InstalledInChrome());
   if (!app_id.has_value()) {
     return std::nullopt;
   }
@@ -652,7 +636,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallDuration(
   DCHECK_GE(install_duration.InMilliseconds(), 0);
 
   if (!shutting_down_) {
-    base::UmaHistogramMediumTimes(kInstallDurationHistogramName,
+    base::UmaHistogramMediumTimes(kFreshInstallDurationHistogramName,
                                   install_duration);
   }
 }
@@ -666,7 +650,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
   // the install success rate.
   std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
       results_to_report;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       install_results,
       std::inserter(results_to_report, results_to_report.end()),
       [](const auto& url_and_result) {
@@ -780,17 +764,17 @@ void SystemWebAppManager::OnIconCheckResult(
     case SystemWebAppIconChecker::IconState::kNoAppInstalled:
       break;
     case SystemWebAppIconChecker::IconState::kBroken:
-      base::UmaHistogramBoolean(kIconHealthMetricName, false);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, false);
       if (PreviousSessionHadBrokenIcons()) {
-        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, false);
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, false);
       }
       pref_service_->SetBoolean(kSystemWebAppSessionHasBrokenIconsPrefName,
                                 true);
       break;
     case SystemWebAppIconChecker::IconState::kOk:
-      base::UmaHistogramBoolean(kIconHealthMetricName, true);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, true);
       if (PreviousSessionHadBrokenIcons()) {
-        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, true);
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, true);
       }
       pref_service_->ClearPref(kSystemWebAppSessionHasBrokenIconsPrefName);
       pref_service_->ClearPref(prefs::kSystemWebAppInstallFailureCount);

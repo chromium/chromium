@@ -5,14 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import type {AutocompleteMatch} from '../omnibox.mojom-webui.js';
-import {AutocompleteControllerType} from '../omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from '../omnibox_internals.mojom-webui.js';
+import {AutocompleteControllerType} from '../omnibox_internals.mojom-webui.js';
 import {clearChildren, createEl, setFormattedClipboardForMl, signalNames} from '../omnibox_util.js';
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
 import {ResponseFilter} from './ml_browser_proxy.js';
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-ignore:next-line
 import sheet from './ml_table.css' with {type : 'css'};
 import {getTemplate} from './ml_table.html.js';
 
@@ -86,8 +84,7 @@ export class MlTableElement extends CustomElement {
     const headers = this.getRequiredElement('.thead .tr').children;
 
     result.forEach(match => {
-      const additionalInfo = Object.fromEntries(
-          match.additionalInfo.map(tuple => Object.values(tuple)));
+      const additionalInfo = match.additionalInfo;
 
       const matchDetails = [
         inputText,

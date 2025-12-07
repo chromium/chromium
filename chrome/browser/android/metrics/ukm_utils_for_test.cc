@@ -13,7 +13,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/metrics/test_jni_headers/UkmUtilsForTest_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace ukm {
 
@@ -67,3 +67,5 @@ static void JNI_UkmUtilsForTest_RecordSourceWithId(JNIEnv*, jlong source_id) {
 static jlong JNI_UkmUtilsForTest_GetClientId(JNIEnv*) {
   return ukm::UkmUtilsForTest::GetClientId();
 }
+
+DEFINE_JNI(UkmUtilsForTest)

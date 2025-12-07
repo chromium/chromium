@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -14,12 +15,12 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/sync/model/sync_change.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -40,9 +41,7 @@ std::string DeleteDirectiveToString(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   base::Value value =
       syncer::HistoryDeleteDirectiveSpecificsToValue(delete_directive);
-  std::string str;
-  base::JSONWriter::Write(value, &str);
-  return str;
+  return base::WriteJson(value).value_or("");
 }
 
 // Compare time range directives first by start time, then by end time.
@@ -126,7 +125,7 @@ void CheckDeleteDirectiveValid(
     DCHECK(url_directive.has_url());
     DCHECK_GT(url_directive.end_time_usec(), 0);
   } else {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Delete directive has no time range, global ID or url directive";
   }
 }
@@ -205,7 +204,7 @@ bool DeleteDirectiveHandler::DeleteDirectiveTask::RunOnDBThread(
   }
 
   ProcessGlobalIdDeleteDirectives(backend, global_id_directives);
-  base::ranges::sort(time_range_directives, TimeRangeLessThan);
+  std::ranges::sort(time_range_directives, TimeRangeLessThan);
   ProcessTimeRangeDeleteDirectives(backend, time_range_directives);
   ProcessUrlDeleteDirectives(backend, url_directives);
   return true;
@@ -280,9 +279,10 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
   for (const syncer::SyncData& data : time_range_directives) {
     const sync_pb::TimeRangeDirective& time_range_directive =
         data.GetSpecifics().history_delete_directive().time_range_directive();
-    const std::optional<std::string>& app_id =
-        time_range_directive.has_app_id() ? time_range_directive.app_id()
-                                          : kNoAppIdFilter;
+    const std::optional<std::string> app_id =
+        time_range_directive.has_app_id()
+            ? std::optional(time_range_directive.app_id())
+            : std::nullopt;
     app_directives_map[app_id].push_back(data);
   }
 
@@ -312,9 +312,11 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
 
     const sync_pb::TimeRangeDirective& time_range_directive =
         delete_directive.time_range_directive();
-    CHECK((!time_range_directive.has_app_id() &&
-           restrict_app_id == kNoAppIdFilter) ||
-          time_range_directive.app_id() == *restrict_app_id);
+    const std::optional<std::string> directive_app_id =
+        time_range_directive.has_app_id()
+            ? std::optional(time_range_directive.app_id())
+            : std::nullopt;
+    CHECK(directive_app_id == restrict_app_id);
     if (!time_range_directive.has_start_time_usec() ||
         !time_range_directive.has_end_time_usec() ||
         time_range_directive.start_time_usec() >=
@@ -402,7 +404,6 @@ bool DeleteDirectiveHandler::CreateTimeRangeDeleteDirective(
       begin_time.is_null() ? 0 : TimeToUnixUsec(begin_time);
 
   // Determine the actual end time -- it should not be null or in the future.
-  // TODO(dubroy): Use sane time (crbug.com/146090) here when it's available.
   base::Time end = (end_time.is_null() || end_time > now) ? now : end_time;
   // -1 because end time in delete directives is inclusive.
   int64_t end_time_usecs = TimeToUnixUsec(end) - 1;
@@ -436,8 +437,9 @@ DeleteDirectiveHandler::ProcessLocalDeleteDirective(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!sync_processor_) {
-    return syncer::ModelError(FROM_HERE,
-                              "Cannot send local delete directive to sync");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kHistoryDeleteDirectiveSyncDisabledOnLocalCreation);
   }
 #if !defined(NDEBUG)
   CheckDeleteDirectiveValid(delete_directive);
@@ -500,7 +502,9 @@ std::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!sync_processor_) {
-    return syncer::ModelError(FROM_HERE, "Sync is disabled.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kHistoryDeleteDirectiveSyncDisabledOnRemoteChange);
   }
 
   syncer::SyncDataList delete_directives;
@@ -513,8 +517,7 @@ std::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
         // TODO(akalin): Keep track of existing delete directives.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -534,6 +537,16 @@ std::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> DeleteDirectiveHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string DeleteDirectiveHandler::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  // Client tags of delete directives are not computed from the specifics.
+  NOTREACHED();
+}
+
+bool DeleteDirectiveHandler::SupportsGetClientTag() const {
+  return false;
 }
 
 void DeleteDirectiveHandler::FinishProcessing(

@@ -4,17 +4,19 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 # Use chromium-metrics-reviews@google.com as a backup.
 
 # For Privacy.*
-andzaytsev@google.com
 dullweber@chromium.org
 harrisonsean@chromium.org
 
 # For Privacy.DIPS.*
 # For PrivacySandbox.*
-wanderview@chromium.org
+liu@chromium.org
+svend@chromium.org
 
 # For PrivacySandbox.AggregationService.*
 csharrison@chromium.org
-johnidel@chromium.org
 
 # For PrivacySandbox.*
 boujane@google.com
+
+# For PrivacySandbox.Attestations.*
+xiaochenzh@chromium.org

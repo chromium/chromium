@@ -5,6 +5,7 @@
 #ifndef GOOGLE_APIS_GOOGLE_API_KEYS_UNITTEST_H_
 #define GOOGLE_APIS_GOOGLE_API_KEYS_UNITTEST_H_
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -13,10 +14,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 struct EnvironmentCache {
-  EnvironmentCache() : variable_name(nullptr), was_set(false) {}
-
-  const char* variable_name;
-  bool was_set;
+  std::string variable_name;
+  bool was_set = false;
   std::string value;
 };
 
@@ -36,7 +35,8 @@ class GoogleAPIKeysTest : public testing::Test {
   // Why 2 times CLIENT_NUM_ITEMS?  This is the number of different
   // clients in the OAuth2Client enumeration, and for each of these we
   // have both an ID and a secret.
-  EnvironmentCache env_cache_[3 + 2 * google_apis::CLIENT_NUM_ITEMS];
+  std::array<EnvironmentCache, 3 + 2 * google_apis::CLIENT_NUM_ITEMS>
+      env_cache_;
 };
 
 #endif  // GOOGLE_APIS_GOOGLE_API_KEYS_UNITTEST_H_

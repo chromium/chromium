@@ -21,7 +21,7 @@ class SidePanelEntryKey {
 
   SidePanelEntryKey& operator=(const SidePanelEntryKey& other);
   bool operator==(const SidePanelEntryKey& other) const;
-  bool operator<(const SidePanelEntryKey& other) const;
+  auto operator<=>(const SidePanelEntryKey& other) const;
 
   SidePanelEntryId id() const { return id_; }
   std::optional<extensions::ExtensionId> extension_id() const {

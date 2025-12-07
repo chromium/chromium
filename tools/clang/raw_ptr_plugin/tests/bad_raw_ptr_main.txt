@@ -1,0 +1,19 @@
+In file included from bad_raw_ptr_main.cpp:5:
+./bad_raw_ptr_main.h:14:37: error: [chromium-style] casting 'void *' to 'raw_ptr<int> * is not allowed.
+  (void)static_cast<raw_ptr<int>*>(p);
+                                    ^
+./bad_raw_ptr_main.h:14:37: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+In file included from bad_raw_ptr_main.cpp:7:
+./bad_raw_ptr_unrelated.h:15:37: error: [chromium-style] casting 'void *' to 'raw_ptr<int> * is not allowed.
+  (void)static_cast<raw_ptr<int>*>(p);
+                                    ^
+./bad_raw_ptr_unrelated.h:15:37: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_main.cpp:14:37: error: [chromium-style] casting 'void *' to 'raw_ptr<int> * is not allowed.
+  (void)static_cast<raw_ptr<int>*>(p);
+                                    ^
+bad_raw_ptr_main.cpp:14:37: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_main.cpp:17:39: error: [chromium-style] casting 'void *' to 'raw_ptr<int> * is not allowed.
+    (void)static_cast<raw_ptr<int>*>(p);
+                                      ^
+bad_raw_ptr_main.cpp:17:39: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+4 errors generated.

@@ -9,11 +9,13 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 
 import java.util.List;
 
 /** LinearLayout for the {@link ColorPickerCoordinator} component. */
+@NullMarked
 public abstract class ColorPickerContainer extends LinearLayout {
     /** Constructs a new color picker. */
     public ColorPickerContainer(Context context, AttributeSet attrs) {

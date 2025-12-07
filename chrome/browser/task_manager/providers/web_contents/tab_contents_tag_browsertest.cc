@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -60,26 +58,13 @@ struct TestPageData {
 // The below test files are available in src/chrome/test/data/
 // TODO(afakhry): Add more test pages here as needed (e.g. pages that are hosted
 // in the tabs as apps or extensions).
-const TestPageData kTestPages[] = {
-    {
-        "/title1.html",
-        "",
-        Task::RENDERER,
-        IDS_TASK_MANAGER_TAB_PREFIX
-    },
-    {
-        "/title2.html",
-        "Title Of Awesomeness",
-        Task::RENDERER,
-        IDS_TASK_MANAGER_TAB_PREFIX
-    },
-    {
-        "/title3.html",
-        "Title Of More Awesomeness",
-        Task::RENDERER,
-        IDS_TASK_MANAGER_TAB_PREFIX
-    },
-};
+constexpr auto kTestPages = std::to_array<TestPageData>({
+    {"/title1.html", "", Task::RENDERER, IDS_TASK_MANAGER_TAB_PREFIX},
+    {"/title2.html", "Title Of Awesomeness", Task::RENDERER,
+     IDS_TASK_MANAGER_TAB_PREFIX},
+    {"/title3.html", "Title Of More Awesomeness", Task::RENDERER,
+     IDS_TASK_MANAGER_TAB_PREFIX},
+});
 
 const size_t kTestPagesLength = std::size(kTestPages);
 
@@ -175,7 +160,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
   // title (e.g. via the <title> tag).
   std::u16string GetDefaultTitleForUrl(const GURL& url) const {
     std::u16string title =
-        base::UTF8ToUTF16(url.host() + ":" + url.port() + url.path());
+        base::UTF8ToUTF16(url.GetHost() + ":" + url.GetPort() + url.GetPath());
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX, title);
   }
 
@@ -194,6 +179,12 @@ class TabContentsTagTest : public InProcessBrowserTest {
   GURL GetUrlOfFile(const char* test_page_file) const {
     return embedded_test_server()->GetURL(test_page_file);
   }
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Tests that TabContentsTags are being recorded correctly by the
@@ -316,17 +307,14 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
   // Check that the task manager uses the specified favicon for the page.
   base::FilePath test_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
-  std::string favicon_string;
+  std::optional<std::vector<uint8_t>> favicon_data;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::ReadFileToString(
-        test_dir.AppendASCII("favicon").AppendASCII("icon.png"),
-        &favicon_string);
+    favicon_data = base::ReadFileToBytes(
+        test_dir.AppendASCII("favicon").AppendASCII("icon.png"));
   }
-  SkBitmap favicon_bitmap;
-  gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(favicon_string.data()),
-      favicon_string.length(), &favicon_bitmap);
+  SkBitmap favicon_bitmap = gfx::PNGCodec::Decode(favicon_data.value());
+  ASSERT_FALSE(favicon_bitmap.isNull());
   ASSERT_TRUE(
       gfx::test::AreBitmapsEqual(favicon_bitmap, *task->icon().bitmap()));
 

@@ -94,6 +94,8 @@ template("chrome_ios_eg2_test_app_host") {
 
     bundle_identifier = shared_bundle_id_for_test_apps
 
+    link_framework_first = "EarlyMallocZoneRegistration"
+
     if (defined(_tweak_entitlements)) {
       entitlements_target = ":$_tweak_entitlements"
     }
@@ -109,6 +111,7 @@ template("chrome_ios_eg2_test_app_host") {
 
     deps = [
       ":$_deps_group_name",
+      "//ios/chrome/app:app_trampoline",
       "//ios/chrome/app:main",
       "//ios/chrome/test/earl_grey:eg_app_support+eg2",
       "//ios/chrome/test/earl_grey:hooks",
@@ -131,6 +134,7 @@ template("chrome_ios_eg2_test_app_host") {
       "//ios/third_party/earl_grey2:app_framework+bundle",
       "//ios/third_party/gtx:gtx+bundle",
       ios_application_icons_target,
+      ios_application_icons_target_legacy,
     ]
 
     extra_substitutions = [
@@ -141,7 +145,6 @@ template("chrome_ios_eg2_test_app_host") {
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$bundle_identifier.ContentTodayExtension",
       "EG_MAIN_APPLICATION_DELEGATE=$_eg_main_application_delegate",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",

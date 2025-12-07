@@ -6,5 +6,4 @@
 
 dictionary GPUComputePipelineDescriptor : GPUPipelineDescriptorBase {
     required GPUProgrammableStage compute;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] boolean requiresFullSubgroups;
 };

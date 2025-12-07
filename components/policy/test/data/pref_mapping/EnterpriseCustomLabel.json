@@ -5,15 +5,16 @@
       "linux",
       "mac"
     ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "enterprise_label.custom_value",
-      "default_value": "",
-      "values_to_test": [
-        "Custom label",
-        "Another label"
-      ]
-    },
     "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "enterprise_label.custom_value.for_profile": {
+            "location": "user_profile",
+            "default_value": ""
+          }
+        }
+      },
       {
         "policies": {
           "EnterpriseCustomLabel": "Label"
@@ -25,9 +26,9 @@
           }
         },
         "prefs": {
-          "enterprise_label.custom_value": {
-            "location": "local_state",
-            "value": "Label"
+          "enterprise_label.custom_value.for_profile": {
+            "location": "user_profile",
+            "default_value": ""
           }
         }
       },
@@ -42,7 +43,7 @@
           }
         },
         "prefs": {
-          "enterprise_label.custom_value": {
+          "enterprise_label.custom_value.for_profile": {
             "location": "user_profile",
             "value": "Label"
           }

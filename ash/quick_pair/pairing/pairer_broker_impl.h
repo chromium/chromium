@@ -56,6 +56,7 @@ class PairerBrokerImpl final : public PairerBroker {
   void OnAccountKeyFailure(scoped_refptr<Device> device,
                            AccountKeyFailure failure);
   void OnFastPairProcedureComplete(scoped_refptr<Device> device);
+  void OnDisplayPasskey(std::u16string device_name, uint32_t passkey);
   void CreateHandshake(scoped_refptr<Device> device);
   void OnHandshakeComplete(scoped_refptr<Device> device,
                            std::optional<PairFailure> failure);

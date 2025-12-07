@@ -18,6 +18,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kGuestOsTerminalSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(kGuestOsUSBNotificationEnabled, true);
+  registry->RegisterBooleanPref(kGuestOsUSBPersistentPassthroughEnabled, true);
+  registry->RegisterDictionaryPref(kGuestOsUSBPersistentPassthroughDevices);
 }
 
 }  // namespace guest_os::prefs

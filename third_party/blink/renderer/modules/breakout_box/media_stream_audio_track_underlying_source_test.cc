@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -19,6 +16,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -117,11 +115,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
 
   void SetChannelData(media::AudioBus* bus, int channel, float value) {
     ASSERT_LE(channel, bus->channels());
-
-    float* bus_channel = bus->channel(channel);
-    for (int i = 0; i < bus->frames(); ++i) {
-      bus_channel[i] = value;
-    }
+    std::ranges::fill(bus->channel_span(channel), value);
   }
 
   bool DataMatches(scoped_refptr<media::AudioBuffer> buffer,
@@ -130,11 +124,11 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
     EXPECT_EQ(bus.frames(), buffer->frame_count());
 
     for (int ch = 0; ch < bus.channels(); ch++) {
-      const float* bus_channel = bus.channel(ch);
+      base::span<const float> bus_channel = bus.channel_span(ch);
       const float* buffer_channel =
           reinterpret_cast<float*>(buffer->channel_data()[ch]);
       for (int i = 0; i < bus.frames(); ++i) {
-        if (bus_channel[i] != buffer_channel[i]) {
+        if (bus_channel[i] != UNSAFE_TODO(buffer_channel[i])) {
           return false;
         }
       }

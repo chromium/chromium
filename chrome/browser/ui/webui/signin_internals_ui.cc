@@ -4,20 +4,18 @@
 
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 
-#include <base/strings/cstring_view.h>
-
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/signin_internals_resources.h"
+#include "components/grit/signin_internals_resources_map.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -25,6 +23,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
@@ -38,34 +37,22 @@ namespace {
 void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISignInInternalsHost);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
-
-  source->UseStringsJs();
-  source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
-  source->AddResourcePath("signin_index.css", IDR_SIGNIN_INTERNALS_INDEX_CSS);
-  source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::span<const webui::ResourcePath>(kSigninInternalsResources),
+      IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 std::string GetBoundSessionExpirationString(base::Time expiration_time) {
-  static constexpr base::cstring_view kExpired = "Expired at %s";
-  static constexpr base::cstring_view kExpiresIn = "Expires at %s";
-
-  return base::StringPrintf(expiration_time > base::Time::Now()
-                                ? kExpiresIn.c_str()
-                                : kExpired.c_str(),
-                            base::TimeFormatAsIso8601(expiration_time).c_str());
+  return (expiration_time > base::Time::Now() ? "Expires at " : "Expired at ") +
+         base::TimeFormatAsIso8601(expiration_time);
 }
 
 void AppendBoundSessionInfo(
     base::Value::Dict& signin_status,
-    BoundSessionCookieRefreshService* bound_session_service) {
+    BoundSessionCookieRefreshService* bound_session_service,
+    bool is_feature_enabled) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
   static constexpr std::string_view kSessionIdKey = "sessionID";
@@ -76,8 +63,10 @@ void AppendBoundSessionInfo(
   } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
                  bound_session_service->GetBoundSessionDebugInfo();
              bound_session_info.empty()) {
-    bound_sessions_list.Append(
-        base::Value::Dict().Set(kSessionIdKey, "No active bound sessions."));
+    bound_sessions_list.Append(base::Value::Dict().Set(
+        kSessionIdKey, is_feature_enabled
+                           ? "No active bound sessions."
+                           : "Bound session feature is disabled."));
   } else {
     for (const auto& info : bound_session_info) {
       bound_sessions_list.Append(
@@ -158,11 +147,10 @@ void SignInInternalsHandler::HandleGetSignInInfo(
       about_signin_internals ? about_signin_internals->GetSigninStatus()
                              : base::Value::Dict();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
-    AppendBoundSessionInfo(
-        signin_status,
-        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
-  }
+  AppendBoundSessionInfo(
+      signin_status,
+      BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
+      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   ResolveJavascriptCallback(base::Value(callback_id), std::move(signin_status));
 
@@ -174,7 +162,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(
       IdentityManagerFactory::GetForProfile(profile);
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager->GetAccountsInCookieJar();
-  if (accounts_in_cookie_jar.accounts_are_fresh) {
+  if (accounts_in_cookie_jar.AreAccountsFresh()) {
     about_signin_internals->OnAccountsInCookieUpdated(
         accounts_in_cookie_jar,
         GoogleServiceAuthError(GoogleServiceAuthError::NONE));
@@ -185,12 +173,12 @@ void SignInInternalsHandler::OnSigninStateChanged(
     const base::Value::Dict& info) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile &&
-      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
+  if (profile) {
     base::Value::Dict signin_status = info.Clone();
     AppendBoundSessionInfo(
         signin_status,
-        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
+        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
+        switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
     FireWebUIListener("signin-info-changed", signin_status);
     return;
   }

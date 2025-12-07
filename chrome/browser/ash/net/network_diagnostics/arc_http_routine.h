@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "ash/components/arc/mojom/net.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
+#include "chromeos/ash/experiences/arc/mojom/net.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -62,4 +62,4 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
 }  // namespace network_diagnostics
 }  // namespace ash
 
-#endif  //  CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_HTTP_ROUTINE_H_
+#endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_HTTP_ROUTINE_H_

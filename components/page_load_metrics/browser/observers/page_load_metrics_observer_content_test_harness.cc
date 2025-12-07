@@ -17,7 +17,9 @@
 namespace page_load_metrics {
 
 PageLoadMetricsObserverContentTestHarness::
-    PageLoadMetricsObserverContentTestHarness() {
+    PageLoadMetricsObserverContentTestHarness()
+    : RenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {
           {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
@@ -30,7 +32,7 @@ PageLoadMetricsObserverContentTestHarness::
 }
 
 PageLoadMetricsObserverContentTestHarness::
-    ~PageLoadMetricsObserverContentTestHarness() {}
+    ~PageLoadMetricsObserverContentTestHarness() = default;
 
 void PageLoadMetricsObserverContentTestHarness::SetUp() {
   content::RenderViewHostTestHarness::SetUp();

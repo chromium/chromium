@@ -1,0 +1,274 @@
+{
+  "tvos-rel-fyi": {
+    "additional_compile_targets": [
+      "base_unittests",
+      "components_browsertests",
+      "components_unittests",
+      "content_shell",
+      "content_unittests",
+      "media_unittests"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+          "--platform",
+          "Apple TV 4K (3rd generation)",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests Apple TV 4K (3rd generation) 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_tvos_26_0",
+              "path": "Runtime-tvos-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "Apple TV 4K (3rd generation) 26.0"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter;testing/buildbot/filters/tvos.components_browsertests.filter",
+          "--platform",
+          "Apple TV 4K (3rd generation)",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components:components_browsertests",
+        "module_scheme": "gtest",
+        "name": "components_browsertests Apple TV 4K (3rd generation) 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_tvos_26_0",
+              "path": "Runtime-tvos-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/",
+        "variant_id": "Apple TV 4K (3rd generation) 26.0"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
+          "--platform",
+          "Apple TV 4K (3rd generation)",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components:components_unittests",
+        "module_scheme": "gtest",
+        "name": "components_unittests Apple TV 4K (3rd generation) 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_tvos_26_0",
+              "path": "Runtime-tvos-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/",
+        "variant_id": "Apple TV 4K (3rd generation) 26.0"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter;testing/buildbot/filters/tvos.content_unittests.filter",
+          "--platform",
+          "Apple TV 4K (3rd generation)",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//content/test:content_unittests",
+        "module_scheme": "gtest",
+        "name": "content_unittests Apple TV 4K (3rd generation) 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_tvos_26_0",
+              "path": "Runtime-tvos-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/",
+        "variant_id": "Apple TV 4K (3rd generation) 26.0"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+          "--platform",
+          "Apple TV 4K (3rd generation)",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//media:media_unittests",
+        "module_scheme": "gtest",
+        "name": "media_unittests Apple TV 4K (3rd generation) 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_tvos_26_0",
+              "path": "Runtime-tvos-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "media_unittests",
+        "test_id_prefix": "ninja://media:media_unittests/",
+        "variant_id": "Apple TV 4K (3rd generation) 26.0"
+      }
+    ]
+  }
+}

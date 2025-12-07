@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
@@ -89,7 +88,7 @@ void FeatureConfigEventStorageValidator::InitializeFeatures(
     InitializeGroupConfig(configuration.GetGroupConfig(*group));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   InitializeEventPrefixes(configuration);
 #endif
 }
@@ -133,7 +132,7 @@ void FeatureConfigEventStorageValidator::InitializeEventConfig(
     longest_storage_times_[event_config.name] = event_config.storage;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeatureConfigEventStorageValidator::InitializeEventPrefixes(
     const Configuration& configuration) {
   const auto& prefixes = configuration.GetRegisteredAllowedEventPrefixes();

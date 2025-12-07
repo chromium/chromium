@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {File} from 'chrome://resources/mojo/mojo/public/mojom/base/file.mojom-webui.js';
 import type {ReadOnlyBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/read_only_buffer.mojom-webui.js';
@@ -121,6 +120,13 @@ class FakeDeviceManagerRemote extends TestBrowserProxy implements
     assertNotReached();
   }
 
+  // <if expr="is_android">
+  refreshDeviceInfo(_guid: string):
+      Promise<{deviceInfo: UsbDeviceInfo | null}> {
+    assertNotReached();
+  }
+  // </if>
+
   async setClient() {}
 }
 
@@ -139,19 +145,19 @@ class FakeUsbDeviceRemote extends TestBrowserProxy implements
     this.receiver = new UsbDeviceReceiver(this);
   }
 
-  async controlTransferIn(
+  controlTransferIn(
       params: UsbControlTransferParams, length: number, _timeout: number):
       Promise<{status: UsbTransferStatus, data: ReadOnlyBuffer}> {
     const response =
         this.responses.get(usbControlTransferParamsToString(params));
     if (!response) {
-      return {
+      return Promise.resolve({
         status: UsbTransferStatus.TRANSFER_ERROR,
         data: {buffer: []},
-      };
+      });
     }
     response.data = {buffer: response.data.slice(0, length)};
-    return response;
+    return Promise.resolve(response);
   }
 
   /**
@@ -258,7 +264,7 @@ function fakeDeviceInfo(num: number): UsbDeviceInfo {
     deviceVersionMajor: 3,
     deviceVersionMinor: 2,
     deviceVersionSubminor: 1,
-    manufacturerName: stringToMojoString16('test'),
+    manufacturerName: 'test',
     productName: null,
     serialNumber: null,
     webusbLandingPage: {url: 'http://google.com'},

@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
+
+#include <array>
 
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_options.h"
 #include "third_party/blink/renderer/core/editing/commands/undo_stack.h"
@@ -122,6 +121,24 @@ void IdleSpellCheckController::RespondToChangedSelection() {
     return;
   }
 
+  // We can skip this pass if the selection isn't the result of a user gesture
+  // and `kRestrictSpellingAndGrammarHighlightsChangedSelection` is enabled.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedSelection.Get()) {
+    const Element* focused_element = GetDocument().FocusedElement();
+    if (focused_element && !focused_element->WasLastFocusFromUserGesture()) {
+      Deactivate();
+      base::UmaHistogramBoolean(
+          "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", true);
+      return;
+    }
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", false);
+
   if (IsInInvocation())
     return;
 
@@ -135,6 +152,24 @@ void IdleSpellCheckController::RespondToChangedContents() {
     return;
   }
 
+  // We can skip this pass if the page isn't being interacted with and
+  // `kRestrictSpellingAndGrammarHighlightsChangedContents` is enabled.
+  // This isn't the ideal signal, as it has a 5 second timeout, but it's
+  // enough to prevent a user focused field from being taken advantage of.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedContents.Get() &&
+      !LocalFrame::HasTransientUserActivation(GetWindow().GetFrame())) {
+    Deactivate();
+    base::UmaHistogramBoolean(
+        "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Contents", true);
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Contents", false);
+
   if (IsInInvocation())
     return;
 
@@ -147,6 +182,21 @@ void IdleSpellCheckController::RespondToChangedEnablement() {
     Deactivate();
     return;
   }
+
+  // We can skip this pass as it must be the result of a script if
+  // and `kRestrictSpellingAndGrammarHighlightsChangedEnablement` is enabled.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedEnablement.Get()) {
+    Deactivate();
+    base::UmaHistogramBoolean(
+        "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Enablement", true);
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Enablement", false);
 
   if (IsInInvocation())
     return;
@@ -191,8 +241,8 @@ void IdleSpellCheckController::SetNeedsColdModeInvocation() {
                                  : kColdModeTimerInterval;
   cold_mode_timer_ = PostDelayedCancellableTask(
       *GetWindow().GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::BindOnce(&IdleSpellCheckController::ColdModeTimerFired,
-                    WrapPersistent(this)),
+      BindOnce(&IdleSpellCheckController::ColdModeTimerFired,
+               WrapPersistent(this)),
       interval);
   state_ = State::kColdModeTimerStarted;
 }
@@ -274,6 +324,22 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
     return;
   }
 
+  // If focus node has canonical position null then spellcheck should not
+  // be executed.
+  if (RuntimeEnabledFeatures::
+          CheckForCanonicalPositionInIdleSpellCheckEnabled()) {
+    Position selection_focus =
+        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+    if (selection_focus) {
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+      if (CanonicalPositionOf(EphemeralRange(selection_focus).StartPosition())
+              .IsNull()) {
+        Deactivate();
+        return;
+      }
+    }
+  }
+
   if (state_ == State::kHotModeRequested) {
     state_ = State::kInHotModeInvocation;
     HotModeInvocation(deadline);
@@ -306,9 +372,8 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
     return;
 
   bool cross_origin_isolated_capability =
-      GetExecutionContext()
-          ? GetExecutionContext()->CrossOriginIsolatedCapability()
-          : false;
+      GetExecutionContext() &&
+      GetExecutionContext()->CrossOriginIsolatedCapability();
 
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks::Now() + kIdleSpellcheckTestTimeout,
@@ -331,9 +396,14 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
       Invoke(deadline);
       break;
     case State::kInactive:
+      if (!base::FeatureList::IsEnabled(
+              features::kRestrictSpellingAndGrammarHighlights)) {
+        NOTREACHED();
+      }
+      break;
     case State::kInHotModeInvocation:
     case State::kInColdModeInvocation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -353,11 +423,11 @@ void IdleSpellCheckController::SetSpellCheckingDisabled(
 }
 
 const char* IdleSpellCheckController::GetStateAsString() const {
-  static const char* const kTexts[] = {
+  static const auto kTexts = std::to_array<const char*>({
 #define V(state) #state,
       FOR_EACH_IDLE_SPELL_CHECK_CONTROLLER_STATE(V)
 #undef V
-  };
+  });
 
   unsigned index = static_cast<unsigned>(state_);
   if (index < std::size(kTexts)) {

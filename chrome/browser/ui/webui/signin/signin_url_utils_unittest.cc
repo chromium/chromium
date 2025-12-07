@@ -39,7 +39,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUISyncConfirmationURL),
       SyncConfirmationStyle::kDefaultModal, /*is_sync_promo=*/false);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
             GetSyncConfirmationStyle(url));
   EXPECT_FALSE(IsSyncConfirmationPromo(url));
@@ -50,7 +50,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       SyncConfirmationStyle::kSigninInterceptModal,
       /*is_sync_promo=*/false);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kSigninInterceptModal,
             GetSyncConfirmationStyle(url));
   EXPECT_FALSE(IsSyncConfirmationPromo(url));
@@ -60,7 +60,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUISyncConfirmationURL),
       SyncConfirmationStyle::kWindow, /*is_sync_promo=*/false);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
   EXPECT_FALSE(IsSyncConfirmationPromo(url));
 
@@ -69,12 +69,12 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUISyncConfirmationURL),
       SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
   EXPECT_TRUE(IsSyncConfirmationPromo(url));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(SigninURLUtilsTest, ParseParameterlessProfileCustomizationURL) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
   EXPECT_EQ(ProfileCustomizationStyle::kDefault,
@@ -87,7 +87,7 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUIProfileCustomizationURL),
       ProfileCustomizationStyle::kDefault);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
   EXPECT_EQ(ProfileCustomizationStyle::kDefault,
             GetProfileCustomizationStyle(url));
 
@@ -96,30 +96,8 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUIProfileCustomizationURL),
       ProfileCustomizationStyle::kLocalProfileCreation);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
   EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
             GetProfileCustomizationStyle(url));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-class SigninURLUtilsReauthConfirmationURLTest
-    : public ::testing::TestWithParam<int> {};
-
-TEST_P(SigninURLUtilsReauthConfirmationURLTest,
-       GetAndParseReauthConfirmationURL) {
-  auto access_point =
-      static_cast<signin_metrics::ReauthAccessPoint>(GetParam());
-  GURL url = GetReauthConfirmationURL(access_point);
-  ASSERT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISigninReauthHost);
-  signin_metrics::ReauthAccessPoint get_access_point =
-      GetReauthAccessPointForReauthConfirmationURL(url);
-  EXPECT_EQ(get_access_point, access_point);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AllAccessPoints,
-    SigninURLUtilsReauthConfirmationURLTest,
-    ::testing::Range(
-        static_cast<int>(signin_metrics::ReauthAccessPoint::kUnknown),
-        static_cast<int>(signin_metrics::ReauthAccessPoint::kMaxValue) + 1));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

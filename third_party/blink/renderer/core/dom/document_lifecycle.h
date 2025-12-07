@@ -36,12 +36,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-#if DCHECK_IS_ON()
-namespace WTF {
-class String;
-}  // namespace WTF
-#endif
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -216,7 +211,7 @@ class CORE_EXPORT DocumentLifecycle {
   bool LifecyclePostponed() const { return life_cycle_postponed_; }
 
 #if DCHECK_IS_ON()
-  WTF::String ToString() const;
+  String ToString() const;
 #endif
  private:
   friend class PostponeTransitionScope;

@@ -5,22 +5,28 @@
 #ifndef IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_SCENE_AGENT_H_
 #define IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_SCENE_AGENT_H_
 
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
-
+enum class IncognitoLockState;
 @class IncognitoReauthSceneAgent;
 class PrefRegistrySimple;
 class PrefService;
 @protocol ReauthenticationProtocol;
+@protocol ApplicationCommands;
 
 @protocol IncognitoReauthObserver <NSObject>
 
 @optional
 // Called when the authentication requirement in a given scene might have
 // changed.
+// TODO(crbug.com/374073829): Remove after launching Soft Lock.
 - (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
     didUpdateAuthenticationRequirement:(BOOL)isRequired;
+
+// Called when the incognito lock state in a given scene might have changed.
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateIncognitoLockState:(IncognitoLockState)incogitoLockState;
 
 @end
 
@@ -31,7 +37,11 @@ class PrefService;
 
 // Designated initializer.
 // The `reauthModule` is used for authentication.
+// The `applicationCommandsHandler` is used to transition between the tab and
+// tab switcher.
 - (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
+          applicationCommandsHandler:
+              (id<ApplicationCommands>)applicationCommandsHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -50,6 +60,10 @@ class PrefService;
 // Returns YES when the authentication is currently required.
 @property(nonatomic, assign, readonly, getter=isAuthenticationRequired)
     BOOL authenticationRequired;
+
+// Returns whether incognito tabs are hidden behind a reauthentication screen,
+// soft lock screen or are not hidden at all.
+@property(nonatomic, assign, readonly) IncognitoLockState incognitoLockState;
 
 // Authentication module used when the user toggles the biometric auth on.
 @property(nonatomic, strong, readonly) id<ReauthenticationProtocol>

@@ -20,6 +20,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -27,6 +28,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -40,7 +42,9 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -81,9 +85,9 @@ void AddInstallComProgIdWorkItems(UpdaterScope scope,
 std::wstring GetTaskName(UpdaterScope scope) {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
-  return task_scheduler
-             ? task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope))
-             : std::wstring();
+  return task_scheduler ? task_scheduler->FindFirstTaskName(
+                              GetTaskNamePrefix(scope) + L"{")
+                        : std::wstring();
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
@@ -133,6 +137,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
             return {
                 INTERFACE_PAIR(IUpdateStateUser),
                 INTERFACE_PAIR(IUpdaterUser),
+                INTERFACE_PAIR(IUpdater2User),
                 INTERFACE_PAIR(ICompleteStatusUser),
                 INTERFACE_PAIR(IUpdaterObserverUser),
                 INTERFACE_PAIR(IUpdaterCallbackUser),
@@ -156,6 +161,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
             return {
                 INTERFACE_PAIR(IUpdateStateSystem),
                 INTERFACE_PAIR(IUpdaterSystem),
+                INTERFACE_PAIR(IUpdater2System),
                 INTERFACE_PAIR(ICompleteStatusSystem),
                 INTERFACE_PAIR(IUpdaterObserverSystem),
                 INTERFACE_PAIR(IUpdaterCallbackSystem),
@@ -349,7 +355,7 @@ void AddInstallServerWorkItems(HKEY root,
 
   base::CommandLine run_com_server_command(com_server_path);
   run_com_server_command.AppendSwitch(kServerSwitch);
-  run_com_server_command.AppendSwitchASCII(
+  run_com_server_command.AppendSwitchUTF8(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
@@ -395,7 +401,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   base::CommandLine com_service_command(com_service_path);
   com_service_command.AppendSwitch(kSystemSwitch);
   com_service_command.AppendSwitch(kWindowsServiceSwitch);
-  com_service_command.AppendSwitchASCII(
+  com_service_command.AppendSwitchUTF8(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
@@ -419,10 +425,16 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
     }
   }
 
+  const std::wstring language = base::UTF8ToWide(GetTagLanguage());
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
-      com_service_command, com_switch, UPDATER_KEY, clsids, {}));
+      GetLocalizedString(internal_service
+                             ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
+                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE,
+                         language),
+      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE, language),
+      SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
+      {}));
 
   for (const auto& clsid : clsids) {
     AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);
@@ -437,7 +449,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
 std::wstring GetProgIdForClsid(REFCLSID clsid) {
   auto clsid_comparator = [](REFCLSID a, REFCLSID b) {
-    return std::memcmp(&a, &b, sizeof(a)) < 0;
+    return UNSAFE_TODO(std::memcmp(&a, &b, sizeof(a))) < 0;
   };
 
   const base::flat_map<CLSID, std::wstring, decltype(clsid_comparator)>
@@ -496,7 +508,7 @@ HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
          return {TYPELIB_UPDATER_IDL_USER, TYPELIB_UPDATER_LEGACY_IDL_USER};
        }()) {
     const base::FilePath typelib_path =
-        exe_path.AppendASCII(base::NumberToString(typelib_resource_index));
+        exe_path.AppendUTF8(base::NumberToString(typelib_resource_index));
 
     Microsoft::WRL::ComPtr<ITypeLib> type_lib;
     if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
@@ -542,6 +554,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       // Updater user typelib.
       {__uuidof(ICompleteStatusUser), kUpdaterUserIndex},
       {__uuidof(IUpdaterUser), kUpdaterUserIndex},
+      {__uuidof(IUpdater2User), kUpdaterUserIndex},
       {__uuidof(IUpdaterObserverUser), kUpdaterUserIndex},
       {__uuidof(IUpdateStateUser), kUpdaterUserIndex},
       {__uuidof(IUpdaterCallbackUser), kUpdaterUserIndex},
@@ -551,6 +564,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       // Updater system typelib.
       {__uuidof(ICompleteStatusSystem), kUpdaterSystemIndex},
       {__uuidof(IUpdaterSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdater2System), kUpdaterSystemIndex},
       {__uuidof(IUpdaterObserverSystem), kUpdaterSystemIndex},
       {__uuidof(IUpdateStateSystem), kUpdaterSystemIndex},
       {__uuidof(IUpdaterCallbackSystem), kUpdaterSystemIndex},
@@ -609,7 +623,12 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IProcessLauncher2System), kUpdaterLegacySystemIndex},
   };
   const auto index = kTypeLibIndexes.find(iid);
-  CHECK(index != kTypeLibIndexes.end()) << StringFromGuid(iid);
+  if (index == kTypeLibIndexes.end()) {
+    base::debug::Alias(&iid);
+    VLOG(1) << "index == kTypeLibIndexes.end() for interface: "
+            << StringFromGuid(iid);
+    CHECK(false) << StringFromGuid(iid);
+  }
   return index->second;
 }
 

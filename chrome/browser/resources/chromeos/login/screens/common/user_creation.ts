@@ -21,10 +21,10 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
@@ -238,18 +238,14 @@ export class UserCreation extends UserCreationScreenElementBase {
     super.ready();
     this.initializeLoginScreen('UserCreationScreen');
 
-    if (loadTimeData.getBoolean('isOobeLazyLoadingEnabled')) {
-      // The UserCreation screen is a priority screen, so it becomes visible
-      // before the remaining of the OOBE flow is fully loaded. 'Back' and
-      // 'Next' buttons are initially disabled, and enabled upon receiving the
-      //|oobe-screens-loaded| event.
-      this.isOobeLoaded_ = false;
-      document.addEventListener('oobe-screens-loaded', () => {
-        this.isOobeLoaded_ = true;
-      }, {once: true});
-    } else {
+    // The UserCreation screen is a priority screen, so it becomes visible
+    // before the remaining of the OOBE flow is fully loaded. 'Back' and
+    // 'Next' buttons are initially disabled, and enabled upon receiving the
+    //|oobe-screens-loaded| event.
+    this.isOobeLoaded_ = false;
+    document.addEventListener('oobe-screens-loaded', () => {
       this.isOobeLoaded_ = true;
-    }
+    }, {once: true});
   }
 
   override getOobeUIInitialState(): OobeUiState {

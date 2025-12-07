@@ -9,7 +9,7 @@ import type {OnDeviceInternalsEventLogElement} from './event_log.js';
 export function getHtml(this: OnDeviceInternalsEventLogElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div>
+<div class="main">
   <h2>Event Logs</h2>
   <cr-button @click="${this.onEventLogsDumpClick_}">Dump</cr-button>
   <table>
@@ -21,15 +21,14 @@ export function getHtml(this: OnDeviceInternalsEventLogElement) {
       </tr>
     </thead>
     <tbody>
-    ${this.eventLogMessages_.map(item => html`
-      <tr>
-        <td class="time">${item.eventTime.toLocaleTimeString()}</td>
-        <td class="source-location">
-          <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
-        </td>
-        <td class="message">${item.message}</td>
-      </tr>
-    `)}
+      ${this.eventLogMessages_.map(item => html`
+        <tr>
+          <td class="time">${item.eventTime.toLocaleTimeString()}</td>
+          <td class="source-location">
+            <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
+          </td>
+          <td class="message">${item.message}</td>
+        </tr>`)}
     </tbody>
   </table>
 </div>

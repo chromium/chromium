@@ -27,13 +27,14 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
 // The duration of the silent period before we start nagging the user again.
 const int kSilenceDurationDays = 100;
 
-// The number of warnings to be shown on consequtive starts of Chrome before the
+// The number of warnings to be shown on consecutive starts of Chrome before the
 // silent period starts.
 const int kMaxWarnings = 2;
 
@@ -50,7 +51,7 @@ class NetworkProfileBubbleBrowserListObserver : public BrowserListObserver {
 };
 
 NetworkProfileBubbleBrowserListObserver::
-    ~NetworkProfileBubbleBrowserListObserver() {}
+    ~NetworkProfileBubbleBrowserListObserver() = default;
 
 void NetworkProfileBubbleBrowserListObserver::OnBrowserAdded(Browser* browser) {
 }
@@ -77,8 +78,9 @@ bool NetworkProfileBubble::notification_shown_ = false;
 // static
 bool NetworkProfileBubble::ShouldCheckNetworkProfile(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetInteger(prefs::kNetworkProfileWarningsLeft))
+  if (prefs->GetInteger(prefs::kNetworkProfileWarningsLeft)) {
     return !notification_shown_;
+  }
   int64_t last_check = prefs->GetInt64(prefs::kNetworkProfileLastWarningTime);
   base::TimeDelta time_since_last_check =
       base::Time::Now() - base::Time::FromTimeT(last_check);
@@ -107,7 +109,7 @@ void NetworkProfileBubble::CheckNetworkProfile(
     return;
   }
 
-  LPWSTR buffer = NULL;
+  LPWSTR buffer = nullptr;
   DWORD buffer_length = 0;
   // Checking for RDP is cheaper than checking for a network drive so do this
   // one first.
@@ -118,37 +120,32 @@ void NetworkProfileBubble::CheckNetworkProfile(
     return;
   }
 
-  unsigned short* type = reinterpret_cast<unsigned short*>(buffer);
-  // We should warn the users if they have their profile on a network share only
-  // if running on a local session.
-  if (*type == WTS_PROTOCOL_TYPE_CONSOLE) {
-    bool profile_on_network = false;
-    if (!profile_folder.empty()) {
-      base::FilePath temp_file;
-      // Try to create some non-empty temp file in the profile dir and use
-      // it to check if there is a reparse-point free path to it.
-      if (base::CreateTemporaryFileInDir(profile_folder, &temp_file) &&
-          base::WriteFile(temp_file, ".")) {
-        base::FilePath normalized_temp_file;
-        if (!base::NormalizeFilePath(temp_file, &normalized_temp_file))
-          profile_on_network = true;
-      } else {
-        RecordUmaEvent(METRIC_CHECK_IO_FAILED);
-      }
-      base::DeleteFile(temp_file);
-    }
-    if (profile_on_network) {
-      RecordUmaEvent(METRIC_PROFILE_ON_NETWORK);
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&NotifyNetworkProfileDetected));
-    } else {
-      RecordUmaEvent(METRIC_PROFILE_NOT_ON_NETWORK);
-    }
-  } else {
+  absl::Cleanup wts_deleter = [buffer] { ::WTSFreeMemory(buffer); };
+  auto* type = reinterpret_cast<unsigned short*>(buffer);
+  if (*type != WTS_PROTOCOL_TYPE_CONSOLE) {
     RecordUmaEvent(METRIC_REMOTE_SESSION);
+    return;
   }
 
-  ::WTSFreeMemory(buffer);
+  // We should warn the users if they have their profile on a network share only
+  // if running on a local session.
+  bool profile_on_network = false;
+  if (!profile_folder.empty()) {
+    base::FilePath normalized_profile_folder;
+    if (!base::NormalizeFilePath(profile_folder, &normalized_profile_folder)) {
+      RecordUmaEvent(METRIC_CHECK_IO_FAILED);
+      return;
+    }
+    profile_on_network = normalized_profile_folder.IsNetwork();
+  }
+  if (!profile_on_network) {
+    RecordUmaEvent(METRIC_PROFILE_NOT_ON_NETWORK);
+    return;
+  }
+
+  RecordUmaEvent(METRIC_PROFILE_ON_NETWORK);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyNetworkProfileDetected));
 }
 
 // static
@@ -174,8 +171,10 @@ void NetworkProfileBubble::RecordUmaEvent(MetricNetworkedProfileCheck event) {
 void NetworkProfileBubble::NotifyNetworkProfileDetected() {
   Browser* browser = chrome::FindLastActive();
 
-  if (browser)
+  if (browser) {
     ShowNotification(browser);
-  else
+  } else {
+    // Won't leak because the observer is self-deleting.
     BrowserList::AddObserver(new NetworkProfileBubbleBrowserListObserver());
+  }
 }

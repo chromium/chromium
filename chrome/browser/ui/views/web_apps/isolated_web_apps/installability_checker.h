@@ -8,17 +8,15 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 class Profile;
-
-namespace base {
-class Version;
-}  // namespace base
 
 namespace web_app {
 
@@ -38,17 +36,17 @@ class InstallabilityChecker {
   };
   struct BundleUpdatable {
     SignedWebBundleMetadata metadata;
-    base::Version installed_version;
+    IwaVersion installed_version;
   };
   struct BundleOutdated {
     SignedWebBundleMetadata metadata;
-    base::Version installed_version;
+    IwaVersion installed_version;
   };
-  using Result = absl::variant<ProfileShutdown,
-                               BundleInvalid,
-                               BundleInstallable,
-                               BundleUpdatable,
-                               BundleOutdated>;
+  using Result = std::variant<ProfileShutdown,
+                              BundleInvalid,
+                              BundleInstallable,
+                              BundleUpdatable,
+                              BundleOutdated>;
 
   static std::unique_ptr<InstallabilityChecker> CreateAndStart(
       Profile* profile,
@@ -72,7 +70,7 @@ class InstallabilityChecker {
   void OnInstallabilityChecked(
       SignedWebBundleMetadata metadata,
       IsolatedInstallabilityCheckResult installability_check_result,
-      std::optional<base::Version> installed_version);
+      std::optional<IwaVersion> installed_version);
 
   raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> web_app_provider_;

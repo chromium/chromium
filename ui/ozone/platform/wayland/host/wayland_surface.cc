@@ -5,22 +5,22 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
-#include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
+#include <linux-drm-syncobj-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
-#include <surface-augmenter-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,28 +29,38 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
-#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
+#include "ui/ozone/platform/wayland/host/wayland_syncobj_timeline.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_management_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
 
 namespace {
+
+// Floating points may have a precision error as they may not correctly be
+// represented in binary, but approximately. In order to mitigate that, round
+// the value to a specified precision to ensure consistency when working with
+// floating-point values. This avoids potential inaccuracies in calculations
+// that could arise from small rounding errors. This function rounds the input
+// value to the nearest multiple of the specified precision (0.001f in this
+// case, which is a default precision in cc/viz).
+double RoundToNearestThousandth(float value) {
+  // This is a default precision that cc/viz uses.
+  static constexpr float kPrecision = 0.001f;
+  return std::round(value / kPrecision) * kPrecision;
+}
 
 uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
   uint32_t priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;
@@ -78,31 +88,13 @@ const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
 
 }  // namespace
 
-WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
-    wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
-    wl_buffer* buffer,
-    ExplicitReleaseCallback explicit_release_callback)
-    : linux_buffer_release(std::move(linux_buffer_release)),
-      buffer(buffer),
-      explicit_release_callback(std::move(explicit_release_callback)) {}
-
-WaylandSurface::ExplicitReleaseInfo::~ExplicitReleaseInfo() = default;
-
-WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
-    ExplicitReleaseInfo&&) = default;
-
-WaylandSurface::ExplicitReleaseInfo&
-WaylandSurface::ExplicitReleaseInfo::operator=(ExplicitReleaseInfo&&) = default;
-
 WaylandSurface::WaylandSurface(WaylandConnection* connection,
                                WaylandWindow* root_window)
     : connection_(connection),
       root_window_(root_window),
       surface_(connection->CreateSurface()),
-      surface_submission_in_pixel_coordinates_(
-          connection->surface_submission_in_pixel_coordinates()),
       use_viewporter_surface_scaling_(
-          connection->UseViewporterSurfaceScaling()) {
+          connection->supports_viewporter_surface_scaling()) {
   // Inherit per-surface preferred scale when owned by non-toplevel windows.
   // See https://wayland.app/protocols/fractional-scale-v1.
   if (root_window_ && root_window_->parent_window()) {
@@ -111,26 +103,7 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
   }
 }
 
-WaylandSurface::~WaylandSurface() {
-  for (auto& release : linux_buffer_releases_) {
-    DCHECK(release.second.explicit_release_callback);
-    std::move(release.second.explicit_release_callback)
-        .Run(release.second.buffer.get(), base::ScopedFD());
-  }
-}
-
-WaylandZAuraSurface* WaylandSurface::CreateZAuraSurface() {
-  auto* zaura_shell = connection_->zaura_shell();
-  if (!zaura_surface_ && zaura_shell) {
-    zaura_surface_ = std::make_unique<WaylandZAuraSurface>(
-        zaura_shell->wl_object(), surface(), connection_);
-  }
-  return zaura_surface_.get();
-}
-
-void WaylandSurface::ResetZAuraSurface() {
-  zaura_surface_.reset();
-}
+WaylandSurface::~WaylandSurface() = default;
 
 void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {
   DCHECK(!next_explicit_release_request_);
@@ -213,22 +186,6 @@ bool WaylandSurface::Initialize() {
     }
   }
 
-  auto* surface_augmenter = connection_->surface_augmenter();
-  if (surface_augmenter && root_window() &&
-      root_window()->root_surface() != this) {
-    augmented_surface_ = surface_augmenter->CreateAugmentedSurface(surface());
-    if (!augmented_surface_) {
-      LOG(ERROR) << "Failed to create augmented_surface.";
-      return false;
-    }
-  } else {
-    static bool log_once = false;
-    if (!log_once) {
-      log_once = true;
-      LOG(WARNING) << "Server doesn't support surface_augmenter.";
-    }
-  }
-
   if (auto* content_type_manager = connection_->content_type_manager_v1()) {
     content_type_.reset(wp_content_type_manager_v1_get_surface_content_type(
         content_type_manager, surface()));
@@ -244,22 +201,17 @@ bool WaylandSurface::Initialize() {
     }
   }
 
-  if (auto* zcr_color_manager = connection_->zcr_color_manager()) {
-    zcr_color_management_surface_ =
-        std::make_unique<WaylandZcrColorManagementSurface>(
-            zcr_color_manager->CreateColorManagementSurface(surface())
-                .release(),
-            connection_);
-    if (!zcr_color_management_surface_) {
-      LOG(ERROR) << "Failed to create zcr_color_management_surface.";
-      return false;
-    }
-    zcr_color_management_surface_->SetDefaultColorSpace();
+  if (auto* wp_color_manager = connection_->wp_color_manager()) {
+    wp_color_management_surface_ =
+        std::make_unique<WaylandWpColorManagementSurface>(
+            this, connection_,
+            wp_color_manager->CreateColorManagementSurface(surface()),
+            wp_color_manager->CreateColorManagementFeedbackSurface(surface()));
   } else {
     static bool log_once = false;
     if (!log_once) {
       log_once = true;
-      LOG(WARNING) << "Server doesn't support zcr_color_management_surface.";
+      LOG(WARNING) << "Server doesn't support wp_color_management_surface_v1.";
     }
   }
 
@@ -279,9 +231,12 @@ void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
   // WaylandBufferManagerGPU knows if the synchronization is not available and
   // must disallow clients to use explicit synchronization.
   DCHECK(!apply_state_immediately_);
-  DCHECK(connection_->linux_explicit_synchronization_v1() ||
+  DCHECK(connection_->SupportsExplicitSync() ||
          connection_->UseImplicitSyncInterop());
-  if (!acquire_fence.is_null()) {
+  if (!acquire_fence.is_null() &&
+      // linux-drm-syncobj explicit sync expects that a fence is always set,
+      // even if it has been signaled already.
+      !connection_->linux_drm_syncobj_manager_v1()) {
     base::TimeTicks ticks;
     auto status =
         gfx::GpuFence::GetStatusChangeTime(acquire_fence.Peek(), &ticks);
@@ -301,8 +256,9 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   }
 
   pending_state_.buffer_size_px = buffer_handle->size();
-  pending_state_.buffer = buffer_handle->buffer();
+  pending_state_.buffer = buffer_handle->AsWeakPtr();
   pending_state_.buffer_id = buffer_handle->id();
+  pending_state_.sync_method = buffer_handle->sync_method();
 
   if (state_.buffer_id == pending_state_.buffer_id &&
       buffer_handle->released(this)) {
@@ -323,6 +279,21 @@ void WaylandSurface::Commit(bool flush) {
   wl_surface_commit(surface_.get());
   if (flush)
     connection_->Flush();
+
+  if (surface_sync_ && acquire_timeline_ &&
+      !next_explicit_release_request_.is_null()) {
+    auto* buffer_handle = connection_->buffer_manager_host()->GetBufferHandle(
+        this, state_.buffer_id);
+    CHECK(buffer_handle);
+    auto* release_timeline = buffer_handle->release_timeline();
+    if (!release_timeline) {
+      VLOG(4) << "no release timeline";
+      return;
+    }
+    release_timeline->WaitForFenceAvailableAtCurrentSyncPoint(base::BindOnce(
+        &WaylandSurface::OnFenceAvailable, weak_factory_.GetWeakPtr(),
+        state_.buffer_id, std::move(next_explicit_release_request_)));
+  }
 }
 
 void WaylandSurface::set_surface_buffer_scale(float scale) {
@@ -330,17 +301,13 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
 
   if (apply_state_immediately_) {
     state_.buffer_scale_float = pending_state_.buffer_scale_float;
-    if (!(surface_submission_in_pixel_coordinates_ ||
-          use_viewporter_surface_scaling_)) {
+    if (!use_viewporter_surface_scaling_) {
       // It's safe to cast the result of GetWaylandScale to an integer here
-      // because the buffer scale should always be integer when both surface
-      // submission in pixel coordinates and viewporter surface scaling is
-      // disabled.
+      // because the buffer scale should always be integer when viewporter
+      // surface scaling is disabled.
       wl_surface_set_buffer_scale(
           surface_.get(), static_cast<int32_t>(GetWaylandScale(state_)));
     }
-    if (root_window_)
-      root_window_->PropagateBufferScale(scale);
   }
 }
 
@@ -390,9 +357,6 @@ void WaylandSurface::set_input_region(
 }
 
 float WaylandSurface::GetWaylandScale(const State& state) {
-  if (surface_submission_in_pixel_coordinates_) {
-    return 1;
-  }
   return wl::ClampScale(use_viewporter_surface_scaling_
                             ? state.buffer_scale_float
                             : std::ceil(state.buffer_scale_float));
@@ -423,13 +387,10 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
     const std::vector<gfx::Rect>& region_px,
     float buffer_scale) {
   DCHECK(root_window_);
-  DCHECK(!surface_submission_in_pixel_coordinates_ || buffer_scale == 1.f);
-
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
   for (const auto& rect_px : region_px) {
-    // On Lacros, the buffer scale should be 1, so no need to ignore error.
     gfx::Rect rect = gfx::ScaleToEnclosedRect(rect_px, 1.f / buffer_scale);
     wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                   rect.height());
@@ -437,19 +398,95 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   return region;
 }
 
-zwp_linux_surface_synchronization_v1* WaylandSurface::GetOrCreateSurfaceSync() {
-  // The server needs to support the linux_explicit_synchronization protocol.
-  if (!connection_->linux_explicit_synchronization_v1()) {
+void WaylandSurface::EnsureSurfaceSync() {
+  if (!surface_sync_) {
+    surface_sync_.reset(wp_linux_drm_syncobj_manager_v1_get_surface(
+        connection_->linux_drm_syncobj_manager_v1(), surface_.get()));
+  }
+}
+
+void WaylandSurface::EnsureAcquireTimeline() {
+  if (!acquire_timeline_) {
+    acquire_timeline_ = WaylandSyncobjAcquireTimeline::Create(connection_);
+  }
+}
+
+std::optional<bool> WaylandSurface::SetExplicitSync() {
+  if (!connection_->linux_drm_syncobj_manager_v1()) {
     NOTIMPLEMENTED_LOG_ONCE();
-    return nullptr;
+    return false;
+  }
+  EnsureAcquireTimeline();
+  auto* buffer_handle = connection_->buffer_manager_host()->GetBufferHandle(
+      this, pending_state_.buffer_id);
+  CHECK(buffer_handle);
+  auto* release_timeline = buffer_handle->release_timeline();
+  if (!acquire_timeline_ || !release_timeline) {
+    // Cannot use explicit sync without an acquire or release timeline.
+    next_explicit_release_request_.Reset();
+    return false;
   }
 
-  if (!surface_sync_) {
-    surface_sync_.reset(
-        zwp_linux_explicit_synchronization_v1_get_synchronization(
-            connection_->linux_explicit_synchronization_v1(), surface_.get()));
+  constexpr unsigned kPointHiShift = 32;
+  constexpr unsigned kPointLoMask = 0xffffffff;
+  auto* acquire_syncobj = acquire_timeline_.get();
+
+  // This check is needed to ensure no graphics freeze occurs if there are
+  // subsequent buffer attachments without an acquire fence. This is because
+  // wl_buffer.release is never called after using explicit sync once, even if
+  // we delete the wp_linux_drm_syncobj_surface_v1 after using it once.  So we
+  // need to continue setting the acquire and release points even in that
+  // case, without incrementing the former.
+  if (!pending_state_.acquire_fence.is_null()) {
+    acquire_syncobj->IncrementSyncPoint();
+    if (!acquire_syncobj->ImportSyncFdAtCurrentSyncPoint(
+            pending_state_.acquire_fence.Peek())) {
+      DLOG(ERROR) << "Could not import sync fd at current sync point";
+      acquire_syncobj->DecrementSyncPoint();
+      if (acquire_syncobj->sync_point() > 0) {
+        // If we have set a sync point that means we have started using
+        // explicit sync already, and so we need to discard this frame as it
+        // is not possible to set explicit sync for this frame.
+        next_explicit_release_request_.Reset();
+        return std::nullopt;
+      }
+    }
+  } else {
+    VLOG(1) << "no acquire fence";
   }
-  return surface_sync_.get();
+
+  auto acquire_sync_point = acquire_syncobj->sync_point();
+  if (acquire_sync_point == 0) {
+    // No acquire fence has been set yet. So we cannot use explicit sync.
+    next_explicit_release_request_.Reset();
+    return false;
+  }
+
+  EnsureSurfaceSync();
+  wp_linux_drm_syncobj_surface_v1_set_acquire_point(
+      surface_sync_.get(), acquire_timeline_->timeline(),
+      acquire_sync_point >> kPointHiShift, acquire_sync_point & kPointLoMask);
+
+  release_timeline->IncrementSyncPoint();
+  auto release_sync_point = release_timeline->sync_point();
+  wp_linux_drm_syncobj_surface_v1_set_release_point(
+      surface_sync_.get(), release_timeline->timeline(),
+      release_sync_point >> kPointHiShift, release_sync_point & kPointLoMask);
+
+  return true;
+}
+
+void WaylandSurface::OnFenceAvailable(uint32_t buffer_id,
+                                      ExplicitReleaseCallback callback,
+                                      base::ScopedFD fd) {
+  auto* buffer_handle =
+      connection_->buffer_manager_host()->GetBufferHandle(this, buffer_id);
+  DVLOG(3) << __func__ << " surface=" << surface_.id() << " buffer="
+           << wl_proxy_get_id(
+                  reinterpret_cast<wl_proxy*>(buffer_handle->buffer()))
+           << " fence fd=" << fd.get();
+  CHECK(buffer_handle);
+  std::move(callback).Run(buffer_handle->buffer(), std::move(fd));
 }
 
 wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
@@ -462,72 +499,57 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
   return subsurface;
 }
 
-bool WaylandSurface::ApplyPendingState() {
+std::optional<bool> WaylandSurface::ApplyPendingState() {
   DCHECK(!apply_state_immediately_);
   bool needs_commit = false;
 
   if (pending_state_.buffer_id != state_.buffer_id) {
+    if (pending_state_.buffer) {
+      switch (pending_state_.sync_method) {
+        case WaylandBufferHandle::SyncMethod::kSyncobj:
+          // We need to try setting explicit sync first so that we don't attach
+          // the buffer if there is a failure when setting explicit sync.
+          if (!SetExplicitSync().has_value()) {
+            // There was a failure while trying to set explicit sync. So we need
+            // to early-out and discard this frame and show the previous frame.
+            AttachBuffer(nullptr);
+            pending_state_.damage_px.clear();
+            return std::nullopt;
+          }
+          break;
+        case WaylandBufferHandle::SyncMethod::kDMAFence:
+          if (!pending_state_.acquire_fence.is_null()) {
+            connection_->buffer_manager_host()->InsertAcquireFence(
+                pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
+          }
+          [[fallthrough]];
+        default:
+          // Remove the existing surface sync to avoid compositor throwing
+          // error.
+          surface_sync_.reset();
+          break;
+      }
+    }
     // The logic in DamageBuffer currently relies on attachment coordinates of
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
     // Note: should the offset be non-zero, use wl_surface_offset() to set it.
-    wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
+    wl_surface_attach(
+        surface_.get(),
+        pending_state_.buffer ? pending_state_.buffer->buffer() : nullptr, 0,
+        0);
     needs_commit = true;
-
-    // Do not call GetOrCreateSurfaceSync() if the buffer management doesn't
-    // happen with WaylandBufferManagerHost. That is, if Wayland EGL
-    // implementation is used, buffers are attached/swapped via eglSwapBuffers,
-    // which may internally (depends on the implementation) also create a
-    // surface sync. Creating a surface sync in this case is not necessary.
-    // Moreover, a Wayland protocol error will be raised as only one surface
-    // sync can exist.
-    if (pending_state_.buffer) {
-      auto* surface_sync = GetOrCreateSurfaceSync();
-      if (surface_sync) {
-        if (!pending_state_.acquire_fence.is_null()) {
-          zwp_linux_surface_synchronization_v1_set_acquire_fence(
-              surface_sync, pending_state_.acquire_fence.Peek());
-        }
-
-        if (!next_explicit_release_request_.is_null()) {
-          auto* linux_buffer_release =
-              zwp_linux_surface_synchronization_v1_get_release(surface_sync);
-          // This must be very unlikely to happen, but there is a bug for this.
-          // Thus, add a check for this object to ensure it's not null. See
-          // https://crbug.com/1382976
-          LOG_IF(FATAL, !linux_buffer_release)
-              << "Unable to get an explicit release object.";
-
-          static constexpr zwp_linux_buffer_release_v1_listener
-              kBufferReleaseListener = {
-                  .fenced_release = &OnFencedRelease,
-                  .immediate_release = &OnImmediateRelease,
-              };
-          zwp_linux_buffer_release_v1_add_listener(
-              linux_buffer_release, &kBufferReleaseListener, this);
-
-          linux_buffer_releases_.emplace(
-              linux_buffer_release,
-              ExplicitReleaseInfo(
-                  wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
-                  pending_state_.buffer,
-                  std::move(next_explicit_release_request_)));
-        }
-      } else if (connection_->UseImplicitSyncInterop()) {
-        if (!pending_state_.acquire_fence.is_null()) {
-          connection_->buffer_manager_host()->InsertAcquireFence(
-              pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
-        }
-      }
-    }
   }
   pending_state_.acquire_fence = gfx::GpuFenceHandle();
 
   // Setting Color Space of surface.
   // Should be called infrequently: only when color space is changing to a
-  // a different one.
-  if (pending_state_.color_space != state_.color_space) {
-    zcr_color_management_surface_->SetColorSpace(pending_state_.color_space);
+  // different one.
+  if (wp_color_management_surface_ &&
+      (pending_state_.color_space != state_.color_space ||
+       pending_state_.hdr_metadata != state_.hdr_metadata)) {
+    wp_color_management_surface_->SetColorSpace(pending_state_.color_space,
+                                                pending_state_.hdr_metadata);
     needs_commit = true;
   }
 
@@ -591,85 +613,6 @@ bool WaylandSurface::ApplyPendingState() {
     needs_commit = true;
   }
 
-  if (pending_state_.background_color != state_.background_color) {
-    DCHECK(get_augmented_surface());
-    if (augmented_surface_get_version(get_augmented_surface()) >=
-        static_cast<uint32_t>(
-            AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION)) {
-      wl_array color_data;
-      wl_array_init(&color_data);
-      if (pending_state_.background_color.has_value())
-        wl::SkColorToWlArray(pending_state_.background_color.value(),
-                             color_data);
-
-      augmented_surface_set_background_color(get_augmented_surface(),
-                                             &color_data);
-      needs_commit = true;
-
-      wl_array_release(&color_data);
-    }
-  }
-
-  if (pending_state_.rounded_clip_bounds != state_.rounded_clip_bounds) {
-    DCHECK(get_augmented_surface());
-    gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
-    rounded_clip_bounds.Scale(1.f / GetWaylandScale(pending_state_));
-
-    if (augmented_surface_get_version(get_augmented_surface()) >=
-        AUGMENTED_SURFACE_SET_ROUNDED_CORNERS_CLIP_BOUNDS_SINCE_VERSION) {
-      augmented_surface_set_rounded_corners_clip_bounds(
-          get_augmented_surface(),
-          wl_fixed_from_double(rounded_clip_bounds.rect().x()),
-          wl_fixed_from_double(rounded_clip_bounds.rect().y()),
-          wl_fixed_from_double(rounded_clip_bounds.rect().width()),
-          wl_fixed_from_double(rounded_clip_bounds.rect().height()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kUpperLeft)
-                  .x()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kUpperRight)
-                  .x()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kLowerRight)
-                  .x()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kLowerLeft)
-                  .x()));
-      needs_commit = true;
-    } else if (augmented_surface_get_version(get_augmented_surface()) >=
-               AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
-      // For debugging purposes, stdout uses of the old incarnation of this API.
-      // In the future, this API will get a clean up pass.
-      LOG(WARNING) << "The 'augmented_surface::set_rounded_clip_bounds' "
-                      "request has been deprecated in favor of "
-                      "augmented_surface::set_rounded_corners_clip_bounds.";
-    }
-  }
-
-  if (pending_state_.clip_rect != state_.clip_rect) {
-    DCHECK(get_augmented_surface());
-    if (connection_->surface_augmenter()
-            ->SupportsClipRectOnAugmentedSurface()) {
-      std::optional<gfx::RectF> clip_rect = pending_state_.clip_rect;
-      if (clip_rect) {
-        clip_rect->Scale(1.f / GetWaylandScale(pending_state_));
-        augmented_surface_set_clip_rect(
-            get_augmented_surface(), wl_fixed_from_double(clip_rect->x()),
-            wl_fixed_from_double(clip_rect->y()),
-            wl_fixed_from_double(clip_rect->width()),
-            wl_fixed_from_double(clip_rect->height()));
-      } else {
-        augmented_surface_set_clip_rect(get_augmented_surface(), kMinusOne,
-                                        kMinusOne, kMinusOne, kMinusOne);
-      }
-      needs_commit = true;
-    }
-  }
-
   if (content_type_ &&
       (pending_state_.contains_video != state_.contains_video)) {
     wp_content_type_v1_set_content_type(content_type_.get(),
@@ -694,13 +637,11 @@ bool WaylandSurface::ApplyPendingState() {
   gfx::RectF crop = pending_state_.crop;
   gfx::SizeF viewport_px = pending_state_.viewport_px;
 
-  // If this is the root surface, no viewport scaling is requested, surface
-  // submission in pixel coordinates is disabled and fractional_scale_v1 is in
-  // use, then crop the buffer in accordance with the protocol specification to
-  // ensure that a pixel on the window will correspond to a pixel on the
-  // physical display.
-  if (!surface_submission_in_pixel_coordinates_ &&
-      connection_->fractional_scale_manager_v1() && root_window_ &&
+  // If this is the root surface, no viewport scaling is requested, and
+  // fractional_scale_v1 is in use, then crop the buffer in accordance with the
+  // protocol specification to ensure that a pixel on the window will correspond
+  // to a pixel on the physical display.
+  if (connection_->fractional_scale_manager_v1() && root_window_ &&
       root_window_->root_surface() == this &&
       !IsViewportScaled(pending_state_)) {
     gfx::Size old_size_px =
@@ -741,18 +682,13 @@ bool WaylandSurface::ApplyPendingState() {
     applying_surface_scale = GetWaylandScale(pending_state_);
     bounds = gfx::ScaleSize(bounds, 1.f / GetWaylandScale(pending_state_));
   }
-  if (!(surface_submission_in_pixel_coordinates_ ||
-        use_viewporter_surface_scaling_) &&
+  if (!use_viewporter_surface_scaling_ &&
       surface_scale_set_ != applying_surface_scale) {
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
     surface_scale_set_ = applying_surface_scale;
     needs_commit = true;
   }
   DCHECK_GE(surface_scale_set_, 1);
-
-  // If this is not a subsurface, propagate the buffer scale.
-  if (root_window_ && root_window_->root_surface() == this)
-    root_window_->PropagateBufferScale(pending_state_.buffer_scale_float);
 
   gfx::RectF viewport_src_dip;
   wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
@@ -781,14 +717,16 @@ bool WaylandSurface::ApplyPendingState() {
         viewport_src_dip.set_width(kViewPortSizeMinFloat);
         src_to_set[2] = kViewportSizeMin;
       } else {
-        src_to_set[2] = wl_fixed_from_double(viewport_src_dip.width());
+        src_to_set[2] = wl_fixed_from_double(
+            RoundToNearestThousandth(viewport_src_dip.width()));
       }
 
       if (wl_fixed_from_double(viewport_src_dip.height()) <= 0) {
         viewport_src_dip.set_height(kViewPortSizeMinFloat);
         src_to_set[3] = kViewportSizeMin;
       } else {
-        src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
+        src_to_set[3] = wl_fixed_from_double(
+            RoundToNearestThousandth(viewport_src_dip.height()));
       }
     }
 
@@ -808,14 +746,16 @@ bool WaylandSurface::ApplyPendingState() {
       viewport_src_dip.set_y(std::max(viewport_src_dip.y(), 0.f));
     }
 
-    src_to_set[0] = wl_fixed_from_double(viewport_src_dip.x()),
-    src_to_set[1] = wl_fixed_from_double(viewport_src_dip.y());
+    src_to_set[0] =
+        wl_fixed_from_double(RoundToNearestThousandth(viewport_src_dip.x()));
+    src_to_set[1] =
+        wl_fixed_from_double(RoundToNearestThousandth(viewport_src_dip.y()));
   }
   // Apply crop (wp_viewport.set_source).
-  if (viewport() && !base::ranges::equal(src_to_set, src_set_)) {
+  if (viewport() && !std::ranges::equal(src_to_set, src_set_)) {
     wp_viewport_set_source(viewport(), src_to_set[0], src_to_set[1],
                            src_to_set[2], src_to_set[3]);
-    memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set));
+    UNSAFE_TODO(memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set)));
     needs_commit = true;
   }
 
@@ -829,22 +769,8 @@ bool WaylandSurface::ApplyPendingState() {
     dst_to_set[1] = viewport_dst_dip.height();
   }
   // Apply viewport scale (wp_viewport.set_destination).
-  if (!base::ranges::equal(dst_to_set, dst_set_)) {
-    auto* augmented_surface = get_augmented_surface();
-    if (dst_to_set[0] > 0.f && augmented_surface &&
-        connection_->surface_augmenter()->SupportsSubpixelAccuratePosition()) {
-      // Subpixel accurate positioning is available since the surface augmenter
-      // version 2. Since that version, the augmented surface also supports
-      // setting destination with wl_fixed. Verify that with dchecks.
-      DCHECK_EQ(AUGMENTED_SURFACE_SET_DESTINATION_SIZE_SINCE_VERSION,
-                SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION);
-      DCHECK(augmented_surface_get_version(get_augmented_surface()) >=
-             AUGMENTED_SURFACE_SET_DESTINATION_SIZE_SINCE_VERSION);
-      augmented_surface_set_destination_size(
-          augmented_surface, wl_fixed_from_double(viewport_dst_dip.width()),
-          wl_fixed_from_double(viewport_dst_dip.height()));
-      needs_commit = true;
-    } else if (viewport()) {
+  if (!std::ranges::equal(dst_to_set, dst_set_)) {
+    if (viewport()) {
       wp_viewport_set_destination(
           viewport(),
           dst_to_set[0] > 0.f ? base::ClampRound(viewport_dst_dip.width())
@@ -853,24 +779,7 @@ bool WaylandSurface::ApplyPendingState() {
                               : static_cast<int>(dst_to_set[1]));
       needs_commit = true;
     }
-    memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set));
-  }
-
-  if (pending_state_.frame_trace_id >= 0) {
-    bool is_frame_tracing_enabled;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz,benchmark,graphics.pipeline",
-                                       &is_frame_tracing_enabled);
-    if (is_frame_tracing_enabled) {
-      auto* augmented_surface = get_augmented_surface();
-      if (augmented_surface &&
-          augmented_surface_get_version(augmented_surface) >=
-              AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION) {
-        augmented_surface_set_frame_trace_id(
-            augmented_surface, pending_state_.frame_trace_id >> 32,
-            pending_state_.frame_trace_id & 0xffffffff);
-      }
-    }
-    pending_state_.frame_trace_id = -1;
+    UNSAFE_TODO(memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set)));
   }
 
   DCHECK_LE(pending_state_.damage_px.size(), 1u);
@@ -883,9 +792,6 @@ bool WaylandSurface::ApplyPendingState() {
 
   DCHECK(pending_state_.buffer);
 
-  // Lacros on Ash will always have a scale factory of 1, so damage will be
-  // unchanged on Ash and no need to ignore error, but that won't always be true
-  // on other compositors.
   gfx::Rect damage = ScaleToEnclosingRect(
       pending_state_.damage_px.back(), 1.f / GetWaylandScale(pending_state_));
 
@@ -906,25 +812,6 @@ void WaylandSurface::ForceImmediateStateApplication() {
   apply_state_immediately_ = true;
 }
 
-void WaylandSurface::EnableTrustedDamageIfPossible() {
-  if (get_augmented_surface() &&
-      augmented_surface_get_version(get_augmented_surface()) >=
-          AUGMENTED_SURFACE_SET_TRUSTED_DAMAGE_SINCE_VERSION) {
-    augmented_surface_set_trusted_damage(get_augmented_surface(), true);
-  }
-}
-
-void WaylandSurface::ExplicitRelease(
-    zwp_linux_buffer_release_v1* linux_buffer_release,
-    base::ScopedFD fence) {
-  auto iter = linux_buffer_releases_.find(linux_buffer_release);
-  CHECK(iter != linux_buffer_releases_.end(), base::NotFatalUntil::M130);
-  DCHECK(iter->second.buffer);
-  std::move(iter->second.explicit_release_callback)
-      .Run(iter->second.buffer.get(), std::move(fence));
-  linux_buffer_releases_.erase(iter);
-}
-
 WaylandSurface::State::State() = default;
 
 WaylandSurface::State::~State() = default;
@@ -935,6 +822,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   opaque_region_px = other.opaque_region_px;
   input_region_px = other.input_region_px;
   color_space = other.color_space;
+  hdr_metadata = other.hdr_metadata;
   buffer_id = other.buffer_id;
   buffer = other.buffer;
   buffer_size_px = other.buffer_size_px;
@@ -944,10 +832,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   viewport_px = other.viewport_px;
   opacity = other.opacity;
   use_blending = other.use_blending;
-  rounded_clip_bounds = other.rounded_clip_bounds;
   priority_hint = other.priority_hint;
-  background_color = other.background_color;
-  clip_rect = other.clip_rect;
   contains_video = other.contains_video;
   return *this;
 }
@@ -972,8 +857,8 @@ void WaylandSurface::OnEnter(void* data,
                 wayland_output->output_id()),
             nullptr);
 
-  if (auto it = base::ranges::find(self->entered_outputs_,
-                                   wayland_output->output_id());
+  if (auto it = std::ranges::find(self->entered_outputs_,
+                                  wayland_output->output_id());
       it == self->entered_outputs_.end()) {
     self->entered_outputs_.emplace_back(wayland_output->output_id());
   }
@@ -1025,7 +910,7 @@ void WaylandSurface::OnPreferredScale(void* data,
 }
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
-  auto it = base::ranges::find(entered_outputs_, output_id);
+  auto it = std::ranges::find(entered_outputs_, output_id);
   if (it == entered_outputs_.end())
     return;
 
@@ -1040,42 +925,17 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
     root_window_->OnLeftOutput();
 }
 
-void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
-  if (!connection_->zcr_color_manager()) {
-    return;
-  }
-  if (!color_space.IsValid() && pending_state_.contains_video) {
+void WaylandSurface::SetImageDescription(const gfx::ColorSpace& color_space,
+                                         const gfx::HDRMetadata& hdr_metadata) {
+  if (color_space.IsValid() || !pending_state_.contains_video) {
+    pending_state_.color_space = color_space;
+  } else {
     // Not all video content contains colorspace information.
     // In this case, default to Rec709.
     // Maybe use Rec601 for SD video if it becomes an issue.
-    color_space = gfx::ColorSpace::CreateREC709();
+    pending_state_.color_space = gfx::ColorSpace::CreateREC709();
   }
-  if (!color_space.IsValid()) {
-    return;
-  }
-
-  auto wayland_zcr_color_space =
-      connection_->zcr_color_manager()->GetColorSpace(color_space);
-  if (wayland_zcr_color_space != nullptr)
-    pending_state_.color_space = wayland_zcr_color_space;
-}
-
-// static
-void WaylandSurface::OnFencedRelease(
-    void* data,
-    zwp_linux_buffer_release_v1* buffer_release,
-    int32_t fence) {
-  auto* self = static_cast<WaylandSurface*>(data);
-  auto fd = base::ScopedFD(fence);
-  self->ExplicitRelease(buffer_release, std::move(fd));
-}
-
-// static
-void WaylandSurface::OnImmediateRelease(
-    void* data,
-    zwp_linux_buffer_release_v1* buffer_release) {
-  auto* self = static_cast<WaylandSurface*>(data);
-  self->ExplicitRelease(buffer_release, base::ScopedFD());
+  pending_state_.hdr_metadata = hdr_metadata;
 }
 
 }  // namespace ui

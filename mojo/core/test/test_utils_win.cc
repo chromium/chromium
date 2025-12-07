@@ -13,6 +13,8 @@
 
 #include <ostream>
 
+#include "base/compiler_specific.h"
+
 namespace mojo {
 namespace core {
 namespace test {
@@ -34,12 +36,15 @@ base::ScopedFILE FILEFromPlatformHandle(PlatformHandle h, const char* mode) {
   // Microsoft's documentation for |_open_osfhandle()| only discusses these
   // flags (and |_O_WTEXT|). Hmmm.
   int flags = 0;
-  if (strchr(mode, 'a'))
+  if (UNSAFE_TODO(strchr(mode, 'a'))) {
     flags |= _O_APPEND;
-  if (strchr(mode, 'r'))
+  }
+  if (UNSAFE_TODO(strchr(mode, 'r'))) {
     flags |= _O_RDONLY;
-  if (strchr(mode, 't'))
+  }
+  if (UNSAFE_TODO(strchr(mode, 't'))) {
     flags |= _O_TEXT;
+  }
   base::ScopedFILE rv(_fdopen(
       _open_osfhandle(reinterpret_cast<intptr_t>(h.ReleaseHandle()), flags),
       mode));

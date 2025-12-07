@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- Dimens for pinned tab strip -->
+    <dimen name="pinned_tab_strip_item_min_width">186dp</dimen>
+</resources>

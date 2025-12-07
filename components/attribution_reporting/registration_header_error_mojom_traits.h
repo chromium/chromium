@@ -6,6 +6,7 @@
 #define COMPONENTS_ATTRIBUTION_REPORTING_REGISTRATION_HEADER_ERROR_MOJOM_TRAITS_H_
 
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "components/attribution_reporting/os_registration_error.mojom-forward.h"
@@ -15,7 +16,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 
@@ -52,25 +52,24 @@ struct COMPONENT_EXPORT(
 
   static attribution_reporting::mojom::SourceRegistrationError source_error(
       const attribution_reporting::RegistrationHeaderErrorDetails& details) {
-    return absl::get<attribution_reporting::mojom::SourceRegistrationError>(
+    return std::get<attribution_reporting::mojom::SourceRegistrationError>(
         details);
   }
 
   static attribution_reporting::mojom::TriggerRegistrationError trigger_error(
       const attribution_reporting::RegistrationHeaderErrorDetails& details) {
-    return absl::get<attribution_reporting::mojom::TriggerRegistrationError>(
+    return std::get<attribution_reporting::mojom::TriggerRegistrationError>(
         details);
   }
 
   static attribution_reporting::mojom::OsRegistrationError os_source_error(
       const attribution_reporting::RegistrationHeaderErrorDetails& details) {
-    return *absl::get<attribution_reporting::OsSourceRegistrationError>(
-        details);
+    return *std::get<attribution_reporting::OsSourceRegistrationError>(details);
   }
 
   static attribution_reporting::mojom::OsRegistrationError os_trigger_error(
       const attribution_reporting::RegistrationHeaderErrorDetails& details) {
-    return *absl::get<attribution_reporting::OsTriggerRegistrationError>(
+    return *std::get<attribution_reporting::OsTriggerRegistrationError>(
         details);
   }
 

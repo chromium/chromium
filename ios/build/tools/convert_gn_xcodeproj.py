@@ -489,7 +489,7 @@ def ConvertGnXcodeProject(root_dir, proj_name, input_dir, output_dir, configs):
   Args:
     root_dir: directory that is the root of the project
     proj_name: name of the Xcode project "file" (usually `all.xcodeproj`)
-    input_dir: directory containing the XCode projects created by "gn gen --ide"
+    input_dir: directory containing the Xcode projects created by "gn gen --ide"
     output_dir: directory where the tweaked Xcode projects will be saved
     configs: list of string corresponding to the configurations that need to be
         supported by the tweaked Xcode projects, must contains at least one

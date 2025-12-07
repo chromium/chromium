@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(!is_fuchsia, "Fuchsia does not support extensions.")
 
 import("//build/config/features.gni")
 
@@ -32,6 +33,7 @@ source_set("networking_private") {
     "//components/keyed_service/content",
     "//components/onc",
     "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
     "//net",
@@ -39,19 +41,7 @@ source_set("networking_private") {
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 
-  if (is_chromeos_lacros) {
-    sources = default_sources + [
-                "lacros_networking_private_observer.cc",
-                "lacros_networking_private_observer.h",
-                "networking_private_event_router_nonchromeos.cc",
-                "networking_private_lacros.cc",
-                "networking_private_lacros.h",
-              ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  } else if (is_linux && use_dbus) {
+  if (is_linux && use_dbus) {
     sources = default_sources + [
                 "network_config_dbus_constants_linux.cc",
                 "network_config_dbus_constants_linux.h",
@@ -60,15 +50,18 @@ source_set("networking_private") {
                 "networking_private_linux.h",
               ]
 
-    deps += [ "//dbus" ]
-  } else if (is_win || is_mac || is_fuchsia) {
+    deps += [
+      "//components/dbus",
+      "//dbus",
+    ]
+  } else if (is_win || is_mac) {
     sources = default_sources + [
                 "networking_private_event_router_nonchromeos.cc",
                 "networking_private_service_client.cc",
                 "networking_private_service_client.h",
               ]
     deps += [ "//components/wifi" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     sources = default_sources + [
                 "networking_private_chromeos.cc",
                 "networking_private_chromeos.h",
@@ -77,7 +70,6 @@ source_set("networking_private") {
     deps += [
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
-      "//chromeos/ash/components/network/portal_detector",
       "//chromeos/components/onc",
       "//components/proxy_config",
     ]

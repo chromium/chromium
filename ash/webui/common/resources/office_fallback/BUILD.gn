@@ -5,19 +5,17 @@
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
-  assert(is_chromeos_ash, "The office fallback dialog is ash-chrome only")
+  assert(is_chromeos, "The office fallback dialog is ChromeOS only")
   grd_prefix = "office_fallback"
 
   static_files = [ "main.html" ]
   web_component_files = [ "office_fallback_dialog.ts" ]
-  non_web_component_files = [ "office_fallback_browser_proxy.ts" ]
+  ts_files = [ "office_fallback_browser_proxy.ts" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom-webui.ts" ]
   mojo_files_deps = [
     "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings_ts__generator",
   ]
   ts_composite = true
-
-  html_to_wrapper_template = "native"
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

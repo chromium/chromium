@@ -21,6 +21,7 @@ class FeatureContext;
 // a single dimension.
 // When adding a new variable the string equivalent needs to be added to
 // |GetVariableName|.
+// LINT.IfChange(UADefinedVariable)
 enum class UADefinedVariable {
   // The safe area insets are four environment variables that define a
   // rectangle by its top, right, bottom, and left insets from the edge of
@@ -29,6 +30,14 @@ enum class UADefinedVariable {
   kSafeAreaInsetLeft,
   kSafeAreaInsetBottom,
   kSafeAreaInsetRight,
+
+  // When safe-area-inset-* values can change dynamically during the browsing
+  // session, their maximum values are expressed as safe-area-max-inset-*.
+  // Currently only the bottom inset is dynamic, for Android edge-to-edge UI.
+  kSafeAreaMaxInsetTop,
+  kSafeAreaMaxInsetLeft,
+  kSafeAreaMaxInsetBottom,
+  kSafeAreaMaxInsetRight,
 
   // The keyboard area insets are six environment variables that define a
   // virtual keyboard rectangle by its top, right, bottom, left, width and
@@ -51,8 +60,19 @@ enum class UADefinedVariable {
   kTitlebarAreaX,
   kTitlebarAreaY,
   kTitlebarAreaWidth,
-  kTitlebarAreaHeight
+  kTitlebarAreaHeight,
+
+  // The text scale as chosen by the user in the OS accessibility settings.
+  kPreferredTextScale,
+
+  // Largest unprintable area inset along the four paper edges. Due to a
+  // printer's paper handling mechanism, there's usually a small region along
+  // the paper edges that the printer isn't capable of marking reliably.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/11395
+  kSafePrintableInset,
 };
+// LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:EnvironmentVariables)
 
 enum class UADefinedTwoDimensionalVariable {
   // The viewport segment variables describe logically distinct regions of the
@@ -124,13 +144,14 @@ class CORE_EXPORT StyleEnvironmentVariables
   // Resolve the variable |name| by traversing the tree of
   // |StyleEnvironmentVariables|.
   virtual CSSVariableData* ResolveVariable(const AtomicString& name,
-                                           WTF::Vector<unsigned> indices);
+                                           Vector<unsigned> indices);
 
   // Detach |this| from |parent|.
   void DetachFromParent();
 
   // Stringify |value| and append 'px'. Helper for setting variables that are
   // CSS lengths.
+  static String FormatFloatPx(float value);
   static String FormatPx(int value);
 
   virtual const FeatureContext* GetFeatureContext() const;
@@ -158,12 +179,13 @@ class CORE_EXPORT StyleEnvironmentVariables
   virtual void InvalidateVariable(const AtomicString& name);
 
  private:
-  typedef HeapVector<HeapVector<Member<CSSVariableData>>>
-      TwoDimensionVariableValues;
+  using TwoDimensionVariableValues =
+      GCedHeapVector<HeapVector<Member<CSSVariableData>>>;
 
   HeapVector<Member<StyleEnvironmentVariables>> children_;
   HeapHashMap<AtomicString, Member<CSSVariableData>> data_;
-  HeapHashMap<AtomicString, TwoDimensionVariableValues> two_dimension_data_;
+  HeapHashMap<AtomicString, Member<TwoDimensionVariableValues>>
+      two_dimension_data_;
   Member<StyleEnvironmentVariables> parent_;
 };
 

@@ -13,6 +13,7 @@
 
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "content/public/test/render_view_test.h"
@@ -44,7 +45,6 @@ class MockAutofillDriver : public mojom::AutofillDriver {
   MOCK_METHOD(void,
               FormSubmitted,
               (const FormData& form,
-               bool known_success,
                mojom::SubmissionSource source),
               (override));
   MOCK_METHOD(void,
@@ -54,7 +54,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
                const gfx::Rect& caret_bounds),
               (override));
   MOCK_METHOD(void,
-              TextFieldDidChange,
+              TextFieldValueChanged,
               (const FormData& form,
                FieldRendererId field_id,
                base::TimeTicks timestamp),
@@ -64,37 +64,35 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
-              SelectControlDidChange,
+              SelectControlSelectionChanged,
               (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
-              SelectOrSelectListFieldOptionsDidChange,
-              (const FormData& form),
+              SelectFieldOptionsDidChange,
+              (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
               JavaScriptChangedAutofilledValue,
               (const FormData& form,
                FieldRendererId field_id,
-               const std::u16string& old_value,
-               bool formatting_ony),
+               const std::u16string& old_value),
               (override));
-  MOCK_METHOD(void,
-              AskForValuesToFill,
-              (const FormData& form,
-               FieldRendererId field_id,
-               const gfx::Rect& caret_bounds,
-               AutofillSuggestionTriggerSource trigger_source),
-              (override));
+  MOCK_METHOD(
+      void,
+      AskForValuesToFill,
+      (const FormData& form,
+       FieldRendererId field_id,
+       const gfx::Rect& caret_bounds,
+       AutofillSuggestionTriggerSource trigger_source,
+       const std::optional<PasswordSuggestionRequest>& password_request),
+      (override));
   MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void, FocusOnNonFormField, (), (override));
   MOCK_METHOD(void,
               FocusOnFormField,
               (const FormData& form, FieldRendererId field_id),
               (override));
-  MOCK_METHOD(void,
-              DidFillAutofillFormData,
-              (const FormData& form, base::TimeTicks timestamp),
-              (override));
+  MOCK_METHOD(void, DidAutofillForm, (const FormData& form), (override));
   MOCK_METHOD(void, DidEndTextFieldEditing, (), (override));
 
  private:
@@ -112,7 +110,6 @@ class AutofillRendererTest : public content::RenderViewTest {
 
   virtual std::unique_ptr<AutofillAgent> CreateAutofillAgent(
       content::RenderFrame* render_frame,
-      const AutofillAgent::Config& config,
       std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
       std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
       blink::AssociatedInterfaceRegistry* associated_interfaces);
@@ -160,6 +157,9 @@ class AutofillRendererTest : public content::RenderViewTest {
 
  protected:
   AutofillAgent& autofill_agent() { return *autofill_agent_; }
+  PasswordAutofillAgent& password_autofill_agent() {
+    return test_api(*autofill_agent_).password_autofill_agent();
+  }
   MockAutofillDriver& autofill_driver() { return autofill_driver_; }
 
  private:

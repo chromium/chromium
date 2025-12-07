@@ -7,22 +7,26 @@
 
 #include <string>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "ui/base/interaction/interaction_test_util.h"
 
 namespace ui {
 class TrackedElement;
 }  // namespace ui
 
-class Browser;
-
-class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
+class InteractionTestUtilBrowser {
  public:
-  InteractionTestUtilBrowser();
-  ~InteractionTestUtilBrowser() override;
+  // Static class only.
+  InteractionTestUtilBrowser() = delete;
+
+  // Populates the appropriate simulators for a browser.
+  static void PopulateSimulators(ui::test::InteractionTestUtil& test_util);
 
   // Returns the browser that matches the given context, or nullptr if none
   // can be found.
-  static Browser* GetBrowserFromContext(ui::ElementContext context);
+  static BrowserWindowInterface* GetBrowserFromContext(
+      ui::ElementContext context);
 
   // Takes a screenshot based on the contents of `element` and compares with
   // Skia Gold. May return ActionResult::kKnownIncompatible on platforms and
@@ -40,14 +44,8 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
   // Element must be on a surface that is visible and not occluded (for example,
   // a widget, or the active tab in a browser).
   //
-  // If `element` is a TrackedElementWebContents of any sort, it is useful to
-  // verify that the contents you intend to take a screenshot of are present and
-  // rendered before taking the screenshot. One way to do this is by calling:
-  //  - SendEventOnElementMinimumSize() for pages in browser tabs
-  //  - SendEventOnWebViewMinimumSize() for secondary WebUI
-  // These are especially important if your WebView contains any dynamic content
-  // that may populate and display after the page is loaded. After you receive
-  // the event, you should be able to call CompareScreenshot() safely.
+  // Be sure that everything is completely loaded before attempting a
+  // screenshot!
   //
   // In order to actually take screenshots:
   // - Your test must be in browser_tests or interactive_ui_tests
@@ -61,7 +59,8 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
   static ui::test::ActionResult CompareScreenshot(
       ui::TrackedElement* element,
       const std::string& screenshot_name,
-      const std::string& baseline_cl);
+      const std::string& baseline_cl,
+      const ScreenshotOptions& options = {});
 
   // As `CompareScreenshot()` but takes a screenshot of the entire surface
   // containing `element_in_surface`, not just the element itself. Be careful

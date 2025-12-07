@@ -235,7 +235,7 @@ class ExtensionDownloader {
                       const bool is_force_installed);
     ~FetchDataGroupKey();
 
-    bool operator<(const FetchDataGroupKey& other) const;
+    auto operator<=>(const FetchDataGroupKey& rhs) const = default;
 
     int request_id{0};
     GURL update_url;

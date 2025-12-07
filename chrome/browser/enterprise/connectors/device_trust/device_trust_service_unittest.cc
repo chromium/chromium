@@ -19,14 +19,13 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "components/enterprise/connectors/device_trust/prefs.h"
+#include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::NotNull;
 
 namespace {
@@ -177,14 +176,14 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
 
   std::string fake_display_name = "fake_display_name";
   EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&fake_display_name](
               base::OnceCallback<void(base::Value::Dict)> signals_callback) {
             auto fake_signals = std::make_unique<base::Value::Dict>();
             fake_signals->Set(device_signals::names::kDisplayName,
                               fake_display_name);
             std::move(signals_callback).Run(std::move(*fake_signals));
-          }));
+          });
 
   const DTAttestationResult result_code = DTAttestationResult::kSuccess;
   AttestationResponse attestation_response = {kAttestationResponse,
@@ -192,16 +191,16 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
   EXPECT_CALL(*mock_attestation_service_,
               BuildChallengeResponseForVAChallenge(
                   GetSerializedSignedChallenge(kJsonChallenge), _, levels_, _))
-      .WillOnce(Invoke([&fake_display_name, &attestation_response](
-                           const std::string& challenge,
-                           const base::Value::Dict signals,
-                           const std::set<DTCPolicyLevel> levels,
-                           AttestationService::AttestationCallback callback) {
+      .WillOnce([&fake_display_name, &attestation_response](
+                    const std::string& challenge,
+                    const base::Value::Dict signals,
+                    const std::set<DTCPolicyLevel> levels,
+                    AttestationService::AttestationCallback callback) {
         EXPECT_EQ(
             signals.FindString(device_signals::names::kDisplayName)->c_str(),
             fake_display_name);
         std::move(callback).Run(attestation_response);
-      }));
+      });
 
   base::test::TestFuture<const DeviceTrustResponse&> future;
   device_trust_service->BuildChallengeResponse(
@@ -222,14 +221,14 @@ TEST_P(DeviceTrustServiceTest, AttestationFailure) {
 
   std::string fake_display_name = "fake_display_name";
   EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&fake_display_name](
               base::OnceCallback<void(base::Value::Dict)> signals_callback) {
             auto fake_signals = std::make_unique<base::Value::Dict>();
             fake_signals->Set(device_signals::names::kDisplayName,
                               fake_display_name);
             std::move(signals_callback).Run(std::move(*fake_signals));
-          }));
+          });
 
   const DTAttestationResult result_code =
       DTAttestationResult::kMissingSigningKey;
@@ -238,13 +237,13 @@ TEST_P(DeviceTrustServiceTest, AttestationFailure) {
   EXPECT_CALL(*mock_attestation_service_,
               BuildChallengeResponseForVAChallenge(
                   GetSerializedSignedChallenge(kJsonChallenge), _, levels_, _))
-      .WillOnce(Invoke([&attestation_response](
-                           const std::string& challenge,
-                           const base::Value::Dict signals,
-                           const std::set<DTCPolicyLevel> levels,
-                           AttestationService::AttestationCallback callback) {
+      .WillOnce([&attestation_response](
+                    const std::string& challenge,
+                    const base::Value::Dict signals,
+                    const std::set<DTCPolicyLevel> levels,
+                    AttestationService::AttestationCallback callback) {
         std::move(callback).Run(attestation_response);
-      }));
+      });
 
   base::test::TestFuture<const DeviceTrustResponse&> future;
   device_trust_service->BuildChallengeResponse(

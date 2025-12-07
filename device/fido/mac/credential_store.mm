@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "device/fido/mac/credential_store.h"
 
@@ -27,7 +23,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/random.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -107,7 +103,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
 
   base::apple::ScopedCFTypeRef<CFArrayRef> keychain_items;
   {
-    OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
+    OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
         NSToCFPtrCast(query),
         reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
     if (status == errSecItemNotFound) {
@@ -266,14 +262,14 @@ TouchIdCredentialStore::CreateCredential(
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key =
-      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateRandomKey(
           NSToCFPtrCast(params), cferr.InitializeInto());
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr.get();
     return std::nullopt;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-      crypto::AppleKeychainV2::GetInstance().KeyCopyPublicKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(
           private_key.get()));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
@@ -322,6 +318,10 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
         objc_storage_->authentication_context;
   }
 
+  // Legacy credentials used to set kSecAttrApplicationTag to a CFStringRef
+  // encoding the RP ID and user ID, but MacOS Sequoia returns an internal error
+  // when setting an application tag of type CFStringRef. Skip the field in that
+  // case, as application tags are ignored for legacy credentials anyway.
   NSDictionary* params = @{
     CFToNSPtrCast(kSecAttrAccessGroup) :
         base::SysUTF8ToNSString(config_.keychain_access_group),
@@ -333,8 +333,6 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
         CFToNSPtrCast(kSecAttrTokenIDSecureEnclave),
     CFToNSPtrCast(kSecAttrLabel) :
         base::SysUTF8ToNSString(EncodeRpId(config_.metadata_secret, rp_id)),
-    CFToNSPtrCast(kSecAttrApplicationTag) : base::SysUTF8ToNSString(
-        EncodeRpIdAndUserIdDeprecated(config_.metadata_secret, rp_id, user.id)),
     CFToNSPtrCast(kSecAttrApplicationLabel) :
         [NSData dataWithBytes:credential_id.data() length:credential_id.size()],
     CFToNSPtrCast(kSecPrivateKeyAttrs) : private_key_params,
@@ -342,14 +340,14 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key =
-      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateRandomKey(
           NSToCFPtrCast(params), cferr.InitializeInto());
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr.get();
     return std::nullopt;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-      crypto::AppleKeychainV2::GetInstance().KeyCopyPublicKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(
           private_key.get()));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
@@ -453,9 +451,7 @@ bool TouchIdCredentialStore::DeleteCredentialsSync(
       DLOG(ERROR) << "missing application label";
       continue;
     }
-    if (!DeleteCredentialById(base::make_span(
-            CFDataGetBytePtr(credential_id_data),
-            base::checked_cast<size_t>(CFDataGetLength(credential_id_data))))) {
+    if (!DeleteCredentialById(base::apple::CFDataToSpan(credential_id_data))) {
       // Indicate failure, but keep deleting remaining items.
       result = false;
     }
@@ -509,7 +505,7 @@ TouchIdCredentialStore::FindCredentialsImpl(
   query[CFToNSPtrCast(kSecMatchLimit)] = CFToNSPtrCast(kSecMatchLimitAll);
 
   base::apple::ScopedCFTypeRef<CFArrayRef> keychain_items;
-  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
       NSToCFPtrCast(query),
       reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
   if (status == errSecItemNotFound) {
@@ -565,9 +561,9 @@ TouchIdCredentialStore::FindCredentialsImpl(
       FIDO_LOG(ERROR) << "credential with missing application label";
       return std::nullopt;
     }
-    std::vector<uint8_t> credential_id(CFDataGetBytePtr(application_label),
-                                       CFDataGetBytePtr(application_label) +
-                                           CFDataGetLength(application_label));
+    auto credential_id_span = base::apple::CFDataToSpan(application_label);
+    const std::vector<uint8_t> credential_id(credential_id_span.begin(),
+                                             credential_id_span.end());
     if (!credential_ids.empty() &&
         !base::Contains(credential_ids, credential_id)) {
       continue;
@@ -582,10 +578,7 @@ TouchIdCredentialStore::FindCredentialsImpl(
     // On version < 3 credentials, kSecAttrApplicationTag is a CFStringRef,
     // which means `application_tag_ref` would be nullptr.
     if (application_tag_ref) {
-      const base::span<const uint8_t> application_tag(
-          CFDataGetBytePtr(application_tag_ref),
-          CFDataGetBytePtr(application_tag_ref) +
-              CFDataGetLength(application_tag_ref));
+      auto application_tag = base::apple::CFDataToSpan(application_tag_ref);
       metadata = UnsealMetadataFromApplicationTag(config_.metadata_secret,
                                                   rp_id_value, application_tag);
     } else {
@@ -620,7 +613,7 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   //     CFToNSPtrCast(kSecValueRef) : (__bridge id)sec_key_ref,
   //   };
   //   OSStatus status =
-  //       AppleKeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
+  //       KeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
   //
   // But on macOS that looks for `sec_key_ref` in the legacy keychain instead of
   // the "iOS" keychain that secure enclave credentials live in, and so the call
@@ -639,7 +632,7 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   };
 
   OSStatus status =
-      crypto::AppleKeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
+      crypto::apple::KeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
     return false;
@@ -685,7 +678,7 @@ bool TouchIdCredentialStore::UpdateCredential(
   };
   NSDictionary* params =
       @{CFToNSPtrCast(kSecAttrApplicationTag) : sealed_metadata_data};
-  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemUpdate(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemUpdate(
       NSToCFPtrCast(query), NSToCFPtrCast(params));
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemUpdate failed";

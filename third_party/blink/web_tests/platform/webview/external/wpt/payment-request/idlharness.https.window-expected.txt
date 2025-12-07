@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PaymentRequest interface: existence and properties of interface object
   assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
 [FAIL] PaymentRequest interface object length
@@ -20,6 +20,16 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
 [FAIL] PaymentRequest interface: attribute id
   assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute shippingAddress
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute shippingOption
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute shippingType
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute onshippingaddresschange
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute onshippingoptionchange
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
 [FAIL] PaymentRequest interface: attribute onpaymentmethodchange
   assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
 [FAIL] PaymentRequest must be primary interface of paymentRequest
@@ -35,6 +45,16 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PaymentRequest interface: paymentRequest must inherit property "canMakePayment()" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
 [FAIL] PaymentRequest interface: paymentRequest must inherit property "id" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "shippingAddress" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "shippingOption" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "shippingType" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "onshippingaddresschange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "onshippingoptionchange" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
 [FAIL] PaymentRequest interface: paymentRequest must inherit property "onpaymentmethodchange" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
@@ -58,9 +78,21 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
 [FAIL] PaymentResponse interface: attribute details
   assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute shippingAddress
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute shippingOption
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute payerName
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute payerEmail
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute payerPhone
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
 [FAIL] PaymentResponse interface: operation complete(optional PaymentComplete, optional PaymentCompleteDetails)
   assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
 [FAIL] PaymentResponse interface: operation retry(optional PaymentValidationErrors)
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute onpayerdetailchange
   assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
 [FAIL] PaymentMethodChangeEvent interface: existence and properties of interface object
   assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing

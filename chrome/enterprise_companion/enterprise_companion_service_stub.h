@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
+#include "chrome/enterprise_companion/ipc_security.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
@@ -21,12 +22,6 @@ class EnterpriseCompanion;
 }
 
 class EnterpriseCompanionService;
-
-// Returns true if IPC caller is allowed.
-using IpcTrustDecider =
-    base::RepeatingCallback<bool(const named_mojo_ipc_server::ConnectionInfo&)>;
-
-IpcTrustDecider CreateIpcTrustDecider();
 
 // Provides the options used to instantiate the NamedMojoIpcServer.
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(

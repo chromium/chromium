@@ -5,27 +5,25 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_OBSERVER_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_OBSERVER_H_
 
-#include "ui/native_theme/native_theme_export.h"
+#include "base/component_export.h"
+#include "base/observer_list_types.h"
 
 namespace ui {
 
 class NativeTheme;
 
 // Observers which are notified when the native theme changes.
-class NATIVE_THEME_EXPORT NativeThemeObserver {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeObserver
+    : public base::CheckedObserver {
  public:
+  ~NativeThemeObserver() override;
+
   // Called when the native theme changes. The observed theme is passed so that
   // observers may handle changes to their associated native theme instances.
-  virtual void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {}
+  virtual void OnNativeThemeUpdated(NativeTheme* observed_theme) {}
 
   // Called when the caption style changes.
   virtual void OnCaptionStyleUpdated() {}
-
-  // Called when the system Increased Contrast state changes.
-  virtual void OnPreferredContrastChanged() {}
-
- protected:
-  virtual ~NativeThemeObserver();
 };
 
 }  // namespace ui

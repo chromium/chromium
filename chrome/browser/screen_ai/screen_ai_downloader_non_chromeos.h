@@ -27,8 +27,7 @@ class ScreenAIDownloaderNonChromeOS
   void SetLastUsageTime() override;
 
   // component_updater::ComponentUpdateService::Observer:
-  void OnEvent(update_client::UpdateClient::Observer::Events event,
-               const std::string& omaha_id) override;
+  void OnEvent(const update_client::CrxUpdateItem& item) override;
 
  private:
   // ScreenAIInstallState:

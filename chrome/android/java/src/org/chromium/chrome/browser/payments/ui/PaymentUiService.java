@@ -4,14 +4,24 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
@@ -33,21 +43,20 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.AddressNormalizer.NormalizedAddressRequestDelegate;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.autofill.FieldType;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.payments.AbortReason;
-import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
@@ -56,6 +65,7 @@ import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
 import org.chromium.components.payments.Section;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.AddressErrors;
@@ -71,13 +81,15 @@ import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,31 +100,47 @@ import java.util.Set;
  * This class manages all of the UIs related to payment. The UI logic of {@link
  * ChromePaymentRequestService} should be moved into this class.
  */
+@NullMarked
 public class PaymentUiService
         implements SettingsAutofillAndPaymentsObserver.Observer,
                 PaymentHandlerUiObserver,
                 FocusChangedObserver,
                 PaymentUiServiceTestInterface,
                 NormalizedAddressRequestDelegate,
-                PaymentRequestUI.Client,
+                PaymentRequestUi.Client,
                 LayoutStateObserver {
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PaymentRequestAddressEditorMode.ADD_NEW_ADDRESS,
+        PaymentRequestAddressEditorMode.EDIT_EXISTING_ADDRESS,
+        PaymentRequestAddressEditorMode.COUNT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PaymentRequestAddressEditorMode {
+        int ADD_NEW_ADDRESS = 0;
+        int EDIT_EXISTING_ADDRESS = 1;
+        int COUNT = 2;
+    }
+
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
     // Reverse order of the comparator to sort in descending order of completeness scores.
     private static final Comparator<Completable> COMPLETENESS_COMPARATOR =
-            (a, b) -> (PaymentAppComparator.compareCompletablesByCompleteness(b, a));
+            (a, b) -> PaymentAppComparator.compareCompletablesByCompleteness(b, a);
     private final Comparator<PaymentApp> mPaymentAppComparator;
 
     private final boolean mIsOffTheRecord;
     private final Handler mHandler = new Handler();
-    private final Queue<Runnable> mRetryQueue = new LinkedList<>();
-    private final TabModelSelectorObserver mSelectorObserver;
+    private final Queue<Runnable> mRetryQueue = new ArrayDeque<>();
+    private final Callback<TabModel> mCurrentTabModelObserver = this::onTabModelSelected;
     private final TabModelObserver mTabModelObserver;
-    private ContactEditor mContactEditor;
-    private PaymentHandlerCoordinator mPaymentHandlerUi;
-    private Callback<PaymentInformation> mPaymentInformationCallback;
-    private SectionInformation mUiShippingOptions;
+    private @MonotonicNonNull ContactEditor mContactEditor;
+    private @Nullable PaymentHandlerCoordinator mPaymentHandlerUi;
+    private @Nullable Callback<PaymentInformation> mPaymentInformationCallback;
+    private @MonotonicNonNull SectionInformation mUiShippingOptions;
     private final Delegate mDelegate;
     private final WebContents mWebContents;
     private final String mTopLevelOriginFormattedForDisplay;
@@ -123,18 +151,17 @@ public class PaymentUiService
     private final PaymentRequestParams mParams;
     private final JourneyLogger mJourneyLogger;
 
-    private PaymentRequestUI mPaymentRequestUI;
-    private ShoppingCart mUiShoppingCart;
+    private @MonotonicNonNull PaymentRequestUi mPaymentRequestUi;
+    private @MonotonicNonNull ShoppingCart mUiShoppingCart;
     private boolean mHasInitialized;
     private boolean mHasClosed;
-    private SectionInformation mPaymentMethodsSection;
-    private SectionInformation mShippingAddressesSection;
-    private ContactDetailsSection mContactSection;
-    private boolean mHaveRequestedAutofillData = true;
-    private List<AutofillProfile> mAutofillProfiles;
-    private TabModelSelector mObservedTabModelSelector;
-    private TabModel mObservedTabModel;
-    private LayoutStateProvider mLayoutStateProvider;
+    private @MonotonicNonNull SectionInformation mPaymentMethodsSection;
+    private @MonotonicNonNull SectionInformation mShippingAddressesSection;
+    private @MonotonicNonNull ContactDetailsSection mContactSection;
+    private List<AutofillProfile> mAutofillProfiles = Collections.emptyList();
+    private @Nullable TabModelSelector mObservedTabModelSelector;
+    private @Nullable TabModel mObservedTabModel;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /** The delegate of this class. */
     public interface Delegate {
@@ -159,25 +186,27 @@ public class PaymentUiService
          *     spinner is hidden in that case. Other payment apps typically show a spinner.
          */
         boolean invokePaymentApp(
-                EditableOption selectedShippingAddress,
-                EditableOption selectedShippingOption,
-                PaymentApp selectedPaymentApp);
+                @Nullable EditableOption selectedShippingAddress,
+                @Nullable EditableOption selectedShippingOption,
+                @Nullable PaymentApp selectedPaymentApp);
 
         /**
          * Invoked when the UI service has been aborted.
+         *
          * @param reason The reason for the aborting, as defined by {@link AbortReason}.
          * @param debugMessage The debug message for the aborting.
          */
         void onUiAborted(@AbortReason int reason, String debugMessage);
 
         /** Called when favicon not available for payment request UI. */
-        void onPaymentRequestUIFaviconNotAvailable();
+        void onPaymentRequestUiFaviconNotAvailable();
 
         /**
          * Called when the user is leaving the current tab (e.g., tab switched or tab overview mode
          * is shown), upon which the PaymentRequest service should be closed.
+         *
          * @param reason The reason of leaving the current tab, to be used as debug message for the
-         *         developers.
+         *     developers.
          */
         void onLeavingCurrentTab(String reason);
 
@@ -202,14 +231,14 @@ public class PaymentUiService
 
         /**
          * @return The context of the current activity, can be null when WebContents has been
-         *         destroyed, the activity is gone, the window is closed, etc.
+         *     destroyed, the activity is gone, the window is closed, etc.
          */
-        @Nullable
-        Context getContext();
+        @Nullable Context getContext();
 
-        /** @return The ActivityLifecycleDispatcher of the current ChromeActivity. */
-        @Nullable
-        ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
+        /**
+         * @return The ActivityLifecycleDispatcher of the current ChromeActivity.
+         */
+        @Nullable ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
     }
 
     /**
@@ -243,7 +272,7 @@ public class PaymentUiService
 
         /** A callback invoked when the Payment Request UI is closed. */
         private void onPaymentRequestUiClosed() {
-            assert mPaymentRequestUI == null;
+            assert mPaymentRequestUi == null;
             mShouldShowDialog = false;
         }
 
@@ -260,9 +289,9 @@ public class PaymentUiService
         }
 
         private void updatePaymentRequestDialogShowState() {
-            if (mPaymentRequestUI == null) return;
+            if (mPaymentRequestUi == null) return;
             boolean isSuccess =
-                    mPaymentRequestUI.setVisible(!mShowingBottomSheet && mShouldShowDialog);
+                    mPaymentRequestUi.setVisible(!mShowingBottomSheet && mShouldShowDialog);
             if (!isSuccess) {
                 mDelegate.onUiServiceError(ErrorStrings.FAIL_TO_SHOW_PAYMENT_REQUEST_UI);
             }
@@ -303,13 +332,6 @@ public class PaymentUiService
         mCurrencyFormatterMap = new HashMap<>();
         mIsOffTheRecord = isOffTheRecord;
         mPaymentAppComparator = new PaymentAppComparator(/* params= */ mParams);
-        mSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
-                    }
-                };
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -330,23 +352,26 @@ public class PaymentUiService
     /**
      * Creates the shipping section for the app selector UI if needed. This method should be called
      * when UI has been built and payment details has been finalized.
+     *
      * @param context The activity context.
      */
     public void createShippingSectionIfNeeded(Context context) {
-        if (!shouldShowShippingSection()) return;
-        createShippingSectionForPaymentRequestUI(context);
+        if (!shouldShowShippingSection() || mShippingAddressesSection != null) return;
+        createShippingSectionForPaymentRequestUi(context);
     }
 
     /**
      * @return Whether the PaymentRequest UI is alive. The UI comes to live when
-     *         buildPaymentRequestUi() has been called to create it; it stops being alive when
-     *         close() is called to destroy it.
+     *     buildPaymentRequestUi() has been called to create it; it stops being alive when close()
+     *     is called to destroy it.
      */
     public boolean isPaymentRequestUiAlive() {
-        return mPaymentRequestUI != null;
+        return mPaymentRequestUi != null;
     }
 
-    /** @return The payment apps. */
+    /**
+     * @return The payment apps.
+     */
     public List<PaymentApp> getPaymentApps() {
         List<PaymentApp> paymentApps = new ArrayList<>();
         if (mPaymentMethodsSection == null) return paymentApps;
@@ -379,8 +404,10 @@ public class PaymentUiService
 
     /**
      * Loads the payment apps into the app selector UI (aka, PaymentRequest UI).
+     *
      * @param apps The payment apps to be loaded into the app selector UI.
      */
+    @EnsuresNonNull("mPaymentMethodsSection")
     public void setPaymentApps(List<PaymentApp> apps) {
         Collections.sort(apps, mPaymentAppComparator);
         // Possibly pre-select the first app on the list.
@@ -390,7 +417,7 @@ public class PaymentUiService
         // The list of payment apps is ready to display.
         mPaymentMethodsSection =
                 new SectionInformation(
-                        PaymentRequestUI.DataType.PAYMENT_METHODS,
+                        PaymentRequestUi.DataType.PAYMENT_METHODS,
                         selection,
                         new ArrayList<>(apps));
 
@@ -403,30 +430,15 @@ public class PaymentUiService
      * The UI model of the shopping cart, including the total. Each item includes a label and a
      * price string. This data is passed to the UI.
      */
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public void getShoppingCart(Callback<ShoppingCart> callback) {
-        mHandler.post(callback.bind(mUiShoppingCart));
+        mHandler.post(callback.bind(assumeNonNull(mUiShoppingCart)));
     }
 
     /** @return The selected contact, can be null. */
     public @Nullable AutofillContact getSelectedContact() {
         return mContactSection != null ? (AutofillContact) mContactSection.getSelectedItem() : null;
-    }
-
-    /** Get the contact editor on PaymentRequest UI. */
-    private ContactEditor getContactEditor() {
-        return mContactEditor;
-    }
-
-    /** @return The autofill profiles. */
-    private List<AutofillProfile> getAutofillProfiles() {
-        return mAutofillProfiles;
-    }
-
-    /** @return Whether PaymentRequestUI has requested autofill data. */
-    public boolean haveRequestedAutofillData() {
-        return mHaveRequestedAutofillData;
     }
 
     /**
@@ -458,14 +470,16 @@ public class PaymentUiService
 
         if (mShippingAddressesSection != null) {
             mShippingAddressesSection.addAndSelectOrUpdateItem(address);
-            mPaymentRequestUI.updateSection(
-                    PaymentRequestUI.DataType.SHIPPING_ADDRESSES, mShippingAddressesSection);
+            assumeNonNull(mPaymentRequestUi)
+                    .updateSection(
+                            PaymentRequestUi.DataType.SHIPPING_ADDRESSES,
+                            mShippingAddressesSection);
         }
 
         if (mContactSection != null) {
             mContactSection.addOrUpdateWithAutofillAddress(address);
-            mPaymentRequestUI.updateSection(
-                    PaymentRequestUI.DataType.CONTACT_DETAILS, mContactSection);
+            assumeNonNull(mPaymentRequestUi)
+                    .updateSection(PaymentRequestUi.DataType.CONTACT_DETAILS, mContactSection);
         }
     }
 
@@ -479,32 +493,19 @@ public class PaymentUiService
 
     /**
      * Initializes the payment UI service.
+     *
      * @param details The PaymentDetails provided by the merchant.
      */
+    @Initializer
     public void initialize(PaymentDetails details) {
         assert !mParams.hasClosed();
-        updateDetailsOnPaymentRequestUI(details);
+        updateDetailsOnPaymentRequestUi(details);
 
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         if (PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             mAutofillProfiles =
-                    Collections.unmodifiableList(
-                            personalDataManager.getProfilesToSuggest(
-                                    /* includeNameInLabel= */ false));
-        }
-
-        if (mParams.getPaymentOptions().requestShipping) {
-            boolean haveCompleteShippingAddress = false;
-            for (int i = 0; i < mAutofillProfiles.size(); i++) {
-                if (AutofillAddress.checkAddressCompletionStatus(
-                                mAutofillProfiles.get(i), personalDataManager)
-                        == AutofillAddress.CompletionStatus.COMPLETE) {
-                    haveCompleteShippingAddress = true;
-                    break;
-                }
-            }
-            mHaveRequestedAutofillData &= haveCompleteShippingAddress;
+                    Collections.unmodifiableList(personalDataManager.getProfilesToSuggest());
         }
 
         PaymentOptions options = mParams.getPaymentOptions();
@@ -517,29 +518,17 @@ public class PaymentUiService
                             options.requestPayerEmail,
                             /* saveToDisk= */ !mIsOffTheRecord,
                             personalDataManager);
-            boolean haveCompleteContactInfo = false;
-            for (int i = 0; i < getAutofillProfiles().size(); i++) {
-                AutofillProfile profile = getAutofillProfiles().get(i);
-                if (getContactEditor()
-                                .checkContactCompletionStatus(
-                                        profile.getFullName(),
-                                        profile.getPhoneNumber(),
-                                        profile.getEmailAddress())
-                        == ContactEditor.COMPLETE) {
-                    haveCompleteContactInfo = true;
-                    break;
-                }
-            }
-            mHaveRequestedAutofillData &= haveCompleteContactInfo;
         }
         mHasInitialized = true;
     }
 
     /**
      * Called after {@link PaymentRequest#retry} is invoked.
+     *
      * @param context The context of the main activity.
      * @param errors The payment validation errors.
      */
+    @EnsuresNonNull("mPaymentMethodsSection")
     public void onRetry(Context context, PaymentValidationErrors errors) {
         // Remove all payment apps except the selected one.
         assert mPaymentMethodsSection != null;
@@ -547,19 +536,19 @@ public class PaymentUiService
         assert selectedApp != null;
         mPaymentMethodsSection =
                 new SectionInformation(
-                        PaymentRequestUI.DataType.PAYMENT_METHODS,
+                        PaymentRequestUi.DataType.PAYMENT_METHODS,
                         /* selection= */ 0,
                         new ArrayList<>(Arrays.asList(selectedApp)));
-        mPaymentRequestUI.updateSection(
-                PaymentRequestUI.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
+        assumeNonNull(mPaymentRequestUi)
+                .updateSection(PaymentRequestUi.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
 
         // Go back to the payment sheet
-        mPaymentRequestUI.onPayButtonProcessingCancelled();
+        mPaymentRequestUi.onPayButtonProcessingCancelled();
         if (!TextUtils.isEmpty(errors.error)) {
-            mPaymentRequestUI.setRetryErrorMessage(errors.error);
+            mPaymentRequestUi.setRetryErrorMessage(errors.error);
         } else {
-            mPaymentRequestUI.setRetryErrorMessage(
-                    context.getResources().getString(R.string.payments_error_message));
+            mPaymentRequestUi.setRetryErrorMessage(
+                    context.getString(R.string.payments_error_message));
         }
 
         if (shouldShowShippingSection() && hasShippingAddressError(errors.shippingAddress)) {
@@ -567,7 +556,8 @@ public class PaymentUiService
                     () -> {
                         mAddressEditor.setAddressErrors(errors.shippingAddress);
                         AutofillAddress selectedAddress =
-                                (AutofillAddress) mShippingAddressesSection.getSelectedItem();
+                                (AutofillAddress)
+                                        assumeNonNull(mShippingAddressesSection).getSelectedItem();
                         editAddress(selectedAddress);
                     });
         }
@@ -575,10 +565,10 @@ public class PaymentUiService
         if (shouldShowContactSection() && hasPayerError(errors.payer)) {
             mRetryQueue.add(
                     () -> {
-                        mContactEditor.setPayerErrors(errors.payer);
+                        assumeNonNull(mContactEditor).setPayerErrors(errors.payer);
                         AutofillContact selectedContact =
-                                (AutofillContact) mContactSection.getSelectedItem();
-                        editContactOnPaymentRequestUI(selectedContact);
+                                (AutofillContact) assumeNonNull(mContactSection).getSelectedItem();
+                        editContactOnPaymentRequestUi(selectedContact);
                     });
         }
 
@@ -617,23 +607,26 @@ public class PaymentUiService
         PaymentItem total = modifier == null ? null : modifier.total;
         if (total == null) total = mParams.getRawTotal();
 
-        CurrencyFormatter formatter = getOrCreateCurrencyFormatter(total.amount);
-        mUiShoppingCart.setTotal(
-                new LineItem(
-                        total.label,
-                        formatter.getFormattedCurrencyCode(),
-                        formatter.format(total.amount.value),
-                        /* isPending= */ false));
+        CurrencyFormatter formatter = getOrCreateCurrencyFormatter(assumeNonNull(total).amount);
+        assumeNonNull(mUiShoppingCart)
+                .setTotal(
+                        new LineItem(
+                                total.label,
+                                formatter.getFormattedCurrencyCode(),
+                                formatter.format(total.amount.value),
+                                /* isPending= */ false));
         mUiShoppingCart.setAdditionalContents(
                 modifier == null
                         ? null
                         : getLineItems(Arrays.asList(modifier.additionalDisplayItems)));
-        if (mPaymentRequestUI != null) {
-            mPaymentRequestUI.updateOrderSummarySection(mUiShoppingCart);
+        if (mPaymentRequestUi != null) {
+            mPaymentRequestUi.updateOrderSummarySection(mUiShoppingCart);
         }
     }
 
-    /** @return The first modifier that matches the given app, or null. */
+    /**
+     * @return The first modifier that matches the given app, or null.
+     */
     private @Nullable PaymentDetailsModifier getModifier(@Nullable PaymentApp app) {
         if (mParams.hasClosed()) return null;
         Map<String, PaymentDetailsModifier> modifiers = mParams.getUnmodifiableModifiers();
@@ -645,7 +638,7 @@ public class PaymentUiService
 
         for (String methodName : methodNames) {
             PaymentDetailsModifier modifier = modifiers.get(methodName);
-            if (app.isValidForPaymentMethodData(methodName, modifier.methodData)) {
+            if (app.isValidForPaymentMethodData(methodName, assumeNonNull(modifier).methodData)) {
                 return modifier;
             }
         }
@@ -659,7 +652,7 @@ public class PaymentUiService
         if (mPaymentMethodsSection == null) return;
 
         for (int i = 0; i < mPaymentMethodsSection.getSize(); i++) {
-            PaymentApp app = (PaymentApp) mPaymentMethodsSection.getItem(i);
+            PaymentApp app = assumeNonNull((PaymentApp) mPaymentMethodsSection.getItem(i));
             PaymentDetailsModifier modifier = getModifier(app);
             app.setModifiedTotal(
                     modifier == null || modifier.total == null
@@ -757,10 +750,10 @@ public class PaymentUiService
      * @param options The raw shipping options to parse. Can be null.
      * @return The UI representation of the shipping options.
      */
-    private SectionInformation getShippingOptions(@Nullable PaymentShippingOption[] options) {
+    private SectionInformation getShippingOptions(PaymentShippingOption @Nullable [] options) {
         // Shipping options are optional.
         if (options == null || options.length == 0) {
-            return new SectionInformation(PaymentRequestUI.DataType.SHIPPING_OPTIONS);
+            return new SectionInformation(PaymentRequestUi.DataType.SHIPPING_OPTIONS);
         }
 
         List<EditableOption> result = new ArrayList<>();
@@ -782,7 +775,7 @@ public class PaymentUiService
         }
 
         return new SectionInformation(
-                PaymentRequestUI.DataType.SHIPPING_OPTIONS,
+                PaymentRequestUi.DataType.SHIPPING_OPTIONS,
                 selectedItemIndex,
                 Collections.unmodifiableList(result));
     }
@@ -799,13 +792,14 @@ public class PaymentUiService
 
     /** Notifies the UI about the changes in selected payment method. */
     private void onSelectedPaymentMethodUpdated() {
-        mPaymentRequestUI.selectedPaymentMethodUpdated(
-                new PaymentInformation(
-                        mUiShoppingCart,
-                        mShippingAddressesSection,
-                        mUiShippingOptions,
-                        mContactSection,
-                        mPaymentMethodsSection));
+        assumeNonNull(mPaymentRequestUi)
+                .selectedPaymentMethodUpdated(
+                        new PaymentInformation(
+                                assumeNonNull(mUiShoppingCart),
+                                assumeNonNull(mShippingAddressesSection),
+                                assumeNonNull(mUiShippingOptions),
+                                assumeNonNull(mContactSection),
+                                assumeNonNull(mPaymentMethodsSection)));
     }
 
     /**
@@ -813,33 +807,36 @@ public class PaymentUiService
      * should be called when the user interface is disabled with a "↻" spinner being displayed. The
      * user is unable to interact with the user interface until this method is called.
      */
-    public void enableAndUpdatePaymentRequestUIWithPaymentInfo() {
+    public void enableAndUpdatePaymentRequestUiWithPaymentInfo() {
         if (mPaymentInformationCallback != null && mPaymentMethodsSection != null) {
-            providePaymentInformationToPaymentRequestUI();
+            providePaymentInformationToPaymentRequestUi();
         } else {
-            mPaymentRequestUI.updateOrderSummarySection(mUiShoppingCart);
+            assumeNonNull(mPaymentRequestUi)
+                    .updateOrderSummarySection(assumeNonNull(mUiShoppingCart));
             if (shouldShowShippingSection()) {
-                mPaymentRequestUI.updateSection(
-                        PaymentRequestUI.DataType.SHIPPING_OPTIONS, mUiShippingOptions);
+                mPaymentRequestUi.updateSection(
+                        PaymentRequestUi.DataType.SHIPPING_OPTIONS,
+                        assumeNonNull(mUiShippingOptions));
             }
         }
     }
 
     /**
      * Shows the shipping address error if any.
+     *
      * @param error The shipping address error, can be null.
      */
     public void showShippingAddressErrorIfApplicable(@Nullable String error) {
         if (shouldShowShippingSection()
-                && (mUiShippingOptions.isEmpty() || !TextUtils.isEmpty(error))
-                && mShippingAddressesSection.getSelectedItem() != null) {
-            mShippingAddressesSection.getSelectedItem().setInvalid();
+                && (assumeNonNull(mUiShippingOptions).isEmpty() || !TextUtils.isEmpty(error))
+                && assumeNonNull(mShippingAddressesSection).getSelectedItem() != null) {
+            assumeNonNull(mShippingAddressesSection.getSelectedItem()).setInvalid();
             mShippingAddressesSection.setSelectedItemIndex(SectionInformation.INVALID_SELECTION);
             mShippingAddressesSection.setErrorMessage(error);
         }
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public boolean shouldShowShippingSection() {
         if (mParams.hasClosed() || !mParams.getPaymentOptions().requestShipping) return false;
@@ -848,7 +845,7 @@ public class PaymentUiService
         return selectedApp == null || !selectedApp.handlesShippingAddress();
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public boolean shouldShowContactSection() {
         PaymentApp selectedApp = getSelectedPaymentApp();
@@ -890,7 +887,7 @@ public class PaymentUiService
      * @return The WebContents of the payment handler that's just opened when the opening is
      *     successful; null if failed.
      */
-    public @Nullable WebContents showPaymentHandlerUI(GURL url) {
+    public @Nullable WebContents showPaymentHandlerUi(GURL url) {
         if (mPaymentHandlerUi != null) return null;
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
         WebContents paymentHandlerWebContents =
@@ -907,8 +904,8 @@ public class PaymentUiService
 
     // Implements PaymentUiServiceTestInterface:
     @Override
-    public WebContents getPaymentHandlerWebContentsForTest() {
-        if (mPaymentHandlerUi == null) return null;
+    public @Nullable WebContents getPaymentHandlerWebContentsForTest() {
+        if (mPaymentHandlerUi == null) return mWebContents;
         return mPaymentHandlerUi.getWebContentsForTest();
     }
 
@@ -936,78 +933,93 @@ public class PaymentUiService
     }
 
     /** Provide PaymentInformation to the PaymentRequest UI. */
-    public void providePaymentInformationToPaymentRequestUI() {
+    private void providePaymentInformationToPaymentRequestUi() {
         // Do not display service worker payment apps summary in single line so as to display its
         // origin completely.
-        mPaymentMethodsSection.setDisplaySelectedItemSummaryInSingleLineInNormalMode(
-                getSelectedPaymentAppType() != PaymentAppType.SERVICE_WORKER_APP);
-        mPaymentInformationCallback.onResult(
-                new PaymentInformation(
-                        mUiShoppingCart,
-                        mShippingAddressesSection,
-                        mUiShippingOptions,
-                        mContactSection,
-                        mPaymentMethodsSection));
+        assumeNonNull(mPaymentMethodsSection)
+                .setDisplaySelectedItemSummaryInSingleLineInNormalMode(
+                        getSelectedPaymentAppType() != PaymentAppType.SERVICE_WORKER_APP);
+        assumeNonNull(mPaymentInformationCallback)
+                .onResult(
+                        new PaymentInformation(
+                                assumeNonNull(mUiShoppingCart),
+                                assumeNonNull(mShippingAddressesSection),
+                                assumeNonNull(mUiShippingOptions),
+                                assumeNonNull(mContactSection),
+                                mPaymentMethodsSection));
         mPaymentInformationCallback = null;
     }
 
     /**
      * Edit the contact information on the PaymentRequest UI.
+     *
      * @param toEdit The information to edit, allowed to be null.
-     **/
-    private void editContactOnPaymentRequestUI(@Nullable final AutofillContact toEdit) {
-        mContactEditor.edit(
-                toEdit,
-                new Callback<AutofillContact>() {
-                    @Override
-                    public void onResult(AutofillContact editedContact) {
-                        if (mPaymentRequestUI == null) return;
+     */
+    private void editContactOnPaymentRequestUi(@Nullable final AutofillContact toEdit) {
+        assumeNonNull(mContactEditor)
+                .showEditPrompt(
+                        toEdit,
+                        new Callback<>() {
+                            @Override
+                            public void onResult(@Nullable AutofillContact editedContact) {
+                                if (mPaymentRequestUi == null) return;
 
-                        if (editedContact != null) {
-                            mContactEditor.setPayerErrors(null);
+                                if (editedContact != null) {
+                                    assumeNonNull(mContactEditor).setPayerErrors(null);
 
-                            // A partial or complete contact came back from the editor (could have
-                            // been from adding/editing or cancelling out of the edit flow).
-                            if (!editedContact.isComplete()) {
-                                // If the contact is not complete according to the requirements of
-                                // the flow, unselect it (editor can return incomplete information
-                                // when cancelled).
-                                mContactSection.setSelectedItemIndex(
-                                        SectionInformation.NO_SELECTION);
-                            } else if (toEdit == null) {
-                                // Contact is complete and we were in the "Add flow": add an item to
-                                // the list.
-                                mContactSection.addAndSelectItem(editedContact);
-                            } else {
-                                mDelegate.dispatchPayerDetailChangeEventIfNeeded(
-                                        editedContact.toPayerDetail());
+                                    // A partial or complete contact came back from the editor
+                                    // (could have
+                                    // been from adding/editing or cancelling out of the edit flow).
+                                    if (!editedContact.isComplete()) {
+                                        // If the contact is not complete according to the
+                                        // requirements of
+                                        // the flow, unselect it (editor can return incomplete
+                                        // information
+                                        // when cancelled).
+                                        assumeNonNull(mContactSection)
+                                                .setSelectedItemIndex(
+                                                        SectionInformation.NO_SELECTION);
+                                    } else if (toEdit == null) {
+                                        // Contact is complete and we were in the "Add flow": add an
+                                        // item to
+                                        // the list.
+                                        assumeNonNull(mContactSection)
+                                                .addAndSelectItem(editedContact);
+                                    } else {
+                                        mDelegate.dispatchPayerDetailChangeEventIfNeeded(
+                                                editedContact.toPayerDetail());
+                                    }
+                                    // If contact is complete and (toEdit != null), no action
+                                    // needed: the
+                                    // contact was already selected in the UI.
+                                }
+                                // If |editedContact| is null, the user has cancelled out of the
+                                // "Add flow".
+                                // No action to take (if a contact was selected in the UI, it will
+                                // stay
+                                // selected).
+
+                                mPaymentRequestUi.updateSection(
+                                        PaymentRequestUi.DataType.CONTACT_DETAILS,
+                                        assumeNonNull(mContactSection));
+
+                                if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
                             }
-                            // If contact is complete and (toEdit != null), no action needed: the
-                            // contact was already selected in the UI.
-                        }
-                        // If |editedContact| is null, the user has cancelled out of the "Add flow".
-                        // No action to take (if a contact was selected in the UI, it will stay
-                        // selected).
-
-                        mPaymentRequestUI.updateSection(
-                                PaymentRequestUI.DataType.CONTACT_DETAILS, mContactSection);
-
-                        if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
-                    }
-                });
+                        });
     }
 
     /**
      * Edit the address on the PaymentRequest UI.
+     *
      * @param toEdit The address to be updated with, allowed to be null.
      */
     private void editAddress(@Nullable final AutofillAddress toEdit) {
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 toEdit,
-                new Callback<AutofillAddress>() {
+                new Callback<>() {
                     @Override
                     public void onResult(AutofillAddress editedAddress) {
-                        if (mPaymentRequestUI == null) return;
+                        if (mPaymentRequestUi == null) return;
 
                         if (editedAddress != null) {
                             mAddressEditor.setAddressErrors(null);
@@ -1020,14 +1032,15 @@ public class PaymentUiService
                             if (!editedAddress.isComplete()) {
                                 // If the address is not complete, unselect it (editor can return
                                 // incomplete information when cancelled).
-                                mShippingAddressesSection.setSelectedItemIndex(
-                                        SectionInformation.NO_SELECTION);
-                                providePaymentInformationToPaymentRequestUI();
+                                assumeNonNull(mShippingAddressesSection)
+                                        .setSelectedItemIndex(SectionInformation.NO_SELECTION);
+                                providePaymentInformationToPaymentRequestUi();
                             } else {
                                 if (toEdit == null) {
                                     // Address is complete and user was in the "Add flow": add an
                                     // item to the list.
-                                    mShippingAddressesSection.addAndSelectItem(editedAddress);
+                                    assumeNonNull(mShippingAddressesSection)
+                                            .addAndSelectItem(editedAddress);
                                 }
 
                                 if (mContactSection != null) {
@@ -1035,20 +1048,30 @@ public class PaymentUiService
                                     // address, which will update an existing item or add a new one
                                     // to the end of the list.
                                     mContactSection.addOrUpdateWithAutofillAddress(editedAddress);
-                                    mPaymentRequestUI.updateSection(
-                                            PaymentRequestUI.DataType.CONTACT_DETAILS,
+                                    mPaymentRequestUi.updateSection(
+                                            PaymentRequestUi.DataType.CONTACT_DETAILS,
                                             mContactSection);
                                 }
 
                                 startShippingAddressChangeNormalization(editedAddress);
                             }
                         } else {
-                            providePaymentInformationToPaymentRequestUI();
+                            providePaymentInformationToPaymentRequestUi();
                         }
 
                         if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
                     }
                 });
+
+        @PaymentRequestAddressEditorMode
+        int addressEditorMode =
+                toEdit == null
+                        ? PaymentRequestAddressEditorMode.ADD_NEW_ADDRESS
+                        : PaymentRequestAddressEditorMode.EDIT_EXISTING_ADDRESS;
+        RecordHistogram.recordEnumeratedHistogram(
+                "PaymentRequest.AddressEditorTrigerred",
+                addressEditorMode,
+                PaymentRequestAddressEditorMode.COUNT);
     }
 
     /**
@@ -1056,29 +1079,29 @@ public class PaymentUiService
      * true for the method to take effect.
      */
     public void dimBackground() {
-        if (mPaymentRequestUI == null) return;
-        mPaymentRequestUI.dimBackground();
+        if (mPaymentRequestUi == null) return;
+        mPaymentRequestUi.dimBackground();
     }
 
     /**
-     * Shows the app selector UI. Precondition: isPaymentRequestUiAlive() needs to be true for
-     * the method to take effect.
-     * @param isShowWaitingForUpdatedDetails
-     *        Whether showing payment app or the app selector is blocked on the updated payment
-     *        details.
+     * Shows the app selector UI. Precondition: isPaymentRequestUiAlive() needs to be true for the
+     * method to take effect.
+     *
+     * @param isShowWaitingForUpdatedDetails Whether showing payment app or the app selector is
+     *     blocked on the updated payment details.
      */
     public void showAppSelector(boolean isShowWaitingForUpdatedDetails) {
-        if (mPaymentRequestUI == null) return;
-        mPaymentRequestUI.show(isShowWaitingForUpdatedDetails);
+        if (mPaymentRequestUi == null) return;
+        mPaymentRequestUi.show(isShowWaitingForUpdatedDetails);
     }
 
     /**
-     *  Shows the processing message after payment details have been loaded in the case the
-     *  app selector UI has been skipped. Precondition: isPaymentRequestUiAlive() needs to be
-     *  true for the method to take effect.
+     * Shows the processing message after payment details have been loaded in the case the app
+     * selector UI has been skipped. Precondition: isPaymentRequestUiAlive() needs to be true for
+     * the method to take effect.
      */
     public void showProcessingMessageAfterUiSkip() {
-        if (mPaymentRequestUI != null) mPaymentRequestUI.showProcessingMessageAfterUiSkip();
+        if (mPaymentRequestUi != null) mPaymentRequestUi.showProcessingMessageAfterUiSkip();
     }
 
     /**
@@ -1086,18 +1109,19 @@ public class PaymentUiService
      * Precondition: isPaymentRequestUiAlive() needs to be true for the method to take effect.
      */
     public void onPayButtonProcessingCancelled() {
-        if (mPaymentRequestUI != null) mPaymentRequestUI.onPayButtonProcessingCancelled();
+        if (mPaymentRequestUi != null) mPaymentRequestUi.onPayButtonProcessingCancelled();
     }
 
     /**
      * Build the PaymentRequest UI.
+     *
      * @param isWebContentsActive Whether the merchant's WebContents is active.
      * @param activity The activity of the current tab.
      * @param tabModelSelector The tab model selector of the current tab.
      * @param tabModel The tab model of the current tab.
      * @return The error message if built unsuccessfully; null otherwise.
      */
-    public @Nullable String buildPaymentRequestUI(
+    public @Nullable String buildPaymentRequestUi(
             boolean isWebContentsActive,
             Activity activity,
             TabModelSelector tabModelSelector,
@@ -1120,10 +1144,14 @@ public class PaymentUiService
         // Catch any time the user switches tabs. Because the dialog is modal, a user shouldn't be
         // allowed to switch tabs, which can happen if the user receives an external Intent.
         if (mObservedTabModelSelector != null) {
-            mObservedTabModelSelector.removeObserver(mSelectorObserver);
+            mObservedTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mCurrentTabModelObserver);
         }
         mObservedTabModelSelector = tabModelSelector;
-        mObservedTabModelSelector.addObserver(mSelectorObserver);
+        mObservedTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addObserver(mCurrentTabModelObserver);
         if (mObservedTabModel != null) {
             mObservedTabModel.removeObserver(mTabModelObserver);
         }
@@ -1132,7 +1160,7 @@ public class PaymentUiService
 
         // Catch any time the user enters the overview mode and dismiss the payment UI.
         LayoutStateProvider layoutStateProvider =
-                LayoutManagerProvider.from(mWebContents.getTopLevelNativeWindow());
+                LayoutManagerProvider.from(assumeNonNull(mWebContents.getTopLevelNativeWindow()));
         if (layoutStateProvider != null) {
             if (mLayoutStateProvider != null) {
                 mLayoutStateProvider.removeObserver(this);
@@ -1144,14 +1172,19 @@ public class PaymentUiService
             mLayoutStateProvider.addObserver(this);
         }
 
+        createShippingSectionIfNeeded(activity);
+
         if (shouldShowContactSection()) {
             mContactSection =
                     new ContactDetailsSection(
-                            activity, mAutofillProfiles, mContactEditor, mJourneyLogger);
+                            activity,
+                            mAutofillProfiles,
+                            assumeNonNull(mContactEditor),
+                            mJourneyLogger);
         }
 
-        mPaymentRequestUI =
-                new PaymentRequestUI(
+        mPaymentRequestUi =
+                new PaymentRequestUi(
                         activity,
                         /* client= */ this,
                         !PaymentPreferencesUtil.isPaymentCompleteOnce(),
@@ -1163,7 +1196,7 @@ public class PaymentUiService
                         Profile.fromWebContents(mWebContents));
         ActivityLifecycleDispatcher dispatcher = mDelegate.getActivityLifecycleDispatcher();
         if (dispatcher != null) {
-            dispatcher.register(mPaymentRequestUI); // registered as a PauseResumeWithNativeObserver
+            dispatcher.register(mPaymentRequestUi); // registered as a PauseResumeWithNativeObserver
         }
 
         final FaviconHelper faviconHelper = new FaviconHelper();
@@ -1173,37 +1206,44 @@ public class PaymentUiService
                 activity.getResources().getDimensionPixelSize(R.dimen.payments_favicon_size),
                 (bitmap, iconUrl) -> {
                     if (bitmap == null) {
-                        mDelegate.onPaymentRequestUIFaviconNotAvailable();
+                        mDelegate.onPaymentRequestUiFaviconNotAvailable();
                     }
-                    if (mPaymentRequestUI != null && bitmap != null) {
-                        mPaymentRequestUI.setTitleBitmap(bitmap);
+                    if (mPaymentRequestUi != null && bitmap != null) {
+                        mPaymentRequestUi.setTitleBitmap(bitmap);
                     }
                     faviconHelper.destroy();
                 });
 
         // Add the callback to change the label of shipping addresses depending on the focus.
         if (mParams.getPaymentOptions().requestShipping) {
-            setShippingAddressSectionFocusChangedObserverForPaymentRequestUI();
+            setShippingAddressSectionFocusChangedObserverForPaymentRequestUi();
         }
 
-        mAddressEditor.setEditorDialog(mPaymentRequestUI.getEditorDialog());
+        mAddressEditor.setEditorDialog(mPaymentRequestUi.getEditorDialog());
         if (mContactEditor != null) {
-            mContactEditor.setEditorDialog(mPaymentRequestUI.getEditorDialog());
+            mContactEditor.setEditorDialog(mPaymentRequestUi.getEditorDialog());
         }
         return null;
     }
 
     /** Create a shipping section for PaymentRequest UI. */
-    private void createShippingSectionForPaymentRequestUI(Context context) {
+    @EnsuresNonNull("mShippingAddressesSection")
+    private void createShippingSectionForPaymentRequestUi(Context context) {
         List<AutofillAddress> addresses = new ArrayList<>();
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         for (int i = 0; i < mAutofillProfiles.size(); i++) {
             AutofillProfile profile = mAutofillProfiles.get(i);
-            mAddressEditor.addPhoneNumberIfValid(profile.getPhoneNumber());
+            // We intentionally hide Home, Work and Name+Email profiles to prevent their potential
+            // editing.
+            if (profile.isHomeOrWorkProfile() || profile.isNameEmailProfile()) {
+                continue;
+            }
+            mAddressEditor.addPhoneNumberIfValid(
+                    profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
 
             // Only suggest addresses that have a street address.
-            if (!TextUtils.isEmpty(profile.getStreetAddress())) {
+            if (!TextUtils.isEmpty(profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS))) {
                 addresses.add(new AutofillAddress(context, profile, personalDataManager));
             }
         }
@@ -1231,7 +1271,8 @@ public class PaymentUiService
         // not require a shipping address to calculate shipping costs.
         boolean hasCompleteShippingAddress = !addresses.isEmpty() && addresses.get(0).isComplete();
         int firstCompleteAddressIndex = SectionInformation.NO_SELECTION;
-        if (mUiShippingOptions.getSelectedItem() != null && hasCompleteShippingAddress) {
+        if (assumeNonNull(mUiShippingOptions).getSelectedItem() != null
+                && hasCompleteShippingAddress) {
             firstCompleteAddressIndex = 0;
 
             // The initial label for the selected shipping address should not include the
@@ -1246,7 +1287,7 @@ public class PaymentUiService
 
         mShippingAddressesSection =
                 new SectionInformation(
-                        PaymentRequestUI.DataType.SHIPPING_ADDRESSES,
+                        PaymentRequestUi.DataType.SHIPPING_ADDRESSES,
                         firstCompleteAddressIndex,
                         addresses);
     }
@@ -1254,37 +1295,37 @@ public class PaymentUiService
     // Implements PaymentRequestUi.Delegate:
     @Override
     public void getSectionInformation(
-            @PaymentRequestUI.DataType final int optionType,
+            @PaymentRequestUi.DataType final int optionType,
             final Callback<SectionInformation> callback) {
         SectionInformation result = null;
         switch (optionType) {
-            case PaymentRequestUI.DataType.SHIPPING_ADDRESSES:
+            case PaymentRequestUi.DataType.SHIPPING_ADDRESSES:
                 result = mShippingAddressesSection;
                 break;
-            case PaymentRequestUI.DataType.SHIPPING_OPTIONS:
+            case PaymentRequestUi.DataType.SHIPPING_OPTIONS:
                 result = mUiShippingOptions;
                 break;
-            case PaymentRequestUI.DataType.CONTACT_DETAILS:
+            case PaymentRequestUi.DataType.CONTACT_DETAILS:
                 result = mContactSection;
                 break;
-            case PaymentRequestUI.DataType.PAYMENT_METHODS:
+            case PaymentRequestUi.DataType.PAYMENT_METHODS:
                 result = mPaymentMethodsSection;
                 break;
             default:
                 assert false;
         }
-        mHandler.post(callback.bind(result));
+        mHandler.post(callback.bind(assertNonNull(result)));
     }
 
     // Implement PaymentRequestSection.FocusChangedObserver:
     @Override
-    public void onFocusChanged(@PaymentRequestUI.DataType int dataType, boolean willFocus) {
-        assert dataType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES;
+    public void onFocusChanged(@PaymentRequestUi.DataType int dataType, boolean willFocus) {
+        assert dataType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES;
 
-        if (mShippingAddressesSection.getSelectedItem() == null) return;
+        if (assumeNonNull(mShippingAddressesSection).getSelectedItem() == null) return;
 
         AutofillAddress selectedAddress =
-                (AutofillAddress) mShippingAddressesSection.getSelectedItem();
+                assumeNonNull((AutofillAddress) mShippingAddressesSection.getSelectedItem());
 
         // The label should only include the country if the view is focused.
         if (willFocus) {
@@ -1293,86 +1334,92 @@ public class PaymentUiService
             selectedAddress.setShippingAddressLabelWithoutCountry();
         }
 
-        mPaymentRequestUI.updateSection(
-                PaymentRequestUI.DataType.SHIPPING_ADDRESSES, mShippingAddressesSection);
+        assumeNonNull(mPaymentRequestUi)
+                .updateSection(
+                        PaymentRequestUi.DataType.SHIPPING_ADDRESSES, mShippingAddressesSection);
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public boolean onPayClicked(
-            EditableOption selectedShippingAddress,
-            EditableOption selectedShippingOption,
-            EditableOption selectedPaymentMethod) {
+            @Nullable EditableOption selectedShippingAddress,
+            @Nullable EditableOption selectedShippingOption,
+            @Nullable EditableOption selectedPaymentMethod) {
         return mDelegate.invokePaymentApp(
                 selectedShippingAddress,
                 selectedShippingOption,
                 (PaymentApp) selectedPaymentMethod);
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public int onSectionAddOption(
-            @PaymentRequestUI.DataType int optionType, Callback<PaymentInformation> callback) {
-        if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
+            @PaymentRequestUi.DataType int optionType,
+            @Nullable Callback<PaymentInformation> callback) {
+        if (optionType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
             editAddress(null);
             mPaymentInformationCallback = callback;
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
-            editContactOnPaymentRequestUI(null);
-            return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
-        } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
+            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUi.DataType.CONTACT_DETAILS) {
+            editContactOnPaymentRequestUi(null);
+            return PaymentRequestUi.SelectionResult.EDITOR_LAUNCH;
+        } else if (optionType == PaymentRequestUi.DataType.PAYMENT_METHODS) {
             // TODO(crbug.com/40182225): Either remove DataType.PAYMENT_METHODS entirely, or
             // just remove this branch.
             assert false : "Cannot edit PAYMENT_METHODS";
-            return PaymentRequestUI.SelectionResult.NONE;
+            return PaymentRequestUi.SelectionResult.NONE;
         }
 
-        return PaymentRequestUI.SelectionResult.NONE;
+        return PaymentRequestUi.SelectionResult.NONE;
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
-    @PaymentRequestUI.SelectionResult
+    @PaymentRequestUi.SelectionResult
     public int onSectionEditOption(
-            @PaymentRequestUI.DataType int optionType,
+            @PaymentRequestUi.DataType int optionType,
             EditableOption option,
-            Callback<PaymentInformation> callback) {
-        if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
+            @Nullable Callback<PaymentInformation> callback) {
+        if (optionType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
             editAddress((AutofillAddress) option);
             mPaymentInformationCallback = callback;
 
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
+            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
         }
 
-        if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
-            editContactOnPaymentRequestUI((AutofillContact) option);
-            return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
+        if (optionType == PaymentRequestUi.DataType.CONTACT_DETAILS) {
+            editContactOnPaymentRequestUi((AutofillContact) option);
+            return PaymentRequestUi.SelectionResult.EDITOR_LAUNCH;
         }
 
-        if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
+        if (optionType == PaymentRequestUi.DataType.PAYMENT_METHODS) {
             // TODO(crbug.com/40182225): Either remove DataType.PAYMENT_METHODS entirely, or
             // just remove this branch.
             assert false : "Cannot edit PAYMENT_METHODS";
-            return PaymentRequestUI.SelectionResult.NONE;
+            return PaymentRequestUi.SelectionResult.NONE;
         }
 
         assert false;
-        return PaymentRequestUI.SelectionResult.NONE;
+        return PaymentRequestUi.SelectionResult.NONE;
     }
 
     /** Set a change observer for the shipping address section on the PaymentRequest UI. */
-    private void setShippingAddressSectionFocusChangedObserverForPaymentRequestUI() {
-        mPaymentRequestUI.setShippingAddressSectionFocusChangedObserver(this);
+    @RequiresNonNull("mPaymentRequestUi")
+    private void setShippingAddressSectionFocusChangedObserverForPaymentRequestUi() {
+        mPaymentRequestUi.setShippingAddressSectionFocusChangedObserver(this);
     }
 
     /**
      * Update the details related fields on the PaymentRequest UI.
+     *
      * @param details The details whose information is used for the update.
      */
-    public void updateDetailsOnPaymentRequestUI(PaymentDetails details) {
+    @EnsuresNonNull("mUiShoppingCart")
+    public void updateDetailsOnPaymentRequestUi(PaymentDetails details) {
         loadCurrencyFormattersForPaymentDetails(details);
         // Total is never pending.
-        CurrencyFormatter formatter = getOrCreateCurrencyFormatter(details.total.amount);
+        CurrencyFormatter formatter =
+                getOrCreateCurrencyFormatter(assumeNonNull(details.total).amount);
         LineItem uiTotal =
                 new LineItem(
                         details.total.label,
@@ -1398,7 +1445,9 @@ public class PaymentUiService
     /** Removes all of the observers that observe users leaving the tab. */
     private void removeLeavingTabObservers() {
         if (mObservedTabModelSelector != null) {
-            mObservedTabModelSelector.removeObserver(mSelectorObserver);
+            mObservedTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mCurrentTabModelObserver);
             mObservedTabModelSelector = null;
         }
 
@@ -1413,7 +1462,7 @@ public class PaymentUiService
         }
     }
 
-    // Implements PaymentRequestUI.Client:
+    // Implements PaymentRequestUi.Client:
     @Override
     public void getDefaultPaymentInformation(
             boolean isShowWaitingForUpdatedDetails, Callback<PaymentInformation> callback) {
@@ -1423,82 +1472,89 @@ public class PaymentUiService
 
         mHandler.post(
                 () -> {
-                    if (mPaymentRequestUI != null) providePaymentInformationToPaymentRequestUI();
+                    if (mPaymentRequestUi != null
+                            && mPaymentInformationCallback
+                                    != null // Verify callback not canceled before post.
+                    ) providePaymentInformationToPaymentRequestUi();
                 });
     }
 
     /**
-     * The implementation of {@link PaymentRequestUI.Client#onSectionOptionSelected}.
+     * The implementation of {@link PaymentRequestUi.Client#onSectionOptionSelected}.
+     *
      * @param optionType Data being updated.
      * @param option Value of the data being updated.
      * @param callback The callback after an asynchronous check has completed.
      * @return The result of the selection.
      */
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
-    @PaymentRequestUI.SelectionResult
+    @PaymentRequestUi.SelectionResult
     public int onSectionOptionSelected(
-            @PaymentRequestUI.DataType int optionType,
+            @PaymentRequestUi.DataType int optionType,
             EditableOption option,
-            Callback<PaymentInformation> callback) {
+            @Nullable Callback<PaymentInformation> callback) {
         Context context = mDelegate.getContext();
-        if (context == null) return PaymentRequestUI.SelectionResult.NONE;
+        if (context == null) return PaymentRequestUi.SelectionResult.NONE;
 
         boolean wasRetryCalled = mDelegate.wasRetryCalled();
-        if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
+        if (optionType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
             AutofillAddress address = (AutofillAddress) option;
             if (address.isComplete()) {
-                mShippingAddressesSection.setSelectedItem(option);
+                assumeNonNull(mShippingAddressesSection).setSelectedItem(option);
                 startShippingAddressChangeNormalization(address);
             } else {
                 editAddress(address);
             }
             mPaymentInformationCallback = callback;
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.SHIPPING_OPTIONS) {
+            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUi.DataType.SHIPPING_OPTIONS) {
             // This may update the line items.
-            mUiShippingOptions.setSelectedItem(option);
+            assumeNonNull(mUiShippingOptions).setSelectedItem(option);
             mDelegate.onShippingOptionChange(option.getIdentifier());
             mPaymentInformationCallback = callback;
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
+            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUi.DataType.CONTACT_DETAILS) {
             AutofillContact contact = (AutofillContact) option;
             if (contact.isComplete()) {
-                mContactSection.setSelectedItem(option);
-                if (!wasRetryCalled) return PaymentRequestUI.SelectionResult.NONE;
+                assumeNonNull(mContactSection).setSelectedItem(option);
+                if (!wasRetryCalled) return PaymentRequestUi.SelectionResult.NONE;
                 mDelegate.dispatchPayerDetailChangeEventIfNeeded(contact.toPayerDetail());
             } else {
-                editContactOnPaymentRequestUI(contact);
-                if (!wasRetryCalled) return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
+                editContactOnPaymentRequestUi(contact);
+                if (!wasRetryCalled) return PaymentRequestUi.SelectionResult.EDITOR_LAUNCH;
             }
             mPaymentInformationCallback = callback;
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
+            return PaymentRequestUi.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUi.DataType.PAYMENT_METHODS) {
             if (shouldShowShippingSection() && mShippingAddressesSection == null) {
-                createShippingSectionForPaymentRequestUI(context);
+                createShippingSectionForPaymentRequestUi(context);
             }
             if (shouldShowContactSection() && mContactSection == null) {
                 mContactSection =
                         new ContactDetailsSection(
-                                context, mAutofillProfiles, mContactEditor, mJourneyLogger);
+                                context,
+                                mAutofillProfiles,
+                                assumeNonNull(mContactEditor),
+                                mJourneyLogger);
             }
             onSelectedPaymentMethodUpdated();
             PaymentApp paymentApp = (PaymentApp) option;
 
             updateOrderSummary(paymentApp);
-            mPaymentMethodsSection.setSelectedItem(option);
+            assumeNonNull(mPaymentMethodsSection).setSelectedItem(option);
         }
 
-        return PaymentRequestUI.SelectionResult.NONE;
+        return PaymentRequestUi.SelectionResult.NONE;
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public void onDismiss() {
         mDelegate.onUiAborted(AbortReason.ABORTED_BY_USER, ErrorStrings.USER_CANCELLED);
     }
 
-    // Implements PaymentRequestUI.Delegate:
+    // Implements PaymentRequestUi.Delegate:
     @Override
     public void onCardAndAddressSettingsClicked() {
         Context context = mDelegate.getContext();
@@ -1507,8 +1563,9 @@ public class PaymentUiService
             return;
         }
 
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(context);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(context);
     }
 
     // Implements PersonalDataManager.NormalizedAddressRequestDelegate:
@@ -1553,6 +1610,7 @@ public class PaymentUiService
     }
 
     /** Close the instance. Do not use this instance any more after calling this method. */
+    @SuppressWarnings("NullAway")
     public void close() {
         assert !mHasClosed;
         mHasClosed = true;
@@ -1562,13 +1620,13 @@ public class PaymentUiService
             mPaymentHandlerUi = null;
         }
 
-        if (mPaymentRequestUI != null) {
-            mPaymentRequestUI.close();
+        if (mPaymentRequestUi != null) {
+            mPaymentRequestUi.close();
             ActivityLifecycleDispatcher dispatcher = mDelegate.getActivityLifecycleDispatcher();
             if (dispatcher != null) {
-                dispatcher.unregister(mPaymentRequestUI);
+                dispatcher.unregister(mPaymentRequestUi);
             }
-            mPaymentRequestUI = null;
+            mPaymentRequestUi = null;
             mPaymentUisShowStateReconciler.onPaymentRequestUiClosed();
         }
         if (mPaymentMethodsSection != null) {
@@ -1582,5 +1640,11 @@ public class PaymentUiService
 
         removeLeavingTabObservers();
         destroyCurrencyFormatters();
+    }
+
+    private void onTabModelSelected(@Nullable TabModel newTabModel) {
+        if (mObservedTabModel == newTabModel) return;
+
+        mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
     }
 }

@@ -9,14 +9,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_info/page_info_features.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -74,20 +75,6 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
     return;
   }
   about_this_site_metadata_ = metadata.ParsedMetadata<AboutThisSiteMetadata>();
-
-#if defined(TOOLKIT_VIEWS)
-  if (page_info::IsPersistentSidePanelEntryFeatureEnabled()) {
-    auto status = ValidateMetadata(about_this_site_metadata_);
-
-    if (status != AboutThisSiteStatus::kValid) {
-      return;
-    }
-
-    RegisterAboutThisSiteSidePanel(
-        web_contents(),
-        GURL(about_this_site_metadata_->site_info().more_about().url()));
-  }
-#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);

@@ -9,11 +9,12 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A collection of utilities and constants for the images used in MediaSession notifications. */
+@NullMarked
 public class MediaNotificationImageUtils {
     public static final int MINIMAL_MEDIA_IMAGE_SIZE_PX = 114;
 
@@ -29,8 +30,7 @@ public class MediaNotificationImageUtils {
      * {@link getIdealMediaImageSize()} and return. Otherwise return the original |icon|.
      * @param icon The icon to be scaled.
      */
-    @Nullable
-    public static Bitmap downscaleIconToIdealSize(@Nullable Bitmap icon) {
+    public static @Nullable Bitmap downscaleIconToIdealSize(@Nullable Bitmap icon) {
         if (icon == null) return null;
 
         int targetSize = getIdealMediaImageSize();

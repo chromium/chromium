@@ -8,16 +8,17 @@ import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGo
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.Consume_Response;
 
 /** A converter that deals with the parameters and result for Consume calls. */
+@NullMarked
 class ConsumeConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -36,7 +37,7 @@ class ConsumeConverter {
     static TrustedWebActivityCallback convertCallback(Consume_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
-            public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_CONSUME.equals(callbackName)) {
                     Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
                     returnClientAppError(callback);

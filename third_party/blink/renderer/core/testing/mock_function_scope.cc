@@ -25,23 +25,20 @@ ScriptFunction* MockFunctionScope::ExpectCall(String* captor) {
   mock_functions_.push_back(
       MakeGarbageCollected<MockFunction>(script_state_, captor));
   EXPECT_CALL(*mock_functions_.back(), Call(script_state_, testing::_));
-  return MakeGarbageCollected<ScriptFunction>(script_state_,
-                                              mock_functions_.back());
+  return mock_functions_.back();
 }
 
 ScriptFunction* MockFunctionScope::ExpectCall() {
   mock_functions_.push_back(MakeGarbageCollected<MockFunction>());
   EXPECT_CALL(*mock_functions_.back(), Call(script_state_, testing::_));
-  return MakeGarbageCollected<ScriptFunction>(script_state_,
-                                              mock_functions_.back());
+  return mock_functions_.back();
 }
 
 ScriptFunction* MockFunctionScope::ExpectNoCall() {
   mock_functions_.push_back(MakeGarbageCollected<MockFunction>());
   EXPECT_CALL(*mock_functions_.back(), Call(script_state_, testing::_))
       .Times(0);
-  return MakeGarbageCollected<ScriptFunction>(script_state_,
-                                              mock_functions_.back());
+  return mock_functions_.back();
 }
 
 ACTION_P2(SaveValueIn, script_state, captor) {

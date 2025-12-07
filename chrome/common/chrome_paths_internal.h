@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_CHROME_PATHS_INTERNAL_H_
 #define CHROME_COMMON_CHROME_PATHS_INTERNAL_H_
 
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
@@ -24,6 +25,15 @@ namespace chrome {
 // Get the path to the user's data directory, regardless of whether
 // DIR_USER_DATA has been overridden by a command-line option.
 bool GetDefaultUserDataDirectory(base::FilePath* result);
+
+// Returns true if the current user data directory is the default user data
+// directory. Returns `std::nullopt` if this could not be determined e.g. API
+// calls failed.
+std::optional<bool> IsUsingDefaultDataDirectory();
+
+// Overrides whether or not the `IsUsingDefaultDataDirectory` API returns a fake
+// value for testing. Set to `std::nullopt` to restore the default behavior.
+void SetUsingDefaultUserDataDirectoryForTesting(std::optional<bool> is_default);
 
 #if BUILDFLAG(IS_WIN)
 // Get the path to the roaming user's data directory, regardless of whether
@@ -74,14 +84,6 @@ bool GetLocalLibraryDirectory(base::FilePath* result);
 
 // Get the global Application Support directory (under /Library/).
 bool GetGlobalApplicationSupportDirectory(base::FilePath* result);
-
-#if defined(__OBJC__)
-
-// Returns the NSBundle for the outer browser application, even when running
-// inside the helper. In unbundled applications, such as tests, returns nil.
-NSBundle* OuterAppBundle();
-
-#endif  // __OBJC__
 
 #endif  // BUILDFLAG(IS_MAC)
 

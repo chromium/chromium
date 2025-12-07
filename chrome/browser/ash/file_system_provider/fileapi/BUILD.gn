@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("fileapi") {
   sources = [
@@ -50,9 +50,9 @@ source_set("unit_tests") {
     ":fileapi",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/fileapi",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//extensions/browser",
@@ -61,4 +61,8 @@ source_set("unit_tests") {
     "//storage/browser:test_support",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

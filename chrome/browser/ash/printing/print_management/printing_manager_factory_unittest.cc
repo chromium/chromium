@@ -66,15 +66,6 @@ TEST(PrintingManagerFactoryTest, SigninProfileNoService) {
             PrintingManagerFactory::GetForProfile(signin_profile.get()));
 }
 
-TEST(PrintingManagerFactoryTest, LockScreenProfileNoService) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<Profile> lockscreen_profile =
-      CreateProfile(ash::kLockScreenAppBrowserContextBaseName);
-
-  EXPECT_EQ(nullptr,
-            PrintingManagerFactory::GetForProfile(lockscreen_profile.get()));
-}
-
 }  // namespace print_management
 }  // namespace printing
 }  // namespace ash

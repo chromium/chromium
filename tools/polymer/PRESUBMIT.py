@@ -22,8 +22,10 @@ def _CheckChangeOnUploadOrCommit(input_api, output_api):
   results = []
   affected = input_api.AffectedFiles()
 
-  webui_sources = set(
-      ['html_to_js.py', 'html_to_wrapper.py', 'css_to_wrapper.py'])
+  webui_sources = set([
+      'html_to_js.py', 'html_to_wrapper.py', 'css_minifier.js',
+      'css_to_wrapper.py'
+  ])
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
   if webui_sources.intersection(set(affected_files)):
     results += RunPolymerTests(input_api, output_api)

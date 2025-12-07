@@ -15,8 +15,16 @@
 // Messages passed back to WebUIMochaBrowserTest C++ class.
 enum TestStatus {
   FAILURE = 'FAILURE',
-  PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',
+}
+
+function reportTestResult(test: Mocha.Test, err?: Error) {
+  // NOTE not using any particular schema
+  window.domAutomationController.send({
+    fullTitle: test.fullTitle(),
+    duration: test.duration,
+    failureReason: err ? err.stack : undefined,
+  });
 }
 
 class WebUiMochaBrowserTestReporter extends Mocha.reporters.Base {
@@ -45,11 +53,12 @@ class WebUiMochaBrowserTestReporter extends Mocha.reporters.Base {
         .on(constants.EVENT_TEST_BEGIN,
             test => {
               console.info(`${this.indent_()}started: ${test.fullTitle()}`);
-              window.domAutomationController.send(TestStatus.PENDING);
             })
         .on(constants.EVENT_TEST_PASS,
             test => {
               console.info(`${this.indent_()} passed: ${test.fullTitle()}`);
+
+              reportTestResult(test);
             })
         .on(constants.EVENT_TEST_FAIL,
             (test, err) => {
@@ -62,6 +71,8 @@ class WebUiMochaBrowserTestReporter extends Mocha.reporters.Base {
               }
 
               console.info(message);
+
+              reportTestResult(test, err);
             })
         .once(constants.EVENT_RUN_END, () => {
           console.info(

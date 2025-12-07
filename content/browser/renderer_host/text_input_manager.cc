@@ -9,6 +9,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -35,8 +36,7 @@ bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
   // the state. So the new state is always different.
   return true;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 #endif
 }
 
@@ -123,6 +123,23 @@ const TextInputManager::CompositionRangeInfo*
 TextInputManager::GetCompositionRangeInfo() const {
   return active_view_ ? &composition_range_info_map_.at(active_view_) : nullptr;
 }
+
+#if BUILDFLAG(IS_WIN)
+const blink::mojom::ProximateCharacterRangeBounds*
+TextInputManager::GetProximateCharacterBoundsInfo(
+    const RenderWidgetHostViewBase& view) const {
+  // TODO(crbug.com/355578906): Remove const_cast<RenderWidgetHostViewBase*>,
+  // which is needed because TextInputManager::ViewMap has mutable
+  // `RenderWidgetHostViewBase*` keys and the two RenderWidgetHostViewAura
+  // callers are const methods passing (*this).
+  // - RenderWidgetHostViewAura::GetProximateCharacterBounds
+  // - RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint
+  const auto found = proximate_character_bounds_map_.find(
+      const_cast<RenderWidgetHostViewBase*>(&view));
+  return found != proximate_character_bounds_map_.end() ? found->second.get()
+                                                        : nullptr;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 const TextInputManager::TextSelection* TextInputManager::GetTextSelection(
     RenderWidgetHostViewBase* view) const {
@@ -235,6 +252,18 @@ void TextInputManager::UpdateTextInputState(
   NotifyObserversAboutInputStateUpdate(view, changed);
 }
 
+#if BUILDFLAG(IS_WIN)
+void TextInputManager::UpdateProximateCharacterBounds(
+    RenderWidgetHostViewBase& view,
+    blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds) {
+  if (!proximate_bounds) {
+    proximate_character_bounds_map_.erase(&view);
+    return;
+  }
+  proximate_character_bounds_map_[&view] = std::move(proximate_bounds);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void TextInputManager::ImeCancelComposition(RenderWidgetHostViewBase* view) {
   DCHECK(IsRegistered(view));
   for (auto& observer : observer_list_)
@@ -344,12 +373,10 @@ void TextInputManager::NotifySelectionBoundsChanged(
 // TODO(ekaramad): We use |range| only on Mac OS; but we still track its value
 // here for other platforms. See if there is a nice way around this with minimal
 // #ifdefs for platform specific code (https://crbug.com/602427).
-// This also applies to |line_bounds| which are only used on Android.
 void TextInputManager::ImeCompositionRangeChanged(
     RenderWidgetHostViewBase* view,
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
   DCHECK(IsRegistered(view));
 
   if (character_bounds.has_value()) {
@@ -365,20 +392,10 @@ void TextInputManager::ImeCompositionRangeChanged(
     composition_range_info_map_[view].range.set_start(range.start());
     composition_range_info_map_[view].range.set_end(range.end());
   }
-  // Transform the values in line bounds to the root coordinate space if they
-  // exist.
-  std::optional<std::vector<gfx::Rect>> transformed_line_bounds;
-  if (line_bounds.has_value()) {
-    transformed_line_bounds.emplace();
-    for (auto& rect : line_bounds.value()) {
-      transformed_line_bounds->emplace_back(
-          view->TransformPointToRootCoordSpace(rect.origin()), rect.size());
-    }
-  }
 
   for (auto& observer : observer_list_) {
-    observer.OnImeCompositionRangeChanged(
-        this, view, character_bounds.has_value(), transformed_line_bounds);
+    observer.OnImeCompositionRangeChanged(this, view,
+                                          character_bounds.has_value());
   }
 }
 
@@ -407,6 +424,9 @@ void TextInputManager::Unregister(RenderWidgetHostViewBase* view) {
   selection_region_map_.erase(view);
   composition_range_info_map_.erase(view);
   text_selection_map_.erase(view);
+#if BUILDFLAG(IS_WIN)
+  proximate_character_bounds_map_.erase(view);
+#endif  // BUILDFLAG(IS_WIN)
 
   if (active_view_ == view) {
     active_view_ = nullptr;

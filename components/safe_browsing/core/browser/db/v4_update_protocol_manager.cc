@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -91,53 +93,11 @@ ChromeClientInfo::SafeBrowsingReportingPopulation GetReportingLevelProtoValue(
     case SBER_LEVEL_ENHANCED_PROTECTION:
       return ChromeClientInfo::ENHANCED_PROTECTION;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected reporting_level!";
-      return ChromeClientInfo::UNSPECIFIED;
+      NOTREACHED() << "Unexpected reporting_level!";
   }
 }
-
-// The default V4UpdateProtocolManagerFactory.
-class V4UpdateProtocolManagerFactoryImpl
-    : public V4UpdateProtocolManagerFactory {
- public:
-  V4UpdateProtocolManagerFactoryImpl() {}
-
-  V4UpdateProtocolManagerFactoryImpl(
-      const V4UpdateProtocolManagerFactoryImpl&) = delete;
-  V4UpdateProtocolManagerFactoryImpl& operator=(
-      const V4UpdateProtocolManagerFactoryImpl&) = delete;
-
-  ~V4UpdateProtocolManagerFactoryImpl() override {}
-  std::unique_ptr<V4UpdateProtocolManager> CreateProtocolManager(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
-      V4UpdateCallback update_callback,
-      ExtendedReportingLevelCallback extended_reporting_level_callback)
-      override {
-    return base::WrapUnique(
-        new V4UpdateProtocolManager(url_loader_factory, config, update_callback,
-                                    extended_reporting_level_callback));
-  }
-};
 
 // V4UpdateProtocolManager implementation --------------------------------
-
-// static
-V4UpdateProtocolManagerFactory* V4UpdateProtocolManager::factory_ = nullptr;
-
-// static
-std::unique_ptr<V4UpdateProtocolManager> V4UpdateProtocolManager::Create(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config,
-    V4UpdateCallback update_callback,
-    ExtendedReportingLevelCallback extended_reporting_level_callback) {
-  if (!factory_) {
-    factory_ = new V4UpdateProtocolManagerFactoryImpl();
-  }
-  return factory_->CreateProtocolManager(url_loader_factory, config,
-                                         update_callback,
-                                         extended_reporting_level_callback);
-}
 
 void V4UpdateProtocolManager::ResetUpdateErrors() {
   update_error_count_ = 0;
@@ -374,17 +334,14 @@ void V4UpdateProtocolManager::HandleTimeout() {
 
 // SafeBrowsing request responses are handled here.
 void V4UpdateProtocolManager::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = 0;
   if (request_->ResponseInfo() && request_->ResponseInfo()->headers)
     response_code = request_->ResponseInfo()->headers->response_code();
 
-  std::string data;
-  if (response_body)
-    data = *response_body;
-
-  OnURLLoaderCompleteInternal(request_->NetError(), response_code, data);
+  OnURLLoaderCompleteInternal(request_->NetError(), response_code,
+                              std::move(response_body).value_or(""));
 }
 
 void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(

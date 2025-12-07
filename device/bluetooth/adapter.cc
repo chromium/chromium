@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "device/bluetooth/advertisement.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
@@ -169,7 +168,7 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
     // ordering 0xf3 first, then 0xfe in for this example.
     auto service_id_bytes = service_uuid.GetBytes();
     // Take bytes 2 and 3.
-    auto id_bytes = base::make_span(service_id_bytes).subspan(2, 2);
+    auto id_bytes = base::span(service_id_bytes).subspan<2, 2>();
     // Add them in reverse order (little endian).
     scan_response_data.insert(scan_response_data.begin(), id_bytes.rbegin(),
                               id_bytes.rend());
@@ -461,8 +460,7 @@ void Adapter::ProcessPendingInsecureServiceConnectionRequest(
   auto it = connect_to_service_requests_pending_discovery_.begin();
   while (it != connect_to_service_requests_pending_discovery_.end()) {
     auto request_it = connect_to_service_request_map_.find(*it);
-    CHECK(request_it != connect_to_service_request_map_.end(),
-          base::NotFatalUntil::M130);
+    CHECK(request_it != connect_to_service_request_map_.end());
     if (address == request_it->second->address) {
       ProcessDeviceForInsecureServiceConnection(*it, device, disconnected);
       it = connect_to_service_requests_pending_discovery_.erase(it);

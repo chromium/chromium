@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/ct_objects_extractor.h"
 
 #include <string.h>
 
 #include <string_view>
 
-#include "base/hash/sha1.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/signed_certificate_timestamp.h"
@@ -24,6 +22,10 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net::ct {
+
+std::string Sha1ForOCSP(std::string_view data) {
+  return std::string(base::as_string_view(crypto::obsolete::Sha1::Hash(data)));
+}
 
 namespace {
 
@@ -44,10 +46,15 @@ const uint8_t kSHA1Oid[] = {0x2b, 0x0e, 0x03, 0x02, 0x1a};
 const uint8_t kSHA256Oid[] = {0x60, 0x86, 0x48, 0x01, 0x65,
                               0x03, 0x04, 0x02, 0x01};
 
+base::span<const uint8_t> SpanFromCBS(const CBS& cbs) {
+  return bssl::Span<const uint8_t>(cbs);
+}
+
 bool StringEqualToCBS(const std::string& value1, const CBS* value2) {
   if (CBS_len(value2) != value1.size())
     return false;
-  return memcmp(value1.data(), CBS_data(value2), CBS_len(value2)) == 0;
+  return UNSAFE_TODO(
+             memcmp(value1.data(), CBS_data(value2), CBS_len(value2))) == 0;
 }
 
 bool SkipElements(CBS* cbs, int count) {
@@ -67,23 +74,23 @@ bool SkipOptionalElement(CBS* cbs, unsigned tag) {
 // must be a subset of |outer|.
 bool CopyBefore(const CBS& outer, const CBS& inner, CBB* out) {
   CHECK_LE(CBS_data(&outer), CBS_data(&inner));
-  CHECK_LE(CBS_data(&inner) + CBS_len(&inner),
-           CBS_data(&outer) + CBS_len(&outer));
+  CHECK_LE(UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
+           UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
 
   return !!CBB_add_bytes(out, CBS_data(&outer),
-                         CBS_data(&inner) - CBS_data(&outer));
+                         UNSAFE_TODO(CBS_data(&inner) - CBS_data(&outer)));
 }
 
 // Copies all the bytes in |outer| which are after |inner| to |out|. |inner|
 // must be a subset of |outer|.
 bool CopyAfter(const CBS& outer, const CBS& inner, CBB* out) {
   CHECK_LE(CBS_data(&outer), CBS_data(&inner));
-  CHECK_LE(CBS_data(&inner) + CBS_len(&inner),
-           CBS_data(&outer) + CBS_len(&outer));
+  CHECK_LE(UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
+           UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
 
-  return !!CBB_add_bytes(
-      out, CBS_data(&inner) + CBS_len(&inner),
-      CBS_data(&outer) + CBS_len(&outer) - CBS_data(&inner) - CBS_len(&inner));
+  return !!CBB_add_bytes(out, UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
+                         UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer) -
+                                     CBS_data(&inner) - CBS_len(&inner)));
 }
 
 // Skips |tbs_cert|, which must be a TBSCertificate body, to just before the
@@ -174,7 +181,7 @@ bool ParseSCTListFromExtensions(const CBS& extensions,
 // |certStatus| field.
 bool FindMatchingSingleResponse(CBS* responses,
                                 const CRYPTO_BUFFER* issuer,
-                                const std::string& cert_serial_number,
+                                base::span<const uint8_t> cert_serial_number,
                                 CBS* out_single_response) {
   std::string_view issuer_spki;
   if (!asn1::ExtractSPKIFromDERCert(
@@ -197,8 +204,7 @@ bool FindMatchingSingleResponse(CBS* responses,
   // necessary.
   // TODO(ekasper): only compute the hashes on demand.
   std::string issuer_key_sha256_hash = crypto::SHA256HashString(issuer_spk);
-  std::string issuer_key_sha1_hash =
-      base::SHA1HashString(std::string(issuer_spk));
+  std::string issuer_key_sha1_hash = Sha1ForOCSP(issuer_spk);
 
   while (CBS_len(responses) > 0) {
     CBS single_response, cert_id;
@@ -218,8 +224,9 @@ bool FindMatchingSingleResponse(CBS* responses,
     }
 
     // Check the serial number matches.
-    if (!StringEqualToCBS(cert_serial_number, &serial_number))
+    if (cert_serial_number != SpanFromCBS(serial_number)) {
       continue;
+    }
 
     // Check if the issuer_key_hash matches.
     // TODO(ekasper): also use the issuer name hash in matching.
@@ -333,8 +340,8 @@ bool GetPrecertSignedEntry(const CRYPTO_BUFFER* leaf,
   result->type = ct::SignedEntryData::LOG_ENTRY_TYPE_PRECERT;
   result->tbs_certificate.assign(
       reinterpret_cast<const char*>(new_tbs_cert_der), new_tbs_cert_len);
-  crypto::SHA256HashString(issuer_key, result->issuer_key_hash.data,
-                           sizeof(result->issuer_key_hash.data));
+  result->issuer_key_hash =
+      crypto::hash::Sha256(base::as_byte_span(issuer_key));
 
   return true;
 }
@@ -349,10 +356,11 @@ bool GetX509SignedEntry(const CRYPTO_BUFFER* leaf, SignedEntryData* result) {
   return true;
 }
 
-bool ExtractSCTListFromOCSPResponse(const CRYPTO_BUFFER* issuer,
-                                    const std::string& cert_serial_number,
-                                    std::string_view ocsp_response,
-                                    std::string* sct_list) {
+bool ExtractSCTListFromOCSPResponse(
+    const CRYPTO_BUFFER* issuer,
+    base::span<const uint8_t> cert_serial_number,
+    std::string_view ocsp_response,
+    std::string* sct_list) {
   // The input is an bssl::OCSPResponse. See RFC2560, section 4.2.1. The SCT
   // list is in the extensions field of the SingleResponse which matches the
   // input certificate.

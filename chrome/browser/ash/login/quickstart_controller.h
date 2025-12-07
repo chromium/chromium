@@ -14,8 +14,6 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
-#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -221,6 +219,15 @@ class QuickStartController
   // to transfer the user's credentials.
   void OnPhoneConnectionEstablished();
 
+  // Updates the exit point to the default one: Welcome screen if OOBE is
+  // incomplete, GAIA Info screen otherwise.
+  void SetExitPointToDefault();
+
+  // Called when the user returns to the QuickStart screen after it was exited
+  // externally. This method updates the UI to reflect the state it was in
+  // before the exit.
+  void RestoreCachedUIState();
+
   void SavePhoneInstanceID();
 
   // Performs the final steps and triggers ChromeOS account creation flow.
@@ -287,6 +294,12 @@ class QuickStartController
   bool is_transitioning_to_quick_start_screen_ = false;
 
   bool should_resume_quick_start_after_update_ = false;
+
+  // Used for sanity checks in order to discard unrequested data from the phone.
+  // Similar checks exist on the TargetDeviceBootstrapController level.
+  bool did_request_wifi_credentials_ = false;
+  bool did_request_account_info_ = false;
+  bool did_request_account_transfer_ = false;
 
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};

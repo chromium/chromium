@@ -1,11 +1,4 @@
-<style
-<if expr="not chromeos_ash">
-  include="cr-shared-style"
-</if>
-<if expr="chromeos_ash">
-  include="cr-shared-style cros-color-overrides"
-</if>
->
+<style include="cr-shared-style">
   #outerRow {
     align-items: center;
     display: flex;
@@ -40,7 +33,8 @@
       aria-label="[[label]]">
     <div id="label">[[label]] <slot></slot></div>
     <div id="subLabel" class="cr-secondary-text">
-      <div inner-h-t-m-l="[[sanitizeInnerHtml_(subLabelHtml)]]"></div>
+      <div inner-h-t-m-l="[[sanitizeInnerHtml_(subLabelHtml)]]"
+          on-click="onSubLabelClick_"></div>
       [[subLabel]]
     </div>
   </cr-checkbox>

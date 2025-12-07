@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PAGE_POPUP_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PAGE_POPUP_H_
 
+#include "base/types/id_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_widget.h"
 
@@ -44,6 +45,12 @@ class WebPagePopup : public WebWidget {
   // accessibility tree. Access to the popup document is needed to ensure the
   // popup's layout is clean before serializing the combined tree.
   virtual WebDocument GetDocument() = 0;
+
+  using Handle = base::IdTypeU32<WebPagePopup>;
+
+  // Returns a handle that can be used to uniquely (within this process)
+  // identify this given instance of a popup.
+  virtual Handle GetHandle() const = 0;
 };
 
 }  // namespace blink

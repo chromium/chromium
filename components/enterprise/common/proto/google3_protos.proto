@@ -1,0 +1,83 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package google3_protos;
+
+option optimize_for = LITE_RUNTIME;
+
+// This is a copy of google.protobuf.Timestamp.
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}
+
+// This is a copy of google.protobuf.Any.
+message Any {
+  string type_url = 1 [ctype = STRING_PIECE];
+  bytes value = 2 [ctype = CORD];
+}
+
+// This is a copy of google.rpc.Code.
+enum Code {
+  // HTTP Mapping: 200 OK
+  OK = 0;
+
+  // HTTP Mapping: 499 Client Closed Request
+  CANCELLED = 1;
+
+  // HTTP Mapping: 500 Internal Server Error
+  UNKNOWN = 2;
+
+  // HTTP Mapping: 400 Bad Request
+  INVALID_ARGUMENT = 3;
+
+  // HTTP Mapping: 504 Gateway Timeout
+  DEADLINE_EXCEEDED = 4;
+
+  // HTTP Mapping: 404 Not Found
+  NOT_FOUND = 5;
+
+  // HTTP Mapping: 409 Conflict
+  ALREADY_EXISTS = 6;
+
+  // HTTP Mapping: 403 Forbidden
+  PERMISSION_DENIED = 7;
+
+  // HTTP Mapping: 401 Unauthorized
+  UNAUTHENTICATED = 16;
+
+  // HTTP Mapping: 429 Too Many Requests
+  RESOURCE_EXHAUSTED = 8;
+
+  // HTTP Mapping: 400 Bad Request
+  FAILED_PRECONDITION = 9;
+
+  // HTTP Mapping: 409 Conflict
+  ABORTED = 10;
+
+  // HTTP Mapping: 400 Bad Request
+  OUT_OF_RANGE = 11;
+
+  // HTTP Mapping: 501 Not Implemented
+  UNIMPLEMENTED = 12;
+
+  // HTTP Mapping: 500 Internal Server Error
+  INTERNAL = 13;
+
+  // HTTP Mapping: 503 Service Unavailable
+  UNAVAILABLE = 14;
+
+  // HTTP Mapping: 500 Internal Server Error
+  DATA_LOSS = 15;
+}

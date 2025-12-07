@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -180,8 +181,8 @@ std::string UrlCanonicalizeNameIfAble(std::string_view name) {
   std::string canonicalized;
   url::StdStringCanonOutput output(&canonicalized);
   url::CanonHostInfo host_info;
-  url::CanonicalizeHostVerbose(name.data(), url::Component(0, name.size()),
-                               &output, &host_info);
+  url::CanonicalizeHostVerbose(name, url::Component(0, name.size()), &output,
+                               &host_info);
 
   if (host_info.family == url::CanonHostInfo::Family::BROKEN) {
     return std::string(name);

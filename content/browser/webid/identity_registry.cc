@@ -4,7 +4,7 @@
 
 #include "content/browser/webid/identity_registry.h"
 
-#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
+#include "content/browser/webid/identity_registry_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -13,7 +13,7 @@ namespace content {
 
 IdentityRegistry::IdentityRegistry(
     content::WebContents* web_contents,
-    base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+    base::WeakPtr<IdentityRegistryDelegate> delegate,
     const GURL& idp_config_url)
     : content::WebContentsUserData<IdentityRegistry>(*web_contents),
       delegate_(delegate),
@@ -24,6 +24,10 @@ IdentityRegistry::~IdentityRegistry() = default;
 void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
+    if (delegate_) {
+      delegate_->OnOriginMismatch(IdentityRegistryDelegate::Method::kClose,
+                                  idp_origin, notifier_origin);
+    }
     return;
   }
 
@@ -33,9 +37,13 @@ void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
 bool IdentityRegistry::NotifyResolve(
     const url::Origin& notifier_origin,
     const std::optional<std::string>& account_id,
-    const std::string& token) {
+    const base::Value& token) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
+    if (delegate_) {
+      delegate_->OnOriginMismatch(IdentityRegistryDelegate::Method::kClose,
+                                  idp_origin, notifier_origin);
+    }
     return false;
   }
 

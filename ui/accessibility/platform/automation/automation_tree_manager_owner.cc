@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/i18n/string_search.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
@@ -41,9 +42,9 @@ bool AutomationTreeManagerOwner::SendTreeChangeEvent(
     AXNode* node) {
   // Notify custom bindings when there's an unloaded tree; js will enable the
   // renderer and wait for it to load.
-  std::string child_tree_id_str;
-  if (node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                               &child_tree_id_str)) {
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+    const std::string& child_tree_id_str =
+        node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
     AXTreeID child_tree_id = AXTreeID::FromString(child_tree_id_str);
     auto* tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(child_tree_id);
     if (!tree_wrapper || !tree_wrapper->ax_tree()->data().loaded)
@@ -115,8 +116,7 @@ void AutomationTreeManagerOwner::SendAutomationEvent(
 
   // If we don't explicitly recognize the event type, require a valid, unignored
   // node target.
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), event.id);
+  AXNode* node = tree_wrapper->GetNode(event.id);
   if (!fire_event && (!node || node->data().IsIgnored()))
     return;
 
@@ -172,8 +172,7 @@ AXNode* AutomationTreeManagerOwner::GetHostInParentTree(
 #endif
 
   for (int32_t host_node_id : host_node_ids) {
-    AXNode* host_node = parent_tree_wrapper->GetNodeFromTree(
-        parent_tree_wrapper->GetTreeID(), host_node_id);
+    AXNode* host_node = parent_tree_wrapper->GetNode(host_node_id);
     if (host_node) {
       DCHECK_EQ((*in_out_tree_wrapper)->GetTreeID(),
                 AXTreeID::FromString(host_node->GetStringAttribute(
@@ -246,8 +245,7 @@ void AutomationTreeManagerOwner::MaybeSendFocusAndBlur(
   AutomationAXTreeWrapper* old_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(focus_tree_id_);
   if (old_wrapper) {
-    old_node =
-        old_wrapper->GetNodeFromTree(old_wrapper->GetTreeID(), focus_id_);
+    old_node = old_wrapper->GetNode(focus_id_);
   }
 
   // Determine whether old focus was lost.
@@ -364,8 +362,7 @@ bool AutomationTreeManagerOwner::GetFocusInternal(
     AutomationAXTreeWrapper** out_tree_wrapper,
     AXNode** out_node) const {
   int focus_id = tree_wrapper->ax_tree()->data().focus_id;
-  AXNode* focus =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), focus_id);
+  AXNode* focus = tree_wrapper->GetNode(focus_id);
   if (!focus)
     return false;
 
@@ -420,8 +417,7 @@ bool AutomationTreeManagerOwner::GetFocusInternal(
     }
 
     int child_focus_id = child_tree_wrapper->ax_tree()->data().focus_id;
-    AXNode* child_focus = child_tree_wrapper->GetNodeFromTree(
-        child_tree_wrapper->GetTreeID(), child_focus_id);
+    AXNode* child_focus = child_tree_wrapper->GetNode(child_focus_id);
     if (!child_focus)
       break;
 
@@ -498,19 +494,20 @@ gfx::Rect AutomationTreeManagerOwner::ComputeGlobalNodeBounds(
 
 std::vector<AXNode*> AutomationTreeManagerOwner::GetRootsOfChildTree(
     AXNode* node) const {
-  // Account for two types of links to child trees.
-  // An explicit tree id to a child tree.
-  std::string child_tree_id_str;
-
-  // A node attribute pointing to a node in a descendant tree.
-  std::string child_tree_node_app_id_str;
-
-  if (!node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                &child_tree_id_str) &&
-      !node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
-                                &child_tree_node_app_id_str)) {
+  if (!node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId) &&
+      !node->HasStringAttribute(
+          ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
     return std::vector<AXNode*>();
   }
+
+  // Account for two types of links to child trees.
+  // An explicit tree id to a child tree.
+  const std::string& child_tree_id_str =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+
+  // A node attribute pointing to a node in a descendant tree.
+  const std::string& child_tree_node_app_id_str =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId);
 
   if (!child_tree_node_app_id_str.empty()) {
     std::vector<AXNode*> child_app_nodes =
@@ -675,8 +672,7 @@ bool AutomationTreeManagerOwner::GetFocus(AXTreeID* focused_tree_id,
     if (!focused_wrapper)
       return false;
 
-    focused_node = focused_wrapper->GetNodeFromTree(
-        focused_wrapper->GetTreeID(), focus_id_);
+    focused_node = focused_wrapper->GetNode(focus_id_);
     if (!focused_node)
       return false;
   }
@@ -704,8 +700,9 @@ std::vector<int> AutomationTreeManagerOwner::GetChildIDs(
     for (AXNode* child_root : child_roots)
       child_ids.push_back(child_root->id());
   } else {
-    for (auto iter = node->UnignoredChildrenBegin();
-         iter != node->UnignoredChildrenEnd(); ++iter) {
+    for (auto iter = node->UnignoredChildrenBegin(),
+              end = node->UnignoredChildrenEnd();
+         iter != end; ++iter) {
       child_ids.push_back(iter->id());
       *result_tree_id = iter->tree()->GetAXTreeID();
     }
@@ -795,10 +792,12 @@ bool AutomationTreeManagerOwner::GetNextTextMatch(
     if (!node)
       return false;
 
-    std::u16string name;
-    if (!node->GetString16Attribute(ax::mojom::StringAttribute::kName, &name))
+    if (!node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
       continue;
+    }
 
+    std::u16string name =
+        node->GetString16Attribute(ax::mojom::StringAttribute::kName);
     if (base::i18n::StringSearchIgnoringCaseAndAccents(search_str_16, name,
                                                        nullptr, nullptr)) {
       *result_tree_id = (*target_tree_wrapper)->GetTreeID();
@@ -821,8 +820,7 @@ bool AutomationTreeManagerOwner::GetChildIDAtIndex(const AXTreeID& tree_id,
   if (!tree_wrapper)
     return false;
 
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node)
     return false;
 
@@ -860,16 +858,6 @@ bool AutomationTreeManagerOwner::GetAccessibilityFocus(AXTreeID* tree_id,
   *tree_id = accessibility_focused_tree_id_;
   *node_id = node->id();
   return true;
-}
-
-AXNode* AutomationTreeManagerOwner::GetNodeFromTree(const AXTreeID& tree_id,
-                                                    int node_id) const {
-  AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return nullptr;
-
-  return tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
 }
 
 void AutomationTreeManagerOwner::AddTreeChangeObserver(
@@ -960,12 +948,11 @@ bool AutomationTreeManagerOwner::CalculateNodeState(const AXTreeID& tree_id,
   if (!tree_wrapper)
     return false;
 
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node)
     return false;
 
-  *node_state = node->data().state;
+  *node_state = node->data().state.value();
 
   AutomationAXTreeWrapper* top_tree_wrapper = nullptr;
   AutomationAXTreeWrapper* walker = tree_wrapper;
@@ -1061,21 +1048,27 @@ void AutomationTreeManagerOwner::UpdateOverallTreeChangeObserverFilter() {
 }
 
 void AutomationTreeManagerOwner::DispatchTreeDestroyedEvent(
-    const ui::AXTreeID& tree_id) {
+    const AXTreeID& tree_id) {
   GetAutomationV8Bindings()->SendTreeDestroyedEvent(tree_id);
 }
 
 void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
-    const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
+    const AXTreeID& tree_id,
+    const std::vector<AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
-    const std::vector<ui::AXEvent>& events) {
+    const std::vector<AXEvent>& events) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   bool is_new_tree = tree_wrapper == nullptr;
   if (is_new_tree) {
     tree_wrapper = new AutomationAXTreeWrapper(this);
     CacheAutomationTreeWrapperForTreeID(tree_id, tree_wrapper);
+    // A new tree requires at least a root node. This is similar to early
+    // return logic in RenderFrameHostImpl::UpdateAXTreeData() for the case
+    // where needs_ax_root_id_ is true.
+    if (updates.size() == 1 && updates[0].nodes.empty()) {
+      return;
+    }
   }
 
   if (!tree_wrapper->OnAccessibilityEvents(tree_id, updates, events,
@@ -1101,16 +1094,15 @@ void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
 }
 
 void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
-    const ui::AXTreeID& tree_id,
+    const AXTreeID& tree_id,
     int32_t node_id,
-    const ui::AXRelativeBounds& bounds) {
+    const AXRelativeBounds& bounds) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper) {
     return;
   }
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node) {
     return;
   }
@@ -1128,18 +1120,48 @@ void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
   }
 }
 
-void AutomationTreeManagerOwner::DispatchActionResult(
-    const ui::AXActionData& data,
-    bool result) {
+void AutomationTreeManagerOwner::DispatchAccessibilityScrollChange(
+    const AXTreeID& tree_id,
+    int32_t node_id,
+    int32_t scroll_x,
+    int32_t scroll_y) {
+  AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  if (!tree_wrapper) {
+    return;
+  }
+  AXNode* node = tree_wrapper->GetNode(node_id);
+  if (!node) {
+    return;
+  }
+
+  int old_scroll_x = 0;
+  int old_scroll_y = 0;
+  node->GetScrollInfo(&old_scroll_x, &old_scroll_y);
+  node->SetScrollInfo(scroll_x, scroll_y);
+
+  if (scroll_x == old_scroll_x && scroll_y == old_scroll_y) {
+    return;
+  }
+
+  AXEvent event;
+  event.id = tree_wrapper->accessibility_focused_id();
+  event.id = node_id;
+  event.event_type = ax::mojom::Event::kScrollPositionChanged;
+  SendAutomationEvent(tree_wrapper->GetTreeID(), gfx::Point(), event);
+}
+
+void AutomationTreeManagerOwner::DispatchActionResult(const AXActionData& data,
+                                                      bool result) {
   GetAutomationV8Bindings()->SendActionResultEvent(data, result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AutomationTreeManagerOwner::DispatchGetTextLocationResult(
-    const ui::AXActionData& data,
+    const AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
   GetAutomationV8Bindings()->SendGetTextLocationResult(data, rect);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

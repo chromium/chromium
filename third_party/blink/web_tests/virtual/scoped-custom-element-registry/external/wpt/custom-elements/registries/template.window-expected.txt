@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Serializing a null registry ShadowRoot with a scoped registry host (document)
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Serializing a scoped registry ShadowRoot with a scoped registry host (document)
+  assert_equals: expected "<template shadowrootmode=\\"closed\\" shadowrootserializable=\\"\\" shadowrootcustomelementregistry=\\"\\"></template>" but got "<template shadowrootmode=\\"closed\\" shadowrootserializable=\\"\\"></template>"
+Harness: the test ran to completion.
+

@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_PROXY_WAYLAND_PROXY_H_
 
 #include "base/component_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 struct wl_buffer;

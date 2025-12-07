@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ipcz/message.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -13,10 +11,13 @@
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/message.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -107,11 +108,13 @@ bool IsArrayValid(Message& message,
 }
 
 // Deserializes a driver object encoded within `message`, returning the object
-// on success. On failure, an invalid DriverObject is returned.
+// on success and marking its constituent handles as consumed. On failure, an
+// invalid DriverObject is returned.
 DriverObject DeserializeDriverObject(
     Message& message,
     const internal::DriverObjectData& object_data,
     absl::Span<const IpczDriverHandle> handles,
+    absl::Span<bool> is_handle_consumed,
     const DriverTransport& transport) {
   if (!IsArrayValid(message, object_data.driver_data_array, sizeof(uint8_t))) {
     return {};
@@ -128,6 +131,11 @@ DriverObject DeserializeDriverObject(
     return {};
   }
 
+  for (auto i = object_data.first_driver_handle;
+       i < object_data.first_driver_handle + object_data.num_driver_handles;
+       ++i) {
+    is_handle_consumed[i] = true;
+  }
   return DriverObject::Deserialize(
       transport, driver_data,
       handles.subspan(object_data.first_driver_handle,
@@ -273,6 +281,19 @@ bool Message::Serialize(const DriverTransport& transport) {
 
 bool Message::DeserializeUnknownType(const DriverTransport::RawMessage& message,
                                      const DriverTransport& transport) {
+  // Ensure that upon return we explicitly close any handles that weren't
+  // consumed by some object deserialization below.
+  absl::InlinedVector<bool, 8> is_handle_consumed(message.handles.size());
+  const IpczDriver* driver = transport.driver_object().driver();
+  const absl::Cleanup close_unused_handles = [&message, &is_handle_consumed,
+                                              driver] {
+    for (size_t i = 0; i < message.handles.size(); ++i) {
+      if (!is_handle_consumed[i]) {
+        driver->Close(message.handles[i], IPCZ_NO_FLAGS, nullptr);
+      }
+    }
+  };
+
   if (!CopyDataAndValidateHeader(message.data)) {
     return false;
   }
@@ -292,8 +313,9 @@ bool Message::DeserializeUnknownType(const DriverTransport::RawMessage& message,
         GetArrayView<internal::DriverObjectData>(driver_object_array_offset);
     driver_objects_.reserve(driver_object_data.size());
     for (const internal::DriverObjectData& object_data : driver_object_data) {
-      DriverObject object = DeserializeDriverObject(*this, object_data,
-                                                    message.handles, transport);
+      DriverObject object = DeserializeDriverObject(
+          *this, object_data, message.handles,
+          absl::MakeSpan(is_handle_consumed), transport);
       if (object.is_valid()) {
         driver_objects_.push_back(std::move(object));
       } else {
@@ -315,11 +337,19 @@ Message::ReceivedDataBuffer Message::TakeReceivedData() && {
   return buffer;
 }
 
+void Message::SetEnvelope(DriverObject envelope) {
+  envelope_ = std::move(envelope);
+}
+
+DriverObject Message::TakeEnvelope() {
+  return std::move(envelope_);
+}
+
 bool Message::CopyDataAndValidateHeader(absl::Span<const uint8_t> data) {
   // Copy the data into a local message object to avoid any TOCTOU issues in
   // case `data` is in unsafe shared memory.
   received_data_.emplace(data.size());
-  memcpy(received_data_->data(), data.data(), data.size());
+  IPCZ_UNSAFE_TODO(memcpy(received_data_->data(), data.data(), data.size()));
   data_ = received_data_->bytes();
 
   // The message must at least be large enough to encode a v0 MessageHeader.
@@ -356,6 +386,12 @@ bool Message::ValidateParameters(
   // Validate parameter data. There must be at least enough bytes following the
   // header to encode a StructHeader and to account for all parameter data for
   // some known version of the message.
+  const size_t minimum_size =
+      static_cast<size_t>(header().size) + sizeof(internal::StructHeader);
+  if (data_.size() < minimum_size) {
+    return false;
+  }
+
   absl::Span<uint8_t> params_data = params_data_view();
   if (params_data.size() < sizeof(internal::StructHeader)) {
     return false;
@@ -410,10 +446,21 @@ bool Message::ValidateParameters(
       }
 
       switch (param.type) {
+        case internal::ParamType::kEnum: {
+          // Only support u8 and u32 enums at present (see static asserts
+          // in node_messages.h.tmpl).
+          uint32_t value = param.size == 1 ? GetParamValueAt<uint8_t>(offset)
+                                           : GetParamValueAt<uint32_t>(offset);
+          if (value > param.enum_max_value) {
+            return false;
+          }
+          break;
+        }
+
         case internal::ParamType::kDriverObject: {
           const uint32_t index = GetParamValueAt<uint32_t>(offset);
           if (index != internal::kInvalidDriverObjectIndex) {
-            if (is_object_claimed[index]) {
+            if (index >= is_object_claimed.size() || is_object_claimed[index]) {
               return false;
             }
             is_object_claimed[index] = true;
@@ -425,6 +472,13 @@ bool Message::ValidateParameters(
           const internal::DriverObjectArrayData array_data =
               GetParamValueAt<internal::DriverObjectArrayData>(offset);
           const size_t begin = array_data.first_object_index;
+          if (begin > is_object_claimed.size()) {
+            return false;
+          }
+          const size_t max_num_objects = is_object_claimed.size() - begin;
+          if (array_data.num_objects > max_num_objects) {
+            return false;
+          }
           for (size_t i = begin; i < begin + array_data.num_objects; ++i) {
             if (is_object_claimed[i]) {
               return false;

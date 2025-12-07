@@ -2,25 +2,46 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 # We need a component because this gives access to a per-process
 # singleton instance of the model. Without a component, we end up an
 # instance in each component that uses the library.
-component("language_detection") {
+component("core") {
   sources = [
-    "language_detection_provider.cc",
-    "language_detection_provider.h",
+    "background_file.cc",
+    "background_file.h",
+    "constants.h",
+    "features.cc",
+    "features.h",
+    "language_detection_model.cc",
+    "language_detection_model.h",
   ]
-  public_deps = [ ":core" ]
-  deps = [ "//base" ]
+  if (use_blink) {
+    sources += [
+      "language_detection_provider.cc",
+      "language_detection_provider.h",
+    ]
+  }
+  deps = [
+    ":internals",
+    "//base",
+    "//components/optimization_guide/core:features",
+    "//third_party/tflite",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+  ]
   defines = [ "IS_LANGUAGE_DETECTION_IMPL" ]
 }
 
-static_library("core") {
+static_library("internals") {
+  visibility = [
+    ":core",
+    ":unit_tests",
+  ]
   sources = [
     "embedding_lookup.cc",
     "embedding_lookup.h",
-    "language_detection_model.cc",
-    "language_detection_model.h",
     "language_detection_resolver.h",
     "ngram_hash.cc",
     "ngram_hash.h",
@@ -32,12 +53,8 @@ static_library("core") {
 
   deps = [
     "//base",
-    "//components/optimization_guide/core:features",
-    "//components/translate/core/common",
     "//third_party/smhasher:murmurhash2",
     "//third_party/tflite",
-    "//third_party/tflite_support",
-    "//third_party/tflite_support:tflite_support_proto",
     "//third_party/utf",
   ]
 }
@@ -45,17 +62,21 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "background_file_unittest.cc",
     "language_detection_model_unittest.cc",
-    "language_detection_provider_unittest.cc",
     "ngram_hash_ops_utils_unittest.cc",
     "quantization_utils_unittest.cc",
   ]
+  if (use_blink) {
+    sources += [ "language_detection_provider_unittest.cc" ]
+  }
 
   deps = [
-    ":language_detection",
+    ":core",
+    ":internals",
     "//base",
     "//base/test:test_support",
     "//components/language_detection/testing",
-    "//components/translate/core/common:common",
+    "//components/translate/core/common",
   ]
 }

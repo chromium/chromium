@@ -5,6 +5,8 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
@@ -47,6 +49,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   // Sets widget bounds.
   void SetPopupBounds(const gfx::Rect& bounds);
 
+  // Sets widget transform.
+  void SetPopupTransform(const gfx::Transform& transform);
+
   // Set widget opacity.
   void SetOpacity(float opacity);
 
@@ -62,19 +67,22 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   // in such case MessagePopupView should be deleted. Virtual for unit testing.
   virtual void Close();
 
-  void OnWillChangeFocus(views::View* before, views::View* now) override {}
+  // views::FocusChangeListener,
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // views::WidgetDelegateView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnDisplayChanged() override;
   void OnWorkAreaChanged() override;
   void OnFocus() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+
+  // Returns the cached height if `width` is the same as last call. Otherwise,
+  // call `GetHeightForWidth` to recalculate.
+  int GetCachedHeightForWidth(int width);
 
   bool is_hovered() const { return is_hovered_; }
   bool is_focused() const { return is_focused_; }
@@ -90,6 +98,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
  private:
   // True if the view has a widget and the widget is not closed.
   bool IsWidgetValid() const;
+  void UpdateAccessibleName(const std::u16string& new_name) const;
+
+  void OnMessageViewNameUpdated(
+      bool should_make_spoken_feedback_for_popup_updates);
 
   // Owned by views hierarchy.
   raw_ptr<MessageView> message_view_;
@@ -107,6 +119,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   // Owned by the widget associated with this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
+
+  std::optional<gfx::Size> cached_preferred_size_;
+
+  base::WeakPtrFactory<MessagePopupView> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

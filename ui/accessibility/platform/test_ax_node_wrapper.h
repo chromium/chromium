@@ -11,9 +11,11 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -28,7 +30,9 @@ namespace ui {
 
 // For testing, a TestAXNodeWrapper wraps an AXNode, implements
 // AXPlatformNodeDelegate, and owns an AXPlatformNode.
-class TestAXNodeWrapper : public AXPlatformNodeDelegate {
+// TODO(crbug.com/374813016): Refactor global variables into class members in
+// ui/accessibility/platform/test_ax_node_wrapper.h
+class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
  public:
   // Create TestAXNodeWrapper instances on-demand from an AXTree and AXNode.
   static TestAXNodeWrapper* GetOrCreate(AXTree* tree, AXNode* node);
@@ -62,7 +66,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
 
   ~TestAXNodeWrapper() override;
 
-  AXPlatformNode* ax_platform_node() const { return platform_node_; }
+  AXPlatformNode* ax_platform_node() const { return platform_node_.get(); }
   void set_minimized(bool minimized) { minimized_ = minimized; }
 
   // Test helpers.
@@ -109,7 +113,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   bool IsReadOnlySupported() const override;
   bool IsReadOnlyOrDisabled() const override;
   AXPlatformNode* GetFromNodeID(int32_t id) override;
-  AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
+  AXPlatformNode* GetFromTreeIDAndNodeID(const AXTreeID& ax_tree_id,
                                          int32_t id) override;
   std::optional<size_t> GetIndexInParent() const override;
   std::optional<int> GetTableRowCount() const override;
@@ -159,8 +163,8 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   SkColor GetBackgroundColor() const override;
 
   const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
-      ui::AXPlatformNodeDelegate* start,
-      ui::AXPlatformNodeDelegate* end) override;
+      AXPlatformNodeDelegate* start,
+      AXPlatformNodeDelegate* end) override;
   gfx::RectF GetLocation() const;
   size_t InternalChildCount() const;
   TestAXNodeWrapper* InternalGetChild(size_t index) const;
@@ -197,12 +201,16 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   // Determine the offscreen status of a particular element given its bounds.
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
+  // `AXTreeObserver`
+  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override;
+
   raw_ptr<AXTree> tree_;
-  raw_ptr<AXNode, DanglingUntriaged> node_;
-  ui::AXUniqueId unique_id_;
-  raw_ptr<AXPlatformNode> platform_node_;
+  raw_ptr<AXNode> node_;
+  AXUniqueId unique_id_;
+  AXPlatformNode::Pointer platform_node_;
   gfx::AcceleratedWidget native_event_target_;
   bool minimized_ = false;
+  base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};
 };
 
 }  // namespace ui

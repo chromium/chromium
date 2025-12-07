@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "instructions_bottom_sheet_coordinator.h",
+    "instructions_bottom_sheet_coordinator.mm",
+    "instructions_bottom_sheet_view_controller.h",
+    "instructions_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/instruction_view",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

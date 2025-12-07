@@ -7,23 +7,44 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
 
-# Wrapper component to allow dependencies to depend on //components/os_crypt/sync directly.
-group("sync") {
-  public_deps = [ ":os_crypt" ]
-}
+component("sync") {
+  # New code should use os_crypt async.
+  visibility = [
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/os_crypt/async/browser:dpapi_key_provider",
+    "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+    "//components/os_crypt/async/browser:keychain_key_provider",
+    "//components/os_crypt/async/browser:secret_portal_key_provider",
+    "//components/os_crypt/async/browser:unit_tests",
+    "//components/os_crypt/async/common",
+    "//components/os_crypt/async/common:unit_tests",
+    "//components/os_crypt/sync:test_support",
+    "//components/os_crypt/sync:unit_tests",
+    "//components/signin/core/browser",
+    "//components/sync:unit_tests",
+    "//components/sync/nigori",
+    "//components/sync/service",
+    "//headless:headless_non_renderer",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//services/network:network_service",
+    "//services/test/echo:lib",
+  ]
+  if (is_mac) {
+    visibility += [ "//headless:headless_shell_lib" ]
+  }
 
-component("os_crypt") {
   sources = [
     "os_crypt.h",
-    "os_crypt_switches.cc",
-    "os_crypt_switches.h",
+    "os_crypt_metrics.cc",
+    "os_crypt_metrics.h",
   ]
 
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
+    "//components/os_crypt/common:switches",
     "//components/prefs",
     "//crypto",
   ]
@@ -35,26 +56,17 @@ component("os_crypt") {
     defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
   }
 
-  if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
-    sources += [ "os_crypt_posix.cc" ]
-  }
-
   if (is_apple) {
-    sources += [
-      "keychain_password_mac.h",
-      "keychain_password_mac.mm",
-      "os_crypt_mac.mm",
+    sources += [ "os_crypt_mac.mm" ]
+    deps += [
+      "//components/os_crypt/common:keychain_password_mac",
+      "//crypto:mock_apple_keychain",
     ]
-    deps += [ "//crypto:mock_apple_keychain" ]
-  }
-
-  if (is_win) {
+  } else if (is_win) {
     sources += [ "os_crypt_win.cc" ]
     deps += [ "//components/version_info" ]
     libs = [ "crypt32.lib" ]
-  }
-
-  if (is_linux && !is_castos) {
+  } else if (is_linux && !is_castos) {
     sources += [
       "key_storage_config_linux.cc",
       "key_storage_config_linux.h",
@@ -65,7 +77,7 @@ component("os_crypt") {
       "os_crypt_linux.cc",
     ]
 
-    if (use_glib) {
+    if (use_glib && use_dbus) {
       sources += [
         "key_storage_libsecret.cc",
         "key_storage_libsecret.h",
@@ -86,6 +98,8 @@ component("os_crypt") {
       deps += [ "//dbus" ]
       defines += [ "USE_KWALLET" ]
     }
+  } else if (is_posix || is_fuchsia) {
+    sources += [ "os_crypt_posix.cc" ]
   }
 }
 
@@ -96,7 +110,7 @@ static_library("test_support") {
     "os_crypt_mocker.h",
   ]
   deps = [
-    ":os_crypt",
+    ":sync",
     "//base",
     "//testing/gtest",
   ]
@@ -119,12 +133,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_unittest.cc" ]
   deps = [
-    ":os_crypt",
+    ":sync",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//crypto",
     "//testing/gmock",
@@ -133,11 +146,9 @@ source_set("unit_tests") {
   ]
 
   if (is_apple) {
-    sources += [ "keychain_password_mac_unittest.mm" ]
+    sources += [ "os_crypt_mac_unittest.cc" ]
     deps += [ "//crypto:mock_apple_keychain" ]
-  }
-
-  if (is_linux && !is_castos) {
+  } else if (is_linux && !is_castos) {
     sources += [
       "key_storage_linux_unittest.cc",
       "key_storage_util_linux_unittest.cc",
@@ -158,5 +169,7 @@ source_set("unit_tests") {
       deps += [ "//dbus:test_support" ]
       defines += [ "USE_KWALLET" ]
     }
+  } else if (is_posix || is_fuchsia) {
+    sources += [ "os_crypt_posix_unittest.cc" ]
   }
 }

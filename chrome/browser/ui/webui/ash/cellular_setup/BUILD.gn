@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("cellular_setup") {
   sources = [
@@ -19,6 +19,7 @@ static_library("cellular_setup") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//ui/web_dialogs",
   ]
 
@@ -27,9 +28,7 @@ static_library("cellular_setup") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
-    "//chrome/browser/ash/mobile",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//components/login",
@@ -40,6 +39,7 @@ static_library("cellular_setup") {
     "//ui/chromeos",
     "//ui/gfx/geometry",
     "//ui/views",
+    "//ui/webui",
     "//url",
   ]
 }

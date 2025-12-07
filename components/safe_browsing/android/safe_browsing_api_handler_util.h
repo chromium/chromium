@@ -13,24 +13,13 @@
 
 namespace safe_browsing {
 
-// These match what SafetyNetApiHandler.java uses for |resultStatus|
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SafeBrowsingResult
-enum class SafetyNetRemoteCallResultStatus {
-  INTERNAL_ERROR = -1,
-  SUCCESS = 0,
-  TIMEOUT = 1,
-};
-
 // Threat types as per the Java code.
-// This must match those in SafeBrowsingThreat.java in GMS's SafetyNet API.
+// Threat type values must be consistent with values in SafeBrowsingThreat.java
+// in GMS's SafetyNet API.
 enum class SafetyNetJavaThreatType {
-  UNWANTED_SOFTWARE = 3,
-  POTENTIALLY_HARMFUL_APPLICATION = 4,
-  SOCIAL_ENGINEERING = 5,
-  SUBRESOURCE_FILTER = 13,
-  BILLING = 15,
-  // Magic numbers for allowlists. Not actually used by GMSCore.
+  // Below listed entries are magic numbers for allowlists. These are not
+  // actually threat types used by GMSCore.
+  CSD_DOWNLOAD_ALLOWLIST = 9,
   CSD_ALLOWLIST = 16,
   MAX_VALUE
 };
@@ -113,25 +102,8 @@ enum class SafeBrowsingJavaValidationResult {
   kMaxValue = INVALID_THREAT_ATTRIBUTE
 };
 
-// Do not reorder or delete entries, and make sure changes here are reflected
-// in SB2RemoteCallResult histogram.
-enum class UmaRemoteCallResult {
-  INTERNAL_ERROR = 0,
-  TIMEOUT = 1,
-  SAFE = 2,
-  MATCH = 3,
-  JSON_EMPTY = 4,
-  JSON_FAILED_TO_PARSE = 5,
-  JSON_UNKNOWN_THREAT = 6,
-  UNSUPPORTED = 7,
-  MAX_VALUE
-};
-
-// LINT.IfChange(VerifyAppsEnabledResult)
 // The result of either SafetyNet.isVerifyAppsEnabled or
-// SafetyNet.enableVerifyApps. These values are persisted to
-// logs. Entries should not be renumbered and numeric values should
-// never be reused.
+// SafetyNet.enableVerifyApps.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: VerifyAppsResult
 enum class VerifyAppsEnabledResult {
@@ -139,19 +111,27 @@ enum class VerifyAppsEnabledResult {
   SUCCESS_NOT_ENABLED = 1,
   TIMEOUT = 2,
   FAILED = 3,
-  kMaxValue = FAILED,
+  SUCCESS_ALREADY_ENABLED = 4,
+  kMaxValue = SUCCESS_ALREADY_ENABLED,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SafeBrowsingVerifyAppsEnabledResult)
 
-// This parses the JSON from the GMSCore API and then:
-//   1) Picks the most severe threat type
-//   2) Parses that threat's key/value pairs into the metadata struct.
-//
-// If anything fails to parse, this sets the threat to "safe".  The caller
-// should report the return value via UMA.
-UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
-                                         SBThreatType* worst_threat,
-                                         ThreatMetadata* metadata);
+// The result status of SafetyNet.listHarmfulApps.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
+// TODO(b:449183636): Remove `FAILED` once internal usage is removed.
+enum class HasHarmfulAppsResultStatus {
+  SUCCESS = 0,
+  TIMEOUT = 1,
+  FAILED = 2,
+  // Failure occurred from SafetyNet API, see below for code definition
+  // https://developers.google.com/android/reference/com/google/android/gms/common/api/CommonStatusCodes
+  // or
+  // https://developers.google.com/android/reference/com/google/android/gms/safetynet/SafetyNetStatusCodes
+  API_FAILURE = 3,
+  // Error occurred locally in Chrome
+  LOCAL_FAILURE = 4,
+  UNKNOWN_FAILURE = 5,
+  kMaxValue = UNKNOWN_FAILURE,
+};
 
 // Translates |threat_type| and |threat_attributes| from the Safe Browsing API
 // into ThreatMetadata.

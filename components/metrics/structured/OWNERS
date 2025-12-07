@@ -1,4 +1,5 @@
 file://base/metrics/OWNERS
-jongahn@chromium.org
+troywang@google.com
+
+# Last resort reviewers
 tby@chromium.org
-andrewbregger@google.com

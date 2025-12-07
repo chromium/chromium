@@ -69,9 +69,7 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
   const HTTPHeaderMap& Headers() const { return headers_; }
   bool IncludeCredentials() const { return include_credentials_; }
 
-  virtual void Trace(Visitor* visitor) const {
-    visitor->Trace(execution_context_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(execution_context_); }
 
  private:
   WeakMember<ExecutionContext> execution_context_;
@@ -174,7 +172,7 @@ class NetworkResourcesData final
 
    private:
     bool HasData() const { return data_buffer_.has_value(); }
-    void AppendData(const char* data, size_t data_length);
+    void AppendData(base::span<const char> data);
     // Removes just the response content.
     [[nodiscard]] size_t RemoveResponseContent();
     size_t DecodeDataToContent();
@@ -224,8 +222,7 @@ class NetworkResourcesData final
                           const String& content,
                           bool base64_encoded = false);
   void MaybeAddResourceData(const String& request_id,
-                            const char* data,
-                            uint64_t data_length);
+                            base::span<const char> data);
   void MaybeDecodeDataToContent(const String& request_id);
   void AddResource(const String& request_id, const Resource*);
   ResourceData const* Data(const String& request_id);

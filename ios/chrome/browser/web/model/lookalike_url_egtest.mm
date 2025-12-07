@@ -87,22 +87,11 @@ const char kLookalikeInNewTabContent[] = "New tab";
       l10n_util::GetStringUTF8(IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH);
   _lookalikeBlockingPageNoSuggestionContent = l10n_util::GetStringUTF8(
       IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH_NO_SUGGESTED_URL);
-
-  if (@available(iOS 15.1, *)) {
-  } else {
-    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
-    // some back/forward navigations between pages that share a renderer
-    // process. Use 'localhost' instead of '127.0.0.1' for the safe URL to
-    // prevent sharing renderer processes with unsafe URLs.
-    GURL::Replacements replacements;
-    replacements.SetHostStr("localhost");
-    _safeURL = _safeURL.ReplaceComponents(replacements);
-  }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [LookalikeUrlAppInterface tearDownLookalikeUrlDeciderForWebState];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that non-lookalike URLs are not blocked.
@@ -304,6 +293,11 @@ const char kLookalikeInNewTabContent[] = "New tab";
 // Tests that performing session restoration to a lookalike URL warning page
 // preserves navigation history.
 - (void)testRestoreToWarningPagePreservesHistory {
+  // TODO(crbug.com/405302626): Test fails on iOS 18.4. Re-enable when fixed.
+  if (@available(iOS 18.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 18.4.");
+  }
+
   // Build up navigation history that consists of a safe URL, a warning page,
   // and the suggested safe URL.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echoall")];

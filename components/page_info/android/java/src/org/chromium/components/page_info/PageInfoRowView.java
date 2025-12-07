@@ -15,24 +15,25 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** View showing an icon, title and subtitle for a page info row. */
+@NullMarked
 public class PageInfoRowView extends FrameLayout {
-    /**  Parameters to configure the row view. */
+    /** Parameters to configure the row view. */
     public static class ViewParams {
         public boolean visible;
         public @DrawableRes int iconResId;
         public @ColorRes int iconTint;
-        public CharSequence title;
-        public CharSequence subtitle;
-        public Runnable clickCallback;
+        public @Nullable CharSequence title;
+        public @Nullable CharSequence subtitle;
+        public @Nullable Runnable clickCallback;
         public boolean decreaseIconSize;
         public boolean singleLineSubTitle;
         public @ColorRes int rowTint;
@@ -42,7 +43,7 @@ public class PageInfoRowView extends FrameLayout {
     private final TextView mTitle;
     private final TextView mSubtitle;
 
-    public PageInfoRowView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public PageInfoRowView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.page_info_row, this, true);
         mIcon = findViewById(R.id.page_info_row_icon);
@@ -82,10 +83,11 @@ public class PageInfoRowView extends FrameLayout {
         if (params.title != null && params.subtitle != null) {
             mTitle.setPadding(0, 0, 0, ViewUtils.dpToPx(displayMetrics, 4));
         }
-        if (params.clickCallback != null) {
+        var clickCallback = params.clickCallback;
+        if (clickCallback != null) {
             setClickable(true);
             setFocusable(true);
-            getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
+            setOnClickListener(v -> clickCallback.run());
         }
         if (params.rowTint != 0) {
             setBackgroundColor(
@@ -94,7 +96,7 @@ public class PageInfoRowView extends FrameLayout {
         }
     }
 
-    public void updateSubtitle(CharSequence subtitle) {
+    public void updateSubtitle(@Nullable CharSequence subtitle) {
         mSubtitle.setText(subtitle);
         mSubtitle.setVisibility(subtitle != null ? VISIBLE : GONE);
     }

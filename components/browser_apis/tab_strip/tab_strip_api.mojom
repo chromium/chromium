@@ -1,0 +1,102 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+import "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_events.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
+
+// A snapshot of the current tabs in the tab strip.
+struct TabsSnapshot {
+  Container tab_strip;
+  // Updates to tabs would be sent through this update stream. Clients may
+  // subscribe to this stream to receive update events.
+  // The interface is associated with the interface used to retrieve this
+  // stream. This means that the ordering of the message between the remote
+  // and the observation stream is preserved.
+  pending_associated_receiver<TabsObserver> stream;
+};
+
+// The TabStripService is an object that lives alongside the
+// TabstripModel. It acts as the bridge between the model and any UI Dialog
+// or client.
+interface TabStripService {
+  // Gets the current state of the tab tree. This also returns a stream of
+  // future update events. Clients can implement the |TabsObserver| interface
+  // and receive all future updates from the snapshot. Note that all messages
+  // since the snapshot will be present in the stream, even if the client
+  // does not immediately register to the update stream.
+  GetTabs() => result<TabsSnapshot, mojo_base.mojom.Error>;
+
+  // Get a single tab.
+  GetTab(NodeId id) => result<Tab, mojo_base.mojom.Error>;
+
+  // Creates a new tab.
+  // Position specifies the location of the Tab after creation. If position is
+  // empty, the new tab will be appended to the end of the Tabstrip.
+  // Url specifies what is loaded in the Tab. If url is empty, then the new
+  // tab-page is loaded instead.
+  // The newly created tab is immediately activated.
+  CreateTabAt(Position? pos, url.mojom.Url? url)
+      => result<Tab, mojo_base.mojom.Error>;
+
+  // Closes a list of tabs. The accepted tab types are content and collection
+  // types. All the provided IDs must exist. If an ID could not be found, the
+  // invocation will be rejected with a |Code.kNotFound| error.
+  // If the method call succeeds, all of the tabs will have been closed.
+  CloseTabs(array<NodeId> id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Activates a tab. The only accepted id type for this method are |kContent|
+  // ids.
+  ActivateTab(NodeId id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Selects a list of tabs. The only accepted id type for this method are
+  // |kContent| ids. The selection must also pass in a tab to activate. This
+  // tab must be part of the tab selection.
+  SetSelectedTabs(array<NodeId> selection, NodeId tab_to_activate)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Moves a node identified by id to a specified position.
+  // "Node" is the generic term for any item which can be a tab or a tab
+  // collection.
+  MoveNode(NodeId id, Position position)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+};
+
+union TabsEvent {
+  // When new tabs have been created on the tab strip.
+  OnTabsCreatedEvent tabs_created_event;
+
+  // When tabs have been closed on the tab strip.
+  OnTabsClosedEvent tabs_closed_event;
+
+  // When any node in the tab strip tree has been moved. This could be a tab
+  // TabGroup or SplitTab.
+  OnNodeMovedEvent node_moved_event;
+
+  // When the data properties of an existing node have changed, but the node
+  // itself has not moved. For example, this could be data changes to an
+  // individual Tab or to a collection, such as a TabGroup's title.
+  OnDataChangedEvent data_changed_event;
+
+  // When a new tab collection has been created.
+  OnCollectionCreatedEvent collection_created_event;
+};
+
+// TabsObserver is an interface a client can implement to receive events
+// about changes to the tab strip.
+interface TabsObserver {
+  // When the tab strip has been updated. This contains all the relevant
+  // updates that should be applied in a single run loop. For dispatch
+  // clients, use the following libraries:
+  //   ts: chrome/browser/resources/tab_strip_api/tab_strip_observation.ts
+  //   cpp: TODO(crbug.com/439639253): add cpp client.
+  OnTabEvents(array<TabsEvent> events);
+};

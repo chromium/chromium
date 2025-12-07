@@ -11,7 +11,8 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "media/base/decoder.h"
 #include "media/base/media_export.h"
@@ -55,8 +56,8 @@ enum PipelineStatusCodes : StatusCodeType {
   // Deprecated: AUDIO_RENDERER_ERROR_SPLICE_FAILED = 20,
   PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED = 21,
 
-  // Android only. Used as a signal to fallback MediaPlayerRenderer, and thus
-  // not exactly an 'error' per say.
+  // Android only. Used as a signal to fallback to the HLS demuxer if it is
+  // enabled.
   DEMUXER_ERROR_DETECTED_HLS = 22,
 
   // Used when hardware context is reset (e.g. OS sleep/resume), where we should
@@ -67,15 +68,64 @@ enum PipelineStatusCodes : StatusCodeType {
   // The remote media component was disconnected unexpectedly, e.g. crash.
   PIPELINE_ERROR_DISCONNECTED = 24,
 
+  // Bitstream format conversion related errors.
+  DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED = 25,
+
+  // Issued when a component in the pipeline runs out of memory.
+  PIPELINE_ERROR_OUT_OF_MEMORY = 26,
+
+  // Used when a Progressive Demuxer cannot be created because it is disabled,
+  // rather than it being unsupported.
+  DEMUXER_ERROR_PROGRESSIVE_DISABLED = 27,
+
   // Must be equal to the largest value ever logged.
-  PIPELINE_STATUS_MAX = PIPELINE_ERROR_DISCONNECTED,
+  PIPELINE_STATUS_MAX = DEMUXER_ERROR_PROGRESSIVE_DISABLED,
 };
+
+MEDIA_EXPORT std::string_view PipelineStatusCodeToString(
+    PipelineStatusCodes code);
 
 struct PipelineStatusTraits {
   using Codes = PipelineStatusCodes;
 
   static constexpr StatusGroupType Group() { return "PipelineStatus"; }
   static constexpr Codes OkEnumValue() { return PIPELINE_OK; }
+
+  static constexpr std::string ReadableCodeName(Codes code) {
+#define STRINGIFY_STATUS_CASE(status) \
+  case status:                        \
+    return #status
+
+    switch (code) {
+      STRINGIFY_STATUS_CASE(PIPELINE_OK);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_NETWORK);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_DECODE);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_ABORT);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_INITIALIZATION_FAILED);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_COULD_NOT_RENDER);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_READ);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_INVALID_STATE);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_DISCONNECTED);
+      STRINGIFY_STATUS_CASE(PIPELINE_ERROR_OUT_OF_MEMORY);
+      STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_OPEN);
+      STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_PARSE);
+      STRINGIFY_STATUS_CASE(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
+      STRINGIFY_STATUS_CASE(DEMUXER_ERROR_DETECTED_HLS);
+      STRINGIFY_STATUS_CASE(DEMUXER_ERROR_PROGRESSIVE_DISABLED);
+      STRINGIFY_STATUS_CASE(DECODER_ERROR_NOT_SUPPORTED);
+      STRINGIFY_STATUS_CASE(DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED);
+      STRINGIFY_STATUS_CASE(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
+      STRINGIFY_STATUS_CASE(CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR);
+      STRINGIFY_STATUS_CASE(CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR);
+      STRINGIFY_STATUS_CASE(AUDIO_RENDERER_ERROR);
+    }
+
+#undef STRINGIFY_STATUS_CASE
+
+    NOTREACHED();
+  }
 };
 
 using PipelineStatus = TypedStatus<PipelineStatusTraits>;

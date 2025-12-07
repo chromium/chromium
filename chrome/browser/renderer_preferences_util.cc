@@ -6,49 +6,47 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/browser/reduce_accept_language_utils.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/renderer_preferences_util.h"
+#include "content/public/common/content_features.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/ui_base_features.h"
-
-#if defined(TOOLKIT_VIEWS)
-#include "ui/views/controls/textfield/textfield.h"
-#endif
+#include "ui/native_theme/native_theme.h"
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #endif
 
 namespace {
-
-constexpr char kPrefixedVideoFullscreenApiEnabled[] = "enabled";
-constexpr char kPrefixedVideoFullscreenApiDisabled[] = "disabled";
 
 // Parses a string |range| with a port range in the form "<min>-<max>".
 // If |range| is not in the correct format or contains an invalid range, zero
@@ -101,7 +99,8 @@ std::string GetLanguageListForProfile(Profile* profile,
     // In incognito mode return only the first language.
     return language::GetFirstLanguage(language_list);
   }
-  return language_list;
+  return content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+      language_list);
 }
 
 }  // namespace
@@ -111,36 +110,13 @@ namespace renderer_preferences_util {
 void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
-  prefs->accept_languages = GetLanguageListForProfile(
-      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
-  prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
-  prefs->enable_do_not_track =
-      TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->IsDoNotTrackEnabled();
-  prefs->enable_encrypted_media =
-      pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
-  prefs->webrtc_ip_handling_policy = std::string();
-#if !BUILDFLAG(IS_ANDROID)
-  prefs->caret_browsing_enabled =
-      pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
-      prefs->caret_browsing_enabled);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
+  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
 #endif
-
-  if (prefs->webrtc_ip_handling_policy.empty()) {
-    prefs->webrtc_ip_handling_policy =
-        pref_service->GetString(prefs::kWebRTCIPHandlingPolicy);
-  }
-  std::string webrtc_udp_port_range =
-      pref_service->GetString(prefs::kWebRTCUDPPortRange);
-  ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,
-                 &prefs->webrtc_udp_max_port);
-
-  const base::Value::List& allowed_urls =
-      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
-  prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
+  prefs->focus_ring_color = BUILDFLAG(IS_MAC) ? SkColorSetRGB(0x00, 0x5F, 0xCC)
+                                              : SkColorSetRGB(0x10, 0x10, 0x10);
 #if defined(USE_AURA)
-  prefs->focus_ring_color = SkColorSetRGB(0x4D, 0x90, 0xFE);
 #if BUILDFLAG(IS_CHROMEOS)
   // This color is 0x544d90fe modulated with 0xffffff.
   prefs->active_selection_bg_color = SkColorSetRGB(0xCB, 0xE4, 0xFA);
@@ -148,15 +124,9 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   prefs->inactive_selection_bg_color = SkColorSetRGB(0xEA, 0xEA, 0xEA);
   prefs->inactive_selection_fg_color = SK_ColorBLACK;
 #endif
-#endif
 
-#if defined(TOOLKIT_VIEWS)
-  prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
-#endif
-
-#if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
-  if (linux_ui_theme) {
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile)) {
     if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
       linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
       linux_ui_theme->GetActiveSelectionBgColor(
@@ -169,25 +139,79 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
           &prefs->inactive_selection_fg_color);
     }
   }
+#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(USE_AURA)
 
-    // If we have a linux_ui object, set the caret blink interval regardless of
-    // whether we're in native theme mode.
-  if (auto* linux_ui = ui::LinuxUi::instance())
-    prefs->caret_blink_interval = linux_ui->GetCursorBlinkInterval();
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    prefs->middle_click_paste_allowed = linux_ui->PrimaryPasteEnabled();
+  }
 #endif
+  prefs->caret_blink_interval =
+      ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval();
+  prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
+  prefs->enable_do_not_track =
+      pref_service->GetBoolean(prefs::kEnableDoNotTrack);
+  prefs->enable_encrypted_media =
+      pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
+  prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
+      pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN)
-  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
-#endif
+  for (const base::Value& entry :
+       pref_service->GetList(prefs::kWebRTCIPHandlingUrl)) {
+    const base::Value::Dict& dict = entry.GetDict();
+    const std::string* url = dict.FindString("url");
+    if (!url) {
+      DVLOG(1) << "Malformed WebRtcIPHandlingUrl entry: Missing 'url' value.";
+      continue;
+    }
+    ContentSettingsPattern pattern = ContentSettingsPattern::FromString(*url);
+    if (!pattern.IsValid()) {
+      DVLOG(1)
+          << "Malformed WebRtcIPHandlingUrl entry: Invalid pattern found: '"
+          << *url << "'.";
+      continue;
+    }
+    const std::string* handling = dict.FindString("handling");
+    if (!handling) {
+      DVLOG(1)
+          << "Malformed WebRtcIPHandlingUrl entry: Missing 'handling' value.";
+      continue;
+    }
+    prefs->webrtc_ip_handling_urls.push_back(
+        {pattern, blink::ToWebRTCIPHandlingPolicy(*handling)});
+  }
+  if (pref_service->IsManagedPreference(
+          prefs::kWebRTCPostQuantumKeyAgreement)) {
+    prefs->webrtc_post_quantum_key_agreement =
+        pref_service->GetBoolean(prefs::kWebRTCPostQuantumKeyAgreement);
+  }
 
+  ParsePortRange(pref_service->GetString(prefs::kWebRTCUDPPortRange),
+                 &prefs->webrtc_udp_min_port, &prefs->webrtc_udp_max_port);
+  prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(
+      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls));
+  prefs->accept_languages = GetLanguageListForProfile(
+      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
 #if !BUILDFLAG(IS_MAC)
   prefs->plugin_fullscreen_allowed =
       pref_service->GetBoolean(prefs::kFullscreenAllowed);
 #endif
-
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
+#if BUILDFLAG(IS_ANDROID)
+  prefs->uses_platform_autofill = pref_service->GetBoolean(
+      autofill::prefs::kAutofillUsingVirtualViewStructure);
+#endif
+  prefs->caret_browsing_enabled =
+      pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(features::kAndroidCaretBrowsing)) {
+    // ensures caret browsing is disabled on Clank if the feature flag is off
+    prefs->caret_browsing_enabled = false;
+  }
+#endif
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
+      prefs->caret_browsing_enabled);
+  if (PrefService* const local_state = g_browser_process->local_state()) {
     prefs->allow_cross_origin_auth_prompt =
         local_state->GetBoolean(prefs::kAllowCrossOriginAuthPrompt);
 
@@ -195,23 +219,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
         ConvertExplicitlyAllowedNetworkPortsPref(local_state);
   }
 
-#if BUILDFLAG(IS_MAC)
-  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
-#else
-  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
-#endif
-
-  std::string fullscreen_video_api_availability =
-      pref_service->GetString(prefs::kPrefixedVideoFullscreenApiAvailability);
-
-  if (fullscreen_video_api_availability == kPrefixedVideoFullscreenApiEnabled) {
-    prefs->prefixed_fullscreen_video_api_availability = true;
-  } else if (fullscreen_video_api_availability ==
-             kPrefixedVideoFullscreenApiDisabled) {
-    prefs->prefixed_fullscreen_video_api_availability = false;
-  } else {
-    prefs->prefixed_fullscreen_video_api_availability = std::nullopt;
-  }
+  prefs->view_source_line_wrap_enabled =
+      pref_service->GetBoolean(prefs::kViewSourceLineWrappingEnabled);
 }
 
 }  // namespace renderer_preferences_util

@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,12 +21,13 @@ import org.chromium.ui.base.WindowAndroid;
  * Class that observes the Custom Tab for an initial scroll down gesture before
  * {@link RealtimeEngagementSignalObserver} is created.
  */
+@NullMarked
 public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver {
     private final TabObserverRegistrar mTabObserverRegistrar;
 
-    private WebContents mWebContents;
-    private GestureStateListener mGestureStateListener;
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContents mWebContents;
+    private @Nullable GestureStateListener mGestureStateListener;
+    private @Nullable WebContentsObserver mWebContentsObserver;
     private boolean mHadScrollDown;
 
     public EngagementSignalsInitialScrollObserver(TabObserverRegistrar tabObserverRegistrar) {
@@ -42,12 +42,12 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
 
     // extends CustomTabTabObserver
     @Override
-    protected void onAttachedToInitialTab(@NonNull Tab tab) {
+    protected void onAttachedToInitialTab(Tab tab) {
         startTrackingScrolls(tab);
     }
 
     @Override
-    protected void onObservingDifferentTab(@NonNull Tab tab) {
+    protected void onObservingDifferentTab(Tab tab) {
         cleanUpListeners();
         startTrackingScrolls(tab);
     }
@@ -67,11 +67,6 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         cleanUpListeners();
         super.onActivityAttachmentChanged(tab, window);
-    }
-
-    @Override
-    public void webContentsWillSwap(Tab tab) {
-        cleanUpListeners();
     }
 
     @Override
@@ -120,7 +115,7 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
                 };
 
         mWebContentsObserver =
-                new WebContentsObserver() {
+                new WebContentsObserver(mWebContents) {
                     @Override
                     public void navigationEntryCommitted(LoadCommittedDetails details) {
                         if (details.isMainFrame() && !details.isSameDocument()) {
@@ -130,23 +125,24 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
                 };
 
         GestureListenerManager gestureListenerManager =
-                GestureListenerManager.fromWebContents(mWebContents);
-        if (!gestureListenerManager.hasListener(mGestureStateListener)) {
+                mWebContents != null ? GestureListenerManager.fromWebContents(mWebContents) : null;
+        if (gestureListenerManager != null
+                && !gestureListenerManager.hasListener(mGestureStateListener)) {
             gestureListenerManager.addListener(
                     mGestureStateListener, RootScrollOffsetUpdateFrequency.NONE);
         }
-        mWebContents.addObserver(mWebContentsObserver);
     }
 
     private void cleanUpListeners() {
         mHadScrollDown = false;
         if (mWebContents != null) {
-            if (mGestureStateListener != null) {
-                GestureListenerManager.fromWebContents(mWebContents)
-                        .removeListener(mGestureStateListener);
+            GestureListenerManager gestureListenerManager =
+                    GestureListenerManager.fromWebContents(mWebContents);
+            if (gestureListenerManager != null && mGestureStateListener != null) {
+                gestureListenerManager.removeListener(mGestureStateListener);
             }
             if (mWebContentsObserver != null) {
-                mWebContents.removeObserver(mWebContentsObserver);
+                mWebContentsObserver.observe(null);
             }
         }
         mWebContents = null;

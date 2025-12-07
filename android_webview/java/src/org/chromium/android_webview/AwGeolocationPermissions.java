@@ -7,6 +7,8 @@ package org.chromium.android_webview;
 import android.content.SharedPreferences;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.GURLUtils;
 
 import java.util.HashSet;
@@ -15,17 +17,18 @@ import java.util.Set;
 /**
  * This class is used to manage permissions for the WebView's Geolocation JavaScript API.
  *
- * Callbacks are posted on the UI thread.
+ * <p>Callbacks are posted on the UI thread.
  */
 @Lifetime.Profile
+@NullMarked
 public final class AwGeolocationPermissions {
     private static final String PREF_PREFIX = "AwGeolocationPermissions%";
     private final SharedPreferences mSharedPreferences;
 
     /** See {@link android.webkit.GeolocationPermissions}. */
     public interface Callback {
-        /* See {@link android.webkit.GeolocationPermissions}. */
-        public void invoke(String origin, boolean allow, boolean retain);
+        /** See {@link android.webkit.GeolocationPermissions}. */
+        void invoke(String origin, boolean allow, boolean retain);
     }
 
     public AwGeolocationPermissions(SharedPreferences sharedPreferences) {
@@ -74,12 +77,14 @@ public final class AwGeolocationPermissions {
 
     /** Synchronous method to get if an origin is set to be allowed. */
     public boolean isOriginAllowed(String origin) {
-        return mSharedPreferences.getBoolean(getOriginKey(origin), false);
+        String key = getOriginKey(origin);
+        return key != null && mSharedPreferences.getBoolean(key, false);
     }
 
     /** Returns true if the origin is either set to allowed or denied. */
     public boolean hasOrigin(String origin) {
-        return mSharedPreferences.contains(getOriginKey(origin));
+        String key = getOriginKey(origin);
+        return key != null && mSharedPreferences.contains(key);
     }
 
     /** Asynchronous method to get if an origin set to be allowed. */
@@ -100,7 +105,7 @@ public final class AwGeolocationPermissions {
     }
 
     /** Get the domain of an URL using the GURL library. */
-    private String getOriginKey(String url) {
+    private @Nullable String getOriginKey(String url) {
         String origin = GURLUtils.getOrigin(url);
         if (origin.isEmpty()) {
             return null;

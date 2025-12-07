@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace network {
 namespace mojom {
@@ -56,6 +55,10 @@ class OffscreenCanvas;
 class ThreadDebugger;
 
 namespace protocol {
+namespace Network {
+class DirectTCPSocketOptions;
+class DirectUDPSocketOptions;
+}  // namespace Network
 namespace Audits {
 class InspectorIssue;
 }  // namespace Audits
@@ -130,8 +133,8 @@ inline CoreProbeSink* ToCoreProbeSink(v8::Isolate* isolate) {
   return isolate ? CurrentExecutionContext(isolate)->GetProbeSink() : nullptr;
 }
 
-inline CoreProbeSink* ToCoreProbeSink(ScriptState* script_state) {
-  return ToCoreProbeSink(ToExecutionContext(script_state));
+inline CoreProbeSink* ToCoreProbeSink(const ScriptState& script_state) {
+  return ToCoreProbeSink(ToExecutionContext(&script_state));
 }
 
 inline CoreProbeSink* ToCoreProbeSink(Document& document) {

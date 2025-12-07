@@ -6,10 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_parser.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -21,8 +22,15 @@ constexpr base::TimeDelta
     ProtobufHttpStreamRequest::kStreamReadyTimeoutDuration;
 
 ProtobufHttpStreamRequest::ProtobufHttpStreamRequest(
-    std::unique_ptr<ProtobufHttpRequestConfig> config)
-    : ProtobufHttpRequestBase(std::move(config)) {}
+    std::unique_ptr<ProtobufHttpRequestConfig> request_config)
+    : ProtobufHttpRequestBase(std::move(request_config)) {
+  // It's unclear what should be done if a server responds SERVICE_UNAVAILABLE
+  // after the stream is open, since the stream might be stateful so we can't
+  // reopen the stream opaquely. We don't bother to implement retries for
+  // stream requests since they are only used by FTL, which already has its own
+  // retry logic.
+  DCHECK(!config().retry_policy) << "Stream requests don't support retries.";
+}
 
 ProtobufHttpStreamRequest::~ProtobufHttpStreamRequest() = default;
 
@@ -46,8 +54,7 @@ void ProtobufHttpStreamRequest::OnMessage(const std::string& message) {
   }
 }
 
-void ProtobufHttpStreamRequest::OnStreamClosed(
-    const ProtobufHttpStatus& status) {
+void ProtobufHttpStreamRequest::OnStreamClosed(const HttpStatus& status) {
   DCHECK(stream_closed_callback_);
   DCHECK(invalidator_);
 
@@ -58,7 +65,7 @@ void ProtobufHttpStreamRequest::OnStreamClosed(
   std::move(invalidator).Run();
 }
 
-void ProtobufHttpStreamRequest::OnAuthFailed(const ProtobufHttpStatus& status) {
+void ProtobufHttpStreamRequest::OnAuthFailed(const HttpStatus& status) {
   // Can't call OnStreamClosed here since it invokes the |invalidator_|.
   std::move(stream_closed_callback_).Run(status);
 }
@@ -69,7 +76,6 @@ void ProtobufHttpStreamRequest::StartRequestInternal(
   DCHECK(stream_ready_callback_);
   DCHECK(stream_closed_callback_);
   DCHECK(message_callback_);
-  DCHECK(!stream_ready_timeout_timer_.IsRunning());
 
   stream_ready_timeout_timer_.Start(
       FROM_HERE, kStreamReadyTimeoutDuration, this,
@@ -114,8 +120,8 @@ void ProtobufHttpStreamRequest::OnRetry(base::OnceClosure start_retry) {
 }
 
 void ProtobufHttpStreamRequest::OnStreamReadyTimeout() {
-  OnStreamClosed(ProtobufHttpStatus(ProtobufHttpStatus::Code::DEADLINE_EXCEEDED,
-                                    "Stream connection failed: timeout"));
+  OnStreamClosed(HttpStatus(HttpStatus::Code::DEADLINE_EXCEEDED,
+                            "Stream connection failed: timeout"));
 }
 
 }  // namespace remoting

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/grpc_support/include/bidirectional_stream_c.h"
 
 #include <stdbool.h>
@@ -15,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -80,8 +76,8 @@ HeadersArray::HeadersArray(const quiche::HttpHeaderBlock& header_block)
   headers = new bidirectional_stream_header[count];
   size_t i = 0;
   for (const auto& it : headers_strings_) {
-    headers[i].key = it.first.c_str();
-    headers[i].value = it.second.c_str();
+    UNSAFE_TODO(headers[i]).key = it.first.c_str();
+    UNSAFE_TODO(headers[i]).value = it.second.c_str();
     ++i;
   }
 }
@@ -90,14 +86,12 @@ HeadersArray::~HeadersArray() {
   delete[] headers;
 }
 
-class BidirectionalStreamAdapter
+class BidirectionalStreamAdapter final
     : public grpc_support::BidirectionalStream::Delegate {
  public:
   BidirectionalStreamAdapter(stream_engine* engine,
                              void* annotation,
                              const bidirectional_stream_callback* callback);
-
-  virtual ~BidirectionalStreamAdapter();
 
   void OnStreamReady() override;
 
@@ -125,12 +119,13 @@ class BidirectionalStreamAdapter
   static void DestroyAdapterForStream(bidirectional_stream* stream);
 
  private:
+  ~BidirectionalStreamAdapter();
   void DestroyOnNetworkThread();
 
-  // None of these objects are owned by |this|.
+  std::unique_ptr<grpc_support::BidirectionalStream> bidirectional_stream_;
+
   raw_ptr<net::URLRequestContextGetter> request_context_getter_;
-  raw_ptr<grpc_support::BidirectionalStream, AcrossTasksDanglingUntriaged>
-      bidirectional_stream_;
+
   // C side
   std::unique_ptr<bidirectional_stream> c_stream_;
   raw_ptr<const bidirectional_stream_callback> c_callback_;
@@ -145,13 +140,13 @@ BidirectionalStreamAdapter::BidirectionalStreamAdapter(
       c_stream_(std::make_unique<bidirectional_stream>()),
       c_callback_(callback) {
   DCHECK(request_context_getter_);
-  bidirectional_stream_ =
-      new grpc_support::BidirectionalStream(request_context_getter_, this);
+  bidirectional_stream_ = std::make_unique<grpc_support::BidirectionalStream>(
+      request_context_getter_, this);
   c_stream_->obj = this;
   c_stream_->annotation = annotation;
 }
 
-BidirectionalStreamAdapter::~BidirectionalStreamAdapter() {}
+BidirectionalStreamAdapter::~BidirectionalStreamAdapter() = default;
 
 void BidirectionalStreamAdapter::OnStreamReady() {
   DCHECK(c_callback_->on_response_headers_received);
@@ -206,7 +201,7 @@ grpc_support::BidirectionalStream* BidirectionalStreamAdapter::GetStream(
       static_cast<BidirectionalStreamAdapter*>(stream->obj);
   DCHECK(adapter->c_stream() == stream);
   DCHECK(adapter->bidirectional_stream_);
-  return adapter->bidirectional_stream_;
+  return adapter->bidirectional_stream_.get();
 }
 
 void BidirectionalStreamAdapter::DestroyAdapterForStream(
@@ -215,10 +210,6 @@ void BidirectionalStreamAdapter::DestroyAdapterForStream(
   BidirectionalStreamAdapter* adapter =
       static_cast<BidirectionalStreamAdapter*>(stream->obj);
   DCHECK(adapter->c_stream() == stream);
-  // Destroy could be called from any thread, including network thread (if
-  // posting task to executor throws an exception), but is posted, so |this|
-  // is valid until calling task is complete.
-  adapter->bidirectional_stream_->Destroy();
   adapter->request_context_getter_->GetNetworkTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&BidirectionalStreamAdapter::DestroyOnNetworkThread,
@@ -272,8 +263,8 @@ int bidirectional_stream_start(bidirectional_stream* stream,
   net::HttpRequestHeaders request_headers;
   if (headers) {
     for (size_t i = 0; i < headers->count; ++i) {
-      std::string name(headers->headers[i].key);
-      std::string value(headers->headers[i].value);
+      std::string name(UNSAFE_TODO(headers->headers[i]).key);
+      std::string value(UNSAFE_TODO(headers->headers[i]).value);
       if (!net::HttpUtil::IsValidHeaderName(name) ||
           !net::HttpUtil::IsValidHeaderValue(value)) {
         DLOG(ERROR) << "Invalid Header " << name << "=" << value;

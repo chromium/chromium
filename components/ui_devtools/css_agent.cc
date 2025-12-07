@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/ui_element.h"
 
@@ -129,7 +130,7 @@ std::vector<UIElement::ClassProperties> GetClassPropertiesWithBounds(
     if (ui_element->type() != VIEW) {
       bool visible;
       ui_element->GetVisible(&visible);
-      bound_properties.emplace_back(kVisibility, visible ? "true" : "false");
+      bound_properties.emplace_back(kVisibility, base::ToString(visible));
     }
     properties_vector.emplace_back(ui_element->GetTypeName(), bound_properties);
   }
@@ -221,7 +222,7 @@ Response CSSAgent::disable() {
 
 Response CSSAgent::getMatchedStylesForNode(
     int node_id,
-    protocol::Maybe<Array<CSS::RuleMatch>>* matched_css_rules) {
+    std::unique_ptr<Array<CSS::RuleMatch>>* matched_css_rules) {
   UIElement* ui_element = dom_agent_->GetElementFromNodeId(node_id);
   if (!ui_element)
     return NodeNotFoundError(node_id);
@@ -244,8 +245,9 @@ Response CSSAgent::getStyleSheetText(const protocol::String& style_sheet_id,
     return Response::ServerError("Node id not found");
 
   auto sources = ui_element->GetSources();
-  if (static_cast<int>(sources.size()) <= stylesheet_id)
+  if (static_cast<int>(sources.size()) <= stylesheet_id || stylesheet_id < 0) {
     return Response::ServerError("Stylesheet id not found");
+  }
 
   if (GetSourceCode(sources[stylesheet_id].path_, result))
     return Response::Success();

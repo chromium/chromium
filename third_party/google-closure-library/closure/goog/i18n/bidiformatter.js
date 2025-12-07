@@ -365,9 +365,8 @@ goog.i18n.BidiFormatter.prototype.spanWrapWithKnownDir_ = function(
     result = html;
   }
   var str = goog.html.SafeHtml.unwrap(html);
-  result = goog.html.SafeHtml.concatWithDir(
-      goog.i18n.bidi.Dir.NEUTRAL, result,
-      this.dirResetIfNeeded_(str, dir, true, opt_dirReset));
+  result = goog.html.SafeHtml.concat(
+      result, this.dirResetIfNeeded_(str, dir, true, opt_dirReset));
   return result;
 };
 

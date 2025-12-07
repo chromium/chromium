@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1569387923882100876">जडित यन्त्र</translation>
-<translation id="1612196535745283361">यन्त्रहरू स्क्यान गर्न Chrome लाई स्थान माथिको पहुँच चाहिन्छ। यस यन्त्रमा स्थान माथिको पहुँचलाई <ph name="BEGIN_LINK" />निष्क्रिय पारिएको छ<ph name="END_LINK" />।</translation>
+<translation id="1612196535745283361">डिभाइसहरू स्क्यान गर्न Chrome लाई लोकेसन एक्सेस चाहिन्छ। यस डिभाइसमा लोकेसन एक्सेस <ph name="BEGIN_LINK" />अफ गरिएको छ<ph name="END_LINK" />।</translation>
 <translation id="1769234867324334094">यो साइटका हकमा <ph name="APP_NAME" /> लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> जोडा बनाउन चाहन्छ</translation>
 <translation id="2077832278056815832">अन्य एपका सबै बबल वा ओभरले बन्द गर्नुहोस्। त्यसपछि, फेरि प्रयास गर्नुहोस्।</translation>
@@ -10,11 +10,12 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2987449669841041897">यो साइट तपाईंको अनुमति माग्न सक्दैन</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="3773755127849930740">जोडा बनाउने प्रक्रियालाई अनुमति दिन <ph name="BEGIN_LINK" />ब्लुटुथ<ph name="END_LINK" /> लाई अन गर्नुहोस्</translation>
+<translation id="3773755127849930740">कनेक्ट गर्ने प्रक्रियालाई अनुमति दिन <ph name="BEGIN_LINK" />ब्लुटुथ<ph name="END_LINK" /> लाई अन गर्नुहोस्</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> लाई तपाईंका हातहरू ट्रयाक गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
 <translation id="4915549754973153784">अन्य यन्त्रहरूलाई स्क्यान गर्दा <ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" />…</translation>
 <translation id="4925793601605263825">यो साइटका हकमा <ph name="APP_NAME" /> लाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> वरपरका ब्लुटुथ यन्त्रहरू खोज्न स्क्यान गर्न चाहन्छ। निम्न यन्त्रहरू फेला परेका छन्:</translation>
-<translation id="5527082711130173040">यन्त्रहरू स्क्यान गर्न Chrome लाई स्थान माथिको पहुँच चाहिन्छ। <ph name="BEGIN_LINK1" />अनुमतिहरूलाई अपडेट गर्नुहोस्<ph name="END_LINK1" />। यो डिभाइसमा स्थान माथिको पहुँचलाई पनि <ph name="BEGIN_LINK2" />निष्क्रिय पारिएको छ<ph name="END_LINK2" />।</translation>
+<translation id="5527082711130173040">डिभाइसहरू स्क्यान गर्न Chrome लाई लोकेसन एक्सेस चाहिन्छ। <ph name="BEGIN_LINK1" />अनुमतिहरूलाई अपडेट गर्नुहोस्<ph name="END_LINK1" />। यो डिभाइसमा लोकेसन एक्सेस पनि <ph name="BEGIN_LINK2" />अफ गरिएको छ<ph name="END_LINK2" />।</translation>
 <translation id="5817918615728894473">जोडा  बनाउनुहोस्</translation>
 <translation id="5858741533101922242">Chrome ले ब्लुटुथ एडाप्टरलाई सक्रिय गर्न सकेन</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>

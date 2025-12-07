@@ -1,0 +1,271 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("android") {
+  sources = [ "bookmark_bridge.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/partnerbookmarks:android",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/reading_list/android:reading_list",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common/android",
+    "//components/bookmarks/managed",
+    "//components/power_bookmarks/core",
+    "//components/prefs",
+    "//components/reading_list/core",
+    "//components/signin/public/identity_manager",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "bookmark_bridge.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":android",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/commerce",
+    "//chrome/browser/profiles",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/signin",
+    "//components/query_parser",
+    "//components/undo",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkAddNewFolderCoordinator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkDelegate.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcher.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkListEntry.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpener.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkMetrics.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModelObserver.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkOpener.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkQueryHandler.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowCoordinator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRow.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkTextInputLayout.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbar.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarMediator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiObserver.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiPrefs.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiState.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUndoController.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkViewUtils.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/CancelableAnimator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderView.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowView.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/PendingRunnable.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtils.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeader.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ScopedBookmarkModelObservation.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryView.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBar.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButton.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButtonProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButtonViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarConstants.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManager.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProvider.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayerProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProvider.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//base:callback_java",
+    "//base:lifetime_java",
+    "//base:supplier_java",
+    "//base:tasks_java",
+    "//cc:cc_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android/features/tab_ui:java_resources",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/hub:factory_java",
+    "//chrome/browser/hub:java",
+    "//chrome/browser/page_image_service/android:java",
+    "//chrome/browser/partnerbookmarks:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/preferences:pref_service_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:ui_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/url_constants/android:java",
+    "//chrome/browser/user_education:java",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/embedder_support/android:simple_factory_key_java",
+    "//components/embedder_support/android:util_java",
+    "//components/feature_engagement/public:public_java",
+    "//components/image_fetcher:java",
+    "//components/page_image_service/mojom:mojo_bindings_java",
+    "//components/payments/content/android/ui:java",
+    "//components/power_bookmarks/core:proto_java",
+    "//components/prefs/android:java",
+    "//components/profile_metrics:browser_profile_type_enum_java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/accessibility:ax_base_java",
+    "//ui/accessibility:keyboard_focus_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni_headers",
+  ]
+  resources_package = "org.chromium.chrome.browser.bookmarks"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayer.java",
+  ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  sources = [ "bookmark_bridge.h" ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "junit/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonControllerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BasicBookmarkQueryHandlerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkAddNewFolderCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcherTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkListEntryTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkModelListTestUtil.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkPaneUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkTextInputLayoutTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUiPrefsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUiStateTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUtilsTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModelTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandlerTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/PendingRunnableTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeaderTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/ScopedBookmarkModelObservationTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarIphControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSceneLayerTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProviderTest.java",
+  ]
+
+  deps = [
+    "//chrome/android/junit:chrome_junit_tests_helper",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
+    "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/AccountBookmarkTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkBatchUploadCardRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkBridgeTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkOpenerTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPaneTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPersonalizedSigninPromoDismissTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPersonalizedSigninPromoTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderViewRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtilsTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarTest.java",
+  ]
+
+  deps = [
+    "//chrome/android/javatests:chrome_test_java_helper",
+    "//chrome/browser/user_education:java",
+  ]
+}

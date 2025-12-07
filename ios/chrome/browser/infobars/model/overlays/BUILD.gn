@@ -29,6 +29,7 @@ source_set("overlays") {
     ":util",
     "//base",
     "//components/infobars/core",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/translate/core/browser",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
@@ -39,6 +40,10 @@ source_set("overlays") {
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/passwords/model:infobar_delegates",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tips_manager/model:factory",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
     "//ios/web/common",
     "//ios/web/public",
   ]
@@ -107,6 +112,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",
     "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
@@ -118,13 +124,17 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model/test",
     "//ios/chrome/browser/safe_browsing/model/tailored_security/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/translate/model:test_support",
-    "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

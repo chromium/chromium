@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/form_data_parser.h"
 
 #include <stddef.h>
 
+#include <memory>
 #include <string_view>
 #include <vector>
 
 #include "base/check.h"
-#include "base/lazy_instance.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/re2/src/re2/re2.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using re2::RE2;
 
@@ -40,11 +41,11 @@ const char kCRLF[] = "\r\n";
 const char kContentTypeOctetString[] =
     "Content-Type: application/octet-stream\r\n";
 
-// A wrapper struct for static RE2 objects to be held as LazyInstance.
+// A wrapper struct for static RE2 objects to be held as a singleton.
 struct Patterns {
   Patterns();
-  // Patterns is only instantiated as a leaky LazyInstance, so the destructor
-  // is never called.
+  // Patterns is only instantiated as a NoDestructor static local instance, so
+  // the destructor is never called.
   ~Patterns() = delete;
   const RE2 transfer_padding_pattern;
   const RE2 closing_pattern;
@@ -72,7 +73,10 @@ Patterns::Patterns()
       url_encoded_pattern(std::string("(") + kCharacterPattern + "*)=(" +
                           kCharacterPattern + "*)") {}
 
-base::LazyInstance<Patterns>::Leaky g_patterns = LAZY_INSTANCE_INITIALIZER;
+const Patterns* GetPatterns() {
+  static base::NoDestructor<Patterns> instance;
+  return instance.get();
+}
 
 bool ConsumePrefix(std::string_view* str, std::string_view prefix) {
   if (!str->starts_with(prefix)) {
@@ -103,10 +107,8 @@ class FormDataParserUrlEncoded : public FormDataParser {
  private:
   // Returns the pattern to match a single name-value pair. This could be even
   // static, but then we would have to spend more code on initializing the
-  // cached pointer to g_patterns.Get().
-  const RE2& pattern() const {
-    return patterns_->url_encoded_pattern;
-  }
+  // cached pointer to `GetPatterns()`.
+  const RE2& pattern() const { return patterns_->url_encoded_pattern; }
 
   // Auxiliary constant for using RE2. Number of arguments for parsing
   // name-value pairs (one for name, one for value).
@@ -121,9 +123,9 @@ class FormDataParserUrlEncoded : public FormDataParser {
   std::string value_;
   const RE2::Arg arg_name_;
   const RE2::Arg arg_value_;
-  const RE2::Arg* args_[args_size_];
+  std::array<const RE2::Arg*, args_size_> args_;
 
-  // Caching the pointer to g_patterns.Get().
+  // Caching the pointer to `GetPatterns()`.
   raw_ptr<const Patterns> patterns_;
 };
 
@@ -243,7 +245,7 @@ class FormDataParserMultipart : public FormDataParser {
   bool FinishReadingPart(std::string_view* data);
 
   // These methods could be even static, but then we would have to spend more
-  // code on initializing the cached pointer to g_patterns.Get().
+  // code on initializing the cached pointer to `GetPatterns()`.
   const RE2& transfer_padding_pattern() const {
     return patterns_->transfer_padding_pattern;
   }
@@ -282,7 +284,7 @@ class FormDataParserMultipart : public FormDataParser {
   // sequentially.
   std::string_view source_;
 
-  // Caching the pointer to g_patterns.Get().
+  // Caching the pointer to `GetPatterns()`.
   raw_ptr<const Patterns> patterns_;
 };
 
@@ -290,8 +292,7 @@ FormDataParser::Result::Result() = default;
 FormDataParser::Result::~Result() = default;
 
 void FormDataParser::Result::SetBinaryValue(std::string_view str) {
-  value_ = base::Value(
-      base::Value::BlobStorage(str.data(), str.data() + str.size()));
+  value_ = base::Value(base::ToVector(str));
 }
 
 void FormDataParser::Result::SetStringValue(std::string str) {
@@ -303,10 +304,8 @@ FormDataParser::~FormDataParser() = default;
 // static
 std::unique_ptr<FormDataParser> FormDataParser::Create(
     const net::HttpRequestHeaders& request_headers) {
-  std::string value;
-  const bool found =
-      request_headers.GetHeader(net::HttpRequestHeaders::kContentType, &value);
-  return CreateFromContentTypeHeader(found ? &value : nullptr);
+  return CreateFromContentTypeHeader(base::OptionalToPtr(
+      request_headers.GetHeader(net::HttpRequestHeaders::kContentType)));
 }
 
 // static
@@ -336,24 +335,23 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
       offset += sizeof(kBoundaryString) - 1;
       boundary = content_type_header->substr(
           offset, content_type_header->find(';', offset));
-      if (!boundary.empty())
+      if (!boundary.empty()) {
         choice = MULTIPART;
+      }
     }
   }
   // Other cases are unparseable, including when |content_type| is "text/plain".
 
   switch (choice) {
     case URL_ENCODED:
-      return std::unique_ptr<FormDataParser>(new FormDataParserUrlEncoded());
+      return std::make_unique<FormDataParserUrlEncoded>();
     case MULTIPART:
       return std::unique_ptr<FormDataParser>(
           new FormDataParserMultipart(boundary));
     case ERROR_CHOICE:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();  // Some compilers do not believe this is
-                              // unreachable.
-  return nullptr;
+  NOTREACHED();  // Some compilers do not believe this is unreachable.
 }
 
 FormDataParser::FormDataParser() = default;
@@ -363,7 +361,7 @@ FormDataParserUrlEncoded::FormDataParserUrlEncoded()
       source_malformed_(false),
       arg_name_(&name_),
       arg_value_(&value_),
-      patterns_(g_patterns.Pointer()) {
+      patterns_(GetPatterns()) {
   args_[0] = &arg_name_;
   args_[1] = &arg_value_;
 }
@@ -376,10 +374,11 @@ bool FormDataParserUrlEncoded::AllDataReadOK() {
 }
 
 bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
-  if (!source_set_ || source_malformed_)
+  if (!source_set_ || source_malformed_) {
     return false;
+  }
 
-  bool success = RE2::ConsumeN(&source_, pattern(), args_, args_size_);
+  bool success = RE2::ConsumeN(&source_, pattern(), args_.data(), args_size_);
   if (success) {
     const base::UnescapeRule::Type kUnescapeRules =
         base::UnescapeRule::REPLACE_PLUS_WITH_SPACE;
@@ -396,17 +395,19 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
     }
   }
   if (source_.length() > 0) {
-    if (source_[0] == '&')
+    if (source_[0] == '&') {
       source_.remove_prefix(1);  // Remove the leading '&'.
-    else
+    } else {
       source_malformed_ = true;  // '&' missing between two name-value pairs.
+    }
   }
   return success && !source_malformed_;
 }
 
 bool FormDataParserUrlEncoded::SetSource(std::string_view source) {
-  if (source_set_)
+  if (source_set_) {
     return false;  // We do not allow multiple sources for this parser.
+  }
   source_ = source;
   source_set_ = true;
   source_malformed_ = false;
@@ -423,7 +424,7 @@ FormDataParserMultipart::FormDataParserMultipart(
     const std::string& boundary_separator)
     : dash_boundary_separator_("--" + boundary_separator),
       state_(STATE_INIT),
-      patterns_(g_patterns.Pointer()) {}
+      patterns_(GetPatterns()) {}
 
 FormDataParserMultipart::~FormDataParserMultipart() = default;
 
@@ -470,8 +471,9 @@ bool FormDataParserMultipart::FinishReadingPart(std::string_view* data) {
 }
 
 bool FormDataParserMultipart::GetNextNameValue(Result* result) {
-  if (source_.empty() || state_ != STATE_READY)
+  if (source_.empty() || state_ != STATE_READY) {
     return false;
+  }
 
   // 1. Read body-part headers.
   std::string_view name;
@@ -520,8 +522,9 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
 }
 
 bool FormDataParserMultipart::SetSource(std::string_view source) {
-  if (source.data() == nullptr || !source_.empty())
+  if (source.data() == nullptr || !source_.empty()) {
     return false;
+  }
   source_ = source;
 
   switch (state_) {
@@ -567,15 +570,17 @@ bool FormDataParserMultipart::TryReadHeader(std::string_view* name,
     return true;
   }
   const char* header_start = source_.data();
-  if (!RE2::Consume(&source_, header_pattern()))
+  if (!RE2::Consume(&source_, header_pattern())) {
     return false;
+  }
   // (*) After this point we must return true, because we consumed one header.
 
   // Subtract 2 for the trailing "\r\n".
   std::string_view header(header_start, source_.data() - header_start - 2);
 
-  if (!StartsWithPattern(header, content_disposition_pattern()))
+  if (!StartsWithPattern(header, content_disposition_pattern())) {
     return true;  // Skip headers that don't describe the content-disposition.
+  }
 
   std::string_view groups[2];
 

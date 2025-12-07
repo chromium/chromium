@@ -63,8 +63,9 @@ function getFileBindingsForApi(apiName) {
           // error is reported. Note that an error can occur either during the
           // loop or in the asynchronous error callback to getFile.
           $Array.forEach(response.entries, function(entry) {
-            if (hasError)
+            if (hasError) {
               return;
+            }
             var fileSystemId = entry.fileSystemId;
             var baseName = entry.baseName;
             var id = entry.id;
@@ -72,8 +73,9 @@ function getFileBindingsForApi(apiName) {
 
             try {
               var getEntryCallback = function(fileEntry) {
-                if (hasError)
+                if (hasError) {
                   return;
+                }
                 entryIdManager.registerEntry(id, fileEntry);
                 entries.push(fileEntry);
                 // Once all entries are ready, pass them to the callback. In the

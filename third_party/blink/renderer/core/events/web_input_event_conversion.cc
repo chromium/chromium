@@ -28,13 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 
+#include <array>
+
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -92,18 +91,6 @@ void UpdateWebMouseEventFromCoreMouseEvent(const MouseEvent& event,
   web_event.SetPositionInWidget(local_point);
 }
 
-unsigned ToWebInputEventModifierFrom(WebMouseEvent::Button button) {
-  if (button == WebMouseEvent::Button::kNoButton)
-    return 0;
-
-  unsigned web_mouse_button_to_platform_modifier[] = {
-      WebInputEvent::kLeftButtonDown, WebInputEvent::kMiddleButtonDown,
-      WebInputEvent::kRightButtonDown, WebInputEvent::kBackButtonDown,
-      WebInputEvent::kForwardButtonDown};
-
-  return web_mouse_button_to_platform_modifier[static_cast<int>(button)];
-}
-
 WebPointerEvent TransformWebPointerEvent(float frame_scale,
                                          gfx::Vector2dF frame_translate,
                                          const WebPointerEvent& event) {
@@ -123,12 +110,16 @@ WebMouseEvent TransformWebMouseEvent(LocalFrameView* frame_view,
                                      const WebMouseEvent& event) {
   WebMouseEvent result = event;
 
-  // TODO(dtapuska): Perhaps the event should be constructed correctly?
-  // crbug.com/686200
-  if (event.GetType() == WebInputEvent::Type::kMouseUp) {
-    result.SetModifiers(event.GetModifiers() &
-                        ~ToWebInputEventModifierFrom(event.button));
+  // The code in production fixes the modifiers field further upstream at
+  // `MakeWebMouseEventFromUiEvent`.  But thousands of our tests (both WPTs and
+  // binary tests) bypasses the upstream fix while injecting mouse clicks
+  // without proper event modifiers!  And then mouse events on DevTools overlay
+  // bypasses the fix below!!
+  if (event.GetType() == WebInputEvent::Type::kMouseUp ||
+      event.GetType() == WebInputEvent::Type::kMouseDown) {
+    result.UpdateEventModifiersToMatchButton();
   }
+
   result.SetFrameScale(FrameScale(frame_view));
   result.SetFrameTranslate(FrameTranslation(frame_view));
   return result;
@@ -184,19 +175,19 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
 
   switch (event.button()) {
     case int16_t(WebPointerProperties::Button::kLeft):
-      button = WebMouseEvent::Button::kLeft;
+      button = WebPointerProperties::Button::kLeft;
       break;
     case int16_t(WebPointerProperties::Button::kMiddle):
-      button = WebMouseEvent::Button::kMiddle;
+      button = WebPointerProperties::Button::kMiddle;
       break;
     case int16_t(WebPointerProperties::Button::kRight):
-      button = WebMouseEvent::Button::kRight;
+      button = WebPointerProperties::Button::kRight;
       break;
     case int16_t(WebPointerProperties::Button::kBack):
-      button = WebMouseEvent::Button::kBack;
+      button = WebPointerProperties::Button::kBack;
       break;
     case int16_t(WebPointerProperties::Button::kForward):
-      button = WebMouseEvent::Button::kForward;
+      button = WebPointerProperties::Button::kForward;
       break;
   }
   if (event.ButtonDown()) {
@@ -218,7 +209,7 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
         break;
     }
   } else {
-    button = WebMouseEvent::Button::kNoButton;
+    button = WebPointerProperties::Button::kNoButton;
   }
   movement_x = event.movementX();
   movement_y = event.movementY();
@@ -265,7 +256,8 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
   gfx::PointF screen_point = touch->ScreenLocation();
   SetPositionInScreen(screen_point.x(), screen_point.y());
 
-  button = WebMouseEvent::Button::kLeft;
+  button = WebPointerProperties::Button::kLeft;
+  // TODO(mustaq@chromium.org): Shouldn't we reset the bit for kMouseUp?
   modifiers_ |= WebInputEvent::kLeftButtonDown;
   click_count = (type_ == WebInputEvent::Type::kMouseDown ||
                  type_ == WebInputEvent::Type::kMouseUp);

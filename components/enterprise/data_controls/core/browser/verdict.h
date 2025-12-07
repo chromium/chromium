@@ -17,16 +17,23 @@ namespace data_controls {
 class Verdict {
  public:
   // The key is the rule's index in the "DataControlsRules" policy list
-  // representation that exists in `RulesService`.
+  // representation that exists in `RulesService` combined with a boolean
+  // representing if it comes from a machine-scope policy or not.
   // Since policy updates can change the rules list and invalidate indexes of
   // previously triggered rules, this index key should only be used
   // synchronously to merge rules and not in async cases (for example after a
   // warning dialog has been shown).
+  struct TriggeredRuleKey {
+    size_t index;
+    bool machine_scope;
+
+    bool operator<(const TriggeredRuleKey& other) const;
+  };
   struct TriggeredRule {
     std::string rule_id;
     std::string rule_name;
   };
-  using TriggeredRules = base::flat_map<size_t, TriggeredRule>;
+  using TriggeredRules = base::flat_map<TriggeredRuleKey, TriggeredRule>;
 
   static Verdict NotSet();
   static Verdict Report(TriggeredRules triggered_rules);
@@ -37,7 +44,8 @@ class Verdict {
   // Creates a combination of two `Verdict`s when both a source and destination
   // `Verdict` are obtained in a single paste. The merge `Verdict` has the
   // highest precedence between the two original verdicts, but only the
-  // triggered rules of the destination one for reporting.
+  // triggered rules of the destination and machine-level rules of the source
+  // verdict are reported.
   static Verdict MergePasteVerdicts(Verdict source_verdict,
                                     Verdict destination_verdict);
 

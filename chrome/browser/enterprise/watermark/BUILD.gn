@@ -4,12 +4,24 @@
 
 source_set("watermark_view_lib") {
   sources = [
+    "settings.cc",
+    "settings.h",
+    "watermark_features.cc",
+    "watermark_features.h",
+    "watermark_style_policy_handler.cc",
+    "watermark_style_policy_handler.h",
     "watermark_view.cc",
     "watermark_view.h",
   ]
 
   deps = [
+    "//chrome/common:channel_info",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/watermarking",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//components/version_info",
     "//ui/views",
   ]
 }
@@ -28,18 +40,14 @@ executable("watermark_app") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
-    "//ui/base/metadata:metadata",
+    "//ui/base/metadata",
     "//ui/color:mixers",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
     "//ui/resources:ui_test_pak",
-    "//ui/views:views",
+    "//ui/views",
     "//ui/views/examples:views_examples_lib",
     "//ui/views/examples:views_examples_proc",
   ]
-
-  if (is_win) {
-    deps += [ "//ui/native_theme:native_theme_browser" ]
-  }
 
   defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
 }

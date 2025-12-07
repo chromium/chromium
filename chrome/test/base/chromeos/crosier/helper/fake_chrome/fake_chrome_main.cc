@@ -7,6 +7,7 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 

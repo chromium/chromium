@@ -10,16 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/common/channel_info.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -43,71 +37,25 @@ namespace {
 
 constexpr base::TimeDelta kEngagedSiteUpdateInterval = base::Seconds(60);
 
-class LookalikeUrlServiceFactory : public ProfileKeyedServiceFactory {
- public:
-  static LookalikeUrlService* GetForProfile(Profile* profile) {
-    return static_cast<LookalikeUrlService*>(
-        GetInstance()->GetServiceForBrowserContext(profile,
-                                                   /*create_service=*/true));
-  }
-  static LookalikeUrlServiceFactory* GetInstance() {
-    return base::Singleton<LookalikeUrlServiceFactory>::get();
-  }
-
-  LookalikeUrlServiceFactory(const LookalikeUrlServiceFactory&) = delete;
-  LookalikeUrlServiceFactory& operator=(const LookalikeUrlServiceFactory&) =
-      delete;
-
- private:
-  friend struct base::DefaultSingletonTraits<LookalikeUrlServiceFactory>;
-
-  // LookalikeUrlServiceFactory();
-  LookalikeUrlServiceFactory()
-      : ProfileKeyedServiceFactory(
-            "LookalikeUrlServiceFactory",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOwnInstance)
-                .Build()) {
-    DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
-  }
-
-  ~LookalikeUrlServiceFactory() override {}
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override {
-    return new LookalikeUrlService(static_cast<Profile*>(profile));
-  }
-};
-
 // static
 std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
     base::Time now,
     scoped_refptr<HostContentSettingsMap> map) {
   TRACE_EVENT0("navigation",
                "LookalikeUrlService UpdateEngagedSitesOnWorkerThread");
-  std::vector<DomainInfo> new_engaged_sites;
 
   auto details =
-      site_engagement::SiteEngagementService::GetAllDetailsInBackground(now,
-                                                                        map);
+      site_engagement::SiteEngagementService::GetAllDetailsInBackground(
+          now, map, site_engagement::SiteEngagementService::URLSets::HTTP,
+          blink::mojom::EngagementLevel::MEDIUM);
   TRACE_EVENT1("navigation", "LookalikeUrlService SiteEngagementService",
                "site_count", details.size());
+  std::vector<DomainInfo> new_engaged_sites;
+  new_engaged_sites.reserve(details.size());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-    // Ignore sites with an engagement score below threshold.
-    if (!site_engagement::SiteEngagementService::IsEngagementAtLeast(
-            detail.total_score, blink::mojom::EngagementLevel::MEDIUM)) {
-      continue;
-    }
+    DCHECK(detail.origin.SchemeIsHTTPOrHTTPS());
+    DCHECK(site_engagement::SiteEngagementService::IsEngagementAtLeast(
+        detail.total_score, blink::mojom::EngagementLevel::MEDIUM));
     const DomainInfo domain_info = lookalikes::GetDomainInfo(detail.origin);
     if (domain_info.domain_and_registry.empty()) {
       continue;
@@ -133,15 +81,14 @@ void RecordReputationStatusWithEngagedSitesTime(base::TimeTicks start) {
 
 }  // namespace
 
-LookalikeUrlService::LookalikeUrlService(Profile* profile)
-    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
+LookalikeUrlService::LookalikeUrlService(
+    PrefService* pref_service,
+    HostContentSettingsMap* host_content_settings_map)
+    : pref_service_(pref_service),
+      host_content_settings_map_(host_content_settings_map),
+      clock_(base::DefaultClock::GetInstance()) {}
 
 LookalikeUrlService::~LookalikeUrlService() = default;
-
-// static
-LookalikeUrlService* LookalikeUrlService::Get(Profile* profile) {
-  return LookalikeUrlServiceFactory::GetForProfile(profile);
-}
 
 bool LookalikeUrlService::EngagedSitesNeedUpdating() const {
   if (last_engagement_fetch_time_.is_null())
@@ -163,11 +110,9 @@ void LookalikeUrlService::ForceUpdateEngagedSites(
         FROM_HERE,
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(
-            &UpdateEngagedSitesOnWorkerThread,
-            clock_->Now(),
-            base::WrapRefCounted(
-                HostContentSettingsMapFactory::GetForProfile(profile_))),
+        base::BindOnce(&UpdateEngagedSitesOnWorkerThread, clock_->Now(),
+                       base::WrapRefCounted<HostContentSettingsMap>(
+                           host_content_settings_map_)),
         base::BindOnce(&LookalikeUrlService::OnUpdateEngagedSitesCompleted,
                        weak_factory_.GetWeakPtr()));
   }
@@ -212,10 +157,10 @@ LookalikeUrlService::CheckUrlForLookalikes(
   LookalikeUrlCheckResult result;
 
   // Don't warn on non-HTTP(s) sites or non-public domains.
-  if (!url.SchemeIsHTTPOrHTTPS() || net::HostStringIsLocalhost(url.host()) ||
-      net::IsHostnameNonUnique(url.host()) ||
-      lookalikes::GetETLDPlusOne(url.host()).empty() ||
-      lookalikes::IsSafeTLD(url.host())) {
+  if (!url.SchemeIsHTTPOrHTTPS() || net::HostStringIsLocalhost(url.GetHost()) ||
+      net::IsHostnameNonUnique(url.GetHost()) ||
+      lookalikes::GetETLDPlusOne(url.GetHost()).empty() ||
+      lookalikes::IsSafeTLD(url.GetHost())) {
     return result;
   }
 
@@ -233,11 +178,15 @@ LookalikeUrlService::CheckUrlForLookalikes(
   }
 
   // If the host is allowlisted by policy, don't show any warning.
-  if (lookalikes::IsAllowedByEnterprisePolicy(profile_->GetPrefs(), url)) {
+  if (lookalikes::IsAllowedByEnterprisePolicy(pref_service_, url)) {
     result.is_allowlisted = true;
     if (stop_checking_on_allowlist_or_ignore) {
       return result;
     }
+  }
+
+  if (url_formatter::IsTopDomain(url)) {
+    return result;
   }
 
   // GetDomainInfo() is expensive, so do possible early-abort checks first.
@@ -246,9 +195,6 @@ LookalikeUrlService::CheckUrlForLookalikes(
   result.get_domain_info_duration =
       base::TimeTicks::Now() - get_domain_info_start;
 
-  if (IsTopDomain(navigated_domain)) {
-    return result;
-  }
 
   // Ensure that this URL is not already engaged. We can't use the synchronous
   // SiteEngagementService::IsEngagementAtLeast as it has side effects. We check
@@ -365,24 +311,19 @@ void LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites(
 
 bool LookalikeUrlService::IsIgnored(const GURL& url) const {
   return warning_dismissed_etld1s_.count(
-             GetETLDPlusOneWithPrivateRegistries(url.host())) > 0;
+             GetETLDPlusOneWithPrivateRegistries(url.GetHost())) > 0;
 }
 
 void LookalikeUrlService::SetUserIgnore(const GURL& url) {
   warning_dismissed_etld1s_.insert(
-      GetETLDPlusOneWithPrivateRegistries(url.host()));
+      GetETLDPlusOneWithPrivateRegistries(url.GetHost()));
 }
 
 void LookalikeUrlService::OnUIDisabledFirstVisit(const GURL& url) {
   warning_dismissed_etld1s_.insert(
-      GetETLDPlusOneWithPrivateRegistries(url.host()));
+      GetETLDPlusOneWithPrivateRegistries(url.GetHost()));
 }
 
 void LookalikeUrlService::ResetWarningDismissedETLDPlusOnesForTesting() {
   warning_dismissed_etld1s_.clear();
-}
-
-// static
-void LookalikeUrlService::EnsureFactoryBuilt() {
-  LookalikeUrlServiceFactory::GetInstance();
 }

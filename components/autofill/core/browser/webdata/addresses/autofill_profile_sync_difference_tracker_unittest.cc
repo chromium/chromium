@@ -10,9 +10,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -30,17 +30,14 @@ using testing::ElementsAre;
 using testing::IsEmpty;
 
 // Some guids for testing.
-const char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
-const char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-const char kLocaleString[] = "en-US";
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+constexpr char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
+constexpr char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
+constexpr char kLocaleString[] = "en-US";
 
 struct UpdatesToSync {
   std::vector<AutofillProfile> profiles_to_upload_to_sync;
   std::vector<std::string> profiles_to_delete_from_sync;
 };
-
-}  // namespace
 
 class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
  public:
@@ -55,7 +52,7 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
@@ -70,46 +67,29 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   }
 
   void IncorporateRemoteProfile(const AutofillProfile& profile) {
-    EXPECT_EQ(std::nullopt, tracker()->IncorporateRemoteProfile(
-                                std::make_unique<AutofillProfile>(profile)));
+    EXPECT_EQ(std::nullopt, tracker()->IncorporateRemoteProfile(profile));
   }
 
   UpdatesToSync FlushToSync() {
     EXPECT_EQ(std::nullopt,
               tracker()->FlushToLocal(
                   /*autofill_changes_callback=*/base::DoNothing()));
-
     UpdatesToSync updates;
-    std::vector<std::unique_ptr<AutofillProfile>> vector_of_unique_ptrs;
-    EXPECT_EQ(std::nullopt,
-              tracker()->FlushToSync(
-                  /*profiles_to_upload_to_sync=*/&vector_of_unique_ptrs,
-                  /*profiles_to_delete_from_sync=*/&updates
-                      .profiles_to_delete_from_sync));
-
-    // Copy all the elements by value so that we have a vector that is easier to
-    // work with in the test.
-    for (const std::unique_ptr<AutofillProfile>& entry :
-         vector_of_unique_ptrs) {
-      updates.profiles_to_upload_to_sync.push_back(*entry);
-    }
+    EXPECT_EQ(
+        std::nullopt,
+        tracker()->FlushToSync(
+            /*profiles_to_upload_to_sync=*/&updates.profiles_to_upload_to_sync,
+            /*profiles_to_delete_from_sync=*/&updates
+                .profiles_to_delete_from_sync));
     return updates;
   }
 
   std::vector<AutofillProfile> GetAllLocalData() {
-    std::vector<std::unique_ptr<AutofillProfile>> vector_of_unique_ptrs;
+    std::vector<AutofillProfile> profiles;
     // Meant as an assertion but I cannot use ASSERT_TRUE in non-void function.
     EXPECT_TRUE(table()->GetAutofillProfiles(
-        AutofillProfile::Source::kLocalOrSyncable, vector_of_unique_ptrs));
-
-    // Copy all the elements by value so that we have a vector that is easier to
-    // work with in the test.
-    std::vector<AutofillProfile> local_data;
-    for (const std::unique_ptr<AutofillProfile>& entry :
-         vector_of_unique_ptrs) {
-      local_data.push_back(*entry);
-    }
-    return local_data;
+        {AutofillProfile::RecordType::kLocalOrSyncable}, profiles));
+    return profiles;
   }
 
   virtual AutofillProfileSyncDifferenceTracker* tracker() = 0;
@@ -117,9 +97,9 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   AddressAutofillTable* table() { return &table_; }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   base::ScopedTempDir temp_dir_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AddressAutofillTable table_;
   WebDatabase db_;
 };
@@ -144,7 +124,8 @@ class AutofillProfileSyncDifferenceTrackerTest
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldOverwriteProfileWithSameKey) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.FinalizeAfterImport();
@@ -152,7 +133,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   // The remote profile is completely different but it has the same key.
   AutofillProfile remote(kSmallerGuid,
-                         AutofillProfile::Source::kLocalOrSyncable,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(NAME_FIRST, u"Tom");
   remote.FinalizeAfterImport();
@@ -168,7 +149,8 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldNotOverwriteFullNameByEmptyString) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FULL, u"John");
   local.FinalizeAfterImport();
@@ -176,7 +158,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   // The remote profile has the same key.
   AutofillProfile remote(kSmallerGuid,
-                         AutofillProfile::Source::kLocalOrSyncable,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2st st");
 
@@ -196,7 +178,8 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepRemoteKeyWhenMergingDuplicateProfileWithBiggerKey) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -205,7 +188,8 @@ TEST_F(
 
   // The remote profile is identical to the local one, except that the guids and
   // origins are different.
-  AutofillProfile remote(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile remote(kBiggerGuid,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(NAME_FIRST, u"John");
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -223,7 +207,8 @@ TEST_F(
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepRemoteKeyAndLocalOriginWhenMergingDuplicateProfileWithBiggerKey) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                          VerificationStatus::kObserved);
@@ -233,7 +218,8 @@ TEST_F(
   AddAutofillProfilesToTable({local});
 
   // The remote profile has the same key.
-  AutofillProfile remote(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile remote(kBiggerGuid,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                           VerificationStatus::kObserved);
@@ -255,7 +241,8 @@ TEST_F(
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepLocalKeyWhenMergingDuplicateProfileWithSmallerKey) {
-  AutofillProfile local(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kBiggerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -265,7 +252,7 @@ TEST_F(
   // The remote profile is identical to the local one, except that the guids and
   // origins are different.
   AutofillProfile remote(kSmallerGuid,
-                         AutofillProfile::Source::kLocalOrSyncable,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(NAME_FIRST, u"John");
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -283,7 +270,8 @@ TEST_F(
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepLocalKeyAndRemoteOriginWhenMergingDuplicateProfileWithSmallerKey) {
-  AutofillProfile local(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kBiggerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                          VerificationStatus::kUserVerified);
@@ -295,7 +283,7 @@ TEST_F(
 
   // The remote profile has the same key.
   AutofillProfile remote(kSmallerGuid,
-                         AutofillProfile::Source::kLocalOrSyncable,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                           VerificationStatus::kUserVerified);
@@ -326,7 +314,8 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileDeleted) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
@@ -344,7 +333,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileAdded) {
   AutofillProfile remote(kSmallerGuid,
-                         AutofillProfile::Source::kLocalOrSyncable,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   IncorporateRemoteProfile(remote);
 
@@ -359,12 +348,13 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileUpdated) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
   AutofillProfile remote(kSmallerGuid,
-                         AutofillProfile::Source::kLocalOrSyncable,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.FinalizeAfterImport();
@@ -407,24 +397,26 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncShouldSyncUpChanges) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.set_use_count(27);
+  local.usage_history().set_use_count(27);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile matches the local one (except for origin and use count).
-  AutofillProfile remote(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile remote(kBiggerGuid,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
-  remote.set_use_count(13);
+  remote.usage_history().set_use_count(13);
   remote.FinalizeAfterImport();
   // The remote profile wins (as regards the storage key).
   AutofillProfile merged(remote);
   // Merging two profile takes their max use count.
-  merged.set_use_count(27);
+  merged.usage_history().set_use_count(27);
 
   IncorporateRemoteProfile(remote);
   EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
@@ -438,20 +430,22 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncShouldNotSyncUpWhenNotNeeded) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.set_use_count(13);
+  local.usage_history().set_use_count(13);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile matches the local one and has some additional data.
-  AutofillProfile remote(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile remote(kBiggerGuid,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Merging two profile takes their max use count, so use count of 27 is taken.
-  remote.set_use_count(27);
+  remote.usage_history().set_use_count(27);
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
   EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
@@ -465,7 +459,8 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncNotMatchNonsimilarEntries) {
-  AutofillProfile local(kSmallerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local(kSmallerGuid,
+                        AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
@@ -473,7 +468,8 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   AddAutofillProfilesToTable({local});
 
   // The remote profile has a different street address.
-  AutofillProfile remote(kBiggerGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile remote(kBiggerGuid,
+                         AutofillProfile::RecordType::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
@@ -489,4 +485,5 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   EXPECT_THAT(GetAllLocalData(), ElementsAre(local, remote));
 }
 
+}  // namespace
 }  // namespace autofill

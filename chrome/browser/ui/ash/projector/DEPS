@@ -1,0 +1,44 @@
+include_rules = [
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/link_capturing",
+  "+chrome/browser/ash/drive",
+  "+chrome/browser/ash/extensions/file_manager",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/download",
+  "+chrome/browser/feedback",
+  "+chrome/browser/notifications",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/signin",
+  "+chrome/browser/speech",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+  "+chrome/services/media_gallery_util/public/cpp",
+  "+chrome/services/media_gallery_util/public/mojom",
+]
+
+specific_include_rules = {
+  ".*(browser|unit)test\\.cc": [
+    "+chrome/browser/ash/login/login_manager_test.h",
+    "+chrome/browser/ash/login/test",
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_list_observer.h",
+    "+chrome/browser/ui/browser_navigator.h",
+    "+chrome/browser/ui/browser_navigator_params.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/test"
+  ],
+}

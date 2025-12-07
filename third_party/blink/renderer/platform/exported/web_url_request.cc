@@ -76,8 +76,7 @@ net::RequestPriority WebURLRequest::ConvertToNetPriority(
 
     case WebURLRequest::Priority::kUnresolved:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return net::LOW;
+      NOTREACHED();
   }
 }
 

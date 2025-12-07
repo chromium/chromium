@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/input/gesture_event_queue.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,7 +43,7 @@ class GestureEventQueueTest : public testing::Test,
         acked_gesture_event_count_(0),
         sent_gesture_event_count_(0) {}
 
-  ~GestureEventQueueTest() override {}
+  ~GestureEventQueueTest() override = default;
 
   // testing::Test
   void SetUp() override {
@@ -73,8 +70,11 @@ class GestureEventQueueTest : public testing::Test,
 
   // GestureEventQueueClient
   void SendGestureEventImmediately(
-      const GestureEventWithLatencyInfo& event) override {
+      const GestureEventWithLatencyInfo& event,
+      DispatchToRendererCallback& dispatch_callback) override {
     ++sent_gesture_event_count_;
+    std::move(dispatch_callback)
+        .Run(event.event, DispatchToRendererResult::kDispatched);
     if (sync_ack_result_) {
       std::unique_ptr<blink::mojom::InputEventResultState> ack_result =
           std::move(sync_ack_result_);
@@ -108,7 +108,7 @@ class GestureEventQueueTest : public testing::Test,
       base::WeakPtr<FlingController> fling_controller) override {}
   void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) override {}
-  bool NeedsBeginFrameForFlingProgress() override { return false; }
+  bool ProgressFlingOnFlingStart() override { return true; }
   bool ShouldUseMobileFlingCurve() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return true;
@@ -134,7 +134,9 @@ class GestureEventQueueTest : public testing::Test,
   void SimulateGestureEvent(const WebGestureEvent& gesture) {
     GestureEventWithLatencyInfo gesture_event(gesture);
     if (!queue()->PassToFlingController(gesture_event)) {
-      queue()->DebounceOrForwardEvent(gesture_event);
+      ScopedDispatchToRendererCallback dispatch_callback(base::DoNothing());
+      queue()->DebounceOrForwardEvent(gesture_event,
+                                      dispatch_callback.callback);
     }
   }
 
@@ -325,12 +327,13 @@ TEST_F(GestureEventQueueTest, DebounceDefersFollowingGestureEvents) {
   EXPECT_FALSE(ScrollingInProgress());
 
   // Verify that the coalescing queue contains the correct events.
-  WebInputEvent::Type expected[] = {WebInputEvent::Type::kGestureScrollUpdate,
-                                    WebInputEvent::Type::kGestureScrollUpdate,
-                                    WebInputEvent::Type::kGestureScrollEnd};
+  auto expected = std::to_array<WebInputEvent::Type>({
+      WebInputEvent::Type::kGestureScrollUpdate,
+      WebInputEvent::Type::kGestureScrollUpdate,
+      WebInputEvent::Type::kGestureScrollEnd,
+  });
 
-  for (unsigned i = 0; i < sizeof(expected) / sizeof(WebInputEvent::Type);
-       i++) {
+  for (size_t i = 0; i < expected.size(); i++) {
     WebGestureEvent merged_event = GestureEventQueueEventAt(i);
     EXPECT_EQ(expected[i], merged_event.GetType());
   }
@@ -363,15 +366,55 @@ TEST_F(GestureEventQueueTest,
   EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
 
   // Verify that the coalescing queue contains the correct events.
-  WebInputEvent::Type expected[] = {WebInputEvent::Type::kGestureScrollUpdate,
-                                    WebInputEvent::Type::kGestureScrollEnd,
-                                    WebInputEvent::Type::kGestureScrollBegin};
+  auto expected = std::to_array<WebInputEvent::Type>({
+      WebInputEvent::Type::kGestureScrollUpdate,
+      WebInputEvent::Type::kGestureScrollEnd,
+      WebInputEvent::Type::kGestureScrollBegin,
+  });
 
-  for (unsigned i = 0; i < sizeof(expected) / sizeof(WebInputEvent::Type);
-       i++) {
+  for (size_t i = 0; i < expected.size(); i++) {
     WebGestureEvent merged_event = GestureEventQueueEventAt(i);
     EXPECT_EQ(expected[i], merged_event.GetType());
   }
+}
+
+TEST_F(GestureEventQueueTest, DebounceThenFling) {
+  SetUpForDebounce(3);
+  blink::WebGestureDevice source = blink::WebGestureDevice::kTouchpad;
+
+  // Start a scroll.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, source);
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, source);
+
+  // Debounce one GSE+GSB pair.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollEnd, source);
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, source);
+  EXPECT_EQ(2U, GestureEventDebouncingQueueSize());
+  EXPECT_TRUE(ScrollingInProgress());
+
+  // Every GSU clears the debouncing queue.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, source);
+  EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
+
+  // Start a fling.
+  SimulateGestureFlingStartEvent(0, -10, blink::WebGestureDevice::kTouchscreen);
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, source);
+  EXPECT_TRUE(FlingInProgress());
+
+  // Stop the fling. Simulate GSE first. (With a real RenderWidgetHostImpl, the
+  // GSE would be sent during StopFling(), but before resetting fling_curve_.)
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollEnd, source);
+  queue()->StopFling();
+  EXPECT_FALSE(FlingInProgress());
+  EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
+
+  // Let the debounce timer fire. We're all done with this scroll.
+  FastForwardBy(base::Milliseconds(5));
+  EXPECT_FALSE(ScrollingInProgress());
+
+  // Start a brand new scroll. This GSB should NOT be filtered.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, source);
+  EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
 }
 
 TEST_F(GestureEventQueueTest, DebounceDefersGSBIfPreviousGSEDeferred) {
@@ -428,11 +471,11 @@ TEST_F(GestureEventQueueTest, DebounceDefersGSBIfPreviousGSEDropped) {
   EXPECT_TRUE(ScrollingInProgress());
 
   // Verify that the coalescing queue contains the correct events.
-  WebInputEvent::Type expected[] = {WebInputEvent::Type::kGestureScrollUpdate,
-                                    WebInputEvent::Type::kGestureScrollUpdate};
+  auto expected = std::to_array<WebInputEvent::Type>(
+      {WebInputEvent::Type::kGestureScrollUpdate,
+       WebInputEvent::Type::kGestureScrollUpdate});
 
-  for (unsigned i = 0; i < sizeof(expected) / sizeof(WebInputEvent::Type);
-       i++) {
+  for (size_t i = 0; i < expected.size(); i++) {
     WebGestureEvent merged_event = GestureEventQueueEventAt(i);
     EXPECT_EQ(expected[i], merged_event.GetType());
   }
@@ -468,11 +511,11 @@ TEST_F(GestureEventQueueTest, DebounceDropsDeferredEvents) {
   EXPECT_TRUE(ScrollingInProgress());
 
   // Verify that the coalescing queue contains the correct events.
-  WebInputEvent::Type expected[] = {WebInputEvent::Type::kGestureScrollUpdate,
-                                    WebInputEvent::Type::kGestureScrollUpdate};
+  auto expected = std::to_array<WebInputEvent::Type>(
+      {WebInputEvent::Type::kGestureScrollUpdate,
+       WebInputEvent::Type::kGestureScrollUpdate});
 
-  for (unsigned i = 0; i < sizeof(expected) / sizeof(WebInputEvent::Type);
-       i++) {
+  for(size_t i = 0; i < expected.size(); i++) {
     WebGestureEvent merged_event = GestureEventQueueEventAt(i);
     EXPECT_EQ(expected[i], merged_event.GetType());
   }

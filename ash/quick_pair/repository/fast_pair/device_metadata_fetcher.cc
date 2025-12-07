@@ -10,6 +10,7 @@
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/unauthenticated_http_fetcher.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "components/cross_device/logging/logging.h"
 #include "google_apis/google_api_keys.h"
@@ -84,13 +85,13 @@ void DeviceMetadataFetcher::LookupDeviceId(int id,
 void DeviceMetadataFetcher::LookupHexDeviceId(
     const std::string& hex_id,
     GetObservedDeviceCallback callback) {
-  int id = std::strtol(hex_id.c_str(), nullptr, 16);
+  int id = UNSAFE_TODO(std::strtol(hex_id.c_str(), nullptr, 16));
   LookupDeviceId(id, std::move(callback));
 }
 
 void DeviceMetadataFetcher::OnFetchComplete(
     GetObservedDeviceCallback callback,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": HTTP result: "
@@ -104,7 +105,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
 
   RecordDeviceMetadataFetchResult(*http_result);
 
-  if (!response_body) {
+  if (!response_body.has_value()) {
     CD_LOG(WARNING, Feature::FP) << "No response.";
     // Only suggest retrying when the actual request failed, otherwise there is
     // no matching metadata for the given model_id.

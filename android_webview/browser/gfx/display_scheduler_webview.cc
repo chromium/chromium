@@ -31,10 +31,12 @@ DisplaySchedulerWebView::~DisplaySchedulerWebView() {
 
 void DisplaySchedulerWebView::ForceImmediateSwapIfPossible() {
   // We can't swap immediately
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
-void DisplaySchedulerWebView::SetNeedsOneBeginFrame(bool needs_draw) {
-  NOTREACHED_IN_MIGRATION();
+void DisplaySchedulerWebView::SetNeedsOneBeginFrame(
+    const viz::BeginFrameArgs& args,
+    bool needs_draw) {
+  NOTREACHED();
 }
 void DisplaySchedulerWebView::DidSwapBuffers() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

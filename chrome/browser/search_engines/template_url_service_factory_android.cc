@@ -16,3 +16,5 @@ JNI_TemplateUrlServiceFactory_GetTemplateUrlService(JNIEnv* env,
   DCHECK(profile);
   return TemplateURLServiceFactory::GetForProfile(profile)->GetJavaObject();
 }
+
+DEFINE_JNI(TemplateUrlServiceFactory)

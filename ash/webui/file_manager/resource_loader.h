@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/resource_path.h"
 
@@ -14,8 +15,7 @@ namespace ash {
 namespace file_manager {
 
 void AddFilesAppResources(content::WebUIDataSource* source,
-                          const webui::ResourcePath* entries,
-                          size_t size);
+                          base::span<const webui::ResourcePath> entries);
 
 }  // namespace file_manager
 }  // namespace ash

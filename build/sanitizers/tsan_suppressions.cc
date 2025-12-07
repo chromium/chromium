@@ -97,6 +97,16 @@ char kTSanDefaultSuppressions[] =
     // and the race is therefore not present in released builds.
     "race:crash_reporter::*::OutputCrashKeysToStream\n"
 
+    // Tracing within fuzztest instrumentation, likely intentionally not
+    // synchronized for performance.
+    "race:SetIsTracing\n"
+
+    // crbug.com/462477486
+    // False positive in SwiftShader/Vulkan due to different virtual memory
+    // addresses for the same physical memory address used for cross-process
+    // mutexes.
+    "mutex:vk::OpaqueFdExternalSemaphore::\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 

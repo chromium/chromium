@@ -2,36 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 if (!is_android) {
   source_set("test_support") {
     testonly = true
-    sources = [
-      "live_caption/live_caption_test_util.cc",
-      "live_caption/live_caption_test_util.h",
-    ]
+    public = [ "live_caption/live_caption_test_util.h" ]
+    sources = [ "live_caption/live_caption_test_util.cc" ]
 
-    deps = [
+    public_deps = [
       "//base",
-      "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
+    ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui",
       "//components/live_caption:constants",
       "//components/soda",
       "//components/soda:constants",
       "//components/sync_preferences",
+      "//ui/accessibility",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ash/constants" ]
     }
 
-    if (is_chromeos_lacros) {
-      deps += [
-        "//chromeos/lacros",
-        "//chromeos/startup",
+    if (is_win) {
+      public += [ "browser_test_with_ax_client.h" ]
+      sources += [ "browser_test_with_ax_client.cc" ]
+      public_deps += [
+        "//chrome/test/accessibility/ax_client:launcher",
+        "//chrome/test/accessibility/ax_client:mojom",
+        "//mojo/public/cpp/bindings",
+        "//ui/accessibility",
       ]
     }
   }
@@ -39,24 +42,16 @@ if (!is_android) {
 
 source_set("utils") {
   sources = [
-    "accessibility_state_utils.cc",
-    "accessibility_state_utils.h",
     "pdf_ocr_metrics.cc",
     "pdf_ocr_metrics.h",
   ]
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/browser/profiles",
-    "//chrome/common",
-    "//components/prefs",
-    "//services/screen_ai/buildflags",
+    "//ui/accessibility/platform",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/accessibility" ]
-  } else {
-    deps += [ "//content/public/browser" ]
   }
 }

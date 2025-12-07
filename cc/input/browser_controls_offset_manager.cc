@@ -13,7 +13,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -83,8 +84,24 @@ float BrowserControlsOffsetManager::TopControlsMinHeight() const {
   return client_->TopControlsMinHeight();
 }
 
+int BrowserControlsOffsetManager::TopControlsAdditionalHeight() const {
+  return offset_tag_modifications_.top_controls_additional_height;
+}
+
+int BrowserControlsOffsetManager::BottomControlsAdditionalHeight() const {
+  return offset_tag_modifications_.bottom_controls_additional_height;
+}
+
+viz::OffsetTag BrowserControlsOffsetManager::BottomControlsOffsetTag() const {
+  return offset_tag_modifications_.tags.bottom_controls_offset_tag;
+}
+
+viz::OffsetTag BrowserControlsOffsetManager::ContentOffsetTag() const {
+  return offset_tag_modifications_.tags.content_offset_tag;
+}
+
 viz::OffsetTag BrowserControlsOffsetManager::TopControlsOffsetTag() const {
-  return top_controls_offset_tag_;
+  return offset_tag_modifications_.tags.top_controls_offset_tag;
 }
 
 float BrowserControlsOffsetManager::TopControlsMinShownRatio() const {
@@ -123,6 +140,11 @@ float BrowserControlsOffsetManager::BottomControlsMinHeightOffset() const {
   return bottom_controls_min_height_offset_;
 }
 
+bool BrowserControlsOffsetManager::HasOffsetTag() const {
+  return BottomControlsOffsetTag() || ContentOffsetTag() ||
+         TopControlsOffsetTag();
+}
+
 std::pair<float, float>
 BrowserControlsOffsetManager::TopControlsShownRatioRange() {
   if (top_controls_animation_.IsInitialized())
@@ -145,7 +167,8 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
     BrowserControlsState constraints,
     BrowserControlsState current,
     bool animate,
-    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
+    base::optional_ref<const BrowserControlsOffsetTagModifications>
+        offset_tag_modifications) {
   DCHECK(!(constraints == BrowserControlsState::kShown &&
            current == BrowserControlsState::kHidden));
   DCHECK(!(constraints == BrowserControlsState::kHidden &&
@@ -164,8 +187,8 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
 
   permitted_state_ = constraints;
 
-  if (offset_tags_info.has_value()) {
-    top_controls_offset_tag_ = offset_tags_info.value().top_controls_offset_tag;
+  if (offset_tag_modifications.has_value()) {
+    offset_tag_modifications_ = offset_tag_modifications.value();
   }
 
   // Don't do anything if it doesn't matter which state the controls are in.
@@ -257,23 +280,32 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
                                ? BottomControlsShownRatio() *
                                      old_bottom_height / BottomControlsHeight()
                                : BottomControlsShownRatio();
-
   if (!animate_changes) {
-    // If the min-heights changed when the controls were at the min-height, the
-    // shown ratios need to be snapped to the new min-shown-ratio to keep the
-    // controls at the min height. If the controls were fully shown, we want to
-    // keep them fully shown even after the heights changed. For any other
-    // cases, we should update the shown ratio so the visible height remains the
-    // same.
-    if (TopControlsShownRatio() == OldTopControlsMinShownRatio())
+    // 1. If browser controls params were updated when permitted_state_ is
+    // hidden, we are always snapping the controls to the min-height.
+    // 2. If the controls were already fully shown, we want to keep them fully
+    // shown even after the heights changed.
+    // 3. If either heights changed when the controls were at the min-height,
+    // the shown ratios need to be snapped to the new min-shown-ratio to keep
+    // the controls at the min height.
+    // 4. For any other cases, we should update the shown ratio so the visible
+    // height remains the same.
+    bool hide_controls = (permitted_state_ == BrowserControlsState::kHidden);
+    if (hide_controls) {
       new_top_ratio = TopControlsMinShownRatio();
-    else if (TopControlsShownRatio() == 1.f)
+    } else if (TopControlsShownRatio() == 1.f) {
       new_top_ratio = 1.f;
+    } else if (TopControlsShownRatio() == OldTopControlsMinShownRatio()) {
+      new_top_ratio = TopControlsMinShownRatio();
+    }
 
-    if (BottomControlsShownRatio() == OldBottomControlsMinShownRatio())
+    if (hide_controls) {
       new_bottom_ratio = BottomControlsMinShownRatio();
-    else if (BottomControlsShownRatio() == 1.f)
+    } else if (BottomControlsShownRatio() == 1.f) {
       new_bottom_ratio = 1.f;
+    } else if (BottomControlsShownRatio() == OldBottomControlsMinShownRatio()) {
+      new_bottom_ratio = BottomControlsMinShownRatio();
+    }
   }
 
   // Browser controls height change animations
@@ -385,6 +417,21 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
         BottomControlsMinHeight()) {
       bottom_controls_min_height_offset_ =
           old_browser_controls_params_.bottom_controls_min_height;
+
+      int height_delta = BottomControlsHeight() - old_bottom_height;
+      int min_height_delta =
+          BottomControlsMinHeight() -
+          old_browser_controls_params_.bottom_controls_min_height;
+      // Currently, browser controls animate purely based on the change in the
+      // height, not on the change in minHeight. This works fine when that
+      // change is the same, but causes issues if the minHeight has been changed
+      // by a different value than the height has. This is mitigated by
+      // "stepping up" or "down" the starting min height offset such that the
+      // effective change is the same for both the height and minHeight.
+      if (min_height_delta > height_delta) {
+        bottom_controls_min_height_offset_ += min_height_delta - height_delta;
+      }
+
       bottom_min_height_change_in_progress_ = true;
       SetBottomMinHeightOffsetAnimationRange(bottom_controls_min_height_offset_,
                                              BottomControlsMinHeight());
@@ -468,8 +515,14 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
 
   float min_ratio = base_on_top_controls ? TopControlsMinShownRatio()
                                          : BottomControlsMinShownRatio();
-  float normalized_shown_ratio =
-      (std::clamp(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
+  float normalized_shown_ratio;
+  if (min_ratio == 1.f) {
+    normalized_shown_ratio = 1.f;
+  } else {
+    normalized_shown_ratio =
+        (std::clamp(shown_ratio, min_ratio, 1.f) - min_ratio) /
+        (1.f - min_ratio);
+  }
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
   // relative/normalized ratio to keep them in sync.
@@ -573,6 +626,18 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
     // Ticking the animation might reset it if it's at the final value.
     bottom_min_height_change_in_progress_ =
         bottom_controls_animation_.IsInitialized();
+
+    // When shrinking the bottom controls, there may be a remaining offset
+    // mistake if the min height was decreased by more than the height was. This
+    // can be fixed by simply "resetting" the offset to the final minHeight
+    // value at the end of the animation. This only applies to shrinking
+    // animations, since this adjustment happens at the beginning for growing
+    // animations. This is done to avoid the bottom controls "lagging behind"
+    // the changes to the web content and exposing a blank space right above the
+    // bottom controls.
+    if (!bottom_min_height_change_in_progress_) {
+      bottom_controls_min_height_offset_ = BottomControlsMinHeight();
+    }
   }
 
   gfx::Vector2dF scroll_delta(0.f, top_offset_delta);
@@ -614,9 +679,9 @@ void BrowserControlsOffsetManager::SetupAnimation(
     AnimationDirection direction) {
   DCHECK_NE(AnimationDirection::kNoAnimation, direction);
   DCHECK(direction != AnimationDirection::kHidingControls ||
-         TopControlsShownRatio() > 0.f);
+         TopControlsShownRatio() > 0.f || BottomControlsShownRatio() > 0.f);
   DCHECK(direction != AnimationDirection::kShowingControls ||
-         TopControlsShownRatio() < 1.f);
+         TopControlsShownRatio() < 1.f || BottomControlsShownRatio() < 1.f);
 
   if (top_controls_animation_.IsInitialized() &&
       top_controls_animation_.Direction() == direction &&

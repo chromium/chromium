@@ -24,7 +24,7 @@
 #include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
@@ -35,6 +35,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
@@ -139,23 +140,21 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
   HostContentSettingsMap* settings_map() { return settings_map_.get(); }
 
  protected:
-  std::unique_ptr<content::NavigationThrottle> CreateThrottle(
-      content::NavigationHandle* handle) {
+  void CreateThrottle(content::NavigationThrottleRegistry& registry) {
     // Activation is only computed when navigating a subresource filter root
     // (see content_subresource_filter_throttle_manager.h for the definition of
     // a root).
-    if (subresource_filter::IsInSubresourceFilterRoot(handle)) {
-      return std::make_unique<
-          subresource_filter::SafeBrowsingPageActivationThrottle>(
-          handle, /*delegate=*/nullptr, content::GetIOThreadTaskRunner({}),
-          fake_safe_browsing_database_);
+    auto& handle = registry.GetNavigationHandle();
+    if (subresource_filter::IsInSubresourceFilterRoot(&handle)) {
+      registry.AddThrottle(
+          std::make_unique<
+              subresource_filter::SafeBrowsingPageActivationThrottle>(
+              registry, /*delegate=*/nullptr, fake_safe_browsing_database_));
     }
-
-    return nullptr;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   raw_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_ = nullptr;
@@ -235,7 +234,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   params.triggering_event_info =
       blink::mojom::TriggeringEventInfo::kFromUntrustedEvent;
   params.source_render_frame_id = main_rfh()->GetRoutingID();
-  params.source_render_process_id = main_rfh()->GetProcess()->GetID();
+  params.source_render_process_id = main_rfh()->GetProcess()->GetDeprecatedID();
 
   MaybeBlockPopup(web_contents(), nullptr,
                   std::make_unique<TestPopupNavigationDelegate>(
@@ -481,7 +480,12 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NonPrimaryFrameTree) {
     // abusive.
     content::MockNavigationHandle handle(url1, main_rfh());
     handle.set_has_committed(true);
-    auto throttle = CreateThrottle(&handle);
+    content::MockNavigationThrottleRegistry registry(
+        &handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    CreateThrottle(registry);
+    ASSERT_EQ(registry.throttles().size(), 1u);
+    auto throttle = registry.throttles().back().get();
     auto result = throttle->WillProcessResponse();
     if (result.action() == content::NavigationThrottle::ThrottleAction::DEFER) {
       base::RunLoop loop;
@@ -503,7 +507,12 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NonPrimaryFrameTree) {
     // abusive.
     content::MockNavigationHandle handle(url2, main_rfh());
     handle.set_has_committed(true);
-    auto throttle = CreateThrottle(&handle);
+    content::MockNavigationThrottleRegistry registry(
+        &handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    CreateThrottle(registry);
+    ASSERT_EQ(registry.throttles().size(), 1u);
+    auto throttle = registry.throttles().back().get();
     auto result = throttle->WillProcessResponse();
     if (result.action() == content::NavigationThrottle::ThrottleAction::DEFER) {
       base::RunLoop loop;
@@ -526,7 +535,12 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NonPrimaryFrameTree) {
     content::MockNavigationHandle handle(url2, main_rfh());
     handle.set_has_committed(true);
     handle.set_is_in_primary_main_frame(false);
-    auto throttle = CreateThrottle(&handle);
+    content::MockNavigationThrottleRegistry registry(
+        &handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    CreateThrottle(registry);
+    ASSERT_EQ(registry.throttles().size(), 1u);
+    auto throttle = registry.throttles().back().get();
     auto result = throttle->WillProcessResponse();
     if (result.action() == content::NavigationThrottle::ThrottleAction::DEFER) {
       base::RunLoop loop;

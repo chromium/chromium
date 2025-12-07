@@ -4,8 +4,8 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.ScreenOrientationProviderImpl;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -14,6 +14,7 @@ import org.chromium.ui.base.WindowAndroid;
  * TODO(boliu): This interface working with WindowAndroid does not support the use case
  * when an Activity (and WindowAndroid) is recreated on rotation.
  */
+@NullMarked
 public interface ScreenOrientationProvider {
     static ScreenOrientationProvider getInstance() {
         return ScreenOrientationProviderImpl.getInstance();
@@ -38,10 +39,11 @@ public interface ScreenOrientationProvider {
     /** Runs delayed screen orientation requests for the given window. */
     void runDelayedOrientationRequests(WindowAndroid window);
 
-    void setOrientationDelegate(ScreenOrientationDelegate delegate);
+    void setOrientationDelegate(@Nullable ScreenOrientationDelegate delegate);
 
     /**
      * Sets a default screen orientation for a given window.
+     *
      * @param window Window to lock rotation on.
      * @param defaultWebOrientation a default screen orientation for the window.
      */

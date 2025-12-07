@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -17,11 +18,11 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
@@ -35,8 +36,9 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -54,10 +56,10 @@
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/ime/ime_text_span.h"
-#include "ui/gfx/range/range.h"
 #include "v8/include/v8-forward.h"
 
 namespace base {
+class Location;
 class SingleThreadTaskRunner;
 }
 
@@ -68,6 +70,7 @@ class PaintCanvas;
 namespace gfx {
 class Point;
 class PointF;
+class Range;
 }  // namespace gfx
 
 namespace ui {
@@ -104,6 +107,7 @@ class WebTextCheckClient;
 class WebURL;
 class WebView;
 struct FramePolicy;
+struct Impression;
 struct WebAssociatedURLLoaderOptions;
 struct WebConsoleMessage;
 struct WebIsolatedWorldInfo;
@@ -240,6 +244,10 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetLCPPHint(
       const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) = 0;
 
+  // Tests whether the policy-controlled feature is enabled in this frame.
+  virtual bool IsFeatureEnabled(
+      const network::mojom::PermissionsPolicyFeature&) const = 0;
+
   // Hierarchy ----------------------------------------------------------
 
   // Returns true if the current frame is a provisional frame.
@@ -249,6 +257,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   // Get the highest-level LocalFrame in this frame's in-process subtree.
   virtual WebLocalFrame* LocalRoot() = 0;
+  virtual const WebLocalFrame* LocalRoot() const = 0;
 
   // Returns the WebFrameWidget associated with this frame if there is one or
   // nullptr otherwise.
@@ -299,6 +308,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   virtual void SendPings(const WebURL& destination_url) = 0;
 
+  virtual void SendAttributionSrc(const std::optional<Impression>&,
+                                  bool did_navigate) = 0;
+
   // Navigation ----------------------------------------------------------
 
   // Start reloading the current document.
@@ -328,6 +340,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       network::mojom::RedirectMode cross_origin_redirect_behavior,
       CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase>
           blob_url_token) = 0;
+
+  // If `this` is a provisional frame, returns the "owner" frame, i.e. the frame
+  // that would be replaced if a navigation commits in `this`. Otherwise,
+  // returns nullptr.
+  virtual WebFrame* GetProvisionalOwnerFrame() = 0;
 
   // Navigation State -------------------------------------------------------
 
@@ -450,6 +467,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                     mojom::WantResultOption,
                                     mojom::PromiseResultOption) = 0;
 
+  // Returns if devtools is connected to the frame.
+  virtual bool IsInspectorConnected() = 0;
+
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been
   // added to the console previously from this page).
@@ -460,6 +480,14 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   void AddInspectorIssue(mojom::InspectorIssueCode code) {
     AddInspectorIssueImpl(code);
+  }
+
+  // Adds a user re-identification issue to DevTools, which is a specific type
+  // of `InspectorIssue` with required details.
+  void AddUserReidentificationIssue(
+      std::optional<std::string> devtools_request_id,
+      const WebURL& affected_request_url) {
+    AddUserReidentificationIssueImpl(devtools_request_id, affected_request_url);
   }
 
   void AddGenericIssue(mojom::GenericIssueErrorType error_type,
@@ -498,7 +526,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                           gfx::Rect&) const = 0;
 
   // Supports commands like Undo, Redo, Cut, Copy, Paste, SelectAll,
-  // Unselect, etc. See EditorCommand.cpp for the full list of supported
+  // Unselect, etc. See editor_command_names.h for the full list of supported
   // commands.
   virtual bool ExecuteCommand(const WebString&) = 0;
   virtual bool ExecuteCommand(const WebString&, const WebString& value) = 0;
@@ -514,6 +542,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Changes the text direction of the selected input node.
   virtual void SetTextDirectionForTesting(
       base::i18n::TextDirection direction) = 0;
+
+  // Sets whether caret browsing mode has been overridden. Embedders that want
+  // to override caret browsing need to set this to prevent any default move
+  // commands from interfering with the embedder's implementation.
+  virtual void SetIsCaretBrowsingOverridden(bool should_update) = 0;
 
   // Selection -----------------------------------------------------------
   virtual void CenterSelection() = 0;
@@ -569,7 +602,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   virtual bool SetEditableSelectionOffsets(int start, int end) = 0;
   virtual bool AddImeTextSpansToExistingText(
-      const WebVector<ui::ImeTextSpan>& ime_text_spans,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
       unsigned text_start,
       unsigned text_end) = 0;
   virtual bool ClearImeTextSpansByType(ui::ImeTextSpan::Type type,
@@ -578,7 +611,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual bool SetCompositionFromExistingText(
       int composition_start,
       int composition_end,
-      const WebVector<ui::ImeTextSpan>& ime_text_spans) = 0;
+      const std::vector<ui::ImeTextSpan>& ime_text_spans) = 0;
   virtual void ExtendSelectionAndDelete(int before, int after) = 0;
   virtual void ExtendSelectionAndReplace(int before,
                                          int after,
@@ -608,12 +641,15 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void ReplaceMisspelledRange(const WebString&) = 0;
   virtual void RemoveSpellingMarkers() = 0;
   virtual void RemoveSpellingMarkersUnderWords(
-      const WebVector<WebString>& words) = 0;
+      const std::vector<WebString>& words) = 0;
 
   // Content Settings -------------------------------------------------------
 
   virtual WebContentSettingsClient* GetContentSettingsClient() const = 0;
   virtual void SetContentSettingsClient(WebContentSettingsClient*) = 0;
+
+  virtual const mojom::RendererContentSettingsPtr& GetContentSettings()
+      const = 0;
 
   // Image reload -----------------------------------------------------------
 
@@ -658,7 +694,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // given layout object. If this is called with an empty array, the default
   // behavior will be restored.
   virtual void SetTickmarks(const WebElement& target,
-                            const WebVector<gfx::Rect>& tickmarks) = 0;
+                            const std::vector<gfx::Rect>& tickmarks) = 0;
 
   // Context menu -----------------------------------------------------------
 
@@ -719,6 +755,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       TaskType) = 0;
 
+  // Schedules a callback to run when the main thread is idle.
+  virtual void PostIdleTask(
+      const base::Location&,
+      base::OnceCallback<void(base::TimeTicks deadline)>) = 0;
+
   // Returns the WebInputMethodController associated with this local frame.
   virtual WebInputMethodController* GetInputMethodController() = 0;
 
@@ -736,6 +777,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // used on a regular basis.
   virtual void DeprecatedStopLoading() = 0;
 
+  // Invokes the given callback when the Blink determines it is in an idle
+  // period of network resource requests. Only one callback is currently
+  // supported at a time.
+  virtual void RequestNetworkIdleCallback(base::OnceClosure callback) = 0;
+
   // Geometry -----------------------------------------------------------------
 
   // NOTE: These routines do not force page layout so their results may
@@ -748,7 +794,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // where there is no concept of scroll origin.
   // See renderer/core/scroll/scroll_area.h for details.
   virtual gfx::PointF GetScrollOffset() const = 0;
-  virtual void SetScrollOffset(const gfx::PointF&) = 0;
+  // Returns true if the scroll offset was set successfully.
+  virtual bool SetScrollOffset(const gfx::PointF&) = 0;
 
   // The size of the document in this frame.
   virtual gfx::Size DocumentSize() const = 0;
@@ -788,7 +835,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual bool WillPrintSoon() = 0;
 
   // Prints one page.
-  virtual void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
+  virtual void PrintPage(uint32_t page_index, cc::PaintCanvas*) = 0;
 
   // Reformats the WebFrame for screen display.
   virtual void PrintEnd() = 0;
@@ -811,16 +858,12 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // |skip_accelerated_content| is true, the capture will omit GPU accelerated
   // content where applicable. Currently, this setting replaces video frames
   // with a poster or empty space.
+  // |allow_scrollbars| is true, the capture will include scrollbars as well.
   virtual bool CapturePaintPreview(const gfx::Rect& bounds,
                                    cc::PaintCanvas* canvas,
                                    bool include_linked_destinations,
-                                   bool skip_accelerated_content) = 0;
-
-  // Focus --------------------------------------------------------------
-
-  // Returns whether the keyboard should be suppressed for the currently focused
-  // element.
-  virtual bool ShouldSuppressKeyboardForFocusedElement() = 0;
+                                   bool skip_accelerated_content,
+                                   bool allow_scrollbars) = 0;
 
   // Performance --------------------------------------------------------
 
@@ -883,7 +926,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Get the total spool size (the bounding box of all the pages placed after
   // oneanother vertically), when printing for testing.
   virtual gfx::Size SpoolSizeInPixelsForTesting(
-      const WebVector<uint32_t>& pages) = 0;
+      const std::vector<uint32_t>& pages) = 0;
   virtual gfx::Size SpoolSizeInPixelsForTesting(uint32_t page_count) = 0;
 
   // Prints the given pages of the frame into the canvas, with page boundaries
@@ -892,7 +935,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void PrintPagesForTesting(
       cc::PaintCanvas*,
       const gfx::Size& spool_size_in_pixels,
-      const WebVector<uint32_t>* pages = nullptr) = 0;
+      const std::vector<uint32_t>* pages = nullptr) = 0;
 
   // Returns the bounds rect for current selection. If selection is performed
   // on transformed text, the rect will still bound the selection but will
@@ -970,6 +1013,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void AddMessageToConsoleImpl(const WebConsoleMessage&,
                                        bool discard_duplicates) = 0;
   virtual void AddInspectorIssueImpl(blink::mojom::InspectorIssueCode code) = 0;
+  virtual void AddUserReidentificationIssueImpl(
+      std::optional<std::string> devtools_request_id,
+      const WebURL& affected_request_url) = 0;
   virtual void AddGenericIssueImpl(
       blink::mojom::GenericIssueErrorType error_type,
       int violating_node_id) = 0;

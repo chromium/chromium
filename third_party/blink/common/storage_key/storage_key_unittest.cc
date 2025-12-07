@@ -13,7 +13,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/gurl.h"
@@ -1033,69 +1035,20 @@ TEST_F(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
   }
 }
 
-// crbug.com/328043119 remove ToCookiePartitionKeyAncestorChainBitDisabled test
-// when kAncestorChainBitEnabledInPartitionedCookies is no longer needed.
-TEST_F(StorageKeyTest, ToCookiePartitionKeyAncestorChainBitDisabled) {
-  auto nonce = base::UnguessableToken::Create();
-
-  std::vector<StorageKey> storage_keys =
-      StorageKeysForCookiePartitionKeyTest(nonce);
-
-  // CookiePartitionKeys evaluate the state of the feature
-  // kAncestorChainBitEnabledInPartitionedCookies during
-  // object creation. The ScopedFeatureList is used here to ensure that the
-  // CookiePartitionKeys created from the storage_keys vector have the expected
-  // result in either state.
-
-  {  // Ancestor Chain Bit disabled in Partitioned Cookies.
-    base::test::ScopedFeatureList scope_feature_list;
-    scope_feature_list.InitWithFeatures(
-        {net::features::kThirdPartyStoragePartitioning},
-        {net::features::kAncestorChainBitEnabledInPartitionedCookies});
-
-    std::vector<std::optional<net::CookiePartitionKey>> expected_cpk{
-        {net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://www.example.com"))},
-        {net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://subdomain.bar.com"))},
-        {net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://www.foo.com"),
-            net::CookiePartitionKey::AncestorChainBit::kSameSite)},
-        {net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://www.foo.com"),
-            net::CookiePartitionKey::AncestorChainBit::kSameSite)},
-        {net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://www.example.com"),
-            net::CookiePartitionKey::AncestorChainBit::kCrossSite, nonce)},
-    };
-
-    std::vector<std::optional<net::CookiePartitionKey>> got;
-    base::ranges::transform(
-        storage_keys, std::back_inserter(got),
-        [](const StorageKey& key) -> std::optional<net::CookiePartitionKey> {
-          return key.ToCookiePartitionKey();
-        });
-    EXPECT_EQ(expected_cpk, got);
-  }
-}
-
 TEST_F(StorageKeyTest, ToCookiePartitionKeyAncestorChainEnabled) {
   auto nonce = base::UnguessableToken::Create();
 
   std::vector<StorageKey> storage_keys =
       StorageKeysForCookiePartitionKeyTest(nonce);
 
-  // CookiePartitionKeys evaluate the state of the feature
-  // kAncestorChainBitEnabledInPartitionedCookies during
-  // object creation. The ScopedFeatureList is used here to ensure that the
+  // The ScopedFeatureList is used here to ensure that the
   // CookiePartitionKeys created from the storage_keys vector have the expected
   // result.
 
-  {  // Ancestor Chain Bit enabled in Partitioned Cookies.
+  {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatures(
-        {net::features::kThirdPartyStoragePartitioning,
-         net::features::kAncestorChainBitEnabledInPartitionedCookies},
+        {net::features::kThirdPartyStoragePartitioning},
         {});
 
     std::vector<std::optional<net::CookiePartitionKey>> expected_cpk{
@@ -1115,7 +1068,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKeyAncestorChainEnabled) {
             net::CookiePartitionKey::AncestorChainBit::kCrossSite, nonce)},
     };
     std::vector<std::optional<net::CookiePartitionKey>> got;
-    base::ranges::transform(
+    std::ranges::transform(
         storage_keys, std::back_inserter(got),
         [](const StorageKey& key) -> std::optional<net::CookiePartitionKey> {
           return key.ToCookiePartitionKey();
@@ -1147,6 +1100,25 @@ TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndCrossSite) {
     EXPECT_EQ(key.ancestor_chain_bit(),
               blink::mojom::AncestorChainBit::kCrossSite);
     EXPECT_EQ(key.top_level_site(), opaque_site);
+  }
+}
+
+TEST_F(StorageKeyTest, NoncedKeyForbidsUnpartitionedAccess) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
+  const net::SchemefulSite site(origin);
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+
+    StorageKey key =
+        StorageKey::Create(origin, site, mojom::AncestorChainBit::kSameSite);
+    EXPECT_FALSE(key.ForbidsUnpartitionedStorageAccess());
+
+    key = StorageKey::CreateWithNonce(origin, nonce);
+    EXPECT_TRUE(key.ForbidsUnpartitionedStorageAccess());
   }
 }
 

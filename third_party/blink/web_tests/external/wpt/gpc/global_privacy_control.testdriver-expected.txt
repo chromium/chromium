@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] GPC Testdriver Validation
+  promise_test: Unhandled rejection with value: "error: Action get_global_privacy_control not implemented"
+Harness: the test ran to completion.
+

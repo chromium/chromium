@@ -4,9 +4,7 @@
 
 package org.chromium.base;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.base.PackageUtils.byteArrayToHexString;
 import static org.chromium.base.PackageUtils.getCertificateSHA256FingerprintForPackage;
@@ -63,10 +61,9 @@ public class PackageUtilsTest {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         List<String> fingerprints = getCertificateSHA256FingerprintForPackage(PACKAGE_NAME);
 
-        assertThat(
-                fingerprints,
-                anyOf(
-                        is(Collections.singletonList(SHA_256_FINGERPRINT_PUBLIC)),
-                        is(Collections.singletonList(SHA_256_FINGERPRINT_OFFICIAL))));
+        assertThat(fingerprints)
+                .isAnyOf(
+                        Collections.singletonList(SHA_256_FINGERPRINT_PUBLIC),
+                        Collections.singletonList(SHA_256_FINGERPRINT_OFFICIAL));
     }
 }

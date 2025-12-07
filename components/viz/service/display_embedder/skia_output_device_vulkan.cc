@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_device_vulkan.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -13,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -22,16 +24,16 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -65,7 +67,7 @@ SkiaOutputDeviceVulkan::SkiaOutputDeviceVulkan(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_provider->GetGrContext(),
-                       /*graphite_context=*/nullptr,
+                       /*graphite_shared_context=*/nullptr,
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       context_provider_(context_provider),
@@ -108,7 +110,10 @@ bool SkiaOutputDeviceVulkan::Reshape(const ReshapeParams& params) {
                            params.transform);
 }
 
-void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
+void SkiaOutputDeviceVulkan::Submit(
+    scoped_refptr<gpu::SharedContextState> context_state,
+    bool sync_cpu,
+    base::OnceClosure callback) {
   if (scoped_write_) [[likely]] {
     auto& sk_surface =
         sk_surface_size_pairs_[scoped_write_->image_index()].sk_surface;
@@ -117,13 +122,12 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
         context_provider_->GetDeviceQueue()->GetVulkanQueueIndex();
     skgpu::MutableTextureState state = skgpu::MutableTextureStates::MakeVulkan(
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, queue_index);
-    if (GrDirectContext* direct_context =
-            GrAsDirectContext(sk_surface->recordingContext())) {
-      direct_context->flush(sk_surface.get(), {}, &state);
+    if (GrDirectContext* gr_context = context_state->gr_context()) {
+      gr_context->flush(sk_surface.get(), {}, &state);
     }
   }
 
-  SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
+  SkiaOutputDevice::Submit(context_state, sync_cpu, std::move(callback));
 }
 
 void SkiaOutputDeviceVulkan::Present(
@@ -264,7 +268,7 @@ void SkiaOutputDeviceVulkan::EndPaint() {
   if (!context_provider_->GetGrContext()->abandoned() &&
       !GrBackendRenderTargets::GetVkImageInfo(backend, &vk_image_info))
       [[unlikely]] {
-    NOTREACHED_IN_MIGRATION() << "Failed to get the image info.";
+    NOTREACHED() << "Failed to get the image info.";
   }
   DCHECK_EQ(vk_image_info.fImageLayout, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 #endif
@@ -277,15 +281,14 @@ void SkiaOutputDeviceVulkan::EndPaint() {
 bool SkiaOutputDeviceVulkan::Initialize() {
   gfx::AcceleratedWidget accelerated_widget = gfx::kNullAcceleratedWidget;
 #if BUILDFLAG(IS_ANDROID)
-  bool can_be_used_with_surface_control = false;
-  auto surface_variant =
-      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-          surface_handle_, &can_be_used_with_surface_control);
+  auto surface_record =
+      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle_);
   // Should only reach here if surface control is disabled. In which case
   // browser should not be sending ScopedJavaSurfaceControl variant.
-  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant));
+  CHECK(std::holds_alternative<gl::ScopedJavaSurface>(
+      surface_record.surface_variant));
   gl::ScopedJavaSurface& scoped_java_surface =
-      absl::get<gl::ScopedJavaSurface>(surface_variant);
+      std::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
   gl::ScopedANativeWindow window(scoped_java_surface);
   accelerated_widget = window.a_native_window();
 #else

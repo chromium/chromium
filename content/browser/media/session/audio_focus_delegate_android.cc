@@ -13,7 +13,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AudioFocusDelegate_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -86,35 +86,28 @@ const base::UnguessableToken& AudioFocusDelegateAndroid::request_id() const {
   return base::UnguessableToken::Null();
 }
 
-void AudioFocusDelegateAndroid::OnSuspend(JNIEnv*,
-                                          const JavaParamRef<jobject>&) {
-  if (!media_session_->IsActive() ||
-      !base::FeatureList::IsEnabled(media::kAudioFocusLossSuspendMediaSession))
+void AudioFocusDelegateAndroid::OnSuspend(JNIEnv*) {
+  if (!media_session_->IsActive()) {
     return;
+  }
 
   media_session_->Suspend(MediaSession::SuspendType::kSystem);
 }
 
-void AudioFocusDelegateAndroid::OnResume(JNIEnv*,
-                                         const JavaParamRef<jobject>&) {
-  if (!media_session_->IsSuspended())
+void AudioFocusDelegateAndroid::OnResume(JNIEnv*) {
+  if (!media_session_->IsSuspended()) {
     return;
+  }
 
   media_session_->Resume(MediaSession::SuspendType::kSystem);
 }
 
-void AudioFocusDelegateAndroid::OnStartDucking(JNIEnv*, jobject) {
+void AudioFocusDelegateAndroid::OnStartDucking(JNIEnv*) {
   media_session_->StartDucking();
 }
 
-void AudioFocusDelegateAndroid::OnStopDucking(JNIEnv*, jobject) {
+void AudioFocusDelegateAndroid::OnStopDucking(JNIEnv*) {
   media_session_->StopDucking();
-}
-
-void AudioFocusDelegateAndroid::RecordSessionDuck(
-    JNIEnv*,
-    const JavaParamRef<jobject>&) {
-  media_session_->RecordSessionDuck();
 }
 
 void AudioFocusDelegateAndroid::OnAudioStateChanged(bool is_audible) {
@@ -138,3 +131,5 @@ std::unique_ptr<AudioFocusDelegate> AudioFocusDelegate::Create(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AudioFocusDelegate)

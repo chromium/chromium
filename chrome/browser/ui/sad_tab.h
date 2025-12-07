@@ -20,12 +20,13 @@ class WebContents;
 class SadTab {
  public:
   enum class Action {
-    BUTTON,
-    HELP_LINK,
+    kButton,
+    kHelpLink,
   };
 
   // Factory function to create the platform specific implementations.
-  static SadTab* Create(content::WebContents* web_contents, SadTabKind kind);
+  static std::unique_ptr<SadTab> Create(content::WebContents* web_contents,
+                                        SadTabKind kind);
 
   // Returns true if the sad tab should be shown.
   static bool ShouldShow(base::TerminationStatus status);
@@ -33,7 +34,7 @@ class SadTab {
   SadTab(const SadTab&) = delete;
   SadTab& operator=(const SadTab&) = delete;
 
-  virtual ~SadTab() {}
+  virtual ~SadTab() = default;
 
   // Called when the sad tab needs to be reinstalled in its window,
   // for example because an inactive tab was activated, or because a tab was

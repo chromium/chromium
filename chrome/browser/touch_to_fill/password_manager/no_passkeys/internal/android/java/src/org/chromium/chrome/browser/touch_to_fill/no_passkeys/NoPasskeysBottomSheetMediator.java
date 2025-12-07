@@ -4,19 +4,22 @@
 
 package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
 
 /** Mediator class for the no passkeys bottom sheet. */
+@NullMarked
 class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Delegate {
     private final WeakReference<BottomSheetController> mBottomSheetController;
 
     private @Nullable BottomSheetContent mBottomSheetContent;
-    private @Nullable NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
+    private NoPasskeysBottomSheetCoordinator.@Nullable NativeDelegate mNativeDelegate;
 
     /**
      * Creates the mediator.
@@ -40,11 +43,12 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
      */
     boolean show(@Nullable BottomSheetContent bottomSheetContent) {
         assert bottomSheetContent != null;
-        if (mBottomSheetController.get() == null) {
+        BottomSheetController bottomSheetController = mBottomSheetController.get();
+        if (bottomSheetController == null) {
             return false;
         }
         mBottomSheetContent = bottomSheetContent;
-        return mBottomSheetController.get().requestShowContent(mBottomSheetContent, true);
+        return bottomSheetController.requestShowContent(mBottomSheetContent, true);
     }
 
     /**
@@ -82,6 +86,9 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
         }
         mNativeDelegate.onDismissed();
         mNativeDelegate = null; // Don't call the callback repeatedly!
-        mBottomSheetController.get().hideContent(mBottomSheetContent, true);
+        BottomSheetController bottomSheetController = mBottomSheetController.get();
+        assumeNonNull(bottomSheetController);
+        assert mBottomSheetContent != null;
+        bottomSheetController.hideContent(mBottomSheetContent, true);
     }
 }

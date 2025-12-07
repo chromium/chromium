@@ -5,6 +5,7 @@
 #include "services/device/hid/hid_connection_mac.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
@@ -15,6 +16,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_mac.h"
 #include "services/device/hid/hid_service.h"
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -130,9 +132,12 @@ void HidConnectionMac::InputReportCallback(void* context,
 
 void HidConnectionMac::GetFeatureReportAsync(uint8_t report_id,
                                              ReadCallback callback) {
-  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(
-      device_info()->max_feature_report_size() + 1);
-  CFIndex report_size = buffer->size();
+  CFIndex report_size = device_info()->max_feature_report_size();
+  if (!base::FeatureList::IsEnabled(features::kHidReportRequestExactLength) ||
+      report_id != 0) {
+    ++report_size;
+  }
+  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(report_size);
 
   // The IOHIDDevice object is shared with the UI thread and so this function
   // should probably be called there but it may block and the asynchronous

@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -16,12 +15,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Bottom sheet content for Read Aloud expanded player speed options menu. */
-class SpeedMenuSheetContent extends MenuSheetContent {
+@NullMarked
+class SpeedMenuSheetContent extends SingleMenuSheetContent {
     private static final String TAG = "ReadAloudSpeed";
     private final Context mContext;
     private final PropertyModel mModel;
-    private InteractionHandler mInteractionHandler;
-    private float[] mSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
+    private final float[] mSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
 
     SpeedMenuSheetContent(
             Context context,
@@ -31,28 +30,11 @@ class SpeedMenuSheetContent extends MenuSheetContent {
         super(context, parent, bottomSheetController, R.string.readaloud_speed_menu_title);
         mContext = context;
         mModel = model;
-        setUp();
-    }
 
-    @VisibleForTesting
-    SpeedMenuSheetContent(
-            Context context,
-            BottomSheetContent parent,
-            BottomSheetController bottomSheetController,
-            Menu menu,
-            PropertyModel model) {
-        super(context, parent, bottomSheetController, R.string.readaloud_options_menu_title, menu);
-        mContext = context;
-        mModel = model;
-        setUp();
-    }
-
-    private void setUp() {
         float currentSpeed = mModel.get(PlayerProperties.SPEED);
         for (int i = 0; i < mSpeeds.length; i++) {
             String speedString =
-                    mContext.getResources()
-                            .getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
+                    mContext.getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
             MenuItem item =
                     mMenu.addItem(i, 0, speedString, /* header= */ null, MenuItem.Action.RADIO);
             if (mSpeeds[i] == currentSpeed) {
@@ -62,7 +44,6 @@ class SpeedMenuSheetContent extends MenuSheetContent {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
-        mInteractionHandler = handler;
         mMenu.setRadioTrueHandler(
                 (itemId) -> {
                     handler.onSpeedChange(mSpeeds[itemId]);
@@ -75,9 +56,7 @@ class SpeedMenuSheetContent extends MenuSheetContent {
 
     // BottomSheetContent
     @Override
-    public int getSheetContentDescriptionStringId() {
-        // "Speed menu"
-        // Automatically appended: "Swipe down to close."
-        return R.string.readaloud_speed_menu_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.readaloud_speed_menu_description);
     }
 }

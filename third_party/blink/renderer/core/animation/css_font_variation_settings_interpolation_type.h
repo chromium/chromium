@@ -12,7 +12,7 @@ namespace blink {
 
 class CSSFontVariationSettingsInterpolationType : public CSSInterpolationType {
  public:
-  CSSFontVariationSettingsInterpolationType(PropertyHandle property)
+  explicit CSSFontVariationSettingsInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(),
               CSSPropertyID::kFontVariationSettings);
@@ -39,7 +39,7 @@ class CSSFontVariationSettingsInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 };
 

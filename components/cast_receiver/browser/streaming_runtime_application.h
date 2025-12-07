@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 
+#include "base/sequence_checker.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"
@@ -41,9 +42,6 @@ class StreamingRuntimeApplication final
   // StreamingReceiverSessionClient::Handler implementation:
   void OnStreamingSessionStarted() override;
   void OnError() override;
-  void OnResolutionChanged(
-      const gfx::Rect& size,
-      const media::VideoTransformation& transformation) override;
 
   // Returns the network context used by |receiver_session_client_|.
   const network::NetworkContextGetter network_context_getter_;

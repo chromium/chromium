@@ -12,10 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
@@ -90,8 +90,8 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
 
     zero_duration_scope_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     mock_notification_menu_controller_ =
         std::make_unique<MockNotificationMenuController>();
@@ -216,7 +216,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
   raw_ptr<NotificationMenuView, DanglingUntriaged> notification_menu_view_;
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_scope_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_scope_;
 };
 
 // Tests that the correct NotificationItemView is shown when notifications come
@@ -323,7 +323,13 @@ TEST_F(NotificationMenuViewTest, RemoveOlderNotification) {
 
 // Tests that the displayed NotificationItemView is only dismissed when dragged
 // beyond the threshold.
-TEST_F(NotificationMenuViewTest, SlideOut) {
+// TODO(crbug.com/401481106): This test is very flaky on Linux under Asan+Lsan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SlideOut DISABLED_SlideOut
+#else
+#define MAYBE_SlideOut SlideOut
+#endif
+TEST_F(NotificationMenuViewTest, MAYBE_SlideOut) {
   AddNotification("notification_id", u"title", u"message");
 
   EXPECT_EQ(0, mock_notification_menu_controller()->slide_out_count_);

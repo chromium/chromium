@@ -35,8 +35,8 @@ export class CrCollapseElement extends CrLitElement {
     };
   }
 
-  opened: boolean = false;
-  noAnimation: boolean = false;
+  accessor opened: boolean = false;
+  accessor noAnimation: boolean = false;
 
   toggle() {
     this.opened = !this.opened;

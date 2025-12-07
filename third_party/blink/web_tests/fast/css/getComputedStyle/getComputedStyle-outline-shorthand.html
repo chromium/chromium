@@ -25,7 +25,7 @@ e.style.outline = "2em solid";
 shouldBe("computedStyle.getPropertyValue('outline')", "'rgb(0, 0, 0) solid 32px'");
 
 e.style.outline = "4px none red";
-shouldBe("computedStyle.getPropertyValue('outline')", "'rgb(255, 0, 0) none 0px'");
+shouldBe("computedStyle.getPropertyValue('outline')", "'rgb(255, 0, 0) none 4px'");
 
 document.body.removeChild(testContainer);
 

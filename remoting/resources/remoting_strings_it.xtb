@@ -28,6 +28,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="2329392777730037872">Impossibile aprire <ph name="URL" /> sul dispositivo client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">Impossibile raggiungere l'host. Il problema potrebbe essere dovuto alla configurazione della rete in uso.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="2504109125669302160">Concedi l'autorizzazione "Accessibilità" a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Connessione a <ph name="HOSTNAME" /> effettuata</translation>
 <translation id="2540992418118313681">Vuoi condividere questo computer con un altro utente che potrà accedervi e controllarlo?</translation>
@@ -39,6 +40,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="2758123043070977469">Si è verificato un problema di autenticazione. Accedi nuovamente.</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
 <translation id="2919669478609886916">Stai condividendo questo computer con un altro utente. Continuare la condivisione?</translation>
+<translation id="2929683002824598593">Condividi dispositivo</translation>
 <translation id="2939145106548231838">Esegui autenticazione host</translation>
 <translation id="3027681561976217984">Modalità multi-touch</translation>
 <translation id="3106379468611574572">Il computer remoto non sta rispondendo alle richieste di connessione. Verifica che sia online e riprova.</translation>
@@ -91,6 +93,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4987330545941822761">Chrome Remote Desktop non può determinare il browser per aprire gli URL localmente. Scegline uno dall'elenco di seguito.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Vuoi disattivare le connessioni remote a <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Crash Reporting</translation>
 <translation id="5170982930780719864">ID host non valido.</translation>
 <translation id="5204575267916639804">Domande frequenti</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -116,16 +119,18 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="6178645564515549384">Host messaggi nativi per assistenza remota</translation>
 <translation id="618120821413932081">Aggiorna risoluzione desktop remoto in base a finestra</translation>
 <translation id="6223301979382383752">Apri preferenze Registrazione dello schermo</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ha chiesto di accedere per vedere il tuo schermo e controllare la tastiera e il mouse. Vuoi condividere il tuo dispositivo?</translation>
 <translation id="6284412385303060032">L'esecuzione dell'host nella schermata di accesso alla console si è interrotta per supportare la modalità Curtain, pertanto l'host viene ora eseguito in una sessione specifica dell'utente.</translation>
 <translation id="6542902059648396432">Segnala un problema…</translation>
 <translation id="6583902294974160967">Assistenza</translation>
 <translation id="6612717000975622067">Invia Ctrl-Alt-Canc</translation>
+<translation id="6625262630437221505">{0,plural, =1{Se non intervieni, il dispositivo inizierà automaticamente a condividere i dati tra # secondo.}other{Se non intervieni, il dispositivo inizierà automaticamente a condividere i dati tra # secondi.}}</translation>
 <translation id="6654753848497929428">Condividi</translation>
 <translation id="677755392401385740">Host avviato per utente: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Helper per aprire un URL sul client <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostra/nascondi tastiera.</translation>
 <translation id="6963936880795878952">Le connessioni al computer remoto sono temporaneamente bloccate perché qualcuno stava cercando di collegarsi al computer con un PIN non valido. Riprova più tardi.</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6985691951107243942">Vuoi disattivare le connessioni remote a <ph name="HOSTNAME" />? Se cambi idea, dovrai utilizzare il computer in questione per riattivare le connessioni.</translation>
 <translation id="7019153418965365059">Errore host non riconosciuto: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistenza remota</translation>
@@ -133,6 +138,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7067321367069083429">Lo schermo funge da touch screen</translation>
 <translation id="7116737094673640201">Benvenuto in Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Riprova</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="7312846573060934304">L'host è offline.</translation>
 <translation id="7319983568955948908">Interrompi condivisione</translation>
 <translation id="7359298090707901886">Il browser selezionato non può essere utilizzato per aprire gli URL sulla macchina locale.</translation>
@@ -149,7 +155,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7693372326588366043">Aggiorna l'elenco degli host</translation>
 <translation id="7714222945760997814">Segnala errore</translation>
 <translation id="7868137160098754906">Inserisci il codice PIN per il computer remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="7895403300744144251">Le norme di sicurezza del computer remoto non consentono connessioni dal tuo account.</translation>
 <translation id="7936528439960309876">Aggancia a destra</translation>
 <translation id="7970576581263377361">Autenticazione non riuscita. Accedi di nuovo a Chromium.</translation>
@@ -181,7 +186,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="8747048596626351634">La sessione si è arrestata in modo anomalo o non si è avviata. Se sul computer remoto esiste la sessione ~/.chrome-remote-desktop-session, assicurati che avvii un processo in primo piano con esecuzione prolungata come un ambiente desktop o gestione finestre.</translation>
 <translation id="8804164990146287819">Norme sulla privacy</translation>
 <translation id="8906511416443321782">È richiesto l'accesso al microfono per acquisire l'audio e trasmetterlo in streaming al client Chrome Remote Desktop.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="9111855907838866522">Sei connesso al tuo dispositivo remoto. Per aprire il menu, tocca lo schermo con quattro dita.</translation>
 <translation id="9126115402994542723">Non chiedere di nuovo il PIN per il collegamento a questo host da questo dispositivo.</translation>
 <translation id="916856682307586697">Viene avviata la XSession predefinita</translation>

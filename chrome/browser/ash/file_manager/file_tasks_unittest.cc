@@ -11,15 +11,16 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
@@ -48,11 +48,11 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -284,9 +284,9 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   void CheckCorrectPolicyAssignment(std::string_view default_app_id) {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               1);
-    ASSERT_EQ(base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
+    ASSERT_EQ(std::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
                   ->task_descriptor.app_id,
               default_app_id);
   }
@@ -295,10 +295,10 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
       std::string_view virtual_task_id) {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               1);
     const auto& task =
-        base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
+        std::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
             ->task_descriptor;
     ASSERT_TRUE(IsVirtualTask(task));
     ASSERT_THAT(task.action_id, testing::EndsWith(virtual_task_id));
@@ -307,13 +307,13 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   void CheckConflictingPolicyAssignment() {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kIncorrectAssignment);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               0);
   }
 
   void CheckNoPolicyAssignment() {
     ASSERT_FALSE(resulting_tasks()->policy_default_handler_status);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               0);
   }
 
@@ -414,10 +414,9 @@ class FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest
   FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest() {
     // These feature flags are required to make different virtual tasks
     // discoverable.
-    features_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall,
-         chromeos::features::kUploadOfficeToCloud},
-        {});
+    features_.InitWithFeatures({features::kIsolatedWebAppUnmanagedInstall,
+                                chromeos::features::kUploadOfficeToCloud},
+                               {});
   }
 
  private:
@@ -772,7 +771,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
                                 "action-id");
   UpdateDefaultTask(profile(), other_app_task, {".txt"}, {"text/plain"});
   // Even if it's the Media App.
-  TaskDescriptor media_app_task(web_app::kMediaAppId, TASK_TYPE_FILE_HANDLER,
+  TaskDescriptor media_app_task(ash::kMediaAppId, TASK_TYPE_FILE_HANDLER,
                                 "action-id");
   UpdateDefaultTask(profile(), media_app_task, {"tiff"}, {"image/tiff"});
 

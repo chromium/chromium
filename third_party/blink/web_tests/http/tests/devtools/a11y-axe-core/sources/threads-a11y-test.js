@@ -21,6 +21,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   await UI.ViewManager.ViewManager.instance().showView('sources.threads');
 
   const threadsSidebarPane = await sourcesPanel.threadsSidebarPane.widget();
+  await threadsSidebarPane.updateComplete;
   const threadsSidebarElement = threadsSidebarPane.contentElement;
   TestRunner.addResult(`Threads sidebar pane content:\n ${threadsSidebarElement.deepTextContent()}`);
   TestRunner.addResult('Running the axe-core linter on the threads sidebar pane.');

@@ -7,8 +7,6 @@
 #import "base/containers/contains.h"
 #import "ios/web/public/web_state.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlTabAllowList)
-
 LookalikeUrlTabAllowList::LookalikeUrlTabAllowList(web::WebState* web_state) {}
 
 LookalikeUrlTabAllowList::LookalikeUrlTabAllowList(

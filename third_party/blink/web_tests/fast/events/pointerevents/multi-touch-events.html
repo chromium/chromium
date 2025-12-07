@@ -12,72 +12,70 @@
 
 <script type="text/javascript">
 
-var touchMoveCount = 0;
-var touchStartCount = 0;
-var touchendCount = 0;
-var box = document.getElementById("box");
-var targetRect = box.getBoundingClientRect();
-var offset = 50;
-var x = targetRect.left + offset;
-var y = targetRect.top + offset;
+let touchmoveIds = new Set();
+let touchstartIds = new Set();
+let touchendIds = new Set();
+const box = document.getElementById("box");
+const targetRect = box.getBoundingClientRect();
+const offset = 50;
+const x = targetRect.left + offset;
+const y = targetRect.top + offset;
 
-function validTouchResult(event) {
-    if (event.type == 'touchstart')
-      touchStartCount++;
-    else if (event.type == 'touchmove')
-      // TouchMoves may be coalesced so count each touch.
-      touchMoveCount += event.changedTouches.length;
-    else if (event.type == 'touchend')
-      touchendCount++;
-
-    testTouchPointers.step(function () {
-        assert_equals(event.target.id, "box");
-    });
-}
-
-function callbackValidTouchCount() {
-    testTouchPointers.step(function () {
-        assert_equals(touchStartCount, 3);
-        assert_equals(touchMoveCount, 7);
-        assert_equals(touchendCount, 3);
-    });
-    testTouchPointers.done();
-}
-
-function testMultiTouchPointers() {
-    if (window.chrome && chrome.gpuBenchmarking) {
-        var pointerActions =
-            [{source: "touch", id: 0,
-              actions: [
-                { name: "pointerDown", x: x, y: y },
-                { name: "pointerMove", x: x + 30, y: y + 30 },
-                { name: "pointerMove", x: x + 50, y: y + 50 },
-                { name: "pointerMove", x: x + 90, y: y + 90 },
-                { name: "pause", },
-                { name: "pointerUp" }]},
-             {source: "touch", id: 1,
-              actions: [
-                { name: "pause" },
-                { name: "pointerDown", x: x, y: y },
-                { name: "pointerMove", x: x + 60, y: y + 60 },
-                { name: "pointerUp"}]},
-             {source: "touch", id: 2,
-              actions: [
-                { name: "pause" },
-                { name: "pause" },
-                { name: "pointerDown", x: x, y: y },
-                { name: "pointerMove", x: x + 30, y: y + 30 },
-                { name: "pointerMove", x: x + 50, y: y },
-                { name: "pointerMove", x: x + 60, y: y },
-                { name: "pointerUp"}]}];
-        chrome.gpuBenchmarking.pointerActionSequence(pointerActions, callbackValidTouchCount);
+function tallyTouchIdentifiers(set) {
+  return event => {
+    assert_equals(event.target.id, "box");
+    for (let i = 0; i < event.changedTouches.length; i++) {
+      set.add(event.changedTouches[i].identifier);
     }
+  };
 }
 
-var testTouchPointers = async_test('Tests that all the touch events are sent correctly when there are multiple finger pointers.');
-box.addEventListener('touchstart', validTouchResult);
-box.addEventListener('touchmove', validTouchResult);
-box.addEventListener('touchend', validTouchResult);
-testMultiTouchPointers();
+function multitouchGesture() {
+  // Lack of cross platform support for test_driver.action_sequence prevents
+  // porting to WPT.
+  return new Promise((resolve, reject) => {
+    if (!window.chrome || !chrome.gpuBenchmarking) {
+      reject ('test requires gpuBenchmarking');
+    }
+    var pointerActions = [
+      {source: "touch", id: 0,
+        actions: [
+          { name: "pointerDown", x: x, y: y },
+          { name: "pointerMove", x: x + 30, y: y + 30 },
+          { name: "pointerMove", x: x + 50, y: y + 50 },
+          { name: "pointerMove", x: x + 90, y: y + 90 },
+          { name: "pause", },
+          { name: "pointerUp" }]},
+       {source: "touch", id: 1,
+        actions: [
+          { name: "pause" },
+          { name: "pointerDown", x: x, y: y },
+          { name: "pointerMove", x: x + 60, y: y + 60 },
+          { name: "pointerUp"}]},
+       {source: "touch", id: 2,
+        actions: [
+          { name: "pause" },
+          { name: "pause" },
+          { name: "pointerDown", x: x, y: y },
+          { name: "pointerMove", x: x + 30, y: y + 30 },
+          { name: "pointerMove", x: x + 50, y: y },
+          { name: "pointerMove", x: x + 60, y: y },
+          { name: "pointerUp"}]}
+      ];
+      chrome.gpuBenchmarking.pointerActionSequence(pointerActions, resolve);
+  });
+}
 
+promise_test(async t => {
+  box.addEventListener('touchstart', tallyTouchIdentifiers(touchstartIds));
+  box.addEventListener('touchmove', tallyTouchIdentifiers(touchmoveIds));
+  box.addEventListener('touchend', tallyTouchIdentifiers(touchendIds));
+
+  await multitouchGesture();
+
+  assert_equals(touchstartIds.size, 3);
+  assert_equals(touchmoveIds.size, 3);
+  assert_equals(touchendIds.size, 3);
+}, 'Tests that all the touch events are sent correctly when there are ' +
+   'multiple finger pointers.');
 </script>

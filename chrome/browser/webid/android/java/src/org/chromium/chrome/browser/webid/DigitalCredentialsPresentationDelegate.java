@@ -1,0 +1,205 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.webid;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.ResultReceiver;
+
+import androidx.annotation.OptIn;
+import androidx.annotation.VisibleForTesting;
+import androidx.credentials.Credential;
+import androidx.credentials.GetDigitalCredentialOption;
+import androidx.credentials.provider.PendingIntentHandler;
+
+import com.google.android.gms.identitycredentials.CredentialOption;
+import com.google.android.gms.identitycredentials.GetCredentialException;
+import com.google.android.gms.identitycredentials.GetCredentialRequest;
+import com.google.android.gms.identitycredentials.IdentityCredentialClient;
+import com.google.android.gms.identitycredentials.IdentityCredentialManager;
+import com.google.android.gms.identitycredentials.IntentHelper;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
+import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+@NullMarked
+public class DigitalCredentialsPresentationDelegate {
+    private static final String TAG = "DCPresentDelegate";
+
+    @VisibleForTesting public static final String DC_API_RESPONSE_PROTOCOL_KEY = "protocol";
+    @VisibleForTesting public static final String DC_API_RESPONSE_DATA_KEY = "data";
+    @VisibleForTesting public static final String BUNDLE_KEY_IDENTITY_TOKEN = "identityToken";
+
+    @VisibleForTesting
+    public static final String BUNDLE_KEY_PROVIDER_DATA =
+            "androidx.identitycredentials.BUNDLE_KEY_PROVIDER_DATA";
+
+    @OptIn(markerClass = androidx.credentials.ExperimentalDigitalCredentialApi.class)
+    public Promise<DigitalCredential> get(
+            WindowAndroid windowAndroid, String origin, String request) {
+        Activity window = windowAndroid.getActivity().get();
+        if (window == null) return Promise.rejected();
+
+        final IdentityCredentialClient client;
+        try {
+            client = IdentityCredentialManager.Companion.getClient(window);
+        } catch (Exception e) {
+            // Thrown when running in phones without the most current GMS
+            // version.
+            return Promise.rejected();
+        }
+
+        final Promise<DigitalCredential> result = new Promise<>();
+
+        ResultReceiver resultReceiver =
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
+                    // android.credentials.GetCredentialException requires API level 34
+                    @SuppressWarnings("NewApi")
+                    @Override
+                    protected void onReceiveResult(int code, Bundle data) {
+                        Log.d(TAG, "Received a response");
+                        try {
+                            result.fulfill(extractDigitalCredentialFromResponseBundle(code, data));
+                        } catch (Exception e) {
+                            Log.e(TAG, e.toString());
+
+                            if (e instanceof GetCredentialException
+                                    && Build.VERSION.SDK_INT
+                                            >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                String exceptionType = ((GetCredentialException) e).getType();
+                                result.reject(
+                                        new android.credentials.GetCredentialException(
+                                                exceptionType, e.getMessage()));
+                            } else {
+                                result.reject(e);
+                            }
+                        }
+                    }
+                };
+
+        GetDigitalCredentialOption option = new GetDigitalCredentialOption(request);
+        client.getCredential(
+                        new GetCredentialRequest(
+                                Arrays.asList(
+                                        new CredentialOption(
+                                                option.getType(),
+                                                option.getRequestData(),
+                                                option.getCandidateQueryData(),
+                                                request,
+                                                "",
+                                                "")),
+                                new Bundle(),
+                                origin,
+                                resultReceiver))
+                .addOnSuccessListener(
+                        response -> {
+                            Log.d(TAG, "Sending an intent for sender");
+                            Log.d(TAG, request);
+                            int requestCode =
+                                    windowAndroid.showCancelableIntent(
+                                            response.getPendingIntent(),
+                                            (resultCode, intent) -> {
+                                                if (resultCode != Activity.RESULT_OK
+                                                        && result.isPending()) {
+                                                    result.reject(
+                                                            new Exception("Cancelled or Crashed"));
+                                                }
+                                            },
+                                            null);
+                            if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
+                                Log.e(TAG, "Sending an intent for sender failed");
+                                result.reject(new Exception("Failed to start intent"));
+                            }
+                        });
+
+        return result;
+    }
+
+    /**
+     * Extracts a DigitalCredential from a response bundle.
+     *
+     * <p>This method attempts to extract a DigitalCredential from the given response bundle. It
+     * first tries to parse the response in the new format. If that fails, it falls back to the
+     * legacy format.
+     *
+     * @param code The result code from the activity.
+     * @param bundle The bundle containing the response data.
+     * @return The extracted DigitalCredential.
+     * @throws JSONException If there is an error parsing the JSON data.
+     * @throws NullPointerException If required data is missing in the legacy format.
+     * @throws GetCredentialException If there is an issue with the credential.
+     */
+    @VisibleForTesting
+    public static DigitalCredential extractDigitalCredentialFromResponseBundle(
+            int code, Bundle bundle)
+            throws JSONException, NullPointerException, GetCredentialException {
+        // Try to read the new format.
+        var digitalCredential = extractDigitalCredentialFromModernResponse(bundle);
+        if (digitalCredential != null) {
+            return digitalCredential;
+        }
+        // TODO(crbug.com/336329411) Handle the case when the intent doesn't contain the modern
+        // response, but contains the modern exception.
+
+        // Fallback to the legacy format.
+        var response = IntentHelper.extractGetCredentialResponse(code, bundle);
+        var token = response.getCredential().getData().getByteArray(BUNDLE_KEY_IDENTITY_TOKEN);
+
+        return new DigitalCredential(null, Objects.requireNonNull(token));
+    }
+
+    /**
+     * Extracts a DigitalCredential from a response bundle in the modern format.
+     *
+     * @param bundle The bundle containing the response data.
+     * @return The extracted DigitalCredential, or null if the response is not in the modern format.
+     * @throws JSONException If there is an error parsing the JSON data.
+     */
+    private static @Nullable DigitalCredential extractDigitalCredentialFromModernResponse(
+            Bundle bundle) throws JSONException {
+        Intent intent = IntentUtils.safeGetParcelable(bundle, BUNDLE_KEY_PROVIDER_DATA);
+        if (intent == null) {
+            return null;
+        }
+        var response = PendingIntentHandler.retrieveGetCredentialResponse(intent);
+        if (response == null) {
+            return null;
+        }
+        Credential c = response.getCredential();
+        if (!(c instanceof androidx.credentials.DigitalCredential)) {
+            return null;
+        }
+        String credentialJson = ((androidx.credentials.DigitalCredential) c).getCredentialJson();
+        if (credentialJson == null) {
+            return null;
+        }
+        JSONObject credential = new JSONObject(credentialJson);
+        // Unless the json contains the protocol, return null to fallback to the legacy format.
+        if (credential.has(DC_API_RESPONSE_PROTOCOL_KEY)) {
+            String protocol = credential.getString(DC_API_RESPONSE_PROTOCOL_KEY);
+            var data = credential.getJSONObject(DC_API_RESPONSE_DATA_KEY);
+            return new DigitalCredential(protocol, data.toString());
+        }
+        // Otherwise, treat the whole json as the response. This is added for backward compatibility
+        // where GMSCore was setting the modern response with the contents of the legacy response
+        // without a protocol.
+        return new DigitalCredential(null, credentialJson);
+    }
+}

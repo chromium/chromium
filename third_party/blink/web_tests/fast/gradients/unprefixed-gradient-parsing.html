@@ -22,7 +22,7 @@ function testGradient(css)
 }
 
 test(() => {
-  assert_equals(testGradient("background-image: linear-gradient(black 0%)"), 'none');
+  assert_equals(testGradient("background-image: linear-gradient(black 0%)"), 'linear-gradient(rgb(0, 0, 0) 0%)');
   assert_equals(testGradient("background-image: linear-gradient(top)"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(to top)"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(10deg)"), 'none');
@@ -34,7 +34,7 @@ test(() => {
   assert_equals(testGradient("background-image: linear-gradient(to left left)"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(to left center)"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(to left 10deg, black 0%, white)"), 'none');
-  assert_equals(testGradient("background-image: linear-gradient(black)"), 'none');
+  assert_equals(testGradient("background-image: linear-gradient(black)"), 'linear-gradient(rgb(0, 0, 0))');
 
   assert_equals(testGradient("background-image: linear-gradient(10deg, black 0%, 25%, 50%, white)"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(10deg, black 0%, 50%)"), 'none');
@@ -73,7 +73,7 @@ test(() => {
 
 test(() => {
   assert_equals(testGradient("background-image: radial-gradient(white, black)"), 'radial-gradient(rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(at bottom right, white, black)"), 'radial-gradient(at right bottom, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(at bottom right, white, black)"), 'radial-gradient(at 100% 100%, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(farthest-corner, white, black)"), 'radial-gradient(rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(farthest-corner, white, 35%, black)"), 'radial-gradient(rgb(255, 255, 255), 35%, rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(closest-side, white, black)"), 'radial-gradient(closest-side, rgb(255, 255, 255), rgb(0, 0, 0))');
@@ -83,8 +83,8 @@ test(() => {
   assert_equals(testGradient("background-image: radial-gradient(circle, white, black)"), 'radial-gradient(circle, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle farthest-corner, white, black)"), 'radial-gradient(circle, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle closest-side, white, black)"), 'radial-gradient(circle closest-side, rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top, white, black)"), 'radial-gradient(circle closest-side at center top, rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top left, white, black)"), 'radial-gradient(circle closest-side at left top, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top, white, black)"), 'radial-gradient(circle closest-side at 50% 0%, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(circle closest-side at top left, white, black)"), 'radial-gradient(circle closest-side at 0% 0%, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle closest-side at 10px 20%, white, black)"), 'radial-gradient(circle closest-side at 10px 20%, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(at 10px 20% circle closest-side, white, black)"), 'none');
   assert_equals(testGradient("background-image: radial-gradient(circle at 10px 20% circle, white, black)"), 'none');

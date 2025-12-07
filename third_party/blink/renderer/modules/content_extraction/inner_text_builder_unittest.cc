@@ -506,5 +506,24 @@ TEST(InnerTextBuilderTest, InnerTextPassagesDropsShortPassagesAtMaxPassage) {
                       });
 }
 
+TEST(InnerTextBuilderTest, InnerTextPassagesExcludesSvgElements) {
+  std::string html = R"(
+      <body>
+      <p>foo bar baz</p>
+      <svg>
+        <defs>defs text is excluded</defs>
+        <style>style text is excluded</style>
+        <script>script text is excluded</script>
+        text within svg
+      </svg>
+      <p>foo bar baz</p>
+      </body>
+  )";
+  ExpectChunkerResult(10, false, 10, 0, html,
+                      {
+                          "foo bar baz text within svg foo bar baz",
+                      });
+}
+
 }  // namespace
 }  // namespace blink

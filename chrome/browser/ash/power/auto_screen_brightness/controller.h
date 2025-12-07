@@ -17,7 +17,6 @@ namespace auto_screen_brightness {
 class Adapter;
 class AlsReader;
 class BrightnessMonitorImpl;
-class MetricsReporter;
 class ModelConfigLoaderImpl;
 class ModellerImpl;
 
@@ -49,7 +48,6 @@ class Controller : public session_manager::SessionManagerObserver {
   // user sign-ins.
   bool observing_session_manager_ = false;
 
-  std::unique_ptr<MetricsReporter> metrics_reporter_;
   std::unique_ptr<AlsReader> als_reader_;
   std::unique_ptr<BrightnessMonitorImpl> brightness_monitor_;
   std::unique_ptr<ModelConfigLoaderImpl> model_config_loader_;

@@ -10,7 +10,8 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_metrics_ui.html.js';
-import {NetworkUiBrowserProxy, NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
+import type {NetworkUiBrowserProxy} from './network_ui_browser_proxy.js';
+import {NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
 import {uPlot} from './third_party/uPlot.iife.min.js';
 
 /**

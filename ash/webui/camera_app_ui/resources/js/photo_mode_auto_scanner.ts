@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 import {assertExists} from './assert.js';
-import {Flag} from './flag.js';
 import {OcrEventType, sendOcrEvent} from './metrics.js';
 import {AsyncIntervalRunner} from './models/async_interval.js';
 import {BarcodeScanner, ScanBarcodeResult} from './models/barcode.js';
-import {getChromeFlag} from './models/load_time_data.js';
 import {Ocr, PerformOcrResult} from './ocr.js';
 import {PerfLogger} from './perf.js';
 import * as scannerChip from './scanner_chip.js';
@@ -93,12 +91,8 @@ export class PhotoModeAutoScanner {
   start(): void {
     // TODO(b/311592341): Show the object closer to the center of preview when
     // both scanners detect objects at the same time.
-    if (getChromeFlag(Flag.AUTO_QR)) {
-      this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL);
-    }
-    if (getChromeFlag(Flag.PREVIEW_OCR)) {
-      this.ocrRunner = this.createOcrRunner(OCR_SCAN_INTERVAL);
-    }
+    this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL);
+    this.ocrRunner = this.createOcrRunner(OCR_SCAN_INTERVAL);
     this.slowdownTimer = new OneShotTimer(() => {
       this.slowdownTimer = null;
       this.slowdown();
@@ -138,7 +132,13 @@ export class PhotoModeAutoScanner {
   }
 
   private createBarcodeRunner(interval: number) {
-    const barcodeScanner = new BarcodeScanner(this.video, () => {});
+    const barcodeScanner = new BarcodeScanner(
+        this.video,
+        () => {
+            // We don't use the BarcodeScanner.start so callback does nothing.
+            // TODO(pihsun): callback should be directly passed to `start`
+            // instead of in constructor.
+        });
     return new AsyncIntervalRunner(async (stopped) => {
       const result = await barcodeScanner.scan();
       if (stopped.isSignaled()) {

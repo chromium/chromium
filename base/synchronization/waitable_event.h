@@ -9,8 +9,10 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -18,14 +20,12 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
-#include <list>
 #include <memory>
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include <list>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
@@ -125,7 +125,8 @@ class BASE_EXPORT WaitableEvent {
   // Wait, synchronously, on multiple events.
   //   waitables: a span of WaitableEvent pointers
   //
-  // returns: the index of a WaitableEvent which has been signaled.
+  // returns: the index of a WaitableEvent within the span which has been
+  //          signaled.
   //
   // You MUST NOT delete any of the WaitableEvent objects while this wait is
   // happening, however WaitMany's return "happens after" the |Signal| call
@@ -174,11 +175,14 @@ class BASE_EXPORT WaitableEvent {
   // the actual signaling and waiting).
   void SignalImpl();
   bool TimedWaitImpl(TimeDelta wait_delta);
-  static size_t WaitManyImpl(base::span<WaitableEvent*> raw_waitables);
+  static size_t WaitManyImpl(base::span<WaitableEvent*> waitables);
 
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle handle_;
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_APPLE) && (!BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK))
+  // iOS which supports blink must use the posix variant since opening
+  // mach_ports is prevented inside sandbox profiles.
+  //
   // Peeks the message queue named by |port| and returns true if a message
   // is present and false if not. If |dequeue| is true, the messsage will be
   // drained from the queue. If |dequeue| is false, the queue will only be
@@ -228,8 +232,8 @@ class BASE_EXPORT WaitableEvent {
   // so we have a kernel of the WaitableEvent, which is reference counted.
   // WaitableEventWatchers may then take a reference and thus match the Windows
   // behaviour.
-  struct WaitableEventKernel :
-      public RefCountedThreadSafe<WaitableEventKernel> {
+  struct WaitableEventKernel
+      : public RefCountedThreadSafe<WaitableEventKernel> {
    public:
     WaitableEventKernel(ResetPolicy reset_policy, InitialState initial_state);
 
@@ -238,22 +242,22 @@ class BASE_EXPORT WaitableEvent {
     base::Lock lock_;
     const bool manual_reset_;
     bool signaled_;
-    std::list<raw_ptr<Waiter, CtnExperimental>> waiters_;
+    base::circular_deque<raw_ptr<Waiter, CtnExperimental>> waiters_;
 
    private:
     friend class RefCountedThreadSafe<WaitableEventKernel>;
     ~WaitableEventKernel();
   };
 
-  typedef std::pair<WaitableEvent*, size_t> WaiterAndIndex;
+  using WaiterAndIndex = std::pair<WaitableEvent*, size_t>;
 
   // When dealing with arrays of WaitableEvent*, we want to sort by the address
   // of the WaitableEvent in order to have a globally consistent locking order.
   // In that case we keep them, in sorted order, in an array of pairs where the
   // second element is the index of the WaitableEvent in the original,
   // unsorted, array.
-  static size_t EnqueueMany(WaiterAndIndex* waitables,
-                            size_t count, Waiter* waiter);
+  static size_t EnqueueMany(base::span<WaiterAndIndex> waitables,
+                            Waiter* waiter);
 
   bool SignalAll();
   bool SignalOne();

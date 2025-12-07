@@ -10,20 +10,20 @@
 #import "base/containers/contains.h"
 #import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
-#import "base/test/task_environment.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -50,11 +50,11 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder test_profile_builder;
+    profile_ = std::move(test_profile_builder).Build();
 
-    first_web_state_.SetBrowserState(chrome_browser_state_.get());
-    second_web_state_.SetBrowserState(chrome_browser_state_.get());
+    first_web_state_.SetBrowserState(profile_.get());
+    second_web_state_.SetBrowserState(profile_.get());
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
@@ -75,8 +75,8 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
     BreadcrumbManagerTabHelper::CreateForWebState(&first_web_state_);
   }
 
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
   UIScrollView* scroll_view_ = nil;
@@ -461,7 +461,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
   ASSERT_TRUE(EventsEmpty());
 
   InfoBarDelegate::InfoBarIdentifier identifier =
-      InfoBarDelegate::InfoBarIdentifier::SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
   std::unique_ptr<FakeInfobarDelegate> delegate =
       std::make_unique<FakeInfobarDelegate>(identifier);
   std::unique_ptr<FakeInfobarIOS> infobar =
@@ -484,7 +484,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
 
   // Add and remove first infobar.
   InfoBarDelegate::InfoBarIdentifier first_identifier =
-      InfoBarDelegate::InfoBarIdentifier::SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::DEV_TOOLS_INFOBAR_DELEGATE;
   std::unique_ptr<FakeInfobarDelegate> first_delegate =
       std::make_unique<FakeInfobarDelegate>(first_identifier);
   std::unique_ptr<FakeInfobarIOS> first_infobar =
@@ -496,7 +496,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
 
   // Add second infobar.
   InfoBarDelegate::InfoBarIdentifier second_identifier =
-      InfoBarDelegate::InfoBarIdentifier::SYNC_ERROR_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE;
   std::unique_ptr<FakeInfobarDelegate> second_delegate =
       std::make_unique<FakeInfobarDelegate>(second_identifier);
   std::unique_ptr<FakeInfobarIOS> second_infobar =

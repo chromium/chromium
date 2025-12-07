@@ -359,10 +359,9 @@ scoped_refptr<const TableConstraintSpaceData> CreateConstraintSpaceData(
   return data;
 }
 
-// Columns do not generate fragments.
-// Column geometry is needed for painting, and is stored
-// in TableFragmentData. Geometry data is also copied
-// back to LayoutObject.
+// Columns do not generate fragments. Column geometry is needed for painting,
+// and is stored in TableColumnGeometry. Geometry data is also copied back to
+// LayoutObject.
 class ColumnGeometriesBuilder {
   STACK_ALLOCATED();
 
@@ -407,8 +406,7 @@ class ColumnGeometriesBuilder {
     // - parent COLGROUP must come before child COLs.
     // - child COLs are in ascending order.
     std::sort(column_geometries.begin(), column_geometries.end(),
-              [](const TableFragmentData::ColumnGeometry& a,
-                 const TableFragmentData::ColumnGeometry& b) {
+              [](const TableColumnGeometry& a, const TableColumnGeometry& b) {
                 if (a.node.IsTableCol() && b.node.IsTableCol()) {
                   return a.start_column < b.start_column;
                 }
@@ -442,7 +440,7 @@ class ColumnGeometriesBuilder {
                           LayoutUnit table_column_block_size)
       : column_locations(column_locations),
         table_column_block_size(table_column_block_size) {}
-  TableFragmentData::ColumnGeometries column_geometries;
+  TableColumnGeometries column_geometries;
   const Vector<TableColumnLocation>& column_locations;
   const LayoutUnit table_column_block_size;
 };
@@ -557,11 +555,27 @@ LayoutUnit TableLayoutAlgorithm::ComputeCaptionBlockSize() {
   return captions_block_size;
 }
 
+void TableLayoutAlgorithm::SetupRelayoutData(
+    const TableLayoutAlgorithm& previous,
+    RelayoutType relayout_type) {
+  LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
+
+  if (relayout_type == kRelayoutAsLastTableBox) {
+    is_known_to_be_last_table_box_ = true;
+  } else {
+    is_known_to_be_last_table_box_ = previous.is_known_to_be_last_table_box_;
+  }
+}
+
 const LayoutResult* TableLayoutAlgorithm::Layout() {
   if (is_known_to_be_last_table_box_) {
-    // This is the last table box fragment. Shouldn't make room for cloned
+    // This is the last table box fragment. Shouldn't reserve space for cloned
     // block-end box decorations.
     container_builder_.SetShouldCloneBoxEndDecorations(false);
+    // And since this is the last table box fragment, be sure *not* to break
+    // before any trailing decorations (even if that would cause it to overflow
+    // the fragmentainer).
+    container_builder_.SetShouldPreventBreakBeforeBlockEndDecorations(true);
   }
 
   const bool is_fixed_layout = Style().IsFixedTableLayout();
@@ -674,7 +688,8 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
       is_grid_empty ? LogicalSize() : border_spacing);
 
   if (result->Status() == LayoutResult::kNeedsRelayoutAsLastTableBox) {
-    return RelayoutAsLastTableBox();
+    DCHECK(!is_known_to_be_last_table_box_);
+    return Relayout<TableLayoutAlgorithm>(kRelayoutAsLastTableBox);
   }
   if (result->Status() == LayoutResult::kNeedsEarlierBreak) {
     // We shouldn't insert early-breaks when we're relaying out as the last
@@ -723,23 +738,6 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
   DCHECK_LE(min_max.min_size, min_max.max_size);
   return MinMaxSizesResult{min_max,
                            /* depends_on_block_constraints */ false};
-}
-
-const LayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
-  DCHECK(!is_known_to_be_last_table_box_);
-  LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), GetBreakToken(), /* early_break */ nullptr);
-  TableLayoutAlgorithm algorithm(params);
-  algorithm.is_known_to_be_last_table_box_ = true;
-
-  // In case we were already re-laying out with a known early-break, we need to
-  // re-propagate that piece of information as well, so that we don't end up
-  // getting stuck in an infinite recursion with the early-break and
-  // known-to-be-last-table-box mechanisms invoking each other.
-  algorithm.early_break_ = early_break_;
-
-  return algorithm.Layout();
 }
 
 void TableLayoutAlgorithm::ComputeRows(
@@ -873,9 +871,8 @@ void TableLayoutAlgorithm::ComputeTableSpecificFragmentData(
   }
   // Collapsed borders.
   if (!table_borders.IsEmpty()) {
-    std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
-        fragment_borders_geometry =
-            std::make_unique<TableFragmentData::CollapsedBordersGeometry>();
+    std::unique_ptr<CollapsedTableBordersGeometry> fragment_borders_geometry =
+        std::make_unique<CollapsedTableBordersGeometry>();
     for (const auto& column : column_locations)
       fragment_borders_geometry->columns.push_back(column.offset);
     DCHECK_NE(column_locations.size(), 0u);
@@ -1640,8 +1637,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetIsTablePart();
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status =
-        FinishFragmentation(border_padding.block_end, &container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
       return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
     }
@@ -1696,8 +1692,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<TableBreakTokenData>(
-            container_builder_.GetBreakTokenData(), rows,
-            cell_block_constraints, sections, total_table_min_block_size_,
+            rows, cell_block_constraints, sections, total_table_min_block_size_,
             consumed_table_box_block_size, has_entered_table_box,
             is_past_table_box));
   }

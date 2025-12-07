@@ -90,7 +90,7 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
                               const std::string& receiver_id,
                               const std::string& message_id,
                               MCSClient::MessageSendStatus status,
-                              int byte_size,
+                              size_t byte_size,
                               int ttl) override;
   void RecordIncomingSendError(const std::string& app_id,
                                const std::string& receiver_id,

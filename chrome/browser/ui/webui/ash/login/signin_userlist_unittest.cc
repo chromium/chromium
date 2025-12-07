@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -31,8 +27,8 @@ namespace ash {
 namespace {
 
 const size_t kMaxUsers = 50;  // same as in user_selection_screen.cc
-const char* kOwner = "owner@gmail.com";
-const char* kUsersPublic[] = {"public0@gmail.com", "public1@gmail.com"};
+const char kOwner[] = "owner@gmail.com";
+constexpr std::array kUsersPublic = {"public0@gmail.com", "public1@gmail.com"};
 
 std::string GenerateUserEmail(int number) {
   return "a" + base::NumberToString(number) + "@gmail.com";
@@ -50,25 +46,27 @@ class SigninPrepareUserListTest : public testing::Test {
   SigninPrepareUserListTest& operator=(const SigninPrepareUserListTest&) =
       delete;
 
-  ~SigninPrepareUserListTest() override {}
+  ~SigninPrepareUserListTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    for (size_t i = 0; i < std::size(kUsersPublic); ++i)
+    for (size_t i = 0; i < std::size(kUsersPublic); ++i) {
       fake_user_manager_->AddPublicAccountUser(
           AccountId::FromUserEmail(kUsersPublic[i]));
+    }
 
     for (size_t i = 0; i < kMaxUsers + 1; ++i) {
       fake_user_manager_->AddUser(
           AccountId::FromUserEmail(GenerateUserEmail(i)));
       // Insert owner second to last.
-      if (i == kMaxUsers - 1)
+      if (i == kMaxUsers - 1) {
         fake_user_manager_->AddUser(AccountId::FromUserEmail(kOwner));
+      }
     }
 
     fake_user_manager_->SetOwnerId(AccountId::FromUserEmail(kOwner));
@@ -82,7 +80,6 @@ class SigninPrepareUserListTest : public testing::Test {
   FakeChromeUserManager* user_manager() { return fake_user_manager_; }
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
@@ -92,10 +89,10 @@ class SigninPrepareUserListTest : public testing::Test {
 };
 
 TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {
-  EXPECT_LT(kMaxUsers, user_manager()->GetUsers().size());
+  EXPECT_LT(kMaxUsers, user_manager()->GetPersistedUsers().size());
   user_manager::UserList users_to_send =
       UserSelectionScreen::PrepareUserListForSending(
-          user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+          user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
           true /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());
@@ -104,7 +101,7 @@ TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {
   user_manager()->RemoveUserFromList(AccountId::FromUserEmail("a16@gmail.com"));
   user_manager()->RemoveUserFromList(AccountId::FromUserEmail("a17@gmail.com"));
   users_to_send = UserSelectionScreen::PrepareUserListForSending(
-      user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+      user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
       true /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());
@@ -117,7 +114,7 @@ TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {
 TEST_F(SigninPrepareUserListTest, PublicAccounts) {
   user_manager::UserList users_to_send =
       UserSelectionScreen::PrepareUserListForSending(
-          user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+          user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
           true /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());
@@ -125,7 +122,7 @@ TEST_F(SigninPrepareUserListTest, PublicAccounts) {
             users_to_send.front()->GetAccountId().GetUserEmail());
 
   users_to_send = UserSelectionScreen::PrepareUserListForSending(
-      user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+      user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
       false /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());

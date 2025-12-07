@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/protobuf_matchers.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
@@ -26,6 +27,8 @@
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace cast_channel {
+
+using base::test::EqualsProto;
 
 class MockCastTransport : public CastTransport {
  public:
@@ -261,17 +264,6 @@ class MockCastMessageHandler : public CastMessageHandler {
 
 // Creates the IPEndpoint 192.168.1.1.
 net::IPEndPoint CreateIPEndPointForTest();
-
-// Checks if two proto messages are the same.
-// From
-// third_party/cacheinvalidation/overrides/google/cacheinvalidation/deps/gmock.h
-// TODO(kmarshall): promote to a shared testing library.
-MATCHER_P(EqualsProto, message, "") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 ACTION_TEMPLATE(PostCompletionCallbackTask,
                 HAS_1_TEMPLATE_PARAMS(int, cb_idx),

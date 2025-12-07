@@ -21,7 +21,7 @@ include_rules = [
   "+components/download/public/common",
   "+components/embedder_support",
   "+components/favicon_base",
-  "+components/flags_ui",
+  "+components/grit",
   "+components/heap_profiling",
   "+components/history/core/browser",
   "+components/keyed_service/core",
@@ -29,11 +29,12 @@ include_rules = [
   "+components/minidump_uploader",
   "+components/navigation_interception",
   "+components/network_hints/browser",
-  "+components/optimization_guide/core/bloom_filter.h",
+  "+components/optimization_guide/core/filters/bloom_filter.h",
   "+components/origin_trials",
   "+components/os_crypt/async",
   "+components/page_load_metrics/browser",
   "+components/page_load_metrics/google/browser",
+  "+components/payments/content/android/payment_feature_map.h",
   "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",
@@ -48,13 +49,12 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/security_interstitials",
+  "+components/sensitive_content",
   "+components/services/heap_profiling",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
   "+components/strings",
-  "+components/tpcd",
   "+components/tracing/common",
-  "+components/translate/core/common",
   "+components/url_formatter",
   "+components/url_matcher",
   "+components/user_prefs",
@@ -66,14 +66,12 @@ include_rules = [
   "+components/viz/service/frame_sinks",
   "+components/viz/test",
   "+components/webdata/common",
+  "+components/webui/flags",
 
   "+content/public/browser",
   "+content/public/test",
 
-  # Explicitly disallow using SyncMessageFilter to prevent browser from
-  # sending synchronous IPC messages on non-UI threads.
-  "-ipc/ipc_sync_message_filter.h",
-
+  "+media/audio/audio_features.h", # For audio command line switches.
   "+media/base/android",
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",
@@ -87,6 +85,8 @@ include_rules = [
   "+services/cert_verifier/public/mojom",
 
   "+services/metrics/public/cpp/ukm_source_id.h",
+
+  "+services/data_decoder/public/cpp/data_decoder.h",
 
   "+services/network/public",
   # This is needed for the CookieManager to configure the CookieStore directly.
@@ -107,12 +107,15 @@ include_rules = [
   # Background tracing support
   "+services/tracing/public/cpp",
 
+  "+storage/browser/blob",
   "+storage/browser/quota",
   "+storage/common/quota",
 
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/features_generated.h",
   "+third_party/blink/public/common/navigation/navigation_params.h",
+  "+third_party/blink/public/common/navigation/preloading_headers.h",
   "+third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h",
   "+third_party/blink/public/common/origin_trials/trial_token_validator.h",
   "+third_party/blink/public/common/page_state/page_state.h",
@@ -122,7 +125,8 @@ include_rules = [
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/common/web_preferences/web_preferences.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
-  "+third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+  "+third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
+  "+third_party/blink/public/mojom/payments/payment_request.mojom.h",
   "+third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h",
   "+third_party/blink/public/platform/resource_request_blocked_reason.h",
   "+third_party/crashpad/crashpad/client",
@@ -166,5 +170,6 @@ include_rules = [
   # For Android WebView Media Integrity
   "+third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h",
   # For Chrome's API keys in WebView.
+  "+google_apis/common/api_key_request_util.h",
   "+google_apis/google_api_keys.h",
 ]

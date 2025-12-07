@@ -5,25 +5,21 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 
-#include <set>
-
-#include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/profile_metrics/browser_profile_type.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Widget;
+}
+
+namespace privacy_sandbox {
+class PrivacySandboxQueueManager;
 }
 
 // Service which encapsulates logic related to displaying and controlling the
@@ -36,16 +32,6 @@ class Widget;
 // Sandbox APIs.
 class PrivacySandboxService : public KeyedService {
  public:
-  // Possible areas where the pref kPrivacySandboxM1AdMeasurement would be set.
-  // LINT.IfChange(M1AdMeasurementSetReason)
-  enum class M1AdMeasurementSetReason {
-    kDisabled_RestrictedNoNotice = 0,
-    kDisabled_PolicySettings = 1,
-    kEnabled = 2,
-    kMaxValue = kEnabled,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:M1AdMeasurementSetReason)
-
   // Possible types of Privacy Sandbox prompts that may be shown to the user.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class PromptType {
@@ -55,6 +41,15 @@ class PrivacySandboxService : public KeyedService {
     kM1NoticeEEA = 3,
     kM1NoticeRestricted = 4,
     kMaxValue = kM1NoticeRestricted,
+  };
+
+  // A list of the client surfaces we show consents / notices on.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  enum class SurfaceType {
+    kDesktop = 0,
+    kBrApp = 1,
+    kAGACCT = 2,
+    kMaxValue = kAGACCT,
   };
 
   // An exhaustive list of actions related to showing & interacting with the
@@ -82,6 +77,8 @@ class PrivacySandboxService : public KeyedService {
     // has made the decision (accepted or declined the consent).
     kConsentClosedNoDecision = 10,
 
+    // TODO(crbug.com/386240885): Clean up old learn more, as it is not used for
+    // any of the Privacy Sandbox Dialogs anymore.
     // Interaction with notice bubble: click on the link to open interests
     // settings.
     kNoticeLearnMore = 11,
@@ -101,7 +98,17 @@ class PrivacySandboxService : public KeyedService {
     kRestrictedNoticeClosedNoInteraction = 19,
     kRestrictedNoticeMoreButtonClicked = 20,
 
-    kMaxValue = kRestrictedNoticeMoreButtonClicked,
+    // Privacy policy interactions
+    kPrivacyPolicyLinkClicked = 21,
+
+    // Interactions with M1 Notice EEA Prompt. This is in relation to Ads API UX
+    // Enhancement splitting the more info into two different sections.
+    kNoticeSiteSuggestedAdsMoreInfoOpened = 22,
+    kNoticeSiteSuggestedAdsMoreInfoClosed = 23,
+    kNoticeAdsMeasurementMoreInfoOpened = 24,
+    kNoticeAdsMeasurementMoreInfoClosed = 25,
+
+    kMaxValue = kNoticeAdsMeasurementMoreInfoClosed,
   };
 
   // If during the trials a previous consent decision was made, or the notice
@@ -133,31 +140,55 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kNoticeShownToGuardian,
   };
 
-  // Returns whether |url| is suitable to display the Privacy Sandbox prompt
-  // over. Only about:blank and certain chrome:// URLs are considered suitable.
-  static bool IsUrlSuitableForPrompt(const GURL& url);
+  // Contains the possible states of the prompt start up states for m1.
+  // LINT.IfChange(SettingsPrivacySandboxPromptStartupState)
+  enum class PromptStartupState {
+    kEEAConsentPromptWaiting = 0,
+    kEEANoticePromptWaiting = 1,
+    kROWNoticePromptWaiting = 2,
+    kEEAFlowCompletedWithTopicsAccepted = 3,
+    kEEAFlowCompletedWithTopicsDeclined = 4,
+    kROWNoticeFlowCompleted = 5,
+    kPromptNotShownDueToPrivacySandboxRestricted = 6,
+    kPromptNotShownDueTo3PCBlocked = 7,
+    kPromptNotShownDueToTrialConsentDeclined = 8,
+    kPromptNotShownDueToTrialsDisabledAfterNoticeShown = 9,
+    kPromptNotShownDueToManagedState = 10,
+    kRestrictedNoticeNotShownDueToNoticeShownToGuardian = 11,
+    kRestrictedNoticePromptWaiting = 12,
+    kRestrictedNoticeFlowCompleted = 13,
+    kRestrictedNoticeNotShownDueToFullNoticeAcknowledged = 14,
+    kWaitingForGraduationRestrictedNoticeFlowNotCompleted = 15,
+    kWaitingForGraduationRestrictedNoticeFlowCompleted = 16,
+    kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacySandboxPromptStartupState)
 
-  // Disables the display of the Privacy Sandbox prompt for testing. When
-  // |disabled| is true, GetRequiredPromptType() will only ever return that no
-  // prompt is required.
-  // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
-  // prompt for those tests. If you set this outside of that context, you should
-  // ensure it is reset at the end of your test.
-  static void SetPromptDisabledForTests(bool disabled);
+  // Enum for the different events that can be triggered from the
+  // PrivacySandboxApis Dialog. It used to bubble up some Dialog events to other
+  // components.
+  enum class AdsDialogCallbackNoArgsEvents {
+    kShowDialog,
+    kCloseDialog,
+    kOpenAdsPrivacySettings,
+    kOpenMeasurementSettings,
+  };
 
   // Returns the prompt type that should be shown to the user. This consults
-  // previous consent / notice information stored in preferences, the current
-  // state of the Privacy Sandbox settings, and the current location of the
-  // user, to determine the appropriate type. This is expected to be called by
-  // UI code locations determining whether a prompt should be shown on startup.
-  virtual PromptType GetRequiredPromptType() = 0;
+  // previous consent / notice information stored in preferences, the
+  // current state of the Privacy Sandbox settings, and the current location
+  // of the user, to determine the appropriate type. This is expected to be
+  // called by UI code locations determining whether a prompt should be
+  // shown on startup.
+  virtual PromptType GetRequiredPromptType(SurfaceType surface_type) = 0;
 
   // Informs the service that |action| occurred with the prompt. This allows
   // the service to record this information in preferences such that future
   // calls to GetRequiredPromptType() are correct. This is expected to be
-  // called appropriately by all locations showing the prompt. Metrics shared
-  // between platforms will also be recorded.
-  virtual void PromptActionOccurred(PromptAction action) = 0;
+  // called appropriately by all locations showing the prompt. Metrics
+  // shared between platforms will also be recorded.
+  virtual void PromptActionOccurred(PromptAction action,
+                                    SurfaceType surface_type) = 0;
 
   // Functions for coordinating the display of the Privacy Sandbox prompts
   // across multiple browser windows. Only relevant for Desktop.
@@ -165,12 +196,15 @@ class PrivacySandboxService : public KeyedService {
 #if !BUILDFLAG(IS_ANDROID)
   // Informs the service that a Privacy Sandbox prompt has been opened
   // or closed for |browser|.
-  virtual void PromptOpenedForBrowser(Browser* browser,
+  virtual void PromptOpenedForBrowser(BrowserWindowInterface* browser,
                                       views::Widget* widget) = 0;
-  virtual void PromptClosedForBrowser(Browser* browser) = 0;
+  virtual void PromptClosedForBrowser(BrowserWindowInterface* browser) = 0;
 
   // Returns whether a Privacy Sandbox prompt is currently open for |browser|.
-  virtual bool IsPromptOpenForBrowser(Browser* browser) = 0;
+  virtual bool IsPromptOpenForBrowser(BrowserWindowInterface* browser) = 0;
+
+  virtual privacy_sandbox::PrivacySandboxQueueManager&
+  GetPrivacySandboxNoticeQueueManager() = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // If set to true, this treats the testing environment as that of a branded
@@ -187,40 +221,34 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsRestrictedNoticeEnabled() = 0;
 
   // Toggles the RelatedWebsiteSets preference.
-  virtual void SetFirstPartySetsDataAccessEnabled(bool enabled) = 0;
+  virtual void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) = 0;
 
   // Returns whether the RelatedWebsiteSets preference is enabled.
-  virtual bool IsFirstPartySetsDataAccessEnabled() const = 0;
+  virtual bool IsRelatedWebsiteSetsDataAccessEnabled() const = 0;
 
   // Returns whether the RelatedWebsiteSets preference is managed.
-  virtual bool IsFirstPartySetsDataAccessManaged() const = 0;
+  virtual bool IsRelatedWebsiteSetsDataAccessManaged() const = 0;
 
-  // DEPRECATED - Do not use in new code. It will be replaced with queries to
-  // the First-Party Sets that are in the browser-process.
-  // Virtual for mocking in tests.
-  virtual base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetSampleFirstPartySets() const = 0;
-
-  // Returns the owner domain of the first party set that `site_url` is a member
-  // of, or std::nullopt if `site_url` is not recognised as a member of an FPS.
-  // Encapsulates logic about whether FPS information should be shown, if it
-  // should not, std::nullopt is always returned.
-  // Virtual for mocking in tests.
-  virtual std::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  // Returns the owner domain of the related website set that `site_url` is a
+  // member of, or std::nullopt if `site_url` is not recognised as a member of
+  // an RWS. Encapsulates logic about whether RWS information should be shown,
+  // if it should not, std::nullopt is always returned. Virtual for mocking in
+  // tests.
+  virtual std::optional<net::SchemefulSite> GetRelatedWebsiteSetOwner(
       const GURL& site_url) const = 0;
 
-  // Same as GetFirstPartySetOwner but returns a formatted string.
-  virtual std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  // Same as GetRelatedWebsiteSetOwner but returns a formatted string.
+  virtual std::optional<std::u16string> GetRelatedWebsiteSetOwnerForDisplay(
       const GURL& site_url) const = 0;
 
-  // Returns true if `site`'s membership in an FPS is being managed by policy or
-  // if FirstPartySets preference is managed. Virtual for mocking in tests.
+  // Returns true if `site`'s membership in an RWS is being managed by policy or
+  // if RelatedWebsiteSets preference is managed. Virtual for mocking in tests.
   //
-  // Note: Enterprises can use the First-Party Set Overrides policy to either
-  // add or remove a site from a First-Party Set. This method returns true only
-  // if `site` is being added into a First-Party Set since there's no UI use for
-  // whether `site` is being removed by an enterprise yet.
-  virtual bool IsPartOfManagedFirstPartySet(
+  // Note: Enterprises can use the Related Website Set Overrides policy to
+  // either add or remove a site from a Related Website Set. This method returns
+  // true only if `site` is being added into a Related Website Set since there's
+  // no UI use for whether `site` is being removed by an enterprise yet.
+  virtual bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const = 0;
 
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
@@ -271,6 +299,14 @@ class PrivacySandboxService : public KeyedService {
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed) = 0;
 
+  // Determines whether the Topics API step should be shown in the Privacy
+  // Guide.
+  virtual bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() = 0;
+
+  // Determines whether the China domain should be used for the Privacy Policy
+  // page.
+  virtual bool ShouldUsePrivacyPolicyChinaDomain() = 0;
+
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.
   // This is not fired for changes to the preference for policy or extensions,
@@ -281,7 +317,7 @@ class PrivacySandboxService : public KeyedService {
   virtual void TopicsToggleChanged(bool new_value) const = 0;
 
   // Whether the current profile requires consent for Topics to operate.
-  virtual bool TopicsConsentRequired() const = 0;
+  virtual bool TopicsConsentRequired() = 0;
 
   // Whether there is an active consent for Topics currently recorded.
   virtual bool TopicsHasActiveConsent() const = 0;
@@ -293,55 +329,16 @@ class PrivacySandboxService : public KeyedService {
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
 
-#if BUILDFLAG(IS_ANDROID)
-  // On Clank startup, the RecordActivityType function will be called once,
-  // passing in the corresponding PrivacySandboxStorageActivityType. Each time
-  // the function is called, the kPrivacySandboxActivityTypeRecord2 preference
-  // will be updated with a new list of activity type launches. This list is
-  // limited in size and by the timestamps of recordable launches
-  // (kPrivacySandboxActivityTypeStorageLastNLaunches and
-  // kPrivacySandboxActivityTypeStorageWithinXDays). By having this storage
-  // component, we can create an accurate heuristic to identify distinct user
-  // groups based on their Chrome usage patterns. This will enable us to tailor
-  // the user experience for specific launches in the near future.
-  //
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  // LINT.IfChange(PrivacySandboxStorageActivityType)
-  enum class PrivacySandboxStorageActivityType {
-    kOther = 0,               // Partial CCT and all other unknowns
-    kTabbed = 1,              // BrApp
-    kAGSACustomTab = 2,       // AGSA-CCT
-    kNonAGSACustomTab = 3,    // Non-AGSA-CCT
-    kTrustedWebActivity = 4,  // TWA
-    //   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webapps/README.md
-    kWebapp = 5,  // Shortcut
-    //   - https://web.dev/webapks/
-    kWebApk = 6,  // PWA
-    kPreFirstTab =
-        7,  // Chrome has started running, but no tab has yet become visible.
-    kMaxValue = kPreFirstTab,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
-
-  virtual void RecordActivityType(
-      PrivacySandboxStorageActivityType type) const = 0;
-
-  // Enum used for recording metrics about Clank Activity Type Storage
-  //
-  // LINT.IfChange(PrivacySandboxStorageUserSegmentByRecentActivity)
-  enum class PrivacySandboxStorageUserSegmentByRecentActivity {
-    kHasOther = 0,
-    kHasBrowserApp = 1,
-    kHasAGSACCT = 2,
-    kHasNonAGSACCT = 3,
-    kHasPWA = 4,
-    kHasTWA = 5,
-    kHasWebapp = 6,
-    kHasPreFirstTab = 7,
-    kMaxValue = kHasPreFirstTab,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
-#endif  // BUILDFLAG(IS_ANDROID)
+  // Notice Framework Result Callbacks.
+  virtual void UpdateTopicsApiResult(bool value) = 0;
+  virtual void UpdateProtectedAudienceApiResult(bool value) = 0;
+  virtual void UpdateMeasurementApiResult(bool value) = 0;
+  // Notice Framework Eligibility Callbacks.
+  virtual privacy_sandbox::EligibilityLevel GetTopicsApiEligibility() = 0;
+  virtual privacy_sandbox::EligibilityLevel
+  GetProtectedAudienceApiEligibility() = 0;
+  virtual privacy_sandbox::EligibilityLevel
+  GetAdMeasurementApiEligibility() = 0;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

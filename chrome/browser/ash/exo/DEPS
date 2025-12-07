@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/bruschetta",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/file_manager",
@@ -26,3 +25,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+chrome/browser/ash/login/users/scoped_account_id_annotator.h",
+  ]
+}

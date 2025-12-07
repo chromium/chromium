@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -77,8 +78,7 @@ SelectToSpeakPanelAction PanelActionForButtonID(int button_id, bool is_paused) {
       return SelectToSpeakPanelAction::kChangeSpeed;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SelectToSpeakPanelAction::kNone;
+  NOTREACHED();
 }
 
 }  // namespace

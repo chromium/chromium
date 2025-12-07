@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] WebAssembly.namespaceInstance() should return the underlying instance with shared state
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+[FAIL] WebAssembly.namespaceInstance() should work correctly with multiple modules
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/exports.wasm"
+Harness: the test ran to completion.
+

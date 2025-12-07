@@ -5,30 +5,51 @@
 #include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "android_webview/common/aw_paths.h"
+#include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "android_webview/nonembedded/component_updater/registration.h"
 #include "android_webview/nonembedded/webview_apk_process.h"
 #include "base/android/callback_android.h"
+#include "base/android/jni_string.h"
+#include "base/android/path_utils.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
+#include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
+#include "components/update_client/utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
+#include "android_webview/nonembedded/nonembedded_jni_headers/ComponentsProviderPathUtil_jni.h"
 
 namespace android_webview {
 
@@ -39,9 +60,9 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 }
 
 // static
-void JNI_AwComponentUpdateService_StartComponentUpdateService(
+static void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_finished_callback,
+    const base::android::JavaRef<jobject>& j_finished_callback,
     jboolean j_on_demand_update) {
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
@@ -57,7 +78,8 @@ AwComponentUpdateService::AwComponentUpdateService()
 
 AwComponentUpdateService::AwComponentUpdateService(
     scoped_refptr<update_client::Configurator> configurator)
-    : update_client_(update_client::UpdateClientFactory(configurator)) {}
+    : update_client_(update_client::UpdateClientFactory(configurator)),
+      configurator_(configurator) {}
 
 AwComponentUpdateService::~AwComponentUpdateService() = default;
 
@@ -72,7 +94,10 @@ void AwComponentUpdateService::StartComponentUpdateService(
                           base::Unretained(this)),
       base::BindOnce(
           &AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents,
-          weak_ptr_factory_.GetWeakPtr(), std::move(finished_callback),
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&AwComponentUpdateService::UpdateMetadataFiles,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(finished_callback)),
           on_demand_update));
 }
 
@@ -238,4 +263,85 @@ void AwComponentUpdateService::RecordComponentsUpdated(
   std::move(on_finished).Run(components_updated_count_);
 }
 
+std::string AwComponentUpdateService::GetCohortId(
+    const std::string& component_id) {
+  return configurator_->GetPersistedData()->GetCohort(component_id);
+}
+
+void AwComponentUpdateService::UpdateMetadataFiles(
+    UpdateCallback on_finished,
+    int32_t components_updated_count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& component_entry : components_) {
+    const std::string& component_id = component_entry.first;
+    const auto& component = component_entry.second;
+
+    base::FilePath cps_component_base_path =
+        GetComponentsProviderServiceDirectory(component.public_key_hash);
+    std::string highest_sequence_number_dir =
+        GetHighestSequenceNumberDirectory(cps_component_base_path);
+
+    // If no directory was found, continue to the next component.
+    if (highest_sequence_number_dir.empty()) {
+      LOG(ERROR) << "No directory found for component " << component_id;
+      continue;
+    }
+
+    base::FilePath dest_path =
+        cps_component_base_path.AppendASCII(highest_sequence_number_dir);
+
+    base::Value::Dict metadata_file_contents;
+    metadata_file_contents.Set(component_updater::kMetadataFileCohortIdKey,
+                               GetCohortId(component_id));
+    std::optional<std::string> metadata_file_contents_json =
+        base::WriteJson(metadata_file_contents);
+    if (!metadata_file_contents_json.has_value()) {
+      LOG(ERROR) << "Failed to serialize metadata for component "
+                 << component_id;
+      continue;
+    }
+
+    // Write the metadata JSON to the destination path.
+    base::FilePath metadata_file_path =
+        dest_path.Append("aw_extra_component_metadata.json");
+    if (!base::ImportantFileWriter::WriteFileAtomically(
+            metadata_file_path, metadata_file_contents_json.value())) {
+      LOG(ERROR) << "Failed to write metadata file for component "
+                 << component_id << " at " << metadata_file_path;
+    }
+  }
+
+  std::move(on_finished).Run(components_updated_count);
+}
+
+std::string AwComponentUpdateService::GetHighestSequenceNumberDirectory(
+    base::FilePath cps_component_base_path) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_ComponentsProviderPathUtil_getTheHighestSequenceNumberDirectory(
+      env, cps_component_base_path.MaybeAsASCII());
+}
+
+int AwComponentUpdateService::GetHighestSequenceNumber(
+    base::FilePath cps_component_base_path) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_ComponentsProviderPathUtil_getTheHighestSequenceNumber(
+      env, cps_component_base_path.MaybeAsASCII());
+}
+
+base::FilePath AwComponentUpdateService::GetComponentsProviderServiceDirectory(
+    const std::vector<uint8_t>& public_key_hash) {
+  std::string component_id =
+      update_client::GetCrxIdFromPublicKeyHash(public_key_hash);
+
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::FilePath(
+
+             Java_ComponentsProviderPathUtil_getComponentsServingDirectoryPath(
+                 env))
+      .AppendASCII(component_id);
+}
+
 }  // namespace android_webview
+
+DEFINE_JNI(AwComponentUpdateService)
+DEFINE_JNI(ComponentsProviderPathUtil)

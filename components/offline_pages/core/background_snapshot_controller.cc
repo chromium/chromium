@@ -44,7 +44,7 @@ BackgroundSnapshotController::BackgroundSnapshotController(
   }
 }
 
-BackgroundSnapshotController::~BackgroundSnapshotController() {}
+BackgroundSnapshotController::~BackgroundSnapshotController() = default;
 
 void BackgroundSnapshotController::Reset() {
   // Cancel potentially delayed tasks that relate to the previous 'session'.
@@ -69,8 +69,9 @@ void BackgroundSnapshotController::DocumentOnLoadCompletedInPrimaryMainFrame() {
 }
 
 void BackgroundSnapshotController::MaybeStartSnapshot() {
-  if (state_ != State::READY)
+  if (state_ != State::READY) {
     return;
+  }
   state_ = State::SNAPSHOT_PENDING;
   client_->StartSnapshot();
 }

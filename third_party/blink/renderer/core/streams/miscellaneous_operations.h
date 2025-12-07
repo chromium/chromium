@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_MISCELLANEOUS_OPERATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_MISCELLANEOUS_OPERATIONS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -100,25 +101,17 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(ScriptState*,
                                                   v8::Local<v8::Value> arg0,
                                                   ExceptionState&);
 
-// Used in JavaScriptByteStreamStartAlgoirthm to call the method.
-// This is a variation of the CallOrNoop1 method where it is given the method
-// function already.
-CORE_EXPORT v8::MaybeLocal<v8::Value> Call1(ScriptState*,
-                                            v8::Local<v8::Function> method,
-                                            v8::Local<v8::Object> object,
-                                            v8::Local<v8::Value> arg0,
-                                            ExceptionState&);
-
 // https://streams.spec.whatwg.org/#promise-call
 // "PromiseCall(F, V, args)"
 // "F" is called |method| here
 // "V" is called |recv| here
 // "args" becomes |argc| and |argv| here.
-CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState*,
-                                               v8::Local<v8::Function> method,
-                                               v8::Local<v8::Object> recv,
-                                               int argc,
-                                               v8::Local<v8::Value> argv[]);
+CORE_EXPORT ScriptPromise<IDLUndefined> PromiseCall(
+    ScriptState*,
+    v8::Local<v8::Function> method,
+    v8::Local<v8::Object> recv,
+    int argc,
+    v8::Local<v8::Value> argv[]);
 
 // Unlike in the standard, the caller needs to handle the conversion of the
 // value to a Number.
@@ -133,19 +126,6 @@ CORE_EXPORT StrategySizeAlgorithm* MakeSizeAlgorithmFromSizeFunction(
     ExceptionState&);
 
 CORE_EXPORT StrategySizeAlgorithm* CreateDefaultSizeAlgorithm();
-
-// Implements "a promise rejected with" from the INFRA standard.
-// https://www.w3.org/2001/tag/doc/promises-guide/#a-promise-rejected-with
-CORE_EXPORT v8::Local<v8::Promise> PromiseReject(ScriptState*,
-                                                 v8::Local<v8::Value>);
-
-// Implements "a promise resolved with" from the INFRA standard.
-// https://www.w3.org/2001/tag/doc/promises-guide/#a-promise-resolved-with
-CORE_EXPORT v8::Local<v8::Promise> PromiseResolve(ScriptState*,
-                                                  v8::Local<v8::Value>);
-
-// Implements "a promise resolved with *undefined*".
-CORE_EXPORT v8::Local<v8::Promise> PromiseResolveWithUndefined(ScriptState*);
 
 // Converts |value| to an object. |value| must not be empty. If |value| is
 // undefined, an empty object will be returned. If |value| is JavaScript null,

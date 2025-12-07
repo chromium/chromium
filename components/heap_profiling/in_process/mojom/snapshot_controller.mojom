@@ -18,4 +18,9 @@ interface SnapshotController {
   // `process_index` is the 0-based index of this process in the list of
   // processes of the same type that were snapshotted at the same time.
   TakeSnapshot(uint32 process_probability_pct, uint32 process_index);
+
+  // Tells the process to take a snapshot and record metrics, but not upload it.
+  // This ensures that processes excluded from a scheduled snapshot are
+  // included in performance metrics, since they were running the profiler.
+  LogMetricsWithoutSnapshot();
 };

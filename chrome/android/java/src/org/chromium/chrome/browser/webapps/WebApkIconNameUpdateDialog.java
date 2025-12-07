@@ -11,6 +11,9 @@ import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -22,8 +25,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The dialog that warns the user that a WebApk is about to be updated, which will result in a short
  * name, long name and/or icon change.
  */
+@NullMarked
 public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Controller {
-    private static Boolean sActionToTakeInTests;
 
     private static final String TAG = "IconNameUpdateDlg";
 
@@ -34,13 +37,13 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     private ModalDialogManager mModalDialogManager;
 
     // The property model for the dialog.
-    private PropertyModel mDialogModel;
+    private @Nullable PropertyModel mDialogModel;
 
     // The short name of the app before update.
-    private String mOldAppShortName;
+    private @Nullable String mOldAppShortName;
 
     // The package name for this app.
-    private String mPackageName;
+    private @Nullable String mPackageName;
 
     // The callback to run when the user has made a decision.
     private Callback<Integer> mDialogResultCallback;
@@ -66,17 +69,18 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
      * @param newIconAdaptive Whether the updated icon is adaptive.
      * @param callback The callback to use to communicate the results.
      */
+    @Initializer
     public void show(
             Context activityContext,
             ModalDialogManager manager,
-            String packageName,
+            @Nullable String packageName,
             boolean iconChanging,
             boolean shortNameChanging,
             boolean nameChanging,
-            String oldAppShortName,
-            String newAppShortName,
-            String oldAppName,
-            String newAppName,
+            @Nullable String oldAppShortName,
+            @Nullable String newAppShortName,
+            @Nullable String oldAppName,
+            @Nullable String newAppName,
             Bitmap currentAppIcon,
             Bitmap updatedAppIcon,
             boolean oldIconAdaptive,

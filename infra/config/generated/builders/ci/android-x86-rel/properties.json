@@ -13,15 +13,18 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "arm",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -45,15 +48,18 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "arm",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -86,21 +92,21 @@
           "builder": "android-webview-10-x86-rel-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-x86-rel/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },

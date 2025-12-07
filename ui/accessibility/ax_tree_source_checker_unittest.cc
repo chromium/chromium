@@ -4,12 +4,14 @@
 
 #include "ui/accessibility/ax_tree_source_checker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
+#include "ui/accessibility/mojom/ax_tree_data.mojom.h"
 
 namespace ui {
 namespace {
@@ -33,7 +35,7 @@ void CleanAXNodeDataString(std::string* error_str) {
 // about errors in accessibility trees that have inconsistent parent/child
 // links.
 class FakeAXTreeSource
-    : public AXTreeSource<const FakeAXNode*, ui::AXTreeData*, ui::AXNodeData> {
+    : public AXTreeSource<const FakeAXNode*, AXTreeData*, AXNodeData> {
  public:
   FakeAXTreeSource(std::vector<FakeAXNode> nodes, AXNodeID root_id)
       : nodes_(nodes), root_id_(root_id) {
@@ -86,7 +88,7 @@ class FakeAXTreeSource
 
  private:
   std::vector<FakeAXNode> nodes_;
-  std::map<AXNodeID, FakeAXNode*> id_to_node_;
+  std::map<AXNodeID, raw_ptr<FakeAXNode, CtnExperimental>> id_to_node_;
   AXNodeID root_id_;
 };
 

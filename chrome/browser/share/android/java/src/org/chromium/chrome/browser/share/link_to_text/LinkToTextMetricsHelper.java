@@ -8,9 +8,11 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 
 /** Helper for metrics related to the Link to Text feature. */
+@NullMarked
 public final class LinkToTextMetricsHelper {
     @IntDef({
         LinkToTextDiagnoseStatus.SHOW_SHARINGHUB_FOR_HIGHLIGHT,
@@ -58,7 +60,7 @@ public final class LinkToTextMetricsHelper {
     /**
      * Records the metrics about the status of link to text flow.
      *
-     * @param LinkToTextDiagnoseStatus The status of link to text flow.
+     * @param linkToTextDiagnoseStatus The status of link to text flow.
      */
     public static void recordLinkToTextDiagnoseStatus(
             @LinkToTextDiagnoseStatus int linkToTextDiagnoseStatus) {

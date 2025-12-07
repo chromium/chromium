@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewStructure;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Sub-class of UrlBar that contains newer Android APIs to avoid verification errors.
@@ -16,6 +17,7 @@ import android.view.ViewStructure;
  * API, use ApiHelperForX. See crbug.com/999165 for more description of what verification errors are
  * and why they are expensive.
  */
+@NullMarked
 public class UrlBarApi26 extends UrlBar {
     public UrlBarApi26(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,10 +37,6 @@ public class UrlBarApi26 extends UrlBar {
         // https://crbug.com/1103555: Prevent augmented autofill service from taking over the
         // session by disabling both standard and augmented autofill on versions of Android
         // where both are supported.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return AUTOFILL_TYPE_NONE;
-        } else {
-            return super.getAutofillType();
-        }
+        return AUTOFILL_TYPE_NONE;
     }
 }

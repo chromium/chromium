@@ -11,7 +11,6 @@ namespace chromeos {
 
 // A cleanup handler which clears the pinned apps added by the user to the
 // shelf.
-// TODO(b:309099718) Add pinned apps to shared MGS session Tast test.
 class PinnedAppsCleanupHandler : public CleanupHandler {
  public:
   PinnedAppsCleanupHandler();

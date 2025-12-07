@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,12 +28,11 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -89,7 +87,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       uint32_t loader_options,
       SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
@@ -112,7 +110,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       const Vector<String>& cors_exempt_header_list,
       scoped_refptr<ResourceRequestClient> client,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
@@ -199,7 +197,8 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     //
     // May also include the `Shared-Storage-Writable` header in the case that
     // permission has been revoked on a redirect.
-    WebVector<WebString> removed_headers;
+    std::vector<std::string> removed_headers
+        ALLOW_DISCOURAGED_TYPE("Matches Chrome net API");
 
     // Headers that need to be added or updated, e.g. the
     // `Shared-Storage-Writable` header in the case that permission has been
@@ -243,6 +242,15 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   // when the response has finished, or when the request is canceled.
   std::unique_ptr<PendingRequestInfo> request_info_;
 
+  // Set to true when an operation integral to resource loading latency is
+  // delayed waiting on a response from the code cache.
+  bool latency_critical_operation_deferred_ = false;
+  bool used_code_cache_fetcher_ = false;
+
+  // Set to true when OnReceivedResponse of the client is called.
+  // This is used to prevent OnReceivedResponse from being called twice.
+  bool response_sent_to_client_ = false;
+
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
 
   // `pending_tasks_` are queued while waiting for the response from the
@@ -250,7 +258,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   // such deferring logic. However, it is difficult because the current code for
   // ScriptCachedMetadataHandler is written with the assumption that metadata
   // comes first.
-  WTF::Vector<base::OnceClosure> pending_tasks_;
+  Vector<base::OnceClosure> pending_tasks_;
 
   scoped_refptr<CodeCacheFetcher> code_cache_fetcher_;
 

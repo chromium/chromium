@@ -12,11 +12,13 @@
 #include "ash/constants/ash_features.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
@@ -34,6 +36,8 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -129,12 +133,15 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
         chromeos::PowerManagerClient::Get(), &session_manager_,
         observer.InitWithNewPipeAndPassReceiver());
 
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
+
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   void TearDown() override {
+    browser_controller_.reset();
     activity_logger_.reset();
     chromeos::PowerManagerClient::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -279,8 +286,10 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<UserActivityManager> activity_logger_;
+  std::unique_ptr<BrowserControllerImpl> browser_controller_;
 };
 
 // After an idle event, we have a ui::Event, we should expect one
@@ -1281,7 +1290,7 @@ TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
 
   const UserActivityEvent::Features& features = events[0].features();
   EXPECT_EQ(features.source_id(), source_id1);
-  EXPECT_EQ(features.tab_domain(), url1_.host());
+  EXPECT_EQ(features.tab_domain(), url1_.GetHost());
   EXPECT_FALSE(features.tab_domain().empty());
   EXPECT_EQ(features.engagement_score(), 90);
   EXPECT_FALSE(features.has_form_entry());
@@ -1328,7 +1337,7 @@ TEST_F(UserActivityManagerTest, DISABLED_MultiBrowsersAndTabs) {
 
   const UserActivityEvent::Features& features = events[0].features();
   EXPECT_EQ(features.source_id(), source_id3);
-  EXPECT_EQ(features.tab_domain(), url3_.host());
+  EXPECT_EQ(features.tab_domain(), url3_.GetHost());
   EXPECT_EQ(features.engagement_score(), 0);
   EXPECT_FALSE(features.has_form_entry());
 

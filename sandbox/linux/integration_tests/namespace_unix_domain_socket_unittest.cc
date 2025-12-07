@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
@@ -101,7 +102,7 @@ void RecvHello(int fd,
   ssize_t n = base::UnixDomainSocket::RecvMsgWithPid(
       fd, buf, sizeof(buf), &message_fds, sender_pid);
   CHECK_EQ(sizeof(kHello), static_cast<size_t>(n));
-  CHECK_EQ(0, memcmp(buf, kHello, sizeof(kHello)));
+  UNSAFE_TODO(CHECK_EQ(0, memcmp(buf, kHello, sizeof(kHello))));
   CHECK_EQ(1U, message_fds.size());
   if (write_pipe)
     std::swap(*write_pipe, message_fds[0]);
@@ -227,7 +228,7 @@ SANDBOX_TEST(UnixDomainSocketTest, DoubleNamespace) {
         CHECK_EQ(pid, sender_pid);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

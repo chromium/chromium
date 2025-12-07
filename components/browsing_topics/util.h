@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_UTIL_H_
 #define COMPONENTS_BROWSING_TOPICS_UTIL_H_
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
@@ -60,10 +62,21 @@ uint64_t HashTopDomainForTopTopicIndexDecision(
     base::Time epoch_calculation_time,
     const std::string& top_domain);
 
-// Returns a per-user hash of `top_domain` for the purpose of deciding the epoch
-// switch-over time. The `hmac_key` is per-user.
-uint64_t HashTopDomainForEpochSwitchTimeDecision(ReadOnlyHmacKey hmac_key,
-                                                 const std::string& top_domain);
+// Returns a per-user, per-epoch hash of `top_domain` for the purpose of
+// deciding the epoch introduction time. The `hmac_key` is per-user and
+// `epoch_calculation_time` represents the epoch.
+uint64_t HashTopDomainForEpochIntroductionTimeDecision(
+    ReadOnlyHmacKey hmac_key,
+    base::Time epoch_calculation_time,
+    const std::string& top_domain);
+
+// Returns a per-user, per-epoch hash of `top_domain` for the purpose of
+// deciding the epoch phase out time. The `hmac_key` is per-user and
+// `epoch_calculation_time` represents the epoch.
+uint64_t HashTopDomainForEpochPhaseOutTimeDecision(
+    ReadOnlyHmacKey hmac_key,
+    base::Time epoch_calculation_time,
+    const std::string& top_domain);
 
 // Returns a per-user hash of `context_domain` to be stored more efficiently in
 // disk and memory. The `hmac_key` is per-user. A per-user hash is necessary to

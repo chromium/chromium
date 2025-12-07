@@ -11,6 +11,9 @@
 #include <vector>
 
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class Value;
@@ -41,9 +44,9 @@ struct ContentCondition {
 };
 
 // Factory function that instantiates a ContentCondition according to the
-// description |condition|, which should be an instance of
+// description `condition`, which should be an instance of
 // declarativeContent.PageStateMatcher from the Declarative Content
-// API. |predicate_factories| maps attribute names in the API to factories that
+// API. `predicate_factories` maps attribute names in the API to factories that
 // create the corresponding predicate.
 std::unique_ptr<ContentCondition> CreateContentCondition(
     const Extension* extension,

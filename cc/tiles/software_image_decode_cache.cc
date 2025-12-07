@@ -4,30 +4,26 @@
 
 #include "cc/tiles/software_image_decode_cache.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/ostream_operators.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
-#include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -36,18 +32,11 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 namespace cc {
 namespace {
 
-BASE_FEATURE(kNormalMaxItemsInCacheForSoftwareFeature,
-             "NormalMaxItemsInCacheForSoftwareFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The number of entries to keep around in the cache. This limit can be breached
 // if more items are locked. That is, locked items ignore this limit.
 // Depending on the memory state of the system, we limit the amount of items
 // differently.
-MIRACLE_PARAMETER_FOR_INT(GetNormalMaxItemsInCacheForSoftware,
-                          kNormalMaxItemsInCacheForSoftwareFeature,
-                          "NormalMaxItemsInCacheForSoftware",
-                          1000)
+constexpr size_t kNormalMaxItemsInCacheForSoftware = 1000;
 
 class AutoRemoveKeyFromTaskMap {
  public:
@@ -73,7 +62,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
       SoftwareImageDecodeCache* cache,
       const SoftwareImageDecodeCache::CacheKey& image_key,
       const PaintImage& paint_image,
-      SoftwareImageDecodeCache::DecodeTaskType task_type,
+      ImageDecodeCache::TaskType task_type,
       const ImageDecodeCache::TracingInfo& tracing_info)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
                  TileTask::SupportsBackgroundThreadPriority::kNo),
@@ -99,7 +88,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
     devtools_instrumentation::ScopedImageDecodeTask image_decode_task(
         paint_image_.GetSwSkImage().get(),
         devtools_instrumentation::ScopedImageDecodeTask::DecodeType::kSoftware,
-        ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
+        ImageDecodeCache::ToScopedTaskType(task_type_),
         ImageDecodeCache::ToScopedImageType(image_type));
     SoftwareImageDecodeCache::TaskProcessingResult result =
         cache_->DecodeImageInTask(image_key_, paint_image_, task_type_);
@@ -110,6 +99,9 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   }
 
   // Overridden from TileTask:
+  bool IsRasterTask() const override {
+    return task_type_ == ImageDecodeCache::TaskType::kInRaster;
+  }
   void OnTaskCompleted() override {
     cache_->OnImageDecodeTaskCompleted(image_key_, task_type_);
   }
@@ -125,10 +117,10 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   ~SoftwareImageDecodeTaskImpl() override = default;
 
  private:
-  raw_ptr<SoftwareImageDecodeCache, AcrossTasksDanglingUntriaged> cache_;
+  raw_ptr<SoftwareImageDecodeCache> cache_;
   SoftwareImageDecodeCache::CacheKey image_key_;
   PaintImage paint_image_;
-  SoftwareImageDecodeCache::DecodeTaskType task_type_;
+  ImageDecodeCache::TaskType task_type_;
   const ImageDecodeCache::TracingInfo tracing_info_;
 };
 
@@ -165,7 +157,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),
-      max_items_in_cache_(GetNormalMaxItemsInCacheForSoftware()) {
+      max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
@@ -186,29 +178,29 @@ ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
     ClientId client_id,
     const DrawImage& image,
     const TracingInfo& tracing_info) {
-  DCHECK_EQ(tracing_info.task_type, TaskType::kInRaster);
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
-  return GetTaskForImageAndRefInternal(image, tracing_info,
-                                       DecodeTaskType::USE_IN_RASTER_TASKS);
+  return GetTaskForImageAndRefInternal(image, tracing_info, TaskType::kInRaster,
+                                       /*speculative*/ false);
 }
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
     ClientId client_id,
-    const DrawImage& image) {
+    const DrawImage& image,
+    bool speculative) {
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
-  return GetTaskForImageAndRefInternal(
-      image, TracingInfo(0, TilePriority::NOW, TaskType::kOutOfRaster),
-      DecodeTaskType::USE_OUT_OF_RASTER_TASKS);
+  return GetTaskForImageAndRefInternal(image, TracingInfo(0, TilePriority::NOW),
+                                       TaskType::kOutOfRaster, speculative);
 }
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const DrawImage& image,
     const TracingInfo& tracing_info,
-    DecodeTaskType task_type) {
+    TaskType task_type,
+    bool speculative) {
   CacheKey key = CacheKey::FromDrawImage(
       image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
@@ -219,12 +211,10 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   // If the target size is empty, we can skip this image during draw (and thus
   // we don't need to decode it or ref it).
   if (key.target_size().IsEmpty())
-    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false);
 
   if (!UseCacheForDrawImage(image))
-    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false);
 
   base::AutoLock lock(lock_);
 
@@ -237,11 +227,8 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   if (decoded_it == decoded_images_.end()) {
     // There is no reason to create a new entry if we know it won't fit anyway.
     if (!new_image_fits_in_memory)
-      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
-                        /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true);
     cache_entry = AddCacheEntry(key);
-    if (task_type == DecodeTaskType::USE_OUT_OF_RASTER_TASKS)
-      cache_entry->mark_out_of_raster();
   } else {
     cache_entry = decoded_it->second.get();
   }
@@ -251,8 +238,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     if (!new_image_fits_in_memory) {
       // We don't need to ref anything here because this image will be at
       // raster.
-      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
-                        /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true);
     }
     AddBudgetForImage(key, cache_entry);
   }
@@ -265,20 +251,31 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   // If we already have a locked entry, then we can just use that. Otherwise
   // we'll have to create a task.
   if (cache_entry->is_locked)
-    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
 
-  scoped_refptr<TileTask>& task =
-      task_type == DecodeTaskType::USE_IN_RASTER_TASKS
-          ? cache_entry->in_raster_task
-          : cache_entry->out_of_raster_task;
+  scoped_refptr<TileTask>& task = task_type == TaskType::kInRaster
+                                      ? cache_entry->in_raster_task
+                                      : cache_entry->out_of_raster_task;
   if (!task) {
     // Ref image once for the decode task.
     ++cache_entry->ref_count;
     task = base::MakeRefCounted<SoftwareImageDecodeTaskImpl>(
         this, key, image.paint_image(), task_type, tracing_info);
+    if (task_type == TaskType::kInRaster && cache_entry->out_of_raster_task) {
+      // If the existing stand-alone task hasn't started yet, make the new
+      // raster task primary.
+      if (cache_entry->out_of_raster_task->state().IsNew()) {
+        task->SetExternalDependent(cache_entry->out_of_raster_task);
+      } else {
+        cache_entry->out_of_raster_task->SetExternalDependent(task);
+      }
+    } else if (task_type == TaskType::kOutOfRaster &&
+               cache_entry->in_raster_task &&
+               !cache_entry->in_raster_task->HasCompleted()) {
+      cache_entry->in_raster_task->SetExternalDependent(task);
+    }
   }
-  return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
+  return TaskResult(task);
 }
 
 void SoftwareImageDecodeCache::AddBudgetForImage(const CacheKey& key,
@@ -317,7 +314,7 @@ void SoftwareImageDecodeCache::UnrefImage(const DrawImage& image) {
 
 void SoftwareImageDecodeCache::UnrefImage(const CacheKey& key) {
   auto decoded_image_it = decoded_images_.Peek(key);
-  CHECK(decoded_image_it != decoded_images_.end(), base::NotFatalUntil::M130);
+  CHECK(decoded_image_it != decoded_images_.end());
   auto* entry = decoded_image_it->second.get();
   DCHECK_GT(entry->ref_count, 0);
   if (--entry->ref_count == 0) {
@@ -333,13 +330,13 @@ void SoftwareImageDecodeCache::UnrefImage(const CacheKey& key) {
 SoftwareImageDecodeCache::TaskProcessingResult
 SoftwareImageDecodeCache::DecodeImageInTask(const CacheKey& key,
                                             const PaintImage& paint_image,
-                                            DecodeTaskType task_type) {
+                                            TaskType task_type) {
   TRACE_EVENT1("cc,benchmark", "SoftwareImageDecodeCache::DecodeImageInTask",
                "key", key.ToString());
   base::AutoLock lock(lock_);
 
   auto image_it = decoded_images_.Peek(key);
-  CHECK(image_it != decoded_images_.end(), base::NotFatalUntil::M130);
+  CHECK(image_it != decoded_images_.end());
   auto* cache_entry = image_it->second.get();
   // These two checks must be true because we're running this from a task, which
   // means that we've budgeted this entry when we got the task and the ref count
@@ -503,8 +500,7 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
   auto image_keys_it = frame_key_to_image_keys_.find(key.frame_key());
   // We know that we must have at least our own |entry| in this list, so it
   // won't be empty.
-  CHECK(image_keys_it != frame_key_to_image_keys_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(image_keys_it != frame_key_to_image_keys_.end());
 
   auto& available_keys = image_keys_it->second;
   std::sort(available_keys.begin(), available_keys.end(),
@@ -526,7 +522,7 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
       continue;
     }
     auto image_it = decoded_images_.Peek(available_key);
-    CHECK(image_it != decoded_images_.end(), base::NotFatalUntil::M130);
+    CHECK(image_it != decoded_images_.end());
     auto* available_entry = image_it->second.get();
     if (available_entry->is_locked || available_entry->Lock()) {
       return available_key;
@@ -597,7 +593,6 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
 
   // We'll definitely ref this cache entry and use it.
   ++cache_entry->ref_count;
-  cache_entry->mark_used();
 
   DecodeImageIfNecessary(key, paint_image, cache_entry);
   auto decoded_image = cache_entry->image();
@@ -605,7 +600,8 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
     return DecodedDrawImage();
 
   auto decoded_draw_image =
-      DecodedDrawImage(std::move(decoded_image), nullptr,
+      DecodedDrawImage(std::move(decoded_image), cache_entry->gainmap_image(),
+                       cache_entry->hdr_metadata(), nullptr,
                        cache_entry->src_rect_offset(), GetScaleAdjustment(key),
                        GetDecodedFilterQuality(key), cache_entry->is_budgeted);
   return decoded_draw_image;
@@ -636,8 +632,8 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
 
     const CacheKey& key = it->first;
     auto vector_it = frame_key_to_image_keys_.find(key.frame_key());
-    auto item_it = base::ranges::find(vector_it->second, key);
-    CHECK(item_it != vector_it->second.end(), base::NotFatalUntil::M130);
+    auto item_it = std::ranges::find(vector_it->second, key);
+    CHECK(item_it != vector_it->second.end());
     vector_it->second.erase(item_it);
     if (vector_it->second.empty())
       frame_key_to_image_keys_.erase(vector_it);
@@ -660,17 +656,16 @@ size_t SoftwareImageDecodeCache::GetMaximumMemoryLimitBytes() const {
   return locked_images_budget_.total_limit_bytes();
 }
 
-void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(
-    const CacheKey& key,
-    DecodeTaskType task_type) {
+void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(const CacheKey& key,
+                                                          TaskType task_type) {
   base::AutoLock hold(lock_);
 
   auto image_it = decoded_images_.Peek(key);
-  CHECK(image_it != decoded_images_.end(), base::NotFatalUntil::M130);
+  CHECK(image_it != decoded_images_.end());
   CacheEntry* cache_entry = image_it->second.get();
   UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Software",
                         key.may_be_lcp_candidate());
-  auto& task = task_type == DecodeTaskType::USE_IN_RASTER_TASKS
+  auto& task = task_type == TaskType::kInRaster
                    ? cache_entry->in_raster_task
                    : cache_entry->out_of_raster_task;
   task = nullptr;
@@ -734,7 +729,7 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
   return decoded_images_.size();
 }
 size_t SoftwareImageDecodeCache::GetMaxNumCacheEntriesForTesting() {
-  return GetNormalMaxItemsInCacheForSoftware();
+  return kNormalMaxItemsInCacheForSoftware;
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(

@@ -3,11 +3,11 @@ rootWebArea
 ++staticText name='Lengthy instructions on filling out the form.'
 ++staticText name='Imagine hundreds of nodes that are simple content...'
 ++labelText ignored
-++++staticText ignored name='Enter your name: '
+++++staticText ignored
 ++textField name='Enter your name:'
 ++++genericContainer
 ++labelText ignored
-++++staticText ignored name='Enter your email: '
+++++staticText ignored
 ++textField name='Enter your email:'
 ++++genericContainer
 ++button name='Subscribe!'

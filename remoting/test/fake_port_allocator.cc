@@ -7,17 +7,19 @@
 #include <memory>
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/test/fake_network_dispatcher.h"
 #include "remoting/test/fake_network_manager.h"
 #include "remoting/test/fake_socket_factory.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace remoting {
 
 namespace {
 
-class FakePortAllocatorSession : public cricket::BasicPortAllocatorSession {
+class FakePortAllocatorSession : public webrtc::BasicPortAllocatorSession {
  public:
   FakePortAllocatorSession(FakePortAllocator* allocator,
                            const std::string& content_name,
@@ -48,21 +50,20 @@ FakePortAllocatorSession::~FakePortAllocatorSession() = default;
 }  // namespace
 
 FakePortAllocator::FakePortAllocator(
-    rtc::NetworkManager* network_manager,
-    rtc::PacketSocketFactory* socket_factory,
+    webrtc::NetworkManager* network_manager,
+    webrtc::PacketSocketFactory* socket_factory,
     scoped_refptr<protocol::TransportContext> transport_context)
-    : BasicPortAllocator(network_manager, socket_factory),
+    : BasicPortAllocator(WebRtcEnvironment(), network_manager, socket_factory),
       transport_context_(transport_context) {
-  set_flags(cricket::PORTALLOCATOR_DISABLE_TCP |
-            cricket::PORTALLOCATOR_ENABLE_IPV6 |
-            cricket::PORTALLOCATOR_DISABLE_STUN |
-            cricket::PORTALLOCATOR_DISABLE_RELAY);
+  set_flags(
+      webrtc::PORTALLOCATOR_DISABLE_TCP | webrtc::PORTALLOCATOR_ENABLE_IPV6 |
+      webrtc::PORTALLOCATOR_DISABLE_STUN | webrtc::PORTALLOCATOR_DISABLE_RELAY);
   Initialize();
 }
 
 FakePortAllocator::~FakePortAllocator() = default;
 
-cricket::PortAllocatorSession* FakePortAllocator::CreateSessionInternal(
+webrtc::PortAllocatorSession* FakePortAllocator::CreateSessionInternal(
     std::string_view content_name,
     int component,
     std::string_view ice_username_fragment,
@@ -82,12 +83,15 @@ FakePortAllocatorFactory::FakePortAllocatorFactory(
 
 FakePortAllocatorFactory::~FakePortAllocatorFactory() = default;
 
-std::unique_ptr<cricket::PortAllocator>
+protocol::PortAllocatorFactory::CreatePortAllocatorResult
 FakePortAllocatorFactory::CreatePortAllocator(
     scoped_refptr<protocol::TransportContext> transport_context,
     base::WeakPtr<protocol::SessionOptionsProvider> session_options_provider) {
-  return std::make_unique<FakePortAllocator>(
+  CreatePortAllocatorResult result;
+  result.allocator = std::make_unique<FakePortAllocator>(
       network_manager_.get(), socket_factory_.get(), transport_context);
+  result.apply_network_settings = base::DoNothing();
+  return result;
 }
 
 }  // namespace remoting

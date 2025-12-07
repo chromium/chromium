@@ -4,41 +4,39 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 
-import javax.inject.Inject;
-
 /**
  * Unbound WebAPKs are part of Chrome. They have access to cookies and report metrics the same way
  * as the rest of Chrome. However, there is no UI indicating they are running in Chrome. For privacy
  * purposes we show a Snackbar based privacy disclosure that the activity is running as part of
  * Chrome. This occurs once per app installation, but will appear again if Chrome's storage is
- * cleared. The Snackbar must be acknowledged in order to be dismissed and should remain onscreen
- * as long as the app is open. It should remain active even across pause/resume and should show the
+ * cleared. The Snackbar must be acknowledged in order to be dismissed and should remain onscreen as
+ * long as the app is open. It should remain active even across pause/resume and should show the
  * next time the app is opened if it hasn't been acknowledged.
  */
-@ActivityScope
+@NullMarked
 public class WebappDisclosureController extends DisclosureController {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Inject
     public WebappDisclosureController(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            CurrentPageVerifier currentPageVerifier) {
+            CurrentPageVerifier currentPageVerifier,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler) {
         super(
                 model,
                 lifecycleDispatcher,
@@ -46,9 +44,11 @@ public class WebappDisclosureController extends DisclosureController {
                 intentDataProvider.getClientPackageName());
         mIntentDataProvider = intentDataProvider;
 
-        deferredStartupWithStorageHandler.addTask(
+        webappDeferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
-                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) {
+                        return;
+                    }
 
                     onDeferredStartupWithStorage(storage, didCreateStorage);
                 });
@@ -72,7 +72,8 @@ public class WebappDisclosureController extends DisclosureController {
     public void onDisclosureAccepted() {
         WebappDataStorage storage =
                 WebappRegistry.getInstance()
-                        .getWebappDataStorage(mIntentDataProvider.getWebappExtras().id);
+                        .getWebappDataStorage(
+                                assumeNonNull(mIntentDataProvider.getWebappExtras()).id);
         assert storage != null;
 
         storage.clearShowDisclosure();
@@ -95,7 +96,8 @@ public class WebappDisclosureController extends DisclosureController {
 
         WebappDataStorage storage =
                 WebappRegistry.getInstance()
-                        .getWebappDataStorage(mIntentDataProvider.getWebappExtras().id);
+                        .getWebappDataStorage(
+                                assumeNonNull(mIntentDataProvider.getWebappExtras()).id);
         if (storage == null) return false;
 
         // Show only if the correct flag is set.

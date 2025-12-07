@@ -24,7 +24,20 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
   // ash::RecorderAppUIDelegate
   void InstallSoda(speech::LanguageCode language_code) override;
 
+  std::u16string GetLanguageDisplayName(
+      speech::LanguageCode language_code) override;
+
+  std::string GetDefaultTranscriptionLanguage() override;
+
   void OpenAiFeedbackDialog(const std::string& description_template) override;
+
+  bool CanUseGenerativeAiForCurrentProfile() override;
+
+  bool CanUseSpeakerLabelForCurrentProfile() override;
+
+  void RecordSpeakerLabelConsent(
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
+      override;
 
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;

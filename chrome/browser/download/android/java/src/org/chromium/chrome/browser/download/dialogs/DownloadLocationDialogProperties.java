@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Properties used by the MVC model between {@link DownloadLocationDialogCoordinator} and
  * {@link DownloadLocationCustomView}.
  */
+@NullMarked
 class DownloadLocationDialogProperties {
     /** The title text of the download location dialog. */
     static final PropertyModel.ReadableObjectPropertyKey<CharSequence> TITLE =

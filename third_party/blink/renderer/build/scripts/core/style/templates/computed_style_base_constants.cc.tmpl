@@ -9,7 +9,7 @@
 
 namespace blink {
 
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
 {% for enum in enums %}
 {% if not enum.set_type %}
 std::ostream& operator<<(std::ostream& o, const {{enum.type_name}} v) {

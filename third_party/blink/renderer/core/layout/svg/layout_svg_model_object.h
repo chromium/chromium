@@ -47,17 +47,16 @@ class LayoutSVGModelObject : public LayoutObject {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  PhysicalRect VisualRectInDocument(
-      VisualRectFlags = kDefaultVisualRectFlags) const override;
-
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
     return DecoratedBoundingBox();
   }
 
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const override;
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const final;
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
@@ -65,7 +64,9 @@ class LayoutSVGModelObject : public LayoutObject {
   void MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   SVGElement* GetElement() const {
     NOT_DESTROYED();

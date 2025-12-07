@@ -6,6 +6,8 @@ package org.chromium.components.feature_engagement;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -14,19 +16,29 @@ import java.lang.annotation.RetentionPolicy;
  * in //components/feature_engagement/public/feature_constants.h.
  */
 @StringDef({
+    FeatureConstants.ANDROID_TAB_DECLUTTER_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,
+    FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_TRANSLATE_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE,
-    FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
+    FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_WEB_FEATURE,
+    FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_PDF_FEATURE,
+    FeatureConstants.PAGE_SUMMARY_WEB_MENU_FEATURE,
+    FeatureConstants.PAGE_SUMMARY_PDF_MENU_FEATURE,
     FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE,
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
+    FeatureConstants.BOOKMARKS_BAR_FEATURE,
+    FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
     FeatureConstants.CCT_HISTORY_FEATURE,
     FeatureConstants.CCT_MINIMIZED_FEATURE,
+    FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK,
+    FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES,
+    FeatureConstants.DEFAULT_BROWSER_PROMO_SETTING_CARD,
     FeatureConstants.DOWNLOAD_PAGE_FEATURE,
     FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
     FeatureConstants.DOWNLOAD_HOME_FEATURE,
@@ -45,10 +57,15 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.INSTANCE_SWITCHER,
     FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION,
     FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE,
@@ -57,30 +74,32 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_FEATURE,
     FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
-    FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
-    FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-    FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
-    FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
+    FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
     FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
-    FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
+    FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
     FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
-    FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
+    FeatureConstants.MOST_VISITED_TILES_CUSTOMIZATION_PIN,
     FeatureConstants.PAGE_INFO_FEATURE,
     FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
     FeatureConstants.PAGE_ZOOM_FEATURE,
+    FeatureConstants.READER_MODE_DISTILL_IN_APP_FEATURE,
     FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
     FeatureConstants.READ_ALOUD_EXPANDED_PLAYER_FEATURE,
+    FeatureConstants.READ_ALOUD_PLAYBACK_MODE_FEATURE,
     FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
     FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,
     FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE,
@@ -89,8 +108,12 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE,
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
+    FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
     FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
     FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
+    FeatureConstants.IPH_TAB_SWITCHER_XR,
+    FeatureConstants.IPH_TAB_TEARING_XR,
+    FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
@@ -103,14 +126,20 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
-    FeatureConstants.PRICE_DROP_NTP_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
+    FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface FeatureConstants {
+
+    String ACCOUNT_SETTINGS_HISTORY_SYNC = "IPH_AccountSettingsHistorySync";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_OpenInBrowser";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_Share";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE =
@@ -121,17 +150,32 @@ public @interface FeatureConstants {
             "IPH_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud";
-    String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_WEB_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Web";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_PDF_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf";
+
+    /** An IPH feature to prompt users to select the 'Add to group' option in the App 3-Dot menu. */
+    String MENU_ADD_TO_GROUP = "IPH_MenuAddToGroup";
+
+    String PAGE_SUMMARY_WEB_MENU_FEATURE = "IPH_PageSummaryWebMenu";
+    String PAGE_SUMMARY_PDF_MENU_FEATURE = "IPH_PageSummaryPdfMenu";
+    String ANDROID_TAB_DECLUTTER_FEATURE = "IPH_AndroidTabDeclutter";
     String APP_SPECIFIC_HISTORY_FEATURE = "IPH_AppSpecificHistory";
     String AUTO_DARK_OPT_OUT_FEATURE = "IPH_AutoDarkOptOut";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
             "IPH_AutoDarkUserEducationMessageOptIn";
+    String BOOKMARKS_BAR_FEATURE = "IPH_BookmarksBar";
+    String BOTTOM_TOOLBAR_FEATURE = "IPH_BottomToolbarTip";
     String CCT_HISTORY_FEATURE = "IPH_CCTHistory";
     String CCT_MINIMIZED_FEATURE = "IPH_CCTMinimized";
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";
     String COOKIE_CONTROLS_FEATURE = "IPH_CookieControls";
+    String DEFAULT_BROWSER_PROMO_MAGIC_STACK = "IPH_DefaultBrowserPromoMagicStack";
+    String DEFAULT_BROWSER_PROMO_MESSAGES = "IPH_DefaultBrowserPromoMessages";
+    String DEFAULT_BROWSER_PROMO_SETTING_CARD = "IPH_DefaultBrowserPromoSettingCard";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
     String DOWNLOAD_HOME_FEATURE = "IPH_DownloadHome";
@@ -143,10 +187,19 @@ public @interface FeatureConstants {
     String DATA_SAVER_MILESTONE_PROMO_FEATURE = "IPH_DataSaverMilestonePromo";
     String EPHEMERAL_TAB_FEATURE = "IPH_EphemeralTab";
     String KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE = "IPH_KeyboardAccessoryAddressFilling";
+    String KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS_FEATURE = "IPH_AutofillEnableLoyaltyCards";
+    String KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE =
+            "IPH_AutofillHomeWorkProfileSuggestion";
+    String KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE =
+            "IPH_AutofillAccountNameEmailSuggestion";
     String KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE = "IPH_KeyboardAccessoryPasswordFilling";
+    String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE =
+            "IPH_AutofillCardInfoRetrievalSuggestion";
     String KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE = "IPH_KeyboardAccessoryPaymentFilling";
     String KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE = "IPH_KeyboardAccessoryPaymentOffer";
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE = "IPH_AutofillVirtualCardSuggestion";
+    String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE =
+            "IPH_AutofillDisabledVirtualCardSuggestion";
     String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION = "IPH_PlusAddressCreateSuggestion";
     String KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE =
             "IPH_AutofillExternalAccountProfileSuggestion";
@@ -157,8 +210,10 @@ public @interface FeatureConstants {
     String PAGE_ZOOM_FEATURE = "IPH_PageZoom";
     String PREVIEWS_OMNIBOX_UI_FEATURE = "IPH_PreviewsOmniboxUI";
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
+    String READER_MODE_DISTILL_IN_APP_FEATURE = "IPH_ReaderModeDistillInApp";
     String READ_ALOUD_APP_MENU_FEATURE = "IPH_ReadAloudAppMenuFeature";
     String READ_ALOUD_EXPANDED_PLAYER_FEATURE = "IPH_ReadAloudExpandedPlayerFeature";
+    String READ_ALOUD_PLAYBACK_MODE_FEATURE = "IPH_ReadAloudPlaybackModeFeature";
 
     String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";
     String READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE = "IPH_ReadLaterAppMenuBookmarkThisPage";
@@ -202,29 +257,54 @@ public @interface FeatureConstants {
      */
     String SHOPPING_LIST_MENU_ITEM_FEATURE = "IPH_ShoppingListMenuItem";
 
-    /** An IPH feature to prompt the user to long press on pages with links to open them in a group. */
-    String TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE = "IPH_TabGroupsQuicklyComparePages";
-
-    /** An IPH feature to show when the tabstrip shows to explain what each button does. */
-    String TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE = "IPH_TabGroupsTapToSeeAnotherTab";
-
     /**
      * An IPH feature to show description text on the tab group creation dialog teaching the user
      * about tab group sync and save functionality.
      */
     String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE = "IPH_TabGroupCreationDialogSyncText";
 
+    /**
+     * An IPH feature that explains through a bottom sheet that changes to shared tab groups are
+     * visible to everyone.
+     */
+    String TAB_GROUP_SHARE_NOTICE_FEATURE = "IPH_TabGroupShareNotice";
+
+    /**
+     * A simple IPH bubble and highlight on the tab switcher button the first time there's an
+     * activity dot visible. Teaches the user what the dot means.
+     */
+    String TAB_GROUP_SHARE_UPDATE_FEATURE = "IPH_TabGroupShareUpdate";
+
+    /**
+     * A simple IPH bubble and highlight on the tab switcher button or tab group pane button when
+     * the user updates their version of Chrome and regains access to shared tab groups.
+     */
+    String TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE = "IPH_TabGroupShareVersionUpdate";
+
+    /**
+     * An IPH feature that shows a notification bubble for updated tab groups. The bubble appears on
+     * the group title when the group is collapsed and on updated tabs when the group is expanded.
+     */
+    String TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE =
+            "IPH_TabGroupSharedNotificationBubbleOnStrip";
+
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
 
-    /** An IPH feature to show on tab switcher cards with multiple tab thumbnails. */
-    String TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE = "IPH_TabGroupsYourTabsTogether";
+    /**
+     * An IPH feature to prompt users to select the 'Add to group' option in the Tab Switcher 3-Dot
+     * menu.
+     */
+    String TAB_SWITCHER_ADD_TO_GROUP = "IPH_TabSwitcherAddToGroup";
 
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
 
-    /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
-    String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";
+    /**
+     * An IPH feature to prompt users to open the tab switcher to switch to incognito when incognito
+     * tabs are present.
+     */
+    String TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO = "IPH_TabSwitcherButtonSwitchIncognito";
 
     /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";
@@ -286,12 +366,6 @@ public @interface FeatureConstants {
      */
     String IDENTITY_DISC_FEATURE = "IPH_IdentityDisc";
 
-    /**
-     * An IPH feature showing up the first time the user is presented with the quieter version of
-     * the permission prompt (for notifications).
-     */
-    String QUIET_NOTIFICATION_PROMPTS_FEATURE = "IPH_QuietNotificationPrompts";
-
     /** An IPH feature to show on the feed header menu button of the FeedNewTabPage. */
     String FEED_HEADER_MENU_FEATURE = "IPH_FeedHeaderMenu";
 
@@ -307,8 +381,8 @@ public @interface FeatureConstants {
     /** An IPH feature to show the third re-engagement notification. */
     String CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE = "IPH_ChromeReengagementNotification3";
 
-    /** An IPH feature to inform users that installing a PWA is an option. */
-    String PWA_INSTALL_AVAILABLE_FEATURE = "IPH_PwaInstallAvailableFeature";
+    /** An IPH feature to inform users about Most Visited Tile context menu "Pin this shortcut". */
+    String MOST_VISITED_TILES_CUSTOMIZATION_PIN = "IPH_MostVisitedTilesCustomizationPin";
 
     /** An IPH feature to inform about changing permissions in PageInfo. */
     String PAGE_INFO_FEATURE = "IPH_PageInfo";
@@ -341,14 +415,20 @@ public @interface FeatureConstants {
     /** An IPH feature to inform users about the Webnotes Stylize feature in Sharing Hub. */
     String SHARING_HUB_WEBNOTES_STYLIZE_FEATURE = "IPH_SharingHubWebnotesStylize";
 
-    /** An IPH feature to inform users that a price drop has occurred in any of their open tabs */
-    String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
-
     /**
      * An IPH feature to inform users that tabs from another synced device can be restored on FRE.
      */
     String RESTORE_TABS_ON_FRE_FEATURE = "IPH_RestoreTabsOnFRE";
 
-    /** An IPH feature to inform users about the gesture navigation in RTL mode. */
-    String IPH_RTL_GESTURE_NAVIGATION = "IPH_RtlGestureNavigation";
+    /** An IPH feature to inform users about the pdf download option in the app menu. */
+    String IPH_PDF_PAGE_DOWNLOAD = "IPH_PdfPageDownload";
+
+    /** An IPH feature to inform users about the tab switcher feature on an XR device. */
+    String IPH_TAB_SWITCHER_XR = "IPH_TabSwitcherXR";
+
+    /** An IPH feature to inform users about the tab tearing gesture on an XR device. */
+    String IPH_TAB_TEARING_XR = "IPH_TabTearingXR";
+
+    /** An IPH feature to inform users that the touch to search panel can be expanded. */
+    String IPH_TOUCH_TO_SEARCH_CALLOUT = "IPH_TouchToSearchCallout";
 }

@@ -52,31 +52,21 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
   switch (thread_type) {
     case ThreadType::kBackground:
     case ThreadType::kUtility:
-    case ThreadType::kResourceEfficient:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
-    case ThreadType::kCompositing:
-#if BUILDFLAG(IS_CHROMEOS)
-      // On ChromeOS, kCompositing is also considered urgent.
-      return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
-#else
-      // TODO(crbug.com/40226692): Experiment with bringing IS_LINUX inline with
-      // IS_CHROMEOS.
-      return cgroup_filepath;
-#endif
     case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
     case ThreadType::kRealtimeAudio:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
   }
-  NOTREACHED_IN_MIGRATION();
-  return FilePath();
+  NOTREACHED();
 }
 
 void SetThreadCgroup(PlatformThreadId thread_id,
                      const FilePath& cgroup_directory) {
   FilePath tasks_filepath = cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
-  std::string tid = NumberToString(thread_id);
+  std::string tid = NumberToString(thread_id.raw());
   if (!WriteFile(tasks_filepath, as_byte_span(tid))) {
     DVLOG(1) << "Failed to add " << tid << " to " << tasks_filepath.value();
   }
@@ -90,8 +80,9 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
       cgroup_filepath.Append(FILE_PATH_LITERAL("chrome")), thread_type);
 
   // Silently ignore request if cgroup directory doesn't exist.
-  if (!DirectoryExists(cgroup_directory))
+  if (!DirectoryExists(cgroup_directory)) {
     return;
+  }
 
   SetThreadCgroup(thread_id, cgroup_directory);
 }
@@ -100,41 +91,10 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 
 namespace internal {
 
-const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[7] = {
-        {ThreadPriorityForTest::kRealtimeAudio, -10},
-        {ThreadPriorityForTest::kDisplay, -8},
-#if BUILDFLAG(IS_CHROMEOS)
-        {ThreadPriorityForTest::kCompositing, -8},
-#else
-        // TODO(crbug.com/40226692): Experiment with bringing IS_LINUX inline
-        // with IS_CHROMEOS.
-        {ThreadPriorityForTest::kCompositing, -1},
-#endif
-        {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kResourceEfficient, 1},
-        {ThreadPriorityForTest::kUtility, 2},
-        {ThreadPriorityForTest::kBackground, 10},
-};
-
-// These nice values are shared with ChromeOS platform code
-// (platform_thread_cros.cc) and have to be unique as ChromeOS has a unique
-// type -> nice value mapping. An exception is kCompositing and
-// kDisplayCritical where aliasing is OK as they have the same scheduler
-// attributes (cpusets, latency_sensitive etc) including nice value.
-// The uniqueness of the nice value per-type helps to change and restore the
-// scheduling params of threads when their process toggles between FG and BG.
-const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 2},
-    {ThreadType::kResourceEfficient, 1}, {ThreadType::kDefault, 0},
-#if BUILDFLAG(IS_CHROMEOS)
-    {ThreadType::kCompositing, -8},
-#else
-    // TODO(crbug.com/40226692): Experiment with bringing IS_LINUX inline with
-    // IS_CHROMEOS.
-    {ThreadType::kCompositing, -1},
-#endif
-    {ThreadType::kDisplayCritical, -8},  {ThreadType::kRealtimeAudio, -10},
+const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
+    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kDefault, 0},         {ThreadType::kUtility, 2},
+    {ThreadType::kBackground, 10},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
@@ -149,22 +109,19 @@ bool CanSetThreadTypeToRealtimeAudio() {
   return getrlimit(RLIMIT_RTPRIO, &rlim) != 0 && rlim.rlim_cur != 0;
 }
 
-bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
-                                     MessagePumpType pump_type_hint) {
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
   const PlatformThreadId thread_id = PlatformThread::CurrentId();
 
   if (g_thread_type_delegate &&
       g_thread_type_delegate->HandleThreadTypeChange(thread_id, thread_type)) {
-    return true;
+    return;
   }
 
   internal::SetThreadType(getpid(), thread_id, thread_type, IsViaIPC(false));
-
-  return true;
 }
 
-std::optional<ThreadPriorityForTest>
-GetCurrentThreadPriorityForPlatformForTest() {
+std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
   int maybe_sched_rr = 0;
   struct sched_param maybe_realtime_prio = {0};
   if (pthread_getschedparam(pthread_self(), &maybe_sched_rr,
@@ -172,10 +129,20 @@ GetCurrentThreadPriorityForPlatformForTest() {
       maybe_sched_rr == SCHED_RR &&
       maybe_realtime_prio.sched_priority ==
           PlatformThreadLinux::kRealTimeAudioPrio.sched_priority) {
-    return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
+    return std::make_optional(ThreadType::kRealtimeAudio);
   }
   return std::nullopt;
 }
+
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  return false;
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {}
 
 }  // namespace internal
 
@@ -205,7 +172,7 @@ bool PlatformThreadLinux::IsThreadBackgroundedForTest(
   FilePath non_urgent_tasks_filepath =
       non_urgent_cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
 
-  std::string tid = NumberToString(thread_id);
+  std::string tid = NumberToString(thread_id.raw());
   // Check if thread_id is in the urgent cpuset
   std::string urgent_tasks;
   if (!ReadFileToString(urgent_tasks_filepath, &urgent_tasks)) {
@@ -234,8 +201,9 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // the process name for the LWP.  We don't want to do this for the main
   // thread because that would rename the process, causing tools like killall
   // to stop working.
-  if (PlatformThread::CurrentId() == getpid())
+  if (PlatformThread::CurrentId().raw() == getpid()) {
     return;
+  }
 
   // http://0pointer.de/blog/projects/name-your-threads.html
   // Set the name for the LWP (which gets truncated to 15 characters).
@@ -244,8 +212,9 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // that it can set the name of threads other than the current thread.
   int err = prctl(PR_SET_NAME, name.c_str());
   // We expect EPERM failures in sandboxed processes, just ignore those.
-  if (err < 0 && errno != EPERM)
+  if (err < 0 && errno != EPERM) {
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  }
 }
 
 // static
@@ -290,11 +259,11 @@ void SetThreadTypeLinux(ProcessId process_id,
   // global TID.
   PlatformThreadId syscall_tid = thread_id;
   if (thread_id == PlatformThreadLinux::CurrentId()) {
-    syscall_tid = 0;
+    syscall_tid = kInvalidThreadId;
   }
 
   if (thread_type == ThreadType::kRealtimeAudio) {
-    if (sched_setscheduler(syscall_tid, SCHED_RR,
+    if (sched_setscheduler(syscall_tid.raw(), SCHED_RR,
                            &PlatformThreadLinux::kRealTimeAudioPrio) == 0) {
       return;
     }
@@ -302,10 +271,22 @@ void SetThreadTypeLinux(ProcessId process_id,
     DPLOG(ERROR) << "Failed to set realtime priority for thread " << thread_id;
   }
 
-  const int nice_setting = ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
-              << nice_setting;
+  SetThreadNiceFromType(thread_id, thread_type);
+}
+
+int ThreadTypeToNiceValue(const ThreadType thread_type) {
+  switch (thread_type) {
+    case ThreadType::kBackground:
+      return 10;
+    case ThreadType::kUtility:
+      return 2;
+    case ThreadType::kDefault:
+      return 0;
+    case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
+      return -8;
+    case ThreadType::kRealtimeAudio:
+      return -10;
   }
 }
 

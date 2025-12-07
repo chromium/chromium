@@ -40,22 +40,18 @@ void PasswordReuseDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
       controller_->GetSecondaryButtonText());
 }
 
-void PasswordReuseDialogViewAndroid::CheckPasswords(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PasswordReuseDialogViewAndroid::CheckPasswords(JNIEnv* env) {
   controller_->ShowCheckPasswords();
 }
 
-void PasswordReuseDialogViewAndroid::Ignore(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PasswordReuseDialogViewAndroid::Ignore(JNIEnv* env) {
   controller_->IgnoreDialog();
 }
 
-void PasswordReuseDialogViewAndroid::Close(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PasswordReuseDialogViewAndroid::Close(JNIEnv* env) {
   controller_->CloseDialog();
 }
 
 }  // namespace safe_browsing
+
+DEFINE_JNI(SafeBrowsingPasswordReuseDialogBridge)

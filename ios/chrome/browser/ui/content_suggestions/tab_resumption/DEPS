@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/visited_url_ranking/public",
-]

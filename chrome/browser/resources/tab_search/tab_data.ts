@@ -92,7 +92,7 @@ function titleAndAlertAriaLabel(tabData: TabData): string {
 export function ariaLabel(itemData: ItemData): string {
   if (itemData instanceof TabGroupData &&
       itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
-    const tabGroup = itemData.tabGroup as RecentlyClosedTabGroup;
+    const tabGroup = itemData.tabGroup;
     const tabCountText = loadTimeData.getStringF(
         tabGroup.tabCount === 1 ? 'oneTab' : 'tabCount', tabGroup.tabCount);
     return `${tabGroup.title} ${tabCountText} ${
@@ -116,6 +116,18 @@ export function normalizeURL(url: string): string {
   // it. To handle this, we substitute any empty URL with 'about:blank'. This is
   // consistent with how the Omnibox handles empty URLs.
   return url || 'about:blank';
+}
+
+export function getDisplayHostnameForUrl(url: URL): string {
+  if (url.protocol === 'blob:') {
+    return loadTimeData.getString('blobUrlSource');
+  } else if (url.protocol === 'file:') {
+    return loadTimeData.getString('fileUrlSource');
+  } else if (url.protocol === 'about:' && url.pathname === 'blank') {
+    return 'about:blank';
+  } else {
+    return url.hostname;
+  }
 }
 
 export function getTitle(data: TabData|TabGroupData): string|undefined {

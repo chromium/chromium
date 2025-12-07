@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +34,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CRE
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
@@ -47,20 +50,28 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -68,21 +79,28 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -101,7 +119,7 @@ import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
@@ -112,6 +130,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressWarnings("DoNotMock") // Mocks GURL
+@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
 public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
     private static final Bitmap TEST_CARD_ART_IMAGE =
@@ -119,10 +138,15 @@ public class KeyboardAccessoryViewTest {
     private PropertyModel mModel;
     private BlockingQueue<KeyboardAccessoryView> mKeyboardAccessoryView;
 
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock PersonalDataManager mMockPersonalDataManager;
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Mock AutofillImageFetcher mMockImageFetcher;
+    @Mock Profile mMockProfile;
+    private WebPageStation mPage;
 
     private static class TestTracker implements Tracker {
         private boolean mWasDismissed;
@@ -138,17 +162,17 @@ public class KeyboardAccessoryViewTest {
         }
 
         @Override
-        public boolean shouldTriggerHelpUI(String feature) {
+        public boolean shouldTriggerHelpUi(String feature) {
             return true;
         }
 
         @Override
-        public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+        public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
             return null;
         }
 
         @Override
-        public boolean wouldTriggerHelpUI(String feature) {
+        public boolean wouldTriggerHelpUi(String feature) {
             return true;
         }
 
@@ -204,15 +228,19 @@ public class KeyboardAccessoryViewTest {
 
         @Override
         public void addOnInitializedCallback(Callback<Boolean> callback) {
-            assert false : "Implement addOnInitializedCallback if you need it.";
+            throw new AssertionError("Implement addOnInitializedCallback if you need it.");
         }
+    }
+
+    @After
+    public void tearDown() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
-        mActivityTestRule.startMainActivityOnBlankPage();
-        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        mPage = mActivityTestRule.startOnBlankPage();
+        AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel =
@@ -231,6 +259,7 @@ public class KeyboardAccessoryViewTest {
                                     .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
                                     .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
                                     .with(SHOW_SWIPING_IPH, false)
+                                    .with(HAS_STICKY_LAST_ITEM, true)
                                     .build();
                     AsyncViewStub viewStub =
                             mActivityTestRule
@@ -246,8 +275,7 @@ public class KeyboardAccessoryViewTest {
                             (view) -> {
                                 KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
                                         KeyboardAccessoryCoordinator.createUiConfiguration(
-                                                mActivityTestRule.getActivity(),
-                                                mMockPersonalDataManager);
+                                                mActivityTestRule.getActivity(), mMockImageFetcher);
                                 view.setBarItemsAdapter(
                                         KeyboardAccessoryCoordinator.createBarItemsAdapter(
                                                 mModel.get(BAR_ITEMS), view, uiConfiguration));
@@ -268,7 +296,7 @@ public class KeyboardAccessoryViewTest {
                     mModel.set(VISIBLE, true);
                 });
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-        assertEquals(view.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, view.getVisibility());
 
         // After hiding the view, the view should still exist but be invisible.
         ThreadUtils.runOnUiThreadBlocking(
@@ -276,6 +304,49 @@ public class KeyboardAccessoryViewTest {
                     mModel.set(VISIBLE, false);
                 });
         assertNotEquals(view.getVisibility(), View.VISIBLE);
+    }
+
+    @Test
+    @MediumTest
+    public void testAccessoryDimensions() throws InterruptedException {
+        assertNull(mKeyboardAccessoryView.poll());
+        // After setting the visibility to true, the view should exist and be visible.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                });
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        LinearLayout barContents = view.findViewById(R.id.accessory_bar_contents);
+        assertThat(
+                barContents.getMinimumHeight(),
+                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height)));
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) barContents.getLayoutParams();
+        assertThat(params.height, is(getDimensionPixelSize(R.dimen.keyboard_accessory_height)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
+    public void testAccessoryDimensionsWithRedesign() throws InterruptedException {
+        assertNull(mKeyboardAccessoryView.poll());
+        // After setting the visibility to true, the view should exist and be visible.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                });
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        LinearLayout barContents = view.findViewById(R.id.accessory_bar_contents);
+        assertThat(
+                barContents.getMinimumHeight(),
+                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign)));
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) barContents.getLayoutParams();
+        assertThat(
+                params.height,
+                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign)));
     }
 
     @Test
@@ -312,6 +383,32 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    public void testGroupedSuggestionsAreClickable() {
+        AtomicReference<Boolean> clickRecorded1 = new AtomicReference<>();
+        AtomicReference<Boolean> clickRecorded2 = new AtomicReference<>();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        createAutofillBarItem(
+                                                "Johnathan", result -> clickRecorded1.set(true)),
+                                        createAutofillBarItem(
+                                                "Mark", result -> clickRecorded2.set(true)),
+                                        createSheetOpener()
+                                    });
+                });
+
+        onViewWaiting(withText("Johnathan")).perform(click());
+        assertTrue(clickRecorded1.get());
+
+        onViewWaiting(withText("Mark")).perform(click());
+        assertTrue(clickRecorded2.get());
+    }
+
+    @Test
+    @MediumTest
     public void testAddsLongClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
@@ -324,16 +421,16 @@ public class KeyboardAccessoryViewTest {
                                                 new AutofillSuggestion.Builder()
                                                         .setLabel("Johnathan")
                                                         .setSubLabel("Smith")
-                                                        .setItemTag("")
                                                         .setSuggestionType(
                                                                 SuggestionType.ADDRESS_ENTRY)
-                                                        .setFeatureForIPH("")
+                                                        .setFeatureForIph("")
                                                         .setApplyDeactivatedStyle(false)
                                                         .build(),
                                                 new Action(
                                                         AUTOFILL_SUGGESTION,
                                                         result -> {},
-                                                        result -> clickRecorded.set(true))),
+                                                        result -> clickRecorded.set(true)),
+                                                mMockProfile),
                                         createSheetOpener()
                                     });
                 });
@@ -347,12 +444,12 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testCanAddSingleButtons() {
         BarItem generatePasswordItem =
-                new BarItem(
+                new ActionBarItem(
                         BarItem.Type.ACTION_BUTTON,
                         new Action(GENERATE_PASSWORD_AUTOMATIC, unused -> {}),
                         R.string.password_generation_accessory_button);
         BarItem credmanItem =
-                new BarItem(
+                new ActionBarItem(
                         BarItem.Type.ACTION_CHIP,
                         new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {}),
                         R.string.more_passkeys);
@@ -377,12 +474,12 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testCanRemoveSingleButtons() {
         BarItem generatePasswordsItem =
-                new BarItem(
+                new ActionBarItem(
                         BarItem.Type.ACTION_BUTTON,
                         new Action(GENERATE_PASSWORD_AUTOMATIC, unused -> {}),
                         R.string.password_generation_accessory_button);
         BarItem credmanItem =
-                new BarItem(
+                new ActionBarItem(
                         BarItem.Type.ACTION_CHIP,
                         new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {}),
                         R.string.more_passkeys);
@@ -437,21 +534,22 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    public void testDismissesPlusAddressEducationBubbleOnFilling() throws InterruptedException {
-        AutofillBarItem itemWithIPH =
+    public void testDismissesCardInfoRetrievalBubbleOnFilling() throws InterruptedException {
+        String descriptionText =
+                "You can autofill this card because your PayPay account is linked to Google";
+        AutofillBarItem itemWithIph =
                 new AutofillBarItem(
                         new AutofillSuggestion.Builder()
-                                .setLabel("Create plus address")
+                                .setLabel("Card Info Retrieval")
                                 .setSubLabel("")
-                                .setItemTag("")
-                                .setSuggestionType(SuggestionType.CREATE_NEW_PLUS_ADDRESS)
-                                .setFeatureForIPH("")
-                                .setIPHDescriptionText("IPH description")
+                                .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
+                                .setIphDescriptionText(descriptionText)
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
-        itemWithIPH.setFeatureForIPH(
-                FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION);
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
+        itemWithIph.setFeatureForIph(
+                FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
 
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
@@ -459,37 +557,74 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
-                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
                 });
 
-        onViewWaiting(withText("Create plus address"));
-        waitForHelpBubble(withText("IPH description"));
+        onViewWaiting(withText("Card Info Retrieval"));
+        waitForHelpBubble(withText(descriptionText));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
-        onView(withChild(withText("Create plus address"))).check(matches(isSelected()));
-        onView(withText("Create plus address")).perform(click());
+        onView(withChild(withText("Card Info Retrieval"))).check(matches(isSelected()));
+        onView(withText("Card Info Retrieval")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
         assertThat(
                 tracker.getLastEmittedEvent(),
-                is(EventConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION));
-        onView(withChild(withText("Create plus address"))).check(matches(not(isSelected())));
+                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED));
+        onView(withChild(withText("Card Info Retrieval"))).check(matches(not(isSelected())));
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissesHomeAndWorkdEducationBubbleOnFilling() throws InterruptedException {
+        AutofillBarItem itemWithIph =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Johnathan")
+                                .setSubLabel("Smith")
+                                .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                                .setFeatureForIph("")
+                                .setApplyDeactivatedStyle(false)
+                                .build(),
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
+        itemWithIph.setFeatureForIph(
+                FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE);
+
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
+                });
+
+        onViewWaiting(withText("Johnathan"));
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_home_work_profile_suggestion));
+        assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
+        onView(withText("Johnathan")).perform(click());
+
+        assertThat(tracker.wasDismissed(), is(true));
+        assertThat(
+                tracker.getLastEmittedEvent(),
+                is(EventConstants.KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED));
     }
 
     @Test
     @MediumTest
     public void testDismissesPasswordEducationBubbleOnFilling() throws InterruptedException {
-        AutofillBarItem itemWithIPH =
+        AutofillBarItem itemWithIph =
                 new AutofillBarItem(
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
-                                .setFeatureForIPH("")
+                                .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
-        itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
+        itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
@@ -497,7 +632,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
-                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
                 });
 
         onViewWaiting(withText("Johnathan"));
@@ -516,18 +651,18 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testDismissesAddressEducationBubbleOnFilling() throws InterruptedException {
-        AutofillBarItem itemWithIPH =
+        AutofillBarItem itemWithIph =
                 new AutofillBarItem(
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                                .setFeatureForIPH("")
+                                .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
-        itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
+        itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
@@ -535,7 +670,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
-                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
                 });
 
         onViewWaiting(withText("Johnathan"));
@@ -552,18 +687,18 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testDismissesPaymentEducationBubbleOnFilling() throws InterruptedException {
-        AutofillBarItem itemWithIPH =
+        AutofillBarItem itemWithIph =
                 new AutofillBarItem(
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
-                                .setFeatureForIPH("")
+                                .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
-        itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
+        itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
@@ -571,7 +706,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
-                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
                 });
 
         onViewWaiting(withText("Johnathan"));
@@ -587,6 +722,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263973")
     public void testDismissesSwipingEducationBubbleOnTap() throws InterruptedException {
         TestTracker tracker =
                 new TestTracker() {
@@ -624,20 +760,19 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testDismissesPaymentOfferEducationBubbleOnFilling() throws InterruptedException {
-        String itemTag = "Cashback linked";
-        AutofillBarItem itemWithIPH =
+        AutofillBarItem itemWithIph =
                 new AutofillBarItem(
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag(itemTag)
                                 .setIconId(R.drawable.ic_offer_tag)
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
-                                .setFeatureForIPH("")
+                                .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
-        itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
+        itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
@@ -645,11 +780,10 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
-                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
                 });
 
         onViewWaiting(withText("Johnathan"));
-        waitForHelpBubble(withText(itemTag));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withText("Johnathan")).perform(click());
 
@@ -695,24 +829,22 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
-    public void testCustomIconUrlSet_imageReturnedByPersonalDataManager_customIconSetOnChipView()
+    public void testCustomIconUrlSet_imageReturnedByImageFetcher_customIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);
         when(customIconUrl.isValid()).thenReturn(true);
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return the cached image when
-        // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
+        // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(TEST_CARD_ART_IMAGE);
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder()
                                 .setCustomIconUrl(customIconUrl)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -734,21 +866,21 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    public void testCustomIconUrlSet_imageNotCachedInPersonalDataManager_defaultIconSetOnChipView()
+    public void testCustomIconUrlSet_imageNotCachedInImageFetcher_defaultIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);
         when(customIconUrl.isValid()).thenReturn(true);
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return the response of PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable
+        // Return the response of PersonalDataManager.getImageIfAvailable
         // to null to indicate that the image is not present in the cache.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(Optional.empty());
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder()
                                 .setCustomIconUrl(customIconUrl)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -775,7 +907,8 @@ public class KeyboardAccessoryViewTest {
         AutofillBarItem itemWithoutCustomIconUrl =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder().build(),
-                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}),
+                        mMockProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -798,6 +931,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/385200981")
     public void testClickDisabledForNonAcceptableAutofillSuggestions() throws InterruptedException {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>(false);
         ThreadUtils.runOnUiThreadBlocking(
@@ -810,22 +944,130 @@ public class KeyboardAccessoryViewTest {
                                                 new AutofillSuggestion.Builder()
                                                         .setLabel("Virtual Card")
                                                         .setSubLabel("Disabled")
-                                                        .setItemTag("")
                                                         .setSuggestionType(
                                                                 SuggestionType.CREDIT_CARD_ENTRY)
-                                                        .setFeatureForIPH("")
+                                                        .setFeatureForIph("")
                                                         .setApplyDeactivatedStyle(true)
                                                         .build(),
                                                 new Action(
                                                         AUTOFILL_SUGGESTION,
                                                         result -> clickRecorded.set(true),
-                                                        result -> clickRecorded.set(true))),
+                                                        result -> clickRecorded.set(true)),
+                                                mMockProfile),
                                         createSheetOpener()
                                     });
                 });
 
         onView(withText("Virtual Card")).perform(click());
         assertFalse(clickRecorded.get());
+        onView(withText("Virtual Card")).check(matches(not(isSelected())));
+    }
+
+    @Test
+    @MediumTest
+    public void testAccessoryButtonsHaveHoverBackground() throws InterruptedException {
+        KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
+        ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
+        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+
+        // The presence of a background drawable (e.g., a state-list drawable)
+        // is used to enable visual feedback on hover and press states.
+        assertNotNull(
+                "First button should have a background for hover effects.",
+                buttons.get(0).getBackground());
+        assertNotNull(
+                "Second button should have a background for hover effects.",
+                buttons.get(1).getBackground());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccessoryButtonsHaveCorrectSpacing() throws InterruptedException {
+        KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
+        ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
+        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+
+        ImageButton button1 = buttons.get(0);
+        ImageButton button2 = buttons.get(1);
+
+        // Check spacing.
+        ViewGroup.MarginLayoutParams params1 =
+                (ViewGroup.MarginLayoutParams) button1.getLayoutParams();
+        ViewGroup.MarginLayoutParams params2 =
+                (ViewGroup.MarginLayoutParams) button2.getLayoutParams();
+
+        int expectedMargin =
+                buttonGroupView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_spacing);
+
+        assertEquals(
+                "First button's left margin is incorrect.", expectedMargin, params1.leftMargin);
+        assertEquals(
+                "First button's right margin is incorrect.", expectedMargin, params1.rightMargin);
+        assertEquals(
+                "Second button's left margin is incorrect.", expectedMargin, params2.leftMargin);
+        assertEquals(
+                "Second button's right margin is incorrect.", expectedMargin, params2.rightMargin);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    public void testUndockedStyleWithDynamicPositioning() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        int horizontalOffset = 10;
+        int verticalOffset = 20;
+        KeyboardAccessoryStyle style =
+                new KeyboardAccessoryStyle(
+                        /* isDocked= */ false,
+                        horizontalOffset,
+                        verticalOffset,
+                        /* maxWidth= */ 100);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
+
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
+        assertEquals(horizontalOffset, params.leftMargin);
+        assertEquals(verticalOffset, params.topMargin);
+    }
+
+    /**
+     * Sets up the accessory, adds two buttons, and waits for them to be laid out.
+     *
+     * @return The {@link KeyboardAccessoryButtonGroupView} containing the buttons.
+     */
+    private KeyboardAccessoryButtonGroupView setupButtonsAndGetGroup() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {createSheetOpener()});
+                });
+
+        // Wait for the view and find the KeyboardAccessoryButtonGroupView.
+        mKeyboardAccessoryView.take(); // Make sure the view is inflated.
+        AtomicReference<KeyboardAccessoryButtonGroupView> buttonGroupViewRef =
+                new AtomicReference<>();
+        onView(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
+                .check(
+                        (v, noViewFoundException) -> {
+                            if (noViewFoundException != null) {
+                                throw new RuntimeException(noViewFoundException);
+                            }
+                            buttonGroupViewRef.set((KeyboardAccessoryButtonGroupView) v);
+                        });
+
+        KeyboardAccessoryButtonGroupView buttonGroupView = buttonGroupViewRef.get();
+        assertNotNull(buttonGroupView);
+
+        // Wait for buttons to be added.
+        CriteriaHelper.pollUiThread(() -> buttonGroupView.getButtons().size() == 2);
+
+        return buttonGroupView;
     }
 
     private static AutofillSuggestion.Builder getDefaultAutofillSuggestionBuilder() {
@@ -847,6 +1089,10 @@ public class KeyboardAccessoryViewTest {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    private int getDimensionPixelSize(@DimenRes int res) {
+        return mActivityTestRule.getActivity().getResources().getDimensionPixelSize(res);
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
@@ -893,12 +1139,12 @@ public class KeyboardAccessoryViewTest {
                 new AutofillSuggestion.Builder()
                         .setLabel(label)
                         .setSubLabel("Smith")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                        .setFeatureForIPH("")
+                        .setFeatureForIph("")
                         .setApplyDeactivatedStyle(false)
                         .build(),
-                new Action(AUTOFILL_SUGGESTION, chipCallback));
+                new Action(AUTOFILL_SUGGESTION, chipCallback),
+                mMockProfile);
     }
 
     private SheetOpenerBarItem createSheetOpener() {
@@ -906,14 +1152,20 @@ public class KeyboardAccessoryViewTest {
                 new KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks() {
                     @Override
                     public void onViewBound(View buttons) {
-                        if (((KeyboardAccessoryButtonGroupView) buttons).getButtons().size() > 0) {
+                        KeyboardAccessoryButtonGroupView group =
+                                (KeyboardAccessoryButtonGroupView) buttons;
+                        if (group.getButtons().size() > 0) {
                             return;
                         }
-                        ((KeyboardAccessoryButtonGroupView) buttons)
-                                .addButton(
-                                        buttons.getContext()
-                                                .getDrawable(R.drawable.ic_password_manager_key),
-                                        "Key Icon");
+
+                        group.addButton(
+                                buttons.getContext()
+                                        .getDrawable(R.drawable.ic_password_manager_key),
+                                "Key Icon");
+
+                        group.addButton(
+                                buttons.getContext().getDrawable(R.drawable.ic_credit_card_black),
+                                "Card Icon 2");
                     }
 
                     @Override

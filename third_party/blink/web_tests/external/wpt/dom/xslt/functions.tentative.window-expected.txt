@@ -1,0 +1,358 @@
+This is a testharness.js-based test.
+Found 177 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] QName
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] abs
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] accumulator-after
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] accumulator-before
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] adjust-date-to-timezone
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] adjust-dateTime-to-timezone
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] adjust-time-to-timezone
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] analyze-string
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] apply
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] available-environment-variables
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] available-system-properties
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] avg
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] base-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] boolean
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] ceiling
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] codepoint-equal
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] codepoints-to-string
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] collation-key
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] collection
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] compare
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] concat
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] contains
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] contains-token
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] copy-of
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] count
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-group
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-grouping-key
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-merge-group
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-merge-key
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-output-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] current-time
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] data
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] day-from-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] day-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] days-from-duration
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] deep-equal
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] default-collation
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] default-language
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] distinct-values
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] doc
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] doc-available
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] document
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] document-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] element-available
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] element-with-id
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] empty
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] encode-for-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] ends-with
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] environment-variable
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] error
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] escape-html-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] exactly-one
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] exists
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] false
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] filter
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] floor
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] fold-left
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] fold-right
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] for-each
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] for-each-pair
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] format-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] format-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] format-integer
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] format-number
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] format-time
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] function-arity
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] function-available
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] function-lookup
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] function-name
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] generate-id
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] has-children
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] head
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] hours-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] hours-from-duration
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] hours-from-time
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] id
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] idref
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] implicit-timezone
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] in-scope-prefixes
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] index-of
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] innermost
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] insert-before
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] iri-to-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] json-doc
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] json-to-xml
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] key
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] lang
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] last
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] load-xquery-module
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] local-name
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] local-name-from-QName
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] lower-case
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] matches
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] max
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] min
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] minutes-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] minutes-from-duration
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] minutes-from-time
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] month-from-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] month-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] months-from-duration
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] name
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] namespace-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] namespace-uri-for-prefix
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] namespace-uri-from-QName
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] nilled
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] node-name
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] normalize-space
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] normalize-unicode
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] not
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] number
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] one-or-more
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] outermost
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] parse-ietf-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] parse-json
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] parse-xml
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] parse-xml-fragment
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] path
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] position
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] prefix-from-QName
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] put
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] random-number-generator
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] regex-group
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] remove
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] replace
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] resolve-QName
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] resolve-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] reverse
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] root
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] round
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] round-half-to-even
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] seconds-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] seconds-from-duration
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] seconds-from-time
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] serialize
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] snapshot
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] sort
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] starts-with
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] static-base-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] stream-available
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] string
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] string-join
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] string-length
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] string-to-codepoints
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] subsequence
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] substring
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] substring-after
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] substring-before
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] sum
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] system-property
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] tail
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] timezone-from-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] timezone-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] timezone-from-time
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] tokenize
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] trace
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] transform
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] translate
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] true
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] type-available
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] unordered
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] unparsed-entity-public-id
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] unparsed-entity-uri
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] unparsed-text
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] unparsed-text-available
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] unparsed-text-lines
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] upper-case
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] uri-collection
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] xml-to-json
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] year-from-date
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] year-from-dateTime
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] years-from-duration
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+[FAIL] zero-or-one
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+Harness: the test ran to completion.
+

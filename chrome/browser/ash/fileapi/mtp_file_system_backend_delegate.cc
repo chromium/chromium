@@ -20,8 +20,7 @@ MTPFileSystemBackendDelegate::MTPFileSystemBackendDelegate(
           new MTPWatcherManager(device_media_async_file_util_.get())) {
 }
 
-MTPFileSystemBackendDelegate::~MTPFileSystemBackendDelegate() {
-}
+MTPFileSystemBackendDelegate::~MTPFileSystemBackendDelegate() = default;
 
 storage::AsyncFileUtil* MTPFileSystemBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {

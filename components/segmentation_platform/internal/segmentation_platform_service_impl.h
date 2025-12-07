@@ -116,16 +116,25 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       const PredictionOptions& prediction_options,
       scoped_refptr<InputContext> input_context,
       AnnotatedNumericResultCallback callback) override;
+  void GetInputKeysForModel(const std::string& segmentation_key,
+                            InputContextKeysCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
   void CollectTrainingData(SegmentId segment_id,
                            TrainingRequestId request_id,
                            const TrainingLabels& param,
                            SuccessCallback callback) override;
+  void CollectTrainingData(SegmentId segment_id,
+                           TrainingRequestId request_id,
+                           ukm::SourceId ukm_source_id,
+                           const TrainingLabels& param,
+                           SuccessCallback callback) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   ServiceProxy* GetServiceProxy() override;
   DatabaseClient* GetDatabaseClient() override;
   bool IsPlatformInitialized() override;
+
+  bool IsMetricsEnabledForTesting() const { return is_metrics_enabled_; }
 
  private:
   friend class SegmentationPlatformServiceImplTest;
@@ -170,6 +179,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // Signal processing.
   SignalHandler signal_handler_;
+
+  bool is_metrics_enabled_{false};
 
   ExecutionService execution_service_;
 

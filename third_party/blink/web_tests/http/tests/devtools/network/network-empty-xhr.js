@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests empty xhr content is correctly loaded in inspector. https://bugs.webkit.org/show_bug.cgi?id=79026`);
@@ -20,7 +22,7 @@ import {NetworkTestRunner} from 'network_test_runner';
       callback();
     }
 
-    request.requestContent().then(contentLoaded);
+    request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(contentLoaded);
   }
 
   NetworkTestRunner.recordNetwork();

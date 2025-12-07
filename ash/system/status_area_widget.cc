@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
+#include "ash/system/accessibility/mouse_keys/mouse_keys_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
@@ -45,12 +46,13 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -78,6 +80,8 @@ StatusAreaWidget::StatusAreaWidget(aura::Window* status_container, Shelf* shelf)
   Init(std::move(params));
   set_focus_on_creation(false);
   SetContentsView(status_area_widget_delegate_);
+
+  Shell::Get()->AddShellObserver(this);
 }
 
 void StatusAreaWidget::Initialize() {
@@ -90,15 +94,15 @@ void StatusAreaWidget::Initialize() {
     video_conference_tray_ =
         AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
   }
-  if (features::IsFocusModeEnabled()) {
-    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
-  }
+  focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
   holding_space_tray_ =
       AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
   logout_button_tray_ =
       AddTrayButton(std::make_unique<LogoutButtonTray>(shelf_));
   dictation_button_tray_ = AddTrayButton(std::make_unique<DictationButtonTray>(
       shelf_, TrayBackgroundViewCatalogName::kDictationStatusArea));
+  mouse_keys_tray_ = AddTrayButton(std::make_unique<MouseKeysTray>(
+      shelf_, TrayBackgroundViewCatalogName::kMouseKeysStatusArea));
   select_to_speak_tray_ = AddTrayButton(std::make_unique<SelectToSpeakTray>(
       shelf_, TrayBackgroundViewCatalogName::kSelectToSpeakStatusArea));
   ime_menu_tray_ = AddTrayButton(std::make_unique<ImeMenuTray>(shelf_));
@@ -173,6 +177,7 @@ void StatusAreaWidget::Initialize() {
 }
 
 StatusAreaWidget::~StatusAreaWidget() {
+  Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
   // Resets `animation_controller_` before destroying
@@ -298,6 +303,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kWmMode:
       case TrayBackgroundViewCatalogName::kVideoConferenceTray:
       case TrayBackgroundViewCatalogName::kFocusMode:
+      case TrayBackgroundViewCatalogName::kMouseKeysStatusArea:
         if (!tray_button->GetVisible()) {
           continue;
         }
@@ -306,7 +312,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
     }
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.Tablet.ShelfPodCount",
                              visible_pod_count);
   } else {
@@ -389,6 +395,18 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
     target_bounds_.set_y(shelf_position);
   } else {
     target_bounds_.set_x(shelf_position);
+  }
+}
+
+void StatusAreaWidget::OnPinnedStateChanged(aura::Window* pinned_window) {
+  // Close all tray bubbles when in locked fullscreen mode to prevent users from
+  // exiting this mode.
+  if (GetWindowPinType(pinned_window) ==
+      chromeos::WindowPinType::kLockedFullscreen) {
+    for (ash::TrayBackgroundView* const tray_button : tray_buttons_) {
+      tray_button->CloseBubble(
+          TrayBackgroundView::CloseReason::kWindowActivation);
+    }
   }
 }
 
@@ -499,8 +517,8 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     return CollapseState::NOT_COLLAPSIBLE;
   }
 
-  bool is_collapsible = display::Screen::GetScreen()->InTabletMode() &&
-                        ShelfConfig::Get()->is_in_app();
+  bool is_collapsible =
+      display::Screen::Get()->InTabletMode() && ShelfConfig::Get()->is_in_app();
 
   bool force_collapsible = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshForceStatusAreaCollapsible);
@@ -622,6 +640,12 @@ bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
   return true;
 }
 
+void StatusAreaWidget::InitializeTrayButtonsAccessibleNavFocus() {
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
+    tray_button->UpdateAccessibleNavFocus(shelf_);
+  }
+}
+
 void StatusAreaWidget::SetOpenShelfPodBubble(
     TrayBubbleView* open_shelf_pod_bubble) {
   if (open_shelf_pod_bubble_ == open_shelf_pod_bubble) {
@@ -651,13 +675,18 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
       /*bubble_shown=*/open_shelf_pod_bubble_);
 }
 
+void StatusAreaWidget::InitializeAccessibleProperties() {
+  status_area_widget_delegate()->UpdateAccessiblePreviousAndNextFocus();
+}
+
 void StatusAreaWidget::OnViewIsDeleting(views::View* observed_view) {
   CHECK(observed_view == notification_center_tray_);
   notification_center_tray_->RemoveObserver(this);
 }
 
 void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
-                                               views::View* starting_view) {
+                                               views::View* starting_view,
+                                               bool visible) {
   CHECK(observed_view == notification_center_tray_);
   UpdateDateTrayRoundedCorners();
 }

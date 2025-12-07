@@ -18,8 +18,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -42,7 +42,6 @@ using ::testing::AllOf;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Matches;
 using ::testing::Mock;
@@ -166,8 +165,7 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
 
     // User education in Ash is currently only supported for the primary user
     // profile. This is a self-imposed restriction. Log in the primary user.
-    primary_user_account_id_ = AccountId::FromUserEmail("primary@test");
-    SimulateUserLogin(primary_user_account_id_);
+    primary_user_account_id_ = SimulateUserLogin({"primary@test"});
 
     // Create and show a `help_bubble_anchor_widget_`.
     help_bubble_anchor_widget_ = CreateFramelessTestWidget();

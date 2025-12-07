@@ -79,7 +79,7 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
       std::unique_ptr<QuickAnswersSession> quick_answers_session) override;
 
   // Send a quick answer request for preprocessing only.
-  void SendRequestForPreprocessing(
+  virtual void SendRequestForPreprocessing(
       const QuickAnswersRequest& quick_answers_request);
   // Fetch quick answers result from the server.
   void FetchQuickAnswers(const QuickAnswersRequest& processed_request);

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 
@@ -98,7 +94,7 @@ void LowUserEngagementModel::ExecuteModelWithInput(
   }
 
   float result = 0;
-  bool weeks[4]{};
+  std::array<bool, 4> weeks = {};
   for (unsigned i = 0; i < 28; ++i) {
     int week_idx = i / 7;
     weeks[week_idx] = weeks[week_idx] || inputs[i];

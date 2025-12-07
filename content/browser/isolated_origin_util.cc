@@ -69,7 +69,7 @@ bool IsolatedOriginPattern::Parse(const std::string_view& unparsed_pattern) {
   // Ports are ignored when matching isolated origins (see also
   // https://crbug.com/914511).
   const std::string& scheme = origin_.scheme();
-  int default_port = url::DefaultPortForScheme(scheme.data(), scheme.length());
+  int default_port = url::DefaultPortForScheme(scheme);
   if (origin_.port() != default_port) {
     LOG(ERROR) << "Ignoring port number in isolated origin: " << origin_;
     origin_ = url::Origin::Create(GURL(

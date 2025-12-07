@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
@@ -48,9 +48,10 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -66,10 +68,11 @@
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -102,7 +105,9 @@ using file_manager::io_task::IOTaskController;
 using file_manager::util::EntryDefinition;
 using file_manager::util::FileDefinition;
 using guest_os::GuestOsService;
+using guest_os::GuestOsServiceFactory;
 using guest_os::GuestOsSharePath;
+using guest_os::GuestOsSharePathFactory;
 
 namespace fmp = extensions::api::file_manager_private;
 
@@ -180,8 +185,7 @@ fmp::IoTaskState GetIoTaskState(io_task::State state) {
     case io_task::State::kCancelled:
       return fmp::IoTaskState::kCancelled;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::IoTaskState::kError;
+      NOTREACHED();
   }
 }
 
@@ -207,8 +211,7 @@ fmp::IoTaskType GetIoTaskType(io_task::OperationType type) {
     case io_task::OperationType::kZip:
       return fmp::IoTaskType::kZip;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::IoTaskType::kCopy;
+      NOTREACHED();
   }
 }
 
@@ -225,8 +228,7 @@ fmp::PolicyErrorType GetPolicyErrorType(
     case io_task::PolicyErrorType::kDlpWarningTimeout:
       return fmp::PolicyErrorType::kDlpWarningTimeout;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::PolicyErrorType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -289,7 +291,7 @@ bool ShouldShowNotificationForVolume(
   // manager is opened only for the active user.
   if (ash::LoginDisplayHost::default_host() ||
       ash::ScreenLocker::default_screen_locker() ||
-      chrome::IsRunningInForcedAppMode() ||
+      IsRunningInForcedAppMode() ||
       profile != ProfileManager::GetActiveUserProfile()) {
     return false;
   }
@@ -376,13 +378,6 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
         fmp::OnDeviceChanged::kEventName, fmp::OnDeviceChanged::Create(event));
 
     system_notification_manager()->HandleDeviceEvent(event);
-  }
-
-  // DeviceEventRouter overrides.
-  bool IsExternalStorageDisabled() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return profile_->GetPrefs()->GetBoolean(
-        disks::prefs::kExternalStorageDisabled);
   }
 
  private:
@@ -493,7 +488,7 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 
 // Returns a map from the given `files` to their parent directory.
 std::map<base::FilePath, std::vector<base::FilePath>>
-MapFilePathsToParentDirectory(const std::vector<base::FilePath> files) {
+MapFilePathsToParentDirectory(const std::vector<base::FilePath>& files) {
   std::map<base::FilePath, std::vector<base::FilePath>> dir_files_map;
   for (const auto& file : files) {
     dir_files_map[file.DirName()].push_back(file);
@@ -591,6 +586,8 @@ fmp::MountError MountErrorToMountCompletedStatus(ash::MountError error) {
       return fmp::MountError::kCancelled;
     case ash::MountError::kBusy:
       return fmp::MountError::kBusy;
+    case ash::MountError::kCorrupted:
+      return fmp::MountError::kCorrupted;
     default:
       LOG(ERROR) << "Unexpected mount error: " << error;
       return fmp::MountError::kUnknownError;
@@ -666,12 +663,13 @@ void EventRouter::Shutdown() {
   }
 
   // GuestOsService doesn't exist for all profiles.
-  if (GuestOsService* const service = GuestOsService::GetForProfile(profile_)) {
+  if (GuestOsService* const service =
+          GuestOsServiceFactory::GetForProfile(profile_)) {
     service->MountProviderRegistry()->RemoveObserver(this);
   }
 
   if (GuestOsSharePath* const path =
-          GuestOsSharePath::GetForProfile(profile_)) {
+          GuestOsSharePathFactory::GetForProfile(profile_)) {
     path->RemoveObserver(this);
   }
 
@@ -737,7 +735,6 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToOneDrive, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToGoogleDrive, cb);
-    pref_change_registrar_->Add(prefs::kLocalUserFilesAllowed, cb);
   }
 
   {
@@ -755,12 +752,13 @@ void EventRouter::ObserveEvents() {
   }
 
   if (GuestOsSharePath* const path =
-          GuestOsSharePath::GetForProfile(profile_)) {
+          GuestOsSharePathFactory::GetForProfile(profile_)) {
     path->AddObserver(this);
   }
 
   // GuestOsService doesn't exist for all profiles.
-  if (GuestOsService* const service = GuestOsService::GetForProfile(profile_)) {
+  if (GuestOsService* const service =
+          GuestOsServiceFactory::GetForProfile(profile_)) {
     service->MountProviderRegistry()->AddObserver(this);
   }
 

@@ -17,13 +17,12 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/browser/render_widget_host.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class WebContents;
@@ -65,9 +64,8 @@ class ExpandablePopupParentControllerImpl {
 // This class is a controller for an AutofillPopupView. It implements
 // AutofillPopupController to allow calls from AutofillPopupView. The
 // other, public functions are available to its instantiator.
-class AutofillPopupControllerImpl
-    : public AutofillPopupController,
-      public ExpandablePopupParentControllerImpl {
+class AutofillPopupControllerImpl : public AutofillPopupController,
+                                    public ExpandablePopupParentControllerImpl {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
@@ -75,7 +73,9 @@ class AutofillPopupControllerImpl
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(
+      int index,
+      AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
   bool RemoveSuggestion(
       int list_index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
@@ -87,12 +87,13 @@ class AutofillPopupControllerImpl
       const override;
   void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
-  void Show(std::vector<Suggestion> suggestions,
+  void Show(UiSessionId ui_session_id,
+            std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
-  void PinView() override;
   bool IsViewVisibilityAcceptingThresholdEnabled() const override;
 
   // AutofillPopupController:
@@ -104,7 +105,9 @@ class AutofillPopupControllerImpl
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void HideSubPopup() override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  void PerformButtonActionForSuggestion(int index) override;
+  void PerformButtonActionForSuggestion(
+      int index,
+      const SuggestionButtonAction& button_action) override;
   const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;
@@ -148,6 +151,9 @@ class AutofillPopupControllerImpl
   // Hides `view_` unless it is null and then deletes `this`.
   virtual void HideViewAndDie();
 
+  // Returns true if the suggestions are credit card suggestions.
+  bool HasCreditCardSuggestions() const;
+
  private:
   friend class AutofillPopupControllerImplTestApi;
   friend class AutofillSuggestionController;
@@ -169,8 +175,9 @@ class AutofillPopupControllerImpl
   // the first preferred when recalculating the popup position.
   void OnSuggestionsChanged(bool prefer_prev_arrow_side);
 
-  void UpdateFilteredSuggestions(bool notify_suggestions_changed);
+  void UpdateFilteredSuggestions();
 
+  UiSessionId ui_session_id_;
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;
@@ -198,18 +205,10 @@ class AutofillPopupControllerImpl
   // parameter of `AcceptSuggestion`).
   std::optional<NextIdleBarrier> barrier_for_accepting_;
 
-  // The time of the latest successful (the view is created and shown) `Show()`
-  // call.
-  std::optional<base::TimeTicks> shown_time_;
-
   // An override to suppress minimum show thresholds. It should only be set
   // during tests that cannot mock time (e.g. the autofill interactive
   // browsertests).
   bool disable_threshold_for_testing_ = false;
-
-  // If set to true, the popup will never be hidden because of stale data or if
-  // the user interacts with native UI.
-  bool is_view_pinned_ = false;
 
   // If `filter_` set, it contains suggestions from `non_filtered_suggestions_`
   // that matches the filter.  Otherwise, the list is empty

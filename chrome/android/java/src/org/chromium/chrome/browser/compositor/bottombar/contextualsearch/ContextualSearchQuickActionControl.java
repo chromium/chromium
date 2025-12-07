@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -18,6 +20,8 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -39,22 +43,23 @@ import java.util.List;
  * Actions can be activated through a tap on the Bar and include intents like calling a phone
  * number or launching Maps for a street address.
  */
+@NullMarked
 public class ContextualSearchQuickActionControl extends ViewResourceInflater {
-    private Context mContext;
-    private String mQuickActionUri;
+    private final Context mContext;
+    private @Nullable String mQuickActionUri;
     private int mQuickActionCategory;
     private int mToolbarBackgroundColor;
     private boolean mHasQuickAction;
     private boolean mOpenQuickActionInChrome;
-    private Intent mIntent;
-    private String mCaption;
+    private @Nullable Intent mIntent;
+    private @Nullable String mCaption;
 
     /**
      * @param context The Android Context used to inflate the View.
      * @param resourceLoader The resource loader that will handle the snapshot capturing.
      */
     public ContextualSearchQuickActionControl(
-            Context context, DynamicResourceLoader resourceLoader) {
+            Context context, @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 R.layout.contextual_search_quick_action_icon_view,
                 R.id.contextual_search_quick_action_icon_view,
@@ -82,7 +87,8 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
             case QuickActionCategory.WEBSITE:
                 return R.drawable.ic_link_grey600_36dp;
             default:
-                return null;
+                assert false : "Invalid quick action category.";
+                return assumeNonNull(null);
         }
     }
 
@@ -104,7 +110,8 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
             case QuickActionCategory.WEBSITE:
                 return R.string.contextual_search_quick_action_caption_open;
             default:
-                return null;
+                assert false : "Invalid quick action category.";
+                return assumeNonNull(null);
         }
     }
 
@@ -126,7 +133,8 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
             case QuickActionCategory.WEBSITE:
                 return R.string.contextual_search_quick_action_caption_generic_website;
             default:
-                return null;
+                assert false : "Invalid quick action category.";
+                return assumeNonNull(null);
         }
     }
 
@@ -161,6 +169,7 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
      */
     public void sendIntent(Tab tab) {
         if (mOpenQuickActionInChrome) {
+            assert mQuickActionUri != null;
             tab.loadUrl(new LoadUrlParams(mQuickActionUri));
             return;
         }
@@ -169,7 +178,7 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
 
         // Set the Browser application ID to us in case the user chooses Chrome
         // as the app from the intent picker.
-        Context context = getContext();
+        Context context = assumeNonNull(getContext());
         mIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
 
         mIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
@@ -187,7 +196,7 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
      * @return The caption associated with the quick action or null if no quick action
      *         is available.
      */
-    public String getCaption() {
+    public @Nullable String getCaption() {
         return mCaption;
     }
 
@@ -286,15 +295,12 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
             if (mQuickActionCategory != QuickActionCategory.PHONE) {
                 // Use the default app's name to construct the caption.
                 mCaption =
-                        mContext.getResources()
-                                .getString(
-                                        getDefaultAppCaptionId(mQuickActionCategory),
-                                        defaultActivityResolveInfo.loadLabel(packageManager));
+                        mContext.getString(
+                                getDefaultAppCaptionId(mQuickActionCategory),
+                                defaultActivityResolveInfo.loadLabel(packageManager));
             } else {
                 // The caption for phone numbers does not use the app's name.
-                mCaption =
-                        mContext.getResources()
-                                .getString(getDefaultAppCaptionId(mQuickActionCategory));
+                mCaption = mContext.getString(getDefaultAppCaptionId(mQuickActionCategory));
             }
         } else if (mQuickActionCategory == QuickActionCategory.WEBSITE) {
             // If there is not a default app handler for a URL, open the quick action
@@ -314,25 +320,23 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
                         && ColorUtils.shouldUseLightForegroundOnBackground(
                                 mToolbarBackgroundColor)) {
                     // Tint the link icon to match the custom tab toolbar.
-                    iconDrawable = mContext.getDrawable(iconResId);
+                    iconDrawable = assumeNonNull(mContext.getDrawable(iconResId));
                     iconDrawable.mutate();
                     DrawableCompat.setTint(iconDrawable, mToolbarBackgroundColor);
                 }
             }
-            mCaption =
-                    mContext.getResources().getString(getFallbackCaptionId(mQuickActionCategory));
+            mCaption = mContext.getString(getFallbackCaptionId(mQuickActionCategory));
         } else {
             iconResId = getIconResId(mQuickActionCategory);
-            mCaption =
-                    mContext.getResources().getString(getFallbackCaptionId(mQuickActionCategory));
+            mCaption = mContext.getString(getFallbackCaptionId(mQuickActionCategory));
         }
 
         inflate();
 
         if (iconDrawable != null) {
-            ((ImageView) getView()).setImageDrawable(iconDrawable);
+            assumeNonNull((ImageView) getView()).setImageDrawable(iconDrawable);
         } else {
-            ((ImageView) getView()).setImageResource(iconResId);
+            assumeNonNull((ImageView) getView()).setImageResource(iconResId);
         }
 
         invalidate();

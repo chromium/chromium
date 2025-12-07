@@ -13,3 +13,14 @@ struct TsCacheItem {
   url.mojom.Url url;
   string contents;
 };
+
+// This interface is imported by web_ui_ts_test.test-mojom and is used to
+// provide test coverage of importing an array of pending remotes of
+// interfaces.
+interface StringWrapper {
+  PutString(string item);
+  GetString() => (string item);
+
+  // Allows copies to be passed
+  Clone(pending_receiver<StringWrapper> string_wrapper_clone);
+};

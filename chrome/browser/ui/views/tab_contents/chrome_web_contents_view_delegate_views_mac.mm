@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_mac.h"
 
 #include <memory>
+#include <optional>
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_delegate.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,9 +17,11 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "components/remote_cocoa/browser/window.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
@@ -37,7 +40,7 @@ ChromeWebContentsViewDelegateViewsMac::
 
 gfx::NativeWindow ChromeWebContentsViewDelegateViewsMac::GetNativeWindow() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  return browser ? browser->window()->GetNativeWindow() : nullptr;
+  return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 
 NSObject<RenderWidgetHostViewMacDelegate>*
@@ -61,6 +64,17 @@ ChromeWebContentsViewDelegateViewsMac::GetDragDestDelegate() {
 void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  // MacOS doesn't activate the `WebContents` on click by default so it must be
+  // manually configured. This is tied to the `kSideBySide` experiment because
+  // it is common to right click an inactive `WebContents` in split view.
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    tabs::TabInterface* tab_interface =
+        tabs::TabInterface::MaybeGetFromContents(web_contents_);
+    if (tab_interface && !tab_interface->IsActivated()) {
+      web_contents_->Focus();
+    }
+  }
+
   ShowMenu(BuildMenu(
       render_frame_host,
       AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
@@ -115,8 +129,9 @@ ChromeWebContentsViewDelegateViewsMac::BuildMenu(
 void ChromeWebContentsViewDelegateViewsMac::ShowMenu(
     std::unique_ptr<RenderViewContextMenuBase> menu) {
   context_menu_ = std::move(menu);
-  if (!context_menu_.get())
+  if (!context_menu_.get()) {
     return;
+  }
 
   // The renderer may send the "show context menu" message multiple times, one
   // for each right click mouse event it receives. Normally, this doesn't happen
@@ -125,8 +140,9 @@ void ChromeWebContentsViewDelegateViewsMac::ShowMenu(
   // the second mouse event arrives. In this case, |ShowContextMenu()| will
   // get called multiple times - if so, don't create another context menu.
   // TODO(asvitkine): Fix the renderer so that it doesn't do this.
-  if (web_contents_->IsShowingContextMenu())
+  if (web_contents_->IsShowingContextMenu()) {
     return;
+  }
 
   context_menu_->Show();
 }

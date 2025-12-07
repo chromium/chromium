@@ -23,13 +23,13 @@ const std::string GetDisplayName(const offline_pages::OfflinePageItem& page) {
   if (!page.title.empty())
     return base::UTF16ToUTF8(page.title);
 
-  std::string host = page.url.host();
+  std::string host = page.url.GetHost();
   return host.empty() ? page.url.spec() : host;
 }
 
 const std::string GetDisplayName(
     const offline_pages::SavePageRequest& request) {
-  std::string host = request.url().host();
+  std::string host = request.url().GetHost();
   return host.empty() ? request.url().spec() : host;
 }
 
@@ -94,7 +94,7 @@ OfflineItem OfflineItemConversions::CreateOfflineItem(
       item.state = OfflineItemState::PAUSED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   item.fail_state = request.fail_state();
   item.progress.value = 0;

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(VectorBackedLinkedListTest, Insert) {
   using List = VectorBackedLinkedList<int>;
@@ -505,4 +505,4 @@ TEST(VectorBackedLinkedListTest, UniquePtr) {
   EXPECT_TRUE(deleted6);
 }
 
-}  // namespace WTF
+}  // namespace blink

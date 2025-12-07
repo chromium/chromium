@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Apple Inc. All rights reserved.
+ * Copyright (C) 2015-2023 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,7 +49,7 @@ BouncingCanvasImagesStage = Utilities.createSubclass(BouncingCanvasParticlesStag
     initialize: function(benchmark, options)
     {
         BouncingCanvasParticlesStage.prototype.initialize.call(this, benchmark, options);
-        var imageSrc = options["imageSrc"] || "resources/yin-yang.svg";
+        var imageSrc = options["imageSrc"] || "../resources/yin-yang.svg";
         this.imageElement = document.querySelector(".hidden[src=\"" + imageSrc + "\"]");
     },
 

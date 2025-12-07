@@ -101,7 +101,8 @@ TEST_F(RecommendedArcAppFetcherTest, OnLoadSuccess) {
         EXPECT_EQ(play_extras->GetContainsAds(), true);
         EXPECT_EQ(play_extras->GetOptimizedForChrome(), true);
       }));
-  auto output = base::JSONReader::ReadAndReturnValueWithError(response);
+  auto output = base::JSONReader::ReadAndReturnValueWithError(
+      response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(output.has_value());
   arc_app_fetcher()->OnLoadSuccess(std::move(output.value()));
 }

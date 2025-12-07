@@ -10,7 +10,6 @@ PASS WebKitCSSMatrix.prototype.toString.call(new WebKitCSSMatrix()) is 'matrix(1
 PASS new WebKitCSSMatrix(null) threw exception SyntaxError: Failed to construct 'DOMMatrix': Failed to parse 'null'..
 FAIL new WebKitCSSMatrix(undefined) should throw an exception. Was matrix(1, 0, 0, 1, 0, 0).
 PASS XMLHttpRequest.prototype.toString.call(new XMLHttpRequest) is '[object XMLHttpRequest]'
-PASS XSLTProcessor.prototype.toString.call(new XSLTProcessor) is '[object XSLTProcessor]'
 PASS successfullyParsed is true
 
 TEST COMPLETE

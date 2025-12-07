@@ -1,0 +1,107 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("sensitive_content") {
+  sources = [
+    "sensitive_content_client.h",
+    "sensitive_content_manager.cc",
+    "sensitive_content_manager.h",
+  ]
+  deps = [
+    "//components/password_manager/content/browser:password_form_classification_util",
+    "//content/public/browser",
+  ]
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+  ]
+  if (is_android) {
+    sources += [
+      "android/android_sensitive_content_client.cc",
+      "android/android_sensitive_content_client.h",
+    ]
+    deps += [ ":jni_headers" ]
+    public_deps += [ "//ui/android" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sensitive_content_manager_unittest.cc" ]
+  deps = [
+    ":sensitive_content",
+    "//base/test:test_support",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//content/test:test_support",
+    "//url",
+  ]
+}
+
+component("features") {
+  output_name = "sensitive_content_features"
+  defines = [ "IS_SENSITIVE_CONTENT_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+if (is_android) {
+  android_library("java") {
+    sources = [ "android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java" ]
+    deps = [
+      "//base:base_java",
+      "//content/public/android:content_full_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+    srcjar_deps = [ ":jni_headers" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [ ":*" ]
+    sources = [ "android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java" ]
+  }
+
+  robolectric_library("junit") {
+    sources = [ "android/junit/src/org/chromium/components/sensitive_content/SensitiveContentClientUnitTest.java" ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//content/public/android:content_full_java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "//components/sensitive_content/features.cc" ]
+    class_name =
+        "org.chromium.components.sensitive_content.SensitiveContentFeatures"
+  }
+
+  # Used to expose the features to the WebView flag UI (the equivalent of
+  # chrome://flags for WebView).
+  android_library("sensitive_content_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}

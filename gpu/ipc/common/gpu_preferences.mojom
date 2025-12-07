@@ -78,18 +78,16 @@ struct GpuPreferences {
   bool enable_gpu_driver_debug_logging;
   bool disable_gpu_program_cache;
   bool enforce_gl_minimums;
-  uint32 force_gpu_mem_available_bytes;
   uint32 force_gpu_mem_discardable_limit_bytes;
   uint32 force_max_texture_size;
   uint32 gpu_program_cache_size;
   bool disable_gpu_shader_disk_cache;
   bool enable_threaded_texture_mailboxes;
   bool gl_shader_interm_output;
-  bool enable_android_surface_control;
+  bool perform_graphite_precompilation;
   bool enable_gpu_service_logging;
   bool enable_gpu_service_tracing;
   bool use_passthrough_cmd_decoder;
-  bool disable_biplanar_gpu_memory_buffers_for_video_frames;
 
   bool ignore_gpu_blocklist;
   bool watchdog_starts_backgrounded;

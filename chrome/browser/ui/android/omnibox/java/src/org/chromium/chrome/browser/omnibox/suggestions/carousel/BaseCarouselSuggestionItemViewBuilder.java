@@ -12,13 +12,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileView;
-import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileViewBinder;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTileViewBinder;
 import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -29,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
  * ViewBuilder for the Carousel suggestion. Its sole responsibility is to inflate appropriate view
  * layouts for supplied view type.
  */
+@NullMarked
 public class BaseCarouselSuggestionItemViewBuilder {
     /**
      * ViewType defines a list of Views that are understood by the Carousel. Views below can be used
@@ -38,10 +37,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
         /** Carousel item is a TileView instance. */
-        public int TILE_VIEW = 0;
-
-        /** Carousel item is a QueryTile instance. */
-        public int QUERY_TILE = 1;
+        int TILE_VIEW = 0;
     }
 
     /**
@@ -55,11 +51,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
         adapter.registerType(
                 ViewType.TILE_VIEW,
                 BaseCarouselSuggestionItemViewBuilder::createTileView,
-                TileViewBinder::bind);
-        adapter.registerType(
-                ViewType.QUERY_TILE,
-                BaseCarouselSuggestionItemViewBuilder::createQueryTile,
-                QueryTileViewBinder::bind);
+                MostVisitedTileViewBinder::bind);
         return new BaseCarouselSuggestionView(parent.getContext(), adapter);
     }
 
@@ -76,7 +68,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.suggestions_tile_view, parent, false);
         tile.setClickable(true);
-        applyViewBackground(tile);
+        tile.setFocusable(true);
 
         // Update the background color of the solid circle around the icon (typically a favicon).
         Drawable modernizedBackground =
@@ -86,27 +78,5 @@ public class BaseCarouselSuggestionItemViewBuilder {
         iconBackground.setBackground(modernizedBackground);
 
         return tile;
-    }
-
-    /**
-     * Create a QueryTile element.
-     *
-     * @param parent ViewGroup that will host the QueryTile.
-     * @return A View element hosting QueryTile.
-     */
-    private static QueryTileView createQueryTile(ViewGroup parent) {
-        var tile = new QueryTileView(parent.getContext());
-        applyViewBackground(tile);
-        return tile;
-    }
-
-    private static void applyViewBackground(View view) {
-        view.setFocusable(true);
-        Drawable background =
-                OmniboxResourceProvider.resolveAttributeToDrawable(
-                        view.getContext(),
-                        BrandedColorScheme.APP_DEFAULT,
-                        R.attr.selectableItemBackground);
-        view.setBackground(background);
     }
 }

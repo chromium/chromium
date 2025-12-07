@@ -6,14 +6,17 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/scoped_process_information.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -244,6 +247,7 @@ TEST(PolicyTargetTest, OpenProcess) {
 // launches a sandboxed app. Validates that the sandboxed app has access to the
 // desktop.
 TEST(PolicyTargetTest, InheritedDesktopPolicy) {
+  base::test::TaskEnvironment task_environment;
   // Create a desktop with a null dacl - which should allow access to
   // everything.
   SECURITY_ATTRIBUTES attributes = {};
@@ -286,13 +290,12 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
   policy->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
-  PROCESS_INFORMATION temp_process_info = {};
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
-
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
   EXPECT_EQ(SBOX_ALL_OK, result);
-  if (result == SBOX_ALL_OK)
-    target.Set(temp_process_info);
 
   // Run the process for some time to make sure it doesn't crash on launch
   EXPECT_EQ(1u, ::ResumeThread(target.thread_handle()));
@@ -315,6 +318,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
 // desktop associated with the app thread is not the same as the
 // current desktop.
 TEST(PolicyTargetTest, DesktopPolicy) {
+  base::test::TaskEnvironment task_environment;
   BrokerServices* broker = GetBroker();
 
   // Precreate the desktop.
@@ -340,16 +344,16 @@ TEST(PolicyTargetTest, DesktopPolicy) {
   policy->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
-  PROCESS_INFORMATION temp_process_info = {};
   // Keep the desktop name to test against later (note - it was precreated).
   std::wstring desktop_name =
       broker->GetDesktopName(Desktop::kAlternateDesktop);
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
 
   EXPECT_EQ(SBOX_ALL_OK, result);
-  if (result == SBOX_ALL_OK)
-    target.Set(temp_process_info);
 
   EXPECT_EQ(1u, ::ResumeThread(target.thread_handle()));
 
@@ -379,6 +383,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
 // winstation associated with the app thread is not the same as the
 // current desktop.
 TEST(PolicyTargetTest, WinstaPolicy) {
+  base::test::TaskEnvironment task_environment;
   BrokerServices* broker = GetBroker();
 
   // Precreate the desktop.
@@ -403,17 +408,17 @@ TEST(PolicyTargetTest, WinstaPolicy) {
   policy->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
-  PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
   // Keep the desktop name for later (note - it was precreated).
   std::wstring desktop_name =
       broker->GetDesktopName(Desktop::kAlternateWinstation);
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
 
   EXPECT_EQ(SBOX_ALL_OK, result);
-  if (result == SBOX_ALL_OK)
-    target.Set(temp_process_info);
 
   EXPECT_EQ(1u, ::ResumeThread(target.thread_handle()));
 
@@ -479,6 +484,7 @@ TEST(PolicyTargetTest, BothLocalAndAlternateWinstationDesktop) {
 // Launches the app in the sandbox and share a handle with it. The app should
 // be able to use the handle.
 TEST(PolicyTargetTest, ShareHandleTest) {
+  base::test::TaskEnvironment task_environment;
   BrokerServices* broker = GetBroker();
   ASSERT_TRUE(broker);
 
@@ -488,7 +494,8 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   ASSERT_TRUE(writable_region.IsValid());
   base::WritableSharedMemoryMapping writable_mapping = writable_region.Map();
   ASSERT_TRUE(writable_mapping.IsValid());
-  memcpy(writable_mapping.memory(), contents.data(), contents.size());
+  UNSAFE_TODO(
+      memcpy(writable_mapping.memory(), contents.data(), contents.size()));
 
   // Get the path to the sandboxed app.
   wchar_t prog_name[MAX_PATH];
@@ -514,14 +521,14 @@ TEST(PolicyTargetTest, ShareHandleTest) {
 
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
-  PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
 
   EXPECT_EQ(SBOX_ALL_OK, result);
-  if (result == SBOX_ALL_OK)
-    target.Set(temp_process_info);
 
   EXPECT_EQ(1u, ::ResumeThread(target.thread_handle()));
 
@@ -541,7 +548,7 @@ TEST(SharedTargetConfig, BrokerConfigManagement) {
   auto policy = broker->CreatePolicy("");
   EXPECT_FALSE(policy->GetConfig()->IsConfigured());
   // Normally a policy is frozen (if necessary) by the broker when it is passed
-  // to SpawnTarget.
+  // to SpawnTargetAsync.
   BrokerServicesBase::FreezeTargetConfigForTesting(policy->GetConfig());
   EXPECT_TRUE(policy->GetConfig()->IsConfigured());
   auto policy_two = broker->CreatePolicy("");
@@ -590,6 +597,12 @@ TEST(PolicyTargetTest, FilterEnvironment) {
     EXPECT_EQ(SBOX_TEST_SECOND_ERROR,
               runner.RunTest(L"PolicyTargetTest_filterEnvironment"));
   }
+}
+
+TEST(PolicyTargetDeathTest, SharePseudoHandle) {
+  TestRunner runner;
+  auto* policy = runner.GetPolicy();
+  EXPECT_DEATH(policy->AddHandleToShare(::GetCurrentThread()), "");
 }
 
 }  // namespace sandbox

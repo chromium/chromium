@@ -23,7 +23,6 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
-#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -47,27 +46,17 @@ namespace {
 // The maximum number of attempts we'll do to see if the page has finshed
 // loading before giving up the translation
 const int kMaxTranslateLoadCheckAttempts = 20;
-
-// Overrides the hrefTranslate logic to auto-translate when the navigation is
-// from any origin rather than only Google origins. Used for manual testing
-// where the test page may reside on a test domain.
-BASE_FEATURE(kAutoHrefTranslateAllOrigins,
-             "AutoHrefTranslateAllOrigins",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace
 
 ContentTranslateDriver::ContentTranslateDriver(
     content::WebContents& web_contents,
-    language::UrlLanguageHistogram* url_language_histogram,
-    translate::TranslateModelService* translate_model_service)
+    language::UrlLanguageHistogram* url_language_histogram)
     : content::WebContentsObserver(&web_contents),
       translate_manager_(nullptr),
       is_otr_context_(web_contents.GetBrowserContext()->IsOffTheRecord()),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
       next_page_seq_no_(0),
-      language_histogram_(url_language_histogram),
-      translate_model_service_(translate_model_service) {}
+      language_histogram_(url_language_histogram) {}
 
 ContentTranslateDriver::~ContentTranslateDriver() = default;
 
@@ -172,13 +161,6 @@ bool ContentTranslateDriver::HasCurrentPage() const {
   // of GetLastCommittedEntry(), which always exists now. Check if this is true
   // for other implementations and consider removing this method.
   return true;
-}
-
-void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
-  web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void ContentTranslateDriver::InitiateTranslationIfReload(
@@ -286,17 +268,12 @@ void ContentTranslateDriver::DidFinishNavigation(
       initiator_origin.has_value() &&
       (google_util::IsGoogleDomainUrl(initiator_origin->GetURL(),
                                       google_util::DISALLOW_SUBDOMAIN,
-                                      google_util::ALLOW_NON_STANDARD_PORTS) ||
-       IsAutoHrefTranslateAllOriginsEnabled());
+                                      google_util::ALLOW_NON_STANDARD_PORTS));
 
   translate_manager_->GetLanguageState()->DidNavigate(
       navigation_handle->IsSameDocument(),
       navigation_handle->IsInPrimaryMainFrame(), reload,
       navigation_handle->GetHrefTranslate(), navigation_from_google);
-}
-
-bool ContentTranslateDriver::IsAutoHrefTranslateAllOriginsEnabled() const {
-  return base::FeatureList::IsEnabled(kAutoHrefTranslateAllOrigins);
 }
 
 void ContentTranslateDriver::OnPageAway(int page_seq_no) {
@@ -375,38 +352,6 @@ void ContentTranslateDriver::OnPageTranslated(
   translate_manager_->PageTranslated(source_lang, translated_lang, error_type);
   for (auto& observer : translation_observers_)
     observer.OnPageTranslated(source_lang, translated_lang, error_type);
-}
-
-void ContentTranslateDriver::GetLanguageDetectionModel(
-    GetLanguageDetectionModelCallback callback) {
-  if (!translate_model_service_) {
-    std::move(callback).Run(base::File());
-    return;
-  }
-  // If the model file is not available, request the translate model service
-  // notify |this| when it is. The two-step process is to ensure that
-  // the model file and callback lifetimes are carefully managed so they
-  // are not freed without be handled on the appropriate thread, particularly
-  // for the model file.
-  if (!translate_model_service_->IsModelAvailable()) {
-    translate_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
-        &ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged,
-        weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  OnLanguageModelFileAvailabilityChanged(std::move(callback), true);
-}
-
-void ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged(
-    GetLanguageDetectionModelCallback callback,
-    bool is_available) {
-  if (!is_available) {
-    std::move(callback).Run(base::File());
-    return;
-  }
-  std::move(callback).Run(
-      translate_model_service_->GetLanguageDetectionModelFile());
 }
 
 }  // namespace translate

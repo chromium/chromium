@@ -18,20 +18,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chromeos/components/kcer/kcer_nss/test_utils.h"
+#include "chromeos/ash/components/kcer/kcer_nss/test_utils.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_chromeos_user.h"
-#include "crypto/scoped_test_nss_db.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
-#include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -69,11 +67,33 @@ void SavePrivateKeyAndQuitCallback(scoped_refptr<net::SSLPrivateKey>* out_key,
   std::move(quit_closure).Run();
 }
 
+void GetClientCertIssuerSourceForCerts(
+    net::CertificateList certs,
+    net::ClientCertIssuerSourceGetterCallback callback) {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers;
+  for (const auto& cert : certs) {
+    cert_buffers.push_back(bssl::UpRef(cert->cert_buffer()));
+  }
+
+  net::ClientCertIssuerSourceCollection sources;
+  sources.push_back(std::make_unique<net::ClientCertIssuerSourceInMemory>(
+      std::move(cert_buffers)));
+  // The callback can be run either synchronously or asynchronously. Run it
+  // synchronously as re-entrancy is probably more the more stressful case to
+  // test.
+  std::move(callback).Run(std::move(sources));
+}
+
+net::ClientCertIssuerSourceGetter IssuerSourceGetter(
+    net::CertificateList certs) {
+  return base::BindOnce(&GetClientCertIssuerSourceForCerts, std::move(certs));
+}
+
 }  // namespace
 
 class ClientCertStoreKcerTest : public ::testing::Test {
  public:
-  ClientCertStoreKcerTest() {}
+  ClientCertStoreKcerTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(user1_.constructed_successfully());
@@ -112,7 +132,7 @@ class ClientCertStoreKcerTest : public ::testing::Test {
 // will wait for the initialization and succeed afterwards.
 TEST_F(ClientCertStoreKcerTest, RequestWaitsForNSSInitAndSucceeds) {
   ClientCertStoreKcer store(nullptr /* no additional provider */,
-                            kcer_holder_->GetKcer());
+                            kcer_holder_->GetKcer(), IssuerSourceGetter({}));
 
   scoped_refptr<net::X509Certificate> cert_1(ImportCertToSlot(
       "client_1.pem", "client_1.pk8",
@@ -148,7 +168,7 @@ TEST_F(ClientCertStoreKcerTest, RequestsAfterNSSInitSucceed) {
   user1_.FinishInit();
 
   ClientCertStoreKcer store(nullptr /* no additional provider */,
-                            kcer_holder_->GetKcer());
+                            kcer_holder_->GetKcer(), IssuerSourceGetter({}));
 
   scoped_refptr<net::X509Certificate> cert_1(ImportCertToSlot(
       "client_1.pem", "client_1.pk8",
@@ -223,7 +243,8 @@ TEST_F(ClientCertStoreKcerTest, Filter) {
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.description);
 
-    ClientCertStoreKcer store(nullptr /* no additional provider */, test.kcer);
+    ClientCertStoreKcer store(nullptr /* no additional provider */, test.kcer,
+                              IssuerSourceGetter({}));
 
     auto request_all = base::MakeRefCounted<net::SSLCertRequestInfo>();
 
@@ -255,7 +276,7 @@ TEST_F(ClientCertStoreKcerTest, CertRequestMatching) {
   user1_.FinishInit();
 
   ClientCertStoreKcer store(nullptr,  // no additional provider
-                            kcer_holder_->GetKcer());
+                            kcer_holder_->GetKcer(), IssuerSourceGetter({}));
 
   crypto::ScopedPK11Slot slot =
       crypto::GetPublicSlotForChromeOSUser(user1_.username_hash());
@@ -300,20 +321,16 @@ TEST_F(ClientCertStoreKcerTest, BuildsCertificateChain) {
                                           "client_1.pem", "client_1.pk8",
                                           private_slot.get()));
   ASSERT_TRUE(client_1.get());
-  scoped_refptr<net::X509Certificate> client_1_ca(
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1_ca.pem"));
   std::string pkcs8_key;
   ASSERT_TRUE(base::ReadFileToString(
       net::GetTestCertsDirectory().AppendASCII("client_1.pk8"), &pkcs8_key));
 
-  // Import client_1_ca.pem into a separate slot, that is visible to NSS in
-  // general, but not to Kcer for user1.
-  crypto::ScopedTestNSSDB public_slot;
+  scoped_refptr<net::X509Certificate> client_1_ca(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1_ca.pem"));
   ASSERT_TRUE(client_1_ca.get());
-  ASSERT_TRUE(net::ImportClientCertToSlot(client_1_ca, public_slot.slot()));
 
-  ClientCertStoreKcer store(nullptr,  // no additional provider
-                            kcer_holder_->GetKcer());
+  net::CertificateList issuers;
+  issuers.push_back(client_1_ca);
 
   // These test keys are RSA keys.
   std::vector<uint16_t> expected =
@@ -321,6 +338,10 @@ TEST_F(ClientCertStoreKcerTest, BuildsCertificateChain) {
                                                       true /* supports PSS */);
 
   {
+    ClientCertStoreKcer store(nullptr,  // no additional provider
+                              kcer_holder_->GetKcer(),
+                              IssuerSourceGetter(issuers));
+
     // Request certificates matching B CA, |client_1|'s issuer.
     auto request = base::MakeRefCounted<net::SSLCertRequestInfo>();
     request->cert_authorities.emplace_back(
@@ -354,6 +375,10 @@ TEST_F(ClientCertStoreKcerTest, BuildsCertificateChain) {
   }
 
   {
+    ClientCertStoreKcer store(nullptr,  // no additional provider
+                              kcer_holder_->GetKcer(),
+                              IssuerSourceGetter(issuers));
+
     // Request certificates matching C Root CA, |client_1_ca|'s issuer.
     auto request = base::MakeRefCounted<net::SSLCertRequestInfo>();
     request->cert_authorities.emplace_back(

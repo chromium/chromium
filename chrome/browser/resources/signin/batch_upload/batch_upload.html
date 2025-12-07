@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+  <style>
+    body {
+      background-color: var(--color-batch-upload-background);
+      height: 100vh;
+      margin: 0;
+      overflow: hidden; /* Hides scrollbars */
+      width: 100vw;
+    }
+  </style>
+</head>
+<body>
+  <batch-upload-app></batch-upload-app>
+  <script type="module" src="batch_upload.js"></script>
+</body>
+</html>

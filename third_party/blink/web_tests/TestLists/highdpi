@@ -1,8 +1,5 @@
 accessibility/click-event.html
 animations/3d/matrix-transform-type-animation.html
-animations/composition/background-position-composition.html
-animations/composition/clip-composition.html
-animations/composition/font-size-composition.html
 animations/cross-fade-webkit-mask-box-image.html
 animations/custom-properties/angle-type-interpolation.html
 animations/custom-properties/animate-high-priority.html
@@ -19,14 +16,6 @@ animations/responsive/stacked-visibility-animations-responsive.html
 animations/responsive/zoom-responsive-transform-animation-001.html
 animations/stability/font-builder-crash.html
 animations/state-at-end-event.html
-animations/svg-attribute-composition/svg-amplitude-composition.html
-animations/svg-attribute-composition/svg-azimuth-composition.html
-animations/svg-attribute-composition/svg-baseFrequency-composition.html
-animations/svg-attribute-composition/svg-bias-composition.html
-animations/svg-attribute-interpolation/svg-edgeMode-interpolation.html
-animations/svg-attribute-interpolation/svg-elevation-interpolation.html
-animations/svg-attribute-interpolation/svg-exponent-interpolation.html
-animations/svg-attribute-interpolation/svg-viewBox-interpolation.html
 animations/svg/animated-filter-svg-element.html
 animations/web-animations/KeyframeEffect-animation.html
 clipboard/copy-image-at.html
@@ -212,8 +201,6 @@ css3/blending/svg-blend-overlapping-elements.html
 css3/calc/css3-radial-gradients.html
 css3/calc/gradient-color-stops.html
 css3/filters/add-filter-rendering.html
-css3/filters/backdrop-filter-border-radius.html
-css3/filters/backdrop-filter-clip-rect-zoom.html
 css3/filters/composited-layer-promotion-after-outset-overlap-change-using-composited-shadow.html
 css3/filters/composited-layer-promotion-after-outset-overlap-change-using-sw-shadow.html
 css3/filters/effect-blur.html
@@ -299,6 +286,7 @@ external/wpt/css/css-animations/crashtests/replace-keyframes-animating-filter-00
 external/wpt/css/css-animations/parsing/animation-invalid.html
 external/wpt/css/css-animations/responsive/column-width-001.html
 external/wpt/css/css-backgrounds/animations/background-color-transition-currentcolor.html
+external/wpt/css/css-backgrounds/animations/background-position-composition.html
 external/wpt/css/css-backgrounds/animations/invalidation/background-color-transition-with-initially-transparent.html
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html
 external/wpt/css/css-backgrounds/background-position/subpixel-position-center.tentative.html
@@ -389,6 +377,7 @@ external/wpt/css/css-flexbox/order/order-with-column-reverse.html
 external/wpt/css/css-flexbox/parsing/flex-grow-invalid.html
 external/wpt/css/css-flexbox/relayout-align-items.html
 external/wpt/css/css-font-loading/fontfacesetloadevent-constructor.html
+external/wpt/css/css-fonts/animations/font-size-composition.html
 external/wpt/css/css-fonts/animations/system-fonts.html
 external/wpt/css/css-fonts/font-display/font-display.html
 external/wpt/css/css-fonts/font-variant-ligatures-02.html
@@ -434,6 +423,7 @@ external/wpt/css/css-lists/crashtests/chrome-legacy-propagation-remove-body-cras
 external/wpt/css/css-lists/parsing/list-style-position-valid.html
 external/wpt/css/css-logical/logicalprops-with-deferred-writing-mode.html
 external/wpt/css/css-logical/parsing/border-inline-width-invalid.html
+external/wpt/css/css-masking/animations/clip-composition.html
 external/wpt/css/css-masking/animations/clip-path-interpolation-002.html
 external/wpt/css/css-masking/clip-path/animations/clip-path-animation-three-keyframes1.html
 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html
@@ -452,6 +442,8 @@ external/wpt/css/css-overflow/overflow-clip-margin-005.html
 external/wpt/css/css-overflow/parsing/scrollbar-gutter-valid.html
 external/wpt/css/css-overscroll-behavior/inheritance.html
 external/wpt/css/css-overscroll-behavior/parsing/overscroll-behavior-invalid.html
+external/wpt/css/css-page/body-background-vlr-print.html
+external/wpt/css/css-page/body-background-vrl-print.html
 external/wpt/css/css-page/page-rule-declarations-001.html
 external/wpt/css/css-page/parsing/page-invalid.html
 external/wpt/css/css-paint-api/parse-input-arguments-003.https.html
@@ -577,6 +569,7 @@ external/wpt/css/cssom-view/table-border-collapse-client-width-height.html
 external/wpt/css/cssom/style-sheet-interfaces-002.html
 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-004.html
 external/wpt/css/filter-effects/backdrop-filter-basic-blur.html
+external/wpt/css/filter-effects/backdrop-filter-clip-rect-zoom.html
 external/wpt/css/filter-effects/filter-function/filter-function-007.html
 external/wpt/css/filter-effects/parsing/backdrop-filter-parsing-valid.html
 external/wpt/css/filter-effects/svg-shorthand-drop-shadow-001.html
@@ -703,7 +696,6 @@ external/wpt/html/canvas/element/manual/the-canvas-state/2d.zero.size.canvas.htm
 external/wpt/html/canvas/element/path-objects/2d.path.arc.angle.2.html
 external/wpt/html/canvas/element/pixel-manipulation/2d.imageData.get.range.html
 external/wpt/html/canvas/element/reset/2d.reset.basic.html
-external/wpt/html/canvas/element/scroll/2d.scrollPathIntoView.basic.html
 external/wpt/html/canvas/element/shadows/2d.shadow.image.scale.html
 external/wpt/html/canvas/element/text-styles/2d.text.draw.space.collapse.end.html
 external/wpt/html/canvas/element/the-canvas-state/2d.state.saverestore.strokeStyle.html
@@ -849,7 +841,7 @@ external/wpt/html/semantics/forms/the-option-element/option-text-backslash.html
 external/wpt/html/semantics/forms/the-output-element/output-setcustomvalidity.html
 external/wpt/html/semantics/forms/the-progress-element/progress.html
 external/wpt/html/semantics/forms/the-select-element/select-add.html
-external/wpt/html/semantics/forms/the-selectlist-element/selectlist-events.tentative.html
+external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events-2.tentative.html
 external/wpt/html/semantics/forms/the-textarea-element/wrap-enumerated-ascii-case-insensitive.html
 external/wpt/html/semantics/grouping-content/the-dd-element/grouping-dd.html
 external/wpt/html/semantics/grouping-content/the-div-element/grouping-div.html
@@ -1013,11 +1005,9 @@ external/wpt/reporting/same-origin-report-credentials.https.sub.html
 external/wpt/resize-observer/scrollbars-2.html
 external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html
 external/wpt/scheduler/post-task-with-signal-from-detached-iframe.html
-external/wpt/scroll-animations/css/progress-based-animation-timeline.html
-external/wpt/scroll-animations/scroll-timelines/setting-playback-rate.html
+external/wpt/scroll-animations/
 external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html
 external/wpt/secure-contexts/shared-worker-insecure-first.https.html
-external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html
 external/wpt/selection/addRange-40.html
 external/wpt/selection/anonymous/details-ancestor.html
 external/wpt/selection/bidi/modify.tentative.html
@@ -1301,7 +1291,7 @@ html/details_summary/details-add-summary.html
 html/document_metadata/head-has-text-1.html
 html/grouping_content/listing.html
 html/tabular_data/table_createcaption.html
-html/text_level_semantics/font-weight-bold-for-b-and-strong.html
+html/text_level_semantics/font-weight-bolder-for-b-and-strong.html
 http/tests/css/css-resources-referrer.html
 http/tests/csspaint/border-color.html
 http/tests/csspaint/entire-canvas-visible-zoom.html
@@ -1438,8 +1428,6 @@ printing/css2.1/page-break-inside-000.html
 printing/fixed-positioned-headers-and-footers.html
 printing/multicol-2-pages.html
 printing/thead-repeats-with-translucent-text-and-borders.html
-printing/vertical-lr.html
-printing/vertical-rl.html
 printing/width-overflow.html
 svg/W3C-I18N/text-anchor-dirLTR-anchorMiddle.svg
 svg/W3C-I18N/text-anchor-dirRTL-anchorMiddle.svg
@@ -1544,22 +1532,19 @@ tables/mozilla/bugs/bug4527.html
 transforms/2d/transform-borderbox.html
 transforms/3d/general/perspective-units.html
 transforms/3d/hit-testing/backface-hit-test.html
-transforms/3d/point-mapping/3d-point-mapping-3.html
 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html
-transforms/3d/point-mapping/3d-point-mapping.html
 transforms/combine-transforms-properties-transform.html
 transforms/perspective-fixed-pos-descendant.html
 transforms/svg-vs-css.xhtml
 transforms/transform-on-inline.html
 transforms/transformed-document-element.html
 virtual/android/fullscreen/video-controls-timeline.html
-virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-with-overflow-zoomed.html
 virtual/threaded/external/wpt/css/css-view-transitions/
-virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/
+virtual/threaded/external/wpt/css/css-view-transitions/navigation/
 virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html
 virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/opaque-ad-sizes.https.html
 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html
@@ -1569,7 +1554,6 @@ virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mo
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-32.html
 virtual/forced-high-contrast-colors/html/details_summary/color-scheme-validation/details-with-summary-open.html
 
-virtual/main-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/border-color.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/entire-canvas-visible-zoom.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/geometry-background-image-zoom.html

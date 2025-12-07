@@ -33,20 +33,28 @@ export class CredentialNoteElement extends CredentialNoteElementBase {
   static get properties() {
     return {
       note: String,
+      showNoteFully_: Boolean,
+
+      alwaysExpanded: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  note: string;
-  private showNoteFully_: boolean;
+  declare note: string;
+  declare alwaysExpanded: boolean;
+  declare private showNoteFully_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
-    // Set default value here so listeners can be updated properly.
-    this.showNoteFully_ = false;
+    // Initialize visibility state based on whether the note should always be
+    // expanded.
+    this.showNoteFully_ = this.alwaysExpanded;
   }
 
   private getNoteValue_(): string {
-    return !this.note ? this.i18n('emptyNote') : this.note!;
+    return !this.note ? this.i18n('emptyNote') : this.note;
   }
 
   private noteIsEmpty_(): boolean {

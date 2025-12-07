@@ -23,7 +23,8 @@
 
 namespace qt {
 
-class QtNativeTheme;
+class NativeThemeQt;
+class OsSettingsProviderQt;
 
 // Interface to QT desktop features.
 class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
@@ -38,7 +39,6 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   // ui::LinuxUi:
   bool Initialize() override;
   void InitializeFontSettings() override;
-  base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
@@ -55,10 +55,8 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   int GetCursorThemeSize() override;
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const override;
-  bool GetTextEditCommandsForEvent(
-      const ui::Event& event,
-      int text_flags,
-      std::vector<ui::TextEditCommandAuraLinux>* commands) override;
+  ui::TextEditCommand GetTextEditCommandForEvent(const ui::Event& event,
+                                                 int text_flags) override;
   gfx::FontRenderParams GetDefaultFontRenderParams() override;
   bool AnimationsEnabled() const override;
   void AddWindowButtonOrderObserver(
@@ -67,6 +65,9 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
       ui::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
+  bool PrimaryPasteEnabled() const override;
+  int GetWindowDragThresholdPx() const override;
+  std::vector<std::string> GetCmdLineFlagsForCopy() const override;
 
   // ui::LinuxUiTheme:
   ui::NativeTheme* GetNativeTheme() const override;
@@ -82,7 +83,8 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   void SetAccentColor(std::optional<SkColor>) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
-                                                  bool tiled) override;
+                                                  bool tiled,
+                                                  bool maximized) override;
 
   // QtInterface::Delegate:
   void FontChanged() override;
@@ -111,7 +113,8 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   std::optional<gfx::FontRenderParams> font_params_;
   std::unique_ptr<QtInterface> shim_;
 
-  std::unique_ptr<QtNativeTheme> native_theme_;
+  std::unique_ptr<OsSettingsProviderQt> os_settings_provider_;
+  std::unique_ptr<NativeThemeQt> native_theme_;
 
   std::optional<SkColor> accent_color_;
 

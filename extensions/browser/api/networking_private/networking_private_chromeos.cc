@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/onc/onc_translator.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -579,8 +578,7 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
     std::move(success_callback).Run(kCaptivePortalStatusOffline);
     return;
   }
-  std::move(success_callback)
-      .Run(PortalStatusString(network->GetPortalState()));
+  std::move(success_callback).Run(PortalStatusString(network->portal_state()));
 }
 
 void NetworkingPrivateChromeOS::UnlockCellularSim(

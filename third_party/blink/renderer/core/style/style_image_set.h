@@ -58,7 +58,7 @@ class StyleImageSet final : public StyleImage {
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
@@ -70,7 +70,7 @@ class StyleImageSet final : public StyleImage {
   void RemoveClient(ImageResourceObserver*) override;
 
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
 

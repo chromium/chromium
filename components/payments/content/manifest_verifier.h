@@ -36,7 +36,7 @@ namespace payments {
 
 class PaymentManifestDownloader;
 class PaymentManifestParser;
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 
 // Verifies that payment handlers (i.e., service worker payment apps) can use
 // the payment method names that they claim. Each object can be used to verify
@@ -52,7 +52,7 @@ class PaymentManifestWebDataService;
 // checks for --unsafely-treat-insecure-origin-as-secure=<origin> flag. For
 // example:
 //  base::CommandLine::Init(0, nullptr);
-class ManifestVerifier final : public WebDataServiceConsumer {
+class ManifestVerifier final {
  public:
   // The callback that will be invoked with the validated payment handlers.
   // These payment handlers will have only the valid payment method names
@@ -75,12 +75,12 @@ class ManifestVerifier final : public WebDataServiceConsumer {
                    content::WebContents* web_contents,
                    PaymentManifestDownloader* downloader,
                    PaymentManifestParser* parser,
-                   PaymentManifestWebDataService* cache);
+                   WebPaymentsWebDataService* cache);
 
   ManifestVerifier(const ManifestVerifier&) = delete;
   ManifestVerifier& operator=(const ManifestVerifier&) = delete;
 
-  ~ManifestVerifier() override;
+  ~ManifestVerifier();
 
   // Initiates the verification. This object should be deleted after
   // |finished_using_resources| is invoked.
@@ -90,9 +90,9 @@ class ManifestVerifier final : public WebDataServiceConsumer {
 
  private:
   // Called when a manifest is retrieved from cache.
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnGetPaymentMethodManifest(const GURL& method_manifest_url,
+                                  WebDataServiceBase::Handle handle,
+                                  std::unique_ptr<WDTypedResult> result);
 
   // Called when a manifest is downloaded. The "method manifest URL after
   // redirects" is intentionally not used.
@@ -121,7 +121,7 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   raw_ptr<PaymentManifestParser, DanglingUntriaged> parser_;
 
   // Caches the manifests.
-  raw_ptr<PaymentManifestWebDataService> cache_;
+  raw_ptr<WebPaymentsWebDataService> cache_;
 
   // The list of payment apps being verified.
   content::InstalledPaymentAppsFinder::PaymentApps apps_;
@@ -142,8 +142,9 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   // use these payment method names.
   std::map<GURL, std::vector<int64_t>> manifest_url_to_app_id_map_;
 
-  // The mapping of cache request handles to the payment method manifest URLs.
-  std::map<WebDataServiceBase::Handle, GURL> cache_request_handles_;
+  // The set of ongoing cache request handles, used to clean up any outstanding
+  // requests when the class is torn down.
+  std::set<WebDataServiceBase::Handle> cache_request_handles_;
 
   // The set of payment method manifest URLs for which the cached value was
   // used.

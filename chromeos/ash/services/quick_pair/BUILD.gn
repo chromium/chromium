@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash,
-       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are ChromeOS only")
 
 source_set("quick_pair") {
   sources = [
@@ -27,11 +25,12 @@ source_set("quick_pair") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//chromeos/ash/services/quick_pair/public/cpp",
     "//chromeos/ash/services/quick_pair/public/mojom",
-    "//components/cross_device/logging:logging",
-    "//crypto:crypto",
+    "//components/cross_device/logging",
+    "//crypto",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
@@ -69,6 +68,7 @@ source_set("unit_tests") {
 
   deps = [
     ":quick_pair",
+    "//ash/constants",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/fast_pair_handshake",
     "//base/test:test_support",
@@ -78,6 +78,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("fast_pair_data_parser_fuzzer") {

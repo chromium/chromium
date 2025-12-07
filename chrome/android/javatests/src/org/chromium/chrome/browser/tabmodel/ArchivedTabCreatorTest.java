@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -12,15 +13,14 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -32,30 +32,21 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 
 /** Tests for ChromeTabCreator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
-})
+@EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
 public class ArchivedTabCreatorTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
-    @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
@@ -63,14 +54,16 @@ public class ArchivedTabCreatorTest {
     private Profile mProfile;
     private ArchivedTabModelOrchestrator mOrchestrator;
     private TabCreator mTabCreator;
+    private WebPageStation mInitialPage;
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = sTestServerRule.getServer();
+        mTestServer = mActivityTestRule.getTestServer();
+        mInitialPage = mActivityTestRule.startOnBlankPage();
         runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            sActivityTestRule
+                            mInitialPage
                                     .getActivity()
                                     .getProfileProviderSupplier()
                                     .get()
@@ -78,30 +71,27 @@ public class ArchivedTabCreatorTest {
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
                     mTabCreator = mOrchestrator.getArchivedTabCreatorForTesting();
                 });
-    }
-
-    @After
-    public void tearDown() {
-        runOnUiThreadBlocking(() -> mOrchestrator.destroy());
+        // Wait for the native tab state to be initialized so that we are sure that native is ready.
+        CriteriaHelper.pollUiThread(
+                () -> mOrchestrator.getTabModelSelector().isTabStateInitialized());
     }
 
     @Test
     @MediumTest
     public void testCreateFrozenTab() throws Exception {
-        Tab tab =
-                sActivityTestRule.loadUrlInNewTab(
-                        mTestServer.getURL(TEST_PATH), /* incognito= */ false);
+        WebPageStation testPage = mInitialPage.openFakeLinkToWebPage(mTestServer.getURL(TEST_PATH));
+        Tab tab = testPage.loadedTabElement.value();
         Tab frozenTab =
                 runOnUiThreadBlocking(
                         () -> {
                             TabState state = TabStateExtractor.from(tab);
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabModel()
+                                    .getTabRemover()
                                     .closeTabs(
-                                            TabClosureParams.closeTab(tab)
-                                                    .allowUndo(false)
-                                                    .build());
+                                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                            /* allowDialog= */ false);
                             return mTabCreator.createFrozenTab(state, tab.getId(), /* index= */ 0);
                         });
         assertNotNull(frozenTab);
@@ -113,11 +103,13 @@ public class ArchivedTabCreatorTest {
     public void testRestoreFallback() {
         runOnUiThreadBlocking(
                 () -> {
+                    int count = mOrchestrator.getTabModel().getCount();
                     assertNotNull(
                             mTabCreator.createNewTab(
                                     new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
                                     TabLaunchType.FROM_RESTORE,
                                     null));
+                    assertEquals(count + 1, mOrchestrator.getTabModel().getCount());
                 });
     }
 

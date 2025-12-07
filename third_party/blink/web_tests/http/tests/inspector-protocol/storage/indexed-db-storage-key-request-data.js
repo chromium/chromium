@@ -5,7 +5,7 @@
       `(await navigator.storageBuckets.open('${bucketName}'))`;
     const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
     const storageKey =
-      (await dp.Storage.getStorageKeyForFrame({ frameId })).result.storageKey;
+        (await dp.Storage.getStorageKey({frameId})).result.storageKey;
     const bucketPromise = (async () => {
       dp.Storage.setStorageBucketTracking({ storageKey, enable: true });
       const { params: { bucketInfo: { bucket } } } =
@@ -46,14 +46,13 @@
 
     const storageBucket = await bucketPromise;
     const requestDataResult =
-      (await dp.IndexedDB.requestData({
-        storageBucket,
-        databaseName: 'test-database',
-        objectStoreName: 'test-store',
-        indexName: '',
-        skipCount: 1,
-        pageSize: 3
-      })).result.objectStoreDataEntries.map(entry => entry.value.value);
+        (await dp.IndexedDB.requestData({
+          storageBucket,
+          databaseName: 'test-database',
+          objectStoreName: 'test-store',
+          skipCount: 1,
+          pageSize: 3
+        })).result.objectStoreDataEntries.map(entry => entry.value.value);
 
     testRunner.log(requestDataResult, 'data key values equal');
 

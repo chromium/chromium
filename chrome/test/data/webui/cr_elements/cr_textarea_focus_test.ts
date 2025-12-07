@@ -45,7 +45,7 @@ suite('cr-textarea-focus-test', function() {
     crTextarea.label = 'foobar';
     await microtasksFinished();
     assertFalse(label.hidden);
-    assertEquals('foobar', label.textContent!.trim());
+    assertEquals('foobar', label.textContent.trim());
     assertEquals('foobar', textarea.getAttribute('aria-label'));
   });
 

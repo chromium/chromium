@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/visitedlink/browser/partitioned_visitedlink_writer.cc:AddFingerprint) -->
 
+<enum name="BooleanDatabaseKilled">
+  <int value="0" label="Not Killed">The database was not razed.</int>
+  <int value="1" label="Killed">The database was razed.</int>
+</enum>
+
 <enum name="BooleanQueried">
   <int value="0" label="Not Queried"/>
   <int value="1" label="Queried"/>
@@ -59,10 +64,12 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNetworkErrorLogging"/>
   <int value="12" label="kTrustTokens"/>
   <int value="13" label="kConversions"/>
-  <int value="14" label="kDeferredCookies"/>
+  <int value="14" label="(obsolete) kDeferredCookies"/>
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
   <int value="17" label="kSharedDictionary"/>
+  <int value="18" label="kPrefetchCache"/>
+  <int value="19" label="kPrerenderCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.Task) -->
@@ -73,8 +80,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kHistory"/>
   <int value="3" label="(Obsolete) kHostNameResolution"/>
-  <int value="4" label="kNaclCache"/>
-  <int value="5" label="kPnaclCache"/>
+  <int value="4" label="(Obsolete) kNaclCache"/>
+  <int value="5" label="(Obsolete) kPnaclCache"/>
   <int value="6" label="kAutofillData"/>
   <int value="7" label="kAutofillOrigins"/>
   <int value="8" label="(Obsolete) kPluginData"/>
@@ -122,11 +129,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
-<enum name="ClearBrowsingDataTab">
-  <int value="0" label="Basic"/>
-  <int value="1" label="Advanced"/>
-</enum>
-
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>
   <int value="1" label="Not enough visits with images"/>
@@ -138,6 +140,24 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Contains content that should not be visible"/>
   <int value="8" label="Contains blocked category"/>
   <int value="9" label="Not enough non-hidden visits"/>
+</enum>
+
+<enum name="ComputeAnswerStatus">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Loading"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Unanswerable"/>
+  <int value="4" label="ModelUnavailable"/>
+  <int value="5" label="ExecutionFailure"/>
+  <int value="6" label="ExecutionCancelled"/>
+  <int value="7" label="Filtered"/>
+</enum>
+
+<enum name="ComputeEmbeddingsStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model Unavailable"/>
+  <int value="2" label="Execution Failure"/>
+  <int value="3" label="Execution Canceled"/>
 </enum>
 
 <enum name="CookieOrCacheDeletion">
@@ -168,11 +188,23 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Model info has invalid data for additional files"/>
 </enum>
 
+<enum name="EmbeddingsQueryFiltered">
+  <int value="0" label="Not filtered"/>
+  <int value="1" label="Filtered non-ASCII"/>
+  <int value="2" label="Filtered phrase match"/>
+  <int value="3" label="Filtered term match"/>
+  <int value="4" label="Filtered one-word hash match"/>
+  <int value="5" label="Filtered two-word hash match"/>
+</enum>
+
 <enum name="EmbeddingsUserActions">
   <int value="0" label="Non-empty query History search"/>
   <int value="1" label="Embeddings search"/>
   <int value="2" label="Embeddings non-empty results shown"/>
   <int value="3" label="Embeddings result clicked"/>
+  <int value="4" label="Answer shown"/>
+  <int value="5" label="Answer citation clicked"/>
+  <int value="6" label="Other history result clicked"/>
 </enum>
 
 <enum name="HistoryClustersInitialState">
@@ -201,6 +233,20 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="5" label="kSidePanelFromToolbarButton">
     The Side Panel HistoryClusters UI was opened from side panel toolbar button.
+  </int>
+</enum>
+
+<enum name="HistoryDatabaseVersion">
+<!-- Enum definitions must have a least one value, but we won't define beyond
+       value "0" because the version label is always identical to the version
+       value. There is no need to list them all explicitly. We care that version
+       numbers be treated as an enum rather than an integral value because they
+       should be viewed as buckets (averages and percentiles of version numbers
+       are non-sensical). -->
+
+  <int value="0" label="0">
+    Version 0 can either mean that the history database has no meta table, or
+    that the meta table is missing the version field.
   </int>
 </enum>
 
@@ -271,9 +317,20 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kPrivateAggregation"/>
   <int value="13" label="kInterestGroups"/>
   <int value="14" label="kCdmStorage"/>
+  <int value="15" label="kDeviceBoundSessions"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->
+
+<!-- LINT.IfChange(VisitContextMenuAction) -->
+
+<enum name="VisitContextMenuAction">
+  <int value="0" label="More from this site clicked"/>
+  <int value="1" label="Remove from history clicked"/>
+  <int value="2" label="Remove bookmark clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/history/constants.ts:VisitContextMenuAction) -->
 
 </enums>
 

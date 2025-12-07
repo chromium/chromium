@@ -8,7 +8,7 @@ found in the LICENSE file.
 <org.chromium.ui.widget.ChromeImageView
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar_left_button"
+    android:id="@+id/toolbar_back_button"
     style="@style/BottomToolbarButton"
     android:src="@drawable/ic_arrow_back_24dp"
     app:tint="@color/default_icon_color_tint_list"

@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
-#include "cc/metrics/web_vital_metrics.h"
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/debug_rect_history.h"
@@ -30,7 +29,6 @@ class ClientResourceProvider;
 }
 
 namespace cc {
-class DroppedFrameCounter;
 class LayerTreeFrameSink;
 class PaintCanvas;
 class PaintFlags;
@@ -58,7 +56,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
   void DidDraw(viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   void UpdateHudTexture(DrawMode draw_mode,
                         LayerTreeFrameSink* frame_sink,
@@ -78,10 +77,13 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
   void ClearLayoutShiftRects();
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
-  void SetWebVitalMetrics(std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
   // This evicts hud quad appended during render pass preparation.
   void EvictHudQuad(const viz::CompositorRenderPassList& list);
+
+  void GetContentsResourceId(viz::ResourceId* resource_id,
+                             gfx::Size* resource_size,
+                             gfx::SizeF* resource_uv_size) const override;
 
   // LayerImpl overrides.
   void PushPropertiesTo(LayerImpl* layer) override;
@@ -120,11 +122,9 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                          PaintFlags* flags,
                          const SkRect& bounds) const;
 
-  SkRect DrawFrameThroughputDisplay(
-      PaintCanvas* canvas,
-      const DroppedFrameCounter* dropped_frame_counter,
-      int right,
-      int top) const;
+  SkRect DrawFrameThroughputDisplay(PaintCanvas* canvas,
+                                    int right,
+                                    int top) const;
   SkRect DrawMemoryDisplay(PaintCanvas* canvas,
                            int top,
                            int right,
@@ -143,34 +143,6 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void DrawDebugRects(PaintCanvas* canvas,
                       DebugRectHistory* debug_rect_history);
 
-  // This function draws a single web vital metric. If the metrics doesn't have
-  // a valid value, the value is set to -1. This function returns the height
-  // of the current draw so it can be used to calculate the top of the next
-  // draw.
-  int DrawSingleMetric(PaintCanvas* canvas,
-                       int left,
-                       int right,
-                       int top,
-                       std::string name,
-                       const WebVitalMetrics::MetricsInfo& info,
-                       bool has_value,
-                       double value) const;
-  SkRect DrawWebVitalMetrics(PaintCanvas* canvas,
-                             int left,
-                             int top,
-                             int width) const;
-
-  // This function draws a single smoothness related metric.
-  int DrawSinglePercentageMetric(PaintCanvas* canvas,
-                                 int left,
-                                 int right,
-                                 int top,
-                                 std::string name,
-                                 double value) const;
-  SkRect DrawSmoothnessMetrics(PaintCanvas* canvas,
-                               int left,
-                               int top,
-                               int width) const;
 
   int bounds_width_in_dips() const {
     // bounds() is specified in layout coordinates, which is painted dsf away
@@ -205,8 +177,6 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   int layout_shift_rects_fade_step_ = 0;
   std::vector<DebugRect> paint_rects_;
   std::vector<DebugRect> layout_shift_debug_rects_;
-
-  std::unique_ptr<WebVitalMetrics> web_vital_metrics_;
 
   base::TimeTicks time_of_last_graph_update_;
 

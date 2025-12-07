@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
@@ -84,8 +83,7 @@ OpenTabResult::~OpenTabResult() {
 void OpenTabResult::Open(int event_flags) {
   list_controller_->OpenURL(
       profile_, *search_result_->destination_url,
-      crosapi::PageTransitionToUiPageTransition(
-          search_result_->page_transition),
+      PageTransitionToUiPageTransition(search_result_->page_transition),
       ui::DispositionFromEventFlags(event_flags,
                                     WindowOpenDisposition::SWITCH_TO_TAB));
 }
@@ -138,8 +136,8 @@ void OpenTabResult::UpdateIcon() {
 void OpenTabResult::SetGenericIcon() {
   uses_generic_icon_ = true;
   SetIcon(IconInfo(
-      ui::ImageModel::FromVectorIcon(
-          omnibox::kSwitchIcon, GetGenericIconColor(), kSystemIconDimension),
+      ui::ImageModel::FromVectorIcon(omnibox::kSwitchIcon, kGenericIconColorId,
+                                     kSystemIconDimension),
       kSystemIconDimension));
 }
 

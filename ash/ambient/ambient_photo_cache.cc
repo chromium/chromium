@@ -6,6 +6,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <optional>
+#include <string>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
@@ -23,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -100,7 +103,7 @@ bool WriteOrDeleteFile(const base::FilePath& path,
     return false;
   }
 
-  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()) <
+  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()).value_or(-1) <
       kMaxReservedAvailableDiskSpaceByte) {
     LOG(ERROR) << "Not enough disk space left.";
     return false;
@@ -141,7 +144,7 @@ const base::FilePath& GetCacheRootDir(ambient_photo_cache::Store store) {
     case ambient_photo_cache::Store::kBackup:
       return GetAmbientBackupPhotoCacheRootDir();
   }
-  NOTREACHED_NORETURN() << "Unknown cache store: " << static_cast<int>(store);
+  NOTREACHED() << "Unknown cache store: " << static_cast<int>(store);
 }
 
 base::FilePath GetCachePath(int cache_index, const base::FilePath& root_path) {
@@ -158,7 +161,7 @@ void OnUrlDownloaded(
     base::OnceCallback<void(std::string&&)> callback,
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (simple_loader->NetError() == net::OK && response_body) {
     std::move(callback).Run(std::move(*response_body));
     return;
@@ -199,7 +202,7 @@ void DownloadPhotoInternal(
     const std::string& url,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::OnceCallback<void(std::string&&)> callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       CreateSimpleURLLoader(url, access_token);
@@ -217,7 +220,7 @@ void DownloadPhotoToTempFileInternal(
     const std::string& url,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::OnceCallback<void(base::FilePath)> callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       CreateSimpleURLLoader(url, access_token);

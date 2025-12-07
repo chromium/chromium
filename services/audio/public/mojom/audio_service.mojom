@@ -10,6 +10,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/audio/public/mojom/debug_recording.mojom";
 import "services/audio/public/mojom/device_notifications.mojom";
 import "services/audio/public/mojom/log_factory_manager.mojom";
+import "services/audio/public/mojom/ml_model_manager.mojom";
 import "services/audio/public/mojom/system_info.mojom";
 import "services/audio/public/mojom/testing_api.mojom";
 
@@ -41,4 +42,8 @@ interface AudioService {
   // Binds a TestingApi interface receiver. Only callable in some test
   // environments.
   BindTestingApi(pending_receiver<TestingApi> receiver);
+
+  // Binds an MlModelManager interface receiver.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
+  BindMlModelManager(pending_receiver<MlModelManager> receiver);
 };

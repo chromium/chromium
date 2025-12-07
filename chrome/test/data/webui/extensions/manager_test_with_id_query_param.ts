@@ -6,9 +6,8 @@ import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ExtensionManagerTest', function() {
   let manager: ExtensionsManagerElement;
@@ -32,16 +31,16 @@ suite('ExtensionManagerTest', function() {
         eventToPromise('view-enter-start', manager);
   });
 
-  test('UrlNavigationToDetails', function() {
+  test('UrlNavigationToDetails', async () => {
     assertViewActive('extensions-detail-view');
     const detailsView =
-        manager.shadowRoot!.querySelector('extensions-detail-view');
+        manager.shadowRoot.querySelector('extensions-detail-view');
     assertTrue(!!detailsView);
     assertEquals('ldnnhddmnhbkjipkidpdiheffobcpfmf', detailsView.data.id);
 
     // Try to open detail view for invalid ID.
     navigation.navigateTo({page: Page.DETAILS, extensionId: 'z'.repeat(32)});
-    flush();
+    await microtasksFinished();
     // Should be re-routed to the main page.
     assertViewActive('extensions-item-list');
 
@@ -50,11 +49,11 @@ suite('ExtensionManagerTest', function() {
       page: Page.DETAILS,
       extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf',
     });
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-detail-view');
   });
 
-  test('UrlNavigationToActivityLogFail', function() {
+  test('UrlNavigationToActivityLogFail', async () => {
     assertFalse(manager.showActivityLog);
 
     // Try to open activity log with a valid ID.
@@ -62,20 +61,20 @@ suite('ExtensionManagerTest', function() {
       page: Page.ACTIVITY_LOG,
       extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf',
     });
-    flush();
+    await microtasksFinished();
 
     // Should be re-routed to details page with showActivityLog set to
     // false.
     assertViewActive('extensions-detail-view');
     const detailsView =
-        manager.shadowRoot!.querySelector('extensions-detail-view');
+        manager.shadowRoot.querySelector('extensions-detail-view');
     assertTrue(!!detailsView);
     assertFalse(detailsView.showActivityLog);
 
     // Try to open activity log with an invalid ID.
     navigation.navigateTo(
         {page: Page.ACTIVITY_LOG, extensionId: 'z'.repeat(32)});
-    flush();
+    await microtasksFinished();
     // Should be re-routed to the main page.
     assertViewActive('extensions-item-list');
   });

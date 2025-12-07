@@ -5,6 +5,7 @@
 #include "content/browser/tracing/startup_tracing_controller.h"
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -32,6 +33,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/tracing_controller_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
+#include "base/apple/foundation_util.h"
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace content {
 
@@ -62,9 +67,6 @@ class EmergencyTraceFinalisationCoordinator {
     // do.
     if (!tracing_started_.IsSet())
       return;
-
-    base::trace_event::TraceLog::GetInstance()
-        ->SetCurrentThreadBlocksMessageLoop();
 
     base::OnceClosure stop_tracing;
     scoped_refptr<base::SequencedTaskRunner> task_runner;
@@ -128,8 +130,7 @@ class StartupTracingController::BackgroundTracer {
       OpenFile(output_file_);
       tracing_session_->Setup(trace_config, file_.TakePlatformFile());
 #else
-      NOTREACHED_IN_MIGRATION()
-          << "Streaming to file is not supported on Windows yet";
+      NOTREACHED() << "Streaming to file is not supported on Windows yet";
 #endif
     } else {
       tracing_session_->Setup(trace_config);
@@ -210,7 +211,7 @@ class StartupTracingController::BackgroundTracer {
 
     // Proto files should be written directly to the file.
     if (output_format_ == tracing::TraceStartupConfig::OutputFormat::kProto) {
-      file_.WriteAtCurrentPos(data, size);
+      UNSAFE_TODO(file_.WriteAtCurrentPos(data, size));
       return;
     }
 
@@ -221,11 +222,11 @@ class StartupTracingController::BackgroundTracer {
     }
 
     std::vector<perfetto::TracePacket> packets = trace_packet_tokenizer_->Parse(
-        reinterpret_cast<const uint8_t*>(data), size);
+        UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(data), size)));
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
-        file_.WriteAtCurrentPos(reinterpret_cast<const char*>(slice.start),
-                                slice.size);
+        UNSAFE_TODO(file_.WriteAtCurrentPos(
+            reinterpret_cast<const char*>(slice.start), slice.size));
       }
     }
   }
@@ -328,6 +329,9 @@ namespace {
 base::FilePath BasenameToPath(std::string basename) {
 #if BUILDFLAG(IS_ANDROID)
   return TracingControllerAndroid::GenerateTracingFilePath(basename);
+#elif BUILDFLAG(IS_IOS)
+  // On iOS blink, write to the documents directory associated with the app.
+  return base::apple::GetUserDocumentPath().AppendASCII(basename);
 #else
   // Default to saving the startup trace into the current dir.
   return base::FilePath().AppendASCII(basename);

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() with one interest group with two ads w/renderIds and omit-ads.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] getInterestGroupAdAuctionData() with one interest group with two ads w/renderIds and include-full-ads.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] getInterestGroupAdAuctionData() all IG data fields, with include-full-ads
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] getInterestGroupAdAuctionData() all IG data fields, w/o include-full-ads
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+Harness: the test ran to completion.
+

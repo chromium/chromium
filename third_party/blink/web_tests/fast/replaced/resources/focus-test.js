@@ -7,7 +7,7 @@ function checkNoFocusRing(element, event)
     var style = getComputedStyle(element, null).getPropertyValue('outline-style');
     var width = getComputedStyle(element, null).getPropertyValue('outline-width');
 
-    var noFocusRing = (width == '0px') && (style == 'none');
+    var noFocusRing = (width == '0px') || (style == 'none') || (style == 'hidden');
 
     document.body.insertAdjacentHTML('beforeEnd', '<BR>' + element.tagName +
         ' Event: ' +  event.type);

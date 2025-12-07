@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -49,8 +51,7 @@ ProductSpecificationsButton::ProductSpecificationsButton(
           tab_strip_controller,
           base::BindRepeating(&ProductSpecificationsButton::OnClicked,
                               base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT),
+          l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT),
           Edge::kNone),
       locked_expansion_view_(locked_expansion_view),
       tab_strip_model_(tab_strip_model),
@@ -59,8 +60,9 @@ ProductSpecificationsButton::ProductSpecificationsButton(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
                                                     gfx::Insets()),
       this);
-  CHECK(entry_point_controller_);
-  entry_point_controller_observations_.Observe(entry_point_controller_);
+  if (entry_point_controller_) {
+    entry_point_controller_observations_.Observe(entry_point_controller_);
+  }
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
@@ -69,8 +71,7 @@ ProductSpecificationsButton::ProductSpecificationsButton(
   SetProperty(views::kElementIdentifierKey,
               kProductSpecificationsButtonElementId);
 
-  SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT));
   // TODO(b/325661685): Set accessibility name of the button.
   SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
@@ -108,6 +109,9 @@ ProductSpecificationsButton::ProductSpecificationsButton(
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   UpdateColors();
+
+  // Button is not visible by default to avoid grabbing focus.
+  SetVisible(false);
 }
 
 ProductSpecificationsButton::~ProductSpecificationsButton() = default;
@@ -137,9 +141,14 @@ void ProductSpecificationsButton::AnimationEnded(
   // If the button went from shown -> hidden, unblock the tab strip from
   // showing other modal UIs. Compare to 0.5 to distinguish between show/hide
   // while avoiding potentially inexact float comparison to 0.0.
+  // When hiding animation finishes, set the button to not visible to avoid
+  // grabbing focus.
   if (animation == &expansion_animation_ &&
-      animation->GetCurrentValue() < 0.5 && scoped_tab_strip_modal_ui_) {
-    scoped_tab_strip_modal_ui_.reset();
+      animation->GetCurrentValue() < 0.5) {
+    SetVisible(false);
+    if (scoped_tab_strip_modal_ui_) {
+      scoped_tab_strip_modal_ui_.reset();
+    }
   }
 }
 
@@ -153,6 +162,7 @@ void ProductSpecificationsButton::Show() {
   if (expansion_animation_.IsShowing()) {
     return;
   }
+
   if (locked_expansion_view_->IsMouseHovered()) {
     SetLockedExpansionMode(LockedExpansionMode::kWillShow);
   }
@@ -179,6 +189,8 @@ void ProductSpecificationsButton::ShowEntryPointWithTitle(
 
 void ProductSpecificationsButton::HideEntryPoint() {
   Hide();
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipDisqualified"));
 }
 
 void ProductSpecificationsButton::SetOpacity(float factor) {
@@ -205,35 +217,36 @@ void ProductSpecificationsButton::ExecuteShow() {
   if (!tab_strip_model_->CanShowModalUI()) {
     return;
   }
-  // Check if the entry point is still eligible for showing.
-  if (!entry_point_controller_->ShouldExecuteEntryPointShow()) {
-    return;
-  }
 
   scoped_tab_strip_modal_ui_ = tab_strip_model_->ShowModalUI();
 
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionInDuration));
-  opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));
-  const base::TimeDelta delay = GetAnimationDuration(kOpacityDelay);
+      gfx::Animation::RichAnimationDuration(kExpansionInDuration));
+  opacity_animation_.SetSlideDuration(
+      gfx::Animation::RichAnimationDuration(kOpacityInDuration));
+  const base::TimeDelta delay =
+      gfx::Animation::RichAnimationDuration(kOpacityDelay);
   opacity_animation_delay_timer_.Start(
       FROM_HERE, delay, this,
       &ProductSpecificationsButton::ShowOpacityAnimation);
 
+  SetVisible(true);
   expansion_animation_.Show();
 
   hide_button_timer_.Start(FROM_HERE, kShowDuration, this,
                            &ProductSpecificationsButton::OnTimeout);
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipShown"));
 }
 
 void ProductSpecificationsButton::ExecuteHide() {
   hide_button_timer_.Stop();
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionOutDuration));
+      gfx::Animation::RichAnimationDuration(kExpansionOutDuration));
   expansion_animation_.Hide();
 
   opacity_animation_.SetSlideDuration(
-      GetAnimationDuration(kOpacityOutDuration));
+      gfx::Animation::RichAnimationDuration(kOpacityOutDuration));
   opacity_animation_.Hide();
   if (entry_point_controller_) {
     entry_point_controller_->OnEntryPointHidden();
@@ -245,6 +258,8 @@ void ProductSpecificationsButton::OnClicked() {
     entry_point_controller_->OnEntryPointExecuted();
   }
   ExecuteHide();
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipClicked"));
 }
 
 void ProductSpecificationsButton::OnDismissed() {
@@ -252,18 +267,22 @@ void ProductSpecificationsButton::OnDismissed() {
   if (entry_point_controller_) {
     entry_point_controller_->OnEntryPointDismissed();
   }
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipDismissed"));
 }
 
 void ProductSpecificationsButton::OnTimeout() {
   Hide();
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipIgnored"));
 }
 
 void ProductSpecificationsButton::SetCloseButton(
     views::LabelButton::PressedCallback pressed_callback) {
   auto close_button =
       std::make_unique<views::LabelButton>(std::move(pressed_callback));
-  close_button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE));
+  close_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_COMPARE_ENTRY_POINT_CLOSE));
 
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       vector_icons::kCloseChromeRefreshIcon,
@@ -282,7 +301,7 @@ void ProductSpecificationsButton::SetCloseButton(
   views::InkDrop::Get(close_button.get())->SetHighlightOpacity(0.16f);
   views::InkDrop::Get(close_button.get())->SetVisibleOpacity(0.14f);
   views::InkDrop::Get(close_button.get())
-      ->SetBaseColorId(kColorTabSearchButtonCRForegroundFrameActive);
+      ->SetBaseColor(kColorTabSearchButtonCRForegroundFrameActive);
 
   auto ink_drop_highlight_path =
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets());
@@ -306,7 +325,11 @@ void ProductSpecificationsButton::SetLockedExpansionMode(
     LockedExpansionMode mode) {
   if (mode == LockedExpansionMode::kNone) {
     if (locked_expansion_mode_ == LockedExpansionMode::kWillShow) {
-      ExecuteShow();
+      // Check if the entry point is still eligible for showing.
+      if (entry_point_controller_ &&
+          entry_point_controller_->ShouldExecuteEntryPointShow()) {
+        ExecuteShow();
+      }
     } else if (locked_expansion_mode_ == LockedExpansionMode::kWillHide) {
       ExecuteHide();
     }
@@ -323,12 +346,6 @@ void ProductSpecificationsButton::SetWidthFactor(float factor) {
 
 void ProductSpecificationsButton::ShowOpacityAnimation() {
   opacity_animation_.Show();
-}
-
-base::TimeDelta ProductSpecificationsButton::GetAnimationDuration(
-    base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
 }
 
 BEGIN_METADATA(ProductSpecificationsButton)

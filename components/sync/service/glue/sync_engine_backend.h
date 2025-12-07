@@ -21,7 +21,7 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_manager.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -33,8 +33,7 @@ class SyncEngineImpl;
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
                           public SyncManager::Observer {
  public:
-  using AllNodesCallback =
-      base::OnceCallback<void(const DataType, base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
 
   // Struct that allows passing back data upon init, for data previously
   // produced by SyncEngineBackend (which doesn't itself have the ability to
@@ -127,7 +126,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       const std::string& passphrase,
       const KeyDerivationParams& key_derivation_params);
 
-  // Called to decrypt the pending keys using the |key| derived from
+  // Called to decrypt the pending keys using the `key` derived from
   // user-entered passphrase.
   void DoSetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key);
 
@@ -143,7 +142,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoInitialProcessControlTypes();
 
   // The shutdown order is a bit complicated:
-  // 1) Call ShutdownOnUIThread() from |frontend_loop_| to request sync manager
+  // 1) Call ShutdownOnUIThread() from `frontend_loop_` to request sync manager
   //    to stop as soon as possible.
   // 2) Post DoShutdown() to sync loop to clean up backend state and destroy
   //    sync manager.
@@ -151,7 +150,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoShutdown(ShutdownReason reason);
 
   // Configuration methods that must execute on sync loop.
-  void DoPurgeDisabledTypes(const DataTypeSet& to_purge);
   void DoConfigureSyncer(DataTypeConfigurer::ConfigureParams params);
   void DoFinishConfigureDataTypes(
       DataTypeSet types_to_config,
@@ -164,25 +162,21 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoOnCookieJarChanged(bool account_mismatch, base::OnceClosure callback);
 
   // Forwards an invalidation to the sync manager for all data types extracted
-  // from the |payload|. This method is called for sync standalone
+  // from the `payload`. This method is called for sync standalone
   // invalidations.
   void DoOnStandaloneInvalidationReceived(
       const std::string& payload,
       const DataTypeSet& interested_data_types);
 
-  // Returns a Value::List representing Nigori node.
+  // Functions to deal with NIGORI, resembling DataTypeController APIs.
+  void DoClearNigoriDataForMigration();
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
-
-  // Record histograms related to Nigori data type.
   void RecordNigoriMemoryUsageAndCountsHistograms();
-
-  // Returns types that have local changes yet to be synced to the server.
-  DataTypeSet GetTypesWithUnsyncedData() const;
 
   bool HasUnsyncedItemsForTest() const;
 
   // Called on each device infos change and might be called more than once with
-  // the same |active_devices|. |fcm_registration_tokens| contains a list of
+  // the same `active_devices`. `fcm_registration_tokens` contains a list of
   // tokens for all known active devices (if available and excluding the local
   // device if reflections are disabled).
   void DoOnActiveDevicesChanged(
@@ -208,14 +202,14 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Our parent SyncEngineImpl.
   WeakHandle<SyncEngineImpl> host_;
 
-  // Should outlive |sync_manager_|.
+  // Should outlive `sync_manager_`.
   std::unique_ptr<SyncEncryptionHandler> sync_encryption_handler_;
 
   // The top-level syncapi entry point.  Lives on the sync thread.
   std::unique_ptr<SyncManager> sync_manager_;
 
-  // Required for |nigori_controller_| LoadModels().
-  CoreAccountId authenticated_account_id_;
+  // Required for `nigori_controller_` LoadModels().
+  GaiaId authenticated_gaia_id_;
 
   // Initialized in Init().
   std::unique_ptr<DataTypeController> nigori_controller_;

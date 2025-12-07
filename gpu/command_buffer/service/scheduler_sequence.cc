@@ -5,18 +5,13 @@
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/command_buffer/service/scheduler.h"
-
-#if DCHECK_IS_ON()
-#include "third_party/abseil-cpp/absl/base/attributes.h"
-#endif
 
 namespace gpu {
 
 namespace {
 
 #if DCHECK_IS_ON()
-ABSL_CONST_INIT thread_local bool schedule_task_disallowed = false;
+constinit thread_local bool schedule_task_disallowed = false;
 #endif  // DCHECK_IS_ON()
 
 }  // namespace
@@ -61,9 +56,52 @@ bool SchedulerSequence::ShouldYield() {
   return scheduler_->ShouldYield(sequence_id_);
 }
 
+void SchedulerSequence::ScheduleTask(gpu::TaskCallback task,
+                                     std::vector<SyncToken> sync_token_fences,
+                                     const SyncToken& release,
+                                     ReportingCallback report_callback) {
+  Scheduler::Task task_info(sequence_id_, std::move(task),
+                            std::move(sync_token_fences), release,
+                            std::move(report_callback));
+  ScheduleTaskImpl(std::move(task_info));
+}
+
 void SchedulerSequence::ScheduleTask(base::OnceClosure task,
                                      std::vector<SyncToken> sync_token_fences,
+                                     const SyncToken& release,
                                      ReportingCallback report_callback) {
+  Scheduler::Task task_info(sequence_id_, std::move(task),
+                            std::move(sync_token_fences), release,
+                            std::move(report_callback));
+  ScheduleTaskImpl(std::move(task_info));
+}
+
+void SchedulerSequence::ScheduleOrRetainTask(
+    base::OnceClosure task,
+    std::vector<gpu::SyncToken> sync_token_fences,
+    const SyncToken& release,
+    ReportingCallback report_callback) {
+  scheduler_->ScheduleTask(Scheduler::Task(
+      sequence_id_, std::move(task), std::move(sync_token_fences), release,
+      std::move(report_callback)));
+}
+
+void SchedulerSequence::ContinueTask(gpu::TaskCallback task) {
+  scheduler_->ContinueTask(sequence_id_, std::move(task));
+}
+
+void SchedulerSequence::ContinueTask(base::OnceClosure task) {
+  scheduler_->ContinueTask(sequence_id_, std::move(task));
+}
+
+ScopedSyncPointClientState SchedulerSequence::CreateSyncPointClientState(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  return scheduler_->CreateSyncPointClientState(sequence_id_, namespace_id,
+                                                command_buffer_id);
+}
+
+void SchedulerSequence::ScheduleTaskImpl(Scheduler::Task task) {
   // If your CL is failing this DCHECK, then that means you are probably calling
   // ScheduleGpuTask at a point that cannot be supported by Android Webview.
   // Consider using ScheduleOrRetainGpuTask which will delay (not reorder) the
@@ -79,21 +117,7 @@ void SchedulerSequence::ScheduleTask(base::OnceClosure task,
 #endif
   }
 
-  ScheduleOrRetainTask(std::move(task), std::move(sync_token_fences),
-                       std::move(report_callback));
-}
-
-void SchedulerSequence::ScheduleOrRetainTask(
-    base::OnceClosure task,
-    std::vector<gpu::SyncToken> sync_token_fences,
-    ReportingCallback report_callback) {
-  scheduler_->ScheduleTask(Scheduler::Task(sequence_id_, std::move(task),
-                                           std::move(sync_token_fences),
-                                           std::move(report_callback)));
-}
-
-void SchedulerSequence::ContinueTask(base::OnceClosure task) {
-  scheduler_->ContinueTask(sequence_id_, std::move(task));
+  scheduler_->ScheduleTask(std::move(task));
 }
 
 }  // namespace gpu

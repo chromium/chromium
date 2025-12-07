@@ -2,11 +2,11 @@
   {
     "can_be_recommended": true,
     "os": [
+      "android",
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
     "simple_policy_pref_mapping_test": {

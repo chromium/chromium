@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/structured/ash_event_storage.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/metrics/structured/lib/histogram_util.h"

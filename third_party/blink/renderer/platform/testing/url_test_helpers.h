@@ -42,7 +42,7 @@ namespace blink {
 namespace url_test_helpers {
 
 inline blink::KURL ToKURL(const std::string& url) {
-  WTF::String wtf_string(url.c_str());
+  String wtf_string(url.c_str());
   return blink::KURL(wtf_string);
 }
 

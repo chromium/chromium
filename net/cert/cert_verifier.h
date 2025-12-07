@@ -51,6 +51,8 @@ class NET_EXPORT CertVerifier {
     Config& operator=(const Config&);
     Config& operator=(Config&&);
 
+    bool operator==(const Config& other) const = default;
+
     // Enable online revocation checking via CRLs and OCSP for the certificate
     // chain. Note that revocation checking is soft-fail.
     bool enable_rev_checking = false;
@@ -64,10 +66,6 @@ class NET_EXPORT CertVerifier {
     // Enable support for SHA-1 signatures if the constructed chain terminates
     // in a locally-installed, non-public trust anchor.
     bool enable_sha1_local_anchors = false;
-
-    // Disable enforcement of the policies described at
-    // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
-    bool disable_symantec_enforcement = false;
   };
 
   class Request {
@@ -81,6 +79,7 @@ class NET_EXPORT CertVerifier {
     virtual ~Request() = default;
   };
 
+  // LINT.IfChange(CertVerifier.VerifyFlags)
   enum VerifyFlags {
     // If set, actively overrides the current CertVerifier::Config to disable
     // dependent network fetches. This can be used to avoid triggering
@@ -93,8 +92,14 @@ class NET_EXPORT CertVerifier {
     // without accessing the network.
     VERIFY_DISABLE_NETWORK_FETCHES = 1 << 0,
 
-    VERIFY_FLAGS_LAST = VERIFY_DISABLE_NETWORK_FETCHES
+    // If set, Certificate Transparency requirements are evaluated in a
+    // stricter fashion as required by Signed Exchanges. This only has effect
+    // in implementations where CT is handled by chrome.
+    VERIFY_SXG_CT_REQUIREMENTS = 1 << 1,
+
+    VERIFY_FLAGS_LAST = VERIFY_SXG_CT_REQUIREMENTS
   };
+  // LINT.ThenChange(/net/log/net_log_util.cc:CertVerifier.VerifyFlags)
 
   // Parameters to verify |certificate| against the supplied
   // |hostname| as an SSL server.
@@ -184,6 +189,18 @@ class NET_EXPORT CertVerifier {
                      std::unique_ptr<Request>* out_req,
                      const NetLogWithSource& net_log) = 0;
 
+  // Verifies that `binding` is a valid 2-QWAC binding for `hostname` and
+  // `tls_cert`. On success, callback will be called asynchronously with the
+  // verified 2-QWAC certificate chain. Otherwise the callback will be called
+  // with nullptr. The callback might be run even after the CertVerifier is
+  // destroyed.
+  virtual void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+      const NetLogWithSource& net_log) = 0;
+
   // Sets the configuration for new certificate verifications to be |config|.
   // Any in-progress verifications (i.e. those with outstanding Request
   // handles) will continue using the old configuration. This may be called
@@ -214,14 +231,6 @@ class NET_EXPORT CertVerifier {
   static std::unique_ptr<CertVerifier> CreateDefault(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 };
-
-// Overloads for comparing two configurations. Note, comparison is shallow -
-// that is, two scoped_refptr<CRLSet>s are equal iff they point to the same
-// object.
-NET_EXPORT bool operator==(const CertVerifier::Config& lhs,
-                           const CertVerifier::Config& rhs);
-NET_EXPORT bool operator!=(const CertVerifier::Config& lhs,
-                           const CertVerifier::Config& rhs);
 
 // A CertVerifier that can update its CertVerifyProc while it is running.
 class NET_EXPORT CertVerifierWithUpdatableProc : public CertVerifier {

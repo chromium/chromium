@@ -29,7 +29,9 @@ class TextHighlighter : public blink::mojom::AnnotationAgentHost {
   // blink::mojom::AnnotationAgentHost implementation.
   // Called when the annotation agent finishes finding the text.
   // Scrolls to the highlighted text via the mojo method of the agent.
-  void DidFinishAttachment(const gfx::Rect& rect) override;
+  void DidFinishAttachment(
+      const gfx::Rect& rect,
+      blink::mojom::AttachmentResult attachment_result) override;
 
   const std::string& GetTextDirective() const { return text_directive_; }
 

@@ -7,9 +7,12 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 namespace net {
 class IOBuffer;
@@ -31,7 +34,7 @@ class InputStream {
 
   // |stream| should be an instance of the InputStream Java class.
   // |stream| can't be null.
-  InputStream(const base::android::JavaRef<jobject>& stream);
+  explicit InputStream(const base::android::JavaRef<jobject>& stream);
 
   InputStream(const InputStream&) = delete;
   InputStream& operator=(const InputStream&) = delete;
@@ -69,8 +72,22 @@ class InputStream {
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   base::android::ScopedJavaGlobalRef<jbyteArray> buffer_;
+
+  int total_bytes_read_ = 0;
 };
 
 }  // namespace embedder_support
 
-#endif  //  COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_H_
+namespace jni_zero {
+template <>
+inline std::unique_ptr<embedder_support::InputStream> FromJniType(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jstream) {
+  if (!jstream) {
+    return nullptr;
+  }
+  return std::make_unique<embedder_support::InputStream>(jstream);
+}
+}  // namespace jni_zero
+
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_H_

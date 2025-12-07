@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_history_document_open
+  AssertionError
+[FAIL] test_history_back_forward
+  asyncio.exceptions.CancelledError
+Harness: the test ran to completion.
+

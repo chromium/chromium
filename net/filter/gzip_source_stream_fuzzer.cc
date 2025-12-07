@@ -13,6 +13,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/fuzzed_source_stream.h"
+#include "net/filter/source_stream_type.h"
 
 // Fuzzer for GzipSourceStream.
 //
@@ -28,10 +29,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // because lots of 1-byte chunks is also a problem.
   const size_t kMaxReads = 10 * 1024;
 
-  const net::SourceStream::SourceType kGzipTypes[] = {
-      net::SourceStream::TYPE_GZIP, net::SourceStream::TYPE_DEFLATE};
-  net::SourceStream::SourceType type =
-      data_provider.PickValueInArray(kGzipTypes);
+  const net::SourceStreamType kGzipTypes[] = {net::SourceStreamType::kGzip,
+                                              net::SourceStreamType::kDeflate};
+  net::SourceStreamType type = data_provider.PickValueInArray(kGzipTypes);
   std::unique_ptr<net::GzipSourceStream> gzip_stream =
       net::GzipSourceStream::Create(std::move(fuzzed_source_stream), type);
   size_t num_reads = 0;

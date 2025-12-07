@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../shared_style.css.js';
-import '../shared_vars.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './activity_log_stream_item.html.js';
+import {getCss} from './activity_log_stream_item.css.js';
+import {getHtml} from './activity_log_stream_item.html.js';
 
 export interface StreamItem {
   name?: string;
@@ -48,44 +46,62 @@ export const ARG_URL_PLACEHOLDER: string = '<arg_url>';
  */
 const ARG_URL_PLACEHOLDER_REGEX: RegExp = /"<arg_url>"/g;
 
-export class ActivityLogStreamItemElement extends PolymerElement {
+export class ActivityLogStreamItemElement extends CrLitElement {
   static get is() {
     return 'activity-log-stream-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The underlying ActivityGroup that provides data for the
        * ActivityLogItem displayed.
        */
-      data: Object,
+      data: {type: Object},
 
-      argsList_: {
-        type: Array,
-        computed: 'computeArgsList_(data.args)',
-      },
+      expanded_: {type: Boolean},
 
-      isExpandable_: {
-        type: Boolean,
-        computed: 'computeIsExpandable_(data)',
-      },
+      argsList_: {type: Array},
+
+      isExpandable_: {type: Boolean},
     };
   }
 
-  data: StreamItem;
-  private argsList_: StreamArgItem[];
-  private isExpandable_: boolean;
+  accessor data: StreamItem = {
+    timestamp: 0,
+    activityType: chrome.activityLogPrivate.ExtensionActivityType.API_CALL,
+    argUrl: '',
+    args: '{}',
+    expanded: false,
+  };
+  protected accessor expanded_: boolean = false;
+  protected accessor argsList_: StreamArgItem[] = [];
+  protected accessor isExpandable_: boolean = false;
 
-  private computeIsExpandable_(): boolean {
-    return this.hasPageUrl_() || this.hasArgs_() || this.hasWebRequestInfo_();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('data')) {
+      this.argsList_ = this.computeArgsList_();
+      this.isExpandable_ =
+          this.hasPageUrl_() || this.hasArgs_() || this.hasWebRequestInfo_();
+      this.expanded_ = this.data.expanded;
+    }
   }
 
-  private getFormattedTime_(): string {
+  protected getFormattedTime_(): string {
+    if (!this.data) {
+      return '';
+    }
+
     // Format the activity's time to HH:MM:SS.mmm format. Use ToLocaleString
     // for HH:MM:SS and padLeft for milliseconds.
     const activityDate = new Date(this.data.timestamp);
@@ -100,15 +116,15 @@ export class ActivityLogStreamItemElement extends PolymerElement {
     return `${timeString}.${ms}`;
   }
 
-  private hasPageUrl_(): boolean {
+  protected hasPageUrl_(): boolean {
     return !!this.data.pageUrl;
   }
 
-  private hasArgs_(): boolean {
+  protected hasArgs_(): boolean {
     return this.argsList_.length > 0;
   }
 
-  private hasWebRequestInfo_(): boolean {
+  protected hasWebRequestInfo_(): boolean {
     return !!this.data.webRequestInfo && this.data.webRequestInfo !== '{}';
   }
 
@@ -130,10 +146,10 @@ export class ActivityLogStreamItemElement extends PolymerElement {
         }));
   }
 
-  private onExpandClick_() {
+  protected onExpandClick_() {
     if (this.isExpandable_) {
-      this.set('data.expanded', !this.data.expanded);
-      this.dispatchEvent(new CustomEvent('resize-stream'));
+      this.expanded_ = !this.expanded_;
+      this.fire('resize-stream');
     }
   }
 }

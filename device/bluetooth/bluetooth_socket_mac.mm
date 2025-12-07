@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -728,7 +729,7 @@ void BluetoothSocketMac::OnChannelDataReceived(void* data, size_t length) {
 
   int data_size = base::checked_cast<int>(length);
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data_size);
-  memcpy(buffer->data(), data, buffer->size());
+  UNSAFE_TODO(memcpy(buffer->data(), data, buffer->size()));
 
   // If there is a pending read callback, call it now.
   if (receive_callbacks_) {

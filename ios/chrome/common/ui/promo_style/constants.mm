@@ -14,12 +14,6 @@ NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
     @"PromoStyleSubtitleAccessibilityIdentifier";
 NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier =
     @"PromoStyleReadMoreActionAccessibilityIdentifier";
-NSString* const kPromoStylePrimaryActionAccessibilityIdentifier =
-    @"PromoStylePrimaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
-    @"PromoStyleSecondaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
-    @"PromoStyleTertiaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
     @"PromoStyleLearnMoreActionAccessibilityIdentifier";
 NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
@@ -27,7 +21,6 @@ NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
     @"PromoStyleScrollViewAccessibilityIdentifier";
 
-const CGFloat kPromoStyleDefaultMargin = 16.;
 const CGFloat kActionsBottomMarginWithSafeArea = 10.;
 const CGFloat kActionsBottomMarginWithoutSafeArea =
     kActionsBottomMarginWithSafeArea * 2;

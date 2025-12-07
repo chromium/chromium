@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/verification.h"
@@ -39,7 +40,6 @@ bool DestinationListsEqual(ListOfBlockedDestinations list_a,
 // Only used in testing. Feature for testing the configuration file in our
 // automated tests. Not exposed on the UI.
 BASE_FEATURE(kReportingConfigurationFileTestSignature,
-             "ReportingConfigurationFileTestSignature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ConfigurationFileController::~ConfigurationFileController() = default;

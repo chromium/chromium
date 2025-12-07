@@ -4,19 +4,18 @@
 
 #include "components/policy/core/common/policy_map.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -36,16 +35,18 @@ const std::u16string GetLocalizedString(
   std::u16string result = std::u16string();
   std::u16string line_feed = u"\n";
   for (const auto& string_pairs : localized_string_ids) {
-    if (string_pairs.second)
+    if (string_pairs.second) {
       result += l10n_util::GetStringFUTF16(
           string_pairs.first, string_pairs.second.value(), nullptr);
-    else
+    } else {
       result += lookup.Run(string_pairs.first);
+    }
     result += line_feed;
   }
   // Remove the trailing newline.
-  if (!result.empty() && result[result.length() - 1] == line_feed[0])
+  if (!result.empty() && result[result.length() - 1] == line_feed[0]) {
     result.pop_back();
+  }
   return result;
 }
 
@@ -72,21 +73,21 @@ PolicyPriorityBrowser GetPriority(
     const PolicyDetails* details) {
   switch (source) {
     case POLICY_SOURCE_ENTERPRISE_DEFAULT:
-      return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
+      return PolicyPriorityBrowser::kEnterpriseDefault;
     case POLICY_SOURCE_COMMAND_LINE:
-      return POLICY_PRIORITY_BROWSER_COMMAND_LINE;
+      return PolicyPriorityBrowser::kCommandLine;
     case POLICY_SOURCE_CLOUD:
       if (scope == POLICY_SCOPE_MACHINE) {
         // Raise the priority of cloud machine policies only when the metapolicy
         // CloudPolicyOverridesPlatformPolicy is set to true.
         return cloud_policy_overrides_platform_policy
-                   ? POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED
-                   : POLICY_PRIORITY_BROWSER_CLOUD_MACHINE;
+                   ? PolicyPriorityBrowser::kCloudMachineRaised
+                   : PolicyPriorityBrowser::kCloudMachine;
       }
       // For policies that can only be set with managed account, raise the
       // priority of correct source to highest.
       if (details && details->scope == kSingleProfile) {
-        return POLICY_PRIORITY_BROWSER_CLOUD_USER_DOUBLE_RAISED;
+        return PolicyPriorityBrowser::kCloudUserDoubleRaised;
       }
       if (cloud_user_policy_overrides_cloud_machine_policy &&
           is_user_affiliated) {
@@ -95,19 +96,18 @@ PolicyPriorityBrowser GetPriority(
         // user is affiliated. Its priority relative to cloud machine policies
         // also depends on the value of CloudPolicyOverridesPlatformPolicy.
         return cloud_policy_overrides_platform_policy
-                   ? POLICY_PRIORITY_BROWSER_CLOUD_USER_DOUBLE_RAISED
-                   : POLICY_PRIORITY_BROWSER_CLOUD_USER_RAISED;
+                   ? PolicyPriorityBrowser::kCloudUserDoubleRaised
+                   : PolicyPriorityBrowser::kCloudUserRaised;
       }
-      return POLICY_PRIORITY_BROWSER_CLOUD_USER;
+      return PolicyPriorityBrowser::kCloudUser;
     case POLICY_SOURCE_PLATFORM:
       return scope == POLICY_SCOPE_MACHINE
-                 ? POLICY_PRIORITY_BROWSER_PLATFORM_MACHINE
-                 : POLICY_PRIORITY_BROWSER_PLATFORM_USER;
+                 ? PolicyPriorityBrowser::kPlatformMachine
+                 : PolicyPriorityBrowser::kPlatformUser;
     case POLICY_SOURCE_MERGED:
-      return POLICY_PRIORITY_BROWSER_MERGED;
+      return PolicyPriorityBrowser::kMerged;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
+      NOTREACHED();
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -182,9 +182,10 @@ void PolicyMap::Entry::set_value(std::optional<base::Value> val) {
 
 bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
   bool conflicts_are_equal = conflicts.size() == other.conflicts.size();
-  for (size_t i = 0; conflicts_are_equal && i < conflicts.size(); ++i)
+  for (size_t i = 0; conflicts_are_equal && i < conflicts.size(); ++i) {
     conflicts_are_equal &=
         conflicts[i].entry().Equals(other.conflicts[i].entry());
+  }
 
   const bool equals =
       conflicts_are_equal && level == other.level && scope == other.scope &&
@@ -215,8 +216,9 @@ void PolicyMap::Entry::ClearMessage(MessageType type, int message_id) {
     return;
   }
   message_ids_[type].erase(message_id);
-  if (message_ids_[type].size() == 0)
+  if (message_ids_[type].size() == 0) {
     message_ids_.erase(type);
+  }
 }
 
 void PolicyMap::Entry::AddConflictingPolicy(Entry&& conflict) {
@@ -464,8 +466,9 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
                             const PolicyMap& other,
                             bool using_default_precedence) {
   const Entry* other_policy = other.GetUntrusted(policy_name);
-  if (!other_policy)
+  if (!other_policy) {
     return;
+  }
 
   Entry* policy = GetMutableUntrusted(policy_name);
   Entry other_policy_copy = other_policy->DeepCopy();
@@ -500,8 +503,9 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
     higher_policy.AddConflictingPolicy(std::move(conflicting_policy));
   }
 
-  if (other_is_higher_priority)
+  if (other_is_higher_priority) {
     *policy = std::move(other_policy_copy);
+  }
 }
 
 void PolicyMap::MergeFrom(const PolicyMap& other) {
@@ -540,8 +544,9 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
 }
 
 void PolicyMap::MergeValues(const std::vector<PolicyMerger*>& mergers) {
-  for (const auto* it : mergers)
+  for (const auto* it : mergers) {
     it->Merge(this);
+  }
 }
 
 void PolicyMap::set_chrome_policy_details_callback_for_test(
@@ -551,8 +556,9 @@ void PolicyMap::set_chrome_policy_details_callback_for_test(
 
 bool PolicyMap::IsPolicyExternal(const std::string& policy) {
   const PolicyDetails* policy_details = GetPolicyDetails(policy);
-  if (policy_details && policy_details->max_external_data_size > 0)
+  if (policy_details && policy_details->max_external_data_size > 0) {
     return true;
+  }
   return false;
 }
 
@@ -576,7 +582,7 @@ void PolicyMap::LoadFrom(const base::Value::Dict& policies,
 }
 
 bool PolicyMap::Equals(const PolicyMap& other) const {
-  return base::ranges::equal(*this, other, MapEntryEquals);
+  return std::ranges::equal(*this, other, MapEntryEquals);
 }
 
 bool PolicyMap::empty() const {

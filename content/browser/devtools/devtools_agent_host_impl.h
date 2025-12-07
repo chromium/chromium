@@ -19,10 +19,12 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace content {
 
@@ -43,7 +45,6 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
 
   // DevToolsAgentHost implementation.
   bool AttachClient(DevToolsAgentHostClient* client) override;
-  bool AttachClientWithoutWakeLock(DevToolsAgentHostClient* client) override;
   bool DetachClient(DevToolsAgentHostClient* client) override;
   void DispatchProtocolMessage(DevToolsAgentHostClient* client,
                                base::span<const uint8_t> message) override;
@@ -55,6 +56,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   std::string GetParentId() override;
   std::string GetOpenerId() override;
   std::string GetOpenerFrameId() override;
+  std::string GetParentFrameId() override;
   bool CanAccessOpener() override;
   std::string GetDescription() override;
   GURL GetFaviconURL() override;
@@ -86,6 +88,12 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   virtual DevToolsSession::Mode GetSessionMode();
 
   bool Inspect();
+
+  scoped_refptr<DevToolsAgentHost> OpenDevTools(
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options);
+
+  scoped_refptr<DevToolsAgentHost> GetDevToolsAgentHost();
 
   template <typename Handler>
   std::vector<Handler*> HandlersByName(const std::string& name) {
@@ -120,7 +128,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   static bool ShouldForceCreation();
 
   // Returning |false| will block the attach.
-  virtual bool AttachSession(DevToolsSession* session, bool acquire_wake_lock);
+  virtual bool AttachSession(DevToolsSession* session);
   virtual void DetachSession(DevToolsSession* session);
   virtual void UpdateRendererChannel(bool force);
 
@@ -164,8 +172,6 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   friend class DevToolsRendererChannel;
 
   bool AttachInternal(std::unique_ptr<DevToolsSession> session);
-  bool AttachInternal(std::unique_ptr<DevToolsSession> session,
-                      bool acquire_wake_lock);
   void DetachInternal(DevToolsSession* session);
   void NotifyAttached();
   void NotifyDetached();

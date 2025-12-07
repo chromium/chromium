@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import './privacy_guide_ad_topics_fragment.js';
 import './privacy_guide_completion_fragment.js';
 import './privacy_guide_cookies_fragment.js';
 import './privacy_guide_history_sync_fragment.js';
@@ -33,11 +34,11 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
-import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
+import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
 import {RouteObserverMixin, Router} from '../../router.js';
-import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
+import {ContentSetting} from '../../site_settings/constants.js';
 
 import {PrivacyGuideStep} from './constants.js';
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
@@ -48,9 +49,9 @@ import type {StepIndicatorModel} from './step_indicator.js';
 
 interface PrivacyGuideStepComponents {
   nextStep?: PrivacyGuideStep;
-  onForwardNavigation?(): void;
+  recordForwardNavigationMetrics?(): void;
   previousStep?: PrivacyGuideStep;
-  onBackwardNavigation?(): void;
+  recordBackwardNavigationMetrics?(): void;
   isAvailable(): boolean;
 }
 
@@ -95,14 +96,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Valid privacy guide states.
        */
       privacyGuideStepEnum_: {
@@ -135,7 +128,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       },
 
       shouldShowAdTopicsCard_: {
@@ -149,25 +142,25 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   static get observers() {
     return [
-      'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+      'onPrefsChanged_(prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
 
-  private privacyGuideStep_: PrivacyGuideStep;
-  private stepIndicatorModel_: StepIndicatorModel;
+  declare private privacyGuideStep_: PrivacyGuideStep;
+  declare private stepIndicatorModel_: StepIndicatorModel;
   private privacyGuideStepToComponentsMap_:
       Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  private syncStatus_: SyncStatus;
+  declare private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  private translateMultiplier_: number;
+  declare private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
-  private shouldShowAdTopicsCard_: boolean;
+  declare private shouldShowAdTopicsCard_: boolean;
 
   constructor() {
     super();
@@ -214,7 +207,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.MSBB,
           isAvailable: () => true,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
@@ -230,13 +223,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.HISTORY_SYNC,
           previousStep: PrivacyGuideStep.WELCOME,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickMSBB');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickMSBB');
           },
@@ -248,13 +241,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.SAFE_BROWSING,
           previousStep: PrivacyGuideStep.MSBB,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickHistorySync');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickHistorySync');
           },
@@ -262,7 +255,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
           // unavailable. Otherwise we would skip it in
           // `navigateForwardIfCurrentCardNoLongerAvailable` before
           // `onSyncStatusChanged_` is called asynchronously.
-          isAvailable: () => !this.syncStatus_ || this.isSyncOn_(),
+          isAvailable: () =>
+              !this.syncStatus_ || this.shouldShowHistorySyncCard_(),
         },
       ],
       [
@@ -270,13 +264,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.COOKIES,
           previousStep: PrivacyGuideStep.HISTORY_SYNC,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickSafeBrowsing');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickSafeBrowsing');
           },
@@ -287,13 +281,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         PrivacyGuideStep.COOKIES,
         {
           nextStep: PrivacyGuideStep.AD_TOPICS,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickCookies');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCookies');
           },
@@ -305,13 +299,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         PrivacyGuideStep.AD_TOPICS,
         {
           nextStep: PrivacyGuideStep.COMPLETION,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickAdTopics');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickAdTopics');
           },
@@ -322,7 +316,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       [
         PrivacyGuideStep.COMPLETION,
         {
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCompletion');
           },
@@ -421,8 +415,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private navigateForward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
-    if (components.onForwardNavigation) {
-      components.onForwardNavigation();
+    if (components.isAvailable() && components.recordForwardNavigationMetrics) {
+      components.recordForwardNavigationMetrics();
     }
     if (components.nextStep) {
       this.navigateToCard_(components.nextStep, false, false);
@@ -436,8 +430,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private navigateBackward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
-    if (components.onBackwardNavigation) {
-      components.onBackwardNavigation();
+    if (components.isAvailable() &&
+        components.recordBackwardNavigationMetrics) {
+      components.recordBackwardNavigationMetrics();
     }
     if (components.previousStep) {
       this.navigateToCard_(components.previousStep, true, false);
@@ -526,10 +521,14 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     };
   }
 
-  private isSyncOn_(): boolean {
+  private shouldShowHistorySyncCard_(): boolean {
     assert(this.syncStatus_);
-    return this.syncStatus_.signedInState === SignedInState.SYNCING &&
-        !this.syncStatus_.hasError;
+    if (this.syncStatus_.hasError) {
+      return false;
+    }
+    return this.syncStatus_.signedInState === SignedInState.SYNCING ||
+        (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
+         this.syncStatus_.signedInState === SignedInState.SIGNED_IN);
   }
 
   private shouldShowCookiesCard_(): boolean {
@@ -540,11 +539,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return false;
     }
-    const currentCookieSetting =
-        this.getPref('generated.cookie_primary_setting').value;
-    return currentCookieSetting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
-        currentCookieSetting ===
-        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+    // Don't show the 3PC card if the user has chosen to block 1PCs.
+    return this.getPref('generated.cookie_default_content_setting').value !==
+        ContentSetting.BLOCK;
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {
@@ -571,6 +568,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         break;
       case 'ArrowRight':
         isLtr ? this.navigateForward_() : this.navigateBackward_();
+        break;
+      default:
         break;
     }
   }

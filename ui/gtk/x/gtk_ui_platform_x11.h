@@ -6,11 +6,9 @@
 #define UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 
 #include "base/memory/raw_ref.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gtk/gtk_ui_platform.h"
-
-using GdkDisplay = struct _GdkDisplay;
 
 namespace gtk {
 
@@ -25,24 +23,20 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
   ~GtkUiPlatformX11() override;
 
   // GtkUiPlatform:
-  void OnInitialized(GtkWidget* widget) override;
-  GdkKeymap* GetGdkKeymap() override;
-  GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
-  int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
+  void OnInitialized() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  void SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const override;
   bool IncludeFontScaleInDeviceScale() const override;
+  bool IncludeScaleInCursorSize() const override;
 
  private:
-  GdkDisplay* GetGdkDisplay();
-
   const raw_ref<x11::Connection> connection_;
-  raw_ptr<GdkDisplay> display_ = nullptr;
+
   std::unique_ptr<GtkEventLoopX11> event_loop_;
 };
 

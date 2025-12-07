@@ -8,10 +8,16 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.compositor.layouts.phone.NewTabAnimationLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -19,15 +25,25 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+
+import java.util.function.Supplier;
 
 /**
  * {@link LayoutManagerChromePhone} is the specialization of {@link LayoutManagerChrome} for the
  * phone.
  */
+@NullMarked
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
-    // Layouts
-    private SimpleAnimationLayout mSimpleAnimationLayout;
+    // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
+    // rolled out.
+    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
+    private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final ToolbarManager mToolbarManager;
+    private final ViewGroup mContentView;
+    private Layout mSimpleAnimationLayout;
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
@@ -41,6 +57,10 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
+     * @param compositorViewHolderSupplier Supplier of the {@link CompositorViewHolder} instance.
+     * @param contentView The base content view.
+     * @param toolbarManager The {@link ToolbarManager} instance.
+     * @param scrimVisibilitySupplier Supplier for the Scrim visibility.
      */
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
@@ -49,7 +69,12 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            HubLayoutDependencyHolder hubLayoutDependencyHolder) {
+            HubLayoutDependencyHolder hubLayoutDependencyHolder,
+            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            ViewGroup contentView,
+            ToolbarManager toolbarManager,
+            ObservableSupplier<Boolean> scrimVisibilitySupplier,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier) {
         super(
                 host,
                 contentContainer,
@@ -58,22 +83,59 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 tabContentManagerSupplier,
                 topUiThemeColorProvider,
                 hubLayoutDependencyHolder);
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mContentView = contentView;
+        mToolbarManager = toolbarManager;
+        mScrimVisibilitySupplier = scrimVisibilitySupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
     }
 
     @Override
+    public void destroy() {
+        super.destroy();
+        mSimpleAnimationLayout.destroy();
+    }
+
+    @Override
+    @Initializer
     public void init(
             TabModelSelector selector,
             TabCreatorManager creator,
-            ControlContainer controlContainer,
+            @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
+            TopUiThemeColorProvider topUiColorProvider,
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
-        // Build Layouts
-        mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
+        if (NewTabAnimationUtils.isNewTabAnimationEnabled()) {
+            // TODO(crbug.com/40282469): Change from getContentContainer() as it is z-indexed behind
+            // the NTP.
+            mSimpleAnimationLayout =
+                    new NewTabAnimationLayout(
+                            context,
+                            this,
+                            renderHost,
+                            this,
+                            getContentContainer(),
+                            mCompositorViewHolderSupplier,
+                            mContentView,
+                            mToolbarManager,
+                            getBrowserControlsManager(),
+                            mScrimVisibilitySupplier,
+                            mTopInsetCoordinatorSupplier);
+        } else {
+            mSimpleAnimationLayout =
+                    new SimpleAnimationLayout(context, this, renderHost, getContentContainer());
+        }
 
-        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
+        super.init(
+                selector,
+                creator,
+                controlContainer,
+                dynamicResourceLoader,
+                topUiColorProvider,
+                bottomControlsOffsetSupplier);
 
         // Initialize Layouts
         TabContentManager tabContentManager = mTabContentManagerSupplier.get();
@@ -91,14 +153,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
-    public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout && !incognito) {
-            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
-        }
-        super.onTabsAllClosing(incognito);
-    }
-
-    @Override
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER && showOverview) {
@@ -106,7 +160,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // overview mode when the animation is finished.
             if (getActiveLayoutType() == LayoutType.SIMPLE_ANIMATION) {
                 setNextLayout(getLayoutForType(LayoutType.TAB_SWITCHER), true);
-                getActiveLayout().onTabClosed(time(), id, nextId, incognito);
             } else {
                 super.tabClosed(id, nextId, incognito, tabRemoved);
             }
@@ -120,7 +173,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 && overlaysHandleTabCreating()
                 && getActiveLayout().handlesTabCreating()) {
             // If the current layout in the foreground, let it handle the tab creation animation.
-            // This check allows us to switch from the StackLayout to the SimpleAnimationLayout
+            // This check allows us to switch from the HubLayout to the SimpleAnimationLayout
             // smoothly.
             getActiveLayout().onTabCreating(sourceId);
         } else if (animationsEnabled()) {

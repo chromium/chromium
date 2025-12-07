@@ -14,6 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -23,6 +24,7 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
  * Handles servicing of background offlining requests coming via background_task_scheduler
  * component.
  */
+@NullMarked
 public class OfflineBackgroundTask extends NativeBackgroundTask {
     private static final String TAG = "OfflineBkgrndTask";
 
@@ -78,7 +80,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
 
     /** Wraps the callback for code reuse */
     private Callback<Boolean> wrapCallback(final TaskFinishedCallback callback) {
-        return new Callback<Boolean>() {
+        return new Callback<>() {
             @Override
             public void onResult(Boolean result) {
                 callback.taskFinished(result);
@@ -91,7 +93,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
      * conditions and should be used together with {@link #checkConditions} to ensure that it
      * performs the tasks only when it is supposed to.
      *
-     * @returns Whether processing will be carried out and completion will be indicated through a
+     * @return Whether processing will be carried out and completion will be indicated through a
      *     callback.
      */
     @VisibleForTesting
@@ -106,7 +108,9 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
         return bridge.startScheduledProcessing(deviceConditions, callback);
     }
 
-    /** @returns Whether conditions for running the tasks are met. */
+    /**
+     * @return Whether conditions for running the tasks are met.
+     */
     @VisibleForTesting
     static boolean checkConditions(Context context, PersistableBundle taskExtras) {
         TriggerConditions triggerConditions =

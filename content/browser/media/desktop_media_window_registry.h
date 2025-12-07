@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_DESKTOP_MEDIA_WINDOW_REGISTRY_H_
 
 #include "content/public/browser/desktop_media_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 

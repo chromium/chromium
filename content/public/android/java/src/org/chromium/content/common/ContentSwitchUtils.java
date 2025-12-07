@@ -4,15 +4,19 @@
 
 package org.chromium.content.common;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Util class that handles command line switches that are specific to the content/
  * portion of Chromium on Android.
  */
+@NullMarked
 public final class ContentSwitchUtils {
     // Prevent instantiation.
     private ContentSwitchUtils() {}
 
-    public static String getSwitchValue(final String[] commandLine, String switchKey) {
+    public static @Nullable String getSwitchValue(final String[] commandLine, String switchKey) {
         if (commandLine == null || switchKey == null) {
             return null;
         }

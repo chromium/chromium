@@ -31,8 +31,7 @@ std::string GetRestartMarkerFromId(int animation_id) {
     return kOutlineLoadingAnimationRestartMarker;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return base::EmptyString();
+  NOTREACHED();
 }
 
 base::TimeDelta GetCycleRestartTimestamp(const cc::SkottieWrapper& skottie,

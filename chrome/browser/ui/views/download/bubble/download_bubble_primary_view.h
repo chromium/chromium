@@ -54,9 +54,6 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
 
   views::ScrollView* scroll_view_for_testing() { return scroll_view_; }
 
-  // Whether this primary view is a partial view.
-  virtual bool IsPartialView() const = 0;
-
  protected:
   // TODO(crbug.com/40853007): Add support for refreshing the scroll view
   // contents.
@@ -72,10 +69,6 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
   // Maybe show the banner informing the user that any files downloaded
   // in OTR mode are visible to anyone on the device.
   void MaybeAddOtrInfoRow(Browser* browser);
-
-  // Log the histogram for how long the bubble was visible.
-  void LogVisibleTimeMetrics() const;
-  virtual std::string_view GetVisibleTimeHistogramName() const = 0;
 
  private:
   // The ScrollView holding the DownloadBubbleRowListView with the download

@@ -6,6 +6,7 @@
 #define IOS_WEB_VIEW_PUBLIC_CWV_AUTOFILL_DATA_MANAGER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "cwv_export.h"
 
@@ -38,6 +39,9 @@ CWV_EXPORT
 // Deletes the profile.
 - (void)deleteProfile:(CWVAutofillProfile*)profile;
 
+// Fetches the image icon for the given credit card.
+- (UIImage*)fetchIconForCreditCard:(CWVCreditCard*)creditCard;
+
 // Returns all saved credit cards for payment autofill in |completionHandler|.
 - (void)fetchCreditCardsWithCompletionHandler:
     (void (^)(NSArray<CWVCreditCard*>* creditCards))completionHandler;
@@ -50,9 +54,11 @@ CWV_EXPORT
 // |password| The password to update.
 // |newUsername| The new username to set for |password|. Ignored if nil.
 // |newPassword| The new password to set for |password|. Ignored if nil.
+// |timestamp| The date associated with this password action.
 - (void)updatePassword:(CWVPassword*)password
            newUsername:(nullable NSString*)newUsername
-           newPassword:(nullable NSString*)newPassword;
+           newPassword:(nullable NSString*)newPassword
+             timestamp:(NSDate*)timestamp;
 
 // Deletes the password.
 - (void)deletePassword:(CWVPassword*)password;
@@ -62,9 +68,11 @@ CWV_EXPORT
 // |password| The desired password.
 // |site| The website this password is used for. For example
 // "https://www.chromium.org/".
+// |timestamp| The date associated with this password action.
 - (void)addNewPasswordForUsername:(NSString*)username
                          password:(NSString*)password
-                             site:(NSString*)site;
+                             site:(NSString*)site
+                        timestamp:(NSDate*)timestamp;
 
 // Adds a new password created from the iOS credential provider extension.
 // |username| The login username for this password.
@@ -73,9 +81,11 @@ CWV_EXPORT
 // |keychainIdentifier| Used to retrieve the password value from the keychain.
 // This should identify a password previously stored using the APIs in
 // CWVCredentialProviderUtils.
+// |timestamp| The date associated with this password action.
 - (void)addNewPasswordForUsername:(NSString*)username
                 serviceIdentifier:(NSString*)serviceIdentifier
-               keychainIdentifier:(NSString*)keychainIdentifier;
+               keychainIdentifier:(NSString*)keychainIdentifier
+                        timestamp:(NSDate*)timestamp;
 
 @end
 

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './privacy_sandbox_icons.html.js';
+import '../settings_page/settings_subpage.js';
 import '../simple_confirmation_dialog.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
@@ -19,6 +20,7 @@ import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {FirstLevelTopicsState, PrivacySandboxBrowserProxy, PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
@@ -29,8 +31,8 @@ export interface SettingsPrivacySandboxManageTopicsSubpageElement {
     explanationText: HTMLElement,
   };
 }
-const SettingsPrivacySandboxManageTopicsSubpageElementBase =
-    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
+const SettingsPrivacySandboxManageTopicsSubpageElementBase = SettingsViewMixin(
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 // First Level Topics for Taxonomy v2
 // This list comes from here:
@@ -72,14 +74,6 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       firstLevelTopicsList_: {
         type: Array,
         value() {
@@ -108,11 +102,11 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
       PrivacySandboxBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private firstLevelTopicsList_: PrivacySandboxInterest[];
+  declare private firstLevelTopicsList_: PrivacySandboxInterest[];
   private topicBeingToggled_?: PrivacySandboxInterest;
-  private blockTopicDialogTitle_: string;
-  private blockTopicDialogBody_: string;
-  private shouldShowBlockTopicDialog_: boolean;
+  declare private blockTopicDialogTitle_: string;
+  declare private blockTopicDialogBody_: string;
+  declare private shouldShowBlockTopicDialog_: boolean;
 
   override ready() {
     super.ready();
@@ -121,7 +115,9 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
         state => this.onFirstLevelTopicsStateChanged_(state));
   }
 
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (newRoute === routes.PRIVACY_SANDBOX_MANAGE_TOPICS) {
       // Should not be able to navigate to Manage Topics page when topics is
       // disabled.
@@ -161,7 +157,7 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     const toggleBeingChanged =
         this.shadowRoot!.querySelector<CrToggleElement>(toggleId);
     assert(toggleBeingChanged);
-    toggleBeingChanged!.click();
+    toggleBeingChanged.click();
   }
 
   private async onToggleChange_(e: DomRepeatEvent<PrivacySandboxInterest>) {
@@ -258,10 +254,13 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
         'Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked');
   }
 
-  // TODO(b/321007722): Add test to make sure there is always a icon based on
-  // the variability of different taxonomies.
   private computeTopicIcon_(topicId: number) {
     return topicIdToIconName.get(topicId) || 'firstLevelTopics20:category';
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

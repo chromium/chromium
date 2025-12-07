@@ -82,7 +82,7 @@ void FrameConsole::ReportMessageToClient(
     if (frame_->GetChromeClient()
             .ShouldReportDetailedMessageForSourceAndSeverity(*frame_, level,
                                                              url)) {
-      std::unique_ptr<SourceLocation> full_location =
+      SourceLocation* full_location =
           SourceLocation::CaptureWithFullStackTrace();
       if (!full_location->IsUnknown())
         stack_trace = full_location->ToString();
@@ -108,9 +108,9 @@ void FrameConsole::ReportResourceResponseReceived(
   if (response.HttpStatusCode() < 400)
     return;
   String message =
-      "Failed to load resource: the server responded with a status of " +
-      String::Number(response.HttpStatusCode()) + " (" +
-      response.HttpStatusText() + ')';
+      StrCat({"Failed to load resource: the server responded with a status of ",
+              String::Number(response.HttpStatusCode()), " (",
+              response.HttpStatusText(), ")"});
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kNetwork,
       mojom::blink::ConsoleMessageLevel::kError, message,
@@ -125,15 +125,16 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
   if (error.IsCancellation() || error.IsUnactionableTrustTokensStatus())
     return;
 
-  if (error.CorsErrorStatus() &&
-      base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
-    // CORS issues are reported via network service instrumentation.
-    return;
-  }
-
   if (error.WasBlockedByORB()) {
     // ORB loading errors are reported from the network service directly to
     // DevTools (CorsURLLoader::ReportOrbErrorToDevTools).
+    return;
+  }
+
+  // Reduce noise in the DevTools console due to CORS policy errors.
+  // See http://crbug.com/375357425.
+  if (error.CorsErrorStatus() &&
+      base::FeatureList::IsEnabled(features::kDevToolsImprovedNetworkError)) {
     return;
   }
 

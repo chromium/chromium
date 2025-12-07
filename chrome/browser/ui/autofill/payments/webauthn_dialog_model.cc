@@ -24,8 +24,9 @@ WebauthnDialogModel::~WebauthnDialogModel() = default;
 void WebauthnDialogModel::SetDialogState(WebauthnDialogState state) {
   state_ = state;
   SetIllustrationsFromState();
-  for (WebauthnDialogModelObserver& observer : observers_)
+  for (WebauthnDialogModelObserver& observer : observers_) {
     observer.OnDialogStateChanged();
+  }
 }
 
 void WebauthnDialogModel::AddObserver(WebauthnDialogModelObserver* observer) {
@@ -65,13 +66,19 @@ std::u16string WebauthnDialogModel::GetCancelButtonLabel() const {
   return std::u16string();
 }
 
-bool WebauthnDialogModel::IsAcceptButtonVisible() const {
-  return state_ == WebauthnDialogState::kOffer ||
-         state_ == WebauthnDialogState::kOfferPending;
-}
-
-bool WebauthnDialogModel::IsAcceptButtonEnabled() const {
-  return state_ != WebauthnDialogState::kOfferPending;
+AuthenticatorRequestSheetModel::AcceptButtonState
+WebauthnDialogModel::GetAcceptButtonState() const {
+  switch (state_) {
+    case WebauthnDialogState::kOffer:
+      return AcceptButtonState::kEnabled;
+    case WebauthnDialogState::kOfferPending:
+      return AcceptButtonState::kDisabled;
+    case WebauthnDialogState::kOfferError:
+    case WebauthnDialogState::kVerifyPending:
+    case WebauthnDialogState::kInactive:
+    case WebauthnDialogState::kUnknown:
+      return AcceptButtonState::kNotVisible;
+  }
 }
 
 std::u16string WebauthnDialogModel::GetAcceptButtonLabel() const {
@@ -95,8 +102,7 @@ std::u16string WebauthnDialogModel::GetStepTitle() const {
     case WebauthnDialogState::kUnknown:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string WebauthnDialogModel::GetStepDescription() const {
@@ -114,8 +120,7 @@ std::u16string WebauthnDialogModel::GetStepDescription() const {
     case WebauthnDialogState::kUnknown:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 void WebauthnDialogModel::SetIllustrationsFromState() {

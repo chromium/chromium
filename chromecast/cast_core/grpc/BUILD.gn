@@ -15,6 +15,7 @@ source_set("grpc") {
     "grpc_handler.h",
     "grpc_server.cc",
     "grpc_server.h",
+    "grpc_server_reactor.cc",
     "grpc_server_reactor.h",
     "grpc_server_streaming_call.h",
     "grpc_server_streaming_handler.h",
@@ -32,6 +33,11 @@ source_set("grpc") {
     "//base",
     "//third_party/abseil-cpp:absl",
     "//third_party/grpc:grpc++",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 }
 
@@ -65,6 +71,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -83,6 +93,10 @@ source_set("test_support") {
   ]
 
   public_deps = [ ":status_matchers" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 cast_core_proto_library("test_service_messages_proto") {

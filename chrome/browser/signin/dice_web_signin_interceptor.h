@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/cancelable_callback.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -48,27 +48,6 @@ class DiceInterceptedSessionStartupHelper;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
-
-// This enum gets the result of `MaybeShouldShowChromeSigninBubble()`, which
-// could be `ShouldShow` or `ShouldNotShow`. When the result is `ShouldNotShow`
-// the reason is also added to differentiate the cases of not showing the
-// bubble. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class ShouldShowChromeSigninBubbleWithReason {
-  // The bubble should be shown.
-  kShouldShow = 0,
-
-  // The bubble should not be shown: multiple reasons listed below with order of
-  // priority.
-  // Deprecated: kShouldNotShowMaxShownCountReached = 1,
-  kShouldNotShowAlreadySignedIn = 2,
-  // Deprecated: kShouldNotShowSecondaryAccount = 3,
-  kShouldNotShowUnknownAccessPoint = 4,
-  kShouldNotShowNotFromWebSignin = 5,
-  kShouldNotShowUserChoice = 6,
-
-  kMaxValue = kShouldNotShowUserChoice,
-};
 
 // Supervision state of the user who is shown the sign-in intercept bubble.
 // These values are logged to UMA. Entries should not be renumbered and
@@ -154,8 +133,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       bool is_new_account,
       bool is_sync_signin,
       const std::string& email,
-      const std::string& gaia_id = std::string(),
-      bool update_state = false,
+      const GaiaId& gaia_id = GaiaId(),
       const ProfileAttributesEntry** entry = nullptr) const;
 
   // Returns true if the interception is in progress (running the heuristic or
@@ -163,6 +141,23 @@ class DiceWebSigninInterceptor : public KeyedService,
   bool is_interception_in_progress() const {
     return state_->is_interception_in_progress_;
   }
+
+  bool has_interception_bubble_handle_for_testing() const {
+    return state_->interception_bubble_handle_.get();
+  }
+
+  content::WebContents* web_contents() const {
+    return state_->web_contents_.get();
+  }
+
+  const std::optional<policy::ProfileSeparationPolicies>
+  intercepted_account_profile_separation_policies() const {
+    return state_->intercepted_account_profile_separation_policies_;
+  }
+
+  bool managed_profile_creation_required_by_policy() const;
+
+  AccountInfo intercepted_account_info() const;
 
   void SetInterceptedAccountProfileSeparationPoliciesForTesting(
       std::optional<policy::ProfileSeparationPolicies> value) {
@@ -172,7 +167,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   static base::TimeDelta GetTimeSinceLastChromeSigninDeclineForTesting(
       const SigninPrefs& signin_prefs,
-      const std::string& gaia_id);
+      const GaiaId& gaia_id);
 
   // KeyedService:
   void Shutdown() override;
@@ -201,14 +196,18 @@ class DiceWebSigninInterceptor : public KeyedService,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            EnforceManagedAccountAsPrimary);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
-                           ShouldEnforceEnterpriseProfileSeparationReauth);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTestWithUnoEnabled,
+                           EnforceManagedAccountAsPrimaryReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ForcedEnterpriseInterceptionTestAccountLevelPolicy);
   FRIEND_TEST_ALL_PREFIXES(
       DiceWebSigninInterceptorTest,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
+                           ShouldShowEnterpriseDialog_AlwaysAsk);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
+  FRIEND_TEST_ALL_PREFIXES(ManagedProfileRequiredNavigationThrottleTest,
+                           CancelsWithInterstitialWhenForcedInterception);
 
   // Profile presets that will be passed from the previous profile to the newly
   // created one during sign in intercept.
@@ -235,7 +234,8 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // Helper functions to determine which interception UI should be shown.
   const ProfileAttributesEntry* ShouldShowProfileSwitchBubble(
-      const std::string& intercepted_email,
+      const GaiaId& intercepted_gaia_id,
+      const std::string& intercepted_email_fallback,
       ProfileAttributesStorage* profile_attribute_storage) const;
   bool ShouldEnforceEnterpriseProfileSeparation(
       const AccountInfo& intercepted_account_info) const;
@@ -245,7 +245,8 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
-  bool ShouldShowChromeSigninBubble(const std::string& gaia_id);
+  bool ShouldShowChromeSigninBubble(const GaiaId& gaia_id,
+                                    const std::string& email) const;
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
   void ShowSigninInterceptionBubble(
@@ -289,7 +290,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // - returns the processed result.
   SigninInterceptionResult ProcessChromeSigninUserChoice(
       SigninInterceptionResult result,
-      const std::string& gaia_id);
+      const GaiaId& gaia_id);
 
   // A non `std::nullopt` `profile_presets` will be applied to the
   // `new_profile` when the function is called.
@@ -328,7 +329,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // `SigninInterceptionResult::kAccepted` or
   // `SigninInterceptionResult::kDeclined`.
   void RecordChromeSigninNumberOfDismissesForAccount(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       SigninInterceptionResult result);
 
   // Checks if the user previously declined 2 times creating a new profile for
@@ -341,18 +342,20 @@ class DiceWebSigninInterceptor : public KeyedService,
   // timeout.
   void EnsureAccountLevelSigninRestrictionFetchInProgress(
       const AccountInfo& account_info,
-      base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
-          callback);
+      base::OnceCallback<void(policy::ProfileSeparationPolicies)> callback);
 
   // Called when the the value of the cloud user level value of the
   // ManagedAccountsSigninRestriction is received.
   void OnAccountLevelManagedAccountsSigninRestrictionReceived(
       const AccountInfo& account_info,
-      const policy::ProfileSeparationPolicies& profile_separation_policies);
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
   // Records the heuristic outcome and latency metrics.
   void RecordSigninInterceptionHeuristicOutcome(
       SigninInterceptionHeuristicOutcome outcome) const;
+
+  // Shows HaTS survey to eligible users.
+  void LaunchHatsSurvey(const std::string& trigger);
 
   // Returns true if we have all the extended account information which might
   // factor in to the intercept heuristic. If we don't have 'Full' information,
@@ -382,9 +385,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     std::optional<WebSigninInterceptor::SigninInterceptionType>
         interception_type_;
     signin_metrics::AccessPoint access_point_ =
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
-    std::optional<ShouldShowChromeSigninBubbleWithReason>
-        should_show_chrome_signin_bubble_;
+        signin_metrics::AccessPoint::kUnknown;
 
     // Timeout for waiting for full information to be available (see
     // `ProcessInterceptionOrWait()`).
@@ -397,7 +398,6 @@ class DiceWebSigninInterceptor : public KeyedService,
         interception_bubble_handle_;
 
     // Used for metrics.
-    base::TimeTicks interception_start_time_;
     bool was_interception_ui_displayed_ = false;
 
     // Used to fetch the cloud user level policy value of the profile separation
@@ -409,10 +409,12 @@ class DiceWebSigninInterceptor : public KeyedService,
     // no value is set, then we have not yet received the policy value.
     std::optional<policy::ProfileSeparationPolicies>
         intercepted_account_profile_separation_policies_;
+
+    base::ScopedClosureRunner disable_management_disclaimer_until_reset_;
   };
 
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
-  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<WebSigninInterceptor::Delegate> delegate_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

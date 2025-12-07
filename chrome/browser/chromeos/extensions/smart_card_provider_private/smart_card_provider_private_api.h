@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_SMART_CARD_PROVIDER_PRIVATE_SMART_CARD_PROVIDER_PRIVATE_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_SMART_CARD_PROVIDER_PRIVATE_SMART_CARD_PROVIDER_PRIVATE_API_H_
 
+#include <variant>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -16,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 
 namespace extensions {
@@ -105,6 +108,8 @@ class SmartCardProviderPrivateAPI
   void Connect(const std::string& reader,
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
+               mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+                   connection_watcher,
                ConnectCallback callback) override;
 
   // device::mojom::SmartCardConnection overrides:
@@ -163,10 +168,13 @@ class SmartCardProviderPrivateAPI
   void ProcessPlainResult(ResultArgs result_args,
                           device::mojom::SmartCardResultPtr result,
                           SmartCardCallback callback);
-  void ProcessConnectResult(ContextId scard_context,
-                            ResultArgs result_args,
-                            device::mojom::SmartCardResultPtr result,
-                            SmartCardCallback callback);
+  void ProcessConnectResult(
+      ContextId scard_context,
+      mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+          connection_watcher,
+      ResultArgs result_args,
+      device::mojom::SmartCardResultPtr result,
+      SmartCardCallback callback);
   void ProcessDataResult(ResultArgs result_args,
                          device::mojom::SmartCardResultPtr result,
                          SmartCardCallback callback);
@@ -191,11 +199,14 @@ class SmartCardProviderPrivateAPI
       base::TimeDelta time_delta,
       std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states,
       GetStatusChangeCallback callback);
-  void SendConnect(ContextId scard_context,
-                   const std::string& reader,
-                   device::mojom::SmartCardShareMode share_mode,
-                   device::mojom::SmartCardProtocolsPtr preferred_protocols,
-                   ConnectCallback callback);
+  void SendConnect(
+      ContextId scard_context,
+      const std::string& reader,
+      device::mojom::SmartCardShareMode share_mode,
+      device::mojom::SmartCardProtocolsPtr preferred_protocols,
+      mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+          connection_watcher,
+      ConnectCallback callback);
   void SendDisconnect(ContextId scard_context,
                       Handle handle,
                       device::mojom::SmartCardDisposition disposition,
@@ -248,7 +259,8 @@ class SmartCardProviderPrivateAPI
 
   void RunNextRequestForContext(ContextId scard_context);
 
-  std::string GetListenerExtensionId(const extensions::Event& event);
+  std::optional<std::string> GetListenerExtensionId(
+      const extensions::Event& event);
 
   void OnEstablishContextTimeout(const std::string& provider_extension_id,
                                  RequestId request_id);
@@ -294,7 +306,9 @@ class SmartCardProviderPrivateAPI
   device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(
       ContextId scard_context,
       Handle handle,
-      device::mojom::SmartCardProtocol active_protocol);
+      device::mojom::SmartCardProtocol active_protocol,
+      mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+          connection_watcher);
 
   device::mojom::SmartCardTransactionResultPtr CreateSmartCardTransaction(
       ContextId scard_context,
@@ -314,6 +328,14 @@ class SmartCardProviderPrivateAPI
                               ContextData& context_data,
                               device::mojom::SmartCardDisposition disposition,
                               EndTransactionCallback callback);
+
+  // The watcher connection closes - thus, the pipe fall is leveraged to kill
+  // the connection.
+  void OnMojoWatcherPipeClosed(mojo::RemoteSetElementId watcher_id);
+
+  // This may only be called only when processing a received method call on
+  // SmartCardConnection().
+  void NotifyConnectionUsed();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -337,6 +359,15 @@ class SmartCardProviderPrivateAPI
   mojo::ReceiverSet<device::mojom::SmartCardConnection,
                     std::tuple<ContextId, Handle>>
       connection_receivers_;
+
+  mojo::RemoteSet<device::mojom::SmartCardConnectionWatcher>
+      connection_watchers_;
+
+  std::map<mojo::ReceiverId, mojo::RemoteSetElementId>
+      connection_watchers_per_receiver_;
+
+  std::map<mojo::RemoteSetElementId, mojo::ReceiverId>
+      connection_receivers_per_watcher_;
 
   mojo::AssociatedReceiverSet<device::mojom::SmartCardTransaction,
                               std::tuple<ContextId, Handle>>

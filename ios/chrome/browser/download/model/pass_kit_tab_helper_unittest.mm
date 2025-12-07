@@ -4,19 +4,21 @@
 
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 
-#import <memory>
-
 #import <PassKit/PassKit.h>
 
+#import <memory>
+
 #import "base/functional/callback_helpers.h"
+#import "base/task/current_thread.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/io_buffer.h"
 #import "net/base/net_errors.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +43,7 @@ class PassKitTabHelperTest : public PlatformTest {
     return PassKitTabHelper::GetOrCreateForWebState(&web_state_);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   web::FakeWebState web_state_;
   FakeWebContentHandler* handler_;
   base::HistogramTester histogram_tester_;
@@ -54,6 +56,9 @@ TEST_F(PassKitTabHelperTest, EmptyBundledFile) {
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -64,7 +69,7 @@ TEST_F(PassKitTabHelperTest, EmptyBundledFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadBundledPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       1);
 }
@@ -82,6 +87,9 @@ TEST_F(PassKitTabHelperTest, ValidBundledPassKitFile) {
                                 length:pass_data.size()];
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -100,10 +108,11 @@ TEST_F(PassKitTabHelperTest, ValidBundledPassKitFile) {
   EXPECT_NSEQ(@"pass.google.chrome.test", second_pass.passTypeIdentifier);
   EXPECT_NSEQ(@"Paw Planet", second_pass.organizationName);
 
-  histogram_tester_.ExpectUniqueSample(kUmaDownloadBundledPassKitResult,
-                                       static_cast<base::HistogramBase::Sample>(
-                                           DownloadPassKitResult::kSuccessful),
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadBundledPassKitResult,
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadPassKitResult::kSuccessful),
+      1);
 }
 
 // Tests downloading a bundle pkpass file containing one valid pass and an
@@ -120,6 +129,9 @@ TEST_F(PassKitTabHelperTest, SemiValidBundledPassKitFile) {
                                 length:pass_data.size()];
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -134,7 +146,7 @@ TEST_F(PassKitTabHelperTest, SemiValidBundledPassKitFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadBundledPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kPartialFailure),
       1);
 }
@@ -153,6 +165,9 @@ TEST_F(PassKitTabHelperTest, InvalidBundledPassKitFile) {
                                 length:pass_data.size()];
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
+
+  base::test::RunUntil([&]() { return handler_.called; });
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
         return handler_.called;
@@ -163,7 +178,7 @@ TEST_F(PassKitTabHelperTest, InvalidBundledPassKitFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadBundledPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       1);
 }
@@ -180,7 +195,7 @@ TEST_F(PassKitTabHelperTest, EmptyFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       1);
 }
@@ -207,7 +222,7 @@ TEST_F(PassKitTabHelperTest, MultipleEmptyFiles) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       2);
 }
@@ -233,10 +248,11 @@ TEST_F(PassKitTabHelperTest, ValidPassKitFile) {
   EXPECT_NSEQ(@"pass.com.apple.devpubs.example", pass.passTypeIdentifier);
   EXPECT_NSEQ(@"Toy Town", pass.organizationName);
 
-  histogram_tester_.ExpectUniqueSample(kUmaDownloadPassKitResult,
-                                       static_cast<base::HistogramBase::Sample>(
-                                           DownloadPassKitResult::kSuccessful),
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadPassKitResult,
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadPassKitResult::kSuccessful),
+      1);
 }
 
 // Tests the change of MIME type during the download. Can happen if the second
@@ -251,7 +267,7 @@ TEST_F(PassKitTabHelperTest, MimeTypeChange) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kWrongMimeTypeFailure),
       1);
 }
@@ -268,7 +284,7 @@ TEST_F(PassKitTabHelperTest, DownloadError) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kOtherFailure),
       1);
 }
@@ -285,7 +301,7 @@ TEST_F(PassKitTabHelperTest, UnauthorizedHttpResponse) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kUnauthorizedFailure),
       1);
 }
@@ -302,7 +318,7 @@ TEST_F(PassKitTabHelperTest, ForbiddenHttpResponse) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kUnauthorizedFailure),
       1);
 }

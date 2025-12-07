@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -31,6 +32,8 @@
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
+#include "net/quic/quic_session_alias_key.h"
+#include "net/quic/quic_session_key.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/socket_tag.h"
@@ -169,10 +172,13 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
       &transport_security_state_, &ssl_config_service_,
       base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
-      QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                     proxy_chain_, SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+      QuicSessionAliasKey(
+          url::SchemeHostPort(),
+          QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                         proxy_chain_, SessionUsage::kDestination, SocketTag(),
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                         /*require_dns_https_alpn=*/false,
+                         /*disable_cert_verification_network_fetches=*/false)),
       /*require_confirmation=*/false,
       /*migrate_session_early_v2=*/false,
       /*migrate_session_on_network_change_v2=*/false,
@@ -193,7 +199,9 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       base::DefaultTickClock::GetInstance(),
       base::SingleThreadTaskRunner::GetCurrentDefault().get(),
       /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-      /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+      /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
+      MultiplexedSessionCreationInitiator::kUnknown,
+      NetLogWithSource::Make(NetLogSourceType::NONE));
 
   writer->set_delegate(session_.get());
 
@@ -323,9 +331,10 @@ QuicProxyClientSocketTestBase::ConstructAckAndDataPacket(
     uint64_t largest_received,
     uint64_t smallest_received,
     std::string_view data) {
-  return client_maker_.MakeAckAndDataPacket(
-      packet_number, client_data_stream_id1_, largest_received,
-      smallest_received, !kFin, data);
+  return client_maker_.Packet(packet_number)
+      .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+      .AddStreamFrame(client_data_stream_id1_, !kFin, data)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>

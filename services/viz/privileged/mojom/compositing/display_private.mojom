@@ -7,6 +7,7 @@ module viz.mojom;
 import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/display/mojom/display_constants.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 import "ui/gfx/mojom/delegated_ink_point_renderer.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
@@ -19,6 +20,7 @@ import "services/viz/privileged/mojom/compositing/layered_window_updater.mojom";
 import "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom";
 
 // The DisplayPrivate is used by privileged clients to talk to Display.
+[DirectReceiver]
 interface DisplayPrivate {
   SetDisplayVisible(bool visible);
 
@@ -57,16 +59,18 @@ interface DisplayPrivate {
   // by other means, it should be made sync.
   ForceImmediateDrawAndSwapIfPossible();
 
-  // Notifies the display to pause VSync signals. Used for VR.
-  [EnableIf=is_android]
-  SetVSyncPaused(bool paused);
-
   // Updates the refresh rate of the associated Display.
   [EnableIf=is_android]
   UpdateRefreshRate(float refresh_rate);
 
-  // Updates the list of refresh rates supported by the associated Display.
+  // Updates adaptive refresh rate information of the associated Display.
   [EnableIf=is_android]
+  SetAdaptiveRefreshRateInfo(bool has_support,
+                           float suggested_high,
+                           float device_scale_factor);
+
+  // Updates the list of refresh rates supported by the associated Display.
+  [EnableIf=can_set_refresh_rate]
   SetSupportedRefreshRates(array<float> refresh_rates);
 
   // Notifies associated Display to not detach child surface controls during
@@ -101,9 +105,11 @@ interface DisplayPrivate {
   SetStandaloneBeginFrameObserver(pending_remote<BeginFrameObserver> observer);
 
   // Sets the maximum vsync interval supported by the display for use with
-  // variable refresh rates. An absent value indicates that VRR is not enabled
-  // on the display.
-  SetMaxVrrInterval(mojo_base.mojom.TimeDelta? max_vrr_interval);
+  // variable refresh rates and/or virtual modes, if supported. Also sets
+  // the current VRR state indicating whether it is enabled on the display.
+  SetMaxVSyncAndVrr(
+    mojo_base.mojom.TimeDelta? max_vsync_interval,
+    display.mojom.VariableRefreshRateState vrr_state);
 };
 
 // DisplayClient allows privileged clients to receive events from the Display.
@@ -141,6 +147,7 @@ interface DisplayClient {
   [EnableIf=is_android]
   SetWideColorEnabled(bool enabled);
 
-  [EnableIf=is_android]
+  // Notifies that there is a new refresh rate preference.
+  [EnableIf=can_set_refresh_rate]
   SetPreferredRefreshRate(float refresh_rate);
 };

@@ -8,12 +8,21 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+
 namespace gfx {
+
+namespace mojom {
+class AxisTransform2dDataView;
+}  // namespace mojom
 
 struct DecomposedTransform;
 
@@ -26,7 +35,7 @@ struct DecomposedTransform;
 // Results of the *Map* methods are clamped with ClampFloatGeometry().
 // See the definition of the function for details.
 //
-class GEOMETRY_EXPORT AxisTransform2d {
+class COMPONENT_EXPORT(GEOMETRY) AxisTransform2d {
  public:
   constexpr AxisTransform2d() = default;
   constexpr AxisTransform2d(float scale, const Vector2dF& translation)
@@ -37,12 +46,8 @@ class GEOMETRY_EXPORT AxisTransform2d {
     return AxisTransform2d(scale, translation);
   }
 
-  constexpr bool operator==(const AxisTransform2d& other) const {
-    return scale_ == other.scale_ && translation_ == other.translation_;
-  }
-  constexpr bool operator!=(const AxisTransform2d& other) const {
-    return !(*this == other);
-  }
+  friend constexpr bool operator==(const AxisTransform2d&,
+                                   const AxisTransform2d&) = default;
 
   void PreScale(const Vector2dF& scale) { scale_.Scale(scale.x(), scale.y()); }
   void PostScale(const Vector2dF& scale) {
@@ -118,6 +123,9 @@ class GEOMETRY_EXPORT AxisTransform2d {
   std::string ToString() const;
 
  private:
+  friend struct mojo::StructTraits<mojom::AxisTransform2dDataView,
+                                   AxisTransform2d>;
+
   constexpr AxisTransform2d(const Vector2dF& scale,
                             const Vector2dF& translation)
       : scale_(scale), translation_(translation) {}

@@ -1,4 +1,4 @@
-    <style include="settings-shared">
+    <style include="settings-shared cr-spinner-style">
       :host {
         /* Fixed height to allow multiple tabs with different height.
          * The last entry in the advanced tab should show half an entry.
@@ -53,7 +53,7 @@
         min-height: 40px;
       }
 
-      paper-spinner-lite {
+      .spinner {
         margin-bottom: auto;
         margin-inline-end: 16px;
         margin-top: auto;
@@ -63,7 +63,7 @@
         --cr-section-two-line-min-height: 48px;
       }
 
-      #basic-tab settings-checkbox + settings-checkbox {
+      #basicTab settings-checkbox + settings-checkbox {
         --settings-checkbox-margin-top: 12px;
       }
 
@@ -99,7 +99,7 @@
         margin: 0 16px;
       }
 
-      #footer-description {
+      #footerDescription {
         color: var(--cr-secondary-text-color);
         padding: 16px;
       }
@@ -162,29 +162,18 @@
       <div slot="body">
         <cr-page-selector id="pages" selected="[[selectedTabIndex_]]"
             on-iron-select="updateClearButtonState_">
-          <div id="basic-tab">
+          <div id="basicTab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic" no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period_basic}}"
-                    menu-options="[[clearFromOptions_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-                </settings-dropdown-menu>
-              </template>
-              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic" required no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
-                    menu-options="[[clearFromOptionsV2_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-                </settings-dropdown-menu>
-              </template>
+              <settings-dropdown-menu id="clearFromBasic" no-set-pref
+                  class="time-range-select"
+                  label="$i18n{clearTimeRange}"
+                  pref="{{prefs.browser.clear_data.time_period_basic}}"
+                  menu-options="[[clearFromOptions_]]"
+                  on-settings-control-change="onTimePeriodChanged_">
+              </settings-dropdown-menu>
             </div>
             <!-- Note: whether these checkboxes are checked are ignored if
                  deleting history is disabled (i.e. supervised users, policy),
@@ -206,7 +195,7 @@
                 pref="{{prefs.browser.clear_data.cookies_basic}}"
                 label="$i18n{clearCookies}"
                 sub-label="[[cookiesCheckboxLabel_(
-                    isSignedIn_,
+                    syncStatus.signedInState,
                     shouldShowCookieException_,
                     '$i18nPolymer{clearCookiesSummary}',
                     '$i18nPolymer{clearCookiesSummarySignedIn}',
@@ -223,10 +212,10 @@
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <div class="search-history-box"
-                hidden="[[!isSignedIn_]]">
-              <iron-icon class="search-history-box-icon" aria-hidden="true"
+                hidden="[[!showSearchHistoryBox_(syncStatus.signedInState)]]">
+              <cr-icon class="search-history-box-icon" aria-hidden="true"
                   icon="settings20:googleg">
-              </iron-icon>
+              </cr-icon>
               <div id="googleSearchHistoryLabel"
                   inner-h-t-m-l="[[googleSearchHistoryString_]]">
               </div>
@@ -234,36 +223,26 @@
             <div id="nonGoogleSearchHistoryBox"
                 class="search-history-box"
                 hidden="[[!isNonGoogleDse_]]">
-              <iron-icon class="search-history-box-icon" aria-hidden="true"
+              <cr-icon class="search-history-box-icon" aria-hidden="true"
                   icon="cr:search">
-              </iron-icon>
+              </cr-icon>
               <div id="nonGoogleSearchHistoryLabel"
                   inner-h-t-m-l="[[nonGoogleSearchHistoryString_]]">
               </div>
             </div>
           </div>
-          <div id="advanced-tab">
+          <div id="advancedTab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom" no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period}}"
-                    menu-options="[[clearFromOptions_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-                </settings-dropdown-menu>
-              </template>
-              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom" required no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period_v2}}"
-                    menu-options="[[clearFromOptionsV2_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-              </template>
+              <settings-dropdown-menu id="clearFrom" no-set-pref
+                  class="time-range-select"
+                  label="$i18n{clearTimeRange}"
+                  pref="{{prefs.browser.clear_data.time_period}}"
+                  menu-options="[[clearFromOptions_]]"
+                  on-settings-control-change="onTimePeriodChanged_">
+              </settings-dropdown-menu>
             </div>
             <settings-checkbox id="browsingCheckbox"
                 pref="{{prefs.browser.clear_data.browsing_history}}"
@@ -321,8 +300,7 @@
         </cr-page-selector>
       </div>
       <div slot="button-container">
-        <paper-spinner-lite active="[[clearingInProgress_]]">
-        </paper-spinner-lite>
+        <div class="spinner" hidden$="[[!clearingInProgress_]]"></div>
         <cr-button class="cancel-button" autofocus
             disabled="[[clearingInProgress_]]"
             on-click="onCancelClick_">
@@ -343,33 +321,34 @@
       </div>
 <if expr="not is_chromeos">
       <template is="dom-if"
-          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState,
-              isClearPrimaryAccountAllowed_)]]"
+          if="[[shouldShowFooter_(
+              syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
-              prefs="{{prefs}}" hide-buttons hide-banner>
+              prefs="{{prefs}}" hide-buttons hide-banner
+              access-point="[[accessPointEnum_.SETTINGS]]">
           </settings-sync-account-control>
           <div class="divider"></div>
-          <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
-            <span id="signin-info"
-                hidden="[[!showSigninInfo_(isSignedIn_,
+          <div id="footerDescription" on-click="onSyncDescriptionLinkClicked_">
+            <span id="signinInfo"
+                hidden="[[!showSigninInfo_(
                     syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
-            <span id="sync-info"
-                hidden="[[!showSyncInfo_(isSignedIn_,
-                    syncStatus.signedInState)]]">
+            <span id="syncInfo"
+                hidden="[[!showSyncInfo_(
+                    syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
-            <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">
+            <span id="syncPausedInfo" hidden="[[!isSyncPaused_]]">
               $i18nRaw{clearBrowsingDataWithSyncPaused}
             </span>
-            <span id="sync-passphrase-error-info"
+            <span id="syncPassphraseErrorInfo"
                 hidden="[[!hasPassphraseError_]]">
               $i18nRaw{clearBrowsingDataWithSyncPassphraseError}
             </span>
-            <span id="sync-other-error-info" hidden="[[!hasOtherSyncError_]]">
+            <span id="syncOtherErrorInfo" hidden="[[!hasOtherSyncError_]]">
               $i18nRaw{clearBrowsingDataWithSyncError}
             </span>
           </div>

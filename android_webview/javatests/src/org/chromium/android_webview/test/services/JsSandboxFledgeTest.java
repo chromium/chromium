@@ -26,6 +26,7 @@ import org.chromium.android_webview.shell.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Batch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 /** Instrumentation tests for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.PER_CLASS)
 public class JsSandboxFledgeTest {
     private static final int TIMEOUT_SECONDS = 5;
 
@@ -596,12 +598,12 @@ public class JsSandboxFledgeTest {
 
         final String codeRunWasmModule =
                 "'use strict';function callWasm(input1, input2, wasmModule) {  const instance = new"
-                        + " WebAssembly.Instance(wasmModule);  const { addTwo } = instance.exports; "
-                        + " return addTwo(input1,input2);}\n"
-                        + "(function() {  const input1 = 3;  const input2 = 4;  return"
-                        + " android.consumeNamedDataAsArrayBuffer('module').then((value) => {    return"
-                        + " WebAssembly.compile(value).then((wasmModule) => {      return"
-                        + " JSON.stringify(callWasm(input1, input2, wasmModule));    })  });})();";
+                    + " WebAssembly.Instance(wasmModule);  const { addTwo } = instance.exports; "
+                    + " return addTwo(input1,input2);}\n"
+                    + "(function() {  const input1 = 3;  const input2 = 4;  return"
+                    + " android.consumeNamedDataAsArrayBuffer('module').then((value) => {    return"
+                    + " WebAssembly.compile(value).then((wasmModule) => {      return"
+                    + " JSON.stringify(callWasm(input1, input2, wasmModule));    })  });})();";
         final String expected = "7";
 
         final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
@@ -616,8 +618,7 @@ public class JsSandboxFledgeTest {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_WASM_COMPILATION));
 
-            final boolean provideNamedDataReturn = jsIsolate.provideNamedData("module", wasmModule);
-            Assert.assertTrue(provideNamedDataReturn);
+            jsIsolate.provideNamedData("module", wasmModule);
             final ListenableFuture<String> resultFuture =
                     jsIsolate.evaluateJavaScriptAsync(codeRunWasmModule);
             final String result = resultFuture.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);

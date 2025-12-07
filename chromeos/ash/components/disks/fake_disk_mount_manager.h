@@ -38,8 +38,11 @@ class FakeDiskMountManager : public DiskMountManager {
     MountAccessMode access_mode;
   };
 
-  struct RemountAllRequest {
-    explicit RemountAllRequest(MountAccessMode access_mode);
+  struct RemountRequest {
+    RemountRequest(std::string device_path, MountAccessMode access_mode);
+    friend bool operator==(const RemountRequest&,
+                           const RemountRequest&) = default;
+    std::string device_path;
     MountAccessMode access_mode;
   };
 
@@ -56,8 +59,8 @@ class FakeDiskMountManager : public DiskMountManager {
   const std::vector<std::string>& unmount_requests() const {
     return unmount_requests_;
   }
-  const std::vector<RemountAllRequest>& remount_all_requests() const {
-    return remount_all_requests_;
+  const std::vector<RemountRequest>& remount_requests() const {
+    return remount_requests_;
   }
 
   // Emulates that all mount request finished.
@@ -72,8 +75,7 @@ class FakeDiskMountManager : public DiskMountManager {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   const Disks& disks() const override;
-  const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const override;
+  const Disk* FindDiskBySourcePath(std::string_view source_path) const override;
   const MountPoints& mount_points() const override;
   void EnsureMountInfoRefreshed(EnsureMountInfoRefreshedCallback callback,
                                 bool force) override;
@@ -89,7 +91,8 @@ class FakeDiskMountManager : public DiskMountManager {
   // |FinishAllUnmountRequest()| is called.
   void UnmountPath(const std::string& mount_path,
                    UnmountPathCallback callback) override;
-  void RemountAllRemovableDrives(MountAccessMode access_mode) override;
+  void RemountRemovableDrive(const Disk& disk,
+                             MountAccessMode access_mode) override;
   void FormatMountedDevice(const std::string& mount_path,
                            FormatFileSystemType filesystem,
                            const std::string& label) override;
@@ -118,7 +121,7 @@ class FakeDiskMountManager : public DiskMountManager {
 
   std::vector<MountRequest> mount_requests_;
   std::vector<std::string> unmount_requests_;
-  std::vector<RemountAllRequest> remount_all_requests_;
+  std::vector<RemountRequest> remount_requests_;
   std::map<std::string, MountError> unmount_errors_;
   // Maps a network storage URL scheme to a registered mount point path for that
   // scheme.

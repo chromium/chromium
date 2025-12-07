@@ -8,10 +8,12 @@ import android.content.res.AssetFileDescriptor;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 
+import androidx.javascriptengine.common.MessagePortInternal;
 import androidx.javascriptengine.common.Utils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxConsoleCallback;
@@ -19,43 +21,48 @@ import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback;
+import org.chromium.android_webview.js_sandbox.common.IMessagePort;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.GuardedBy;
 
 /** Service that provides methods for Javascript execution. */
 @JNINamespace("android_webview")
+@NullMarked
 public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     private static final String TAG = "JsSandboxIsolate";
     // mLock must never be held whilst (synchronously) calling back into the client/embedding
     // application, otherwise it's entirely possible for the embedder to then call back into service
     // code (on another thread) and then try to take mLock again and therefore deadlock.
     private final Object mLock = new Object();
-    private final JsSandboxService mService;
-    private final AtomicReference<IJsSandboxConsoleCallback> mConsoleCallback =
-            new AtomicReference<IJsSandboxConsoleCallback>();
+    private final AtomicReference<@Nullable IJsSandboxConsoleCallback> mConsoleCallback =
+            new AtomicReference<@Nullable IJsSandboxConsoleCallback>();
 
     @GuardedBy("mLock")
     private long mJsSandboxIsolate;
 
-    private final IJsSandboxIsolateClient mIsolateClient;
+    @Nullable private final IJsSandboxIsolateClient mIsolateClient;
 
-    JsSandboxIsolate(JsSandboxService service) {
-        this(service, 0);
+    private final ExecutorService mExecutorService =
+            Executors.newSingleThreadExecutor(r -> new Thread(r, "MessagePortIO"));
+
+    JsSandboxIsolate() {
+        this(0);
     }
 
-    JsSandboxIsolate(JsSandboxService service, long maxHeapSizeBytes) {
-        this(service, maxHeapSizeBytes, null);
+    JsSandboxIsolate(long maxHeapSizeBytes) {
+        this(maxHeapSizeBytes, null);
     }
 
-    JsSandboxIsolate(
-            JsSandboxService service,
-            long maxHeapSizeBytes,
-            IJsSandboxIsolateClient isolateClient) {
-        mService = service;
+    JsSandboxIsolate(long maxHeapSizeBytes, @Nullable IJsSandboxIsolateClient isolateClient) {
         mIsolateClient = isolateClient;
         mJsSandboxIsolate =
                 JsSandboxIsolateJni.get()
@@ -70,7 +77,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             }
             JsSandboxIsolateJni.get()
                     .evaluateJavascript(
-                            mJsSandboxIsolate, this, code, new JsSandboxIsolateCallback(callback));
+                            mJsSandboxIsolate, code, new JsSandboxIsolateCallback(callback));
         }
     }
 
@@ -92,7 +99,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             JsSandboxIsolateJni.get()
                     .evaluateJavascriptWithFd(
                             mJsSandboxIsolate,
-                            this,
                             afd.getParcelFileDescriptor().getFd(),
                             afd.getLength(),
                             afd.getStartOffset(),
@@ -107,7 +113,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             if (mJsSandboxIsolate == 0) {
                 return;
             }
-            JsSandboxIsolateJni.get().destroyNative(mJsSandboxIsolate, this);
+            JsSandboxIsolateJni.get().destroyNative(mJsSandboxIsolate);
             mJsSandboxIsolate = 0;
         }
     }
@@ -129,7 +135,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                     JsSandboxIsolateJni.get()
                             .provideNamedData(
                                     mJsSandboxIsolate,
-                                    this,
                                     name,
                                     afd.getParcelFileDescriptor().detachFd(),
                                     (int) afd.getLength());
@@ -142,7 +147,9 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     // Unicode, such as characters composed of multiple code points, modifiers, ...
     //
     // maxCodePoints must be > 0.
-    private static String truncateUnicodeString(String original, int maxLength) {
+    @Contract("null, _ -> null; !null, _ -> !null")
+    private static @Nullable String truncateUnicodeString(
+            @Nullable String original, int maxLength) {
         if (original == null || original.length() <= maxLength) {
             return original;
         }
@@ -197,7 +204,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
 
     // Checks for errors thrown by client side while reading the stream and closes the Pfd.
     @CalledByNative
-    private static String checkStreamingErrorAndClosePfd(ParcelFileDescriptor pfd) {
+    private static @Nullable String checkStreamingErrorAndClosePfd(ParcelFileDescriptor pfd) {
         try {
             if (pfd.canDetectErrors()) {
                 try {
@@ -219,13 +226,32 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     }
 
     @Override
-    public void setConsoleCallback(IJsSandboxConsoleCallback callback) {
+    public void setConsoleCallback(@Nullable IJsSandboxConsoleCallback callback) {
         synchronized (mLock) {
             if (mJsSandboxIsolate == 0) {
                 throw new IllegalStateException("setConsoleCallback() called after close()");
             }
             mConsoleCallback.set(callback);
-            JsSandboxIsolateJni.get().setConsoleEnabled(mJsSandboxIsolate, this, callback != null);
+            JsSandboxIsolateJni.get().setConsoleEnabled(mJsSandboxIsolate, callback != null);
+        }
+    }
+
+    @Override
+    public IMessagePort provideMessagePort(String name, IMessagePort port) {
+        synchronized (mLock) {
+            if (mJsSandboxIsolate == 0) {
+                throw new IllegalStateException(
+                        "provideMessagePort(String, IMessagePort) called after close()");
+            }
+
+            MessagePortInternal messagePortInternal =
+                    new MessagePortInternal(mExecutorService, Integer.MAX_VALUE);
+            messagePortInternal.setRemoteIMessagePort(port);
+
+            JsSandboxIsolateJni.get()
+                    .provideMessagePort(mJsSandboxIsolate, name, messagePortInternal);
+
+            return messagePortInternal.getLocalIMessagePort();
         }
     }
 
@@ -265,31 +291,26 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         void initializeEnvironment();
 
         // The calling code must not call any methods after it called destroyNative().
-        void destroyNative(long nativeJsSandboxIsolate, JsSandboxIsolate caller);
+        void destroyNative(long nativeJsSandboxIsolate);
 
         boolean evaluateJavascript(
-                long nativeJsSandboxIsolate,
-                JsSandboxIsolate caller,
-                String script,
-                JsSandboxIsolateCallback callback);
+                long nativeJsSandboxIsolate, String script, JsSandboxIsolateCallback callback);
 
         boolean evaluateJavascriptWithFd(
                 long nativeJsSandboxIsolate,
-                JsSandboxIsolate caller,
                 int fd,
                 long length,
                 long offset,
                 JsSandboxIsolateFdCallback callback,
                 ParcelFileDescriptor pfd);
 
-        boolean provideNamedData(
-                long nativeJsSandboxIsolate,
-                JsSandboxIsolate caller,
-                String name,
-                int fd,
-                int length);
+        boolean provideNamedData(long nativeJsSandboxIsolate, String name, int fd, int length);
 
-        void setConsoleEnabled(
-                long nativeJsSandboxIsolate, JsSandboxIsolate caller, boolean enable);
+        void setConsoleEnabled(long nativeJsSandboxIsolate, boolean enable);
+
+        void provideMessagePort(
+                long nativeJsSandboxIsolate,
+                @JniType("std::string") String name,
+                MessagePortInternal messagePortInternal);
     }
 }

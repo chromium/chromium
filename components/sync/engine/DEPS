@@ -1,5 +1,6 @@
 include_rules = [
   "+components/signin/public/identity_manager/account_info.h",
+  "+components/os_crypt/async/common",
   "+components/sync/base",
   "+components/sync/protocol",
   "+components/sync/test",
@@ -9,4 +10,5 @@ include_rules = [
   "+services/network/public",
   "+services/network/test",
   "+third_party/protobuf",
+  "+components/autofill/core/browser/webdata/payments",
 ]

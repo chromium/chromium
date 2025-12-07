@@ -48,7 +48,7 @@ if (is_win) {
       "$root_out_dir/dbghelp.dll",
       "$root_out_dir/dbgcore.dll",
     ]
-    if (is_component_build) {
+    if (is_component_build || is_asan) {
       # Copy the VS runtime DLLs into the isolate so that they don't have to be
       # preinstalled on the target machine. The debug runtimes have a "d" at
       # the end.
@@ -62,6 +62,7 @@ if (is_win) {
       # vs_toolchain script that runs as part of toolchain configuration.
       data += [
         "$root_out_dir/msvcp140${vcrt_suffix}.dll",
+        "$root_out_dir/msvcp140${vcrt_suffix}_atomic_wait.dll",
         "$root_out_dir/vccorlib140${vcrt_suffix}.dll",
         "$root_out_dir/vcruntime140${vcrt_suffix}.dll",
       ]

@@ -7,6 +7,8 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -164,7 +166,8 @@ std::string AutocompleteParsingResult::ToString() const {
   return base::StrCat({"section='", section, "' ", "mode='",
                        HtmlFieldModeToStringView(mode), "' ", "field_type='",
                        FieldTypeToStringView(field_type), "' ", "webauthn='",
-                       webauthn ? "true" : "false", "'"});
+                       base::ToString(webauthn), "webidentity='",
+                       base::ToString(webidentity), "'"});
 }
 
 bool AutocompleteParsingResult::operator==(
@@ -213,13 +216,23 @@ std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   AutocompleteParsingResult result;
 
-  // Parse the "webauthn" token.
-  if (tokens.back() == "webauthn") {
-    result.webauthn = true;
-    tokens.pop_back();
-    if (tokens.empty()) {
-      return result;
+  // The "webauthn" and "webidentity" tokens can appear in any order at the end
+  // of the list. Note that `tokens` won't be empty by this moment.
+  while (!tokens.empty()) {
+    if (tokens.back() == "webauthn") {
+      result.webauthn = true;
+      tokens.pop_back();
+    } else if (tokens.back() == "webidentity") {
+      result.webidentity = true;
+      tokens.pop_back();
+    } else {
+      // If the last token is neither "webauthn" nor "webidentity",
+      // stop processing these specific tokens.
+      break;
     }
+  }
+  if (tokens.empty()) {
+    return result;
   }
 
   // (1) The final token must be the field type.
@@ -290,6 +303,14 @@ bool IsAutocompleteTypeWrongButWellIntended(
     }
   }
 
+  // Parse the "webidentity" token.
+  if (tokens.back() == "webidentity") {
+    tokens.pop_back();
+    if (tokens.empty()) {
+      return false;
+    }
+  }
+
   std::string field_type_token = tokens.back();
 
   // Autofill does not recognize password inputs, so we have to manually check
@@ -305,12 +326,11 @@ bool IsAutocompleteTypeWrongButWellIntended(
   auto contains_field_type_token = [&](std::string_view s) {
     return std::string_view(field_type_token).find(s) != std::string::npos;
   };
-  bool token_is_wrong_but_has_well_intended_usage_keyword =
-      base::ranges::any_of(kWellIntendedAutocompleteValuesKeywords,
-                           contains_field_type_token);
+  bool token_is_wrong_but_has_well_intended_usage_keyword = std::ranges::any_of(
+      kWellIntendedAutocompleteValuesKeywords, contains_field_type_token);
   bool developer_likely_tried_to_disable_autofill =
-      base::ranges::any_of(kNegativeMatchWellIntendedAutocompleteValuesKeywords,
-                           contains_field_type_token);
+      std::ranges::any_of(kNegativeMatchWellIntendedAutocompleteValuesKeywords,
+                          contains_field_type_token);
   return token_is_wrong_but_has_well_intended_usage_keyword &&
          !developer_likely_tried_to_disable_autofill;
 }

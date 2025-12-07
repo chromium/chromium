@@ -20,9 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_poly_element.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_point_list.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -48,24 +48,20 @@ void SVGPolyElement::Trace(Visitor* visitor) const {
   SVGGeometryElement::Trace(visitor);
 }
 
-Path SVGPolyElement::AsPathFromPoints() const {
-  Path path;
+PathBuilder SVGPolyElement::AsPathFromPoints() const {
+  PathBuilder builder;
   DCHECK(GetComputedStyle());
 
   const SVGPointList* points_value = Points()->CurrentValue();
   if (points_value->IsEmpty())
-    return path;
+    return builder;
 
-  auto it = points_value->begin();
-  auto it_end = points_value->end();
-  DCHECK(it != it_end);
-  path.MoveTo((*it)->Value());
-  ++it;
+  builder.MoveTo(points_value->at(0)->Value());
+  for (uint32_t i = 1; i < points_value->length(); ++i) {
+    builder.LineTo(points_value->at(i)->Value());
+  }
 
-  for (; it != it_end; ++it)
-    path.AddLineTo((*it)->Value());
-
-  return path;
+  return builder;
 }
 
 void SVGPolyElement::SvgAttributeChanged(

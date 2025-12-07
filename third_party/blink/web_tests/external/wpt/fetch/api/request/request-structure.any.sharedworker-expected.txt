@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] Check isReloadNavigation attribute
   assert_true: request has isReloadNavigation attribute expected true got false
-[FAIL] Check duplex attribute
-  assert_true: request has duplex attribute expected true got false
 Harness: the test ran to completion.
 

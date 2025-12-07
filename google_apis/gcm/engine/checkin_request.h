@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <map>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -47,7 +49,6 @@ class GCM_EXPORT CheckinRequest {
   struct GCM_EXPORT RequestInfo {
     RequestInfo(uint64_t android_id,
                 uint64_t security_token,
-                const std::map<std::string, std::string>& account_tokens,
                 const std::string& settings_digest,
                 const checkin_proto::ChromeBuildProto& chrome_build_proto);
     RequestInfo(const RequestInfo& other);
@@ -57,8 +58,6 @@ class GCM_EXPORT CheckinRequest {
     uint64_t android_id;
     // Security token of the device.
     uint64_t security_token;
-    // Map of account OAuth2 tokens keyed by emails.
-    std::map<std::string, std::string> account_tokens;
     // Digest of GServices settings on the device.
     std::string settings_digest;
     // Information of the Chrome build of this device.
@@ -83,7 +82,7 @@ class GCM_EXPORT CheckinRequest {
 
   // Invoked from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> body);
+                         std::optional<std::string> body);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest, CheckinWithAccountsEmpty);

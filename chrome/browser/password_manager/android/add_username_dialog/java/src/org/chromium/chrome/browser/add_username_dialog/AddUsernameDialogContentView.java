@@ -8,15 +8,16 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.EmptyTextWatcher;
 
+@NullMarked
 public class AddUsernameDialogContentView extends LinearLayout {
-    private Callback<String> mUsernameChangedCallback;
+    private @Nullable Callback<String> mUsernameChangedCallback;
 
     public AddUsernameDialogContentView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

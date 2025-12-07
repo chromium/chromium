@@ -5,6 +5,8 @@ owners:
 caption: Manage the deprecated prefixed video fullscreen API's availability
 
 desc: |-
+  Starting in M132, this policy will be removed, along with the prefixed video-specific fullscreen APIs.
+
   Setting the policy to <ph name="ENABLED_VALUE_NAME">enabled</ph> will allow the prefixed video-specific fullscreen APIs (e.g. Video.webkitEnterFullscreen()) to be used from Javascript.
 
   Setting the policy to <ph name="DISABLED_VALUE_NAME">disabled</ph> will prevent the prefixed video-specific fullscreen APIs from being used in Javascript, leaving only the standard fullscreen APIs (e.g. Element.requestFullscreen()).
@@ -13,16 +15,15 @@ desc: |-
 
   If the policy is unset, the behavior defaults to <ph name="RUNTIME_ENABLED_VALUE_NAME">runtime-enabled</ph>.
 
-  Note: this policy is a temporary solution to help transition away from webkit-prefixed fullscreen APIs. It will tentatively be removed in M130, or in the few following releases.
-
+  Note: this policy is a temporary solution to help transition away from webkit-prefixed fullscreen APIs. M131 is the last release which will have this policy.
 
 supported_on:
-- android:124-
-- chrome.*:124-
-- chrome_os:124-
-- fuchsia:124-
+- android:124-131
+- chrome.*:124-131
+- chrome_os:124-131
+- fuchsia:124-131
 
-deprecated: false
+deprecated: true
 
 features:
   dynamic_refresh: true

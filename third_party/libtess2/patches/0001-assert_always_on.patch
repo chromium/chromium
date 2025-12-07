@@ -1,0 +1,499 @@
+diff --git a/third_party/libtess2/src/Source/geom.c b/third_party/libtess2/src/Source/geom.c
+index b421157c38719..18884ff23699a 100644
+--- a/third_party/libtess2/src/Source/geom.c
++++ b/third_party/libtess2/src/Source/geom.c
+@@ -30,7 +30,7 @@
+ */
+ 
+ //#include "tesos.h"
+-#include <assert.h>
++#include "libtess2/tess_assert.h"
+ #include "mesh.h"
+ #include "geom.h"
+ #include <math.h>
+@@ -56,7 +56,7 @@ TESSreal tesedgeEval( TESSvertex *u, TESSvertex *v, TESSvertex *w )
+ 	*/
+ 	TESSreal gapL, gapR;
+ 
+-	assert( VertLeq( u, v ) && VertLeq( v, w ));
++	tess_assert( VertLeq( u, v ) && VertLeq( v, w ));
+ 
+ 	gapL = v->s - u->s;
+ 	gapR = w->s - v->s;
+@@ -80,7 +80,7 @@ TESSreal tesedgeSign( TESSvertex *u, TESSvertex *v, TESSvertex *w )
+ 	*/
+ 	TESSreal gapL, gapR;
+ 
+-	assert( VertLeq( u, v ) && VertLeq( v, w ));
++	tess_assert( VertLeq( u, v ) && VertLeq( v, w ));
+ 
+ 	gapL = v->s - u->s;
+ 	gapR = w->s - v->s;
+@@ -112,7 +112,7 @@ TESSreal testransEval( TESSvertex *u, TESSvertex *v, TESSvertex *w )
+ 	*/
+ 	TESSreal gapL, gapR;
+ 
+-	assert( TransLeq( u, v ) && TransLeq( v, w ));
++	tess_assert( TransLeq( u, v ) && TransLeq( v, w ));
+ 
+ 	gapL = v->t - u->t;
+ 	gapR = w->t - v->t;
+@@ -136,7 +136,7 @@ TESSreal testransSign( TESSvertex *u, TESSvertex *v, TESSvertex *w )
+ 	*/
+ 	TESSreal gapL, gapR;
+ 
+-	assert( TransLeq( u, v ) && TransLeq( v, w ));
++	tess_assert( TransLeq( u, v ) && TransLeq( v, w ));
+ 
+ 	gapL = v->t - u->t;
+ 	gapR = w->t - v->t;
+diff --git a/third_party/libtess2/src/Source/mesh.c b/third_party/libtess2/src/Source/mesh.c
+index 2ce746b9726c9..9a419cafaad40 100644
+--- a/third_party/libtess2/src/Source/mesh.c
++++ b/third_party/libtess2/src/Source/mesh.c
+@@ -31,7 +31,7 @@
+ 
+ //#include "tesos.h"
+ #include <stddef.h>
+-#include <assert.h>
++#include "libtess2/tess_assert.h"
+ #include "mesh.h"
+ #include "geom.h"
+ #include "bucketalloc.h"
+@@ -124,7 +124,7 @@ static void MakeVertex( TESSvertex *newVertex,
+ 	TESSvertex *vPrev;
+ 	TESSvertex *vNew = newVertex;
+ 
+-	assert(vNew != NULL);
++	tess_assert(vNew != NULL);
+ 
+ 	/* insert in circular doubly-linked list before vNext */
+ 	vPrev = vNext->prev;
+@@ -156,7 +156,7 @@ static void MakeFace( TESSface *newFace, TESShalfEdge *eOrig, TESSface *fNext )
+ 	TESSface *fPrev;
+ 	TESSface *fNew = newFace;
+ 
+-	assert(fNew != NULL); 
++	tess_assert(fNew != NULL); 
+ 
+ 	/* insert in circular doubly-linked list before fNext */
+ 	fPrev = fNext->prev;
+@@ -767,9 +767,9 @@ void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
+ 	TESSface *fa = a0->Lface;
+ 	TESSface *fb = b0->Lface;
+ 
+-	assert(EdgeIsInternal(edge));
+-	assert(a2->Lnext == a0);
+-	assert(b2->Lnext == b0);
++	tess_assert(EdgeIsInternal(edge));
++	tess_assert(a2->Lnext == a0);
++	tess_assert(b2->Lnext == b0);
+ 
+ 	a0->Org = bOpp;
+ 	a0->Onext = b1->Sym;
+@@ -797,35 +797,35 @@ void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
+ 	if (aOrg->anEdge == a0) aOrg->anEdge = b1;
+ 	if (bOrg->anEdge == b0) bOrg->anEdge = a1;
+ 
+-	assert( a0->Lnext->Onext->Sym == a0 );
+-	assert( a0->Onext->Sym->Lnext == a0 );
+-	assert( a0->Org->anEdge->Org == a0->Org );
++	tess_assert( a0->Lnext->Onext->Sym == a0 );
++	tess_assert( a0->Onext->Sym->Lnext == a0 );
++	tess_assert( a0->Org->anEdge->Org == a0->Org );
+ 
+ 
+-	assert( a1->Lnext->Onext->Sym == a1 );
+-	assert( a1->Onext->Sym->Lnext == a1 );
+-	assert( a1->Org->anEdge->Org == a1->Org );
++	tess_assert( a1->Lnext->Onext->Sym == a1 );
++	tess_assert( a1->Onext->Sym->Lnext == a1 );
++	tess_assert( a1->Org->anEdge->Org == a1->Org );
+ 
+-	assert( a2->Lnext->Onext->Sym == a2 );
+-	assert( a2->Onext->Sym->Lnext == a2 );
+-	assert( a2->Org->anEdge->Org == a2->Org );
++	tess_assert( a2->Lnext->Onext->Sym == a2 );
++	tess_assert( a2->Onext->Sym->Lnext == a2 );
++	tess_assert( a2->Org->anEdge->Org == a2->Org );
+ 
+-	assert( b0->Lnext->Onext->Sym == b0 );
+-	assert( b0->Onext->Sym->Lnext == b0 );
+-	assert( b0->Org->anEdge->Org == b0->Org );
++	tess_assert( b0->Lnext->Onext->Sym == b0 );
++	tess_assert( b0->Onext->Sym->Lnext == b0 );
++	tess_assert( b0->Org->anEdge->Org == b0->Org );
+ 
+-	assert( b1->Lnext->Onext->Sym == b1 );
+-	assert( b1->Onext->Sym->Lnext == b1 );
+-	assert( b1->Org->anEdge->Org == b1->Org );
++	tess_assert( b1->Lnext->Onext->Sym == b1 );
++	tess_assert( b1->Onext->Sym->Lnext == b1 );
++	tess_assert( b1->Org->anEdge->Org == b1->Org );
+ 
+-	assert( b2->Lnext->Onext->Sym == b2 );
+-	assert( b2->Onext->Sym->Lnext == b2 );
+-	assert( b2->Org->anEdge->Org == b2->Org );
++	tess_assert( b2->Lnext->Onext->Sym == b2 );
++	tess_assert( b2->Onext->Sym->Lnext == b2 );
++	tess_assert( b2->Org->anEdge->Org == b2->Org );
+ 
+-	assert(aOrg->anEdge->Org == aOrg);
+-	assert(bOrg->anEdge->Org == bOrg);
++	tess_assert(aOrg->anEdge->Org == aOrg);
++	tess_assert(bOrg->anEdge->Org == bOrg);
+ 
+-	assert(a0->Oprev->Onext->Org == a0->Org);
++	tess_assert(a0->Oprev->Onext->Org == a0->Org);
+ }
+ 
+ #ifdef DELETE_BY_ZAPPING
+@@ -839,7 +839,7 @@ void tessMeshDeleteMesh( TESSalloc* alloc, TESSmesh *mesh )
+ 	while( fHead->next != fHead ) {
+ 		tessMeshZapFace( fHead->next );
+ 	}
+-	assert( mesh->vHead.next == &mesh->vHead );
++	tess_assert( mesh->vHead.next == &mesh->vHead );
+ 
+ 	alloc->memfree( alloc->userData, mesh );
+ }
+@@ -873,43 +873,43 @@ void tessMeshCheckMesh( TESSmesh *mesh )
+ 	TESShalfEdge *e, *ePrev;
+ 
+ 	for( fPrev = fHead ; (f = fPrev->next) != fHead; fPrev = f) {
+-		assert( f->prev == fPrev );
++		tess_assert( f->prev == fPrev );
+ 		e = f->anEdge;
+ 		do {
+-			assert( e->Sym != e );
+-			assert( e->Sym->Sym == e );
+-			assert( e->Lnext->Onext->Sym == e );
+-			assert( e->Onext->Sym->Lnext == e );
+-			assert( e->Lface == f );
++			tess_assert( e->Sym != e );
++			tess_assert( e->Sym->Sym == e );
++			tess_assert( e->Lnext->Onext->Sym == e );
++			tess_assert( e->Onext->Sym->Lnext == e );
++			tess_assert( e->Lface == f );
+ 			e = e->Lnext;
+ 		} while( e != f->anEdge );
+ 	}
+-	assert( f->prev == fPrev && f->anEdge == NULL );
++	tess_assert( f->prev == fPrev && f->anEdge == NULL );
+ 
+ 	for( vPrev = vHead ; (v = vPrev->next) != vHead; vPrev = v) {
+-		assert( v->prev == vPrev );
++		tess_assert( v->prev == vPrev );
+ 		e = v->anEdge;
+ 		do {
+-			assert( e->Sym != e );
+-			assert( e->Sym->Sym == e );
+-			assert( e->Lnext->Onext->Sym == e );
+-			assert( e->Onext->Sym->Lnext == e );
+-			assert( e->Org == v );
++			tess_assert( e->Sym != e );
++			tess_assert( e->Sym->Sym == e );
++			tess_assert( e->Lnext->Onext->Sym == e );
++			tess_assert( e->Onext->Sym->Lnext == e );
++			tess_assert( e->Org == v );
+ 			e = e->Onext;
+ 		} while( e != v->anEdge );
+ 	}
+-	assert( v->prev == vPrev && v->anEdge == NULL );
++	tess_assert( v->prev == vPrev && v->anEdge == NULL );
+ 
+ 	for( ePrev = eHead ; (e = ePrev->next) != eHead; ePrev = e) {
+-		assert( e->Sym->next == ePrev->Sym );
+-		assert( e->Sym != e );
+-		assert( e->Sym->Sym == e );
+-		assert( e->Org != NULL );
+-		assert( e->Dst != NULL );
+-		assert( e->Lnext->Onext->Sym == e );
+-		assert( e->Onext->Sym->Lnext == e );
++		tess_assert( e->Sym->next == ePrev->Sym );
++		tess_assert( e->Sym != e );
++		tess_assert( e->Sym->Sym == e );
++		tess_assert( e->Org != NULL );
++		tess_assert( e->Dst != NULL );
++		tess_assert( e->Lnext->Onext->Sym == e );
++		tess_assert( e->Onext->Sym->Lnext == e );
+ 	}
+-	assert( e->Sym->next == ePrev->Sym
++	tess_assert( e->Sym->next == ePrev->Sym
+ 		&& e->Sym == &mesh->eHeadSym
+ 		&& e->Sym->Sym == e
+ 		&& e->Org == NULL && e->Dst == NULL
+diff --git a/third_party/libtess2/src/Source/priorityq.c b/third_party/libtess2/src/Source/priorityq.c
+index 02a6988b0e893..50e2de3d98eff 100644
+--- a/third_party/libtess2/src/Source/priorityq.c
++++ b/third_party/libtess2/src/Source/priorityq.c
+@@ -31,7 +31,7 @@
+ 
+ //#include "tesos.h"
+ #include <stddef.h>
+-#include <assert.h>
++#include "libtess2/tess_assert.h"
+ #include "../Include/tesselator.h"
+ #include "priorityq.h"
+ 
+@@ -138,7 +138,7 @@ static void FloatDown( PriorityQHeap *pq, int curr )
+ 				++child;
+ 		}
+ 
+-		assert(child <= pq->max);
++		tess_assert(child <= pq->max);
+ 
+ 		hChild = n[child].handle;
+ 		if( child > pq->size || LEQ( h[hCurr].key, h[hChild].key )) {
+@@ -237,7 +237,7 @@ PQhandle pqHeapInsert( TESSalloc* alloc, PriorityQHeap *pq, PQkey keyNew )
+ 	if( pq->initialized ) {
+ 		FloatUp( pq, curr );
+ 	}
+-	assert(free != INV_HANDLE);
++	tess_assert(free != INV_HANDLE);
+ 	return free;
+ }
+ 
+@@ -271,7 +271,7 @@ void pqHeapDelete( PriorityQHeap *pq, PQhandle hCurr )
+ 	PQhandleElem *h = pq->handles;
+ 	int curr;
+ 
+-	assert( hCurr >= 1 && hCurr <= pq->max && h[hCurr].key != NULL );
++	tess_assert( hCurr >= 1 && hCurr <= pq->max && h[hCurr].key != NULL );
+ 
+ 	curr = h[hCurr].node;
+ 	n[curr].handle = n[pq->size].handle;
+@@ -324,7 +324,7 @@ PriorityQ *pqNewPriorityQ( TESSalloc* alloc, int size, int (*leq)(PQkey key1, PQ
+ /* really tessPqSortDeletePriorityQ */
+ void pqDeletePriorityQ( TESSalloc* alloc, PriorityQ *pq )
+ {
+-	assert(pq != NULL); 
++	tess_assert(pq != NULL); 
+ 	if (pq->heap != NULL) pqHeapDeletePriorityQ( alloc, pq->heap );
+ 	if (pq->order != NULL) alloc->memfree( alloc->userData, pq->order );
+ 	if (pq->keys != NULL) alloc->memfree( alloc->userData, pq->keys );
+@@ -410,7 +410,7 @@ int pqInit( TESSalloc* alloc, PriorityQ *pq )
+ 	p = pq->order;
+ 	r = p + pq->size - 1;
+ 	for( i = p; i < r; ++i ) {
+-		assert( LEQ( **(i+1), **i ));
++		tess_assert( LEQ( **(i+1), **i ));
+ 	}
+ #endif
+ 
+@@ -445,7 +445,7 @@ PQhandle pqInsert( TESSalloc* alloc, PriorityQ *pq, PQkey keyNew )
+ 			}
+ 		}
+ 	}
+-	assert(curr != INV_HANDLE); 
++	tess_assert(curr != INV_HANDLE); 
+ 	pq->keys[curr] = keyNew;
+ 
+ 	/* Negative handles index the sorted array. */
+@@ -505,7 +505,7 @@ void pqDelete( PriorityQ *pq, PQhandle curr )
+ 		return;
+ 	}
+ 	curr = -(curr+1);
+-	assert( curr < pq->max && pq->keys[curr] != NULL );
++	tess_assert( curr < pq->max && pq->keys[curr] != NULL );
+ 
+ 	pq->keys[curr] = NULL;
+ 	while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL ) {
+diff --git a/third_party/libtess2/src/Source/sweep.c b/third_party/libtess2/src/Source/sweep.c
+index 332fdb311962e..6116b5b69da1c 100644
+--- a/third_party/libtess2/src/Source/sweep.c
++++ b/third_party/libtess2/src/Source/sweep.c
+@@ -29,7 +29,7 @@
+ ** Author: Eric Veach, July 1994.
+ */
+ 
+-#include <assert.h>
++#include "libtess2/tess_assert.h"
+ #include <float.h>
+ #include <stddef.h>
+ #include <setjmp.h>		/* longjmp */
+@@ -144,7 +144,7 @@ static void DeleteRegion( TESStesselator *tess, ActiveRegion *reg )
+ 		* deleted with zero winding number (ie. it better not get merged
+ 		* with a real edge).
+ 		*/
+-		assert( reg->eUp->winding == 0 );
++		tess_assert( reg->eUp->winding == 0 );
+ 	}
+ 	reg->eUp->activeRegion = NULL;
+ 	dictDelete( tess->dict, reg->nodeUp );
+@@ -157,7 +157,7 @@ static int FixUpperEdge( TESStesselator *tess, ActiveRegion *reg, TESShalfEdge *
+ * Replace an upper edge which needs fixing (see ConnectRightVertex).
+ */
+ {
+-	assert( reg->fixUpperEdge );
++	tess_assert( reg->fixUpperEdge );
+ 	if ( !tessMeshDelete( tess->mesh, reg->eUp ) ) return 0;
+ 	reg->fixUpperEdge = FALSE;
+ 	reg->eUp = newEdge;
+@@ -238,7 +238,7 @@ static int IsWindingInside( TESStesselator *tess, int n )
+ 			return (n >= 2) || (n <= -2);
+ 	}
+ 	/*LINTED*/
+-	assert( FALSE );
++	tess_assert( FALSE );
+ 	/*NOTREACHED*/
+ 
+ 	return( FALSE );
+@@ -347,7 +347,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
+ 	/* Insert the new right-going edges in the dictionary */
+ 	e = eFirst;
+ 	do {
+-		assert( VertLeq( e->Org, e->Dst ));
++		tess_assert( VertLeq( e->Org, e->Dst ));
+ 		AddRegionBelow( tess, regUp, e->Sym );
+ 		e = e->Onext;
+ 	} while ( e != eLast );
+@@ -389,7 +389,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
+ 		ePrev = e;
+ 	}
+ 	regPrev->dirty = TRUE;
+-	assert( regPrev->windingNumber - e->winding == reg->windingNumber );
++	tess_assert( regPrev->windingNumber - e->winding == reg->windingNumber );
+ 
+ 	if( cleanUp ) {
+ 		/* Check for intersections between newly adjacent edges. */
+@@ -533,7 +533,7 @@ static int CheckForLeftSplice( TESStesselator *tess, ActiveRegion *regUp )
+ 	TESShalfEdge *eLo = regLo->eUp;
+ 	TESShalfEdge *e;
+ 
+-	assert( ! VertEq( eUp->Dst, eLo->Dst ));
++	tess_assert( ! VertEq( eUp->Dst, eLo->Dst ));
+ 
+ 	if( VertLeq( eUp->Dst, eLo->Dst )) {
+ 		if( EdgeSign( eUp->Dst, eLo->Dst, eUp->Org ) < 0 ) return FALSE;
+@@ -584,11 +584,11 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
+ 	TESSvertex isect, *orgMin;
+ 	TESShalfEdge *e;
+ 
+-	assert( ! VertEq( dstLo, dstUp ));
+-	assert( EdgeSign( dstUp, tess->event, orgUp ) <= 0 );
+-	assert( EdgeSign( dstLo, tess->event, orgLo ) >= 0 );
+-	assert( orgUp != tess->event && orgLo != tess->event );
+-	assert( ! regUp->fixUpperEdge && ! regLo->fixUpperEdge );
++	tess_assert( ! VertEq( dstLo, dstUp ));
++	tess_assert( EdgeSign( dstUp, tess->event, orgUp ) <= 0 );
++	tess_assert( EdgeSign( dstLo, tess->event, orgLo ) >= 0 );
++	tess_assert( orgUp != tess->event && orgLo != tess->event );
++	tess_assert( ! regUp->fixUpperEdge && ! regLo->fixUpperEdge );
+ 
+ 	if( orgUp == orgLo ) return FALSE;	/* right endpoints are the same */
+ 
+@@ -610,10 +610,10 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
+ 	 * The following properties are guaranteed (with a little wiggle-room to
+ 	 * account for loss of precision if the values are subnormal.)
+ 	 */
+-	assert( MIN( orgUp->t, dstUp->t ) <= isect.t + FLT_MIN);
+-	assert( isect.t <= MAX( orgLo->t, dstLo->t ) + FLT_MIN);
+-	assert( MIN( dstLo->s, dstUp->s ) <= isect.s + FLT_MIN);
+-	assert( isect.s <= MAX( orgLo->s, orgUp->s ) + FLT_MIN);
++	tess_assert( MIN( orgUp->t, dstUp->t ) <= isect.t + FLT_MIN);
++	tess_assert( isect.t <= MAX( orgLo->t, dstLo->t ) + FLT_MIN);
++	tess_assert( MIN( dstLo->s, dstUp->s ) <= isect.s + FLT_MIN);
++	tess_assert( isect.s <= MAX( orgLo->s, orgUp->s ) + FLT_MIN);
+ 
+ 	if( VertLeq( &isect, tess->event )) {
+ 		/* The intersection point lies slightly to the left of the sweep line,
+@@ -916,7 +916,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
+ 		/* e->Org is an unprocessed vertex - just combine them, and wait
+ 		* for e->Org to be pulled from the queue
+ 		*/
+-		assert( TOLERANCE_NONZERO );
++		tess_assert( TOLERANCE_NONZERO );
+ 		SpliceMergeVertices( tess, e, vEvent->anEdge );
+ 		return;
+ 	}
+@@ -937,7 +937,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
+ 	/* vEvent coincides with e->Dst, which has already been processed.
+ 	* Splice in the additional right-going edges.
+ 	*/
+-	assert( TOLERANCE_NONZERO );
++	tess_assert( TOLERANCE_NONZERO );
+ 	regUp = TopRightRegion( regUp );
+ 	reg = RegionBelow( regUp );
+ 	eTopRight = reg->eUp->Sym;
+@@ -946,7 +946,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
+ 		/* Here e->Dst has only a single fixable edge going right.
+ 		* We can delete it since now we have some real right-going edges.
+ 		*/
+-		assert( eTopLeft != eTopRight );   /* there are some left edges too */
++		tess_assert( eTopLeft != eTopRight );   /* there are some left edges too */
+ 		DeleteRegion( tess, reg );
+ 		if ( !tessMeshDelete( tess->mesh, eTopRight ) ) longjmp(tess->env,1);
+ 		eTopRight = eTopLeft->Oprev;
+@@ -1158,10 +1158,10 @@ static void DoneEdgeDict( TESStesselator *tess )
+ 		* created by ConnectRightVertex().
+ 		*/
+ 		if( ! reg->sentinel ) {
+-			assert( reg->fixUpperEdge );
+-			assert( ++fixedEdges == 1 );
++			tess_assert( reg->fixUpperEdge );
++			tess_assert( ++fixedEdges == 1 );
+ 		}
+-		assert( reg->windingNumber == 0 );
++		tess_assert( reg->windingNumber == 0 );
+ 		DeleteRegion( tess, reg );
+ 		/*    tessMeshDelete( reg->eUp );*/
+ 	}
+@@ -1268,7 +1268,7 @@ static int RemoveDegenerateFaces( TESStesselator *tess, TESSmesh *mesh )
+ 	for( f = mesh->fHead.next; f != &mesh->fHead; f = fNext ) {
+ 		fNext = f->next;
+ 		e = f->anEdge;
+-		assert( e->Lnext != e );
++		tess_assert( e->Lnext != e );
+ 
+ 		if( e->Lnext->Lnext == e ) {
+ 			/* A face with only two edges */
+diff --git a/third_party/libtess2/src/Source/tess.c b/third_party/libtess2/src/Source/tess.c
+index 0b479210f4d86..5f043d67da2e2 100644
+--- a/third_party/libtess2/src/Source/tess.c
++++ b/third_party/libtess2/src/Source/tess.c
+@@ -30,7 +30,7 @@
+ */
+ 
+ #include <stddef.h>
+-#include <assert.h>
++#include "libtess2/tess_assert.h"
+ #include <setjmp.h>
+ #include "bucketalloc.h"
+ #include "tess.h"
+@@ -52,7 +52,7 @@ static void Normalize( TESSreal v[3] )
+ {
+ 	TESSreal len = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
+ 
+-	assert( len > 0 );
++	tess_assert( len > 0 );
+ 	len = sqrtf( len );
+ 	v[0] /= len;
+ 	v[1] /= len;
+@@ -334,7 +334,7 @@ int tessMeshTessellateMonoRegion( TESSmesh *mesh, TESSface *face )
+ 	* be close to the edge we want.
+ 	*/
+ 	up = face->anEdge;
+-	assert( up->Lnext != up && up->Lnext->Lnext != up );
++	tess_assert( up->Lnext != up && up->Lnext->Lnext != up );
+ 
+ 	for( ; VertLeq( up->Dst, up->Org ); up = up->Lprev )
+ 		;
+@@ -370,7 +370,7 @@ int tessMeshTessellateMonoRegion( TESSmesh *mesh, TESSface *face )
+ 	/* Now lo->Org == up->Dst == the leftmost vertex.  The remaining region
+ 	* can be tessellated in a fan from this leftmost vertex.
+ 	*/
+-	assert( lo->Lnext != up );
++	tess_assert( lo->Lnext != up );
+ 	while( lo->Lnext->Lnext != up ) {
+ 		TESShalfEdge *tempHalfEdge= tessMeshConnect( mesh, lo->Lnext, lo );
+ 		if (tempHalfEdge == NULL) return 0;
+@@ -746,7 +746,7 @@ void OutputPolymesh( TESStesselator *tess, TESSmesh *mesh, int elementType, int
+ 		}
+ 		while (edge != f->anEdge);
+ 
+-		assert( faceVerts <= polySize );
++		tess_assert( faceVerts <= polySize );
+ 
+ 		f->n = maxFaceCount;
+ 		++maxFaceCount;

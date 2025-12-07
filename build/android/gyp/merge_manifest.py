@@ -12,7 +12,6 @@ import contextlib
 import os
 import sys
 import tempfile
-import xml.etree.ElementTree as ElementTree
 
 from util import build_utils
 from util import manifest_utils
@@ -22,24 +21,23 @@ _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 
 
 @contextlib.contextmanager
-def _ProcessMainManifest(manifest_path, min_sdk_version, target_sdk_version,
-                         max_sdk_version, manifest_package):
+def _ProcessMainManifest(manifest_path, manifest_package):
   """Patches the main Android manifest"""
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
-  manifest_utils.SetUsesSdk(manifest, target_sdk_version, min_sdk_version,
-                            max_sdk_version)
   assert manifest_utils.GetPackage(manifest) or manifest_package, \
             'Must set manifest package in GN or in AndroidManifest.xml'
   if manifest_package:
     manifest.set('package', manifest_package)
   tmp_prefix = manifest_path.replace(os.path.sep, '-')
   with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
+    # Manifest merger requires <uses-sdk> to not exist in the main manifest.
+    manifest_utils.RemoveUsesSdk(manifest)
     manifest_utils.SaveManifest(doc, patched_manifest.name)
     yield patched_manifest.name, manifest_utils.GetPackage(manifest)
 
 
 @contextlib.contextmanager
-def _ProcessOtherManifest(manifest_path, target_sdk_version,
+def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
                           seen_package_names):
   """Patches non-main AndroidManifest.xml if necessary."""
   # 1. Ensure targetSdkVersion is set to the expected value to avoid
@@ -51,6 +49,11 @@ def _ProcessOtherManifest(manifest_path, target_sdk_version,
   changed_api = manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
 
   package_name = manifest_utils.GetPackage(manifest)
+  # Ignore minSdkVersion from androidx.pdf library. The client code will ensure
+  # not to call into the library API on older Android versions.
+  if package_name.startswith('androidx.pdf'):
+    manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version)
+    changed_api = True
   package_count = seen_package_names[package_name]
   seen_package_names[package_name] += 1
   if package_count > 0:
@@ -119,14 +122,13 @@ def main(argv):
 
     with contextlib.ExitStack() as stack:
       root_manifest, package = stack.enter_context(
-          _ProcessMainManifest(args.root_manifest, args.min_sdk_version,
-                               args.target_sdk_version, args.max_sdk_version,
-                               args.manifest_package))
+          _ProcessMainManifest(args.root_manifest, args.manifest_package))
       if extras:
         seen_package_names = collections.Counter()
         extras_processed = [
             stack.enter_context(
-                _ProcessOtherManifest(e, args.target_sdk_version,
+                _ProcessOtherManifest(e, args.min_sdk_version,
+                                      args.target_sdk_version,
                                       seen_package_names)) for e in extras
         ]
         cmd += ['--libs', ':'.join(extras_processed)]

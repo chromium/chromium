@@ -68,7 +68,7 @@ OmniboxPedalProvider::OmniboxPedalProvider(
   });
 }
 
-OmniboxPedalProvider::~OmniboxPedalProvider() {}
+OmniboxPedalProvider::~OmniboxPedalProvider() = default;
 
 size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
   size_t total = 0;
@@ -185,12 +185,12 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
       if (right > left) {
         const std::u16string raw_token =
             token_sequence_string.substr(left, right - left);
-        const std::u16string token = base::i18n::FoldCase(raw_token);
+        std::u16string token = base::i18n::FoldCase(raw_token);
         const auto iter = dictionary_.find(token);
         if (iter == dictionary_.end()) {
           // Token not in dictionary; expand dictionary.
           out_tokens.Add(dictionary_.size());
-          dictionary_.insert({token, dictionary_.size()});
+          dictionary_.insert({std::move(token), dictionary_.size()});
         } else {
           // Token in dictionary; add existing token identifier to sequence.
           out_tokens.Add(iter->second);

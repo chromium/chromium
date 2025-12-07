@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
@@ -24,8 +23,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
-#include "components/tpcd/metadata/browser/manager.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "net/cookies/cookie_setting_override.h"
 
 class GURL;
 class PrefService;
@@ -34,6 +32,10 @@ namespace net {
 class SiteForCookies;
 }  // namespace net
 
+namespace tpcd::metadata {
+class Manager;
+}  // namespace tpcd::metadata
+
 namespace content_settings {
 
 // This enum is used in prefs, do not change values.
@@ -41,12 +43,15 @@ namespace content_settings {
 // This enum needs to be kept in sync with the enum of the same name in
 // browser/resources/settings/site_settings/constants.js.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// LINT.IfChange(CookieControlsMode)
 enum class CookieControlsMode {
   kOff = 0,
   kBlockThirdParty = 1,
   kIncognitoOnly = 2,
-  kMaxValue = kIncognitoOnly,
+  kLimited = 3,
+  kMaxValue = kLimited,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode)
 
 // Default value for |extension_scheme|.
 const char kDummyExtensionScheme[] = ":no-extension-scheme:";
@@ -145,29 +150,18 @@ class CookieSettings
   // Sets the cookie setting to allow for the |first_party_url|.
   void SetCookieSettingForUserBypass(const GURL& first_party_url);
 
-  // Determines the current state of User Bypass for the given
-  // |first_party_url|. This method only takes into consideration the hard-coded
-  // default and user-specified values of cookie setting.
-  //
-  // Notes:
-  // - Storage partitioning could be enabled by default even when third-party
-  // cookies are allowed.
-  // - Also, user bypass as of now is only integrated with the runtime feature
-  // of the top-level frame.
-  // - Cases like WebUIs, allowlisted internal apps, and extension iframes are
-  // usually being exempted from storage partitioning or are allowlisted. Thus,
-  // not covered by user bypass at this state of art.
-  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url) const;
-
-  const ContentSettingsForOneType GetTpcdMetadataGrants() const {
-    return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
-                                  : ContentSettingsForOneType();
-  }
+  ContentSettingsForOneType GetTpcdMetadataGrants() const;
 
   // Resets the cookie setting for the given url.
   //
   // This should only be called on the UI thread.
   void ResetCookieSetting(const GURL& primary_url);
+
+  // Returns true if third party cookies should be limited (blocked with
+  // mitigations).
+  //
+  // This should only be called on the UI thread.
+  bool AreThirdPartyCookiesLimited() const;
 
   // Returns true if cookies are allowed for *most* third parties on |url|.
   // There might be rules allowing or blocking specific third parties from
@@ -197,7 +191,7 @@ class CookieSettings
   // Returns true if third party cookies should be blocked.
   //
   // This method may be called on any thread. Virtual for testing.
-  bool ShouldBlockThirdPartyCookies() const override;
+  bool ShouldBlockThirdPartyCookies() const;
 
   // Returns true iff third party cookies deprecation mitigations should be
   // allowed.
@@ -247,6 +241,9 @@ class CookieSettings
 
   void OnCookiePreferencesChanged();
 
+  // Updates the status of cookies deprecation mitigations.
+  void OnMitigationsEnabledChanged();
+
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,
                                 const GURL& first_party_url) const override;
@@ -255,8 +252,10 @@ class CookieSettings
       const GURL& secondary_url,
       ContentSettingsType content_type,
       content_settings::SettingInfo* info) const override;
-  bool IsThirdPartyCookiesAllowedScheme(
-      const std::string& scheme) const override;
+  bool IsThirdPartyCookiesAllowedScheme(std::string_view scheme) const override;
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override;
 
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;

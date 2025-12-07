@@ -28,16 +28,17 @@ enum {
   // common_syncable_prefs_database.cc and
   // chrome_syncable_prefs_database.cc.
   kArticlesForYouEnabled = 200000,
-  kContextualSearchEnabled = 200001,
+  // kContextualSearchEnabled = 200001,  // deprecated
   kDefaultCharset = 200002,
-  kEnableDoNotTrack = 200003,
+  // kEnableDoNotTrack = 200003, // deprecated
   kIosHandoffToOtherDevices = 200004,
   kNetworkPredictionSetting = 200005,
   kNTPContentSuggestionsEnabled = 200006,
   kNTPContentSuggestionsForSupervisedUserEnabled = 200007,
   kSearchSuggestEnabled = 200008,
   kTrackPricesOnTabsEnabled = 200009,
-  kVoiceSearchLocale = 200010
+  kVoiceSearchLocale = 200010,
+  kIOSBwgConsent = 200011
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -56,16 +57,8 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
          {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
-        {prefs::kContextualSearchEnabled,
-         {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
-          sync_preferences::PrefSensitivity::kNone,
-          sync_preferences::MergeBehavior::kNone}},
         {prefs::kDefaultCharset,
          {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES,
-          sync_preferences::PrefSensitivity::kNone,
-          sync_preferences::MergeBehavior::kNone}},
-        {prefs::kEnableDoNotTrackIos,
-         {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kIosHandoffToOtherDevices,
@@ -96,6 +89,10 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
          {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
+        {prefs::kIOSBwgConsent,
+         {syncable_prefs_ids::kIOSBwgConsent, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
     });
 
 }  // namespace
@@ -117,9 +114,9 @@ std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
 IOSChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs;
-  base::ranges::copy(kIOSChromeSyncablePrefsAllowlist,
-                     std::inserter(syncable_prefs, syncable_prefs.end()));
-  base::ranges::move(
+  std::ranges::copy(kIOSChromeSyncablePrefsAllowlist,
+                    std::inserter(syncable_prefs, syncable_prefs.end()));
+  std::ranges::move(
       common_syncable_prefs_database_.GetAllSyncablePrefsForTest(),  // IN-TEST
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;

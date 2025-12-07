@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_DISCOUNTS_ICON_VIEW_H_
 
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -17,6 +16,8 @@ class CommerceUiTabHelper;
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+class ScopedWindowCallToAction;
 
 class DiscountsIconView : public PageActionIconView {
   METADATA_HEADER(DiscountsIconView, PageActionIconView)
@@ -29,6 +30,12 @@ class DiscountsIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
 
+  void SetIsLabelExpanded(bool is_expanded);
+  // For testing only.
+  bool GetIsLabelExpanded() const;
+  [[nodiscard]] base::CallbackListSubscription
+  AddIsLabelExpandedChangedCallback(views::PropertyChangedCallback callback);
+
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
@@ -39,13 +46,13 @@ class DiscountsIconView : public PageActionIconView {
   // IconLabelBubbleView:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
+  void UnpauseAnimation();
   bool ShouldShow();
   void HidePageActionLabel();
   void MaybeShowPageActionLabel();
   commerce::CommerceUiTabHelper* GetTabHelper();
+  const commerce::CommerceUiTabHelper* GetTabHelper() const;
   void MaybeShowBubble(bool from_user);
-
-  DiscountsBubbleCoordinator bubble_coordinator_;
 
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
@@ -54,6 +61,10 @@ class DiscountsIconView : public PageActionIconView {
   // This keeps the label visible for long enough to give users an opportunity
   // to read the label text.
   base::OneShotTimer animate_out_timer_;
+
+  bool is_label_expanded_;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 
   base::WeakPtrFactory<DiscountsIconView> weak_ptr_factory_{this};
 };

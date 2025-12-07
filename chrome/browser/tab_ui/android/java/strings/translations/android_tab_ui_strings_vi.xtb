@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="vi">
+<translation id="1293272072740285747">Giữ lại nhóm này để thêm thẻ vào lúc khác hoặc xoá nhóm này nếu bạn không cần nữa.
+
+Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào nhóm thẻ "<ph name="TITLE_OF_GROUP" />" và nhóm thẻ này sẽ bị xoá khỏi tất cả thiết bị.</translation>
+<translation id="1340839264183302272">Rời khỏi nhóm</translation>
+<translation id="1419023007528516122">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn</translation>
+<translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="2677748264148917807">Rời khỏi</translation>
+<translation id="3547352561153509682">Thao tác này sẽ xoá nhóm khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Bạn muốn tách nhóm thẻ?</translation>
+<translation id="4139634748112164403">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá vĩnh viễn</translation>
+<translation id="4431937619879060901">Bạn sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị của bạn</translation>
+<translation id="4460014764210899310">Tách nhóm</translation>
+<translation id="4777866634702576038">Bạn muốn xoá nhóm thẻ?</translation>
+<translation id="5094423602314093681">Bạn muốn loại bỏ thẻ và xoá nhóm?</translation>
+<translation id="5647702255748985085">Rời khỏi nhóm này?</translation>
+<translation id="742664698522525515">Giữ lại nhóm này?</translation>
+<translation id="750886945254958667">Giữ lại nhóm này để thêm thẻ sau hoặc rời khỏi nhóm nếu bạn không còn muốn truy cập vào nhóm</translation>
+<translation id="8261506727792406068">Xoá</translation>
+<translation id="870736955561925754">Bạn muốn đóng thẻ và xoá nhóm?</translation>
+<translation id="8804742093141782941">Giữ lại nhóm</translation>
+<translation id="9169141410816678175">Mọi người sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị</translation>
+<translation id="9216898458513705996">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Xoá nhóm này?</translation>
+</translationbundle>

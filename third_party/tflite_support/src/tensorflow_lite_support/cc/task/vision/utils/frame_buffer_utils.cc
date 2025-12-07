@@ -327,7 +327,7 @@ FrameBuffer::Dimension FrameBufferUtils::GetSize(
 }
 
 std::vector<FrameBuffer::Plane> FrameBufferUtils::GetPlanes(
-    const uint8* buffer, FrameBuffer::Dimension dimension,
+    const uint8_t* buffer, FrameBuffer::Dimension dimension,
     FrameBuffer::Format format) {
   std::vector<FrameBuffer::Plane> planes;
   switch (format) {
@@ -487,7 +487,7 @@ absl::Status FrameBufferUtils::Orient(const FrameBuffer& buffer,
 
   // Perform rotation and flip operations.
   // Create a temporary buffer to hold the rotation result.
-  auto tmp_buffer = absl::make_unique<uint8[]>(
+  auto tmp_buffer = absl::make_unique<uint8_t[]>(
       GetBufferByteSize(output_buffer->dimension(), output_buffer->format()));
   auto tmp_frame_buffer = FrameBuffer::Create(
       GetPlanes(tmp_buffer.get(), output_buffer->dimension(),
@@ -514,8 +514,8 @@ absl::Status FrameBufferUtils::Execute(
   // Temporary buffers and its size to hold intermediate results.
   int buffer1_size = 0;
   int buffer2_size = 0;
-  std::unique_ptr<uint8[]> buffer1;
-  std::unique_ptr<uint8[]> buffer2;
+  std::unique_ptr<uint8_t[]> buffer1;
+  std::unique_ptr<uint8_t[]> buffer2;
 
   for (size_t i = 0; i < operations.size(); i++) {
     const FrameBufferOperation& operation = operations[i];
@@ -562,13 +562,13 @@ absl::Status FrameBufferUtils::Execute(
       if (i % 2 == 0) {
         if (buffer1_size < byte_size) {
           buffer1_size = byte_size;
-          buffer1 = absl::make_unique<uint8[]>(byte_size);
+          buffer1 = absl::make_unique<uint8_t[]>(byte_size);
         }
         planes = GetPlanes(buffer1.get(), new_size, new_format);
       } else {
         if (buffer2_size < byte_size) {
           buffer2_size = byte_size;
-          buffer2 = absl::make_unique<uint8[]>(byte_size);
+          buffer2 = absl::make_unique<uint8_t[]>(byte_size);
         }
         planes = GetPlanes(buffer2.get(), new_size, new_format);
       }

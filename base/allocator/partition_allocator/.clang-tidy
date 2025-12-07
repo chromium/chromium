@@ -1,0 +1,7 @@
+---
+  Checks: 'google-build-namespaces,
+           readability-redundant-smartptr-get,
+           readability-static-accessed-through-instance'
+  InheritParentConfig: true
+  HeaderFilterRegex: 'partition_alloc/*'
+...

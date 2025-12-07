@@ -23,8 +23,11 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_bucket_lookup.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/bucket_lookup.h"           // nogncheck
+#include "partition_alloc/partition_alloc_config.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
@@ -45,11 +48,10 @@
 #endif
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 #if BUILDFLAG(IS_WIN)
@@ -250,13 +252,10 @@ void ReportPartitionAllocThreadCacheStats(
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   if (stats.alloc_count && detailed) {
-    partition_alloc::internal::BucketIndexLookup lookup{};
     std::string name = dump->absolute_name();
-    for (size_t i = 0; i < partition_alloc::kNumBuckets; i++) {
-      size_t bucket_size = lookup.bucket_sizes()[i];
-      if (bucket_size == partition_alloc::kInvalidBucketSize) {
-        continue;
-      }
+    for (uint16_t i = 0; i < partition_alloc::BucketIndexLookup::kNumBuckets;
+         i++) {
+      size_t bucket_size = partition_alloc::BucketIndexLookup::GetBucketSize(i);
       // Covers all normal buckets, that is up to ~1MiB, so 7 digits.
       std::string dump_name = base::StringPrintf(
           "%s/buckets_alloc/%07d", name.c_str(), static_cast<int>(bucket_size));
@@ -268,9 +267,9 @@ void ReportPartitionAllocThreadCacheStats(
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 }
 
-void ReportPartitionAllocLightweightQuarantineStats(
+void ReportPartitionAllocSchedulerLoopQuarantineStats(
     MemoryAllocatorDump* dump,
-    const partition_alloc::LightweightQuarantineStats& stats) {
+    const partition_alloc::SchedulerLoopQuarantineStats& stats) {
   dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects, stats.count);
   dump->AddScalar("size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
                   stats.size_in_bytes);
@@ -282,6 +281,22 @@ void ReportPartitionAllocLightweightQuarantineStats(
                   stats.quarantine_miss_count);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void ReportExtremeLightweightDetectorQuarantineStats(
+    MemoryAllocatorDump* dump,
+    const MallocDumpProvider::ExtremeLUDStats& stats) {
+  dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects, stats.count);
+  dump->AddScalar("size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
+                  stats.size_in_bytes);
+  dump->AddScalar("cumulative_count", MemoryAllocatorDump::kUnitsObjects,
+                  stats.cumulative_count);
+  dump->AddScalar("cumulative_size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
+                  stats.cumulative_size_in_bytes);
+  dump->AddScalar("quarantine_miss_count", MemoryAllocatorDump::kUnitsObjects,
+                  stats.quarantine_miss_count);
+}
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
 
@@ -415,8 +430,10 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   }
 
   base::trace_event::MemoryAllocatorDump* partitions_dump = nullptr;
-  base::trace_event::MemoryAllocatorDump* elud_dump = nullptr;
-  ExtremeLUDStats elud_stats;
+  base::trace_event::MemoryAllocatorDump* elud_dump_for_small_objects = nullptr;
+  ExtremeLUDStats elud_stats_for_small_objects;
+  base::trace_event::MemoryAllocatorDump* elud_dump_for_large_objects = nullptr;
+  ExtremeLUDStats elud_stats_for_large_objects;
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partitions_dump = pmd->CreateAllocatorDump("malloc/partitions");
   pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
@@ -424,16 +441,25 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   auto& extreme_lud_get_stats_callback = GetExtremeLUDGetStatsCallback();
   if (!extreme_lud_get_stats_callback.is_null()) {
     // The Extreme LUD is enabled.
-    elud_dump = pmd->CreateAllocatorDump("malloc/extreme_lud");
-    elud_stats = extreme_lud_get_stats_callback.Run();
-    ReportPartitionAllocLightweightQuarantineStats(elud_dump,
-                                                   elud_stats.lq_stats);
+    elud_dump_for_small_objects =
+        pmd->CreateAllocatorDump("malloc/extreme_lud/small_objects");
+    elud_dump_for_large_objects =
+        pmd->CreateAllocatorDump("malloc/extreme_lud/large_objects");
+    const auto elud_stats_set = extreme_lud_get_stats_callback.Run();
+    elud_stats_for_small_objects = elud_stats_set.for_small_objects;
+    elud_stats_for_large_objects = elud_stats_set.for_large_objects;
+    ReportExtremeLightweightDetectorQuarantineStats(
+        elud_dump_for_small_objects, elud_stats_for_small_objects);
+    ReportExtremeLightweightDetectorQuarantineStats(
+        elud_dump_for_large_objects, elud_stats_for_large_objects);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  ReportPerMinuteStats(syscall_count, cumulative_brp_quarantined_size,
-                       cumulative_brp_quarantined_count, elud_stats, outer_dump,
-                       partitions_dump, elud_dump);
+  ReportPerMinuteStats(
+      syscall_count, cumulative_brp_quarantined_size,
+      cumulative_brp_quarantined_count, elud_stats_for_small_objects,
+      elud_stats_for_large_objects, outer_dump, partitions_dump,
+      elud_dump_for_small_objects, elud_dump_for_large_objects);
 
   return true;
 }
@@ -442,10 +468,12 @@ void MallocDumpProvider::ReportPerMinuteStats(
     uint64_t syscall_count,
     size_t cumulative_brp_quarantined_bytes,
     size_t cumulative_brp_quarantined_count,
-    const ExtremeLUDStats& elud_stats,
+    const ExtremeLUDStats& elud_stats_for_small_objects,
+    const ExtremeLUDStats& elud_stats_for_large_objects,
     MemoryAllocatorDump* malloc_dump,
     MemoryAllocatorDump* partition_alloc_dump,
-    MemoryAllocatorDump* elud_dump) {
+    MemoryAllocatorDump* elud_dump_for_small_objects,
+    MemoryAllocatorDump* elud_dump_for_large_objects) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t new_syscalls = syscall_count - last_syscall_count_;
   size_t new_brp_quarantined_bytes =
@@ -470,51 +498,68 @@ void MallocDumpProvider::ReportPerMinuteStats(
                                     MemoryAllocatorDump::kNameObjectCount,
                                     brp_quarantined_count_per_minute);
   }
-  if (elud_dump) {
-    size_t bytes = elud_stats.lq_stats.cumulative_size_in_bytes -
-                   last_cumulative_elud_quarantined_bytes_;
-    size_t count = elud_stats.lq_stats.cumulative_count -
-                   last_cumulative_elud_quarantined_count_;
-    size_t miss_count = elud_stats.lq_stats.quarantine_miss_count -
-                        last_cumulative_elud_miss_count_;
-    elud_dump->AddScalar("bytes_per_minute", MemoryAllocatorDump::kUnitsBytes,
-                         60ull * bytes / seconds_since_last_dump);
-    elud_dump->AddScalar("count_per_minute",
-                         MemoryAllocatorDump::kNameObjectCount,
-                         60ull * count / seconds_since_last_dump);
-    elud_dump->AddScalar("miss_count_per_minute",
-                         MemoryAllocatorDump::kNameObjectCount,
-                         60ull * miss_count / seconds_since_last_dump);
-    // Given the following three:
-    //   capacity := the quarantine storage space
-    //   time     := the elapsed time since the last dump
-    //   bytes    := the consumed/used bytes since the last dump
-    // We can define/calculate the following.
-    //   speed    := the consuming speed of the quarantine
-    //            = bytes / time
-    //   quarantined_time
-    //            := the time to use up the capacity
-    //               (near to how long an object may be quarantined)
-    //            = capacity / speed
-    //            = capacity / (bytes / time)
-    //            = time * capacity / bytes
-    //
-    // Note that objects in the quarantine are randomly evicted. So objects may
-    // stay in the qurantine longer or shorter depending on object sizes,
-    // allocation/deallocation patterns, etc. in addition to pure randomness.
-    // So, this is just a rough estimation, not necessarily to be the average.
-    if (bytes > 0) {
-      elud_dump->AddScalar(
-          "quarantined_time", "msec",
-          static_cast<uint64_t>(time_since_last_dump.InMilliseconds()) *
-              elud_stats.capacity_in_bytes / bytes);
-    }
-    last_cumulative_elud_quarantined_bytes_ =
-        elud_stats.lq_stats.cumulative_size_in_bytes;
-    last_cumulative_elud_quarantined_count_ =
-        elud_stats.lq_stats.cumulative_count;
-    last_cumulative_elud_miss_count_ =
-        elud_stats.lq_stats.quarantine_miss_count;
+
+  auto report_elud_per_minute_stats =
+      [time_since_last_dump, seconds_since_last_dump](
+          const ExtremeLUDStats& elud_stats,
+          CumulativeEludStats& last_cumulative_elud_stats,
+          MemoryAllocatorDump* elud_dump) {
+        size_t bytes = elud_stats.cumulative_size_in_bytes -
+                       last_cumulative_elud_stats.quarantined_bytes;
+        size_t count = elud_stats.cumulative_count -
+                       last_cumulative_elud_stats.quarantined_count;
+        size_t miss_count = elud_stats.quarantine_miss_count -
+                            last_cumulative_elud_stats.miss_count;
+        elud_dump->AddScalar("bytes_per_minute",
+                             MemoryAllocatorDump::kUnitsBytes,
+                             60ull * bytes / seconds_since_last_dump);
+        elud_dump->AddScalar("count_per_minute",
+                             MemoryAllocatorDump::kNameObjectCount,
+                             60ull * count / seconds_since_last_dump);
+        elud_dump->AddScalar("miss_count_per_minute",
+                             MemoryAllocatorDump::kNameObjectCount,
+                             60ull * miss_count / seconds_since_last_dump);
+        // Given the following three:
+        //   capacity := the quarantine storage space
+        //   time     := the elapsed time since the last dump
+        //   bytes    := the consumed/used bytes since the last dump
+        // We can define/calculate the following.
+        //   speed    := the consuming speed of the quarantine
+        //            = bytes / time
+        //   quarantined_time
+        //            := the time to use up the capacity
+        //               (near to how long an object may be quarantined)
+        //            = capacity / speed
+        //            = capacity / (bytes / time)
+        //            = time * capacity / bytes
+        //
+        // Note that objects in the quarantine are randomly evicted. So objects
+        // may stay in the qurantine longer or shorter depending on object
+        // sizes, allocation/deallocation patterns, etc. in addition to pure
+        // randomness. So, this is just a rough estimation, not necessarily to
+        // be the average.
+        if (bytes > 0) {
+          elud_dump->AddScalar(
+              "quarantined_time", "msec",
+              static_cast<uint64_t>(time_since_last_dump.InMilliseconds()) *
+                  elud_stats.capacity_in_bytes / bytes);
+        }
+        last_cumulative_elud_stats.quarantined_bytes =
+            elud_stats.cumulative_size_in_bytes;
+        last_cumulative_elud_stats.quarantined_count =
+            elud_stats.cumulative_count;
+        last_cumulative_elud_stats.miss_count =
+            elud_stats.quarantine_miss_count;
+      };
+  if (elud_dump_for_small_objects) {
+    report_elud_per_minute_stats(elud_stats_for_small_objects,
+                                 last_cumulative_elud_stats_for_small_objects_,
+                                 elud_dump_for_small_objects);
+  }
+  if (elud_dump_for_large_objects) {
+    report_elud_per_minute_stats(elud_stats_for_large_objects,
+                                 last_cumulative_elud_stats_for_large_objects_,
+                                 elud_dump_for_large_objects);
   }
 
   last_memory_dump_time_ = base::TimeTicks::Now();
@@ -561,8 +606,22 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
 
   auto total_committed_bytes = memory_stats->total_committed_bytes;
   auto total_active_bytes = memory_stats->total_active_bytes;
-  size_t wasted = total_committed_bytes - total_active_bytes;
-  DCHECK_GE(total_committed_bytes, total_active_bytes);
+  size_t wasted = 0;
+  // This should always be true, but only if our accounting of committed bytes
+  // is consistent, which it isn't. Indeed, with kUseFewerMemoryRegions, we may
+  // allocate a slot span before the feature state is known, in which case we
+  // commit less, then decommit it after, in which case we subtract the new
+  // commit unit, which is larger.
+  //
+  // Properly handling this would require remembering how much was committed,
+  // which complicates bookkeeping, especially as metadata space is
+  // limited. Since this is only used to report metrics, which are known to
+  // already be quite flawed, and the feature is meant to be temporary (either
+  // shipped or abandoned), don't handle this corner case (which should only
+  // happen for the initial partition, which is tiny anyway).
+  if (total_committed_bytes >= total_active_bytes) {
+    wasted = total_committed_bytes - total_active_bytes;
+  }
   size_t fragmentation =
       total_committed_bytes == 0 ? 0 : 100 * wasted / total_committed_bytes;
 
@@ -627,7 +686,7 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     MemoryAllocatorDump* quarantine_dump_total =
         memory_dump_->CreateAllocatorDump(dump_name +
                                           "/scheduler_loop_quarantine");
-    ReportPartitionAllocLightweightQuarantineStats(
+    ReportPartitionAllocSchedulerLoopQuarantineStats(
         quarantine_dump_total,
         memory_stats->scheduler_loop_quarantine_stats_total);
   }
@@ -681,5 +740,4 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

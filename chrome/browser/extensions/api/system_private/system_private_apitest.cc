@@ -12,7 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #endif
@@ -20,7 +20,7 @@
 namespace extensions {
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, GetIncognitoModeAvailability) {
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetInteger(policy::policy_prefs::kIncognitoModeAvailability, 1);
 
   EXPECT_TRUE(RunExtensionTest("system/get_incognito_mode_availability", {},
@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, GetIncognitoModeAvailability) {
       << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class GetUpdateStatusApiTest : public ExtensionApiTest {
  public:

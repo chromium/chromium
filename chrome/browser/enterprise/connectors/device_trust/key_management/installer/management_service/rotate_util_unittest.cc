@@ -33,7 +33,6 @@ using HttpResponseCode =
     enterprise_connectors::test::MockKeyNetworkDelegate::HttpResponseCode;
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace {
@@ -109,11 +108,11 @@ TEST_F(RotateUtilTest, RotateDTKeySuccess) {
   EXPECT_CALL(
       *mock_network_delegate_,
       SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
-                          const std::string& body,
-                          base::OnceCallback<void(int)> callback) {
+      .WillOnce([](const GURL& url, const std::string& dm_token,
+                   const std::string& body,
+                   base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
-      }));
+      });
 
   EXPECT_EQ(
       RotateDeviceTrustKey(
@@ -264,11 +263,11 @@ TEST_F(RotateUtilTest, RotateDTKeyFailure_UploadKeyFailed) {
   EXPECT_CALL(
       *mock_network_delegate_,
       SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
-                          const std::string& body,
-                          base::OnceCallback<void(int)> callback) {
+      .WillOnce([](const GURL& url, const std::string& dm_token,
+                   const std::string& body,
+                   base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kFailureCode);
-      }));
+      });
 
   EXPECT_EQ(
       RotateDeviceTrustKey(
@@ -296,11 +295,11 @@ TEST_F(RotateUtilTest, RotateDTKeyFailure_UploadKeyConflict) {
   EXPECT_CALL(
       *mock_network_delegate_,
       SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
-                          const std::string& body,
-                          base::OnceCallback<void(int)> callback) {
+      .WillOnce([](const GURL& url, const std::string& dm_token,
+                   const std::string& body,
+                   base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kConflictCode);
-      }));
+      });
 
   EXPECT_EQ(
       RotateDeviceTrustKey(

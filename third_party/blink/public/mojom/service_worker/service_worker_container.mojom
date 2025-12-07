@@ -43,8 +43,8 @@ struct ServiceWorkerContainerInfoForClient {
 //       Associated with SharedWorkerFactory, which is on a dedicated message
 //       pipe.
 // - For documents:
-//       Associated with NavigationClient/FrameNavigationControl, which is on
-//       the channel-associated interface to the renderer process.
+//       Associated with NavigationClient, which is on the channel-associated
+//       interface to the renderer process.
 interface ServiceWorkerContainerHost {
   // Corresponds to navigator.serviceWorker.register().
   // Registers a service worker from |script_url| with |options|.

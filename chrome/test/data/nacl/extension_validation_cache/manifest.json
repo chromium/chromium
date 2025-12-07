@@ -1,7 +1,0 @@
-{
-  "name": "NaCl_ValidationCacheNexeTest",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "Tests NaCl validation caching for main nexe from extensions.",
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoq+cJMuoIaoL2hx//QoIeHnNkXLAEu3IJGcLpM95qbmw9VnAplFI0tpSv4IpuJ1DPPsdsEMhONu1mPhK9xd3BHCtzqXRfRsnx/uOap4NTcUimxiUH3uuX9xkCNWO8EihdV0atnrKROhhnyIxmhgKmKfAYLheOrSGSXP0A4SqaBQIDAQAB"
-}

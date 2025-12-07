@@ -306,5 +306,54 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
   node_c->Close();
 }
 
+struct TestObject : public RefCountedFragment {
+ public:
+  int x;
+  int y;
+};
+
+TEST_F(NodeLinkMemoryTest, AdoptFragmentRefIfValid) {
+  auto object = memory_a().AdoptFragmentRef<TestObject>(
+      memory_a().AllocateFragment(sizeof(TestObject)));
+  object->x = 5;
+  object->y = 42;
+
+  const FragmentDescriptor valid_descriptor(object.fragment().buffer_id(),
+                                            object.fragment().offset(),
+                                            sizeof(TestObject));
+
+  const FragmentDescriptor null_descriptor(
+      kInvalidBufferId, valid_descriptor.offset(), valid_descriptor.size());
+  EXPECT_TRUE(memory_a()
+                  .AdoptFragmentRefIfValid<TestObject>(null_descriptor)
+                  .is_null());
+
+  const FragmentDescriptor empty_descriptor(
+      valid_descriptor.buffer_id(), valid_descriptor.offset(), /*size=*/0);
+  EXPECT_TRUE(memory_a()
+                  .AdoptFragmentRefIfValid<TestObject>(empty_descriptor)
+                  .is_null());
+
+  const FragmentDescriptor short_descriptor(valid_descriptor.buffer_id(),
+                                            valid_descriptor.offset(),
+                                            sizeof(TestObject) - 4);
+  EXPECT_TRUE(memory_a()
+                  .AdoptFragmentRefIfValid<TestObject>(short_descriptor)
+                  .is_null());
+
+  const FragmentDescriptor unaligned_descriptor(valid_descriptor.buffer_id(),
+                                                valid_descriptor.offset() + 2,
+                                                valid_descriptor.size() - 2);
+  EXPECT_TRUE(memory_a()
+                  .AdoptFragmentRefIfValid<TestObject>(unaligned_descriptor)
+                  .is_null());
+
+  const auto adopted_object =
+      memory_a().AdoptFragmentRefIfValid<TestObject>(valid_descriptor);
+  ASSERT_TRUE(adopted_object.is_addressable());
+  EXPECT_EQ(5, adopted_object->x);
+  EXPECT_EQ(42, adopted_object->y);
+}
+
 }  // namespace
 }  // namespace ipcz

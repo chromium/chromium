@@ -12,12 +12,9 @@
 #include "build/buildflag.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/branded_strings.h"
@@ -25,7 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -40,6 +37,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -77,7 +75,7 @@ class ChromeLabsFooter : public views::View {
                      .SetStyle(ui::ButtonStyle::kProminent)
                      .Build());
     SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+        views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(
@@ -103,7 +101,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
                                views::BubbleBorder::DIALOG_SHADOW,
                                true) {
   SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsBubbleElementId);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
   SetTitle(l10n_util::GetStringUTF16(IDS_WINDOW_TITLE_EXPERIMENTS));
   SetLayoutManager(std::make_unique<views::BoxLayout>())
@@ -176,17 +174,9 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
       base::BindRepeating(&ChromeLabsBubbleView::NotifyRestartCallback,
                           base::Unretained(this))));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
-
-  CHECK(browser);
-  chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
-      kActionShowChromeLabs, browser->browser_actions()->root_action_item());
-  chrome_labs_action_item_->SetIsShowingBubble(true);
 }
 
-ChromeLabsBubbleView::~ChromeLabsBubbleView() {
-  CHECK(chrome_labs_action_item_);
-  chrome_labs_action_item_->SetIsShowingBubble(false);
-}
+ChromeLabsBubbleView::~ChromeLabsBubbleView() = default;
 
 ChromeLabsItemView* ChromeLabsBubbleView::AddLabItem(
     const LabInfo& lab,

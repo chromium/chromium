@@ -27,12 +27,14 @@
 
 #include <limits>
 
+#include "base/check_deref.h"
 #include "base/message_loop/message_pump.h"
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -54,8 +56,9 @@ namespace {
 // Step 11 of the algorithm at
 // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html requires
 // that a timeout less than 4ms is increased to 4ms when the nesting level is
-// greater than 5.
-constexpr int kMaxTimerNestingLevel = 5;
+// greater than 5. Since the counters in this file start at 1 (rather than the
+// 0 in the spec), we should use the value 6 here.
+constexpr int kSpecCompliantMaxTimerNestingLevel = 6;
 constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
 
 base::TimeDelta GetMaxHighResolutionInterval() {
@@ -66,28 +69,26 @@ base::TimeDelta GetMaxHighResolutionInterval() {
              : base::Milliseconds(32);
 }
 
+}  // namespace
+
 // Maintains a set of DOMTimers for a given ExecutionContext. Assigns IDs to
 // timers; these IDs are the ones returned to web authors from setTimeout or
 // setInterval. It also tracks recursive creation or iterative scheduling of
 // timers, which is used as a signal for throttling repetitive timers.
 class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
-                            public Supplement<ExecutionContext> {
+                            public GarbageCollectedMixin {
  public:
-  constexpr static const char kSupplementName[] = "DOMTimerCoordinator";
-
   static DOMTimerCoordinator& From(ExecutionContext& context) {
     CHECK(!context.IsWorkletGlobalScope());
-    auto* coordinator =
-        Supplement<ExecutionContext>::From<DOMTimerCoordinator>(context);
+    DOMTimerCoordinator* coordinator = context.GetDOMTimerCoordinator();
     if (!coordinator) {
-      coordinator = MakeGarbageCollected<DOMTimerCoordinator>(context);
-      Supplement<ExecutionContext>::ProvideTo(context, coordinator);
+      coordinator = MakeGarbageCollected<DOMTimerCoordinator>();
+      context.SetDOMTimerCoordinator(coordinator);
     }
     return *coordinator;
   }
 
-  explicit DOMTimerCoordinator(ExecutionContext& context)
-      : Supplement<ExecutionContext>(context) {}
+  DOMTimerCoordinator() = default;
 
   int Install(DOMTimer* timer) {
     int timeout_id = NextID();
@@ -119,10 +120,7 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
   // deeper timer nesting level, see DOMTimer::DOMTimer.
   void SetTimerNestingLevel(int level) { timer_nesting_level_ = level; }
 
-  void Trace(Visitor* visitor) const final {
-    visitor->Trace(timers_);
-    Supplement<ExecutionContext>::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const final { visitor->Trace(timers_); }
 
  private:
   int NextID() {
@@ -143,6 +141,8 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
   int circular_sequential_id_ = 0;
   int timer_nesting_level_ = 0;
 };
+
+namespace {
 
 bool IsAllowed(ExecutionContext& context, bool is_eval, const String& source) {
   if (context.IsContextDestroyed()) {
@@ -181,9 +181,25 @@ int DOMTimer::setTimeout(ScriptState* script_state,
 
 int DOMTimer::setTimeout(ScriptState* script_state,
                          ExecutionContext& context,
-                         const String& handler,
+                         const V8UnionStringOrTrustedScript* untrusted_handler,
                          int timeout,
-                         const HeapVector<ScriptValue>&) {
+                         const HeapVector<ScriptValue>&,
+                         ExceptionState& exception_state) {
+  // In the current version of the HTML spec, the two setTimeout variants have
+  // been unified, and the Trusted Types check is moved much further down. This
+  // is script-obervable if one tries hard enough, e.g. by having competing
+  // error conditions. Here, we emulate Chrome's existing behaviour precisely.
+  // We leave aligning with the current spec to crbug.com/330516530.
+  //
+  // Spec: https://html.spec.whatwg.org/#timer-initialisation-steps, 9.6.1.4
+  String handler = TrustedTypesCheckForScript(
+      untrusted_handler, &context,
+      context.IsWorkerGlobalScope() ? "WorkerGlobalScope" : "Window",
+      "setTimeout", exception_state);
+  if (exception_state.HadException()) {
+    return 0;
+  }
+
   if (!IsAllowed(context, true, handler)) {
     return 0;
   }
@@ -216,9 +232,20 @@ int DOMTimer::setInterval(ScriptState* script_state,
 
 int DOMTimer::setInterval(ScriptState* script_state,
                           ExecutionContext& context,
-                          const String& handler,
+                          const V8UnionStringOrTrustedScript* untrusted_handler,
                           int timeout,
-                          const HeapVector<ScriptValue>&) {
+                          const HeapVector<ScriptValue>&,
+                          ExceptionState& exception_state) {
+  // Also see DOMTimer::setTimeout.
+  // Spec: https://html.spec.whatwg.org/#timer-initialisation-steps, 9.6.1.4
+  String handler = TrustedTypesCheckForScript(
+      untrusted_handler, &context,
+      context.IsWorkerGlobalScope() ? "WorkerGlobalScope" : "Window",
+      "setInterval", exception_state);
+  if (exception_state.HadException()) {
+    return 0;
+  }
+
   if (!IsAllowed(context, true, handler)) {
     return 0;
   }
@@ -283,28 +310,27 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   bool precise = (timeout < GetMaxHighResolutionInterval()) ||
                  scheduler::IsAlignWakeUpsDisabledForProcess();
 
+  const int max_timer_nesting_level = kSpecCompliantMaxTimerNestingLevel;
+
   // Step 11:
-  // Note: The implementation uses >= instead of >, contrary to what the spec
-  // requires crbug.com/1108877.
-  if (nesting_level_ >= kMaxTimerNestingLevel && timeout < kMinimumInterval) {
+  if (nesting_level_ > max_timer_nesting_level && timeout < kMinimumInterval) {
     timeout = kMinimumInterval;
   }
 
   // Select TaskType based on nesting level.
   TaskType task_type;
-  if (nesting_level_ >= kMaxTimerNestingLevel) {
+  if (nesting_level_ > max_timer_nesting_level) {
     task_type = TaskType::kJavascriptTimerDelayedHighNesting;
   } else if (timeout.is_zero()) {
     task_type = TaskType::kJavascriptTimerImmediate;
-    DCHECK_LT(nesting_level_, kMaxTimerNestingLevel);
+    DCHECK_LE(nesting_level_, max_timer_nesting_level);
   } else {
     task_type = TaskType::kJavascriptTimerDelayedLowNesting;
   }
   MoveToNewTaskRunner(context.GetTaskRunner(task_type));
 
   // Clamping up to 1ms for historical reasons crbug.com/402694.
-  // Removing clamp for single_shot behind a feature flag.
-  if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled()) {
+  if (!single_shot && !blink::features::IsSetIntervalWithoutClampEnabled()) {
     timeout = std::max(timeout, base::Milliseconds(1));
   }
 
@@ -334,7 +360,7 @@ void DOMTimer::Stop() {
   }
 
   async_task_context_.Cancel();
-  const bool is_interval = !RepeatInterval().is_zero();
+  const bool is_interval = RepeatInterval().has_value();
   probe::BreakableLocation(GetExecutionContext(),
                            is_interval ? "clearInterval" : "clearTimeout");
 
@@ -362,43 +388,42 @@ void DOMTimer::Fired() {
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("TimerFire", inspector_timer_fire_event::Data,
                                 context, timeout_id_);
-  const bool is_interval = !RepeatInterval().is_zero();
+  const bool is_interval = RepeatInterval().has_value();
 
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
   probe::InvokeCallback invoke_probe(
-      action_->GetScriptState(),
+      CHECK_DEREF(action_->GetScriptState()),
       is_interval ? "TimerHandler:setInterval" : "TimerHandler:setTimeout",
       action_->CallbackFunction());
   probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);
 
+  const int max_timer_nesting_level = kSpecCompliantMaxTimerNestingLevel;
+
   // Simple case for non-one-shot timers.
   if (IsActive()) {
     DCHECK(is_interval);
+    DCHECK(RepeatInterval());
 
     // Steps 12 and 13:
-    // Note: The implementation increments the nesting level before using it to
-    // adjust timeout, contrary to what the spec requires crbug.com/1108877.
     IncrementNestingLevel();
 
     // Step 11:
-    // Make adjustments when the nesting level becomes >= |kMaxNestingLevel|.
-    // Note: The implementation uses >= instead of >, contrary to what the spec
-    // requires crbug.com/1108877.
-    if (nesting_level_ == kMaxTimerNestingLevel &&
-        RepeatInterval() < kMinimumInterval) {
-      AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
+    // Make adjustments when the nesting level becomes > |kMaxNestingLevel|.
+    if (nesting_level_ == max_timer_nesting_level + 1 &&
+        (*RepeatInterval() < kMinimumInterval)) {
+      AugmentRepeatInterval(kMinimumInterval - *RepeatInterval());
     }
-    if (nesting_level_ == kMaxTimerNestingLevel) {
+    if (nesting_level_ == max_timer_nesting_level + 1) {
       // Move to the TaskType that corresponds to nesting level >=
       // |kMaxNestingLevel|.
       MoveToNewTaskRunner(
           context->GetTaskRunner(TaskType::kJavascriptTimerDelayedHighNesting));
     }
 
-    DCHECK(nesting_level_ < kMaxTimerNestingLevel ||
-           RepeatInterval() >= kMinimumInterval);
+    DCHECK(nesting_level_ <= max_timer_nesting_level ||
+           (is_interval && *RepeatInterval() >= kMinimumInterval));
 
     // No access to member variables after this point, it can delete the timer.
     action_->Execute(context);

@@ -30,7 +30,6 @@
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -435,8 +434,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
 
     // Setup a portrait internal display in tablet mode.
     UpdateDisplay("800x700");
-    const int64_t display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
     set_internal_ = std::make_unique<display::test::ScopedSetInternalDisplayId>(
         display_manager(), display_id);
     ScreenOrientationControllerTestApi test_api(
@@ -586,14 +584,9 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   const gfx::Rect desk_bar_bounds = desks_bar_view->GetBoundsInScreen();
   const gfx::Rect first_item_bounds =
       gfx::ToEnclosedRect(overview_grid()->item_list()[0]->target_bounds());
-  if (features::IsForestFeatureEnabled()) {
-    // With forest, a little overlap is ok since the desk bar is transparent.
-    // TODO(sammiequon|zxdan): Check if this gap is okay.
-    EXPECT_NEAR(desk_bar_bounds.bottom(), first_item_bounds.y(), 20);
-  } else {
-    // Check there's no overlap between overview items and desks bar view.
-    EXPECT_FALSE(desk_bar_bounds.Intersects(first_item_bounds));
-  }
+  // A little overlap is ok since the desk bar is transparent.
+  // TODO(sammiequon|zxdan): Check if this gap is okay.
+  EXPECT_NEAR(desk_bar_bounds.bottom(), first_item_bounds.y(), 20);
 }
 
 }  // namespace ash

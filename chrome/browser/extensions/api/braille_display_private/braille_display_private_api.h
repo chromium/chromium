@@ -53,7 +53,7 @@ class BrailleDisplayPrivateAPI : public BrowserContextKeyedAPI,
 
   class EventDelegate {
    public:
-    virtual ~EventDelegate() {}
+    virtual ~EventDelegate() = default;
     virtual void BroadcastEvent(std::unique_ptr<Event> event) = 0;
     virtual bool HasListener() = 0;
   };
@@ -86,7 +86,7 @@ class BrailleDisplayPrivateGetDisplayStateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("brailleDisplayPrivate.getDisplayState",
                              BRAILLEDISPLAYPRIVATE_GETDISPLAYSTATE)
  protected:
-  ~BrailleDisplayPrivateGetDisplayStateFunction() override {}
+  ~BrailleDisplayPrivateGetDisplayStateFunction() override = default;
   ResponseAction Run() override;
 
   void ReplyWithState(base::Value::Dict state);

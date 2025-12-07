@@ -12,13 +12,17 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Mac capable of running the required version of Xcode.
-* [Xcode](https://developer.apple.com/xcode) 15.0 or higher.
+<!-- LINT.IfChange -->
 
-Note: after installing Xcode, you need to launch it and to let it install
-the iOS simulator. This is required as part of the build, see [this discussion](
-https://groups.google.com/a/chromium.org/g/chromium-dev/c/98d6MyLoYHM/m/A_HyOGxPAgAJ)
-on chromium-dev.
+* A 64-bit Mac capable of running the required version of Xcode.
+* [Xcode](https://developer.apple.com/xcode) 26.0 or higher.
+
+<!-- LINT.ThenChange(//ios/build/chrome_build.gni) -->
+
+Note: after installing Xcode, you need to install
+the iOS simulator. This is required as part of the build, see
+[this document](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)
+to add iOS Platform Support.
 
 ## Install `depot_tools`
 
@@ -28,13 +32,26 @@ Clone the `depot_tools` repository:
 $ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
-Add `depot_tools` to the end of your PATH (you will probably want to put this
-in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
-`/path/to/depot_tools`:
+You need to add the directory where you checked out `depot_tools` to your
+`PATH` to make the `gclient` commands available. It is also recommended to
+add the `depot_tools/python-bin` directory to your `PATH` to get access to
+a recent version of python3 (the version shipped by default on macOS tends
+to be quite old which can lead to build failure).
+
+To do that, edit your shell login script (e.g. `~/.bash_profile`, `~/.zprofile`)
+and add the following line at the end (assuming you've checked out `depot_tools`
+in your `HOME` directory):
 
 ```shell
-$ export PATH="$PATH:/path/to/depot_tools"
+export PATH="$HOME/depot_tools:$HOME/depot_tools/python-bin:$PATH"
 ```
+
+You may need to run `gclient status` to force an update of `depot_tools`
+before the `python3` command work once you've updated your `PATH`.
+
+You can omit `$HOME/depot_tools/python-bin` if you already have a recent
+version of python installed and you manually manage it (but this may lead
+to unexpected build failures).
 
 ## Get the code
 
@@ -83,9 +100,15 @@ as well.
 More information about [developing with Xcode](xcode_tips.md). *Xcode project
 is an artifact, any changes made in the project itself will be ignored.*
 
-You can customize the build by editing the file `$HOME/.setup-gn` (create it if
-it does not exist).  Look at `src/ios/build/tools/setup-gn.config` for
-available configuration options.
+You can customize the build by editing a file called `.setup-gn` (create it if
+it does not exist). It can be stored in two locations:
+
+* `$HOME/.setup-gn` (the settings will be applied to all Chromium checkouts).
+* The directory above `src/` (i.e. the directory containing your `.gclient`)
+  for checkout-specific settings.
+
+Look at `src/ios/build/tools/setup-gn.config` for available configuration
+options.
 
 From this point, you can either build from Xcode or from the command line using
 `autoninja`. `setup-gn.py` creates sub-directories named
@@ -97,6 +120,8 @@ $ autoninja -C out/Debug-iphonesimulator gn_all
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
 arguments passed to `ninja`.)
+
+Tips: See [Siso tips](../siso_tips.md).
 
 Note: The `setup-gn.py` script needs to run every time one of the `BUILD.gn`
 files is updated (either by you or after rebasing). If you forget to run it,
@@ -189,12 +214,10 @@ for the following bundle identifiers to build and run Chromium with these
 application extensions:
 
 -   `${prefix}.chrome.ios.dev`
--   `${prefix}.chrome.ios.dev.ContentTodayExtension`
 -   `${prefix}.chrome.ios.dev.CredentialProviderExtension`
 -   `${prefix}.chrome.ios.dev.IntentsExtension`
 -   `${prefix}.chrome.ios.dev.OpenExtension`
 -   `${prefix}.chrome.ios.dev.ShareExtension`
--   `${prefix}.chrome.ios.dev.TodayExtension`
 -   `${prefix}.chrome.ios.dev.WidgetKitExtension`
 
 All these certificates need to have the "App Groups"
@@ -251,7 +274,7 @@ be signed on the command line, e.g.:
 $ autoninja -C out/Debug-iphoneos ios_web_shell
 ninja: Entering directory `out/Debug-iphoneos'
 FAILED: ios_web_shell.app/ios_web_shell ios_web_shell.app/_CodeSignature/CodeResources ios_web_shell.app/embedded.mobileprovision
-python ../../build/config/ios/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app
+python ../../build/config/apple/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app
 Error: no mobile provisioning profile found for "org.chromium.ios-web-shell".
 ninja: build stopped: subcommand failed.
 ```
@@ -281,12 +304,55 @@ experimental code and should only be used for analysis.
 ```
 [gn_args]
 use_blink = true
+ios_content_shell_bundle_identifier="REPLACE_YOUR_BUNDLE_IDENTIFIER_HERE"
+ios_chromium_bundle_id="REPLACE_YOUR_BUNDLE_IDENTIFIER_HERE"
 ```
-Note that only certain targets support blink. `content_shell` being the
-most useful.
+Note that only certain targets support blink. `content_shell` and `chrome`
+being the most useful.
 
 ```shell
-$ autoninja -C out/Debug-iphonesimulator content_shell
+$ autoninja -C out/Debug-iphonesimulator content_shell chrome
+```
+
+## Blink for tvOS builds and running
+
+Note: To build Blink for tvOS, make sure that the tvOS SDK and the tvOS
+simulator are installed on your system.
+
+Blink for tvOS is an experimental project that aims to port Blink to Apple tvOS.
+Due to platform limitations, specifically because tvOS does not support
+multi-process applications, Blink for tvOS runs in a single-process mode only.
+As a result, there is no security isolation, since all content runs within the
+same process. Therefore, it is intended solely for loading trusted content.
+Please note that this project is still under development and considered
+unstable.
+
+tvOS is an iOS-based platform, and within the Chromium project, it is treated as
+a variant of the iOS build. As such, the same setup instructions used for iOS
+also apply to tvOS.
+
+If you use the `setup-gn.py` script as described above, it will automatically
+create `out/${configuration}-appletvsimulator` and
+`out/${configuration}-appletvos` directories with the appropriate GN arguments.
+
+If you would like to set your build up manually, the following GN arguments are
+required:
+
+```
+target_os="ios"
+target_platform="tvos"
+use_blink=true
+```
+
+Currently, tvOS supports only a limited set of targets, with `content_shell`
+being the most useful one. Note that `chrome` is not a supported target.
+
+The `iossim` tool also supports tvOS via the `-x tvos` argument. You can run a
+debug build of `content_shell`:
+
+```shell
+$ out/Debug-appletvsimulator/iossim -d 'Apple TV' -s '18.4' -x tvos \
+  out/Debug-appletvsimulator/content_shell.app
 ```
 
 ## Running apps from the command line
@@ -300,9 +366,8 @@ command line, you can use `iossim`. For example, to run a debug build of
 $ out/Debug-iphonesimulator/iossim -i out/Debug-iphonesimulator/Chromium.app
 ```
 
-From Xcode 9 on, `iossim` no longer automatically launches the Simulator. This must now
-be done manually from within Xcode (`Xcode > Open Developer Tool > Simulator`), and
-also must be done *after* running `iossim`.
+Note that `iossim` does not automatically launch the Simulator. This must be
+done manually *after* running `iossim`.
 
 ### Passing arguments
 
@@ -405,15 +470,14 @@ hooks as needed.
 
 ## Tips, tricks, and troubleshooting
 
-Remember that the XCode project you interact with while working on Chromium is a
+Remember that the Xcode project you interact with while working on Chromium is a
 build artifact, generated from the `BUILD.gn` files. Do not use it to add new
 files; instead see the procedures for [working with
 files](working_with_files.md).
 
-If you have problems building, join us in `#chromium` on `irc.freenode.net` and
-ask there. As mentioned above, be sure that the
-[waterfall](https://build.chromium.org/buildbot/waterfall/) is green and the tree
-is open before checking out. This will increase your chances of success.
+If you have problems building, you can join us on
+[Slack](https://www.chromium.org/developers/slack/) or one of our [mailing
+lists](https://www.chromium.org/developers/technical-discussion-groups/).
 
 ### Debugging
 

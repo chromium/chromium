@@ -12,7 +12,6 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display_observer.h"
@@ -120,9 +119,7 @@ class ASH_EXPORT WallpaperWidgetController
   std::unique_ptr<ui::LayerTreeOwner> old_layer_tree_owner_;
 
   // Pointer to the wallpaper view owned by |widget_|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION WallpaperView* wallpaper_view_ = nullptr;
+  raw_ptr<WallpaperView> wallpaper_view_ = nullptr;
 
   // A solid-color layer stacked below the clipped `wallpaper_view_`
   // layer. Note that it can't be stacked at bottom since the `shield_view_` may

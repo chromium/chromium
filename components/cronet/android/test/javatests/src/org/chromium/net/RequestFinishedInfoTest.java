@@ -21,7 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.build.BuildConfig;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
@@ -45,6 +46,7 @@ public class RequestFinishedInfoTest {
 
     private String mUrl;
     private CronetImplementation mImplementationUnderTest;
+    private NativeTestServer mNativeTestServer;
 
     // A subclass of TestRequestFinishedListener to additionally assert that UrlRequest.Callback's
     // terminal callbacks have been invoked at the time of onRequestFinished().
@@ -68,18 +70,20 @@ public class RequestFinishedInfoTest {
 
     @Before
     public void setUp() throws Exception {
-        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
-        mUrl = NativeTestServer.getFileURL("/echo?status=200");
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
+        mUrl = mNativeTestServer.getFileURL("/echo?status=200");
         mImplementationUnderTest = mTestRule.implementationUnderTest();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     static class DirectExecutor implements Executor {
-        private ConditionVariable mBlock = new ConditionVariable();
+        private final ConditionVariable mBlock = new ConditionVariable();
 
         @Override
         public void execute(Runnable task) {
@@ -93,7 +97,7 @@ public class RequestFinishedInfoTest {
     }
 
     static class ThreadExecutor implements Executor {
-        private List<Thread> mThreads = new ArrayList<Thread>();
+        private final List<Thread> mThreads = new ArrayList<>();
 
         @Override
         public void execute(Runnable task) {
@@ -456,12 +460,15 @@ public class RequestFinishedInfoTest {
         // Empty headers are invalid and will cause start() to throw an exception.
         UrlRequest request = urlRequestBuilder.addHeader("", "").build();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, request::start);
-        if (mImplementationUnderTest == CronetImplementation.AOSP_PLATFORM
-                && !mTestRule.isRunningInAOSP()) {
-            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header =");
+        var oldMessage = "Invalid header =";
+        var newMessage = "Invalid header with headername: ";
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
+                && !BuildConfig.CRONET_FOR_AOSP_BUILD) {
+            // We may be running against an HttpEngine backed by an old version of Cronet, so accept
+            // both the old and new variants of the message.
+            assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);
         } else {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: ");
+            assertThat(e).hasMessageThat().isEqualTo(newMessage);
         }
     }
 

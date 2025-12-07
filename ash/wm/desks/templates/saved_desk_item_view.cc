@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -30,8 +31,10 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_constants.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,7 +51,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -86,7 +89,8 @@ constexpr int kFadeDurationMs = 100;
 std::u16string GetTimeStr(base::Time timestamp) {
   // `ui::TimeFormat::RelativeDate()` returns an empty string if `timestamp` is
   // out of relative date range, which is yesterday and today as of now.
-  const std::u16string date = ui::TimeFormat::RelativeDate(timestamp, nullptr);
+  const std::u16string date =
+      ui::TimeFormat::RelativeDate(timestamp, std::nullopt);
   return date.empty()
              // Syntax `yMMMdjmm` is used by the File App if it's not a relative
              // date. Please note, this might be slightly different for
@@ -128,9 +132,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .CopyAddressTo(&background_view)
               .SetPreferredSize(kPreferredSize)
               .SetUseDefaultFillLayout(true)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
-                  cros_tokens::kCrosSysSystemBaseElevated,
-                  kSaveDeskCornerRadius)),
+              .SetBackground(views::CreateSolidBackground(
+                  cros_tokens::kCrosSysSystemBaseElevated)),
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kVertical)
               .CopyAddressTo(&box_layout_view)
@@ -188,7 +191,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                   views::Builder<views::Label>()
                       .CopyAddressTo(&time_view_)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                      .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+                      .SetEnabledColor(cros_tokens::kCrosSysSecondary)
                       .SetText(
                           is_admin_managed
                               ? l10n_util::GetStringUTF16(
@@ -223,7 +226,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kSaveDeskCornerRadius);
 
-  if (features::IsBackgroundBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled()) {
     background_view->SetPaintToLayer();
     background_view->layer()->SetFillsBoundsOpaquely(false);
     background_view->layer()->SetBackgroundBlur(
@@ -299,6 +302,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF8(
+      IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
 SavedDeskItemView::~SavedDeskItemView() {
@@ -393,20 +398,6 @@ void SavedDeskItemView::UpdateSavedDesk(
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`
   name_view_->OnContentsChanged();
-}
-
-void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // We must set the updated accessible name directly in the cache to override
-  // the one set in `LabelButton::SetText`. This is temporary.
-  //
-  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
-  // the cache as soon as the name is updated.
-  GetViewAccessibility().SetName(ComputeAccessibleName());
-
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kDescription,
-      l10n_util::GetStringUTF8(
-          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
 void SavedDeskItemView::Layout(PassKey) {
@@ -517,7 +508,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
     return;
 
   auto* saved_desk_entry_to_replace = presenter->FindOtherEntryWithName(
-      name_view_->GetText(), saved_desk().type(), uuid());
+      std::u16string(name_view_->GetText()), saved_desk().type(), uuid());
   if (saved_desk_entry_to_replace) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
@@ -554,7 +545,7 @@ bool SavedDeskItemView::CanHandleAccelerators() const {
 }
 
 void SavedDeskItemView::UpdateSavedDeskName() {
-  saved_desk_->set_template_name(name_view_->GetText());
+  saved_desk_->set_template_name(std::u16string(name_view_->GetText()));
   OnSavedDeskNameChanged(saved_desk_->template_name());
 
   if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {

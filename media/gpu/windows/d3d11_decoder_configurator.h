@@ -39,7 +39,8 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
       uint8_t bit_depth,
       VideoChromaSampling chroma_sampling,
       MediaLog* media_log,
-      bool use_shared_handle);
+      bool use_shared_handle,
+      ComD3D11Device device);
 
   bool SupportsDevice(ComD3D11VideoDevice video_device);
 

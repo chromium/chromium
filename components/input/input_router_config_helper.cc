@@ -50,7 +50,7 @@ GestureEventQueue::Config GetGestureEventQueueConfig() {
 
 }  // namespace
 
-InputRouter::Config::Config() {}
+InputRouter::Config::Config() = default;
 
 InputRouter::Config GetInputRouterConfigForPlatform(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {

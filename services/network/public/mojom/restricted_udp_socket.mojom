@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
+import "services/network/public/mojom/ip_address.mojom";
 
 [EnableIf=is_chromeos]
 import "services/network/public/mojom/socket_connection_tracker.mojom";
@@ -41,6 +42,17 @@ struct RestrictedUDPSocketParams {
 //
 // Caller can close the socket by destroying the interface pointer.
 interface RestrictedUDPSocket {
+  // Joins a multicast group. `group_address` is the group address to join,
+  // could be either an IPv4 or IPv6 address. Returns a net error code.
+  // See RFC 1112 for details on multicast.
+  JoinGroup(IPAddress group_address) => (int32 result);
+
+  // Leaves the multicast group. `group_address` is the group address to leave,
+  // could be either an IPv4 or IPv6 address. If the socket hasn't joined the
+  // group, this call will be ignored. It's optional to leave the multicast
+  // group before destroying the socket. Returns a net error code.
+  LeaveGroup(IPAddress group_address) => (int32 result);
+
   // Notifies that the listener is ready to accept datagrams. OnReceived() of
   // the UDPSocketListener interface will be called |num_additional_datagrams|
   // times (errors also count), unless the connection is closed before that.

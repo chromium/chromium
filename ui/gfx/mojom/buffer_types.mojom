@@ -57,15 +57,14 @@ enum BufferPlane {
   A,
 };
 
-// gfx::GpuMemoryBufferId
 [Stable]
 struct GpuMemoryBufferId {
   int32 id;
 };
 
 // gfx::GpuMemoryBufferHandle
+[EnableIf=use_blink]
 struct GpuMemoryBufferHandle {
-  GpuMemoryBufferId id;
   uint32 offset;
   uint32 stride;
   GpuMemoryBufferPlatformHandle? platform_handle;

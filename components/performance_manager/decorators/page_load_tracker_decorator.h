@@ -25,10 +25,10 @@ class ProcessNodeImpl;
 // top-level load to a different document. It stops loading when it reaches an
 // "almost idle" state, based on CPU and network quiescence, or after an
 // absolute timeout. This state is then updated on PageNodes in a graph.
-class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
+class PageLoadTrackerDecorator : public FrameNodeObserver,
                                  public GraphOwnedDefaultImpl,
                                  public NodeDataDescriberDefaultImpl,
-                                 public ProcessNode::ObserverDefaultImpl {
+                                 public ProcessNodeObserver {
  public:
   using Data = PageLoadTrackerDecoratorData;
 

@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_VIEWS_H_
 
-#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
-
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"

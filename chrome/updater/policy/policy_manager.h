@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
 
@@ -48,6 +49,10 @@ class PolicyManager : public PolicyManagerInterface {
       const std::string& app_id) const override;
   std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override;
+  std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const override;
+  std::optional<int> GetMinorVersionRolloutPolicy(
+      const std::string& app_id) const override;
   std::optional<std::string> GetProxyMode() const override;
   std::optional<std::string> GetProxyPacUrl() const override;
   std::optional<std::string> GetProxyServer() const override;
@@ -63,6 +68,10 @@ class PolicyManager : public PolicyManagerInterface {
   const base::Value::Dict policies_;
   std::vector<std::string> force_install_apps_;
 };
+
+// A factory method to create a dict policy manager.
+scoped_refptr<PolicyManagerInterface> CreateDictPolicyManager(
+    base::Value::Dict policies);
 
 }  // namespace updater
 

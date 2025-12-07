@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"

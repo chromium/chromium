@@ -23,8 +23,7 @@ namespace autofillPrivate {
     boolean isAutofillSyncToggleEnabled;
   };
 
-  // A copy of FieldType from
-  // chrome/common/extensions/api/autofill_private.idl
+  // A copy of FieldType from components/autofill/core/browser/field_types.h.
   enum FieldType {
     NO_SERVER_DATA,
     UNKNOWN_TYPE,
@@ -35,6 +34,9 @@ namespace autofillPrivate {
     NAME_MIDDLE_INITIAL,
     NAME_FULL,
     NAME_SUFFIX,
+    ALTERNATIVE_FULL_NAME,
+    ALTERNATIVE_GIVEN_NAME,
+    ALTERNATIVE_FAMILY_NAME,
     EMAIL_ADDRESS,
     PHONE_HOME_NUMBER,
     PHONE_HOME_CITY_CODE,
@@ -58,7 +60,6 @@ namespace autofillPrivate {
     CREDIT_CARD_TYPE,
     CREDIT_CARD_VERIFICATION_CODE,
     COMPANY_NAME,
-    FIELD_WITH_DEFAULT_VALUE,
     MERCHANT_EMAIL_SIGNUP,
     MERCHANT_PROMO_CODE,
     PASSWORD,
@@ -88,6 +89,8 @@ namespace autofillPrivate {
     ADDRESS_HOME_HOUSE_NUMBER,
     ADDRESS_HOME_SUBPREMISE,
     ADDRESS_HOME_OTHER_SUBUNIT,
+    NAME_LAST_PREFIX,
+    NAME_LAST_CORE,
     NAME_LAST_FIRST,
     NAME_LAST_CONJUNCTION,
     NAME_LAST_SECOND,
@@ -121,17 +124,62 @@ namespace autofillPrivate {
     ADDRESS_HOME_APT_TYPE,
     ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
     SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
+    PASSPORT_NUMBER,
+    PASSPORT_ISSUING_COUNTRY,
+    PASSPORT_EXPIRATION_DATE,
+    PASSPORT_ISSUE_DATE,
+    LOYALTY_MEMBERSHIP_PROGRAM,
+    LOYALTY_MEMBERSHIP_PROVIDER,
+    LOYALTY_MEMBERSHIP_ID,
+    VEHICLE_LICENSE_PLATE,
+    VEHICLE_VIN,
+    VEHICLE_MAKE,
+    VEHICLE_MODEL,
+    DRIVERS_LICENSE_REGION,
+    DRIVERS_LICENSE_NUMBER,
+    DRIVERS_LICENSE_EXPIRATION_DATE,
+    DRIVERS_LICENSE_ISSUE_DATE,
+    VEHICLE_YEAR,
+    VEHICLE_PLATE_STATE,
+    EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+    NATIONAL_ID_CARD_NUMBER,
+    NATIONAL_ID_CARD_EXPIRATION_DATE,
+    NATIONAL_ID_CARD_ISSUE_DATE,
+    NATIONAL_ID_CARD_ISSUING_COUNTRY,
+    KNOWN_TRAVELER_NUMBER,
+    KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
+    REDRESS_NUMBER,
+    ADDRESS_HOME_ZIP_PREFIX,
+    ADDRESS_HOME_ZIP_SUFFIX,
+    FLIGHT_RESERVATION_FLIGHT_NUMBER,
+    FLIGHT_RESERVATION_TICKET_NUMBER,
+    FLIGHT_RESERVATION_CONFIRMATION_CODE,
+    FLIGHT_RESERVATION_PASSENGER_NAME,
+    FLIGHT_RESERVATION_DEPARTURE_AIRPORT,
+    FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
+    FLIGHT_RESERVATION_DEPARTURE_DATE,
     MAX_VALID_FIELD_TYPE
   };
 
-  // The address source origin. Describes where the address is stored.
-  enum AddressSource {
+  // The address record type. Describes where the address is stored.
+  enum AddressRecordType {
     // The address is stored in the Chrome infrastructure (locally and
     // possibly synced between devices).
     LOCAL_OR_SYNCABLE,
     // The address is stored in a third party service that is tied
     // to user's account.
-    ACCOUNT
+    ACCOUNT,
+    ACCOUNT_HOME,
+    ACCOUNT_WORK,
+    // The address is stored locally. Not synced at all.
+    ACCOUNT_NAME_EMAIL
+  };
+
+  // The type of data that can be stored for an attribute type.
+  enum AttributeTypeDataType {
+    COUNTRY,
+    DATE,
+    STRING
   };
 
   // Metadata about an autofill entry (address or credit card) which is used to
@@ -148,14 +196,11 @@ namespace autofillPrivate {
     DOMString? summarySublabel;
 
     // For addresses. Describes where the address is stored.
-    AddressSource? source;
+    AddressRecordType? recordType;
 
     // For credit cards, whether the entry is locally owned by Chrome (as opposed to
     // being synced down from the server). Non-local entries may not be editable.
     boolean? isLocal;
-
-    // For credit cards, whether this is a full copy of the card
-    boolean? isCached;
 
     // For credit cards, whether this is migratable (both the card number and
     // expiration date valid and does not have the duplicated server card).
@@ -286,6 +331,9 @@ namespace autofillPrivate {
     // Globally unique identifier for this entry.
     DOMString? guid;
 
+    // The IBAN's instrument ID from the GPay server, if applicable.
+    DOMString? instrumentId;
+
     // IBAN value.
     DOMString? value;
 
@@ -295,6 +343,119 @@ namespace autofillPrivate {
     AutofillMetadata? metadata;
   };
 
+  // Contains the attribute type name and other relevant information about the
+  // attribute type. It is part of the `EntityInstance` API.
+  dictionary AttributeType {
+    // Contains the value of an `AttributeTypeName` on the C++ side.
+    long typeName;
+    // The type name as a human readable string.
+    DOMString typeNameAsString;
+    // The type of data stored for this attribute type.
+    AttributeTypeDataType dataType;
+  };
+
+  // Contains the entity type name and other relevant information about the
+  // entity type. It is part of the `EntityInstance` API.
+  dictionary EntityType {
+    // Contains the value of an `EntityTypeName` on the C++ side.
+    long typeName;
+    // The type name as a human readable string.
+    DOMString typeNameAsString;
+    // The i18n string representation of "Add <entity type>". Used in the entity
+    // instance adding settings UI. The string cannot be constructed
+    // dynamically, because the "<entity type>" string might need declension in
+    // some languages.
+    DOMString addEntityTypeString;
+    // The i18n string representation of "Edit <entity type>". Used in the
+    // entity instance editing settings UI. The string cannot be constructed
+    // dynamically, because the "<entity type>" string might need declension in
+    // some languages.
+    DOMString editEntityTypeString;
+    // The i18n string representation of "Delete <entity type>". Used in the
+    // entity instance deletion settings UI. The string cannot be constructed
+    // dynamically, because the "<entity type>" string might need declension in
+    // some languages.
+    DOMString deleteEntityTypeString;
+    // Whether the entity type can be stored on Google Wallet servers.
+    // Note that an entity type might support Wallet and local storage
+    // as well. (e.g. Vehicle).
+    boolean supportsWalletStorage;
+  };
+
+  // Contains date information: month, day and year.
+  dictionary DateValue {
+    // The year of the date valure, repesented as "YYYY". Example: "2016".
+    DOMString year;
+    // The month of the date value, without leading zeros. Example: "3" for
+    // March, "10" for October.
+    DOMString month;
+    // The day of the date value, without leading zeros. Example: "3", "30".
+    DOMString day;
+  };
+
+  // An attribute instance is a typed string value with additional metadata.
+  // It is associated with an `EntityInstance`.
+  dictionary AttributeInstance {
+    // Contains the attribute type name and other relevant information about the
+    // attribute type.
+    AttributeType type;
+    // The attribute instance value. If the `AttributeTypeDataType` is a `DATE`,
+    // then `value` is a `DateValue`. Otherwise, `value` is a `DOMString`.
+    (DOMString or DateValue) value;
+  };
+
+  // An entity instance entry which can be saved in the "Autofill with AI"
+  // section of the settings UI.
+  dictionary EntityInstance {
+    // Contains the entity type name and other relevant information about the
+    // entity type.
+    EntityType type;
+    // The attribute instances of this entity instance.
+    AttributeInstance[] attributeInstances;
+    // The guid of the entity instance.
+    DOMString guid;
+    // The nickname of the entity instance.
+    DOMString nickname;
+  };
+
+  // Contains the minimum amount of information needed to display an entity
+  // instance, along with the guid. The guid is needed to retrieve the complete
+  // information of the entity instance.
+  dictionary EntityInstanceWithLabels {
+    // The guid of the entity instance.
+    DOMString guid;
+    // Contains the entity type name and other relevant information about the
+    // entity type.
+    EntityType type;
+    // The entity instance label.
+    DOMString entityInstanceLabel;
+    // The entity instance sublabel.
+    DOMString entityInstanceSubLabel;
+    // Whether the entity is stored on Google Wallet servers.
+    boolean storedInWallet;
+  };
+
+  // A Pay Over Time Issuer entry which can be displayed in the autofill
+  // section of the settings UI.
+  dictionary PayOverTimeIssuerEntry {
+    // Unique identifier for the Pay Over Time issuer.
+    DOMString? issuerId;
+
+    // The Pay Over Time issuer's instrument ID from the GPay server,
+    // if applicable.
+    DOMString? instrumentId;
+
+    // The Pay Over Time issuer's display name.
+    DOMString? displayName;
+
+    // The Pay Over Time issuer image source.
+    DOMString? imageSrc;
+
+    // The Pay Over Time issuer image source for dark theme.
+    DOMString? imageSrcDark;
+  };
+
+  callback VoidCallback = void();
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
   callback GetAddressComponentsCallback = void(AddressComponents components);
@@ -304,6 +465,16 @@ namespace autofillPrivate {
   callback IsValidIbanCallback = void(boolean isValid);
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
+  callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
+  callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
+  callback GetWritableEntityTypesCallback = void(EntityType[] entityTypes);
+  callback GetAllAttributeTypesForEntityTypeNameCallback =
+      void(AttributeType[] attributeTypes);
+  callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
+  callback SetAutofillAiOptInStatusCallback = void(boolean success);
+  callback GetWalletablePassDetectionOptInStatusCallback = void(boolean optedIn);
+  callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
+  callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -317,12 +488,16 @@ namespace autofillPrivate {
     // |address|: The address entry to save.
     static void saveAddress(AddressEntry address);
 
+    // Removes the address with the given ID.
+    // |guid|: ID of the address to remove.
+    static void removeAddress(DOMString guid);
+
     // Gets the list of all countries.
-    // |forAccountAddressProfile|: whether the address profile opened in the
-    // editor originates in the user's profile.
+    // |forAccountStorage|: whether the address profile opened in the editor
+    // originates in the user's profile.
     // |callback|: Callback which will be called with the countries.
     static void getCountryList(
-        boolean forAccountAddressProfile,
+        boolean forAccountStorage,
         GetCountryListCallback callback);
 
     // Gets the address components for a given country code.
@@ -349,9 +524,9 @@ namespace autofillPrivate {
     // |iban|: The IBAN entry to save.
     static void saveIban(IbanEntry iban);
 
-    // Removes the entry (address or credit card) with the given ID.
-    // |guid|: ID of the entry to remove.
-    static void removeEntry(DOMString guid);
+    // Removes the payments entity with the given ID.
+    // |guid|: ID of the entity to remove.
+    static void removePaymentsEntity(DOMString guid);
 
     // Gets the list of credit cards.
     // |callback|: Callback which will be called with the list of credit cards.
@@ -359,21 +534,21 @@ namespace autofillPrivate {
         GetCreditCardListCallback callback);
 
     // Gets the list of IBANs.
-    // `callback`: Callback which will be called with the list of IBANs.
+    // |callback|: Callback which will be called with the list of IBANs.
     static void getIbanList(
         GetIbanListCallback callback);
 
     // Returns true if the given `ibanValue` is a valid IBAN.
-    // `callback`: Callback which will be called with the result of IBAN
+    // |callback|: Callback which will be called with the result of IBAN
     // validation.
     static void isValidIban(
         DOMString ibanValue, IsValidIbanCallback callback);
 
-    // Triggers local credit cards migration.
-    static void migrateCreditCards();
-
     // Logs that the server cards edit link was clicked.
     static void logServerCardLinkClicked();
+
+    // Logs that a server IBAN's edit link was clicked.
+    static void logServerIbanLinkClicked();
 
     // Enrolls a credit card into virtual cards.
     // |cardId|: The server side id of the credit card to be enrolled. Note it
@@ -385,6 +560,12 @@ namespace autofillPrivate {
     // it refers to the legacy server id of credit cards, not the instrument
     // ids.
     static void removeVirtualCard(DOMString cardId);
+
+    // Gets the list of Pay Over Time Issuers.
+    // |callback|: Callback which will be called with the list of
+    //             Pay Over Time Issuers.
+    static void getPayOverTimeIssuerList(
+        GetPayOverTimeIssuerListCallback callback);
 
     // Authenticates the user via device authentication and if successful, it
     // will then flip the mandatory auth toggle.
@@ -409,6 +590,51 @@ namespace autofillPrivate {
     // Sets the Sync Autofill toggle value, which corresponds to
     // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
     static void setAutofillSyncToggleEnabled(boolean enabled);
+
+    // Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
+    // the entity instance.
+    static void addOrUpdateEntityInstance(
+        EntityInstance entityInstance, optional VoidCallback callback);
+
+    // Deletes an entity instance by its guid.
+    static void removeEntityInstance(
+        DOMString guid, optional VoidCallback callback);
+
+    // Returns all of the user's entity instances with labels.
+    static void loadEntityInstances(LoadEntityInstancesCallback callback);
+
+    // Returns the entity instance by its guid.
+    static void getEntityInstanceByGuid(
+        DOMString guid, GetEntityInstanceByGuid callback);
+
+    // Returns a list of writable entity types. Used for the user to decide
+    // what entity instance to add.
+    static void getWritableEntityTypes(GetWritableEntityTypesCallback callback);
+
+    // Returns a list of all possible attribute types that can be set on an
+    // entity instance with the respective entity type name. Used for
+    // adding/editing a new entity instance.
+    static void getAllAttributeTypesForEntityTypeName(
+        long entityTypeName,
+        GetAllAttributeTypesForEntityTypeNameCallback callback);
+
+    // Gets the AutofillAI opt-in status for the current user.
+    static void getAutofillAiOptInStatus(
+      GetAutofillAiOptInStatusCallback callback);
+
+    // Sets the AutofillAI opt-in status for the current user.
+    static void setAutofillAiOptInStatus(
+      boolean optedIn,
+      SetAutofillAiOptInStatusCallback callback);
+
+    // Gets the walletable pass detection opt-in status for the current user.
+    static void getWalletablePassDetectionOptInStatus(
+      GetWalletablePassDetectionOptInStatusCallback callback);
+
+    // Sets the walletable pass detection opt-in status for the current user.
+    static void setWalletablePassDetectionOptInStatus(
+      boolean optedIn,
+      SetWalletablePassDetectionOptInStatusCallback callback);
   };
 
   interface Events {
@@ -417,10 +643,17 @@ namespace autofillPrivate {
     // `addressEntries`: the updated list of addresses.
     // `creditCardEntries`: the updated list of credit cards.
     // `ibans`: the updated list of IBANs.
+    // `payOverTimeIssuers`: the updated list of Pay Over Time issuers
     // `accountInfo`: account info if the user is signed-in or no value if not.
     static void onPersonalDataChanged(AddressEntry[] addressEntries,
         CreditCardEntry[] creditCardEntries,
         IbanEntry[] ibans,
+        PayOverTimeIssuerEntry[] payOverTimeIssuers,
         optional AccountInfo accountInfo);
+
+    // Fired when the entity instances have changed (additions, updates,
+    // removals).
+    static void onEntityInstancesChanged(
+        EntityInstanceWithLabels[] entityInstancesWithLabels);
   };
 };

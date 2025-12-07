@@ -44,7 +44,7 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
   value.Set(keys::kManifestVersion, 2);
   value.Set(keys::kVersion, "1.0.0.0");
   value.Set(keys::kName, name);
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(Extension::Create(
       path, extensions::mojom::ManifestLocation::kInvalidLocation, value,
       Extension::NO_FLAGS, &error));
@@ -58,7 +58,9 @@ template <class T>
 void FireBookmarksApiEvent(Profile* profile,
                            const scoped_refptr<Extension>& extension,
                            int repeats) {
-  scoped_refptr<extensions::BookmarksFunction> bookmarks_function(new T());
+  scoped_refptr<extensions::BookmarksFunction> bookmarks_function =
+      base::MakeRefCounted<T>();
+  bookmarks_function->set_extension(extension.get());
   bookmarks_function->set_histogram_value(T::static_histogram_value());
   bookmarks_function->SetName(T::static_function_name());
   // |bookmarks_function| won't be run, just passed to Notify(), so calling
@@ -66,7 +68,7 @@ void FireBookmarksApiEvent(Profile* profile,
   bookmarks_function->ignore_did_respond_for_testing();
   for (int i = 0; i < repeats; i++) {
     extensions::BookmarksApiWatcher::GetForBrowserContext(profile)
-        ->NotifyApiInvoked(extension.get(), bookmarks_function.get());
+        ->NotifyApiInvoked(bookmarks_function.get());
   }
 }
 

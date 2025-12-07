@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -21,12 +22,13 @@ TEST_F(ManualFillCredentialiOSTest, Creation) {
                                             password:password
                                             siteName:siteName
                                                 host:host
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   EXPECT_TRUE(credential);
-  EXPECT_TRUE([username isEqualToString:credential.username]);
-  EXPECT_TRUE([password isEqualToString:credential.password]);
-  EXPECT_TRUE([siteName isEqualToString:credential.siteName]);
-  EXPECT_TRUE([host isEqualToString:credential.host]);
+  EXPECT_NSEQ(username, credential.username);
+  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(siteName, credential.siteName);
+  EXPECT_NSEQ(host, credential.host);
   EXPECT_EQ(URL, credential.URL);
 }
 
@@ -42,13 +44,15 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
                                             password:password
                                             siteName:siteName
                                                 host:host
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   ManualFillCredential* equalCredential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:password
                                             siteName:siteName
                                                 host:host
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   EXPECT_TRUE([credential isEqual:equalCredential]);
 
   ManualFillCredential* differentUsernameCredential =
@@ -56,7 +60,8 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
                                             password:password
                                             siteName:siteName
                                                 host:host
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   EXPECT_FALSE([credential isEqual:differentUsernameCredential]);
 
   ManualFillCredential* differentPasswordCredential =
@@ -64,7 +69,8 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
                                             password:@"psswd"
                                             siteName:siteName
                                                 host:host
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   EXPECT_FALSE([credential isEqual:differentPasswordCredential]);
 
   ManualFillCredential* differentSiteNameCredential =
@@ -72,7 +78,8 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
                                             password:password
                                             siteName:@"notexample.com"
                                                 host:host
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   EXPECT_FALSE([credential isEqual:differentSiteNameCredential]);
 
   ManualFillCredential* differentHostCredential =
@@ -80,14 +87,25 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
                                             password:password
                                             siteName:siteName
                                                 host:@"other.example.com"
-                                                 URL:URL];
+                                                 URL:URL
+                                  isBackupCredential:NO];
   EXPECT_FALSE([credential isEqual:differentHostCredential]);
 
   ManualFillCredential* differentURLCredential = [[ManualFillCredential alloc]
-      initWithUsername:username
-              password:password
-              siteName:siteName
-                  host:host
-                   URL:GURL("https://www.other.example.com")];
+        initWithUsername:username
+                password:password
+                siteName:siteName
+                    host:host
+                     URL:GURL("https://www.other.example.com")
+      isBackupCredential:NO];
   EXPECT_FALSE([credential isEqual:differentURLCredential]);
+
+  ManualFillCredential* differentBackupFlag = [[ManualFillCredential alloc]
+        initWithUsername:username
+                password:password
+                siteName:siteName
+                    host:host
+                     URL:GURL("https://www.other.example.com")
+      isBackupCredential:YES];
+  EXPECT_FALSE([credential isEqual:differentBackupFlag]);
 }

@@ -4,24 +4,30 @@
 
 #include "base/profiler/stack_sampler.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/tagging.h"  // nogncheck
+#endif
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
 // the target thread is suspended so it must not do any allocation from the
@@ -80,16 +86,9 @@ class StackCopierDelegate : public StackCopier::Delegate {
   const MetadataRecorder::MetadataProvider* const metadata_provider_;
 };
 
-bool g_use_thread_pool = true;
-
 }  // namespace
 
 StackSampler::~StackSampler() = default;
-
-// static
-void StackSampler::SetUseThreadPool(bool use_thread_pool) {
-  g_use_thread_pool = use_thread_pool;
-}
 
 std::unique_ptr<StackBuffer> StackSampler::CreateStackBuffer() {
   size_t size = GetStackBufferSize();
@@ -102,17 +101,15 @@ std::unique_ptr<StackBuffer> StackSampler::CreateStackBuffer() {
 void StackSampler::Initialize() {
   was_initialized_ = true;
   unwind_data_->Initialize(std::move(unwinders_factory_).Run());
-  if (g_use_thread_pool) {
-    thread_pool_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+  thread_pool_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
 
-    // The thread pool might not start right away (or it may never start), so we
-    // schedule a job and wait for it to become running before we schedule other
-    // work.
-    thread_pool_runner_->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(),
-        base::BindOnce(&StackSampler::ThreadPoolRunning,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  // The thread pool might not start right away (or it may never start), so we
+  // schedule a job and wait for it to become running before we schedule other
+  // work.
+  thread_pool_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(),
+      base::BindOnce(&StackSampler::ThreadPoolRunning,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StackSampler::ThreadPoolRunning() {
@@ -149,12 +146,12 @@ void StackSampler::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
     thread_pool_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](StackUnwindData* unwind_data,
+            [](scoped_refptr<StackUnwindData> unwind_data,
                std::unique_ptr<Unwinder> unwinder) {
               unwinder->Initialize(unwind_data->module_cache());
               return unwinder;
             },
-            base::Unretained(unwind_data_.get()), std::move(unwinder)),
+            unwind_data_, std::move(unwinder)),
         base::BindOnce(&StackSampler::AddAuxUnwinderWithoutInit,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -177,6 +174,14 @@ void StackSampler::RecordStackFrames(StackBuffer* stack_buffer,
                                      PlatformThreadId thread_id,
                                      base::OnceClosure done_callback) {
   DCHECK(stack_buffer);
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+  // Disable MTE during this function because this function indiscriminately
+  // reads stack frames, some of which belong to system libraries, not Chrome
+  // itself. With stack tagging, some bytes on the stack have MTE tags different
+  // from the stack pointer tag.
+  partition_alloc::SuspendTagCheckingScope suspend_tag_checking_scope;
+#endif
 
   if (record_sample_callback_) {
     record_sample_callback_.Run();
@@ -258,15 +263,15 @@ void StackSampler::RecordStackFrames(StackBuffer* stack_buffer,
     thread_pool_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](StackUnwindData* unwind_data,
+            [](scoped_refptr<StackUnwindData> unwind_data,
                std::vector<UnwinderCapture> unwinders,
                RegisterContext thread_context,
                std::unique_ptr<StackBuffer> stack, uintptr_t stack_top) {
               return WalkStack(unwind_data->module_cache(), &thread_context,
                                stack_top, std::move(unwinders));
             },
-            base::Unretained(unwind_data_.get()), std::move(unwinders),
-            OwnedRef(thread_context), std::move(cloned_stack), stack_top),
+            unwind_data_, std::move(unwinders), OwnedRef(thread_context),
+            std::move(cloned_stack), stack_top),
         base::BindOnce(&StackSampler::UnwindComplete,
                        weak_ptr_factory_.GetWeakPtr(), timestamp,
                        std::move(done_callback)));
@@ -302,7 +307,7 @@ std::vector<Frame> StackSampler::WalkStackForTesting(
 // static
 std::unique_ptr<StackSampler> StackSampler::CreateForTesting(
     std::unique_ptr<StackCopier> stack_copier,
-    std::unique_ptr<StackUnwindData> stack_unwind_data,
+    scoped_refptr<StackUnwindData> stack_unwind_data,
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
@@ -313,7 +318,7 @@ std::unique_ptr<StackSampler> StackSampler::CreateForTesting(
 }
 
 StackSampler::StackSampler(std::unique_ptr<StackCopier> stack_copier,
-                           std::unique_ptr<StackUnwindData> stack_unwind_data,
+                           scoped_refptr<StackUnwindData> stack_unwind_data,
                            UnwindersFactory core_unwinders_factory,
                            RepeatingClosure record_sample_callback,
                            StackSamplerTestDelegate* test_delegate)
@@ -347,8 +352,8 @@ std::vector<Frame> StackSampler::WalkStack(
   do {
     // Choose an authoritative unwinder for the current module. Use the first
     // unwinder that thinks it can unwind from the current frame.
-    auto unwinder =
-        ranges::find_if(unwinders, [&stack](const UnwinderCapture& unwinder) {
+    auto unwinder = std::ranges::find_if(
+        unwinders, [&stack](const UnwinderCapture& unwinder) {
           return GetUnwinder(unwinder)->CanUnwindFrom(stack.back());
         });
     if (unwinder == unwinders.end()) {

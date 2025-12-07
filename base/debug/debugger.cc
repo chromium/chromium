@@ -7,14 +7,14 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(CLANG_PROFILING)
 #include "base/test/clang_profiling.h"
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 static bool is_debug_ui_suppressed = false;
 
@@ -27,8 +27,9 @@ bool WaitForDebugger(int wait_seconds, bool silent) {
 #endif
   for (int i = 0; i < wait_seconds * 10; ++i) {
     if (BeingDebugged()) {
-      if (!silent)
+      if (!silent) {
         BreakDebugger();
+      }
       return true;
     }
     PlatformThread::Sleep(Milliseconds(100));
@@ -52,5 +53,4 @@ bool IsDebugUISuppressed() {
   return is_debug_ui_suppressed;
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

@@ -12,6 +12,7 @@
 #include "ash/auth/views/test_support/mock_auth_input_row_view_observer.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -70,7 +71,7 @@ class PinContainerUnitTest : public AshTestBase {
 // Verify pin keyboard connected with auth input row.
 TEST_F(PinContainerUnitTest, TypePin) {
   // Press 1,2,3,4,5,6 buttons on the pin pad.
-  const std::u16string kPin(u"123456");
+  static constexpr std::u16string_view kPin(u"123456");
   for (size_t i = 1; i <= kPin.size(); ++i) {
     EXPECT_CALL(*mock_observer_, OnContentsChanged(kPin.substr(0, i))).Times(1);
     LeftClickOn(test_api_pin_keyboard_->digit_button(kPin[i - 1] - u'0'));
@@ -82,7 +83,7 @@ TEST_F(PinContainerUnitTest, TypePin) {
 TEST_F(PinContainerUnitTest, DisabledTypePin) {
   container_view_->SetInputEnabled(false);
   // Press 1,2,3,4,5,6 buttons on the pin pad.
-  const std::u16string kPin(u"123456");
+  static constexpr std::u16string_view kPin(u"123456");
   for (size_t i = 1; i <= kPin.size(); ++i) {
     LeftClickOn(test_api_pin_keyboard_->digit_button(kPin[i - 1] - u'0'));
   }
@@ -91,19 +92,20 @@ TEST_F(PinContainerUnitTest, DisabledTypePin) {
 
 // Verify pin keyboard connected with auth input row.
 TEST_F(PinContainerUnitTest, BackspaceTest) {
-  const std::u16string kPin(u"6893112");
+  static constexpr std::u16string_view kPin(u"6893112");
   for (size_t i = 1; i <= kPin.size(); ++i) {
     LeftClickOn(test_api_pin_keyboard_->digit_button(kPin[i - 1] - u'0'));
   }
-  const std::u16string modified_pin = kPin.substr(0, kPin.size() - 1);
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modified_pin)).Times(1);
+  static constexpr std::u16string_view kModifiedPin =
+      kPin.substr(0, kPin.size() - 1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kModifiedPin)).Times(1);
   LeftClickOn(test_api_pin_keyboard_->backspace_button());
-  EXPECT_EQ(test_api_auth_input_->GetTextfield()->GetText(), modified_pin);
+  EXPECT_EQ(test_api_auth_input_->GetTextfield()->GetText(), kModifiedPin);
 }
 
 // Verify enter press on the textfield submits the pin.
 TEST_F(PinContainerUnitTest, SubmitTest) {
-  const std::u16string kPin(u"60012345");
+  static constexpr std::u16string_view kPin(u"60012345");
   // Set textfield to be focused.
   container_view_->GetFocusManager()->SetFocusedView(
       test_api_auth_input_->GetTextfield());
@@ -116,7 +118,7 @@ TEST_F(PinContainerUnitTest, SubmitTest) {
 
 // Verify enter press is not operating with disabled input.
 TEST_F(PinContainerUnitTest, SubmitDisabledTest) {
-  const std::u16string kPin(u"60012345");
+  static constexpr std::u16string_view kPin(u"60012345");
   // Set textfield to be focused.
   container_view_->GetFocusManager()->SetFocusedView(
       test_api_auth_input_->GetTextfield());
@@ -130,7 +132,7 @@ TEST_F(PinContainerUnitTest, SubmitDisabledTest) {
 
 // Verify enter press on the digit presses the key.
 TEST_F(PinContainerUnitTest, EnterOnPinkeyboardTest) {
-  const std::u16string kPin(u"0894329");
+  static constexpr std::u16string_view kPin(u"0894329");
   for (size_t i = 1; i <= kPin.size(); ++i) {
     // Set digit key to be focused and press enter on the button.
     container_view_->GetFocusManager()->SetFocusedView(
@@ -142,10 +144,16 @@ TEST_F(PinContainerUnitTest, EnterOnPinkeyboardTest) {
 
 // Verify the ResetState functionality.
 TEST_F(PinContainerUnitTest, ResetStateTest) {
-  const std::u16string kPin(u"0894329");
+  static constexpr std::u16string_view kPin(u"0894329");
   test_api_auth_input_->GetTextfield()->SetText(kPin);
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string()));
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string_view()));
   test_api_->GetView()->ResetState();
+}
+
+TEST_F(PinContainerUnitTest, AccessibleState) {
+  ui::AXNodeData node_data;
+  container_view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  ASSERT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
 }
 
 }  // namespace

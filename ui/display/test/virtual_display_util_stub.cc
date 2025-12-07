@@ -6,11 +6,7 @@
 
 namespace display::test {
 
-// Stub definitions for unimplemented platforms to prevent linker errors.
-
-struct DisplayParams {};
-const DisplayParams VirtualDisplayUtil::k1920x1080 = DisplayParams{};
-const DisplayParams VirtualDisplayUtil::k1024x768 = DisplayParams{};
+// Stub definition for unimplemented platforms to prevent linker errors.
 
 // static
 std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(

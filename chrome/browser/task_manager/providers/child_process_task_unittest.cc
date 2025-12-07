@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/task_manager/providers/child_process_task.h"
+
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,15 +30,11 @@ namespace {
 struct ProcessTypeTaskTypePair {
   int process_type_;
   Task::Type expected_task_type_;
-} process_task_types_pairs[] = {
-    { content::PROCESS_TYPE_PPAPI_PLUGIN, Task::PLUGIN },
-    { content::PROCESS_TYPE_PPAPI_BROKER, Task::PLUGIN },
-    { content::PROCESS_TYPE_UTILITY, Task::UTILITY },
-    { content::PROCESS_TYPE_ZYGOTE, Task::ZYGOTE },
-    { content::PROCESS_TYPE_SANDBOX_HELPER, Task::SANDBOX_HELPER },
-    { content::PROCESS_TYPE_GPU, Task::GPU },
-    { PROCESS_TYPE_NACL_LOADER, Task::NACL },
-    { PROCESS_TYPE_NACL_BROKER, Task::NACL },
+} constexpr kProcessTaskTypesPairs[] = {
+    {content::PROCESS_TYPE_UTILITY, Task::UTILITY},
+    {content::PROCESS_TYPE_ZYGOTE, Task::ZYGOTE},
+    {content::PROCESS_TYPE_SANDBOX_HELPER, Task::SANDBOX_HELPER},
+    {content::PROCESS_TYPE_GPU, Task::GPU},
 };
 
 }  // namespace
@@ -74,7 +71,7 @@ class ChildProcessTaskTest
   }
 
  protected:
-  std::map<base::ProcessHandle, Task*> provided_tasks_;
+  std::map<base::ProcessHandle, raw_ptr<Task, CtnExperimental>> provided_tasks_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -103,20 +100,19 @@ TEST_F(ChildProcessTaskTest, TestAll) {
 
   // The following process which has handle = base::kNullProcessHandle, won't be
   // added.
-  ChildProcessData data1(0);
+  ChildProcessData data1(0, content::ChildProcessId());
   ASSERT_FALSE(data1.GetProcess().IsValid());
   provider.BrowserChildProcessLaunchedAndConnected(data1);
   EXPECT_TRUE(provided_tasks_.empty());
 
-  const int unique_id = 245;
+  const content::ChildProcessId unique_id(245);
   const std::u16string name(u"Test Task");
   const std::u16string expected_name(
-      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX, name));
+      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_UTILITY_PREFIX, name));
 
-  ChildProcessData data2(content::PROCESS_TYPE_PPAPI_PLUGIN);
+  ChildProcessData data2(content::PROCESS_TYPE_UTILITY, unique_id);
   data2.SetProcess(base::Process::Current());
   data2.name = name;
-  data2.id = unique_id;
   provider.BrowserChildProcessLaunchedAndConnected(data2);
   ASSERT_EQ(1U, provided_tasks_.size());
 
@@ -125,17 +121,19 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   EXPECT_EQ(base::GetCurrentProcId(), base::GetProcId(task->process_handle()));
   EXPECT_EQ(base::GetCurrentProcId(), task->process_id());
   EXPECT_EQ(expected_name, task->title());
-  EXPECT_EQ(Task::PLUGIN, task->GetType());
-  EXPECT_EQ(unique_id, task->GetChildProcessUniqueID());
+  EXPECT_EQ(Task::UTILITY, task->GetType());
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue() usage.
+  EXPECT_EQ(unique_id.GetUnsafeValue(), task->GetChildProcessUniqueID());
   EXPECT_EQ(std::u16string(), task->GetProfileName());
   EXPECT_FALSE(task->ReportsSqliteMemory());
   EXPECT_FALSE(task->ReportsWebCacheStats());
 
   // Make sure that indexing by child_id works properly.
-  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id, 0));
-  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id, 1));
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue() usage.
+  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id.GetUnsafeValue(), 0));
+  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id.GetUnsafeValue(), 1));
 
-  const int64_t bytes_read = 1024;
+  const base::ByteCount bytes_read = base::KiB(1);
   task->OnNetworkBytesRead(bytes_read);
   task->Refresh(base::Seconds(1), REFRESH_TYPE_NETWORK_USAGE);
 
@@ -157,9 +155,9 @@ TEST_F(ChildProcessTaskTest, ProcessTypeToTaskType) {
   content::RunAllPendingInMessageLoop();
   ASSERT_TRUE(provided_tasks_.empty());
 
-  for (const auto& types_pair : process_task_types_pairs) {
+  for (const auto& types_pair : kProcessTaskTypesPairs) {
     // Add the task.
-    ChildProcessData data(types_pair.process_type_);
+    ChildProcessData data(types_pair.process_type_, content::ChildProcessId());
     data.SetProcess(base::Process::Current());
     provider.BrowserChildProcessLaunchedAndConnected(data);
     ASSERT_EQ(1U, provided_tasks_.size());

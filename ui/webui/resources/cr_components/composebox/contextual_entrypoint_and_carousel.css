@@ -1,0 +1,128 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+#carousel {
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  margin-top: 4px;
+  padding-inline-end: var(--context-carousel-inline-end-spacing, 50px);
+  padding-inline-start: var(--context-carousel-inline-start-spacing, 50px);
+}
+
+#carousel.top {
+  margin: 0;
+  position: absolute;
+  top: 14px;
+  width: auto;
+}
+
+.context-menu-container {
+  align-items: center;
+  cursor: text;
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
+  min-height: var(--cr-icon-button-size);
+  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
+}
+
+#contextEntrypoint {
+  color: var(--color-searchbox-results-foreground);
+  padding-inline: var(--contextual-entrypoint-and-carousel-context-menu-container-inline-start, 8px);
+}
+
+#toolChipsContainer {
+  padding-top: 10px;
+  padding-inline-start: 16px;
+}
+
+#uploadContainer {
+  display: flex;
+  padding-inline-start: var(--text-input-inline-start-spacing);
+}
+
+.upload-icon {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
+  --cr-icon-button-size: 48px;
+  color: var(--color-composebox-upload-button);
+}
+
+:host([inputs-disabled_]) .upload-icon {
+  color: var(--color-composebox-upload-button-disabled);
+}
+
+#imageUploadButton {
+  --cr-icon-button-margin-start: -12px;
+}
+
+.carousel-divider {
+  border-radius: 100px;
+  border-top: 1px solid
+    var(--color-composebox-file-carousel-divider);
+  margin-inline-end: 16px;
+  margin-inline-start: var(--text-input-inline-start-spacing);
+  margin-top: var(--contextual-entrypoint-and-carousel-carousel-divider-margin-top, 20px);
+  margin-bottom: var(--contextual-entrypoint-and-carousel-carousel-divider-margin-bottom, 10px);
+}
+
+#deepSearchButton {
+  align-items: center;
+  background-color:
+    var(--color-composebox-context-entrypoint-hover-background);
+  border: none;
+  color: var(--color-composebox-upload-button);
+  display: flex;
+  font-size: 13px;
+  gap: 2px;
+  height: 36px;
+  justify-content: center;
+  padding-bottom: 6px;
+  padding-inline: 8px 12px;
+  padding-top: 6px;
+  width: 126px;
+}
+
+#deepSearchButton .icon-container {
+  align-items: center;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  position: relative;
+  width: 24px;
+}
+
+#deepSearchButton .deep-search-icon,
+#deepSearchButton .close-icon {
+  height: 16px;
+  position: absolute;
+  transition: opacity 150ms;
+  width: 16px;
+}
+
+#deepSearchButton .deep-search-icon {
+  padding-top: 3px;
+}
+
+#deepSearchButton .close-icon {
+  opacity: 0;
+}
+
+#deepSearchButton:hover .close-icon {
+  opacity: 1;
+}
+
+#deepSearchButton:hover .deep-search-icon {
+  opacity: 0;
+}

@@ -1,0 +1,295 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("public_config") {
+  include_dirs = [ "//third_party/ink/src" ]
+}
+
+source_set("ink") {
+  sources = [
+    "src/ink/brush/brush.cc",
+    "src/ink/brush/brush.h",
+    "src/ink/brush/brush_behavior.cc",
+    "src/ink/brush/brush_behavior.h",
+    "src/ink/brush/brush_coat.cc",
+    "src/ink/brush/brush_coat.h",
+    "src/ink/brush/brush_family.cc",
+    "src/ink/brush/brush_family.h",
+    "src/ink/brush/brush_paint.cc",
+    "src/ink/brush/brush_paint.h",
+    "src/ink/brush/brush_tip.cc",
+    "src/ink/brush/brush_tip.h",
+    "src/ink/brush/color_function.cc",
+    "src/ink/brush/color_function.h",
+    "src/ink/brush/easing_function.cc",
+    "src/ink/brush/easing_function.h",
+    "src/ink/color/color.cc",
+    "src/ink/color/color.h",
+    "src/ink/color/color_space.cc",
+    "src/ink/color/color_space.h",
+    "src/ink/geometry/affine_transform.cc",
+    "src/ink/geometry/affine_transform.h",
+    "src/ink/geometry/angle.cc",
+    "src/ink/geometry/angle.h",
+    "src/ink/geometry/distance.cc",
+    "src/ink/geometry/distance.h",
+    "src/ink/geometry/envelope.cc",
+    "src/ink/geometry/envelope.h",
+    "src/ink/geometry/internal/algorithms.cc",
+    "src/ink/geometry/internal/algorithms.h",
+    "src/ink/geometry/internal/circle.cc",
+    "src/ink/geometry/internal/circle.h",
+    "src/ink/geometry/internal/intersects_internal.cc",
+    "src/ink/geometry/internal/intersects_internal.h",
+    "src/ink/geometry/internal/legacy_segment_intersection.cc",
+    "src/ink/geometry/internal/legacy_segment_intersection.h",
+    "src/ink/geometry/internal/legacy_triangle_contains.cc",
+    "src/ink/geometry/internal/legacy_triangle_contains.h",
+    "src/ink/geometry/internal/legacy_vector_utils.cc",
+    "src/ink/geometry/internal/legacy_vector_utils.h",
+    "src/ink/geometry/internal/mesh_constants.h",
+    "src/ink/geometry/internal/mesh_packing.cc",
+    "src/ink/geometry/internal/mesh_packing.h",
+    "src/ink/geometry/internal/modulo.cc",
+    "src/ink/geometry/internal/modulo.h",
+    "src/ink/geometry/internal/static_rtree.cc",
+    "src/ink/geometry/internal/static_rtree.h",
+    "src/ink/geometry/intersects.cc",
+    "src/ink/geometry/intersects.h",
+    "src/ink/geometry/mesh.cc",
+    "src/ink/geometry/mesh.h",
+    "src/ink/geometry/mesh_format.cc",
+    "src/ink/geometry/mesh_format.h",
+    "src/ink/geometry/mesh_packing_types.cc",
+    "src/ink/geometry/mesh_packing_types.h",
+    "src/ink/geometry/mutable_mesh.cc",
+    "src/ink/geometry/mutable_mesh.h",
+    "src/ink/geometry/partitioned_mesh.cc",
+    "src/ink/geometry/partitioned_mesh.h",
+    "src/ink/geometry/point.cc",
+    "src/ink/geometry/point.h",
+    "src/ink/geometry/quad.cc",
+    "src/ink/geometry/quad.h",
+    "src/ink/geometry/rect.cc",
+    "src/ink/geometry/rect.h",
+    "src/ink/geometry/segment.cc",
+    "src/ink/geometry/segment.h",
+    "src/ink/geometry/tessellator.cc",
+    "src/ink/geometry/tessellator.h",
+    "src/ink/geometry/triangle.cc",
+    "src/ink/geometry/triangle.h",
+    "src/ink/geometry/vec.cc",
+    "src/ink/geometry/vec.h",
+    "src/ink/rendering/skia/common_internal/mesh_specification_data.cc",
+    "src/ink/rendering/skia/common_internal/mesh_specification_data.h",
+    "src/ink/rendering/skia/common_internal/sksl_common_shader_helper_functions.h",
+    "src/ink/rendering/skia/common_internal/sksl_fragment_shader_helper_functions.h",
+    "src/ink/rendering/skia/common_internal/sksl_vertex_shader_helper_functions.h",
+    "src/ink/rendering/skia/native/internal/create_mesh_specification.cc",
+    "src/ink/rendering/skia/native/internal/create_mesh_specification.h",
+    "src/ink/rendering/skia/native/internal/mesh_drawable.cc",
+    "src/ink/rendering/skia/native/internal/mesh_drawable.h",
+    "src/ink/rendering/skia/native/internal/mesh_specification_cache.cc",
+    "src/ink/rendering/skia/native/internal/mesh_specification_cache.h",
+    "src/ink/rendering/skia/native/internal/mesh_uniform_data.cc",
+    "src/ink/rendering/skia/native/internal/mesh_uniform_data.h",
+    "src/ink/rendering/skia/native/internal/path_drawable.cc",
+    "src/ink/rendering/skia/native/internal/path_drawable.h",
+    "src/ink/rendering/skia/native/internal/shader_cache.cc",
+    "src/ink/rendering/skia/native/internal/shader_cache.h",
+    "src/ink/rendering/skia/native/skia_renderer.cc",
+    "src/ink/rendering/skia/native/skia_renderer.h",
+    "src/ink/strokes/in_progress_stroke.cc",
+    "src/ink/strokes/in_progress_stroke.h",
+    "src/ink/strokes/input/internal/stroke_input_validation_helpers.cc",
+    "src/ink/strokes/input/internal/stroke_input_validation_helpers.h",
+    "src/ink/strokes/input/stroke_input.cc",
+    "src/ink/strokes/input/stroke_input.h",
+    "src/ink/strokes/input/stroke_input_batch.cc",
+    "src/ink/strokes/input/stroke_input_batch.h",
+    "src/ink/strokes/internal/brush_tip_extruder.cc",
+    "src/ink/strokes/internal/brush_tip_extruder.h",
+    "src/ink/strokes/internal/brush_tip_extruder/derivative_calculator.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/derivative_calculator.h",
+    "src/ink/strokes/internal/brush_tip_extruder/derivative_calculator_helpers.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/derivative_calculator_helpers.h",
+    "src/ink/strokes/internal/brush_tip_extruder/directed_partial_outline.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/directed_partial_outline.h",
+    "src/ink/strokes/internal/brush_tip_extruder/extruded_vertex.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/extruded_vertex.h",
+    "src/ink/strokes/internal/brush_tip_extruder/find_clockwise_winding_segment.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/find_clockwise_winding_segment.h",
+    "src/ink/strokes/internal/brush_tip_extruder/geometry.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/geometry.h",
+    "src/ink/strokes/internal/brush_tip_extruder/mutable_mesh_view.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/mutable_mesh_view.h",
+    "src/ink/strokes/internal/brush_tip_extruder/side.h",
+    "src/ink/strokes/internal/brush_tip_extruder/simplify.cc",
+    "src/ink/strokes/internal/brush_tip_extruder/simplify.h",
+    "src/ink/strokes/internal/brush_tip_extrusion.cc",
+    "src/ink/strokes/internal/brush_tip_extrusion.h",
+    "src/ink/strokes/internal/brush_tip_modeler.cc",
+    "src/ink/strokes/internal/brush_tip_modeler.h",
+    "src/ink/strokes/internal/brush_tip_modeler_helpers.cc",
+    "src/ink/strokes/internal/brush_tip_modeler_helpers.h",
+    "src/ink/strokes/internal/brush_tip_shape.cc",
+    "src/ink/strokes/internal/brush_tip_shape.h",
+    "src/ink/strokes/internal/brush_tip_state.cc",
+    "src/ink/strokes/internal/brush_tip_state.h",
+    "src/ink/strokes/internal/circular_extrusion_helpers.cc",
+    "src/ink/strokes/internal/circular_extrusion_helpers.h",
+    "src/ink/strokes/internal/constrain_brush_tip_extrusion.cc",
+    "src/ink/strokes/internal/constrain_brush_tip_extrusion.h",
+    "src/ink/strokes/internal/easing_implementation.cc",
+    "src/ink/strokes/internal/easing_implementation.h",
+    "src/ink/strokes/internal/extrusion_points.h",
+    "src/ink/strokes/internal/noise_generator.cc",
+    "src/ink/strokes/internal/noise_generator.h",
+    "src/ink/strokes/internal/rounded_polygon.cc",
+    "src/ink/strokes/internal/rounded_polygon.h",
+    "src/ink/strokes/internal/stroke_input_modeler.cc",
+    "src/ink/strokes/internal/stroke_input_modeler.h",
+    "src/ink/strokes/internal/stroke_input_modeler/naive_input_modeler.cc",
+    "src/ink/strokes/internal/stroke_input_modeler/naive_input_modeler.h",
+    "src/ink/strokes/internal/stroke_input_modeler/sliding_window_input_modeler.cc",
+    "src/ink/strokes/internal/stroke_input_modeler/sliding_window_input_modeler.h",
+    "src/ink/strokes/internal/stroke_input_modeler/spring_based_input_modeler.cc",
+    "src/ink/strokes/internal/stroke_input_modeler/spring_based_input_modeler.h",
+    "src/ink/strokes/internal/stroke_outline.cc",
+    "src/ink/strokes/internal/stroke_outline.h",
+    "src/ink/strokes/internal/stroke_shape_builder.cc",
+    "src/ink/strokes/internal/stroke_shape_builder.h",
+    "src/ink/strokes/internal/stroke_shape_update.cc",
+    "src/ink/strokes/internal/stroke_shape_update.h",
+    "src/ink/strokes/internal/stroke_vertex.cc",
+    "src/ink/strokes/internal/stroke_vertex.h",
+    "src/ink/strokes/stroke.cc",
+    "src/ink/strokes/stroke.h",
+    "src/ink/types/duration.cc",
+    "src/ink/types/duration.h",
+    "src/ink/types/internal/copy_on_write.h",
+    "src/ink/types/internal/float.h",
+    "src/ink/types/numbers.h",
+    "src/ink/types/physical_distance.cc",
+    "src/ink/types/physical_distance.h",
+    "src/ink/types/small_array.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    "//skia",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/ink_stroke_modeler",
+  ]
+
+  deps = [ "//third_party/libtess2" ]
+}
+
+source_set("brush_test_support") {
+  testonly = true
+
+  sources = [
+    "src/ink/brush/type_matchers.cc",
+    "src/ink/brush/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    ":geometry_test_support",
+    ":types_test_support",
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("geometry_test_support") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "src/ink/geometry/type_matchers.cc",
+    "src/ink/geometry/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("input_test_support") {
+  testonly = true
+
+  sources = [
+    "src/ink/strokes/input/type_matchers.cc",
+    "src/ink/strokes/input/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    ":geometry_test_support",
+    ":types_test_support",
+  ]
+}
+
+source_set("types_test_support") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "src/ink/types/type_matchers.cc",
+    "src/ink/types/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

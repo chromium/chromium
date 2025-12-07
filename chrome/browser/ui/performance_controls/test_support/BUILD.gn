@@ -1,0 +1,34 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "battery_saver_browser_test_mixin.h",
+      "memory_metrics_refresh_waiter.cc",
+      "memory_metrics_refresh_waiter.h",
+      "memory_saver_browser_test_mixin.h",
+      "memory_saver_interactive_test_mixin.h",
+      "resource_usage_collector_observer.cc",
+      "resource_usage_collector_observer.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//components/performance_manager",
+      "//components/prefs",
+      "//net:test_support",
+      "//ui/base:test_support",
+    ]
+  }
+}

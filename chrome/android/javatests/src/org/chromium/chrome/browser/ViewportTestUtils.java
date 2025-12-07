@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import androidx.annotation.Px;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
@@ -15,11 +17,10 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,11 +29,11 @@ public final class ViewportTestUtils {
 
     private boolean mSetupCalled;
 
-    private final ChromeTabbedActivityTestRule mActivityTestRule;
+    private final BaseCtaTransitTestRule mActivityTestRule;
 
     private static final int TEST_TIMEOUT = 10000;
 
-    public ViewportTestUtils(ChromeTabbedActivityTestRule rule) {
+    public ViewportTestUtils(BaseCtaTransitTestRule rule) {
         mActivityTestRule = rule;
     }
 
@@ -51,20 +52,12 @@ public final class ViewportTestUtils {
 
     public void waitForBrowserControlsState(boolean shown) {
         int topControlsHeight = getTopControlsHeightPx();
-        BrowserControlsStateProvider browserControlsStateProvider =
-                mActivityTestRule.getActivity().getBrowserControlsManager();
         // The TopControlOffset is the offset of the controls top edge from the viewport top edge.
         // So fully shown the offset is 0, fully hidden it is -controls_height.
         int expectedOffset = shown ? 0 : -topControlsHeight;
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            browserControlsStateProvider.getTopControlOffset(),
-                            Matchers.is(expectedOffset));
-                },
-                TEST_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        FullscreenManagerTestUtils.waitForBrowserControlsPosition(
+                mActivityTestRule.getActivity(), expectedOffset);
     }
 
     public void hideBrowserControls() throws Throwable {
@@ -75,35 +68,16 @@ public final class ViewportTestUtils {
         // animation has completed is flaky.
         waitForBrowserControlsState(/* shown= */ true);
 
-        FullscreenManagerTestUtils.waitForPageToBeScrollable(
-                mActivityTestRule.getActivity().getActivityTab());
+        FullscreenManagerTestUtils.waitForPageToBeScrollable(mActivityTestRule.getActivityTab());
         waitForFramePresented();
-
         int initialPageHeight = getPageInnerHeightPx();
-        int topControlsHeight = getTopControlsHeightPx();
+        int initialBottomMargin = getBottomMargins();
+        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
+                mActivityTestRule.getActivity(), /* showControls= */ false);
 
-        float dragX = 50f;
-
-        // Drag slightly less than the full height of the controls. Releasing at this point will
-        // animate the controls to hidden but ensure we don't accidentally cause any scrolling of
-        // the page.
-        float dragStartY = topControlsHeight * 3;
-        float dragEndY = dragStartY - topControlsHeight * 0.85f;
-
-        long duration_ms = 1000;
-        int steps = 60;
-        TouchCommon.performDragNoFling(
-                mActivityTestRule.getActivity(),
-                dragX,
-                dragX,
-                dragStartY,
-                dragEndY,
-                steps,
-                duration_ms);
-
-        waitForBrowserControlsState(/* shown= */ false);
         // Also wait for the browser controls to resize Blink before returning.
-        waitForExpectedPageHeight(initialPageHeight + getTopControlsHeightDp());
+        int finalHeight = initialPageHeight + getTopControlsHeightPx() + initialBottomMargin;
+        waitForExpectedPageHeight(finalHeight);
     }
 
     public void waitForExpectedPageHeight(double expectedPageHeight) {
@@ -181,19 +155,32 @@ public final class ViewportTestUtils {
         return (int) Math.floor(getTopControlsHeightPx() / getDeviceScaleFactor());
     }
 
-    public int getPageInnerHeightPx() throws Throwable {
-        return Integer.parseInt(
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        getWebContents(), "window.innerHeight"));
+    public @Px int getBottomMargins() {
+        BrowserControlsStateProvider browserControlsStateProvider =
+                mActivityTestRule.getActivity().getBrowserControlsManager();
+        return browserControlsStateProvider.getBottomControlsHeight()
+                - browserControlsStateProvider.getBottomControlOffset();
     }
 
-    public double getVisualViewportHeightPx() throws Throwable {
-        return Float.parseFloat(
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        getWebContents(), "window.visualViewport.height"));
+    public int getPageInnerHeightPx() throws Throwable {
+        return (int)
+                Math.round(
+                        getDeviceScaleFactor()
+                                * Integer.parseInt(
+                                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                                getWebContents(), "window.innerHeight")));
+    }
+
+    public int getVisualViewportHeightPx() throws Throwable {
+        return (int)
+                Math.round(
+                        getDeviceScaleFactor()
+                                * Float.parseFloat(
+                                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                                getWebContents(), "window.visualViewport.height")));
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getWebContents();
     }
 }

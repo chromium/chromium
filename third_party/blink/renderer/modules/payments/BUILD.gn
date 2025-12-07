@@ -27,8 +27,6 @@ blink_modules_sources("payments") {
     "payment_event_data_conversion.h",
     "payment_handler_utils.cc",
     "payment_handler_utils.h",
-    "payment_instruments.cc",
-    "payment_instruments.h",
     "payment_manager.cc",
     "payment_manager.h",
     "payment_method_change_event.cc",

@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "extensions/buildflags/buildflags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
 
-constexpr struct {
+struct ResourceTypes {
   const char* const name;
   const WebRequestResourceType type;
-} kResourceTypes[] = {
+};
+constexpr auto kResourceTypes = std::to_array<ResourceTypes>({
     {"main_frame", WebRequestResourceType::MAIN_FRAME},
     {"sub_frame", WebRequestResourceType::SUB_FRAME},
     {"stylesheet", WebRequestResourceType::STYLESHEET},
@@ -39,7 +40,7 @@ constexpr struct {
     {"webtransport", WebRequestResourceType::WEB_TRANSPORT},
     {"webbundle", WebRequestResourceType::WEBBUNDLE},
     {"other", WebRequestResourceType::OTHER},
-};
+});
 
 constexpr size_t kResourceTypesLength = std::size(kResourceTypes);
 
@@ -52,10 +53,12 @@ static_assert(kResourceTypesLength ==
 WebRequestResourceType ToWebRequestResourceType(
     const network::ResourceRequest& request,
     bool is_download) {
-  if (request.url.SchemeIsWSOrWSS())
+  if (request.url.SchemeIsWSOrWSS()) {
     return WebRequestResourceType::WEB_SOCKET;
-  if (is_download)
+  }
+  if (is_download) {
     return WebRequestResourceType::OTHER;
+  }
   if (request.is_fetch_like_api) {
     // This must be checked before `request.keepalive` check below, because
     // currently Fetch keepAlive is not reported as ping.
@@ -98,8 +101,9 @@ WebRequestResourceType ToWebRequestResourceType(
       return WebRequestResourceType::CSP_REPORT;
     case network::mojom::RequestDestination::kEmpty:
       // https://fetch.spec.whatwg.org/#concept-request-destination
-      if (request.keepalive)
+      if (request.keepalive) {
         return WebRequestResourceType::PING;
+      }
       return WebRequestResourceType::OTHER;
     case network::mojom::RequestDestination::kWebBundle:
       return WebRequestResourceType::WEBBUNDLE;
@@ -107,14 +111,14 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
     case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
     // The compression dictionary has not been exposed to extensions yet.
     // We could do so if the need arises.
     case network::mojom::RequestDestination::kDictionary:
     case network::mojom::RequestDestination::kSpeculationRules:
       return WebRequestResourceType::OTHER;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebRequestResourceType::OTHER;
+  NOTREACHED();
 }
 
 const char* WebRequestResourceTypeToString(WebRequestResourceType type) {

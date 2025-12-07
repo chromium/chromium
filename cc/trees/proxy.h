@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/shared_memory_mapping.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/cc_export.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/paint/draw_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/task_runner_provider.h"
@@ -47,7 +49,7 @@ class CC_EXPORT Proxy {
   virtual void SetVisible(bool visible) = 0;
   virtual void SetShouldWarmUp() = 0;
 
-  virtual void SetNeedsAnimate() = 0;
+  virtual void SetNeedsAnimate(bool urgent = false) = 0;
   virtual void SetNeedsUpdateLayers() = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsRedraw(const gfx::Rect& damage_rect) = 0;
@@ -87,12 +89,16 @@ class CC_EXPORT Proxy {
 
   virtual bool CommitRequested() const = 0;
 
+  virtual void SetShouldThrottleFrameRate(bool flag) = 0;
+
   // Must be called before using the proxy.
   virtual void Start() = 0;
   // Must be called before deleting the proxy.
   virtual void Stop() = 0;
 
-  virtual void QueueImageDecode(int request_id, const PaintImage& image) = 0;
+  virtual void QueueImageDecode(int request_id,
+                                const DrawImage& image,
+                                bool speculative) = 0;
   virtual void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) = 0;
 
   virtual void SetPaintWorkletLayerPainter(
@@ -102,8 +108,8 @@ class CC_EXPORT Proxy {
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo>
-          offset_tags_info) = 0;
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications) = 0;
 
   virtual void RequestBeginMainFrameNotExpected(bool new_state) = 0;
 
@@ -112,8 +118,8 @@ class CC_EXPORT Proxy {
 
   virtual void SetSourceURL(ukm::SourceId source_id, const GURL& url) = 0;
 
-  virtual void SetUkmSmoothnessDestination(
-      base::WritableSharedMemoryMapping ukm_smoothness_data) = 0;
+  virtual void SetUkmDroppedFramesDestination(
+      base::WritableSharedMemoryMapping ukm_dropped_frames_data) = 0;
 
   virtual void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) = 0;
@@ -122,9 +128,17 @@ class CC_EXPORT Proxy {
                                            bool raster,
                                            base::OnceClosure callback) = 0;
 
-  // Returns a percentage of dropped frames of the last second.
+  // Returns the average throughput as measured by the FrameSorter.
   // Only implemenented for single threaded proxy.
-  virtual double GetPercentDroppedFrames() const = 0;
+  virtual double GetAverageThroughput() const = 0;
+
+  // Returns true if we have requested to have rendering paused.
+  virtual bool IsRenderingPaused() const = 0;
+
+  // If rendering is paused, then this can be called to notify that we have a
+  // pending local surface id change which will take effect when resume frame
+  // production.
+  virtual void NotifyNewLocalSurfaceIdExpectedWhilePaused() = 0;
 };
 
 }  // namespace cc

@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <string>
 
@@ -26,12 +22,13 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -52,7 +49,7 @@ enum class TabSliderType {
 // Helpers ---------------------------------------------------------------------
 
 std::unique_ptr<views::Widget> CreateSystemDialogWidget(
-    ui::ModalType modal_type,
+    ui::mojom::ModalType modal_type,
     aura::Window* parent_window) {
   // Generate a new dialog delegate view.
   auto dialog_view = views::Builder<SystemDialogDelegateView>()
@@ -75,6 +72,8 @@ std::unique_ptr<views::Widget> CreateSystemDialogWidget(
   dialog_widget->Show();
   return dialog_widget;
 }
+
+}  // namespace
 
 // WidgetWithSystemUIComponentView ---------------------------------------------
 
@@ -101,8 +100,6 @@ std::unique_ptr<views::Widget> CreateWidgetWithComponent(
       new WidgetWithSystemUIComponentView(std::move(component)));
 }
 
-}  // namespace
-
 using SystemComponentsTest = AshTestBase;
 
 // Tests if the tooltip text of PillButton is same with the button text, unless
@@ -113,19 +110,19 @@ TEST_F(SystemComponentsTest, PillButtonTooltip) {
       std::make_unique<PillButton>(PillButton::PressedCallback(), u"Default");
 
   // The tooltip text should be same with initial button text.
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Default");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Default");
 
   // Changing button text will also update the tooltip text.
   pill_button->SetText(u"New Text");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"New Text");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"New Text");
 
   // If the tooltip text is explicitly set, the tooltip text will always be use.
   pill_button->SetTooltipText(u"Tooltip");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Tooltip");
 
   // Updating button text won't change the preset tooltip text.
   pill_button->SetText(u"Foo");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Tooltip");
 }
 
 // TODO(crbug.com/40878458): Disable for constant failure.
@@ -313,7 +310,7 @@ TEST_F(SystemComponentsTest, AccessibleDefaultActionVerb) {
 }
 
 struct DialogTestParams {
-  ui::ModalType modal_type;
+  ui::mojom::ModalType modal_type;
   bool parent_to_root;
 };
 
@@ -321,7 +318,7 @@ using SystemDialogDelegateViewTest = SystemComponentsTest;
 
 TEST_F(SystemDialogDelegateViewTest, CancelCallback) {
   std::unique_ptr<views::Widget> dialog_widget =
-      CreateSystemDialogWidget(ui::ModalType::MODAL_TYPE_NONE,
+      CreateSystemDialogWidget(ui::mojom::ModalType::kNone,
                                /*parent_window=*/Shell::GetPrimaryRootWindow());
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cancel_callback);
@@ -349,7 +346,7 @@ TEST_F(SystemDialogDelegateViewTest, CancelCallback) {
 // should run when the dialog view is destroyed without clicking any buttons.
 TEST_F(SystemDialogDelegateViewTest, CloseCallback) {
   std::unique_ptr<views::Widget> dialog_widget =
-      CreateSystemDialogWidget(ui::ModalType::MODAL_TYPE_NONE,
+      CreateSystemDialogWidget(ui::mojom::ModalType::kNone,
                                /*parent_window=*/Shell::GetPrimaryRootWindow());
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cancel_callback);
@@ -411,14 +408,14 @@ class SystemDialogSizeTest
 };
 
 const DialogTestParams kSystemDialogTestParams[] = {
-    {ui::ModalType::MODAL_TYPE_NONE, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_NONE, /*parent_to_root=*/true},
-    {ui::ModalType::MODAL_TYPE_WINDOW, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_WINDOW, /*parent_to_root=*/true},
-    {ui::ModalType::MODAL_TYPE_CHILD, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_CHILD, /*parent_to_root=*/true},
-    {ui::ModalType::MODAL_TYPE_SYSTEM, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_SYSTEM, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kNone, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kNone, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kWindow, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kWindow, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kChild, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kChild, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kSystem, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kSystem, /*parent_to_root=*/true},
 };
 
 INSTANTIATE_TEST_SUITE_P(SystemDialogSize,
@@ -539,8 +536,8 @@ TEST_P(TabSliderTest, TabSliderLayout) {
       std::make_unique<TabSlider>(/*max_tab_num=*/tab_num, params);
 
   // The texts for tabs.
-  const std::u16string labels_text[] = {u"one", u"one two three",
-                                        u"one two three four five"};
+  const std::array<std::u16string, 3> labels_text = {
+      u"one", u"one two three", u"one two three four five"};
   // Add slider buttons according to the testing parameters.
   std::vector<TabSliderButton*> buttons(tab_num, nullptr);
   int max_button_width = 0;

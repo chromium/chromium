@@ -40,9 +40,11 @@ void ViewDrawnWaiter::Wait(views::View* view) {
 }
 
 void ViewDrawnWaiter::OnViewVisibilityChanged(views::View* view,
-                                              views::View* starting_view) {
-  if (IsDrawn(view))
+                                              views::View* starting_view,
+                                              bool visible) {
+  if (IsDrawn(view)) {
     wait_loop_->Quit();
+  }
 }
 
 void ViewDrawnWaiter::OnViewBoundsChanged(views::View* view) {
@@ -51,8 +53,7 @@ void ViewDrawnWaiter::OnViewBoundsChanged(views::View* view) {
 }
 
 void ViewDrawnWaiter::OnViewIsDeleting(views::View* view) {
-  NOTREACHED_IN_MIGRATION()
-      << "View deleted while waiting for it to be visible";
+  NOTREACHED() << "View deleted while waiting for it to be visible";
 }
 
 }  // namespace ash

@@ -44,8 +44,7 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
                            Thread::IdleTask) override;
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override;
+  void RemoveCancelledIdleTasks() override;
 
   // Do nothing (the observer won't get notified).
   void AddRAILModeObserver(RAILModeObserver*) override;
@@ -54,7 +53,7 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void RemoveRAILModeObserver(RAILModeObserver const*) override;
 
   void ForEachMainThreadIsolate(
-      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override;
+      base::FunctionRef<void(v8::Isolate* isolate)>) override;
 
   // Return the thread task runner (there's no separate task runner for them).
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;

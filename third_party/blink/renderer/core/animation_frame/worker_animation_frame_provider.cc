@@ -8,7 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -45,7 +45,7 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
                          TRACE_ID_GLOBAL(args.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  context_->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+  context_->GetAgent()->event_loop()->EnqueueMicrotask(BindOnce(
       [](WeakPersistent<WorkerAnimationFrameProvider> provider,
          const viz::BeginFrameArgs& args) {
         if (!provider)

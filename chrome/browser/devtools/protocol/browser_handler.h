@@ -20,7 +20,7 @@ class BrowserHandler : public protocol::Browser::Backend {
 
   // Browser::Backend:
   protocol::Response GetWindowForTarget(
-      protocol::Maybe<std::string> target_id,
+      std::optional<std::string> target_id,
       int* out_window_id,
       std::unique_ptr<protocol::Browser::Bounds>* out_bounds) override;
   protocol::Response GetWindowBounds(
@@ -29,10 +29,13 @@ class BrowserHandler : public protocol::Browser::Backend {
   protocol::Response Close() override;
   protocol::Response SetWindowBounds(
       int window_id,
-      std::unique_ptr<protocol::Browser::Bounds> out_bounds) override;
+      std::unique_ptr<protocol::Browser::Bounds> window_bounds) override;
+  protocol::Response SetContentsSize(int window_id,
+                                     std::optional<int> width,
+                                     std::optional<int> height) override;
   protocol::Response SetDockTile(
-      protocol::Maybe<std::string> label,
-      protocol::Maybe<protocol::Binary> image) override;
+      std::optional<std::string> label,
+      std::optional<protocol::Binary> image) override;
   protocol::Response ExecuteBrowserCommand(
       const protocol::Browser::BrowserCommandId& command_id) override;
   protocol::Response AddPrivacySandboxEnrollmentOverride(

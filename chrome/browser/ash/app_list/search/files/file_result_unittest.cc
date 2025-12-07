@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 
 #include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/image_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,7 +20,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -119,8 +115,8 @@ class FileResultTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<Profile> profile_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
+  std::unique_ptr<Profile> profile_;
 };
 
 TEST_F(FileResultTest, CheckMetadata) {
@@ -167,10 +163,11 @@ TEST_F(FileResultTest, PenalizeScore) {
   int access_days_ago[] = {0, 10, 30};
 
   for (int i = 0; i < 3; ++i) {
-    base::Time last_accessed = now - base::Days(access_days_ago[i]);
+    base::Time last_accessed =
+        now - base::Days(UNSAFE_TODO(access_days_ago[i]));
     double relevance =
         FileResult::CalculateRelevance(query, path, last_accessed);
-    EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01));
+    UNSAFE_TODO(EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01)));
   }
 }
 
@@ -266,8 +263,7 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   volume_manager->RegisterDownloadsDirectoryForTesting(local_directory);
 
   base::FilePath path(local_directory.Append("test.jpg"));
-  ASSERT_TRUE(base::WriteFile(path, reinterpret_cast<const char*>(kJpegData),
-                              kJpegDataSize));
+  ASSERT_TRUE(base::WriteFile(path, kJpegData));
   ASSERT_TRUE(base::TouchFile(path, base::Time::FromSecondsSinceUnixEpoch(1),
                               base::Time::FromSecondsSinceUnixEpoch(2)));
   FileResult result(

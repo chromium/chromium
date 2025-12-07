@@ -9,15 +9,19 @@
 
 @class FaviconView;
 
+// Container view that displays a `faviconView`.
 @interface FaviconContainerView : UIView
 
+// the `faviconView` to to display.
 @property(nonatomic, readonly, strong) FaviconView* faviconView;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Sets the favicon's background color. Can be nil to reset to original value.
 - (void)setFaviconBackgroundColor:(UIColor*)color;
-
-// Sets the favicon view border color. Can be nil to reset to original value.
-- (void)setFaviconBorderColor:(UIColor*)color;
 
 @end
 

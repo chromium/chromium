@@ -19,19 +19,6 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_bindings_generator",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
-            "indirect_inputs": {
-                "includes": [
-                    "*.js",
-                    "*.mojom",
-                    "*.mojom-module",
-                    "*.test-mojom",
-                    "*.test-mojom-module",
-                    "*.zip",
-                ],
-            },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             "restat": True,
             "remote": True,
             "canonicalize_dir": True,
@@ -42,43 +29,8 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_parser",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
-            "indirect_inputs": {
-                "includes": [
-                    "*.build_metadata",
-                    "*.mojom",
-                    "*.mojom-module",
-                    "*.test-mojom",
-                    "*.test-mojom-module",
-                ],
-            },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
-            # TODO(b/288523418): missing inputs for mojom_parser?
-            "outputs_map": {
-                "./gen/mojo/public/interfaces/bindings/tests/sample_import2.mojom-module": {
-                    "inputs": [
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
-                    ],
-                },
-                "./gen/mojo/public/interfaces/bindings/tests/math_calculator.mojom-module": {
-                    "inputs": [
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
-                    ],
-                },
-                "./gen/mojo/public/interfaces/bindings/tests/test_associated_interfaces.mojom-module": {
-                    "inputs": [
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
-                    ],
-                },
-            },
-            # TODO: b/285078792 - Win cross compile on Linux worker doesn't work with input_root_absolute_path=true.
             "remote": runtime.os != "windows",
             "canonicalize_dir": True,
-            "input_root_absolute_path": True,
             "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,

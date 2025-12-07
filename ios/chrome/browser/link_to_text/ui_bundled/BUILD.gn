@@ -4,19 +4,19 @@
 
 source_set("ui_bundled") {
   sources = [
-    "link_to_text_delegate.h",
     "link_to_text_mediator.h",
     "link_to_text_mediator.mm",
   ]
   deps = [
     "//components/shared_highlighting/core/common",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/model",
+    "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_alert_delegate",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
     "//ios/web/public",
     "//ui/strings",
   ]
@@ -32,17 +32,21 @@ source_set("unit_tests") {
     "//components/shared_highlighting/core/common",
     "//components/ukm:test_support",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_alert_delegate",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/link_to_text/model:internal",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("eg2_tests") {
@@ -53,13 +57,15 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/ui_bundled:eg_matchers",
+    "//ios/chrome/browser/browser_container/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/browser_container:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:features",
-    "//ios/web/public/navigation:navigation",
+    "//ios/web/public/navigation",
     "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server",
     "//net",

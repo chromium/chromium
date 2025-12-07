@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.browsing_data;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Implementations of URLFilter used in tests. */
+@NullMarked
 public final class UrlFilters {
     /** A trivial implementation of {@link UrlFilter} that matches all urls. */
     public static class AllUrls implements UrlFilter {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/ttf_for_payments_terms_label_margin_horizontal"
+    android:layout_marginBottom="@dimen/bnpl_terms_margin_bottom">
+
+    <TextView
+        android:id="@+id/bnpl_terms_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ttf_for_payments_terms_label_margin_top"
+        android:gravity="center"
+        android:screenReaderFocusable="true"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/bnpl_open_payment_settings_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
+</LinearLayout>

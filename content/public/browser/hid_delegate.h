@@ -101,6 +101,12 @@ class CONTENT_EXPORT HidDelegate {
   virtual bool IsFidoAllowedForOrigin(BrowserContext* browser_context,
                                       const url::Origin& origin) = 0;
 
+  // Returns true if |device| is a known FIDO U2F security key. Origins allowed
+  // to bypass the HID blocklist to access FIDO collections are also allowed to
+  // access the non-FIDO collections of known security keys.
+  virtual bool IsKnownSecurityKey(BrowserContext* browser_context,
+                                  const device::mojom::HidDeviceInfo& device);
+
   // Returns true if |origin| is allowed to access HID from service workers.
   virtual bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) = 0;
 

@@ -10,11 +10,11 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from 'chrome://settings/lazy_load.js';
-import {ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 // clang-format on
 
 const origin = 'https://example.com';
@@ -58,12 +58,12 @@ suite('StorageAccessStaticSiteListEntry', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a storage-access-static-site-list-entry before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement =
         document.createElement('storage-access-static-site-list-entry');
@@ -87,7 +87,7 @@ suite('StorageAccessStaticSiteListEntry', function() {
     assertEquals(
         storageAccessException.displayName,
         testElement.$.displayName.querySelector('.site-representation')!
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   test('origin site description', async function() {
@@ -98,7 +98,7 @@ suite('StorageAccessStaticSiteListEntry', function() {
 
     // Validate the row description.
     assertEquals(
-        storageAccessException.description, secondLine.textContent!.trim());
+        storageAccessException.description, secondLine.textContent.trim());
   });
 
   test('site incognito', async function() {

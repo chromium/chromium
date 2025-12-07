@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
@@ -25,6 +24,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
@@ -37,7 +37,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #endif
 
@@ -113,7 +113,7 @@ SharingDialogView::SharingDialogView(views::View* anchor_view,
                                     web_contents,
                                     /*autosize=*/true),
       data_(std::move(data)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -143,8 +143,9 @@ std::u16string SharingDialogView::GetWindowTitle() const {
 }
 
 void SharingDialogView::WindowClosing() {
-  if (data_.close_callback)
+  if (data_.close_callback) {
     std::move(data_.close_callback).Run(this);
+  }
 }
 
 void SharingDialogView::WebContentsDestroyed() {
@@ -162,7 +163,7 @@ void SharingDialogView::AddedToWidget() {
                               gfx::kPlaceholderColor),
         gfx::CreateVectorIcon(*data_.header_icons->dark,
                               gfx::kPlaceholderColor),
-        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+        base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                             base::Unretained(this)));
     constexpr gfx::Size kHeaderImageSize(320, 100);
     image_view->SetPreferredSize(kHeaderImageSize);
@@ -200,12 +201,13 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubble(
 // static
 views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
     SharingDialog* dialog) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!dialog) {
     auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
     if (bubble && bubble->bubble_type() ==
-                      IntentPickerBubbleView::BubbleType::kClickToCall)
+                      IntentPickerBubbleView::BubbleType::kClickToCall) {
       return bubble;
+    }
   }
 #endif
   return static_cast<SharingDialogView*>(dialog);

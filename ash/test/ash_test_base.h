@@ -14,10 +14,14 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
+#include "ash/test/ash_test_helper.h"
+#include "ash/test/login_info.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"
@@ -28,6 +32,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/env.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/display.h"
 #include "ui/events/event_constants.h"
@@ -36,7 +41,6 @@
 
 namespace aura {
 class Window;
-class WindowDelegate;
 }  // namespace aura
 
 namespace base {
@@ -67,11 +71,11 @@ namespace ash {
 class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshPixelDiffer;
+class AshPixelTestHelper;
 class AshTestHelper;
 class NotificationCenterTray;
 class Shelf;
 class TestAppListClient;
-class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
@@ -95,6 +99,11 @@ class AshTestBase : public testing::Test {
   explicit AshTestBase(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
+  // In addition, a subclass may pass a TestingPrefServiceSimple to be used in
+  // the shell. `local_state` must be non-null and outlive `this`.
+  AshTestBase(std::unique_ptr<base::test::TaskEnvironment> task_environment,
+              TestingPrefServiceSimple* local_state);
+
   AshTestBase(const AshTestBase&) = delete;
   AshTestBase& operator=(const AshTestBase&) = delete;
 
@@ -102,7 +111,6 @@ class AshTestBase : public testing::Test {
 
   // testing::Test:
   void SetUp() override;
-  void SetUp(std::unique_ptr<TestShellDelegate> delegate);
   void TearDown() override;
 
   // Returns the notification center tray on the primary display.
@@ -156,7 +164,8 @@ class AshTestBase : public testing::Test {
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
       chromeos::AppType app_type = chromeos::AppType::SYSTEM_APP,
       int shell_window_id = kShellWindowId_Invalid,
-      views::WidgetDelegate* delegate = nullptr);
+      views::WidgetDelegate* delegate = nullptr,
+      bool show = true);
 
   // Creates a visible window in the appropriate container. If
   // |bounds_in_screen| is empty the window is added to the primary root
@@ -177,28 +186,13 @@ class AshTestBase : public testing::Test {
 
   // Versions of the functions in aura::test:: that go through our shell
   // StackingController instead of taking a parent.
-  aura::Window* CreateTestWindowInShellWithId(int id);
-  aura::Window* CreateTestWindowInShellWithBounds(const gfx::Rect& bounds);
-  aura::Window* CreateTestWindowInShellWithDelegate(
-      aura::WindowDelegate* delegate,
-      int id,
-      const gfx::Rect& bounds);
-  aura::Window* CreateTestWindowInShellWithDelegateAndType(
-      aura::WindowDelegate* delegate,
-      aura::client::WindowType type,
-      int id,
-      const gfx::Rect& bounds);
+  aura::Window* CreateTestWindowInShell(aura::test::WindowBuilderParams params);
 
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);
 
   // Returns the raw pointer carried by `pixel_differ_`.
   AshPixelDiffer* GetPixelDiffer();
-
-  // Stabilizes the variable UI components (such as the battery view). It should
-  // be called after the active user changes since some UI components are
-  // associated with the active account.
-  void StabilizeUIForPixelTest();
 
   // Returns the EventGenerator that uses screen coordinates and works
   // across multiple displays. It creates a new generator if it
@@ -251,6 +245,9 @@ class AshTestBase : public testing::Test {
       std::list<base::OnceClosure>* tasks,
       bool is_touch);
 
+  // Called when AshTestHelper will be soon destroyed.
+  virtual void OnHelperWillBeDestroyed() {}
+
  protected:
   enum UserSessionBlockReason {
     FIRST_BLOCK_REASON,
@@ -271,23 +268,48 @@ class AshTestBase : public testing::Test {
   // pixel tests.
   virtual std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const;
+  virtual std::string GenerateScreenshotName(const std::string& title);
 
-  void set_start_session(bool start_session) { start_session_ = start_session; }
+  void set_start_session(bool start_session) {
+    CHECK(init_params_) << "start_session must set before calling SetUp()";
+    init_params_->start_session = start_session;
+  }
+
+  void set_create_signin_pref_service(bool create_signin_pref_service) {
+    CHECK(init_params_)
+        << "create_create_signin_pref_service must set before calling SetUp()";
+    init_params_->create_signin_pref_service = create_signin_pref_service;
+  }
 
   void set_create_global_cras_audio_handler(
       bool create_global_cras_audio_handler) {
-    create_global_cras_audio_handler_ = create_global_cras_audio_handler;
+    CHECK(init_params_)
+        << "create_global_cras_audio_handler must set before calling SetUp()";
+    init_params_->create_global_cras_audio_handler =
+        create_global_cras_audio_handler;
   }
 
   void set_create_quick_pair_mediator(bool create_quick_pair_mediator) {
-    create_quick_pair_mediator_ = create_quick_pair_mediator;
+    CHECK(init_params_)
+        << "create_quick_pair_mediator must set before calling SetUp()";
+    init_params_->create_quick_pair_mediator = create_quick_pair_mediator;
+  }
+
+  void set_shell_delegate(std::unique_ptr<ShellDelegate> shell_delegate) {
+    CHECK(init_params_) << "shell_delegate mustset before calling SetUp()";
+    CHECK(!init_params_->delegate);
+    init_params_->delegate = std::move(shell_delegate);
   }
 
   base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();
   }
-  TestingPrefServiceSimple* local_state() { return &local_state_; }
+
+  // Always returns a non-null pointer.
+  TestingPrefServiceSimple* local_state() { return local_state_.get(); }
+
   AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
+  AshPixelTestHelper* pixel_test_helper() { return pixel_test_helper_.get(); }
 
   // Returns nullptr before SetUp() is called.
   ui::InProcessContextFactory* GetContextFactory() {
@@ -310,35 +332,30 @@ class AshTestBase : public testing::Test {
 
   AmbientAshTestHelper* GetAmbientAshTestHelper();
 
-  // Emulates an ash session that have |session_count| user sessions running.
-  // Note that existing user sessions will be cleared.
-  void CreateUserSessions(int session_count);
+  // Simulates a user sign-in, and returns an AccountId used to sign in.
+  // Please see `AshTestHelper::SimulateUserLogin` for more details.
+  AccountId SimulateUserLogin(
+      LoginInfo login_info,
+      std::optional<AccountId> opt_account_id = std::nullopt,
+      std::unique_ptr<PrefService> pref_service = nullptr);
 
-  // Simulates a user sign-in. It creates a new user session, adds it to
-  // existing user sessions and makes it the active user session.
-  //
-  // For convenience |user_email| is used to create an |AccountId|. For testing
-  // behavior where |AccountId|s are compared, prefer the method of the same
-  // name that takes an |AccountId| created with a valid storage key instead.
-  // See the documentation for|AccountId::GetUserEmail| for discussion.
-  void SimulateUserLogin(
-      const std::string& user_email,
-      user_manager::UserType user_type = user_manager::UserType::kRegular);
-
-  // Simulates a user sign-in. It creates a new user session, adds it to
-  // existing user sessions and makes it the active user session.
-  void SimulateUserLogin(
-      const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::UserType::kRegular);
+  // Similar to above, but it uses AccountId with default values.
+  void SimulateUserLogin(const AccountId& account_id);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
-  void SimulateNewUserFirstLogin(const std::string& user_email);
+  AccountId SimulateNewUserFirstLogin(const std::string& user_email);
 
   // Similar to SimulateUserLogin but for a guest user.
-  void SimulateGuestLogin();
+  AccountId SimulateGuestLogin();
 
   // Simulates kiosk mode. |user_type| must correlate to a kiosk type user.
-  void SimulateKioskMode(user_manager::UserType user_type);
+  AccountId SimulateKioskMode(user_manager::UserType user_type);
+
+  // Switches the active user to `account_id`;
+  void SwitchActiveUser(const AccountId& account_id);
+
+  // Returns true if the session is in `state`.
+  bool IsInSessionState(session_manager::SessionState state) const;
 
   // Simulates setting height of the accessibility panel.
   // Note: Accessibility panel widget needs to be setup first.
@@ -383,23 +400,19 @@ class AshTestBase : public testing::Test {
   bool setup_called_ = false;
   bool teardown_called_ = false;
 
-  // SetUp() doesn't activate session if this is set to false.
-  bool start_session_ = true;
-
-  // `SetUp()` doesn't create a global `CrasAudioHandler` instance if this is
-  // set to false.
-  bool create_global_cras_audio_handler_ = true;
-
-  // `SetUp()` doesn't create a global `QuickPairMediator` instance if this is
-  // set to false.
-  bool create_quick_pair_mediator_ = true;
+  // AshTestHelper's init params.
+  std::unique_ptr<AshTestHelper::InitParams> init_params_ =
+      std::make_unique<AshTestHelper::InitParams>();
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
+  // Used only if no TestingPrefServiceSimple is provided to ctor.
+  std::unique_ptr<TestingPrefServiceSimple> owned_local_state_;
+
   // A pref service used for local state.
-  TestingPrefServiceSimple local_state_;
+  raw_ptr<TestingPrefServiceSimple> local_state_;
 
   // A helper class to take screen shots then compare with benchmarks. Set by
   // `PrepareForPixelDiffTest()`.
@@ -409,6 +422,9 @@ class AshTestBase : public testing::Test {
 
   // Must be constructed after |task_environment_|.
   std::unique_ptr<AshTestHelper> ash_test_helper_;
+
+  // Used only for pixel tests.
+  std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 

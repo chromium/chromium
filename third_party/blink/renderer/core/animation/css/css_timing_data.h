@@ -17,15 +17,15 @@ namespace blink {
 
 struct Timing;
 
-class CSSTimingData {
-  USING_FAST_MALLOC(CSSTimingData);
-
+class CSSTimingData : public GarbageCollected<CSSTimingData> {
  public:
   using DelayVector = Vector<Timing::Delay, 1>;
   using DurationVector = Vector<std::optional<double>, 1>;
   using TimingFunctionVector = Vector<scoped_refptr<TimingFunction>, 1>;
 
   ~CSSTimingData() = default;
+
+  virtual void Trace(Visitor*) const {}
 
   const DelayVector& DelayStartList() const { return delay_start_list_; }
   const DelayVector& DelayEndList() const { return delay_end_list_; }

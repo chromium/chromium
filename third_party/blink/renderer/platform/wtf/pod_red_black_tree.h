@@ -80,7 +80,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #endif
 
-namespace WTF {
+namespace blink {
 
 #ifndef NDEBUG
 template <class T>
@@ -90,7 +90,7 @@ struct ValueToString;
 enum UninitializedTreeEnum { kUninitializedTree };
 
 template <class T>
-class PODRedBlackTree {
+class PodRedBlackTree {
   DISALLOW_NEW();
 
  public:
@@ -109,7 +109,7 @@ class PODRedBlackTree {
   // isInitialized will return false in this case. initIfNeeded can be used
   // to init the structure. This constructor is usefull for creating
   // lazy initialized tree.
-  explicit PODRedBlackTree(UninitializedTreeEnum)
+  explicit PodRedBlackTree(UninitializedTreeEnum)
       : root_(nullptr),
         needs_full_ordering_comparisons_(false)
 #ifndef NDEBUG
@@ -120,9 +120,9 @@ class PODRedBlackTree {
   }
 
   // Constructs a new red-black tree, allocating temporary objects
-  // from a newly constructed PODFreeListArena.
-  PODRedBlackTree()
-      : arena_(PODFreeListArena<Node>::Create()),
+  // from a newly constructed PodFreeListArena.
+  PodRedBlackTree()
+      : arena_(PodFreeListArena<Node>::Create()),
         root_(nullptr),
         needs_full_ordering_comparisons_(false)
 #ifndef NDEBUG
@@ -133,8 +133,8 @@ class PODRedBlackTree {
   }
 
   // Constructs a new red-black tree, allocating temporary objects
-  // from the given PODArena.
-  explicit PODRedBlackTree(scoped_refptr<PODFreeListArena<Node>> arena)
+  // from the given PodArena.
+  explicit PodRedBlackTree(scoped_refptr<PodFreeListArena<Node>> arena)
       : arena_(std::move(arena)),
         root_(nullptr),
         needs_full_ordering_comparisons_(false)
@@ -145,7 +145,7 @@ class PODRedBlackTree {
   {
   }
 
-  virtual ~PODRedBlackTree() = default;
+  virtual ~PodRedBlackTree() = default;
 
   // Clearing will delete the contents of the tree. After this call
   // isInitialized will return false.
@@ -159,10 +159,10 @@ class PODRedBlackTree {
 
   void InitIfNeeded() {
     if (!arena_)
-      arena_ = PODFreeListArena<Node>::Create();
+      arena_ = PodFreeListArena<Node>::Create();
   }
 
-  void InitIfNeeded(PODFreeListArena<Node>* arena) {
+  void InitIfNeeded(PodFreeListArena<Node>* arena) {
     if (!arena_)
       arena_ = arena;
   }
@@ -473,7 +473,7 @@ class PODRedBlackTree {
     x->SetColor(kRed);
     UpdateNode(x);
 
-    LogIfVerbose("  PODRedBlackTree::InsertNode");
+    LogIfVerbose("  PodRedBlackTree::InsertNode");
 
     // The node from which to start propagating updates upwards.
     Node* update_start = x->Parent();
@@ -776,7 +776,7 @@ class PODRedBlackTree {
     builder.Append('-');
     if (node) {
       builder.Append(' ');
-      builder.Append(ValueToString<T>::GetString(node->Data()));
+      builder.Append(blink::ValueToString<T>::GetString(node->Data()));
       builder.Append((node->GetColor() == kBlack) ? " (black)" : " (red)");
     }
     DLOG(ERROR) << builder.ToString();
@@ -790,7 +790,7 @@ class PODRedBlackTree {
   //----------------------------------------------------------------------
   // Data members
 
-  scoped_refptr<PODFreeListArena<Node>> arena_;
+  scoped_refptr<PodFreeListArena<Node>> arena_;
   Node* root_;
   bool needs_full_ordering_comparisons_;
 #ifndef NDEBUG
@@ -798,6 +798,6 @@ class PODRedBlackTree {
 #endif
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_RED_BLACK_TREE_H_

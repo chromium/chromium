@@ -6,18 +6,16 @@
 // is functionally a wrapper around the LockImpl class, so the only
 // real intelligence in the class is in the debugging logic.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/lock.h"
 
 #include <cstdint>
 
+#include "base/compiler_specific.h"
+
 #if DCHECK_IS_ON()
 #include <array>
 
+#include "base/check_op.h"
 #include "base/synchronization/lock_subtle.h"
 #include "base/threading/platform_thread.h"
 
@@ -34,7 +32,7 @@ namespace {
 // therefore considered sufficient to track all locks held by a thread. A
 // dynamic-size array (e.g. owned by a `ThreadLocalOwnedPointer`) would require
 // handling reentrancy issues with allocator shims that use `base::Lock`.
-constexpr int kHeldLocksCapacity = 10;
+constexpr size_t kHeldLocksCapacity = 10;
 thread_local std::array<uintptr_t, kHeldLocksCapacity>
     g_tracked_locks_held_by_thread;
 
@@ -96,12 +94,10 @@ void Lock::AddToLocksHeldOnCurrentThread() {
   CHECK(!in_tracked_locks_held_by_current_thread_);
 
   // Check if capacity is exceeded.
-  if (g_num_tracked_locks_held_by_thread >= kHeldLocksCapacity) {
-    CHECK(false)
-        << "This thread holds more than " << kHeldLocksCapacity
-        << " tracked locks simultaneously. Reach out to //base OWNERS to "
-           "determine whether `kHeldLocksCapacity` should be increased.";
-  }
+  CHECK_LT(g_num_tracked_locks_held_by_thread, kHeldLocksCapacity)
+      << "This thread holds more than " << kHeldLocksCapacity
+      << " tracked locks simultaneously. Reach out to //base OWNERS to "
+         "determine whether `kHeldLocksCapacity` should be increased.";
 
   // Add to the list of held locks.
   g_tracked_locks_held_by_thread[g_num_tracked_locks_held_by_thread] =
@@ -133,8 +129,9 @@ void Lock::RemoveFromLocksHeldOnCurrentThread() {
 namespace subtle {
 
 span<const uintptr_t> GetTrackedLocksHeldByCurrentThread() {
-  return span<const uintptr_t>(g_tracked_locks_held_by_thread.begin(),
-                               g_num_tracked_locks_held_by_thread);
+  return UNSAFE_TODO(
+      span<const uintptr_t>(g_tracked_locks_held_by_thread.begin(),
+                            g_num_tracked_locks_held_by_thread));
 }
 
 }  // namespace subtle

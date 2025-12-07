@@ -11,13 +11,9 @@
 
 BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
-BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
-
 BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 
-// Whether matching prefetches can block navigation until they are determined to
-// be serve-able or not based on headers.
-bool SearchPrefetchBlockBeforeHeadersIsEnabled();
+BASE_DECLARE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache);
 
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
@@ -40,10 +36,6 @@ size_t SearchPrefetchMaxCacheEntries();
 // need to override the cache size dynamically. Otherwise, the cache size should
 // be set through base::ScopedFeatureList.
 void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_site);
-
-// The amount of time that needs to have elapsed before we consider a prefetch
-// eligible to be served.
-base::TimeDelta SearchPrefetchBlockHeadStart();
 
 BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
 
@@ -80,6 +72,17 @@ bool PrefetchSearchHistorySuggestions();
 // Whether Omnibox prefetch and prerender should be restricted to the suggestion
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();
+bool IsNoVarySearchDiskCacheEnabled();
+// TODO(https://crbug.com/413557424): Remove the DryRun mode once the
+// investigation is done.
+bool CacheAliasLoaderDryRunModeEnabled();
+
+// Allows the omnibox search prefetch in Incognito.
+//
+// Note SearchPrefetchService partially supports Incognito profile. For now,
+// it supports the on-press triggered search prefetch only. Other prefetches
+// must not be triggered in Incognito. crbug.com/394716358 for more details.
+bool IsPrefetchIncognitoEnabled();
 
 // When this feature is enabled, SearchPrefetchService will send a request to
 // the network service to preload shared dictionary from the disk storage for

@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // Creates a UUID that consists of 32 hexadecimal digits and returns its
 // canonical form.  The canonical form is displayed in 5 groups separated by
@@ -54,6 +54,6 @@ WTF_EXPORT String CreateCanonicalUUIDString();
 // 8-4-4-4-12.
 WTF_EXPORT bool IsValidUUID(const String& uuid);
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_UUID_H_

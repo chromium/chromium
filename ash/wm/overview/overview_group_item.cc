@@ -12,12 +12,12 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -131,8 +132,6 @@ void OverviewGroupItem::DestroyMirrorsForDragging() {
 }
 
 aura::Window* OverviewGroupItem::GetWindow() {
-  // TODO(michelefan): `GetWindow()` will be replaced by `GetWindows()` in a
-  // follow-up cl.
   CHECK_LE(overview_items_.size(), 2u);
   return overview_items_.empty() ? nullptr : overview_items_[0]->GetWindow();
 }
@@ -206,9 +205,8 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
 
   aura::Window* item0_window = item0->GetWindow();
   aura::Window* item1_window = item1->GetWindow();
-  const gfx::Rect work_area = display::Screen::GetScreen()
-                                  ->GetDisplayNearestWindow(item0_window)
-                                  .work_area();
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayNearestWindow(item0_window).work_area();
   const bool is_horizontal = IsLayoutHorizontal(item0_window);
   item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
 
@@ -358,8 +356,6 @@ void OverviewGroupItem::UpdateRoundedCornersAndShadow() {
 }
 
 float OverviewGroupItem::GetOpacity() const {
-  // TODO(michelefan): This is a temporary placeholder value. The opacity
-  // settings will be handled in a separate task.
   return 1.f;
 }
 
@@ -472,6 +468,11 @@ void OverviewGroupItem::Shutdown() {
   for (const auto& overview_item : overview_items_) {
     overview_item->Shutdown();
   }
+  if (IsDragItem() && overview_grid_->drop_target()) {
+    auto* drag_controller = overview_session_->window_drag_controller();
+    CHECK(drag_controller);
+    drag_controller->ResetGesture();
+  }
 }
 
 void OverviewGroupItem::AnimateAndCloseItem(bool up) {
@@ -524,8 +525,8 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
   // We use 2-step removal to ensure that the `overview_item` gets removed from
   // the vector before been destroyed so that all the overview items in
   // `overview_items_` are valid.
-  auto iter = base::ranges::find_if(overview_items_,
-                                    base::MatchesUniquePtr(overview_item));
+  auto iter = std::ranges::find_if(overview_items_,
+                                   base::MatchesUniquePtr(overview_item));
   auto to_be_removed = std::move(*iter);
   overview_items_.erase(iter);
   to_be_removed.reset();
@@ -540,9 +541,9 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
       // Remove the group-level shadow and apply it on the window-level to
       // ensure that the shadow bounds get updated properly.
       item->set_eligible_for_shadow_config(/*eligible_for_shadow_config=*/true);
-
-      OverviewItemView* item_view = item->overview_item_view();
-      item_view->ResetRoundedCorners();
+      if (OverviewItemView* item_view = item->overview_item_view()) {
+        item_view->ResetRoundedCorners();
+      }
     }
   }
 
@@ -566,8 +567,8 @@ void OverviewGroupItem::CreateItemWidget() {
 
   CreateShadow();
 
-  overview_group_container_view_ = item_widget_->SetContentsView(
-      std::make_unique<OverviewGroupContainerView>(this));
+  overview_group_container_view_ =
+      item_widget_->SetContentsView(std::make_unique<views::View>());
   item_widget_->Show();
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }

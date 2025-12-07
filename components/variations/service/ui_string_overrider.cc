@@ -34,7 +34,7 @@ int UIStringOverrider::GetResourceIndex(uint32_t hash) {
   if (element == end || *element != hash) {
     return -1;
   }
-  return resource_indices_[element - begin];
+  return resource_indices_[static_cast<size_t>(element - begin)];
 }
 
 }  // namespace variations

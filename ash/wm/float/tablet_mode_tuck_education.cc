@@ -86,7 +86,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
 
   auto nudge_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_TUCK_EDUCATIONAL_NUDGE_LABEL));
-  nudge_label->SetBackground(views::CreateThemedRoundedRectBackground(
+  nudge_label->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysSurface3, kLabelHeight / kRoundedDivisor));
   nudge_label->SetPreferredSize(gfx::Size(
       nudge_label->GetPreferredSize().width() + kLabelHorizontalPadding * 2,
@@ -178,7 +178,7 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
 
   // Move window towards edge of screen.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+      display::Screen::Get()->GetDisplayNearestWindow(window_);
   const bool bounce_right =
       window_bounds.CenterPoint().x() > display.bounds().CenterPoint().x();
   const gfx::Transform side_transform = gfx::Transform::MakeTranslation(

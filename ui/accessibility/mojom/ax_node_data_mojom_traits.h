@@ -12,36 +12,58 @@
 namespace mojo {
 
 template <>
+struct StructTraits<ax::mojom::AXBitsetDataDataView,
+                    ui::AXBitset<ax::mojom::BoolAttribute>> {
+  static uint32_t set_bits(const ui::AXBitset<ax::mojom::BoolAttribute>& p) {
+    return p.GetSetBits();
+  }
+
+  static uint32_t values(const ui::AXBitset<ax::mojom::BoolAttribute>& p) {
+    return p.GetValues();
+  }
+
+  static bool Read(ax::mojom::AXBitsetDataDataView data,
+                   ui::AXBitset<ax::mojom::BoolAttribute>* out);
+};
+
+template <>
 struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   static int32_t id(const ui::AXNodeData& p) { return p.id; }
   static ax::mojom::Role role(const ui::AXNodeData& p) { return p.role; }
-  static uint32_t state(const ui::AXNodeData& p) { return p.state; }
+  static uint32_t state(const ui::AXNodeData& p) { return p.state.value(); }
   static uint64_t actions(const ui::AXNodeData& p) { return p.actions; }
-  static const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+  static const base::flat_map<ax::mojom::StringAttribute, std::string>&
   string_attributes(const ui::AXNodeData& p) {
-    return p.string_attributes;
+    return p.string_attributes.container();
   }
-  static const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-  int_attributes(const ui::AXNodeData& p) {
-    return p.int_attributes;
+  static const base::flat_map<ax::mojom::IntAttribute, int32_t>& int_attributes(
+      const ui::AXNodeData& p) {
+    return p.int_attributes.container();
   }
-  static const std::vector<std::pair<ax::mojom::FloatAttribute, float>>&
+  static const base::flat_map<ax::mojom::FloatAttribute, float>&
   float_attributes(const ui::AXNodeData& p) {
-    return p.float_attributes;
+    return p.float_attributes.container();
   }
-  static const std::vector<std::pair<ax::mojom::BoolAttribute, bool>>&
+  // Return std::nullopt to prevent writing to the legacy `bool_attributes`
+  // field. The field remains in Mojom only for backward compatibility when
+  // reading.
+  static std::optional<base::flat_map<ax::mojom::BoolAttribute, bool>>
   bool_attributes(const ui::AXNodeData& p) {
+    return std::nullopt;
+  }
+  static std::optional<ui::AXBitset<ax::mojom::BoolAttribute>>
+  bool_attributes_data(const ui::AXNodeData& p) {
     return p.bool_attributes;
   }
-  static const std::vector<
-      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  static const base::flat_map<ax::mojom::IntListAttribute,
+                              std::vector<int32_t>>&
   intlist_attributes(const ui::AXNodeData& p) {
-    return p.intlist_attributes;
+    return p.intlist_attributes.container();
   }
-  static const std::vector<
-      std::pair<ax::mojom::StringListAttribute, std::vector<std::string>>>&
+  static const base::flat_map<ax::mojom::StringListAttribute,
+                              std::vector<std::string>>&
   stringlist_attributes(const ui::AXNodeData& p) {
-    return p.stringlist_attributes;
+    return p.stringlist_attributes.container();
   }
   static const std::vector<std::pair<std::string, std::string>>&
   html_attributes(const ui::AXNodeData& p) {
@@ -50,7 +72,7 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   static const std::vector<int32_t>& child_ids(const ui::AXNodeData& p) {
     return p.child_ids;
   }
-  static ui::AXRelativeBounds relative_bounds(const ui::AXNodeData& p) {
+  static const ui::AXRelativeBounds& relative_bounds(const ui::AXNodeData& p) {
     return p.relative_bounds;
   }
   static bool Read(ax::mojom::AXNodeDataDataView data, ui::AXNodeData* out);

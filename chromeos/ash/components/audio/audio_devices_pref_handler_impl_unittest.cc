@@ -22,6 +22,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 
 namespace ash {
 
@@ -523,6 +524,32 @@ TEST_P(AudioDevicesPrefHandlerTest, TestSettingV2DeviceStateRemovesV1Entry) {
   ExpectDeviceStateEquals(device_v2, false, false);
 }
 
+TEST_P(AudioDevicesPrefHandlerTest, InputVoiceIsolationPrefRegistered) {
+  EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+  audio_pref_handler_->SetVoiceIsolationState(true);
+  EXPECT_TRUE(audio_pref_handler_->GetVoiceIsolationState());
+  audio_pref_handler_->SetVoiceIsolationState(false);
+  EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+}
+
+TEST_P(AudioDevicesPrefHandlerTest,
+       InputVoiceIsolationPreferredEffectPrefRegistered) {
+  // Default 0
+  EXPECT_EQ(audio_pref_handler_->GetVoiceIsolationPreferredEffect(), 0u);
+
+  const uint32_t kExpectedEffects[] = {
+      cras::AudioEffectType::EFFECT_TYPE_NOISE_CANCELLATION,
+      cras::AudioEffectType::EFFECT_TYPE_HFP_MIC_SR,
+      cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER,
+      cras::AudioEffectType::EFFECT_TYPE_BEAMFORMING,
+      cras::AudioEffectType::EFFECT_TYPE_NONE,
+  };
+  for (uint32_t effect : kExpectedEffects) {
+    audio_pref_handler_->SetVoiceIsolationPreferredEffect(effect);
+    EXPECT_EQ(audio_pref_handler_->GetVoiceIsolationPreferredEffect(), effect);
+  }
+}
+
 TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {
   EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
   audio_pref_handler_->SetNoiseCancellationState(true);
@@ -723,65 +750,6 @@ TEST_P(AudioDevicesPrefHandlerTest, MostRecentActivatedDeviceIdList) {
       GetDeviceIdString(device),
       audio_pref_handler_->GetMostRecentActivatedDeviceIdList(device.is_input)
           .back());
-}
-
-// Tests set-based audio selection preference is reset when flag is on.
-TEST_P(AudioDevicesPrefHandlerTest, ResetAudioSelectionPrefFlagOn) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kResetAudioSelectionImprovementPref},
-      /*disabled_features=*/{});
-
-  AudioDevice device = GetDeviceWithVersion(2);
-  AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
-  AudioDeviceList devices = {device, device2};
-
-  // No preferred device among this set of devices yet.
-  EXPECT_EQ(std::nullopt,
-            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
-                device.is_input, devices));
-
-  // Set preferred device and verify.
-  audio_pref_handler_->UpdateDevicePreferenceSet(devices, device);
-  EXPECT_EQ(device.stable_device_id,
-            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
-                device.is_input, devices));
-
-  ResetPrefHandler();
-  // Expect that no preferred device is set.
-  EXPECT_EQ(std::nullopt,
-            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
-                device.is_input, devices));
-}
-
-// Tests set-based audio selection preference is not reset when flag is off.
-TEST_P(AudioDevicesPrefHandlerTest, ResetAudioSelectionPrefFlagOff) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          ash::features::kResetAudioSelectionImprovementPref});
-
-  AudioDevice device = GetDeviceWithVersion(2);
-  AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
-  AudioDeviceList devices = {device, device2};
-
-  // No preferred device among this set of devices yet.
-  EXPECT_EQ(std::nullopt,
-            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
-                device.is_input, devices));
-
-  // Set preferred device and verify.
-  audio_pref_handler_->UpdateDevicePreferenceSet(devices, device);
-  EXPECT_EQ(device.stable_device_id,
-            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
-                device.is_input, devices));
-
-  ResetPrefHandler();
-  // Expect that preferred device is set.
-  EXPECT_EQ(device.stable_device_id,
-            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
-                device.is_input, devices));
 }
 
 }  // namespace ash

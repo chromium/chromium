@@ -15,7 +15,7 @@ namespace input {
 // Provided customized disposition response for input events.
 class InputDispositionHandler {
  public:
-  virtual ~InputDispositionHandler() {}
+  virtual ~InputDispositionHandler() = default;
 
   // Called upon event ack receipt from the renderer.
   virtual void OnWheelEventAck(

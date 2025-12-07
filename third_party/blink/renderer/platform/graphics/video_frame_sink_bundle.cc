@@ -124,12 +124,6 @@ void VideoFrameSinkBundle::RemoveClient(const viz::FrameSinkId& frame_sink_id) {
   clients_.erase(frame_sink_id.sink_id());
 }
 
-void VideoFrameSinkBundle::InitializeCompositorFrameSinkType(
-    uint32_t sink_id,
-    viz::mojom::blink::CompositorFrameSinkType type) {
-  bundle_->InitializeCompositorFrameSinkType(sink_id, type);
-}
-
 void VideoFrameSinkBundle::SetNeedsBeginFrame(uint32_t sink_id,
                                               bool needs_begin_frame) {
   DVLOG(2) << __func__ << " this " << this << " sink_id " << sink_id
@@ -149,11 +143,6 @@ void VideoFrameSinkBundle::SetNeedsBeginFrame(uint32_t sink_id,
   }
   // These messages are not sent often, so we don't bother batching them.
   bundle_->SetNeedsBeginFrame(sink_id, needs_begin_frame);
-}
-
-void VideoFrameSinkBundle::SetWantsBeginFrameAcks(uint32_t sink_id) {
-  // These messages are not sent often, so we don't bother batching them.
-  bundle_->SetWantsBeginFrameAcks(sink_id);
 }
 
 void VideoFrameSinkBundle::SubmitCompositorFrame(
@@ -197,37 +186,17 @@ void VideoFrameSinkBundle::DidNotProduceFrame(uint32_t sink_id,
   }
 }
 
-void VideoFrameSinkBundle::DidAllocateSharedBitmap(
-    uint32_t sink_id,
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  bundle_->DidAllocateSharedBitmap(sink_id, std::move(region), id);
-}
-
-void VideoFrameSinkBundle::DidDeleteSharedBitmap(
-    uint32_t sink_id,
-    const viz::SharedBitmapId& id) {
-  // These messages are not urgent, but they must be well-ordered with respect
-  // to frame submissions. Hence they are batched in the same queue and
-  // flushed whenever any other messages are fit to flush.
-  submission_queue_.push_back(viz::mojom::blink::BundledFrameSubmission::New(
-      sink_id,
-      viz::mojom::blink::BundledFrameSubmissionData::NewDidDeleteSharedBitmap(
-          id)));
-}
-
 #if BUILDFLAG(IS_ANDROID)
-void VideoFrameSinkBundle::SetThreadIds(
-    uint32_t sink_id,
-    const WTF::Vector<int32_t>& thread_ids) {
-  bundle_->SetThreadIds(sink_id, thread_ids);
+void VideoFrameSinkBundle::SetThreads(uint32_t sink_id,
+                                      const Vector<viz::Thread>& threads) {
+  bundle_->SetThreads(sink_id, threads);
 }
 #endif
 
 void VideoFrameSinkBundle::FlushNotifications(
-    WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
-    WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
-    WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr>
+    Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
+    Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
+    Vector<viz::mojom::blink::BundledReturnedResourcesPtr>
         reclaimed_resources) {
   for (const auto& entry : acks) {
     auto it = clients_.find(entry->sink_id);
@@ -255,7 +224,7 @@ void VideoFrameSinkBundle::FlushNotifications(
     if (it == clients_.end())
       continue;
     it->value->OnBeginFrame(std::move(entry->args), std::move(entry->details),
-                            entry->frame_ack, std::move(entry->resources));
+                            std::move(entry->resources));
   }
   defer_submissions_ = false;
 
@@ -299,7 +268,7 @@ void VideoFrameSinkBundle::FlushMessages() {
     return;
   }
 
-  WTF::Vector<viz::mojom::blink::BundledFrameSubmissionPtr> submissions;
+  Vector<viz::mojom::blink::BundledFrameSubmissionPtr> submissions;
   std::swap(submissions, submission_queue_);
   bundle_->Submit(std::move(submissions));
 }

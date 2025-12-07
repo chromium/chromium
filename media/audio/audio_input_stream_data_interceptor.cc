@@ -46,7 +46,9 @@ void AudioInputStreamDataInterceptor::Stop() {
 
 void AudioInputStreamDataInterceptor::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  stream_->Close();
+  AudioInputStream* stream_to_close = stream_;
+  stream_ = nullptr;
+  stream_to_close->Close();
   delete this;
 }
 

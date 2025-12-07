@@ -28,11 +28,13 @@
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
@@ -51,11 +53,13 @@ bool NotInResponseMap(const ScopedResponseMap& map,
   return map.find(PolicyNamespace(domain, component_id)) == map.end();
 }
 
-bool ToPolicyNamespace(const std::pair<std::string, std::string>& key,
+bool ToPolicyNamespace(const CloudPolicyClientTypeParams& key,
                        PolicyNamespace* ns) {
-  if (!ComponentCloudPolicyStore::GetPolicyDomain(key.first, &ns->domain))
+  if (!ComponentCloudPolicyStore::GetPolicyDomain(key.policy_type(),
+                                                  &ns->domain)) {
     return false;
-  ns->component_id = key.second;
+  }
+  ns->component_id = key.settings_entity_id();
   return true;
 }
 
@@ -123,7 +127,7 @@ class ComponentCloudPolicyService::Backend
 
   // The passed credentials will be used to validate the policies.
   void SetCredentials(const std::string& username,
-                      const std::string& gaia_id,
+                      const GaiaId& gaia_id,
                       const std::string& dm_token,
                       const std::string& device_id,
                       const std::string& public_key,
@@ -193,14 +197,14 @@ ComponentCloudPolicyService::Backend::~Backend() {
 
 void ComponentCloudPolicyService::Backend::ClearCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Clearing cache";
+  DVLOG_POLICY(1, POLICY_FETCHING) << "Clearing cache";
   store_.Clear();
   has_credentials_set_ = false;
 }
 
 void ComponentCloudPolicyService::Backend::SetCredentials(
     const std::string& username,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& dm_token,
     const std::string& device_id,
     const std::string& public_key,
@@ -208,8 +212,9 @@ void ComponentCloudPolicyService::Backend::SetCredentials(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!username.empty());
   DCHECK(!dm_token.empty());
-  DVLOG(1) << "Updating credentials: username = " << username
-           << ", public_key_version = " << public_key_version;
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Updating credentials: username = " << username
+      << ", public_key_version = " << public_key_version;
   store_.SetCredentials(username, gaia_id, dm_token, device_id, public_key,
                         public_key_version);
   has_credentials_set_ = true;
@@ -283,8 +288,9 @@ void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
   if (!has_credentials_set_ || !last_fetched_policy_ || !initialized_)
     return;
 
-  DVLOG(1) << "Processing the last fetched policies (count = "
-           << last_fetched_policy_->size() << ")";
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Processing the last fetched policies (count = "
+      << last_fetched_policy_->size() << ")";
 
   // Purge any components that don't have a policy configured at the server.
   // Note that this is less secure than the data integrity validation, since
@@ -439,18 +445,6 @@ void ComponentCloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
   UpdateFromClient();
 }
 
-void ComponentCloudPolicyService::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignored; the registration state is tracked by looking at the
-  // CloudPolicyStore instead.
-}
-
-void ComponentCloudPolicyService::OnClientError(CloudPolicyClient* client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignored.
-}
-
 void ComponentCloudPolicyService::UpdateFromSuperiorStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -468,7 +462,7 @@ void ComponentCloudPolicyService::UpdateFromSuperiorStore() {
     // updates, to handle the case of the user registering for policy after the
     // session starts.
     std::string username = policy->username();
-    std::string gaia_id = policy->gaia_id();
+    GaiaId gaia_id(policy->gaia_id());
     std::string request_token = policy->request_token();
     std::string device_id =
         policy->has_device_id() ? policy->device_id() : std::string();
@@ -505,7 +499,8 @@ void ComponentCloudPolicyService::UpdateFromClient() {
   for (const auto& response : core_->client()->last_policy_fetch_responses()) {
     PolicyNamespace ns;
     if (!ToPolicyNamespace(response.first, &ns)) {
-      DVLOG(1) << "Ignored policy with type = " << response.first.first;
+      DVLOG_POLICY(1, POLICY_FETCHING)
+          << "Ignored policy with type = " << response.first.policy_type();
       continue;
     }
     (*valid_responses)[ns] = response.second;
@@ -566,8 +561,9 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
                                     /*drop_invalid_component_policies=*/false);
 
   policy_installed_ = true;
-  DVLOG(1) << "Installed policy (count = "
-           << std::distance(policy_.begin(), policy_.end()) << ")";
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Installed policy (count = "
+      << std::distance(policy_.begin(), policy_.end()) << ")";
   delegate_->OnComponentCloudPolicyUpdated();
 }
 

@@ -48,7 +48,6 @@ cast_source_set("unittests") {
   testonly = true
   sources = [
     "backend/audio_video_pipeline_device_unittest.cc",
-    "backend/multizone_backend_unittest.cc",
     "base/balanced_media_task_runner_unittest.cc",
     "base/buffering_controller_unittest.cc",
     "base/buffering_frame_provider_unittest.cc",
@@ -59,6 +58,7 @@ cast_source_set("unittests") {
     "base/demuxer_stream_for_test.h",
     "base/multi_demuxer_stream_adapter_unittest.cc",
     "pipeline/audio_video_pipeline_impl_unittest.cc",
+    "pipeline/media_pipeline_impl_unittest.cc",
   ]
 
   deps = [
@@ -73,12 +73,16 @@ cast_source_set("unittests") {
     "//media",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 
   # Building the required proto files here cause a linker issue on
   # Android because both protobuf_full and protobuf_lite get included.
   if (!is_android) {
     sources += [
+      # For whatever reason the MZ backend tests take ~20sec to run in CI as opposed to
+      # 200ms when ran locally. So enable them only on non-Android envs.
+      "backend/multizone_backend_unittest.cc",
       "backend/proxy/audio_decoder_pipeline_node_unittest.cc",
       "backend/proxy/buffer_id_manager_unittest.cc",
       "backend/proxy/cma_backend_proxy_unittest.cc",

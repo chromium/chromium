@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
@@ -30,12 +29,12 @@ class SyncableFileOperationRunner final : public LocalFileSyncStatus::Observer {
   // Represents an operation task (which usually wraps one FileSystemOperation).
   class Task {
    public:
-    Task() {}
+    Task() = default;
 
     Task(const Task&) = delete;
     Task& operator=(const Task&) = delete;
 
-    virtual ~Task() {}
+    virtual ~Task() = default;
 
     // Only one of Run() or Cancel() is called.
     virtual void Run() = 0;

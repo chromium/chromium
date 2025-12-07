@@ -15,38 +15,34 @@ PowerMonitorSource::PowerMonitorSource() = default;
 PowerMonitorSource::~PowerMonitorSource() = default;
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorSource::GetCurrentThermalState() {
+PowerMonitorSource::GetCurrentThermalState() const {
   return PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
-int PowerMonitorSource::GetInitialSpeedLimit() {
+int PowerMonitorSource::GetInitialSpeedLimit() const {
   return PowerThermalObserver::kSpeedLimitMax;
 }
 
 void PowerMonitorSource::SetCurrentThermalState(
     PowerThermalObserver::DeviceThermalState state) {}
 
-#if BUILDFLAG(IS_ANDROID)
-int PowerMonitorSource::GetRemainingBatteryCapacity() {
-  return 0;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // static
 void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
-  if (!PowerMonitor::IsInitialized())
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  if (!power_monitor->IsInitialized()) {
     return;
+  }
 
   switch (event_id) {
     case POWER_STATE_EVENT:
-      PowerMonitor::NotifyPowerStateChange(
-          PowerMonitor::Source()->IsOnBatteryPower());
+      power_monitor->NotifyPowerStateChange(
+          power_monitor->Source()->GetBatteryPowerStatus());
       break;
-      case RESUME_EVENT:
-        PowerMonitor::NotifyResume();
+    case RESUME_EVENT:
+      power_monitor->NotifyResume();
       break;
-      case SUSPEND_EVENT:
-        PowerMonitor::NotifySuspend();
+    case SUSPEND_EVENT:
+      power_monitor->NotifySuspend();
       break;
   }
 }
@@ -54,16 +50,18 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
 // static
 void PowerMonitorSource::ProcessThermalEvent(
     PowerThermalObserver::DeviceThermalState new_thermal_state) {
-  if (!PowerMonitor::IsInitialized())
-    return;
-  PowerMonitor::NotifyThermalStateChange(new_thermal_state);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->NotifyThermalStateChange(new_thermal_state);
+  }
 }
 
 // static
 void PowerMonitorSource::ProcessSpeedLimitEvent(int speed_limit) {
-  if (!PowerMonitor::IsInitialized())
-    return;
-  PowerMonitor::NotifySpeedLimitChange(speed_limit);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->NotifySpeedLimitChange(speed_limit);
+  }
 }
 
 // static
@@ -81,8 +79,7 @@ const char* PowerMonitorSource::DeviceThermalStateToString(
     case PowerThermalObserver::DeviceThermalState::kCritical:
       return "Critical";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace base

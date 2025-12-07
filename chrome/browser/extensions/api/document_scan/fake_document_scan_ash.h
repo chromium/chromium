@@ -24,12 +24,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   ~FakeDocumentScanAsh() override;
 
   // crosapi::mojom::DocumentScan overrides:
-  void GetScannerNames(GetScannerNamesCallback callback) override;
-  void ScanFirstPage(const std::string& scanner_name,
-                     ScanFirstPageCallback callback) override;
-  void GetScannerList(const std::string& client_id,
-                      crosapi::mojom::ScannerEnumFilterPtr filter,
-                      GetScannerListCallback callback) override;
   void OpenScanner(const std::string& client_id,
                    const std::string& scanner_id,
                    OpenScannerCallback callback) override;
@@ -48,13 +42,15 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   void CancelScan(const std::string& job_handle,
                   CancelScanCallback callback) override;
 
-  void AddScanner(crosapi::mojom::ScannerInfoPtr scanner);
-  void SetGetScannerNamesResponse(std::vector<std::string> scanner_names);
-  void SetScanResponse(
-      const std::optional<std::vector<std::string>>& scan_data);
   void SetOpenScannerResponse(const std::string& connection_string,
                               crosapi::mojom::OpenScannerResponsePtr response);
   void SetSmallestMaxReadSize(size_t max_size);
+  void SetReadScanDataResponses(
+      const std::optional<std::vector<std::string>>& scan_data,
+      crosapi::mojom::ScannerOperationResult final_result);
+  void SetStartPreparedScanResponse(
+      const std::string& connection_string,
+      crosapi::mojom::StartPreparedScanResponsePtr response);
 
  private:
   struct OpenScannerState {
@@ -66,17 +62,23 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
     std::string client_id;
     std::string connection_string;
     std::optional<std::string> job_handle;
+    bool cancelled;
   };
 
   size_t handle_count_ = 0;  // How many times a handle has been issued.
-  std::vector<std::string> scanner_names_;
   std::optional<std::vector<std::string>> scan_data_;
-  std::vector<crosapi::mojom::ScannerInfoPtr> scanners_;
+  crosapi::mojom::ScannerOperationResult scan_data_result_ =
+      crosapi::mojom::ScannerOperationResult::kUnknown;
   size_t smallest_max_read_ = 0;
 
   // Map from connection strings to the OpenScannerResponsePtr that should be
   // returned.
   std::map<std::string, crosapi::mojom::OpenScannerResponsePtr> open_responses_;
+
+  // Map from connection strings to the StartPreparedScanResponsePtr that should
+  // be returned.
+  std::map<std::string, crosapi::mojom::StartPreparedScanResponsePtr>
+      start_responses_;
 
   // Map from scanner handles to the original client and scanner used to create
   // the handle.

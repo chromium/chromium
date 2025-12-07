@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -42,7 +43,7 @@ ScopedMockFirstPartySetsHandler::FindEntry(
 }
 
 void ScopedMockFirstPartySetsHandler::GetContextConfigForPolicy(
-    const base::Value::Dict* policy,
+    base::optional_ref<const base::Value::Dict> policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   if (invoke_callbacks_asynchronously_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -69,7 +70,7 @@ void ScopedMockFirstPartySetsHandler::ClearSiteDataOnChangedSetsForContext(
 
 void ScopedMockFirstPartySetsHandler::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   net::FirstPartySetMetadata metadata =

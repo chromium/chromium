@@ -6,9 +6,9 @@
 
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/common/api/file_handlers.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
@@ -257,8 +257,7 @@ bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  extension->SetManifestData(FileHandlersManifestKeys::kFileHandlers,
-                             std::move(info));
+  extension->SetManifestData(manifest_keys::kFileHandlers, std::move(info));
   return true;
 }
 
@@ -269,7 +268,7 @@ base::span<const char* const> WebFileHandlersParser::Keys() const {
 }
 
 bool WebFileHandlersParser::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // TODO(crbug.com/40832486): Verify that icons exist.
@@ -278,13 +277,7 @@ bool WebFileHandlersParser::Validate(
 
 // static
 bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
-  // An MV3+ extension is required.
-  if (extension.manifest_version() < 3 || !extension.is_extension()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(
-      extensions_features::kExtensionWebFileHandlers);
+  return extension.manifest_version() >= 3 && extension.is_extension();
 }
 
 // static

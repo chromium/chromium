@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/aura/test/test_window_builder.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
@@ -30,7 +31,12 @@ class RoundedWindowTargeterTest : public aura::test::AuraTestBase {
  protected:
   void SetUp() override {
     aura::test::AuraTestBase::SetUp();
-    window_.reset(CreateNormalWindow(1, root_window(), &delegate_));
+    window_ = aura::test::TestWindowBuilder({.delegate = &delegate_,
+                                             .parent = root_window(),
+                                             .bounds = {100, 100},
+                                             .window_id = 1})
+                  .AllowAllWindowStates()
+                  .Build();
   }
 
   void TearDown() override {

@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.widget;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,6 +15,8 @@ import android.view.View;
 
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
@@ -44,6 +45,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
  *                             Also used as the pulsing color.
  * app:colorSecondaryProgress  Represents secondary progress on top of the regular progress.
  */
+@NullMarked
 public class MaterialProgressBar extends View implements AnimatorUpdateListener {
     private static final long INDETERMINATE_ANIMATION_DURATION_MS = 3000;
 
@@ -153,8 +155,7 @@ public class MaterialProgressBar extends View implements AnimatorUpdateListener 
         stopIndeterminateAnimation();
     }
 
-    private void initialize(Context context, AttributeSet attrs, int defStyle) {
-        Resources resources = context.getResources();
+    private void initialize(Context context, @Nullable AttributeSet attrs, int defStyle) {
         int backgroundColor = context.getColor(R.color.progress_bar_bg_color_list);
         int progressColor = SemanticColorUtils.getProgressBarForeground(context);
         int secondaryProgressColor = context.getColor(R.color.progress_bar_secondary);

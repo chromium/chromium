@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Signal a slot change should be done in tree order.
-  assert_array_equals: expected property 0 to be "s1" but got "s2.5" (expected array ["s1", "s2.5", "s3"] got ["s2.5", "s1", "s3"])
-Harness: the test ran to completion.
-

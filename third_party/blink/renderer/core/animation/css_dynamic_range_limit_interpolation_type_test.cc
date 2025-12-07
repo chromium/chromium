@@ -25,13 +25,14 @@ namespace {
 
 class CSSDynamicRangeLimitInterpolationTypeTest : public PageTestBase {
  protected:
-  std::unique_ptr<CSSDynamicRangeLimitInterpolationType>
+  CSSDynamicRangeLimitInterpolationType*
   CreateDynamicRangeLimitInterpolationType() {
     ScopedCSSDynamicRangeLimitForTest scoped_feature(true);
     const CSSProperty& css_property =
         CSSProperty::Get(CSSPropertyID::kDynamicRangeLimit);
     PropertyHandle property = PropertyHandle(css_property);
-    return std::make_unique<CSSDynamicRangeLimitInterpolationType>(property);
+    return MakeGarbageCollected<CSSDynamicRangeLimitInterpolationType>(
+        property);
   }
 };
 
@@ -51,7 +52,7 @@ TEST_F(CSSDynamicRangeLimitInterpolationTypeTest,
   StyleResolverState state(document, *element, nullptr,
                            StyleRequest(element->GetComputedStyle()));
 
-  std::unique_ptr<CSSDynamicRangeLimitInterpolationType>
+  CSSDynamicRangeLimitInterpolationType*
       dynamic_range_limit_interpolation_type =
           CreateDynamicRangeLimitInterpolationType();
 
@@ -68,16 +69,19 @@ TEST_F(CSSDynamicRangeLimitInterpolationTypeTest,
 }
 
 TEST_F(CSSDynamicRangeLimitInterpolationTypeTest, MaybeConvertValue) {
-  std::unique_ptr<CSSDynamicRangeLimitInterpolationType>
+  CSSDynamicRangeLimitInterpolationType*
       dynamic_range_limit_interpolation_type =
           CreateDynamicRangeLimitInterpolationType();
   CSSDynamicRangeLimitInterpolationType::ConversionCheckers conversion_checkers;
   CSSValue* value =
       MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kStandard);
 
+  StyleResolverState dummy_state(GetDocument(),
+                                 *GetDocument().documentElement());
+
   InterpolationValue result =
       dynamic_range_limit_interpolation_type->MaybeConvertValue(
-          *value, nullptr, conversion_checkers);
+          *value, dummy_state, conversion_checkers);
 
   const InterpolableDynamicRangeLimit* interpolable_limit =
       To<InterpolableDynamicRangeLimit>(result.interpolable_value.Get());

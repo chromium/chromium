@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
 #include "content/browser/media/capture/fake_video_capture_stack.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -38,6 +36,10 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/content_features.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/test/aura_test_utils.h"
@@ -53,10 +55,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
       public FrameTestUtil {
  public:
-  WebContentsVideoCaptureDeviceBrowserTest() {
-    // TODO(https://crbug.com/1324757): tests should work with HiDPI enabled.
-    scoped_feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
-  }
+  WebContentsVideoCaptureDeviceBrowserTest() = default;
 
   WebContentsVideoCaptureDeviceBrowserTest(
       const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
@@ -88,12 +87,12 @@ class WebContentsVideoCaptureDeviceBrowserTest
             << color_string << ", tolerated color: " << tolerated_color_string;
 
     while (!testing::Test::HasFailure()) {
-      EXPECT_TRUE(capture_stack()->Started());
       EXPECT_FALSE(capture_stack()->ErrorOccurred());
       capture_stack()->ExpectNoLogMessages();
 
       while (capture_stack()->HasCapturedFrames() &&
              !testing::Test::HasFailure()) {
+        EXPECT_TRUE(capture_stack()->Started());
         // Pop the next frame from the front of the queue and convert to a RGB
         // bitmap for analysis.
         const SkBitmap rgb_frame = capture_stack()->NextCapturedFrame();
@@ -250,8 +249,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
   std::unique_ptr<FrameSinkVideoCaptureDevice> CreateDevice() final {
     auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
-    const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
-                                     main_frame->GetRoutingID());
+    const GlobalRenderFrameHostId id(
+        main_frame->GetProcess()->GetDeprecatedID(),
+        main_frame->GetRoutingID());
     return std::make_unique<WebContentsVideoCaptureDevice>(id);
   }
 
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   const auto capture_params = SnapshotCaptureParams();
 
-  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
+  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetDeprecatedID(),
                                    main_frame->GetRoutingID());
   // Delete the WebContents instance and the Shell. This makes the
   // render_frame_id invalid.
@@ -395,8 +395,14 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
 };
 
 // Verifies capture still works if the WindowTreeHost is occluded.
+// TODO(crbug.com/372481179): Failing on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_CapturesWhenOccluded DISABLED_CapturesWhenOccluded
+#else
+#define MAYBE_CapturesWhenOccluded CapturesWhenOccluded
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
-                       CapturesWhenOccluded) {
+                       MAYBE_CapturesWhenOccluded) {
   aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
   aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
   NavigateToInitialDocument();
@@ -425,7 +431,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
 // TODO(crbug.com/328658521): It is also flaky on macOS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372481179): Failing on win-asan.
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_WIN) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
 #define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
 #else
 #define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
@@ -596,7 +605,7 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebContentsVideoCaptureDeviceBrowserTestP,
@@ -651,7 +660,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
-    (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG))
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges

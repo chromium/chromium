@@ -264,11 +264,6 @@ TEST_F(FragmentationTest, InkOverflowInline) {
   )HTML");
   const auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  const auto* flow_thread = To<LayoutBlockFlow>(container->FirstChild());
-  DCHECK(flow_thread->IsLayoutFlowThread());
-  // |flow_thread| is in the stitched coordinate system.
-  // Legacy had (0, 0, 150, 30), but NG doesn't compute for |LayoutFlowThread|.
-  EXPECT_EQ(flow_thread->VisualOverflowRect(), PhysicalRect(0, 0, 100, 30));
   EXPECT_EQ(container->VisualOverflowRect(), PhysicalRect(0, 0, 260, 15));
 }
 

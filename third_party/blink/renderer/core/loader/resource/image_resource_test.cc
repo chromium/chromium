@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 
 #include <memory>
@@ -148,7 +143,8 @@ TEST_F(ImageResourceTest, DimensionsDecodableFromPartialTestImage) {
   EXPECT_EQ(
       Image::kSizeAvailable,
       image->SetData(SharedBuffer::Create(
-                         kJpegImage, kJpegImageSubrangeWithDimensionsLength),
+                         base::span(kJpegImage)
+                             .first(kJpegImageSubrangeWithDimensionsLength)),
                      true));
   EXPECT_TRUE(IsA<BitmapImage>(image.get()));
   EXPECT_EQ(1, image->width());
@@ -377,7 +373,8 @@ TEST_F(ImageResourceTest, CancelOnRemoveObserver) {
 
   ResourceFetcher* fetcher = CreateFetcher();
   scheduler::FakeTaskRunner* task_runner =
-      static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
+      static_cast<scheduler::FakeTaskRunner*>(
+          fetcher->GetUnfreezableTaskRunner().get());
   task_runner->SetTime(1);
 
   // Emulate starting a real load.
@@ -900,8 +897,8 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       /*cached_metadata=*/std::nullopt);
   image_resource->Loader()->DidReceiveDataForTesting(
-      base::make_span(reinterpret_cast<const char*>(kJpegImage),
-                      kJpegImageSubrangeWithoutDimensionsLength));
+      base::as_chars(base::span(kJpegImage))
+          .first(kJpegImageSubrangeWithoutDimensionsLength));
 
   EXPECT_EQ(ResourceStatus::kPending, image_resource->GetStatus());
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
@@ -1201,13 +1198,13 @@ TEST_F(ImageResourceCounterTest, RevalidationPolicyMetrics) {
 
   // Test histograms.
   histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Image", 2);
+      "Blink.MemoryCache.RevalidationPolicy2.Preload.Image", 2);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Image",
+      "Blink.MemoryCache.RevalidationPolicy2.Preload.Image",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kLoad),
       1);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Image",
+      "Blink.MemoryCache.RevalidationPolicy2.Preload.Image",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kUse), 1);
 
   KURL test_url_deferred("http://127.0.0.1:8000/img_deferred.ttf");
@@ -1220,16 +1217,16 @@ TEST_F(ImageResourceCounterTest, RevalidationPolicyMetrics) {
   resource = ImageResource::Fetch(fetch_params_deferred, fetcher);
   ASSERT_TRUE(resource);
   histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Image", 1);
+      "Blink.MemoryCache.RevalidationPolicy2.Image", 1);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Image",
+      "Blink.MemoryCache.RevalidationPolicy2.Image",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kDefer),
       1);
   fetcher->StartLoad(resource);
   histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Image", 2);
+      "Blink.MemoryCache.RevalidationPolicy2.Image", 2);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Image",
+      "Blink.MemoryCache.RevalidationPolicy2.Image",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::
                            kPreviouslyDeferredLoad),
       1);
@@ -1237,9 +1234,9 @@ TEST_F(ImageResourceCounterTest, RevalidationPolicyMetrics) {
   // counted as kUse.
   resource = ImageResource::Fetch(fetch_params_deferred, fetcher);
   histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Image", 3);
+      "Blink.MemoryCache.RevalidationPolicy2.Image", 3);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Image",
+      "Blink.MemoryCache.RevalidationPolicy2.Image",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kUse), 1);
 }
 

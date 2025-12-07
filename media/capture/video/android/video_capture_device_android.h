@@ -6,9 +6,12 @@
 #define MEDIA_CAPTURE_VIDEO_ANDROID_VIDEO_CAPTURE_DEVICE_ANDROID_H_
 
 #include <jni.h>
+
+#include <list>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -96,18 +99,16 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   // Implement org.chromium.media.VideoCapture.nativeOnFrameAvailable.
   void OnFrameAvailable(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
-                        const base::android::JavaParamRef<jbyteArray>& data,
+                        const base::android::JavaRef<jbyteArray>& data,
                         jint length,
                         jint rotation);
 
   // Implement org.chromium.media.VideoCapture.nativeOnI420FrameAvailable.
   void OnI420FrameAvailable(JNIEnv* env,
-                            jobject obj,
-                            jobject y_buffer,
+                            const base::android::JavaRef<jobject>& y_buffer,
                             jint y_stride,
-                            jobject u_buffer,
-                            jobject v_buffer,
+                            const base::android::JavaRef<jobject>& u_buffer,
+                            const base::android::JavaRef<jobject>& v_buffer,
                             jint uv_row_stride,
                             jint uv_pixel_stride,
                             jint width,
@@ -117,35 +118,29 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   // Implement org.chromium.media.VideoCapture.nativeOnError.
   void OnError(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
                int android_video_capture_error,
-               const base::android::JavaParamRef<jstring>& message);
+               const base::android::JavaRef<jstring>& message);
 
   // Implement org.chromium.media.VideoCapture.nativeOnFrameDropped.
   void OnFrameDropped(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
                       int android_video_capture_frame_drop_reason);
 
   void OnGetPhotoCapabilitiesReply(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jlong callback_id,
-      jobject photo_capabilities);
+      const base::android::JavaRef<jobject>& photo_capabilities);
 
   // Implement org.chromium.media.VideoCapture.nativeOnPhotoTaken.
   void OnPhotoTaken(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     jlong callback_id,
-                    const base::android::JavaParamRef<jbyteArray>& data);
+                    const base::android::JavaRef<jbyteArray>& data);
 
   // Implement org.chromium.media.VideoCapture.nativeOnStarted.
-  void OnStarted(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnStarted(JNIEnv* env);
 
   // Implement
   // org.chromium.media.VideoCapture.nativeDCheckCurrentlyOnIncomingTaskRunner.
-  void DCheckCurrentlyOnIncomingTaskRunner(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void DCheckCurrentlyOnIncomingTaskRunner(JNIEnv* env);
 
   void ConfigureForTesting();
 
@@ -202,8 +197,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   // List of callbacks for photo API in flight, being served in Java side.
   base::Lock photo_callbacks_lock_;
-  std::list<std::unique_ptr<GetPhotoStateCallback>> get_photo_state_callbacks_;
-  std::list<std::unique_ptr<TakePhotoCallback>> take_photo_callbacks_;
+  int64_t nextPhotoRequestId_ = 0;
+  base::flat_map<int64_t, GetPhotoStateCallback> get_photo_state_callbacks_;
+  base::flat_map<int64_t, TakePhotoCallback> take_photo_callbacks_;
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
   VideoCaptureFormat capture_format_;

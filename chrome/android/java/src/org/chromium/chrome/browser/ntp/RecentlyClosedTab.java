@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Represents a recently closed tab from TabRestoreService. */
-public class RecentlyClosedTab extends RecentlyClosedEntry {
+@NullMarked
+public class RecentlyClosedTab extends SessionRecentlyClosedEntry {
     private final String mTitle;
     private final GURL mUrl;
     private final @Nullable Token mTabGroupId;

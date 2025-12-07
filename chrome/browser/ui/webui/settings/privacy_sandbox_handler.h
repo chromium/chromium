@@ -24,7 +24,6 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
 
  private:
   friend class PrivacySandboxHandlerTest;
-  friend class PrivacySandboxHandlerPrivacyGuideAdTopicsTest;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            SetFledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
@@ -35,10 +34,6 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
                            GetTopicsState);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            TopicsToggleChanged);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
-                           AdTopicsCardShownForUserInConsentCountry);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
-                           AdTopicsCardNotShownForUserNotInConsentCountry);
 
   void HandleSetFledgeJoiningAllowed(const base::Value::List& args);
   void HandleGetFledgeState(const base::Value::List& args);
@@ -47,10 +42,17 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   void HandleTopicsToggleChanged(const base::Value::List& args);
   void HandleGetFirstLevelTopics(const base::Value::List& args);
   void HandleGetChildTopicsCurrentlyAssigned(const base::Value::List& args);
-  void HandleShouldShowAdTopicsCard(const base::Value::List& args);
+  // Determines if the Ad Topics card in the Privacy Guide should be displayed.
+  // This requires the PrivacySandboxAdTopicsContentParity feature to be enabled
+  // AND the user to be located in a Privacy Sandbox Consent Country.
+  void HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+      const base::Value::List& args);
+  // Determines if the Ad Topics Content Parity should be shown.
+  void HandleShouldShowPrivacySandboxAdTopicsContentParity(
+      const base::Value::List& args);
 
   virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
-  PrivacySandboxService* GetPrivacySandboxService();
+  virtual PrivacySandboxService* GetPrivacySandboxService();
 
   void OnFledgeJoiningSitesRecieved(const std::string& callback_id,
                                     std::vector<std::string> joining_sites);

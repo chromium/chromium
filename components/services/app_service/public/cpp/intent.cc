@@ -4,9 +4,10 @@
 
 #include "components/services/app_service/public/cpp/intent.h"
 
+#include <algorithm>
+
 #include "base/files/safe_base_name.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
@@ -15,17 +16,6 @@ namespace apps {
 IntentFile::IntentFile(const GURL& url) : url(url) {}
 
 IntentFile::~IntentFile() = default;
-
-bool IntentFile::operator==(const IntentFile& other) const {
-  return url == other.url && mime_type == other.mime_type &&
-         file_name == other.file_name && file_size == other.file_size &&
-         is_directory == other.is_directory &&
-         dlp_source_url == other.dlp_source_url;
-}
-
-bool IntentFile::operator!=(const IntentFile& other) const {
-  return !(*this == other);
-}
 
 std::unique_ptr<IntentFile> IntentFile::Clone() const {
   auto intent_file = std::make_unique<IntentFile>(url);
@@ -46,8 +36,7 @@ bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
     case PatternMatchType::kLiteral:
     case PatternMatchType::kPrefix:
     case PatternMatchType::kSuffix: {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     case PatternMatchType::kGlob: {
       return apps_util::MatchGlob(url.spec(), condition_value->value);
@@ -69,10 +58,10 @@ bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
 
 bool IntentFile::MatchAnyConditionValue(
     const std::vector<ConditionValuePtr>& condition_values) {
-  return base::ranges::any_of(condition_values,
-                              [this](const ConditionValuePtr& condition_value) {
-                                return MatchConditionValue(condition_value);
-                              });
+  return std::ranges::any_of(condition_values,
+                             [this](const ConditionValuePtr& condition_value) {
+                               return MatchConditionValue(condition_value);
+                             });
 }
 
 Intent::Intent(const std::string& action) : action(action) {}
@@ -99,10 +88,6 @@ bool Intent::operator==(const Intent& other) const {
          start_type == other.start_type && categories == other.categories &&
          data == other.data && ui_bypassed == other.ui_bypassed &&
          extras == other.extras;
-}
-
-bool Intent::operator!=(const Intent& other) const {
-  return !(*this == other);
 }
 
 std::unique_ptr<Intent> Intent::Clone() const {
@@ -152,11 +137,11 @@ std::optional<std::string> Intent::GetIntentConditionValueByType(
       return action;
     }
     case ConditionType::kScheme: {
-      return url.has_value() ? std::optional<std::string>(url->scheme())
+      return url.has_value() ? std::optional<std::string>(url->GetScheme())
                              : std::nullopt;
     }
     case ConditionType::kPath: {
-      return url.has_value() ? std::optional<std::string>(url->path())
+      return url.has_value() ? std::optional<std::string>(url->GetPath())
                              : std::nullopt;
     }
     case ConditionType::kMimeType: {
@@ -166,8 +151,7 @@ std::optional<std::string> Intent::GetIntentConditionValueByType(
     case ConditionType::kAuthority:
     // Handled in MatchFileCondition.
     case ConditionType::kFile: {
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
     }
   }
 }
@@ -181,12 +165,12 @@ bool Intent::MatchAuthorityCondition(const ConditionPtr& condition) {
 
   std::optional<std::string> port =
       apps_util::AuthorityView::PortToString(url.value());
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       condition->condition_values,
       [this, &port](const ConditionValuePtr& condition_value) {
         apps_util::AuthorityView match_authority =
             apps_util::AuthorityView::Decode(condition_value->value);
-        if (!apps_util::PatternMatchValue(url->host(),
+        if (!apps_util::PatternMatchValue(url->GetHost(),
                                           condition_value->match_type,
                                           match_authority.host)) {
           return false;
@@ -207,7 +191,7 @@ bool Intent::MatchFileCondition(const ConditionPtr& condition) {
   DCHECK_EQ(condition->condition_type, ConditionType::kFile);
 
   return !files.empty() &&
-         base::ranges::all_of(files, [&condition](const IntentFilePtr& file) {
+         std::ranges::all_of(files, [&condition](const IntentFilePtr& file) {
            return file->MatchAnyConditionValue(condition->condition_values);
          });
 }
@@ -224,11 +208,11 @@ bool Intent::MatchCondition(const ConditionPtr& condition) {
   std::optional<std::string> value_to_match =
       GetIntentConditionValueByType(condition->condition_type);
   return value_to_match.has_value() &&
-         base::ranges::any_of(condition->condition_values,
-                              [&value_to_match](const auto& condition_value) {
-                                return apps_util::ConditionValueMatches(
-                                    value_to_match.value(), condition_value);
-                              });
+         std::ranges::any_of(condition->condition_values,
+                             [&value_to_match](const auto& condition_value) {
+                               return apps_util::ConditionValueMatches(
+                                   value_to_match.value(), condition_value);
+                             });
 }
 
 bool Intent::MatchFilter(const IntentFilterPtr& filter) {

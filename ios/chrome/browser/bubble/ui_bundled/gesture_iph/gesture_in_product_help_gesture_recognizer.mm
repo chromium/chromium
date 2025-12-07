@@ -79,13 +79,7 @@ UISwipeGestureRecognizerDirection GetOppositeDirection(
   _startPoint = location;
 }
 
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
-  // Revert to normal pan gesture recognizer characteristics after state began.
-  if (self.state != UIGestureRecognizerStatePossible) {
-    [super touchesMoved:touches withEvent:event];
-    return;
-  }
-
+- (void)updateGestureStateWithEvent:(UIEvent*)event {
   // Only one touch.
   if ([[event allTouches] count] > 1) {
     self.state = UIGestureRecognizerStateFailed;
@@ -154,6 +148,17 @@ UISwipeGestureRecognizerDirection GetOppositeDirection(
     }
   }
   self.state = state;
+}
+
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
+  if (self.state == UIGestureRecognizerStatePossible) {
+    [self updateGestureStateWithEvent:(UIEvent*)event];
+  }
+
+  // If the state was updated, call touchesMoved.
+  if (self.state != UIGestureRecognizerStatePossible) {
+    [super touchesMoved:touches withEvent:event];
+  }
 }
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {

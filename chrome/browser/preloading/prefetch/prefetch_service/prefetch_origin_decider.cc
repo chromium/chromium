@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/pref_names.h"
@@ -80,7 +81,7 @@ void PrefetchOriginDecider::LoadFromPrefs() {
     if (!url_origin.is_valid()) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
-      NOTREACHED_IN_MIGRATION();
+      DLOG(FATAL) << "Bad URL origin in prefs";
       continue;
     }
 
@@ -88,7 +89,7 @@ void PrefetchOriginDecider::LoadFromPrefs() {
     if (!retry_after) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
-      NOTREACHED_IN_MIGRATION();
+      DLOG(FATAL) << "Bad retry after time in prefs";
       continue;
     }
 

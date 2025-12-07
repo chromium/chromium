@@ -40,7 +40,7 @@ DownloadCreateInfo::DownloadCreateInfo(
 DownloadCreateInfo::DownloadCreateInfo()
     : DownloadCreateInfo(base::Time(), std::make_unique<DownloadSaveInfo>()) {}
 
-DownloadCreateInfo::~DownloadCreateInfo() {}
+DownloadCreateInfo::~DownloadCreateInfo() = default;
 
 const GURL& DownloadCreateInfo::url() const {
   return url_chain.empty() ? GURL::EmptyGURL() : url_chain.back();

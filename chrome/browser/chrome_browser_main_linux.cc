@@ -15,46 +15,29 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/tast_support/stack_sampling_recorder.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/metrics/call_stacks/stack_sampling_recorder.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
-#endif
-
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/new_window_delegate.h"
-#include "ash/webui/sanitize_ui/url_constants.h"
-#include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -67,24 +50,23 @@ ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
     StartupData* startup_data)
     : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
-}
+ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() = default;
 
 void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 #if BUILDFLAG(IS_CHROMEOS)
-  if (command_line->HasSwitch(
-          chromeos::tast_support::kRecordStackSamplingDataSwitch)) {
+  if (command_line->HasSwitch(metrics::kRecordStackSamplingDataSwitch)) {
     stack_sampling_recorder_ =
-        base::MakeRefCounted<chromeos::tast_support::StackSamplingRecorder>();
+        base::MakeRefCounted<metrics::StackSamplingRecorder>();
     stack_sampling_recorder_->Start();
   }
-  // Don't initialize DBus here. Ash and Lacros Bluetooth DBusManager
-  // initialization depend on FeatureList, and is done elsewhere.
+  // Don't initialize DBus here. Bluetooth DBusManager initialization depends on
+  // FeatureList, and is done elsewhere.
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
+  bluez::BluezDBusManager::Initialize(
+      dbus_thread_linux::GetSharedSystemBus().get());
 
   // Set up crypt config. This needs to be done before anything starts the
   // network service, as the raw encryption key needs to be shared with the
@@ -118,7 +100,7 @@ void ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() {
 #endif
 
 void ChromeBrowserMainPartsLinux::PreProfileInit() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Needs to be called after we have chrome::DIR_USER_DATA and
   // g_browser_process.  This happens in PreCreateThreads.
   // base::GetLinuxDistro() will initialize its value if needed.
@@ -130,9 +112,8 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-#if (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 void ChromeBrowserMainPartsLinux::PostBrowserStart() {
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
   // static_cast is safe because this is the only implementation of
   // MemoryPressureMonitor.
   auto* monitor =
@@ -144,36 +125,15 @@ void ChromeBrowserMainPartsLinux::PostBrowserStart() {
         std::make_unique<DbusMemoryPressureEvaluatorLinux>(
             monitor->CreateVoter()));
   }
-#endif  // defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CheckIfSanitizeCompleted();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
-#endif  // (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ChromeBrowserMainPartsLinux::CheckIfSanitizeCompleted() {
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  if (base::FeatureList::IsEnabled(ash::features::kSanitize) &&
-      prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
-    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
-    prefs->CommitPendingWrite();
-    ash::SystemAppLaunchParams params;
-    params.launch_source = apps::LaunchSource::kUnknown;
-    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
-                                 ash::SystemWebAppType::OS_SANITIZE, params);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS)
   // No-op; per PostBrowserStart() comment, this is done elsewhere.
 #else
   bluez::BluezDBusManager::Shutdown();
-  bluez::BluezDBusThreadManager::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ChromeBrowserMainPartsPosix::PostDestroyThreads();

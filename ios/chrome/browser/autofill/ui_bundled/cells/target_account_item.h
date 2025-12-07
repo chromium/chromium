@@ -16,12 +16,12 @@
 // Avatar displayed by the item's cell.
 @property(nonatomic, strong) UIImage* avatar;
 // Email displayed by the item's cell.
-@property(nonatomic, strong) NSString* email;
+@property(nonatomic, copy) NSString* email;
 
 @end
 
 // Cell class for TargetAccountItem.
-@interface TargetAccountCell : TableViewCell
+@interface TargetAccountCell : LegacyTableViewCell
 
 // A left-aligned round badge showing the account avatar.
 @property(nonatomic, readonly, strong) UIImageView* avatarBadge;

@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_
 #define CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -16,7 +15,7 @@
 namespace content {
 class Page;
 class WebContents;
-}
+}  // namespace content
 
 class Browser;
 

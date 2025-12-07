@@ -40,23 +40,14 @@ class CookiesFetcherRestoreUtilBrowserTest : public AndroidBrowserTest {
 
   void AddCookie(std::string partition_key) {
     JNIEnv* env = base::android::AttachCurrentThread();
+    Profile* profile =
+        Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext())
+            ->GetPrimaryOTRProfile(/*create_if_needed=*/false);
     CookiesFetcherRestoreCookiesImpl(
-        env,
-        jni_zero::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF8ToJavaString(env, "test").obj()),
-        jni_zero::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF8ToJavaString(env, "test").obj()),
-        jni_zero::JavaParamRef<jstring>(
-            env,
-            base::android::ConvertUTF8ToJavaString(env, "google.com").obj()),
-        jni_zero::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF8ToJavaString(env, "/").obj()),
+        env, profile, "test", "test", "google.com", "/",
         /*creation=*/0, /*expiration=*/0, /*last_access=*/0,
         /*last_update=*/0, /*secure=*/true, /*httponly=*/false,
-        /*same_site=*/0, /*priority=*/0,
-        jni_zero::JavaParamRef<jstring>(
-            env,
-            base::android::ConvertUTF8ToJavaString(env, partition_key).obj()),
+        /*same_site=*/0, /*priority=*/0, partition_key,
         /*source_scheme=*/2, /*source_port=*/-1, /*source_type=*/0);
   }
 
@@ -64,7 +55,10 @@ class CookiesFetcherRestoreUtilBrowserTest : public AndroidBrowserTest {
     net::CookieList cookies_for_profile;
     {
       base::RunLoop loop;
-      GetCookieServiceClient()->GetAllCookies(
+      Profile* profile = Profile::FromBrowserContext(
+                             GetActiveWebContents()->GetBrowserContext())
+                             ->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+      GetCookieServiceClient(profile)->GetAllCookies(
           base::BindLambdaForTesting([&](const net::CookieList& cookies) {
             cookies_for_profile = cookies;
             loop.Quit();

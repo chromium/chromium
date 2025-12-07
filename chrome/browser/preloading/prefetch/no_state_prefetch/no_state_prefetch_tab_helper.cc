@@ -22,16 +22,19 @@ NoStatePrefetchTabHelper::NoStatePrefetchTabHelper(
 NoStatePrefetchTabHelper::~NoStatePrefetchTabHelper() = default;
 
 void NoStatePrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (page.GetMainDocument().IsErrorDocument())
+  if (page.GetMainDocument().IsErrorDocument()) {
     return;
+  }
 
   NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
-  if (!no_state_prefetch_manager)
+  if (!no_state_prefetch_manager) {
     return;
-  if (no_state_prefetch_manager->IsWebContentsPrefetching(web_contents()))
+  }
+  if (no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
     return;
+  }
   no_state_prefetch_manager->RecordNavigation(
       page.GetMainDocument().GetLastCommittedURL());
 }

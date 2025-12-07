@@ -117,19 +117,6 @@ TEST(BitsTest, AlignDownPointer) {
             AlignDown(reinterpret_cast<uint8_t*>(1), kUintPtrTMax / 2 + 1));
 }
 
-TEST(BitsTest, PowerOfTwoDeprecatedDoNotUse) {
-  EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(-1));
-  // Signed 64 bit cases.
-  for (uint32_t i = 2; i < 63; i++) {
-    const int64_t val = int64_t{1} << i;
-    EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(val - 1));
-    EXPECT_TRUE(IsPowerOfTwoDeprecatedDoNotUse(val));
-    EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(val + 1));
-  }
-  // Signed integers with only the last bit set are negative, not powers of two.
-  EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(int64_t{1} << 63));
-}
-
 TEST(BitsTest, LeftMostBit) {
   // Construction of a signed type from an unsigned one of the same width
   // preserves all bits. Explicitly confirming this behavior here to illustrate

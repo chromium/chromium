@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_palette_mix_value.h"
+
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -23,20 +25,24 @@ String CSSPaletteMixValue::CustomCSSText() const {
   result.Append("palette-mix(in ");
   result.Append(Color::SerializeInterpolationSpace(color_interpolation_space_,
                                                    hue_interpolation_method_));
+
+  auto [percentage1_value, percentage2_value] =
+      CSSColorMixValue::PercentageValuesForSerialization(percentage1_,
+                                                         percentage2_);
+
   result.Append(", ");
   result.Append(palette1_->CssText());
-  if (percentage1_) {
-    result.Append(" ");
-    result.Append(percentage1_->CssText());
+  if (percentage1_value) {
+    result.Append(' ');
+    result.Append(percentage1_value->CssText());
   }
   result.Append(", ");
   result.Append(palette2_->CssText());
-  if (percentage2_) {
-    result.Append(" ");
-    result.Append(percentage2_->CssText());
+  if (percentage2_value) {
+    result.Append(' ');
+    result.Append(percentage2_value->CssText());
   }
-  result.Append(")");
-
+  result.Append(')');
   return result.ReleaseString();
 }
 

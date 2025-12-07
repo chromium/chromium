@@ -4,16 +4,10 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 
-#import <memory>
-
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/web/public/browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
@@ -26,16 +20,15 @@ AutocompleteScoringModelServiceFactory::GetInstance() {
 
 // static
 AutocompleteScoringModelService*
-AutocompleteScoringModelServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AutocompleteScoringModelService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AutocompleteScoringModelServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AutocompleteScoringModelService>(
+      profile, /*create=*/true);
 }
 
 AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutocompleteScoringModelService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AutocompleteScoringModelService",
+                                    ProfileSelection::kOwnInstanceInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
@@ -44,23 +37,12 @@ AutocompleteScoringModelServiceFactory::
 
 std::unique_ptr<KeyedService>
 AutocompleteScoringModelServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+    ProfileIOS* profile) const {
   OptimizationGuideService* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
   return optimization_guide ? std::make_unique<AutocompleteScoringModelService>(
                                   optimization_guide)
                             : nullptr;
-}
-
-web::BrowserState* AutocompleteScoringModelServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
-}
-
-bool AutocompleteScoringModelServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

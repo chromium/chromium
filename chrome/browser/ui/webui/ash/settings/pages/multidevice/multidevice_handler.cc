@@ -20,7 +20,7 @@
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -74,9 +74,6 @@ const char kIsCameraRollFilePermissionGranted[] =
     "isCameraRollFilePermissionGranted";
 const char kIsPhoneHubFeatureCombinedSetupSupported[] =
     "isPhoneHubFeatureCombinedSetupSupported";
-const char kIsChromeOSSyncedSessionSharingEnabled[] =
-    "isChromeOSSyncedSessionSharingEnabled";
-const char kIsLacrosTabSyncEnabled[] = "isLacrosTabSyncEnabled";
 
 void OnRetrySetHostNowResult(bool success) {
   if (success) {
@@ -208,13 +205,6 @@ void MultideviceHandler::OnJavascriptAllowed() {
     camera_roll_manager_observation_.Observe(camera_roll_manager_.get());
   }
 
-  if (phonehub::BrowserTabsModelProviderImpl::
-          IsLacrosSessionSyncFeatureEnabled() &&
-      browser_tabs_model_provider_) {
-    browser_tabs_model_provider_observation_.Observe(
-        browser_tabs_model_provider_.get());
-  }
-
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           Profile::FromWebUI(web_ui()))) {
     pref_change_registrar_.Add(
@@ -261,14 +251,6 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     DCHECK(camera_roll_manager_observation_.IsObservingSource(
         camera_roll_manager_.get()));
     camera_roll_manager_observation_.Reset();
-  }
-
-  if (phonehub::BrowserTabsModelProviderImpl::
-          IsLacrosSessionSyncFeatureEnabled() &&
-      browser_tabs_model_provider_) {
-    DCHECK(browser_tabs_model_provider_observation_.IsObservingSource(
-        browser_tabs_model_provider_));
-    browser_tabs_model_provider_observation_.Reset();
   }
 
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
@@ -358,7 +340,7 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
     const base::Value::List& args) {
   const auto& list = args;
   DCHECK_GE(list.size(), 3u);
-  std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
 
   int feature_as_int = list[1].GetInt();
 
@@ -532,7 +514,7 @@ void MultideviceHandler::HandleCancelFeatureSetupConnection(
 
 void MultideviceHandler::HandleShowBrowserSyncSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL("chrome://settings/syncSetup/advanced"),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
@@ -742,19 +724,6 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
                                   ? multidevice_feature_access_manager_
                                         ->GetFeatureSetupRequestSupported()
                                   : false);
-
-  bool is_lacros_session_sync_feature_enabled = phonehub::
-      BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled();
-  page_content_dictionary.Set(kIsChromeOSSyncedSessionSharingEnabled,
-                              is_lacros_session_sync_feature_enabled);
-
-  if (is_lacros_session_sync_feature_enabled && browser_tabs_model_provider_) {
-    page_content_dictionary.Set(
-        kIsLacrosTabSyncEnabled,
-        browser_tabs_model_provider_->IsBrowserTabSyncEnabled());
-  } else {
-    page_content_dictionary.Set(kIsLacrosTabSyncEnabled, false);
-  }
 
   return page_content_dictionary;
 }

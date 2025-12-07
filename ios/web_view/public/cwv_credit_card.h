@@ -30,6 +30,9 @@ CWV_EXPORT
 @property(nonatomic, copy, nullable, readonly) NSString* expirationYear;
 // The issuing bank of this card. "Chase", "Bank of America".
 @property(nonatomic, copy, nullable, readonly) NSString* bankName;
+// The name of the card to be displayed. It will be nickname if available,
+// or product description, or network if neither are available.
+@property(nonatomic, copy, nullable, readonly) NSString* cardNameForDisplay;
 
 - (instancetype)init NS_UNAVAILABLE;
 

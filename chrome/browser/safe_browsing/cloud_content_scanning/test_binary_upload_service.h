@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace safe_browsing {
 
@@ -23,7 +24,7 @@ class TestBinaryUploadService : public BinaryUploadService {
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {}
   void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override {}
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
-  void SetResponse(Result result,
+  void SetResponse(enterprise_connectors::ScanRequestUploadResult result,
                    enterprise_connectors::ContentAnalysisResponse response);
 
   bool was_called() { return was_called_; }
@@ -34,7 +35,8 @@ class TestBinaryUploadService : public BinaryUploadService {
 
  private:
   enterprise_connectors::ContentAnalysisRequest last_request_;
-  Result saved_result_ = Result::UNKNOWN;
+  enterprise_connectors::ScanRequestUploadResult saved_result_ =
+      enterprise_connectors::ScanRequestUploadResult::kUnknown;
   enterprise_connectors::ContentAnalysisResponse saved_response_;
   bool was_called_ = false;
   base::WeakPtrFactory<TestBinaryUploadService> weak_ptr_factory_{this};

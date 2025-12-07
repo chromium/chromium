@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "pdf/buildflags.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
@@ -56,8 +58,10 @@ class PDFiumEngineClient {
   // Scroll the horizontal/vertical scrollbars to a given position.
   // Values are in screen coordinates, where 0 is the top/left of the document
   // and a positive value is the distance in pixels from that line.
-  virtual void ScrollToX(int x_screen_coords) {}
-  virtual void ScrollToY(int y_screen_coords) {}
+  // `force_smooth_scroll` forces smooth scrolling regardless of the current
+  // animation settings.
+  virtual void ScrollToX(int x_screen_coords, bool force_smooth_scroll) {}
+  virtual void ScrollToY(int y_screen_coords, bool force_smooth_scroll) {}
 
   // Scroll by a given delta relative to the current position.
   virtual void ScrollBy(const gfx::Vector2d& delta) {}
@@ -140,15 +144,16 @@ class PDFiumEngineClient {
   // Returns the current V8 isolate, if any.
   virtual v8::Isolate* GetIsolate() = 0;
 
-  // Searches the given string for "term" and returns the results.  Unicode-
-  // aware.
+  // Searches for `needle` in `haystack` and returns the results.
+  // Unicode-aware.
   struct SearchStringResult {
     int start_index;
     int length;
   };
-  virtual std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                                       const char16_t* term,
-                                                       bool case_sensitive) = 0;
+  virtual std::vector<SearchStringResult> SearchString(
+      const std::u16string& needle,
+      const std::u16string& haystack,
+      bool case_sensitive) = 0;
 
   // Notifies the client that the document has finished loading.
   virtual void DocumentLoadComplete() {}
@@ -195,6 +200,27 @@ class PDFiumEngineClient {
   // viewers.
   // See https://crbug.com/312882 for an example.
   virtual bool IsValidLink(const std::string& url) = 0;
+
+  // Notifies clients that a new text fragments search has started.
+  virtual void OnNewTextFragmentsSearchStarted() = 0;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Returns true if the client is in annotation mode.
+  virtual bool IsInAnnotationMode() const = 0;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // See the comment for `OnSearchifyStateChange` in pdf/pdfium/pdfium_engine.h.
+  virtual void OnSearchifyStateChange(bool busy) = 0;
+
+  // Notifies that at least one page is searchified. This function is called at
+  // most once.
+  virtual void OnHasSearchifyText() = 0;
+
+  // Show searchify in progress indicator if searchify is running and the
+  // indicator is not showing.
+  virtual void MaybeShowSearchifyInProgress() = 0;
+#endif
 };
 
 }  // namespace chrome_pdf

@@ -1,0 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    RuntimeEnabled=CSSPseudoElementInterface,
+    Exposed=Window
+]
+interface CSSPseudoElement {
+    readonly attribute CSSOMString type;
+    readonly attribute Element element;
+    readonly attribute (Element or CSSPseudoElement) parent;
+    CSSPseudoElement? pseudo(CSSOMString type);
+};

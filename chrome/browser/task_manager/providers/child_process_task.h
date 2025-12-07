@@ -9,7 +9,9 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "chrome/browser/task_manager/providers/task.h"
+#include "chrome/common/buildflags.h"
 
 class ProcessResourceUsage;
 
@@ -26,11 +28,19 @@ class ChildProcessTask : public Task {
   // ChildProcessData has a ProcessType but that's not always granular enough to
   // correctly determine what string to show as the name of the task. This enum
   // is used to provide that information.
+  //
+  // Please consult Task Manager OWNERs when adding a new ProcessSubType.
+  // There is a dependency between Task Manager categories and a processes
+  // subtype.
   enum class ProcessSubtype {
     kNoSubtype,
     // The "spare" render process, a render process used so that there is always
     // a render process ready to go.
     kSpareRenderProcess,
+#if BUILDFLAG(ENABLE_GLIC)
+    // A render process used for chrome://glic.
+    kGlicRenderProcess,
+#endif
     // A render process that is unknown and for which no provider is available.
     // Should not be used; all processes should be shown in the Task Manager.
     // See https://crbug.com/739782 .
@@ -50,9 +60,10 @@ class ChildProcessTask : public Task {
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;
+  SubType GetSubType() const override;
   int GetChildProcessUniqueID() const override;
-  int64_t GetV8MemoryAllocated() const override;
-  int64_t GetV8MemoryUsed() const override;
+  base::ByteCount GetV8MemoryAllocated() const override;
+  base::ByteCount GetV8MemoryUsed() const override;
 
  private:
   static gfx::ImageSkia* s_icon_;
@@ -62,16 +73,18 @@ class ChildProcessTask : public Task {
   std::unique_ptr<ProcessResourceUsage> process_resources_sampler_;
 
   // The allocated and used V8 memory (in bytes).
-  int64_t v8_memory_allocated_;
-  int64_t v8_memory_used_;
+  base::ByteCount v8_memory_allocated_ = base::ByteCount(-1);
+  base::ByteCount v8_memory_used_ = base::ByteCount(-1);
 
   // The unique ID of the child process. It is not the PID of the process.
   // See |content::ChildProcessData::id|.
   const int unique_child_process_id_;
 
-  // The type of the child process. See |content::ProcessType| and
-  // |NaClTrustedProcessType|.
+  // The type of the child process. See |content::ProcessType|.
   const int process_type_;
+
+  // The subtype of the child process.
+  const ProcessSubtype process_subtype_;
 
   // Depending on the |process_type_|, determines whether this task uses V8
   // memory or not.

@@ -22,8 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SmartLockStatusTypes">
+  <variant name=".Other" summary=""/>
+  <variant name=".Unlockable" summary=""/>
+</variants>
+
 <histogram name="AndroidSms.EffectivePWAInstallationSuccess"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -35,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.FcmMessageDispatchFailure"
-    enum="AndroidSmsFcmMessageType" expires_after="2025-05-05">
+    enum="AndroidSmsFcmMessageType" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -46,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.FcmMessageDispatchRetry"
-    enum="AndroidSmsFcmMessageType" expires_after="2025-05-05">
+    enum="AndroidSmsFcmMessageType" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -57,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.FcmMessageDispatchSuccess"
-    enum="AndroidSmsFcmMessageType" expires_after="2025-05-05">
+    enum="AndroidSmsFcmMessageType" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -68,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2025-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -79,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.NumAttemptsForSuccessfulInstallation"
-    units="attempts" expires_after="2025-05-05">
+    units="attempts" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -89,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.PWAInstallationResult"
-    enum="WebAppInstallResultCode" expires_after="2025-05-05">
+    enum="WebAppInstallResultCode" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -100,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.PWAUninstallationResult" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -111,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.ServiceWorkerLifetime" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -121,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AndroidSms.ServiceWorkerMessageDispatchStatus"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -131,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadata.IsManufacturerEmpty"
-    enum="BooleanEmpty" expires_after="2025-05-05">
+    enum="BooleanEmpty" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -142,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadata.IsModelEmpty" enum="BooleanEmpty"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -152,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Result"
-    enum="InstanceIDResult" expires_after="2025-05-05">
+    enum="InstanceIDResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -162,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Retries"
-    units="retries" expires_after="2025-05-05">
+    units="retries" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -173,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSync.Result" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Indicates success of performing a DeviceSync.</summary>
@@ -181,7 +186,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncService.ClientAppMetadataFetch.AsyncTaskResult"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -193,7 +198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncService.ClientAppMetadataFetch.ExecutionTime"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -204,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncService.GcmRegistration.ExecutionTime"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -215,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncService.GcmRegistration.Success"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -225,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncService.Initialization.ExecutionTime"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -236,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -249,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult.Failures"
-    enum="CryptAuthSoftwareFeature" expires_after="2025-05-05">
+    enum="CryptAuthSoftwareFeature" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -261,7 +266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceActivityGetter.ApiCallResult.GetDevicesActivityStatus"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -273,7 +278,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceActivityGetter.ExecutionTime.GetDevicesActivityStatus"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -285,7 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceNotifier.ApiCallResult.NotifyGroupDevices"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -297,7 +302,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceNotifier.ExecutionTime.NotifyGroupDevices"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -309,7 +314,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.DeviceMetadataDecryption"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -324,7 +329,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.GroupPrivateKeyDecryption"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -336,7 +341,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.ExecutionTime.DeviceMetadataDecryption"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -348,7 +353,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.ExecutionTime.GroupPrivateKeyDecryption"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -360,7 +365,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsGroupPrivateKeyConsistent"
-    enum="BooleanConsistent" expires_after="2025-05-05">
+    enum="BooleanConsistent" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -372,7 +377,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsLocalDeviceMetadataConsistent"
-    enum="BooleanConsistent" expires_after="2025-05-05">
+    enum="BooleanConsistent" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -383,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataDecryptionSuccess"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -394,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataParsingSuccess"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -407,7 +412,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ApiCallResult.GetFeatureStatuses"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -419,7 +424,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.CorrectNumberOfDevicesInResponse"
-    enum="BooleanExpected" expires_after="2025-05-05">
+    enum="BooleanExpected" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -431,7 +436,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ExecutionTime.GetFeatureStatuses"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -443,7 +448,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsDuplicateDeviceId"
-    enum="BooleanDuplicate" expires_after="2025-05-05">
+    enum="BooleanDuplicate" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -455,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsKnownFeatureType"
-    enum="BooleanKnown" expires_after="2025-05-05">
+    enum="BooleanKnown" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -469,7 +474,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsUnsupportedFeatureMarkedEnabled"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -482,7 +487,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.WasDeviceInResponseRequested"
-    enum="BooleanRequested" expires_after="2025-05-05">
+    enum="BooleanRequested" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -494,7 +499,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ApiCallResult.SetFeatureStatuses"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -506,7 +511,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ExecutionTime.SetFeatureStatuses"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -518,7 +523,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ApiCallResult.ShareGroupPrivateKey"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -530,7 +535,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.AsyncTaskResult.GroupPrivateKeyEncryption"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -545,7 +550,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.EncryptionSuccess"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -558,7 +563,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ExecutionTime.GroupPrivateKeyEncryption"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -570,7 +575,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ExecutionTime.ShareGroupPrivateKey"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -582,7 +587,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.IsEncryptingKeyEmpty"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -595,7 +600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.InvocationReason"
-    enum="CryptAuthV2InvocationReason" expires_after="2025-05-05">
+    enum="CryptAuthV2InvocationReason" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -606,7 +611,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.FirstSyncMetadata"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -618,7 +623,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.SecondSyncMetadata"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -630,7 +635,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.AsyncTaskResult.GroupKeyCreation"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -642,7 +647,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.AsyncTaskResult.LocalDeviceMetadataEncryption"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -654,7 +659,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.FirstSyncMetadata"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -666,7 +671,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.GroupKeyCreation"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -678,7 +683,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.LocalDeviceMetadataEncryption"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -690,7 +695,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.SecondSyncMetadata"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -702,7 +707,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDeviceMetadataPacketValid"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -713,7 +718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDuplicateDeviceId"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -724,79 +729,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV1Devices"
-    units="count" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the number of devices returned by a v1 DeviceSync. Only recorded
-    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
-    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
-    are merged together, which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV2Devices"
-    units="count" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the number of devices returned by a v2 DeviceSync. Only recorded
-    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
-    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
-    are merged together, which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram
-    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV1DevicesReplacedByV2Devices"
-    units="%" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the percentage of devices returned by a v2 DeviceSync that replace
-    their v1 counterparts. This will only occur if the v2 device has a decrypted
-    public key that matches a v1 device. Only recorded when v1 and v2 DeviceSync
-    are running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
-    previously occurred. Emitted when v1 and v2 devices are merged together,
-    which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram
-    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV2DevicesWithDecryptedPublicKey"
-    units="%" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the percentage of devices returned by a v2 DeviceSync that have a
-    decrypted user public key. Only recorded when v1 and v2 DeviceSync are
-    running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
-    previously occurred. Emitted when v1 and v2 devices are merged together,
-    which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram
-    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.RatioOfV2ToV1Devices"
-    units="%" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the ratio of the number of devices returned by a v2 DeviceSync to
-    the number returned by a v1 DeviceSync. Devices returned by a v2 DeviceSync
-    should be a subset of the devices returned by a v1 DeviceSync, barring any
-    race conditions. This ratio should be greater than or equal to
-    PercentageOfV1DevicesReplacedByV2Devices because a v2 device can only
-    replace its v1 counterpart if it has a decrypted public key. Only recorded
-    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
-    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
-    are merged together, which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
 <histogram name="CryptAuth.DeviceSyncV2.Result.DidDeviceRegistryChange"
-    enum="BooleanChanged" expires_after="2025-05-05">
+    enum="BooleanChanged" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -807,7 +741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.Result.ResultCode"
-    enum="CryptAuthV2DeviceSyncResultCode" expires_after="2025-05-05">
+    enum="CryptAuthV2DeviceSyncResultCode" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -817,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.Result.ResultType"
-    enum="CryptAuthV2DeviceSyncResultType" expires_after="2025-05-05">
+    enum="CryptAuthV2DeviceSyncResultType" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -827,7 +761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.Enrollment.Result" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -836,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.ApiCallResult.EnrollKeys"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -847,7 +781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.ApiCallResult.SyncKeys"
-    enum="CryptAuthApiCallResult" expires_after="2025-05-05">
+    enum="CryptAuthApiCallResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -858,7 +792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.AsyncTaskResult.KeyCreation"
-    enum="CryptAuthAsyncTaskResult" expires_after="2025-05-05">
+    enum="CryptAuthAsyncTaskResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -869,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.ExecutionTime.EnrollKeys" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -880,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.ExecutionTime.KeyCreation" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -891,7 +825,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.ExecutionTime.SyncKeys" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -902,7 +836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.InvocationReason"
-    enum="CryptAuthV2InvocationReason" expires_after="2025-05-05">
+    enum="CryptAuthV2InvocationReason" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -912,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.Result.ResultCode"
-    enum="CryptAuthV2EnrollmentResult" expires_after="2025-05-05">
+    enum="CryptAuthV2EnrollmentResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -922,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.Result.Success" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -931,19 +865,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CryptAuth.EnrollmentV2.UserKeyPairState"
-    enum="CryptAuthV2EnrollmentUserKeyPairState" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The state--at system start time--of persisted user key pairs, generated
-    during CryptAuth v1 and/or v2 Enrollment: whether they exist and if they
-    agree. Recorded on CryptAuth v2 Enrollment manager construction.
-  </summary>
-</histogram>
-
 <histogram name="CryptAuth.Gcm.Message.FeatureType" enum="CryptAuthFeatureType"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -954,7 +877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.Gcm.Message.IsDeviceSyncGroupNameValid"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -966,7 +889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.Gcm.Message.IsKnownFeatureType" enum="Boolean"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -978,7 +901,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.Gcm.Message.TargetService.AreTickleTypeAndTargetServiceBothSpecified"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -992,7 +915,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CryptAuth.Gcm.Message.TargetService.FromRegistrationTickleType"
-    enum="CryptAuthTargetService" expires_after="2025-05-05">
+    enum="CryptAuthTargetService" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1004,7 +927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.Gcm.Message.TargetService.FromTargetServiceValue"
-    enum="CryptAuthTargetService" expires_after="2025-05-05">
+    enum="CryptAuthTargetService" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1016,7 +939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.Gcm.Registration.AttemptTimeWithRetries" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1032,23 +955,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.Gcm.Registration.Result" enum="GCMClientResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The result code from a GCM registration request made by the CryptAuth GCM
-    manager. CryptAuth registration with GCM is only performed once, if
-    successful, for a given user on a device as the first step in CryptAuth v1
-    or v2 Enrollment. Recorded when the CryptAuth GCM manager is notified by the
-    GCM driver that the registration attempt finished, successfully or not. The
-    GCM driver might quietly retry failures before notifying the CryptAuth GCM
-    manager. This metric will not include results codes that were quietly
-    retried by the GCM driver.
+    DEPRECATED. Please use CryptAuth.Gcm.Registration.Result2. The result code
+    from a GCM registration request made by the CryptAuth GCM manager. CryptAuth
+    registration with GCM is only performed once, if successful, for a given
+    user on a device as the first step in CryptAuth v1 or v2 Enrollment.
+    Recorded when the CryptAuth GCM manager is notified by the GCM driver that
+    the registration attempt finished, successfully or not. The GCM driver might
+    quietly retry failures before notifying the CryptAuth GCM manager. This
+    metric will not include results codes that were quietly retried by the GCM
+    driver.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Registration.Result2" enum="GCMInstanceIdResult"
+    expires_after="2026-05-05">
+  <owner>dclasson@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    This new version of CryptAuth.Gcm.Registration.Result2 uses V4 GCM tokens
+    instead of V3 tokens, which also have a different success enum. The result
+    code from a GCM registration request made by the CryptAuth GCM manager.
+    CryptAuth registration with GCM is only performed once, if successful, for a
+    given user on a device as the first step in CryptAuth v1 or v2 Enrollment.
+    Recorded when the CryptAuth GCM manager is notified by the GCM driver that
+    the registration attempt finished, successfully or not. The GCM driver might
+    quietly retry failures before notifying the CryptAuth GCM manager. This
+    metric will not include results codes that were quietly retried by the GCM
+    driver.
   </summary>
 </histogram>
 
 <histogram name="CryptAuth.GetLocalDeviceMetadata.HasId" enum="BooleanPresent"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1060,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.GetLocalDeviceMetadata.IsReady" enum="BooleanReady"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1073,7 +1015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.GetLocalDeviceMetadata.Result" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1084,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.InstanceId.DidInstanceIdChange"
-    enum="BooleanChanged" expires_after="2025-05-05">
+    enum="BooleanChanged" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1095,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.InstanceId.DidInstanceIdTokenChange"
-    enum="BooleanChanged" expires_after="2025-05-05">
+    enum="BooleanChanged" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1106,7 +1048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.DidUserManuallyUnlockPhone"
-    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2025-05-05">
+    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1118,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn" enum="EasyUnlockAuthEvent"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1130,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn.Duration" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1140,7 +1082,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.Unlock" enum="EasyUnlockAuthEvent"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1152,7 +1094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.Unlock.Duration" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1163,21 +1105,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="EasyUnlock.AuthProximity.RemoteDeviceModelHash"
-    enum="EasyUnlockDeviceModelHash" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The hash of the phone model used to successfully sign in or unlock using
-    Smart Lock.
-
-    This hash is calculated by taking the first 4 bytes of the MD5 hash of the
-    device model.
-  </summary>
-</histogram>
-
 <histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1197,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.RemoteLockScreenState"
-    enum="EasyUnlockRemoteLockScreenState" expires_after="2025-05-05">
+    enum="EasyUnlockRemoteLockScreenState" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1211,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.BluetoothDiscoverySessionStarted"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1220,7 +1149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.BluetoothDiscoverySessionStopped"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1230,7 +1159,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InstantTethering.ConnectionToHostResult.EndResult"
     enum="InstantTethering_ConnectionToHostResult_EndResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>joeantonetti@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1253,7 +1182,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InstantTethering.ConnectionToHostResult.Failure"
     enum="InstantTethering_ConnectionToHostResult_Failure"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1272,7 +1201,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="InstantTethering.ConnectionToHostResult.Failure.ClientConnection"
     enum="InstantTethering_ConnectionToHostResult_Failure_ClientConnection"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1292,7 +1221,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="InstantTethering.ConnectionToHostResult.Failure.TetheringTimeout"
     enum="InstantTethering_ConnectionToHostResult_Failure_TetheringTimeout"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1324,7 +1253,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="InstantTethering.ConnectionToHostResult.ProvisioningFailureRate"
     enum="InstantTethering_ConnectionToHostResult_ProvisioningFailureRate"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1346,7 +1275,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="InstantTethering.ConnectionToHostResult.SuccessRate.Background"
     enum="InstantTethering_ConnectionToHostResult_SuccessRate"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1364,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InstantTethering.ConnectionToHostResult.UnavoidableError"
     enum="InstantTethering_ConnectionToHostResult_UnavoidableError"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1379,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.FeatureState"
-    enum="InstantTethering_FeatureState" expires_after="2025-05-05">
+    enum="InstantTethering_FeatureState" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1395,7 +1324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.HostScanBatchDuration" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1411,7 +1340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.HostScanResult"
-    enum="InstantTethering_HostScanResult" expires_after="2025-05-05">
+    enum="InstantTethering_HostScanResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1429,7 +1358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.HotspotUsageDuration" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1440,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.KeepAliveTickle.Result" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1450,7 +1379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2025-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1462,7 +1391,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InstantTethering.NotificationInteractionType"
     enum="InstantTethering_NotificationInteractionType"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1472,7 +1401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.Performance.ConnectTetheringResponseDuration"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1482,7 +1411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.Performance.ConnectToHostDuration.Background"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1493,7 +1422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.Performance.ConnectToHotspotDuration"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1505,7 +1434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InstantTethering.Performance.DisconnectTetheringRequestDuration"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1515,7 +1444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.Performance.KeepAliveTickleResponseDuration"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1526,7 +1455,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InstantTethering.Performance.TetherAvailabilityResponseDuration"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1536,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.SessionCompletionReason"
-    enum="InstantTethering_SessionCompletionReason" expires_after="2025-05-05">
+    enum="InstantTethering_SessionCompletionReason" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1548,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.UserPreference.OnStartup"
-    enum="BooleanEnabled" expires_after="2025-05-05">
+    enum="BooleanEnabled" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1559,7 +1488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.UserPreference.OnToggle"
-    enum="BooleanEnabled" expires_after="2025-05-05">
+    enum="BooleanEnabled" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1570,7 +1499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2025-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1582,7 +1511,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState.MojoClient"
-    enum="MultiDevice_FeatureState" expires_after="2025-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-05-05">
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1593,28 +1522,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
-    enum="BooleanSuccess" expires_after="2025-05-05">
-  <owner>hansberry@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>Result of trying to find eligible devices.</summary>
-</histogram>
-
-<histogram
-    name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result.FailureReason"
-    enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2025-05-05">
-  <owner>hansberry@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Breaks down the percentages of reasons when failure occurs on
-    FindEligibleDevices.
-  </summary>
-</histogram>
-
 <histogram name="MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Result for when ForceEnrollmentNow is called.</summary>
@@ -1622,7 +1532,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>
@@ -1630,7 +1540,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Disable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2025-05-05">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1640,14 +1550,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Enable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2025-05-05">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Breaks down which features failed when attempted to enable.</summary>
 </histogram>
 
 <histogram name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Result of enabling and disabling features for devices.</summary>
@@ -1656,7 +1566,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result.FailureReason"
     enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1667,7 +1577,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.ForgetHostConfirmed"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1676,7 +1586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.PostOOBESetupFlow.PageShown"
-    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2025-05-05">
+    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1693,7 +1603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.GattConnectionToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1706,7 +1616,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.ConnectionToAuthenticationDuration.Background"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1726,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.ReceiveAdvertisementToConnectionDuration.Background"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1746,7 +1656,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToAuthenticationDuration.Background"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1767,7 +1677,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToConnectionDuration.Background"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1787,7 +1697,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToReceiveAdvertisementDuration.Background"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1807,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1819,7 +1729,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToGattConnection.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1830,7 +1740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionMedium"
-    enum="SecureChannelNearbyConnectionMedium" expires_after="2025-05-05">
+    enum="SecureChannelNearbyConnectionMedium" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1845,7 +1755,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionResult"
     enum="MultiDeviceNearbyConnectionsInitiatorResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1858,7 +1768,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
-    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2025-05-05">
+    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1873,7 +1783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1889,7 +1799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.FileAction"
-    enum="MultiDeviceNearbyFileAction" expires_after="2025-05-05">
+    enum="MultiDeviceNearbyFileAction" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1900,7 +1810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.FileTransferResult"
-    enum="MultiDeviceNearbyFileTransferResult" expires_after="2025-05-05">
+    enum="MultiDeviceNearbyFileTransferResult" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1911,7 +1821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
-    enum="MultiDeviceNearbyMessageAction" expires_after="2025-05-05">
+    enum="MultiDeviceNearbyMessageAction" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1922,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.OperationResult.{Function}"
-    enum="NearbyConnectionsStatus" expires_after="2025-05-05">
+    enum="NearbyConnectionsStatus" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1944,7 +1854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1955,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1969,7 +1879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.Setup.EligibleHostDeviceListCount" units="count"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1982,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
-    enum="BooleanDuplicate" expires_after="2025-05-05">
+    enum="BooleanDuplicate" expires_after="2026-05-05">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1994,7 +1904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HostStatus"
-    enum="MultiDevice_Setup_HostStatus" expires_after="2025-05-05">
+    enum="MultiDevice_Setup_HostStatus" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2005,7 +1915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HostVerifier.DoesHostHaveCryptoData"
-    enum="Boolean" expires_after="2025-05-05">
+    enum="Boolean" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2020,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.VerifyButtonClicked"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2029,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NotificationInteracted" units="count"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2042,7 +1952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeActionDuration" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2052,7 +1962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeInteracted"
-    enum="MultideviceSetupNudgeInteraction" expires_after="2025-05-05">
+    enum="MultideviceSetupNudgeInteraction" expires_after="2026-05-05">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2064,7 +1974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeShown" units="count"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2074,7 +1984,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeShownTimesBeforeActed" units="attempts"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2084,7 +1994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.OOBE.UserChoice"
-    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2025-05-05">
+    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -2095,7 +2005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.SetupDialogEntryPoint"
-    enum="MultiDeviceSetupDialogEntrypoint" expires_after="2025-05-05">
+    enum="MultiDeviceSetupDialogEntrypoint" expires_after="2026-05-05">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2106,7 +2016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationClicked"
-    enum="MultiDeviceSetupNotification" expires_after="2025-05-05">
+    enum="MultiDeviceSetupNotification" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2116,7 +2026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationDismissed"
-    enum="MultiDeviceSetupNotification" expires_after="2025-05-05">
+    enum="MultiDeviceSetupNotification" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2127,7 +2037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationShown"
-    enum="MultiDeviceSetupNotification" expires_after="2025-05-05">
+    enum="MultiDeviceSetupNotification" expires_after="2026-05-05">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2136,7 +2046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProximityAuth.BleWeaveConnectionResult"
-    enum="ProximityAuth_BleWeaveConnectionResult" expires_after="2025-05-05">
+    enum="ProximityAuth_BleWeaveConnectionResult" expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2147,7 +2057,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ProximityAuth.BluetoothGattConnectionResult"
     enum="ProximityAuth_BluetoothGattConnectionResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2163,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ProximityAuth.BluetoothGattNotifySessionResult"
     enum="ProximityAuth_BluetoothGattServiceOperationResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2179,7 +2089,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ProximityAuth.BluetoothGattWriteCharacteristicResult"
     enum="ProximityAuth_BluetoothGattServiceOperationResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2190,7 +2100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushNotification.ChromeOS.GCM.Token.RetrievalResult"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>akingsb@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2200,7 +2110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushNotification.ChromeOS.GCM.Token.RetrievalTime" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>akingsb@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2212,7 +2122,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Failure"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>akingsb@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2224,7 +2134,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Success"
-    units="ms" expires_after="2025-05-05">
+    units="ms" expires_after="2026-05-05">
   <owner>akingsb@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2235,7 +2145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushNotification.ChromeOS.OAuth.Token.RetrievalResult"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>akingsb@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2245,7 +2155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushNotification.ChromeOS.Registration.Result"
-    enum="BooleanSuccess" expires_after="2025-05-05">
+    enum="BooleanSuccess" expires_after="2026-05-05">
   <owner>akingsb@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2256,14 +2166,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock"
-    enum="SmartLockAuthMethodChoice" expires_after="2025-05-05">
+    enum="SmartLockAuthMethodChoice" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Records the user's unlock method choice.</summary>
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock.PasswordState"
-    enum="SmartLockAuthEventPasswordState" expires_after="2025-05-05">
+    enum="SmartLockAuthEventPasswordState" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2273,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2283,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2293,7 +2203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock.Failure"
-    enum="SmartLockAuthResultFailureReason" expires_after="2025-05-05">
+    enum="SmartLockAuthResultFailureReason" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2303,7 +2213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.EnabledDevicesCount" units="devices"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2314,7 +2224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.EnabledState" enum="SmartLockEnabledState"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2327,7 +2237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.FindAndConnectToHostResult.Unlock"
-    enum="SmartLockFindAndConnectToHostResult" expires_after="2025-05-05">
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2337,7 +2247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.FirstStatusToUser" enum="FirstSmartLockStatus"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2348,7 +2258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.GetRemoteStatus.Unlock" enum="BooleanSuccess"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2359,7 +2269,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.GetRemoteStatus.Unlock.Failure"
     enum="SmartLockGetRemoteStatusResultFailureReason"
-    expires_after="2025-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2369,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2025-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2380,10 +2290,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock"
-    units="ms" expires_after="2025-05-05">
-<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
-
+    name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock{SmartLockStatusTypes}"
+    units="ms" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2398,15 +2306,16 @@ chromium-metrics-reviews@google.com.
     particular remote status type.
 
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
-    remote status from the host.
+    remote status from the host. {SmartLockStatusTypes}
   </summary>
+  <token key="SmartLockStatusTypes" variants="SmartLockStatusTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
-    name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock"
-    units="ms" expires_after="2025-05-05">
-<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
-
+    name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock{SmartLockStatusTypes}"
+    units="ms" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2421,15 +2330,16 @@ chromium-metrics-reviews@google.com.
     status type.
 
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
-    remote status from the host.
+    remote status from the host. {SmartLockStatusTypes}
   </summary>
+  <token key="SmartLockStatusTypes" variants="SmartLockStatusTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
-    name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"
-    units="ms" expires_after="2025-05-05">
-<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
-
+    name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock{SmartLockStatusTypes}"
+    units="ms" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2450,23 +2360,26 @@ chromium-metrics-reviews@google.com.
     for breakdowns of this metric.
 
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
-    remote status from the host.
+    remote status from the host. {SmartLockStatusTypes}
   </summary>
+  <token key="SmartLockStatusTypes" variants="SmartLockStatusTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SmartLock.Toggle" enum="SmartLockToggle"
-    expires_after="2024-12-08">
+    expires_after="2026-11-26">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Emitted whenever Smart Lock is enabled/disabled in Settings using any of the
-    three toggles. Indicates which toggle was used and whether Smart Lock was
+    two toggles. Indicates which toggle was used and whether Smart Lock was
     enabled or disabled.
   </summary>
 </histogram>
 
 <histogram name="WifiSync.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2025-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

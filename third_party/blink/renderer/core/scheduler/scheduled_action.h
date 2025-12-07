@@ -71,7 +71,9 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
 
   void Trace(Visitor*) const;
 
-  const char* NameInHeapSnapshot() const override { return "ScheduledAction"; }
+  const char* GetHumanReadableName() const override {
+    return "ScheduledAction";
+  }
 
   CallbackFunctionBase* CallbackFunction();
   ScriptState* GetScriptState();
@@ -81,7 +83,7 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
   Member<V8Function> function_;
   HeapVector<ScriptValue> arguments_;
   String code_;
-  Member<scheduler::TaskAttributionInfo> code_parent_task_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

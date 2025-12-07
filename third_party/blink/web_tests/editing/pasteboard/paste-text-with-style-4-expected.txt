@@ -12,4 +12,3 @@ After paste:
 |   <i>
 |     style="font-weight: 400;"
 |     "hello<#selection-caret>"
-|   <br>

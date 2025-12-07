@@ -16,7 +16,6 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "extensions/buildflags/buildflags.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,12 +38,13 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       mojom::SafeBrowsing* safe_browsing,
       base::optional_ref<const blink::LocalFrameToken> local_frame_token);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // |extension_web_request_reporter_pending_remote| is used for sending
+  // |extension_web_request_reporter| is used for sending
   // extension web requests to the browser.
   RendererURLLoaderThrottle(
       mojom::SafeBrowsing* safe_browsing,
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-      mojom::ExtensionWebRequestReporter* extension_web_request_reporter);
+      mojo::PendingRemote<mojom::ExtensionWebRequestReporter>
+          extension_web_request_reporter);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   ~RendererURLLoaderThrottle() override;
 
@@ -57,6 +57,8 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
                            DoesNotDeferChromeUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            DoesNotDeferIframeUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           WillRedirectRequest_ProviderDestroyed_NoCrash);
 
   // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;
@@ -108,12 +110,10 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   // originated from an extension and destination is HTTP/HTTPS scheme only.
   void MaybeSendExtensionWebRequestData(network::ResourceRequest* request);
 
-  raw_ptr<mojom::ExtensionWebRequestReporter, DanglingUntriaged>
+  mojo::Remote<mojom::ExtensionWebRequestReporter>
       extension_web_request_reporter_;
   mojo::PendingRemote<mojom::ExtensionWebRequestReporter>
-      extension_web_request_reporter_pending_remote_;
-  mojo::Remote<mojom::ExtensionWebRequestReporter>
-      extension_web_request_reporter_remote_;
+      pending_extension_web_request_reporter_;
   // Tracks if the request originated from an extension, used during redirects
   // to send web request data to the telemetry service.
   std::string origin_extension_id_;

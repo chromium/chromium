@@ -6,11 +6,15 @@ package org.chromium.printing;
 
 import android.print.PrintDocumentAdapter;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This interface describes a class which is responsible of talking to the printing backend.
  *
  * Such class communicates with a {@link PrintingContext}, which in turn talks to the native side.
  */
+@NullMarked
 public interface PrintingController {
     /**
      * @return Dots Per Inch (DPI) of the currently selected printer.
@@ -37,18 +41,18 @@ public interface PrintingController {
      * @return The individual page numbers of the document to be printed, of null if all pages are
      *         to be printed.  The numbers are zero indexed.
      */
-    int[] getPageNumbers();
+    int @Nullable [] getPageNumbers();
 
     /**
      * @return If the controller is busy.
      */
-    public boolean isBusy();
+    boolean isBusy();
 
     /**
      * Initiates the printing process for the Android API.
      *
-     * @param printable An object capable of starting native side PDF generation, i.e. typically
-     *                  a Tab.
+     * @param printable An object capable of starting native side PDF generation, i.e. typically a
+     *     Tab.
      * @param printManager The print manager that manages the print job.
      */
     void startPrint(final Printable printable, PrintManagerDelegate printManager);
@@ -57,18 +61,9 @@ public interface PrintingController {
      * This method is called by the native side to signal PDF writing process is completed.
      *
      * @param pageCount How many pages native side wrote to PDF file descriptor. Non-positive value
-     *                  indicates native side writing failed.
+     *     indicates native side writing failed.
      */
     void pdfWritingDone(int pageCount);
-
-    /**
-     * Sets PrintingContext currently associated with the controller.
-     *
-     * This needs to be called after PrintingContext object is created. Firstly its native
-     * counterpart is created, and then the Java. PrintingController implementation
-     * needs this to interact with the native side, since JNI is built on PrintingContext.
-     **/
-    void setPrintingContext(final PrintingContext printingContext);
 
     /**
      * @return Whether a complete PDF generation cycle inside Chromium has been completed.
@@ -79,12 +74,11 @@ public interface PrintingController {
      * Sets the data required to initiate a printing process. The process can later be started using
      * {@link #startPendingPrint()}.
      *
-     * @param printable An object capable of starting native side PDF generation, i.e. typically
-     *     a Tab.
+     * @param printable An object capable of starting native side PDF generation, i.e. typically a
+     *     Tab.
      * @param printManager The print manager that manages the print job.
-     * @param renderProcessId
      * @param renderFrameId renderProcessId and renderFrameId are a pair of integers used to figure
-     *                      out which frame is going to be printed in native side.
+     *     out which frame is going to be printed in native side.
      */
     void setPendingPrint(
             final Printable printable,

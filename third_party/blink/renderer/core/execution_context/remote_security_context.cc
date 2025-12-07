@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/remote_security_context.h"
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -37,11 +38,11 @@ void RemoteSecurityContext::ResetAndEnforceSandboxFlags(
 }
 
 void RemoteSecurityContext::InitializePermissionsPolicy(
-    const ParsedPermissionsPolicy& parsed_header,
-    const ParsedPermissionsPolicy& container_policy,
-    const PermissionsPolicy* parent_permissions_policy) {
+    const network::ParsedPermissionsPolicy& parsed_header,
+    const network::ParsedPermissionsPolicy& container_policy,
+    const network::PermissionsPolicy* parent_permissions_policy) {
   report_only_permissions_policy_ = nullptr;
-  permissions_policy_ = PermissionsPolicy::CreateFromParentPolicy(
+  permissions_policy_ = network::PermissionsPolicy::CreateFromParentPolicy(
       parent_permissions_policy, parsed_header, container_policy,
       security_origin_->ToUrlOrigin());
 }

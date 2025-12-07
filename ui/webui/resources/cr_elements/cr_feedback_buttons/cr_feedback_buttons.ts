@@ -47,10 +47,12 @@ export class CrFeedbackButtonsElement extends CrLitElement {
     };
   }
 
-  selectedOption: CrFeedbackOption = CrFeedbackOption.UNSPECIFIED;
-  protected thumbsDownLabel_: string = loadTimeData.getString('thumbsDown');
-  protected thumbsUpLabel_: string = loadTimeData.getString('thumbsUp');
-  disabled: boolean = false;
+  accessor selectedOption: CrFeedbackOption = CrFeedbackOption.UNSPECIFIED;
+  protected accessor thumbsDownLabel_: string =
+      loadTimeData.getString('thumbsDown');
+  protected accessor thumbsUpLabel_: string =
+      loadTimeData.getString('thumbsUp');
+  accessor disabled: boolean = false;
 
   protected getThumbsDownAriaPressed_(): boolean {
     return this.selectedOption === CrFeedbackOption.THUMBS_DOWN;
@@ -76,11 +78,7 @@ export class CrFeedbackButtonsElement extends CrLitElement {
     // Wait for the element's DOM to be updated before dispatching
     // selected-option-changed event.
     await this.updateComplete;
-    this.dispatchEvent(new CustomEvent('selected-option-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {value: this.selectedOption},
-    }));
+    this.fire('selected-option-changed', {value: this.selectedOption});
   }
 
   protected onThumbsDownClick_() {

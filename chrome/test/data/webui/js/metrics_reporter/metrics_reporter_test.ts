@@ -66,6 +66,16 @@ suite('MetricsReporterTest', function() {
     assertTrue(await metricsReporter.hasMark('mark'));
   });
 
+  test('markWithTime', async function() {
+    const MARK_TIME = 500n;
+    metricsReporter.mark('start-mark', MARK_TIME);
+    forwardTime();
+    metricsReporter.mark('end-mark');
+    assertEquals(
+        DELTA_TIME - MARK_TIME,
+        await metricsReporter.measure('start-mark', 'end-mark'));
+  });
+
   test('hasLocalMark', function() {
     assertFalse(metricsReporter.hasLocalMark('mark'));
     metricsReporter.mark('mark');

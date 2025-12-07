@@ -12,7 +12,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printers_map.h"
@@ -133,7 +135,7 @@ class FakePpdProvider : public chromeos::PpdProvider {
                      ReverseLookupCallback cb) override {}
 
  private:
-  ~FakePpdProvider() override {}
+  ~FakePpdProvider() override = default;
   base::flat_map<std::string, std::string> ppds_;
 };
 

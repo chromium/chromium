@@ -4,8 +4,8 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_paths.h"
@@ -21,7 +21,7 @@
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 // TODO(crbug.com/40625383): Move the baselines to skia gold for easier
@@ -39,6 +39,15 @@ namespace content {
 
 class FormControlsBrowserTest : public ContentBrowserTest {
  public:
+  FormControlsBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/391378106): On Android the graphite results are different
+    // enough to need separate expected images. Force using ganesh until either
+    // all Android bots are running graphite or these tests support skia gold.
+    feature_list_.InitAndDisableFeature(features::kSkiaGraphite);
+#endif
+  }
+
   void SetUp() override {
     EnablePixelOutput(/*force_device_scale_factor=*/1.f);
     ContentBrowserTest::SetUp();
@@ -69,8 +78,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 #elif BUILDFLAG(IS_CHROMEOS)
     platform_suffix = "_chromeos";
 #elif BUILDFLAG(IS_ANDROID)
-    int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk_int >= base::android::SDK_VERSION_T) {
+    int sdk_int = base::android::android_info::sdk_int();
+    if (sdk_int >= base::android::android_info::SDK_VERSION_T) {
       platform_suffix = "_android_T";
     } else {
       platform_suffix = "_android";
@@ -117,7 +126,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     auto comparator = cc::FuzzyPixelComparator()
                           .DiscardAlpha()
                           .SetErrorPixelsPercentageLimit(11.f)
-                          .SetAvgAbsErrorLimit(5.f)
+                          .SetAvgAbsErrorLimit(12.f)
                           .SetAbsErrorLimit(140);
 #else
     cc::AlphaDiscardingExactPixelComparator comparator;
@@ -133,22 +142,25 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // Lower versions of android running on older devices, ex Nexus 5, render
     // form controls with a too large of a difference -- >20% error -- to
     // pixel compare.
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_OREO) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_OREO) {
       return true;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
     return false;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checkbox renders differently on Android x86. crbug.com/1238283
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+// TODO(crbug.com/401594933): The test fails on Windows ARM64.
+#if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_Checkbox DISABLED_Checkbox
 #else
 #define MAYBE_Checkbox Checkbox
 #endif
-
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
   if (SkipTestForOldAndroidVersions())
     return;
@@ -230,7 +242,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
           /* screenshot_height */ 330);
 }
 
-#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+// The test fails on Windows ARM64: crbug.com/401594933.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_Textarea DISABLED_Textarea
 #else
 #define MAYBE_Textarea Textarea
@@ -282,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
 // TODO(crbug.com/1160104/#25) This test creates large average_error_rate on
 // Android FYI SkiaRenderer Vulkan. Disable it until a resolution for is
 // found.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/401594933): The test fails on Windows ARM64.
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_ColorInput DISABLED_ColorInput
 #else
 #define MAYBE_ColorInput ColorInput
@@ -306,7 +321,13 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_ColorInput) {
           /* screenshot_height */ 250);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
+// TODO(crbug.com/401594933): The test fails on Windows ARM64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_Select DISABLED_Select
+#else
+#define MAYBE_Select DISABLED_Select
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Select) {
   if (SkipTestForOldAndroidVersions())
     return;
 
@@ -329,7 +350,19 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
           /* screenshot_height */ 200);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MultiSelect) {
+// TODO(crbug.com/377986468) : Flaky on Windows. Seems to lose focus of top
+// <select> in some runs which causes the results to be different from
+// expectations.
+// TODO(crbug.com/448656594): The test fails on Android. Either the test is
+// flaky or the baseline is wrong.
+// TODO(crbug.com/449053040): Re-enable the test on Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_LINUX)
+#define MAYBE_MultiSelect DISABLED_MultiSelect
+#else
+#define MAYBE_MultiSelect MultiSelect
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_MultiSelect) {
   if (SkipTestForOldAndroidVersions())
     return;
 

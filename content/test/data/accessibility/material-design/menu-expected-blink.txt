@@ -1,0 +1,241 @@
+rootWebArea htmlTag='#document' name='Material Web Menu'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button className='button' htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Menu'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button className='button' htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu htmlTag='md-menu'
+++++++++++++genericContainer className='menu open' htmlTag='div'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++group htmlTag='md-menu-item'
+++++++++++++++++++++++menuItem className='list-item   ' htmlTag='li'
+++++++++++++++++++++++++none ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored
+++++++++++++++++++++++menuItem className='list-item   ' htmlTag='li'
+++++++++++++++++++++++++none ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored
+++++++++++++++++++++++menuItem className='list-item  disabled ' htmlTag='li' restriction=disabled
+++++++++++++++++++++++++none ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored
+++++++++++++++++++++++menuItem className='list-item   ' htmlTag='li'
+++++++++++++++++++++++++none ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++++++++++staticText ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Menu Opened'
+++++++++++++inlineTextBox name='Menu Opened'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Menu'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button className='button' htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Menu Opened'
+++++++++++++inlineTextBox name='Menu Opened'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Menu Closed'
+++++++++++++inlineTextBox name='Menu Closed'

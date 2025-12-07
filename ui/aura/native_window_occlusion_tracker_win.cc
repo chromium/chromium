@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,10 +19,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/win/scoped_gdi_object.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -32,7 +29,10 @@ namespace aura {
 namespace {
 
 // ~16 ms = time between frames when frame rate is 60 FPS.
-const base::TimeDelta kUpdateOcclusionDelay = base::Milliseconds(16);
+const base::TimeDelta kUpdateOcclusionDelayMin = base::Milliseconds(16);
+
+// ~100 ms = time between frames when frame rate is 10 FPS.
+const base::TimeDelta kUpdateOcclusionDelayMax = base::Milliseconds(100);
 
 // This global variable can be accessed only on main thread.
 NativeWindowOcclusionTrackerWin* g_tracker = nullptr;
@@ -94,9 +94,7 @@ void NativeWindowOcclusionTrackerWin::DeleteInstanceForTesting() {
 void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
   DCHECK(window->IsRootWindow());
   if (window->HasObserver(this)) {
-    NOTREACHED_IN_MIGRATION()
-        << "window shouldn't already be observing occlusion tracker";
-    return;
+    NOTREACHED() << "window shouldn't already be observing occlusion tracker";
   }
   // Add this as an observer so that we can be notified
   // when it's no longer true that all windows are minimized, and when the
@@ -195,109 +193,6 @@ NativeWindowOcclusionTrackerWin::~NativeWindowOcclusionTrackerWin() {
   done_event.Wait();
 }
 
-// static
-bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
-    HWND hwnd,
-    gfx::Rect* window_rect) {
-  // Filter out windows that are not "visible", IsWindowVisible().
-  if (!IsWindow(hwnd) || !IsWindowVisible(hwnd))
-    return false;
-
-  // Filter out minimized windows.
-  if (IsIconic(hwnd))
-    return false;
-
-  LONG ex_styles = ::GetWindowLong(hwnd, GWL_EXSTYLE);
-  // Filter out "transparent" windows, windows where the mouse clicks fall
-  // through them.
-  if (ex_styles & WS_EX_TRANSPARENT)
-    return false;
-
-  // Filter out "tool windows", which are floating windows that do not appear on
-  // the taskbar or ALT-TAB. Floating windows can have larger window rectangles
-  // than what is visible to the user, so by filtering them out we will avoid
-  // incorrectly marking native windows as occluded. We do not filter out the
-  // Windows Taskbar.
-  if (ex_styles & WS_EX_TOOLWINDOW) {
-    if (gfx::GetClassName(hwnd) != L"Shell_TrayWnd")
-      return false;
-  }
-
-  // Filter out layered windows that are not opaque or that set a transparency
-  // colorkey.
-  if (ex_styles & WS_EX_LAYERED) {
-    BYTE alpha;
-    DWORD flags;
-
-    // GetLayeredWindowAttributes only works if the application has
-    // previously called SetLayeredWindowAttributes on the window.
-    // The function will fail if the layered window was setup with
-    // UpdateLayeredWindow. Treat this failure as the window being transparent.
-    // See Remarks section of
-    // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlayeredwindowattributes
-    if (!GetLayeredWindowAttributes(hwnd, nullptr, &alpha, &flags))
-      return false;
-
-    if (flags & LWA_ALPHA && alpha < 255)
-      return false;
-    if (flags & LWA_COLORKEY)
-      return false;
-  }
-
-  // Filter out windows that do not have a simple rectangular region.
-  base::win::ScopedRegion region(CreateRectRgn(0, 0, 0, 0));
-  if (GetWindowRgn(hwnd, region.get()) == COMPLEXREGION)
-    return false;
-
-  // Windows 10 has cloaked windows, windows with WS_VISIBLE attribute but
-  // not displayed. explorer.exe, in particular has one that's the
-  // size of the desktop. It's usually behind Chrome windows in the z-order,
-  // but using a remote desktop can move it up in the z-order. So, ignore them.
-  if (gfx::IsWindowCloaked(hwnd))
-    return false;
-
-  RECT win_rect;
-  // Filter out windows that take up zero area. The call to GetWindowRect is one
-  // of the most expensive parts of this function, so it is last.
-  if (!GetWindowRect(hwnd, &win_rect))
-    return false;
-  if (IsRectEmpty(&win_rect))
-    return false;
-
-  // Ignore popup windows since they're transient unless it is a Chrome Widget
-  // Window or the Windows Taskbar
-  if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
-    std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
-    if (!base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") &&
-        hwnd_class_name != L"Shell_TrayWnd") {
-      return false;
-    }
-  }
-
-  *window_rect = gfx::Rect(win_rect);
-
-  WINDOWPLACEMENT window_placement = {0};
-  window_placement.length = sizeof(WINDOWPLACEMENT);
-  ::GetWindowPlacement(hwnd, &window_placement);
-  if (window_placement.showCmd == SW_MAXIMIZE) {
-    // If the window is maximized the window border extends beyond the visible
-    // region of the screen.  Adjust the maximized window rect to fit the
-    // screen dimensions to ensure that fullscreen windows, which do not extend
-    // beyond the screen boundaries since they typically have no borders, will
-    // occlude maximized windows underneath them.
-    HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
-    if (hmon) {
-      MONITORINFO mi;
-      mi.cbSize = sizeof(mi);
-      if (GetMonitorInfo(hmon, &mi)) {
-        (*window_rect).AdjustToFit(gfx::Rect(mi.rcWork));
-      }
-    }
-  }
-
-  return true;
-}
-
 void NativeWindowOcclusionTrackerWin::UpdateOcclusionState(
     const HwndToRootOcclusionStateMap& root_window_hwnds_occlusion_state,
     bool show_all_windows) {
@@ -364,11 +259,6 @@ void NativeWindowOcclusionTrackerWin::OnSessionChange(
 }
 
 void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
-  static bool screen_power_listener_enabled = base::FeatureList::IsEnabled(
-      features::kScreenPowerListenerForNativeWinOcclusion);
-  if (!screen_power_listener_enabled)
-    return;
-
   if (display_on == display_on_)
     return;
 
@@ -424,11 +314,7 @@ NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
         UpdateOcclusionStateCallback update_occlusion_state_callback)
     : task_runner_(task_runner),
       ui_thread_task_runner_(ui_thread_task_runner),
-      calculate_occluded_region_(base::FeatureList::IsEnabled(
-          features::kApplyNativeOccludedRegionToWindowTracker)),
       update_occlusion_state_callback_(update_occlusion_state_callback) {
-  ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
-                     IID_PPV_ARGS(&virtual_desktop_manager_));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -649,9 +535,14 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!occlusion_update_timer_.IsRunning()) {
     occlusion_update_timer_.Start(
-        FROM_HERE, kUpdateOcclusionDelay, this,
+        FROM_HERE, GetUpdateOcclusionDelay(), this,
         &WindowOcclusionCalculator::ComputeNativeWindowOcclusionStatus);
   }
+}
+
+const base::TimeDelta NativeWindowOcclusionTrackerWin::
+    WindowOcclusionCalculator::GetUpdateOcclusionDelay() {
+  return moving_window_ ? kUpdateOcclusionDelayMax : kUpdateOcclusionDelayMin;
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
@@ -776,7 +667,6 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 
   num_root_windows_with_unknown_occlusion_state_--;
 
-  SkRegion occluded_window_region = unoccluded_desktop_region_;
   SkRegion curr_unoccluded_destkop = unoccluded_desktop_region_;
   if (window_is_occluding) {
     unoccluded_desktop_region_.op(gfx::RectToSkIRect(window_rect),
@@ -800,18 +690,7 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     return true;
   }
   it->second.occlusion_state = Window::OcclusionState::VISIBLE;
-  if (!calculate_occluded_region_ || window_rect.IsEmpty())
-    return true;
 
-  occluded_window_region.op(gfx::RectToSkIRect(window_rect),
-                            SkRegion::kIntersect_Op);
-  if (occluded_window_region.isEmpty())
-    return true;
-
-  occluded_window_region.op(gfx::RectToSkIRect(window_rect),
-                            SkRegion::kReverseDifference_Op);
-  occluded_window_region.translate(-window_rect.x(), -window_rect.y());
-  it->second.occluded_region_pixels.swap(occluded_window_region);
   return true;
 }
 
@@ -840,9 +719,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   bool calculate_occlusion = true;
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
     std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
-    calculate_occlusion =
-        base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") ||
-        hwnd_class_name == L"Shell_TrayWnd";
+    calculate_occlusion = hwnd_class_name.starts_with(L"Chrome_WidgetWin_") ||
+                          hwnd_class_name == L"Shell_TrayWnd";
   }
 
   // Detect if either the alt tab view or the task list thumbnail is being
@@ -894,9 +772,11 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       // Ignore move events if it's not a root window that's being moved. If it
       // is a root window, we want to calculate occlusion to support tab
       // dragging to windows that were occluded when the drag was started but
-      // are no longer occluded.
-      if (root_window_hwnds_occlusion_state_.find(hwnd) ==
-          root_window_hwnds_occlusion_state_.end()) {
+      // are no longer occluded.  If there is only one root window, occlusion
+      // calculation is not needed.
+      if ((root_window_hwnds_occlusion_state_.size() <= 1) ||
+          (root_window_hwnds_occlusion_state_.find(hwnd) ==
+           root_window_hwnds_occlusion_state_.end())) {
         return;
       }
     } else {
@@ -938,19 +818,24 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     WindowCanOccludeOtherWindowsOnCurrentVirtualDesktop(
         HWND hwnd,
         gfx::Rect* window_rect) {
-  return IsWindowVisibleAndFullyOpaque(hwnd, window_rect) &&
+  return gfx::IsWindowVisibleAndFullyOpaque(hwnd, window_rect) &&
          (IsWindowOnCurrentVirtualDesktop(hwnd) == true);
 }
 
 std::optional<bool> NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     IsWindowOnCurrentVirtualDesktop(HWND hwnd) {
-  if (!virtual_desktop_manager_)
-    return true;
 
   // If the window is not cloaked, it is not on another desktop.
   if (!gfx::IsWindowCloaked(hwnd))
     return true;
 
+  if (!virtual_desktop_manager_) {
+    if (FAILED(::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr,
+                                  CLSCTX_ALL,
+                                  IID_PPV_ARGS(&virtual_desktop_manager_)))) {
+      return std::nullopt;
+    }
+  }
   return gfx::IsWindowOnCurrentVirtualDesktop(hwnd, virtual_desktop_manager_);
 }
 

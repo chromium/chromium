@@ -11,9 +11,14 @@
 namespace ash {
 namespace {
 
+using device::mojom::UsbAlternateInterfaceInfo;
+using device::mojom::UsbConfigurationInfo;
 using device::mojom::UsbDeviceInfo;
+using device::mojom::UsbInterfaceInfo;
 using testing::ElementsAre;
+using testing::Eq;
 using testing::HasSubstr;
+using testing::Optional;
 
 TEST(UsbPrinterUtilTest, UsbDeviceToPrinterWithValidSerialNumber) {
   UsbDeviceInfo device_info;
@@ -49,6 +54,17 @@ TEST(UsbPrinterUtilTest, UsbDeviceToPrinterWithEmptySerialNumber) {
   // If the device_info specifies an empty serial number, the URI should get
   // created with the character '?'.
   EXPECT_THAT(entry.printer.uri().GetNormalized(), HasSubstr("?serial=?"));
+}
+
+TEST(UsbPrinterUtilTest, UsbDeviceToPrinter_UsbDeviceId) {
+  UsbDeviceInfo device_info;
+  device_info.vendor_id = 1;
+  device_info.product_id = 2;
+
+  PrinterDetector::DetectedPrinter entry;
+  ASSERT_TRUE(UsbDeviceToPrinter(device_info, &entry));
+  EXPECT_THAT(entry.printer.usb_device_id(),
+              chromeos::Printer::UsbDeviceId(1, 2));
 }
 
 TEST(UsbPrinterUtilTest, GuessEffectiveMakeAndModelDuplicatedManufacturer) {
@@ -170,6 +186,27 @@ TEST(UsbPrinterUtilTest, SearchDataReplacedForGenericDescriptors) {
   EXPECT_THAT(entry.ppd_search_data.make_and_model, ElementsAre("make model"));
 }
 
+TEST(UsbPrinterUtilTest, SearchDataReplacedForEmptyMakeModel) {
+  UsbDeviceInfo device_info;
+  device_info.vendor_id = 1;
+  device_info.product_id = 2;
+  device_info.serial_number = u"";
+  device_info.manufacturer_name = u"";
+  device_info.product_name = u"";
+
+  PrinterDetector::DetectedPrinter entry;
+  EXPECT_TRUE(UsbDeviceToPrinter(device_info, &entry));
+  entry.ppd_search_data.make_and_model.push_back("");
+
+  chromeos::UsbPrinterId device_id;
+  device_id.set_make("MAKE");
+  device_id.set_model("MODEL");
+  UpdateSearchDataFromDeviceId(device_id, &entry);
+
+  EXPECT_EQ("MAKE MODEL", entry.printer.make_and_model());
+  EXPECT_THAT(entry.ppd_search_data.make_and_model, ElementsAre("make model"));
+}
+
 TEST(UsbPrinterUtilTest, SearchDataAugmentedForNonGenericDescriptors) {
   UsbDeviceInfo device_info;
   device_info.vendor_id = 1;
@@ -190,6 +227,147 @@ TEST(UsbPrinterUtilTest, SearchDataAugmentedForNonGenericDescriptors) {
   EXPECT_EQ("make model", entry.printer.make_and_model());
   EXPECT_THAT(entry.ppd_search_data.make_and_model,
               ElementsAre("make model", "real-make real-model"));
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetMissingConfig) {
+  UsbDeviceInfo di;
+  EXPECT_FALSE(internal::FindPrinterInterfaceTarget(di).has_value());
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetMissingInterface) {
+  UsbDeviceInfo di;
+  di.configurations.emplace_back(UsbConfigurationInfo::New());
+
+  EXPECT_FALSE(internal::FindPrinterInterfaceTarget(di).has_value());
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetMissingAlternate) {
+  UsbDeviceInfo di;
+  auto& config = di.configurations.emplace_back(UsbConfigurationInfo::New());
+  config->interfaces.emplace_back(UsbInterfaceInfo::New());
+
+  EXPECT_FALSE(internal::FindPrinterInterfaceTarget(di).has_value());
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetNonPrinterAlternate) {
+  UsbDeviceInfo di;
+  auto& config = di.configurations.emplace_back(UsbConfigurationInfo::New());
+  auto& iface = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt = iface->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt->class_code = 0;
+
+  EXPECT_FALSE(internal::FindPrinterInterfaceTarget(di).has_value());
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetOnePrinterAlternate) {
+  UsbDeviceInfo di;
+  di.vendor_id = 0x1234;
+  di.product_id = 0x5678;
+  auto& config = di.configurations.emplace_back(UsbConfigurationInfo::New());
+  auto& iface = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt = iface->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt->class_code = 7;
+  alt->subclass_code = 1;
+
+  // The first interface is a printer, so it should be returned.
+  internal::PrinterInterfaceTarget expected = {.vidpid = "1234:5678",
+                                               .config = 0,
+                                               .interface = 0,
+                                               .alternate = 0,
+                                               .set_alternate = false};
+
+  EXPECT_THAT(internal::FindPrinterInterfaceTarget(di), Optional(Eq(expected)));
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetPrinterInterfaceSecond) {
+  UsbDeviceInfo di;
+  di.vendor_id = 0x1234;
+  di.product_id = 0x5678;
+  auto& config = di.configurations.emplace_back(UsbConfigurationInfo::New());
+  auto& iface1 = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt1 = iface1->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt1->class_code = 255;
+  alt1->subclass_code = 255;
+  auto& iface2 = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt2 = iface2->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt2->class_code = 7;
+  alt2->subclass_code = 1;
+
+  // Skip the first non-printer interface and return the printer interface.
+  internal::PrinterInterfaceTarget expected = {.vidpid = "1234:5678",
+                                               .config = 0,
+                                               .interface = 1,
+                                               .alternate = 0,
+                                               .set_alternate = false};
+
+  EXPECT_THAT(internal::FindPrinterInterfaceTarget(di), Optional(Eq(expected)));
+}
+
+TEST(UsbPrinterUtilTest, FindPrinterInterfaceTargetPrinterSkipMultiAlternates) {
+  UsbDeviceInfo di;
+  di.vendor_id = 0x1234;
+  di.product_id = 0x5678;
+  auto& config = di.configurations.emplace_back(UsbConfigurationInfo::New());
+  auto& iface1 = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt11 = iface1->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt11->class_code = 255;
+  alt11->subclass_code = 255;
+  auto& alt12 = iface1->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt12->class_code = 7;
+  alt12->subclass_code = 1;
+  auto& iface2 = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt2 = iface2->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt2->class_code = 7;
+  alt2->subclass_code = 1;
+
+  // Skip the first interface because its printer class isn't the first
+  // alternate.
+  internal::PrinterInterfaceTarget expected = {.vidpid = "1234:5678",
+                                               .config = 0,
+                                               .interface = 1,
+                                               .alternate = 0,
+                                               .set_alternate = false};
+
+  EXPECT_THAT(internal::FindPrinterInterfaceTarget(di), Optional(Eq(expected)));
+}
+
+TEST(UsbPrinterUtilTest,
+     FindPrinterInterfaceTargetPrinterForcedMultiAlternates) {
+  UsbDeviceInfo di;
+  di.vendor_id = 0x1234;
+  di.product_id = 0x5678;
+  auto& config = di.configurations.emplace_back(UsbConfigurationInfo::New());
+  auto& iface1 = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt11 = iface1->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt11->class_code = 255;
+  alt11->subclass_code = 255;
+  auto& alt12 = iface1->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt12->class_code = 7;
+  alt12->subclass_code = 1;
+  auto& iface2 = config->interfaces.emplace_back(UsbInterfaceInfo::New());
+  auto& alt2 = iface2->alternates.emplace_back(
+      device::mojom::UsbAlternateInterfaceInfo::New());
+  alt2->class_code = 255;
+  alt2->subclass_code = 255;
+
+  // Choose the first interface even though it has multiple alternates because
+  // none of the other interfaces are printer class.
+  internal::PrinterInterfaceTarget expected = {.vidpid = "1234:5678",
+                                               .config = 0,
+                                               .interface = 0,
+                                               .alternate = 1,
+                                               .set_alternate = true};
+
+  EXPECT_THAT(internal::FindPrinterInterfaceTarget(di), Optional(Eq(expected)));
 }
 
 }  // namespace

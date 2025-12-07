@@ -55,9 +55,9 @@ ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
 void ServiceWorkerInstalledScriptsSender::Start() {
   DCHECK_EQ(State::kNotStarted, state_);
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker",
-                                    "ServiceWorkerInstalledScriptsSender", this,
-                                    "main_script_url", main_script_url_.spec());
+  TRACE_EVENT_BEGIN("ServiceWorker", "ServiceWorkerInstalledScriptsSender",
+                    perfetto::Track::FromPointer(this), "main_script_url",
+                    main_script_url_.spec());
   StartSendingScript(main_script_id_, main_script_url_);
 }
 
@@ -68,6 +68,14 @@ void ServiceWorkerInstalledScriptsSender::StartSendingScript(
   DCHECK(current_sending_url_.is_empty());
   state_ = State::kSendingScripts;
 
+  // (crbug.com/352578800) Override the state and bypass reading the scripts as
+  // it does not exist since the registration is a fake one and therefore there
+  // is no actual script.
+  if (resource_id == blink::mojom::kSyntheticResponseServiceWorkerResourceId) {
+    state_ = State::kIdle;
+    return;
+  }
+
   if (!owner_->context()) {
     Abort(ServiceWorkerInstalledScriptReader::FinishedReason::kNoContextError);
     return;
@@ -76,13 +84,11 @@ void ServiceWorkerInstalledScriptsSender::StartSendingScript(
   current_sending_url_ = script_url;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> resource_reader;
-  owner_->context()
-      ->registry()
-      ->GetRemoteStorageControl()
-      ->CreateResourceReader(resource_id,
-                             resource_reader.BindNewPipeAndPassReceiver());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker", "SendingScript", this,
-                                    "script_url", current_sending_url_.spec());
+  owner_->context()->registry().GetRemoteStorageControl()->CreateResourceReader(
+      resource_id, resource_reader.BindNewPipeAndPassReceiver());
+  TRACE_EVENT_BEGIN("ServiceWorker", "SendingScript",
+                    perfetto::Track::FromPointer(this), "script_url",
+                    current_sending_url_.spec());
   reader_ = std::make_unique<ServiceWorkerInstalledScriptReader>(
       std::move(resource_reader), this);
   reader_->Start();
@@ -97,9 +103,10 @@ void ServiceWorkerInstalledScriptsSender::OnStarted(
   DCHECK(reader_);
   DCHECK_EQ(State::kSendingScripts, state_);
   uint64_t meta_data_size = metadata ? metadata->size() : 0;
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2(
-      "ServiceWorker", "OnStarted", this, "body_size",
-      response_head->content_length, "meta_data_size", meta_data_size);
+  TRACE_EVENT_INSTANT("ServiceWorker", "OnStarted",
+                      perfetto::Track::FromPointer(this), "body_size",
+                      response_head->content_length, "meta_data_size",
+                      meta_data_size);
 
   // Create a map of response headers.
   scoped_refptr<net::HttpResponseHeaders> headers = response_head->headers;
@@ -140,7 +147,8 @@ void ServiceWorkerInstalledScriptsSender::OnFinished(
     ServiceWorkerInstalledScriptReader::FinishedReason reason) {
   DCHECK(reader_);
   DCHECK_EQ(State::kSendingScripts, state_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "SendingScript", this);
+  // SendingScript
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this));
   reader_.reset();
   current_sending_url_ = GURL();
 
@@ -155,8 +163,8 @@ void ServiceWorkerInstalledScriptsSender::OnFinished(
   if (pending_scripts_.empty()) {
     UpdateFinishedReasonAndBecomeIdle(
         ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess);
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "ServiceWorker", "ServiceWorkerInstalledScriptsSender", this);
+    // ServiceWorkerInstalledScriptsSender
+    TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this));
     return;
   }
 
@@ -172,9 +180,9 @@ void ServiceWorkerInstalledScriptsSender::Abort(
   DCHECK_EQ(State::kSendingScripts, state_);
   DCHECK_NE(ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess,
             reason);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker",
-                                  "ServiceWorkerInstalledScriptsSender", this,
-                                  "FinishedReason", static_cast<int>(reason));
+  // ServiceWorkerInstalledScriptsSender
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this),
+                  "FinishedReason", static_cast<int>(reason));
 
   // Remove all pending scripts.
   // Note that base::queue doesn't have clear(), and also base::STLClearObject
@@ -187,8 +195,7 @@ void ServiceWorkerInstalledScriptsSender::Abort(
   switch (reason) {
     case ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished:
     case ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case ServiceWorkerInstalledScriptReader::FinishedReason::
         kNoResponseHeadError:
     case ServiceWorkerInstalledScriptReader::FinishedReason::
@@ -266,9 +273,9 @@ void ServiceWorkerInstalledScriptsSender::RequestInstalledScript(
   }
 
   DCHECK_EQ(State::kIdle, state_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker",
-                                    "ServiceWorkerInstalledScriptsSender", this,
-                                    "main_script_url", main_script_url_.spec());
+  TRACE_EVENT_BEGIN("ServiceWorker", "ServiceWorkerInstalledScriptsSender",
+                    perfetto::Track::FromPointer(this), "main_script_url",
+                    main_script_url_.spec());
   StartSendingScript(resource_id, script_url);
 }
 

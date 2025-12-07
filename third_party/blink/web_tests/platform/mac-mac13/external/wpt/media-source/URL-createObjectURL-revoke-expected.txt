@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Check referenced MediaSource can open after URL.revokeObjectURL(url).
+  assert_unreached: Unexpected error. Reached unreachable code
+[FAIL] Check auto-revoking behavior with URL.createObjectURL(MediaSource).
+  assert_unreached: url should not reference MediaSource. Reached unreachable code
+Harness: the test ran to completion.
+

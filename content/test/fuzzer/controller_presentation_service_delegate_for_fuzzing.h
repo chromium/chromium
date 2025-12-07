@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/presentation_screen_availability_listener.h"
 #include "content/public/browser/presentation_service_delegate.h"

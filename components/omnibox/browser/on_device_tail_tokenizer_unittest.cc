@@ -109,7 +109,7 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
     tokenizer_.TokenizePrevQuery("facebook", &token_ids);
 
     // Expect tokens: ["fa", "ce", "bo", "ok"]
-    EXPECT_EQ(4, (int)token_ids.size());
+    EXPECT_EQ(4u, token_ids.size());
     EXPECT_THAT(token_ids, ElementsAreArray({317, 285, 281, 390}));
     EXPECT_EQ("fa", tokenizer_.IdToToken(token_ids[0]));
   }
@@ -122,7 +122,7 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
 
     // Expect tokens:
     // ["ma", "t", "chi", "ng", " ", "g", "y", "m", " ", "out", "fi", "ts"]
-    EXPECT_EQ(12, (int)token_ids.size());
+    EXPECT_EQ(12u, token_ids.size());
     EXPECT_THAT(token_ids, ElementsAreArray({364, 116, 488, 375, 32, 103, 121,
                                              109, 32, 533, 320, 443}));
     EXPECT_EQ("ma", tokenizer_.IdToToken(token_ids[0]));
@@ -136,7 +136,7 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
 
     // Expect tokens:
     // ["us", "ल्", "वावि", "てる",  "a", "वा"]
-    EXPECT_EQ(6, (int)token_ids.size());
+    EXPECT_EQ(6u, token_ids.size());
     EXPECT_THAT(token_ids, ElementsAreArray({259, 260, 263, 264, 97, 261}));
     EXPECT_EQ("us", tokenizer_.IdToToken(token_ids[0]));
   }

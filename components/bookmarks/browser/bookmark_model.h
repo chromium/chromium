@@ -36,6 +36,7 @@
 
 namespace base {
 class FilePath;
+class Location;
 }  // namespace base
 
 namespace favicon_base {
@@ -109,7 +110,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
   // local-or-syncable storage (and this folder) will become purely local.
   // This is null until loaded.
-  const BookmarkNode* bookmark_bar_node() const {
+  const BookmarkPermanentNode* bookmark_bar_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return bookmark_bar_node_;
   }
@@ -119,7 +120,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
   // local-or-syncable storage (and this folder) will become purely local.
   // This is null until loaded.
-  const BookmarkNode* other_node() const {
+  const BookmarkPermanentNode* other_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return other_node_;
   }
@@ -129,7 +130,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
   // local-or-syncable storage (and this folder) will become purely local.
   // This is null until loaded.
-  const BookmarkNode* mobile_node() const {
+  const BookmarkPermanentNode* mobile_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return mobile_node_;
   }
@@ -137,17 +138,17 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Returns the 'bookmark bar' node for the account storage. This is null until
   // loaded or if the user is not signed in (or isn't opted into syncing
   // bookmarks in the account storage).
-  const BookmarkNode* account_bookmark_bar_node() const;
+  const BookmarkPermanentNode* account_bookmark_bar_node() const;
 
   // Returns the 'other' node for the account storage. This is null until loaded
   // or if the user is not signed in (or isn't opted into syncing bookmarks in
   // the account storage).
-  const BookmarkNode* account_other_node() const;
+  const BookmarkPermanentNode* account_other_node() const;
 
   // Returns the 'mobile' node for the account storage. This is null until
   // loaded or if the user is not signed in (or isn't opted into syncing
   // bookmarks in the account storage).
-  const BookmarkNode* account_mobile_node() const;
+  const BookmarkPermanentNode* account_mobile_node() const;
 
   bool is_root_node(const BookmarkNode* node) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,6 +176,8 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Notifies the observers that an extensive set of changes is about to happen,
   // such as during import or sync, so they can delay any expensive UI updates
   // until it's finished.
+  //
+  // Undo tracking is suspended during extensive changes.
   void BeginExtensiveChanges();
   void EndExtensiveChanges();
 
@@ -192,6 +195,18 @@ class BookmarkModel : public BookmarkUndoProvider,
               metrics::BookmarkEditSource source,
               const base::Location& location);
 
+  // Removes the last child under `parent`. This is identical to invoking
+  // `Remove()` for the actual child, i.e.
+  // `Remove(parent->children()[parent->children().size() - 1].get())`. The
+  // only difference is that `RemoveLastChild()` is guaranteed to require
+  // constant time, for advanced cases where performance is a concern (to be
+  // more accurate, it exhibits logarithmic runtime complexity with respect to
+  // the tree depth, excluding the cost incurred in observers, which may
+  // implement arbitrary logic outside BookmarkModel's control).
+  void RemoveLastChild(const BookmarkNode* parent,
+                       metrics::BookmarkEditSource source,
+                       const base::Location& location);
+
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no
   // notification for individual node removals. `location` is used for logging
@@ -202,12 +217,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   //
   // Note: this might cause UUIDs to get reassigned for `node` or its
   // descendants, when the node is moved between local and account storages.
+  //
+  // `new_parent` may be the same as `node`'s current parent, in which case the
+  // semantics are "insert before the element currently at `index`". Suppose the
+  // initial current children of new_parent are ordered [A, B, C]:
+  // * Move(B, new_parent, 0) -> [B, A, C]
+  // * Move(B, new_parent, 1) -> [A, B, C]
+  // * Move(B, new_parent, 2) -> [A, B, C]
+  // * Move(B, new_parent, 3) -> [A, C, B]
   void Move(const BookmarkNode* node,
-            const BookmarkNode* new_parent,
-            size_t index);
-
-  // Inserts a copy of `node` into `new_parent` at `index`.
-  void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
 
@@ -287,8 +305,11 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Returns true if there are bookmarks, otherwise returns false.
   bool HasBookmarks() const;
 
-  // Returns true is there is no user created bookmarks or folders.
-  bool HasNoUserCreatedBookmarksOrFolders() const;
+  // Returns true is there is at least one user-created bookmark or folder. This
+  // includes bookmarks downloaded via Sync but excludes managed nodes
+  // (enterprise) as well as, on Android, partner bookmarks (which are not
+  // included in BookmarkModel).
+  bool HasUserCreatedBookmarksOrFolders() const;
 
   // Returns true if the specified URL is bookmarked.
   bool IsBookmarked(const GURL& url) const;
@@ -415,6 +436,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   // by sync code only. Must only be invoked after BookmarkModel is loaded.
   void RemoveAccountPermanentFolders();
 
+  // Returns the total number of bookmark nodes (URLs and folders) in the model.
+  // This is equivalent to iterating the entire tree starting with root_node(),
+  // root node included.
+  // On Android this does *not* include partner bookmarks.
+  size_t GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes() const;
+
   base::WeakPtr<BookmarkModel> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -472,11 +499,20 @@ class BookmarkModel : public BookmarkUndoProvider,
   void AddNodeToIndicesRecursive(const BookmarkNode* node,
                                  NodeTypeForUuidLookup type_for_uuid_lookup);
 
-  // Removes `node` and notifies its observers, returning and transferring
-  // ownership of the node removed. The caller is responsible for allowing undo,
-  // if applicable.
-  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node,
-                                           const base::Location& location);
+  // Removes a child under `parent` at position `index` and notifies its
+  // observers. `is_undoable` determines whether the deletion should be
+  // propagated via BookmarkClient to the undo stack. `notify_observers`
+  // determines whether observers are notified about the removal.
+  void RemoveChildAt(const BookmarkNode* parent,
+                     size_t index,
+                     const base::Location& location,
+                     std::optional<metrics::BookmarkEditSource> source,
+                     bool is_undoable,
+                     bool notify_observers);
+
+  // Private counterpart of `RemoveAccountPermanentFolders()` that allows
+  // controlling whether observers are notified.
+  void RemoveAccountPermanentFoldersImpl(bool notify_observers);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.
@@ -485,6 +521,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   void RemoveNodeFromIndicesRecursive(
       BookmarkNode* node,
       NodeTypeForUuidLookup type_for_uuid_lookup);
+
+  // Updates the UUID index to ensure that `node`, whose former type was
+  // `old_type_for_uuid_lookup`, is instead indexed under type
+  // `new_type_for_uuid_lookup`. This is exercised when a node is moved across
+  // type boundaries, which requires updating the UUID index.
+  void UpdateUuidIndexUponNodeMoveRecursive(
+      const BookmarkNode* node,
+      NodeTypeForUuidLookup old_type_for_uuid_lookup,
+      NodeTypeForUuidLookup new_type_for_uuid_lookup);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
@@ -542,6 +587,23 @@ class BookmarkModel : public BookmarkUndoProvider,
   metrics::StorageStateForUma GetStorageStateForUma(
       const BookmarkNode* node) const;
 
+  // Returns true if the given `node` should be visible in UI surfaces.
+  // This method is used during transient states (eg. just before or just after
+  // making model updates), therefore explicit parameters are passed in for
+  // properties of the node/model that shouldn't be read directly.
+  bool DetermineIfNodeShouldBeVisible(const BookmarkNode& node,
+                                      bool account_folders_exist,
+                                      bool local_bookmarks_exist) const;
+
+  // Updates the visibility of all local permanent folders.
+  void RefreshPermanentFolderVisibility(bool notify_observers);
+
+  // Updates the visibility of `node` and notifies observers if the visibility
+  // changed and `notify_observers` is true.
+  void UpdateNodeVisibilityIfNeeded(BookmarkNode& node,
+                                    bool new_visibility,
+                                    bool notify_observers);
+
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
 
@@ -571,12 +633,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   int64_t next_node_id_ = 1;
 
   // The observers.
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/40277960) Set the parameter to `true` on all platforms.
   base::ObserverList<BookmarkModelObserver, true> observers_;
-#else
-  base::ObserverList<BookmarkModelObserver> observers_;
-#endif
 
   std::unique_ptr<BookmarkClient> client_;
 

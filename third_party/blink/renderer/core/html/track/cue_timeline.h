@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -19,13 +20,13 @@ namespace blink {
 class HTMLMediaElement;
 class TextTrackCueList;
 
-// TODO(Oilpan): This needs to be PODIntervalTree<double, Member<TextTrackCue>>.
-// However, it is not easy to move PODIntervalTree to the heap (for a
+// TODO(Oilpan): This needs to be PodIntervalTree<double, Member<TextTrackCue>>.
+// However, it is not easy to move PodIntervalTree to the heap (for a
 // C++-template reason) so we leave it as a raw pointer at the moment. This is
 // safe because CueTimeline and TextTrackCue are guaranteed to die at the same
 // time when the owner HTMLMediaElement dies. Thus the raw TextTrackCue* cannot
 // become stale pointers.
-typedef WTF::PODIntervalTree<double, TextTrackCue*> CueIntervalTree;
+using CueIntervalTree = PodIntervalTree<double, TextTrackCue*>;
 typedef CueIntervalTree::IntervalType CueInterval;
 typedef Vector<CueInterval> CueList;
 
@@ -97,6 +98,7 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
   CueIntervalTree cue_tree_;
 
   CueList currently_active_cues_;
+  HeapHashSet<Member<TextTrackCue>> newly_introduced_cues_;
   double last_update_time_;
 
   // Timer data for cue events (start, end)
@@ -111,18 +113,14 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
   bool update_requested_while_ignoring_;
 };
 
-}  // namespace blink
-
-namespace WTF {
 #ifndef NDEBUG
 // Template specializations required by PodIntervalTree in debug mode.
 template <>
-struct ValueToString<blink::TextTrackCue*> {
-  static String ToString(blink::TextTrackCue* const& cue) {
-    return cue->ToString();
-  }
+struct ValueToString<TextTrackCue*> {
+  static String ToString(TextTrackCue* const& cue) { return cue->ToString(); }
 };
 #endif
-}
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_CUE_TIMELINE_H_

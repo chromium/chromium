@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
@@ -20,6 +21,8 @@ class NavigationTransitionData {
   // Used for recording UMA for cache hit/miss.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(CacheHitOrMissReason)
   enum class CacheHitOrMissReason {
     // The screenshot is captured and placed in the cache.
     kCacheHit = 0,
@@ -28,11 +31,11 @@ class NavigationTransitionData {
     // `CaptureNavigationEntryScreenshotForCrossDocumentNavigations`.
     kSentScreenshotRequest = 1,
 
-    // Received an empty bitmap when capturing the screenshot.
-    kCapturedEmptyBitmap = 2,
+    // Received an empty bitmap when capturing the screenshot from web pages.
+    kCapturedEmptyBitmapFromWebPage = 2,
 
-    // Screenshot is not captured for subframes.
-    kCacheMissSubframe = 3,
+    // [DEPRECATED] Screenshot is not captured for subframes.
+    // kCacheMissSubframe = 3,
 
     // Screenshot was evicted because of memory constraints.
     kCacheMissEvicted = 4,
@@ -52,20 +55,56 @@ class NavigationTransitionData {
     // Screenshot is not captured for embedded pages.
     kCacheMissEmbeddedPages = 8,
 
-    // Screenshot is not captured since the page has opted-out of BFCache.
+    // [DEPRECATED] Screenshot is not captured since the page has
     // Cache-Control: no-store
-    kCacheMissCCNS = 9,
+    // kCacheMissCCNS = 9,
 
     // Screenshot was evicted because the tab was invisible for a long duration.
     kCacheMissInvisible = 10,
 
-    kMaxValue = kCacheMissInvisible
-  };
+    // Screenshot was not captured because user had prefers-reduced-motion
+    // turned on when the navigation committed.
+    kCacheMissPrefersReducedMotion = 11,
 
-  NavigationTransitionData() = default;
+    // Screenshot is not displayed since it is captured in a different
+    // orientation (horizontal or vertical) compared to the current screen
+    // orientation.
+    kCacheMissScreenshotOrientation = 12,
+
+    // Screenshot is not captured when the page is crashed.
+    kNavigateAwayFromCrashedPage = 13,
+    kNavigateAwayFromCrashedPageNoEarlySwap = 14,
+
+    // Screenshot is not captured when the root window or compositor is
+    // detached.
+    kNoRootWindowOrCompositor = 15,
+
+    // The browser isn't embedding a valid `viz::LocalSurfaceID` when we try
+    // to capture the screenshot from the browser.
+    kBrowserNotEmbeddingValidSurfaceId = 16,
+
+    // We only cache screenshots for navigations targeting the primary main
+    // frame.
+    kCacheMissNonPrimaryMainFrame = 17,
+
+    // Received an empty bitmap from embedder when capturing the screenshot.
+    kCapturedEmptyBitmapFromEmbedder = 18,
+
+    // Forward navigation transitions were not supported when doing a back
+    // history navigation out of this entry.
+    kForwardTransitionAnimationNotSupported = 19,
+
+    // A screenshot was captured into a texture, but the read back failed.
+    kCacheMissFailedReadBack = 20,
+
+    kMaxValue = kCacheMissFailedReadBack
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationTransitionCacheHitOrMissReason)
+
+  NavigationTransitionData();
   ~NavigationTransitionData() = default;
   NavigationTransitionData(NavigationTransitionData&&) = delete;
-  NavigationTransitionData& operator=(NavigationTransitionData&&) = default;
+  NavigationTransitionData& operator=(NavigationTransitionData&&) = delete;
   NavigationTransitionData(const NavigationTransitionData&) = delete;
   NavigationTransitionData& operator=(const NavigationTransitionData&) = delete;
 
@@ -78,18 +117,14 @@ class NavigationTransitionData {
     return same_document_navigation_entry_screenshot_token_;
   }
 
+  using UniqueId = base::StrongAlias<class NavigationTransitionDataIdTag, int>;
+  constexpr static UniqueId kInvalidId = UniqueId(-1);
+  UniqueId unique_id() const { return unique_id_; }
+
   void set_is_copied_from_embedder(bool is_copied_from_embedder) {
     is_copied_from_embedder_ = is_copied_from_embedder;
   }
   bool is_copied_from_embedder() const { return is_copied_from_embedder_; }
-
-  void set_main_frame_background_color(
-      const std::optional<SkColor4f>& main_frame_background_color) {
-    main_frame_background_color_ = main_frame_background_color;
-  }
-  const std::optional<SkColor4f>& main_frame_background_color() const {
-    return main_frame_background_color_;
-  }
 
   void set_cache_hit_or_miss_reason(
       std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason) {
@@ -106,12 +141,21 @@ class NavigationTransitionData {
     ++copy_output_request_sequence_number_;
   }
 
+  const SkBitmap& favicon() const { return favicon_; }
+  void set_favicon(const SkBitmap& favicon) { favicon_ = favicon; }
+
  private:
+  // A unique ID for this struct. This is synonymous to the owning
+  // `NavigationEntry::GetUniqueID()`, and is used to uniquely identify a
+  // screenshot and its owning navigation entry.
+  //
+  // See crbug.com/376944343: the navigation entry's unique ID is actually not
+  // unique (`NavigationEntryImpl::set_unique_id()`), which leads to unexpected
+  // behavior.
+  const UniqueId unique_id_;
+
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
-
-  // Used to compose a fallback screenshot when no valid screenshot available.
-  std::optional<SkColor4f> main_frame_background_color_;
 
   // Used to map a screenshot for the last frame of this navigation entry
   // captured in Viz and sent back to the browser process. The token is set when
@@ -133,6 +177,9 @@ class NavigationTransitionData {
 
   // Used to record UMA in `BackForwardTransitionAnimator`
   std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason_;
+
+  // The favicon used to compose the fallback UX.
+  SkBitmap favicon_;
 };
 
 }  // namespace content

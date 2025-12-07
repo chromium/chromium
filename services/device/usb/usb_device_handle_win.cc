@@ -11,6 +11,7 @@
 #include <winioctl.h>
 #include <winusb.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -18,13 +19,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -142,7 +143,7 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
       : handle_(handle),
         interface_number_(interface_number),
         event_(CreateEvent(nullptr, false, false, nullptr)) {
-    memset(&overlapped_, 0, sizeof(overlapped_));
+    UNSAFE_TODO(memset(&overlapped_, 0, sizeof(overlapped_)));
     overlapped_.hEvent = event_.Get();
   }
 
@@ -214,7 +215,7 @@ void UsbDeviceHandleWin::Close() {
 
   device_->HandleClosed(this);
 
-  if (hub_handle_.IsValid()) {
+  if (hub_handle_.is_valid()) {
     // Pending I/O operations on |hub_handle_| have been posted to
     // |blocking_task_runner_|. Transfer ownership of the handle to a task on
     // this runner which will close it on completion. This is guaranteed to run
@@ -225,8 +226,9 @@ void UsbDeviceHandleWin::Close() {
 
   for (auto& map_entry : interfaces_) {
     Interface* interface = &map_entry.second;
-    if (interface->function_handle.IsValid())
+    if (interface->function_handle.is_valid()) {
       CancelIo(interface->function_handle.Get());
+    }
 
     if (interface->claimed) {
       interface->claimed = false;
@@ -351,7 +353,7 @@ void UsbDeviceHandleWin::SetInterfaceAlternateSetting(int interface_number,
 
   // Prevent |interface.handle| from being released while the blocking call
   // is in progress.
-  DCHECK(interface.handle.IsValid());
+  DCHECK(interface.handle.is_valid());
   interface.reference_count++;
 
   // Use a strong reference to |this| rather than a weak pointer to prevent
@@ -394,7 +396,7 @@ void UsbDeviceHandleWin::ClearHalt(mojom::UsbTransferDirection direction,
 
   auto interface_it =
       interfaces_.find(endpoint_it->second.interface->interface_number);
-  CHECK(interface_it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(interface_it != interfaces_.end());
   Interface& interface = interface_it->second;
   if (!interface.claimed) {
     task_runner_->PostTask(FROM_HERE,
@@ -404,7 +406,7 @@ void UsbDeviceHandleWin::ClearHalt(mojom::UsbTransferDirection direction,
 
   // Prevent |interface.handle| from being released while the blocking call
   // is in progress.
-  DCHECK(interface.handle.IsValid());
+  DCHECK(interface.handle.is_valid());
   interface.reference_count++;
 
   // Use a strong reference to |this| rather than a weak pointer to prevent
@@ -436,7 +438,7 @@ void UsbDeviceHandleWin::ControlTransfer(
     return;
   }
 
-  if (hub_handle_.IsValid()) {
+  if (hub_handle_.is_valid()) {
     if (direction == UsbTransferDirection::INBOUND &&
         request_type == UsbControlTransferType::STANDARD &&
         recipient == UsbControlTransferRecipient::DEVICE &&
@@ -550,7 +552,7 @@ void UsbDeviceHandleWin::GenericTransfer(
 
   auto interface_it =
       interfaces_.find(endpoint_it->second.interface->interface_number);
-  CHECK(interface_it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(interface_it != interfaces_.end());
   Interface* interface = &interface_it->second;
   if (!interface->claimed) {
     task_runner_->PostTask(
@@ -560,7 +562,7 @@ void UsbDeviceHandleWin::GenericTransfer(
     return;
   }
 
-  DCHECK(interface->handle.IsValid());
+  DCHECK(interface->handle.is_valid());
   Request* request = MakeRequest(interface);
   BOOL result;
   if (direction == UsbTransferDirection::INBOUND) {
@@ -684,7 +686,7 @@ void UsbDeviceHandleWin::UpdateFunction(int interface_number,
 
 void UsbDeviceHandleWin::OpenInterfaceHandle(Interface* interface,
                                              OpenInterfaceCallback callback) {
-  if (interface->handle.IsValid()) {
+  if (interface->handle.is_valid()) {
     std::move(callback).Run(interface);
     return;
   }
@@ -713,8 +715,7 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
     Interface* interface) {
   switch (device_->driver_type()) {
     case UsbDeviceWin::DriverType::kUnsupported:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case UsbDeviceWin::DriverType::kWinUSB:
       // If WinUSB has been loaded for a composite device then all of its
       // interfaces must be treated as a single function.
@@ -725,7 +726,7 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
         return interface;
 
       auto it = interfaces_.find(interface->first_interface);
-      CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
+      CHECK(it != interfaces_.end());
       return &it->second;
     }
   }
@@ -737,8 +738,9 @@ void UsbDeviceHandleWin::OnFunctionAvailable(OpenInterfaceCallback callback,
     std::move(callback).Run(interface);
   };
 
-  if (interface->handle.IsValid())
+  if (interface->handle.is_valid()) {
     return;
+  }
 
   if (!base::EqualsCaseInsensitiveASCII(interface->function_driver,
                                         kWinUsbDriverName)) {
@@ -754,12 +756,12 @@ void UsbDeviceHandleWin::OnFunctionAvailable(OpenInterfaceCallback callback,
     return;
   }
 
-  DCHECK(!interface->function_handle.IsValid());
+  DCHECK(!interface->function_handle.is_valid());
   interface->function_handle.Set(CreateFile(
       interface->function_path.c_str(), GENERIC_READ | GENERIC_WRITE,
       FILE_SHARE_READ | FILE_SHARE_WRITE, /*lpSecurityAttributes=*/nullptr,
       OPEN_EXISTING, FILE_FLAG_OVERLAPPED, /*hTemplateFile=*/nullptr));
-  if (!interface->function_handle.IsValid()) {
+  if (!interface->function_handle.is_valid()) {
     USB_PLOG(ERROR) << "Failed to open " << interface->function_path;
     return;
   }
@@ -776,7 +778,7 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
                                                 OpenInterfaceCallback callback,
                                                 Interface* first_interface) {
   auto interface_it = interfaces_.find(interface_number);
-  CHECK(interface_it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(interface_it != interfaces_.end());
   Interface* interface = &interface_it->second;
   if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
     DCHECK_NE(interface->first_interface, interface->interface_number);
@@ -787,8 +789,9 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
     std::move(callback).Run(interface);
   };
 
-  if (!first_interface->handle.IsValid())
+  if (!first_interface->handle.is_valid()) {
     return;
+  }
 
   first_interface->reference_count++;
 
@@ -808,7 +811,7 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
 
 void UsbDeviceHandleWin::OnInterfaceClaimed(ResultCallback callback,
                                             Interface* interface) {
-  if (interface->handle.IsValid()) {
+  if (interface->handle.is_valid()) {
     interface->claimed = true;
     interface->reference_count++;
   }
@@ -821,7 +824,7 @@ void UsbDeviceHandleWin::OnSetAlternateInterfaceSetting(int interface_number,
                                                         ResultCallback callback,
                                                         bool result) {
   auto it = interfaces_.find(interface_number);
-  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(it != interfaces_.end());
   Interface& interface = it->second;
 
   if (!result) {
@@ -874,7 +877,7 @@ void UsbDeviceHandleWin::OnClearHalt(int interface_number,
                                      ResultCallback callback,
                                      bool result) {
   auto it = interfaces_.find(interface_number);
-  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(it != interfaces_.end());
   ReleaseInterfaceReference(&it->second);
 
   std::move(callback).Run(result);
@@ -964,7 +967,7 @@ void UsbDeviceHandleWin::OnInterfaceOpenedForControlTransfer(
     return;
   }
 
-  if (!interface->handle.IsValid()) {
+  if (!interface->handle.is_valid()) {
     // OpenInterfaceHandle() already logged an error.
     task_runner_->PostTask(
         FROM_HERE,
@@ -1010,9 +1013,9 @@ UsbDeviceHandleWin::Request* UsbDeviceHandleWin::MakeRequest(
 
 std::unique_ptr<UsbDeviceHandleWin::Request> UsbDeviceHandleWin::UnlinkRequest(
     UsbDeviceHandleWin::Request* request_ptr) {
-  auto it = base::ranges::find(requests_, request_ptr,
-                               &std::unique_ptr<Request>::get);
-  CHECK(it != requests_.end(), base::NotFatalUntil::M130);
+  auto it =
+      std::ranges::find(requests_, request_ptr, &std::unique_ptr<Request>::get);
+  CHECK(it != requests_.end());
   std::unique_ptr<Request> request = std::move(*it);
   requests_.erase(it);
   return request;
@@ -1039,8 +1042,7 @@ void UsbDeviceHandleWin::GotNodeConnectionInformation(
   size_t bytes_transferred =
       std::min(sizeof(USB_DEVICE_DESCRIPTOR), buffer->size());
   base::span(buffer->as_vector())
-      .first(bytes_transferred)
-      .copy_from(
+      .copy_prefix_from(
           base::byte_span_from_ref(node_connection_info->DeviceDescriptor)
               .first(bytes_transferred));
   std::move(callback).Run(UsbTransferStatus::COMPLETED, buffer,
@@ -1074,8 +1076,7 @@ void UsbDeviceHandleWin::GotDescriptorFromNodeConnection(
   bytes_transferred = std::min(bytes_transferred, original_buffer->size());
 
   base::span(original_buffer->as_vector())
-      .first(bytes_transferred)
-      .copy_from(
+      .copy_prefix_from(
           base::span(*request_buffer)
               .subspan(sizeof(USB_DESCRIPTOR_REQUEST), bytes_transferred));
   std::move(callback).Run(UsbTransferStatus::COMPLETED, original_buffer,
@@ -1108,7 +1109,7 @@ void UsbDeviceHandleWin::TransferComplete(
 
   DCHECK_NE(request->interface_number(), -1);
   auto it = interfaces_.find(request->interface_number());
-  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(it != interfaces_.end());
   ReleaseInterfaceReference(&it->second);
 
   std::move(callback).Run(status, std::move(buffer), bytes_transferred);
@@ -1132,8 +1133,7 @@ void UsbDeviceHandleWin::ReportIsochronousError(
 bool UsbDeviceHandleWin::AllFunctionsEnumerated() const {
   switch (device_->driver_type()) {
     case UsbDeviceWin::DriverType::kUnsupported:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case UsbDeviceWin::DriverType::kWinUSB:
       return true;
     case UsbDeviceWin::DriverType::kComposite:
@@ -1157,13 +1157,14 @@ void UsbDeviceHandleWin::ReleaseInterfaceReference(Interface* interface) {
   if (interface->reference_count > 0)
     return;
 
-  if (interface->handle.IsValid()) {
+  if (interface->handle.is_valid()) {
     interface->handle.Close();
     interface->alternate_setting = 0;
   }
 
-  if (interface->function_handle.IsValid())
+  if (interface->function_handle.is_valid()) {
     interface->function_handle.Close();
+  }
 
   Interface* first_interface = GetFirstInterfaceForFunction(interface);
   if (first_interface != interface)

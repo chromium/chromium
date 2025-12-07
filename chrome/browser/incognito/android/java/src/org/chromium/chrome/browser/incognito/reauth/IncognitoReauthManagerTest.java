@@ -13,14 +13,17 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
@@ -28,6 +31,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 @RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoReauthManagerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private IncognitoReauthManager mIncognitoReauthManager;
 
     @Mock private ReauthenticatorBridge mReauthenticatorBridgeMock;
@@ -36,7 +40,6 @@ public class IncognitoReauthManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mIncognitoReauthManager = new IncognitoReauthManager(mReauthenticatorBridgeMock);
     }
 
@@ -45,8 +48,8 @@ public class IncognitoReauthManagerTest {
     public void
             testIncognitoReauthManager_WhenCantUseAuthentication_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(false);
+        when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.UNAVAILABLE);
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
@@ -57,8 +60,8 @@ public class IncognitoReauthManagerTest {
     @MediumTest
     public void testIncognitoReauthManager_WhenFeatureDisabled_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
-        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(false);
+        when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.UNAVAILABLE);
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
@@ -70,8 +73,8 @@ public class IncognitoReauthManagerTest {
     public void
             testIncognitoReauthManager_WhenReauthenticationSucceeded_FiresCallbackWithSuccess() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(true);
+        when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         doAnswer(
                         invocationOnMock -> {
                             Callback<Boolean> callback = invocationOnMock.getArgument(0);
@@ -90,8 +93,8 @@ public class IncognitoReauthManagerTest {
     @MediumTest
     public void testIncognitoReauthManager_WhenReauthenticationFailed_FiresCallbackWithFailed() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
-                .thenReturn(true);
+        when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         doAnswer(
                         invocationOnMock -> {
                             Callback<Boolean> callback = invocationOnMock.getArgument(0);

@@ -69,8 +69,7 @@ gfx::ResizeEdge GetWindowResizeEdge(int window_component) {
     case HTBOTTOMRIGHT:
       return gfx::ResizeEdge::kBottomRight;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::ResizeEdge::kBottomRight;
+      NOTREACHED();
   }
 }
 
@@ -188,7 +187,7 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   // has to come first since it might have an impact on the origin as well as
   // on the size.
   if (details().bounds_change & kBoundsChange_Resizes) {
-    gfx::Rect work_area = display::Screen::GetScreen()
+    gfx::Rect work_area = display::Screen::Get()
                               ->GetDisplayNearestWindow(GetTarget())
                               .work_area();
     ::wm::ConvertRectFromScreen(GetTarget()->parent(), &work_area);
@@ -241,7 +240,7 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
     // Use a pointer location (matching the logic in DragWindowResizer) to
     // calculate the target display after the drag.
     const display::Display& display =
-        display::Screen::GetScreen()->GetDisplayMatching(near_passed_location);
+        display::Screen::Get()->GetDisplayMatching(near_passed_location);
     gfx::Rect screen_work_area = display.work_area();
     screen_work_area.Inset(gfx::Insets::VH(0, kMinimumOnScreenArea));
     gfx::Rect new_bounds_in_screen(new_bounds);
@@ -450,13 +449,14 @@ int WindowResizer::GetWidthForDrag(int min_width, int* delta_x) const {
     }
 
     // And don't let the window go bigger than the display.
-    int max_width = display::Screen::GetScreen()
+    int max_width = display::Screen::Get()
                         ->GetDisplayNearestWindow(GetTarget())
                         .bounds()
                         .width();
-    gfx::Size max_size = GetTarget()->delegate()
-                             ? GetTarget()->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        GetTarget()->delegate()
+            ? GetTarget()->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     if (max_size.width() != 0)
       max_width = std::min(max_width, max_size.width());
     if (width > max_width) {
@@ -484,13 +484,14 @@ int WindowResizer::GetHeightForDrag(int min_height, int* delta_y) const {
     }
 
     // And don't let the window go bigger than the display.
-    int max_height = display::Screen::GetScreen()
+    int max_height = display::Screen::Get()
                          ->GetDisplayNearestWindow(GetTarget())
                          .bounds()
                          .height();
-    gfx::Size max_size = GetTarget()->delegate()
-                             ? GetTarget()->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        GetTarget()->delegate()
+            ? GetTarget()->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     if (max_size.height() != 0)
       max_height = std::min(max_height, max_size.height());
     if (height > max_height) {
@@ -507,9 +508,10 @@ void WindowResizer::CalculateBoundsWithAspectRatio(float aspect_ratio,
   gfx::Size min_size = GetTarget()->delegate()
                            ? GetTarget()->delegate()->GetMinimumSize()
                            : gfx::Size();
-  gfx::Size max_size = GetTarget()->delegate()
-                           ? GetTarget()->delegate()->GetMaximumSize()
-                           : gfx::Size();
+  gfx::Size max_size =
+      GetTarget()->delegate()
+          ? GetTarget()->delegate()->GetMaximumSize().value_or(gfx::Size())
+          : gfx::Size();
   DCHECK(!min_size.IsEmpty());
 
   // gfx::SizeRectToAspectRatio expects std::nullopt when there is no limit, but

@@ -1,0 +1,90 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module system_media_controls.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
+
+// Defines Mojo interfaces for interacting with system media controls on macOS.
+// Facilitates communication between the browser process and a
+// SystemMediaControlsBridge. The bridge can be either in-process or
+// out-of-process (within an app shim).
+
+// Enum for relaying the current state of media playback.
+enum PlaybackStatus {
+  kPlaying, kPaused, kStopped,
+};
+
+// Enables the browser process to control the system media controls UI on macOS.
+interface SystemMediaControls {
+  // Enables or disables the "next" command.
+  SetIsNextEnabled(bool enabled);
+
+  // Enables or disables the "previous" command.
+  SetIsPreviousEnabled(bool enabled);
+
+  // Enables or disables the "play/pause" command.
+  SetIsPlayPauseEnabled(bool enabled);
+
+  // Enables or disables the "stop" command.
+  SetIsStopEnabled(bool enabled);
+
+  // Enables or disables the seek functionality.
+  SetIsSeekToEnabled(bool enabled);
+
+  // Updates the current playback status displayed.
+  SetPlaybackStatus(PlaybackStatus status);
+
+  // Sets the title of the currently playing media.
+  SetTitle(mojo_base.mojom.String16 title);
+
+  // Sets the artist of the currently playing media.
+  SetArtist(mojo_base.mojom.String16 artist);
+
+  // Sets the album of the currently playing media.
+  SetAlbum(mojo_base.mojom.String16 album);
+
+  // Sets the thumbnail image displayed.
+  SetThumbnail(media_session.mojom.MediaImageBitmap thumbnail);
+
+  // Updates the current playback position.
+  SetPosition(media_session.mojom.MediaPosition position);
+
+  // Clears all previously set metadata and state from the system media controls.
+  ClearMetadata();
+};
+
+// Enables the browser process to observe user initiated events from macOS's
+// system media controls UI.
+interface SystemMediaControlsObserver {
+  // Indicates that the user triggered the "next" command.
+  OnNext();
+
+  // Indicates that the user triggered the "previous" command.
+  OnPrevious();
+
+  // Indicates that the user triggered the "pause" command.
+  OnPause();
+
+  // Indicates that the user triggered the "play/pause" command.
+  OnPlayPause();
+
+  // Indicates that the user triggered the "stop" command.
+  OnStop();
+
+  // Indicates that the user triggered the "play" command.
+  OnPlay();
+
+  // Indicates that the user initiated a seek operation to a specific time.
+  OnSeekTo(mojo_base.mojom.TimeDelta seek_time);
+
+  // (For testing purposes) Notifies the browser that the bridge has been established.
+  OnBridgeCreatedForTesting();
+
+  // (For testing purposes) Notifies the browser that the bridge has cleared its
+  // now playing info.
+  OnMetadataClearedForTesting();
+};

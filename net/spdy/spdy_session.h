@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -43,15 +44,16 @@
 #include "net/spdy/buffered_spdy_framer.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_buffer.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_stream.h"
 #include "net/spdy/spdy_write_queue.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_alt_svc_wire_format.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_framer.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -305,6 +307,9 @@ class NET_EXPORT SpdySession
       public HigherLayeredPool,
       public NetworkChangeNotifier::DefaultNetworkActiveObserver {
  public:
+  static constexpr inline std::string_view kHTTP11RequiredErrorMessage =
+      "HTTP/1.x is required.";
+
   // TODO(akalin): Use base::TickClock when it becomes available.
   typedef base::TimeTicks (*TimeFunc)();
 
@@ -339,15 +344,14 @@ class NET_EXPORT SpdySession
               bool enable_priority_update,
               TimeFunc time_func,
               NetworkQualityEstimator* network_quality_estimator,
-              NetLog* net_log);
+              NetLog* net_log,
+              MultiplexedSessionCreationInitiator session_creation_initiator,
+              SpdySessionInitiator spdy_session_initiator);
 
   ~SpdySession() override;
 
   const HostPortPair& host_port_pair() const {
-    return spdy_session_key_.host_port_proxy_pair().first;
-  }
-  const HostPortProxyPair& host_port_proxy_pair() const {
-    return spdy_session_key_.host_port_proxy_pair();
+    return spdy_session_key_.host_port_pair();
   }
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
@@ -516,15 +520,18 @@ class NET_EXPORT SpdySession
   // be destroyed right away, e.g. when a SpdySession function is
   // present in the call stack.)
   //
-  // |err| should be < ERR_IO_PENDING; this function is intended to be
+  // `err` should be < ERR_IO_PENDING; this function is intended to be
   // called on error.
-  // |description| indicates the reason for the error.
-  void CloseSessionOnError(Error err, const std::string& description);
+  // `description` indicates the reason for the error.
+  // `force_send_go_away` forces sending GOAWAY.
+  void CloseSessionOnError(Error err,
+                           const std::string& description,
+                           bool force_send_go_away = false);
 
   // Mark this session as unavailable, meaning that it will not be used to
   // service new streams. Unlike when a GOAWAY frame is received, this function
   // will not close any streams.
-  void MakeUnavailable();
+  void MakeUnavailable(Error error);
 
   // Closes all active streams with stream id's greater than
   // |last_good_stream_id|, as well as any created or pending
@@ -606,6 +613,10 @@ class NET_EXPORT SpdySession
   // Whether connection status monitoring is active or not.
   bool IsBrokenConnectionDetectionEnabled() const;
 
+  SpdySessionInitiator spdy_session_initiator() const {
+    return spdy_session_initiator_;
+  }
+
  private:
   friend class test::SpdyStreamTest;
   friend class base::RefCounted<SpdySession>;
@@ -648,6 +659,8 @@ class NET_EXPORT SpdySession
     WRITE_STATE_DO_WRITE,
     WRITE_STATE_DO_WRITE_COMPLETE,
   };
+
+  static std::string_view AvailabilityStateToString(AvailabilityState state);
 
   // Has the shared logic for the other two Initialize methods that call it.
   void InitializeInternal(SpdySessionPool* pool);
@@ -841,7 +854,9 @@ class NET_EXPORT SpdySession
 
   // If the session is already draining, does nothing. Otherwise, moves
   // the session to the draining state.
-  void DoDrainSession(Error err, const std::string& description);
+  void DoDrainSession(Error err,
+                      const std::string& description,
+                      bool force_send_go_away = false);
 
   // Called right before closing a (possibly-inactive) stream for a
   // reason other than being requested to by the stream.
@@ -1036,7 +1051,8 @@ class NET_EXPORT SpdySession
 
   // Queue, for each priority, of pending stream requests that have
   // not yet been satisfied.
-  PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
+  std::array<PendingStreamRequestQueue, NUM_PRIORITIES>
+      pending_create_stream_queues_;
 
   // Map from stream id to all active streams.  Streams are active in the sense
   // that they have a consumer (typically HttpNetworkTransaction and regardless
@@ -1087,6 +1103,11 @@ class NET_EXPORT SpdySession
   // may be OK (upon a polite GOAWAY) or an error < ERR_IO_PENDING otherwise.
   // Initialized to OK.
   Error error_on_close_ = OK;
+
+  // If the session is made unavailable (i.e., `availability_state_` is
+  // STATE_GOING_AWAY), then `error_on_unavailable_` holds the error that
+  // caused it to become unavailable. Initialized to OK.
+  Error error_on_unavailable_ = OK;
 
   // Settings that are sent in the initial SETTINGS frame
   // (if |enable_sending_initial_data_| is true),
@@ -1221,8 +1242,8 @@ class NET_EXPORT SpdySession
 
   // A queue of stream IDs that have been send-stalled at some point
   // in the past.
-  base::circular_deque<spdy::SpdyStreamId>
-      stream_send_unstall_queue_[NUM_PRIORITIES];
+  std::array<base::circular_deque<spdy::SpdyStreamId>, NUM_PRIORITIES>
+      stream_send_unstall_queue_;
 
   NetLogWithSource net_log_;
 
@@ -1274,6 +1295,19 @@ class NET_EXPORT SpdySession
   // Network quality estimator to which the ping RTTs should be reported. May be
   // nullptr.
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
+
+  // Set to the error and reason why this session is draining.
+  // TODO(crbug.com/405934874): Remove once we identify the cause of the bug.
+  std::optional<Error> drain_error_;
+  std::string drain_description_;
+  std::optional<spdy::SpdyErrorCode> go_away_error_;
+  std::string go_away_debug_data_;
+  spdy::SpdyStreamId last_good_stream_id_ = 0;
+
+  // Represents how this session is created.
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
+
+  const SpdySessionInitiator spdy_session_initiator_;
 
   // Used for accessing the SpdySession from asynchronous tasks. An asynchronous
   // must check if its WeakPtr<SpdySession> is valid before accessing it, to

@@ -4,6 +4,7 @@
 
 package org.chromium.net.urlconnection;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataSink;
 
@@ -164,20 +165,28 @@ final class CronetBufferedOutputStream extends CronetOutputStream {
 
         @Override
         public void read(UploadDataSink uploadDataSink, ByteBuffer byteBuffer) {
-            final int availableSpace = byteBuffer.remaining();
-            if (availableSpace < mBuffer.remaining()) {
-                byteBuffer.put(mBuffer.array(), mBuffer.position(), availableSpace);
-                mBuffer.position(mBuffer.position() + availableSpace);
-            } else {
-                byteBuffer.put(mBuffer);
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetBufferedOutputStream.UploadDataProviderImpl#read")) {
+                final int availableSpace = byteBuffer.remaining();
+                if (availableSpace < mBuffer.remaining()) {
+                    byteBuffer.put(mBuffer.array(), mBuffer.position(), availableSpace);
+                    mBuffer.position(mBuffer.position() + availableSpace);
+                } else {
+                    byteBuffer.put(mBuffer);
+                }
+                uploadDataSink.onReadSucceeded(false);
             }
-            uploadDataSink.onReadSucceeded(false);
         }
 
         @Override
         public void rewind(UploadDataSink uploadDataSink) {
-            mBuffer.position(0);
-            uploadDataSink.onRewindSucceeded();
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetBufferedOutputStream.UploadDataProviderImpl#rewind")) {
+                mBuffer.position(0);
+                uploadDataSink.onRewindSucceeded();
+            }
         }
     }
 }

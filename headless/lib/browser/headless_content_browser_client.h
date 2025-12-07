@@ -15,9 +15,11 @@
 #include "headless/public/headless_browser.h"
 #include "services/network/network_service.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
+#include "third_party/blink/public/mojom/persistent_renderer_prefs.mojom.h"
 
 namespace headless {
 
+class HeadlessBluetoothDelegate;
 class HeadlessBrowserImpl;
 
 class HeadlessContentBrowserClient : public content::ContentBrowserClient {
@@ -33,8 +35,9 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
-  void OverrideWebkitPrefs(content::WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override;
+  void OverrideWebPreferences(content::WebContents* web_contents,
+                              content::SiteInstance& main_frame_site,
+                              blink::web_pref::WebPreferences* prefs) override;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
@@ -72,13 +75,21 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       net::ClientCertIdentityList client_certs,
       std::unique_ptr<content::ClientCertificateDelegate> delegate) override;
   bool ShouldEnableStrictSiteIsolation() override;
+  bool ShouldAllowProcessPerSiteForMultipleMainFrames(
+      content::BrowserContext* context) override;
 
   // Returns whether |api_origin| on |top_frame_origin| can perform
   // |operation| within the interest group API.
-  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 content::RenderFrameHost* render_frame_host,
                                  content::InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;
+
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override;
 
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,
@@ -93,7 +104,10 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) override;
-
+  bool IsFencedStorageReadAllowed(content::BrowserContext* browser_context,
+                                  content::RenderFrameHost* rfh,
+                                  const url::Origin& top_frame_origin,
+                                  const url::Origin& accessing_origin) override;
   void ConfigureNetworkContextParams(
       content::BrowserContext* context,
       bool in_memory,
@@ -114,8 +128,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
+  void CreateThrottlesForNavigation(
+      content::NavigationThrottleRegistry& registry) override;
 #endif
 
   void OnNetworkServiceCreated(
@@ -128,16 +142,38 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   CreateWindowForVideoPictureInPicture(
       content::VideoPictureInPictureWindowController* controller) override;
 
+  bool ShouldSandboxNetworkService() override;
+
+  content::BluetoothDelegate* GetBluetoothDelegate() override;
+
+  bool IsRendererProcessPriorityEnabled() override;
+
  private:
   class StubBadgeService;
+
+  class StubPersistentRendererPrefsService;
 
   void BindBadgeService(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
+  void BindPersistentRendererPrefsService(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::PersistentRendererPrefsService>
+          receiver);
+
+  void HandleExplicitlyAllowedPorts(
+      ::network::mojom::NetworkService* network_service);
+  void SetEncryptionKey(::network::mojom::NetworkService* network_service);
+
   raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
 
   std::unique_ptr<StubBadgeService> stub_badge_service_;
+
+  std::unique_ptr<StubPersistentRendererPrefsService>
+      stub_persistent_renderer_prefs_service_;
+
+  std::unique_ptr<HeadlessBluetoothDelegate> bluetooth_delegate_;
 };
 
 }  // namespace headless

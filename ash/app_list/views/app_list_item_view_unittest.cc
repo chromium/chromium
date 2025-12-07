@@ -9,21 +9,21 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -60,18 +60,13 @@ class ProgressIndicatorWaiter {
 
 }  // namespace
 
-class AppListItemViewTest : public AshTestBase,
-                            public testing::WithParamInterface<bool> {
+class AppListItemViewTest : public AshTestBase {
  public:
   AppListItemViewTest() = default;
   ~AppListItemViewTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, IsUsingDragDropController()},
-         {features::kPromiseIcons, true}});
-
     AshTestBase::SetUp();
 
     ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
@@ -119,26 +114,14 @@ class AppListItemViewTest : public AshTestBase,
   void SetAppListItemViewForTest(AppListItemView* view) { drag_view_ = view; }
 
   void MaybeCheckDragStartedOnControllerCount(int count) {
-    if (IsUsingDragDropController()) {
-      EXPECT_EQ(count, drag_started_on_controller_);
-    }
+    EXPECT_EQ(count, drag_started_on_controller_);
   }
-
-  bool IsUsingDragDropController() { return GetParam(); }
 
   int drag_started_on_controller_ = 0;
   raw_ptr<AppListItemView, DanglingUntriaged> drag_view_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-INSTANTIATE_TEST_SUITE_P(All, AppListItemViewTest, testing::Bool());
 
-using AppListItemViewTestWithDragDropController = AppListItemViewTest;
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListItemViewTestWithDragDropController,
-                         testing::Values(true));
-
-TEST_P(AppListItemViewTest, NewInstallDot) {
+TEST_F(AppListItemViewTest, NewInstallDot) {
   AppListItem* item = CreateAppListItem("Google Buzz");
   ASSERT_FALSE(item->is_new_install());
 
@@ -152,23 +135,20 @@ TEST_P(AppListItemViewTest, NewInstallDot) {
   views::View* new_install_dot = GetNewInstallDot(item_view);
   ASSERT_TRUE(new_install_dot);
   EXPECT_FALSE(new_install_dot->GetVisible());
-  EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz");
-  item_view->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(
-      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
-      "");
+  EXPECT_EQ(item_view->GetRenderedTooltipText({}), u"Google Buzz");
+  EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(), u"");
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
-  EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz\nNew install");
-  item_view->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(
-      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
-      "New install");
+  EXPECT_EQ(item_view->GetRenderedTooltipText({}), u"Google Buzz\nNew install");
+
+  EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
 }
 
-TEST_P(AppListItemViewTest, LabelInsetWithNewInstallDot) {
+TEST_F(AppListItemViewTest, LabelInsetWithNewInstallDot) {
   AppListItem* long_item = CreateAppListItem("Very very very very long name");
   long_item->SetIsNewInstall(true);
   AppListItem* short_item = CreateAppListItem("Short");
@@ -192,7 +172,7 @@ TEST_P(AppListItemViewTest, LabelInsetWithNewInstallDot) {
             short_item_view->title()->bounds());
 }
 
-TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeTimerFires) {
+TEST_F(AppListItemViewTest, AppItemReleaseTouchBeforeTimerFires) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -217,7 +197,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeTimerFires) {
   MaybeCheckDragStartedOnControllerCount(0);
 }
 
-TEST_P(AppListItemViewTest, AppItemDragStateChange) {
+TEST_F(AppListItemViewTest, AppItemDragStateChange) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -238,18 +218,13 @@ TEST_P(AppListItemViewTest, AppItemDragStateChange) {
 
   generator->MoveTouchBy(10, 10);
 
-  if (!IsUsingDragDropController()) {
-    EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
-    generator->ReleaseTouch();
-  }
-
   EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
   EXPECT_FALSE(view->FireTouchDragTimerForTest());
   EXPECT_FALSE(IsIconScaled(view));
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTest, AppItemDragStateAfterLongPress) {
+TEST_F(AppListItemViewTest, AppItemDragStateAfterLongPress) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -281,18 +256,13 @@ TEST_P(AppListItemViewTest, AppItemDragStateAfterLongPress) {
   generator->MoveTouchBy(5, 5);
   generator->MoveTouchBy(5, 5);
 
-  if (!IsUsingDragDropController()) {
-    EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
-    generator->ReleaseTouch();
-  }
-
   EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
   EXPECT_FALSE(view->FireTouchDragTimerForTest());
   EXPECT_FALSE(IsIconScaled(view));
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStart) {
+TEST_F(AppListItemViewTest, AppItemReleaseTouchBeforeDragStart) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -317,7 +287,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStart) {
   MaybeCheckDragStartedOnControllerCount(0);
 }
 
-TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
+TEST_F(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -349,8 +319,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
   MaybeCheckDragStartedOnControllerCount(0);
 }
 
-TEST_P(AppListItemViewTestWithDragDropController,
-       TouchDragAppRemovedDoesNotCrash) {
+TEST_F(AppListItemViewTest, TouchDragAppRemovedDoesNotCrash) {
   CreateAppListItem("TestItem 1");
   CreateAppListItem("TestItem 2");
 
@@ -391,8 +360,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTestWithDragDropController,
-       AppListFolderLabelShowsAfterMouseClick) {
+TEST_F(AppListItemViewTest, AppListFolderLabelShowsAfterMouseClick) {
   CreateFolderItem(2);
 
   auto* helper = GetAppListTestHelper();
@@ -421,8 +389,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   EXPECT_TRUE(view->title()->GetVisible());
 }
 
-TEST_P(AppListItemViewTestWithDragDropController,
-       AppItemDragStateResetsAfterDrag) {
+TEST_F(AppListItemViewTest, AppItemDragStateResetsAfterDrag) {
   CreateAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();
@@ -464,7 +431,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
+TEST_F(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   AppListItem* item = CreatePromiseAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();
@@ -506,7 +473,121 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   // No crash.
 }
 
-TEST_P(AppListItemViewTest, UpdateProgressOnPromiseIcon) {
+TEST_F(AppListItemViewTest, AccessibleDescription) {
+  AppListItem* item = CreatePromiseAppListItem("TestItem 1");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(), u"");
+
+  // Promise apps are created with app_status kPending.
+  ProgressIndicator* progress_indicator = view->GetProgressIndicatorForTest();
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  item->SetAppStatus(AppStatus::kBlocked);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_BLOCKED_APP));
+
+  item->SetAppStatus(AppStatus::kPaused);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_PAUSED_APP));
+
+  item->SetAppStatus(AppStatus::kInstalling);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(), u"");
+}
+
+TEST_F(AppListItemViewTest, FolderItemAccessibleDescription) {
+  AppListItem* item = CreateFolderItem(2);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+
+  item->SetAppStatus(AppStatus::kInstalling);
+  item->SetProgress(0.3f);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION, 2));
+}
+
+TEST_F(AppListItemViewTest, AppListItemViewTooltipText) {
+  AppListItem* item = CreateAppListItem("Tooltip");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  views::View* new_install_dot = GetNewInstallDot(view);
+  ASSERT_TRUE(new_install_dot);
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  // Initially default tooltip is not used.
+  EXPECT_EQ(view->GetRenderedTooltipText(gfx::Point()), u"");
+
+  view->title()->SetCustomTooltipText(u"Sample Text");
+
+  EXPECT_EQ(view->GetRenderedTooltipText(gfx::Point()), u"Sample Text");
+
+  // When the app is a new install the dot is visible and the tooltip changes.
+  item->SetIsNewInstall(true);
+  EXPECT_TRUE(new_install_dot->GetVisible());
+  EXPECT_EQ(
+      view->GetRenderedTooltipText(gfx::Point()),
+      l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, u"Sample Text"));
+}
+
+TEST_F(AppListItemViewTest, AppListItemViewTooltipTextAccessibility) {
+  AppListItem* item = CreateAppListItem("Tooltip");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  views::View* new_install_dot = GetNewInstallDot(view);
+  ASSERT_TRUE(new_install_dot);
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  ui::AXNodeData data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view->GetRenderedTooltipText(gfx::Point()));
+
+  view->title()->SetCustomTooltipText(u"Sample Text");
+
+  data = ui::AXNodeData();
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view->GetRenderedTooltipText(gfx::Point()));
+
+  // When the app is a new install the dot is visible and the tooltip changes.
+  item->SetIsNewInstall(true);
+  EXPECT_TRUE(new_install_dot->GetVisible());
+  data = ui::AXNodeData();
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view->GetRenderedTooltipText(gfx::Point()));
+  // Description itself changes during new installation so tooltip info is not
+  // used.
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
+}
+
+TEST_F(AppListItemViewTest, UpdateProgressOnPromiseIcon) {
   AppListItem* item = CreatePromiseAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();

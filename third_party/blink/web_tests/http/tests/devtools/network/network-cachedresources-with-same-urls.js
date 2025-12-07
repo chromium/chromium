@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that when we load two different images from the same url (e.g. counters), their content is different in network panel as well.\n`);
@@ -44,8 +46,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
     var request1 = requests[requests.length - 2];
     var request2 = requests[requests.length - 1];
 
-    var request1Content = await request1.requestContent();
-    var request2Content = await request2.requestContent();
+    var request1Content = await request1.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
+    var request2Content = await request2.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
 
     TestRunner.addResult(request1.url());
     TestRunner.addResult(request2.url());

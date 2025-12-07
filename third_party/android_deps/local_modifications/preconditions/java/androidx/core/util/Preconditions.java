@@ -51,6 +51,11 @@ public final class Preconditions {
         return value;
     }
 
+    public static double checkArgumentInRange(
+            double value, double lower, double upper, String valueName) {
+        return value;
+    }
+
     public static int checkArgumentInRange(int value, int lower, int upper, String valueName) {
         return value;
     }

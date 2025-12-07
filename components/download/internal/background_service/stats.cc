@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/download/internal/background_service/startup_status.h"
@@ -52,14 +51,11 @@ std::string TaskTypeToHistogramSuffix(DownloadTaskType task_type) {
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
-      NOTREACHED_IN_MIGRATION();
-      return "DownloadAutoResumptionTask";
+      NOTREACHED();
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
-      NOTREACHED_IN_MIGRATION();
-      return "DownloadLaterTask";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Converts FileCleanupReason to histogram suffix.
@@ -75,10 +71,9 @@ std::string FileCleanupReasonToHistogramSuffix(FileCleanupReason reason) {
     case FileCleanupReason::HARD_RECOVERY:
       return "HardRecovery";
     case FileCleanupReason::COUNT:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Helper method to log the pause reason for a particular download.

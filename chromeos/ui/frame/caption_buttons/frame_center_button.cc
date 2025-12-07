@@ -30,7 +30,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
-#include "ui/views/window/custom_frame_view.h"
+#include "ui/views/window/default_frame_view.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace chromeos {

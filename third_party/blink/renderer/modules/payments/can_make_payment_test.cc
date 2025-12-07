@@ -5,8 +5,8 @@
 // Tests for PaymentRequest::canMakePayment().
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -23,31 +23,35 @@ using payments::mojom::blink::PaymentRequestClient;
 TEST(HasEnrolledInstrumentTest, RejectPromiseOnUserCancel) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->hasEnrolledInstrument(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), request->hasEnrolledInstrument(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnError(
       PaymentErrorReason::USER_CANCEL, "User closed UI.");
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST(HasEnrolledInstrumentTest, RejectPromiseOnUnknownError) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->hasEnrolledInstrument(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), request->hasEnrolledInstrument(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnError(
       PaymentErrorReason::UNKNOWN, "Unknown error.");
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST(HasEnrolledInstrumentTest, RejectDuplicateRequest) {
@@ -66,83 +70,90 @@ TEST(HasEnrolledInstrumentTest, RejectDuplicateRequest) {
 TEST(HasEnrolledInstrumentTest, RejectQueryQuotaExceeded) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->hasEnrolledInstrument(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), request->hasEnrolledInstrument(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnHasEnrolledInstrument(
       HasEnrolledInstrumentQueryResult::QUERY_QUOTA_EXCEEDED);
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST(HasEnrolledInstrumentTest, ReturnHasNoEnrolledInstrument) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-  String captor;
-  request->hasEnrolledInstrument(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectCall(&captor), funcs.ExpectNoCall());
+
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), request->hasEnrolledInstrument(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnHasEnrolledInstrument(
       HasEnrolledInstrumentQueryResult::HAS_NO_ENROLLED_INSTRUMENT);
 
   scope.PerformMicrotaskCheckpoint();
-  EXPECT_EQ("false", captor);
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+  EXPECT_EQ("false", promise_tester.ValueAsString());
 }
 
 TEST(HasEnrolledInstrumentTest, ReturnHasEnrolledInstrument) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-  String captor;
-  request->hasEnrolledInstrument(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectCall(&captor), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), request->hasEnrolledInstrument(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnHasEnrolledInstrument(
       HasEnrolledInstrumentQueryResult::HAS_ENROLLED_INSTRUMENT);
 
   scope.PerformMicrotaskCheckpoint();
-  EXPECT_EQ("true", captor);
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+  EXPECT_EQ("true", promise_tester.ValueAsString());
 }
 
 TEST(CanMakePaymentTest, RejectPromiseOnUserCancel) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnError(
       PaymentErrorReason::USER_CANCEL, "User closed the UI.");
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST(CanMakePaymentTest, RejectPromiseOnUnknownError) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
 
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnError(
       PaymentErrorReason::UNKNOWN, "Unknown error.");
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST(CanMakePaymentTest, RejectDuplicateRequest) {
@@ -161,37 +172,35 @@ TEST(CanMakePaymentTest, RejectDuplicateRequest) {
 TEST(CanMakePaymentTest, ReturnCannotMakePayment) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-  String captor;
-  request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectCall(&captor), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnCanMakePayment(
       CanMakePaymentQueryResult::CANNOT_MAKE_PAYMENT);
 
   scope.PerformMicrotaskCheckpoint();
-  EXPECT_EQ("false", captor);
+  EXPECT_EQ("false", promise_tester.ValueAsString());
 }
 
 TEST(CanMakePaymentTest, ReturnCanMakePayment) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-  String captor;
-  request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectCall(&captor), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<PaymentRequestClient*>(request)->OnCanMakePayment(
       CanMakePaymentQueryResult::CAN_MAKE_PAYMENT);
 
   scope.PerformMicrotaskCheckpoint();
-  EXPECT_EQ("true", captor);
+  EXPECT_EQ("true", promise_tester.ValueAsString());
 }
 
 }  // namespace

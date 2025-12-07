@@ -30,7 +30,6 @@
     readonly attribute unsigned long long maxBufferSize;
     readonly attribute unsigned long maxVertexAttributes;
     readonly attribute unsigned long maxVertexBufferArrayStride;
-    readonly attribute unsigned long maxInterStageShaderComponents;
     readonly attribute unsigned long maxInterStageShaderVariables;
     readonly attribute unsigned long maxColorAttachments;
     readonly attribute unsigned long maxColorAttachmentBytesPerSample;
@@ -40,7 +39,9 @@
     readonly attribute unsigned long maxComputeWorkgroupSizeY;
     readonly attribute unsigned long maxComputeWorkgroupSizeZ;
     readonly attribute unsigned long maxComputeWorkgroupsPerDimension;
-    // Note that WebGPUSubgroupsFeatures is implied by WebGPUExperimentalFeatures.
-    [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long minSubgroupSize;
-    [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long maxSubgroupSize;
+    [RuntimeEnabled=WebGPUImmediatesFeature] readonly attribute unsigned long maxImmediateSize;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageBuffersInFragmentStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageTexturesInFragmentStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageBuffersInVertexStage;
+    [RuntimeEnabled=WebGPUCompatibilityMode] readonly attribute unsigned long maxStorageTexturesInVertexStage;
 };

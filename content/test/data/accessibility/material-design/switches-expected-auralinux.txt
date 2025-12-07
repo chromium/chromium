@@ -1,0 +1,71 @@
+[document web] name='Material Web Switches'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+=== Start Continuation ===
+[document web] name='Material Web Switches'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] checked checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++[section]
+++++++[static] name='Switch Selected'
+=== Start Continuation ===
+[document web] name='Material Web Switches'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++[section]
+++++++[static] name='Switch Selected'
+++++[section]
+++++++[static] name='Switch Deselected'

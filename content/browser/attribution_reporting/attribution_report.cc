@@ -9,10 +9,10 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/overloaded.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,7 +24,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -36,24 +36,9 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
-void PopulateSourceDebugKey(base::Value::Dict& dict,
-                            std::optional<uint64_t> debug_key) {
-  if (debug_key.has_value()) {
-    dict.Set("source_debug_key", base::NumberToString(*debug_key));
-  }
-}
-
-void PopulateTriggerDebugKey(base::Value::Dict& dict,
-                             std::optional<uint64_t> debug_key) {
-  if (debug_key.has_value()) {
-    dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
-  }
-}
-
 void PopulateReportBody(base::Value::Dict& dict,
-                        const AttributionReport::CommonAggregatableData& data,
-                        std::optional<uint64_t> trigger_debug_key) {
-  if (const auto& assembled_report = data.assembled_report;
+                        const AttributionReport::AggregatableData& data) {
+  if (const auto& assembled_report = data.assembled_report();
       assembled_report.has_value()) {
     dict = assembled_report->GetAsJson();
   } else {
@@ -63,10 +48,8 @@ void PopulateReportBody(base::Value::Dict& dict,
     dict.Set("aggregation_service_payloads", "not generated prior to send");
   }
 
-  PopulateTriggerDebugKey(dict, trigger_debug_key);
-
   if (const auto& trigger_context_id =
-          data.aggregatable_trigger_config.trigger_context_id();
+          data.aggregatable_trigger_config().trigger_context_id();
       trigger_context_id.has_value()) {
     dict.Set("trigger_context_id", *trigger_context_id);
   }
@@ -83,7 +66,6 @@ AttributionReport::EventLevelData::EventLevelData(uint32_t trigger_data,
       destinations(source.destination_sites()),
       source_event_id(source.source_event_id()),
       source_type(source.common_info().source_type()),
-      source_debug_key(source.debug_key()),
       randomized_response_rate(source.randomized_response_rate()),
       attributed_truthfully(source.attribution_logic() ==
                             StoredSource::AttributionLogic::kTruthfully) {}
@@ -101,92 +83,67 @@ AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
 
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
-AttributionReport::CommonAggregatableData::CommonAggregatableData(
+AttributionReport::AggregatableData::AggregatableData(
     std::optional<SuitableOrigin> aggregation_coordinator_origin,
     attribution_reporting::AggregatableTriggerConfig
-        aggregatable_trigger_config)
-    : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
-      aggregatable_trigger_config(std::move(aggregatable_trigger_config)) {}
-
-AttributionReport::CommonAggregatableData::CommonAggregatableData(
-    const CommonAggregatableData&) = default;
-
-AttributionReport::CommonAggregatableData&
-AttributionReport::CommonAggregatableData::operator=(
-    const CommonAggregatableData&) = default;
-
-AttributionReport::CommonAggregatableData::CommonAggregatableData(
-    CommonAggregatableData&&) = default;
-
-AttributionReport::CommonAggregatableData&
-AttributionReport::CommonAggregatableData::operator=(CommonAggregatableData&&) =
-    default;
-
-AttributionReport::CommonAggregatableData::~CommonAggregatableData() = default;
-
-AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
-    CommonAggregatableData common_data,
+        aggregatable_trigger_config,
+    base::Time source_time,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    const StoredSource& source)
-    : common_data(std::move(common_data)),
-      contributions(std::move(contributions)),
-      source_time(source.source_time()),
-      source_debug_key(source.debug_key()),
-      source_origin(source.common_info().source_origin()) {}
-
-AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
-    const AggregatableAttributionData&) = default;
-
-AttributionReport::AggregatableAttributionData&
-AttributionReport::AggregatableAttributionData::operator=(
-    const AggregatableAttributionData&) = default;
-
-AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
-    AggregatableAttributionData&&) = default;
-
-AttributionReport::AggregatableAttributionData&
-AttributionReport::AggregatableAttributionData::operator=(
-    AggregatableAttributionData&&) = default;
-
-AttributionReport::AggregatableAttributionData::~AggregatableAttributionData() =
-    default;
-
-base::CheckedNumeric<int64_t>
-AttributionReport::AggregatableAttributionData::BudgetRequired() const {
-  return GetTotalAggregatableValues(contributions);
+    std::optional<attribution_reporting::SuitableOrigin> source_origin)
+    : aggregation_coordinator_origin_(
+          std::move(aggregation_coordinator_origin)),
+      aggregatable_trigger_config_(std::move(aggregatable_trigger_config)),
+      source_time_(source_time),
+      contributions_(std::move(contributions)),
+      source_origin_(std::move(source_origin)) {
+  CHECK(source_origin_.has_value() || contributions_.empty());
 }
 
-AttributionReport::NullAggregatableData::NullAggregatableData(
-    CommonAggregatableData common_data,
-    base::Time fake_source_time)
-    : common_data(std::move(common_data)),
-      fake_source_time(fake_source_time) {}
-
-AttributionReport::NullAggregatableData::NullAggregatableData(
-    const NullAggregatableData&) = default;
-
-AttributionReport::NullAggregatableData::NullAggregatableData(
-    NullAggregatableData&&) = default;
-
-AttributionReport::NullAggregatableData&
-AttributionReport::NullAggregatableData::operator=(
-    const NullAggregatableData&) = default;
-
-AttributionReport::NullAggregatableData&
-AttributionReport::NullAggregatableData::operator=(NullAggregatableData&&) =
+AttributionReport::AggregatableData::AggregatableData(const AggregatableData&) =
     default;
 
-AttributionReport::NullAggregatableData::~NullAggregatableData() = default;
+AttributionReport::AggregatableData&
+AttributionReport::AggregatableData::operator=(const AggregatableData&) =
+    default;
 
-AttributionReport::AttributionReport(AttributionInfo attribution_info,
-                                     Id id,
-                                     base::Time report_time,
-                                     base::Time initial_report_time,
-                                     base::Uuid external_report_id,
-                                     int failed_send_attempts,
-                                     Data data,
-                                     SuitableOrigin reporting_origin)
+AttributionReport::AggregatableData::AggregatableData(AggregatableData&&) =
+    default;
+
+AttributionReport::AggregatableData&
+AttributionReport::AggregatableData::operator=(AggregatableData&&) = default;
+
+void AttributionReport::AggregatableData::SetContributions(
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions) {
+  CHECK(source_origin_.has_value());
+  CHECK(!contributions.empty());
+  contributions_ = std::move(contributions);
+}
+
+void AttributionReport::AggregatableData::SetAssembledReport(
+    std::optional<AggregatableReport> assembled_report) {
+  CHECK(!assembled_report_.has_value());
+  assembled_report_ = std::move(assembled_report);
+}
+
+AttributionReport::AggregatableData::~AggregatableData() = default;
+
+base::CheckedNumeric<int64_t>
+AttributionReport::AggregatableData::BudgetRequired() const {
+  return GetTotalAggregatableValues(contributions_);
+}
+
+AttributionReport::AttributionReport(
+    AttributionInfo attribution_info,
+    Id id,
+    base::Time report_time,
+    base::Time initial_report_time,
+    base::Uuid external_report_id,
+    int failed_send_attempts,
+    Data data,
+    attribution_reporting::SuitableOrigin reporting_origin,
+    std::optional<uint64_t> source_debug_key)
     : attribution_info_(std::move(attribution_info)),
       id_(id),
       report_time_(report_time),
@@ -194,9 +151,10 @@ AttributionReport::AttributionReport(AttributionInfo attribution_info,
       external_report_id_(std::move(external_report_id)),
       failed_send_attempts_(failed_send_attempts),
       data_(std::move(data)),
-      reporting_origin_(std::move(reporting_origin)) {
-  DCHECK(external_report_id_.is_valid());
-  DCHECK_GE(failed_send_attempts_, 0);
+      reporting_origin_(std::move(reporting_origin)),
+      source_debug_key_(source_debug_key) {
+  CHECK(external_report_id_.is_valid());
+  CHECK_GE(failed_send_attempts_, 0);
 }
 
 AttributionReport::AttributionReport(const AttributionReport&) = default;
@@ -236,8 +194,8 @@ GURL AttributionReport::ReportURL(bool debug) const {
 base::Value::Dict AttributionReport::ReportBody() const {
   base::Value::Dict dict;
 
-  absl::visit(
-      base::Overloaded{
+  std::visit(
+      absl::Overload{
           [&](const EventLevelData& data) {
             dict.Set("attribution_destination", data.destinations.ToJson());
 
@@ -261,30 +219,41 @@ base::Value::Dict AttributionReport::ReportBody() const {
                 round(data.randomized_response_rate * 10000000) / 10000000.0;
             dict.Set("randomized_trigger_rate", rounded_rate);
 
-            PopulateSourceDebugKey(dict, data.source_debug_key);
-            PopulateTriggerDebugKey(dict, attribution_info_.debug_key);
-
             dict.Set("scheduled_report_time",
                      base::NumberToString(
                          (initial_report_time_ - base::Time::UnixEpoch())
                              .InSeconds()));
           },
 
-          [&](const AggregatableAttributionData& data) {
-            PopulateReportBody(dict, data.common_data,
-                               attribution_info_.debug_key);
-
-            PopulateSourceDebugKey(dict, data.source_debug_key);
-          },
-
-          [&](const NullAggregatableData& data) {
-            PopulateReportBody(dict, data.common_data,
-                               attribution_info_.debug_key);
-          },
+          [&](const AggregatableData& data) { PopulateReportBody(dict, data); },
       },
       data_);
 
+  if (CanDebuggingBeEnabled()) {
+    CHECK(source_debug_key_.has_value());
+    std::optional<uint64_t> trigger_debug_key = attribution_info_.debug_key;
+    CHECK(trigger_debug_key.has_value());
+    dict.Set("source_debug_key", base::NumberToString(*source_debug_key_));
+    dict.Set("trigger_debug_key", base::NumberToString(*trigger_debug_key));
+  }
+
   return dict;
+}
+
+AttributionReport::Type AttributionReport::GetReportType() const {
+  return std::visit(
+      absl::Overload{
+          [](const EventLevelData&) {
+            return AttributionReport::Type::kEventLevel;
+          },
+
+          [](const AggregatableData& data) {
+            return data.is_null()
+                       ? AttributionReport::Type::kNullAggregatable
+                       : AttributionReport::Type::kAggregatableAttribution;
+          },
+      },
+      data_);
 }
 
 void AttributionReport::set_report_time(base::Time report_time) {
@@ -306,33 +275,25 @@ std::optional<base::Time> AttributionReport::MinReportTime(
   return std::min(*a, *b);
 }
 
-std::optional<uint64_t> AttributionReport::GetSourceDebugKey() const {
-  return absl::visit(
-      base::Overloaded{
-          [](const EventLevelData& data) { return data.source_debug_key; },
-          [](const AggregatableAttributionData& data) {
-            return data.source_debug_key;
-          },
-          [](const NullAggregatableData& data) {
-            return std::optional<uint64_t>();
+const SuitableOrigin& AttributionReport::GetSourceOrigin() const {
+  return std::visit(
+      absl::Overload{
+          [](const AttributionReport::EventLevelData& data)
+              -> const SuitableOrigin& { return data.source_origin; },
+          [&](const AttributionReport::AggregatableData& data)
+              -> const SuitableOrigin& {
+            if (data.source_origin().has_value()) {
+              return *data.source_origin();
+            }
+            return attribution_info_.context_origin;
           },
       },
       data_);
 }
 
-const SuitableOrigin& AttributionReport::GetSourceOrigin() const {
-  return absl::visit(
-      base::Overloaded{
-          [](const AttributionReport::EventLevelData& data)
-              -> const SuitableOrigin& { return data.source_origin; },
-          [](const AttributionReport::AggregatableAttributionData& data)
-              -> const SuitableOrigin& { return data.source_origin; },
-          [&](const AttributionReport::NullAggregatableData&)
-              -> const SuitableOrigin& {
-            return attribution_info_.context_origin;
-          },
-      },
-      data_);
+bool AttributionReport::CanDebuggingBeEnabled() const {
+  return attribution_info_.debug_key.has_value() &&
+         source_debug_key_.has_value();
 }
 
 }  // namespace content

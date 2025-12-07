@@ -21,7 +21,6 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -38,6 +37,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -46,7 +46,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -117,7 +117,7 @@ std::u16string GetFormattedDueTime(const base::Time& due) {
 
 std::unique_ptr<views::View> BuildIcon() {
   return views::Builder<views::ImageView>()
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1, kIconViewBackgroundRadius))
       .SetID(base::to_underlying(GlanceablesViewId::kClassroomItemIcon))
       .SetImage(ui::ImageModel::FromVectorIcon(
@@ -140,13 +140,14 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
       .SetProperty(views::kMarginsKey, kAssignmentLabelsMargin)
       .SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+          views::FlexSpecification(views::BoxLayout::Orientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded))
       .AddChild(views::Builder<views::Label>()
                     .SetText(base::UTF8ToUTF16(assignment->course_work_title))
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemCourseWorkTitleLabel))
-                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                    .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         kAssignmentCourseWorkTypography))
                     .SetLineHeight(typography_provider->ResolveLineHeight(
@@ -155,7 +156,7 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
                     .SetText(base::UTF8ToUTF16(assignment->course_title))
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemCourseTitleLabel))
-                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
+                    .SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         kAssignmentCourseTypography))
                     .SetLineHeight(typography_provider->ResolveLineHeight(
@@ -178,7 +179,7 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
                     .SetText(due_date)
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemDueDateLabel))
-                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
+                    .SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         kDueLabelsTypography))
                     // Use the course work line height to align with the
@@ -189,7 +190,7 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
                     .SetText(due_time)
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemDueTimeLabel))
-                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
+                    .SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         kDueLabelsTypography))
                     .SetLineHeight(typography_provider->ResolveLineHeight(
@@ -230,6 +231,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
       base::UTF8ToUTF16(assignment->course_work_title));
   GetViewAccessibility().SetDescription(
       base::JoinString(a11y_description_parts, u", "));
+  UpdateAccessibleDefaultAction();
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
@@ -245,16 +247,19 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
 
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
 
-void GlanceablesClassroomItemView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-
-  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
-}
-
 void GlanceablesClassroomItemView::Layout(PassKey) {
   LayoutSuperclass<views::Button>(this);
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
+}
+
+void GlanceablesClassroomItemView::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
+  UpdateAccessibleDefaultAction();
+}
+
+void GlanceablesClassroomItemView::UpdateAccessibleDefaultAction() {
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kClick);
 }
 
 BEGIN_METADATA(GlanceablesClassroomItemView)

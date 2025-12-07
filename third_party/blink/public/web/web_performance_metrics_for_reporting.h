@@ -5,14 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_METRICS_FOR_REPORTING_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_METRICS_FOR_REPORTING_H_
 
+#include <array>
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
 namespace blink {
@@ -34,12 +36,23 @@ struct LargestContentfulPaintDetailsForReporting {
   double image_bpp = 0.0;
   double text_paint_time = 0;
   uint64_t text_paint_size = 0;
-  base::TimeTicks paint_time = base::TimeTicks();
   std::optional<WebURLRequest::Priority> image_request_priority = std::nullopt;
-  bool is_loaded_from_memory_cache = false;
-  bool is_preloaded_with_early_hints = false;
   // The unclamped paint time of the largest content (image/text).
   std::optional<base::TimeTicks> merged_unclamped_paint_time = std::nullopt;
+};
+
+struct SoftNavigationMetricsForReporting {
+  uint32_t count = 0;
+  base::TimeDelta start_time;
+  base::TimeDelta first_contentful_paint;
+  // For the mechanism that generates these ids, see
+  // third_party/blink/renderer/core/timing/navigation_id_generator.h.
+  uint32_t navigation_id = 0;
+
+  // Identifies the same document navigation for the initial URL change.
+  // This allows us to map to the UKM Source ID in the browser side,
+  // and therefore attribute the metrics to the correct URL.
+  base::UnguessableToken same_document_metrics_token;
 };
 
 // This class is used for reporting purposes (e.g. ukm) of non-web-exposed
@@ -61,7 +74,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   };
 
   using BackForwardCacheRestoreTimings =
-      WebVector<BackForwardCacheRestoreTiming>;
+      std::vector<BackForwardCacheRestoreTiming>;
 
   ~WebPerformanceMetricsForReporting() { Reset(); }
 
@@ -96,12 +109,14 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double DomainLookupStart() const;
   double DomainLookupEnd() const;
   double ConnectStart() const;
+  double ConnectEnd() const;
   double ResponseStart() const;
   double DomContentLoadedEventStart() const;
   double DomContentLoadedEventEnd() const;
   double LoadEventStart() const;
   double LoadEventEnd() const;
   double FirstPaint() const;
+  base::TimeTicks FirstPaintAsMonotonicTime() const;
   double FirstImagePaint() const;
   double FirstContentfulPaint() const;
   base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;

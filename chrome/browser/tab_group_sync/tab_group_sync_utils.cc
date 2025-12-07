@@ -1,0 +1,103 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
+
+#include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/utils.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "extensions/common/constants.h"
+#include "net/http/http_request_headers.h"
+
+namespace tab_groups {
+
+// static
+bool TabGroupSyncUtils::IsSaveableNavigation(
+    bool is_extension_navigation_allowed,
+    content::NavigationHandle* navigation_handle) {
+  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
+
+  // The initial request needs to be a GET request, regardless of server-side
+  // redirects later on.
+  if (navigation_handle->GetRequestMethod() !=
+      net::HttpRequestHeaders::kGetMethod) {
+    return false;
+  }
+  if (!ui::IsValidPageTransitionType(page_transition)) {
+    return false;
+  }
+  if (ui::PageTransitionIsRedirect(page_transition)) {
+    return false;
+  }
+
+  if (!ui::PageTransitionIsMainFrame(page_transition)) {
+    return false;
+  }
+
+  if (!navigation_handle->HasCommitted()) {
+    return false;
+  }
+
+  if (!navigation_handle->ShouldUpdateHistory()) {
+    return false;
+  }
+
+  const GURL& url = navigation_handle->GetURL();
+  // If the navigation is just updating the reference fragment of a URL, don't
+  // sync it or otherwise it will be very annoying if there are lots of users
+  // viewing the same document.
+  // TODO(crbug.com/379758340): do the same for iOS.
+  const bool is_same_document_link_click =
+      navigation_handle->IsSameDocument() &&
+      ui::PageTransitionCoreTypeIs(page_transition, ui::PAGE_TRANSITION_LINK);
+  if (is_same_document_link_click &&
+      navigation_handle->GetPreviousPrimaryMainFrameURL().GetWithoutRef() ==
+          url.GetWithoutRef()) {
+    return false;
+  }
+
+  // For renderer initiated navigation, in most cases these navigations will be
+  // auto triggered on restoration. So there is no need to save them.
+  if (navigation_handle->IsRendererInitiated() &&
+      !navigation_handle->HasUserGesture()) {
+    if (!is_extension_navigation_allowed || navigation_handle->IsHistory()) {
+      return false;
+    }
+
+    // Navigation triggered by Extension's chrome.tab.update will have extension
+    // URL as the initiator origin.
+    if (navigation_handle->GetInitiatorOrigin().has_value()) {
+      GURL origin_url = navigation_handle->GetInitiatorOrigin()->GetURL();
+      if (origin_url.SchemeIs(extensions::kExtensionScheme)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  return true;
+}
+
+// statics
+void TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
+    const LocalTabID& id,
+    SavedTabGroupType type,
+    content::NavigationHandle* navigation_handle,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  tab_group_sync_service->GetTabGroupSyncMetricsLogger()
+      ->RecordSavedTabGroupNavigation(
+          id, navigation_handle->GetURL(), type, navigation_handle->IsPost(),
+          navigation_handle->GetRedirectChain().size() > 1,
+          navigation_handle->GetRenderFrameHost()->GetPageUkmSourceId());
+}
+
+}  // namespace tab_groups

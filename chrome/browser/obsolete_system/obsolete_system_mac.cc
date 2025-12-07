@@ -10,14 +10,18 @@
 #include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+// Chromium 138 will be the last mstone to support macOS 11.
+constexpr int kLastMStoneWithSupport = 138;
+constexpr int kMacOSReleaseBeingObsoleted = 11;
+
 namespace ObsoleteSystem {
 
 bool IsObsoleteNowOrSoon() {
-#if CHROME_VERSION_MAJOR >= 126
-  return base::mac::MacOSMajorVersion() < 11;
-#else
+  // Warn for the last three mstones.
+  if (CHROME_VERSION_MAJOR >= kLastMStoneWithSupport - 2) {
+    return base::mac::MacOSMajorVersion() <= kMacOSReleaseBeingObsoleted;
+  }
   return false;
-#endif
 }
 
 std::u16string LocalizedObsoleteString() {
@@ -25,8 +29,7 @@ std::u16string LocalizedObsoleteString() {
 }
 
 bool IsEndOfTheLine() {
-  // M128 is the last milestone supporting macOS 10.15.
-  return CHROME_VERSION_MAJOR >= 128;
+  return CHROME_VERSION_MAJOR >= kLastMStoneWithSupport;
 }
 
 const char* GetLinkURL() {

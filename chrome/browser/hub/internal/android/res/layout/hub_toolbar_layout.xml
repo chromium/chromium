@@ -4,50 +4,151 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.hub.HubToolbarView
+<FrameLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:id="@+id/hub_toolbar"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:orientation="vertical">
-
+  android:orientation="vertical"
+  tools:ignore="MergeRootFrame">
+  <!-- Should only be visible during animations involving hub search. -->
   <FrameLayout
+    android:id="@+id/search_box_background"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/toolbar_height_no_shadow">
+    android:layout_height="@dimen/toolbar_height_no_shadow"
+    android:layout_marginTop="@dimen/toolbar_height_no_shadow"
+    android:background="@android:color/white"
+    android:visibility="gone" />
 
-    <org.chromium.ui.widget.ButtonCompat
-      android:id="@+id/toolbar_action_button"
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:layout_gravity="start"
-      android:drawablePadding="16dp"
-      android:minWidth="@dimen/min_touch_target_size"
-      android:paddingStart="16dp"
-      android:paddingEnd="16dp"
-      android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-      android:visibility="gone"
-      app:buttonColor="@android:color/transparent"
-      app:buttonTextColor="@color/default_text_color_list"
-      app:verticalInset="0dp" />
-
-    <com.google.android.material.tabs.TabLayout
-      android:id="@+id/pane_switcher"
-      style="@style/ToolbarButton"
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:layout_gravity="center_horizontal|bottom"
-      android:visibility="gone"
-      app:tabIndicator="@drawable/m3_tabs_line_indicator"
-      app:tabIndicatorFullWidth="true"/>
+  <org.chromium.chrome.browser.hub.HubToolbarView
+    android:id="@+id/hub_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <FrameLayout
-      android:id="@+id/menu_button_container"
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:layout_gravity="end" >
+      android:id="@+id/toolbar_action_container"
+      android:clipChildren="false"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/toolbar_height_no_shadow">
+
+      <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|center_vertical">
+
+        <Space
+          android:id="@+id/margin_spacer"
+          android:layout_width="@dimen/hub_toolbar_action_button_start_margin"
+          android:layout_height="match_parent"
+          android:visibility="gone"/>
+
+        <org.chromium.ui.widget.ChromeImageButton
+          android:id="@+id/toolbar_back_button"
+          android:src="@drawable/ic_arrow_back_24dp"
+          android:layout_width="@dimen/min_touch_target_size"
+          android:layout_height="@dimen/min_touch_target_size"
+          android:layout_gravity="center"
+          android:layout_marginStart="4dp"
+          android:contentDescription="@string/back"
+          android:tooltipText="@string/back"
+          android:visibility="gone"
+          style="@style/ToolbarMenuButton"
+          app:tint="@color/default_icon_color_tint_list"/>
+
+        <Button
+          android:id="@+id/toolbar_action_button"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="start|center_vertical"
+          android:visibility="gone"
+          style="?attr/newTabButtonStyle"/>
+      </LinearLayout>
+
+      <FrameLayout
+        android:id="@+id/pane_switcher_card"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal|bottom"
+        android:background="@drawable/hub_pane_switcher_background"
+        android:clipChildren="false"
+        >
+
+        <com.google.android.material.tabs.TabLayout
+          android:id="@+id/pane_switcher"
+          style="@style/ToolbarButton"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="center_horizontal|bottom"
+          android:visibility="gone"
+          android:clipChildren="false"
+          android:clipToPadding="false"
+          app:tabIndicator="@drawable/m3_tabs_line_indicator"
+          app:tabIndicatorFullWidth="true"
+          app:tabUnboundedRipple="true" />
+      </FrameLayout>
+
+      <LinearLayout
+        android:id="@+id/menu_button_container"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end" >
+        <!-- On tablets, the searchbox (R.id.search_box) is hidden in favor of a button. -->
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/search_loupe"
+            android:visibility="gone"
+            android:gravity="center_vertical"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/search"
+            android:src="@drawable/ic_search"
+            android:tooltipText="@string/accessibility_search_loupe_tooltip_text"
+            style="@style/ToolbarMenuButton"
+            app:tint="@color/default_icon_color_tint_list"  />
         <include layout="@layout/menu_button" />
+      </LinearLayout>
+
     </FrameLayout>
 
-  </FrameLayout>
-</org.chromium.chrome.browser.hub.HubToolbarView>
+    <!-- Hub search is selectively hidden based on the feature flag. -->
+    <LinearLayout
+      android:id="@+id/search_box"
+      android:visibility="gone"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/hub_search_box_height"
+      android:layout_marginHorizontal="16dp"
+      android:layout_marginVertical="@dimen/hub_search_box_vertical_margin"
+      android:paddingHorizontal="16dp"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:background="@drawable/hub_search_box_background">
+
+      <EditText
+        tools:ignore="Autofill,LabelFor"
+        style="@style/TextAppearance.TextLarge.Primary"
+        android:id="@+id/search_box_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:ellipsize="end"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:longClickable="false"
+        android:inputType="text"
+        android:singleLine="true" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/toolbar_bottom_hairline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/toolbar_hairline"
+        android:scaleType="fitXY"
+        android:gravity="top"
+        android:importantForAccessibility="no"
+        android:visibility="gone"/>
+  </org.chromium.chrome.browser.hub.HubToolbarView>
+</FrameLayout>

@@ -53,6 +53,8 @@ class ExtensionAppsBase : public AppPublisher,
   ExtensionAppsBase(const ExtensionAppsBase&) = delete;
   ExtensionAppsBase& operator=(const ExtensionAppsBase&) = delete;
 
+  virtual void Initialize();
+
   // Handles profile prefs kHideWebStoreIcon changes for ChromeOS.
   virtual void OnHideWebStoreIconPrefChanged() {}
 
@@ -88,8 +90,6 @@ class ExtensionAppsBase : public AppPublisher,
   // Returns extensions::Extension* for the valid |app_id|. Otherwise, returns
   // nullptr.
   const extensions::Extension* MaybeGetExtension(const std::string& app_id);
-
-  virtual void Initialize();
 
   Profile* profile() const { return profile_; }
 

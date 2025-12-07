@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 
+#include <sstream>
+
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -25,6 +27,22 @@ bool IsAnyIdEmpty(const std::set<webapps::AppId>& app_ids) {
 }
 #endif
 
+template <typename Container>
+std::string ContainerToString(const Container& container) {
+  std::ostringstream ss;
+  ss << "[";
+  bool first_item = true;
+  for (const auto& item : container) {
+    if (!first_item) {
+      ss << ", ";
+    }
+    ss << base::ToString(item);
+    first_item = false;
+  }
+  ss << "]";
+  return ss.str();
+}
+
 }  // namespace
 
 WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
@@ -35,7 +53,7 @@ WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
 WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
     Profile* profile)
     : WebAppInstallManagerObserverAdapter(
-          &WebAppProvider::GetForTest(profile)->install_manager()) {}
+          &WebAppProvider::GetForWebApps(profile)->install_manager()) {}
 
 WebAppInstallManagerObserverAdapter::~WebAppInstallManagerObserverAdapter() =
     default;
@@ -143,15 +161,33 @@ void WebAppTestRegistryObserverAdapter::SetWebAppWillBeUpdatedFromSyncDelegate(
   app_will_be_updated_from_sync_delegate_ = std::move(delegate);
 }
 
+void WebAppTestRegistryObserverAdapter::SetWebAppEffectiveScopeChangedDelegate(
+    WebAppEffectiveScopeChangedDelegate delegate) {
+  app_effective_scope_changed_delegate_ = std::move(delegate);
+}
+
 void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
     WebAppLastBadgingTimeChangedDelegate delegate) {
   app_last_badging_time_changed_delegate_ = std::move(delegate);
+}
+
+void WebAppTestRegistryObserverAdapter::SetWebAppPendingUpdateChangedDelegate(
+    WebAppPendingUpdateChangedDelegate delegate) {
+  app_pending_update_changed_delegate_ = std::move(delegate);
 }
 
 void WebAppTestRegistryObserverAdapter::
     SetWebAppProtocolSettingsChangedDelegate(
         WebAppProtocolSettingsChangedDelegate delegate) {
   app_protocol_settings_changed_delegate_ = std::move(delegate);
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppEffectiveScopeChanged(
+    const webapps::AppId& app_id,
+    const WebAppScope& new_scope) {
+  if (app_effective_scope_changed_delegate_) {
+    app_effective_scope_changed_delegate_.Run(app_id, new_scope);
+  }
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppsWillBeUpdatedFromSync(
@@ -167,7 +203,16 @@ void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
     app_last_badging_time_changed_delegate_.Run(app_id, time);
 }
 
-void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged() {
+void WebAppTestRegistryObserverAdapter::OnWebAppPendingUpdateChanged(
+    const webapps::AppId& app_id,
+    bool has_pending_update) {
+  if (app_pending_update_changed_delegate_) {
+    app_pending_update_changed_delegate_.Run(app_id, has_pending_update);
+  }
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged(
+    const webapps::AppId& app_id) {
   if (app_protocol_settings_changed_delegate_)
     app_protocol_settings_changed_delegate_.Run();
 }
@@ -207,6 +252,10 @@ void WebAppTestInstallObserver::BeginListening(
 
 webapps::AppId WebAppTestInstallObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 
@@ -237,6 +286,10 @@ void WebAppTestInstallWithOsHooksObserver::BeginListening(
 
 webapps::AppId WebAppTestInstallWithOsHooksObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 
@@ -267,6 +320,10 @@ void WebAppTestManifestUpdatedObserver::BeginListening(
 
 webapps::AppId WebAppTestManifestUpdatedObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 
@@ -296,6 +353,10 @@ void WebAppTestUninstallObserver::BeginListening(
 
 webapps::AppId WebAppTestUninstallObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 

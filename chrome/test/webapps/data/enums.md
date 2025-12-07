@@ -23,7 +23,7 @@ The tables in this file are parsed as action templates for critical user journey
 | Site | Standalone* | MinimalUi | Tabbed | NotPromotable | StandaloneNestedA | StandaloneNestedB | Wco | Isolated | FileHandler | NotInstalled | StandaloneNotStartUrl | Screenshots | HasSubApps | SubApp1 | SubApp2 | TabbedWithHomeTab | TabbedNestedA | TabbedNestedB | TabbedNestedC | ChromeUrl |
 | InstallableSite | Standalone* | MinimalUi | Tabbed | StandaloneNestedA | StandaloneNestedB | Wco | NotInstalled | StandaloneNotStartUrl | Screenshots | HasSubApps | SubApp1 | SubApp2 | TabbedWithHomeTab | ChromeUrl |
 | Title | StandaloneOriginal | StandaloneUpdated |  |  |  |  |  |
-| Color | Red | Green |  |  |  |  |  |
+| Color | Red | Green | GreenSmallDiff |  |  |  |  |
 | ProfileClient | Client2* | Client1 |  |  |  |  |  |
 | UserDisplayPreference | Standalone | Browser |  |  |  |  |  |
 | IsShown | Shown | NotShown |  |  |  |  |  |
@@ -38,6 +38,7 @@ The tables in this file are parsed as action templates for critical user journey
 | ShortcutOptions | WithShortcut | NoShortcut |
 | WindowOptions | Windowed | Browser |
 | InstallMode | WebApp* | WebShortcut |
-| UpdateDialogResponse | AcceptUpdate | CancelDialogAndUninstall | CancelUninstallAndAcceptUpdate | SkipDialog |
+| UpdateDialogResponse | AcceptUpdate | CancelDialogAndUninstall | IgnoreDialog | | |
 | SubAppInstallDialogOptions | UserAllow* | UserDeny | PolicyOverride |
 | ProfileName | Default | Profile2 |
+| MenuButtonState | ExpandedUpdateAvailable | NotExpanded |

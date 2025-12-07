@@ -1,41 +1,35 @@
-# Choosing A Hash Function
+# Hashing
 
-> Note: this document is still very much a work-in-progress. Currently missing:
-> - recommendations for hashed containers
-> - recommendations for a better persistent hash
-> - recommendations for a secure hash
+A hash function turns a variable-length input (called the "message", usually
+`m`) into a fixed-length value (called the "hash", usually `h` or `H(m)`). Good
+hash functions have the property that for two messages m0 and m1, if m0 differs
+in any bit from m1, `H(m0)` and `H(m1)` are likely to differ in many bits.
 
-If a hash function with unchanging output is needed, please select from one of
-the unchanging forever options below.
+This directory exports two recommended hash functions: a fast hash function and
+a persistent hash function. The fast hash function is updated regularly as
+faster hash functions become available, while the persistent hash function is
+permanently frozen. That means that the value of the fast hash function for a
+given message may change between Chromium revisions, but the value of the
+persistent hash function for a given message will never change.
 
-## Non-cryptographic
+These are called `base::FastHash` and `base::PersistentHash` respectively and
+are in [base/hash].
 
-name                                         | input                       | output     | unchanging forever | notes
----------------------------------------------|-----------------------------|------------|--------------------|-------
-[`Hash()`][hash]                             | overloaded                  | `uint32_t` | no                 | This function is currently being updated to return `size_t`.
-[`PersistentHash()`][persistenthash]         | overloaded                  | `uint32_t` | yes                | Fairly weak but widely used for persisted hashes.
-[`CityHash64()`][cityhash64]                 | `base::span<const uint8_t>` | `uint64_t` | yes (note 1)       | Version 1.0.3. Has some known weaknesses.
-[`CityHash64WithSeed()`][cityhash64withseed] | `base::span<const uint8_t>` | `uint64_t` | yes (note 1)       | Version 1.0.3. Has some known weaknesses.
+## Cryptographic Hashing
 
-## Cryptographic
+If you need cryptographic strength from your hash function, meaning that you
+need it to be the case that either:
 
-**There are no hashes in `//base` that provide cryptographic security.**
+* Given `h`, nobody can find an `m` such that `H(m) = h`, or
+* Given `m`, nobody can find an `m'` such that `H(m) = H(m')`
 
- name                          | input         | output        | unchanging forever | notes
--------------------------------|---------------|---------------|--------------------|-------
-[`MD5String()`][md5string]     | `std::string` | `std::string` | yes                | **INSECURE**
-[`SHA1HashString`][sha1string] | `std::string` | `std::string` | yes                | **INSECURE**
+Then you need to use a cryptographic hash instead of one of the hashes here -
+see [crypto/hash].
 
-## Deprecated
+This directory contains implementations of two hash functions (MD5 and SHA-1)
+which were previously considered cryptographically strong, but they **are no
+longer considered secure** and you must not add new uses of them. See
+[crypto/hash] for more details and suggested alternatives.
 
-> Note: CRC32, Murmur2, and Murmur3 will be listed here.
-
-Note 1: While CityHash is not guaranteed unchanging forever, the version used in
-Chrome is pinned to version 1.0.3.
-
-[hash]: https://cs.chromium.org/chromium/src/base/hash/hash.h?l=26
-[persistenthash]: https://cs.chromium.org/chromium/src/base/hash/hash.h?l=36
-[cityhash64]: https://cs.chromium.org/chromium/src/base/hash/city_v103.h?l=19
-[cityhash64withseed]: https://cs.chromium.org/chromium/src/base/hash/city_v103.h?l=20
-[md5string]: https://cs.chromium.org/chromium/src/base/hash/md5.h?l=74
-[sha1string]: https://cs.chromium.org/chromium/src/base/hash/sha1.h?l=22
+[base/hash]: hash.h
+[crypto/hash]: ../../crypto/hash.h

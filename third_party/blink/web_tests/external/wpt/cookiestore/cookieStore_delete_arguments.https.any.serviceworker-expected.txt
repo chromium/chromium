@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] cookieStore.delete does not append / at the end of path
+  assert_equals: expected null but got object "[object Object]"
+[FAIL] cookieStore.delete with whitespace
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'delete' on 'CookieStore': Cookie was malformed and could not be stored, due to problem(s) while parsing."
+Harness: the test ran to completion.
+

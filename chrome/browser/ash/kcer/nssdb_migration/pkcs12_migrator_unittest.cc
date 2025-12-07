@@ -14,10 +14,12 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/kcer/chaps/mock_high_level_chaps_client.h"
-#include "chromeos/components/kcer/kcer.h"
-#include "chromeos/components/kcer/kcer_impl.h"
-#include "chromeos/components/kcer/kcer_nss/test_utils.h"
+#include "chromeos/ash/components/kcer/chaps/mock_high_level_chaps_client.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/kcer_impl.h"
+#include "chromeos/ash/components/kcer/kcer_nss/test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/scoped_nss_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +56,7 @@ std::unique_ptr<KeyedService> CreateKcer(
     content::BrowserContext* context) {
   auto kcer = std::make_unique<internal::KcerImpl>();
   kcer->Initialize(content::GetUIThreadTaskRunner(), user_token, nullptr);
-  return std::make_unique<KcerFactory::KcerService>(std::move(kcer));
+  return std::make_unique<KcerFactoryAsh::KcerService>(std::move(kcer));
 }
 
 class KcerPkcs12MigratorTest : public testing::Test {
@@ -104,17 +106,17 @@ class KcerPkcs12MigratorTest : public testing::Test {
     std::vector<uint8_t> pkcs12_bytes = ReadTestFile(file_name);
     std::string pkcs12_str(pkcs12_bytes.begin(), pkcs12_bytes.end());
 
-    PK11SlotInfo* slot_info = nullptr;
+    crypto::ScopedPK11Slot slot_info;
     switch (slot) {
       case NssSlot::kPublic:
-        slot_info = nss_db->GetPublicSlot().get();
+        slot_info = nss_db->GetPublicSlot();
         break;
       case NssSlot::kPrivate:
-        slot_info = nss_db->GetPrivateSlot().get();
+        slot_info = nss_db->GetPrivateSlot();
         break;
     }
 
-    nss_db->ImportFromPKCS12(slot_info, std::move(pkcs12_str),
+    nss_db->ImportFromPKCS12(slot_info.get(), std::move(pkcs12_str),
                              GetPassword(file_name), true, nullptr);
   }
 

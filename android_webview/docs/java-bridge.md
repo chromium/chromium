@@ -13,9 +13,6 @@ already existed, they still didn't cover all important aspects of the bridge
 behavior and we had to add some new tests to ensure we are preserving
 compatibility.
 
-The Gin implementation was introduced in Chromium M37 (initial Android Lollipop
-release), with the threading issue fixed in M39 (L MR1).
-
 ## The API
 
 An API for embedders is exposed on

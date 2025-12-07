@@ -1,0 +1,13 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "type": "Code",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}

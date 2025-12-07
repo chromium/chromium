@@ -45,7 +45,6 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   // No need to override since this view doesn't have an active/inactive state.
   void UpdateTrayItemColor(bool is_active) override {}
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
@@ -82,6 +81,8 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
 
     const std::unique_ptr<gfx::SlideAnimation> slide_animation_;
   };
+
+  void UpdateAccessibleName();
 
   State state_ = CLICK_TO_EXPAND;
 

@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_REALTIME_AUDIO_THREAD_H_
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 
 namespace audio {
 

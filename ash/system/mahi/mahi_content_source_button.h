@@ -28,6 +28,10 @@ class ASH_EXPORT MahiContentSourceButton : public views::LabelButton {
 
   // Updates the content source info to the source currently used by the Mahi
   // Manager instance.
+  // The button text is set to the selected text if
+  // MahiManager->GetSelectedText() returns a valid value, meaning the result
+  // panel is for a result based on selected text, otherwise the title of the
+  // webpage or the PDF file name.
   void RefreshContentSourceInfo();
 
  private:

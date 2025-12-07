@@ -13,9 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
@@ -37,13 +35,10 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/win/conflicts/module_database.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
 #endif
 
@@ -61,7 +56,7 @@ PrintPreviewUI* GetPrintPreviewUIForDialog(WebContents* dialog) {
   return web_ui ? web_ui->GetController()->GetAs<PrintPreviewUI>() : nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void CloseArcPrintSession(WebContents* initiator) {
   WebContents* outermost_web_contents =
       guest_view::GuestViewBase::GetTopLevelWebContents(initiator);
@@ -83,7 +78,7 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate {
 
   ~PrintPreviewDialogDelegate() override;
 
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
   std::u16string GetAccessibleDialogTitle() const override;
   GURL GetDialogContentURL() const override;
@@ -106,10 +101,9 @@ PrintPreviewDialogDelegate::PrintPreviewDialogDelegate(WebContents* initiator)
 
 PrintPreviewDialogDelegate::~PrintPreviewDialogDelegate() = default;
 
-ui::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
+ui::mojom::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
   // Not used, returning dummy value.
-  NOTREACHED_IN_MIGRATION();
-  return ui::MODAL_TYPE_WINDOW;
+  NOTREACHED();
 }
 
 std::u16string PrintPreviewDialogDelegate::GetDialogTitle() const {
@@ -201,10 +195,6 @@ PrintPreviewDialogController* PrintPreviewDialogController::GetInstance() {
 void PrintPreviewDialogController::PrintPreview(
     WebContents* initiator,
     const mojom::RequestPrintPreviewParams& params) {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  PrintViewManagerBase::DisableThirdPartyBlocking();
-#endif
-
   if (initiator->IsCrashed()) {
     return;
   }
@@ -215,6 +205,13 @@ void PrintPreviewDialogController::PrintPreview(
       print_view_manager->PrintPreviewDone();
     }
   }
+}
+
+// static
+std::unique_ptr<ui::WebDialogDelegate>
+PrintPreviewDialogController::CreatePrintPreviewDialogDelegateForTesting(
+    WebContents* initiator) {
+  return std::make_unique<PrintPreviewDialogDelegate>(initiator);
 }
 
 WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialogForTesting(
@@ -234,7 +231,17 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
   if (preview_dialog) {
     return preview_dialog;
   }
-  return CreatePrintPreviewDialog(initiator, params);
+
+  // TODO(https://crbug.com/372062070: It's currently probably possible to
+  // invoke print-preview on non-tab web contents. There are currently tests
+  // that allow this for extension guest-views and chrome apps. For now allow
+  // these through. In the future we may want to restrict printing to tabs.
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(initiator);
+  if (tab && !tab->CanShowModalUI()) {
+    return nullptr;
+  }
+
+  return CreatePrintPreviewDialog(tab, initiator, params);
 }
 
 WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
@@ -276,13 +283,13 @@ void PrintPreviewDialogController::ForEachPreviewDialog(
 // static
 bool PrintPreviewDialogController::IsPrintPreviewURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
-         url.host_piece() == chrome::kChromeUIPrintHost;
+         url.host() == chrome::kChromeUIPrintHost;
 }
 
 // static
 bool PrintPreviewDialogController::IsPrintPreviewContentURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-         url.host_piece() == chrome::kChromeUIPrintHost;
+         url.host() == chrome::kChromeUIPrintHost;
 }
 
 void PrintPreviewDialogController::EraseInitiatorInfo(
@@ -292,10 +299,29 @@ void PrintPreviewDialogController::EraseInitiatorInfo(
     return;
 
   web_contents_collection_.StopObserving(it->second.initiator);
-  it->second = {/*initiator=*/nullptr, /*request_params=*/{}};
+  it->second.initiator = nullptr;
+  it->second.request_params = {};
+  it->second.scoper.reset();
 }
 
 PrintPreviewDialogController::~PrintPreviewDialogController() = default;
+
+PrintPreviewDialogController::InitiatorData::InitiatorData(
+    InitiatorData&&) noexcept = default;
+
+PrintPreviewDialogController::InitiatorData&
+PrintPreviewDialogController::InitiatorData::operator=(
+    InitiatorData&&) noexcept = default;
+
+PrintPreviewDialogController::InitiatorData::InitiatorData(
+    content::WebContents* initiator,
+    const mojom::RequestPrintPreviewParams& request_params,
+    std::unique_ptr<tabs::ScopedTabModalUI> scoper)
+    : initiator(initiator),
+      request_params(request_params),
+      scoper(std::move(scoper)) {}
+
+PrintPreviewDialogController::InitiatorData::~InitiatorData() = default;
 
 void PrintPreviewDialogController::RenderProcessGone(
     content::WebContents* web_contents,
@@ -330,8 +356,7 @@ void PrintPreviewDialogController::RenderProcessGone(
 void PrintPreviewDialogController::WebContentsDestroyed(WebContents* contents) {
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
   if (!preview_dialog) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (contents == preview_dialog)
@@ -350,8 +375,7 @@ void PrintPreviewDialogController::DidFinishNavigation(
 
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
   if (!preview_dialog) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (contents != preview_dialog)
@@ -396,7 +420,8 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
 }
 
 WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
-    WebContents* initiator,
+    tabs::TabInterface* tab,
+    content::WebContents* initiator,
     const mojom::RequestPrintPreviewParams& params) {
   base::AutoReset<bool> auto_reset(&is_creating_print_preview_dialog_, true);
 
@@ -412,11 +437,13 @@ WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
   // extension when iframed by the print preview dialog.
   GURL print_url(chrome::kChromeUIPrintURL);
   content::HostZoomMap::Get(preview_dialog->GetSiteInstance())
-      ->SetZoomLevelForHostAndScheme(print_url.scheme(), print_url.host(), 0);
+      ->SetZoomLevelForHostAndScheme(print_url.GetScheme(), print_url.GetHost(),
+                                     0);
   PrintViewManager::CreateForWebContents(preview_dialog);
 
   // Add an entry to the map.
-  preview_dialog_map_[preview_dialog] = {initiator, params};
+  InitiatorData data(initiator, params, tab ? tab->ShowModalUI() : nullptr);
+  preview_dialog_map_.emplace(preview_dialog, std::move(data));
 
   // Make the print preview WebContents show up in the task manager.
   task_manager::WebContentsTags::CreateForPrintingContents(preview_dialog);
@@ -448,13 +475,11 @@ void PrintPreviewDialogController::RemoveInitiator(
   // Update the map entry first, so when the print preview dialog gets destroyed
   // and reaches RemovePreviewDialog(), it does not attempt to also remove the
   // initiator's observers.
-  preview_dialog_map_[preview_dialog] = {/*initiator=*/nullptr,
-                                         /*request_params=*/{}};
-  web_contents_collection_.StopObserving(initiator);
+  EraseInitiatorInfo(preview_dialog);
 
   PrintViewManager::FromWebContents(initiator)->PrintPreviewDone();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CloseArcPrintSession(initiator);
 #endif
 
@@ -472,7 +497,7 @@ void PrintPreviewDialogController::RemovePreviewDialog(
     web_contents_collection_.StopObserving(initiator);
     PrintViewManager::FromWebContents(initiator)->PrintPreviewDone();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     CloseArcPrintSession(initiator);
 #endif
   }

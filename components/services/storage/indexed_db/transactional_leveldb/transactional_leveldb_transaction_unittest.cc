@@ -29,11 +29,10 @@
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 const size_t kTestingMaxOpenCursors = 3;
-}  // namespace
 
 class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
  public:
@@ -73,7 +72,7 @@ class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
     base::RunLoop loop;
     PartitionedLockHolder locks_receiver;
     lock_manager->AcquireLocks(
-        lock_requests, locks_receiver.AsWeakPtr(),
+        lock_requests, locks_receiver,
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     loop.Run();
     return std::move(locks_receiver.locks);
@@ -186,9 +185,7 @@ TEST_F(TransactionalLevelDBTransactionTest, GetPutDelete) {
 
   const std::string another_key("b-another key");
   const std::string another_value("b-another value");
-  EXPECT_EQ(12ull, transaction->GetTransactionSize());
   TransactionPut(transaction.get(), another_key, another_value);
-  EXPECT_EQ(43ull, transaction->GetTransactionSize());
 
   status = transaction->Get(another_key, &got_value, &found);
   EXPECT_TRUE(status.ok());
@@ -196,7 +193,6 @@ TEST_F(TransactionalLevelDBTransactionTest, GetPutDelete) {
   EXPECT_EQ(Compare(got_value, another_value), 0);
 
   TransactionRemove(transaction.get(), another_key);
-  EXPECT_EQ(124ull, transaction->GetTransactionSize());
 
   status = transaction->Get(another_key, &got_value, &found);
   EXPECT_FALSE(found);
@@ -1026,4 +1022,5 @@ TEST_F(TransactionalLevelDBTransactionTest,
   ASSERT_FALSE(it->IsValid());
 }
 
-}  // namespace content
+}  // namespace
+}  // namespace content::indexed_db

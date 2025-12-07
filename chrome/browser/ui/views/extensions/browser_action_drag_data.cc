@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
@@ -18,7 +19,7 @@ namespace {
 // The MIME type for the clipboard format for BrowserActionDragData.
 const char kClipboardFormatString[] = "chromium/x-browser-actions";
 
-}
+}  // namespace
 
 BrowserActionDragData::BrowserActionDragData()
     : profile_(nullptr), index_(static_cast<size_t>(-1)) {}
@@ -46,8 +47,8 @@ bool BrowserActionDragData::IsFromProfile(const Profile* profile) const {
   return profile_ == profile;
 }
 
-void BrowserActionDragData::Write(
-    Profile* profile, ui::OSExchangeData* data) const {
+void BrowserActionDragData::Write(Profile* profile,
+                                  ui::OSExchangeData* data) const {
   DCHECK(data);
   base::Pickle data_pickle;
   WriteToPickle(profile, &data_pickle);
@@ -76,7 +77,7 @@ bool BrowserActionDragData::Read(const ui::OSExchangeData& data) {
 const ui::ClipboardFormatType&
 BrowserActionDragData::GetBrowserActionFormatType() {
   static base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::GetType(kClipboardFormatString));
+      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString));
 
   return *format;
 }
@@ -92,16 +93,19 @@ bool BrowserActionDragData::ReadFromPickle(base::Pickle* pickle) {
   base::PickleIterator data_iterator(*pickle);
 
   const char* tmp;
-  if (!data_iterator.ReadBytes(&tmp, sizeof(profile_)))
+  if (!data_iterator.ReadBytes(&tmp, sizeof(profile_))) {
     return false;
-  memcpy(&profile_, tmp, sizeof(profile_));
+  }
+  UNSAFE_TODO(memcpy(&profile_, tmp, sizeof(profile_)));
 
-  if (!data_iterator.ReadString(&id_))
+  if (!data_iterator.ReadString(&id_)) {
     return false;
+  }
 
   uint64_t index;
-  if (!data_iterator.ReadUInt64(&index))
+  if (!data_iterator.ReadUInt64(&index)) {
     return false;
+  }
   index_ = static_cast<size_t>(index);
 
   return true;

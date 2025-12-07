@@ -13,14 +13,16 @@
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/paint_vector_icon.h"
 #endif
 
 namespace infobars {
 
 const int InfoBarDelegate::kNoIconID = 0;
 
-InfoBarDelegate::~InfoBarDelegate() {
+InfoBarDelegate::~InfoBarDelegate() = default;
+
+InfoBarDelegate::InfobarPriority InfoBarDelegate::GetPriority() const {
+  return InfobarPriority::kDefault;
 }
 
 int InfoBarDelegate::GetIconId() const {
@@ -28,16 +30,16 @@ int InfoBarDelegate::GetIconId() const {
 }
 
 const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
-  static gfx::VectorIcon empty_icon;
-  return empty_icon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 ui::ImageModel InfoBarDelegate::GetIcon() const {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   const gfx::VectorIcon& vector_icon = GetVectorIcon();
-  if (!vector_icon.is_empty())
+  if (!vector_icon.is_empty()) {
     return ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorInfoBarIcon,
                                           20);
+  }
 #endif
 
   int icon_id = GetIconId();
@@ -56,19 +58,23 @@ GURL InfoBarDelegate::GetLinkURL() const {
   return GURL();
 }
 
+std::optional<std::u16string> InfoBarDelegate::GetLinkAccessibleText() const {
+  return std::nullopt;
+}
+
 bool InfoBarDelegate::EqualsDelegate(InfoBarDelegate* delegate) const {
   return false;
 }
 
 bool InfoBarDelegate::ShouldExpire(const NavigationDetails& details) const {
   return details.is_navigation_to_different_page &&
-      !details.did_replace_entry &&
-      // This next condition ensures a navigation that passes the above
-      // conditions doesn't dismiss infobars added while that navigation was
-      // already in process.  We carve out an exception for reloads since we
-      // want reloads to dismiss infobars, but they will have unchanged entry
-      // IDs.
-      ((nav_entry_id_ != details.entry_id) || details.is_reload);
+         !details.did_replace_entry &&
+         // This next condition ensures a navigation that passes the above
+         // conditions doesn't dismiss infobars added while that navigation was
+         // already in process.  We carve out an exception for reloads since we
+         // want reloads to dismiss infobars, but they will have unchanged entry
+         // IDs.
+         ((nav_entry_id_ != details.entry_id) || details.is_reload);
 }
 
 bool InfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
@@ -76,8 +82,7 @@ bool InfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
   return false;
 }
 
-void InfoBarDelegate::InfoBarDismissed() {
-}
+void InfoBarDelegate::InfoBarDismissed() {}
 
 bool InfoBarDelegate::IsCloseable() const {
   return true;
@@ -87,7 +92,17 @@ bool InfoBarDelegate::ShouldAnimate() const {
   return true;
 }
 
+bool InfoBarDelegate::ShouldHideInFullscreen() const {
+  return false;
+}
+
 ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate() {
+  return const_cast<ConfirmInfoBarDelegate*>(
+      static_cast<const InfoBarDelegate*>(this)->AsConfirmInfoBarDelegate());
+}
+
+const ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate()
+    const {
   return nullptr;
 }
 
@@ -97,14 +112,16 @@ InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
 }
 
 ThemeInstalledInfoBarDelegate*
-    InfoBarDelegate::AsThemePreviewInfobarDelegate() {
+InfoBarDelegate::AsThemePreviewInfobarDelegate() {
   return nullptr;
 }
 
+#if BUILDFLAG(IS_IOS)
 translate::TranslateInfoBarDelegate*
-    InfoBarDelegate::AsTranslateInfoBarDelegate() {
+InfoBarDelegate::AsTranslateInfoBarDelegate() {
   return nullptr;
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 offline_pages::OfflinePageInfoBarDelegate*

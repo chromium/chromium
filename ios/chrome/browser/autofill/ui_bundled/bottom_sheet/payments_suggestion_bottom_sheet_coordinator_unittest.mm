@@ -9,22 +9,23 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -36,26 +37,24 @@
 class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
  public:
   PaymentsSuggestionBottomSheetCoordinatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     // Credit card import requires a PersonalDataManager which itself needs the
-    // WebDataService; this is not initialized on a TestChromeBrowserState by
+    // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
+                              TipsManagerIOSFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     autofill::PersonalDataManager* personal_data_manager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            browser_state_.get());
+        autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     // Set circular SyncService dependency to null.
     personal_data_manager->SetSyncServiceForTest(nullptr);
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
 
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
@@ -78,7 +77,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
  protected:
   // Creates and inserts a new WebState.
   int InsertWebState() {
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
 
@@ -97,7 +96,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIWindow* window_;
   PaymentsSuggestionBottomSheetCoordinator* coordinator_;
@@ -114,9 +113,10 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
-                                        initWithCreditCard:credit_card_
-                                                      icon:nil]];
+  [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
+                                               initWithCreditCard:credit_card_
+                                                             icon:nil]
+                                   atIndex:0];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
@@ -128,16 +128,14 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 // Test that using the primary button logs the correct exit reason when a
 // virtual card is used
 TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kAutofillEnableVirtualCards);
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
-                                        initWithCreditCard:virtual_card_
-                                                      icon:nil]];
+  [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
+                                               initWithCreditCard:virtual_card_
+                                                             icon:nil]
+                                   atIndex:0];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 

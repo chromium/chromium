@@ -9,7 +9,6 @@
 #include "components/component_updater/ash/component_manager_ash.h"
 
 class BrowserProcessPlatformPart;
-class Profile;
 
 // Used to override parts of BrowserProcessPlatformParts in tests.
 class BrowserProcessPlatformPartTestApi {
@@ -30,8 +29,6 @@ class BrowserProcessPlatformPartTestApi {
 
   // Shuts down ComponentManagerAsh set by InitializeComponentManager().
   void ShutdownComponentManager();
-
-  bool CanRestoreUrlsForProfile(const Profile* profile);
 
  private:
   const raw_ptr<BrowserProcessPlatformPart> platform_part_;

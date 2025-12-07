@@ -51,16 +51,16 @@ UserCloudPolicyTokenForwarder::UserCloudPolicyTokenForwarder(
   if (manager_->core()->service()->IsInitializationComplete()) {
     StartRequest();
   } else {
-    manager_->core()->service()->AddObserver(this);
+    cloud_policy_service_observation_.Observe(manager_->core()->service());
   }
 }
 
-UserCloudPolicyTokenForwarder::~UserCloudPolicyTokenForwarder() {}
+UserCloudPolicyTokenForwarder::~UserCloudPolicyTokenForwarder() = default;
 
 void UserCloudPolicyTokenForwarder::Shutdown() {
   access_token_fetcher_.reset();
   refresh_oauth_token_timer_.reset();
-  manager_->core()->service()->RemoveObserver(this);
+  cloud_policy_service_observation_.Reset();
 }
 
 void UserCloudPolicyTokenForwarder::
@@ -97,18 +97,15 @@ void UserCloudPolicyTokenForwarder::OverrideTimeForTesting(
 
 void UserCloudPolicyTokenForwarder::StartRequest() {
   refresh_oauth_token_timer_->Stop();
+
   // TODO(mnissler): Once a better way to reconfirm whether a user is on the
   // login allowlist is available there is no reason to fetch the OAuth2 token
   // for regular user here if the client is already registered. If it is not
   // recurring token fetch for child user check and bail out here.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-
   // NOTE: The primary account may not be available yet.
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "policy_token_forwarder", identity_manager_, scopes,
+          signin::OAuthConsumerId::kPolicyTokenForwarder, identity_manager_,
           base::BindOnce(
               &UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted,
               base::Unretained(this)),
@@ -164,10 +161,6 @@ void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(
       FROM_HERE, time_to_next_refresh,
       base::BindRepeating(&UserCloudPolicyTokenForwarder::StartRequest,
                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-std::string_view UserCloudPolicyTokenForwarder::name() const {
-  return "UserCloudPolicyTokenForwarder";
 }
 
 }  // namespace policy

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] customElementRegistry of an upgrade candidate created in a document without a browsing context uses null regsitry by default
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Connecting a custom element candiate in a shadow root with a scoped custom element registry has null registry by default
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Connecting a custom element candiate with null registry does not set the registry
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Connecting a custom element candiate with a scoped custom element registry does not change the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Inserting a custom element candiate with null registry does not change the registry
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Inserting the shadow host of a shadow root with a scoped custom element registry does not change the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Inserting a node from another document with global registry results in the custom element registry to be set and upgraded.
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Inserting a node from another document with null registry results in the custom element registry to be set and upgraded.
+  assert_equals: expected (object) null but got (undefined) undefined
+Harness: the test ran to completion.
+

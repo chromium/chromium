@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/script/script_runner.h"
+
+#include <array>
 
 #include "base/test/null_task_runner.h"
 #include "base/time/time.h"
@@ -50,7 +47,7 @@ class MockPendingScript : public PendingScript {
                     ScriptSchedulingType scheduling_type)
       : PendingScript(element,
                       TextPosition::MinimumPosition(),
-                      /*parent_task=*/nullptr) {
+                      /*task_state=*/nullptr) {
     SetSchedulingType(scheduling_type);
   }
   ~MockPendingScript() override {}
@@ -124,7 +121,7 @@ class ScriptRunnerTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<Document> document_;
   Persistent<ScriptRunner> script_runner_;
-  WTF::Vector<int> order_;
+  blink::Vector<int> order_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 };
@@ -306,7 +303,7 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_InOrder) {
 }
 
 TEST_F(ScriptRunnerTest, QueueReentrantScript_ManyAsyncScripts) {
-  MockPendingScript* pending_scripts[20];
+  std::array<MockPendingScript*, 20> pending_scripts;
   for (int i = 0; i < 20; i++)
     pending_scripts[i] = nullptr;
 
@@ -553,8 +550,8 @@ class PostTaskWithLowPriorityUntilTimeoutTest : public testing::Test {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
   int counter = 0;
-  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
-                                         WTF::Unretained(&counter));
+  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
+                                           blink::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -571,8 +568,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
-                                         WTF::Unretained(&counter));
+  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
+                                           blink::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -588,8 +585,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnNormalPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
-                                         WTF::Unretained(&counter));
+  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
+                                           blink::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),

@@ -22,7 +22,6 @@ class PDFiumEngine;
 class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
  public:
   enum class ScriptOption { kNoJavaScript, kJavaScript, kJavaScriptAndXFA };
-  static PDFiumFormFiller::ScriptOption DefaultScriptOption();
 
   // NOTE: `script_option` is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumFormFiller(PDFiumEngine* engine, ScriptOption script_option);
@@ -235,7 +234,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
   static EngineInIsolateScope GetEngineInIsolateScope(
       IPDF_JSPLATFORM* platform);
 
-  int SetTimer(const base::TimeDelta& delay, TimerCallback timer_func);
+  int SetTimer(base::TimeDelta delay, TimerCallback timer_func);
   void KillTimer(int timer_id);
 
   const EngineInIsolateScopeFactory engine_in_isolate_scope_factory_;

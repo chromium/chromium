@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
@@ -39,8 +40,6 @@ class InMemoryClientHintsControllerDelegate final
   InMemoryClientHintsControllerDelegate(
       network::NetworkQualityTracker* network_quality_tracker,
       base::RepeatingCallback<bool(const GURL&)> is_javascript_allowed_callback,
-      base::RepeatingCallback<bool(const GURL&)>
-          are_third_party_cookies_blocked_callback,
       blink::UserAgentMetadata user_agent_metadata);
   ~InMemoryClientHintsControllerDelegate() override;
 
@@ -63,8 +62,6 @@ class InMemoryClientHintsControllerDelegate final
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
   bool IsJavaScriptAllowed(const GURL& url,
                            content::RenderFrameHost* parent_rfh) override;
-  bool AreThirdPartyCookiesBlocked(const GURL& url,
-                                   content::RenderFrameHost* rfh) override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void SetMostRecentMainFrameViewportSize(
       const gfx::Size& viewport_size) override;
@@ -88,10 +85,6 @@ class InMemoryClientHintsControllerDelegate final
 
   // Callback to determine whether JavaScript is enabled for an URL.
   base::RepeatingCallback<bool(const GURL&)> is_javascript_allowed_callback_;
-
-  // Callback to determine whether third-party cookies are blocked for an URL.
-  base::RepeatingCallback<bool(const GURL&)>
-      are_third_party_cookies_blocked_callback_;
 
   const blink::UserAgentMetadata user_agent_metadata_;
 

@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var gPaymentResponse = null;
-var gRetryPromise = null;
+let gPaymentResponse = null;
+let gRetryPromise = null;
 
 const bobPayMethod = Object.freeze({
   supportedMethods: 'https://bobpay.test',
@@ -15,7 +15,7 @@ const bobPayMethod = Object.freeze({
  * Launches the PaymentRequest UI
  */
 function buy() {
-  var options = {
+  const options = {
     requestPayerEmail: true,
     requestPayerName: true,
     requestPayerPhone: true,
@@ -23,7 +23,7 @@ function buy() {
   getPaymentResponseWithMethod(options, [bobPayMethod])
       .then(function(response) {
         gPaymentResponse = response;
-        var eventPromise = new Promise(function(resolve) {
+        const eventPromise = new Promise(function(resolve) {
           gPaymentResponse.addEventListener('payerdetailchange', function(e) {
             e.updateWith({});
             resolve();

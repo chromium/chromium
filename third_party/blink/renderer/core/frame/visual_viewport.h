@@ -147,6 +147,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   float Scale() const { return scale_; }
   bool IsPinchGestureActive() const { return is_pinch_gesture_active_; }
 
+  PhysicalOffset LocalToScrollOriginOffset() const final;
+
   // Convert the given rect in the main LocalFrameView's coordinates into a rect
   // in the viewport. The given and returned rects are in CSS pixels, meaning
   // scale isn't applied.
@@ -186,13 +188,15 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;
-  SmoothScrollSequencer* GetSmoothScrollSequencer() const override;
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,
+                       cc::ScrollSourceType,
                        mojom::blink::ScrollBehavior,
-                       ScrollCallback on_finish) override;
+                       ScrollCallback on_finish,
+                       bool targeted_scroll = false) override;
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,
+                       cc::ScrollSourceType,
                        mojom::blink::ScrollBehavior =
                            mojom::blink::ScrollBehavior::kInstant) override;
   PhysicalRect ScrollIntoView(
@@ -227,7 +231,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool ScrollAnimatorEnabled() const override;
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
   void UpdateScrollOffset(const ScrollOffset&,
-                          mojom::blink::ScrollType) override;
+                          mojom::blink::ScrollType,
+                          cc::ScrollSourceType) override;
   cc::Layer* LayerForScrolling() const;
   cc::Layer* LayerForHorizontalScrollbar() const override;
   cc::Layer* LayerForVerticalScrollbar() const override;
@@ -248,8 +253,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // WebViewImpl explicitly rather than via
   // ScrollingCoordinator::DidCompositorScroll() since it needs to be set in
   // tandem with the page scale delta.
-  void DidCompositorScroll(const gfx::PointF&) final {
-    NOTREACHED_IN_MIGRATION();
+  void DidCompositorScroll(const gfx::PointF&, cc::ScrollSourceType) final {
+    NOTREACHED();
   }
 
   // Visual Viewport API implementation.
@@ -360,15 +365,15 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_horizontal_;
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_vertical_;
 
-  PropertyTreeStateOrAlias parent_property_tree_state_;
-  scoped_refptr<TransformPaintPropertyNode> device_emulation_transform_node_;
-  scoped_refptr<TransformPaintPropertyNode>
-      overscroll_elasticity_transform_node_;
-  scoped_refptr<TransformPaintPropertyNode> page_scale_node_;
-  scoped_refptr<TransformPaintPropertyNode> scroll_translation_node_;
-  scoped_refptr<ScrollPaintPropertyNode> scroll_node_;
-  scoped_refptr<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
-  scoped_refptr<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
+  TraceablePropertyTreeStateOrAlias parent_property_tree_state_{
+      TraceablePropertyTreeStateOrAlias::kUninitialized};
+  Member<TransformPaintPropertyNode> device_emulation_transform_node_;
+  Member<TransformPaintPropertyNode> overscroll_elasticity_transform_node_;
+  Member<TransformPaintPropertyNode> page_scale_node_;
+  Member<TransformPaintPropertyNode> scroll_translation_node_;
+  Member<ScrollPaintPropertyNode> scroll_node_;
+  Member<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
+  Member<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
 
   // Offset of the visual viewport from the main frame's origin, in CSS pixels.
   ScrollOffset offset_;

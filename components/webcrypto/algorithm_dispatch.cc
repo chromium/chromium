@@ -250,7 +250,7 @@ Status UnwrapKey(blink::WebCryptoKeyFormat format,
 
 Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                   const blink::WebCryptoKey& base_key,
-                  unsigned int length_bits,
+                  std::optional<unsigned int> length_bits,
                   std::vector<uint8_t>* derived_bytes) {
   if (!base_key.KeyUsageAllows(blink::kWebCryptoKeyUsageDeriveBits))
     return Status::ErrorUnexpected();
@@ -314,7 +314,7 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
 }
 
 bool SerializeKeyForClone(const blink::WebCryptoKey& key,
-                          blink::WebVector<uint8_t>* key_data) {
+                          std::vector<uint8_t>* key_data) {
   const AlgorithmImplementation* impl = nullptr;
   Status status = GetAlgorithmImplementation(key.Algorithm().Id(), &impl);
   if (status.IsError())

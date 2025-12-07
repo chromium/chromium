@@ -1,0 +1,31 @@
+This is a wdspec test.
+[FAIL] test_scroll_not_scrollable[0-10]
+  assert 27.22222137451172 == 10
+[FAIL] test_scroll_not_scrollable[5-0]
+  assert 13.61111068725586 == 5
+[FAIL] test_scroll_not_scrollable[5-10]
+  assert 13.61111068725586 == 5
+[FAIL] test_scroll_scrollable_overflow[0-10]
+  assert 27.22222137451172 == 10
+[FAIL] test_scroll_scrollable_overflow[5-0]
+  assert 13.61111068725586 == 5
+[FAIL] test_scroll_scrollable_overflow[5-10]
+  assert 13.61111068725586 == 5
+[FAIL] test_scroll_iframe[0-10]
+  assert 27.22222137451172 == 10
+[FAIL] test_scroll_iframe[5-0]
+  assert 13.61111068725586 == 5
+[FAIL] test_scroll_iframe[5-10]
+  assert 13.61111068725586 == 5
+[FAIL] test_scroll_shadow_tree[outer-open]
+  AssertionError: Expected event not found: {'type': 'wheel', 'target': 'scrollableShadowTreeContent', 'deltaX': 5, 'deltaY': 10, 'deltaZ': 0, 'pageX': 58.0 ± 1.0e+00, 'pageY': 418.3333435058594 ± 1.0e+00}
+[FAIL] test_scroll_shadow_tree[outer-closed]
+  AssertionError: Expected event not found: {'type': 'wheel', 'target': 'scrollableShadowTreeContent', 'deltaX': 5, 'deltaY': 10, 'deltaZ': 0, 'pageX': 58.0 ± 1.0e+00, 'pageY': 418.3333435058594 ± 1.0e+00}
+[FAIL] test_scroll_shadow_tree[inner-open]
+  AssertionError: Expected event not found: {'type': 'wheel', 'target': 'scrollableShadowTreeContent', 'deltaX': 5, 'deltaY': 10, 'deltaZ': 0, 'pageX': 58.0 ± 1.0e+00, 'pageY': 418.3333435058594 ± 1.0e+00}
+[FAIL] test_scroll_shadow_tree[inner-closed]
+  AssertionError: Expected event not found: {'type': 'wheel', 'target': 'scrollableShadowTreeContent', 'deltaX': 5, 'deltaY': 10, 'deltaZ': 0, 'pageX': 58.0 ± 1.0e+00, 'pageY': 418.3333435058594 ± 1.0e+00}
+[FAIL] test_scroll_with_key_pressed
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Cannot read properties of undefined (reading 'events')
+Harness: the test ran to completion.
+

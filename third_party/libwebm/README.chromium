@@ -2,12 +2,14 @@ Name: WebM container parser and writer.
 Short Name: libwebm
 URL: https://chromium.googlesource.com/webm/libwebm
 Version: N/A
-Revision: 26d9f667170dc75e8d759a997bb61c64dec42dda
-CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.31
-License: BSD
-License File: source/LICENSE.TXT
+Revision: f2a982d748b80586ae53b89a2e6ebbc305848b8c
+Update Mechanism: Manual
+CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.32
+License: BSD-3-Clause, Patent
+License File: source/LICENSE.TXT, source/PATENTS.TXT
 Security Critical: yes
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 libwebm is a library to read and write WebM files. It's used by MediaStream

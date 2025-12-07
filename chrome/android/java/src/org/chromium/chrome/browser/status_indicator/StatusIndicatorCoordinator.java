@@ -10,12 +10,18 @@ import android.view.View;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlLayer;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.base.ViewUtils;
@@ -24,11 +30,15 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
+import java.util.function.Supplier;
+
 /**
  * The coordinator for a status indicator that is positioned below the status bar and is persistent.
  * Typically used to relay status, e.g. indicate user is offline.
  */
-public class StatusIndicatorCoordinator {
+@NullMarked
+public class StatusIndicatorCoordinator implements TopControlLayer {
+
     /** An observer that will be notified of the changes to the status indicator, e.g. height. */
     public interface StatusIndicatorObserver {
         /**
@@ -47,33 +57,34 @@ public class StatusIndicatorCoordinator {
         default void onStatusIndicatorShowAnimationEnd() {}
     }
 
-    private StatusIndicatorMediator mMediator;
-    private StatusIndicatorSceneLayer mSceneLayer;
+    private final StatusIndicatorMediator mMediator;
+    private final StatusIndicatorSceneLayer mSceneLayer;
     private boolean mIsShowing;
     private Runnable mRemoveOnLayoutChangeListener;
     private int mResourceId;
     private ViewResourceAdapter mResourceAdapter;
-    private ResourceManager mResourceManager;
+    private final ResourceManager mResourceManager;
     private boolean mResourceRegistered;
-    private Activity mActivity;
-    private Callback<Runnable> mRequestRender;
+    private final Activity mActivity;
+    private final Callback<@Nullable Runnable> mRequestRender;
     private boolean mInitialized;
+    private final TopControlsStacker mTopControlsStacker;
 
     /**
      * Constructs the status indicator.
+     *
      * @param activity The {@link Activity} to find and inflate the status indicator view.
      * @param resourceManager The {@link ResourceManager} for the status indicator's cc layer.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to
-     *                                     for the changes in controls offsets.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to for
+     *     the changes in controls offsets.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param statusBarColorWithoutStatusIndicatorSupplier A supplier that will get the status bar
-     *                                                     color without taking the status indicator
-     *                                                     into account.
+     *     color without taking the status indicator into account.
      * @param canAnimateNativeBrowserControls Will supply a boolean meaning whether the native
-     *                                        browser controls can be animated. This will be false
-     *                                        where we can't have a reliable cc::BCOM instance, e.g.
-     *                                        tab switcher.
+     *     browser controls can be animated. This will be false where we can't have a reliable
+     *     cc::BCOM instance, e.g. tab switcher.
      * @param requestRender Runnable to request a render when the cc-layer needs to be updated.
+     * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
      */
     public StatusIndicatorCoordinator(
             Activity activity,
@@ -82,7 +93,8 @@ public class StatusIndicatorCoordinator {
             TabObscuringHandler tabObscuringHandler,
             Supplier<Integer> statusBarColorWithoutStatusIndicatorSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls,
-            Callback<Runnable> requestRender) {
+            Callback<@Nullable Runnable> requestRender,
+            TopControlsStacker topControlsStacker) {
         mActivity = activity;
         mResourceManager = resourceManager;
         mRequestRender = requestRender;
@@ -94,12 +106,16 @@ public class StatusIndicatorCoordinator {
                         tabObscuringHandler,
                         statusBarColorWithoutStatusIndicatorSupplier,
                         canAnimateNativeBrowserControls);
+
+        mTopControlsStacker = topControlsStacker;
+        topControlsStacker.addControl(this);
     }
 
     public void destroy() {
         if (mInitialized) mRemoveOnLayoutChangeListener.run();
         if (mResourceRegistered) unregisterResource();
         mMediator.destroy();
+        mTopControlsStacker.removeControl(this);
     }
 
     /**
@@ -112,8 +128,8 @@ public class StatusIndicatorCoordinator {
      * @param iconTint Status icon tint.
      */
     public void show(
-            @NonNull String statusText,
-            Drawable statusIcon,
+            String statusText,
+            @Nullable Drawable statusIcon,
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint) {
@@ -141,8 +157,8 @@ public class StatusIndicatorCoordinator {
      * @param animationCompleteCallback The callback that will be run once the animations end.
      */
     public void updateContent(
-            @NonNull String statusText,
-            Drawable statusIcon,
+            String statusText,
+            @Nullable Drawable statusIcon,
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint,
@@ -186,13 +202,14 @@ public class StatusIndicatorCoordinator {
         return StatusIndicatorSceneLayer.class;
     }
 
+    @Initializer
     private void initialize() {
         final ViewStub stub = mActivity.findViewById(R.id.status_indicator_stub);
         final ViewResourceFrameLayout root = (ViewResourceFrameLayout) stub.inflate();
         mResourceId = root.getId();
         mSceneLayer.setResourceId(mResourceId);
         mResourceAdapter = root.getResourceAdapter();
-        Callback<Runnable> invalidateCompositorView =
+        Callback<@Nullable Runnable> invalidateCompositorView =
                 callback -> {
                     mResourceAdapter.invalidate(null);
                     mRequestRender.onResult(callback);
@@ -233,6 +250,28 @@ public class StatusIndicatorCoordinator {
         mResourceAdapter.dropCachedBitmap();
         mResourceManager.getDynamicResourceLoader().unregisterResource(mResourceId);
         mResourceRegistered = false;
+    }
+
+    // TopControlLayer implementation:
+
+    @Override
+    public @TopControlType int getTopControlType() {
+        return TopControlType.STATUS_INDICATOR;
+    }
+
+    @Override
+    public int getTopControlHeight() {
+        return mMediator.getEffectiveHeight();
+    }
+
+    @Override
+    public @TopControlVisibility int getTopControlVisibility() {
+        return mIsShowing ? TopControlVisibility.VISIBLE : TopControlVisibility.HIDDEN;
+    }
+
+    @Override
+    public @ScrollBehavior int getScrollBehavior() {
+        return ScrollBehavior.NEVER_SCROLLABLE;
     }
 
     StatusIndicatorMediator getMediatorForTesting() {

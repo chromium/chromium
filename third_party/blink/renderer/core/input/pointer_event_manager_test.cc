@@ -157,8 +157,6 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
   ASSERT_FALSE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
-  ExceptionState exception(nullptr, v8::ExceptionContext::kOperation, "", "");
-
   GetEventHandler().HandleMousePressEvent(CreateTestMouseEvent(
       WebInputEvent::Type::kMouseDown, gfx::PointF(100, 100)));
 
@@ -166,7 +164,7 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
   GetDocument().body()->setPointerCapture(PointerEventFactory::kMouseId,
-                                          exception);
+                                          IGNORE_EXCEPTION);
   ASSERT_TRUE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
@@ -179,7 +177,7 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
   GetDocument().body()->releasePointerCapture(PointerEventFactory::kMouseId,
-                                              exception);
+                                              IGNORE_EXCEPTION);
   ASSERT_FALSE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 }
@@ -621,10 +619,8 @@ class PanActionTrackingWebFrameWidget
 
 class PanActionPointerEventTest : public PointerEventManagerTest {
  public:
-  PanActionPointerEventTest() {
-    feature_list_.InitWithFeatures({blink::features::kStylusPointerAdjustment},
-                                   {});
-  }
+  PanActionPointerEventTest() = default;
+  static constexpr int kStylusHandwritingRadius = 30;
 
   frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
@@ -643,17 +639,24 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
       bool is_for_scalable_page) override {
-    return MakeGarbageCollected<PanActionTrackingWebFrameWidget>(
-        pass_key, std::move(frame_widget_host), std::move(frame_widget),
-        std::move(widget_host), std::move(widget), std::move(task_runner),
-        frame_sink_id, hidden, never_composited, is_for_child_local_root,
-        is_for_nested_main_frame, is_for_scalable_page);
+    auto* web_frame_widget =
+        MakeGarbageCollected<PanActionTrackingWebFrameWidget>(
+            pass_key, std::move(frame_widget_host), std::move(frame_widget),
+            std::move(widget_host), std::move(widget), std::move(task_runner),
+            frame_sink_id, hidden, never_composited, is_for_child_local_root,
+            is_for_nested_main_frame, is_for_scalable_page);
+    display::ScreenInfo screen_info;
+    screen_info.device_scale_factor = 1.f;
+    screen_info.handwriting_radius = kStylusHandwritingRadius;
+    web_frame_widget->SetInitialScreenInfo(screen_info);
+    return web_frame_widget;
   }
 
  protected:
   // Sets inner HTML and runs document lifecycle.
   void SetBodyInnerHTML(const String& body_content) {
-    GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(body_content,
+                                                          ASSERT_NO_EXCEPTION);
     WebView().MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kAll,
                                                  DocumentUpdateReason::kTest);
   }
@@ -673,9 +676,6 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
     event.pointer_type = pointer_type;
     return event;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PanActionPointerEventTest, PanActionStylusWritable) {
@@ -734,6 +734,32 @@ TEST_F(PanActionPointerEventTest, PanActionMoveCursor) {
       Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   test::RunPendingTasks();
   ASSERT_EQ(widget->LastPanAction(), PanAction::kMoveCursorOrScroll);
+}
+
+TEST_F(PanActionPointerEventTest, PanActionAdjustedForStylus) {
+  ScopedStylusHandwritingForTest stylus_handwriting(true);
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <input type=text style='width: 100px; height: 100px;'>
+  )HTML");
+
+  PanActionTrackingWebFrameWidget* widget = GetWidget();
+
+  // Expect pan action to result in a stroke.
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kNone);
+  ASSERT_EQ(GetDocument()
+                .GetPage()
+                ->GetChromeClient()
+                .GetScreenInfo(*(GetDocument().GetFrame()))
+                .handwriting_radius,
+            kStylusHandwritingRadius);
+
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen,
+                               gfx::PointF(120, 120)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  test::RunPendingTasks();
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);
 }
 
 TEST_F(PanActionPointerEventTest, PanActionNoneAndScroll) {

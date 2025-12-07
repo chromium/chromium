@@ -1,1 +1,18 @@
-../resources/tests5.dat: PASS
+../resources/tests5.dat:
+17
+
+Test 17 of 17 in ../resources/tests5.dat failed. Input:
+<noscript><!--</noscript>--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<!--"
+|   <body>
+|     "-->"
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- </noscript> -->
+|   <body>

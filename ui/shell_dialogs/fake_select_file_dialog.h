@@ -97,6 +97,9 @@ class FakeSelectFileDialog : public SelectFileDialog {
   // Calls the |MultiFilesSelected()| method on listener().
   void CallMultiFilesSelected(const std::vector<base::FilePath>& file_path);
 
+  // Calls the |FileSelectionCanceled()| method on listener().
+  void CallFileSelectionCanceled();
+
   base::WeakPtr<FakeSelectFileDialog> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

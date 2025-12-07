@@ -5,16 +5,18 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATABLE_TRIGGER_DATA_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATABLE_TRIGGER_DATA_H_
 
-#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -22,15 +24,15 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
  public:
   using Keys = base::flat_set<std::string>;
 
-  static std::optional<AggregatableTriggerData> Create(absl::uint128 key_piece,
-                                                       Keys source_keys,
-                                                       FilterPair);
-
   static base::expected<AggregatableTriggerData,
                         mojom::TriggerRegistrationError>
   FromJSON(base::Value& value);
 
   AggregatableTriggerData();
+
+  AggregatableTriggerData(absl::uint128 key_piece,
+                          Keys source_keys,
+                          FilterPair);
 
   ~AggregatableTriggerData();
 
@@ -46,16 +48,12 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
 
   const FilterPair& filters() const { return filters_; }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const AggregatableTriggerData&,
                          const AggregatableTriggerData&) = default;
 
  private:
-  AggregatableTriggerData(absl::uint128 key_piece,
-                          Keys source_keys,
-                          FilterPair);
-
   absl::uint128 key_piece_ = 0;
   Keys source_keys_;
   FilterPair filters_;

@@ -11,9 +11,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -21,12 +23,13 @@ import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -39,7 +42,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
-import org.chromium.webapk.shell_apk.HostBrowserUtils;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 import org.chromium.webapk.shell_apk.LaunchHostBrowserSelector;
 import org.chromium.webapk.test.WebApkTestHelper;
 
@@ -57,6 +60,8 @@ import java.util.Arrays;
 public final class SplashActivityTest {
     public static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
 
+    private static final int MODERN_BROWSER_VERSION = 10000;
+
     /** Mock {@link LaunchHostBrowserSelector} which enables calling the callback manually. */
     @Implements(LaunchHostBrowserSelector.class)
     public static class MockLaunchHostBrowserSelector {
@@ -68,7 +73,9 @@ public final class SplashActivityTest {
         @Implementation
         public void selectHostBrowser(LaunchHostBrowserSelector.Callback callback) {
             if (!sDialogNeeded) {
-                callback.onBrowserSelected(BROWSER_PACKAGE_NAME, /* dialogShown= */ false);
+                callback.onBrowserSelected(
+                        new PackageNameAndComponentName(BROWSER_PACKAGE_NAME),
+                        /* dialogShown= */ false);
                 return;
             }
             sCallback = callback;
@@ -80,7 +87,8 @@ public final class SplashActivityTest {
 
         public static void dialogDismissed() {
             assertNotNull(sCallback);
-            sCallback.onBrowserSelected(BROWSER_PACKAGE_NAME, /* dialogShown= */ true);
+            sCallback.onBrowserSelected(
+                    new PackageNameAndComponentName(BROWSER_PACKAGE_NAME), /* dialogShown= */ true);
             sCallback = null;
         }
     }
@@ -91,25 +99,23 @@ public final class SplashActivityTest {
 
     @Before
     public void setUp() {
-        Context appContext = RuntimeEnvironment.application;
+        Context appContext = ApplicationProvider.getApplicationContext();
         ActivityManager activityManager =
                 (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
         mShadowActivityManager = Shadows.shadowOf(activityManager);
-        mShadowApplication = ShadowApplication.getInstance();
+        mShadowApplication = shadowOf((Application) ApplicationProvider.getApplicationContext());
         mShadowPackageManager = Shadows.shadowOf(appContext.getPackageManager());
 
         MockLaunchHostBrowserSelector.setNeedsToShowDialog(false);
 
         Bundle metadata = new Bundle();
         metadata.putString(WebApkMetaDataKeys.START_URL, "https://pwa.rocks/");
-        metadata.putBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK, true);
+        metadata.putBoolean(WebApkMetaDataKeys.IS_ARC_CHROMEOS, false);
         WebApkTestHelper.registerWebApkWithMetaData(appContext.getPackageName(), metadata, null);
 
         // Install browser.
         mShadowPackageManager.addPackage(
-                newPackageInfo(
-                        BROWSER_PACKAGE_NAME,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH));
+                newPackageInfo(BROWSER_PACKAGE_NAME, MODERN_BROWSER_VERSION));
     }
 
     // Test common cases that SplashActivity:

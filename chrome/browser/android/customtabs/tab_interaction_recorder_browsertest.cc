@@ -13,10 +13,9 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,9 +44,6 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // For using an HTTPS server.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kIgnoreCertificateErrors);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
@@ -83,7 +79,7 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
   class TestAutofillManager : public autofill::BrowserAutofillManager {
    public:
     explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
-        : autofill::BrowserAutofillManager(driver, "en-US") {}
+        : autofill::BrowserAutofillManager(driver) {}
 
     [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
         int min_num_awaited_calls) {
@@ -127,10 +123,6 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
   GURL GetTestFormInSubFrameUrl() {
     return embedded_test_server()->GetURL(
         "/autofill/iframe_autocomplete_simple_form.html");
-  }
-
-  base::FilePath GetChromeTestDataDir() {
-    return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
   }
 
   base::HistogramTester histogram_tester_;

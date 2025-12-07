@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_waiter.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,16 +92,10 @@ void DevicePolicyCrosTestHelper::RefreshDevicePolicy() {
 
 void DevicePolicyCrosTestHelper::RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
     const std::vector<std::string>& settings) {
-  base::RunLoop run_loop;
-
-  // For calls from SetPolicy().
-  std::vector<base::CallbackListSubscription> subscriptions = {};
-  for (auto& setting : settings) {
-    subscriptions.push_back(ash::CrosSettings::Get()->AddSettingsObserver(
-        setting, run_loop.QuitClosure()));
-  }
+  std::vector<std::string_view> settings_view(settings.begin(), settings.end());
+  ash::CrosSettingsWaiter waiter(settings_view);
   RefreshDevicePolicy();
-  run_loop.Run();
+  waiter.Wait();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();
 }

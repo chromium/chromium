@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -78,6 +79,13 @@ void DesktopSessionDurationTracker::OnUserEvent() {
   }
 }
 
+void DesktopSessionDurationTracker::EndSessionForTesting() {
+  if (!in_session_) {
+    StartSession();
+  }
+  EndSession(base::TimeDelta());
+}
+
 // static
 void DesktopSessionDurationTracker::CleanupForTesting() {
   DCHECK(g_desktop_session_duration_tracker_instance);
@@ -112,7 +120,7 @@ DesktopSessionDurationTracker::DesktopSessionDurationTracker()
   InitInactivityTimeout();
 }
 
-DesktopSessionDurationTracker::~DesktopSessionDurationTracker() {}
+DesktopSessionDurationTracker::~DesktopSessionDurationTracker() = default;
 
 void DesktopSessionDurationTracker::OnTimerFired() {
   base::TimeDelta remaining =
@@ -135,7 +143,6 @@ void DesktopSessionDurationTracker::StartSession() {
   is_first_session_ = false;
   session_start_ = base::TimeTicks::Now();
   StartTimer(inactivity_timeout_);
-  ResetDefaultSearchCounter();
 
   for (Observer& observer : observer_list_)
     observer.OnSessionStarted(session_start_);
@@ -167,11 +174,14 @@ void DesktopSessionDurationTracker::EndSession(
   // UmaSessionStats::UmaEndSession.
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
 
+  // Records true each time Session.TotalDuration is supposed to be recorded
+  // in a PUMA histogram. Allowing for the count to be collected.
+  base::PumaHistogramBoolean(
+      base::PumaType::kRc,
+      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
+
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
                              base::Milliseconds(1), base::Hours(24), 50);
-
-  UMA_HISTOGRAM_COUNTS_1000("Session.TotalNewDefaultSearchEngineCount",
-                            default_search_counter_);
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {

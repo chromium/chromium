@@ -6,9 +6,6 @@
 // geographical information to the Default Search Engine in omnibox queries
 // when location permissions are granted.
 //
-// TODO(lbargu): Move over to standard Geo header once it is defined, and remove
-// this proto structure from chromium code base.
-//
 // NOTE: This is currently using a Google-defined structure. This explains the
 // jumps in values. New fields cannot be added to this proto directly. See
 // https://goto.google.com/partner_location_proto
@@ -19,8 +16,6 @@ package org.chromium.chrome.browser.omnibox.geo;
 
 option java_outer_classname = "PartnerLocationDescriptor";
 option java_package = "org.chromium.chrome.browser.omnibox.geo";
-
-// TODO(jkrcal): Remove when protobuf 4.0 is out, https://crbug.com/800281.
 option optimize_for = LITE_RUNTIME;
 
 enum LocationRole {
@@ -33,52 +28,48 @@ enum LocationProducer {
   DEVICE_LOCATION = 12;
 }
 
+enum PermissionGranularity {
+  PERMISSION_GRANULARITY_UNKNOWN = 0;
+  PERMISSION_GRANULARITY_COARSE = 1;
+  PERMISSION_GRANULARITY_FINE = 2;
+}
+
 message LatLng {
   optional sfixed32 latitude_e7 = 1;
   optional sfixed32 longitude_e7 = 2;
 }
 
-message VisibleNetwork {
-
-  message WiFi {
-    optional string bssid = 1;
-    optional int32 level_dbm = 2;
-  }
-
-  message Cell {
-
-    enum Type {
-      UNKNOWN = 0;
-      GSM = 1;
-      LTE = 2;
-      CDMA = 3;
-      WCDMA = 4;
-    }
-
-    optional Type type = 1;
-    optional int32 cell_id = 2;
-    optional int32 location_area_code = 3;
-    optional int32 mobile_country_code = 4;
-    optional int32 mobile_network_code = 5;
-    optional int32 primary_scrambling_code = 6;
-    optional int32 physical_cell_id = 7;
-    optional int32 tracking_area_code = 8;
-  }
-
-  oneof type {
-    WiFi wifi = 1;
-    Cell cell = 2;
-  }
-
-  optional bool connected = 3;
-  optional int64 timestamp_ms = 4;
+// Used to indicate non-semantic details of how a descriptor was obtained.
+//
+// NOTE: All unused values are reserved for internal Google use.
+enum LocationProvenance {
+  UNREMARKABLE = 0;
+  // Descriptor came from X-Geo HTTP header. Used by browsers and apps that
+  // retrieve location on-device and attach it to the request as XGeo header.
+  XGEO_HEADER = 8;
+  // Descriptor came from X-Geo HTTP header. Used by proxy providers, the
+  // source of the location is up to the proxy to decide.
+  FORWARDED_FROM_PROXY = 13;
 }
 
 message LocationDescriptor {
   optional LocationRole role = 1 [default = UNKNOWN_ROLE];
   optional LocationProducer producer = 2 [default = UNKNOWN_PRODUCER];
+
+  // Extra information about how this descriptor was obtained.
+  optional LocationProvenance provenance = 9;
+
+  // A timestamp associated with this location expressed as the number of
+  // microseconds since 00:00:00 Jan-1-1970 UTC.  If not set, assumed to be
+  // "now" or not possible to define for the type of location attached.
   optional int64 timestamp = 3;
+
+  // A latitude and longitude used to describe this location as a point.
   optional LatLng latlng = 5;
+
+  // A radius associated with this location (e.g., GPS accuracy estimate).
+  // Units must be in mm.
   optional float radius = 7;
-  repeated VisibleNetwork visible_network = 23;
+  optional PermissionGranularity permission_granularity = 25;
+  reserved 23;
 }

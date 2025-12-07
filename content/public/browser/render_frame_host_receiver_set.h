@@ -16,7 +16,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace content {
 
@@ -79,13 +78,18 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
     frame_to_receivers_map_[render_frame_host].push_back(id);
   }
 
+  // Determines if `render_frame_host` is already bound.
+  bool IsBound(RenderFrameHost* render_frame_host) {
+    return frame_to_receivers_map_.contains(render_frame_host);
+  }
+
   // Implementations of `Interface` can call `GetCurrentTargetFrame()` to
   // determine which frame sent the message. `GetCurrentTargetFrame()` will
   // never return `nullptr`.
   //
   // Important: this method must only be called while the incoming message is
   // being dispatched on the stack.
-  RenderFrameHost* GetCurrentTargetFrame() ABSL_ATTRIBUTE_RETURNS_NONNULL {
+  RETURNS_NONNULL RenderFrameHost* GetCurrentTargetFrame() {
     if (current_target_frame_for_testing_)
       return current_target_frame_for_testing_;
     return receivers_.current_context();

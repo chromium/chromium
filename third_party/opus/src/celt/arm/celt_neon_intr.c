@@ -38,6 +38,8 @@
 #include "../pitch.h"
 
 #if defined(FIXED_POINT)
+#include <string.h>
+
 void xcorr_kernel_neon_fixed(const opus_val16 * x, const opus_val16 * y, opus_val32 sum[4], int len)
 {
    int j;
@@ -47,7 +49,10 @@ void xcorr_kernel_neon_fixed(const opus_val16 * x, const opus_val16 * y, opus_va
    int16x4_t y0 = vld1_s16(y);
    y += 4;
 
-   for (j = 0; j + 8 <= len; j += 8)
+   /* This loop loads one y value more than we actually need.
+      Therefore we have to stop as soon as there are 8 or fewer samples left
+       (instead of 7), to avoid reading past the end of the array. */
+   for (j = 0; j + 8 < len; j += 8)
    {
       /* Load x[0...7] */
       int16x8_t xx = vld1q_s16(x);
@@ -80,23 +85,79 @@ void xcorr_kernel_neon_fixed(const opus_val16 * x, const opus_val16 * y, opus_va
       x += 8;
       y += 8;
    }
-
-   for (; j < len; j++)
-   {
-      int16x4_t x0 = vld1_dup_s16(x);  /* load next x */
+   if (j + 4 < len) {
+      /* Load x[0...3] */
+      int16x4_t x0 = vld1_s16(x);
+      /* Load y[4...7] */
+      int16x4_t y4 = vld1_s16(y);
+      int32x4_t a0 = vmlal_lane_s16(a, y0, x0, 0);
+      int16x4_t y1 = vext_s16(y0, y4, 1);
+      int32x4_t a1 = vmlal_lane_s16(a0, y1, x0, 1);
+      int16x4_t y2 = vext_s16(y0, y4, 2);
+      int32x4_t a2 = vmlal_lane_s16(a1, y2, x0, 2);
+      int16x4_t y3 = vext_s16(y0, y4, 3);
+      int32x4_t a3 = vmlal_lane_s16(a2, y3, x0, 3);
+      y0 = y4;
+      a = a3;
+      x += 4;
+      y += 4;
+      j += 4;
+   }
+   if (j + 2 < len) {
+      /* Load x[0...1] */
+      int16x4x2_t xx = vld2_dup_s16(x);
+      int16x4_t x0 = xx.val[0];
+      int16x4_t x1 = xx.val[1];
+      /* Load y[4...5].
+         We would like to use vld1_dup_s32(), but casting the pointer would
+          break strict aliasing rules and potentially have alignment issues.
+         Fortunately the compiler seems capable of translating this memcpy()
+          and vdup_n_s32() into the equivalent vld1_dup_s32().*/
+      int32_t yy;
+      memcpy(&yy, y, sizeof(yy));
+      int16x4_t y4 = vreinterpret_s16_s32(vdup_n_s32(yy));
       int32x4_t a0 = vmlal_s16(a, y0, x0);
-
-      int16x4_t y4 = vld1_dup_s16(y);  /* load next y */
-      y0 = vext_s16(y0, y4, 1);
+      int16x4_t y1 = vext_s16(y0, y4, 1);
+      /* Replace bottom copy of {y[5], y[4]} in y4 with {y[3], y[2]} from y0,
+          using VSRI instead of VEXT, since it's a data-processing
+          instruction. */
+      y0 = vreinterpret_s16_s64(vsri_n_s64(vreinterpret_s64_s16(y4),
+       vreinterpret_s64_s16(y0), 32));
+      int32x4_t a1 = vmlal_s16(a0, y1, x1);
+      a = a1;
+      x += 2;
+      y += 2;
+      j += 2;
+   }
+   if (j + 1 < len) {
+      /* Load next x. */
+      int16x4_t x0 = vld1_dup_s16(x);
+      int32x4_t a0 = vmlal_s16(a, y0, x0);
+      /* Load last y. */
+      int16x4_t y4 = vld1_dup_s16(y);
+      y0 = vreinterpret_s16_s64(vsri_n_s64(vreinterpret_s64_s16(y4),
+       vreinterpret_s64_s16(y0), 16));
       a = a0;
       x++;
-      y++;
    }
-
-   vst1q_s32(sum, a);
+   /* Load last x. */
+   int16x4_t x0 = vld1_dup_s16(x);
+   int32x4_t a0 = vmlal_s16(a, y0, x0);
+   vst1q_s32(sum, a0);
 }
 
 #else
+
+#if defined(__ARM_FEATURE_FMA) && defined(__ARM_ARCH_ISA_A64)
+/* If we can, force the compiler to use an FMA instruction rather than break
+ *    vmlaq_f32() into fmul/fadd. */
+#ifdef vmlaq_lane_f32
+#undef vmlaq_lane_f32
+#endif
+#define vmlaq_lane_f32(a,b,c,lane) vfmaq_lane_f32(a,b,c,lane)
+#endif
+
+
 /*
  * Function: xcorr_kernel_neon_float
  * ---------------------------------

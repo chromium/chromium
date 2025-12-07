@@ -11,6 +11,7 @@
 #include "android_webview/browser/permission/permission_request_handler_client.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"

@@ -1,0 +1,156 @@
+<html lang="en">
+<head>
+    <style>
+        .font-serif {
+            font-family: serif;
+        }
+
+        .font-sans-serif {
+            font-family: sans-serif;
+        }
+
+        .font-monospace {
+            font-family: monospace;
+        }
+
+        .font-size-small {
+            font-size: 0.8em;
+        }
+
+        .font-size-large {
+            font-size: 1.5em;
+        }
+
+        .font-size-pixels {
+            font-size: 20px;
+        }
+
+        .font-size-zero {
+            font-size: 0px;
+        }
+
+        .color-red {
+            color: red;
+        }
+
+        .color-hex {
+            color: #008000;
+        }
+
+        .color-blue {
+            color: rgb(0, 0, 255);
+        }
+
+        .color-rgba {
+            color: rgba(0, 0, 255, 0.7);
+        }
+
+        .bg-color-yellow {
+            background-color: yellow;
+        }
+
+        .bg-color-hex {
+            background-color: #FFFF00;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+
+        .strikethrough {
+            text-decoration: line-through;
+        }
+
+        .strikethrough-underlined {
+            text-decoration: line-through underline;
+        }
+
+        .superscript {
+            vertical-align: super;
+            font-size: smaller;
+        }
+
+        .subscript {
+            vertical-align: sub;
+            font-size: smaller;
+        }
+    </style>
+</head>
+<body>
+
+    <p class="font-serif">Example Text - Serif Font</p>
+    <p class="font-sans-serif">Example Text - Sans-Serif Font</p>
+    <p class="font-monospace">Example Text - Monospace Font</p>
+
+    <p class="font-size-small">Example Text - Small Font Size</p>
+    <p class="font-size-large">Example Text - Large Font Size</p>
+    <p class="font-size-pixels">Example Text - Font Size in Pixels</p>
+
+    <p class="color-red">Example Text - Red Text Color</p>
+    <p class="color-hex">Example Text - Hex Code Text Color</p>
+    <p class="color-rgba">Example Text - RGBA Text Color</p>
+
+    <p class="bg-color-yellow">Example Text - Yellow Background Color</p>
+    <p class="bg-color-hex">Example Text - Yellow Background Color (Hex)</p>
+
+    <p class="bold">Example Text - Bold Text</p>
+    <p class="italic">Example Text - Italic Text</p>
+    <p class="underline">Example Text - Underlined Text</p>
+    <p class="strikethrough">Example Text - Strikethrough Text</p>
+
+    <p>Example Text - <sup class="superscript">Superscripted Text</sup></p>
+    <p>Example Text - <sub class="subscript">Subscripted Text</sub></p>
+
+    <p class="bold italic">Example Text - Bold and Italic</p>
+    <p class="strikethrough-underlined">Example Text - Underline and Strikethrough</p>
+    <p class="color-red bold">Example Text - Red and Bold</p>
+    <p class="font-sans-serif font-size-large color-blue">Example Text - Sans-Serif, Large, Blue</p>
+    <p class="bg-color-yellow bold italic">Example Text - Yellow Background, Bold, Italic</p>
+    <p class="font-monospace color-rgba bg-color-hex bold">Example Text - Monospace, RGBA, BG Hex, Bold</p>
+
+    <p>Example Text - An <a href="https://www.example.com/">example</a> link</p>
+
+    <p>Example Text - Nested <span class="bold">bolded</span> text</p>
+    <p>Example Text - <span class="italic">Overlapping <span class="bold">text</span> styling</span></p>
+    <p>Example Text - <span class="italic">Same</span> style <span class="italic">multiple</span> times</p>
+    <p>Example Text - Consecutive <span class="italic">same</span><span class="italic"> style</span> not merged</p>
+    <p>Example Text - Mixed <span class="italic">italic, <span class="underline">underline, and <span class="strikethrough-underlined">strikethrough</span></span></span> styles</p>
+
+    <p>Example Text - Nested <span class="font-monospace">monospace font</span> text</p>
+    <p>Example Text - Nested <span class="font-size-pixels">pixel font size</span> text</p>
+    <p>Example Text - Nested <span class="color-red">red color</span> text</p>
+    <p>Example Text - Nested <span class="bg-color-yellow">yellow background color</span> text</p>
+
+    <p>Example Text - Nested <span lang="zh-TW">繁體中文</span> text</p>
+
+    <p>Example Text - Nested <span class="color-red">foreground and <span class="bg-color-yellow">background <span class="italic">colors <span class="font-size-pixels">with</span></span> font</span> <span class="bold">sizes</span> and styles</span></p>
+    <p>Example Text - Some <span style="background-color: yellow;">background color and <span style="font-style: italic;">italic</span> text</span></p>
+
+    <p>Example Text - Empty <span class="bold"></span>style text</p>
+    <p>Example Text - Empty <a href="https://www.example.com/"></a>link text</p>
+    <p>Example Text - Nested <span class="font-size-zero">invisible</span> text</p>
+
+    <p><input class="italic" value="Italic text field" /></p>
+
+    <div contenteditable="true">
+      Simple contenteditable example with <b>bold</b>, <i>italic</i>, and <u>underline</u> text.<br/>
+      Also <span class="font-monospace">monospace, <span class="font-size-pixels">big</span>, and <span class="color-red">red text with <span class="bg-color-yellow">yellow background and <b>bold</b></span></span></span> style.
+    </div>
+
+    <div class="contenteditable-test" contenteditable="true">
+        <p class="font-monospace">Example ContentEditable - Monospace Font</p>
+        <p class="bold">Example ContentEditable - Bold Text</p>
+        <p class="color-red"><sup class="superscript">Example ContentEditable - Small red superscript</sup></p>
+        <p class="font-serif strikethrough-underlined bold italic font-size-large">Example ContentEditable - Large bold italic strikethrough underlined serif</p>
+    </div>
+
+</body>
+</html>

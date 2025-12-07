@@ -15,7 +15,17 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
+#if PA_BUILDFLAG(IS_WIN)
+#include "partition_alloc/partition_alloc_base/win/windows_types.h"
+#endif
+
 namespace partition_alloc {
+
+// LINT.IfChange(CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE)
+// Exit code to use when another process is terminated on commit failure.
+// This is defined here to avoid a dependency on Chrome.
+static constexpr unsigned int kTerminateOnCommitFailureExitCode = 39;
+// LINT.ThenChange(/chrome/common/chrome_result_codes.h:CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE)
 
 struct PageAccessibilityConfiguration {
   enum Permissions {
@@ -343,6 +353,24 @@ void DiscardSystemPages(uintptr_t address, size_t length);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void DiscardSystemPages(void* address, size_t length);
 
+// Seal a number of system pages starting at |address|. Returns |true| on
+// success.
+//
+// This blocks various modifications to the pages such as unmapping, remapping
+// or changing page permissions. Note that it doesn't change the accessibility
+// of the memory, sealed writable pages will still be writable.
+//
+// This is mainly useful for non-writable memory (either via page permissions or
+// other hardware features like pkeys) that is bound to the process lifetime.
+//
+// While unmapping the pages gets blocked, it can still be possible to release
+// the memory using |DiscardSystemPages()|, though note that at least on Linux,
+// it requires write access to the page to succeed.
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool SealSystemPages(uintptr_t address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool SealSystemPages(void* address, size_t length);
+
 // Rounds up |address| to the next multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
@@ -404,6 +432,24 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) size_t GetTotalMappedSize();
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void SetRetryOnCommitFailure(bool retry_on_commit_failure);
 bool GetRetryOnCommitFailure();
+
+// Sets the handle of a process to terminate on commit failure, before retrying
+// the operation. The API takes ownership of the handle (ensures that it will be
+// closed when no longer needed). The caller must call this again with a new
+// handle (or nullptr) when the last provided process terminates (for any
+// reason) - otherwise the implementation may hold onto the terminated process's
+// handle which will undesirably keep the process object alive, see
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/eprocess#eprocess
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetProcessToTerminateOnCommitFailure(HANDLE handle);
+
+// Terminates the last process passed to SetProcessToTerminateOnCommitFailure(),
+// if any. Local experiments show that it takes ~50ms for the terminated
+// process' commit charge to be relinquished, so the caller may want to wait a
+// little bit before retrying the commit.
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void TerminateAnotherProcessOnCommitFailure();
+
 #endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc

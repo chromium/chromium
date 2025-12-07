@@ -47,10 +47,11 @@ void AddUserDataFolder(std::vector<BrokerFilePermission>* permissions) {
 }
 
 std::vector<BrokerFilePermission> GetImeFilePermissions() {
-  // These 2 paths are needed before creating IME service.
+  // These paths are needed before creating IME service.
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu")};
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu"),
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
 
   AddBundleFolder(&permissions);
   AddUserDataFolder(&permissions);

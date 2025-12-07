@@ -5,7 +5,7 @@
 #include "device/gamepad/test_support/fake_igamepad.h"
 
 #include "base/containers/flat_map.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
 
 using ABI::Windows::Foundation::ITypedEventHandler;

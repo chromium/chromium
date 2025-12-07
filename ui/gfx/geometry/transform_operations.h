@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_operation.h"
 
@@ -30,7 +30,7 @@ struct DecomposedTransform;
 // we have two dissimilar sets of transform operations, but the effect may not
 // be what was intended. For more information, see the comments for the blend
 // function below.
-class GEOMETRY_SKIA_EXPORT TransformOperations {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) TransformOperations {
  public:
   TransformOperations();
   TransformOperations(const TransformOperations& other);

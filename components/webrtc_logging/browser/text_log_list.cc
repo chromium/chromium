@@ -5,7 +5,6 @@
 #include "components/webrtc_logging/browser/text_log_list.h"
 
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "components/upload_list/text_log_upload_list.h"
 #include "content/public/browser/browser_context.h"
 

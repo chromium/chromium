@@ -10,6 +10,7 @@
 
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
+#include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +21,7 @@ namespace {
 
 void TestProcessAccess(RunnerGenerator runner_gen, DWORD target) {
   const wchar_t *kCommandTemplate = L"OpenProcessCmd %d %d";
-  wchar_t command[1024] = {0};
+  wchar_t command[1024] = {};
   std::unique_ptr<sandbox::TestRunner> runner = nullptr;
 
   // Test all the scary process permissions.
@@ -184,7 +185,7 @@ TEST(ValidationSuite, TestAlternateDesktop) {
             runner_no_policy.RunTest(L"EnumAlternateWinsta NULL"));
 
   TestRunner runner;
-  wchar_t command[1024] = {0};
+  wchar_t command[1024] = {};
   runner.SetTimeout(3600000);
   EXPECT_EQ(SBOX_ALL_OK, runner.broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
@@ -232,7 +233,7 @@ TEST(ValidationSuite, TestWindows) {
     GTEST_SKIP() << "Skipping test for Win10 19041 branch, crbug.com/1057656.";
   }
 
-  wchar_t command[1024] = {0};
+  wchar_t command[1024] = {};
 
   TestRunner runner_getshellwindow;
   wsprintf(command, L"ValidWindow %Id",
@@ -307,7 +308,7 @@ TEST(ValidationSuite, TestProcessDenyBelowLowIntegrity) {
 // Tests if the threads are correctly protected by the sandbox.
 TEST(ValidationSuite, TestThread) {
   TestRunner runner;
-  wchar_t command[1024] = {0};
+  wchar_t command[1024] = {};
 
   wsprintf(command, L"OpenThreadCmd %d", ::GetCurrentThreadId());
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
@@ -316,7 +317,7 @@ TEST(ValidationSuite, TestThread) {
 // Tests if an over-limit allocation will be denied.
 TEST(ValidationSuite, TestMemoryLimit) {
   TestRunner runner;
-  wchar_t command[1024] = {0};
+  wchar_t command[1024] = {};
   const int kAllocationSize = 256 * 1024 * 1024;
 
   wsprintf(command, L"AllocateCmd %d", kAllocationSize);
@@ -327,11 +328,25 @@ TEST(ValidationSuite, TestMemoryLimit) {
 // Tests a large allocation will succeed absent limits.
 TEST(ValidationSuite, TestMemoryNoLimit) {
   TestRunner runner;
-  wchar_t command[1024] = {0};
+  wchar_t command[1024] = {};
   const int kAllocationSize = 256 * 1024 * 1024;
 
   wsprintf(command, L"AllocateCmd %d", kAllocationSize);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command));
+}
+
+// Tests that the InitCompleted API works correctly in various states.
+TEST(ValidationSuite, TestInitCompleted) {
+  {
+    TestRunner runner;
+    runner.SetTestState(BEFORE_REVERT);
+    EXPECT_EQ(SBOX_TEST_FIRST_ERROR, runner.RunTest(L"InitCompleted"));
+  }
+  {
+    TestRunner runner;
+    runner.SetTestState(AFTER_REVERT);
+    EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"InitCompleted"));
+  }
 }
 
 }  // namespace sandbox

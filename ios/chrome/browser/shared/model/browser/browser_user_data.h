@@ -6,19 +6,11 @@
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_USER_DATA_H_
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-
-// This macro declares a static variable inside the class that inherits from
-// BrwoserUserData. The address of this static variable is used as the key to
-// store/retrieve an instance of the class on/from a Browser.
-#define BROWSER_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
-
-// This macro instantiates the static variable declared by the previous macro.
-// It must live in a .mm/.cc file to ensure that there is only one instantiation
-// of the static variable.
-#define BROWSER_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
+#include "ios/chrome/browser/shared/model/browser/browser.h"
 
 // A base class for classes attached to, and scoped to, the lifetime of a
 // Browser. For example:
@@ -31,12 +23,8 @@
 //  private:
 //   explicit FooBrowserAgent(Browser* browser);
 //   friend class BrowserUserData<FooBrowserAgent>;
-//   BROWSER_USER_DATA_KEY_DECL();
 //   // ... more private stuff here ...
 // };
-//
-// --- in foo_browser_agent.cc ---
-// BROWSER_USER_DATA_KEY_IMPL(FooBrowserAgent)
 template <typename T>
 class BrowserUserData : public base::SupportsUserData::Data {
  public:
@@ -46,9 +34,8 @@ class BrowserUserData : public base::SupportsUserData::Data {
   static void CreateForBrowser(Browser* browser, Args&&... args) {
     DCHECK(browser);
     if (!FromBrowser(browser)) {
-      browser->SetUserData(
-          UserDataKey(),
-          base::WrapUnique(new T(browser, std::forward<Args>(args)...)));
+      browser->SetUserData(UserDataKey(),
+                           T::Create(browser, std::forward<Args>(args)...));
     }
   }
 
@@ -67,7 +54,27 @@ class BrowserUserData : public base::SupportsUserData::Data {
     browser->RemoveUserData(UserDataKey());
   }
 
-  static const void* UserDataKey() { return &T::kUserDataKey; }
+  // The key under which to store the user data.
+  static inline const void* UserDataKey() {
+    static const int kId = 0;
+    return &kId;
+  }
+
+ protected:
+  explicit BrowserUserData(Browser* browser) : browser_(browser) {
+    CHECK(browser_);
+  }
+
+  // The owning Browser.
+  const raw_ptr<Browser> browser_;
+
+ private:
+  // Default factory for T that invoke T's constructor. Can be overloaded
+  // by sub-class if they want to create a sub-class of T instead.
+  template <typename... Args>
+  static std::unique_ptr<T> Create(Browser* browser, Args&&... args) {
+    return base::WrapUnique(new T(browser, std::forward<Args>(args)...));
+  }
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_USER_DATA_H_

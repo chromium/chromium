@@ -11,6 +11,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -19,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hkdf.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 
@@ -288,7 +291,7 @@ GCMMessageCryptographer::GCMMessageCryptographer(Version version) {
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GCMMessageCryptographer::~GCMMessageCryptographer() = default;

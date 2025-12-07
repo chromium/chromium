@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
@@ -19,8 +20,8 @@ void AppendLayerPropertiesMatchedStyle(
   ret->emplace_back("layer-type",
                     std::string(LayerTypeToString(layer->type())));
   ret->emplace_back("has-layer-mask",
-                    layer->layer_mask_layer() ? "true" : "false");
-  ret->emplace_back("layer-is-visible", layer->IsVisible() ? "true" : "false");
+                    base::ToString(layer->layer_mask_layer()));
+  ret->emplace_back("layer-is-visible", base::ToString(layer->IsVisible()));
   ret->emplace_back("layer-opacity", base::NumberToString((layer->opacity())));
   ret->emplace_back("layer-combined-opacity",
                     base::NumberToString(layer->GetCombinedOpacity()));
@@ -34,7 +35,7 @@ void AppendLayerPropertiesMatchedStyle(
   ret->emplace_back("layer-grayscale",
                     base::NumberToString(layer->layer_grayscale()));
   ret->emplace_back("layer-fills-bounds-opaquely",
-                    layer->fills_bounds_opaquely() ? "true" : "false");
+                    base::ToString(layer->fills_bounds_opaquely()));
   if (layer->type() == ui::LAYER_SOLID_COLOR) {
     ret->emplace_back("layer-color",
                       base::StringPrintf("%X", layer->GetTargetColor()));
@@ -49,9 +50,7 @@ void AppendLayerPropertiesMatchedStyle(
 
   const ui::Layer::ShapeRects* alpha_shape_bounds = layer->alpha_shape();
   if (alpha_shape_bounds && alpha_shape_bounds->size()) {
-    gfx::Rect bounding_box;
-    for (auto& shape_bound : *alpha_shape_bounds)
-      bounding_box.Union(shape_bound);
+    gfx::Rect bounding_box = gfx::UnionRects(*alpha_shape_bounds);
     ret->emplace_back("alpha-shape-bounding-box", bounding_box.ToString());
   }
 

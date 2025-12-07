@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/content/renderer/password_form_conversion_utils.h"
+
 #include <stddef.h>
+
 #include <memory>
+#include <vector>
 
 #include "base/strings/stringprintf.h"
-#include "components/autofill/content/renderer/password_form_conversion_utils.h"
 #include "content/public/test/render_view_test.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 using blink::WebFormElement;
 using blink::WebLocalFrame;
-using blink::WebVector;
 
 namespace autofill {
-
 namespace {
 
 // A builder to produce HTML code for a password form composed of the desired
@@ -115,14 +115,12 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
     WebLocalFrame* frame = GetMainFrame();
     ASSERT_TRUE(frame);
 
-    WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
+    std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
     ASSERT_LE(1U, forms.size());
 
     *form = forms[0];
   }
 };
-
-}  // namespace
 
 TEST_F(PasswordFormConversionUtilsTest, IsGaiaReauthFormIgnored) {
   struct TestCase {
@@ -262,4 +260,5 @@ TEST_F(PasswordFormConversionUtilsTest, IsGaiaWithSkipSavePasswordForm) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

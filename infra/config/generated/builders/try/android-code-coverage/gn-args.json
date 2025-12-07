@@ -3,6 +3,7 @@
     "android_static_analysis": "off",
     "dcheck_always_on": false,
     "debuggable_apks": false,
+    "enable_r8_tracerefs": true,
     "enable_resource_allowlist_generation": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
@@ -14,6 +15,7 @@
     "target_cpu": "arm64",
     "target_os": "android",
     "use_jacoco_coverage": true,
+    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true,
     "use_static_angle": true

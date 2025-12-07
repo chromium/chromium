@@ -36,11 +36,13 @@ std::vector<ui::SimpleComboboxModel::Item> GetExpirationYearItems(
   base::Time::Exploded now_exploded;
   AutofillClock::Now().LocalExplode(&now_exploded);
 
-  if (additional_year != 0 && additional_year < now_exploded.year)
+  if (additional_year != 0 && additional_year < now_exploded.year) {
     years.emplace_back(base::NumberToString16(additional_year));
+  }
 
-  for (int i = 0; i < kNumberOfExpirationYears; i++)
+  for (int i = 0; i < kNumberOfExpirationYears; i++) {
     years.emplace_back(base::NumberToString16(now_exploded.year + i));
+  }
 
   if (additional_year != 0 &&
       additional_year >= now_exploded.year + kNumberOfExpirationYears) {
@@ -59,9 +61,9 @@ std::u16string FormatMonth(int month) {
 
 // MonthComboboxModel ----------------------------------------------------------
 
-MonthComboboxModel::MonthComboboxModel() {}
+MonthComboboxModel::MonthComboboxModel() = default;
 
-MonthComboboxModel::~MonthComboboxModel() {}
+MonthComboboxModel::~MonthComboboxModel() = default;
 
 size_t MonthComboboxModel::GetItemCount() const {
   // 12 months plus the empty entry.
@@ -75,8 +77,9 @@ std::u16string MonthComboboxModel::GetItemAt(size_t index) const {
 }
 
 void MonthComboboxModel::SetDefaultIndexByMonth(int month) {
-  if (month >= 1 && month <= 12)
+  if (month >= 1 && month <= 12) {
     default_index_ = static_cast<size_t>(month);
+  }
 }
 
 std::optional<size_t> MonthComboboxModel::GetDefaultIndex() const {
@@ -88,7 +91,7 @@ std::optional<size_t> MonthComboboxModel::GetDefaultIndex() const {
 YearComboboxModel::YearComboboxModel(int additional_year)
     : ui::SimpleComboboxModel(GetExpirationYearItems(additional_year)) {}
 
-YearComboboxModel::~YearComboboxModel() {}
+YearComboboxModel::~YearComboboxModel() = default;
 
 void YearComboboxModel::SetDefaultIndexByYear(int year) {
   const std::u16string& year_value = base::NumberToString16(year);

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -68,7 +69,7 @@ BlinkStorageKey BlinkStorageKey::Create(
 
 // static
 BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
-    const WTF::String& origin) {
+    const String& origin) {
   return BlinkStorageKey::CreateFirstParty(
       SecurityOrigin::CreateFromString(origin));
 }
@@ -184,15 +185,16 @@ BlinkStorageKey BlinkStorageKey::WithOrigin(
 }
 
 String BlinkStorageKey::ToDebugString() const {
-  return "{ origin: " + GetSecurityOrigin()->ToString() +
-         ", top-level site: " + top_level_site_.Serialize() + ", nonce: " +
-         (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())
-                                 : "<null>") +
-         ", ancestor chain bit: " +
-         (GetAncestorChainBit() == mojom::blink::AncestorChainBit::kSameSite
-              ? "Same-Site"
-              : "Cross-Site") +
-         " }";
+  return StrCat(
+      {"{ origin: ", GetSecurityOrigin()->ToString(),
+       ", top-level site: ", top_level_site_.Serialize(), ", nonce: ",
+       (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())
+                               : "<null>"),
+       ", ancestor chain bit: ",
+       (GetAncestorChainBit() == mojom::blink::AncestorChainBit::kSameSite
+            ? "Same-Site"
+            : "Cross-Site"),
+       " }"});
 }
 
 bool BlinkStorageKey::ExactMatchForTesting(const BlinkStorageKey& other) const {
@@ -201,20 +203,6 @@ bool BlinkStorageKey::ExactMatchForTesting(const BlinkStorageKey& other) const {
              other.ancestor_chain_bit_if_third_party_enabled_ &&
          this->top_level_site_if_third_party_enabled_ ==
              other.top_level_site_if_third_party_enabled_;
-}
-
-bool operator==(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
-  DCHECK(lhs.origin_);
-  DCHECK(rhs.origin_);
-
-  return lhs.origin_->IsSameOriginWith(rhs.origin_.get()) &&
-         lhs.nonce_ == rhs.nonce_ &&
-         lhs.top_level_site_ == rhs.top_level_site_ &&
-         lhs.ancestor_chain_bit_ == rhs.ancestor_chain_bit_;
-}
-
-bool operator!=(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
-  return !(lhs == rhs);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const BlinkStorageKey& key) {

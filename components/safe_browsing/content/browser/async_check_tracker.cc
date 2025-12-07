@@ -4,11 +4,12 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
@@ -16,6 +17,7 @@ namespace safe_browsing {
 namespace {
 
 using security_interstitials::UnsafeResource;
+using security_interstitials::UnsafeResourceLocator;
 
 // The threshold that will trigger a cleanup on
 // `committed_navigation_timestamps_`.
@@ -23,8 +25,8 @@ constexpr int kNavigationTimestampsSizeThreshold = 10000;
 
 // Navigation timestamps that are older than this interval are considered
 // expired and may be cleaned up. This interval must be much larger than the
-// life time of UrlCheckerOnSB so that IsMainPageLoadPending returns the correct
-// result when the check completes.
+// life time of UrlCheckerHolder so that IsMainPageLoadPending returns the
+// correct result when the check completes.
 constexpr base::TimeDelta kNavigationTimestampExpiration = base::Seconds(180);
 
 }  // namespace
@@ -32,30 +34,28 @@ constexpr base::TimeDelta kNavigationTimestampExpiration = base::Seconds(180);
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AsyncCheckTracker);
 
 // static
-AsyncCheckTracker* AsyncCheckTracker::GetOrCreateForWebContents(
-    content::WebContents* web_contents,
-    scoped_refptr<BaseUIManager> ui_manager) {
-  CHECK(web_contents);
-  // CreateForWebContents does nothing if the delegate instance already exists.
-  AsyncCheckTracker::CreateForWebContents(web_contents, std::move(ui_manager));
-  return AsyncCheckTracker::FromWebContents(web_contents);
+bool AsyncCheckTracker::IsMainPageResourceLoadPending(
+    const security_interstitials::UnsafeResource& resource) {
+  return IsMainPageLoadPending(resource.rfh_locator, resource.navigation_id,
+                               resource.threat_type);
 }
 
 // static
 bool AsyncCheckTracker::IsMainPageLoadPending(
-    const security_interstitials::UnsafeResource& resource) {
+    const security_interstitials::UnsafeResourceLocator& rfh_locator,
+    const std::optional<int64_t>& navigation_id,
+    safe_browsing::SBThreatType threat_type) {
   content::WebContents* web_contents =
-      unsafe_resource_util::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
   if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
-      resource.navigation_id.has_value() &&
-      base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+      navigation_id.has_value()) {
     // If async check is enabled, whether the main page load is pending cannot
     // be solely determined by the fields in resource. The page load may or may
     // not be pending, depending on when the async check completes.
     return AsyncCheckTracker::FromWebContents(web_contents)
-        ->IsNavigationPending(resource.navigation_id.value());
+        ->IsNavigationPending(navigation_id.value());
   }
-  return resource.IsMainPageLoadPendingWithSyncCheck();
+  return UnsafeResource::IsMainPageLoadPendingWithSyncCheck(threat_type);
 }
 
 // static
@@ -65,21 +65,33 @@ AsyncCheckTracker::GetBlockedPageCommittedTimestamp(
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForResource(resource);
   if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
-      resource.navigation_id.has_value() &&
-      base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+      resource.navigation_id.has_value()) {
     return AsyncCheckTracker::FromWebContents(web_contents)
         ->GetNavigationCommittedTimestamp(resource.navigation_id.value());
   }
   return std::nullopt;
 }
 
+// static
+bool AsyncCheckTracker::IsPlatformEligibleForSyncCheckerCheckAllowlist() {
+#if BUILDFLAG(IS_ANDROID)
+  // Allowlist check is much faster than blocklist check on Android, so we are
+  // enabling this on Android only.
+  return base::FeatureList::IsEnabled(kSafeBrowsingSyncCheckerCheckAllowlist);
+#else
+  return false;
+#endif
+}
+
 AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
-                                     scoped_refptr<BaseUIManager> ui_manager)
+                                     scoped_refptr<BaseUIManager> ui_manager,
+                                     bool should_sync_checker_check_allowlist)
     : content::WebContentsUserData<AsyncCheckTracker>(*web_contents),
       content::WebContentsObserver(web_contents),
       ui_manager_(std::move(ui_manager)),
-      navigation_timestamps_size_threshold_(
-          kNavigationTimestampsSizeThreshold) {}
+      navigation_timestamps_size_threshold_(kNavigationTimestampsSizeThreshold),
+      should_sync_checker_check_allowlist_(
+          should_sync_checker_check_allowlist) {}
 
 AsyncCheckTracker::~AsyncCheckTracker() {
   DeletePendingCheckers(/*excluded_navigation_id=*/std::nullopt);
@@ -89,7 +101,7 @@ AsyncCheckTracker::~AsyncCheckTracker() {
 }
 
 void AsyncCheckTracker::TransferUrlChecker(
-    std::unique_ptr<UrlCheckerOnSB> checker) {
+    std::unique_ptr<UrlCheckerHolder> checker) {
   std::optional<int64_t> navigation_id = checker->navigation_id();
   CHECK(navigation_id.has_value());
   int64_t id = navigation_id.value();
@@ -107,7 +119,7 @@ void AsyncCheckTracker::TransferUrlChecker(
 
 void AsyncCheckTracker::PendingCheckerCompleted(
     int64_t navigation_id,
-    UrlCheckerOnSB::OnCompleteCheckResult result) {
+    UrlCheckerHolder::OnCompleteCheckResult result) {
   DVLOG(1) << __func__ << " : navigation id: " << navigation_id
            << " proceed: " << result.proceed
            << " has_post_commit_interstitial_skipped: "
@@ -214,8 +226,9 @@ void AsyncCheckTracker::MaybeDisplayBlockingPage(
     return;
   }
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
-  resource.render_process_id = primary_main_frame->GetGlobalId().child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+      primary_main_frame->GetGlobalId().child_id,
+      primary_main_frame->GetFrameToken().value());
   // The callback has already been run when BaseUIManager attempts to
   // trigger post commit error page, so there is no need to run again.
   resource.callback = base::DoNothing();

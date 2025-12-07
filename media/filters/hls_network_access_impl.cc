@@ -31,12 +31,13 @@ void HlsNetworkAccessImpl::ReadSegmentQueueInternal(
 }
 
 void HlsNetworkAccessImpl::ReadAllInternal(const GURL& uri,
-                                           HlsDataSourceProvider::ReadCb cb) {
+                                           HlsDataSourceProvider::ReadCb cb,
+                                           bool bypass_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   // Callers of `ReadAllInternal` should enforce this.
   CHECK(data_source_provider_);
   HlsDataSourceProvider::SegmentQueue queue;
-  queue.emplace(uri, std::nullopt);
+  queue.emplace(uri, std::nullopt, bypass_cache);
   ReadSegmentQueueInternal(
       std::move(queue),
       base::BindOnce(&HlsNetworkAccessImpl::ReadUntilExhausted,
@@ -69,7 +70,7 @@ void HlsNetworkAccessImpl::ReadManifest(const GURL& uri,
     std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
     return;
   }
-  ReadAllInternal(uri, std::move(cb));
+  ReadAllInternal(uri, std::move(cb), /*bypass_cache=*/true);
 }
 
 void HlsNetworkAccessImpl::ReadKey(
@@ -101,10 +102,10 @@ void HlsNetworkAccessImpl::ReadMediaSegment(const hls::MediaSegment& segment,
   HlsDataSourceProvider::SegmentQueue queue;
   if (include_init) {
     if (auto init = segment.GetInitializationSegment()) {
-      queue.emplace(init->GetUri(), init->GetByteRange());
+      queue.emplace(init->GetUri(), init->GetByteRange(), false);
     }
   }
-  queue.emplace(segment.GetUri(), segment.GetByteRange());
+  queue.emplace(segment.GetUri(), segment.GetByteRange(), false);
 
   if (auto enc_data = segment.GetEncryptionData()) {
     if (enc_data->NeedsKeyFetch()) {

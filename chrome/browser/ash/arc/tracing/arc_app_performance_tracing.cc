@@ -4,14 +4,10 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +21,11 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -148,7 +149,7 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
     exo::WMHelper::GetInstance()->AddActivationObserver(this);
   }
   ArcAppListPrefs::Get(context_)->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
 }
 
 // Releasing resources in DTOR is not safe, see |Shutdown|.
@@ -188,7 +189,7 @@ void ArcAppPerformanceTracing::MaybeCancelTracing() {
 }
 
 void ArcAppPerformanceTracing::Shutdown() {
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 
   MaybeCancelTracing();
 
@@ -221,7 +222,7 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
 }
 
 bool ExpectingPresentEvents() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
 
   return screen->GetNumDisplays() > 1 || screen->GetPrimaryDisplay().detected();
 }

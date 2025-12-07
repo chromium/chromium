@@ -1,0 +1,68 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+assert(is_chromeos, "This API is only supported on ChromeOS.")
+
+source_set("document_scan") {
+  sources = [
+    "document_scan_api.cc",
+    "document_scan_api.h",
+    "document_scan_api_handler.cc",
+    "document_scan_api_handler.h",
+    "document_scan_type_converters.cc",
+    "document_scan_type_converters.h",
+    "scanner_discovery_runner.cc",
+    "scanner_discovery_runner.h",
+    "simple_scan_runner.cc",
+    "simple_scan_runner.h",
+    "start_scan_runner.cc",
+    "start_scan_runner.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/scanning",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/extensions",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
+    "//components/prefs",
+    "//ui/native_window_tracker",
+    "//ui/views",
+  ]
+}
+
+source_set("profile_prefs_registry_util") {
+  sources = [
+    "profile_prefs_registry_util.cc",
+    "profile_prefs_registry_util.h",
+  ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/prefs",
+  ]
+}

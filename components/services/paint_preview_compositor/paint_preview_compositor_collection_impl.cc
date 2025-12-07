@@ -147,9 +147,8 @@ void PaintPreviewCompositorCollectionImpl::CreateCompositor(
 }
 
 void PaintPreviewCompositorCollectionImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level >=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     SkGraphics::PurgeAllCaches();
     if (discardable_shared_memory_manager_) {
       discardable_shared_memory_manager_->ReleaseFreeMemory();

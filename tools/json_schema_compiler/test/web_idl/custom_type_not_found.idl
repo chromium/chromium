@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary ExampleType {
+  required DOMString someString;
+};
+
+// Example WebIDL schema which is invalid due to it referencing a type which is
+// not defined anywhere in the file. This should raise a SchemaCompilerError.
+interface TestWebIdl {
+  // This function returns a type correctly defined in the file.
+  static ExampleType returnsExampleType();
+  // This function returns a type not defined in the file.
+  static MissingType returnsMissingType();
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

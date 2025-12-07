@@ -18,9 +18,11 @@ source_set("bubble") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
     "//content/public/browser",
     "//skia",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/views",
     "//ui/views/controls/webview",
 
@@ -31,8 +33,10 @@ source_set("bubble") {
     "//chrome/browser/ui:webui_name_variants",
   ]
   deps = [
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/input",
+    "//ui/webui",
   ]
 
   if (use_aura) {

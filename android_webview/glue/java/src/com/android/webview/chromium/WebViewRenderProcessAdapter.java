@@ -5,10 +5,7 @@
 package com.android.webview.chromium;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.webkit.WebViewRenderProcess;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.common.Lifetime;
@@ -16,13 +13,12 @@ import org.chromium.android_webview.common.Lifetime;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Lifetime.Renderer
 class WebViewRenderProcessAdapter extends WebViewRenderProcess {
-    private static WeakHashMap<AwRenderProcess, WebViewRenderProcessAdapter> sInstances =
+    private static final WeakHashMap<AwRenderProcess, WebViewRenderProcessAdapter> sInstances =
             new WeakHashMap<>();
 
-    private WeakReference<AwRenderProcess> mAwRenderProcessWeakRef;
+    private final WeakReference<AwRenderProcess> mAwRenderProcessWeakRef;
 
     public static WebViewRenderProcessAdapter getInstanceFor(AwRenderProcess awRenderProcess) {
         if (awRenderProcess == null) {
@@ -30,8 +26,8 @@ class WebViewRenderProcessAdapter extends WebViewRenderProcess {
         }
         WebViewRenderProcessAdapter instance = sInstances.get(awRenderProcess);
         if (instance == null) {
-            sInstances.put(
-                    awRenderProcess, instance = new WebViewRenderProcessAdapter(awRenderProcess));
+            instance = new WebViewRenderProcessAdapter(awRenderProcess);
+            sInstances.put(awRenderProcess, instance);
         }
         return instance;
     }

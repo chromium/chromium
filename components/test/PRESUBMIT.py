@@ -24,6 +24,9 @@ def CheckChange(input_api, output_api):
                 'data/dom_distiller/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/autofill/label-doms/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/feed/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
@@ -39,7 +42,13 @@ def CheckChange(input_api, output_api):
                 'data/language/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/optimization_guide/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/offline_pages/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/page_content_annotations/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
                 'data/paint_preview/unit_tests_bundle_data')

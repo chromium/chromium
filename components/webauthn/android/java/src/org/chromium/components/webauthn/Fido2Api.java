@@ -4,6 +4,10 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.webauthn.WebauthnLogger.log;
+import static org.chromium.components.webauthn.WebauthnLogger.logError;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -14,13 +18,10 @@ import android.os.ResultReceiver;
 import android.util.Base64;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Log;
 import org.chromium.blink.mojom.AttestationConveyancePreference;
 import org.chromium.blink.mojom.AuthenticationExtensionsClientOutputs;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
@@ -37,6 +38,9 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.blink.mojom.UvmEntry;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
 import java.nio.ByteBuffer;
@@ -85,7 +89,10 @@ import java.util.concurrent.TimeUnit;
  * https://android.googlesource.com/platform/frameworks/native/+/3cf307284a620c67b9eb024439583fc1c42574ee/libs/binder/Parcel.cpp#1545
  */
 @JNINamespace("webauthn")
+@NullMarked
 public final class Fido2Api {
+    private static final String TAG = "Fido2Api";
+
     public interface Calls {
         /**
          * Serialize a browser's or an app's makeCredential request to a {@link Parcel}. Apps should
@@ -104,7 +111,7 @@ public final class Fido2Api {
         void makeCredential(
                 PublicKeyCredentialCreationOptions options,
                 @Nullable Uri uri,
-                @Nullable byte[] clientDataHash,
+                byte @Nullable [] clientDataHash,
                 @Nullable Bundle browserOptions,
                 @Nullable ResultReceiver resultReceiver,
                 Parcel parcel)
@@ -126,8 +133,8 @@ public final class Fido2Api {
         void getAssertion(
                 PublicKeyCredentialRequestOptions options,
                 @Nullable Uri uri,
-                @Nullable byte[] clientDataHash,
-                @Nullable byte[] tunnelId,
+                byte @Nullable [] clientDataHash,
+                byte @Nullable [] tunnelId,
                 @Nullable ResultReceiver resultReceiver,
                 Parcel parcel);
     }
@@ -149,7 +156,6 @@ public final class Fido2Api {
     private static final double MIN_TIMEOUT_SECONDS = 10;
     private static final double MAX_TIMEOUT_SECONDS = 600;
 
-    private static final String TAG = "Fido2Api";
     private static final int ECDSA_COSE_IDENTIFIER = -7;
 
     // OBJECT_MAGIC is a magic value used to indicate the start of an object when encoding with
@@ -191,11 +197,12 @@ public final class Fido2Api {
     public static void appendBrowserMakeCredentialOptionsToParcel(
             PublicKeyCredentialCreationOptions options,
             Uri origin,
-            @Nullable byte[] clientDataHash,
+            byte @Nullable [] clientDataHash,
             @Nullable Bundle browserOptions,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel)
             throws NoSuchAlgorithmException {
+        log(TAG, "appendBrowserMakeCredentialOptionsToParcel");
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: PublicKeyCredentialCreationOptions
@@ -239,6 +246,7 @@ public final class Fido2Api {
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel)
             throws NoSuchAlgorithmException {
+        log(TAG, "appendMakeCredentialOptionsToParcel");
 
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
@@ -436,7 +444,7 @@ public final class Fido2Api {
                 // Two bytestrings for a single PRF input: the null credential ID and then the
                 // hashed salts, concatenated.
                 parcel.writeInt(2);
-                writePrfInput(options.prfInput, /* prfInputsHashed= */ false, parcel);
+                writePrfInput(options.prfInput, parcel);
             } else {
                 // No PRF inputs.
                 parcel.writeInt(0);
@@ -461,10 +469,11 @@ public final class Fido2Api {
     public static void appendBrowserGetAssertionOptionsToParcel(
             PublicKeyCredentialRequestOptions options,
             Uri origin,
-            byte[] clientDataHash,
-            byte[] tunnelId,
+            byte @Nullable [] clientDataHash,
+            byte @Nullable [] tunnelId,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel) {
+        log(TAG, "appendBrowserGetAssertionOptionsToParcel");
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: PublicKeyCredentialRequestOptions
@@ -496,9 +505,10 @@ public final class Fido2Api {
      */
     public static void appendGetAssertionOptionsToParcel(
             PublicKeyCredentialRequestOptions options,
-            byte[] tunnelId,
+            byte @Nullable [] tunnelId,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel) {
+        log(TAG, "appendGetAssertionOptionsToParcel");
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: challenge
@@ -554,7 +564,7 @@ public final class Fido2Api {
     }
 
     private static void appendGetAssertionExtensionsToParcel(
-            PublicKeyCredentialRequestOptions options, byte[] tunnelId, Parcel parcel) {
+            PublicKeyCredentialRequestOptions options, byte @Nullable [] tunnelId, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: appId
@@ -586,7 +596,7 @@ public final class Fido2Api {
             final int d = writeHeader(1, parcel);
             parcel.writeInt(2 * options.extensions.prfInputs.length);
             for (PrfValues input : options.extensions.prfInputs) {
-                writePrfInput(input, options.extensions.prfInputsHashed, parcel);
+                writePrfInput(input, parcel);
             }
             writeLength(d, parcel);
             writeLength(c, parcel);
@@ -606,17 +616,9 @@ public final class Fido2Api {
         writeLength(a, parcel);
     }
 
-    private static void writePrfInput(PrfValues input, boolean prfInputsHashed, Parcel parcel) {
+    private static void writePrfInput(PrfValues input, Parcel parcel) {
         parcel.writeByteArray(input.id);
-        if (prfInputsHashed) {
-            if (input.second == null) {
-                parcel.writeByteArray(input.first);
-            } else {
-                parcel.writeByteArray(concat(input.first, input.second));
-            }
-        } else {
-            parcel.writeByteArray(hashPrfInputs(input));
-        }
+        parcel.writeByteArray(hashPrfInputs(input));
     }
 
     /**
@@ -734,7 +736,7 @@ public final class Fido2Api {
         parcel.setDataPosition(totalLength);
     }
 
-    private static String attachmentToString(int attachment) {
+    private static @Nullable String attachmentToString(int attachment) {
         // This is the closest one can get to a static assert that no new enumeration values have
         // been added.
         assert AuthenticatorAttachment.MAX_VALUE == AuthenticatorAttachment.CROSS_PLATFORM;
@@ -750,14 +752,14 @@ public final class Fido2Api {
         }
     }
 
-    private static int stringToAttachment(String v) {
+    private static int stringToAttachment(@Nullable String v) {
         // This is the closest one can get to a static assert that no new enumeration values have
         // been added.
         assert AuthenticatorAttachment.MAX_VALUE == AuthenticatorAttachment.CROSS_PLATFORM;
 
-        if (v.equals("platform")) {
+        if ("platform".equals(v)) {
             return AuthenticatorAttachment.PLATFORM;
-        } else if (v.equals("cross-platform")) {
+        } else if ("cross-platform".equals(v)) {
             return AuthenticatorAttachment.CROSS_PLATFORM;
         }
         return AuthenticatorAttachment.MIN_VALUE - 1;
@@ -872,15 +874,16 @@ public final class Fido2Api {
      */
     public static @Nullable Object parseIntentResponse(Intent data)
             throws IllegalArgumentException {
+        log(TAG, "parseIntentResponse");
         byte[] responseBytes = data.getByteArrayExtra(CREDENTIAL_EXTRA);
         if (responseBytes == null) {
-            Log.e(TAG, "FIDO2 PendingIntent missing response");
+            logError(TAG, "FIDO2 PendingIntent missing response");
             throw new IllegalArgumentException();
         }
 
         final Object response = parseResponse(responseBytes);
         if (response == null) {
-            Log.e(TAG, "Failed to parse FIDO2 API response");
+            logError(TAG, "Failed to parse FIDO2 API response");
             throw new IllegalArgumentException();
         }
 
@@ -897,6 +900,7 @@ public final class Fido2Api {
      * @throws IllegalArgumentException if there was a parse error.
      */
     static Object parseResponse(byte[] responseBytes) throws IllegalArgumentException {
+        log(TAG, "parseResponse");
         Parcel parcel = Parcel.obtain();
         parcel.unmarshall(responseBytes, 0, responseBytes.length);
         parcel.setDataPosition(0);
@@ -970,7 +974,7 @@ public final class Fido2Api {
                 byte[] responseSerialized =
                         Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(jsonString);
                 if (responseSerialized == null) {
-                    Log.e(
+                    logError(
                             TAG,
                             "Failed to convert response from JSON to Mojo object: %s",
                             jsonString);
@@ -1012,7 +1016,7 @@ public final class Fido2Api {
                 byte[] responseSerialized =
                         Fido2CredentialRequestJni.get().getCredentialResponseFromJson(jsonString);
                 if (responseSerialized == null) {
-                    Log.e(
+                    logError(
                             TAG,
                             "Failed to convert response from JSON to Mojo object: %s",
                             jsonString);
@@ -1122,15 +1126,15 @@ public final class Fido2Api {
         for (int i = 0; i < numValues; i++) {
             String transport = parcel.readString();
 
-            if (transport.equals("usb")) {
+            if ("usb".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.USB;
-            } else if (transport.equals("nfc")) {
+            } else if ("nfc".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.NFC;
-            } else if (transport.equals("ble")) {
+            } else if ("ble".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.BLE;
-            } else if (transport.equals("cable") || transport.equals("hybrid")) {
+            } else if ("cable".equals(transport) || "hybrid".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.HYBRID;
-            } else if (transport.equals("internal")) {
+            } else if ("internal".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.INTERNAL;
             }
         }
@@ -1245,14 +1249,14 @@ public final class Fido2Api {
     }
 
     private static class Extensions {
-        public ArrayList<UvmEntry> userVerificationMethods;
+        public @Nullable ArrayList<UvmEntry> userVerificationMethods;
         public boolean hasCredProps;
         public boolean didCreateDiscoverableCredential;
         // prf contains an "enabled" flag and a bytestring that contains either
         // one or two 32-byte strings.
-        public Pair<Boolean, byte[]> prf;
+        public @Nullable Pair<Boolean, byte[]> prf;
 
-        PrfValues getPrfResults() {
+        @Nullable PrfValues getPrfResults() {
             if (prf == null || prf.second == null) {
                 return null;
             }
@@ -1421,6 +1425,7 @@ public final class Fido2Api {
 
                 case 2:
                     outputs = parcel.createByteArray();
+                    assumeNonNull(outputs);
                     if (outputs.length != 32 && outputs.length != 64) {
                         throw new IllegalArgumentException("bad PRF output length");
                     }
@@ -1476,11 +1481,12 @@ public final class Fido2Api {
                 MIN_TIMEOUT_SECONDS,
                 Math.min(
                         MAX_TIMEOUT_SECONDS,
-                        TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
+                        (double) TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
     }
 
     /** AttestationObjectParts groups together the return values of |parseAttestationObject|. */
     public static final class AttestationObjectParts {
+        @Initializer
         @CalledByNative("AttestationObjectParts")
         void setAll(
                 byte[] authenticatorData,
@@ -1503,11 +1509,13 @@ public final class Fido2Api {
      * Parse a {@link WebauthnCredentialDetails} list from a parcel.
      *
      * @param parcel the {@link parcel} with current position set to the beginning of the list.
+     * @param fromCache True if the credentials came from the passkey cache.
      * @return The list of {@link WebauthnCredentialDetails} if successfully parsed.
      * @throws IllegalArgumentException if a parsing error is encountered.
      */
-    public static ArrayList<WebauthnCredentialDetails> parseCredentialList(Parcel parcel)
-            throws IllegalArgumentException {
+    public static ArrayList<WebauthnCredentialDetails> parseCredentialList(
+            Parcel parcel, boolean fromCache) throws IllegalArgumentException {
+        log(TAG, "parseCredentialList fromCache=%b", fromCache);
         int numCredentials = parcel.readInt();
         ArrayList<WebauthnCredentialDetails> credentials = new ArrayList<>();
         for (int i = 0; i < numCredentials; i++) {
@@ -1551,10 +1559,18 @@ public final class Fido2Api {
                         details.mCredentialId = parcel.createByteArray();
                         break;
                     case 5:
-                        details.mIsDiscoverable = parcel.readInt() != 0;
+                        if (fromCache) {
+                            // This field is ignored for cached credentials but must be consumed.
+                            parcel.readInt();
+                        } else {
+                            details.mIsDiscoverable = parcel.readInt() != 0;
+                        }
                         break;
                     case 6:
                         details.mIsPayment = parcel.readInt() != 0;
+                        break;
+                    case 7:
+                        details.mLastUsedTimeMs = parcel.readLong();
                         break;
                     default:
                         // unknown tag. Skip over it.

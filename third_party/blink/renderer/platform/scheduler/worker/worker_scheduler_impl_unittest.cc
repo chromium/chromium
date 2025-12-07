@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
@@ -163,8 +162,8 @@ class WorkerSchedulerImplTest : public testing::Test {
                     const String& task_descriptor,
                     base::SingleThreadTaskRunner& task_runner) {
     task_runner.PostTask(
-        FROM_HERE, WTF::BindOnce(&AppendToVectorTestTask,
-                                 WTF::Unretained(run_order), task_descriptor));
+        FROM_HERE, BindOnce(&AppendToVectorTestTask, Unretained(run_order),
+                            task_descriptor));
   }
 
  protected:

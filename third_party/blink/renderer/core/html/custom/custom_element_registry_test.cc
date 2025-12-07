@@ -315,7 +315,7 @@ TEST_F(CustomElementRegistryTest, define_upgradesInDocumentElements) {
   LogUpgradeBuilder builder;
   NonThrowableExceptionState should_not_throw;
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     Define("a-a", builder, ElementDefinitionOptions::Create(),
            should_not_throw);
   }
@@ -361,7 +361,7 @@ TEST_F(CustomElementRegistryTest, attributeChangedCallback) {
   LogUpgradeBuilder builder;
   NonThrowableExceptionState should_not_throw;
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     Define("a-a", builder, ElementDefinitionOptions::Create(),
            should_not_throw);
   }
@@ -370,7 +370,7 @@ TEST_F(CustomElementRegistryTest, attributeChangedCallback) {
 
   definition->Clear();
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     element->setAttribute(QualifiedName(g_null_atom, AtomicString("attr2"),
                                         html_names::xhtmlNamespaceURI),
                           AtomicString("v2"));
@@ -399,7 +399,7 @@ TEST_F(CustomElementRegistryTest, disconnectedCallback) {
   LogUpgradeBuilder builder;
   NonThrowableExceptionState should_not_throw;
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     Define("a-a", builder, ElementDefinitionOptions::Create(),
            should_not_throw);
   }
@@ -408,7 +408,7 @@ TEST_F(CustomElementRegistryTest, disconnectedCallback) {
 
   definition->Clear();
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     element->remove(should_not_throw);
   }
   EXPECT_EQ(LogUpgradeDefinition::kDisconnectedCallback, definition->logs_[0])
@@ -429,7 +429,7 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
   LogUpgradeBuilder builder;
   NonThrowableExceptionState should_not_throw;
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     Define("a-a", builder, ElementDefinitionOptions::Create(),
            should_not_throw);
   }
@@ -440,7 +440,7 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
   auto* other_document =
       HTMLDocument::CreateForTest(*GetDocument().GetExecutionContext());
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(testing_scope.GetIsolate());
     other_document->adoptNode(element, ASSERT_NO_EXCEPTION);
   }
   EXPECT_EQ(LogUpgradeDefinition::kDisconnectedCallback, definition->logs_[0])

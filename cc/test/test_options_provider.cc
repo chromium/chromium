@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/test/test_options_provider.h"
 
 #include <limits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "cc/paint/paint_op_writer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -117,14 +113,16 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
   // Create a transfer cache entry for this image.
   ClientImageTransferCacheEntry cache_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()),
-      false /* needs_mips */, std::nullopt);
+      false /* needs_mips */, gfx::HDRMetadata());
   const uint32_t data_size = cache_entry.SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(data_size);
-  if (!cache_entry.Serialize(base::span<uint8_t>(data.get(), data_size))) {
+  if (!cache_entry.Serialize(
+          UNSAFE_TODO(base::span<uint8_t>(data.get(), data_size)))) {
     return ScopedResult();
   }
 
-  CreateEntryDirect(entry_key, base::span<uint8_t>(data.get(), data_size));
+  CreateEntryDirect(entry_key,
+                    UNSAFE_TODO(base::span<uint8_t>(data.get(), data_size)));
 
   return ScopedResult(DecodedDrawImage(
       image_id, nullptr, SkSize::MakeEmpty(), draw_image.scale(),

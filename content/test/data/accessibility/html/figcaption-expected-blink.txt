@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++figure detailsIds=figcaption
+++++++figure
 ++++++++image name='This is a green box.'
 ++++++++figcaption
 ++++++++++staticText name='Fig.1 - A green Box'

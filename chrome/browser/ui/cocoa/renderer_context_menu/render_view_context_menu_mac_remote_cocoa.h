@@ -8,6 +8,12 @@
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac.h"
 #include "ui/views/controls/menu/menu_runner_impl_remote_cocoa.h"
 
+namespace content {
+struct ContextMenuParams;
+class RenderFrameHost;
+class RenderWidgetHostView;
+}
+
 // Mac Remote Cocoa implementation of the renderer context menu display code.
 // Delegates to views::MenuRunnerImplRemoteCocoa to use a NSMenu to display the
 // context menu in a possibly remote process.

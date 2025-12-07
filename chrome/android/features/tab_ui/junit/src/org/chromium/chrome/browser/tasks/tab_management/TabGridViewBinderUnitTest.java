@@ -7,67 +7,111 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
+import android.view.ContextThemeWrapper;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Junit Tests for {@link TabGridViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class TabGridViewBinderUnitTest {
     private static final int INIT_WIDTH = 100;
-    private static final int INIT_HEIGHT = 200;
-    @Mock private TabGridView mViewGroup;
-    @Mock private TabListMediator.ThumbnailFetcher mFetcher;
-    @Mock private TabThumbnailView mThumbnailView;
-    @Mock private ImageView mFaviconView;
-    @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
-    @Mock private TypedArray mTypedArray;
 
+    private static final int INIT_HEIGHT = 200;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabGridView mViewGroup;
+    @Mock private ThumbnailFetcher mFetcher;
+    @Mock private TabThumbnailView mThumbnailView;
+    @Mock private FrameLayout mTabGroupColorViewContainer;
+    @Mock private ImageView mFaviconView;
+    @Mock private ImageView mMediaIndicatorView;
+    @Mock private ViewStub mTabCardLabelStub;
+    @Mock private TabCardLabelView mTabCardLabelView;
+    @Mock private ImageView mActionButton;
     @Mock private TabFavicon mTabFavicon;
+    @Mock private PriceCardView mPriceCardView;
     @Mock private Drawable mDrawable;
+    @Mock private TabCardLabelData mTabCardLabelData;
+    @Mock private ShoppingPersistedTabDataFetcher mShoppingPersistedTabDataFetcher;
+    @Mock private ShoppingPersistedTabData mShoppingPersistedTabData;
+    @Mock private TextView mTabTitleView;
+
+    @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
 
     private Context mContext;
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
-    private Bitmap mBitmap;
+    private BitmapDrawable mBitmapDrawable;
+    private final PriceDrop mPriceDrop = new PriceDrop("$7", "$89");
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mContext = RuntimeEnvironment.application;
+        mContext =
+                new ContextThemeWrapper(
+                        RuntimeEnvironment.application, R.style.Theme_BrowserUI_DayNight);
 
         mModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -75,20 +119,51 @@ public final class TabGridViewBinderUnitTest {
                         .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
                         .with(TabProperties.IS_INCOGNITO, false)
                         .with(TabProperties.IS_SELECTED, true)
+                        .with(TabProperties.TAB_GROUP_CARD_COLOR, null)
                         .with(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, INIT_HEIGHT))
                         .build();
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
+        when(mViewGroup.fastFindViewById(R.id.tab_group_color_view_container))
+                .thenReturn(mTabGroupColorViewContainer);
         when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
+        when(mViewGroup.fastFindViewById(R.id.media_indicator_icon))
+                .thenReturn(mMediaIndicatorView);
+        when(mViewGroup.fastFindViewById(R.id.price_info_box_outer)).thenReturn(mPriceCardView);
+        when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub)).thenReturn(mTabCardLabelStub);
+        when(mViewGroup.fastFindViewById(R.id.action_button)).thenReturn(mActionButton);
+        doAnswer(
+                        (ignored) -> {
+                            when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub))
+                                    .thenReturn(null);
+                            when(mViewGroup.fastFindViewById(R.id.tab_card_label))
+                                    .thenReturn(mTabCardLabelView);
+                            return mTabCardLabelView;
+                        })
+                .when(mTabCardLabelStub)
+                .inflate();
         when(mFaviconView.getContext()).thenReturn(mContext);
+        when(mMediaIndicatorView.getContext()).thenReturn(mContext);
         when(mViewGroup.getContext()).thenReturn(mContext);
+        when(mViewGroup.getResources()).thenReturn(mContext.getResources());
 
         // mModel, view and bitmap all use the same initial values.
         mLayoutParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
-        mBitmap = Bitmap.createBitmap(INIT_WIDTH, INIT_HEIGHT, Config.RGB_565);
+        mBitmapDrawable =
+                new BitmapDrawable(Bitmap.createBitmap(INIT_WIDTH, INIT_HEIGHT, Config.RGB_565));
         when(mViewGroup.getLayoutParams()).thenReturn(mLayoutParams);
 
         LayoutParams thumbnailParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
         when(mThumbnailView.getLayoutParams()).thenReturn(thumbnailParams);
+
+        when(mShoppingPersistedTabData.getPriceDrop()).thenReturn(mPriceDrop);
+        doCallback(
+                        (Callback<ShoppingPersistedTabData> callback) -> {
+                            callback.onResult(mShoppingPersistedTabData);
+                        })
+                .when(mShoppingPersistedTabDataFetcher)
+                .fetch(any());
+
+        when(mViewGroup.fastFindViewById(R.id.tab_title)).thenReturn(mTabTitleView);
     }
 
     @Test
@@ -96,7 +171,7 @@ public final class TabGridViewBinderUnitTest {
     public void bindClosableTabWithCardWidth_updateNullFetcher() {
         mModel.set(TabProperties.THUMBNAIL_FETCHER, null);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.THUMBNAIL_FETCHER);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         verify(mThumbnailView).setImageDrawable(null);
 
         // Update width.
@@ -106,7 +181,8 @@ public final class TabGridViewBinderUnitTest {
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView, times(2)).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView, times(2))
+                .updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mThumbnailView, times(2)).setImageDrawable(null);
@@ -123,14 +199,14 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -145,6 +221,50 @@ public final class TabGridViewBinderUnitTest {
 
     @Test
     @org.robolectric.annotation.Config(qualifiers = "sw348dp")
+    public void bindClosableTabNoSizeChange_NoOp() {
+        // Update width.
+        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
+        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
+        final int updatedCardWidth = 200;
+        when(mViewGroup.getMinimumWidth()).thenReturn(updatedCardWidth);
+        when(mViewGroup.getMinimumHeight()).thenReturn(INIT_HEIGHT);
+        mLayoutParams.width = updatedCardWidth;
+        mLayoutParams.height = INIT_HEIGHT;
+        when(mThumbnailView.isPlaceholder()).thenReturn(false);
+
+        mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+
+        verify(mViewGroup, never()).setMinimumWidth(anyInt());
+        verify(mViewGroup, never()).setMinimumHeight(anyInt());
+        verify(mViewGroup, never()).setLayoutParams(any());
+        verify(mFetcher, never()).fetch(any(), anyBoolean(), any());
+    }
+
+    @Test
+    @org.robolectric.annotation.Config(qualifiers = "sw348dp")
+    public void bindClosableTabNoSizeChange_ThumbnailOnly() {
+        // Update width.
+        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
+        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
+        final int updatedCardWidth = 200;
+        when(mViewGroup.getMinimumWidth()).thenReturn(updatedCardWidth);
+        when(mViewGroup.getMinimumHeight()).thenReturn(INIT_HEIGHT);
+        mLayoutParams.width = updatedCardWidth;
+        mLayoutParams.height = INIT_HEIGHT;
+        when(mThumbnailView.isPlaceholder()).thenReturn(true);
+
+        mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+
+        verify(mViewGroup, never()).setMinimumWidth(anyInt());
+        verify(mViewGroup, never()).setMinimumHeight(anyInt());
+        verify(mViewGroup, never()).setLayoutParams(any());
+        verify(mFetcher).fetch(any(), anyBoolean(), any());
+    }
+
+    @Test
+    @org.robolectric.annotation.Config(qualifiers = "sw348dp")
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail_notSelected() {
         // Update width.
         // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
@@ -155,14 +275,14 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, false);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, false, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(false));
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        verify(mFetcher).fetch(any(), eq(false), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -189,15 +309,15 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
+        verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -223,15 +343,15 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId= */ null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
+        verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -259,6 +379,12 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 
         verify(mFaviconView).setImageDrawable(mDrawable);
+        verify(mFaviconView).setVisibility(View.VISIBLE);
+
+        mModel.set(TabProperties.FAVICON_FETCHER, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
+        verify(mFaviconView).setImageDrawable(null);
+        verify(mFaviconView).setVisibility(View.GONE);
     }
 
     @Test
@@ -267,6 +393,192 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 
         verify(mFaviconView).setImageDrawable(null);
+    }
+
+    @Test
+    public void testBindTabCardLabelData() {
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub, never()).inflate();
+
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, mTabCardLabelData);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub).inflate();
+        verify(mTabCardLabelView).setData(mTabCardLabelData);
+
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, mTabCardLabelData);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub).inflate();
+        verify(mTabCardLabelView, times(2)).setData(mTabCardLabelData);
+    }
+
+    @Test
+    public void testBindTabCardLabelData_IgnoredForSelection() {
+        mModel.set(TabProperties.TAB_ACTION_STATE, TabActionState.SELECTABLE);
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub, never()).inflate();
+
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, mTabCardLabelData);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub, never()).inflate();
+        verify(mTabCardLabelView, never()).setData(any());
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.DATA_SHARING,
+        ChromeFeatureList.DATA_SHARING_JOIN_ONLY
+    })
+    public void testPriceDrop_PriceCardView() {
+        mModel.set(
+                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                mShoppingPersistedTabDataFetcher);
+        TabGridViewBinder.bindTab(
+                mModel, mViewGroup, TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER);
+
+        verify(mPriceCardView).setPriceStrings(mPriceDrop.price, mPriceDrop.previousPrice);
+        verify(mPriceCardView).setVisibility(View.VISIBLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceDrop_TabCardLabelView() {
+        mModel.set(
+                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                mShoppingPersistedTabDataFetcher);
+        TabGridViewBinder.bindTab(
+                mModel, mViewGroup, TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER);
+
+        verify(mTabCardLabelStub).inflate();
+        verify(mTabCardLabelView)
+                .setData(argThat((data) -> TabCardLabelType.PRICE_DROP == data.labelType));
+    }
+
+    @Test
+    public void testOnViewRecycled() {
+        // Shouldn't crash.
+        TabGridViewBinder.onViewRecycled(mModel, null);
+        TabGridViewBinder.onViewRecycled(mModel, mThumbnailView);
+
+        verify(mThumbnailView, never()).setImageDrawable(null);
+        verify(mFetcher, never()).cancel();
+
+        // Should work!
+        TabGridViewBinder.onViewRecycled(mModel, mViewGroup);
+
+        verify(mThumbnailView).setImageDrawable(null);
+        verify(mFetcher).cancel();
+
+        verify(mTabGroupColorViewContainer).removeAllViews();
+        verify(mTabGroupColorViewContainer).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void bindClosableTab_actionButtonTint() {
+        mModel.set(TabProperties.IS_SELECTED, true);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        verify(mViewGroup).setTabActionButtonTint(any());
+    }
+
+    @Test
+    public void bindTabWithActionButtonData_setOnClickListenerAndOnPeripheralClickListener() {
+        TabActionButtonData tabActionButtonData =
+                new TabActionButtonData(
+                        TabActionButtonType.CLOSE,
+                        new TabActionListener() {
+                            @Override
+                            public void run(
+                                    View view,
+                                    int tabId,
+                                    @Nullable MotionEventInfo triggeringMotion) {}
+
+                            @Override
+                            public void run(
+                                    View view,
+                                    String syncId,
+                                    @Nullable MotionEventInfo triggeringMotion) {}
+                        });
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
+
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        verify(mActionButton).setOnClickListener(any());
+        verify(mActionButton).setOnTouchListener(isA(OnPeripheralClickListener.class));
+    }
+
+    @Test
+    public void testBindHighlightState() {
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.NOT_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.NOT_HIGHLIGHTED, false);
+
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.TO_BE_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.TO_BE_HIGHLIGHTED, false);
+
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.HIGHLIGHTED, false);
+
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.NOT_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup, times(2)).setIsHighlighted(TabCardHighlightState.NOT_HIGHLIGHTED, false);
+    }
+
+    @Test
+    public void testBindHighlightState_updateTransientState() {
+        mModel.set(TabProperties.HIGHLIGHT_STATE, TabCardHighlightState.TO_BE_HIGHLIGHTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.HIGHLIGHT_STATE);
+        verify(mViewGroup).setIsHighlighted(TabCardHighlightState.TO_BE_HIGHLIGHTED, false);
+        assertThat(
+                mModel.get(TabProperties.HIGHLIGHT_STATE),
+                equalTo(TabCardHighlightState.HIGHLIGHTED));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
+    public void testMediaIndicator() {
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mViewGroup).setMediaIndicator(eq(MediaState.RECORDING));
+
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mViewGroup).setMediaIndicator(eq(MediaState.AUDIBLE));
+
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mViewGroup).setMediaIndicator(eq(MediaState.MUTED));
+
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mViewGroup).setMediaIndicator(eq(MediaState.NONE));
+    }
+
+    @Test
+    public void testBindContextClickListener() {
+        TabActionListener listener = mock();
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, listener);
+
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+
+        verify(mViewGroup).setContextClickable(true);
+        ArgumentCaptor<View.OnContextClickListener> captor =
+                ArgumentCaptor.forClass(View.OnContextClickListener.class);
+        verify(mViewGroup).setOnContextClickListener(captor.capture());
+        assertNotNull(captor.getValue());
+
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+        verify(mViewGroup).setContextClickable(false);
+        verify(mViewGroup).setOnContextClickListener(eq(null));
     }
 
     private void assertImageMatrix(
@@ -281,5 +593,91 @@ public final class TabGridViewBinderUnitTest {
         assertThat("Incorrect image matrix scaleY", scaleY, equalTo(expectedScale));
         assertThat("Incorrect image matrix transY", transY, equalTo(0f));
         assertThat("Incorrect image matrix transX", transX, equalTo(expectedTrans));
+    }
+
+    @Test
+    public void testTabContentDescription() {
+        final String title = "Tab title";
+        mModel.set(TabProperties.TITLE, title);
+
+        // Unpinned state.
+        mModel.set(TabProperties.IS_PINNED, false);
+
+        // MediaState NONE.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(R.string.accessibility_tabstrip_tab, title));
+
+        // MediaState AUDIBLE.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(R.string.accessibility_tabstrip_tab_audible, title));
+
+        // MediaState MUTED.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(R.string.accessibility_tabstrip_tab_muted, title));
+
+        // MediaState RECORDING.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(R.string.accessibility_tabstrip_tab_recording, title));
+
+        // MediaState SHARING.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.SHARING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(R.string.accessibility_tabstrip_tab_sharing, title));
+
+        // Pinned state.
+        mModel.set(TabProperties.IS_PINNED, true);
+
+        // MediaState NONE.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(R.string.accessibility_tabstrip_tab_pinned, title));
+
+        // MediaState AUDIBLE.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(
+                                R.string.accessibility_tabstrip_tab_pinned_audible, title));
+
+        // MediaState MUTED.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(
+                                R.string.accessibility_tabstrip_tab_pinned_muted, title));
+
+        // MediaState RECORDING.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(
+                                R.string.accessibility_tabstrip_tab_pinned_recording, title));
+
+        // MediaState SHARING.
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.SHARING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(
+                                R.string.accessibility_tabstrip_tab_pinned_sharing, title));
     }
 }

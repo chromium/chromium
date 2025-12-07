@@ -10,7 +10,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -18,11 +18,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {cast} from '../../../assert_extras.js';
 import {AppManagementStoreMixin} from '../../../common/app_management/store_mixin.js';
-import {PrefsState} from '../../../common/types.js';
+import type {PrefsState} from '../../../common/types.js';
 import {Router, routes} from '../../../router.js';
 import {AppManagementPermissionItemElement} from '../permission_item.js';
 
-import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
+import type {PluginVmBrowserProxy} from './plugin_vm_browser_proxy.js';
+import {PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
 import {getTemplate} from './plugin_vm_detail_view.html.js';
 
 const AppManagementPluginVmDetailViewElementBase =

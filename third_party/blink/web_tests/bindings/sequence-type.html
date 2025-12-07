@@ -293,4 +293,32 @@
    assert_throws_js(TypeError, () => { sequenceTest.setElementSequence([...elems, 1]) },
                     "Invalid types cause exceptions");
  }, "Array to sequence<> conversions with heterogeneous ScriptWrappable types");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const elem1 = document.createElement('br');
+   const elems = [ , elem1 ];
+   assert_throws_js(TypeError, () => { sequenceTest.setElementSequence(elems) },
+                    "Holes cause invalid type exceptoin");
+
+ }, "Sequence of ScriptWrappable conversion should throw on holes");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   function _T(str) {
+     const span = document.createElement('span');
+     span.textContent = str;
+     return span;
+   }
+   const elems = [
+     [ _T('a'), _T('b'), _T('c') ],
+     [ _T('d'), _T('e') ],
+     [ _T('f') ]
+   ];
+   sequenceTest.setElementSequenceOfSequences(elems);
+   const flattened = elems.reduce((acc, cur) => acc.concat(cur));
+   assert_array_equals(sequenceTest.getElementSequence(), flattened);
+ }, "Sequence of sequences of ScriptWrappable types");
 </script>

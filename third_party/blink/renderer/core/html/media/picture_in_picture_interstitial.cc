@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -133,13 +134,15 @@ Node::InsertionNotificationRequest PictureInPictureInterstitial::InsertedInto(
   return HTMLDivElement::InsertedInto(root);
 }
 
-void PictureInPictureInterstitial::RemovedFrom(ContainerNode&) {
+void PictureInPictureInterstitial::RemovedFrom(ContainerNode& insertion_point) {
   DCHECK(!GetVideoElement().isConnected());
 
   if (resize_observer_) {
     resize_observer_->disconnect();
     resize_observer_.Clear();
   }
+
+  HTMLDivElement::RemovedFrom(insertion_point);
 }
 
 void PictureInPictureInterstitial::NotifyElementSizeChanged(

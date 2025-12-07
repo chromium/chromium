@@ -1,0 +1,46 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/c++/c++.gni")
+
+# The atomic support library contains static data that must not be duplicated in
+# a given program (or wherever atomic objects are shared between components).
+# Therefore, for correctness, we build it as a shared object in the componenet
+# build.
+#
+# See crbug.com/402171653 for context.
+if (is_component_build) {
+  _target_type = "shared_library"
+} else {
+  _target_type = "source_set"
+}
+
+target(_target_type, "atomic") {
+  sources = [
+    "src/lib/builtins/assembly.h",
+    "src/lib/builtins/atomic.c",
+    "src/lib/builtins/int_endianness.h",
+  ]
+
+  if (_target_type == "shared_library") {
+    no_default_deps = true
+    if (is_win) {
+      sources += [ "atomics.def" ]
+    } else {
+      configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+      configs += [ "//build/config/gcc:symbol_visibility_default" ]
+    }
+
+    if (is_android) {
+      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    }
+  }
+
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/coverage:default_coverage",
+  ]
+}

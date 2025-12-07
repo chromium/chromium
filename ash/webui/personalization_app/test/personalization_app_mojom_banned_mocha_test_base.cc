@@ -74,6 +74,10 @@ class MockPersonalizationAppAmbientProvider
               IsGeolocationEnabledForSystemServices,
               (IsGeolocationEnabledForSystemServicesCallback callback),
               (override));
+  MOCK_METHOD(void,
+              IsGeolocationUserModifiable,
+              (IsGeolocationUserModifiableCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppKeyboardBacklightProvider
@@ -115,6 +119,8 @@ class MockSeaPenProvider
               (override));
   bool IsEligibleForSeaPen() override { return true; }
   bool IsEligibleForSeaPenTextInput() override { return true; }
+  bool IsManagedSeaPenEnabled() override { return true; }
+  bool IsManagedSeaPenFeedbackEnabled() override { return false; }
   // ::ash::personalization_app::mojom::SeaPenProvider:
   MOCK_METHOD(void,
               SetSeaPenObserver,
@@ -127,7 +133,7 @@ class MockSeaPenProvider
               (override));
   MOCK_METHOD(void,
               SelectSeaPenThumbnail,
-              (uint32_t, SelectSeaPenThumbnailCallback),
+              (uint32_t, bool preview_mode, SelectSeaPenThumbnailCallback),
               (override));
   MOCK_METHOD(void,
               SelectRecentSeaPenImage,
@@ -154,6 +160,14 @@ class MockSeaPenProvider
               (ShouldShowSeaPenIntroductionDialogCallback callback),
               (override));
   MOCK_METHOD(void, HandleSeaPenIntroductionDialogClosed, (), (override));
+  MOCK_METHOD(void,
+              ShouldShowSeaPenFreeformIntroductionDialog,
+              (ShouldShowSeaPenFreeformIntroductionDialogCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              HandleSeaPenFreeformIntroductionDialogClosed,
+              (),
+              (override));
   MOCK_METHOD(void,
               IsInTabletMode,
               (IsInTabletModeCallback callback),
@@ -209,6 +223,10 @@ class MockPersonalizationAppThemeProvider
               IsGeolocationEnabledForSystemServices,
               (IsGeolocationEnabledForSystemServicesCallback callback),
               (override));
+  MOCK_METHOD(void,
+              IsGeolocationUserModifiable,
+              (IsGeolocationUserModifiableCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppWallpaperProvider
@@ -220,7 +238,6 @@ class MockPersonalizationAppWallpaperProvider
                   ash::personalization_app::mojom::WallpaperProvider> receiver),
               (override));
   bool IsEligibleForGooglePhotos() override { return true; }
-  bool IsManagedSeaPenEnabled() override { return true; }
   void GetWallpaperAsJpegBytes(
       content::WebUIDataSource::GotDataCallback callback) override {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());

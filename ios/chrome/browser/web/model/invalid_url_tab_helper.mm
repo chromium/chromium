@@ -68,5 +68,3 @@ void InvalidUrlTabHelper::ShouldAllowRequest(
   }
   std::move(callback).Run(PolicyDecision::Cancel());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(InvalidUrlTabHelper)

@@ -102,6 +102,12 @@ template("in_process_fuzzer") {
         # Default computed timeout per batch is ridiculously low (1127, which
         # means ~1.1 sec per input average) for those fuzzers.
         "timeout_per_batch=8400",
+
+        # Those big fuzzers are likely to be flaky on test case sequence
+        # execution, but unlikely to crash while executing inputs one-by-one.
+        # Since those are super slow, let's not waste time re-running the whole
+        # batches.
+        "batch_triage_suspect_only=1",
       ]
 
       if (defined(invoker.asan_options)) {
@@ -195,10 +201,10 @@ template("in_process_proto_fuzzer") {
         args = [
           "--encode=${invoker.testcase_proto_kind}",
           "-I",
-          rebase_path(root_gen_dir),
+          rebase_path(root_gen_dir, root_build_dir),
           "-I",
-          rebase_path("//"),
-          rebase_path(inputs[0]),
+          rebase_path("//", root_build_dir),
+          rebase_path(inputs[0], root_build_dir),
         ]
 
         deps = []
@@ -268,6 +274,7 @@ template("in_process_mojolpm_fuzzer") {
 template("in_process_mojolpm_generated_fuzzer") {
   in_process_fuzzer(target_name) {
     target_type = "mojolpm_generated_fuzzer"
+    ensure_remote = true
     forward_variables_from(invoker,
                            "*",
                            [

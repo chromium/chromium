@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    testRunner.setSafePrintableInset(50);
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+  }
+</script>
+<style>
+  @page {
+    margin: env(safe-printable-inset);
+    margin-top: calc(env(safe-printable-inset) * 2);
+    margin-right: calc(env(safe-printable-inset) * 2);
+  }
+  body {
+    background: yellow;
+  }
+</style>
+There should be a white margin around this page. It should be larger on the top
+and on the right.

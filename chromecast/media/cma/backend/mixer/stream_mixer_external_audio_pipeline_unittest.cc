@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -21,6 +22,7 @@
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 #include "chromecast/public/media/mixer_output_stream.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,7 +69,7 @@ class MockLoopbackAudioObserver
     // Save received data to local.
     float* float_data = reinterpret_cast<float*>(const_cast<uint8_t*>(data));
     const size_t size = length / sizeof(float);
-    data_.insert(data_.end(), float_data, float_data + size);
+    data_.insert(data_.end(), float_data, UNSAFE_TODO(float_data + size));
   }
 
   std::vector<float> data_;
@@ -128,10 +130,10 @@ void CompareAudioData(const ::media::AudioBus& expected,
   ASSERT_EQ(expected.channels(), actual.channels());
   ASSERT_EQ(expected.frames(), actual.frames());
   for (int c = 0; c < expected.channels(); ++c) {
-    const float* expected_data = expected.channel(c);
-    const float* actual_data = actual.channel(c);
+    auto expected_data = expected.channel_span(c);
+    auto actual_data = actual.channel_span(c);
     for (int f = 0; f < expected.frames(); ++f) {
-      EXPECT_FLOAT_EQ(*expected_data++, *actual_data++) << c << " " << f;
+      EXPECT_FLOAT_EQ(expected_data[f], actual_data[f]) << c << " " << f;
     }
   }
 }
@@ -191,7 +193,7 @@ TEST_F(ExternalAudioPipelineTest, ExternalAudioPipelineLoopbackData) {
   const size_t kSampleSize = 64;
   uint8_t test_data[kSampleSize];
   for (size_t i = 0; i < kSampleSize; ++i)
-    test_data[i] = i;
+    UNSAFE_TODO(test_data[i]) = i;
 
   // Set test data in AudioBus.
   const auto kNumFrames = kSampleSize / kNumChannels;

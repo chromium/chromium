@@ -4,19 +4,21 @@
 
 #include "content/renderer/service_worker/service_worker_context_client.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
@@ -63,6 +66,7 @@
 #include "third_party/blink/public/web/modules/service_worker/web_navigation_preload_request.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::WebURLRequest;
 using blink::MessagePortChannel;
@@ -122,7 +126,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
     scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
     int32_t service_worker_route_id,
     const std::vector<std::string>& cors_exempt_header_list,
-    const blink::StorageKey& storage_key)
+    const blink::StorageKey& storage_key,
+    const blink::ServiceWorkerToken& service_worker_token)
     : service_worker_version_id_(service_worker_version_id),
       service_worker_scope_(service_worker_scope),
       script_url_(script_url),
@@ -142,7 +147,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       start_timing_(std::move(start_timing)),
       service_worker_route_id_(service_worker_route_id),
       cors_exempt_header_list_(cors_exempt_header_list),
-      storage_key_(storage_key) {
+      storage_key_(storage_key),
+      service_worker_token_(service_worker_token) {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(owner_);
   DCHECK(subresource_loaders);
@@ -174,13 +180,13 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
 
   service_worker_provider_info_ = std::move(provider_info);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker",
-                                    "ServiceWorkerContextClient", this,
-                                    "script_url", script_url_.spec());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "ServiceWorker", "LOAD_SCRIPT", this, "Source",
-      (is_starting_installed_worker_ ? "InstalledScriptsManager"
-                                     : "ResourceLoader"));
+  TRACE_EVENT_BEGIN("ServiceWorker", "ServiceWorkerContextClient",
+                    perfetto::Track::FromPointer(this), "script_url",
+                    script_url_.spec());
+  TRACE_EVENT_BEGIN("ServiceWorker", "LOAD_SCRIPT",
+                    perfetto::Track::FromPointer(this), "Source",
+                    (is_starting_installed_worker_ ? "InstalledScriptsManager"
+                                                   : "ResourceLoader"));
 }
 
 ServiceWorkerContextClient::~ServiceWorkerContextClient() {
@@ -200,14 +206,19 @@ void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
         content_settings,
     mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-        browser_interface_broker) {
+        browser_interface_broker,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        dip_reporting_observer) {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   worker_ = std::move(worker);
   worker_->StartWorkerContext(
       std::move(start_data), std::move(installed_scripts_manager_params),
       std::move(content_settings), std::move(cache_storage),
       std::move(browser_interface_broker), blink_interface_registry_.get(),
-      initiator_thread_task_runner_);
+      initiator_thread_task_runner_, std::move(coep_reporting_observer),
+      std::move(dip_reporting_observer));
 }
 
 blink::WebEmbeddedWorker& ServiceWorkerContextClient::worker() {
@@ -241,8 +252,9 @@ void ServiceWorkerContextClient::FailedToFetchClassicScript() {
            ComposeAlreadyInstalledString(is_starting_installed_worker_),
            ".Time"}),
       base::TimeTicks::Now() - top_level_script_loading_start_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker", "LOAD_SCRIPT", this,
-                                  "Status", "FailedToFetchClassicScript");
+  // End "LOAD_SCRIPT" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Status",
+                  "FailedToFetchClassicScript");
   // The caller is responsible for terminating the thread which
   // eventually destroys |this|.
 }
@@ -255,8 +267,9 @@ void ServiceWorkerContextClient::FailedToFetchModuleScript() {
            ComposeAlreadyInstalledString(is_starting_installed_worker_),
            ".Time"}),
       base::TimeTicks::Now() - top_level_script_loading_start_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker", "LOAD_SCRIPT", this,
-                                  "Status", "FailedToFetchModuleScript");
+  // End "LOAD_SCRIPT" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Status",
+                  "FailedToFetchModuleScript");
   // The caller is responsible for terminating the thread which
   // eventually destroys |this|.
 }
@@ -270,7 +283,8 @@ void ServiceWorkerContextClient::WorkerScriptLoadedOnWorkerThread() {
            ComposeAlreadyInstalledString(is_starting_installed_worker_),
            ".Time"}),
       base::TimeTicks::Now() - top_level_script_loading_start_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "LOAD_SCRIPT", this);
+  // End "LOAD_SCRIPT" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this));
 }
 
 void ServiceWorkerContextClient::WorkerContextStarted(
@@ -323,7 +337,7 @@ void ServiceWorkerContextClient::WillEvaluateScript(
   DCHECK(proxy_);
   GetContentClient()->renderer()->WillEvaluateServiceWorkerOnWorkerThread(
       proxy_, v8_context, service_worker_version_id_, service_worker_scope_,
-      script_url_);
+      script_url_, service_worker_token_);
 }
 
 void ServiceWorkerContextClient::DidEvaluateScript(bool success) {
@@ -371,9 +385,6 @@ void ServiceWorkerContextClient::WillDestroyWorkerContext(
   interface_provider_receiver_.reset();
   registry_.clear();
 
-  // At this point WillStopCurrentWorkerThread is already called, so
-  // worker_task_runner_->RunsTasksInCurrentSequence() returns false
-  // (while we're still on the worker thread).
   proxy_ = nullptr;
 
   // We have to clear callbacks now, as they need to be freed on the
@@ -434,11 +445,8 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
       std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(std::move(
           service_worker_provider_info_->script_loader_factory_remote));
 
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list_.size());
-  base::ranges::transform(
-      cors_exempt_header_list_, web_cors_exempt_header_list.begin(),
-      [](const auto& header) { return blink::WebString::FromLatin1(header); });
+  std::vector<blink::WebString> web_cors_exempt_header_list =
+      base::ToVector(cors_exempt_header_list_, &blink::WebString::FromLatin1);
 
   return blink::WebServiceWorkerFetchContext::Create(
       renderer_preferences_, script_url_, loader_factories_->PassInterface(),
@@ -511,6 +519,9 @@ void ServiceWorkerContextClient::SendWorkerStarted(
   DCHECK(context_);
 
   if (GetContentClient()->renderer()) {  // nullptr in unit_tests.
+    // TODO(crbug.com/389971360) Remove this once the bug is fixed.
+    SCOPED_CRASH_KEY_NUMBER("extensions", "service_worker_start_status",
+                            static_cast<int>(status));
     GetContentClient()->renderer()->DidStartServiceWorkerContextOnWorkerThread(
         service_worker_version_id_, service_worker_scope_, script_url_);
   }
@@ -535,8 +546,8 @@ void ServiceWorkerContextClient::SendWorkerStarted(
       proxy_->HasUsbEventHandlers(), WorkerThread::GetCurrentId(),
       std::move(start_timing_));
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "ServiceWorkerContextClient",
-                                  this);
+  // End "ServiceWorkerContextClient" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this));
 }
 
 void ServiceWorkerContextClient::SetupNavigationPreload(

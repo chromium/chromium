@@ -35,8 +35,7 @@ class POLICY_EXPORT AndroidCombinedPolicyProvider
 
   // Push the polices updated by the Java policy providers to the core policy
   // system
-  void FlushPolicies(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  void FlushPolicies(JNIEnv* env);
 
   // Call this method to tell the policy system whether it should wait for
   // policies to be loaded by this provider. If this method is called,

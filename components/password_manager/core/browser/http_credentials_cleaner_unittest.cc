@@ -144,7 +144,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   static const std::array<std::u16string, 2> password = {u"pass0", u"pass1"};
 
   base::test::TaskEnvironment task_environment;
-  store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store_->Init(/*affiliated_match_helper=*/nullptr);
   TestCase test = GetParam();
   SCOPED_TRACE(testing::Message()
                << "is_hsts_enabled=" << test.is_hsts_enabled
@@ -185,7 +185,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
 
   if (test.is_hsts_enabled) {
     base::RunLoop run_loop;
-    network_context->AddHSTS(http_form.url.host(), base::Time::Max(),
+    network_context->AddHSTS(http_form.url.GetHost(), base::Time::Max(),
                              false /*include_subdomains*/,
                              run_loop.QuitClosure());
     run_loop.Run();
@@ -254,8 +254,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
 
     base::test::TaskEnvironment task_environment;
     auto password_store = base::MakeRefCounted<TestPasswordStore>();
-    password_store->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    password_store->Init(/*affiliated_match_helper=*/nullptr);
 
     double last_time =
         (base::Time::Now() - base::Minutes(10)).InSecondsFSinceUnixEpoch();

@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/login_screen_model.h"
-#include "ash/public/mojom/tray_action.mojom.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
@@ -54,12 +53,15 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     // authentication should be disabled.
     virtual void OnUserAuthFactorsChanged(
         const AccountId& user,
-        cryptohome::AuthFactorsSet auth_factors);
+        cryptohome::AuthFactorsSet auth_factors,
+        cryptohome::PinLockAvailability pin_available_at);
 
     // Called when pin should be enabled or disabled for |user|. By default, pin
     // should be disabled.
-    virtual void OnPinEnabledForUserChanged(const AccountId& user,
-                                            bool enabled);
+    virtual void OnPinEnabledForUserChanged(
+        const AccountId& user,
+        bool enabled,
+        cryptohome::PinLockAvailability available_at);
 
     // Called when the challenge-response authentication should be enabled or
     // disabled for |user|. By default, it should be disabled.
@@ -112,9 +114,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     // token is revoked).
     virtual void OnForceOnlineSignInForUser(const AccountId& user);
 
-    // Called when the lock screen note state changes.
-    virtual void OnLockScreenNoteStateChanged(mojom::TrayActionState state);
-
     // Called when a warning message should be displayed, or hidden if |message|
     // is empty.
     virtual void OnWarningMessageUpdated(const std::u16string& message);
@@ -158,10 +157,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     virtual void OnDetachableBasePairingStatusChanged(
         DetachableBasePairingStatus pairing_status);
 
-    // Called when focus is leaving a lock screen app window due to tabbing.
-    // |reverse| - whether the tab order is reversed.
-    virtual void OnFocusLeavingLockScreenApps(bool reverse);
-
     // Called when the state of the OOBE dialog is changed.
     virtual void OnOobeDialogStateChanged(OobeDialogState state);
 
@@ -188,9 +183,14 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   // LoginScreenModel is complete, separate out the methods that aren't
   // overrides.
   void SetUserList(const std::vector<LoginUserInfo>& users) override;
-  void SetAuthFactorsForUser(const AccountId& user,
-                             cryptohome::AuthFactorsSet auth_factors) override;
-  void SetPinEnabledForUser(const AccountId& user, bool enabled) override;
+  void SetAuthFactorsForUser(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) override;
+  void SetPinEnabledForUser(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) override;
   void SetChallengeResponseAuthEnabledForUser(const AccountId& user,
                                               bool enabled) override;
   void SetAvatarForUser(const AccountId& account_id,
@@ -213,7 +213,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   void SetTapToUnlockEnabledForUser(const AccountId& user,
                                     bool enabled) override;
   void ForceOnlineSignInForUser(const AccountId& user) override;
-  void SetLockScreenNoteState(mojom::TrayActionState state);
   void UpdateWarningMessage(const std::u16string& message) override;
   void SetSystemInfo(bool show,
                      bool enforced,
@@ -235,7 +234,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
       bool show_full_management_disclosure) override;
   void SetDetachableBasePairingStatus(
       DetachableBasePairingStatus pairing_status);
-  void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(OobeDialogState state) override;
   void NotifyFocusPod(const AccountId& account_id) override;
 

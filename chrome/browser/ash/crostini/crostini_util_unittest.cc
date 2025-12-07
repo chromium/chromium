@@ -13,9 +13,9 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -23,7 +23,14 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "components/account_id/account_id.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,8 +44,6 @@ class CrostiniUtilTest : public testing::Test {
   CrostiniUtilTest()
       : app_id_(crostini::CrostiniTestHelper::GenerateAppId(kDesktopFileId)),
         task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
@@ -73,7 +78,18 @@ class CrostiniUtilTest : public testing::Test {
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeComponentManager(component_manager_);
 
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
     test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
     test_helper_->SetupDummyApps();
     g_browser_process->platform_part()
@@ -84,6 +100,7 @@ class CrostiniUtilTest : public testing::Test {
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     test_helper_.reset();
     profile_.reset();
+    user_manager_.Reset();
     browser_part_.ShutdownComponentManager();
     component_manager_.reset();
     ash::DlcserviceClient::Shutdown();
@@ -92,13 +109,13 @@ class CrostiniUtilTest : public testing::Test {
  protected:
   raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
 
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
   std::string app_id_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_MOVE_PASSWORDS_PROMO_H_
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_MOVE_PASSWORDS_PROMO_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"

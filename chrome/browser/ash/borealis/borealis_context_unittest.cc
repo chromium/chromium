@@ -38,8 +38,7 @@ namespace borealis {
 class BorealisContextTest : public testing::Test,
                             protected guest_os::FakeVmServicesHelper {
  public:
-  BorealisContextTest()
-      : new_window_provider_(std::make_unique<ash::TestNewWindowDelegate>()) {
+  BorealisContextTest() {
     profile_ = std::make_unique<TestingProfile>();
     borealis_shutdown_monitor_ =
         std::make_unique<BorealisShutdownMonitor>(profile_.get());
@@ -89,7 +88,7 @@ class BorealisContextTest : public testing::Test,
   std::unique_ptr<BorealisShutdownMonitor> borealis_shutdown_monitor_;
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   base::HistogramTester histogram_tester_;
-  ash::TestNewWindowDelegateProvider new_window_provider_;
+  ash::TestNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(BorealisContextTest, ConciergeFailure) {

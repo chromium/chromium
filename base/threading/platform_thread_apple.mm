@@ -85,7 +85,6 @@ void PlatformThreadBase::SetName(const std::string& name) {
 
 // Whether optimized real-time thread config should be used for audio.
 BASE_FEATURE(kOptimizedRealtimeThreadingMac,
-             "OptimizedRealtimeThreadingMac",
 #if BUILDFLAG(IS_MAC)
              FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -103,15 +102,24 @@ bool IsOptimizedRealtimeThreadingMacEnabled() {
 
 // Fine-tuning optimized real-time thread config:
 // Whether or not the thread should be preemptible.
-const FeatureParam<bool> kOptimizedRealtimeThreadingMacPreemptible{
-    &kOptimizedRealtimeThreadingMac, "preemptible", true};
+BASE_FEATURE_PARAM(bool,
+                   kOptimizedRealtimeThreadingMacPreemptible,
+                   &kOptimizedRealtimeThreadingMac,
+                   "preemptible",
+                   true);
 // Portion of the time quantum the thread is expected to be busy, (0, 1].
-const FeatureParam<double> kOptimizedRealtimeThreadingMacBusy{
-    &kOptimizedRealtimeThreadingMac, "busy", 0.5};
+BASE_FEATURE_PARAM(double,
+                   kOptimizedRealtimeThreadingMacBusy,
+                   &kOptimizedRealtimeThreadingMac,
+                   "busy",
+                   0.5);
 // Maximum portion of the time quantum the thread is expected to be busy,
 // (kOptimizedRealtimeThreadingMacBusy, 1].
-const FeatureParam<double> kOptimizedRealtimeThreadingMacBusyLimit{
-    &kOptimizedRealtimeThreadingMac, "busy_limit", 1.0};
+BASE_FEATURE_PARAM(double,
+                   kOptimizedRealtimeThreadingMacBusyLimit,
+                   &kOptimizedRealtimeThreadingMac,
+                   "busy_limit",
+                   1.0);
 
 namespace {
 
@@ -271,6 +279,22 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
   return;
 }
 
+std::optional<qos_class_t> ThreadTypeToQoSClass(ThreadType thread_type) {
+  switch (thread_type) {
+    case ThreadType::kBackground:
+      return QOS_CLASS_BACKGROUND;
+    case ThreadType::kUtility:
+      return QOS_CLASS_UTILITY;
+    case ThreadType::kDefault:
+      return QOS_CLASS_USER_INITIATED;
+    case ThreadType::kDisplayCritical:
+    case ThreadType::kInteractive:
+      return QOS_CLASS_USER_INTERACTIVE;
+    case ThreadType::kRealtimeAudio:
+      return std::nullopt;
+  }
+}
+
 }  // anonymous namespace
 
 // static
@@ -287,67 +311,68 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  switch (thread_type) {
-    case ThreadType::kBackground:
-      pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
-      break;
-    case ThreadType::kUtility:
-      pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
-      break;
-    case ThreadType::kResourceEfficient:
-      pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
-      break;
-    case ThreadType::kDefault:
-      pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
-      break;
-    case ThreadType::kCompositing:
-    case ThreadType::kDisplayCritical: {
-      pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
-      break;
-    }
-    case ThreadType::kRealtimeAudio:
-      SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
-      DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);
-      break;
+  std::optional<qos_class_t> qos_class = ThreadTypeToQoSClass(thread_type);
+
+  if (qos_class) {
+    pthread_set_qos_class_self_np(*qos_class, 0);
+  } else {
+    CHECK_EQ(thread_type, ThreadType::kRealtimeAudio);
+    SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
   }
+}
+
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  std::optional<qos_class_t> qos_class = ThreadTypeToQoSClass(thread_type);
+
+  if (qos_class) {
+    return pthread_override_qos_class_start_np(thread_handle.platform_handle(),
+                                               *qos_class, 0);
+  }
+
+  return PlatformPriorityOverride();
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {
+  if (priority_override_handle == nullptr) {
+    return;
+  }
+  pthread_override_qos_class_end_np(priority_override_handle);
 }
 
 }  // namespace internal
 
 // static
-ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
+ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
   if ([NSThread.currentThread threadPriority] == 1.0) {
     // Set to 1 for a non-fixed thread.)
-    return ThreadPriorityForTest::kRealtimeAudio;
+    return ThreadType::kRealtimeAudio;
   }
 
-  qos_class_t qos_class;
-  int relative_priority;
-  pthread_get_qos_class_np(pthread_self(), &qos_class, &relative_priority);
+  qos_class_t qos_class = qos_class_self();
   switch (qos_class) {
     case QOS_CLASS_BACKGROUND:
-      return ThreadPriorityForTest::kBackground;
+      return ThreadType::kBackground;
     case QOS_CLASS_UTILITY:
-      return ThreadPriorityForTest::kUtility;
+      return ThreadType::kUtility;
     case QOS_CLASS_USER_INITIATED:
-      return ThreadPriorityForTest::kNormal;
+      return ThreadType::kDefault;
     case QOS_CLASS_USER_INTERACTIVE:
-      return ThreadPriorityForTest::kDisplay;
+      return ThreadType::kDisplayCritical;
     default:
-      return ThreadPriorityForTest::kNormal;
+      return ThreadType::kDefault;
   }
 }
 
 size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 #if BUILDFLAG(IS_IOS)
-#if BUILDFLAG(USE_BLINK)
   // For iOS 512kB (the default) isn't sufficient, but using the code
   // for macOS below will return 8MB. So just be a little more conservative
   // and return 1MB for now.
   return 1024 * 1024;
-#else
-  return 0;
-#endif
 #else
   // The macOS default for a pthread stack size is 512kB.
   // Libc-594.1.4/pthreads/pthread.c's pthread_attr_init uses

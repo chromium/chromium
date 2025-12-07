@@ -36,7 +36,6 @@ class ProcessingAudioFifo {
       base::RepeatingCallback<void(const media::AudioBus&,
                                    base::TimeTicks,
                                    double,
-                                   bool,
                                    const media::AudioGlitchInfo&)>;
 
   using LogCallback = base::RepeatingCallback<void(std::string_view)>;
@@ -60,7 +59,6 @@ class ProcessingAudioFifo {
   void PushData(const media::AudioBus* audio_bus,
                 base::TimeTicks capture_time,
                 double volume,
-                bool key_pressed,
                 const media::AudioGlitchInfo& audio_glitch_info);
 
   // Starts the processing thread. Cannot be called more than once.

@@ -49,11 +49,12 @@ component("wtf") {
     "assertions.h",
     "atomic_operations.cc",
     "atomic_operations.h",
+    "bind_post_task.h",
     "bit_field.h",
     "bloom_filter.h",
     "casting.h",
+    "construct_traits.h",
     "container_annotations.h",
-    "cross_thread_copier.cc",
     "cross_thread_copier.h",
     "cross_thread_copier_base.h",
     "cross_thread_copier_gfx.h",
@@ -63,6 +64,7 @@ component("wtf") {
     "cross_thread_copier_public.h",
     "cross_thread_copier_skia.h",
     "cross_thread_copier_std.h",
+    "cross_thread_copier_url.h",
     "cross_thread_functional.h",
     "date_math.cc",
     "date_math.h",
@@ -76,6 +78,7 @@ component("wtf") {
     "dynamic_annotations.h",
     "forward.h",
     "functional.h",
+    "functional_internal.h",
     "gc_plugin.h",
     "get_ptr.h",
     "hash_counted_set.h",
@@ -106,8 +109,8 @@ component("wtf") {
     "stack_util.h",
     "static_constructors.h",
     "std_lib_extras.h",
-    "text/ascii_ctype.cc",
     "text/ascii_ctype.h",
+    "text/ascii_fast_path.cc",
     "text/ascii_fast_path.h",
     "text/atomic_string.cc",
     "text/atomic_string.h",
@@ -123,6 +126,7 @@ component("wtf") {
     "text/character_names.h",
     "text/character_visitor.h",
     "text/code_point_iterator.h",
+    "text/convert_to_8bit_hash_reader.h",
     "text/copy_lchars_from_uchar_source.h",
     "text/encoding_tables.cc",
     "text/encoding_tables.h",
@@ -133,9 +137,13 @@ component("wtf") {
     "text/math_transform.h",
     "text/number_parsing_options.h",
     "text/parsing_utilities.h",
+    "text/strcat.cc",
+    "text/strcat.h",
     "text/string_buffer.h",
     "text/string_builder.cc",
     "text/string_builder.h",
+    "text/string_builder_stream.cc",
+    "text/string_builder_stream.h",
     "text/string_concatenate.cc",
     "text/string_concatenate.h",
     "text/string_hash.h",
@@ -143,6 +151,7 @@ component("wtf") {
     "text/string_impl.cc",
     "text/string_impl.h",
     "text/string_operators.h",
+    "text/string_operators_atomic.h",
     "text/string_statics.cc",
     "text/string_statics.h",
     "text/string_to_number.cc",
@@ -176,10 +185,10 @@ component("wtf") {
     "text/text_offset_map.h",
     "text/text_position.cc",
     "text/text_position.h",
-    "text/text_stream.cc",
-    "text/text_stream.h",
     "text/unicode.h",
     "text/unicode_string.h",
+    "text/utf16.cc",
+    "text/utf16.h",
     "text/utf8.cc",
     "text/utf8.h",
     "text/wtf_string.cc",
@@ -218,8 +227,7 @@ component("wtf") {
 
   deps = [
     "//base/allocator:buildflags",
-    "//build:chromeos_buildflags",
-    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common",
     "//third_party/modp_b64",
     "//third_party/rapidhash",
 
@@ -241,7 +249,6 @@ component("wtf") {
 
   if (is_apple) {
     sources += [
-      "text/atomic_string_cf.cc",
       "text/string_apple.mm",
       "text/string_impl_apple.mm",
     ]
@@ -294,6 +301,7 @@ source_set("wtf_unittests_sources") {
     "allocator/partitions_test.cc",
     "assertions_test.cc",
     "atomic_operations_test.cc",
+    "bind_post_task_test.cc",
     "bit_field_test.cc",
     "bloom_filter_test.cc",
     "casting_test.cc",
@@ -318,6 +326,7 @@ source_set("wtf_unittests_sources") {
     "shared_buffer_test.cc",
     "testing/run_all_tests.cc",
     "text/ascii_ctype_test.cc",
+    "text/ascii_fast_path_test.cc",
     "text/atomic_string_table_test.cc",
     "text/atomic_string_test.cc",
     "text/base64_test.cc",
@@ -327,6 +336,7 @@ source_set("wtf_unittests_sources") {
     "text/integer_to_string_conversion_test.cc",
     "text/line_ending_test.cc",
     "text/math_transform_test.cc",
+    "text/strcat_test.cc",
     "text/string_buffer_test.cc",
     "text/string_builder_test.cc",
     "text/string_hasher_test.cc",
@@ -340,12 +350,16 @@ source_set("wtf_unittests_sources") {
     "text/text_codec_utf8_test.cc",
     "text/text_encoding_test.cc",
     "text/text_offset_map_test.cc",
+    "text/utf16_test.cc",
+    "text/utf8_test.cc",
     "text/wtf_string_test.cc",
     "threading_primitives_test.cc",
     "type_traits_test.cc",
     "uuid_test.cc",
     "vector_backed_linked_list_test.cc",
     "vector_test.cc",
+    "wtf_test_helper.cc",
+    "wtf_test_helper.h",
   ]
 
   if (is_win) {
@@ -364,4 +378,8 @@ source_set("wtf_unittests_sources") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

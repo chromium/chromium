@@ -8,17 +8,10 @@
 #include <functional>
 #include <unordered_map>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_weak_ref.h"
-#endif
-
-namespace content {
-class WebContents;
-}
 
 // Abstraction of a mechanism that associates GURL objects with open tabs.
 class TabMatcher {
@@ -30,8 +23,7 @@ class TabMatcher {
     bool has_matching_tab{};
 
 #if BUILDFLAG(IS_ANDROID)
-    // Weak pointer to an Android Tab for the supplied GURL.
-    JavaObjectWeakGlobalRef android_tab{};
+    int android_tab_id{};
 #endif
   };
 
@@ -39,6 +31,19 @@ class TabMatcher {
   struct GURLHash {
     size_t operator()(const GURL& url) const {
       return std::hash<std::string>()(url.spec());
+    }
+  };
+
+  // Wrapper for tab information used by OpenTabProvider.
+  struct TabWrapper {
+    std::u16string title;
+    GURL url;
+    base::Time last_shown_time;
+
+    TabWrapper(std::u16string title, GURL url, base::Time last_shown_time) {
+      this->title = title;
+      this->url = url;
+      this->last_shown_time = last_shown_time;
     }
   };
 
@@ -68,10 +73,10 @@ class TabMatcher {
   virtual void FindMatchingTabs(GURLToTabInfoMap* map,
                                 const AutocompleteInput* input) const;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Returns pointers to all open tab WebContents for the current profile.
-  virtual std::vector<content::WebContents*> GetOpenTabs() const;
-#endif
+  // Returns tab wrappers for all open tabs for the current profile.
+  virtual std::vector<TabWrapper> GetOpenTabs(
+      const AutocompleteInput* input,
+      bool exclude_active_tab = true) const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TAB_MATCHER_H_

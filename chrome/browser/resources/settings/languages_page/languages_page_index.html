@@ -1,0 +1,34 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+
+  /* Necessary to display multiple cr-view-manager views (in this case "cards")
+     at the same time. */
+  cr-view-manager [slot=view]:not(.closing) {
+    position: initial;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-languages-page slot="view" id="languages" prefs="{{prefs}}"
+      languages="[[languages]]" route-path$="[[routes_.LANGUAGES.path]]">
+  </settings-languages-page>
+
+  <settings-spell-check-page slot="view" id="spellCheck" prefs="{{prefs}}"
+      languages="[[languages]]" route-path$="[[routes_.SPELL_CHECK.path]]">
+  </settings-spell-check-page>
+
+  <settings-translate-page slot="view" id="translate" prefs="{{prefs}}"
+      languages="[[languages]]">
+  </settings-translate-page>
+
+<if expr="not is_macosx">
+  <settings-edit-dictionary-page slot="view" id="editDictionary"
+      data-parent-view-id="spellCheck" prefs="{{prefs}}"
+      route-path$="[[routes_.EDIT_DICTIONARY.path]]">
+  </settings-edit-dictionary-page>
+</if>
+</cr-view-manager>

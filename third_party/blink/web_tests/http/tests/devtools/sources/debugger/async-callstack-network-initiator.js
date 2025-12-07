@@ -44,13 +44,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SourcesTestRunner.startDebuggerTest(step1);
 
   function step1() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions);
-    TestRunner.DebuggerAgent.setAsyncCallStackDepth(0);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions});
+    TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: 0});
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step2);
   }
 
   async function step2() {
-    await TestRunner.DebuggerAgent.setAsyncCallStackDepth(maxAsyncCallStackDepth);
+    await TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: maxAsyncCallStackDepth});
     ConsoleTestRunner.waitUntilNthMessageReceived(numberOfConsoleMessages, expandAndDumpConsoleMessages);
     SourcesTestRunner.resumeExecution();
   }
@@ -62,8 +63,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     });
   }
 
+  function textContentWithoutStylesAndWithLineBreaksTrimmed(node) {
+    return TestRunner.textContentWithoutStyles(node).replace(/\s{3,}/g, ' ');
+  }
+
   async function dumpConsoleMessages() {
-    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaksTrimmed);
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, textContentWithoutStylesAndWithLineBreaksTrimmed);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

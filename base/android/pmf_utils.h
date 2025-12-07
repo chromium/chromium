@@ -5,6 +5,7 @@
 #ifndef BASE_ANDROID_PMF_UTILS_H_
 #define BASE_ANDROID_PMF_UTILS_H_
 
+#include "base/byte_count.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/process/process.h"
@@ -13,11 +14,11 @@ namespace base::android {
 
 class BASE_EXPORT PmfUtils {
  public:
-  static std::optional<uint64_t> GetPrivateMemoryFootprintForCurrentProcess();
+  static std::optional<ByteCount> GetPrivateMemoryFootprintForCurrentProcess();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PmfUtilsTest, CalculatePrivateMemoryFootprint);
-  static std::optional<uint64_t> CalculatePrivateMemoryFootprintForTesting(
+  static std::optional<ByteCount> CalculatePrivateMemoryFootprintForTesting(
       base::File& statm_file,
       base::File& status_file);
 };

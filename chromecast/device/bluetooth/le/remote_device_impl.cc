@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/base/bind_to_task_runner.h"
@@ -594,8 +593,7 @@ void RemoteDeviceImpl::ReadCharacteristicImpl(
 
   LOG(ERROR) << __func__ << " failed";
   auto it = handle_to_characteristic_read_cbs_.find(characteristic->handle());
-  CHECK(it != handle_to_characteristic_read_cbs_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(it != handle_to_characteristic_read_cbs_.end());
   DCHECK(!it->second.empty());
   std::move(it->second.front()).Run(false, {});
   it->second.pop();
@@ -616,8 +614,7 @@ void RemoteDeviceImpl::WriteCharacteristicImpl(
 
   LOG(ERROR) << __func__ << " failed";
   auto it = handle_to_characteristic_write_cbs_.find(characteristic->handle());
-  CHECK(it != handle_to_characteristic_write_cbs_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(it != handle_to_characteristic_write_cbs_.end());
   DCHECK(!it->second.empty());
   std::move(it->second.front()).Run(false);
   it->second.pop();
@@ -635,7 +632,7 @@ void RemoteDeviceImpl::ReadDescriptorImpl(
 
   LOG(ERROR) << __func__ << " failed";
   auto it = handle_to_descriptor_read_cbs_.find(descriptor->handle());
-  CHECK(it != handle_to_descriptor_read_cbs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != handle_to_descriptor_read_cbs_.end());
   DCHECK(!it->second.empty());
   std::move(it->second.front()).Run(false, {});
   it->second.pop();
@@ -654,7 +651,7 @@ void RemoteDeviceImpl::WriteDescriptorImpl(
 
   LOG(ERROR) << __func__ << " failed";
   auto it = handle_to_descriptor_write_cbs_.find(descriptor->handle());
-  CHECK(it != handle_to_descriptor_write_cbs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != handle_to_descriptor_write_cbs_.end());
   DCHECK(!it->second.empty());
   std::move(it->second.front()).Run(false);
   it->second.pop();

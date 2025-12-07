@@ -6,12 +6,12 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <optional>
 #include <sstream>
 #include <string_view>
 
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -24,7 +24,7 @@ namespace shared_highlighting {
 base::Value ParseTextFragments(const GURL& url) {
   if (!url.has_ref())
     return {};
-  std::vector<std::string> fragments = ExtractTextFragments(url.ref());
+  std::vector<std::string> fragments = ExtractTextFragments(url.GetRef());
   if (fragments.empty())
     return {};
 
@@ -92,14 +92,14 @@ std::vector<std::string> ExtractTextFragments(std::string ref_string) {
 GURL RemoveFragmentSelectorDirectives(const GURL& url) {
   const std::vector<std::string_view> directive_parameter_names{
       kTextDirectiveParameterName, kSelectorDirectiveParameterName};
-  size_t start_pos = url.ref().find(kFragmentsUrlDelimiter);
+  size_t start_pos = url.GetRef().find(kFragmentsUrlDelimiter);
   if (start_pos == std::string::npos)
     return url;
 
   // Split url before and after the ":~:" delimiter.
-  std::string fragment_prefix = url.ref().substr(0, start_pos);
+  std::string fragment_prefix = url.GetRef().substr(0, start_pos);
   std::string fragment_directive =
-      url.ref().substr(start_pos + kFragmentsUrlDelimiterLength);
+      url.GetRef().substr(start_pos + kFragmentsUrlDelimiterLength);
 
   // Split fragment directive on "&" and remove any piece that starts with
   // one of the directive_parameter_names
@@ -107,7 +107,7 @@ GURL RemoveFragmentSelectorDirectives(const GURL& url) {
   for (const std::string& directive :
        base::SplitString(fragment_directive, kSelectorJoinDelimeter,
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (base::ranges::none_of(
+    if (std::ranges::none_of(
             directive_parameter_names,
             [&directive](std::string_view directive_parameter_name) {
               return base::StartsWith(directive, directive_parameter_name);
@@ -173,7 +173,7 @@ GURL AppendFragmentDirectives(const GURL& base_url,
   }
 
   GURL url = RemoveFragmentSelectorDirectives(base_url);
-  std::string new_ref = url.ref();
+  std::string new_ref = url.GetRef();
   if (new_ref.find(kFragmentsUrlDelimiter) == std::string::npos) {
     new_ref += kFragmentsUrlDelimiter;
   } else {

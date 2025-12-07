@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/browser_process.h"
@@ -12,9 +13,17 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif
 
 namespace settings {
 
@@ -29,6 +38,12 @@ bool DefaultBrowserIsDisabledByPolicy() {
   return pref->IsManaged() && !pref->GetValue()->GetBool();
 }
 
+#if BUILDFLAG(IS_WIN)
+void PinToTaskbarResult(bool result) {
+  base::UmaHistogramBoolean("Windows.TaskbarPinFromSettingsSucceeded", result);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 DefaultBrowserHandler::DefaultBrowserHandler() = default;
@@ -40,6 +55,11 @@ void DefaultBrowserHandler::RegisterMessages() {
       "requestDefaultBrowserState",
       base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "requestUserValueStringsFeatureState",
+      base::BindRepeating(
+          &DefaultBrowserHandler::HandleRequestUserValueStringsFeatureState,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setAsDefaultBrowser",
       base::BindRepeating(&DefaultBrowserHandler::SetAsDefaultBrowser,
@@ -74,10 +94,30 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
                      weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
+void DefaultBrowserHandler::HandleRequestUserValueStringsFeatureState(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(args.size(), 1U);
+  auto& callback_id = args[0].GetString();
+
+  bool is_enabled =
+      base::FeatureList::IsEnabled(features::kUserValueDefaultBrowserStrings);
+  ResolveJavascriptCallback(callback_id, base::Value(is_enabled));
+}
 void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
   CHECK(!DefaultBrowserIsDisabledByPolicy());
   AllowJavascript();
   RecordSetAsDefaultUMA();
+
+#if BUILDFLAG(IS_WIN)
+  if (!args.empty() && args[0].GetBool()) {
+    browser_util::PinAppToTaskbar(
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kSettingsPage,
+        base::BindOnce(&PinToTaskbarResult));
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   default_browser_worker_->StartSetAsDefault(
       base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
@@ -102,6 +142,13 @@ void DefaultBrowserHandler::RecordSetAsDefaultUMA() {
   UMA_HISTOGRAM_COUNTS("Settings.StartSetAsDefault", true);
 }
 
+void DefaultBrowserHandler::OnCanPinToTaskbarResult(
+    const std::optional<std::string>& js_callback_id,
+    shell_integration::DefaultWebClientState state,
+    bool can_pin) {
+  OnDefaultCheckFinished(js_callback_id, can_pin, state);
+}
+
 void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
     const std::optional<std::string>& js_callback_id,
     shell_integration::DefaultWebClientState state) {
@@ -110,10 +157,29 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
     // default browser.
     chrome::startup::default_prompt::ResetPromptPrefs(
         Profile::FromWebUI(web_ui()));
+  } else {
+#if BUILDFLAG(IS_WIN)
+    if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInSettings)) {
+      browser_util::ShouldOfferToPin(
+          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+          browser_util::PinAppToTaskbarChannel::kSettingsPage,
+          base::BindOnce(&DefaultBrowserHandler::OnCanPinToTaskbarResult,
+                         weak_ptr_factory_.GetWeakPtr(), js_callback_id,
+                         state));
+      return;
+    }
+#endif  // BUILDFLAG(IS_WIN)
   }
+  OnDefaultCheckFinished(js_callback_id, /*can_pin=*/false, state);
+}
 
+void DefaultBrowserHandler::OnDefaultCheckFinished(
+    const std::optional<std::string>& js_callback_id,
+    bool can_pin,
+    shell_integration::DefaultWebClientState state) {
   base::Value::Dict dict;
   dict.Set("isDefault", state == shell_integration::IS_DEFAULT);
+  dict.Set("canPin", can_pin);
   dict.Set("canBeDefault", shell_integration::CanSetAsDefaultBrowser());
   dict.Set("isUnknownError", state == shell_integration::UNKNOWN_DEFAULT);
   dict.Set("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());

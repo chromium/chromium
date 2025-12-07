@@ -2,47 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
-var WebViewContextMenusImpl = require('chromeWebView').WebViewContextMenusImpl;
-var ControlledFrame = getInternalApi('controlledFrameInternal');
-var utils = require('utils');
-
-function ControlledFrameContextMenusImpl(viewInstanceId) {
-  this.viewInstanceId_ = viewInstanceId;
-}
-$Object.setPrototypeOf(ControlledFrameContextMenusImpl.prototype,
-  WebViewContextMenusImpl.prototype);
-
-ControlledFrameContextMenusImpl.prototype.create = function() {
-  let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
-  let result = $Function.apply(ControlledFrame.contextMenusCreate, null, args);
-  if (bindingUtil.hasLastError()) {
-    result = bindingUtil.getLastErrorMessage();
-    bindingUtil.clearLastError();
-  }
-  return result;
-}
-
-function ControlledFrameContextMenus() {
-  privates(ControlledFrameContextMenus).constructPrivate(this, arguments);
-}
-
-utils.expose(ControlledFrameContextMenus, ControlledFrameContextMenusImpl, {
-  functions: [
-    'create',
-    'remove',
-    'removeAll',
-    'update',
-  ]
-});
+const ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
+const ControlledFrameInternal = getInternalApi('controlledFrameInternal');
+const ControlledFrameEvents =
+    require('controlledFrameEvents').ControlledFrameEvents;
+const ControlledFrameContextMenus =
+    require('controlledFrameContextMenus').ControlledFrameContextMenus;
 
 class ControlledFrameImpl extends ChromeWebViewImpl {
   constructor(webviewElement) {
     super(webviewElement);
   }
 
+  setupEvents() {
+    new ControlledFrameEvents(this);
+  }
+
   createWebViewContextMenus() {
-    return new ControlledFrameContextMenus(this.viewInstanceId);
+    return new ControlledFrameContextMenus(this, this.viewInstanceId);
+  }
+
+  setClientHintsUABrandEnabled(enable) {
+    ControlledFrameInternal.setClientHintsEnabled(this.guest.getId(), !!enable);
+  }
+
+  getLogTag() {
+    return 'controlledframe';
   }
 }
 

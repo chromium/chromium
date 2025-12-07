@@ -1,0 +1,13 @@
+include_rules = [
+  "+chromeos/ash/components/install_attributes",
+  "+chromeos/ash/components/login/login_state",
+  "+components/user_manager",
+  "+components/vector_icons",
+  "+ui/base/l10n",
+  "+ui/chromeos",
+  "+ui/message_center",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/notification_utils.h",
+]

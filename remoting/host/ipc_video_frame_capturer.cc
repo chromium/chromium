@@ -5,7 +5,7 @@
 #include "remoting/host/ipc_video_frame_capturer.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "remoting/host/desktop_session_proxy.h"
 #include "remoting/host/video_memory_utils.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -70,6 +70,12 @@ bool IpcVideoFrameCapturer::SelectSource(SourceId id) {
   return true;
 }
 
+void IpcVideoFrameCapturer::SetComposeEnabled(bool enabled) {
+  if (capturer_control_) {
+    capturer_control_->SetComposeEnabled(enabled);
+  }
+}
+
 void IpcVideoFrameCapturer::OnSharedMemoryRegionCreated(
     int id,
     base::ReadOnlySharedMemoryRegion region,
@@ -108,8 +114,8 @@ void IpcVideoFrameCapturer::OnCaptureResult(mojom::CaptureResultPtr result) {
 
   std::unique_ptr<webrtc::DesktopFrame> frame =
       std::make_unique<webrtc::SharedMemoryDesktopFrame>(
-          desktop_frame->size, desktop_frame->stride,
-          new IpcSharedBuffer(shared_buffer_core));
+          desktop_frame->size, desktop_frame->stride, webrtc::FOURCC_ARGB,
+          std::make_unique<IpcSharedBuffer>(shared_buffer_core));
   frame->set_capture_time_ms(desktop_frame->capture_time_ms);
   frame->set_dpi(desktop_frame->dpi);
   frame->set_capturer_id(desktop_frame->capturer_id);

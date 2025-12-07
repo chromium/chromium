@@ -48,7 +48,10 @@ class V8MobileBrowsingBenchmark(
   PLATFORM = 'mobile'
   # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
   # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
+  SUPPORTED_PLATFORMS = [
+      story.expectations.ALL_MOBILE, story.expectations.FUCHSIA_SHERLOCK,
+      story.expectations.FUCHSIA_NELSON
+  ]
   SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
 
   @classmethod

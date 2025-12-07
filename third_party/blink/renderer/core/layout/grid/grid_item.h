@@ -15,7 +15,6 @@
 namespace blink {
 
 enum class AxisEdge { kStart, kCenter, kEnd, kFirstBaseline, kLastBaseline };
-enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 struct GridItemIndices {
   wtf_size_t begin{kNotFound};
@@ -27,11 +26,8 @@ struct OutOfFlowItemPlacement {
   GridItemIndices offset_in_range;
 };
 
-struct CORE_EXPORT GridItemData {
-  USING_FAST_MALLOC(GridItemData);
-
- public:
-  GridItemData() = delete;
+struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
+  GridItemData() = default;
   GridItemData(const GridItemData&) = default;
   GridItemData& operator=(const GridItemData&) = default;
 
@@ -41,11 +37,20 @@ struct CORE_EXPORT GridItemData {
                bool parent_must_consider_grid_items_for_column_sizing = false,
                bool parent_must_consider_grid_items_for_row_sizing = false);
 
-  GridItemData(BlockNode item_node, const ComputedStyle& grid_style)
-      : GridItemData(std::move(item_node), grid_style, grid_style) {}
+  GridItemData(BlockNode item_node, const ComputedStyle& parent_style)
+      : GridItemData(std::move(item_node), parent_style, parent_style) {}
 
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
                             bool has_synthesized_baseline);
+
+  // This method updates the current item's span to be the given `span` in the
+  // given `track_direction`, translates the item as needed by the
+  // `start_offset`, and recalculates the item's set indices based on its new
+  // span location.
+  void UpdateSpan(const GridSpan& span,
+                  GridTrackSizingDirection track_direction,
+                  wtf_size_t start_offset,
+                  const GridLayoutTrackCollection& track_collection);
 
   AxisEdge Alignment(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
@@ -78,18 +83,25 @@ struct CORE_EXPORT GridItemData {
                : row_alignment == AxisEdge::kLastBaseline;
   }
 
-  // For this item and track direction, computes the pair of indices |begin| and
-  // |end| such that the item spans every set from the respective collection's
-  // |sets_| with an index in the range [begin, end).
+  // For this item and track direction, computes the pair of indices `begin` and
+  // `end` such that the item spans every set from the respective collection's
+  // `sets_` with an index in the range [begin, end).
   void ComputeSetIndices(const GridLayoutTrackCollection& track_collection);
 
   // For this out of flow item and track collection, computes and stores its
   // first and last spanned ranges, as well as the start and end track offset.
-  // |grid_placement| is used to resolve the grid lines.
+  // `grid_placement` is used to resolve the grid lines.
   void ComputeOutOfFlowItemPlacement(
       const GridLayoutTrackCollection& track_collection,
       const GridPlacementData& placement_data,
       const ComputedStyle& grid_style);
+
+  // Returns the total size of the tracks spanned by this item in the given
+  // track collection. If `start_offset` is provided, it will be set to the
+  // offset of the first track spanned by this grid item.
+  LayoutUnit CalculateAvailableSize(
+      const GridLayoutTrackCollection& track_collection,
+      LayoutUnit* start_offset = nullptr) const;
 
   enum BaselineGroup BaselineGroup(
       GridTrackSizingDirection track_direction) const {
@@ -112,6 +124,13 @@ struct CORE_EXPORT GridItemData {
                                             : row_set_indices;
   }
 
+  GridSizingTrackCollection::SetIterator SetIterator(
+      GridSizingTrackCollection* track_collection) const {
+    DCHECK(track_collection);
+    const auto& set_indices = SetIndices(track_collection->Direction());
+    return track_collection->GetSetIterator(set_indices.begin, set_indices.end);
+  }
+
   GridItemIndices& RangeIndices(GridTrackSizingDirection track_direction) {
     return (track_direction == kForColumns) ? column_range_indices
                                             : row_range_indices;
@@ -120,6 +139,11 @@ struct CORE_EXPORT GridItemData {
   void ResetPlacementIndices() {
     column_range_indices = row_range_indices = GridItemIndices();
     column_set_indices = row_set_indices = GridItemIndices();
+  }
+
+  const GridSpan& MaybeTranslateSpan(wtf_size_t start_offset,
+                                     GridTrackSizingDirection track_direction) {
+    return resolved_position.MaybeTranslateSpan(start_offset, track_direction);
   }
 
   const GridSpan& Span(GridTrackSizingDirection track_direction) const {
@@ -165,7 +189,7 @@ struct CORE_EXPORT GridItemData {
                : must_consider_grid_items_for_row_sizing;
   }
 
-  bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
+  bool IsOutOfFlow() const { return node && node.IsOutOfFlowPositioned(); }
 
   const TrackSpanProperties& GetTrackSpanProperties(
       GridTrackSizingDirection track_direction) const {
@@ -206,24 +230,73 @@ struct CORE_EXPORT GridItemData {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
+  void EncompassContributionSize(MinMaxSizes sizes) {
+    if (contribution_sizes) {
+      contribution_sizes->min_max_contribution.Encompass(sizes);
+    } else {
+      contribution_sizes = VirtualItemContributions();
+      contribution_sizes->min_max_contribution = sizes;
+    }
+  }
+
+  void EncompassIntrinsicMinIgnoringTrackPlacement(LayoutUnit size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes->intrinsic_min_ignoring_track_placement = std::max(
+        contribution_sizes->intrinsic_min_ignoring_track_placement, size);
+  }
+
+  void EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(LayoutUnit size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes
+        ->intrinsic_min_ignoring_track_placement_unclamped = std::max(
+        contribution_sizes->intrinsic_min_ignoring_track_placement_unclamped,
+        size);
+  }
+
+  void EncompassIntrinsicMinAssumingTrackPlacement(LayoutUnit size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes->intrinsic_min_assuming_track_placement = std::max(
+        contribution_sizes->intrinsic_min_assuming_track_placement, size);
+  }
+
+  // The min clamp size is the margin, border, padding, and baseline shim
+  // for an item that may be clamped. We take the largest of these to ensure
+  // we don't clamp past the largest such value for these items. This may not
+  // be 100% equivalent to what we would get with the grid implementation, but
+  // should be as close as we can get without leading to overflow.
+  void EncompassMinClampSize(LayoutUnit min_clamp_size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes->min_clamp_size =
+        std::max(contribution_sizes->min_clamp_size, min_clamp_size);
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 
-  BlockNode node;
+  BlockNode node{nullptr};
   GridArea resolved_position;
 
-  bool has_subgridded_columns : 1;
-  bool has_subgridded_rows : 1;
-  bool is_considered_for_column_sizing : 1;
-  bool is_considered_for_row_sizing : 1;
-  bool is_opposite_direction_in_root_grid_columns : 1;
-  bool is_opposite_direction_in_root_grid_rows : 1;
-  bool is_overflow_safe_for_columns : 1;
-  bool is_overflow_safe_for_rows : 1;
-  bool is_parallel_with_root_grid : 1;
-  bool is_sizing_dependent_on_block_size : 1;
-  bool is_subgridded_to_parent_grid : 1;
-  bool must_consider_grid_items_for_column_sizing : 1;
-  bool must_consider_grid_items_for_row_sizing : 1;
+  bool has_subgridded_columns : 1 {false};
+  bool has_subgridded_rows : 1 {false};
+  bool is_auto_placed : 1 {false};
+  bool is_considered_for_column_sizing : 1 {true};
+  bool is_considered_for_row_sizing : 1 {true};
+  bool is_opposite_direction_in_root_grid_columns : 1 {false};
+  bool is_opposite_direction_in_root_grid_rows : 1 {false};
+  bool is_overflow_safe_for_columns : 1 {false};
+  bool is_overflow_safe_for_rows : 1 {false};
+  bool is_parallel_with_root_grid : 1 {false};
+  bool is_sizing_dependent_on_block_size : 1 {false};
+  bool is_subgridded_to_parent_grid : 1 {false};
+  bool must_consider_grid_items_for_column_sizing : 1 {false};
+  bool must_consider_grid_items_for_row_sizing : 1 {false};
 
   FontBaseline parent_grid_font_baseline;
 
@@ -253,16 +326,70 @@ struct CORE_EXPORT GridItemData {
 
   // These fields are only for out of flow items. They are used to store their
   // start/end range indices, and offsets in range in the respective track
-  // collection; see |OutOfFlowItemPlacement|.
+  // collection; see `OutOfFlowItemPlacement`.
   OutOfFlowItemPlacement column_placement;
   OutOfFlowItemPlacement row_placement;
+
+  // Virtual masonry items don't have a node, so we cache the maximum of every
+  // intrinsic contribution among the items that make up its respective group,
+  // which may be the min/max sizes if parallel to the grid-axis, and the block
+  // contribution size if perpendicular.
+  struct VirtualItemContributions {
+    MinMaxSizes min_max_contribution;
+
+    // Intrinsic minimums have special contribution size logic as outlined in
+    // [1]. Virtual masonry items don't have a node, so we cache this value for
+    // later. Note that some of the logic depends on the tracks spanned, which
+    // we don't know when creating the virtual item. Some of the logic also
+    // requires clamping based on the total track size an item spans. Store:
+    //
+    // - `intrinsic_min_assuming_track_placement` - The max intrinsic min
+    // contribution assuming the tracks it spans will lead us to use the
+    // automatic min size. This value will never need to be clamped, so no need
+    // to store a clamped/unclamped version.
+    //
+    // - `intrinsic_min_ignoring_track_placement` - The max intrinsic min
+    // contribution assuming that we *don't* span tracks that will lead us to
+    // use the automatic min size. Under this condition, some items may be
+    // forced to the automatic min size, and some will use the min content
+    // contribution (which may need to be clamped). This var holds the the max
+    // contribution for items that use the min content contribution that may
+    // need to be clamped later to get the actual contribution size once we know
+    // the tracks the item spans.
+    //
+    // - `intrinsic_min_ignoring_track_placement_unclamped` - The max intrinsic
+    // min contribution assuming that we *don't* span tracks that will lead us
+    // to use the automatic min size. Under this condition, some items may be
+    // forced to the automatic min size, and some will use the min content
+    // contribution (which may need to be clamped). This var holds the the max
+    // contribution for items that use the automatic min size, which will *not*
+    // need to be clamped later.
+    //
+    // - `min_clamp_size` - When we clamp
+    // `intrinsic_min_ignoring_track_placement` by the total track span later on
+    // in the track sizing algo, we should not clamp past the sum of
+    // margin/border/padding/baseline shim. This value holds the largest such
+    // sum for items that contribute to
+    // `intrinsic_min_ignoring_track_placement`.
+    //
+    // We store all of these values to choose which ends up leading to the
+    // largest contribution size when we know the final virtual item
+    // position(s).
+    //
+    // [1] https://drafts.csswg.org/css-grid/#min-size-auto
+    LayoutUnit intrinsic_min_assuming_track_placement;
+    LayoutUnit intrinsic_min_ignoring_track_placement;
+    LayoutUnit intrinsic_min_ignoring_track_placement_unclamped;
+    LayoutUnit min_clamp_size;
+  };
+  std::optional<VirtualItemContributions> contribution_sizes;
 };
 
 class CORE_EXPORT GridItems {
   DISALLOW_NEW();
 
  public:
-  using GridItemDataVector = Vector<std::unique_ptr<GridItemData>, 16>;
+  using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
 
   template <bool is_const>
   class Iterator {
@@ -301,7 +428,7 @@ class CORE_EXPORT GridItems {
 
     value_type* operator->() const {
       DCHECK_LT(current_index_, item_data_->size());
-      return item_data_->at(current_index_).get();
+      return item_data_->at(current_index_).Get();
     }
 
     value_type& operator*() const { return *operator->(); }
@@ -359,7 +486,8 @@ class CORE_EXPORT GridItems {
   void Append(GridItems* other);
   void SortByOrderProperty();
 
-  void Append(std::unique_ptr<GridItemData>&& new_item_data) {
+  void Append(GridItemData* new_item_data) {
+    DCHECK(new_item_data);
     if (!new_item_data->is_subgridded_to_parent_grid) {
       // Subgridded items are appended after non-subgridded ones; keep moving
       // `first_subgridded_item_index_` while we append non-subgridded items.
@@ -370,13 +498,27 @@ class CORE_EXPORT GridItems {
   }
 
   GridItemData& At(wtf_size_t index) {
+    DCHECK_LT(index, item_data_.size());
     DCHECK(item_data_[index]);
     return *item_data_[index];
+  }
+
+  const GridItemData& At(wtf_size_t index) const {
+    DCHECK_LT(index, item_data_.size());
+    DCHECK(item_data_[index]);
+    return *item_data_[index];
+  }
+
+  const Member<GridItemData>& operator[](wtf_size_t index) const {
+    DCHECK_LT(index, item_data_.size());
+    return item_data_[index];
   }
 
   void ReserveInitialCapacity(wtf_size_t initial_capacity) {
     item_data_.ReserveInitialCapacity(initial_capacity);
   }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(item_data_); }
 
  private:
   // End index used to iterate over the non-subgridded items of the collection.

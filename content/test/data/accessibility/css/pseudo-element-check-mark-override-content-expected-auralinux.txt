@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[combo box] name='Pets'
+++++++[menu]
+++++++++[menu item] name='Dog' selectable selected
+++++++++[menu item] name='Cat' selectable
+++++++++[menu item] name='Donkey' selectable

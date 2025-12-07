@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_uninstall_missing_extension
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Extensions.uninstall' wasn't found)
+[FAIL] test_params_extension_invalid_value[empty]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Extensions.uninstall' wasn't found)
+[FAIL] test_params_extension_invalid_value[unknown]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Extensions.uninstall' wasn't found)
+Harness: the test ran to completion.
+

@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -76,7 +77,7 @@ base::FilePath GetComponentBinaryPath() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
   return screen_ai::GetComponentBinaryPathForTests();
 #else
-  NOTREACHED_NORETURN() << "Test library is used on a not-suppported platform.";
+  NOTREACHED() << "Test library is used on a not-suppported platform.";
 #endif
 }
 

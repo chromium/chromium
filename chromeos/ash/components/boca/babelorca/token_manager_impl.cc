@@ -12,7 +12,6 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -22,11 +21,8 @@
 namespace ash::babelorca {
 
 TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> token_fetcher,
-                                   base::TimeDelta expiration_buffer,
                                    base::Clock* clock)
-    : token_fetcher_(std::move(token_fetcher)),
-      expiration_buffer_(expiration_buffer),
-      clock_(*clock) {}
+    : token_fetcher_(std::move(token_fetcher)), clock_(*clock) {}
 
 TokenManagerImpl::~TokenManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -34,8 +30,7 @@ TokenManagerImpl::~TokenManagerImpl() {
 
 const std::string* TokenManagerImpl::GetTokenString() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!token_data_ ||
-      token_data_->expiration_time < clock_->Now() + expiration_buffer_) {
+  if (!token_data_ || token_data_->expiration_time <= clock_->Now()) {
     return nullptr;
   }
   return &(token_data_->token);

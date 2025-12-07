@@ -1,0 +1,79 @@
+This is a wdspec test.
+[ERROR] test_context_invalid_type[None]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_context_invalid_type[False]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_context_invalid_type[42]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_context_invalid_type[context3]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_context_invalid_type[context4]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_context_unknown_value
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_address_invalid_type[None]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_address_invalid_type[False]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_address_invalid_type[42]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_address_invalid_type[address3]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_address_invalid_type[address4]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_address_unknown_value
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_service_uuid_invalid_type[None]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_service_uuid_invalid_type[False]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_service_uuid_invalid_type[42]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_service_uuid_invalid_type[service_uuid3]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_service_uuid_invalid_type[service_uuid4]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_service_uuid_unknown_value
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_characteristic_uuid_invalid_type[None]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_characteristic_uuid_invalid_type[False]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_characteristic_uuid_invalid_type[42]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_characteristic_uuid_invalid_type[characteristic_uuid3]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_characteristic_uuid_invalid_type[characteristic_uuid4]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_characteristic_uuid_unknown_value
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_descriptor_uuid_invalid_type[None]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_descriptor_uuid_invalid_type[False]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_descriptor_uuid_invalid_type[42]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_descriptor_uuid_invalid_type[descriptor_uuid3]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_descriptor_uuid_invalid_type[descriptor_uuid4]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_descriptor_uuid_unknown_value
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_type_invalid_type[None]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_type_invalid_type[False]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_type_invalid_type[42]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_type_invalid_type[type3]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_type_invalid_type[type4]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_type_unknown_value
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_data_present_for_nonread
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_data_absent_for_read
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+Harness: the test ran to completion.
+

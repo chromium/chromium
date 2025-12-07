@@ -8,13 +8,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 
 /** Trampoline activity to start the NTP from the reengagement notification. */
+@NullMarked
 public class ReengagementActivity extends Activity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String action = getIntent().getAction();
         if (ReengagementNotificationController.LAUNCH_NTP_ACTION.equals(action)) {

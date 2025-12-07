@@ -31,7 +31,7 @@ media::VideoCodecProfile ToVideoDecoderConfigCodecProfile(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 media::AudioCodec ToAudioDecoderConfigCodec(
@@ -45,7 +45,7 @@ media::AudioCodec ToAudioDecoderConfigCodec(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 media::VideoCodec ToVideoDecoderConfigCodec(
@@ -65,7 +65,7 @@ media::VideoCodec ToVideoDecoderConfigCodec(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -81,7 +81,7 @@ openscreen::cast::AudioCodec ToAudioCaptureConfigCodec(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 openscreen::cast::VideoCodec ToVideoCaptureConfigCodec(
@@ -101,7 +101,7 @@ openscreen::cast::VideoCodec ToVideoCaptureConfigCodec(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 openscreen::cast::AudioCaptureConfig ToAudioCaptureConfig(

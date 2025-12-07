@@ -2,37 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_split.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
-#include "gpu/command_buffer/service/gles2_external_framebuffer.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
+#include "gpu/command_buffer/service/passthrough_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_switching_manager.h"
@@ -54,8 +56,8 @@ GLenum GetterForTextureTarget(GLenum target) {
       return GL_TEXTURE_BINDING_2D;
     case GL_TEXTURE_EXTERNAL_OES:
       return GL_TEXTURE_BINDING_EXTERNAL_OES;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      return GL_TEXTURE_BINDING_RECTANGLE_ARB;
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+      return GL_TEXTURE_BINDING_RECTANGLE_ANGLE;
     default:
       // Other targets not currently used.
       NOTIMPLEMENTED();
@@ -98,7 +100,7 @@ class ScopedFramebufferBindingReset {
 class ScopedTextureBindingReset {
  public:
   // |texture_target| only supports GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES, and
-  // GL_TEXTURE_RECTANGLE_ARB.
+  // GL_TEXTURE_RECTANGLE_ANGLE.
   ScopedTextureBindingReset(gl::GLApi* api, GLenum texture_target)
       : api_(api), texture_target_(texture_target), texture_(0) {
     api_->glGetIntegervFn(GetterForTextureTarget(texture_target_), &texture_);
@@ -135,13 +137,7 @@ class ScopedColorMaskZeroReset {
   explicit ScopedColorMaskZeroReset(gl::GLApi* api,
                                     bool oes_draw_buffers_indexed)
       : api_(api), oes_draw_buffers_indexed_(oes_draw_buffers_indexed) {
-    if (oes_draw_buffers_indexed_) {
-      GLsizei length = 0;
-      api_->glGetBooleani_vRobustANGLEFn(
-          GL_COLOR_WRITEMASK, 0, sizeof(color_mask_), &length, color_mask_);
-    } else {
-      api_->glGetBooleanvFn(GL_COLOR_WRITEMASK, color_mask_);
-    }
+    api_->glGetBooleanvFn(GL_COLOR_WRITEMASK, color_mask_);
   }
   ~ScopedColorMaskZeroReset() {
     if (oes_draw_buffers_indexed_) {
@@ -203,29 +199,51 @@ bool GetClientID(const ClientServiceMap<ClientType, ServiceType>* map,
 
 void RequestExtensions(gl::GLApi* api,
                        const gfx::ExtensionSet& requestable_extensions,
-                       const char* const* extensions_to_request,
-                       size_t count) {
-  for (size_t i = 0; i < count; i++) {
-    if (gfx::HasExtension(requestable_extensions, extensions_to_request[i])) {
-      // Request the intersection of the two sets
-      api->glRequestExtensionANGLEFn(extensions_to_request[i]);
+                       base::span<const char* const> extensions_to_request) {
+  for (auto* extension : extensions_to_request) {
+    if (gfx::HasExtension(requestable_extensions, extension)) {
+      // Request the intersection of the two sets │
+      api->glRequestExtensionANGLEFn(extension);
     }
   }
 }
 
-void APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
-                                                GLenum type,
-                                                GLuint id,
-                                                GLenum severity,
-                                                GLsizei length,
-                                                const GLchar* message,
-                                                const GLvoid* user_param) {
+void GL_APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
+                                                   GLenum type,
+                                                   GLuint id,
+                                                   GLenum severity,
+                                                   GLsizei length,
+                                                   const GLchar* message,
+                                                   const GLvoid* user_param) {
   DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
       static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
   command_decoder->OnDebugMessage(source, type, id, severity, length, message);
   LogGLDebugMessage(source, type, id, severity, length, message,
                     command_decoder->GetLogger());
+}
+
+GLsizeiptr GL_APIENTRY
+PassthroughGLBlobCacheGetCallback(const void* key,
+                                  GLsizeiptr key_size,
+                                  void* value,
+                                  GLsizeiptr value_size,
+                                  const void* user_param) {
+  DCHECK(user_param != nullptr);
+  GLES2DecoderPassthroughImpl* command_decoder =
+      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+  return command_decoder->BlobCacheGet(key, key_size, value, value_size);
+}
+
+void GL_APIENTRY PassthroughGLBlobCacheSetCallback(const void* key,
+                                                   GLsizeiptr key_size,
+                                                   const void* value,
+                                                   GLsizeiptr value_size,
+                                                   const void* user_param) {
+  DCHECK(user_param != nullptr);
+  GLES2DecoderPassthroughImpl* command_decoder =
+      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+  command_decoder->BlobCacheSet(key, key_size, value, value_size);
 }
 
 void RunCallbacks(std::vector<base::OnceClosure> callbacks) {
@@ -272,13 +290,14 @@ void ReturnProgramInfoData(DecoderClient* client,
 
   std::vector<uint8_t> return_data;
   return_data.resize(sizeof(cmds::GLES2ReturnProgramInfo) + info.size());
-  auto* return_program_info =
-      reinterpret_cast<cmds::GLES2ReturnProgramInfo*>(return_data.data());
+  auto* return_program_info = UNSAFE_TODO(
+      reinterpret_cast<cmds::GLES2ReturnProgramInfo*>(return_data.data()));
   return_program_info->return_data_header.return_data_type = type;
   return_program_info->program_client_id = program;
-  memcpy(return_program_info->deserialized_buffer, info.data(), info.size());
+  UNSAFE_TODO(memcpy(return_program_info->deserialized_buffer, info.data(),
+                     info.size()));
   client->HandleReturnData(
-      base::span<uint8_t>(return_data.data(), return_data.size()));
+      UNSAFE_TODO(base::span<uint8_t>(return_data.data(), return_data.size())));
 }
 
 }  // anonymous namespace
@@ -700,7 +719,7 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstGLES2Command;
     if (command_index < std::size(command_info)) {
-      const CommandInfo& info = command_info[command_index];
+      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
           (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {
@@ -741,7 +760,7 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
 
     if (result != error::kDeferCommandUntilLater) {
       process_pos += size;
-      cmd_data += size;
+      UNSAFE_TODO(cmd_data += size);
     }
   }
 
@@ -772,9 +791,12 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     const scoped_refptr<gl::GLSurface>& surface,
     const scoped_refptr<gl::GLContext>& context,
     bool offscreen,
-    const DisallowedFeatures& disallowed_features,
-    const ContextCreationAttribs& attrib_helper) {
+    ContextType context_type,
+    bool lose_context_when_out_of_memory) {
   TRACE_EVENT0("gpu", "GLES2DecoderPassthroughImpl::Initialize");
+  CHECK(gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE)
+      << "Running WebGL through passthrough command decoder without ANGLE's "
+      << "validation is a security risk";
   DCHECK(context->IsCurrent(surface.get()));
   api_ = gl::g_current_gl_context;
   // Take ownership of the context and surface. The surface can be replaced
@@ -798,8 +820,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   multi_draw_manager_ = std::make_unique<MultiDrawManager>(
       MultiDrawManager::IndexStorageType::Pointer);
 
-  auto result =
-      group_->Initialize(this, attrib_helper.context_type, disallowed_features);
+  auto result = group_->Initialize(this, context_type);
   if (result != gpu::ContextResult::kSuccess) {
     // Must not destroy ContextGroup if it is not initialized.
     group_ = nullptr;
@@ -809,43 +830,43 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
   // Extensions that are enabled via emulation on the client side or needed for
   // basic command buffer functionality.  Make sure they are always enabled.
-  if (IsWebGLContextType(attrib_helper.context_type)) {
+  if (IsWebGLContextType(context_type)) {
     // Grab the extensions that are requestable
     gfx::ExtensionSet requestable_extensions(
         gl::GetRequestableGLExtensionsFromCurrentContext());
 
     static constexpr const char* kRequiredFunctionalityExtensions[] = {
-      "GL_ANGLE_framebuffer_blit",
+        "GL_ANGLE_blob_cache",
+        "GL_ANGLE_framebuffer_blit",
 #if BUILDFLAG(IS_FUCHSIA)
-      "GL_ANGLE_memory_object_fuchsia",
+        "GL_ANGLE_memory_object_fuchsia",
 #endif
-      "GL_ANGLE_memory_size",
-      "GL_ANGLE_native_id",
+        "GL_ANGLE_memory_size",
+        "GL_ANGLE_native_id",
 #if BUILDFLAG(IS_FUCHSIA)
-      "GL_ANGLE_semaphore_fuchsia",
+        "GL_ANGLE_semaphore_fuchsia",
 #endif
-      "GL_ANGLE_texture_storage_external",
-      "GL_ANGLE_texture_usage",
-      "GL_CHROMIUM_bind_uniform_location",
-      "GL_CHROMIUM_sync_query",
-      "GL_EXT_debug_marker",
-      "GL_EXT_memory_object",
-      "GL_EXT_memory_object_fd",
-      "GL_EXT_semaphore",
-      "GL_EXT_semaphore_fd",
-      "GL_KHR_debug",
-      "GL_NV_fence",
-      "GL_OES_EGL_image",
-      "GL_OES_EGL_image_external",
-      "GL_OES_EGL_image_external_essl3",
+        "GL_ANGLE_texture_storage_external",
+        "GL_ANGLE_texture_usage",
+        "GL_CHROMIUM_bind_uniform_location",
+        "GL_CHROMIUM_sync_query",
+        "GL_EXT_debug_marker",
+        "GL_EXT_memory_object",
+        "GL_EXT_memory_object_fd",
+        "GL_EXT_semaphore",
+        "GL_EXT_semaphore_fd",
+        "GL_KHR_debug",
+        "GL_NV_fence",
+        "GL_OES_EGL_image",
+        "GL_OES_EGL_image_external",
+        "GL_OES_EGL_image_external_essl3",
 #if BUILDFLAG(IS_APPLE)
-      "GL_ANGLE_texture_rectangle",
+        "GL_ANGLE_texture_rectangle",
 #endif
-      "GL_ANGLE_vulkan_image",
+        "GL_ANGLE_vulkan_image",
     };
     RequestExtensions(api(), requestable_extensions,
-                      kRequiredFunctionalityExtensions,
-                      std::size(kRequiredFunctionalityExtensions));
+                      kRequiredFunctionalityExtensions);
 
     if (request_optional_extensions_) {
       static constexpr const char* kOptionalFunctionalityExtensions[] = {
@@ -885,8 +906,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
           "NV_EGL_stream_consumer_external",
       };
       RequestExtensions(api(), requestable_extensions,
-                        kOptionalFunctionalityExtensions,
-                        std::size(kOptionalFunctionalityExtensions));
+                        kOptionalFunctionalityExtensions);
     }
 
     context->ReinitializeDynamicBindings();
@@ -895,8 +915,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   // Each context initializes its own feature info because some extensions may
   // be enabled dynamically.  Don't disallow any features, leave it up to ANGLE
   // to dynamically enable extensions.
-  InitializeFeatureInfo(attrib_helper.context_type, DisallowedFeatures(),
-                        false);
+  feature_info_->Initialize(context_type, /*is_passthrough_cmd_decoder=*/true,
+                            DisallowedFeatures());
 
   // Check for required extensions
   // TODO(geofflang): verify
@@ -922,24 +942,22 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   FAIL_INIT_IF_NOT(api()->glIsEnabledFn(GL_CLIENT_ARRAYS_ANGLE) == GL_FALSE,
                    "GL_ANGLE_client_arrays shouldn't be enabled");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().angle_webgl_compatibility ==
-                       IsWebGLContextType(attrib_helper.context_type),
+                       IsWebGLContextType(context_type),
                    "missing GL_ANGLE_webgl_compatibility");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().angle_request_extension,
                    "missing GL_ANGLE_request_extension");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().khr_debug,
                    "missing GL_KHR_debug");
-  FAIL_INIT_IF_NOT(!attrib_helper.fail_if_major_perf_caveat ||
-                       !feature_info_->feature_flags().is_swiftshader_for_webgl,
-                   "fail_if_major_perf_caveat + swiftshader");
-  FAIL_INIT_IF_NOT(!attrib_helper.enable_oop_rasterization,
-                   "oop rasterization not supported");
-  FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(attrib_helper.context_type) ||
+  FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(context_type) ||
                        feature_info_->gl_version_info().IsAtLeastGLES(3, 1),
                    "ES 3.1 context type requires an ES 3.1 ANGLE context");
 
 #undef FAIL_INIT_IF_NOT
 
-  bind_generates_resource_ = group_->bind_generates_resource();
+  if (feature_info_->feature_flags().angle_blob_cache) {
+    api()->glBlobCacheCallbacksANGLEFn(PassthroughGLBlobCacheSetCallback,
+                                       PassthroughGLBlobCacheGetCallback, this);
+  }
 
   resources_ = group_->passthrough_resources();
 
@@ -979,8 +997,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   }
   bound_element_array_buffer_dirty_ = false;
 
-  lose_context_when_out_of_memory_ =
-      attrib_helper.lose_context_when_out_of_memory;
+  lose_context_when_out_of_memory_ = lose_context_when_out_of_memory;
 
   GLint max_2d_texture_size = 0;
   api()->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_2d_texture_size);
@@ -1036,9 +1053,34 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     api()->glDisableFn(GL_TEXTURE_RECTANGLE_ANGLE);
 #endif
 
+  // TEMPORARY: Set primitive restart to enabled by default for WebGL2. Clear
+  // errors afterwards so that when this state is initialized and validated in
+  // ANGLE, it will not generate errors during command buffer initialization.
+  if (feature_info_->context_type() == CONTEXT_TYPE_WEBGL2) {
+    // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
+    // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
+    // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1.4
+    api()->glEnableFn(GL_PRIMITIVE_RESTART_FIXED_INDEX);
+    CheckErrorCallbackState();
+  }
+
   // Register this object as a GPU switching observer.
   if (feature_info_->IsWebGLContext()) {
     ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
+  }
+
+  // Deprecation warning for SwiftShader WebGL fallback
+  if (feature_info_->IsWebGLContext() &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeSwiftShader)) {
+    constexpr const char* kSwiftShaderFallbackDeprcationMessage =
+        "Automatic fallback to software WebGL has been deprecated. Please use "
+        "the --enable-unsafe-swiftshader "
+        "(about:flags#enable-unsafe-swiftshader) flag to opt in to lower "
+        "security guarantees for trusted content.";
+    logger_.LogMessage(__FILE__, __LINE__,
+                       kSwiftShaderFallbackDeprcationMessage);
   }
 
   set_initialized();
@@ -1046,6 +1088,10 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 }
 
 void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
+  if (have_context && feature_info_->feature_flags().angle_blob_cache) {
+    api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
+  }
+
   if (have_context) {
     FlushErrors();
   }
@@ -1119,11 +1165,6 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
     emulated_back_buffer_.reset();
   }
 
-  if (external_default_framebuffer_) {
-    external_default_framebuffer_->Destroy(have_context);
-    external_default_framebuffer_.reset();
-  }
-
   if (gpu_fence_manager_.get()) {
     gpu_fence_manager_->Destroy(have_context);
     gpu_fence_manager_.reset();
@@ -1194,61 +1235,6 @@ void GLES2DecoderPassthroughImpl::ReleaseSurface() {
   surface_ = nullptr;
 }
 
-void GLES2DecoderPassthroughImpl::SetDefaultFramebufferSharedImage(
-    const Mailbox& mailbox,
-    int samples,
-    bool preserve,
-    bool needs_depth,
-    bool needs_stencil) {
-  if (!offscreen_)
-    return;
-
-  if (!external_default_framebuffer_) {
-    external_default_framebuffer_ = std::make_unique<GLES2ExternalFramebuffer>(
-        /*passthrough=*/true, *group_->feature_info(),
-        group_->shared_image_representation_factory());
-  }
-
-  if (!external_default_framebuffer_->AttachSharedImage(
-          mailbox, samples, preserve, needs_depth, needs_stencil)) {
-    return;
-  }
-
-  GLuint default_framebuffer_id;
-  if (external_default_framebuffer_->IsSharedImageAttached()) {
-    default_framebuffer_id = external_default_framebuffer_->GetFramebufferId();
-  } else {
-    default_framebuffer_id = emulated_back_buffer_->framebuffer_service_id;
-  }
-
-  framebuffer_id_map_.RemoveClientID(0);
-  framebuffer_id_map_.SetIDMapping(0, default_framebuffer_id);
-
-  // Note, there is member variable `supports_separate_fbo_bindings_` that is
-  // used across this class, but it's never initialized with the real value
-  // (defaults to false) which is likely a bug. To avoid any code changes
-  // outside of the feature flag we don't use it here.
-  const bool supports_separate_fbo_bindings =
-      feature_info_->feature_flags().chromium_framebuffer_multisample ||
-      feature_info_->IsWebGL2OrES3Context();
-
-  if (supports_separate_fbo_bindings) {
-    if (bound_draw_framebuffer_ == 0) {
-      api()->glBindFramebufferEXTFn(GL_DRAW_FRAMEBUFFER,
-                                    default_framebuffer_id);
-    }
-    if (bound_read_framebuffer_ == 0) {
-      api()->glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER,
-                                    default_framebuffer_id);
-    }
-  } else {
-    DCHECK_EQ(bound_draw_framebuffer_, bound_read_framebuffer_);
-    if (bound_draw_framebuffer_ == 0) {
-      api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, default_framebuffer_id);
-    }
-  }
-}
-
 bool GLES2DecoderPassthroughImpl::MakeCurrent() {
   if (!context_.get())
     return false;
@@ -1317,13 +1303,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.texture_format_etc1_npot =
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture &&
       !feature_info_->workarounds().etc1_power_of_two_only;
-  // Vulkan currently doesn't support single-component cross-thread shared
-  // images.
-  caps.disable_one_component_textures =
-      group_->shared_image_manager() &&
-      group_->shared_image_manager()->display_context_on_another_thread() &&
-      (feature_info_->workarounds().avoid_one_component_egl_images ||
-       features::IsUsingVulkan());
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
   caps.texture_rg = feature_info_->feature_flags().ext_texture_rg;
   caps.texture_norm16 = feature_info_->feature_flags().ext_texture_norm16;
@@ -1331,9 +1310,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->feature_flags().enable_texture_half_float_linear;
   caps.image_ycbcr_420v =
       feature_info_->feature_flags().chromium_image_ycbcr_420v;
-  caps.image_ycbcr_420v_disabled_for_video_frames =
-      group_->gpu_preferences()
-          .disable_biplanar_gpu_memory_buffers_for_video_frames;
   caps.image_ar30 = feature_info_->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info_->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =
@@ -1343,8 +1319,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
         std::min(caps.max_texture_size,
                  feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
-  caps.max_copy_texture_chromium_size =
-      feature_info_->workarounds().max_copy_texture_chromium_size;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
   caps.gpu_rasterization = false;
@@ -1361,10 +1335,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
 
   caps.gpu_memory_buffer_formats =
       feature_info_->feature_flags().gpu_memory_buffer_formats;
-  caps.angle_rgbx_internal_format =
-      feature_info_->feature_flags().angle_rgbx_internal_format;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   PopulateDRMCapabilities(&caps, feature_info_.get());
 #endif
 
@@ -1376,11 +1348,16 @@ gpu::GLCapabilities GLES2DecoderPassthroughImpl::GetGLCapabilities() {
   GLCapabilities caps;
 
   PopulateGLCapabilities(&caps, feature_info_.get());
-  CHECK_EQ(caps.bind_generates_resource_chromium != GL_FALSE,
-           group_->bind_generates_resource());
   caps.occlusion_query_boolean =
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = feature_info_->feature_flags().ext_disjoint_timer_query;
+
+  if (feature_info_->workarounds().webgl_or_caps_max_texture_size) {
+    caps.max_texture_size =
+        std::min(caps.max_texture_size,
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
+  }
+  caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
   return caps;
 }
@@ -1592,10 +1569,9 @@ gpu::gles2::Logger* GLES2DecoderPassthroughImpl::GetLogger() {
   return &logger_;
 }
 
-void GLES2DecoderPassthroughImpl::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {
+void GLES2DecoderPassthroughImpl::OnGpuSwitched() {
   // Send OnGpuSwitched notification to renderer process via decoder client.
-  client()->OnGpuSwitched(active_gpu_heuristic);
+  client()->OnGpuSwitched();
 }
 
 void GLES2DecoderPassthroughImpl::BeginDecoding() {
@@ -1662,6 +1638,52 @@ void GLES2DecoderPassthroughImpl::OnDebugMessage(GLenum source,
   }
 }
 
+GLsizeiptr GLES2DecoderPassthroughImpl::BlobCacheGet(const void* key,
+                                                     GLsizeiptr key_size,
+                                                     void* value,
+                                                     GLsizeiptr value_size) {
+  PassthroughProgramCache* cache = get_passthrough_program_cache();
+  if (!cache) {
+    return 0;
+  }
+
+  if (key_size < 0) {
+    return 0;
+  }
+
+  const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
+  PassthroughProgramCache::Key entry_key(key_begin,
+                                         UNSAFE_TODO(key_begin + key_size));
+  return cache->Get(entry_key, value, value_size);
+}
+
+void GLES2DecoderPassthroughImpl::BlobCacheSet(const void* key,
+                                               GLsizeiptr key_size,
+                                               const void* value,
+                                               GLsizeiptr value_size) {
+  PassthroughProgramCache* cache = get_passthrough_program_cache();
+  if (!cache) {
+    return;
+  }
+
+  if (key_size < 0 || value_size < 0) {
+    return;
+  }
+
+  const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
+  PassthroughProgramCache::Key entry_key(key_begin,
+                                         UNSAFE_TODO(key_begin + key_size));
+
+  const uint8_t* value_begin = reinterpret_cast<const uint8_t*>(value);
+  PassthroughProgramCache::Value entry_value(
+      value_begin, UNSAFE_TODO(value_begin + value_size));
+
+  cache->Set(
+      std::move(entry_key), std::move(entry_value),
+      base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(client()),
+                          gpu::GpuDiskCacheType::kGlShaders));
+}
+
 void GLES2DecoderPassthroughImpl::SetCopyTextureResourceManagerForTest(
     CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager) {
   NOTIMPLEMENTED();
@@ -1683,14 +1705,6 @@ const char* GLES2DecoderPassthroughImpl::GetCommandName(
 void GLES2DecoderPassthroughImpl::SetOptionalExtensionsRequestedForTesting(
     bool request_extensions) {
   request_optional_extensions_ = request_extensions;
-}
-
-void GLES2DecoderPassthroughImpl::InitializeFeatureInfo(
-    ContextType context_type,
-    const DisallowedFeatures& disallowed_features,
-    bool force_reinitialize) {
-  feature_info_->Initialize(context_type, true /* is_passthrough_cmd_decoder */,
-                            disallowed_features, force_reinitialize);
 }
 
 template <typename T>
@@ -1904,8 +1918,7 @@ GLES2DecoderPassthroughImpl::PatchGetFramebufferAttachmentParameter(
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } break;
 
@@ -1962,7 +1975,6 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   }
 
   gl::GLContextAttribs attribs;
-  attribs.bind_generates_resource = false;
   attribs.global_texture_share_group = true;
   attribs.global_semaphore_share_group = true;
   attribs.robust_resource_initialization = true;
@@ -2067,6 +2079,11 @@ bool GLES2DecoderPassthroughImpl::IsIgnoredCap(GLenum cap) const {
     case GL_DEBUG_OUTPUT:
       return true;
 
+    case GL_PRIMITIVE_RESTART_FIXED_INDEX:
+      // Disable setting primitive restart at the command decoder level until
+      // it's blocked in ANGLE for WebGL contexts.
+      return feature_info_->IsWebGLContext();
+
     default:
       return false;
   }
@@ -2084,18 +2101,17 @@ bool GLES2DecoderPassthroughImpl::CheckResetStatus() {
   }
 
   switch (driver_status) {
-    case GL_GUILTY_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
       MarkContextLost(error::kGuilty);
       break;
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
+    case GL_INNOCENT_CONTEXT_RESET:
       MarkContextLost(error::kInnocent);
       break;
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_UNKNOWN_CONTEXT_RESET:
       MarkContextLost(error::kUnknown);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   reset_by_robustness_extension_ = true;
   return true;
@@ -2106,7 +2122,6 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedQueryTarget(GLenum target) const {
     case GL_COMMANDS_COMPLETED_CHROMIUM:
     case GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM:
     case GL_COMMANDS_ISSUED_CHROMIUM:
-    case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
     case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
     case GL_GET_ERROR_QUERY_CHROMIUM:
     case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM:
@@ -2118,9 +2133,14 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedQueryTarget(GLenum target) const {
 }
 
 bool GLES2DecoderPassthroughImpl::OnlyHasPendingProgramCompletionQueries() {
-  return base::ranges::all_of(pending_queries_, [](const auto& query) {
+  return std::ranges::all_of(pending_queries_, [](const auto& query) {
     return query.target == GL_PROGRAM_COMPLETION_QUERY_CHROMIUM;
   });
+}
+
+PassthroughProgramCache*
+GLES2DecoderPassthroughImpl::get_passthrough_program_cache() const {
+  return static_cast<PassthroughProgramCache*>(group_->get_program_cache());
 }
 
 error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
@@ -2143,14 +2163,6 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
       case GL_COMMANDS_ISSUED_CHROMIUM:
         result_available = GL_TRUE;
         result = query.commands_issued_time.InMicroseconds();
-        break;
-
-      case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
-        result_available = GL_TRUE;
-        DCHECK_GT(
-            query.commands_issued_timestamp.since_origin().InMicroseconds(), 0);
-        result =
-            query.commands_issued_timestamp.since_origin().InMicroseconds();
         break;
 
       case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
@@ -2303,8 +2315,8 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
 }
 
 void GLES2DecoderPassthroughImpl::RemovePendingQuery(GLuint service_id) {
-  auto pending_iter = base::ranges::find(pending_queries_, service_id,
-                                         &PendingQuery::service_id);
+  auto pending_iter = std::ranges::find(pending_queries_, service_id,
+                                        &PendingQuery::service_id);
   if (pending_iter != pending_queries_.end()) {
     QuerySync* sync = pending_iter->sync;
     sync->result = 0;
@@ -2329,8 +2341,7 @@ void GLES2DecoderPassthroughImpl::ReadBackBuffersIntoShadowCopies(
     if (!resources_->buffer_id_map.GetServiceID(client_id, &service_id)) {
       // Buffer no longer exists, this shadow update should have been removed by
       // DoDeleteBuffers
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     const auto& update = u.second;
@@ -2361,7 +2372,7 @@ void GLES2DecoderPassthroughImpl::ReadBackBuffersIntoShadowCopies(
       group_->LoseContexts(error::kUnknown);
       return;
     }
-    memcpy(shadow, mapped, update.size);
+    UNSAFE_TODO(memcpy(shadow, mapped, update.size));
     bool unmap_ok = api()->glUnmapBufferFn(GL_ARRAY_BUFFER);
     if (unmap_ok == GL_FALSE) {
       DLOG(ERROR) << "glUnmapBuffer unexpectedly returned GL_FALSE";
@@ -2403,15 +2414,15 @@ error::Error GLES2DecoderPassthroughImpl::ProcessReadPixels(bool did_finish) {
         break;
       }
 
-      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER_ARB,
+      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                             pending_read_pixels.buffer_service_id);
       void* data = nullptr;
       if (feature_info_->feature_flags().map_buffer_range) {
-        data = api()->glMapBufferRangeFn(GL_PIXEL_PACK_BUFFER_ARB, 0,
+        data = api()->glMapBufferRangeFn(GL_PIXEL_PACK_BUFFER, 0,
                                          pending_read_pixels.pixels_size,
                                          GL_MAP_READ_BIT);
       } else {
-        data = api()->glMapBufferFn(GL_PIXEL_PACK_BUFFER_ARB, GL_READ_ONLY);
+        data = api()->glMapBufferFn(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
       }
       if (!data) {
         InsertError(GL_OUT_OF_MEMORY, "Failed to map pixel pack buffer.");
@@ -2419,11 +2430,11 @@ error::Error GLES2DecoderPassthroughImpl::ProcessReadPixels(bool did_finish) {
         break;
       }
 
-      memcpy(pixels, data, pending_read_pixels.pixels_size);
-      api()->glUnmapBufferFn(GL_PIXEL_PACK_BUFFER_ARB);
-      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER_ARB,
+      UNSAFE_TODO(memcpy(pixels, data, pending_read_pixels.pixels_size));
+      api()->glUnmapBufferFn(GL_PIXEL_PACK_BUFFER);
+      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                             resources_->buffer_id_map.GetServiceIDOrInvalid(
-                                bound_buffers_[GL_PIXEL_PACK_BUFFER_ARB]));
+                                bound_buffers_[GL_PIXEL_PACK_BUFFER]));
       api()->glDeleteBuffersARBFn(1, &pending_read_pixels.buffer_service_id);
 
       if (result != nullptr) {
@@ -2450,9 +2461,9 @@ void GLES2DecoderPassthroughImpl::ProcessDescheduleUntilFinished() {
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "cc", "GLES2DecoderPassthroughImpl::DescheduleUntilFinished",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "cc", /*"GLES2DecoderPassthroughImpl::DescheduleUntilFinished"*/
+      perfetto::Track::FromPointer(this));
   deschedule_until_finished_fences_.pop_front();
   client()->OnRescheduleAfterFinished();
 }
@@ -2539,13 +2550,6 @@ void GLES2DecoderPassthroughImpl::UpdateTextureSizeFromTexturePassthrough(
 
   UpdateBoundTexturePassthroughSize(api(), texture);
 
-  // If a client ID is available, notify the discardable manager of the size
-  // change
-  if (client_id != 0) {
-    group_->passthrough_discardable_manager()->UpdateTextureSize(
-        client_id, group_.get(), texture->estimated_size());
-  }
-
   if (needs_rebind) {
     GLuint old_texture =
         bound_texture.texture ? bound_texture.texture->service_id() : 0;
@@ -2626,11 +2630,11 @@ void GLES2DecoderPassthroughImpl::VerifyServiceTextureObjectsExist() {
 
 bool GLES2DecoderPassthroughImpl::IsEmulatedFramebufferBound(
     GLenum target) const {
-  if (!emulated_back_buffer_ && !external_default_framebuffer_) {
+  if (!emulated_back_buffer_) {
     return false;
   }
 
-  if ((target == GL_FRAMEBUFFER_EXT || target == GL_DRAW_FRAMEBUFFER) &&
+  if ((target == GL_FRAMEBUFFER || target == GL_DRAW_FRAMEBUFFER) &&
       bound_draw_framebuffer_ == 0) {
     return true;
   }
@@ -2640,32 +2644,6 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedFramebufferBound(
   }
 
   return false;
-}
-
-void GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult(
-    const char* function_name,
-    uint64_t swap_id,
-    gfx::SwapCompletionResult result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "gpu", "AsyncSwapBuffers",
-      TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-  CheckSwapBuffersResult(result.swap_result, function_name);
-}
-
-error::Error GLES2DecoderPassthroughImpl::CheckSwapBuffersResult(
-    gfx::SwapResult result,
-    const char* function_name) {
-  if (result == gfx::SwapResult::SWAP_FAILED) {
-    // If SwapBuffers failed, we may not have a current context any more.
-    LOG(ERROR) << "Context lost because " << function_name << " failed.";
-    if (!context_->IsCurrent(surface_.get()) || !CheckResetStatus()) {
-      MarkContextLost(error::kUnknown);
-      group_->LoseContexts(error::kUnknown);
-      return error::kLostContext;
-    }
-  }
-
-  return error::kNoError;
 }
 
 // static
@@ -2684,8 +2662,14 @@ GLES2DecoderPassthroughImpl::GLenumToTextureTarget(GLenum target) {
       return TextureTarget::k2DMultisample;
     case GL_TEXTURE_EXTERNAL_OES:
       return TextureTarget::kExternal;
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       return TextureTarget::kRectangle;
+    case GL_TEXTURE_BUFFER:
+      return TextureTarget::kBuffer;
+    case GL_TEXTURE_CUBE_MAP_ARRAY:
+      return TextureTarget::kCubeMapArray;
+    case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+      return TextureTarget::k2DMultisampleArray;
     default:
       return TextureTarget::kUnkown;
   }

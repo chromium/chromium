@@ -33,7 +33,7 @@ class UI_DEVTOOLS_EXPORT CSSAgent
   protocol::Response disable() override;
   protocol::Response getMatchedStylesForNode(
       int node_id,
-      protocol::Maybe<protocol::Array<protocol::CSS::RuleMatch>>*
+      std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>*
           matched_css_rules) override;
   protocol::Response getStyleSheetText(const protocol::String& style_sheet_id,
                                        protocol::String* text) override;

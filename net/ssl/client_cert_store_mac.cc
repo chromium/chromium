@@ -10,6 +10,7 @@
 #include <Security/SecBase.h>
 #include <Security/Security.h>
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
@@ -22,10 +23,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "crypto/mac_security_services_lock.h"
+#include "crypto/apple/security_framework_lock.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
@@ -66,7 +66,7 @@ OSStatus CopyCertChain(
   OSStatus result;
   SecTrustRef trust_ref = nullptr;
   {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
     result = SecTrustCreateWithCertificates(input_certs.get(), ssl_policy.get(),
                                             &trust_ref);
   }
@@ -76,12 +76,12 @@ OSStatus CopyCertChain(
 
   // Evaluate trust, which creates the cert chain.
   {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
     // The return value is intentionally ignored since we only care about
     // building a cert chain, not whether it is trusted (the server is the
     // only one that can decide that.)
     std::ignore = SecTrustEvaluateWithError(trust.get(), nullptr);
-    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust.get());
+    out_cert_chain->reset(SecTrustCopyCertificateChain(trust.get()));
   }
   return result;
 }
@@ -230,7 +230,7 @@ void GetClientCertsImpl(
     }
 
     // Skip duplicates (a cert may be in multiple keychains).
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             *selected_identities,
             [&cert](const std::unique_ptr<ClientCertIdentity>&
                         other_cert_identity) {
@@ -313,56 +313,13 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     // libsecurity_keychain, specifically
     // _SecIdentityCopyPreferenceMatchingName().
     {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+      base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
       preferred_sec_identity.reset(
           SecIdentityCopyPreferred(domain_str.get(), nullptr, nullptr));
     }
   }
 
   // Now enumerate the identities in the available keychains.
-  std::unique_ptr<ClientCertIdentityMac> preferred_identity;
-  ClientCertIdentityMacList regular_identities;
-
-// TODO(crbug.com/40233280): Is it still true, as claimed below, that
-// SecIdentitySearchCopyNext sometimes returns identities missed by
-// SecItemCopyMatching? Add some histograms to test this and, if none are
-// missing, remove this code.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  SecIdentitySearchRef search = nullptr;
-  OSStatus err;
-  {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    err = SecIdentitySearchCreate(nullptr, CSSM_KEYUSE_SIGN, &search);
-  }
-  if (err)
-    return ClientCertIdentityList();
-  ScopedCFTypeRef<SecIdentitySearchRef> scoped_search(search);
-  while (!err) {
-    ScopedCFTypeRef<SecIdentityRef> sec_identity;
-    {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-      err = SecIdentitySearchCopyNext(search, sec_identity.InitializeInto());
-    }
-    if (err)
-      break;
-    AddIdentity(std::move(sec_identity), preferred_sec_identity.get(),
-                &regular_identities, &preferred_identity);
-  }
-
-  if (err != errSecItemNotFound) {
-    OSSTATUS_LOG(ERROR, err) << "SecIdentitySearch error";
-    return ClientCertIdentityList();
-  }
-#pragma clang diagnostic pop  // "-Wdeprecated-declarations"
-
-  // macOS provides two ways to search for identities. SecIdentitySearchCreate()
-  // is deprecated, as it relies on CSSM_KEYUSE_SIGN (part of the deprecated
-  // CDSM/CSSA implementation), but is necessary to return some certificates
-  // that would otherwise not be returned by SecItemCopyMatching(), which is the
-  // non-deprecated way. However, SecIdentitySearchCreate() will not return all
-  // items, particularly smart-card based identities, so it's necessary to call
-  // both functions.
   static const void* kKeys[] = {
       kSecClass, kSecMatchLimit, kSecReturnRef, kSecAttrCanSign,
   };
@@ -373,11 +330,14 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
       kCFAllocatorDefault, kKeys, kValues, std::size(kValues),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
   ScopedCFTypeRef<CFArrayRef> result;
+  OSStatus err;
   {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+    base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
     err = SecItemCopyMatching(
         query.get(), reinterpret_cast<CFTypeRef*>(result.InitializeInto()));
   }
+  std::unique_ptr<ClientCertIdentityMac> preferred_identity;
+  ClientCertIdentityMacList regular_identities;
   if (!err) {
     for (CFIndex i = 0; i < CFArrayGetCount(result.get()); i++) {
       SecIdentityRef item = reinterpret_cast<SecIdentityRef>(

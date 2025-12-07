@@ -79,12 +79,12 @@ class ImeListItemView : public views::Button {
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
         /*use_wide_layout=*/true);
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     // |id_label| contains the IME short name (e.g., 'US', 'GB', 'IT').
     views::Label* id_label = TrayPopupUtils::CreateDefaultLabel();
-    id_label->SetEnabledColorId(
+    id_label->SetEnabledColor(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     id_label->SetAutoColorReadabilityEnabled(false);
     id_label->SetText(id);
@@ -108,7 +108,7 @@ class ImeListItemView : public views::Button {
     // The label shows the IME full name.
     auto* label_view = TrayPopupUtils::CreateDefaultLabel();
     label_view->SetText(label);
-    label_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label_view->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label_view);
     label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -122,7 +122,7 @@ class ImeListItemView : public views::Button {
           kHollowCheckCircleIcon, button_color_id, kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
-    GetViewAccessibility().SetName(label_view->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_view->GetText()));
     GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
     GetViewAccessibility().SetCheckedState(
         selected ? ax::mojom::CheckedState::kTrue
@@ -177,7 +177,7 @@ class KeyboardStatusRow : public views::View {
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
         /*use_wide_layout=*/true);
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
 
     // The on-screen keyboard image button.
     views::ImageView* keyboard_image =
@@ -192,7 +192,7 @@ class KeyboardStatusRow : public views::View {
     auto* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
     tri_view->AddView(TriView::Container::CENTER, label);
@@ -280,13 +280,6 @@ void ImeListView::ScrollItemToVisible(views::View* item_view) {
   }
 }
 
-void ImeListView::CloseImeListView() {
-  last_selected_item_id_.clear();
-  current_ime_view_ = nullptr;
-  last_item_selected_with_keyboard_ = false;
-  GetWidget()->Close();
-}
-
 void ImeListView::AppendImeListAndProperties(
     const std::string& current_ime_id,
     const std::vector<ImeInfo>& list,
@@ -309,7 +302,8 @@ void ImeListView::AppendImeListAndProperties(
     // Add the properties, if any, of the currently-selected IME.
     if (selected && !property_list.empty()) {
       // Adds a separator on the top of property items.
-      container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+      container_->AddChildViewRaw(
+          TrayPopupUtils::CreateListItemSeparator(true));
 
       // Adds the property items.
       for (const auto& property : property_list) {
@@ -324,7 +318,8 @@ void ImeListView::AppendImeListAndProperties(
       // Adds a separator on the bottom of property items if there are still
       // other IMEs under the current one.
       if (i < list.size() - 1) {
-        container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+        container_->AddChildViewRaw(
+            TrayPopupUtils::CreateListItemSeparator(true));
       }
     }
   }
@@ -366,11 +361,6 @@ void ImeListView::HandleViewClicked(views::View* view) {
     const std::string key = property->second;
     last_selected_item_id_ = key;
     ime_controller->ActivateImeMenuItem(key);
-  }
-
-  if (!should_focus_ime_after_selection_with_keyboard_ ||
-      !last_item_selected_with_keyboard_) {
-    CloseImeListView();
   }
 }
 

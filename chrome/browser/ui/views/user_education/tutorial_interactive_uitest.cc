@@ -4,37 +4,43 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/views/help_bubble_views.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -66,16 +72,24 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
   }
 
+  static void ClearEventQueue() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               UserEducationServiceFactory::GetForBrowserContext(
+                   browser()->profile())
+                   ->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 
   ui::TrackedElement* GetElement(ui::ElementIdentifier id) {
-    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-        id, browser()->window()->GetElementContext());
+    return BrowserElements::From(browser())->GetElement(id);
   }
 
   TutorialDescription GetDefaultTutorialDescription() {
@@ -98,25 +112,32 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
-  GetTutorialService()->StartTutorial(kTestTutorialId,
-                                      browser()->window()->GetElementContext(),
-                                      completed.Get(), aborted.Get());
+  GetTutorialService()->StartTutorial(
+      kTestTutorialId, BrowserElements::From(browser())->GetContext(),
+      completed.Get(), aborted.Get());
+  ClearEventQueue();
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial());
 
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       GetElement(kTabStripElementId), kCustomEventType1);
+  ClearEventQueue();
 
-  InteractionTestUtilBrowser test_util;
+  ui::test::InteractionTestUtil test_util;
+  test_util.AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.PressButton(GetElement(kToolbarAppMenuButtonElementId)));
+  ClearEventQueue();
 
   // Simulate click on close button.
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          static_cast<HelpBubbleViews*>(
-              GetTutorialService()->currently_displayed_bubble_for_testing())
-              ->bubble_view()
+          AsViewClass<user_education::HelpBubbleView>(
+              GetTutorialService()
+                  ->currently_displayed_bubble_for_testing()
+                  ->AsA<HelpBubbleViews>()
+                  ->bubble_view_for_testing())
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
 
@@ -151,9 +172,9 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 
   auto CheckWebUIHelpBubbleIsShowing(bool showing) {
     return InAnyContext(CheckElement(
-        NewTabPageUI::kCustomizeChromeButtonElementId,
+        CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
         [](ui::TrackedElement* el) {
-          return el->AsA<user_education::TrackedElementWebUI>()
+          return el->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
               ->handler()
               ->IsHelpBubbleShowingForTesting(el->identifier());
         },
@@ -163,7 +184,8 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
   auto StartTutorial(ui::ElementIdentifier page_id) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleShownEvent);
     StateChange help_bubble_shown;
-    help_bubble_shown.where = {"ntp-app", "help-bubble"};
+    help_bubble_shown.where = {"ntp-app", "ntp-customize-buttons",
+                               "help-bubble"};
     help_bubble_shown.type = StateChange::Type::kExists;
     help_bubble_shown.event = kHelpBubbleShownEvent;
 
@@ -171,10 +193,11 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
         Steps(Do([this]() {
                 auto* const service = GetTutorialService();
                 service->StartTutorial(
-                    kTestTutorialId, browser()->window()->GetElementContext());
+                    kTestTutorialId,
+                    BrowserElements::From(browser())->GetContext());
               }),
-              WaitForStateChange(page_id, help_bubble_shown), FlushEvents());
-    AddDescription(steps, "StartTutorial( %s )");
+              WaitForStateChange(page_id, help_bubble_shown));
+    AddDescriptionPrefix(steps, "StartTutorial()");
     return steps;
   }
 
@@ -182,31 +205,31 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleHiddenEvent);
     StateChange help_bubble_hidden;
     help_bubble_hidden.type = StateChange::Type::kDoesNotExist;
-    help_bubble_hidden.where = {"ntp-app", "help-bubble"};
+    help_bubble_hidden.where = {"ntp-app", "ntp-customize-buttons",
+                                "help-bubble"};
     help_bubble_hidden.event = kHelpBubbleHiddenEvent;
 
-    auto steps =
-        Steps(Do([this]() {
-                auto* const service = GetTutorialService();
-                service->CancelTutorialIfRunning(kTestTutorialId);
-              }),
-              WaitForStateChange(page_id, help_bubble_hidden), FlushEvents());
-    AddDescription(steps, "CancelTutorial( %s )");
+    auto steps = Steps(Do([this]() {
+                         auto* const service = GetTutorialService();
+                         service->CancelTutorialIfRunning(kTestTutorialId);
+                       }),
+                       WaitForStateChange(page_id, help_bubble_hidden));
+    AddDescriptionPrefix(steps, "CancelTutorial()");
     return steps;
   }
 
  protected:
   TutorialService* GetTutorialService() {
-    return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
-        ->tutorial_service_for_testing();
+    return &UserEducationServiceFactory::GetForBrowserContext(
+                browser()->profile())
+                ->tutorial_service();
   }
 
   TutorialDescription GetDefaultTutorialDescription() {
     TutorialDescription description;
     description.steps.emplace_back(
         TutorialDescription::BubbleStep(
-            NewTabPageUI::kCustomizeChromeButtonElementId)
+            CustomizeButtonsHandler::kCustomizeChromeButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
             .InAnyContext());

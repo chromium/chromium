@@ -4,55 +4,107 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ColorMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-suite('ColorMenu', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let toolbar: ReadAnythingToolbarElement;
+suite('ColorMenuElement', () => {
+  let colorMenu: ColorMenuElement;
+  let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    toolbar = document.createElement('read-anything-toolbar');
-    document.body.appendChild(toolbar);
-    flush();
+    metrics = mockMetrics();
+
+    colorMenu = document.createElement('color-menu');
+    document.body.appendChild(colorMenu);
   });
 
-  test('is dropdown menu', () => {
-    stubAnimationFrame();
-    const menuButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#color');
-
-    menuButton!.click();
-    flush();
-
-    assertTrue(toolbar.$.colorMenu.get().open);
+  test('has checkmarks', () => {
+    assertCheckMarksForDropdown(colorMenu);
   });
 
-  test('option click propagates change', () => {
-    const colorMenuOptions = getItemsInMenu(toolbar.$.colorMenu);
-    let colorsEmitted = 0;
-    document.addEventListener(ToolbarEvent.THEME, () => colorsEmitted++);
+  test('theme change', async () => {
+    const theme1 = chrome.readingMode.blueTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme1}}));
+    assertEquals(theme1, chrome.readingMode.colorTheme);
 
-    let previousPropagatedColor = -1;
-    colorMenuOptions.forEach(option => {
-      option.click();
-      assertGT(chrome.readingMode.colorTheme, previousPropagatedColor);
-      previousPropagatedColor = chrome.readingMode.colorTheme;
-    });
-    assertEquals(colorMenuOptions.length, colorsEmitted);
+    const theme2 = chrome.readingMode.defaultTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme2}}));
+    assertEquals(theme2, chrome.readingMode.colorTheme);
+
+    const theme3 = chrome.readingMode.darkTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme3}}));
+    assertEquals(theme3, chrome.readingMode.colorTheme);
+
+    const theme4 = chrome.readingMode.highContrastTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme4}}));
+    assertEquals(theme4, chrome.readingMode.colorTheme);
+
+    const theme5 = chrome.readingMode.lowContrastTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme5}}));
+    assertEquals(theme5, chrome.readingMode.colorTheme);
+
+    const theme6 = chrome.readingMode.sepiaLightTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme6}}));
+    assertEquals(theme6, chrome.readingMode.colorTheme);
+
+    const theme7 = chrome.readingMode.sepiaDarkTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme7}}));
+    assertEquals(theme7, chrome.readingMode.colorTheme);
+
+    assertEquals(
+        ReadAnythingSettingsChange.THEME_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(7, metrics.getCallCount('recordTextSettingsChange'));
+  });
+
+  test('restores saved color option', async () => {
+    const color = chrome.readingMode.yellowTheme;
+    const startingIndex = colorMenu.$.menu.currentSelectedIndex;
+    assertNotEquals(color, startingIndex);
+
+    colorMenu.settingsPrefs = {
+      letterSpacing: 0,
+      lineSpacing: 0,
+      theme: color,
+      speechRate: 0,
+      font: '',
+      highlightGranularity: 0,
+    };
+    await microtasksFinished();
+
+    assertNotEquals(startingIndex, colorMenu.$.menu.currentSelectedIndex);
+  });
+
+  test('does nothing if saved color is the same', async () => {
+    const startingIndex = colorMenu.$.menu.currentSelectedIndex;
+
+    colorMenu.settingsPrefs = {
+      letterSpacing: 100,
+      lineSpacing: 101,
+      theme: 0,
+      speechRate: 103,
+      font: 'font',
+      highlightGranularity: 103,
+    };
+    await microtasksFinished();
+
+    assertEquals(startingIndex, colorMenu.$.menu.currentSelectedIndex);
   });
 });

@@ -64,8 +64,7 @@ public class PartnerBookmarksProviderExample extends ContentProvider {
     private static final int URI_MATCH_BOOKMARKS_PARTNER_BOOKMARKS_FOLDER_ID = 1004;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-    private static final Map<String, String> BOOKMARKS_PROJECTION_MAP =
-            new HashMap<String, String>();
+    private static final Map<String, String> BOOKMARKS_PROJECTION_MAP = new HashMap<>();
 
     // Default sort order for unsync'd bookmarks
     private static final String DEFAULT_BOOKMARKS_SORT_ORDER =

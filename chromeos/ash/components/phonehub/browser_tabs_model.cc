@@ -6,8 +6,7 @@
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 const size_t BrowserTabsModel::kMaxMostRecentTabs = 2;
 
@@ -94,5 +93,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

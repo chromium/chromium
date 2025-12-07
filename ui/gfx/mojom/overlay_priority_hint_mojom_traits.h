@@ -27,8 +27,7 @@ struct EnumTraits<gfx::mojom::OverlayPriorityHint, gfx::OverlayPriorityHint> {
       case gfx::OverlayPriorityHint::kVideo:
         return gfx::mojom::OverlayPriorityHint::kVideo;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::OverlayPriorityHint::kNone;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::OverlayPriorityHint input,
@@ -50,8 +49,7 @@ struct EnumTraits<gfx::mojom::OverlayPriorityHint, gfx::OverlayPriorityHint> {
         *out = gfx::OverlayPriorityHint::kVideo;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

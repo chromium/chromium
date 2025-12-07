@@ -5,20 +5,16 @@
 function setupListener() {
   chrome.syncFileSystem.onFileStatusChanged.addListener(fileInfoReceived);
   chrome.syncFileSystem.requestFileSystem(function() {});
+  chrome.test.getConfig(function(config) {
+    setTimeout(function() {
+      // `fileInfo` not received.
+      chrome.test.succeed();
+    }, 10000);
+  });
 }
 
 function fileInfoReceived(fileInfo) {
-  // FileEntry object fields.
-  var fileEntry = fileInfo.fileEntry;
-  chrome.test.assertEq("foo.txt", fileEntry.name);
-  chrome.test.assertEq("/foo.txt", fileEntry.fullPath);
-  chrome.test.assertTrue(fileEntry.isFile);
-  chrome.test.assertFalse(fileEntry.isDirectory);
-
-  chrome.test.assertEq("synced", fileInfo.status);
-  chrome.test.assertEq("added", fileInfo.action);
-  chrome.test.assertEq("remote_to_local", fileInfo.direction);
-  chrome.test.succeed();
+  chrome.test.fail("Feature deprecated. Should not receive fileInfo");
 }
 
 chrome.test.runTests([

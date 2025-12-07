@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -52,6 +51,8 @@ class UserMediaClient;
 
 enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kAllScreensMedia };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class UserMediaRequestResult {
   kOk = 0,
   kTimedOut = 1,
@@ -66,7 +67,8 @@ enum class UserMediaRequestResult {
   kNotSupportedError = 10,
   kInsecureContext = 11,
   kInvalidStateError = 12,
-  kMaxValue = kInvalidStateError
+  kNotAllowedByUserError = 13,
+  kMaxValue = kNotAllowedByUserError
 };
 
 class MODULES_EXPORT UserMediaRequest final
@@ -97,10 +99,10 @@ class MODULES_EXPORT UserMediaRequest final
                                   UserMediaRequestType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
-                                  ExceptionState&,
-                                  IdentifiableSurface surface);
+                                  ExceptionState&);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,
-                                            const MediaConstraints& video);
+                                            const MediaConstraints& video,
+                                            bool is_user_media = true);
 
   UserMediaRequest(ExecutionContext*,
                    UserMediaClient*,
@@ -108,17 +110,15 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints audio,
                    MediaConstraints video,
                    bool should_prefer_current_tab,
-                   bool auto_select_all_screens,
                    CaptureController* capture_controller,
-                   Callbacks*,
-                   IdentifiableSurface surface);
+                   Callbacks*);
   ~UserMediaRequest() override;
 
   LocalDOMWindow* GetWindow();
 
   void Start();
 
-  void Succeed(const MediaStreamDescriptorVector& streams);
+  void Succeed(const GCedMediaStreamDescriptorVector& streams);
   void OnMediaStreamInitialized(MediaStream* stream);
   void OnMediaStreamsInitialized(MediaStreamVector streams);
   void FailConstraint(const String& constraint_name, const String& message);
@@ -126,6 +126,7 @@ class MODULES_EXPORT UserMediaRequest final
             const String& message);
 
   UserMediaRequestType MediaRequestType() const;
+  bool IsGumExtensionRequest() const;
   bool Audio() const;
   bool Video() const;
   MediaConstraints AudioConstraints() const;
@@ -136,10 +137,6 @@ class MODULES_EXPORT UserMediaRequest final
   // The MediaStreamType for the video part of a request with video. Returns
   // NO_SERVICE for requests where Video() == false.
   mojom::blink::MediaStreamType VideoMediaStreamType() const;
-
-  // Flag tied to whether or not the similarly named Origin Trial is
-  // enabled. Will be removed at end of trial. See: http://crbug.com/789152.
-  bool ShouldDisableHardwareNoiseSuppression() const;
 
   // errorMessage is only set if requestIsPrivilegedContext() returns |false|.
   // Caller is responsible for properly setting errors and canceling request.
@@ -162,6 +159,13 @@ class MODULES_EXPORT UserMediaRequest final
 
   void set_exclude_system_audio(bool value) { exclude_system_audio_ = value; }
   bool exclude_system_audio() const { return exclude_system_audio_; }
+
+  void set_window_audio_preference(mojom::blink::WindowAudioPreference value) {
+    window_audio_preference_ = value;
+  }
+  mojom::blink::WindowAudioPreference window_audio_preference() const {
+    return window_audio_preference_;
+  }
 
   void set_exclude_self_browser_surface(bool value) {
     exclude_self_browser_surface_ = value;
@@ -199,7 +203,8 @@ class MODULES_EXPORT UserMediaRequest final
     return suppress_local_audio_playback_;
   }
 
-  bool auto_select_all_screens() const { return auto_select_all_screens_; }
+  void set_restrict_own_audio(bool value) { restrict_own_audio_ = value; }
+  bool restrict_own_audio() const { return restrict_own_audio_; }
 
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.
@@ -223,7 +228,7 @@ class MODULES_EXPORT UserMediaRequest final
   // Completes the re-creation of the transferred MediaStreamTrack by
   // constructing the MediaStreamTrackImpl object.
   void FinalizeTransferredTrackInitialization(
-      const MediaStreamDescriptorVector& streams_descriptors);
+      const GCedMediaStreamDescriptorVector& streams_descriptors);
 
   void Trace(Visitor*) const override;
 
@@ -234,21 +239,22 @@ class MODULES_EXPORT UserMediaRequest final
   const Member<CaptureController> capture_controller_;
   const bool should_prefer_current_tab_ = false;
   bool exclude_system_audio_ = false;
+  mojom::blink::WindowAudioPreference window_audio_preference_ =
+      mojom::blink::WindowAudioPreference::kExclude;
   bool exclude_self_browser_surface_ = false;
   mojom::blink::PreferredDisplaySurface preferred_display_surface_ =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
   bool dynamic_surface_switching_requested_ = true;
   bool exclude_monitor_type_surfaces_ = false;
   bool suppress_local_audio_playback_ = false;
+  bool restrict_own_audio_ = false;
   const bool auto_select_all_screens_ = false;
-  bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;
 
   Member<UserMediaClient> client_;
 
   Member<Callbacks> callbacks_;
-  IdentifiableSurface surface_;
   bool is_resolved_ = false;
 
   std::optional<base::UnguessableToken> transferred_track_session_id_;

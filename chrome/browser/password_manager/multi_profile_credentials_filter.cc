@@ -8,7 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 

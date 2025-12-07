@@ -6,10 +6,10 @@
 
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/renderer/fake_page_timing_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
@@ -46,10 +46,8 @@ class PageTimingMetricsSenderTest : public testing::Test {
             CreatePageLoadTiming(),
             PageTimingMetadataRecorder::MonotonicTiming())) {}
 
-  mojom::SoftNavigationMetrics CreateEmptySoftNavigationMetrics() {
-    return mojom::SoftNavigationMetrics(blink::kSoftNavigationCountDefaultValue,
-                                        base::Milliseconds(0), std::string(),
-                                        CreateLargestContentfulPaintTiming());
+  mojom::SoftNavigationMetricsPtr CreateEmptySoftNavigationMetrics() {
+    return CreateSoftNavigationMetrics();
   }
 
  protected:
@@ -69,7 +67,7 @@ TEST_F(PageTimingMetricsSenderTest, Basic) {
 
   // Firing the timer should trigger sending of an SendTiming call.
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
   ASSERT_TRUE(metrics_sender_->mock_timer()->IsRunning());
   metrics_sender_->mock_timer()->Fire();
   EXPECT_FALSE(metrics_sender_->mock_timer()->IsRunning());
@@ -105,7 +103,7 @@ TEST_F(PageTimingMetricsSenderTest, CoalesceMultipleTimings) {
   // Firing the timer should trigger sending of the SendTiming call with
   // the most recently provided PageLoadTiming instance.
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
   metrics_sender_->mock_timer()->Fire();
   EXPECT_FALSE(metrics_sender_->mock_timer()->IsRunning());
 }
@@ -122,7 +120,7 @@ TEST_F(PageTimingMetricsSenderTest, MultipleTimings) {
                           PageTimingMetadataRecorder::MonotonicTiming());
   ASSERT_TRUE(metrics_sender_->mock_timer()->IsRunning());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
   metrics_sender_->mock_timer()->Fire();
   EXPECT_FALSE(metrics_sender_->mock_timer()->IsRunning());
   validator_.VerifyExpectedTimings();
@@ -134,7 +132,7 @@ TEST_F(PageTimingMetricsSenderTest, MultipleTimings) {
                           PageTimingMetadataRecorder::MonotonicTiming());
   ASSERT_TRUE(metrics_sender_->mock_timer()->IsRunning());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
   metrics_sender_->mock_timer()->Fire();
   EXPECT_FALSE(metrics_sender_->mock_timer()->IsRunning());
 }
@@ -150,7 +148,7 @@ TEST_F(PageTimingMetricsSenderTest, SendTimingOnSendLatest) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
   ASSERT_TRUE(metrics_sender_->mock_timer()->IsRunning());
 
   metrics_sender_->SendLatest();
@@ -162,7 +160,7 @@ TEST_F(PageTimingMetricsSenderTest, SendSubresourceLoadMetrics) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   blink::SubresourceLoadMetrics metrics{
       .number_of_subresources_loaded = 5,
@@ -188,7 +186,7 @@ TEST_F(PageTimingMetricsSenderTest, SendSingleFeature) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   // Observe a single feature, update expected features sent across IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature);
@@ -213,7 +211,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeatures) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   // Observe the first feature, update expected features sent across IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_0);
@@ -241,7 +239,7 @@ TEST_F(PageTimingMetricsSenderTest, SendDuplicatedFeatures) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   metrics_sender_->DidObserveNewFeatureUsage(feature);
   validator_.UpdateExpectPageLoadFeatures(feature);
@@ -268,7 +266,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   // Observe the first feature, update expected features sent across IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_0);
@@ -290,7 +288,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
   // Observe duplicated feature usage, without updating expected features sent
   // across IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_0);
@@ -318,7 +316,7 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   metrics_sender_->DidObserveLayoutShift(0.5, false);
   metrics_sender_->DidObserveLayoutShift(0.5, false);
@@ -337,7 +335,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMainFrameIntersectionRect) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   metrics_sender_->OnMainFrameIntersectionChanged(gfx::Rect(0, 0, 1, 1));
   validator_.UpdateExpectedMainFrameIntersectionRect(gfx::Rect(0, 0, 1, 1));
@@ -352,7 +350,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMainFrameViewportRect) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   metrics_sender_->OnMainFrameViewportRectangleChanged(gfx::Rect(2, 2, 1, 1));
   validator_.UpdateExpectedMainFrameViewportRect(gfx::Rect(2, 2, 1, 1));
@@ -378,23 +376,21 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
       interaction_start_1, base::TimeTicks(), base::TimeTicks(),
-      interaction_end_1, blink::UserInteractionType::kKeyboard, 0);
-  validator_.UpdateExpectedInteractionTiming(
-      interaction_duration_1, mojom::UserInteractionType::kKeyboard, 0,
-      interaction_start_1);
+      interaction_end_1, 0);
+  validator_.UpdateExpectedInteractionTiming(interaction_duration_1, 0,
+                                             interaction_start_1);
 
   // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
       interaction_start_2, base::TimeTicks(), base::TimeTicks(),
-      interaction_end_2, blink::UserInteractionType::kTapOrClick, 1);
-  validator_.UpdateExpectedInteractionTiming(
-      interaction_duration_2, mojom::UserInteractionType::kTapOrClick, 1,
-      interaction_start_2);
+      interaction_end_2, 1);
+  validator_.UpdateExpectedInteractionTiming(interaction_duration_2, 1,
+                                             interaction_start_2);
 
   // Fire the timer to trigger sending of features via an SendTiming call.
   metrics_sender_->mock_timer()->Fire();
@@ -406,7 +402,7 @@ TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {
   InitPageLoadTimingForTest(&timing);
   timing.paint_timing->first_contentful_paint = base::Seconds(1);
   validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+  validator_.ExpectSoftNavigationMetrics(*CreateEmptySoftNavigationMetrics());
 
   // Updating when |timing| has FCP will cause the metrics to be sent urgently.
   metrics_sender_->Update(timing.Clone(),

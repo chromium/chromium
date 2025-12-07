@@ -14,13 +14,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
 
 class GURL;
 
 namespace commerce {
+
+class ShoppingService;
+
+// The maximum number of products to update per update cycle for the shopping
+// list.
+inline constexpr int kShoppingListBookmarkUpdateBatchMaxParam = 150;
 
 // This object manages regular updates of product information stored in
 // bookmarks. This object should be tied to the life of the profile and

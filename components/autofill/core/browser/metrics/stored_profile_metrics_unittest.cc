@@ -5,9 +5,10 @@
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -18,11 +19,11 @@ namespace autofill::autofill_metrics {
 // Separate stored profile count metrics exist for every profile category. Test
 // them in a parameterized way.
 class StoredProfileMetricsTestByCategory
-    : public testing::TestWithParam<AutofillProfileSourceCategory> {
+    : public testing::TestWithParam<AutofillProfileRecordTypeCategory> {
  public:
   StoredProfileMetricsTestByCategory() = default;
 
-  AutofillProfileSourceCategory Category() const { return GetParam(); }
+  AutofillProfileRecordTypeCategory Category() const { return GetParam(); }
 
   // Returns the suffix used for the metrics.
   std::string GetSuffix() const { return GetProfileCategorySuffix(Category()); }
@@ -31,9 +32,14 @@ class StoredProfileMetricsTestByCategory
 INSTANTIATE_TEST_SUITE_P(
     ,
     StoredProfileMetricsTestByCategory,
-    testing::ValuesIn({AutofillProfileSourceCategory::kLocalOrSyncable,
-                       AutofillProfileSourceCategory::kAccountChrome,
-                       AutofillProfileSourceCategory::kAccountNonChrome}));
+    testing::ValuesIn({
+        AutofillProfileRecordTypeCategory::kLocalOrSyncable,
+        AutofillProfileRecordTypeCategory::kAccountChrome,
+        AutofillProfileRecordTypeCategory::kAccountNonChrome,
+        AutofillProfileRecordTypeCategory::kAccountHome,
+        AutofillProfileRecordTypeCategory::kAccountWork,
+        AutofillProfileRecordTypeCategory::kAccountNameEmail,
+    }));
 
 // Tests that no profile count metrics for the corresponding category are
 // emitted when no profiles of that category are stored.
@@ -59,12 +65,12 @@ TEST_P(StoredProfileMetricsTestByCategory, NoProfiles) {
 TEST_P(StoredProfileMetricsTestByCategory, StoredProfiles) {
   // Create a recently used (3 days ago) profile.
   AutofillProfile profile0 = test::GetFullProfile();
-  profile0.set_use_date(AutofillClock::Now() - base::Days(3));
+  profile0.usage_history().set_use_date(AutofillClock::Now() - base::Days(3));
   test::SetProfileCategory(profile0, Category());
 
   // Create a profile used a long time (200 days) ago.
   AutofillProfile profile1 = test::GetFullProfile2();
-  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(200));
   test::SetProfileCategory(profile1, Category());
 
   // Log the metrics and verify expectations.
@@ -91,7 +97,8 @@ TEST_P(StoredProfileMetricsTestByCategory, StoredProfiles) {
 // of superset profiles.
 TEST(StoredProfileMetricsTest, LocalProfileSupersetMetrics) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile local_profile1 = test::StandardProfile();
   AutofillProfile local_profile2 = test::SubsetOfStandardProfile();
   AutofillProfile local_profile3 = test::DifferentFromStandardProfile();
@@ -105,6 +112,48 @@ TEST(StoredProfileMetricsTest, LocalProfileSupersetMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup", 1,
       1);
+}
+
+TEST(StoredProfileMetricsTest, TotalPostalAddressProfiles) {
+  // A full profile is a postal address.
+  AutofillProfile postal_address = test::GetFullProfile();
+  // A profile with only one address field is not a postal address.
+  AutofillProfile partial_address(AddressCountryCode("US"));
+  partial_address.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
+  // A profile with two address fields is a postal address.
+  AutofillProfile minimal_postal_address(AddressCountryCode("US"));
+  minimal_postal_address.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
+  minimal_postal_address.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  // A profile with just name and email is not a postal address.
+  AutofillProfile name_and_email_profile(AddressCountryCode("US"));
+  name_and_email_profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
+  name_and_email_profile.SetInfo(EMAIL_ADDRESS, u"john@doe.com", "en-US");
+
+  base::HistogramTester histogram_tester;
+  LogStoredProfileMetrics({&postal_address, &partial_address,
+                           &minimal_postal_address, &name_and_email_profile});
+  // `postal_address` and `minimal_postal_address` should be counted.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCount.TotalPostalAddressProfiles", 2, 1);
+}
+
+// Tests that if profiles contain an alternative name, the metrics are emitted.
+TEST_P(StoredProfileMetricsTestByCategory, StoredProfilesWithAlternativeName) {
+  // Create profiles with alternative names.
+  AutofillProfile profile0 = test::GetFullProfile(AddressCountryCode("JP"));
+  profile0.SetInfo(ALTERNATIVE_FULL_NAME, u"あおい", "ja");
+
+  AutofillProfile profile1 = test::GetFullProfile2(AddressCountryCode("JP"));
+  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと·あおい", "ja");
+
+  // Create a profile without the alternative name set.
+  AutofillProfile profile2 = test::GetFullProfile();
+
+  // Log the metrics and verify expectations.
+  base::HistogramTester histogram_tester;
+  LogStoredProfileCountWithAlternativeName({&profile0, &profile1, &profile2});
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCount.WithAlternativeName", 2, 1);
 }
 
 }  // namespace autofill::autofill_metrics

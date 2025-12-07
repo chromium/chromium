@@ -6,24 +6,30 @@ package org.chromium.chrome.browser.share.screenshot;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An interface for a class that can provide screenshots to a consumer. TODO(crbug.com/40107491):
  * Remove this temporary class and instead move
  * chrome/android/java/src/org/chromium/chrome/browser/feedback/ScreenshotSource.java.
  */
+@NullMarked
 public interface EditorScreenshotSource {
     /**
      * Starts capturing the screenshot.
+     *
      * @param callback The {@link Runnable} to call when the screenshot capture process is complete.
      */
     void capture(@Nullable Runnable callback);
 
-    /** @return Whether or not this source is finished attempting to grab a screenshot. */
+    /**
+     * @return Whether or not this source is finished attempting to grab a screenshot.
+     */
     boolean isReady();
 
-    /** @return A screenshot if available or {@code null} otherwise. */
-    @Nullable
-    Bitmap getScreenshot();
+    /**
+     * @return A screenshot if available or {@code null} otherwise.
+     */
+    @Nullable Bitmap getScreenshot();
 }

@@ -50,9 +50,17 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
  private:
   // views::Button:
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
+  void OnThemeChanged() override;
+
+  // Updates to use the default image.
+  void UpdateToDefaultImage();
 
   bool is_playing_ = false;
   bool is_selected_ = true;
+
+  // Indicates if this button uses a default image.
+  bool is_default_image_ = false;
+
   raw_ptr<views::ImageView> image_view_ = nullptr;
   raw_ptr<views::ImageView> selected_curvycutout_icon_ = nullptr;
   raw_ptr<views::AnimatedImageView> lottie_animation_view_ = nullptr;

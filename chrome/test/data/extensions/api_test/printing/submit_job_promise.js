@@ -4,7 +4,7 @@
 
 chrome.test.getConfig(async function(config) {
   const url = `http://localhost:${config.testServer.port}/pdf/test.pdf`;
-  let response = await submitJobPromise('id', 'test job', url);
+  let response = await submitJobPromise('id', 'test job', url, minimal_ticket);
   chrome.test.assertTrue(!!response);
   chrome.test.assertEq(chrome.printing.SubmitJobStatus.OK, response.status);
   chrome.test.assertTrue(!!response.jobId);

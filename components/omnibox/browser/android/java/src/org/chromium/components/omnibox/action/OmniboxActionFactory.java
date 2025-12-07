@@ -4,12 +4,14 @@
 
 package org.chromium.components.omnibox.action;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** An interface for creation of the OmniboxAction instances. */
+@NullMarked
 public interface OmniboxActionFactory {
     /**
      * Create a new OmniboxPedal.
@@ -20,12 +22,8 @@ public interface OmniboxActionFactory {
      * @return new instance of an OmniboxPedal
      */
     @CalledByNative
-    @NonNull
-    OmniboxAction buildOmniboxPedal(
-            long instance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @OmniboxPedalId int pedalId);
+    @Nullable OmniboxAction buildOmniboxPedal(
+            long instance, String hint, String accessibilityHint, @OmniboxPedalId int pedalId);
 
     /**
      * Create a new OmniboxActionInSuggest.
@@ -33,34 +31,24 @@ public interface OmniboxActionFactory {
      * @param hint the title displayed on the chip
      * @param accessibilityHint the text to be announced to the accessibility-enabled users
      * @param actionType the specific type of an action matching the {@link
-     *     EntityInfoProto.ActionInfo.ActionType}
+     *     SuggestTemplateInfo.TemplateAction.ActionType}
      * @param actionUri the corresponding action URI/URL (serialized intent)
+     * @param showAsActionButton whether to show it as action button
      * @return new instance of an OmniboxActionInSuggest
      */
     @CalledByNative
-    @NonNull
-    OmniboxAction buildActionInSuggest(
+    @Nullable OmniboxAction buildActionInSuggest(
             long instance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            /* EntityInfoProto.ActionInfo.ActionType */ int actionType,
-            @NonNull String actionUri);
-
-    /**
-     * Construct a new OmniboxAnswerAction.
-     *
-     * @param nativeInstance Pointer to native instance of the object.
-     * @param hint Text that should be displayed in the associated action chip.
-     * @param accessibilityHint Text for screen reader to read when focusing action chip
-     */
-    @CalledByNative
-    @NonNull
-    OmniboxAction buildOmniboxAnswerAction(
-            long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint);
+            String hint,
+            String accessibilityHint,
+            /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
+            String actionUri,
+            int tabId,
+            boolean showAsActionButton);
 
     @NativeMethods
     public interface Natives {
         /** Pass the OmniboxActionFactory instance to C++. */
-        void setFactory(OmniboxActionFactory javaFactory);
+        void setFactory(@Nullable OmniboxActionFactory javaFactory);
     }
 }

@@ -7,8 +7,8 @@ import 'chrome://scanning/scan_done_section.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {ScanDoneSectionElement} from 'chrome://scanning/scan_done_section.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {ScanDoneSectionElement} from 'chrome://scanning/scan_done_section.js';
 import {FileType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -57,13 +57,13 @@ suite('scanDoneSectionTest', function() {
         strictQuery('#fileSavedText', scanDoneSection.shadowRoot, HTMLElement);
     assertEquals(
         'Your file has been successfully scanned and saved to My files.',
-        fileSaveText.textContent!.trim());
+        fileSaveText.textContent.trim());
     scanDoneSection.numFilesSaved = 2;
     await flushTasks();
     assertEquals(
         'Your files have been successfully scanned and saved to My ' +
             'files.',
-        fileSaveText.textContent!.trim());
+        fileSaveText.textContent.trim());
   });
 
   // Verify the file saved text updates correctly based on the selected folder.
@@ -77,14 +77,14 @@ suite('scanDoneSectionTest', function() {
         strictQuery('#fileSavedText', scanDoneSection.shadowRoot, HTMLElement);
     assertEquals(
         'Your file has been successfully scanned and saved to Downloads.',
-        fileSaveText.textContent!.trim());
+        fileSaveText.textContent.trim());
 
     scanDoneSection.selectedFolder = 'My Drive';
     await flushTasks();
 
     assertEquals(
         'Your file has been successfully scanned and saved to My Drive.',
-        fileSaveText.textContent!.trim());
+        fileSaveText.textContent.trim());
   });
 
   // Verify clicking the file location text link invokes showFileInLocation();
@@ -185,9 +185,9 @@ suite('scanDoneSectionTest', function() {
     await flushTasks();
     const buttonLabel = strictQuery(
         '#editButtonLabel', scanDoneSection.shadowRoot, HTMLElement);
-    assertEquals('Edit file', buttonLabel.textContent!.trim());
+    assertEquals('Edit file', buttonLabel.textContent.trim());
     scanDoneSection.numFilesSaved = 2;
     await flushTasks();
-    assertEquals('Edit files', buttonLabel.textContent!.trim());
+    assertEquals('Edit files', buttonLabel.textContent.trim());
   });
 });

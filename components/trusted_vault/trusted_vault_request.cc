@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/credentials_mode.h"
@@ -17,6 +18,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -96,8 +98,7 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
     case TrustedVaultRequest::HttpMethod::kPatch:
       return "PATCH";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 TrustedVaultRequest::HttpStatus AccessTokenFetchingErrorToRequestHttpStatus(
@@ -111,13 +112,13 @@ TrustedVaultRequest::HttpStatus AccessTokenFetchingErrorToRequestHttpStatus(
       return TrustedVaultRequest::HttpStatus::
           kPrimaryAccountChangeAccessTokenFetchError;
   }
-  NOTREACHED_IN_MIGRATION();
-  return TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError;
+  NOTREACHED();
 }
 
 }  // namespace
 
 TrustedVaultRequest::TrustedVaultRequest(
+    const SecurityDomainId& security_domain_id,
     const CoreAccountId& account_id,
     HttpMethod http_method,
     const GURL& request_url,
@@ -126,7 +127,8 @@ TrustedVaultRequest::TrustedVaultRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
     RecordFetchStatusCallback record_fetch_status_callback)
-    : account_id_(account_id),
+    : security_domain_id_(security_domain_id),
+      account_id_(account_id),
       http_method_(http_method),
       request_url_(request_url),
       serialized_request_proto_(serialized_request_proto),
@@ -155,8 +157,10 @@ void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
 void TrustedVaultRequest::OnAccessTokenFetched(
     TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
         access_token_info_or_error) {
-  base::UmaHistogramBoolean("Sync.TrustedVaultAccessTokenFetchSuccess",
-                            access_token_info_or_error.has_value());
+  base::UmaHistogramBoolean(
+      "TrustedVault.AccessTokenFetchSuccess." +
+          GetSecurityDomainNameForUma(security_domain_id_),
+      access_token_info_or_error.has_value());
 
   if (!access_token_info_or_error.has_value()) {
     backoff_entry_.InformOfRequest(/*succeeded=*/false);
@@ -184,7 +188,7 @@ void TrustedVaultRequest::OnAccessTokenFetched(
 }
 
 void TrustedVaultRequest::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int http_response_code = 0;
 
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
@@ -196,7 +200,11 @@ void TrustedVaultRequest::OnURLLoadComplete(
                                       url_loader_->NetError());
   }
 
-  std::string response_content = response_body ? *response_body : std::string();
+  if (!response_body) {
+    response_body = std::string();
+  }
+  const std::string& response_content = *response_body;
+
   if (http_response_code == 0) {
     backoff_entry_.InformOfRequest(/*succeeded=*/false);
     if (CanRetry()) {

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -21,12 +20,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/app.mojom-forward.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Browser;
 class Profile;
@@ -84,32 +79,9 @@ int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container);
 int GetSessionIdForRestoreFromWebContents(
     const content::WebContents* web_contents);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Helper to convert apps::mojom::WindowInfoPtr to arc::mojom::WindowInfoPtr.
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Helper to convert apps::AppLaunchParams to crosapi::mojom::LaunchParams.
-// This is needed because we cannot use traits to convert Intent at the moment,
-// After that is done, this can be moved to the mojom type traits.
-crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
-    const AppLaunchParams& params,
-    Profile* profile);
-
-// Helper to convert crosapi::mojom::LaunchParams to apps::AppLaunchParams.
-// This is needed because we cannot use traits to convert Intent at the moment,
-// After that is done, this can be moved to the mojom type traits.
-AppLaunchParams ConvertCrosapiToLaunchParams(
-    const crosapi::mojom::LaunchParamsPtr& crosapi_params,
-    Profile* profile);
-
-crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
-    AppServiceProxy* proxy,
-    const std::string& app_id,
-    int event_flags,
-    LaunchSource launch_source,
-    int64_t display_id);
 
 // Container for holding possible app IDs that can launch a PWA for a given URL.
 struct AppIdsToLaunchForUrl {
@@ -134,9 +106,7 @@ AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
 void MaybeLaunchPreferredAppForUrl(Profile* profile,
                                    const GURL& url,
                                    LaunchSource launch_source);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Launches `url` in a suitable installed app, or in the browser if no app is
 // installed. If one app is installed which can handle `url`, it will always be
 // opened. If multiple apps are installed, any app which is preferred by the
@@ -144,7 +114,7 @@ void MaybeLaunchPreferredAppForUrl(Profile* profile,
 void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
                                       const GURL& url,
                                       LaunchSource launch_source);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
 

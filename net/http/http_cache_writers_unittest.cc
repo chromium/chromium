@@ -4,15 +4,19 @@
 
 #include "net/http/http_cache_writers.h"
 
+#include <stdint.h>
+
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "crypto/secure_hash.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_transaction.h"
@@ -20,6 +24,7 @@
 #include "net/http/http_transaction.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/mock_http_cache.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "net/http/partial_data.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -34,8 +39,8 @@ namespace net {
 namespace {
 // Helper function, generating valid HTTP cache key from `url`.
 // See also: HttpCache::GenerateCacheKey(..)
-std::string GenerateCacheKey(const std::string& url) {
-  return "1/0/" + url;
+std::string GenerateCacheKey(const std::string_view url) {
+  return base::StrCat({"1/0/", url});
 }
 }  // namespace
 
@@ -56,7 +61,9 @@ class TestHttpCache : public HttpCache {
  public:
   TestHttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
                 std::unique_ptr<BackendFactory> backend_factory)
-      : HttpCache(std::move(network_layer), std::move(backend_factory)) {}
+      : HttpCache(std::move(network_layer),
+                  std::move(backend_factory),
+                  /*file_operations=*/nullptr) {}
 
   void WritersDoneWritingToEntry(scoped_refptr<ActiveEntry> entry,
                                  bool success,
@@ -111,10 +118,8 @@ class WritersTest : public TestWithTaskEnvironment {
   }
 
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
-    std::unique_ptr<HttpTransaction> transaction;
     MockNetworkLayer* network_layer = cache_.network_layer();
-    network_layer->CreateTransaction(DEFAULT_PRIORITY, &transaction);
-    return transaction;
+    return network_layer->CreateTransaction(DEFAULT_PRIORITY);
   }
 
   void CreateWritersAddTransaction(
@@ -494,8 +499,8 @@ class WritersTest : public TestWithTaskEnvironment {
     rv = callback.GetResult(rv);
     HttpResponseInfo response_info;
     bool truncated;
-    HttpCache::ParseResponseInfo(base::as_bytes(read_buffer->span()),
-                                 &response_info, &truncated);
+    HttpCache::ParseResponseInfo(read_buffer->span(), &response_info,
+                                 &truncated);
     return truncated;
   }
 

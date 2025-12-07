@@ -16,12 +16,12 @@ import {isDlpEnabled, isDriveFsBulkPinningEnabled, isSkyvaultV2Enabled} from '..
 import {recordMediumCount} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
-import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
+import {getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import type {FileData, FileKey, SearchData} from '../../state/state.js';
-import {EntryType, PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
+import {PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
 import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
@@ -229,10 +229,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     // initiate the actual change and will update to SUCCESS at the end.
     if (state.currentDirectory?.status === PropStatus.STARTED) {
       const fileData = getFileData(state, newURL);
-      if (fileData?.type === EntryType.MATERIALIZED_VIEW) {
-        this.changeDirectoryFileData(fileData);
-        return;
-      }
 
       const entry = fileData?.entry;
       if (!entry) {
@@ -372,19 +368,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   }
 
   /**
-   * @return True if entries in the current directory can be deleted. Similar to
-   *     !isReadOnly() except that we allow items in the read-only Trash root to
-   *     be deleted. If there is no entry set, then returns false.
-   */
-  canDeleteEntries(): boolean {
-    const currentDirEntry = this.getCurrentDirEntry();
-    if (currentDirEntry && getRootType(currentDirEntry) === RootType.TRASH) {
-      return true;
-    }
-    return !this.isReadOnly();
-  }
-
-  /**
    * @return True if the a scan is active.
    */
   isScanning(): boolean {
@@ -403,14 +386,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    */
   isOnDrive(): boolean {
     return this.isCurrentRootVolumeType_(VolumeType.DRIVE);
-  }
-
-  /**
-   * @return True if the current volume is provided by FuseBox.
-   */
-  isOnFuseBox(): boolean {
-    const info = this.getCurrentVolumeInfo();
-    return info ? info.diskFileSystemType === FileSystemType.FUSEBOX : false;
   }
 
   /**
@@ -1527,18 +1502,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       if (isSameEntry(currentDir, volume.prefixEntry)) {
         this.rescan(false);
         break;
-      }
-    }
-
-    // If the current directory is the Drive placeholder and the real Drive is
-    // mounted, switch to it.
-    if (this.getCurrentRootType() === RootType.DRIVE_FAKE_ROOT) {
-      for (const newVolume of spliceEventDetail.added) {
-        if (newVolume.volumeType === VolumeType.DRIVE) {
-          newVolume.resolveDisplayRoot().then((displayRoot: DirectoryEntry) => {
-            this.changeDirectoryEntry(displayRoot);
-          });
-        }
       }
     }
 

@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("language_preferences") {
+  sources = [
+    "language_preferences.cc",
+    "language_preferences.h",
+  ]
+
+  deps = [ "//components/prefs" ]
+}

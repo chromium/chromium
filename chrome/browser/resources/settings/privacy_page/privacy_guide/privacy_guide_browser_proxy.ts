@@ -18,7 +18,7 @@ export interface PrivacyGuideBrowserProxy {
   /** Increment The number of times the privacy guide promo was shown. */
   incrementPromoImpressionCount(): void;
 
-  /** @return True or False if the Ad Topics Card should be shown. */
+  /** @return If the Ad Topics Card should be shown. */
   privacySandboxPrivacyGuideShouldShowAdTopicsCard(): Promise<boolean>;
 }
 

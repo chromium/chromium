@@ -23,8 +23,10 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/global_routing_id.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace content {
 
@@ -32,12 +34,26 @@ namespace {
 
 using attribution_reporting::SuitableOrigin;
 
+bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
+  return rfh->GetLifecycleState() !=
+         RenderFrameHost::LifecycleState::kPrerendering;
+}
+
 }  // namespace
 
 // static
 std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
-    GlobalRenderFrameHostId initiator_frame_id) {
-  return Create(RenderFrameHostImpl::FromID(initiator_frame_id));
+    NavigationHandle* navigation_handle) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      navigation_handle->GetRenderFrameHost());
+  std::optional<AttributionSuitableContext> context = Create(rfh);
+  // Override the UKM source ID from the associated ongoing navigation handle as
+  // `AttributionHost::GetPageUkmSourceId()` is not updated until the navigation
+  // finishes.
+  if (context && UkmSourceIdAllowed(rfh)) {
+    context->ukm_source_id_ = navigation_handle->GetNextPageUkmSourceId();
+  }
+  return context;
 }
 
 // static
@@ -53,7 +69,7 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
   }
 
   if (!initiator_frame->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
+          network::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
     return std::nullopt;
   }
   RenderFrameHostImpl* initiator_root_frame =
@@ -100,6 +116,9 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       attribution_host->GetMostRecentNavigationInputEvent(),
       AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
           web_contents),
+      UkmSourceIdAllowed(initiator_root_frame)
+          ? attribution_host->GetPageUkmSourceId()
+          : ukm::kInvalidSourceId,
       data_host_manager->AsWeakPtr());
 }
 
@@ -111,10 +130,12 @@ AttributionSuitableContext AttributionSuitableContext::CreateForTesting(
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
-    AttributionDataHostManager* attribution_data_host_manager) {
+    AttributionDataHostManager* attribution_data_host_manager,
+    ukm::SourceId ukm_source_id) {
   return AttributionSuitableContext(
       std::move(context_origin), is_nested_within_fenced_frame,
       root_render_frame_id, last_navigation_id, last_input_event, os_registrars,
+      ukm_source_id,
       attribution_data_host_manager ? attribution_data_host_manager->AsWeakPtr()
                                     : nullptr);
 }
@@ -124,7 +145,9 @@ bool AttributionSuitableContext::operator==(
   const auto tie = [](const AttributionSuitableContext& c) {
     // We don't check the `attribution_data_host_manager_` property since we'd
     // consider two contexts equal even if the manager is no longer available.
-    return std::make_tuple(c.context_origin(), c.last_input_event(),
+    // We also don't check the `last_input_event_` property which is time
+    // sensitive.
+    return std::make_tuple(c.context_origin(),
                            c.is_nested_within_fenced_frame(),
                            c.last_navigation_id(), c.root_render_frame_id());
   };
@@ -138,6 +161,7 @@ AttributionSuitableContext::AttributionSuitableContext(
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
+    ukm::SourceId ukm_source_id,
     base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
       is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
@@ -145,6 +169,7 @@ AttributionSuitableContext::AttributionSuitableContext(
       last_navigation_id_(last_navigation_id),
       last_input_event_(std::move(last_input_event)),
       os_registrars_(os_registrars),
+      ukm_source_id_(ukm_source_id),
       attribution_data_host_manager_(attribution_data_host_manager) {}
 
 AttributionSuitableContext::AttributionSuitableContext(

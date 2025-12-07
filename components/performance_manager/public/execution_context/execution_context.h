@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/node_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -68,6 +69,9 @@ class ExecutionContext {
 
   // Returns the graph to which this ExecutionContext belongs.
   virtual Graph* GetGraph() const = 0;
+
+  // Returns the state of this node.
+  virtual NodeState GetNodeState() const = 0;
 
   // Returns the final post-redirect committed URL associated with this
   // ExecutionContext. This is the URL of the HTML document (not the javascript)
@@ -132,13 +136,6 @@ class ExecutionContextObserverDefaultImpl : public ExecutionContextObserver {
       const ExecutionContext* ec,
       const PriorityAndReason& previous_value) override {}
 };
-
-// Helper function for converting from a WorkerToken to an
-// ExecutionContextToken.
-// TODO(crbug.com/40148083): Get rid of this once MultiToken handles compatible
-// assignment.
-blink::ExecutionContextToken ToExecutionContextToken(
-    const blink::WorkerToken& token);
 
 }  // namespace execution_context
 }  // namespace performance_manager

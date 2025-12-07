@@ -4,20 +4,27 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -26,9 +33,6 @@
 #import "url/gurl.h"
 
 namespace {
-
-// Credit Card icon corner radius.
-CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Default spacing used for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
@@ -52,6 +56,9 @@ CGFloat const kTitleLogoHeight = 32;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
+
+  // YES if the primary button is active where actions are effective.
+  BOOL _primaryButtonActive;
 }
 
 // The payments controller handler used to open the payments options.
@@ -75,6 +82,7 @@ CGFloat const kTitleLogoHeight = 32;
     self.handler = handler;
     _URL = URL;
     self.disableBottomSheetOnExit = YES;
+    _primaryButtonActive = NO;
   }
   return self;
 }
@@ -91,7 +99,7 @@ CGFloat const kTitleLogoHeight = 32;
                                : IDS_IOS_PRODUCT_NAME),
                        l10n_util::GetNSString(
                            IDS_IOS_PAYMENT_BOTTOM_SHEET_SELECT_PAYMENT_METHOD)];
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
+  self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
   std::u16string formattedURL =
@@ -105,32 +113,27 @@ CGFloat const kTitleLogoHeight = 32;
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.actionHandler = self;
 
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
-  self.secondaryActionImage =
+  self.configuration.secondaryActionImage =
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
 
   [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
+
+  [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                    @[ UITraitUserInterfaceStyle.class ])
+                     withAction:@selector(resizeLogoOnTraitChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                   self.imageViewAccessibilityLabel);
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    // Make sure the GPay logo matches the new trait collection.
-    self.image = [self titleImage];
-  }
+  [self.delegate paymentsBottomSheetViewDidAppear];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -155,6 +158,10 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (void)dismiss {
   [self dismissViewControllerAnimated:NO completion:NULL];
+}
+
+- (void)activatePrimaryButton {
+  _primaryButtonActive = YES;
 }
 
 #pragma mark - UITableViewDelegate
@@ -211,8 +218,8 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewDetailIconCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   return [self layoutCell:cell
         forTableViewWidth:tableView.frame.size.width
               atIndexPath:indexPath];
@@ -221,10 +228,21 @@ CGFloat const kTitleLogoHeight = 32;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  [self.delegate didTapOnPrimaryButton];
+
+  if (!_primaryButtonActive) {
+    return;
+  }
+
   self.disableBottomSheetOnExit = NO;
 
+  base::RecordAction(
+      base::UserMetricsAction("BottomSheet_CreditCard_SuggestionAccepted"));
   NSInteger index = [self selectedRow];
-  [self.handler primaryButtonTapped:_creditCardData[index]];
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.BottomSheet", index);
+  [self.handler primaryButtonTappedForCard:_creditCardData[index]
+                                   atIndex:index];
 
   if ([self rowCount] > 1) {
     base::UmaHistogramCounts100("Autofill.TouchToFill.CreditCard.SelectedIndex",
@@ -242,8 +260,7 @@ CGFloat const kTitleLogoHeight = 32;
   UITableView* tableView = [super createTableView];
 
   tableView.dataSource = self;
-  [tableView registerClass:TableViewDetailIconCell.class
-      forCellReuseIdentifier:@"cell"];
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
 
   return tableView;
 }
@@ -253,13 +270,23 @@ CGFloat const kTitleLogoHeight = 32;
 }
 
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
+  UITableViewCell* cell = [[UITableViewCell alloc] init];
   // Setup UI same as real cell.
   CGFloat tableWidth = [self tableViewWidth];
   cell = [self layoutCell:cell
         forTableViewWidth:tableWidth
               atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
   return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  // In V2, since the listeners are removed early as soon as the presentation
+  // started, allow the sheet to become a first responder to not allow the
+  // keyboard popping over the sheet when there is a focus event on the WebView
+  // underneath the sheet.
+  return base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios);
 }
 
 #pragma mark - Private
@@ -357,42 +384,45 @@ CGFloat const kTitleLogoHeight = 32;
 
 // Layouts the cell for the table view with the payment info at the specific
 // index path.
-- (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
-                     forTableViewWidth:(CGFloat)tableViewWidth
-                           atIndexPath:(NSIndexPath*)indexPath {
+- (UITableViewCell*)layoutCell:(UITableViewCell*)cell
+             forTableViewWidth:(CGFloat)tableViewWidth
+                   atIndexPath:(NSIndexPath*)indexPath {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = [self suggestionAtRow:indexPath.row];
+  configuration.titleNumberOfLines = 1;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingMiddle;
+  configuration.subtitle = [self descriptionAtRow:indexPath.row];
+  configuration.customAccessibilityLabel =
+      [self accessibleCardNameAtRow:indexPath.row];
+
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image = [self iconAtRow:indexPath.row];
+
+  configuration.leadingConfiguration = imageConfiguration;
+
+  cell.contentConfiguration = configuration;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
-  cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
   cell.accessibilityValue = [self accessibilityValueForCardAtRow:indexPath.row];
 
-  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
-  [cell setIconImage:[self iconAtRow:indexPath.row]
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCreditCardIconCornerRadius];
-  [cell updateIconBackgroundWidthToFitContent:YES];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
-
-  cell.textLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.textLabel.numberOfLines = 1;
 
   // If we have the potential presence of a virtual card, the textLabel on its
   // own is no longer a unique identifier, so we include the description.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    cell.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@ %@", cell.textLabel.text,
-                                   [self descriptionAtRow:indexPath.row]];
-  } else {
-    cell.accessibilityIdentifier = cell.textLabel.text;
-  }
+  cell.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@ %@", configuration.title,
+                                 [self descriptionAtRow:indexPath.row]];
 
-  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
-                                                  atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
   return cell;
+}
+
+// Resizes the GPay logo to match the new trait collection.
+- (void)resizeLogoOnTraitChange {
+  self.image = [self titleImage];
 }
 
 #pragma mark - ConfirmationAlertViewController

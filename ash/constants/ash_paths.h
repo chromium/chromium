@@ -28,8 +28,17 @@ enum {
                                      // store the uptime at which an update
                                      // became necessary. The file should be
                                      // cleared on boot.
-  FILE_STARTUP_CUSTOMIZATION_MANIFEST,     // Path to OEM partner startup
-                                           // customization manifest.
+  FILE_STARTUP_CUSTOMIZATION_MANIFEST,  // Path to OEM partner startup
+                                        // customization manifest.
+  FILE_TPM_FIRMWARE_UPDATE_LOCATION,    // File containing the location of
+                                        // the updated TPM firmware binary
+                                        // in the file system.
+  FILE_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,  // Flag file indicating SRK
+                                                 // ROCA vulnerability status.
+  DIR_USER_DATA,      // The same as chrome::DIR_USER_DATA. Allowed to access
+                      // the value from //ash.
+  DIR_HOMEDIR_MOUNT,  // Base directory where user cryptohome mount point
+                      // (named as hash of username) resides.
   DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS,     // Directory under which a cache of
                                            // force-installed extensions is
                                            // maintained for each device-local
@@ -55,12 +64,18 @@ enum {
   DIR_SIGNIN_PROFILE_EXTENSIONS,        // Directory under which a cache of
                                         // force-installed extensions is
                                         // maintained for the signin profile.
-  DIR_PREINSTALLED_COMPONENTS,          // Directory that contains pre-installed
-                                        // components.
   DIR_DEVICE_POLICY_EXTERNAL_DATA,     // Directory where device policy external
                                        // data resources are cached.
   DIR_DEVICE_POLICY_SCREENSAVER_DATA,  // Directory where the device policy
                                        // managed screensaver images are cached.
+  DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE,  // Directory under which a cache of
+                                       // force-installed IWAs is maintained for
+                                       // kiosk and MGS.
+  DIR_WALLPAPERS,                      // Directory where downloaded chromeos
+                                       // wallpapers reside.
+  DIR_CUSTOM_WALLPAPERS,               // Directory where custom wallpapers
+                                       // reside.
+
   PATH_END
 };
 

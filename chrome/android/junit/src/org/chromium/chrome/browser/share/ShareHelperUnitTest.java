@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -37,6 +38,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DestroyableHolder;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -65,6 +67,8 @@ public class ShareHelperUnitTest {
     private static final ComponentName TEST_COMPONENT_NAME_2 =
             new ComponentName("test.package.two", "test.class.name.two");
 
+    private final DestroyableHolder<WindowAndroid> mWindowDestroyRef = new DestroyableHolder<>();
+
     private WindowAndroid mWindow;
     private Activity mActivity;
     private Uri mImageUri;
@@ -74,7 +78,12 @@ public class ShareHelperUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
                 new ActivityWindowAndroid(
-                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+                        mActivity,
+                        /* listenToActivityState= */ false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        /* insetObserver= */ null,
+                        /* trackOcclusion= */ true);
+        mWindowDestroyRef.set(mWindow);
         mImageUri = Uri.parse(IMAGE_URI);
     }
 
@@ -82,7 +91,7 @@ public class ShareHelperUnitTest {
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME);
-        mWindow.destroy();
+        mWindowDestroyRef.destroy();
         mActivity.finish();
     }
 
@@ -224,6 +233,15 @@ public class ShareHelperUnitTest {
                 "Intent component name does not match.",
                 TEST_COMPONENT_NAME_1,
                 nextIntent.getComponent());
+    }
+
+    @Test
+    public void doNotShareWhenWindowDestroying() {
+        mWindowDestroyRef.destroy();
+        ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, true);
+
+        Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+        assertNull("Shared intent is sending during window destoy.", nextIntent);
     }
 
     @Test

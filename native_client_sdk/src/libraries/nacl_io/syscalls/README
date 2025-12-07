@@ -1,8 +1,0 @@
-This folder contains the implementations of libc/POSIX
-entry points and redirects them to nacl_io implementations.
-
-Not all C library entry points are implemented in this way.
-In many cases nacl_io instead intercepts the calls at a
-lower level within the C library.  The way this is done
-differs for each C library.  See kernel_wrap_*.cc for
-details.

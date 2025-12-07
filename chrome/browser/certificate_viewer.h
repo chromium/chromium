@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CERTIFICATE_VIEWER_H_
 #define CHROME_BROWSER_CERTIFICATE_VIEWER_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContents;

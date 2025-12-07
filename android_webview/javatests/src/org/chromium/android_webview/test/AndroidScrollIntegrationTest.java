@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.annotation.SuppressLint;
@@ -35,6 +37,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.Locale;
@@ -79,27 +82,20 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     private static class OverScrollByCallbackHelper extends CallbackHelper {
         int mDeltaX;
         int mDeltaY;
-        int mScrollRangeY;
 
         public int getDeltaX() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mDeltaX;
         }
 
         public int getDeltaY() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mDeltaY;
         }
 
-        public int getScrollRangeY() {
-            assert getCallCount() > 0;
-            return mScrollRangeY;
-        }
-
-        public void notifyCalled(int deltaX, int deltaY, int scrollRangeY) {
+        public void notifyCalled(int deltaX, int deltaY) {
             mDeltaX = deltaX;
             mDeltaY = deltaY;
-            mScrollRangeY = scrollRangeY;
             notifyCalled();
         }
     }
@@ -108,8 +104,8 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         private int mMaxScrollXPix = -1;
         private int mMaxScrollYPix = -1;
 
-        private CallbackHelper mOnScrollToCallbackHelper = new CallbackHelper();
-        private OverScrollByCallbackHelper mOverScrollByCallbackHelper =
+        private final CallbackHelper mOnScrollToCallbackHelper = new CallbackHelper();
+        private final OverScrollByCallbackHelper mOverScrollByCallbackHelper =
                 new OverScrollByCallbackHelper();
 
         public ScrollTestContainerView(Context context, boolean allowHardwareAcceleration) {
@@ -143,7 +139,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 int maxOverScrollX,
                 int maxOverScrollY,
                 boolean isTouchEvent) {
-            mOverScrollByCallbackHelper.notifyCalled(deltaX, deltaY, scrollRangeY);
+            mOverScrollByCallbackHelper.notifyCalled(deltaX, deltaY);
             return super.overScrollBy(
                     deltaX,
                     deltaY,
@@ -245,18 +241,24 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                         });
     }
 
+    private boolean approxEqual(final int a, final int b) {
+        return Math.abs(a - b) <= 2;
+    }
+
     private boolean checkScrollOnMainSync(
             final ScrollTestContainerView testContainerView,
             final int scrollXPix,
             final int scrollYPix) {
+        // Allow the scroll to be off by 2px, to account for non-integer
+        // device pixel ratio devicse where scroll*Pix is rounded inaccurately.
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        scrollXPix == testContainerView.getScrollX()
-                                && scrollYPix == testContainerView.getScrollY());
+                        approxEqual(scrollXPix, testContainerView.getScrollX())
+                                && approxEqual(scrollYPix, testContainerView.getScrollY()));
     }
 
     private int[] getScrollOnMainSync(final ScrollTestContainerView testContainerView) {
-        final int scroll[] = new int[2];
+        final int[] scroll = new int[2];
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
@@ -270,7 +272,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
             final ScrollTestContainerView testContainerView,
             final int scrollXPix,
             final int scrollYPix) {
-        int scrolled[] = getScrollOnMainSync(testContainerView);
+        int[] scrolled = getScrollOnMainSync(testContainerView);
         int scrolledXPix = scrolled[0];
         int scrolledYPix = scrolled[1];
 
@@ -333,20 +335,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 });
     }
 
-    private void assertScrolledToBottomInJs(
-            final AwContents awContents, final TestAwContentsClient contentsClient) {
-        final String isBottomScript =
-                "window.scrollY == "
-                        + "(window.document.documentElement.scrollHeight - window.innerHeight)";
-        AwActivityTestRule.pollInstrumentationThread(
-                () -> {
-                    String r =
-                            mActivityTestRule.executeJavaScriptAndWaitForResult(
-                                    awContents, contentsClient, isBottomScript);
-                    return r.equals("true");
-                });
-    }
-
     private void loadTestPageAndWaitForFirstFrame(
             final ScrollTestContainerView testContainerView,
             final TestAwContentsClient contentsClient,
@@ -363,12 +351,17 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                                 firstFrameObserver.register(
                                         testContainerView.getWebContents(),
                                         firstFrameObserverName));
+
+        final AwContents awContents = testContainerView.getAwContents();
         mActivityTestRule.loadDataSync(
-                testContainerView.getAwContents(),
+                awContents,
                 contentsClient.getOnPageFinishedHelper(),
                 makeTestPage(onscrollObserverName, firstFrameObserverName, extraContent),
                 "text/html",
                 false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(awContents.getWebContents()));
 
         // We wait for "a couple" of frames for the active tree in CC to stabilize and for pending
         // tree activations to stop clobbering the root scroll layer's scroll offset. This wait
@@ -509,8 +502,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 GraphicsTestUtils.dipScaleForContext(testContainerView.getContext());
         final int targetScrollXCss = 132;
         final int targetScrollYCss = 243;
-        final int targetScrollXPix = (int) Math.floor(targetScrollXCss * deviceDIPScale);
-        final int targetScrollYPix = (int) Math.floor(targetScrollYCss * deviceDIPScale);
 
         final int maxScrollXCss = 101;
         final int maxScrollYCss = 201;
@@ -760,7 +751,10 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         final int maxScrollYPix =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                (testContainerView.getAwContents().computeVerticalScrollRange()
+                                (testContainerView
+                                                .getAwContents()
+                                                .getViewMethods()
+                                                .computeVerticalScrollRange()
                                         - testContainerView.getHeight()));
 
         final CallbackHelper onScrollToCallbackHelper =
@@ -813,7 +807,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     }
 
     private static class TestGestureStateListener extends GestureStateListener {
-        private CallbackHelper mOnScrollUpdateGestureConsumedHelper = new CallbackHelper();
+        private final CallbackHelper mOnScrollUpdateGestureConsumedHelper = new CallbackHelper();
 
         public CallbackHelper getOnScrollUpdateGestureConsumedHelper() {
             return mOnScrollUpdateGestureConsumedHelper;
@@ -890,8 +884,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         final ScrollTestContainerView testContainerView =
                 (ScrollTestContainerView)
                         mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
-        final OverScrollByCallbackHelper overScrollByCallbackHelper =
-                testContainerView.getOverScrollByCallbackHelper();
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
@@ -912,22 +904,26 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                             canZoomIn.set(awContents.canZoomIn());
 
                             int oldScrollRange =
-                                    awContents.computeVerticalScrollRange()
+                                    awContents.getViewMethods().computeVerticalScrollRange()
                                             - testContainerView.getHeight();
                             float oldScale = awContents.getScale();
                             double oldHeight =
-                                    Math.ceil(awContents.computeVerticalScrollRange() / oldScale);
+                                    Math.ceil(
+                                            awContents.getViewMethods().computeVerticalScrollRange()
+                                                    / oldScale);
                             atomicOldContentHeightApproximation.set((int) oldHeight);
 
                             awContents.zoomIn();
 
                             int newScrollRange =
-                                    awContents.computeVerticalScrollRange()
+                                    awContents.getViewMethods().computeVerticalScrollRange()
                                             - testContainerView.getHeight();
                             float newScale = awContents.getScale();
 
                             double newHeight =
-                                    Math.ceil(awContents.computeVerticalScrollRange() / newScale);
+                                    Math.ceil(
+                                            awContents.getViewMethods().computeVerticalScrollRange()
+                                                    / newScale);
                             atomicNewContentHeightApproximation.set((int) newHeight);
 
                             atomicOldScale.set(oldScale);
@@ -1022,14 +1018,11 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
 
         // Check page loaded at scroll offset 0.
         {
-            int scroll[] = getScrollOnMainSync(testContainerView);
+            int[] scroll = getScrollOnMainSync(testContainerView);
             Assert.assertEquals(0, scroll[1]);
         }
 
         // Drag scroll.
-        final CallbackHelper onScrollToCallbackHelper =
-                testContainerView.getOnScrollToCallbackHelper();
-        final int scrollToCallCount = onScrollToCallbackHelper.getCallCount();
         final int dragSteps = 10;
         final int dragStepSize = 24;
         final int targetScrollYPix = dragStepSize * dragSteps;
@@ -1038,7 +1031,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         // Poll until scroll on UI is bigger than 0.
         AwActivityTestRule.pollInstrumentationThread(
                 () -> {
-                    int scroll[] = getScrollOnMainSync(testContainerView);
+                    int[] scroll = getScrollOnMainSync(testContainerView);
                     return scroll[1] > 0;
                 });
     }

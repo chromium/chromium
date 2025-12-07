@@ -45,7 +45,6 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
   if (reference_params) {
     // TODO(mmenke):  Just copying specific parameters seems highly regression
     // prone.  Should have a better way to do this.
-    session_params.host_mapping_rules = reference_params->host_mapping_rules;
     session_params.ignore_certificate_errors =
         reference_params->ignore_certificate_errors;
     session_params.testing_fixed_http_port =

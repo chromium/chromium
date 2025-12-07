@@ -5,8 +5,10 @@
 #include "remoting/base/file_path_util_linux.h"
 
 #include "base/base_paths.h"
-#include "base/hash/md5.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/network_interfaces.h"
 
 namespace remoting {
@@ -18,7 +20,8 @@ base::FilePath GetConfigDirectoryPath() {
 }
 
 std::string GetHostHash() {
-  return "host#" + base::MD5String(net::GetHostName());
+  return "host#" +
+         base::HexEncodeLower(crypto::obsolete::Md5::Hash(net::GetHostName()));
 }
 
 }  // namespace remoting

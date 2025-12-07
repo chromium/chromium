@@ -5,7 +5,6 @@
 #include "chromeos/components/onc/variable_expander.h"
 
 #include "base/check_deref.h"
-#include "base/files/file_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

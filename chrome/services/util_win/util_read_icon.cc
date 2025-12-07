@@ -15,8 +15,8 @@
 #include "base/win/scoped_gdi_object.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/win/icon_util.h"
 
 using chrome::mojom::IconSize;
 
@@ -43,7 +43,7 @@ gfx::ImageSkia LoadIcon(base::File file, int size, float scale) {
       },
       reinterpret_cast<LONG_PTR>(&id));
 
-  base::win::ScopedHICON icon(static_cast<HICON>(
+  base::win::ScopedGDIObject<HICON> icon(static_cast<HICON>(
       ::LoadImage(library, id, IMAGE_ICON, size, size, LR_DEFAULTCOLOR)));
   if (!IS_INTRESOURCE(id))
     free(id);
@@ -86,7 +86,7 @@ void UtilReadIcon::ReadIcon(base::File file,
       size = 48;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   std::move(callback).Run(LoadIcon(std::move(file), size * scale, scale));
 }

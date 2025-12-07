@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "gpu/ipc/service/shared_image_stub.h"
@@ -30,7 +29,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace media {
 
@@ -95,7 +94,6 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
 // TODO: crbug.com/349290188 - Clean up if no performance regressions are
 // observed.
 BASE_FEATURE(kVideoToolboxFrameConverterSpecifyWebGpuUsage,
-             "VideoToolboxFrameConverterSpecifyWebGpuUsage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -152,11 +150,6 @@ void VideoToolboxFrameConverter::Initialize() {
     DestroyStub();
     return;
   }
-
-  texture_rectangle_ = stub_->decoder_context()
-                           ->GetFeatureInfo()
-                           ->feature_flags()
-                           .arb_texture_rectangle;
 }
 
 void VideoToolboxFrameConverter::DestroyStub() {
@@ -195,24 +188,10 @@ void VideoToolboxFrameConverter::Convert(
   const gfx::Size natural_size =
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
-  bool allow_overlay = true;
-  gfx::ColorSpace color_space = GetImageBufferColorSpace(image.get());
-  if (!color_space.IsValid()) {
-    // Chrome and macOS do not agree on the color space; force compositing to
-    // ensure a consistent result. See crbug.com/343014700.
-    allow_overlay = false;
-    // Always use limited range since we request a limited range output format.
-    color_space = metadata->color_space.GetWithMatrixAndRange(
-        metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
-  }
+  gfx::GpuMemoryBufferHandle handle(gfx::ScopedIOSurface(
+      CVPixelBufferGetIOSurface(image.get()), base::scoped_policy::RETAIN));
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
-  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(CVPixelBufferGetIOSurface(image.get()),
-                          base::scoped_policy::RETAIN);
-
-  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface.get());
+  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface().get());
   std::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {
@@ -224,6 +203,28 @@ void VideoToolboxFrameConverter::Convert(
 
   VideoPixelFormat video_pixel_format =
       PixelFormatToVideoPixelFormat(pixel_format);
+
+  bool allow_overlay = true;
+  if (__builtin_available(macOS 13.0, iOS 16.0, *)) {
+    // On macOS < 13 or iOS < 16, there is a video artifact issue if the decoded
+    // YUV 4:4:4 CVImageBuffer is processed by macOS internally.
+    //
+    // There are some operations that could trigger the process operation:
+    // - Video overlay promotion.
+    // - Video down/up-sampling. i.e. 10 bit 4:4:4 -> 10 bit 4:2:0, or 16 bit
+    // 4:4:4 -> 10 bit 4:4:4.
+    //
+    // Below codes that disable overlay promotion for 4:4:4 chroma sampling
+    // video could solve the artifact issue for 8/10 bit 4:4:4 video. But note
+    // that for 12 bit 4:4:4 chroma sampling video, unfortunately since there is
+    // no `444YpCbCr12BiPlanarVideoRange` pixel format support, we have to down
+    // sampling the video to `444YpCbCr10BiPlanarVideoRange`, which means the
+    // issue still could not be solved for 12 bit 4:4:4 videos. See:
+    // crbug.com/387619594.
+  } else if (VideoPixelFormatToChromaSampling(video_pixel_format) ==
+             VideoChromaSampling::k444) {
+    allow_overlay = false;
+  }
 
   auto shared_image_interface = sis_->shared_image_interface();
   CHECK(shared_image_interface);
@@ -238,8 +239,18 @@ void VideoToolboxFrameConverter::Convert(
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
+  gfx::ColorSpace color_space = GetImageBufferColorSpace(image.get());
+  if (!color_space.IsValid()) {
+    // Chrome and macOS do not agree on the color space; force compositing to
+    // ensure a consistent result. See crbug.com/343014700.
+    allow_overlay = false;
+    // Always use limited range since we request a limited range output format.
+    color_space = metadata->color_space.GetWithMatrixAndRange(
+        metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
+  }
+
   auto shared_image = shared_image_interface->CreateSharedImage(
-      {*format, coded_size, metadata->color_space, kTopLeft_GrSurfaceOrigin,
+      {*format, coded_size, color_space, kTopLeft_GrSurfaceOrigin,
        kOpaque_SkAlphaType, shared_image_usage, kSharedImageDebugLabel},
       std::move(handle));
   if (!shared_image) {
@@ -249,20 +260,15 @@ void VideoToolboxFrameConverter::Convert(
   }
 
 
-  GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
-
   // |image| must be retained until after the release sync token passes.
   VideoFrame::ReleaseMailboxCB release_cb = base::BindPostTask(
       gpu_task_runner_,
       base::BindOnce(&VideoToolboxFrameConverter::OnVideoFrameReleased, this,
                      shared_image, std::move(image)));
 
-  // It should be possible to use VideoFrame::WrapExternalGpuMemoryBuffer(),
-  // which would allow the renderer to map the IOSurface, but this is more
-  // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       video_pixel_format, shared_image, shared_image->creation_sync_token(),
-      target, std::move(release_cb), coded_size, visible_rect, natural_size,
+      std::move(release_cb), coded_size, visible_rect, natural_size,
       metadata->timestamp);
 
   if (!frame) {
@@ -271,10 +277,8 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  frame->set_color_space(color_space);
+  frame->set_color_space(shared_image->color_space());
   frame->set_hdr_metadata(metadata->hdr_metadata);
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }

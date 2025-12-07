@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -173,7 +174,7 @@ bool DumpRegion(const MappedMemoryRegion& region,
     }
     std::string metadata = base::StringPrintf(
         "%c%c\n", entry.present ? '1' : '0', entry.swapped ? '1' : '0');
-    metadata_file.WriteAtCurrentPos(metadata.c_str(), metadata.size());
+    metadata_file.WriteAtCurrentPos(base::as_byte_span(metadata));
   }
 
   // Writing data page by page to avoid allocating too much memory.

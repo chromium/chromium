@@ -37,6 +37,9 @@ class StarboardVideoDecoder
       CastDecoderBuffer* buffer) override;
   void SetDelegate(Delegate* delegate) override;
 
+  // StarboardDecoder implementation:
+  std::optional<EncryptionScheme> GetEncryptionScheme() override;
+
  private:
   // StarboardDecoder implementation:
   void InitializeInternal() override;

@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/pipe_options.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
@@ -199,7 +198,7 @@ WritableStream* WritableStream::Create(ScriptState* script_state,
       exception_state);
 
   //  8. Return stream.
-  return stream;
+  return exception_state.HadException() ? nullptr : stream;
 }
 
 // static
@@ -218,17 +217,16 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
     size_t high_water_mark,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer) {
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "WritableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto* stream = MakeGarbageCollected<WritableStream>();
   stream->InitWithCountQueueingStrategy(script_state, underlying_sink,
                                         high_water_mark, std::move(optimizer),
-                                        exception_state);
-  if (exception_state.HadException())
+                                        PassThroughException(isolate));
+  if (isolate->HasPendingException()) {
     return nullptr;
+  }
 
   return stream;
 }
@@ -239,16 +237,15 @@ void WritableStream::InitWithCountQueueingStrategy(
     size_t high_water_mark,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  ScriptValue strategy_value =
-      CreateTrivialQueuingStrategy(script_state->GetIsolate(), high_water_mark);
-
-  auto underlying_sink_value = ScriptValue::From(script_state, underlying_sink);
-
-  // TODO(crbug.com/902633): This method of constructing a WritableStream
-  // introduces unnecessary trips through V8. Implement algorithms based on an
-  // UnderlyingSinkBase.
-  InitInternal(script_state, underlying_sink_value, strategy_value,
-               exception_state);
+  auto* controller = MakeGarbageCollected<WritableStreamDefaultController>();
+  WritableStreamDefaultController::SetUp(
+      script_state, this, controller,
+      MakeGarbageCollected<UnderlyingSinkStartAlgorithm>(underlying_sink,
+                                                         controller),
+      MakeGarbageCollected<UnderlyingSinkWriteAlgorithm>(underlying_sink),
+      MakeGarbageCollected<UnderlyingSinkCloseAlgorithm>(underlying_sink),
+      MakeGarbageCollected<UnderlyingSinkAbortAlgorithm>(underlying_sink),
+      high_water_mark, CreateDefaultSizeAlgorithm(), exception_state);
 
   transferring_optimizer_ = std::move(optimizer);
 }
@@ -437,6 +434,8 @@ ScriptPromise<IDLUndefined> WritableStream::Close(ScriptState* script_state,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
+  resolver->SuppressDetachCheck();
+
   //  6. Set stream.[[closeRequest]] to promise.
   stream->SetCloseRequest(resolver);
 
@@ -590,14 +589,14 @@ void WritableStream::FinishErroring(ScriptState* script_state,
   auto promise = stream->writable_stream_controller_->AbortSteps(
       script_state, abort_request->Reason(isolate));
 
-  class ResolvePromiseFunction final : public PromiseHandler {
+  class ResolvePromiseFunction final
+      : public ThenCallable<IDLUndefined, ResolvePromiseFunction> {
    public:
     ResolvePromiseFunction(WritableStream* stream,
                            ScriptPromiseResolver<IDLUndefined>* resolver)
         : stream_(stream), resolver_(resolver) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       // 13. Upon fulfillment of promise,
       //      a. Resolve abortRequest.[[promise]] with undefined.
       resolver_->Resolve();
@@ -610,7 +609,7 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       visitor->Trace(resolver_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolvePromiseFunction>::Trace(visitor);
     }
 
    private:
@@ -618,14 +617,14 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
 
-  class RejectPromiseFunction final : public PromiseHandler {
+  class RejectPromiseFunction final
+      : public ThenCallable<IDLAny, RejectPromiseFunction> {
    public:
     RejectPromiseFunction(WritableStream* stream,
                           ScriptPromiseResolver<IDLUndefined>* resolver)
         : stream_(stream), resolver_(resolver) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> reason) override {
+    void React(ScriptState* script_state, ScriptValue reason) {
       // 14. Upon rejection of promise with reason reason,
       //      a. Reject abortRequest.[[promise]] with reason.
       resolver_->Reject(reason);
@@ -638,7 +637,7 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       visitor->Trace(resolver_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectPromiseFunction>::Trace(visitor);
     }
 
    private:
@@ -646,14 +645,11 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolvePromiseFunction>(
-                            stream, abort_request->GetResolver())),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectPromiseFunction>(
-                            stream, abort_request->GetResolver())));
+  promise.Then(script_state,
+               MakeGarbageCollected<ResolvePromiseFunction>(
+                   stream, abort_request->GetResolver()),
+               MakeGarbageCollected<RejectPromiseFunction>(
+                   stream, abort_request->GetResolver()));
 }
 
 void WritableStream::FinishInFlightWrite(ScriptState* script_state,
@@ -891,7 +887,7 @@ v8::Local<v8::Value> WritableStream::CreateCannotActionOnStateStreamException(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return v8::Exception::TypeError(
       CreateCannotActionOnStateStreamMessage(isolate, action, state_name));
@@ -940,11 +936,10 @@ void WritableStream::InitInternal(ScriptState* script_state,
   }
 
   // 4. Let type be ? GetV(underlyingSink, "type").
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> type;
   if (!underlying_sink->Get(context, V8AtomicString(isolate, "type"))
            .ToLocal(&type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return;
   }
 

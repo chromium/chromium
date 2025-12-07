@@ -20,17 +20,42 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
+
+namespace {
+
+void SetupMockDirectory(const base::FilePath& mock_dir,
+                        const base::FilePath::StringType& mock_extension) {
+  for (const base::FilePath& dir :
+       {mock_dir, mock_dir.Append(FILE_PATH_LITERAL("SubDir1")),
+        mock_dir.Append(FILE_PATH_LITERAL("SubDir2"))}) {
+    ASSERT_TRUE(base::CreateDirectory(dir));
+    base::FilePath temp_file;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(dir, &temp_file));
+    if (mock_extension[0]) {
+      ASSERT_TRUE(
+          base::CopyFile(temp_file, temp_file.AddExtension(mock_extension)));
+    }
+  }
+}
+
+}  // namespace
 
 struct UtilTagArgsTestCase {
   const std::string tag_switch;
@@ -49,30 +74,29 @@ TEST_P(UtilTagArgsTest, AppArgsAndAP) {
   base::test::ScopedCommandLine original_command_line;
   {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(GetParam().tag_switch,
-                                    "appguid=8a69f345-c564-463c-aff1-"
-                                    "a69d9e530f96&appname=TestApp&ap=TestAP");
+    command_line->AppendSwitchUTF8(GetParam().tag_switch,
+                                   "appguid=8a69f345-c564-463c-aff1-"
+                                   "a69d9e530f96&appname=TestApp&ap=TestAP");
 
     // Test GetAppArgs.
     EXPECT_EQ(GetAppArgs("NonExistentAppId"), std::nullopt);
     std::optional<tagging::AppArgs> app_args =
         GetAppArgs("8a69f345-c564-463c-aff1-a69d9e530f96");
     ASSERT_NE(app_args, std::nullopt);
-    EXPECT_STREQ(app_args->app_id.c_str(),
-                 "8a69f345-c564-463c-aff1-a69d9e530f96");
-    EXPECT_STREQ(app_args->app_name.c_str(), "TestApp");
+    EXPECT_EQ(app_args->app_id, "8a69f345-c564-463c-aff1-a69d9e530f96");
+    EXPECT_EQ(app_args->app_name, "TestApp");
   }
 }
 
 TEST_P(UtilTagArgsTest, GetTagArgsForCommandLine) {
   base::CommandLine command_line(base::FilePath(FILE_PATH_LITERAL("my.exe")));
-  command_line.AppendSwitchASCII(GetParam().tag_switch,
-                                 "appguid={8a69}&appname=Chrome");
-  command_line.AppendSwitchASCII(kAppArgsSwitch,
-                                 "&appguid={8a69}&installerdata=%7B%22homepage%"
-                                 "22%3A%22http%3A%2F%2Fwww.google.com%");
+  command_line.AppendSwitchUTF8(GetParam().tag_switch,
+                                "appguid={8a69}&appname=Chrome");
+  command_line.AppendSwitchUTF8(kAppArgsSwitch,
+                                "&appguid={8a69}&installerdata=%7B%22homepage%"
+                                "22%3A%22http%3A%2F%2Fwww.google.com%");
   command_line.AppendSwitch(kSilentSwitch);
-  command_line.AppendSwitchASCII(kSessionIdSwitch, "{123-456}");
+  command_line.AppendSwitchUTF8(kSessionIdSwitch, "{123-456}");
 
   TagParsingResult result = GetTagArgsForCommandLine(command_line);
   EXPECT_EQ(result.error, tagging::ErrorCode::kSuccess);
@@ -114,9 +138,9 @@ TEST(Util, GetCrashDatabasePath) {
             FILE_PATH_LITERAL("Crashpad"));
 }
 
-TEST(Util, GetCrxDiffCacheDirectory) {
+TEST(Util, GetCrxCacheDirectory) {
   std::optional<base::FilePath> diff_cache_directory(
-      GetCrxDiffCacheDirectory(GetUpdaterScopeForTesting()));
+      GetCrxCacheDirectory(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(diff_cache_directory);
   EXPECT_EQ(diff_cache_directory->BaseName().value(),
             FILE_PATH_LITERAL("crx_cache"));
@@ -214,6 +238,82 @@ TEST(Util, ToSignedIntegral) {
   EXPECT_EQ(ToSignedIntegral(uint32_t{0xFFFFFFFF}), -1);
   EXPECT_EQ(ToSignedIntegral(uint64_t{0x7FFFFFFFFFFFFFFF}), 0x7FFFFFFFFFFFFFFF);
   EXPECT_EQ(ToSignedIntegral(uint64_t{0x8000000000000000}), -1);
+}
+
+#if BUILDFLAG(IS_WIN)
+class UtilTaskNameTest : public ::testing::TestWithParam<std::string> {
+ protected:
+  base::Version version() const { return base::Version(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(UtilTaskNameTestCases,
+                         UtilTaskNameTest,
+                         ::testing::Values(kUpdaterVersion,
+                                           "1.2.3.4",
+                                           "199.28537.11717"));
+
+TEST_P(UtilTaskNameTest, GetTaskNamePrefix) {
+  EXPECT_EQ(
+      GetTaskNamePrefix(GetUpdaterScopeForTesting(), version()),
+      base::StrCat(
+          {base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L"Task",
+           IsSystemInstall(GetUpdaterScopeForTesting()) ? L"System" : L"User",
+           base::UTF8ToWide(version().GetString())}));
+}
+
+TEST_P(UtilTaskNameTest, GetTaskDisplayName) {
+  EXPECT_EQ(
+      GetTaskDisplayName(GetUpdaterScopeForTesting(), version()),
+      base::StrCat(
+          {base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L" Task ",
+           IsSystemInstall(GetUpdaterScopeForTesting()) ? L"System " : L"User ",
+           base::UTF8ToWide(version().GetString())}));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+TEST(Util, GetFilesWithPredicate) {
+  EXPECT_TRUE(GetFilesWithPredicate({}, [](const base::FilePath&) {
+                return true;
+              }).empty());
+
+  for (const auto& extension :
+       {FILE_PATH_LITERAL(".log"), FILE_PATH_LITERAL("")}) {
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    ASSERT_NO_FATAL_FAILURE(SetupMockDirectory(temp_dir.GetPath(), extension));
+    EXPECT_EQ(
+        GetFilesWithPredicate(temp_dir.GetPath(),
+                              [&](const base::FilePath& item) {
+                                return item.MatchesFinalExtension(extension);
+                              })
+            .size(),
+        extension[0] ? 3u : 0u);
+  }
+}
+
+TEST(Util, EnumerateUpdateClientTempDirectories) {
+  ASSERT_NO_FATAL_FAILURE(EnumerateUpdateClientTempDirectories(
+      GetUpdaterScopeForTesting(), [](const base::FilePath& dir) {
+        ADD_FAILURE() << "Unexpected directory: " << dir;
+      }));
+
+  base::FilePath dir;
+  for (const auto& matcher :
+       {FILE_PATH_LITERAL("chrome_url_fetcher_"),
+        FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"),
+        FILE_PATH_LITERAL("chrome_BITS_"), FILE_PATH_LITERAL("BazBar")}) {
+    ASSERT_TRUE(base::CreateNewTempDirectory(matcher, &dir));
+  }
+
+  int count = 0;
+  ASSERT_NO_FATAL_FAILURE(EnumerateUpdateClientTempDirectories(
+      GetUpdaterScopeForTesting(), [&count](const base::FilePath& dir) {
+        ++count;
+        EXPECT_TRUE(base::DeletePathRecursively(dir));
+      }));
+
+  EXPECT_EQ(count, 3);
+  EXPECT_TRUE(base::DeletePathRecursively(dir));
 }
 
 }  // namespace updater

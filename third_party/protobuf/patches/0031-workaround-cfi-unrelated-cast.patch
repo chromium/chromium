@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
-index 0524fd46226e6..082e5124a023f 100644
+index 7456d3c3d6653..7731a9405e031 100644
 --- a/src/google/protobuf/descriptor.cc
 +++ b/src/google/protobuf/descriptor.cc
-@@ -301,22 +301,16 @@ class FlatAllocation {
+@@ -343,22 +343,16 @@ class FlatAllocation {
      return ends_.template Get<U>();
    }
  
@@ -29,20 +29,44 @@ index 0524fd46226e6..082e5124a023f 100644
    }
  
    template <typename U>
+diff --git a/src/google/protobuf/map.h b/src/google/protobuf/map.h
+index 71abcb9b80564..2d3ef18139e2f 100644
+--- a/src/google/protobuf/map.h
++++ b/src/google/protobuf/map.h
+@@ -320,6 +320,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+   UntypedMapBase& operator=(const UntypedMapBase&) = delete;
+ 
+   template <typename T>
++  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
+   T* GetKey(NodeBase* node) const {
+     // Debug check that `T` matches what we expect from the type info.
+     ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
+@@ -332,6 +333,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+   }
+ 
+   template <typename T>
++  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
+   T* GetValue(NodeBase* node) const {
+     // Debug check that `T` matches what we expect from the type info.
+     ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index cae9ebe01ec2c..b84b55e4d8762 100644
+index a12a49e9971af..8b2ebe31195d2 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -764,6 +764,12 @@
- #define PROTOBUF_UNUSED
+@@ -601,6 +601,16 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+ #define PROTOBUF_PREFETCH_WITH_OFFSET(base, offset)
  #endif
  
++#if !defined(_MSVC_LANG)
 +#if __has_attribute(no_sanitize)
 +#define PROTOBUF_NO_SANITIZE(...) __attribute__((no_sanitize(__VA_ARGS__)))
++#else
++#define PROTOBUF_NO_SANITIZE(...)
++#endif  // __has_attribute(no_sanitize)
 +#else
 +#define PROTOBUF_NO_SANITIZE(...)
 +#endif
 +
  // ThreadSafeArenaz is turned off completely in opensource builds.
  
- // Windows declares several inconvenient macro names.  We #undef them and then
+ 

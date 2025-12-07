@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsMultideviceFeatureToggleElement} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubFeatureAccessStatus} from 'chrome://os-settings/os_settings.js';
+import type {SettingsMultideviceFeatureToggleElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubFeatureAccessStatus} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -99,8 +100,6 @@ suite('<settings-multidevice-feature-toggle>', () => {
       isPhoneHubPermissionsDialogSupported: false,
       isCameraRollFilePermissionGranted: false,
       isPhoneHubFeatureCombinedSetupSupported: false,
-      isChromeOSSyncedSessionSharingEnabled: false,
-      isLacrosTabSyncEnabled: false,
       betterTogetherState: MultiDeviceFeatureState.ENABLED_BY_USER,
       [pageContentDataKey]: MultiDeviceFeatureState.DISABLED_BY_USER,
     };

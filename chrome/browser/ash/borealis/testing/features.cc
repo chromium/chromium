@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 
 namespace borealis {
 

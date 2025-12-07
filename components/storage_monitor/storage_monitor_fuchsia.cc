@@ -4,7 +4,7 @@
 
 #include "components/storage_monitor/storage_monitor.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace storage_monitor {
 

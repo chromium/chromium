@@ -4,18 +4,19 @@
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/chromevox/touch_accessibility_enabler.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/cursor_client.h"
@@ -139,6 +140,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
   root_window_->GetHost()->ConvertPixelsToDIP(&root_location);
 
   bool exclude =
+      (Shell::HasInstance() &&
+       Shell::Get()->cros_display_config()->IsCalibrating()) ||
       IsTargetedToArcVirtualKeyboard(location) ||
       (!exclude_bounds_.IsEmpty() && exclude_bounds_.Contains(location));
   if (exclude) {
@@ -177,7 +180,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
   } else if (type == ui::EventType::kTouchReleased ||
              type == ui::EventType::kTouchCancelled) {
     std::vector<int>::iterator it =
-        base::ranges::find(current_touch_ids_, touch_id);
+        std::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down
     // or if an additional press occurred within the exclusion bounds.
@@ -204,7 +207,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     touch_locations_.erase(touch_id);
   } else if (type == ui::EventType::kTouchMoved) {
     std::vector<int>::iterator it =
-        base::ranges::find(current_touch_ids_, touch_id);
+        std::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down.
     if (it == current_touch_ids_.end())
@@ -212,9 +215,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
 
     touch_locations_[*it] = gfx::PointF(location);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected event type received: " << event.GetName();
-    return SendEvent(continuation, &event);
+    NOTREACHED() << "Unexpected event type received: " << event.GetName();
   }
   VLOG_EVENT(touch_event);
 
@@ -285,8 +286,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     case TWO_FINGER_TAP:
       return InTwoFingerTap(touch_event_dip, continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InNoFingersDown(
@@ -294,9 +294,7 @@ ui::EventDispatchDetails TouchExplorationController::InNoFingersDown(
     const Continuation continuation) {
   const ui::EventType type = event.type();
   if (type != ui::EventType::kTouchPressed) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected event type received: " << event.GetName();
-    return SendEvent(continuation, &event);
+    NOTREACHED() << "Unexpected event type received: " << event.GetName();
   }
 
   initial_press_ = std::make_unique<ui::TouchEvent>(event);
@@ -364,8 +362,7 @@ ui::EventDispatchDetails TouchExplorationController::InSingleTapPressed(
     SET_STATE(TOUCH_EXPLORATION);
     return InTouchExploration(event, continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails
@@ -445,8 +442,7 @@ ui::EventDispatchDetails TouchExplorationController::InDoubleTapPending(
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
@@ -465,8 +461,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
@@ -489,8 +484,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     MaybeSendSimulatedTapInLiftActivationBounds(event, continuation);
     SET_STATE(TOUCH_EXPLORE_RELEASED);
   } else if (type != ui::EventType::kTouchMoved) {
-    NOTREACHED_IN_MIGRATION();
-    return SendEvent(continuation, &event);
+    NOTREACHED();
   }
 
   // |location| is in window DIP coordinates.
@@ -580,9 +574,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
                initial_press_->pointer_details().id) {
       original_touch = initial_press_.get();
     } else {
-      NOTREACHED_IN_MIGRATION();
-      SET_STATE(WAIT_FOR_NO_FINGERS);
-      return DiscardEvent(continuation);
+      NOTREACHED();
     }
     // Check the distance between the current finger location and the original
     // location. The slop for this is a bit more generous since keeping two
@@ -617,8 +609,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
     EnterTouchToMouseMode();
     return DiscardEvent(continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InTouchExploreLongPress(
@@ -1241,8 +1232,7 @@ bool TouchExplorationController::ShouldEnableVolumeSlideGesture(
   // Can be nullptr in unit tests.
   int edge = FindEdgesWithinInset(event.location(), kMaxDistanceFromEdge);
   return edge & RIGHT_EDGE && edge != BOTTOM_RIGHT_CORNER &&
-         (!Shell::HasInstance() ||
-          display::Screen::GetScreen()->InTabletMode() ||
+         (!Shell::HasInstance() || display::Screen::Get()->InTabletMode() ||
           Shell::Get()
               ->accessibility_controller()
               ->enable_chromevox_volume_slide_gesture());

@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -61,19 +63,18 @@ void ImageCallbackIfPresent(ImageFetcherCallback image_callback,
 
 std::string EncodeSkBitmapToPNG(const std::string& uma_client_name,
                                 const SkBitmap& bitmap) {
-  std::vector<unsigned char> encoded_data;
-  bool result = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> encoded_data = gfx::PNGCodec::Encode(
       static_cast<const unsigned char*>(bitmap.getPixels()),
       gfx::PNGCodec::FORMAT_SkBitmap,
       gfx::Size(bitmap.width(), bitmap.height()),
-      static_cast<int>(bitmap.rowBytes()), /* discard_transparency */ false,
-      std::vector<gfx::PNGCodec::Comment>(), &encoded_data);
-  if (!result) {
+      static_cast<int>(bitmap.rowBytes()), /*discard_transparency=*/false,
+      std::vector<gfx::PNGCodec::Comment>());
+  if (!encoded_data) {
     ImageFetcherMetricsReporter::ReportEvent(
         uma_client_name, ImageFetcherEvent::kTranscodingError);
     return "";
   } else {
-    return std::string(encoded_data.begin(), encoded_data.end());
+    return std::string(base::as_string_view(encoded_data.value()));
   }
 }
 
@@ -326,8 +327,8 @@ void CachedImageFetcher::StoreData(bool cache_result_needs_transcoding,
         return;
     }
 
-    // |needs_transcoding| is only true when the image to save isn't transcoded
-    // and |allow_needs_transcoding_file()| is true (set by
+    // `needs_transcoding` is only true when the image to save isn't transcoded
+    // and `allow_needs_transcoding_file()` is true (set by
     // ReducedModeImageFetcher).
     bool needs_transcoding = !is_image_data_transcoded &&
                              request.params.allow_needs_transcoding_file();

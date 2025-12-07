@@ -16,13 +16,11 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
-#include "components/favicon/core/favicon_service.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "ui/base/models/image_model.h"
@@ -37,9 +35,6 @@ namespace {
 
 // Returns true if focus mode is playing media (e.g. an audio playlist).
 bool IsFocusModePlayingMedia() {
-  if (!features::IsFocusModeEnabled()) {
-    return false;
-  }
   const focus_mode_util::SelectedPlaylist& playlist =
       FocusModeController::Get()
           ->focus_mode_sounds_controller()
@@ -85,10 +80,17 @@ void BirchLostMediaProvider::MediaSessionMetadataChanged(
     media_title_ = pending_metadata->title;
     source_url_ = pending_metadata->source_title;
   }
+
+  NotifyDataProviderChanged();
 }
 
 void BirchLostMediaProvider::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  // Notify data changed on closure.
+  base::ScopedClosureRunner scoped_closure(
+      base::BindOnce(&BirchLostMediaProvider::NotifyDataProviderChanged,
+                     base::Unretained(this)));
+
   media_session::mojom::MediaSessionInfoPtr media_session_info =
       std::move(session_info);
 
@@ -134,18 +136,13 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
     VideoConferenceManagerAsh::MediaApps apps) {
   std::vector<BirchLostMediaItem> items;
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  // TODO(b/354043357): Investigate why backup icon is grainy in production.
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
   // If video conference apps exist, return the most recently active app data to
   // the birch model.
   if (!apps.empty()) {
     items.emplace_back(
         /*source_url=*/apps[0]->url.value_or(GURL()),
         /*media_title=*/apps[0]->title,
-        /*backup_icon=*/backup_icon,
+        /*backup_icon=*/std::nullopt,
         /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
         /*activation_callback=*/
         base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
@@ -174,17 +171,15 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
     return;
   }
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  std::optional<ui::ImageModel> backup_icon;
   // The YouTube icon is only available in branded builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  int backup_icon_id = source_url_.starts_with(u"youtube.com")
-                           ? IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG
-                           : IDR_CHROME_APP_ICON_192;
-#else
-  int backup_icon_id = IDR_CHROME_APP_ICON_192;
+  if (source_url_.starts_with(u"youtube.com")) {
+    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+    backup_icon = ui::ImageModel::FromImageSkia(
+        *rb.GetImageSkiaNamed(IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG));
+  }
 #endif
-  ui::ImageModel backup_icon =
-      ui::ImageModel::FromImageSkia(*rb.GetImageSkiaNamed(backup_icon_id));
 
   std::vector<BirchLostMediaItem> items;
   // `source_url_` doesn't contain necessary prefix to make it a valid GURL so

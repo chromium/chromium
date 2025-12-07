@@ -12,19 +12,13 @@
   session.navigate('resources/bad-http-prerender-with-target-hint.html');
 
   // Pending
-  testRunner.log(
-      await dp.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp.Preload.oncePrerenderStatusUpdated());
 
   // Running
-  testRunner.log(
-      await dp.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp.Preload.oncePrerenderStatusUpdated());
 
   // Failure
-  testRunner.log(
-      await dp.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp.Preload.oncePrerenderStatusUpdated());
 
   testRunner.completeTest();
 });

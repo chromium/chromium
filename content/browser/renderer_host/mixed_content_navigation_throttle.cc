@@ -20,15 +20,15 @@
 namespace content {
 
 // static
-std::unique_ptr<NavigationThrottle>
-MixedContentNavigationThrottle::CreateThrottleForNavigation(
-    NavigationHandle* navigation_handle) {
-  return std::make_unique<MixedContentNavigationThrottle>(navigation_handle);
+void MixedContentNavigationThrottle::CreateAndAdd(
+    NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(
+      std::make_unique<MixedContentNavigationThrottle>(registry));
 }
 
 MixedContentNavigationThrottle::MixedContentNavigationThrottle(
-    NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 MixedContentNavigationThrottle::~MixedContentNavigationThrottle() {}
 

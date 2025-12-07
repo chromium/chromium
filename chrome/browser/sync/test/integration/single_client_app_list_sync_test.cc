@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -118,6 +117,11 @@ class SingleClientAppListSyncTest : public SyncTest {
     SyncAppListHelper::GetInstance();
     return true;
   }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 class SingleClientAppListSyncTestWithVerifier
@@ -154,11 +158,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier,
   app_list::AppListSyncableService* service =
       app_list::AppListSyncableServiceFactory::GetForProfile(verifier());
 
-  // Default apps: chrome + web store + internal apps .
-  const size_t kNumDefaultApps =
-      2u + app_list::GetNumberOfInternalAppsShowInLauncherForTest(
-               /*apps_name=*/nullptr, GetProfile(0));
-  ASSERT_EQ(kNumApps + kNumDefaultApps, service->sync_items().size());
+  // Default apps: chrome + web store.
+  ASSERT_EQ(kNumApps + 2u, service->sync_items().size());
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(AllProfilesHaveSameAppList());
@@ -185,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   base::RunLoop().RunUntilIdle();
 
   for (const std::string& app_id : app_ids) {
-    service->SetPinPosition(app_id, pin_position, /*pinned_by_policy=*/false);
+    service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
   EXPECT_TRUE(SyncItemsHaveNames(service));
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
 
   // Change data when sync is off.
   for (const std::string& app_id : app_ids) {
-    service->SetPinPosition(app_id, pin_position, /*pinned_by_policy=*/false);
+    service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
   SyncAppListHelper::GetInstance()->MoveAppFromFolder(profile, app_ids[0],
@@ -251,6 +252,11 @@ class SingleClientAppListOsSyncTest : public SyncTest {
  public:
   SingleClientAppListOsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppListOsSyncTest() override = default;
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppListOsSyncTest,
@@ -266,14 +272,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListOsSyncTest,
 
   // Disable all browser types.
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // APP_LIST is still synced because it is an OS setting.
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::APP_LIST));
 
   // Disable OS types.
   settings->SetSelectedOsTypes(false, UserSelectableOsTypeSet());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // APP_LIST is not synced.
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::APP_LIST));

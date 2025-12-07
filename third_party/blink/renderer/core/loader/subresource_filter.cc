@@ -49,18 +49,22 @@ SubresourceFilter::~SubresourceFilter() = default;
 
 bool SubresourceFilter::AllowLoad(
     const KURL& resource_url,
-    mojom::blink::RequestContextType request_context,
+    network::mojom::RequestDestination request_destination,
     ReportingDisposition reporting_disposition) {
   // TODO(csharrison): Implement a caching layer here which is a HashMap of
   // Pair<url string, context> -> LoadPolicy.
+  subresource_filter::ScopedRule rule;
   WebDocumentSubresourceFilter::LoadPolicy load_policy =
-      subresource_filter_->GetLoadPolicy(resource_url, request_context);
+      subresource_filter_->GetLoadPolicy(resource_url, request_destination,
+                                         /*out_rule=*/&rule);
 
-  if (reporting_disposition == ReportingDisposition::kReport)
+  if (reporting_disposition == ReportingDisposition::kReport) {
     ReportLoad(resource_url, load_policy);
+  }
 
   last_resource_check_result_ = std::make_pair(
-      std::make_pair(resource_url, request_context), load_policy);
+      std::make_pair(resource_url, request_destination),
+      ResourceCheckResult{.load_policy = load_policy, .rule = std::move(rule)});
 
   return load_policy != WebDocumentSubresourceFilter::kDisallow;
 }
@@ -75,9 +79,9 @@ void SubresourceFilter::ReportLoadAsync(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       execution_context_->GetTaskRunner(TaskType::kNetworking);
   DCHECK(task_runner->RunsTasksInCurrentSequence());
-  task_runner->PostTask(FROM_HERE, WTF::BindOnce(&SubresourceFilter::ReportLoad,
-                                                 WrapPersistent(this),
-                                                 resource_url, load_policy));
+  task_runner->PostTask(
+      FROM_HERE, BindOnce(&SubresourceFilter::ReportLoad, WrapPersistent(this),
+                          resource_url, load_policy));
 }
 
 bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
@@ -98,14 +102,18 @@ bool SubresourceFilter::AllowWebTransportConnection(const KURL& url) {
 
 bool SubresourceFilter::IsAdResource(
     const KURL& resource_url,
-    mojom::blink::RequestContextType request_context) {
+    network::mojom::RequestDestination request_destination,
+    subresource_filter::ScopedRule* out_rule) {
   WebDocumentSubresourceFilter::LoadPolicy load_policy;
   if (last_resource_check_result_.first ==
-      std::make_pair(resource_url, request_context)) {
-    load_policy = last_resource_check_result_.second;
+      std::make_pair(resource_url, request_destination)) {
+    load_policy = last_resource_check_result_.second.load_policy;
+    if (out_rule) {
+      *out_rule = last_resource_check_result_.second.rule;
+    }
   } else {
-    load_policy =
-        subresource_filter_->GetLoadPolicy(resource_url, request_context);
+    load_policy = subresource_filter_->GetLoadPolicy(
+        resource_url, request_destination, out_rule);
   }
 
   return load_policy != WebDocumentSubresourceFilter::kAllow;

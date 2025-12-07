@@ -8,12 +8,17 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <tuple>
-#include <vector>
+#include <unordered_map>
+#include <utility>
 
+#include "base/containers/flat_set.h"
+#include "base/hash/hash.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace viz {
 
@@ -24,7 +29,8 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
 
   ViewTransitionElementResourceId(
       const blink::ViewTransitionToken& transition_token,
-      uint32_t local_id);
+      uint32_t local_id,
+      bool for_scope_snapshot);
 
   // Creates an invalid id.
   ViewTransitionElementResourceId();
@@ -44,6 +50,18 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
     CHECK(transition_token_);
     return *transition_token_;
   }
+  size_t Hash() const {
+    size_t token_hash = 0u;
+    if (transition_token_) {
+      token_hash = blink::ViewTransitionToken::Hasher()(*transition_token_);
+    }
+    return base::HashInts(token_hash, local_id_);
+  }
+
+  bool MatchesToken(
+      const base::flat_set<blink::ViewTransitionToken>& tokens) const;
+
+  bool for_scope_snapshot() const { return for_scope_snapshot_; }
 
  private:
   // Refers to a specific view transition - globally unique.
@@ -52,8 +70,25 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
   // Refers to a specific snapshot resource within a specific transition
   // Unique only with respect to a given `transition_token_`.
   uint32_t local_id_ = kInvalidLocalId;
+
+  // If true, this resource id is generated for a scope snapshot instead of
+  // other view transition elements.
+  bool for_scope_snapshot_ = false;
 };
 
+using ViewTransitionElementResourceRects =
+    std::unordered_map<ViewTransitionElementResourceId, gfx::RectF>;
+
 }  // namespace viz
+
+namespace std {
+template <>
+struct hash<viz::ViewTransitionElementResourceId> {
+  size_t operator()(
+      const viz::ViewTransitionElementResourceId& resource_id) const {
+    return resource_id.Hash();
+  }
+};
+}  // namespace std
 
 #endif  // COMPONENTS_VIZ_COMMON_VIEW_TRANSITION_ELEMENT_RESOURCE_ID_H_

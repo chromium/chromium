@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/test/arc_task_window_builder.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_base.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
+#include "chromeos/ash/experiences/arc/test/arc_task_window_builder.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/exo/surface.h"
 #include "content/public/test/browser_task_environment.h"

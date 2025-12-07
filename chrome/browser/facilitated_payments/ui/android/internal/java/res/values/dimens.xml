@@ -6,21 +6,32 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="facilitated_payments_bank_account_icon_padding_horizontal">11dp</dimen>
-    <dimen name="facilitated_payments_bank_account_icon_padding_vertical">3dp</dimen>
-    <dimen name="facilitated_payments_product_icon_height">32dp</dimen>
-    <dimen name="facilitated_payments_product_icon_margin_vertical">12dp</dimen>
+    <dimen name="facilitated_payments_drag_handlebar_margin_top">8dp</dimen>
+    <dimen name="facilitated_payments_drag_handlebar_margin_bottom">16dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_width">80dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_height">32dp</dimen>
+    <dimen name="facilitated_payments_fop_icon_height">24dp</dimen>
+    <dimen name="facilitated_payments_fop_icon_width">40dp</dimen>
+    <dimen name="facilitated_payments_fop_title_top_margin">2dp</dimen>
+    <dimen name="facilitated_payments_open_in_new_icon_size">20dp</dimen>
+    <dimen name="facilitated_payments_open_in_new_icon_padding">1dp</dimen>
+    <dimen name="facilitated_payments_open_in_new_icon_margin_start">16dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_header_height">24dp</dimen>
+    <dimen name="facilitated_payments_security_illustration_top_margin">16dp</dimen>
+    <dimen name="facilitated_payments_product_icon_height">28dp</dimen>
+    <dimen name="facilitated_payments_product_icon_margin_vertical">8dp</dimen>
     <dimen name="facilitated_payments_horizontal_margin">8dp</dimen>
     <dimen name="facilitated_payments_header_bottom_margin">24dp</dimen>
-    <dimen name="facilitated_payments_additional_info_margin_top">20dp</dimen>
-    <dimen name="facilitated_payments_footer_margin_top">24dp</dimen>
-    <dimen name="facilitated_payments_footer_margin_bottom">18dp</dimen>
-    <dimen name="facilitated_payments_footer_text_padding_horizontal">8dp</dimen>
+    <dimen name="facilitated_payments_additional_info_margin_vertical">20dp</dimen>
+    <dimen name="facilitated_payments_footer_button_height">40dp</dimen>
+    <dimen name="facilitated_payments_footer_button_margin_vertical">10dp</dimen>
     <dimen name="facilitated_payments_footer_drawable_padding">16dp</dimen>
-    <dimen name="facilitated_payments_progress_screen_height">356dp</dimen>
-    <dimen name="facilitated_payments_progress_bar_size">100dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_height">300dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_margin_top">12dp</dimen>
+    <dimen name="facilitated_payments_progress_bar_size">80dp</dimen>
     <dimen name="facilitated_payments_progress_bar_track_thickness">4dp</dimen>
-    <dimen name="facilitated_payments_progress_screen_lock_size">40dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_lock_size">32dp</dimen>
+    <dimen name="facilitated_payments_progress_message_margin_top">12dp</dimen>
     <dimen name="facilitated_payments_error_icon_size">32dp</dimen>
     <dimen name="facilitated_payments_error_icon_top_margin">18dp</dimen>
     <dimen name="facilitated_payments_error_icon_bottom_margin">8dp</dimen>
@@ -28,4 +39,18 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_error_screen_description_top_margin">8dp</dimen>
     <dimen name="facilitated_payments_error_screen_button_height">48dp</dimen>
     <dimen name="facilitated_payments_error_screen_button_vertical_margin">18dp</dimen>
+    <dimen name="facilitated_payments_continue_button_min_height">48dp</dimen>
+    <dimen name="facilitated_payments_continue_button_margin_bottom">24dp</dimen>
+    <dimen name="facilitated_payments_fop_selector_description_text_margin_top">4dp</dimen>
+    <dimen name="facilitated_payments_fop_selector_title_margin_top">16dp</dimen>
+    <dimen name="pix_account_linking_prompt_product_icon_height">32dp</dimen>
+    <dimen name="pix_account_linking_prompt_product_icon_vertical_padding">2dp</dimen>
+    <dimen name="pix_account_linking_prompt_title_top_margin">12dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_section_top_margin">16dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_vertical_padding">10dp</dimen>
+    <dimen name="pix_account_linking_prompt_inter_value_prop_vertical_margin">2dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_message_margin_horizontal">8dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_icon_padding">16dp</dimen>
+    <dimen name="pix_account_linking_prompt_accept_button_top_margin">20dp</dimen>
+    <dimen name="pix_account_linking_prompt_decline_button_top_margin">8dp</dimen>
 </resources>

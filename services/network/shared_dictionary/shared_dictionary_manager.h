@@ -41,9 +41,23 @@ enum class RequestDestination;
 
 class SharedDictionaryStorage;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SharedDictionaryStorageEvictionReason)
+enum class SharedDictionaryStorageEvictionReason {
+  kNotEvicted,
+  kMemoryPressureModerate,
+  kMemoryPressureCritical,
+  kCacheFull,
+  kMaxValue = kCacheFull
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SharedDictionaryStorageEvictionReason)
+
 // This class is attached to NetworkContext and manages the dictionaries for
 // CompressionDictionaryTransport feature.
-class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
+class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
+    : public base::MemoryPressureListener {
  public:
   // Returns a SharedDictionaryManager which keeps the whole dictionary
   // information in memory.
@@ -67,7 +81,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   SharedDictionaryManager(const SharedDictionaryManager&) = delete;
   SharedDictionaryManager& operator=(const SharedDictionaryManager&) = delete;
 
-  virtual ~SharedDictionaryManager();
+  ~SharedDictionaryManager() override;
 
   // Returns a SharedDictionaryStorage for the `isolation_key`.
   scoped_refptr<SharedDictionaryStorage> GetStorage(
@@ -97,6 +111,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       base::Time start_time,
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback) = 0;
+  virtual void HandleMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) = 0;
 
   net::SharedDictionaryGetter MaybeCreateSharedDictionaryGetter(
       int request_load_flags,
@@ -114,7 +130,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   // Called to create a SharedDictionaryStorage for the `isolation_key`. This is
   // called only when there is no matching storage in `storages_`.
   virtual scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryIsolationKey& isolation_key) = 0;
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      SharedDictionaryStorageEvictionReason previous_eviction_reason) = 0;
 
   scoped_refptr<net::SharedDictionary> GetDictionaryImpl(
       mojom::RequestDestination request_destination,
@@ -134,8 +151,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   size_t GetStorageCountForTesting();
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   void DeletePreloadedDictionaries(
       PreloadedDictionaries* preloaded_dictionaries);
@@ -143,14 +159,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   base::LRUCache<net::SharedDictionaryIsolationKey,
                  scoped_refptr<SharedDictionaryStorage>>
       cached_storages_;
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
+  base::MemoryPressureLevel memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>
       storages_;
   std::set<std::unique_ptr<PreloadedDictionaries>, base::UniquePtrComparator>
       preloaded_dictionaries_set_;
+
+  std::map<net::SharedDictionaryIsolationKey,
+           SharedDictionaryStorageEvictionReason>
+      previously_evicted_keys_;
 
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };

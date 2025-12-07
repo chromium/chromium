@@ -63,6 +63,15 @@ source_set("tests") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_recording_helper.cc",
+    "test_recording_helper.h",
+  ]
+  public_deps = [ ":metrics_cpp" ]
+}
+
 action("gen_ukm_builders") {
   script = "//tools/metrics/ukm/gen_builders.py"
 

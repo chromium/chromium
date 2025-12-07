@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 
 #include <va/va.h>
 
+#include <bitset>
+
+#include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/gpu/vaapi/test/scoped_va_config.h"
@@ -58,8 +57,7 @@ Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        const VaapiDevice& va_device,
                        SharedVASurface::FetchPolicy fetch_policy)
     : VideoDecoder::VideoDecoder(va_device, fetch_policy),
-      vp9_parser_(
-          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)),
+      vp9_parser_(std::make_unique<Vp9Parser>()),
       ref_frames_(kVp9NumRefFrames),
       ivf_parser_(std::move(ivf_parser)) {}
 
@@ -110,7 +108,7 @@ void Vp9Decoder::RefreshReferenceSlots(uint8_t refresh_frame_flags,
 VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   // Parse next frame from stream.
   gfx::Size size;
-  Vp9FrameHeader frame_hdr{};
+  Vp9FrameHeader frame_hdr;
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   if (parser_res == Vp9Parser::kEOStream)
     return VideoDecoder::kEOStream;
@@ -170,7 +168,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   CHECK_EQ(kVp9NumRefFrames, std::size(pic_param.reference_frames));
   CHECK_EQ(kVp9NumRefFrames, ref_frames_.size());
   for (size_t i = 0; i < std::size(pic_param.reference_frames); ++i) {
-    pic_param.reference_frames[i] =
+    UNSAFE_TODO(pic_param.reference_frames[i]) =
         ref_frames_[i] ? ref_frames_[i]->id() : VA_INVALID_SURFACE;
   }
 
@@ -229,12 +227,13 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
 
   // Set up buffer for slice decoding.
   VASliceParameterBufferVP9 slice_param{};
-  slice_param.slice_data_size = frame_hdr.frame_size;
+  slice_param.slice_data_size =
+      base::checked_cast<uint32_t>(frame_hdr.data.size());
   slice_param.slice_data_offset = 0;
   slice_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
 
   for (size_t i = 0; i < std::size(slice_param.seg_param); ++i) {
-    VASegmentParameterVP9& seg_param = slice_param.seg_param[i];
+    VASegmentParameterVP9& seg_param = UNSAFE_TODO(slice_param.seg_param[i]);
 #define SEG_TO_SP_SF(a, b) seg_param.segment_flags.fields.a = b
     SEG_TO_SP_SF(
         segment_reference_enabled,
@@ -245,12 +244,12 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
                  seg.FeatureEnabled(i, Vp9SegmentationParams::SEG_LVL_SKIP));
 #undef SEG_TO_SP_SF
 
-    SafeArrayMemcpy(seg_param.filter_level, lf.lvl[i]);
+    SafeArrayMemcpy(seg_param.filter_level, UNSAFE_TODO(lf.lvl[i]));
 
-    seg_param.luma_dc_quant_scale = seg.y_dequant[i][0];
-    seg_param.luma_ac_quant_scale = seg.y_dequant[i][1];
-    seg_param.chroma_dc_quant_scale = seg.uv_dequant[i][0];
-    seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
+    seg_param.luma_dc_quant_scale = UNSAFE_TODO(seg.y_dequant[i])[0];
+    seg_param.luma_ac_quant_scale = UNSAFE_TODO(seg.y_dequant[i])[1];
+    seg_param.chroma_dc_quant_scale = UNSAFE_TODO(seg.uv_dequant[i])[0];
+    seg_param.chroma_ac_quant_scale = UNSAFE_TODO(seg.uv_dequant[i])[1];
   }
 
   res = vaCreateBuffer(
@@ -260,9 +259,11 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   buffers.push_back(buffer_id);
 
   // Set up buffer for frame header.
-  res = vaCreateBuffer(va_device_->display(), va_context_->id(),
-                       VASliceDataBufferType, frame_hdr.frame_size, 1u,
-                       const_cast<uint8_t*>(frame_hdr.data), &buffer_id);
+  res = vaCreateBuffer(
+      va_device_->display(), va_context_->id(), VASliceDataBufferType,
+      base::checked_cast<int>(frame_hdr.data.size()), 1u,
+      reinterpret_cast<void*>(const_cast<uint8_t*>(frame_hdr.data.data())),
+      &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
 

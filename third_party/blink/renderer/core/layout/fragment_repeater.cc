@@ -26,7 +26,7 @@ void RemoveClonedResults(LayoutBox& layout_box) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UpdateBreakTokens(LayoutBox& layout_box) {
@@ -113,6 +113,29 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
 }
 
 }  // anonymous namespace
+
+void FragmentRepeater::DeepCloneRepeatableRoot(LayoutBox& repeatable_root) {
+  wtf_size_t fragment_count = repeatable_root.PhysicalFragmentCount();
+  DCHECK_GE(fragment_count, 1u);
+  for (wtf_size_t i = 1; i < fragment_count; i++) {
+    const PhysicalBoxFragment& fragment =
+        *repeatable_root.GetPhysicalFragment(i);
+    bool is_first = i == 1;
+    bool is_last = i + 1 == fragment_count;
+    FragmentRepeater repeater(is_first, is_last);
+    repeater.CloneChildFragments(fragment);
+  }
+
+  // The break tokens for the repeated root itself have already been set
+  // correctly during layout (i.e. there's an outgoing repeat-break-token for
+  // all fragments but the last). And the code above also takes care of child
+  // fragment cloning, and update of any break tokens on CSS box children and
+  // their descendants. But if the repeated root establishes a fragmentation
+  // context, the child fragmentainers need to update their break tokens as
+  // well. This is always carried out after having performed the cloning of all
+  // fragments, in order to get the sequence numbers right.
+  UpdateBreakTokens(repeatable_root);
+}
 
 void FragmentRepeater::CloneChildFragments(
     const PhysicalBoxFragment& cloned_fragment) {
@@ -213,8 +236,7 @@ const LayoutResult* FragmentRepeater::GetClonableLayoutResult(
     if (!break_token || break_token->IsRepeated())
       return result;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

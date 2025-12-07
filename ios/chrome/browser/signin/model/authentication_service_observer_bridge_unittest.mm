@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -17,17 +17,13 @@
 class AuthenticationServiceObserverBridgeTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   AuthenticationService* GetAuthenticationService() { return auth_service_; }
@@ -35,7 +31,7 @@ class AuthenticationServiceObserverBridgeTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
 };
 

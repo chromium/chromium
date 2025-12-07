@@ -12,40 +12,34 @@ import android.webkit.WebSettings;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-
-import java.util.Collections;
-import java.util.Set;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Stores Android WebView Service Worker specific settings.
  *
- * Methods in this class can be called from any thread, including threads created by
- * the client of WebView.
+ * <p>Methods in this class can be called from any thread, including threads created by the client
+ * of WebView.
  */
 @Lifetime.Profile
+@NullMarked
 public class AwServiceWorkerSettings {
     // Must be maximum 20 characters, hence the abbreviation
     private static final String TAG = "AwSWSettings";
     private static final boolean TRACE = false;
-
-    private final AwBrowserContext mBrowserContext;
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
     private boolean mAllowContentUrlAccess = true;
     private boolean mAllowFileUrlAccess = true;
     private boolean mBlockNetworkLoads; // Default depends on permission of the embedding APK
-    private boolean mAcceptThirdPartyCookies;
     private boolean mBlockSpecialFileUrls;
-
-    private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
     // Lock to protect all settings.
     private final Object mAwServiceWorkerSettingsLock = new Object();
 
     // Computed on construction.AwServiceWorkerSettingsTest
     private final boolean mHasInternetPermission;
+    private boolean mIncludeCookiesOnIntercept;
 
-    public AwServiceWorkerSettings(Context context, AwBrowserContext browserContext) {
-        mBrowserContext = browserContext;
+    public AwServiceWorkerSettings(Context context) {
         boolean hasInternetPermission =
                 context.checkPermission(
                                 android.Manifest.permission.INTERNET,
@@ -62,9 +56,6 @@ public class AwServiceWorkerSettings {
             // Explicitly block this to cause confusion in the case of accidentally
             // hitting assets in the application context.
             mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
-
-            mRequestedWithHeaderAllowedOriginRules =
-                    ManifestMetadataUtil.getXRequestedWithAllowList();
         }
     }
 
@@ -152,34 +143,18 @@ public class AwServiceWorkerSettings {
     }
 
     /**
-     * See {@link
-     * androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList}
+     * Set whether the shouldInterceptRequest API should include request cookies and accept response
+     * cookies.
      */
-    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
-        // Even though clients shouldn't pass in null, it's better to guard against it
-        allowedOriginRules =
-                allowedOriginRules != null ? allowedOriginRules : Collections.emptySet();
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
         synchronized (mAwServiceWorkerSettingsLock) {
-            AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeServiceWorkerAPIUsage(
-                    allowedOriginRules);
-            Set<String> rejectedRules =
-                    mBrowserContext.updateServiceWorkerXRequestedWithAllowListOriginMatcher(
-                            allowedOriginRules);
-            if (!rejectedRules.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Malformed origin match rules: " + rejectedRules);
-            }
-            mRequestedWithHeaderAllowedOriginRules = allowedOriginRules;
+            this.mIncludeCookiesOnIntercept = includeCookiesOnIntercept;
         }
     }
 
-    /**
-     * See {@link
-     * androidx.webkit.ServiceWorkerWebSettingsCompat#getRequestedWithHeaderOriginAllowList}
-     */
-    public Set<String> getRequestedWithHeaderOriginAllowList() {
+    public boolean getIncludeCookiesOnIntercept() {
         synchronized (mAwServiceWorkerSettingsLock) {
-            return mRequestedWithHeaderAllowedOriginRules;
+            return mIncludeCookiesOnIntercept;
         }
     }
 }

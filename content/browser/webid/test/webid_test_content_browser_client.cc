@@ -37,7 +37,7 @@ void WebIdTestContentBrowserClient::SetDigitalIdentityProvider(
 
 void WebIdTestContentBrowserClient::SetIdentityRegistry(
     WebContents* web_contents,
-    base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+    base::WeakPtr<IdentityRegistryDelegate> delegate,
     const GURL& config_url) {
   IdentityRegistry::CreateForWebContents(web_contents, delegate, config_url);
 }

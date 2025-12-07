@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -24,7 +24,8 @@ struct PhysicalDisplaySize {
 };
 
 // Gets the physical size for all displays.
-GFX_EXPORT std::vector<PhysicalDisplaySize> GetPhysicalSizeForDisplays();
+COMPONENT_EXPORT(GFX)
+std::vector<PhysicalDisplaySize> GetPhysicalSizeForDisplays();
 
 }  // namespace gfx
 

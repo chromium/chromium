@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file is here so other GLES2 related files can have a common set of
 // includes where appropriate.
 
@@ -20,6 +15,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "gpu/command_buffer/common/gles2_utils_export.h"
 
@@ -35,7 +31,8 @@ inline uint32_t ToGLuint(const void* ptr) {
 // Returns the address of the first byte after a struct.
 template <typename T>
 const volatile void* AddressAfterStruct(const volatile T& pod) {
-  return reinterpret_cast<const volatile uint8_t*>(&pod) + sizeof(pod);
+  return UNSAFE_TODO(reinterpret_cast<const volatile uint8_t*>(&pod) +
+                     sizeof(pod));
 }
 
 // Returns the address of the frst byte after the struct or nullptr if size >
@@ -255,9 +252,6 @@ class GLES2_UTILS_EXPORT GLES2Util {
                                         uint32_t* rt_unpadded_row_size,
                                         uint32_t* rt_padded_row_size,
                                         uint32_t* rt_padding);
-
-  static const EnumToString* const enum_to_string_table_;
-  static const size_t enum_to_string_table_len_;
 
   int num_compressed_texture_formats_;
   int num_shader_binary_formats_;

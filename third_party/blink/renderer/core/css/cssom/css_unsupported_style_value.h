@@ -47,10 +47,7 @@ class CORE_EXPORT CSSUnsupportedStyleValue : public CSSStyleValue {
     return name_ && *name_ == name;
   }
 
-  const CSSValue* ToCSSValue() const override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  const CSSValue* ToCSSValue() const override { NOTREACHED(); }
 
   String toString() const final { return CSSText(); }
 

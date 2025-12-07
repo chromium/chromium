@@ -5,15 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
+#import <memory>
+
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
-#import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/password_manager/ios/password_generation_provider.h"
-#import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/core/browser/plus_address_types.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
-#include "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/origin.h"
@@ -31,6 +35,8 @@ class ScriptMessage;
 
 @protocol AutofillCommands;
 @class CommandDispatcher;
+@protocol FormInputSuggestionsProvider;
+@class FormSuggestion;
 
 // This class manages state and events relating to the showing of various bottom
 // sheets for Autofill/Password Manager.
@@ -47,9 +53,9 @@ class AutofillBottomSheetTabHelper
       public web::WebStateUserData<AutofillBottomSheetTabHelper>,
       public autofill::AutofillManager::Observer {
  public:
-  // Maximum number of times the password bottom sheet can be
+  // Maximum number of times the credential bottom sheet can be
   // dismissed before it gets disabled.
-  static constexpr int kPasswordBottomSheetMaxDismissCount = 3;
+  static constexpr int kCredentialBottomSheetMaxDismissCount = 3;
 
   // Maximum number of times the password generation bottom sheet can be
   // dismissed before it gets disabled.
@@ -78,6 +84,10 @@ class AutofillBottomSheetTabHelper
   // if/when the UI completes successfully.
   void ShowPlusAddressesBottomSheet(
       plus_addresses::PlusAddressCallback callback);
+
+  // Send a command to show save card bottomsheet.
+  void ShowSaveCardBottomSheet(
+      std::unique_ptr<autofill::SaveCardBottomSheetModel> model);
 
   // Send a command to show the VCN enrollment Bottom Sheet.
   void ShowVirtualCardEnrollmentBottomSheet(
@@ -111,13 +121,17 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       const std::string& frame_id);
 
-  // Detach the password listeners, which will deactivate the password bottom
+  // Detach the password listeners, which will deactivate the credential bottom
   // sheet on the provided frame.
   void DetachPasswordListeners(const std::string& frame_id, bool refocus);
 
-  // Detach the password listeners, which will deactivate the password bottom
-  // sheet on all frames.
-  void DetachPasswordListenersForAllFrames();
+  // Detaches the password listeners, which will deactivate the credential
+  // bottom sheet on all frames. Refocuses on the last field that triggered a
+  // bottom sheet if `refocus` is true, which can be a login field or any other
+  // field associated with a bottom sheet. The last element is reset after
+  // focusing, meaning that refocusing multiple times will be no op until a new
+  // sheet is presented.
+  void DetachPasswordListenersForAllFrames(bool refocus);
 
   // Detach the password generation listeners, which will deactivate the
   // proactive password generation bottom sheet on all frames.
@@ -130,6 +144,10 @@ class AutofillBottomSheetTabHelper
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on all frames.
   void DetachPaymentsListenersForAllFrames(bool refocus);
+
+  // Refocuses on the last field that triggered a bottom sheet, which can be a
+  // login field or any other field associated with a bottom sheet.
+  void RefocusElementIfNeeded(const std::string& frame_id);
 
   // WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
@@ -160,18 +178,31 @@ class AutofillBottomSheetTabHelper
   // Used to get the callback to be run on completion of the plus_address UI.
   plus_addresses::PlusAddressCallback GetPendingPlusAddressFillCallback();
 
+  // Returns the model for save card bottomsheet. The caller takes ownership and
+  // subsequent calls will return nullptr until another instance of the
+  // bottomsheet is shown again by calling ShowSaveCardBottomSheet().
+  std::unique_ptr<autofill::SaveCardBottomSheetModel>
+  GetSaveCardBottomSheetModel();
+
   // Used to get the callbacks to be run on completion of the VCN enrollment UI.
   // This value is moved and should only be retrieved once per bottom sheet.
   autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
+
+  // Attaches the listeners for the payments form corresponding to `form_id`.
+  // Only attaches the listeners on newly discovered renderer ids if `only_new`
+  // is true.
+  void AttachListenersForPaymentsForm(autofill::AutofillManager& manager,
+                                      autofill::FormGlobalId form_id,
+                                      bool only_new);
 
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
   explicit AutofillBottomSheetTabHelper(web::WebState* web_state);
 
-  // Check whether the password bottom sheet has been dismissed too many times
+  // Check whether the credential bottom sheet has been dismissed too many times
   // by the user.
-  bool HasReachedPasswordSuggestionDismissLimit();
+  bool HasReachedCredentialBottomSheetDismissLimit();
 
   // Check whether the password generation bottom sheet has been dismissed
   // too many times by the user.
@@ -182,7 +213,8 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
       const std::string& frame_id,
-      bool allow_autofocus);
+      bool allow_autofocus,
+      bool only_new);
 
   // Detach listeners, which will deactivate the associated bottom sheet.
   void DetachListenersForFrame(
@@ -190,11 +222,23 @@ class AutofillBottomSheetTabHelper
       const std::set<autofill::FieldRendererId>& renderer_ids,
       bool refocus);
 
-  // Send command to show the Password Bottom Sheet.
-  void ShowPasswordBottomSheet(const autofill::FormActivityParams params);
+  // Send command to show the Credential Bottom Sheet.
+  void ShowCredentialBottomSheet(const autofill::FormActivityParams& params);
 
-  // Send command to show the Payments Bottom Sheet.
-  void ShowPaymentsBottomSheet(const autofill::FormActivityParams params);
+  // Send command to show the Payments Bottom Sheet. Detach all listeners if
+  // `detach`.
+  void ShowPaymentsBottomSheet(const autofill::FormActivityParams& params,
+                               bool detach);
+
+  // Maybe shows the Payments Bottom Sheet if the conditions are met.
+  void MaybeShowPaymentsBottomSheet(autofill::FormActivityParams params);
+
+  // Called when the suggestions are retrieved for the payments bottom sheet.
+  void OnSuggestionsRetrievedForPaymentsBottomSheet(
+      const autofill::FormActivityParams& params,
+      base::TimeTicks start_timestamp,
+      NSArray<FormSuggestion*>* suggestions,
+      id<FormInputSuggestionsProvider> provider);
 
   // Shows the password generation suggestion view controller.
   void ShowProactivePasswordGenerationBottomSheet(
@@ -203,11 +247,11 @@ class AutofillBottomSheetTabHelper
   // Password generation provider used to trigger proactive password generation
   id<PasswordGenerationProvider> generation_provider_;
 
-  // Handler used to request showing the password bottom sheet.
+  // Handler used to request showing the credential bottom sheet.
   __weak id<AutofillCommands> commands_handler_;
 
   // The WebState with which this object is associated.
-  const raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState> web_state_;
 
   // TODO(crbug.com/40266699): Remove once this class uses FormGlobalIds.
   base::ScopedObservation<web::WebFramesManager,
@@ -218,7 +262,7 @@ class AutofillBottomSheetTabHelper
                                      autofill::AutofillManager::Observer>
       autofill_manager_observations_{this};
 
-  // List of password bottom sheet related renderer ids, mapped to a frame id.
+  // List of credential bottom sheet related renderer ids, mapped to a frame id.
   // TODO(crbug.com/40266699): Maybe migrate to FieldGlobalIds.
   std::map<std::string, std::set<autofill::FieldRendererId>>
       registered_password_renderer_ids_;
@@ -247,11 +291,16 @@ class AutofillBottomSheetTabHelper
   // flow.
   plus_addresses::PlusAddressCallback pending_plus_address_callback_;
 
+  // Model providing resources and callbacks for save card bottomsheet. This
+  // will be reset once GetSaveCardBottomSheetModel() is called.
+  std::unique_ptr<autofill::SaveCardBottomSheetModel>
+      save_card_bottom_sheet_model_;
+
   // Callbacks to be run when the virtual card enrollment bottom sheet UI has
   // completed.
   autofill::VirtualCardEnrollmentCallbacks virtual_card_enrollment_callbacks_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<AutofillBottomSheetTabHelper> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_

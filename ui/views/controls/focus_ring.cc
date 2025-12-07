@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -27,6 +28,7 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -51,10 +53,12 @@ bool IsPathUsable(const SkPath& path) {
 
 SkColor GetPaintColor(FocusRing* focus_ring, bool valid) {
   const auto* cp = focus_ring->GetColorProvider();
-  if (!valid)
+  if (!valid) {
     return cp->GetColor(ui::kColorAlertHighSeverity);
-  if (auto color_id = focus_ring->GetColorId(); color_id.has_value())
+  }
+  if (auto color_id = focus_ring->GetColorId(); color_id.has_value()) {
     return cp->GetColor(color_id.value());
+  }
   return GetCascadingAccentColor(focus_ring);
 }
 
@@ -71,8 +75,9 @@ SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
     SkPath highlight_path = path_generator->GetHighlightPath(view);
     // The generated path might be empty or otherwise unusable. If that's the
     // case we should fall back on the default path.
-    if (IsPathUsable(highlight_path))
+    if (IsPathUsable(highlight_path)) {
       return highlight_path;
+    }
   }
 
   gfx::Rect client_rect = view->GetLocalBounds();
@@ -84,8 +89,7 @@ SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
   if (client_rect.IsEmpty()) {
     client_rect.Outset(kMinFocusRingInset);
   }
-  return SkPath().addRRect(SkRRect::MakeRectXY(RectToSkRect(client_rect),
-                                               corner_radius, corner_radius));
+  return SkPath::RRect(RectToSkRect(client_rect), corner_radius, corner_radius);
 }
 
 }  // namespace
@@ -99,7 +103,6 @@ void FocusRing::Install(View* host) {
   auto ring = base::WrapUnique<FocusRing>(new FocusRing());
   ring->InvalidateLayout();
   ring->SchedulePaint();
-  ring->SetProperty(kIsDecorativeViewKey, true);
   ring->SetProperty(kViewIgnoredByLayoutKey, true);
   host->SetProperty(kFocusRingIdKey, host->AddChildView(std::move(ring)));
 }
@@ -116,8 +119,9 @@ void FocusRing::Remove(View* host) {
   // Note that the FocusRing is owned by the View hierarchy, so we can't just
   // clear the key.
   FocusRing* const focus_ring = FocusRing::Get(host);
-  if (!focus_ring)
+  if (!focus_ring) {
     return;
+  }
   host->RemoveChildViewT(focus_ring);
   host->ClearProperty(kFocusRingIdKey);
 }
@@ -146,10 +150,11 @@ std::optional<ui::ColorId> FocusRing::GetColorId() const {
 }
 
 void FocusRing::SetColorId(std::optional<ui::ColorId> color_id) {
-  if (color_id_ == color_id)
+  if (color_id_ == color_id) {
     return;
+  }
   color_id_ = color_id;
-  OnPropertyChanged(&color_id_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&color_id_, PropertyEffects::kPaint);
 }
 
 float FocusRing::GetHaloThickness() const {
@@ -161,17 +166,19 @@ float FocusRing::GetHaloInset() const {
 }
 
 void FocusRing::SetHaloThickness(float halo_thickness) {
-  if (halo_thickness_ == halo_thickness)
+  if (halo_thickness_ == halo_thickness) {
     return;
+  }
   halo_thickness_ = halo_thickness;
-  OnPropertyChanged(&halo_thickness_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&halo_thickness_, PropertyEffects::kPaint);
 }
 
 void FocusRing::SetHaloInset(float halo_inset) {
-  if (halo_inset_ == halo_inset)
+  if (halo_inset_ == halo_inset) {
     return;
+  }
   halo_inset_ = halo_inset;
-  OnPropertyChanged(&halo_inset_, PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&halo_inset_, PropertyEffects::kPaint);
 }
 
 void FocusRing::SetOutsetFocusRingDisabled(bool disable) {
@@ -231,8 +238,9 @@ void FocusRing::Layout(PassKey) {
 
 void FocusRing::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
-  if (details.child != this)
+  if (details.child != this) {
     return;
+  }
 
   if (details.is_add) {
     // Need to start observing the parent.
@@ -298,8 +306,9 @@ SkRRect FocusRing::GetRingRoundRect() const {
 
 void FocusRing::OnThemeChanged() {
   View::OnThemeChanged();
-  if (invalid_ || color_id_.has_value())
+  if (invalid_ || color_id_.has_value()) {
     SchedulePaint();
+  }
 }
 
 void FocusRing::OnViewFocused(View* view) {
@@ -340,8 +349,9 @@ SkPath FocusRing::GetPath() const {
   SkPath path;
   if (path_generator_) {
     path = path_generator_->GetHighlightPath(parent());
-    if (IsPathUsable(path))
+    if (IsPathUsable(path)) {
       return path;
+    }
   }
 
   // If there's no path generator or the generated path is unusable, fall back
@@ -414,7 +424,7 @@ SkPath GetHighlightPath(const View* view, float halo_thickness) {
     gfx::Point center = view->GetLocalBounds().CenterPoint();
     SkMatrix flip;
     flip.setScale(-1, 1, center.x(), center.y());
-    path.transform(flip);
+    path = path.makeTransform(flip);
   }
   return path;
 }

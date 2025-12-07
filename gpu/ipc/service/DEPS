@@ -4,7 +4,6 @@ include_rules = [
   "+components/viz/common/features.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/overlay_state/win/overlay_state_service.h",
-  "+components/viz/common/resources/resource_sizes.h",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
   "+mojo/public",
@@ -21,6 +20,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "arc_shared_image_interface\.cc": [
+    "+chromeos/ash/experiences/arc/arc_features.h",
+  ],
   "image_decode_accelerator_stub_unittest\.cc": [
     "+skia/ext/skia_memory_dump_provider.h",
   ],

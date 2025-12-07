@@ -42,3 +42,5 @@ void PasswordManagerLifecycleHelperImpl::OnForegroundSessionStart(JNIEnv* env) {
   DCHECK(foregrounding_callback_);
   foregrounding_callback_.Run();
 }
+
+DEFINE_JNI(PasswordManagerLifecycleHelper)

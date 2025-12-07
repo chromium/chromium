@@ -207,6 +207,8 @@ export class CrTreeElement extends CrTreeBaseElement {
       case 'End':
         itemToSelect = this.items[this.items.length - 1] || null;
         break;
+      default:
+        break;
     }
 
     if (itemToSelect) {

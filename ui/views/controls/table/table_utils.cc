@@ -18,8 +18,6 @@
 
 namespace views {
 
-const int kUnspecifiedColumnWidth = 90;
-
 int WidthForContent(const gfx::FontList& header_font_list,
                     const gfx::FontList& content_font_list,
                     int padding,
@@ -27,9 +25,10 @@ int WidthForContent(const gfx::FontList& header_font_list,
                     const ui::TableColumn& column,
                     ui::TableModel* model) {
   int width = header_padding;
-  if (!column.title.empty())
+  if (!column.title.empty()) {
     width =
         gfx::GetStringWidth(column.title, header_font_list) + header_padding;
+  }
 
   for (size_t i = 0, row_count = model->RowCount(); i < row_count; ++i) {
     const int cell_width =
@@ -64,8 +63,9 @@ std::vector<int> CalculateTableColumnSizes(
         content_widths[i] =
             WidthForContent(header_font_list, content_font_list, padding,
                             header_padding, column, model);
-        if (i == 0)
+        if (i == 0) {
           content_widths[i] += first_column_padding;
+        }
       }
       non_percent_width += content_widths[i];
     } else {
@@ -107,25 +107,28 @@ int TableColumnAlignmentToCanvasAlignment(
     case ui::TableColumn::RIGHT:
       return gfx::Canvas::TEXT_ALIGN_RIGHT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<size_t> GetClosestVisibleColumnIndex(const TableView& table,
                                                    int x) {
   const std::vector<TableView::VisibleColumn>& columns(table.visible_columns());
-  if (columns.empty())
+  if (columns.empty()) {
     return std::nullopt;
+  }
   for (size_t i = 0; i < columns.size(); ++i) {
-    if (x <= columns[i].x + columns[i].width)
+    if (x <= columns[i].x + columns[i].width) {
       return i;
+    }
   }
   return columns.size() - 1;
 }
 
 ui::TableColumn::Alignment GetMirroredTableColumnAlignment(
     ui::TableColumn::Alignment alignment) {
-  if (!base::i18n::IsRTL())
+  if (!base::i18n::IsRTL()) {
     return alignment;
+  }
 
   switch (alignment) {
     case ui::TableColumn::LEFT:

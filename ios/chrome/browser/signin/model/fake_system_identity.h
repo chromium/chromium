@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_SYSTEM_IDENTITY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_SYSTEM_IDENTITY_H_
 
-#include "ios/chrome/browser/signin/model/system_identity.h"
-
 #include <string>
+
+#include "ios/chrome/browser/signin/model/system_identity.h"
 
 // A fake SystemIdentity used for testing.
 @interface FakeSystemIdentity : NSObject <SystemIdentity, NSSecureCoding>
@@ -44,14 +44,15 @@
 // Returns a SystemIdentity based on `email` with `name@example.com`.
 // For simplicity, both `userGivenName` and `userFullName` properties use
 // `name` from the email address.
-+ (instancetype)identityWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID;
++ (instancetype)identityWithEmail:(NSString*)email gaiaID:(const GaiaId&)gaiaID;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Redeclared as readwrite.
-@property(strong, nonatomic, readwrite) NSString* userEmail;
-@property(strong, nonatomic, readwrite) NSString* userFullName;
-@property(strong, nonatomic, readwrite) NSString* userGivenName;
+@property(nonatomic, readwrite) NSString* userEmail;
+@property(nonatomic, readwrite) NSString* userFullName;
+@property(nonatomic, readwrite) NSString* userGivenName;
+@property(nonatomic, readwrite) BOOL hasValidAuth;
 
 @end
 

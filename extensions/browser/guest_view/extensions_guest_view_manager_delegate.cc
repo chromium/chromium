@@ -15,10 +15,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
@@ -39,6 +41,27 @@ using guest_view::GuestViewBase;
 using guest_view::GuestViewManager;
 
 namespace extensions {
+
+// Returns a HostID instance based on the given GuestViewBase.
+mojom::HostID GenerateHostIdFromGuestView(
+    const guest_view::GuestViewBase& guest) {
+  // Note: We return a type of kExtensions for all cases where
+  // |guest.IsOwnedByExtension()| are true, as well as some additional cases
+  // where that call is false but also |guest.IsOwnedByWebUI()| and
+  // |guest.IsOwnedByControlledFrameEmbedder()| are false. Those appear to be
+  // when the provided extension identifier is blank. Future work in this area
+  // could improve the checks here so all the cases are declared relative to
+  // what the GuestView instance asserts itself to be.
+  mojom::HostID::HostType host_type = mojom::HostID::HostType::kExtensions;
+
+  if (guest.IsOwnedByWebUI()) {
+    host_type = mojom::HostID::HostType::kWebUi;
+  } else if (guest.IsOwnedByControlledFrameEmbedder()) {
+    host_type = mojom::HostID::HostType::kControlledFrameEmbedder;
+  }
+
+  return mojom::HostID(host_type, guest.owner_host());
+}
 
 // static
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
@@ -62,7 +85,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
   Feature::Availability availability = feature->IsAvailableToContext(
       owner_extension,
       process_map->GetMostLikelyContextType(
-          owner_extension, guest->owner_rfh()->GetProcess()->GetID(),
+          owner_extension, guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
           &owner_site_url),
       owner_site_url, util::GetBrowserContextId(context),
       BrowserFrameContextData(guest->owner_rfh()));
@@ -78,6 +101,7 @@ ExtensionsGuestViewManagerDelegate::~ExtensionsGuestViewManagerDelegate() =
 
 void ExtensionsGuestViewManagerDelegate::OnGuestAdded(
     content::WebContents* guest_web_contents) const {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   // Set the view type so extensions sees the guest view as a foreground page.
   SetViewType(guest_web_contents, mojom::ViewType::kExtensionGuest);
 }
@@ -111,7 +135,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
 
   EventRouter::Get(guest->browser_context())
       ->DispatchEventToSender(owner->GetProcess(), guest->browser_context(),
-                              util::GenerateHostIdFromGuestView(*guest),
+                              GenerateHostIdFromGuestView(*guest),
                               histogram_value, event_name,
                               extensions::kMainThreadId,
                               blink::mojom::kInvalidServiceWorkerVersionId,

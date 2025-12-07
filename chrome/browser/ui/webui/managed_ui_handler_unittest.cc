@@ -8,7 +8,6 @@
 
 #include "base/token.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,10 +20,6 @@
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/policy/core/browser/browser_policy_connector_base.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestManagedUIHandler : public ManagedUIHandler {
  public:
@@ -86,19 +81,18 @@ class ManagedUIHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUIDataSource> source_;
 };
 
-// TODO(crbug.com/355288951): fix these tests.
-TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIDisabledByDefault) {
+TEST_F(ManagedUIHandlerTest, ManagedUIDisabledByDefault) {
   InitializeHandler();
   EXPECT_FALSE(IsSourceManaged());
 }
 
-TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIEnabledWhenManaged) {
+TEST_F(ManagedUIHandlerTest, ManagedUIEnabledWhenManaged) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
   InitializeHandler();
   EXPECT_TRUE(IsSourceManaged());
 }
 
-TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIBecomesEnabledByProfile) {
+TEST_F(ManagedUIHandlerTest, ManagedUIBecomesEnabledByProfile) {
   InitializeHandler();
   EXPECT_FALSE(IsSourceManaged());
 
@@ -114,7 +108,7 @@ TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIBecomesEnabledByProfile) {
   EXPECT_TRUE(IsSourceManaged());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagedUIHandlerTest, ManagedUIDisabledForChildAccount) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
   profile()->SetIsSupervisedProfile();

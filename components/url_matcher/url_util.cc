@@ -52,9 +52,6 @@ const char kGoogleWebCacheQueryPattern[] =
 const char kGoogleTranslateSubdomain[] = "translate.";
 const char kAlternateGoogleTranslateHost[] = "translate.googleusercontent.com";
 
-// Maximum filters allowed. Filters over this index are ignored.
-const size_t kMaxFiltersAllowed = 1000;
-
 // Returns a full URL using either "http" or "https" as the scheme.
 GURL BuildURL(bool is_https, const std::string& host_and_path) {
   std::string scheme = is_https ? url::kHttpsScheme : url::kHttpScheme;
@@ -66,7 +63,7 @@ void ProcessQueryToConditions(
     const std::string& query,
     bool allow,
     std::set<URLQueryElementMatcherCondition>* query_conditions) {
-  url::Component query_left = url::MakeRange(0, query.length());
+  url::Component query_left{std::string_view(query)};
   url::Component key;
   url::Component value;
   // Depending on the filter type being block-list or allow-list, the matcher
@@ -122,33 +119,25 @@ class EmbeddedURLExtractor {
     if (url.DomainIs(kGoogleAmpCacheHost)) {
       std::string s;
       std::string embedded;
-      if (re2::RE2::FullMatch(url.path(), google_amp_cache_path_regex_, &s,
+      if (re2::RE2::FullMatch(url.GetPath(), google_amp_cache_path_regex_, &s,
                               &embedded)) {
         if (url.has_query())
-          embedded += "?" + url.query();
+          embedded += "?" + url.GetQuery();
         return BuildURL(!s.empty(), embedded);
       }
     }
 
     // Check for "www.google.TLD/amp/" URLs.
-    if (google_util::IsGoogleDomainUrl(
-            url, google_util::DISALLOW_SUBDOMAIN,
-            google_util::DISALLOW_NON_STANDARD_PORTS)) {
-      std::string s;
-      std::string embedded;
-      if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
-                              &embedded)) {
-        // The embedded URL may be percent-encoded. Undo that.
-        embedded = base::UnescapeBinaryURLComponent(embedded);
-        return BuildURL(!s.empty(), embedded);
-      }
+    if (GURL google_amp_embedded_url = GetGoogleAmpViewerEmbeddedURL(url);
+        !google_amp_embedded_url.is_empty()) {
+      return google_amp_embedded_url;
     }
 
     // Check for Google web cache URLs
     // ("webcache.googleusercontent.com/search?q=cache:...").
     std::string query;
-    if (url.host_piece() == kGoogleWebCacheHost &&
-        base::StartsWith(url.path_piece(), kGoogleWebCachePathPrefix) &&
+    if (url.host() == kGoogleWebCacheHost &&
+        base::StartsWith(url.path(), kGoogleWebCachePathPrefix) &&
         net::GetValueForKeyInQuery(url, "q", &query)) {
       std::string fingerprint;
       std::string scheme;
@@ -162,11 +151,10 @@ class EmbeddedURLExtractor {
     // Check for Google translate URLs ("translate.google.TLD/...?...&u=URL" or
     // "translate.googleusercontent.com/...?...&u=URL").
     bool is_translate = false;
-    if (base::StartsWith(url.host_piece(), kGoogleTranslateSubdomain)) {
+    if (base::StartsWith(url.host(), kGoogleTranslateSubdomain)) {
       // Remove the "translate." prefix.
       GURL::Replacements replace;
-      replace.SetHostStr(
-          url.host_piece().substr(strlen(kGoogleTranslateSubdomain)));
+      replace.SetHostStr(url.host().substr(strlen(kGoogleTranslateSubdomain)));
       GURL trimmed = url.ReplaceComponents(replace);
       // Check that the remainder is a Google URL. Note: IsGoogleDomainUrl
       // checks for [www.]google.TLD, but we don't want the "www.", so
@@ -176,16 +164,33 @@ class EmbeddedURLExtractor {
       is_translate = google_util::IsGoogleDomainUrl(
                          trimmed, google_util::DISALLOW_SUBDOMAIN,
                          google_util::DISALLOW_NON_STANDARD_PORTS) &&
-                     !base::StartsWith(trimmed.host_piece(), "www.");
+                     !base::StartsWith(trimmed.host(), "www.");
     }
-    bool is_alternate_translate =
-        url.host_piece() == kAlternateGoogleTranslateHost;
+    bool is_alternate_translate = url.host() == kAlternateGoogleTranslateHost;
     if (is_translate || is_alternate_translate) {
       std::string embedded;
       if (net::GetValueForKeyInQuery(url, "u", &embedded)) {
         // The embedded URL may or may not include a scheme. Fix it if
         // necessary.
         return url_formatter::FixupURL(embedded, /*desired_tld=*/std::string());
+      }
+    }
+
+    return GURL();
+  }
+
+  GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url) const {
+    // Check for "www.google.TLD/amp/" URLs.
+    if (google_util::IsGoogleDomainUrl(
+            url, google_util::DISALLOW_SUBDOMAIN,
+            google_util::DISALLOW_NON_STANDARD_PORTS)) {
+      std::string s;
+      std::string embedded;
+      if (re2::RE2::FullMatch(url.GetPath(), google_amp_viewer_path_regex_, &s,
+                              &embedded)) {
+        // The embedded URL may be percent-encoded. Undo that.
+        embedded = base::UnescapeBinaryURLComponent(embedded);
+        return BuildURL(!s.empty(), embedded);
       }
     }
 
@@ -244,8 +249,9 @@ GURL GetEmbeddedURL(const GURL& url) {
   return EmbeddedURLExtractor::GetInstance()->GetEmbeddedURL(url);
 }
 
-size_t GetMaxFiltersAllowed() {
-  return kMaxFiltersAllowed;
+GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url) {
+  return EmbeddedURLExtractor::GetInstance()->GetGoogleAmpViewerEmbeddedURL(
+      url);
 }
 
 FilterComponents::FilterComponents() = default;
@@ -380,8 +386,7 @@ bool FilterToComponents(const std::string& filter,
   } else {
     url::RawCanonOutputT<char> output;
     url::CanonHostInfo host_info;
-    url::CanonicalizeHostVerbose(filter.c_str(), parsed.host, &output,
-                                 &host_info);
+    url::CanonicalizeHostVerbose(filter, parsed.host, &output, &host_info);
     if (host_info.family == url::CanonHostInfo::NEUTRAL) {
       // We want to match subdomains. Add a dot in front to make sure we only
       // match at domain component boundaries.
@@ -419,18 +424,19 @@ bool FilterToComponents(const std::string& filter,
   return true;
 }
 
-void AddFilters(URLMatcher* matcher,
-                bool allow,
-                base::MatcherStringPattern::ID* id,
-                const base::Value::List& patterns,
-                std::map<base::MatcherStringPattern::ID,
-                         url_matcher::util::FilterComponents>* filters) {
+void AddFiltersWithLimit(
+    URLMatcher* matcher,
+    bool allow,
+    base::MatcherStringPattern::ID* id,
+    const base::Value::List& patterns,
+    std::map<base::MatcherStringPattern::ID, FilterComponents>* filters,
+    size_t max_filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  size_t size = std::min(kMaxFiltersAllowed, patterns.size());
+  size_t limit = std::min(max_filters, patterns.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < limit; ++i) {
     DCHECK(patterns[i].is_string());
-    const std::string pattern = patterns[i].GetString();
+    const std::string& pattern = patterns[i].GetString();
     FilterComponents components;
     components.allow = allow;
     if (!FilterToComponents(pattern, &components.scheme, &components.host,
@@ -453,16 +459,17 @@ void AddFilters(URLMatcher* matcher,
   matcher->AddConditionSets(all_conditions);
 }
 
-void AddFilters(URLMatcher* matcher,
-                bool allow,
-                base::MatcherStringPattern::ID* id,
-                const std::vector<std::string>& patterns,
-                std::map<base::MatcherStringPattern::ID,
-                         url_matcher::util::FilterComponents>* filters) {
+void AddFiltersWithLimit(
+    URLMatcher* matcher,
+    bool allow,
+    base::MatcherStringPattern::ID* id,
+    const std::vector<std::string>& patterns,
+    std::map<base::MatcherStringPattern::ID, FilterComponents>* filters,
+    size_t max_filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  size_t size = std::min(kMaxFiltersAllowed, patterns.size());
+  size_t limit = std::min(max_filters, patterns.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < limit; ++i) {
     FilterComponents components;
     components.allow = allow;
     if (!FilterToComponents(patterns[i], &components.scheme, &components.host,
@@ -485,16 +492,20 @@ void AddFilters(URLMatcher* matcher,
   matcher->AddConditionSets(all_conditions);
 }
 
-void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                     const base::Value::List& patterns) {
+void AddAllowFiltersWithLimit(url_matcher::URLMatcher* matcher,
+                              const base::Value::List& patterns,
+                              size_t max_filters) {
   base::MatcherStringPattern::ID id(0);
-  AddFilters(matcher, true, &id, patterns);
+  AddFiltersWithLimit(matcher, true, &id, patterns, /*filters= */ nullptr,
+                      max_filters);
 }
 
-void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                     const std::vector<std::string>& patterns) {
+void AddAllowFiltersWithLimit(url_matcher::URLMatcher* matcher,
+                              const std::vector<std::string>& patterns,
+                              size_t max_filters) {
   base::MatcherStringPattern::ID id(0);
-  AddFilters(matcher, true, &id, patterns);
+  AddFiltersWithLimit(matcher, true, &id, patterns, /*filters= */ nullptr,
+                      max_filters);
 }
 
 }  // namespace util

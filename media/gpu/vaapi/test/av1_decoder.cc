@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/av1_decoder.h"
 
 #include <va/va.h>
 #include <va/va_dec_av1.h>
 
+#include <bitset>
+
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -22,6 +20,7 @@
 #include "media/gpu/vaapi/test/scoped_va_context.h"
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -53,15 +52,17 @@ void FillSegmentInfo(VASegmentationStructAV1& va_seg_info,
                 "Invalid feature array size");
   for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
     for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j)
-      va_seg_info.feature_data[i][j] = segmentation.feature_data[i][j];
+      UNSAFE_TODO(va_seg_info.feature_data[i][j]) =
+          UNSAFE_TODO(segmentation.feature_data[i][j]);
   }
   for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
     uint8_t feature_mask = 0;
     for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j) {
-      if (segmentation.feature_enabled[i][j])
+      if (UNSAFE_TODO(segmentation.feature_enabled[i][j])) {
         feature_mask |= 1 << j;
+      }
     }
-    va_seg_info.feature_mask[i] = feature_mask;
+    UNSAFE_TODO(va_seg_info.feature_mask[i]) = feature_mask;
   }
 }
 
@@ -121,19 +122,21 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
   COPY_FILM_GRAIN_FIELD3(grain_seed);
   COPY_FILM_GRAIN_FIELD3(num_y_points);
   for (uint8_t i = 0; i < film_grain_params.num_y_points; ++i) {
-    COPY_FILM_GRAIN_FIELD3(point_y_value[i]);
-    COPY_FILM_GRAIN_FIELD3(point_y_scaling[i]);
+    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD3(point_y_value[i]));
+    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD3(point_y_scaling[i]));
   }
 #undef COPY_FILM_GRAIN_FIELD3
   COPY_FILM_GRAIN_FIELD2(num_cb_points, num_u_points);
   for (uint8_t i = 0; i < film_grain_params.num_u_points; ++i) {
-    COPY_FILM_GRAIN_FIELD2(point_cb_value[i], point_u_value[i]);
-    COPY_FILM_GRAIN_FIELD2(point_cb_scaling[i], point_u_scaling[i]);
+    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(point_cb_value[i], point_u_value[i]));
+    UNSAFE_TODO(
+        COPY_FILM_GRAIN_FIELD2(point_cb_scaling[i], point_u_scaling[i]));
   }
   COPY_FILM_GRAIN_FIELD2(num_cr_points, num_v_points);
   for (uint8_t i = 0; i < film_grain_params.num_v_points; ++i) {
-    COPY_FILM_GRAIN_FIELD2(point_cr_value[i], point_v_value[i]);
-    COPY_FILM_GRAIN_FIELD2(point_cr_scaling[i], point_v_scaling[i]);
+    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(point_cr_value[i], point_v_value[i]));
+    UNSAFE_TODO(
+        COPY_FILM_GRAIN_FIELD2(point_cr_scaling[i], point_v_scaling[i]));
   }
 
   constexpr size_t kAutoRegressionCoeffYSize = 24;
@@ -157,7 +160,8 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
   if (film_grain_params.num_y_points > 0) {
     DCHECK_LE(num_pos_y, kAutoRegressionCoeffYSize);
     for (size_t i = 0; i < num_pos_y; ++i)
-      COPY_FILM_GRAIN_FIELD2(ar_coeffs_y[i], auto_regression_coeff_y[i]);
+      UNSAFE_TODO(
+          COPY_FILM_GRAIN_FIELD2(ar_coeffs_y[i], auto_regression_coeff_y[i]));
   }
   if (film_grain_params.chroma_scaling_from_luma ||
       film_grain_params.num_u_points > 0 ||
@@ -166,11 +170,13 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
     for (size_t i = 0; i < num_pos_uv; ++i) {
       if (film_grain_params.chroma_scaling_from_luma ||
           film_grain_params.num_u_points > 0) {
-        COPY_FILM_GRAIN_FIELD2(ar_coeffs_cb[i], auto_regression_coeff_u[i]);
+        UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(ar_coeffs_cb[i],
+                                           auto_regression_coeff_u[i]));
       }
       if (film_grain_params.chroma_scaling_from_luma ||
           film_grain_params.num_v_points > 0) {
-        COPY_FILM_GRAIN_FIELD2(ar_coeffs_cr[i], auto_regression_coeff_v[i]);
+        UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(ar_coeffs_cr[i],
+                                           auto_regression_coeff_v[i]));
       }
     }
   }
@@ -199,30 +205,30 @@ void FillGlobalMotionInfo(
     auto gm = global_motion[i + 1];
     switch (gm.type) {
       case libgav1::kGlobalMotionTransformationTypeIdentity:
-        va_warped_motion[i].wmtype = VAAV1TransformationIdentity;
+        UNSAFE_TODO(va_warped_motion[i]).wmtype = VAAV1TransformationIdentity;
         break;
       case libgav1::kGlobalMotionTransformationTypeTranslation:
-        va_warped_motion[i].wmtype = VAAV1TransformationTranslation;
+        UNSAFE_TODO(va_warped_motion[i]).wmtype =
+            VAAV1TransformationTranslation;
         break;
       case libgav1::kGlobalMotionTransformationTypeRotZoom:
-        va_warped_motion[i].wmtype = VAAV1TransformationRotzoom;
+        UNSAFE_TODO(va_warped_motion[i]).wmtype = VAAV1TransformationRotzoom;
         break;
       case libgav1::kGlobalMotionTransformationTypeAffine:
-        va_warped_motion[i].wmtype = VAAV1TransformationAffine;
+        UNSAFE_TODO(va_warped_motion[i]).wmtype = VAAV1TransformationAffine;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, "
-            << va_warped_motion[i].wmtype;
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << UNSAFE_TODO(va_warped_motion[i]).wmtype;
     }
     static_assert(ARRAY_SIZE(va_warped_motion[i].wmmat) == 8 &&
                       ARRAY_SIZE(gm.params) == 6,
                   "Invalid size of warp motion parameters");
     for (size_t j = 0; j < 6; ++j)
-      va_warped_motion[i].wmmat[j] = gm.params[j];
-    va_warped_motion[i].wmmat[6] = 0;
-    va_warped_motion[i].wmmat[7] = 0;
-    va_warped_motion[i].invalid = !libgav1::SetupShear(&gm);
+      UNSAFE_TODO(va_warped_motion[i].wmmat[j]) = UNSAFE_TODO(gm.params[j]);
+    UNSAFE_TODO(va_warped_motion[i]).wmmat[6] = 0;
+    UNSAFE_TODO(va_warped_motion[i]).wmmat[7] = 0;
+    UNSAFE_TODO(va_warped_motion[i]).invalid = !libgav1::SetupShear(&gm);
   }
 }
 
@@ -251,16 +257,20 @@ bool FillTileInfo(VADecPictureParameterBufferAV1& va_pic_param,
     const int tile_columns =
         std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_columns);
     for (int i = 0; i < tile_columns; i++) {
-      if (!base::CheckSub<int>(tile_info.tile_column_width_in_superblocks[i], 1)
-               .AssignIfValid(&va_pic_param.width_in_sbs_minus_1[i])) {
+      if (!base::CheckSub<int>(
+               UNSAFE_TODO(tile_info.tile_column_width_in_superblocks[i]), 1)
+               .AssignIfValid(
+                   &UNSAFE_TODO(va_pic_param.width_in_sbs_minus_1[i]))) {
         return false;
       }
     }
     const int tile_rows =
         std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_rows);
     for (int i = 0; i < tile_rows; i++) {
-      if (!base::CheckSub<int>(tile_info.tile_row_height_in_superblocks[i], 1)
-               .AssignIfValid(&va_pic_param.height_in_sbs_minus_1[i])) {
+      if (!base::CheckSub<int>(
+               UNSAFE_TODO(tile_info.tile_row_height_in_superblocks[i]), 1)
+               .AssignIfValid(
+                   &UNSAFE_TODO(va_pic_param.height_in_sbs_minus_1[i]))) {
         return false;
       }
     }
@@ -306,9 +316,9 @@ void FillLoopFilterInfo(VADecPictureParameterBufferAV1& va_pic_param,
                         libgav1::kLoopFilterMaxModeDeltas,
                 "Invalid size of mode deltas array");
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
-    va_pic_param.ref_deltas[i] = loop_filter.ref_deltas[i];
+    UNSAFE_TODO(va_pic_param.ref_deltas[i]) = loop_filter.ref_deltas[i];
   for (size_t i = 0; i < libgav1::kLoopFilterMaxModeDeltas; i++)
-    va_pic_param.mode_deltas[i] = loop_filter.mode_deltas[i];
+    UNSAFE_TODO(va_pic_param.mode_deltas[i]) = loop_filter.mode_deltas[i];
 }
 
 void FillQuantizationInfo(VADecPictureParameterBufferAV1& va_pic_param,
@@ -369,22 +379,26 @@ void FillCdefInfo(VADecPictureParameterBufferAV1& va_pic_param,
   DCHECK_LE(num_cdef_strengths,
             static_cast<size_t>(libgav1::kMaxCdefStrengths));
   for (size_t i = 0; i < num_cdef_strengths; ++i) {
-    const uint8_t prim_strength = cdef.y_primary_strength[i] >> coeff_shift;
-    uint8_t sec_strength = cdef.y_secondary_strength[i] >> coeff_shift;
+    const uint8_t prim_strength =
+        UNSAFE_TODO(cdef.y_primary_strength[i]) >> coeff_shift;
+    uint8_t sec_strength =
+        UNSAFE_TODO(cdef.y_secondary_strength[i]) >> coeff_shift;
     DCHECK_LE(sec_strength, 4u);
     if (sec_strength == 4)
       sec_strength--;
-    va_pic_param.cdef_y_strengths[i] =
+    UNSAFE_TODO(va_pic_param.cdef_y_strengths[i]) =
         ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
   }
 
   for (size_t i = 0; i < num_cdef_strengths; ++i) {
-    const uint8_t prim_strength = cdef.uv_primary_strength[i] >> coeff_shift;
-    uint8_t sec_strength = cdef.uv_secondary_strength[i] >> coeff_shift;
+    const uint8_t prim_strength =
+        UNSAFE_TODO(cdef.uv_primary_strength[i]) >> coeff_shift;
+    uint8_t sec_strength =
+        UNSAFE_TODO(cdef.uv_secondary_strength[i]) >> coeff_shift;
     DCHECK_LE(sec_strength, 4u);
     if (sec_strength == 4)
       sec_strength--;
-    va_pic_param.cdef_uv_strengths[i] =
+    UNSAFE_TODO(va_pic_param.cdef_uv_strengths[i]) =
         ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
   }
 }
@@ -421,9 +435,8 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
       case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
         return 2;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid restoration type" << base::strict_cast<int>(lr_type);
-        return 0;
+        NOTREACHED() << "Invalid restoration type"
+                     << base::strict_cast<int>(lr_type);
     }
   };
   static_assert(
@@ -442,10 +455,10 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
   const size_t num_planes = libgav1::kMaxPlanes;
   const bool use_loop_restoration =
       std::find_if(std::begin(loop_restoration.type),
-                   std::begin(loop_restoration.type) + num_planes,
+                   UNSAFE_TODO(std::begin(loop_restoration.type) + num_planes),
                    [](const auto type) {
                      return type != libgav1::kLoopRestorationTypeNone;
-                   }) != (loop_restoration.type + num_planes);
+                   }) != (UNSAFE_TODO(loop_restoration.type + num_planes));
   if (!use_loop_restoration)
     return;
   static_assert(libgav1::kPlaneY == 0u && libgav1::kPlaneU == 1u,
@@ -471,7 +484,7 @@ bool FillAV1SliceParameters(
   va_slice_params.resize(num_tiles);
   for (uint16_t tile = 0; tile < num_tiles; ++tile) {
     VASliceParameterBufferAV1& va_tile_param = va_slice_params[tile];
-    memset(&va_tile_param, 0, sizeof(VASliceParameterBufferAV1));
+    va_tile_param = {};
     va_tile_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
     va_tile_param.tile_row = tile / base::checked_cast<uint16_t>(tile_columns);
     va_tile_param.tile_column =
@@ -519,18 +532,15 @@ unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
       // AV1 stream whose profile is 'main' - this profile only supports bit
       // depths of 8 and 10 and libgav1 should guarantee that
       // |color_config.bitdepth| meets that requirement at parsing time.
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Unsupported color config with chroma subsampling of bitdepth %d"
           << color_config.bitdepth;
     }
   }
   // If this AV1 stream has profile 'main', then libgav1 ensures that both
   // |color_config.subsampling_x| and |color_config.subsampling_y| are 1.
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported color config; only profile 0 with 4:2:0 Chroma "
-         "subsampling is supported.";
-  // There is no VA_RT_FORMAT_UNSUPPORTED; use a "default" value.
-  return 0u;
+  NOTREACHED() << "Unsupported color config; only profile 0 with 4:2:0 Chroma "
+                  "subsampling is supported.";
 }
 
 }  // namespace
@@ -572,7 +582,8 @@ Av1Decoder::~Av1Decoder() {
 Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
     libgav1::RefCountedBufferPtr& current_frame) {
   if (!obu_parser_ || !obu_parser_->HasData()) {
-    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_)) {
+    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_,
+                                     &ivf_frame_data_.AsEphemeralRawAddr())) {
       return ParsingResult::kEOStream;
     }
 
@@ -676,12 +687,17 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     for (auto& display_surface : display_surfaces_)
       display_surface.reset();
 
-    const gfx::Size new_frame_size(
+    // Update the context size if needed.
+    const gfx::Size new_max_frame_size(
         base::strict_cast<int>(current_sequence_header_->max_frame_width),
         base::strict_cast<int>(current_sequence_header_->max_frame_height));
-    if (!va_context_ || va_context_->size() != new_frame_size) {
+    if (!va_context_ || va_context_->size() != new_max_frame_size) {
+      VLOG(1) << "New context size needed";
+      VLOG_IF(1, va_context_)
+          << "Previous context size: " << va_context_->size().ToString();
+      VLOG(1) << "New context size: " << new_max_frame_size.ToString();
       va_context_ = std::make_unique<ScopedVAContext>(*va_device_, *va_config_,
-                                                      new_frame_size);
+                                                      new_max_frame_size);
     }
   }
 
@@ -708,19 +724,28 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   LOG_ASSERT(current_sequence_header_)
       << "Sequence header missing for decoding.";
 
+  // The frame_width and frame_height denote the visible part of the frame.
+  // This handles resolution changes between sequence header changes: the
+  // "resolution change" is really just an update to which part of the frame to
+  // show to the user, which comes from the width and height hints provided in
+  // |current_frame_header|.
+  // Also see
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/av1_decoder.cc;l=454;drc=9c1d4b495c1ebadeda004c9b741e11a6f035b9e7
+  const gfx::Size visible_size(
+      base::strict_cast<int>(current_frame->frame_width()),
+      base::strict_cast<int>(current_frame->frame_height()));
+
   // Create surfaces for decode.
-  VASurfaceAttrib attribute;
-  memset(&attribute, 0, sizeof(VASurfaceAttrib));
+  VASurfaceAttrib attribute = {};
   attribute.type = VASurfaceAttribUsageHint;
   attribute.flags = VA_SURFACE_ATTRIB_SETTABLE;
   attribute.value.type = VAGenericValueTypeInteger;
   attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_DECODER;
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
-      *va_device_, va_config_->va_rt_format(), va_context_->size(), attribute);
+      *va_device_, va_config_->va_rt_format(), visible_size, attribute);
 
   // Set up buffer for pic parameters
-  VADecPictureParameterBufferAV1 pic_parameters;
-  memset(&pic_parameters, 0, sizeof(VADecPictureParameterBufferAV1));
+  VADecPictureParameterBufferAV1 pic_parameters = {};
   pic_parameters.profile =
       base::strict_cast<uint8_t>(current_sequence_header_->profile);
 
@@ -739,15 +764,13 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     case 12:
       // This is a valid bitdepth in streams, but we do not support it;
       // GetFormatForColorConfig() only expects bit depths of 8 or 10.
-      NOTREACHED_IN_MIGRATION() << "12bpp color is not yet supported.";
-      break;
+      NOTREACHED() << "12bpp color is not yet supported.";
     default:
       // The OBU Parser can only produce bit depths of 8, 10, and 12; we should
       // not hit any other cases. See
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/libgav1/src/src/obu_parser.cc;l=144-150;drc=7880d0cc1d1976012dbec8a1bb982191ac49b7f4
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid color bit depth: "
-          << current_sequence_header_->color_config.bitdepth;
+      NOTREACHED() << "Invalid color bit depth: "
+                   << current_sequence_header_->color_config.bitdepth;
   }
   pic_parameters.matrix_coefficients = base::checked_cast<uint8_t>(
       current_sequence_header_->color_config.matrix_coefficients);
@@ -780,9 +803,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   scoped_refptr<SharedVASurface> film_grain_surface;
   if (current_frame_header.film_grain_params.apply_grain) {
     pic_parameters.current_frame = surface->id();
-    film_grain_surface =
-        SharedVASurface::Create(*va_device_, va_config_->va_rt_format(),
-                                va_context_->size(), attribute);
+    film_grain_surface = SharedVASurface::Create(
+        *va_device_, va_config_->va_rt_format(), visible_size, attribute);
     pic_parameters.current_display_picture = film_grain_surface->id();
   } else {
     pic_parameters.current_frame = surface->id();
@@ -792,18 +814,20 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   pic_parameters.frame_height_minus1 = current_frame_header.height - 1;
 
   for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
-    pic_parameters.ref_frame_map[i] =
+    UNSAFE_TODO(pic_parameters.ref_frame_map[i]) =
         ref_frames_[i] ? ref_frames_[i]->id() : VA_INVALID_SURFACE;
   }
 
   // |pic_parameters.ref_frame_idx| doesn't need to be filled in for intra
   // frames (it can be left zero initialized).
   if (!libgav1::IsIntraFrame(current_frame_header.frame_type)) {
-    for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
-      const int8_t index = current_frame_header.reference_frame_index[i];
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+      const int8_t index =
+          UNSAFE_TODO(current_frame_header.reference_frame_index[i]);
       CHECK_GE(index, 0);
       CHECK_LT(static_cast<size_t>(index), kAv1NumRefFrames);
-      pic_parameters.ref_frame_idx[i] = base::checked_cast<uint8_t>(index);
+      UNSAFE_TODO(pic_parameters.ref_frame_idx[i]) =
+          base::checked_cast<uint8_t>(index);
     }
   }
   pic_parameters.primary_ref_frame =
@@ -873,7 +897,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   const size_t tile_columns = current_frame_header.tile_info.tile_columns;
   const bool slice_parameters_success = FillAV1SliceParameters(
       obu_parser_->tile_buffers(), tile_columns,
-      base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
+      UNSAFE_TODO(
+          base::span(ivf_frame_data_.get(), ivf_frame_header_.frame_size)),
       slice_params);
   LOG_ASSERT(slice_parameters_success)
       << "Failed to fill slice parameters for current frame.";
@@ -890,7 +915,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   // Set up the slice data buffer.
   res = vaCreateBuffer(va_device_->display(), va_context_->id(),
                        VASliceDataBufferType, ivf_frame_header_.frame_size, 1u,
-                       const_cast<uint8_t*>(ivf_frame_data_), &buffer_id);
+                       const_cast<uint8_t*>(ivf_frame_data_.get()), &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
 

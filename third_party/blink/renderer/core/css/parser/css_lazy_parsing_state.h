@@ -7,10 +7,11 @@
 
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
-#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class StyleSheetContents;
 
 // This class helps lazy parsing by retaining necessary state. It should not
 // outlive the StyleSheetContents that initiated the parse, as it retains a raw

@@ -13,7 +13,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
@@ -118,7 +118,8 @@ class GalleryWatchManager
 
   typedef std::map<WatchOwner, base::FilePath> WatchesMap;
   typedef std::map<base::FilePath, NotificationInfo> WatchedPaths;
-  typedef std::map<content::BrowserContext*, GalleryWatchManagerObserver*>
+  typedef std::map<content::BrowserContext*,
+                   raw_ptr<GalleryWatchManagerObserver, CtnExperimental>>
       ObserverMap;
   typedef std::map<content::BrowserContext*, base::CallbackListSubscription>
       BrowserContextSubscriptionMap;

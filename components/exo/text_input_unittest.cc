@@ -338,12 +338,12 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
   // VirtualKeyboardControllerObserver event as if it is done via
   // real VirtualKeyboardController implementation.
   EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
-      .WillOnce(testing::Invoke([this](bool should_show) {
+      .WillOnce([this](bool should_show) {
         if (should_show)
           text_input()->OnKeyboardVisible(gfx::Rect());
         else
           text_input()->OnKeyboardHidden();
-      }));
+      });
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->ShowVirtualKeyboardIfEnabled();
   testing::Mock::VerifyAndClearExpectations(&observer);
@@ -370,12 +370,12 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
   // VirtualKeyboardControllerObserver event as if it is done via
   // real VirtualKeyboardController implementation.
   EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
-      .WillOnce(testing::Invoke([this](bool should_show) {
+      .WillOnce([this](bool should_show) {
         if (should_show)
           text_input()->OnKeyboardVisible(gfx::Rect());
         else
           text_input()->OnKeyboardHidden();
-      }));
+      });
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->Activate(seat(), surface(),

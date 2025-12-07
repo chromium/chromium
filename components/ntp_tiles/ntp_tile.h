@@ -15,7 +15,8 @@
 
 namespace ntp_tiles {
 
-// A suggested site shown on the New Tab Page.
+// A suggested site shown on the New Tab Page. This is equivalent to "shortcuts"
+// which are the user facing name.
 struct NTPTile {
   std::u16string title;
   GURL url;
@@ -39,13 +40,25 @@ struct NTPTile {
   // The last visit time of a Most Visited item. Used for debugging.
   base::Time last_visit_time;
 
+  // The score of a Most Visited item. Used for tweaking algorithm.
+  double score = -1;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Whether to allow users to edit the tile in the action menu. Does not apply
+  // to top sites. May be false for enterprise shortcuts.
+  bool allow_user_edit = true;
+
+  // Whether to allow users to delete the tile in the action menu. Does not
+  // apply to top sites. May be false for enterprise shortcuts.
+  bool allow_user_delete = true;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   NTPTile();
   NTPTile(const NTPTile&);
   ~NTPTile();
 };
 
 bool operator==(const NTPTile& a, const NTPTile& b);
-bool operator!=(const NTPTile& a, const NTPTile& b);
 
 using NTPTilesVector = std::vector<NTPTile>;
 

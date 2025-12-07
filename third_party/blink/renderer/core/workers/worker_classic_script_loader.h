@@ -29,7 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_CLASSIC_SCRIPT_LOADER_H_
 
 #include <memory>
-#include "base/memory/scoped_refptr.h"
+
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
@@ -74,15 +74,15 @@ class CORE_EXPORT WorkerClassicScriptLoader final
                          network::mojom::RequestDestination);
 
   // Note that callbacks could be invoked before
-  // LoadTopLevelScriptAsynchronously() returns.
+  // `LoadTopLevelScriptAsynchronously()` returns.
   //
-  // |fetch_client_settings_object_fetcher| is different from
-  // ExecutionContext::Fetcher() in off-the-main-thread fetch.
-  // TODO(crbug.com/1064920): Remove |reject_coep_unsafe_none| and
-  // |blob_url_loader_factory| when PlzDedicatedWorker ships.
+  // `fetch_client_settings_object_fetcher` is different from
+  // `ExecutionContext::Fetcher()` in off-the-main-thread fetch.
+  // TODO(crbug.com/40123913): Remove `blob_url_loader_factory` now
+  // that PlzDedicatedWorker has shipped.
   //
-  // |worker_main_script_load_params| is valid for dedicated workers (when
-  // PlzDedicatedWorker is enabled) and shared workers.
+  // `worker_main_script_load_params` is valid for dedicated workers and shared
+  // workers.
   void LoadTopLevelScriptAsynchronously(
       ExecutionContext&,
       ResourceFetcher* fetch_client_settings_object_fetcher,
@@ -95,11 +95,8 @@ class CORE_EXPORT WorkerClassicScriptLoader final
       network::mojom::CredentialsMode,
       base::OnceClosure response_callback,
       base::OnceClosure finished_callback,
-      RejectCoepUnsafeNone reject_coep_unsafe_none =
-          RejectCoepUnsafeNone(false),
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-          blob_url_loader_factory = {},
-      std::optional<uint64_t> main_script_identifier = std::nullopt);
+          blob_url_loader_factory = {});
 
   // This will immediately invoke |finishedCallback| if
   // LoadTopLevelScriptAsynchronously() is in progress.
@@ -136,8 +133,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void DidFailRedirectCheck(uint64_t) override;
 
   // WorkerMainScriptLoaderClient
-  // These will be called for dedicated workers (when PlzDedicatedWorker is
-  // enabled) and shared workers.
+  // These will be called for dedicated workers and shared workers.
   void DidReceiveDataWorkerMainScript(base::span<const char> span) override;
   void OnFinishedLoadingWorkerMainScript() override;
   void OnFailedLoadingWorkerMainScript() override;

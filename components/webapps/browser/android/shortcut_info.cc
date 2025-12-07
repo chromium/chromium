@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
 #include "shortcut_info.h"
@@ -34,22 +36,22 @@ bool IsWebApkDisplayMode(blink::mojom::DisplayMode display_mode) {
 
 using blink::mojom::DisplayMode;
 
-ShareTargetParamsFile::ShareTargetParamsFile() {}
+ShareTargetParamsFile::ShareTargetParamsFile() = default;
 
 ShareTargetParamsFile::ShareTargetParamsFile(
     const ShareTargetParamsFile& other) = default;
 
-ShareTargetParamsFile::~ShareTargetParamsFile() {}
+ShareTargetParamsFile::~ShareTargetParamsFile() = default;
 
-ShareTargetParams::ShareTargetParams() {}
+ShareTargetParams::ShareTargetParams() = default;
 
 ShareTargetParams::ShareTargetParams(const ShareTargetParams& other) = default;
 
-ShareTargetParams::~ShareTargetParams() {}
+ShareTargetParams::~ShareTargetParams() = default;
 
-ShareTarget::ShareTarget() {}
+ShareTarget::ShareTarget() = default;
 
-ShareTarget::~ShareTarget() {}
+ShareTarget::~ShareTarget() = default;
 
 ShortcutInfo::ShortcutInfo(const GURL& shortcut_url)
     : url(shortcut_url),
@@ -282,15 +284,14 @@ void ShortcutInfo::UpdateBestSplashIcon(
   minimum_splash_image_size_in_px =
       WebappsIconUtils::GetMinimumSplashImageSizeInPx();
 
-  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
-    splash_image_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-        manifest.icons, ideal_splash_image_size_in_px,
-        minimum_splash_image_size_in_px,
-        blink::mojom::ManifestImageResource_Purpose::MASKABLE);
-    is_splash_image_maskable = true;
-  }
-  // If did not fetch maskable icon for splash image, or can not find a best
+  // Try fetcing maskable icon for splash image first, if can not find a best
   // match, fallback to ANY icon.
+  splash_image_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+      manifest.icons, ideal_splash_image_size_in_px,
+      minimum_splash_image_size_in_px,
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+  is_splash_image_maskable = true;
+
   if (!splash_image_url.is_valid()) {
     splash_image_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
         manifest.icons, ideal_splash_image_size_in_px,

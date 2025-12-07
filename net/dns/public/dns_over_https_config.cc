@@ -4,6 +4,7 @@
 
 #include "net/dns/public/dns_over_https_config.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -33,7 +33,7 @@ std::vector<std::optional<DnsOverHttpsServerConfig>> ParseTemplates(
     std::vector<std::string> templates) {
   std::vector<std::optional<DnsOverHttpsServerConfig>> parsed;
   parsed.reserve(templates.size());
-  base::ranges::transform(templates, std::back_inserter(parsed), [](auto& s) {
+  std::ranges::transform(templates, std::back_inserter(parsed), [](auto& s) {
     return DnsOverHttpsServerConfig::FromString(std::move(s));
   });
   return parsed;
@@ -56,14 +56,16 @@ std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
       return std::nullopt;
     servers.push_back(std::move(*parsed));
   }
-  return DnsOverHttpsConfig(servers);
+  return DnsOverHttpsConfig(std::move(servers));
 }
 
 std::optional<DnsOverHttpsConfig> FromJson(std::string_view json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value) {
     return std::nullopt;
-  return FromValue(std::move(*value).TakeDict());
+  }
+  return FromValue(std::move(*value));
 }
 
 }  // namespace
@@ -87,7 +89,7 @@ std::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromTemplates(
     std::vector<std::string> server_templates) {
   // All templates must be valid for the group to be considered valid.
   std::vector<DnsOverHttpsServerConfig> servers;
-  for (auto& server_config : ParseTemplates(server_templates)) {
+  for (auto& server_config : ParseTemplates(std::move(server_templates))) {
     if (!server_config)
       return std::nullopt;
     servers.push_back(std::move(*server_config));
@@ -133,12 +135,12 @@ bool DnsOverHttpsConfig::operator==(const DnsOverHttpsConfig& other) const {
 }
 
 std::string DnsOverHttpsConfig::ToString() const {
-  if (base::ranges::all_of(servers(), &DnsOverHttpsServerConfig::IsSimple)) {
+  if (std::ranges::all_of(servers(), &DnsOverHttpsServerConfig::IsSimple)) {
     // Return the templates on separate lines.
     std::vector<std::string_view> strings;
     strings.reserve(servers().size());
-    base::ranges::transform(servers(), std::back_inserter(strings),
-                            &DnsOverHttpsServerConfig::server_template_piece);
+    std::ranges::transform(servers(), std::back_inserter(strings),
+                           &DnsOverHttpsServerConfig::server_template_piece);
     return base::JoinString(std::move(strings), "\n");
   }
   std::string json;

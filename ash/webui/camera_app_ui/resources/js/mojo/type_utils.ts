@@ -37,8 +37,6 @@ import * as mojoType from './type.js';
 export function convertLaunchTypeToMojo(launchType: LaunchType):
     mojoType.LaunchType {
   switch (launchType) {
-    case LaunchType.ASSISTANT:
-      return mojoType.LaunchType.kAssistant;
     case LaunchType.DEFAULT:
       return mojoType.LaunchType.kDefault;
     default:
@@ -134,8 +132,6 @@ export function convertTimerTypeToMojo(timerType: string): mojoType.TimerType {
 export function convertShutterTypeToMojo(shutterType: ShutterType):
     mojoType.ShutterType {
   switch (shutterType) {
-    case ShutterType.ASSISTANT:
-      return mojoType.ShutterType.kAssistant;
     case ShutterType.KEYBOARD:
       return mojoType.ShutterType.kKeyboard;
     case ShutterType.MOUSE:
@@ -449,6 +445,23 @@ export function convertOcrEventTypeToMojo(ocrEventType: OcrEventType):
       return mojoType.OcrEventType.kCopyText;
     case OcrEventType.TEXT_DETECTED:
       return mojoType.OcrEventType.kTextDetected;
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * Converts the `AspectRatio` mojo enum to `AspectRatioSet`.
+ */
+export function convertMojoToAspectRatio(aspectRatio: mojoType.AspectRatio):
+    AspectRatioSet {
+  switch (aspectRatio) {
+    case mojoType.AspectRatio.k4To3:
+      return AspectRatioSet.RATIO_4_3;
+    case mojoType.AspectRatio.k16To9:
+      return AspectRatioSet.RATIO_16_9;
+    case mojoType.AspectRatio.kOthers:
+      return AspectRatioSet.RATIO_OTHER;
     default:
       assertNotReached();
   }

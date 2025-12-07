@@ -13,6 +13,8 @@ import android.os.Build;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import com.google.protobuf.ByteString;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,17 +22,26 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
+import org.chromium.net.CronetTestRule.BoolFlag;
+import org.chromium.net.CronetTestRule.BytesFlag;
+import org.chromium.net.CronetTestRule.Flags;
+import org.chromium.net.CronetTestRule.FloatFlag;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.CronetTestRule.IntFlag;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
+import org.chromium.net.CronetTestRule.StringFlag;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.HttpFlagsForImpl;
 import org.chromium.net.impl.JavaCronetEngine;
 
 /** Tests features of CronetTestRule. */
 @RunWith(AndroidJUnit4.class)
-@Batch(Batch.UNIT_TESTS)
+// @Flags annotation can't be combined with @Batch
+@DoNotBatch(reason = "crbug.com/387983175#comment2")
 public class CronetTestRuleTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     @Rule public final TestName mTestName = new TestName();
@@ -114,7 +125,10 @@ public class CronetTestRuleTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            implementations = {
+                CronetImplementation.FALLBACK,
+                CronetImplementation.AOSP_PLATFORM,
+            },
             reason = "Testing the rule")
     public void testRunOnlyNativeMustRun() {
         assertThat(mTestRule.testingJavaImpl()).isFalse();
@@ -131,7 +145,7 @@ public class CronetTestRuleTest {
     @IgnoreFor(
             implementations = {
                 CronetImplementation.STATICALLY_LINKED,
-                CronetImplementation.AOSP_PLATFORM
+                CronetImplementation.AOSP_PLATFORM,
             },
             reason = "Testing the rule")
     public void testRunOnlyJavaMustRun() {
@@ -147,7 +161,7 @@ public class CronetTestRuleTest {
     @IgnoreFor(
             implementations = {
                 CronetImplementation.STATICALLY_LINKED,
-                CronetImplementation.FALLBACK
+                CronetImplementation.FALLBACK,
             },
             reason = "Testing the rule")
     @RequiresMinAndroidApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -161,5 +175,32 @@ public class CronetTestRuleTest {
                 .isNotInstanceOf(JavaCronetEngine.class);
         assertThat(mTestRule.getTestFramework().getEngine())
                 .isNotInstanceOf(CronetUrlRequestContext.class);
+    }
+
+    @Test
+    @SmallTest
+    @Flags(
+            intFlags = {@IntFlag(name = "random_int_flag", value = 123456789012345L)},
+            stringFlags = {@StringFlag(name = "random_string_flag", value = "some_message_value")},
+            floatFlags = {@FloatFlag(name = "random_float_flag", value = 0.123456f)},
+            boolFlags = {@BoolFlag(name = "random_bool_flag", value = true)},
+            bytesFlags = {
+                @BytesFlag(
+                        name = "random_bytes_flag",
+                        value = {'a', 'b', 'c'})
+            })
+    public void testHttpFlagsAreCorrectlyApplied() {
+        var flags =
+                HttpFlagsForImpl.getHttpFlags(
+                                mTestRule.getTestFramework().getContext(),
+                                CronetSource.CRONET_SOURCE_UNSPECIFIED)
+                        .flags();
+        assertThat(flags.get("random_string_flag").getStringValue())
+                .isEqualTo("some_message_value");
+        assertThat(flags.get("random_int_flag").getIntValue()).isEqualTo(123456789012345L);
+        assertThat(flags.get("random_bool_flag").getBoolValue()).isEqualTo(true);
+        assertThat(flags.get("random_float_flag").getFloatValue()).isEqualTo(0.123456f);
+        assertThat(flags.get("random_bytes_flag").getBytesValue())
+                .isEqualTo(ByteString.copyFrom(new byte[] {'a', 'b', 'c'}));
     }
 }

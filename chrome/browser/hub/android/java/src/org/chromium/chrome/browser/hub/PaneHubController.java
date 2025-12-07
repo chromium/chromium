@@ -6,14 +6,15 @@ package org.chromium.chrome.browser.hub;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Interface for controlling the Hub from a {@link Pane}. This is only available to the focused
  * pane.
  */
+@NullMarked
 public interface PaneHubController {
     /**
      * Sets a tab as active and hides the Hub. A tab must be selected if the browser is
@@ -43,11 +44,11 @@ public interface PaneHubController {
     View getPaneButton(@PaneId int paneId);
 
     /**
-     * Allows retrieval of the View object for the floating action button. Should never be used to
-     * perform click operations. Instead this is for purposes such as rooting IPHs.
+     * Set whether the search box background should show in the hub toolbar. The visibility for this
+     * component is defaulted to gone and should only be shown for the shrink and expand animations
+     * when transiting between a tab view and hub to prevent ghosting behind the hub search box.
      *
-     * @return The view if currently visible atop the pane.
+     * @param shouldShow Whether the search box background should be showing.
      */
-    @Nullable
-    View getFloatingActionButton();
+    void setSearchBoxBackgroundProperties(boolean shouldShow);
 }

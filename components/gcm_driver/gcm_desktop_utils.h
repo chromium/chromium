@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +21,10 @@ class FilePath;
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
+}
+
+namespace os_crypt_async {
+class OSCryptAsync;
 }
 
 namespace gcm {
@@ -41,7 +45,8 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     const std::string& product_category_for_subtypes,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
-    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    os_crypt_async::OSCryptAsync* os_crypt_async);
 
 }  // namespace gcm
 

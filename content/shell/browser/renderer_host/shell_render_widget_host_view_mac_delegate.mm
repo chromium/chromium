@@ -24,12 +24,6 @@
   return _drop_events;
 }
 
-- (void)beginGestureWithEvent:(NSEvent*)event {
-}
-
-- (void)endGestureWithEvent:(NSEvent*)event {
-}
-
 - (void)touchesMovedWithEvent:(NSEvent*)event {
 }
 
@@ -40,10 +34,6 @@
 }
 
 - (void)touchesEndedWithEvent:(NSEvent*)event {
-}
-
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed {
 }
 
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event

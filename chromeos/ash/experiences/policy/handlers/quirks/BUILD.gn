@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Quicks can be used only in chromeos")
+
+static_library("quirks") {
+  sources = [
+    "quirks_policy_controller.cc",
+    "quirks_policy_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/settings",
+    "//components/quirks",
+  ]
+}

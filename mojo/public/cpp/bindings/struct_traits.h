@@ -31,16 +31,16 @@ namespace mojo {
 //        - string:
 //          Value or reference of any type that has a StringTraits defined.
 //          Supported by default: std::string_view, std::string,
-//          WTF::String (in blink).
+//          blink::String (in blink).
 //
 //        - array:
 //          Value or reference of any type that has an ArrayTraits defined.
-//          Supported by default: std::vector, CArray, WTF::Vector (in blink)
+//          Supported by default: std::vector, CArray, blink::Vector (in blink)
 //
 //        - map:
 //          Value or reference of any type that has a MapTraits defined.
 //          Supported by default: std::map, std::unordered_map, base::flat_map,
-//          WTF::HashMap (in blink).
+//          blink::HashMap (in blink).
 //
 //        - struct:
 //          Value or reference of any type that has a StructTraits defined.
@@ -143,9 +143,15 @@ namespace mojo {
 //
 template <typename DataViewType, typename T>
 struct StructTraits {
-  static_assert(internal::AlwaysFalse<T>::value,
-                "Cannot find the mojo::StructTraits specialization. Did you "
-                "forget to include the corresponding header file?");
+  static_assert(
+      false,
+      "Cannot find the mojo::StructTraits specialization. Did you confirm "
+      "that:"
+      "  * the corresponding header file is included in your build file"
+      "    typemap?"
+      "  * the mojom::StructTraits specialization you've created is defined"
+      "    *exactly* the same as the mojom::StructTraits specialization"
+      "    specified in this stack trace?");
 };
 
 }  // namespace mojo

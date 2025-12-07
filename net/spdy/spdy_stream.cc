@@ -77,8 +77,7 @@ class SpdyStream::HeadersBufferProducer : public SpdyBufferProducer {
 
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override {
     if (!stream_.get()) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
     DCHECK_GT(stream_->stream_id(), 0u);
     return std::make_unique<SpdyBuffer>(stream_->ProduceHeadersFrame());
@@ -389,6 +388,8 @@ void SpdyStream::OnHeadersReceived(
           if (io_state_ == STATE_IDLE) {
             const std::string error("Response received before request sent.");
             LogStreamError(ERR_HTTP2_PROTOCOL_ERROR, error);
+            DVLOG(1) << "Response received before request sent, possibly "
+                        "crbug.com/41180906";
             session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR, error);
             return;
           }
@@ -457,7 +458,7 @@ void SpdyStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
       // Deletes |this|.
       session_->CloseActiveStream(stream_id_, OK);
     } else {
-      NOTREACHED_IN_MIGRATION() << io_state_;
+      NOTREACHED() << io_state_;
     }
     return;
   }
@@ -510,7 +511,7 @@ void SpdyStream::OnFrameWriteComplete(spdy::SpdyFrameType frame_type,
     } else if (io_state_ == STATE_HALF_CLOSED_REMOTE) {
       io_state_ = STATE_CLOSED;
     } else {
-      NOTREACHED_IN_MIGRATION() << io_state_;
+      NOTREACHED() << io_state_;
     }
   }
   // Notify delegate of write completion. Must not destroy |this|.
@@ -712,6 +713,15 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
       recv_first_byte_time_for_non_informational_response_;
   load_timing_info->first_early_hints_time = first_early_hints_time_;
   return result;
+}
+
+base::Value::Dict SpdyStream::GetInfoAsValue() const {
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id_));
+  dict.Set("io_state", DescribeState(io_state_));
+  dict.Set("send_stalled_by_flow_control", send_stalled_by_flow_control_);
+  dict.Set("pending_send_status", pending_send_status_);
+  return dict;
 }
 
 void SpdyStream::QueueNextDataFrame() {

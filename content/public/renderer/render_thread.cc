@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker_impl.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom.h"
 
 namespace content {
 
@@ -14,7 +14,7 @@ namespace {
 
 // Keep the global RenderThread in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
-ABSL_CONST_INIT thread_local RenderThread* render_thread = nullptr;
+constinit thread_local RenderThread* render_thread = nullptr;
 
 static const base::ThreadCheckerImpl& GetThreadChecker() {
   static base::NoDestructor<base::ThreadCheckerImpl> checker;
@@ -28,12 +28,16 @@ RenderThread* RenderThread::Get() {
 }
 
 bool RenderThread::IsMainThread() {
-  // TODO(avi): Eventually move to be based on WTF::IsMainThread().
+  // TODO(avi): Eventually move to be based on blink::IsMainThread().
   return GetThreadChecker().CalledOnValidThread();
 }
 
 RenderThread::RenderThread() : resetter_(&render_thread, this) {}
 
 RenderThread::~RenderThread() = default;
+
+blink::mojom::PerformanceTier RenderThread::GetCpuPerformanceTier() {
+  return blink::mojom::PerformanceTier::kUnknown;
+}
 
 }  // namespace content

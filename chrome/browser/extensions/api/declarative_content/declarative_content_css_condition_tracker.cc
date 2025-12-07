@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -17,8 +16,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/mojom/renderer.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -174,8 +176,7 @@ void DeclarativeContentCssConditionTracker::StopTrackingPredicates(
     for (const DeclarativeContentCssPredicate* predicate : it->second) {
       for (const std::string& selector : predicate->css_selectors()) {
         auto loc = watched_css_selector_predicate_count_.find(selector);
-        CHECK(loc != watched_css_selector_predicate_count_.end(),
-              base::NotFatalUntil::M130);
+        CHECK(loc != watched_css_selector_predicate_count_.end());
         if (--loc->second == 0) {
           watched_css_selector_predicate_count_.erase(loc);
           watched_selectors_updated = true;
@@ -193,7 +194,7 @@ void DeclarativeContentCssConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents,
-      base::BindRepeating(&Delegate::RequestEvaluation,
+      base::BindRepeating(&Delegate::NotifyPredicateStateUpdated,
                           base::Unretained(delegate_)),
       base::BindOnce(
           &DeclarativeContentCssConditionTracker::DeletePerWebContentsTracker,
@@ -224,7 +225,7 @@ bool DeclarativeContentCssConditionTracker::EvaluatePredicate(
   const DeclarativeContentCssPredicate* typed_predicate =
       static_cast<const DeclarativeContentCssPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
-  CHECK(loc != per_web_contents_tracker_.end(), base::NotFatalUntil::M130);
+  CHECK(loc != per_web_contents_tracker_.end());
   const std::unordered_set<std::string>& matching_css_selectors =
       loc->second->matching_css_selectors();
   for (const std::string& predicate_css_selector :
@@ -269,7 +270,7 @@ InstructRenderProcessIfManagingBrowserContext(
     content::RenderProcessHost* process,
     std::vector<std::string> watched_css_selectors) {
   content::BrowserContext* browser_context = process->GetBrowserContext();
-  if (delegate_->ShouldManageConditionsForBrowserContext(browser_context)) {
+  if (delegate_->ShouldManagePredicatesForBrowserContext(browser_context)) {
     mojom::Renderer* renderer =
         RendererStartupHelperFactory::GetForBrowserContext(browser_context)
             ->GetRenderer(process);

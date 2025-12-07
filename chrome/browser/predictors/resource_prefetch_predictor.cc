@@ -27,6 +27,7 @@
 #include "components/history/core/browser/url_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -73,26 +74,14 @@ GURL CreateRedirectURL(const std::string& scheme,
 
 }  // namespace
 
-PreconnectRequest::PreconnectRequest(
-    const url::Origin& origin,
-    int num_sockets,
-    const net::NetworkAnonymizationKey& network_anonymization_key)
-    : origin(origin),
-      num_sockets(num_sockets),
-      network_anonymization_key(network_anonymization_key) {
-  DCHECK_GE(num_sockets, 0);
-  DCHECK(!network_anonymization_key.IsEmpty());
-}
-
 PrefetchRequest::PrefetchRequest(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::RequestDestination destination)
     : url(url),
-      network_anonymization_key(network_anonymization_key),
       destination(destination) {
-  DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
-  DCHECK(!network_anonymization_key.IsEmpty());
+  CHECK(
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;
@@ -250,7 +239,6 @@ ResourcePrefetchPredictor::ResourcePrefetchPredictor(
     const LoadingPredictorConfig& config,
     Profile* profile)
     : profile_(profile),
-      observer_(nullptr),
       config_(config),
       initialization_state_(NOT_INITIALIZED),
       tables_(PredictorDatabaseFactory::GetForProfile(profile)
@@ -258,7 +246,7 @@ ResourcePrefetchPredictor::ResourcePrefetchPredictor(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-ResourcePrefetchPredictor::~ResourcePrefetchPredictor() {}
+ResourcePrefetchPredictor::~ResourcePrefetchPredictor() = default;
 
 void ResourcePrefetchPredictor::StartInitialization() {
   TRACE_EVENT0("browser", "ResourcePrefetchPredictor::StartInitialization");
@@ -297,8 +285,12 @@ bool ResourcePrefetchPredictor::IsUrlPreconnectable(
   return PredictPreconnectOrigins(main_frame_url, nullptr);
 }
 
-void ResourcePrefetchPredictor::SetObserverForTesting(TestObserver* observer) {
-  observer_ = observer;
+void ResourcePrefetchPredictor::AddObserverForTesting(TestObserver* observer) {
+  test_observer_set_.insert(observer);
+}
+void ResourcePrefetchPredictor::RemoveObserverForTesting(
+    TestObserver* observer) {
+  test_observer_set_.erase(observer);
 }
 
 void ResourcePrefetchPredictor::Shutdown() {
@@ -315,9 +307,8 @@ bool ResourcePrefetchPredictor::TryEnsureRecordingPrecondition() {
   } else if (initialization_state_ == INITIALIZING) {
     return false;
   } else if (initialization_state_ != INITIALIZED) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected initialization_state_: " << initialization_state_;
-    return false;
+    NOTREACHED() << "Unexpected initialization_state_: "
+                 << initialization_state_;
   }
 
   CHECK(host_redirect_data_);
@@ -332,13 +323,14 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
     return;
   }
 
-  LearnRedirect(summary.initial_url.host(), summary.main_frame_url);
-  LearnOrigins(summary.main_frame_url.host(),
+  LearnRedirect(summary.initial_url.GetHost(), summary.main_frame_url);
+  LearnOrigins(summary.main_frame_url.GetHost(),
                summary.main_frame_url.DeprecatedGetOriginAsURL(),
                summary.origins);
 
-  if (observer_)
-    observer_->OnNavigationLearned(summary);
+  for (auto observer : test_observer_set_) {
+    observer->OnNavigationLearned(summary);
+  }
 }
 
 bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
@@ -425,8 +417,9 @@ void ResourcePrefetchPredictor::OnHistoryAndCacheLoaded() {
     DeleteAllUrls();
     delete_all_data_requested_ = false;
   }
-  if (observer_)
-    observer_->OnPredictorInitialized();
+  for (auto observer : test_observer_set_) {
+    observer->OnPredictorInitialized();
+  }
 }
 
 void ResourcePrefetchPredictor::DeleteAllUrls() {
@@ -445,7 +438,7 @@ void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
   std::vector<std::string> hosts_to_delete;
   std::vector<GURL> urls_to_delete;
   for (const auto& it : urls) {
-    hosts_to_delete.emplace_back(it.url().host());
+    hosts_to_delete.emplace_back(it.url().GetHost());
     urls_to_delete.emplace_back(it.url());
   }
 
@@ -468,16 +461,16 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
     data.set_primary_key(key);
     data.set_last_visit_time(base::Time::Now().ToInternalValue());
     RedirectStat* redirect_to_add = data.add_redirect_endpoints();
-    redirect_to_add->set_url(final_redirect.host());
+    redirect_to_add->set_url(final_redirect.GetHost());
     redirect_to_add->set_number_of_hits(1);
-    redirect_to_add->set_url_scheme(final_redirect.scheme());
+    redirect_to_add->set_url_scheme(final_redirect.GetScheme());
     redirect_to_add->set_url_port(final_redirect.EffectiveIntPort());
   } else {
     data.set_last_visit_time(base::Time::Now().ToInternalValue());
 
     bool need_to_add = true;
     for (RedirectStat& redirect : *(data.mutable_redirect_endpoints())) {
-      const bool host_mismatch = redirect.url() != final_redirect.host();
+      const bool host_mismatch = redirect.url() != final_redirect.GetHost();
 
       // When the existing scheme in database is empty, then difference in
       // schemes is not considered a scheme mismatch. This case is treated
@@ -486,7 +479,7 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
       // as a mismatch, and simply update the scheme in the database.
       const bool url_scheme_mismatch =
           !redirect.url_scheme().empty() &&
-          redirect.url_scheme() != final_redirect.scheme();
+          redirect.url_scheme() != final_redirect.GetScheme();
 
       // When the existing port in database is empty, then difference in
       // ports is not considered a mismatch. This case is treated
@@ -505,7 +498,7 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
 
         // If existing scheme or port in database are empty, then update them.
         if (redirect.url_scheme().empty())
-          redirect.set_url_scheme(final_redirect.scheme());
+          redirect.set_url_scheme(final_redirect.GetScheme());
         if (!redirect.has_url_port())
           redirect.set_url_port(final_redirect.EffectiveIntPort());
       } else {
@@ -517,9 +510,9 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
 
     if (need_to_add) {
       RedirectStat* redirect_to_add = data.add_redirect_endpoints();
-      redirect_to_add->set_url(final_redirect.host());
+      redirect_to_add->set_url(final_redirect.GetHost());
       redirect_to_add->set_number_of_hits(1);
-      redirect_to_add->set_url_scheme(final_redirect.scheme());
+      redirect_to_add->set_url_scheme(final_redirect.GetScheme());
       redirect_to_add->set_url_port(final_redirect.EffectiveIntPort());
     }
   }
@@ -636,8 +629,10 @@ void ResourcePrefetchPredictor::LearnLcpp(
   }
   const bool data_updated =
       lcpp_data_->LearnLcpp(initiator_origin, url, inputs);
-  if (data_updated && observer_) {
-    observer_->OnLcppLearned();
+  if (data_updated) {
+    for (auto observer : test_observer_set_) {
+      observer->OnLcppLearned();
+    }
   }
 }
 
@@ -652,6 +647,36 @@ std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
     return std::nullopt;
   }
   return lcpp_data_->GetLcppStat(initiator_origin, url);
+}
+
+void ResourcePrefetchPredictor::OnLcpUpdatedForTesting(
+    const std::optional<std::string>& element_locator) {
+  for (auto observer : test_observer_set_) {
+    observer->OnLcpUpdated(element_locator);
+  }
+}
+
+void ResourcePrefetchPredictor::OnLcpTimingPredictedForTesting(
+    const std::optional<std::string>& element_locator) {
+  for (auto observer : test_observer_set_) {
+    observer->OnLcpTimingPredicted(element_locator);
+  }
+}
+
+void ResourcePrefetchPredictor::GetPreconnectAndPrefetchRequest(
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& url,
+    PreconnectPrediction& prediction) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The `initialization_state_` can be not `INITIALIZED` in the very first
+  // navigation on browser startup. Because this object is initialized on the
+  // first navigation.
+  if (initialization_state_ != INITIALIZED) {
+    return;
+  }
+
+  lcpp_data_->GetPreconnectAndPrefetchRequest(initiator_origin, url,
+                                              prediction);
 }
 
 void ResourcePrefetchPredictor::OnHistoryDeletions(
@@ -695,12 +720,12 @@ void ResourcePrefetchPredictor::ConnectToHistoryService() {
 // TestObserver.
 
 TestObserver::~TestObserver() {
-  predictor_->SetObserverForTesting(nullptr);
+  predictor_->RemoveObserverForTesting(this);
 }
 
 TestObserver::TestObserver(ResourcePrefetchPredictor* predictor)
     : predictor_(predictor) {
-  predictor_->SetObserverForTesting(this);
+  predictor_->AddObserverForTesting(this);
 }
 
 }  // namespace predictors

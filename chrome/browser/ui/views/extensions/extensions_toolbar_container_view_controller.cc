@@ -4,15 +4,45 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 
+#include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/common/pref_names.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_features.h"
+
+namespace {
+// Only attempt to launch the Extensions Zero State Promo IPH after this
+// timestamp, in order to reduce the cadence with which the this IPH calls
+// the User Educations system.
+std::optional<base::TimeTicks> g_zero_state_promo_next_show_time_opt =
+    std::nullopt;
+
+// The interval of time to wait for between attempting to launch the Zero
+// State Promo.
+constexpr base::TimeDelta kZeroStatePromoIntervalBetweenLaunchAttempt =
+    base::Minutes(2);
+}  // namespace
+
+bool ArePromotionsEnabled() {
+  PrefService* local_state = g_browser_process->local_state();
+  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
+// static
+void ExtensionsToolbarContainerViewController::WakeZeroStatePromoForTesting() {
+  g_zero_state_promo_next_show_time_opt = base::TimeTicks::Now();
+}
 
 ExtensionsToolbarContainerViewController::
     ExtensionsToolbarContainerViewController(
@@ -53,35 +83,55 @@ void ExtensionsToolbarContainerViewController::
 }
 
 void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
-  // IPH is only shown for the kExtensionsMenuAccessControl feature.
-  if (!base::FeatureList::IsEnabled(
+  // Extensions menu IPH, with priority order. These depend on the new access
+  // control feature.
+  if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    return;
+    ExtensionsRequestAccessButton* request_access_button =
+        extensions_container_->GetRequestAccessButton();
+    if (request_access_button->GetVisible()) {
+      const int extensions_size = request_access_button->GetExtensionsCount();
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
+      params.body_params = extensions_size;
+      params.title_params = extensions_size;
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          std::move(params));
+    }
+
+    if (extensions_container_->GetExtensionsButton()->state() ==
+        ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsMenuFeature);
+    }
   }
 
-  CHECK(browser_->window());
-
-  // Display IPH, with priority order.
-  ExtensionsRequestAccessButton* request_access_button =
-      extensions_container_->GetRequestAccessButton();
-  if (request_access_button->GetVisible()) {
-    const int extensions_size = request_access_button->GetExtensionsCount();
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
-    params.body_params = extensions_size;
-    params.title_params = extensions_size;
-    browser_->window()->MaybeShowFeaturePromo(std::move(params));
-  }
-
-  if (extensions_container_->GetExtensionsButton()->state() ==
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsMenuFeature);
+  // The Extensions Zero State promo prompts users without extensions to
+  // explore the Chrome Web Store. Only triggered for normal browser types.
+  if (browser_->type() == Browser::TYPE_NORMAL) {
+    if (!g_zero_state_promo_next_show_time_opt.has_value()) {
+      g_zero_state_promo_next_show_time_opt =
+          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+    } else if (base::TimeTicks::Now() >=
+                   g_zero_state_promo_next_show_time_opt.value() &&
+               ArePromotionsEnabled() &&
+               !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
+                   browser_->profile())) {
+      g_zero_state_promo_next_show_time_opt =
+          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsZeroStatePromoFeature);
+    }
   }
 }
 
 void ExtensionsToolbarContainerViewController::UpdateRequestAccessButton() {
   CHECK(extensions_container_);
+
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
 
   auto* web_contents = extensions_container_->GetCurrentWebContents();
   extensions::PermissionsManager::UserSiteSetting site_setting =
@@ -100,8 +150,9 @@ void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
   }
 
   // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHExtensionsMenuFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 
   extensions::MaybeShowExtensionControlledNewTabPage(browser_,
                                                      selection.new_contents);
@@ -126,7 +177,7 @@ void ExtensionsToolbarContainerViewController::TabChangedAt(
   }
 
   // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
+  BrowserUserEducationInterface::From(browser_)->AbortFeaturePromo(
       feature_engagement::kIPHExtensionsMenuFeature);
 
   // Request access button confirmation is tab-specific for a specific origin.
@@ -195,13 +246,13 @@ void ExtensionsToolbarContainerViewController::
 }
 
 void ExtensionsToolbarContainerViewController::
-    OnSiteAccessRequestDismissedByUser(
+    OnHostAccessRequestDismissedByUser(
         const extensions::ExtensionId& extension_id,
         const url::Origin& origin) {
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -213,7 +264,13 @@ void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestUpdated(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -225,7 +282,7 @@ void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestsCleared(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestsCleared(
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
       extensions_container_->GetCurrentWebContents());

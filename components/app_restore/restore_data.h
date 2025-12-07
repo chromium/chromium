@@ -14,10 +14,6 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_info.h"
 
-namespace base {
-class Value;
-}
-
 namespace app_restore {
 
 struct AppLaunchInfo;
@@ -184,10 +180,6 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   // IDs to the IDs present before this function was called. If the function is
   // called a second time, no change is done and the returned mapping is empty.
   base::flat_map<int32_t, int32_t> MakeWindowIdsUniqueForDeskTemplate();
-
-  // Update the app id for the browser app to lacros if lacros is enabled and is
-  // primary. This must be done before launching.
-  void UpdateBrowserAppIdToLacros();
 
   std::string ToString() const;
 

@@ -6,11 +6,9 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_SINGLE_INVALID_CONFIGURATION_H_
 
 #include <string>
-#include <unordered_set>
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 
 namespace feature_engagement {
@@ -40,7 +38,7 @@ class SingleInvalidConfiguration : public Configuration {
   const Configuration::GroupConfigMap& GetRegisteredGroupConfigs()
       const override;
   const std::vector<std::string> GetRegisteredGroups() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateConfig(const base::Feature& feature,
                     const ConfigurationProvider* provider) override;
   const Configuration::EventPrefixSet& GetRegisteredAllowedEventPrefixes()
@@ -60,7 +58,7 @@ class SingleInvalidConfiguration : public Configuration {
   // An empty map.
   GroupConfigMap group_configs_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // An empty set.
   EventPrefixSet event_prefixes_;
 #endif

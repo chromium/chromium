@@ -24,7 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IMAGE_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IMAGE_ELEMENT_H_
 
-#include <memory>
+#include <optional>
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -35,10 +35,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -165,10 +162,6 @@ class CORE_EXPORT HTMLImageElement
     return is_legacy_format_or_unoptimized_image_;
   }
 
-  // Keeps track of whether the image comes from an ad.
-  void SetIsAdRelated();
-  bool IsAdRelated() const override { return is_ad_related_; }
-
   // Keeps track whether this image is an LCP element.
   // If the element is reused for loading another image, this flag might be
   // retained so use with caution.
@@ -176,10 +169,6 @@ class CORE_EXPORT HTMLImageElement
   bool IsLCPElement() const { return is_lcp_element_; }
   void SetPredictedLcpElement() { is_predicted_lcp_element_ = true; }
   bool IsPredictedLcpElement() const { return is_predicted_lcp_element_; }
-
-  bool IsChangedShortlyAfterMouseover() const {
-    return is_changed_shortly_after_mouseover_;
-  }
 
   void InvalidateAttributeMapping();
 
@@ -223,20 +212,18 @@ class CORE_EXPORT HTMLImageElement
   void AdjustStyle(ComputedStyleBuilder&) override;
 
  private:
-  bool AreAuthorShadowsAllowed() const override { return false; }
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   // For mapping attributes from the <source> element, if any.
   bool HasExtraStyleForPresentationAttribute() const override {
     return source_ != nullptr;
   }
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   void SetLayoutDisposition(LayoutDisposition, bool force_reattach = false);
 
   void AttachLayoutTree(AttachContext&) override;
@@ -266,7 +253,7 @@ class CORE_EXPORT HTMLImageElement
   void CreateMediaQueryListIfDoesNotExist();
 
   // LocalFrameView::LifecycleNotificationObserver
-  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+  void DidFinishLayout() override;
 
   Member<HTMLImageLoader> image_loader_;
   Member<ViewportChangeListener> listener_;
@@ -284,19 +271,10 @@ class CORE_EXPORT HTMLImageElement
   bool is_legacy_format_or_unoptimized_image_ : 1;
   bool is_ad_related_ : 1;
   bool is_lcp_element_ : 1;
-  bool is_changed_shortly_after_mouseover_ : 1;
   bool is_auto_sized_ : 1;
   bool is_predicted_lcp_element_ : 1;
 
   HashSet<String> creator_scripts_;
-
-  bool image_ad_use_counter_recorded_ = false;
-
-  // The last rectangle reported to the `PageTimingMetricsSender`.
-  // `last_reported_ad_rect_` is empty if there's no report before, or if the
-  // last report was used to signal the removal of this element (i.e. both cases
-  // will be handled the same way).
-  gfx::Rect last_reported_ad_rect_;
 };
 
 }  // namespace blink

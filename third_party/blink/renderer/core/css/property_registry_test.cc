@@ -277,7 +277,7 @@ TEST_F(PropertyRegistryTest, MarkReferencedRegisterProperty) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(Registry().WasReferenced(AtomicString("--x")));
 
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       :root {
         --x: 10px;
@@ -297,7 +297,7 @@ TEST_F(PropertyRegistryTest, MarkReferencedAtProperty) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(Registry().WasReferenced(AtomicString("--x")));
 
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @property --x {
         syntax: "<length>";

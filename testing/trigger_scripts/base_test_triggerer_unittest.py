@@ -10,7 +10,8 @@ import os
 import unittest
 from unittest import mock
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 import base_test_triggerer
 
@@ -33,7 +34,7 @@ class UnitTest(fake_filesystem_unittest.TestCase):
 
     @unittest.skipUnless('TRIGGER_SCRIPT_INTEGRATION_TESTS' in os.environ,
                          'this is quick check test using real swarming server')
-    def test_list_bots(self):
+    def test_list_tasks(self):
         # This just checks list_bots runs without error.
         triggerer = base_test_triggerer.BaseTestTriggerer()
         with fake_filesystem_unittest.Pause(self):
@@ -49,7 +50,7 @@ class UnitTest(fake_filesystem_unittest.TestCase):
             '-cipd-package', 'path:name=123', '--scalar', '42',
             '--enable-resultdb'
         ]
-        go_args = base_test_triggerer._convert_to_go_swarming_args(args)
+        go_args = base_test_triggerer.convert_to_go_swarming_args(args)
         expected = [
             '--server', 'x.apphost.com', '--dimension', 'pool=ci',
             '--dimension', 'os=linux', '-env', 'FOO=foo', '--hello',
@@ -68,7 +69,7 @@ class UnitTest(fake_filesystem_unittest.TestCase):
         ]
         for args, ex in invalid_args:
             self.assertRaises(ex,
-                              base_test_triggerer._convert_to_go_swarming_args,
+                              base_test_triggerer.convert_to_go_swarming_args,
                               args)
 
     def test_trigger_tasks(self):

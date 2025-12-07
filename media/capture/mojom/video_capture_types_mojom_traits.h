@@ -185,6 +185,11 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return params.is_high_dpi_enabled;
   }
 
+  static uint32_t capture_version_source(
+      const media::VideoCaptureParams& params) {
+    return params.capture_version_source;
+  }
+
   static bool Read(media::mojom::VideoCaptureParamsDataView data,
                    media::VideoCaptureParams* out);
 };

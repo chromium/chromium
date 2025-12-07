@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/color/color_mixers.h"
-
 #include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
+#include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
@@ -16,8 +15,9 @@
 
 namespace ui {
 
-// Defines mappings for colors used in Ash and Lacros. Colors that
-// are only used in Ash are defined in //ash/style.
+// Defines mappings for colors used outside of //ash and includes overriding
+// some colors used in //ui. Colors that are only used in Ash are defined in
+// //ash/style.
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
@@ -75,6 +75,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
       SkColorSetRGB(0x40, 0x67, 0x43));
   mixer[kColorCrosSysComplementVariant] = {dark_mode ? complement.get(30)
                                                      : complement.get(95)};
+
+  // This matches cros.sys.input-field-on-base
+  mixer[kColorCrosSysInputFieldOnBase] = {
+      dark_mode ? SetAlpha(ui::kColorRefNeutral0, SK_AlphaOPAQUE * 0.6f)
+                : kColorRefNeutral95};
 }
 
 }  // namespace ui

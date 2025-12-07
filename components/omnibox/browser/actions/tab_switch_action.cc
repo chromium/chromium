@@ -4,12 +4,13 @@
 
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 
-#include <numeric>
+#include <utility>
 
-#include "build/build_config.h"
-#include "components/omnibox/browser/buildflags.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck

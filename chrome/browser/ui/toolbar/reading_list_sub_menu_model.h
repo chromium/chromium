@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_READING_LIST_SUB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_TOOLBAR_READING_LIST_SUB_MENU_MODEL_H_
 
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 // A menu model that builds the contents of "Reading List" submenu, which
 // includes "Add tab to Reading List" and "Show Reading List" entries.

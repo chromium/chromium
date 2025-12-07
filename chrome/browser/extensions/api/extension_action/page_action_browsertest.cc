@@ -12,8 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -35,7 +33,7 @@ const std::string kHashPageAHash = kHashPageA + "#asdf";
 const std::string kHashPageB =
     "/extensions/api_test/page_action/hash_change/test_page_B.html";
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class PageActionBrowserTest : public ExtensionBrowserTest,
                               public testing::WithParamInterface<ContextType> {
@@ -65,7 +63,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionCrash25562) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 }
@@ -81,13 +79,13 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageAction) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Navigate to a page with no feed.
   GURL no_feed = embedded_test_server()->GetURL(kNoFeedPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_feed));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), no_feed));
   // Make sure the page action goes away.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
@@ -103,17 +101,17 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, SameDocumentNavigation) {
 
   // Page action should become visible when we navigate here.
   GURL feed_url = embedded_test_server()->GetURL(kHashPageA);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Same-document navigation, page action should remain.
   feed_url = embedded_test_server()->GetURL(kHashPageAHash);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Not a same-document navigation, page action should go away.
   feed_url = embedded_test_server()->GetURL(kHashPageB);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
 
@@ -126,9 +124,8 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
 
   // Navigation prompts the location bar to load page actions.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, feed_url));
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
 
   UnloadExtension(last_loaded_extension_id());
@@ -137,10 +134,11 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
   EXPECT_EQ(0u, extension_action_test_util::GetTotalPageActionCount(tab));
 }
 
+// TODO(crbug.com/417057394): Remove log statements once the flakiness has been
+// figured out.
 // Regression test for crbug.com/44415.
 IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
-  ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = extensions::ExtensionRegistry::Get(profile());
 
   size_t size_before = registry->enabled_extensions().size();
 
@@ -159,13 +157,16 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
   ASSERT_EQ(size_before + 2, registry->enabled_extensions().size());
 
   std::string idA = extensionA->id();
+  LOG(INFO) << "Reloading extensionA";
   ReloadExtension(extensionA->id());
   // ExtensionA has changed, so refetch it.
   ASSERT_EQ(size_before + 2, registry->enabled_extensions().size());
   extensionA = registry->enabled_extensions().GetByID(idA);
 
+  LOG(INFO) << "Reloading extensionB";
   ReloadExtension(extensionB->id());
 
+  LOG(INFO) << "Reloading extensionA again";
   // This is where it would crash, before http://crbug.com/44415 was fixed.
   ReloadExtension(extensionA->id());
 }

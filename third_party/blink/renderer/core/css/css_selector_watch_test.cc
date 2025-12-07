@@ -33,7 +33,7 @@ void CSSSelectorWatchTest::ClearAddedRemoved(CSSSelectorWatch& watch) {
 }
 
 TEST_F(CSSSelectorWatchTest, RecalcOnDocumentChange) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div>
       <span id='x' class='a'></span>
       <span id='y' class='b'><span></span></span>
@@ -91,7 +91,7 @@ class CSSSelectorWatchCQTest : public CSSSelectorWatchTest {
 TEST_F(CSSSelectorWatchCQTest, ContainerQueryDisplayNone) {
   CSSSelectorWatch& watch = CSSSelectorWatch::From(GetDocument());
 
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .c #container {
         container-name: c1;

@@ -20,7 +20,6 @@
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
-#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/message_dispatcher.h"
@@ -37,6 +36,7 @@ class SequencedTaskRunner;
 namespace mojo {
 
 class AsyncFlusher;
+class ConnectionGroupRef;
 class PendingFlush;
 
 namespace internal {
@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   // Adds this object to a ConnectionGroup identified by |ref|. All receiving
   // pipe endpoints decoded from inbound messages on this MultiplexRouter will
   // be added to the same group.
-  void SetConnectionGroup(ConnectionGroup::Ref ref);
+  void SetConnectionGroup(ConnectionGroupRef ref);
 
   // ---------------------------------------------------------------------------
   // The following public methods are safe to call from any sequence.

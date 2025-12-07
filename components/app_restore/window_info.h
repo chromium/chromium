@@ -12,6 +12,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -43,6 +44,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) BrowserExtraInfo {
   // value conversions.
   std::vector<tab_groups::TabGroupInfo> tab_group_infos;
   // Lacros only, the ID of the lacros profile that this browser uses.
+  // TODO(crbug.com/381216377): remove this once usages of this member have
+  // been removed from outside the //components/app_restore.
   std::optional<uint64_t> lacros_profile_id;
 };
 
@@ -88,7 +91,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
 
   // Show state of a window before it was minimized. Empty for non-minimized
   // windows.
-  std::optional<ui::WindowShowState> pre_minimized_show_state_type;
+  std::optional<ui::mojom::WindowShowState> pre_minimized_show_state_type;
 
   // The snap percentage of a window, if it is snapped. For instance a snap
   // percentage of 75 means the window takes up three quarters of the work area.

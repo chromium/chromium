@@ -49,9 +49,9 @@ namespace {
 
 // The list of features which should be reported as deprecated.
 constexpr WebFeature kDeprecatedAddressSpaceFeatures[] = {
-    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
-    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
-    WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLoopbackV2,
+    WebFeature::kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2,
 };
 
 // Returns whether |feature| is deprecated.
@@ -131,8 +131,7 @@ void ResourceLoadObserverForFrame::DidStartRequest(
           Resource::ResourceTypeToString(resource_type, initiator_name),
           params.Url()};
       activity_logger->LogEvent(document_->GetExecutionContext(),
-                                "blinkRequestResource", argv.size(),
-                                argv.data());
+                                "blinkRequestResource", argv);
     }
   }
 }
@@ -273,8 +272,7 @@ void ResourceLoadObserverForFrame::DidReceiveData(
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   frame->Loader().Progress().IncrementProgress(identifier, chunk.size());
-  probe::DidReceiveData(GetProbe(), identifier, document_loader_,
-                        chunk.ptr_or_null_if_no_data(), chunk.size());
+  probe::DidReceiveData(GetProbe(), identifier, document_loader_, chunk);
 }
 
 void ResourceLoadObserverForFrame::DidReceiveTransferSizeUpdate(

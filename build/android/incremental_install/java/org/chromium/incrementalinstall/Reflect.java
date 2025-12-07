@@ -6,7 +6,7 @@ package org.chromium.incrementalinstall;
 
 import android.os.Build;
 
-import org.lsposed.hiddenapibypass.HiddenApiBypass;
+import org.lsposed.hiddenapibypass.LSPass;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -93,8 +93,8 @@ final class Reflect {
             } else {
                 List<Field> fields =
                         isStatic
-                                ? HiddenApiBypass.getStaticFields(clazz)
-                                : HiddenApiBypass.getInstanceFields(clazz);
+                                ? LSPass.getStaticFields(clazz)
+                                : LSPass.getInstanceFields(clazz);
                 for (Field field : fields) {
                     if (field.getName().equals(name)) {
                         return field;
@@ -154,8 +154,8 @@ final class Reflect {
         Class<?> rightClazz = right.getClass();
         if (left.isPrimitive()) {
             // TODO(agrieve): Fill in the rest as needed.
-            return left == boolean.class && rightClazz == Boolean.class
-                    || left == int.class && rightClazz == Integer.class;
+            return (left == boolean.class && rightClazz == Boolean.class)
+                    || (left == int.class && rightClazz == Integer.class);
         }
         return left.isAssignableFrom(rightClazz);
     }

@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SWITCHES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace password_manager {
 
@@ -21,6 +20,11 @@ extern const char kEnableShareButtonUnbranded[];
 // all of its state. Needs to be kept in sync with
 // chrome/common/chrome_switches.h
 inline constexpr char kUserDataDir[] = "user-data-dir";
+
+// This switch allows testing password change feature on provided URL. Password
+// change will be offered by submitting password form on any URL with matching
+// eTLD+1.
+inline constexpr char kPasswordChangeUrl[] = "password-change-url";
 
 }  // namespace password_manager
 

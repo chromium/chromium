@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
@@ -27,19 +27,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  * <p>The schema for the stamp is documented in go/rsearches-dd. There's a snapshot of the schema
  * below.
  */
+@NullMarked
 class RelatedSearchesStamp {
     // Related Searches "stamp" building and accessing details.
     static final String STAMP_PARAMETER = "ctxsl_rs";
-    private static final String RELATED_SEARCHES_STAMP_VERSION = "1";
-    private static final String RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE = "R";
-    private static final String RELATED_SEARCHES_NO_EXPERIMENT = "n";
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
-    private static final String NO_EXPERIMENT_STAMP =
-            RELATED_SEARCHES_STAMP_VERSION
-                    + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE
-                    + RELATED_SEARCHES_NO_EXPERIMENT;
 
     private final ContextualSearchPolicy mPolicy;
 

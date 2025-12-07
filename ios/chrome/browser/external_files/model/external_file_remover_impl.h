@@ -5,17 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_
 #define IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_
 
-#include <vector>
+#import <vector>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "components/sessions/core/tab_restore_service_observer.h"
+#import "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#import "base/time/time.h"
+#import "components/sessions/core/tab_restore_service_observer.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace sessions {
 class TabRestoreService;
@@ -28,8 +29,9 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // Creates an ExternalFileRemoverImpl to remove external documents not
   // referenced by the specified BrowserViewController. Use Remove to initiate
   // the removal.
-  ExternalFileRemoverImpl(ChromeBrowserState* browser_state,
-                          sessions::TabRestoreService* tab_restore_service);
+  ExternalFileRemoverImpl(ProfileIOS* profile,
+                          sessions::TabRestoreService* tab_restore_service,
+                          NSString* inbox_directory_path = nil);
 
   ExternalFileRemoverImpl(const ExternalFileRemoverImpl&) = delete;
   ExternalFileRemoverImpl& operator=(const ExternalFileRemoverImpl&) = delete;
@@ -49,15 +51,6 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
       sessions::TabRestoreService* service) override;
 
  private:
-  // Struct used to save information for delayed requests.
-  struct DelayedFileRemoveRequest {
-    bool remove_all_files;
-    base::ScopedClosureRunner closure_runner;
-  };
-  // Removes all files received from other apps if `all_files` is true.
-  // Otherwise, removes the unreferenced files only. `closure_runner` is called
-  // when the removal finishes.
-  void Remove(bool all_files, base::ScopedClosureRunner closure_runner);
   // Removes files received from other apps. If `all_files` is true, then
   // all files including files that may be referenced by tabs through restore
   // service or history. Otherwise, only the unreferenced files are removed.
@@ -65,13 +58,12 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   void RemoveFiles(bool all_files, base::ScopedClosureRunner closure_runner);
   // Returns all Referenced External files.
   NSSet* GetReferencedExternalFiles();
-  // Vector used to store delayed requests.
-  std::vector<DelayedFileRemoveRequest> delayed_file_remove_requests_;
   // Pointer to the tab restore service.
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
-  // ChromeBrowserState used to get the referenced files. Must outlive this
+  // ProfileIOS used to get the referenced files. Must outlive this
   // object.
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  raw_ptr<ProfileIOS> profile_ = nullptr;
+  __strong NSString* inbox_directory_path_;
   // Used to ensure that this class' methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   // Used to ensure `Remove()` is not run when this object is destroyed.

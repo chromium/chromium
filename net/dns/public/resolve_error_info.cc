@@ -25,13 +25,4 @@ ResolveErrorInfo& ResolveErrorInfo::operator=(const ResolveErrorInfo& other) =
 ResolveErrorInfo& ResolveErrorInfo::operator=(ResolveErrorInfo&& other) =
     default;
 
-bool ResolveErrorInfo::operator==(const ResolveErrorInfo& other) const {
-  return error == other.error &&
-         is_secure_network_error == other.is_secure_network_error;
-}
-
-bool ResolveErrorInfo::operator!=(const ResolveErrorInfo& other) const {
-  return !(*this == other);
-}
-
 }  // namespace net

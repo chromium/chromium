@@ -31,7 +31,7 @@ bool {{class_name}}::Validate(
 {%  for field in union.fields %}
     case {{enum_name}}::k{{field.name|under_to_camel}}: {
 {%-   set field_expr = "object->data.f_" ~ field.name %}
-{{validation_macros.validate_field(field, loop.index, field_expr, union.name, false)|indent(4)}}
+{{validation_macros.validate_field(field, loop.index, field_expr, false)|indent(4)}}
       return true;
     }
 {%- endfor %}

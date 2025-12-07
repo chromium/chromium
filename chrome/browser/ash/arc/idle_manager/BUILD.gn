@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("idle_manager") {
   sources = [
@@ -24,11 +24,12 @@ static_library("idle_manager") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/ash/arc/vmm",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/throttle",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/power",
     "//ui/display/manager",
   ]
@@ -44,7 +45,7 @@ static_library("test_support") {
     "arc_throttle_test_observer.h",
   ]
 
-  deps = [ "//chrome/browser/ash" ]
+  deps = [ "//chromeos/ash/components/throttle" ]
 }
 
 source_set("unit_tests") {
@@ -63,16 +64,16 @@ source_set("unit_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/arc/instance_throttle",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
-    "//chrome/browser/ash/arc/util",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//testing/gtest",

@@ -8,14 +8,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -24,15 +27,24 @@
 #include "content/renderer/worker/worker_thread_registry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client.mojom.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
 
 namespace {
+
+const char kLostConnectionErrorMessage[] =
+    "Lost connection to the service worker system.";
 
 void CreateSubresourceLoaderFactoryForProviderContext(
     mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
@@ -44,7 +56,7 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
     std::optional<blink::ServiceWorkerRouterRules> router_rules,
-    blink::EmbeddedWorkerStatus initial_running_status,
+    std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -101,6 +113,10 @@ ServiceWorkerProviderContext::TakeController() {
   return std::move(controller_);
 }
 
+bool ServiceWorkerProviderContext::container_is_blob_url_shared_worker() const {
+  return container_is_blob_url_shared_worker_;
+}
+
 int64_t ServiceWorkerProviderContext::GetControllerVersionId() const {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   return controller_version_id_;
@@ -128,6 +144,15 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
           blink::mojom::WebFeature::kServiceWorkerSkippedForSubresourceLoad);
       return nullptr;
     }
+  }
+
+  if (fetch_handler_bypass_option_ ==
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kSyntheticResponse ||
+      fetch_handler_bypass_option_ ==
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kSyntheticResponseDryRunMode) {
+    return nullptr;
   }
 
   if (!subresource_loader_factory_) {
@@ -176,13 +201,6 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactory() {
   return weak_wrapped_subresource_loader_factory_;
 }
 
-blink::mojom::ServiceWorkerContainerHost*
-ServiceWorkerProviderContext::container_host() const {
-  CHECK_EQ(blink::mojom::ServiceWorkerContainerType::kForWindow,
-           container_type_);
-  return container_host_ ? container_host_.get() : nullptr;
-}
-
 const std::set<blink::mojom::WebFeature>&
 ServiceWorkerProviderContext::used_features() const {
   return used_features_;
@@ -201,7 +219,20 @@ void ServiceWorkerProviderContext::SetWebServiceWorkerProvider(
 void ServiceWorkerProviderContext::RegisterWorkerClient(
     mojo::PendingRemote<blink::mojom::ServiceWorkerWorkerClient>
         pending_client) {
-  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::RegisterWorkerClient,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(pending_client)));
+    return;
+  }
+
   mojo::Remote<blink::mojom::ServiceWorkerWorkerClient> client(
       std::move(pending_client));
   client.set_disconnect_handler(base::BindOnce(
@@ -213,16 +244,45 @@ void ServiceWorkerProviderContext::RegisterWorkerClient(
 void ServiceWorkerProviderContext::CloneWorkerClientRegistry(
     mojo::PendingReceiver<blink::mojom::ServiceWorkerWorkerClientRegistry>
         receiver) {
-  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::CloneWorkerClientRegistry,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
+    return;
+  }
+
   worker_client_registry_receivers_.Add(this, std::move(receiver));
 }
 
 void ServiceWorkerProviderContext::OnNetworkProviderDestroyed() {
+  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   container_host_.reset();
 }
 
+bool ServiceWorkerProviderContext::has_container_host_for_testing() const {
+  CHECK_IS_TEST();
+  return container_host_.is_bound();
+}
+
 void ServiceWorkerProviderContext::DispatchNetworkQuiet() {
-  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::DispatchNetworkQuiet,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   if (controller_mode_ ==
       blink::mojom::ControllerServiceWorkerMode::kNoController) {
@@ -312,9 +372,30 @@ const blink::WebString ServiceWorkerProviderContext::client_id() const {
   return blink::WebString::FromUTF8(client_id_);
 }
 
+std::unique_ptr<blink::WebServiceWorkerProvider>
+ServiceWorkerProviderContext::CreateServiceWorkerProvider() {
+  return std::make_unique<content::WebServiceWorkerProviderImpl>(this);
+}
+
+void ServiceWorkerProviderContext::Destroy() const {
+  DestructOnMainThread();
+}
+
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(
     blink::mojom::ServiceWorkerWorkerClient* client) {
-  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ServiceWorkerProviderContext::UnregisterWorkerFetchContext,
+            weak_ptr_factory_.GetWeakPtr(), client));
+    return;
+  }
   std::erase_if(
       worker_clients_,
       [client](const mojo::Remote<blink::mojom::ServiceWorkerWorkerClient>&
@@ -412,7 +493,19 @@ void ServiceWorkerProviderContext::SetController(
 void ServiceWorkerProviderContext::PostMessageToClient(
     blink::mojom::ServiceWorkerObjectInfoPtr source,
     blink::TransferableMessage message) {
-  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::PostMessageToClient,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(source),
+                       std::move(message)));
+    return;
+  }
 
   if (web_service_worker_provider_) {
     web_service_worker_provider_->PostMessageToClient(std::move(source),
@@ -422,7 +515,17 @@ void ServiceWorkerProviderContext::PostMessageToClient(
 
 void ServiceWorkerProviderContext::CountFeature(
     blink::mojom::WebFeature feature) {
-  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ServiceWorkerProviderContext::CountFeature,
+                                  weak_ptr_factory_.GetWeakPtr(), feature));
+    return;
+  }
 
   // ServiceWorkerProviderContext keeps track of features in order to propagate
   // it to WebServiceWorkerProviderClient, which actually records the
@@ -444,6 +547,149 @@ void ServiceWorkerProviderContext::DestructOnMainThread() const {
     return;
   }
   delete this;
+}
+
+void ServiceWorkerProviderContext::Register(
+    const GURL& script_url,
+    blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
+    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings,
+    blink::mojom::ServiceWorkerContainerHost::RegisterCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread and wrap the callback
+    // to ensure it runs back on this thread.
+    auto wrapped_callback = base::BindPostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
+
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::Register,
+                       weak_ptr_factory_.GetWeakPtr(), script_url,
+                       std::move(options), std::move(fetch_client_settings),
+                       std::move(wrapped_callback)));
+    return;
+  }
+
+  if (container_host_) {
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::RegisterServiceWorker",
+                      perfetto::Track::FromPointer(this), "Scope",
+                      options->scope.spec(), "Script URL", script_url.spec());
+
+    container_host_->Register(std::move(script_url), std::move(options),
+                              std::move(fetch_client_settings),
+                              std::move(callback));
+  } else {
+    const std::string error_prefix("Failed to register a ServiceWorker: ");
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kAbort,
+                            error_prefix + kLostConnectionErrorMessage,
+                            nullptr);
+  }
+}
+
+void ServiceWorkerProviderContext::GetRegistration(
+    const GURL& document_url,
+    blink::mojom::ServiceWorkerContainerHost::GetRegistrationCallback
+        callback) {
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread and wrap the callback
+    // to ensure it runs back on this thread.
+    auto wrapped_callback = base::BindPostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
+
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::GetRegistration,
+                       weak_ptr_factory_.GetWeakPtr(), document_url,
+                       std::move(wrapped_callback)));
+    return;
+  }
+
+  if (container_host_) {
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::GetRegistration",
+                      perfetto::Track::FromPointer(this), "Document URL",
+                      document_url.spec());
+
+    container_host_->GetRegistration(document_url, std::move(callback));
+  } else {
+    const std::string error_prefix(
+        "Failed to get a ServiceWorkerRegistration: ");
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kAbort,
+                            error_prefix + kLostConnectionErrorMessage,
+                            nullptr);
+  }
+}
+
+void ServiceWorkerProviderContext::GetRegistrations(
+    blink::mojom::ServiceWorkerContainerHost::GetRegistrationsCallback
+        callback) {
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread and wrap the callback
+    // to ensure it runs back on this thread.
+    auto wrapped_callback = base::BindPostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::GetRegistrations,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(wrapped_callback)));
+    return;
+  }
+
+  if (container_host_) {
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::GetRegistrations",
+                      perfetto::Track::FromPointer(this));
+
+    container_host_->GetRegistrations(std::move(callback));
+  } else {
+    const std::string error_prefix(
+        "Failed to get ServiceWorkerRegistration objects: ");
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kAbort,
+                            error_prefix + kLostConnectionErrorMessage,
+                            std::nullopt);
+  }
+}
+
+void ServiceWorkerProviderContext::GetRegistrationForReady(
+    blink::mojom::ServiceWorkerContainerHost::GetRegistrationForReadyCallback
+        callback) {
+  CHECK(base::FeatureList::IsEnabled(
+            blink::features::kServiceWorkerInDedicatedWorker) ||
+        main_thread_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Queue a task to run this method on the main thread and wrap the callback
+    // to ensure it runs back on this thread.
+    auto wrapped_callback = base::BindPostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerProviderContext::GetRegistrationForReady,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(wrapped_callback)));
+    return;
+  }
+
+  if (container_host_) {
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::GetRegistrationForReady",
+                      perfetto::Track::FromPointer(this));
+
+    container_host_->GetRegistrationForReady(std::move(callback));
+  }
 }
 
 }  // namespace content

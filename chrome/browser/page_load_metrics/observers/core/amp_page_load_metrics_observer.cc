@@ -35,8 +35,6 @@ const char kHistogramAMPSubframeNavigationToInput[] =
     "Experimental.PageTiming.NavigationToInput.Subframe";
 const char kHistogramAMPSubframeInputToNavigation[] =
     "Experimental.PageTiming.InputToNavigation.Subframe";
-const char kHistogramAMPSubframeMainFrameToSubFrameNavigation[] =
-    "Experimental.PageTiming.MainFrameToSubFrameNavigationDelta.Subframe";
 const char kHistogramAMPSubframeFirstContentfulPaint[] =
     "PaintTiming.InputToFirstContentfulPaint.Subframe";
 const char kHistogramAMPSubframeFirstContentfulPaintFullNavigation[] =
@@ -47,8 +45,6 @@ const char kHistogramAMPSubframeLargestContentfulPaintFullNavigation[] =
     "PaintTiming.InputToLargestContentfulPaint.Subframe.FullNavigation";
 const char kHistogramAMPSubframeFirstInputDelay[] =
     "InteractiveTiming.FirstInputDelay4.Subframe";
-const char kHistogramAMPSubframeFirstInputDelayFullNavigation[] =
-    "InteractiveTiming.FirstInputDelay4.Subframe.FullNavigation";
 
 const char kHistogramAMPSubframeNumInteractions[] =
     "InteractiveTiming.NumInteractions.Subframe";
@@ -87,7 +83,7 @@ GURL GetViewerUrlFromCacheUrl(const GURL& url) {
   // (&viewerURL=<URL>). net::QueryIterator only operates on the query string,
   // so we copy the fragment into the query string, then iterate over the
   // parameters below.
-  std::string_view ref = url.ref_piece();
+  std::string_view ref = url.ref();
   GURL::Replacements replacements;
   replacements.SetQueryStr(ref);
   GURL modified_url = url.ReplaceComponents(replacements);
@@ -110,9 +106,9 @@ bool IsInPrerenderingBeforeActivation(
          page_load_metrics::PrerenderingState::kInPrerendering;
 }
 
-AMPPageLoadMetricsObserver::AMPPageLoadMetricsObserver() {}
+AMPPageLoadMetricsObserver::AMPPageLoadMetricsObserver() = default;
 
-AMPPageLoadMetricsObserver::~AMPPageLoadMetricsObserver() {}
+AMPPageLoadMetricsObserver::~AMPPageLoadMetricsObserver() = default;
 
 AMPPageLoadMetricsObserver::SubFrameInfo::SubFrameInfo() = default;
 AMPPageLoadMetricsObserver::SubFrameInfo::~SubFrameInfo() = default;
@@ -264,12 +260,9 @@ void AMPPageLoadMetricsObserver::OnInputTimingUpdate(
   if (it == amp_subframe_info_.end())
     return;
 
-  if (input_timing_delta.num_interactions) {
-    it->second.responsiveness_metrics_normalization
-        .AddNewUserInteractionLatencies(
-            input_timing_delta.num_interactions,
-            *(input_timing_delta.max_event_durations));
-  }
+  it->second.responsiveness_metrics_normalization
+      .AddNewUserInteractionLatencies(
+          input_timing_delta.user_interaction_latencies);
 }
 
 void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
@@ -431,15 +424,7 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
   builder.SetSubFrame_MainFrameToSubFrameNavigationDelta(
       -navigation_input_delta.InMilliseconds());
 
-  if (!current_main_frame_nav_info_->is_same_document_navigation) {
-    // For non same document navigations, we expect the main frame navigation
-    // to be before the subframe navigation. This measures the time from main
-    // frame navigation to the time the AMP subframe is added to the document.
-    PAGE_LOAD_HISTOGRAM(
-        std::string(kHistogramPrefix)
-            .append(kHistogramAMPSubframeMainFrameToSubFrameNavigation),
-        -navigation_input_delta);
-  } else {
+  if (current_main_frame_nav_info_->is_same_document_navigation) {
     if (navigation_input_delta >= base::TimeDelta()) {
       // Prerender case: subframe navigation happens before main frame
       // navigation.
@@ -529,12 +514,6 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
         base::UmaHistogramCustomTimes(
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelay),
-            subframe_info.timing->interactive_timing->first_input_delay.value(),
-            base::Milliseconds(1), base::Seconds(60), 50);
-      } else {
-        base::UmaHistogramCustomTimes(
-            std::string(kHistogramPrefix)
-                .append(kHistogramAMPSubframeFirstInputDelayFullNavigation),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
             base::Milliseconds(1), base::Seconds(60), 50);
       }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/common_saved_account_manager_bubble_controller.h"
 
 namespace base {
@@ -27,14 +28,13 @@ class SaveUpdateBubbleController
   // by the user.
   void OnNeverForThisSiteClicked();
 
+  // Called by the view when the "Not now" button is clicked.
+  void OnNotNowClicked();
+
   // The password bubble can switch its state between "save" and "update"
   // depending on the user input. |state_| only captures the correct state on
   // creation. This method returns true iff the current state is "update".
   bool IsCurrentStateUpdate() const;
-
-  // Returns true iff the bubble is supposed to show the footer about syncing
-  // to Google account.
-  bool ShouldShowFooter() const;
 
   // This method returns true iff the current state is "save" or "update" to a
   // password that is synced to the Google Account. This method covers
@@ -50,15 +50,6 @@ class SaveUpdateBubbleController
 
   // Returns true iff the password account store is used.
   bool IsUsingAccountStore();
-
-  // Returns true if the user must opt-in to the account-scoped password storage
-  // before the save bubble action can be concluded.
-  bool IsAccountStorageOptInRequiredBeforeSave();
-
-  // Users need to reauth to their account to opt-in using their password
-  // account storage. This method returns whether account auth attempt during
-  // the last password save process failed or not.
-  bool DidAuthForAccountStoreOptInFail() const;
 
   // PasswordBubbleControllerBase methods:
   std::u16string GetTitle() const override;

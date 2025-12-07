@@ -50,14 +50,11 @@ MANIFEST_INSTALL_CMD = [
 
 class TestImporterTest(LoggingTestCase):
 
-    def setUp(self):
-        super().setUp()
-        self.buganizer_client = mock.Mock()
-
     def mock_host(self):
         host = MockHost()
         host.builders = BuilderList({
             'cq-builder-a': {
+                'main': 'tryserver.blink',
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
@@ -66,6 +63,7 @@ class TestImporterTest(LoggingTestCase):
                 'is_try_builder': True,
             },
             'cq-builder-b': {
+                'main': 'tryserver.blink',
                 'port_name': 'mac-mac12',
                 'specifiers': ['Mac12', 'Release'],
                 'steps': {
@@ -98,7 +96,7 @@ class TestImporterTest(LoggingTestCase):
         return TestImporter(host,
                             github=github,
                             wpt_manifests=[manifest],
-                            buganizer_client=self.buganizer_client)
+                            builders=host.builders.all_try_builder_names())
 
     def test_update_expectations_for_cl_no_results(self):
         host = self.mock_host()
@@ -415,6 +413,41 @@ class TestImporterTest(LoggingTestCase):
             importer.wpt_git.local_commits(),
             [['Applying patch 14fd77e88e42147c57935c49d9e3b2412b8491b7']])
 
+    def test_apply_exportable_commits_locally_ignore(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(
+            host, github=MockWPTGitHub(pull_requests=[]))
+        importer.wpt_git = MockGit(cwd='/tmp/wpt', executive=host.executive)
+        # The commit hashes are SHA1s of the `position` argument.
+        commit_to_keep = MockChromiumCommit(
+            host,
+            subject='Keep',
+            patch='Fake patch contents...\n',
+            position='refs/heads/master@{#123}')
+        commit_to_ignore1 = MockChromiumCommit(
+            host,
+            subject='Ignore (1/2)',
+            patch='Fake patch contents...\n',
+            position='refs/heads/master@{#124}')
+        commit_to_ignore2 = MockChromiumCommit(
+            host,
+            subject='Ignore (2/2)',
+            patch='Fake patch contents...\n',
+            position='refs/heads/master@{#125}')
+        commits = [commit_to_ignore1, commit_to_keep, commit_to_ignore2]
+
+        with mock.patch.object(importer, 'exportable_but_not_exported_commits',
+                               return_value=commits):
+            applied = importer.apply_exportable_commits_locally(LocalWPT(host), {
+                '39e866ed54f106fdc751cfae9cf623df4ccf9082',
+                '688b9695f0',
+            })
+
+        self.assertEqual(applied, [commit_to_keep])
+        self.assertEqual(
+            importer.wpt_git.local_commits(),
+            [['Applying patch 14fd77e88e42147c57935c49d9e3b2412b8491b7']])
+
     def test_apply_exportable_commits_locally_returns_none_on_failure(self):
         host = self.mock_host()
         github = MockWPTGitHub(pull_requests=[])
@@ -488,7 +521,7 @@ class TestImporterTest(LoggingTestCase):
             fs.write_text_file(MOCK_WEB_TESTS + baseline, '')
 
         port = host.port_factory.get('test-linux-trusty')
-        importer = TestImporter(host, buganizer_client=mock.Mock())
+        importer = TestImporter(host)
         with mock.patch.object(host.port_factory, 'get', return_value=port):
             importer.delete_orphaned_baselines()
 
@@ -565,7 +598,8 @@ class TestImporterTest(LoggingTestCase):
                 NOAUTOREVERT=true
                 No-Export: true
                 Validate-Test-Flakiness: skip
-                Cq-Include-Trybots: luci.chromium.try:linux-blink-rel
+                Cq-Include-Trybots: luci.chromium.try:cq-builder-a
+                Cq-Include-Trybots: luci.chromium.try:cq-builder-b
                 """))
         self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])
@@ -720,13 +754,14 @@ class TestImporterTest(LoggingTestCase):
         gerrit_cl = mock.Mock(messages=[], number=999)
         gerrit_api = mock.Mock()
         gerrit_api.query_cls.return_value = [gerrit_cl]
-        self.buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
+        buganizer_client = mock.Mock()
+        buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
             **{
                 **dataclasses.asdict(issue),
                 'issue_id': 111,
             })
         notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
-                                  self.buganizer_client)
+                                  buganizer_client)
         with mock.patch(
                 'blinkpy.w3c.import_notifier.'
                 'DirectoryOwnersExtractor.read_dir_metadata',
@@ -736,7 +771,7 @@ class TestImporterTest(LoggingTestCase):
         gerrit_cl.post_comment.assert_called_once_with(
             'Filed bugs for failures introduced by this CL: '
             'https://crbug.com/111')
-        self.buganizer_client.NewIssue.assert_called_once()
+        buganizer_client.NewIssue.assert_called_once()
         self.assertEqual(
             git.show_blob(RELATIVE_WEB_TESTS + 'TestExpectations',
                           'HEAD').decode(),
@@ -792,8 +827,11 @@ class TestImporterTest(LoggingTestCase):
         local_wpt = MockLocalWPT()
         gerrit_api = mock.Mock()
         gerrit_api.query_cls.return_value = [mock.Mock(messages=[])]
-        notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
-                                  self.buganizer_client)
+        notifier = ImportNotifier(host,
+                                  git,
+                                  local_wpt,
+                                  gerrit_api,
+                                  buganizer_client=mock.Mock())
         with mock.patch(
                 'blinkpy.w3c.import_notifier.'
                 'DirectoryOwnersExtractor.read_dir_metadata',
@@ -827,6 +865,7 @@ class TestImporterTest(LoggingTestCase):
                                     results=frozenset(
                                         [typ_types.ResultType.Failure]))
         notifier = mock.Mock(default_port=host.port_factory.get('test'))
+        notifier.buganizer_client = mock.Mock()
         notifier.new_failures_by_directory = {
             'external/wpt/foo': DirectoryFailures({exp_path: [exp]}),
         }
@@ -844,8 +883,9 @@ class TestImporterTest(LoggingTestCase):
             'WARNING: Failed to automatically submit https://crrev.com/c/1234. '
             'Pinging https://crbug.com/111 for help.\n',
         ])
-        self.buganizer_client.NewComment.assert_called_once_with(111, mock.ANY)
-        _, message = self.buganizer_client.NewComment.call_args.args
+        notifier.buganizer_client.NewComment.assert_called_once_with(
+            111, mock.ANY)
+        _, message = notifier.buganizer_client.NewComment.call_args.args
         self.assertIn('https://crrev.com/c/1234 backfills TestExpectations',
                       message)
         self.assertIn(['git', 'cl', 'set-close'], importer.git_cl.calls)

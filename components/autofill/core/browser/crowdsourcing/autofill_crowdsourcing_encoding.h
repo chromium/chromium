@@ -5,15 +5,109 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_ENCODING_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_ENCODING_H_
 
+#include <optional>
 #include <string>
 
-#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
+
+// Specifies if the Username First Flow vote has intermediate values.
+enum class IsMostRecentSingleUsernameCandidate {
+  // Field is not part of Username First Flow.
+  kNotPartOfUsernameFirstFlow = 0,
+  // Field is candidate for username in Username First Flow and has no
+  // intermediate fields
+  kMostRecentCandidate = 1,
+  // Field is candidate for username in Username First Flow and has intermediate
+  // fields between candidate and password form.
+  kHasIntermediateValuesInBetween = 2,
+};
+
+struct EncodeUploadRequestOptions {
+  struct Field {
+    Field();
+    Field(const Field&&) = delete;
+    Field(Field&&);
+    Field& operator=(const Field&&) = delete;
+    Field& operator=(Field&&);
+    ~Field();
+
+    // All format strings that match the field value.
+    std::set<std::pair<FormatString_Type, std::u16string>> format_strings;
+
+    // Strength of the single username vote signal, if applicable.
+    std::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
+        single_username_vote_type;
+
+    // If set to `kMostRecentCandidate`, the field is candidate for username
+    // in Username First Flow and the field has no intermediate
+    // fields (like OTP/Captcha) between the candidate and the password form.
+    // If set to `kHasIntermediateValuesInBetween`, the field is candidate for
+    // username in Username First Flow, but has intermediate fields between the
+    // candidate and the password form.
+    // If set to `kNotPartOfUsernameFirstFlow`, the field is not part of
+    // Username First Flow.
+    IsMostRecentSingleUsernameCandidate
+        is_most_recent_single_username_candidate =
+            IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
+
+    // The type of password generation event, if it happened.
+    AutofillUploadContents::Field::PasswordGenerationType generation_type =
+        AutofillUploadContents::Field::NO_GENERATION;
+
+    // Whether the generated password was changed by user.
+    bool generated_password_changed = false;
+
+    // For username fields, a low-entropy hash of the field's initial value
+    // before user-interactions or automatic fillings. This field is used to
+    // detect static placeholders. On non-username fields, it is not set.
+    std::optional<uint32_t> initial_value_hash;
+
+    // The vote type, if the autofill type is USERNAME or any password vote.
+    // Otherwise, the field is ignored. `vote_type` provides context as to what
+    // triggered the vote.
+    AutofillUploadContents::Field::VoteType vote_type =
+        AutofillUploadContents::Field::NO_INFORMATION;
+  };
+
+  EncodeUploadRequestOptions();
+  EncodeUploadRequestOptions(const EncodeUploadRequestOptions&) = delete;
+  EncodeUploadRequestOptions(EncodeUploadRequestOptions&&);
+  EncodeUploadRequestOptions& operator=(const EncodeUploadRequestOptions&) =
+      delete;
+  EncodeUploadRequestOptions& operator=(EncodeUploadRequestOptions&&);
+  ~EncodeUploadRequestOptions();
+
+  // The randomized encoder to use to encode form metadata during upload.
+  // If this is nullptr, no randomized metadata is sent.
+  std::optional<RandomizedEncoder> encoder;
+
+  // The language detected for this form's page, before any translations
+  // performed by Chrome.
+  LanguageCode current_page_language;
+
+  // The type of the event that was taken as an indication that the form has
+  // been successfully submitted.
+  mojom::SubmissionIndicatorEvent submission_event =
+      mojom::SubmissionIndicatorEvent::NONE;
+
+  // The signatures of forms recently submitted on the same origin within a
+  // small period of time.
+  FormStructure::FormAssociations form_associations;
+
+  FieldTypeSet available_field_types;
+
+  std::optional<FormSignature> login_form_signature;
+
+  bool observed_submission = false;
+
+  std::map<FieldGlobalId, Field> fields;
+};
 
 // Encodes the given FormStructure as a vector of protobufs.
 //
@@ -48,9 +142,7 @@ namespace autofill {
 // form signatures of forms 1 and 2.
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
-    const FieldTypeSet& available_field_types,
-    std::string_view login_form_signature,
-    bool observed_submission);
+    const EncodeUploadRequestOptions& options);
 
 // Encodes the list of `forms` and their fields that are valid into an
 // `AutofillPageQueryRequest` proto. The queried FormSignatures and
@@ -60,7 +152,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 // signatures.
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
 // `ProcessServerPredictionsQueryResponse`.
@@ -68,18 +160,15 @@ void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager);
 
 // Parses the field types from the server query response. `forms` must be the
 // same as the one passed to `EncodeAutofillPageQueryRequest()` when
-// constructing the query. `form_interactions_ukm_logger` is used to provide
-// logs to UKM and can be null in tests.
+// constructing the query.
 void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager);
 
 }  // namespace autofill

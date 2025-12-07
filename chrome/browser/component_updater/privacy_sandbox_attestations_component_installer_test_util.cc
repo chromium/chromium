@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -30,24 +31,26 @@ bool WritePrivacySandboxAttestationsFileForTesting(
 
 bool InstallPrivacySandboxAttestationsComponentForTesting(
     const privacy_sandbox::PrivacySandboxAttestationsProto& proto,
-    const base::Version& version) {
+    const base::Version& version,
+    bool is_pre_installed) {
   // Serialize to string.
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
 
-  return InstallPrivacySandboxAttestationsComponentForTesting(serialized_proto,
-                                                              version);
+  return InstallPrivacySandboxAttestationsComponentForTesting(
+      serialized_proto, version, is_pre_installed);
 }
 
 bool InstallPrivacySandboxAttestationsComponentForTesting(
     std::string_view contents,
-    const base::Version& version) {
+    const base::Version& version,
+    bool is_pre_installed) {
   // Allow blocking for file IO.
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Write the serialized proto to the attestation list file.
-  base::FilePath install_dir =
-      GetPrivacySandboxAtteststionsComponentInstallDir(version);
+  base::FilePath install_dir = GetPrivacySandboxAtteststionsComponentInstallDir(
+      version, is_pre_installed);
   if (!base::CreateDirectory(install_dir)) {
     return false;
   }
@@ -64,22 +67,39 @@ bool InstallPrivacySandboxAttestationsComponentForTesting(
           R"({
                "manifest_version": 1,
                "name": "Privacy Sandbox Attestations",
-               "version": "$1"
+               "version": "$1",
+               "pre_installed": $2
               })",
-          /*subst=*/{version.GetString()}, /*offsets=*/nullptr));
+          /*subst=*/
+          {version.GetString(), base::ToString(is_pre_installed)},
+          /*offsets=*/nullptr));
 }
 
 base::FilePath GetPrivacySandboxAtteststionsComponentInstallDir(
-    const base::Version& version) {
-  // Get component updater directory that contains user-wide components.
+    const base::Version& version,
+    bool is_pre_installed) {
+  // Get component updater directory according to whether this is a
+  // pre-installed component.
   base::FilePath component_updater_dir;
-  base::PathService::Get(DIR_COMPONENT_USER, &component_updater_dir);
+  base::PathService::Get(is_pre_installed
+                             ? component_updater::DIR_COMPONENT_PREINSTALLED
+                             : component_updater::DIR_COMPONENT_USER,
+                         &component_updater_dir);
 
   CHECK(!component_updater_dir.empty());
 
+  base::FilePath install_dir =
+      Installer::GetInstalledDirectory(component_updater_dir);
+
+  if (!is_pre_installed) {
+    // If this is a downloaded attestation file, it needs to be put inside a
+    // directory that is named using its version number. Otherwise, for the
+    // pre-install directory, the component files reside directly under it.
+    install_dir = install_dir.AppendASCII(version.GetString());
+  }
+
   // Write the serialized proto to the attestation list file.
-  return Installer::GetInstalledDirectory(component_updater_dir)
-      .AppendASCII(version.GetString());
+  return install_dir;
 }
 
 }  // namespace component_updater

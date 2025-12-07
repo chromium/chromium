@@ -1,0 +1,123 @@
+Tests DOM.performSearch command.
+Nodes:
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : class
+                [1] : find-me
+                [2] : id
+                [3] : in-main-frame
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : div
+            nodeId : <number>
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : class
+                [1] : find-me
+                [2] : id
+                [3] : in-shadow-dom-in-main-frame
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : div
+            nodeId : <number>
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : class
+                [1] : find-me
+                [2] : id
+                [3] : in-iframe
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : div
+            nodeId : <number>
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : class
+                [1] : find-me
+                [2] : id
+                [3] : in-shadow-dom-in-iframe
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : div
+            nodeId : <number>
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 2
+            frameId : <string>
+            localName : html
+            nodeId : <number>
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 2
+            frameId : <string>
+            localName : html
+            nodeId : <number>
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+    }
+    sessionId : <string>
+}
+

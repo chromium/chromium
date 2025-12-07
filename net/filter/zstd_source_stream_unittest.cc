@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/filter/zstd_source_stream.h"
+
+#include <stdint.h>
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -71,7 +70,7 @@ class ZstdSourceStreamTest : public PlatformTest {
   }
 
   int ReadStream(net::CompletionOnceCallback callback) {
-    return zstd_stream_->Read(out_buffer(), out_buffer_size(),
+    return zstd_stream_->Read(out_buffer_.get(), out_buffer_->size(),
                               std::move(callback));
   }
 
@@ -83,20 +82,20 @@ class ZstdSourceStreamTest : public PlatformTest {
       if (bytes_read <= OK) {
         break;
       }
-      actual_output.append(out_data(), bytes_read);
+      actual_output.append(
+          base::as_string_view(out_buffer_->first(bytes_read)));
     }
     return actual_output;
   }
 
   IOBuffer* out_buffer() { return out_buffer_.get(); }
-  char* out_data() { return out_buffer_->data(); }
-  size_t out_buffer_size() { return out_buffer_->size(); }
 
   std::string source_data() { return source_data_; }
   size_t source_data_len() { return source_data_.length(); }
 
-  char* encoded_buffer() { return &encoded_buffer_[0]; }
-  size_t encoded_buffer_len() { return encoded_buffer_.length(); }
+  base::span<const uint8_t> encoded_span() const {
+    return base::as_byte_span(encoded_buffer_);
+  }
 
   MockSourceStream* source() { return source_; }
   SourceStream* zstd_stream() { return zstd_stream_.get(); }
@@ -116,7 +115,7 @@ class ZstdSourceStreamTest : public PlatformTest {
 };
 
 TEST_F(ZstdSourceStreamTest, EmptyStream) {
-  source()->AddReadResult(nullptr, 0, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
   TestCompletionCallback callback;
   int result = ReadStream(callback.callback());
   EXPECT_EQ(OK, result);
@@ -127,13 +126,13 @@ TEST_F(ZstdSourceStreamTest, EmptyStream) {
 TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockSync) {
   base::HistogramTester histograms;
 
-  source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
-                          MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_span(), OK, MockSourceStream::SYNC);
 
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
+  EXPECT_EQ(base::as_string_view(out_buffer()->first(source_data_len())),
+            source_data());
 
   // Resetting streams is needed to call the destructor of ZstdSourceStream,
   // where the histograms are recorded.
@@ -146,13 +145,12 @@ TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockSync) {
 }
 
 TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInOneRead) {
-  std::string response_with_extra_data(encoded_buffer(), encoded_buffer_len());
+  std::string response_with_extra_data(base::as_string_view(encoded_span()));
   response_with_extra_data.append(100, 'x');
-  source()->AddReadResult(response_with_extra_data.data(),
-                          response_with_extra_data.length(), OK,
+  source()->AddReadResult(base::as_byte_span(response_with_extra_data), OK,
                           MockSourceStream::SYNC);
   // Add an EOF.
-  source()->AddReadResult(nullptr, 0, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
 
   std::string actual_output = ReadStreamUntilDone();
 
@@ -161,14 +159,11 @@ TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInOneRead) {
 }
 
 TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInDifferentRead) {
-  std::string extra_data;
-  extra_data.append(100, 'x');
-  source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
-                          MockSourceStream::SYNC);
-  source()->AddReadResult(extra_data.c_str(), extra_data.length(), OK,
-                          MockSourceStream::SYNC);
+  std::vector<uint8_t> extra_data(100, 'x');
+  source()->AddReadResult(encoded_span(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(extra_data, OK, MockSourceStream::SYNC);
   // Add an EOF.
-  source()->AddReadResult(extra_data.c_str(), 0, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
 
   std::string actual_output = ReadStreamUntilDone();
 
@@ -177,20 +172,21 @@ TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInDifferentRead) {
 }
 
 TEST_F(ZstdSourceStreamTest, DecodeZstdTwoBlockSync) {
-  source()->AddReadResult(encoded_buffer(), 10, OK, MockSourceStream::SYNC);
-  source()->AddReadResult(encoded_buffer() + 10, encoded_buffer_len() - 10, OK,
+  source()->AddReadResult(encoded_span().first(10u), OK,
+                          MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_span().subspan(10u), OK,
                           MockSourceStream::SYNC);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
+  EXPECT_EQ(base::as_string_view(out_buffer()->first(source_data_len())),
+            source_data());
 }
 
 TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockAsync) {
-  source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
-                          MockSourceStream::ASYNC);
+  source()->AddReadResult(encoded_span(), OK, MockSourceStream::ASYNC);
   // Add an EOF.
-  source()->AddReadResult(nullptr, 0, OK, MockSourceStream::ASYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::ASYNC);
 
   scoped_refptr<IOBuffer> buffer =
       base::MakeRefCounted<IOBufferWithSize>(source_data_len());
@@ -207,7 +203,8 @@ TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockAsync) {
     EXPECT_GE(static_cast<int>(kDefaultBufferSize), bytes_read);
     EXPECT_GE(bytes_read, 0);
     if (bytes_read > 0) {
-      actual_output.append(out_data(), bytes_read);
+      actual_output.append(
+          base::as_string_view(out_buffer()->first(bytes_read)));
     }
   } while (bytes_read > 0);
   EXPECT_EQ(source_data_len(), actual_output.size());
@@ -241,9 +238,9 @@ TEST_F(ZstdSourceStreamTest, DecodeTwoConcatenatedFrames) {
 
   // Decompress content.
   auto source = std::make_unique<MockSourceStream>();
-  source->AddReadResult(encoded_buffer.c_str(), encoded_buffer.size(), OK,
+  source->AddReadResult(base::as_byte_span(encoded_buffer), OK,
                         MockSourceStream::SYNC);
-  source->AddReadResult(nullptr, 0, OK, MockSourceStream::SYNC);
+  source->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
   source->set_expect_all_input_consumed(false);
 
   std::unique_ptr<SourceStream> zstd_stream =
@@ -257,7 +254,7 @@ TEST_F(ZstdSourceStreamTest, DecodeTwoConcatenatedFrames) {
     if (bytes_read <= OK) {
       break;
     }
-    actual_output.append(out_buffer->data(), bytes_read);
+    actual_output.append(base::as_string_view(out_buffer->first(bytes_read)));
   }
 
   EXPECT_EQ(source_data.length(), actual_output.size());
@@ -286,7 +283,7 @@ TEST_F(ZstdSourceStreamTest, WithDictionary) {
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
 
   auto source = std::make_unique<MockSourceStream>();
-  source->AddReadResult(encoded_buffer.c_str(), encoded_buffer.size(), OK,
+  source->AddReadResult(base::as_byte_span(encoded_buffer), OK,
                         MockSourceStream::SYNC);
 
   std::unique_ptr<SourceStream> zstd_stream =
@@ -298,8 +295,8 @@ TEST_F(ZstdSourceStreamTest, WithDictionary) {
                                      callback.callback());
 
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(
-      0, memcmp(out_buffer->data(), source_data().c_str(), source_data_len()));
+  EXPECT_EQ(base::as_string_view(out_buffer->first(source_data_len())),
+            source_data());
 }
 
 TEST_F(ZstdSourceStreamTest, WindowSizeTooBig) {
@@ -332,16 +329,14 @@ TEST_F(ZstdSourceStreamTest, WindowSizeTooBig) {
       0x00, 0x02, 0x00, 0x10, 0x00, 0x02, 0x00, 0x10, 0x00, 0x02, 0x00, 0x10,
       0x00, 0x02, 0x00, 0x10, 0x00, 0x02, 0x00, 0x10, 0x00, 0x02, 0x00, 0x10,
       0x00, 0x03, 0x00, 0x10, 0x00, 0x6e, 0x70, 0x97, 0x34};
-  out_data()[0] = 'e';
+  out_buffer()->span()[0] = 'e';
 
-  source()->AddReadResult(reinterpret_cast<const char*>(kNineMegWindowZstd),
-                          sizeof(kNineMegWindowZstd), OK,
-                          MockSourceStream::SYNC);
+  source()->AddReadResult(kNineMegWindowZstd, OK, MockSourceStream::SYNC);
 
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(net::ERR_ZSTD_WINDOW_SIZE_TOO_BIG, bytes_read);
-  EXPECT_EQ(0, memcmp(out_data(), "e", 1));
+  EXPECT_EQ(out_buffer()->span()[0], 'e');
 
   // Resetting streams is needed to call the destructor of ZstdSourceStream,
   // where the histograms are recorded.

@@ -10,7 +10,10 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A custom version of a TextMessagePreference that allows for very long summary texts. */
+@NullMarked
 public class LongSummaryTextMessagePreference extends TextMessagePreference {
     /** Constructor for inflating from XML. */
     public LongSummaryTextMessagePreference(Context context, AttributeSet attrs) {

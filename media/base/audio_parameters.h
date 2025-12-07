@@ -18,7 +18,7 @@
 #include "media/base/audio_latency.h"
 #include "media/base/audio_point.h"
 #include "media/base/channel_layout.h"
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 
 namespace media {
@@ -38,18 +38,16 @@ constexpr int kParametersAlignment = 16;
 // ****WARNING****: Do not change the field types or ordering of these fields
 // without checking that alignment is correct. The structs may be concurrently
 // accessed by both 32bit and 64bit process in shmem. http://crbug.com/781095.
-struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
-    AudioInputBufferParameters {
+struct MEDIA_EXPORT alignas(kParametersAlignment) AudioInputBufferParameters {
   double volume;
   int64_t capture_time_us;     // base::TimeTicks in microseconds.
   int64_t glitch_duration_us;  // base::TimeDelta in microseconds.
   uint32_t glitch_count;
   uint32_t size;
   uint32_t id;
-  bool key_pressed;
+  uint32_t has_unread_data;
 };
-struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
-    AudioOutputBufferParameters {
+struct MEDIA_EXPORT alignas(kParametersAlignment) AudioOutputBufferParameters {
   int64_t delay_us;            // base::TimeDelta in microseconds.
   int64_t delay_timestamp_us;  // base::TimeTicks in microseconds.
   int64_t glitch_duration_us;  // base::TimeDelta in microseconds.
@@ -61,16 +59,16 @@ struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
 #pragma warning(pop)
 #endif
 
-struct MEDIA_SHMEM_EXPORT AudioInputBuffer {
+struct MEDIA_EXPORT AudioInputBuffer {
   AudioInputBufferParameters params;
-  int8_t audio[1];
+  uint8_t audio[1];
 };
-struct MEDIA_SHMEM_EXPORT AudioOutputBuffer {
+struct MEDIA_EXPORT AudioOutputBuffer {
   AudioOutputBufferParameters params;
-  int8_t audio[1];
+  uint8_t audio[1];
 };
 
-struct MEDIA_SHMEM_EXPORT AudioRendererAlgorithmParameters {
+struct MEDIA_EXPORT AudioRendererAlgorithmParameters {
   // The maximum size for the audio buffer.
   base::TimeDelta max_capacity;
 
@@ -92,33 +90,33 @@ class AudioParameters;
 // |shared_memory_count| AudioInputBuffers, with enough memory for AudioBus
 // data, using |parameters| (or alternatively |channels| and |frames|). The
 // functions not returning a CheckedNumeric will CHECK on overflow.
-MEDIA_SHMEM_EXPORT base::CheckedNumeric<uint32_t>
-ComputeAudioInputBufferSizeChecked(const AudioParameters& parameters,
-                                   uint32_t audio_bus_count);
+MEDIA_EXPORT base::CheckedNumeric<uint32_t> ComputeAudioInputBufferSizeChecked(
+    const AudioParameters& parameters,
+    uint32_t audio_bus_count);
 
-MEDIA_SHMEM_EXPORT uint32_t
+MEDIA_EXPORT uint32_t
 ComputeAudioInputBufferSize(const AudioParameters& parameters,
                             uint32_t audio_bus_count);
 
-MEDIA_SHMEM_EXPORT uint32_t
-ComputeAudioInputBufferSize(int channels, int frames, uint32_t audio_bus_count);
+MEDIA_EXPORT uint32_t ComputeAudioInputBufferSize(int channels,
+                                                  int frames,
+                                                  uint32_t audio_bus_count);
 
 // These convenience functions safely computes the size required for an
 // AudioOutputBuffer with enough memory for AudioBus data using |parameters| (or
 // alternatively |channels| and |frames|). The functions not returning a
 // CheckedNumeric will CHECK on overflow.
-MEDIA_SHMEM_EXPORT base::CheckedNumeric<uint32_t>
-ComputeAudioOutputBufferSizeChecked(const AudioParameters& parameters);
+MEDIA_EXPORT base::CheckedNumeric<uint32_t> ComputeAudioOutputBufferSizeChecked(
+    const AudioParameters& parameters);
 
-MEDIA_SHMEM_EXPORT uint32_t
+MEDIA_EXPORT uint32_t
 ComputeAudioOutputBufferSize(const AudioParameters& parameters);
 
-MEDIA_SHMEM_EXPORT uint32_t ComputeAudioOutputBufferSize(int channels,
-                                                         int frames);
+MEDIA_EXPORT uint32_t ComputeAudioOutputBufferSize(int channels, int frames);
 
 // Channel count and ChannelLayout pair, with helper methods to enforce safe
 // construction.
-class MEDIA_SHMEM_EXPORT ChannelLayoutConfig {
+class MEDIA_EXPORT ChannelLayoutConfig {
  public:
   ChannelLayoutConfig(const ChannelLayoutConfig& other);
   ChannelLayoutConfig& operator=(const ChannelLayoutConfig& other);
@@ -152,7 +150,7 @@ template <>
 ChannelLayoutConfig ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_DISCRETE>() =
     delete;
 
-class MEDIA_SHMEM_EXPORT AudioParameters {
+class MEDIA_EXPORT AudioParameters {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AudioEncodingFormat
@@ -188,6 +186,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   // Bitmasks to determine whether certain platform (typically hardware) audio
   // effects should be enabled.
+  // Ensure that EffectsMaskToString() is updated to match the content of this
+  // enumerator when it is updated.
   enum PlatformEffectsMask {
     NO_EFFECTS = 0x0,
     ECHO_CANCELLER = 1 << 0,
@@ -196,9 +196,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     HOTWORD = 1 << 3,
     NOISE_SUPPRESSION = 1 << 4,
     AUTOMATIC_GAIN_CONTROL = 1 << 5,
-    EXPERIMENTAL_ECHO_CANCELLER = 1 << 6,  // Indicates an echo canceller is
-                                           // available that should only
-                                           // experimentally be enabled.
+    // EXPERIMENTAL_ECHO_CANCELLER used to hold 1 << 6, but has been deprecated.
     MULTIZONE = 1 << 7,
     AUDIO_PREFETCH = 1 << 8,
     ALLOW_DSP_ECHO_CANCELLER = 1 << 9,
@@ -223,6 +221,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     VOICE_ISOLATION = 1 << 20,  // Enable/Disable platform voice isolation.
                                 // Only meaningful when
                                 // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
+
+    DEEP_NOISE_SUPPRESSION = 1 << 21,  // Also called Voice Focus on Windows.
   };
 
   struct HardwareCapabilities {
@@ -262,6 +262,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     // Require audio processing offload.
     bool require_audio_offload = false;
   };
+
+  // Returns a string which contains the full bitmask for the given `mask`.
+  // Example: mask=3 => returns "ECHO_CANCELLER | DUCKING".
+  static std::string EffectsMaskToString(int mask);
 
   AudioParameters();
 

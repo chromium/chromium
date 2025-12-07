@@ -10,8 +10,8 @@ the window management sense). Examples:
 
 Chromium uses several layers of abstraction on top of these primitives:
   * NativeWindow: A handle to a top-level window. On platforms that run aura
-    (Windows, Linux, Lacros, Ash) this is just an aura::Window. Otherwise this
-    is a handle to the window-manager client-side primitive mentioned above.
+    (Windows, Linux, Ash) this is just an aura::Window. Otherwise this is a
+    handle to the window-manager client-side primitive mentioned above.
   * NativeView: A handle to a native view. Similar to NativeWindow. Not all
     window managers distinguish between View and Window.
   * AcceleratedWidget: This is a handle to a client-side primitive that is
@@ -48,4 +48,3 @@ Some implications:
 For example: if we display a popup (child aura::Window), then
 DesktopWindowTreeHost::IsActive() will return true whereas
 DesktopNativeWidgetAura::IsActive() will return false.
-

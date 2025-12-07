@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -26,6 +25,7 @@
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX));
 
+class Browser;
 class ExtensionEnableFlow;
 
 namespace content {
@@ -72,6 +72,7 @@ class AppHomePageHandler
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // extensions::ExtensionRegistryObserver:
@@ -155,7 +156,8 @@ class AppHomePageHandler
   void FillWebAppInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
   void FillExtensionInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
   app_home::mojom::AppInfoPtr CreateAppInfoPtrFromWebApp(
-      const webapps::AppId& app_id);
+      const webapps::AppId& app_id,
+      bool is_update = false);
   app_home::mojom::AppInfoPtr CreateAppInfoPtrFromExtension(
       const extensions::Extension* extension);
 

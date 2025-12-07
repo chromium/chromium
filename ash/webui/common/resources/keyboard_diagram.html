@@ -85,6 +85,49 @@
     grid-column: span 10;
   }
 
+  /* Split modifier keyboard adjustments */
+
+  [data-physical-layout='acer-split-modifier-with-numpad'] #launcherKey,
+  [data-physical-layout='split-modifier'] #launcherKey {
+    display: none;
+  }
+
+  [data-physical-layout='acer-split-modifier-with-numpad'] #assistantKey,
+  [data-physical-layout='split-modifier'] #assistantKey {
+    grid-column: span 4;
+  }
+
+  [data-bottom-left-layout='3keys'] #leftAltKey,
+  [data-bottom-left-layout='4keys'] #leftAltKey {
+    grid-column: span 2;
+  }
+
+  [data-bottom-left-layout='4keys'] #leftCtrlKey {
+    grid-column: span 3;
+  }
+
+  [data-bottom-right-layout='3keys'] #spacebar {
+    grid-column: span 8;
+  }
+
+  [data-bottom-right-layout='4keys'] #spacebar{
+    grid-column: span 6;
+  }
+
+  /*
+   * For ANSI Canadian Bilingual keyboard, the usual right ctrl key is
+   * replaced by another key.
+   */
+  #caHybridKey {
+    display: none;
+  }
+  [data-region-code='ca.hybridansi'] #rightCtrlKey {
+    display: none;
+  }
+  [data-region-code='ca.hybridansi'] #caHybridKey {
+    display: block;
+  }
+
   /*
    * On ISO and JIS, the Enter key is L-shaped (with the backslash key moved
    * down one row). To achieve this with elements that fit in the grid, two
@@ -161,12 +204,20 @@
     grid-column: span 6;
   }
 
+  [data-mech-layout='jis'][data-bottom-right-layout='4keys'] #spacebar {
+    grid-column: span 4;
+  }
+
   [data-mech-layout='jis'] #rightShiftKey {
     grid-column: span 3;
   }
 
-  [data-mech-layout='jis'] #arrowKeyCluster {
+  [data-mech-layout='jis'][data-bottom-right-layout='2keys'] #arrowKeyCluster {
     grid-column: span 7;
+  }
+
+  [data-mech-layout='jis'] #arrowKeyCluster {
+    grid-column: span 5;
   }
 
   /* Modifications for Dell Enterprise keyboards */
@@ -204,6 +255,14 @@
     width: 77%;
   }
 
+  [data-show-number-pad][data-number-pad-layout='3columns'] .main-cluster {
+    width: 82%;
+  }
+
+  [data-show-number-pad][data-number-pad-layout='3columns'][data-physical-layout='acer-split-modifier-with-numpad'] .main-cluster {
+    width: 85%;
+  }
+
   [data-show-number-pad] #numberPad {
     box-sizing: border-box;
     display: inline-grid;
@@ -218,6 +277,38 @@
     padding-left:  /* csschecker-disable-line left-right */
         calc(var(--grid-gap) * 3);
     width: 23%;
+  }
+
+  [data-show-number-pad][data-number-pad-layout='3columns'] #numberPad {
+    box-sizing: border-box;
+    display: inline-grid;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: var(--rows);
+    height: 100%;
+    /*
+     * The number pad will always be on the right, even in RTL locales, so
+     * disable the lint warning.
+     */
+    padding-left:  /* csschecker-disable-line left-right */
+        calc(var(--grid-gap) * 3);
+    width: 18%;
+  }
+
+  [data-show-number-pad][data-number-pad-layout='3columns'][data-physical-layout='acer-split-modifier-with-numpad'] #numberPad {
+    box-sizing: border-box;
+    display: inline-grid;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: var(--rows);
+    height: 100%;
+    /*
+     * The number pad will always be on the right, even in RTL locales, so
+     * disable the lint warning.
+     */
+    padding-left:  /* csschecker-disable-line left-right */
+        calc(var(--grid-gap) * 1);
+    width: 15%;
   }
 
   #numberPad keyboard-key {
@@ -240,11 +331,16 @@
   -->
 </div>
 <div id="keyboard"
-    data-show-number-pad$="[[showNumberPad]]">
+    data-show-number-pad$="[[showNumberPad]]"
+    data-number-pad-layout$="[[numberPadLayout]]"
+    data-physical-layout$="[[physicalLayout]]">
   <div class="main-cluster"
       data-mech-layout$="[[mechanicalLayout]]"
       data-show-assistant-key$="[[showAssistantKey]]"
-      data-show-fn-and-globe-keys$="[[showFnAndGlobeKeys_]]">
+      data-show-fn-and-globe-keys$="[[showFnAndGlobeKeys_]]"
+      data-bottom-left-layout$="[[bottomLeftLayout]]"
+      data-bottom-right-layout$="[[bottomRightLayout]]"
+      data-region-code$="[[regionCode]]">
     <!--
       Most keys aren't labelled here, as their glyphs are set from the
       appropriate layout in keyboard_layouts.js. The exceptions are keys that
@@ -263,8 +359,14 @@
           </keyboard-key>
         </template>
       </dom-repeat>
-      <keyboard-key id="topRightKey" class="disabled">
-      </keyboard-key>
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'acer-split-modifier-with-numpad')]]">
+        <keyboard-key main-glyph="pg up" data-code="104"></keyboard-key>
+        <keyboard-key main-glyph="pg dn" data-code="109"></keyboard-key>
+      </template>
+      <template is="dom-if" if="[[!isEqual_(numberPadLayout, '3columns')]]">
+        <keyboard-key id="topRightKey" class="disabled"></keyboard-key>
+      </template>
+
     </div>
 
     <keyboard-key data-code="41"></keyboard-key>
@@ -310,14 +412,33 @@
     <keyboard-key data-code="26"></keyboard-key>
     <keyboard-key data-code="27"></keyboard-key>
     <keyboard-key id="backslashKey" data-code="43"></keyboard-key>
-
     <keyboard-key
         id="launcherKey"
         class="left"
         icon="keyboard:launcher"
         data-code="125"
-        aria-name="[[i18n('keyboardDiagramAriaNameLauncher')]]">
+	aria-name="[[i18n('keyboardDiagramAriaNameLauncher')]]">
     </keyboard-key>
+    <template is="dom-if" if="[[isEqual_(physicalLayout, 'split-modifier')]]">
+      <keyboard-key
+          id="assistantKey"
+          class="left"
+          icon="keyboard:caps"
+          data-code="583"
+          aria-name="[[i18n('keyboardDiagramAriaNameAssistant')]]"
+          bottom-right-glyph="caps">
+      </keyboard-key>
+    </template>
+    <template is="dom-if" if="[[isEqual_(physicalLayout, 'acer-split-modifier-with-numpad')]]">
+      <keyboard-key
+          id="assistantKey"
+          class="left"
+          icon="keyboard:caps"
+          data-code="583"
+          aria-name="[[i18n('keyboardDiagramAriaNameAssistant')]]"
+          bottom-right-glyph="caps">
+      </keyboard-key>
+    </template>
     <keyboard-key data-code="30"></keyboard-key>
     <keyboard-key data-code="31"></keyboard-key>
     <keyboard-key data-code="32"></keyboard-key>
@@ -387,7 +508,21 @@
           aria-name="[[i18n('keyboardDiagramAriaNameAssistant')]]">
       </keyboard-key>
     </template>
-    <keyboard-key id="leftAltKey" class="left" main-glyph="alt" data-code="56"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(physicalLayout, 'split-modifier')]]">
+      <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
+    </template>
+    <template is="dom-if" if="[[isEqual_(physicalLayout, 'acer-split-modifier-with-numpad')]]">
+      <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
+    </template>
+    <template is="dom-if" if="[[isEqual_(bottomLeftLayout, '4keys')]]">
+      <keyboard-key
+          icon="keyboard:g-logo"
+          data-code="125"
+          aria-name="[[i18n('keyboardDiagramAriaNameLayoutSwitch')]]">
+      </keyboard-key>
+    </template>
+
+    <keyboard-key id="leftAltKey" main-glyph="alt" data-code="56"></keyboard-key>
     <keyboard-key
         id="jisAlphanumericKey"
         class="jis-only"
@@ -402,7 +537,21 @@
         data-code="92">
     </keyboard-key>
     <keyboard-key id="rightAltKey" main-glyph="alt" data-code="100"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(bottomRightLayout, '3keys')]]">
+      <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
+    </template>
+    <template is="dom-if" if="[[isEqual_(bottomRightLayout, '4keys')]]">
+      <keyboard-key
+          id="layoutSwitchKey"
+          icon="keyboard:layout-switch"
+          data-code="584"
+          aria-name="[[i18n('keyboardDiagramAriaNameLayoutSwitch')]]">
+      </keyboard-key>
+      <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
+    </template>
+
     <keyboard-key id="rightCtrlKey" main-glyph="ctrl" data-code="97"></keyboard-key>
+    <keyboard-key id="caHybridKey" data-code="86"></keyboard-key>
 
     <div id="arrowKeyCluster">
       <template is="dom-if"
@@ -436,32 +585,70 @@
       </keyboard-key>
     </div>
   </div>
-  <div id="numberPad">
-    <keyboard-key main-glyph="page up" data-code="104"></keyboard-key>
-    <keyboard-key main-glyph="page dn" data-code="109"></keyboard-key>
-    <keyboard-key main-glyph="home" data-code="102"></keyboard-key>
-    <keyboard-key main-glyph="end" data-code="107"></keyboard-key>
+  <template is="dom-if" if="[[!isEqual_(numberPadLayout, '3columns')]]">
+    <div id="numberPad">
+      <keyboard-key main-glyph="pg up" data-code="104"></keyboard-key>
+      <keyboard-key main-glyph="pg dn" data-code="109"></keyboard-key>
+      <keyboard-key main-glyph="home" data-code="102"></keyboard-key>
+      <keyboard-key main-glyph="end" data-code="107"></keyboard-key>
 
-    <keyboard-key main-glyph="delete" data-code="111"></keyboard-key>
-    <keyboard-key main-glyph="/" data-code="98"></keyboard-key>
-    <keyboard-key main-glyph="*" data-code="55"></keyboard-key>
-    <keyboard-key main-glyph="-" data-code="74"></keyboard-key>
+      <keyboard-key main-glyph="del" data-code="111"></keyboard-key>
+      <keyboard-key main-glyph="/" data-code="98"></keyboard-key>
+      <keyboard-key main-glyph="*" data-code="55"></keyboard-key>
+      <keyboard-key main-glyph="-" data-code="74"></keyboard-key>
 
-    <keyboard-key main-glyph="7" data-code="71"></keyboard-key>
-    <keyboard-key main-glyph="8" data-code="72"></keyboard-key>
-    <keyboard-key main-glyph="9" data-code="73"></keyboard-key>
-    <keyboard-key class="double-height" main-glyph="+" data-code="78"></keyboard-key>
+      <keyboard-key main-glyph="7" data-code="71"></keyboard-key>
+      <keyboard-key main-glyph="8" data-code="72"></keyboard-key>
+      <keyboard-key main-glyph="9" data-code="73"></keyboard-key>
+      <keyboard-key class="double-height" main-glyph="+" data-code="78"></keyboard-key>
 
-    <keyboard-key main-glyph="4" data-code="75"></keyboard-key>
-    <keyboard-key main-glyph="5" data-code="76"></keyboard-key>
-    <keyboard-key main-glyph="6" data-code="77"></keyboard-key>
+      <keyboard-key main-glyph="4" data-code="75"></keyboard-key>
+      <keyboard-key main-glyph="5" data-code="76"></keyboard-key>
+      <keyboard-key main-glyph="6" data-code="77"></keyboard-key>
 
-    <keyboard-key main-glyph="1" data-code="79"></keyboard-key>
-    <keyboard-key main-glyph="2" data-code="80"></keyboard-key>
-    <keyboard-key main-glyph="3" data-code="81"></keyboard-key>
-    <keyboard-key class="double-height" main-glyph="enter" data-code="96"></keyboard-key>
+      <keyboard-key main-glyph="1" data-code="79"></keyboard-key>
+      <keyboard-key main-glyph="2" data-code="80"></keyboard-key>
+      <keyboard-key main-glyph="3" data-code="81"></keyboard-key>
+      <keyboard-key class="double-height" main-glyph="enter" data-code="96"></keyboard-key>
 
-    <keyboard-key class="double-width" main-glyph="0" data-code="82"></keyboard-key>
-    <keyboard-key main-glyph="." data-code="83"></keyboard-key>
-  </div>
+      <keyboard-key class="double-width" main-glyph="0" data-code="82"></keyboard-key>
+      <keyboard-key main-glyph="." data-code="83"></keyboard-key>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isEqual_(numberPadLayout, '3columns')]]">
+    <div id="numberPad">
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'acer-split-modifier-with-numpad')]]">
+        <keyboard-key main-glyph="home" data-code="102"></keyboard-key>
+        <keyboard-key main-glyph="end" data-code="107"></keyboard-key>
+        <keyboard-key class="disabled"></keyboard-key>
+      </template>
+
+      <template is="dom-if" if="[[!isEqual_(physicalLayout, 'acer-split-modifier-with-numpad')]]">
+        <keyboard-key main-glyph="/" data-code="98"></keyboard-key>
+        <keyboard-key main-glyph="*" data-code="55"></keyboard-key>
+        <keyboard-key class="disabled"></keyboard-key>
+      </template>
+
+      <keyboard-key main-glyph="-" data-code="74"></keyboard-key>
+      <keyboard-key main-glyph="+" data-code="78"></keyboard-key>
+      <keyboard-key main-glyph="del" data-code="111"></keyboard-key>
+
+      <keyboard-key main-glyph="7" data-code="71"></keyboard-key>
+      <keyboard-key main-glyph="8" data-code="72"></keyboard-key>
+      <keyboard-key main-glyph="9" data-code="73"></keyboard-key>
+
+      <keyboard-key main-glyph="4" data-code="75"></keyboard-key>
+      <keyboard-key main-glyph="5" data-code="76"></keyboard-key>
+      <keyboard-key main-glyph="6" data-code="77"></keyboard-key>
+
+      <keyboard-key main-glyph="1" data-code="79"></keyboard-key>
+      <keyboard-key main-glyph="2" data-code="80"></keyboard-key>
+      <keyboard-key main-glyph="3" data-code="81"></keyboard-key>
+
+      <keyboard-key main-glyph="0" data-code="82"></keyboard-key>
+      <keyboard-key main-glyph="." data-code="83"></keyboard-key>
+      <keyboard-key main-glyph="enter" data-code="96"></keyboard-key>
+    </div>
+  </template>
+
 </div>

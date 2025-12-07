@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/all_loyalty_cards_item"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginHorizontal="8dp"
+    android:background="@color/baseline_neutral_90"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/all_loyalty_cards_item_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:gravity="start"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:text="@string/autofill_bottom_sheet_all_your_loyalty_cards"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:ellipsize="middle" />
+
+    <ImageView
+        android:id="@+id/loyalty_card_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:contentDescription="@string/autofill_bottom_sheet_expand_all_loyalty_cards_description"
+        app:tint="@color/default_icon_color_secondary_tint_list"
+        app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
+
+</LinearLayout>

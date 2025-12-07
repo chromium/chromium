@@ -9,10 +9,13 @@
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
+#import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -26,9 +29,12 @@ struct UpgradeRecommendedDetails;
 class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
  public:
   // Called whenever the Safety Check determines a change in the Password check
-  // state (i.e. when user has reused passwords, weak passwords, no compromised
-  // password, etc.)
-  virtual void PasswordCheckStateChanged(PasswordSafetyCheckState state) {}
+  // state (i.e. when the user has reused passwords, weak passwords, no
+  // compromised password, etc.). Also provides the latest count of insecure
+  // credentials.
+  virtual void PasswordCheckStateChanged(
+      PasswordSafetyCheckState state,
+      password_manager::InsecurePasswordCounts insecure_password_counts) {}
   // Called whenever the Safety Check determines a change in the Safe Browsing
   // check state (i.e. when Safe Browsing is enabled, disabled, the check
   // is currently running, etc.)
@@ -68,12 +74,16 @@ class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
 //      (e.g., compromised password detected, Safety Check completed).
 class IOSChromeSafetyCheckManager
     : public KeyedService,
-      public IOSChromePasswordCheckManager::Observer {
+      public IOSChromePasswordCheckManager::Observer,
+      public OmahaServiceObserver,
+      public signin::IdentityManager::Observer {
  public:
   explicit IOSChromeSafetyCheckManager(
       PrefService* pref_service,
       PrefService* local_pref_service,
-      const scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   IOSChromeSafetyCheckManager(const IOSChromeSafetyCheckManager&) = delete;
   IOSChromeSafetyCheckManager& operator=(const IOSChromeSafetyCheckManager&) =
@@ -98,11 +108,21 @@ class IOSChromeSafetyCheckManager
   // NOTE: If the Safety Check is not currently running, does nothing.
   void StopSafetyCheck();
 
-  // IOSChromePasswordCheckManager::Observer implementation.
+  // `IOSChromePasswordCheckManager::Observer` implementation.
   void PasswordCheckStatusChanged(PasswordCheckState state) override;
   void InsecureCredentialsChanged() override;
   void ManagerWillShutdown(
       IOSChromePasswordCheckManager* password_check_manager) override;
+
+  // `OmahaServiceObserver` implementation.
+  void OnServiceStarted(OmahaService* omaha_service) override;
+  void UpgradeRecommendedDetailsChanged(
+      UpgradeRecommendedDetails details) override;
+  void ServiceWillShutdown(OmahaService* omaha_service) override;
+
+  // `signin::IdentityManager::Observer` implementation.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // Adds/removes an observer to be notified of PasswordSafetyCheckState,
   // SafeBrowsingSafetyCheckState, UpdateChromeSafetyCheckState, and
@@ -136,9 +156,19 @@ class IOSChromeSafetyCheckManager
   // Returns the time of the last Safety Check run, if ever.
   base::Time GetLastSafetyCheckRunTime() const;
 
+  // Ingests the Omaha response, `details`, to determine if the app is up to
+  // date.
+  //
+  // If the app is up-to-date, calls `SetUpdateChromeCheckState()` to reflect
+  // the new, updated state.
+  //
+  // If the app is outdated, sets `upgrade_url_` and `next_version_` to maintain
+  // the upgrade details.
+  void HandleOmahaResponse(UpgradeRecommendedDetails details);
+
   // For unit-testing only.
   void StartOmahaCheckForTesting();
-  void HandleOmahaResponseForTesting(UpgradeRecommendedDetails details);
+  bool IsOmahaCheckQueuedForTesting() const;
   RunningSafetyCheckState GetRunningCheckStateForTesting() const;
   void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
   void SetInsecurePasswordCountsForTesting(
@@ -211,16 +241,7 @@ class IOSChromeSafetyCheckManager
   // NOTE: The response from the Omaha service is handled by
   // `HandleOmahaResponse()`.
   void StartOmahaCheck();
-
-  // Ingests the Omaha response, `details`, to determine if the app is up to
-  // date.
-  //
-  // If the app is up-to-date, calls `SetUpdateChromeCheckState()` to reflect
-  // the new, updated state.
-  //
-  // If the app is outdated, sets `upgrade_url_` and `next_version_` to maintain
-  // the upgrade details.
-  void HandleOmahaResponse(UpgradeRecommendedDetails details);
+  void StartOmahaCheckInternal();
 
   // Checks if the Update Chrome check is still running after
   // `kOmahaNetworkWaitTime` has elapsed. If so, considers this an Omaha
@@ -313,6 +334,12 @@ class IOSChromeSafetyCheckManager
   // run again.
   bool ignore_omaha_changes_ = false;
 
+  // If `omaha_check_queued_` is true, an Omaha check was requested via
+  // `StartOmahaCheck()` but the Omaha service had not yet started.
+  // `OnServiceStarted()` will call `StartOmahaCheck()` again when the service
+  // becomes available.
+  bool omaha_check_queued_ = false;
+
   // If `ignore_password_check_changes_` is true when Password Check Manager
   // observer methods are called, nothing happens. Effectively, this enables
   // users to cancel a currently running Password check.
@@ -346,6 +373,17 @@ class IOSChromeSafetyCheckManager
   // about the latest Safety Check run (e.g. the results of each check, the
   // timestamp of the run, etc.)
   raw_ptr<PrefService> local_pref_service_;
+
+  // Refcounted pointer to the `IOSChromePasswordCheckManager` to use.
+  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
+
+  // The `IdentityManager` instance being observed.
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // Scoped observation for `IdentityManager`.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Registrar for pref changes notifications.
   PrefChangeRegistrar pref_change_registrar_;

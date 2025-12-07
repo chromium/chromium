@@ -17,21 +17,38 @@ namespace base {
 
 #if BUILDFLAG(IS_APPLE)
 BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizedRealtimeThreadingMac);
-extern const BASE_EXPORT FeatureParam<bool>
-    kOptimizedRealtimeThreadingMacPreemptible;
-extern const BASE_EXPORT FeatureParam<double>
-    kOptimizedRealtimeThreadingMacBusy;
-extern const BASE_EXPORT FeatureParam<double>
-    kOptimizedRealtimeThreadingMacBusyLimit;
-extern const BASE_EXPORT Feature kUserInteractiveCompositingMac;
-#endif
-
-#if BUILDFLAG(IS_WIN)
-BASE_EXPORT BASE_DECLARE_FEATURE(kAboveNormalCompositingBrowserWin);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kOptimizedRealtimeThreadingMacPreemptible);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                       kOptimizedRealtimeThreadingMacBusy);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                       kOptimizedRealtimeThreadingMacBusyLimit);
+BASE_EXPORT BASE_DECLARE_FEATURE(kUserInteractiveCompositingMac);
 #endif
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcher);
-BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcherInZygoteChildren);
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcherOnGpuProcess);
+BASE_EXPORT extern const char kHangWatcherMonitoringPeriodParam[];
+
+// Hang watcher log levels.
+BASE_EXPORT extern const char kBrowserProcessIoThreadLogLevelParam[];
+BASE_EXPORT extern const char kBrowserProcessUiThreadLogLevelParam[];
+BASE_EXPORT extern const char kBrowserProcessThreadPoolLogLevelParam[];
+
+BASE_EXPORT extern const char kGpuProcessIoThreadLogLevelParam[];
+BASE_EXPORT extern const char kGpuProcessMainThreadLogLevelParam[];
+BASE_EXPORT extern const char kGpuProcessCompositorThreadLogLevelParam[];
+BASE_EXPORT extern const char kGpuProcessThreadPoolLogLevelParam[];
+
+BASE_EXPORT extern const char kRendererProcessIoThreadLogLevelParam[];
+BASE_EXPORT extern const char kRendererProcessMainThreadLogLevelParam[];
+BASE_EXPORT extern const char kRendererProcessThreadPoolLogLevelParam[];
+BASE_EXPORT extern const char kRendererProcessCompositorThreadLogLevelParam[];
+
+BASE_EXPORT extern const char kUtilityProcessIoThreadLogLevelParam[];
+BASE_EXPORT extern const char kUtilityProcessMainThreadLogLevelParam[];
+BASE_EXPORT extern const char kUtilityProcessThreadPoolLogLevelParam[];
 
 }  // namespace base
 

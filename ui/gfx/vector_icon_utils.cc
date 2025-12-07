@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/vector_icon_utils.h"
 
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace gfx {
+
+namespace {
+const char kCanvasDimensions[] = "CANVAS_DIMENSIONS";
+}  // namespace
 
 int GetCommandArgumentCount(CommandType command) {
   switch (command) {
@@ -68,20 +72,69 @@ int GetCommandArgumentCount(CommandType command) {
       return 0;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int GetDefaultSizeOfVectorIcon(const VectorIcon& icon) {
   if (icon.is_empty())
     return -1;
-  const PathElement* default_icon_path = icon.reps[icon.reps_size - 1].path;
-  DCHECK_EQ(default_icon_path[0].command, CANVAS_DIMENSIONS)
+  const VectorIconRep& default_rep = icon.reps.back();
+  DCHECK_EQ(default_rep.path[0].command, CANVAS_DIMENSIONS)
       << " " << icon.name
       << " has no size in its icon definition, and it seems unlikely you want "
          "to display at the default of 48dip. Please specify a size in "
          "CreateVectorIcon().";
-  return default_icon_path[1].arg;
+  return default_rep.path[1].arg;
+}
+
+#define DECLARE_VECTOR_COMMAND(x) {#x, gfx::x},
+
+PathElement ParsePathElement(std::string_view s) {
+  static base::NoDestructor<absl::flat_hash_map<std::string_view, CommandType>>
+      kCommandMap({DECLARE_VECTOR_COMMANDS});
+
+  // Attempt to parse as a command.
+  auto it = kCommandMap->find(s);
+  if (it != kCommandMap->end()) {
+    return PathElement(it->second);
+  }
+
+  // Attempt to parse as hex.
+  if (base::StartsWith(s, "0x")) {
+    int int_value = 0;
+    CHECK(base::HexStringToInt(s, &int_value));
+    return PathElement(SkIntToScalar(int_value));
+  }
+
+  // Finally, parse as double.
+  double value = 0.0;
+  if (base::EndsWith(s, "f")) {
+    auto trimmed = s.substr(0, s.length() - 1);
+    CHECK(base::StringToDouble(trimmed, &value));
+  } else {
+    CHECK(base::StringToDouble(s, &value));
+  }
+
+  return PathElement(SkDoubleToScalar(value));
+}
+
+void ParsePathElements(std::string_view s,
+                       std::vector<std::vector<PathElement>>& path_elements) {
+  auto lines = base::SplitString(s, "\n", base::TRIM_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
+  for (const auto& line : lines) {
+    if (base::StartsWith(line, "//")) {
+      continue;
+    }
+    auto elements = base::SplitString(line, ", ", base::TRIM_WHITESPACE,
+                                      base::SPLIT_WANT_NONEMPTY);
+    for (const auto& element : elements) {
+      if (element == kCanvasDimensions || path_elements.empty()) {
+        path_elements.emplace_back();
+      }
+      path_elements.back().push_back(ParsePathElement(element));
+    }
+  }
 }
 
 }  // namespace gfx

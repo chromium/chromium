@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 
@@ -23,7 +19,7 @@
 namespace policy {
 
 bool CreateDummyFile(const base::FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+  return WriteFile(path, "42");
 }
 
 storage::FileSystemURL CreateFileSystemURL(const blink::StorageKey key,

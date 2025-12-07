@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/android/hats/test/test_survey_utils_bridge.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -35,3 +36,5 @@ std::string TestSurveyUtilsBridge::GetLastShownSurveyTriggerId() {
 }
 
 }  // namespace hats
+
+DEFINE_JNI(TestSurveyUtilsBridge)

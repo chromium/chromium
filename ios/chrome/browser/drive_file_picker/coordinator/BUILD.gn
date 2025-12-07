@@ -4,31 +4,100 @@
 
 source_set("coordinator") {
   sources = [
-    "drive_file_picker_coordinator.h",
-    "drive_file_picker_coordinator.mm",
+    "browse_drive_file_picker_coordinator.h",
+    "browse_drive_file_picker_coordinator.mm",
+    "browse_drive_file_picker_coordinator_delegate.h",
+    "drive_file_picker_collection.h",
+    "drive_file_picker_collection.mm",
+    "drive_file_picker_image_fetcher.h",
+    "drive_file_picker_image_fetcher.mm",
     "drive_file_picker_mediator.h",
     "drive_file_picker_mediator.mm",
+    "drive_file_picker_mediator_delegate.h",
+    "drive_file_picker_mediator_helper.h",
+    "drive_file_picker_mediator_helper.mm",
+    "drive_file_picker_metrics_helper.h",
+    "drive_file_picker_metrics_helper.mm",
+    "root_drive_file_picker_coordinator.h",
+    "root_drive_file_picker_coordinator.mm",
   ]
   deps = [
     "//base",
+    "//components/image_fetcher/core",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/drive/model:drive_file_downloader",
+    "//ios/chrome/browser/drive/model:drive_list",
+    "//ios/chrome/browser/drive/model:drive_service",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/drive_file_picker/ui",
+    "//ios/chrome/browser/drive_file_picker/ui:alert_utils",
+    "//ios/chrome/browser/drive_file_picker/ui:constants",
+    "//ios/chrome/browser/drive_file_picker/ui:options",
+    "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/web/model/choose_file",
+    "//ios/chrome/browser/web/model/choose_file:choose_file_file_utils",
+    "//ios/chrome/common/ui/util:image_util",
     "//ios/web/public",
+    "//ios/web/public/js_image_transcoder",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "drive_file_picker_mediator_unittest.mm" ]
+  sources = [
+    "browse_drive_file_picker_coordinator_unittest.mm",
+    "drive_file_picker_mediator_unittest.mm",
+    "root_drive_file_picker_coordinator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/image_fetcher/core",
+    "//ios/chrome/browser/drive/model:drive_list",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/drive/model:test_support",
+    "//ios/chrome/browser/drive_file_picker/ui",
+    "//ios/chrome/browser/drive_file_picker/ui:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/choose_file:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_drive_file_picker_handler.h",
+    "fake_drive_file_picker_handler.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/public/commands" ]
 }

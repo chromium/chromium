@@ -2,6 +2,6 @@ This is a testharness.js-based test.
 [FAIL] Test :pseudo-class syntax is supported without throwing a SyntaxError
   assert_unreached: :muted is not supported Reached unreachable code
 [FAIL] Test :muted pseudo-class
-  promise_test: Unhandled rejection with value: object "SyntaxError: Failed to execute 'querySelector' on 'Document': 'video:muted' is not a valid selector."
+  assert_implements: :muted is not supported undefined
 Harness: the test ran to completion.
 

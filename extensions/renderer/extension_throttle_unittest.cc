@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "extensions/renderer/extension_throttle_manager.h"
 #include "extensions/renderer/extension_throttle_test_support.h"
+#include "extensions/renderer/extension_url_loader_throttle.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -213,7 +213,7 @@ TEST_F(ExtensionThrottleEntryTest, IsEntryReallyOutdated) {
       base::Milliseconds(MockExtensionThrottleEntry::kDefaultEntryLifetimeMs);
   const base::TimeDelta kFiveMs = base::Milliseconds(5);
 
-  TimeAndBool test_values[] = {
+  const std::array<TimeAndBool, 6> test_values = {
       TimeAndBool(now_, false, __LINE__),
       TimeAndBool(now_ - kFiveMs, false, __LINE__),
       TimeAndBool(now_ + kFiveMs, false, __LINE__),
@@ -286,7 +286,7 @@ TEST_F(ExtensionThrottleEntryTest, SlidingWindow) {
 
 TEST(ExtensionThrottleManagerTest, IsUrlStandardised) {
   MockExtensionThrottleManager manager;
-  GurlAndString test_values[] = {
+  const std::array<GurlAndString, 8> test_values = {
       GurlAndString(GURL("http://www.example.com"),
                     std::string("http://www.example.com/"), __LINE__),
       GurlAndString(GURL("http://www.Example.com"),
@@ -400,6 +400,45 @@ TEST(ExtensionThrottleManagerTest, UseAfterNetworkChange) {
   manager.SetOnline(/*is_online=*/true);
   auto response_head = network::mojom::URLResponseHead::New();
   manager.WillProcessResponse(redirect_info.new_url, *response_head);
+}
+
+// Verify that throttles relying on a manager in the constructor can function
+// even if manager is destructed before throttles are destructed.
+TEST(ExtensionThrottleManagerTest, ThrottlesCanOutliveManager) {
+  // Create a manager that can be passed into the throttle constructor.
+  MockExtensionThrottleManager* manager = new MockExtensionThrottleManager();
+
+  // Create one or more throttles that receive the manager in the constructor.
+  auto throttle1 = ExtensionURLLoaderThrottle(manager->GetAccess());
+  auto throttle2 = ExtensionURLLoaderThrottle(manager->GetAccess());
+
+  // Delete `manager` to prove that throttle functions can run without it.
+  delete manager;
+
+  // Call a function in throttle that uses manager after manager destruction.
+  GURL gurl;
+  network::mojom::URLResponseHead* response_head = nullptr;
+  bool* defer = nullptr;
+  throttle1.WillProcessResponse(gurl, response_head, defer);
+  throttle2.WillProcessResponse(gurl, response_head, defer);
+}
+
+// Verify that throttles can be destroyed from other threads without crashing.
+TEST(ExtensionThrottleManagerTest, ThrottlesDestroyOnOtherThreads) {
+  // Create a manager that can be passed into the throttle constructor.
+  auto manager = std::make_unique<MockExtensionThrottleManager>();
+
+  base::test::TaskEnvironment task_environment;
+
+  constexpr int kThrottles = 100;
+  for (int i = 0; i < kThrottles; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&manager] {
+          auto throttle = std::make_unique<ExtensionURLLoaderThrottle>(
+              manager->GetAccess());
+          throttle.reset();
+        }));
+  }
 }
 
 }  // namespace extensions

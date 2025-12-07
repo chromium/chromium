@@ -1,0 +1,16 @@
+Name: play-services-auth
+Short Name: play-services-auth
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-auth/21.4.0/play-services-auth-21.4.0.aar
+Version: 21.4.0
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Auth library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

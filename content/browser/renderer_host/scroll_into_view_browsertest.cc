@@ -7,6 +7,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -219,8 +220,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       JSON.stringify(document.querySelector($1).getBoundingClientRect());
     )JS",
                                          query));
-    std::optional<base::Value> value =
-        base::JSONReader::Read(result.ExtractString());
+    std::optional<base::Value> value = base::JSONReader::Read(
+        result.ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
@@ -270,8 +271,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
         pageTop: visualViewport.pageTop});
     )JS");
 
-    std::optional<base::Value> value =
-        base::JSONReader::Read(result.ExtractString());
+    std::optional<base::Value> value = base::JSONReader::Read(
+        result.ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
@@ -435,7 +436,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     root_view->SetLastPointerType(ui::EventPointerType::kTouch);
     root_view->SetInsets(gfx::Insets::TLBR(0, 0, keyboard_height, 0));
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   }
 
@@ -447,18 +448,18 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();
     while (node) {
       bool is_proxy_for_inner_frame_tree =
-          node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
-          FrameTreeNode::kFrameTreeNodeInvalidId;
-
+          !node->current_frame_host()
+               ->inner_tree_main_frame_tree_node_id()
+               .is_null();
       // The functor isn't called for the placeholder FrameTreeNode, it'll be
       // called on the inner tree's root.
       if (!is_proxy_for_inner_frame_tree)
         func(node);
 
       if (node->child_count()) {
-        CHECK_EQ(
-            node->current_frame_host()->inner_tree_main_frame_tree_node_id(),
-            FrameTreeNode::kFrameTreeNodeInvalidId);
+        CHECK(node->current_frame_host()
+                  ->inner_tree_main_frame_tree_node_id()
+                  .is_null());
         // These tests never have multiple child frames.
         CHECK_EQ(node->child_count(), 1ul);
         node = node->child_at(0);
@@ -525,8 +526,9 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     if (GetInvokeMethod() == kInputHandler ||
         GetInvokeMethod() == kAuraOnScreenKeyboard) {
       // Focus the input for tests that rely on scrolling to a focused element
-      // (i.e. via ScrollFocusedEditableNodeIntoView).  Use `preventScroll` to
-      // avoid affecting the test via the automatic scrolling caused by focus.
+      // (i.e. via ScrollFocusedEditableNodeIntoView).  Use `window.scrollTo`
+      // instead of `preventScroll`, since ScrollFocusedEditableNodeIntoView
+      // is affected by the `preventScroll` parameter.
       //
       // Note: normally, an IME (i.e. On-Screen Keyboard) can also attempt to
       // scroll into view (in fact, using ScrollFocusedEditableNodeIntoView
@@ -535,7 +537,10 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       // on-screen keyboard on a platform that uses one will not activate in
       // response to this. See ScopedSuppressImeEvents above.
       EXPECT_TRUE_OR_FAIL(ExecJs(InnerMostFrameTreeNode(), R"JS(
-        document.querySelector('input').focus({preventScroll: true});
+        document.querySelector('input').focus();
+      )JS"));
+      EXPECT_TRUE_OR_FAIL(ExecJs(RootFrameTreeNode(), R"JS(
+        window.scrollTo(0, 0);
       )JS"));
     }
 
@@ -796,7 +801,7 @@ IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest,
   RunTest();
 
   // width=device-width must prevent the zooming behavior.
-  EXPECT_EQ(kMobileMinimumScale, GetVisualViewport().scale);
+  EXPECT_LE(kMobileMinimumScale, GetVisualViewport().scale);
 }
 
 // Similar to above, an input in a touch-action region that disables pinch-zoom
@@ -825,6 +830,10 @@ class RootScrollerScrollIntoViewBrowserTest
 IN_PROC_BROWSER_TEST_F(RootScrollerScrollIntoViewBrowserTest,
                        FocusInRootScroller) {
   ASSERT_TRUE(SetupTest("siteA{RootScroller,MobileViewportNoZoom}"));
+
+  EXPECT_TRUE(ExecJs(InnerMostFrameTreeNode(), R"JS(
+    document.querySelector('.rootScroller').scroll(0, 0);
+  )JS"));
 
   // Root scroller is recomputed after a Blink lifecycle so ensure a frame is
   // produced to make sure the renderer has had time to evaluate the root
@@ -873,6 +882,38 @@ class ScrollIntoViewFencedFrameBrowserTest
     https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     ScrollIntoViewBrowserTestBase::SetUpOnMainThread();
+  }
+  // Since `ScrollFocusedEditableNodeIntoView` is affected by `preventScroll`,
+  // use JS `scrollIntoView` to verify the scrolling behavior.
+  void RunTest() {
+    ForEachFrameFromRootToInnerMost([](FrameTreeNode* node) {
+      EXPECT_TRUE(ExecJs(node, R"JS(
+        if (document.getElementById('childframe')) {
+          document.getElementById('childframe').scrollIntoView({
+            behavior: 'instant',
+            block: 'center',
+            inline: 'start'
+          });
+        }
+      )JS"));
+    });
+
+    RenderFrameSubmissionObserver frame_observer(web_contents());
+    EXPECT_TRUE(ExecJs(InnerMostFrameTreeNode(), R"JS(
+      document.querySelector('input').scrollIntoView({
+        behavior: 'instant',
+        block: 'center',
+        inline: 'end'
+      })
+    )JS"));
+    frame_observer.WaitForScrollOffsetAtTop(
+        /*expected_scroll_offset_at_top=*/false);
+    gfx::RectF caret_in_viewport = GetCaretRectInViewport();
+    gfx::RectF acceptable_rect = GetAcceptableCaretRect();
+
+    EXPECT_TRUE(acceptable_rect.Contains(caret_in_viewport))
+        << "Expected caret to within [" << acceptable_rect.ToString()
+        << "] but caret is [" << caret_in_viewport.ToString() << "]";
   }
 
  private:

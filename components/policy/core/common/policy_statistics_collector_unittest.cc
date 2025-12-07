@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/policy_statistics_collector.h"
 
+#include <array>
 #include <cstring>
 #include <memory>
 #include <string>
@@ -40,14 +41,12 @@ const char* kTestPolicy3 = key::kDefaultSearchProviderEncodings;
 
 const char kEnrollmentTokenPolicy[] = "CloudManagementEnrollmentToken";
 const char kEnrollmentOptionPolicy[] = "CloudManagementEnrollmentMandatory";
-const char kBrowserSigninPolicy[] = "BrowserSignin";
 
 const int kTestPolicy1Id = 42;
 const int kTestPolicy2Id = 123;
 const int kTestPolicy3Id = 32;
 const int kEnrollmentTokenPolicyId = 510;
 const int kEnrollmentOptionPolicyId = 505;
-const int kBrowserSigninPolicyId = 487;
 
 const char kTestChromeSchema[] = R"(
     {
@@ -58,19 +57,17 @@ const char kTestChromeSchema[] = R"(
         "DefaultSearchProviderEncodings": { "type": "boolean" },
         "CloudManagementEnrollmentToken": { "type": "boolean" },
         "CloudManagementEnrollmentMandatory": { "type": "boolean" },
-        "BrowserSigninPolicy": { "type": "integer" },
       }
     })";
 
-const PolicyDetails kTestPolicyDetails[] = {
+constexpr auto kTestPolicyDetails = std::to_array<PolicyDetails>({
     // is_deprecated is_future is_device_policy id  max_external_data_size
     {false, false, kProfile, kTestPolicy1Id, 0},
     {false, false, kProfile, kTestPolicy2Id, 0},
     {false, false, kProfile, kTestPolicy3Id, 0},
     {false, false, kProfile, kEnrollmentTokenPolicyId, 0},
     {false, false, kProfile, kEnrollmentOptionPolicyId, 0},
-    {false, false, kProfile, kBrowserSigninPolicyId, 0},
-};
+});
 
 }  // namespace
 
@@ -88,10 +85,9 @@ class PolicyStatisticsCollectorTest : public testing::Test {
     policy_details_.SetDetails(kTestPolicy3, &kTestPolicyDetails[2]);
     policy_details_.SetDetails(kEnrollmentTokenPolicy, &kTestPolicyDetails[3]);
     policy_details_.SetDetails(kEnrollmentOptionPolicy, &kTestPolicyDetails[4]);
-    policy_details_.SetDetails(kBrowserSigninPolicy, &kTestPolicyDetails[5]);
 
-    prefs_.registry()->RegisterInt64Pref(
-        policy_prefs::kLastPolicyStatisticsUpdate, 0);
+    prefs_.registry()->RegisterTimePref(
+        policy_prefs::kLastPolicyStatisticsUpdate, base::Time());
 
     // Set up default function behaviour.
     EXPECT_CALL(policy_service_, GetPolicies(PolicyNamespace(
@@ -121,13 +117,6 @@ class PolicyStatisticsCollectorTest : public testing::Test {
     policy->SetIgnoredByPolicyAtomicGroup();
   }
 
-  void SetBrowserSigninPolicy(const int& policyValue) {
-    policy_map_.Set(kBrowserSigninPolicy, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(policyValue),
-                    /*external_data_fetcher=*/nullptr);
-  }
-
   base::TimeDelta GetFirstDelay() const {
     if (!task_runner_->HasPendingTask()) {
       ADD_FAILURE();
@@ -155,7 +144,6 @@ TEST_F(PolicyStatisticsCollectorTest, NoPolicy) {
   histogram_tester_.ExpectTotalCount("Enterprise.Policies.Recommended", 0);
   histogram_tester_.ExpectTotalCount("Enterprise.Policies", 0);
   histogram_tester_.ExpectTotalCount("Enterprise.Policies.Sources", 0);
-  histogram_tester_.ExpectTotalCount("Enterprise.BrowserSigninPolicy", 0);
 }
 
 TEST_F(PolicyStatisticsCollectorTest, CollectPending) {
@@ -279,25 +267,5 @@ TEST_F(PolicyStatisticsCollectorTest, EnrollmentOnly) {
   histogram_tester_.ExpectUniqueSample("Enterprise.Policies.Sources",
                                        PoliciesSources::kEnrollmentOnly, 1);
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PolicyStatisticsCollectorTest, BrowserSigninValid) {
-  SetBrowserSigninPolicy(static_cast<int>(BrowserSigninMode::kDisabled));
-
-  policy_statistics_collector_->Initialize();
-
-  histogram_tester_.ExpectUniqueSample("Enterprise.BrowserSigninPolicy",
-                                       BrowserSigninMode::kDisabled, 1);
-}
-
-TEST_F(PolicyStatisticsCollectorTest, BrowserSigninInValid) {
-  // 3 is an invalid value for BrowserSigninMode
-  SetBrowserSigninPolicy(3);
-
-  policy_statistics_collector_->Initialize();
-
-  histogram_tester_.ExpectTotalCount("Enterprise.BrowserSigninPolicy", 0);
-}
-#endif
 
 }  // namespace policy

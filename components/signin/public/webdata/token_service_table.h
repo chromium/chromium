@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "components/webdata/common/web_database_table.h"
@@ -59,10 +60,17 @@ class TokenServiceTable : public WebDatabaseTable {
   // Removes a token related to the service from the token_service table.
   bool RemoveTokenForService(const std::string& service);
 
+  // Removes all tokens stored in the web database except for those whose
+  // service is present in `services_to_keep`.
+  bool RemoveOtherTokens(const std::vector<std::string>& services_to_keep);
+
   // Retrieves all tokens previously set with SetTokenForService.
   // Returns true if there were tokens and we decrypted them,
-  // false if there was a failure somehow
-  Result GetAllTokens(std::map<std::string, TokenWithBindingKey>* tokens);
+  // false if there was a failure somehow. If `should_reencrypt` is set to true,
+  // then `SetTokenForService` should be called to write newly encrypted values
+  // to storage.
+  Result GetAllTokens(std::map<std::string, TokenWithBindingKey>* tokens,
+                      bool& should_reencrypt);
 
   // Stores a token with an optional binding key in the token_service table.
   // Token is stored encrypted. May cause a mac keychain popup.

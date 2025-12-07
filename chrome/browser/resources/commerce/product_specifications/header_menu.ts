@@ -4,29 +4,34 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './images/icons.html.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './header_menu.html.js';
+import {getCss} from './header_menu.css.js';
+import {getHtml} from './header_menu.html.js';
 
 export interface HeaderMenuElement {
   $: {
-    menu: CrLazyRenderElement<CrActionMenuElement>,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
-export class HeaderMenuElement extends PolymerElement {
+export class HeaderMenuElement extends CrLitElement {
   static get is() {
     return 'header-menu';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   showAt(element: HTMLElement) {
@@ -43,7 +48,7 @@ export class HeaderMenuElement extends PolymerElement {
     this.$.menu.get().close();
   }
 
-  private onRenameClick_() {
+  protected onRenameClick_() {
     this.close();
     this.dispatchEvent(new CustomEvent('rename-click', {
       bubbles: true,
@@ -51,7 +56,7 @@ export class HeaderMenuElement extends PolymerElement {
     }));
   }
 
-  private onSeeAllClick_() {
+  protected onSeeAllClick_() {
     this.close();
     this.dispatchEvent(new CustomEvent('see-all-click', {
       bubbles: true,
@@ -59,7 +64,7 @@ export class HeaderMenuElement extends PolymerElement {
     }));
   }
 
-  private onDeleteClick_() {
+  protected onDeleteClick_() {
     this.close();
     this.dispatchEvent(new CustomEvent('delete-click', {
       bubbles: true,

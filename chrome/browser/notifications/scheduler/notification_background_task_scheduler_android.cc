@@ -17,10 +17,9 @@
 #include "chrome/browser/profiles/profile_key.h"
 
 // static
-void JNI_NotificationSchedulerTask_OnStartTask(
+static void JNI_NotificationSchedulerTask_OnStartTask(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
   auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
   auto* handler = service->GetBackgroundTaskSchedulerHandler();
@@ -31,9 +30,7 @@ void JNI_NotificationSchedulerTask_OnStartTask(
 }
 
 // static
-jboolean JNI_NotificationSchedulerTask_OnStopTask(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller) {
+static jboolean JNI_NotificationSchedulerTask_OnStopTask(JNIEnv* env) {
   ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
   auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
   auto* handler = service->GetBackgroundTaskSchedulerHandler();
@@ -60,3 +57,5 @@ void NotificationBackgroundTaskSchedulerAndroid::Cancel() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NotificationSchedulerTask_cancel(env);
 }
+
+DEFINE_JNI(NotificationSchedulerTask)

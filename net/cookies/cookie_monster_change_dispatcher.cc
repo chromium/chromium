@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
@@ -78,6 +78,7 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
              .IncludeForRequestURL(
                  url_, options,
                  CookieAccessParams{change.access_result.access_semantics,
+                                    change.access_result.scope_semantics,
                                     delegate_treats_url_as_trustworthy})
              .status.IsInclude()) {
       return;
@@ -154,8 +155,7 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url), NameKey(name), url,
-      CookiePartitionKeyCollection::FromOptional(cookie_partition_key),
-      std::move(callback));
+      CookiePartitionKeyCollection(cookie_partition_key), std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -171,8 +171,7 @@ CookieMonsterChangeDispatcher::AddCallbackForUrl(
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url),
       std::string(kGlobalNameKey), url,
-      CookiePartitionKeyCollection::FromOptional(cookie_partition_key),
-      std::move(callback));
+      CookiePartitionKeyCollection(cookie_partition_key), std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -252,14 +251,12 @@ void CookieMonsterChangeDispatcher::UnlinkSubscription(
 
   auto cookie_domain_map_iterator =
       cookie_domain_map_.find(subscription->domain_key());
-  CHECK(cookie_domain_map_iterator != cookie_domain_map_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(cookie_domain_map_iterator != cookie_domain_map_.end());
 
   CookieNameMap& cookie_name_map = cookie_domain_map_iterator->second;
   auto cookie_name_map_iterator =
       cookie_name_map.find(subscription->name_key());
-  CHECK(cookie_name_map_iterator != cookie_name_map.end(),
-        base::NotFatalUntil::M130);
+  CHECK(cookie_name_map_iterator != cookie_name_map.end());
 
   SubscriptionList& subscription_list = cookie_name_map_iterator->second;
   subscription->RemoveFromList();

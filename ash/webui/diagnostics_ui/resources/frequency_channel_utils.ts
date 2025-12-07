@@ -6,7 +6,8 @@
  * @fileoverview Utility for converting frequencies into their related channel.
  */
 
-import {ChannelBand, ChannelProperties} from './diagnostics_types.js';
+import type {ChannelProperties} from './diagnostics_types.js';
+import {ChannelBand} from './diagnostics_types.js';
 
 /**
  * Map of keyed on center frequency with values of related channel for 5GHz.

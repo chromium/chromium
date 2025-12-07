@@ -30,6 +30,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -196,8 +197,7 @@ const DOMExceptionEntry* FindErrorEntry(DOMExceptionCode exception_code) {
     if (exception_code == entry.code)
       return &entry;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 uint16_t FindLegacyErrorCode(const String& name) {
@@ -278,15 +278,17 @@ String DOMException::ToStringForConsole() const {
       !unsanitized_message_.empty() ? unsanitized_message_ : sanitized_message_;
   return message_for_console.empty()
              ? String()
-             : "Uncaught " + name() + ": " + message_for_console;
+             : StrCat({"Uncaught ", name(), ": ", message_for_console});
 }
 
-void DOMException::AddContextToMessages(const ExceptionContext& context) {
-  sanitized_message_ =
-      ExceptionMessages::AddContextToMessage(context, sanitized_message_);
+void DOMException::AddContextToMessages(v8::ExceptionContext type,
+                                        const char* class_name,
+                                        const String& property_name) {
+  sanitized_message_ = ExceptionMessages::AddContextToMessage(
+      type, class_name, property_name, sanitized_message_);
   if (!unsanitized_message_.IsNull()) {
-    unsanitized_message_ =
-        ExceptionMessages::AddContextToMessage(context, unsanitized_message_);
+    unsanitized_message_ = ExceptionMessages::AddContextToMessage(
+        type, class_name, property_name, unsanitized_message_);
   }
 }
 

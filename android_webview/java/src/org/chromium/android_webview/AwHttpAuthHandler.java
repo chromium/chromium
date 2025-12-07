@@ -9,20 +9,19 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** See {@link android.webkit.HttpAuthHandler}. */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwHttpAuthHandler {
-    private static final String TAG = "AwHttpAuthHandler";
-
     private long mNativeAwHttpAuthHandler;
     private final boolean mFirstAttempt;
 
     public void proceed(String username, String password) {
         checkOnUiThread();
         if (mNativeAwHttpAuthHandler != 0) {
-            AwHttpAuthHandlerJni.get()
-                    .proceed(mNativeAwHttpAuthHandler, AwHttpAuthHandler.this, username, password);
+            AwHttpAuthHandlerJni.get().proceed(mNativeAwHttpAuthHandler, username, password);
             mNativeAwHttpAuthHandler = 0;
         }
     }
@@ -30,7 +29,7 @@ public class AwHttpAuthHandler {
     public void cancel() {
         checkOnUiThread();
         if (mNativeAwHttpAuthHandler != 0) {
-            AwHttpAuthHandlerJni.get().cancel(mNativeAwHttpAuthHandler, AwHttpAuthHandler.this);
+            AwHttpAuthHandlerJni.get().cancel(mNativeAwHttpAuthHandler);
             mNativeAwHttpAuthHandler = 0;
         }
     }
@@ -64,12 +63,8 @@ public class AwHttpAuthHandler {
 
     @NativeMethods
     interface Natives {
-        void proceed(
-                long nativeAwHttpAuthHandler,
-                AwHttpAuthHandler caller,
-                String username,
-                String password);
+        void proceed(long nativeAwHttpAuthHandler, String username, String password);
 
-        void cancel(long nativeAwHttpAuthHandler, AwHttpAuthHandler caller);
+        void cancel(long nativeAwHttpAuthHandler);
     }
 }

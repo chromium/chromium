@@ -1,0 +1,18 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac",
+        "chromeos"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "ntp_footer.settings.extension_attribution",
+        "default_value": true,
+        "values_to_test": [
+          true,
+          false
+        ]
+      }
+    }
+]

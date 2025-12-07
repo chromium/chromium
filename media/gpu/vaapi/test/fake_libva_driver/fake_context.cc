@@ -5,10 +5,11 @@
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 
 #include "base/environment.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/av1_decoder_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/h264_decoder_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/no_op_context_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
 
@@ -20,9 +21,9 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
     int picture_height) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   CHECK(env);
-  std::string no_op_flag;
-  if (env->GetVar("USE_NO_OP_CONTEXT_DELEGATE", &no_op_flag) &&
-      no_op_flag == "1") {
+  std::string no_op_flag =
+      env->GetVar("USE_NO_OP_CONTEXT_DELEGATE").value_or(std::string());
+  if (no_op_flag == "1") {
     return std::make_unique<media::internal::NoOpContextDelegate>();
   }
 
@@ -39,6 +40,11 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
     case VAProfileAV1Profile0:
       return std::make_unique<media::internal::Av1DecoderDelegate>(
           config.GetProfile());
+    case VAProfileH264ConstrainedBaseline:
+    case VAProfileH264Main:
+    case VAProfileH264High:
+      return std::make_unique<media::internal::H264DecoderDelegate>(
+          picture_width, picture_height, config.GetProfile());
     default:
       break;
   }

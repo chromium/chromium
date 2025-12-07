@@ -9,31 +9,31 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<body>
-  <iframe></iframe>
-</body>
-<script>
-  promise_setup(async () => {
-    const iframe = document.querySelector("iframe");
+<body></body>
+<script type="module">
+  import { makeGetOptions } from "./support/helper.js";
+  async function createIframe() {
+    const iframe = document.createElement("iframe");
     await new Promise((resolve) => {
       iframe.addEventListener("load", resolve, { once: true });
       iframe.src = "about:blank";
       document.body.appendChild(iframe);
     });
-  });
+    return iframe;
+  }
 
   promise_test(async (t) => {
-    const iframe = document.querySelector("iframe");
+    const iframe = await createIframe();
 
     // The signal check happens after the fully active check.
-    // This allows us to confirm the the right error is thrown
+    // This allows us to confirm the right error is thrown
     // and in the right order.
     const controller = new iframe.contentWindow.AbortController();
     const signal = controller.signal;
     controller.abort();
 
     // Steal all the needed references.
-    const { identity } = iframe.contentWindow.navigator;
+    const { credentials } = iframe.contentWindow.navigator;
     const DOMExceptionCtor = iframe.contentWindow.DOMException;
 
     // No longer fully active.
@@ -44,7 +44,7 @@
       t,
       "InvalidStateError",
       DOMExceptionCtor,
-      identity.get({ signal }),
+      credentials.get({ signal }),
       "Expected InvalidStateError for get() on non-fully-active document"
     );
 
@@ -53,7 +53,7 @@
       t,
       "InvalidStateError",
       DOMExceptionCtor,
-      identity.create({ signal }),
+      credentials.create({ signal }),
       "Expected InvalidStateError for create() on non-fully-active document"
     );
 
@@ -62,8 +62,26 @@
       t,
       "InvalidStateError",
       DOMExceptionCtor,
-      identity.preventSilentAccess(),
+      credentials.preventSilentAccess(),
       "Expected InvalidStateError for preventSilentAccess() on non-fully-active document"
     );
   }, "non-fully active document behavior for CredentialsContainer");
+
+  promise_test(async (t) => {
+    let iframe = await createIframe();
+    const DOMExceptionCtor = iframe.contentWindow.DOMException;
+    let stolenNavigator = iframe.contentWindow.navigator;
+    const request = makeGetOptions({ protocol: "openid4vp-v1-unsigned" });
+    await test_driver.bless("User activation", null, iframe.contentWindow);
+    await iframe.focus();
+    const p = promise_rejects_dom(
+      t,
+      "AbortError",
+      DOMExceptionCtor,
+      iframe.contentWindow.navigator.credentials.get(request),
+      "Expect promise to reject if the document becomes non-fully active"
+    );
+    iframe.remove();
+    await p;
+  }, "Promise rejects with DOMException when the document becomes non-fully active");
 </script>

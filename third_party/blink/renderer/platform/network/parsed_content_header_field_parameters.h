@@ -42,16 +42,13 @@ class PLATFORM_EXPORT ParsedContentHeaderFieldParameters final {
     kRelaxed,
   };
 
-  // We use std::optional instead of WTF::Optional which requires its content
-  // type to be fully defined. They are essentially same, so uses of this class
-  // can (and should) use WTF::Optional to store the returned value.
   static std::optional<ParsedContentHeaderFieldParameters> Parse(
       HeaderFieldTokenizer,
       Mode);
 
   // Note that in the case of multiple values for the same name, the last value
   // is returned.
-  String ParameterValueForName(const String&) const;
+  String ParameterValueForName(StringView) const;
   size_t ParameterCount() const;
   bool HasDuplicatedNames() const;
 

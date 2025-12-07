@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/autofill/autofill_uitest.h"
+
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -17,10 +18,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test_utils.h"
@@ -60,8 +61,8 @@ void TryToCloseAllPrompts(content::WebContents* web_contents) {
   top_level_view = platform_util::GetParent(top_level_view)
                        ? platform_util::GetParent(top_level_view)
                        : top_level_view;
-  views::Widget::Widgets all_widgets;
-  views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
+  views::Widget::Widgets all_widgets =
+      views::Widget::GetAllChildWidgets(top_level_view);
   for (views::Widget* w : all_widgets) {
     if (w->IsDialogBox())
       w->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
@@ -156,8 +157,12 @@ void AutofillUiTest::SetUpOnMainThread() {
   // spurious notifications deceive the tests.
   WaitForPersonalDataManagerToBeLoaded(browser()->profile());
 
-  disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  // Disable the caret blinking to not generate any compositor frames from just
+  // a blinking cursor.
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
+
+  disable_animation_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // If the mouse happened to be over where the suggestions are shown, then
   // the preview will show up and will fail the tests. We need to give it a

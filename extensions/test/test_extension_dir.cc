@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "extensions/browser/extension_creator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,7 +75,7 @@ base::FilePath TestExtensionDir::Pack(std::string_view custom_path) {
   if (!creator.Run(dir_.GetPath(), crx_path, pem_in_path, pem_out_path,
                    ExtensionCreator::kOverwriteCRX)) {
     ADD_FAILURE() << "ExtensionCreator::Run() failed: "
-                  << creator.error_message();
+                  << base::UTF16ToUTF8(creator.error_message());
     return base::FilePath();
   }
   if (!base::PathExists(crx_path)) {

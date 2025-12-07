@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module metrics.dwa.mojom;
+
+struct DwaEntry {
+  // A hash of the event name (such as "ReportingAPIUsage").
+  // Uses the same hash function as UMA.
+  // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
+  uint64 event_hash;
+  // A hash of the content (e.g. hash("example.com")).
+  // Uses the same hash function as UMA.
+  // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
+  uint64 content_hash;
+  // Map of names of field trials of interest. Their values are always true.
+  // Since mojom does not support set directly, we use a map to prevent
+  // duplicate keys. We should revisit this in the future to change the
+  // type to type-map it to a set.
+  map<string,bool> studies_of_interest;
+  // Map of metrics and their values that are relevant for this DWA event.
+  map<uint64,int64> metrics;
+};
+
+// Interface used for sending information from browser process to clients.
+// Lives in the browser process.
+interface DwaRecorderClientInterface {
+};
+
+// Interface used for sending DWA events from clients to the browser process.
+// Lives in the renderer process.
+interface DwaRecorderInterface {
+  // Clients call this method when the entry is ready to be logged by the
+  // recorder.
+  AddEntry(DwaEntry entry);
+};
+
+// This interface is used for building bidirectional communication between
+// browser & client.
+interface DwaRecorderFactory {
+  // The implementation of DwaRecorderClientInterface calls this method when
+  // it's first initialized.
+  CreateDwaRecorder(pending_receiver<DwaRecorderInterface> receiver,
+                    pending_remote<DwaRecorderClientInterface> client_remote);
+};

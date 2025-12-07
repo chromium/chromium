@@ -4,6 +4,7 @@
 
 #include "components/payments/content/payment_request.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/has_enrolled_instrument_query_factory.h"
@@ -21,6 +21,7 @@
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds.h"
+#include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
@@ -31,6 +32,7 @@
 #include "components/payments/core/payment_details_validation.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_request_delegate.h"
+#include "components/payments/core/payments_experimental_features.h"
 #include "components/payments/core/payments_validators.h"
 #include "components/payments/core/url_util.h"
 #include "components/prefs/pref_service.h"
@@ -43,6 +45,7 @@
 #include "content/public/common/content_features.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace payments {
 namespace {
@@ -81,7 +84,7 @@ PaymentRequest::PaymentRequest(
           delegate_->GetRenderFrameHost()->GetLastCommittedOrigin()),
       spc_transaction_mode_(
           PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-              *web_contents())
+              web_contents())
               ->transaction_mode()),
       journey_logger_(delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
   CHECK(!delegate_->GetRenderFrameHost()->IsInLifecycleState(
@@ -161,7 +164,7 @@ void PaymentRequest::Init(
     return;
   }
 
-  if (base::ranges::any_of(method_data, [](const auto& datum) {
+  if (std::ranges::any_of(method_data, [](const auto& datum) {
         return !datum || datum->supported_method.empty();
       })) {
     log_.Error(errors::kMethodNameRequired);
@@ -231,7 +234,7 @@ void PaymentRequest::Init(
     method_categories.push_back(
         JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation);
   }
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           spec_->url_payment_method_identifiers(), [&](const GURL& url) {
             return url != google_pay_url && url != android_pay_url &&
                    url != google_play_billing_url;
@@ -301,10 +304,16 @@ void PaymentRequest::Show(bool wait_for_updated_details,
     return;
   }
 
+  VLOG(2) << "PaymentRequest (" << *spec_->details().id
+          << ").show(); had_user_activation: " << had_user_activation;
+
   if (!had_user_activation) {
     PaymentRequestWebContentsManager* manager =
         PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-            *web_contents());
+            web_contents());
+    VLOG(2) << "PaymentRequest (" << *spec_->details().id
+            << ").show(); manager->HadActivationlessShow(): "
+            << manager->HadActivationlessShow();
     if (manager->HadActivationlessShow()) {
       log_.Error(errors::kCannotShowWithoutUserActivation);
       DCHECK(!has_recorded_completion_);
@@ -314,6 +323,9 @@ void PaymentRequest::Show(bool wait_for_updated_details,
                        errors::kCannotShowWithoutUserActivation);
       ResetAndDeleteThis();
       return;
+    } else {
+      VLOG(2) << "PaymentRequest (" << *spec_->details().id
+              << ").show(); allowing activationless show";
     }
 
     is_activationless_show_ = true;
@@ -563,7 +575,9 @@ void PaymentRequest::CanMakePayment() {
   }
 
   if (!can_make_payment_allowed_by_pref) {
-    CanMakePaymentCallback(/*can_make_payment=*/false);
+    CanMakePaymentCallback(
+        /*can_make_payment=*/PaymentsExperimentalFeatures::IsEnabled(
+            features::kCanMakePaymentTrueWhenPrivate));
   } else {
     state_->CanMakePayment(
         base::BindOnce(&PaymentRequest::CanMakePaymentCallback,
@@ -843,6 +857,22 @@ void PaymentRequest::OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) {
   client_->OnPayerDetailChange(std::move(payer_info));
 }
 
+void PaymentRequest::OnUserAuthAnotherWay() {
+  // If |client_| is not bound, then the object is already being destroyed as
+  // a result of a renderer event.
+  if (!client_.is_bound()) {
+    return;
+  }
+
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
+
+  // This sends an error to the renderer, which informs the API user.
+  client_->OnError(mojom::PaymentErrorReason::NOT_ALLOWED_ERROR,
+                   errors::kWebAuthnOperationTimedOutOrNotAllowed);
+
+  ResetAndDeleteThis();
+}
+
 void PaymentRequest::OnUserCancelled() {
   // If |client_| is not bound, then the object is already being destroyed as
   // a result of a renderer event.
@@ -851,16 +881,24 @@ void PaymentRequest::OnUserCancelled() {
 
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
-  // This sends an error to the renderer, which informs the API user.
-  // If SPC flag is enabled, use NotAllowedError instead.
-  bool is_spc_enabled = spec_->IsSecurePaymentConfirmationRequested();
-  client_->OnError(
-      is_spc_enabled ? mojom::PaymentErrorReason::NOT_ALLOWED_ERROR
-                     : mojom::PaymentErrorReason::USER_CANCEL,
-      is_spc_enabled
-          ? errors::kWebAuthnOperationTimedOutOrNotAllowed
-          : (!reject_show_error_message_.empty() ? reject_show_error_message_
-                                                 : errors::kUserCancelled));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationUxRefresh)) {
+    client_->OnError(
+        mojom::PaymentErrorReason::USER_CANCEL,
+        (!reject_show_error_message_.empty() ? reject_show_error_message_
+                                             : errors::kUserCancelled));
+  } else {
+    // This sends an error to the renderer, which informs the API user.
+    // If SPC flag is enabled, use NotAllowedError instead.
+    bool is_spc_enabled = spec_->IsSecurePaymentConfirmationRequested();
+    client_->OnError(
+        is_spc_enabled ? mojom::PaymentErrorReason::NOT_ALLOWED_ERROR
+                       : mojom::PaymentErrorReason::USER_CANCEL,
+        is_spc_enabled
+            ? errors::kWebAuthnOperationTimedOutOrNotAllowed
+            : (!reject_show_error_message_.empty() ? reject_show_error_message_
+                                                   : errors::kUserCancelled));
+  }
 
   ResetAndDeleteThis();
 }
@@ -996,8 +1034,7 @@ JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
       break;
     }
     case PaymentApp::Type::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return JourneyLogger::PaymentMethodCategory::kOther;
 }

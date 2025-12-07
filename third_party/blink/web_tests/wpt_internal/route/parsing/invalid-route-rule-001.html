@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>Invalid @route rule declarations</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://wicg.github.io/declarative-partial-updates/css-route-matching/">
+<style>
+  @route incorrect {}
+  .parseme {}
+  @route (r) incorrect {}
+  .parseme {}
+  @route (r) (r) {}
+  .parseme {}
+  @route (r r) incorrect {}
+  .parseme {}
+  @route (at: r) incorrect {}
+  .parseme {}
+  @route (at: r r) incorrect {}
+  .parseme {}
+  @route (at: from:) incorrect {}
+  .parseme {}
+  @route (at: from: whatever) incorrect {}
+  .parseme {}
+  @route incorrect (r) {}
+  .parseme {}
+  @route incorrect (at: r) incorrect {}
+  .parseme {}
+  @route (over:) incorrect {}
+  .parseme {}
+  @route (over: rainbow) incorrect {}
+  .parseme {}
+  @route incorrect (over: rainbow) incorrect {}
+  .parseme {}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(document.styleSheets.length, 1);
+    let stylesheet = document.styleSheets[0];
+    assert_equals(stylesheet.cssRules.length, 13);
+    for (let i = 0; i < stylesheet.cssRules.length; i++) {
+      let rule = stylesheet.cssRules[i];
+      assert_true(rule instanceof CSSStyleRule);
+      assert_equals(rule.selectorText, ".parseme");
+    }
+  }, "Invalid @route");
+</script>

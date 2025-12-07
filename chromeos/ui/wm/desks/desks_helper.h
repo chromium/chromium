@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
-#include "build/chromeos_buildflags.h"
 
 namespace aura {
 class Window;
@@ -21,17 +19,17 @@ namespace chromeos {
 // Desks feature.
 class COMPONENT_EXPORT(CHROMEOS_UI_WM) DesksHelper {
  public:
-  // Returns DesksHelper instance by window.
-  // It is OK to pass nullptr when called from ash if there is no accessible
-  // window at that moment.
-  // But window must be passed to get DesksHelper when called from lacros.
-  static DesksHelper* Get(aura::Window* window);
+  // Returns DesksHelper instance.
+  static DesksHelper* Get();
 
   DesksHelper(const DesksHelper&) = delete;
   DesksHelper& operator=(const DesksHelper&) = delete;
 
   // Returns true if |window| exists on the currently active desk.
   virtual bool BelongsToActiveDesk(aura::Window* window) = 0;
+
+  // Returns true if `Window` exists on the desk with the given `index`.
+  virtual bool BelongsToDesk(aura::Window* window, size_t index) = 0;
 
   // Returns the active desk's index.
   virtual int GetActiveDeskIndex() const = 0;

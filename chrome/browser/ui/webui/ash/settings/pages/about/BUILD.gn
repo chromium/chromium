@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("about") {
   sources = [
@@ -17,8 +15,10 @@ static_library("about") {
   public_deps = [
     "//base",
     "//build:branding_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/device_name",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
     "//components/user_manager",
   ]
@@ -29,22 +29,23 @@ static_library("about") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
-    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chromeos/dbus/constants",
     "//components/policy/core/common",
     "//components/signin/public/identity_manager",
     "//components/strings:components_branded_strings",
     "//components/strings:components_strings",
-    "//components/version_ui",
+    "//components/webui/version",
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/webui",
   ]
 }
 

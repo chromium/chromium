@@ -1,0 +1,79 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+
+static_library("strike_database") {
+  sources = [
+    "history_clearable_strike_database.h",
+    "simple_strike_database.h",
+    "strike_database.cc",
+    "strike_database.h",
+    "strike_database_base.cc",
+    "strike_database_base.h",
+    "strike_database_integrator_base.cc",
+    "strike_database_integrator_base.h",
+    "strike_database_integrator_test_strike_database.cc",
+    "strike_database_integrator_test_strike_database.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+  ]
+
+  deps = [
+    ":features",
+    ":proto",
+  ]
+}
+
+component("features") {
+  output_name = "strike_database_features"
+  defines = [ "IS_STRIKE_DATABASE_IMPL" ]
+  sources = [
+    "strike_database_features.cc",
+    "strike_database_features.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+fuzzable_proto_library("proto") {
+  sources = [ "strike_data.proto" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_inmemory_strike_database.cc",
+    "test_inmemory_strike_database.h",
+  ]
+
+  public_deps = [ ":strike_database" ]
+
+  deps = [ ":proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "history_clearable_strike_database_unittest.cc",
+    "simple_autofill_strike_database_unittest.cc",
+    "strike_database_integrator_test_strike_database_unittest.cc",
+    "strike_database_unittest.cc",
+  ]
+
+  deps = [
+    ":features",
+    ":proto",
+    ":strike_database",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

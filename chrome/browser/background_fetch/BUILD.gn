@@ -1,0 +1,99 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("background_fetch") {
+  sources = [
+    "background_fetch_delegate_factory.h",
+    "background_fetch_delegate_impl.h",
+    "background_fetch_permission_context.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/background_fetch",
+    "//components/content_settings/core/common",
+    "//components/download/public/background_service:public",
+    "//components/keyed_service/core",
+    "//components/offline_items_collection/core",
+    "//components/permissions",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "background_fetch_delegate_factory.cc",
+    "background_fetch_delegate_impl.cc",
+    "background_fetch_permission_context.cc",
+  ]
+  deps = [
+    ":background_fetch",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/metrics",
+    "//chrome/browser/offline_items_collection",
+    "//chrome/browser/profiles",
+    "//components/content_settings/core/browser",
+    "//components/download/public/common:public",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/mojom:mojom_permissions_policy",
+    "//skia",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "background_fetch_delegate_impl_unittest.cc",
+    "background_fetch_permission_context_unittest.cc",
+  ]
+  deps = [
+    ":background_fetch",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/ukm:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "background_fetch_browsertest.cc" ]
+    deps = [
+      ":background_fetch",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/offline_items_collection",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/browser",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//url",
+    ]
+  }
+}

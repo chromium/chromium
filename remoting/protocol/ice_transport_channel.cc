@@ -16,11 +16,13 @@
 #include "remoting/protocol/channel_socket_adapter.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/webrtc/api/ice_transport_interface.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/p2p/base/port.h"
 #include "third_party/webrtc/rtc_base/crypto_random.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace remoting::protocol {
 
@@ -28,10 +30,10 @@ namespace {
 
 const int kIceUfragLength = 16;
 
-// Utility function to map a cricket::Candidate string type to a
+// Utility function to map a webrtc::Candidate string type to a
 // TransportRoute::RouteType enum value.
 TransportRoute::RouteType CandidateTypeToTransportRouteType(
-    const cricket::Candidate& c) {
+    const webrtc::Candidate& c) {
   if (c.is_local()) {
     return TransportRoute::DIRECT;
   } else if (c.is_stun() || c.is_prflx()) {
@@ -46,11 +48,12 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
 }  // namespace
 
 IceTransportChannel::IceTransportChannel(
-    scoped_refptr<TransportContext> transport_context)
+    scoped_refptr<TransportContext> transport_context,
+    const NetworkSettings& network_settings)
     : transport_context_(transport_context),
-      ice_username_fragment_(rtc::CreateRandomString(kIceUfragLength)),
-      connect_attempts_left_(
-          transport_context->network_settings().ice_reconnect_attempts) {
+      ice_username_fragment_(webrtc::CreateRandomString(kIceUfragLength)),
+      connect_attempts_left_(network_settings.ice_reconnect_attempts),
+      network_settings_(network_settings) {
   DCHECK(!ice_username_fragment_.empty());
 }
 
@@ -82,37 +85,52 @@ void IceTransportChannel::Connect(const std::string& name,
   delegate_ = delegate;
   callback_ = std::move(callback);
 
-  port_allocator_ =
+  auto create_port_allocator_result =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
           transport_context_, nullptr);
+  port_allocator_ = std::move(create_port_allocator_result.allocator);
+  std::move(create_port_allocator_result.apply_network_settings)
+      .Run(network_settings_);
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
-  channel_ = std::make_unique<cricket::P2PTransportChannel>(
-      std::string(), 0, port_allocator_.get());
-  std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
+  webrtc::IceTransportInit ice_init(WebRtcEnvironment());
+  ice_init.set_port_allocator(port_allocator_.get());
+  channel_ = webrtc::P2PTransportChannel::Create(name_, /*component=*/0,
+                                                 std::move(ice_init));
+  std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
-                           ? cricket::ICEROLE_CONTROLLING
-                           : cricket::ICEROLE_CONTROLLED);
+                           ? webrtc::ICEROLE_CONTROLLING
+                           : webrtc::ICEROLE_CONTROLLED);
   delegate_->OnChannelIceCredentials(this, ice_username_fragment_,
                                      ice_password);
-  channel_->SetIceCredentials(ice_username_fragment_, ice_password);
-  channel_->SignalCandidateGathered.connect(
-      this, &IceTransportChannel::OnCandidateGathered);
-  channel_->SignalRouteChange.connect(this,
-                                      &IceTransportChannel::OnRouteChange);
-  channel_->SignalWritableState.connect(this,
-                                        &IceTransportChannel::OnWritableState);
-  channel_->set_incoming_only(!(transport_context_->network_settings().flags &
-                                NetworkSettings::NAT_TRAVERSAL_OUTGOING));
+  channel_->SetIceParameters(webrtc::IceParameters(
+      ice_username_fragment_, ice_password, /*ice_renomination=*/false));
+  channel_->SubscribeCandidateGathered(
+      [this](webrtc::IceTransportInternal* transport,
+             const webrtc::Candidate& candidate) {
+        OnCandidateGathered(transport, candidate);
+      });
+  channel_->SubscribeNetworkRouteChanged(
+      this, [this](std::optional<webrtc::NetworkRoute>) {
+        if (channel_->writable()) {
+          NotifyRouteChanged();
+        }
+      });
+  channel_->SubscribeWritableState(
+      this, [this](webrtc::PacketTransportInternal* channel) {
+        OnWritableState(channel);
+      });
+  channel_->set_incoming_only(
+      !(network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_OUTGOING));
 
-  channel_->Connect();
   channel_->MaybeStartGathering();
 
   // Pass pending ICE credentials and candidates to the channel.
   if (!remote_ice_username_fragment_.empty()) {
-    channel_->SetRemoteIceCredentials(remote_ice_username_fragment_,
-                                      remote_ice_password_);
+    channel_->SetRemoteIceParameters(webrtc::IceParameters(
+        remote_ice_username_fragment_, remote_ice_password_,
+        /*ice_renomination=*/false));
   }
 
   while (!pending_candidates_.empty()) {
@@ -123,9 +141,8 @@ void IceTransportChannel::Connect(const std::string& name,
   --connect_attempts_left_;
 
   // Start reconnection timer.
-  reconnect_timer_.Start(FROM_HERE,
-                         transport_context_->network_settings().ice_timeout,
-                         this, &IceTransportChannel::TryReconnect);
+  reconnect_timer_.Start(FROM_HERE, network_settings_.ice_timeout, this,
+                         &IceTransportChannel::TryReconnect);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&IceTransportChannel::NotifyConnected,
@@ -149,18 +166,19 @@ void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,
   remote_ice_password_ = password;
 
   if (channel_) {
-    channel_->SetRemoteIceCredentials(ufrag, password);
+    channel_->SetRemoteIceParameters(
+        webrtc::IceParameters(ufrag, password, /*ice_renomination=*/false));
   }
 }
 
 void IceTransportChannel::AddRemoteCandidate(
-    const cricket::Candidate& candidate) {
+    const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // To enforce the no-relay setting, it's not enough to not produce relay
   // candidates. It's also necessary to discard remote relay candidates.
-  bool relay_allowed = (transport_context_->network_settings().flags &
-                        NetworkSettings::NAT_TRAVERSAL_RELAY) != 0;
+  bool relay_allowed =
+      (network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_RELAY) != 0;
   if (!relay_allowed && candidate.is_relay()) {
     return;
   }
@@ -183,29 +201,19 @@ bool IceTransportChannel::is_connected() const {
 }
 
 void IceTransportChannel::OnCandidateGathered(
-    cricket::IceTransportInternal* ice_transport,
-    const cricket::Candidate& candidate) {
+    webrtc::IceTransportInternal* ice_transport,
+    const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnChannelCandidate(this, candidate);
 }
 
-void IceTransportChannel::OnRouteChange(
-    cricket::IceTransportInternal* ice_transport,
-    const cricket::Candidate& candidate) {
-  // Ignore notifications if the channel is not writable.
-  if (channel_->writable()) {
-    NotifyRouteChanged();
-  }
-}
-
 void IceTransportChannel::OnWritableState(
-    rtc::PacketTransportInternal* transport) {
+    webrtc::PacketTransportInternal* transport) {
   DCHECK_EQ(transport,
-            static_cast<rtc::PacketTransportInternal*>(channel_.get()));
+            static_cast<webrtc::PacketTransportInternal*>(channel_.get()));
 
   if (transport->writable()) {
-    connect_attempts_left_ =
-        transport_context_->network_settings().ice_reconnect_attempts;
+    connect_attempts_left_ = network_settings_.ice_reconnect_attempts;
     reconnect_timer_.Stop();
 
     // Route change notifications are ignored when the |channel_| is not
@@ -227,7 +235,7 @@ void IceTransportChannel::NotifyRouteChanged() {
   TransportRoute route;
 
   DCHECK(channel_->best_connection());
-  const cricket::Connection* connection = channel_->best_connection();
+  const webrtc::Connection* connection = channel_->best_connection();
 
   // A connection has both a local and a remote candidate. For our purposes, the
   // route type is determined by the most indirect candidate type. For example:
@@ -246,7 +254,7 @@ void IceTransportChannel::NotifyRouteChanged() {
     LOG(FATAL) << "Failed to convert peer IP address.";
   }
 
-  const cricket::Candidate& local_candidate =
+  const webrtc::Candidate& local_candidate =
       channel_->best_connection()->local_candidate();
   if (!webrtc::SocketAddressToIPEndPoint(local_candidate.address(),
                                          &route.local_address)) {
@@ -270,10 +278,11 @@ void IceTransportChannel::TryReconnect() {
   --connect_attempts_left_;
 
   // Restart ICE by resetting ICE password.
-  std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
+  std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   delegate_->OnChannelIceCredentials(this, ice_username_fragment_,
                                      ice_password);
-  channel_->SetIceCredentials(ice_username_fragment_, ice_password);
+  channel_->SetIceParameters(webrtc::IceParameters(
+      ice_username_fragment_, ice_password, /*ice_renomination=*/false));
 }
 
 }  // namespace remoting::protocol

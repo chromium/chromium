@@ -133,7 +133,7 @@ void ChromeComposeDialogController::OnWidgetDestroying(views::Widget* widget) {
         FROM_HERE,
         base::BindOnce(&ChromeComposeDialogController::OnAfterWidgetDestroyed,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Milliseconds(config.focus_lost_delay_milliseconds));
+        config.focus_lost_delay);
   }
   // This will no-op if there is no observation.
   widget_observation_.Reset();

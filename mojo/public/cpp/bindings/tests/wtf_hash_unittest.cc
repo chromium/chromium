@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/wtf_hash_util.h"
-
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom-blink.h"
-#include "mojo/public/interfaces/bindings/tests/test_wtf_types.mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_wtf_types.test-mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 
@@ -27,22 +26,22 @@ TEST_F(WTFHashTest, NestedStruct) {
 
 TEST_F(WTFHashTest, Enum) {
   // Just check that this template instantiation compiles.
+  using ::blink::HashTraits;
 
   // Top-level.
-  ASSERT_EQ(
-      WTF::HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0),
-      WTF::HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0));
+  ASSERT_EQ(HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0),
+            HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0));
 
   // Nested in struct.
-  ASSERT_EQ(WTF::HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
+  ASSERT_EQ(HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
                 blink::TestWTFStruct::NestedEnum::E0),
-            WTF::HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
+            HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
                 blink::TestWTFStruct::NestedEnum::E0));
 
   // Nested in interface.
-  ASSERT_EQ(WTF::HashTraits<blink::TestWTF::NestedEnum>::GetHash(
+  ASSERT_EQ(HashTraits<blink::TestWTF::NestedEnum>::GetHash(
                 blink::TestWTF::NestedEnum::E0),
-            WTF::HashTraits<blink::TestWTF::NestedEnum>::GetHash(
+            HashTraits<blink::TestWTF::NestedEnum>::GetHash(
                 blink::TestWTF::NestedEnum::E0));
 }
 

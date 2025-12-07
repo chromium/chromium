@@ -45,6 +45,9 @@ class DemoComponents {
   // found.
   static base::FilePath GetPreInstalledPath();
 
+  static void OverridePreinstalledResourcesRootPathForTesting(
+      const base::FilePath* path);
+
   explicit DemoComponents(DemoSession::DemoModeConfig config);
 
   DemoComponents(const DemoComponents&) = delete;

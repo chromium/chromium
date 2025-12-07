@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {AppManagementStore} from 'chrome://os-settings/os_settings.js';
-import {App, AppType, ExtensionAppPermissionMessage, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {App, ExtensionAppPermissionMessage, PageHandlerInterface, PageHandlerRemote, PageRemote, Permission, RunOnOsLoginMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallReason, InstallSource, PageHandlerReceiver, PermissionType, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -29,7 +29,7 @@ export class FakePageHandler implements PageHandlerInterface {
       let isManaged = false;
 
       if (options && options[permissionType]) {
-        const opts = options[permissionType]!;
+        const opts = options[permissionType];
         permissionValue = opts.value ? getTriStatePermissionValue(opts.value) :
                                        permissionValue;
         isManaged = opts.isManaged || isManaged;
@@ -104,6 +104,7 @@ export class FakePageHandler implements PageHandlerInterface {
       selectedLocale: null,
       showSystemNotificationsSettingsLink: false,
       allowUninstall: true,
+      disableUserChoiceNavigationCapturing: false,
     };
 
     if (optConfig) {
@@ -180,22 +181,22 @@ export class FakePageHandler implements PageHandlerInterface {
     await this.page.$.flushForTesting();
   }
 
-  async getApps(): Promise<{apps: App[]}> {
-    return {apps: this.apps_};
+  getApps(): Promise<{apps: App[]}> {
+    return Promise.resolve({apps: this.apps_});
   }
 
-  async getApp(_appId: string): Promise<{app: App}> {
+  getApp(_appId: string): Promise<{app: App}> {
     assertNotReached();
   }
 
-  async getSubAppToParentMap():
+  getSubAppToParentMap():
       Promise<{subAppToParentMap: {[key: string]: string}}> {
-    return {subAppToParentMap: {}};
+    return Promise.resolve({subAppToParentMap: {}});
   }
 
   async getExtensionAppPermissionMessages(_appId: string):
       Promise<{messages: ExtensionAppPermissionMessage[]}> {
-    return {messages: []};
+    return Promise.resolve({messages: []});
   }
 
   setApps(appList: App[]): void {
@@ -286,13 +287,12 @@ export class FakePageHandler implements PageHandlerInterface {
     assertNotReached();
   }
 
-  async getOverlappingPreferredApps(_appId: string):
-      Promise<{appIds: string[]}> {
+  getOverlappingPreferredApps(_appId: string): Promise<{appIds: string[]}> {
     this.methodCalled('getOverlappingPreferredApps');
     if (!this.overlappingAppIds) {
-      return {appIds: []};
+      return Promise.resolve({appIds: []});
     }
-    return {appIds: this.overlappingAppIds};
+    return Promise.resolve({appIds: this.overlappingAppIds});
   }
 
   openStorePage(_appId: string): void {}

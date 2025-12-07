@@ -19,8 +19,6 @@ inline constexpr char kDialogScreenshotVisibility[] =
 inline constexpr char kInformedRestoreOnboardingHistogram[] =
     "Ash.Pine.OnboardingDialog.TurnRestoreOn";
 
-inline constexpr char kFullRestoreNotificationHistogram[] =
-    "Ash.FullRestore.ShowFullRestoreNotification";
 inline constexpr char kFullRestoreDialogHistogram[] =
     "Ash.FullRestore.ShowInformedRestoreDialog";
 
@@ -39,7 +37,10 @@ enum class ScreenshotOnShutdownStatus {
   kFailedOnDifferentOrientations,
   kFailedOnDLP,
   kFailedInGuestOrPublicUserSession,
-  kMaxValue = kFailedInGuestOrPublicUserSession,
+  kFailedOtherUserIsActive,
+  kFailedWithVisibleWindowFromOtherUser,
+  kFailedSessionIsNotActive,
+  kMaxValue = kFailedSessionIsNotActive,
 };
 
 // Enumeration of the ways the informed restore dialog could be closed. Used for

@@ -67,7 +67,7 @@ GURL GetBaseUrlForTesting(int port);
 // Writes the |content| to the file at |file_path|. Returns true on success,
 // otherwise false.
 bool WriteStringToFile(const base::FilePath& file_path,
-                       const std::string& content);
+                       std::string_view content);
 
 // Creates a |size| byte file. The file is filled with random bytes so that
 // the test assertions can identify correct portion/position of the file is

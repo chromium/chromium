@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Tento web nemôže žiadať o vaše povolenie</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Získať pomoc<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">Povoľte párovanie <ph name="BEGIN_LINK" />zapnutím rozhrania Bluetooth<ph name="END_LINK" /></translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> vyžaduje povolenie sledovať vaše ruky.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Získajte pomoc<ph name="END_LINK" /> s vyhľadávaním zariadení…</translation>
 <translation id="4925793601605263825">Aplikácia <ph name="APP_NAME" /> potrebuje povolenie pre tento web na prístup k mikrofónu.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> chce vyhľadávať zariadenia Bluetooth nablízku. Našli sa tieto zariadenia:</translation>

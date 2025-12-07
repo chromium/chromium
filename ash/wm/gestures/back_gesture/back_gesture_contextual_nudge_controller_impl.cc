@@ -117,8 +117,9 @@ void BackGestureContextualNudgeControllerImpl::OnShelfConfigUpdated() {
 
 bool BackGestureContextualNudgeControllerImpl::CanShowNudge(
     base::TimeDelta* recheck_delay) const {
-  if (!Shell::Get()->IsInTabletMode())
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
+  }
 
   if (Shell::Get()->session_controller()->GetSessionState() !=
       session_manager::SessionState::ACTIVE) {

@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -48,7 +49,7 @@ struct GtkPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
         CreateResourceWithImpl<TestSelectionOffer>(
             wl_resource_get_client(device->resource()),
             &gtk_primary_selection_offer_interface, version, &kOfferImpl, 0,
-            std::move(owned_delegate));
+            base::DoNothing(), std::move(owned_delegate));
     delegate->offer = GetUserDataAs<TestSelectionOffer>(new_offer_resource);
     gtk_primary_selection_device_send_data_offer(device_resource,
                                                  new_offer_resource);
@@ -78,7 +79,7 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
   }
 
   void SendFinished() override {
-    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
+    NOTREACHED() << "The interface does not support this method.";
   }
 
   void SendCancelled() override {
@@ -86,11 +87,11 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
   }
 
   void SendDndAction(uint32_t action) override {
-    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
+    NOTREACHED() << "The interface does not support this method.";
   }
 
   void SendDndDropPerformed() override {
-    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
+    NOTREACHED() << "The interface does not support this method.";
   }
 
   raw_ptr<TestSelectionSource> source = nullptr;
@@ -110,7 +111,8 @@ struct GtkPrimarySelectionDeviceManager
     auto* delegate = owned_delegate.get();
     wl_resource* resource = CreateResourceWithImpl<TestSelectionDevice>(
         client, &gtk_primary_selection_device_interface, version_,
-        &kTestSelectionDeviceImpl, id, std::move(owned_delegate));
+        &kTestSelectionDeviceImpl, id, base::DoNothing(),
+        std::move(owned_delegate));
     delegate->device = GetUserDataAs<TestSelectionDevice>(resource);
     return delegate->device;
   }
@@ -122,7 +124,8 @@ struct GtkPrimarySelectionDeviceManager
     auto* delegate = owned_delegate.get();
     wl_resource* resource = CreateResourceWithImpl<TestSelectionSource>(
         client, &gtk_primary_selection_source_interface, version_,
-        &kTestSelectionSourceImpl, id, std::move(owned_delegate));
+        &kTestSelectionSourceImpl, id, base::DoNothing(),
+        std::move(owned_delegate));
     delegate->source = GetUserDataAs<TestSelectionSource>(resource);
     return delegate->source;
   }

@@ -141,7 +141,7 @@ dictionary AudioDecoderConfig {
   required DOMString codec;
   [EnforceRange] required unsigned long sampleRate;
   [EnforceRange] required unsigned long numberOfChannels;
-  BufferSource description;
+  AllowSharedBufferSource description;
 };
 
 dictionary VideoDecoderConfig {
@@ -154,6 +154,8 @@ dictionary VideoDecoderConfig {
   VideoColorSpaceInit colorSpace;
   HardwareAcceleration hardwareAcceleration = "no-preference";
   boolean optimizeForLatency;
+  double rotation = 0;
+  boolean flip = false;
 };
 
 dictionary AudioEncoderConfig {
@@ -317,6 +319,8 @@ interface VideoFrame {
   readonly attribute unsigned long codedHeight;
   readonly attribute DOMRectReadOnly? codedRect;
   readonly attribute DOMRectReadOnly? visibleRect;
+  readonly attribute double rotation;
+  readonly attribute boolean flip;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
@@ -340,9 +344,12 @@ dictionary VideoFrameInit {
   AlphaOption alpha = "keep";
 
   // Default matches image. May be used to efficiently crop. Will trigger
-  // new computation of displayWidth and displayHeight using image’s pixel
+  // new computation of displayWidth and displayHeight using image's pixel
   // aspect ratio unless an explicit displayWidth and displayHeight are given.
   DOMRectInit visibleRect;
+
+  double rotation = 0;
+  boolean flip = false;
 
   // Default matches image unless visibleRect is provided.
   [EnforceRange] unsigned long displayWidth;
@@ -363,6 +370,9 @@ dictionary VideoFrameBufferInit {
 
   // Default visible rect is coded size positioned at (0,0)
   DOMRectInit visibleRect;
+
+  double rotation = 0;
+  boolean flip = false;
 
   // Default display dimensions match visibleRect.
   [EnforceRange] unsigned long displayWidth;
@@ -488,7 +498,7 @@ interface ImageDecoder {
   static Promise<boolean> isTypeSupported(DOMString type);
 };
 
-typedef (BufferSource or ReadableStream) ImageBufferSource;
+typedef (AllowSharedBufferSource or ReadableStream) ImageBufferSource;
 dictionary ImageDecoderInit {
   required DOMString type;
   required ImageBufferSource data;
@@ -509,7 +519,7 @@ dictionary ImageDecodeResult {
   required boolean complete;
 };
 
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), SecureContext]
 interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
@@ -519,7 +529,7 @@ interface ImageTrackList {
   readonly attribute ImageTrack? selectedTrack;
 };
 
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), SecureContext]
 interface ImageTrack {
   readonly attribute boolean animated;
   readonly attribute unsigned long frameCount;

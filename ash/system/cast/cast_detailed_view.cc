@@ -67,8 +67,7 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
       return kSystemMenuCastGenericIcon;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kSystemMenuCastGenericIcon;
+  NOTREACHED();
 }
 
 std::unique_ptr<views::View> MakeButtonContainer() {
@@ -226,7 +225,7 @@ void CastDetailedView::AddAccessCodeCastButton(
   // image with an updated `ui::ImageModel`.
   add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kKeyboardIcon, cros_tokens::kCrosSysPrimary));
-  add_access_code_device_->text_label()->SetEnabledColorId(
+  add_access_code_device_->text_label()->SetEnabledColor(
       cros_tokens::kCrosSysPrimary);
 }
 
@@ -267,9 +266,9 @@ std::unique_ptr<PillButton> CastDetailedView::CreateStopButton(
                           base::Unretained(this), route.id),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP_CASTING),
       PillButton::kDefaultWithIconLeading, &kQuickSettingsCircleStopIcon);
-  stop_button->SetBackgroundColorId(cros_tokens::kCrosSysErrorContainer);
-  stop_button->SetIconColorId(cros_tokens::kCrosSysError);
-  stop_button->SetButtonTextColorId(cros_tokens::kCrosSysError);
+  stop_button->SetBackgroundColor(cros_tokens::kCrosSysErrorContainer);
+  stop_button->SetIconColor(cros_tokens::kCrosSysError);
+  stop_button->SetButtonTextColor(cros_tokens::kCrosSysError);
   return stop_button;
 }
 

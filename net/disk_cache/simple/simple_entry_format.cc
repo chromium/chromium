@@ -4,23 +4,27 @@
 
 #include "net/disk_cache/simple/simple_entry_format.h"
 
-#include <cstring>
+#include "base/containers/span.h"
 
 namespace disk_cache {
 
 SimpleFileHeader::SimpleFileHeader() {
-  // Make hashing repeatable: leave no padding bytes untouched.
-  std::memset(this, 0, sizeof(*this));
+  // We don't want unset holes in types stored to disk.
+  static_assert(std::has_unique_object_representations_v<SimpleFileHeader>,
+                "SimpleFileHeader should have no implicit padding bytes");
 }
 
 SimpleFileEOF::SimpleFileEOF() {
-  // Make hashing repeatable: leave no padding bytes untouched.
-  std::memset(this, 0, sizeof(*this));
+  // We don't want unset holes in types stored to disk.
+  static_assert(std::has_unique_object_representations_v<SimpleFileEOF>,
+                "SimpleFileEOF should have no implicit padding bytes");
 }
 
 SimpleFileSparseRangeHeader::SimpleFileSparseRangeHeader() {
-  // Make hashing repeatable: leave no padding bytes untouched.
-  std::memset(this, 0, sizeof(*this));
+  // We don't want unset holes in types stored to disk.
+  static_assert(
+      std::has_unique_object_representations_v<SimpleFileSparseRangeHeader>,
+      "SimpleFileSparseRangeHeader should have no implicit padding bytes");
 }
 
 }  // namespace disk_cache

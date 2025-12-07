@@ -11,6 +11,7 @@ source_set("formats") {
   visibility = [
     "//media",
     "//media/base/android/",
+    "//media/base/win:media_foundation_util",
     "//media/cdm",
     "//media/ffmpeg",
     "//media/filters",
@@ -27,6 +28,7 @@ source_set("formats") {
     "common/opus_constants.h",
     "mp4/bitstream_converter.cc",
     "mp4/bitstream_converter.h",
+    "mp4/box_constants.h",
     "mp4/box_definitions.cc",
     "mp4/box_definitions.h",
     "mp4/box_reader.cc",
@@ -102,8 +104,9 @@ source_set("formats") {
       "mp4/dolby_vision.h",
       "mp4/h264_annex_b_to_avc_bitstream_converter.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter.h",
+      "mp4/h26x_annex_b_to_bitstream_converter.cc",
+      "mp4/h26x_annex_b_to_bitstream_converter.h",
       "mp4/mp4_status.h",
-      "mpeg/adts_constants.cc",
       "mpeg/adts_constants.h",
       "mpeg/adts_stream_parser.cc",
       "mpeg/adts_stream_parser.h",
@@ -204,8 +207,8 @@ source_set("formats") {
 
   # TODO(crbug.com/40057824): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
-    "hls/audio_rendition.cc",
-    "hls/audio_rendition.h",
+    "hls/abr_algorithm.cc",
+    "hls/abr_algorithm.h",
     "hls/items.cc",
     "hls/items.h",
     "hls/media_playlist.cc",
@@ -214,12 +217,16 @@ source_set("formats") {
     "hls/media_segment.h",
     "hls/multivariant_playlist.cc",
     "hls/multivariant_playlist.h",
-    "hls/parse_status.cc",
     "hls/parse_status.h",
     "hls/playlist.cc",
     "hls/playlist.h",
     "hls/playlist_common.cc",
     "hls/playlist_common.h",
+    "hls/quirks.h",
+    "hls/rendition.cc",
+    "hls/rendition.h",
+    "hls/rendition_group.cc",
+    "hls/rendition_group.h",
     "hls/rendition_manager.cc",
     "hls/rendition_manager.h",
     "hls/segment_stream.cc",
@@ -228,8 +235,6 @@ source_set("formats") {
     "hls/source_string.h",
     "hls/tag_name.cc",
     "hls/tag_name.h",
-    "hls/tag_recorder.cc",
-    "hls/tag_recorder.h",
     "hls/tags.cc",
     "hls/tags.h",
     "hls/types.cc",
@@ -240,7 +245,7 @@ source_set("formats") {
     "hls/variant_stream.h",
   ]
   deps += [
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/re2",
   ]
   public_deps = [
@@ -319,6 +324,7 @@ source_set("unit_tests") {
       "mp4/dolby_vision_unittest.cc",
       "mp4/es_descriptor_unittest.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter_unittest.cc",
+      "mp4/h26x_annex_b_to_bitstream_converter_unittest.cc",
       "mp4/mp4_stream_parser_unittest.cc",
       "mp4/sample_to_group_iterator_unittest.cc",
       "mp4/track_run_iterator_unittest.cc",
@@ -369,6 +375,7 @@ source_set("unit_tests") {
 
   # TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
+    "hls/abr_algorithm_unittest.cc",
     "hls/common_playlist_unittest.cc",
     "hls/items_unittest.cc",
     "hls/media_playlist_test_builder.cc",
@@ -380,6 +387,7 @@ source_set("unit_tests") {
     "hls/multivariant_playlist_unittest.cc",
     "hls/playlist_test_builder.h",
     "hls/playlist_unittest.cc",
+    "hls/rendition_group_unittest.cc",
     "hls/rendition_manager_unittest.cc",
     "hls/segment_stream_unittest.cc",
     "hls/tags_unittest.cc",
@@ -387,6 +395,10 @@ source_set("unit_tests") {
     "hls/types_unittest.cc",
     "hls/variable_dictionary_unittest.cc",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.

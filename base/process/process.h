@@ -8,11 +8,11 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
@@ -45,11 +45,13 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
 // CPU c-group (via cgroup.procs).
 BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
 
-class ProcessPriorityDelegate;
-#endif
+// FlattenCpuCgroups feature uses /sys/fs/cgroup/cpu/chrome_renderers and
+// /sys/fs/cgroup/cpu/chrome_renderers_background cpu cgroups for renderer
+// processes instead of nested cpu cgroups. Nested cpu cgroups has an overhead
+// on task scheduling.
+BASE_EXPORT BASE_DECLARE_FEATURE(kFlattenCpuCgroups);
 
-#if BUILDFLAG(IS_WIN)
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseEcoQoSForBackgroundProcess);
+class ProcessPriorityDelegate;
 #endif
 
 // Provides a move-only encapsulation of a process.
@@ -80,6 +82,11 @@ class BASE_EXPORT Process {
   ~Process();
 
   Process& operator=(Process&& other);
+
+  // The result code that is used when a process is killed by a bad message.
+  // Consistent with the value of RESULT_CODE_KILLED_BAD_MESSAGE in
+  // content/public/common/result_codes.h.
+  static constexpr int kResultCodeKilledBadMessage = 3;
 
   // Returns an object for the current process.
   static Process Current();
@@ -138,7 +145,9 @@ class BASE_EXPORT Process {
 #if BUILDFLAG(IS_CHROMEOS)
   // A unique token generated for each process, this is used to create a unique
   // cgroup for each renderer.
-  const std::string& unique_token() const { return unique_token_; }
+  const std::string& unique_token() const LIFETIME_BOUND {
+    return unique_token_;
+  }
 #endif
 
   // Close the process handle. This will not terminate the process.
@@ -204,17 +213,21 @@ class BASE_EXPORT Process {
     // to the user. Lowest priority.
     kBestEffort,
 
-    // The process contributes to content that is visible to the user. High
-    // priority.
+    // The process contributes to content that is visible to the user, but the
+    // work don't have significant performance or latency requirement, so it can
+    // run in energy efficient manner. Moderate priority.
     kUserVisible,
 
     // The process contributes to content that is of the utmost importance to
     // the user, like producing audible content, or visible content in the
-    // focused window. Highest priority.
+    // main frame. High priority.
     kUserBlocking,
+
+    kMaxValue = kUserBlocking,
   };
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if (BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))) && \
+    !BUILDFLAG(IS_IOS_TVOS)
   // The Mac needs a Mach port in order to manipulate a process's priority,
   // and there's no good way to get that from base given the pid. These Mac
   // variants of the `GetPriority()` and `SetPriority()` API take a port
@@ -242,7 +255,7 @@ class BASE_EXPORT Process {
   // of this value is OS dependent.
   int GetOSPriority() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the PID in its PID namespace.
   // If the process is not in a PID namespace or /proc/<pid>/status does not
   // report NSpid, kNullProcessId is returned.
@@ -290,11 +303,15 @@ class BASE_EXPORT Process {
 
 #if BUILDFLAG(IS_APPLE)
   // Sets the priority of the current process to its default value.
+  // Ironically, non-App Nap compliant processes do not get this by default on
+  // Mac.
   static void SetCurrentTaskDefaultRole();
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
-  using TerminateCallback = bool (*)(ProcessHandle handle);
+  using TerminateCallback = bool (*)(ProcessHandle handle,
+                                     int exit_code,
+                                     bool wait);
   using WaitForExitCallback = bool (*)(ProcessHandle handle,
                                        int* exit_code,
                                        base::TimeDelta timeout);

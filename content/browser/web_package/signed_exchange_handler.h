@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/browser/web_package/signed_exchange_prologue.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
@@ -98,17 +100,17 @@ class CONTENT_EXPORT SignedExchangeHandler {
   SignedExchangeHandler(
       bool is_secure_transport,
       bool has_nosniff,
-      std::string content_type,
+      std::string_view content_type,
       std::unique_ptr<net::SourceStream> body,
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-      const std::optional<net::IsolationInfo> outer_request_isolation_info,
+      std::optional<net::IsolationInfo> outer_request_isolation_info,
       int load_flags,
       const net::IPEndPoint& remote_endpoint,
       std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
       std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy,
       SignedExchangeReporter* reporter,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   SignedExchangeHandler(const SignedExchangeHandler&) = delete;
   SignedExchangeHandler& operator=(const SignedExchangeHandler&) = delete;
@@ -205,7 +207,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   // This is owned by SignedExchangeLoader which is the owner of |this|.
   raw_ptr<SignedExchangeReporter> reporter_;
 
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   base::TimeTicks cert_fetch_start_time_;
   net::IPAddress cert_server_ip_address_;

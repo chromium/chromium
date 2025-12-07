@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/modules/ad_auction/protected_audience.h"
 
 #include <utility>
+#include <variant>
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "base/feature_list.h"
+#include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -26,17 +29,20 @@ using FeatureVal = ProtectedAudience::FeatureVal;
 
 v8::Local<v8::Value> MakeV8Val(ScriptState* script_state,
                                const FeatureVal& val) {
-  if (const bool* bool_val = absl::get_if<bool>(&val)) {
+  if (const bool* bool_val = std::get_if<bool>(&val)) {
     return ToV8Traits<IDLBoolean>::ToV8(script_state, *bool_val);
+  } else if (const size_t* size_t_val = std::get_if<size_t>(&val)) {
+    return ToV8Traits<IDLUnsignedLongLong>::ToV8(script_state, *size_t_val);
   } else {
-    return ToV8Traits<IDLUnsignedLongLong>::ToV8(script_state,
-                                                 absl::get<size_t>(val));
+    const double* double_val = std::get_if<double>(&val);
+    CHECK(double_val);
+    return ToV8Traits<IDLDouble>::ToV8(script_state, *double_val);
   }
 }
 
-WTF::Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
+Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
     ExecutionContext* execution_context) {
-  WTF::Vector<std::pair<String, FeatureVal>> feature_status;
+  Vector<std::pair<String, FeatureVal>> feature_status;
   feature_status.emplace_back(String("adComponentsLimit"),
                               FeatureVal(MaxAdAuctionAdComponents()));
   feature_status.emplace_back(
@@ -44,19 +50,28 @@ WTF::Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
       FeatureVal(
           RuntimeEnabledFeatures::FledgeDeprecatedRenderURLReplacementsEnabled(
               execution_context)));
-  feature_status.emplace_back(
-      String("reportingTimeout"),
-      FeatureVal(RuntimeEnabledFeatures::FledgeReportingTimeoutEnabled(
-          execution_context)));
-  feature_status.emplace_back(
-      String("permitCrossOriginTrustedSignals"),
-      FeatureVal(
-          RuntimeEnabledFeatures::FledgePermitCrossOriginTrustedSignalsEnabled(
-              execution_context)));
+  feature_status.emplace_back(String("reportingTimeout"), FeatureVal(true));
+  feature_status.emplace_back(String("permitCrossOriginTrustedSignals"),
+                              FeatureVal(true));
   feature_status.emplace_back(
       String("realTimeReporting"),
       FeatureVal(RuntimeEnabledFeatures::FledgeRealTimeReportingEnabled(
           execution_context)));
+  feature_status.emplace_back(
+      String("selectableReportingIds"),
+      FeatureVal(RuntimeEnabledFeatures::FledgeAuctionDealSupportEnabled(
+          execution_context)));
+  feature_status.emplace_back(
+      String("sellerNonce"),
+      FeatureVal(
+          RuntimeEnabledFeatures::FledgeSellerNonceEnabled(execution_context)));
+  feature_status.emplace_back(
+      String("trustedSignalsKVv2"),
+      FeatureVal(RuntimeEnabledFeatures::FledgeTrustedSignalsKVv2SupportEnabled(
+          execution_context)));
+  feature_status.emplace_back(
+      String("maxGroupLifetimeMs"),
+      FeatureVal(MaxInterestGroupLifetime().InMillisecondsF()));
   return feature_status;
 }
 
@@ -67,15 +82,13 @@ ProtectedAudience::ProtectedAudience(ExecutionContext* execution_context)
 
 ScriptValue ProtectedAudience::queryFeatureSupport(ScriptState* script_state,
                                                    const String& feature_name) {
-  if (feature_name == "*" &&
-      RuntimeEnabledFeatures::FledgeFeatureDetectAllEnabled(
-          ExecutionContext::From(script_state))) {
+  if (feature_name == "*") {
     // Return all registered features if asked for '*'
     V8ObjectBuilder features_obj(script_state);
     for (const auto& kv : feature_status_) {
       features_obj.AddV8Value(kv.first, MakeV8Val(script_state, kv.second));
     }
-    return features_obj.GetScriptValue();
+    return features_obj.ToScriptObject();
   } else {
     for (const auto& kv : feature_status_) {
       if (kv.first == feature_name) {

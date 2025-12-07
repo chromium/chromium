@@ -5,34 +5,185 @@
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 
 #include <optional>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+std::string ToString(const blink::InterestGroupKey& key) {
+  return "(" + key.owner.Serialize() + ", " + key.name + ")";
+}
+
+std::string ToString(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+  if (!request) {
+    return "null";
+  }
+  const blink::mojom::AggregatableReportHistogramContributionPtr& contribution =
+      request->contribution->get_histogram_contribution();
+  std::stringstream ss;
+  ss << "{bucket: ";
+  ss << contribution->bucket;
+  ss << ", value: ";
+  ss << contribution->value;
+  ss << "}";
+  return ss.str();
+}
+}  // namespace
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const BiddingAndAuctionResponse::ReportingURLs& reporting) {
+  os << "ReportingURLs("
+     << "reporting_url: " << base::ToString(reporting.reporting_url) << ", "
+     << "beacon_urls: " << base::ToString(reporting.beacon_urls) << ")";
+  return os;
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const BiddingAndAuctionResponse::KAnonJoinCandidate& candidate) {
+  os << "KAnonJoinCandidate(";
+  os << "ad_render_url_hash: 0x"
+     << base::HexEncode(candidate.ad_render_url_hash) << ", ";
+  os << "ad_component_render_urls_hash: [";
+  for (const auto& component : candidate.ad_component_render_urls_hash) {
+    os << "0x" << base::HexEncode(component) << ", ";
+  }
+  os << "], ";
+  os << "reporting_id_hash: 0x" << base::HexEncode(candidate.reporting_id_hash)
+     << ")";
+  return os;
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction& winner) {
+  os << "GhostWinnerForTopLevelAuction(";
+  os << "ad_render_url: " << winner.ad_render_url.spec() << ", ";
+  os << "ad_components: " << testing::PrintToString(winner.ad_components)
+     << ", ";
+  os << "modified_bid: " << testing::PrintToString(winner.modified_bid) << ", ";
+  os << "bid_currency: "
+     << (winner.bid_currency ? winner.bid_currency->currency_code() : "nullopt")
+     << ", ";
+  os << "buyer_reporting_id: "
+     << testing::PrintToString(winner.buyer_reporting_id) << ", ";
+  os << "buyer_and_seller_reporting_id: "
+     << testing::PrintToString(winner.buyer_and_seller_reporting_id) << ")";
+  os << "selected_buyer_and_seller_reporting_id: "
+     << testing::PrintToString(winner.selected_buyer_and_seller_reporting_id)
+     << ")";
+  return os;
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const BiddingAndAuctionResponse::KAnonGhostWinner& winner) {
+  os << "KAnonGhostWinner(";
+  os << "candidate: " << testing::PrintToString(winner.candidate) << ", ";
+  os << "interest_group: " << ToString(winner.interest_group) << ", ";
+  os << "non_kanon_private_aggregation_requests: [";
+  for (const auto& pagg_request :
+       winner.non_kanon_private_aggregation_requests) {
+    os << ToString(pagg_request) << ", ";
+  }
+  os << "], ";
+  os << "ghost_winner: " << testing::PrintToString(winner.ghost_winner) << ")";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const BiddingAndAuctionResponse& response) {
+  os << "BiddingAndAuctionResponse(";
+  os << "nonce: " << testing::PrintToString(response.nonce) << ",";
+  os << "is_chaff: " << base::ToString(response.is_chaff) << ", ";
+  os << "ad_render_url: " << response.ad_render_url << ", ";
+  os << "ad_components: [";
+  for (const auto& component : response.ad_components) {
+    os << component << ", ";
+  }
+  os << "], ";
+  os << "interest_group_name: " << response.interest_group_name << ", ";
+  os << "interest_group_owner: " << response.interest_group_owner.Serialize()
+     << ", ";
+  os << "bidding_groups: [";
+  for (const auto& group : response.bidding_groups) {
+    os << ToString(group) << ", ";
+  }
+  os << "], ";
+  os << "score:" << testing::PrintToString(response.score) << ", ";
+  os << "bid:" << testing::PrintToString(response.bid) << ", ";
+  os << "buyer_reporting_id:"
+     << testing::PrintToString(response.buyer_reporting_id) << ", ";
+  os << "buyer_and_seller_reporting_id:"
+     << testing::PrintToString(response.buyer_and_seller_reporting_id) << ", ";
+  os << "selected_buyer_and_seller_reporting_id:"
+     << testing::PrintToString(response.selected_buyer_and_seller_reporting_id)
+     << ", ";
+  os << "k_anon_join_candidate: "
+     << testing::PrintToString(response.k_anon_join_candidate) << ", ";
+  os << "k_anon_ghost_winner: "
+     << testing::PrintToString(response.k_anon_ghost_winner) << ", ";
+  os << "error:" << testing::PrintToString(response.error) << ", ";
+  os << "buyer_reporting: " << testing::PrintToString(response.buyer_reporting)
+     << ", ";
+  os << "top_level_seller_reporting: "
+     << testing::PrintToString(response.top_level_seller_reporting) << ", ";
+  os << "component_seller_reporting: "
+     << testing::PrintToString(response.component_seller_reporting) << ", ";
+  os << "component_win_pagg_requests: "
+     << testing::PrintToString(response.component_win_pagg_requests) << ", ";
+  os << "server_filtered_pagg_requests_reserved: "
+     << testing::PrintToString(response.server_filtered_pagg_requests_reserved)
+     << ", ";
+  os << "component_win_debugging_only_reports: "
+     << testing::PrintToString(response.component_win_debugging_only_reports)
+     << ", ";
+  os << "server_filtered_debugging_only_reports: "
+     << testing::PrintToString(response.server_filtered_debugging_only_reports)
+     << ", ";
+  os << "debugging_only_report_origins: "
+     << testing::PrintToString(response.debugging_only_report_origins) << ", ";
+  os << "triggered_updates: [";
+  for (const auto& update : response.triggered_updates) {
+    os << ToString(update.first) << ": " << update.second << ", ";
+  }
+  os << "])";
+  return os;
+}
+
 namespace {
 
 const char kOwnerOrigin[] = "https://owner.example.com";
+const char kAdURL[] = "https://example.com/ad";
 const char kUntrustedURL[] = "http://untrusted.example.com/foo";
 const char kReportingURL[] = "https://reporting.example.com/report";
 const char kAggregationCoordinator[] = "https://coordinator.example.com";
 const char kAggregationCoordinator2[] = "https://coordinator2.example.com";
 const char kDebugReportingURL[] = "https://fdo.com/report";
 
-const base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
-  return base::MakeFlatMap<url::Origin, std::vector<std::string>>(
+base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
+  return base::flat_map<url::Origin, std::vector<std::string>>(
       std::vector<std::pair<url::Origin, std::vector<std::string>>>{
           {
               url::Origin::Create(GURL(kOwnerOrigin)),
@@ -42,12 +193,16 @@ const base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
               url::Origin::Create(GURL("https://otherowner.example.com")),
               std::vector<std::string>{"foo"},
           },
+          {
+              url::Origin::Create(GURL("http://not.secure.example.com")),
+              std::vector<std::string>{"bar"},
+          },
       });
 }
 
-const base::flat_map<blink::InterestGroupKey, url::Origin>
+base::flat_map<blink::InterestGroupKey, url::Origin>
 GroupAggregationCoordinators() {
-  return base::MakeFlatMap<blink::InterestGroupKey, url::Origin>(
+  return base::flat_map<blink::InterestGroupKey, url::Origin>(
       std::vector<std::pair<blink::InterestGroupKey, url::Origin>>{
           {
               blink::InterestGroupKey{url::Origin::Create(GURL(kOwnerOrigin)),
@@ -64,7 +219,7 @@ GroupAggregationCoordinators() {
 BiddingAndAuctionResponse CreateExpectedValidResponse() {
   BiddingAndAuctionResponse response;
   response.is_chaff = false;
-  response.ad_render_url = GURL("https://example.com/ad");
+  response.ad_render_url = GURL(kAdURL);
   response.ad_components = {GURL("https://example.com/component")};
   response.interest_group_name = "name";
   response.interest_group_owner = url::Origin::Create(GURL(kOwnerOrigin));
@@ -77,7 +232,7 @@ BiddingAndAuctionResponse CreateExpectedValidResponse() {
 base::Value::Dict CreateValidResponseDict() {
   return base::Value::Dict()
       .Set("isChaff", false)
-      .Set("adRenderURL", "https://example.com/ad")
+      .Set("adRenderURL", kAdURL)
       .Set("components", base::Value(base::Value::List().Append(
                              "https://example.com/component")))
       .Set("interestGroupName", "name")
@@ -134,15 +289,19 @@ base::Value::Dict CreateResponseDictWithPAggResponse(
 }
 
 base::Value::Dict CreateResponseDictWithDebugReports(
-    std::optional<bool> maybe_is_win_report,
-    std::optional<bool> maybe_component_win) {
+    std::optional<bool> maybe_component_win,
+    std::optional<bool> maybe_is_seller_report,
+    std::optional<bool> maybe_is_win_report) {
   base::Value::Dict report;
   report.Set("url", kDebugReportingURL);
-  if (maybe_is_win_report.has_value()) {
-    report.Set("isWinReport", *maybe_is_win_report);
-  }
   if (maybe_component_win.has_value()) {
     report.Set("componentWin", *maybe_component_win);
+  }
+  if (maybe_is_seller_report.has_value()) {
+    report.Set("isSellerReport", *maybe_is_seller_report);
+  }
+  if (maybe_is_win_report.has_value()) {
+    report.Set("isWinReport", *maybe_is_win_report);
   }
 
   return CreateValidResponseDict().Set(
@@ -152,48 +311,22 @@ base::Value::Dict CreateResponseDictWithDebugReports(
               .Set("adTechOrigin", kOwnerOrigin)
               .Set("reports", base::Value::List().Append(std::move(report)))));
 }
+using ReservedNonErrorEventType =
+    auction_worklet::mojom::ReservedNonErrorEventType;
+using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
 
-std::string ToString(
-    const BiddingAndAuctionResponse::ReportingURLs& reporting) {
-  return std::string("ReportingURLs(") +
-         "reporting_url: " + testing::PrintToString(reporting.reporting_url) +
-         ", " +
-         "beacon_urls: " + testing::PrintToString(reporting.beacon_urls) + ")";
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedNonErrorEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReservedNonError(
+      reserved_event_type);
+}
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedErrorEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReservedError(
+      reserved_event_type);
 }
 
-std::string ToString(const BiddingAndAuctionResponse& response) {
-  return std::string("BiddingAndAuctionResponse(") +
-         "is_chaff: " + (response.is_chaff ? "true" : "false") + ", " +
-         "ad_render_url: " + response.ad_render_url.spec() + ", " +
-         "ad_components: " + testing::PrintToString(response.ad_components) +
-         ", " + "interest_group_name: " + response.interest_group_name + ", " +
-         "interest_group_owner: " + response.interest_group_owner.Serialize() +
-         ", " +
-         "bidding_groups: " + testing::PrintToString(response.bidding_groups) +
-         ", " + "score:" + testing::PrintToString(response.score) + ", " +
-         "bid:" + testing::PrintToString(response.bid) + ", " +
-         "error:" + testing::PrintToString(response.error) + ", " +
-         "buyer_reporting: " +
-         (response.buyer_reporting.has_value()
-              ? ToString(*response.buyer_reporting)
-              : "nullopt") +
-         ", " + "top_level_seller_reporting: " +
-         (response.top_level_seller_reporting.has_value()
-              ? ToString(*response.top_level_seller_reporting)
-              : "nullopt") +
-         ", " + "component_seller_reporting: " +
-         (response.component_seller_reporting.has_value()
-              ? ToString(*response.component_seller_reporting)
-              : "nullopt") +
-         ")";
-}
-
-auction_worklet::mojom::EventTypePtr CreateReservedEventType(
-    auction_worklet::mojom::ReservedEventType reserved_event_type) {
-  return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
-}
-
-auction_worklet::mojom::EventTypePtr CreateNonReservedEventType(
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
     const std::string& event_type) {
   return auction_worklet::mojom::EventType::NewNonReserved(event_type);
 }
@@ -212,28 +345,25 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreatePaggForEventRequest(
                       auction_worklet::mojom::ForEventSignalValue::NewIntValue(
                           value),
                       filtering_id, std::move(event))),
-      // TODO(qingxinwu): consider allowing this to be set
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
 
-auction_worklet::mojom::PrivateAggregationRequestPtr CreatePaggHistogramRequest(
-    absl::uint128 bucket,
-    int value,
-    std::optional<uint64_t> filtering_id) {
-  return auction_worklet::mojom::PrivateAggregationRequest::New(
-      auction_worklet::mojom::AggregatableReportContribution::
-          NewHistogramContribution(
-              blink::mojom::AggregatableReportHistogramContribution::New(
-                  /*bucket=*/bucket,
-                  /*value=*/value,
-                  /*filtering_id=*/filtering_id)),
-      // TODO(qingxinwu): consider allowing this to be set
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+CreateFinalizedPaggHistogramRequest(absl::uint128 bucket,
+                                    int value,
+                                    std::optional<uint64_t> filtering_id) {
+  return auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+      blink::mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/bucket,
+          /*value=*/value,
+          /*filtering_id=*/filtering_id),
+      blink::mojom::DebugModeDetails::New(),
+      /*error_event=*/std::nullopt);
 }
 
-MATCHER_P(EqualsReportingURLS, other, "EqualsReportingURLS") {
+MATCHER_P(EqualsReportingURLS,
+          other,
+          "EqualsReportingURLS(" + testing::PrintToString(other.get()) + ")") {
   std::vector<std::pair<std::string, GURL>> beacon_urls(
       other.get().beacon_urls.begin(), other.get().beacon_urls.end());
   return testing::ExplainMatchResult(
@@ -248,21 +378,131 @@ MATCHER_P(EqualsReportingURLS, other, "EqualsReportingURLS") {
       std::move(arg), result_listener);
 }
 
+MATCHER_P(EqualsKAnonJoinCandidate,
+          other,
+          "EqualsKAnonJoinCandidate(" + testing::PrintToString(other.get()) +
+              ")") {
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field("ad_render_url_hash",
+                         &BiddingAndAuctionResponse::KAnonJoinCandidate::
+                             ad_render_url_hash,
+                         testing::Eq(other.get().ad_render_url_hash)),
+          testing::Field(
+              "ad_component_render_urls_hash",
+              &BiddingAndAuctionResponse::KAnonJoinCandidate::
+                  ad_component_render_urls_hash,
+              testing::Eq(other.get().ad_component_render_urls_hash)),
+          testing::Field(
+              "reporting_id_hash",
+              &BiddingAndAuctionResponse::KAnonJoinCandidate::reporting_id_hash,
+              testing::Eq(other.get().reporting_id_hash))),
+      std::move(arg), result_listener);
+}
+
+MATCHER_P(EqualsGhostWinnerForTopLevelAuction,
+          other,
+          "EqualsGhostWinnerForTopLevelAuction(" +
+              testing::PrintToString(other.get()) + ")") {
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field("ad_render_url",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::ad_render_url,
+                         testing::Eq(other.get().ad_render_url)),
+          testing::Field("ad_components",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::ad_components,
+                         testing::Eq(other.get().ad_components)),
+          testing::Field("modified_bid",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::modified_bid,
+                         testing::Eq(other.get().modified_bid)),
+          testing::Field("bid_currency",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::bid_currency,
+                         testing::Eq(other.get().bid_currency)),
+          testing::Field("ad_metadata",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::ad_metadata,
+                         testing::Eq(other.get().ad_metadata)),
+          testing::Field("buyer_reporting_id",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::buyer_reporting_id,
+                         testing::Eq(other.get().buyer_reporting_id)),
+          testing::Field(
+              "buyer_and_seller_reporting_id",
+              &BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+                  buyer_and_seller_reporting_id,
+              testing::Eq(other.get().buyer_and_seller_reporting_id)),
+          testing::Field(
+              "selected_buyer_and_seller_reporting_id",
+              &BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+                  selected_buyer_and_seller_reporting_id,
+              testing::Eq(other.get().selected_buyer_and_seller_reporting_id))),
+      std::move(arg), result_listener);
+}
+
+MATCHER_P(EqualsKAnonGhostWinner,
+          other,
+          "EqualsKAnonGhostWinner(" + testing::PrintToString(other.get()) +
+              ")") {
+  std::vector<
+      testing::Matcher<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+      pagg_matchers;
+  for (const auto& el : other.get().non_kanon_private_aggregation_requests) {
+    pagg_matchers.emplace_back(testing::Eq(std::ref(el)));
+  }
+  std::vector<testing::Matcher<BiddingAndAuctionResponse::KAnonGhostWinner>>
+      matchers = {
+          testing::Field(
+              "candidate",
+              &BiddingAndAuctionResponse::KAnonGhostWinner::candidate,
+              EqualsKAnonJoinCandidate(std::ref(other.get().candidate))),
+          testing::Field(
+              "interest_group",
+              &BiddingAndAuctionResponse::KAnonGhostWinner::interest_group,
+              testing::Eq(other.get().interest_group)),
+          testing::Field("non_kanon_private_aggregation_requests",
+                         &BiddingAndAuctionResponse::KAnonGhostWinner::
+                             non_kanon_private_aggregation_requests,
+                         testing::UnorderedElementsAreArray(pagg_matchers))};
+  if (other.get().ghost_winner.has_value()) {
+    matchers.push_back(testing::Field(
+        "ghost_winner",
+        &BiddingAndAuctionResponse::KAnonGhostWinner::ghost_winner,
+        testing::Optional(EqualsGhostWinnerForTopLevelAuction(
+            std::ref(*other.get().ghost_winner)))));
+  } else {
+    matchers.push_back(testing::Field(
+        "ghost_winner",
+        &BiddingAndAuctionResponse::KAnonGhostWinner::ghost_winner,
+        testing::Eq(std::nullopt)));
+  }
+  return testing::ExplainMatchResult(testing::AllOfArray(matchers),
+                                     std::move(arg), result_listener);
+}
+
 // Helper to avoid excess boilerplate.
 template <typename... Ts>
 auto ElementsAreRequests(Ts&... requests) {
   static_assert(
-      std::conjunction<std::is_same<
-          std::remove_const_t<Ts>,
-          auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
+      std::conjunction<std::disjunction<
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::PrivateAggregationRequestPtr>,
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::
+                           FinalizedPrivateAggregationRequestPtr>>...>::value);
   // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
   return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
 }
 
 MATCHER_P(EqualsBiddingAndAuctionResponse,
           other,
-          "EqualsBiddingAndAuctionResponse(" + ToString(other.get()) + ")") {
+          "EqualsBiddingAndAuctionResponse(" +
+              testing::PrintToString(other.get()) + ")") {
   std::vector<testing::Matcher<BiddingAndAuctionResponse>> matchers = {
+      // nonce handled below
       testing::Field("is_chaff", &BiddingAndAuctionResponse::is_chaff,
                      testing::Eq(other.get().is_chaff)),
       testing::Field("ad_render_url", &BiddingAndAuctionResponse::ad_render_url,
@@ -272,6 +512,13 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
       testing::Field("interest_group_name",
                      &BiddingAndAuctionResponse::interest_group_name,
                      testing::Eq(other.get().interest_group_name)),
+      testing::Field(
+          "interest_group_owner",
+          &BiddingAndAuctionResponse::interest_group_owner,
+          testing::Conditional(other.get().interest_group_owner.opaque(),
+                               testing::Property("opaque", &url::Origin::opaque,
+                                                 testing::Eq(true)),
+                               testing::Eq(other.get().interest_group_owner))),
       testing::Field("bidding_groups",
                      &BiddingAndAuctionResponse::bidding_groups,
                      testing::ElementsAreArray(other.get().bidding_groups)),
@@ -279,6 +526,8 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
                      testing::Eq(other.get().score)),
       testing::Field("bid", &BiddingAndAuctionResponse::bid,
                      testing::Eq(other.get().bid)),
+      // bid_currency handled below
+      // top_level_seller handled below
       testing::Field("ad_metadata", &BiddingAndAuctionResponse::ad_metadata,
                      testing::Eq(other.get().ad_metadata)),
       testing::Field("buyer_reporting_id",
@@ -287,21 +536,80 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
       testing::Field("buyer_and_seller_reporting_id",
                      &BiddingAndAuctionResponse::buyer_and_seller_reporting_id,
                      testing::Eq(other.get().buyer_and_seller_reporting_id)),
+      testing::Field(
+          "selected_buyer_and_seller_reporting_id",
+          &BiddingAndAuctionResponse::selected_buyer_and_seller_reporting_id,
+          testing::Eq(other.get().selected_buyer_and_seller_reporting_id)),
+      // k_anon_join_candidate handled below
+      // k_anon_ghost_winner handled below
       testing::Field("error", &BiddingAndAuctionResponse::error,
                      testing::Eq(other.get().error)),
-  };
-  if (other.get().interest_group_owner.opaque()) {
-    // Treat opaque as equal
-    matchers.push_back(testing::Field(
-        "interest_group_owner",
-        &BiddingAndAuctionResponse::interest_group_owner,
-        testing::Property("opaque", &url::Origin::opaque, testing::Eq(true))));
+      // buyer_reporting handled below
+      // top_level_seller_reporting handled below
+      // component_seller_reporting handled below
+      // TODO: component_win_pagg_requests not handled
+      // TODO: server_filtered_pagg_requests_reserved not handled
+      // TODO: server_filtered_pagg_requests_non_reserved not handled
+      // TODO: component_win_debugging_only_reports not handled
+      testing::Field(
+          "server_filtered_debugging_only_reports",
+          &BiddingAndAuctionResponse::server_filtered_debugging_only_reports,
+          testing::Eq(other.get().server_filtered_debugging_only_reports)),
+      testing::Field("debugging_only_report_origins",
+                     &BiddingAndAuctionResponse::debugging_only_report_origins,
+                     testing::Eq(other.get().debugging_only_report_origins)),
+      testing::Field("triggered_updates",
+                     &BiddingAndAuctionResponse::triggered_updates,
+                     testing::Eq(other.get().triggered_updates)),
 
+  };
+  if (other.get().nonce) {
+    matchers.push_back(testing::Field("nonce",
+                                      &BiddingAndAuctionResponse::nonce,
+                                      testing::Optional(*other.get().nonce)));
+  } else {
+    matchers.push_back(testing::Field(
+        "nonce", &BiddingAndAuctionResponse::nonce, testing::Eq(std::nullopt)));
+  }
+  if (other.get().bid_currency) {
+    matchers.push_back(
+        testing::Field("bid_currency", &BiddingAndAuctionResponse::bid_currency,
+                       testing::Optional(*other.get().bid_currency)));
+  } else {
+    matchers.push_back(testing::Field("bid_currency",
+                                      &BiddingAndAuctionResponse::bid_currency,
+                                      testing::Eq(std::nullopt)));
+  }
+  if (other.get().top_level_seller) {
+    matchers.push_back(testing::Field(
+        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
+        testing::Optional(*other.get().top_level_seller)));
+  } else {
+    matchers.push_back(testing::Field(
+        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
+        testing::Eq(std::nullopt)));
+  }
+  if (other.get().k_anon_join_candidate) {
+    matchers.push_back(
+        testing::Field("k_anon_join_candidate",
+                       &BiddingAndAuctionResponse::k_anon_join_candidate,
+                       testing::Optional(EqualsKAnonJoinCandidate(
+                           std::ref(*other.get().k_anon_join_candidate)))));
   } else {
     matchers.push_back(
-        testing::Field("interest_group_owner",
-                       &BiddingAndAuctionResponse::interest_group_owner,
-                       testing::Eq(other.get().interest_group_owner)));
+        testing::Field("k_anon_join_candidate",
+                       &BiddingAndAuctionResponse::k_anon_join_candidate,
+                       testing::Eq(std::nullopt)));
+  }
+  if (other.get().k_anon_ghost_winner) {
+    matchers.push_back(testing::Field(
+        "k_anon_ghost_winner", &BiddingAndAuctionResponse::k_anon_ghost_winner,
+        testing::Optional(EqualsKAnonGhostWinner(
+            std::ref(*other.get().k_anon_ghost_winner)))));
+  } else {
+    matchers.push_back(testing::Field(
+        "k_anon_ghost_winner", &BiddingAndAuctionResponse::k_anon_ghost_winner,
+        testing::Eq(std::nullopt)));
   }
   if (other.get().buyer_reporting) {
     matchers.push_back(testing::Field(
@@ -337,33 +645,31 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
                        &BiddingAndAuctionResponse::component_seller_reporting,
                        testing::Eq(std::nullopt)));
   }
-  if (other.get().top_level_seller) {
-    matchers.push_back(testing::Field(
-        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
-        testing::Optional(testing::Eq(other.get().top_level_seller))));
-  } else {
-    matchers.push_back(testing::Field(
-        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
-        testing::Eq(std::nullopt)));
-  }
   return testing::ExplainMatchResult(testing::AllOfArray(matchers),
                                      std::move(arg), result_listener);
 }
 
 TEST(BiddingAndAuctionResponseTest, ParseFails) {
   static const base::Value kTestCases[] = {
-      base::Value(1),                                          // Not a dict
-      base::Value(base::Value::Dict()),                        // empty
-      base::Value(base::Value::Dict().Set("isChaff", 1)),      // wrong type
-      base::Value(base::Value::Dict().Set("isChaff", false)),  // missing fields
+      base::Value(1),                                      // Not a dict
+      base::Value(base::Value::Dict().Set("isChaff", 1)),  // wrong type
+      base::Value(
+          CreateValidResponseDict().Set("adRenderURL", 1)),  // not a string
+      base::Value(
+          CreateValidResponseDict().Set("adRenderURL", "")),  // empty string
       base::Value(
           CreateValidResponseDict().Set("adRenderURL", "not a valid URL")),
       base::Value(CreateValidResponseDict().Set("components", "not a list")),
       base::Value(CreateValidResponseDict().Set(
+          "components", base::Value(base::Value::List().Append(5)))),
+      base::Value(CreateValidResponseDict().Set(
           "components",
           base::Value(base::Value::List().Append("not a valid URL")))),
+      base::Value(CreateValidResponseDict().Set("interestGroupOwner", 2)),
+
       base::Value(CreateValidResponseDict().Set("interestGroupOwner",
                                                 "not a valid origin")),
+      base::Value(CreateValidResponseDict().Set("interestGroupName", 4)),
       base::Value(CreateValidResponseDict().Set("biddingGroups", "not a dict")),
       base::Value(CreateValidResponseDict().Set(
           "biddingGroups",
@@ -388,6 +694,11 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
 }
 
 TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnableBandATriggeredUpdates,
+                            features::kFledgeBiddingAndAuctionNonceSupport},
+      /*disabled_features=*/{});
   static const struct {
     base::Value input;
     BiddingAndAuctionResponse output;
@@ -412,9 +723,40 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
           }(),
       },
       {
+          base::Value(base::Value::Dict()),
+          {},
+      },
+      {base::Value(base::Value::Dict().Set("isChaff", false)), {}},
+      {
           base::Value(CreateValidResponseDict()),
           CreateExpectedValidResponse(),
       },
+      {
+          // Ignore nonce with wrong type
+          base::Value(CreateValidResponseDict().Set("nonce", 0)),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Ignore invalid nonce
+          base::Value(CreateValidResponseDict().Set("nonce", "not a UUID")),
+          CreateExpectedValidResponse(),
+      },
+      {// Nonce with valid message
+       base::Value(CreateValidResponseDict().Set(
+           "nonce", "00000000-0000-0000-0000-000000000000")),
+       []() {
+         auto response = CreateExpectedValidResponse();
+         response.nonce = "00000000-0000-0000-0000-000000000000";
+         return response;
+       }()},
+      {// Nonce converted to lowercase
+       base::Value(CreateValidResponseDict().Set(
+           "nonce", "A0000000-0000-0000-0000-000000000000")),
+       []() {
+         auto response = CreateExpectedValidResponse();
+         response.nonce = "a0000000-0000-0000-0000-000000000000";
+         return response;
+       }()},
       {
           base::Value(CreateValidResponseDict().Set("error", "not a dict")),
           CreateExpectedValidResponse(),
@@ -797,6 +1139,103 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
             return response;
           }(),
       },
+      {
+          base::Value(CreateValidResponseDict().Set("updateGroups", "invalid")),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  "invalid", base::Value(base::Value::List()))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin, base::Value(base::Value::List()))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict().Set("index", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(base::Value(
+                      base::Value::Dict().Set("updateIfOlderThanMs", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict()
+                                      .Set("index", "invalid")
+                                      .Set("updateIfOlderThanMs", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(base::Value(
+                      base::Value::Dict()
+                          .Set("index", 0)
+                          .Set("updateIfOlderThanMs", "invalid")))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict()
+                                      .Set("index", -1)
+                                      .Set("updateIfOlderThanMs", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict()
+                                      .Set("index", 10)
+                                      .Set("updateIfOlderThanMs", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict()
+                                      .Set("index", 0)
+                                      .Set("updateIfOlderThanMs", 0)))))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.triggered_updates[blink::InterestGroupKey(
+                url::Origin::Create(GURL(kOwnerOrigin)), "name")] =
+                base::Milliseconds(0);
+            return response;
+          }(),
+      },
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.input.DebugString());
@@ -807,6 +1246,70 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
     ASSERT_TRUE(result);
     EXPECT_THAT(*result,
                 EqualsBiddingAndAuctionResponse(std::ref(test_case.output)));
+  }
+}
+
+TEST(BiddingAndAuctionResponseTest, SelectedBuyerAndSellerReportingId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAuctionDealSupport);
+
+  base::Value::Dict response = CreateValidResponseDict().Set(
+      "selectedBuyerAndSellerReportingId", "selectable");
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          /*group_pagg_coordinators=*/{});
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  output.selected_buyer_and_seller_reporting_id = "selectable";
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+}
+
+TEST(BiddingAndAuctionResponseTest, DealsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgeAuctionDealSupport);
+
+  base::Value::Dict response = CreateValidResponseDict().Set(
+      "selectedBuyerAndSellerReportingId", "selectable");
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          /*group_pagg_coordinators=*/{});
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+}
+
+TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {
+  struct {
+    std::vector<uint8_t> input;
+    std::vector<uint8_t> expected_output;
+  } kTestCases[] = {
+      // Small one to test basic functionality
+      {
+          {0x02, 0x00, 0x00, 0x00, 0x01, 0xFE, 0x02},
+          {0xFE},
+      },
+      // Bigger one to check that we have the size right.
+      {
+          []() {
+            std::vector<uint8_t> unframed_input(1000, ' ');
+            std::vector<uint8_t> framing = {0x02, 0x00, 0x00, 0x02, 0xFF};
+            std::copy(framing.begin(), framing.end(),
+                      std::inserter(unframed_input, unframed_input.begin()));
+            return unframed_input;
+          }(),
+          std::vector<uint8_t>(0x2FF, ' '),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    std::optional<base::span<const uint8_t>> result =
+        ExtractCompressedBiddingAndAuctionResponse(test_case.input);
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, testing::ElementsAreArray(test_case.expected_output));
   }
 }
 
@@ -831,6 +1334,903 @@ TEST(BiddingAndAuctionResponseTest, PrivateAggregationDisabled) {
   EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
 }
 
+TEST(BiddingAndAuctionResponseTest, BAndAPrivateAggregationDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kPrivateAggregationApi,
+        {{"enabled_in_fledge", "true"}}}},
+      /*disabled_features=*/{features::kEnableBandAPrivateAggregation});
+
+  base::Value::Dict response = CreateResponseDictWithPAggResponse(
+      CreateBasicContributions(), "reserved.win",
+      /*component_win=*/true);
+
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          GroupAggregationCoordinators());
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+  EXPECT_TRUE(result->component_win_pagg_requests.empty());
+  EXPECT_TRUE(result->server_filtered_pagg_requests_reserved.empty());
+  EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
+}
+
+TEST(BiddingAndAuctionResponseTest, BAndASampleDebugReportsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kEnableBandASampleDebugReports);
+
+  base::Value::Dict response = CreateResponseDictWithDebugReports(
+      /*maybe_component_win=*/false, /*maybe_is_seller_report=*/std::nullopt,
+      /*maybe_is_win_report=*/false);
+
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          GroupAggregationCoordinators());
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+  EXPECT_TRUE(result->component_win_debugging_only_reports.empty());
+  EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
+}
+
+TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableBandAKAnonEnforcement);
+
+  static const struct {
+    base::Value input;
+    BiddingAndAuctionResponse output;
+  } kTestCases[] = {
+      {
+          // No fields
+          base::Value(CreateValidResponseDict().Set("kAnonJoinCandidates",
+                                                    base::Value())),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // missing reportingIdHash
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(base::Value::Dict().Set(
+                  "adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // missing adRenderURLHash
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(base::Value::Dict().Set(
+                  "reportingIdHash", std::vector<uint8_t>{0x04, 0x01})))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // bad type for adRenderURLHash
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(base::Value::Dict()
+                              .Set("adRenderURLHash", "Not a blob")
+                              .Set("reportingIdHash",
+                                   std::vector<uint8_t>{0x04, 0x01})))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // bad type for reportingIdHash
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", 5)))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash",
+                           std::vector<uint8_t>{0x04, 0x01})))),
+          []() {
+            auto response = CreateExpectedValidResponse();
+            response.k_anon_join_candidate.emplace();
+            response.k_anon_join_candidate->ad_render_url_hash = {0x01, 0x02};
+            response.k_anon_join_candidate->reporting_id_hash = {0x04, 0x01};
+            return response;
+          }(),
+      },
+      {
+          // Bad type for adComponentRenderURLsHash
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
+                      .Set("adComponentRenderURLsHash", "Not a list")))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad type for adComponentRenderURLsHash element
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
+                      .Set("adComponentRenderURLsHash",
+                           base::Value(
+                               base::Value::List().Append("Not a blob")))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad type for one adComponentRenderURLsHash element
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
+                      .Set("adComponentRenderURLsHash",
+                           base::Value(
+                               base::Value::List()
+                                   .Append(std::vector<uint8_t>{0x03, 0x04})
+                                   .Append("Not a blob")))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid - with component URL
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
+                      .Set("adComponentRenderURLsHash",
+                           base::Value(base::Value::List().Append(
+                               std::vector<uint8_t>{0x03, 0x04})))))),
+          []() {
+            auto response = CreateExpectedValidResponse();
+            response.k_anon_join_candidate.emplace();
+            response.k_anon_join_candidate->ad_render_url_hash = {0x01, 0x02};
+            response.k_anon_join_candidate->ad_component_render_urls_hash = {
+                {0x03, 0x04},
+            };
+            response.k_anon_join_candidate->reporting_id_hash = {0x04, 0x01};
+            return response;
+          }(),
+      },
+      {
+          // Valid - with multiple component URLs
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
+                      .Set("adComponentRenderURLsHash",
+                           base::Value(
+                               base::Value::List()
+                                   .Append(std::vector<uint8_t>{0x03, 0x04})
+                                   .Append(
+                                       std::vector<uint8_t>{0x05, 0x06})))))),
+          []() {
+            auto response = CreateExpectedValidResponse();
+            response.k_anon_join_candidate.emplace();
+            response.k_anon_join_candidate->ad_render_url_hash = {0x01, 0x02};
+            response.k_anon_join_candidate->ad_component_render_urls_hash = {
+                {0x03, 0x04},
+                {0x05, 0x06},
+            };
+            response.k_anon_join_candidate->reporting_id_hash = {0x04, 0x01};
+            return response;
+          }(),
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.input.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(test_case.input.Clone(),
+                                            GroupNames(),
+                                            GroupAggregationCoordinators());
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result,
+                EqualsBiddingAndAuctionResponse(std::ref(test_case.output)));
+  }
+}
+
+TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableBandAKAnonEnforcement);
+
+  const base::Value::Dict kValidMinimalkAnonGhostWinnersDict =
+      base::Value::Dict()
+          .Set("kAnonJoinCandidates",
+               base::Value::Dict()
+                   .Set("adRenderURLHash", std::vector<uint8_t>{0x07, 0x08})
+                   .Set("reportingIdHash", std::vector<uint8_t>{0x09, 0x0a}))
+          .Set("interestGroupIndex", 0)
+          .Set("owner", kOwnerOrigin);
+  auto CreateMinimalkAnonGhostWinnersServerResponse = []() {
+    auto response = CreateExpectedValidResponse();
+    response.k_anon_ghost_winner.emplace();
+    response.k_anon_ghost_winner->candidate.ad_render_url_hash = {0x07, 0x08};
+    response.k_anon_ghost_winner->candidate.reporting_id_hash = {0x09, 0x0a};
+    response.k_anon_ghost_winner->interest_group = blink::InterestGroupKey(
+        url::Origin::Create(GURL(kOwnerOrigin)), "name");
+    return response;
+  };
+
+  static const struct {
+    base::Value input;
+    BiddingAndAuctionResponse output;
+  } kTestCases[] = {
+      {
+          // Bad type
+          base::Value(CreateValidResponseDict().Set("kAnonGhostWinners", 5)),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Empty list
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners", base::Value(base::Value::List()))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Empty dict in list
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value::Dict())))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Missing kAnonJoinCandidates
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners", base::Value(base::Value::List().Append(
+                                       base::Value::Dict()
+                                           .Set("interestGroupIndex", 0)
+                                           .Set("owner", kOwnerOrigin))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Invalid kAnonJoinCandidates
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash", "Not a blob")
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", 0)
+                      .Set("owner", kOwnerOrigin))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Invalid type for interestGroupIndex
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash",
+                                    std::vector<uint8_t>{0x07, 0x08})
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", "Not a number")
+                      .Set("owner", kOwnerOrigin))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Out of range for interestGroupIndex (too small)
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash",
+                                    std::vector<uint8_t>{0x07, 0x08})
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", -1)
+                      .Set("owner", kOwnerOrigin))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Out of range for interestGroupIndex (too big)
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash",
+                                    std::vector<uint8_t>{0x07, 0x08})
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", 2048)
+                      .Set("owner", kOwnerOrigin))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Owner wrong type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash",
+                                    std::vector<uint8_t>{0x07, 0x08})
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", 0)
+                      .Set("owner", 5))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Owner not secure
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash",
+                                    std::vector<uint8_t>{0x07, 0x08})
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", 0)
+                      .Set("owner", "http://not.secure.example.com"))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Owner not in list
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("kAnonJoinCandidates",
+                           base::Value::Dict()
+                               .Set("adRenderURLHash",
+                                    std::vector<uint8_t>{0x07, 0x08})
+                               .Set("reportingIdHash",
+                                    std::vector<uint8_t>{0x09, 0x0a}))
+                      .Set("interestGroupIndex", 0)
+                      .Set("owner", "https://not.listed.example.com"))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid (minimal)
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone())))),
+          CreateMinimalkAnonGhostWinnersServerResponse(),
+      },
+      {
+          // Private aggregation not a dict
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Private aggregation bad type for bucket
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(base::Value::Dict()
+                                      .Set("bucket", base::Value(1))
+                                      .Set("value", base::Value(1)))))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Private aggregation bucket too big (17 bytes > 16)
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(
+                          base::Value::Dict()
+                              .Set("bucket",
+                                   base::Value(std::vector<uint8_t>{
+                                       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+                                       0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                                       0x0e, 0x0f, 0x10}))
+                              .Set("value", base::Value(4)))))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Private aggregation bad type for value
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(
+                          base::Value::Dict()
+                              .Set("bucket", base::Value(std::vector<uint8_t>{
+                                                 0x00, 0x01}))
+                              .Set("value", base::Value(std::vector<uint8_t>{
+                                                0x00, 0x01})))))))),
+          CreateExpectedValidResponse(),
+      },
+      {// 1 Valid private aggregation
+       base::Value(CreateValidResponseDict().Set(
+           "kAnonGhostWinners",
+           base::Value(base::Value::List().Append(
+               kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                   "ghostWinnerPrivateAggregationSignals",
+                   base::Value(base::Value::List().Append(base::Value(
+                       base::Value::Dict()
+                           .Set("bucket",
+                                base::Value(std::vector<uint8_t>{0x04, 0x01}))
+                           .Set("value", base::Value(2)))))))))),
+       [&]() {
+         auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+         response.k_anon_ghost_winner->non_kanon_private_aggregation_requests
+             .emplace_back(
+                 auction_worklet::mojom::PrivateAggregationRequest::New(
+                     auction_worklet::mojom::AggregatableReportContribution::
+                         NewHistogramContribution(
+                             blink::mojom::
+                                 AggregatableReportHistogramContribution::New(
+                                     /*bucket=*/1025,
+                                     /*value=*/2,
+                                     /*filtering_id=*/std::nullopt)),
+                     blink::mojom::DebugModeDetails::New()));
+         return response;
+       }()},
+      {// Multiple valid private aggregation
+       base::Value(CreateValidResponseDict().Set(
+           "kAnonGhostWinners",
+           base::Value(base::Value::List().Append(
+               kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                   "ghostWinnerPrivateAggregationSignals",
+                   base::Value(
+                       base::Value::List()
+                           .Append(base::Value(
+                               base::Value::Dict()
+                                   .Set("bucket",
+                                        base::Value(
+                                            std::vector<uint8_t>{0x04, 0x01}))
+                                   .Set("value", base::Value(2))))
+                           .Append(base::Value(base::Value(
+                               base::Value::Dict()
+                                   .Set("bucket",
+                                        base::Value(
+                                            std::vector<uint8_t>{0x06, 0x02}))
+                                   .Set("value", base::Value(4))))))))))),
+       [&]() {
+         auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+         response.k_anon_ghost_winner->non_kanon_private_aggregation_requests
+             .emplace_back(
+                 auction_worklet::mojom::PrivateAggregationRequest::New(
+                     auction_worklet::mojom::AggregatableReportContribution::
+                         NewHistogramContribution(
+                             blink::mojom::
+                                 AggregatableReportHistogramContribution::New(
+                                     /*bucket=*/1025,
+                                     /*value=*/2,
+                                     /*filtering_id=*/std::nullopt)),
+                     blink::mojom::DebugModeDetails::New()));
+         response.k_anon_ghost_winner->non_kanon_private_aggregation_requests
+             .emplace_back(
+                 auction_worklet::mojom::PrivateAggregationRequest::New(
+                     auction_worklet::mojom::AggregatableReportContribution::
+                         NewHistogramContribution(
+                             blink::mojom::
+                                 AggregatableReportHistogramContribution::New(
+                                     /*bucket=*/1538,
+                                     /*value=*/4,
+                                     /*filtering_id=*/std::nullopt)),
+                     blink::mojom::DebugModeDetails::New()));
+         return response;
+       }()},
+      {
+          // Bad ghost_winner type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction", 5))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad ghost_winner - missing all fields
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction", base::Value::Dict()))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad ghost_winner - bad adRenderURL type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", 5)
+                          .Set("modifiedBid", 1.0)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad ghost_winner - insecure adRenderURL
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kUntrustedURL)
+                          .Set("modifiedBid", 1.0)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad ghost_winner - wrong modifiedBid type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", "not a number")))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid ghost_winner
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            return response;
+          }(),
+      },
+      {
+          // Invalid ad components type in ghost winner
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("adComponentRenderURLs", 5)
+                          .Set("modifiedBid", 1.0)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Empty list for ad components URL in ghost winner is okay
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("adComponentRenderURLs", base::Value::List())
+                          .Set("modifiedBid", 1.0)))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            return response;
+          }(),
+      },
+      {
+          // Insecure ad component in ghost winner
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("adComponentRenderURLs",
+                               base::Value::List().Append(kUntrustedURL))
+                          .Set("modifiedBid", 1.0)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // One insecure ad component in ghost winner
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("adComponentRenderURLs",
+                               base::Value::List().Append(kAdURL).Append(
+                                   kUntrustedURL))
+                          .Set("modifiedBid", 1.0)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Multiple valid ad components in ghost winner
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set(
+                              "adComponentRenderURLs",
+                              base::Value::List().Append(kAdURL).Append(kAdURL))
+                          .Set("modifiedBid", 1.0)))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->ad_components
+                .emplace_back(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->ad_components
+                .emplace_back(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            return response;
+          }(),
+      },
+      {
+          // Bad bid currency type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("bidCurrency", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Bad bid currency
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("bidCurrency", "Not a Currency")))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid bid currency
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("bidCurrency", "USD")))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            response.k_anon_ghost_winner->ghost_winner->bid_currency =
+                blink::AdCurrency::From("USD");
+            return response;
+          }(),
+      },
+      {
+          // Wrong adMetadata type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("adMetadata", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid adMetadata
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("adMetadata", "meta")))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            response.k_anon_ghost_winner->ghost_winner->ad_metadata = "meta";
+            return response;
+          }(),
+      },
+
+      {
+          // Invalid buyerReportingId type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("buyerReportingId", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Invalid buyerAndSellerReportingId type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("buyerAndSellerReportingId", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Invalid selectedBuyerAndSellerReportingId type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("selectedBuyerAndSellerReportingId", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Everything all together correct
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set(
+                              "adComponentRenderURLs",
+                              base::Value::List().Append(kAdURL).Append(kAdURL))
+                          .Set("modifiedBid", 1.0)
+                          .Set("bidCurrency", "USD")
+                          .Set("adMetadata", "meta")
+                          .Set("buyerReportingId", "bId")
+                          .Set("buyerAndSellerReportingId", "basId")
+                          .Set("selectedBuyerAndSellerReportingId",
+                               "sbasId")))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->ad_components
+                .emplace_back(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->ad_components
+                .emplace_back(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            response.k_anon_ghost_winner->ghost_winner->bid_currency =
+                blink::AdCurrency::From("USD");
+            response.k_anon_ghost_winner->ghost_winner->ad_metadata = "meta";
+            response.k_anon_ghost_winner->ghost_winner->buyer_reporting_id =
+                "bId";
+            response.k_anon_ghost_winner->ghost_winner
+                ->buyer_and_seller_reporting_id = "basId";
+            response.k_anon_ghost_winner->ghost_winner
+                ->selected_buyer_and_seller_reporting_id = "sbasId";
+            return response;
+          }(),
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.input.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(test_case.input.Clone(),
+                                            GroupNames(),
+                                            GroupAggregationCoordinators());
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result,
+                EqualsBiddingAndAuctionResponse(std::ref(test_case.output)));
+  }
+}
+
+TEST(BiddingAndAuctionResponseTest, kAnonDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kEnableBandAKAnonEnforcement);
+
+  base::Value response = base::Value(
+      CreateValidResponseDict()
+          .Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
+                      .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
+                      .Set("adComponentRenderURLsHash",
+                           base::Value(
+                               base::Value::List()
+                                   .Append(std::vector<uint8_t>{0x03, 0x04})
+                                   .Append(std::vector<uint8_t>{0x05, 0x06})))))
+          .Set("kAnonGhostWinners",
+               base::Value(base::Value::List().Append(
+
+                   base::Value::Dict()
+                       .Set("kAnonJoinCandidates",
+                            base::Value::Dict()
+                                .Set("adRenderURLHash",
+                                     std::vector<uint8_t>{0x07, 0x08})
+                                .Set("reportingIdHash",
+                                     std::vector<uint8_t>{0x09, 0x0a}))
+                       .Set("interestGroupIndex", 0)
+                       .Set("owner", kOwnerOrigin)
+                       .Set("ghostWinnerForTopLevelAuction",
+                            base::Value::Dict()
+                                .Set("adRenderURL", kAdURL)
+                                .Set("adComponentRenderURLs",
+                                     base::Value::List().Append(kAdURL).Append(
+                                         kAdURL))
+                                .Set("modifiedBid", 1.0)
+                                .Set("bidCurrency", "USD")
+                                .Set("buyerReportingId", "bId")
+                                .Set("buyerAndSellerReportingId", "basId"))))));
+  BiddingAndAuctionResponse expected = CreateExpectedValidResponse();
+
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(std::move(response), GroupNames(),
+                                          GroupAggregationCoordinators());
+  ASSERT_TRUE(result);
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(expected)));
+}
+
 class BiddingAndAuctionPAggResponseTest : public testing::Test {
  public:
   BiddingAndAuctionPAggResponseTest() {
@@ -838,8 +2238,7 @@ class BiddingAndAuctionPAggResponseTest : public testing::Test {
         /*enabled_features=*/
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_fledge", "true"}}},
-         {blink::features::kPrivateAggregationApiFilteringIds, {}},
-         {kPrivacySandboxAggregationServiceFilteringIds, {}}},
+         {features::kEnableBandAPrivateAggregation, {}}},
         /*disabled_features=*/{});
   }
 
@@ -888,8 +2287,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
       PrivateAggregationPhase::kNonTopLevelSeller,
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   auction_worklet::mojom::PrivateAggregationRequestPtr request1 =
-      CreatePaggForEventRequest(1, 123, std::nullopt,
-                                CreateNonReservedEventType("click"));
+      CreatePaggForEventRequest(1, 123, std::nullopt, ToEventTypePtr("click"));
   EXPECT_THAT(result->component_win_pagg_requests[std::move(phase_key1)],
               ElementsAreRequests(request1));
 
@@ -900,8 +2298,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
   auction_worklet::mojom::PrivateAggregationRequestPtr request2 =
       CreatePaggForEventRequest(
           1, 123, std::nullopt,
-          CreateReservedEventType(
-              auction_worklet::mojom::ReservedEventType::kReservedWin));
+          ToEventTypePtr(ReservedNonErrorEventType::kReservedWin));
   EXPECT_THAT(result->component_win_pagg_requests[std::move(phase_key2)],
               ElementsAreRequests(request2));
 
@@ -909,8 +2306,9 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
   PrivateAggregationKey key = {
       url::Origin::Create(GURL(kOwnerOrigin)),
       url::Origin::Create(GURL(kAggregationCoordinator))};
-  auction_worklet::mojom::PrivateAggregationRequestPtr histogram_request =
-      CreatePaggHistogramRequest(1, 123, std::nullopt);
+  auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+      histogram_request =
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt);
   EXPECT_THAT(result->server_filtered_pagg_requests_reserved[std::move(key)],
               ElementsAreRequests(histogram_request));
 
@@ -1024,8 +2422,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseContribution) {
           123,
           CreatePaggForEventRequest(
               absl::MakeUint128(1, 2), 123, 123,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       },
       {
           "bucket is bigger than 128 bits",
@@ -1057,8 +2454,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseContribution) {
           std::nullopt,
           CreatePaggForEventRequest(
               absl::MakeUint128(1, 2), 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       },
       {
           "Invalid filtering_id",
@@ -1122,22 +2518,19 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseComponentWinEvents) {
           "reserved.win",
           CreatePaggForEventRequest(
               1, 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       },
       {
           "reserved.always",
           CreatePaggForEventRequest(
               1, 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedAlways)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
       },
       {
           "reserved.loss",
           CreatePaggForEventRequest(
               1, 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
       },
       {
           "click",
@@ -1175,23 +2568,23 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   static const struct {
     std::string event;
-    auction_worklet::mojom::PrivateAggregationRequestPtr pagg_request;
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr pagg_request;
   } kTestCases[] = {
       {
           "reserved.win",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
       {
           "reserved.always",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
       {
           "reserved.loss",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
       {
           "click",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
   };
   for (const auto& test_case : kTestCases) {
@@ -1221,8 +2614,141 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
     }
   }
 }
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReports) {
+
+TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseErrorReporting) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+
+  const std::vector<uint8_t> bucket_byte_string = base::Value::BlobStorage(
+      {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0x00, 0x02});
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  static const struct {
+    std::string event_string;
+    ReservedErrorEventType error_event_type;
+  } kTestCases[] = {
+      {"reserved.report-success", ReservedErrorEventType::kReportSuccess},
+      {"reserved.too-many-contributions",
+       ReservedErrorEventType::kTooManyContributions},
+      {"reserved.empty-report-dropped",
+       ReservedErrorEventType::kEmptyReportDropped},
+      {"reserved.pending-report-limit-reached",
+       ReservedErrorEventType::kPendingReportLimitReached},
+      {"reserved.insufficient-budget",
+       ReservedErrorEventType::kInsufficientBudget},
+      {"reserved.uncaught-error", ReservedErrorEventType::kUncaughtError},
+  };
+
+  PrivateAggregationPhaseKey key = {
+      url::Origin::Create(GURL(kOwnerOrigin)),
+      PrivateAggregationPhase::kNonTopLevelSeller,
+      url::Origin::Create(GURL(kAggregationCoordinator2))};
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.event_string);
+    base::Value::Dict contribution;
+    contribution.Set("bucket", base::Value(bucket_byte_string));
+    contribution.Set("value", 123);
+    contribution.Set("filteringId", 45);
+
+    base::Value::List contributions;
+    contributions.Append(std::move(contribution));
+    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+        std::move(contributions), test_case.event_string,
+        /*component_win=*/true);
+
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                            GroupNames(),
+                                            GroupAggregationCoordinators());
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+
+    auction_worklet::mojom::PrivateAggregationRequestPtr expected_pagg_request =
+        CreatePaggForEventRequest(absl::MakeUint128(1, 2), 123, 45,
+                                  ToEventTypePtr(test_case.error_event_type));
+
+    EXPECT_EQ(1u, result->component_win_pagg_requests.size());
+    EXPECT_THAT(result->component_win_pagg_requests[key],
+                ElementsAreRequests(expected_pagg_request));
+
+    EXPECT_TRUE(result->server_filtered_pagg_requests_reserved.empty());
+    EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
+  }
+}
+
+TEST_F(BiddingAndAuctionPAggResponseTest,
+       ParsePAggResponseErrorReporting_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiErrorReporting);
+
+  const std::vector<uint8_t> bucket_byte_string = base::Value::BlobStorage(
+      {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0x00, 0x02});
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+
+  std::string kEventTestCases[] = {
+      "reserved.report-success",       "reserved.too-many-contributions",
+      "reserved.empty-report-dropped", "reserved.pending-report-limit-reached",
+      "reserved.insufficient-budget",  "reserved.uncaught-error",
+  };
+
+  PrivateAggregationPhaseKey key = {
+      url::Origin::Create(GURL(kOwnerOrigin)),
+      PrivateAggregationPhase::kNonTopLevelSeller,
+      url::Origin::Create(GURL(kAggregationCoordinator2))};
+  for (const auto& event_string : kEventTestCases) {
+    SCOPED_TRACE(event_string);
+    base::Value::Dict contribution;
+    contribution.Set("bucket", base::Value(bucket_byte_string));
+    contribution.Set("value", 123);
+    contribution.Set("filteringId", 45);
+
+    base::Value::List contributions;
+    contributions.Append(std::move(contribution));
+    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+        std::move(contributions), event_string,
+        /*component_win=*/true);
+
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                            GroupNames(),
+                                            GroupAggregationCoordinators());
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+
+    EXPECT_TRUE(result->component_win_pagg_requests.empty());
+
+    EXPECT_TRUE(result->server_filtered_pagg_requests_reserved.empty());
+    EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
+  }
+}
+
+class BiddingAndAuctionSampleDebugReportsTest : public testing::Test {
+ public:
+  BiddingAndAuctionSampleDebugReportsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableBandASampleDebugReports);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BiddingAndAuctionSampleDebugReportsTest, ForDebuggingOnlyReports) {
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  output.component_win_debugging_only_reports
+      [BiddingAndAuctionResponse::DebugReportKey(false, true)] =
+      GURL("https://component-win.win-debug-report.com");
+  output.component_win_debugging_only_reports
+      [BiddingAndAuctionResponse::DebugReportKey(false, false)] =
+      GURL("https://component-win.loss-debug-report.com");
+  output
+      .server_filtered_debugging_only_reports[url::Origin::Create(
+          GURL(kOwnerOrigin))]
+      .emplace_back(kDebugReportingURL);
+  output.debugging_only_report_origins.emplace(
+      url::Origin::Create(GURL(kOwnerOrigin)));
   base::Value::List reports;
   reports.Append(base::Value::Dict()
                      .Set("isWinReport", true)
@@ -1246,160 +2772,154 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReports) {
                                           /*group_pagg_coordinators=*/{});
   ASSERT_TRUE(result);
   EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-
-  EXPECT_EQ(2u, result->component_winner_debugging_only_reports.size());
-  EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
-                  url::Origin::Create(GURL(kOwnerOrigin)), true)],
-              testing::UnorderedElementsAre(
-                  GURL("https://component-win.win-debug-report.com")));
-  EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
-                  url::Origin::Create(GURL(kOwnerOrigin)), false)],
-              testing::UnorderedElementsAre(
-                  GURL("https://component-win.loss-debug-report.com")));
-
-  EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
-  EXPECT_THAT(
-      result->server_filtered_debugging_only_reports[url::Origin::Create(
-          GURL(kOwnerOrigin))],
-      testing::UnorderedElementsAre(kDebugReportingURL));
 }
 
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsIgnoreErrors) {
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
-  static const base::Value kTestCases[] = {
+TEST_F(BiddingAndAuctionSampleDebugReportsTest,
+       ForDebuggingOnlyReportsIgnoreErrors) {
+  static const struct {
+    base::Value input;
+    BiddingAndAuctionResponse output;
+  } kTestCases[] = {
       {
           base::Value(
               CreateValidResponseDict().Set("debugReports", "not a list")),
+          CreateExpectedValidResponse(),
       },
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports", base::Value::List().Append("not a dict")))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports", base::Value::List().Append("not a dict"))),
+          CreateExpectedValidResponse(),
+      },
       // Miss required ad tech origin.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(base::Value::Dict().Set(
-              "reports", base::Value::List().Append(base::Value::Dict().Set(
-                             "url", "https://fdo.com"))))))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(base::Value::Dict().Set(
+                  "reports", base::Value::List().Append(base::Value::Dict().Set(
+                                 "url", "https://fdo.com")))))),
+          CreateExpectedValidResponse(),
+      },
       // Http ad tech origin.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(
-              base::Value::Dict()
-                  .Set("adTechOrigin", "http://adtech.com")
-                  .Set("reports",
-                       base::Value::List().Append(base::Value::Dict().Set(
-                           "url", "https://fdo.com"))))))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("adTechOrigin", "http://adtech.com")
+                      .Set("reports",
+                           base::Value::List().Append(base::Value::Dict().Set(
+                               "url", "https://fdo.com")))))),
+          CreateExpectedValidResponse(),
+      },
       // Http url.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(
-              base::Value::Dict()
-                  .Set("adTechOrigin", "https://adtech.com")
-                  .Set("reports",
-                       base::Value::List().Append(base::Value::Dict().Set(
-                           "url", "http://fdo.com"))))))},
-      // Invalid url.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(
-              base::Value::Dict()
-                  .Set("adTechOrigin", "https://adtech.com")
-                  .Set("reports",
-                       base::Value::List().Append(
-                           base::Value::Dict().Set("url", "not a url"))))))},
-  };
-  for (const auto& response : kTestCases) {
-    SCOPED_TRACE(response.DebugString());
-    std::optional<BiddingAndAuctionResponse> result =
-        BiddingAndAuctionResponse::TryParse(response.Clone(), GroupNames(),
-                                            /*group_pagg_coordinators=*/{});
-    ASSERT_TRUE(result);
-    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-
-    EXPECT_TRUE(result->component_winner_debugging_only_reports.empty());
-    EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
-  }
-}
-
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsComponentWinner) {
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
-  static const std::optional<bool> kTestCases[] = {
-      true,
-      false,
-      std::nullopt,
-  };
-  for (const auto& test_case : kTestCases) {
-    base::Value::Dict response = CreateResponseDictWithDebugReports(
-        test_case, /*maybe_component_win=*/true);
-    SCOPED_TRACE(response.DebugString());
-    std::optional<BiddingAndAuctionResponse> result =
-        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
-                                            GroupNames(),
-                                            /*group_pagg_coordinators=*/{});
-    ASSERT_TRUE(result);
-    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-    EXPECT_EQ(1u, result->component_winner_debugging_only_reports.size());
-    bool is_win_report = test_case.has_value() && *test_case;
-    EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
-                    url::Origin::Create(GURL(kOwnerOrigin)), is_win_report)],
-                testing::UnorderedElementsAre(kDebugReportingURL));
-    EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
-  }
-}
-
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsServerFiltered) {
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
-  static const std::optional<bool> kTestCases[] = {
-      true,
-      false,
-      std::nullopt,
-  };
-  for (const auto& test_case : kTestCases) {
-    base::Value::Dict response = CreateResponseDictWithDebugReports(
-        test_case, /*maybe_component_win=*/false);
-    SCOPED_TRACE(response.DebugString());
-    std::optional<BiddingAndAuctionResponse> result =
-        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
-                                            GroupNames(),
-                                            /*group_pagg_coordinators=*/{});
-    ASSERT_TRUE(result);
-    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-    EXPECT_TRUE(result->component_winner_debugging_only_reports.empty());
-    EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
-    EXPECT_THAT(
-        result->server_filtered_debugging_only_reports[url::Origin::Create(
-            GURL(kOwnerOrigin))],
-        testing::UnorderedElementsAre(kDebugReportingURL));
-  }
-}
-
-TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {
-  struct {
-    std::vector<uint8_t> input;
-    std::vector<uint8_t> expected_output;
-  } kTestCases[] = {
-      // Small one to test basic functionality
       {
-          {0x02, 0x00, 0x00, 0x00, 0x01, 0xFE, 0x02},
-          {0xFE},
-      },
-      // Bigger one to check that we have the size right.
-      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("adTechOrigin", "https://adtech.com")
+                      .Set("reports",
+                           base::Value::List().Append(base::Value::Dict().Set(
+                               "url", "http://fdo.com")))))),
           []() {
-            std::vector<uint8_t> unframed_input(1000, ' ');
-            std::vector<uint8_t> framing = {0x02, 0x00, 0x00, 0x02, 0xFF};
-            std::copy(framing.begin(), framing.end(),
-                      std::inserter(unframed_input, unframed_input.begin()));
-            return unframed_input;
+            auto response = CreateExpectedValidResponse();
+            response.debugging_only_report_origins.emplace(
+                url::Origin::Create(GURL("https://adtech.com")));
+            return response;
           }(),
-          std::vector<uint8_t>(0x2FF, ' '),
       },
+      // Invalid url.
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("adTechOrigin", "https://adtech.com")
+                      .Set("reports",
+                           base::Value::List().Append(
+                               base::Value::Dict().Set("url", "not a url")))))),
+          []() {
+            auto response = CreateExpectedValidResponse();
+            response.debugging_only_report_origins.emplace(
+                url::Origin::Create(GURL("https://adtech.com")));
+            return response;
+          }(),
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.input.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(test_case.input.Clone(),
+                                            GroupNames(),
+                                            /*group_pagg_coordinators=*/{});
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result,
+                EqualsBiddingAndAuctionResponse(std::ref(test_case.output)));
+  }
+}
+
+TEST_F(BiddingAndAuctionSampleDebugReportsTest,
+       ForDebuggingOnlyReportsComponentWinner) {
+  static const struct {
+    std::optional<bool> is_seller_report;
+    std::optional<bool> is_win_report;
+  } kTestCases[] = {
+      {true, true},         {true, false},         {true, std::nullopt},
+      {false, true},        {false, false},        {false, std::nullopt},
+      {std::nullopt, true}, {std::nullopt, false}, {std::nullopt, std::nullopt},
   };
 
   for (const auto& test_case : kTestCases) {
-    std::optional<base::span<const uint8_t>> result =
-        ExtractCompressedBiddingAndAuctionResponse(test_case.input);
+    BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+    bool is_seller_report =
+        test_case.is_seller_report.has_value() && *test_case.is_seller_report;
+    bool is_win_report =
+        test_case.is_win_report.has_value() && *test_case.is_win_report;
+    output.component_win_debugging_only_reports
+        [BiddingAndAuctionResponse::DebugReportKey(
+            is_seller_report, is_win_report)] = GURL(kDebugReportingURL);
+    output.debugging_only_report_origins.emplace(
+        url::Origin::Create(GURL(kOwnerOrigin)));
+
+    base::Value::Dict response = CreateResponseDictWithDebugReports(
+        /*maybe_component_win=*/true, test_case.is_seller_report,
+        test_case.is_win_report);
+    SCOPED_TRACE(response.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                            GroupNames(),
+                                            /*group_pagg_coordinators=*/{});
     ASSERT_TRUE(result);
-    EXPECT_THAT(*result, testing::ElementsAreArray(test_case.expected_output));
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+  }
+}
+
+TEST_F(BiddingAndAuctionSampleDebugReportsTest,
+       ForDebuggingOnlyReportsServerFiltered) {
+  static const std::optional<bool> kTestCases[] = {
+      true,
+      false,
+      std::nullopt,
+  };
+  for (const auto& test_case : kTestCases) {
+    BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+    output
+        .server_filtered_debugging_only_reports[url::Origin::Create(
+            GURL(kOwnerOrigin))]
+        .emplace_back(kDebugReportingURL);
+    output.debugging_only_report_origins.emplace(
+        url::Origin::Create(GURL(kOwnerOrigin)));
+    base::Value::Dict response = CreateResponseDictWithDebugReports(
+        /*maybe_component_win=*/false,
+        /*maybe_is_seller_report=*/std::nullopt,
+        /*maybe_is_win_report=*/test_case);
+    SCOPED_TRACE(response.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                            GroupNames(),
+                                            /*group_pagg_coordinators=*/{});
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
   }
 }
 

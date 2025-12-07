@@ -1,0 +1,115 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/grpc-java/grpc_java_library.gni")
+
+# Classes that live inside the apk split.
+android_library("impl_java") {
+  sources = [
+    "java/src/org/chromium/chrome/modules/on_demand/OnDemandModuleEntryPointsImpl.java",
+    "java/src/org/chromium/chrome/modules/on_demand/OnDemandModuleInternalEntryPoints.java",
+  ]
+  deps = [
+    ":data_importer_service_impl_java",
+    ":provider_java",
+    "//base:service_loader_java",
+  ]
+}
+
+# Classes that live in the base module.
+android_library("provider_java") {
+  sources = [ "java/src/org/chromium/chrome/modules/on_demand/OnDemandModuleEntryPoints.java" ]
+  deps = [
+    "//components/module_installer/android:module_installer_java",
+    "//components/module_installer/android:module_interface_java",
+  ]
+  annotation_processor_deps =
+      [ "//components/module_installer/android:module_interface_processor" ]
+}
+
+proto_java_library("os_migration_target_service_proto_java") {
+  proto_path = "java/src/org/chromium/chrome/browser/data_import"
+  sources = [ "$proto_path/os_migration_target_service.proto" ]
+}
+
+grpc_java_library("os_migration_target_service_grpc_java") {
+  proto_path = "java/src/org/chromium/chrome/browser/data_import"
+  sources = [ "$proto_path/os_migration_target_service.proto" ]
+  deps = [ ":os_migration_target_service_proto_java" ]
+}
+
+android_library("data_importer_service_impl_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/data_import/DataImporterServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/data_import/TargetService.java",
+  ]
+  deps = [
+    ":os_migration_target_service_grpc_java",
+    ":os_migration_target_service_proto_java",
+    "//base:callback_java",
+    "//base:log_java",
+    "//base:metrics_java",
+    "//base:resetters_java",
+    "//base:tasks_java",
+    "//base/version_info/android:version_constants_java",
+    "//chrome/android:base_module_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/cached_flags:java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:io_grpc_grpc_api_java",
+    "//third_party/android_deps:io_grpc_grpc_binder_java",
+    "//third_party/android_deps:io_grpc_grpc_stub_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("data_importer_service_impl_java_test") {
+  testonly = true
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/data_import/DataImporterServiceImplTest.java",
+    "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceGrpcTest.java",
+    "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceTest.java",
+  ]
+  deps = [
+    ":data_importer_service_impl_java",
+    ":os_migration_target_service_grpc_java",
+    ":os_migration_target_service_proto_java",
+    "//base:base_java_test_support",
+    "//base:callback_java",
+    "//chrome/android:base_module_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/bookmarks/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:io_grpc_grpc_api_java",
+    "//third_party/android_deps:io_grpc_grpc_binder_java",
+    "//third_party/android_deps:io_grpc_grpc_inprocess_java",
+    "//third_party/android_deps:io_grpc_grpc_stub_java",
+    "//third_party/android_deps:io_grpc_grpc_testing_java",
+    "//third_party/android_deps:io_grpc_grpc_util_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//url:url_java",
+  ]
+}
+
+java_group("javatests") {
+  testonly = true
+  deps = [ ":data_importer_service_impl_java_test" ]
+}

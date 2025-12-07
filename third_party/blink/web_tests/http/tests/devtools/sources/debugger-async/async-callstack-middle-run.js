@@ -40,7 +40,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   SourcesTestRunner.startDebuggerTest(step1);
 
   async function step1() {
-    await TestRunner.DebuggerAgent.setAsyncCallStackDepth(0);
+    await TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: 0});
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
   }
 
@@ -53,7 +53,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   async function didPause(callFrames, reason, breakpointIds, asyncStackTrace) {
     ++step;
     if (step === 1) {
-      TestRunner.DebuggerAgent.setAsyncCallStackDepth(maxAsyncCallStackDepth).then(resumeExecution);
+      TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: maxAsyncCallStackDepth}).then(resumeExecution);
       return;
     }
 

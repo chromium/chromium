@@ -12,11 +12,21 @@ namespace test {
 
 class FakeMagicBoostState : public chromeos::MagicBoostState {
  public:
+  bool CanShowNoticeBannerForHMR() override;
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override;
   void AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus consent_status) override;
   void AsyncWriteHMREnabled(bool enabled) override;
+  bool ShouldIncludeOrcaInOptInSync() override;
   void DisableOrcaFeature() override {}
+  void DisableLobsterSettings() override {}
+
+  void SetAvailability(bool available);
+  void SetMagicBoostEnabled(bool enabled);
+
+ protected:
+  base::expected<bool, chromeos::MagicBoostState::Error>
+  IsUserEligibleForGenAIFeaturesExpected() const override;
 };
 
 }  // namespace test

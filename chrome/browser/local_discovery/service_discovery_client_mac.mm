@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/local_discovery/service_discovery_client_mac.h"
 
-#import <Foundation/Foundation.h>
-#import <Network/Network.h>
-#import <arpa/inet.h>
-#import <net/if_dl.h>
+#include <Foundation/Foundation.h>
+#include <Network/Network.h>
+#include <arpa/inet.h>
+#include <net/if_dl.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20,11 +16,14 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
-#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "net/base/ip_address.h"
@@ -78,10 +77,15 @@ const char kServiceDiscoveryThreadName[] = "Service Discovery Thread";
 
 const NSTimeInterval kResolveTimeout = 10.0;
 
+// Duration of time to wait for the users to responds to the permission dialog
+// before the permission state metric is recorded.
+constexpr base::TimeDelta kPermissionsMetricsDelay = base::Seconds(60);
+
 void SetUpServiceBrowser(
     nw_browser_t browser,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    ServiceWatcher::UpdatedCallback services_update_callback) {
+    ServiceWatcher::UpdatedCallback services_update_callback,
+    base::RepeatingCallback<void(bool)> metrics_callback) {
   nw_browser_set_queue(browser, dispatch_get_main_queue());
 
   nw_browser_set_browse_results_changed_handler(
@@ -89,47 +93,80 @@ void SetUpServiceBrowser(
                  bool batch_complete) {
         nw_browse_result_change_t change =
             nw_browse_result_get_changes(old_result, new_result);
-        const char* new_service_name = nw_endpoint_get_bonjour_service_name(
-            nw_browse_result_copy_endpoint(new_result));
-        const char* old_service_name = nw_endpoint_get_bonjour_service_name(
-            nw_browse_result_copy_endpoint(old_result));
+        nw_endpoint_t new_endpoint = nw_browse_result_copy_endpoint(new_result);
+        nw_endpoint_t old_endpoint = nw_browse_result_copy_endpoint(old_result);
+        const char* new_service_name =
+            nw_endpoint_get_bonjour_service_name(new_endpoint);
+        const char* old_service_name =
+            nw_endpoint_get_bonjour_service_name(old_endpoint);
+
         switch (change) {
           case nw_browse_result_change_result_added:
+            CHECK(new_service_name);
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(services_update_callback,
                                ServiceWatcher::UpdateType::UPDATE_ADDED,
-                               new_service_name));
+                               std::string(new_service_name)));
             break;
           case nw_browse_result_change_result_removed:
+            CHECK(old_service_name);
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(services_update_callback,
                                ServiceWatcher::UpdateType::UPDATE_REMOVED,
-                               old_service_name));
+                               std::string(old_service_name)));
             break;
           case nw_browse_result_change_txt_record_changed:
+            CHECK(new_service_name);
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(services_update_callback,
                                ServiceWatcher::UpdateType::UPDATE_CHANGED,
-                               new_service_name));
+                               std::string(new_service_name)));
             break;
           default:
             break;
         }
       });
 
-  nw_browser_set_state_changed_handler(
-      browser, ^(nw_browser_state_t state, nw_error_t error) {
+  // Local Network Permission is available on macOS 15 or later.
+  if (base::mac::MacOSMajorVersion() < 15) {
+    return;
+  }
+
+  nw_browser_set_state_changed_handler(browser, ^(nw_browser_state_t state,
+                                                  nw_error_t error) {
+    // nw_browser always starts in the 'ready' state, but this doesn't mean
+    // permission is granted.
+    // Permission granted -> no change in the browser state.
+    // Permission denied -> transitions to the 'waiting' state with an error.
+    // Permission pending -> no change in the browser state.
+    // We use a delayed task to handle this: If permission is
+    // denied before the task runs, it's a no-op (permission is recorded once
+    // per session). Otherwise, we record the permission as granted. Note that
+    // it's possible that users deny the permission after the timer expires so
+    // there will be a few false positives.
+    switch (state) {
+      case nw_browser_state_ready:
+        task_runner->PostDelayedTask(FROM_HERE,
+                                     base::BindOnce(metrics_callback, true),
+                                     kPermissionsMetricsDelay);
+        break;
+      case nw_browser_state_waiting:
         if (nw_error_get_error_code(error) == kDNSServiceErr_PolicyDenied) {
           task_runner->PostTask(
               FROM_HERE,
               base::BindOnce(
                   services_update_callback,
                   ServiceWatcher::UpdateType::UPDATE_PERMISSION_REJECTED, ""));
+          metrics_callback.Run(/*permission_granted*/ false);
         }
-      });
+        break;
+      default:
+        break;
+    }
+  });
 }
 
 // These functions are used to PostTask with ObjC objects, without needing to
@@ -225,7 +262,12 @@ ServiceWatcherImplMac::ServiceWatcherImplMac(
     scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner)
     : service_type_(service_type),
       callback_(std::move(callback)),
-      service_discovery_runner_(service_discovery_runner) {}
+      service_discovery_runner_(service_discovery_runner) {
+  force_enable_legacy_discovery_ =
+      base::mac::MacOSMajorVersion() >= 15 ||
+      !base::FeatureList::IsEnabled(
+          media_router::kUseNetworkFrameworkForLocalDiscovery);
+}
 
 ServiceWatcherImplMac::~ServiceWatcherImplMac() {
   if (base::FeatureList::IsEnabled(
@@ -234,7 +276,9 @@ ServiceWatcherImplMac::~ServiceWatcherImplMac() {
         FROM_HERE, base::BindOnce(&StopServiceBrowser, nw_browser_,
                                   service_discovery_runner_));
     nw_browser_ = nil;
-  } else {
+  }
+
+  if (force_enable_legacy_discovery_) {
     service_discovery_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StopNetServiceBrowser, browser_));
     browser_ = nil;
@@ -266,8 +310,12 @@ void ServiceWatcherImplMac::Start() {
     SetUpServiceBrowser(
         nw_browser_, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindRepeating(&ServiceWatcherImplMac::OnServicesUpdate,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&ServiceWatcherImplMac::RecordPermissionState,
                             weak_factory_.GetWeakPtr()));
-  } else {
+  }
+
+  if (force_enable_legacy_discovery_) {
     browser_ = [[NetServiceBrowser alloc]
         initWithServiceType:service_type_
                    callback:base::BindRepeating(
@@ -286,7 +334,9 @@ void ServiceWatcherImplMac::DiscoverNewServices() {
     service_discovery_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StartServiceBrowser, nw_browser_,
                                   service_discovery_runner_));
-  } else {
+  }
+
+  if (force_enable_legacy_discovery_) {
     service_discovery_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StartNetServiceBrowser, browser_));
   }
@@ -307,6 +357,17 @@ void ServiceWatcherImplMac::OnServicesUpdate(ServiceWatcher::UpdateType update,
   VLOG(1) << "ServiceWatcherImplMac::OnServicesUpdate: "
           << service + "." + service_type_;
   callback_.Run(update, service + "." + service_type_);
+}
+
+void ServiceWatcherImplMac::RecordPermissionState(bool permission_granted) {
+  static bool permission_state_recorded_ = false;
+  if (permission_state_recorded_) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "MediaRouter.Discovery.LocalNetworkAccessPermissionGranted",
+      permission_granted);
+  permission_state_recorded_ = true;
 }
 
 // Service Resolver ////////////////////////////////////////////////////////////

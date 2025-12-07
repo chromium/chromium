@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_EVENT_ROUTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -12,8 +13,9 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
 
-class ProfileKeyedServiceFactory;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -27,10 +29,6 @@ class ReadingListEventRouter : public KeyedService,
   ReadingListEventRouter& operator=(const ReadingListEventRouter&) = delete;
   ~ReadingListEventRouter() override;
 
-  static ReadingListEventRouter* Get(content::BrowserContext* browser_context);
-
-  static ProfileKeyedServiceFactory* GetFactoryInstance();
-
  private:
   // ReadingListModelObserver:
   void ReadingListModelLoaded(const ReadingListModel* model) override {}
@@ -41,11 +39,6 @@ class ReadingListEventRouter : public KeyedService,
                                   const GURL& url) override;
   void ReadingListDidUpdateEntry(const ReadingListModel* model,
                                  const GURL& url) override;
-
-  // TODO(crbug.com/40260548): Remove when MoveEntry is replaced with
-  // UpdateEntry Called when the read status of an entry is changed.
-  void ReadingListDidMoveEntry(const ReadingListModel* model,
-                               const GURL& url) override;
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,

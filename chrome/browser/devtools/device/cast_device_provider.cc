@@ -72,7 +72,7 @@ AndroidDeviceManager::DeviceInfo ServiceDescriptionToDeviceInfo(
       ParseServiceTxtRecord(service_description.metadata);
 
   AndroidDeviceManager::DeviceInfo device_info;
-  device_info.connected = true;
+  device_info.connected_state = AndroidDeviceManager::DeviceInfo::kConnected;
   device_info.model = GetServiceMapValue(*record_map, "md", kUnknownCastDevice);
   AndroidDeviceManager::BrowserInfo browser_info;
   browser_info.socket_name = base::NumberToString(kCastInspectPort);
@@ -98,7 +98,7 @@ class CastDeviceProvider::DeviceListerDelegate final
                        scoped_refptr<base::SingleThreadTaskRunner> runner)
       : provider_(provider), runner_(runner) {}
 
-  virtual ~DeviceListerDelegate() {}
+  ~DeviceListerDelegate() = default;
 
   void StartDiscovery() {
     // This must be called on the UI thread; ServiceDiscoverySharedClient and
@@ -157,9 +157,9 @@ class CastDeviceProvider::DeviceListerDelegate final
   base::WeakPtrFactory<DeviceListerDelegate> weak_ptr_factory_{this};
 };
 
-CastDeviceProvider::CastDeviceProvider() {}
+CastDeviceProvider::CastDeviceProvider() = default;
 
-CastDeviceProvider::~CastDeviceProvider() {}
+CastDeviceProvider::~CastDeviceProvider() = default;
 
 void CastDeviceProvider::QueryDevices(SerialsCallback callback) {
   if (!lister_delegate_) {

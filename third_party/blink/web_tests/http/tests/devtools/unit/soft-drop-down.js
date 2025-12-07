@@ -71,7 +71,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   };
 
   function pressKey(key) {
-    var element = Platform.DOMUtilities.deepActiveElement(document);
+    var element = UI.DOMUtilities.deepActiveElement(document);
     if (!element)
       return;
     TestRunner.addResult(key);

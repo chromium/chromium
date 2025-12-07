@@ -21,14 +21,13 @@ import './startup_settings_card.js';
 import './storage_and_power_settings_card.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isQuickAnswersSupported, isRevampWayfindingEnabled, shouldShowMultitasking, shouldShowStartup} from '../common/load_time_booleans.js';
-import {PrefsState} from '../common/types.js';
+import {isExternalStorageEnabled, isGuest, isPowerwashAllowed, isQuickAnswersSupported, shouldShowStartup} from '../common/load_time_booleans.js';
+import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import {routes} from '../router.js';
 
 import {getTemplate} from './system_preferences_page.html.js';
@@ -84,13 +83,6 @@ export class SettingsSystemPreferencesPageElement extends
         },
       },
 
-      shouldShowMultitaskingCard_: {
-        type: Boolean,
-        value: () => {
-          return shouldShowMultitasking();
-        },
-      },
-
       shouldShowResetSettingsCard_: {
         type: Boolean,
         value: () => {
@@ -102,13 +94,6 @@ export class SettingsSystemPreferencesPageElement extends
         type: Boolean,
         value: () => {
           return isQuickAnswersSupported();
-        },
-      },
-
-      isAssistantAllowed_: {
-        type: Boolean,
-        value: () => {
-          return isAssistantAllowed();
         },
       },
 
@@ -162,29 +147,17 @@ export class SettingsSystemPreferencesPageElement extends
   private shouldStampGoogleDriveSubpage_: boolean;
   private shouldStampOfficeSubpage_: boolean;
 
-  // Multitasking subsection
-  private shouldShowMultitaskingCard_: boolean;
-
   // Reset subsection
   private shouldShowResetSettingsCard_: boolean;
 
-  // Search and Assistant subsection
+  // Search subsection
   private isQuickAnswersSupported_: boolean;
-  private isAssistantAllowed_: boolean;
 
   // Startup subsection
   private readonly shouldShowStartupSettingsCard_: boolean;
 
   // Storage and Power subsection
   private isExternalStorageEnabled_: boolean;
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-    assert(
-        isRevampWayfindingEnabled(),
-        'OsSettingsRevampWayfinding feature must be enabled.');
-  }
 }
 
 declare global {

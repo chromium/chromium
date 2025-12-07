@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 

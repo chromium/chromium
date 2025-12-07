@@ -338,4 +338,17 @@ TEST_F(SeparatorTest, Paint_MinimumSize_Scale125) {
   EXPECT_EQ(kBackgroundColor, painted.getColor(8, 7));
 }
 
+TEST_F(SeparatorTest, Paint_BorderRadius) {
+  separator_->SetSize({10, 10});
+  separator_->SetBorderRadius(10);
+  separator_->SetColorId(kForegroundColorId);
+
+  SkBitmap painted = PaintToCanvas(1.0f);
+  EXPECT_EQ(kBackgroundColor, painted.getColor(0, 0));
+  EXPECT_EQ(kBackgroundColor, painted.getColor(0, 9));
+  EXPECT_EQ(kBackgroundColor, painted.getColor(9, 9));
+  EXPECT_EQ(kBackgroundColor, painted.getColor(9, 0));
+  EXPECT_EQ(expected_foreground_color_, painted.getColor(5, 5));
+}
+
 }  // namespace views

@@ -9,19 +9,21 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
+#include "base/memory/stack_allocated.h"
 #include "base/types/strong_alias.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-blink-forward.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -184,6 +186,11 @@ class MODULES_EXPORT ManifestParser {
                            Enum (*parse_enum)(const std::string&),
                            Enum invalid_value);
 
+  // Parses the 'dir' field of the manifest, as defined in:
+  // https://w3c.github.io/manifest/#dfn-process-the-dir-member
+  // Returns the parsed TextDirection.
+  mojom::blink::Manifest::TextDirection ParseDir(const JSONObject* object);
+
   // Parses the 'name' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-name-member
   // Returns the parsed string if any, a null string if the parsing failed.
@@ -271,6 +278,14 @@ class MODULES_EXPORT ManifestParser {
   // icons, if any. An empty vector if the field was not present or empty.
   Vector<mojom::blink::ManifestImageResourcePtr> ParseIcons(
       const JSONObject* object);
+
+  // Parses the 'icons_localized' field of a Manifest, as defined in:
+  // https://w3c.github.io/manifest/#dfn-process-a-_localized-image-resource-member
+  // Returns a map of locale strings to vectors of ManifestImageResourcePtr with
+  // the successfully parsed localized icons, if any. An empty map is returned
+  // if the field was not present or empty.
+  HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+  ParseIconsLocalized(const JSONObject* object);
 
   // Parses the 'screenshots' field of a Manifest, as defined in:
   // https://www.w3.org/TR/manifest-app-info/#screenshots-member
@@ -372,32 +387,17 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
       const JSONObject* object);
 
-  // Parses the 'url_handlers' field of a Manifest, as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  // Returns the parsed list of UrlHandlers. The returned UrlHandlers are empty
-  // if the field didn't exist, parsing failed, the input list was empty, or if
-  // the blink feature flag is disabled.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableUrlHandlers.
-  Vector<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandlers(
-      const JSONObject* object);
-
-  // Parses a single URL handler entry in 'url_handlers', as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  // Returns |std::nullopt| if the UrlHandler was invalid, or a UrlHandler if
-  // parsing succeeded.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableUrlHandlers.
-  std::optional<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandler(
-      const JSONObject* object);
+  // Keep in sync with ScopeExtensionTypeMap. E.g. kOrigin -> "origin"
+  enum class ScopeExtensionType {
+    kOrigin = 0,
+  };
+  static constexpr const char* ScopeExtensionTypeMap[1] = {"origin"};
 
   // Parses the 'scope_extensions' field of a Manifest, as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns the parsed list of ScopeExtensions. The returned ScopeExtensions
   // are empty if the field didn't exist, parsing failed, the input list was
   // empty, or if the blink feature flag is disabled.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableScopeExtensions.
   Vector<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtensions(
       const JSONObject* object);
 
@@ -405,8 +405,6 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns |std::nullopt| if the ScopeExtension was invalid, or a
   // ScopeExtension if parsing succeeded.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableScopeExtensions.
   std::optional<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtension(
       const JSONObject* object);
 
@@ -415,8 +413,6 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns |std::nullopt| if the ScopeExtension origin was invalid, or a
   // ScopeExtension if parsing succeeded.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableScopeExtensions.
   std::optional<mojom::blink::ManifestScopeExtensionPtr>
   ParseScopeExtensionOrigin(const String& origin_string);
 
@@ -536,7 +532,9 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'permissions_policy' field of the manifest.
   // This outsources semantic parsing of the policy to the
   // PermissionsPolicyParser.
-  Vector<blink::ParsedPermissionsPolicyDeclaration> ParseIsolatedAppPermissions(
+  Vector<network::ParsedPermissionsPolicyDeclaration>
+  ParseIsolatedAppPermissions(const JSONObject* object);
+  std::optional<KURL> ParseIsolatedAppUpdateManifestUrl(
       const JSONObject* object);
   Vector<String> ParseOriginAllowlist(const JSONArray* allowlist,
                                       const String& feature);
@@ -560,13 +558,28 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::TabStripMemberVisibility ParseTabStripMemberVisibility(
       const JSONValue* json_value);
 
-  // Parses the 'scope_patterns' field of the 'tab_strip.home_tab' field
-  // of the manifest.
-  Vector<SafeUrlPattern> ParseScopePatterns(const JSONObject* object);
+  // Helper function to parse the JSON array under `object.field_name` as list
+  // of `SafeUrlPattern`, as defined in https://urlpattern.spec.whatwg.org/.
+  Vector<SafeUrlPattern> ParseUrlPatterns(const JSONObject* object,
+                                          const String& field_name);
 
-  // Helper method to parse individual scope patterns.
-  std::optional<SafeUrlPattern> ParseScopePattern(const PatternInit& init,
-                                                  const KURL& base_url);
+  // Helper function to parse an individual URL pattern. See also
+  // `ParseUrlPatterns`.
+  std::optional<SafeUrlPattern> ParseUrlPattern(const String& property_name,
+                                                const PatternInit& init,
+                                                const KURL& base_url);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseLocalizedField(const JSONObject* object, const String& field_name);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseNameLocalized(const JSONObject* object);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseShortNameLocalized(const JSONObject* object);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseDescriptionLocalized(const JSONObject* object);
 
   std::optional<PatternInit> MaybeCreatePatternInit(
       const JSONObject* pattern_object);

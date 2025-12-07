@@ -8,18 +8,28 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
-#include "chrome/common/controlled_frame/controlled_frame.h"
-#include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
+#include "build/build_config.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/extensions/webstore_override.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/user_scripts_availability.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/controlled_frame/controlled_frame.h"
+#include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -28,8 +38,13 @@ namespace {
 extensions::Feature::FeatureDelegatedAvailabilityCheckMap
 CombineAllAvailabilityCheckMaps() {
   extensions::Feature::FeatureDelegatedAvailabilityCheckMap map_list[] = {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       controlled_frame::CreateAvailabilityCheckMap(),
-      extensions::webstore_override::CreateAvailabilityCheckMap()};
+#endif
+      extensions::user_scripts_availability::CreateAvailabilityCheckMap(),
+      extensions::webstore_override::CreateAvailabilityCheckMap(),
+
+  };
   extensions::Feature::FeatureDelegatedAvailabilityCheckMap result;
 
   for (auto& map : map_list) {
@@ -38,9 +53,9 @@ CombineAllAvailabilityCheckMaps() {
     // is empty now. This is done as a DCHECK rather than a CHECK as it is meant
     // as a catch for developers adding a new delegated availability check that
     // might have overlapping keys with an existing one.
-    DCHECK(map.empty())
-        << "Overlapping feature name key in delegated availibty check map for: "
-        << map.begin()->first;
+    DCHECK(map.empty()) << "Overlapping feature name key in delegated "
+                           "availability check map for: "
+                        << map.begin()->first;
   }
   return result;
 }
@@ -58,10 +73,14 @@ void EnsureExtensionsClientInitialized() {
 
     extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
         CombineAllAvailabilityCheckMaps());
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions_client->AddAPIProvider(
         std::make_unique<controlled_frame::ControlledFrameAPIProvider>());
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     extensions_client->AddAPIProvider(
         std::make_unique<chromeos::ChromeOSSystemExtensionsAPIProvider>());

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 
 namespace autofill {
 class AutofillClient;

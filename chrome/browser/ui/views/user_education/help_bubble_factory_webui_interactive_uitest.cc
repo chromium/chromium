@@ -5,16 +5,16 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
@@ -24,17 +24,22 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/user_education/common/events.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -77,9 +82,14 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewSizeObserver, kSidePanelSize);
 
 class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  HelpBubbleFactoryWebUIInteractiveUiTest() {
-  }
+  HelpBubbleFactoryWebUIInteractiveUiTest() = default;
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+  }
 
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.
@@ -87,31 +97,49 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
         SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-        SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
-        SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
+    // TODO(https://crbug.com/359252812): On Linux and ChromeOS, sometimes
+    // the bookmarks submenu randomly loses focus causing it to close.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+        WithoutDelay(
+#endif
+            SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
+            SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                )
+#endif
+            ,
         AfterShow(kSidePanelElementId,
                   [this](ui::TrackedElement* el) {
                     side_panel_ = AsView(el);
                     ASSERT_TRUE(side_panel_);
                   }),
-        WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+        WaitForShow(kReadLaterSidePanelWebViewElementId),
         // Ensure that the Reading List side panel loads properly.
         InstrumentNonTabWebView(kReadLaterWebContentsElementId,
                                 kReadLaterSidePanelWebViewElementId),
         ObserveState(kSidePanelSize, std::ref(side_panel_)),
-        WaitForState(kSidePanelSize, testing::Ne(gfx::Size())), FlushEvents());
+        WaitForState(kSidePanelSize, testing::Ne(gfx::Size())));
   }
 
   auto OpenBookmarksSidePanel() {
-      return Steps(
-          PressButton(kToolbarAppMenuButtonElementId),
-          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-          SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
-          WaitForShow(kSidePanelElementId), FlushEvents());
+    return Steps(
+        PressButton(kToolbarAppMenuButtonElementId),
+    // TODO(https://crbug.com/359252812): On Linux and ChromeOS, sometimes
+    // the bookmarks submenu randomly loses focus causing it to close.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+        WithoutDelay(
+#endif
+            SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+            SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                )
+#endif
+            ,
+        WaitForShow(kSidePanelElementId));
   }
 
   auto ShowHelpBubble(ElementSpecifier element) {
-    return InAnyContext(std::move(
+    return InAnyContext(
         AfterShow(
             element,
             base::BindLambdaForTesting(
@@ -123,7 +151,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                     seq->FailForTesting();
                   }
                 }))
-            .SetDescription("ShowHelpBubble")));
+            .SetDescription("ShowHelpBubble"));
   }
 
   auto CloseHelpBubble() {
@@ -133,17 +161,18 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   auto CheckHandlerHasHelpBubble(ElementSpecifier anchor,
                                  bool has_help_bubble) {
     return InAnyContext(
-        std::move(CheckElement(
-                      anchor,
-                      [](ui::TrackedElement* el) {
-                        return el->AsA<user_education::TrackedElementWebUI>()
-                            ->handler()
-                            ->IsHelpBubbleShowingForTesting(el->identifier());
-                      },
-                      has_help_bubble)
-                      .SetDescription(base::StringPrintf(
-                          "CheckHandlerHasHelpBubble(%s)",
-                          has_help_bubble ? "true" : "false"))));
+        CheckElement(
+            anchor,
+            [](ui::TrackedElement* el) {
+              return el
+                  ->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
+                  ->handler()
+                  ->IsHelpBubbleShowingForTesting(el->identifier());
+            },
+            has_help_bubble)
+            .SetDescription(
+                base::StringPrintf("CheckHandlerHasHelpBubble(%s)",
+                                   base::ToString(has_help_bubble))));
   }
 
   auto Cleanup() {
@@ -170,18 +199,25 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   user_education::HelpBubbleFactoryRegistry* GetHelpBubbleFactory() {
-    auto* const controller = browser()->window()->GetFeaturePromoController();
-    return static_cast<BrowserFeaturePromoController*>(controller)
+    auto* const controller =
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+            ->GetFeaturePromoControllerForTesting();
+    return static_cast<user_education::FeaturePromoControllerCommon*>(
+               controller)
         ->bubble_factory_registry();
   }
 
   raw_ptr<views::View> side_panel_ = nullptr;
 };
 
+// TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
+// TODO(https://crbug.com/463867599): This test is flaky/failing on CI on
+// Windows, Linux, and ChromeOS.
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       ShowFloatingHelpBubble) {
+                       DISABLED_ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
+  gfx::Rect bubble_rect;
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -202,19 +238,15 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 
       // Expect the bubble to overlap the side panel slightly, as the anchor
       // element is not flush with the edge of the side panel.
-      CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-                base::BindOnce(
-                    [](ui::ElementContext context, views::View* bubble) {
-                      const gfx::Rect bubble_rect =
-                          bubble->GetWidget()->GetWindowBoundsInScreen();
-                      const gfx::Rect side_panel_rect =
-                          views::ElementTrackerViews::GetInstance()
-                              ->GetFirstMatchingView(kSidePanelElementId,
-                                                     context)
-                              ->GetBoundsInScreen();
-                      return bubble_rect.Intersects(side_panel_rect);
-                    },
-                    browser()->window()->GetElementContext())),
+      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+               [&bubble_rect](views::View* bubble) {
+                 bubble_rect = bubble->GetWidget()->GetWindowBoundsInScreen();
+               }),
+      CheckElement(kSidePanelElementId,
+                   [&bubble_rect](ui::TrackedElement* side_panel) {
+                     return bubble_rect.Intersects(
+                         side_panel->GetScreenBounds());
+                   }),
 
       CloseHelpBubble(),
 
@@ -235,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
       NavigateWebContents(kBrowserTabId,
-                          GURL("chrome://internals/user-education")),
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
 
       // Verify that the handler believes that the anchor has a help bubble.
@@ -267,12 +299,12 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
       NavigateWebContents(kBrowserTabId,
-                          GURL("chrome://internals/user-education")),
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
 
       ExecuteJsAt(kBrowserTabId, kPathToHelpBubbleCloseButton,
                   "el => el.click()"),
-      WaitForStateChange(kBrowserTabId, bubble_hidden), FlushEvents(),
+      WaitForStateChange(kBrowserTabId, bubble_hidden),
 
       // Verify that the handler no longer believes that the anchor has a help
       // bubble.
@@ -282,8 +314,16 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 }
 
 // Regression test for item (1) in crbug.com/1422875.
+// TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  DISABLED_FloatingHelpBubbleHiddenOnWebUiHidden
+#else
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  FloatingHelpBubbleHiddenOnWebUiHidden
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       FloatingHelpBubbleHiddenOnWebUiHidden) {
+                       MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -316,8 +356,14 @@ class HelpBubbleFactoryRtlWebUIInteractiveUiTest
 // This verifies that the "element bounds updated" event gets sent when the side
 // panel is resized, even if none of the elements in the side panel are resized.
 // This is a regression test for crbug.com/1425487.
+// TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResizeSidePanelSendsUpdate DISABLED_ResizeSidePanelSendsUpdate
+#else
+#define MAYBE_ResizeSidePanelSendsUpdate ResizeSidePanelSendsUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
-                       ResizeSidePanelSendsUpdate) {
+                       MAYBE_ResizeSidePanelSendsUpdate) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(
@@ -325,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
                     [](ui::InteractionSequence* seq, ui::TrackedElement* el) {
                       seq->NameElement(el, kSidePanelElementName);
                     })),
-      ShowHelpBubble(kSidePanelElementName), FlushEvents(),
+      ShowHelpBubble(kSidePanelElementName),
       WithView(kSidePanelElementId,
                [](SidePanel* side_panel) {
                  side_panel->OnResize(-50, true);

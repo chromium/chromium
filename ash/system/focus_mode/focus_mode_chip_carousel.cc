@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,8 +50,8 @@ constexpr int kFirstChipOffsetX =
 void SetupChip(views::LabelButton* chip, bool first) {
   chip->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   chip->SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedRoundedRectBorder(1, kChipHeight,
-                                           cros_tokens::kCrosSysSeparator),
+      views::CreateRoundedRectBorder(1, kChipHeight,
+                                     cros_tokens::kCrosSysSeparator),
       kChipInsets));
   // Add a border to space out chips on all chips but the first.
   chip->SetProperty(views::kMarginsKey,
@@ -63,11 +64,15 @@ void SetupChip(views::LabelButton* chip, bool first) {
   views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(4),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
-  chip->SetTooltipText(chip->GetText());
+  chip->SetTooltipText(std::u16string(chip->GetText()));
 
   views::ViewAccessibility& view_accessibility = chip->GetViewAccessibility();
-  view_accessibility.SetName(chip->GetText());
-  view_accessibility.SetRole(ax::mojom::Role::kListItem);
+  view_accessibility.SetName(std::u16string(chip->GetText()));
+  // Set the list item role with a description to let the users know that they
+  // can press this item as a button.
+  view_accessibility.SetRole(
+      ax::mojom::Role::kListItem,
+      l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
 }
 
 void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
@@ -137,7 +142,6 @@ END_METADATA
 FocusModeChipCarousel::FocusModeChipCarousel(
     ChipPressedCallback on_chip_pressed)
     : on_chip_pressed_(std::move(on_chip_pressed)) {
-  SetProperty(views::kBoxLayoutFlexKey, views::BoxLayoutFlexSpecification());
   SetBorder(views::CreateEmptyBorder(kCarouselInsets));
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetNotifyEnterExitOnChild(true);
@@ -331,7 +335,7 @@ void FocusModeChipCarousel::OnChevronPressed(bool left) {
   }
 
   // Pressing a chevron should always result in a scroll.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void FocusModeChipCarousel::ScrollToChip(views::View* chip) {

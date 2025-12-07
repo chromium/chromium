@@ -45,4 +45,4 @@ There are two exceptions:
 
 Note, //chromeos does not contain any user-facing UI code, and hence it has
 "-ui" in its DEPS. The contents of //chromeos should also not depend on
-//chrome or //content.
+//chrome.

@@ -23,7 +23,7 @@
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 
 namespace ash {
 class UserSessionManager;
@@ -53,8 +53,6 @@ class ManagedSessionService : public ash::AuthStatusConsumer,
     virtual void OnLogin(Profile* profile) {}
 
     // Occurs when a user has logged out.
-    // TODO(b/194215634):: Check if this function can be replaced by
-    // `OnSessionTerminationStarted`
     virtual void OnLogout(Profile* profile) {}
 
     // Occurs when the active user has locked the user session.

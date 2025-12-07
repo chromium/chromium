@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
+
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "components/subresource_filter/tools/indexing_tool.h"
 
@@ -24,7 +26,7 @@ const char kSwitchVersionOutput[] = "version_output";
 const char kSwitchContentVersion[] = "content_version";
 
 void PrintHelp() {
-  printf("%s\n\n", kHelpMsg);
+  std::cout << kHelpMsg << "\n\n";
 }
 
 int main(int argc, char* argv[]) {
@@ -52,8 +54,9 @@ int main(int argc, char* argv[]) {
 
   CHECK_NE(0, checksum);
 
-  if (!command_line.HasSwitch(kSwitchVersionOutput))
+  if (!command_line.HasSwitch(kSwitchVersionOutput)) {
     return 0;
+  }
 
   LOG_IF(FATAL, !command_line.HasSwitch(kSwitchContentVersion))
       << "content_version must be present if version_output is";

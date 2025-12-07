@@ -80,8 +80,7 @@ TEST_F(UiTest, CaptureToasts) {
           string_id = spec.potential_resource_string;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       browser_ui->SetCapturingState(active_capturing, background_capturing,

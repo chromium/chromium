@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] column-rule-width is as specified when column-rule-style is none or hidden
+  assert_equals: expected "10px" but got "0px"
+Harness: the test ran to completion.
+

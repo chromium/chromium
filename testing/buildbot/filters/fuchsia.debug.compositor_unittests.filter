@@ -1,13 +1,13 @@
 # https://crbug.com/1241502
--LayerWithRealCompositorTest.CompositorObservers
--LayerWithRealCompositorTest.Delegate
--LayerWithRealCompositorTest.Draw
--LayerWithRealCompositorTest.DrawAlphaBlendedPixels
--LayerWithRealCompositorTest.DrawAlphaThresholdFilterPixels
--LayerWithRealCompositorTest.DrawPixels
--LayerWithRealCompositorTest.DrawTree
--LayerWithRealCompositorTest.Hierarchy
--LayerWithRealCompositorTest.HierarchyNoTexture
--LayerWithRealCompositorTest.ModifyHierarchy
--LayerWithRealCompositorTest.Opacity
--LayerWithRealCompositorTest.SchedulePaintUpdatesMask
+-All/LayerWithRealCompositorTest.CompositorObservers/*
+-All/LayerWithRealCompositorTest.Delegate/*
+-All/LayerWithRealCompositorTest.Draw/*
+-All/LayerWithRealCompositorTest.DrawAlphaBlendedPixels/*
+-All/LayerWithRealCompositorTest.DrawAlphaThresholdFilterPixels/*
+-All/LayerWithRealCompositorTest.DrawPixels/*
+-All/LayerWithRealCompositorTest.DrawTree/*
+-All/LayerWithRealCompositorTest.Hierarchy/*
+-All/LayerWithRealCompositorTest.HierarchyNoTexture/*
+-All/LayerWithRealCompositorTest.ModifyHierarchy/*
+-All/LayerWithRealCompositorTest.Opacity/*
+-All/LayerWithRealCompositorTest.SchedulePaintUpdatesMask/*

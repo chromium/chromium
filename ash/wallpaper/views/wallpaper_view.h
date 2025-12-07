@@ -11,6 +11,8 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace aura {
@@ -51,9 +53,10 @@ class WallpaperView : public WallpaperBaseView,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // WallpaperBaseView:
   void DrawWallpaper(const gfx::ImageSkia& wallpaper,
@@ -78,7 +81,7 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
     float blur_sigma,
     bool locked,
-    WallpaperView** out_wallpaper_view);
+    raw_ptr<WallpaperView>* out_wallpaper_view);
 
 }  // namespace ash
 

@@ -1,0 +1,9 @@
+[document web] tag:#document
+++[heading] name='Image' class:headerClass id:headerID tag:h1
+++++[static] name='Image'
+++[image] name='ImageAlt' class:imageClass id:imageID tag:img
+=== Start Continuation ===
+[document web] name='changed-class' tag:#document
+++[heading] name='Image' class:newClass id:headerID tag:h1
+++++[static] name='Image'
+++[image] name='ImageAlt' class:imageClass id:imageID tag:img

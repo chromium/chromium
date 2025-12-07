@@ -28,6 +28,7 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:padding="12dp"
             android:src="@drawable/ic_arrow_back_24dp"
             android:clickable="true"
             android:focusable="true"
@@ -55,5 +56,14 @@ found in the LICENSE file.
             <!-- Menu items and headings are added programmatically here. -->
         </LinearLayout>
     </org.chromium.chrome.browser.readaloud.player.expanded.MaxHeightScrollView>
+
+    <TextView
+        android:id="@+id/readaloud_menu_footer"
+        android:text="@string/readaloud_negative_feedback_menu_disclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/readaloud_menu_title_margin_start"
+        android:layout_marginEnd="@dimen/readaloud_menu_margin_horizontal"
+        android:visibility="gone" />
 
 </org.chromium.chrome.browser.readaloud.player.expanded.Menu>

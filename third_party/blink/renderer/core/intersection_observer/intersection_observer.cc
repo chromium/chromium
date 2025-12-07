@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_delegate.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -41,18 +41,14 @@ namespace {
 // IntersectionObserver with an EventCallback.
 class IntersectionObserverDelegateImpl final
     : public IntersectionObserverDelegate {
-
  public:
   IntersectionObserverDelegateImpl(
       ExecutionContext* context,
       IntersectionObserver::EventCallback callback,
-      IntersectionObserver::DeliveryBehavior delivery_behavior,
-      bool needs_initial_observation_with_detached_target)
+      IntersectionObserver::DeliveryBehavior delivery_behavior)
       : context_(context),
         callback_(std::move(callback)),
-        delivery_behavior_(delivery_behavior),
-        needs_initial_observation_with_detached_target_(
-            needs_initial_observation_with_detached_target) {}
+        delivery_behavior_(delivery_behavior) {}
   IntersectionObserverDelegateImpl(const IntersectionObserverDelegateImpl&) =
       delete;
   IntersectionObserverDelegateImpl& operator=(
@@ -60,10 +56,6 @@ class IntersectionObserverDelegateImpl final
 
   IntersectionObserver::DeliveryBehavior GetDeliveryBehavior() const override {
     return delivery_behavior_;
-  }
-
-  bool NeedsInitialObservationWithDetachedTarget() const override {
-    return needs_initial_observation_with_detached_target_;
   }
 
   void Deliver(const HeapVector<Member<IntersectionObserverEntry>>& entries,
@@ -84,7 +76,6 @@ class IntersectionObserverDelegateImpl final
   WeakMember<ExecutionContext> context_;
   IntersectionObserver::EventCallback callback_;
   IntersectionObserver::DeliveryBehavior delivery_behavior_;
-  bool needs_initial_observation_with_detached_target_;
 };
 
 void ParseMargin(const String& margin_parameter,
@@ -101,22 +92,21 @@ void ParseMargin(const String& margin_parameter,
   // "1px 2px 3px" = top left/right bottom
   // "1px 2px 3px 4px" = top left right bottom
 
-  CSSTokenizer tokenizer(margin_parameter);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
-  token_range.ConsumeWhitespace();
-  while (token_range.Peek().GetType() != kEOFToken &&
+  CSSParserTokenStream stream(margin_parameter);
+  stream.ConsumeWhitespace();
+  while (stream.Peek().GetType() != kEOFToken &&
          !exception_state.HadException()) {
     if (margin.size() == 4) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "Extra text found at the end of " + marginName + "Margin.");
+          StrCat({"Extra text found at the end of ", marginName, "Margin."}));
       break;
     }
-    const CSSParserToken& token = token_range.ConsumeIncludingWhitespace();
+    const CSSParserToken token = stream.Peek();
     switch (token.GetType()) {
       case kPercentageToken:
         margin.push_back(Length::Percent(token.NumericValue()));
+        stream.ConsumeIncludingWhitespace();
         break;
       case kDimensionToken:
         switch (token.GetUnitType()) {
@@ -130,21 +120,23 @@ void ParseMargin(const String& margin_parameter,
           default:
             exception_state.ThrowDOMException(
                 DOMExceptionCode::kSyntaxError,
-                marginName + "Margin must be specified in pixels or percent.");
+                StrCat({marginName,
+                        "Margin must be specified in pixels or percent."}));
         }
+        stream.ConsumeIncludingWhitespace();
         break;
       default:
         exception_state.ThrowDOMException(
             DOMExceptionCode::kSyntaxError,
-            marginName + "Margin must be specified in pixels or percent.");
+            StrCat({marginName,
+                    "Margin must be specified in pixels or percent."}));
     }
   }
 }
 
-void ParseThresholds(
-    const V8UnionDoubleOrDoubleSequence* threshold_parameter,
-    Vector<float>& thresholds,
-    ExceptionState& exception_state) {
+void ParseThresholds(const V8UnionDoubleOrDoubleSequence* threshold_parameter,
+                     Vector<float>& thresholds,
+                     ExceptionState& exception_state) {
   switch (threshold_parameter->GetContentType()) {
     case V8UnionDoubleOrDoubleSequence::ContentType::kDouble:
       thresholds.push_back(
@@ -199,8 +191,7 @@ Vector<Length> NormalizeMargins(const Vector<Length>& margins) {
       normalized_margins[3] = margins[3];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return normalized_margins;
@@ -223,7 +214,7 @@ String StringifyMargin(const Vector<Length>& margin) {
     if (length.IsPercent()) {
       string_builder.Append('%');
     } else {
-      string_builder.Append("px", 2);
+      string_builder.Append(base::byte_span_from_cstring("px"));
     }
   };
 
@@ -291,12 +282,10 @@ IntersectionObserver* IntersectionObserver::Create(
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::IntersectionObserverScrollMarginEnabled()) {
-    ParseMargin(observer_init->scrollMargin(), params.scroll_margin,
-                exception_state, "scroll");
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
+  ParseMargin(observer_init->scrollMargin(), params.scroll_margin,
+              exception_state, "scroll");
+  if (exception_state.HadException()) {
+    return nullptr;
   }
 
   ParseThresholds(observer_init->threshold(), params.thresholds,
@@ -333,8 +322,7 @@ IntersectionObserver* IntersectionObserver::Create(
     Params&& params) {
   IntersectionObserverDelegateImpl* intersection_observer_delegate =
       MakeGarbageCollected<IntersectionObserverDelegateImpl>(
-          document.GetExecutionContext(), std::move(callback), params.behavior,
-          params.needs_initial_observation_with_detached_target);
+          document.GetExecutionContext(), std::move(callback), params.behavior);
   return MakeGarbageCollected<IntersectionObserver>(
       *intersection_observer_delegate, ukm_metric_id, std::move(params));
 }
@@ -357,7 +345,8 @@ IntersectionObserver::IntersectionObserver(
       track_visibility_(params.track_visibility),
       track_fraction_of_root_(params.semantics == kFractionOfRoot),
       always_report_root_bounds_(params.always_report_root_bounds),
-      use_overflow_clip_edge_(params.use_overflow_clip_edge) {
+      use_overflow_clip_edge_(params.use_overflow_clip_edge),
+      expose_occluder_id_(params.expose_occluder_id) {
   if (params.root) {
     if (params.root->IsDocumentNode()) {
       To<Document>(params.root)
@@ -385,13 +374,6 @@ bool IntersectionObserver::RootIsValid() const {
   return RootIsImplicit() || root();
 }
 
-void IntersectionObserver::InvalidateCachedRects() {
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  for (auto& observation : observations_) {
-    observation->InvalidateCachedRects();
-  }
-}
-
 void IntersectionObserver::observe(Element* target,
                                    ExceptionState& exception_state) {
   if (!RootIsValid() || !target)
@@ -404,25 +386,20 @@ void IntersectionObserver::observe(Element* target,
       MakeGarbageCollected<IntersectionObservation>(*this, *target);
   target->EnsureIntersectionObserverData().AddObservation(*observation);
   observations_.insert(observation);
-  if (root() && root()->isConnected()) {
+  if (root()) {
     root()
         ->GetDocument()
         .EnsureIntersectionObserverController()
         .AddTrackedObserver(*this);
   }
-  if (target->isConnected()) {
-    target->GetDocument()
-        .EnsureIntersectionObserverController()
-        .AddTrackedObservation(*observation);
-    if (LocalFrameView* frame_view = target->GetDocument().View()) {
-      // The IntersectionObserver spec requires that at least one observation
-      // be recorded after observe() is called, even if the frame is throttled.
-      frame_view->SetIntersectionObservationState(LocalFrameView::kRequired);
-      frame_view->ScheduleAnimation();
-    }
-  } else if (delegate_->NeedsInitialObservationWithDetachedTarget()) {
-    ComputeIntersectionsContext context;
-    observation->ComputeIntersectionImmediately(context);
+  target->GetDocument()
+      .EnsureIntersectionObserverController()
+      .AddTrackedObservation(*observation);
+  if (LocalFrameView* frame_view = target->GetDocument().View()) {
+    // The IntersectionObserver spec requires that at least one observation
+    // be recorded after observe() is called, even if the frame is throttled.
+    frame_view->SetIntersectionObservationState(LocalFrameView::kRequired);
+    frame_view->ScheduleAnimation();
   }
 }
 
@@ -439,7 +416,7 @@ void IntersectionObserver::unobserve(Element* target,
   observation->Disconnect();
   observations_.erase(observation);
   active_observations_.erase(observation);
-  if (root() && root()->isConnected() && observations_.empty()) {
+  if (root() && observations_.empty()) {
     root()
         ->GetDocument()
         .EnsureIntersectionObserverController()
@@ -452,7 +429,7 @@ void IntersectionObserver::disconnect(ExceptionState& exception_state) {
     observation->Disconnect();
   observations_.clear();
   active_observations_.clear();
-  if (root() && root()->isConnected()) {
+  if (root()) {
     root()
         ->GetDocument()
         .EnsureIntersectionObserverController()
@@ -479,37 +456,6 @@ String IntersectionObserver::scrollMargin() const {
 
 base::TimeDelta IntersectionObserver::GetEffectiveDelay() const {
   return throttle_delay_enabled ? delay_ : base::TimeDelta();
-}
-
-int64_t IntersectionObserver::ComputeIntersections(
-    unsigned flags,
-    ComputeIntersectionsContext& context) {
-  DCHECK(!RootIsImplicit());
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
-    return 0;
-
-  int64_t result = 0;
-  // If we're processing post-layout deliveries only and we're not a
-  // post-layout delivery observer, then return early. Likewise, return if we
-  // need to compute non-post-layout-delivery observations but the observer
-  // behavior is post-layout.
-  bool post_layout_delivery_only =
-      flags & IntersectionObservation::kPostLayoutDeliveryOnly;
-  bool is_post_layout_delivery_observer =
-      GetDeliveryBehavior() ==
-      IntersectionObserver::kDeliverDuringPostLayoutSteps;
-  if (post_layout_delivery_only != is_post_layout_delivery_observer) {
-    return 0;
-  }
-  // TODO(szager): Is this copy necessary?
-  HeapVector<Member<IntersectionObservation>> observations_to_process(
-      observations_);
-  for (auto& observation : observations_to_process) {
-    result +=
-        observation->ComputeIntersection(flags, gfx::Vector2dF(), context);
-  }
-  return result;
 }
 
 bool IntersectionObserver::IsInternal() const {

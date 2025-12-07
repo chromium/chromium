@@ -25,11 +25,6 @@ namespace syncer {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-//
-// |kDataTypeInfoMap| struct entries are in the same order as their definition
-// in DataType enum. When you make changes in DataType enum, don't forget to
-// update the |kDataTypeInfoMap| struct in data_type.cc and also the
-// SyncDataType histogram suffix in histograms.xml
 enum DataType {
   // Object type unknown. This may be used when:
   // a) The client received *valid* data from a data type which this version
@@ -139,10 +134,6 @@ enum DataType {
   // (Linux, Mac, Windows, ChromeOS) and Android.
   SAVED_TAB_GROUP,
 
-  // Power bookmarks are features associated with bookmarks(i.e. notes, price
-  // tracking). Their life cycle are synced with bookmarks.
-  POWER_BOOKMARK,
-
   // WebAuthn credentials, more commonly known as passkeys.
   WEBAUTHN_CREDENTIAL,
 
@@ -173,7 +164,32 @@ enum DataType {
   // standard syncable prefs.
   PLUS_ADDRESS_SETTING,
 
-  LAST_USER_DATA_TYPE = PLUS_ADDRESS_SETTING,
+  // Valuables stored in the Google Wallet.
+  // Read-only on the client.
+  AUTOFILL_VALUABLE,
+
+  // Account-local metadata for shared tab groups.
+  SHARED_TAB_GROUP_ACCOUNT_DATA,
+
+  // Comments for shared contexts.
+  SHARED_COMMENT,
+
+  // ACCOUNT_SETTING(s) forwarded from the user's account. Since the
+  // settings originate from the user account, this is not reusing any of the
+  // standard syncable prefs.
+  // Read-only on the client.
+  ACCOUNT_SETTING,
+
+  // A user thread when interacting with AI features.
+  AI_THREAD,
+
+  // Information about a contextual task.
+  CONTEXTUAL_TASK,
+
+  // Usage metadata for `AUTOFILL_VALUABLE`.
+  AUTOFILL_VALUABLE_METADATA,
+
+  LAST_USER_DATA_TYPE = AUTOFILL_VALUABLE_METADATA,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -225,9 +241,9 @@ enum class DataTypeForHistograms {
   // kDeprecatedSyncedNotifications = 20,
   kPriorityPreferences = 21,
   kDictionary = 22,
-  // kFaviconImages = 23,
-  // kFaviconTracking = 24,
-  kProxyTabs = 25,
+  // kDeprecatedFaviconImages = 23,
+  // kDeprecatedFaviconTracking = 24,
+  // kDeprecatedProxyTabs = 25,
   kSupervisedUserSettings = 26,
   // kDeprecatedSupervisedUsers = 27,
   // kDeprecatedArticles = 28,
@@ -259,7 +275,7 @@ enum class DataTypeForHistograms {
   kAutofillWalletUsage = 54,
   // kDeprecatedSegmentation = 55,
   kSavedTabGroups = 56,
-  kPowerBookmark = 57,
+  // kDeprecatedPowerBookmark = 57,
   kWebAuthnCredentials = 58,
   kIncomingPasswordSharingInvitations = 59,
   kOutgoingPasswordSharingInvitations = 60,
@@ -271,7 +287,14 @@ enum class DataTypeForHistograms {
   kProductComparison = 66,
   kCookies = 67,
   kPlusAddressSettings = 68,
-  kMaxValue = kPlusAddressSettings,
+  kAutofillValuable = 69,
+  kSharedTabGroupAccountData = 70,
+  kSharedComment = 71,
+  kAccountSetting = 72,
+  kAIThread = 73,
+  kContextualTask = 74,
+  kAutofillValuableMetadata = 75,
+  kMaxValue = kAutofillValuableMetadata,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -299,16 +322,7 @@ constexpr DataTypeSet UserTypes() {
 }
 
 // User types which are not user-controlled.
-constexpr DataTypeSet AlwaysPreferredUserTypes() {
-  return {DEVICE_INFO,
-          USER_CONSENTS,
-          PLUS_ADDRESS,
-          PLUS_ADDRESS_SETTING,
-          SECURITY_EVENTS,
-          SEND_TAB_TO_SELF,
-          SUPERVISED_USER_SETTINGS,
-          SHARING_MESSAGE};
-}
+DataTypeSet AlwaysPreferredUserTypes();
 
 // User types which are always encrypted.
 constexpr DataTypeSet AlwaysEncryptedUserTypes() {
@@ -340,7 +354,12 @@ constexpr DataTypeSet HighPriorityUserTypes() {
       // in the creation flow for a new profile. If the user has no theme in
       // their sync data, the browser offers a theme customization bubble which
       // should appear soon after opening the browser.
-      THEMES};
+      THEMES,
+      // This guarantees that sync will process updates for collaboration groups
+      // before other data types during initial sync download and during
+      // uploads, which is critical for remote clients to correctly detect the
+      // start of a passive migration.
+      COLLABORATION_GROUP};
 }
 
 // This is the subset of UserTypes() that have a *lower* priority than other
@@ -399,17 +418,18 @@ constexpr DataTypeSet SharedTypes() {
 }
 
 // Types triggering a warning when the user signs out and the types have
-// unsynced data. The warning offers the user to either save the data locally or
-// abort sign-out, depending on the platform.
+// unsynced data. The warning offers the user to proceed with sign-out deleting
+// any pending account data or abort, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      53 == GetNumDataTypes(),
+      59 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
-      "data. The warning offers the user to either save the data locally or "
-      "abort sign-out, depending on the platform");
-  return {syncer::BOOKMARKS, syncer::CONTACT_INFO, syncer::PASSWORDS,
-          syncer::READING_LIST, syncer::SAVED_TAB_GROUP};
+      "data. The warning offers the user to either proceed with sign-out "
+      "deleting any pending account data or abort, depending on the platform");
+  return {syncer::BOOKMARKS,    syncer::CONTACT_INFO,    syncer::PASSWORDS,
+          syncer::READING_LIST, syncer::SAVED_TAB_GROUP, syncer::THEMES,
+          syncer::EXTENSIONS};
 }
 
 // User types that can be encrypted, which is a subset of UserTypes() and a
@@ -445,11 +465,11 @@ DataTypeSet GetDataTypeSetFromSpecificsFieldNumberList(
 int GetSpecificsFieldNumberFromDataType(DataType data_type);
 
 // Returns a string with application lifetime that represents the name of
-// |data_type|.
+// `data_type`.
 const char* DataTypeToDebugString(DataType data_type);
 
 // Returns a string with application lifetime that is used as the histogram
-// suffix for |data_type|.
+// suffix for `data_type`.
 const char* DataTypeToHistogramSuffix(DataType data_type);
 
 // Some histograms take an integer parameter that represents a data type.
@@ -462,8 +482,15 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type);
 // time and thus can be used when persisting data.
 int DataTypeToStableIdentifier(DataType data_type);
 
-// Returns the comma-separated string representation of |data_types|.
+// This returns a string that is stable over time and thus can be used for local
+// persistence. It is guaranteed to be lowercase.
+const char* DataTypeToStableLowerCaseString(DataType data_type);
+
+// Returns the comma-separated string representation of `data_types`.
 std::string DataTypeSetToDebugString(DataTypeSet data_types);
+
+// Necessary for compatibility with EXPECT_EQ and the like.
+std::ostream& operator<<(std::ostream& out, DataType data_type);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
@@ -476,15 +503,10 @@ std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
 // not return the root entity.
 std::string DataTypeToProtocolRootTag(DataType data_type);
 
-// As opposed to DataTypeToProtocolRootTag(), this returns a string that isn't
-// exposed in the sync protocol, but that is still stable and thus can be used
-// for local persistence. It is guaranteed to be lowercase.
-const char* GetDataTypeLowerCaseRootTag(DataType data_type);
-
-// Returns true if |data_type| is a real datatype
+// Returns true if `data_type` is a real datatype
 bool IsRealDataType(DataType data_type);
 
-// Returns true if |data_type| is an act-once type. Act once types drop
+// Returns true if `data_type` is an act-once type. Act once types drop
 // entities after applying them. Drops are deletes that are not synced to other
 // clients.
 bool IsActOnceDataType(DataType data_type);

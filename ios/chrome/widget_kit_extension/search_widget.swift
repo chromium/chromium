@@ -25,14 +25,46 @@ struct SearchWidget: Widget {
   }
 }
 
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  struct SearchWidgetConfigurable: Widget {
+    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "SearchWidget"
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
+      ) { entry in
+        SearchWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME")
+      )
+      .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION"))
+      .supportedFamilies([.systemSmall])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
+    }
+  }
+#endif
+
 struct SearchWidgetEntryView: View {
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
-    SearchWidgetEntryViewTemplate(
-      destinationURL: WidgetConstants.SearchWidget.url, imageName: "widget_chrome_logo",
-      title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
-      accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
+    // The account to display was deleted (entry.deleted can only be true if
+    // IOS_ENABLE_WIDGETS_FOR_MIM is true).
+    if entry.deleted && !entry.isPreview {
+      SmallWidgetDeletedAccountView()
+    } else {
+      SearchWidgetEntryViewTemplate(
+        destinationURL: destinationURL(url: WidgetConstants.SearchWidget.url, gaia: entry.gaiaID),
+        imageName: "widget_chrome_logo",
+        title: entry.avatar != nil
+          ? "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_AVATAR_TITLE"
+          : "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
+        accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
+    }
   }
 }
 
@@ -41,45 +73,77 @@ struct SearchWidgetEntryViewTemplate: View {
   let imageName: String
   let title: LocalizedStringKey
   let accessibilityLabel: LocalizedStringKey
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
-    // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
-    // the widget as one tap target. Without the wrapping, voice over treats the content within
-    // the widget as multiple tap targets.
-    Link(destination: destinationURL) {
-      ZStack {
-        VStack(alignment: .leading, spacing: 0) {
-          ZStack {
-            RoundedRectangle(cornerRadius: 26)
-              .frame(height: 52)
-              .foregroundColor(Color("widget_search_bar_color"))
-            HStack(spacing: 0) {
-              Image(imageName)
-                .clipShape(Circle())
-                .padding(.leading, 8)
-                .unredacted()
-              Spacer()
-            }
+    ZStack {
+      VStack(alignment: .leading, spacing: 0) {
+        ZStack {
+          RoundedRectangle(cornerRadius: 26)
+            .frame(height: 52)
+            .foregroundColor(Color("widget_search_bar_color"))
+            // This is needed so that the voice over will see the widget as a button and not as
+            // an image.
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(Text(accessibilityLabel))
+          HStack(spacing: 0) {
+            Image(imageName)
+              .clipShape(Circle())
+              .padding(.leading, 8)
+              .unredacted()
+              .accessibilityHidden(true)
+            Spacer()
           }
-          .frame(minWidth: 0, maxWidth: .infinity)
-          .padding([.leading, .trailing], 11)
-          .padding(.top, 16)
-          Spacer()
+        }
+        .frame(minWidth: 0, maxWidth: .infinity)
+        .padding([.leading, .trailing], 11)
+        .padding(.top, 16)
+        Spacer()
+        HStack {
           Text(title)
             .foregroundColor(Color("widget_text_color"))
             .fontWeight(.semibold)
             .font(.subheadline)
-            .padding([.leading, .bottom, .trailing], 16)
+            .padding([.leading, .bottom], 16)
+            .accessibilityHidden(true)
+          Spacer()
+          #if IOS_ENABLE_WIDGETS_FOR_MIM
+            AvatarForSearch(entry: entry)
+          #endif
         }
       }
     }
     .widgetURL(destinationURL)
-    .accessibility(
-      label: Text(accessibilityLabel)
-    )
     .crContainerBackground(
       Color("widget_background_color")
         .unredacted())
   }
 }
+
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  struct AvatarForSearch: View {
+    var entry: ConfigureWidgetEntry
+    var body: some View {
+      if entry.isPreview {
+        Circle()
+          .foregroundColor(Color("widget_text_color"))
+          .opacity(0.2)
+          .frame(width: 25, height: 25)
+          .padding([.bottom, .trailing], 16)
+      } else if let avatar = entry.avatar,
+        let email = entry.email
+      {
+        avatar
+          .resizable()
+          .clipShape(Circle())
+          .accessibilityLabel(
+            String(localized: "IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL") + email
+          )
+          .unredacted()
+          .scaledToFill()
+          .frame(width: 25, height: 25)
+          .padding([.bottom, .trailing], 16)
+      }
+    }
+  }
+#endif

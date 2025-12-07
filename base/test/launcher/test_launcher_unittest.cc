@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -29,7 +30,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -43,6 +43,8 @@ using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::ReturnPointee;
+
+constexpr int kExcessiveBytes = 700000;
 
 TestResult GenerateTestResult(const std::string& test_name,
                               TestResult::Status status,
@@ -332,8 +334,8 @@ TEST_F(TestLauncherTest, RepeatTest) {
   command_line->AppendSwitchASCII("gtest_repeat", "2");
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .Times(2)
-      .WillRepeatedly(::testing::DoAll(OnTestResult(
-          &test_launcher, "Test.firstTest", TestResult::TEST_SUCCESS)));
+      .WillRepeatedly(OnTestResult(&test_launcher, "Test.firstTest",
+                                   TestResult::TEST_SUCCESS));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
@@ -345,12 +347,12 @@ TEST_F(TestLauncherTest, RunningMultipleIterationsUntilFailure) {
   command_line->AppendSwitchASCII("gtest_repeat", "4");
   command_line->AppendSwitch("gtest_break_on_failure");
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_SUCCESS)))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_SUCCESS)))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_FAILURE)));
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_SUCCESS))
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_SUCCESS))
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_FAILURE));
   EXPECT_FALSE(test_launcher.Run(command_line.get()));
 }
 
@@ -501,8 +503,8 @@ TEST_F(TestLauncherTest, DoesRunFilteredTests) {
                                  testing::ElementsAreArray(tests_names.cbegin(),
                                                            tests_names.cend()),
                                  _, _))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.secondTest",
-                                              TestResult::TEST_SUCCESS)));
+      .WillOnce(OnTestResult(&test_launcher, "Test.secondTest",
+                             TestResult::TEST_SUCCESS));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
@@ -572,8 +574,8 @@ TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFilter) {
                                  testing::ElementsAreArray(tests_names.cbegin(),
                                                            tests_names.cend()),
                                  _, _))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_SUCCESS)));
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_SUCCESS));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
@@ -616,7 +618,7 @@ TEST_F(TestLauncherTest, ExcessiveOutput) {
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         Milliseconds(30), std::string(500000, 'a'));
+                         Milliseconds(30), std::string(kExcessiveBytes, 'a'));
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_FALSE(test_launcher.Run(command_line.get()));
@@ -627,10 +629,11 @@ TEST_F(TestLauncherTest, OutputLimitSwitch) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
-  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit", "800000");
+  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit",
+                                  base::ToString(kExcessiveBytes + 100000));
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         Milliseconds(30), std::string(500000, 'a'));
+                         Milliseconds(30), std::string(kExcessiveBytes, 'a'));
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
@@ -978,7 +981,7 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
-      .WillOnce(DoAll(InvokeWithoutArgs([&]() {
+      .WillOnce(DoAll(InvokeWithoutArgs([&] {
                         task_environment.AdvanceClock(Milliseconds(1500));
                       }),
                       Return(true)));
@@ -1006,38 +1009,36 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
   bool done = false;
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
       .Times(10)
-      .WillRepeatedly(
-          DoAll(Invoke([&](TimeDelta timeout) {
-                  task_environment.AdvanceClock(timeout);
-                  // Append a result with "time" (duration) as 40.000s and
-                  // "timestamp" (test start) as `Now()` - 45s.
-                  AppendToFile(
-                      result_file,
-                      StrCat({"    <testcase name=\"B\" status=\"run\" "
-                              "time=\"40.000\" classname=\"A\" timestamp=\"",
-                              TimeFormatAsIso8601(Time::Now() - Seconds(45))
-                                  .c_str(),
-                              "\">\n", "    </testcase>\n"}));
-                  checks++;
-                  if (checks == 10) {
-                    AppendToFile(result_file,
-                                 "  </testsuite>\n"
-                                 "</testsuites>\n");
-                    done = true;
-                  } else {
-                    // Append a preliminary result for the next test that
-                    // started when the last test completed (i.e., `Now()` - 45s
-                    // + 40s).
-                    AppendToFile(
-                        result_file,
-                        StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
-                                "timestamp=\"",
-                                TimeFormatAsIso8601(Time::Now() - Seconds(5))
-                                    .c_str(),
-                                "\" />\n"}));
-                  }
-                }),
-                ReturnPointee(&done)));
+      .WillRepeatedly(DoAll(
+          [&](TimeDelta timeout) {
+            task_environment.AdvanceClock(timeout);
+            // Append a result with "time" (duration) as 40.000s and
+            // "timestamp" (test start) as `Now()` - 45s.
+            AppendToFile(
+                result_file,
+                StrCat({"    <testcase name=\"B\" status=\"run\" "
+                        "time=\"40.000\" classname=\"A\" timestamp=\"",
+                        TimeFormatAsIso8601(Time::Now() - Seconds(45)).c_str(),
+                        "\">\n", "    </testcase>\n"}));
+            checks++;
+            if (checks == 10) {
+              AppendToFile(result_file,
+                           "  </testsuite>\n"
+                           "</testsuites>\n");
+              done = true;
+            } else {
+              // Append a preliminary result for the next test that
+              // started when the last test completed (i.e., `Now()` - 45s
+              // + 40s).
+              AppendToFile(
+                  result_file,
+                  StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
+                          "timestamp=\"",
+                          TimeFormatAsIso8601(Time::Now() - Seconds(5)).c_str(),
+                          "\" />\n"}));
+            }
+          },
+          ReturnPointee(&done)));
 
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
   // The first check occurs 45s after the batch starts, so the sequence of
@@ -1094,13 +1095,14 @@ TEST_F(ResultWatcherTest, RetryIncompleteResultRead) {
   bool done = false;
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
       .Times(5)
-      .WillRepeatedly(DoAll(Invoke([&](TimeDelta timeout) {
-                              task_environment.AdvanceClock(timeout);
-                              // Don't bother writing the rest of the file when
-                              // this test completes.
-                              done = ++attempts >= 5;
-                            }),
-                            ReturnPointee(&done)));
+      .WillRepeatedly(DoAll(
+          [&](TimeDelta timeout) {
+            task_environment.AdvanceClock(timeout);
+            // Don't bother writing the rest of the file when
+            // this test completes.
+            done = ++attempts >= 5;
+          },
+          ReturnPointee(&done)));
 
   Time start = Time::Now();
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
@@ -1360,8 +1362,9 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
 // be launched explicitly by RunMockLeakProcessTest
 
 MULTIPROCESS_TEST_MAIN(LeakChildProcess) {
-  while (true)
+  while (true) {
     PlatformThread::Sleep(base::Seconds(1));
+  }
 }
 
 TEST(LeakedChildProcessTest, DISABLED_LeakChildProcess) {
@@ -1520,15 +1523,15 @@ void MatchesFatalMessagesTest() {
 // retain during truncation.
 TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesTest) {
   logging::ScopedLoggingSettings scoped_logging_settings;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_SYSLOG);
 #endif
   MatchesFatalMessagesTest();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Validates TestSnippetFocused correctly identifies fatal messages to
-// retain during truncation, for ChromeOS Ash.
+// retain during truncation, for ChromeOS.
 TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesCrosAshTest) {
   logging::ScopedLoggingSettings scoped_logging_settings;
   scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_CHROME);
@@ -1605,18 +1608,18 @@ TEST(TestLauncherTools, TruncateSnippetFocusedTest) {
       "libva error: va_getDriverName() failed with unknown libva error,driver"
       "_name=(null)\n"
       "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
-      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "] Check failed: message->routing_id() != IPC::mojom::kRoutingIdControl "
       "(2147483647 vs. 2147483647)\n";
-  const std::string result_three = TruncateSnippetFocused(snippet_three, 300);
+  const std::string result_three = TruncateSnippetFocused(snippet_three, 310);
   EXPECT_EQ(
       result_three,
       "[ RUN      ] All/PDFExtensionAccessibilityTreeDumpTest.Hi\n"
       "<truncated (432 bytes)>\n"
       "Name() failed with unknown libva error,driver_name=(null)\n"
       "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
-      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "] Check failed: message->routing_id() != IPC::mojom::kRoutingIdControl "
       "(2147483647 vs. 2147483647)\n");
-  EXPECT_EQ(result_three.length(), 300UL);
+  EXPECT_EQ(result_three.length(), 310UL);
 
   // Test where FATAL message does not appear.
   const std::string snippet_four =

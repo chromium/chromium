@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 
 void AddOrganizationDetailsToQualityOrganization(
@@ -26,10 +25,6 @@ void AddOrganizationDetailsToQualityOrganization(
         optimization_guide::proto::
             TabOrganizationQuality_Organization_Choice_NOT_USED);
     return;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
-    quality_organization->set_user_feedback(organization->feedback());
   }
 
   switch (organization->choice()) {
@@ -66,10 +61,7 @@ void AddSessionDetailsToQuality(
     optimization_guide::proto::TabOrganizationQuality* quality,
     const TabOrganizationSession* session) {
   CHECK(session && session->request() && session->request()->response());
-
-  if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
-    quality->set_user_feedback(session->feedback());
-  }
+  quality->set_user_feedback(session->feedback());
 
   for (const auto& response_organization :
        session->request()->response()->organizations) {

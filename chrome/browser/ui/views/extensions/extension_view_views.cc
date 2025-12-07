@@ -21,12 +21,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/widget/widget.h"
 
-ExtensionViewViews::ExtensionViewViews(extensions::ExtensionViewHost* host)
-    : views::WebView(host->GetBrowser() ? host->GetBrowser()->profile()
-                                        : nullptr),
-      host_(host) {
+ExtensionViewViews::ExtensionViewViews(Profile* profile,
+                                       extensions::ExtensionViewHost* host)
+    : views::WebView(profile), host_(host) {
   web_contents_attached_subscription_ =
       AddWebContentsAttachedCallback(base::BindRepeating(
           &ExtensionViewViews::OnWebContentsAttached, base::Unretained(this)));
@@ -39,9 +39,7 @@ ExtensionViewViews::~ExtensionViewViews() {
     parent()->RemoveChildView(this);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnViewDestroying();
-  }
+  observers_.Notify(&Observer::OnViewDestroying);
 }
 
 void ExtensionViewViews::Init() {
@@ -69,10 +67,11 @@ void ExtensionViewViews::VisibilityChanged(View* starting_from,
     content::RenderWidgetHostView* host_view =
         host_->main_frame_host()->GetView();
     if (host_view) {
-      if (is_visible)
+      if (is_visible) {
         host_view->Show();
-      else
+      } else {
         host_view->Hide();
+      }
     }
   }
 }
@@ -82,17 +81,18 @@ gfx::Size ExtensionViewViews::GetMinimumSize() const {
 }
 
 void ExtensionViewViews::SetMinimumSize(const gfx::Size& minimum_size) {
-  if (minimum_size_ && minimum_size_.value() == minimum_size)
+  if (minimum_size_ && minimum_size_.value() == minimum_size) {
     return;
+  }
   minimum_size_ = minimum_size;
   OnPropertyChanged(&minimum_size_,
-                    views::kPropertyEffectsPreferredSizeChanged);
+                    views::PropertyEffects::kPreferredSizeChanged);
 }
 
 void ExtensionViewViews::SetContainer(
     ExtensionViewViews::Container* container) {
   container_ = container;
-  OnPropertyChanged(&container_, views::kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&container_, views::PropertyEffects::kPreferredSizeChanged);
 }
 
 ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {
@@ -141,8 +141,9 @@ void ExtensionViewViews::OnLoaded() {
 
   // ExtensionPopup delegates showing the view to OnLoaded(). ExtensionDialog
   // handles visibility directly.
-  if (GetVisible())
+  if (GetVisible()) {
     return;
+  }
 
   SetVisible(true);
   ResizeDueToAutoResize(web_contents(), pending_preferred_size_);

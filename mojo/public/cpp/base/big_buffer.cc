@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/base/big_buffer.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace mojo_base {
 
@@ -68,25 +67,11 @@ void TryCreateSharedMemory(
 
 }  // namespace
 
-// static
-constexpr size_t BigBuffer::kMaxInlineBytes;
-
-BigBuffer::BigBuffer() : storage_type_(StorageType::kBytes) {}
-
-BigBuffer::BigBuffer(BigBuffer&& other)
-    : storage_type_(other.storage_type_),
-      bytes_(std::move(other.bytes_)),
-      shared_memory_(std::move(other.shared_memory_)) {
-  // Make sure |other| looks empty.
-  other.storage_type_ = StorageType::kInvalidBuffer;
-}
+BigBuffer::BigBuffer() = default;
 
 BigBuffer::BigBuffer(base::span<const uint8_t> data) {
   *this = BigBufferView::ToBigBuffer(BigBufferView(data));
 }
-
-BigBuffer::BigBuffer(const std::vector<uint8_t>& data)
-    : BigBuffer(base::make_span(data)) {}
 
 BigBuffer::BigBuffer(internal::BigBufferSharedMemoryRegion shared_memory)
     : storage_type_(StorageType::kSharedMemory),
@@ -101,23 +86,26 @@ BigBuffer::BigBuffer(size_t size) {
   }
 }
 
-BigBuffer::~BigBuffer() = default;
+BigBuffer::BigBuffer(BigBuffer&& other)
+    // Make sure |other| looks empty.
+    : storage_type_(
+          std::exchange(other.storage_type_, StorageType::kInvalidBuffer)),
+      bytes_(std::move(other.bytes_)),
+      shared_memory_(std::move(other.shared_memory_)) {}
 
 BigBuffer& BigBuffer::operator=(BigBuffer&& other) {
-  storage_type_ = other.storage_type_;
+  // Make sure |other| looks empty.
+  storage_type_ =
+      std::exchange(other.storage_type_, StorageType::kInvalidBuffer);
   bytes_ = std::move(other.bytes_);
   shared_memory_ = std::move(other.shared_memory_);
-  // Make sure |other| looks empty.
-  other.storage_type_ = StorageType::kInvalidBuffer;
   return *this;
 }
 
+BigBuffer::~BigBuffer() = default;
+
 BigBuffer BigBuffer::Clone() const {
   return BigBuffer(base::span(*this));
-}
-
-uint8_t* BigBuffer::data() {
-  return const_cast<uint8_t*>(const_cast<const BigBuffer*>(this)->data());
 }
 
 const uint8_t* BigBuffer::data() const {
@@ -133,8 +121,7 @@ const uint8_t* BigBuffer::data() const {
       // consumer is allowed to dereference this when |size()| is zero anyway.
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -147,9 +134,14 @@ size_t BigBuffer::size() const {
     case StorageType::kInvalidBuffer:
       return 0;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
+}
+
+void BigBuffer::WriteIntoTrace(perfetto::TracedValue context) const {
+  // Don't write the data, otherwise traces become enormous, and crash the UI.
+  auto dict = std::move(context).WriteDictionary();
+  perfetto::WriteIntoTracedValue(dict.AddItem("size"), size());
 }
 
 BigBufferView::BigBufferView() = default;
@@ -160,7 +152,7 @@ BigBufferView::BigBufferView(base::span<const uint8_t> bytes) {
   TryCreateSharedMemory(bytes.size(), &storage_type_, &shared_memory_);
   if (storage_type_ == BigBuffer::StorageType::kSharedMemory) {
     DCHECK(shared_memory_->memory());
-    base::ranges::copy(bytes, static_cast<uint8_t*>(shared_memory_->memory()));
+    std::ranges::copy(bytes, static_cast<uint8_t*>(shared_memory_->memory()));
     return;
   }
   if (storage_type_ == BigBuffer::StorageType::kBytes) {
@@ -194,9 +186,10 @@ base::span<const uint8_t> BigBufferView::data() const {
     return bytes_;
   } else if (storage_type_ == BigBuffer::StorageType::kSharedMemory) {
     DCHECK(shared_memory_.has_value());
-    return base::make_span(static_cast<const uint8_t*>(const_cast<const void*>(
-                               shared_memory_->memory())),
-                           shared_memory_->size());
+    return UNSAFE_TODO(
+        base::span(static_cast<const uint8_t*>(
+                       const_cast<const void*>(shared_memory_->memory())),
+                   shared_memory_->size()));
   }
 
   return base::span<const uint8_t>();

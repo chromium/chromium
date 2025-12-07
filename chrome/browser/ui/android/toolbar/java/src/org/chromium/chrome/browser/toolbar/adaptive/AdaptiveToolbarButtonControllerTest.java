@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -18,6 +19,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -27,10 +29,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -45,15 +49,15 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider.ButtonDataObserver;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.List;
@@ -64,12 +68,14 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarButtonControllerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
     @Mock private ButtonDataProvider mShareButtonController;
     @Mock private ButtonDataProvider mVoiceToolbarButtonController;
     @Mock private ButtonDataProvider mNewTabButtonController;
     @Mock private ButtonDataProvider mPriceTrackingButtonController;
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private ButtonDataProvider mReaderModeButtonController;
+    @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
@@ -77,13 +83,12 @@ public class AdaptiveToolbarButtonControllerTest {
 
     private ButtonDataImpl mButtonData;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private AdaptiveToolbarBehavior mToolbarBehavior;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         mButtonData =
                 new ButtonDataImpl(
                         /* canShow= */ true,
@@ -94,11 +99,13 @@ public class AdaptiveToolbarButtonControllerTest {
                         /* iphCommandBuilder= */ null,
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* tooltipTextResId= */ Resources.ID_NULL);
         mConfiguration.screenWidthDp = 420;
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         mProfileSupplier = new ObservableSupplierImpl<>();
+        mToolbarBehavior =
+                AdaptiveToolbarBehavior.getDefaultBehavior(
+                        Robolectric.setupActivity(Activity.class));
     }
 
     @After
@@ -125,6 +132,42 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(
+                mNewTabButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
+    public void testDynamicAction_readerModeFallbackToNewTab() {
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        verify(mActivityLifecycleDispatcher).register(adaptiveToolbarButtonController);
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        mProfileSupplier.set(mProfile);
+
+        verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(
+                mNewTabButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.READER_MODE, mReaderModeButtonController);
+        adaptiveToolbarButtonController.showDynamicAction(AdaptiveToolbarButtonVariant.READER_MODE);
+        Assert.assertEquals(
+                mReaderModeButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        // Simulate the case the reader mode dynamic action times out. This should flip the button
+        // back to the static new tab button.
+        adaptiveToolbarButtonController.buttonDataChanged(false);
         Assert.assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
@@ -235,8 +278,8 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
-                        mAndroidPermissionDelegate,
-                        ChromeSharedPreferences.getInstance());
+                        mToolbarBehavior,
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         mProfileSupplier.set(mProfile);
@@ -253,8 +296,9 @@ public class AdaptiveToolbarButtonControllerTest {
         longClickListener.onLongClick(view);
         adaptiveToolbarButtonController.destroy();
 
-        verify(mSettingsLauncher)
-                .launchSettingsActivity(activity, AdaptiveToolbarSettingsFragment.class);
+        verify(mSettingsNavigation)
+                .startSettings(
+                        eq(activity), eq(AdaptiveToolbarSettingsFragment.class), any(Bundle.class));
     }
 
     @Test
@@ -286,8 +330,8 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
-                        mAndroidPermissionDelegate,
-                        ChromeSharedPreferences.getInstance());
+                        mToolbarBehavior,
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
@@ -298,8 +342,6 @@ public class AdaptiveToolbarButtonControllerTest {
         mButtonData.setEnabled(true);
         mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         when(mPriceTrackingButtonController.get(any())).thenReturn(mButtonData);
-        View view = mock(View.class);
-        when(view.getContext()).thenReturn(activity);
 
         adaptiveToolbarButtonController.showDynamicAction(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING);
@@ -447,8 +489,8 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         mock(AdaptiveButtonActionMenuCoordinator.class),
-                        mAndroidPermissionDelegate,
-                        ChromeSharedPreferences.getInstance());
+                        mToolbarBehavior,
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
@@ -469,6 +511,6 @@ public class AdaptiveToolbarButtonControllerTest {
                 variant,
                 /* actionChipLabelResId= */ 0,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showHoverHighlight= */ false);
+                /* hasErrorBadge= */ false);
     }
 }

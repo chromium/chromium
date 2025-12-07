@@ -7,9 +7,7 @@
 <script src="/css/support/parsing-testcommon.js"></script>
 
 <script>
-// anchor-size() can only be used in sizing properties
-test_invalid_value('margin-top', 'anchor-size(--foo width)');
-test_invalid_value('top', 'anchor-size(--foo width)');
+// anchor-size() can only be used in properties accepted in `@position-try`.
 test_invalid_value('font-size', 'anchor-size(--foo width)');
 
 // Invalid parameter format
@@ -18,6 +16,8 @@ test_invalid_value('width', 'anchor-size(--foo width,)');
 test_invalid_value('width', 'anchor-size(--foo width height)');
 test_invalid_value('width', 'anchor-size(--foo width, 10px 20%)');
 test_invalid_value('width', 'anchor-size(--foo width, 10px, 20%)');
+test_invalid_value('width', 'anchor-size(--foo,)');
+test_invalid_value('width', 'anchor-size(, 10px)');
 
 // Anchor name must be a dashed ident
 test_invalid_value('width', 'anchor-size(foo width)');
@@ -39,4 +39,7 @@ test_invalid_value('width', 'anchor-size(--foo width, anchor(--bar top))');
 test_invalid_value('width', 'calc(anchor-size(foo width) + 10px + 10%)');
 test_invalid_value('width', 'calc(10px + 100 * anchor-size(--foo width, anchor-size(bar bottom)))');
 test_invalid_value('width', 'min(anchor-size(--foo width), anchor-size(--bar height), anchor(--baz top))');
+
+// Invalid unit anchor size fallback value in calc tree
+test_invalid_value('top', 'calc(anchor-size(--foo width, 1) + 1px)');
 </script>

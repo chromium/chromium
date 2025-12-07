@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -14,14 +15,11 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -29,10 +27,14 @@
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -42,6 +44,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,9 +58,9 @@ using ::testing::Ne;
 // Create fake test users in order to test different owner and secondary user
 // consent flows.
 constexpr char kTestUser1[] = "test-user1@gmail.com";
-constexpr char kTestUser1GaiaId[] = "1111111111";
+constexpr GaiaId::Literal kTestUser1GaiaId("1111111111");
 constexpr char kTestUser2[] = "test-user2@gmail.com";
-constexpr char kTestUser2GaiaId[] = "2222222222";
+constexpr GaiaId::Literal kTestUser2GaiaId("2222222222");
 
 }  // namespace
 
@@ -123,8 +126,10 @@ class ChromeOSPerUserRegularUserTest
     user_consent_ = GetParam().second;
 
     // Set the owner parameter.
-    test_cros_settings_.device_settings()->SetBoolean(ash::kStatsReportingPref,
-                                                      owner_consent_);
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_metrics_enabled()->set_metrics_enabled(
+        owner_consent_);
+    updater.Commit();
 
     // Establish ownership of the device.
     ash::OwnerSettingsServiceAshFactory::GetInstance()
@@ -135,7 +140,6 @@ class ChromeOSPerUserRegularUserTest
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  ash::ScopedTestingCrosSettings test_cros_settings_;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
@@ -206,9 +210,16 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   auto* metrics_service = g_browser_process->metrics_service();
   MetricsLogStore* log_store = metrics_service->LogStoreForTest();
 
-  // Device consent should be false if device is not owned.
-  EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
-  EXPECT_FALSE(GetLocalStateMetricsConsent());
+  if (ash::features::IsOobePreConsentMetricsEnabled()) {
+    // Consent is set to true for pre-consent during OOBE.
+    EXPECT_TRUE(ash::StatsReportingController::Get()->IsEnabled());
+    EXPECT_TRUE(GetLocalStateMetricsConsent());
+  } else {
+    // Device consent should be false if device is not owned.
+    EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
+    EXPECT_FALSE(GetLocalStateMetricsConsent());
+  }
+
 
   bool guest_consent = GetParam();
   ChangeUserMetricsConsent(guest_consent);
@@ -219,7 +230,12 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   // Once consent is set for the first time, log store should be set
   // appropriately. Log store should be the inverse of the first consent since
   // consent means that log store used should be local state.
-  EXPECT_THAT(GetLocalStateMetricsConsent(), Eq(guest_consent));
+  // Checks active user profile as current user is the guest.
+  EXPECT_EQ(g_browser_process->profile_manager()
+                ->GetActiveUserProfile()
+                ->GetPrefs()
+                ->GetBoolean(prefs::kMetricsUserConsent),
+            guest_consent);
 
   // Secondary users always set ephemeral partition.
   EXPECT_TRUE(log_store->has_alternate_ongoing_log_store());
@@ -227,9 +243,15 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   // Guests should have a user id if guest consent is set.
   EXPECT_EQ(metrics_service->GetCurrentUserId().has_value(), guest_consent);
 
-  // Device settings consent should remain disabled since this is a guest
-  // session.
-  EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
+  if (ash::features::IsOobePreConsentMetricsEnabled()) {
+    // Device settings consent should remain enabled since this is a guest
+    // session.
+    EXPECT_TRUE(ash::StatsReportingController::Get()->IsEnabled());
+  } else {
+    // Device settings consent should remain disabled since this is a guest
+    // session.
+    EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(MetricsConsentForGuestWithNoOwner,
@@ -296,8 +318,13 @@ IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
 
   base::RunLoop().RunUntilIdle();
 
-  // Device owner has not consented to reporting in OOBE flow yet.
-  EXPECT_FALSE(GetLocalStateMetricsConsent());
+  if (ash::features::IsOobePreConsentMetricsEnabled()) {
+    // Consent is set to true for pre-consent during OOBE.
+    EXPECT_TRUE(GetLocalStateMetricsConsent());
+  } else {
+    // Device owner has not consented to reporting in OOBE flow yet.
+    EXPECT_FALSE(GetLocalStateMetricsConsent());
+  }
 
   // Device owner accepted consent.
   ash::test::TapConsolidatedConsentAccept();
@@ -354,8 +381,13 @@ IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
   login_manager_mixin_.LoginAsNewRegularUser(context);
   ash::OobeScreenExitWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 
-  // Device owner has not consented to reporting in OOBE flow yet.
-  EXPECT_FALSE(GetLocalStateMetricsConsent());
+  if (ash::features::IsOobePreConsentMetricsEnabled()) {
+    // Consent is set to true for pre-consent during OOBE.
+    EXPECT_TRUE(GetLocalStateMetricsConsent());
+  } else {
+    // Device owner has not consented to reporting in OOBE flow yet.
+    EXPECT_FALSE(GetLocalStateMetricsConsent());
+  }
 
   ash::test::WaitForConsolidatedConsentScreen();
   ash::test::TapConsolidatedConsentAccept();

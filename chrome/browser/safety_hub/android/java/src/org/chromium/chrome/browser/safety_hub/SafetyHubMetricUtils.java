@@ -9,12 +9,17 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.StringJoiner;
 
 /** Helper utils to log UMA histograms for Safety Hub. */
+@NullMarked
 public class SafetyHubMetricUtils {
     @VisibleForTesting
     public static final String EXTERNAL_INTERACTIONS_HISTOGRAM_NAME =
@@ -22,7 +27,7 @@ public class SafetyHubMetricUtils {
 
     @VisibleForTesting
     public static final String PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME =
-            "Settings.SafetyCheck.UnusedSitePermissionsModule.Interactions";
+            "Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions";
 
     @VisibleForTesting
     public static final String NOTIFICATIONS_INTERACTIONS_HISTOGRAM_NAME =
@@ -33,8 +38,11 @@ public class SafetyHubMetricUtils {
             "Settings.SafetyHub.Dashboard.Interactions";
 
     @VisibleForTesting
-    public static final String MODULE_STATE_HISTOGRAM_NAME =
-            "Settings.SafetyHub.Dashboard.Interactions";
+    public static final String MODULE_STATE_HISTOGRAM_NAME = "Settings.SafetyHub";
+
+    @VisibleForTesting
+    public static final String ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME =
+            "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions";
 
     /**
      * Interactions on surfaces outside of the Safety Hub settings pages. These can be in the Magic
@@ -45,6 +53,7 @@ public class SafetyHubMetricUtils {
         ExternalInteractions.OPEN_FROM_SETTINGS_PAGE,
         ExternalInteractions.OPEN_FROM_MAGIC_STACK,
         ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK,
+        ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK,
         ExternalInteractions.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -52,7 +61,8 @@ public class SafetyHubMetricUtils {
         int OPEN_FROM_SETTINGS_PAGE = 0;
         int OPEN_FROM_MAGIC_STACK = 1;
         int OPEN_SAFE_BROWSING_FROM_MAGIC_STACK = 2;
-        int MAX_VALUE = OPEN_SAFE_BROWSING_FROM_MAGIC_STACK;
+        int OPEN_GPM_FROM_MAGIC_STACK = 3;
+        int MAX_VALUE = OPEN_GPM_FROM_MAGIC_STACK;
     }
 
     /**
@@ -61,7 +71,9 @@ public class SafetyHubMetricUtils {
      */
     @StringDef({
         DashboardModuleType.UPDATE_CHECK,
-        DashboardModuleType.PASSWORDS,
+        DashboardModuleType.ACCOUNT_PASSWORDS,
+        DashboardModuleType.LOCAL_PASSWORDS,
+        DashboardModuleType.UNIFIED_PASSWORDS,
         DashboardModuleType.SAFE_BROWSING,
         DashboardModuleType.REVOKED_PERMISSIONS,
         DashboardModuleType.NOTIFICATION_REVIEW,
@@ -70,7 +82,9 @@ public class SafetyHubMetricUtils {
     @Retention(RetentionPolicy.SOURCE)
     @interface DashboardModuleType {
         String UPDATE_CHECK = "UpdateCheck";
-        String PASSWORDS = "Passwords";
+        String ACCOUNT_PASSWORDS = "AccountPasswords";
+        String LOCAL_PASSWORDS = "LocalPasswords";
+        String UNIFIED_PASSWORDS = "UnifiedPasswords";
         String SAFE_BROWSING = "SafeBrowsing";
         String REVOKED_PERMISSIONS = "RevokedPermissions";
         String NOTIFICATION_REVIEW = "NotificationReview";
@@ -180,13 +194,72 @@ public class SafetyHubMetricUtils {
         int MAX_VALUE = SHOW_SIGN_IN_PROMO;
     }
 
+    /**
+     * State for a Safety Hub module. Must be kept in sync with SafetyHubModuleState in
+     * settings/enums.xml.
+     */
+    @IntDef({
+        ModuleStateEnum.WARNING,
+        ModuleStateEnum.UNAVAILABLE,
+        ModuleStateEnum.INFO,
+        ModuleStateEnum.SAFE,
+        ModuleStateEnum.LOADING
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ModuleStateEnum {
+        int WARNING = 0;
+        int UNAVAILABLE = 1;
+        int INFO = 2;
+        int SAFE = 3;
+        int LOADING = 4;
+        int MAX_VALUE = LOADING;
+    }
+
+    public static String getDashboardModuleTypeForModuleOption(@ModuleOption int option) {
+        switch (option) {
+            case ModuleOption.UPDATE_CHECK:
+                return DashboardModuleType.UPDATE_CHECK;
+            case ModuleOption.ACCOUNT_PASSWORDS:
+                return DashboardModuleType.ACCOUNT_PASSWORDS;
+            case ModuleOption.LOCAL_PASSWORDS:
+                return DashboardModuleType.LOCAL_PASSWORDS;
+            case ModuleOption.UNIFIED_PASSWORDS:
+                return DashboardModuleType.UNIFIED_PASSWORDS;
+            case ModuleOption.SAFE_BROWSING:
+                return DashboardModuleType.SAFE_BROWSING;
+            case ModuleOption.UNUSED_PERMISSIONS:
+                return DashboardModuleType.REVOKED_PERMISSIONS;
+            case ModuleOption.NOTIFICATION_REVIEW:
+                return DashboardModuleType.NOTIFICATION_REVIEW;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     public static void recordExternalInteractions(@ExternalInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 EXTERNAL_INTERACTIONS_HISTOGRAM_NAME, value, ExternalInteractions.MAX_VALUE);
     }
 
+    static @ModuleStateEnum int getModuleStateEnum(@ModuleState int state) {
+        switch (state) {
+            case ModuleState.WARNING:
+                return ModuleStateEnum.WARNING;
+            case ModuleState.UNAVAILABLE:
+                return ModuleStateEnum.UNAVAILABLE;
+            case ModuleState.INFO:
+                return ModuleStateEnum.INFO;
+            case ModuleState.SAFE:
+                return ModuleStateEnum.SAFE;
+            case ModuleState.LOADING:
+                return ModuleStateEnum.LOADING;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     static void recordModuleState(
-            @SafetyHubModuleProperties.ModuleState int state,
+            @ModuleState int state,
             @DashboardModuleType String moduleType,
             @LifecycleEvent String lifecycleEvent) {
         StringJoiner joiner = new StringJoiner(".");
@@ -196,7 +269,7 @@ public class SafetyHubMetricUtils {
         String histogramName = joiner.toString();
 
         RecordHistogram.recordEnumeratedHistogram(
-                histogramName, state, SafetyHubModuleProperties.ModuleState.MAX_VALUE);
+                histogramName, getModuleStateEnum(state), ModuleStateEnum.MAX_VALUE);
     }
 
     static void recordRevokedPermissionsInteraction(@PermissionsModuleInteractions int value) {
@@ -216,5 +289,26 @@ public class SafetyHubMetricUtils {
     static void recordDashboardInteractions(@DashboardInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 DASHBOARD_INTERACTIONS_HISTOGRAM_NAME, value, DashboardInteractions.MAX_VALUE);
+    }
+
+    static void maybeRecordAbusiveNotificationRevokedInteraction(
+            PermissionsData @Nullable [] permissionsDataList,
+            @PermissionsModuleInteractions int value) {
+        if (permissionsDataList == null) return;
+
+        // If any of the `PermissionsData` objects include notifications, log the histogram once.
+        for (PermissionsData permissionsData : permissionsDataList) {
+            switch (permissionsData.getRevocationType()) {
+                case PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS:
+                case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS:
+                case PermissionsRevocationType.SUSPICIOUS_NOTIFICATION_PERMISSIONS:
+                case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_SUSPICIOUS_NOTIFICATIONS:
+                    RecordHistogram.recordEnumeratedHistogram(
+                            ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME,
+                            value,
+                            PermissionsModuleInteractions.MAX_VALUE);
+                    return;
+            }
+        }
     }
 }

@@ -1,8 +1,4 @@
-<style
-<if expr="chromeos_ash">
-  include="cros-color-overrides"
-</if>
->
+<style>
   :host {
     display: inline-flex;
   }
@@ -12,7 +8,7 @@
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
   #labels[disabled] {
     color: var(--google-grey-400);
   }
@@ -24,7 +20,7 @@
   }
 </if>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
   #labels[disabled] {
     color: var(--cros-sys-disabled);
   }

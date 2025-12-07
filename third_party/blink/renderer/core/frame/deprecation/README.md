@@ -12,6 +12,8 @@ Follow the steps below to dispatch alerts via the
 This should be named `kFeatureName` and placed at the bottom of the file.
 If you have an existing `WebFeature` that can be used instead.
 
+This step should be skipped for deprecations only reported via the browser process.
+
 ## (2) [deprecation.json5](/third_party/blink/renderer/core/frame/deprecation/deprecation.json5)
 
 Add a new dictionary to `data` like follows:
@@ -27,12 +29,14 @@ Add a new dictionary to `data` like follows:
   milestone: 123,
 },
 ```
+
 Both `chrome_status_feature` and `milestone` are optional.
-More than one `web_features` can be added if needed.
+
+At least one `web_features` must be listed, unless an exemption for browser process only reporting is added via [`EXEMPTED_FROM_RENDERER_GENERATION`](/third_party/blink/renderer/core/frame/deprecation/PRESUBMIT.py).
 
 ## (3) Count the deprecation
 
-Pick one (or both if needed) of the following methods.
+Pick one (or all if needed) of the following methods.
 
 ### (3a) Call `Deprecation::CountDeprecation`
 
@@ -51,6 +55,10 @@ The [`DeprecateAs`](https://chromium.googlesource.com/chromium/src/+/refs/heads/
 [DeprecateAs=FeatureName] void myDeprecatedFunction();
 ```
 
+### (3c) Browser Process Reporting
+
+Add the type you need to [`DeprecationIssueType`](/third_party/blink/public/mojom/devtools/inspector_issue.mojom) and [`DeprecationIssueTypeToProtocol`](/content/browser/devtools/devtools_instrumentation.cc), then report the issue by building an `InspectorIssueInfo` and passing it to `RenderFrameHost::ReportInspectorIssue` as this [example](https://chromium-review.googlesource.com/c/chromium/src/+/7165867) does.
+
 ## (4) Test
 
 Please do not skip this step! Examples can be found in:
@@ -61,50 +69,32 @@ Tests in this folder can be run like:
 third_party/blink/tools/run_web_tests.py http/tests/inspector-protocol/issues
 ```
 
+For deprecations that require a c++ browsertest to trigger, see this [example](https://chromium-review.googlesource.com/c/chromium/src/+/7165867).
+
 ## (5) Merge steps 1-4 in a `chromium/src` CL
 
 Please tag deprecation-devtool-issues@chromium.org for review.
 
-## (6) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
+## (6) Wait for automatic roll dependencies from `chromium/src` to `devtools/devtools-frontend`
 
-[Check out](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/get_the_code.md)
-`devtools/devtools-frontend` on the same dev machine where you have `chromium/src` checked out.
+Roll CLs are created automatically by an infra bot and then manually reviewed by
+the DevTools waterfall gardener rotation.
 
-Be sure your local `chromium/src` tree is up to date and includes the patch from (5).
+You can find roll CLs [in Gerrit](https://chromium-review.googlesource.com/q/owner:devtools-ci-autoroll-builder@chops-service-accounts.iam.gserviceaccount.com)
+with the subject line "Roll browser-protocol".
 
-Make sure your `devtools/devtools-frontend` is similarly up to date, and check out a new branch:
-```
-cd ~/devtools/devtools-frontend
-git rebase-update
-gclient sync
-git new-branch my-new-branch-name
-```
+## (7) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
 
-Now run (adjusting directories as needed):
-```
-./scripts/deps/roll_deps.py ~/chromium/src ~/devtools/devtools-frontend
-npm run generate-protocol-resources
-```
-This pushes the change from (5) into `devtools/devtools-frontend` so you can use it in (9).
-Note that often this will generate a change list including many things that aren't related
-to your CL from (5), which is ok.
+This will be done automatically within a few hours, you should see the roll CL
+from (6) in `chromium/src/third_party/devtools-frontend`.
 
-## (7) Merge step 6 in a `devtools/devtools-frontend` CL
-
-Please tag deprecation-devtool-issues@chromium.org for review.
-
-## (8) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
-
-This will be done automatically within a few hours, you should see your changes from (7) in
-`chromium/src/third_party/devtools-frontend`.
-
-## (9) Build Chrome from tip-of-trunk
+## (8) Build Chrome from tip-of-trunk
 
 Verify everything is working as expected.
 If something is broken and you can't figure out why, reach out to
 deprecation-devtool-issues@chromium.org.
 
-## (10) Mark deprecation as obsolete
+## (9) Mark deprecation as obsolete
 
 Once the deprecation has hit stable and enough time has passed that the message
 no longer needs to be dispatched you can mark the metadata as obsolete using

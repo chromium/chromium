@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Note: any code in this file MUST be async-signal safe.
 
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -20,6 +15,7 @@
 #include <unistd.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/safe_sprintf.h"
@@ -58,6 +54,7 @@ constexpr char kLogTag[] = "cr_seccomp";
 #endif
 
 base::debug::CrashKeyString* seccomp_crash_key = nullptr;
+base::debug::CrashKeyString* seccomp_ioctl_crash_key = nullptr;
 
 inline bool IsArchitectureX86_64() {
 #if defined(__x86_64__)
@@ -87,7 +84,7 @@ void WriteToStdErr(const char* error_message, size_t size) {
       break;
     }
     size -= ret;
-    error_message += ret;
+    UNSAFE_TODO(error_message += ret);
   }
 }
 
@@ -210,6 +207,31 @@ intptr_t SIGSYSIoctlFailure(const struct arch_seccomp_data& args,
       __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_IOCTL_CONTENT "\n";
   WriteToStdErr(kSeccompIoctlError, sizeof(kSeccompIoctlError) - 1);
   PrintAndSetSeccompCrashKey(args);
+
+  // Log information about the file descriptor.
+  char message[256];
+  size_t message_len;
+  default_stat_struct stat_buf;
+  const int fstat_ret =
+      syscall(__NR_fstat_default, static_cast<int>(args.args[0]), &stat_buf);
+  if (fstat_ret == 0) {
+    MSAN_UNPOISON(&stat_buf, sizeof(stat_buf));
+
+    message_len = base::strings::SafeSPrintf(
+        message,
+        "dev=0x%x,ino=%d,mode=0%o,nlink=%d,"
+        "uid=%d,gid=%d,rdev=0x%x,size=%d,blksize=%d,blocks=%d",
+        stat_buf.st_dev, stat_buf.st_ino, stat_buf.st_mode, stat_buf.st_nlink,
+        stat_buf.st_uid, stat_buf.st_gid, stat_buf.st_rdev, stat_buf.st_size,
+        stat_buf.st_blksize, stat_buf.st_blocks);
+  } else {
+    // fstat failed, log the errno.
+    message_len = base::strings::SafeSPrintf(message, "fstat failed, errno=%d",
+                                             -fstat_ret);
+  }
+  WriteToStdErr(message, message_len);
+  base::debug::SetCrashKeyString(seccomp_ioctl_crash_key, message);
+
   // Make "request" volatile so that we can see it on the stack in a minidump.
   volatile uint64_t request = args.args[1];
   volatile char* addr = reinterpret_cast<volatile char*>(request & 0xFFFF);
@@ -472,35 +494,44 @@ intptr_t SIGSYSSocketcallHandler(const struct arch_seccomp_data& args,
   uint64_t call = args.args[0];
   if (args.nr == __NR_socketcall && 0 < call && call <= kLastSocketcall) {
     const size_t real_args_arr_len =
-        socketcall_args[call].num_args + socketcall_args[call].num_zeroes;
+        UNSAFE_TODO(socketcall_args[call]).num_args +
+        UNSAFE_TODO(socketcall_args[call]).num_zeroes;
 // The length of this array is bounded by the entries in the array above,
 // but the compiler isn't smart enough to figure that out.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wvla-extension"
     unsigned long real_args_arr[real_args_arr_len];
 #pragma clang diagnostic pop
-    memcpy(real_args_arr, reinterpret_cast<unsigned long*>(args.args[1]),
-           real_args_arr_len * sizeof(unsigned long));
-    memset(real_args_arr + socketcall_args[call].num_args, 0,
-           socketcall_args[call].num_zeroes * sizeof(unsigned long));
+    UNSAFE_TODO(memcpy(real_args_arr,
+                       reinterpret_cast<unsigned long*>(args.args[1]),
+                       real_args_arr_len * sizeof(unsigned long)));
+    UNSAFE_TODO(
+        memset(real_args_arr + socketcall_args[call].num_args, 0,
+               socketcall_args[call].num_zeroes * sizeof(unsigned long)));
     switch (real_args_arr_len) {
       case 2:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1]);
+        return syscall(UNSAFE_TODO(socketcall_args[call]).sysno,
+                       real_args_arr[0], UNSAFE_TODO(real_args_arr[1]));
       case 3:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2]);
+        return syscall(UNSAFE_TODO(socketcall_args[call]).sysno,
+                       real_args_arr[0], UNSAFE_TODO(real_args_arr[1]),
+                       UNSAFE_TODO(real_args_arr[2]));
       case 4:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2], real_args_arr[3]);
+        return syscall(UNSAFE_TODO(socketcall_args[call]).sysno,
+                       real_args_arr[0], UNSAFE_TODO(real_args_arr[1]),
+                       UNSAFE_TODO(real_args_arr[2]),
+                       UNSAFE_TODO(real_args_arr[3]));
       case 5:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2], real_args_arr[3],
-                       real_args_arr[4]);
+        return syscall(
+            UNSAFE_TODO(socketcall_args[call]).sysno, real_args_arr[0],
+            UNSAFE_TODO(real_args_arr[1]), UNSAFE_TODO(real_args_arr[2]),
+            UNSAFE_TODO(real_args_arr[3]), UNSAFE_TODO(real_args_arr[4]));
       case 6:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2], real_args_arr[3],
-                       real_args_arr[4], real_args_arr[5]);
+        return syscall(
+            UNSAFE_TODO(socketcall_args[call]).sysno, real_args_arr[0],
+            UNSAFE_TODO(real_args_arr[1]), UNSAFE_TODO(real_args_arr[2]),
+            UNSAFE_TODO(real_args_arr[3]), UNSAFE_TODO(real_args_arr[4]),
+            UNSAFE_TODO(real_args_arr[5]));
       default:
         break;
     }
@@ -524,6 +555,8 @@ void AllocateCrashKeys() {
 
   seccomp_crash_key = base::debug::AllocateCrashKeyString(
       "seccomp-sigsys", base::debug::CrashKeySize::Size256);
+  seccomp_ioctl_crash_key = base::debug::AllocateCrashKeyString(
+      "seccomp-sigsys-ioctl", base::debug::CrashKeySize::Size256);
 }
 
 const char* GetErrorMessageContentForTests() {

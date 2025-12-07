@@ -2,28 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//services/on_device_model/on_device_model.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 
-component("on_device_model_fake") {
-  public = [ "on_device_model_fake.h" ]
-  sources = [ "on_device_model_fake.cc" ]
+component("backend_interfaces") {
+  sources = [
+    "backend.h",
+    "backend_model.cc",
+    "backend_model.h",
+    "backend_session.h",
+  ]
   deps = [
     "//base",
-    "//mojo/public/cpp/bindings",
+    "//services/on_device_model/public/cpp",
     "//services/on_device_model/public/mojom",
   ]
-  public_deps = [ "//services/on_device_model/public/cpp" ]
-  defines = [ "IS_ON_DEVICE_MODEL_FAKE_IMPL" ]
+  defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
 }
 
 component("on_device_model_service") {
   sources = [
+    "on_device_model_mojom_impl.cc",
+    "on_device_model_mojom_impl.h",
     "on_device_model_service.cc",
     "on_device_model_service.h",
-    "pre_sandbox_init.cc",
   ]
   deps = [
+    ":backend_interfaces",
+    "//build:chromecast_buildflags",
+    "//components/optimization_guide/core:features",
+    "//services/on_device_model/fake",
+    "//services/on_device_model/ml:ml_no_internal",
+
     # TODO(crbug.com/41492700): Remove this once possible. This is a hack due to
     # an implicit dependency via //third_party/utf via language_detection above.
     "//third_party/libphonenumber",
@@ -46,13 +57,16 @@ component("on_device_model_service") {
   if (enable_ml_internal) {
     deps += [ "//services/on_device_model/ml" ]
     defines += [ "ENABLE_ML_INTERNAL" ]
-  } else {
-    deps += [ ":on_device_model_fake" ]
   }
 
   if (is_linux || is_chromeos) {
+    deps += [ "//gpu/config" ]
+  }
+  if (is_android) {
+    deps += [ "//services/on_device_model/android" ]
+  }
+  if (!is_fuchsia && !(is_linux && enable_cast_receiver)) {
     deps += [
-      "//gpu/config",
       "//third_party/dawn/include/dawn:cpp_headers",
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
@@ -65,12 +79,22 @@ source_set("tests") {
 
   sources = [ "on_device_model_service_unittest.cc" ]
   deps = [
-    ":on_device_model_fake",
     ":on_device_model_service",
     "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/on_device_model/fake",
+    "//services/on_device_model/ml:ml_no_internal",
     "//services/on_device_model/public/cpp/test_support",
     "//services/on_device_model/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (enable_constraints) {
+    defines = [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
+  }
+}
+
+buildflag_header("ml_internal_buildflags") {
+  header = "ml_internal_buildflags.h"
+  flags = [ "BUILD_WITH_ML_INTERNAL=$enable_ml_internal" ]
 }

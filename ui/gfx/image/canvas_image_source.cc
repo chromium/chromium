@@ -53,6 +53,9 @@ ImageSkia CanvasImageSource::CreatePadded(const ImageSkia& image,
 CanvasImageSource::CanvasImageSource(const Size& size) : size_(size) {}
 
 ImageSkiaRep CanvasImageSource::GetImageForScale(float scale) {
+  if (size_.IsEmpty()) {
+    return ImageSkiaRep();
+  }
   Size size_in_pixel = ScaleToCeiledSize(size_, scale);
   cc::InspectableRecordPaintCanvas record_canvas(size_in_pixel);
   gfx::Canvas canvas(&record_canvas, scale);

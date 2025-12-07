@@ -36,7 +36,6 @@ It is recommended to test with optimized builds of Chromium e.g. these GN args:
   is_component_build = false
   is_official_build = true # optimization similar to official builds
   use_remoteexec = true
-  enable_nacl = false
   proprietary_codecs = true
   ffmpeg_branding = "Chrome"
 
@@ -62,7 +61,7 @@ except ImportError as error:
       'This script needs selenium and appropriate web drivers to be installed.')
   raise
 
-import gpu_tests.ipg_utils as ipg_utils
+from gpu_tests import ipg_utils
 
 CHROME_STABLE_PATH_WIN = (
     r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')
@@ -164,7 +163,7 @@ def CreateWebDriver(browser, user_data_dir, url, fullscreen,
   else:
     options = webdriver.ChromeOptions()
     options.binary_location = browser
-    options.add_argument('--user-data-dir=%s' % user_data_dir)
+    options.add_argument(f'--user-data-dir={user_data_dir}')
     options.add_argument('--no-first-run')
     options.add_argument('--no-default-browser-check')
     options.add_argument('--autoplay-policy=no-user-gesture-required')
@@ -294,14 +293,15 @@ def main():
       logging.error("Can't locate file at %s",
                     options.extra_browser_args_filename)
     else:
-      with open(options.extra_browser_args_filename, 'r') as f:
+      with open(options.extra_browser_args_filename, 'r',
+                encoding='utf-8') as f:
         extra_browser_args.extend(f.read().split())
         f.close()
 
   for run in range(1, options.repeat + 1):
     logfile = ipg_utils.GenerateIPGLogFilename(log_prefix, options.logdir, run,
                                                options.repeat, True)
-    print('Iteration #%d out of %d' % (run, options.repeat))
+    print(f'Iteration #{run} out of {options.repeat}')
     results = MeasurePowerOnce(browser, logfile, options.duration,
                                options.delay, options.resolution, options.url,
                                options.fullscreen, extra_browser_args)
@@ -309,8 +309,7 @@ def main():
     all_results.append(results)
 
   now = datetime.datetime.now()
-  results_filename = '%s_%s_results.csv' % (log_prefix,
-                                            now.strftime('%Y%m%d%H%M%S'))
+  results_filename = f'{log_prefix}_{now.strftime("%Y%m%d%H%M%S")}_results.csv'
   try:
     with open(results_filename, 'wb') as results_csv:
       labels = sorted(all_results[0].keys())

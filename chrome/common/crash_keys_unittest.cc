@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +48,7 @@ TEST_F(CrashKeysTest, ShouldIgnoreBoringFlags) {
   command_line.AppendSwitch("--device-management-url=https://foo/bar");
   command_line.AppendSwitch(
       base::StrCat({"--", switches::kGpuPreferences, "=ABC123"}));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   command_line.AppendSwitch("--user-data-dir=/tmp");
   command_line.AppendSwitch("--default-wallpaper-small=test.png");
   expected_num_switches = "9";
@@ -83,6 +82,48 @@ void InitFromArgv(base::CommandLine& command_line,
 }
 
 }  // namespace
+
+TEST_F(CrashKeysTest, AllocateCrashKeyInBrowserAndChildren) {
+  crash_keys::AllocateCrashKeyInBrowserAndChildren("annotation-name",
+                                                   "annotation-value");
+  crash_keys::AllocateCrashKeyInBrowserAndChildren("another-name",
+                                                   "another-value");
+
+  EXPECT_EQ("annotation-value", GetCrashKeyValue("annotation-name"));
+  EXPECT_EQ("another-value", GetCrashKeyValue("another-name"));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  InitFromArgv(command_line, {"program_name", "--type=renderer"});
+
+  crash_keys::AppendStringAnnotationsCommandLineSwitch(&command_line);
+  EXPECT_EQ("annotation-name=annotation-value,another-name=another-value",
+            command_line.GetSwitchValueASCII("string-annotations"));
+
+}
+
+TEST_F(CrashKeysTest, SetStringAnnotationsBrowser) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  InitFromArgv(command_line, {"program_name",
+                              "--string-annotations=annotation-name=annotation-"
+                              "value,another-annotation=another-value"});
+
+  crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+  EXPECT_EQ("", GetCrashKeyValue("annotation-name"));
+  EXPECT_EQ("", GetCrashKeyValue("another-annotation"));
+}
+
+TEST_F(CrashKeysTest, SetStringAnnotationsNonBrowser) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  InitFromArgv(command_line, {"program_name", "--type=renderer",
+                              "--string-annotations=annotation-name=annotation-"
+                              "value,another-annotation=another-value"});
+
+  crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+  EXPECT_EQ("annotation-value", GetCrashKeyValue("annotation-name"));
+  EXPECT_EQ("another-value", GetCrashKeyValue("another-annotation"));
+}
 
 TEST_F(CrashKeysTest, EnabledDisabledFeaturesFlags) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);

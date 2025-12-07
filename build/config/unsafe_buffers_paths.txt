@@ -2,149 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The set of path prefixes that should be checked for unsafe pointer usage (see
-# -Wunsafe-buffer-usage in Clang).
-#
-# ***
-# Paths should be written as relative to the root of the source tree with
-# unix-style path separators. Directory prefixes should end with `/`, such
-# as `base/`.
-# ***
-#
-# Lines that begin with `-` name path prefixes that will *not* be checked for
-# unsafe-buffer-usage. They are known to do unsafe things and should be
-# changed to use constructs like base::span or containers like base::HeapArray
-# and std::vector instead. See https://crbug.com/40285824
-#
-# Lines that begin with `+` name path prefixes that have no unsafe-buffer-usage
-# (or all such usage is annotated), and are protected against new unsafe pointer
-# behaviour by the compiler.
-#
-# By default, all files are checked for unsafe-buffer-usage unless they are
-# match a `-` path prefix line here. If a file matches both a `-` and `+` line,
-# the `+` line takes precedence and the file will be checked.
-#
-# To opt individual files out of checks, place `#pragma allow_unsafe_buffers`
-# anywhere in the (source or header) file, guarded by
-# `#ifdef UNSAFE_BUFFERS_BUILD`. These pragmas represent the technical debt and
-# security risk present in the file through unsafe pointer usage.
-#
-# ***
-# Recommended process for removing a `-dir/` line from this file:
-#
-# 1. Remove the `-dir/` line from this paths file.
-#    a. Possibly add some subdirectories if needed to reduce scope,
-#       like `-dir/sub_dir/`.
-# 2. Add `#pragma allow_unsafe_buffers` to every file in the directory that now
-#    has a compilation error, with a TODO to the tracking bug for the
-#    directory:
-#    ```
-#    #ifdef UNSAFE_BUFFERS_BUILD
-#    // TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
-#    #pragma allow_unsafe_buffers
-#    #endif
-#    ```
-# 3. Work through the files in the directory, converting pointers to spans, or
-#    to owning containers like HeapArray and vector. Remove the pragmas from
-#    the files when there is no unsafe pointer usage left in each one.
-#
 # See `docs/unsafe_buffers.md`.
 
--android_webview/
-# Check chromeos-libfuzzer-asan-rel bots when removing this.
--ash/quick_pair/fast_pair_handshake/
--base/allocator
--base/third_party
--build/
--build_overrides/
--buildtools/
--chrome/
-+chrome/browser/apps/guest_view/
-+chrome/browser/autofill/
-+chrome/browser/extensions/api/web_view/
-+chrome/browser/guest_view/
-+chrome/browser/history_clusters/
-+chrome/browser/history_embeddings/
-+chrome/browser/manta/
-+chrome/browser/model_execution/
-+chrome/browser/navigation_predictor/
-+chrome/browser/page_image_service/
-+chrome/browser/performance_manager/
-+chrome/browser/preloading/
-+chrome/browser/safe_browsing/
-+chrome/browser/ui/autofill/
-+chrome/browser/ui/views/autofill/
-+chrome/browser/ui/webui/history_clusters/
-+chrome/browser/win/
-+chrome/utility/safe_browsing/
--chromecast/
--chromeos/
--clank/
--codelabs/
--components/allocation_recorder/
--components/base32/
--components/chromeos_camera
--components/commerce/
--components/crash/
--components/cronet/
--components/crx_file/
--components/desks_storage/
--components/device_event_log/
--components/exo/
--components/grpc_support/
--components/gwp_asan/
--components/media_router/
--components/open_from_clipboard/
+# Checks to enable.
+.buffers,libc,unique_ptr
+
+# Path to source root from the directory containing this file.
+$../../
+
+# Directories to exempt from checks, relative to source root.
+-base/third_party/
+-codelabs/  # Examples, keep simple.
+-chrome/browser/platform_experience/win/
+-chrome/chrome_elf/third_party_dlls/
+-chrome/elevation_service/internal/
+-chrome/installer/mac/third_party/
+-chromeos/assistant/internal
 -components/optimization_guide/internal/
--components/ownership/
--components/query_parser/
--components/segmentation_platform/
--components/sharing_message/
--components/signin/
--components/system_cpu/
--components/url_formatter/
--components/url_pattern_index/
--components/webrtc_logging/
--components/zucchini/
--courgette/
--crypto/
--data/
--fuchsia_web/
--gin/
--google_apis/
--gpu/
--ios/
--ios_internal/
--media/
--native_client/
+-ios/third_party/
 -net/third_party/
--printing/
--remoting/
--sandbox/linux/seccomp-bpf-helpers/
--sandbox/win/fuzzer/
--services/accessibility
--services/data_decoder
--services/shape_detection
--services/tracing/public/cpp/perfetto/
--sql/
+-services/shape_detection/internal/barhopper/
 -testing/iossim/
 -third_party/
 +third_party/blink/
++third_party/jni_zero/
++third_party/ipcz/
++third_party/liburlpattern/
 -tools/
--ui/base/clipboard/
--ui/base/ime/ash/
--ui/display/manager/
--ui/events/ash/
--ui/ozone/
-+ui/ozone/platform/wayland
--url/third_party
+-ui/gl/  # Unsafe generated files.
 -v8/
-
-# Before clearing this directory, make sure to run against a bot running
-# with the build flag: use_internal_isolated_origins. There are none on the CQ
-# by default. See file components/site_isolation/preloaded_isolated_origins.cc
--components/site_isolation/
-
-# TODO(crbug.com/41497066#comment22) The Win SDK headers don't get categorized
-# as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
--Program Files (x86)/Windows Kits/

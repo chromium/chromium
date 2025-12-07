@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -25,13 +24,15 @@ component("util") {
   deps = [
     "//base",
     "//components/device_event_log",
+    "//components/viz/common/resources:shared_image_format",
+    "//crypto",
     "//skia",
     "//ui/display/types",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ui/display/types" ]
   } else if (is_mac) {
     frameworks = [ "IOSurface.framework" ]

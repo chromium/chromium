@@ -9,8 +9,12 @@
 
 #include "ash/public/cpp/locale_update_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/soda/soda_installer.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace ash {
 class ProjectorAppClient;
@@ -29,8 +33,11 @@ class ProjectorSodaInstallationController
     : public speech::SodaInstaller::Observer,
       public ash::LocaleChangeObserver {
  public:
-  ProjectorSodaInstallationController(ash::ProjectorAppClient* app_client,
-                                      ash::ProjectorController* controller);
+  // `application_locale_storage` must not be null, and must outlive `this`.
+  ProjectorSodaInstallationController(
+      ApplicationLocaleStorage* application_locale_storage,
+      ash::ProjectorAppClient* app_client,
+      ash::ProjectorController* controller);
   ProjectorSodaInstallationController(
       const ProjectorSodaInstallationController&) = delete;
   ProjectorSodaInstallationController& operator=(
@@ -40,7 +47,8 @@ class ProjectorSodaInstallationController
 
   // Installs the SODA binary and the the corresponding language if it is not
   // present.
-  static void InstallSoda(const std::string& language);
+  static void InstallSoda(PrefService& local_state,
+                          const std::string& language);
 
   // Checks if the device is eligible to install SODA and language pack for the
   // `language` provided.
@@ -65,6 +73,8 @@ class ProjectorSodaInstallationController
   const raw_ptr<ash::ProjectorController> projector_controller_;
 
  private:
+  raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+
   base::ScopedObservation<speech::SodaInstaller,
                           speech::SodaInstaller::Observer>
       soda_installer_observation_{this};

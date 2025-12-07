@@ -15,8 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -33,7 +33,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using base::ScopedTempDir;
@@ -57,8 +56,6 @@ std::vector<VirtualCardUsageData> ExtractVirtualCardUsageDataFromDataBatch(
   return usage_data;
 }
 
-}  // namespace
-
 class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
@@ -72,16 +69,9 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
   }
 
   std::vector<VirtualCardUsageData> GetVirtualCardUsageDataFromTable() {
-    std::vector<std::unique_ptr<VirtualCardUsageData>> table_data;
-    table()->GetAllVirtualCardUsageData(&table_data);
-
-    // In tests, it's more convenient to work without `std::unique_ptr`.
-    std::vector<VirtualCardUsageData> usage_data;
-    for (const std::unique_ptr<VirtualCardUsageData>& data : table_data) {
-      usage_data.push_back(std::move(*data));
-    }
-
-    return usage_data;
+    std::vector<VirtualCardUsageData> table_data;
+    table()->GetAllVirtualCardUsageData(table_data);
+    return table_data;
   }
 
   EntityData SpecificsToEntity(const AutofillWalletUsageSpecifics& specifics) {
@@ -200,7 +190,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   // `virtual_card_usage_data2`.
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete(
-      *virtual_card_usage_data1.usage_data_id()));
+      *virtual_card_usage_data1.usage_data_id(), syncer::EntityData()));
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       *virtual_card_usage_data2.usage_data_id(),
       VirtualCardUsageDataToEntity(virtual_card_usage_data2)));
@@ -297,4 +287,5 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncData_LogDataValidity) {
       "Autofill.VirtualCardUsageData.SyncedUsageDataBeingValid", false, 1);
 }
 
+}  // namespace
 }  // namespace autofill

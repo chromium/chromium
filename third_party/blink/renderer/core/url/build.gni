@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 blink_core_sources_url = [
+  "dom_origin.cc",
+  "dom_origin.h",
+  "dom_origin_utils.h",
   "dom_url.cc",
   "dom_url.h",
   "dom_url_utils.cc",
@@ -13,4 +16,7 @@ blink_core_sources_url = [
   "url_search_params.h",
 ]
 
-blink_core_tests_url = [ "url_search_params_test.cc" ]
+blink_core_tests_url = [
+  "dom_origin_test.cc",
+  "url_search_params_test.cc",
+]

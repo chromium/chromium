@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
 #include <fcntl.h>
@@ -11,7 +16,6 @@
 #include <sys/mman.h>
 
 #include <string_view>
-#include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/files/file.h"
@@ -25,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -43,7 +48,7 @@ constexpr char kMediaDevicePrefix[] = "/dev/media";
 // This map maintains a table with pairs of V4L2 request code
 // and corresponding name. New pair has to be added here
 // when new V4L2 request code has to be used.
-static const std::unordered_map<int, std::string>
+static const absl::flat_hash_map<int, std::string>
     kMapFromV4L2RequestCodeToString = {
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYCAP),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYCTRL),
@@ -135,7 +140,7 @@ MmappedBuffer::MmappedBuffer(const base::PlatformFile ioctl_fd,
     : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
     void* start_addr =
-        mmap(NULL, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
+        mmap(nullptr, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
              MAP_SHARED, ioctl_fd, v4l2_buffer.m.planes[i].m.mem_offset);
 
     LOG_IF(FATAL, start_addr == MAP_FAILED)
@@ -172,10 +177,8 @@ scoped_refptr<MmappedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
 
 template <typename T>
 bool V4L2IoctlShim::Ioctl(int request_code, T arg) const {
-  NOTREACHED_IN_MIGRATION()
-      << "Please add a specialized function for the given V4L2 ioctl "
-         "request code.";
-  return !kIoctlOk;
+  NOTREACHED() << "Please add a specialized function for the given V4L2 ioctl "
+                  "request code.";
 }
 
 template <>

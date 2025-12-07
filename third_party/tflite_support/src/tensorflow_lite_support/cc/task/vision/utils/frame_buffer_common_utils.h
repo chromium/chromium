@@ -15,12 +15,12 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_UTILS_FRAME_BUFFER_COMMON_UTILS_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_UTILS_FRAME_BUFFER_COMMON_UTILS_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "absl/time/clock.h"  // from @com_google_absl
 #include "absl/time/time.h"  // from @com_google_absl
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 
@@ -49,7 +49,7 @@ int GetFrameBufferByteSize(FrameBuffer::Dimension dimension,
 tflite::support::StatusOr<int> GetPixelStrides(FrameBuffer::Format format);
 
 // Returns the biplanar UV raw buffer for NV12/NV21 frame buffer.
-tflite::support::StatusOr<const uint8*> GetUvRawBuffer(
+tflite::support::StatusOr<const uint8_t*> GetUvRawBuffer(
     const FrameBuffer& buffer);
 
 // Returns U or V plane dimension with the given buffer `dimension` and
@@ -110,28 +110,28 @@ absl::Status ValidateConvertFormats(FrameBuffer::Format from_format,
 
 // Creates a FrameBuffer from raw RGBA buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromRgbaRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Orientation orientation = FrameBuffer::Orientation::kTopLeft,
     absl::Time timestamp = absl::Now(),
     FrameBuffer::Stride stride = kDefaultStride);
 
 // Creates a FrameBuffer from raw RGB buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromRgbRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Orientation orientation = FrameBuffer::Orientation::kTopLeft,
     absl::Time timestamp = absl::Now(),
     FrameBuffer::Stride stride = kDefaultStride);
 
 // Creates a FrameBuffer from raw grayscale buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromGrayRawBuffer(
-    const uint8* input, FrameBuffer::Dimension dimension,
+    const uint8_t* input, FrameBuffer::Dimension dimension,
     FrameBuffer::Orientation orientation = FrameBuffer::Orientation::kTopLeft,
     absl::Time timestamp = absl::Now(),
     FrameBuffer::Stride stride = kDefaultStride);
 
 // Creates a FrameBuffer from raw YUV buffer and passing arguments.
 tflite::support::StatusOr<std::unique_ptr<FrameBuffer>> CreateFromYuvRawBuffer(
-    const uint8* y_plane, const uint8* u_plane, const uint8* v_plane,
+    const uint8_t* y_plane, const uint8_t* u_plane, const uint8_t* v_plane,
     FrameBuffer::Format format, FrameBuffer::Dimension dimension,
     int row_stride_y, int row_stride_uv, int pixel_stride_uv,
     FrameBuffer::Orientation orientation = FrameBuffer::Orientation::kTopLeft,
@@ -139,7 +139,7 @@ tflite::support::StatusOr<std::unique_ptr<FrameBuffer>> CreateFromYuvRawBuffer(
 
 // Creates an instance of FrameBuffer from raw buffer and passing arguments.
 tflite::support::StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
-    const uint8* buffer, FrameBuffer::Dimension dimension,
+    const uint8_t* buffer, FrameBuffer::Dimension dimension,
     FrameBuffer::Format target_format,
     FrameBuffer::Orientation orientation = FrameBuffer::Orientation::kTopLeft,
     absl::Time timestamp = absl::Now());

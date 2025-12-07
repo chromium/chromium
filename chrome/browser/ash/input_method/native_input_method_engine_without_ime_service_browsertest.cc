@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,10 +25,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -48,8 +50,6 @@ namespace ash {
 namespace input_method {
 
 namespace {
-
-constexpr char kEmojiData[] = "happy,😀;😃;😄";
 
 class TestObserver : public StubInputMethodEngineObserver {
  public:
@@ -127,9 +127,6 @@ class NativeInputMethodEngineWithoutImeServiceTest
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
                 base::Value(base::Value::Type::DICT));
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile_);
-    engine_->get_assistive_suggester_for_testing()
-        ->get_emoji_suggester_for_testing()
-        ->LoadEmojiMapForTesting(kEmojiData);
 
     // Ensure predictive writing is off to stop tests from attempting to
     // load the shared library.
@@ -149,7 +146,7 @@ class NativeInputMethodEngineWithoutImeServiceTest
   }
 
   void SetUpTextInput(TextInputTestHelper& helper) {
-    GURL url = ui_test_utils::GetTestUrl(
+    GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("textinput")),
         base::FilePath(FILE_PATH_LITERAL("simple_textarea.html")));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -218,112 +215,6 @@ constexpr char kEngineIdUs[] = "xkb:us::eng";
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       SuggestEmoji) {
-  base::HistogramTester histogram_tester;
-  engine_->Enable(kEngineIdUs);
-  TextInputTestHelper helper(GetBrowserInputMethod());
-  SetUpTextInput(helper);
-  const std::u16string prefix_text = u"happy ";
-  const std::u16string expected_result_text = u"happy 😀";
-
-  helper.GetTextInputClient()->InsertText(
-      prefix_text,
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(prefix_text);
-  // Selects first emoji.
-  DispatchKeyPress(ui::VKEY_DOWN, false);
-  DispatchKeyPress(ui::VKEY_RETURN, false);
-  helper.WaitForSurroundingTextChanged(expected_result_text);
-
-  EXPECT_EQ(expected_result_text, helper.GetSurroundingText());
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Match",
-                                      AssistiveType::kEmoji, 1);
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                      DisabledReason::kNone, 1);
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Coverage",
-                                      AssistiveType::kEmoji, 1);
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Success",
-                                      AssistiveType::kEmoji, 1);
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       DismissEmojiSuggestionWhenUsersContinueTyping) {
-  base::HistogramTester histogram_tester;
-  engine_->Enable(kEngineIdUs);
-  TextInputTestHelper helper(GetBrowserInputMethod());
-  SetUpTextInput(helper);
-  const std::u16string prefix_text = u"happy ";
-  const std::u16string expected_result_text = u"happy a";
-
-  helper.GetTextInputClient()->InsertText(
-      prefix_text,
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(prefix_text);
-  // Types something random to dismiss emoji
-  helper.GetTextInputClient()->InsertText(
-      u"a",
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(expected_result_text);
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       EmojiSuggestionDisabledReasonkEnterpriseSettingsOff) {
-  base::HistogramTester histogram_tester;
-  prefs_->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed, false);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
-
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                      DisabledReason::kEnterpriseSettingsOff,
-                                      1);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       EmojiSuggestionDisabledReasonkUserSettingsOff) {
-  base::HistogramTester histogram_tester;
-  prefs_->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
-
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                      DisabledReason::kUserSettingsOff, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       EmojiSuggestionDisabledReasonkUrlOrAppNotAllowed) {
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
-
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                      DisabledReason::kUrlOrAppNotAllowed, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    NativeInputMethodEngineWithoutImeServiceTest,
-    OnLearnMoreButtonClickedOpensEmojiSuggestionSettingsPage) {
-  base::UserActionTester user_action_tester;
-  ui::ime::AssistiveWindowButton button;
-  button.id = ui::ime::ButtonId::kLearnMore;
-  button.window_type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
-
-  engine_->AssistiveWindowButtonClicked(button);
-
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        FiresOnInputMethodOptionsChangedEvent) {
   {
     base::Value::Dict settings;
@@ -348,8 +239,19 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   }
 }
 
+// TODO(pbos): Re-enable on all build configurations. This hits a
+// DUMP_WILL_BE_NOTREACHED() in ~Profile as it's being destroyed with observers
+// still present in its ObserverList. Usually this is a sign of UAFs waiting to
+// happen (those observers will likely try to unregister themselves later). It's
+// unclear if this is a quirk of the test or a bug in production code.
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
+#define MAYBE_DestroyProfile DestroyProfile
+#else
+#define MAYBE_DestroyProfile DISABLED_DestroyProfile
+#endif  // defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
+
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       DestroyProfile) {
+                       MAYBE_DestroyProfile) {
   EXPECT_NE(engine_->GetPrefChangeRegistrarForTesting(), nullptr);
   profile_->MaybeSendDestroyedNotification();
   EXPECT_EQ(engine_->GetPrefChangeRegistrarForTesting(), nullptr);

@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/notreached.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -78,7 +79,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   FrameOwnerElementType OwnerType() const override {
     return FrameOwnerElementType::kFencedframe;
   }
-  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
+  network::ParsedPermissionsPolicy ConstructContainerPolicy() const override;
   void SetCollapsed(bool) override;
   void DidChangeContainerPolicy() override;
 
@@ -124,7 +125,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // events that were originally fired *inside* of the fenced frame content, and
   // that have been intentionally propagated outwards to `this`, the frame
   // owner, for reception by the embedder script.
-  void DispatchFencedEvent(const WTF::String& event_type);
+  void DispatchFencedEvent(const String& event_type);
 
  private:
   // This method will only navigate the underlying frame if the element
@@ -157,12 +158,11 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AttachLayoutTree(AttachContext& context) override;
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
   // Set the size of the fenced frame outer container. Used for container size
   // specified by FencedFrameConfig.

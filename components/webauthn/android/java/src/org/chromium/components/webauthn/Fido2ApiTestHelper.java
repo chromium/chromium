@@ -20,12 +20,13 @@ import com.google.common.io.BaseEncoding;
 
 import org.junit.Assert;
 
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink.mojom.AuthenticationExtensionsClientInputs;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorSelectionCriteria;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.CableAuthentication;
+import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentCredentialInstrument;
@@ -358,62 +359,76 @@ public class Fido2ApiTestHelper {
     // API.
     private static final byte[] TEST_SERIALIZED_CREDMAN_MAKE_CREDENTIAL_RESPONSE =
             new byte[] {
-                72, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 127, 7, 0, 0, 80, 1,
-                0, 0, 0, 0, 0, 0, 24, 2, 0, 0, 0, 0, 0, 0, 32, 2, 0, 0, 0, 0, 0, 0, 88, 2, 0, 0, 0,
-                0, 0, 0, 121, 127, 127, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0,
-                0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 80,
-                0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 10, 0, 0, 0, 100, 71, 86, 122, 100, 67, 66, 112,
-                90, 65, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 7, 0, 0, 0, 116, 101, 115, 116, 32, 105, 100,
-                0, 29, 0, 0, 0, 21, 0, 0, 0, 116, 101, 115, 116, 32, 99, 108, 105, 101, 110, 116,
-                32, 100, 97, 116, 97, 32, 106, 115, 111, 110, 0, 0, 0, 44, 0, 0, 0, 36, 0, 0, 0, 38,
-                61, 114, 120, 62, 70, 55, 97, 113, 122, 33, 49, 10, 52, 68, 120, 38, 112, 38, 28,
-                65, 12, 114, 106, 31, 86, 96, 88, 85, 97, 27, 70, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 4, 39, 41, 1, 40, 110, 3, 80, 15, 47, 41, 58,
-                19, 51, 47, 127, 27, 40, 33, 99, 49, 9, 37, 68, 106, 84, 45, 115, 43, 28, 110, 22,
-                37, 1, 2, 3, 38, 32, 1, 33, 88, 32, 22, 69, 112, 93, 97, 55, 24, 88, 99, 78, 82, 22,
-                61, 23, 119, 47, 51, 94, 68, 116, 101, 45, 126, 101, 120, 104, 68, 110, 61, 57, 18,
-                117, 34, 88, 32, 113, 19, 12, 37, 54, 32, 60, 39, 101, 115, 54, 117, 31, 126, 42,
-                68, 15, 37, 32, 99, 6, 61, 26, 103, 84, 38, 33, 7, 81, 62, 12, 2, 0, 0, 0, 0, 74, 0,
-                0, 0, 66, 0, 0, 0, 35, 99, 102, 109, 116, 100, 110, 111, 110, 101, 103, 97, 116,
-                116, 83, 116, 109, 116, 32, 104, 97, 117, 116, 104, 68, 97, 116, 97, 88, 36, 38, 61,
-                114, 120, 62, 70, 55, 97, 113, 122, 33, 49, 10, 52, 68, 120, 38, 112, 38, 28, 65,
-                12, 114, 106, 31, 86, 96, 88, 85, 97, 27, 70, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 4, 39, 41, 1, 40, 110, 3, 80, 15, 47, 41, 58, 19,
-                51, 47, 127, 27, 40, 33, 99, 49, 9, 37, 68, 106, 84, 45, 115, 43, 28, 110, 22, 37,
-                1, 2, 3, 38, 32, 1, 33, 88, 32, 22, 69, 112, 93, 97, 55, 24, 88, 99, 78, 82, 22, 61,
-                23, 119, 47, 51, 94, 68, 116, 101, 45, 126, 101, 120, 104, 68, 110, 61, 57, 18, 117,
-                34, 88, 32, 113, 19, 12, 37, 54, 32, 60, 39, 101, 115, 54, 117, 31, 126, 42, 68, 15,
-                37, 32, 99, 6, 61, 26, 103, 84, 38, 33, 7, 81, 62, 12, 2, 0, 0, 0, 0, 0, 0, 12, 0,
-                0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 4, 0, 0, 0, 1,
-                2, 3, 4, 0, 0, 0, 0, 12, 0, 0, 0, 4, 0, 0, 0, 5, 6, 7, 8, 0, 0, 0, 0, 99, 0, 0, 0,
-                91, 0, 0, 0, 48, 89, 48, 19, 6, 7, 42, 6, 72, 78, 61, 2, 1, 6, 8, 42, 6, 72, 78, 61,
-                3, 1, 7, 3, 66, 0, 4, 22, 69, 112, 93, 97, 55, 24, 88, 99, 78, 82, 22, 61, 23, 119,
-                47, 51, 94, 68, 116, 101, 45, 126, 101, 120, 104, 68, 110, 61, 57, 18, 117, 113, 19,
-                12, 37, 54, 32, 60, 39, 101, 115, 54, 117, 31, 126, 42, 68, 15, 37, 32, 99, 6, 61,
-                26, 103, 84, 38, 33, 7, 81, 62, 12, 2, 0, 0, 0, 0, 0
+                80, 0, 0, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, -1, 7, 0, 0, 88, 1, 0,
+                0, 0, 0, 0, 0, 32, 2, 0, 0, 0, 0, 0, 0, 40, 2, 0, 0, 0, 0, 0, 0, -112, 2, 0, 0, 0,
+                0, 0, 0, -7, -1, -1, -1, 0, 0, 0, 0, -24, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 40, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 56, 0,
+                0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 10, 0, 0, 0, 100, 71, 86,
+                122, 100, 67, 66, 112, 90, 65, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 7, 0, 0, 0, 116, 101,
+                115, 116, 32, 105, 100, 0, 29, 0, 0, 0, 21, 0, 0, 0, 116, 101, 115, 116, 32, 99,
+                108, 105, 101, 110, 116, 32, 100, 97, 116, 97, 32, 106, 115, 111, 110, 0, 0, 0, -84,
+                0, 0, 0, -92, 0, 0, 0, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95, -79, 10,
+                -76, -60, -8, 38, 112, 38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31, -101,
+                70, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 4, 39,
+                -87, 1, 40, -18, -125, -48, -113, 47, -87, -70, -109, -77, 47, 127, -101, -88, 33,
+                99, -79, 9, 37, -60, 106, 84, 45, -13, -85, -100, 110, -106, -91, 1, 2, 3, 38, 32,
+                1, 33, 88, 32, -106, 69, -16, 93, -31, 55, -104, -40, 99, 78, 82, -106, -67, 23, -9,
+                -81, -77, 94, -60, -12, 101, -83, 126, 101, 120, -24, 68, -18, -67, -71, 18, -11,
+                34, 88, 32, -15, -109, -116, 37, 54, -96, 60, 39, -27, -13, 54, 117, -97, 126, -86,
+                -60, 15, 37, 32, -29, -122, -67, -102, -25, -44, 38, -95, 7, -47, -66, 12, 2, 0, 0,
+                0, 0, -54, 0, 0, 0, -62, 0, 0, 0, -93, 99, 102, 109, 116, 100, 110, 111, 110, 101,
+                103, 97, 116, 116, 83, 116, 109, 116, -96, 104, 97, 117, 116, 104, 68, 97, 116, 97,
+                88, -92, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95, -79, 10, -76, -60, -8,
+                38, 112, 38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31, -101, 70, 93, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 4, 39, -87, 1, 40, -18,
+                -125, -48, -113, 47, -87, -70, -109, -77, 47, 127, -101, -88, 33, 99, -79, 9, 37,
+                -60, 106, 84, 45, -13, -85, -100, 110, -106, -91, 1, 2, 3, 38, 32, 1, 33, 88, 32,
+                -106, 69, -16, 93, -31, 55, -104, -40, 99, 78, 82, -106, -67, 23, -9, -81, -77, 94,
+                -60, -12, 101, -83, 126, 101, 120, -24, 68, -18, -67, -71, 18, -11, 34, 88, 32, -15,
+                -109, -116, 37, 54, -96, 60, 39, -27, -13, 54, 117, -97, 126, -86, -60, 15, 37, 32,
+                -29, -122, -67, -102, -25, -44, 38, -95, 7, -47, -66, 12, 2, 0, 0, 0, 0, 0, 0, 12,
+                0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 32, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 40, 0, 0, 0, 32, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 99, 0, 0, 0, 91, 0, 0, 0, 48, 89,
+                48, 19, 6, 7, 42, -122, 72, -50, 61, 2, 1, 6, 8, 42, -122, 72, -50, 61, 3, 1, 7, 3,
+                66, 0, 4, -106, 69, -16, 93, -31, 55, -104, -40, 99, 78, 82, -106, -67, 23, -9, -81,
+                -77, 94, -60, -12, 101, -83, 126, 101, 120, -24, 68, -18, -67, -71, 18, -11, -15,
+                -109, -116, 37, 54, -96, 60, 39, -27, -13, 54, 117, -97, 126, -86, -60, 15, 37, 32,
+                -29, -122, -67, -102, -25, -44, 38, -95, 7, -47, -66, 12, 2, 0, 0, 0, 0, 0, 16, 0,
+                0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 2, 0, 0, 0, 16, 0, 0, 0, 0,
+                0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 3, 0, 0, 0, 0, 16, -125, 0, 0, 0, 0,
+                0, 11, 0, 0, 0, 3, 0, 0, 0, 16, 81, -121, 0, 0, 0, 0, 0
             };
 
     // Serialized assertion response converted from JSON received from the Credential Manager API.
     private static final byte[] TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE =
             new byte[] {
-                48, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, -64, 0, 0,
-                0, 0, 0, 0, 0, 8, 1, 0, 0, 0, 0, 0, 0, 32, 1, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0,
-                0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 0, 88,
-                0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 22, 0, 0, 0, 78, 81, 119, 83, 88, 81, 109, 80,
-                113, 99, 107, 112, 54, 86, 66, 114, 117, 74, 52, 84, 45, 65, 0, 0, 24, 0, 0, 0, 16,
-                0, 0, 0, 53, 12, 18, 93, 9, -113, -87, -55, 41, -23, 80, 107, -72, -98, 19, -8, 17,
-                0, 0, 0, 9, 0, 0, 0, 60, 105, 110, 118, 97, 108, 105, 100, 62, 0, 0, 0, 0, 0, 0, 0,
-                45, 0, 0, 0, 37, 0, 0, 0, -56, 89, -63, 83, -10, -10, 58, 88, -74, 13, 49, -64, 95,
-                85, -99, 61, -90, 100, -74, -120, 11, 20, 82, 85, -69, -47, 2, 101, 101, -105, -58,
-                -109, 29, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 71, 0, 0, 0, 48, 69, 2, 33, 0, -104, -2,
-                -11, -58, 98, 106, -47, 80, 63, 82, 35, 47, 121, -87, -40, -119, 39, 121, -58, 107,
-                -119, -108, 90, -22, -12, -36, -113, -56, -112, -63, 21, 44, 2, 32, 47, 7, 8, 107,
-                110, 36, -60, -49, -32, 118, 54, -92, 84, 124, 77, -80, 87, -9, 7, -50, -1, 24, -49,
-                -7, -116, -42, -93, -23, -111, 91, 80, 87, 0, 26, 0, 0, 0, 18, 0, 0, 0, 49, 55, 51,
-                48, 54, 51, 55, 54, 56, 46, 57, 56, 53, 54, 49, 54, 57, 53, 0, 0, 0, 0, 0, 0, 56, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                48, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, -88, 0, 0,
+                0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0,
+                0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0,
+                80, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 10, 0, 0, 0, 100, 71, 86, 122, 100, 67, 66,
+                112, 90, 65, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 7, 0, 0, 0, 116, 101, 115, 116, 32, 105,
+                100, 0, 29, 0, 0, 0, 21, 0, 0, 0, 116, 101, 115, 116, 32, 99, 108, 105, 101, 110,
+                116, 32, 100, 97, 116, 97, 32, 106, 115, 111, 110, 0, 0, 0, 31, 0, 0, 0, 23, 0, 0,
+                0, 116, 101, 115, 116, 32, 97, 117, 116, 104, 101, 110, 116, 105, 99, 97, 116, 111,
+                114, 32, 100, 97, 116, 97, 0, 22, 0, 0, 0, 14, 0, 0, 0, 116, 101, 115, 116, 32, 115,
+                105, 103, 110, 97, 116, 117, 114, 101, 0, 0, 24, 0, 0, 0, 16, 0, 0, 0, 116, 101,
+                115, 116, 32, 117, 115, 101, 114, 32, 104, 97, 110, 100, 108, 101, 64, 0, 0, 0, 0,
+                0, 0, 0, -21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0,
+                -112, 0, 0, 0, 0, 0, 0, 0, -96, 0, 0, 0, 0, 0, 0, 0, -80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0,
+                0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 32, 0, 0, 0, -103, -99, 48, 41, 123,
+                -59, 3, 123, -91, 123, -127, -68, -8, 39, -77, 71, 27, -24, 63, -128, 103, -10, -5,
+                -117, 100, 61, 10, 107, -51, 9, 76, 125, 40, 0, 0, 0, 32, 0, 0, 0, -51, -14, -44,
+                104, 127, 48, -75, -75, -113, -104, 99, -104, -55, 39, -63, -116, -41, -95, 20,
+                -117, -31, 81, -108, 29, -72, -91, -27, 56, 126, -100, -12, 66, 23, 0, 0, 0, 15, 0,
+                0, 0, 116, 101, 115, 116, 32, 108, 97, 114, 103, 101, 32, 98, 108, 111, 98, 0, 22,
+                0, 0, 0, 14, 0, 0, 0, 116, 101, 115, 116, 32, 99, 114, 101, 100, 32, 98, 108, 111,
+                98, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 2, 0, 0, 0,
+                16, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 3, 0, 0, 0, 0, 16,
+                -125, 0, 0, 0, 0, 0, 11, 0, 0, 0, 3, 0, 0, 0, 16, 81, -121, 0, 0, 0, 0, 0
             };
 
     // TEST_USER_HANDLE is the user ID contained within `TEST_DISCOVERABLE_CREDENTIAL_ASSERTION`.
@@ -426,10 +441,11 @@ public class Fido2ApiTestHelper {
     private static final int[] TEST_USER_VERIFICATION_METHOD = new int[] {0x00000002, 0x00000200};
     private static final short[] TEST_KEY_PROTECTION_TYPE = new short[] {0x0002, 0x0001};
     private static final short[] TEST_MATCHER_PROTECTION_TYPE = new short[] {0x0004, 0x0001};
-    private static final String TEST_SERIALIZED_MAKE_CREDENTIAL_REQUEST_JSON =
+    public static final String TEST_SERIALIZED_MAKE_CREDENTIAL_REQUEST_JSON =
             "{serialized_make_request}";
     private static final String TEST_SERIALIZED_GET_ASSERTION_REQUEST_JSON =
             "{serialized_get_request}";
+    public static final String TEST_SERIALIZED_REPORT_REQUEST_JSON = "{serialized_report_request}";
 
     /**
      * Builds a test intent to be returned by a successful call to makeCredential.
@@ -479,12 +495,10 @@ public class Fido2ApiTestHelper {
      * Construct default options for a makeCredential request.
      *
      * @return Options for the Fido2 API.
-     * @throws Exception
      */
-    public static PublicKeyCredentialCreationOptions createDefaultMakeCredentialOptions()
-            throws Exception {
+    public static PublicKeyCredentialCreationOptions createDefaultMakeCredentialOptions() {
         PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
-        options.challenge = "climb a mountain".getBytes("UTF8");
+        options.challenge = "climb a mountain".getBytes(UTF_8);
         options.hints = new int[0];
 
         options.relyingParty = new PublicKeyCredentialRpEntity();
@@ -492,7 +506,7 @@ public class Fido2ApiTestHelper {
         options.relyingParty.name = "Acme";
 
         options.user = new PublicKeyCredentialUserEntity();
-        options.user.id = "1098237235409872".getBytes("UTF8");
+        options.user.id = "1098237235409872".getBytes(UTF_8);
         options.user.name = "avery.a.jones@example.com";
         options.user.displayName = "Avery A. Jones";
 
@@ -515,6 +529,8 @@ public class Fido2ApiTestHelper {
          * supports it */
         options.authenticatorSelection.authenticatorAttachment =
                 AuthenticatorAttachment.CROSS_PLATFORM;
+
+        options.attestationFormats = new String[0];
         return options;
     }
 
@@ -535,13 +551,11 @@ public class Fido2ApiTestHelper {
      * Constructs default options for a getAssertion request.
      *
      * @return Options for the Fido2 API
-     * @throws Exception
      */
-    public static PublicKeyCredentialRequestOptions createDefaultGetAssertionOptions()
-            throws Exception {
+    public static PublicKeyCredentialRequestOptions createDefaultGetAssertionOptions() {
         PublicKeyCredentialRequestOptions options = new PublicKeyCredentialRequestOptions();
         options.extensions = new AuthenticationExtensionsClientInputs();
-        options.challenge = "climb a mountain".getBytes("UTF8");
+        options.challenge = "climb a mountain".getBytes(UTF_8);
         options.timeout = new TimeDelta();
         options.timeout.microseconds = TimeUnit.MILLISECONDS.toMicros(TIMEOUT_MS);
         options.relyingPartyId = "subdomain.example.test";
@@ -726,6 +740,7 @@ public class Fido2ApiTestHelper {
         options.instrument.displayName = "MaxPay";
         options.instrument.icon = new Url();
         options.instrument.icon.url = "https://www.google.com/icon.png";
+        options.instrument.details = "instrument details";
         options.payeeOrigin = new org.chromium.url.internal.mojom.Origin();
         options.payeeOrigin.scheme = "https";
         options.payeeOrigin.host = "test.example";
@@ -736,10 +751,9 @@ public class Fido2ApiTestHelper {
     /**
      * Mocks ClientDataJson so that it returns the provided result.
      *
-     * @param mocker The JNI mocker
      * @param mockResult The mock value for {@link ClientDataJson#buildClientDataJson} to return.
      */
-    public static void mockClientDataJson(JniMocker mocker, String mockResult) {
+    public static void mockClientDataJson(String mockResult) {
         ClientDataJsonImpl.Natives clientDataJsonJni =
                 new ClientDataJsonImpl.Natives() {
                     @Override
@@ -754,7 +768,12 @@ public class Fido2ApiTestHelper {
                         return mockResult;
                     }
                 };
-        mocker.mock(ClientDataJsonImplJni.TEST_HOOKS, clientDataJsonJni);
+        ClientDataJsonImplJni.setInstanceForTesting(clientDataJsonJni);
+    }
+
+    /** Mocks ClientDataJson with the default test value. */
+    public static void mockClientDataJson() {
+        mockClientDataJson(new String(TEST_CLIENT_DATA_JSON));
     }
 
     /**
@@ -770,10 +789,11 @@ public class Fido2ApiTestHelper {
         credential.mCredentialId = new byte[] {8, 7, 6};
         credential.mIsDiscoverable = true;
         credential.mIsPayment = false;
+        credential.mLastUsedTimeMs = 42;
         return credential;
     }
 
-    public static void mockFido2CredentialRequestJni(JniMocker mocker) {
+    public static void mockFido2CredentialRequestJni() {
         Fido2CredentialRequest.Natives fido2CredentialRequestJni =
                 new Fido2CredentialRequest.Natives() {
                     @Override
@@ -795,8 +815,13 @@ public class Fido2ApiTestHelper {
                     public byte[] getCredentialResponseFromJson(String json) {
                         return TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE;
                     }
+
+                    @Override
+                    public String reportOptionsToJson(ByteBuffer serializedOptions) {
+                        return TEST_SERIALIZED_REPORT_REQUEST_JSON;
+                    }
                 };
-        mocker.mock(Fido2CredentialRequestJni.TEST_HOOKS, fido2CredentialRequestJni);
+        Fido2CredentialRequestJni.setInstanceForTesting(fido2CredentialRequestJni);
     }
 
     public static AuthenticatorCallback getAuthenticatorCallback() {
@@ -806,8 +831,10 @@ public class Fido2ApiTestHelper {
     /** Callback class to pass to Fido2CredentialRequest WebAuthn operations. */
     public static class AuthenticatorCallback {
         private Integer mStatus;
+        private Integer mOutcome;
         private MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
         private GetAssertionAuthenticatorResponse mGetAssertionAuthenticatorResponse;
+        private CredentialInfo mPasswordCredential;
         private List<byte[]> mGetMatchingCredentialIdsResponse;
 
         // Signals when request is complete.
@@ -822,7 +849,18 @@ public class Fido2ApiTestHelper {
             unblock();
         }
 
-        public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
+        public void onSignResponse(
+                @Nullable GetAssertionAuthenticatorResponse response,
+                @Nullable CredentialInfo passwordCredential) {
+            assert mStatus == null;
+            mStatus = AuthenticatorStatus.SUCCESS;
+            mGetAssertionAuthenticatorResponse = response;
+            mPasswordCredential = passwordCredential;
+            unblock();
+        }
+
+        public void onSignResponseWithStatus(
+                int status, GetAssertionAuthenticatorResponse response) {
             assert mStatus == null;
             mStatus = status;
             mGetAssertionAuthenticatorResponse = response;
@@ -840,8 +878,23 @@ public class Fido2ApiTestHelper {
             unblock();
         }
 
+        public void onReportOutcome(int status) {
+            assert mStatus == null;
+            mStatus = status;
+            unblock();
+        }
+
+        public void onRequestOutcome(int outcome) {
+            assert mOutcome == null;
+            mOutcome = outcome;
+        }
+
         public Integer getStatus() {
             return mStatus;
+        }
+
+        public Integer getOutcome() {
+            return mOutcome;
         }
 
         public MakeCredentialAuthenticatorResponse getMakeCredentialResponse() {
@@ -850,6 +903,10 @@ public class Fido2ApiTestHelper {
 
         public GetAssertionAuthenticatorResponse getGetAssertionResponse() {
             return mGetAssertionAuthenticatorResponse;
+        }
+
+        public CredentialInfo getGetAssertionPasswordCredential() {
+            return mPasswordCredential;
         }
 
         public List<byte[]> getGetMatchingCredentialIdsResponse() {

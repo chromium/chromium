@@ -829,6 +829,18 @@ class EyeDropper extends HTMLElement {
     this.setAttribute('aria-label', global.params.axEyedropperLabel);
     this.addEventListener('click', this.onClick_);
     this.addEventListener('keydown', this.onKeyDown_);
+    // We append the eye dropper icon SVG so that the `WindowText` fill isn't
+    // ignored when rendered in high contrast modes.
+    this.eyeDropperIcon_ = document.createElement('span');
+    this.eyeDropperIcon_.classList.add('icon-container');
+    this.eyeDropperIcon_.innerHTML =
+        '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="20" ' +
+        'viewBox="0 0 24 24" width="20"><path d="M0 0h24v24H0z" fill="none"/>' +
+        '<path fill="WindowText" d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 ' +
+        '0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 ' +
+        '1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 ' +
+        '17.08l8.06-8.06 1.92 1.92L6.92 19z"/></svg>';
+    this.append(this.eyeDropperIcon_);
   }
 
   onClick_ = () => {
@@ -1949,7 +1961,7 @@ class FormatToggler extends HTMLElement {
     this.adjustFormatLabelVisibility_();
 
     this.upDownIcon_ = document.createElement('span');
-    this.upDownIcon_.setAttribute('id', 'up-down-icon');
+    this.upDownIcon_.classList.add('icon-container');
     this.upDownIcon_.innerHTML =
         '<svg class="up-down-icon" width="6" height="8" viewBox="0 0 6 8" fill="none" ' +
         'xmlns="http://www.w3.org/2000/svg"><path d="M1.18359 ' +

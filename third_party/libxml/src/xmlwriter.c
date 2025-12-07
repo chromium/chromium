@@ -5,7 +5,7 @@
  * For license and disclaimer see the license and disclaimer of
  * libxml2.
  *
- * alfred@mickautsch.de
+ * Author: Alfred Mickautsch
  */
 
 #define IN_LIBXML
@@ -36,7 +36,7 @@
   #ifdef __va_copy
     #define va_copy(dest, src) __va_copy(dest, src)
   #else
-    #define va_copy(dest, src) memcpy(dest, src, sizeof(va_list))
+    #define va_copy(dest, src) memcpy(&(dest), &(src), sizeof(va_list))
   #endif
 #endif
 
@@ -112,62 +112,58 @@ static int
                                        xmlTextWriterStackEntry * p);
 
 /**
- * xmlWriterErrMsg:
- * @ctxt:  a writer context
- * @error:  the error number
- * @msg:  the error message
- *
  * Handle a writer error
+ *
+ * @param ctxt  a writer context
+ * @param error  the error number
+ * @param msg  the error message
  */
 static void
 xmlWriterErrMsg(xmlTextWriterPtr ctxt, xmlParserErrors error,
                const char *msg)
 {
-    if (ctxt != NULL) {
-	__xmlRaiseError(NULL, NULL, NULL, ctxt->ctxt,
-	            NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
-		    NULL, 0, NULL, NULL, NULL, 0, 0, "%s", msg);
-    } else {
-	__xmlRaiseError(NULL, NULL, NULL, NULL, NULL, XML_FROM_WRITER, error,
-                    XML_ERR_FATAL, NULL, 0, NULL, NULL, NULL, 0, 0, "%s", msg);
-    }
+    xmlParserCtxtPtr pctxt = NULL;
+
+    if (ctxt != NULL)
+        pctxt = ctxt->ctxt;
+
+    xmlRaiseError(NULL, NULL, NULL, pctxt,
+                  NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
+                  NULL, 0, NULL, NULL, NULL, 0, 0, "%s", msg);
 }
 
 /**
- * xmlWriterErrMsgInt:
- * @ctxt:  a writer context
- * @error:  the error number
- * @msg:  the error message
- * @val:  an int
- *
  * Handle a writer error
+ *
+ * @param ctxt  a writer context
+ * @param error  the error number
+ * @param msg  the error message
+ * @param val  an int
  */
 static void LIBXML_ATTR_FORMAT(3,0)
 xmlWriterErrMsgInt(xmlTextWriterPtr ctxt, xmlParserErrors error,
                const char *msg, int val)
 {
-    if (ctxt != NULL) {
-	__xmlRaiseError(NULL, NULL, NULL, ctxt->ctxt,
-	            NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
-		    NULL, 0, NULL, NULL, NULL, val, 0, msg, val);
-    } else {
-	__xmlRaiseError(NULL, NULL, NULL, NULL, NULL, XML_FROM_WRITER, error,
-                    XML_ERR_FATAL, NULL, 0, NULL, NULL, NULL, val, 0, msg, val);
-    }
+    xmlParserCtxtPtr pctxt = NULL;
+
+    if (ctxt != NULL)
+        pctxt = ctxt->ctxt;
+
+    xmlRaiseError(NULL, NULL, NULL, pctxt,
+	          NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
+		  NULL, 0, NULL, NULL, NULL, val, 0, msg, val);
 }
 
 /**
- * xmlNewTextWriter:
- * @out:  an xmlOutputBufferPtr
- *
- * Create a new xmlNewTextWriter structure using an xmlOutputBufferPtr
- * NOTE: the @out parameter will be deallocated when the writer is closed
+ * Create a new xmlTextWriter structure using an xmlOutputBuffer
+ * NOTE: the `out` parameter will be deallocated when the writer is closed
  *       (if the call succeed.)
  *
- * Returns the new xmlTextWriterPtr or NULL in case of error
+ * @param out  an xmlOutputBuffer
+ * @returns the new xmlTextWriter or NULL in case of error
  */
-xmlTextWriterPtr
-xmlNewTextWriter(xmlOutputBufferPtr out)
+xmlTextWriter *
+xmlNewTextWriter(xmlOutputBuffer *out)
 {
     xmlTextWriterPtr ret;
 
@@ -219,15 +215,13 @@ xmlNewTextWriter(xmlOutputBufferPtr out)
 }
 
 /**
- * xmlNewTextWriterFilename:
- * @uri:  the URI of the resource for the output
- * @compression:  compress the output?
+ * Create a new xmlTextWriter structure with `uri` as output
  *
- * Create a new xmlNewTextWriter structure with @uri as output
- *
- * Returns the new xmlTextWriterPtr or NULL in case of error
+ * @param uri  the URI of the resource for the output
+ * @param compression  compress the output?
+ * @returns the new xmlTextWriter or NULL in case of error
  */
-xmlTextWriterPtr
+xmlTextWriter *
 xmlNewTextWriterFilename(const char *uri, int compression)
 {
     xmlTextWriterPtr ret;
@@ -254,17 +248,15 @@ xmlNewTextWriterFilename(const char *uri, int compression)
 }
 
 /**
- * xmlNewTextWriterMemory:
- * @buf:  xmlBufferPtr
- * @compression:  compress the output?
- *
- * Create a new xmlNewTextWriter structure with @buf as output
+ * Create a new xmlTextWriter structure with `buf` as output
  * TODO: handle compression
  *
- * Returns the new xmlTextWriterPtr or NULL in case of error
+ * @param buf  xmlBuffer
+ * @param compression  compress the output?
+ * @returns the new xmlTextWriter or NULL in case of error
  */
-xmlTextWriterPtr
-xmlNewTextWriterMemory(xmlBufferPtr buf, int compression ATTRIBUTE_UNUSED)
+xmlTextWriter *
+xmlNewTextWriterMemory(xmlBuffer *buf, int compression ATTRIBUTE_UNUSED)
 {
     xmlTextWriterPtr ret;
     xmlOutputBufferPtr out;
@@ -290,19 +282,17 @@ xmlNewTextWriterMemory(xmlBufferPtr buf, int compression ATTRIBUTE_UNUSED)
 }
 
 /**
- * xmlNewTextWriterPushParser:
- * @ctxt: xmlParserCtxtPtr to hold the new XML document tree
- * @compression:  compress the output?
- *
- * Create a new xmlNewTextWriter structure with @ctxt as output
- * NOTE: the @ctxt context will be freed with the resulting writer
+ * Create a new xmlTextWriter structure with `ctxt` as output
+ * NOTE: the `ctxt` context will be freed with the resulting writer
  *       (if the call succeeds).
  * TODO: handle compression
  *
- * Returns the new xmlTextWriterPtr or NULL in case of error
+ * @param ctxt  xmlParserCtxt to hold the new XML document tree
+ * @param compression  compress the output?
+ * @returns the new xmlTextWriter or NULL in case of error
  */
-xmlTextWriterPtr
-xmlNewTextWriterPushParser(xmlParserCtxtPtr ctxt,
+xmlTextWriter *
+xmlNewTextWriterPushParser(xmlParserCtxt *ctxt,
                            int compression ATTRIBUTE_UNUSED)
 {
     xmlTextWriterPtr ret;
@@ -337,16 +327,14 @@ xmlNewTextWriterPushParser(xmlParserCtxtPtr ctxt,
 }
 
 /**
- * xmlNewTextWriterDoc:
- * @doc: address of a xmlDocPtr to hold the new XML document tree
- * @compression:  compress the output?
+ * Create a new xmlTextWriter structure with `doc` as output
  *
- * Create a new xmlNewTextWriter structure with @*doc as output
- *
- * Returns the new xmlTextWriterPtr or NULL in case of error
+ * @param doc  address of a xmlDoc to hold the new XML document tree
+ * @param compression  compress the output?
+ * @returns the new xmlTextWriter or NULL in case of error
  */
-xmlTextWriterPtr
-xmlNewTextWriterDoc(xmlDocPtr * doc, int compression)
+xmlTextWriter *
+xmlNewTextWriterDoc(xmlDoc ** doc, int compression)
 {
     xmlTextWriterPtr ret;
     xmlSAXHandler saxHandler;
@@ -355,8 +343,6 @@ xmlNewTextWriterDoc(xmlDocPtr * doc, int compression)
     memset(&saxHandler, '\0', sizeof(saxHandler));
     xmlSAX2InitDefaultSAXHandler(&saxHandler, 1);
     saxHandler.startDocument = xmlTextWriterStartDocumentCallback;
-    saxHandler.startElement = xmlSAX2StartElement;
-    saxHandler.endElement = xmlSAX2EndElement;
 
     ctxt = xmlCreatePushParserCtxt(&saxHandler, NULL, NULL, 0, NULL);
     if (ctxt == NULL) {
@@ -398,18 +384,16 @@ xmlNewTextWriterDoc(xmlDocPtr * doc, int compression)
 }
 
 /**
- * xmlNewTextWriterTree:
- * @doc: xmlDocPtr
- * @node: xmlNodePtr or NULL for doc->children
- * @compression:  compress the output?
+ * Create a new xmlTextWriter structure with `doc` as output
+ * starting at `node`
  *
- * Create a new xmlNewTextWriter structure with @doc as output
- * starting at @node
- *
- * Returns the new xmlTextWriterPtr or NULL in case of error
+ * @param doc  xmlDoc
+ * @param node  xmlNode or NULL for doc->children
+ * @param compression  compress the output?
+ * @returns the new xmlTextWriter or NULL in case of error
  */
-xmlTextWriterPtr
-xmlNewTextWriterTree(xmlDocPtr doc, xmlNodePtr node, int compression)
+xmlTextWriter *
+xmlNewTextWriterTree(xmlDoc *doc, xmlNode *node, int compression)
 {
     xmlTextWriterPtr ret;
     xmlSAXHandler saxHandler;
@@ -424,8 +408,6 @@ xmlNewTextWriterTree(xmlDocPtr doc, xmlNodePtr node, int compression)
     memset(&saxHandler, '\0', sizeof(saxHandler));
     xmlSAX2InitDefaultSAXHandler(&saxHandler, 1);
     saxHandler.startDocument = xmlTextWriterStartDocumentCallback;
-    saxHandler.startElement = xmlSAX2StartElement;
-    saxHandler.endElement = xmlSAX2EndElement;
 
     ctxt = xmlCreatePushParserCtxt(&saxHandler, NULL, NULL, 0, NULL);
     if (ctxt == NULL) {
@@ -457,13 +439,12 @@ xmlNewTextWriterTree(xmlDocPtr doc, xmlNodePtr node, int compression)
 }
 
 /**
- * xmlFreeTextWriter:
- * @writer:  the xmlTextWriterPtr
- *
  * Deallocate all the resources associated to the writer
+ *
+ * @param writer  the xmlTextWriter
  */
 void
-xmlFreeTextWriter(xmlTextWriterPtr writer)
+xmlFreeTextWriter(xmlTextWriter *writer)
 {
     if (writer == NULL)
         return;
@@ -494,18 +475,16 @@ xmlFreeTextWriter(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterStartDocument:
- * @writer:  the xmlTextWriterPtr
- * @version:  the xml version ("1.0") or NULL for default ("1.0")
- * @encoding:  the encoding or NULL for default
- * @standalone: "yes" or "no" or NULL for default
- *
  * Start a new xml document
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param version  the xml version ("1.0") or NULL for default ("1.0")
+ * @param encoding  the encoding or NULL for default
+ * @param standalone  "yes" or "no" or NULL for default
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartDocument(xmlTextWriterPtr writer, const char *version,
+xmlTextWriterStartDocument(xmlTextWriter *writer, const char *version,
                            const char *encoding, const char *standalone)
 {
     int count;
@@ -539,7 +518,7 @@ xmlTextWriterStartDocument(xmlTextWriterPtr writer, const char *version,
     writer->out->encoder = encoder;
     if (encoder != NULL) {
 	if (writer->out->conv == NULL) {
-	    writer->out->conv = xmlBufCreateSize(4000);
+	    writer->out->conv = xmlBufCreate(4000);
 	}
         xmlCharEncOutput(writer->out, 1);
         if ((writer->doc != NULL) && (writer->doc->encoding == NULL))
@@ -616,16 +595,14 @@ xmlTextWriterStartDocument(xmlTextWriterPtr writer, const char *version,
 }
 
 /**
- * xmlTextWriterEndDocument:
- * @writer:  the xmlTextWriterPtr
- *
  * End an xml document. All open elements are closed, and
  * the content is flushed to the output.
  *
- * Returns the bytes written or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written or -1 in case of error
  */
 int
-xmlTextWriterEndDocument(xmlTextWriterPtr writer)
+xmlTextWriterEndDocument(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -707,15 +684,13 @@ xmlTextWriterEndDocument(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterStartComment:
- * @writer:  the xmlTextWriterPtr
- *
  * Start an xml comment.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartComment(xmlTextWriterPtr writer)
+xmlTextWriterStartComment(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -791,15 +766,13 @@ xmlTextWriterStartComment(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterEndComment:
- * @writer:  the xmlTextWriterPtr
- *
  * End the current xml comment.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndComment(xmlTextWriterPtr writer)
+xmlTextWriterEndComment(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -847,17 +820,15 @@ xmlTextWriterEndComment(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatComment:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write an xml comment.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatComment(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatComment(xmlTextWriter *writer,
                                 const char *format, ...)
 {
     int rc;
@@ -872,17 +843,15 @@ xmlTextWriterWriteFormatComment(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatComment:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write an xml comment.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatComment(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatComment(xmlTextWriter *writer,
                                  const char *format, va_list argptr)
 {
     int rc;
@@ -905,16 +874,14 @@ xmlTextWriterWriteVFormatComment(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteComment:
- * @writer:  the xmlTextWriterPtr
- * @content:  comment string
- *
  * Write an xml comment.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param content  comment string
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteComment(xmlTextWriterPtr writer, const xmlChar * content)
+xmlTextWriterWriteComment(xmlTextWriter *writer, const xmlChar * content)
 {
     int count;
     int sum;
@@ -937,16 +904,14 @@ xmlTextWriterWriteComment(xmlTextWriterPtr writer, const xmlChar * content)
 }
 
 /**
- * xmlTextWriterStartElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  element name
- *
  * Start an xml element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  element name
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartElement(xmlTextWriterPtr writer, const xmlChar * name)
+xmlTextWriterStartElement(xmlTextWriter *writer, const xmlChar * name)
 {
     int count;
     int sum;
@@ -1032,18 +997,16 @@ xmlTextWriterStartElement(xmlTextWriterPtr writer, const xmlChar * name)
 }
 
 /**
- * xmlTextWriterStartElementNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix or NULL
- * @name:  element local name
- * @namespaceURI:  namespace URI or NULL
- *
  * Start an xml element with namespace support.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix or NULL
+ * @param name  element local name
+ * @param namespaceURI  namespace URI or NULL
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartElementNS(xmlTextWriterPtr writer,
+xmlTextWriterStartElementNS(xmlTextWriter *writer,
                             const xmlChar * prefix, const xmlChar * name,
                             const xmlChar * namespaceURI)
 {
@@ -1100,15 +1063,13 @@ xmlTextWriterStartElementNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterEndElement:
- * @writer:  the xmlTextWriterPtr
- *
  * End the current xml element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndElement(xmlTextWriterPtr writer)
+xmlTextWriterEndElement(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -1192,15 +1153,13 @@ xmlTextWriterEndElement(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterFullEndElement:
- * @writer:  the xmlTextWriterPtr
- *
  * End the current xml element. Writes an end tag even if the element is empty
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterFullEndElement(xmlTextWriterPtr writer)
+xmlTextWriterFullEndElement(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -1275,17 +1234,15 @@ xmlTextWriterFullEndElement(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatRaw:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted raw xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatRaw(xmlTextWriterPtr writer, const char *format,
+xmlTextWriterWriteFormatRaw(xmlTextWriter *writer, const char *format,
                             ...)
 {
     int rc;
@@ -1300,17 +1257,15 @@ xmlTextWriterWriteFormatRaw(xmlTextWriterPtr writer, const char *format,
 }
 
 /**
- * xmlTextWriterWriteVFormatRaw:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted raw xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatRaw(xmlTextWriterPtr writer, const char *format,
+xmlTextWriterWriteVFormatRaw(xmlTextWriter *writer, const char *format,
                              va_list argptr)
 {
     int rc;
@@ -1330,18 +1285,16 @@ xmlTextWriterWriteVFormatRaw(xmlTextWriterPtr writer, const char *format,
 }
 
 /**
- * xmlTextWriterWriteRawLen:
- * @writer:  the xmlTextWriterPtr
- * @content:  text string
- * @len:  length of the text string
- *
  * Write an xml text.
  * TODO: what about entities and special chars??
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param content  text string
+ * @param len  length of the text string
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteRawLen(xmlTextWriterPtr writer, const xmlChar * content,
+xmlTextWriterWriteRawLen(xmlTextWriter *writer, const xmlChar * content,
                          int len)
 {
     int count;
@@ -1386,32 +1339,28 @@ xmlTextWriterWriteRawLen(xmlTextWriterPtr writer, const xmlChar * content,
 }
 
 /**
- * xmlTextWriterWriteRaw:
- * @writer:  the xmlTextWriterPtr
- * @content:  text string
- *
  * Write a raw xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param content  text string
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteRaw(xmlTextWriterPtr writer, const xmlChar * content)
+xmlTextWriterWriteRaw(xmlTextWriter *writer, const xmlChar * content)
 {
     return xmlTextWriterWriteRawLen(writer, content, xmlStrlen(content));
 }
 
 /**
- * xmlTextWriterWriteFormatString:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatString(xmlTextWriterPtr writer, const char *format,
+xmlTextWriterWriteFormatString(xmlTextWriter *writer, const char *format,
                                ...)
 {
     int rc;
@@ -1429,17 +1378,15 @@ xmlTextWriterWriteFormatString(xmlTextWriterPtr writer, const char *format,
 }
 
 /**
- * xmlTextWriterWriteVFormatString:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatString(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatString(xmlTextWriter *writer,
                                 const char *format, va_list argptr)
 {
     int rc;
@@ -1459,16 +1406,14 @@ xmlTextWriterWriteVFormatString(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteString:
- * @writer:  the xmlTextWriterPtr
- * @content:  text string
- *
  * Write an xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param content  text string
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteString(xmlTextWriterPtr writer, const xmlChar * content)
+xmlTextWriterWriteString(xmlTextWriter *writer, const xmlChar * content)
 {
     int count;
     int sum;
@@ -1488,10 +1433,9 @@ xmlTextWriterWriteString(xmlTextWriterPtr writer, const xmlChar * content)
             switch (p->state) {
                 case XML_TEXTWRITER_NAME:
                 case XML_TEXTWRITER_TEXT:
-#if 0
-                    buf = NULL;
-		    xmlOutputBufferWriteEscape(writer->out, content, NULL);
-#endif
+                    /*
+                     * TODO: Use xmlSerializeText
+                     */
                     buf = xmlEncodeSpecialChars(NULL, content);
                     break;
                 case XML_TEXTWRITER_ATTRIBUTE:
@@ -1520,15 +1464,13 @@ xmlTextWriterWriteString(xmlTextWriterPtr writer, const xmlChar * content)
 }
 
 /**
- * xmlOutputBufferWriteBase64:
- * @out: the xmlOutputBufferPtr
- * @data:   binary data
- * @len:  the number of bytes to encode
- *
  * Write base64 encoded data to an xmlOutputBuffer.
  * Adapted from John Walker's base64.c (http://www.fourmilab.ch/).
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param out  the xmlOutputBuffer
+ * @param data  binary data
+ * @param len  the number of bytes to encode
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 static int
 xmlOutputBufferWriteBase64(xmlOutputBufferPtr out, int len,
@@ -1602,18 +1544,16 @@ xmlOutputBufferWriteBase64(xmlOutputBufferPtr out, int len,
 }
 
 /**
- * xmlTextWriterWriteBase64:
- * @writer: the xmlTextWriterPtr
- * @data:   binary data
- * @start:  the position within the data of the first byte to encode
- * @len:  the number of bytes to encode
- *
  * Write an base64 encoded xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param data  binary data
+ * @param start  the position within the data of the first byte to encode
+ * @param len  the number of bytes to encode
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteBase64(xmlTextWriterPtr writer, const char *data,
+xmlTextWriterWriteBase64(xmlTextWriter *writer, const char *data,
                          int start, int len)
 {
     int count;
@@ -1650,15 +1590,12 @@ xmlTextWriterWriteBase64(xmlTextWriterPtr writer, const char *data,
 }
 
 /**
- * xmlOutputBufferWriteBinHex:
- * @out: the xmlOutputBufferPtr
- * @data:   binary data
- * @len:  the number of bytes to encode
- *
  * Write hqx encoded data to an xmlOutputBuffer.
- * ::todo
  *
- * Returns the bytes written (may be 0 because of buffering)
+ * @param out  the xmlOutputBuffer
+ * @param data  binary data
+ * @param len  the number of bytes to encode
+ * @returns the bytes written (may be 0 because of buffering)
  * or -1 in case of error
  */
 static int
@@ -1695,18 +1632,16 @@ xmlOutputBufferWriteBinHex(xmlOutputBufferPtr out,
 }
 
 /**
- * xmlTextWriterWriteBinHex:
- * @writer: the xmlTextWriterPtr
- * @data:   binary data
- * @start:  the position within the data of the first byte to encode
- * @len:  the number of bytes to encode
- *
  * Write a BinHex encoded xml text.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param data  binary data
+ * @param start  the position within the data of the first byte to encode
+ * @param len  the number of bytes to encode
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteBinHex(xmlTextWriterPtr writer, const char *data,
+xmlTextWriterWriteBinHex(xmlTextWriter *writer, const char *data,
                          int start, int len)
 {
     int count;
@@ -1743,16 +1678,14 @@ xmlTextWriterWriteBinHex(xmlTextWriterPtr writer, const char *data,
 }
 
 /**
- * xmlTextWriterStartAttribute:
- * @writer:  the xmlTextWriterPtr
- * @name:  element name
- *
  * Start an xml attribute.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  element name
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartAttribute(xmlTextWriterPtr writer, const xmlChar * name)
+xmlTextWriterStartAttribute(xmlTextWriter *writer, const xmlChar * name)
 {
     int count;
     int sum;
@@ -1807,18 +1740,16 @@ xmlTextWriterStartAttribute(xmlTextWriterPtr writer, const xmlChar * name)
 }
 
 /**
- * xmlTextWriterStartAttributeNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix or NULL
- * @name:  element local name
- * @namespaceURI:  namespace URI or NULL
- *
  * Start an xml attribute with namespace support.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix or NULL
+ * @param name  element local name
+ * @param namespaceURI  namespace URI or NULL
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartAttributeNS(xmlTextWriterPtr writer,
+xmlTextWriterStartAttributeNS(xmlTextWriter *writer,
                               const xmlChar * prefix, const xmlChar * name,
                               const xmlChar * namespaceURI)
 {
@@ -1899,15 +1830,13 @@ xmlTextWriterStartAttributeNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterEndAttribute:
- * @writer:  the xmlTextWriterPtr
- *
  * End the current xml element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndAttribute(xmlTextWriterPtr writer)
+xmlTextWriterEndAttribute(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -1946,18 +1875,16 @@ xmlTextWriterEndAttribute(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatAttribute:
- * @writer:  the xmlTextWriterPtr
- * @name:  attribute name
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted xml attribute.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  attribute name
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatAttribute(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatAttribute(xmlTextWriter *writer,
                                   const xmlChar * name, const char *format,
                                   ...)
 {
@@ -1973,18 +1900,16 @@ xmlTextWriterWriteFormatAttribute(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatAttribute:
- * @writer:  the xmlTextWriterPtr
- * @name:  attribute name
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml attribute.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  attribute name
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatAttribute(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatAttribute(xmlTextWriter *writer,
                                    const xmlChar * name,
                                    const char *format, va_list argptr)
 {
@@ -2005,17 +1930,15 @@ xmlTextWriterWriteVFormatAttribute(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteAttribute:
- * @writer:  the xmlTextWriterPtr
- * @name:  attribute name
- * @content:  attribute content
- *
  * Write an xml attribute.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  attribute name
+ * @param content  attribute content
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteAttribute(xmlTextWriterPtr writer, const xmlChar * name,
+xmlTextWriterWriteAttribute(xmlTextWriter *writer, const xmlChar * name,
                             const xmlChar * content)
 {
     int count;
@@ -2039,20 +1962,18 @@ xmlTextWriterWriteAttribute(xmlTextWriterPtr writer, const xmlChar * name,
 }
 
 /**
- * xmlTextWriterWriteFormatAttributeNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix
- * @name:  attribute local name
- * @namespaceURI:  namespace URI
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted xml attribute.with namespace support
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix
+ * @param name  attribute local name
+ * @param namespaceURI  namespace URI
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatAttributeNS(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatAttributeNS(xmlTextWriter *writer,
                                     const xmlChar * prefix,
                                     const xmlChar * name,
                                     const xmlChar * namespaceURI,
@@ -2071,20 +1992,18 @@ xmlTextWriterWriteFormatAttributeNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatAttributeNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix
- * @name:  attribute local name
- * @namespaceURI:  namespace URI
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml attribute.with namespace support
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix
+ * @param name  attribute local name
+ * @param namespaceURI  namespace URI
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatAttributeNS(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatAttributeNS(xmlTextWriter *writer,
                                      const xmlChar * prefix,
                                      const xmlChar * name,
                                      const xmlChar * namespaceURI,
@@ -2108,19 +2027,17 @@ xmlTextWriterWriteVFormatAttributeNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteAttributeNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix
- * @name:  attribute local name
- * @namespaceURI:  namespace URI
- * @content:  attribute content
- *
  * Write an xml attribute.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix
+ * @param name  attribute local name
+ * @param namespaceURI  namespace URI
+ * @param content  attribute content
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteAttributeNS(xmlTextWriterPtr writer,
+xmlTextWriterWriteAttributeNS(xmlTextWriter *writer,
                               const xmlChar * prefix, const xmlChar * name,
                               const xmlChar * namespaceURI,
                               const xmlChar * content)
@@ -2149,18 +2066,16 @@ xmlTextWriterWriteAttributeNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteFormatElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  element name
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted xml element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  element name
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatElement(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatElement(xmlTextWriter *writer,
                                 const xmlChar * name, const char *format,
                                 ...)
 {
@@ -2176,18 +2091,16 @@ xmlTextWriterWriteFormatElement(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  element name
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  element name
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatElement(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatElement(xmlTextWriter *writer,
                                  const xmlChar * name, const char *format,
                                  va_list argptr)
 {
@@ -2208,17 +2121,15 @@ xmlTextWriterWriteVFormatElement(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  element name
- * @content:  element content
- *
  * Write an xml element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  element name
+ * @param content  element content
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteElement(xmlTextWriterPtr writer, const xmlChar * name,
+xmlTextWriterWriteElement(xmlTextWriter *writer, const xmlChar * name,
                           const xmlChar * content)
 {
     int count;
@@ -2244,20 +2155,18 @@ xmlTextWriterWriteElement(xmlTextWriterPtr writer, const xmlChar * name,
 }
 
 /**
- * xmlTextWriterWriteFormatElementNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix
- * @name:  element local name
- * @namespaceURI:  namespace URI
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted xml element with namespace support.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix
+ * @param name  element local name
+ * @param namespaceURI  namespace URI
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatElementNS(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatElementNS(xmlTextWriter *writer,
                                   const xmlChar * prefix,
                                   const xmlChar * name,
                                   const xmlChar * namespaceURI,
@@ -2276,20 +2185,18 @@ xmlTextWriterWriteFormatElementNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatElementNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix
- * @name:  element local name
- * @namespaceURI:  namespace URI
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml element with namespace support.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix
+ * @param name  element local name
+ * @param namespaceURI  namespace URI
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatElementNS(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatElementNS(xmlTextWriter *writer,
                                    const xmlChar * prefix,
                                    const xmlChar * name,
                                    const xmlChar * namespaceURI,
@@ -2313,19 +2220,17 @@ xmlTextWriterWriteVFormatElementNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteElementNS:
- * @writer:  the xmlTextWriterPtr
- * @prefix:  namespace prefix
- * @name:  element local name
- * @namespaceURI:  namespace URI
- * @content:  element content
- *
  * Write an xml element with namespace support.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param prefix  namespace prefix
+ * @param name  element local name
+ * @param namespaceURI  namespace URI
+ * @param content  element content
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteElementNS(xmlTextWriterPtr writer,
+xmlTextWriterWriteElementNS(xmlTextWriter *writer,
                             const xmlChar * prefix, const xmlChar * name,
                             const xmlChar * namespaceURI,
                             const xmlChar * content)
@@ -2355,16 +2260,14 @@ xmlTextWriterWriteElementNS(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterStartPI:
- * @writer:  the xmlTextWriterPtr
- * @target:  PI target
- *
  * Start an xml PI.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param target  PI target
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartPI(xmlTextWriterPtr writer, const xmlChar * target)
+xmlTextWriterStartPI(xmlTextWriter *writer, const xmlChar * target)
 {
     int count;
     int sum;
@@ -2452,15 +2355,13 @@ xmlTextWriterStartPI(xmlTextWriterPtr writer, const xmlChar * target)
 }
 
 /**
- * xmlTextWriterEndPI:
- * @writer:  the xmlTextWriterPtr
- *
  * End the current xml PI.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndPI(xmlTextWriterPtr writer)
+xmlTextWriterEndPI(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -2503,18 +2404,16 @@ xmlTextWriterEndPI(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatPI:
- * @writer:  the xmlTextWriterPtr
- * @target:  PI target
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted PI.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param target  PI target
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatPI(xmlTextWriterPtr writer, const xmlChar * target,
+xmlTextWriterWriteFormatPI(xmlTextWriter *writer, const xmlChar * target,
                            const char *format, ...)
 {
     int rc;
@@ -2529,18 +2428,16 @@ xmlTextWriterWriteFormatPI(xmlTextWriterPtr writer, const xmlChar * target,
 }
 
 /**
- * xmlTextWriterWriteVFormatPI:
- * @writer:  the xmlTextWriterPtr
- * @target:  PI target
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml PI.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param target  PI target
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatPI(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatPI(xmlTextWriter *writer,
                             const xmlChar * target, const char *format,
                             va_list argptr)
 {
@@ -2561,17 +2458,15 @@ xmlTextWriterWriteVFormatPI(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWritePI:
- * @writer:  the xmlTextWriterPtr
- * @target:  PI target
- * @content:  PI content
- *
  * Write an xml PI.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param target  PI target
+ * @param content  PI content
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWritePI(xmlTextWriterPtr writer, const xmlChar * target,
+xmlTextWriterWritePI(xmlTextWriter *writer, const xmlChar * target,
                      const xmlChar * content)
 {
     int count;
@@ -2597,15 +2492,13 @@ xmlTextWriterWritePI(xmlTextWriterPtr writer, const xmlChar * target,
 }
 
 /**
- * xmlTextWriterStartCDATA:
- * @writer:  the xmlTextWriterPtr
- *
  * Start an xml CDATA section.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartCDATA(xmlTextWriterPtr writer)
+xmlTextWriterStartCDATA(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -2676,15 +2569,13 @@ xmlTextWriterStartCDATA(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterEndCDATA:
- * @writer:  the xmlTextWriterPtr
- *
  * End an xml CDATA section.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndCDATA(xmlTextWriterPtr writer)
+xmlTextWriterEndCDATA(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -2719,17 +2610,15 @@ xmlTextWriterEndCDATA(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatCDATA:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted xml CDATA.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatCDATA(xmlTextWriterPtr writer, const char *format,
+xmlTextWriterWriteFormatCDATA(xmlTextWriter *writer, const char *format,
                               ...)
 {
     int rc;
@@ -2744,17 +2633,15 @@ xmlTextWriterWriteFormatCDATA(xmlTextWriterPtr writer, const char *format,
 }
 
 /**
- * xmlTextWriterWriteVFormatCDATA:
- * @writer:  the xmlTextWriterPtr
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted xml CDATA.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatCDATA(xmlTextWriterPtr writer, const char *format,
+xmlTextWriterWriteVFormatCDATA(xmlTextWriter *writer, const char *format,
                                va_list argptr)
 {
     int rc;
@@ -2774,16 +2661,14 @@ xmlTextWriterWriteVFormatCDATA(xmlTextWriterPtr writer, const char *format,
 }
 
 /**
- * xmlTextWriterWriteCDATA:
- * @writer:  the xmlTextWriterPtr
- * @content:  CDATA content
- *
  * Write an xml CDATA.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param content  CDATA content
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteCDATA(xmlTextWriterPtr writer, const xmlChar * content)
+xmlTextWriterWriteCDATA(xmlTextWriter *writer, const xmlChar * content)
 {
     int count;
     int sum;
@@ -2808,18 +2693,16 @@ xmlTextWriterWriteCDATA(xmlTextWriterPtr writer, const xmlChar * content)
 }
 
 /**
- * xmlTextWriterStartDTD:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- *
  * Start an xml DTD.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartDTD(xmlTextWriterPtr writer,
+xmlTextWriterStartDTD(xmlTextWriter *writer,
                       const xmlChar * name,
                       const xmlChar * pubid, const xmlChar * sysid)
 {
@@ -2948,15 +2831,13 @@ xmlTextWriterStartDTD(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterEndDTD:
- * @writer:  the xmlTextWriterPtr
- *
  * End an xml DTD.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndDTD(xmlTextWriterPtr writer)
+xmlTextWriterEndDTD(xmlTextWriter *writer)
 {
     int loop;
     int count;
@@ -3025,20 +2906,18 @@ xmlTextWriterEndDTD(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatDTD:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a DTD with a formatted markup declarations part.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatDTD(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatDTD(xmlTextWriter *writer,
                             const xmlChar * name,
                             const xmlChar * pubid,
                             const xmlChar * sysid, const char *format, ...)
@@ -3056,20 +2935,18 @@ xmlTextWriterWriteFormatDTD(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatDTD:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a DTD with a formatted markup declarations part.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatDTD(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatDTD(xmlTextWriter *writer,
                              const xmlChar * name,
                              const xmlChar * pubid,
                              const xmlChar * sysid,
@@ -3092,19 +2969,17 @@ xmlTextWriterWriteVFormatDTD(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTD:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- * @subset:  string content of the DTD
- *
  * Write a DTD.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @param subset  string content of the DTD
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTD(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTD(xmlTextWriter *writer,
                       const xmlChar * name,
                       const xmlChar * pubid,
                       const xmlChar * sysid, const xmlChar * subset)
@@ -3132,16 +3007,14 @@ xmlTextWriterWriteDTD(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterStartDTDElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD element
- *
  * Start an xml DTD element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD element
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartDTDElement(xmlTextWriterPtr writer, const xmlChar * name)
+xmlTextWriterStartDTDElement(xmlTextWriter *writer, const xmlChar * name)
 {
     int count;
     int sum;
@@ -3220,15 +3093,13 @@ xmlTextWriterStartDTDElement(xmlTextWriterPtr writer, const xmlChar * name)
 }
 
 /**
- * xmlTextWriterEndDTDElement:
- * @writer:  the xmlTextWriterPtr
- *
  * End an xml DTD element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndDTDElement(xmlTextWriterPtr writer)
+xmlTextWriterEndDTDElement(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -3271,18 +3142,16 @@ xmlTextWriterEndDTDElement(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatDTDElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD element
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted DTD element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD element
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatDTDElement(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatDTDElement(xmlTextWriter *writer,
                                    const xmlChar * name,
                                    const char *format, ...)
 {
@@ -3298,18 +3167,16 @@ xmlTextWriterWriteFormatDTDElement(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatDTDElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD element
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted DTD element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD element
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatDTDElement(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatDTDElement(xmlTextWriter *writer,
                                     const xmlChar * name,
                                     const char *format, va_list argptr)
 {
@@ -3330,17 +3197,15 @@ xmlTextWriterWriteVFormatDTDElement(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDElement:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD element
- * @content:  content of the element
- *
  * Write a DTD element.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD element
+ * @param content  content of the element
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDElement(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDElement(xmlTextWriter *writer,
                              const xmlChar * name, const xmlChar * content)
 {
     int count;
@@ -3369,16 +3234,14 @@ xmlTextWriterWriteDTDElement(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterStartDTDAttlist:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD ATTLIST
- *
  * Start an xml DTD ATTLIST.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD ATTLIST
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartDTDAttlist(xmlTextWriterPtr writer, const xmlChar * name)
+xmlTextWriterStartDTDAttlist(xmlTextWriter *writer, const xmlChar * name)
 {
     int count;
     int sum;
@@ -3457,15 +3320,13 @@ xmlTextWriterStartDTDAttlist(xmlTextWriterPtr writer, const xmlChar * name)
 }
 
 /**
- * xmlTextWriterEndDTDAttlist:
- * @writer:  the xmlTextWriterPtr
- *
  * End an xml DTD attribute list.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndDTDAttlist(xmlTextWriterPtr writer)
+xmlTextWriterEndDTDAttlist(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -3508,18 +3369,16 @@ xmlTextWriterEndDTDAttlist(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatDTDAttlist:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD ATTLIST
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted DTD ATTLIST.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD ATTLIST
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatDTDAttlist(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatDTDAttlist(xmlTextWriter *writer,
                                    const xmlChar * name,
                                    const char *format, ...)
 {
@@ -3535,18 +3394,16 @@ xmlTextWriterWriteFormatDTDAttlist(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatDTDAttlist:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD ATTLIST
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted DTD ATTLIST.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD ATTLIST
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatDTDAttlist(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatDTDAttlist(xmlTextWriter *writer,
                                     const xmlChar * name,
                                     const char *format, va_list argptr)
 {
@@ -3567,17 +3424,15 @@ xmlTextWriterWriteVFormatDTDAttlist(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDAttlist:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the DTD ATTLIST
- * @content:  content of the ATTLIST
- *
  * Write a DTD ATTLIST.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the DTD ATTLIST
+ * @param content  content of the ATTLIST
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDAttlist(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDAttlist(xmlTextWriter *writer,
                              const xmlChar * name, const xmlChar * content)
 {
     int count;
@@ -3606,17 +3461,15 @@ xmlTextWriterWriteDTDAttlist(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterStartDTDEntity:
- * @writer:  the xmlTextWriterPtr
- * @pe:  TRUE if this is a parameter entity, FALSE if not
- * @name:  the name of the DTD ATTLIST
- *
  * Start an xml DTD ATTLIST.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pe  TRUE if this is a parameter entity, FALSE if not
+ * @param name  the name of the DTD ATTLIST
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterStartDTDEntity(xmlTextWriterPtr writer,
+xmlTextWriterStartDTDEntity(xmlTextWriter *writer,
                             int pe, const xmlChar * name)
 {
     int count;
@@ -3708,15 +3561,13 @@ xmlTextWriterStartDTDEntity(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterEndDTDEntity:
- * @writer:  the xmlTextWriterPtr
- *
  * End an xml DTD entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterEndDTDEntity(xmlTextWriterPtr writer)
+xmlTextWriterEndDTDEntity(xmlTextWriter *writer)
 {
     int count;
     int sum;
@@ -3765,19 +3616,17 @@ xmlTextWriterEndDTDEntity(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterWriteFormatDTDInternalEntity:
- * @writer:  the xmlTextWriterPtr
- * @pe:  TRUE if this is a parameter entity, FALSE if not
- * @name:  the name of the DTD entity
- * @format:  format string (see printf)
- * @...:  extra parameters for the format
- *
  * Write a formatted DTD internal entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pe  TRUE if this is a parameter entity, FALSE if not
+ * @param name  the name of the DTD entity
+ * @param format  format string (see printf)
+ * @param ...  extra parameters for the format
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteFormatDTDInternalEntity(xmlTextWriterPtr writer,
+xmlTextWriterWriteFormatDTDInternalEntity(xmlTextWriter *writer,
                                           int pe,
                                           const xmlChar * name,
                                           const char *format, ...)
@@ -3795,19 +3644,17 @@ xmlTextWriterWriteFormatDTDInternalEntity(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteVFormatDTDInternalEntity:
- * @writer:  the xmlTextWriterPtr
- * @pe:  TRUE if this is a parameter entity, FALSE if not
- * @name:  the name of the DTD entity
- * @format:  format string (see printf)
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Write a formatted DTD internal entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pe  TRUE if this is a parameter entity, FALSE if not
+ * @param name  the name of the DTD entity
+ * @param format  format string (see printf)
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteVFormatDTDInternalEntity(xmlTextWriterPtr writer,
+xmlTextWriterWriteVFormatDTDInternalEntity(xmlTextWriter *writer,
                                            int pe,
                                            const xmlChar * name,
                                            const char *format,
@@ -3830,21 +3677,19 @@ xmlTextWriterWriteVFormatDTDInternalEntity(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDEntity:
- * @writer:  the xmlTextWriterPtr
- * @pe:  TRUE if this is a parameter entity, FALSE if not
- * @name:  the name of the DTD entity
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- * @ndataid:  the xml notation name.
- * @content:  content of the entity
- *
  * Write a DTD entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pe  TRUE if this is a parameter entity, FALSE if not
+ * @param name  the name of the DTD entity
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @param ndataid  the xml notation name.
+ * @param content  content of the entity
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDEntity(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDEntity(xmlTextWriter *writer,
                             int pe,
                             const xmlChar * name,
                             const xmlChar * pubid,
@@ -3866,18 +3711,16 @@ xmlTextWriterWriteDTDEntity(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDInternalEntity:
- * @writer:  the xmlTextWriterPtr
- * @pe:  TRUE if this is a parameter entity, FALSE if not
- * @name:  the name of the DTD entity
- * @content:  content of the entity
- *
  * Write a DTD internal entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pe  TRUE if this is a parameter entity, FALSE if not
+ * @param name  the name of the DTD entity
+ * @param content  content of the entity
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDInternalEntity(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDInternalEntity(xmlTextWriter *writer,
                                     int pe,
                                     const xmlChar * name,
                                     const xmlChar * content)
@@ -3908,20 +3751,18 @@ xmlTextWriterWriteDTDInternalEntity(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDExternalEntity:
- * @writer:  the xmlTextWriterPtr
- * @pe:  TRUE if this is a parameter entity, FALSE if not
- * @name:  the name of the DTD entity
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- * @ndataid:  the xml notation name.
+ * Write a DTD external entity. The entity must have been started with #xmlTextWriterStartDTDEntity
  *
- * Write a DTD external entity. The entity must have been started with xmlTextWriterStartDTDEntity
- *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pe  TRUE if this is a parameter entity, FALSE if not
+ * @param name  the name of the DTD entity
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @param ndataid  the xml notation name.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDExternalEntity(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDExternalEntity(xmlTextWriter *writer,
                                     int pe,
                                     const xmlChar * name,
                                     const xmlChar * pubid,
@@ -3958,18 +3799,16 @@ xmlTextWriterWriteDTDExternalEntity(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDExternalEntityContents:
- * @writer:  the xmlTextWriterPtr
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- * @ndataid:  the xml notation name.
- *
  * Write the contents of a DTD external entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @param ndataid  the xml notation name.
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDExternalEntityContents(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDExternalEntityContents(xmlTextWriter *writer,
                                             const xmlChar * pubid,
                                             const xmlChar * sysid,
                                             const xmlChar * ndataid)
@@ -4090,18 +3929,16 @@ xmlTextWriterWriteDTDExternalEntityContents(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterWriteDTDNotation:
- * @writer:  the xmlTextWriterPtr
- * @name:  the name of the xml notation
- * @pubid:  the public identifier, which is an alternative to the system identifier
- * @sysid:  the system identifier, which is the URI of the DTD
- *
  * Write a DTD entity.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @param name  the name of the xml notation
+ * @param pubid  the public identifier, which is an alternative to the system identifier
+ * @param sysid  the system identifier, which is the URI of the DTD
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterWriteDTDNotation(xmlTextWriterPtr writer,
+xmlTextWriterWriteDTDNotation(xmlTextWriter *writer,
                               const xmlChar * name,
                               const xmlChar * pubid, const xmlChar * sysid)
 {
@@ -4213,15 +4050,13 @@ xmlTextWriterWriteDTDNotation(xmlTextWriterPtr writer,
 }
 
 /**
- * xmlTextWriterFlush:
- * @writer:  the xmlTextWriterPtr
- *
  * Flush the output buffer.
  *
- * Returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ * @param writer  the xmlTextWriter
+ * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
  */
 int
-xmlTextWriterFlush(xmlTextWriterPtr writer)
+xmlTextWriterFlush(xmlTextWriter *writer)
 {
     int count;
 
@@ -4237,17 +4072,15 @@ xmlTextWriterFlush(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterClose:
- * @writer:  the xmlTextWriterPtr
- *
  * Flushes and closes the output buffer.
  *
- * Available since 2.13.0.
+ * @since 2.13.0
  *
- * Returns an xmlParserErrors code.
+ * @param writer  the xmlTextWriter
+ * @returns an xmlParserErrors code.
  */
 int
-xmlTextWriterClose(xmlTextWriterPtr writer)
+xmlTextWriterClose(xmlTextWriter *writer)
 {
     int result;
 
@@ -4270,10 +4103,9 @@ xmlTextWriterClose(xmlTextWriterPtr writer)
  */
 
 /**
- * xmlFreeTextWriterStackEntry:
- * @lk:  the xmlLinkPtr
- *
  * Free callback for the xmlList.
+ *
+ * @param lk  the xmlLink
  */
 static void
 xmlFreeTextWriterStackEntry(xmlLinkPtr lk)
@@ -4290,13 +4122,11 @@ xmlFreeTextWriterStackEntry(xmlLinkPtr lk)
 }
 
 /**
- * xmlCmpTextWriterStackEntry:
- * @data0:  the first data
- * @data1:  the second data
- *
  * Compare callback for the xmlList.
  *
- * Returns -1, 0, 1
+ * @param data0  the first data
+ * @param data1  the second data
+ * @returns -1, 0, 1
  */
 static int
 xmlCmpTextWriterStackEntry(const void *data0, const void *data1)
@@ -4324,10 +4154,9 @@ xmlCmpTextWriterStackEntry(const void *data0, const void *data1)
  */
 
 /**
- * xmlTextWriterOutputNSDecl:
- * @writer:  the xmlTextWriterPtr
- *
  * Output the current namespace declarations.
+ *
+ * @param writer  the xmlTextWriter
  */
 static int
 xmlTextWriterOutputNSDecl(xmlTextWriterPtr writer)
@@ -4369,10 +4198,9 @@ xmlTextWriterOutputNSDecl(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlFreeTextWriterNsStackEntry:
- * @lk:  the xmlLinkPtr
- *
  * Free callback for the xmlList.
+ *
+ * @param lk  the xmlLink
  */
 static void
 xmlFreeTextWriterNsStackEntry(xmlLinkPtr lk)
@@ -4392,13 +4220,11 @@ xmlFreeTextWriterNsStackEntry(xmlLinkPtr lk)
 }
 
 /**
- * xmlCmpTextWriterNsStackEntry:
- * @data0:  the first data
- * @data1:  the second data
- *
  * Compare callback for the xmlList.
  *
- * Returns -1, 0, 1
+ * @param data0  the first data
+ * @param data1  the second data
+ * @returns -1, 0, 1
  */
 static int
 xmlCmpTextWriterNsStackEntry(const void *data0, const void *data1)
@@ -4428,14 +4254,12 @@ xmlCmpTextWriterNsStackEntry(const void *data0, const void *data1)
 }
 
 /**
- * xmlTextWriterWriteDocCallback:
- * @context:  the xmlBufferPtr
- * @str:  the data to write
- * @len:  the length of the data
- *
  * Write callback for the xmlOutputBuffer with target xmlBuffer
  *
- * Returns -1, 0, 1
+ * @param context  the xmlBuffer
+ * @param str  the data to write
+ * @param len  the length of the data
+ * @returns -1, 0, 1
  */
 static int
 xmlTextWriterWriteDocCallback(void *context, const char *str, int len)
@@ -4443,7 +4267,8 @@ xmlTextWriterWriteDocCallback(void *context, const char *str, int len)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) context;
     int rc;
 
-    if ((rc = xmlParseChunk(ctxt, str, len, 0)) != 0) {
+    rc = xmlParseChunk(ctxt, str, len, 0);
+    if (rc != 0) {
         xmlWriterErrMsgInt(NULL, XML_ERR_INTERNAL_ERROR,
                         "xmlTextWriterWriteDocCallback : XML error %d !\n",
                         rc);
@@ -4454,12 +4279,10 @@ xmlTextWriterWriteDocCallback(void *context, const char *str, int len)
 }
 
 /**
- * xmlTextWriterCloseDocCallback:
- * @context:  the xmlBufferPtr
- *
  * Close callback for the xmlOutputBuffer with target xmlBuffer
  *
- * Returns -1, 0, 1
+ * @param context  the xmlBuffer
+ * @returns -1, 0, 1
  */
 static int
 xmlTextWriterCloseDocCallback(void *context)
@@ -4467,7 +4290,8 @@ xmlTextWriterCloseDocCallback(void *context)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) context;
     int rc;
 
-    if ((rc = xmlParseChunk(ctxt, NULL, 0, 1)) != 0) {
+    rc = xmlParseChunk(ctxt, NULL, 0, 1);
+    if (rc != 0) {
         xmlWriterErrMsgInt(NULL, XML_ERR_INTERNAL_ERROR,
                         "xmlTextWriterCloseDocCallback : XML error %d !\n",
                         rc);
@@ -4478,13 +4302,11 @@ xmlTextWriterCloseDocCallback(void *context)
 }
 
 /**
- * xmlTextWriterVSprintf:
- * @format:  see printf
- * @argptr:  pointer to the first member of the variable argument list.
- *
  * Utility function for formatted output
  *
- * Returns a new xmlChar buffer with the data or NULL on error. This buffer must be freed.
+ * @param format  see printf
+ * @param argptr  pointer to the first member of the variable argument list.
+ * @returns a new xmlChar buffer with the data or NULL on error. This buffer must be freed.
  */
 static xmlChar *
 xmlTextWriterVSprintf(const char *format, va_list argptr)
@@ -4522,10 +4344,9 @@ xmlTextWriterVSprintf(const char *format, va_list argptr)
 }
 
 /**
- * xmlTextWriterStartDocumentCallback:
- * @ctx: the user data (XML parser context)
- *
  * called at the start of document processing.
+ *
+ * @param ctx  the user data (XML parser context)
  */
 static void
 xmlTextWriterStartDocumentCallback(void *ctx)
@@ -4571,16 +4392,14 @@ xmlTextWriterStartDocumentCallback(void *ctx)
 }
 
 /**
- * xmlTextWriterSetIndent:
- * @writer:  the xmlTextWriterPtr
- * @indent:  do indentation?
- *
  * Set indentation output. indent = 0 do not indentation. indent > 0 do indentation.
  *
- * Returns -1 on error or 0 otherwise.
+ * @param writer  the xmlTextWriter
+ * @param indent  do indentation?
+ * @returns -1 on error or 0 otherwise.
  */
 int
-xmlTextWriterSetIndent(xmlTextWriterPtr writer, int indent)
+xmlTextWriterSetIndent(xmlTextWriter *writer, int indent)
 {
     if ((writer == NULL) || (indent < 0))
         return -1;
@@ -4592,16 +4411,14 @@ xmlTextWriterSetIndent(xmlTextWriterPtr writer, int indent)
 }
 
 /**
- * xmlTextWriterSetIndentString:
- * @writer:  the xmlTextWriterPtr
- * @str:  the xmlChar string
- *
  * Set string indentation.
  *
- * Returns -1 on error or 0 otherwise.
+ * @param writer  the xmlTextWriter
+ * @param str  the xmlChar string
+ * @returns -1 on error or 0 otherwise.
  */
 int
-xmlTextWriterSetIndentString(xmlTextWriterPtr writer, const xmlChar * str)
+xmlTextWriterSetIndentString(xmlTextWriter *writer, const xmlChar * str)
 {
     if ((writer == NULL) || (!str))
         return -1;
@@ -4617,16 +4434,14 @@ xmlTextWriterSetIndentString(xmlTextWriterPtr writer, const xmlChar * str)
 }
 
 /**
- * xmlTextWriterSetQuoteChar:
- * @writer:  the xmlTextWriterPtr
- * @quotechar:  the quote character
- *
  * Set the character used for quoting attributes.
  *
- * Returns -1 on error or 0 otherwise.
+ * @param writer  the xmlTextWriter
+ * @param quotechar  the quote character
+ * @returns -1 on error or 0 otherwise.
  */
 int
-xmlTextWriterSetQuoteChar(xmlTextWriterPtr writer, xmlChar quotechar)
+xmlTextWriterSetQuoteChar(xmlTextWriter *writer, xmlChar quotechar)
 {
     if ((writer == NULL) || ((quotechar != '\'') && (quotechar != '"')))
         return -1;
@@ -4637,12 +4452,10 @@ xmlTextWriterSetQuoteChar(xmlTextWriterPtr writer, xmlChar quotechar)
 }
 
 /**
- * xmlTextWriterWriteIndent:
- * @writer:  the xmlTextWriterPtr
- *
  * Write indent string.
  *
- * Returns -1 on error or the number of strings written.
+ * @param writer  the xmlTextWriter
+ * @returns -1 on error or the number of strings written.
  */
 static int
 xmlTextWriterWriteIndent(xmlTextWriterPtr writer)
@@ -4665,13 +4478,11 @@ xmlTextWriterWriteIndent(xmlTextWriterPtr writer)
 }
 
 /**
- * xmlTextWriterHandleStateDependencies:
- * @writer:  the xmlTextWriterPtr
- * @p:  the xmlTextWriterStackEntry
- *
  * Write state dependent strings.
  *
- * Returns -1 on error or the number of characters written.
+ * @param writer  the xmlTextWriter
+ * @param p  the xmlTextWriterStackEntry
+ * @returns -1 on error or the number of characters written.
  */
 static int
 xmlTextWriterHandleStateDependencies(xmlTextWriterPtr writer,

@@ -1,0 +1,14 @@
+include_rules = [
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/tabs",
+]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/test",
+  ],
+}

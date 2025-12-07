@@ -37,8 +37,9 @@ TEST(ClientSharedImageTest, ImportUnowned) {
                                kOpaque_SkAlphaType,
                                kUsage};
 
-  auto client_si = ClientSharedImage::ImportUnowned(
-      ExportedSharedImage(mailbox, metadata, SyncToken(), GL_TEXTURE_2D));
+  auto client_si = ClientSharedImage::ImportUnowned(ExportedSharedImage(
+      mailbox, metadata, SyncToken(), "ClientSharedImageTest", std::nullopt,
+      std::nullopt, GL_TEXTURE_2D, /*is_software=*/false));
 
   // Check that the ClientSI's state matches the input parameters.
   EXPECT_EQ(client_si->mailbox(), mailbox);
@@ -82,6 +83,52 @@ TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
             static_cast<uint32_t>(GL_TEXTURE_2D));
 }
 
+TEST(ClientSharedImageTest, BackingWasExternallyUpdatedForwardsToSII) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size kSize(256, 256);
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageInfo si_info{kFormat,
+                          kSize,
+                          gfx::ColorSpace(),
+                          kTopLeft_GrSurfaceOrigin,
+                          kOpaque_SkAlphaType,
+                          kUsage,
+                          ""};
+
+  auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+  ASSERT_EQ(0u, sii->num_update_shared_image_no_fence_calls());
+  client_si->BackingWasExternallyUpdated(gpu::SyncToken());
+  EXPECT_EQ(1u, sii->num_update_shared_image_no_fence_calls());
+}
+
+// Verifies that invoking BackingWasExternallyUpdated() on a
+// ClientSharedImage after its SharedImageInterface has been lost does not cause
+// a crash.
+TEST(ClientSharedImageTest, BackingWasExternallyUpdatedAfterLossOfSII) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size kSize(256, 256);
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageInfo si_info{kFormat,
+                          kSize,
+                          gfx::ColorSpace(),
+                          kTopLeft_GrSurfaceOrigin,
+                          kOpaque_SkAlphaType,
+                          kUsage,
+                          ""};
+
+  auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+  sii.reset();
+  client_si->BackingWasExternallyUpdated(gpu::SyncToken());
+}
+
 TEST(ClientSharedImageTest, ExportAndImport) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
 
@@ -99,7 +146,8 @@ TEST(ClientSharedImageTest, ExportAndImport) {
 
   auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
   auto exported_si = client_si->Export();
-  auto imported_client_si = ClientSharedImage::ImportUnowned(exported_si);
+  auto imported_client_si =
+      ClientSharedImage::ImportUnowned(std::move(exported_si));
 
   EXPECT_EQ(imported_client_si->mailbox(), client_si->mailbox());
   EXPECT_EQ(imported_client_si->format(), kFormat);
@@ -352,38 +400,6 @@ TEST(ClientSharedImageTest,
 
     // Since the format has external sampling enabled, the platform-specific
     // target for native buffers should be used.
-#if BUILDFLAG(IS_FUCHSIA)
-    EXPECT_EQ(client_si->GetTextureTarget(), 0u);
-#else
-    EXPECT_EQ(client_si->GetTextureTarget(),
-              static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
-#endif
-  }
-}
-#endif
-
-#if BUILDFLAG(IS_OZONE)
-// On Ozone, the target for native buffers should be used if a legacy
-// multiplanar format is passed.
-TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
-  sii->emulate_client_provided_native_buffer();
-
-  const gfx::Size kSize(256, 256);
-  const SharedImageUsageSet kUsage =
-      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
-
-  for (auto format : viz::LegacyMultiPlaneFormat::kAll) {
-    SharedImageInfo si_info{format,
-                            kSize,
-                            gfx::ColorSpace(),
-                            kTopLeft_GrSurfaceOrigin,
-                            kOpaque_SkAlphaType,
-                            kUsage,
-                            ""};
-
-    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
-
 #if BUILDFLAG(IS_FUCHSIA)
     EXPECT_EQ(client_si->GetTextureTarget(), 0u);
 #else

@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 class SkImage;
 
@@ -74,8 +74,8 @@ class MODULES_EXPORT CanvasCaptureHandler {
   // Functions called by VideoCapturerSource implementation.
   void StartVideoCapture(
       const media::VideoCaptureParams& params,
-      const VideoCaptureDeliverFrameCB& new_frame_callback,
-      const VideoCapturerSource::RunningCallback& running_callback);
+      VideoCaptureDeliverFrameCB new_frame_callback,
+      VideoCapturerSource::VideoCaptureRunningCallbackCB running_callback);
   void RequestRefreshFrame();
   void StopVideoCapture();
   void SetCanDiscardAlpha(bool can_discard_alpha) {

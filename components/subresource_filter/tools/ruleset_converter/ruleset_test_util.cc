@@ -55,12 +55,14 @@ bool TestRulesetContents::operator==(const TestRulesetContents& other) const {
     return false;
   }
   for (size_t i = 0; i < url_rules.size(); ++i) {
-    if (!AreUrlRulesEqual(url_rules[i], other.url_rules[i]))
+    if (!AreUrlRulesEqual(url_rules[i], other.url_rules[i])) {
       return false;
+    }
   }
   for (size_t i = 0; i < css_rules.size(); ++i) {
-    if (!AreCssRulesEqual(css_rules[i], other.css_rules[i]))
+    if (!AreCssRulesEqual(css_rules[i], other.css_rules[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -106,10 +108,12 @@ void ScopedTempRulesetFile::WriteRuleset(
   std::unique_ptr<RuleOutputStream> output = OpenForOutput();
   ASSERT_NE(nullptr, output);
 
-  for (const auto& rule : contents.url_rules)
+  for (const auto& rule : contents.url_rules) {
     EXPECT_TRUE(output->PutUrlRule(rule));
-  for (const auto& rule : contents.css_rules)
+  }
+  for (const auto& rule : contents.css_rules) {
     EXPECT_TRUE(output->PutCssRule(rule));
+  }
   EXPECT_TRUE(output->Finish());
 }
 

@@ -63,8 +63,7 @@ SimulatedCPUMeasurementDelegateFactory::GetDelegate(
 bool SimulatedCPUMeasurementDelegateFactory::ShouldMeasureProcess(
     const ProcessNode* process_node) {
   if (require_valid_processes_) {
-    // Delegate the decision to the production factory.
-    return CPUMeasurementDelegate::GetDefaultFactory()->ShouldMeasureProcess(
+    return CPUMeasurementDelegate::Factory::ProcessNodeHasRunningProcess(
         process_node);
   }
   return true;

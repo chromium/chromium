@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 
 namespace blink {
 
@@ -26,7 +27,7 @@ UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
           blink::ContextMenuData::kCheckableMenuItemEnabled),
       edit_flags(0),
       referrer_policy(network::mojom::ReferrerPolicy::kDefault),
-      source_type(ui::MENU_SOURCE_NONE),
+      source_type(ui::mojom::MenuSourceType::kNone),
       selection_start_offset(0) {}
 
 UntrustworthyContextMenuParams::UntrustworthyContextMenuParams(
@@ -75,12 +76,13 @@ void UntrustworthyContextMenuParams::Assign(
   source_type = other.source_type;
   selection_rect = other.selection_rect;
   selection_start_offset = other.selection_start_offset;
-  opened_from_highlight = other.opened_from_highlight;
+  annotation_type = other.annotation_type;
+  opened_from_interest_for = other.opened_from_interest_for;
+  interest_for_node_id = other.interest_for_node_id;
   form_control_type = other.form_control_type;
   is_content_editable_for_autofill = other.is_content_editable_for_autofill;
   field_renderer_id = other.field_renderer_id;
   form_renderer_id = other.form_renderer_id;
-  is_password_type_by_heuristics = other.is_password_type_by_heuristics;
 }
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;

@@ -9,6 +9,7 @@
 #include "base/check_is_test.h"
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -45,6 +46,11 @@
 #endif
 
 using input::NativeWebKeyboardEvent;
+
+// During testing we can disable animations by setting this flag to true,
+// so that opening and closing the dropdown bar is shown instantly, instead of
+// having to poll it while it animates to open/closed status.
+static bool g_disable_animation_for_test_ = false;
 
 namespace {
 
@@ -84,16 +90,16 @@ class FindBarHostHelper
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper);
 
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
-                                    const gfx::Rect& dialog_bounds,
+                                    const gfx::Rect& clipping_box,
                                     const gfx::Rect& avoid_overlapping_rect) {
-  // Clamp to the `dialog_bounds`.
+  // Clamp to the `clipping_box`.
   view_location.set_width(
-      std::min(view_location.width(), dialog_bounds.width()));
+      std::min(view_location.width(), clipping_box.width()));
   if (base::i18n::IsRTL()) {
-    int boundary = dialog_bounds.width() - view_location.width();
+    int boundary = clipping_box.width() - view_location.width();
     view_location.set_x(std::min(view_location.x(), boundary));
   } else {
-    view_location.set_x(std::max(view_location.x(), dialog_bounds.x()));
+    view_location.set_x(std::max(view_location.x(), clipping_box.x()));
   }
 
   gfx::Rect new_pos = view_location;
@@ -111,36 +117,32 @@ gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                     avoid_overlapping_rect.width() +
                     (2 * kMinFindWndDistanceFromSelection));
 
-      // If we moved it off-screen to the right, we won't move it at all.
-      if (new_pos.x() + new_pos.width() > dialog_bounds.width())
+      // If we moved it to be clipped on the right, we won't move it at all.
+      if (new_pos.x() + new_pos.width() > clipping_box.width()) {
         new_pos = view_location;  // Reset.
+      }
     } else {
       new_pos.set_x(avoid_overlapping_rect.x() - new_pos.width() -
                     kMinFindWndDistanceFromSelection);
 
       // If we moved it off-screen to the left, we won't move it at all.
-      if (new_pos.x() < 0)
+      if (new_pos.x() < 0) {
         new_pos = view_location;  // Reset.
+      }
     }
   }
 
   return new_pos;
 }
 
-// During testing we can disable animations by setting this flag to true,
-// so that opening and closing the dropdown bar is shown instantly, instead of
-// having to poll it while it animates to open/closed status.
-// TODO(https://crbug.com/40183900): Make this private and push disabling for
-// testing into here instead of `find_bar_host_unittest_util`.
-static bool kDisableAnimationsForTesting = false;
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarHost, public:
 
-FindBarHost::FindBarHost(BrowserView* browser_view)
-    : AnimationDelegateViews(browser_view), browser_view_(browser_view) {
+FindBarHost::FindBarHost(FindBarOwner* find_bar_owner)
+    : AnimationDelegateViews(find_bar_owner->GetOwnerWidget()),
+      find_bar_owner_(find_bar_owner) {
   auto find_bar_view = std::make_unique<FindBarView>(this);
   // The |clip_view| exists to paint to a layer so that it can clip descendent
   // Views which also paint to a Layer. See http://crbug.com/589497
@@ -151,13 +153,14 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   view_ = clip_view->AddChildView(std::move(find_bar_view));
 
   // Initialize the host.
-  host_ = std::make_unique<ThemeCopyingWidget>(browser_view_->GetWidget());
+  host_ =
+      std::make_unique<ThemeCopyingWidget>(find_bar_owner_->GetOwnerWidget());
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
   params.name = "FindBarHost";
-  params.parent = browser_view_->GetWidgetForAnchoring()->GetNativeView();
+  params.parent = find_bar_owner_->GetWidgetForAnchoring()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #if BUILDFLAG(IS_MAC)
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -172,7 +175,7 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   // Start listening to focus changes, so we can register and unregister our
   // own handler for Escape.
   focus_manager_ = host_->GetFocusManager();
-  focus_manager_->AddFocusChangeListener(this);
+  focus_manager_observation_.Observe(focus_manager_.get());
 
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
@@ -185,12 +188,10 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
 }
 
 FindBarHost::~FindBarHost() {
-  focus_manager_->RemoveFocusChangeListener(this);
   focus_tracker_.reset();
 }
 
-bool FindBarHost::MaybeForwardKeyEventToWebpage(
-    const ui::KeyEvent& key_event) {
+bool FindBarHost::MaybeForwardKeyEventToWebpage(const ui::KeyEvent& key_event) {
   switch (key_event.key_code()) {
     case ui::VKEY_DOWN:
     case ui::VKEY_UP:
@@ -199,22 +200,24 @@ bool FindBarHost::MaybeForwardKeyEventToWebpage(
       break;
     case ui::VKEY_HOME:
     case ui::VKEY_END:
-      if (key_event.IsControlDown())
+      if (key_event.IsControlDown()) {
         break;
+      }
       [[fallthrough]];
     default:
       return false;
   }
 
-  content::WebContents* contents = find_bar_controller_->web_contents();
-  if (!contents)
+  if (!web_contents()) {
     return false;
+  }
 
   // Make sure we don't have a text field element interfering with keyboard
   // input. Otherwise Up and Down arrow key strokes get eaten. "Nom Nom Nom".
-  contents->ClearFocusedElement();
+  web_contents()->ClearFocusedElement();
   NativeWebKeyboardEvent event(key_event);
-  contents->GetPrimaryMainFrame()
+  web_contents()
+      ->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardKeyboardEventWithLatencyInfo(event, *key_event.latency());
@@ -235,11 +238,23 @@ FindBarController* FindBarHost::GetFindBarController() const {
   return find_bar_controller_;
 }
 
-void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
-  find_bar_controller_ = find_bar_controller;
+bool FindBarHost::HasFocus() const {
+  return view_->ContainsFocus();
 }
 
-void FindBarHost::Show(bool animate) {
+void FindBarHost::CloseOverlappingBubbles() {
+  find_bar_owner_->CloseOverlappingBubbles();
+}
+
+void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
+  find_bar_controller_ = find_bar_controller;
+
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
+}
+
+void FindBarHost::Show(bool animate, bool focus) {
   RestoreOrCreateFocusTracker();
   DCHECK(host_);
 
@@ -252,11 +267,15 @@ void FindBarHost::Show(bool animate) {
     animation_->End();
   }
 
-  host_->Show();
+  if (focus) {
+    host_->Show();
+  } else {
+    host_->ShowInactive();
+  }
 
   bool was_visible = is_visible_;
   is_visible_ = true;
-  if (!animate || kDisableAnimationsForTesting) {
+  if (!animate || g_disable_animation_for_test_) {
     animation_->Reset(1);
     AnimationProgressed(animation_.get());
   } else if (!was_visible) {
@@ -280,7 +299,7 @@ void FindBarHost::Hide(bool animate) {
     return;
   }
 
-  if (animate && !kDisableAnimationsForTesting && !animation_->IsClosing()) {
+  if (animate && !g_disable_animation_for_test_ && !animation_->IsClosing()) {
     animation_->Hide();
   } else {
     if (animation_->IsClosing()) {
@@ -301,6 +320,7 @@ void FindBarHost::Hide(bool animate) {
 
 void FindBarHost::SetFocusAndSelection() {
   view_->FocusAndSelectAll();
+  SetFindBarIsFocusedOnCurrentTab(true);
 }
 
 void FindBarHost::ClearResults(
@@ -322,7 +342,7 @@ void FindBarHost::SetFindTextAndSelectedRange(
   view_->SetFindTextAndSelectedRange(find_text, selected_range);
 }
 
-std::u16string FindBarHost::GetFindText() const {
+std::u16string_view FindBarHost::GetFindText() const {
   return view_->GetFindText();
 }
 
@@ -333,18 +353,20 @@ gfx::Range FindBarHost::GetSelectedRange() const {
 void FindBarHost::UpdateUIForFindResult(
     const find_in_page::FindNotificationDetails& result,
     const std::u16string& find_text) {
-  if (!find_text.empty())
+  if (!find_text.empty()) {
     view_->UpdateForResult(result, find_text);
-  else
+  } else {
     view_->ClearMatchCount();
+  }
 
   // We now need to check if the window is obscuring the search results.
   MoveWindowIfNecessaryWithRect(result.selection_rect());
 
   // Once we find a match we no longer want to keep track of what had
   // focus. EndFindSession will then set the focus to the page content.
-  if (result.number_of_matches() > 0)
+  if (result.number_of_matches() > 0) {
     focus_tracker_.reset();
+  }
 }
 
 void FindBarHost::AudibleAlert() {
@@ -359,16 +381,15 @@ bool FindBarHost::IsFindBarVisible() const {
 }
 
 void FindBarHost::RestoreSavedFocus() {
+  SetFindBarIsFocusedOnCurrentTab(false);
+
   std::unique_ptr<views::ExternalFocusTracker> focus_tracker_from_web_contents;
   views::ExternalFocusTracker* tracker = focus_tracker_.get();
-  if (!tracker) {
-    auto* web_contents = find_bar_controller_->web_contents();
-    if (web_contents) {
-      auto* helper = FindBarHostHelper::FromWebContents(web_contents);
-      if (helper) {
-        focus_tracker_from_web_contents = helper->TakeExternalFocusTracker();
-        tracker = focus_tracker_from_web_contents.get();
-      }
+  if (!tracker && web_contents()) {
+    auto* helper = FindBarHostHelper::FromWebContents(web_contents());
+    if (helper) {
+      focus_tracker_from_web_contents = helper->TakeExternalFocusTracker();
+      tracker = focus_tracker_from_web_contents.get();
     }
   }
 
@@ -377,7 +398,7 @@ void FindBarHost::RestoreSavedFocus() {
     focus_tracker_.reset();
   } else {
     // TODO(brettw): Focus() should be on WebContentsView.
-    find_bar_controller_->web_contents()->Focus();
+    web_contents()->Focus();
   }
 }
 
@@ -390,6 +411,15 @@ bool FindBarHost::HasGlobalFindPasteboard() const {
 }
 
 void FindBarHost::UpdateFindBarForChangedWebContents() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
+}
+
+bool FindBarHost::CanPopulateFromSelectedText() {
+  return !web_contents() ||
+         enterprise_data_protection::CanPopulateFindBarFromSelection(
+             web_contents());
 }
 
 const FindBarTesting* FindBarHost::GetFindBarTesting() const {
@@ -428,26 +458,30 @@ bool FindBarHost::CanHandleAccelerators() const {
 bool FindBarHost::GetFindBarWindowInfo(gfx::Point* position,
                                        bool* fully_visible) const {
   if (!find_bar_controller_) {
-    if (position)
+    if (position) {
       *position = gfx::Point();
-    if (fully_visible)
+    }
+    if (fully_visible) {
       *fully_visible = false;
+    }
     return false;
   }
 
   gfx::Rect window_rect = host_->GetWindowBoundsInScreen();
-  if (position)
+  if (position) {
     *position = window_rect.origin();
-  if (fully_visible)
+  }
+  if (fully_visible) {
     *fully_visible = is_visible_ && !animation_->is_animating();
+  }
   return true;
 }
 
-std::u16string FindBarHost::GetFindSelectedText() const {
+std::u16string_view FindBarHost::GetFindSelectedText() const {
   return view_->GetFindSelectedText();
 }
 
-std::u16string FindBarHost::GetMatchCountText() const {
+std::u16string_view FindBarHost::GetMatchCountText() const {
   return view_->GetMatchCountText();
 }
 
@@ -464,11 +498,10 @@ std::u16string FindBarHost::GetAccessibleWindowTitle() const {
   // is registered with this object. So to handle that case, we need to bail out
   // if there is no controller.
   const FindBarController* const controller = GetFindBarController();
-  if (!controller)
+  if (!controller) {
     return std::u16string();
-  return l10n_util::GetStringFUTF16(
-      IDS_FIND_IN_PAGE_ACCESSIBLE_TITLE,
-      browser_view_->browser()->GetWindowTitleForCurrentTab(false));
+  }
+  return find_bar_owner_->GetFindBarAccessibleWindowTitle();
 }
 
 FindBarView* FindBarHost::GetFindBarViewForTesting() {
@@ -476,17 +509,18 @@ FindBarView* FindBarHost::GetFindBarViewForTesting() {
   return view_;
 }
 
-void FindBarHost::SetEnableAnimationsForTesting(bool enable_animations) {
+base::AutoReset<bool> FindBarHost::SetEnableAnimationsForTesting(
+    bool enable_animation) {
   CHECK_IS_TEST();
-  kDisableAnimationsForTesting = !enable_animations;
+  return base::AutoReset<bool>(&g_disable_animation_for_test_,
+                               !enable_animation);
 }
 ////////////////////////////////////////////////////////////////////////////////
 // private:
 
 void FindBarHost::GetWidgetPositionNative(gfx::Rect* avoid_overlapping_rect) {
   gfx::Rect frame_rect = host_->GetTopLevelWidget()->GetWindowBoundsInScreen();
-  gfx::Rect webcontents_rect =
-      find_bar_controller_->web_contents()->GetViewBounds();
+  gfx::Rect webcontents_rect = web_contents()->GetViewBounds();
   avoid_overlapping_rect->Offset(0, webcontents_rect.y() - frame_rect.y());
 }
 
@@ -495,14 +529,15 @@ void FindBarHost::MoveWindowIfNecessaryWithRect(
   // We only move the window if one is active for the current WebContents. If we
   // don't check this, then SetDialogPosition below will end up making the Find
   // Bar visible.
-  content::WebContents* web_contents = find_bar_controller_->web_contents();
-  if (!web_contents)
+  if (!web_contents()) {
     return;
+  }
 
   find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents);
-  if (!find_tab_helper || !find_tab_helper->find_ui_active())
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
+  if (!find_tab_helper || !find_tab_helper->find_ui_active()) {
     return;
+  }
 
   gfx::Rect new_pos = GetDialogPosition(selection_rect);
   SetDialogPosition(new_pos);
@@ -513,24 +548,24 @@ void FindBarHost::MoveWindowIfNecessaryWithRect(
 }
 
 void FindBarHost::SaveFocusTracker() {
-  auto* web_contents = find_bar_controller_->web_contents();
-  if (!web_contents)
+  if (!web_contents()) {
     return;
+  }
 
   if (focus_tracker_) {
     focus_tracker_->SetFocusManager(nullptr);
-    FindBarHostHelper::CreateOrGetFromWebContents(web_contents)
+    FindBarHostHelper::CreateOrGetFromWebContents(web_contents())
         ->SetExternalFocusTracker(std::move(focus_tracker_));
   }
 }
 
 void FindBarHost::RestoreOrCreateFocusTracker() {
-  auto* web_contents = find_bar_controller_->web_contents();
-  if (!web_contents)
+  if (!web_contents()) {
     return;
+  }
 
   std::unique_ptr<views::ExternalFocusTracker> focus_tracker =
-      FindBarHostHelper::CreateOrGetFromWebContents(web_contents)
+      FindBarHostHelper::CreateOrGetFromWebContents(web_contents())
           ->TakeExternalFocusTracker();
   if (focus_tracker) {
     focus_tracker_ = std::move(focus_tracker);
@@ -538,6 +573,13 @@ void FindBarHost::RestoreOrCreateFocusTracker() {
   } else {
     focus_tracker_ =
         std::make_unique<views::ExternalFocusTracker>(view_, focus_manager_);
+  }
+}
+
+void FindBarHost::SetFindBarIsFocusedOnCurrentTab(bool focus) {
+  if (web_contents()) {
+    find_in_page::FindTabHelper::FromWebContents(web_contents())
+        ->set_find_ui_focused(focus);
   }
 }
 
@@ -549,10 +591,7 @@ void FindBarHost::OnVisibilityChanged() {
   if (is_visible_) {
     visible_bounds = host_->GetWindowBoundsInScreen();
   }
-  browser_view_->immersive_mode_controller()->OnFindBarVisibleBoundsChanged(
-      visible_bounds);
-
-  browser_view_->browser()->OnFindBarVisibilityChanged();
+  find_bar_owner_->OnFindBarVisibilityChanged(visible_bounds);
 }
 
 void FindBarHost::RegisterAccelerators() {
@@ -580,9 +619,9 @@ void FindBarHost::UnregisterAccelerators() {
 
 gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
   // Find the area we have to work with (after accounting for scrollbars, etc).
-  // The BrowserView does Layout for the components that we care about
+  // The owner does layout for the components that we care about
   // positioning relative to, so we ask it to tell us where we should go.
-  gfx::Rect find_bar_bounds = browser_view_->GetFindBarBoundingBox();
+  gfx::Rect find_bar_bounds = find_bar_owner_->GetFindBarBoundingBox();
   if (find_bar_bounds.IsEmpty()) {
     return gfx::Rect();
   }
@@ -616,9 +655,9 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
     GetWidgetPositionNative(&avoid_overlapping_rect);
   }
 
-  gfx::Rect widget_bounds = browser_view_->bounds();
+  gfx::Rect clipping_box = find_bar_owner_->GetFindBarClippingBox();
 
-  return GetLocationForFindBarView(view_location, widget_bounds,
+  return GetLocationForFindBarView(view_location, clipping_box,
                                    avoid_overlapping_rect);
 }
 
@@ -631,13 +670,7 @@ void FindBarHost::SetDialogPosition(const gfx::Rect& new_pos) {
 
   host_->SetBounds(new_pos);
 
-  // Tell the immersive mode controller about the find bar's new bounds. The
-  // immersive mode controller uses the bounds to keep the top-of-window views
-  // revealed when the mouse is hovered over the find bar.
-  browser_view_->immersive_mode_controller()->OnFindBarVisibleBoundsChanged(
-      host_->GetWindowBoundsInScreen());
-
-  browser_view_->browser()->OnFindBarVisibilityChanged();
+  find_bar_owner_->OnFindBarVisibilityChanged(host_->GetWindowBoundsInScreen());
 }
 
 void FindBarHost::OnWillChangeFocus(views::View* focused_before,
@@ -656,15 +689,17 @@ void FindBarHost::OnWillChangeFocus(views::View* focused_before,
     // We are gaining focus from outside the dropdown widget so we must register
     // a handler for Escape.
     RegisterAccelerators();
+    SetFindBarIsFocusedOnCurrentTab(true);
   } else if (our_view_before && !our_view_now) {
     // We are losing focus to something outside our widget so we restore the
     // original handler for Escape.
     UnregisterAccelerators();
   }
-}
 
-void FindBarHost::OnDidChangeFocus(views::View* focused_before,
-                                   views::View* focused_now) {}
+  if (!our_view_now) {
+    SetFindBarIsFocusedOnCurrentTab(false);
+  }
+}
 
 void FindBarHost::AnimationProgressed(const gfx::Animation* animation) {
   // First, we calculate how many pixels to slide the widget.

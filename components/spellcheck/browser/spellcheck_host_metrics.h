@@ -99,13 +99,8 @@ class SpellCheckHostMetrics {
   int replaced_word_count_;
   int last_replaced_word_count_;
 
-  // Last recorded number of unique words.
-  size_t last_unique_word_count_;
-
   // Time when first spellcheck happened.
   base::TimeTicks start_time_;
-  // Set of checked words in the hashed form.
-  std::unordered_set<std::string> checked_word_hashes_;
   base::RepeatingTimer recording_timer_;
 };
 

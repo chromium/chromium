@@ -25,7 +25,7 @@ namespace sharing {
 // IpcNetworkManager is a NetworkManager for libjingle that gets a
 // list of network interfaces from the browser.
 // TODO(crbug.com/40115622): reuse code from blink instead.
-class IpcNetworkManager : public rtc::NetworkManagerBase,
+class IpcNetworkManager : public webrtc::NetworkManagerBase,
                           public network::mojom::P2PNetworkNotificationClient {
  public:
   IpcNetworkManager(
@@ -36,7 +36,7 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
   IpcNetworkManager& operator=(const IpcNetworkManager&) = delete;
   ~IpcNetworkManager() override;
 
-  // rtc:::NetworkManagerBase:
+  // webrtc:::NetworkManagerBase:
   void StartUpdating() override;
   void StopUpdating() override;
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;

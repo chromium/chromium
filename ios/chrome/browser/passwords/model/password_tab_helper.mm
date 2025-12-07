@@ -49,13 +49,19 @@ PasswordTabHelper::GetPasswordGenerationProvider() {
 }
 
 PasswordTabHelper::PasswordTabHelper(web::WebState* web_state)
-    : web::WebStatePolicyDecider(web_state),
-      controller_([[PasswordController alloc] initWithWebState:web_state]) {
-  web_state->AddObserver(this);
+    : web::WebStatePolicyDecider(web_state) {
+  web_state_observation_.Observe(web_state);
+  if (web_state->IsRealized()) {
+    WebStateRealized(web_state);
+  }
+}
+
+void PasswordTabHelper::WebStateRealized(web::WebState* web_state) {
+  controller_ = [[PasswordController alloc] initWithWebState:web_state];
 }
 
 void PasswordTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  web_state->RemoveObserver(this);
+  web_state_observation_.Reset();
   controller_ = nil;
 }
 
@@ -71,8 +77,7 @@ void PasswordTabHelper::ShouldAllowRequest(
     id<SettingsCommands> settings_command_handler =
         HandlerForProtocol(controller_.dispatcher, SettingsCommands);
 
-    [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                          showCancelButton:NO];
+    [settings_command_handler showSavedPasswordsSettingsFromViewController:nil];
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Cancel());
     UMA_HISTOGRAM_ENUMERATION(
@@ -86,5 +91,3 @@ void PasswordTabHelper::ShouldAllowRequest(
 }
 
 void PasswordTabHelper::WebStateDestroyed() {}
-
-WEB_STATE_USER_DATA_KEY_IMPL(PasswordTabHelper)

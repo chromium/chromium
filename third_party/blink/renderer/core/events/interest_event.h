@@ -24,15 +24,13 @@ class InterestEvent final : public Event {
   }
 
   static InterestEvent* Create(const AtomicString& type,
-                               const String& action,
-                               Element* invoker) {
-    return MakeGarbageCollected<InterestEvent>(type, action, invoker);
+                               Element* source,
+                               Event::Cancelable cancelable) {
+    return MakeGarbageCollected<InterestEvent>(type, source, cancelable);
   }
 
-  InterestEvent(const AtomicString& type, const InterestEventInit* initializer);
-  InterestEvent(const AtomicString& type,
-                const String& action,
-                Element* invoker);
+  InterestEvent(const AtomicString&, const InterestEventInit*);
+  InterestEvent(const AtomicString&, Element*, Event::Cancelable);
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kInterestEvent;
@@ -40,14 +38,11 @@ class InterestEvent final : public Event {
 
   void Trace(Visitor*) const override;
 
-  const String& action() const { return action_; }
-
-  Element* invoker() const;
-  void SetInvoker(Element* invoker) { invoker_ = invoker; }
+  Element* source() const;
+  void SetSource(Element* source) { source_ = source; }
 
  private:
-  Member<Element> invoker_;
-  String action_;
+  Member<Element> source_;
 };
 
 }  // namespace blink

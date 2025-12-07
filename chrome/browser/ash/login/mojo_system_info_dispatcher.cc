@@ -8,8 +8,8 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -62,7 +62,7 @@ void MojoSystemInfoDispatcher::OnSystemInfoUpdated() {
   if (enforced) {
     show = policy_show.value();
   } else {
-    version_info::Channel channel = chrome::GetChannel();
+    version_info::Channel channel = ash::GetChannel();
     show = channel != version_info::Channel::STABLE &&
            channel != version_info::Channel::BETA;
   }

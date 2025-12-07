@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/history_sync_opt_in_background.imageset/Contents.json",
+    "Assets.xcassets/history_sync_opt_in_background.imageset/history_sync_opt_in_background.pdf",
+    "Assets.xcassets/history_sync_opt_in_background.imageset/history_sync_opt_in_background_dark.pdf",
+    "Assets.xcassets/sync_opt_in_background.imageset/Contents.json",
+    "Assets.xcassets/sync_opt_in_background.imageset/sync_opt_in_background.png",
+    "Assets.xcassets/sync_opt_in_background.imageset/sync_opt_in_background@2x.png",
+    "Assets.xcassets/sync_opt_in_background.imageset/sync_opt_in_background@3x.png",
+    "Assets.xcassets/sync_opt_in_background.imageset/sync_opt_in_background_dark.png",
+    "Assets.xcassets/sync_opt_in_background.imageset/sync_opt_in_background_dark@2x.png",
+    "Assets.xcassets/sync_opt_in_background.imageset/sync_opt_in_background_dark@3x.png",
+  ]
+}

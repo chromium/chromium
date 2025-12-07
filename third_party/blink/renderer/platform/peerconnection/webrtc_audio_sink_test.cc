@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_audio_sink.h"
 
 #include "base/memory/raw_ptr.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

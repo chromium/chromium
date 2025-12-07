@@ -182,6 +182,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // Applies rounded_corner_bounds (bounds + radii_in_dps) to the surface tree.
   // `rounded_corner_bounds` should be in the coordinate space of the
+  // `root_surface`.
   void ApplyRoundedCornersToSurfaceTree(
       const gfx::RectF& bounds,
       const gfx::RoundedCornersF& radii_in_dps);
@@ -208,10 +209,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // size to cover exo surfaces that must be visible and not clipped.
   // It also updates `root_surface_origin_` accordingly to the origin.
   void UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
-
-  // Updates the host layer's opacity. This has to be called after root
-  // surface's resource is updated.
-  void UpdateHostLayerOpacity();
 
   void UpdateHostWindowOpaqueRegion();
 

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/screen_details/screen_detailed.h"
 
+#include <cmath>
+
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -92,6 +94,13 @@ bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
   return true;
 }
 
+// static
+bool ScreenDetailed::AreHdrHeadroomEqual(const display::ScreenInfo& prev,
+                                         const display::ScreenInfo& current) {
+  return prev.display_color_spaces.GetHDRMaxLuminanceRelative() ==
+         current.display_color_spaces.GetHDRMaxLuminanceRelative();
+}
+
 int ScreenDetailed::left() const {
   if (!DomWindow())
     return 0;
@@ -126,6 +135,12 @@ String ScreenDetailed::label() const {
   if (!DomWindow())
     return String();
   return String::FromUTF8(GetScreenInfo().label);
+}
+
+float ScreenDetailed::hdrHeadroom() const {
+  return std::log2(std::max(
+      GetScreenInfo().display_color_spaces.GetHDRMaxLuminanceRelative(),
+      1.f));
 }
 
 float ScreenDetailed::highDynamicRangeHeadroom() const {

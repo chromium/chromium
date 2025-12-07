@@ -8,15 +8,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
-
-namespace base {
-class Value;
-}
 
 namespace crdtp {
 class Serializable;
@@ -98,6 +95,8 @@ class CRDTP_EXPORT Binary : public Serializable {
   // Allow explicit conversion to `base::span`.
   const uint8_t* data() const { return bytes_->data(); }
   size_t size() const { return bytes_->size(); }
+  auto begin() const { return bytes_->begin(); }
+  auto end() const { return bytes_->end(); }
   // data()/size() provide access to Binary's data as a span, but each one
   // requires a virtual call. Like RefCountedData, provide this operator as an
   // optimization.
@@ -112,7 +111,7 @@ class CRDTP_EXPORT Binary : public Serializable {
   static Binary fromRefCounted(scoped_refptr<base::RefCountedMemory> memory);
   static Binary fromVector(std::vector<uint8_t> data);
   static Binary fromString(std::string data);
-  static Binary fromSpan(const uint8_t* data, size_t size);
+  static Binary fromSpan(base::span<const uint8_t> data);
 
  private:
   explicit Binary(scoped_refptr<base::RefCountedMemory> bytes);
@@ -123,11 +122,6 @@ template <>
 struct CRDTP_EXPORT ProtocolTypeTraits<Binary> {
   static bool Deserialize(DeserializerState* state, Binary* value);
   static void Serialize(const Binary& value, std::vector<uint8_t>* bytes);
-};
-
-template <>
-struct detail::MaybeTypedef<Binary> {
-  typedef ValueMaybe<Binary> type;
 };
 
 }  // namespace crdtp

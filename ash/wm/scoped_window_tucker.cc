@@ -182,8 +182,6 @@ void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
   tuck_handle->SetBounds(delegate_->GetTuckHandleBounds(left_, final_bounds));
 
   views::AnimationBuilder()
-      // TODO(sammiequon|sophiewen): Should we handle the case where the
-      // animation gets aborted?
       .OnEnded(std::move(callback))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -264,13 +262,13 @@ void ScopedWindowTucker::InitializeTuckHandleWidget() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto app_window_it =
-      base::ranges::find_if(mru_windows, [this](aura::Window* w) {
+      std::ranges::find_if(mru_windows, [this](aura::Window* w) {
         CHECK(WindowState::Get(w));
         return w != window() && !WindowState::Get(w)->IsMinimized();
       });
   aura::Window* window_to_activate = nullptr;
   if (app_window_it == mru_windows.end()) {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       window_to_activate = Shell::Get()->app_list_controller()->GetWindow();
     }
   } else {

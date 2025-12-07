@@ -12,9 +12,11 @@ AudioCapturerSource::ErrorCode ConvertToCaptureCallbackCode(
       return AudioCapturerSource::ErrorCode::kSystemPermissions;
     case mojom::InputStreamErrorCode::kDeviceInUse:
       return AudioCapturerSource::ErrorCode::kDeviceInUse;
+    case mojom::InputStreamErrorCode::kSocketError:
+      return AudioCapturerSource::ErrorCode::kSocketError;
     case mojom::InputStreamErrorCode::kUnknown:
-      break;
+      return AudioCapturerSource::ErrorCode::kUnknown;
   }
-  return AudioCapturerSource::ErrorCode::kUnknown;
+  NOTREACHED();
 }
 }  // namespace media

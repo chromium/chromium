@@ -1,0 +1,129 @@
+    <style include="settings-shared cr-spinner-style">
+      cr-input {
+        display: inline-block;
+        --cr-input-width: 8em;
+      }
+
+      #newPIN {
+        padding-inline-end: 2em;
+      }
+
+      #newPINRow {
+        display: flex;
+        flex-direction: row;
+      }
+
+      #newPINRow cr-input {
+        width: 8em;
+        --cr-input-error-white-space: nowrap;
+      }
+
+      .spinner {
+        padding-bottom: 12px;
+      }
+    </style>
+
+    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+        on-close="closeDialog_">
+      <div slot="title">[[title_]]</div>
+      <div slot="body">
+        <cr-page-selector attr-for-selected="id" selected="[[shown_]]"
+            on-iron-select="onIronSelect_">
+          <div id="initial">
+            <p>$i18n{securityKeysTouchToContinue}</p>
+            <div class="spinner"></div>
+          </div>
+
+          <div id="noPINSupport">
+            <p>$i18n{securityKeysNoPIN}</p>
+          </div>
+
+          <div id="pinPrompt">
+            <div id="currentPINEntry" hidden="[[!showCurrentEntry_]]">
+              <p>$i18nRaw{securityKeysCurrentPINIntro}</p>
+
+              <div id="currentPINRow">
+                <cr-input id="currentPIN" value="{{currentPIN_}}"
+                    min-length="[[currentMinPinLength_]]"
+                    max-length="255" spellcheck="false"
+                    on-input="onCurrentPinInput_"
+                    invalid="[[isNonEmpty_(currentPINError_)]]"
+                    label="$i18n{securityKeysCurrentPIN}"
+                    type$="[[inputType_(pinsVisible_)]]"
+                    error-message="[[currentPINError_]]">
+                  <cr-icon-button slot="suffix" id="showPINsButton"
+                      class$="[[showPinsClass_(pinsVisible_)]]"
+                      title="[[showPinsTitle_(pinsVisible_)]]"
+                      focus-row-control focus-type="showPassword"
+                      on-click="showPinsClick_"></cr-icon-button>
+                </cr-input>
+
+              </div>
+            </div>
+
+            <p>[[newPINDialogDescription_]]</p>
+
+            <div id="newPINRow">
+              <cr-input id="newPIN" value="{{newPIN_}}"
+                  min-length="[[newMinPinLength_]]"
+                  max-length="255" spellcheck="false" on-input="onNewPinInput_"
+                  label="$i18n{securityKeysPIN}"
+                  type$="[[inputType_(pinsVisible_)]]"
+                  invalid="[[isNonEmpty_(newPINError_)]]"
+                  error-message="[[newPINError_]]">
+                <!-- If a show/hide icon is included in this row, this div is
+                     needed to ensure that the cr-input is the same height
+                     as the one to the right. Otherwise they don't vertically
+                     align -->
+                <div style="height: 36px" slot="suffix"
+                     hidden="[[showCurrentEntry_]]"></div>
+              </cr-input>
+              <cr-input id="confirmPIN" value="{{confirmPIN_}}"
+                  min-length="[[newMinPinLength_]]"
+                  max-length="255" spellcheck="false"
+                  on-input="onConfirmPinInput_"
+                  label="$i18n{securityKeysConfirmPIN}"
+                  invalid="[[isNonEmpty_(confirmPINError_)]]"
+                  type$="[[inputType_(pinsVisible_)]]"
+                  error-message="[[confirmPINError_]]">
+                <cr-icon-button slot="suffix"
+                    class$="[[showPinsClass_(pinsVisible_)]]"
+                    title="[[showPinsTitle_(pinsVisible_)]]"
+                    hidden="[[showCurrentEntry_]]"
+                    focus-row-control focus-type="showPassword"
+                    on-click="showPinsClick_"></cr-icon-button>
+              </cr-input>
+            </div>
+          </div>
+
+          <div id="success">
+            <p>$i18n{securityKeysPINSuccess}</p>
+          </div>
+
+          <div id="error">
+            <p>[[pinFailed_(errorCode_)]]</p>
+          </div>
+
+          <div id="locked">
+            <p>$i18n{securityKeysPINHardLock}</p>
+          </div>
+
+          <div id="reinsert">
+            <p>$i18n{securityKeysPINSoftLock}</p>
+          </div>
+        </cr-page-selector>
+      </div>
+
+      <div slot="button-container">
+        <cr-button id="closeButton"
+            class$="[[maybeActionButton_(complete_)]]"
+            on-click="closeDialog_">
+          [[closeText_(complete_)]]
+        </cr-button>
+        <cr-button id="pinSubmit" class="action-button"
+            on-click="pinSubmitNew_" disabled="[[!setPINButtonValid_]]"
+            hidden="[[complete_]]">
+          $i18n{securityKeysSetPINConfirm}
+        </cr-button>
+      </div>
+    </cr-dialog>

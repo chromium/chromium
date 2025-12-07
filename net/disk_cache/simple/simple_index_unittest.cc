@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -17,11 +18,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
+#include "net/base/features.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
 #include "net/disk_cache/simple/simple_index_file.h"
 #include "net/disk_cache/simple/simple_test_util.h"
@@ -34,10 +38,13 @@ namespace {
 
 const base::Time kTestLastUsedTime = base::Time::UnixEpoch() + base::Days(20);
 const uint32_t kTestEntrySize = 789;
-const uint8_t kTestEntryMemoryData = 123;
 
-uint32_t RoundSize(uint32_t in) {
-  return (in + 0xFFu) & 0xFFFFFF00u;
+// Memory data must be 2 bit value.
+const uint8_t kTestEntryMemoryData =
+    HINT_UNUSABLE_PER_CACHING_HEADERS | HINT_HIGH_PRIORITY;
+
+uint64_t RoundSize(uint64_t in) {
+  return (in + 0xFFu) & 0x3FFFFFFF00u;
 }
 
 }  // namespace
@@ -165,6 +172,16 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
                                 base::checked_cast<uint32_t>(entry_size)));
   }
 
+  void InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      uint64_t hash_key,
+      base::Time last_used_time,
+      int entry_size) {
+    EntryMetadata entry_meta_data =
+        EntryMetadata(last_used_time, base::checked_cast<uint32_t>(entry_size));
+    entry_meta_data.SetInMemoryData(HINT_HIGH_PRIORITY);
+    index_file_->load_result()->entries.emplace(hash_key, entry_meta_data);
+  }
+
   void ReturnIndexFile() {
     index_file_->load_result()->did_load = true;
     index_file_->RunLoadCallback();
@@ -244,19 +261,83 @@ TEST_F(EntryMetadataTest, Serialize) {
 
   base::PickleIterator it(pickle);
   EntryMetadata new_entry_metadata;
-  new_entry_metadata.Deserialize(net::DISK_CACHE, &it, true, true);
+  new_entry_metadata.Deserialize(net::DISK_CACHE, &it,
+                                 /*app_cache_has_trailer_prefetch_size=*/true);
   CheckEntryMetadataValues(new_entry_metadata);
 
   // Test reading of old format --- the modern serialization of above entry
-  // corresponds, in older format, to an entry with size =
-  //   RoundSize(kTestEntrySize) | kTestEntryMemoryData, which then gets
-  // rounded again when stored by EntryMetadata.
+  // corresponds, in older format, to an entry with
+  // size =  RoundSize(kTestEntrySize), which then gets rounded again when
+  // stored by EntryMetadata.
   base::PickleIterator it2(pickle);
   EntryMetadata new_entry_metadata2;
-  new_entry_metadata2.Deserialize(net::DISK_CACHE, &it2, false, false);
-  EXPECT_EQ(RoundSize(RoundSize(kTestEntrySize) | kTestEntryMemoryData),
-            new_entry_metadata2.GetEntrySize());
-  EXPECT_EQ(0, new_entry_metadata2.GetInMemoryData());
+  new_entry_metadata2.Deserialize(
+      net::DISK_CACHE, &it2,
+      /*app_cache_has_trailer_prefetch_size=*/false);
+  EXPECT_EQ(RoundSize(kTestEntrySize), new_entry_metadata2.GetEntrySize());
+  EXPECT_EQ(kTestEntryMemoryData, new_entry_metadata2.GetInMemoryData());
+}
+
+TEST_F(EntryMetadataTest, SerializeMaximumLargeFile) {
+  constexpr uint64_t kMaximumEntrySize = (1ULL << 38) - 256;
+
+  EntryMetadata entry_metadata;
+  entry_metadata.SetLastUsedTime(kTestLastUsedTime);
+  ASSERT_TRUE(entry_metadata.SetEntrySize(kMaximumEntrySize));
+  entry_metadata.SetInMemoryData(kTestEntryMemoryData);
+
+  base::Pickle pickle;
+  entry_metadata.Serialize(net::DISK_CACHE, &pickle);
+
+  base::PickleIterator it(pickle);
+  EntryMetadata new_entry_metadata;
+  ASSERT_TRUE(new_entry_metadata.Deserialize(
+      net::DISK_CACHE, &it,
+      /*app_cache_has_trailer_prefetch_size=*/true));
+
+  EXPECT_LT(kTestLastUsedTime - base::Seconds(2),
+            entry_metadata.GetLastUsedTime());
+  EXPECT_GT(kTestLastUsedTime + base::Seconds(2),
+            entry_metadata.GetLastUsedTime());
+  EXPECT_EQ(RoundSize(kMaximumEntrySize), entry_metadata.GetEntrySize());
+  EXPECT_EQ(kTestEntryMemoryData, entry_metadata.GetInMemoryData());
+
+  // Test reading of old format --- the modern serialization of above entry
+  // corresponds, in older format, to an entry with
+  // size =  RoundSize(kTestEntrySize), which then gets rounded again when
+  // stored by EntryMetadata.
+  base::PickleIterator it2(pickle);
+  EntryMetadata new_entry_metadata2;
+  new_entry_metadata2.Deserialize(
+      net::DISK_CACHE, &it2,
+      /*app_cache_has_trailer_prefetch_size=*/false);
+  EXPECT_EQ(RoundSize(kMaximumEntrySize), new_entry_metadata2.GetEntrySize());
+  EXPECT_EQ(kTestEntryMemoryData, new_entry_metadata2.GetInMemoryData());
+}
+
+TEST_F(EntryMetadataTest, SerializeTooLargeFile) {
+  constexpr uint64_t kAboveMaximumEntrySize = (1ULL << 38) - 255;
+
+  EntryMetadata entry_metadata;
+
+  // Cannot set too large size.
+  ASSERT_FALSE(entry_metadata.SetEntrySize(kAboveMaximumEntrySize));
+}
+
+TEST_F(EntryMetadataTest, DeserializationFailureInvalidPackedEntryInfo) {
+  constexpr uint64_t kAboveMaximumPackedEntryInfo = 1ULL << 38;
+
+  base::Pickle pickle;
+  pickle.WriteInt64(0);
+
+  // If the value set to `packed_entry_info` exceeds the limit, deserialization
+  // should fail.
+  pickle.WriteUInt64(kAboveMaximumPackedEntryInfo);
+  base::PickleIterator it(pickle);
+  EntryMetadata entry_metadata;
+  EXPECT_FALSE(
+      entry_metadata.Deserialize(net::DISK_CACHE, &it,
+                                 /*app_cache_has_trailer_prefetch_size=*/true));
 }
 
 TEST_F(SimpleIndexTest, IndexSizeCorrectOnMerge) {
@@ -663,6 +744,117 @@ TEST_F(SimpleIndexTest, EvictBySize2) {
   EXPECT_FALSE(index()->Has(hashes_.at<2>()));
   EXPECT_TRUE(index()->Has(hashes_.at<3>()));
   ASSERT_EQ(2u, last_doom_entry_hashes().size());
+}
+
+TEST_F(SimpleIndexTest, EvictPrioritization) {
+  const auto caching_prioritization_period =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
+  auto now = base::Time::Now();
+  index()->SetMaxSize(50000);
+  InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      hashes_.at<1>(), now - caching_prioritization_period * 0.8, 20000u);
+  InsertIntoIndexFileReturn(hashes_.at<2>(),
+                            now - caching_prioritization_period * 0.4, 20000u);
+  ReturnIndexFile();
+  WaitForTimeChange();
+
+  index()->Insert(hashes_.at<3>());
+  // Confirm index is as expected: No eviction, everything there.
+  EXPECT_EQ(3, index()->GetEntryCount());
+  EXPECT_EQ(0, doom_entries_calls());
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+
+  // Trigger an eviction, and make sure the right things are tossed.
+  index()->UpdateEntrySize(hashes_.at<3>(), 20000u);
+  EXPECT_EQ(1, doom_entries_calls());
+  EXPECT_EQ(2, index()->GetEntryCount());
+  // The entry with the priority flag is kept, even if it's older.
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  // The entry without the priority flag is evicted, even if it's newer.
+  EXPECT_FALSE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+  ASSERT_EQ(1u, last_doom_entry_hashes().size());
+}
+
+TEST_F(SimpleIndexTest, EvictPrioritizationOutOfPeriod) {
+  const auto caching_prioritization_period =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
+  auto now = base::Time::Now();
+  index()->SetMaxSize(50000);
+  InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      hashes_.at<1>(), now - caching_prioritization_period * 2, 20000u);
+  InsertIntoIndexFileReturn(hashes_.at<2>(),
+                            now - caching_prioritization_period, 20000u);
+  ReturnIndexFile();
+  WaitForTimeChange();
+
+  index()->Insert(hashes_.at<3>());
+  // Confirm index is as expected: No eviction, everything there.
+  EXPECT_EQ(3, index()->GetEntryCount());
+  EXPECT_EQ(0, doom_entries_calls());
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+
+  // Trigger an eviction, and make sure the right things are tossed.
+  index()->UpdateEntrySize(hashes_.at<3>(), 20000u);
+  EXPECT_EQ(1, doom_entries_calls());
+  EXPECT_EQ(2, index()->GetEntryCount());
+  // The older entry is evicted, even if it has the priority flag, when the
+  // entry is out of the prioritization period.
+  EXPECT_FALSE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+  ASSERT_EQ(1u, last_doom_entry_hashes().size());
+}
+
+class SimpleIndexPrioritizedCachingDisabledTest : public SimpleIndexTest {
+ public:
+  SimpleIndexPrioritizedCachingDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        net::features::kSimpleCachePrioritizedCaching);
+  }
+  ~SimpleIndexPrioritizedCachingDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SimpleIndexPrioritizedCachingDisabledTest,
+       EvictPrioritizationFeatureDisabled) {
+  const auto caching_prioritization_period =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
+  auto now = base::Time::Now();
+  index()->SetMaxSize(50000);
+  InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      hashes_.at<1>(), now - caching_prioritization_period * 0.8, 20000u);
+  InsertIntoIndexFileReturn(hashes_.at<2>(),
+                            now - caching_prioritization_period * 0.4, 20000u);
+  ReturnIndexFile();
+  WaitForTimeChange();
+
+  index()->Insert(hashes_.at<3>());
+  // Confirm index is as expected: No eviction, everything there.
+  EXPECT_EQ(3, index()->GetEntryCount());
+  EXPECT_EQ(0, doom_entries_calls());
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+
+  // Trigger an eviction, and make sure the right things are tossed.
+  index()->UpdateEntrySize(hashes_.at<3>(), 20000u);
+  EXPECT_EQ(1, doom_entries_calls());
+  EXPECT_EQ(2, index()->GetEntryCount());
+  // The older entry is evicted, even if it has the priority flag, when the
+  // feature is disabled.
+  EXPECT_FALSE(index()->Has(hashes_.at<1>()));
+  // The newer entry is kept, even if it doesn't have the priority flag, when
+  // the feature is disabled.
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+  ASSERT_EQ(1u, last_doom_entry_hashes().size());
 }
 
 // Confirm all the operations queue a disk write at some point in the

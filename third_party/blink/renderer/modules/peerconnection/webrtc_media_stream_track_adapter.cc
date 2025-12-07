@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
+#include "third_party/blink/renderer/modules/mediastream/remote_media_stream_track_adapter.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_video_webrtc_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
@@ -61,14 +62,14 @@ WebRtcMediaStreamTrackAdapter::CreateRemoteTrackAdapter(
     remote_track_adapter->InitializeRemoteAudioTrack(
         base::WrapRefCounted(
             static_cast<webrtc::AudioTrackInterface*>(webrtc_track.get())),
-        factory->GetSupplementable());
+        factory->GetExecutionContext());
   } else {
     DCHECK_EQ(webrtc_track->kind(),
               webrtc::MediaStreamTrackInterface::kVideoKind);
     remote_track_adapter->InitializeRemoteVideoTrack(
         base::WrapRefCounted(
             static_cast<webrtc::VideoTrackInterface*>(webrtc_track.get())),
-        factory->GetSupplementable());
+        factory->GetExecutionContext());
   }
   return remote_track_adapter;
 }
@@ -149,12 +150,12 @@ MediaStreamComponent* WebRtcMediaStreamTrackAdapter::track() {
   return component_.Get();
 }
 
-rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>
+webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>
 WebRtcMediaStreamTrackAdapter::webrtc_track() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(webrtc_track_);
   EnsureTrackIsInitialized();
-  return rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(
+  return webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(
       webrtc_track_.get());
 }
 

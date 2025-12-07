@@ -6,10 +6,16 @@
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "components/prefs/pref_service.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -140,12 +146,11 @@ void PaintFocusBar(gfx::Canvas* canvas,
                    const gfx::Point& content_origin,
                    int height,
                    SkColor color) {
-  SkPath path;
   gfx::Rect focus_bar_bounds(content_origin.x() - kFocusBarThickness,
                              content_origin.y(), kFocusBarThickness * 2,
                              height);
-  path.addRRect(SkRRect::MakeRectXY(RectToSkRect(focus_bar_bounds),
-                                    kFocusBarThickness, kFocusBarThickness));
+  const SkPath path = SkPath::RRect(RectToSkRect(focus_bar_bounds),
+                                    kFocusBarThickness, kFocusBarThickness);
   canvas->ClipPath(path, true);
 
   cc::PaintFlags flags;
@@ -167,6 +172,14 @@ void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
 
 float GetAppsGridCardifiedScale() {
   return kAppsGridCardifiedScale;
+}
+
+void SetSunfishLauncherNudgeShownCount(int count) {
+  auto* session_controller = Shell::Get()->session_controller();
+  if (session_controller && !session_controller->IsUserSessionBlocked()) {
+    session_controller->GetActivePrefService()->SetInteger(
+        prefs::kSunfishLauncherNudgeShownCount, count);
+  }
 }
 
 }  // namespace ash

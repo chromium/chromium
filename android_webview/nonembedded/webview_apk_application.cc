@@ -5,7 +5,6 @@
 
 #include "android_webview/common/aw_resource_bundle.h"
 #include "android_webview/nonembedded/webview_apk_process.h"
-#include "base/android/base_jni_onload.h"
 #include "base/check.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -13,9 +12,12 @@
 
 namespace android_webview {
 
-void JNI_WebViewApkApplication_InitializeGlobalsAndResources(JNIEnv* env) {
+static void JNI_WebViewApkApplication_InitializeGlobalsAndResources(
+    JNIEnv* env) {
   InitIcuAndResourceBundleBrowserSide();
   WebViewApkProcess::Init();
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(WebViewApkApplication)

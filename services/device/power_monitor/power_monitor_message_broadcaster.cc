@@ -10,13 +10,15 @@
 namespace device {
 
 PowerMonitorMessageBroadcaster::PowerMonitorMessageBroadcaster() {
-  base::PowerMonitor::AddPowerSuspendObserver(this);
-  base::PowerMonitor::AddPowerStateObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerSuspendObserver(this);
+  power_monitor->AddPowerStateObserver(this);
 }
 
 PowerMonitorMessageBroadcaster::~PowerMonitorMessageBroadcaster() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->RemovePowerSuspendObserver(this);
+  power_monitor->RemovePowerStateObserver(this);
 }
 
 // static
@@ -30,29 +32,33 @@ void PowerMonitorMessageBroadcaster::AddClient(
         power_monitor_client) {
   mojo::RemoteSetElementId element_id =
       clients_.Add(std::move(power_monitor_client));
+  auto* power_monitor = base::PowerMonitor::GetInstance();
 
-  if (!base::PowerMonitor::IsInitialized())
-    return;
-
-  bool on_battery_power = base::PowerMonitor::IsOnBatteryPower();
-
-  // If the state has changed since we last checked, update all clients.
-  if (on_battery_power != on_battery_power_) {
-    OnPowerStateChange(on_battery_power);
+  if (!power_monitor->IsInitialized()) {
     return;
   }
 
-  // New clients default to on_battery_power == false. Only update this new
-  // client if on_battery_power_ == true;
-  if (on_battery_power_) {
-    clients_.Get(element_id)->PowerStateChange(on_battery_power_);
+  base::PowerStateObserver::BatteryPowerStatus battery_power_status =
+      power_monitor->GetBatteryPowerStatus();
+  // If the state has changed since we last checked, update all clients.
+  if (battery_power_status != battery_power_status_) {
+    OnBatteryPowerStatusChange(battery_power_status);
+    return;
+  }
+
+  // New clients default to battery_power_status_ == kUnknown. Only update this
+  // new client if battery power status isn't unknown;
+  if (battery_power_status_ !=
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown) {
+    clients_.Get(element_id)->PowerStateChange(battery_power_status_);
   }
 }
 
-void PowerMonitorMessageBroadcaster::OnPowerStateChange(bool on_battery_power) {
-  on_battery_power_ = on_battery_power;
+void PowerMonitorMessageBroadcaster::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  battery_power_status_ = battery_power_status;
   for (auto& client : clients_)
-    client->PowerStateChange(on_battery_power_);
+    client->PowerStateChange(battery_power_status_);
 }
 
 void PowerMonitorMessageBroadcaster::OnSuspend() {

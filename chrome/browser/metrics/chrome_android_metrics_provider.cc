@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
@@ -69,12 +70,17 @@ ChromeAndroidMetricsProvider::ChromeAndroidMetricsProvider(
     PrefService* local_state)
     : local_state_(local_state) {}
 
-ChromeAndroidMetricsProvider::~ChromeAndroidMetricsProvider() {}
+ChromeAndroidMetricsProvider::~ChromeAndroidMetricsProvider() = default;
 
 // static
 void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   chrome::android::RegisterActivityTypePrefs(registry);
   metrics::AndroidMetricsHelper::RegisterPrefs(registry);
+}
+
+void ChromeAndroidMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
+  hardware_class_ = base::SysInfo::GetAndroidHardwareClass();
+  std::move(done_callback).Run();
 }
 
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
@@ -106,8 +112,9 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   auto activity_type =
       chrome::android::GetActivityTypeFromLocalState(local_state_);
-  if (activity_type.has_value())
+  if (activity_type.has_value()) {
     chrome::android::EmitActivityTypeHistograms(activity_type.value());
+  }
 
   // Save whether multiple user profiles are present in Android. This is
   // unlikely to change across sessions.
@@ -145,3 +152,21 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 void ChromeAndroidMetricsProvider::ResetGlobalStateForTesting() {
   metrics::AndroidMetricsHelper::ResetGlobalStateForTesting();
 }
+
+const std::string& ChromeAndroidMetricsProvider::GetHardwareClass() const {
+  return hardware_class_;
+}
+
+void ChromeAndroidMetricsProvider::ProvideSystemProfileMetrics(
+    metrics::SystemProfileProto* system_profile_proto) {
+  if (GetHardwareClass().empty()) {
+    return;
+  }
+
+  metrics::SystemProfileProto::Hardware* hardware =
+      system_profile_proto->mutable_hardware();
+  hardware->set_full_hardware_class(GetHardwareClass());
+}
+
+DEFINE_JNI(AppUpdateInfoUtils)
+DEFINE_JNI(NotificationSystemStatusUtil)

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -235,7 +236,7 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
      AddMonitorThenRemoveMonitor) {
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath application_object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(),
@@ -275,8 +276,8 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
       &method_call, base::BindOnce(&ResponseSenderCallback, kExpectedMessage1));
 
   ON_CALL(*mock_exported_object, SendSignal(testing::_))
-      .WillByDefault(testing::Invoke(
-          [](dbus::Signal* signal) { SendSignal(kExpectedMessage3, signal); }));
+      .WillByDefault(
+          [](dbus::Signal* signal) { SendSignal(kExpectedMessage3, signal); });
   EXPECT_CALL(*mock_exported_object, SendSignal(testing::_));
 
   provider_impl.AddMonitor(std::move(advertisement_monitor));
@@ -285,8 +286,8 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
       &method_call, base::BindOnce(&ResponseSenderCallback, kExpectedMessage2));
 
   ON_CALL(*mock_exported_object, SendSignal(testing::_))
-      .WillByDefault(testing::Invoke(
-          [](dbus::Signal* signal) { SendSignal(kExpectedMessage4, signal); }));
+      .WillByDefault(
+          [](dbus::Signal* signal) { SendSignal(kExpectedMessage4, signal); });
   EXPECT_CALL(*mock_exported_object, SendSignal(testing::_));
   provider_impl.RemoveMonitor(monitor_object_path);
 
@@ -298,7 +299,7 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
      RemoveFailure) {
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath application_object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(),

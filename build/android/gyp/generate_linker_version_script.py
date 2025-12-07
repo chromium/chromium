@@ -55,11 +55,13 @@ def main():
   # JNI_OnLoad is always exported.
   # CrashpadHandlerMain() is the entry point to the Crashpad handler, required
   # for libcrashpad_handler_trampoline.so.
-  symbol_list = ['CrashpadHandlerMain', 'JNI_OnLoad']
+  # NativeChildProcessService_onCreate export is for native-only services,
+  # which have a symbol exposed in our AndroidManifest which Android calls.
+  symbol_list = [
+      'CrashpadHandlerMain', 'JNI_OnLoad', 'NativeChildProcessService_onCreate'
+  ]
 
-  if options.jni_multiplexing:
-    symbol_list.append('Java_J_*N__*')
-  elif options.export_fortesting_java_symbols:
+  if options.export_fortesting_java_symbols or options.jni_multiplexing:
     symbol_list.append('Java_*')
   else:
     # The linker uses unix shell globbing patterns, not regex. So, we have to
@@ -86,7 +88,7 @@ def main():
     symbol_list.append('JNI_OnLoad_*')
 
   for allowlist in options.allowlists:
-    with open(allowlist, 'rt') as f:
+    with open(allowlist, 'rt', encoding='utf-8') as f:
       for line in f:
         line = line.strip()
         if not line or line[0] == '#':

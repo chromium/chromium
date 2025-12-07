@@ -1,0 +1,33 @@
+<style include="your-saved-info-shared">
+
+  .card {
+    overflow: hidden;
+  }
+
+</style>
+<settings-subpage page-title="$i18n{identityDocsCardTitle}"
+    class="multi-card">
+
+  <div class="card">
+    <settings-toggle-button id="optInToggle"
+        disabled="[[optInToggleDisabled_(
+            enhancedAutofillEligibleUser_, enhancedAutofillOptedIn_)]]"
+        on-settings-boolean-control-change="onOptInToggleChange_"
+        pref="[[identityDocsOptedIn_]]"
+        no-extension-indicator
+        label="$i18n{identityDocsOptInToggleLabel}"
+        sub-label="$i18n{identityDocsOptInToggleSubLabel}">
+  </div>
+
+  <!-- Entities list card -->
+  <div class="card">
+    <settings-autofill-ai-entries-list
+        list-title="$i18n{identityDocsCardTitle}"
+        allowed-entity-types="[[getAllowedEntityTypes_()]]"
+        allow-editing-pref="[[
+            prefs.autofill.autofill_ai.identity_entities_enabled]]"
+        prefs="{{prefs}}">
+    </settings-autofill-ai-entries-list>
+  </div>
+
+</settings-subpage>

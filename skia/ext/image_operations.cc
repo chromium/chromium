@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "skia/ext/convolver.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkRect.h"
 
 namespace skia {
@@ -123,8 +122,7 @@ class ResizeFilter {
         // each direction as the size of the window = 3 for Lanczos3.
         return 3.0f;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return 1.0f;
+        NOTREACHED();
     }
   }
 
@@ -153,8 +151,7 @@ class ResizeFilter {
       case ImageOperations::RESIZE_LANCZOS3:
         return EvalLanczos(3, pos);
       default:
-        NOTREACHED_IN_MIGRATION();
-        return 0;
+        NOTREACHED();
     }
   }
 
@@ -339,10 +336,10 @@ SkBitmap ImageOperations::Resize(const SkPixmap& source,
                "src_pixels", source.width() * source.height(), "dst_pixels",
                dest_width * dest_height);
   // Ensure that the ResizeMethod enumeration is sound.
-  SkASSERT(((RESIZE_FIRST_QUALITY_METHOD <= method) &&
-            (method <= RESIZE_LAST_QUALITY_METHOD)) ||
-           ((RESIZE_FIRST_ALGORITHM_METHOD <= method) &&
-            (method <= RESIZE_LAST_ALGORITHM_METHOD)));
+  DCHECK(((RESIZE_FIRST_QUALITY_METHOD <= method) &&
+          (method <= RESIZE_LAST_QUALITY_METHOD)) ||
+         ((RESIZE_FIRST_ALGORITHM_METHOD <= method) &&
+          (method <= RESIZE_LAST_ALGORITHM_METHOD)));
 
   // If the size of source or destination is 0, i.e. 0x0, 0xN or Nx0, just
   // return empty.
@@ -356,8 +353,8 @@ SkBitmap ImageOperations::Resize(const SkPixmap& source,
 
   method = ResizeMethodToAlgorithmMethod(method);
   // Check that we deal with an "algorithm methods" from this point onward.
-  SkASSERT((ImageOperations::RESIZE_FIRST_ALGORITHM_METHOD <= method) &&
-           (method <= ImageOperations::RESIZE_LAST_ALGORITHM_METHOD));
+  DCHECK((ImageOperations::RESIZE_FIRST_ALGORITHM_METHOD <= method) &&
+         (method <= ImageOperations::RESIZE_LAST_ALGORITHM_METHOD));
 
   if (!source.addr() || source.colorType() != kN32_SkColorType)
     return SkBitmap();

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<p>
+    Check that type-to-select in unopened popups works with Hebrew</i>.
+</p>
+<select id="select">
+    <option>&#x05e9;</option>
+    <option>&#x05d3;</option>
+    <option>&#x05d2;</option>
+    <option>&#x05db;</option>
+    <option>&#x05e2;</option>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<div id="result">Cannot run interactively.</div>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        var select = document.getElementById("select");
+        select.focus();
+        eventSender.keyDown("\u05d2");
+        var result = document.getElementById("result");
+        result.innerText = select.value == "\u05d2" ? "SUCCESS" : "FAIL";
+    }
+</script>

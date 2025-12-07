@@ -4,8 +4,10 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsCheckboxElement} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 /** @fileoverview Suite of tests for settings-checkbox. */
 suite('SettingsCheckbox', function() {
@@ -84,5 +86,78 @@ suite('SettingsCheckbox', function() {
     await testElement.$.checkbox.updateComplete;
     assertTrue(testElement.checked);
     assertEquals(1, prefNum.value);
+  });
+
+  test('sub label should be able to have an id', () => {
+    testElement.subLabelHtml = `<a id="subLabelWithLink"></a>`;
+    flush();
+
+    const actionLink =
+        testElement.$.subLabel.querySelector('#subLabelWithLink');
+    assertTrue(!!actionLink);
+  });
+
+  test('sub label should be able to have an aria-label', () => {
+    testElement.subLabelHtml = `<a aria-label="Label"></a>`;
+    flush();
+
+    const actionLink = testElement.$.subLabel.querySelector('a');
+    assertTrue(!!actionLink);
+    assertEquals(actionLink.getAttribute('aria-label'), 'Label');
+  });
+
+  test(
+      'click on sub label link should not toggle the button', async function() {
+        testElement.checked = true;
+        testElement.subLabelHtml = `<a href="#"></a>`;
+        flush();
+
+        const actionLink = testElement.$.subLabel.querySelector('a');
+        assertTrue(!!actionLink);
+
+        assertTrue(testElement.checked);
+
+        actionLink.click();
+        await testElement.$.checkbox.updateComplete;
+
+        assertTrue(testElement.checked);
+      });
+
+  test('click on sub label text should toggle the button', async function() {
+    testElement.checked = true;
+    testElement.subLabelHtml = `<a href="#"></a>`;
+    flush();
+
+    assertTrue(testElement.checked);
+
+    testElement.$.subLabel.click();
+    await testElement.$.checkbox.updateComplete;
+
+    assertFalse(testElement.checked);
+  });
+
+  test('click on sub label link should fire a custom event', async function() {
+    testElement.subLabelHtml = `<a href="#" id="subLabelWithLink"></a>`;
+    flush();
+
+    const actionLink = testElement.$.subLabel.querySelector('a');
+    assertTrue(!!actionLink);
+
+    const clickEventPromise =
+        eventToPromise('sub-label-link-clicked', testElement);
+    actionLink.click();
+    const clickEvent = await clickEventPromise;
+    assertEquals('subLabelWithLink', clickEvent.detail.id);
+  });
+
+  test('click on sub label text should not fire a custom event', () => {
+    testElement.subLabelHtml = `<a href="#" id="subLabelWithLink"></a>`;
+    testElement.addEventListener('sub-label-link-clicked', () => {
+      assertNotReached(
+          'custom event should not be triggered for non action link clicks.');
+    });
+    flush();
+
+    testElement.$.subLabel.click();
   });
 });

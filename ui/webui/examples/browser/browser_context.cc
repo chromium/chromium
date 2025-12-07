@@ -23,7 +23,7 @@ BrowserContext::CreateZoomLevelDelegate(const base::FilePath& partition_path) {
   return nullptr;
 }
 
-base::FilePath BrowserContext::GetPath() {
+base::FilePath BrowserContext::GetPath() const {
   return temp_dir_path_;
 }
 

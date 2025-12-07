@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Bindings from 'devtools/models/bindings/bindings.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -79,7 +80,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     testAndDumpLocation(scssUISourceCode, 4, 11, 4, 11);
     testAndDumpLocation(scssUISourceCode, 4, 13, 4, 15);
     testAndDumpLocation(scssUISourceCode, 4, 17, 4, 20);
-    scssUISourceCode.requestContent().then(didRequestContent);
+    scssUISourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(didRequestContent);
 
     function didRequestContent({ content, error, isEncoded }) {
       TestRunner.assertEquals(0, content.indexOf('/* Comment */'));

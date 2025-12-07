@@ -33,17 +33,17 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
 
     private boolean mPermittedByUser;
 
-    private SamplingDelegate mSamplingDelegate;
+    private final SamplingDelegate mSamplingDelegate;
 
     /**
      * A delegate to provide the required information to decide whether a crash is sampled or not.
      * This is to allow injecting delegates for testing.
      */
     @VisibleForTesting
-    public static interface SamplingDelegate {
-        public int getChannel();
+    public interface SamplingDelegate {
+        int getChannel();
 
-        public int getRandomSample();
+        int getRandomSample();
     }
 
     @VisibleForTesting
@@ -59,7 +59,7 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     public AwMinidumpUploaderDelegate() {
         this(
                 new SamplingDelegate() {
-                    private Random mRandom = new Random();
+                    private final Random mRandom = new Random();
 
                     @Override
                     public int getChannel() {

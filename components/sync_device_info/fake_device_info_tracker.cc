@@ -4,13 +4,11 @@
 
 #include "components/sync_device_info/fake_device_info_tracker.h"
 
-#include <map>
+#include <algorithm>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -42,6 +40,11 @@ std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllDeviceInfo() const {
   return devices;
 }
 
+std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllChromeDeviceInfo()
+    const {
+  return GetAllDeviceInfo();
+}
+
 void FakeDeviceInfoTracker::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -50,13 +53,13 @@ void FakeDeviceInfoTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::map<DeviceInfo::FormFactor, int>
+absl::flat_hash_map<DeviceInfo::FormFactor, int>
 FakeDeviceInfoTracker::CountActiveDevicesByType() const {
   if (device_count_per_type_override_) {
     return *device_count_per_type_override_;
   }
 
-  std::map<DeviceInfo::FormFactor, int> count_by_type;
+  absl::flat_hash_map<DeviceInfo::FormFactor, int> count_by_type;
   for (const syncer::DeviceInfo* device : devices_) {
     count_by_type[device->form_factor()]++;
   }
@@ -64,7 +67,7 @@ FakeDeviceInfoTracker::CountActiveDevicesByType() const {
 }
 
 void FakeDeviceInfoTracker::ForcePulseForTest() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeDeviceInfoTracker::IsRecentLocalCacheGuid(
@@ -94,16 +97,15 @@ void FakeDeviceInfoTracker::Add(std::unique_ptr<DeviceInfo> device) {
 }
 
 void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
-  const auto remove_it = base::ranges::remove(devices_, device);
-  CHECK(remove_it != devices_.end());
-  devices_.erase(remove_it);
+  const auto to_remove = std::ranges::remove(devices_, device);
+  CHECK(!to_remove.empty());
+  devices_.erase(to_remove.begin(), to_remove.end());
 }
 
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
-  auto it = base::ranges::find(devices_, old_device);
-  CHECK(devices_.end() != it, base::NotFatalUntil::M130)
-      << "Tracker doesn't contain device";
+  auto it = std::ranges::find(devices_, old_device);
+  CHECK(devices_.end() != it) << "Tracker doesn't contain device";
   *it = new_device;
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();
@@ -111,7 +113,7 @@ void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
 }
 
 void FakeDeviceInfoTracker::OverrideActiveDeviceCount(
-    const std::map<DeviceInfo::FormFactor, int>& counts) {
+    const absl::flat_hash_map<DeviceInfo::FormFactor, int>& counts) {
   device_count_per_type_override_ = counts;
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();

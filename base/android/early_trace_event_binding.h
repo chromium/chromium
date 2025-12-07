@@ -12,7 +12,7 @@ namespace android {
 
 // Returns true if background startup tracing flag was set on the previous
 // startup.
-BASE_EXPORT bool GetBackgroundStartupTracingFlag();
+BASE_EXPORT bool GetBackgroundStartupTracingFlagFromJava();
 
 // Sets a flag to chrome application preferences to enable startup tracing next
 // time the app is started.

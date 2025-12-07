@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,6 +29,7 @@
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 namespace {
@@ -123,11 +122,6 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "kerberosRememberPasswordEnabled",
       local_state->GetBoolean(::prefs::kKerberosRememberPasswordEnabled));
-
-  // Whether the 'Remember password' checkbox should be checked by default.
-  html_source->AddBoolean(
-      "kerberosRememberPasswordByDefault",
-      features::IsKerberosRememberPasswordByDefaultEnabled());
 
   // Prefilled domain if policy is enabled. Note that Kerberos
   // domains should be in all uppercase.

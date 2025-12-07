@@ -7,25 +7,19 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/reporting/util/status.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -64,17 +58,10 @@ class OsUpdateEventObserverBrowserTest
  protected:
   OsUpdateEventObserverBrowserTest() {
     login_manager_mixin_.AppendRegularUsers(1);
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportOsUpdateStatus, true);
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kSystemLogUploadEnabled, true);
   }
 
   void SetUpOnMainThread() override {
     login_manager_mixin_.SetShouldLaunchBrowser(true);
-    PrefService* local_state = g_browser_process->local_state();
-    static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
-        ->RegisterDictionaryPref(policy::prefs::kEventBasedLogLastUploadTimes);
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }
 
@@ -91,6 +78,10 @@ class OsUpdateEventObserverBrowserTest
         kTestAffiliationId);
     user_policy_update->policy_data()->add_user_affiliation_ids(
         kTestAffiliationId);
+
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_os_update_status(true);
   }
 
   void TearDownOnMainThread() override {
@@ -108,16 +99,12 @@ class OsUpdateEventObserverBrowserTest
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
 
-  ash::FakeSessionManagerClient* session_manager_client();
-
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, kTestAccountId};
 
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
 
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   raw_ptr<ash::FakeUpdateEngineClient> fake_update_engine_client_ = nullptr;
 };

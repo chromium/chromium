@@ -3,8 +3,11 @@
 require_once('test_base.php');
 require_once('test_util.php');
 
+use Google\Protobuf\Internal\CodedOutputStream;
+use Google\Protobuf\PrintOptions;
 use Google\Protobuf\RepeatedField;
 use Google\Protobuf\GPBType;
+use Foo\EmptyAnySerialization;
 use Foo\TestInt32Value;
 use Foo\TestInt64Value;
 use Foo\TestUInt32Value;
@@ -202,6 +205,68 @@ class EncodeDecodeTest extends TestBase
         $m = new TestStringValue();
         $m->mergeFromJsonString("{\"repeated_field\":[\"a\"]}");
         $this->assertSame("a", $m->getRepeatedField()[0]->getValue());
+    }
+
+    public function testDecodeEnumMapWithUnknownStringValueThrows()
+    {
+        $this->expectException(Exception::class);
+
+        $m = new TestMessage();
+        $m->mergeFromJsonString(
+          "{\"map_int32_enum\":{
+            \"1\": \"ONE\",
+            \"2\": \"UNKNOWN_ENUM\",
+            \"3\": \"ZERO\"
+          }}"
+        );
+    }
+
+    public function testDecodeEnumMapWithUnknownStringValueIgnored()
+    {
+        $m = new TestMessage();
+        $m->mergeFromJsonString(
+          "{\"map_int32_enum\":{
+            \"1\": \"ONE\",
+            \"2\": \"UNKNOWN_ENUM\",
+            \"3\": \"ZERO\"
+          }}",
+          true
+        );
+
+        $this->assertSame(TestEnum::ONE, $m->getMapInt32Enum()["1"]);
+        $this->assertSame(TestEnum::ZERO, $m->getMapInt32Enum()["3"]);
+        $this->assertFalse($m->getMapInt32Enum()->offsetExists(2));
+    }
+
+    public function testDecodeRepeatedEnumWithUnknownStringValueThrows()
+    {
+        $this->expectException(Exception::class);
+
+        $m = new TestMessage();
+        $m->mergeFromJsonString(
+          "{\"repeated_enum\":[
+            \"ONE\",
+            \"UNKNOWN_ENUM\",
+            \"ZERO\"
+          ]}"
+        );
+    }
+
+    public function testDecodeRepeatedEnumWithUnknownStringValueIgnored()
+    {
+        $m = new TestMessage();
+        $m->mergeFromJsonString(
+          "{\"repeated_enum\":[
+            \"ONE\",
+            \"UNKNOWN_ENUM\",
+            \"ZERO\"
+          ]}",
+          true
+        );
+
+        $this->assertSame(2, count($m->getRepeatedEnum()));
+        $this->assertSame(TestEnum::ONE, $m->getRepeatedEnum()[0]);
+        $this->assertSame(TestEnum::ZERO, $m->getRepeatedEnum()[1]);
     }
 
     public function testDecodeMapStringValue()
@@ -682,6 +747,21 @@ class EncodeDecodeTest extends TestBase
         $m->mergeFromString(hex2bin('7201'));
     }
 
+    public function testDecodeInvalidStringDataBadUtf8()
+    {
+        $this->expectException(Exception::class);
+
+        $m = new TestMessage();
+        $m->mergeFromString(hex2bin('720180'));
+    }
+
+    public function testDecodeValidStringData()
+    {
+        $m = new TestMessage();
+        $m->mergeFromString(hex2bin('720161'));
+        $this->assertSame('a', $m->getOptionalString());
+    }
+
     public function testDecodeInvalidBytesLengthMiss()
     {
         $this->expectException(Exception::class);
@@ -744,7 +824,7 @@ class EncodeDecodeTest extends TestBase
     {
         // Test preserve unknown for varint.
         $m = new TestMessage();
-        $from = hex2bin('F80601');  // TODO(teboring): Add a util to encode
+        $from = hex2bin('F80601');  // TODO: Add a util to encode
                                     // varint for better readability
         $m->mergeFromString($from);
         $to = $m->serializeToString();
@@ -989,6 +1069,16 @@ class EncodeDecodeTest extends TestBase
         $m->setNanos(123456789);
         $this->assertEquals("\"2000-01-01T00:00:00.123456789Z\"",
                             $m->serializeToJsonString());
+    }
+
+    public function testEncodeDecodeTimestampConsistency()
+    {
+        $m = new Google\Protobuf\Timestamp();
+        $m->setSeconds(946684800);
+        $m->setNanos(123000000);
+        $m->mergeFromJsonString($m->serializeToJsonString());
+        $this->assertEquals(946684800, $m->getSeconds());
+        $this->assertEquals(123000000, $m->getNanos());
     }
 
     public function testDecodeTopLevelValue()
@@ -1511,6 +1601,110 @@ class EncodeDecodeTest extends TestBase
         return [
             [TestInt32Value::class, 1, "1", 0, "0"],
             [TestStringValue::class, "a", "\"a\"", "", "\"\""],
+        ];
+    }
+
+    public function testEmptyAnySerialization()
+    {
+        $m = new EmptyAnySerialization();
+
+        $any = new Any();
+        $any->pack($m);
+
+        $data = $any->serializeToJsonString();
+        $this->assertEquals('{"@type":"type.googleapis.com/foo.EmptyAnySerialization"}', $data);
+
+        $any = new Any();
+        $any->mergeFromJsonString($data);
+
+        $m = $any->unpack();
+        $this->assertInstanceOf(EmptyAnySerialization::class, $m);
+        $this->assertEquals('', $m->getA());
+    }
+
+    public function testSerializeToJsonStringNoOption()
+    {
+        $m = new TestMessage();
+
+        $m->setOneofEnum(TestEnum::ONE);
+        $data = $m->serializeToJsonString();
+        $this->assertSame('{"oneofEnum":"ONE"}', $data);
+
+        $n = new TestMessage();
+        $n->mergeFromJsonString($data);
+        $this->assertSame("oneof_enum", $n->getMyOneof());
+        $this->assertSame(TestEnum::ONE, $n->getOneofEnum());
+    }
+
+    /**
+     * @dataProvider serializeToJsonStringOptionsProvider
+     */
+    public function testSerializeToJsonStringWithOptions(int|bool|null $flags, string $expected)
+    {
+        $m = new TestMessage();
+
+        $m->setOneofEnum(TestEnum::ONE);
+        $data = $m->serializeToJsonString($flags);
+        $this->assertSame($expected, $data);
+
+        $n = new TestMessage();
+        $n->mergeFromJsonString($data);
+        $this->assertSame("oneof_enum", $n->getMyOneof());
+        $this->assertSame(TestEnum::ONE, $n->getOneofEnum());
+    }
+
+    public static function serializeToJsonStringOptionsProvider(): array
+    {
+        return [
+            'null' => [
+                null,
+                '{"oneofEnum":"ONE"}',
+            ],
+            'boolean false (BC)' => [
+                false,
+                '{"oneofEnum":"ONE"}',
+            ],
+            'boolean true (BC)' => [
+                true,
+                '{"oneof_enum":"ONE"}',
+            ],
+            'default int' => [
+                0,
+                '{"oneofEnum":"ONE"}',
+            ],
+            'as int' => [
+                PrintOptions::ALWAYS_PRINT_ENUMS_AS_INTS,
+                '{"oneofEnum":1}',
+            ],
+            'preserve' => [
+                PrintOptions::PRESERVE_PROTO_FIELD_NAMES,
+                '{"oneof_enum":"ONE"}',
+            ],
+            'as int + preserve' => [
+                PrintOptions::ALWAYS_PRINT_ENUMS_AS_INTS | PrintOptions::PRESERVE_PROTO_FIELD_NAMES,
+                '{"oneof_enum":1}',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider preserveProtoFieldNamesProvider
+     * Backwards Compatibility test for boolean parameter to serializeToJsonString
+     */
+    public function testJsonStringBCPreserveProtoFieldNames(bool $value, $expected)
+    {
+        $m = new TestMessage();
+
+        $m->setOneofEnum(TestEnum::ONE);
+        $data = $m->serializeToJsonString($value);
+        $this->assertSame($expected, $data);
+    }
+
+    public static function preserveProtoFieldNamesProvider(): array
+    {
+        return [
+            [true, '{"oneof_enum":"ONE"}'],
+            [false, '{"oneofEnum":"ONE"}'],
         ];
     }
 }

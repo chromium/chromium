@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-
-import {DeviceRequest, DeviceRequestId, DeviceRequestKind, FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
+import type {DeviceRequest, FirmwareUpdate, InstallationProgress} from './firmware_update.mojom-webui.js';
+import {DeviceRequestId, DeviceRequestKind, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
 
 export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
     deviceId: '1',
-    deviceName: stringToMojoString16('HP dock'),
+    deviceName: 'HP dock',
+    needsReboot: false,
     deviceVersion: '5.4.3',
-    deviceDescription: stringToMojoString16(
+    deviceDescription:
         `Update the firmware to the latest to enhance the security of your HP
-         dock device`),
+         dock device`,
     priority: UpdatePriority.kCritical,
     filepath: {'path': '1.cab'},
     checksum:
@@ -21,11 +21,12 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   },
   {
     deviceId: '2',
-    deviceName: stringToMojoString16('ColorHugALS'),
+    deviceName: 'ColorHugALS',
+    needsReboot: false,
     deviceVersion: '3.0.2',
-    deviceDescription: stringToMojoString16(
+    deviceDescription:
         `Updating your ColorHugALS device firmware improves performance and
-         adds new features`),
+         adds new features`,
     priority: UpdatePriority.kMedium,
     filepath: {'path': '2.cab'},
     checksum:
@@ -33,10 +34,11 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   },
   {
     deviceId: '3',
-    deviceName: stringToMojoString16('Logitech keyboard'),
+    deviceName: 'Logitech keyboard',
+    needsReboot: false,
     deviceVersion: '2.1.12',
-    deviceDescription: stringToMojoString16(
-        'Update firmware for Logitech keyboard to improve performance'),
+    deviceDescription:
+        'Update firmware for Logitech keyboard to improve performance',
     priority: UpdatePriority.kLow,
     filepath: {'path': '3.cab'},
     checksum:
@@ -44,10 +46,11 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   },
   {
     deviceId: '4',
-    deviceName: stringToMojoString16('Game Controller (has user requests)'),
+    deviceName: 'Game Controller (has user requests)',
+    needsReboot: false,
     deviceVersion: '90.0.1',
-    deviceDescription: stringToMojoString16(
-        'Update this device to see what a device request looks like'),
+    deviceDescription:
+        'Update this device to see what a device request looks like',
     priority: UpdatePriority.kLow,
     filepath: {'path': '4.cab'},
     checksum:
@@ -55,13 +58,23 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   },
   {
     deviceId: '5',
-    deviceName:
-        stringToMojoString16('Game Controller 2 (has user requests, fails)'),
+    deviceName: 'Game Controller 2 (has user requests, fails)',
+    needsReboot: false,
     deviceVersion: '90.0.1',
-    deviceDescription:
-        stringToMojoString16('This update will fail during the device request'),
+    deviceDescription: 'This update will fail during the device request',
     priority: UpdatePriority.kLow,
     filepath: {'path': '4.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
+  },
+  {
+    deviceId: '6',
+    deviceName: 'System Firmware',
+    needsReboot: true,
+    deviceVersion: '1.16.0',
+    deviceDescription: `Update system firmware`,
+    priority: UpdatePriority.kMedium,
+    filepath: {'path': '6.cab'},
     checksum:
         '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
   },
@@ -96,10 +109,22 @@ export const fakeInstallationProgressWithRequestAndFailure:
 
 export const fakeFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
-  deviceName: stringToMojoString16('Logitech keyboard'),
+  deviceName: 'Logitech keyboard',
+  needsReboot: false,
   deviceVersion: '2.1.12',
-  deviceDescription: stringToMojoString16(
-      'Update firmware for Logitech keyboard to improve performance'),
+  deviceDescription:
+      'Update firmware for Logitech keyboard to improve performance',
+  priority: UpdatePriority.kLow,
+  filepath: {'path': '1.cab'},
+  checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
+};
+
+export const fakeFirmwareUpdateWithReboot: FirmwareUpdate = {
+  deviceId: '1',
+  deviceName: 'System firmware',
+  needsReboot: true,
+  deviceVersion: '2.1.12',
+  deviceDescription: 'Update system firmware',
   priority: UpdatePriority.kLow,
   filepath: {'path': '1.cab'},
   checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
@@ -107,10 +132,11 @@ export const fakeFirmwareUpdate: FirmwareUpdate = {
 
 export const fakeCriticalFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
-  deviceName: stringToMojoString16('Logitech keyboard'),
+  deviceName: 'Logitech keyboard',
+  needsReboot: false,
   deviceVersion: '2.1.12',
-  deviceDescription: stringToMojoString16(
-      'Update firmware for Logitech keyboard to improve performance'),
+  deviceDescription:
+      'Update firmware for Logitech keyboard to improve performance',
   priority: UpdatePriority.kCritical,
   filepath: {'path': '2.cab'},
   checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',

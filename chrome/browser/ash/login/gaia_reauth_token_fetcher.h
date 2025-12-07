@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_GAIA_REAUTH_TOKEN_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -35,7 +36,7 @@ class GaiaReauthTokenFetcher {
 
  private:
   // Handles responses from the SimpleURLLoader.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Called at the end of Fetch().
   FetchCompleteCallback callback_;

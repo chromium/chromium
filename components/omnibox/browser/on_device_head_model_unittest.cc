@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -183,13 +182,6 @@ TEST(OnDeviceHeadDeepModelTest, SearchSuggestions) {
 #else
   model_filename = file_path.value();
 #endif
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOnDeviceHeadProviderNonIncognito,
-      {
-          {OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix, "true"},
-      });
 
   std::vector<std::pair<std::string, uint32_t>> reference_suggestions{
       {"ping 11", 1008}, {"pong 11", 1007}, {"ping 12", 1006},

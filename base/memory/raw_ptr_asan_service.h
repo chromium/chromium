@@ -46,22 +46,22 @@ class BASE_EXPORT RawPtrAsanService {
 
   bool IsEnabled() const { return mode_ == Mode::kEnabled; }
 
-  ALWAYS_INLINE NO_SANITIZE(
-      "address") bool is_dereference_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_dereference_check_enabled() const {
     return is_dereference_check_enabled_;
   }
 
-  ALWAYS_INLINE NO_SANITIZE(
-      "address") bool is_extraction_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_extraction_check_enabled() const {
     return is_extraction_check_enabled_;
   }
 
-  ALWAYS_INLINE NO_SANITIZE(
-      "address") bool is_instantiation_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_instantiation_check_enabled() const {
     return is_instantiation_check_enabled_;
   }
 
-  ALWAYS_INLINE NO_SANITIZE("address") static RawPtrAsanService& GetInstance() {
+  NO_SANITIZE("address") ALWAYS_INLINE static RawPtrAsanService& GetInstance() {
     return instance_;
   }
 
@@ -81,8 +81,9 @@ class BASE_EXPORT RawPtrAsanService {
 
   static void MallocHook(const volatile void*, size_t);
   static void FreeHook(const volatile void*) {}
-  static void ErrorReportCallback(const char* report,
-                                  bool* should_exit_cleanly);
+  static void ErrorReportCallback(const char* reason,
+                                  bool* should_exit_cleanly,
+                                  bool* should_abort);
 
   Mode mode_ = Mode::kUninitialized;
   bool is_dereference_check_enabled_ = false;

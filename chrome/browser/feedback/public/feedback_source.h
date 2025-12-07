@@ -7,66 +7,63 @@
 
 // Sources of feedback requests.
 //
-// WARNING: The below enum MUST never be renamed, modified or reordered, as
+// WARNING: The below enum values MUST never be modified or reordered, as
 // they're written to logs. You can only insert a new element immediately
-// before the last. Also, 'FeedbackSource' in
+// before the last, or deprecate existing values. Also, 'FeedbackSource' in
 // 'tools/metrics/histograms/enums.xml' MUST be kept in sync with the enum
 // below.
-// Note: Many feedback sources are being deprecated, or don't apply for Lacros
-// (e.g. Ash only). Therefore, we won't support all the values listed below in
-// Lacros. "enum LacrosFeedbackSource" in chromeos/crosapi/mojom/feedback.mojom
-// lists all the feedback sources we allow in Lacros to the current. When you
-// need to show feedack from Lacros with a new feedback source, please add it to
-// LacrosFeedbackSource, handles the mojom serialization accordingly, and add a
-// new test case in:
-// chrome/browser/feedback/show_feedback_page_lacros_browsertest.cc.
 namespace feedback {
 
+// LINT.IfChange(FeedbackSource)
 enum FeedbackSource {
   kFeedbackSourceArcApp = 0,
-  kFeedbackSourceAsh,
-  kFeedbackSourceBrowserCommand,
-  kFeedbackSourceMdSettingsAboutPage,
-  kFeedbackSourceOldSettingsAboutPage,
-  kFeedbackSourceProfileErrorDialog,
-  kFeedbackSourceSadTabPage,
-  kFeedbackSourceSupervisedUserInterstitial,
-  kFeedbackSourceAssistant,
-  kFeedbackSourceDesktopTabGroups,
-  kFeedbackSourceMediaApp,
-  kFeedbackSourceHelpApp,
-  kFeedbackSourceKaleidoscope,
-  kFeedbackSourceNetworkHealthPage,
-  kFeedbackSourceTabSearch,
-  kFeedbackSourceCameraApp,
-  kFeedbackSourceCaptureMode,
-  kFeedbackSourceChromeLabs,
-  kFeedbackSourceBentoBar_DEPRECATED,
-  kFeedbackSourceQuickAnswers,
-  kFeedbackSourceWhatsNew,
-  kFeedbackSourceConnectivityDiagnostics,
-  kFeedbackSourceProjectorApp,
-  kFeedbackSourceDesksTemplates,
-  kFeedbackSourceFilesApp,
-  kFeedbackSourceChannelIndicator,
-  kFeedbackSourceLauncher,
-  kFeedbackSourceSettingsPerformancePage,
-  kFeedbackSourceQuickOffice,
-  kFeedbackSourceOsSettingsSearch,
-  kFeedbackSourceAutofillContextMenu,
-  kFeedbackSourceUnknownLacrosSource,
-  kFeedbackSourceWindowLayoutMenu,
-  kFeedbackSourcePriceInsights,
-  kFeedbackSourceCookieControls,
-  kFeedbackSourceGameDashboard,
-  kFeedbackSourceLensOverlay,
-  kFeedbackSourceLogin,
-  kFeedbackSourceAI,
-  kFeedbackSourceFocusMode,
-  kFeedbackSourceOverview,
-  kFeedbackSourceSnapGroups_DEPRECATED,
-  kFeedbackSourceBirch,
-  kFeedbackSourceBorealis,
+  kFeedbackSourceAsh = 1,
+  kFeedbackSourceBrowserCommand = 2,
+  kFeedbackSourceMdSettingsAboutPage = 3,
+  // kFeedbackSourceOldSettingsAboutPage = 4, Obsolete
+  kFeedbackSourceProfileErrorDialog = 5,
+  kFeedbackSourceSadTabPage = 6,
+  // kFeedbackSourceSupervisedUserInterstitial = 7, Obsolete
+  kFeedbackSourceAssistant = 8,
+  kFeedbackSourceDesktopTabGroups = 9,
+  kFeedbackSourceMediaApp = 10,
+  kFeedbackSourceHelpApp = 11,
+  // kFeedbackSourceKaleidoscope = 12, Obsolete
+  kFeedbackSourceNetworkHealthPage = 13,
+  // kFeedbackSourceTabSearch = 14, Obsolete
+  kFeedbackSourceCameraApp = 15,
+  // kFeedbackSourceCaptureMode = 16, Obsolete
+  kFeedbackSourceChromeLabs = 17,
+  // kFeedbackSourceBentoBar = 18, Obsolete
+  kFeedbackSourceQuickAnswers = 19,
+  // kFeedbackSourceWhatsNew = 20, Obsolete
+  kFeedbackSourceConnectivityDiagnostics = 21,
+  kFeedbackSourceProjectorApp = 22,
+  // kFeedbackSourceDesksTemplates = 23, Obsolete
+  kFeedbackSourceFilesApp = 24,
+  kFeedbackSourceChannelIndicator = 25,
+  kFeedbackSourceLauncher = 26,
+  kFeedbackSourceSettingsPerformancePage = 27,
+  kFeedbackSourceQuickOffice = 28,
+  kFeedbackSourceOsSettingsSearch = 29,
+  kFeedbackSourceAutofillContextMenu = 30,
+  // kFeedbackSourceUnknownLacrosSource = 31, Obsolete
+  kFeedbackSourceWindowLayoutMenu = 32,
+  kFeedbackSourcePriceInsights = 33,
+  kFeedbackSourceCookieControls = 34,
+  kFeedbackSourceGameDashboard = 35,
+  kFeedbackSourceLensOverlay = 36,
+  kFeedbackSourceLogin = 37,
+  kFeedbackSourceAI = 38,
+  // kFeedbackSourceFocusMode = 39, Obsolete
+  kFeedbackSourceOverview = 40,
+  // kFeedbackSourceSnapGroups = 41, Obsolete
+  // kFeedbackSourceBirch = 42, Obsolete
+  kFeedbackSourceBorealis = 43,
+  kFeedbackSourceSunfish = 44,
+  kFeedbackSourceBocaApp = 45,
+  kFeedbackSourceTrackingProtections = 46,
+  kFeedbackSourceSplitView = 47,
 
   // ATTENTION: Before making any changes or adding to feedback collection,
   // please ensure the teams that operationalize feedback are aware and
@@ -75,6 +72,7 @@ enum FeedbackSource {
   // Must be last.
   kFeedbackSourceCount,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FeedbackSource)
 
 }  // namespace feedback
 

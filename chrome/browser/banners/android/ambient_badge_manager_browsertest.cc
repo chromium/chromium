@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
@@ -15,8 +14,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
-#include "components/site_engagement/content/site_engagement_score.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/ambient_badge_manager.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
@@ -165,7 +162,6 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
-    site_engagement::SiteEngagementScore::SetParamValuesForTesting();
 
     app_banner_manager_ = std::make_unique<TestAppBannerManager>(
         web_contents(), &mock_segmentation_service_);
@@ -189,21 +185,12 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
     return app_banner_manager_->GetBadgeManagerForTest();
   }
 
-  void ResetEngagementForUrl(const GURL& url, double score) {
-    site_engagement::SiteEngagementService* service =
-        site_engagement::SiteEngagementService::Get(
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-    service->ResetBaseScoreForURL(url, score);
-  }
-
   void SetSegmentationResult(std::string label) {
     EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
         .WillOnce(RunOnceCallback<3>(GetClassificationResult(label)));
   }
 
   void RunTest(const GURL& url, AmbientBadgeManager::State expected_state) {
-    ResetEngagementForUrl(url, 10);
-
     base::RunLoop waiter;
 
     app_banner_manager_->WaitForAmbientBadgeState(expected_state,
@@ -222,15 +209,18 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
       mock_segmentation_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest, ShowAmbientBadge) {
+// TODO(crbug.com/369913977): Flaky
+IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
+                       DISABLED_ShowAmbientBadge) {
   SetSegmentationResult(MLInstallabilityPromoter::kShowInstallPromptLabel);
 
   RunTest(embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
           AmbientBadgeManager::State::kShowing);
 }
 
+// TODO(crbug.com/376278389): Flaky
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
-                       BlockedBySegmentationResult) {
+                       DISABLED_BlockedBySegmentationResult) {
   SetSegmentationResult(MLInstallabilityPromoter::kDontShowLabel);
 
   RunTest(embedded_test_server()->GetURL("/banners/manifest_test_page.html"),

@@ -50,7 +50,7 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
       delete;
 
-  ~SecurityStyleTestObserver() override {}
+  ~SecurityStyleTestObserver() override = default;
 
   void DidChangeVisibleSecurityState() override { run_loop_.Quit(); }
 
@@ -62,14 +62,14 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 
 class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  SecurityStatePageLoadMetricsBrowserTest() {}
+  SecurityStatePageLoadMetricsBrowserTest() = default;
 
   SecurityStatePageLoadMetricsBrowserTest(
       const SecurityStatePageLoadMetricsBrowserTest&) = delete;
   SecurityStatePageLoadMetricsBrowserTest& operator=(
       const SecurityStatePageLoadMetricsBrowserTest&) = delete;
 
-  ~SecurityStatePageLoadMetricsBrowserTest() override {}
+  ~SecurityStatePageLoadMetricsBrowserTest() override = default;
 
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
@@ -606,7 +606,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Loads a page in the prerender.
   GURL prerender_url = https_test_server()->GetURL("/title2.html");
-  const int host_id = prerender_helper()->AddPrerender(prerender_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

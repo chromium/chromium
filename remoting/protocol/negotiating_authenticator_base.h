@@ -73,7 +73,9 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 
@@ -83,8 +85,6 @@ class NegotiatingAuthenticatorBase : public Authenticator {
                               base::OnceClosure resume_callback);
 
  protected:
-  using Method = HostAuthenticationConfig::Method;
-
   friend class NegotiatingAuthenticatorTest;
 
   static const jingle_xmpp::StaticQName kMethodAttributeQName;
@@ -98,7 +98,7 @@ class NegotiatingAuthenticatorBase : public Authenticator {
 
   void NotifyStateChangeAfterAccepted() override;
 
-  void AddMethod(HostAuthenticationConfig::Method method);
+  void AddMethod(AuthenticationMethod method);
 
   // Updates |state_| to reflect the current underlying authenticator state.
   // |resume_callback| is called after the state is updated.
@@ -108,11 +108,12 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   // the 'method' tag with |current_method_|.
   virtual std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessageInternal();
 
-  std::vector<Method> methods_;
-  Method current_method_ = Method::INVALID;
+  std::vector<AuthenticationMethod> methods_;
+  AuthenticationMethod current_method_ = AuthenticationMethod::INVALID;
   std::unique_ptr<Authenticator> current_authenticator_;
   State state_;
   RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
+  RejectionDetails rejection_details_;
 };
 
 }  // namespace remoting::protocol

@@ -27,6 +27,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -50,12 +51,8 @@
 
 namespace blink {
 
-// static
-const char FontFaceSetDocument::kSupplementName[] = "FontFaceSetDocument";
-
 FontFaceSetDocument::FontFaceSetDocument(Document& document)
     : FontFaceSet(*document.GetExecutionContext()),
-      Supplement<Document>(document),
       lcp_limit_timer_(document.GetTaskRunner(TaskType::kInternalLoading),
                        this,
                        &FontFaceSetDocument::LCPLimitReached) {}
@@ -72,12 +69,6 @@ FontSelector* FontFaceSetDocument::GetFontSelector() const {
   return GetDocument()->GetStyleEngine().GetFontSelector();
 }
 
-AtomicString FontFaceSetDocument::status() const {
-  DEFINE_STATIC_LOCAL(AtomicString, loading, ("loading"));
-  DEFINE_STATIC_LOCAL(AtomicString, loaded, ("loaded"));
-  return is_loading_ ? loading : loaded;
-}
-
 void FontFaceSetDocument::DidLayout() {
   if (!GetExecutionContext()) {
     return;
@@ -92,11 +83,8 @@ void FontFaceSetDocument::DidLayout() {
 }
 
 void FontFaceSetDocument::StartLCPLimitTimerIfNeeded() {
-  // Make sure the timer is started at most once for each document, and only
-  // when the feature is enabled
-  if (!base::FeatureList::IsEnabled(
-          features::kAlignFontDisplayAutoTimeoutWithLCPGoal) ||
-      has_reached_lcp_limit_ || lcp_limit_timer_.IsActive() ||
+  // Make sure the timer is started at most once for each document.
+  if (has_reached_lcp_limit_ || lcp_limit_timer_.IsActive() ||
       !GetDocument()->Loader()) {
     return;
   }
@@ -150,46 +138,50 @@ FontFaceSetDocument::CSSConnectedFontFaceList() const {
 }
 
 void FontFaceSetDocument::FireDoneEventIfPossible() {
-  if (should_fire_loading_event_) {
-    return;
-  }
-  if (!ShouldSignalReady()) {
-    return;
-  }
-  Document* d = GetDocument();
-  if (!d) {
+  Document* document = GetDocument();
+  if (!document || !document->View()) {
     return;
   }
 
-  // If the layout was invalidated in between when we thought layout
-  // was updated and when we're ready to fire the event, just wait
-  // until after the next layout before firing events.
-  if (!d->View() || d->View()->NeedsLayout()) {
+  if (!ShouldSignalReady()) {
+    return;
+  }
+
+  // FireDoneEventIfPossible gets scheduled via PostTask at the end of a
+  // successful style+layout update. An invalidation may have occurred in
+  // the interim, so update style and layout synchronously here.
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+
+  // These values can change during style+layout update, so check them
+  // *after* the call to UpdateStyleAndLayout.
+  if (should_fire_loading_event_) {
+    return;
+  }
+
+  if (!ShouldSignalReady()) {
     return;
   }
 
   FireDoneEvent();
 }
 
-bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
-                                           Font& font) {
+const Font* FontFaceSetDocument::ResolveFontStyle(const String& font_string) {
   if (font_string.empty()) {
-    return false;
+    return nullptr;
   }
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
   auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
   if (!parsed_style) {
-    return false;
+    return nullptr;
   }
 
   if (!GetDocument()->documentElement()) {
     auto* font_selector = GetDocument()->GetStyleEngine().GetFontSelector();
     FontDescription description =
         FontStyleResolver::ComputeFont(*parsed_style, font_selector);
-    font = Font(description, font_selector);
-    return true;
+    return MakeGarbageCollected<Font>(description, font_selector);
   }
 
   ComputedStyleBuilder builder =
@@ -205,14 +197,14 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   builder.SetFontDescription(default_font_description);
   const ComputedStyle* style = builder.TakeStyle();
 
-  font = GetDocument()->GetStyleEngine().ComputeFont(
+  const Font* font = GetDocument()->GetStyleEngine().ComputeFont(
       *GetDocument()->documentElement(), *style, *parsed_style);
 
   // StyleResolver::ComputeFont() should have set the document's FontSelector
   // to |style|.
-  DCHECK_EQ(font.GetFontSelector(), GetFontSelector());
+  DCHECK_EQ(font->GetFontSelector(), GetFontSelector());
 
-  return true;
+  return font;
 }
 
 Document* FontFaceSetDocument::GetDocument() const {
@@ -223,11 +215,10 @@ Document* FontFaceSetDocument::GetDocument() const {
 }
 
 FontFaceSetDocument* FontFaceSetDocument::From(Document& document) {
-  FontFaceSetDocument* fonts =
-      Supplement<Document>::From<FontFaceSetDocument>(document);
+  FontFaceSetDocument* fonts = document.GetFontFaceSetDocument();
   if (!fonts) {
     fonts = MakeGarbageCollected<FontFaceSetDocument>(document);
-    Supplement<Document>::ProvideTo(document, fonts);
+    document.SetFontFaceSetDocument(fonts);
   }
 
   return fonts;
@@ -240,15 +231,13 @@ void FontFaceSetDocument::DidLayout(Document& document) {
     // existing tests depend on it firing after onload.
     return;
   }
-  if (FontFaceSetDocument* fonts =
-          Supplement<Document>::From<FontFaceSetDocument>(document)) {
+  if (FontFaceSetDocument* fonts = document.GetFontFaceSetDocument()) {
     fonts->DidLayout();
   }
 }
 
 size_t FontFaceSetDocument::ApproximateBlankCharacterCount(Document& document) {
-  if (FontFaceSetDocument* fonts =
-          Supplement<Document>::From<FontFaceSetDocument>(document)) {
+  if (FontFaceSetDocument* fonts = document.GetFontFaceSetDocument()) {
     return fonts->ApproximateBlankCharacterCount();
   }
   return 0;
@@ -259,8 +248,6 @@ void FontFaceSetDocument::AlignTimeoutWithLCPGoal(FontFace* font_face) {
 }
 
 void FontFaceSetDocument::LCPLimitReached(TimerBase*) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAlignFontDisplayAutoTimeoutWithLCPGoal));
   if (!GetDocument() || !GetDocument()->IsActive()) {
     return;
   }
@@ -275,7 +262,6 @@ void FontFaceSetDocument::LCPLimitReached(TimerBase*) {
 
 void FontFaceSetDocument::Trace(Visitor* visitor) const {
   visitor->Trace(lcp_limit_timer_);
-  Supplement<Document>::Trace(visitor);
   FontFaceSet::Trace(visitor);
 }
 

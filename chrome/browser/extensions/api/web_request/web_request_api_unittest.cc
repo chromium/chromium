@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/web_request/web_request_api.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,11 +18,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -29,7 +31,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
-#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -41,10 +42,10 @@
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
-#include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/constants.h"
@@ -56,6 +57,8 @@
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extension_web_request_api_constants;
@@ -115,8 +118,8 @@ class ExtensionWebRequestTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
   TestingProfileManager profile_manager_;
+  TestingProfile profile_;
 };
 
 namespace {
@@ -132,8 +135,7 @@ bool GenerateInfoSpec(content::BrowserContext* browser_context,
            values, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     list.Append(cur);
   }
-  return ExtraInfoSpec::InitFromValue(browser_context,
-                                      base::Value(std::move(list)), result);
+  return ExtraInfoSpec::InitFromValue(base::Value(std::move(list)), result);
 }
 
 }  // namespace
@@ -282,6 +284,15 @@ TEST_F(ExtensionWebRequestTest, InitFromValue) {
                     ExtraInfoSpec::ASYNC_BLOCKING);
   TestInitFromValue(&profile_, "requestBody", true,
                     ExtraInfoSpec::REQUEST_BODY);
+
+  TestInitFromValue(&profile_, "securityInfo", true,
+                    ExtraInfoSpec::SECURITY_INFO);
+  TestInitFromValue(
+      &profile_, "securityInfo,securityInfoRawDer", true,
+      ExtraInfoSpec::SECURITY_INFO | ExtraInfoSpec::SECURITY_INFO_RAW_DER);
+  TestInitFromValue(
+      &profile_, "securityInfoRawDer", true,
+      ExtraInfoSpec::SECURITY_INFO | ExtraInfoSpec::SECURITY_INFO_RAW_DER);
 
   // Multiple valid values are bitwise-or'ed.
   TestInitFromValue(&profile_, "requestHeaders,blocking", true,
@@ -570,6 +581,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   EventResponseDeltas deltas;
   helpers::IgnoredActions ignored_actions;
   GURL effective_new_url;
+  std::optional<ExtensionId> extension_id;
 
   // No redirect
   {
@@ -577,8 +589,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
     deltas.push_back(std::move(d0));
   }
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_TRUE(effective_new_url.is_empty());
+  EXPECT_FALSE(extension_id.has_value());
 
   // Single redirect.
   GURL new_url_1("http://foo.com");
@@ -589,8 +602,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   }
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_1, effective_new_url);
+  EXPECT_EQ("extid1", extension_id.value());
   EXPECT_TRUE(ignored_actions.empty());
 
   // Ignored redirect (due to precedence).
@@ -603,8 +617,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   ignored_actions.clear();
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_1, effective_new_url);
+  EXPECT_EQ("extid1", extension_id.value());
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid2",
                                web_request::IgnoredActionType::kRedirect));
@@ -619,8 +634,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   ignored_actions.clear();
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_3, effective_new_url);
+  EXPECT_EQ("extid3", extension_id.value());
   EXPECT_EQ(2u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid1",
                                web_request::IgnoredActionType::kRedirect));
@@ -636,8 +652,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   ignored_actions.clear();
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_3, effective_new_url);
+  EXPECT_EQ("extid3", extension_id.value());
   EXPECT_EQ(2u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid1",
                                web_request::IgnoredActionType::kRedirect));
@@ -651,6 +668,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses2) {
   EventResponseDeltas deltas;
   helpers::IgnoredActions ignored_actions;
   GURL effective_new_url;
+  std::optional<ExtensionId> extension_id;
 
   // Single redirect.
   GURL new_url_0("http://foo.com");
@@ -660,8 +678,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses2) {
     deltas.push_back(std::move(d0));
   }
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_0, effective_new_url);
+  EXPECT_EQ("extid0", extension_id.value());
 
   // Cancel request by redirecting to a data:// URL. This shall override
   // the other redirect but not cause any conflict warnings.
@@ -674,8 +693,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses2) {
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   ignored_actions.clear();
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_1, effective_new_url);
+  EXPECT_EQ("extid1", extension_id.value());
   EXPECT_TRUE(ignored_actions.empty());
 
   // Cancel request by redirecting to the same data:// URL. This shall
@@ -690,8 +710,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses2) {
   ignored_actions.clear();
 
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
-  EXPECT_EQ(new_url_1, effective_new_url);
+                                &extension_id, &ignored_actions);
+  EXPECT_EQ(new_url_2, effective_new_url);
+  EXPECT_EQ("extid2", extension_id.value());
   EXPECT_TRUE(ignored_actions.empty());
 
   // Cancel redirect by redirecting to a different data:// URL. This needs
@@ -705,8 +726,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses2) {
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   ignored_actions.clear();
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_1, effective_new_url);
+  EXPECT_EQ("extid2", extension_id.value());
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid3",
                                web_request::IgnoredActionType::kRedirect));
@@ -718,6 +740,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses3) {
   EventResponseDeltas deltas;
   helpers::IgnoredActions ignored_actions;
   GURL effective_new_url;
+  std::optional<ExtensionId> extension_id;
 
   // Single redirect.
   GURL new_url_0("http://foo.com");
@@ -727,8 +750,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses3) {
     deltas.push_back(std::move(d0));
   }
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_0, effective_new_url);
+  EXPECT_EQ("extid0", extension_id.value());
 
   // Cancel request by redirecting to about:blank. This shall override
   // the other redirect but not cause any conflict warnings.
@@ -741,8 +765,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses3) {
   deltas.sort(&InDecreasingExtensionInstallationTimeOrder);
   ignored_actions.clear();
   MergeOnBeforeRequestResponses(GURL(kExampleUrl), deltas, &effective_new_url,
-                                &ignored_actions);
+                                &extension_id, &ignored_actions);
   EXPECT_EQ(new_url_1, effective_new_url);
+  EXPECT_EQ("extid1", extension_id.value());
   EXPECT_TRUE(ignored_actions.empty());
 }
 
@@ -751,6 +776,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses4) {
   EventResponseDeltas deltas;
   helpers::IgnoredActions ignored_actions;
   GURL effective_new_url;
+  std::optional<ExtensionId> extension_id;
 
   // Single redirect.
   {
@@ -759,8 +785,10 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses4) {
     deltas.push_back(std::move(delta));
   }
   MergeOnBeforeRequestResponses(GURL("ws://example.com"), deltas,
-                                &effective_new_url, &ignored_actions);
+                                &effective_new_url, &extension_id,
+                                &ignored_actions);
   EXPECT_EQ(GURL(), effective_new_url);
+  EXPECT_FALSE(extension_id.has_value());
 }
 
 // TODO(crbug.com/40137306): Separate this test into subtests to improve
@@ -1578,6 +1606,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   bool response_headers_modified0;
   scoped_refptr<net::HttpResponseHeaders> new_headers0;
   GURL preserve_fragment_on_redirect_url0;
+  std::optional<ExtensionId> extension_id;
   WebRequestInfoInitParams info_params;
   info_params.url = GURL(kExampleUrl);
   WebRequestInfo info(std::move(info_params));
@@ -1586,7 +1615,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
 
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers0,
-      &preserve_fragment_on_redirect_url0, &ignored_actions,
+      &preserve_fragment_on_redirect_url0, &extension_id, &ignored_actions,
       &response_headers_modified0, &matched_dnr_actions);
   EXPECT_FALSE(new_headers0.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url0.is_empty());
@@ -1609,7 +1638,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   GURL preserve_fragment_on_redirect_url1;
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers1,
-      &preserve_fragment_on_redirect_url1, &ignored_actions,
+      &preserve_fragment_on_redirect_url1, &extension_id, &ignored_actions,
       &response_headers_modified1, &matched_dnr_actions);
   ASSERT_TRUE(new_headers1.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url1.is_empty());
@@ -1645,7 +1674,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   GURL preserve_fragment_on_redirect_url2;
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers2,
-      &preserve_fragment_on_redirect_url2, &ignored_actions,
+      &preserve_fragment_on_redirect_url2, &extension_id, &ignored_actions,
       &response_headers_modified2, &matched_dnr_actions);
   ASSERT_TRUE(new_headers2.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url2.is_empty());
@@ -1679,7 +1708,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   GURL preserve_fragment_on_redirect_url3;
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers3,
-      &preserve_fragment_on_redirect_url3, &ignored_actions,
+      &preserve_fragment_on_redirect_url3, &extension_id, &ignored_actions,
       &response_headers_modified3, &matched_dnr_actions);
   ASSERT_TRUE(new_headers3.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url3.is_empty());
@@ -1730,7 +1759,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   GURL preserve_fragment_on_redirect_url4;
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers4,
-      &preserve_fragment_on_redirect_url4, &ignored_actions,
+      &preserve_fragment_on_redirect_url4, &extension_id, &ignored_actions,
       &response_headers_modified4, &matched_dnr_actions);
   ASSERT_TRUE(new_headers4.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url4.is_empty());
@@ -1789,6 +1818,7 @@ TEST(ExtensionWebRequestHelpersTest,
   bool response_headers_modified1;
   scoped_refptr<net::HttpResponseHeaders> new_headers1;
   GURL preserve_fragment_on_redirect_url1;
+  std::optional<ExtensionId> extension_id;
 
   WebRequestInfoInitParams info_params;
   info_params.url = GURL(kExampleUrl);
@@ -1798,7 +1828,7 @@ TEST(ExtensionWebRequestHelpersTest,
 
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers1,
-      &preserve_fragment_on_redirect_url1, &ignored_actions,
+      &preserve_fragment_on_redirect_url1, &extension_id, &ignored_actions,
       &response_headers_modified1, &matched_dnr_actions);
   ASSERT_TRUE(new_headers1.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url1.is_empty());
@@ -1840,6 +1870,7 @@ TEST(ExtensionWebRequestHelpersTest,
   bool response_headers_modified0;
   scoped_refptr<net::HttpResponseHeaders> new_headers0;
   GURL preserve_fragment_on_redirect_url0;
+  std::optional<ExtensionId> extension_id;
 
   WebRequestInfoInitParams info_params;
   info_params.url = GURL(kExampleUrl);
@@ -1849,7 +1880,7 @@ TEST(ExtensionWebRequestHelpersTest,
 
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers0,
-      &preserve_fragment_on_redirect_url0, &ignored_actions,
+      &preserve_fragment_on_redirect_url0, &extension_id, &ignored_actions,
       &response_headers_modified0, &matched_dnr_actions);
   EXPECT_FALSE(new_headers0.get());
   EXPECT_TRUE(preserve_fragment_on_redirect_url0.is_empty());
@@ -1870,7 +1901,7 @@ TEST(ExtensionWebRequestHelpersTest,
   GURL preserve_fragment_on_redirect_url1;
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers1,
-      &preserve_fragment_on_redirect_url1, &ignored_actions,
+      &preserve_fragment_on_redirect_url1, &extension_id, &ignored_actions,
       &response_headers_modified1, &matched_dnr_actions);
 
   EXPECT_TRUE(new_headers1.get());
@@ -1973,11 +2004,12 @@ TEST(ExtensionWebRequestHelpersTest,
   bool response_headers_modified;
   scoped_refptr<net::HttpResponseHeaders> new_headers;
   GURL preserve_fragment_on_redirect_url;
+  std::optional<ExtensionId> extension_id;
   std::vector<const DNRRequestAction*> matched_dnr_actions;
 
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers,
-      &preserve_fragment_on_redirect_url, &ignored_actions,
+      &preserve_fragment_on_redirect_url, &extension_id, &ignored_actions,
       &response_headers_modified, &matched_dnr_actions);
   EXPECT_TRUE(new_headers.get());
   EXPECT_TRUE(response_headers_modified);
@@ -2078,11 +2110,12 @@ TEST(ExtensionWebRequestHelpersTest,
   bool response_headers_modified;
   scoped_refptr<net::HttpResponseHeaders> new_headers;
   GURL preserve_fragment_on_redirect_url;
+  std::optional<ExtensionId> extension_id;
   std::vector<const DNRRequestAction*> matched_dnr_actions;
 
   MergeOnHeadersReceivedResponses(
       info, deltas, base_headers.get(), &new_headers,
-      &preserve_fragment_on_redirect_url, &ignored_actions,
+      &preserve_fragment_on_redirect_url, &extension_id, &ignored_actions,
       &response_headers_modified, &matched_dnr_actions);
   EXPECT_TRUE(new_headers.get());
   EXPECT_TRUE(response_headers_modified);

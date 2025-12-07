@@ -34,6 +34,8 @@ class SecurityStateTabHelper
 
   // See security_state::GetSecurityLevel.
   security_state::SecurityLevel GetSecurityLevel();
+
+  virtual security_state::MaliciousContentStatus GetMaliciousContentStatus();
   virtual std::unique_ptr<security_state::VisibleSecurityState>
   GetVisibleSecurityState();
 
@@ -50,8 +52,6 @@ class SecurityStateTabHelper
  protected:
   SecurityStateTabHelper(content::WebContents* web_contents,
                          UsesEmbedderInformation uses_embedder_information);
-
-  virtual bool UsedPolicyInstalledCertificate() const;
 
  private:
   friend class content::WebContentsUserData<SecurityStateTabHelper>;

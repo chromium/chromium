@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -44,9 +44,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   using PreconnectSocketCallback = base::OnceCallback<void(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key)>;
-
-  using GetCookieDeprecationLabelCallback =
-      base::RepeatingCallback<std::optional<std::string>()>;
 
   using GetDevtoolsAuctionIdsCallback =
       base::RepeatingCallback<std::vector<std::string>()>;
@@ -95,7 +92,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
       GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
       PreconnectSocketCallback preconnect_socket_callback,
-      GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
       GetDevtoolsAuctionIdsCallback get_devtools_auction_ids,
       bool force_reload,
       const url::Origin& top_frame_origin,
@@ -107,7 +103,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       const std::optional<GURL>& wasm_url,
       const std::optional<GURL>& trusted_signals_base_url,
       bool needs_cors_for_additional_bid,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   AuctionURLLoaderFactoryProxy(const AuctionURLLoaderFactoryProxy&) = delete;
   AuctionURLLoaderFactoryProxy& operator=(const AuctionURLLoaderFactoryProxy&) =
       delete;
@@ -130,21 +126,20 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       override;
 
  private:
-  // Returns `url` could be a valid trusted signals URL. In particular,
-  // 1) It needs to start with
-  //     `<trusted_signals_base_url_>?hostname=<top_frame_origin>&keys=`.
-  // 2) The rest of the URL has none of the following characters, in unescaped
-  //     form: &, #, =.
-  bool CouldBeTrustedSignalsUrl(const GURL& url) const;
-
-  mojo::PendingRemote<network::mojom::DevToolsObserver>
-  CreateDevtoolsObserver();
+  // Returns `url` could be a valid trusted signals URL. There are two kinds of
+  // trusted signals servers:
+  // 1. BYOS Model(Key-Value v1):
+  //   It needs to start with
+  //     `<trusted_signals_base_url_>?hostname=<top_frame_origin>`.
+  // 2. Server in TEE(Key-Value v2):
+  //   It needs to start with `<trusted_signals_base_url_>.
+  bool CouldBeTrustedSignalsUrl(const GURL& url,
+                                const std::string& accept_header) const;
 
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 
   const GetUrlLoaderFactoryCallback get_frame_url_loader_factory_;
   const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
-  const GetCookieDeprecationLabelCallback get_cookie_deprecation_label_;
   const GetDevtoolsAuctionIdsCallback get_devtools_auction_ids_;
 
   // Manages the bundle subresource URLs that may be accessed by the worklet.
@@ -162,7 +157,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   // bidders.
   const net::IsolationInfo isolation_info_;
 
-  const int owner_frame_tree_node_id_;
+  const FrameTreeNodeId owner_frame_tree_node_id_;
   const GURL script_url_;
   const std::optional<GURL> wasm_url_;
   const std::optional<GURL> trusted_signals_base_url_;
@@ -173,7 +168,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 class AuctionNetworkEventsProxy
     : public auction_worklet::mojom::AuctionNetworkEventsHandler {
  public:
-  explicit AuctionNetworkEventsProxy(int owner_frame_tree_node_id);
+  explicit AuctionNetworkEventsProxy(FrameTreeNodeId owner_frame_tree_node_id);
   AuctionNetworkEventsProxy(const AuctionURLLoaderFactoryProxy&) = delete;
   AuctionNetworkEventsProxy& operator=(const AuctionURLLoaderFactoryProxy&) =
       delete;
@@ -198,7 +193,7 @@ class AuctionNetworkEventsProxy
       const ::network::URLLoaderCompletionStatus& status) override;
 
  private:
-  const int owner_frame_tree_node_id_;
+  const FrameTreeNodeId owner_frame_tree_node_id_;
   mojo::ReceiverSet<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handlers_;
 };

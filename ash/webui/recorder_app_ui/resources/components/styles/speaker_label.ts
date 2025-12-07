@@ -6,8 +6,11 @@ import {css} from 'chrome://resources/mwc/lit/index.js';
 
 /**
  * Maximum number of the speaker colors before the color starts cycling.
+ *
+ * Note that the number of SPEECH_SPEAKER_COLOR_ entries in TimelineSegmentKind
+ * in recording_data_manager.ts should be keep in sync with this.
  */
-const MAX_SPEAKER_COLORS = 5;
+export const MAX_SPEAKER_COLORS = 5;
 
 export const SPEAKER_LABEL_COLORS = css`
   /* Color tokens for different number of speakers. */
@@ -25,16 +28,16 @@ export const SPEAKER_LABEL_COLORS = css`
   }
 
   .speaker-duo {
+    --speaker-label-label-color: var(--cros-sys-surface);
+
     & .speaker-1 {
-      --speaker-label-container-color: var(--cros-sys-secondary_container);
-      --speaker-label-label-color: var(--cros-sys-on_primary);
-      --speaker-label-shapes-color: var(--cros-sys-primary);
+      --speaker-label-container-color: var(--cros-sys-illo-card-color4);
+      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color4);
     }
 
     & .speaker-2 {
-      --speaker-label-container-color: var(--cros-sys-tertiary_container);
-      --speaker-label-label-color: var(--cros-sys-on_tertiary);
-      --speaker-label-shapes-color: var(--cros-sys-tertiary);
+      --speaker-label-container-color: var(--cros-sys-illo-card-color5);
+      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color5);
     }
   }
 
@@ -42,28 +45,28 @@ export const SPEAKER_LABEL_COLORS = css`
     --speaker-label-label-color: var(--cros-sys-surface);
 
     & .speaker-1 {
-      --speaker-label-container-color: var(--cros-sys-illo-card-color1);
-      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color1);
-    }
-
-    & .speaker-2 {
-      --speaker-label-container-color: var(--cros-sys-illo-card-color2);
-      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color2);
-    }
-
-    & .speaker-3 {
-      --speaker-label-container-color: var(--cros-sys-illo-card-color3);
-      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color3);
-    }
-
-    & .speaker-4 {
       --speaker-label-container-color: var(--cros-sys-illo-card-color4);
       --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color4);
     }
 
-    & .speaker-5 {
+    & .speaker-2 {
       --speaker-label-container-color: var(--cros-sys-illo-card-color5);
       --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color5);
+    }
+
+    & .speaker-3 {
+      --speaker-label-container-color: var(--cros-sys-illo-card-color1);
+      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color1);
+    }
+
+    & .speaker-4 {
+      --speaker-label-container-color: var(--cros-sys-illo-card-color2);
+      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color2);
+    }
+
+    & .speaker-5 {
+      --speaker-label-container-color: var(--cros-sys-illo-card-color3);
+      --speaker-label-shapes-color: var(--cros-sys-illo-card-on_color3);
     }
   }
 `;

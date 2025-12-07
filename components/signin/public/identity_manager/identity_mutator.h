@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "google_apis/gaia/core_account_id.h"
 #endif
 
 namespace signin {
@@ -43,10 +44,10 @@ class JniIdentityMutator {
   //   - there is not already a primary account set.
   jint SetPrimaryAccount(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& primary_account_id,
+      const CoreAccountId& primary_account_id,
       jint consent_level,
       jint access_point,
-      const base::android::JavaParamRef<jobject>& j_prefs_committed_callback);
+      const base::android::JavaRef<jobject>& j_prefs_committed_callback);
 
   // Called by java to clear the primary account, and return whether the
   // operation succeeded or not. Depending on |action|, the other accounts known
@@ -56,16 +57,12 @@ class JniIdentityMutator {
   // Called by java to revoke sync consent for the primary account.
   void RevokeSyncConsent(JNIEnv* env, jint source_metric);
 
-  // Called by java to reload the accounts in the token service from the system
+  // Called by java to seed the accounts in the token service with system
   // accounts.
-  void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& primary_account_id);
-
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
-      const base::android::JavaParamRef<jobject>& j_primary_account_id);
+      const base::android::JavaRef<jobjectArray>& j_account_infos,
+      const base::android::JavaRef<jobject>& j_primary_account_id);
 
  private:
   friend IdentityMutator;

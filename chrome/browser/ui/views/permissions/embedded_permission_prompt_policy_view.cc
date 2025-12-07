@@ -32,15 +32,9 @@ std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitleAdminAllowed()
   std::u16string permission_name;
   if (requests.size() == 2) {
     permission_name = l10n_util::GetStringUTF16(
-        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED);
-  } else if (requests[0]->request_type() ==
-             permissions::RequestType::kCameraStream) {
-    permission_name = l10n_util::GetStringUTF16(
-        IDS_CAMERA_PERMISSION_NAME_FRAGMENT_CAPITALIZED);
-  } else if (requests[0]->request_type() ==
-             permissions::RequestType::kMicStream) {
-    permission_name = l10n_util::GetStringUTF16(
-        IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED);
+        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT);
+  } else {
+    permission_name = requests[0]->GetPermissionNameTextFragment();
   }
 
   return l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED,
@@ -89,7 +83,8 @@ std::vector<EmbeddedPermissionPromptPolicyView::ButtonConfiguration>
 EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() const {
   std::vector<ButtonConfiguration> buttons;
   buttons.emplace_back(l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL),
-                       ButtonType::kPolicyOK, ui::ButtonStyle::kTonal);
+                       ButtonType::kPolicyOK, ui::ButtonStyle::kTonal,
+                       kOkButtonId);
   return buttons;
 }
 

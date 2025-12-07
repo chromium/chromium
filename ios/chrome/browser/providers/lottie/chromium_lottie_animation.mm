@@ -9,6 +9,7 @@
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 #import <Lottie/Lottie.h>
+
 #import "base/check.h"
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 
@@ -57,6 +58,12 @@
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
+- (void)pause {
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  [_lottieAnimation pause];
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+}
+
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath {
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   LOTKeypath* lot_keypath = [LOTKeypath keypathWithKeys:keypath, nil];
@@ -64,6 +71,11 @@
       [LOTColorValueCallback withCGColor:color.CGColor];
   [_lottieAnimation setValueDelegate:color_callback forKeypath:lot_keypath];
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+}
+
+- (void)setGradientValue:(NSArray<UIColor*>*)colors
+              forKeypath:(NSString*)keypath {
+  // Not available for the objc version of Lottie in Chromium.
 }
 
 - (void)setDictionaryTextProvider:

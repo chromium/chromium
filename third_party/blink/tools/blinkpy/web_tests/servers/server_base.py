@@ -33,7 +33,6 @@ import socket
 import sys
 import tempfile
 
-import six
 
 _log = logging.getLogger(__name__)
 
@@ -45,10 +44,6 @@ webtransport_h3_server = None
 
 
 def _is_webtransport_h3_server_running(port):
-    if six.PY2:
-        # TODO(crbug.com/1250210): Consider to support python2.
-        return False
-
     # Import the WebTransport server module from wpt tools.
     global webtransport_h3_server
     if webtransport_h3_server is None:

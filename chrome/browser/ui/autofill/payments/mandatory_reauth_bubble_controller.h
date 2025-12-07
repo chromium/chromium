@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_ui.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -32,7 +32,7 @@ class MandatoryReauthBubbleController {
   virtual std::u16string GetCancelButtonText() const = 0;
   virtual std::u16string GetExplanationText() const = 0;
 
-  virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 
   // Returns the current bubble view. Can return nullptr if bubble is not
   // visible.
@@ -42,7 +42,7 @@ class MandatoryReauthBubbleController {
   virtual bool IsIconVisible() = 0;
 
   // The type of bubble currently displayed to the user.
-  virtual MandatoryReauthBubbleType GetBubbleType() const = 0;
+  virtual MandatoryReauthBubbleType GetMandatoryReauthBubbleType() const = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaLocalRef<jobject>

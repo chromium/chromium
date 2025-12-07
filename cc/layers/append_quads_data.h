@@ -21,21 +21,15 @@ class CC_EXPORT AppendQuadsData {
   AppendQuadsData();
   ~AppendQuadsData();
 
-  int num_incompletely_rastered_tiles = 0;
-  int num_incompletely_recorded_tiles = 0;
   int num_missing_tiles = 0;
 
-  int64_t visible_layer_area = 0;
-  int64_t approximated_visible_content_area = 0;
+  bool checkerboarded_needs_raster = false;
+  bool checkerboarded_needs_record = false;
 
-  // This is total of the following areas. Overlapping areas are excluded.
-  int64_t checkerboarded_visible_content_area = 0;
-  // This is the visible content area of outside of the record cull rect,
-  // which may be incompletedly recorded.
-  int64_t checkerboarded_needs_record_content_area = 0;
-  // This is the visible content area containing existing recording but not
-  // rasterized (even in low resolution). This may overlap with the above.
-  int64_t checkerboarded_needs_raster_content_area = 0;
+  int64_t visible_layer_area = 0;
+
+  // The visible content area of tiles that are of low or non-ideal resolution.
+  int64_t approximated_visible_content_area = 0;
 
   // The non-default number of BeginFrames to wait before forcibly activating
   // this CompositorFrame.

@@ -12,7 +12,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/callback_helpers.h"
 #import "ui/base/l10n/l10n_util.h"

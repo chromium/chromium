@@ -1,0 +1,20 @@
+Name: Fragment Testing Manifest dependency
+Short Name: fragment-testing-manifest
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/fragment/fragment-testing-manifest/1.9.0-SNAPSHOT/fragment-testing-manifest-1.9.0-20251126.133552-1.aar
+Version: 1.9.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Fragment testing library that should be added as a debugImplementation dependency to add properties to the debug manifest necessary for testing an application
+
+See also: https://developer.android.com/jetpack/androidx/releases/fragment#1.9.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

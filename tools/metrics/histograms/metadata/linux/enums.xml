@@ -1,0 +1,548 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="DisplayServerSupport">
+  <int value="0" label="None"/>
+  <int value="1" label="X11"/>
+  <int value="2" label="XWayland"/>
+  <int value="3" label="Wayland"/>
+</enum>
+
+<enum name="LinuxDistro3">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Other"/>
+  <int value="2" label="Alma"/>
+  <int value="3" label="Alpine"/>
+  <int value="4" label="Alter"/>
+  <int value="5" label="Amazon"/>
+  <int value="6" label="Anarchy"/>
+  <int value="7" label="Antergos"/>
+  <int value="8" label="AntiX"/>
+  <int value="9" label="AoscOs"/>
+  <int value="10" label="Aperio"/>
+  <int value="11" label="Apricity"/>
+  <int value="12" label="Arch"/>
+  <int value="13" label="ArcoLinux"/>
+  <int value="14" label="Artix"/>
+  <int value="15" label="Arya"/>
+  <int value="16" label="AsteroidOs"/>
+  <int value="17" label="Bedrock"/>
+  <int value="18" label="Bitrig"/>
+  <int value="19" label="BlackArch"/>
+  <int value="20" label="Blag"/>
+  <int value="21" label="BlankOn"/>
+  <int value="22" label="BlueLight"/>
+  <int value="23" label="Bodhi"/>
+  <int value="24" label="Bonsai"/>
+  <int value="25" label="BunsenLabs"/>
+  <int value="26" label="Calculate"/>
+  <int value="27" label="Carbs"/>
+  <int value="28" label="CblMariner"/>
+  <int value="29" label="CelOs"/>
+  <int value="30" label="CentOs"/>
+  <int value="31" label="Chakra"/>
+  <int value="32" label="ChaletOs"/>
+  <int value="33" label="Chapeau"/>
+  <int value="34" label="Cleanjaro"/>
+  <int value="35" label="ClearLinux"/>
+  <int value="36" label="ClearOs"/>
+  <int value="37" label="Clover"/>
+  <int value="38" label="Condres"/>
+  <int value="39" label="ContainerLinux"/>
+  <int value="40" label="Crux"/>
+  <int value="41" label="CrystalLinux"/>
+  <int value="42" label="Cucumber"/>
+  <int value="43" label="CyberOs"/>
+  <int value="44" label="Dahlia"/>
+  <int value="45" label="DarkOs"/>
+  <int value="46" label="Debian"/>
+  <int value="47" label="Deepin"/>
+  <int value="48" label="DesaOs"/>
+  <int value="49" label="Devuan"/>
+  <int value="50" label="DracOs"/>
+  <int value="51" label="Drauger"/>
+  <int value="52" label="Elementary"/>
+  <int value="53" label="EndeavourOs"/>
+  <int value="54" label="Endless"/>
+  <int value="55" label="EuroLinux"/>
+  <int value="56" label="Exherbo"/>
+  <int value="57" label="Fedora"/>
+  <int value="58" label="Feren"/>
+  <int value="59" label="Frugalware"/>
+  <int value="60" label="Funtoo"/>
+  <int value="61" label="GalliumOs"/>
+  <int value="62" label="Garuda"/>
+  <int value="63" label="Gentoo"/>
+  <int value="64" label="Glaucus"/>
+  <int value="65" label="GnewSense"/>
+  <int value="66" label="Gnome"/>
+  <int value="67" label="GoboLinux"/>
+  <int value="68" label="Grombyang"/>
+  <int value="69" label="Hash"/>
+  <int value="70" label="Huayra"/>
+  <int value="71" label="HydroOs"/>
+  <int value="72" label="Hyperbola"/>
+  <int value="73" label="Iglu"/>
+  <int value="74" label="InstantOs"/>
+  <int value="75" label="Itc"/>
+  <int value="76" label="Janus"/>
+  <int value="77" label="KaOs"/>
+  <int value="78" label="Kaisen"/>
+  <int value="79" label="Kali"/>
+  <int value="80" label="Kde"/>
+  <int value="81" label="Kibojoe"/>
+  <int value="82" label="Kogaion"/>
+  <int value="83" label="Korora"/>
+  <int value="84" label="KsLinux"/>
+  <int value="85" label="Kubuntu"/>
+  <int value="86" label="LangitKetujuh"/>
+  <int value="87" label="LaxerOs"/>
+  <int value="88" label="Lede"/>
+  <int value="89" label="LibreElec"/>
+  <int value="90" label="LinuxLite"/>
+  <int value="91" label="LinuxMint"/>
+  <int value="92" label="LiveRaizo"/>
+  <int value="93" label="Lmde"/>
+  <int value="94" label="Lubuntu"/>
+  <int value="95" label="Lunar"/>
+  <int value="96" label="Mageia"/>
+  <int value="97" label="MagpieOs"/>
+  <int value="98" label="Mandriva"/>
+  <int value="99" label="Manjaro"/>
+  <int value="100" label="Maui"/>
+  <int value="101" label="Mer"/>
+  <int value="102" label="Minix"/>
+  <int value="103" label="Mx"/>
+  <int value="104" label="Namib"/>
+  <int value="105" label="Neptune"/>
+  <int value="106" label="Netrunner"/>
+  <int value="107" label="Nitrux"/>
+  <int value="108" label="NixOs"/>
+  <int value="109" label="Nurunner"/>
+  <int value="110" label="NutyX"/>
+  <int value="111" label="ObRevenge"/>
+  <int value="112" label="Obarun"/>
+  <int value="113" label="OpenEuler"/>
+  <int value="114" label="OpenIndiana"/>
+  <int value="115" label="OpenMandriva"/>
+  <int value="116" label="OpenSourceMediaCenter"/>
+  <int value="117" label="OpenStage"/>
+  <int value="118" label="OpenSuse"/>
+  <int value="119" label="OpenSuseLeap"/>
+  <int value="120" label="OpenSuseTumbleweed"/>
+  <int value="121" label="OpenWrt"/>
+  <int value="122" label="OpenMamba"/>
+  <int value="123" label="Oracle"/>
+  <int value="124" label="OsElbrus"/>
+  <int value="125" label="Parabola"/>
+  <int value="126" label="Pardus"/>
+  <int value="127" label="Parrot"/>
+  <int value="128" label="Parsix"/>
+  <int value="129" label="PcLinuxOs"/>
+  <int value="130" label="Pengwin"/>
+  <int value="131" label="Pentoo"/>
+  <int value="132" label="Peppermint"/>
+  <int value="133" label="Pisi"/>
+  <int value="134" label="PnmLinux"/>
+  <int value="135" label="PopOs"/>
+  <int value="136" label="Porteus"/>
+  <int value="137" label="PostMarketOs"/>
+  <int value="138" label="Proxmox"/>
+  <int value="139" label="PuffOs"/>
+  <int value="140" label="Puppy"/>
+  <int value="141" label="PureOs"/>
+  <int value="142" label="Qubes"/>
+  <int value="143" label="Qubyt"/>
+  <int value="144" label="Quibian"/>
+  <int value="145" label="Radix"/>
+  <int value="146" label="Raspbian"/>
+  <int value="147" label="Reborn"/>
+  <int value="148" label="RedStar"/>
+  <int value="149" label="Redcore"/>
+  <int value="150" label="Redhat"/>
+  <int value="151" label="RefractedDevuan"/>
+  <int value="152" label="Regata"/>
+  <int value="153" label="Regolith"/>
+  <int value="154" label="Rocky"/>
+  <int value="155" label="Rosa"/>
+  <int value="156" label="Sabayon"/>
+  <int value="157" label="Sabotage"/>
+  <int value="158" label="Sailfish"/>
+  <int value="159" label="SalentOs"/>
+  <int value="160" label="Scientific"/>
+  <int value="161" label="Semc"/>
+  <int value="162" label="Septor"/>
+  <int value="163" label="Serene"/>
+  <int value="164" label="SharkLinux"/>
+  <int value="165" label="Siduction"/>
+  <int value="166" label="SkiffOs"/>
+  <int value="167" label="Slackware"/>
+  <int value="168" label="SliTaz"/>
+  <int value="169" label="SmartOs"/>
+  <int value="170" label="Solus"/>
+  <int value="171" label="SourceMage"/>
+  <int value="172" label="Sparky"/>
+  <int value="173" label="Star"/>
+  <int value="174" label="SteamOs"/>
+  <int value="175" label="SwagArch"/>
+  <int value="176" label="T2"/>
+  <int value="177" label="Tails"/>
+  <int value="178" label="TeArch"/>
+  <int value="179" label="Trisquel"/>
+  <int value="180" label="Ubuntu"/>
+  <int value="181" label="Univention"/>
+  <int value="182" label="Venom"/>
+  <int value="183" label="Vnux"/>
+  <int value="184" label="Void"/>
+  <int value="185" label="Xferience"/>
+  <int value="186" label="Xubuntu"/>
+  <int value="187" label="Zorin"/>
+</enum>
+
+<enum name="LinuxDistroDebianVersion">
+  <int value="7" label="Wheezy"/>
+  <int value="8" label="Jessie"/>
+  <int value="9" label="Stretch"/>
+  <int value="10" label="Buster"/>
+  <int value="11" label="Bullseye"/>
+  <int value="12" label="Bookworm"/>
+</enum>
+
+<enum name="LinuxDistroFedoraVersion">
+  <int value="24" label="24"/>
+  <int value="25" label="25"/>
+  <int value="26" label="26"/>
+  <int value="27" label="27"/>
+  <int value="28" label="28"/>
+  <int value="29" label="29"/>
+  <int value="30" label="30"/>
+  <int value="31" label="31"/>
+  <int value="32" label="32"/>
+  <int value="33" label="33"/>
+</enum>
+
+<enum name="LinuxDistroMintVersion">
+  <int value="17" label="17"/>
+  <int value="18" label="18"/>
+  <int value="19" label="19"/>
+  <int value="20" label="20"/>
+  <int value="17001" label="17.1"/>
+  <int value="17002" label="17.2"/>
+  <int value="17003" label="17.3"/>
+  <int value="18001" label="18.1"/>
+  <int value="18002" label="18.2"/>
+  <int value="18003" label="18.3"/>
+  <int value="19001" label="19.1"/>
+  <int value="19002" label="19.2"/>
+  <int value="19003" label="19.3"/>
+  <int value="20001" label="20.1"/>
+</enum>
+
+<enum name="LinuxDistroOpenSuseLeapVersion">
+  <int value="15000" label="15.0"/>
+  <int value="15001" label="15.1"/>
+  <int value="15002" label="15.2"/>
+  <int value="42002" label="42.2"/>
+  <int value="42003" label="42.3"/>
+</enum>
+
+<enum name="LinuxDistroUbuntuVersion">
+  <int value="12004" label="12.04"/>
+  <int value="12010" label="12.10"/>
+  <int value="13004" label="13.04"/>
+  <int value="13010" label="13.10"/>
+  <int value="14004" label="14.04"/>
+  <int value="14010" label="14.10"/>
+  <int value="16004" label="16.04"/>
+  <int value="16010" label="16.10"/>
+  <int value="17004" label="17.04"/>
+  <int value="17010" label="17.10"/>
+  <int value="18004" label="18.04"/>
+  <int value="18010" label="18.10"/>
+  <int value="19004" label="19.04"/>
+  <int value="19010" label="19.10"/>
+  <int value="20004" label="20.04"/>
+  <int value="20010" label="20.10"/>
+  <int value="21004" label="21.04"/>
+  <int value="21010" label="21.10"/>
+  <int value="22004" label="22.04"/>
+  <int value="22010" label="22.10"/>
+  <int value="23004" label="23.04"/>
+  <int value="23010" label="23.10"/>
+  <int value="24004" label="24.04"/>
+</enum>
+
+<enum name="LinuxGlibcVersion">
+  <int value="0" label="Not Parseable"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="2.11"/>
+  <int value="3" label="2.12"/>
+  <int value="4" label="2.13"/>
+  <int value="5" label="2.14"/>
+  <int value="6" label="2.15"/>
+  <int value="7" label="2.16"/>
+  <int value="8" label="2.17"/>
+  <int value="9" label="2.18"/>
+  <int value="10" label="2.19"/>
+  <int value="11" label="2.20"/>
+  <int value="12" label="2.21"/>
+  <int value="13" label="2.22"/>
+  <int value="14" label="2.23"/>
+  <int value="15" label="2.24"/>
+  <int value="16" label="2.25"/>
+  <int value="17" label="2.26"/>
+  <int value="18" label="2.27"/>
+  <int value="19" label="2.28"/>
+  <int value="20" label="2.29"/>
+  <int value="21" label="2.30"/>
+  <int value="22" label="2.31"/>
+  <int value="23" label="2.32"/>
+  <int value="24" label="2.33"/>
+  <int value="25" label="2.34"/>
+  <int value="26" label="2.35"/>
+  <int value="27" label="2.36"/>
+  <int value="28" label="2.37"/>
+  <int value="29" label="2.38"/>
+  <int value="30" label="2.39"/>
+</enum>
+
+<enum name="LinuxPasswordStoreUsage">
+  <int value="0" label="No decision"/>
+  <int value="1" label="No decision - Initialization failed"/>
+  <int value="2" label="Basic text"/>
+  <int value="3" label="Basic text - Initialization failed"/>
+  <int value="4" label="Gnome any"/>
+  <int value="5" label="Gnome any - Initialization failed"/>
+  <int value="6" label="Gnome keyring"/>
+  <int value="7" label="Gnome keyring - Initialization failed"/>
+  <int value="8" label="Gnome libsecret"/>
+  <int value="9" label="Gnome libsecret - Initialization failed"/>
+  <int value="10" label="KWallet"/>
+  <int value="11" label="KWallet - Initialization failed"/>
+  <int value="12" label="KWallet5"/>
+  <int value="13" label="KWallet5 - Initialization failed"/>
+</enum>
+
+<enum name="LinuxSandboxStatus">
+  <int value="0" label="none"/>
+  <int value="1" label="suid"/>
+  <int value="2" label="pidns"/>
+  <int value="3" label="suid, pidns"/>
+  <int value="4" label="netns"/>
+  <int value="5" label="suid, netns"/>
+  <int value="6" label="pidns, netns"/>
+  <int value="7" label="suid, pidns, netns"/>
+  <int value="8" label="seccomp-bpf"/>
+  <int value="9" label="suid, seccomp-bpf"/>
+  <int value="10" label="pidns, seccomp-bpf"/>
+  <int value="11" label="suid, pidns, seccomp-bpf"/>
+  <int value="12" label="netns, seccomp-bpf"/>
+  <int value="13" label="suid, netns, seccomp-bpf"/>
+  <int value="14" label="pidns, netns, seccomp-bpf"/>
+  <int value="15" label="suid, pidns, netns, seccomp-bpf"/>
+  <int value="16" label="yama"/>
+  <int value="17" label="suid, yama"/>
+  <int value="18" label="pidns, yama"/>
+  <int value="19" label="suid, pidns, yama"/>
+  <int value="20" label="netns, yama"/>
+  <int value="21" label="suid, netns, yama"/>
+  <int value="22" label="pidns, netns, yama"/>
+  <int value="23" label="suid, pidns, netns, yama"/>
+  <int value="24" label="seccomp-bpf, yama"/>
+  <int value="25" label="suid, seccomp-bpf, yama"/>
+  <int value="26" label="pidns, seccomp-bpf, yama"/>
+  <int value="27" label="suid, pidns, seccomp-bpf, yama"/>
+  <int value="28" label="netns, seccomp-bpf, yama"/>
+  <int value="29" label="suid, netns, seccomp-bpf, yama"/>
+  <int value="30" label="pidns, netns, seccomp-bpf, yama"/>
+  <int value="31" label="suid, pidns, netns, seccomp-bpf, yama"/>
+  <int value="32" label="seccomp-tsync"/>
+  <int value="33" label="suid, seccomp-tsync"/>
+  <int value="34" label="pidns, seccomp-tsync"/>
+  <int value="35" label="suid, pidns, seccomp-tsync"/>
+  <int value="36" label="netns, seccomp-tsync"/>
+  <int value="37" label="suid, netns, seccomp-tsync"/>
+  <int value="38" label="pidns, netns, seccomp-tsync"/>
+  <int value="39" label="suid, pidns, netns, seccomp-tsync"/>
+  <int value="40" label="seccomp-bpf, seccomp-tsync"/>
+  <int value="41" label="suid, seccomp-bpf, seccomp-tsync"/>
+  <int value="42" label="pidns, seccomp-bpf, seccomp-tsync"/>
+  <int value="43" label="suid, pidns, seccomp-bpf, seccomp-tsync"/>
+  <int value="44" label="netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="45" label="suid, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="46" label="pidns, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="47" label="suid, pidns, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="48" label="yama, seccomp-tsync"/>
+  <int value="49" label="suid, yama, seccomp-tsync"/>
+  <int value="50" label="pidns, yama, seccomp-tsync"/>
+  <int value="51" label="suid, pidns, yama, seccomp-tsync"/>
+  <int value="52" label="netns, yama, seccomp-tsync"/>
+  <int value="53" label="suid, netns, yama, seccomp-tsync"/>
+  <int value="54" label="pidns, netns, yama, seccomp-tsync"/>
+  <int value="55" label="suid, pidns, netns, yama, seccomp-tsync"/>
+  <int value="56" label="seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="57" label="suid, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="58" label="pidns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="59" label="suid, pidns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="60" label="netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="61" label="suid, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="62" label="pidns, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="63" label="suid, pidns, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="64" label="userns"/>
+  <int value="65" label="suid, userns"/>
+  <int value="66" label="userns, pidns"/>
+  <int value="67" label="suid, userns, pidns"/>
+  <int value="68" label="userns, netns"/>
+  <int value="69" label="suid, userns, netns"/>
+  <int value="70" label="userns, pidns, netns"/>
+  <int value="71" label="suid, userns, pidns, netns"/>
+  <int value="72" label="userns, seccomp-bpf"/>
+  <int value="73" label="suid, userns, seccomp-bpf"/>
+  <int value="74" label="userns, pidns, seccomp-bpf"/>
+  <int value="75" label="suid, userns, pidns, seccomp-bpf"/>
+  <int value="76" label="userns, netns, seccomp-bpf"/>
+  <int value="77" label="suid, userns, netns, seccomp-bpf"/>
+  <int value="78" label="userns, pidns, netns, seccomp-bpf"/>
+  <int value="79" label="suid, userns, pidns, netns, seccomp-bpf"/>
+  <int value="80" label="userns, yama"/>
+  <int value="81" label="suid, userns, yama"/>
+  <int value="82" label="userns, pidns, yama"/>
+  <int value="83" label="suid, userns, pidns, yama"/>
+  <int value="84" label="userns, netns, yama"/>
+  <int value="85" label="suid, userns, netns, yama"/>
+  <int value="86" label="userns, pidns, netns, yama"/>
+  <int value="87" label="suid, userns, pidns, netns, yama"/>
+  <int value="88" label="userns, seccomp-bpf, yama"/>
+  <int value="89" label="suid, userns, seccomp-bpf, yama"/>
+  <int value="90" label="userns, pidns, seccomp-bpf, yama"/>
+  <int value="91" label="suid, userns, pidns, seccomp-bpf, yama"/>
+  <int value="92" label="userns, netns, seccomp-bpf, yama"/>
+  <int value="93" label="suid, userns, netns, seccomp-bpf, yama"/>
+  <int value="94" label="userns, pidns, netns, seccomp-bpf, yama"/>
+  <int value="95" label="suid, userns, pidns, netns, seccomp-bpf, yama"/>
+  <int value="96" label="userns, seccomp-tsync"/>
+  <int value="97" label="suid, userns, seccomp-tsync"/>
+  <int value="98" label="userns, pidns, seccomp-tsync"/>
+  <int value="99" label="suid, userns, pidns, seccomp-tsync"/>
+  <int value="100" label="userns, netns, seccomp-tsync"/>
+  <int value="101" label="suid, userns, netns, seccomp-tsync"/>
+  <int value="102" label="userns, pidns, netns, seccomp-tsync"/>
+  <int value="103" label="suid, userns, pidns, netns, seccomp-tsync"/>
+  <int value="104" label="userns, seccomp-bpf, seccomp-tsync"/>
+  <int value="105" label="suid, userns, seccomp-bpf, seccomp-tsync"/>
+  <int value="106" label="userns, pidns, seccomp-bpf, seccomp-tsync"/>
+  <int value="107" label="suid, userns, pidns, seccomp-bpf, seccomp-tsync"/>
+  <int value="108" label="userns, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="109" label="suid, userns, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="110" label="userns, pidns, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="111"
+      label="suid, userns, pidns, netns, seccomp-bpf, seccomp-tsync"/>
+  <int value="112" label="userns, yama, seccomp-tsync"/>
+  <int value="113" label="suid, userns, yama, seccomp-tsync"/>
+  <int value="114" label="userns, pidns, yama, seccomp-tsync"/>
+  <int value="115" label="suid, userns, pidns, yama, seccomp-tsync"/>
+  <int value="116" label="userns, netns, yama, seccomp-tsync"/>
+  <int value="117" label="suid, userns, netns, yama, seccomp-tsync"/>
+  <int value="118" label="userns, pidns, netns, yama, seccomp-tsync"/>
+  <int value="119" label="suid, userns, pidns, netns, yama, seccomp-tsync"/>
+  <int value="120" label="userns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="121" label="suid, userns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="122" label="userns, pidns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="123"
+      label="suid, userns, pidns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="124" label="userns, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="125"
+      label="suid, userns, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="126"
+      label="userns, pidns, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="127"
+      label="suid, userns, pidns, netns, seccomp-bpf, yama, seccomp-tsync"/>
+  <int value="2147483648" label="Invalid"/>
+</enum>
+
+<enum name="LinuxWaylandShellName">
+  <int value="0" label="zaura_shell"/>
+  <int value="1" label="gtk_shell1"/>
+  <int value="2" label="org_kde_plasma_shell"/>
+  <int value="3" label="xdg_wm_base"/>
+  <int value="4" label="xdg_shell_v6"/>
+  <int value="5" label="zwlr_layer_shell_v1"/>
+</enum>
+
+<enum name="LinuxWindowManagerName">
+  <int value="0" label="Other"/>
+  <int value="1" label="Blackbox"/>
+  <int value="2" label="Chrome OS"/>
+  <int value="3" label="Compiz"/>
+  <int value="4" label="Enlightment"/>
+  <int value="5" label="IceWM"/>
+  <int value="6" label="KWin"/>
+  <int value="7" label="Metacity"/>
+  <int value="8" label="Muffin"/>
+  <int value="9" label="Mutter"/>
+  <int value="10" label="Openbox"/>
+  <int value="11" label="Xfwm4"/>
+  <int value="12" label="Awesome"/>
+  <int value="13" label="i3"/>
+  <int value="14" label="Ion3"/>
+  <int value="15" label="Matchbox"/>
+  <int value="16" label="Notion"/>
+  <int value="17" label="Qtile"/>
+  <int value="18" label="Ratpoison"/>
+  <int value="19" label="StumpWM"/>
+  <int value="20" label="wmii"/>
+  <int value="21" label="Fluxbox"/>
+  <int value="22" label="Xmonad"/>
+  <int value="23" label="Unnamed"/>
+</enum>
+
+<enum name="WaylandCompositor">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Other"/>
+  <int value="2" label="Anvil"/>
+  <int value="3" label="Cage"/>
+  <int value="4" label="Cosmic"/>
+  <int value="5" label="Dwl"/>
+  <int value="6" label="Gamescope"/>
+  <int value="7" label="Hyprland"/>
+  <int value="8" label="KWin"/>
+  <int value="9" label="Labwc"/>
+  <int value="10" label="Miracle"/>
+  <int value="11" label="Mutter"/>
+  <int value="12" label="Niri"/>
+  <int value="13" label="Qtile"/>
+  <int value="14" label="River"/>
+  <int value="15" label="Sway"/>
+  <int value="16" label="Theseus"/>
+  <int value="17" label="Wayfire"/>
+  <int value="18" label="Weston"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

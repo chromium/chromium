@@ -52,7 +52,7 @@ ABSL_FLAG(std::string, image_path, "",
           "Absolute path to the image to search. The image must be RGB or "
           "RGBA (grayscale is not supported). The image EXIF orientation "
           "flag, if any, is NOT taken into account.");
-ABSL_FLAG(int32, max_results, 5,
+ABSL_FLAG(int32_t, max_results, 5,
           "Maximum number of nearest-neighbor results to display.");
 ABSL_FLAG(bool, l2_normalize, false,
           "If true, the raw feature vectors returned by the image embedder "

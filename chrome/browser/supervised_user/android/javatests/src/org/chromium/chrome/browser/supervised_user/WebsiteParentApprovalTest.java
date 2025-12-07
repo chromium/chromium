@@ -29,13 +29,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -62,8 +63,8 @@ import java.util.concurrent.TimeoutException;
                         + "which must remain unchanged for the duration of the test.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebsiteParentApprovalTest {
-    public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mTabbedActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
     public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Destroy TabbedActivityTestRule before SigninTestRule to remove observers of
@@ -71,8 +72,6 @@ public class WebsiteParentApprovalTest {
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mTabbedActivityTestRule);
-
-    @Rule public final JniMocker mocker = new JniMocker();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -87,12 +86,13 @@ public class WebsiteParentApprovalTest {
 
     @Mock private WebsiteParentApproval.Natives mWebsiteParentApprovalNativesMock;
     @Mock private ParentAuthDelegate mParentAuthDelegateMock;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = mTabbedActivityTestRule.getEmbeddedTestServerRule().getServer();
+        mTestServer = mTabbedActivityTestRule.getTestServer();
         mBlockedUrl = mTestServer.getURL(TEST_PAGE);
-        mTabbedActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mTabbedActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
@@ -110,7 +110,7 @@ public class WebsiteParentApprovalTest {
                 });
         mWebContents = mTabbedActivityTestRule.getWebContents();
 
-        mocker.mock(WebsiteParentApprovalJni.TEST_HOOKS, mWebsiteParentApprovalNativesMock);
+        WebsiteParentApprovalJni.setInstanceForTesting(mWebsiteParentApprovalNativesMock);
 
         // @TODO b:243916194 : Once we start consuming mParentAuthDelegateMock
         // .isLocalAuthSupported we should add a mocked behaviour in this test.
@@ -172,7 +172,7 @@ public class WebsiteParentApprovalTest {
         // Verify only histograms recorded in Java.
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "FamilyLinkUser.LocalWebApprovalOutcome", /* APPROVED_BY_PARENT= */ 0);
+                        "FamilyLinkUser.LocalWebApprovalOutcome", /* value= */ 0);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
         WebsiteParentApprovalTestUtils.clickApprove(mBottomSheetTestSupport);
@@ -193,7 +193,7 @@ public class WebsiteParentApprovalTest {
         // Verify only histograms recorded in Java.
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "FamilyLinkUser.LocalWebApprovalOutcome", /* DENIED_BY_PARENT= */ 1);
+                        "FamilyLinkUser.LocalWebApprovalOutcome", /* value= */ 1);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
         WebsiteParentApprovalTestUtils.clickDoNotApprove(mBottomSheetTestSupport);

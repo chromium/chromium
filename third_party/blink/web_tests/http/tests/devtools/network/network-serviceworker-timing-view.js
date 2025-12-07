@@ -67,9 +67,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     setRequestValues(testRequest);
 
     const calculator = Network.NetworkPanel.NetworkPanel.instance().calculator;
-    const tableElement = Network.RequestTimingView.RequestTimingView.createTimingTable(testRequest, calculator);
+    const tableElement = Network.RequestTimingView.RequestTimingView.create(testRequest, calculator);
+    await tableElement.updateComplete;
 
-    for (const element of tableElement.getElementsByTagName('td')) {
+    for (const element of tableElement.contentElement.getElementsByTagName('td')) {
       const content = element.textContent;
       // Exclude timings that depend on runtime calculations
       if (!content.includes('Queued at') && !content.includes('Started at')) {

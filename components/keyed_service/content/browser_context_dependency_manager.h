@@ -93,11 +93,6 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   BrowserContextDependencyManager();
   ~BrowserContextDependencyManager() override;
 
-#ifndef NDEBUG
-  // DependencyManager:
-  void DumpContextDependencies(void* context) const final;
-#endif  // NDEBUG
-
   // A list of callbacks to call just before executing
   // CreateBrowserContextServices() or CreateBrowserContextServicesForTest().
   CreateServicesCallbackList create_services_callbacks_;

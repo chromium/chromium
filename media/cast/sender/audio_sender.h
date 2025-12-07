@@ -33,7 +33,6 @@ class AudioEncoder;
 // timeouts.
 class AudioSender : public FrameSender::Client {
  public:
-
   // New way of instantiating using an openscreen::cast::Sender. Since the
   // |Sender| instance is destroyed when renegotiation is complete, |this|
   // is also invalid and should be immediately torn down.

@@ -17,8 +17,7 @@ using content::WebContents;
 WebDragBookmarkHandlerAura::WebDragBookmarkHandlerAura()
     : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
-WebDragBookmarkHandlerAura::~WebDragBookmarkHandlerAura() {
-}
+WebDragBookmarkHandlerAura::~WebDragBookmarkHandlerAura() = default;
 
 void WebDragBookmarkHandlerAura::DragInitialize(WebContents* contents) {
   // Ideally we would want to initialize the the BookmarkTabHelper member in
@@ -26,16 +25,18 @@ void WebDragBookmarkHandlerAura::DragInitialize(WebContents* contents) {
   // created during the construction of the WebContents object.  The
   // BookmarkTabHelper is created much later.
   web_contents_ = contents;
-  if (!bookmark_tab_helper_)
+  if (!bookmark_tab_helper_) {
     bookmark_tab_helper_ = BookmarkTabHelper::FromWebContents(contents);
+  }
 }
 
 void WebDragBookmarkHandlerAura::OnDragOver() {
   DCHECK(web_contents_);
   if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
-    if (bookmark_drag_data_.is_valid())
+    if (bookmark_drag_data_.is_valid()) {
       bookmark_tab_helper_->bookmark_drag_delegate()->OnDragOver(
           bookmark_drag_data_);
+    }
   }
 }
 
@@ -50,9 +51,10 @@ void WebDragBookmarkHandlerAura::OnReceiveDragData(
 
 void WebDragBookmarkHandlerAura::OnDragEnter() {
   if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
-    if (bookmark_drag_data_.is_valid())
+    if (bookmark_drag_data_.is_valid()) {
       bookmark_tab_helper_->bookmark_drag_delegate()->OnDragEnter(
           bookmark_drag_data_);
+    }
   }
 }
 
@@ -67,8 +69,9 @@ void WebDragBookmarkHandlerAura::OnDrop() {
 
     // Focus the target browser.
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-    if (browser)
+    if (browser) {
       browser->window()->Show();
+    }
   }
 
   bookmark_drag_data_.Clear();
@@ -76,9 +79,10 @@ void WebDragBookmarkHandlerAura::OnDrop() {
 
 void WebDragBookmarkHandlerAura::OnDragLeave() {
   if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
-    if (bookmark_drag_data_.is_valid())
+    if (bookmark_drag_data_.is_valid()) {
       bookmark_tab_helper_->bookmark_drag_delegate()->OnDragLeave(
           bookmark_drag_data_);
+    }
   }
 
   bookmark_drag_data_.Clear();

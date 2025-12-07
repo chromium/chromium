@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_context.h"
@@ -171,7 +172,8 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   raw_ptr<Profile, DanglingUntriaged> test_profile_;  // Unowned
   TestingProfileManager profile_manager_;
@@ -190,14 +192,13 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedDnsResolution) {
           std::make_unique<FakeNetworkContext::DnsResult>(
               net::ERR_NAME_NOT_RESOLVED,
               net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-              /*resolved_addresses=*/std::nullopt,
-              /*endpoint_results_with_metadata=*/std::nullopt));
+              net::AddressList(), net::HostResolverEndpointResults()));
     } else {
       fake_dns_results.emplace_back(
           std::make_unique<FakeNetworkContext::DnsResult>(
               net::OK, net::ResolveErrorInfo(net::OK),
               net::AddressList(FakeIPAddress()),
-              /*endpoint_results_with_metadata=*/std::nullopt));
+              net::HostResolverEndpointResults()));
     }
   }
 
@@ -220,7 +221,7 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -241,7 +242,7 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -263,7 +264,7 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -285,7 +286,7 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =

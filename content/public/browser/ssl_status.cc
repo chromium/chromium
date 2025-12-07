@@ -15,9 +15,7 @@ SSLStatus::SSLStatus()
       peer_signature_algorithm(0),
       connection_status(0),
       content_status(NORMAL_CONTENT),
-      pkp_bypassed(false),
-      ct_policy_compliance(net::ct::CTPolicyCompliance::
-                               CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE) {}
+      pkp_bypassed(false) {}
 
 SSLStatus::SSLStatus(const net::SSLInfo& ssl_info)
     : initialized(true),
@@ -27,33 +25,11 @@ SSLStatus::SSLStatus(const net::SSLInfo& ssl_info)
       peer_signature_algorithm(ssl_info.peer_signature_algorithm),
       connection_status(ssl_info.connection_status),
       content_status(NORMAL_CONTENT),
-      pkp_bypassed(ssl_info.pkp_bypassed),
-      ct_policy_compliance(ssl_info.ct_policy_compliance) {}
+      pkp_bypassed(ssl_info.pkp_bypassed) {}
 
-SSLStatus::SSLStatus(const SSLStatus& other)
-    : initialized(other.initialized),
-      certificate(other.certificate),
-      cert_status(other.cert_status),
-      key_exchange_group(other.key_exchange_group),
-      peer_signature_algorithm(other.peer_signature_algorithm),
-      connection_status(other.connection_status),
-      content_status(other.content_status),
-      pkp_bypassed(other.pkp_bypassed),
-      ct_policy_compliance(other.ct_policy_compliance) {}
+SSLStatus::SSLStatus(const SSLStatus& other) = default;
+SSLStatus& SSLStatus::operator=(const SSLStatus& other) = default;
 
-SSLStatus& SSLStatus::operator=(SSLStatus other) {
-  initialized = other.initialized;
-  certificate = other.certificate;
-  cert_status = other.cert_status;
-  key_exchange_group = other.key_exchange_group;
-  peer_signature_algorithm = other.peer_signature_algorithm;
-  connection_status = other.connection_status;
-  content_status = other.content_status;
-  pkp_bypassed = other.pkp_bypassed;
-  ct_policy_compliance = other.ct_policy_compliance;
-  return *this;
-}
-
-SSLStatus::~SSLStatus() {}
+SSLStatus::~SSLStatus() = default;
 
 }  // namespace content

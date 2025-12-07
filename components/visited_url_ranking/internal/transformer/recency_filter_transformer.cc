@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/visited_url_ranking/public/features.h"
@@ -17,48 +18,24 @@ namespace visited_url_ranking {
 
 namespace {
 
-// Get all matching URLType for the given visit.
-// TODO(ssid): Move this to URLVisitAggregate.
-FetchOptions::URLTypeSet GetURLTypes(const URLVisitAggregate& visit) {
-  FetchOptions::URLTypeSet types;
-  for (const auto& fetcher_entry : visit.fetcher_data_map) {
-    std::visit(
-        URLVisitVariantHelper{
-            [&types](const URLVisitAggregate::TabData& tab_data) {
-              if (tab_data.last_active_tab.session_name) {
-                types.Put(FetchOptions::URLType::kActiveRemoteTab);
-              } else {
-                types.Put(FetchOptions::URLType::kActiveLocalTab);
-              }
-            },
-            [&types](const URLVisitAggregate::HistoryData& history_data) {
-              if (history_data.last_app_id) {
-                types.Put(FetchOptions::URLType::kCCTVisit);
-              }
-              if (history_data.last_visited.visit_row.originator_cache_guid
-                      .empty()) {
-                types.Put(FetchOptions::URLType::kLocalVisit);
-              } else {
-                types.Put(FetchOptions::URLType::kRemoteVisit);
-              }
-            }},
-        fetcher_entry.second);
-  }
-  return types;
-}
-
 // Returns true if the visit should be discarded from candidates based on
 // `fetch_options`.
 bool ShouldDiscardVisit(const URLVisitAggregate& visit,
                         base::Time current_time,
                         const FetchOptions& options) {
-  FetchOptions::URLTypeSet types = GetURLTypes(visit);
+  URLVisitAggregate::URLTypeSet types = visit.GetURLTypes();
+  if (!options.exclude_results_containing_types.empty() &&
+      types.HasAny(options.exclude_results_containing_types)) {
+    return true;
+  }
+
   bool should_discard = true;
-  for (FetchOptions::URLType current_url_type : types) {
+  for (URLVisitAggregate::URLType current_url_type : types) {
     auto it = options.result_sources.find(current_url_type);
     if (it == options.result_sources.end()) {
       continue;
     }
+
     if (current_time - visit.GetLastVisitTime() <= it->second.age_limit) {
       VLOG(2) << "RecencyFilterTransformer: retained candidate "
               << visit.url_key
@@ -75,12 +52,6 @@ bool ShouldDiscardVisit(const URLVisitAggregate& visit,
 
 }  // namespace
 
-RecencyFilterTransformer::RecencyFilterTransformer()
-    : aggregate_count_limit_(base::GetFieldTrialParamByFeatureAsInt(
-          features::kVisitedURLRankingService,
-          features::kURLAggregateCountLimit,
-          features::kURLAggregateCountLimitDefaultValue)) {}
-
 RecencyFilterTransformer::~RecencyFilterTransformer() = default;
 
 void RecencyFilterTransformer::Transform(
@@ -96,9 +67,9 @@ void RecencyFilterTransformer::Transform(
             [](const URLVisitAggregate& a, const URLVisitAggregate& b) {
               return a.GetLastVisitTime() > b.GetLastVisitTime();
             });
-  if (aggregates.size() > aggregate_count_limit_) {
+  if (aggregates.size() > options.aggregate_count_limit) {
     std::vector<URLVisitAggregate> copy;
-    for (size_t i = 0; i < aggregate_count_limit_; ++i) {
+    for (size_t i = 0; i < options.aggregate_count_limit; ++i) {
       copy.emplace_back(std::move(aggregates[i]));
     }
     aggregates.swap(copy);

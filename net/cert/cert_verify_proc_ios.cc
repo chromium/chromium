@@ -11,9 +11,11 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "crypto/sha2.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verify_result.h"
@@ -136,36 +138,15 @@ CertStatus CertStatusFromOSStatus(OSStatus status) {
   }
 }
 
-// Creates a series of SecPolicyRefs to be added to a SecTrustRef used to
-// validate a certificate for an SSL server. |hostname| contains the name of
-// the SSL server that the certificate should be verified against. If
-// successful, returns noErr, and stores the resultant array of SecPolicyRefs
-// in |policies|.
-OSStatus CreateTrustPolicies(ScopedCFTypeRef<CFArrayRef>* policies) {
-  ScopedCFTypeRef<CFMutableArrayRef> local_policies(
-      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  if (!local_policies)
-    return errSecAllocate;
-
-  base::apple::ScopedCFTypeRef<SecPolicyRef> ssl_policy(
-      SecPolicyCreateBasicX509());
-  CFArrayAppendValue(local_policies.get(), ssl_policy.get());
-  ssl_policy.reset(SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
-  CFArrayAppendValue(local_policies.get(), ssl_policy.get());
-
-  *policies = std::move(local_policies);
-  return noErr;
-}
-
 // Builds and evaluates a SecTrustRef for the certificate chain contained
-// in |cert_array|, using the verification policies in |trust_policies|. On
+// in |cert_array|, using the verification policy in |trust_policy|. On
 // success, returns OK, and updates |trust_ref|, |is_trusted|, and
 // |trust_error|. On failure, no output parameters are modified.
 //
 // Note: An OK return does not mean that |cert_array| is trusted, merely that
 // verification was performed successfully.
 int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
-                                CFArrayRef trust_policies,
+                                SecPolicyRef trust_policy,
                                 CFDataRef ocsp_response_ref,
                                 CFArrayRef sct_array_ref,
                                 ScopedCFTypeRef<SecTrustRef>* trust_ref,
@@ -173,7 +154,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
                                 bool* is_trusted,
                                 ScopedCFTypeRef<CFErrorRef>* trust_error) {
   ScopedCFTypeRef<SecTrustRef> tmp_trust;
-  OSStatus status = SecTrustCreateWithCertificates(cert_array, trust_policies,
+  OSStatus status = SecTrustCreateWithCertificates(cert_array, trust_policy,
                                                    tmp_trust.InitializeInto());
   if (status)
     return NetErrorFromOSStatus(status);
@@ -225,7 +206,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
 
   trust_ref->swap(tmp_trust);
   trust_error->swap(tmp_error);
-  *verified_chain = x509_util::CertificateChainFromSecTrust(trust_ref->get());
+  verified_chain->reset(SecTrustCopyCertificateChain(trust_ref->get()));
   *is_trusted = tmp_is_trusted;
   return OK;
 }
@@ -253,22 +234,17 @@ void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
 
     std::string_view spki_bytes;
     if (!asn1::ExtractSPKIFromDERCert(
-            std::string_view(
-                reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
-                CFDataGetLength(der_data.get())),
+            base::as_string_view(base::apple::CFDataToSpan(der_data.get())),
             &spki_bytes)) {
       verify_result->cert_status |= CERT_STATUS_INVALID;
       return;
     }
 
-    HashValue sha256(HASH_VALUE_SHA256);
-    CC_SHA256(spki_bytes.data(), spki_bytes.size(), sha256.data());
-    verify_result->public_key_hashes.push_back(sha256);
+    verify_result->public_key_hashes.push_back(
+        crypto::hash::Sha256(base::as_byte_span(spki_bytes)));
   }
   if (!verified_cert.get()) {
-    NOTREACHED_IN_MIGRATION();
-    verify_result->cert_status |= CERT_STATUS_INVALID;
-    return;
+    NOTREACHED();
   }
 
   scoped_refptr<X509Certificate> verified_cert_with_chain =
@@ -396,12 +372,12 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
                                       const std::string& sct_list,
                                       int flags,
                                       CertVerifyResult* verify_result,
-                                      const NetLogWithSource& net_log,
-                                      std::optional<base::Time> time_now) {
-  ScopedCFTypeRef<CFArrayRef> trust_policies;
-  OSStatus status = CreateTrustPolicies(&trust_policies);
-  if (status)
-    return NetErrorFromOSStatus(status);
+                                      const NetLogWithSource& net_log) {
+  ScopedCFTypeRef<SecPolicyRef> trust_policy(
+      SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
+  if (!trust_policy) {
+    return NetErrorFromOSStatus(errSecAllocate);
+  }
 
   ScopedCFTypeRef<CFMutableArrayRef> cert_array(
       x509_util::CreateSecCertificateArrayForX509Certificate(
@@ -449,7 +425,7 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
   ScopedCFTypeRef<CFErrorRef> trust_error;
 
   int err = BuildAndEvaluateSecTrustRef(
-      cert_array.get(), trust_policies.get(), ocsp_response_ref.get(),
+      cert_array.get(), trust_policy.get(), ocsp_response_ref.get(),
       sct_array_ref.get(), &trust_ref, &final_chain, &is_trusted, &trust_error);
   if (err)
     return err;
@@ -466,14 +442,13 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
     } else {
 #if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
       SecTrustResultType trust_result = kSecTrustResultInvalid;
-      status = SecTrustGetTrustResult(trust_ref.get(), &trust_result);
+      OSStatus status = SecTrustGetTrustResult(trust_ref.get(), &trust_result);
       if (status)
         return NetErrorFromOSStatus(status);
       switch (trust_result) {
         case kSecTrustResultUnspecified:
         case kSecTrustResultProceed:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
         case kSecTrustResultDeny:
           verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
           break;
@@ -484,8 +459,8 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
 #else
       // It should be impossible to reach this code, but if somehow it is
       // reached it would allow any certificate as valid since no errors would
-      // be added to cert_status. Therefore, add a CHECK as a fail safe.
-      CHECK(false);
+      // be added to cert_status. Therefore, add a NOTREACHED() as a fail safe.
+      NOTREACHED();
 #endif
     }
   }

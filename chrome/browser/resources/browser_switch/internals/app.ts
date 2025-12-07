@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -58,15 +58,15 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected isBrowserSwitcherEnabled_: boolean = true;
-  protected showSearch_: boolean = false;
-  protected greyListRules_: RuleItem[] = [];
-  protected siteListRules_: RuleItem[] = [];
-  protected xmlSiteLists_: XmlSiteListItem[] = [];
-  protected urlCheckerInput_: string = '';
-  protected urlCheckerOutput_: string[] = [];
-  protected lastFetch_: string = '';
-  protected nextFetch_: string = '';
+  protected accessor isBrowserSwitcherEnabled_: boolean = true;
+  protected accessor showSearch_: boolean = false;
+  protected accessor greyListRules_: RuleItem[] = [];
+  protected accessor siteListRules_: RuleItem[] = [];
+  protected accessor xmlSiteLists_: XmlSiteListItem[] = [];
+  protected accessor urlCheckerInput_: string = '';
+  protected accessor urlCheckerOutput_: string[] = [];
+  protected accessor lastFetch_: string = '';
+  protected accessor nextFetch_: string = '';
 
   override firstUpdated() {
     this.updateEverything();
@@ -138,6 +138,8 @@ export class AppElement extends AppElementBase {
       case 'go':
         opensIn = this.i18n('openBrowser', altBrowserName) + '\n';
         break;
+      default:
+        break;
     }
 
     let reason = '';
@@ -167,6 +169,8 @@ export class AppElement extends AppElementBase {
         break;
       case 'default':
         reason += this.i18n('openBrowserDefaultReason', browserName) + '\n';
+        break;
+      default:
         break;
     }
 
@@ -271,6 +275,23 @@ export class AppElement extends AppElementBase {
 
   protected onUrlCheckerInputInput_(e: Event) {
     this.urlCheckerInput_ = (e.target as CrInputElement).value;
+  }
+
+  /**
+   * Handles the click event on the export policies button.
+   * Fetches the internals data as JSON and triggers a download.
+   */
+  protected async onExportToJsonClick_() {
+    const json = await getProxy().getBrowserSwitchInternalsJson();
+    const blob = new Blob([json], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'browser_switch_internals.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 }
 

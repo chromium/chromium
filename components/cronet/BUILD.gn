@@ -10,19 +10,7 @@ import("//chrome/version.gni")
 import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
-
-declare_args() {
-  # If set to true, this will remove histogram manager to reduce binary size.
-  disable_histogram_support = is_mac || is_win
-}
-
-# Disable histogram support is not allowed on Android.
-assert(!disable_histogram_support || !is_android)
-
-buildflag_header("cronet_buildflags") {
-  header = "cronet_buildflags.h"
-  flags = [ "DISABLE_HISTOGRAM_SUPPORT=$disable_histogram_support" ]
-}
+import("//third_party/protobuf/proto_library.gni")
 
 process_version("cronet_version_header") {
   template_file = "//components/cronet/version.h.in"
@@ -34,6 +22,19 @@ process_version("cronet_version_header") {
   ]
 }
 
+proto_library("request_context_config_proto") {
+  sources = [ "proto/request_context_config.proto" ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("request_context_config_java_proto") {
+    proto_path = "."
+    sources = [ "proto/request_context_config.proto" ]
+  }
+}
+
 # Cronet common implementation.
 source_set("cronet_common") {
   sources = [
@@ -42,28 +43,26 @@ source_set("cronet_common") {
     "cronet_global_state.h",
     "cronet_prefs_manager.cc",
     "cronet_prefs_manager.h",
+    "cronet_proxy_delegate.cc",
+    "cronet_proxy_delegate.h",
     "cronet_upload_data_stream.cc",
     "cronet_upload_data_stream.h",
     "cronet_url_request.cc",
     "cronet_url_request.h",
     "host_cache_persistence_manager.cc",
     "host_cache_persistence_manager.h",
-    "stale_host_resolver.cc",
-    "stale_host_resolver.h",
     "url_request_context_config.cc",
     "url_request_context_config.h",
   ]
   deps = [
-    ":cronet_buildflags",
     ":cronet_version_header",
+    ":request_context_config_proto",
     "//base",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//net",
   ]
 
-  if (!disable_histogram_support) {
-    public_deps = [ "//components/metrics:library_support" ]
-  }
+  public_deps = [ "//components/metrics:library_support" ]
 }
 
 source_set("metrics_util") {
@@ -85,9 +84,9 @@ source_set("cronet_common_unittests") {
   ]
 
   sources = [
+    "cronet_stale_host_resolver_unittest.cc",
     "host_cache_persistence_manager_unittest.cc",
     "network_tasks_unittest.cc",
-    "stale_host_resolver_unittest.cc",
     "url_request_context_config_unittest.cc",
   ]
 }
@@ -100,14 +99,6 @@ if (is_android) {
     deps = [ "//components/cronet/android:cronet_package_android" ]
   }
 } else {
-  config("shared_library_public_config") {
-    if (is_mac && !is_component_build) {
-      # Executable targets that depend on the shared libraries below need to have
-      # the rpath setup in non-component build configurations.
-      ldflags = [ "-Wl,-rpath,@executable_path/" ]
-    }
-  }
-
   _cronet_shared_lib_name = "cronet.$chrome_version_full"
   _cronet_shared_lib_file_name =
       "$shlib_prefix$_cronet_shared_lib_name$shlib_extension"
@@ -124,13 +115,9 @@ if (is_android) {
 
     sources = [ "cronet_global_state_stubs.cc" ]
 
-    if (is_mac && !is_component_build) {
-      ldflags = [
-        "-install_name",
-        "@executable_path/$_cronet_shared_lib_file_name",
-      ]
-      public_configs = [ ":shared_library_public_config" ]
-    }
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   test("cronet_tests") {
@@ -158,6 +145,10 @@ if (is_android) {
       additional_manifest_fragments =
           [ "//build/config/fuchsia/test/network.shard.test-cml" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   test("cronet_unittests") {
@@ -174,6 +165,10 @@ if (is_android) {
       "cronet_global_state_stubs.cc",
       "run_all_unittests.cc",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   _package_dir = "$root_out_dir/cronet"
@@ -221,22 +216,6 @@ if (is_android) {
     ]
   }
 
-  executable("cronet_native_perf_test") {
-    testonly = true
-    sources = [
-      "native/perftest/main.cc",
-      "native/perftest/perf_test.cc",
-    ]
-    deps = [
-      "//base",
-      "//components/cronet",
-      "//components/cronet/native:cronet_native_headers",
-      "//components/cronet/native/test:cronet_native_tests",
-      "//components/cronet/native/test:cronet_native_testutil",
-      "//net:test_support",
-    ]
-  }
-
   executable("cronet_sample") {
     testonly = true
     sources = [
@@ -259,7 +238,11 @@ if (is_android) {
     sources = [ "native/sample/test/sample_test.cc" ]
     deps = [
       ":cronet_sample",
-      "//testing/gtest:gtest",
+      "//testing/gtest",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

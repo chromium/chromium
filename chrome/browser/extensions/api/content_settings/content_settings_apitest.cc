@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -40,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -54,7 +54,7 @@
 
 namespace extensions {
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionContentSettingsApiTest : public ExtensionApiTest {
  public:
@@ -72,7 +72,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
     // The browser might get closed later (and therefore be destroyed), so we
     // save the profile.
-    profile_ = browser()->profile();
+    profile_ = profile();
 
     // Closing the last browser window also releases a KeepAlive. Make
     // sure it's not the last one, so the message loop doesn't quit
@@ -106,7 +106,8 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     GURL example_url("http://www.example.com");
     EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
         example_url, net::SiteForCookies::FromUrl(example_url),
-        url::Origin::Create(example_url), net::CookieSettingOverrides()));
+        url::Origin::Create(example_url), net::CookieSettingOverrides(),
+        /*cookie_partition_key=*/std::nullopt));
     EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(example_url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(example_url, example_url,
@@ -135,6 +136,9 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::AUTOPLAY));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetContentSetting(example_url, example_url,
+                                     ContentSettingsType::SOUND));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::ANTI_ABUSE));
@@ -147,7 +151,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     GURL url("http://www.google.com");
     EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
         url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-        net::CookieSettingOverrides()));
+        net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
     EXPECT_EQ(
@@ -172,6 +176,8 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              map->GetContentSetting(url, url, ContentSettingsType::SOUND));
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
         map->GetContentSetting(url, url, ContentSettingsType::ANTI_ABUSE));
@@ -193,7 +199,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     GURL url("http://www.google.com");
     EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
         url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-        net::CookieSettingOverrides()));
+        net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
     EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
@@ -219,6 +225,8 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetContentSetting(url, url, ContentSettingsType::SOUND));
     EXPECT_EQ(
         CONTENT_SETTING_ALLOW,
         map->GetContentSetting(url, url, ContentSettingsType::ANTI_ABUSE));
@@ -238,7 +246,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
     content_settings.push_back(cookie_settings->IsFullCookieAccessAllowed(
         url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-        net::CookieSettingOverrides()));
+        net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
     content_settings.push_back(cookie_settings->IsCookieSessionOnly(url));
     content_settings.push_back(
         map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
@@ -514,15 +522,14 @@ IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
                        temp_dir_.GetPath().AppendASCII("test.png")));
   }
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver body_load_observer(web_contents);
   body_load_observer.SetPattern("body load");
   content::WebContentsConsoleObserver observer(web_contents);
 
   GURL example1_index =
       embedded_test_server()->GetURL("example1.com", "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example1_index));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), example1_index));
 
   // The onload event will fire when there are no more pending image loads. We
   // should then have one messages -- one for the onload event. Neither "example

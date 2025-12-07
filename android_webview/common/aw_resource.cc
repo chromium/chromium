@@ -28,3 +28,5 @@ std::vector<std::string> GetConfigKeySystemUuidMapping() {
 
 }  // namespace AwResource
 }  // namespace android_webview
+
+DEFINE_JNI(AwResource)

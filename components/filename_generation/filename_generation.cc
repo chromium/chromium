@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
@@ -129,9 +128,9 @@ base::FilePath GenerateFilename(const std::u16string& title,
           std::string());
 
       // If host is used as file name, try to decode punycode.
-      if (name_with_proper_ext.AsUTF8Unsafe() == url.host()) {
+      if (name_with_proper_ext.AsUTF8Unsafe() == url.GetHost()) {
         name_with_proper_ext = base::FilePath::FromUTF16Unsafe(
-            url_formatter::IDNToUnicode(url.host()));
+            url_formatter::IDNToUnicode(url.GetHost()));
       }
     } else {
       name_with_proper_ext = base::FilePath::FromUTF8Unsafe("dataurl");
@@ -167,7 +166,7 @@ bool TruncateFilename(base::FilePath* path, size_t limit) {
 
   // Encoding specific truncation logic.
   base::FilePath::StringType truncated;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
   // UTF-8.
   base::TruncateUTF8ToByteSize(name, limit, &truncated);
 #elif BUILDFLAG(IS_WIN)

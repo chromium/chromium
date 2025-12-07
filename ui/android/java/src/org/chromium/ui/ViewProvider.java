@@ -7,11 +7,13 @@ package org.chromium.ui;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Interface to support asynchronous inflation of views.
  * @param <T> The view type.
  */
+@NullMarked
 public interface ViewProvider<T> {
     /** Starts inflating the view. */
     void inflate();

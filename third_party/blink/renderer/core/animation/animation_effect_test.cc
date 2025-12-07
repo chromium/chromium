@@ -802,9 +802,9 @@ TEST(AnimationAnimationEffectTest, UpdateTiming) {
   effect->updateTiming(effect_timing);
   EXPECT_EQ(0.5, effect->getTiming()->endDelay()->GetAsDouble());
   effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setFill("backwards");
+  effect_timing->setFill(V8FillMode::Enum::kBackwards);
   effect->updateTiming(effect_timing);
-  EXPECT_EQ("backwards", effect->getTiming()->fill());
+  EXPECT_EQ(V8FillMode::Enum::kBackwards, effect->getTiming()->fill());
 
   EXPECT_EQ(0, effect->getTiming()->iterationStart());
   effect_timing = OptionalEffectTiming::Create();
@@ -818,11 +818,13 @@ TEST(AnimationAnimationEffectTest, UpdateTiming) {
   effect->updateTiming(effect_timing);
   EXPECT_EQ(10, effect->getTiming()->iterations());
 
-  EXPECT_EQ("normal", effect->getTiming()->direction());
+  EXPECT_EQ(V8PlaybackDirection::Enum::kNormal,
+            effect->getTiming()->direction());
   effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setDirection("reverse");
+  effect_timing->setDirection(V8PlaybackDirection::Enum::kReverse);
   effect->updateTiming(effect_timing);
-  EXPECT_EQ("reverse", effect->getTiming()->direction());
+  EXPECT_EQ(V8PlaybackDirection::Enum::kReverse,
+            effect->getTiming()->direction());
 
   EXPECT_EQ("linear", effect->getTiming()->easing());
   effect_timing = OptionalEffectTiming::Create();
@@ -844,50 +846,62 @@ TEST(AnimationAnimationEffectTest, UpdateTimingThrowsWhenExpected) {
   Timing timing;
   auto* effect = MakeGarbageCollected<TestAnimationEffect>(timing);
 
-  DummyExceptionStateForTesting exception_state;
-
   // iterationStart must be non-negative
-  OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setIterationStart(-10);
-  effect->updateTiming(effect_timing, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
+    effect_timing->setIterationStart(-10);
+    effect->updateTiming(effect_timing, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
   // iterations must be non-negative and non-null.
-  exception_state.ClearException();
-  effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setIterations(-2);
-  effect->updateTiming(effect_timing, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
+    effect_timing->setIterations(-2);
+    effect->updateTiming(effect_timing, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  exception_state.ClearException();
-  effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setIterations(std::numeric_limits<double>::quiet_NaN());
-  effect->updateTiming(effect_timing, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
+    effect_timing->setIterations(std::numeric_limits<double>::quiet_NaN());
+    effect->updateTiming(effect_timing, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
   // If it is a number, duration must be non-negative and non-null.
-  exception_state.ClearException();
-  effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setDuration(
-      MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
-          -100));
-  effect->updateTiming(effect_timing, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
+    effect_timing->setDuration(
+        MakeGarbageCollected<
+            V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(-100));
+    effect->updateTiming(effect_timing, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  exception_state.ClearException();
-  effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setDuration(
-      MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
-          std::numeric_limits<double>::quiet_NaN()));
-  effect->updateTiming(effect_timing, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
+    effect_timing->setDuration(
+        MakeGarbageCollected<
+            V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
+            std::numeric_limits<double>::quiet_NaN()));
+    effect->updateTiming(effect_timing, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
   // easing must be a valid timing function
-  exception_state.ClearException();
-  effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setEasing("my-custom-timing-function");
-  effect->updateTiming(effect_timing, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
+    effect_timing->setEasing("my-custom-timing-function");
+    effect->updateTiming(effect_timing, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 }
 
 TEST(AnimationAnimationEffectTest, UpdateTimingInformsOwnerOnChange) {
@@ -936,7 +950,7 @@ TEST(AnimationAnimationEffectTest, UpdateTimingNoChange) {
 
   effect_timing = OptionalEffectTiming::Create();
   effect_timing->setEndDelay(CreateTimeDelay(5000));
-  effect_timing->setFill("both");
+  effect_timing->setFill(V8FillMode::Enum::kBoth);
   effect_timing->setIterationStart(0.1);
   effect->updateTiming(effect_timing);
 
@@ -945,7 +959,7 @@ TEST(AnimationAnimationEffectTest, UpdateTimingNoChange) {
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
           2000));
-  effect_timing->setDirection("alternate-reverse");
+  effect_timing->setDirection(V8PlaybackDirection::Enum::kAlternateReverse);
   effect->updateTiming(effect_timing);
 
   effect_timing = OptionalEffectTiming::Create();

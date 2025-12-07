@@ -33,7 +33,7 @@
         "name": "returnAdditionalProperties",
         "type": "function",
         "description": "Returns an object with additionalProperties.",
-        "nodoc": "true",
+        "nodoc": true,
         "parameters": [],
         "returns_async": {
           "name": "callback",

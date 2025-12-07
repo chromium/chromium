@@ -1,0 +1,22 @@
+This test documents all interface attributes and methods on the global window object and element instances.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+[INTERFACES]
+interface Clipboard : EventTarget
+    getter onclipboardchange
+    setter onclipboardchange
+interface ClipboardChangeEvent : Event
+    attribute @@toStringTag
+    getter changeId
+    getter types
+    method constructor
+interface Navigator
+interface Notification : EventTarget
+    getter image
+[NAMESPACES]
+[GLOBAL OBJECT]
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -4,17 +4,16 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 
 // static
 safe_browsing::SafeBrowsingMetricsCollector*
-SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<safe_browsing::SafeBrowsingMetricsCollector*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+SafeBrowsingMetricsCollectorFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<safe_browsing::SafeBrowsingMetricsCollector>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -25,15 +24,11 @@ SafeBrowsingMetricsCollectorFactory::GetInstance() {
 }
 
 SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SafeBrowsingMetricsCollector",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("SafeBrowsingMetricsCollector") {}
 
 std::unique_ptr<KeyedService>
 SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+    ProfileIOS* profile) const {
   return std::make_unique<safe_browsing::SafeBrowsingMetricsCollector>(
-      chrome_browser_state->GetPrefs());
+      profile->GetPrefs());
 }

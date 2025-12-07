@@ -12,7 +12,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
@@ -186,8 +185,8 @@ void FileFlusher::RequestFlush(const base::FilePath& path,
 }
 
 void FileFlusher::PauseForTest() {
-  DCHECK(base::ranges::none_of(jobs_,
-                               [](const Job* job) { return job->started(); }));
+  DCHECK(std::ranges::none_of(jobs_,
+                              [](const Job* job) { return job->started(); }));
   paused_for_test_ = true;
 }
 

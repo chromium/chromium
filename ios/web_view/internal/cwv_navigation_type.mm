@@ -4,9 +4,9 @@
 
 #import "ios/web_view/public/cwv_navigation_type.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/web_view/internal/cwv_navigation_type_internal.h"
 
 CWVNavigationType CWVNavigationTypeFromPageTransition(
@@ -53,9 +53,8 @@ CWVNavigationType CWVNavigationTypeFromPageTransition(
       // The compiler cannot do this check automatically because
       // ui::PageTransition contains both core values and qualifiers while only
       // core values are enumerated here.
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown core value of ui::PageTransition. Update "
-             "CWVNavigationTypeFromUIPageTransition() to add one.";
+      NOTREACHED() << "Unknown core value of ui::PageTransition. Update "
+                      "CWVNavigationTypeFromUIPageTransition() to add one.";
   }
 
   if (ui_page_transition & ui::PAGE_TRANSITION_BLOCKED) {

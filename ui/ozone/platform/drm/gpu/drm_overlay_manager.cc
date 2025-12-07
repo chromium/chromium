@@ -4,14 +4,16 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_candidates.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
@@ -166,7 +168,7 @@ void DrmOverlayManager::CheckOverlaySupport(
     // that a system doesn't support overlays for certain buffer formats. Thus,
     // doing IPC below to do validation is just waste of resources given |this|
     // is aware of that limitation.
-    can_handle &= IsBufferFormatSupported(candidate.format, widget);
+    can_handle &= IsFormatSupported(candidate.format, widget);
 
     // If we can't handle the candidate in an overlay replace it with default
     // value. The quad might have a non-integer display rect which hits a
@@ -217,7 +219,7 @@ void DrmOverlayManager::CheckOverlaySupport(
   auto iter = cache.Get(cache_key);
   if (iter == cache.end()) {
     // We can skip GPU side validation in case all candidates are invalid.
-    bool needs_gpu_validation = base::ranges::any_of(
+    bool needs_gpu_validation = std::ranges::any_of(
         result_candidates,
         [](OverlaySurfaceCandidate& c) { return c.overlay_handled; });
     OverlayValidationCacheValue value;
@@ -278,13 +280,11 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
         disallow_fullscreen_overlays_end_time_ =
             base::TimeTicks::Now() + kDisallowSkipFullscreenOverlaysDRMTestTime;
       } else {
-        NOTREACHED_NORETURN()
-            << "It's not expected to receive swap failures for "
-               "fullscreen overlays as they are drm tested.";
+        NOTREACHED() << "It's not expected to receive swap failures for "
+                        "fullscreen overlays as they are drm tested.";
       }
     } else {
-      NOTREACHED_NORETURN()
-          << "Only fullscreen overlays are treated specially.";
+      NOTREACHED() << "Only fullscreen overlays are treated specially.";
     }
   }
 
@@ -300,11 +300,11 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   }
 }
 
-void DrmOverlayManager::SetSupportedBufferFormats(
+void DrmOverlayManager::SetSupportedSharedImageFormats(
     gfx::AcceleratedWidget widget,
-    base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
-  per_widget_overlay_supported_buffer_formats_.insert_or_assign(
-      widget, std::move(supported_buffer_formats));
+    base::flat_set<viz::SharedImageFormat> supported_formats) {
+  per_widget_overlay_supported_formats_.insert_or_assign(
+      widget, std::move(supported_formats));
 }
 
 void DrmOverlayManager::OnPromotedOverlayTypes(
@@ -317,12 +317,16 @@ void DrmOverlayManager::OnPromotedOverlayTypes(
 bool DrmOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
-  if (candidate.buffer_size.IsEmpty())
+  if (candidate.buffer_size.IsEmpty()) {
+    VLOG(3) << "Overlay Rejected: buffer_size="
+            << candidate.buffer_size.ToString();
     return false;
+  }
 
-  if (!absl::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
-      absl::get<gfx::OverlayTransform>(candidate.transform) ==
+  if (!std::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
+      std::get<gfx::OverlayTransform>(candidate.transform) ==
           gfx::OVERLAY_TRANSFORM_INVALID) {
+    VLOG(3) << "Overlay Rejected: invalid transform";
     return false;
   }
 
@@ -360,21 +364,20 @@ bool DrmOverlayManager::CanHandleCandidate(
   return true;
 }
 
-bool DrmOverlayManager::IsBufferFormatSupported(
-    gfx::BufferFormat required_overlay_buffer_format,
+bool DrmOverlayManager::IsFormatSupported(
+    viz::SharedImageFormat required_overlay_format,
     gfx::AcceleratedWidget widget) const {
   auto supported_formats_it =
-      per_widget_overlay_supported_buffer_formats_.find(widget);
-  if (supported_formats_it ==
-      per_widget_overlay_supported_buffer_formats_.end()) {
+      per_widget_overlay_supported_formats_.find(widget);
+  if (supported_formats_it == per_widget_overlay_supported_formats_.end()) {
     // Supported formats are unknown.
     return false;
   }
 
-  auto format_it = base::ranges::find_if(
+  auto format_it = std::ranges::find_if(
       supported_formats_it->second,
-      [required_overlay_buffer_format](const auto& supported_format) {
-        return required_overlay_buffer_format == supported_format;
+      [required_overlay_format](const auto& supported_format) {
+        return required_overlay_format == supported_format;
       });
   return format_it != supported_formats_it->second.end();
 }

@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
+class ScriptObject;
 class ScriptState;
 class ScriptValue;
 class TrustedHTML;
@@ -56,8 +58,8 @@ class CORE_EXPORT TrustedTypePolicyFactory final
                           const String& tagNS,
                           const String& attributeNS) const;
 
-  ScriptValue getTypeMapping(ScriptState*) const;
-  ScriptValue getTypeMapping(ScriptState*, const String& ns) const;
+  ScriptObject getTypeMapping(ScriptState*) const;
+  ScriptObject getTypeMapping(ScriptState*, const String& ns) const;
 
   // Count whether a Trusted Type error occured during DOM operations.
   // (We aggregate this here to get a count per document, so that we can

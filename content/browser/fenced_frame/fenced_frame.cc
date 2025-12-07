@@ -23,7 +23,8 @@ namespace {
 FrameTreeNode* CreateDelegateFrameTreeNode(
     RenderFrameHostImpl* owner_render_frame_host) {
   return owner_render_frame_host->frame_tree()->AddFrame(
-      &*owner_render_frame_host, owner_render_frame_host->GetProcess()->GetID(),
+      &*owner_render_frame_host,
+      owner_render_frame_host->GetProcess()->GetDeprecatedID(),
       owner_render_frame_host->GetProcess()->GetNextRoutingID(),
       // We're creating an dummy outer delegate node which will never have a
       // corresponding `RenderFrameImpl`, and therefore we pass null
@@ -62,8 +63,9 @@ FencedFrame::FencedFrame(
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
                                       FrameTree::Type::kFencedFrame)) {
-  if (was_discarded)
+  if (was_discarded) {
     frame_tree_->root()->set_was_discarded();
+  }
 }
 
 FencedFrame::~FencedFrame() {
@@ -165,6 +167,9 @@ void FencedFrame::Navigate(
 
   // Embedder initiated fenced frame navigation should force a new browsing
   // instance.
+  // Note: `navigation_start_time` already comes from the renderer process in
+  // HTMLFencedFrameElement::FencedFrameDelegate::Navigate, so it is not
+  // necessary to record a different `actual_navigation_start_time`.
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
@@ -178,6 +183,7 @@ void FencedFrame::Navigate(
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
       /*impression=*/std::nullopt, initiator_activation_and_ad_status,
+      /*actual_navigation_start_time=*/navigation_start_time,
       navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,
@@ -191,7 +197,7 @@ bool FencedFrame::IsHidden() {
   return web_contents_->IsHidden();
 }
 
-int FencedFrame::GetOuterDelegateFrameTreeNodeId() {
+FrameTreeNodeId FencedFrame::GetOuterDelegateFrameTreeNodeId() {
   DCHECK(outer_delegate_frame_tree_node_);
   return outer_delegate_frame_tree_node_->frame_tree_node_id();
 }
@@ -213,11 +219,17 @@ void FencedFrame::SetFocusedFrame(FrameTreeNode* node,
   web_contents_->SetFocusedFrame(node, source);
 }
 
-FrameTree* FencedFrame::GetOwnedPictureInPictureFrameTree() {
+FrameTree* FencedFrame::GetOwnedDocumentPictureInPictureFrameTree() {
   return nullptr;
 }
 
-FrameTree* FencedFrame::GetPictureInPictureOpenerFrameTree() {
+bool FencedFrame::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  return false;
+}
+
+FrameTree* FencedFrame::GetDocumentPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 
@@ -302,7 +314,8 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
           inner_render_manager->current_frame_host()
               ->GetSiteInstance()
               ->group(),
-          static_cast<RenderViewHostImpl*>(rvh), nullptr)) {
+          static_cast<RenderViewHostImpl*>(rvh), /*proxy=*/nullptr,
+          /*navigation_metrics_token=*/std::nullopt)) {
     return proxy_host;
   }
 
@@ -347,6 +360,21 @@ bool FencedFrame::ShouldPreserveAbortedURLs() {
 
 void FencedFrame::UpdateOverridingUserAgent() {}
 
+#if BUILDFLAG(IS_ANDROID)
+
+scoped_refptr<viz::RasterContextProvider>
+FencedFrame::GetRasterContextProvider() {
+  NOTREACHED();
+}
+
+gfx::ColorSpace FencedFrame::GetOutputColorSpace(
+    gfx::ContentColorUsage color_usage,
+    bool needs_alpha) {
+  NOTREACHED();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
   FrameTreeNode* inner_root = frame_tree_->root();
   const blink::FramePolicy& current_frame_policy =
@@ -358,7 +386,8 @@ void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
   // in the browser, allowing us to use non-fixed sets of sandbox flags.
   inner_root->SetPendingFramePolicy(blink::FramePolicy(
       current_frame_policy.sandbox_flags, frame_policy.container_policy,
-      current_frame_policy.required_document_policy));
+      current_frame_policy.required_document_policy,
+      frame_policy.deferred_fetch_policy));
 }
 
 }  // namespace content

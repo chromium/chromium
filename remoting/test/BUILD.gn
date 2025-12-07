@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/remoting_options.gni")
 
 static_library("test_support") {
@@ -50,8 +49,6 @@ static_library("test_support") {
     "//net",
     "//remoting/base",
     "//remoting/base:logging",
-    "//remoting/client",
-    "//remoting/client/audio",
     "//remoting/codec:decoder",
     "//remoting/codec:encoder",
     "//remoting/protocol",
@@ -75,10 +72,13 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-if (enable_remoting_host && !is_android && !is_chromeos_ash &&
-    !is_chromeos_lacros) {
+if (enable_remoting_host && !is_android && !is_chromeos) {
   static_library("fake_connection_event_logger") {
     testonly = true
 
@@ -128,7 +128,8 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
     deps = [
       ":fake_connection_event_logger",
       "//base/test:test_support",
-      "//remoting/protocol:protocol",
+      "//remoting/base:session_policies",
+      "//remoting/protocol",
       "//remoting/protocol:test_support",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
@@ -151,10 +152,10 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
       "//remoting/host:resources",
     ]
 
-    if ((is_linux || is_chromeos_lacros) && remoting_use_x11) {
+    if (is_linux && remoting_use_x11) {
       deps += [
         "//build/config/linux/gtk",
-        "//ui/events/platform/x11:x11",
+        "//ui/events/platform/x11",
       ]
     }
 
@@ -181,47 +182,6 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
   }
 }
 
-# A binary for testing and fiddling FTL services.
-executable("ftl_services_playground") {
-  testonly = true
-  sources = [
-    "ftl_services_playground.cc",
-    "ftl_services_playground.h",
-    "ftl_services_playground_main.cc",
-  ]
-  deps = [
-    ":test_support",
-    "//mojo/core/embedder",
-    "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:logging",
-    "//remoting/proto/ftl/v1:ftl_messages",
-    "//remoting/signaling",
-    "//services/network:network_service",
-  ]
-}
-
-# A binary for testing and fiddling the FTL signaling process.
-executable("ftl_signaling_playground") {
-  testonly = true
-  sources = [
-    "ftl_signaling_playground.cc",
-    "ftl_signaling_playground.h",
-    "ftl_signaling_playground_main.cc",
-  ]
-  deps = [
-    ":test_support",
-    "//components/webrtc:thread_wrapper",
-    "//mojo/core/embedder",
-    "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:errors",
-    "//remoting/base:logging",
-    "//remoting/signaling",
-    "//services/network:network_service",
-  ]
-}
-
 if (enable_me2me_host && is_linux) {
   # A binary for testing and fiddling the SessionAuthz service.
   executable("session_authz_playground") {
@@ -240,6 +200,24 @@ if (enable_me2me_host && is_linux) {
       "//remoting/host",
       "//remoting/proto:internal_structs",
       "//services/network:network_service",
+    ]
+  }
+
+  # A binary for testing the Corp messaging service.
+  executable("corp_messaging_playground") {
+    testonly = true
+    sources = [
+      "corp_messaging_playground.cc",
+      "corp_messaging_playground.h",
+      "corp_messaging_playground_main.cc",
+    ]
+    deps = [
+      "//mojo/core/embedder",
+      "//net",
+      "//remoting/base",
+      "//remoting/signaling",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
     ]
   }
 }

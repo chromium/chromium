@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -305,7 +305,8 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
         request.mutable_register_browser_request();
     register_browser_request->set_os_platform(GetOSPlatform());
     if (!machine_name.empty()) {
-      register_browser_request->set_machine_name(machine_name);
+      register_browser_request->mutable_browser_device_identifier()
+          ->set_computer_name(kMachineName);
     }
     std::string payload;
     ASSERT_TRUE(request.SerializeToString(&payload));
@@ -503,8 +504,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
     observer_.SetShouldDisplayErrorMessage(should_display_error_message());
 
     if (!is_enrollment_token_valid() && should_display_error_message()) {
-      set_expected_exit_code(
-          chrome::RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED);
+      set_expected_exit_code(CHROME_RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED);
     }
   }
 

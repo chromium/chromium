@@ -13,6 +13,7 @@
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/service/cast_service.h"
 #include "chromecast/starboard/media/cdm/starboard_decryptor_cast.h"
+#include "content/public/browser/web_contents.h"
 #include "media/base/provision_fetcher.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/provision_fetcher.mojom.h"
@@ -98,6 +99,28 @@ CastRuntimeContentBrowserClientStarboard::CreateCdmFactory(
   return std::make_unique<StarboardCdmFactory>(std::move(provision_fetcher_cb),
                                                GetMediaTaskRunner(), cdm_origin,
                                                media_resource_tracker());
+}
+
+void CastRuntimeContentBrowserClientStarboard::OnWebContentsCreated(
+    content::WebContents* web_contents) {
+  CastRuntimeContentBrowserClient::OnWebContentsCreated(web_contents);
+  LOG(INFO) << "Creating a new StarboardWebContentsObserver";
+  content_observer_.emplace(web_contents);
+}
+
+CastRuntimeContentBrowserClientStarboard::StarboardWebContentsObserver::
+    StarboardWebContentsObserver(content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
+
+CastRuntimeContentBrowserClientStarboard::StarboardWebContentsObserver::
+    ~StarboardWebContentsObserver() = default;
+
+void CastRuntimeContentBrowserClientStarboard::StarboardWebContentsObserver::
+    LoadProgressChanged(double progress) {
+  if (progress == 1.0) {
+    LOG(INFO) << "Focusing web contents";
+    web_contents()->Focus();
+  }
 }
 
 }  // namespace shell

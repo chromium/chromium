@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_link_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
@@ -35,6 +36,8 @@
 @synthesize collectionView = _collectionView;
 @synthesize diffableDataSource = _diffableDataSource;
 @synthesize page = _page;
+@synthesize additionalViewWillTransitionToSizeHandler =
+    _additionalViewWillTransitionToSizeHandler;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -57,6 +60,14 @@
   [_collectionConfigurator configureNavigationBar];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  if (_additionalViewWillTransitionToSizeHandler) {
+    _additionalViewWillTransitionToSizeHandler(size, coordinator);
+  }
+}
+
 #pragma mark - Private
 
 // Registers the different cells used by the collection view.
@@ -66,7 +77,7 @@
       registrationWithCellClass:[HomeCustomizationLinkCell class]
            configurationHandler:^(HomeCustomizationLinkCell* cell,
                                   NSIndexPath* indexPath,
-                                  NSNumber* itemIdentifier) {
+                                  NSString* itemIdentifier) {
              CustomizationLinkType linkType =
                  (CustomizationLinkType)[itemIdentifier integerValue];
              [cell configureCellWithType:linkType];
@@ -84,9 +95,9 @@
 }
 
 // Creates a data snapshot representing the content of the collection view.
-- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>*)
+- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>*)
     dataSnapshot {
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
   // Create links section and add items to it.
@@ -102,9 +113,8 @@
 
 #pragma mark - HomeCustomizationViewControllerProtocol
 
-- (void)dismissCustomizationMenu {
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:nil];
+- (void)dismissCustomizationMenuPage {
+  [self.mutator dismissMenuPage];
 }
 
 - (NSCollectionLayoutSection*)
@@ -120,7 +130,7 @@
 }
 
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
-                                     itemIdentifier:(NSNumber*)itemIdentifier {
+                                     itemIdentifier:(NSString*)itemIdentifier {
   return [_collectionView
       dequeueConfiguredReusableCellWithRegistration:_linkCellRegistration
                                        forIndexPath:indexPath
@@ -142,7 +152,7 @@
 
   // Recreate the snapshot with the new items to take into account all the
   // changes of items presence (add/remove).
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [self dataSnapshot];
 
   // Reconfigure all present items to ensure that they are updated in case
@@ -157,12 +167,12 @@
 
 // Returns an array of identifiers for a vector of link types, which can be
 // used by the snapshot.
-- (NSMutableArray<NSNumber*>*)identifiersForLinksVector:
+- (NSMutableArray<NSString*>*)identifiersForLinksVector:
     (std::vector<CustomizationLinkType>)types {
-  NSMutableArray<NSNumber*>* linkDataIdentifiers =
+  NSMutableArray<NSString*>* linkDataIdentifiers =
       [[NSMutableArray alloc] init];
   for (auto const& type : types) {
-    [linkDataIdentifiers addObject:@((int)type)];
+    [linkDataIdentifiers addObject:[@((int)type) stringValue]];
   }
   return linkDataIdentifiers;
 }

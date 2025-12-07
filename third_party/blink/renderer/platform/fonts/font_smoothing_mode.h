@@ -27,10 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SMOOTHING_MODE_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -41,7 +38,7 @@ enum FontSmoothingMode {
   kSubpixelAntialiased
 };
 
-PLATFORM_EXPORT WTF::String ToString(FontSmoothingMode);
+PLATFORM_EXPORT String ToString(FontSmoothingMode);
 
 }  // namespace blink
 

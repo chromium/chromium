@@ -23,13 +23,10 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -271,10 +268,10 @@ void HRTFPanner::Pan(double desired_azimuth,
 
     // Calculate the source and destination pointers for the current segment.
     const unsigned offset = segment * kFramesPerSegment;
-    const float* segment_source_l = source_l + offset;
-    const float* segment_source_r = source_r + offset;
-    float* segment_destination_l = destination_l + offset;
-    float* segment_destination_r = destination_r + offset;
+    const float* segment_source_l = UNSAFE_TODO(source_l + offset);
+    const float* segment_source_r = UNSAFE_TODO(source_r + offset);
+    float* segment_destination_l = UNSAFE_TODO(destination_l + offset);
+    float* segment_destination_r = UNSAFE_TODO(destination_r + offset);
 
     // First run through delay lines for inter-aural time difference.
     delay_line_l_.SetDelayFrames(frame_delay_l);
@@ -320,10 +317,12 @@ void HRTFPanner::Pan(double desired_azimuth,
       float x = crossfade_x_;
       const float incr = crossfade_incr_;
       for (unsigned i = 0; i < kFramesPerSegment; ++i) {
-        segment_destination_l[i] = (1 - x) * convolution_destination_l1[i] +
-                                   x * convolution_destination_l2[i];
-        segment_destination_r[i] = (1 - x) * convolution_destination_r1[i] +
-                                   x * convolution_destination_r2[i];
+        UNSAFE_TODO(segment_destination_l[i]) =
+            (1 - x) * UNSAFE_TODO(convolution_destination_l1[i]) +
+            x * UNSAFE_TODO(convolution_destination_l2[i]);
+        UNSAFE_TODO(segment_destination_r[i]) =
+            (1 - x) * UNSAFE_TODO(convolution_destination_r1[i]) +
+            x * UNSAFE_TODO(convolution_destination_r2[i]);
         x += incr;
       }
       // Update cross-fade value from local.
@@ -345,8 +344,8 @@ void HRTFPanner::Pan(double desired_azimuth,
 }
 
 void HRTFPanner::PanWithSampleAccurateValues(
-    double* desired_azimuth,
-    double* elevation,
+    base::span<double> desired_azimuth,
+    base::span<double> elevation,
     const AudioBus* input_bus,
     AudioBus* output_bus,
     uint32_t frames_to_process,

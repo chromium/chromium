@@ -14,7 +14,6 @@
 
 namespace ui {
 class LatencyInfo;
-struct DidOverscrollParams;
 }  // namespace ui
 
 namespace input {
@@ -29,7 +28,7 @@ class StylusInterface {
 
 class COMPONENT_EXPORT(INPUT) InputRouterClient {
  public:
-  virtual ~InputRouterClient() {}
+  virtual ~InputRouterClient() = default;
 
   // Called just prior to events being sent to the renderer, giving the client
   // a chance to perform in-process event filtering.
@@ -48,14 +47,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
   virtual void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) = 0;
 
-  // Called each time the browser UI scheduler should be notified of a gesture
-  // event which is a scroll state update.
-  virtual void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) = 0;
-
   // Called when the router has received an overscroll notification from the
   // renderer.
-  virtual void DidOverscroll(const ui::DidOverscrollParams& params) = 0;
+  virtual void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) = 0;
 
   // Called when the router has received an allowed touch action notification
   // from the renderer.
@@ -110,10 +104,13 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
   virtual void OnImeCancelComposition() = 0;
   virtual void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds) = 0;
   virtual StylusInterface* GetStylusInterface() = 0;
   virtual void OnStartStylusWriting() = 0;
+
+  virtual void OnUnconfirmedTapConvertedToTap() = 0;
+
+  virtual DispatchToRendererCallback GetDispatchToRendererCallback() = 0;
 };
 
 }  // namespace input

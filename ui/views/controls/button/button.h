@@ -8,16 +8,19 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/native_theme/native_theme.h"
@@ -25,7 +28,6 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
@@ -47,6 +49,9 @@ class ButtonController;
 // be part of the focus chain.
 class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   METADATA_HEADER(Button, View)
+
+  // TODO(crbug.com/451373711): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
   // Button states for various button sub-types.
@@ -126,8 +131,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
     void Run(const ui::Event& event);
 
    private:
-    absl::variant<base::OnceClosure, base::RepeatingClosure, Callback>
-        callback_;
+    std::variant<base::OnceClosure, base::RepeatingClosure, Callback> callback_;
   };
 
   // This is used to ensure that multiple overlapping elements anchored on this
@@ -158,9 +162,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  void SetTooltipText(const std::u16string& tooltip_text);
-  const std::u16string& GetTooltipText() const;
-
   // Tag is now a property. These accessors are deprecated. Use GetTag() and
   // SetTag() below or even better, use SetID()/GetID() from the ancestor.
   int tag() const { return tag_; }
@@ -170,6 +171,14 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   void AdjustAccessibleName(std::u16string& new_name,
                             ax::mojom::NameFrom& name_from) override;
+
+  // Button uses the tooltip text in `AdjustAccessibleName` to provide an
+  // alternative accessible name if there is no existing accessible name.
+  // However, some button subclasses have a custom locally cached tooltip text
+  // that should be used instead. Views that follow this pattern should override
+  // this method to provide an alternative accessible name if they cache a
+  // custom tooltip text that is different from the one cached in View.
+  virtual std::u16string GetAlternativeAccessibleName() const;
 
   // Get/sets the current display state of the button.
   ButtonState GetState() const;
@@ -243,14 +252,12 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ShowContextMenu(const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
   void OnDragDone() override;
   // Instead of overriding this, subclasses that want custom painting should use
   // PaintButtonContents.
   void OnPaint(gfx::Canvas* canvas) final;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -295,6 +302,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Called when the tooltip is set.
   virtual void OnSetTooltipText(const std::u16string& tooltip_text);
+
+  void OnTooltipTextChanged(const std::u16string& old_tooltip_text) override;
 
   // Invoked from SetState() when SetState() is passed a value that differs from
   // the current node_data. Button's implementation of StateChanged() does
@@ -341,6 +350,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   virtual void OnEnabledChanged();
 
+  virtual void UpdateAccessibleCheckedState();
+
   // Sets the |default_action_verb_| for accessibility. Subclasses may
   // call this method to set their specific default action verb.
   void SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb);
@@ -353,9 +364,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
 
   void ReleaseAnchorHighlight();
-
-  // The text shown in a tooltip.
-  std::u16string tooltip_text_;
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;
@@ -406,8 +414,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   std::unique_ptr<ButtonController> button_controller_;
 
   base::CallbackListSubscription enabled_changed_subscription_{
-      AddEnabledChangedCallback(base::BindRepeating(&Button::OnEnabledChanged,
-                                                    base::Unretained(this)))};
+      AddEnabledInViewsSubtreeChangedCallback(
+          base::BindRepeating(&Button::OnEnabledChanged,
+                              base::Unretained(this)))};
 
   size_t anchor_count_ = 0;
 

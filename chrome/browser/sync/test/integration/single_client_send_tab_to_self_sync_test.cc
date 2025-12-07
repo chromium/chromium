@@ -150,9 +150,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target");
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@g.com");
+      GetProfile(0), &test_url_loader_factory_, "user@gmail.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   send_tab_to_self::SendTabToSelfModel* model =
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
   // because it may simply not have reached the server yet. So let's send
   // something else through the system that we can wait on before checking.
   ASSERT_TRUE(
-      bookmarks_helper::AddURL(0, "What are you syncing about?",
+      bookmarks_helper::AddURL(0, u"What are you syncing about?",
                                GURL("https://google.com/synced-bookmark-1")));
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
 

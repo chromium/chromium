@@ -7,6 +7,8 @@ package org.chromium.components.messages;
 import static org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection.DOWN;
 import static org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection.UP;
 import static org.chromium.components.messages.MessageBannerProperties.CONTENT_ALPHA;
+import static org.chromium.components.messages.MessageBannerProperties.ENABLE_CLOSE_BUTTON;
+import static org.chromium.components.messages.MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER;
 import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
@@ -21,7 +23,11 @@ import android.view.MotionEvent;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
+import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -35,8 +41,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Mediator responsible for the business logic in a message banner. */
+@NullMarked
 class MessageBannerMediator implements SwipeHandler {
     // Message banner state
     @Retention(RetentionPolicy.SOURCE)
@@ -50,17 +58,18 @@ class MessageBannerMediator implements SwipeHandler {
         int IDLE = 2;
         // User gesture
         int GESTURE = 3;
-
-        int NUM_ENTRIES = 4;
     }
+
+    private static final long TAP_PROTECTION_DURATION_MS = 500;
 
     private static final int ENTER_DURATION_MS = 550;
     private static final int EXIT_DURATION_MS = 350;
     private static final TimeInterpolator TRANSLATION_ENTER_INTERPOLATOR =
-            Interpolators.EMPHASIZED_DECELERATE;
-    private static final TimeInterpolator ALPHA_ENTER_INTERPOLATOR =
-            Interpolators.EMPHASIZED_DECELERATE;
-    private static final TimeInterpolator EXIT_INTERPOLATOR = Interpolators.EMPHASIZED_DECELERATE;
+            Interpolators.DEFAULT_SPATIAL;
+    private static final TimeInterpolator ALPHA_ENTER_INTERPOLATOR = Interpolators.DEFAULT_SPATIAL;
+    private static final TimeInterpolator EXIT_INTERPOLATOR = Interpolators.DEFAULT_SPATIAL;
+
+    private static long sTapProtectionDurationMsForTesting;
 
     private final PropertyModel mModel;
     private final Supplier<Integer> mMaxTranslationYSupplier;
@@ -74,7 +83,7 @@ class MessageBannerMediator implements SwipeHandler {
     private final int mPeekingMarginTop;
     private final int mDefaultMarginTop;
 
-    private Animator mAnimation;
+    private @Nullable Animator mAnimation;
     @State private int mCurrentState = State.HIDDEN;
     @ScrollDirection private int mSwipeDirection;
     private float mSwipeStartTranslation;
@@ -98,7 +107,7 @@ class MessageBannerMediator implements SwipeHandler {
         mMaxHorizontalTranslationPx = resources.getDisplayMetrics().widthPixels;
         mMessageDismissed = messageDismissed;
         mSwipeAnimationHandler = swipeAnimationHandler;
-        mDefaultMarginTop = resources.getDimensionPixelSize(R.dimen.message_shadow_top_margin);
+        mDefaultMarginTop = 0;
         mPeekingMarginTop =
                 resources.getDimensionPixelSize(R.dimen.message_peeking_layer_height)
                         + mDefaultMarginTop;
@@ -131,25 +140,42 @@ class MessageBannerMediator implements SwipeHandler {
             mModel.set(TRANSLATION_Y, mModel.get(MARGIN_TOP) - mDefaultMarginTop);
             mModel.set(MARGIN_TOP, mDefaultMarginTop);
         }
+        if (toIndex == Position.FRONT
+                && (!BuildConfig.IS_FOR_TEST || sTapProtectionDurationMsForTesting > 0)) {
+            long startTimestamp = TimeUtils.elapsedRealtimeMillis();
+            long protectionDuration =
+                    sTapProtectionDurationMsForTesting > 0
+                            ? sTapProtectionDurationMsForTesting
+                            : TAP_PROTECTION_DURATION_MS;
+            mModel.set(
+                    IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                    () -> {
+                        return TimeUtils.elapsedRealtimeMillis()
+                                < ENTER_DURATION_MS / 2 + protectionDuration + startTimestamp;
+                    });
+        }
+        mModel.set(
+                ENABLE_CLOSE_BUTTON,
+                MessageFeatureList.isCloseButtonEnabled() && toIndex == Position.FRONT);
         cancelAnyAnimations();
         return startAnimation(
                 true,
                 true,
                 0,
-                false,
                 toIndex == Position.BACK ? mPeekingMarginTop + verticalOffset : mDefaultMarginTop,
                 messageShown);
     }
 
     /**
      * Hides the message banner with an animation.
+     *
      * @param fromIndex The initial position.
      * @param toIndex The target position the message is moving to.
      * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      * @return The animator to hide the message.
      */
-    Animator hide(
+    @Nullable Animator hide(
             @Position int fromIndex,
             @Position int toIndex,
             boolean animate,
@@ -167,10 +193,10 @@ class MessageBannerMediator implements SwipeHandler {
             messageHidden.run();
             return null;
         }
-        return startAnimation(true, false, translateTo, false, mDefaultMarginTop, messageHidden);
+        return startAnimation(true, false, translateTo, mDefaultMarginTop, messageHidden);
     }
 
-    void setOnTouchRunnable(Runnable runnable) {
+    void setOnTouchRunnable(@Nullable Runnable runnable) {
         mModel.set(MessageBannerProperties.ON_TOUCH_RUNNABLE, runnable);
     }
 
@@ -250,7 +276,6 @@ class MessageBannerMediator implements SwipeHandler {
                         isVertical,
                         isShow,
                         translateTo,
-                        false,
                         mDefaultMarginTop,
                         isShow ? () -> {} : mMessageDismissed));
     }
@@ -268,7 +293,6 @@ class MessageBannerMediator implements SwipeHandler {
         // Flinging toward the idle position from outside the hiding threshold should animate the
         // message to the idle position. Otherwise, the message will be dismissed with animation.
         final boolean isVertical = isVertical(mSwipeDirection);
-        final float velocity = isVertical ? velocityY : velocityX;
         float translateTo;
         if (isVertical) {
             final float translationY = mModel.get(TRANSLATION_Y);
@@ -290,7 +314,6 @@ class MessageBannerMediator implements SwipeHandler {
                         isVertical(mSwipeDirection),
                         isShow,
                         translateTo,
-                        velocity != 0,
                         mDefaultMarginTop,
                         isShow ? () -> {} : mMessageDismissed));
     }
@@ -311,7 +334,6 @@ class MessageBannerMediator implements SwipeHandler {
      * @param vertical Whether the message is being animated vertically.
      * @param isShow Whether the message is going to be shown.
      * @param translateTo Target translation value for the animation.
-     * @param didFling Whether the animation is the result of a fling gesture.
      * @param marginTo The marginTop value the view should move to.
      * @param onEndCallback Callback that will be called after the animation.
      * @return The animator which can trigger the animation.
@@ -320,12 +342,10 @@ class MessageBannerMediator implements SwipeHandler {
             boolean vertical,
             boolean isShow,
             float translateTo,
-            boolean didFling,
             int marginTo,
             Runnable onEndCallback) {
         final long duration = isShow ? ENTER_DURATION_MS : EXIT_DURATION_MS;
         List<Animator> animators = new ArrayList<>();
-        Animator alphaAnimation = null;
 
         if (vertical) {
             final Animator expand =
@@ -336,7 +356,8 @@ class MessageBannerMediator implements SwipeHandler {
         }
 
         final float alphaTo = isShow ? 1.f : 0.f;
-        alphaAnimation = PropertyModelAnimatorFactory.ofFloat(mModel, CONTENT_ALPHA, alphaTo);
+        Animator alphaAnimation =
+                PropertyModelAnimatorFactory.ofFloat(mModel, CONTENT_ALPHA, alphaTo);
         alphaAnimation.setInterpolator(EXIT_INTERPOLATOR);
         alphaAnimation.setDuration(duration);
         animators.add(alphaAnimation);
@@ -398,5 +419,11 @@ class MessageBannerMediator implements SwipeHandler {
 
     private boolean isResting() {
         return mModel.get(TRANSLATION_Y) == 0.f && mModel.get(TRANSLATION_X) == 0.f;
+    }
+
+    /** Set duration of tap protection period. */
+    static void setTapProtectionDurationMsForTesting(long duration) {
+        sTapProtectionDurationMsForTesting = duration;
+        ResettersForTesting.register(() -> sTapProtectionDurationMsForTesting = -1);
     }
 }

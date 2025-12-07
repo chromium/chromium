@@ -48,33 +48,34 @@ CookieChangeEvent::CookieChangeEvent(const AtomicString& type,
 
 namespace {
 
-String ToCookieListItemSameSite(net::CookieSameSite same_site) {
+std::optional<V8CookieSameSite::Enum> ToCookieListItemSameSite(
+    net::CookieSameSite same_site) {
   switch (same_site) {
     case net::CookieSameSite::STRICT_MODE:
-      return "strict";
+      return V8CookieSameSite::Enum::kStrict;
     case net::CookieSameSite::LAX_MODE:
-      return "lax";
+      return V8CookieSameSite::Enum::kLax;
     case net::CookieSameSite::NO_RESTRICTION:
-      return "none";
+      return V8CookieSameSite::Enum::kNone;
     case net::CookieSameSite::UNSPECIFIED:
-      return String();
+      return std::nullopt;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-String ToCookieListItemEffectiveSameSite(
+std::optional<V8CookieSameSite::Enum> ToCookieListItemEffectiveSameSite(
     network::mojom::CookieEffectiveSameSite effective_same_site) {
   switch (effective_same_site) {
     case network::mojom::CookieEffectiveSameSite::kStrictMode:
-      return "strict";
+      return V8CookieSameSite::Enum::kStrict;
     case network::mojom::CookieEffectiveSameSite::kLaxMode:
     case network::mojom::CookieEffectiveSameSite::kLaxModeAllowUnsafe:
-      return "lax";
+      return V8CookieSameSite::Enum::kLax;
     case network::mojom::CookieEffectiveSameSite::kNoRestriction:
-      return "none";
+      return V8CookieSameSite::Enum::kNone;
     case network::mojom::CookieEffectiveSameSite::kUndefined:
-      return String();
+      return std::nullopt;
   }
 }
 
@@ -92,11 +93,13 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
 
   list_item->setSecure(canonical_cookie.SecureAttribute());
   // Use effective same site if available, otherwise use same site.
-  auto&& same_site = ToCookieListItemEffectiveSameSite(effective_same_site);
-  if (same_site.IsNull())
+  auto same_site = ToCookieListItemEffectiveSameSite(effective_same_site);
+  if (!same_site) {
     same_site = ToCookieListItemSameSite(canonical_cookie.SameSite());
-  if (!same_site.IsNull())
-    list_item->setSameSite(same_site);
+  }
+  if (same_site) {
+    list_item->setSameSite(*same_site);
+  }
 
   // The domain of host-only cookies is the host name, without a dot (.) prefix.
   String cookie_domain = String::FromUTF8(canonical_cookie.Domain());
@@ -127,7 +130,9 @@ void CookieChangeEvent::ToEventInfo(
     HeapVector<Member<CookieListItem>>& changed,
     HeapVector<Member<CookieListItem>>& deleted) {
   switch (change_info->cause) {
-    case ::network::mojom::CookieChangeCause::INSERTED: {
+    case ::network::mojom::CookieChangeCause::INSERTED:
+    case ::network::mojom::CookieChangeCause::
+        INSERTED_NO_VALUE_CHANGE_OVERWRITE: {
       CookieListItem* cookie = ToCookieListItem(
           change_info->cookie, change_info->access_result->effective_same_site,
           false /* is_deleted */);
@@ -147,8 +152,11 @@ void CookieChangeEvent::ToEventInfo(
     }
 
     case ::network::mojom::CookieChangeCause::OVERWRITE:
+    case ::network::mojom::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       // A cookie overwrite causes an OVERWRITE (meaning the old cookie was
-      // deleted) and an INSERTED.
+      // deleted) and an INSERTED, unless the insertion resulted in a cookie
+      // with no observable difference. In that case, we do not dispatch any
+      // change events.
       break;
   }
 }

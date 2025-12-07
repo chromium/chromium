@@ -29,14 +29,13 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
 namespace {
 
-ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
+static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
     JNIEnv* env,
     const SkBitmap& bitmap,
     const GURL& on_click_url,
@@ -45,27 +44,31 @@ ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
   ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(bitmap);
 
   ScopedJavaLocalRef<jstring> j_on_click_url;
-  if (on_click_url.is_valid())
+  if (on_click_url.is_valid()) {
     j_on_click_url = ConvertUTF8ToJavaString(env, on_click_url.spec());
+  }
 
   ScopedJavaLocalRef<jstring> j_alt_text;
-  if (!alt_text.empty())
+  if (!alt_text.empty()) {
     j_alt_text = ConvertUTF8ToJavaString(env, alt_text);
+  }
 
   ScopedJavaLocalRef<jstring> j_animated_url;
-  if (animated_url.is_valid())
+  if (animated_url.is_valid()) {
     j_animated_url = ConvertUTF8ToJavaString(env, animated_url.spec());
+  }
 
   return Java_LogoBridge_createLogo(env, j_bitmap, j_on_click_url, j_alt_text,
                                     j_animated_url);
 }
 
 // Converts a C++ Logo to a Java Logo.
-ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
+static ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
     JNIEnv* env,
     const search_provider_logos::Logo* logo) {
-  if (!logo)
+  if (!logo) {
     return ScopedJavaLocalRef<jobject>();
+  }
 
   return JNI_LogoBridge_MakeJavaLogo(
       env, logo->image, GURL(logo->metadata.on_click_url),
@@ -76,7 +79,7 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
  public:
   LogoObserverAndroid(base::WeakPtr<LogoBridge> logo_bridge,
                       JNIEnv* env,
-                      jobject j_logo_observer)
+                      const base::android::JavaRef<jobject>& j_logo_observer)
       : logo_bridge_(logo_bridge) {
     j_logo_observer_.Reset(env, j_logo_observer);
   }
@@ -84,13 +87,14 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
   LogoObserverAndroid(const LogoObserverAndroid&) = delete;
   LogoObserverAndroid& operator=(const LogoObserverAndroid&) = delete;
 
-  ~LogoObserverAndroid() override {}
+  ~LogoObserverAndroid() override = default;
 
   // seach_provider_logos::LogoObserver:
   void OnLogoAvailable(const search_provider_logos::Logo* logo,
                        bool from_cache) override {
-    if (!logo_bridge_)
+    if (!logo_bridge_) {
       return;
+    }
 
     JNIEnv* env = base::android::AttachCurrentThread();
     ScopedJavaLocalRef<jobject> j_logo =
@@ -112,7 +116,6 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
 }  // namespace
 
 static jlong JNI_LogoBridge_Init(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
                                  Profile* profile) {
   LogoBridge* logo_bridge = new LogoBridge(profile);
   return reinterpret_cast<intptr_t>(logo_bridge);
@@ -124,17 +127,18 @@ LogoBridge::LogoBridge(Profile* profile) : logo_service_(nullptr) {
   logo_service_ = LogoServiceFactory::GetForProfile(profile);
 }
 
-LogoBridge::~LogoBridge() {}
+LogoBridge::~LogoBridge() = default;
 
-void LogoBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void LogoBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void LogoBridge::GetCurrentLogo(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
-                                const JavaParamRef<jobject>& j_logo_observer) {
+                                const JavaRef<jobject>& j_logo_observer) {
   // |observer| is deleted in LogoObserverAndroid::OnObserverRemoved().
   LogoObserverAndroid* observer = new LogoObserverAndroid(
       weak_ptr_factory_.GetWeakPtr(), env, j_logo_observer);
   logo_service_->GetLogo(observer);
 }
+
+DEFINE_JNI(LogoBridge)

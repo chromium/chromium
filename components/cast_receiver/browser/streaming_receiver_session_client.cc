@@ -4,11 +4,11 @@
 
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/platform_message_port.h"
@@ -153,15 +153,6 @@ void StreamingReceiverSessionClient::OnStreamingConfigSet(
   // already started.
   LOG(WARNING)
       << "Received updated streaming config during an ongoing session!";
-}
-
-void StreamingReceiverSessionClient::OnAudioConfigUpdated(
-    const ::media::AudioDecoderConfig& audio_config) {}
-
-void StreamingReceiverSessionClient::OnVideoConfigUpdated(
-    const ::media::VideoDecoderConfig& video_config) {
-  handler_->OnResolutionChanged(video_config.visible_rect(),
-                                video_config.video_transformation());
 }
 
 void StreamingReceiverSessionClient::OnStreamingSessionEnded() {

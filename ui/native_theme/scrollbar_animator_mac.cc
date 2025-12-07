@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace ui {
 
@@ -15,9 +17,9 @@ namespace ui {
 
 ScrollbarAnimationTimerMac::ScrollbarAnimationTimerMac(
     base::RepeatingCallback<void(double)> callback,
-    double duration,
+    base::TimeDelta duration,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : start_time_(0.0), duration_(duration), callback_(std::move(callback)) {
+    : duration_(duration), callback_(std::move(callback)) {
   timing_function_ = gfx::CubicBezierTimingFunction::CreatePreset(
       gfx::CubicBezierTimingFunction::EaseType::EASE_IN_OUT);
 }
@@ -25,7 +27,7 @@ ScrollbarAnimationTimerMac::ScrollbarAnimationTimerMac(
 ScrollbarAnimationTimerMac::~ScrollbarAnimationTimerMac() {}
 
 void ScrollbarAnimationTimerMac::Start() {
-  start_time_ = base::Time::Now().InSecondsFSinceUnixEpoch();
+  start_time_ = base::TimeTicks::Now();
   // Set the framerate of the animation. NSAnimation uses a default
   // framerate of 60 Hz, so use that here.
   timer_.Start(FROM_HERE, base::Seconds(1.0 / 60.0), this,
@@ -36,16 +38,17 @@ void ScrollbarAnimationTimerMac::Stop() {
   timer_.Stop();
 }
 
-void ScrollbarAnimationTimerMac::SetDuration(double duration) {
+void ScrollbarAnimationTimerMac::SetDuration(base::TimeDelta duration) {
   duration_ = duration;
 }
 
 void ScrollbarAnimationTimerMac::TimerFired() {
-  double current_time = base::Time::Now().InSecondsFSinceUnixEpoch();
-  double delta = current_time - start_time_;
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  base::TimeDelta delta = current_time - start_time_;
 
-  if (delta >= duration_)
+  if (delta >= duration_) {
     timer_.Stop();
+  }
 
   double fraction = delta / duration_;
   fraction = std::clamp(fraction, 0.0, 1.0);
@@ -67,6 +70,8 @@ OverlayScrollbarAnimatorMac::OverlayScrollbarAnimatorMac(
       thumb_width_expanded_(thumb_width_expanded),
       thumb_width_unexpanded_(thumb_width_unexpanded),
       thumb_width_(thumb_width_unexpanded),
+      animations_enabled_(
+          base::FeatureList::IsEnabled(features::kScrollbarAnimations)),
       task_runner_(task_runner),
       weak_factory_(this) {}
 
@@ -75,28 +80,33 @@ OverlayScrollbarAnimatorMac::~OverlayScrollbarAnimatorMac() = default;
 void OverlayScrollbarAnimatorMac::MouseDidEnter() {
   // If the scrollbar is completely hidden, ignore this. We will initialize
   // the `mouse_in_track_` state if there's a scroll.
-  if (thumb_alpha_ == 0.f)
+  if (thumb_alpha_ == 0.f) {
     return;
+  }
 
-  if (mouse_in_track_)
+  if (mouse_in_track_) {
     return;
+  }
   mouse_in_track_ = true;
 
   // Cancel any in-progress fade-out, and ensure that the fade-out timer be
   // disabled.
-  if (fade_out_animation_)
+  if (fade_out_animation_) {
     FadeOutAnimationCancel();
+  }
   FadeOutTimerUpdate();
 
   // Start the fade-in animation (unless it is in progress or has already
   // completed).
-  if (!fade_in_track_animation_ && track_alpha_ != 1.f)
+  if (!fade_in_track_animation_ && track_alpha_ != 1.f) {
     FadeInTrackAnimationStart();
+  }
 
   // Start the expand-thumb animation (unless it is in progress or has already
   // completed).
-  if (!expand_thumb_animation_ && thumb_width_ != thumb_width_expanded_)
+  if (!expand_thumb_animation_ && thumb_width_ != thumb_width_expanded_) {
     ExpandThumbAnimationStart();
+  }
 }
 
 void OverlayScrollbarAnimatorMac::MouseDidExit() {
@@ -151,7 +161,8 @@ void OverlayScrollbarAnimatorMac::ExpandThumbAnimationStart() {
       base::BindRepeating(
           &OverlayScrollbarAnimatorMac::ExpandThumbAnimationTicked,
           weak_factory_.GetWeakPtr()),
-      kAnimationDurationSeconds, task_runner_);
+      animations_enabled_ ? kAnimationDuration : base::TimeDelta(),
+      task_runner_);
   expand_thumb_animation_->Start();
 }
 
@@ -159,8 +170,9 @@ void OverlayScrollbarAnimatorMac::ExpandThumbAnimationTicked(double progress) {
   thumb_width_ = (1 - progress) * thumb_width_unexpanded_ +
                  progress * thumb_width_expanded_;
   client_->SetThumbNeedsDisplay();
-  if (progress == 1)
+  if (progress == 1) {
     expand_thumb_animation_.reset();
+  }
 }
 
 void OverlayScrollbarAnimatorMac::FadeInTrackAnimationStart() {
@@ -170,7 +182,8 @@ void OverlayScrollbarAnimatorMac::FadeInTrackAnimationStart() {
       base::BindRepeating(
           &OverlayScrollbarAnimatorMac::FadeInTrackAnimationTicked,
           weak_factory_.GetWeakPtr()),
-      kAnimationDurationSeconds, task_runner_);
+      animations_enabled_ ? kAnimationDuration : base::TimeDelta(),
+      task_runner_);
   fade_in_track_animation_->Start();
 }
 
@@ -190,10 +203,16 @@ void OverlayScrollbarAnimatorMac::FadeOutTimerUpdate() {
     start_scrollbar_fade_out_timer_.reset();
     return;
   }
+  // If animations aren't enabled, we will only hide the scrollbar if the
+  // mouse was previously over it.
+  if (!animations_enabled_ && thumb_width_ != thumb_width_expanded_) {
+    return;
+  }
+
   if (!start_scrollbar_fade_out_timer_) {
     start_scrollbar_fade_out_timer_ =
         std::make_unique<base::RetainingOneShotTimer>(
-            FROM_HERE, kFadeOutDelay,
+            FROM_HERE, animations_enabled_ ? kFadeOutDelay : base::TimeDelta(),
             base::BindRepeating(
                 &OverlayScrollbarAnimatorMac::FadeOutAnimationStart,
                 weak_factory_.GetWeakPtr()));
@@ -210,7 +229,8 @@ void OverlayScrollbarAnimatorMac::FadeOutAnimationStart() {
   fade_out_animation_ = std::make_unique<ScrollbarAnimationTimerMac>(
       base::BindRepeating(&OverlayScrollbarAnimatorMac::FadeOutAnimationTicked,
                           weak_factory_.GetWeakPtr()),
-      kAnimationDurationSeconds, task_runner_);
+      animations_enabled_ ? kAnimationDuration : base::TimeDelta(),
+      task_runner_);
   fade_out_animation_->Start();
 }
 
@@ -251,9 +271,5 @@ void OverlayScrollbarAnimatorMac::FadeOutAnimationCancel() {
     client_->SetTrackNeedsDisplay();
   }
 }
-
-const float OverlayScrollbarAnimatorMac::kAnimationDurationSeconds = 0.25f;
-const base::TimeDelta OverlayScrollbarAnimatorMac::kFadeOutDelay =
-    base::Milliseconds(500);
 
 }  // namespace ui

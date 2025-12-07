@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -139,8 +139,9 @@ void RelaunchForUpdate() {
 }
 
 bool UpdatePending() {
-  if (!ash::DBusThreadManager::IsInitialized())
+  if (!ash::DBusThreadManager::IsInitialized()) {
     return false;
+  }
 
   return GetUpdateEngineClient()->GetLastStatus().current_operation() ==
          update_engine::UPDATED_NEED_REBOOT;
@@ -186,12 +187,14 @@ void StopSession() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Only call this function once.
   static bool notified = false;
-  if (notified)
+  if (notified) {
     return;
+  }
   notified = true;
 
-  if (chromeos::PowerPolicyController::IsInitialized())
+  if (chromeos::PowerPolicyController::IsInitialized()) {
     chromeos::PowerPolicyController::Get()->NotifyChromeIsExiting();
+  }
 
   if (chrome::UpdatePending()) {
     chrome::RelaunchForUpdate();

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -16,11 +17,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -28,6 +30,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+namespace {
+
+std::unique_ptr<CalendarClientImpl> BuildClient(Profile* profile) {
+  return std::make_unique<CalendarClientImpl>(
+      profile->GetPrefs(), apps::AppServiceProxyFactory::GetForProfile(profile),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
+      CalendarKeyedServiceFactory::GetInstance()->GetService(profile));
+}
+
+}  // namespace
 
 class CalendarClientImplTest : public testing::Test {
  public:
@@ -65,8 +78,8 @@ class CalendarClientImplTest : public testing::Test {
 TEST_F(CalendarClientImplTest, IsDisabledByAdmin_Default) {
   auto* const profile = CreateTestingProfile(GetDefaultPrefs());
 
-  const auto client = CalendarClientImpl(profile);
-  EXPECT_FALSE(client.IsDisabledByAdmin());
+  std::unique_ptr<CalendarClientImpl> client = BuildClient(profile);
+  EXPECT_FALSE(client->IsDisabledByAdmin());
   histogram_tester()->ExpectUniqueSample(
       "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
       ContextualGoogleIntegrationStatus::kEnabled,
@@ -79,8 +92,8 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarPref) {
 
   auto* const profile = CreateTestingProfile(std::move(prefs));
 
-  const auto client = CalendarClientImpl(profile);
-  EXPECT_TRUE(client.IsDisabledByAdmin());
+  std::unique_ptr<CalendarClientImpl> client = BuildClient(profile);
+  EXPECT_TRUE(client->IsDisabledByAdmin());
   histogram_tester()->ExpectUniqueSample(
       "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
       ContextualGoogleIntegrationStatus::kDisabledByPolicy,
@@ -98,8 +111,8 @@ TEST_F(CalendarClientImplTest,
 
   auto* const profile = CreateTestingProfile(std::move(prefs));
 
-  const auto client = CalendarClientImpl(profile);
-  EXPECT_TRUE(client.IsDisabledByAdmin());
+  std::unique_ptr<CalendarClientImpl> client = BuildClient(profile);
+  EXPECT_TRUE(client->IsDisabledByAdmin());
   histogram_tester()->ExpectUniqueSample(
       "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
       ContextualGoogleIntegrationStatus::kDisabledByPolicy,
@@ -111,15 +124,15 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
 
   std::vector<apps::AppPtr> app_deltas;
   app_deltas.push_back(apps::AppPublisher::MakeApp(
-      apps::AppType::kWeb, web_app::kGoogleCalendarAppId,
+      apps::AppType::kWeb, ash::kGoogleCalendarAppId,
       apps::Readiness::kDisabledByPolicy, "Calendar",
       apps::InstallReason::kUser, apps::InstallSource::kBrowser));
   apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
       std::move(app_deltas), apps::AppType::kWeb,
       /*should_notify_initialized=*/true);
 
-  const auto client = CalendarClientImpl(profile);
-  EXPECT_TRUE(client.IsDisabledByAdmin());
+  std::unique_ptr<CalendarClientImpl> client = BuildClient(profile);
+  EXPECT_TRUE(client->IsDisabledByAdmin());
   histogram_tester()->ExpectUniqueSample(
       "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
       ContextualGoogleIntegrationStatus::kDisabledByAppBlock,
@@ -135,8 +148,8 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_BlockedCalendarUrl) {
 
   auto* const profile = CreateTestingProfile(std::move(prefs));
 
-  const auto client = CalendarClientImpl(profile);
-  EXPECT_TRUE(client.IsDisabledByAdmin());
+  std::unique_ptr<CalendarClientImpl> client = BuildClient(profile);
+  EXPECT_TRUE(client->IsDisabledByAdmin());
   histogram_tester()->ExpectUniqueSample(
       "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
       ContextualGoogleIntegrationStatus::kDisabledByUrlBlock,

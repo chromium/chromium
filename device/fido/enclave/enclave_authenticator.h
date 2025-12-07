@@ -10,12 +10,15 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/types/expected.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
@@ -24,16 +27,26 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
+#include "device/fido/enclave/transact.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "url/gurl.h"
 
 namespace device::enclave {
 
 struct CredentialRequest;
+
+// This feature holds parameters that control the cert.xml & cert.sig.xml file
+// locations, allowing us to roll out a new Vault cohort progressively.
+// If URL parsing fails, the default is used instead.
+COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kEnclaveTrustedVaultCohort);
+COMPONENT_EXPORT(DEVICE_FIDO)
+const extern base::FeatureParam<std::string> kCertXmlUrlFeature;
+COMPONENT_EXPORT(DEVICE_FIDO)
+const extern base::FeatureParam<std::string> kSigXmlUrlFeature;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     : public FidoAuthenticator {
@@ -92,24 +105,36 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     MakeCredentialCallback callback;
   };
 
+  void DispatchGetAssertion();
+  void OnHaveReencodedLargeBlob(
+      size_t original_size,
+      base::expected<mojo_base::BigBuffer, std::string> maybe_deflated);
+  void OnHaveInflatedLargeBlobForGetAssertion(
+      AuthenticatorGetAssertionResponse,
+      base::expected<mojo_base::BigBuffer, std::string>);
+  void ReturnGetAssertionSuccess(AuthenticatorGetAssertionResponse);
   void DispatchMakeCredentialWithNewUVKey(
       base::span<const uint8_t> uv_public_key);
   void DispatchGetAssertionWithNewUVKey(
       base::span<const uint8_t> uv_public_key);
-  void ProcessMakeCredentialResponse(std::optional<cbor::Value> response);
-  void ProcessGetAssertionResponse(std::optional<cbor::Value> response);
+  void ProcessMakeCredentialResponse(
+      base::expected<cbor::Value, TransactError> maybe_response);
+  void ProcessGetAssertionResponse(
+      base::expected<cbor::Value, TransactError> maybe_response);
   void ProcessErrorResponse(const ErrorResponse& error);
 
   // `Complete*` methods invoke callbacks that can result in `this` being
   // destroyed, and so should only be called immediately before a return.
   void CompleteRequestWithError(
-      absl::variant<GetAssertionStatus, MakeCredentialStatus> error);
+      std::variant<GetAssertionStatus, MakeCredentialStatus> error);
   void CompleteMakeCredentialRequest(
       MakeCredentialStatus status,
       std::optional<AuthenticatorMakeCredentialResponse> response);
   void CompleteGetAssertionRequest(
       GetAssertionStatus status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
+
+  data_decoder::DataDecoder* data_decoder();
 
   const std::array<uint8_t, 8> id_;
   const NetworkContextFactory network_context_factory_;
@@ -123,6 +148,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
 
   // Set to true when the request included a deferred UV key creation.
   bool includes_new_uv_key_ = false;
+
+  std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
 
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };

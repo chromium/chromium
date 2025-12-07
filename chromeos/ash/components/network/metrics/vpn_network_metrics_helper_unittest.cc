@@ -144,10 +144,10 @@ TEST_F(VpnNetworkMetricsHelperTest, LogVpnVPNConfigurationSource) {
     ExpectConfigurationSourceCounts(it.first.c_str(), /*manual_count=*/0,
                                     /*policy_count=*/0);
 
-// Emitting a metric for an unknown VPN provider will always cause a NOTREACHED
-// to be hit. This can cause a CHECK to fail, depending on the build flags. We
-// catch any failing CHECK below by asserting that we will crash when emitting.
-#if DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+// Emitting a metric for an unknown VPN provider will always cause a
+// DUMP_WILL_BE_NOTREACHED() to be hit. This is fatal outside official builds,
+// so make sure that we die in those configurations.
+#if !defined(OFFICIAL_BUILD)
     if (it.first == kTestUnknownVpn) {
       ASSERT_DEATH(
           {
@@ -165,7 +165,7 @@ TEST_F(VpnNetworkMetricsHelperTest, LogVpnVPNConfigurationSource) {
                                       /*policy_count=*/0);
       continue;
     }
-#endif  // DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+#endif  // !defined(OFFICIAL_BUILD)
 
     CreateTestShillConfiguration(it.first, /*is_managed=*/false);
     ExpectConfigurationSourceCounts(it.second, /*manual_count=*/1,

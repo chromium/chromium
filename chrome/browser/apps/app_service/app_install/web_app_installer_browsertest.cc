@@ -4,11 +4,14 @@
 
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -460,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestWithFailingIcons) {
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsiteAsShortcut) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsite) {
   WebAppInstaller installer(profile());
   SetManifestResponse(AddIconToManifest(R"({
     "name": "Example App",
@@ -468,20 +471,66 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsiteAsShortcut) {
     "icons": $1
   })"));
 
+  AppInstallData data = CreateInstallData(
+      "Example App", "website:https://www.example.com/",
+      "https://www.example.com/manifest.json", "/manifest.json");
+  // Unset user_window_override to request UserDisplayMode::kBrowser.
+  std::get<WebAppInstallData>(data.app_type_data).open_as_window = false;
+
   base::test::TestFuture<bool> result;
-  installer.InstallApp(
-      AppInstallSurface::kAppInstallUriUnknown,
-      CreateInstallData("Example App", "website:https://www.example.com/",
-                        "https://www.example.com/manifest.json",
-                        "/manifest.json"),
-      result.GetCallback());
+  installer.InstallApp(AppInstallSurface::kAppInstallUriUnknown, data,
+                       result.GetCallback());
   ASSERT_TRUE(result.Get());
 
+  // Verify that the app is set to open in a browser in App Service.
   auto app_id =
       web_app::GenerateAppId(std::nullopt, GURL("https://www.example.com/"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.WindowMode(), apps::WindowMode::kBrowser);
+      });
+  ASSERT_TRUE(found);
 
-  // Verify that the app installed in App Service.
-  VerifyAppInstalled(app_id, "Example App", InstallReason::kSync);
+  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
+                  ->registrar_unsafe()
+                  .IsDiyApp(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
+                       InstallWebsiteWithOpenInWindowOverride) {
+  WebAppInstaller installer(profile());
+
+  constexpr char kManifestTemplate[] = R"({
+    "name": "Example App",
+    "start_url": "/",
+    "scope": "/",
+    "icons": $1
+  })";
+  SetManifestResponse(AddIconToManifest(kManifestTemplate));
+
+  AppInstallData data = CreateInstallData(
+      "Example App", "website:https://www.example.com/",
+      "https://www.example.com/manifest.json", "/manifest.json");
+  // Unset user_window_override to request UserDisplayMode::kStandalone.
+  std::get<WebAppInstallData>(data.app_type_data).open_as_window = true;
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(AppInstallSurface::kAppInstallUriUnknown, data,
+                       result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  // Verify that the app is set to open in a window in App Service.
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.example.com/"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.WindowMode(), apps::WindowMode::kWindow);
+      });
+  ASSERT_TRUE(found);
+
+  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
+                  ->registrar_unsafe()
+                  .IsDiyApp(app_id));
 }
 
 }  // namespace apps

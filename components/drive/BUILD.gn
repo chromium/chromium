@@ -2,23 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-static_library("drive") {
+component("drive") {
+  defines = [ "COMPONENTS_DRIVE_IMPLEMENTATION" ]
+
   sources = [
     "drive_api_util.cc",
     "drive_api_util.h",
-    "drive_notification_manager.cc",
-    "drive_notification_manager.h",
-    "drive_notification_observer.h",
     "drive_pref_names.h",
     "drive_uploader.cc",
     "drive_uploader.h",
     "event_logger.cc",
     "event_logger.h",
-    "features.cc",
-    "features.h",
     "file_errors.cc",
     "file_errors.h",
     "file_system_core_util.cc",
@@ -30,22 +26,43 @@ static_library("drive") {
     "service/drive_service_interface.cc",
     "service/drive_service_interface.h",
   ]
+
   deps = [
-    "//base",
-    "//components/invalidation/public",
     "//components/keyed_service/core",
-    "//google_apis/common",
-    "//google_apis/drive",
+    "//google_apis",
     "//services/device/public/mojom",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/leveldatabase",
     "//third_party/re2",
   ]
-  public_deps = [ ":proto" ]
+
+  public_deps = [
+    ":drive_export_header",
+    ":proto",
+    "//base",
+    "//google_apis/common",
+    "//google_apis/drive",
+    "//net/traffic_annotation",
+  ]
+}
+
+source_set("drive_export_header") {
+  sources = [ "drive_export.h" ]
 }
 
 proto_library("proto") {
+  visibility = [ ":drive" ]
+
   sources = [ "drive.proto" ]
+
+  cc_generator_options = "dllexport_decl=COMPONENTS_DRIVE_EXPORT_PRIVATE:"
+  cc_include = "components/drive/drive_export.h"
+  component_build_force_source_set = true
+  defines = [ "COMPONENTS_DRIVE_IMPLEMENTATION" ]
+
+  link_deps = [ ":drive_export_header" ]
+
+  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -63,7 +80,7 @@ static_library("test_support") {
     "//base",
     "//google_apis/common:test_support",
     "//google_apis/drive",
-    "//net:net",
+    "//net",
   ]
 }
 
@@ -72,7 +89,6 @@ source_set("unit_tests") {
 
   sources = [
     "drive_api_util_unittest.cc",
-    "drive_notification_manager_unittest.cc",
     "drive_uploader_unittest.cc",
     "event_logger_unittest.cc",
     "resource_metadata_storage_unittest.cc",
@@ -85,21 +101,20 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/invalidation/impl:test_support",
     "//content/test:test_support",
     "//google_apis/common:test_support",
     "//google_apis/drive",
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "search_metadata_unittest.cc" ]
 
     deps += [ ":drive_chromeos" ]
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("drive_chromeos") {
     sources = [
       "chromeos/search_metadata.cc",

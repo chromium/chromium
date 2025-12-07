@@ -41,9 +41,9 @@ export class MoveConfirmationPageElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'});
 
     shadowRoot.innerHTML = getTemplate();
-    const actionButton = this.$('.action-button')!;
-    const cancelButton = this.$('.cancel-button')!;
-    this.playPauseButton = this.$('#playPauseIcon')!;
+    const actionButton = this.$('.action-button');
+    const cancelButton = this.$('.cancel-button');
+    this.playPauseButton = this.$('#playPauseIcon');
 
     actionButton.addEventListener('click', () => this.onActionButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
@@ -89,7 +89,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
     this.updateAnimation();
 
     // Title.
-    const titleElement = this.$<HTMLElement>('#title')!;
+    const titleElement = this.$<HTMLElement>('#title');
     if (isCopyOperation) {
       titleElement.innerText = loadTimeData.getStringF(
           isPlural ? 'moveConfirmationCopyTitlePlural' :
@@ -117,7 +117,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
       if (officeMoveConfirmationShownForOneDrive) {
         checkbox.checked = alwaysMoveToOneDrive;
       } else {
-        checkbox!.remove();
+        checkbox.remove();
       }
     } else {
       bodyText.innerText =
@@ -128,12 +128,12 @@ export class MoveConfirmationPageElement extends HTMLElement {
       if (officeMoveConfirmationShownForDrive) {
         checkbox.checked = alwaysMoveToDrive;
       } else {
-        checkbox!.remove();
+        checkbox.remove();
       }
     }
 
     // Action button.
-    const actionButton = this.$<HTMLElement>('.action-button')!;
+    const actionButton = this.$<HTMLElement>('.action-button');
     actionButton.innerText =
         loadTimeData.getString(isCopyOperation ? 'copyAndOpen' : 'moveAndOpen');
   }
@@ -152,8 +152,8 @@ export class MoveConfirmationPageElement extends HTMLElement {
     this.animationPlayer.setAttribute('dynamic', 'true');
     this.animationPlayer.setAttribute('aria-hidden', 'true');
     this.animationPlayer.autoplay = true;
-    const animationWrapper = this.$<HTMLElement>('.animation-wrapper')!;
-    const playPauseIcon = this.$<HTMLElement>('#playPauseIcon')!;
+    const animationWrapper = this.$<HTMLElement>('.animation-wrapper');
+    const playPauseIcon = this.$<HTMLElement>('#playPauseIcon');
     animationWrapper.insertBefore(this.animationPlayer, playPauseIcon);
   }
 
@@ -197,7 +197,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
   }
 
   private onPlayPauseButtonClick(): void {
-    const animation = this.$<LottieRenderer>('#animation')!;
+    const animation = this.$<LottieRenderer>('#animation');
     const shouldPlay = this.playPauseButton!.className === 'play';
     if (shouldPlay) {
       animation.play();

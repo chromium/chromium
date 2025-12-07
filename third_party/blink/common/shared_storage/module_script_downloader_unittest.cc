@@ -72,7 +72,7 @@ class ModuleScriptDownloaderTest : public testing::Test {
   ModuleScriptDownloaderTest() = default;
   ~ModuleScriptDownloaderTest() override = default;
 
-  std::unique_ptr<std::string> RunRequest() {
+  std::optional<std::string> RunRequest() {
     DCHECK(!run_loop_);
 
     ModuleScriptDownloader downloader(
@@ -85,12 +85,14 @@ class ModuleScriptDownloaderTest : public testing::Test {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
-    return std::move(body_);
+    auto body = std::move(body_);
+    body_ = std::nullopt;  // a moved from optional is still engaged.
+    return body;
   }
 
  protected:
   void DownloadCompleteCallback(
-      std::unique_ptr<std::string> body,
+      std::optional<std::string> body,
       std::string error,
       network::mojom::URLResponseHeadPtr response_head) {
     DCHECK(!body_);
@@ -107,7 +109,7 @@ class ModuleScriptDownloaderTest : public testing::Test {
   const GURL url_ = GURL("https://url.test/script.js");
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<std::string> body_;
+  std::optional<std::string> body_;
   std::string error_;
   network::mojom::URLResponseHeadPtr response_head_;
 
@@ -162,7 +164,7 @@ TEST_F(ModuleScriptDownloaderTest, Redirect) {
 TEST_F(ModuleScriptDownloaderTest, Success) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kAsciiResponseBody, *body);
 }
@@ -232,7 +234,7 @@ TEST_F(ModuleScriptDownloaderTest, JavscriptMimeTypeVariants) {
   for (const char* javascript_type : kJavascriptMimeTypes) {
     AddResponse(&url_loader_factory_, url_, javascript_type, kUtf8Charset,
                 kAsciiResponseBody);
-    std::unique_ptr<std::string> body = RunRequest();
+    std::optional<std::string> body = RunRequest();
     ASSERT_TRUE(body);
     EXPECT_EQ(kAsciiResponseBody, *body);
   }
@@ -242,7 +244,7 @@ TEST_F(ModuleScriptDownloaderTest, Charset) {
   // ASCII charset should restrict response bodies to ASCII characters.
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,
               kAsciiResponseBody);
-  std::unique_ptr<std::string> body = RunRequest();
+  std::optional<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kAsciiResponseBody, *body);
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,

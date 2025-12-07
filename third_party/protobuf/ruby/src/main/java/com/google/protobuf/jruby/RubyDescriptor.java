@@ -32,6 +32,7 @@
 
 package com.google.protobuf.jruby;
 
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.OneofDescriptor;
@@ -156,6 +157,43 @@ public class RubyDescriptor extends RubyObject {
   @JRubyMethod(name = "lookup_oneof")
   public IRubyObject lookupOneof(ThreadContext context, IRubyObject name) {
     return Helpers.nullToNil(oneofDescriptors.get(Utils.symToString(name)), context.nil);
+  }
+
+  @JRubyMethod
+  public IRubyObject options(ThreadContext context) {
+    RubyDescriptorPool pool = (RubyDescriptorPool) RubyDescriptorPool.generatedPool(null, null);
+    RubyDescriptor messageOptionsDescriptor =
+        (RubyDescriptor)
+            pool.lookup(context, context.runtime.newString("google.protobuf.MessageOptions"));
+    RubyClass messageOptionsClass = (RubyClass) messageOptionsDescriptor.msgclass(context);
+    RubyMessage msg = (RubyMessage) messageOptionsClass.newInstance(context, Block.NULL_BLOCK);
+    return msg.decodeBytes(
+        context,
+        msg,
+        CodedInputStream.newInstance(
+            descriptor.getOptions().toByteString().toByteArray()), /*freeze*/
+        true);
+  }
+
+  /*
+   * call-seq:
+   *     Descriptor.to_proto => DescriptorProto
+   *
+   * Returns the `DescriptorProto` of this `Descriptor`.
+   */
+  @JRubyMethod(name = "to_proto")
+  public IRubyObject toProto(ThreadContext context) {
+    RubyDescriptorPool pool = (RubyDescriptorPool) RubyDescriptorPool.generatedPool(null, null);
+    RubyDescriptor descriptorProto =
+        (RubyDescriptor)
+            pool.lookup(context, context.runtime.newString("google.protobuf.DescriptorProto"));
+    RubyClass msgClass = (RubyClass) descriptorProto.msgclass(context);
+    RubyMessage msg = (RubyMessage) msgClass.newInstance(context, Block.NULL_BLOCK);
+    return msg.decodeBytes(
+        context,
+        msg,
+        CodedInputStream.newInstance(descriptor.toProto().toByteString().toByteArray()), /*freeze*/
+        true);
   }
 
   protected FieldDescriptor getField(String name) {

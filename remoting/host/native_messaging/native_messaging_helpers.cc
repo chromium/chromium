@@ -14,13 +14,14 @@ namespace remoting {
 bool ParseNativeMessageJson(const std::string& message,
                             std::string& message_type,
                             base::Value::Dict& parsed_message) {
-  auto opt_message = base::JSONReader::Read(message);
+  auto opt_message =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!opt_message.has_value()) {
     LOG(ERROR) << "Received a message that's not valid JSON.";
     return false;
   }
 
-  auto message_value = std::move(opt_message.value());
+  auto message_value = std::move(*opt_message);
   if (!message_value.is_dict()) {
     LOG(ERROR) << "Received a message that's not a dictionary.";
     return false;

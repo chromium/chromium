@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -38,16 +39,14 @@ bool IsValidRequestInitiator(const network::ResourceRequest& request,
   switch (initiator_lock_compatibility) {
     case network::InitiatorLockCompatibility::kBrowserProcess:
       // kBrowserProcess cannot happen outside of NetworkService.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
 
     case network::InitiatorLockCompatibility::kNoLock:
     case network::InitiatorLockCompatibility::kNoInitiator:
       // Only browser-initiated navigations can specify no initiator and we only
       // expect subresource requests (i.e. non-navigations) to go through
       // SubresourceSignedExchangeURLLoaderFactory::CreateLoaderAndStart.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
 
     case network::InitiatorLockCompatibility::kCompatibleLock:
       return true;
@@ -56,14 +55,12 @@ bool IsValidRequestInitiator(const network::ResourceRequest& request,
       // This branch indicates that either 1) the CreateLoaderAndStart IPC was
       // forged by a malicious/compromised renderer process or 2) there are
       // renderer-side bugs.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // Failing safely for an unrecognied `network::InitiatorLockCompatibility`
   // enum value.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -92,7 +89,6 @@ void SubresourceSignedExchangeURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (!IsValidRequestInitiator(request, request_initiator_origin_lock_)) {
-    NOTREACHED_IN_MIGRATION();
     network::debug::ScopedResourceRequestCrashKeys request_crash_keys(request);
     network::debug::ScopedRequestInitiatorOriginLockCrashKey lock_crash_keys(
         request_initiator_origin_lock_);
@@ -102,7 +98,7 @@ void SubresourceSignedExchangeURLLoaderFactory::CreateLoaderAndStart(
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(
             network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
-    return;
+    NOTREACHED();
   }
 
   DCHECK_EQ(request.url, entry_->inner_url());

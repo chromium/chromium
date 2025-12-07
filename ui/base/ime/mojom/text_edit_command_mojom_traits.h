@@ -5,6 +5,7 @@
 #ifndef UI_BASE_IME_MOJOM_TEXT_EDIT_COMMAND_MOJOM_TRAITS_H_
 #define UI_BASE_IME_MOJOM_TEXT_EDIT_COMMAND_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "ui/base/ime/mojom/text_edit_commands.mojom-shared.h"
 #include "ui/base/ime/text_edit_commands.h"

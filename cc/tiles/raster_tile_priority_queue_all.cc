@@ -17,8 +17,7 @@ namespace {
 
 class RasterOrderComparator {
  public:
-  explicit RasterOrderComparator(TreePriority tree_priority)
-      : tree_priority_(tree_priority) {}
+  RasterOrderComparator() = default;
 
   // Note that in this function, we have to return true if and only if
   // a is strictly lower priority than b.
@@ -27,7 +26,6 @@ class RasterOrderComparator {
       const std::unique_ptr<TilingSetRasterQueueAll>& b_queue) const {
     const TilePriority& a_priority = a_queue->Top().priority();
     const TilePriority& b_priority = b_queue->Top().priority();
-    bool prioritize_low_res = tree_priority_ == SMOOTHNESS_TAKES_PRIORITY;
 
     // If the priority bin is the same but one of the tiles is from a
     // non-drawing layer, then the drawing layer has a higher priority.
@@ -36,34 +34,21 @@ class RasterOrderComparator {
       return b_queue->is_drawing_layer();
     }
 
-    // If the bin is the same but the resolution is not, then the order will be
-    // determined by whether we prioritize low res or not.
+    // If the bin is the same but the resolution is not, the tile with non-ideal
+    // resolution is lower priority.
     // TODO(vmpstr): Remove this when TilePriority is no longer a member of Tile
     // class but instead produced by the iterators.
     if (b_priority.priority_bin == a_priority.priority_bin &&
         b_priority.resolution != a_priority.resolution) {
-      // Non ideal resolution should be sorted lower than other resolutions.
-      if (a_priority.resolution == NON_IDEAL_RESOLUTION)
-        return true;
-
-      if (b_priority.resolution == NON_IDEAL_RESOLUTION)
-        return false;
-
-      if (prioritize_low_res)
-        return b_priority.resolution == LOW_RESOLUTION;
-      return b_priority.resolution == HIGH_RESOLUTION;
+      return a_priority.resolution == NON_IDEAL_RESOLUTION;
     }
 
     return b_priority.IsHigherPriorityThan(a_priority);
   }
-
- private:
-  TreePriority tree_priority_;
 };
 
 void CreateTilingSetRasterQueues(
     const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
-    TreePriority tree_priority,
     std::vector<std::unique_ptr<TilingSetRasterQueueAll>>* queues) {
   DCHECK(queues->empty());
 
@@ -76,18 +61,15 @@ void CreateTilingSetRasterQueues(
     if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
-    bool prioritize_low_res = tree_priority == SMOOTHNESS_TAKES_PRIORITY;
     std::unique_ptr<TilingSetRasterQueueAll> tiling_set_queue =
         TilingSetRasterQueueAll::Create(
-            tiling_set, prioritize_low_res,
-            layer->contributes_to_drawn_render_surface());
+            tiling_set, layer->contributes_to_drawn_render_surface());
     // Queues will only contain non empty tiling sets.
     if (tiling_set_queue && !tiling_set_queue->IsEmpty()) {
       queues->push_back(std::move(tiling_set_queue));
     }
   }
-  std::make_heap(queues->begin(), queues->end(),
-                 RasterOrderComparator(tree_priority));
+  std::make_heap(queues->begin(), queues->end(), RasterOrderComparator());
 }
 
 }  // namespace
@@ -103,8 +85,8 @@ void RasterTilePriorityQueueAll::Build(
     TreePriority tree_priority) {
   tree_priority_ = tree_priority;
 
-  CreateTilingSetRasterQueues(active_layers, tree_priority_, &active_queues_);
-  CreateTilingSetRasterQueues(pending_layers, tree_priority_, &pending_queues_);
+  CreateTilingSetRasterQueues(active_layers, &active_queues_);
+  CreateTilingSetRasterQueues(pending_layers, &pending_queues_);
 }
 
 bool RasterTilePriorityQueueAll::IsEmpty() const {
@@ -122,7 +104,7 @@ void RasterTilePriorityQueueAll::Pop() {
 
   auto& next_queues = GetNextQueues();
   std::pop_heap(next_queues.begin(), next_queues.end(),
-                RasterOrderComparator(tree_priority_));
+                RasterOrderComparator());
   TilingSetRasterQueueAll* queue = next_queues.back().get();
   queue->Pop();
 
@@ -131,7 +113,7 @@ void RasterTilePriorityQueueAll::Pop() {
     next_queues.pop_back();
   } else {
     std::push_heap(next_queues.begin(), next_queues.end(),
-                   RasterOrderComparator(tree_priority_));
+                   RasterOrderComparator());
   }
 }
 

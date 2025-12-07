@@ -4,19 +4,19 @@
 """Helper module for shared code related to video overlays."""
 
 import collections
+from collections.abc import Iterable
+import dataclasses
 import enum
 import functools
 import json
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive
+from telemetry.internal.platform import gpu_device
 
 from gpu_tests import common_typing as ct
 from gpu_tests import constants
 from gpu_tests import gpu_helper
-
-from telemetry.internal.platform import gpu_device
 
 
 # These can be changed to enum.StrEnum once Python 3.11+ is used.
@@ -70,7 +70,7 @@ class PresentationModeEvent(enum.IntEnum):
 
 
 def PresentationModeEventToStr(
-    presentation_mode_event: Union[int, PresentationModeEvent]) -> str:
+    presentation_mode_event: int | PresentationModeEvent) -> str:
   try:
     event = PresentationModeEvent(presentation_mode_event)
     return getattr(PresentationMode, event.name)
@@ -86,7 +86,7 @@ DriverConditional = collections.namedtuple('DriverConditional',
 @dataclasses.dataclass
 class ZeroCopyConfig:
   supports_scaled_video: bool = False
-  supported_codecs: List[ZeroCopyCodec] = ct.EmptyList()
+  supported_codecs: list[ZeroCopyCodec] = ct.EmptyList()
 
 
 class GpuOverlayConfig:
@@ -95,12 +95,12 @@ class GpuOverlayConfig:
   def __init__(self):
     self.direct_composition = False
     self.supports_overlays = False
-    self._driver_version: Optional[str] = None
+    self._driver_version: str | None = None
     self._zero_copy_config = ZeroCopyConfig()
 
-    self._possible_overlay_support: Dict[str, str] = {}
-    self._driver_conditionals: Dict[str, Iterable[DriverConditional]] = {}
-    self._supported_rotations: Dict[str, List[VideoRotation]] = {}
+    self._possible_overlay_support: dict[str, str] = {}
+    self._driver_conditionals: dict[str, Iterable[DriverConditional]] = {}
+    self._supported_rotations: dict[str, list[VideoRotation]] = {}
 
     self._force_composed_bgra8_driver_conditionals: Iterable[
         DriverConditional] = []
@@ -119,7 +119,7 @@ class GpuOverlayConfig:
     if set(self_dict.keys()) != set(other_dict.keys()):
       return False
 
-    return all(self_dict[k] == other_dict[k] for k in self_dict)
+    return all(v == other_dict[k] for k, v in self_dict.items())
 
   def WithDirectComposition(self) -> 'GpuOverlayConfig':
     """Enables direct composition support via software."""
@@ -131,8 +131,8 @@ class GpuOverlayConfig:
 
   def WithHardwareNV12Support(
       self,
-      driver_conditionals: Optional[Iterable[DriverConditional]] = None,
-      supported_rotations: Optional[List[VideoRotation]] = None
+      driver_conditionals: Iterable[DriverConditional] | None = None,
+      supported_rotations: list[VideoRotation] | None = None
   ) -> 'GpuOverlayConfig':
     """Enables NV12 hardware support.
 
@@ -150,8 +150,8 @@ class GpuOverlayConfig:
 
   def WithHardwareYUY2Support(
       self,
-      driver_conditionals: Optional[Iterable[DriverConditional]] = None,
-      supported_rotations: Optional[List[VideoRotation]] = None
+      driver_conditionals: Iterable[DriverConditional] | None = None,
+      supported_rotations: list[VideoRotation] | None = None
   ) -> 'GpuOverlayConfig':
     """Enables YUY2 hardware support.
 
@@ -169,8 +169,8 @@ class GpuOverlayConfig:
 
   def WithHardwareBGRA8Support(
       self,
-      driver_conditionals: Optional[Iterable[DriverConditional]] = None,
-      supported_rotations: Optional[List[VideoRotation]] = None
+      driver_conditionals: Iterable[DriverConditional] | None = None,
+      supported_rotations: list[VideoRotation] | None = None
   ) -> 'GpuOverlayConfig':
     """Enables BGRA8 hardware support.
 
@@ -189,8 +189,8 @@ class GpuOverlayConfig:
   def _WithHardwareSupport(
       self,
       pixel_format: str,
-      driver_conditionals: Optional[Iterable[DriverConditional]] = None,
-      supported_rotations: Optional[List[VideoRotation]] = None) -> None:
+      driver_conditionals: Iterable[DriverConditional] | None = None,
+      supported_rotations: list[VideoRotation] | None = None) -> None:
     assert self.supports_overlays
     assert (
         self._possible_overlay_support[pixel_format] == OverlaySupport.SOFTWARE)
@@ -283,7 +283,7 @@ class GpuOverlayConfig:
         return True
     return False
 
-  def GetExpectedPixelFormat(self, forced_pixel_format: Optional[str]) -> str:
+  def GetExpectedPixelFormat(self, forced_pixel_format: str | None) -> str:
     """Retrieves the pixel format that is expected to be used for swap chains.
 
     Args:
@@ -392,13 +392,16 @@ class GpuOverlayConfig:
     return codec in self._zero_copy_config.supported_codecs
 
 
-BasicDirectCompositionConfig = lambda: (GpuOverlayConfig().
-                                        WithDirectComposition())
-AllHardwareSupportDirectCompositionConfig = lambda: (
-    BasicDirectCompositionConfig()\
-    .WithHardwareNV12Support()\
-    .WithHardwareYUY2Support()\
-    .WithHardwareBGRA8Support())
+def BasicDirectCompositionConfig() -> GpuOverlayConfig:
+  return GpuOverlayConfig().WithDirectComposition()
+
+
+def AllHardwareSupportDirectCompositionConfig() -> GpuOverlayConfig:
+  return BasicDirectCompositionConfig()\
+            .WithHardwareNV12Support()\
+            .WithHardwareYUY2Support()\
+            .WithHardwareBGRA8Support()
+
 
 OVERLAY_CONFIGS = {
     constants.GpuVendor.AMD: {
@@ -412,6 +415,33 @@ OVERLAY_CONFIGS = {
                     supported_codecs=[
                         ZeroCopyCodec.H264,
                         ZeroCopyCodec.VP9])),
+        0x1900: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support(supported_rotations=[
+                    VideoRotation.ROT90,
+                    VideoRotation.ROT180,
+                    VideoRotation.ROT270])\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
+        0x7480: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support(supported_rotations=[
+                    VideoRotation.ROT90,
+                    VideoRotation.ROT180,
+                    VideoRotation.ROT270])\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
+        0x150e: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support(supported_rotations=[
+                    VideoRotation.ROT90,
+                    VideoRotation.ROT180,
+                    VideoRotation.ROT270])\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
         0x6613:
         BasicDirectCompositionConfig(),
         0x699f:
@@ -451,7 +481,9 @@ OVERLAY_CONFIGS = {
                 .WithHardwareNV12Support(driver_conditionals=[
                     DriverConditional('ge', '31.0.15.4601')])\
                 .WithHardwareYUY2Support(driver_conditionals=[
-                    DriverConditional('ge', '31.0.15.4601')])
+                    DriverConditional('ge', '31.0.15.4601')])\
+                .WithHardwareBGRA8Support(driver_conditionals=[
+                    DriverConditional('ge', '32.0.15.7602')])\
                 .WithForceComposedBGRA8(driver_conditionals=[
                     DriverConditional('lt', '31.0.15.4601')])\
                 .WithZeroCopyConfig(ZeroCopyConfig(
@@ -585,7 +617,7 @@ def ParseOverlayJsonFile(filepath: str) -> None:
 
 
 def _ParseOverlayJsonForDevice(vendor: constants.GpuVendor, device: int,
-                               function_list: List[dict]) -> None:
+                               function_list: list[dict]) -> None:
   """Helper to parse overlay config JSON for a single device.
 
   Args:
@@ -615,7 +647,7 @@ def _ParseOverlayJsonForDevice(vendor: constants.GpuVendor, device: int,
   OVERLAY_CONFIGS.setdefault(vendor, {})[device] = overlay_config
 
 
-def _ConvertDriverConditionals(args: Dict[str, Any]) -> None:
+def _ConvertDriverConditionals(args: dict[str, Any]) -> None:
   """Converts any driver_conditionals arguments in place."""
   if 'driver_conditionals' not in args:
     return
@@ -626,7 +658,7 @@ def _ConvertDriverConditionals(args: Dict[str, Any]) -> None:
   args['driver_conditionals'] = driver_conditionals
 
 
-def _ConvertSupportedRotations(args: Dict[str, Any]) -> None:
+def _ConvertSupportedRotations(args: dict[str, Any]) -> None:
   """Converts any supported_rotations arguments in place."""
   if 'supported_rotations' not in args:
     return
@@ -637,7 +669,7 @@ def _ConvertSupportedRotations(args: Dict[str, Any]) -> None:
   args['supported_rotations'] = supported_rotations
 
 
-def _ConvertSupportedCodecs(args: Dict[str, Any]) -> None:
+def _ConvertSupportedCodecs(args: dict[str, Any]) -> None:
   """Converts any supported_codecs arguments in place."""
   if 'supported_codecs' not in args:
     return

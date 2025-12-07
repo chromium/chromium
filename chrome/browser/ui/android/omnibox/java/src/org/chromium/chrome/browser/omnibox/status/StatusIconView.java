@@ -10,12 +10,14 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.ViewUtils;
 
 /** StatusIconView is a custom view displaying the status icon in the location bar. */
+@NullMarked
 public class StatusIconView extends LinearLayout {
-    private View mIconViewFrame;
+    private View mIconView;
     private Space mStatusIconHoldingSpace;
 
     public StatusIconView(Context context, AttributeSet attributes) {
@@ -26,7 +28,7 @@ public class StatusIconView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mIconViewFrame = findViewById(R.id.location_bar_status_icon_frame);
+        mIconView = findViewById(R.id.location_bar_status_icon);
         mStatusIconHoldingSpace = findViewById(R.id.location_bar_status_icon_holding_space);
     }
 
@@ -35,7 +37,7 @@ public class StatusIconView extends LinearLayout {
         int iconViewFrameVisibility = getIconVisibility();
         if (iconViewFrameVisibility != visibility) {
             boolean wasLayoutPreviouslyRequested = isLayoutRequested();
-            mIconViewFrame.setVisibility(visibility);
+            mIconView.setVisibility(visibility);
             ViewUtils.requestLayout(this, "StatusIconView setVisibility");
             // If the icon's visibility changes while layout is pending, we can end up in a bad
             // state due to a stale measurement cache. Post a task to request layout to force this
@@ -55,6 +57,6 @@ public class StatusIconView extends LinearLayout {
 
     /** return the status icon's visibility. */
     int getIconVisibility() {
-        return mIconViewFrame.getVisibility();
+        return mIconView.getVisibility();
     }
 }

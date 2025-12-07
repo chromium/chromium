@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
@@ -18,8 +19,8 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
+
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Mock;
@@ -32,7 +33,7 @@ class MockDelegate : public PopupSearchBarView::Delegate {
   ~MockDelegate() override = default;
   MOCK_METHOD(void,
               SearchBarOnInputChanged,
-              (const std::u16string& text),
+              (std::u16string_view text),
               (override));
   MOCK_METHOD(void, SearchBarOnFocusLost, (), (override));
   MOCK_METHOD(bool,
@@ -40,8 +41,6 @@ class MockDelegate : public PopupSearchBarView::Delegate {
               (const ui::KeyEvent& event),
               (override));
 };
-
-}  // namespace
 
 class PopupSearchBarViewTest : public ChromeViewsTestBase {
  public:
@@ -79,8 +78,7 @@ TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
-  EXPECT_EQ(focused_field->GetClassMetaData()->type_name(),
-            std::string("Textfield"));
+  EXPECT_EQ(focused_field->GetClassName(), "Textfield");
 }
 
 TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {
@@ -182,4 +180,6 @@ TEST_F(PopupSearchBarViewTest, ClearButton) {
   task_environment()->FastForwardBy(
       PopupSearchBarView::kInputChangeCallbackDelay);
 }
+
+}  // namespace
 }  // namespace autofill

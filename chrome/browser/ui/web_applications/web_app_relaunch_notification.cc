@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/web_applications/web_app_relaunch_notification.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -14,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +26,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
 #endif
 
@@ -46,14 +46,14 @@ message_center::Notification CreateNotification(
     const webapps::AppId& placeholder_app_id,
     const webapps::AppId& final_app_id,
     const std::u16string& final_app_name) {
-#if (BUILDFLAG(IS_CHROMEOS_ASH))
+#if (BUILDFLAG(IS_CHROMEOS))
   message_center::NotifierId notifier_id = message_center::NotifierId(
       message_center::NotifierType::SYSTEM_COMPONENT, kWebAppRelaunchId,
       ash::NotificationCatalogName::kWebAppSettings);
 #else
   message_center::NotifierId notifier_id = message_center::NotifierId(
       message_center::NotifierType::SYSTEM_COMPONENT, kWebAppRelaunchId);
-#endif  // (BUILDFLAG(IS_CHROMEOS_ASH))
+#endif  // (BUILDFLAG(IS_CHROMEOS))
 
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -85,7 +85,7 @@ void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
 
   switch (relaunch_state) {
     case web_app::AppRelaunchState::kAppClosingForRelaunch:
-      NotificationDisplayService::GetForProfile(profile.get())
+      NotificationDisplayServiceFactory::GetForProfile(profile.get())
           ->Display(NotificationHandler::Type::TRANSIENT,
                     std::move(CreateNotification(placeholder_app_id,
                                                  final_app_id, final_app_name)),
@@ -112,7 +112,7 @@ void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
                 // The `NotificationDisplayService::Close` function can be
                 // called even if
                 // the notification is not shown anymore.
-                NotificationDisplayService::GetForProfile(profile.get())
+                NotificationDisplayServiceFactory::GetForProfile(profile.get())
                     ->Close(NotificationHandler::Type::TRANSIENT,
                             CreateNotificationId(app_id));
               },

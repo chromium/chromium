@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -28,13 +28,8 @@
 
 namespace extensions {
 
-const int RulesRegistryService::kDefaultRulesRegistryID = 0;
-const int RulesRegistryService::kInvalidRulesRegistryID = -1;
-
 RulesRegistryService::RulesRegistryService(content::BrowserContext* context)
-    : current_rules_registry_id_(kDefaultRulesRegistryID),
-      content_rules_registry_(nullptr),
-      browser_context_(context) {
+    : browser_context_(context) {
   if (browser_context_) {
     extension_registry_observation_.Observe(
         ExtensionRegistry::Get(browser_context_));
@@ -54,18 +49,8 @@ void RulesRegistryService::Shutdown() {
     registry->OnShutdown();
   }
 
-  // Release the references to all registries, and remove the default registry
-  // from ExtensionWebRequestEventRouter.
+  // Release the references to all registries.
   rule_registries_.clear();
-  // TODO(crbug.com/40264286): This could be moved to
-  // WebRequestEventRouter::Shutdown when the new per-BrowserContext event
-  // router is the only implementation. Or we might just remove it completely,
-  // since that instance will be destroyed when this RulesRegistryService
-  // instance is.
-  WebRequestEventRouter::Get(browser_context_)
-      ->RegisterRulesRegistry(browser_context_,
-                              RulesRegistryService::kDefaultRulesRegistryID,
-                              nullptr);
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<RulesRegistryService>>::
@@ -103,13 +88,16 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
     const std::string& event_name) {
   RulesRegistryKey key(event_name, rules_registry_id);
   RulesRegistryMap::const_iterator i = rule_registries_.find(key);
-  if (i != rule_registries_.end())
+  if (i != rule_registries_.end()) {
     return i->second;
+  }
 
   // We should have attempted creation of the default rule registries at
   // construction.
-  if (!browser_context_ || rules_registry_id == kDefaultRulesRegistryID)
+  if (!browser_context_ ||
+      rules_registry_id == rules_registry_ids::kDefaultRulesRegistryID) {
     return nullptr;
+  }
 
   // Only web request rules registries are created for webviews.
   DCHECK_EQ(declarative_webrequest_constants::kOnRequest, event_name);
@@ -122,23 +110,22 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
 
 void RulesRegistryService::RemoveRulesRegistriesByID(int rules_registry_id) {
   std::set<RulesRegistryKey> registries_to_delete;
-  for (auto it = rule_registries_.begin(); it != rule_registries_.end(); ++it) {
-    const RulesRegistryKey& key = it->first;
-    if (key.rules_registry_id != rules_registry_id)
+  for (auto& [key, rule_registry] : rule_registries_) {
+    if (key.rules_registry_id != rules_registry_id) {
       continue;
+    }
     // Modifying a container while iterating over it can lead to badness. So we
     // save the keys in another container and delete them in another loop.
     registries_to_delete.insert(key);
   }
 
-  for (auto it = registries_to_delete.begin(); it != registries_to_delete.end();
-       ++it) {
-    rule_registries_.erase(*it);
+  for (const auto& registry : registries_to_delete) {
+    rule_registries_.erase(registry);
   }
 }
 
 bool RulesRegistryService::HasAnyRegisteredRules() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       cache_delegates_,
       [](const std::unique_ptr<RulesCacheDelegate>& delegate) {
         return delegate->HasRules();
@@ -203,7 +190,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
   DCHECK(!base::Contains(
       rule_registries_,
       RulesRegistryKey(declarative_webrequest_constants::kOnRequest,
-                       kDefaultRulesRegistryID)));
+                       rules_registry_ids::kDefaultRulesRegistryID)));
 
   // Only register the default web request rules registry if the
   // declarativeWebRequest API is enabled. See crbug.com/693243.
@@ -214,7 +201,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
           .is_available();
   if (is_api_enabled) {
     // Persist the cache since it pertains to regular pages (i.e. not webviews).
-    RegisterWebRequestRulesRegistry(kDefaultRulesRegistryID,
+    RegisterWebRequestRulesRegistry(rules_registry_ids::kDefaultRulesRegistryID,
                                     RulesCacheDelegate::Type::kPersistent);
   }
 

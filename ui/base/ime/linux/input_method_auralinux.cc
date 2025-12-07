@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/text_input_client.h"
@@ -44,8 +43,11 @@ bool IsSameKeyEvent(const ui::KeyEvent& lhs, const ui::KeyEvent& rhs) {
 namespace ui {
 
 InputMethodAuraLinux::InputMethodAuraLinux(
-    ImeKeyEventDispatcher* ime_key_event_dispatcher)
+
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    gfx::AcceleratedWidget widget)
     : InputMethodBase(ime_key_event_dispatcher),
+      widget_(widget),
       text_input_type_(TEXT_INPUT_TYPE_NONE),
       is_sync_mode_(false),
       composition_changed_(false) {
@@ -88,9 +90,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   //   method does not consume the event, the framework internally re-generates
   //   the same key event, and post it back again to the application.
   // This happens some common input method framework, such as iBus/fcitx and
-  // GTK-IMmodule. Also, wayland extension implemented by exosphere in
-  // ash-chrome for Lacros behaves in the same way from InputMethodAuraLinux's
-  // point of view.
+  // GTK-IMmodule.
   // To avoid dispatching twice, do not dispatch it here. Following code
   // will handle the second (i.e. fallback) key event, including event
   // dispatching.
@@ -161,17 +161,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // consumed by IME and commit/preedit string update will happen
   // asynchronously. The remaining case is covered in OnCommit and
   // OnPreeditChanged/End.
-  // TODO(crbug.com/40761214): On Lacros CTRL+TAB events are sent twice if
-  // user types it on loading page, because the connected client is considered
-  // None type, and so the peek key event is not held here.
-  // To derisk the regression in other platform, and to prioritize the fix
-  // on Lacros, we conditionally do not check whether the connected client
-  // is None type for Lacros only. We should remove this soon.
-  if (filtered && !HasInputMethodResult()
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      && !IsTextInputTypeNone()
-#endif
-  ) {
+  if (filtered && !HasInputMethodResult() && !IsTextInputTypeNone()) {
     ime_filtered_key_event_ = std::move(*event);
     return ui::EventDispatchDetails();
   }
@@ -411,22 +401,13 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
       // composition text. So set it to invalid range in that case.
       composition_range = gfx::Range::InvalidRange();
     }
-    std::optional<GrammarFragment> fragment;
-    std::optional<AutocorrectInfo> autocorrect;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    fragment = client->GetGrammarFragmentAtCursor();
-    autocorrect = AutocorrectInfo{
-        client->GetAutocorrectRange(),
-        client->GetAutocorrectCharacterBounds(),
-    };
-#endif
     if (surrounding_text_ != text || text_range_ != text_range ||
         selection_range_ != selection_range) {
       surrounding_text_ = text;
       text_range_ = text_range;
       selection_range_ = selection_range;
       context_->SetSurroundingText(text, text_range, composition_range,
-                                   selection_range, fragment, autocorrect);
+                                   selection_range);
     }
   }
 }
@@ -478,6 +459,10 @@ InputMethodAuraLinux::GetVirtualKeyboardController() {
 }
 
 // Overriden from ui::LinuxInputMethodContextDelegate
+
+gfx::AcceleratedWidget InputMethodAuraLinux::GetClientWindowKey() const {
+  return widget_;
+}
 
 void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   if (IgnoringNonKeyInput() || !GetTextInputClient())
@@ -557,36 +542,6 @@ void InputMethodAuraLinux::OnSetPreeditRegion(
     composition_.text = text;
   }
   last_commit_result_.reset();
-}
-
-void InputMethodAuraLinux::OnClearGrammarFragments(const gfx::Range& range) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* text_input_client = GetTextInputClient();
-  if (!text_input_client)
-    return;
-
-  text_input_client->ClearGrammarFragments(range);
-#endif
-}
-
-void InputMethodAuraLinux::OnAddGrammarFragment(
-    const ui::GrammarFragment& fragment) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* text_input_client = GetTextInputClient();
-  if (!text_input_client)
-    return;
-
-  text_input_client->AddGrammarFragments({fragment});
-#endif
-}
-
-void InputMethodAuraLinux::OnSetAutocorrectRange(const gfx::Range& range) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* text_input_client = GetTextInputClient();
-  if (!text_input_client)
-    return;
-  text_input_client->SetAutocorrectRange(range);
-#endif
 }
 
 void InputMethodAuraLinux::OnSetVirtualKeyboardOccludedBounds(

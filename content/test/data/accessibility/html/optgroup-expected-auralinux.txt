@@ -11,7 +11,7 @@
 ++++++++[list item] name='Two' posinset:6 setsize:8
 ++++++++[list item] name='Three' posinset:7 setsize:8
 ++++++++[list item] name='Four' posinset:8 setsize:8
-++++[combo box] enabled posinset:1 setsize:7
+++++[combo box] enabled has-popup haspopup:menu posinset:1 setsize:7
 ++++++[menu] enabled setsize:7
 ++++++++[menu item] name='Random Transformer' enabled selectable selected posinset:1 setsize:7
 ++++++++[panel] name='group 1' enabled

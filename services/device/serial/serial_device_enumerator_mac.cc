@@ -19,7 +19,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/pattern.h"
@@ -124,7 +123,7 @@ std::optional<std::string> GetUsbDriverName(
 }  // namespace
 
 SerialDeviceEnumeratorMac::SerialDeviceEnumeratorMac() {
-  notify_port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
+  notify_port_.reset(IONotificationPortCreate(kIOMainPortDefault));
   CFRunLoopAddSource(CFRunLoopGetMain(),
                      IONotificationPortGetRunLoopSource(notify_port_.get()),
                      kCFRunLoopDefaultMode);

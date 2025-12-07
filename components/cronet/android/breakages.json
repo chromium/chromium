@@ -13,6 +13,38 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "Ic2b5cf6b19baaa298fe6bd64bd55268f85d70fa7",
+      "good_change_id": "Ia28dbc3aa037a6a9fd0cc157213f6f9aa34641f6",
+      "bugs": ["b/445372626"],
+      "comment": "jni_zero annotations break ProGuard on the fallback impl"
+    },
+    {
+      "bad_change_id": "Iaf91186149315066f1bf9928c4bef66015d55a46",
+      "good_change_id": "Ib13d999649a26230a09bd970a16ae04a7a1a4e68",
+      "bugs": ["b/425901872"],
+      "comment": "Custom built protobuf runtime breaks proguard."
+    },
+    {
+      "bad_change_id": "I4f1f32c01b708c3802e685412bac27a1d6af5258",
+      "good_change_id": "I8b928ed0807bff1b545da2da503388af7a602dd7",
+      "bugs": ["b/421181925"],
+      "comment": "setProxyOptions silently succeeds if the Cronet implementation does not support it (e.g., is too old)."
+    },
+    {
+      "bad_change_id": "I47f011c59d7a238e738c18bf5b5d7e9c15676ee2",
+      "good_change_id": "Iac5a6430580e1d83aeac11bb84766027819d2895",
+      "bugs": [
+        "b/373373506"
+      ],
+      "comment": "Global state mutation through a local (allow_server_migration) which can cause undefined behavior."
+    },
+    {
+      "bad_change_id": "Id3987d4c3662d674fab99cc92e40efdd859015d2",
+      "good_change_id": "I722bc4085cf789b85d05b962f7e8d5a984f30653",
+      "bugs": ["b/361725824"],
+      "comment": "Faulty call from Impl to API through QuicException#getConnectionCloseSource."
+    },
+    {
       "bad_change_id": "I8c8c4e96b90675894ff49dc1ad6f8ecf23b38f1e",
       "good_change_id": "I6f9d0e2e4b6ae864912a80f43697fbf13956f924",
       "bugs": ["b/340192797"],
@@ -41,6 +73,12 @@
       "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
       "bugs": ["crbug/1449478"],
       "comment": "Connection migration crash"
+    },
+    {
+      "bad_change_id": "I18c238cf073938fc1bd8bf2f9ee752d79a291e15",
+      "good_change_id": "Ic335c4142fb5d9fbf0ecf4989ef22b94fa3ee0bf",
+      "bugs": ["b/410846554"],
+      "comment": "JniAndroid class not found when app is already crashing."
     }
   ],
   "_end_comment": "Add new breakages to the top of the list"

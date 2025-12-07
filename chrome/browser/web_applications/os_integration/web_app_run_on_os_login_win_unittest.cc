@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/base_paths_win.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"

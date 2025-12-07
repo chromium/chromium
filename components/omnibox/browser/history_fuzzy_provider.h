@@ -222,8 +222,7 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // history::HistoryServiceObserver:
   // Adds visited URL host to trie.
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
 
   // Removes deleted (or all) URLs from trie.
   void OnHistoryDeletions(history::HistoryService* history_service,

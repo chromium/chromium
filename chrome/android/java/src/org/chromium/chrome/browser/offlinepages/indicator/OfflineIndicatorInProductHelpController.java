@@ -6,14 +6,16 @@ package org.chromium.chrome.browser.offlinepages.indicator;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
@@ -21,6 +23,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
  * Class that controls the showing of in-product help for the offline indicator. The in-product help
  * is shown when the "show" animation finishes.
  */
+@NullMarked
 public class OfflineIndicatorInProductHelpController
         implements StatusIndicatorCoordinator.StatusIndicatorObserver {
     private final Activity mActivity;
@@ -58,7 +61,8 @@ public class OfflineIndicatorInProductHelpController
             return;
         }
 
-        if (!mToolbarManager.getMenuButtonView().isShown()) {
+        View menuButton = mToolbarManager.getMenuButtonView();
+        if (menuButton == null || !menuButton.isShown()) {
             // Don't show the IPH if the menu button isn't visible (e.g. if the user has scrolled
             // down to the point where the toolbar has been hidden). If we did show it here, it
             // would just be a floating text bubble pointing at an empty spot where the menu button
@@ -70,13 +74,13 @@ public class OfflineIndicatorInProductHelpController
         // StatusIndicator at the moment, but if different StatusIndicators are added in the
         // future, then it will be important to make sure that Chrome only shows this IPH for the
         // offline indicator, and not for other StatusIndicators.
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.DOWNLOAD_INDICATOR_FEATURE,
                                 R.string.iph_download_indicator_text,
                                 R.string.iph_download_home_accessibility_text)
-                        .setAnchorView(mToolbarManager.getMenuButtonView())
+                        .setAnchorView(menuButton)
                         .setOnShowCallback(this::turnOnHighlightForDownloadsMenuItem)
                         .setOnDismissCallback(this::turnOffHighlightForDownloadsMenuItem)
                         .build());

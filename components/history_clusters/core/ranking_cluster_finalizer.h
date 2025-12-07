@@ -23,11 +23,6 @@ class VisitScores {
   // weightings between each. Note, this score is not between [0, 1] as
   // normalization will consider all visits within a cluster.
   float GetTotalScore() const {
-    if (ntp_visit_attributes_score_) {
-      return *ntp_visit_attributes_score_ +
-             visit_duration_score_ *
-                 GetConfig().ntp_visit_duration_ranking_weight;
-    }
     return visit_duration_score_ * GetConfig().visit_duration_ranking_weight +
            foreground_duration_score_ *
                GetConfig().foreground_duration_ranking_weight +
@@ -49,10 +44,6 @@ class VisitScores {
 
   void set_has_url_keyed_image() { has_url_keyed_image_score_ = 1.0; }
 
-  void set_ntp_visit_attributes_score(float score) {
-    ntp_visit_attributes_score_ = score;
-  }
-
  private:
   // The score for the duration associated with a visit.
   float visit_duration_score_ = 0.0;
@@ -64,8 +55,6 @@ class VisitScores {
   float srp_score_ = 0.0;
   // The score for whether the visit had a URL-keyed image.
   float has_url_keyed_image_score_ = 0.0;
-  // The score for NTP visit attributes.
-  std::optional<float> ntp_visit_attributes_score_;
 };
 
 // A cluster finalizer that scores visits based on visit duration.
@@ -96,8 +85,6 @@ class RankingClusterFinalizer : public ClusterFinalizer {
   void ComputeFinalVisitScores(
       history::Cluster& cluster,
       base::flat_map<history::VisitID, VisitScores>& url_visit_scores);
-
-  const ClusteringRequestSource clustering_request_source_;
 };
 
 }  // namespace history_clusters

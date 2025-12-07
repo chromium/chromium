@@ -22,7 +22,6 @@
 #include "base/functional/callback_tags.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
-#include "base/types/always_false.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -136,7 +135,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
     static_assert(!sizeof(*this),
                   "OnceCallback::Run() may only be invoked on a non-const "
                   "rvalue, i.e. std::move(callback).Run().");
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Calls the bound functor with any already-bound arguments + `args`. Consumes
@@ -144,7 +143,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) && {
-    CHECK(!holder_.is_null());
+    CHECK(!is_null());
 
     // Move the callback instance into a local variable before the invocation,
     // that ensures the internal state is cleared after the invocation.
@@ -255,7 +254,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() & {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "need to convert a base::OnceCallback to base::FunctionRef? "
         "Please bring up this use case on #cxx (Slack) or cxx@chromium.org.");
   }
@@ -264,7 +263,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() && {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "using base::BindOnce() is not necessary with base::FunctionRef; is it "
         "possible to use a capturing lambda directly? If not, please bring up "
         "this use case on #cxx (Slack) or cxx@chromium.org.");
@@ -333,7 +332,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) const& {
-    CHECK(!holder_.is_null());
+    CHECK(!is_null());
 
     // Keep `bind_state` alive at least until after the invocation to ensure all
     // bound `Unretained` arguments remain protected by MiraclePtr.
@@ -463,7 +462,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() & {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "need to convert a base::RepeatingCallback to base::FunctionRef? "
         "Please bring up this use case on #cxx (Slack) or cxx@chromium.org.");
   }
@@ -472,7 +471,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() && {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "using base::BindRepeating() is not necessary with base::FunctionRef; "
         "is it possible to use a capturing lambda directly? If not, please "
         "bring up this use case on #cxx (Slack) or cxx@chromium.org.");
@@ -498,11 +497,12 @@ auto ToDoNothingCallback(
   return std::apply(
       [](auto&&... args) {
         if constexpr (is_once) {
-          return BindOnce([](TransformToUnwrappedType<is_once, BoundArgs>...,
-                             UnboundArgs...) {},
-                          std::move(args)...);
+          return base::BindOnce(
+              [](TransformToUnwrappedType<is_once, BoundArgs>...,
+                 UnboundArgs...) {},
+              std::move(args)...);
         } else {
-          return BindRepeating(
+          return base::BindRepeating(
               [](TransformToUnwrappedType<is_once, BoundArgs>...,
                  UnboundArgs...) {},
               std::move(args)...);

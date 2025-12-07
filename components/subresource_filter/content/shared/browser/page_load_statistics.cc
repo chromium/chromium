@@ -12,6 +12,7 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
 namespace subresource_filter {
 
@@ -19,7 +20,7 @@ PageLoadStatistics::PageLoadStatistics(const mojom::ActivationState& state,
                                        std::string_view uma_filter_tag)
     : activation_state_(state), uma_filter_tag_(uma_filter_tag) {}
 
-PageLoadStatistics::~PageLoadStatistics() {}
+PageLoadStatistics::~PageLoadStatistics() = default;
 
 void PageLoadStatistics::OnDocumentLoadStatistics(
     const mojom::DocumentLoadStatistics& statistics) {
@@ -38,8 +39,27 @@ void PageLoadStatistics::OnDocumentLoadStatistics(
       statistics.evaluation_total_cpu_duration;
 }
 
-void PageLoadStatistics::OnDidFinishLoad() {
+void PageLoadStatistics::OnDidFinishLoad(bool record_incognito_metrics) {
   if (activation_state_.activation_level != mojom::ActivationLevel::kDisabled) {
+    if (record_incognito_metrics) {
+      base::UmaHistogramCounts1000(
+          base::StrCat({uma_filter_tag_,
+                        ".PageLoad.NumSubresourceLoads.Total.Incognito"}),
+          aggregated_document_statistics_.num_loads_total);
+      base::UmaHistogramCounts1000(
+          base::StrCat({uma_filter_tag_,
+                        ".PageLoad.NumSubresourceLoads.Evaluated.Incognito"}),
+          aggregated_document_statistics_.num_loads_evaluated);
+      base::UmaHistogramCounts1000(
+          base::StrCat(
+              {uma_filter_tag_,
+               ".PageLoad.NumSubresourceLoads.MatchedRules.Incognito"}),
+          aggregated_document_statistics_.num_loads_matching_rules);
+      base::UmaHistogramCounts1000(
+          base::StrCat({uma_filter_tag_,
+                        ".PageLoad.NumSubresourceLoads.Disallowed.Incognito"}),
+          aggregated_document_statistics_.num_loads_disallowed);
+    }
     base::UmaHistogramCounts1000(
         base::StrCat({uma_filter_tag_, ".PageLoad.NumSubresourceLoads.Total"}),
         aggregated_document_statistics_.num_loads_total);
@@ -58,9 +78,23 @@ void PageLoadStatistics::OnDidFinishLoad() {
   }
 
   if (activation_state_.measure_performance) {
-    CHECK(
-        activation_state_.activation_level != mojom::ActivationLevel::kDisabled,
-        base::NotFatalUntil::M129);
+    CHECK(activation_state_.activation_level !=
+          mojom::ActivationLevel::kDisabled);
+    if (record_incognito_metrics) {
+      base::UmaHistogramCustomTimes(
+          base::StrCat(
+              {uma_filter_tag_,
+               ".PageLoad.SubresourceEvaluation.TotalWallDuration.Incognito"}),
+          aggregated_document_statistics_.evaluation_total_wall_duration,
+          base::Microseconds(1), base::Seconds(10), 50);
+
+      base::UmaHistogramCustomTimes(
+          base::StrCat(
+              {uma_filter_tag_,
+               ".PageLoad.SubresourceEvaluation.TotalCPUDuration.Incognito"}),
+          aggregated_document_statistics_.evaluation_total_cpu_duration,
+          base::Microseconds(1), base::Seconds(10), 50);
+    }
     base::UmaHistogramCustomTimes(
         base::StrCat({uma_filter_tag_,
                       ".PageLoad.SubresourceEvaluation.TotalWallDuration"}),
@@ -72,14 +106,10 @@ void PageLoadStatistics::OnDidFinishLoad() {
                       ".PageLoad.SubresourceEvaluation.TotalCPUDuration"}),
         aggregated_document_statistics_.evaluation_total_cpu_duration,
         base::Microseconds(1), base::Seconds(10), 50);
-  } else {
-    CHECK(aggregated_document_statistics_.evaluation_total_wall_duration
-              .is_zero(),
-          base::NotFatalUntil::M130);
-    CHECK(
-        aggregated_document_statistics_.evaluation_total_cpu_duration.is_zero(),
-        base::NotFatalUntil::M130);
   }
+  // Theoretically, we should be able to add an else case that CHECK()s that the
+  // evaluation durations are zero. However, this causes crashes as the renderer
+  // and browser appear to sometimes get out of sync. See crbug.com/372883698.
 }
 
 }  // namespace subresource_filter

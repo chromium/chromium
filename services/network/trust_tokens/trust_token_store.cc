@@ -4,13 +4,13 @@
 
 #include "services/network/trust_tokens/trust_token_store.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
@@ -63,7 +63,6 @@ std::unique_ptr<TrustTokenStore> TrustTokenStore::CreateForTesting(
 }
 
 void TrustTokenStore::RecordIssuance(const SuitableTrustTokenOrigin& issuer) {
-  SuitableTrustTokenOrigin issuer_origin = issuer;
   std::unique_ptr<TrustTokenIssuerConfig> config =
       persister_->GetIssuerConfig(issuer);
   if (!config)
@@ -225,11 +224,11 @@ std::vector<TrustToken> TrustTokenStore::RetrieveMatchingTokens(
   if (!config)
     return matching_tokens;
 
-  base::ranges::copy_if(config->tokens(), std::back_inserter(matching_tokens),
-                        [&key_matcher](const TrustToken& token) {
-                          return token.has_signing_key() &&
-                                 key_matcher.Run(token.signing_key());
-                        });
+  std::ranges::copy_if(config->tokens(), std::back_inserter(matching_tokens),
+                       [&key_matcher](const TrustToken& token) {
+                         return token.has_signing_key() &&
+                                key_matcher.Run(token.signing_key());
+                       });
 
   return matching_tokens;
 }

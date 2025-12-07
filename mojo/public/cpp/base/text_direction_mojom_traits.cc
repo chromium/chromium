@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/base/text_direction_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -18,8 +20,7 @@ EnumTraits<mojo_base::mojom::TextDirection, base::i18n::TextDirection>::ToMojom(
     case base::i18n::LEFT_TO_RIGHT:
       return mojo_base::mojom::TextDirection::LEFT_TO_RIGHT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojo_base::mojom::TextDirection::UNKNOWN_DIRECTION;
+  NOTREACHED();
 }
 
 // static

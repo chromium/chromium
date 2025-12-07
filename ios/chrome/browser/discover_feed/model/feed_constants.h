@@ -7,12 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// Enum representing the different feeds displayed on the NTP.
-typedef NS_ENUM(NSInteger, FeedType) {
-  FeedTypeDiscover = 0,
-  FeedTypeFollowing
-};
-
 // Enum representing the reasons why the feed would be started.
 typedef NS_ENUM(NSUInteger, FeedStartReason) {
   FeedStartReasonLaunch = 0,
@@ -45,14 +39,16 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType) {
   FeedLayoutUpdateTypeReload,
 };
 
-// The types of sorting for the Following feed.
-typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
-  // Does not provide a sort type. Used for non-Following feeds.
-  FollowingFeedSortTypeUnspecified = 0,
-  // Sorts content in publisher groups that can be expanded.
-  FollowingFeedSortTypeByPublisher,
-  // Sorts content in reverse-chronological order without groups.
-  FollowingFeedSortTypeByLatest
+/// Enums representing whether the user is eligible to view the feed, and if
+/// not, why.
+enum class DiscoverFeedEligibility {
+  /// User is eligible for the Discover feed.
+  kEligible,
+  /// Feed is ineligible for an unknown reason.
+  kIneligibleReasonUnknown,
+  /// Feed is ineligible because a managed account is being used, and feed is
+  /// not allowed by enterprise settings.
+  kDisabledByEnterprisePolicy,
 };
 
 // The user defaults key indicating if the user has ever engaged with a feed.

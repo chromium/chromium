@@ -6,12 +6,12 @@
 
 #include <windows.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
 // Prototype for ProcessPrng.
 // See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng

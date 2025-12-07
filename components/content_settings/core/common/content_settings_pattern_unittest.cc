@@ -25,23 +25,23 @@ TEST(ContentSettingsPatternTest, GURL) {
   // Document and verify GURL behavior.
   GURL url("http://mail.google.com:80");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("http://mail.google.com");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("https://mail.google.com:443");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("https://mail.google.com");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("http://mail.google.com");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 }
 
 TEST(ContentSettingsPatternTest, FromURL) {
@@ -991,32 +991,41 @@ TEST(ContentSettingsPatternTest, CanonicalizePattern_Legacy) {
 
 TEST(ContentSettingsPatternTest, Schemes) {
   EXPECT_EQ(ContentSettingsPattern::SCHEME_HTTP,
-            Pattern("http://www.example.com").GetScheme());
+            Pattern("http://www.example.com").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_HTTPS,
-            Pattern("https://www.example.com").GetScheme());
+            Pattern("https://www.example.com").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_FILE,
-            Pattern("file:///tmp/file.html").GetScheme());
+            Pattern("file:///tmp/file.html").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_CHROMEEXTENSION,
             Pattern("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")
-                .GetScheme());
+                .GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_CHROMESEARCH,
-            Pattern("chrome-search://local-ntp/").GetScheme());
+            Pattern("chrome-search://local-ntp/").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_WILDCARD,
-            Pattern("192.168.0.1").GetScheme());
+            Pattern("192.168.0.1").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_WILDCARD,
-            Pattern("www.example.com").GetScheme());
-  EXPECT_EQ(ContentSettingsPattern::SCHEME_OTHER,
-            Pattern("filesystem:http://www.google.com/temporary/").GetScheme());
+            Pattern("www.example.com").GetSchemeType());
+  EXPECT_EQ(
+      ContentSettingsPattern::SCHEME_OTHER,
+      Pattern("filesystem:http://www.google.com/temporary/").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_CHROME,
-            Pattern("chrome://sample/").GetScheme());
+            Pattern("chrome://sample/").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_CHROMEUNTRUSTED,
-            Pattern("chrome-untrusted://sample/").GetScheme());
+            Pattern("chrome-untrusted://sample/").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_DEVTOOLS,
-            Pattern("devtools://devtools/").GetScheme());
+            Pattern("devtools://devtools/").GetSchemeType());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_ISOLATEDAPP,
             Pattern("isolated-app://"
                     "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/")
-                .GetScheme());
+                .GetSchemeType());
+}
+
+TEST(ContentSettingsPatternTest, GetScheme) {
+  EXPECT_EQ("https", Pattern("https://www.example.com").GetScheme());
+  EXPECT_EQ("http", Pattern("http://www.example.com").GetScheme());
+  EXPECT_EQ("file", Pattern("file:///tmp/file.html").GetScheme());
+  // A pattern with a scheme wildcard should return an empty string.
+  EXPECT_EQ("", Pattern("www.example.com").GetScheme());
 }
 
 TEST(ContentSettingsPatternTest, MatchesSingleOrigin) {
@@ -1096,4 +1105,61 @@ TEST(ContentSettingsPatternTest, CompareDomains) {
       "b",
   };
   EXPECT_THAT(domains, testing::ContainerEq(expected));
+}
+
+TEST(ContentSettingsPatternTest, ScopeType) {
+  EXPECT_EQ(ContentSettingsPattern::Scope::kOriginScoped,
+            Pattern("https://www.example.com:443").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kOriginScoped,
+            Pattern("https://192.168.0.1:8080").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kOriginScoped,
+            Pattern("https://[::1]:8080").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithDomainWildcard,
+            Pattern("https://[*.]example.com:443").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithPortWildcard,
+            Pattern("https://www.example.com").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithPortWildcard,
+            Pattern("https://192.168.0.1").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithPortWildcard,
+            Pattern("https://[::1]").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithSchemeWildcard,
+            Pattern("www.example.com:443").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithSchemeWildcard,
+            Pattern("192.168.0.1:8080").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithSchemeWildcard,
+            Pattern("[::1]:8080").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithSchemeAndPortWildcard,
+            Pattern("www.example.com").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithSchemeAndPortWildcard,
+            Pattern("192.168.0.1").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithSchemeAndPortWildcard,
+            Pattern("[::1]").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithDomainAndPortWildcard,
+            Pattern("https://[*.]example.com").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithDomainAndSchemeWildcard,
+            Pattern("[*.]example.com:443").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kWithDomainAndSchemeAndPortWildcard,
+            Pattern("[*.]example.com").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kFullWildcard,
+            Pattern("*").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kFullWildcard,
+            ContentSettingsPattern::Wildcard().GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kCustomScope,
+            Pattern("https://*").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kCustomScope,
+            Pattern("*:443").GetScope());
+  EXPECT_EQ(ContentSettingsPattern::Scope::kCustomScope,
+            Pattern("https://*:443").GetScope());
+
+  EXPECT_EQ(ContentSettingsPattern::Scope::kFilePath,
+            Pattern("file:///tmp/file.html").GetScope());
 }

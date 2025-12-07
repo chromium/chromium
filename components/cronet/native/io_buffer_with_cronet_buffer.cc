@@ -4,6 +4,7 @@
 
 #include "components/cronet/native/io_buffer_with_cronet_buffer.h"
 
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
@@ -29,9 +30,9 @@ namespace cronet {
 
 IOBufferWithCronet_Buffer::IOBufferWithCronet_Buffer(
     Cronet_BufferPtr cronet_buffer)
-    : net::WrappedIOBuffer(
-          base::make_span(static_cast<const char*>(cronet_buffer->GetData()),
-                          static_cast<size_t>(cronet_buffer->GetSize()))),
+    : net::WrappedIOBuffer(UNSAFE_TODO(
+          base::span(static_cast<const char*>(cronet_buffer->GetData()),
+                     static_cast<size_t>(cronet_buffer->GetSize())))),
       cronet_buffer_(cronet_buffer) {}
 
 IOBufferWithCronet_Buffer::~IOBufferWithCronet_Buffer() {
@@ -41,7 +42,7 @@ IOBufferWithCronet_Buffer::~IOBufferWithCronet_Buffer() {
 }
 
 Cronet_BufferPtr IOBufferWithCronet_Buffer::Release() {
-  data_ = nullptr;  // Avoid dangling pointer.
+  ClearSpan();  // Avoid dangling pointer.
   return cronet_buffer_.release();
 }
 

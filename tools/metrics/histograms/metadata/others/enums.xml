@@ -33,12 +33,149 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
-<enum name="DisplayServerSupport">
-  <int value="0" label="None"/>
-  <int value="1" label="X11"/>
-  <int value="2" label="XWayland"/>
-  <int value="3" label="Wayland"/>
+<enum name="BooleanRelroAvailableImmediately">
+  <int value="0" label="Available Later"/>
+  <int value="1" label="Available Immediately"/>
 </enum>
+
+<!-- LINT.IfChange(DetachKernelDriverOutcome) -->
+
+<enum name="DetachKernelDriverOutcome">
+  <int value="0" label="Interface was not attached to a kernel driver"/>
+  <int value="1" label="Kernel driver is not allowed to detach"/>
+  <int value="2" label="Kernel driver detaching failed"/>
+  <int value="3" label="Kernel driver detached: other"/>
+  <int value="4" label="Kernel driver detached: cdc_acm"/>
+  <int value="5" label="Kernel driver detached: usblp"/>
+  <int value="6" label="Kernel driver detached: ftdi_sio"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
+
+<enum name="EncryptionPrefixVersion">
+  <int value="0" label="No prefix found"/>
+  <int value="1" label="Version v10"/>
+  <int value="2" label="Version v11"/>
+</enum>
+
+<enum name="FreedesktopSecretKeyProviderErrorDetail">
+  <summary>
+    Fine-grained error details for FreedesktopSecretKeyProvider.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="DestructedBeforeComplete"/>
+  <int value="2" label="EmptyObjectPaths"/>
+  <int value="3" label="InvalidReplyFormat"/>
+  <int value="4" label="InvalidSignalFormat"/>
+  <int value="5" label="InvalidVariantFormat"/>
+  <int value="6" label="NoResponse"/>
+  <int value="7" label="PromptDismissed"/>
+  <int value="8" label="PromptFailedSignalConnection"/>
+</enum>
+
+<enum name="FreedesktopSecretKeyProviderInitStatus">
+  <summary>
+    High-level error categories for FreedesktopSecretKeyProvider.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="CreateCollectionFailed"/>
+  <int value="2" label="CreateItemFailed"/>
+  <int value="3" label="EmptySecret"/>
+  <int value="4" label="GetSecretFailed"/>
+  <int value="5" label="GnomeKeyringDeadlock"/>
+  <int value="6" label="NoService"/>
+  <int value="7" label="ReadAliasFailed"/>
+  <int value="8" label="SearchItemsFailed"/>
+  <int value="9" label="SessionFailure"/>
+  <int value="10" label="UnlockFailed"/>
+</enum>
+
+<enum name="HappinessTrackingSurvey">
+  <summary>Possible survey states and answers for each question.</summary>
+  <int value="1" label="Survey Triggered"/>
+  <int value="2" label="Survey Loaded"/>
+  <int value="3" label="Survey Completed"/>
+  <int value="8" label="Survey Question Answer Parse Error"/>
+  <int value="9" label="Survey Unknown State"/>
+  <int value="101" label="Question 1 - Answer 1"/>
+  <int value="102" label="Question 1 - Answer 2"/>
+  <int value="103" label="Question 1 - Answer 3"/>
+  <int value="104" label="Question 1 - Answer 4"/>
+  <int value="105" label="Question 1 - Answer 5"/>
+  <int value="106" label="Question 1 - Answer 6"/>
+  <int value="107" label="Question 1 - Answer 7"/>
+  <int value="108" label="Question 1 - Answer 8"/>
+  <int value="109" label="Question 1 - Answer 9"/>
+  <int value="110" label="Question 1 - Answer 10"/>
+  <int value="201" label="Question 2 - Answer 1"/>
+  <int value="202" label="Question 2 - Answer 2"/>
+  <int value="203" label="Question 2 - Answer 3"/>
+  <int value="204" label="Question 2 - Answer 4"/>
+  <int value="205" label="Question 2 - Answer 5"/>
+  <int value="206" label="Question 2 - Answer 6"/>
+  <int value="207" label="Question 2 - Answer 7"/>
+  <int value="208" label="Question 2 - Answer 8"/>
+  <int value="209" label="Question 2 - Answer 9"/>
+  <int value="210" label="Question 2 - Answer 10"/>
+  <int value="301" label="Question 3 - Answer 1"/>
+  <int value="302" label="Question 3 - Answer 2"/>
+  <int value="303" label="Question 3 - Answer 3"/>
+  <int value="304" label="Question 3 - Answer 4"/>
+  <int value="305" label="Question 3 - Answer 5"/>
+  <int value="306" label="Question 3 - Answer 6"/>
+  <int value="307" label="Question 3 - Answer 7"/>
+  <int value="308" label="Question 3 - Answer 8"/>
+  <int value="309" label="Question 3 - Answer 9"/>
+  <int value="310" label="Question 3 - Answer 10"/>
+  <int value="401" label="Question 4 - Answer 1"/>
+  <int value="402" label="Question 4 - Answer 2"/>
+  <int value="403" label="Question 4 - Answer 3"/>
+  <int value="404" label="Question 4 - Answer 4"/>
+  <int value="405" label="Question 4 - Answer 5"/>
+  <int value="406" label="Question 4 - Answer 6"/>
+  <int value="407" label="Question 4 - Answer 7"/>
+  <int value="408" label="Question 4 - Answer 8"/>
+  <int value="409" label="Question 4 - Answer 9"/>
+  <int value="410" label="Question 4 - Answer 10"/>
+  <int value="501" label="Question 5 - Answer 1"/>
+  <int value="502" label="Question 5 - Answer 2"/>
+  <int value="503" label="Question 5 - Answer 3"/>
+  <int value="504" label="Question 5 - Answer 4"/>
+  <int value="505" label="Question 5 - Answer 5"/>
+  <int value="506" label="Question 5 - Answer 6"/>
+  <int value="507" label="Question 5 - Answer 7"/>
+  <int value="508" label="Question 5 - Answer 8"/>
+  <int value="509" label="Question 5 - Answer 9"/>
+  <int value="510" label="Question 5 - Answer 10"/>
+</enum>
+
+<enum name="ImportantFileReplaceResult">
+  <int value="0" label="Succeeded on first attempt"/>
+  <int value="1" label="Succeeded after retries"/>
+  <int value="2" label="Failed after retry limit"/>
+</enum>
+
+<!-- LINT.IfChange(MojoAdoptPipeResult) -->
+
+<enum name="MojoAdoptPipeResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kTransportNotConnected"/>
+  <int value="2" label="kPutFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//mojo/public/cpp/bindings/direct_receiver.cc:MojoAdoptPipeResult)
+-->
+
+<!-- LINT.IfChange(MojoMergePortalsResult) -->
+
+<enum name="MojoMergePortalsResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNotAttempted"/>
+  <int value="2" label="kGetFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//mojo/public/cpp/bindings/direct_receiver.cc:MojoMergePortalsResult)
+-->
 
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
@@ -58,6 +195,35 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Feedback Tool System Logs"/>
 </enum>
 
+<enum name="RelroSharingStatus">
+  <int value="0" label="Using shared RELRO failed: other reasons"/>
+  <int value="1" label="Using shared RELRO succeeded"/>
+  <int value="2" label="Using shared RELRO failed: contents did not match"/>
+  <int value="3" label="Using shared RELRO failed: RELRO FD was not provided"/>
+  <int value="4"
+      label="Using shared RELRO failed: RELRO region not found in the current
+             process"/>
+  <int value="5"
+      label="Using shared RELRO failed: could not find shared memory
+             functions"/>
+  <int value="6"
+      label="Using shared RELRO failed: failed to mmap on top of previous
+             RELRO"/>
+  <int value="7" label="Using shared RELRO failed: invalid RELRO information"/>
+  <int value="8" label="Using shared RELRO failed: load address was reset"/>
+</enum>
+
+<enum name="RequestWorkletServiceOutcome">
+  <summary>
+    The outcome of AuctionProcessManager::RequestWorkletService().
+  </summary>
+  <int value="0" label="Hit process limit"/>
+  <int value="1" label="Used shared process"/>
+  <int value="2" label="Used existing dedicated process"/>
+  <int value="3" label="Created new dedicated process"/>
+  <int value="4" label="Used idle process"/>
+</enum>
+
 <enum name="SalientImageUrlFetchResult">
   <int value="0" label="Failed to fetch salient image url from network."/>
   <int value="1" label="A previous network request failed."/>
@@ -65,11 +231,39 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Succeessfully got salient image url from local cache."/>
 </enum>
 
+<enum name="SecretPortalKeyProviderInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoService"/>
+  <int value="2" label="PipeFailed"/>
+  <int value="3" label="InvalidResponseFormat"/>
+  <int value="4" label="ResponsePathMismatch"/>
+  <int value="5" label="PipeReadFailed"/>
+  <int value="6" label="EmptySecret"/>
+  <int value="7" label="NoResponse"/>
+  <int value="8" label="SignalReadFailed"/>
+  <int value="9" label="UserCancelledUnlock"/>
+  <int value="10" label="(Obsolete) DestructedBeforeComplete"/>
+  <int value="11" label="SignalConnectFailed"/>
+  <int value="12" label="SignalParseFailed"/>
+</enum>
+
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>
   <int value="2" label="Silent push without notification"/>
   <int value="3" label="Silent push with generic notification"/>
+</enum>
+
+<enum name="SubscriptionEligibilityAiSubscriptionTierStatus">
+  <int value="0" label="Value not set"/>
+  <int value="1" label="No profiles have an AI subscription tier"/>
+  <int value="2"
+      label="Some profiles have an AI subscription tier, some do not"/>
+  <int value="3" label="All profiles subscribed for AI but at different tiers"/>
+  <int value="4" label="All profiles subscribed for AI but at an unknown tier"/>
+  <int value="5" label="All profiles subscribed for AI at tier=1"/>
+  <int value="6" label="All profiles subscribed for AI at tier=2"/>
+  <int value="7" label="All profiles subscribed for AI at tier=3"/>
 </enum>
 
 <!--
@@ -109,6 +303,7 @@ chromium-metrics-reviews@google.com.
   <int value="-685636232" label="icdcnl.dll"/>
   <int value="-629812910" label="fwhook.dll"/>
   <int value="-570442231" label="npggNT.des"/>
+  <int value="-551159708" label="kwsui64.dll"/>
   <int value="-534417221" label="mdnsnsp.dll"/>
   <int value="-434631356" label="cmsetac.dll"/>
   <int value="-432495155" label="radhslib.dll"/>

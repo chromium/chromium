@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -58,7 +61,8 @@ constexpr size_t kNumOfContentLabels = 3;
 // `image_info_container_`.
 std::u16string GetFormattedTime(base::Time time) {
   std::u16string date_time_of_day = base::TimeFormatTimeOfDay(time);
-  std::u16string relative_date = ui::TimeFormat::RelativeDate(time, nullptr);
+  std::u16string relative_date =
+      ui::TimeFormat::RelativeDate(time, std::nullopt);
   std::u16string formatted_time;
   if (!relative_date.empty()) {
     relative_date = base::ToLowerASCII(relative_date);
@@ -89,7 +93,7 @@ SearchResultImageListView::SearchResultImageListView(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_IMAGES)));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetAutoColorReadabilityEnabled(false);
-  title_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+  title_label_->SetEnabledColor(kColorAshTextColorSecondary);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
@@ -100,7 +104,7 @@ SearchResultImageListView::SearchResultImageListView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
-      title_label_->GetText()));
+      std::u16string(title_label_->GetText())));
 
   image_view_container_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -160,12 +164,12 @@ SearchResultImageListView::SearchResultImageListView(
       content_label->SetAllowCharacterBreak(true);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                             *content_label);
-      content_label->SetEnabledColorId(cros_tokens::kColorPrimary);
+      content_label->SetEnabledColor(cros_tokens::kColorPrimary);
     } else {
       content_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                             *content_label);
-      content_label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+      content_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
     }
 
     metadata_content_labels_.push_back(content_label.get());
@@ -269,7 +273,7 @@ int SearchResultImageListView::DoUpdate() {
                                    notifier_results);
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
   return num_results;
 }
 

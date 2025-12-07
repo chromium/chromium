@@ -50,7 +50,7 @@ struct ScriptsVerticalParameters {
 ScriptsVerticalParameters GetScriptsVerticalParameters(
     const ComputedStyle& style) {
   ScriptsVerticalParameters parameters;
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   if (!font_data)
     return parameters;
   auto x_height = font_data->GetFontMetrics().XHeight();
@@ -107,7 +107,8 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
     if (child.IsOutOfFlowPositioned()) {
       if (container_builder) {
         container_builder->AddOutOfFlowChildCandidate(
-            block_child, BorderScrollbarPadding().StartOffset());
+            block_child,
+            LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
       }
       continue;
     }
@@ -149,8 +150,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
         // https://w3c.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
         if (IsPrescriptDelimiter(block_child)) {
           if (!number_of_scripts_is_even || *prescripts) {
-            NOTREACHED_IN_MIGRATION();
-            return;
+            NOTREACHED();
           }
           *first_prescript_index = sub_sup_pairs->size() - 1;
           *prescripts = block_child;
@@ -168,7 +168,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
         continue;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   DCHECK(number_of_scripts_is_even);
@@ -303,7 +303,7 @@ const LayoutResult* MathScriptsLayoutAlgorithm::Layout() {
   ChildAndMetrics prescripts_metrics;
   if (prescripts)
     prescripts_metrics = LayoutAndGetMetrics(prescripts);
-  for (auto sub_sup_pair : sub_sup_pairs) {
+  for (const auto& sub_sup_pair : sub_sup_pairs) {
     if (sub_sup_pair.sub)
       sub_metrics.emplace_back(LayoutAndGetMetrics(sub_sup_pair.sub));
     if (sub_sup_pair.sup)

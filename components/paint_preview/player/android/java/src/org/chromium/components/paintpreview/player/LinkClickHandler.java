@@ -4,9 +4,11 @@
 
 package org.chromium.components.paintpreview.player;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Interface for processing link click events from the player's hit tests. */
+@NullMarked
 public interface LinkClickHandler {
     void onLinkClicked(GURL url);
 }

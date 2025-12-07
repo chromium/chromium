@@ -19,6 +19,13 @@ IncognitoInfo::IncognitoInfo(api::incognito::IncognitoMode mode) : mode(mode) {
 IncognitoInfo::~IncognitoInfo() = default;
 
 // static
+bool IncognitoInfo::IsSpanningMode(const Extension* extension) {
+  IncognitoInfo* info = static_cast<IncognitoInfo*>(
+      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  return info->mode == api::incognito::IncognitoMode::kSpanning;
+}
+
+// static
 bool IncognitoInfo::IsSplitMode(const Extension* extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));

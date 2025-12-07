@@ -1,0 +1,14 @@
+diff --git a/src/google/protobuf/message_lite.h b/src/google/protobuf/message_lite.h
+index 25264ef5c24d2..c3978d4d99201 100644
+--- a/src/google/protobuf/message_lite.h
++++ b/src/google/protobuf/message_lite.h
+@@ -415,7 +415,7 @@ struct PROTOBUF_EXPORT ClassData {
+       void (*merge_to_from)(MessageLite& to, const MessageLite& from_msg),
+       internal::MessageCreator message_creator,
+       [[maybe_unused]] void (*destroy_message)(MessageLite& msg),  //
+-      [[maybe_unused]] void (MessageLite::*clear)(),
++      [[maybe_unused]] void (*clear)(MessageLite*),
+       [[maybe_unused]] size_t (*byte_size_long)(const MessageLite&),
+       [[maybe_unused]] uint8_t* (*serialize)(const MessageLite& msg,
+                                              uint8_t* ptr,
+

@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 
 namespace signin {
@@ -30,6 +31,8 @@ const char kSigninAuthorizationCodeAttrName[] = "authorization_code";
 const char kSigninNoAuthorizationCodeAttrName[] = "no_authorization_code";
 const char kSigninEmailAttrName[] = "email";
 const char kSigninIdAttrName[] = "id";
+const char kSigninEligibleForTokenBindingAttrName[] =
+    "eligible_for_token_binding";
 
 // Signout response parameters.
 const char kSignoutEmailAttrName[] = "email";
@@ -38,14 +41,15 @@ const char kSignoutObfuscatedIDAttrName[] = "obfuscatedid";
 
 // Determines the Dice action that has been passed from Gaia in the header.
 DiceAction GetDiceActionFromHeader(const std::string& value) {
-  if (value == "SIGNIN")
+  if (value == "SIGNIN") {
     return DiceAction::SIGNIN;
-  else if (value == "SIGNOUT")
+  } else if (value == "SIGNOUT") {
     return DiceAction::SIGNOUT;
-  else if (value == "ENABLE_SYNC")
+  } else if (value == "ENABLE_SYNC") {
     return DiceAction::ENABLE_SYNC;
-  else
+  } else {
     return DiceAction::NONE;
+  }
 }
 
 }  // namespace
@@ -60,8 +64,9 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
   DiceResponseParams params;
   ResponseHeaderDictionary header_dictionary =
       ParseAccountConsistencyResponseHeader(header_value);
-  if (header_dictionary.count(kSigninActionAttrName) != 1u)
+  if (header_dictionary.count(kSigninActionAttrName) != 1u) {
     return params;
+  }
 
   DiceResponseParams::AccountInfo* info = nullptr;
   switch (GetDiceActionFromHeader(
@@ -91,24 +96,33 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     if (key_name == kSigninActionAttrName) {
       // Do nothing, this was already parsed.
     } else if (key_name == kSigninIdAttrName) {
-      info->gaia_id = value;
+      info->gaia_id = GaiaId(value);
     } else if (key_name == kSigninEmailAttrName) {
       info->email = value;
     } else if (key_name == kSigninAuthUserAttrName) {
       bool parse_success = base::StringToInt(value, &info->session_index);
-      if (!parse_success)
+      if (!parse_success) {
         info->session_index = -1;
+      }
     } else if (key_name == kSigninAuthorizationCodeAttrName) {
-      if (params.signin_info)
+      if (params.signin_info) {
         params.signin_info->authorization_code = value;
-      else
+      } else {
         DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
+      }
     } else if (key_name == kSigninNoAuthorizationCodeAttrName) {
       if (params.signin_info) {
         params.signin_info->no_authorization_code = true;
       } else {
         DLOG(WARNING)
             << "No authorization code header expected only with SIGNIN action";
+      }
+    } else if (key_name == kSigninEligibleForTokenBindingAttrName) {
+      if (params.signin_info) {
+        params.signin_info->supported_algorithms_for_token_binding = value;
+      } else {
+        DLOG(WARNING) << "Eligible for token binding attribute expected only "
+                         "with SIGNIN action";
       }
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
@@ -146,7 +160,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
   DCHECK(!header_value.empty());
   DiceResponseParams params;
   params.user_intention = DiceAction::SIGNOUT;
-  std::vector<std::string> gaia_ids;
+  std::vector<GaiaId> gaia_ids;
   std::vector<std::string> emails;
   std::vector<int> session_indices;
   ResponseHeaderDictionary header_dictionary =
@@ -156,9 +170,10 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
     const std::string key_name(it->first);
     const std::string value(it->second);
     if (key_name == kSignoutObfuscatedIDAttrName) {
-      gaia_ids.push_back(value);
+      std::string trimmed_value = value;
       // The Gaia ID is wrapped in quotes.
-      base::TrimString(value, "\"", &gaia_ids.back());
+      base::TrimString(value, "\"", &trimmed_value);
+      gaia_ids.push_back(GaiaId(std::move(trimmed_value)));
     } else if (key_name == kSignoutEmailAttrName) {
       // The email is wrapped in quotes.
       emails.push_back(value);
@@ -166,8 +181,9 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
     } else if (key_name == kSignoutSessionIndexAttrName) {
       int session_index = -1;
       bool parse_success = base::StringToInt(value, &session_index);
-      if (parse_success)
+      if (parse_success) {
         session_indices.push_back(session_index);
+      }
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
     }
@@ -201,23 +217,25 @@ bool DiceHeaderHelper::ShouldBuildRequestHeader(
 }
 
 bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {
-  if (account_consistency_ != AccountConsistencyMethod::kDice)
+  if (account_consistency_ != AccountConsistencyMethod::kDice) {
     return false;
+  }
 
   return gaia::HasGaiaSchemeHostPort(url);
 }
 
-std::string DiceHeaderHelper::BuildRequestHeader(
-    const std::string& sync_gaia_id,
-    const std::string& device_id) {
+std::string DiceHeaderHelper::BuildRequestHeader(const GaiaId& sync_gaia_id,
+                                                 const std::string& device_id) {
   std::vector<std::string> parts;
   parts.push_back(base::StringPrintf("version=%s", kDiceProtocolVersion));
   parts.push_back("client_id=" +
                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  if (!device_id.empty())
+  if (!device_id.empty()) {
     parts.push_back("device_id=" + device_id);
-  if (!sync_gaia_id.empty())
-    parts.push_back("sync_account_id=" + sync_gaia_id);
+  }
+  if (!sync_gaia_id.empty()) {
+    parts.push_back("sync_account_id=" + sync_gaia_id.ToString());
+  }
 
   // Restrict Signin to Sync account only when fixing auth errors.
   std::string signin_mode = kRequestSigninAll;

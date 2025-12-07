@@ -33,7 +33,7 @@ class TestApiObserver : public base::CheckedObserver {
                             const std::string& message) {}
 
   // Called on chrome.test.sendMessage.
-  // If the observer will reply to |function|, returns true.
+  // If the observer will reply to `function`, returns true.
   virtual bool OnTestMessage(TestSendMessageFunction* function,
                              const std::string& message);
 

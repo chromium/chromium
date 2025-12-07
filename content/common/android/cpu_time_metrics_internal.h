@@ -37,8 +37,8 @@ enum class ProcessTypeForUma {
   kZygote,
   kSandboxHelper,
   kGpu,
-  kPpapiPlugin,
-  kPpapiBroker,
+  kPpapiPlugin,  // deprecated
+  kPpapiBroker,  // deprecated
   kMaxValue = kPpapiBroker,
 };
 
@@ -66,7 +66,6 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
   void OnVisibilityChanged(bool visible) override;
 
-  void PerformFullCollectionForTesting();
   void WaitForCollectionForTesting() const;
 
   static std::unique_ptr<ProcessCpuTimeMetrics> CreateForTesting();

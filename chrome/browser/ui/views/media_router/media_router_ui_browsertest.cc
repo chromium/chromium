@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
-#include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +34,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -42,10 +43,11 @@ namespace media_router {
 class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
-      : issue_(IssueInfo("title notification",
-                         IssueInfo::Severity::NOTIFICATION,
-                         "sinkId1")) {}
-  ~MediaRouterUIBrowserTest() override {}
+      : issue_(Issue::CreateIssueWithIssueInfo(
+            IssueInfo("title notification",
+                      IssueInfo::Severity::NOTIFICATION,
+                      "sinkId1"))) {}
+  ~MediaRouterUIBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     action_controller_ =
@@ -54,11 +56,18 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
     routes_ = {MediaRoute("routeId1",
                           MediaSource("urn:x-org.chromium.media:source:tab:*"),
                           "sinkId1", "description", true)};
+
+    auto* pinned_toolbar_actions_container =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->pinned_toolbar_actions_container();
+    views::test::ReduceAnimationDuration(pinned_toolbar_actions_container);
   }
 
   bool ToolbarIconExists() {
     base::RunLoop().RunUntilIdle();
-    return GetCastIcon()->GetVisible();
+    ToolbarButton* cast_icon = GetCastIcon();
+    return cast_icon && cast_icon->GetVisible();
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
@@ -67,10 +76,10 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  CastToolbarButton* GetCastIcon() {
+  ToolbarButton* GetCastIcon() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->cast_button();
+        ->GetCastButton();
   }
 
   Issue issue_;

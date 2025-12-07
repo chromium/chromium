@@ -86,6 +86,9 @@ class ExternalProtocolHandler {
     virtual void OnSetBlockState(const std::string& scheme,
                                  const url::Origin& initiating_origin,
                                  ExternalProtocolHandler::BlockState state) {}
+    virtual void ReportExternalAppRedirectToSafeBrowsing(
+        const GURL& url,
+        content::WebContents* web_contents) {}
     virtual ~Delegate() = default;
   };
 

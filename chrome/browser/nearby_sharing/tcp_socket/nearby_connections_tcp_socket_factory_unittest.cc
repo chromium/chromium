@@ -21,7 +21,7 @@
 
 namespace {
 
-uint32_t kBacklog = 10;
+constexpr uint32_t kBacklog = 10;
 const net::MutableNetworkTrafficAnnotationTag kAnnotation =
     net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 01),

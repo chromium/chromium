@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_HELPER_H_
 
-#include "base/feature_list.h"
 #include "base/time/time.h"
 
 namespace crash_helper {

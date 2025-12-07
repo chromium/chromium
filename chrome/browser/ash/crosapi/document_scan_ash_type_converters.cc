@@ -20,8 +20,7 @@ struct TypeConverter<crosapi::mojom::ScannerInfo_ConnectionType,
 
     switch (input) {
       default:
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case lorgnette::ConnectionType::CONNECTION_UNSPECIFIED:
         return ConnectionType::kUnspecified;
       case lorgnette::ConnectionType::CONNECTION_USB:
@@ -61,8 +60,7 @@ struct TypeConverter<crosapi::mojom::OptionType, lorgnette::OptionType> {
     switch (input) {
       default:
         // Default case included to cover protobuf sentinel values.
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case lorgnette::TYPE_UNKNOWN:
         return crosapi::mojom::OptionType::kUnknown;
       case lorgnette::TYPE_BOOL:
@@ -112,8 +110,7 @@ struct TypeConverter<crosapi::mojom::OptionUnit, lorgnette::OptionUnit> {
     switch (input) {
       default:
         // Default case included to cover protobuf sentinel values.
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case lorgnette::UNIT_NONE:
         return crosapi::mojom::OptionUnit::kUnitless;
       case lorgnette::UNIT_PIXEL:
@@ -143,8 +140,7 @@ struct TypeConverter<crosapi::mojom::OptionConstraintType,
     switch (input) {
       default:
         // Default case included to cover protobuf sentinel values.
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case lorgnette::OptionConstraint::CONSTRAINT_NONE:
         return crosapi::mojom::OptionConstraintType::kNone;
       case lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE:
@@ -444,8 +440,7 @@ crosapi::mojom::ScannerOperationResult TypeConverter<
     lorgnette::OperationResult>::Convert(lorgnette::OperationResult input) {
   switch (input) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case lorgnette::OPERATION_RESULT_UNKNOWN:
       return crosapi::mojom::ScannerOperationResult::kUnknown;
     case lorgnette::OPERATION_RESULT_SUCCESS:

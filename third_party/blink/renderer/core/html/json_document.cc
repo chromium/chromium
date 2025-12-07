@@ -34,17 +34,17 @@ class PrettyPrintJSONListener : public NativeEventListener {
 
   void Invoke(ExecutionContext*, Event* event) override {
     DCHECK_EQ(event->type(), event_type_names::kChange);
-    if (!parsed_json_value_ &&
-        opt_error_.type == JSONParseErrorType::kNoError) {
-      parsed_json_value_ = ParseJSON(pre_->textContent(), &opt_error_);
+    if (original_content_.IsNull()) {
+      original_content_ = pre_->textContent();
+      std::unique_ptr<JSONValue> parsed = ParseJSON(original_content_);
+      if (parsed) {
+        pretty_printed_ = parsed->ToPrettyJSONString();
+      }
     }
-    if (opt_error_.type != JSONParseErrorType::kNoError) {
-      return;
-    }
-    if (checkbox_->Checked()) {
-      pre_->setTextContent(parsed_json_value_->ToPrettyJSONString());
+    if (checkbox_->Checked() && !pretty_printed_.IsNull()) {
+      pre_->setTextContent(pretty_printed_);
     } else {
-      pre_->setTextContent(parsed_json_value_->ToJSONString());
+      pre_->setTextContent(original_content_);
     }
   }
 
@@ -57,8 +57,11 @@ class PrettyPrintJSONListener : public NativeEventListener {
  private:
   Member<HTMLInputElement> checkbox_;
   Member<HTMLPreElement> pre_;
-  JSONParseError opt_error_{.type = JSONParseErrorType::kNoError};
-  std::unique_ptr<JSONValue> parsed_json_value_;
+  // The original and pretty-printed JSON. If `original_content_` is null, we
+  // have not yet attempted to parse `pre_`. If it is non-null, but
+  // `pretty_printed_` is null, the JSON could not be parsed.
+  String original_content_;
+  String pretty_printed_;
 };
 
 class JSONDocumentParser : public HTMLDocumentParser {
@@ -74,7 +77,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
 
  private:
   void Append(const String& input) override {
-    CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     if (!document_initialized_) {
       CreateDocumentStructure();
     }
@@ -82,13 +84,12 @@ class JSONDocumentParser : public HTMLDocumentParser {
   }
 
   void CreateDocumentStructure() {
-    CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());
     GetDocument()->ParserAppendChild(html);
     auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());
     auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument(),
                                                        CreateElementFlags());
-    meta->setAttribute(html_names::kNameAttr, AtomicString("color-scheme"));
+    meta->setAttribute(html_names::kNameAttr, keywords::kColorScheme);
     meta->setAttribute(html_names::kContentAttr, AtomicString("light dark"));
     auto* meta_charset = MakeGarbageCollected<HTMLMetaElement>(
         *GetDocument(), CreateElementFlags());
@@ -103,7 +104,7 @@ class JSONDocumentParser : public HTMLDocumentParser {
 
     auto* label = MakeGarbageCollected<HTMLLabelElement>(*GetDocument());
     label->ParserAppendChild(Text::Create(
-        *GetDocument(), WTF::AtomicString(Locale::DefaultLocale().QueryString(
+        *GetDocument(), AtomicString(Locale::DefaultLocale().QueryString(
                             IDS_PRETTY_PRINT_JSON))));
     label->SetShadowPseudoId(AtomicString("-internal-json-formatter-control"));
     auto* checkbox = MakeGarbageCollected<HTMLInputElement>(*GetDocument());
@@ -112,10 +113,9 @@ class JSONDocumentParser : public HTMLDocumentParser {
         event_type_names::kChange,
         MakeGarbageCollected<PrettyPrintJSONListener>(pre_, checkbox),
         /*use_capture=*/false);
-    checkbox->setAttribute(
-        html_names::kAriaLabelAttr,
-        WTF::AtomicString(
-            Locale::DefaultLocale().QueryString(IDS_PRETTY_PRINT_JSON)));
+    checkbox->setAttribute(html_names::kAriaLabelAttr,
+                           AtomicString(Locale::DefaultLocale().QueryString(
+                               IDS_PRETTY_PRINT_JSON)));
     label->ParserAppendChild(checkbox);
     // Add the checkbox to a form with autocomplete=off, to avoid form
     // restoration from changing the value of the checkbox.

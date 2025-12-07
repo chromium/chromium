@@ -108,10 +108,9 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
         GetHighestRemainingConnectionPriority();
 
     if (base::Contains(id_to_request_map_, request->GetRequestId())) {
-      PA_LOG(ERROR) << "ConnectionAttemptBase::"
-                    << "ProcessAddingNewConnectionRequest(): Processing "
-                    << "request whose ID has already been processed.";
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED() << "ConnectionAttemptBase::"
+                   << "ProcessAddingNewConnectionRequest(): Processing "
+                   << "request whose ID has already been processed.";
     }
 
     bool was_empty = id_to_request_map_.empty();

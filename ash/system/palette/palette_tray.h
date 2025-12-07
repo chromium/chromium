@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -54,14 +55,15 @@ class TrayBubbleWrapper;
 // class also controls the lifetime for all of the tools available in the
 // palette. PaletteTray has one instance per-display. It is only made visible if
 // the display has stylus hardware.
-class ASH_EXPORT PaletteTray : public TrayBackgroundView,
+class ASH_EXPORT PaletteTray : public AnnotatorController::AnnotatorObserver,
+                               public display::DisplayManagerObserver,
+                               public PaletteToolManager::Delegate,
+                               public ProjectorSessionObserver,
                                public SessionObserver,
                                public ShelfObserver,
                                public ShellObserver,
-                               public display::DisplayManagerObserver,
-                               public PaletteToolManager::Delegate,
-                               public ui::InputDeviceEventObserver,
-                               public ProjectorSessionObserver {
+                               public TrayBackgroundView,
+                               public ui::InputDeviceEventObserver {
   METADATA_HEADER(PaletteTray, TrayBackgroundView)
 
  public:
@@ -103,12 +105,11 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   void OnThemeChanged() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
@@ -116,12 +117,12 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // PaletteToolManager::Delegate:
   void HidePalette() override;
   void HidePaletteImmediately() override;
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override;
-  void RecordPaletteModeCancellation(PaletteModeCancelType type) override;
 
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
+
+  // AnnotatorObserver:
+  void OnAnnotatorStateChanged(bool enabled) override;
 
  private:
   friend class PaletteTrayTestApi;
@@ -215,6 +216,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};
+  base::ScopedObservation<AnnotatorController, AnnotatorObserver>
+      annotator_controller_observation_{this};
 
   ScopedSessionObserver scoped_session_observer_;
 

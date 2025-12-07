@@ -1,0 +1,189 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-frame-active);
+  color: var(--color-toolbar-text);
+  position: relative; /* Needed for absolute positioning of controls */
+  overflow: hidden;
+}
+
+/* Hide browser frame in tab fullscreen mode */
+:host([fullscreen-mode="tab"]) #topContainer {
+  display: none;
+}
+
+/* Make content fill the window in tab fullscreen mode */
+:host([fullscreen-mode="tab"]) #contentRegion {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.caption-button {
+  box-shadow: none;
+  border-radius: 0;
+  --cr-button-background-color: transparent;
+  --cr-button-border-color: transparent;
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  --iron-icon-stroke-color: var(--color-tab-foreground-active-frame-active);
+  --iron-icon-fill-color: transparent;
+  stroke-width: 3px;
+  height: 43px;
+  min-width: 30px;
+  padding: 0;
+  shape-rendering: crispEdges;
+}
+
+#bookmarkBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 35px;
+  user-select: none;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 35px;
+  --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
+}
+
+cr-searchbox {
+  --cr-searchbox-height: 35px;
+  --cr-searchbox-shadow: 0 0 0px 1px #20212451;
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-size-in-searchbox: 20px;
+  --cr-searchbox-icon-top-position: 0;
+  --cr-searchbox-match-padding: 4px 0;
+
+  margin: 0 10px;
+}
+
+cr-searchbox[dropdown-is-visible] {
+  --cr-searchbox-shadow: 0 3px 7px 0px #20212451;
+}
+
+.activeFrame {
+  /* Everything below the tab strip is the active frame, so give it the active
+   * background color. */
+  background-color: var(--color-tab-background-active-frame-active);
+}
+
+.titlebarDiv {
+  app-region: drag;
+  display: flex;
+  /* The tab strip is by default mostly inactive content, so give it the
+   * inactive background color. */
+  background-color: var(--color-tab-background-inactive-frame-active);
+}
+
+.tabstripDiv {
+  app-region: no-drag;
+  float: left;
+  overflow: hidden;
+  text-align: left;
+}
+
+.captionButtonsDiv {
+  float: right;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.captionButtonsDiv cr-button {
+  app-region: no-drag;
+}
+
+#addressBox {
+  position: relative;
+  flex: 1;
+}
+
+#locationIconButton {
+  position: absolute;
+  z-index: 101;
+  top: 3px;
+  left: 22px;
+  height: 27px;
+  min-width: 32px;
+  padding: 0;
+  border: none;
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  background-color: var(--color-searchbox-background);
+}
+
+#locationIcon {
+  fill: var(--color-searchbox-foreground);
+  stroke: var(--color-searchbox-foreground);
+  stroke-width: 0px;
+  stroke-linecap: round;
+  shape-rendering: geometricPrecision;
+}
+
+#searchBar {
+  display: flex;
+  flex: none;
+  padding: 7px;
+}
+
+#searchBar #address {
+  display: block;
+}
+
+#rootContainer {
+  display: grid;
+  height: 100%;
+  /* *
+   * #topContainer (natural height)
+   * #main (remaining height)
+   * */
+  grid-template-rows: auto 1fr;
+}
+
+#topContainer {
+  grid-row: 1;
+  min-width: 0;
+}
+
+#main {
+  grid-row: 2;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  background-color: var(--color-toolbar);
+}
+
+content-region {
+  border-top: 1px var(--color-toolbar-separator) solid;
+}
+
+content-region[showing-side-panel] {
+  border-top: 1px var(--color-toolbar-separator) solid;
+  border-right: 1px var(--color-toolbar-separator) solid;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0 16px 0 0;
+}

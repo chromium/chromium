@@ -55,7 +55,7 @@ void FileSystemNatives::GetIsolatedFileSystem(
   // layer, and it's not worth pulling it up into //extensions just for this.
   CHECK(context_url.SchemeIs(extensions::kExtensionScheme) ||
         (context_url.SchemeIs(content::kChromeUIScheme) &&
-         context_url.host_piece() == "file-manager"));
+         context_url.host() == "file-manager"));
 
   const GURL origin(url::Origin::Create(context_url).Serialize());
   std::string name(storage::GetIsolatedFileSystemName(origin, file_system_id));

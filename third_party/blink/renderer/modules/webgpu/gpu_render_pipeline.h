@@ -48,21 +48,6 @@ struct OwnedFragmentState : OwnedProgrammableStage {
   Vector<wgpu::BlendState> blend_states;
 };
 
-struct OwnedDepthStencilState {
-  OwnedDepthStencilState() = default;
-
-  //  This struct should be non-copyable non-movable because it contains
-  //  self-referencing pointers that would be invalidated when moved / copied.
-  OwnedDepthStencilState(const OwnedDepthStencilState& desc) = delete;
-  OwnedDepthStencilState(OwnedDepthStencilState&& desc) = delete;
-  OwnedDepthStencilState& operator=(const OwnedDepthStencilState& desc) =
-      delete;
-  OwnedDepthStencilState& operator=(OwnedDepthStencilState&& desc) = delete;
-
-  wgpu::DepthStencilState dawn_desc = {};
-  wgpu::DepthStencilStateDepthWriteDefinedDawn depth_write_defined;
-};
-
 struct OwnedRenderPipelineDescriptor {
   OwnedRenderPipelineDescriptor() = default;
 
@@ -79,7 +64,7 @@ struct OwnedRenderPipelineDescriptor {
   wgpu::RenderPipelineDescriptor dawn_desc = {};
   std::string label;
   OwnedVertexState vertex;
-  OwnedDepthStencilState depth_stencil;
+  wgpu::DepthStencilState depth_stencil;
   OwnedFragmentState fragment;
 };
 
@@ -107,7 +92,7 @@ class GPURenderPipeline : public DawnObject<wgpu::RenderPipeline> {
   GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
 
  private:
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

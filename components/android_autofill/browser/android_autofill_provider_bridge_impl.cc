@@ -22,15 +22,14 @@
 namespace autofill {
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
 
-void JNI_AutofillProvider_Init(JNIEnv* env,
-                               const JavaParamRef<jobject>& jcaller,
-                               const JavaParamRef<jobject>& jweb_contents) {
+static void JNI_AutofillProvider_Init(JNIEnv* env,
+                                      const JavaRef<jobject>& jcaller,
+                                      const JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
@@ -199,14 +198,14 @@ void AndroidAutofillProviderBridgeImpl::OnFormSubmitted(
                                         static_cast<int>(submission_source));
 }
 
-void AndroidAutofillProviderBridgeImpl::OnDidFillAutofillFormData() {
+void AndroidAutofillProviderBridgeImpl::OnDidAutofillForm() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
     return;
   }
 
-  Java_AutofillProvider_onDidFillAutofillFormData(env, obj);
+  Java_AutofillProvider_onDidAutofillForm(env, obj);
 }
 
 void AndroidAutofillProviderBridgeImpl::CancelSession() {
@@ -234,6 +233,10 @@ void AndroidAutofillProviderBridgeImpl::DetachFromJavaAutofillProvider(
   java_ref_.reset();
 }
 
+jboolean AndroidAutofillProviderBridgeImpl::HasPasskeyRequest(JNIEnv* env) {
+  return delegate_->HasPasskeyRequest();
+}
+
 void AndroidAutofillProviderBridgeImpl::OnAutofillAvailable(JNIEnv* env) {
   delegate_->OnAutofillAvailable();
 }
@@ -244,12 +247,13 @@ void AndroidAutofillProviderBridgeImpl::OnAcceptDataListSuggestion(
   delegate_->OnAcceptDatalistSuggestion(value);
 }
 
-void AndroidAutofillProviderBridgeImpl::SetAnchorViewRect(JNIEnv* env,
-                                                          jobject anchor_view,
-                                                          jfloat x,
-                                                          jfloat y,
-                                                          jfloat width,
-                                                          jfloat height) {
+void AndroidAutofillProviderBridgeImpl::SetAnchorViewRect(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& anchor_view,
+    jfloat x,
+    jfloat y,
+    jfloat width,
+    jfloat height) {
   delegate_->SetAnchorViewRect(ScopedJavaLocalRef<jobject>(env, anchor_view),
                                gfx::RectF(x, y, width, height));
 }
@@ -260,4 +264,11 @@ void AndroidAutofillProviderBridgeImpl::OnShowBottomSheetResult(
     jboolean provided_autofill_structure) {
   delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
 }
+
+void AndroidAutofillProviderBridgeImpl::OnTriggerPasskeyRequest(JNIEnv* env) {
+  delegate_->OnTriggerPasskeyRequest();
+}
+
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProvider)

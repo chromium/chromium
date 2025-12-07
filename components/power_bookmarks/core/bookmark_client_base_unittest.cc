@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/power_bookmarks/core/bookmark_client_base.h"
+
 #include <memory>
 #include <set>
 #include <string>
@@ -16,7 +18,6 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/power_bookmarks/core/bookmark_client_base.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,14 +60,19 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override {}
 
-  void DecodeAccountBookmarkSyncMetadata(
+  DecodeAccountBookmarkSyncMetadataResult DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
-      const base::RepeatingClosure& schedule_save_closure) override {}
+      const base::RepeatingClosure& schedule_save_closure) override {
+    return DecodeAccountBookmarkSyncMetadataResult::kSuccess;
+  }
 
   void OnBookmarkNodeRemovedUndoable(
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override {}
+
+  void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) override {}
 };
 
 class MockSuggestionProvider : public SuggestedSaveLocationProvider {
@@ -274,8 +280,8 @@ TEST_F(BookmarkClientBaseTest, SuggestedFolder_ExplicitSave) {
   // Save another bookmark to the suggested folder explicitly, even though the
   // system wouldn't normally suggest it.
   const GURL normal_bookmark_url1 = GURL("http://example.com/normal_1");
-  bookmarks::AddIfNotBookmarked(model(), normal_bookmark_url1, u"bookmark 1",
-                                suggested_folder);
+  model()->AddNewURL(suggested_folder, suggested_folder->children().size(),
+                     u"bookmark 1", normal_bookmark_url1);
   node = model()->GetMostRecentlyAddedUserNodeForURL(normal_bookmark_url1);
   ASSERT_EQ(node->parent(), suggested_folder);
 

@@ -36,7 +36,7 @@ class SnapCoordinatorTest : public testing::Test,
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>(
-        gfx::Size(), nullptr, nullptr, WTF::BindOnce([](Settings& settings) {
+        gfx::Size(), nullptr, nullptr, BindOnce([](Settings& settings) {
           settings.SetAcceleratedCompositingEnabled(true);
         }));
 
@@ -74,7 +74,8 @@ class SnapCoordinatorTest : public testing::Test,
   Document& GetDocument() { return page_holder_->GetDocument(); }
 
   void SetHTML(const char* html_content) {
-    GetDocument().documentElement()->setInnerHTML(html_content);
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+        html_content);
   }
 
   Element& SnapContainer() {
@@ -243,7 +244,7 @@ TEST_F(SnapCoordinatorTest, UpdateStyleForSnapElement) {
   // Add a new snap element
   Element& container =
       *GetDocument().getElementById(AtomicString("snap-container"));
-  container.setInnerHTML(R"HTML(
+  container.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style='scroll-snap-align: start;'>
         <div style='width:2000px; height:2000px;'></div>
     </div>
@@ -460,7 +461,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculation) {
       GetDocument().getElementById(AtomicString("scroller"));
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
-  scroller_element->scrollBy(20, 20);
+  scroller_element->scrollByForTesting(20, 20);
   EXPECT_EQ(gfx::PointF(20, 20), scrollable_area->ScrollPosition());
   Element* area_element = GetDocument().getElementById(AtomicString("area"));
   area_element->setAttribute(kStyleAttr,
@@ -520,7 +521,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculationOnViewport) {
   Element* body = GetDocument().body();
   EXPECT_EQ(body, GetDocument().ViewportDefiningElement());
   ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
-  body->scrollBy(20, 20);
+  body->scrollByForTesting(20, 20);
   EXPECT_EQ(gfx::PointF(20, 20), scrollable_area->ScrollPosition());
   Element* area_element = GetDocument().getElementById(AtomicString("area"));
   area_element->setAttribute(kStyleAttr,
@@ -789,7 +790,7 @@ TEST_F(SnapCoordinatorTest, CurrentSnappedAreaRemoved) {
   area_element->setAttribute(kStyleAttr,
                              AtomicString("scroll-snap-align: start;"));
   UpdateAllLifecyclePhasesForTest();
-  scroller_element->scrollTo(250, 250);
+  scroller_element->scrollToForTesting(250, 250);
   UpdateAllLifecyclePhasesForTest();
 
   const cc::SnapContainerData* data_ptr =
@@ -862,7 +863,7 @@ TEST_F(SnapCoordinatorTest, AddingSnapAreaDoesNotRemoveCurrentSnapTarget) {
   area_element->setAttribute(kStyleAttr,
                              AtomicString("scroll-snap-align: start;"));
   UpdateAllLifecyclePhasesForTest();
-  scroller_element->scrollTo(250, 250);
+  scroller_element->scrollToForTesting(250, 250);
   UpdateAllLifecyclePhasesForTest();
 
   const cc::SnapContainerData* data_ptr =

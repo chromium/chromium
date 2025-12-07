@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/generation/password_generator.h"
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -24,8 +24,8 @@ namespace autofill {
 // prediction is smaller than the default.)
 const uint32_t kDefaultPasswordLength = 15;
 
-// The minimum length to chunk password in kChunkPassword variation of
-// password_manager::features::PasswordGenerationExperiment.
+// The minimum length to chunk password with
+// `password_manager::features::PasswordGenerationChunking` feature.
 const uint32_t kMinLengthToChunkPassword = 9;
 
 namespace {
@@ -85,16 +85,15 @@ PasswordRequirementsSpec BuildDefaultSpec() {
 // sequences of '-' or '_' that are joined into long strokes on the screen
 // in many fonts.
 bool IsDifficultToRead(const std::u16string& password) {
-  return base::ranges::adjacent_find(password, [](auto a, auto b) {
+  return std::ranges::adjacent_find(password, [](auto a, auto b) {
            return a == b && (a == '-' || a == '_');
          }) != password.end();
 }
 
-bool ChunkingPasswordExperimentEnabled() {
+bool ChunkingPasswordEnabled() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-  return password_manager::features::kPasswordGenerationExperimentVariationParam
-             .Get() == password_manager::features::PasswordGenerationVariation::
-                           kChunkPassword;
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordGenerationChunking);
 #else
   return false;
 #endif
@@ -277,11 +276,10 @@ std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
   std::u16string password;
 
   // For specs that allow dash symbol and can be longer than 8 chars generate a
-  // chunked password when `kChunkPassword` variaton of
-  // kPasswordGenerationExperiment is enabled.
+  // chunked password with `PasswordGenerationChunking` feature enabled.
   if (actual_spec.symbols().character_set().find('-') != std::string::npos &&
       actual_spec.max_length() >= kMinLengthToChunkPassword &&
-      ChunkingPasswordExperimentEnabled()) {
+      ChunkingPasswordEnabled()) {
     password = GenerateMaxEntropyChunkedPassword(std::move(actual_spec));
     CHECK_LE(4u, password.size());
     return password;

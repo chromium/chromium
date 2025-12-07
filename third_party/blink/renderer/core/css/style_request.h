@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 
-#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -58,6 +57,10 @@ class StyleRequest {
   Element* styled_element{nullptr};
   RuleMatchingBehavior matching_behavior{kMatchAllRules};
 
+  // pseudo_id is used only for pseudo-elements that are not PseudoElement,
+  // since for real PseudoElement style requests, PseudoElement would be
+  // ElementResolveContext::element_ for matching with pseudo_id set to none
+  // here.
   PseudoId pseudo_id{kPseudoIdNone};
   RequestType type{kForRenderer};
   ScrollbarPart scrollbar_part{kNoPart};

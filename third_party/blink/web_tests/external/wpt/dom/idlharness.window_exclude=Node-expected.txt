@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Document interface: attribute customElementRegistry
+  assert_true: The prototype object must have a property "customElementRegistry" expected true got false
+[FAIL] Document interface: new Document() must inherit property "customElementRegistry" with the proper type
+  assert_inherits: property "customElementRegistry" not found in prototype chain
+[FAIL] Document interface: xmlDoc must inherit property "customElementRegistry" with the proper type
+  assert_inherits: property "customElementRegistry" not found in prototype chain
+[FAIL] ShadowRoot interface: attribute customElementRegistry
+  assert_true: The prototype object must have a property "customElementRegistry" expected true got false
+[FAIL] Element interface: attribute customElementRegistry
+  assert_true: The prototype object must have a property "customElementRegistry" expected true got false
+[FAIL] Element interface: element must inherit property "customElementRegistry" with the proper type
+  assert_inherits: property "customElementRegistry" not found in prototype chain
+[FAIL] XSLTProcessor interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface object length
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface object name
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation importStylesheet(Node)
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation transformToFragment(Node, Document)
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation transformToDocument(Node)
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation setParameter(DOMString, DOMString, any)
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation getParameter(DOMString, DOMString)
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation removeParameter(DOMString, DOMString)
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation clearParameters()
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor interface: operation reset()
+  assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
+[FAIL] XSLTProcessor must be primary interface of new XSLTProcessor()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] Stringification of new XSLTProcessor()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "importStylesheet(Node)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: calling importStylesheet(Node) on new XSLTProcessor() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "transformToFragment(Node, Document)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: calling transformToFragment(Node, Document) on new XSLTProcessor() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "transformToDocument(Node)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: calling transformToDocument(Node) on new XSLTProcessor() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "setParameter(DOMString, DOMString, any)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: calling setParameter(DOMString, DOMString, any) on new XSLTProcessor() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "getParameter(DOMString, DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: calling getParameter(DOMString, DOMString) on new XSLTProcessor() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "removeParameter(DOMString, DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: calling removeParameter(DOMString, DOMString) on new XSLTProcessor() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "clearParameters()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+[FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "reset()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
+Harness: the test ran to completion.
+

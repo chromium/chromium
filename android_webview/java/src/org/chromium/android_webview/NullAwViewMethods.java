@@ -25,9 +25,9 @@ import org.chromium.android_webview.AwContents.InternalAccessDelegate;
  * to the {@link FullScreenView} in embedded mode, but not to both at the same time.
  */
 class NullAwViewMethods implements AwViewMethods {
-    private AwContents mAwContents;
-    private InternalAccessDelegate mInternalAccessAdapter;
-    private View mContainerView;
+    private final AwContents mAwContents;
+    private final InternalAccessDelegate mInternalAccessAdapter;
+    private final View mContainerView;
 
     public NullAwViewMethods(
             AwContents awContents,
@@ -191,5 +191,15 @@ class NullAwViewMethods implements AwViewMethods {
     @Override
     public boolean performAccessibilityAction(final int action, final Bundle arguments) {
         return false;
+    }
+
+    @Override
+    public void onStartTemporaryDetach() {
+        // Intentional no-op.
+    }
+
+    @Override
+    public void onFinishTemporaryDetach() {
+        // Intentional no-op.
     }
 }

@@ -1,8 +1,19 @@
 # hwnd_util is allowed to include ui/views because it has separate
 # implementations for win and aura.
 specific_include_rules = {
+  "hwnd_message_handler_interactive_uitest.cc": [
+    "+ui/views/test/widget_test.h"
+  ],
   "hwnd_util.*": [
     "+ui/views",
+  ],
+  # Used for the feature flag check. Should be deleted once the feature is
+  # enabled by default.
+  "pen_event_processor.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "pen_event_processor_unittest.cc": [
+    "+components/stylus_handwriting/win/features.h"
   ],
 }
 

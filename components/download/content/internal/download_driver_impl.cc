@@ -46,8 +46,7 @@ DriverEntry::State ToDriverEntryState(
     case DownloadItem::MAX_DOWNLOAD_STATE:
       return DriverEntry::State::UNKNOWN;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return DriverEntry::State::UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -203,9 +202,7 @@ void DownloadDriverImpl::Start(
       }
     } else {
       // The request headers are validated in ControllerImpl::StartDownload.
-      LOG(ERROR) << "Failed to parse Range request header.";
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED() << "Failed to parse Range request header.";
     }
   }
 
@@ -232,6 +229,9 @@ void DownloadDriverImpl::Start(
   }
   download_url_params->set_update_first_party_url_on_redirect(
       request_params.update_first_party_url_on_redirect);
+  if (request_params.initiator) {
+    download_url_params->set_initiator(request_params.initiator.value());
+  }
 
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }

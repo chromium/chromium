@@ -9,7 +9,6 @@
 
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"

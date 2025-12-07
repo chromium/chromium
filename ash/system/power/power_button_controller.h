@@ -180,6 +180,9 @@ class ASH_EXPORT PowerButtonController
   // the screen off) should currently be used.
   bool UseTabletBehavior() const;
 
+  // Returns true if power button should be disabled.
+  bool IsPowerButtonDisabled() const;
+
   // Stops |power_button_menu_timer_|, |shutdown_timer_| and dismisses the power
   // button menu.
   void StopTimersAndDismissMenu();
@@ -246,6 +249,9 @@ class ASH_EXPORT PowerButtonController
   // True if the kForceTabletPowerButton flag is set. This forces tablet power
   // button behavior even while in laptop mode.
   bool force_tablet_power_button_ = false;
+
+  // If set, the power button in tablet mode is disabled.
+  bool disable_power_button_in_tablet_mode_ = false;
 
   // True if the screen was off when the power button was pressed.
   bool screen_off_when_power_button_down_ = false;

@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/current_thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -44,8 +44,6 @@ struct NextIdleBarrier::Data {
 void NextIdleBarrier::Data::OnUiThreadIdle(base::TimeTicks start_time) {
   CHECK(!value);
   value = true;
-  base::UmaHistogramTimes("Autofill.Popup.NextIdleTimeTicksDelay",
-                          base::TimeTicks::Now() - start_time);
 }
 
 void NextIdleBarrier::Data::StartTimerForMeasurementAttempt(

@@ -73,10 +73,7 @@ available, you must bundle a component implementation with the browser itself.
 If you are using `ComponentInstaller`, you simply need to make sure that
 your component implementation (and a corresponding manifest.json file) are
 written to DIR\_COMPONENTS as part of the build. The manifest.json file must
-state the version of this component implementation, and the files must be
-bitwise identical to the contents of any update CRX with that version for that
-platform, as the system will attempt to apply differential updates over these
-files.
+state the version of this component implementation.
 
 This option is not recommended, because:
 * the browser should generally not depend on any particular component's

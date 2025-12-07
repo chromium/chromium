@@ -130,7 +130,7 @@ std::optional<double> MediaImageManager::GetImageExtensionScore(
   if (!url.has_path())
     return std::nullopt;
 
-  std::string extension = GetExtension(url.path());
+  std::string extension = GetExtension(url.GetPath());
 
   // These hashes are calculated in
   // MediaImageManagerTest_CheckExpectedImageExtensionHashes

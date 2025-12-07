@@ -46,7 +46,7 @@ class AnnotationList {
   //!     CrashapdInfo structure.
   static AnnotationList* Get();
 
-  //! \brief Returns the instace of the list, creating and registering
+  //! \brief Returns the instance of the list, creating and registering
   //!     it if one is not already set on the CrashapdInfo structure.
   static AnnotationList* Register();
 

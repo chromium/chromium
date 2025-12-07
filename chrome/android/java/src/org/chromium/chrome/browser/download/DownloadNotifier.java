@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.download;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.PendingState;
 
 /** Class for reporting the status of a download. */
+@NullMarked
 public interface DownloadNotifier {
     /**
      * Add a download successful notification.
@@ -29,24 +31,28 @@ public interface DownloadNotifier {
     void notifyDownloadFailed(DownloadInfo downloadInfo);
 
     /**
-     * Update the download progress notification.
+     * Update the download progress notification. Depending on the download's danger type, this can
+     * cause the download notification to reflect a Dangerous verdict from Safe Browsing.
+     *
      * @param downloadInfo info about in progress download.
      * @param startTimeInMillis the startTime of the download, measured in milliseconds, between the
-     *        current time and midnight, January 1, 1970 UTC. Useful to keep progress notifications
-     *        sorted by time.
-     * @param canDownloadWhileMetered Wheter the download can take place on metered network.
+     *     current time and midnight, January 1, 1970 UTC. Useful to keep progress notifications
+     *     sorted by time.
+     * @param canDownloadWhileMetered Whether the download can take place on metered network.
      */
     void notifyDownloadProgress(
-            DownloadInfo downloadInfo, long startTimeInMillis, boolean mCanDownloadWhileMetered);
+            DownloadInfo downloadInfo, long startTimeInMillis, boolean canDownloadWhileMetered);
 
     /**
      * Update the download notification to paused.
+     *
      * @param downloadInfo info about in progress download.
      */
     void notifyDownloadPaused(DownloadInfo downloadInfo);
 
     /**
-     * Update the download notification to paused.
+     * Update the download notification to interrupted.
+     *
      * @param downloadInfo info about in progress download.
      * @param isAutoResumable Whether the download can be auto resumed when network is available.
      * @param pendingState Reason download is pending

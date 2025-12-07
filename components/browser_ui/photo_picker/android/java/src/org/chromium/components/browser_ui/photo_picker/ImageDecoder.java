@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -14,6 +16,7 @@ import android.util.Pair;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -22,6 +25,7 @@ import java.io.IOException;
  * A helper to accept requests to take image file contents and decode them. As this is intended to
  * be run in a separate, sandboxed process, it also requires calling code to initialize the sandbox.
  */
+@NullMarked
 public class ImageDecoder extends IDecoderService.Stub {
     // The keys for the bundle when passing data to and from this service.
     public static final String KEY_FILE_DESCRIPTOR = "file_descriptor";
@@ -69,6 +73,7 @@ public class ImageDecoder extends IDecoderService.Stub {
                 return;
             }
 
+            assumeNonNull(pfd);
             FileDescriptor fd = pfd.getFileDescriptor();
 
             long begin = SystemClock.elapsedRealtime();
@@ -88,6 +93,7 @@ public class ImageDecoder extends IDecoderService.Stub {
                 sendReply(callback, bundle); // Sends SUCCESS == false;
                 return;
             }
+            assumeNonNull(decodedBitmap);
 
             // The most widely supported, easiest, and reasonably efficient method is to
             // decode to an immutable bitmap and just return the bitmap over binder. It

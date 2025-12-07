@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -120,7 +117,7 @@ TEST(WaitableEventTest, WaitManyShortcut) {
 }
 
 TEST(WaitableEventTest, WaitManyLeftToRight) {
-  WaitableEvent* ev[5];
+  std::array<WaitableEvent*, 5> ev;
   for (auto*& i : ev) {
     i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                           WaitableEvent::InitialState::NOT_SIGNALED);
@@ -131,7 +128,7 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
   // the WaitableEvents' addresses -- are relevant in determining who wins when
   // multiple events are signaled.
 
-  std::sort(ev, ev + 5);
+  std::ranges::sort(ev);
   do {
     ev[0]->Signal();
     ev[1]->Signal();
@@ -149,7 +146,7 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
     ev[2]->Signal();
     EXPECT_EQ(2u, WaitableEvent::WaitMany(ev));
     EXPECT_EQ(4u, WaitableEvent::WaitMany(ev));
-  } while (std::next_permutation(ev, ev + 5));
+  } while (std::ranges::next_permutation(ev).found);
 
   for (auto* i : ev) {
     delete i;
@@ -159,9 +156,7 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
 class WaitableEventSignaler : public PlatformThread::Delegate {
  public:
   WaitableEventSignaler(TimeDelta delay, WaitableEvent* event)
-      : delay_(delay),
-        event_(event) {
-  }
+      : delay_(delay), event_(event) {}
 
   void ThreadMain() override {
     PlatformThread::Sleep(delay_);
@@ -206,12 +201,12 @@ TEST(WaitableEventTest, WaitMany) {
     // Signaler can't outlive event.
     WaitableEventSignaler signaler(Milliseconds(10), ev[2]);
     PlatformThread::Create(0, &signaler, &thread);
-    size_t index = WaitableEvent::WaitMany(ev);
-    EXPECT_EQ(2u, index);
+    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev));
   }
 
-  for (auto* i : ev)
+  for (auto* i : ev) {
     delete i;
+  }
 
   PlatformThread::Join(thread);
 }

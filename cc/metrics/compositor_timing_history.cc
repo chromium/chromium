@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/compositor_timing_history.h"
 
 #include <stddef.h>
@@ -18,22 +13,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/debug/rendering_stats_instrumentation.h"
-
 namespace cc {
-
 namespace {
-
-// Used to generate a unique id when emitting the "Long Draw Interval" trace
-// event.
-int g_num_long_draw_intervals = 0;
-
-// The threshold to emit a trace event is the 99th percentile
-// of the histogram on Windows Stable as of Feb 26th, 2020.
-constexpr base::TimeDelta kDrawIntervalTraceThreshold =
-    base::Microseconds(34478);
 
 // Using the 90th percentile will disable latency recovery
 // if we are missing the deadline approximately ~6 times per
@@ -156,19 +138,17 @@ const int kUMAVSyncBuckets[] = {
     32000000,
 };
 
-#define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample)             \
-  do {                                                                     \
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                                      \
-        name "2", sample.InMicroseconds(),                                 \
-        std::vector<int>(kUMAVSyncBuckets,                                 \
-                         kUMAVSyncBuckets + std::size(kUMAVSyncBuckets))); \
+#define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample) \
+  do {                                                         \
+    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                          \
+        name "2", sample.InMicroseconds(),                     \
+        std::vector<int>(std::begin(kUMAVSyncBuckets),         \
+                         std::end(kUMAVSyncBuckets)));         \
   } while (false)
 
 }  // namespace
 
-CompositorTimingHistory::CompositorTimingHistory(
-    UMACategory uma_category,
-    RenderingStatsInstrumentation* rendering_stats_instrumentation)
+CompositorTimingHistory::CompositorTimingHistory(UMACategory uma_category)
     : enabled_(false),
       compositor_drawing_continuously_(false),
       begin_main_frame_queue_duration_history_(kDurationHistorySize),
@@ -181,8 +161,8 @@ CompositorTimingHistory::CompositorTimingHistory(
       commit_to_ready_to_activate_duration_history_(kDurationHistorySize),
       activate_duration_history_(kDurationHistorySize),
       draw_duration_history_(kDurationHistorySize),
-      uma_category_(uma_category),
-      rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
+      pending_tree_is_impl_side_(false),
+      uma_category_(uma_category) {}
 
 CompositorTimingHistory::~CompositorTimingHistory() = default;
 
@@ -343,15 +323,9 @@ void CompositorTimingHistory::DidBeginMainFrame(
   if (begin_main_frame_start_time_.is_null())
     begin_main_frame_start_time_ = begin_main_frame_sent_time_;
 
-  base::TimeDelta bmf_sent_to_commit_duration =
-      begin_main_frame_end_time - begin_main_frame_sent_time_;
-  base::TimeDelta bmf_queue_duration =
-      begin_main_frame_start_time_ - begin_main_frame_sent_time_;
-
-  rendering_stats_instrumentation_->AddBeginMainFrameToCommitDuration(
-      bmf_sent_to_commit_duration);
-
   if (enabled_) {
+    base::TimeDelta bmf_queue_duration =
+        begin_main_frame_start_time_ - begin_main_frame_sent_time_;
     begin_main_frame_queue_duration_history_.InsertSample(bmf_queue_duration);
     if (begin_main_frame_on_critical_path_) {
       begin_main_frame_queue_duration_critical_history_.InsertSample(
@@ -382,23 +356,11 @@ void CompositorTimingHistory::ReadyToActivate() {
   DCHECK_EQ(pending_tree_ready_to_activate_time_, base::TimeTicks());
 
   pending_tree_ready_to_activate_time_ = Now();
-  if (!pending_tree_is_impl_side_) {
+  if (!pending_tree_is_impl_side_ && enabled_) {
     base::TimeDelta time_since_commit =
         pending_tree_ready_to_activate_time_ - pending_tree_creation_time_;
-
-    // Before adding the new data point to the timing history, see what we would
-    // have predicted for this frame. This allows us to keep track of the
-    // accuracy of our predictions.
-
-    base::TimeDelta commit_to_ready_to_activate_estimate =
-        CommitToReadyToActivateDurationEstimate();
-    rendering_stats_instrumentation_->AddCommitToActivateDuration(
-        time_since_commit, commit_to_ready_to_activate_estimate);
-
-    if (enabled_) {
-      commit_to_ready_to_activate_duration_history_.InsertSample(
-          time_since_commit);
-    }
+    commit_to_ready_to_activate_duration_history_.InsertSample(
+        time_since_commit);
   }
 }
 
@@ -432,39 +394,16 @@ void CompositorTimingHistory::WillDraw() {
 void CompositorTimingHistory::DidDraw() {
   DCHECK_NE(base::TimeTicks(), draw_start_time_);
   base::TimeTicks draw_end_time = Now();
-  base::TimeDelta draw_duration = draw_end_time - draw_start_time_;
-
-  // Before adding the new data point to the timing history, see what we would
-  // have predicted for this frame. This allows us to keep track of the accuracy
-  // of our predictions.
-  base::TimeDelta draw_estimate = DrawDurationEstimate();
-  rendering_stats_instrumentation_->AddDrawDuration(draw_duration,
-                                                    draw_estimate);
-
   if (enabled_) {
+    base::TimeDelta draw_duration = draw_end_time - draw_start_time_;
     draw_duration_history_.InsertSample(draw_duration);
   }
 
   SetCompositorDrawingContinuously(true);
-  if (!draw_end_time_prev_.is_null()) {
+  if (!draw_end_time_prev_.is_null() && uma_category_ == RENDERER_UMA) {
     base::TimeDelta draw_interval = draw_end_time - draw_end_time_prev_;
-    if (uma_category_ == RENDERER_UMA) {
-      UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(
-          "Scheduling.Renderer.DrawInterval", draw_interval);
-    }
-    // Emit a trace event to highlight a long time lapse between the draw times
-    // of back-to-back BeginImplFrames.
-    if (draw_interval > kDrawIntervalTraceThreshold) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "latency", "Long Draw Interval",
-          TRACE_ID_WITH_SCOPE("Long Draw Interval", g_num_long_draw_intervals),
-          draw_start_time_);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "latency", "Long Draw Interval",
-          TRACE_ID_WITH_SCOPE("Long Draw Interval", g_num_long_draw_intervals),
-          draw_end_time);
-      g_num_long_draw_intervals++;
-    }
+    UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED("Scheduling.Renderer.DrawInterval",
+                                             draw_interval);
   }
   draw_end_time_prev_ = draw_end_time;
 

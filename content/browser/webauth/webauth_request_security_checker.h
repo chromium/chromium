@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_WEBAUTH_REQUEST_SECURITY_CHECKER_H_
 #define CONTENT_BROWSER_WEBAUTH_WEBAUTH_REQUEST_SECURITY_CHECKER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -13,17 +14,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "url/origin.h"
 
-namespace base {
-class Value;
-}
-
 namespace network {
 class SimpleURLLoader;
-}
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace content {
 
@@ -60,26 +58,26 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     static std::unique_ptr<RemoteValidation> Create(
         const url::Origin& caller_origin,
         const std::string& relying_party_id,
+        scoped_refptr<network::SharedURLLoaderFactory>
+            shared_url_loader_factory,
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
     // ValidateWellKnownJSON implements the core of remote validation. It isn't
     // intended to be called externally except for testing.
     [[nodiscard]] static blink::mojom::AuthenticatorStatus
     ValidateWellKnownJSON(const url::Origin& caller_origin,
-                          const base::Value& json);
+                          std::string_view json);
 
    private:
     RemoteValidation(
         const url::Origin& caller_origin,
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
-    void OnFetchComplete(std::unique_ptr<std::string> body);
-    void OnDecodeComplete(base::expected<base::Value, std::string> maybe_value);
+    void OnFetchComplete(std::optional<std::string> body);
 
     const url::Origin caller_origin_;
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback_;
     std::unique_ptr<network::SimpleURLLoader> loader_;
-    std::unique_ptr<std::string> json_;
 
     base::WeakPtrFactory<RemoteValidation> weak_factory_{this};
   };
@@ -115,8 +113,12 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // effective domain. In this case the callback will be called before this
   // function returns.
   //
-  // If `remote_destop_client_override` is non-null, this method also validates
-  // whether `caller_origin` is authorized to use that extension.
+  // If `remote_desktop_client_override_origin` is present, this method
+  // validates whether `caller_origin` is authorized to use that extension
+  // through enterprise policy allowlists. This prevents untrusted renderer
+  // processes from being able to impersonate arbitrary origins for WebAuthn
+  // operations. The `remote_desktop_client_override_origin` comes from the
+  // renderer and must not be trusted without this validation.
   //
   // If the RP ID cannot be validated using the rule above then a remote
   // validation will be attempted by fetching `.well-known/webauthn`
@@ -132,8 +134,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       RequestType request_type,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override,
+      const std::optional<url::Origin>& remote_desktop_client_override_origin,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
   // Validates whether `caller_origin` is authorized to claim the U2F AppID
@@ -153,6 +154,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
 
   [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
       std::vector<device::PublicKeyCredentialDescriptor>* list);
+
+  static bool& UseSystemSharedURLLoaderFactoryForTesting();
 
  protected:
   friend class base::RefCounted<WebAuthRequestSecurityChecker>;

@@ -105,6 +105,7 @@ class CORE_EXPORT ReadableByteStreamController
                                 size_t byte_offset,
                                 size_t byte_length,
                                 size_t bytes_filled,
+                                uint64_t minimum_fill,
                                 size_t element_size,
                                 ViewConstructorType view_constructor,
                                 ReaderType reader_type);
@@ -114,6 +115,7 @@ class CORE_EXPORT ReadableByteStreamController
     size_t byte_offset;
     const size_t byte_length;
     size_t bytes_filled;
+    const uint64_t minimum_fill;
     const size_t element_size;
     const ViewConstructorType view_constructor;
     ReaderType reader_type;
@@ -122,7 +124,7 @@ class CORE_EXPORT ReadableByteStreamController
   };
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-close
-  void Close(ScriptState*, ReadableByteStreamController*, ExceptionState&);
+  void Close(ScriptState*, ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-error
   static void Error(ScriptState*,
@@ -154,8 +156,7 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(
       ScriptState*,
-      ReadableByteStreamController*,
-      ExceptionState&);
+      ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerprocessreadrequestsusingqueue
   static void ProcessReadRequestsUsingQueue(ScriptState*,
@@ -232,6 +233,7 @@ class CORE_EXPORT ReadableByteStreamController
   static void PullInto(ScriptState*,
                        ReadableByteStreamController*,
                        NotShared<DOMArrayBufferView> view,
+                       uint64_t min,
                        ReadIntoRequest*,
                        ExceptionState&);
 
@@ -281,8 +283,8 @@ class CORE_EXPORT ReadableByteStreamController
                                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-cancel
-  v8::Local<v8::Promise> CancelSteps(ScriptState*,
-                                     v8::Local<v8::Value> reason) override;
+  ScriptPromise<IDLUndefined> CancelSteps(ScriptState*,
+                                          v8::Local<v8::Value> reason) override;
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-pull
   void PullSteps(ScriptState*, ReadRequest*, ExceptionState&) override;

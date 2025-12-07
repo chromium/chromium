@@ -8,6 +8,8 @@
 #include <ostream>
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -37,6 +39,12 @@ static_assert(internal::SupportsToString<const HasToString&>,
 static_assert(internal::SupportsToString<HasToString&&>,
               "&& with ToString() should be marked SupportsToString");
 
+// Booleans should stringify specifically as "true" and "false".
+TEST(ToStringTest, Booleans) {
+  EXPECT_EQ(ToString(true), "true");
+  EXPECT_EQ(ToString(false), "false");
+}
+
 TEST(ToStringTest, Streamable) {
   // Types with built-in <<.
   EXPECT_EQ(ToString("foo"), "foo");
@@ -57,9 +65,6 @@ std::ostream& operator<<(std::ostream& os, const StreamableTestEnum& value) {
 TEST(ToStringTest, UserDefinedStreamable) {
   // Type with user-defined <<.
   EXPECT_EQ(ToString(StreamableTestEnum::kGreeting), "hello");
-  EXPECT_EQ(ToString(StreamableTestEnum::kGreeting, " ",
-                     StreamableTestEnum::kLocation),
-            "hello world");
 }
 
 TEST(ToStringTest, UserDefinedToString) {
@@ -85,10 +90,9 @@ TEST(ToStringTest, ScopedEnum) {
   EXPECT_EQ(ToString(NonStreamableTestEnum::kLocation), "1");
 }
 
-TEST(ToStringTest, IoManip) {
-  // I/O manipulators should have their expected effect, not be printed as
-  // function pointers.
-  EXPECT_EQ(ToString("42 in hex is ", std::hex, 42), "42 in hex is 2a");
+TEST(ToStringTest, WideChars) {
+  EXPECT_EQ(ToString(u'a'), "97");
+  EXPECT_EQ(ToString(L'a'), "97");
 }
 
 TEST(ToStringTest, Tuple) {
@@ -109,6 +113,21 @@ TEST(ToStringTest, FunctionPointer) {
   EXPECT_EQ(ToString(Func), ToString(&Func));
 }
 
+TEST(ToStringTest, Pointer) {
+  int i = 42;
+  std::string result_string = ToString(&i);
+
+  // The result of ToString() on a pointer is a string that begins with "0x".
+  ASSERT_GT(result_string.size(), 2);
+  EXPECT_EQ(result_string.substr(0, 2), "0x");
+
+  // ... and whose contents is the hex representation of the value of the actual
+  // pointer value.
+  uint64_t result_int;
+  ASSERT_TRUE(HexStringToUInt64(result_string, &result_int));
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(&i), result_int);
+}
+
 class OverloadsAddressOp {
  public:
   OverloadsAddressOp* operator&() { return nullptr; }
@@ -124,6 +143,25 @@ TEST(ToStringTest, NonStringifiable) {
   // address.
   EXPECT_NE(ToString(OverloadsAddressOp()),
             ToString(static_cast<OverloadsAddressOp*>(nullptr)));
+}
+
+TEST(ToStringTest, Span) {
+  struct S {
+    std::string ToString() const { return "S()"; }
+  };
+
+  EXPECT_EQ(ToString(span<const int>({1, 2, 3})), "[1, 2, 3]");
+  EXPECT_EQ(ToString(span<const S>({S(), S()})), "[S(), S()]");
+  EXPECT_EQ(ToString(span<const char>({'a', 'b', 'c'})), "[\"abc\"]");
+  EXPECT_EQ(ToString(span<const char>({'a', 'b', 'c', '\0'})),
+            std::string_view("[\"abc\0\"]", 8u));
+  EXPECT_EQ(ToString(span<const char>({'a', 'b', '\0', 'c', '\0'})),
+            std::string_view("[\"ab\0c\0\"]", 9u));
+  EXPECT_EQ(ToString(span<int>()), "[]");
+  EXPECT_EQ(ToString(span<char>()), "[\"\"]");
+
+  EXPECT_EQ(ToString(span<const char16_t>({u'a', u'b', u'c'})), "[u\"abc\"]");
+  EXPECT_EQ(ToString(span<const wchar_t>({L'a', L'b', L'c'})), "[L\"abc\"]");
 }
 
 }  // namespace

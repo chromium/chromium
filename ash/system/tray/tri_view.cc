@@ -27,8 +27,7 @@ views::BoxLayout::Orientation GetOrientation(TriView::Orientation orientation) {
       return views::BoxLayout::Orientation::kVertical;
   }
   // Required for some compilers.
-  NOTREACHED_IN_MIGRATION();
-  return views::BoxLayout::Orientation::kHorizontal;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -41,9 +40,9 @@ TriView::TriView(int padding_between_containers)
 TriView::TriView(Orientation orientation) : TriView(orientation, 0) {}
 
 TriView::TriView(Orientation orientation, int padding_between_containers) {
-  start_container_layout_manager_ = AddChildView(new SizeRangeLayout);
-  center_container_layout_manager_ = AddChildView(new SizeRangeLayout);
-  end_container_layout_manager_ = AddChildView(new SizeRangeLayout);
+  start_container_layout_manager_ = AddChildViewRaw(new SizeRangeLayout);
+  center_container_layout_manager_ = AddChildViewRaw(new SizeRangeLayout);
+  end_container_layout_manager_ = AddChildViewRaw(new SizeRangeLayout);
 
   auto layout = std::make_unique<views::BoxLayout>(
       GetOrientation(orientation), gfx::Insets(), padding_between_containers);
@@ -87,7 +86,7 @@ void TriView::SetMaxSize(Container container, const gfx::Size& size) {
 }
 
 void TriView::AddView(Container container, views::View* view) {
-  GetContainer(container)->AddChildView(view);
+  GetContainer(container)->AddChildViewRaw(view);
 }
 
 void TriView::AddViewAt(Container container, views::View* view, int index) {
@@ -167,8 +166,7 @@ SizeRangeLayout* TriView::GetLayoutManager(Container container) {
       return end_container_layout_manager_;
   }
   // Required for some compilers.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 BEGIN_METADATA(TriView)

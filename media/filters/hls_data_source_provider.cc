@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "media/filters/hls_data_source_provider.h"
+
+#include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -30,8 +33,7 @@ HlsDataSourceStream::~HlsDataSourceStream() {
 }
 
 std::string_view HlsDataSourceStream::AsString() const {
-  return std::string_view(reinterpret_cast<const char*>(buffer_.data()),
-                          buffer_.size());
+  return base::as_string_view(buffer_);
 }
 
 bool HlsDataSourceStream::RequiresNextDataSource() const {
@@ -40,6 +42,11 @@ bool HlsDataSourceStream::RequiresNextDataSource() const {
 }
 
 GURL HlsDataSourceStream::GetNextSegmentURI() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::get<0>(GetNextSegmentURIAndCacheStatus());
+}
+
+std::pair<GURL, bool> HlsDataSourceStream::GetNextSegmentURIAndCacheStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(requires_next_data_source_);
   CHECK(!segments_.empty());
@@ -52,9 +59,10 @@ GURL HlsDataSourceStream::GetNextSegmentURI() {
     max_read_position_ = std::nullopt;
   }
   GURL new_url = std::move(first.uri);
+  bool bypass_cache = first.bypass_cache;
   segments_.pop();
   requires_next_data_source_ = false;
-  return new_url;
+  return std::make_pair(new_url, bypass_cache);
 }
 
 bool HlsDataSourceStream::CanReadMore() const {
@@ -76,25 +84,26 @@ void HlsDataSourceStream::Clear() {
   write_index_ = 0;
 }
 
-uint8_t* HlsDataSourceStream::LockStreamForWriting(int ensure_minimum_space) {
+base::span<uint8_t> HlsDataSourceStream::LockStreamForWriting(
+    size_t ensure_minimum_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::Read", this, "minimum space",
-                                    ensure_minimum_space);
+  TRACE_EVENT_BEGIN("media", "HLS::Read", perfetto::Track::FromPointer(this),
+                    "minimum space", ensure_minimum_space);
   CHECK(!stream_locked_);
   stream_locked_ = true;
   CHECK_GE(buffer_.size(), write_index_);
-  int remaining_bytes = buffer_.size() - write_index_;
+  size_t remaining_bytes = buffer_.size() - write_index_;
   if (ensure_minimum_space > remaining_bytes) {
     buffer_.resize(write_index_ + ensure_minimum_space);
   }
-  return buffer_.data() + write_index_;
+  return base::span(buffer_).subspan(write_index_, ensure_minimum_space);
 }
 
-void HlsDataSourceStream::UnlockStreamPostWrite(int read_size,
+void HlsDataSourceStream::UnlockStreamPostWrite(size_t read_size,
                                                 bool end_of_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "HLS::Read", this, "bytes",
-                                  read_size, "eos", end_of_stream);
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "bytes",
+                  read_size, "eos", end_of_stream);
   CHECK(stream_locked_);
   write_index_ += read_size;
   read_position_ += read_size;

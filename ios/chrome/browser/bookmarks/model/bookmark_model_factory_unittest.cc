@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -26,9 +25,9 @@ namespace {
 using testing::UnorderedElementsAre;
 
 const char kLocalOrSyncableIdsReassignedMetricName[] =
-    "Bookmarks.IdsReassigned.OnProfileLoad.LocalOrSyncable";
+    "Bookmarks.IdsReassigned2.OnProfileLoad.LocalOrSyncable";
 const char kAccountIdsReassignedMetricName[] =
-    "Bookmarks.IdsReassigned.OnProfileLoad.Account";
+    "Bookmarks.IdsReassigned2.OnProfileLoad.Account";
 
 MATCHER_P(HasUrl, expected_url, "") {
   return arg.url == expected_url;
@@ -68,12 +67,12 @@ class BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest
     // ModelLoaderTest.LoadTwoFilesWhereFirstHasInternalIdCollisions.
     ASSERT_TRUE(base::CopyFile(
         GetTestDataDir().AppendASCII("bookmarks/model_with_duplicate_ids.json"),
-        chrome_browser_state_->GetStatePath().Append(
+        profile_->GetStatePath().Append(
             bookmarks::kLocalOrSyncableBookmarksFileName)));
-    ASSERT_TRUE(base::CopyFile(GetTestDataDir().AppendASCII(
-                                   "bookmarks/model_with_sync_metadata_2.json"),
-                               chrome_browser_state_->GetStatePath().Append(
-                                   bookmarks::kAccountBookmarksFileName)));
+    ASSERT_TRUE(base::CopyFile(
+        GetTestDataDir().AppendASCII(
+            "bookmarks/model_with_sync_metadata_2.json"),
+        profile_->GetStatePath().Append(bookmarks::kAccountBookmarksFileName)));
   }
 
   base::HistogramTester histogram_tester_;
@@ -105,12 +104,12 @@ class BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest
     ASSERT_TRUE(
         base::CopyFile(GetTestDataDir().AppendASCII(
                            "bookmarks/model_with_sync_metadata_1.json"),
-                       chrome_browser_state_->GetStatePath().Append(
+                       profile_->GetStatePath().Append(
                            bookmarks::kLocalOrSyncableBookmarksFileName)));
-    ASSERT_TRUE(base::CopyFile(GetTestDataDir().AppendASCII(
-                                   "bookmarks/model_with_sync_metadata_1.json"),
-                               chrome_browser_state_->GetStatePath().Append(
-                                   bookmarks::kAccountBookmarksFileName)));
+    ASSERT_TRUE(base::CopyFile(
+        GetTestDataDir().AppendASCII(
+            "bookmarks/model_with_sync_metadata_1.json"),
+        profile_->GetStatePath().Append(bookmarks::kAccountBookmarksFileName)));
   }
 
   base::HistogramTester histogram_tester_;

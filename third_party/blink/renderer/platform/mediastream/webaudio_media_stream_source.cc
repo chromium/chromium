@@ -8,7 +8,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -17,16 +19,14 @@ namespace blink {
 WebAudioMediaStreamSource::WebAudioMediaStreamSource(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : MediaStreamAudioSource(std::move(task_runner), false /* is_remote */),
-      is_registered_consumer_(false),
       fifo_(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebAudioMediaStreamSource::DeliverRebufferedAudio,
-          WTF::CrossThreadUnretained(this)))) {
+          CrossThreadUnretained(this)))) {
   DVLOG(1) << "WebAudioMediaStreamSource::WebAudioMediaStreamSource()";
 }
 
 WebAudioMediaStreamSource::~WebAudioMediaStreamSource() {
   DVLOG(1) << "WebAudioMediaStreamSource::~WebAudioMediaStreamSource()";
-  EnsureSourceIsStopped();
 }
 
 void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
@@ -54,30 +54,6 @@ void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
     wrapper_bus_ = media::AudioBus::CreateWrapper(params.channels());
 }
 
-bool WebAudioMediaStreamSource::EnsureSourceIsStarted() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_registered_consumer_)
-    return true;
-  if (!media_stream_source_ || !media_stream_source_->RequiresAudioConsumer())
-    return false;
-  VLOG(1) << "Starting WebAudio media stream source.";
-  media_stream_source_->SetAudioConsumer(this);
-  is_registered_consumer_ = true;
-  return true;
-}
-
-void WebAudioMediaStreamSource::EnsureSourceIsStopped() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!is_registered_consumer_)
-    return;
-  is_registered_consumer_ = false;
-  DCHECK(media_stream_source_);
-  media_stream_source_->RemoveAudioConsumer();
-  media_stream_source_ = nullptr;
-  VLOG(1) << "Stopped WebAudio media stream source. Final audio parameters={"
-          << GetAudioParameters().AsHumanReadableString() << "}.";
-}
-
 void WebAudioMediaStreamSource::ConsumeAudio(
     const Vector<const float*>& audio_data,
     int number_of_frames) {
@@ -91,8 +67,11 @@ void WebAudioMediaStreamSource::ConsumeAudio(
   wrapper_bus_->set_frames(number_of_frames);
   DCHECK_EQ(wrapper_bus_->channels(), static_cast<int>(audio_data.size()));
   for (wtf_size_t i = 0; i < audio_data.size(); ++i) {
-    wrapper_bus_->SetChannelData(static_cast<int>(i),
-                                 const_cast<float*>(audio_data[i]));
+    // TODO(crbug.com/375449662): Spanify `audio_data`.
+    wrapper_bus_->SetChannelData(
+        static_cast<int>(i),
+        UNSAFE_TODO(base::span(const_cast<float*>(audio_data[i]),
+                               base::checked_cast<size_t>(number_of_frames))));
   }
 
   // The following will result in zero, one, or multiple synchronous calls to

@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
@@ -15,7 +16,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_thread.h"
@@ -172,8 +173,8 @@ std::string GetModelInput(const SkBitmap& bitmap,
     return std::string();
   }
 
-  CHECK_EQ(downsampled.width(), width, base::NotFatalUntil::M125);
-  CHECK_EQ(downsampled.height(), height, base::NotFatalUntil::M125);
+  CHECK_EQ(downsampled.width(), width);
+  CHECK_EQ(downsampled.height(), height);
 
   // Format as an RGB buffer for input into the model
   std::string data;
@@ -193,7 +194,7 @@ auto CreateFrameBuffer(const std::string& model_input,
                        int input_width,
                        int input_height) {
   tflite::task::vision::FrameBuffer::Plane plane{
-      reinterpret_cast<const tflite::uint8*>(model_input.data()),
+      reinterpret_cast<const uint8_t*>(model_input.data()),
       {3 * input_width, 3}};
   return tflite::task::vision::FrameBuffer::Create(
       {plane}, {input_width, input_height},
@@ -483,7 +484,7 @@ double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
   for (int32_t feature : *rule->feature()) {
     const flat::Hash* hash = flatbuffer_model_->hashes()->Get(feature);
 
-    if (!hash->data()) {
+    if (!hash || !hash->data()) {
       return 0.0;
     }
 

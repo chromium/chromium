@@ -4,29 +4,31 @@
 
 #include "content/browser/attribution_reporting/send_result.h"
 
-#include "base/functional/overloaded.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
+
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace content {
 
 SendResult::Status SendResult::status() const {
-  return absl::visit(
-      base::Overloaded{[](Sent sent) {
-                         switch (sent.result) {
-                           case Sent::Result::kSent:
-                             return Status::kSent;
-                           case Sent::Result::kTransientFailure:
-                             return Status::kTransientFailure;
-                           case Sent::Result::kFailure:
-                             return Status::kFailure;
-                         }
-                       },
-                       [](Dropped) { return Status::kDropped; },
-                       [](AssemblyFailure failure) {
-                         return failure.transient
-                                    ? Status::kTransientAssemblyFailure
-                                    : Status::kAssemblyFailure;
-                       }},
+  return std::visit(
+      absl::Overload{[](Sent sent) {
+                       switch (sent.result) {
+                         case Sent::Result::kSent:
+                           return Status::kSent;
+                         case Sent::Result::kTransientFailure:
+                           return Status::kTransientFailure;
+                         case Sent::Result::kFailure:
+                           return Status::kFailure;
+                       }
+                     },
+                     [](Dropped) { return Status::kDropped; },
+                     [](Expired) { return Status::kExpired; },
+                     [](AssemblyFailure failure) {
+                       return failure.transient
+                                  ? Status::kTransientAssemblyFailure
+                                  : Status::kAssemblyFailure;
+                     }},
       result);
 }
 

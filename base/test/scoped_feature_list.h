@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -16,14 +17,13 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base::test {
 
 // A reference to a base::Feature and field trial params that should be force
 // enabled and overwritten for test purposes.
 struct FeatureRefAndParams {
-  FeatureRefAndParams(const Feature& feature ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  FeatureRefAndParams(const Feature& feature LIFETIME_BOUND,
                       const FieldTrialParams& params);
 
   FeatureRefAndParams(const FeatureRefAndParams& other);
@@ -41,8 +41,7 @@ struct FeatureRefAndParams {
 class FeatureRef {
  public:
   // NOLINTNEXTLINE(google-explicit-constructor)
-  FeatureRef(const Feature& feature ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : feature_(feature) {}
+  FeatureRef(const Feature& feature LIFETIME_BOUND) : feature_(feature) {}
 
   const Feature& operator*() const { return *feature_; }
   const Feature* operator->() const { return &*feature_; }

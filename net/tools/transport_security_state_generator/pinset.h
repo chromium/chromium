@@ -15,7 +15,7 @@ namespace net::transport_security_state {
 // the same pinset.
 class Pinset {
  public:
-  Pinset(std::string name, std::string report_uri);
+  explicit Pinset(std::string name);
 
   Pinset(const Pinset&) = delete;
   Pinset& operator=(const Pinset&) = delete;
@@ -23,7 +23,6 @@ class Pinset {
   ~Pinset();
 
   const std::string& name() const { return name_; }
-  const std::string& report_uri() const { return report_uri_; }
 
   const std::vector<std::string>& static_spki_hashes() const {
     return static_spki_hashes_;
@@ -42,7 +41,6 @@ class Pinset {
 
  private:
   std::string name_;
-  std::string report_uri_;
 
   // These vectors contain names rather than actual hashes.
   std::vector<std::string> static_spki_hashes_;

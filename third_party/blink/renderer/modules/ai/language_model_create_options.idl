@@ -1,0 +1,126 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/prompt-api
+
+// The argument to the prompt() method and others like it
+typedef (
+  sequence<LanguageModelMessage>
+  // Shorthand for `[{ role: "user", content: [{ type: "text", value: providedValue }] }]`
+  or DOMString
+) LanguageModelPrompt;
+
+// The return type from prompt() or promptStreaming() method.
+typedef (DOMString or sequence<LanguageModelMessageContent>) LanguageModelPromptResult;
+
+dictionary LanguageModelMessage {
+  required LanguageModelMessageRole role;
+
+  // The DOMString branch is shorthand for `[{ type: "text", value: providedValue }]`
+  required (DOMString or sequence<LanguageModelMessageContent>) content;
+
+  // Whether this message is an assistant response prefix.
+  boolean prefix = false;
+};
+
+dictionary LanguageModelMessageContent {
+  required LanguageModelMessageType type;
+  required LanguageModelMessageValue value;
+};
+
+// LINT.IfChange
+enum LanguageModelMessageRole { "system", "user", "assistant", "tool-call", "tool-response" };
+// LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputRole)
+
+// LINT.IfChange
+enum LanguageModelMessageType { "text", "image", "audio", "tool-call", "tool-response" };
+// LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputType)
+
+typedef (
+  ImageBitmapSource
+  or AudioBuffer
+  or HTMLAudioElement
+  or BufferSource
+  or DOMString
+  or LanguageModelToolCall
+  or LanguageModelToolResponse
+) LanguageModelMessageValue;
+
+// Type enum for tool execution results. Used in LanguageModelToolSuccess.result
+// sequence to indicate the content type of each result item.
+// - "text": value should be a string
+// - "image": value should be ImageBitmapSource or ArrayBuffer/ArrayBufferView
+// - "audio": value should be AudioBuffer, HTMLAudioElement, or BufferSource
+// - "object": value should be JSON-serializable (primitives, objects, arrays)
+enum LanguageModelToolResultType { "text", "image", "audio", "object" };
+
+// Individual result item returned from tool execution. Used in the
+// LanguageModelToolSuccess.result sequence to represent text, images, audio,
+// or structured JSON data returned by the tool. The type field indicates
+// the expected content type, and validation is performed at runtime.
+dictionary LanguageModelToolResultContent {
+  required LanguageModelToolResultType type;
+  required any value;
+};
+
+// Represents a tool call requested by the language model.
+dictionary LanguageModelToolCall {
+  // Unique identifier for this tool call within the session.
+  required DOMString callID;
+  // The tool name to be invoked.
+  required DOMString name;
+  // Object fitting the JSON input schema of the tool's declaration.
+  object arguments;
+};
+
+// Successful tool execution result.
+dictionary LanguageModelToolSuccess {
+  required DOMString callID;
+  required DOMString name;
+  required sequence<LanguageModelToolResultContent> result;
+};
+
+// Failed tool execution result.
+dictionary LanguageModelToolError {
+  required DOMString callID;
+  required DOMString name;
+  required DOMString errorMessage;
+};
+
+// The response from executing a tool call - either success or error.
+typedef (LanguageModelToolSuccess or LanguageModelToolError) LanguageModelToolResponse;
+
+// The declaration for a tool that a language model can invoke.
+dictionary LanguageModelToolDeclaration {
+  required DOMString name;
+  required DOMString description;
+  // JSON schema for the input parameters.
+  required object inputSchema;
+};
+
+dictionary LanguageModelCreateCoreOptions {
+  // Note: these two have custom out-of-range handling behavior, not in the IDL layer.
+  // They are unrestricted double so as to allow +Infinity without failing.
+  unrestricted double topK;
+  unrestricted double temperature;
+
+  // The expected types and languages for the session.
+  sequence<LanguageModelExpected> expectedInputs;
+  sequence<LanguageModelExpected> expectedOutputs;
+
+  // Tools that the language model can use.
+  sequence<LanguageModelToolDeclaration> tools;
+};
+
+dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+
+  sequence<LanguageModelMessage> initialPrompts;
+};
+
+dictionary LanguageModelExpected {
+  required LanguageModelMessageType type;
+  sequence<DOMString> languages;
+};

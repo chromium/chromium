@@ -41,18 +41,21 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton" hidden="[[!canGoBack]]"
-      on-click="onBackButtonClicked">
+      on-click="onBackButtonClicked" disabled="[[disabled]]">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button hidden="[[isOwner]]" id="proceedRemove"
-        on-click="onProceedClicked" text-key="continueAnywayButtonLabel">
+        on-click="onProceedClicked" text-key="continueAnywayButtonLabel"
+        disabled="[[disabled]]">
     </oobe-text-button>
     <oobe-text-button hidden= "[[!isOwner]]" id="powerwash"
-        on-click="onResetClicked" text-key="powerwashButtonLabel">
+        on-click="onResetClicked" text-key="powerwashButtonLabel"
+        disabled="[[disabled]]">
     </oobe-text-button>
     <oobe-text-button id="cancel"
-        on-click="onCancelClicked" text-key="cancelButtonLabel">
+        on-click="onCancelClicked" text-key="cancelButtonLabel"
+        disabled="[[disabled]]">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

@@ -23,6 +23,9 @@
     },
     "tasks_api_origin_url": {
       "url": "https://tasks.exampleapis.com"
+    },
+    "people_api_origin_url": {
+      "url": "https://people.exampleapis.com"
     }
   }
 }

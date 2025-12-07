@@ -8,9 +8,13 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_store_base.h"
@@ -26,10 +30,22 @@ class MetadataChangeList;
 class ModelError;
 }  // namespace syncer
 
+namespace net {
+class CanonicalCookie;
+}  // namespace net
+
 namespace ash::floating_sso {
 
 class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnCookiesAddedOrUpdatedRemotely(
+        const std::vector<net::CanonicalCookie>& cookies) = 0;
+    virtual void OnCookiesRemovedRemotely(
+        const std::vector<net::CanonicalCookie>& cookies) = 0;
+  };
+
   using CookieSpecificsEntries =
       std::map<std::string, sync_pb::CookieSpecifics>;
 
@@ -47,8 +63,11 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
@@ -56,13 +75,25 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& storage_key,
       const syncer::EntityData& remote_data) const override;
 
-  void AddOrUpdateCookie(const sync_pb::CookieSpecifics& specifics);
-  void DeleteCookie(const std::string& storage_key);
+  // Methods to notify Sync about local cookie changes on this client.
+  void AddOrUpdateCookie(const net::CanonicalCookie& cookie);
+  void DeleteCookie(const net::CanonicalCookie& cookie);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // `callback` will be run immediately if `MergeFullSyncData` was already
+  // called.
+  void SetOnMergeFullSyncDataCallback(base::OnceClosure callback);
+
+  // Cookie corresponding to `storage_key` will not be overridden by remote
+  // cookie on initial merge of Sync data.
+  void AddToLocallyPreferredCookies(const std::string& storage_key);
 
   // Assumes that the `store_` is initialized.
-  const CookieSpecificsEntries& CookieSpecificsEntriesForTest() const;
+  const CookieSpecificsEntries& CookieSpecificsInStore() const;
   bool IsInitialDataReadFinishedForTest() const;
-  void SetOnCommitCallbackForTest(base::RepeatingClosure callback);
+  void SetOnStoreCommitCallbackForTest(base::RepeatingClosure callback);
 
  private:
   using StoreWithCache =
@@ -75,12 +106,19 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   void OnStoreCommit(const std::optional<syncer::ModelError>& error);
   void CommitToStore(std::unique_ptr<StoreWithCache::WriteBatch> batch);
   bool IsCookieInStore(const std::string& storage_key) const;
+  void OnMergeFullSyncDataFinished();
+  void DeleteCookieWithKey(const std::string& storage_key);
 
   // Whether we finished reading data and metadata from disk on initial bridge
   // creation.
   bool is_initial_data_read_finished_ = false;
 
-  base::RepeatingClosure on_commit_callback_for_test_;
+  base::RepeatingClosure on_store_commit_callback_for_test_;
+
+  // Whether `MergeFullSyncData()` was executed.
+  bool merge_full_sync_data_finished_ = false;
+
+  base::OnceClosure on_merge_full_sync_data_callback_;
 
   // Reads and writes data from/to disk, maintains an in-memory copy of the
   // data.
@@ -88,8 +126,15 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Used to store cookies to be added/deleted while the store or change
   // processor are not ready.
-  std::map<std::string, sync_pb::CookieSpecifics> deferred_cookie_additions_;
+  std::map<std::string, net::CanonicalCookie> deferred_cookie_additions_;
   std::set<std::string> deferred_cookie_deletions_;
+
+  // Storage keys of cookies for which we should always prefer local version
+  // during conflict resolution.
+  base::flat_set<std::string> keep_local_cookie_keys_;
+
+  // Observers which are notified about all incoming remote changes.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<FloatingSsoSyncBridge> weak_ptr_factory_{this};
 };

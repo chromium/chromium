@@ -20,7 +20,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_polyline_element.h"
 
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
 namespace blink {
 
@@ -28,6 +29,10 @@ SVGPolylineElement::SVGPolylineElement(Document& document)
     : SVGPolyElement(svg_names::kPolylineTag, document) {}
 
 Path SVGPolylineElement::AsPath() const {
+  return AsPathFromPoints().Finalize();
+}
+
+PathBuilder SVGPolylineElement::AsMutablePath() const {
   return AsPathFromPoints();
 }
 

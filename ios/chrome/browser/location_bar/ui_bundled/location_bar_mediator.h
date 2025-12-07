@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol LocationBarConsumer;
+class PlaceholderService;
 class TemplateURLService;
 class WebStateList;
 
@@ -16,11 +17,15 @@ class WebStateList;
 // WebState.
 @interface LocationBarMediator : NSObject
 
-- (instancetype)init;
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // The templateURLService used by this mediator to extract whether the default
 // search engine supports search-by-image.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
+
+/// The placeholder used by this mediator to extract placeholder text and image.
+@property(nonatomic, assign) PlaceholderService* placeholderService;
 
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
@@ -32,6 +37,9 @@ class WebStateList;
 
 // Stops observing all objects.
 - (void)disconnect;
+
+// Called when the location is updated.
+- (void)locationUpdated;
 
 @end
 

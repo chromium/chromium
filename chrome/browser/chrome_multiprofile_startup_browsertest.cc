@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -35,7 +34,7 @@ using ::testing::Mock;
 using ::testing::Property;
 using ::testing::ValuesIn;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #error Not supported on this platform.
 #endif
 

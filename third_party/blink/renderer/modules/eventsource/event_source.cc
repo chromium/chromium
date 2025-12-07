@@ -32,10 +32,10 @@
 
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -80,7 +80,7 @@ void ReportUMA(ExecutionContext& context,
                network::mojom::FetchResponseType response_type) {
   if (response_type == network::mojom::FetchResponseType::kCors &&
       (value.size() > 128 ||
-       base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))) {
+       std::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))) {
     UseCounter::Count(context,
                       WebFeature::kFetchEventSourceLastEventIdCorsUnSafe);
   }
@@ -115,9 +115,9 @@ EventSource* EventSource::Create(ExecutionContext* context,
 
   KURL full_url = context->CompleteURL(url);
   if (!full_url.IsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "Cannot open an EventSource to '" + url + "'. The URL is invalid.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      StrCat({"Cannot open an EventSource to '",
+                                              url, "'. The URL is invalid."}));
     return nullptr;
   }
 
@@ -170,8 +170,7 @@ void EventSource::Connect() {
     std::string last_event_id_utf8 = parser_->LastEventId().Utf8();
     request.SetHttpHeaderField(
         http_names::kLastEventID,
-        AtomicString(reinterpret_cast<const LChar*>(last_event_id_utf8.c_str()),
-                     last_event_id_utf8.length()));
+        AtomicString(base::as_byte_span(last_event_id_utf8)));
   }
 
   ResourceLoaderOptions resource_loader_options(world_);
@@ -250,8 +249,7 @@ void EventSource::DidReceiveResponse(uint64_t identifier,
 
   resource_identifier_ = identifier;
   current_url_ = response.CurrentRequestUrl();
-  event_stream_origin_ =
-      SecurityOrigin::Create(response.CurrentRequestUrl())->ToString();
+  event_stream_origin_ = SecurityOrigin::Create(response.CurrentRequestUrl());
   int status_code = response.HttpStatusCode();
   bool mime_type_is_valid = response.MimeType() == "text/event-stream";
   bool response_is_valid = status_code == 200 && mime_type_is_valid;
@@ -310,7 +308,7 @@ void EventSource::DidReceiveData(base::span<const char> data) {
   DCHECK(loader_);
   DCHECK(parser_);
 
-  parser_->AddBytes(data.data(), base::checked_cast<uint32_t>(data.size()));
+  parser_->AddBytes(data);
 }
 
 void EventSource::DidFinishLoading(uint64_t) {

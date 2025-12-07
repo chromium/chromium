@@ -15,7 +15,7 @@ namespace {
 TEST(SpanReaderTest, Construct) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   EXPECT_EQ(r.remaining(), 5u);
   EXPECT_EQ(r.remaining_span().data(), &kArray[0u]);
   EXPECT_EQ(r.remaining_span().size(), 5u);
@@ -24,23 +24,23 @@ TEST(SpanReaderTest, Construct) {
 TEST(SpanReaderTest, Skip) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   EXPECT_EQ(r.num_read(), 0u);
   EXPECT_FALSE(r.Skip(6u));
-  EXPECT_THAT(r.Skip(2u), Optional(base::span(kArray).first(2u)));
+  EXPECT_THAT(r.Skip(2u), Optional(span(kArray).first(2u)));
   EXPECT_EQ(r.num_read(), 2u);
 }
 
 TEST(SpanReaderTest, Read) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   EXPECT_EQ(r.num_read(), 0u);
   {
     auto o = r.Read(2u);
     static_assert(std::same_as<decltype(*o), span<const int>&>);
     ASSERT_TRUE(o.has_value());
-    EXPECT_TRUE(*o == base::span(kArray).subspan(0u, 2u));
+    EXPECT_TRUE(*o == span(kArray).subspan(0u, 2u));
     EXPECT_EQ(r.remaining(), 3u);
     EXPECT_EQ(r.num_read(), 2u);
   }
@@ -55,7 +55,7 @@ TEST(SpanReaderTest, Read) {
     auto o = r.Read(1u);
     static_assert(std::same_as<decltype(*o), span<const int>&>);
     ASSERT_TRUE(o.has_value());
-    EXPECT_TRUE(*o == base::span(kArray).subspan(2u, 1u));
+    EXPECT_TRUE(*o == span(kArray).subspan(2u, 1u));
     EXPECT_EQ(r.remaining(), 2u);
     EXPECT_EQ(r.num_read(), 3u);
   }
@@ -63,7 +63,7 @@ TEST(SpanReaderTest, Read) {
     auto o = r.Read(2u);
     static_assert(std::same_as<decltype(*o), span<const int>&>);
     ASSERT_TRUE(o.has_value());
-    EXPECT_TRUE(*o == base::span(kArray).subspan(3u, 2u));
+    EXPECT_TRUE(*o == span(kArray).subspan(3u, 2u));
     EXPECT_EQ(r.remaining(), 0u);
     EXPECT_EQ(r.num_read(), 5u);
   }
@@ -72,12 +72,12 @@ TEST(SpanReaderTest, Read) {
 TEST(SpanReaderTest, ReadFixed) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   {
     auto o = r.Read<2u>();
     static_assert(std::same_as<decltype(*o), span<const int, 2u>&>);
     ASSERT_TRUE(o.has_value());
-    EXPECT_TRUE(*o == base::span(kArray).subspan(0u, 2u));
+    EXPECT_TRUE(*o == span(kArray).subspan(0u, 2u));
     EXPECT_EQ(r.remaining(), 3u);
   }
   {
@@ -90,14 +90,14 @@ TEST(SpanReaderTest, ReadFixed) {
     auto o = r.Read<1u>();
     static_assert(std::same_as<decltype(*o), span<const int, 1u>&>);
     ASSERT_TRUE(o.has_value());
-    EXPECT_TRUE(*o == base::span(kArray).subspan(2u, 1u));
+    EXPECT_TRUE(*o == span(kArray).subspan(2u, 1u));
     EXPECT_EQ(r.remaining(), 2u);
   }
   {
     auto o = r.Read<2u>();
     static_assert(std::same_as<decltype(*o), span<const int, 2u>&>);
     ASSERT_TRUE(o.has_value());
-    EXPECT_TRUE(*o == base::span(kArray).subspan(3u, 2u));
+    EXPECT_TRUE(*o == span(kArray).subspan(3u, 2u));
     EXPECT_EQ(r.remaining(), 0u);
   }
 }
@@ -105,28 +105,28 @@ TEST(SpanReaderTest, ReadFixed) {
 TEST(SpanReaderTest, ReadInto) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   {
-    base::span<const int> s;
+    span<const int> s;
     EXPECT_TRUE(r.ReadInto(2u, s));
-    EXPECT_TRUE(s == base::span(kArray).subspan(0u, 2u));
+    EXPECT_TRUE(s == span(kArray).subspan(0u, 2u));
     EXPECT_EQ(r.remaining(), 3u);
   }
   {
-    base::span<const int> s;
+    span<const int> s;
     EXPECT_FALSE(r.ReadInto(5u, s));
     EXPECT_EQ(r.remaining(), 3u);
   }
   {
-    base::span<const int> s;
+    span<const int> s;
     EXPECT_TRUE(r.ReadInto(1u, s));
-    EXPECT_TRUE(s == base::span(kArray).subspan(2u, 1u));
+    EXPECT_TRUE(s == span(kArray).subspan(2u, 1u));
     EXPECT_EQ(r.remaining(), 2u);
   }
   {
-    base::span<const int> s;
+    span<const int> s;
     EXPECT_TRUE(r.ReadInto(2u, s));
-    EXPECT_TRUE(s == base::span(kArray).subspan(3u, 2u));
+    EXPECT_TRUE(s == span(kArray).subspan(3u, 2u));
     EXPECT_EQ(r.remaining(), 0u);
   }
 }
@@ -134,11 +134,11 @@ TEST(SpanReaderTest, ReadInto) {
 TEST(SpanReaderTest, ReadCopy) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   {
     std::array<int, 2u> s;
     EXPECT_TRUE(r.ReadCopy(s));
-    EXPECT_TRUE(s == base::span(kArray).subspan(0u, 2u));
+    EXPECT_TRUE(s == span(kArray).subspan(0u, 2u));
     EXPECT_EQ(r.remaining(), 3u);
   }
   {
@@ -149,13 +149,13 @@ TEST(SpanReaderTest, ReadCopy) {
   {
     std::array<int, 1u> s;
     EXPECT_TRUE(r.ReadCopy(s));
-    EXPECT_TRUE(s == base::span(kArray).subspan(2u, 1u));
+    EXPECT_TRUE(s == span(kArray).subspan(2u, 1u));
     EXPECT_EQ(r.remaining(), 2u);
   }
   {
     std::array<int, 2u> s;
     EXPECT_TRUE(r.ReadCopy(s));
-    EXPECT_TRUE(s == base::span(kArray).subspan(3u, 2u));
+    EXPECT_TRUE(s == span(kArray).subspan(3u, 2u));
     EXPECT_EQ(r.remaining(), 0u);
   }
 }
@@ -167,7 +167,7 @@ TEST(SpanReaderTest, ReadBigEndian_Unsigned) {
   {
     uint8_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU8BigEndian(val));
     EXPECT_EQ(r.remaining(), 3u);
@@ -176,7 +176,7 @@ TEST(SpanReaderTest, ReadBigEndian_Unsigned) {
   {
     uint16_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU16BigEndian(val));
     EXPECT_EQ(r.remaining(), 2u);
@@ -185,7 +185,7 @@ TEST(SpanReaderTest, ReadBigEndian_Unsigned) {
   {
     uint32_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU32BigEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -194,7 +194,7 @@ TEST(SpanReaderTest, ReadBigEndian_Unsigned) {
   {
     uint64_t val;
 
-    auto r = SpanReader(base::span(kBigArray));
+    auto r = SpanReader(span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU64BigEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -209,7 +209,7 @@ TEST(SpanReaderTest, ReadBigEndian_Signed) {
   {
     int8_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI8BigEndian(val));
     EXPECT_EQ(r.remaining(), 3u);
@@ -218,7 +218,7 @@ TEST(SpanReaderTest, ReadBigEndian_Signed) {
   {
     int16_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI16BigEndian(val));
     EXPECT_EQ(r.remaining(), 2u);
@@ -227,7 +227,7 @@ TEST(SpanReaderTest, ReadBigEndian_Signed) {
   {
     int32_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI32BigEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -236,7 +236,7 @@ TEST(SpanReaderTest, ReadBigEndian_Signed) {
   {
     int64_t val;
 
-    auto r = SpanReader(base::span(kBigArray));
+    auto r = SpanReader(span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI64BigEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -251,7 +251,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Unsigned) {
   {
     uint8_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU8LittleEndian(val));
     EXPECT_EQ(r.remaining(), 3u);
@@ -260,7 +260,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Unsigned) {
   {
     uint16_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU16LittleEndian(val));
     EXPECT_EQ(r.remaining(), 2u);
@@ -269,7 +269,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Unsigned) {
   {
     uint32_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU32LittleEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -278,7 +278,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Unsigned) {
   {
     uint64_t val;
 
-    auto r = SpanReader(base::span(kBigArray));
+    auto r = SpanReader(span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU64LittleEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -293,7 +293,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Signed) {
   {
     int8_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI8LittleEndian(val));
     EXPECT_EQ(r.remaining(), 3u);
@@ -302,7 +302,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Signed) {
   {
     int16_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI16LittleEndian(val));
     EXPECT_EQ(r.remaining(), 2u);
@@ -311,7 +311,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Signed) {
   {
     int32_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI32LittleEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -320,7 +320,7 @@ TEST(SpanReaderTest, ReadLittleEndian_Signed) {
   {
     int64_t val;
 
-    auto r = SpanReader(base::span(kBigArray));
+    auto r = SpanReader(span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI64LittleEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -335,7 +335,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Unsigned) {
   {
     uint8_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU8NativeEndian(val));
     EXPECT_EQ(r.remaining(), 3u);
@@ -344,7 +344,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Unsigned) {
   {
     uint16_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU16NativeEndian(val));
     EXPECT_EQ(r.remaining(), 2u);
@@ -353,7 +353,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Unsigned) {
   {
     uint32_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU32NativeEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -362,7 +362,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Unsigned) {
   {
     uint64_t val;
 
-    auto r = SpanReader(base::span(kBigArray));
+    auto r = SpanReader(span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadU64NativeEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -377,7 +377,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Signed) {
   {
     int8_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI8NativeEndian(val));
     EXPECT_EQ(r.remaining(), 3u);
@@ -386,7 +386,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Signed) {
   {
     int16_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI16NativeEndian(val));
     EXPECT_EQ(r.remaining(), 2u);
@@ -395,7 +395,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Signed) {
   {
     int32_t val;
 
-    auto r = SpanReader(base::span(kArray));
+    auto r = SpanReader(span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI32NativeEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -404,7 +404,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Signed) {
   {
     int64_t val;
 
-    auto r = SpanReader(base::span(kBigArray));
+    auto r = SpanReader(span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.ReadI64NativeEndian(val));
     EXPECT_EQ(r.remaining(), 0u);
@@ -415,7 +415,7 @@ TEST(SpanReaderTest, ReadNativeEndian_Signed) {
 TEST(SpanReaderTest, ReadChar) {
   std::array<const uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
 
-  auto r = SpanReader(base::span(kArray));
+  auto r = SpanReader(span(kArray));
   EXPECT_EQ(r.num_read(), 0u);
 
   char c;

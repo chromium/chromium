@@ -13,8 +13,8 @@ goog.provide('goog.dom.iter.AncestorIterator');
 goog.provide('goog.dom.iter.ChildIterator');
 goog.provide('goog.dom.iter.SiblingIterator');
 
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 
 
 
@@ -45,21 +45,24 @@ goog.dom.iter.SiblingIterator = function(node, opt_includeNode, opt_reverse) {
   this.reverse_ = !!opt_reverse;
 
   if (node && !opt_includeNode) {
-    this.nextValueOrThrow();
+    this.next();
   }
 };
 goog.inherits(goog.dom.iter.SiblingIterator, goog.iter.Iterator);
 
 
-/** @override */
-goog.dom.iter.SiblingIterator.prototype.nextValueOrThrow = function() {
+/**
+ * @return {!IIterableResult<!Node>}
+ * @override
+ */
+goog.dom.iter.SiblingIterator.prototype.next = function() {
   'use strict';
   var node = this.node_;
   if (!node) {
-    throw goog.iter.StopIteration;
+    return goog.iter.ES6_ITERATOR_DONE;
   }
   this.node_ = this.reverse_ ? node.previousSibling : node.nextSibling;
-  return node;
+  return goog.iter.createEs6IteratorYield(node);
 };
 
 
@@ -106,19 +109,22 @@ goog.dom.iter.AncestorIterator = function(node, opt_includeNode) {
   this.node_ = node;
 
   if (node && !opt_includeNode) {
-    this.nextValueOrThrow();
+    this.next();
   }
 };
 goog.inherits(goog.dom.iter.AncestorIterator, goog.iter.Iterator);
 
 
-/** @override */
-goog.dom.iter.AncestorIterator.prototype.nextValueOrThrow = function() {
+/**
+ * @return {!IIterableResult<!Node>}
+ * @override
+ */
+goog.dom.iter.AncestorIterator.prototype.next = function() {
   'use strict';
   var node = this.node_;
   if (!node) {
-    throw goog.iter.StopIteration;
+    return goog.iter.ES6_ITERATOR_DONE;
   }
   this.node_ = node.parentNode;
-  return node;
+  return goog.iter.createEs6IteratorYield(node);
 };

@@ -34,9 +34,7 @@ const char kUnlockEventName[] = "easy_unlock";
 
 // Serializes the |value| to a JSON string and returns the result.
 std::string SerializeValueToJson(const base::Value::Dict& value) {
-  std::string json;
-  base::JSONWriter::Write(value, &json);
-  return json;
+  return base::WriteJson(value).value_or("");
 }
 
 // Returns the message type represented by the |message|. This is a convenience
@@ -147,14 +145,14 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  std::optional<base::Value> message_value = base::JSONReader::Read(message);
-  if (!message_value || !message_value->is_dict()) {
+  std::optional<base::Value::Dict> message_value =
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!message_value) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;
     return;
   }
 
-  const base::Value::Dict& message_dictionary = message_value->GetDict();
-  const std::string* type = message_dictionary.FindString(kTypeKey);
+  const std::string* type = message_value->FindString(kTypeKey);
   if (!type) {
     PA_LOG(ERROR) << "Missing '" << kTypeKey << "' key in message:\n "
                   << message;
@@ -163,7 +161,7 @@ void MessengerImpl::HandleMessage(const std::string& message) {
 
   // Remote status updates can be received out of the blue.
   if (*type == kMessageTypeRemoteStatusUpdate) {
-    HandleRemoteStatusUpdateMessage(message_dictionary);
+    HandleRemoteStatusUpdateMessage(*message_value);
     return;
   }
 
@@ -178,6 +176,9 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   if (pending_message_->type == kMessageTypeUnlockRequest) {
     expected_type = kMessageTypeUnlockResponse;
   } else {
+    // (crbug.com/286944516): Unexpected path occurring.
+    PA_LOG(ERROR) << "Response received from unexpected message type: "
+                  << pending_message_->type;
     DUMP_WILL_BE_NOTREACHED();  // There are no other message types
                                 // that expect a response.
   }
@@ -190,10 +191,9 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   }
 
   if (*type == kMessageTypeUnlockResponse) {
-    HandleUnlockResponseMessage(message_dictionary);
+    HandleUnlockResponseMessage(*message_value);
   } else {
-    NOTREACHED_IN_MIGRATION();  // There are no other message types that expect
-                                // a response.
+    NOTREACHED();  // There are no other message types that expect a response.
   }
 
   pending_message_.reset();
@@ -210,8 +210,15 @@ void MessengerImpl::OnSendMessageResult(bool success) {
   // Don't wait if the message could not be sent, as there won't ever be a
   // response in that case. Likewise, don't wait for a response to local
   // event messages, as there is no response for such messages.
-  if (success && pending_message_->type != kMessageTypeLocalEvent)
+  if (success && pending_message_->type != kMessageTypeLocalEvent) {
     return;
+  }
+
+  // Be prepared in case that an observer deletes this object.
+  //
+  // Note that it's not clear whether it's allowed/supported by design or not
+  // that an observer deletes this object. See also crbug.com/392028938
+  base::WeakPtr<MessengerImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   // Notify observer of failure if sending the message fails.
   // For local events, we don't expect a response, so on success, we
@@ -225,6 +232,12 @@ void MessengerImpl::OnSendMessageResult(bool success) {
   } else {
     PA_LOG(ERROR) << "Message of unknown type '" << pending_message_->type
                   << "' sent.";
+  }
+
+  // Note that it's not clear whether it's allowed/supported by design or not
+  // that an observer deletes this object. See also crbug.com/392028938
+  if (!weak_this) {
+    return;  // An observer has deleted this object.
   }
 
   pending_message_.reset();

@@ -18,6 +18,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -37,15 +38,14 @@ TCPClientSocket::TCPClientSocket(
     net::NetLog* net_log,
     const net::NetLogSource& source,
     handles::NetworkHandle network)
-    : TCPClientSocket(
-          std::make_unique<TCPSocket>(std::move(socket_performance_watcher),
-                                      net_log,
-                                      source),
-          addresses,
-          -1 /* current_address_index */,
-          nullptr /* bind_address */,
-          network_quality_estimator,
-          network) {}
+    : TCPClientSocket(TCPSocket::Create(std::move(socket_performance_watcher),
+                                        net_log,
+                                        source),
+                      addresses,
+                      -1 /* current_address_index */,
+                      nullptr /* bind_address */,
+                      network_quality_estimator,
+                      network) {}
 
 TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                                  const IPEndPoint& peer_address)
@@ -73,7 +73,7 @@ TCPClientSocket::TCPClientSocket(
 TCPClientSocket::~TCPClientSocket() {
   Disconnect();
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 }
 
@@ -91,8 +91,7 @@ std::unique_ptr<TCPClientSocket> TCPClientSocket::CreateFromBoundSocket(
 int TCPClientSocket::Bind(const IPEndPoint& address) {
   if (current_address_index_ >= 0 || bind_address_) {
     // Cannot bind the socket if we are already connected or connecting.
-    NOTREACHED_IN_MIGRATION();
-    return ERR_UNEXPECTED;
+    NOTREACHED();
   }
 
   int result = OK;
@@ -173,7 +172,7 @@ TCPClientSocket::TCPClientSocket(
   if (socket_->IsValid())
     socket_->SetDefaultOptionsForClient();
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 }
 
@@ -222,9 +221,7 @@ int TCPClientSocket::DoConnectLoop(int result) {
         rv = DoConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state " << state;
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state " << state;
     }
   } while (rv != ERR_IO_PENDING && next_connect_state_ != CONNECT_STATE_NONE);
 
@@ -243,6 +240,10 @@ int TCPClientSocket::DoConnect() {
   }
 
   next_connect_state_ = CONNECT_STATE_CONNECT_COMPLETE;
+
+  if (!IsPortAllowedForIpEndpoint(endpoint)) {
+    return ERR_UNSAFE_PORT;
+  }
 
   if (!socket_->IsValid()) {
     int result = OpenSocket(endpoint.GetFamily());
@@ -393,7 +394,7 @@ bool TCPClientSocket::WasEverUsed() const {
 }
 
 NextProto TCPClientSocket::GetNegotiatedProtocol() const {
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool TCPClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
@@ -570,10 +571,11 @@ void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
   // failure. Note that failures also include cases when the connect attempt
   // was cancelled by the client before the handshake completed.
   if (result == OK) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Success",
-                               duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Net.TcpConnectAttempt.Latency.Success", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error",
+                                          duration);
   }
 }
 

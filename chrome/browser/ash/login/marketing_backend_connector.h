@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_MARKETING_BACKEND_CONNECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -71,7 +72,7 @@ class MarketingBackendConnector
   void SetTokenAndStartRequest();
 
   // Handles responses from the SimpleURLLoader
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
   void OnSimpleLoaderCompleteInternal(int response_code,
                                       const std::string& data);
 

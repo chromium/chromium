@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/test/chromedriver/logging.h"
 
@@ -13,6 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -21,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -58,14 +56,14 @@ int64_t g_start_time = 0;
 bool readable_timestamp;
 
 // Array indices are the Log::Level enum values.
-const char* const kLevelToName[] = {
-  "ALL",  // kAll
-  "DEBUG",  // kDebug
-  "INFO",  // kInfo
-  "WARNING",  // kWarning
-  "SEVERE",  // kError
-  "OFF",  // kOff
-};
+constexpr auto kLevelToName = std::to_array<const char*>({
+    "ALL",      // kAll
+    "DEBUG",    // kDebug
+    "INFO",     // kInfo
+    "WARNING",  // kWarning
+    "SEVERE",   // kError
+    "OFF",      // kOff
+});
 
 const char* LevelToName(Log::Level level) {
   const int index = level - Log::kAll;
@@ -79,14 +77,14 @@ struct LevelPair {
   Log::Level level;
 };
 
-const LevelPair kNameToLevel[] = {
+constexpr auto kNameToLevel = std::to_array<LevelPair>({
     {"ALL", Log::kAll},
     {"DEBUG", Log::kDebug},
     {"INFO", Log::kInfo},
     {"WARNING", Log::kWarning},
     {"SEVERE", Log::kError},
     {"OFF", Log::kOff},
-};
+});
 
 Log::Level GetLevelFromSeverity(int severity) {
   switch (severity) {

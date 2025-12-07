@@ -9,9 +9,6 @@
  * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
-/* TODO(crbug.com/40234138): update the style after UI design
-  spec is finalized.*/
-
 :host {
   align-items: center;
   cursor: pointer;

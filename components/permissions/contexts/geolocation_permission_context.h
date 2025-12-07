@@ -9,7 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_request_data.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
@@ -22,6 +24,24 @@ class WebContents;
 
 namespace permissions {
 
+// This context handles geolocation permission requests.
+
+// Geolocation has been represented by a ContentSetting for a long time.
+// With approximate location (`features::kApproximateGeolocationPermission`)
+// we plan to migrate away from this and rely on a permission state
+// supporting options. Currently this context deals with both approaches, as the
+// feature has not been launched yet.
+//
+// There are two separate storage locations for the permission state, and
+// whether one or both are used, as well as which ContentSettingType is
+// associated with this context, depends on whether
+// features::kApproximateGeolocationPermission is active.
+
+// - inactive: The associated ContentSettingsType is GEOLOCATION. Only the
+//             ContentSetting for GEOLOCATION is used.
+// - active: The associated ContentSettingsType is GEOLOCATION_WITH_OPTIONS. The
+//           context manages the permission as a multi-state permission, which
+//           is persisted as a PermissionSetting.
 class GeolocationPermissionContext : public PermissionContextBase {
  public:
   // Delegate which allows embedders to modify the logic of the geolocation
@@ -33,9 +53,7 @@ class GeolocationPermissionContext : public PermissionContextBase {
     // Allows the delegate to override the context's DecidePermission() logic.
     // If this returns true, the base context's DecidePermission() will not be
     // called.
-    virtual bool DecidePermission(const PermissionRequestID& id,
-                                  const GURL& requesting_origin,
-                                  bool user_gesture,
+    virtual bool DecidePermission(const PermissionRequestData& request_data,
                                   BrowserPermissionCallback* callback,
                                   GeolocationPermissionContext* context) = 0;
 
@@ -61,8 +79,13 @@ class GeolocationPermissionContext : public PermissionContextBase {
 
   ~GeolocationPermissionContext() override;
 
-  void DecidePermission(PermissionRequestData request_data,
-                        BrowserPermissionCallback callback) override;
+  void DecidePermission(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      BrowserPermissionCallback callback) override;
+
+  void UpdateSetting(const PermissionRequestData& request_data,
+                     PermissionSetting setting,
+                     bool is_one_time) override;
 
   base::WeakPtr<GeolocationPermissionContext> GetWeakPtr();
 
@@ -72,9 +95,12 @@ class GeolocationPermissionContext : public PermissionContextBase {
  protected:
   std::unique_ptr<Delegate> delegate_;
 
+  std::unique_ptr<PermissionResolver> CreatePermissionResolver(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor)
+      const override;
+
  private:
-  void UpdateTabContext(const PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;
 
   device::mojom::GeolocationControl* GetGeolocationControl();

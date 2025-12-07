@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <array>
+#include <cstdint>
 #include <vector>
 
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 
 // Expected rewrite:
 // base::span<T> get()
@@ -49,23 +52,30 @@ void fct() {
   // base::span<int> e = d;
   base::span<int> e = d;
 
-  e++;  // Buffer usage, leads e to be rewritten.
+  // Expected rewrite:
+  // base::PostIncrementSpan(e);
+  base::PostIncrementSpan(e);  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> f = get<int>();
   base::span<int> f = get<int>();
 
-  ++f;  // Leads to f being rewritten.
+  // Expected rewrite:
+  // base::PreIncrementSpan(f);
+  base::PreIncrementSpan(f);  // Leads to f being rewritten.
 
   // Exptected rewrite:
   // base::span<int> g = (condition) ? ctn1 : ctn2;
   base::span<int> g = (condition) ? ctn1 : ctn2;
 
-  g += 1;  // buffer udage: leads g to be rewritten.
+  // Buffer usage: leads `g` to be rewritten.
+  // Expected rewrite:
+  // g = g.subspan(1u);
+  g = g.subspan(1u);
 
   // Expected rewrite:
-  // base::span<char> h = reinterpret_cast<char*>(g);
-  base::span<char> h = reinterpret_cast<char*>(g);
+  // base::span<char> h = base::as_writable_byte_span(g);
+  base::span<char> h = base::as_writable_byte_span(g);
   h[index] = 'x';
 }
 
@@ -107,28 +117,39 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::span<char> buf2 = new char[5];
+  // buf2 = buf2.subspan(1);
   base::span<char> buf2 = new char[5];
-  buf2 += 1;
+  // Expected rewrite:
+  // buf2 = buf2.subspan(1u);
+  buf2 = buf2.subspan(1u);
 
   // Expected rewrite:
   // base::raw_span<char> buf3 = buf2;
+  // buf3 = buf3.subspan(1);
   base::raw_span<char> buf3 = buf2;
-  buf3 += 1;
+  // Expected rewrite:
+  // buf3 = buf3.subspan(1u);
+  buf3 = buf3.subspan(1u);
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
-  base::base::raw_span<char> buf4 = buf3;
-  buf4++;
+  // base::PostIncrementSpan(buf4);
+  base::raw_span<char> buf4 = buf3;
+  base::PostIncrementSpan(buf4);
 
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
+  // buf5 = buf5.subspan(1);
   base::raw_span<char> buf5 = buf4;
-  buf5 = buf5 + 1;
+  // Expected rewrite:
+  // buf5 = buf5.subspan(1u);
+  buf5 = buf5.subspan(1u);
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
+  // base::PreIncrementSpan(buf6);
   base::raw_span<char> buf6 = buf5;
-  ++buf6;
+  base::PreIncrementSpan(buf6);
 
   // Expected rewrite:
   // buf6[0] = 'c';
@@ -136,7 +157,8 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = (buf6 + index).data();
-  raw_ptr<char> buf7 = (buf6 + index).data();
+  // raw_ptr<char> buf7 =
+  // buf6.subspan(base::checked_cast<size_t>(index)).data();
+  raw_ptr<char> buf7 = buf6.subspan(base::checked_cast<size_t>(index)).data();
   (void)buf7;
 }

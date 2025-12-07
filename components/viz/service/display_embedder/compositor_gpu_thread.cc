@@ -15,7 +15,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/switches.h"
-#include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -39,14 +39,9 @@
 namespace viz {
 
 // static
-std::unique_ptr<CompositorGpuThread> CompositorGpuThread::MaybeCreate(
+std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
     const CreateParams& params) {
   DCHECK(params.gpu_channel_manager);
-
-  if (!features::IsDrDcEnabled() ||
-      params.gpu_channel_manager->gpu_driver_bug_workarounds().disable_drdc) {
-    return nullptr;
-  }
 
 #if DCHECK_IS_ON()
 #if BUILDFLAG(IS_ANDROID)
@@ -76,6 +71,7 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::MaybeCreate(
     compositor_thread_device_queue->InitializeForCompositorGpuThread(
         device_queue->GetVulkanPhysicalDevice(),
         device_queue->GetVulkanDevice(), device_queue->GetVulkanQueue(),
+        device_queue->GetVulkanQueueLockContext(),
         device_queue->GetVulkanQueueIndex(), device_queue->enabled_extensions(),
         device_queue->enabled_device_features_2(),
         device_queue->vma_allocator());
@@ -135,7 +131,6 @@ CompositorGpuThread::GetSharedContextState() {
   const auto& gpu_preferences = gpu_channel_manager_->gpu_preferences();
 
   const bool use_passthrough_decoder =
-      gpu::gles2::PassthroughCommandDecoderSupported() &&
       gpu_preferences.use_passthrough_cmd_decoder;
   gl::GLContextAttribs attribs =
       gpu::gles2::GenerateGLContextAttribsForCompositor(
@@ -155,15 +150,6 @@ CompositorGpuThread::GetSharedContextState() {
   // GL resources with the contexts created on gpu main thread.
   auto context =
       gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
-
-  if (!context && !features::UseGles2ForOopR()) {
-    LOG(ERROR) << "Failed to create GLES3 context, fallback to GLES2.";
-    attribs.client_major_es_version = 2;
-    attribs.client_minor_es_version = 0;
-    context =
-        gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
-  }
-
   if (!context) {
     LOG(ERROR) << "Failed to create shared context";
     return nullptr;
@@ -196,7 +182,9 @@ CompositorGpuThread::GetSharedContextState() {
 #else
       /*dawn_context_provider=*/nullptr,
 #endif
-      /*peak_memory_monitor=*/weak_ptr_factory_.GetWeakPtr(),
+      /*peak_memory_monitor=*/
+      gpu_channel_manager_->peak_memory_monitor(),
+      /*direct_rendering_display_compositor_enabled=*/true,
       /*created_on_compositor_gpu_thread=*/true);
 
   auto gles2_feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
@@ -212,6 +200,7 @@ CompositorGpuThread::GetSharedContextState() {
   // Initialize Skia.
   if (!shared_context_state->InitializeSkia(
           gpu_preferences, workarounds, gpu_channel_manager_->gr_shader_cache(),
+          gpu_channel_manager_->persistent_cache(),
           gpu_channel_manager_->use_shader_cache_shm_count(),
           /*progress_reporter=*/nullptr)) {
     LOG(ERROR) << "Failed to Initialize Skia for DrDC SharedContextState";
@@ -223,7 +212,17 @@ CompositorGpuThread::GetSharedContextState() {
 bool CompositorGpuThread::Initialize() {
   // Setup thread options.
   base::Thread::Options thread_options(base::MessagePumpType::DEFAULT, 0);
-  thread_options.thread_type = base::ThreadType::kCompositing;
+  thread_options.thread_type = base::ThreadType::kDisplayCritical;
+
+#if BUILDFLAG(IS_MAC)
+  thread_options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
+
+  // Note: The WorkBatchSize is different from GpuMain thread set. Revisit the
+  // following code if any regression is found. See GpuMain() and
+  // crbug.com/40668161.
+  // std::unique_ptr<base::SingleThreadTaskExecutor> thread_task_executor;
+  // thread_task_executor->SetWorkBatchSize(2);
+#endif
   StartWithOptions(std::move(thread_options));
 
   // Wait until thread is started and Init() is executed in order to return
@@ -232,9 +231,13 @@ bool CompositorGpuThread::Initialize() {
   return init_succeeded_;
 }
 
-void CompositorGpuThread::HandleMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+void CompositorGpuThread::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(task_runner()->BelongsToCurrentThread());
+
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
 
   // Context should be current for cache/memory cleanup.
   if (shared_context_state_ &&
@@ -255,16 +258,17 @@ void CompositorGpuThread::Init() {
   // Making sure to create the |memory_pressure_listener_| on
   // CompositorGpuThread since this callback will be called on the thread it was
   // created on.
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&CompositorGpuThread::HandleMemoryPressure,
-                                     base::Unretained(this))),
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kCompositorGpuThread,
+          this),
   init_succeeded_ = true;
 }
 
 void CompositorGpuThread::CleanUp() {
   // Destroying |memory_pressure_listener_| here to ensure its destroyed on the
   // same thread on which it was created on.
-  memory_pressure_listener_.reset();
+  memory_pressure_listener_registration_.reset();
   if (watchdog_thread_)
     watchdog_thread_->OnGpuProcessTearDown();
 
@@ -276,15 +280,6 @@ void CompositorGpuThread::CleanUp() {
 
   // WatchDogThread destruction should happen on the CompositorGpuThread.
   watchdog_thread_.reset();
-}
-
-void CompositorGpuThread::OnMemoryAllocatedChange(
-    gpu::CommandBufferId id,
-    uint64_t old_size,
-    uint64_t new_size,
-    gpu::GpuPeakMemoryAllocationSource source) {
-  gpu_channel_manager_->GetOnMemoryAllocatedChangeCallback().Run(
-      id, old_size, new_size, source);
 }
 
 void CompositorGpuThread::OnBackgrounded() {
@@ -301,9 +296,7 @@ void CompositorGpuThread::OnBackgroundedOnCompositorGpuThread() {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (shared_context_state_) {
-    shared_context_state_->PurgeMemory(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    shared_context_state_->PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 }
 
@@ -328,6 +321,26 @@ void CompositorGpuThread::LoseContext() {
     shared_context_state_->MarkContextLost();
     shared_context_state_.reset();
   }
+}
+
+void CompositorGpuThread::AddVideoMemoryUsageStatsOnCompositorGpu(
+    GetVideoMemoryUsageStatsCallback callback,
+    gpu::VideoMemoryUsageStats video_memory_usage_stats) {
+  if (!task_runner()->BelongsToCurrentThread()) {
+    task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CompositorGpuThread::AddVideoMemoryUsageStatsOnCompositorGpu,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            video_memory_usage_stats));
+    return;
+  }
+
+  uint64_t size = GetSharedContextState()->GetMemoryUsage();
+  video_memory_usage_stats.process_map[base::GetCurrentProcId()].video_memory +=
+      size;
+  video_memory_usage_stats.bytes_allocated += size;
+  std::move(callback).Run(video_memory_usage_stats);
 }
 
 }  // namespace viz

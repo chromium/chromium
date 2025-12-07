@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/display/display.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -72,8 +73,7 @@ void DrmWindowHost::Hide() {}
 void DrmWindowHost::Close() {}
 
 bool DrmWindowHost::IsVisible() const {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 void DrmWindowHost::PrepareForShutdown() {}
@@ -90,14 +90,13 @@ gfx::Rect DrmWindowHost::GetBoundsInPixels() const {
 }
 
 void DrmWindowHost::SetBoundsInDIP(const gfx::Rect& bounds) {
-  NOTREACHED_IN_MIGRATION();
   // No scaling at DRM level and should always use pixel bounds.
+  NOTREACHED();
 }
 
 gfx::Rect DrmWindowHost::GetBoundsInDIP() const {
   // No scaling at DRM level and should always use pixel bounds.
-  NOTREACHED_IN_MIGRATION();
-  return bounds_;
+  NOTREACHED();
 }
 
 void DrmWindowHost::SetTitle(const std::u16string& title) {}
@@ -148,6 +147,11 @@ void DrmWindowHost::MoveCursorTo(const gfx::Point& location) {
   event_factory_->WarpCursorTo(widget_, gfx::PointF(location));
 }
 
+void DrmWindowHost::SynthesizeMouseMove(const gfx::PointF& location) {
+  window_manager_->ForceCursorUpdateOnNextMouseMove();
+  event_factory_->SynthesizeMouseMove(location);
+}
+
 void DrmWindowHost::ConfineCursorToBounds(const gfx::Rect& bounds) {
   if (cursor_confined_bounds_ == bounds)
     return;
@@ -157,25 +161,24 @@ void DrmWindowHost::ConfineCursorToBounds(const gfx::Rect& bounds) {
 }
 
 void DrmWindowHost::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::Rect DrmWindowHost::GetRestoredBoundsInDIP() const {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
 }
 
 void DrmWindowHost::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                    const gfx::ImageSkia& app_icon) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DrmWindowHost::SizeConstraintsChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-void DrmWindowHost::OnMouseEnter() {
-  delegate_->OnMouseEnter();
+void DrmWindowHost::OnCursorUpdate() {
+  delegate_->OnCursorUpdate();
 }
 
 bool DrmWindowHost::CanDispatchEvent(const PlatformEvent& event) {

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #import "testing/gtest_mac.h"
 #include "ui/gfx/geometry/point.h"
@@ -112,17 +111,11 @@ TEST_F(TabbedPaneAccessibilityMacTest, AttributesMatchAppKit) {
       GetLegacyA11yAttributeValue(cocoa_tabs[0], NSAccessibilityRoleAttribute),
       A11yElementAtPoint(TabCenterPoint(0)).accessibilityRole);
 
-  // Older versions of Cocoa expose browser tabs with the accessible role
-  // description of "radio button." We match the user experience of more recent
-  // versions of Cocoa by exposing the role description of "tab" even in older
-  // versions of macOS. Doing so causes a mismatch between native Cocoa and our
-  // tabs.
-  if (base::mac::MacOSMajorVersion() >= 12) {
-    EXPECT_NSEQ(
-        GetLegacyA11yAttributeValue(cocoa_tabs[0],
-                                    NSAccessibilityRoleDescriptionAttribute),
-        A11yElementAtPoint(TabCenterPoint(0)).accessibilityRoleDescription);
-  }
+  EXPECT_NSEQ(
+      GetLegacyA11yAttributeValue(cocoa_tabs[0],
+                                  NSAccessibilityRoleDescriptionAttribute),
+      A11yElementAtPoint(TabCenterPoint(0)).accessibilityRoleDescription);
+
   EXPECT_NSEQ(
       GetLegacyA11yAttributeValue(cocoa_tabs[0], NSAccessibilityTitleAttribute),
       A11yElementAtPoint(TabCenterPoint(0)).accessibilityTitle);

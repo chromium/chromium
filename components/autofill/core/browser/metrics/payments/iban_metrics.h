@@ -6,33 +6,43 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
 
 // This includes all possible results.
-// They will be used in metrics, and should not be renumbered.
-enum class SaveIbanBubbleResult {
-  // The user explicitly accepted the bubble by clicking the ok button.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+enum class SaveIbanPromptResult {
+  // The user explicitly accepted the prompt by clicking the ok button.
   kAccepted = 0,
-  // The user explicitly cancelled the bubble by clicking the cancel button.
+  // The user explicitly cancelled the prompt by clicking the cancel button.
   kCancelled = 1,
-  // The user explicitly closed the bubble with the close button or ESC.
+  // The user explicitly closed the prompt with the close button or ESC.
   kClosed = 2,
-  // The user did not interact with the bubble.
+  // The user did not interact with the prompt.
   kNotInteracted = 3,
-  // The bubble lost focus and was deactivated.
+  // The prompt lost focus and was deactivated.
   kLostFocus = 4,
-  // The reason why the bubble is closed is not clear. Possible reason is the
+  // The reason why the prompt is closed is not clear. Possible reason is the
   // logging function is invoked before the closed reason is correctly set.
   kUnknown = 5,
   kMaxValue = kUnknown,
 };
 
 // Metrics to track event when the IBAN prompt is offered.
-// They will be used in metrics, and should not be renumbered.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class SaveIbanPromptOffer {
   // The prompt is actually shown.
   kShown = 0,
@@ -44,6 +54,7 @@ enum class SaveIbanPromptOffer {
 
 // Metrics to track events related to individual IBAN suggestions in the
 // IBANs suggestions popup.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class IbanSuggestionsEvent {
@@ -62,7 +73,6 @@ enum class IbanSuggestionsEvent {
   // suggestion for the same field, or if the user alternates between this IBAN
   // field and the other non-IBAN fields and then click on IBAN suggestion.
   kLocalIbanSuggestionSelectedOnce = 3,
-
   // An individual server IBAN suggestion was selected.
   kServerIbanSuggestionSelected = 4,
   // An individual server IBAN suggestion was selected. Logged only once per
@@ -74,6 +84,9 @@ enum class IbanSuggestionsEvent {
 };
 
 // Metrics to track the site blocklist status when showing IBAN suggestions.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class IbanSuggestionBlockListStatus {
   // IBAN suggestions were allowed.
   kAllowed = 0,
@@ -87,6 +100,7 @@ enum class IbanSuggestionBlockListStatus {
 
 // Log all the scenarios that contribute to the decision of whether IBAN
 // upload is enabled or not.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class IbanUploadEnabledStatus {
@@ -102,6 +116,9 @@ enum class IbanUploadEnabledStatus {
 // Metric to measure if an IBAN for which an upload action was taken (offered,
 // accepted, declined, ignored) is already stored as a local IBAN on the device
 // or if it's a new IBAN.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class UploadIbanOriginMetric {
   // IBAN upload action happened for a local IBAN already on the device.
   kLocalIban = 0,
@@ -111,6 +128,9 @@ enum class UploadIbanOriginMetric {
 };
 
 // Metric to track the metrics for an IBAN upload offer.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class UploadIbanActionMetric {
   kOffered = 0,
   kAccepted = 1,
@@ -143,19 +163,19 @@ void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
 void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
                          UploadIbanActionMetric action_metric);
 
-// Logs when IBAN save bubble is offered to users.
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+// Logs when IBAN save prompt is offered to users.
+void LogSaveIbanPromptOfferMetric(SaveIbanPromptOffer metric,
                                   bool is_reshow,
                                   bool is_upload_save);
 
-// Logs when the user makes a decision on the IBAN save bubble.
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+// Logs when the user makes a decision on the IBAN save prompt.
+void LogSaveIbanPromptResultMetric(SaveIbanPromptResult metric,
                                    bool is_reshow,
                                    bool is_upload_save);
 
-// Logs when the user accepts the bubble to save an IBAN.
+// Logs when the user accepts the prompt to save an IBAN.
 // `save_with_nickname` donates the user has input a nickname.
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+void LogSaveIbanPromptResultSavedWithNicknameMetric(bool save_with_nickname,
                                                     bool is_upload_save);
 
 // Logs metrics related to IBAN individual suggestions being shown or selected.

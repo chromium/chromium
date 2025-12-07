@@ -96,12 +96,12 @@ function setupHeaderFooterTemplate(options) {
   const rightMargin = options.width - options.rightMargin;
 
   header.innerHTML = options['headerTemplate'] || `
-    <div class='date text left'></div>
-    <div class='title text center'></div>`;
+    <div id=-internal-print-header class='date text left'></div>
+    <div id=-internal-print-header class='title text center'></div>`;
   footer.innerHTML = options['footerTemplate'] || `
-    <div class='url text left grow'></div>
-    <div class='text right'>
-      <span class='pageNumber'></span>/<span class='totalPages'></span>
+    <div id=-internal-print-footer class='url text left grow'></div>
+    <div id=-internal-print-page-number class='text right'>
+      <span class='pageNumber' id=-internal-print-page-number></span>/<span class='totalPages' id=-internal-print-page-number></span>
     </div>`;
 
   const date = new Date(options.date);

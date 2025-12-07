@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.logo;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Responsible for building and setting properties on the logo.*/
+/** Responsible for building and setting properties on the logo. */
+@NullMarked
 class LogoViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> {
     @Override
@@ -23,9 +25,11 @@ class LogoViewBinder
         } else if (LogoProperties.LOGO_TOP_MARGIN == propertyKey) {
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
             marginLayoutParams.topMargin = model.get(LogoProperties.LOGO_TOP_MARGIN);
+            logoView.setLayoutParams(marginLayoutParams);
         } else if (LogoProperties.LOGO_BOTTOM_MARGIN == propertyKey) {
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
             marginLayoutParams.bottomMargin = model.get(LogoProperties.LOGO_BOTTOM_MARGIN);
+            logoView.setLayoutParams(marginLayoutParams);
         } else if (LogoProperties.SET_END_FADE_ANIMATION == propertyKey) {
             logoView.endFadeAnimation();
         } else if (LogoProperties.VISIBILITY == propertyKey) {
@@ -40,16 +44,19 @@ class LogoViewBinder
             logoView.updateLogo(model.get(LogoProperties.LOGO));
         } else if (LogoProperties.DEFAULT_GOOGLE_LOGO == propertyKey) {
             logoView.setDefaultGoogleLogo(model.get(LogoProperties.DEFAULT_GOOGLE_LOGO));
+        } else if (LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE == propertyKey) {
+            logoView.setDefaultGoogleLogoDrawable(
+                    model.get(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE));
         } else if (LogoProperties.SHOW_LOADING_VIEW == propertyKey) {
             logoView.showLoadingView();
         } else if (LogoProperties.ANIMATED_LOGO == propertyKey) {
             logoView.playAnimatedLogo(model.get(LogoProperties.ANIMATED_LOGO));
         } else if (LogoProperties.LOGO_AVAILABLE_CALLBACK == propertyKey) {
             logoView.setLogoAvailableCallback(model.get(LogoProperties.LOGO_AVAILABLE_CALLBACK));
-        } else if (LogoProperties.LOGO_POLISH_FLAG_ENABLED == propertyKey) {
-            logoView.setLogoPolishFlagEnabled(model.get(LogoProperties.LOGO_POLISH_FLAG_ENABLED));
-        } else if (LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH == propertyKey) {
-            logoView.setLogoSizeForLogoPolish(model.get(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH));
+        } else if (LogoProperties.DOODLE_SIZE == propertyKey) {
+            logoView.setDoodleSize(model.get(LogoProperties.DOODLE_SIZE));
+        } else if (LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO == propertyKey) {
+            logoView.maybeShowDefaultLogoDrawable();
         } else {
             assert false : "Unhandled property detected in LogoViewBinder!";
         }

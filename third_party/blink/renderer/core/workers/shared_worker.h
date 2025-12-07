@@ -40,17 +40,16 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class ExceptionState;
 class StorageAccessHandle;
 class V8UnionSharedWorkerOptionsOrString;
+class V8UnionTrustedScriptURLOrUSVString;
 
 class CORE_EXPORT SharedWorker final
     : public AbstractWorker,
-      public Supplementable<SharedWorker>,
       public ActiveScriptWrappable<SharedWorker> {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -60,7 +59,7 @@ class CORE_EXPORT SharedWorker final
   // recorded in `exception_state`.
   static SharedWorker* Create(
       ExecutionContext* context,
-      const String& url,
+      const V8UnionTrustedScriptURLOrUSVString* url,
       const V8UnionSharedWorkerOptionsOrString* name_or_options,
       ExceptionState& exception_state);
 

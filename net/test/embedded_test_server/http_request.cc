@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/test/embedded_test_server/http_request.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -25,7 +21,7 @@ namespace net::test_server {
 
 namespace {
 
-size_t kRequestSizeLimit = 64 * 1024 * 1024;  // 64 mb.
+constexpr size_t kRequestSizeLimit = 64 * 1024 * 1024;  // 64 mb.
 
 // Helper function used to trim tokens in http request headers.
 std::string Trim(const std::string& value) {
@@ -177,8 +173,8 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
       LOG(WARNING) << "Malformed Content-Length header's value.";
     }
   } else if (http_request_->headers.count("Transfer-Encoding") > 0) {
-    if (base::CompareCaseInsensitiveASCII(
-            http_request_->headers["Transfer-Encoding"], "chunked") == 0) {
+    if (base::EqualsCaseInsensitiveASCII(
+            http_request_->headers["Transfer-Encoding"], "chunked")) {
       http_request_->has_content = true;
       chunked_decoder_ = std::make_unique<HttpChunkedDecoder>();
       state_ = STATE_CONTENT;
@@ -200,10 +196,14 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
 HttpRequestParser::ParseResult HttpRequestParser::ParseContent() {
   const size_t available_bytes = buffer_.size() - buffer_position_;
   if (chunked_decoder_.get()) {
-    int bytes_written = chunked_decoder_->FilterBuf(
-        const_cast<char*>(buffer_.data()) + buffer_position_, available_bytes);
-    http_request_->content.append(buffer_.data() + buffer_position_,
-                                  bytes_written);
+    base::span<uint8_t> available_data =
+        base::as_writable_byte_span(buffer_).subspan(buffer_position_,
+                                                     available_bytes);
+    int bytes_written = chunked_decoder_->FilterBuf(available_data);
+    base::span<const char> extracted_chunk = base::as_chars(
+        available_data.first(base::checked_cast<size_t>(bytes_written)));
+    http_request_->content.append(extracted_chunk.begin(),
+                                  extracted_chunk.end());
 
     if (chunked_decoder_->reached_eof()) {
       buffer_ =
@@ -221,8 +221,9 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseContent() {
   const size_t fetch_bytes = std::min(
       available_bytes,
       declared_content_length_ - http_request_->content.size());
-  http_request_->content.append(buffer_.data() + buffer_position_,
-                                fetch_bytes);
+  base::span<char> payload_portion =
+      base::span(buffer_).subspan(buffer_position_, fetch_bytes);
+  http_request_->content.append(payload_portion.begin(), payload_portion.end());
   buffer_position_ += fetch_bytes;
 
   if (declared_content_length_ == http_request_->content.size()) {

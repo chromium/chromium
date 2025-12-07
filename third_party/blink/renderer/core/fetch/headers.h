@@ -77,6 +77,10 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
   FetchHeaderList* HeaderList() const { return header_list_.Get(); }
   void Trace(Visitor*) const override;
 
+  void SetBypassRequestForbiddenHeaderCheck(bool bypass) {
+    bypass_request_forbidden_header_check_ = bypass;
+  }
+
  private:
   class HeadersIterationSource final
       : public PairSyncIterable<Headers>::IterationSource {
@@ -86,8 +90,7 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
 
     bool FetchNextItem(ScriptState* script_state,
                        String& key,
-                       String& value,
-                       ExceptionState& exception) override;
+                       String& value) override;
 
     void Trace(Visitor*) const override;
 
@@ -111,9 +114,10 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
 
   Member<FetchHeaderList> header_list_;
   Guard guard_;
+  // Allow setting forbidden headers on fetch() requests.
+  bool bypass_request_forbidden_header_check_ = false;
 
-  IterationSource* CreateIterationSource(ScriptState*,
-                                         ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*) override;
 
   HeapHashSet<WeakMember<HeadersIterationSource>> iterators_;
 };

@@ -6,13 +6,22 @@
 #include <queue>
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_policy_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -22,16 +31,23 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/views_switches.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/origin.h"
 
@@ -41,16 +57,25 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDoneVisibleEvent);
 
 using UkmEntry = ukm::builders::Permissions_EmbeddedPromptAction;
+
+constexpr int kMinWindowHeight = 400;
 }  // namespace
 
-class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
+class EmbeddedPermissionPromptInteractiveTest
+    : public InteractiveBrowserTest,
+      public content::TestDevToolsProtocolClient,
+      public testing::WithParamInterface<float> {
  public:
   EmbeddedPermissionPromptInteractiveTest() {
+    // Force the scale factor to test that the prompt is positioned correctly
+    // for all device scale factors.
+    display::Display::SetForceDeviceScaleFactor(GetParam());
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
-        {permissions::features::kOneTimePermission,
-         blink::features::kPermissionElement,
+        {blink::features::kPermissionElement,
+         blink::features::kUserMediaElement,
          blink::features::kBypassPepcSecurityForTesting},
         {});
   }
@@ -74,6 +99,17 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+    // Force the window to be large enough.
+    BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+        {10, 10, 800, 800});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestMixin::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   void TearDownOnMainThread() override {
@@ -82,10 +118,6 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
 
   GURL GetOrigin() { return url::Origin::Create(GetURL()).GetURL(); }
 
@@ -104,11 +136,16 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         ExecuteJsAt(kWebContentsElementId, pepc_visible.where, "click"));
   }
 
-  auto PushPEPCPromptButton(ui::ElementIdentifier button_identifier) {
-    return InAnyContext(
-        Steps(WaitForShow(button_identifier), FlushEvents(),
-              PressButton(button_identifier),
-              WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId)));
+  auto PushPEPCPromptButton(ui::ElementIdentifier button_identifier,
+                            bool wait_for_prompt_resolution = true) {
+    if (wait_for_prompt_resolution) {
+      return InAnyContext(
+          WaitForShow(button_identifier), PressButton(button_identifier),
+          WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId));
+    } else {
+      return InAnyContext(WaitForShow(button_identifier),
+                          PressButton(button_identifier));
+    }
   }
 
   // Checks that the next value in the queue matches the text in the label
@@ -116,20 +153,15 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   // the label is not present instead. Pops the front of the queue if the queues
   // is not empty.
   auto CheckLabel(ui::ElementIdentifier label_identifier,
-                  std::queue<std::u16string>& expected_labels) {
-    std::u16string expected(u"");
-
-    if (!expected_labels.empty()) {
-      expected = expected_labels.front();
-      expected_labels.pop();
+                  std::vector<std::u16string>& expected_labels,
+                  size_t expected_label_index) {
+    if (expected_label_index < expected_labels.size()) {
+      return InAnyContext(
+          CheckViewProperty(label_identifier, &views::Label::GetText,
+                            expected_labels[expected_label_index]));
+    } else {
+      return InAnyContext(EnsureNotPresent(label_identifier));
     }
-
-    if (expected.empty()) {
-      return InAnyContext(Steps(EnsureNotPresent(label_identifier)));
-    }
-
-    return InAnyContext(Steps(
-        CheckViewProperty(label_identifier, &views::Label::GetText, expected)));
   }
 
   auto CheckContentSettingsValue(
@@ -149,8 +181,18 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
                       int count) {
     return Steps(Do([=, &tester]() {
       tester.ExpectBucketCount(
-          view_name, static_cast<base::HistogramBase::Sample>(request_type),
+          view_name, static_cast<base::HistogramBase::Sample32>(request_type),
           count);
+    }));
+  }
+
+  auto CheckLastSampleAndResetTester(
+      std::unique_ptr<base::HistogramTester>& tester,
+      const std::string& view_name,
+      base::HistogramBase::Sample32 sample) {
+    return Steps(Do([=, &tester]() {
+      tester->ExpectUniqueSample(view_name, sample, 1);
+      tester = std::make_unique<base::HistogramTester>();
     }));
   }
 
@@ -217,11 +259,12 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
       const std::string& element_id,
       const std::vector<ContentSettingsType>& content_settings_types,
       // Deliberately passing through value to make a locally modifiable copy.
-      std::queue<std::u16string> expected_titles = std::queue<std::u16string>(),
-      std::queue<std::u16string> expected_labels1 =
-          std::queue<std::u16string>(),
-      std::queue<std::u16string> expected_labels2 =
-          std::queue<std::u16string>()) {
+      std::vector<std::u16string> expected_titles =
+          std::vector<std::u16string>(),
+      std::vector<std::u16string> expected_labels1 =
+          std::vector<std::u16string>(),
+      std::vector<std::u16string> expected_labels2 =
+          std::vector<std::u16string>()) {
     RunTestSequence(
         InstrumentTab(kWebContentsElementId),
         NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -231,11 +274,11 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         InAnyContext(
             WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
         CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
-                   expected_titles),
+                   expected_titles, /*expected_label_index=*/0),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
-                   expected_labels1),
+                   expected_labels1, /*expected_label_index=*/0),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
-                   expected_labels2),
+                   expected_labels2, /*expected_label_index=*/0),
 
         // After allowing, the content setting is updated accordingly.
         PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
@@ -248,11 +291,11 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         InAnyContext(
             WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
         CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
-                   expected_titles),
+                   expected_titles, /*expected_label_index=*/1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
-                   expected_labels1),
+                   expected_labels1, /*expected_label_index=*/1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
-                   expected_labels2),
+                   expected_labels2, /*expected_label_index=*/1),
 
         // Click on "Stop Allowing" and observe the content setting change.
         PushPEPCPromptButton(
@@ -260,19 +303,17 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         CheckContentSettingsValue(content_settings_types,
                                   CONTENT_SETTING_BLOCK),
 
-        // TODO(crbug.com/5020816): Also test with `kOneTimePermission` disabled
-        // when the kAllowId button is present instead.
         // The PreviouslyBlocked view is displayed since the permission is
         // blocked.
         ClickOnPEPCElement(element_id),
         InAnyContext(
             WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
         CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
-                   expected_titles),
+                   expected_titles, /*expected_label_index=*/2),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
-                   expected_labels1),
+                   expected_labels1, /*expected_label_index=*/2),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
-                   expected_labels2),
+                   expected_labels2, /*expected_label_index=*/2),
 
         // Click on "Allow this time" and observe the content setting change.
         PushPEPCPromptButton(
@@ -285,7 +326,50 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         Do([this]() {
           browser()->tab_strip_model()->GetActiveWebContents()->Close();
         }),
-        CheckContentSettingsValue(content_settings_types, CONTENT_SETTING_ASK));
+        // This has to be immediate, because otherwise closing the browser will
+        // detach the profile.
+        WithoutDelay(CheckContentSettingsValue(content_settings_types,
+                                               CONTENT_SETTING_ASK)));
+  }
+
+  void TestAllowThisTimeFlow(
+      const std::string& element_id,
+      const std::vector<ContentSettingsType>& content_settings_types) {
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+
+        // Initially the Ask view is displayed.
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        // After allowing this time, the content setting is updated accordingly.
+        PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowThisTimeId),
+        CheckContentSettingsValue(content_settings_types,
+                                  CONTENT_SETTING_ALLOW),
+
+        // The PreviouslyGranted view is displayed since the permission is
+        // granted.
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        // Click on "Continue Allowing" and observe the content setting remains
+        // the same.
+        PushPEPCPromptButton(
+            EmbeddedPermissionPromptPreviouslyGrantedView::kContinueAllowingId),
+        CheckContentSettingsValue(content_settings_types,
+                                  CONTENT_SETTING_ALLOW),
+        // After the last tab is closed, since the last grant was one-time,
+        // ensure the content setting is reset.
+        Do([this]() {
+          browser()->tab_strip_model()->GetActiveWebContents()->Close();
+        }),
+        // This has to be immediate, because otherwise closing the browser will
+        // detach the profile.
+        WithoutDelay(CheckContentSettingsValue(content_settings_types,
+                                               CONTENT_SETTING_ASK)));
   }
 
   void TestPromptElementText(
@@ -322,7 +406,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     AddStep(steps,
             Steps(
                 // Dismiss the prompt.
-                FlushEvents(), Do([this]() {
+                Do([this]() {
                   auto* manager =
                       permissions::PermissionRequestManager::FromWebContents(
                           browser()->tab_strip_model()->GetActiveWebContents());
@@ -331,6 +415,58 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
                 })));
 
     RunTestSequence(std::move(steps));
+  }
+
+  void TestPromptDismissViaXButton(const std::string& request_type_string,
+                                   const std::string& element_id) {
+    base::HistogramTester tester;
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        InAnyContext(
+            PressButton(views::BubbleFrameView::kCloseButtonElementId)),
+        WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId), Do([&]() {
+          tester.ExpectUniqueSample(
+              base::StrCat({"Permissions.Prompt.", request_type_string,
+                            ".ElementAnchoredBubble.DismissedReason"}),
+              permissions::DismissedReason::kDismissedXButton, 1);
+        }));
+  }
+
+  auto TestPromptDismissViaScrim(const std::string& request_type_string,
+                                 const std::string& element_id) {
+    base::HistogramTester tester;
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "EmbeddedPermissionPromptContentScrimWidget");
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        Do([&]() {
+          auto* scrim_view =
+              static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                  waiter.WaitIfNeededAndGet()->GetContentsView());
+          scrim_view->OnMousePressed(ui::MouseEvent(
+              ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+        }),
+        WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId), Do([&]() {
+          tester.ExpectUniqueSample(
+              base::StrCat({"Permissions.Prompt.", request_type_string,
+                            ".ElementAnchoredBubble.DismissedReason"}),
+              permissions::DismissedReason::kDismissedScrim, 1);
+        }));
+  }
+
+  auto DismissPromptByClickingCloseButton(
+      permissions::RequestType request_type) {
+    return Steps();
   }
 
   void TestPartialPermissionsLabel(ContentSetting camera_setting,
@@ -369,6 +505,16 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
             type, 0));
   }
 
+  auto ShowTabModalUI() {
+    return Do([this]() {
+      scoped_tab_modal_ui_ = browser()->GetActiveTabInterface()->ShowModalUI();
+    });
+  }
+
+  auto HideTabModalUI() {
+    return Do([this]() { scoped_tab_modal_ui_.reset(); });
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 
@@ -378,86 +524,81 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   // |ukm_recorder_| needs to be reset after every check so that further check
   // functions will only check the new data.
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 };
 
-// Failing on Windows, though manual testing of the same flow does not reproduce
-// the issue. TODO(andypaicu, crbug.com/1462930): Investigate and fix failure.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BasicFlowMicrophone DISABLED_BasicFlowMicrophone
-#define MAYBE_BasicFlowGeolocation DISABLED_BasicFlowGeolocation
-#define MAYBE_BasicFlowCamera DISABLED_BasicFlowCamera
-#define MAYBE_BasicFlowCameraMicrophone DISABLED_BasicFlowCameraMicrophone
-#define MAYBE_TestPartialPermissionsLabels DISABLED_TestPartialPermissionsLabels
-#define MAYBE_TestPermissionElementDialogPositioning \
-  DISABLED_TestPermissionElementDialogPositioning
-#define MAYBE_TestPepcHistograms DISABLED_TestPepcHistograms
-#define MAYBE_TestPepcUkm DISABLED_TestPepcUkm
-#define MAYBE_TestButtonsLabel DISABLED_TestButtonsLabel
-#else
-#define MAYBE_BasicFlowMicrophone BasicFlowMicrophone
-#define MAYBE_BasicFlowGeolocation BasicFlowGeolocation
-#define MAYBE_BasicFlowCamera BasicFlowCamera
-#define MAYBE_BasicFlowCameraMicrophone BasicFlowCameraMicrophone
-#define MAYBE_TestPartialPermissionsLabels TestPartialPermissionsLabels
-#define MAYBE_TestPermissionElementDialogPositioning \
-  TestPermissionElementDialogPositioning
-#define MAYBE_TestPepcHistograms TestPepcHistograms
-#define MAYBE_TestPepcUkm TestPepcUkm
-#define MAYBE_TestButtonsLabel TestButtonsLabel
-#endif
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_BasicFlowMicrophone) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BasicFlowMicrophone) {
   TestAskBlockAllowFlow(
       "microphone", {ContentSettingsType::MEDIASTREAM_MIC},
-      std::queue<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed microphone on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously chose don’t allow for this site"}),
-      std::queue<std::u16string>({u"Use your microphones"}));
+      std::vector<std::u16string>(
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+           u"You have allowed microphone for this site",
+           u"You previously didn't allow microphone for this site"}),
+      std::vector<std::u16string>({u"Use your microphones"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_BasicFlowCamera) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BasicFlowCamera) {
   TestAskBlockAllowFlow(
       "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
-      std::queue<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed camera on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously chose don’t allow for this site"}),
-      std::queue<std::u16string>({u"Use your cameras"}));
+      std::vector<std::u16string>(
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+           u"You have allowed camera for this site",
+           u"You previously didn't allow camera for this site"}),
+      std::vector<std::u16string>({u"Use your cameras"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_BasicFlowGeolocation) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BasicFlowGeolocation) {
   TestAskBlockAllowFlow(
-      "geolocation", {ContentSettingsType::GEOLOCATION},
-      std::queue<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed location on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously chose don’t allow for this site"}),
-      std::queue<std::u16string>({u"Know your location"}));
+      "geolocation", {permissions::PermissionUtil::GetGeolocationType()},
+      std::vector<std::u16string>(
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+           u"You have allowed location for this site",
+           u"You previously didn't allow location for this site"}),
+      std::vector<std::u16string>({u"Know your location"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_BasicFlowCameraMicrophone) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BasicFlowCameraMicrophone) {
   TestAskBlockAllowFlow(
       "camera-microphone",
       {ContentSettingsType::MEDIASTREAM_CAMERA,
        ContentSettingsType::MEDIASTREAM_MIC},
-      std::queue<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed camera and microphone on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously chose don’t allow for this site"}),
-      std::queue<std::u16string>({u"Use your cameras"}),
-      std::queue<std::u16string>({u"Use your microphones"}));
+      std::vector<std::u16string>(
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+           u"You have allowed camera and microphone for this site",
+           u"You previously didn't allow camera and microphone for this site"}),
+      std::vector<std::u16string>({u"Use your cameras"}),
+      std::vector<std::u16string>({u"Use your microphones"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_TestPartialPermissionsLabels) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowMicrophone) {
+  TestAllowThisTimeFlow("microphone", {ContentSettingsType::MEDIASTREAM_MIC});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowCamera) {
+  TestAllowThisTimeFlow("camera", {ContentSettingsType::MEDIASTREAM_CAMERA});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowGeolocation) {
+  TestAllowThisTimeFlow("geolocation",
+                        {permissions::PermissionUtil::GetGeolocationType()});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowCameraMicrophone) {
+  TestAllowThisTimeFlow("camera-microphone",
+                        {ContentSettingsType::MEDIASTREAM_CAMERA,
+                         ContentSettingsType::MEDIASTREAM_MIC});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestPartialPermissionsLabels) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()));
 
@@ -471,38 +612,69 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
   TestPartialPermissionsLabel(
       CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
       EmbeddedPermissionPromptBaseView::kTitleViewId,
-      u"You previously chose don’t allow for this site");
+      u"You previously didn't allow camera and microphone for this site");
   TestPartialPermissionsLabel(
       CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
       EmbeddedPermissionPromptBaseView::kTitleViewId,
-      u"You previously chose don’t allow for this site");
+      u"You previously didn't allow camera and microphone for this site");
 
   TestPartialPermissionsLabel(
       CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
       EmbeddedPermissionPromptBaseView::kTitleViewId,
-      u"You previously chose don’t allow for this site");
+      u"You previously didn't allow camera for this site");
   TestPartialPermissionsLabel(
       CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
       EmbeddedPermissionPromptBaseView::kTitleViewId,
-      u"You previously chose don’t allow for this site");
+      u"You previously didn't allow microphone for this site");
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_TestButtonsLabel) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestButtonsLabel) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()));
 
   std::map<ui::ElementIdentifier, const std::u16string> expected_ask_labels = {
-      {EmbeddedPermissionPromptAskView::kAllowId, u"Allow on every visit"},
+      {EmbeddedPermissionPromptAskView::kAllowId,
+       u"Allow while visiting the site"},
       {EmbeddedPermissionPromptAskView::kAllowThisTimeId, u"Allow this time"}};
 
   TestPromptElementText(CONTENT_SETTING_ASK, CONTENT_SETTING_ASK,
                         expected_ask_labels, /*check_buttons=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_TestPepcHistograms) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestOsPromptButtonsLabel) {
+  base::AutoReset<bool> mock_system_settings =
+      system_permission_settings::MockShowSystemSettingsForTesting();
+
+  std::u16string open_settings_label;
+
+#if BUILDFLAG(IS_MAC)
+  open_settings_label = u"MacOS settings";
+#elif BUILDFLAG(IS_WIN)
+  open_settings_label = u"Windows settings";
+#elif BUILDFLAG(IS_CHROMEOS)
+  open_settings_label = u"ChromeOS settings";
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(
+          WaitForShow(EmbeddedPermissionPromptSystemSettingsView::kMainViewId)),
+      InAnyContext(CheckViewProperty(
+          EmbeddedPermissionPromptSystemSettingsView::kOpenSettingsId,
+          &views::MdTextButton::GetText, open_settings_label)));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestPepcHistograms) {
   base::HistogramTester tester;
+  std::unique_ptr<base::HistogramTester> variant_tester =
+      std::make_unique<base::HistogramTester>();
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -513,6 +685,12 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           /*accepted_count=*/1, /*accepted_once_count=*/0),
 
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.VideoCapture.ElementAnchoredBubble.Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kAsk)),
+
       // Now the "allow" view is displayed. Neither clicking "continue allowing"
       // or "stop allowing" records any additional histograms.
       DoPromptAndCheckHistograms(
@@ -521,11 +699,23 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           tester, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           /*accepted_count=*/1, /*accepted_once_count=*/0),
 
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.VideoCapture.ElementAnchoredBubble.Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted)),
+
       DoPromptAndCheckHistograms(
           "camera",
           EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId,
           tester, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           /*accepted_count=*/1, /*accepted_once_count=*/0),
+
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.VideoCapture.ElementAnchoredBubble.Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted)),
 
       // Other permissions are not affected, check that the microphone
       // permission has no histograms.
@@ -546,6 +736,12 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           /*accepted_count=*/0,
           /*accepted_once_count=*/1),
 
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.AudioCapture.ElementAnchoredBubble.Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kAsk)),
+
       // Showing a combined prompt at this point will result in a "previously
       // blocked" screen which won't record new histograms.
       DoPromptAndCheckHistograms(
@@ -555,6 +751,14 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           /*accepted_count=*/0,
           /*accepted_once_count=*/0),
+
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.AudioAndVideoCapture.ElementAnchoredBubble."
+          "Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied)),
+
       CheckHistogram(
           tester,
           permissions::PermissionUmaUtil::kPermissionsPromptAcceptedOnce,
@@ -582,6 +786,13 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           /*accepted_count=*/1,
           /*accepted_once_count=*/0),
 
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.AudioAndVideoCapture.ElementAnchoredBubble."
+          "Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kAsk)),
+
       Do([&, this]() {
         SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                           CONTENT_SETTING_DEFAULT);
@@ -595,6 +806,13 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           /*accepted_count=*/1,
           /*accepted_once_count=*/1),
+
+      CheckLastSampleAndResetTester(
+          variant_tester,
+          "Permissions.Prompt.AudioAndVideoCapture.ElementAnchoredBubble."
+          "Variant",
+          static_cast<base::HistogramBase::Sample32>(
+              permissions::ElementAnchoredBubbleVariant::kAsk)),
 
       // Check that all other histograms are unmodified.
       CheckHistogram(
@@ -617,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           /*count=*/1));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        FocusableViaTabKey) {
   StateChange pepc_visible;
   pepc_visible.where = DeepQuery{"#geolocation"};
@@ -667,8 +885,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       WaitForStateChange(kWebContentsElementId, done_visible));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_TestPepcUkm) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       "EmbeddedPermissionPromptContentScrimWidget");
@@ -683,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::ElementAnchoredBubbleAction::kGranted,
-          permissions::ElementAnchoredBubbleVariant::ASK, 0),
+          permissions::ElementAnchoredBubbleVariant::kAsk, 0),
 
       // Now mic+camera are granted.
       ClickOnPEPCElement("camera"),
@@ -694,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           permissions::ElementAnchoredBubbleAction::kDenied,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0),
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0),
 
       ClickOnPEPCElement("microphone"),
       InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
@@ -704,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
           permissions::ElementAnchoredBubbleAction::kOk,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0),
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0),
 
       // Mic is granted, camera is blocked. Triggering the double permission
       // prompt will show the screen that is only for camera, while the prompt
@@ -717,28 +934,323 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           permissions::ElementAnchoredBubbleAction::kGrantedOnce,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED, 0),
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied, 0),
 
       // Both permissions are granted. Dismiss the prompt via clicking on the
       // scrim.
       ClickOnPEPCElement("camera-microphone"),
       InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
-      FlushEvents(), Do([&]() {
+      Do([&]() {
         auto* scrim_view =
             static_cast<EmbeddedPermissionPromptContentScrimView*>(
                 waiter.WaitIfNeededAndGet()->GetContentsView());
         scrim_view->OnMousePressed(ui::MouseEvent(
             ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-        scrim_view->OnMouseReleased(ui::MouseEvent(
-            ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
       }),
       CheckEntrySinceLastCheck(
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::ElementAnchoredBubbleAction::kDismissedScrim,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0));
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedXButtonUmaCamera) {
+  TestPromptDismissViaXButton(
+      permissions::PermissionUmaUtil::GetRequestTypeString(
+          permissions::RequestType::kCameraStream),
+      "camera");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedXButtonUmaMicrophone) {
+  TestPromptDismissViaXButton(
+      permissions::PermissionUmaUtil::GetRequestTypeString(
+          permissions::RequestType::kMicStream),
+      "microphone");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedXButtonUmaGeolocation) {
+  TestPromptDismissViaXButton(
+      permissions::PermissionUmaUtil::GetRequestTypeString(
+          permissions::RequestType::kGeolocation),
+      "geolocation");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedXButtonUmaCameraMicrophone) {
+  TestPromptDismissViaXButton("AudioAndVideoCapture", "camera-microphone");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedScrimUmaCamera) {
+  TestPromptDismissViaScrim(
+      permissions::PermissionUmaUtil::GetRequestTypeString(
+          permissions::RequestType::kCameraStream),
+      "camera");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedScrimUmaMicrophone) {
+  TestPromptDismissViaScrim(
+      permissions::PermissionUmaUtil::GetRequestTypeString(
+          permissions::RequestType::kMicStream),
+      "microphone");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedScrimUmaGeolocation) {
+  TestPromptDismissViaScrim(
+      permissions::PermissionUmaUtil::GetRequestTypeString(
+          permissions::RequestType::kGeolocation),
+      "geolocation");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDismissedScrimUmaCameraMicrophone) {
+  TestPromptDismissViaScrim("AudioAndVideoCapture", "camera-microphone");
+}
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestOsSystemPromptTransition) {
+  base::AutoReset<bool> mock_system_prompt =
+      system_permission_settings::MockSystemPromptForTesting();
+
+  views::NamedWidgetShownWaiter original_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+
+  EmbeddedPermissionPromptContentScrimView* original_scrim_view = nullptr;
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      Do([&]() {
+        // Save the reference to the scrim.
+        original_scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                original_waiter.WaitIfNeededAndGet()->GetContentsView());
+      }),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      InAnyContext(WaitForShow(
+          EmbeddedPermissionPromptShowSystemPromptView::kMainViewId)),
+      Do([&]() {
+        auto* scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                waiter.WaitIfNeededAndGet()->GetContentsView());
+        // Verify that the scrim view is the same one that was opened at the
+        // beginning, and wasn't closed and reopened during the transition.
+        EXPECT_EQ(scrim_view, original_scrim_view);
+        scrim_view->OnMousePressed(ui::MouseEvent(
+            ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      }));
+}
+
+// Linux wayland does not support window activation.
+#if (BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND))
+#define MAYBE_TestOsSystemAutoResolves DISABLED_TestOsSystemAutoResolves
+#else
+#define MAYBE_TestOsSystemAutoResolves TestOsSystemAutoResolves
+#endif
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       MAYBE_TestOsSystemAutoResolves) {
+  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
+      scoped_system_permission_camera = std::make_unique<
+          system_permission_settings::ScopedSettingsForTesting>(
+          ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
+  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
+      scoped_system_permission_mic = std::make_unique<
+          system_permission_settings::ScopedSettingsForTesting>(
+          ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(
+          WaitForShow(EmbeddedPermissionPromptSystemSettingsView::kMainViewId)),
+      Do([&]() {
+        scoped_system_permission_camera.reset();
+        scoped_system_permission_mic.reset();
+        scoped_system_permission_camera = std::make_unique<
+            system_permission_settings::ScopedSettingsForTesting>(
+            ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
+        scoped_system_permission_mic = std::make_unique<
+            system_permission_settings::ScopedSettingsForTesting>(
+            ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/false);
+
+        // Simulate another window becoming active, and then the current window
+        // again.
+        Browser* focused_window = CreateBrowser(browser()->profile());
+        ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
+        ASSERT_FALSE(browser()->window()->IsActive());
+
+        ui_test_utils::BrowserActivationWaiter waiter(browser());
+        browser()->window()->Activate();
+        waiter.WaitForActivation();
+      }),
+
+      // Now that both system permissions changed to allowed, the PEPC prompt
+      // advances to the next screen.
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptAskView::kAllowId)));
+}
+
+// This test relies on the presence of the "Go to [OS] setting" button which is
+// not implemented for the linux version of the prompt.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TestOsSystemAutoResolvesOnButton \
+  DISABLED_TestOsSystemAutoResolvesOnButton
+#else
+#define MAYBE_TestOsSystemAutoResolvesOnButton TestOsSystemAutoResolvesOnButton
+#endif
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       MAYBE_TestOsSystemAutoResolvesOnButton) {
+  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
+      scoped_system_permission_camera = std::make_unique<
+          system_permission_settings::ScopedSettingsForTesting>(
+          ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
+  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
+      scoped_system_permission_mic = std::make_unique<
+          system_permission_settings::ScopedSettingsForTesting>(
+          ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(
+          WaitForShow(EmbeddedPermissionPromptSystemSettingsView::kMainViewId)),
+      Do([&]() {
+        scoped_system_permission_camera.reset();
+        scoped_system_permission_mic.reset();
+        scoped_system_permission_camera = std::make_unique<
+            system_permission_settings::ScopedSettingsForTesting>(
+            ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
+        scoped_system_permission_mic = std::make_unique<
+            system_permission_settings::ScopedSettingsForTesting>(
+            ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/false);
+      }),
+
+      PushPEPCPromptButton(
+          EmbeddedPermissionPromptSystemSettingsView::kOpenSettingsId,
+          /*wait_for_prompt_resolution=*/false),
+
+      // Now that both system permissions changed to allowed, clicking the "open
+      // settings" button means the prompt progresses to the next screen.
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptAskView::kAllowId)));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       CrossOriginZoomAffectsValidation) {
+  StateChange done_visible;
+  done_visible.where = DeepQuery{"#done"};
+  done_visible.type = StateChange::Type::kExists;
+  done_visible.event = kDoneVisibleEvent;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(
+          kWebContentsElementId,
+          https_server()->GetURL(
+              "b.test", "/permissions/permission_element_embedder.html")),
+      ExecuteJs(kWebContentsElementId,
+                content::JsReplace("() => { insertIframe($1, $2); }", GetURL(),
+                                   "zoom5")),
+      WaitForStateChange(kWebContentsElementId, done_visible), Do([&]() {
+        // Need to attach the devtools client to the cross-site child frame to
+        // be able to notice the font size issue.
+        AttachToFrameTreeHost(ChildFrameAt(browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame(),
+                                           0));
+        SendCommandSync("Audits.enable");
+
+        // Wait until getting the message that the permission element's font
+        // is too large.
+        WaitForMatchingNotification(
+            "Audits.issueAdded",
+            base::BindRepeating([](const base::Value::Dict& params) {
+              const std::string* code =
+                  params.FindStringByDottedPath("issue.code");
+              if (!code) {
+                return false;
+              }
+              const std::string* issue_type = params.FindStringByDottedPath(
+                  "issue.details.permissionElementIssueDetails.issueType");
+              if (!issue_type) {
+                return false;
+              }
+              return *code == "PermissionElementIssue" &&
+                     *issue_type == "FontSizeTooLarge";
+            }));
+
+        DetachProtocolClient();
+      }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BrowserZoomDoesNotAffectValidation) {
+  zoom::ZoomController* zoom_controller = zoom::ZoomController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  zoom_controller->SetZoomLevel(10);
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)));
+}
+
+// Checks that the prompt is not shown if the tab is displaying another modal
+// UI and that it is shown when the other modal UI is closed.
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestSamePromptInteractionsWithModalUILock) {
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()), ShowTabModalUI(),
+      ClickOnPEPCElement("camera"), HideTabModalUI(),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(
+          CheckViewProperty(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                            &views::Label::GetText, u"Use your cameras")),
+      Do([&]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        ASSERT_FALSE(manager->has_pending_requests());
+
+        // Need to close the permission prompt before the test shuts down.
+        manager->Dismiss();
+        manager->FinalizeCurrentRequests();
+      }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDifferentPromptInteractionsWithModalUILock) {
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()), ShowTabModalUI(),
+      ClickOnPEPCElement("camera"), HideTabModalUI(),
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(
+          CheckViewProperty(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                            &views::Label::GetText, u"Know your location")),
+      Do([&]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        ASSERT_FALSE(manager->has_pending_requests());
+
+        // Need to close the permission prompt before the test shuts down.
+        manager->Dismiss();
+        manager->FinalizeCurrentRequests();
+      }));
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest
@@ -749,17 +1261,17 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {blink::features::kPermissionElement, {}},
+            {blink::features::kUserMediaElement, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "near_element"}}},
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
         },
         {});
   }
 };
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
-                       MAYBE_TestPermissionElementDialogPositioning) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       TestPermissionElementDialogPositioning) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   // Set the font size to 'small' to ensure all elements have
@@ -768,7 +1280,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
 
   // Click on multiple elements in order from left to right, and ensure that
   // dialog moves with each click
-  int previous_x = 0;
+  gfx::Point current_origin;
   struct ElementAction {
     std::string element_name;
     ui::ElementIdentifier button_identifier;
@@ -781,18 +1293,292 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
   };
 
   for (const auto& element_action : element_actions) {
-    RunTestSequence(ClickOnPEPCElement(element_action.element_name),
-                    InAnyContext(WaitForShow(
-                        EmbeddedPermissionPromptBaseView::kMainViewId)),
-                    FlushEvents(),
-                    InAnyContext(CheckView(
-                        EmbeddedPermissionPromptBaseView::kMainViewId,
-                        [&previous_x](views::View* view) {
-                          gfx::Rect bounds = view->GetBoundsInScreen();
-                          previous_x = bounds.x();
-                          return bounds.x();
-                        },
-                        testing::Gt(previous_x))),
-                    PushPEPCPromptButton(element_action.button_identifier));
+    RunTestSequence(
+        ClickOnPEPCElement(element_action.element_name),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        InAnyContext(CheckView(EmbeddedPermissionPromptBaseView::kMainViewId,
+                               [&current_origin](views::View* view) {
+                                 gfx::Point previous_origin = current_origin;
+                                 current_origin =
+                                     view->GetBoundsInScreen().origin();
+                                 return previous_origin < current_origin;
+                               })),
+        PushPEPCPromptButton(element_action.button_identifier));
   }
 }
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       TestPositionUsingZoom) {
+  auto* widget = BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  if (widget->GetWindowBoundsInScreen().height() < kMinWindowHeight) {
+    // Skip the test if the actual window size is too small to fit the prompt
+    // even after forcing the window size in the test suite.
+    return;
+  }
+
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()),
+                  ExecuteJs(kWebContentsElementId, "setFontSizeSmall"));
+
+  double zoom_level = 0;
+  int previous_x = 0;
+
+  int loops = 5;
+  while (loops--) {
+    RunTestSequence(
+        ClickOnPEPCElement("microphone"),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        InAnyContext(CheckView(
+            EmbeddedPermissionPromptBaseView::kMainViewId,
+            [&previous_x](views::View* view) {
+              gfx::Rect bounds = view->GetBoundsInScreen();
+              previous_x = bounds.x();
+              return bounds.x();
+            },
+            testing::Gt(previous_x))),
+
+        Do([this, &zoom_level]() {
+          auto* manager =
+              permissions::PermissionRequestManager::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+          manager->Dismiss();
+          manager->FinalizeCurrentRequests();
+
+          zoom::ZoomController* zoom_controller =
+              zoom::ZoomController::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+          zoom_level += 0.2;
+          zoom_controller->SetZoomLevel(zoom_level);
+        }));
+  }
+
+  zoom::ZoomController* zoom_controller = zoom::ZoomController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       TestPositionInsideCrossOriginFrame) {
+  auto* widget = BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  if (widget->GetWindowBoundsInScreen().height() < kMinWindowHeight) {
+    // Skip the test if the actual window size is too small to fit the prompt
+    // even after forcing the window size in the test suite.
+    return;
+  }
+
+  StateChange done_visible;
+  done_visible.where = DeepQuery{"#done"};
+  done_visible.type = StateChange::Type::kExists;
+  done_visible.event = kDoneVisibleEvent;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(
+          kWebContentsElementId,
+          https_server()->GetURL(
+              "b.test", "/permissions/permission_element_embedder.html")),
+      ExecuteJs(kWebContentsElementId,
+                content::JsReplace("() => { insertIframe($1); }", GetURL())),
+      WaitForStateChange(kWebContentsElementId, done_visible));
+
+  int loops = 5;
+  int previous_y = 0;
+  while (loops--) {
+    RunTestSequence(
+        ExecuteJs(
+            kWebContentsElementId,
+            content::JsReplace("() => { clickInIframe($1); }", "microphone")),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        InAnyContext(CheckView(
+            EmbeddedPermissionPromptBaseView::kMainViewId,
+            [&previous_y](views::View* view) {
+              gfx::Rect bounds = view->GetBoundsInScreen();
+              previous_y = bounds.y();
+              return bounds.y();
+            },
+            testing::Gt(previous_y))),
+        ExecuteJs(kWebContentsElementId, "expandDiv"), Do([this]() {
+          auto* manager =
+              permissions::PermissionRequestManager::FromWebContents(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+          manager->Dismiss();
+          manager->FinalizeCurrentRequests();
+        }));
+  }
+}
+
+// A test suite for running policy-related interactive tests. This test suite
+// is parameterized to match its base class, but the parameter is not used in
+// the tests.
+class EmbeddedPermissionPromptPolicyInteractiveTest
+    : public EmbeddedPermissionPromptInteractiveTest {
+ public:
+  EmbeddedPermissionPromptPolicyInteractiveTest() = default;
+  ~EmbeddedPermissionPromptPolicyInteractiveTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    EmbeddedPermissionPromptInteractiveTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
+  }
+
+  void UpdateProviderPolicy(const policy::PolicyMap& policies) {
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  void TestPolicy(const policy::PolicyMap& policies,
+                  const std::string& element_id,
+                  const ui::ElementIdentifier& expected_view_id,
+                  const std::u16string& expected_title) {
+    UpdateProviderPolicy(policies);
+
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(WaitForShow(expected_view_id)),
+        InAnyContext(
+            CheckViewProperty(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                              &views::Label::GetText, expected_title)),
+        PushPEPCPromptButton(EmbeddedPermissionPromptBaseView::kOkButtonId));
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraPolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(policies, "camera",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow camera for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       MicrophonePolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(policies, "microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraAndMicrophonePolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(
+      policies, "camera-microphone",
+      EmbeddedPermissionPromptPolicyView::kMainViewId,
+      u"Your administrator doesn't allow camera and microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_BLOCK),
+               nullptr);
+  TestPolicy(policies, "geolocation",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow location for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraPolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kVideoCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "camera",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows camera for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       MicrophonePolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kAudioCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraAndMicrophonePolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kAudioCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(urls.Clone()), nullptr);
+  policies.Set(policy::key::kVideoCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "camera-microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows camera and microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_ALLOW),
+               nullptr);
+  TestPolicy(policies, "geolocation",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows location for this site");
+}
+
+// Setting up to run all tests with two screen scale factors.
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptInteractiveTest,
+                         testing::Values(1.0, 2.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptPolicyInteractiveTest,
+                         testing::Values(1.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptPositioningInteractiveTest,
+                         testing::Values(1.0, 2.0));

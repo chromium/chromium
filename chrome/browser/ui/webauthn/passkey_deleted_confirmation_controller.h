@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_DELETED_CONFIRMATION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_DELETED_CONFIRMATION_CONTROLLER_H_
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
@@ -19,14 +22,6 @@ class PasskeyDeletedConfirmationController
 
   // PasswordBubbleControllerBase:
   std::u16string GetTitle() const override;
-
-  // Called by the view code when the "Got it" button is clicked
-  // by the user acknowledging the passkey deleted confirmation prompt.
-  void OnGotItButtonClicked();
-
-  // Called by the view when the user press manage passkeys
-  // button. Navigates to password manager main page.
-  void OnManagePasskeysButtonClicked();
 
  private:
   // PasswordBubbleControllerBase:

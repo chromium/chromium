@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
+
+rust_static_library("pix_validator_rs") {
+  crate_root = "pix_validator.rs"
+  sources = [ "pix_validator.rs" ]
+
+  visibility = [ ":*" ]
+}
+
+rust_static_library("pix_validator_rs_ffi_glue") {
+  crate_root = "pix_validator_cxx.rs"
+  sources = [ "pix_validator_cxx.rs" ]
+
+  visibility = [ ":*" ]
+
+  allow_unsafe = true
+  cxx_bindings = [ "pix_validator_cxx.rs" ]
+
+  deps = [ ":pix_validator_rs" ]
+}
+
+static_library("validation") {
+  sources = [
+    "payment_link_validator.cc",
+    "payment_link_validator.h",
+    "pix_code_validator.cc",
+    "pix_code_validator.h",
+  ]
+
+  public_deps = [
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
+    "//url",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/re2",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "payment_link_validator_unittest.cc",
+    "pix_code_validator_fuzzer_util_unittest.cc",
+    "pix_code_validator_unittest.cc",
+  ]
+
+  deps = [
+    ":fuzzer_util",
+    ":pix_validator_rs_ffi_glue",
+    ":validation",
+    "//testing/gtest",
+    "//third_party/re2",
+  ]
+}
+
+static_library("fuzzer_util") {
+  testonly = true
+  sources = [
+    "pix_code_validator_fuzzer_util.cc",
+    "pix_code_validator_fuzzer_util.h",
+  ]
+}
+
+test("pix_code_validator_fuzzer") {
+  sources = [ "pix_code_validator_fuzzer.cc" ]
+
+  testonly = true
+  fuzztests = [ "GetPixQrCodeTypeTest.GetPixQrCodeTypeCanParseAnyString" ]
+
+  deps = [
+    ":fuzzer_util",
+    ":validation",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}

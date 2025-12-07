@@ -9,6 +9,6 @@
     package="no.manifest.configured"
     android:versionCode="1"
     android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="22" android:targetSdkVersion="34"/>
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="36"/>
 </manifest>
 

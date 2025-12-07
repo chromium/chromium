@@ -23,12 +23,12 @@ class AXPlatformForTest : public AXPlatform::Delegate {
   AXPlatformForTest& operator=(const AXPlatformForTest&) = delete;
   ~AXPlatformForTest() override;
 
+  void DetachFromThread();
+
   // AXPlatform::Delegate:
-  AXMode GetProcessMode() override;
-  void SetProcessMode(AXMode new_mode) override;
-  void OnAccessibilityApiUsage() override;
+  AXMode GetAccessibilityMode() override;
 #if BUILDFLAG(IS_WIN)
-  ui::AXPlatform::ProductStrings GetProductStrings() override;
+  AXPlatform::ProductStrings GetProductStrings() override;
 #endif
 
  private:

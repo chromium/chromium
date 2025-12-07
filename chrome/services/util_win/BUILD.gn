@@ -10,6 +10,8 @@ source_set("lib") {
     "av_products.h",
     "processor_metrics.cc",
     "processor_metrics.h",
+    "tpm_metrics.cc",
+    "tpm_metrics.h",
     "util_read_icon.cc",
     "util_read_icon.h",
     "util_win_impl.cc",
@@ -38,6 +40,7 @@ source_set("unit_tests") {
   sources = [
     "av_products_unittest.cc",
     "processor_metrics_unittest.cc",
+    "tpm_metrics_unittest.cc",
   ]
 
   deps = [

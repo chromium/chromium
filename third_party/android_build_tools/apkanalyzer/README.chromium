@@ -1,7 +1,8 @@
 Name: APK Analyzer
 Short Name: apkanalyzer
 Version: 31.2.0-alpha16
-License: Apache Version 2.0
+Update Mechanism: Manual
+License: Apache-2.0
 License File: LICENSE
 Security Critical: No
 Shipped: no

@@ -24,7 +24,9 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget,
                                    public ShelfObserver,
                                    views::ViewObserver {
  public:
-  MahiPanelWidget(InitParams params, MahiUiController* ui_controller);
+  MahiPanelWidget(InitParams params,
+                  RefreshBannerView* refresh_view,
+                  MahiUiController* ui_controller);
 
   MahiPanelWidget(const MahiPanelWidget&) = delete;
   MahiPanelWidget& operator=(const MahiPanelWidget&) = delete;
@@ -41,12 +43,17 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget,
   static const char* GetName();
 
  private:
+  // views::Widget:
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
+
   // ShelfObserver:
   void OnShelfWorkAreaInsetsChanged() override;
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
+                               views::View* starting_view,
+                               bool visible) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
   bool is_refresh_view_visible_ = false;

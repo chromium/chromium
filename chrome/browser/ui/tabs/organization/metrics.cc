@@ -19,8 +19,8 @@
 namespace {
 
 // Max number of tabs within 3 std deviations of mean.
-int kMaxLoggedTabs = 115;
-}
+constexpr int kMaxLoggedTabs = 115;
+}  // namespace
 
 void LogTabStripOrganizationUKM(
     const TabStripModel* tab_strip_model,

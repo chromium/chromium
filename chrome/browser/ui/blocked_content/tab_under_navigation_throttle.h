@@ -5,21 +5,15 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_TAB_UNDER_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_TAB_UNDER_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
-#include "base/feature_list.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
-class NavigationHandle;
+class NavigationThrottleRegistry;
 }
 
-constexpr char kBlockTabUnderFormatMessage[] =
+inline constexpr char kBlockTabUnderFormatMessage[] =
     "Chrome stopped this site from navigating to %s, see "
     "https://www.chromestatus.com/feature/5675755719622656 for more details.";
-
-// TODO(crbug.com/40623730): Remove this.
-BASE_DECLARE_FEATURE(kBlockTabUnders);
 
 // This class blocks navigations that we've classified as tab-unders. It does so
 // by communicating with the popup opener tab helper.
@@ -67,8 +61,7 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
     kCount
   };
 
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   TabUnderNavigationThrottle(const TabUnderNavigationThrottle&) = delete;
   TabUnderNavigationThrottle& operator=(const TabUnderNavigationThrottle&) =
@@ -77,7 +70,8 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
   ~TabUnderNavigationThrottle() override;
 
  private:
-  explicit TabUnderNavigationThrottle(content::NavigationHandle* handle);
+  explicit TabUnderNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // This method is described at the top of this file.
   //
@@ -89,19 +83,11 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
 
   bool HasOpenedPopupSinceLastUserGesture() const;
 
-  // Returns true if tab-unders are allowed due to content settings. Currently,
-  // tab-unders blocking is governed by the same setting as popups.
-  bool TabUndersAllowedBySettings() const;
-
   // content::NavigationThrottle:
   content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
   content::NavigationThrottle::ThrottleCheckResult WillRedirectRequest()
       override;
   const char* GetNameForLogging() override;
-
-  // True if the experiment is turned on and the class should actually attempt
-  // to block tab-unders.
-  const bool block_ = false;
 
   // Tracks whether this WebContents has opened a popup since the last user
   // gesture, at the time this navigation is starting.

@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/task_executor_with_retries.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 
@@ -126,8 +124,7 @@ void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
   // they may break a bigger proportion of the devices when pushed.
   const base::Value* value =
       cros_settings_->GetPref(ash::kDeviceScheduledUpdateCheck);
-  if (!base::FeatureList::IsEnabled(::features::kSupportsRtcWakeOver24Hours) ||
-      !value) {
+  if (!value) {
     ResetState();
     return;
   }

@@ -8,16 +8,15 @@
 #include "base/no_destructor.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 instance_id::InstanceIDProfileService*
-IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<instance_id::InstanceIDProfileService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+IOSChromeInstanceIDProfileServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<instance_id::InstanceIDProfileService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -29,9 +28,7 @@ IOSChromeInstanceIDProfileServiceFactory::GetInstance() {
 
 IOSChromeInstanceIDProfileServiceFactory::
     IOSChromeInstanceIDProfileServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "InstanceIDProfileService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("InstanceIDProfileService") {
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
 }
 
@@ -40,13 +37,10 @@ IOSChromeInstanceIDProfileServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeInstanceIDProfileServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  DCHECK(!context->IsOffTheRecord());
+    ProfileIOS* profile) const {
+  DCHECK(!profile->IsOffTheRecord());
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<instance_id::InstanceIDProfileService>(
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state)
-          ->driver(),
-      browser_state->IsOffTheRecord());
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver(),
+      profile->IsOffTheRecord());
 }

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_PUBLIC_NETWORK_CONTEXT_GETTER_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_PUBLIC_NETWORK_CONTEXT_GETTER_H_
 
-#include "base/functional/callback.h"
 #include "services/network/public/cpp/network_context_getter.h"
 
 namespace cast_streaming {

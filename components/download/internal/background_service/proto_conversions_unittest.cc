@@ -23,7 +23,7 @@ namespace download {
 
 class ProtoConversionsTest : public testing::Test, public ProtoConversions {
  public:
-  ~ProtoConversionsTest() override {}
+  ~ProtoConversionsTest() override = default;
 };
 
 TEST_F(ProtoConversionsTest, StateConversion) {

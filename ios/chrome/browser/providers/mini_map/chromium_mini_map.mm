@@ -9,11 +9,13 @@
 namespace ios {
 namespace provider {
 
-id<MiniMapController> CreateMiniMapController(
-    NSString* address,
-    MiniMapControllerCompletion completion) {
+id<MiniMapController> CreateMiniMapController() {
   // Mini map is not supported in Chromium.
   return nil;
+}
+
+BOOL MiniMapCanHandleURL(NSURL* url) {
+  return NO;
 }
 
 }  // namespace provider

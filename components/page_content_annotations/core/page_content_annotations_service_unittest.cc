@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+
+#include <array>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -17,9 +14,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/test_optimization_guide_decider.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -90,7 +88,8 @@ class FakeOptimizationGuideDecider
       page_entities_metadata.set_alternative_title("alternative title");
 
       optimization_guide::OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(page_entities_metadata);
+      metadata.set_any_metadata(
+          optimization_guide::AnyWrapProto(page_entities_metadata));
       std::move(callback).Run(
           optimization_guide::OptimizationGuideDecision::kTrue, metadata);
       return;
@@ -102,7 +101,8 @@ class FakeOptimizationGuideDecider
           "http://gstatic.com/image");
 
       optimization_guide::OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(salient_image_metadata);
+      metadata.set_any_metadata(
+          optimization_guide::AnyWrapProto(salient_image_metadata));
       std::move(callback).Run(
           optimization_guide::OptimizationGuideDecision::kTrue, metadata);
       return;
@@ -110,7 +110,7 @@ class FakeOptimizationGuideDecider
     if (url == GURL("http://wrongmetadata.com/")) {
       optimization_guide::OptimizationMetadata metadata;
       optimization_guide::proto::Entity entity;
-      metadata.SetAnyMetadataForTesting(entity);
+      metadata.set_any_metadata(optimization_guide::AnyWrapProto(entity));
       std::move(callback).Run(
           optimization_guide::OptimizationGuideDecision::kTrue, metadata);
       return;
@@ -124,8 +124,7 @@ class FakeOptimizationGuideDecider
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata)
       override {
-    NOTREACHED_IN_MIGRATION();
-    return optimization_guide::OptimizationGuideDecision::kFalse;
+    NOTREACHED();
   }
 
  private:
@@ -172,6 +171,8 @@ class PageContentAnnotationsServiceTest : public testing::Test {
         /*database_dir=*/base::FilePath(),
         /*optimization_guide_logger=*/nullptr,
         optimization_guide_decider_.get(),
+        /*embedder_metadata_provider=*/nullptr,
+        /*embedder_=*/nullptr,
         /*background_task_runner=*/nullptr);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -188,15 +189,19 @@ class PageContentAnnotationsServiceTest : public testing::Test {
                 history::VisitID visit_id,
                 std::optional<int64_t> local_navigation_id,
                 bool is_synced_visit = false,
-                base::Time timestamp = base::Time()) {
+                base::Time timestamp = base::Time(),
+                history::VisitResponseCodeCategory response_code_category =
+                    history::VisitResponseCodeCategory::kNot404) {
     history::URLRow url_row(url);
     url_row.set_title(title);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
     new_visit.visit_time = timestamp;
     new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
-    service_->OnURLVisitedWithNavigationId(history_service_.get(), url_row,
-                                           new_visit, local_navigation_id);
+    service_->OnURLVisitedWithNavigationId(
+        history_service_.get(),
+        std::move(history::VisitedURLInfo(
+            url_row, new_visit, response_code_category, local_navigation_id)));
   }
 
   FakeOptimizationGuideDecider* optimization_guide_decider() {
@@ -247,6 +252,24 @@ TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
   VisitURL(GURL("data:,"), u"test", visit_id,
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
+TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
+  history::VisitID visit_id = 1;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id))
+      .Times(0);
+#endif
+
+  VisitURL(GURL("https://example.com"), u"404test", visit_id,
+           /*local_navigation_id=*/1,
+           /*is_synced_visit=*/true,
+           /*timestamp=*/base::Time(),
+           history::VisitResponseCodeCategory::k404);
 
   task_environment_.FastForwardBy(base::Seconds(5));
 }
@@ -357,7 +380,7 @@ TEST_F(PageContentAnnotationsServiceTest, OlderVisitsDropped) {
   // First 2 visits are always processed, then the next 4 are queued and the
   // most recent 2 are annotated.
   constexpr base::Time kTestTime = base::Time() + base::Days(1000);
-  constexpr base::Time kTimestamps[6] = {
+  constexpr std::array<base::Time, 6> kTimestamps = {
       // Queue not full, gets annotated.
       kTestTime + base::Days(12),
       kTestTime,
@@ -397,7 +420,9 @@ class PageContentAnnotationsServiceRemotePageMetadataTest
     : public PageContentAnnotationsServiceTest {
  public:
   PageContentAnnotationsServiceRemotePageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kRemotePageMetadata);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+    features::kRemotePageMetadata,
+    {{"supported_locales", "*"}, {"supported_countries", "*"}});
   }
 
  private:
@@ -436,20 +461,7 @@ TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
            /*local_navigation_id=*/1);
 }
 
-class PageContentAnnotationsServiceSalientImageMetadataTest
-    : public PageContentAnnotationsServiceTest {
- public:
-  PageContentAnnotationsServiceSalientImageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPageContentAnnotationsPersistSalientImageMetadata);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
+TEST_F(PageContentAnnotationsServiceTest, RegistersType) {
   std::vector<optimization_guide::proto::OptimizationType>
       registered_optimization_types =
           optimization_guide_decider()->registered_optimization_types();
@@ -457,21 +469,20 @@ TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
                              optimization_guide::proto::SALIENT_IMAGE));
 }
 
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
+TEST_F(PageContentAnnotationsServiceTest, DoesNotPersistIfServerHasNoData) {
   // Navigate.
   VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13,
            /*local_navigation_id=*/1);
 }
 
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+TEST_F(PageContentAnnotationsServiceTest,
        DoesNotPersistIfServerReturnsWrongMetadata) {
   // Navigate.
   VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13,
            /*local_navigation_id=*/1);
 }
 
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+TEST_F(PageContentAnnotationsServiceTest,
        RequestsToPersistIfHasSalientImageMetadata) {
   EXPECT_CALL(*history_service_, SetHasUrlKeyedImageForVisit(true, 13));
 

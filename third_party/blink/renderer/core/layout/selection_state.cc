@@ -25,8 +25,7 @@ std::ostream& operator<<(std::ostream& out, const SelectionState state) {
     case SelectionState::kContain:
       return out << "Contain";
   }
-  NOTREACHED_IN_MIGRATION();
-  return out;
+  NOTREACHED();
 }
 
 }  // namespace blink

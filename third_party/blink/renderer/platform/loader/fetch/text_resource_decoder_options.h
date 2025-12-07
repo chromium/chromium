@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_TEXT_RESOURCE_DECODER_OPTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_TEXT_RESOURCE_DECODER_OPTIONS_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -34,7 +36,7 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
   // - Else, Latin-1.
   explicit TextResourceDecoderOptions(
       ContentType,
-      const WTF::TextEncoding& default_encoding = WTF::TextEncoding());
+      const TextEncoding& default_encoding = TextEncoding());
 
   // Corresponds to utf-8 decode in Encoding spec:
   // https://encoding.spec.whatwg.org/#utf-8-decode.
@@ -46,8 +48,8 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
 
   static TextResourceDecoderOptions CreateWithAutoDetection(
       ContentType,
-      const WTF::TextEncoding& default_encoding,
-      const WTF::TextEncoding& hint_encoding,
+      const TextEncoding& default_encoding,
+      const TextEncoding& hint_encoding,
       const KURL& hint_url);
 
   void SetUseLenientXMLDecoding() { use_lenient_xml_decoding_ = true; }
@@ -55,8 +57,6 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
     if (encoding_detection_option_ != kAlwaysUseUTF8ForText)
       content_type_ = content_type;
   }
-
-  static ContentType DetermineContentType(const String& mime_type);
 
   // TextResourceDecoder does three kind of encoding detection:
   // 1. By BOM,
@@ -82,32 +82,32 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
     return encoding_detection_option_;
   }
   ContentType GetContentType() const { return content_type_; }
-  const WTF::TextEncoding& DefaultEncoding() const { return default_encoding_; }
+  const TextEncoding& DefaultEncoding() const { return default_encoding_; }
   bool GetNoBOMDecoding() const { return no_bom_decoding_; }
   bool GetUseLenientXMLDecoding() const { return use_lenient_xml_decoding_; }
 
-  const char* HintEncoding() const { return hint_encoding_; }
+  const AtomicString& HintEncoding() const { return hint_encoding_; }
   const KURL& HintURL() const { return hint_url_; }
-  const char* HintLanguage() const { return hint_language_; }
+  const char* HintLanguage() const { return hint_language_.data(); }
 
  private:
   TextResourceDecoderOptions(EncodingDetectionOption,
                              ContentType,
-                             const WTF::TextEncoding& default_encoding,
-                             const char* hint_encoding,
+                             const TextEncoding& default_encoding,
+                             const AtomicString& hint_encoding,
                              const KURL& hint_url);
 
   EncodingDetectionOption encoding_detection_option_;
   ContentType content_type_;
-  WTF::TextEncoding default_encoding_;
+  TextEncoding default_encoding_;
   bool no_bom_decoding_;
   bool use_lenient_xml_decoding_;  // Don't stop on XML decoding errors.
 
   // Hints for DetectTextEncoding().
   // Only used when |encoding_detection_option_| == |kUseAllAutoDetection|.
-  const char* hint_encoding_;
+  AtomicString hint_encoding_;
   KURL hint_url_;
-  char hint_language_[3];
+  std::array<char, 3> hint_language_;
 };
 
 }  // namespace blink

@@ -12,8 +12,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class MessageSender;
 class PhoneModel;
@@ -80,7 +79,6 @@ class CrosStateSender
   base::WeakPtrFactory<CrosStateSender> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_

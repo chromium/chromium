@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/network_interfaces_posix.h"
 
 #include <netinet/in.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "net/base/network_interfaces.h"
 
 namespace net {
@@ -40,7 +36,8 @@ bool IsLoopbackOrUnspecifiedAddress(const sockaddr* addr) {
     const struct sockaddr_in6* addr_in6 =
         reinterpret_cast<const struct sockaddr_in6*>(addr);
     const struct in6_addr* sin6_addr = &addr_in6->sin6_addr;
-    if (IN6_IS_ADDR_LOOPBACK(sin6_addr) || IN6_IS_ADDR_UNSPECIFIED(sin6_addr)) {
+    if (UNSAFE_TODO(IN6_IS_ADDR_LOOPBACK(sin6_addr)) ||
+        UNSAFE_TODO(IN6_IS_ADDR_UNSPECIFIED(sin6_addr))) {
       return true;
     }
   } else if (addr->sa_family == AF_INET) {

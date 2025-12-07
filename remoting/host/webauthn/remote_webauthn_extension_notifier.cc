@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,10 +83,11 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   // See: chrome/common/chrome_paths_linux.cc
   auto env = base::Environment::Create();
   base::FilePath base_path;
-  std::string chrome_config_home_str;
-  if (env->GetVar("CHROME_CONFIG_HOME", &chrome_config_home_str) &&
-      base::IsStringUTF8(chrome_config_home_str)) {
-    base_path = base::FilePath::FromUTF8Unsafe(chrome_config_home_str);
+  std::optional<std::string> chrome_config_home_str =
+      env->GetVar("CHROME_CONFIG_HOME");
+  if (chrome_config_home_str.has_value() &&
+      base::IsStringUTF8(chrome_config_home_str.value())) {
+    base_path = base::FilePath::FromUTF8Unsafe(chrome_config_home_str.value());
   } else {
     base_path = base::nix::GetXDGDirectory(
         env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
@@ -91,6 +95,8 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   dirs.push_back(base_path.Append("google-chrome").Append(kStateChangeDirName));
   dirs.push_back(
       base_path.Append("google-chrome-beta").Append(kStateChangeDirName));
+  dirs.push_back(
+      base_path.Append("google-chrome-canary").Append(kStateChangeDirName));
   dirs.push_back(
       base_path.Append("google-chrome-unstable").Append(kStateChangeDirName));
   dirs.push_back(base_path.Append("chromium").Append(kStateChangeDirName));
@@ -192,8 +198,8 @@ void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
       VLOG(1) << "Writing extension wakeup file: " << file_path;
       base::File file(file_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(kExtensionWakeupFileContent,
-                             sizeof(kExtensionWakeupFileContent));
+      file.WriteAtCurrentPos(
+          base::byte_span_with_nul_from_cstring(kExtensionWakeupFileContent));
       file.Flush();
     }
   }
@@ -203,16 +209,24 @@ void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
 const std::vector<base::FilePath::StringType>&
 RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds() {
   static const base::NoDestructor<std::vector<base::FilePath::StringType>> ids({
-    // Prod extension ID
-    FILE_PATH_LITERAL("djjmngfglakhkhmgcfdmjalogilepkhd"),
+      // LINT.IfChange(extension_ids)
+      // Prod security key extension ID
+      FILE_PATH_LITERAL("djjmngfglakhkhmgcfdmjalogilepkhd"),
 
-    // For debug builds we wake up both extensions, so that developers don't
-    // have to build and install the dev extension for using WebAuthn
-    // forwarding.
+      // Prod companion extension ID
+      FILE_PATH_LITERAL("inomeogfingihgjfjlpeplalcfajhgai"),
+
+  // For debug builds we wake up both extensions, so that developers don't
+  // have to build and install the dev extension for using WebAuthn
+  // forwarding.
 #if !defined(NDEBUG)
-        // Dev extension ID
-        FILE_PATH_LITERAL("hfmpidnhglhndeamkbopljnclamhmnaj"),
+      // Dev security key extension ID
+      FILE_PATH_LITERAL("kbapnajlciffffomeaphfpckfdcfopef"),
+
+      // Dev companion extension ID
+      FILE_PATH_LITERAL("pbnaomcgbfiofkfobmlhmdobjchjkphi"),
 #endif
+      // LINT.ThenChange(/remoting/host/BUILD.gn:extension_ids)
   });
   return *ids;
 }

@@ -24,7 +24,10 @@ void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
 }
 
 void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
-    ConnectToService() {
+    EnsureConnectedToService() {
+  if (mojo_device_notifier_ && receiver_.is_bound()) {
+    return;
+  }
   CHECK(!mojo_device_notifier_);
   CHECK(!receiver_.is_bound());
   GetVideoCaptureService().ConnectToVideoSourceProvider(
@@ -45,7 +48,13 @@ void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
   if (disconnect_cb_) {
     disconnect_cb_.Run();
   }
-  ConnectToService();
+  EnsureConnectedToService();
+}
+
+void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
+    DisconnectVideoSourceProvider() {
+  mojo_device_notifier_.reset();
+  receiver_.reset();
 }
 
 }  // namespace content

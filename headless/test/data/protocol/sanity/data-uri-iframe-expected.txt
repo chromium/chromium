@@ -1,0 +1,5 @@
+Tests protocol events for a data-URI iframes
+requested url: http://a.com/index.html
+Page.frameRequestedNavigation data:text/html,<body></body>
+Page.frameStartedNavigating data:text/html,<body></body>
+Page.frameNavigated data:text/html,<body></body>

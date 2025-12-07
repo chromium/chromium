@@ -38,6 +38,8 @@
 
 namespace blink {
 
+class V8IDBDataLossAmount;
+
 class IDBVersionChangeEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -52,18 +54,19 @@ class IDBVersionChangeEvent final : public Event {
   }
 
   IDBVersionChangeEvent();
-  IDBVersionChangeEvent(const AtomicString& event_type,
-                        uint64_t old_version,
-                        const std::optional<uint64_t>& new_version,
-                        mojom::IDBDataLoss data_loss = mojom::IDBDataLoss::None,
-                        const String& data_loss_message = String());
+  IDBVersionChangeEvent(
+      const AtomicString& event_type,
+      uint64_t old_version,
+      const std::optional<uint64_t>& new_version,
+      mojom::blink::IDBDataLoss data_loss = mojom::blink::IDBDataLoss::None,
+      const String& data_loss_message = String());
   IDBVersionChangeEvent(const AtomicString& event_type,
                         const IDBVersionChangeEventInit*);
 
   uint64_t oldVersion() const { return old_version_; }
   std::optional<uint64_t> newVersion() const { return new_version_; }
 
-  const AtomicString& dataLoss() const;
+  V8IDBDataLossAmount dataLoss() const;
   const String& dataLossMessage() const { return data_loss_message_; }
 
   const AtomicString& InterfaceName() const override;
@@ -73,7 +76,7 @@ class IDBVersionChangeEvent final : public Event {
  private:
   uint64_t old_version_;
   std::optional<uint64_t> new_version_;
-  mojom::IDBDataLoss data_loss_;
+  mojom::blink::IDBDataLoss data_loss_;
   String data_loss_message_;
 };
 

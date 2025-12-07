@@ -2,56 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("policy") {
   output_name = "chromeos_ash_components_policy"
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
-  public = [
-    "restriction_schedule/device_restriction_schedule_controller.h",
-    "weekly_time/time_utils.h",
-    "weekly_time/weekly_time.h",
-    "weekly_time/weekly_time_interval.h",
-  ]
+  public = []
 
-  sources = [
-    "restriction_schedule/device_restriction_schedule_controller.cc",
-    "weekly_time/time_utils.cc",
-    "weekly_time/weekly_time.cc",
-    "weekly_time/weekly_time_interval.cc",
-  ]
+  sources = []
 
   public_deps = [
-    "//base",
-    "//components/policy/proto",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/icu",
+    "external_storage",
+    "local_auth_factors",
+    "restriction_schedule",
+    "system_features_disable_list",
   ]
 
-  deps = [
-    "//base:i18n",
-    "//chromeos/constants",
-    "//components/prefs",
-  ]
+  deps = []
 }
 
 source_set("unit_tests") {
   testonly = true
+
   deps = [
-    ":policy",
-    "//base",
-    "//base:i18n",
-    "//base/test:test_support",
-    "//components/policy/proto",
-    "//testing/gtest",
-    "//third_party/icu",
-  ]
-  sources = [
-    "weekly_time/time_utils_unittest.cc",
-    "weekly_time/weekly_time_interval_unittest.cc",
-    "weekly_time/weekly_time_unittest.cc",
+    "external_storage:unit_tests",
+    "local_auth_factors:unit_tests",
+    "restriction_schedule:unit_tests",
+    "system_features_disable_list:unit_tests",
+    "weekly_time:unit_tests",
+    "weekly_time:unit_tests_checked",
   ]
 }

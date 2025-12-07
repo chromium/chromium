@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("offline_items_collection") {
+  sources = [
+    "offline_content_aggregator_factory.cc",
+    "offline_content_aggregator_factory.h",
+  ]
+  public_deps = [ "//components/keyed_service/core" ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/offline_items_collection/core",
+  ]
+}

@@ -4,17 +4,22 @@
 
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
-#include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
+#include "chromeos/components/cdm_factory_daemon/cdm_context_for_oopvd_impl.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -74,8 +79,8 @@
 //   VideoDecoder::Reset()).
 //
 // - That OOPVideoDecoder asserts it's not being misused (which might cause us
-//   to violate the requirements of the StableVideoDecoder interface). For
-//   example, the StableVideoDecoder interface says for Decode(): "this must not
+//   to violate the requirements of the VideoDecoder interface). For
+//   example, the VideoDecoder interface says for Decode(): "this must not
 //   be called while there are pending Initialize(), Reset(), or Decode(EOS)
 //   requests."
 
@@ -87,74 +92,29 @@ namespace {
 // The maximum size is chosen to be the same as in the VaapiVideoDecoder.
 constexpr size_t kTimestampCacheSize = 128;
 
-// Converts |mojo_frame| to a media::FrameResource after performing some
-// validation. The reason we do validation/conversion here and not in the mojo
-// traits is that we don't want every incoming stable::mojom::VideoFrame to
-// result in a media::FrameResource: we'd like to re-use buffers based on the
-// incoming |mojo_frame|->gpu_memory_buffer_handle.id; if that incoming
-// |mojo_frame| is a frame that we already know about, we can re-use the
-// underlying buffer without creating a media::FrameResource.
-scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
-    stable::mojom::VideoFramePtr mojo_frame) {
-  if (mojo_frame->metadata.protected_video &&
-      mojo_frame->metadata.needs_detiling &&
-      mojo_frame->format == PIXEL_FORMAT_P010LE) {
-    // This is a tiled, protected MTK format that is true 10bpp so it will
-    // not pass the tests in VerifyGpuMemoryBufferHandle for P010. Instead just
-    // do the basic tests that would be done in that call here. This is safe to
-    // do because the buffers for this will only go into the secure video
-    // decoder which will fail on invalid buffer parameters.
-    if (mojo_frame->gpu_memory_buffer_handle.type != gfx::NATIVE_PIXMAP) {
-      VLOGF(1) << "Unexpected GpuMemoryBufferType: "
-               << mojo_frame->gpu_memory_buffer_handle.type;
-      return nullptr;
-    }
-    if (!media::VideoFrame::IsValidCodedSize(mojo_frame->coded_size)) {
-      VLOG(1) << "Coded size is beyond allowed dimensions: "
-              << mojo_frame->coded_size.ToString();
-      return nullptr;
-    }
-    constexpr size_t kNumP010Planes = 2;
-    if (kNumP010Planes != mojo_frame->gpu_memory_buffer_handle
-                              .native_pixmap_handle.planes.size()) {
-      VLOGF(1) << "Invalid number of dmabuf planes passed: "
-               << mojo_frame->gpu_memory_buffer_handle.native_pixmap_handle
-                      .planes.size()
-               << ", expected: 2";
-      return nullptr;
-    }
-  } else {
-    if (!VerifyGpuMemoryBufferHandle(mojo_frame->format, mojo_frame->coded_size,
-                                     mojo_frame->gpu_memory_buffer_handle)) {
-      VLOGF(2) << "Received an invalid GpuMemoryBufferHandle";
-      return nullptr;
-    }
-  }
-
-  std::optional<gfx::BufferFormat> buffer_format =
-      VideoPixelFormatToGfxBufferFormat(mojo_frame->format);
-  if (!buffer_format) {
-    VLOGF(2) << "Could not convert the incoming frame's format to a "
-                "gfx::BufferFormat";
-    return nullptr;
-  }
+scoped_refptr<FrameResource> CreateDecodedFrameResource(
+    const VideoFrameLayout& layout,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    std::vector<base::ScopedFD> dmabuf_fds,
+    base::TimeDelta timestamp,
+    const VideoFrameMetadata& metadata,
+    const gfx::ColorSpace& color_space,
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+  // The VideoFrame mojo traits already perform an extensive validation of the
+  // frame. No additional validations need to take place.
 
   scoped_refptr<media::NativePixmapFrameResource> native_pixmap_frame =
-      NativePixmapFrameResource::Create(
-          mojo_frame->visible_rect, mojo_frame->natural_size,
-          mojo_frame->timestamp, gfx::BufferUsage::SCANOUT_VDA_WRITE,
-          base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-              mojo_frame->coded_size, *buffer_format,
-              std::move(
-                  mojo_frame->gpu_memory_buffer_handle.native_pixmap_handle)));
+      NativePixmapFrameResource::Create(layout, visible_rect, natural_size,
+                                        std::move(dmabuf_fds), timestamp);
   if (!native_pixmap_frame) {
     VLOGF(2) << "Could not create a NativePixmap-backed FrameResource";
     return nullptr;
   }
 
-  native_pixmap_frame->set_metadata(mojo_frame->metadata);
-  native_pixmap_frame->set_color_space(mojo_frame->color_space);
-  native_pixmap_frame->set_hdr_metadata(mojo_frame->hdr_metadata);
+  native_pixmap_frame->set_metadata(metadata);
+  native_pixmap_frame->set_color_space(color_space);
+  native_pixmap_frame->set_hdr_metadata(hdr_metadata);
 
   return native_pixmap_frame;
 }
@@ -188,8 +148,7 @@ class OOPVideoDecoderSupportedConfigsManager {
     //    OOPVideoDecoder instances. This should be impossible as higher layers
     //    should guarantee that we know the supported configurations before
     //    creating OOPVideoDecoder instances. See the logic in
-    //    InterfaceFactoryImpl::CreateVideoDecoder() (for regular OOP-VD) and in
-    //    MojoStableVideoDecoder::Initialize() (for GTFO OOP-VD).
+    //    InterfaceFactoryImpl::CreateVideoDecoder().
     //
     // b) We did try to get the supported configurations but an error occurred.
     //    This case reduces to no supported configurations in which case, a
@@ -210,9 +169,8 @@ class OOPVideoDecoderSupportedConfigsManager {
   }
 
   void NotifySupportKnown(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<
-          void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
     base::ReleasableAutoLock lock(&lock_);
     if ((configs_ && interface_version_) || disconnected_) {
       // Both the supported configurations and the interface version are already
@@ -255,9 +213,9 @@ class OOPVideoDecoderSupportedConfigsManager {
     // because it's been taken over by the |oop_video_decoder_|. For now, we'll
     // store a default-constructed PendingRemote. Later, when we have to call
     // |cb|, we can pass |oop_video_decoder_|.Unbind().
-    waiting_callbacks_.emplace(
-        mojo::PendingRemote<stable::mojom::StableVideoDecoder>(), std::move(cb),
-        base::SequencedTaskRunner::GetCurrentDefault());
+    waiting_callbacks_.emplace(mojo::PendingRemote<mojom::VideoDecoder>(),
+                               std::move(cb),
+                               base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void ResetForTesting() {
@@ -356,7 +314,7 @@ class OOPVideoDecoderSupportedConfigsManager {
           std::move(waiting_callbacks_.front());
       waiting_callbacks_.pop();
 
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder =
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder =
           waiting_callback.oop_video_decoder
               ? std::move(waiting_callback.oop_video_decoder)
               : oop_video_decoder_.Unbind();
@@ -381,7 +339,7 @@ class OOPVideoDecoderSupportedConfigsManager {
   // to |oop_video_decoder_| and we use it to query the supported configurations
   // and the interface version of the out-of-process video decoder.
   // |oop_video_decoder_| will get unbound once both of those things are known.
-  mojo::Remote<stable::mojom::StableVideoDecoder> oop_video_decoder_;
+  mojo::Remote<mojom::VideoDecoder> oop_video_decoder_;
 
   bool disconnected_ GUARDED_BY(lock_) = false;
 
@@ -397,18 +355,14 @@ class OOPVideoDecoderSupportedConfigsManager {
   // progress.
   struct WaitingCallbackContext {
     WaitingCallbackContext(
-        mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-            oop_video_decoder,
-        base::OnceCallback<
-            void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb,
+        mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+        base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb,
         scoped_refptr<base::SequencedTaskRunner> cb_task_runner)
         : oop_video_decoder(std::move(oop_video_decoder)),
           cb(std::move(cb)),
           cb_task_runner(std::move(cb_task_runner)) {}
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder;
-    base::OnceCallback<void(
-        mojo::PendingRemote<stable::mojom::StableVideoDecoder>)>
-        cb;
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder;
+    base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb;
     scoped_refptr<base::SequencedTaskRunner> cb_task_runner;
   };
   base::queue<WaitingCallbackContext> waiting_callbacks_ GUARDED_BY(lock_);
@@ -418,8 +372,7 @@ class OOPVideoDecoderSupportedConfigsManager {
 
 // static
 std::unique_ptr<VideoDecoderMixin> OOPVideoDecoder::Create(
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-        pending_remote_decoder,
+    mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder,
     std::unique_ptr<media::MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
@@ -433,9 +386,8 @@ std::unique_ptr<VideoDecoderMixin> OOPVideoDecoder::Create(
 
 // static
 void OOPVideoDecoder::NotifySupportKnown(
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-    base::OnceCallback<
-        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+    base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
   OOPVideoDecoderSupportedConfigsManager::Instance().NotifySupportKnown(
       std::move(oop_video_decoder), std::move(cb));
 }
@@ -456,8 +408,7 @@ OOPVideoDecoder::OOPVideoDecoder(
     std::unique_ptr<media::MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-        pending_remote_decoder)
+    mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder)
     : VideoDecoderMixin(std::move(media_log),
                         std::move(decoder_task_runner),
                         std::move(client)),
@@ -470,8 +421,7 @@ OOPVideoDecoder::OOPVideoDecoder(
 
   // Set a connection error handler in case the remote decoder gets
   // disconnected, for instance, if the remote decoder process crashes.
-  // The remote decoder lives in a utility process (for lacros-chrome,
-  // this utility process is in ash-chrome).
+  // The remote decoder lives in a utility process.
   // base::Unretained() is safe because `this` owns the `mojo::Remote`.
   remote_decoder_.set_disconnect_handler(
       base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
@@ -490,25 +440,25 @@ OOPVideoDecoder::OOPVideoDecoder(
       &remote_consumer_handle);
   CHECK(mojo_decoder_buffer_writer_);
 
-  DCHECK(!stable_video_frame_handle_releaser_remote_.is_bound());
-  mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>
-      stable_video_frame_handle_releaser_receiver =
-          stable_video_frame_handle_releaser_remote_
-              .BindNewPipeAndPassReceiver();
+  DCHECK(!video_frame_handle_releaser_remote_.is_bound());
+  mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_receiver =
+          video_frame_handle_releaser_remote_.BindNewPipeAndPassReceiver();
 
   // base::Unretained() is safe because `this` owns the `mojo::Remote`.
-  stable_video_frame_handle_releaser_remote_.set_disconnect_handler(
+  video_frame_handle_releaser_remote_.set_disconnect_handler(
       base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
 
-  DCHECK(!stable_media_log_receiver_.is_bound());
+  DCHECK(!media_log_receiver_.is_bound());
 
   CHECK(!has_error_);
   // TODO(b/171813538): plumb the remaining parameters.
-  remote_decoder_->Construct(
-      client_receiver_.BindNewEndpointAndPassRemote(),
-      stable_media_log_receiver_.BindNewPipeAndPassRemote(),
-      std::move(stable_video_frame_handle_releaser_receiver),
-      std::move(remote_consumer_handle), gfx::ColorSpace());
+  remote_decoder_->Construct(client_receiver_.BindNewEndpointAndPassRemote(),
+                             media_log_receiver_.BindNewPipeAndPassRemote(),
+                             std::move(video_frame_handle_releaser_receiver),
+                             std::move(remote_consumer_handle),
+                             media::mojom::CommandBufferIdPtr(),
+                             gfx::ColorSpace());
 }
 
 OOPVideoDecoder::~OOPVideoDecoder() {
@@ -549,33 +499,34 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  mojo::PendingRemote<stable::mojom::StableCdmContext>
-      pending_remote_stable_cdm_context;
+  mojo::PendingRemote<mojom::CdmContextForOOPVD>
+      pending_remote_cdm_context_for_oopvd;
   if (config.is_encrypted()) {
 #if BUILDFLAG(IS_CHROMEOS)
     // There's logic in MojoVideoDecoderService::Initialize() to ensure that the
     // CDM doesn't change across Initialize() calls. We rely on this assumption
-    // to ensure that creating a single StableCdmContextImpl that survives
+    // to ensure that creating a single CdmContextForOOPVDImpl that survives
     // re-initializations is correct: the remote decoder requires a bound
     // |pending_remote_stable_cdm_context| only for the first Initialize() call
     // that sets up encryption.
-    DCHECK(!stable_cdm_context_ ||
-           cdm_context == stable_cdm_context_->cdm_context());
-    if (!stable_cdm_context_) {
+    DCHECK(!cdm_context_for_oopvd_ ||
+           cdm_context == cdm_context_for_oopvd_->cdm_context());
+    if (!cdm_context_for_oopvd_) {
       if (!cdm_context || !cdm_context->GetChromeOsCdmContext()) {
         std::move(init_cb).Run(
             DecoderStatus::Codes::kUnsupportedEncryptionMode);
         return;
       }
-      stable_cdm_context_ =
-          std::make_unique<chromeos::StableCdmContextImpl>(cdm_context);
-      stable_cdm_context_receiver_ =
-          std::make_unique<mojo::Receiver<stable::mojom::StableCdmContext>>(
-              stable_cdm_context_.get(), pending_remote_stable_cdm_context
-                                             .InitWithNewPipeAndPassReceiver());
+      cdm_context_for_oopvd_ =
+          std::make_unique<chromeos::CdmContextForOOPVDImpl>(cdm_context);
+      cdm_context_for_oopvd_receiver_ =
+          std::make_unique<mojo::Receiver<mojom::CdmContextForOOPVD>>(
+              cdm_context_for_oopvd_.get(),
+              pending_remote_cdm_context_for_oopvd
+                  .InitWithNewPipeAndPassReceiver());
 
       // base::Unretained() is safe because |this| owns the mojo::Receiver.
-      stable_cdm_context_receiver_->set_disconnect_handler(
+      cdm_context_for_oopvd_receiver_->set_disconnect_handler(
           base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
     }
 #else
@@ -594,7 +545,10 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
   waiting_cb_ = waiting_cb;
 
   remote_decoder_->Initialize(config, low_delay,
-                              std::move(pending_remote_stable_cdm_context),
+                              pending_remote_cdm_context_for_oopvd
+                                  ? mojom::Cdm::NewCdmContext(std::move(
+                                        pending_remote_cdm_context_for_oopvd))
+                                  : nullptr,
                               base::BindOnce(&OOPVideoDecoder::OnInitializeDone,
                                              weak_this_factory_.GetWeakPtr()));
 }
@@ -627,26 +581,8 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
   max_decode_requests_ = max_decode_requests;
   remote_decoder_type_ = decoder_type;
 
-  if (OOPVideoDecoderSupportedConfigsManager::Instance()
-          .GetInterfaceVersion() >= 1u) {
-    // Starting on version 1, the remote decoder tells us if we need to do
-    // transcryption before sending the encoded data.
-    needs_transcryption_ =
-        initialized_for_protected_content_ && needs_transcryption;
-  } else {
-    // Before version 1, the remote decoder does not tell us this information,
-    // so we need to find it ourselves.
-    //
-    // TODO(b/171813538): remove this once the maximum version skew between
-    // lacros-chrome and ash-chrome makes it impossible for the former to run on
-    // ash-chrome < M115 (since M115 is when StableVideoDecoder got upgraded to
-    // version 1).
-#if BUILDFLAG(USE_VAAPI)
-    needs_transcryption_ = initialized_for_protected_content_ &&
-                           (VaapiWrapper::GetImplementationType() ==
-                            VAImplementation::kMesaGallium);
-#endif  // BUILDFLAG(USE_VAAPI)
-  }
+  needs_transcryption_ =
+      initialized_for_protected_content_ && needs_transcryption;
 
   std::move(init_cb_).Run(status);
 }
@@ -712,7 +648,7 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   is_flushing_ = buffer->end_of_stream();
   remote_decoder_->Decode(
-      std::move(buffer),
+      std::move(mojo_buffer),
       base::BindOnce(&OOPVideoDecoder::OnDecodeDone,
                      weak_this_factory_.GetWeakPtr(), decode_id, is_flushing_));
 }
@@ -828,7 +764,7 @@ void OOPVideoDecoder::OnResetDone() {
   // After a reset is completed, we shouldn't receive decoded frames
   // corresponding to Decode() calls that came in prior to the reset (similar to
   // a flush). That's because according to the media::VideoDecoder and
-  // media::stable::mojom::StableVideoDecoder interfaces, all ongoing Decode()
+  // media::mojom::VideoDecoder interfaces, all ongoing Decode()
   // requests must be completed or aborted prior to executing the reset
   // callback. The clearing of the cache together with the validation in
   // OnVideoFrameDecoded() should guarantee this.
@@ -861,15 +797,15 @@ void OOPVideoDecoder::Stop() {
   base::WeakPtr<OOPVideoDecoder> weak_this = weak_this_factory_.GetWeakPtr();
 
   client_receiver_.reset();
-  stable_media_log_receiver_.reset();
+  media_log_receiver_.reset();
   remote_decoder_.reset();
   mojo_decoder_buffer_writer_.reset();
-  stable_video_frame_handle_releaser_remote_.reset();
+  video_frame_handle_releaser_remote_.reset();
   fake_timestamp_to_real_timestamp_cache_.Clear();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  stable_cdm_context_receiver_.reset();
-  stable_cdm_context_.reset();
+  cdm_context_for_oopvd_receiver_.reset();
+  cdm_context_for_oopvd_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (init_cb_)
@@ -904,13 +840,14 @@ void OOPVideoDecoder::ReleaseVideoFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
-  CHECK(stable_video_frame_handle_releaser_remote_.is_bound());
+  CHECK(video_frame_handle_releaser_remote_.is_bound());
 
-  stable_video_frame_handle_releaser_remote_->ReleaseVideoFrame(release_token);
+  video_frame_handle_releaser_remote_->ReleaseVideoFrame(
+      release_token, /*release_sync_token=*/{});
 }
 
 void OOPVideoDecoder::ApplyResolutionChange() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool OOPVideoDecoder::NeedsBitstreamConversion() const {
@@ -954,7 +891,7 @@ VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
 }
 
 bool OOPVideoDecoder::IsPlatformDecoder() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool OOPVideoDecoder::NeedsTranscryption() {
@@ -963,9 +900,9 @@ bool OOPVideoDecoder::NeedsTranscryption() {
 }
 
 void OOPVideoDecoder::OnVideoFrameDecoded(
-    stable::mojom::VideoFramePtr frame,
+    const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
-    const base::UnguessableToken& release_token) {
+    const std::optional<base::UnguessableToken>& release_token) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -978,17 +915,130 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   }
 
   // According to the media::VideoDecoder API, |output_cb_| should not be
-  // supplied with EOS frames. The mojo traits guarantee this DCHECK.
-  DCHECK(!frame->metadata.end_of_stream);
-
-  if (!gfx::Rect(frame->coded_size).Contains(frame->visible_rect)) {
-    VLOGF(2) << "Received a frame with inconsistent coded size and visible "
-                "rectangle";
+  // supplied with EOS frames.
+  if (frame->metadata().end_of_stream) {
+    VLOGF(2) << "Unexpectedly received an EOS frame";
+    Stop();
+    return;
+  }
+  if (!frame->metadata().allow_overlay) {
+    // All decoded frames should be eligible for overlay promotion at this stage
+    // in the pipeline.
+    VLOGF(2) << "Unexpectedly received a frame with allow_overlay = false";
+    Stop();
+    return;
+  }
+  if (!frame->metadata().read_lock_fences_enabled) {
+    // The remote decoder should expect that frames are returned only when they
+    // are no longer needed by the client.
+    VLOGF(2) << "Unexpectedly received a frame with read_lock_fences_enabled ="
+                " false";
+    Stop();
+    return;
+  }
+  if (!frame->metadata().power_efficient) {
+    // All frames coming from a hardware decoder should have been decoded in a
+    // power efficient manner.
+    VLOGF(2) << "Unexpectedly received a frame with power_efficient = false";
+    Stop();
+    return;
+  }
+  if (frame->metadata().hw_protected && !frame->metadata().protected_video) {
+    // According to the VideoFrameMetadata documentation, |hw_protected| is only
+    // valid if |protected_video| is set to true.
+    VLOGF(2) << "Unexpectedly received a frame with hw_protected = true but "
+                "protected_video = false";
     Stop();
     return;
   }
 
-  const base::TimeDelta fake_timestamp = frame->timestamp;
+  // VideoFrameMetadata has many fields and we don't validate all of them.
+  // Fortunately, we also don't need all the fields. |metadata_to_propagate|
+  // will be explicitly initialized with the fields that:
+  //
+  // 1) We need,
+  //
+  //    AND
+  //
+  // 2) We've validated above or know that not validating won't have security
+  //    implications.
+  //
+  // The rest of the fields are left as default.
+  VideoFrameMetadata metadata_to_propagate;
+  metadata_to_propagate.allow_overlay = true;
+  metadata_to_propagate.end_of_stream = false;
+  metadata_to_propagate.read_lock_fences_enabled = true;
+  metadata_to_propagate.protected_video = frame->metadata().protected_video;
+  metadata_to_propagate.hw_protected = frame->metadata().hw_protected;
+  metadata_to_propagate.needs_detiling = frame->metadata().needs_detiling;
+  metadata_to_propagate.power_efficient = true;
+
+  if (!release_token.has_value()) {
+    VLOGF(2) << "Did not receive a valid release token";
+    Stop();
+    return;
+  }
+
+  static const bool extract_shared_image =
+      base::FeatureList::IsEnabled(kUseSharedImageInOOPVDProcess);
+  std::vector<base::ScopedFD> duped_fds;
+
+  if (extract_shared_image) {
+    if (frame->storage_type() != VideoFrame::STORAGE_OPAQUE) {
+      VLOGF(2) << "Received a frame with an unexpected storage type";
+      Stop();
+      return;
+    }
+
+    if (!frame->HasSharedImage()) {
+      VLOGF(2) << "Received a frame without shared image";
+      Stop();
+      return;
+    }
+
+    const size_t num_fds = frame->NumDmabufFds();
+    if (num_fds > 0) {
+      VLOGF(2) << "Received a frame with DMA buffer FD's";
+      Stop();
+      return;
+    }
+  } else {
+    if (frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
+      VLOGF(2) << "Received a frame with an unexpected storage type";
+      Stop();
+      return;
+    }
+
+    // The mojo traits guarantee this.
+    CHECK(gfx::Rect(frame->coded_size()).Contains(frame->visible_rect()));
+
+    const size_t num_fds = frame->NumDmabufFds();
+    if (0 == num_fds) {
+      VLOGF(2) << "Received a frame with zero DMA buffer FD's";
+      Stop();
+      return;
+    }
+
+    duped_fds.reserve(num_fds);
+    for (size_t i = 0; i < num_fds; ++i) {
+      if (frame->GetDmabufFd(i) < 0) {
+        VLOGF(2) << "Received at least one invalid FD";
+        Stop();
+        return;
+      }
+      duped_fds.emplace_back(HANDLE_EINTR(dup(frame->GetDmabufFd(i))));
+      if (!duped_fds.back().is_valid()) {
+        VLOGF(2) << "Failed to dup() an FD";
+        Stop();
+        return;
+      }
+    }
+  }
+
+  // The mojo traits guarantee this.
+  CHECK(gfx::Rect(frame->coded_size()).Contains(frame->visible_rect()));
+
+  const base::TimeDelta fake_timestamp = frame->timestamp();
   auto it = fake_timestamp_to_real_timestamp_cache_.Get(fake_timestamp);
   if (it == fake_timestamp_to_real_timestamp_cache_.end()) {
     // The remote decoder is misbehaving.
@@ -998,128 +1048,149 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   }
   const base::TimeDelta real_timestamp = it->second;
 
+  if (!frame->metadata().tracking_token.has_value() ||
+      frame->metadata().tracking_token->is_empty()) {
+    VLOGF(2) << "Received a frame with a missing or invalid tracking token";
+    Stop();
+    return;
+  }
+
   // Validate protected content metadata.
   if (!initialized_for_protected_content_ &&
-      (frame->metadata.protected_video || frame->metadata.hw_protected)) {
+      (metadata_to_propagate.protected_video ||
+       metadata_to_propagate.hw_protected)) {
     VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
                 "was not configured for protected content";
     Stop();
     return;
   }
   if (initialized_for_protected_content_ &&
-      (!frame->metadata.protected_video || !frame->metadata.hw_protected)) {
+      (!metadata_to_propagate.protected_video ||
+       !metadata_to_propagate.hw_protected)) {
     VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
                 "was configured for protected content";
     Stop();
     return;
   }
 
-  // What follows is all the logic necessary to recycle buffers safely.
-  //
-  // Note that the way we track buffers is with the gfx::GpuMemoryBufferId. In
-  // theory, this should uniquely identify GpuMemoryBuffers. In practice, we
-  // can't trust what comes from the remote decoder. A malicious decoder could
-  // send us two GpuMemoryBuffers that have the same gfx::GpuMemoryBufferId but
-  // actually refer to different dma-bufs. The solution to this is that we
-  // assume that the remote decoder is telling the truth in a sense: if we
-  // receive an incoming buffer with a gfx::GpuMemoryBufferId that we already
-  // know about (by looking it up in |received_id_to_decoded_frame_map_|), we
-  // will re-use the buffer that we know about and ignore the incoming one. The
-  // goal with the rest of the logic below is that if this assumption is
-  // violated, the worst case is a visually incorrect output but not a security
-  // problem.
-  //
-  // When something like a resolution change happens, we assume that the remote
-  // decoder recreated its pool of buffers. Therefore, in those cases we can
-  // forget about all known frames since we shouldn't see those buffers again.
-  // In order to detect those cases, we replicate the logic from
-  // PlatformVideoFramePool::IsSameFormat_Locked().
-  const VideoPixelFormat format = frame->format;
-  const gfx::Size coded_size = frame->coded_size;
-  const gfx::Rect visible_rect = frame->visible_rect;
-  const gfx::Size natural_size = frame->natural_size;
-  const gfx::ColorSpace color_space = frame->color_space;
-  const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata;
-  const VideoFrameMetadata metadata = frame->metadata;
-  const gfx::GpuMemoryBufferId received_gmb_id =
-      frame->gpu_memory_buffer_handle.id;
-  if (!received_id_to_decoded_frame_map_.empty()) {
-    // It doesn't matter which frame we pick to calculate the current state. All
-    // of them should yield the same result.
-    const VideoPixelFormat current_format =
-        received_id_to_decoded_frame_map_.cbegin()->second->format();
-    const gfx::Size& current_coded_size =
-        received_id_to_decoded_frame_map_.cbegin()->second->coded_size();
-    const gfx::Size& current_visible_rect_size_from_origin =
-        GetRectSizeFromOrigin(
-            received_id_to_decoded_frame_map_.cbegin()->second->visible_rect());
-    const bool currently_uses_protected =
-        received_id_to_decoded_frame_map_.cbegin()
-            ->second->metadata()
-            .hw_protected;
-
-    if (format != current_format || coded_size != current_coded_size ||
-        GetRectSizeFromOrigin(visible_rect) !=
-            current_visible_rect_size_from_origin ||
-        metadata.hw_protected != currently_uses_protected) {
-      received_id_to_decoded_frame_map_.clear();
-      generated_id_to_decoded_frame_map_.clear();
-    }
-  }
-
-  scoped_refptr<FrameResource> frame_to_wrap;
-  auto decoded_frame_it =
-      received_id_to_decoded_frame_map_.find(received_gmb_id);
-  if (decoded_frame_it != received_id_to_decoded_frame_map_.end()) {
-    frame_to_wrap = decoded_frame_it->second;
-    CHECK_EQ(frame_to_wrap->format(), format);
-    CHECK_EQ(frame_to_wrap->coded_size(), coded_size);
-    CHECK_EQ(GetRectSizeFromOrigin(frame_to_wrap->visible_rect()),
-             GetRectSizeFromOrigin(visible_rect));
-    CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
+  scoped_refptr<FrameResource> wrapped_frame;
+  if (extract_shared_image) {
+    frame->set_timestamp(real_timestamp);
+    frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
+                       weak_this_factory_.GetWeakPtr(), *release_token)));
+    wrapped_frame = VideoFrameResource::Create(std::move(frame));
   } else {
-    scoped_refptr<FrameResource> native_pixmap_frame =
-        MojoVideoFrameToFrameResource(std::move(frame));
-    if (!native_pixmap_frame) {
+    // What follows is all the logic necessary to recycle buffers safely.
+    //
+    // Note that the way we track buffers is with the frame's tracking token. In
+    // theory, this should uniquely identify allocated buffers. In practice, we
+    // can't trust what comes from the remote decoder. A malicious decoder could
+    // send us two frames that have the same tracking token, but actually refer
+    // to different dma-bufs. The solution to this is that we assume that the
+    // remote decoder is telling the truth in a sense: if we receive an incoming
+    // buffer with a tracking_token that we already know about (by looking it up
+    // in |received_token_to_decoded_frame_map_|), we will reuse the buffer that
+    // we know about and ignore the incoming one. The goal with the rest of the
+    // logic below is that if this assumption is violated, the worst case is a
+    // visually incorrect output but not a security problem.
+    //
+    // When something like a resolution change happens, we assume that the
+    // remote decoder recreated its pool of buffers. Therefore, in those cases
+    // we can forget about all known frames since we shouldn't see those buffers
+    // again. In order to detect those cases, we replicate the logic from
+    // PlatformVideoFramePool::IsSameFormat_Locked().
+    const VideoPixelFormat format = frame->format();
+    const gfx::Size coded_size = frame->coded_size();
+    const gfx::Rect visible_rect = frame->visible_rect();
+    const gfx::Size natural_size = frame->natural_size();
+    const gfx::ColorSpace color_space = frame->ColorSpace();
+    const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata();
+    const VideoFrameMetadata metadata = metadata_to_propagate;
+    const base::UnguessableToken received_tracking_token =
+        *frame->metadata().tracking_token;
+    if (!received_token_to_decoded_frame_map_.empty()) {
+      // It doesn't matter which frame we pick to calculate the current state.
+      // All of them should yield the same result.
+      const VideoPixelFormat current_format =
+          received_token_to_decoded_frame_map_.cbegin()->second->format();
+      const gfx::Size& current_coded_size =
+          received_token_to_decoded_frame_map_.cbegin()->second->coded_size();
+      const gfx::Size& current_visible_rect_size_from_origin =
+          GetRectSizeFromOrigin(received_token_to_decoded_frame_map_.cbegin()
+                                    ->second->visible_rect());
+      const bool currently_uses_protected =
+          received_token_to_decoded_frame_map_.cbegin()
+              ->second->metadata()
+              .hw_protected;
+
+      if (format != current_format || coded_size != current_coded_size ||
+          GetRectSizeFromOrigin(visible_rect) !=
+              current_visible_rect_size_from_origin ||
+          metadata.hw_protected != currently_uses_protected) {
+        received_token_to_decoded_frame_map_.clear();
+        generated_token_to_decoded_frame_map_.clear();
+      }
+    }
+
+    scoped_refptr<FrameResource> frame_to_wrap;
+    auto decoded_frame_it =
+        received_token_to_decoded_frame_map_.find(received_tracking_token);
+    if (decoded_frame_it != received_token_to_decoded_frame_map_.end()) {
+      frame_to_wrap = decoded_frame_it->second;
+      CHECK_EQ(frame_to_wrap->format(), format);
+      CHECK_EQ(frame_to_wrap->coded_size(), coded_size);
+      CHECK_EQ(GetRectSizeFromOrigin(frame_to_wrap->visible_rect()),
+               GetRectSizeFromOrigin(visible_rect));
+      CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
+    } else {
+      scoped_refptr<FrameResource> native_pixmap_frame =
+          CreateDecodedFrameResource(
+              frame->layout(), visible_rect, natural_size, std::move(duped_fds),
+              fake_timestamp, metadata, color_space, hdr_metadata);
+      if (!native_pixmap_frame) {
+        Stop();
+        return;
+      }
+      received_token_to_decoded_frame_map_[received_tracking_token] =
+          native_pixmap_frame;
+      generated_token_to_decoded_frame_map_[native_pixmap_frame
+                                                ->tracking_token()] =
+          native_pixmap_frame.get();
+      frame_to_wrap = std::move(native_pixmap_frame);
+    }
+
+    // If |frame_to_wrap| was cached in |received_token_to_decoded_frame_map_|,
+    // then there is a possibility that |visible_rect| and |natural_size|, which
+    // are computed from |frame| are different than in |frame_to_wrap| and
+    // |frame|. Because of this, CreateWrappingFrame() is called with
+    // |visible_rect| and |natural_size|.
+    wrapped_frame =
+        frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
+    if (!wrapped_frame) {
+      VLOGF(2) << "Could not wrap the frame";
       Stop();
       return;
     }
-    received_id_to_decoded_frame_map_[received_gmb_id] = native_pixmap_frame;
-    generated_id_to_decoded_frame_map_[native_pixmap_frame
-                                           ->GetSharedMemoryId()] =
-        native_pixmap_frame.get();
-    frame_to_wrap = std::move(native_pixmap_frame);
+
+    wrapped_frame->set_timestamp(real_timestamp);
+    wrapped_frame->set_color_space(color_space);
+    wrapped_frame->set_hdr_metadata(hdr_metadata);
+    wrapped_frame->set_metadata(metadata);
+
+    // The destruction observer will be called after the client releases the
+    // video frame. base::BindPostTaskToCurrentDefault() is used to make sure
+    // that the WeakPtr is dereferenced on the correct sequence.
+    wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
+                       weak_this_factory_.GetWeakPtr(), *release_token)));
   }
-
-  // If |frame_to_wrap| was cached in |received_id_to_decoded_frame_map_|, then
-  // there is a possibility that |visible_rect| and |natural_size|, which are
-  // computed from |frame| are different than in |frame_to_wrap| and |frame|.
-  // Because of this, CreateWrappingFrame() is called with |visible_rect| and
-  // |natural_size|.
-  scoped_refptr<FrameResource> wrapped_frame =
-      frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
-  if (!wrapped_frame) {
-    VLOGF(2) << "Could not wrap the frame";
-    Stop();
-    return;
-  }
-
-  wrapped_frame->set_timestamp(real_timestamp);
-  wrapped_frame->set_color_space(color_space);
-  wrapped_frame->set_hdr_metadata(hdr_metadata);
-  wrapped_frame->set_metadata(metadata);
-
-  // The destruction observer will be called after the client releases the
-  // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
-  // the WeakPtr is dereferenced on the correct sequence.
-  wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
-                     weak_this_factory_.GetWeakPtr(), release_token)));
 
   can_read_without_stalling_ = can_read_without_stalling;
 
-  if (output_cb_)
+  if (output_cb_) {
     output_cb_.Run(std::move(wrapped_frame));
+  }
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
@@ -1128,12 +1199,9 @@ void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
 
   CHECK(!has_error_);
 
-  // Note: the remote video decoder may be of a newer version than us (see e.g.,
-  // go/lacros-version-skew-guide). Therefore, we may get the default
-  // WaitingReason::kNoCdm if the value received over mojo is unrecognized. It's
-  // not expected that we'll ever use WaitingReason::kNoCdm for anything
+  // It's not expected that we'll ever use WaitingReason::kNoCdm for anything
   // legitimate in ChromeOS, so if we receive that for any reason, the remote
-  // decoder is either misbehaving or too new.
+  // decoder is misbehaving.
   if (reason == WaitingReason::kNoCdm) {
     VLOGF(2) << "Received an unexpected WaitingReason";
     Stop();
@@ -1142,6 +1210,11 @@ void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
 
   if (waiting_cb_)
     waiting_cb_.Run(reason);
+}
+
+void OOPVideoDecoder::RequestOverlayInfo() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
@@ -1155,13 +1228,13 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
 }
 
 FrameResource* OOPVideoDecoder::GetOriginalFrame(
-    gfx::GenericSharedMemoryId frame_id) {
+    const base::UnguessableToken& tracking_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(frame_id.is_valid());
-  auto it = generated_id_to_decoded_frame_map_.find(frame_id);
-  return (it == generated_id_to_decoded_frame_map_.end()) ? nullptr
-                                                          : it->second;
+  CHECK(!tracking_token.is_empty());
+  auto it = generated_token_to_decoded_frame_map_.find(tracking_token);
+  return (it == generated_token_to_decoded_frame_map_.end()) ? nullptr
+                                                             : it->second;
 }
 
 }  // namespace media

@@ -7,7 +7,9 @@
 
 #include <optional>
 
-#include "components/sync/protocol/nigori_local_data.pb.h"
+namespace sync_pb {
+class NigoriLocalData;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -21,7 +23,7 @@ class NigoriStorage {
 
   virtual ~NigoriStorage() = default;
 
-  // Should atomically persist |data|.
+  // Should atomically persist `data`.
   virtual void StoreData(const sync_pb::NigoriLocalData& data) = 0;
 
   // Returns previously stored NigoriLocalData. In case error occurs or no data

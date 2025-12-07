@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
+
+#include <algorithm>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/url_blocking_policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
@@ -43,10 +41,10 @@ namespace policy {
 
 namespace {
 
-constexpr const char* kRestoredURLs[] = {
-    "http://aaa.com/empty.html",
-    "http://bbb.com/empty.html",
-};
+constexpr auto kRestoredURLs = std::to_array<const char*>({
+    "https://aaa.com/empty.html",
+    "https://bbb.com/empty.html",
+});
 
 bool IsNonSwitchArgument(const base::CommandLine::StringType& s) {
   return s.empty() || s[0] != '-';
@@ -61,12 +59,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
                                    public testing::WithParamInterface<void (
                                        RestoreOnStartupPolicyTest::*)(void)> {
  public:
-  RestoreOnStartupPolicyTest() {
-    // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
-    // disable this feature.
-    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
-  }
-
+  RestoreOnStartupPolicyTest() = default;
   ~RestoreOnStartupPolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -80,7 +73,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     base::CommandLine::StringVector argv = command_line->argv();
     std::erase_if(argv, IsNonSwitchArgument);
     command_line->InitFromArgv(argv);
-    ASSERT_TRUE(base::ranges::equal(argv, command_line->argv()));
+    ASSERT_TRUE(std::ranges::equal(argv, command_line->argv()));
   }
 
   void ListOfURLs() {
@@ -188,10 +181,6 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
 };
 
 IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, PRE_RunTest) {
-  // Do not show Welcome Page.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage,
-                                               true);
-
   // If policy urls are set, those might be opened at startup. Because
   // some tabs are already opened, we don't need to navigate or open more tabs
   // for verification of tab restoration.

@@ -26,8 +26,8 @@ import java.util.Locale;
 public class WebViewPackageError {
     private static final String TAG = "WebViewDevTools";
 
-    private PersistentErrorView mErrorMessage;
-    private Activity mContext;
+    private final PersistentErrorView mErrorMessage;
+    private final Activity mContext;
 
     public static final String OPEN_WEBVIEW_PROVIDER_BUTTON_TEXT =
             "Open DevTools in current provider";
@@ -125,10 +125,10 @@ public class WebViewPackageError {
                 .setMessage(
                         String.format(
                                 Locale.US,
-                                "DevTools are not available in the current "
-                                        + "WebView provider selected by the system (%s).\n\n"
-                                        + "Please update to a newer version or select a different WebView "
-                                        + "provider.",
+                                "DevTools are not available in the current WebView provider"
+                                        + " selected by the system (%s).\n\n"
+                                        + "Please update to a newer version or select a different"
+                                        + " WebView provider.",
                                 systemWebViewPackage.packageName));
 
         if (canAccessWebViewProviderDeveloperSetting()) {

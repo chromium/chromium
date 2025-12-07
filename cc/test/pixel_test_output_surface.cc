@@ -12,6 +12,7 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -58,6 +59,13 @@ void PixelTestOutputSurface::SetUpdateVSyncParametersCallback(
 
 gfx::OverlayTransform PixelTestOutputSurface::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
+}
+
+void PixelTestOutputSurface::ReadbackForTesting(
+    base::OnceCallback<void(std::unique_ptr<viz::CopyOutputResult>)> callback) {
+  SkBitmap bitmap = software_device()->ReadbackForTesting();
+  std::move(callback).Run(std::make_unique<viz::CopyOutputSkBitmapResult>(
+      gfx::Rect(gfx::SkISizeToSize(bitmap.dimensions())), std::move(bitmap)));
 }
 
 }  // namespace cc

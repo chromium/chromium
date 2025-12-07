@@ -28,13 +28,11 @@
 #include "ui/views/layout/box_layout.h"
 
 BASE_FEATURE(kAnimationForDesktopCapturePermissionChecker,
-             "AnimationForDesktopCapturePermissionChecker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
 BASE_FEATURE(kDesktopCapturePermissionCheckerRestartMessage,
-             "DesktopCapturePermissionCheckerRestartMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::u16string WithRestartMessage(int message_id) {
@@ -66,7 +64,7 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kCurrentTab:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<views::View> MakeToggleAnimation() {
@@ -97,7 +95,8 @@ std::unique_ptr<views::View> MakeToggleAnimation() {
 
   views::ImageView* logo_image_view =
       animation_container->AddChildView(std::make_unique<views::ImageView>());
-  logo_image_view->SetImage(gfx::ImageSkiaFromNSImage(app_icon));
+  logo_image_view->SetImage(
+      ui::ImageModel::FromImageSkia(gfx::ImageSkiaFromNSImage(app_icon)));
   logo_image_view->SetImageSize(gfx::Size(55, 55));
   // Adds a margin on the left side of the logo to balance the right margin that
   // is included in the toggle animation. This visually centers the content of
@@ -130,10 +129,9 @@ DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
                                     base::mac::SystemSettingsPane::
                                         kPrivacySecurity_ScreenRecording,
                                     /*id_param=*/"")) {
-  SetBackground(
-      views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
-                                               /*top_radius=*/0.0f,
-                                               /*bottom_radius=*/8.0f));
+  SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface4,
+                                                   /*top_radius=*/0.0f,
+                                                   /*bottom_radius=*/8.0f));
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -156,14 +154,13 @@ DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   // Unretained safe because button is (transitively) owned by `this`.
-  button_ =
-      button_container->AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &DesktopMediaPermissionPaneViewMac::
-                  OpenScreenRecordingSettingsPane,
-              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
+  button_ = button_container->AddChildView(std::make_unique<
+                                           views::MdTextButton>(
+      base::BindRepeating(
+          &DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane,
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
   button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
@@ -196,7 +193,7 @@ void DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane() {
     case DesktopMediaList::Type::kCurrentTab:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BEGIN_METADATA(DesktopMediaPermissionPaneViewMac)

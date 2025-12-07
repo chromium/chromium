@@ -29,7 +29,7 @@
 
 namespace {
 
-void JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
+static void JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
     JNIEnv* env,
     base::android::ScopedJavaLocalRef<jobjectArray> java_credentials_array,
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
@@ -166,7 +166,6 @@ bool AccountChooserDialogAndroid::ShowDialog() {
 
 void AccountChooserDialogAndroid::OnCredentialClicked(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jint credential_item,
     jboolean signin_button_clicked) {
   bool credential_handled =
@@ -176,16 +175,12 @@ void AccountChooserDialogAndroid::OnCredentialClicked(
   }
 }
 
-void AccountChooserDialogAndroid::CancelDialog(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void AccountChooserDialogAndroid::CancelDialog(JNIEnv* env) {
   OnDialogCancel();
   delete this;
 }
 
-void AccountChooserDialogAndroid::OnLinkClicked(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void AccountChooserDialogAndroid::OnLinkClicked(JNIEnv* env) {
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
@@ -258,3 +253,5 @@ void AccountChooserDialogAndroid::OnReauthCompleted(size_t index,
   }
   delete this;
 }
+
+DEFINE_JNI(AccountChooserDialog)

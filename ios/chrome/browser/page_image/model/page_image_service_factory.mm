@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/image_service_impl.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
@@ -13,21 +11,19 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
-page_image_service::ImageService* PageImageServiceFactory::GetForBrowserState(
-    ChromeBrowserState* state) {
-  return static_cast<page_image_service::ImageService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+page_image_service::ImageService* PageImageServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<page_image_service::ImageService>(
+          profile, /*create=*/true);
 }
 
 PageImageServiceFactory::PageImageServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PageImageService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PageImageService") {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(RemoteSuggestionsServiceFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
@@ -43,18 +39,15 @@ PageImageServiceFactory* PageImageServiceFactory::GetInstance() {
 PageImageServiceFactory::~PageImageServiceFactory() {}
 
 std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   RemoteSuggestionsService* remote_suggestions_service =
-      RemoteSuggestionsServiceFactory::GetForBrowserState(browser_state, true);
+      RemoteSuggestionsServiceFactory::GetForProfile(profile, true);
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier =
       std::make_unique<AutocompleteSchemeClassifierImpl>();
 

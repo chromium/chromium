@@ -34,25 +34,34 @@ Vote GetVote(bool is_audible) {
 // static
 const char FrameAudibleVoter::kFrameAudibleReason[] = "Frame audible.";
 
-FrameAudibleVoter::FrameAudibleVoter(VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+FrameAudibleVoter::FrameAudibleVoter() = default;
 
 FrameAudibleVoter::~FrameAudibleVoter() = default;
 
-void FrameAudibleVoter::InitializeOnGraph(Graph* graph) {
-  graph->AddInitializingFrameNodeObserver(this);
+void FrameAudibleVoter::InitializeOnGraph(Graph* graph,
+                                          VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
+  graph->AddFrameNodeObserver(this);
 }
 
 void FrameAudibleVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
-void FrameAudibleVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
+void FrameAudibleVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   const Vote vote = GetVote(frame_node->IsAudible());
   voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
 }
 
-void FrameAudibleVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
+void FrameAudibleVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
 }
 

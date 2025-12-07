@@ -8,15 +8,15 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#include <winternl.h>
 
 #include <powerbase.h>
 #include <processthreadsapi.h>
-#include <winternl.h>
 #endif
 
 namespace base {
@@ -45,7 +45,7 @@ double EstimateCpuFrequency() {
 
 std::optional<CpuThroughputEstimationResult> EstimateCpuThroughput() {
 #if defined(ARCH_CPU_X86_FAMILY)
-  TRACE_EVENT0("power", "EstimateCpuThroughput");
+  TRACE_EVENT("base.power", "EstimateCpuThroughput");
 
 #if BUILDFLAG(IS_WIN)
   DWORD start_processor_number = GetCurrentProcessorNumber();
@@ -102,6 +102,7 @@ BASE_EXPORT CpuFrequencyInfo GetCpuFrequencyInfo() {
       .max_mhz = 0,
       .mhz_limit = 0,
       .type = CpuFrequencyInfo::CoreType::kPerformance,
+      .num_active_cpus = 0,
   };
 
 #if BUILDFLAG(IS_WIN)
@@ -124,6 +125,14 @@ BASE_EXPORT CpuFrequencyInfo GetCpuFrequencyInfo() {
     }
     fastest = std::max(fastest, i.MaxMhz);
     slowest = std::min(slowest, i.MaxMhz);
+
+    // Count the amount of CPU that are in the C0 state (active).
+    // `CurrentIdleState` contains the CPU C-State + 1. When `MaxIdleState` is
+    // 1, the `CurrentIdleState` will always be 0 and the C-States are not
+    // supported and we consider the CPU is active.
+    if (i.MaxIdleState == 1 || i.CurrentIdleState == 1) {
+      cpu_info.num_active_cpus++;
+    }
   }
 
   // If the CPU frequency is the fastest of all the cores, or the CPU is

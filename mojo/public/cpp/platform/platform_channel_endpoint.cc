@@ -19,8 +19,8 @@
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include <mach/port.h>
 
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/apple/scoped_mach_port.h"
-#include "base/mac/mach_port_rendezvous.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
 #elif BUILDFLAG(IS_POSIX)
@@ -30,10 +30,6 @@
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/binder.h"
 #endif
 
 namespace mojo {
@@ -46,7 +42,6 @@ namespace {
 // generate a key when setting the file descriptor.
 constexpr int kAndroidClientHandleDescriptor =
     base::GlobalDescriptors::kBaseDescriptor + 10000;
-constexpr std::string_view kBinderValuePrefix = "binder:";
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
                             int target_fd) {
@@ -153,14 +148,6 @@ std::string PlatformChannelEndpoint::PrepareToPass(
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   PrepareToPass(options.mach_ports_for_rendezvous, value);
 #elif BUILDFLAG(IS_POSIX)
-#if BUILDFLAG(IS_ANDROID)
-  if (platform_handle().is_valid_binder()) {
-    value = base::StrCat(
-        {kBinderValuePrefix, base::NumberToString(options.binders.size())});
-    options.binders.push_back(platform_handle().GetBinder());
-    return value;
-  }
-#endif
   PrepareToPass(options.fds_to_remap, value);
 #else
 #error "Platform not supported."
@@ -200,20 +187,6 @@ PlatformChannelEndpoint PlatformChannelEndpoint::RecoverFromString(
   return PlatformChannelEndpoint(PlatformHandle(zx::handle(
       zx_take_startup_handle(base::checked_cast<uint32_t>(handle_value)))));
 #elif BUILDFLAG(IS_ANDROID)
-  if (value.starts_with(kBinderValuePrefix)) {
-    size_t index;
-    if (!base::StringToSizeT(value.substr(kBinderValuePrefix.size()), &index)) {
-      DLOG(ERROR) << "Invalid binder endpoint string";
-      return PlatformChannelEndpoint();
-    }
-    base::android::BinderRef binder =
-        base::android::TakeBinderFromParent(index);
-    if (!binder) {
-      DLOG(ERROR) << "Missing binder endpoint " << index;
-      return PlatformChannelEndpoint();
-    }
-    return PlatformChannelEndpoint(PlatformHandle(std::move(binder)));
-  }
   base::GlobalDescriptors::Key key = -1;
   if (value.empty() || !base::StringToUint(value, &key)) {
     DLOG(ERROR) << "Invalid PlatformChannel endpoint string.";

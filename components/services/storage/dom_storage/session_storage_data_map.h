@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
+#include "storage/common/database/db_status.h"
 
 namespace storage {
 
@@ -35,11 +35,11 @@ class SessionStorageDataMap final
  public:
   class Listener {
    public:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
     virtual void OnDataMapCreation(const std::vector<uint8_t>& map_id,
                                    SessionStorageDataMap* map) = 0;
     virtual void OnDataMapDestruction(const std::vector<uint8_t>& map_id) = 0;
-    virtual void OnCommitResult(leveldb::Status status) = 0;
+    virtual void OnCommitResult(DbStatus status) = 0;
   };
 
   static scoped_refptr<SessionStorageDataMap> CreateFromDisk(
@@ -77,7 +77,7 @@ class SessionStorageDataMap final
   // Note: this is irrelevant, as the parent area is handling binding.
   void OnNoBindings() override {}
 
-  void DidCommit(leveldb::Status status) override;
+  void DidCommit(DbStatus status) override;
 
  private:
   friend class base::RefCounted<SessionStorageDataMap>;
@@ -93,7 +93,7 @@ class SessionStorageDataMap final
       scoped_refptr<SessionStorageDataMap> forking_from);
   ~SessionStorageDataMap() override;
 
-  void OnMapLoaded(leveldb::Status status) override;
+  void OnMapLoaded() override;
 
   static StorageAreaImpl::Options GetOptions();
 

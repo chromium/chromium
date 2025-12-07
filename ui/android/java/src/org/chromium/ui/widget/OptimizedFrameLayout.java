@@ -11,6 +11,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +21,11 @@ import java.util.List;
  * This class overrides {@link FrameLayout#onMeasure} so that it does not call onMeasure on its
  * children multiple times during the same {@link FrameLayout#onMeasure} call.
  */
+@NullMarked
 public class OptimizedFrameLayout extends FrameLayout {
+
+    private int mMaxHeight = Integer.MAX_VALUE;
+
     private static class MeasurementState {
         final View mView;
         final int mWidthMeasureSpec;
@@ -33,13 +40,28 @@ public class OptimizedFrameLayout extends FrameLayout {
 
     private final List<MeasurementState> mMatchParentChildren = new ArrayList<>();
 
-    public OptimizedFrameLayout(Context context, AttributeSet attrs) {
+    public OptimizedFrameLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /**
+     * Sets the max height for the layout. The view may be smaller than this and may still wrap to
+     * accommodate the height of its children, but only to the specified height.
+     */
+    public void setMaxHeight(int maxHeight) {
+        if (maxHeight == mMaxHeight) return;
+        mMaxHeight = maxHeight;
+        requestLayout();
     }
 
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (MeasureSpec.getSize(heightMeasureSpec) > mMaxHeight) {
+            final int mode = MeasureSpec.getMode(heightMeasureSpec);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, mode);
+        }
+
         int count = getChildCount();
 
         final boolean measureMatchParentChildren =

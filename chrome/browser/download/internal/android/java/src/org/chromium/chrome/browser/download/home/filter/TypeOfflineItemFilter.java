@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
@@ -11,6 +12,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
  * An {@link OfflineItemFilter} responsible for pruning out items based on
  * {@link OfflineItem#filter} and {@link FilterType}.
  */
+@NullMarked
 public class TypeOfflineItemFilter extends OfflineItemFilter {
     private @FilterType int mFilter = Filters.FilterType.NONE;
 

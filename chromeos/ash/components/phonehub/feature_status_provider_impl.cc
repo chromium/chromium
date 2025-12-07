@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
@@ -189,8 +188,7 @@ void FeatureStatusProviderImpl::OnReady() {
 }
 
 void FeatureStatusProviderImpl::OnNewDevicesSynced() {
-  if (features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
-      ComputeStatus() == FeatureStatus::kEligiblePhoneButNotSetUp) {
+  if (ComputeStatus() == FeatureStatus::kEligiblePhoneButNotSetUp) {
     CheckEligibleDevicesForNudge();
   }
   UpdateStatus();

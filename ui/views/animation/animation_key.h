@@ -20,9 +20,7 @@ struct AnimationKey {
   raw_ptr<ui::Layer> target;
   ui::LayerAnimationElement::AnimatableProperty property;
 
-  bool operator<(const AnimationKey& key) const {
-    return std::tie(target, property) < std::tie(key.target, key.property);
-  }
+  auto operator<=>(const AnimationKey& key) const = default;
 };
 
 }  // namespace views

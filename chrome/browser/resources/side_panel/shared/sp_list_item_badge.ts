@@ -7,55 +7,61 @@
  * or an updated state and is displayed inside of a cr-url-list-item.
  */
 
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss} from './sp_list_item_badge.css.js';
+import {getHtml} from './sp_list_item_badge.html.js';
 
-import {getTemplate} from './sp_list_item_badge.html.js';
-
-export class SpListItemBadge extends PolymerElement {
+export class SpListItemBadgeElement extends CrLitElement {
   static get is() {
     return 'sp-list-item-badge';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       actionable: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-        observer: 'onActionableChanged_',
+        reflect: true,
       },
-      updated: {
+
+      wasUpdated: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
     };
   }
 
-  actionable: boolean;
-  updated: boolean;
+  accessor actionable: boolean = false;
+  accessor wasUpdated: boolean = false;
 
-  private onActionableChanged_() {
-    if (this.actionable) {
-      this.setAttribute('tabindex', '1');
-      this.setAttribute('role', 'button');
-    } else {
-      this.removeAttribute('tabindex');
-      this.removeAttribute('role');
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('actionable')) {
+      if (this.actionable) {
+        this.setAttribute('tabindex', '1');
+        this.setAttribute('role', 'button');
+      } else {
+        this.removeAttribute('tabindex');
+        this.removeAttribute('role');
+      }
     }
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'sp-list-item-badge': SpListItemBadge;
+    'sp-list-item-badge': SpListItemBadgeElement;
   }
 }
 
-customElements.define(SpListItemBadge.is, SpListItemBadge);
+customElements.define(SpListItemBadgeElement.is, SpListItemBadgeElement);

@@ -32,9 +32,10 @@
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/receiver_unittest.test-mojom.h"
 #include "mojo/public/cpp/system/functions.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_interfaces.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -520,9 +521,8 @@ TEST_P(ReceiverTest, CustomImplPointerType) {
 
   {
     // Attempt to dispatch another message after the WeakPtr is invalidated.
-    impl.set_ping_handler(
-        base::BindRepeating([] { NOTREACHED_IN_MIGRATION(); }));
-    remote->Ping(base::BindOnce([] { NOTREACHED_IN_MIGRATION(); }));
+    impl.set_ping_handler(base::BindRepeating([] { NOTREACHED(); }));
+    remote->Ping(base::BindOnce([] { NOTREACHED(); }));
 
     // The receiver will close its end of the pipe which will trigger a
     // disconnect on |remote|.

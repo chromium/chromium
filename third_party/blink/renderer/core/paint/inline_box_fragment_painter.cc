@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -45,7 +46,7 @@ inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
   // if it's possible that this object participates in a fragmentation context.
   // This will give false positives, but that should be harmless, given the way
   // the return value is used by the caller.
-  if (layout_object.IsInsideFlowThread()) [[unlikely]] {
+  if (layout_object.IsInsideMulticol()) [[unlikely]] {
     return true;
   }
   return false;
@@ -75,7 +76,11 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
       PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
     }
   } else {
-    svg_paint_state.emplace(layout_object, paint_info);
+    // SVG filters only apply to container and graphics elements, so using only
+    // kContent to avoid ensuring a paint chunk for filters.
+    svg_paint_state.emplace(layout_object, paint_info,
+                            ScopedSVGPaintState::PaintBehavior{
+                                ScopedSVGPaintState::PaintComponent::kContent});
   }
   const bool suppress_box_decoration_background = true;
   DCHECK(inline_context_);
@@ -124,7 +129,10 @@ void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
   SlicePaintingType border_painting_type =
       GetSlicePaintType(style_.MaskBoxImage(), adjusted_frame_rect,
                         adjusted_clip_rect, object_may_have_multiple_boxes);
-  if (border_painting_type == kDontPaint) {
+  String failing_url;
+  if (border_painting_type == kDontPaint ||
+      (paint_info.IsPrivacyPreserving() && style_.MaskBoxImage().GetImage() &&
+       !style_.MaskBoxImage().GetImage()->IsAccessAllowed(failing_url))) {
     return;
   }
   GraphicsContextStateSaver state_saver(paint_info.context, false);
@@ -147,8 +155,9 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
     const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground);
   if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible ||
-      inline_box_fragment_.IsOpaque())
+      inline_box_fragment_.IsOpaque()) {
     return;
+  }
 
   // You can use p::first-line to specify a background. If so, the direct child
   // inline boxes of line boxes may actually have to paint a background.
@@ -211,8 +220,9 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
-      line_style_.Visibility() != EVisibility::kVisible)
+      line_style_.Visibility() != EVisibility::kVisible) {
     return;
+  }
 
   const DisplayItemClient& display_item_client = GetDisplayItemClient();
   if (DrawingRecorder::UseCachedDrawingIfPossible(
@@ -381,7 +391,13 @@ void InlineBoxFragmentPainterBase::PaintNormalBoxShadow(
     const PaintInfo& info,
     const ComputedStyle& s,
     const PhysicalRect& paint_rect) {
-  BoxPainterBase::PaintNormalBoxShadow(info, paint_rect, s, SidesToInclude());
+  std::optional<BorderShapeReferenceRects> border_shape_rects;
+  if (inline_box_fragment_.GetLayoutObject()) {
+    border_shape_rects = ComputeBorderShapeReferenceRects(
+        paint_rect, s, *inline_box_fragment_.GetLayoutObject());
+  }
+  BoxPainterBase::PaintNormalBoxShadow(info, paint_rect, s, border_shape_rects,
+                                       SidesToInclude());
 }
 
 void InlineBoxFragmentPainterBase::PaintInsetBoxShadow(
@@ -417,12 +433,20 @@ void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
   switch (border_painting_type) {
     case kDontPaint:
       break;
-    case kPaintWithoutClip:
-      BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
-                                  paint_info, adjusted_frame_rect, line_style_,
-                                  kBackgroundBleedNone, sides_to_include);
+    case kPaintWithoutClip: {
+      std::optional<BorderShapeReferenceRects> border_shape_rects;
+      if (const LayoutObject* layout_object =
+              inline_box_fragment_.GetLayoutObject()) {
+        border_shape_rects = ComputeBorderShapeReferenceRects(
+            adjusted_frame_rect, line_style_, *layout_object);
+      }
+      BoxPainterBase::PaintBorder(
+          image_observer_, *document_, node_, paint_info, adjusted_frame_rect,
+          line_style_, kBackgroundBleedNone, sides_to_include,
+          border_shape_rects ? &*border_shape_rects : nullptr);
       break;
-    case kPaintWithClip:
+    }
+    case kPaintWithClip: {
       // FIXME: What the heck do we do with RTL here? The math we're using is
       // obviously not right, but it isn't even clear how this should work at
       // all.
@@ -430,10 +454,19 @@ void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
           PaintRectForImageStrip(adjusted_frame_rect, TextDirection::kLtr);
       GraphicsContextStateSaver state_saver(paint_info.context);
       paint_info.context.Clip(adjusted_clip_rect);
-      BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
-                                  paint_info, image_strip_paint_rect,
-                                  line_style_);
+      std::optional<BorderShapeReferenceRects> clipped_border_shape_rects;
+      if (const LayoutObject* layout_object =
+              inline_box_fragment_.GetLayoutObject()) {
+        clipped_border_shape_rects = ComputeBorderShapeReferenceRects(
+            image_strip_paint_rect, line_style_, *layout_object);
+      }
+      BoxPainterBase::PaintBorder(
+          image_observer_, *document_, node_, paint_info,
+          image_strip_paint_rect, line_style_, kBackgroundBleedNone,
+          PhysicalBoxSides(),
+          clipped_border_shape_rects ? &*clipped_border_shape_rects : nullptr);
       break;
+    }
   }
 }
 
@@ -531,10 +564,29 @@ void InlineBoxFragmentPainter::PaintAllFragments(
   InlineCursor first_container_cursor(*block_flow);
   first_container_cursor.MoveTo(layout_inline);
 
-  wtf_size_t container_fragment_idx =
-      first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
-  const PhysicalBoxFragment* container_fragment =
-      block_flow->GetPhysicalFragment(container_fragment_idx);
+  const PhysicalBoxFragment* container_fragment = nullptr;
+  // If the container is marked as potentially non-contiguous, beware of
+  // container fragments with no items. This LayoutInline isn't represented in
+  // such container fragments. We can trust InlineCursor to have taken us to the
+  // correct container fragment where the inline starts, though, so it's only
+  // necessary to do this if the index is larger than 0.
+  if (block_flow->MayBeNonContiguousIfc() && fragment_data_idx > 0) {
+    for (wtf_size_t idx = 0;;
+         first_container_cursor.MoveToNextFragmentainer()) {
+      CHECK(first_container_cursor.Current());
+      const PhysicalBoxFragment& candidate =
+          first_container_cursor.ContainerFragment();
+      if (candidate.HasItems() && idx++ == fragment_data_idx) {
+        container_fragment = &candidate;
+        break;
+      }
+    }
+  } else {
+    wtf_size_t container_fragment_idx =
+        first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
+    container_fragment =
+        block_flow->GetPhysicalFragment(container_fragment_idx);
+  }
 
   InlineCursor cursor(*container_fragment);
   cursor.MoveTo(layout_inline);

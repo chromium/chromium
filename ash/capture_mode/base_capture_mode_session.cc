@@ -114,7 +114,7 @@ gfx::Rect BaseCaptureModeSession::GetCaptureSurfaceConfineBounds() const {
     case CaptureModeSource::kFullscreen: {
       auto* parent = GetOnCaptureSurfaceWidgetParentWindow();
       DCHECK(parent);
-      return display::Screen::GetScreen()
+      return display::Screen::Get()
           ->GetDisplayNearestWindow(parent)
           .work_area();
     }
@@ -137,7 +137,8 @@ void BaseCaptureModeSession::OnRootWindowWillShutdown(
   if (root_window == current_root_) {
     // There should always be a primary root window.
     DCHECK_NE(Shell::GetPrimaryRootWindow(), current_root_);
-    MaybeChangeRoot(Shell::GetPrimaryRootWindow());
+    MaybeChangeRoot(Shell::GetPrimaryRootWindow(),
+                    /*root_window_will_shutdown=*/true);
   }
 }
 

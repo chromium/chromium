@@ -5,77 +5,73 @@
 package org.chromium.chrome.browser.bottom_sheet;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** This class is responsible for rendering the simple notice sheet. */
+@NullMarked
 class SimpleNoticeSheetView implements BottomSheetContent {
-    private final BottomSheetController mBottomSheetController;
-    private Callback<Integer> mDismissHandler;
     private final RelativeLayout mContentView;
 
-    private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                    super.onSheetClosed(reason);
-                    assert mDismissHandler != null;
-                    mDismissHandler.onResult(reason);
-                    mBottomSheetController.removeObserver(mBottomSheetObserver);
-                }
-
-                @Override
-                public void onSheetStateChanged(int newState, int reason) {
-                    super.onSheetStateChanged(newState, reason);
-                    if (newState != BottomSheetController.SheetState.HIDDEN) return;
-                    // This is a fail-safe for cases where onSheetClosed isn't triggered.
-                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
-                    mBottomSheetController.removeObserver(mBottomSheetObserver);
-                }
-            };
-
-    SimpleNoticeSheetView(Context context, BottomSheetController bottomSheetController) {
-        mBottomSheetController = bottomSheetController;
+    SimpleNoticeSheetView(Context context) {
         mContentView =
                 (RelativeLayout)
                         LayoutInflater.from(context).inflate(R.layout.simple_notice_sheet, null);
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
+        ImageView sheetHeaderImage = mContentView.findViewById(R.id.sheet_header_image);
+        sheetHeaderImage.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        context,
+                        PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
     }
 
-    void setDismissHandler(Callback<Integer> dismissHandler) {
-        mDismissHandler = dismissHandler;
+    void setTitle(String title) {
+        TextView titleView = mContentView.findViewById(R.id.sheet_title);
+        titleView.setText(title);
     }
 
-    boolean setVisible(boolean isVisible) {
-        if (!isVisible) {
-            mBottomSheetController.hideContent(this, true);
-            return true;
-        }
-        mBottomSheetController.addObserver(mBottomSheetObserver);
-        if (!mBottomSheetController.requestShowContent(this, true)) {
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-            return false;
-        }
-        return true;
+    void setText(SpannableString text) {
+        TextViewWithClickableSpans textView = mContentView.findViewById(R.id.sheet_text);
+        textView.setText(text);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    @Nullable
+    void setButtonText(String text) {
+        Button button = mContentView.findViewById(R.id.confirmation_button);
+        button.setText(text);
+    }
+
+    void setButtonAction(Runnable runnable) {
+        Button button = mContentView.findViewById(R.id.confirmation_button);
+        button.setOnClickListener(
+                (unusedView) -> {
+                    runnable.run();
+                });
+    }
+
     @Override
     public View getContentView() {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -98,27 +94,28 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+    public String getSheetContentDescription(Context context) {
+        // TODO(crbug.com/366158726): Make the string configurable.
+        return context.getString(R.string.pwd_access_loss_warning_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        // The sheet doesn't have a half height state.
+        assert false;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        // TODO(crbug.com/366158726): Make the string configurable.
+        return R.string.pwd_access_loss_warning_content_description;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+    public @StringRes int getSheetClosedAccessibilityStringId() {
+        // TODO(crbug.com/366158726): Make the string configurable.
+        return R.string.pwd_access_loss_warning_closed;
     }
 
     @Override
@@ -127,7 +124,7 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
     }
 }

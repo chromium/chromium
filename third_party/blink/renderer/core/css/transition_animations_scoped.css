@@ -1,0 +1,53 @@
+/*
+ * Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * Copy of transition_animations.css modified for ScopedViewTransitions.
+ * TODO(crbug.com/394052227): Replace transition_animations.css with this file
+ * after ScopedViewTransitions has launched.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+@keyframes -ua-view-transition-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes -ua-view-transition-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes -ua-mix-blend-mode-plus-lighter {
+  from { mix-blend-mode: plus-lighter }
+  to { mix-blend-mode: plus-lighter }
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.25s;
+  animation-fill-mode: both;
+}
+
+::view-transition-image-pair(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}
+
+::view-transition-new(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}
+
+::view-transition-old(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}
+
+html::view-transition-group-children(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}

@@ -36,36 +36,33 @@ NotificationManager* NotificationManager::From(ExecutionContext* context) {
   DCHECK(context);
   DCHECK(context->IsContextThread());
 
-  NotificationManager* manager =
-      Supplement<ExecutionContext>::From<NotificationManager>(context);
+  NotificationManager* manager = context->GetNotificationManager();
   if (!manager) {
     manager = MakeGarbageCollected<NotificationManager>(*context);
-    Supplement<ExecutionContext>::ProvideTo(*context, manager);
+    context->SetNotificationManager(manager);
   }
 
   return manager;
 }
 
-// static
-const char NotificationManager::kSupplementName[] = "NotificationManager";
-
 NotificationManager::NotificationManager(ExecutionContext& context)
-    : Supplement<ExecutionContext>(context),
+    : execution_context_(context),
       notification_service_(&context),
       permission_service_(&context) {}
 
 NotificationManager::~NotificationManager() = default;
 
 mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
-  if (GetSupplementable()->IsContextDestroyed())
+  if (execution_context_->IsContextDestroyed()) {
     return mojom::blink::PermissionStatus::DENIED;
+  }
 
   // Tentatively have an early return to avoid calling GetNotificationService()
   // during prerendering. The return value is the same as
   // `Notification::permission`'s.
   // TODO(1280155): defer the construction of notification to ensure this method
   // is not called during prerendering instead.
-  if (auto* window = DynamicTo<LocalDOMWindow>(GetSupplementable())) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
     if (Document* document = window->document(); document->IsPrerendering()) {
       return mojom::blink::PermissionStatus::ASK;
     }
@@ -86,7 +83,7 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
 
 void NotificationManager::GetPermissionStatusAsync(
     base::OnceCallback<void(mojom::blink::PermissionStatus)> callback) {
-  if (GetSupplementable()->IsContextDestroyed()) {
+  if (execution_context_->IsContextDestroyed()) {
     std::move(callback).Run(mojom::blink::PermissionStatus::DENIED);
     return;
   }
@@ -96,7 +93,7 @@ void NotificationManager::GetPermissionStatusAsync(
   // `Notification::permission`'s.
   // TODO(1280155): defer the construction of notification to ensure this method
   // is not called during prerendering instead.
-  if (auto* window = DynamicTo<LocalDOMWindow>(GetSupplementable())) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
     if (Document* document = window->document(); document->IsPrerendering()) {
       std::move(callback).Run(mojom::blink::PermissionStatus::ASK);
       return;
@@ -119,8 +116,8 @@ ScriptPromise<V8NotificationPermission> NotificationManager::RequestPermission(
         context,
         permission_service_.BindNewPipeAndPassReceiver(std::move(task_runner)));
     permission_service_.set_disconnect_handler(
-        WTF::BindOnce(&NotificationManager::OnPermissionServiceConnectionError,
-                      WrapWeakPersistent(this)));
+        BindOnce(&NotificationManager::OnPermissionServiceConnectionError,
+                 WrapWeakPersistent(this)));
   }
 
   auto* resolver =
@@ -132,9 +129,9 @@ ScriptPromise<V8NotificationPermission> NotificationManager::RequestPermission(
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::NOTIFICATIONS),
       LocalFrame::HasTransientUserActivation(win ? win->GetFrame() : nullptr),
-      WTF::BindOnce(&NotificationManager::OnPermissionRequestComplete,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(deprecated_callback)));
+      BindOnce(&NotificationManager::OnPermissionRequestComplete,
+               WrapPersistent(this), WrapPersistent(resolver),
+               WrapPersistent(deprecated_callback)));
 
   return promise;
 }
@@ -225,8 +222,8 @@ void NotificationManager::DisplayPersistentNotification(
   GetNotificationService()->DisplayPersistentNotification(
       service_worker_registration_id, std::move(notification_data),
       std::move(notification_resources),
-      WTF::BindOnce(&NotificationManager::DidDisplayPersistentNotification,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&NotificationManager::DidDisplayPersistentNotification,
+               WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NotificationManager::DidDisplayPersistentNotification(
@@ -250,7 +247,7 @@ void NotificationManager::DidDisplayPersistentNotification(
       resolver->Reject();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NotificationManager::ClosePersistentNotification(
@@ -265,8 +262,8 @@ void NotificationManager::GetNotifications(
     ScriptPromiseResolver<IDLSequence<Notification>>* resolver) {
   GetNotificationService()->GetNotifications(
       service_worker_registration_id, filter_tag, include_triggered,
-      WTF::BindOnce(&NotificationManager::DidGetNotifications,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&NotificationManager::DidGetNotifications, WrapPersistent(this),
+               WrapPersistent(resolver)));
 }
 
 void NotificationManager::DidGetNotifications(
@@ -295,13 +292,13 @@ NotificationManager::GetNotificationService() {
   if (!notification_service_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+        execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI);
+    execution_context_->GetBrowserInterfaceBroker().GetInterface(
         notification_service_.BindNewPipeAndPassReceiver(task_runner));
 
-    notification_service_.set_disconnect_handler(WTF::BindOnce(
-        &NotificationManager::OnNotificationServiceConnectionError,
-        WrapWeakPersistent(this)));
+    notification_service_.set_disconnect_handler(
+        BindOnce(&NotificationManager::OnNotificationServiceConnectionError,
+                 WrapWeakPersistent(this)));
   }
 
   return notification_service_.get();
@@ -310,7 +307,7 @@ NotificationManager::GetNotificationService() {
 void NotificationManager::Trace(Visitor* visitor) const {
   visitor->Trace(notification_service_);
   visitor->Trace(permission_service_);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 }  // namespace blink

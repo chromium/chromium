@@ -1,0 +1,3 @@
+# Generate code cache files
+per-file generate_code_cache*=tluk@chromium.org
+per-file tests/generate_code_cache*=tluk@chromium.org

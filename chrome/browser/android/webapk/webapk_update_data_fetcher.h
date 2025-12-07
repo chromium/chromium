@@ -31,7 +31,7 @@ struct InstallableData;
 class WebApkUpdateDataFetcher : public content::WebContentsObserver {
  public:
   WebApkUpdateDataFetcher(JNIEnv* env,
-                          jobject obj,
+                          const base::android::JavaRef<jobject>& obj,
                           const GURL& start_url,
                           const GURL& scope,
                           const GURL& web_manifest_url,
@@ -43,16 +43,14 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   // Replaces the WebContents that is being observed.
   void ReplaceWebContents(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
 
   // Called by the Java counterpart to destroy its native half.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Called by the Java counterpart to start checking web manifest changes.
   void Start(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& obj,
-             const base::android::JavaParamRef<jobject>& java_web_contents);
+             const base::android::JavaRef<jobject>& java_web_contents);
 
  private:
   ~WebApkUpdateDataFetcher() override;

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/check.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -30,11 +31,13 @@ base::TimeDelta GetStrongAuthTimeout(PrefService* pref_service) {
 
 QuickUnlockStorage::QuickUnlockStorage(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
+  CHECK(profile);
   fingerprint_storage_ = std::make_unique<FingerprintStorage>(profile);
+  CHECK(profile->GetPrefs());
   pin_storage_prefs_ = std::make_unique<PinStoragePrefs>(profile->GetPrefs());
 }
 
-QuickUnlockStorage::~QuickUnlockStorage() {}
+QuickUnlockStorage::~QuickUnlockStorage() = default;
 
 void QuickUnlockStorage::SetClockForTesting(base::Clock* test_clock) {
   clock_ = test_clock;

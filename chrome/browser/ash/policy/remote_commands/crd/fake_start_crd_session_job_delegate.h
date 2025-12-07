@@ -23,7 +23,7 @@ class FakeStartCrdSessionJobDelegate : public StartCrdSessionJobDelegate {
   void FailWithError(ExtendedStartCrdSessionResultCode error) {
     error_ = error;
   }
-  void TerminateCrdSession(const base::TimeDelta& session_duration);
+  void TerminateCrdSession();
 
   // Returns if TerminateSession() was called to terminate the active session.
   bool IsActiveSessionTerminated() const { return terminate_session_called_; }

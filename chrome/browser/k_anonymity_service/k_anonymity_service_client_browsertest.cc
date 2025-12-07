@@ -6,6 +6,8 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
@@ -50,15 +52,6 @@ std::unique_ptr<net::test_server::HttpResponse> MakeTrustTokenResponse(
   return ret;
 }
 
-void OnCreateBrowserContextServices(content::BrowserContext* context) {
-  // Sets all required testing factories to have control over identity
-  // environment during test. Effectively, this substitutes the real identity
-  // environment with identity test environment, taking care to fulfill all
-  // required dependencies.
-  IdentityTestEnvironmentProfileAdaptor::
-      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-}
-
 // Uses an embedded test server to act like a fake K-anonymity service for all
 // of the endpoints.
 class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
@@ -81,8 +74,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     GURL ohttp_relay = https_server_->GetURL("/ohttpRelay");
 
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{network::features::kPrivateStateTokens, {}},
-                              {features::kKAnonymityService,
+        /*enabled_features=*/{{features::kKAnonymityService,
                                {{"KAnonymityServiceAuthServer",
                                  https_server_->base_url().spec()},
                                 {"KAnonymityServiceJoinServer",
@@ -266,7 +258,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     // Handle all of the URLs in k_anonymity_service_urls.h
     GURL absolute_url = https_server_->GetURL(request.relative_url);
-    std::string path = absolute_url.path();
+    std::string path = absolute_url.GetPath();
     if (path == "/v1/generateShortIdentifier") {
       return HandleGenerateShortIdentifierRequest(request);
     } else if (path.starts_with("/v1/1/fetchKeys")) {
@@ -307,11 +299,15 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
 class KAnonymityServiceClientBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&OnCreateBrowserContextServices));
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    MixinBasedInProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    // Sets all required testing factories to have control over identity
+    // environment during test. Effectively, this substitutes the real identity
+    // environment with identity test environment, taking care to fulfill all
+    // required dependencies.
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   void SetUpOnMainThread() override {
@@ -336,7 +332,6 @@ class KAnonymityServiceClientBrowserTest
   TestKAnonymityServiceMixin k_anon_service_{&mixin_host_};
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
-  base::CallbackListSubscription subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(KAnonymityServiceClientBrowserTest, TestJoin) {

@@ -15,7 +15,26 @@ class GPUTextureDescriptor;
 class GPUTextureView;
 class GPUTextureViewDescriptor;
 class StaticBitmapImage;
+class V8GPUTextureDimension;
+class V8GPUTextureFormat;
 class WebGPUMailboxTexture;
+
+struct OwnedTextureViewDescriptor {
+  OwnedTextureViewDescriptor() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedTextureViewDescriptor(const OwnedTextureViewDescriptor& desc) = delete;
+  OwnedTextureViewDescriptor(OwnedTextureViewDescriptor&& desc) = delete;
+  OwnedTextureViewDescriptor& operator=(
+      const OwnedTextureViewDescriptor& desc) = delete;
+  OwnedTextureViewDescriptor& operator=(OwnedTextureViewDescriptor&& desc) =
+      delete;
+
+  wgpu::TextureViewDescriptor dawn_desc = {};
+  std::string label;
+  std::unique_ptr<wgpu::TextureComponentSwizzleDescriptor> swizzle_desc;
+};
 
 class GPUTexture : public DawnObject<wgpu::Texture> {
   DEFINE_WRAPPERTYPEINFO();
@@ -24,6 +43,8 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   static GPUTexture* Create(GPUDevice* device,
                             const GPUTextureDescriptor* webgpu_desc,
                             ExceptionState& exception_state);
+  static GPUTexture* Create(GPUDevice* device,
+                            const wgpu::TextureDescriptor* desc);
   static GPUTexture* CreateError(GPUDevice* device,
                                  const wgpu::TextureDescriptor* desc);
 
@@ -39,7 +60,7 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   GPUTexture(const GPUTexture&) = delete;
   GPUTexture& operator=(const GPUTexture&) = delete;
 
-  // gpu_texture.idl
+  // gpu_texture.idl {{{
   GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc,
                              ExceptionState& exception_state);
   void destroy();
@@ -48,14 +69,15 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   uint32_t depthOrArrayLayers() const;
   uint32_t mipLevelCount() const;
   uint32_t sampleCount() const;
-  String dimension() const;
-  String format() const;
+  V8GPUTextureDimension dimension() const;
+  V8GPUTextureFormat format() const;
   uint32_t usage() const;
+  // }}} End of WebIDL binding implementation.
 
   wgpu::TextureDimension Dimension() { return dimension_; }
   wgpu::TextureFormat Format() { return format_; }
   wgpu::TextureUsage Usage() { return usage_; }
-  bool Destroyed() { return destroyed_; }
+  bool IsDestroyed() { return destroyed_; }
 
   void DissociateMailbox();
 
@@ -69,7 +91,7 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   void ClearBeforeDestroyCallback();
 
  private:
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

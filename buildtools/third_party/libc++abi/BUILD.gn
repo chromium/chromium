@@ -6,18 +6,23 @@ import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/unwind.gni")
 
-source_set("libc++abi") {
+target(libcxxabi_target_type, "libc++abi") {
   if (export_libcxxabi_from_executables) {
     visibility = [ "//build/config:executable_deps" ]
   } else {
     visibility = [ "//buildtools/third_party/libc++" ]
   }
 
+  deps = [
+    "//buildtools/third_party/libc++:custom_headers",
+    "//buildtools/third_party/libc++:libcxx_headers",
+  ]
+
   # Fuchsia builds don't link against any libraries that provide stack
   # unwinding symbols, unlike Linux does with glibc (same applies for Android).
   # Build and link against libunwind manually to get this functionality.
   if (use_custom_libunwind) {
-    deps = [ "//buildtools/third_party/libunwind" ]
+    deps += [ "//buildtools/third_party/libunwind" ]
   }
 
   # TODO(crbug.com/40273848): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
@@ -63,9 +68,7 @@ source_set("libc++abi") {
 
     # Android's bionic libc added support for '__cxa_thread_atexit_impl' as of
     # API level 23.
-    if (is_android &&
-        ((!android_64bit_target_cpu && android32_ndk_api_level >= 23) ||
-         (android_64bit_target_cpu && android64_ndk_api_level >= 23))) {
+    if (is_android && android_ndk_api_level >= 23) {
       defines += [ "HAVE___CXA_THREAD_ATEXIT_IMPL" ]
     }
   }
@@ -99,7 +102,7 @@ source_set("libc++abi") {
   # libc++abi depends on libc++ internals.
   include_dirs = [ "//third_party/libc++/src/src" ]
 
-  if (use_libcxx_modules) {
-    configs -= [ "//build/config/compiler:libcxx_module" ]
-  }
+  # Disabling -Wexit-time-destructors, as libc++abi uses a static object for
+  # at exit management (see `static DtorsManager manager`).
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

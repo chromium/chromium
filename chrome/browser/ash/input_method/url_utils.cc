@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/url_util.h"
@@ -14,7 +15,7 @@ namespace ash {
 namespace input_method {
 
 // Checks if domain is a sub-domain of url
-bool IsSubDomain(const GURL& url, const std::string_view domain) {
+bool IsSubDomain(const GURL& url, std::string_view domain) {
   const size_t registryLength =
       net::registry_controlled_domains::GetRegistryLength(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
@@ -23,7 +24,7 @@ bool IsSubDomain(const GURL& url, const std::string_view domain) {
   if (registryLength == 0 && domain != "localhost") {
     return false;
   }
-  const std::string_view urlContent = url.host_piece();
+  const std::string_view urlContent = url.host();
   const std::string_view urlDomain = urlContent.substr(
       0, urlContent.length() - registryLength - (registryLength == 0 ? 0 : 1));
 
@@ -32,10 +33,16 @@ bool IsSubDomain(const GURL& url, const std::string_view domain) {
 
 // Checks if url belongs to domain and has the path_prefix
 bool IsSubDomainWithPathPrefix(const GURL& url,
-                               const std::string_view domain,
-                               const std::string_view path_prefix) {
+                               std::string_view domain,
+                               std::string_view path_prefix) {
   return IsSubDomain(url, domain) && url.has_path() &&
-         base::StartsWith(url.path(), path_prefix);
+         base::StartsWith(url.GetPath(), path_prefix);
+}
+
+// Checks if url is a file with a matching extension
+bool HasFileExtension(const GURL& url, std::string_view extension) {
+  return base::EndsWith(url.GetPath(), base::StrCat({".", extension}),
+                        base::CompareCase::INSENSITIVE_ASCII);
 }
 
 }  // namespace input_method

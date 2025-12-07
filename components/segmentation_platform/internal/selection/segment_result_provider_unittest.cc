@@ -115,6 +115,7 @@ class SegmentResultProviderTest : public testing::Test {
   }
 
   void TearDown() override {
+    mock_query_processor_ = nullptr;
     score_provider_.reset();
     execution_service_.reset();
     segment_database_.reset();
@@ -189,8 +190,7 @@ class SegmentResultProviderTest : public testing::Test {
   TestModelProviderFactory::Data model_providers_;
   TestModelProviderFactory provider_factory_;
   MockSignalDatabase signal_database_;
-  raw_ptr<processing::MockFeatureListQueryProcessor, DanglingUntriaged>
-      mock_query_processor_ = nullptr;
+  raw_ptr<processing::MockFeatureListQueryProcessor> mock_query_processor_;
   std::unique_ptr<MockModelManager> mock_model_manager_;
   SignalHandler signal_handler_;
   std::unique_ptr<ExecutionService> execution_service_;

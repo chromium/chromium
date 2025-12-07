@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/browser/web_engine_config.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/values.h"
 #include "fuchsia_web/webengine/switches.h"
@@ -43,7 +44,7 @@ class WebEngineConfigTest : public testing::Test {
   }
 
  private:
-  base::FieldTrialList* backup_field_trial_list_ = nullptr;
+  raw_ptr<base::FieldTrialList> backup_field_trial_list_ = nullptr;
 };
 
 TEST_F(WebEngineConfigTest, CommandLineArgs) {

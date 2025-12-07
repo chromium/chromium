@@ -7,15 +7,10 @@
 namespace web {
 
 BASE_FEATURE(kWebPageDefaultZoomFromDynamicType,
-             "WebPageDefaultZoomFromDynamicType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebPageAlternativeTextZoom,
-             "WebPageAlternativeTextZoom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebPageAlternativeTextZoom, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebPageTextZoomIPad,
-             "WebPageTextZoomIPad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebPageTextZoomIPad, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace web

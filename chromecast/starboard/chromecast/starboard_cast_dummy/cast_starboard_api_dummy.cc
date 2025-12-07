@@ -13,13 +13,29 @@
 #endif  // SB_API_VERSION < 15
 
 #if SB_API_VERSION >= 15
+namespace {
+SbEventHandleCallback g_callback = nullptr;
+}
+
 int SbRunStarboardMain(int argc, char** argv, SbEventHandleCallback callback) {
+  g_callback = callback;
   SbEvent* fake_start = new SbEvent;
   fake_start->type = kSbEventTypeStart;
-  callback(fake_start);
+  g_callback(fake_start);
   return 0;
 }
+
+void SbSystemRequestStop(int error_level) {
+  SbEvent* fake_stop = new SbEvent;
+  fake_stop->type = kSbEventTypeStop;
+  g_callback(fake_stop);
+  g_callback = nullptr;
+}
 #else  // SB_API_VERSION >= 15
+namespace {
+SbEventHandleCB g_callback = nullptr;
+}
+
 int StarboardMain(int argc, char** argv) {
   return 0;
 }
@@ -27,13 +43,19 @@ int StarboardMain(int argc, char** argv) {
 int CastStarboardApiInitialize(int argc,
                                char** argv,
                                SbEventHandleCB callback) {
+  g_callback = callback;
   SbEvent* fake_start = new SbEvent;
   fake_start->type = kSbEventTypeStart;
-  callback(fake_start);
+  g_callback(fake_start);
   return 0;
 }
 
-void CastStarboardApiFinalize() {}
+void CastStarboardApiFinalize() {
+  SbEvent* fake_stop = new SbEvent;
+  fake_stop->type = kSbEventTypeStop;
+  g_callback(fake_stop);
+  g_callback = nullptr;
+}
 
 #endif  // SB_API_VERSION >= 15
 

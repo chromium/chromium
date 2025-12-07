@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-#include "chrome/browser/sharesheet/share_action/share_action_cache.h"
-#include "chrome/browser/sharesheet/sharesheet_controller.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
@@ -23,11 +21,12 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 
 namespace apps {
+class AppServiceProxyAsh;
 struct IntentLaunchInfo;
 }  // namespace apps
 
@@ -45,6 +44,8 @@ struct VectorIcon;
 
 namespace sharesheet {
 
+class ShareActionCache;
+class SharesheetController;
 class SharesheetServiceDelegator;
 class SharesheetUiDelegate;
 
@@ -85,7 +86,7 @@ class SharesheetService : public KeyedService {
   // Gets the sharesheet controller for the given |native_window|.
   SharesheetController* GetSharesheetController(
       gfx::NativeWindow native_window);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog for ARC.
   void ShowNearbyShareBubbleForArc(gfx::NativeWindow native_window,
@@ -94,7 +95,9 @@ class SharesheetService : public KeyedService {
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback,
                                    ActionCleanupCallback cleanup_callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  void AddShareActionForTest(ShareActionType type);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // |share_action_type| is set to null when testing, but should otherwise have
   // a valid value.
   void OnBubbleClosed(gfx::NativeWindow native_window,
@@ -134,7 +137,7 @@ class SharesheetService : public KeyedService {
                             LaunchSource source,
                             DeliveredCallback delivered_callback,
                             CloseCallback close_callback,
-                            int num_actions_to_add);
+                            std::vector<::sharesheet::ShareActionType> actions);
   SharesheetUiDelegate* GetUiDelegateForTesting(
       gfx::NativeWindow native_window);
   static void SetSelectedAppForTesting(const std::u16string& target_name);
@@ -187,12 +190,14 @@ class SharesheetService : public KeyedService {
   void RecordShareDataMetrics(const apps::IntentPtr& intent);
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<ShareActionCache> share_action_cache_;
-  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegators. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.
   std::vector<std::unique_ptr<SharesheetServiceDelegator>> active_delegators_;
+
+  // Action may have a reference to the delegator, so define before delegator.
+  std::unique_ptr<ShareActionCache> share_action_cache_;
+  raw_ptr<apps::AppServiceProxyAsh> app_service_proxy_;
 
   base::WeakPtrFactory<SharesheetService> weak_factory_{this};
 };

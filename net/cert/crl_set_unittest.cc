@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/cert/crl_set.h"
 
+#include <array>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "crypto/sha2.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -93,24 +92,24 @@ TEST(CRLSetTest, Parse) {
 
   const CRLSet::CRLList& crls = set->CrlsForTesting();
   ASSERT_EQ(1u, crls.size());
-  const std::vector<std::string>& serials = crls.begin()->second;
+  const std::vector<std::vector<uint8_t>>& serials = crls.begin()->second;
   static const unsigned kExpectedNumSerials = 13;
   ASSERT_EQ(kExpectedNumSerials, serials.size());
-  EXPECT_EQ(std::string("\x10\x0D\x7F\x30\x00\x03\x00\x00\x23\xB0", 10),
+  EXPECT_EQ(base::span<const uint8_t>(
+                {0x10, 0x0D, 0x7F, 0x30, 0x00, 0x03, 0x00, 0x00, 0x23, 0xB0}),
             serials[0]);
-  EXPECT_EQ(std::string("\x64\x63\x49\xD2\x00\x03\x00\x00\x1D\x77", 10),
+  EXPECT_EQ(base::span<const uint8_t>(
+                {0x64, 0x63, 0x49, 0xD2, 0x00, 0x03, 0x00, 0x00, 0x1D, 0x77}),
             serials[kExpectedNumSerials - 1]);
 
   const std::string gia_spki_hash(reinterpret_cast<const char*>(kGIASPKISHA256),
                                   sizeof(kGIASPKISHA256));
-  EXPECT_EQ(CRLSet::REVOKED,
-            set->CheckSerial(
-                std::string("\x16\x7D\x75\x9D\x00\x03\x00\x00\x14\x55", 10),
-                gia_spki_hash));
-  EXPECT_EQ(CRLSet::GOOD,
-            set->CheckSerial(
-                std::string("\x47\x54\x3E\x79\x00\x03\x00\x00\x14\xF5", 10),
-                gia_spki_hash));
+  EXPECT_EQ(CRLSet::REVOKED, set->CheckSerial({0x16, 0x7D, 0x75, 0x9D, 0x00,
+                                               0x03, 0x00, 0x00, 0x14, 0x55},
+                                              gia_spki_hash));
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial({0x47, 0x54, 0x3E, 0x79, 0x00, 0x03,
+                                            0x00, 0x00, 0x14, 0xF5},
+                                           gia_spki_hash));
 
   EXPECT_FALSE(set->IsExpired());
 }
@@ -144,11 +143,14 @@ TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlocklist) {
   EXPECT_TRUE(CRLSet::Parse(s, &set2));
   ASSERT_TRUE(set2);
 
-  static const char* const kDigiNotarFilenames[] = {
-      "diginotar_root_ca.pem",          "diginotar_cyber_ca.pem",
-      "diginotar_services_1024_ca.pem", "diginotar_pkioverheid.pem",
-      "diginotar_pkioverheid_g2.pem",   nullptr,
-  };
+  static const auto kDigiNotarFilenames = std::to_array<const char*>({
+      "diginotar_root_ca.pem",
+      "diginotar_cyber_ca.pem",
+      "diginotar_services_1024_ca.pem",
+      "diginotar_pkioverheid.pem",
+      "diginotar_pkioverheid_g2.pem",
+      nullptr,
+  });
 
   base::FilePath certs_dir = GetTestCertsDirectory();
 
@@ -161,11 +163,13 @@ TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlocklist) {
         x509_util::CryptoBufferAsStringPiece(diginotar_cert->cert_buffer()),
         &spki));
 
-    std::string spki_sha256 = crypto::SHA256HashString(spki);
+    SHA256HashValue spki_sha256 = crypto::hash::Sha256(spki);
 
-    EXPECT_EQ(CRLSet::REVOKED, set1->CheckSPKI(spki_sha256))
+    EXPECT_EQ(CRLSet::REVOKED,
+              set1->CheckSPKI(base::as_string_view(spki_sha256)))
         << "Public key not blocked for " << kDigiNotarFilenames[i];
-    EXPECT_EQ(CRLSet::REVOKED, set2->CheckSPKI(spki_sha256))
+    EXPECT_EQ(CRLSet::REVOKED,
+              set2->CheckSPKI(base::as_string_view(spki_sha256)))
         << "Public key not blocked for " << kDigiNotarFilenames[i];
   }
 }
@@ -187,8 +191,7 @@ TEST(CRLSetTest, BlockedSubjects) {
 
   std::string_view spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(root_der, &spki));
-  SHA256HashValue spki_sha256;
-  crypto::SHA256HashString(spki, spki_sha256.data, sizeof(spki_sha256.data));
+  SHA256HashValue spki_sha256 = crypto::hash::Sha256(spki);
 
   std::string_view subject;
   ASSERT_TRUE(asn1::ExtractSubjectFromDERCert(root_der, &subject));
@@ -206,10 +209,7 @@ TEST(CRLSetTest, BlockedSubjects) {
 
   // When used with the correct hash, that subject should be accepted.
   EXPECT_EQ(CRLSet::GOOD,
-            set->CheckSubject(
-                subject, std::string_view(
-                             reinterpret_cast<const char*>(spki_sha256.data),
-                             sizeof(spki_sha256.data))));
+            set->CheckSubject(subject, base::as_string_view(spki_sha256)));
 }
 
 TEST(CRLSetTest, Expired) {

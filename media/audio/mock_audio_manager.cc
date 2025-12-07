@@ -141,8 +141,8 @@ void MockAudioManager::SetAecDumpRecordingManager(
   // This is no-op by default.
 }
 
-const char* MockAudioManager::GetName() {
-  return nullptr;
+const std::string_view MockAudioManager::GetName() {
+  return "Mock";
 }
 
 void MockAudioManager::SetMakeOutputStreamCB(MakeOutputStreamCallback cb) {
@@ -190,4 +190,4 @@ void MockAudioManager::SetAssociatedOutputDeviceIDCallback(
   get_associated_output_device_id_cb_ = std::move(callback);
 }
 
-}  // namespace media.
+}  // namespace media

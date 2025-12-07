@@ -19,7 +19,7 @@ class CrossThreadAudioParamInfo {
 
  public:
   explicit CrossThreadAudioParamInfo(const AudioParamDescriptor* descriptor)
-      : automation_rate_(IDLEnumAsString(descriptor->automationRate())),
+      : automation_rate_(descriptor->automationRate().AsString()),
         default_value_(descriptor->defaultValue()),
         max_value_(descriptor->maxValue()),
         min_value_(descriptor->minValue()),

@@ -29,5 +29,5 @@ found in the LICENSE file.
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@macro/divider_line_bg_color" />
+        android:background="@drawable/divider_line_bg" />
 </FrameLayout>

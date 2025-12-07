@@ -4,6 +4,8 @@
 
 package org.chromium.components.webxr;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.view.MotionEvent;
@@ -11,25 +13,24 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 
 /** Provides a fullscreen overlay for immersive AR mode. */
+@NullMarked
 public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     private static final String TAG = "ArOverlayDelegate";
     private static final boolean DEBUG_LOGS = false;
 
-    private ArCompositorDelegate mArCompositorDelegate;
-    private boolean mUseOverlay;
-    private boolean mCanRenderDomContent;
-    private boolean mDomSurfaceNeedsConfiguring;
-    private WebContents mWebContents;
+    private final ArCompositorDelegate mArCompositorDelegate;
+    private final boolean mUseOverlay;
+    private final boolean mDomSurfaceNeedsConfiguring;
+    private final WebContents mWebContents;
 
     public ArOverlayDelegate(
-            @NonNull ArCompositorDelegate compositorDelegate,
+            ArCompositorDelegate compositorDelegate,
             final WebContents webContents,
             boolean useOverlay,
             boolean canRenderDomContent) {
@@ -39,8 +40,7 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         mWebContents = webContents;
 
         mUseOverlay = useOverlay;
-        mCanRenderDomContent = canRenderDomContent;
-        mDomSurfaceNeedsConfiguring = mUseOverlay && !mCanRenderDomContent;
+        mDomSurfaceNeedsConfiguring = mUseOverlay && !canRenderDomContent;
     }
 
     @Override
@@ -67,7 +67,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         surfaceView.setZOrderMediaOverlay(!mDomSurfaceNeedsConfiguring);
 
         if (!mUseOverlay) {
-            WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(true);
+            WebContentsAccessibility webContentsAccessibility =
+                    WebContentsAccessibility.fromWebContents(mWebContents);
+            assumeNonNull(webContentsAccessibility);
+            webContentsAccessibility.setObscuredByAnotherView(true);
         }
     }
 
@@ -95,7 +98,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         ViewGroup parent = (ViewGroup) surfaceView.getParent();
 
         if (!mUseOverlay) {
-            WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(false);
+            WebContentsAccessibility webContentsAccessibility =
+                    WebContentsAccessibility.fromWebContents(mWebContents);
+            assumeNonNull(webContentsAccessibility);
+            webContentsAccessibility.setObscuredByAnotherView(false);
         }
 
         if (parent != null) {

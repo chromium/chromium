@@ -14,16 +14,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
+#include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_sinks_observer.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/browser/test/test_helper.h"
 #include "components/media_router/common/media_source.h"
@@ -31,6 +32,7 @@
 #include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +42,6 @@
 #include "url/origin.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
@@ -70,8 +71,9 @@ class MockControllerObserver : public CastDialogController::Observer {
   }
 
   ~MockControllerObserver() override {
-    if (controller_)
+    if (controller_) {
       controller_->RemoveObserver(this);
+    }
   }
 
   MOCK_METHOD(void, OnModelUpdated, (const CastDialogModel& model), (override));
@@ -88,7 +90,7 @@ class MockControllerObserver : public CastDialogController::Observer {
 
 class PresentationRequestCallbacks {
  public:
-  PresentationRequestCallbacks() {}
+  PresentationRequestCallbacks() = default;
 
   explicit PresentationRequestCallbacks(
       const blink::mojom::PresentationError& expected_error)
@@ -111,7 +113,7 @@ class TestWebContentsDisplayObserver : public WebContentsDisplayObserver {
  public:
   explicit TestWebContentsDisplayObserver(const display::Display& display)
       : display_(display) {}
-  ~TestWebContentsDisplayObserver() override {}
+  ~TestWebContentsDisplayObserver() override = default;
 
   const display::Display& GetCurrentDisplay() const override {
     return display_;
@@ -190,8 +192,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
                                     web_contents(), _, base::Seconds(60)))
         .WillOnce(SaveArgWithMove<4>(&callback));
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
-    for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+    }
     ui_->StartCasting(kSinkId, MediaCastMode::TAB_MIRROR);
     Mock::VerifyAndClearExpectations(mock_router_);
 
@@ -219,8 +222,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         *mock_router_,
         CreateRouteInternal(_, _, _, _, _, base::Seconds(timeout_seconds)))
         .WillOnce(SaveArgWithMove<4>(&callback));
-    for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+    }
     ui_->StartCasting(kSinkId, cast_mode);
     Mock::VerifyAndClearExpectations(mock_router_);
 
@@ -273,16 +277,16 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
   MockControllerObserver observer;
 
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         EXPECT_TRUE(model.media_sinks().empty());
-      })));
+      }));
   ui_->AddObserver(&observer);
 
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   MediaSinkWithCastModes sink_with_cast_modes(sink);
   sink_with_cast_modes.cast_modes = {MediaCastMode::TAB_MIRROR};
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([&sink](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([&sink](const CastDialogModel& model) {
         EXPECT_EQ(1u, model.media_sinks().size());
         const UIMediaSink& ui_sink = model.media_sinks()[0];
         EXPECT_EQ(sink.id(), ui_sink.id);
@@ -291,19 +295,18 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
         EXPECT_TRUE(
             base::Contains(ui_sink.cast_modes, MediaCastMode::TAB_MIRROR));
         EXPECT_EQ(sink.icon_type(), ui_sink.icon_type);
-      })));
+      }));
   NotifyUiOnSinksUpdated({sink_with_cast_modes});
 
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true);
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(
-          WithArg<0>(Invoke([&sink, &route](const CastDialogModel& model) {
-            EXPECT_EQ(1u, model.media_sinks().size());
-            const UIMediaSink& ui_sink = model.media_sinks()[0];
-            EXPECT_EQ(sink.id(), ui_sink.id);
-            EXPECT_EQ(UIMediaSinkState::CONNECTED, ui_sink.state);
-            EXPECT_EQ(route.media_route_id(), ui_sink.route->media_route_id());
-          })));
+      .WillOnce(WithArg<0>([&sink, &route](const CastDialogModel& model) {
+        EXPECT_EQ(1u, model.media_sinks().size());
+        const UIMediaSink& ui_sink = model.media_sinks()[0];
+        EXPECT_EQ(sink.id(), ui_sink.id);
+        EXPECT_EQ(UIMediaSinkState::CONNECTED, ui_sink.state);
+        EXPECT_EQ(route.media_route_id(), ui_sink.route->media_route_id());
+      }));
   NotifyUiOnRoutesUpdated({route});
 
   EXPECT_CALL(observer, OnControllerDestroyingInternal());
@@ -316,10 +319,10 @@ TEST_F(MediaRouterViewsUITest, SinkFriendlyName) {
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   MediaSinkWithCastModes sink_with_cast_modes(sink);
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(Invoke([&](const CastDialogModel& model) {
+      .WillOnce([&](const CastDialogModel& model) {
         EXPECT_EQ(base::UTF8ToUTF16(sink.name()),
                   model.media_sinks()[0].friendly_name);
-      }));
+      });
   NotifyUiOnSinksUpdated({sink_with_cast_modes});
 }
 
@@ -401,24 +404,25 @@ TEST_F(MediaRouterViewsUITest, ConnectingState) {
   NiceMock<MockControllerObserver> observer(ui_.get());
 
   MediaSink sink{CreateDialSink(kSinkId, kSinkName)};
-  for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+  for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+  }
 
   // When a request to Cast to a sink is made, its state should become
   // CONNECTING.
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         ASSERT_EQ(1u, model.media_sinks().size());
         EXPECT_EQ(UIMediaSinkState::CONNECTING, model.media_sinks()[0].state);
-      })));
+      }));
   ui_->StartCasting(kSinkId, MediaCastMode::TAB_MIRROR);
 
   // Once a route is created for the sink, its state should become CONNECTED.
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         ASSERT_EQ(1u, model.media_sinks().size());
         EXPECT_EQ(UIMediaSinkState::CONNECTED, model.media_sinks()[0].state);
-      })));
+      }));
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true);
   NotifyUiOnRoutesUpdated({route});
 }
@@ -428,26 +432,27 @@ TEST_F(MediaRouterViewsUITest, DisconnectingState) {
 
   MediaSink sink{CreateDialSink(kSinkId, kSinkName)};
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true);
-  for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+  for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+  }
   NotifyUiOnRoutesUpdated({route});
 
   // When a request to stop casting to a sink is made, its state should become
   // DISCONNECTING.
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         ASSERT_EQ(1u, model.media_sinks().size());
         EXPECT_EQ(UIMediaSinkState::DISCONNECTING,
                   model.media_sinks()[0].state);
-      })));
+      }));
   ui_->StopCasting(kRouteId);
 
   // Once the route is removed, the sink's state should become AVAILABLE.
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         ASSERT_EQ(1u, model.media_sinks().size());
         EXPECT_EQ(UIMediaSinkState::AVAILABLE, model.media_sinks()[0].state);
-      })));
+      }));
   NotifyUiOnRoutesUpdated({});
 }
 
@@ -466,25 +471,24 @@ TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
   Issue::Id issue_id = -1;
 
   EXPECT_CALL(issues_observer, OnIssue)
-      .WillOnce(
-          Invoke([&issue_id](const Issue& issue) { issue_id = issue.id(); }));
+      .WillOnce([&issue_id](const Issue& issue) { issue_id = issue.id(); });
   EXPECT_CALL(observer, OnModelUpdated(_))
       .WillOnce(WithArg<0>(
-          Invoke([&sink1, &sink2, &issue_title](const CastDialogModel& model) {
+          [&sink1, &sink2, &issue_title](const CastDialogModel& model) {
             EXPECT_EQ(2u, model.media_sinks().size());
             EXPECT_EQ(model.media_sinks()[0].id, sink1.id());
             EXPECT_FALSE(model.media_sinks()[0].issue.has_value());
             EXPECT_EQ(model.media_sinks()[1].id, sink2.id());
             EXPECT_EQ(model.media_sinks()[1].issue->info().title, issue_title);
-          })));
+          }));
   mock_router_->GetIssueManager()->AddIssue(issue);
 
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([&sink2](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([&sink2](const CastDialogModel& model) {
         EXPECT_EQ(2u, model.media_sinks().size());
         EXPECT_EQ(model.media_sinks()[1].id, sink2.id());
         EXPECT_FALSE(model.media_sinks()[1].issue.has_value());
-      })));
+      }));
   mock_router_->GetIssueManager()->ClearIssue(issue_id);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -507,37 +511,37 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutIssueTitle) {
   NiceMock<MockIssuesObserver> issues_observer(mock_router_->GetIssueManager());
   issues_observer.Init();
 
-  EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
+  EXPECT_CALL(issues_observer, OnIssue).WillOnce([](const Issue& issue) {
     EXPECT_EQ(l10n_util::GetStringFUTF8(
                   IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME,
                   u"presentation_source_name"),
               issue.info().title);
-  }));
+  });
   ui_->SendIssueForRouteTimeout(MediaCastMode::PRESENTATION, "sink_id",
                                 u"presentation_source_name");
   mock_router_->GetIssueManager()->ClearAllIssues();
 
-  EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
+  EXPECT_CALL(issues_observer, OnIssue).WillOnce([](const Issue& issue) {
     EXPECT_EQ(l10n_util::GetStringUTF8(
                   IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB),
               issue.info().title);
-  }));
+  });
   ui_->SendIssueForRouteTimeout(MediaCastMode::TAB_MIRROR, "sink_id", u"");
   mock_router_->GetIssueManager()->ClearAllIssues();
 
-  EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
+  EXPECT_CALL(issues_observer, OnIssue).WillOnce([](const Issue& issue) {
     EXPECT_EQ(l10n_util::GetStringUTF8(
                   IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_DESKTOP),
               issue.info().title);
-  }));
+  });
   ui_->SendIssueForRouteTimeout(MediaCastMode::DESKTOP_MIRROR, "sink_id", u"");
   mock_router_->GetIssueManager()->ClearAllIssues();
 
-  EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
+  EXPECT_CALL(issues_observer, OnIssue).WillOnce([](const Issue& issue) {
     EXPECT_EQ(
         l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT),
         issue.info().title);
-  }));
+  });
   ui_->SendIssueForRouteTimeout(MediaCastMode::REMOTE_PLAYBACK, "sink_id", u"");
 }
 
@@ -547,8 +551,9 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
   MockControllerObserver observer(ui_.get());
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   ui_->OnSinksUpdated({{sink, {MediaCastMode::DESKTOP_MIRROR}}});
-  for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+  for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+  }
 
   EXPECT_CALL(observer, OnModelUpdated(_))
       .WillOnce(WithArg<0>([&](const CastDialogModel& model) {
@@ -559,7 +564,51 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
       }));
   ui_->StartCasting(kSinkId, MediaCastMode::DESKTOP_MIRROR);
 }
+
 #endif
+
+TEST_F(MediaRouterViewsUITest, PermissionRejectedIssue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kShowCastPermissionRejectedError);
+
+  MockControllerObserver observer(ui_.get());
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
+        EXPECT_TRUE(model.is_permission_rejected());
+        EXPECT_TRUE(model.media_sinks().empty());
+      }));
+  mock_router_->GetIssueManager()->AddPermissionRejectedIssue();
+}
+
+TEST_F(MediaRouterViewsUITest, SinksUpdatedAfterPermissionRejectedIssue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kShowCastPermissionRejectedError);
+
+  MockControllerObserver observer(ui_.get());
+  // Receives a permission rejected issue.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
+        EXPECT_TRUE(model.is_permission_rejected());
+        EXPECT_TRUE(model.media_sinks().empty());
+      }));
+
+  mock_router_->GetIssueManager()->AddPermissionRejectedIssue();
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // After getting sink updates, MediaRouterUI clears the issue and sends sink
+  // updates.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .Times(2)
+      .WillRepeatedly(WithArg<0>([](const CastDialogModel& model) {
+        EXPECT_FALSE(model.is_permission_rejected());
+        EXPECT_EQ(2u, model.media_sinks().size());
+      }));
+
+  NotifyUiOnSinksUpdated({{CreateCastSink("sink1", "B sink"), {}},
+                          {CreateCastSink("sink2", "A sink"), {}}});
+}
 
 TEST_F(MediaRouterViewsUITest, SortedSinks) {
   NotifyUiOnSinksUpdated({{CreateCastSink("sink3", "B sink"), {}},
@@ -708,17 +757,17 @@ TEST_F(MediaRouterViewsUITest, OnFreezeInfoChanged) {
   MockControllerObserver observer;
 
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         EXPECT_TRUE(model.media_sinks().empty());
-      })));
+      }));
   ui_->AddObserver(&observer);
 
   // Calling OnFreezeInfoChanged will trigger the UI to UpdateSinks, which we
   // can detect through OnModelUpdated.
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+      .WillOnce(WithArg<0>([](const CastDialogModel& model) {
         EXPECT_TRUE(model.media_sinks().empty());
-      })));
+      }));
   ui_->OnFreezeInfoChanged();
 
   EXPECT_CALL(observer, OnControllerDestroyingInternal());

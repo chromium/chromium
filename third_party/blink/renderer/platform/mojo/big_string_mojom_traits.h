@@ -14,29 +14,27 @@
 namespace mojo {
 
 template <>
-struct PLATFORM_EXPORT
-    StructTraits<mojo_base::mojom::BigStringDataView, WTF::String> {
-  static bool IsNull(const WTF::String& input) { return input.IsNull(); }
-  static void SetToNull(WTF::String* output) { *output = WTF::String(); }
+struct PLATFORM_EXPORT StructTraits<mojo_base::mojom::BigStringDataView,
+                                    blink::String> {
+  static bool IsNull(const blink::String& input) { return input.IsNull(); }
+  static void SetToNull(blink::String* output) { *output = blink::String(); }
 
-  static mojo_base::BigBuffer data(const WTF::String& input) {
-    WTF::StringUTF8Adaptor adaptor(input);
-    return mojo_base::BigBuffer(base::as_bytes(base::make_span(adaptor)));
+  static mojo_base::BigBuffer data(const blink::String& input) {
+    blink::StringUtf8Adaptor adaptor(input);
+    return mojo_base::BigBuffer(base::as_byte_span(adaptor));
   }
 
-  static bool Read(mojo_base::mojom::BigStringDataView data, WTF::String* out) {
+  static bool Read(mojo_base::mojom::BigStringDataView data,
+                   blink::String* out) {
     mojo_base::BigBuffer buffer;
-    if (!data.ReadData(&buffer))
+    if (!data.ReadData(&buffer)) {
       return false;
-    size_t size = buffer.size();
-    if (size % sizeof(char))
-      return false;
+    }
     // An empty |mojo_base::BigBuffer| may have a null |data()| if empty.
-    if (!size) {
-      *out = g_empty_string;
+    if (!buffer.size()) {
+      *out = blink::g_empty_string;
     } else {
-      *out = WTF::String::FromUTF8(reinterpret_cast<const char*>(buffer.data()),
-                                   size / sizeof(char));
+      *out = blink::String::FromUTF8(base::span(buffer));
     }
     return true;
   }

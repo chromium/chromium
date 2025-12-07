@@ -1,9 +1,18 @@
-# Copyright 2021 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/protobuf/proto_library.gni")
+import("//build/config/ui.gni")
 
-proto_library("side_search_tab_data_proto") {
-  sources = [ "side_search_tab_data.proto" ]
+source_set("side_search") {
+  if (toolkit_views) {
+    sources = [
+      "side_search_prefs.cc",
+      "side_search_prefs.h",
+    ]
+    deps = [
+      "//components/pref_registry",
+      "//components/prefs",
+    ]
+  }
 }

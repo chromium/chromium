@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -60,7 +63,7 @@ FragmentItems::FragmentItems(const FragmentItems& other)
     // |FragmentItem|.
     if (auto* layout_text =
             DynamicTo<LayoutText>(other_item.GetMutableLayoutObject()))
-      layout_text->DetachAbstractInlineTextBoxesIfNeeded();
+      layout_text->DetachAxHooksIfNeeded();
   }
 }
 
@@ -72,15 +75,50 @@ bool FragmentItems::IsSubSpan(const Span& span) const {
 void FragmentItems::FinalizeAfterLayout(
     const HeapVector<Member<const LayoutResult>, 1>& results,
     LayoutBlockFlow& container) {
+  // This class keeps the parent GC objecct and index in case the backing buffer
+  // is moved, because `FragmentItem` is a traceable DISALLOW_NEW objects,
+  class FragmentItemPtr {
+    DISALLOW_NEW();
+
+   public:
+    FragmentItemPtr() = default;
+    FragmentItemPtr(const FragmentItem& item,
+                    const PhysicalBoxFragment& fragment,
+                    const Span& items)
+        : fragment_(fragment), index_(&item - items.data()) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+      DCHECK_EQ(fragment.Items()->Items().data(), items.data());
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+    }
+
+    const FragmentItem* Get() const {
+      return fragment_ ? &(*fragment_->Items())[index_] : nullptr;
+    }
+    const FragmentItem& operator*() const { return *Get(); }
+
+    void Trace(Visitor* visitor) const { visitor->Trace(fragment_); }
+
+   private:
+    Member<const PhysicalBoxFragment> fragment_;
+    wtf_size_t index_ = 0;
+  };
+
+  // This struct keeps the last `FragmentItem` and other properties for a
+  // `LayoutObject`. Their lifecycles are only within this function.
   struct LastItem {
-    const FragmentItem* item;
+    DISALLOW_NEW();
+
+   public:
+    void Trace(Visitor* visitor) const { visitor->Trace(item); }
+
+    FragmentItemPtr item;
     wtf_size_t fragment_id;
-    wtf_size_t item_index;
+    wtf_size_t total_item_index;
   };
   HeapHashMap<Member<const LayoutObject>, LastItem> last_items;
   ClearCollectionScope<HeapHashMap<Member<const LayoutObject>, LastItem>>
       clear_scope(&last_items);
-  wtf_size_t item_index = 0;
+  wtf_size_t total_item_index = 0;
   wtf_size_t line_fragment_id = FragmentItem::kInitialLineFragmentId;
 
   // If there are container fragments that don't have fragment items, or if
@@ -91,6 +129,8 @@ void FragmentItems::FinalizeAfterLayout(
   // up the FragmentData objects.
   bool may_be_non_contiguous_ifc = false;
 
+  bool has_regular_break = false;
+
   for (const auto& result : results) {
     const auto& fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
@@ -100,14 +140,39 @@ void FragmentItems::FinalizeAfterLayout(
       continue;
     }
 
+    if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
+      if (IsBreakInside(break_token)) {
+        has_regular_break = true;
+      } else if (has_regular_break && break_token->IsRepeated()) {
+        // Repeated content (inside a repeated table header, for instance)
+        // that's in a nested multicol container may effectively cause a
+        // non-contiguous inline formatting context, as soon as there's an
+        // inline child inside that isn't represented in all the columns.
+        //
+        // Example scenario: A table header group that's repeated three times
+        // (the table occupies three pages), and there's a two-column multicol
+        // container inside, and there's a text node inside that only exists in
+        // the first column. The inline formatting context established by the
+        // inner multicol will create 3*2 = 6 fragments, but the text node will
+        // only exist in the first, third, and fifth fragment.
+        may_be_non_contiguous_ifc = true;
+      }
+    }
+
     bool found_inflow_content = false;
-    fragment_items->size_of_earlier_fragments_ = item_index;
+    fragment_items->size_of_earlier_fragments_ = total_item_index;
     const Span items = fragment_items->Items();
     for (const FragmentItem& item : items) {
-      ++item_index;
+      ++total_item_index;
       if (item.Type() == FragmentItem::kLine) {
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
         item.SetFragmentId(line_fragment_id++);
+        continue;
+      } else if (item.IsEllipsis() &&
+                 item.GetLayoutObject() == fragment.GetLayoutObject()) {
+        DCHECK(
+            RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+        // Line-clamp ellipsis
         continue;
       } else if (!found_inflow_content) {
         // Resumed floats may take up all the space in the containing block
@@ -115,8 +180,13 @@ void FragmentItems::FinalizeAfterLayout(
         // formatting context. The non-atomic inline boxes themselves also don't
         // contribute to having inflow content, as they may just be wrappers
         // around such floats. We need something "real", such as text or a
-        // non-atomic inline.
-        found_inflow_content = !item.IsFloating() && !item.IsInlineBox();
+        // non-atomic inline. Blocks in inlines cannot unconditionally count as
+        // "real" here, since it's possible that they only contain fragmented
+        // parallel flows (e.g. floats). We *could* examine this situation more
+        // closely, since there might indeed be real in-flow content in there,
+        // but let's keep this as simple as possible.
+        found_inflow_content = !item.IsFloating() && !item.IsInlineBox() &&
+                               !item.IsBlockInInline();
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
       DCHECK(!layout_object->IsOutOfFlowPositioned());
@@ -142,23 +212,26 @@ void FragmentItems::FinalizeAfterLayout(
 
       // If this is the first fragment, associate with |layout_object|.
       const auto last_item_result =
-          last_items.insert(layout_object, LastItem{&item, 0, item_index});
+          last_items.insert(layout_object, LastItem{{item, fragment, items},
+                                                    /*fragment_id*/ 0,
+                                                    total_item_index});
       const bool is_first = last_item_result.is_new_entry;
       if (is_first) {
         item.SetFragmentId(0);
-        layout_object->SetFirstInlineFragmentItemIndex(item_index);
+        layout_object->SetFirstInlineFragmentItemIndex(total_item_index);
         continue;
       }
 
       // Update the last item for |layout_object|.
       LastItem* last = &last_item_result.stored_value->value;
-      const FragmentItem* last_item = last->item;
+      const FragmentItem* last_item = last->item.Get();
       DCHECK_EQ(last_item->DeltaToNextForSameLayoutObject(), 0u);
-      const wtf_size_t last_index = last->item_index;
+      const wtf_size_t last_index = last->total_item_index;
       DCHECK_GT(last_index, 0u);
       DCHECK_LT(last_index, fragment_items->EndItemIndex());
-      DCHECK_LT(last_index, item_index);
-      last_item->SetDeltaToNextForSameLayoutObject(item_index - last_index);
+      DCHECK_LT(last_index, total_item_index);
+      last_item->SetDeltaToNextForSameLayoutObject(total_item_index -
+                                                   last_index);
       // Because we found a following fragment, reset |IsLastForNode| for the
       // last item except:
       // a. |IsLastForNode| is computed from break token. The last item already
@@ -173,8 +246,8 @@ void FragmentItems::FinalizeAfterLayout(
 
       // Update this item.
       item.SetFragmentId(++last->fragment_id);
-      last->item = &item;
-      last->item_index = item_index;
+      last->item = {item, fragment, items};
+      last->total_item_index = total_item_index;
     }
 
     if (!found_inflow_content) {
@@ -460,7 +533,7 @@ void FragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
 // static
 void FragmentItems::DirtyLinesFromNeedsLayout(
     const LayoutBlockFlow& container) {
-  DCHECK(base::ranges::any_of(
+  DCHECK(std::ranges::any_of(
       container.PhysicalFragments(),
       [](const PhysicalBoxFragment& fragment) { return fragment.HasItems(); }));
 

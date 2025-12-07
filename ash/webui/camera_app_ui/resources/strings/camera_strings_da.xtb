@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2244252133441425811">Aktivér vælgeren for videobilleder pr. sekund</translation>
 <translation id="2271433936731426666">Aktivér øjebliksbillede af video i fuld størrelse</translation>
-<translation id="2281736597583450397">Få skarpere detaljer med forbedret zoom</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
 <translation id="2360840973209616515">Kameraappen administreres af din administrator.
         Kontakt administratoren for at få flere oplysninger.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5976160379964388480">Andre</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
-<translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6197807149213783179">Gem metadata</translation>
 <translation id="6233780560267770709">3 gange 3</translation>
 <translation id="6243827288366940320">Det gyldne snit</translation>
@@ -123,7 +121,6 @@
 Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et billede eller en video af problemet og beskrive, hvad der er galt (f.eks. billedet er for mørkt, eller motivet er ikke i fokus).</translation>
 <translation id="6519884562954018934">Opret forbindelse til <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Del</translation>
-<translation id="6586509689874700895">Start med at trykke på <ph name="BUTTON_NAME" /> for at zoome ind. Når du derefter har taget et billede, kan du se de superskarpe detaljer.</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> blev kopieret</translation>
 <translation id="6617916774429601017">Vis alle opløsninger</translation>
 <translation id="6631515515009660915">Slå spejl fra</translation>
@@ -169,8 +166,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8609951387004618906">Åbn <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Slå mikrofonen til eller fra. Lyden er slået fra</translation>
-<translation id="8712637175834984815">Forstået</translation>
-<translation id="8730621377337864115">Udfør</translation>
+<translation id="8730621377337864115">Udført</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>
 <translation id="874854738381978209">Wi-Fi-netværk er registreret.</translation>
 <translation id="8815966864175525708">Skift for at tage et portrætbillede</translation>

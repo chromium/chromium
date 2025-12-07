@@ -23,8 +23,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -32,12 +35,15 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -127,6 +133,20 @@ base::expected<std::string, protocol::Response> GetTargetIdFromLaunch(
   return base::unexpected(protocol::Response::InvalidRequest(msg));
 }
 
+void OnWebBundleInstalled(
+    std::unique_ptr<PWAHandler::InstallCallback> callback,
+    const GURL& manifest_url,
+    const GURL& web_bundle_url,
+    base::expected<web_app::InstallIsolatedWebAppCommandSuccess, std::string>
+        result) {
+  if (result.has_value()) {
+    std::move(callback)->sendSuccess();
+  } else {
+    std::move(callback)->sendFailure(protocol::Response::InvalidRequest(
+        base::StrCat({"Failed to install ", manifest_url.spec(), " from ",
+                      web_bundle_url.spec(), ": ", result.error()})));
+  }
+}
 }  // namespace
 
 PWAHandler::PWAHandler(protocol::UberDispatcher* dispatcher,
@@ -228,6 +248,7 @@ void PWAHandler::InstallFromManifestId(
       webapps::WebappInstallSource::DEVTOOLS, contents->GetWeakPtr(),
       base::BindOnce(
           [](const std::string& in_manifest_id,
+             base::WeakPtr<web_app::WebAppScreenshotFetcher>,
              content::WebContents* initiator_web_contents,
              std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
              web_app::WebAppInstallationAcceptanceCallback
@@ -278,12 +299,24 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
             {"Invalid installUrlOrBundleUrl ", in_install_url_or_bundle_url})));
     return;
   }
-  // TODO(crbug.com/337872319): Support installing isolated apps on chrome-os.
+  const auto manifest_id_url = GURL{in_manifest_id};
+  if (!manifest_id_url.is_valid()) {
+    std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+        base::StrCat({"Invalid manifestId ", in_manifest_id})));
+    return;
+  }
+
+  // This is isolated web app.
+  if (manifest_id_url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    InstallWebBundleFromUrl(manifest_id_url, url, std::move(callback));
+    return;
+  }
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     std::move(callback)->sendFailure(
         protocol::Response::MethodNotFound(base::StrCat(
             {"Installing webapp from url ", in_install_url_or_bundle_url,
-             " with scheme [", url.scheme(), "] is not supported yet."})));
+             " with scheme [", url.GetScheme(), "] is not supported yet."})));
     return;
   }
   auto* scheduler = GetScheduler();
@@ -292,10 +325,72 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
     return;
   }
   scheduler->FetchInstallInfoFromInstallUrl(
-      GURL{in_manifest_id}, url,
+      manifest_id_url, url,
       base::BindOnce(&PWAHandler::InstallFromInstallInfo,
                      weak_ptr_factory_.GetWeakPtr(), in_manifest_id,
                      in_install_url_or_bundle_url, std::move(callback)));
+}
+
+void PWAHandler::InstallWebBundleFromUrl(
+    const GURL& manifest_url,
+    const GURL& web_bundle_url,
+    std::unique_ptr<InstallCallback> callback) {
+  base::expected<web_package::SignedWebBundleId, std::string>
+      expected_bundle_id =
+          web_package::SignedWebBundleId::Create(manifest_url.GetHost());
+
+  if (!expected_bundle_id.has_value()) {
+    std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+        base::StrCat({"manifestId=[", manifest_url.spec(),
+                      "] must be a valid signed web bundle id. Parse error: ",
+                      expected_bundle_id.error()})));
+    return;
+  }
+  auto& installation_manager =
+      web_app::WebAppProvider::GetForWebApps(GetProfile())
+          ->isolated_web_app_installation_manager();
+
+  if (web_bundle_url.SchemeIsFile()) {
+    base::FilePath file_path;
+    if (!net::FileURLToFilePath(web_bundle_url, &file_path)) {
+      std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+          base::StrCat({"installUrlOrBundleUrl should be a valid file path ",
+                        web_bundle_url.spec()})));
+      return;
+    }
+
+    installation_manager.InstallIsolatedWebAppFromDevModeBundle(
+        file_path,
+        web_app::IsolatedWebAppInstallationManager::InstallSurface::
+            kDevToolsProtocol,
+        base::BindOnce(&OnWebBundleInstalled, std::move(callback), manifest_url,
+                       web_bundle_url),
+        std::move(expected_bundle_id.value()));
+
+  } else if (web_bundle_url.SchemeIsHTTPOrHTTPS()) {
+    if (expected_bundle_id->is_for_proxy_mode()) {
+      installation_manager.InstallIsolatedWebAppFromDevModeProxy(
+          web_bundle_url,
+          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+              kDevToolsProtocol,
+          base::BindOnce(&OnWebBundleInstalled, std::move(callback),
+                         manifest_url, web_bundle_url),
+          expected_bundle_id.value());
+    } else {
+      installation_manager.DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+          web_bundle_url,
+          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+              kDevToolsProtocol,
+          base::BindOnce(&OnWebBundleInstalled, std::move(callback),
+                         manifest_url, web_bundle_url),
+          std::move(expected_bundle_id.value()));
+    }
+  } else {
+    std::move(callback)->sendFailure(protocol::Response::MethodNotFound(
+        base::StrCat({"Installing webapp from url ", web_bundle_url.spec(),
+                      " with scheme [", web_bundle_url.GetScheme(),
+                      "] is not supported yet."})));
+  }
 }
 
 void PWAHandler::InstallFromInstallInfo(
@@ -344,7 +439,7 @@ void PWAHandler::InstallFromInstallInfo(
 
 void PWAHandler::Install(
     const std::string& in_manifest_id,
-    protocol::Maybe<std::string> in_install_url_or_bundle_url,
+    std::optional<std::string> in_install_url_or_bundle_url,
     std::unique_ptr<InstallCallback> callback) {
   if (in_install_url_or_bundle_url) {
     InstallFromUrl(in_manifest_id,
@@ -383,7 +478,7 @@ void PWAHandler::Uninstall(const std::string& in_manifest_id,
 }
 
 void PWAHandler::Launch(const std::string& in_manifest_id,
-                        protocol::Maybe<std::string> in_url,
+                        std::optional<std::string> in_url,
                         std::unique_ptr<LaunchCallback> callback) {
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
@@ -404,14 +499,8 @@ void PWAHandler::Launch(const std::string& in_manifest_id,
 
     // TODO(crbug.com/338406726): Remove after launches correctly fail when url
     // is out of scope.
-    bool is_in_scope;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kWebAppEnableScopeExtensions)) {
-      is_in_scope =
-          provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
-    } else {
-      is_in_scope = provider->registrar_unsafe().IsUrlInAppScope(*url, app_id);
-    }
+    bool is_in_scope =
+        provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
     if (!is_in_scope) {
       std::move(callback)->sendFailure(
           protocol::Response::InvalidParams(base::StrCat(
@@ -481,7 +570,6 @@ void PWAHandler::LaunchFilesInApp(
     provider->scheduler().LaunchApp(
         app_id, *base::CommandLine::ForCurrentProcess(),
         /* current_directory */ base::FilePath{},
-        /* url_handler_launch_url */ std::nullopt,
         /* protocol_handler_launch_url */ std::nullopt,
         /* file_launch_url */ url, paths,
         base::BindOnce(
@@ -550,8 +638,8 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
     }
     return state->has_shortcut();
   }();
-  if (!provider->ui_manager().CanReparentAppTabToWindow(app_id,
-                                                        shortcut_created)) {
+  if (!provider->ui_manager().CanReparentAppTabToWindow(
+          app_id, shortcut_created, contents)) {
     return protocol::Response::InvalidParams(
         base::StrCat({"The web app ", in_manifest_id,
                       " cannot be opened in its app. Check if the app is "
@@ -569,8 +657,8 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
 
 void PWAHandler::ChangeAppUserSettings(
     const std::string& in_manifest_id,
-    protocol::Maybe<bool> in_link_capturing,
-    protocol::Maybe<protocol::PWA::DisplayMode> in_display_mode,
+    std::optional<bool> in_link_capturing,
+    std::optional<protocol::PWA::DisplayMode> in_display_mode,
     std::unique_ptr<ChangeAppUserSettingsCallback> callback) {
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
@@ -621,7 +709,13 @@ void PWAHandler::ChangeAppUserSettings(
       base::BindOnce(
           [](const webapps::AppId& app_id, web_app::AppLock& app_lock,
              base::Value::Dict& debug_value) -> std::optional<std::string> {
-            if (app_lock.registrar().IsLocallyInstalled(app_id)) {
+            // Only consider apps that are installed with or without OS
+            // integration. Apps coming via sync should not be considered.
+            if (app_lock.registrar().IsInstallState(
+                    app_id, {web_app::proto::InstallState::
+                                 INSTALLED_WITH_OS_INTEGRATION,
+                             web_app::proto::InstallState::
+                                 INSTALLED_WITHOUT_OS_INTEGRATION})) {
               return std::nullopt;
             }
             return "WebApp is not installed";

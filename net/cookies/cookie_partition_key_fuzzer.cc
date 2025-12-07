@@ -9,6 +9,7 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "net/cookies/cookie_partition_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {

@@ -1,0 +1,11 @@
+{
+  "name": "Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "web_accessible_resources": [{
+    "resources": ["style.css"],
+    "matches": ["<all_urls>"],
+    "use_dynamic_url": true
+  }],
+  "default_locale": "en"
+}

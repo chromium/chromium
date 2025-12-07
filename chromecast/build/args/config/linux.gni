@@ -1,0 +1,9 @@
+import("//chromecast/build/args/config/common.gni")
+
+# Args common to ALL Linux builds targeting Linux TVs.
+is_castos = true
+is_cast_desktop_build = true
+target_os = "linux"
+
+media_use_ffmpeg = true
+enable_widevine = true

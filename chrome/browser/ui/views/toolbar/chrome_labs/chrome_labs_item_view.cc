@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
+
+#include <array>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -20,9 +17,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
+#include "components/webui/flags/feature_entry.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -36,6 +33,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace {
 
@@ -91,7 +89,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
         description_translation_id = IDS_CHROMELABS_DISABLED;
       }
     } else {
-      const int kEnableDisableDescriptions[] = {
+      static constexpr std::array kEnableDisableDescriptions{
           IDS_CHROMELABS_DEFAULT,
           IDS_CHROMELABS_ENABLED,
           IDS_CHROMELABS_DISABLED,
@@ -123,7 +121,7 @@ ChromeLabsItemView::ChromeLabsItemView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_CONTROL_LIST_VERTICAL),
+                          views::DISTANCE_CONTROL_LIST_VERTICAL),
                       0)));
 
   experiment_name_ = AddChildView(
@@ -159,24 +157,26 @@ ChromeLabsItemView::ChromeLabsItemView(
   experiment_name_->GetViewAccessibility().SetIsIgnored(true);
   experiment_description->GetViewAccessibility().SetIsIgnored(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  if (!lab.visible_name.empty())
+  if (!lab.visible_name.empty()) {
     GetViewAccessibility().SetName(lab.visible_name,
                                    ax::mojom::NameFrom::kAttribute);
+  }
 
-    // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
-    // does not announce the accessible description for groups
-    // (crbug.com/1197159). The MacOS specific code here provides a temporary
-    // mitigation for screen reader users and moves announcing the description
-    // to when the user interacts with the combobox of that experiment. Don’t
-    // add an accessible description for now to prevent the screen reader from
-    // announcing the description twice in the time between when the VoiceOver
-    // bug is fixed and this code gets removed.
-    // TODO(elainechien): Remove MacOS specific code for experiment description
-    // when VoiceOver bug is fixed.
+  // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
+  // does not announce the accessible description for groups
+  // (crbug.com/1197159). The MacOS specific code here provides a temporary
+  // mitigation for screen reader users and moves announcing the description
+  // to when the user interacts with the combobox of that experiment. Don’t
+  // add an accessible description for now to prevent the screen reader from
+  // announcing the description twice in the time between when the VoiceOver
+  // bug is fixed and this code gets removed.
+  // TODO(elainechien): Remove MacOS specific code for experiment description
+  // when VoiceOver bug is fixed.
 
 #if !BUILDFLAG(IS_MAC)
-  if (!lab.visible_description.empty())
+  if (!lab.visible_description.empty()) {
     GetViewAccessibility().SetDescription(lab.visible_description);
+  }
 #endif
 
   AddChildView(
@@ -224,7 +224,13 @@ ChromeLabsItemView::ChromeLabsItemView(
                           0, 0))
                   .SetProperty(
                       views::kFlexBehaviorKey,
+                      // FlexSpecification has multiple constructors, and if no
+                      // direction is specified, the settings will be used in
+                      // both horizontal and vertical directions. Therefore, we
+                      // must specify the horizontal direction. Otherwise, the
+                      // vertical height will be stretched.
                       views::FlexSpecification(
+                          views::LayoutOrientation::kHorizontal,
                           views::MinimumFlexSizeRule::kPreferred,
                           views::MaximumFlexSizeRule::kUnbounded)
                           .WithAlignment(views::LayoutAlignment::kEnd)))

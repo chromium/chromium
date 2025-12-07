@@ -31,13 +31,14 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
@@ -52,7 +53,6 @@
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
-#include "crypto/signature_creator.h"
 
 namespace em = enterprise_management;
 
@@ -387,9 +387,10 @@ void OwnerSettingsServiceAsh::IsOwnerForSafeModeAsync(
   // searching for the owner key.
   content::GetIOThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&crypto::InitializeNSSForChromeOSUser),
-                     user_hash,
-                     ProfileHelper::GetProfilePathByUserIdHash(user_hash)),
+      base::BindOnce(
+          base::IgnoreResult(&crypto::InitializeNSSForChromeOSUser), user_hash,
+          ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+              user_hash)),
       base::BindOnce(&DoesPrivateKeyExistAsync, owner_key_util,
                      std::move(callback)));
 }
@@ -457,20 +458,22 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_bool()) {
       allow->set_allow_new_users(value.GetBool());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (path == kAccountsPrefAllowGuest) {
     em::GuestModeEnabledProto* guest = settings.mutable_guest_mode_enabled();
-    if (value.is_bool())
+    if (value.is_bool()) {
       guest->set_guest_mode_enabled(value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kAccountsPrefShowUserNamesOnSignIn) {
     em::ShowUserNamesOnSigninProto* show = settings.mutable_show_user_names();
-    if (value.is_bool())
+    if (value.is_bool()) {
       show->set_show_user_names(value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kAccountsPrefDeviceLocalAccounts) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
@@ -503,62 +506,69 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
           if (kiosk_app_update_url)
             account->mutable_kiosk_app()->set_update_url(*kiosk_app_update_url);
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginId) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    if (value.is_string())
+    if (value.is_string()) {
       device_local_accounts->set_auto_login_id(value.GetString());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginDelay) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    if (value.is_int())
+    if (value.is_int()) {
       device_local_accounts->set_auto_login_delay(value.GetInt());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    if (value.is_bool())
+    if (value.is_bool()) {
       device_local_accounts->set_enable_auto_login_bailout(value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path ==
              kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    if (value.is_bool())
+    if (value.is_bool()) {
       device_local_accounts->set_prompt_for_network_when_offline(
           value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kSignedDataRoamingEnabled) {
     em::DataRoamingEnabledProto* roam = settings.mutable_data_roaming_enabled();
-    if (value.is_bool())
+    if (value.is_bool()) {
       roam->set_data_roaming_enabled(value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kReleaseChannel) {
     em::ReleaseChannelProto* release_channel =
         settings.mutable_release_channel();
     std::string channel_value;
-    if (value.is_string())
+    if (value.is_string()) {
       release_channel->set_release_channel(value.GetString());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kStatsReportingPref) {
     em::MetricsEnabledProto* metrics = settings.mutable_metrics_enabled();
-    if (value.is_bool())
+    if (value.is_bool()) {
       metrics->set_metrics_enabled(value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kAccountsPrefUsers) {
     RepeatedPtrField<std::string>* list = nullptr;
     // Only use the whitelist if the allowlist isn't being used.
@@ -582,7 +592,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_bool()) {
       allow_redeem_offers->set_allow_redeem_offers(value.GetBool());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (path == kFeatureFlags) {
     em::FeatureFlagsProto* feature_flags = settings.mutable_feature_flags();
@@ -600,7 +610,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_bool()) {
       use_24hour_clock_proto->set_use_24hour_clock(value.GetBool());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (path == kAttestationForContentProtectionEnabled) {
     em::AttestationSettingsProto* attestation_settings =
@@ -608,7 +618,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_bool()) {
       attestation_settings->set_content_protection_enabled(value.GetBool());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (path == kDevicePeripheralDataAccessEnabled) {
     em::DevicePciPeripheralDataAccessEnabledProtoV2*
@@ -617,22 +627,23 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_bool()) {
       peripheral_data_access_proto->set_enabled(value.GetBool());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (path == kRevenEnableDeviceHWDataUsage) {
     em::RevenDeviceHWDataUsageEnabledProto* hw_data_usage =
         settings.mutable_hardware_data_usage_enabled();
-    if (value.is_bool())
+    if (value.is_bool()) {
       hw_data_usage->set_hardware_data_usage_enabled(value.GetBool());
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   } else if (path == kDeviceExtendedAutoUpdateEnabled) {
     em::BooleanPolicyProto* container =
         settings.mutable_deviceextendedautoupdateenabled();
     if (value.is_bool()) {
       container->set_value(value.GetBool());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else {
     // The remaining settings don't support Set(), since they are not
@@ -692,9 +703,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
 void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile_);
-  user_id_ = user ? user->GetAccountId().GetUserEmail() : std::string();
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_);
+  user_id_ = account_id ? account_id->GetUserEmail() : std::string();
 
   const bool is_owner = IsOwner() || IsOwnerInTests(user_id_);
   if (is_owner && device_settings_service_)

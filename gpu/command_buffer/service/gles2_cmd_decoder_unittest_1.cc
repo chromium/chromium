@@ -40,7 +40,6 @@ class GLES3DecoderTest1 : public GLES2DecoderTest1 {
   void SetUp() override {
     InitState init;
     init.gl_version = "OpenGL ES 3.0";
-    init.bind_generates_resource = true;
     init.context_type = CONTEXT_TYPE_OPENGLES3;
     InitDecoder(init);
   }

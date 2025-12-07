@@ -30,16 +30,20 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_or_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanordomstringparameters_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
@@ -49,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -98,15 +103,6 @@ const char kMediaStreamRenderToAssociatedSink[] =
 // RenderToAssociatedSink will be going away some time.
 const char kEchoCancellation[] = "echoCancellation";
 const char kDisableLocalEcho[] = "disableLocalEcho";
-const char kGoogEchoCancellation[] = "googEchoCancellation";
-const char kGoogExperimentalEchoCancellation[] = "googEchoCancellation2";
-const char kGoogAutoGainControl[] = "googAutoGainControl";
-const char kGoogNoiseSuppression[] = "googNoiseSuppression";
-const char kGoogExperimentalNoiseSuppression[] = "googNoiseSuppression2";
-const char kGoogHighpassFilter[] = "googHighpassFilter";
-const char kGoogAudioMirroring[] = "googAudioMirroring";
-// Audio constraints.
-const char kDAEchoCancellation[] = "googDAEchoCancellation";
 // Google-specific constraint keys for a local video source (getUserMedia).
 const char kNoiseReduction[] = "googNoiseReduction";
 
@@ -196,7 +192,7 @@ static void ParseOldStyleNames(
     } else if (constraint.name_ == kMaxFrameRate) {
       result.frame_rate.SetMax(atof(constraint.value_.Utf8().c_str()));
     } else if (constraint.name_ == kEchoCancellation) {
-      result.echo_cancellation.SetExact(ToBoolean(constraint.value_));
+      result.echo_cancellation.SetExactBoolean(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kMediaStreamSource) {
       // TODO(hta): This has only a few legal values. Should be
       // represented as an enum, and cause type errors.
@@ -214,24 +210,6 @@ static void ParseOldStyleNames(
       // Should give TypeError when it's not parseable.
       // https://crbug.com/576582
       result.render_to_associated_sink.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogEchoCancellation) {
-      result.goog_echo_cancellation.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogExperimentalEchoCancellation) {
-      result.goog_experimental_echo_cancellation.SetExact(
-          ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogAutoGainControl) {
-      result.goog_auto_gain_control.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogNoiseSuppression) {
-      result.goog_noise_suppression.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogExperimentalNoiseSuppression) {
-      result.goog_experimental_noise_suppression.SetExact(
-          ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogHighpassFilter) {
-      result.goog_highpass_filter.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogAudioMirroring) {
-      result.goog_audio_mirroring.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kDAEchoCancellation) {
-      result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kNoiseReduction) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
     }
@@ -331,15 +309,80 @@ void CopyDoubleConstraint(const V8ConstrainDouble* blink_union_form,
 void CopyBooleanOrDoubleConstraint(
     const V8UnionBooleanOrConstrainDouble* blink_union_form,
     NakedValueDisposition naked_treatment,
-    DoubleConstraint& web_form) {
+    DoubleOrBooleanConstraint& web_form) {
   switch (blink_union_form->GetContentType()) {
     case V8UnionBooleanOrConstrainDouble::ContentType::kBoolean:
-      web_form.SetIsPresent(blink_union_form->GetAsBoolean());
+      web_form.SetIsPresent(true);
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdealBoolean(blink_union_form->GetAsBoolean());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExactBoolean(blink_union_form->GetAsBoolean());
+          break;
+      }
       break;
     case V8UnionBooleanOrConstrainDouble::ContentType::kConstrainDoubleRange:
     case V8UnionBooleanOrConstrainDouble::ContentType::kDouble:
       CopyDoubleConstraint(blink_union_form->GetAsV8ConstrainDouble(),
                            naked_treatment, web_form);
+      break;
+  }
+}
+
+void CopyBooleanOrStringConstraint(
+    const V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString*
+        blink_union_form,
+    NakedValueDisposition naked_treatment,
+    BooleanOrStringConstraint& web_form) {
+  switch (blink_union_form->GetContentType()) {
+    case V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString::
+        ContentType::kBoolean:
+      web_form.SetIsPresent(true);
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdealBoolean(blink_union_form->GetAsBoolean());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExactBoolean(blink_union_form->GetAsBoolean());
+          break;
+      }
+      break;
+    case V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString::
+        ContentType::kString:
+      web_form.SetIsPresent(true);
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdealString(blink_union_form->GetAsString());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExactString(blink_union_form->GetAsString());
+          break;
+      }
+      break;
+    case V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString::
+        ContentType::kConstrainBooleanOrDOMStringParameters:
+      web_form.SetIsPresent(true);
+      ConstrainBooleanOrDOMStringParameters* boolean_or_dom_string =
+          blink_union_form->GetAsConstrainBooleanOrDOMStringParameters();
+      if (boolean_or_dom_string->hasIdeal()) {
+        V8UnionBooleanOrString* ideal_value = boolean_or_dom_string->ideal();
+        if (ideal_value->IsBoolean()) {
+          web_form.SetIdealBoolean(ideal_value->GetAsBoolean());
+        } else {
+          CHECK(ideal_value->IsString());
+          web_form.SetIdealString(ideal_value->GetAsString());
+        }
+      }
+      if (boolean_or_dom_string->hasExact()) {
+        V8UnionBooleanOrString* exact_value = boolean_or_dom_string->exact();
+        if (exact_value->IsBoolean()) {
+          web_form.SetExactBoolean(exact_value->GetAsBoolean());
+        } else {
+          CHECK(exact_value->IsString());
+          web_form.SetExactString(exact_value->GetAsString());
+        }
+      }
       break;
   }
 }
@@ -379,8 +422,7 @@ bool ValidateStringConstraint(
                                error_message);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
@@ -405,8 +447,7 @@ bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
       return ValidateStringSeq(blink_union_form->GetAsStringSequence(),
                                error_message);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 [[nodiscard]] bool ValidateAndCopyStringConstraint(
@@ -551,18 +592,19 @@ bool ValidateAndCopyConstraintSet(
   }
 
   if (constraints_in->hasEchoCancellation()) {
-    CopyBooleanConstraint(constraints_in->echoCancellation(), naked_treatment,
-                          constraint_buffer.echo_cancellation);
+    CopyBooleanOrStringConstraint(constraints_in->echoCancellation(),
+                                  naked_treatment,
+                                  constraint_buffer.echo_cancellation);
   }
 
   if (constraints_in->hasAutoGainControl()) {
     CopyBooleanConstraint(constraints_in->autoGainControl(), naked_treatment,
-                          constraint_buffer.goog_auto_gain_control);
+                          constraint_buffer.auto_gain_control);
   }
 
   if (constraints_in->hasNoiseSuppression()) {
     CopyBooleanConstraint(constraints_in->noiseSuppression(), naked_treatment,
-                          constraint_buffer.goog_noise_suppression);
+                          constraint_buffer.noise_suppression);
   }
 
   if (constraints_in->hasVoiceIsolation()) {
@@ -667,6 +709,12 @@ bool ValidateAndCopyConstraintSet(
                           constraint_buffer.background_blur);
   }
 
+  if (constraints_in->hasBackgroundSegmentationMask()) {
+    CopyBooleanConstraint(constraints_in->backgroundSegmentationMask(),
+                          naked_treatment,
+                          constraint_buffer.background_segmentation_mask);
+  }
+
   if (constraints_in->hasEyeGazeCorrection()) {
     CopyBooleanConstraint(constraints_in->eyeGazeCorrection(), naked_treatment,
                           constraint_buffer.eye_gaze_correction);
@@ -690,7 +738,28 @@ bool ValidateAndCopyConstraintSet(
                           naked_treatment,
                           constraint_buffer.suppress_local_audio_playback);
   }
+
+  if (constraints_in->hasRestrictOwnAudio()) {
+    CopyBooleanConstraint(constraints_in->restrictOwnAudio(), naked_treatment,
+                          constraint_buffer.restrict_own_audio);
+  }
+
   return true;
+}
+
+template <class T>
+bool UseNakedBooleanNotNumeric(const T& input, NakedValueDisposition which) {
+  if (input.HasExact() || input.HasIdeal() || input.HasMin() ||
+      input.HasMax()) {
+    return false;
+  }
+  switch (which) {
+    case NakedValueDisposition::kTreatAsIdeal:
+      return input.HasIdealBoolean();
+    case NakedValueDisposition::kTreatAsExact:
+      return input.HasExactBoolean();
+  }
+  NOTREACHED();
 }
 
 template <class T>
@@ -705,8 +774,7 @@ bool UseNakedNumeric(const T& input, NakedValueDisposition which) {
              !(input.HasIdeal() || input.HasMin() || input.HasMax());
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 template <class T>
@@ -719,8 +787,18 @@ bool UseNakedNonNumeric(const T& input, NakedValueDisposition which) {
       return input.HasExact() && !input.HasIdeal();
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
+}
+
+template <class T>
+bool GetNakedBoolean(const T& input, NakedValueDisposition which) {
+  switch (which) {
+    case NakedValueDisposition::kTreatAsIdeal:
+      return input.IdealBoolean();
+    case NakedValueDisposition::kTreatAsExact:
+      return input.ExactBoolean();
+  }
+  NOTREACHED();
 }
 
 template <typename U, class T>
@@ -733,8 +811,7 @@ U GetNakedValue(const T& input, NakedValueDisposition which) {
       return input.Exact();
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return input.Exact();
+  NOTREACHED();
 }
 
 V8ConstrainLong* ConvertLong(const LongConstraint& input,
@@ -778,11 +855,14 @@ V8ConstrainDouble* ConvertDouble(const DoubleConstraint& input,
 }
 
 V8UnionBooleanOrConstrainDouble* ConvertBooleanOrDouble(
-    const DoubleConstraint& input,
+    const DoubleOrBooleanConstraint& input,
     NakedValueDisposition naked_treatment) {
   if (UseNakedNumeric(input, naked_treatment)) {
     return MakeGarbageCollected<V8UnionBooleanOrConstrainDouble>(
         GetNakedValue<double>(input, naked_treatment));
+  } else if (UseNakedBooleanNotNumeric(input, naked_treatment)) {
+    return MakeGarbageCollected<V8UnionBooleanOrConstrainDouble>(
+        GetNakedBoolean(input, naked_treatment));
   } else if (!input.IsUnconstrained()) {
     ConstrainDoubleRange* output = ConstrainDoubleRange::Create();
     if (input.HasExact())
@@ -847,6 +927,59 @@ V8ConstrainBoolean* ConvertBoolean(const BooleanConstraint& input,
   return nullptr;
 }
 
+V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString*
+ConvertBooleanOrString(const BooleanOrStringConstraint& input,
+                       NakedValueDisposition naked_treatment) {
+  if (UseNakedNonNumeric(input, naked_treatment)) {
+    switch (naked_treatment) {
+      case NakedValueDisposition::kTreatAsIdeal:
+        if (input.HasIdealBoolean()) {
+          return MakeGarbageCollected<
+              V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+              input.IdealBoolean());
+        }
+        if (input.HasIdealString()) {
+          return MakeGarbageCollected<
+              V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+              input.IdealString());
+        }
+        NOTREACHED();
+      case NakedValueDisposition::kTreatAsExact:
+        if (input.HasExactBoolean()) {
+          return MakeGarbageCollected<
+              V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+              input.ExactBoolean());
+        }
+        if (input.HasIdealString()) {
+          return MakeGarbageCollected<
+              V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+              input.ExactString());
+        }
+        NOTREACHED();
+    }
+  } else if (!input.IsUnconstrained()) {
+    ConstrainBooleanOrDOMStringParameters* output =
+        ConstrainBooleanOrDOMStringParameters::Create();
+    if (input.HasExactBoolean()) {
+      output->setExact(
+          MakeGarbageCollected<V8UnionBooleanOrString>(input.ExactBoolean()));
+    } else if (input.HasExactString()) {
+      output->setExact(
+          MakeGarbageCollected<V8UnionBooleanOrString>(input.ExactString()));
+    }
+    if (input.HasIdealBoolean()) {
+      output->setIdeal(
+          MakeGarbageCollected<V8UnionBooleanOrString>(input.IdealBoolean()));
+    } else if (input.HasIdealString()) {
+      output->setIdeal(
+          MakeGarbageCollected<V8UnionBooleanOrString>(input.IdealString()));
+    }
+    return MakeGarbageCollected<
+        V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(output);
+  }
+  return nullptr;
+}
+
 void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
                           NakedValueDisposition naked_treatment,
                           MediaTrackConstraintSet* output) {
@@ -868,15 +1001,15 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setSampleSize(ConvertLong(input.sample_size, naked_treatment));
   if (!input.echo_cancellation.IsUnconstrained()) {
     output->setEchoCancellation(
-        ConvertBoolean(input.echo_cancellation, naked_treatment));
+        ConvertBooleanOrString(input.echo_cancellation, naked_treatment));
   }
-  if (!input.goog_auto_gain_control.IsUnconstrained()) {
+  if (!input.auto_gain_control.IsUnconstrained()) {
     output->setAutoGainControl(
-        ConvertBoolean(input.goog_auto_gain_control, naked_treatment));
+        ConvertBoolean(input.auto_gain_control, naked_treatment));
   }
-  if (!input.goog_noise_suppression.IsUnconstrained()) {
+  if (!input.noise_suppression.IsUnconstrained()) {
     output->setNoiseSuppression(
-        ConvertBoolean(input.goog_noise_suppression, naked_treatment));
+        ConvertBoolean(input.noise_suppression, naked_treatment));
   }
   if (!input.voice_isolation.IsUnconstrained()) {
     output->setVoiceIsolation(
@@ -934,6 +1067,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setBackgroundBlur(
         ConvertBoolean(input.background_blur, naked_treatment));
   }
+  if (!input.background_segmentation_mask.IsUnconstrained()) {
+    output->setBackgroundSegmentationMask(
+        ConvertBoolean(input.background_segmentation_mask, naked_treatment));
+  }
   if (!input.eye_gaze_correction.IsUnconstrained()) {
     output->setEyeGazeCorrection(
         ConvertBoolean(input.eye_gaze_correction, naked_treatment));
@@ -944,6 +1081,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   if (!input.suppress_local_audio_playback.IsUnconstrained()) {
     output->setSuppressLocalAudioPlayback(
         ConvertBoolean(input.suppress_local_audio_playback, naked_treatment));
+  }
+  if (!input.restrict_own_audio.IsUnconstrained()) {
+    output->setRestrictOwnAudio(
+        ConvertBoolean(input.restrict_own_audio, naked_treatment));
   }
   // TODO(hta): Decide the future of the nonstandard constraints.
   // If they go forward, they need to be added here.

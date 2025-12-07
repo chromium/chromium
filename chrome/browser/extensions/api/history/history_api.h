@@ -15,9 +15,13 @@
 #include "chrome/common/extensions/api/history.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -38,8 +42,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
  private:
   // history::HistoryServiceObserver.
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
@@ -89,7 +92,7 @@ void BrowserContextKeyedAPIFactory<HistoryAPI>::DeclareFactoryDependencies();
 // Base class for history function APIs.
 class HistoryFunction : public ExtensionFunction {
  protected:
-  ~HistoryFunction() override {}
+  ~HistoryFunction() override = default;
 
   bool ValidateUrl(const std::string& url_string,
                    GURL* url,
@@ -117,13 +120,13 @@ class HistoryGetVisitsFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.getVisits", HISTORY_GETVISITS)
 
  protected:
-  ~HistoryGetVisitsFunction() override {}
+  ~HistoryGetVisitsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 
   // Callback for the history function to provide results.
-  void QueryComplete(history::QueryURLResult result);
+  void QueryComplete(history::QueryURLAndVisitsResult result);
 };
 
 class HistorySearchFunction : public HistoryFunctionWithCallback {
@@ -131,7 +134,7 @@ class HistorySearchFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.search", HISTORY_SEARCH)
 
  protected:
-  ~HistorySearchFunction() override {}
+  ~HistorySearchFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -145,7 +148,7 @@ class HistoryAddUrlFunction : public HistoryFunction {
   DECLARE_EXTENSION_FUNCTION("history.addUrl", HISTORY_ADDURL)
 
  protected:
-  ~HistoryAddUrlFunction() override {}
+  ~HistoryAddUrlFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -156,7 +159,7 @@ class HistoryDeleteAllFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.deleteAll", HISTORY_DELETEALL)
 
  protected:
-  ~HistoryDeleteAllFunction() override {}
+  ~HistoryDeleteAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -165,13 +168,12 @@ class HistoryDeleteAllFunction : public HistoryFunctionWithCallback {
   void DeleteComplete();
 };
 
-
 class HistoryDeleteUrlFunction : public HistoryFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("history.deleteUrl", HISTORY_DELETEURL)
 
  protected:
-  ~HistoryDeleteUrlFunction() override {}
+  ~HistoryDeleteUrlFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -182,7 +184,7 @@ class HistoryDeleteRangeFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.deleteRange", HISTORY_DELETERANGE)
 
  protected:
-  ~HistoryDeleteRangeFunction() override {}
+  ~HistoryDeleteRangeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

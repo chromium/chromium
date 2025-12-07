@@ -17,7 +17,10 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace syncer {
 class ModelError;
@@ -46,6 +49,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   size_t GetBytesInUse(const std::string& key) override;
   size_t GetBytesInUse(const std::vector<std::string>& keys) override;
   size_t GetBytesInUse() override;
+  ReadResult GetKeys() override;
   ReadResult Get(const std::string& key) override;
   ReadResult Get(const std::vector<std::string>& keys) override;
   ReadResult Get() override;
@@ -64,8 +68,8 @@ class SyncableSettingsStorage : public value_store::ValueStore {
 
   // Starts syncing this storage area. Must only be called if sync isn't
   // already active.
-  // |sync_state| is the current state of the extension settings in sync.
-  // |sync_processor| is used to write out any changes.
+  // `sync_state` is the current state of the extension settings in sync.
+  // `sync_processor` is used to write out any changes.
   // Returns any error when trying to sync, or std::nullopt on success.
   std::optional<syncer::ModelError> StartSyncing(
       base::Value::Dict sync_state,
@@ -81,7 +85,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
       std::unique_ptr<SettingSyncDataList> sync_changes);
 
  private:
-  // Sends the changes from |result| to sync if it's enabled.
+  // Sends the changes from `result` to sync if it's enabled.
   void SyncResultIfEnabled(const value_store::ValueStore::WriteResult& result);
 
   // Analyze the result returned by a call to the delegate, and take appropriate

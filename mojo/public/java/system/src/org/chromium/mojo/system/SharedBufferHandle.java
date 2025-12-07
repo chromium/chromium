@@ -4,13 +4,16 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 
 /** A buffer that can be shared between applications. */
+@NullMarked
 public interface SharedBufferHandle extends Handle {
 
     /** Flags for the shared buffer creation operation. */
-    public static class CreateFlags extends Flags<CreateFlags> {
+    class CreateFlags extends Flags<CreateFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with not bit set. */
@@ -34,8 +37,8 @@ public interface SharedBufferHandle extends Handle {
     }
 
     /** Used to specify creation parameters for a shared buffer to |Core#createSharedBuffer()|. */
-    public static class CreateOptions {
-        private CreateFlags mFlags = CreateFlags.NONE;
+    class CreateOptions {
+        private final CreateFlags mFlags = CreateFlags.NONE;
 
         /**
          * @return the flags
@@ -46,7 +49,7 @@ public interface SharedBufferHandle extends Handle {
     }
 
     /** Flags for the shared buffer duplication operation. */
-    public static class DuplicateFlags extends Flags<DuplicateFlags> {
+    class DuplicateFlags extends Flags<DuplicateFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with not bit set. */
@@ -73,8 +76,8 @@ public interface SharedBufferHandle extends Handle {
      * Used to specify parameters in duplicating access to a shared buffer to
      * |SharedBufferHandle#duplicate|
      */
-    public static class DuplicateOptions {
-        private DuplicateFlags mFlags = DuplicateFlags.NONE;
+    class DuplicateOptions {
+        private final DuplicateFlags mFlags = DuplicateFlags.NONE;
 
         /**
          * @return the flags
@@ -85,7 +88,7 @@ public interface SharedBufferHandle extends Handle {
     }
 
     /** Flags for the shared buffer map operation. */
-    public static class MapFlags extends Flags<MapFlags> {
+    class MapFlags extends Flags<MapFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with not bit set. */
@@ -112,14 +115,14 @@ public interface SharedBufferHandle extends Handle {
      * @see org.chromium.mojo.system.Handle#pass()
      */
     @Override
-    public SharedBufferHandle pass();
+    SharedBufferHandle pass();
 
     /**
      * Duplicates the handle. This creates another handle (returned on success), which can then be
      * sent to another application over a message pipe, while retaining access to this handle (and
      * any mappings that it may have).
      */
-    public SharedBufferHandle duplicate(DuplicateOptions options);
+    SharedBufferHandle duplicate(DuplicateOptions options);
 
     /**
      * Map the part (at offset |offset| of length |numBytes|) of the buffer given by this handle
@@ -129,8 +132,8 @@ public interface SharedBufferHandle extends Handle {
      * permissions (e.g., writable or executable) of the returned memory may depend on the
      * properties of the buffer and properties attached to the buffer handle as well as |flags|.
      */
-    public ByteBuffer map(long offset, long numBytes, MapFlags flags);
+    ByteBuffer map(long offset, long numBytes, MapFlags flags);
 
     /** Unmap a buffer pointer that was mapped by |map()|. */
-    public void unmap(ByteBuffer buffer);
+    void unmap(ByteBuffer buffer);
 }

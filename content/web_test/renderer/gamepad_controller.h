@@ -49,6 +49,7 @@ class GamepadController final {
     void Reset();
     void DispatchConnected(int index, const device::Gamepad& pad);
     void DispatchDisconnected(int index, const device::Gamepad& pad);
+    void DispatchRawInputChanged(int index, const device::Gamepad& pad);
 
     // GamepadMonitor implementation.
     void GamepadStartPolling(GamepadStartPollingCallback callback) override;
@@ -74,8 +75,9 @@ class GamepadController final {
   void Connect(int index);
   void DispatchConnected(int index);
   void Disconnect(int index);
+  void DispatchRawInputChanged(int index);
 
-  void SetId(int index, const std::string& src);
+  void SetId(int index, const std::u16string& src);
   void SetButtonCount(int index, int buttons);
   void SetButtonData(int index, int button, double data);
   void SetAxisCount(int index, int axes);

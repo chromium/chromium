@@ -5,11 +5,13 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Fabricates new elements after a Condition is first fulfilled. */
+@NullMarked
 public class ElementFactory {
-    private Elements mOwner;
-    private Callback<Elements.Builder> mDelayedDeclarations;
+    private final Elements mOwner;
+    private final Callback<Elements.Builder> mDelayedDeclarations;
     private boolean mIsProcessed;
 
     ElementFactory(Elements owner, Callback<Elements.Builder> delayedDeclarations) {
@@ -24,13 +26,13 @@ public class ElementFactory {
      *
      * @return Newly declared elements from this factory.
      */
-    public Elements processDelayedDeclarations() {
+    public BaseElements processDelayedDeclarations() {
         assert !mIsProcessed
                 : "ElementFactory#processDelayedDeclarations should only be called once";
         mIsProcessed = true;
         Elements.Builder builder = mOwner.newBuilder();
         mDelayedDeclarations.onResult(builder);
-        Elements newElements = builder.consolidate();
+        BaseElements newElements = builder.consolidate();
         return newElements;
     }
 }

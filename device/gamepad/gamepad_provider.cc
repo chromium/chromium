@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "device/gamepad/gamepad_provider.h"
 
 #include <stddef.h>
 #include <string.h>
+
 #include <cmath>
+#include <iterator>
 #include <memory>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
@@ -30,79 +32,53 @@
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
 #include "device/gamepad/gamepad_user_gesture.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
+#include "device/gamepad/simulated_gamepad_data_fetcher.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 namespace device {
 
 namespace {
-std::vector<mojom::ButtonChangePtr> CompareButtons(const Gamepad* old_gamepad,
-                                                   const Gamepad* new_gamepad) {
-  if (!new_gamepad)
-    return {};
 
-  std::vector<mojom::ButtonChangePtr> button_changes;
-  const auto* new_buttons = new_gamepad->buttons;
-  const auto* old_buttons = old_gamepad ? old_gamepad->buttons : nullptr;
-  for (size_t i = 0; i < new_gamepad->buttons_length; ++i) {
-    double new_value = new_buttons[i].value;
-    bool new_pressed = new_buttons[i].pressed;
-    if (old_buttons && i < old_gamepad->buttons_length) {
-      double old_value = old_buttons[i].value;
-      bool old_pressed = old_buttons[i].pressed;
-      auto this_change = mojom::ButtonChange::New();
-      this_change->button_index = i;
-      this_change->button_snapshot = new_buttons[i];
-      bool relevant_change = false;
-      if (old_value != new_value) {
-        relevant_change = true;
-        this_change->value_changed = true;
-      }
-      if (old_pressed != new_pressed) {
-        relevant_change = true;
-        this_change->button_down = new_pressed;
-        this_change->button_up = !new_pressed;
-      }
-      if (relevant_change)
-        button_changes.push_back(std::move(this_change));
-    }
+bool TouchEventEqual(const GamepadTouch& a, const GamepadTouch& b) {
+  return a.touch_id == b.touch_id && a.surface_id == b.surface_id &&
+         a.has_surface_dimensions == b.has_surface_dimensions && a.x == b.x &&
+         a.y == b.y && a.surface_width == b.surface_width &&
+         a.surface_height == b.surface_height;
+}
+
+bool AreTouchEventsEqual(
+    const std::array<GamepadTouch, Gamepad::kTouchEventsLengthCap>& old_touches,
+    const std::array<GamepadTouch, Gamepad::kTouchEventsLengthCap>&
+        new_touches) {
+  return std::ranges::equal(old_touches, new_touches, TouchEventEqual);
+}
+
+bool HasInputChanged(const Gamepad& old_pad, const Gamepad& new_pad) {
+  // If the timestamp hasn't changed, nothing could have changed.
+  if (old_pad.timestamp == new_pad.timestamp) {
+    return false;
   }
-  return button_changes;
+
+  // Note: We intentionally check touch_events_length for changes, but not
+  // buttons_length or axes_length. For buttons/axes, the length is expected
+  // to remain constant for a connected gamepad; a change likely means a
+  // disconnect/reconnect. For touch events, the length is expected to
+  // change as the user interacts with the touch surface. If we don't check
+  // the length, we could miss changes when the number of active touches
+  // changes, even if the values in unused slots match.
+  return (!std::ranges::equal(old_pad.axes, new_pad.axes) ||
+          !std::ranges::equal(old_pad.buttons, new_pad.buttons) ||
+          old_pad.touch_events_length != new_pad.touch_events_length ||
+          !AreTouchEventsEqual(old_pad.touch_events, new_pad.touch_events));
 }
 
-std::vector<mojom::AxisChangePtr> CompareAxes(const Gamepad* old_gamepad,
-                                              const Gamepad* new_gamepad) {
-  if (!new_gamepad)
-    return {};
-
-  std::vector<mojom::AxisChangePtr> axis_changes;
-  const auto* new_axes = new_gamepad->axes;
-  const auto* old_axes = old_gamepad ? old_gamepad->axes : nullptr;
-  for (size_t i = 0; i < new_gamepad->axes_length; ++i) {
-    const double new_value = new_axes[i];
-    if (old_axes && i < old_gamepad->axes_length) {
-      const double old_value = old_axes[i];
-      if (old_value != new_value) {
-        auto this_change = mojom::AxisChange::New();
-        this_change->axis_index = i;
-        this_change->axis_snapshot = new_value;
-        axis_changes.push_back(std::move(this_change));
-      }
-    }
-  }
-  return axis_changes;
-}
-
-mojom::GamepadChangesPtr CompareGamepadState(const Gamepad* old_gamepad,
-                                             const Gamepad* new_gamepad,
-                                             size_t index) {
-  return mojom::GamepadChanges::New(
-      index, CompareButtons(old_gamepad, new_gamepad),
-      CompareAxes(old_gamepad, new_gamepad), new_gamepad->timestamp);
-}
 }  // namespace
 
 constexpr int64_t kPollingIntervalMilliseconds = 4;  // ~250 Hz
+
+GamepadProvider::SimulatedGamepadState::SimulatedGamepadState() = default;
+GamepadProvider::SimulatedGamepadState::~SimulatedGamepadState() = default;
 
 GamepadProvider::GamepadProvider(GamepadChangeClient* gamepad_change_client)
     : gamepad_shared_buffer_(std::make_unique<GamepadSharedBuffer>()),
@@ -133,6 +109,7 @@ GamepadProvider::~GamepadProvider() {
   // Delete GamepadDataFetchers on |polling_thread_|. This is important because
   // some of them require their destructor to be called on the same sequence as
   // their other methods.
+  simulated_gamepad_data_fetcher_ = nullptr;
   polling_thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GamepadFetcherVector::clear,
                                 base::Unretained(&data_fetchers_)));
@@ -260,6 +237,119 @@ void GamepadProvider::RemoveSourceGamepadDataFetcher(GamepadSource source) {
                      base::Unretained(this), source));
 }
 
+void GamepadProvider::AddSimulatedGamepad(base::UnguessableToken token,
+                                          SimulatedGamepadParams params) {
+  const auto& [state_it, did_insert] = simulated_gamepad_state_.emplace(
+      std::piecewise_construct, std::forward_as_tuple(token),
+      std::forward_as_tuple());
+  CHECK(did_insert);
+  state_it->second.touch_surface_count = params.touch_surface_bounds.size();
+  polling_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GamepadProvider::DoAddSimulatedGamepad,
+                     base::Unretained(this), token, std::move(params)));
+}
+
+void GamepadProvider::RemoveSimulatedGamepad(base::UnguessableToken token) {
+  simulated_gamepad_state_.erase(token);
+  polling_thread_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&GamepadProvider::DoRemoveSimulatedGamepad,
+                                base::Unretained(this), token));
+}
+
+void GamepadProvider::SimulateAxisInput(base::UnguessableToken token,
+                                        uint32_t index,
+                                        double logical_value) {
+  auto state_it = simulated_gamepad_state_.find(token);
+  if (state_it == simulated_gamepad_state_.end()) {
+    return;
+  }
+  state_it->second.inputs.pending_axis_inputs[index] = logical_value;
+}
+
+void GamepadProvider::SimulateButtonInput(base::UnguessableToken token,
+                                          uint32_t index,
+                                          double logical_value,
+                                          std::optional<bool> pressed,
+                                          std::optional<bool> touched) {
+  auto state_it = simulated_gamepad_state_.find(token);
+  if (state_it == simulated_gamepad_state_.end()) {
+    return;
+  }
+  SimulatedGamepadButton& button =
+      state_it->second.inputs.pending_button_inputs[index];
+  button.logical_value = logical_value;
+  button.pressed = pressed;
+  button.touched = touched;
+}
+
+std::optional<uint32_t> GamepadProvider::SimulateTouchInput(
+    base::UnguessableToken token,
+    uint32_t surface_id,
+    double logical_x,
+    double logical_y) {
+  auto state_it = simulated_gamepad_state_.find(token);
+  if (state_it == simulated_gamepad_state_.end()) {
+    return std::nullopt;
+  }
+  SimulatedGamepadState& state = state_it->second;
+  if (surface_id >= state.touch_surface_count) {
+    return std::nullopt;
+  }
+  uint32_t touch_id = state.next_touch_id++;
+  state.inputs.active_touches.emplace_back(touch_id, surface_id, logical_x,
+                                           logical_y);
+  return touch_id;
+}
+
+void GamepadProvider::SimulateTouchMove(base::UnguessableToken token,
+                                        uint32_t touch_id,
+                                        double logical_x,
+                                        double logical_y) {
+  auto state_it = simulated_gamepad_state_.find(token);
+  if (state_it == simulated_gamepad_state_.end()) {
+    return;
+  }
+  auto& active_touches = state_it->second.inputs.active_touches;
+  auto touch_it = std::ranges::find_if(active_touches, [&](const auto& touch) {
+    return touch.touch_id == touch_id;
+  });
+  if (touch_it == active_touches.end()) {
+    return;
+  }
+  touch_it->logical_x = logical_x;
+  touch_it->logical_y = logical_y;
+}
+
+void GamepadProvider::SimulateTouchEnd(base::UnguessableToken token,
+                                       uint32_t touch_id) {
+  auto state_it = simulated_gamepad_state_.find(token);
+  if (state_it == simulated_gamepad_state_.end()) {
+    return;
+  }
+  auto& active_touches = state_it->second.inputs.active_touches;
+  active_touches.erase(
+      std::remove_if(
+          active_touches.begin(), active_touches.end(),
+          [&](const auto& touch) { return touch.touch_id == touch_id; }),
+      active_touches.end());
+}
+
+void GamepadProvider::SimulateInputFrame(base::UnguessableToken token) {
+  SimulatedGamepadInputs inputs;
+  auto state_it = simulated_gamepad_state_.find(token);
+  if (state_it != simulated_gamepad_state_.end()) {
+    SimulatedGamepadState& state = state_it->second;
+    std::swap(inputs.pending_axis_inputs, state.inputs.pending_axis_inputs);
+    std::swap(inputs.pending_button_inputs, state.inputs.pending_button_inputs);
+    inputs.active_touches = state.inputs.active_touches;
+  }
+  polling_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GamepadProvider::DoSimulateInputFrame,
+                     base::Unretained(this), token, std::move(inputs)));
+}
+
 void GamepadProvider::PlayEffectOnPollingThread(
     uint32_t pad_index,
     mojom::GamepadHapticEffectType type,
@@ -331,6 +421,11 @@ void GamepadProvider::DoAddGamepadDataFetcher(
   if (!fetcher)
     return;
 
+  if (fetcher->source() == GamepadSource::kSimulated) {
+    CHECK(!simulated_gamepad_data_fetcher_);
+    simulated_gamepad_data_fetcher_ =
+        static_cast<SimulatedGamepadDataFetcher*>(fetcher.get());
+  }
   InitializeDataFetcher(fetcher.get());
   data_fetchers_.push_back(std::move(fetcher));
 }
@@ -338,6 +433,9 @@ void GamepadProvider::DoAddGamepadDataFetcher(
 void GamepadProvider::DoRemoveSourceGamepadDataFetcher(GamepadSource source) {
   DCHECK(polling_thread_->task_runner()->BelongsToCurrentThread());
 
+  if (source == GamepadSource::kSimulated) {
+    simulated_gamepad_data_fetcher_ = nullptr;
+  }
   for (auto it = data_fetchers_.begin(); it != data_fetchers_.end();) {
     if ((*it)->source() == source) {
       it = data_fetchers_.erase(it);
@@ -345,6 +443,33 @@ void GamepadProvider::DoRemoveSourceGamepadDataFetcher(GamepadSource source) {
       ++it;
     }
   }
+}
+
+void GamepadProvider::DoAddSimulatedGamepad(base::UnguessableToken token,
+                                            SimulatedGamepadParams params) {
+  CHECK(polling_thread_->task_runner()->BelongsToCurrentThread());
+  if (!simulated_gamepad_data_fetcher_) {
+    return;
+  }
+  simulated_gamepad_data_fetcher_->AddSimulatedGamepad(token,
+                                                       std::move(params));
+}
+
+void GamepadProvider::DoRemoveSimulatedGamepad(base::UnguessableToken token) {
+  CHECK(polling_thread_->task_runner()->BelongsToCurrentThread());
+  if (!simulated_gamepad_data_fetcher_) {
+    return;
+  }
+  simulated_gamepad_data_fetcher_->RemoveSimulatedGamepad(token);
+}
+
+void GamepadProvider::DoSimulateInputFrame(base::UnguessableToken token,
+                                           SimulatedGamepadInputs inputs) {
+  CHECK(polling_thread_->task_runner()->BelongsToCurrentThread());
+  if (!simulated_gamepad_data_fetcher_) {
+    return;
+  }
+  simulated_gamepad_data_fetcher_->SimulateInputFrame(token, std::move(inputs));
 }
 
 void GamepadProvider::SendPauseHint(bool paused) {
@@ -372,7 +497,7 @@ void GamepadProvider::DoPoll() {
   }
 
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i)
-    pad_states_.get()[i].is_active = false;
+    pad_states_[i].is_active = false;
 
   // Loop through each registered data fetcher and poll its gamepad data.
   // It's expected that GetGamepadData will mark each gamepad as active (via
@@ -386,10 +511,8 @@ void GamepadProvider::DoPoll() {
   Gamepads new_buffer;
   GetCurrentGamepadData(&old_buffer);
 
-  std::vector<mojom::GamepadChangesPtr> changes;
-  changes.reserve(Gamepads::kItemsLengthCap);
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-    PadState& state = pad_states_.get()[i];
+    PadState& state = pad_states_[i];
 
     // Send out disconnect events using the last polled data.
     if (ever_had_user_gesture_ && !state.is_newly_active && !state.is_active &&
@@ -401,11 +524,6 @@ void GamepadProvider::DoPoll() {
     }
 
     MapAndSanitizeGamepadData(&state, &new_buffer.items[i], sanitize_);
-    if (gamepad_change_client_ &&
-        features::AreGamepadButtonAxisEventsEnabled()) {
-      changes.push_back(
-          CompareGamepadState(&old_buffer.items[i], &new_buffer.items[i], i));
-    }
   }
 
   {
@@ -420,14 +538,20 @@ void GamepadProvider::DoPoll() {
 
   if (ever_had_user_gesture_) {
     for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-      PadState& state = pad_states_.get()[i];
+      PadState& state = pad_states_[i];
       if (state.is_newly_active && new_buffer.items[i].connected) {
         state.is_newly_active = false;
         OnGamepadConnectionChange(true, i, new_buffer.items[i]);
       }
-    }
-    for (auto& change : changes) {
-      SendChangeEvents(std::move(change));
+
+      // Raw input change detection.
+      if (base::FeatureList::IsEnabled(features::kGamepadRawInputChangeEvent)) {
+        if (new_buffer.items[i].connected && !state.is_newly_active &&
+            HasInputChanged(old_buffer.items[i], new_buffer.items[i])) {
+          has_input_changed_.store(true);
+          OnGamepadRawInputChanged(i, new_buffer.items[i]);
+        }
+      }
     }
   }
 
@@ -442,24 +566,11 @@ void GamepadProvider::DoPoll() {
   // we will notify again for the same gamepad on the next polling cycle.
   if (did_notify) {
     for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i)
-      pad_states_.get()[i].is_newly_active = false;
+      pad_states_[i].is_newly_active = false;
   }
 
   // Schedule our next interval of polling.
   ScheduleDoPoll();
-}
-
-void GamepadProvider::SendChangeEvents(
-    mojom::GamepadChangesPtr gamepad_changes) {
-  DCHECK(gamepad_changes);
-  if (gamepad_changes->button_changes.empty() &&
-      gamepad_changes->axis_changes.empty()) {
-    return;
-  }
-  main_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GamepadChangeClient::OnGamepadChange,
-                                base::Unretained(gamepad_change_client_),
-                                std::move(gamepad_changes)));
 }
 
 void GamepadProvider::DisconnectUnrecognizedGamepad(GamepadSource source,
@@ -499,6 +610,16 @@ void GamepadProvider::OnGamepadConnectionChange(bool connected,
         base::BindOnce(&GamepadChangeClient::OnGamepadConnectionChange,
                        base::Unretained(gamepad_change_client_), connected,
                        index, pad));
+  }
+}
+
+void GamepadProvider::OnGamepadRawInputChanged(uint32_t index,
+                                               const Gamepad& pad) {
+  if (gamepad_change_client_) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GamepadChangeClient::OnGamepadRawInputChanged,
+                       base::Unretained(gamepad_change_client_), index, pad));
   }
 }
 

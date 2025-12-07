@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
 
+#import <Foundation/Foundation.h>
+
 #import <optional>
 #import <string>
-
-#import <Foundation/Foundation.h>
 
 enum class UpdateChromeSafetyCheckState;
 enum class PasswordSafetyCheckState;
@@ -20,14 +20,13 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// NSUserDefaults key to list the number of profile available.
-extern NSString* const kDisplaySwitchProfile;
-
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
-// Whether the Upgrade Promo UI will always be displayed.
-bool AlwaysDisplayUpgradePromo();
+// Whether the First Run UI will never be displayed. Useful when running
+// automated testing on the "chrome" build target which otherwise cannot skip
+// the FRE using tests_hook::DisableDefaultFirstRun
+bool NeverDisplayFirstRun();
 
 // Returns the host name for an alternative Origin Server host for use by
 // `BrandCode` startup ping. Returns empty string if there is no alternative
@@ -42,14 +41,13 @@ NSString* GetAlternateDiscoverFeedServerURL();
 // TODO(crbug.com/40173621): Remove after launch.
 bool ShouldResetNoticeCardOnFeedStart();
 
-// Returns true if the count of showing the First Follow modal should be reset
-// to zero.
-// TODO(crbug.com/40220465): Remove after launch.
-bool ShouldResetFirstFollowCount();
-
 // Returns true if the top of feed signin promo should be shown regardless of
 // dismissal conditions. The promo will still only show for signed out users.
 bool ShouldForceFeedSigninPromo();
+
+// Returns true if device locale conditions should be ignored when gating a
+// feature.
+bool ShouldIgnoreDeviceLocaleConditions();
 
 // Returns true if the top of feed notifications promo should be shown
 // regardless of dismissal conditions. It is only shown for signed in users.
@@ -58,21 +56,6 @@ bool ShouldForceContentNotificationsPromo();
 // Returns true if Tile Ablation should be forced regardless of the value of
 // `isTileAblationExperimentComplete`.
 bool ShouldIgnoreTileAblationConditions();
-
-// Should be called after the count has been reset so that the resetting flag
-// can be turned off.
-// TODO(crbug.com/40220465): Remove after launch.
-void DidResetFirstFollowCount();
-
-// Returns true if the First Follow modal should always be shown when the user
-// follows a channel.
-// TODO(crbug.com/40220465): Remove after launch.
-bool ShouldAlwaysShowFirstFollow();
-
-// Returns true if the Follow IPH should always be shown when the user
-// browsing a eligible website in non-incognito mode.
-// TODO(crbug.com/40230248): Remove after launch.
-bool ShouldAlwaysShowFollowIPH();
 
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
@@ -133,7 +116,15 @@ std::optional<int> GetFirstRunRecency();
 // switches, but the former takes precedence.
 std::string GetSegmentForForcedDeviceSwitcherExperience();
 
-// Whether a phone backup/restore state should be simulated.
+// Returns the selected shopper segment the user wants to simulate as a string.
+// The string should either be nil, "ShoppingUser", or "Other". The value could
+// be set both from Experimental Settings and command line switches, but the
+// former takes precedence.
+std::string GetSegmentForForcedShopperExperience();
+
+// Whether a phone backup/restore state should be simulated due to experimental
+// settings. Uses `tests_hook::SimulatePostDeviceRestore()` to check whether
+// this feature should be enabled for EG tests.
 bool SimulatePostDeviceRestore();
 
 // In production, the history sync opt-in isn't shown if it was declined too
@@ -141,10 +132,43 @@ bool SimulatePostDeviceRestore();
 // limits are suppressed for simpler testing.
 bool ShouldIgnoreHistorySyncDeclineLimits();
 
-// Whether the developer-mode Switch Profile UI will be be displayed, returns
-// the number of test profiles that should be created.
-std::optional<int> DisplaySwitchProfile();
+// Returns the inactivity threshold to be used for displaying Safety Check
+// notifications, overriding the default value stored in the code or any value
+// set by Finch.
+//
+// Returns `std::nullopt` if no override is specified.
+std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications();
 
+// Returns the forced state of the Tips (Magic Stack) module.
+std::optional<int> GetForcedTipsMagicStackState();
+
+// Whether the Lens Shop state for Tips (Magic Stack) should display a product
+// image.
+bool ShouldDisplayLensShopTipWithImage();
+
+// Whether Inactive Tabs should be in Demo mode, where tabs are
+// considered inactive after a minute.
+bool ShouldUseInactiveTabsDemoThreshold();
+
+// Whether Inactive Tabs should be in Automated Testing mode, where
+// tabs are immediately considered inactive.
+bool ShouldUseInactiveTabsTestThreshold();
+
+// Whether the first party incognito experience should be simulated.
+bool ShouldOpenInIncognitoOverride();
+
+// Whether the a delay should be added to the asynchronous startup.
+bool ShouldDelayAsyncStartup();
+
+// Whether to always show the first party incognito experience UI.
+bool AlwaysShowTheFirstPartyIncognitoUI();
+
+// Enables the AI menu, which is a tool for debugging LLM queries.
+bool EnableAIPrototypingMenu();
+
+// Gets GWS URL base used to generate Lens result panel URLs. Returns nil if
+// there is no alternative URL specified.
+NSString* GetLensResultPanelGwsURL();
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

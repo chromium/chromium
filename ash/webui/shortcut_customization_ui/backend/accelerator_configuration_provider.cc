@@ -18,11 +18,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
-#include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
@@ -34,10 +35,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -56,10 +55,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -427,12 +422,12 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
     return AcceleratorConfigResult::kShiftOnlyNotAllowed;
   }
 
-  // Case: Accelerator cannot have right alt key.
-  if (accelerator.key_code() == ui::VKEY_RIGHT_ALT) {
+  // Case: Accelerator cannot have quick insert key.
+  if (accelerator.key_code() == ui::VKEY_QUICK_INSERT) {
     VLOG(1) << "Failed to validate accelerator: "
             << accelerator.GetShortcutText() << " with error: "
-            << static_cast<int>(AcceleratorConfigResult::kBlockRightAlt);
-    return AcceleratorConfigResult::kBlockRightAlt;
+            << static_cast<int>(AcceleratorConfigResult::kBlockQuickInsert);
+    return AcceleratorConfigResult::kBlockQuickInsert;
   }
 
   // No errors with the accelerator.
@@ -450,25 +445,25 @@ std::string GetUuid(mojom::AcceleratorSource source,
 // or specific device property.
 bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   switch (details.action_id) {
-    case kCreateSnapGroup:
-      return !features::IsSnapGroupEnabled();
-    // Hide user switching shortcuts for lacros builds.
-    case kSwitchToNextUser:
-    case kSwitchToPreviousUser:
-      return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
-      return accelerators::CanTogglePrivacyScreen();
+      return !accelerators::CanTogglePrivacyScreen();
     case kTilingWindowResizeLeft:
     case kTilingWindowResizeRight:
     case kTilingWindowResizeUp:
     case kTilingWindowResizeDown:
       return !features::IsTilingWindowResizeEnabled();
+    case kToggleDoNotDisturb:
+      return !features::IsDoNotDisturbShortcutEnabled();
     case kToggleMouseKeys:
       return !::features::IsAccessibilityMouseKeysEnabled();
+    case kToggleGeminiApp:
+      return !features::IsAppLaunchShortcutEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
-    case kTogglePicker:
-      return !ash::features::IsPickerUpdateEnabled();
+    case kToggleCameraAllowed:
+      return !features::IsToggleCameraShortcutEnabled();
+    case kStartSunfishSession:
+      return !CanShowSunfishOrScannerUi();
   }
 
   return false;
@@ -572,24 +567,12 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
     Shell::Get()->accelerator_prefs()->AddObserver(this);
   }
 
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    // `InputDeviceSettingsController` provides updates whenever a device is
-    // connected/disconnected or if its settings changed. In any of these cases,
-    // accelerators must be updated.
-    // Observer is removed on destruction of `InputDeviceSettingsController`,
-    // which happens before this class is destroyed.
-    Shell::Get()->input_device_settings_controller()->AddObserver(this);
-  } else {
-    // Observe connected keyboard events.
-    ui::DeviceDataManager::GetInstance()->AddObserver(this);
-
-    send_function_keys_pref_ = std::make_unique<BooleanPrefMember>();
-    send_function_keys_pref_->Init(
-        ash::prefs::kSendFunctionKeys, pref_service,
-        base::BindRepeating(&AcceleratorConfigurationProvider::
-                                ScheduleNotifyAcceleratorsUpdated,
-                            base::Unretained(this)));
-  }
+  // `InputDeviceSettingsController` provides updates whenever a device is
+  // connected/disconnected or if its settings changed. In any of these cases,
+  // accelerators must be updated.
+  // Observer is removed on destruction of `InputDeviceSettingsController`,
+  // which happens before this class is destroyed.
+  Shell::Get()->input_device_settings_controller()->AddObserver(this);
 
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
       base::BindRepeating(
@@ -602,7 +585,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
   for (const auto& layout_id : kAcceleratorLayouts) {
-    std::optional<AcceleratorLayoutDetails> layout =
+    const std::optional<AcceleratorLayoutDetails> layout =
         GetAcceleratorLayout(layout_id);
     if (!layout) {
       LOG(ERROR) << "Unexpectedly could not find layout for id: " << layout_id;
@@ -612,12 +595,6 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
       continue;
     }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (layout_id == AcceleratorAction::kTogglePicker &&
-        features::IsModifierSplitEnabled()) {
-      layout->description_string_id = IDS_ASH_ACCELERATOR_DESCRIPTION_RIGHT_ALT;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     layout_infos_.push_back(LayoutInfoToMojom(*layout));
     accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
         *layout;
@@ -639,9 +616,7 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
   if (Shell::HasInstance()) {
     Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
         /*prevent_processing_accelerators=*/false);
-    if (features::IsInputDeviceSettingsSplitEnabled()) {
-      Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
-    }
+    Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
     if (Shell::Get()->accelerator_prefs()->IsUserEnterpriseManaged()) {
       Shell::Get()->accelerator_prefs()->RemoveObserver(this);
     }
@@ -1163,6 +1138,12 @@ void AcceleratorConfigurationProvider::RecordEditDialogCompletedActions(
   base::UmaHistogramEnumeration(
       "Ash.ShortcutCustomization.EditDialogCompletedActions",
       completed_actions);
+}
+
+void AcceleratorConfigurationProvider::HasCustomAccelerators(
+    HasCustomAcceleratorsCallback callback) {
+  std::move(callback).Run(
+      ash_accelerator_configuration_->HasCustomAccelerators());
 }
 
 void AcceleratorConfigurationProvider::RecordAddOrEditSubactions(

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -18,6 +20,7 @@ import org.chromium.url.GURL;
  * The view for a site suggestion tile. Displays the title of the site beneath a large icon. If a
  * large icon isn't available, displays a rounded rectangle with a single letter in its place.
  */
+@NullMarked
 public class SuggestionsTileView extends TileView {
     /** The data currently associated to this tile. */
     private SiteSuggestion mData;
@@ -27,23 +30,33 @@ public class SuggestionsTileView extends TileView {
         super(context, attrs);
     }
 
+    // TileView override.
+    @Override
+    public boolean isDraggable() {
+        return mData.source == TileSource.CUSTOM_LINKS;
+    }
+
     /**
      * Initializes the view using the data held by {@code tile}. This should be called immediately
      * after inflation.
+     *
      * @param tile The tile that holds the data to populate this view.
      * @param titleLines The number of text lines to use for the tile title.
      */
+    @Initializer
     public void initialize(Tile tile, int titleLines) {
+        boolean showPinnedShortcutBadge = tile.getSource() == TileSource.CUSTOM_LINKS;
         super.initialize(
                 TitleUtil.getTitleForDisplay(tile.getTitle(), tile.getUrl()),
                 tile.isOfflineAvailable(),
+                showPinnedShortcutBadge,
                 tile.getIcon(),
                 titleLines);
         mData = tile.getData();
         setIconViewLayoutParams(tile);
     }
 
-    /** Retrieves data associated with this view.  */
+    /** Retrieves data associated with this view. */
     public SiteSuggestion getData() {
         return mData;
     }
@@ -53,7 +66,7 @@ public class SuggestionsTileView extends TileView {
         return mData.url;
     }
 
-    /** Renders icon based on tile data.  */
+    /** Renders icon based on tile data. */
     public void renderIcon(Tile tile) {
         setIconDrawable(tile.getIcon());
         setIconViewLayoutParams(tile);

@@ -15,9 +15,9 @@ namespace chromecast {
 
 GeneralAudienceBrowsingNavigationThrottle::
     GeneralAudienceBrowsingNavigationThrottle(
-        content::NavigationHandle* navigation_handle,
+        content::NavigationThrottleRegistry& registry,
         GeneralAudienceBrowsingService* general_audience_browsing_service)
-    : NavigationThrottle(navigation_handle),
+    : NavigationThrottle(registry),
       general_audience_browsing_service_(general_audience_browsing_service),
       weak_ptr_factory_(this) {
   DCHECK(general_audience_browsing_service_);

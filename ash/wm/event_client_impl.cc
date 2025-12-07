@@ -8,7 +8,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/tray_action/tray_action.h"
 #include "ui/aura/window.h"
 
 namespace ash {

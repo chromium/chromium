@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace gfx {
 class Rect;
@@ -65,11 +65,11 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // whether a clipboard history paste is imminent.
   virtual bool ShowMenu(
       const gfx::Rect& anchor_rect,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source) = 0;
   virtual bool ShowMenu(
       const gfx::Rect& anchor_rect,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
       OnMenuClosingCallback callback) = 0;
 

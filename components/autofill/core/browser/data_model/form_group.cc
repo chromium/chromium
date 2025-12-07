@@ -4,45 +4,51 @@
 
 #include "components/autofill/core/browser/data_model/form_group.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {
 
-void FormGroup::GetMatchingTypes(const std::u16string& text,
-                                 const std::string& app_locale,
+void FormGroup::GetMatchingTypes(std::u16string_view text,
+                                 std::string_view app_locale,
                                  FieldTypeSet* matching_types) const {
   if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
     return;
   }
 
-  AutofillProfileComparator comparator(app_locale);
-  if (comparator.HasOnlySkippableCharacters(text)) {
+  if (normalization::HasOnlySkippableCharacters(text)) {
     return;
   }
 
   std::u16string canonicalized_text =
-      AutofillProfileComparator::NormalizeForComparison(text);
-  FieldTypeSet types;
-  GetSupportedTypes(&types);
-  for (FieldType type : types) {
-    if (comparator.Compare(canonicalized_text, GetInfo(type, app_locale))) {
+      normalization::NormalizeForComparison(text);
+  for (FieldType type : GetSupportedTypes()) {
+    if (AutofillProfileComparator::Compare(
+            canonicalized_text, GetInfo(type, app_locale),
+            normalization::WhitespaceSpec::kDiscard, type)) {
       matching_types->insert(type);
     }
   }
 }
 
-void FormGroup::GetNonEmptyTypes(const std::string& app_locale,
+void FormGroup::GetNonEmptyTypes(std::string_view app_locale,
                                  FieldTypeSet* non_empty_types) const {
-  FieldTypeSet types;
-  GetSupportedTypes(&types);
-  for (FieldType type : types) {
+  for (FieldType type : GetSupportedTypes()) {
     if (!GetInfo(type, app_locale).empty()) {
       non_empty_types->insert(type);
     }
@@ -54,59 +60,22 @@ bool FormGroup::HasRawInfo(FieldType type) const {
 }
 
 std::u16string FormGroup::GetInfo(FieldType type,
-                                  const std::string& app_locale) const {
-  return GetInfoImpl(AutofillType(type), app_locale);
-}
-
-std::u16string FormGroup::GetInfo(const AutofillType& type,
-                                  const std::string& app_locale) const {
-  return GetInfoImpl(type, app_locale);
-}
-
-VerificationStatus FormGroup::GetVerificationStatus(FieldType type) const {
-  return GetVerificationStatusImpl(type);
-}
-
-VerificationStatus FormGroup::GetVerificationStatus(
-    const AutofillType& type) const {
-  return GetVerificationStatus(type.GetStorableType());
-}
-
-int FormGroup::GetVerificationStatusInt(FieldType type) const {
-  return static_cast<int>(GetVerificationStatus(type));
-}
-
-int FormGroup::GetVerificationStatusInt(const AutofillType& type) const {
-  return static_cast<int>(GetVerificationStatus(type));
+                                  std::string_view app_locale) const {
+  return GetInfo(AutofillType(type), app_locale);
 }
 
 bool FormGroup::SetInfo(FieldType type,
-                        const std::u16string& value,
-                        const std::string& app_locale) {
+                        std::u16string_view value,
+                        std::string_view app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
 }
 
 bool FormGroup::SetInfo(const AutofillType& type,
-                        const std::u16string& value,
-                        const std::string& app_locale) {
+                        std::u16string_view value,
+                        std::string_view app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
-}
-
-bool FormGroup::SetInfoWithVerificationStatus(FieldType type,
-                                              const std::u16string& value,
-                                              const std::string& app_locale,
-                                              const VerificationStatus status) {
-  return SetInfoWithVerificationStatusImpl(AutofillType(type), value,
-                                           app_locale, status);
-}
-
-bool FormGroup::SetInfoWithVerificationStatus(const AutofillType& type,
-                                              const std::u16string& value,
-                                              const std::string& app_locale,
-                                              VerificationStatus status) {
-  return SetInfoWithVerificationStatusImpl(type, value, app_locale, status);
 }
 
 bool FormGroup::HasInfo(FieldType type) const {
@@ -119,32 +88,42 @@ bool FormGroup::HasInfo(const AutofillType& type) const {
   return !GetInfo(type, "en-US").empty();
 }
 
-std::u16string FormGroup::GetInfoImpl(const AutofillType& type,
-                                      const std::string& app_locale) const {
-  return GetRawInfo(type.GetStorableType());
+bool FormGroup::SetInfoWithVerificationStatus(FieldType type,
+                                              std::u16string_view value,
+                                              std::string_view app_locale,
+                                              const VerificationStatus status) {
+  return SetInfoWithVerificationStatus(AutofillType(type), value, app_locale,
+                                       status);
 }
 
-bool FormGroup::SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                                  const std::u16string& value,
-                                                  const std::string& app_locale,
-                                                  VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
-  return true;
-}
-
-void FormGroup::SetRawInfoWithVerificationStatusInt(FieldType type,
-                                                    const std::u16string& value,
-                                                    int status) {
-  SetRawInfoWithVerificationStatus(type, value,
-                                   static_cast<VerificationStatus>(status));
-}
-
-void FormGroup::SetRawInfo(FieldType type, const std::u16string& value) {
+void FormGroup::SetRawInfo(FieldType type, std::u16string_view value) {
   SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
 }
 
-VerificationStatus FormGroup::GetVerificationStatusImpl(FieldType type) const {
-  return VerificationStatus::kNoStatus;
+LogBuffer& operator<<(LogBuffer& buffer, const FormGroup& form_group) {
+  base::flat_map<std::string, FieldType> sorted_types;
+  for (FieldType type : form_group.GetSupportedTypes()) {
+    sorted_types[std::string(FieldTypeToStringView(type))] = type;
+  }
+
+  buffer << Tag{"table"};
+  for (const auto& [type_string, type] : sorted_types) {
+    std::u16string value = form_group.GetRawInfo(type);
+    if (value.empty()) {
+      continue;
+    }
+    LogBuffer rendered_value;
+    rendered_value << Tag{"span"} << Attrib{"style", "white-space: pre"}
+                   << base::StrCat(
+                          {base::UTF16ToUTF8(value), " (",
+                           std::string(VerificationStatusToStringView(
+                               form_group.GetVerificationStatus(type))),
+                           ")"})
+                   << CTag{"span"};
+    buffer << Tr{} << type_string << std::move(rendered_value);
+  }
+  buffer << CTag{"table"};
+  return buffer;
 }
 
 }  // namespace autofill

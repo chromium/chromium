@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("external_data") {
   sources = [
@@ -34,6 +34,7 @@ static_library("external_data") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/policy:generated",
     "//components/policy/core/browser",
@@ -79,10 +80,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ash/policy/invalidation:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
@@ -90,12 +88,14 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/settings",
+    "//components/invalidation:test_support",
     "//components/policy:generated",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/policy/proto:",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//crypto",
     "//net",
@@ -134,6 +134,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//components/policy:generated",
     "//components/policy/core/common",

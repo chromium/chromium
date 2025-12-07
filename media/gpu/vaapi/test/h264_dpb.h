@@ -22,6 +22,8 @@ namespace media::vaapi_test {
 // compressed slice data buffers memory.
 class H264Picture : public base::RefCountedThreadSafe<H264Picture> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   using Vector = std::vector<scoped_refptr<H264Picture>>;
 
   enum Field {
@@ -77,7 +79,8 @@ class H264Picture : public base::RefCountedThreadSafe<H264Picture> {
   // memory management after finishing this picture.
   bool long_term_reference_flag = false;
   bool adaptive_ref_pic_marking_mode_flag = false;
-  H264DecRefPicMarking ref_pic_marking[H264SliceHeader::kRefListSize];
+  std::array<H264DecRefPicMarking, H264SliceHeader::kRefListSize>
+      ref_pic_marking;
 
   // Position in DPB (i.e. index in DPB).
   int dpb_position = 0;

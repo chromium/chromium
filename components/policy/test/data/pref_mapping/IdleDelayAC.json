@@ -1,19 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "IdleDelayAC": 1800000
-        },
-        "prefs": {
-          "power.ac_idle_delay_ms": {
-            "value": 1800000
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "power.ac_idle_delay_ms",
+      "default_value": 510000,
+      "values_to_test": [
+        0,
+        1800000
+      ]
+    }
   }
 ]

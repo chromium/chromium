@@ -6,12 +6,14 @@
 #define COMPONENTS_FEEDBACK_FEEDBACK_UPLOADER_H_
 
 #include <list>
+#include <optional>
 #include <queue>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -137,7 +139,7 @@ class FeedbackUploader : public KeyedService {
   void DispatchReport();
 
   void OnDispatchComplete(UrlLoaderList::iterator it,
-                          std::unique_ptr<std::string> response_body);
+                          std::optional<std::string> response_body);
 
   // Update our timer for uploading the next report.
   void UpdateUploadTimer();

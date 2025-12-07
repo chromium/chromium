@@ -88,9 +88,13 @@ bool ShouldShowSavedDesksOptions() {
 }
 
 bool ShouldShowSavedDesksOptionsForDesk(Desk* desk, DeskBarViewBase* bar_view) {
+  if (display::Screen::Get()->InTabletMode()) {
+    return false;
+  }
+
   // TODO(hewer): Consult with UX if we should hide the save desk options when
   // we are in the saved desk library.
-  return features::IsSavedDeskUiRevampEnabled() && desk->is_active() &&
+  return desk->is_active() &&
          (desk->ContainsAppWindows() ||
           !DesksController::Get()->visible_on_all_desks_windows().empty()) &&
          bar_view->type() == DeskBarViewBase::Type::kOverview &&
@@ -174,12 +178,12 @@ void UpdateTemplateActivationIndicesRelativeOrder(DeskTemplate& saved_desk) {
   }
   // Sort in descending order so that we maintain the relative window
   // stacking order.
-  base::ranges::sort(relative_window_stack_order,
-                     [](app_restore::AppRestoreData* data1,
-                        app_restore::AppRestoreData* data2) {
-                       return data1->window_info.activation_index.value_or(0) >
-                              data2->window_info.activation_index.value_or(0);
-                     });
+  std::ranges::sort(relative_window_stack_order,
+                    [](app_restore::AppRestoreData* data1,
+                       app_restore::AppRestoreData* data2) {
+                      return data1->window_info.activation_index.value_or(0) >
+                             data2->window_info.activation_index.value_or(0);
+                    });
   for (auto* app_restore_data : relative_window_stack_order) {
     app_restore_data->window_info.activation_index =
         g_template_next_activation_index--;

@@ -98,6 +98,10 @@ Status PerformanceLogger::OnConnected(DevToolsClient* client) {
       return Status(kOk);
     return StartTrace();
   }
+  if (client->IsTabTarget()) {
+    // Tab Targets do not support Network.enable
+    return Status(kOk);
+  }
   return EnableInspectorDomains(client);
 }
 
@@ -118,9 +122,9 @@ Status PerformanceLogger::OnEvent(DevToolsClient* client,
                       "missing target ID in Target.attachedToTarget event");
       }
 
-      std::list<std::string> webview_ids;
-      Status status = session_->chrome->GetWebViewIds(&webview_ids,
-                                                      session_->w3c_compliant);
+      std::list<std::string> tabview_ids;
+      Status status = session_->chrome->GetTopLevelWebViewIds(
+          &tabview_ids, session_->w3c_compliant);
       if (status.IsError())
         return status;
 
@@ -156,8 +160,7 @@ void PerformanceLogger::AddLogEntry(Log::Level level,
   log_message_dict.Set("webview", webview);
   log_message_dict.SetByDottedPath("message.method", method);
   log_message_dict.SetByDottedPath("message.params", params.Clone());
-  std::string log_message_json;
-  base::JSONWriter::Write(log_message_dict, &log_message_json);
+  std::string log_message_json = base::WriteJson(log_message_dict).value_or("");
 
   // TODO(klm): extract timestamp from params?
   // Look at where it is for Page, Network, and trace events.

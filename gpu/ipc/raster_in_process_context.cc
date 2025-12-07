@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/raster_cmd_helper.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/common/command_buffer.h"
@@ -44,32 +43,26 @@ RasterInProcessContext::~RasterInProcessContext() {
 
 ContextResult RasterInProcessContext::Initialize(
     CommandBufferTaskExecutor* task_executor,
-    const ContextCreationAttribs& attribs,
-    const SharedMemoryLimits& memory_limits,
+    bool enable_gpu_rasterization,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessShmCount* use_shader_cache_shm_count) {
-  DCHECK(attribs.enable_raster_interface);
-  if (!attribs.enable_raster_interface) {
-    return ContextResult::kFatalFailure;
-  }
-  DCHECK(!attribs.enable_gles2_interface);
-  if (attribs.enable_gles2_interface) {
-    return ContextResult::kFatalFailure;
-  }
+  constexpr bool lose_context_when_out_of_memory = false;
+  auto attribs = mojom::ContextCreationAttribs::NewRaster(
+      mojom::RasterCreationAttribs::New(
+          /*lose_context_when_out_of_memory=*/lose_context_when_out_of_memory));
 
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
   auto result = command_buffer_->Initialize(
-      attribs, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      gr_shader_cache, use_shader_cache_shm_count);
+      std::move(attribs), enable_gpu_rasterization,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), gr_shader_cache,
+      use_shader_cache_shm_count);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;
   }
 
-  // Check for consistency.
-  DCHECK(!attribs.bind_generates_resource);
-  constexpr bool bind_generates_resource = false;
+  const SharedMemoryLimits memory_limits;
 
   // Create the RasterCmdHelper, which writes the command buffer protocol.
   auto raster_helper =
@@ -82,9 +75,9 @@ ContextResult RasterInProcessContext::Initialize(
   transfer_buffer_ = std::make_unique<TransferBuffer>(raster_helper.get());
 
   raster_implementation_ = std::make_unique<raster::RasterImplementation>(
-      raster_helper.get(), transfer_buffer_.get(), bind_generates_resource,
-      attribs.lose_context_when_out_of_memory, command_buffer_.get(),
-      nullptr /* image_decode_accelerator */);
+      raster_helper.get(), transfer_buffer_.get(),
+      /*lose_context_when_out_of_memory=*/lose_context_when_out_of_memory,
+      command_buffer_.get());
   result = raster_implementation_->Initialize(memory_limits);
   raster_implementation_->SetLostContextCallback(base::BindOnce(
       []() { EXPECT_TRUE(false) << "Unexpected lost context."; }));
@@ -130,8 +123,7 @@ bool RasterInProcessContext::SupportedInTest() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   GpuPreferences gpu_preferences = gles2::ParseGpuPreferences(command_line);
-  return !gpu_preferences.use_passthrough_cmd_decoder ||
-         !gles2::PassthroughCommandDecoderSupported();
+  return !gpu_preferences.use_passthrough_cmd_decoder;
 }
 
 }  // namespace gpu

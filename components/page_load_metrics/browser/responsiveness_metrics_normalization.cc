@@ -34,9 +34,8 @@ ResponsivenessMetricsNormalization::worst_latency() const {
 }
 
 void ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies(
-    uint64_t num_new_interactions,
-    const mojom::UserInteractionLatencies& max_event_durations) {
-  num_user_interactions_ += num_new_interactions;
+    const std::vector<mojom::UserInteractionLatencyPtr>& max_event_durations) {
+  num_user_interactions_ += max_event_durations.size();
   // Normalize max event durations.
   NormalizeUserInteractionLatencies(max_event_durations);
 }
@@ -47,13 +46,12 @@ void ResponsivenessMetricsNormalization::ClearAllUserInteractionLatencies() {
 }
 
 void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
-    const mojom::UserInteractionLatencies& user_interaction_latencies) {
-  DCHECK(user_interaction_latencies.is_user_interaction_latencies());
-
+    const std::vector<mojom::UserInteractionLatencyPtr>&
+        user_interaction_latencies) {
   // Insert each latency into the list if it is one of the worst ten seen so
   // far. Use inplace_merge to keep the list sorted after appending an element.
   for (const mojom::UserInteractionLatencyPtr& user_interaction :
-       user_interaction_latencies.get_user_interaction_latencies()) {
+       user_interaction_latencies) {
     if (worst_ten_latencies_.size() < 10) {
       worst_ten_latencies_.push_back(*user_interaction);
     } else if (user_interaction->interaction_latency >

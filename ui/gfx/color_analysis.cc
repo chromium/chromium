@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/color_analysis.h"
 
 #include <limits.h>
@@ -137,11 +132,11 @@ class KMeanCluster {
   }
 
  private:
-  uint8_t centroid_[3];
+  std::array<uint8_t, 3> centroid_;
 
   // Holds the sum of all the points that make up this cluster. Used to
   // generate the next centroid as well as to check for convergence.
-  uint32_t aggregate_[3];
+  std::array<uint32_t, 3> aggregate_;
   uint32_t counter_;
 
   // The weight of the cluster, determined by how many points were used
@@ -193,8 +188,7 @@ class ColorBox {
         case BLUE:
           return SkColorGetB(a) < SkColorGetB(b);
       }
-      NOTREACHED_IN_MIGRATION();
-      return SkColorGetB(a) < SkColorGetB(b);
+      NOTREACHED();
     };
     // Just the portion of |color_space_| that's covered by this box should be
     // sorted.
@@ -487,8 +481,9 @@ SkColor CalculateKMeanColorOfBuffer(base::span<const uint8_t> decoded_data,
       // found, destroy this cluster.
       bool color_unique = false;
       for (int i = 0; i < 10; ++i) {
-        int pixel_pos = sampler->GetSample(img_width, img_height) %
-            (img_width * img_height);
+        const auto pixel_pos =
+            static_cast<size_t>(sampler->GetSample(img_width, img_height) %
+                                (img_width * img_height));
 
         uint8_t b = decoded_data[pixel_pos * 4];
         uint8_t g = decoded_data[pixel_pos * 4 + 1];
@@ -617,18 +612,19 @@ SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
                                  const HSL& lower_bound,
                                  const HSL& upper_bound,
                                  KMeanImageSampler* sampler) {
-  int img_width = 0;
-  int img_height = 0;
-  std::vector<uint8_t> decoded_data;
-  SkColor color = kDefaultBgColor;
-
-  if (!png.empty() &&
-      gfx::PNGCodec::Decode(png.data(), png.size(), gfx::PNGCodec::FORMAT_BGRA,
-                            &decoded_data, &img_width, &img_height)) {
-    return CalculateKMeanColorOfBuffer(decoded_data, img_width, img_height,
-                                       lower_bound, upper_bound, sampler, true);
+  if (png.empty()) {
+    return kDefaultBgColor;
   }
-  return color;
+
+  std::optional<gfx::PNGCodec::DecodeOutput> output =
+      gfx::PNGCodec::Decode(png, gfx::PNGCodec::FORMAT_BGRA);
+  if (!output) {
+    return kDefaultBgColor;
+  }
+
+  return CalculateKMeanColorOfBuffer(output->output, output->width,
+                                     output->height, lower_bound, upper_bound,
+                                     sampler, /*find_closest=*/true);
 }
 
 SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png) {
@@ -655,12 +651,17 @@ SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
   base::HeapArray<uint32_t> image =
       base::HeapArray<uint32_t>::Uninit(pixel_count);
 
-  // Un-premultiplies each pixel in bitmap into the buffer. Requires
-  // approximately 10 microseconds for a 16x16 icon on an Intel Core i5.
-  uint32_t* in = static_cast<uint32_t*>(bitmap.getPixels());
-  auto out = image.begin();
-  for (int i = 0; i < pixel_count; ++i)
-    *out++ = SkUnPreMultiply::PMColorToColor(*in++);
+  // SAFETY: We know that height <= bitmap.height() and pixel_bound ==
+  // bitmap.width() * height, so pixel_count <= the amount of actual pixels in
+  // the buffer here. However, Skia has no span-based API for this.
+  // TODO(https://crbug.com/357905831): switch to SkSpan when possible.
+  UNSAFE_BUFFERS(
+      base::span<uint32_t> in(static_cast<uint32_t*>(bitmap.getPixels()),
+                              base::checked_cast<size_t>(pixel_count)));
+
+  // Un-premultiply into the out buffer.
+  std::transform(in.begin(), in.end(), image.begin(),
+                 SkUnPreMultiply::PMColorToColor);
 
   GridSampler sampler;
   return CalculateKMeanColorOfBuffer(base::as_byte_span(image), bitmap.width(),

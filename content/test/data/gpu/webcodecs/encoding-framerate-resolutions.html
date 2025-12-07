@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+Check that VideoEncoder can encode in different framerate and resolutions
+-->
+<html>
+
+<head>
+  <title>Encoding framerate resolutions test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    async function main(arg) {
+      const width = Number(arg.resolution.split('x')[0].trim());
+      const height = Number(arg.resolution.split('x')[1].trim());
+      const number_of_frames_to_encode = 5;
+
+      let errors = 0;
+      let decoder_configs = [];
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: arg.acceleration,
+        width: width,
+        height: height,
+        latencyMode: arg.latency_mode,
+        framerate: arg.framerate,
+      };
+
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg, null, 2));
+      TEST.log('Encoder configs: ' + JSON.stringify(encoder_config, null, 2));
+      let supported = false;
+      try {
+        supported = (await VideoEncoder.isConfigSupported(encoder_config)).supported;
+      } catch (e) {}
+      if (!supported) {
+        TEST.skip('Unsupported configs: ' + JSON.stringify(encoder_config, null, 2));
+        return;
+      }
+
+      let source = await createFrameSource('offscreen', width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
+        return;
+      }
+
+      const init = {
+        output(chunk, metadata) {
+          if (metadata.decoderConfig) {
+            decoder_configs.push(metadata.decoderConfig);
+          }
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(init);
+      encoder.configure(encoder_config);
+
+      for (let i = 0; i < number_of_frames_to_encode; i++) {
+        let frame = await source.getNextFrame();
+        encoder.encode(frame, { keyFrame: false });
+
+        frame.close();
+        await waitForNextFrame();
+      }
+
+      await encoder.flush();
+      encoder.close();
+      source.close();
+
+      TEST.assert(
+        decoder_configs.length >= 1,
+        'There should be at least 1 configs');
+
+      TEST.assert(errors == 0, 'Encoding errors occurred during the test');
+      TEST.log('Test completed');
+    }
+    addManualTestButton([{
+      'resolution': '1280x720',
+      'framerate': 30,
+      'codec': 'avc1.420034',
+      'acceleration': 'prefer-hardware',
+      'latency_mode': 'quality',
+    }]);
+    addManualTestButton([{
+      'resolution': '1280x720',
+      'framerate': 30,
+      'codec': 'hvc1.1.6.L123.00',
+      'acceleration': 'prefer-hardware',
+      'latency_mode': 'quality',
+    }]);
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

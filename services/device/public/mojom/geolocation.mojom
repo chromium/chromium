@@ -7,12 +7,17 @@ module device.mojom;
 import "services/device/public/mojom/geoposition.mojom";
 
 // Geolocation provides updates on the device's location. By default, it
-// provides updates with low accuracy, but |SetHighAccuracy()| may be called
+// provides updates with low accuracy, but |SetHighAccuracyHint()| may be called
 // to change this.
 interface Geolocation {
   // Select between high and low accuracy, if supported by the implementation.
   // Ignored if unsupported.
-  SetHighAccuracy(bool high_accuracy);
+  //
+  // Note: This method is intended to help the provider decide how to balance
+  // power consumption against accuracy and does not guarantee coarseness.
+  // Clients that require a coarse position estimate must use
+  // PublicIpAddressGeolocationProvider.
+  SetHighAccuracyHint(bool high_accuracy);
 
   // Use this method to get notified of future position updates, by calling
   // QueryNextPosition once, and then calling it again when/if it returns.

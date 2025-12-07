@@ -1,15 +1,15 @@
 Tests that console logging dumps proper messages.
 
-console-dir.js:12 Array(2)
+console-dir.js:14 Array(2)
     0: "test1"
     1: "test2"
     length: 2
     [[Prototype]]: Array(0)
-console-dir.js:13 NodeList(1)
+console-dir.js:15 NodeList(1)
     0: html
     length: 1
     [[Prototype]]: NodeList
-console-dir.js:14 XPathResult
+console-dir.js:16 XPathResult
     booleanValue: (...)
     invalidIteratorState: false
     numberValue: (...)
@@ -18,7 +18,7 @@ console-dir.js:14 XPathResult
     snapshotLength: (...)
     stringValue: (...)
     [[Prototype]]: XPathResult
-console-dir.js:24 Object
+console-dir.js:26 Object
     "": ""
     "  ": "  "
     " a b ": " a b "
@@ -27,43 +27,43 @@ console-dir.js:24 Object
     c d: "c d"
     negZero: -0
     [[Prototype]]: Object
-console-dir.js:27 ƒ anonymous()
-    arguments: null
-    caller: null
+console-dir.js:29 ƒ anonymous()
     length: 0
     name: ""
-    prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-dir.js:27
+    prototype: {}
+    arguments: null
+    caller: null
+    [[FunctionLocation]]: console-dir.js:29
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-dir.js:31 inner
+console-dir.js:33 inner
     [[Prototype]]: Object
-console-dir.js:34 Object
+console-dir.js:36 Object
     No properties
-console-dir.js:35 Object
+console-dir.js:37 Object
     foo: 
         No properties
     [[Prototype]]: Object
-console-dir.js:37 ƒ __proto__()
+console-dir.js:39 ƒ __proto__()
     length: 0
     name: "get __proto__"
     arguments: (...)
     caller: (...)
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[0]
-console-dir.js:42 Uint8Array(400000000)
+console-dir.js:44 Uint8Array(400000000)
     [0 … 99999999]
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
     PASS: "Non-element properties should be displayed."
-    buffer: ArrayBuffer(400000000)  
+    buffer: ArrayBuffer(400000000)
     byteLength: 400000000
     byteOffset: 0
     length: 400000000
     Symbol(Symbol.toStringTag): "Uint8Array"
     [[Prototype]]: TypedArray
-console-dir.js:47 Event
+console-dir.js:49 Event
     isTrusted: false
     timeStamp: 0
     bubbles: false
@@ -73,7 +73,6 @@ console-dir.js:47 Event
     currentTarget: null
     defaultPrevented: false
     eventPhase: 0
-    path: []
     returnValue: true
     srcElement: null
     target: null

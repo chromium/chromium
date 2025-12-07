@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
@@ -42,7 +43,8 @@ class PolicyDetailsMap {
   void SetDetails(const std::string& policy, const PolicyDetails* details);
 
  private:
-  typedef std::map<std::string, const PolicyDetails*> PolicyDetailsMapping;
+  typedef std::map<std::string, raw_ptr<const PolicyDetails, CtnExperimental>>
+      PolicyDetailsMapping;
 
   const PolicyDetails* Lookup(const std::string& policy) const;
 

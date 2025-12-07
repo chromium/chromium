@@ -7,49 +7,48 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/dialog_model.h"
-#include "ui/base/models/dialog_model_field.h"
-#include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -82,6 +81,8 @@ constexpr float kEmptyChipSize = 12.0f;
 constexpr float kEmptyChipInsets = 4.0f;
 // The radius of the squircle (rounded rect).
 constexpr float kEmptyChipCornerRadius = 2.0f;
+// The amount of insets before and after the share icon when the title is empty.
+constexpr float kSharedEmptyChipInsets = 2.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
@@ -89,23 +90,16 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
                                          Browser* browser,
                                          bool animations_enabled)
     : MenuButton(std::move(callback), group.title()),
+      browser_(browser),
+      is_shared_(group.is_shared_tab_group()),
       tab_group_color_id_(group.color()),
       guid_(group.saved_guid()),
-      local_group_id_(group.local_group_id()),
-      tabs_(group.saved_tabs()),
-      context_menu_controller_(
-          this,
-          base::BindRepeating(
-              &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
-              browser,
-              group.saved_guid()),
-          views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),
-      /*description=*/std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
-  SetTextProperties(group);
+      local_group_id_(group.local_group_id()) {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
+  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
+      IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
+  UpdateButtonData(group);
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);
   SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, kButtonSize));
@@ -121,13 +115,18 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
   }
 
   ConfigureInkDropForToolbar(this);
-  SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  SetImageLabelSpacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL_LIST) /
+      2);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(0),
                                                 kButtonRadius);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   set_drag_controller(this);
+  set_context_menu_controller(this);
+
+  UpdateCachedTooltipText();
 }
 
 SavedTabGroupButton::~SavedTabGroupButton() = default;
@@ -138,20 +137,17 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   tab_group_color_id_ = group.color();
   local_group_id_ = group.local_group_id();
   guid_ = group.saved_guid();
-  tabs_.clear();
-  tabs_ = group.saved_tabs();
+  is_shared_ = group.is_shared_tab_group();
 
   UpdateButtonLayout();
-}
-
-std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
-  return GetAccessibleNameForButton();
+  UpdateAccessibleName();
+  UpdateCachedTooltipText();
 }
 
 bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
     ShowContextMenu(GetKeyboardContextMenuLocation(),
-                    ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
+                    ui::mojom::MenuSourceType::kKeyboard);
     return true;
   } else if (event.key_code() == ui::KeyboardCode::VKEY_SPACE) {
     NotifyClick(event);
@@ -161,24 +157,28 @@ bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
+gfx::Point SavedTabGroupButton::GetKeyboardContextMenuLocation() {
+  // Use center bottom of the button as menu location so the context menu does
+  // not overlap with text.
+  gfx::Rect vis_bounds = GetVisibleBounds();
+  gfx::Point screen_point(vis_bounds.x() + vis_bounds.width() / 2,
+                          vis_bounds.y() + vis_bounds.height());
+  ConvertPointToScreen(this, &screen_point);
+  return screen_point;
+}
+
 bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
   return e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
          event_utils::IsPossibleDispositionEvent(e);
 }
 
-void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::MenuButton::GetAccessibleNodeData(node_data);
-  // We must set the updated accessible name directly in the cache to override
-  // the one set in `LabelButton::SetText`. This is temporary.
-  //
-  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
-  // the cache as soon as the name is updated.
-  GetViewAccessibility().SetName(GetAccessibleNameForButton());
-}
-
 void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (!GetText().empty()) {
+    return;
+  } else if (is_shared_) {
+    // Not title shared groups display a share icon in place of the squircle we
+    // draw for un-shared groups. See SavedTabGroupButton::UpdateButtonLayout.
     return;
   }
 
@@ -205,14 +205,33 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
           ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)
           : l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_CLOSED);
 
+  const std::u16string& shared_state =
+      is_shared_ ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
+                 : u"";
+
   const std::u16string saved_group_acessible_name =
       GetText().empty()
           ? l10n_util::GetStringFUTF16(
-                IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT, opened_state)
+                IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT, shared_state,
+                opened_state)
           : l10n_util::GetStringFUTF16(
-                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT, GetText(),
-                opened_state);
+                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT, shared_state,
+                std::u16string(GetText()), opened_state);
   return saved_group_acessible_name;
+}
+
+void SavedTabGroupButton::UpdateCachedTooltipText() {
+  SetTooltipText(GetAccessibleNameForButton());
+}
+
+void SavedTabGroupButton::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
+}
+
+void SavedTabGroupButton::SetText(std::u16string_view text) {
+  LabelButton::SetText(text);
+  UpdateAccessibleName();
+  UpdateCachedTooltipText();
 }
 
 void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
@@ -222,27 +241,34 @@ void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
 }
 
 void SavedTabGroupButton::UpdateButtonLayout() {
-  // Relies on logic in theme_helper.cc to determine dark/light palette.
-  ui::ColorId background_color =
-      GetTabGroupBookmarkColorId(tab_group_color_id_);
+  SetEnabledTextColors(GetSavedTabGroupForegroundColorId(tab_group_color_id_));
+  SetBackground(views::CreateRoundedRectBackground(
+      GetTabGroupBookmarkColorId(tab_group_color_id_), kButtonRadius));
 
-  SetEnabledTextColorIds(
-      GetSavedTabGroupForegroundColorId(tab_group_color_id_));
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                         kButtonRadius));
-
+  // Adjust the insets so the share icon can fit within the bounds of this
+  // button if the group has no title.
+  bool use_shared_empty_chip_insets = is_shared_ && GetText().empty();
+  int horizontal_insets =
+      use_shared_empty_chip_insets ? kSharedEmptyChipInsets : kHorizontalInsets;
   const gfx::Insets& insets =
-      gfx::Insets::VH(kVerticalInsets, kHorizontalInsets);
+      gfx::Insets::VH(kVerticalInsets, horizontal_insets);
 
   // Only draw a border if the group is open in the tab strip.
   if (!local_group_id_.has_value()) {
     SetBorder(views::CreateEmptyBorder(insets));
   } else {
-    std::unique_ptr<views::Border> border =
-        views::CreateThemedRoundedRectBorder(
-            kBorderThickness, kButtonRadius,
-            GetSavedTabGroupOutlineColorId(tab_group_color_id_));
+    std::unique_ptr<views::Border> border = views::CreateRoundedRectBorder(
+        kBorderThickness, kButtonRadius,
+        GetSavedTabGroupOutlineColorId(tab_group_color_id_));
     SetBorder(views::CreatePaddedBorder(std::move(border), insets));
+  }
+
+  if (is_shared_) {
+    SetImageModel(ButtonState::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kPeopleGroupIcon,
+                      GetSavedTabGroupForegroundColorId(tab_group_color_id_),
+                      gfx::kFaviconSize));
   }
 
   if (GetText().empty()) {
@@ -290,6 +316,41 @@ bool SavedTabGroupButton::CanStartDragForView(View* sender,
   // vertically - downward drag.
   gfx::Vector2d move_offset = p - press_pt;
   return View::ExceededDragThreshold(move_offset);
+}
+
+int SavedTabGroupButton::GetAndIncrementLatestCommandId() {
+  return latest_command_id_ += 1;
+}
+
+void SavedTabGroupButton::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
+
+  const std::optional<SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(guid_);
+  // If the group has been deleted remotely.
+  if (!saved_group.has_value()) {
+    return;
+  }
+
+  menu_model_ = std::make_unique<STGTabsMenuModel>(
+      browser_, TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
+  menu_model_->Build(
+      saved_group.value(),
+      base::BindRepeating(&SavedTabGroupButton::GetAndIncrementLatestCommandId,
+                          base::Unretained(this)));
+
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_.get(),
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+  context_menu_runner_->RunMenuAt(
+      source->GetWidget(),
+      /*button_controller=*/nullptr, gfx::Rect(point, gfx::Size()),
+      views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 BEGIN_METADATA(SavedTabGroupButton)

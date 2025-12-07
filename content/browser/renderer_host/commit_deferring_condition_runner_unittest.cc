@@ -35,7 +35,8 @@ class CommitDeferringConditionRunnerTest
   // CommitDeferringConditionRunner::Delegate:
   void OnCommitDeferringConditionChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id) override {
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id)
+      override {
     EXPECT_EQ(navigation_type,
               CommitDeferringCondition::NavigationType::kOther);
     EXPECT_FALSE(candidate_prerender_frame_tree_node_id.has_value());

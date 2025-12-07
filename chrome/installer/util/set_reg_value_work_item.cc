@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/set_reg_value_work_item.h"
 
-#include "base/debug/alias.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,7 +18,8 @@ void StringToBinaryData(const std::wstring& str_value,
                         std::vector<uint8_t>* binary_data) {
   DCHECK(binary_data);
   const uint8_t* data = reinterpret_cast<const uint8_t*>(str_value.c_str());
-  binary_data->assign(data, data + (str_value.length() + 1) * sizeof(wchar_t));
+  binary_data->assign(
+      data, UNSAFE_TODO(data + (str_value.length() + 1) * sizeof(wchar_t)));
 }
 
 // Transforms |binary_data| into its wstring representation (assuming
@@ -49,7 +45,7 @@ void BinaryDataToString(const std::vector<uint8_t>& binary_data,
 
 }  // namespace
 
-SetRegValueWorkItem::~SetRegValueWorkItem() {}
+SetRegValueWorkItem::~SetRegValueWorkItem() = default;
 
 SetRegValueWorkItem::SetRegValueWorkItem(HKEY predefined_root,
                                          const std::wstring& key_path,
@@ -87,7 +83,7 @@ SetRegValueWorkItem::SetRegValueWorkItem(HKEY predefined_root,
   DCHECK(wow64_access == 0 || wow64_access == KEY_WOW64_32KEY ||
          wow64_access == KEY_WOW64_64KEY);
   const uint8_t* data = reinterpret_cast<const uint8_t*>(&value_data);
-  value_.assign(data, data + sizeof(value_data));
+  value_.assign(data, UNSAFE_TODO(data + sizeof(value_data)));
 }
 
 SetRegValueWorkItem::SetRegValueWorkItem(HKEY predefined_root,
@@ -107,7 +103,7 @@ SetRegValueWorkItem::SetRegValueWorkItem(HKEY predefined_root,
   DCHECK(wow64_access == 0 || wow64_access == KEY_WOW64_32KEY ||
          wow64_access == KEY_WOW64_64KEY);
   const uint8_t* data = reinterpret_cast<const uint8_t*>(&value_data);
-  value_.assign(data, data + sizeof(value_data));
+  value_.assign(data, UNSAFE_TODO(data + sizeof(value_data)));
 }
 
 SetRegValueWorkItem::SetRegValueWorkItem(
@@ -157,13 +153,6 @@ bool SetRegValueWorkItem::DoImpl() {
     if (!size) {
       previous_type_ = type;
     } else {
-      // TODO(crbug.com/40706274): Remove after bug is resolved.
-      DEBUG_ALIAS_FOR_CSTR(key_path_copy, base::WideToUTF8(key_path_).c_str(),
-                           255);
-      DEBUG_ALIAS_FOR_CSTR(value_name_copy,
-                           base::WideToUTF8(value_name_).c_str(), 200);
-      base::debug::Alias(&size);
-      base::debug::Alias(&type);
       previous_value_.resize(size);
       result = key.ReadValue(value_name_.c_str(), &previous_value_[0], &size,
                              &previous_type_);
@@ -242,7 +231,7 @@ void SetRegValueWorkItem::RollbackImpl() {
                             previous_type_);
     VLOG(1) << "rollback: restoring " << value_name_ << " error: " << result;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   status_ = VALUE_ROLL_BACK;

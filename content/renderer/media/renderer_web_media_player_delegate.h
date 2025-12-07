@@ -51,6 +51,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
 
   // blink::WebMediaPlayerDelegate implementation.
   bool IsPageHidden() override;
+  bool IsFrameHidden() override;
   int AddObserver(Observer* observer) override;
   void RemoveObserver(int player_id) override;
   void DidMediaMetadataChange(int player_id,
@@ -88,7 +89,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   bool IsIdleCleanupTimerRunningForTesting() const;
 
   // Note: Does not call OnFrameHidden()/OnFrameShown().
-  void SetFrameHiddenForTesting(bool is_hidden);
+  void SetFrameHiddenForTesting(bool is_frame_hidden);
 
   friend class RendererWebMediaPlayerDelegateTest;
 
@@ -106,8 +107,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   // True if any media has ever been played in this render frame. Affects
   // autoplay logic in RenderFrameImpl.
   bool has_played_media_ = false;
-
-  bool is_frame_hidden_for_testing_ = false;
 
   // State related to scheduling UpdateTask(). These are cleared each time
   // UpdateTask() runs.
@@ -155,7 +154,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   std::optional<bool> is_shown_;
 
   // Last rendered status sent to the player from the containing frame.
-  bool is_rendered_ = false;
+  bool is_frame_hidden_ = false;
 
   base::WeakPtrFactory<RendererWebMediaPlayerDelegate> weak_ptr_factory_{this};
 };

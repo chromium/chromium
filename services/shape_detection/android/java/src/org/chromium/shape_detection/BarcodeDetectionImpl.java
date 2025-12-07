@@ -14,6 +14,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.gfx.mojom.PointF;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.mojo.system.MojoException;
@@ -23,10 +24,11 @@ import org.chromium.shape_detection.mojom.BarcodeDetectorOptions;
 import org.chromium.shape_detection.mojom.BarcodeFormat;
 
 /** Implementation of mojo BarcodeDetection, using Google Play Services vision package. */
+@NullMarked
 public class BarcodeDetectionImpl implements BarcodeDetection {
     private static final String TAG = "BarcodeDetectionImpl";
 
-    private BarcodeDetector mBarcodeDetector;
+    private final BarcodeDetector mBarcodeDetector;
 
     public BarcodeDetectionImpl(BarcodeDetectorOptions options) {
         int formats = Barcode.ALL_FORMATS;

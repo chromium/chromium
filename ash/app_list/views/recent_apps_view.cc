@@ -47,7 +47,7 @@ std::string ItemIdFromAppId(const std::string& app_id) {
   // Convert chrome-extension://<id> to just <id>.
   if (base::StartsWith(app_id, extensions::kExtensionScheme)) {
     GURL url(app_id);
-    return url.host();
+    return url.GetHost();
   }
   return app_id;
 }
@@ -117,23 +117,12 @@ class RecentAppsView::GridDelegateImpl : public AppListItemViewGridDelegate {
     selected_view_ = view;
     // Ensure the translucent background of this selection is painted.
     selected_view_->SchedulePaint();
-    selected_view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    selected_view_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
+                                                       true);
   }
   void ClearSelectedView() override { selected_view_ = nullptr; }
   bool IsSelectedView(const AppListItemView* view) const override {
     return view == selected_view_;
-  }
-  bool InitiateDrag(AppListItemView* view,
-                    const gfx::Point& location,
-                    const gfx::Point& root_location,
-                    base::OnceClosure drag_start_callback,
-                    base::OnceClosure drag_end_callback) override {
-    return false;
-  }
-  void StartDragAndDropHostDragAfterLongPress() override {}
-  bool UpdateDragFromItem(bool is_touch,
-                          const ui::LocatedEvent& event) override {
-    return false;
   }
   void EndDrag(bool cancel) override {}
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
@@ -176,7 +165,6 @@ RecentAppsView::RecentAppsView(AppListKeyboardController* keyboard_controller,
   layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  // TODO(https://crbug.com/1298211): This needs a designated string resource.
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_RECENT_APPS_A11Y_NAME),
       ax::mojom::NameFrom::kAttribute);
@@ -246,8 +234,8 @@ void RecentAppsView::UpdateResults(
     item_view->InitializeIconLoader();
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                           /*send_native_event=*/true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                     /*send_native_event=*/true);
 }
 
 void RecentAppsView::SetModels(SearchModel* search_model, AppListModel* model) {

@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -46,7 +41,8 @@ base::Value ConvertVpnStringToValue(const std::string& str,
   if (type == base::Value::Type::STRING)
     return base::Value(str);
 
-  std::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || value->type() != type)
     return base::Value(type);
 
@@ -292,7 +288,8 @@ void ShillToONCTranslator::TranslateOpenVPN() {
 
   for (const chromeos::onc::OncFieldSignature* field_signature =
            onc_signature_->fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     const std::string& onc_field_name = field_signature->onc_field_name;
     if (onc_field_name == ::onc::openvpn::kRemoteCertKU ||
         onc_field_name == ::onc::openvpn::kServerCAPEMs) {
@@ -487,13 +484,6 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
       *shill_dictionary_, false /* verbose_logging */, &unknown_encoding);
   if (!unknown_encoding && !ssid.empty())
     onc_object_.Set(::onc::wifi::kSSID, ssid);
-
-  std::optional<bool> link_monitor_disable =
-      shill_dictionary_->FindBool(shill::kLinkMonitorDisableProperty);
-  if (link_monitor_disable) {
-    onc_object_.Set(::onc::wifi::kAllowGatewayARPPolling,
-                    !*link_monitor_disable);
-  }
 
   CopyPropertiesAccordingToSignature();
   TranslateAndAddNestedObject(::onc::wifi::kEAP);
@@ -701,7 +691,7 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
 
   if (network_state_) {
     // Only visible networks set RestrictedConnectivity, and only if true.
-    auto portal_state = network_state_->GetPortalState();
+    auto portal_state = network_state_->portal_state();
     if (network_state_->IsConnectedState() &&
         portal_state != NetworkState::PortalState::kUnknown &&
         portal_state != NetworkState::PortalState::kOnline) {
@@ -902,14 +892,22 @@ void ShillToONCTranslator::TranslateEap() {
 
   if (subject_alternative_name_match) {
     base::Value::List deserialized_dicts;
-    std::string error_msg;
     for (const base::Value& san : *subject_alternative_name_match) {
-      JSONStringValueDeserializer deserializer(san.GetString());
-      auto deserialized_dict =
-          deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
-      if (!deserialized_dict) {
+      const std::string* san_string = san.GetIfString();
+      if (!san_string) {
+        LOG(ERROR) << "SAN entry is not a string: " << san;
+        continue;
+      }
+      base::JSONReader::Result deserialized_dict =
+          base::JSONReader::ReadAndReturnValueWithError(
+              *san_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      if (!deserialized_dict.has_value()) {
         LOG(ERROR) << "failed to deserialize " << san << " with error "
-                   << error_msg;
+                   << deserialized_dict.error().ToString();
+        continue;
+      }
+      if (!deserialized_dict->is_dict()) {
+        LOG(ERROR) << "failed to deserialize " << san << " as a dictionary";
         continue;
       }
       deserialized_dicts.Append(std::move(*deserialized_dict));
@@ -1015,7 +1013,8 @@ void ShillToONCTranslator::CopyPropertiesAccordingToSignature(
     return;
   for (const chromeos::onc::OncFieldSignature* field_signature =
            value_signature->fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     CopyProperty(field_signature);
   }
 }
@@ -1059,7 +1058,8 @@ void ShillToONCTranslator::SetDefaultsAccordingToSignature(
     return;
   for (const chromeos::onc::OncFieldSignature* field_signature =
            value_signature->fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     if (!field_signature->default_value_setter) {
       continue;
     }

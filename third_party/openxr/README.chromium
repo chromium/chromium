@@ -1,9 +1,10 @@
 Name: OpenXR SDK
 Short Name: OpenXR
 URL: https://github.com/KhronosGroup/OpenXR-SDK
-Version: 1.0.31
-Revision: 95fe35ffb383710a6e0567e958ead9a3b66e930c
-License: Apache 2.0
+Version: 1.1.53
+Revision: 75c53b6e853dc12c7b3c771edc9c9c841b15faaa
+Update Mechanism: Manual
+License: Apache-2.0
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes
@@ -17,22 +18,35 @@ Local Modifications:
 No modifications to upstream files. BUILD.gn contains all of the configurations
 needed to build the OpenXR loader in Chromium, along with its dependencies. The
 readme was expanded with information about transitive dependencies that are
-copied directly into the OpenXR SDK repository.
+copied directly into the OpenXR SDK repository. An openxr.def file works around
+the fact that attributes aren't exposed by default for the compiler we use on
+windows in component builds.
+
 Added dev/xr_android.h for prototyping xr_android extensions that are currently
 under active development and not in any openxr release at present. This file is
 expected to be superceded by any official definitions and may require additional
 work before a roll containing those definitions can be conducted.
-Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
+
+Copied src/.clang-format into src_overrides/.clang-format and disabled
+clang-format in src_overrides/src/external to mimic how khronos gitlab seems to
+behave. This allows forked files to more closely match the base-files and allow
+for easier "Compare with clipboard" comparisons.
+
+The following changes should be reflected in `src_overrides/patches`:
+* Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
 ignore loading in Android ContentProvider supplied paths while investigating and
 waiting for upstreaming.
+* Forked AndroidManifest.xml.in to remove unnecessary fields that prevent
+merging with Chrome's AndroidManifest.xml
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
 Name: JNIPP
 Short Name: JNIPP
 URL: https://github.com/mitchdowd/jnipp
-Version: N/A
-Revision: unknown
+Version: v1.0.0-13-gcdd6293
+Revision: cdd6293fca985993129f5ef5441709fc49ee507f
+Update Mechanism: Manual
 License: MIT
 License File: src/src/external/jnipp/LICENSE
 Security Critical: yes
@@ -45,9 +59,7 @@ and C++ code.
 
 Local Modifications:
 No modifications to upstream files. BUILD.gn contains all of the configurations
-needed to build the library in Chromium. Since it is a transitive dependency
-that was directly included in OpenXR SDK repository, the exact revision is
-unknown. The library also does not have any versioned releases.
+needed to build the library in Chromium.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -55,8 +67,9 @@ Name: android-jni-wrappers
 Short Name: android-jni-wrappers
 URL: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers
 Version: N/A
-Revision: unknown
-License: Apache 2.0
+Date: 2023-12-13
+Update Mechanism: Manual
+License: Apache-2.0
 License File: src/LICENSES/Apache-2.0.txt
 Security Critical: yes
 Shipped: yes

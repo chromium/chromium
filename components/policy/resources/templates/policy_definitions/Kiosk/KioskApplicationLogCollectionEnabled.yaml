@@ -1,0 +1,25 @@
+owners:
+- macinashutosh@google.com
+- irfedorova@google.com
+- file://chromeos/components/kiosk/OWNERS
+caption: Enable kiosk application log collection
+default: false
+desc: |-
+  Setting the policy to Enabled means Kiosk application level logs would be collected when a kiosk application is running on the device. Logs would be collected for all kiosk application types.
+  These logs would be stored in a separate kiosk_apps.log file.
+  Leaving this policy unset or setting it to Disabled means the Kiosk application level logs would not be collected.
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: main
+schema:
+  type: boolean
+items:
+- caption: Enable Kiosk application logs
+  value: true
+- caption: Disable Kiosk application logs
+  value: false
+example_value: false
+supported_on:
+- chrome_os:141-
+tags: []

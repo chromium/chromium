@@ -1,5 +1,5 @@
 {
-  "extends": "../../../../tools/typescript/tsconfig_base_polymer.json",
+  "extends": "../../../../tools/typescript/tsconfig_base_lit.json",
   "compilerOptions": {
     "allowUmdGlobalAccess": true,
     "typeRoots": [ "../../../../third_party/node/node_modules/@types" ],

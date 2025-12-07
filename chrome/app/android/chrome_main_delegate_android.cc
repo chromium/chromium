@@ -5,6 +5,7 @@
 #include "chrome/app/android/chrome_main_delegate_android.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/android/jni_android.h"
 #include "base/base_paths_android.h"
@@ -26,9 +27,7 @@
 
 namespace {
 // Whether to use the process start time for startup metrics.
-BASE_FEATURE(kUseProcessStartTimeForMetrics,
-             "UseProcessStartTimeForMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseProcessStartTimeForMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 // ChromeMainDelegateAndroid is created when the library is loaded. It is always
@@ -87,7 +86,7 @@ void ChromeMainDelegateAndroid::SecureDataDirectory() {
   }
 }
 
-absl::variant<int, content::MainFunctionParams>
+std::variant<int, content::MainFunctionParams>
 ChromeMainDelegateAndroid::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {

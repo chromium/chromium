@@ -12,14 +12,15 @@ namespace blink {
 
 class CSSTimeInterpolationType : public CSSInterpolationType {
  public:
-  CSSTimeInterpolationType(PropertyHandle property,
-                           const PropertyRegistration* registration = nullptr)
+  explicit CSSTimeInterpolationType(
+      PropertyHandle property,
+      const PropertyRegistration* registration = nullptr)
       : CSSInterpolationType(property, registration) {}
 
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
@@ -33,8 +34,12 @@ class CSSTimeInterpolationType : public CSSInterpolationType {
   InterpolationValue CreateTimeValue(double) const;
   std::optional<double> GetSeconds(const ComputedStyle& style) const;
   double ClampTime(const CSSPropertyID& property, double value) const;
+  InterpolationValue MaybeConvertTime(const CSSValue&,
+                                      const CSSToLengthConversionData&) const;
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;

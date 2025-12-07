@@ -5,6 +5,7 @@
 #include "ash/wm/window_preview_view_test_api.h"
 
 #include "ash/wm/window_preview_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -21,7 +22,7 @@ gfx::RectF WindowPreviewViewTestApi::GetUnionRect() const {
   return preview_view_->GetUnionRect();
 }
 
-const base::flat_map<aura::Window*, WindowMirrorView*>&
+const base::flat_map<aura::Window*, raw_ptr<WindowMirrorView, CtnExperimental>>&
 WindowPreviewViewTestApi::GetMirrorViews() const {
   return preview_view_->mirror_views_;
 }

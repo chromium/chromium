@@ -103,8 +103,8 @@ using FaviconRawBitmapData = FaviconRawBitmapResult;
 struct LargeIconResult {
   explicit LargeIconResult(const FaviconRawBitmapResult& bitmap_in);
 
-  // Takes ownership of |fallback_icon_style_in|.
-  explicit LargeIconResult(FallbackIconStyle* fallback_icon_style_in);
+  explicit LargeIconResult(
+      std::unique_ptr<FallbackIconStyle> fallback_icon_style_in);
 
   ~LargeIconResult();
 
@@ -127,7 +127,8 @@ struct LargeIconImageResult {
                                 const GURL& icon_url_in);
 
   // Takes ownership of |fallback_icon_style_in|.
-  explicit LargeIconImageResult(FallbackIconStyle* fallback_icon_style_in);
+  explicit LargeIconImageResult(
+      std::unique_ptr<FallbackIconStyle> fallback_icon_style_in);
 
   ~LargeIconImageResult();
 

@@ -67,19 +67,6 @@ FactoryPingEmbargoState GetPingEmbargoState(
                                          : FactoryPingEmbargoState::kNotPassed;
 }
 
-FactoryPingEmbargoState GetEnterpriseManagementPingEmbargoState(
-    StatisticsProvider* statistics_provider) {
-  if (statistics_provider->GetMachineStatistic(
-          kEnterpriseManagementEmbargoEndDateKey)) {
-    return GetPingEmbargoState(statistics_provider,
-                               kEnterpriseManagementEmbargoEndDateKey,
-                               "FactoryPingEmbargo");
-  }
-  // Default to the RLZ ping embargo if no value for an enterprise management
-  // embargo.
-  return GetRlzPingEmbargoState(statistics_provider);
-}
-
 FactoryPingEmbargoState GetRlzPingEmbargoState(
     StatisticsProvider* statistics_provider) {
   return GetPingEmbargoState(statistics_provider, kRlzEmbargoEndDateKey,

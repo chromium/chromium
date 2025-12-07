@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -27,7 +23,7 @@ const uint8_t kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
 
 class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
-  DeviceQuirksPolicyTest() {}
+  DeviceQuirksPolicyTest() = default;
 
   DeviceQuirksPolicyTest(const DeviceQuirksPolicyTest&) = delete;
   DeviceQuirksPolicyTest& operator=(const DeviceQuirksPolicyTest&) = delete;
@@ -37,16 +33,16 @@ class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
     // called in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
 
     // Create display_profiles subdirectory under temp profile directory.
-    base::FilePath path =
-        quirks::QuirksManager::Get()->delegate()->GetDisplayProfileDirectory();
+    base::FilePath path = quirks::QuirksManager::Get()->display_profile_path();
     base::File::Error error = base::File::FILE_OK;
     bool created = base::CreateDirectoryAndGetError(path, &error);
     ASSERT_TRUE(created) << error;
 
     // Create fake icc file.
     path = path.Append(quirks::IdToFileName(kProductId));
-    bool all_written = base::WriteFile(
-        path, base::span<const uint8_t>(kFakeIccData, sizeof(kFakeIccData)));
+    bool all_written =
+        base::WriteFile(path, UNSAFE_TODO(base::span<const uint8_t>(
+                                  kFakeIccData, sizeof(kFakeIccData))));
     ASSERT_TRUE(all_written);
   }
 

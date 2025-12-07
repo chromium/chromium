@@ -6,15 +6,17 @@ package org.chromium.chrome.browser.ntp.search;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
@@ -22,10 +24,8 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -33,13 +33,15 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
     private final Context mContext;
     private final PropertyModel mModel;
     private final ViewGroup mView;
     private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
     private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @MonotonicNonNull OnClickListener mComposeplateButtonClickListener;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /** Constructor. */
     SearchBoxMediator(Context context, PropertyModel model, ViewGroup view) {
@@ -70,6 +72,17 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
         }
+
+        mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, null);
+        mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, null);
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
+
+        mLensClickListeners.clear();
+        mVoiceSearchClickListeners.clear();
     }
 
     @Override
@@ -77,8 +90,7 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
         Drawable drawable = AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, drawable);
 
-        ColorStateList colorStateList =
-                ThemeUtils.getThemedToolbarIconTint(mContext, BrandedColorScheme.APP_DEFAULT);
+        ColorStateList colorStateList = NtpCustomizationUtils.getSearchBoxIconColorTint(mContext);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
     }
 
@@ -120,8 +132,25 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
                 });
     }
 
+    /** Called to set a click listener for the composeplate button. */
+    void setComposeplateButtonClickListener(OnClickListener listener) {
+        assert mComposeplateButtonClickListener == null;
+
+        mComposeplateButtonClickListener = listener;
+        mModel.set(
+                SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK,
+                v -> {
+                    mComposeplateButtonClickListener.onClick(v);
+                });
+    }
+
+    void setComposeplateButtonIconRawResId(int iconRawResId) {
+        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID, iconRawResId);
+    }
+
     /**
      * Launch the Lens app.
+     *
      * @param lensEntryPoint A {@link LensEntryPoint}.
      * @param windowAndroid A {@link WindowAndroid} instance.
      * @param isIncognito Whether the request is from a Incognito tab.
@@ -160,15 +189,23 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, endPadding);
     }
 
-    void setTextViewTranslationX(float translationX) {
-        mModel.set(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X, translationX);
+    void setStartPadding(int startPadding) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_START_PADDING, startPadding);
     }
 
-    private Drawable getRoundedDrawable(Bitmap bitmap) {
-        if (bitmap == null) return null;
-        RoundedBitmapDrawable roundedBitmapDrawable =
-                ViewUtils.createRoundedBitmapDrawable(mContext.getResources(), bitmap, 0);
-        roundedBitmapDrawable.setCircular(true);
-        return roundedBitmapDrawable;
+    void setSearchBoxTextAppearance(@StyleRes int resId) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
+    }
+
+    void enableSearchBoxEditText(boolean enabled) {
+        mModel.set(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT, enabled);
+    }
+
+    void setSearchBoxHintText(@Nullable String hint) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hint);
+    }
+
+    void applyWhiteBackgroundWithShadow(boolean apply) {
+        mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
     }
 }

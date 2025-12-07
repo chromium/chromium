@@ -14,17 +14,16 @@ namespace blink {
 
 class CSSProperty;
 
-// Represents a blink::NGGridTrackList, converted into a form that can be
+// Represents a blink::GridTrackList, converted into a form that can be
 // interpolated from/to.
 class CORE_EXPORT InterpolableGridTrackList : public InterpolableValue {
  public:
   InterpolableGridTrackList(InterpolableList* values, double progress);
-  static InterpolableGridTrackList* MaybeCreate(
-      const NGGridTrackList& track_list,
-      const CSSProperty& property,
-      float zoom);
+  static InterpolableGridTrackList* MaybeCreate(const GridTrackList& track_list,
+                                                const CSSProperty& property,
+                                                float zoom);
 
-  NGGridTrackList CreateNGGridTrackList(
+  GridTrackList CreateGridTrackList(
       const CSSToLengthConversionData& conversion_data) const;
 
   // InterpolableValue implementation:

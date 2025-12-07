@@ -48,7 +48,7 @@ class TestExtendedInfoHandler : public ExtendedInfoHandler {
   TestExtendedInfoHandler(const TestExtendedInfoHandler&) = delete;
   TestExtendedInfoHandler& operator=(const TestExtendedInfoHandler&) = delete;
 
-  ~TestExtendedInfoHandler() override {}
+  ~TestExtendedInfoHandler() override = default;
 
   // ExtendedInfoHandler:
   std::string GetExtendedInfo(content::NavigationEntry* entry) const override {
@@ -111,14 +111,14 @@ void SetExtendedInfoForTest(content::NavigationEntry* entry) {
 
 class ContentSerializedNavigationBuilderTest : public testing::Test {
  public:
-  ContentSerializedNavigationBuilderTest() {}
+  ContentSerializedNavigationBuilderTest() = default;
 
   ContentSerializedNavigationBuilderTest(
       const ContentSerializedNavigationBuilderTest&) = delete;
   ContentSerializedNavigationBuilderTest& operator=(
       const ContentSerializedNavigationBuilderTest&) = delete;
 
-  ~ContentSerializedNavigationBuilderTest() override {}
+  ~ContentSerializedNavigationBuilderTest() override = default;
 
   void SetUp() override {
     ContentSerializedNavigationDriver* driver =

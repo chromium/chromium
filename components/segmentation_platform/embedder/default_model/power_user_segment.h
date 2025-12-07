@@ -15,6 +15,45 @@ struct Config;
 // metadata for the Power user optimization target.
 class PowerUserSegment : public DefaultModelProvider {
  public:
+  enum Label {
+    kLabelUnknown = 0,
+    kLabelNone = 1,
+    kLabelLow = 2,
+    kLabelMedium = 3,
+    kLabelHigh = 4,
+    kLabelCount
+  };
+  enum Feature {
+    kFeatureDownloadStartPerProfileType,
+    kFeatureMobileMenuDownloadManager,
+    kFeatureMobileMenuDownloadPage,
+    kFeatureMobileTabSwitched,
+    kFeatureMobileMenuRequestDesktopSite,
+    kFeatureMobileMenuHistory,
+    kFeatureMobileMenuSettings,
+    kFeatureSharingHubAndroidSendTabToSelfSelected,
+    kFeatureMobileMenuShare,
+    kFeatureMobileMenuAddToBookmarks,
+    kFeatureMobileMenuAllBookmarks,
+    kFeatureMobileOmniboxVoiceSearch,
+    kFeatureMediaControlsCast,
+    kFeatureMediaControlsCastOverlay,
+    kFeatureIncognitoModeStarted,
+    kFeatureAutofillKeyMetricsFillingAcceptanceAddress,
+    kFeatureAutofillKeyMetricsFillingAcceptanceCreditCard,
+    kFeatureMediaOutputStreamDuration,
+    kFeaturePasswordManagerFillingSource,
+    kFeatureMediaInputStreamDuration,
+    kFeatureUMAProfileSignInStatusV2,
+    kFeatureUMAProfileSyncStatusV2,
+    kFeatureAndroidPhotoPickerDiaglogAction,
+    kFeatureDataUseTrafficSizeUserUpstreamForegroundNotCellular,
+    kFeatureDataUseTrafficSizeUserUpstreamForegroundCellular,
+    kFeatureTabGroupCreatedOpenInNewTab,
+    kFeatureSessionTotalDuration,
+    kFeatureCount
+  };
+
   PowerUserSegment();
   ~PowerUserSegment() override = default;
 

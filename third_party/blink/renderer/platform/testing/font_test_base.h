@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FONT_TEST_BASE_H_
 
 #include "base/test/task_environment.h"
+#include "skia/ext/codec_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -14,6 +15,11 @@ class FontTestBase : public ::testing::Test {
  protected:
   FontTestBase();
   ~FontTestBase() override;
+
+  void SetUp() override {
+    // Skia's Fontations backend needs a PNG decoder registered.
+    skia::EnsurePNGDecoderRegistered();
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

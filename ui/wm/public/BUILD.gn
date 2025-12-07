@@ -33,8 +33,24 @@ component("public") {
 
   defines = [ "WM_PUBLIC_IMPLEMENTATION" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     "//ui/aura",
     "//ui/base",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_activation_change_observer.cc",
+    "mock_activation_change_observer.h",
+  ]
+
+  deps = [
+    ":public",
+    "//testing/gmock",
   ]
 }

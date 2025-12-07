@@ -10,18 +10,17 @@
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_launch_params.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -38,23 +37,27 @@ bool IsRealUserProfile(const Profile* profile) {
 
 bool IsProjectorAllowedForProfile(const Profile* profile) {
   DCHECK(profile);
-  if (!IsRealUserProfile(profile))
+  if (!IsRealUserProfile(profile)) {
     return false;
+  }
 
   auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
+  if (!user) {
     return false;
+  }
 
   return user->HasGaiaAccount();
 }
 
 bool IsProjectorAppEnabled(const Profile* profile) {
-  if (!IsProjectorAllowedForProfile(profile))
+  if (!IsProjectorAllowedForProfile(profile)) {
     return false;
+  }
 
   // Projector for regular consumer users.
-  if (!profile->GetProfilePolicyConnector()->IsManaged())
+  if (!profile->GetProfilePolicyConnector()->IsManaged()) {
     return true;
+  }
 
   // Projector dogfood for supervised users is controlled by an enterprise
   // policy. When the feature is out of dogfood phase the policy will be
@@ -81,18 +84,18 @@ bool IsMetadataFile(const base::FilePath& path) {
 
 void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  Browser* browser =
-      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* browser = ash::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   if (!browser) {
     // Do not call SendFilesToProjectorApp() unless the Projector app is already
     // open.
     return;
   }
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = browser->GetActiveWebContents();
   auto* web_ui = web_contents->GetWebUI();
-  if (!web_ui)
+  if (!web_ui) {
     return;
+  }
   if (!web_ui->GetController()->GetAs<ash::UntrustedProjectorUI>()) {
     // We only want to send files to the Projector SWA. Don't send files to the
     // wrong trusted context if it navigates away.
@@ -102,7 +105,7 @@ void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
     return;
   }
 
-  web_app::WebAppLaunchParams launch_params;
+  webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = false;
   launch_params.app_id = ash::kChromeUIUntrustedProjectorSwaAppId;
   // Sending files should not navigate the app. This argument is used for

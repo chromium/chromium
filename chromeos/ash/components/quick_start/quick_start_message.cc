@@ -61,7 +61,8 @@ namespace ash::quick_start {
 base::expected<std::unique_ptr<QuickStartMessage>, QuickStartMessage::ReadError>
 QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
   std::string str_data(data.begin(), data.end());
-  std::optional<base::Value> data_value = base::JSONReader::Read(str_data);
+  std::optional<base::Value> data_value =
+      base::JSONReader::Read(str_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!data_value.has_value()) {
     LOG(ERROR) << "Message is not JSON";
     return base::unexpected(QuickStartMessage::ReadError::INVALID_JSON);
@@ -96,8 +97,8 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
           QuickStartMessage::ReadError::BASE64_DESERIALIZATION_FAILURE);
     }
 
-    std::optional<base::Value> json_reader_result =
-        base::JSONReader::Read(json_payload);
+    std::optional<base::Value> json_reader_result = base::JSONReader::Read(
+        json_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!json_reader_result.has_value()) {
       LOG(ERROR) << "Unable to decode base64 encoded payload into JSON";
       return base::unexpected(

@@ -11,13 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -106,7 +106,7 @@ BLINK_COMMON_EXPORT bool DecodePageStateWithDeviceScaleFactorForTesting(
 // + |size|) back into a ResourceRequestBody.  Returns nullptr if the
 // decoding fails (e.g. if |data| is malformed).
 BLINK_COMMON_EXPORT scoped_refptr<network::ResourceRequestBody>
-DecodeResourceRequestBody(const char* data, size_t size);
+DecodeResourceRequestBody(base::span<const uint8_t> data);
 
 // Encodes |resource_request_body| into |encoded|.
 BLINK_COMMON_EXPORT std::string EncodeResourceRequestBody(

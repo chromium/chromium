@@ -21,8 +21,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media::mp2t::EsParserMpeg1Audio es_parser(
       base::BindRepeating(&NewAudioConfig), base::BindRepeating(&EmitBuffer),
       &media_log);
-  if (es_parser.Parse(data, size, media::kNoTimestamp,
-                      media::kNoDecodeTimestamp)) {
+  if (!es_parser.Parse(
+          // SAFETY: This is guaranteed by the fuzzer API.
+          UNSAFE_BUFFERS(base::span(data, size)), media::kNoTimestamp,
+          media::kNoDecodeTimestamp)) {
     es_parser.Flush();
   }
   return 0;

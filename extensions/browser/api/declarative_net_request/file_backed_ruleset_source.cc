@@ -5,7 +5,9 @@
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 
 #include <memory>
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -15,7 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -126,15 +128,13 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
       continue;
     }
 
-    std::string rule_location;
-
-    // If possible use the rule ID in the install warning.
-    if (auto id = rules_list[i].GetDict().FindInt(kIDKey)) {
-      rule_location = base::StringPrintf("id %d", *id);
-    } else {
-      // Use one-based indices.
-      rule_location = base::StringPrintf("index %zu", i + 1);
-    }
+    // If possible use the rule ID in the install warning. Otherwise, use a one
+    // based index.
+    auto id = rules_list[i].is_dict() ? rules_list[i].GetDict().FindInt(kIDKey)
+                                      : std::nullopt;
+    std::string rule_location = id.has_value()
+                                    ? base::StringPrintf("id %d", *id)
+                                    : base::StringPrintf("index %zu", i + 1);
 
     result.rule_parse_warnings.push_back(CreateInstallWarning(
         json_path, ErrorUtils::FormatErrorMessage(
@@ -302,8 +302,9 @@ std::vector<FileBackedRulesetSource> FileBackedRulesetSource::CreateStatic(
 
   std::vector<FileBackedRulesetSource> sources;
   for (const auto& info : rulesets) {
-    if (!only_enabled || info.enabled)
+    if (!only_enabled || info.enabled) {
       sources.push_back(CreateStatic(extension, info));
+    }
   }
 
   return sources;
@@ -428,9 +429,12 @@ bool FileBackedRulesetSource::SerializeRulesToJSON(
   base::Value::List rules_value =
       json_schema_compiler::util::CreateValueFromArray(rules);
 
-  JSONStringValueSerializer serializer(json);
-  serializer.set_pretty_print(false);
-  return serializer.Serialize(rules_value);
+  std::optional<std::string> json_string = base::WriteJson(rules_value);
+  if (!json_string) {
+    return false;
+  }
+  *json = std::move(*json_string);
+  return true;
 }
 
 LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(
@@ -440,15 +444,18 @@ LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(
 
   base::ElapsedTimer timer;
 
-  if (!base::PathExists(indexed_path()))
+  if (!base::PathExists(indexed_path())) {
     return LoadRulesetResult::kErrorInvalidPath;
+  }
 
   std::string ruleset_data;
-  if (!base::ReadFileToString(indexed_path(), &ruleset_data))
+  if (!base::ReadFileToString(indexed_path(), &ruleset_data)) {
     return LoadRulesetResult::kErrorCannotReadFile;
+  }
 
-  if (!StripVersionHeaderAndParseVersion(&ruleset_data))
+  if (!StripVersionHeaderAndParseVersion(&ruleset_data)) {
     return LoadRulesetResult::kErrorVersionMismatch;
+  }
 
   if (expected_ruleset_checksum !=
       GetChecksum(base::as_byte_span(ruleset_data))) {

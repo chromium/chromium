@@ -25,7 +25,7 @@ class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
   KeyboardLayout(const KeyboardLayout&) = delete;
   KeyboardLayout& operator=(const KeyboardLayout&) = delete;
 
-  virtual ~KeyboardLayout() = default;
+  ~KeyboardLayout() = default;
 
   ScriptPromise<KeyboardLayoutMap> GetKeyboardLayoutMap(ScriptState*,
                                                         ExceptionState&);

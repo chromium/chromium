@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -12,6 +15,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 // Base view that provide security-related functionality to permission prompts.
 // This class will:
@@ -61,8 +65,20 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
       permissions::PermissionPrompt::Delegate& delegate);
 
   static std::u16string GetAllowAlwaysText(
-      const std::vector<raw_ptr<permissions::PermissionRequest,
-                                VectorExperimental>>& visible_requests);
+      const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+          visible_requests);
+
+  static std::u16string GetAllowAlwaysText(
+      const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+          visible_requests);
+
+  static std::u16string GetBlockText(
+      const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+          visible_requests);
+
+  static std::u16string GetBlockText(
+      const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+          visible_requests);
 
   // Starts observing our widget for occlusion by a picture-in-picture window.
   // Subclasses must manually call this if they override `AddedToWidget()`
@@ -73,11 +89,21 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
 
   Browser* browser() const { return browser_; }
 
+  bool record_browser_always_active_value() const {
+    return record_browser_always_active_value_;
+  }
+
+  permissions::RequestTypeForUma request_type() const { return request_type_; }
+
   std::vector<std::pair<size_t, size_t>> GetTitleBoldedRanges();
   void SetTitleBoldedRanges(
       std::vector<std::pair<size_t, size_t>> bolded_ranges);
 
  private:
+  void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
+
+  base::CallbackListSubscription browser_subscription_;
+
   const UrlIdentity url_identity_;
 
   ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
@@ -88,11 +114,17 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
   // PictureInPictureOcclusionTracker.
   const bool is_for_picture_in_picture_window_;
 
+  // Boolean value to track if the browser was always active while the prompt
+  // was displayed.
+  bool record_browser_always_active_value_ = true;
+
   const raw_ptr<Browser> browser_ = nullptr;
 
   // $ORIGIN in the title should be bolded, the ranges of the $ORIGINs are
   // gained while building the title string via `l10n_util::GetStringFUTF16()`.
   std::vector<std::pair<size_t, size_t>> title_bolded_ranges_ = {};
+
+  permissions::RequestTypeForUma request_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_

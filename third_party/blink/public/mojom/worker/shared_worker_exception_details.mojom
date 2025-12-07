@@ -1,0 +1,26 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/source_location.mojom";
+
+// Used to distinguish between different types of worker errors, which determines
+// whether a generic `Event` or a detailed `ErrorEvent` should be dispatched
+// to the client. See the spec for details.
+// https://html.spec.whatwg.org/multipage/webappapis.html#report-an-exception
+enum SharedWorkerErrorType {
+  // For script fetch/parse errors. A generic `Event` should be dispatched.
+  kParseError,
+  // For runtime script errors during evaluation. An `ErrorEvent` should be
+  // dispatched.
+  kRuntimeError,
+};
+
+// Contains details about an exception reported from a shared worker.
+struct SharedWorkerExceptionDetails {
+  string error_message;
+  network.mojom.SourceLocation source_location;
+  SharedWorkerErrorType error_type;
+};

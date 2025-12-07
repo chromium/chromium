@@ -79,14 +79,14 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
 
   // DevToolsAgentHostImpl overrides.
   DevToolsSession::Mode GetSessionMode() override;
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
 
   // WebContentsObserver overrides.
   void WebContentsDestroyed() override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(FrameTreeNodeId frame_tree_node_id) override;
 
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
   scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 
 #include <stddef.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -78,8 +74,10 @@ bool IsFileSystemProviderLocalPath(const base::FilePath& local_path) {
   if (components[0] != FILE_PATH_LITERAL("/"))
     return false;
 
-  if (components[1] != kProvidedMountPointRoot + 1 /* no leading slash */)
+  if (components[1] !=
+      UNSAFE_TODO(kProvidedMountPointRoot + 1 /* no leading slash */)) {
     return false;
+  }
 
   return true;
 }

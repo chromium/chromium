@@ -5,7 +5,7 @@
 import("//ash/webui/projector_app/projector_app.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("annotator") {
   sources = [
@@ -13,14 +13,14 @@ static_library("annotator") {
     "untrusted_annotator_ui_config.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/webui/annotator",
     "//ash/webui/projector_app/public/cpp",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/projector",
-    "//chrome/common",
-    "//chrome/common:channel_info",
     "//components/version_info",
     "//content/public/browser",
   ]
@@ -35,12 +35,11 @@ source_set("browser_tests") {
     sources = [ "annotator_ui_integration_browsertest.cc" ]
 
     deps = [
-      ":annotator",
+      "//ash/webui/annotator",
       "//ash/webui/annotator/public/cpp",
       "//ash/webui/media_app_ui:browser_test_support",
       "//ash/webui/projector_app/public/cpp",
       "//base",
-      "//chrome/browser/ui/ash/annotator",
       "//chrome/test:test_support",
       "//content/public/browser",
       "//content/public/common",

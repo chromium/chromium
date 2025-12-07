@@ -8,13 +8,15 @@
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
-#include <iosfwd>
+#include <ostream>
 #include <string>
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -119,27 +121,24 @@ class basic_cstring_view final {
   constexpr basic_cstring_view(const String& s LIFETIME_BOUND) noexcept
       : ptr_(s.c_str()), len_(s.size()) {}
 
-  // Unsafe construction from a pointer and length. Prefer to construct cstring
-  // view from a string literal, std::string, or another cstring view.
+  // Unsafe construction from a NUL-terminated cstring, primarily for use with C
+  // APIs. Prefer to construct cstring view from a string literal, std::string,
+  // or another cstring view.
   //
   // # Safety
-  // The `ptr` and `len` pair indicate a valid NUL-terminated string:
-  // * The `ptr` must not be null, and must point to a NUL-terminated string.
-  // * The `len` must be valid such that `ptr + len` gives a pointer to the
-  //   terminating NUL and is in the same allocation as `ptr`.
-  UNSAFE_BUFFER_USAGE explicit constexpr basic_cstring_view(const Char* ptr
-                                                                LIFETIME_BOUND,
-                                                            size_t len)
-      : ptr_(ptr), len_(len) {
-    // This method is marked UNSAFE_BUFFER_USAGE so we are trusting the caller
-    // to do things right, and expecting strong scrutiny at the call site, but
-    // we perform a debug check to help catch mistakes regardless.
-    //
-    // SAFETY: `ptr` points to `len` many chars and then a NUL, according to the
-    // caller of this method. So then `len` index will be in bounds and return
-    // the NUL.
-    DCHECK_EQ(UNSAFE_BUFFERS(ptr[len]), Char{0});
-  }
+  // The `ptr` must point to a NUL-terminated string or Undefined Behaviour will
+  // result.
+  //
+  // # Implementation note
+  // We use a `String&&` template to ensure the input is a pointer and not an
+  // array that decayed to a pointer. This ensures the ctor will not act as a
+  // fallback for the string literal ctor when the enable_if condition fails.
+  template <class String>
+    requires(std::same_as<std::remove_cvref_t<String>, Char*> ||
+             std::same_as<std::remove_cvref_t<String>, const Char*>)
+  UNSAFE_BUFFER_USAGE explicit constexpr basic_cstring_view(
+      String&& ptr LIFETIME_BOUND) noexcept
+      : ptr_(ptr), len_(std::char_traits<Char>::length(ptr)) {}
 
   // Returns a pointer to the NUL-terminated string, for passing to C-style APIs
   // that require `const char*` (or whatever the `Char` type is).
@@ -553,6 +552,23 @@ std::basic_ostream<Char, Traits>& operator<<(
 // rather than strings.
 inline void PrintTo(cstring_view view, std::ostream* os) {
   *os << view;
+}
+
+// Converts a `basic_cstring_view` instance to a `span<const CharT>`, preserving
+// the trailing '\0'.
+//
+// Explicitly includes the trailing nul, which would be omitted by calling the
+// range constructor.
+template <typename CharT>
+constexpr auto span_with_nul_from_cstring_view(basic_cstring_view<CharT> str) {
+  // SAFETY: It is safe to read the guaranteed null-terminator in `str`.
+  return UNSAFE_BUFFERS(span(str.data(), str.size() + 1));
+}
+// Like `span_with_nul_from_cstring_view()`, but returns a byte span.
+template <typename CharT>
+constexpr auto byte_span_with_nul_from_cstring_view(
+    basic_cstring_view<CharT> str) {
+  return as_bytes(span_with_nul_from_cstring_view(str));
 }
 
 }  // namespace base

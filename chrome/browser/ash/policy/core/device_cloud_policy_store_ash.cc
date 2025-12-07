@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +20,8 @@
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_device_policy_value_validator.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/ownership/owner_key_util.h"
@@ -29,6 +30,7 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 
 namespace em = enterprise_management;
 
@@ -38,6 +40,17 @@ namespace {
 
 const char kDMTokenCheckHistogram[] = "Enterprise.EnrolledPolicyHasDMToken";
 const char kPolicyCheckHistogram[] = "Enterprise.EnrolledDevicePolicyPresent";
+
+bool CanUseDeviceIdValidation() {
+  // The devices are storing the OS version in the local state at enrollment,
+  // starting from version M122. For those devices the stats shows 100%
+  // matching of device_id from policy with the value from install attributes.
+  // Therefore we consider a low risk for them to enforce the device_id
+  // validation now.
+  auto* local_state = g_browser_process->local_state();
+  return local_state &&
+         !local_state->GetString(prefs::kEnrollmentVersionOS).empty();
+}
 
 }  // namespace
 
@@ -91,8 +104,10 @@ void DeviceCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
       CloudPolicyValidatorBase::TIMESTAMP_VALIDATED,
       CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  validator->RunValidation();
-  OnPolicyToStoreValidated(validator.get());
+  DeviceCloudPolicyValidator::StartValidation(
+      std::move(validator),
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreAsh::Load() {
@@ -122,8 +137,10 @@ void DeviceCloudPolicyStoreAsh::InstallInitialPolicy(
   validator->ValidateInitialKey(install_attributes_->GetDomain());
   validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
                               CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  validator->RunValidation();
-  OnPolicyToStoreValidated(validator.get());
+  DeviceCloudPolicyValidator::StartValidation(
+      std::move(validator),
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreAsh::DeviceSettingsUpdated() {
@@ -146,7 +163,12 @@ DeviceCloudPolicyStoreAsh::CreateValidator(
   auto validator = std::make_unique<DeviceCloudPolicyValidator>(
       std::make_unique<em::PolicyFetchResponse>(policy),
       background_task_runner_);
-  validator->ValidateDomain(install_attributes_->GetDomain());
+  if (CanUseDeviceIdValidation()) {
+    validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
+                                CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
+  } else {
+    validator->ValidateDomain(install_attributes_->GetDomain());
+  }
   validator->ValidatePolicyType(dm_protocol::kChromeDevicePolicyType);
   validator->ValidatePayload();
   validator->ValidateValues(std::make_unique<ONCDevicePolicyValueValidator>());
@@ -193,18 +215,12 @@ void DeviceCloudPolicyStoreAsh::UpdateFromService() {
   const ash::DeviceSettingsService::Status service_status =
       device_settings_service_->status();
   if (service_status == ash::DeviceSettingsService::STORE_SUCCESS) {
-    auto new_policy_fetch_response =
-        std::make_unique<em::PolicyFetchResponse>();
     auto new_policy = std::make_unique<em::PolicyData>();
-    const em::PolicyFetchResponse* policy_fetch_response =
-        device_settings_service_->policy_fetch_response();
     const em::PolicyData* policy_data = device_settings_service_->policy_data();
     if (policy_data) {
-      DCHECK(policy_fetch_response);
-      new_policy_fetch_response->MergeFrom(*policy_fetch_response);
       new_policy->MergeFrom(*policy_data);
     }
-    SetPolicy(std::move(new_policy_fetch_response), std::move(new_policy));
+    SetPolicy(std::move(new_policy));
 
     PolicyMap new_policy_map;
     if (is_managed()) {
@@ -239,8 +255,13 @@ void DeviceCloudPolicyStoreAsh::UpdateStatusFromService() {
     case ash::DeviceSettingsService::STORE_VALIDATION_ERROR:
       status_ = STATUS_LOAD_ERROR;
       return;
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED:
+      status_ = STATUS_BAD_STATE;
+      return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DeviceCloudPolicyStoreAsh::CheckDMToken() {
@@ -252,6 +273,9 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
     case ash::DeviceSettingsService::STORE_NO_POLICY:
     case ash::DeviceSettingsService::STORE_INVALID_POLICY:
     case ash::DeviceSettingsService::STORE_VALIDATION_ERROR:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED:
       // Continue with the check below.
       break;
     case ash::DeviceSettingsService::STORE_OPERATION_FAILED:
@@ -283,7 +307,7 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   if (policy_fetch_response) {
     debug_info << ", has_signature: "
                << policy_fetch_response->has_policy_data_signature();
-    debug_info << ", size = " << policy_fetch_response->ByteSize();
+    debug_info << ", size = " << policy_fetch_response->ByteSizeLong();
     std::unique_ptr<em::PolicyData> poldata =
         std::make_unique<em::PolicyData>();
     if (!policy_fetch_response->has_policy_data() ||

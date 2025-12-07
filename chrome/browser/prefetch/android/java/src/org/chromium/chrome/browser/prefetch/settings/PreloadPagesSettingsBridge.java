@@ -8,10 +8,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Reads and writes preferences related to preloading. */
 @JNINamespace("prefetch")
+@NullMarked
 public class PreloadPagesSettingsBridge {
     /**
      * @param profile The {@link Profile} associated with the settings.

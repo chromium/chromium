@@ -11,9 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/log/net_log_event_type.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
@@ -37,6 +37,7 @@ int ClientSocketHandle::Init(
     ClientSocketPool::RespectLimits respect_limits,
     CompletionOnceCallback callback,
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override,
     ClientSocketPool* pool,
     const NetLogWithSource& net_log) {
   requesting_source_ = net_log.source();
@@ -51,7 +52,7 @@ int ClientSocketHandle::Init(
   int rv = pool_->RequestSocket(
       group_id, std::move(socket_params), proxy_annotation_tag, priority,
       socket_tag, respect_limits, this, std::move(io_complete_callback),
-      proxy_auth_callback, net_log);
+      proxy_auth_callback, fail_if_alias_requires_proxy_override, net_log);
   if (rv == ERR_IO_PENDING) {
     callback_ = std::move(callback);
   } else {
@@ -185,7 +186,7 @@ void ClientSocketHandle::ResetInternal(bool cancel, bool cancel_connect_job) {
       } else {
         // If the handle has been initialized, we should still have a
         // socket.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     } else if (cancel) {
       // If we did not get initialized yet and we have a socket

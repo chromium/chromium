@@ -70,8 +70,9 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
   }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, layout_html_canvas_,
-                                                  paint_info.phase))
+                                                  paint_info.phase)) {
     return;
+  }
 
   BoxDrawingRecorder recorder(context, layout_html_canvas_, paint_info.phase,
                               paint_offset);

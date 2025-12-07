@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -137,31 +136,26 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   AtomicString GetMatchFamilyName() { return match_font_family_; }
 
   scoped_refptr<const FontPalette> GetStart() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return start_;
   }
 
   scoped_refptr<const FontPalette> GetEnd() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return end_;
   }
 
   double GetStartPercentage() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return percentages_.start;
   }
 
   double GetEndPercentage() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return percentages_.end;
   }
 
   double GetNormalizedPercentage() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return normalized_percentage_;
   }
@@ -174,20 +168,17 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   }
 
   double GetAlphaMultiplier() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK((IsInterpolablePalette()));
     return alpha_multiplier_;
   }
 
   Color::ColorSpace GetColorInterpolationSpace() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return color_interpolation_space_;
   }
 
   std::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
       const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return hue_interpolation_method_;
   }
@@ -195,7 +186,6 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   String ToString() const;
 
   bool operator==(const FontPalette& other) const;
-  bool operator!=(const FontPalette& other) const { return !(*this == other); }
 
   unsigned GetHash() const;
 

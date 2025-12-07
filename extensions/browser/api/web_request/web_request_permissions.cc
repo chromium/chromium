@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -32,6 +33,8 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::PermissionsData;
 
@@ -85,8 +88,9 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
   const extensions::Extension* extension =
       permission_helper->extension_registry()->enabled_extensions().GetByID(
           extension_id);
-  if (!extension)
+  if (!extension) {
     return PermissionsData::PageAccess::kDenied;
+  }
 
   // Prevent viewing / modifying requests initiated by a host protected by
   // policy.
@@ -96,8 +100,9 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
   }
 
   // Check if this event crosses incognito boundaries when it shouldn't.
-  if (crosses_incognito && !permission_helper->CanCrossIncognito(extension))
+  if (crosses_incognito && !permission_helper->CanCrossIncognito(extension)) {
     return PermissionsData::PageAccess::kDenied;
+  }
 
   switch (host_permissions_check) {
     case WebRequestPermissions::DO_NOT_CHECK_HOST:
@@ -119,8 +124,9 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
             initiator
                 ? GetHostAccessForURL(*extension, initiator->GetURL(), tab_id)
                 : PermissionsData::PageAccess::kDenied;
-        if (initiator_access == PermissionsData::PageAccess::kAllowed)
+        if (initiator_access == PermissionsData::PageAccess::kAllowed) {
           access = PermissionsData::PageAccess::kAllowed;
+        }
       }
       return access;
     }
@@ -135,14 +141,17 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
       // requests. See crbug.com/918137.
       // TODO(karandeepb): Should service worker navigation preload requests be
       // treated similarly?
-      if (is_navigation_request)
+      if (is_navigation_request) {
         return request_access;
+      }
 
-      if (request_access == PermissionsData::PageAccess::kDenied)
+      if (request_access == PermissionsData::PageAccess::kDenied) {
         return request_access;
+      }
 
-      if (!initiator || initiator->opaque())
+      if (!initiator || initiator->opaque()) {
         return request_access;
+      }
 
       DCHECK(request_access == PermissionsData::PageAccess::kWithheld ||
              request_access == PermissionsData::PageAccess::kAllowed);
@@ -174,8 +183,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
                  : PermissionsData::PageAccess::kDenied;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return PermissionsData::PageAccess::kDenied;
+  NOTREACHED();
 }
 
 // Returns true if |request|.url is of the form clients[0-9]*.google.com.
@@ -189,13 +197,15 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
   constexpr size_t kGoogleComLength = std::size(kGoogleCom) - 1;
   constexpr size_t kClientLength = std::size(kClient) - 1;
 
-  if (!url.DomainIs(kGoogleCom))
+  if (!url.DomainIs(kGoogleCom)) {
     return false;
+  }
 
-  std::string_view host = url.host_piece();
+  std::string_view host = url.host();
 
-  while (base::EndsWith(host, "."))
+  while (base::EndsWith(host, ".")) {
     host.remove_suffix(1u);
+  }
 
   // Check for "clients[0-9]*.google.com" hosts.
   // This protects requests to several internal services such as sync,
@@ -210,8 +220,9 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
     return false;
   }
 
-  if (pos > 0 && host[pos - 1] != '.')
+  if (pos > 0 && host[pos - 1] != '.') {
     return false;
+  }
 
   for (std::string_view::const_iterator
            i = host.begin() + pos + kClientLength,
@@ -237,12 +248,14 @@ bool IsMainFrameNavigationRequest(const extensions::WebRequestInfo& request) {
 bool WebRequestPermissions::HideRequest(
     extensions::PermissionHelper* permission_helper,
     const extensions::WebRequestInfo& request) {
-  if (!HasWebRequestScheme(request.url))
+  if (!HasWebRequestScheme(request.url)) {
     return true;
+  }
 
   // Requests from <webview> are never hidden.
-  if (request.is_web_view)
+  if (request.is_web_view) {
     return false;
+  }
 
   bool is_request_from_browser = request.render_process_id == -1;
 
@@ -256,8 +269,9 @@ bool WebRequestPermissions::HideRequest(
     }
 
     // Hide all non-navigation requests made by the browser. crbug.com/884932.
-    if (!request.is_navigation_request)
+    if (!request.is_navigation_request) {
       return true;
+    }
 
     DCHECK(request.web_request_type ==
                extensions::WebRequestResourceType::MAIN_FRAME ||
@@ -344,8 +358,9 @@ bool WebRequestPermissions::HideRequest(
   }
 
   // Allow the extension embedder to hide the request.
-  if (permission_helper->ShouldHideBrowserNetworkRequest(request))
+  if (permission_helper->ShouldHideBrowserNetworkRequest(request)) {
     return true;
+  }
 
   // Safebrowsing and Chrome Webstore URLs are always protected, i.e. also
   // for requests from common renderers.
@@ -355,10 +370,11 @@ bool WebRequestPermissions::HideRequest(
   // domain. However once the old webstore is turned down we can change it over
   // during that cleanup.
   if (extension_urls::IsWebstoreUpdateUrl(url) ||
+      extension_urls::IsWebstoreApiUrl(url) ||
       extension_urls::IsBlocklistUpdateUrl(url) ||
       extension_urls::IsSafeBrowsingUrl(url) ||
       (url.DomainIs("chrome.google.com") &&
-       base::StartsWith(url.path_piece(), "/webstore",
+       base::StartsWith(url.path(), "/webstore",
                         base::CompareCase::SENSITIVE)) ||
       url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host())) {
     return true;
@@ -389,8 +405,9 @@ bool WebRequestPermissions::CanExtensionAccessInitiator(
     const std::optional<url::Origin>& initiator,
     int tab_id,
     bool crosses_incognito) {
-  if (!initiator)
+  if (!initiator) {
     return true;
+  }
 
   return CanExtensionAccessURLInternal(
              permission_helper, extension_id, initiator->GetURL(), tab_id,

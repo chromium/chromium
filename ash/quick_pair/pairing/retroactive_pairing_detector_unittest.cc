@@ -137,14 +137,15 @@ namespace ash {
 namespace quick_pair {
 
 class RetroactivePairingDetectorTest
-    : public AshTestBase,
+    : public NoSessionAshTestBase,
       public RetroactivePairingDetector::Observer {
  public:
   RetroactivePairingDetectorTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
         &fast_pair_gatt_service_factory_);
 
@@ -178,8 +179,7 @@ class RetroactivePairingDetectorTest
   void TearDown() override {
     fast_pair_repository_.reset();
     retroactive_pairing_detector_.reset();
-    ClearLogin();
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   void CreateRetroactivePairingDetector() {
@@ -198,10 +198,11 @@ class RetroactivePairingDetectorTest
     retroactive_device_ = device;
   }
 
-  void PairFastPairDeviceWithFastPair(std::string address) {
-    auto fp_device = base::MakeRefCounted<Device>(kValidModelId, address,
+  void PairFastPairDeviceWithFastPair(std::string classic_address,
+                                      std::string ble_address) {
+    auto fp_device = base::MakeRefCounted<Device>(kValidModelId, ble_address,
                                                   Protocol::kFastPairInitial);
-    fp_device->set_classic_address(address);
+    fp_device->set_classic_address(classic_address);
     mock_pairer_broker_->NotifyDevicePaired(fp_device);
   }
 
@@ -246,7 +247,11 @@ class RetroactivePairingDetectorTest
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    if (user_type == user_manager::UserType::kGuest) {
+      SimulateGuestLogin();
+    } else {
+      SimulateUserLogin({kUserEmail, user_type});
+    }
   }
 
   void SetGattServiceClientConnected(bool connected) {
@@ -308,7 +313,7 @@ TEST_F(RetroactivePairingDetectorTest,
 
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
-  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress, kBleAddress);
 
   EXPECT_FALSE(retroactive_pair_found_);
 }
@@ -336,7 +341,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // pairing event call stack. The Bluetooth Adapter system
   // event response has not finished completing because of the delay set in
   // `SetIsDeviceSavedToAccountCallbackDelayed`.
-  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress, kBleAddress);
 
   // Trigger the callback to check the repository after the Fast Pair pairing
   // event fires. This will conclude the BluetoothAdapter pairing event call
@@ -655,7 +660,7 @@ TEST_F(RetroactivePairingDetectorTest,
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_Ble_ModelId_KioskUserLoggedIn) {
-  Login(user_manager::UserType::kKioskApp);
+  Login(user_manager::UserType::kKioskChromeApp);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
@@ -910,6 +915,7 @@ TEST_F(RetroactivePairingDetectorTest,
   CreateRetroactivePairingDetector();
   base::RunLoop().RunUntilIdle();
 
+  ClearLogin();
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
@@ -2132,7 +2138,7 @@ TEST_F(RetroactivePairingDetectorTest, NoCrashWhenFootprintsResponseIsSlow) {
   PairFastPairDeviceWithClassicBluetooth(true, kTestDeviceAddress);
 
   // This calls OnDevicePaired.
-  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress, kBleAddress);
 
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
@@ -2152,7 +2158,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_Success) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2180,7 +2185,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionOpen_Success) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2208,7 +2212,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionFailure) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2234,7 +2237,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_ReadModelIdFailure) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2254,6 +2256,48 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_ReadModelIdFailure) {
   RunReadModelIdCallback(
       /*error_code=*/device::BluetoothGattService::GattErrorCode::kNotSupported,
       kModelIdBytesNoMetadata);
+  EXPECT_FALSE(retroactive_pair_found_);
+}
+
+TEST_F(RetroactivePairingDetectorTest,
+       ClassicBluetoothPairedLEDeviceDoesNotTriggerRetroactivePair) {
+  Login(user_manager::UserType::kRegular);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairKeyboards},
+      /*disabled_features=*/{});
+  fast_pair_repository_->SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  SetMessageStream(kModelIdBleAddressBytes);
+
+  // Simulate the Bluetooth Adapter event firing for the LE address, with the
+  // callback to`IsDeviceSavedToAccount` delayed.
+  fast_pair_repository_->SetIsDeviceSavedToAccountCallbackDelayed(
+      /*is_delayed=*/true);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+
+  // Simulate the Fast Pair pairing event firing during the Bluetooth Adapter
+  // pairing event call stack.
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress2, kTestDeviceAddress);
+
+  // Trigger the callback to check the repository after the Fast Pair pairing
+  // event fires. This will conclude the BluetoothAdapter pairing event call
+  // stack.
+  fast_pair_repository_->TriggerIsDeviceSavedToAccountCallback();
+
+  // Simulate data being received via Message Stream for the device. It should
+  // not be detected since the Fast Pair event has been fired, removing it
+  // as a possible retroactive device.
+  fake_socket_->TriggerReceiveCallback();
+  NotifyMessageStreamConnected(kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(retroactive_pair_found_);
 }
 

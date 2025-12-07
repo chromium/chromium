@@ -25,11 +25,13 @@ import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -49,6 +51,7 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class CompositorSurfaceManagerImplTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private CompositorSurfaceManager.SurfaceManagerCallbackTarget mCallback;
 
     private CompositorSurfaceManager mManager;
@@ -124,7 +127,6 @@ public class CompositorSurfaceManagerImplTest {
 
     @Before
     public void beforeTest() {
-        MockitoAnnotations.initMocks(this);
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mLayout = new FrameLayout(activity);
         mManager = new CompositorSurfaceManagerImpl(mLayout, mCallback);

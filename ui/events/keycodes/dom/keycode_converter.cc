@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -166,7 +162,7 @@ const KeycodeMapEntry* KeycodeConverter::GetKeycodeMapForTest() {
 const char* KeycodeConverter::DomKeyStringForTest(size_t index) {
   if (index >= std::size(kDomKeyMappings))
     return nullptr;
-  return kDomKeyMappings[index].string;
+  return UNSAFE_TODO(kDomKeyMappings[index]).string;
 }
 
 // static

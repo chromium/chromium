@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 
+#include <array>
 #include <optional>
 #include <set>
 
+#include "base/containers/span.h"
 #include "base/memory/singleton.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
@@ -21,8 +18,8 @@ namespace blink {
 namespace {
 
 // Decision tree lower and upper thresholds for grayscale and color images.
-const float kLowColorCountThreshold[2] = {0.8125, 0.015137};
-const float kHighColorCountThreshold[2] = {1, 0.025635};
+constexpr std::array<float, 2> kLowColorCountThreshold = {0.8125, 0.015137};
+constexpr std::array<float, 2> kHighColorCountThreshold = {1, 0.025635};
 
 bool IsColorGray(const SkColor& color) {
   return abs(static_cast<int>(SkColorGetR(color)) -
@@ -42,9 +39,7 @@ const float kMinOpaquePixelPercentageForForeground = 0.2;
 
 }  // namespace
 
-DarkModeImageClassifier::DarkModeImageClassifier(
-    DarkModeImageClassifierPolicy image_classifier_policy)
-    : image_classifier_policy_(image_classifier_policy) {}
+DarkModeImageClassifier::DarkModeImageClassifier() = default;
 
 DarkModeImageClassifier::~DarkModeImageClassifier() = default;
 
@@ -230,24 +225,13 @@ float DarkModeImageClassifier::ComputeColorBucketsRatio(
 
   // Using 4 bit per channel representation of each color bucket, there would be
   // 2^4 buckets for grayscale images and 2^12 for color images.
-  const float max_buckets[] = {16, 4096};
+  constexpr std::array<float, 2> kMaxBuckets = {16, 4096};
   return static_cast<float>(buckets.size()) /
-         max_buckets[color_mode == ColorMode::kColor];
+         kMaxBuckets[color_mode == ColorMode::kColor];
 }
 
 DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
     const Features& features) const {
-  if (image_classifier_policy_ ==
-      DarkModeImageClassifierPolicy::kTransparencyAndNumColors) {
-    return (features.transparency_ratio > 0 &&
-            features.color_buckets_ratio < static_cast<float>(0.5))
-               ? DarkModeResult::kApplyFilter
-               : DarkModeResult::kDoNotApplyFilter;
-  }
-
-  DCHECK(image_classifier_policy_ ==
-         DarkModeImageClassifierPolicy::kNumColorsWithMlFallback);
-
   DarkModeResult result = ClassifyUsingDecisionTree(features);
 
   // If decision tree cannot decide, we use a neural network to decide whether
@@ -263,7 +247,8 @@ DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
         features.is_colorful ? 1.0f : 0.0f, features.color_buckets_ratio,
         features.transparency_ratio, features.background_ratio};
 
-    darkmode_tfnative_model::Inference(feature_list, &nn_out, &nn_temp);
+    darkmode_tfnative_model::Inference(feature_list,
+                                       base::span_from_ref(nn_out), &nn_temp);
     result = nn_out > 0 ? DarkModeResult::kApplyFilter
                         : DarkModeResult::kDoNotApplyFilter;
   }

@@ -3,10 +3,10 @@ Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed
   Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 [FAIL] setConfiguration(config) - with turns server and empty string username, credential should succeed
-  Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
+  Failed to execute 'setConfiguration' on 'RTCPeerConnection': The given configuration has invalid parameters.
 [FAIL] new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed
   Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 [FAIL] setConfiguration(config) - with turn server and empty string username, credential should succeed
-  Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
+  Failed to execute 'setConfiguration' on 'RTCPeerConnection': The given configuration has invalid parameters.
 Harness: the test ran to completion.
 

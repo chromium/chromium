@@ -17,7 +17,7 @@ opus_lib = library('opus',
   darwin_versions: macosversion,
   c_args: opus_lib_c_args,
   include_directories: opus_includes,
-  link_with: [celt_lib, silk_lib],
+  link_whole: [celt_lib, silk_lib, dnn_lib],
   dependencies: libm,
   install: true)
 

@@ -7,20 +7,37 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+#endif  //  !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
 class Browser;
 class ManagedUserProfileNoticeHandler;
-struct AccountInfo;
 
 namespace content {
 class WebUI;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+class ManagedUserProfileNoticeUI;
+
+class ManagedUserProfileNoticeUIConfig
+    : public content::DefaultWebUIConfig<ManagedUserProfileNoticeUI> {
+ public:
+  ManagedUserProfileNoticeUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIManagedUserProfileNoticeHost) {}
+};
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class ManagedUserProfileNoticeUI : public content::WebUIController {
  public:
@@ -30,7 +47,8 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
     kEntepriseAccountSyncDisabled,
     kConsumerAccountSyncDisabled,
     kEnterpriseAccountCreation,
-    kEnterpriseOIDC
+    kEnterpriseOIDC,
+    kProfilePicker
   };
 
   explicit ManagedUserProfileNoticeUI(content::WebUI* web_ui);
@@ -51,21 +69,21 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   // selected, will indicate that the user wants the current profile to be used
   // as dedicated profile for the new account, linking the current data with
   // synced data from the new account.
-  void Initialize(
-      Browser* browser,
-      ScreenType type,
-      const AccountInfo& account_info,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+  void Initialize(Browser* browser,
+                  ScreenType type,
+                  std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+                      create_param);
 
   // Allows tests to trigger page events.
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();
 
  private:
+  void UpdateBrowsingDataStringWithCounts(std::u16string domain,
+                                          profiles::ProfileCategoryStats stats);
+
   // Stored for tests.
   raw_ptr<ManagedUserProfileNoticeHandler> handler_ = nullptr;
+  base::WeakPtrFactory<ManagedUserProfileNoticeUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

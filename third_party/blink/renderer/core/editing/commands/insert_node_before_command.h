@@ -41,6 +41,7 @@ class InsertNodeBeforeCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<Node> insert_child_;
   Member<Node> ref_child_;

@@ -129,6 +129,9 @@ TEST_F(LinearResamplingTest, ResamplingValue) {
 }
 
 TEST_F(LinearResamplingTest, ResamplingMaxPrediction) {
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(
+      features::kResamplingScrollEventsExperimentalPrediction);
   std::vector<double> x = {10, 20};
   std::vector<double> y = {5, 10};
   std::vector<double> t = {10, 30};
@@ -162,50 +165,6 @@ TEST_F(LinearResamplingTest, TimeInterval) {
     predictor_->Update({gfx::PointF(x[i], y[i]), FromMilliseconds(t[i])});
   }
   EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds(t[1] - t[0]));
-}
-
-// Tests resampling with the experimental latency if +3.3ms instead of
-// the default -5ms.
-TEST_F(LinearResamplingTest, ResamplingValueWithExperimentalLatencyTimeBased) {
-  base::FieldTrialParams params;
-  params["mode"] = ::features::kPredictionTypeTimeBased;
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kResamplingScrollEventsExperimentalPrediction, params);
-
-  std::vector<double> x = {10, 20, 30};
-  std::vector<double> y = {5, 25, 35};
-  std::vector<double> t = {15, 24, 32};
-
-  // Resample at `frame_time` = 24.7 ms, `sample_time` = 24.7+3.3 = 28ms.
-  // Resample at `frame_time` = 32.7 ms, `sample_time` = 32.7+3.3 = 36ms.
-  std::vector<double> pred_ts = {24.7, 32.7};
-  std::vector<double> pred_x = {24.44, 35};
-  std::vector<double> pred_y = {33.89, 40};
-  ValidatePredictor(x, y, t, pred_ts, pred_x, pred_y);
-}
-
-// Tests resampling with the experimental latency if +1ms (using switch) instead
-// of the default -5ms.
-TEST_F(LinearResamplingTest,
-       ResamplingValueWithExperimentalLatencyTimeBasedSwitch) {
-  base::FieldTrialParams params;
-  params["mode"] = ::features::kPredictionTypeTimeBased;
-  params["latency"] = "1.0";
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kResamplingScrollEventsExperimentalPrediction, params);
-
-  std::vector<double> x = {10, 20, 30};
-  std::vector<double> y = {5, 25, 35};
-  std::vector<double> t = {15, 24, 32};
-
-  // Resample at `frame_time` = 27 ms, `sample_time` = 27+1 = 28ms.
-  // Resample at `frame_time` = 35 ms, `sample_time` = 35+1 = 36ms.
-  std::vector<double> pred_ts = {27, 35};
-  std::vector<double> pred_x = {24.44, 35};
-  std::vector<double> pred_y = {33.89, 40};
-  ValidatePredictor(x, y, t, pred_ts, pred_x, pred_y);
 }
 
 // Tests resampling with the experimental latency if +0.5*`frame_interval`
@@ -252,6 +211,68 @@ TEST_F(LinearResamplingTest,
   std::vector<double> pred_x = {24.44, 35};
   std::vector<double> pred_y = {33.89, 40};
   ValidatePredictorFrameBased(x, y, t, pred_ts, pred_x, pred_y, 200);
+}
+
+// Test the default resample latency without any features enabled.
+TEST_F(LinearResamplingTest, GetResampleLatencyDefault) {
+  feature_list.Reset();
+  feature_list.InitWithFeatures(
+      {}, {features::kResamplingScrollEventsExperimentalPrediction,
+           features::kResampleScrollEventsLatency});
+
+  LinearResampling predictor;
+  base::TimeDelta frame_interval = base::Milliseconds(16);
+  EXPECT_EQ(predictor.ResampleLatency(frame_interval), base::Milliseconds(-5));
+}
+
+// Test the kResampleScrollEventsLatency feature with fixed_ms mode.
+TEST_F(LinearResamplingTest, GetResampleLatencyFixed) {
+  base::FieldTrialParams params;
+  params["mode"] = features::kResampleLatencyModeFixedMs;
+  params["value"] = "-2.0";
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kResampleScrollEventsLatency, params);
+
+  LinearResampling predictor;
+  base::TimeDelta frame_interval = base::Milliseconds(16);
+  EXPECT_EQ(predictor.ResampleLatency(frame_interval), base::Milliseconds(-2));
+}
+
+// Test the kResampleScrollEventsLatency feature with fractional mode.
+TEST_F(LinearResamplingTest, GetResampleLatencyFractional) {
+  base::FieldTrialParams params;
+  params["mode"] = features::kResampleLatencyModeFractional;
+  params["value"] = "-0.25";
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kResampleScrollEventsLatency, params);
+
+  LinearResampling predictor;
+  base::TimeDelta frame_interval = base::Milliseconds(16);
+  EXPECT_EQ(predictor.ResampleLatency(frame_interval), base::Milliseconds(-4));
+}
+
+// Test that kResampleScrollEventsLatency overrides
+// kResamplingScrollEventsExperimentalPrediction.
+TEST_F(LinearResamplingTest, GetResampleLatencyOverride) {
+  base::FieldTrialParams exp_params;
+  exp_params["mode"] = ::features::kPredictionTypeFramesBased;
+  exp_params["latency"] = "1.0";  // This would result in 16ms - 5ms = 11ms
+
+  base::FieldTrialParams latency_params;
+  latency_params["mode"] = features::kResampleLatencyModeFixedMs;
+  latency_params["value"] = "-3.0";
+
+  feature_list.Reset();
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kResamplingScrollEventsExperimentalPrediction, exp_params},
+       {features::kResampleScrollEventsLatency, latency_params}},
+      {});
+
+  LinearResampling predictor;
+  base::TimeDelta frame_interval = base::Milliseconds(16);
+  EXPECT_EQ(predictor.ResampleLatency(frame_interval), base::Milliseconds(-3));
 }
 
 }  // namespace test

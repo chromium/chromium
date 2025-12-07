@@ -26,11 +26,9 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace WTF {
-class TextEncoding;
-}
-
 namespace blink {
+
+class TextEncoding;
 
 class PLATFORM_EXPORT FormDataEncoder {
   STATIC_ONLY(FormDataEncoder);
@@ -42,9 +40,9 @@ class PLATFORM_EXPORT FormDataEncoder {
   // - an LF not preceded by a CR
   enum Mode { kNormalizeCRLF, kDoNotNormalizeCRLF };
 
-  static WTF::TextEncoding EncodingFromAcceptCharset(
+  static TextEncoding EncodingFromAcceptCharset(
       const String& accept_charset,
-      const WTF::TextEncoding& fallback_encoding);
+      const TextEncoding& fallback_encoding);
 
   // Helper functions used by HTMLFormElement for multi-part form data
   static Vector<char> GenerateUniqueBoundaryString();
@@ -55,7 +53,7 @@ class PLATFORM_EXPORT FormDataEncoder {
                                            const std::string& boundary,
                                            bool is_last_boundary = false);
   static void AddFilenameToMultiPartHeader(Vector<char>&,
-                                           const WTF::TextEncoding&,
+                                           const TextEncoding&,
                                            const String& filename);
   static void AddContentTypeToMultiPartHeader(Vector<char>&,
                                               const String& mime_type);

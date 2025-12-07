@@ -8,6 +8,7 @@ desc: |-
         If you enable this setting, SafeSearch in Google Search and Moderate Restricted Mode YouTube is always active.
 
         If you disable this setting or do not set a value, SafeSearch in Google Search and Restricted Mode in YouTube is not enforced.
+default: false
 example_value: false
 features:
   can_be_recommended: false

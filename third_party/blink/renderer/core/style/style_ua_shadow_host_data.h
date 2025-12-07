@@ -24,13 +24,15 @@ class CORE_EXPORT StyleUAShadowHostData {
                         const StyleAspectRatio& aspect_ratio,
                         const String& alt_text,
                         const AtomicString& alt_attribute,
-                        const AtomicString& src_attribute)
+                        const AtomicString& src_attribute,
+                        const bool has_appearance)
       : width_(width),
         height_(height),
         aspect_ratio_(aspect_ratio),
         alt_text_(alt_text),
         alt_attribute_(alt_attribute),
-        src_attribute_(src_attribute) {}
+        src_attribute_(src_attribute),
+        has_appearance_(has_appearance) {}
 
   std::unique_ptr<StyleUAShadowHostData> Clone() const {
     return std::make_unique<StyleUAShadowHostData>(*this);
@@ -47,7 +49,8 @@ class CORE_EXPORT StyleUAShadowHostData {
     return width_ == o.width_ && height_ == o.height_ &&
            aspect_ratio_ == o.aspect_ratio_ && alt_text_ == o.alt_text_ &&
            alt_attribute_ == o.alt_attribute_ &&
-           src_attribute_ == o.src_attribute_;
+           src_attribute_ == o.src_attribute_ &&
+           has_appearance_ == o.has_appearance_;
   }
 
  private:
@@ -57,6 +60,7 @@ class CORE_EXPORT StyleUAShadowHostData {
   String alt_text_;
   AtomicString alt_attribute_;
   AtomicString src_attribute_;
+  bool has_appearance_;
 };
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "ash/webui/file_manager/file_manager_ui_delegate.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
@@ -16,11 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 namespace ash {
 namespace file_manager {
@@ -51,12 +47,6 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   void BindInterface(
       mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver);
 
-  // Instantiates the implementor of the mojom::PageHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // Get the number of open File Manager windows.
   // Should be called on UI thread.
   static int GetNumInstances();
@@ -75,15 +65,13 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
   std::unique_ptr<FileManagerPageHandler> page_handler_;
 
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-
   // Counts the number of active Files SWA instances. This counter goes up every
   // time a new window is opened and down every time a window is closed.
-  static inline int instance_count_ = 0;
+  ASH_EXPORT static inline int instance_count_ = 0;
 
   // Counts the total number of windows opened. Unlike the instance_count_ this
   // counter never is decremented.
-  static inline int window_counter_ = 0;
+  ASH_EXPORT static inline int window_counter_ = 0;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

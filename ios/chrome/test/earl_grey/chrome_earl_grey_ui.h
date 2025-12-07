@@ -10,6 +10,7 @@
 #import <string>
 
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
+#import "ios/web/public/test/element_selector.h"
 
 @protocol GREYMatcher;
 
@@ -123,6 +124,12 @@
 // content.
 - (void)focusOmniboxAndType:(NSString*)text;
 
+// Simulates the physical keyboard event.
+- (void)pressEnter;
+
+// Replaces the content of the omnibox with the given text.
+- (void)replaceTextInOmnibox:(NSString*)text;
+
 // Focuses the omnibox by tapping and replaces its content with `text`.
 // The '\n' symbol can be passed in order to commit the string.
 // If `text` is empty or nil, the omnibox is just focused.
@@ -142,9 +149,6 @@
 
 // Opens and clear browsing data from history.
 - (void)openAndClearBrowsingDataFromHistory;
-
-// Clears all browsing data by opening the privacy panel in the settings view.
-- (void)clearAllBrowsingData;
 
 // Asserts that history is empty.
 - (void)assertHistoryHasNoEntries;
@@ -172,10 +176,6 @@
 // Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
 - (BOOL)dismissContextMenuIfPresent;
 
-// Cleans up the view hierarchy after showing the system alert on certain OS
-// versions.
-- (void)cleanupAfterShowingAlert;
-
 // Type `text` in Omnibox and optionally press Enter if `shouldPressEnter` is
 // YES.
 - (void)typeTextInOmnibox:(std::string const&)text
@@ -185,6 +185,15 @@
 // `matcher` can be any view in the popover. Throws if the window is not
 // dismissable by tapping.
 - (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher;
+
+// Long presses on selector.
+- (void)longPressElementOnWebView:(ElementSelector*)selector;
+
+// Convenient function to trigger the Edit Menu on selector.
+- (void)triggerEditMenu:(ElementSelector*)selector;
+
+// Clears the search bar text and dismisses the search bar.
+- (void)clearAndDismissSearchBar;
 
 @end
 

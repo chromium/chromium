@@ -284,10 +284,6 @@ void PointingStickPrefHandlerImpl::InitializeLoginScreenPointingStickSettings(
     PrefService* local_state,
     const AccountId& account_id,
     mojom::PointingStick* pointing_stick) {
-  // Verify if the flag is enabled.
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return;
-  }
   CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(

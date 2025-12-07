@@ -1,0 +1,4 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/collaboration/internal/android/comments/comments_service_bridge.h",
+]

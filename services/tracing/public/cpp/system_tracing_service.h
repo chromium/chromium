@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/tracing/public/mojom/system_tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/base/unix_socket.h"

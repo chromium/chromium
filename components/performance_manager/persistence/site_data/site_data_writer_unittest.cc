@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 
+#include "base/byte_count.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
@@ -96,8 +97,8 @@ TEST_F(SiteDataWriterTest, TestModifiers) {
   EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UsesAudioInBackground());
 
-  writer_->NotifyLoadTimePerformanceMeasurement(base::Microseconds(202),
-                                                base::Microseconds(101), 1005);
+  writer_->NotifyLoadTimePerformanceMeasurement(
+      base::Microseconds(202), base::Microseconds(101), base::KiB(1005));
   EXPECT_EQ(1u, test_impl_->load_duration().num_datums());
   EXPECT_EQ(202.0, test_impl_->load_duration().value());
   EXPECT_EQ(1u, test_impl_->cpu_usage_estimate().num_datums());

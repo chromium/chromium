@@ -11,12 +11,10 @@ namespace storage {
 const QuotaClientTypes& AllQuotaClientTypes() {
   static base::NoDestructor<QuotaClientTypes> all{{
       QuotaClientType::kFileSystem,
-      QuotaClientType::kDatabase,
       QuotaClientType::kIndexedDatabase,
       QuotaClientType::kServiceWorkerCache,
       QuotaClientType::kServiceWorker,
       QuotaClientType::kBackgroundFetch,
-      QuotaClientType::kMediaLicense,
   }};
   return *all;
 }

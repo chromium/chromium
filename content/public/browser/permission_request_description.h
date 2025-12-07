@@ -5,11 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_REQUEST_DESCRIPTION_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_REQUEST_DESCRIPTION_H_
 
-#include <optional>
 #include <vector>
 
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -20,18 +20,18 @@ namespace content {
 // permission from a renderer, including important contextual information.
 struct CONTENT_EXPORT PermissionRequestDescription {
   explicit PermissionRequestDescription(
-      const std::vector<blink::PermissionType>& permissions,
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
       bool user_gesture = false,
-      const GURL& requesting_origin = GURL(),
-      bool embedded_permission_element_initiated = false,
-      const std::optional<gfx::Rect>& anchor_element_position = std::nullopt);
+      const GURL& requesting_origin = GURL());
 
   explicit PermissionRequestDescription(
-      blink::PermissionType permission,
+      blink::mojom::PermissionDescriptorPtr permission,
       bool user_gesture = false,
-      const GURL& requesting_origin = GURL(),
-      bool embedded_permission_element_initiated = false,
-      const std::optional<gfx::Rect>& anchor_element_position = std::nullopt);
+      const GURL& requesting_origin = GURL());
+
+  explicit PermissionRequestDescription(
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
+      blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor);
 
   PermissionRequestDescription& operator=(const PermissionRequestDescription&) =
       delete;
@@ -45,8 +45,8 @@ struct CONTENT_EXPORT PermissionRequestDescription {
 
   bool operator==(const PermissionRequestDescription& other) const;
 
-  // Define the list of permissions we will request.
-  std::vector<blink::PermissionType> permissions;
+  // Defines the list of permissions we will request.
+  std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
 
   // Indicates the request is initiated by a user gesture.
   bool user_gesture;
@@ -54,14 +54,10 @@ struct CONTENT_EXPORT PermissionRequestDescription {
   // The origin on whose behalf this permission request is being made.
   GURL requesting_origin;
 
-  // Indicates the request is initiated from an embedded permission element.
-  bool embedded_permission_element_initiated;
-
-  // Anchor element position (in screen coordinates), when the permission
-  // request is initiated from a <permission> element. Used on the embedder side
-  // to help position the permission prompt.
-  std::optional<gfx::Rect> anchor_element_position;
-
+  // If not null, this request comes from an embedded permission element,
+  // and this struct holds element-specific data.
+  blink::mojom::EmbeddedPermissionRequestDescriptorPtr
+      embedded_permission_request_descriptor;
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
 };

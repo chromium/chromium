@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -37,7 +38,6 @@
 using testing::_;
 using testing::DoAll;
 using testing::InSequence;
-using testing::Invoke;
 using testing::NotNull;
 using testing::Return;
 using testing::WithArg;
@@ -50,7 +50,7 @@ const int kChannelId = 0;
 // Mockable placeholder for write completion events.
 class CompleteHandler {
  public:
-  CompleteHandler() {}
+  CompleteHandler() = default;
 
   CompleteHandler(const CompleteHandler&) = delete;
   CompleteHandler& operator=(const CompleteHandler&) = delete;
@@ -75,7 +75,7 @@ CastMessage CreateCastMessage() {
 // Pop() in the same order as Push().
 class CompletionQueue {
  public:
-  CompletionQueue() {}
+  CompletionQueue() = default;
 
   CompletionQueue(const CompletionQueue&) = delete;
   CompletionQueue& operator=(const CompletionQueue&) = delete;
@@ -116,7 +116,8 @@ ACTION_TEMPLATE(ReadBufferToString,
 ACTION_TEMPLATE(FillBufferFromString,
                 HAS_1_TEMPLATE_PARAMS(int, buf_idx),
                 AND_1_VALUE_PARAMS(str)) {
-  memcpy(testing::get<buf_idx>(args)->data(), str.data(), str.size());
+  UNSAFE_TODO(
+      memcpy(testing::get<buf_idx>(args)->data(), str.data(), str.size()));
 }
 
 // GMock action that enqueues a write completion callback in a queue.
@@ -164,7 +165,7 @@ class CastTransportTest : public testing::Test {
         &mock_socket_, kChannelId, CreateIPEndPointForTest(), logger_);
     transport_->SetReadDelegate(base::WrapUnique(delegate_.get()));
   }
-  ~CastTransportTest() override {}
+  ~CastTransportTest() override = default;
 
  protected:
   // Runs all pending tasks in the message loop.

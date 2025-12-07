@@ -27,8 +27,10 @@ class Dictation {
   // uses the application language. Otherwise uses previous method of
   // determining Dictation language with default IME language.
   // This is guaranteed to return a supported BCP-47 locale.
-  static std::string DetermineDefaultSupportedLocale(Profile* profile,
-                                                     bool new_user);
+  static std::string DetermineDefaultSupportedLocale(
+      Profile* profile,
+      bool new_user,
+      const std::string& application_locale);
 
   // Gets all possible BCP-47 style locale codes supported by Dictation,
   // and whether they are available offline.

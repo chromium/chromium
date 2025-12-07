@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -28,7 +29,7 @@ FakeSyncManager::FakeSyncManager(DataTypeSet initial_sync_ended_types,
     : initial_sync_ended_types_(initial_sync_ended_types),
       progress_marker_types_(progress_marker_types),
       configure_fail_types_(configure_fail_types),
-      last_configure_reason_(CONFIGURE_REASON_UNKNOWN) {
+      last_configure_reason_(ConfigureReason::kUnknown) {
   sync_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
@@ -42,7 +43,7 @@ DataTypeSet FakeSyncManager::GetAndResetDownloadedTypes() {
 
 ConfigureReason FakeSyncManager::GetAndResetConfigureReason() {
   ConfigureReason reason = last_configure_reason_;
-  last_configure_reason_ = CONFIGURE_REASON_UNKNOWN;
+  last_configure_reason_ = ConfigureReason::kUnknown;
   return reason;
 }
 
@@ -55,11 +56,11 @@ int FakeSyncManager::GetInvalidationCount(DataType type) const {
 }
 
 void FakeSyncManager::WaitForSyncThread() {
-  // Post a task to |sync_task_runner_| and block until it runs.
+  // Post a task to `sync_task_runner_` and block until it runs.
   base::RunLoop run_loop;
   if (!sync_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                            run_loop.QuitClosure())) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   run_loop.Run();
 }
@@ -214,11 +215,6 @@ void FakeSyncManager::OnCookieJarChanged(bool account_mismatch) {}
 void FakeSyncManager::UpdateActiveDevicesInvalidationInfo(
     ActiveDevicesInvalidationInfo active_devices_invalidation_info) {
   // Do nothing.
-}
-
-DataTypeSet FakeSyncManager::GetTypesWithUnsyncedData() {
-  NOTIMPLEMENTED();
-  return DataTypeSet();
 }
 
 }  // namespace syncer

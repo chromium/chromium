@@ -8,14 +8,11 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "components/profile_metrics/counts.h"
 
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
-
-namespace profile_metrics {
-struct Counts;
-}
 
 #if BUILDFLAG(IS_ANDROID)
 namespace signin {
@@ -89,12 +86,8 @@ class ProfileMetrics {
     // Delete profile internally when Chrome signout is prohibited and the
     // username is no longer allowed.
     DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = 6,
-    // Delete profile internally when a profile cannot exist without a primary
-    // account and this account gets removed.
-    DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,
-    // Delete profile internally at startup, if a Lacros profile using Mirror is
-    // not signed in (as it is not supported yet).
-    DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,
+    // DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,  // No longer used.
+    // DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,   // No longer used.
     NUM_DELETE_PROFILE_METRICS
   };
 
@@ -107,27 +100,37 @@ class ProfileMetrics {
     NUM_PROFILE_AUTH_METRICS
   };
 
-  // Returns whether profile |entry| is considered active for metrics.
-  static bool IsProfileActive(const ProfileAttributesEntry* entry);
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(GaiaNameShareStatus)
+  enum class GaiaNameShareStatus {
+    // The Gaia name is unique among profiles.
+    kNotShared,
+    // Two non-managed profiles or more share this name.
+    kSharedNonManaged,
+    // The Gaia name is unique among non-managed profiles, but may be shared by
+    // multiple managed profiles, or by one managed profile and a non-managed
+    // profile.
+    kSharedManaged,
 
-  // Count and return summary information about the profiles currently in the
-  // |storage|. This information is returned in the output variable |counts|.
-  static void CountProfileInformation(ProfileAttributesStorage* storage,
-                                      profile_metrics::Counts* counts);
+    kMaxValue = kSharedManaged,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileGaiaNameShareStatus)
+
+  // Returns whether profile `entry` is considered active for metrics. "Active"
+  // is dependent on the `activity_threshold` duration, defaulted to 28 days.
+  static bool IsProfileActive(
+      const ProfileAttributesEntry* entry,
+      profile_metrics::ProfileActivityThreshold activity_threshold =
+          profile_metrics::ProfileActivityThreshold::kDuration28Days);
 
   static void LogNumberOfProfiles(ProfileAttributesStorage* storage);
   static void LogProfileAddNewUser(ProfileAdd metric);
   static void LogProfileAddSignInFlowOutcome(
       ProfileSignedInFlowOutcome outcome);
-  static void LogLacrosPrimaryProfileFirstRunOutcome(
-      ProfileSignedInFlowOutcome outcome);
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileLaunch(Profile* profile);
-
-  // Records the count of KeyedService active for the System Profile histogram.
-  // Expects only System Profiles.
-  static void LogSystemProfileKeyedServicesCount(Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_METRICS_H_

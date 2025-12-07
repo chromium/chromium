@@ -12,18 +12,10 @@ DownloadDBEntry::DownloadDBEntry(const DownloadDBEntry& other) = default;
 
 DownloadDBEntry::~DownloadDBEntry() = default;
 
-bool DownloadDBEntry::operator==(const DownloadDBEntry& other) const {
-  return download_info == other.download_info;
-}
-
 std::string DownloadDBEntry::GetGuid() const {
   if (!download_info)
     return std::string();
   return download_info->guid;
-}
-
-bool DownloadDBEntry::operator!=(const DownloadDBEntry& other) const {
-  return !(*this == other);
 }
 
 }  // namespace download

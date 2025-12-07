@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `derive_arbitrary-1.4.2` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "derive_arbitrary"
+version = "1.4.2"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+
+[dependencies.proc-macro2]
+version = "^1.0"
+default_features = false
+[dependencies.quote]
+version = "^1.0"
+default_features = false
+[dependencies.syn]
+version = "^2"
+default_features = false

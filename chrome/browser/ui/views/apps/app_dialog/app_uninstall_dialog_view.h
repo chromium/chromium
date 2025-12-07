@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
@@ -67,7 +66,8 @@ class AppUninstallDialogView : public ProfileObserver,
 
   void InitializeView(Profile* profile,
                       apps::AppType app_type,
-                      const std::string& app_id);
+                      const std::string& app_id,
+                      const std::string& app_name);
 
   void InitializeCheckbox(const GURL& app_start_url);
   void InitializeSubAppList(const std::string& short_app_name,
@@ -81,7 +81,7 @@ class AppUninstallDialogView : public ProfileObserver,
   void GetSubAppsInfo(const std::string& short_app_name,
                       const std::vector<std::string>& sub_app_ids);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InitializeViewForArcApp(Profile* profile, const std::string& app_id);
   void InitializeViewWithMessage(const std::u16string& message);
 #endif
@@ -96,6 +96,7 @@ class AppUninstallDialogView : public ProfileObserver,
   raw_ptr<views::Checkbox> report_abuse_checkbox_ = nullptr;
   raw_ptr<views::Checkbox> clear_site_data_checkbox_ = nullptr;
   raw_ptr<views::Label> sub_apps_description_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ScrollView> sub_apps_scroll_view_ = nullptr;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

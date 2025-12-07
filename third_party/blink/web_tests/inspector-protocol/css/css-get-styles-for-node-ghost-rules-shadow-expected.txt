@@ -1,0 +1,16 @@
+The test verifies that ghost rules are present for elements in shadow roots.
+Number of shadow roots: 1
+Ghost rules appear for elements inside shadow roots
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+*#comments* {    regular
+    top: 10px; @[2:10-2:20]
+    top: 10px; @[undefined-undefined]
+}
+ {    regular
+    margin-left: 10px; @[4:10-4:34]
+}
+Dumping inherited rules: 
+

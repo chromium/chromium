@@ -29,12 +29,12 @@ class FakeBulkLeakCheckService : public BulkLeakCheckServiceInterface {
   // Setter for the `buffered_state_` variable.
   void SetBufferedState(State state);
 
+  // Sets `state_` to `buffered_state_` and notifies the observers.
+  void SetStateToBufferedState();
+
  private:
   // Notify the observers of a change in state.
   void NotifyStateChanged();
-
-  // Sets `state_` to `buffered_state_` and notifies the observers.
-  void SetStateToBufferedState();
 
   // The service's state.
   State state_ = State::kIdle;

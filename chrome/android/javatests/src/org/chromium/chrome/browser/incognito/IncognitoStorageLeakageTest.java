@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.core.app.ApplicationProvider;
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -24,16 +25,16 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -50,7 +51,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
-@EnableFeatures(ChromeFeatureList.CCT_MINIMIZED)
 @Batch(Batch.PER_CLASS)
 public class IncognitoStorageLeakageTest {
     private static final String SITE_DATA_HTML_PATH =
@@ -64,8 +64,8 @@ public class IncognitoStorageLeakageTest {
     private EmbeddedTestServer mTestServer;
 
     @Rule
-    public ChromeTabbedActivityTestRule mChromeActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mChromeActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule =
@@ -73,16 +73,13 @@ public class IncognitoStorageLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mTestServer = mChromeActivityTestRule.getTestServer();
         mSiteDataTestPage = mTestServer.getURL(SITE_DATA_HTML_PATH);
     }
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
+        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     @Test
@@ -128,6 +125,7 @@ public class IncognitoStorageLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.AllTypesToAllTypes.class)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41484832")
     public void testStorageDoesNotLeakFromActivityToActivity(
             String activityType1, String activityType2)
             throws ExecutionException, TimeoutException {

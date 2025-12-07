@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -28,13 +29,20 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && \
+    (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64))
+#include "base/no_destructor.h"
+#include "base/profiler/native_unwinder_android.h"
+#if BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/no_destructor.h"
-#include "base/profiler/chrome_unwinder_android.h"
-#include "base/profiler/native_unwinder_android.h"
+#include "base/profiler/chrome_unwinder_android_32.h"
+#endif
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/profiler/core_unwinders.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -104,7 +112,8 @@ void OtherLibraryCallback(void* arg) {
   [[maybe_unused]] volatile int i = 0;
 }
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && \
+    (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64))
 class NativeUnwinderAndroidMapDelegateForTesting
     : public NativeUnwinderAndroidMapDelegate {
  public:
@@ -134,27 +143,28 @@ NativeUnwinderAndroidMapDelegateForTesting* GetMapDelegateForTesting() {
 std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
     uintptr_t exclude_module_with_base_address) {
   return std::make_unique<NativeUnwinderAndroid>(
-      exclude_module_with_base_address, GetMapDelegateForTesting(),
-      /*is_java_name_hashing_enabled=*/false);
+      exclude_module_with_base_address, GetMapDelegateForTesting());
 }
 
-std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
+#if BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+std::unique_ptr<Unwinder> CreateChromeUnwinderAndroid32ForTesting(
     uintptr_t chrome_module_base_address) {
   static constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
 
   // The wrapper class ensures that `MemoryMappedFile` has the same lifetime
   // as the unwinder.
-  class ChromeUnwinderAndroidForTesting : public ChromeUnwinderAndroid {
+  class ChromeUnwinderAndroid32ForTesting : public ChromeUnwinderAndroid32 {
    public:
-    ChromeUnwinderAndroidForTesting(std::unique_ptr<MemoryMappedFile> cfi_file,
-                                    const ChromeUnwindInfoAndroid& unwind_info,
-                                    uintptr_t chrome_module_base_address,
-                                    uintptr_t text_section_start_address)
-        : ChromeUnwinderAndroid(unwind_info,
-                                chrome_module_base_address,
-                                text_section_start_address),
+    ChromeUnwinderAndroid32ForTesting(
+        std::unique_ptr<MemoryMappedFile> cfi_file,
+        const ChromeUnwindInfoAndroid32& unwind_info,
+        uintptr_t chrome_module_base_address,
+        uintptr_t text_section_start_address)
+        : ChromeUnwinderAndroid32(unwind_info,
+                                  chrome_module_base_address,
+                                  text_section_start_address),
           cfi_file_(std::move(cfi_file)) {}
-    ~ChromeUnwinderAndroidForTesting() override = default;
+    ~ChromeUnwinderAndroid32ForTesting() override = default;
 
    private:
     std::unique_ptr<MemoryMappedFile> cfi_file_;
@@ -166,14 +176,16 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
   auto cfi_file = std::make_unique<MemoryMappedFile>();
   bool ok = cfi_file->Initialize(base::File(fd), cfi_region);
   DCHECK(ok);
-  return std::make_unique<ChromeUnwinderAndroidForTesting>(
+  return std::make_unique<ChromeUnwinderAndroid32ForTesting>(
       std::move(cfi_file),
-      base::CreateChromeUnwindInfoAndroid(
+      base::CreateChromeUnwindInfoAndroid32(
           {cfi_file->data(), cfi_file->length()}),
       chrome_module_base_address,
       /* text_section_start_address= */ base::android::kStartOfText);
 }
-#endif  // #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#endif  // BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#endif  // BUILDFLAG(IS_ANDROID) && (BUILDFLAG(ENABLE_ARM_CFI_TABLE) ||
+        // defined(ARCH_CPU_ARM64))
 
 }  // namespace
 
@@ -224,7 +236,7 @@ UnwindScenario::InvokeSetupFunction(const SetupFunction& setup_function,
 
   if (!setup_function.is_null()) {
     const auto wait_for_sample_closure =
-        BindLambdaForTesting([&]() { UnwindScenario::WaitForSample(events); });
+        BindLambdaForTesting([&] { UnwindScenario::WaitForSample(events); });
     setup_function.Run(wait_for_sample_closure);
   }
 
@@ -254,8 +266,9 @@ NOINLINE FunctionAddressRange
 CallWithPlainFunction(OnceClosure wait_for_sample) {
   const void* start_program_counter = GetProgramCounter();
 
-  if (!wait_for_sample.is_null())
+  if (!wait_for_sample.is_null()) {
     std::move(wait_for_sample).Run();
+  }
 
   // Volatile to prevent a tail call to GetProgramCounter().
   const void* volatile end_program_counter = GetProgramCounter();
@@ -272,11 +285,13 @@ NOINLINE FunctionAddressRange CallWithAlloca(OnceClosure wait_for_sample) {
   // optimized out.
   volatile char* const allocation =
       const_cast<volatile char*>(static_cast<char*>(alloca(alloca_size)));
-  for (volatile char* p = allocation; p < allocation + alloca_size; ++p)
+  for (volatile char* p = allocation; p < allocation + alloca_size; ++p) {
     *p = '\0';
+  }
 
-  if (!wait_for_sample.is_null())
+  if (!wait_for_sample.is_null()) {
     std::move(wait_for_sample).Run();
+  }
 
   // Volatile to prevent a tail call to GetProgramCounter().
   const void* volatile end_program_counter = GetProgramCounter();
@@ -307,7 +322,7 @@ void WithTargetThread(UnwindScenario* scenario,
                       ProfileCallback profile_callback) {
   UnwindScenario::SampleEvents events;
   TargetThread target_thread(
-      BindLambdaForTesting([&]() { scenario->Execute(&events); }));
+      BindLambdaForTesting([&] { scenario->Execute(&events); }));
 
   target_thread.Start();
   events.ready_for_sample.Wait();
@@ -343,8 +358,9 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                       sampling_thread_completed.Signal();
                     })),
                 CreateCoreUnwindersFactoryForTesting(module_cache));
-            if (aux_unwinder_factory)
+            if (aux_unwinder_factory) {
               profiler.AddAuxUnwinder(std::move(aux_unwinder_factory).Run());
+            }
             profiler.Start();
             sampling_thread_completed.Wait();
           }));
@@ -380,24 +396,6 @@ void ExpectStackContains(const std::vector<Frame>& stack,
   EXPECT_EQ(function_it, functions.end())
       << "Function in position " << function_it - functions.begin() << " at "
       << function_it->start << " was not found in stack "
-      << "(or did not appear in the expected order):\n"
-      << FormatSampleForDiagnosticOutput(stack);
-}
-
-void ExpectStackContainsNames(const std::vector<Frame>& stack,
-                              const std::vector<std::string>& function_names) {
-  auto frame_it = stack.begin();
-  auto names_it = function_names.begin();
-  for (; frame_it != stack.end() && names_it != function_names.end();
-       ++frame_it) {
-    if (frame_it->function_name == *names_it) {
-      ++names_it;
-    }
-  }
-
-  EXPECT_EQ(names_it, function_names.end())
-      << "Function name in position " << names_it - function_names.begin()
-      << " - {" << *names_it << "} was not found in stack "
       << "(or did not appear in the expected order):\n"
       << FormatSampleForDiagnosticOutput(stack);
 }
@@ -474,15 +472,33 @@ StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
   std::vector<std::unique_ptr<Unwinder>> unwinders;
   unwinders.push_back(CreateNativeUnwinderAndroidForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
-  unwinders.push_back(CreateChromeUnwinderAndroidForTesting(
+  unwinders.push_back(CreateChromeUnwinderAndroid32ForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
   return BindOnce(
       [](std::vector<std::unique_ptr<Unwinder>> unwinders) {
         return unwinders;
       },
       std::move(unwinders));
-#else
+#elif BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+  std::vector<std::unique_ptr<Unwinder>> unwinders;
+  unwinders.push_back(CreateNativeUnwinderAndroidForTesting(
+      reinterpret_cast<uintptr_t>(&__executable_start)));
+  unwinders.push_back(std::make_unique<base::FramePointerUnwinder>(
+      base::BindRepeating([](const base::Frame& current_frame) {
+        return current_frame.module &&
+               current_frame.module->GetBaseAddress() ==
+                   reinterpret_cast<uintptr_t>(&__executable_start);
+      }),
+      /*is_system_unwinder=*/false));
+  return BindOnce(
+      [](std::vector<std::unique_ptr<Unwinder>> unwinders) {
+        return unwinders;
+      },
+      std::move(unwinders));
+#elif BUILDFLAG(IS_ANDROID)
   return StackSamplingProfiler::UnwindersFactory();
+#else
+  return CreateCoreUnwindersFactory();
 #endif
 }
 

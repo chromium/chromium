@@ -8,7 +8,8 @@
 
 namespace blink {
 
-WebGLStencilTexturing::WebGLStencilTexturing(WebGLRenderingContextBase* context)
+WebGLStencilTexturing::WebGLStencilTexturing(WebGLRenderingContextBase* context,
+                                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_stencil_texturing");

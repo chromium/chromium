@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_ANDROID_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_ANDROID_H_
 
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
-
 #include <memory>
+
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
 
 class AccountCapabilitiesFetcher;
 struct CoreAccountInfo;

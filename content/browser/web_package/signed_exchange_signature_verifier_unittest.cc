@@ -5,7 +5,6 @@
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
@@ -189,7 +188,7 @@ class SignedExchangeSignatureVerifierTest
     SignedExchangeEnvelope badsigsha256_envelope(envelope);
     SignedExchangeSignatureHeaderField::Signature badsigsha256 =
         envelope.signature();
-    badsigsha256.cert_sha256->data[0]++;
+    (*badsigsha256.cert_sha256)[0]++;
     badsigsha256_envelope.SetSignatureForTesting(badsigsha256);
     EXPECT_EQ(
         SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,
@@ -217,7 +216,7 @@ TEST_P(SignedExchangeSignatureVerifierTest, VerifyECDSAP256) {
   envelope.AddResponseHeader("content-encoding", "mi-sha256-03");
   envelope.AddResponseHeader(
       "digest", "mi-sha256-03=wmp4dRMYgxP3tSMCwV/I0CWOCiHZpAihKZk19bsN9RI=");
-  envelope.set_cbor_header(base::make_span(kCborHeadersECDSAP256));
+  envelope.set_cbor_header(base::span(kCborHeadersECDSAP256));
 
   envelope.SetSignatureForTesting((*signature)[0]);
 

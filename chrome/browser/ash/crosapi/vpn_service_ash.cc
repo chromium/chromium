@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -33,12 +34,6 @@ using SuccessOrFailureCallback =
 
 void RunSuccessCallback(SuccessOrFailureCallback callback) {
   std::move(callback).Run(nullptr);
-}
-
-void RunWarningCallback(
-    crosapi::VpnServiceForExtensionAsh::SuccessCallback callback,
-    const std::string& /*warning*/) {
-  std::move(callback).Run();
 }
 
 void RunFailureCallback(SuccessOrFailureCallback callback,
@@ -66,38 +61,6 @@ AdaptCallback(SuccessOrFailureCallback callback) {
 
 namespace crosapi {
 
-VpnProvidersObserver::VpnProvidersObserver(
-    VpnProvidersObserver::Delegate* delegate)
-    : delegate_(delegate) {
-  ash::GetNetworkConfigService(
-      cros_network_config_.BindNewPipeAndPassReceiver());
-  cros_network_config_->AddObserver(
-      cros_network_config_observer_.BindNewPipeAndPassRemote());
-}
-
-VpnProvidersObserver::~VpnProvidersObserver() = default;
-
-void VpnProvidersObserver::OnVpnProvidersChanged() {
-  cros_network_config_->GetVpnProviders(base::BindOnce(
-      &VpnProvidersObserver::OnGetVpnProviders, weak_factory_.GetWeakPtr()));
-}
-
-void VpnProvidersObserver::OnGetVpnProviders(
-    std::vector<chromeos::network_config::mojom::VpnProviderPtr>
-        vpn_providers) {
-  if (!delegate_) {
-    return;
-  }
-  base::flat_set<std::string> vpn_extensions;
-  for (const auto& vpn_provider : vpn_providers) {
-    if (vpn_provider->type ==
-        chromeos::network_config::mojom::VpnType::kExtension) {
-      vpn_extensions.insert(vpn_provider->app_id);
-    }
-  }
-  delegate_->OnVpnExtensionsChanged(std::move(vpn_extensions));
-}
-
 class VpnConfigurationImpl
     : public VpnServiceForExtensionAsh::VpnConfiguration {
  public:
@@ -122,12 +85,6 @@ class VpnConfigurationImpl
     service_path_ = std::move(service_path);
   }
 
-  void BindPepperVpnProxyObserver(
-      mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>
-          pepper_vpn_proxy_observer) override {
-    pepper_vpn_proxy_observer_.Bind(std::move(pepper_vpn_proxy_observer));
-  }
-
   // ash::ShillThirdPartyVpnObserver:
   void OnPacketReceived(const std::vector<char>& data) override;
   void OnPlatformMessage(uint32_t platform_message) override;
@@ -138,22 +95,13 @@ class VpnConfigurationImpl
   const std::string object_path_;
   std::optional<std::string> service_path_;
 
-  mojo::Remote<crosapi::mojom::PepperVpnProxyObserver>
-      pepper_vpn_proxy_observer_;
-
   // |this| is owned by VpnServiceForExtensionAsh.
   raw_ptr<VpnServiceForExtensionAsh> vpn_service_ = nullptr;
 };
 
 void VpnConfigurationImpl::OnPacketReceived(const std::vector<char>& data) {
   DCHECK(vpn_service_);
-  // If Pepper observer is bound, route the packet through the Pepper API.
-  if (pepper_vpn_proxy_observer_) {
-    pepper_vpn_proxy_observer_->OnPacketReceived(
-        std::vector<uint8_t>(data.begin(), data.end()));
-  } else {
-    vpn_service_->DispatchOnPacketReceivedEvent(data);
-  }
+  vpn_service_->DispatchOnPacketReceivedEvent(data);
 }
 
 void VpnConfigurationImpl::OnPlatformMessage(uint32_t platform_message) {
@@ -169,10 +117,6 @@ void VpnConfigurationImpl::OnPlatformMessage(uint32_t platform_message) {
              platform_message ==
                  base::to_underlying(api_vpn::PlatformMessage::kError)) {
     vpn_service_->SetActiveConfiguration(nullptr);
-    if (pepper_vpn_proxy_observer_) {
-      pepper_vpn_proxy_observer_->OnUnbind();
-      pepper_vpn_proxy_observer_.reset();
-    }
   }
 
   vpn_service_->DispatchOnPlatformMessageEvent(configuration_name(),
@@ -295,115 +239,6 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
               weak_factory_.GetWeakPtr(), std::move(failure)));
 }
 
-void VpnServiceForExtensionAsh::SetParameters(base::Value::Dict parameters,
-                                              SetParametersCallback callback) {
-  if (!OwnsActiveConfiguration()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
-      active_configuration_->object_path(), std::move(parameters),
-      base::BindOnce(&RunWarningCallback, std::move(success)),
-      std::move(failure));
-}
-
-void VpnServiceForExtensionAsh::SendPacket(const std::vector<uint8_t>& data,
-                                           SendPacketCallback callback) {
-  if (!OwnsActiveConfiguration()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  if (data.empty()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Can't send an empty packet.");
-    return;
-  }
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
-      active_configuration_->object_path(),
-      std::vector<char>(data.begin(), data.end()), std::move(success),
-      std::move(failure));
-}
-
-void VpnServiceForExtensionAsh::NotifyConnectionStateChanged(
-    bool connection_success,
-    NotifyConnectionStateChangedCallback callback) {
-  if (!OwnsActiveConfiguration()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-      active_configuration_->object_path(),
-      connection_success
-          ? base::to_underlying(api_vpn::VpnConnectionState::kConnected)
-          : base::to_underlying(api_vpn::VpnConnectionState::kFailure),
-      std::move(success), std::move(failure));
-}
-
-void VpnServiceForExtensionAsh::BindPepperVpnProxyObserver(
-    const std::string& configuration_name,
-    mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>
-        pepper_vpn_proxy_observer,
-    BindPepperVpnProxyObserverCallback callback) {
-  const std::string key = GetKey(extension_id(), configuration_name);
-
-  VpnConfiguration* configuration =
-      base::FindPtrOrNull(key_to_configuration_map_, key);
-  if (!configuration) {
-    RunFailureCallback(
-        std::move(callback), /*error_name=*/{},
-        "Unauthorized access. The configuration does not exist.");
-    return;
-  }
-
-  if (active_configuration_ != configuration) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access. The configuration is not active.");
-    return;
-  }
-
-  if (configuration->configuration_name() != configuration_name) {
-    RunFailureCallback(
-        std::move(callback), /*error_name=*/{},
-        "Unauthorized access. Configuration name or extension ID mismatch.");
-    return;
-  }
-
-  if (!configuration->service_path()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Pending create.");
-    return;
-  }
-
-  // Connection authorized. All packets will be routed through the Pepper API.
-  configuration->BindPepperVpnProxyObserver(
-      std::move(pepper_vpn_proxy_observer));
-
-  RunSuccessCallback(std::move(callback));
-}
-
-void VpnServiceForExtensionAsh::DispatchAddDialogEvent() {
-  for (auto& observer : observers_) {
-    observer->OnAddDialog();
-  }
-}
-
-void VpnServiceForExtensionAsh::DispatchConfigureDialogEvent(
-    const std::string& configuration_name) {
-  for (auto& observer : observers_) {
-    observer->OnConfigureDialog(configuration_name);
-  }
-}
-
 void VpnServiceForExtensionAsh::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
@@ -420,8 +255,12 @@ void VpnServiceForExtensionAsh::OnConfigurationRemoved(
   DestroyConfigurationInternal(configuration);
 }
 
-bool VpnServiceForExtensionAsh::OwnsActiveConfiguration() const {
-  return !!active_configuration_;
+std::optional<std::string>
+VpnServiceForExtensionAsh::GetActiveConfigurationObjectPath() const {
+  if (active_configuration_) {
+    return active_configuration_->object_path();
+  }
+  return std::nullopt;
 }
 
 bool VpnServiceForExtensionAsh::HasConfigurationForServicePath(
@@ -468,10 +307,9 @@ void VpnServiceForExtensionAsh::DispatchOnPacketReceivedEvent(
 
 void VpnServiceForExtensionAsh::DispatchOnPlatformMessageEvent(
     const std::string& configuration_name,
-    int32_t platform_message,
-    const std::optional<std::string>& error) {
+    int32_t platform_message) {
   for (auto& observer : observers_) {
-    observer->OnPlatformMessage(configuration_name, platform_message, error);
+    observer->OnPlatformMessage(configuration_name, platform_message);
   }
 }
 
@@ -559,7 +397,7 @@ VpnServiceAsh::VpnServiceAsh() {
   network_state_handler_observer_.Observe(
       ash::NetworkHandler::Get()->network_state_handler());
 
-  vpn_providers_observer_ = std::make_unique<VpnProvidersObserver>(this);
+  vpn_providers_observer_ = std::make_unique<ash::VpnProvidersObserver>(this);
 }
 
 VpnServiceAsh::~VpnServiceAsh() = default;
@@ -585,8 +423,13 @@ void VpnServiceAsh::MaybeFailActiveConnectionAndDestroyConfigurations(
   if (!service) {
     return;
   }
-  service->NotifyConnectionStateChanged(
-      /*connection_success=*/false, base::DoNothing());
+  if (std::optional<std::string> object_path =
+          service->GetActiveConfigurationObjectPath()) {
+    ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
+        *object_path,
+        base::to_underlying(api_vpn::VpnConnectionState::kFailure),
+        base::DoNothing(), base::DoNothing());
+  }
 
   if (destroy_configurations) {
     service->DestroyAllConfigurations();

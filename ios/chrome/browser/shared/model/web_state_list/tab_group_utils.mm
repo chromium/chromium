@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
@@ -29,20 +29,17 @@ std::set<const TabGroup*> GetAllGroupsForBrowserList(BrowserList* browser_list,
   return groups;
 }
 
-std::set<const TabGroup*> GetAllGroupsForBrowserState(
-    ChromeBrowserState* browser_state) {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
-  const bool incognito = browser_state->IsOffTheRecord();
+std::set<const TabGroup*> GetAllGroupsForProfile(ProfileIOS* profile) {
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+  const bool incognito = profile->IsOffTheRecord();
   return GetAllGroupsForBrowserList(browser_list, incognito);
 }
 
 void MoveTabToGroup(web::WebStateID web_state_identifier,
                     const TabGroup* destination_group,
-                    ChromeBrowserState* browser_state) {
-  BOOL incognito = browser_state->IsOffTheRecord();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+                    ProfileIOS* profile) {
+  BOOL incognito = profile->IsOffTheRecord();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   const BrowserList::BrowserType browser_types =
       incognito ? BrowserList::BrowserType::kIncognito
                 : BrowserList::BrowserType::kRegularAndInactive;

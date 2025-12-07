@@ -1,0 +1,107 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "home_background_customization_service.h",
+    "home_background_customization_service.mm",
+    "home_background_customization_service_factory.h",
+    "home_background_customization_service_factory.mm",
+    "home_background_customization_service_observer.h",
+    "home_background_customization_service_observer_bridge.h",
+    "home_background_customization_service_observer_bridge.mm",
+    "home_background_data.h",
+    "home_background_data.mm",
+    "home_background_image_service.h",
+    "home_background_image_service.mm",
+    "home_background_image_service_factory.h",
+    "home_background_image_service_factory.mm",
+    "ntp_background_service_factory.h",
+    "ntp_background_service_factory.mm",
+    "user_uploaded_image_manager.h",
+    "user_uploaded_image_manager.mm",
+    "user_uploaded_image_manager_factory.h",
+    "user_uploaded_image_manager_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/sync/protocol",
+    "//components/themes",
+    "//components/themes:prefs",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("seed_colors") {
+  sources = [
+    "home_customization_seed_colors.h",
+    "home_customization_seed_colors.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/protocol",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "home_background_customization_service_unittest.mm",
+    "home_background_image_service_unittest.mm",
+    "user_uploaded_image_manager_unittest.mm",
+  ]
+
+  deps = [
+    ":model",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/application_locale_storage",
+    "//components/prefs:test_support",
+    "//components/search",
+    "//components/sync/protocol:protocol_gen",
+    "//components/themes",
+    "//components/themes:prefs",
+    "//components/version_info",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp_base",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx:test_support",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_home_background_image_service.h",
+    "fake_home_background_image_service.mm",
+    "fake_user_uploaded_image_manager.h",
+    "fake_user_uploaded_image_manager.mm",
+  ]
+
+  deps = [
+    ":model",
+    "//base",
+    "//ios/chrome/browser/home_customization/utils",
+  ]
+}

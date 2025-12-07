@@ -1,0 +1,21 @@
+# Please consult components/viz/README.md about allowable dependencies.
+
+include_rules = [
+  "+components/viz/service/frame_sinks",
+  "+mojo/public/cpp/bindings/associated_receiver_set.h",
+  "+ui/events",
+]
+
+specific_include_rules = {
+  "input_manager.cc": [
+    "+components/viz/service/service_jni_headers/InputTransferHandlerViz_jni.h",
+    "+gpu/ipc/common/gpu_surface_lookup.h",
+    "+ui/gl/android/scoped_a_native_window.h",
+  ],
+  "render_input_router_delegate_impl.h": [
+     "+third_party/blink/public/common/input/web_coalesced_input_event.h"
+  ],
+  "render_input_router_support_child_frame.cc": [
+     "+third_party/blink/public/common/frame/frame_visual_properties.h"
+  ],
+}

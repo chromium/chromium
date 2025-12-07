@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,6 +27,7 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/live_caption/caption_util.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -94,16 +93,14 @@ void MediaToolbarButtonView::Show() {
   SetVisible(true);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonShown();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonShown);
 }
 
 void MediaToolbarButtonView::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonHidden();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonHidden);
 }
 
 void MediaToolbarButtonView::Enable() {
@@ -113,38 +110,32 @@ void MediaToolbarButtonView::Enable() {
   // before there is a valid widget to anchor anything to. Previously any
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
-  if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHLiveCaptionFeature);
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
   }
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonEnabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
 }
 
 void MediaToolbarButtonView::Disable() {
   SetEnabled(false);
 
-  ClosePromoBubble();
+  ClosePromoBubble(/*engaged=*/false);
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonDisabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonDisabled);
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser_->profile()) &&
-      service_->should_show_cast_local_media_iph()) {
-    browser_->window()->MaybeShowFeaturePromo(
+  if (service_->should_show_cast_local_media_iph()) {
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCLocalMediaCastingFeature);
   }
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser_->profile()) &&
-      service_->HasLocalCastNotifications()) {
-    browser_->window()->MaybeShowFeaturePromo(
+  if (service_->HasLocalCastNotifications()) {
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }
 }
@@ -154,24 +145,28 @@ void MediaToolbarButtonView::ButtonPressed() {
     MediaDialogView::HideDialog();
   } else {
     MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
-    ClosePromoBubble();
-
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
+    ClosePromoBubble(/*engaged=*/true);
+    observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
   }
 }
 
-void MediaToolbarButtonView::ClosePromoBubble() {
-  // This can get called during setup before the window is even added to the
-  // browser (and before any bubbles could possibly be shown) so if there is no
-  // window, just bail.
-  if (!browser_->window())
-    return;
-
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHLiveCaptionFeature);
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHGMCCastStartStopFeature);
+void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
+  if (auto* const user_education =
+          BrowserUserEducationInterface::From(browser_)) {
+    if (engaged) {
+      user_education->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHLiveCaptionFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      user_education->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHGMCCastStartStopFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    } else {
+      user_education->AbortFeaturePromo(
+          feature_engagement::kIPHLiveCaptionFeature);
+      user_education->AbortFeaturePromo(
+          feature_engagement::kIPHGMCCastStartStopFeature);
+    }
+  }
 }
 
 BEGIN_METADATA(MediaToolbarButtonView)

@@ -11,9 +11,9 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
@@ -21,7 +21,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/setup/installer_crash_reporter_client.h"
 #include "chrome/installer/setup/installer_state.h"
-#include "chrome/installer/util/google_update_settings.h"
+#include "chrome/installer/util/logging_installer.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -40,15 +40,14 @@ const char* OperationToString(InstallerState::Operation operation) {
       // Fall out of switch.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
-// Returns the path returned by `base::GetSecureSystemTemp` if available.
-// Otherwise, retrieves the SYSTEM version of TEMP. We do this instead of
-// GetTempPath so that both elevated and SYSTEM runs share the same directory.
+// Returns `SystemTemp` if available. Otherwise, retrieves the SYSTEM version of
+// TEMP. We do this instead of GetTempPath so that both elevated and SYSTEM runs
+// share the same directory.
 bool GetSystemTemp(base::FilePath* temp) {
-  if (base::GetSecureSystemTemp(temp)) {
+  if (base::PathService::Get(base::DIR_SYSTEM_TEMP, temp)) {
     return true;
   }
 
@@ -65,7 +64,8 @@ bool GetSystemTemp(base::FilePath* temp) {
 
 }  // namespace
 
-void ConfigureCrashReporting(const InstallerState& installer_state) {
+void ConfigureCrashReporting(const InitialPreferences& initial_prefs,
+                             const InstallerState& installer_state) {
   // This is inspired by work done in various parts of Chrome startup to connect
   // to the crash service. Since the installer does not split its work between
   // a stub .exe and a main .dll, crash reporting can be configured in one place
@@ -92,13 +92,8 @@ void ConfigureCrashReporting(const InstallerState& installer_state) {
   }
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(
-      true, "Chrome Installer", "", base::FilePath());
-
-  // Set up the metrics client id (a la child_process_logging::Init()).
-  std::unique_ptr<metrics::ClientInfo> client_info =
-      GoogleUpdateSettings::LoadMetricsClientInfo();
-  if (client_info)
-    crash_keys::SetMetricsClientIdFromGUID(client_info->client_id);
+      true, "Chrome Installer", "", base::FilePath(),
+      {GetLogFilePath(initial_prefs)});
 }
 
 void SetInitialCrashKeys(const InstallerState& state) {
@@ -108,7 +103,7 @@ void SetInitialCrashKeys(const InstallerState& state) {
   operation.Set(OperationToString(state.operation()));
 
   static CrashKeyString<6> is_system_level("system-level");
-  is_system_level.Set(state.system_install() ? "true" : "false");
+  is_system_level.Set(base::ToString(state.system_install()));
 
   // This is a Windows registry key, which maxes out at 255 chars.
   static CrashKeyString<256> state_crash_key("state-key");

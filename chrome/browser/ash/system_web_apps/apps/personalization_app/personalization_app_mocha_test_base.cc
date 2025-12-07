@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -39,10 +39,10 @@ bool WriteJPEGFile(const base::FilePath& path,
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
-  std::vector<unsigned char> output;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/80, &output);
+  std::optional<std::vector<uint8_t>> output =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/80);
 
-  if (!base::WriteFile(path, output)) {
+  if (!base::WriteFile(path, output.value())) {
     LOG(ERROR) << "Writing to " << path.value() << " failed.";
     return false;
   }

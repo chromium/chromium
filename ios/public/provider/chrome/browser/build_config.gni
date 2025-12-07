@@ -10,6 +10,8 @@ declare_args() {
 
   # Label of the target providing application icons.  This target must be a
   # bundle_data target that copy Icon-*.png files in the application bundle.
+  ios_application_icons_target_legacy =
+      "//ios/chrome/app/resources:chromium_icons_legacy"
   ios_application_icons_target = "//ios/chrome/app/resources:chromium_icons"
 
   # Label of the target providing image assets for the launchscreen.  This
@@ -25,6 +27,9 @@ declare_args() {
   # This defines targets to include resources needed by the providers which are
   # copied to the application bundle.
   ios_providers_resources_targets = []
+
+  # This defines targets that provides ressources for the cpe provider.
+  ios_providers_cpe_resources_targets = []
 
   # This defines targets to include resources needed by the providers which are
   # copied to the test application bundle.

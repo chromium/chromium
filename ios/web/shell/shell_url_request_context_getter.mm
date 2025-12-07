@@ -35,8 +35,11 @@ ShellURLRequestContextGetter::ShellURLRequestContextGetter(
     : base_path_(base_path),
       network_task_runner_(network_task_runner),
       proxy_config_service_(
-          new net::ProxyConfigServiceIOS(NO_TRAFFIC_ANNOTATION_YET)),
-      system_cookie_store_(web::CreateSystemCookieStore(browser_state)) {}
+          new net::ProxyConfigServiceIOS(NO_TRAFFIC_ANNOTATION_YET)) {
+  auto pair = web::CreateSystemCookieStore(browser_state);
+  system_cookie_store_ = std::move(pair.first);
+  cookie_store_handle_ = std::move(pair.second);
+}
 
 ShellURLRequestContextGetter::~ShellURLRequestContextGetter() {}
 
@@ -53,7 +56,8 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
         web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
     builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
-            std::move(proxy_config_service_), net::NetLog::Get(),
+            std::move(proxy_config_service_),
+            /*host_resolver_for_override_rules=*/nullptr, net::NetLog::Get(),
             /*quick_check_enabled=*/true));
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
     cache_params.type = net::URLRequestContextBuilder::HttpCacheParams::DISK;

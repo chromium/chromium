@@ -1,0 +1,78 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/clang/clang.gni")
+import("//build/config/python.gni")
+import("//testing/test.gni")
+
+python_library("generate_orderfile_py") {
+  testonly = true
+  pydeps_file = "//tools/cygprofile/generate_orderfile.pydeps"
+  data = [ "//.vpython3" ]
+}
+
+template("generate_orderfile_test") {
+  script_test(target_name) {
+    script = "//tools/cygprofile/generate_orderfile.py"
+
+    # Stream logcat from device (doesn't seem to fully work yet).
+    enable_android_wrapper = true
+
+    args = [
+      # Assume that we are running this script from the output directory.
+      "--out-dir",
+      ".",
+      "--android-browser",
+      invoker.browser_name,
+      "--target-arch",
+      invoker.arch,
+      "-v",
+    ]
+
+    if (defined(invoker.profile_webview) && invoker.profile_webview) {
+      args += [ "--profile-webview" ]
+    }
+
+    deps = [ ":generate_orderfile_py" ]
+
+    data_deps = [
+      # From performance_test_suite_template_base:
+      "//chrome/test:telemetry_perf_tests${invoker.suffix}",
+
+      # From performance_test_suite_template_android:
+      "//components:components_perftests",
+      "//testing:run_perf_test",
+      "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+    ]
+  }
+}
+
+generate_orderfile_test("generate_orderfile_android_trichrome_chrome_bundle") {
+  browser_name = "android-trichrome-chrome-bundle"
+  suffix = "_android_trichrome_chrome_bundle"
+  arch = "arm"
+}
+
+generate_orderfile_test("generate_orderfile_android_webview") {
+  browser_name = "android-webview-standalone"
+  suffix = "_android_webview"
+  arch = "arm"
+  profile_webview = true
+}
+
+if (defined(android_app_secondary_abi)) {
+  generate_orderfile_test(
+      "generate_orderfile_android_trichrome_chrome_64_32_bundle") {
+    browser_name = "android-trichrome-chrome-64-32-bundle"
+    suffix = "_android_trichrome_chrome_64_32_bundle"
+    arch = "arm64"
+  }
+
+  generate_orderfile_test("generate_orderfile_android_webview_64") {
+    browser_name = "android-webview-standalone"
+    suffix = "_android_webview"
+    arch = "arm64"
+    profile_webview = true
+  }
+}

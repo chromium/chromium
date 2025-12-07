@@ -20,7 +20,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +45,7 @@ class TracingObserverProtoTest : public testing::Test {
         false);
     memory_instrumentation::TracingObserverProto::GetInstance()
         ->ResetForTesting();
-    tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
-    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
@@ -138,7 +136,7 @@ memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
       /*is_peak_rss_resettable=*/true, private_footprint_kb, shared_footprint_kb
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
       ,
-      0
+      0, 0, 0, 0
 #endif
   );
 }
@@ -172,8 +170,16 @@ TEST_F(TracingObserverProtoTest,
   data_source_tester.EndTracing();
 }
 
+// TODO(crbug.com/376596183): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  DISABLED_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+#else
+#define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+#endif
 TEST_F(TracingObserverProtoTest,
-       AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
+       MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);
@@ -197,7 +203,14 @@ TEST_F(TracingObserverProtoTest,
   data_source_tester.EndTracing();
 }
 
-TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
+// crbug.com/379290393: consistent failures on linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_AddChromeDumpToTraceIfEnabled \
+  DISABLED_AddChromeDumpToTraceIfEnabled
+#else
+#define MAYBE_AddChromeDumpToTraceIfEnabled AddChromeDumpToTraceIfEnabled
+#endif
+TEST_F(TracingObserverProtoTest, MAYBE_AddChromeDumpToTraceIfEnabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);
@@ -261,7 +274,13 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
   EXPECT_EQ(423ul, edge1.target_id());
 }
 
-TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
+// TODO(crbug.com/376824014): Re-enable this test.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AddOsDumpToTraceIfEnabled DISABLED_AddOsDumpToTraceIfEnabled
+#else
+#define MAYBE_AddOsDumpToTraceIfEnabled AddOsDumpToTraceIfEnabled
+#endif
+TEST_F(TracingObserverProtoTest, MAYBE_AddOsDumpToTraceIfEnabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);
@@ -334,7 +353,13 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
   }
 }
 
-TEST_F(TracingObserverProtoTest, AsProtoInto) {
+// TODO(crbug.com/376596183): Re-enable this test.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AsProtoInto DISABLED_AsProtoInto
+#else
+#define MAYBE_AsProtoInto AsProtoInto
+#endif
+TEST_F(TracingObserverProtoTest, MAYBE_AsProtoInto) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);

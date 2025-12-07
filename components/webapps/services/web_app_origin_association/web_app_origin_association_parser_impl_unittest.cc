@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,6 +29,7 @@ class WebAppOriginAssociationParserImplTest : public testing::Test {
     mojo::PendingReceiver<mojom::WebAppOriginAssociationParser> receiver;
     parser_ = std::make_unique<WebAppOriginAssociationParserImpl>(
         std::move(receiver));
+    associate_origin_ = url::Origin::Create(GetAssociateOriginUrl());
   }
 
   void TearDown() override { parser_.reset(); }
@@ -38,10 +38,17 @@ class WebAppOriginAssociationParserImplTest : public testing::Test {
       const std::string& raw_json,
       mojom::WebAppOriginAssociationParser::ParseWebAppOriginAssociationCallback
           callback) {
-    parser_->ParseWebAppOriginAssociation(raw_json, std::move(callback));
+    parser_->ParseWebAppOriginAssociation(raw_json, associate_origin_,
+                                          std::move(callback));
     scoped_task_environment_.RunUntilIdle();
   }
 
+  const url::Origin GetAssociateOrigin() { return associate_origin_; }
+  const GURL GetAssociateOriginUrl() { return GURL(associate_origin_str_); }
+  const std::string GetAssociateOriginString() { return associate_origin_str_; }
+
+  url::Origin associate_origin_;
+  const std::string associate_origin_str_ = "https://example.co.uk";
   base::test::TaskEnvironment scoped_task_environment_;
   std::unique_ptr<WebAppOriginAssociationParserImpl> parser_;
   base::HistogramTester histogram_tester_;
@@ -49,11 +56,11 @@ class WebAppOriginAssociationParserImplTest : public testing::Test {
 
 TEST_F(WebAppOriginAssociationParserImplTest, ParseGoodAssociationFile) {
   std::string raw_json =
-      "{"
-      "  \"web_apps\": [{"
-      "    \"web_app_identity\":\"https://foo.com/\""
-      "    }]"
-      "}";
+      R"({
+        "https://example.com/app": {
+          "scope": "/extended-scope"
+        }
+      })";
   base::test::TestFuture<mojom::WebAppOriginAssociationPtr,
                          std::vector<mojom::WebAppOriginAssociationErrorPtr>>
       future;
@@ -66,7 +73,10 @@ TEST_F(WebAppOriginAssociationParserImplTest, ParseGoodAssociationFile) {
   ASSERT_TRUE(errors.empty());
 
   ASSERT_EQ(1u, association->apps.size());
-  EXPECT_EQ(GURL("https://foo.com/"), association->apps[0]->web_app_identity);
+  EXPECT_EQ(GURL("https://example.com/app"),
+            association->apps[0]->web_app_identity);
+  EXPECT_EQ(GURL(GetAssociateOriginString() + "/extended-scope"),
+            association->apps[0]->scope);
 
   histogram_tester_.ExpectBucketCount(
       kParseResultHistogram,
@@ -107,12 +117,7 @@ TEST_F(WebAppOriginAssociationParserImplTest,
   ASSERT_TRUE(!association);
   ASSERT_FALSE(errors.empty());
   ASSERT_EQ(1u, errors.size());
-  if (base::JSONReader::UsingRust()) {
-    EXPECT_EQ(errors[0]->message,
-              "EOF while parsing a list at line 1 column 5");
-  } else {
-    EXPECT_EQ(errors[0]->message, "Line: 1, column: 6, Syntax error.");
-  }
+  EXPECT_EQ(errors[0]->message, "EOF while parsing a list at line 1 column 5");
 
   histogram_tester_.ExpectBucketCount(
       kParseResultHistogram,

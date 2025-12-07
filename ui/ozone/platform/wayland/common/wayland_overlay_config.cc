@@ -34,14 +34,7 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
       color_space(data.color_space == gfx::ColorSpace::CreateSRGB()
                       ? std::nullopt
                       : std::optional<gfx::ColorSpace>(data.color_space)),
-      rounded_clip_bounds(
-          data.rounded_corners.IsEmpty()
-              ? std::nullopt
-              : std::optional<gfx::RRectF>(data.rounded_corners)),
-      // Solid color quads are created as wl_buffers. Though, some overlays may
-      // have background data passed.
-      background_color(data.is_solid_color ? std::nullopt : data.color),
-      clip_rect(data.clip_rect) {}
+      hdr_metadata(data.hdr_metadata) {}
 
 WaylandOverlayConfig& WaylandOverlayConfig::operator=(
     WaylandOverlayConfig&& other) = default;

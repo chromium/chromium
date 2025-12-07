@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Defines a feature that will never be enabled in production to allow
+// to land stubbed-out mojom methods sequentially. See go/chrome-ipc-stubs-trial
+// for instructions on when this can be used, and the expectations for
+// developers and reviewers as methods are turned on when this is removed from
+// from a method or interface.
+//
+// Note: Code landed behind this feature is expected to be unfinished and we are
+// unlikely to accept reports of security issues until the implementation is
+// completed and the feature annotation is removed from a method.
+feature kMojomWorkInProgress {
+  const string name = "MojomWorkInProgress";
+  const bool default_state = false;
+};

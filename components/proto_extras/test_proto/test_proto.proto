@@ -1,0 +1,67 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package proto_extras;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/proto_extras/test_proto/test_proto_dependency.proto";
+
+message TestMessageAboveEmbeddedMessage {
+  EmptyEmbeddedMessage empty_embedded_message = 1;
+}
+
+message EmptyEmbeddedMessage {}
+
+message TestMessage {
+  double double_field = 1;
+
+  int32 int32_field = 2;
+
+  message NestedMessage {
+    int32 int32_field = 1;
+  }
+
+  NestedMessage nested_message_field = 3;
+
+  enum TestEnum {
+    UNKNOWN = 0;
+    ENUM_A = 1;
+    ENUM_B = 2;
+  }
+
+  TestEnum enum_field = 4;
+
+  repeated int32 repeated_int32_field = 5;
+
+  string string_field = 6;
+
+  bytes bytes_field = 7;
+
+  DependencyMessage dependency_message = 8;
+
+  oneof oneof_field {
+    int32 maybe_int32_field = 9;
+    string maybe_string_field = 10;
+    DependencyMessage maybe_dependency_message = 11;
+    TestEnum maybe_enum_field = 12;
+  }
+
+  uint64 uint64_field = 13;
+
+  map<int32, string> primitive_map_field = 14;
+  map<string, DependencyMessage> message_map_field = 15;
+  EmptyEmbeddedMessage empty_embedded_message = 16;
+
+  bytes cord_bytes_field = 17 [ctype = CORD];
+
+  repeated bytes repeated_byte_field = 18;
+  repeated bytes repeated_string_field = 19;
+  repeated EmptyEmbeddedMessage repeated_message_field = 20;
+
+  optional int32 optional_int_field = 21;
+  optional EmptyEmbeddedMessage optional_empty_embedded_message_field = 22;
+}

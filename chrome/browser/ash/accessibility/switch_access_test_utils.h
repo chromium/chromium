@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SWITCH_ACCESS_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SWITCH_ACCESS_TEST_UTILS_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 
 class Profile;
 
@@ -38,6 +40,15 @@ class SwitchAccessTestUtils {
   // Name represents the name of the target node.
   void WaitForEventOnAutomationNode(const std::string& eventType,
                                     const std::string& name);
+  // Waits for the back button to initialize its AutomationNode. This can take
+  // longer when running in manifest v3.
+  void WaitForBackButtonInitialized();
+  // Resets the console observer.
+  void ResetConsoleObserver();
+
+  ExtensionConsoleErrorObserver* console_observer() {
+    return console_observer_.get();
+  }
 
  private:
   void WaitForJS(const std::string& js_to_eval);

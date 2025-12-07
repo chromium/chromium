@@ -21,7 +21,7 @@ async_test(function(t) {
         cueNode = cueNode.nextElementSibling;
         assert_equals(getComputedStyle(cueNode).fontStyle, 'italic');
         cueNode = cueNode.nextElementSibling;
-        assert_equals(getComputedStyle(cueNode).textDecoration, 'underline solid rgb(255, 255, 255)');
+        assert_equals(getComputedStyle(cueNode).textDecoration, 'underline');
     });
 
     video.currentTime = 0.1;

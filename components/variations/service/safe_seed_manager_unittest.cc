@@ -10,12 +10,14 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
-#include "components/variations/service/safe_seed_manager_base.h"
+#include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
@@ -41,18 +43,25 @@ base::Time GetTestFetchTime() {
 class FakeSeedStore : public VariationsSeedStore {
  public:
   explicit FakeSeedStore(TestingPrefServiceSimple* local_state)
-      : VariationsSeedStore(
-            local_state,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {
-    VariationsSeedStore::RegisterPrefs(local_state->registry());
-  }
+      : VariationsSeedStore(local_state,
+                            /*initial_seed=*/nullptr,
+                            /*signature_verification_enabled=*/true,
+                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                                local_state,
+                                /*seed_file_dir=*/base::FilePath(),
+                                version_info::Channel::UNKNOWN,
+                                /*entropy_providers=*/nullptr),
+                            version_info::Channel::UNKNOWN,
+                            /*seed_file_dir=*/base::FilePath(),
+                            /*entropy_providers=*/nullptr) {}
 
   FakeSeedStore(const FakeSeedStore&) = delete;
   FakeSeedStore& operator=(const FakeSeedStore&) = delete;
 
   ~FakeSeedStore() override = default;
 
-  bool StoreSafeSeed(const std::string& seed_data,
+  void StoreSafeSeed(base::OnceCallback<void(bool)> done_callback,
+                     const std::string& seed_data,
                      const std::string& base64_seed_signature,
                      int seed_milestone,
                      const ClientFilterableState& client_state,
@@ -65,7 +74,7 @@ class FakeSeedStore : public VariationsSeedStore {
     permanent_consistency_country_ = client_state.permanent_consistency_country;
     session_consistency_country_ = client_state.session_consistency_country;
     fetch_time_ = seed_fetch_time;
-    return true;
+    std::move(done_callback).Run(true);
   }
 
   const std::string& seed_data() const { return seed_data_; }
@@ -133,10 +142,12 @@ class SafeSeedManagerTest : public ::testing::Test {
   SafeSeedManagerTest() {
     metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
     SafeSeedManager::RegisterPrefs(prefs_.registry());
+    VariationsSeedStore::RegisterPrefs(prefs_.registry());
   }
   ~SafeSeedManagerTest() override = default;
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
 };
 

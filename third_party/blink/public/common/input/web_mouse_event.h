@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_MOUSE_EVENT_H_
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -35,34 +36,18 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 base::TimeTicks time_stamp_param,
                 WebMenuSourceType menu_source_type_param = kMenuSourceNone,
                 PointerId id_param = kMousePointerId)
-      : WebInputEvent(type_param, modifiers_param, time_stamp_param),
+      : WebInputEvent(type_param,
+                      Type::kMouseTypeFirst,
+                      Type::kMouseTypeLast,
+                      modifiers_param,
+                      time_stamp_param),
         WebPointerProperties(id_param,
                              PointerType::kMouse,
                              button_param,
                              position,
                              global_position),
         click_count(click_count_param),
-        menu_source_type(menu_source_type_param) {
-    DCHECK_GE(type_param, Type::kMouseTypeFirst);
-    DCHECK_LE(type_param, Type::kMouseTypeLast);
-  }
-
-  WebMouseEvent(Type type_param,
-                int modifiers_param,
-                base::TimeTicks time_stamp_param,
-                PointerId id_param = kMousePointerId)
-      : WebInputEvent(type_param, modifiers_param, time_stamp_param),
-        WebPointerProperties(id_param) {}
-
-  WebMouseEvent() : WebMouseEvent(kMousePointerId) {}
-
-  bool FromTouch() const {
-    return (GetModifiers() & kIsCompatibilityEventForTouch) != 0;
-  }
-
-  int ClickCount() const { return click_count; }
-
-  WebMenuSourceType GetMenuSourceType() const { return menu_source_type; }
+        menu_source_type(menu_source_type_param) {}
 
   WebMouseEvent(Type type_param,
                 const WebGestureEvent&,
@@ -71,6 +56,44 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 int modifiers_param,
                 base::TimeTicks time_stamp_param,
                 PointerId id_param = kMousePointerId);
+
+  WebMouseEvent(Type type_param,
+                Type type_range_min,
+                Type type_range_max,
+                int modifiers_param,
+                base::TimeTicks time_stamp_param,
+                PointerId id_param = kMousePointerId)
+      : WebInputEvent(type_param,
+                      type_range_min,
+                      type_range_max,
+                      modifiers_param,
+                      time_stamp_param),
+        WebPointerProperties(id_param, PointerType::kMouse) {}
+
+  WebMouseEvent(Type type_param,
+                int modifiers_param,
+                base::TimeTicks time_stamp_param,
+                PointerId id_param = kMousePointerId)
+      : WebMouseEvent(type_param,
+                      Type::kMouseTypeFirst,
+                      Type::kMouseTypeLast,
+                      modifiers_param,
+                      time_stamp_param,
+                      id_param) {}
+
+  WebMouseEvent()
+      : WebMouseEvent(Type::kUndefined,
+                      kNoModifiers,
+                      base::TimeTicks(),
+                      kMousePointerId) {}
+
+  bool FromTouch() const {
+    return (GetModifiers() & kIsCompatibilityEventForTouch) != 0;
+  }
+
+  int ClickCount() const { return click_count; }
+
+  WebMenuSourceType GetMenuSourceType() const { return menu_source_type; }
 
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;
@@ -82,9 +105,17 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   // back to 1 and |frame_translate_| X and Y coordinates back to 0.
   WebMouseEvent FlattenTransform() const;
 
- protected:
-  WebMouseEvent(PointerId id_param) : WebPointerProperties(id_param) {}
+  // Makes the event modifier bit corresponding to the `button` field match the
+  // implied button state. More precisely, at mousedown it sets the modifier bit
+  // and at mouseup it resets the bit.  Low-level events from the system may not
+  // set/reset the bit correctly as per the spec:
+  // https://www.w3.org/TR/uievents/#dom-mouseevent-buttons
+  //
+  // Other modifier bits remain unchanged for these two events, and no change is
+  // made for other events.
+  void UpdateEventModifiersToMatchButton();
 
+ protected:
   void FlattenTransformSelf();
 
  private:

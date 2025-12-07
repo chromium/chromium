@@ -12,7 +12,6 @@ namespace switches {
 
 const char kForceControlFaceAe[] = "force-control-face-ae";
 const char kAutoFramingOverride[] = "auto-framing-override";
-const char kCameraSuperResOverride[] = "camera-super-res-override";
 const char kFaceRetouchOverride[] = "face-retouch-override";
 
 }  // namespace switches
@@ -28,7 +27,6 @@ namespace features {
 // private CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource() call
 // to achieve zero-copy video encoding when the device is rotated.
 BASE_FEATURE(kDisableCameraFrameRotationAtSource,
-             "DisableCameraFrameRotationAtSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

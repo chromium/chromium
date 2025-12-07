@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,9 +15,10 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -25,14 +27,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
@@ -40,8 +34,9 @@
 namespace {
 
 content::WebContents* GetPickerWebContents() {
-  if (!ProfilePicker::GetWebViewForTesting())
+  if (!ProfilePicker::GetWebViewForTesting()) {
     return nullptr;
+  }
   return ProfilePicker::GetWebViewForTesting()->GetWebContents();
 }
 
@@ -55,29 +50,25 @@ class TestProfileManagementFlowController
       Step step,
       ProfileManagementStepTestView::StepControllerFactory factory,
       base::OnceClosure initial_step_load_finished_closure)
-      : ProfileManagementFlowController(host, std::move(clear_host_callback)),
+      : ProfileManagementFlowController(host,
+                                        std::move(clear_host_callback),
+                                        /*flow_type_string==*/"TestFlow"),
         step_(step),
         step_controller_factory_(std::move(factory)),
         initial_step_load_finished_closure_(
             std::move(initial_step_load_finished_closure)) {}
 
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override {
+  void Init() override {
     RegisterStep(step_, step_controller_factory_.Run(host()));
     SwitchToStep(
         step_, /*reset_state=*/true,
         /*step_switch_finished_callback=*/
-        base::BindOnce(
+        StepSwitchFinishedCallback(base::BindOnce(
             &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
-            weak_ptr_factory_.GetWeakPtr(),
-            std::move(step_switch_finished_callback)));
+            weak_ptr_factory_.GetWeakPtr())));
   }
 
-  void OnInitialStepSwitchFinished(StepSwitchFinishedCallback original_callback,
-                                   bool success) {
-    if (original_callback) {
-      std::move(original_callback).Run(success);
-    }
-
+  void OnInitialStepSwitchFinished(bool success) {
     if (host()->GetPickerContents()->IsLoading()) {
       Observe(host()->GetPickerContents());
     } else {
@@ -86,13 +77,20 @@ class TestProfileManagementFlowController
     }
   }
 
-  void DidFirstVisuallyNonEmptyPaint() override {
+  void DidStopLoading() override {
     Observe(nullptr);
     DCHECK(initial_step_load_finished_closure_);
     std::move(initial_step_load_finished_closure_).Run();
   }
 
-  void CancelPostSignInFlow() override { NOTREACHED_NORETURN(); }
+  void CancelSigninFlow() override { NOTREACHED(); }
+
+  void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePicker::ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback) override {
+    NOTREACHED();
+  }
 
   Step step_;
   ProfileManagementStepTestView::StepControllerFactory step_controller_factory_;
@@ -109,15 +107,17 @@ ViewAddedWaiter::ViewAddedWaiter(views::View* view) : view_(view) {}
 ViewAddedWaiter::~ViewAddedWaiter() = default;
 
 void ViewAddedWaiter::Wait() {
-  if (view_->GetWidget())
+  if (view_->GetWidget()) {
     return;
+  }
   observation_.Observe(view_.get());
   run_loop_.Run();
 }
 
 void ViewAddedWaiter::OnViewAddedToWidget(views::View* observed_view) {
-  if (observed_view == view_)
+  if (observed_view == view_) {
     run_loop_.Quit();
+  }
 }
 
 // -- ViewDeletedWaiter --------------------------------------------------------
@@ -240,8 +240,9 @@ void ProfileManagementStepTestView::ShowAndWait(
   // UI elements to know when to stop waiting.
   run_loop_.Run();
 
-  if (view_size.has_value())
+  if (view_size.has_value()) {
     GetWidget()->SetSize(view_size.value());
+  }
 }
 
 std::unique_ptr<ProfileManagementFlowController>
@@ -252,6 +253,9 @@ ProfileManagementStepTestView::CreateFlowController(
       this, std::move(clear_host_callback), step_, step_controller_factory_,
       run_loop_.QuitClosure());
 }
+
+MockProfilePickerWebContentsHost::MockProfilePickerWebContentsHost() = default;
+MockProfilePickerWebContentsHost::~MockProfilePickerWebContentsHost() = default;
 
 // -- Other utils --------------------------------------------------------------
 namespace profiles::testing {
@@ -334,39 +338,5 @@ void ExpectPickerManagedUserNoticeScreenTypeAndProceed(
   // Simulate clicking on the next button.
   handler->CallProceedCallbackForTesting(choice);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void CompleteLacrosFirstRun(
-    LoginUIService::SyncConfirmationUIClosedResult result) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile& profile = profiles::testing::CreateProfileSync(
-      profile_manager, profile_manager->GetPrimaryUserProfilePath());
-
-  WaitForPickerWidgetCreated();
-  WaitForPickerLoadStop(GURL(chrome::kChromeUIIntroURL));
-
-  ASSERT_TRUE(ProfilePicker::IsFirstRunOpen());
-  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-
-  base::Value::List args;
-  GetPickerWebContents()->GetWebUI()->ProcessWebUIMessage(
-      GetPickerWebContents()->GetURL(), "continueWithAccount", std::move(args));
-
-  WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
-      /*is_sync_promo=*/true));
-
-  if (result == LoginUIService::UI_CLOSED) {
-    // `UI_CLOSED` is not provided via webui handlers. Instead, it gets sent
-    // when the profile picker gets closed by some external source. If we only
-    // send the result notification like for other types, the view will stay
-    // open.
-    ProfilePicker::Hide();
-  } else {
-    LoginUIServiceFactory::GetForProfile(&profile)->SyncConfirmationUIClosed(
-        result);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace profiles::testing

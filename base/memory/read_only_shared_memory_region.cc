@@ -17,17 +17,20 @@ ReadOnlySharedMemoryRegion::CreateFunction*
 MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(
     size_t size,
     SharedMemoryMapper* mapper) {
-  if (create_hook_)
+  if (create_hook_) {
     return create_hook_(size, mapper);
+  }
 
   subtle::PlatformSharedMemoryRegion handle =
       subtle::PlatformSharedMemoryRegion::CreateWritable(size);
-  if (!handle.IsValid())
+  if (!handle.IsValid()) {
     return {};
+  }
 
   auto result = handle.MapAt(0, handle.GetSize(), mapper);
-  if (!result.has_value())
+  if (!result.has_value()) {
     return {};
+  }
 
   WritableSharedMemoryMapping mapping(result.value(), size, handle.GetGUID(),
                                       mapper);
@@ -38,8 +41,9 @@ MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(
 #endif  // BUILDFLAG(IS_MAC)
   ReadOnlySharedMemoryRegion region(std::move(handle));
 
-  if (!region.IsValid() || !mapping.IsValid())
+  if (!region.IsValid() || !mapping.IsValid()) {
     return {};
+  }
 
   return {std::move(region), std::move(mapping)};
 }
@@ -77,12 +81,14 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
     uint64_t offset,
     size_t size,
     SharedMemoryMapper* mapper) const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   auto result = handle_.MapAt(offset, size, mapper);
-  if (!result.has_value())
+  if (!result.has_value()) {
     return {};
+  }
 
   return ReadOnlySharedMemoryMapping(result.value(), size, handle_.GetGUID(),
                                      mapper);

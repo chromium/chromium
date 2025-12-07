@@ -45,10 +45,6 @@ class SessionRestorationService : public KeyedService {
   // possible. Can be called at any time.
   virtual void SaveSessions() = 0;
 
-  // Requests that all pending changes to be saved to storage when possible.
-  // Can be called at any time.
-  virtual void ScheduleSaveSessions() = 0;
-
   // Sets the `identifier` used to save/load the session for `browser`. The
   // identifier is used to derive the location of the file on storage, thus
   // must be consistent across application restart.
@@ -65,7 +61,8 @@ class SessionRestorationService : public KeyedService {
 
   // Asynchronously loads data for `web_state` owned by `browser` that is
   // unrealized. Invokes `callback` with the data loaded from disk on the
-  // calling sequence.
+  // calling sequence. It is an error to call this method with a realized
+  // WebState.
   //
   // If the method `SetSessionID(...)` has not been called for `browser`,
   // or if the method `Disconnect(...)` has already been called, then the

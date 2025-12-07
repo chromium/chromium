@@ -90,6 +90,8 @@ export namespace OobeTypes {
     authToken: string;
     isChildAccount: boolean;
     hasLoginSupport: boolean;
+    usingPinAsMainSignInFactor: boolean;
+    isRecoveryMode: boolean;
   }
 
   /**
@@ -147,7 +149,8 @@ export namespace OobeTypes {
     SCRAPED_PASSWORD_VERIFICATION_FAILURE = 1,
     INSECURE_CONTENT_BLOCKED = 2,
     MISSING_GAIA_INFO = 3,
-    CUSTOM = 4,
+    OOBE_COMPLETION_SKIPPED = 4,
+    CUSTOM = 5,
   }
 
   /**

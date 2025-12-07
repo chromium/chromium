@@ -93,8 +93,7 @@ bool GLSurfaceEglReadbackWayland::SupportsAsyncSwap() {
 gfx::SwapResult GLSurfaceEglReadbackWayland::SwapBuffers(
     PresentationCallback callback,
     gfx::FrameData data) {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::SwapResult::SWAP_FAILED;
+  NOTREACHED();
 }
 
 void GLSurfaceEglReadbackWayland::SwapBuffersAsync(

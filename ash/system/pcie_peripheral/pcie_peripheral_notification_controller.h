@@ -68,6 +68,7 @@ class ASH_EXPORT PciePeripheralNotificationController
   void OnInvalidUSB4CableWarning() override {}
   void OnInvalidTBTCableWarning() override {}
   void OnSpeedLimitingCableWarning() override {}
+  void OnUsbDeviceOrEndpointLimit() override {}
 
  private:
   friend class PciePeripheralNotificationControllerTest;

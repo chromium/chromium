@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <string>
 #include <vector>
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
 
@@ -23,9 +21,8 @@ TEST(ProtocolBinaryTest, base64EmptyArgs) {
   bool success = false;
   Binary decoded = Binary::fromBase64("", &success);
   EXPECT_TRUE(success);
-  EXPECT_EQ(
-      std::vector<uint8_t>(),
-      std::vector<uint8_t>(decoded.data(), decoded.data() + decoded.size()));
+  EXPECT_EQ(std::vector<uint8_t>(),
+            std::vector<uint8_t>(decoded.begin(), decoded.end()));
 }
 
 TEST(ProtocolStringTest, AllBytesBase64Roundtrip) {
@@ -36,23 +33,21 @@ TEST(ProtocolStringTest, AllBytesBase64Roundtrip) {
   bool success = false;
   Binary decoded = Binary::fromBase64(binary.toBase64(), &success);
   EXPECT_TRUE(success);
-  std::vector<uint8_t> decoded_bytes(decoded.data(),
-                                     decoded.data() + decoded.size());
+  std::vector<uint8_t> decoded_bytes(decoded.begin(), decoded.end());
   EXPECT_EQ(all_bytes, decoded_bytes);
 }
 
 TEST(ProtocolStringTest, HelloWorldBase64Roundtrip) {
-  const char* kMsg = "Hello, world.";
-  std::vector<uint8_t> msg(kMsg, kMsg + strlen(kMsg));
-  EXPECT_EQ(strlen(kMsg), msg.size());
+  const std::string kMsg = "Hello, world.";
+  std::vector<uint8_t> msg(kMsg.begin(), kMsg.end());
+  EXPECT_EQ(kMsg.size(), msg.size());
 
   auto encoded = Binary::fromVector(msg).toBase64();
   EXPECT_EQ("SGVsbG8sIHdvcmxkLg==", encoded);
   bool success = false;
   Binary decoded_binary = Binary::fromBase64(encoded, &success);
   EXPECT_TRUE(success);
-  std::vector<uint8_t> decoded(decoded_binary.data(),
-                               decoded_binary.data() + decoded_binary.size());
+  std::vector<uint8_t> decoded(decoded_binary.begin(), decoded_binary.end());
   EXPECT_EQ(msg, decoded);
 }
 

@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_delegate.h"
@@ -25,7 +26,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "ipc/ipc_message_macros.h"
 
 namespace app_runtime = extensions::api::app_runtime;
 
@@ -41,11 +41,11 @@ namespace {
 struct ResponseInfo {
   scoped_refptr<const Extension> guest_extension;
   std::unique_ptr<GuestViewBase> app_view_guest;
-  GuestViewBase::WebContentsCreatedCallback callback;
+  GuestViewBase::GuestPageCreatedCallback callback;
 
   ResponseInfo(const Extension* guest_extension,
                std::unique_ptr<GuestViewBase> app_view_guest,
-               GuestViewBase::WebContentsCreatedCallback callback)
+               GuestViewBase::GuestPageCreatedCallback callback)
       : guest_extension(guest_extension),
         app_view_guest(std::move(app_view_guest)),
         callback(std::move(callback)) {}
@@ -94,14 +94,14 @@ bool AppViewGuest::CompletePendingRequest(
 
   std::unique_ptr<GuestViewBase> app_view_guest =
       std::move(response_info->app_view_guest);
-  GuestViewBase::WebContentsCreatedCallback callback =
+  GuestViewBase::GuestPageCreatedCallback callback =
       std::move(response_info->callback);
   response_map->erase(it);
 
   auto* raw_app_view_guest = static_cast<AppViewGuest*>(app_view_guest.get());
-  raw_app_view_guest->CompleteCreateWebContents(url, guest_extension.get(),
-                                                std::move(app_view_guest),
-                                                std::move(callback));
+  raw_app_view_guest->CompleteCreateInnerPage(url, guest_extension.get(),
+                                              std::move(app_view_guest),
+                                              std::move(callback));
 
   return true;
 }
@@ -114,8 +114,8 @@ std::unique_ptr<GuestViewBase> AppViewGuest::Create(
 
 AppViewGuest::AppViewGuest(content::RenderFrameHost* owner_rfh)
     : GuestView<AppViewGuest>(owner_rfh),
-      app_view_guest_delegate_(base::WrapUnique(
-          ExtensionsAPIClient::Get()->CreateAppViewGuestDelegate())) {
+      app_view_guest_delegate_(
+          ExtensionsAPIClient::Get()->CreateAppViewGuestDelegate()) {
   if (app_view_guest_delegate_) {
     app_delegate_ =
         base::WrapUnique(app_view_guest_delegate_->CreateAppDelegate(
@@ -125,9 +125,19 @@ AppViewGuest::AppViewGuest(content::RenderFrameHost* owner_rfh)
 
 AppViewGuest::~AppViewGuest() = default;
 
+bool AppViewGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return app_view_guest_delegate_ &&
+         app_view_guest_delegate_->HandleContextMenu(render_frame_host, params);
+}
+
 bool AppViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   DCHECK_EQ(web_contents(),
             content::WebContents::FromRenderFrameHost(&render_frame_host));
 
@@ -138,10 +148,39 @@ bool AppViewGuest::HandleContextMenu(
   return false;
 }
 
+bool AppViewGuest::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
+    content::SiteInstance* source_site_instance,
+    content::mojom::WindowContainerType window_container_type,
+    const GURL& opener_url,
+    const std::string& frame_name,
+    const GURL& target_url) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  return true;
+}
+
+content::WebContents* AppViewGuest::CreateCustomWebContents(
+    content::RenderFrameHost* opener,
+    content::SiteInstance* source_site_instance,
+    bool is_new_browsing_instance,
+    const GURL& opener_url,
+    const std::string& frame_name,
+    const GURL& target_url,
+    const content::StoragePartitionConfig& partition_config,
+    content::SessionStorageNamespace* session_storage_namespace) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  // Suppress window creation.
+  return nullptr;
+}
+
 void AppViewGuest::RequestMediaAccessPermission(
     WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (!app_delegate_) {
     WebContentsDelegate::RequestMediaAccessPermission(web_contents, request,
                                                       std::move(callback));
@@ -160,6 +199,8 @@ bool AppViewGuest::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (!app_delegate_) {
     return WebContentsDelegate::CheckMediaAccessPermission(
         render_frame_host, security_origin, type);
@@ -173,23 +214,25 @@ bool AppViewGuest::CheckMediaAccessPermission(
       render_frame_host, security_origin, type, guest_extension);
 }
 
-void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                                     const base::Value::Dict& create_params,
-                                     WebContentsCreatedCallback callback) {
+void AppViewGuest::CreateInnerPage(
+    std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
+    const base::Value::Dict& create_params,
+    GuestPageCreatedCallback callback) {
   const std::string* app_id = create_params.FindString(appview::kAppID);
   if (!app_id) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   // Verifying that the appId is not the same as the host application.
   if (owner_host() == *app_id) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
   const base::Value::Dict* data = create_params.FindDict(appview::kData);
   if (!data) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
@@ -197,11 +240,11 @@ void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
       ExtensionRegistry::Get(browser_context())->enabled_extensions();
   const Extension* guest_extension = enabled_extensions.GetByID(*app_id);
   const Extension* embedder_extension =
-      enabled_extensions.GetByID(GetOwnerSiteURL().host());
+      enabled_extensions.GetByID(GetOwnerSiteURL().GetHost());
 
   if (!guest_extension || !guest_extension->is_platform_app() ||
       !embedder_extension || !embedder_extension->is_platform_app()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
@@ -227,19 +270,24 @@ void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
 }
 
 void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
-  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
-
-  if (!url_.is_valid())
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     return;
+  }
 
-  GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
-                          std::string());
+  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  LoadURL();
+}
+
+void AppViewGuest::DidAttachToEmbedder() {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    LoadURL();
+  }
 }
 
 void AppViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   // This situation is not possible for AppView.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const char* AppViewGuest::GetAPINamespace() const {
@@ -250,45 +298,53 @@ int AppViewGuest::GetTaskPrefix() const {
   return IDS_EXTENSION_TASK_MANAGER_APPVIEW_TAG_PREFIX;
 }
 
-void AppViewGuest::CompleteCreateWebContents(
+void AppViewGuest::CompleteCreateInnerPage(
     const GURL& url,
     const Extension* guest_extension,
     std::unique_ptr<GuestViewBase> owned_this,
-    WebContentsCreatedCallback callback) {
+    GuestPageCreatedCallback callback) {
   if (!owner_rfh()) {
     // The owner was destroyed before getting a response to the embedding
     // request, so we can't proceed with creating a guest.
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   if (!url.is_valid()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   url_ = url;
   guest_extension_id_ = guest_extension->id();
 
-  WebContents::CreateParams params(
-      browser_context(),
-      content::SiteInstance::CreateForURL(browser_context(),
-                                          guest_extension->url()));
-  params.guest_delegate = this;
-  auto web_contents = WebContents::Create(params);
-  app_delegate_->InitWebContents(web_contents.get());
-  std::move(callback).Run(std::move(owned_this), std::move(web_contents));
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    std::move(callback).Run(std::move(owned_this),
+                            content::GuestPageHolder::Create(
+                                owner_web_contents(),
+                                content::SiteInstance::CreateForURL(
+                                    browser_context(), guest_extension->url()),
+                                GetGuestPageHolderDelegateWeakPtr()));
+  } else {
+    WebContents::CreateParams params(
+        browser_context(), content::SiteInstance::CreateForURL(
+                               browser_context(), guest_extension->url()));
+    params.guest_delegate = this;
+    auto web_contents = WebContents::Create(params);
+    app_delegate_->InitWebContents(web_contents.get());
+    std::move(callback).Run(std::move(owned_this), std::move(web_contents));
+  }
 }
 
 void AppViewGuest::LaunchAppAndFireEvent(
     std::unique_ptr<GuestViewBase> owned_this,
     base::Value::Dict data,
-    WebContentsCreatedCallback callback,
+    GuestPageCreatedCallback callback,
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   bool has_event_listener = EventRouter::Get(browser_context())
                                 ->ExtensionHasEventListener(
                                     context_info->extension_id,
                                     app_runtime::OnEmbedRequested::kEventName);
   if (!has_event_listener) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
@@ -308,6 +364,15 @@ void AppViewGuest::LaunchAppAndFireEvent(
   embed_request.Set(appview::kData, std::move(data));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser_context(), std::move(embed_request), extension);
+}
+
+void AppViewGuest::LoadURL() {
+  if (!url_.is_valid()) {
+    return;
+  }
+
+  GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+                          std::string());
 }
 
 void AppViewGuest::SetAppDelegateForTest(AppDelegate* delegate) {

@@ -7,12 +7,16 @@
 #include <vector>
 
 #include "base/test/gtest_util.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/cookie_partition_key.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -92,12 +96,12 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
 TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
   net::CookieAccessResult original = net::CookieAccessResult(
       net::CookieEffectiveSameSite::LAX_MODE,
-      net::CookieInclusionStatus(
-          net::CookieInclusionStatus::
-              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-          net::CookieInclusionStatus::
-              WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT),
-      net::CookieAccessSemantics::LEGACY,
+      net::CookieInclusionStatus::MakeFromReasonsForTesting(
+          {net::CookieInclusionStatus::ExclusionReason::
+               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX},
+          {net::CookieInclusionStatus::WarningReason::
+               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}),
+      net::CookieAccessSemantics::LEGACY, net::CookieScopeSemantics::LEGACY,
       true /* is_allowed_to_access_secure_cookies */);
   net::CookieAccessResult copied;
 
@@ -106,10 +110,10 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
 
   EXPECT_EQ(original.effective_same_site, copied.effective_same_site);
   EXPECT_TRUE(copied.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::ExclusionReason::
            EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
   EXPECT_TRUE(copied.status.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   EXPECT_EQ(original.is_allowed_to_access_secure_cookies,
             copied.is_allowed_to_access_secure_cookies);
@@ -250,7 +254,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeCause) {
         net::CookieChangeCause::UNKNOWN_DELETION,
         net::CookieChangeCause::OVERWRITE, net::CookieChangeCause::EXPIRED,
         net::CookieChangeCause::EVICTED,
-        net::CookieChangeCause::EXPIRED_OVERWRITE}) {
+        net::CookieChangeCause::EXPIRED_OVERWRITE,
+        net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE,
+        net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE}) {
     net::CookieChangeCause roundtrip;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieChangeCause>(
         change_cause, roundtrip));
@@ -313,8 +319,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
   metadata.redirect_type_bug_1221316 =
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
-  metadata.http_method_bug_1221316 = net::CookieOptions::SameSiteCookieContext::
-      ContextMetadata::HttpMethod::kPost;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
           metadata, roundtrip));
@@ -335,15 +339,11 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
       ContextMetadata::ContextDowngradeType::kStrictToLax;
   metadata1.redirect_type_bug_1221316 =
       ContextMetadata::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
-  metadata1.http_method_bug_1221316 = net::CookieOptions::
-      SameSiteCookieContext::ContextMetadata::HttpMethod::kGet;
   ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kLaxToCross;
   metadata2.redirect_type_bug_1221316 =
       ContextMetadata::ContextRedirectTypeBug1221316::kNoRedirect;
-  metadata2.http_method_bug_1221316 = net::CookieOptions::
-      SameSiteCookieContext::ContextMetadata::HttpMethod::kGet;
 
   const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2};
 
@@ -372,30 +372,28 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   }
 }
 
-TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
-  auto original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
-      base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_LOW,
-      net::CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com")),
-      net::CookieSourceScheme::kSecure, 8433);
+TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKey) {
+  using enum net::CookiePartitionKey::AncestorChainBit;
+  const GURL url("https://toplevelsite.com");
+  const auto nonce = base::UnguessableToken::Create();
+  for (const auto& original : {
+           net::CookiePartitionKey::FromURLForTesting(url),
+           net::CookiePartitionKey::FromURLForTesting(url, kSameSite),
+           net::CookiePartitionKey::FromURLForTesting(url, kCrossSite),
+           net::CookiePartitionKey::FromURLForTesting(url, kSameSite, nonce),
+           net::CookiePartitionKey::FromURLForTesting(url, kCrossSite, nonce),
+           net::CookiePartitionKey::FromScript(),
+       }) {
+    // `copied` is about to be overwritten so it doesn't matter what it is,
+    // but CookiePartitionKey doesn't provide a default ctor, so we have to
+    // initialize it to *some* value.
+    net::CookiePartitionKey copied =
+        net::CookiePartitionKey::FromURLForTesting(GURL());
 
-  net::CanonicalCookie copied;
-
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      *original, copied));
-  EXPECT_EQ(original->PartitionKey(), copied.PartitionKey());
-  EXPECT_FALSE(copied.PartitionKey()->from_script());
-
-  original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
-      base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_LOW, net::CookiePartitionKey::FromScript(),
-      net::CookieSourceScheme::kSecure, 8433);
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
-      *original, copied));
-  EXPECT_TRUE(copied.PartitionKey()->from_script());
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKey>(
+        original, copied));
+    EXPECT_EQ(original, copied);
+  }
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_AncestorChainBit) {
@@ -520,10 +518,10 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
 
   net::CookieChangeInfo original(
       *original_cookie,
-      net::CookieAccessResult(net::CookieEffectiveSameSite::UNDEFINED,
-                              net::CookieInclusionStatus(),
-                              net::CookieAccessSemantics::LEGACY,
-                              false /* is_allowed_to_access_secure_cookies */),
+      net::CookieAccessResult(
+          net::CookieEffectiveSameSite::UNDEFINED, net::CookieInclusionStatus(),
+          net::CookieAccessSemantics::LEGACY, net::CookieScopeSemantics::LEGACY,
+          false /* is_allowed_to_access_secure_cookies */),
       net::CookieChangeCause::EXPLICIT);
 
   net::CookieChangeInfo copied;
@@ -546,6 +544,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.cookie.SourceType(), copied.cookie.SourceType());
   EXPECT_EQ(original.access_result.access_semantics,
             copied.access_result.access_semantics);
+  EXPECT_EQ(original.access_result.scope_semantics,
+            copied.access_result.scope_semantics);
   EXPECT_EQ(original.cause, copied.cause);
 }
 

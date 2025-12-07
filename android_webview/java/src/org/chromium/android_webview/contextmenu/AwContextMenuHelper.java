@@ -4,109 +4,102 @@
 
 package org.chromium.android_webview.contextmenu;
 
-import android.util.Pair;
 import android.view.View;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.Callback;
+import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems;
 import org.chromium.base.Log;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
-import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-
-import java.util.List;
 
 /** A helper class that handles generating and dismissing context menus for {@link WebContents}. */
+@NullMarked
 public class AwContextMenuHelper {
     private static final String TAG = "AwContextMenuHelper";
     private final WebContents mWebContents;
-    private long mNativeAwContextMenuHelper;
 
-    private ContextMenuPopulator mCurrentPopulator;
-    private ContextMenuUi mCurrentContextMenu;
+    public @Nullable AwContextMenuCoordinator mCurrentContextMenu;
 
-    private AwContextMenuHelper(long nativeAwContextMenuHelper, WebContents webContents) {
-        mNativeAwContextMenuHelper = nativeAwContextMenuHelper;
+    @VisibleForTesting
+    public AwContextMenuHelper(WebContents webContents) {
         mWebContents = webContents;
     }
 
     @CalledByNative
-    private static AwContextMenuHelper create(
-            long nativeAwContextMenuHelper, WebContents webContents) {
-        return new AwContextMenuHelper(nativeAwContextMenuHelper, webContents);
+    private static AwContextMenuHelper create(WebContents webContents) {
+        return new AwContextMenuHelper(webContents);
     }
 
     @CalledByNative
     private void destroy() {
         dismissContextMenu();
-        mNativeAwContextMenuHelper = 0;
     }
 
     /**
      * Starts showing a context menu for {@code view} based on {@code params}.
      *
      * @param params The {@link ContextMenuParams} that indicate what menu items to show.
-     * @param renderFrameHost {@link RenderFrameHost} to get the encoded images from.
      * @param view container view for the menu.
+     * @return whether the menu was displayed.
      */
     @CalledByNative
-    private void showContextMenu(
-            ContextMenuParams params, RenderFrameHost renderFrameHost, View view) {
-        if (params.isFile()) return;
-
+    @VisibleForTesting
+    public boolean showContextMenu(ContextMenuParams params, View view) {
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
+        mCurrentContextMenu = null;
 
-        if (view == null
+        if (!params.isAnchor()
+                || view == null
                 || view.getVisibility() != View.VISIBLE
                 || view.getParent() == null
                 || windowAndroid == null
                 || windowAndroid.getActivity().get() == null
-                || mCurrentContextMenu != null) {
+                || windowAndroid.getContext().get() == null) {
             Log.w(TAG, "Could not create context menu");
-            return;
+            return false;
         }
 
-        ContextMenuItemDelegate contextMenuItemDelegate =
-                new AwContextMenuItemDelegate(
-                        windowAndroid.getActivity().get(), mWebContents, params);
-        mCurrentPopulator =
-                new AwContextMenuPopulator(
-                        windowAndroid.getContext().get(), contextMenuItemDelegate, params);
-        Callback<Integer> callback =
-                (result) -> {
-                    if (mCurrentPopulator == null) return;
+        boolean isDragDropEnabled =
+                ContextMenuUtils.isDragDropEnabled(windowAndroid.getContext().get());
+        // Determine whether to display the context menu as an anchored popup window or a dialog.
+        // The usePopupWindow variable is set to true if:
+        // 1. Drag and drop is enabled:
+        //    - ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU flag is enabled AND
+        //    - The device is considered a tablet OR
+        //    - The command line flag FORCE_CONTEXT_MENU_POPUP is enabled.
+        // 2. OR the context menu was triggered by a mouse right-click or by a shared highlight
+        //    interaction.
+        // Otherwise, usePopupWindow is false, and the menu is displayed as a dialog.
+        boolean usePopupWindow =
+                isDragDropEnabled || ContextMenuUtils.isMouseOrHighlightPopup(params);
 
-                    mCurrentPopulator.onItemSelected(result);
-                };
-        Runnable onMenuShown = () -> {};
-        Runnable onMenuClosed =
-                () -> {
-                    mCurrentContextMenu = null;
-                    if (mCurrentPopulator != null) {
-                        mCurrentPopulator.onMenuClosed();
-                        mCurrentPopulator = null;
-                    }
-                };
+        AwContents awContents = AwContents.fromWebContents(mWebContents);
+        @HyperlinkContextMenuItems
+        int hyperlinkMenuItems = getHyperlinkContextMenuItems(awContents);
 
-        // TODO(crbug.com/323344356) make 'Open in browser' disabled by default and only show for
-        // HTTP and HTTPS urls
-        List<Pair<Integer, ModelList>> items = mCurrentPopulator.buildContextMenu();
+        mCurrentContextMenu =
+                new AwContextMenuCoordinator(
+                        windowAndroid,
+                        mWebContents,
+                        params,
+                        isDragDropEnabled,
+                        usePopupWindow,
+                        hyperlinkMenuItems);
 
-        if (items.isEmpty()) {
-            Log.w(TAG, "Could not create items for context menu");
-            return;
-        }
+        mCurrentContextMenu.displayMenu();
+        return true;
+    }
 
-        mCurrentContextMenu = new AwContextMenuCoordinator();
-
-        mCurrentContextMenu.displayMenu(
-                windowAndroid, mWebContents, params, items, callback, onMenuShown, onMenuClosed);
+    public @Nullable AwContextMenuCoordinator getCoordinatorForTesting() {
+        return mCurrentContextMenu;
     }
 
     @CalledByNative
@@ -115,5 +108,9 @@ public class AwContextMenuHelper {
             mCurrentContextMenu.dismiss();
             mCurrentContextMenu = null;
         }
+    }
+
+    protected @HyperlinkContextMenuItems int getHyperlinkContextMenuItems(AwContents awContents) {
+        return awContents.getSettings().getHyperlinkContextMenuItems();
     }
 }

@@ -57,8 +57,8 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   void ToggleFeature(const std::string& feature, bool enable) override;
   void IsFeatureEnabled(const std::string& feature,
                         IsFeatureEnabledCallback callback) override;
-  void ApplyDeferredUpdate(bool shutdown_after_update,
-                           base::OnceClosure failure_callback) override;
+  void ApplyDeferredUpdateAdvanced(bool shutdown_after_update,
+                                   base::OnceClosure failure_callback) override;
   // Pushes update_engine::StatusResult in the queue to test changing status.
   // GetLastStatus() returns the status set by this method in FIFO order.
   // See set_default_status().
@@ -135,9 +135,9 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   // Returns how many times |IsFeatureEnabled()| is called.
   int is_feature_enabled_count() const { return is_feature_enabled_count_; }
 
-  // Returns how many times |ApplyDeferredUpdate()| is called.
-  int apply_deferred_update_count() const {
-    return apply_deferred_update_count_;
+  // Returns how many times |ApplyDeferredUpdateAdvanced()| is called.
+  int apply_deferred_update_advanced_count() const {
+    return apply_deferred_update_advanced_count_;
   }
 
   void SetToggleFeature(const std::string& feature,
@@ -159,7 +159,7 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   int update_over_cellular_one_time_permission_count_ = 0;
   int toggle_feature_count_ = 0;
   int is_feature_enabled_count_ = 0;
-  int apply_deferred_update_count_ = 0;
+  int apply_deferred_update_advanced_count_ = 0;
   std::map<std::string, std::optional<bool>> features_;
   EolInfo eol_info_;
 };

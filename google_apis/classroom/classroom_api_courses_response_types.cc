@@ -18,6 +18,7 @@ namespace {
 
 constexpr char kApiResponseCoursesKey[] = "courses";
 constexpr char kApiResponseCourseStateKey[] = "courseState";
+constexpr char kApiResponseSectionKey[] = "section";
 
 constexpr char kActiveCourseState[] = "ACTIVE";
 
@@ -31,11 +32,16 @@ bool ConvertCourseState(std::string_view input, Course::State* output) {
 
 // ----- Course -----
 
+Course::Course() = default;
+
+Course::~Course() = default;
+
 // static
 void Course::RegisterJSONConverter(
     base::JSONValueConverter<Course>* converter) {
   converter->RegisterStringField(kApiResponseIdKey, &Course::id_);
   converter->RegisterStringField(kApiResponseNameKey, &Course::name_);
+  converter->RegisterStringField(kApiResponseSectionKey, &Course::section_);
   converter->RegisterCustomField<Course::State>(
       kApiResponseCourseStateKey, &Course::state_, &ConvertCourseState);
 }
@@ -45,7 +51,7 @@ std::string Course::StateToString(Course::State state) {
   if (state == Course::State::kActive) {
     return kActiveCourseState;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // ----- Courses -----

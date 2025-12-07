@@ -5,3 +5,11 @@
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_constants.h"
 
 NSString* const kTextZoomCloseButtonID = @"kTextZoomCloseButtonID";
+NSString* const kTextZoomViewAccessibilityIdentifier =
+    @"kTextZoomViewAccessibilityIdentifier";
+NSString* const kTextZoomIncreaseButtonAccessibilityIdentifier =
+    @"kTextZoomIncreaseButtonAccessibilityIdentifier";
+NSString* const kTextZoomDecreaseButtonAccessibilityIdentifier =
+    @"kTextZoomDecreaseButtonAccessibilityIdentifier";
+NSString* const kTextZoomResetButtonAccessibilityIdentifier =
+    @"kTextZoomResetButtonAccessibilityIdentifier";

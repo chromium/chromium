@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/oauth2_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static

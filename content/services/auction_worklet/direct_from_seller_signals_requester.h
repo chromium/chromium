@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -20,7 +21,6 @@
 #include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 
@@ -101,11 +101,11 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     //
     // Default-constructed, this will be a null scoped_refptr<ResponseString>.
     using ResponseOrError =
-        absl::variant<scoped_refptr<ResponseString>, ErrorString>;
+        std::variant<scoped_refptr<ResponseString>, ErrorString>;
 
     // Constructs a Result based on the result of the network download.
     Result(GURL signals_url,
-           std::unique_ptr<std::string> response_body,
+           std::optional<std::string> response_body,
            scoped_refptr<net::HttpResponseHeaders> headers,
            std::optional<std::string> error);
 
@@ -234,7 +234,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
   // Result objects in `coalesced_downloads_` that are waiting on the URL.
   void OnSignalsDownloaded(GURL signals_url,
                            base::TimeTicks start_time,
-                           std::unique_ptr<std::string> response_body,
+                           std::optional<std::string> response_body,
                            scoped_refptr<net::HttpResponseHeaders> headers,
                            std::optional<std::string> error);
 

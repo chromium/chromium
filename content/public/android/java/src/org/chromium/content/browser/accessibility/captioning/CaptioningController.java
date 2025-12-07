@@ -8,18 +8,19 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Sends notification when platform closed caption settings have changed. */
 @JNINamespace("content")
+@NullMarked
 public class CaptioningController implements SystemCaptioningBridge.SystemCaptioningBridgeListener {
-    private SystemCaptioningBridge mSystemCaptioningBridge;
+    private final SystemCaptioningBridge mSystemCaptioningBridge;
     private long mNativeCaptioningController;
 
     public CaptioningController(WebContents webContents) {
         mSystemCaptioningBridge = CaptioningBridge.getInstance();
-        mNativeCaptioningController =
-                CaptioningControllerJni.get().init(CaptioningController.this, webContents);
+        mNativeCaptioningController = CaptioningControllerJni.get().init(this, webContents);
     }
 
     @SuppressWarnings("unused")
@@ -41,7 +42,6 @@ public class CaptioningController implements SystemCaptioningBridge.SystemCaptio
         CaptioningControllerJni.get()
                 .setTextTrackSettings(
                         mNativeCaptioningController,
-                        CaptioningController.this,
                         settings.getTextTracksEnabled(),
                         settings.getTextTrackBackgroundColor(),
                         settings.getTextTrackFontFamily(),
@@ -62,11 +62,10 @@ public class CaptioningController implements SystemCaptioningBridge.SystemCaptio
 
     @NativeMethods
     interface Natives {
-        long init(CaptioningController caller, WebContents webContents);
+        long init(CaptioningController self, WebContents webContents);
 
         void setTextTrackSettings(
                 long nativeCaptioningController,
-                CaptioningController caller,
                 boolean textTracksEnabled,
                 String textTrackBackgroundColor,
                 String textTrackFontFamily,

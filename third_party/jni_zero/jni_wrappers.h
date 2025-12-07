@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// IWYU pragma: private, include "third_party/jni_zero/jni_zero.h"
+
 #ifndef JNI_ZERO_JNI_WRAPPERS_H_
 #define JNI_ZERO_JNI_WRAPPERS_H_
 
 #include <jni.h>
+
+#include <cstdint>
+#include <iterator>
+#include <string_view>
 
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/logging.h"

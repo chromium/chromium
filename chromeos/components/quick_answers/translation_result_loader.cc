@@ -53,10 +53,7 @@ std::string BuildTranslationRequestBody(const IntentInfo& intent_info) {
   payload.Set(kSourceLanguageKey, intent_info.source_language);
   payload.Set(kTargetLanguageKey, intent_info.device_language);
 
-  std::string request_payload_str;
-  base::JSONWriter::Write(payload, &request_payload_str);
-
-  return request_payload_str;
+  return base::WriteJson(payload).value_or("");
 }
 
 }  // namespace
@@ -85,7 +82,7 @@ void TranslationResultLoader::BuildRequest(
 
 void TranslationResultLoader::ProcessResponse(
     const PreprocessedOutput& preprocessed_output,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     ResponseParserCallback complete_callback) {
   if (translation_response_parser_) {
     DCHECK(false) << "translation_response_parser_ must be nullptr";
@@ -98,7 +95,7 @@ void TranslationResultLoader::ProcessResponse(
           &TranslationResultLoader::ProcessParsedResponse,
           weak_ptr_factory_.GetWeakPtr(), preprocessed_output.intent_info,
           std::move(complete_callback)));
-  translation_response_parser_->ProcessResponse(std::move(response_body));
+  translation_response_parser_->ProcessResponse(*response_body);
 }
 
 void TranslationResultLoader::ProcessParsedResponse(

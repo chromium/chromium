@@ -4,6 +4,8 @@
 
 #include "ui/views/highlight_border.h"
 
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -37,24 +39,24 @@ void HighlightBorder::PaintBorderToCanvas(
   const float dsf = canvas->UndoDeviceScaleFactor();
   const gfx::RectF pixel_bounds = gfx::ConvertRectToPixels(bounds, dsf);
 
-  const SkScalar radii[8] = {
-      corner_radii.upper_left() * dsf,  corner_radii.upper_left() * dsf,
-      corner_radii.upper_right() * dsf, corner_radii.upper_right() * dsf,
-      corner_radii.lower_right() * dsf, corner_radii.lower_right() * dsf,
-      corner_radii.lower_left() * dsf,  corner_radii.lower_left() * dsf};
+  const SkVector radii[4] = {
+      {corner_radii.upper_left() * dsf,  corner_radii.upper_left() * dsf},
+      {corner_radii.upper_right() * dsf, corner_radii.upper_right() * dsf},
+      {corner_radii.lower_right() * dsf, corner_radii.lower_right() * dsf},
+      {corner_radii.lower_left() * dsf,  corner_radii.lower_left() * dsf}};
 
   gfx::RectF outer_border_bounds(pixel_bounds);
   outer_border_bounds.Inset(half_thickness);
-  SkPath outer_path;
-  outer_path.addRoundRect(gfx::RectFToSkRect(outer_border_bounds), radii);
+  const SkPath outer_path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectFToSkRect(outer_border_bounds), radii));
   canvas->DrawPath(outer_path, flags);
 
   gfx::RectF inner_border_bounds(pixel_bounds);
   inner_border_bounds.Inset(kHighlightBorderThickness);
   inner_border_bounds.Inset(half_thickness);
   flags.setColor(highlight_color);
-  SkPath inner_path;
-  inner_path.addRoundRect(gfx::RectFToSkRect(inner_border_bounds), radii);
+  const SkPath inner_path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectFToSkRect(inner_border_bounds), radii));
   canvas->DrawPath(inner_path, flags);
 }
 

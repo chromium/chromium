@@ -8,44 +8,21 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_all.star", "clang_all")
-load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
-load("./config.star", "config")
-load("./cros.star", "cros")
+load("./clang_exception.star", "clang_exception")
+load("./clang_unix.star", "clang_unix")
 load("./gn_logs.star", "gn_logs")
+load("./fuchsia.star", "fuchsia")
+load("./win_sdk.star", "win_sdk")
 
-# TODO: b/323091468 - Propagate target android ABI and android SDK version
-# from GN, and remove the hardcoded filegroups.
-android_archs = [
-    "aarch64-linux-android",
-    "arm-linux-androideabi",
-    "i686-linux-android",
-    "riscv64-linux-android",
-    "x86_64-linux-android",
-]
-
-android_versions = list(range(21, 35))
+target_cpus = ["amd64", "i386", "arm64", "armhf"]
 
 def __filegroups(ctx):
+    gn_logs_data = gn_logs.read(ctx)
+
+    # source_root is set only for CrOS's chroot builds that use
+    # rbe_exec_root="/".
+    root = gn_logs_data.get("source_root", "")
     fg = {
-        # for precomputed subtrees
-        "build/linux/debian_bullseye_amd64-sysroot/usr/include:include": {
-            "type": "glob",
-            "includes": ["*"],
-            # need bits/stab.def, c++/*
-        },
-        "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers": {
-            "type": "glob",
-            "includes": ["*.h", "crtbegin.o"],
-        },
-        "build/linux/debian_bullseye_i386-sysroot/usr/include:include": {
-            "type": "glob",
-            "includes": ["*"],
-            # need bits/stab.def, c++/*
-        },
-        "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers": {
-            "type": "glob",
-            "includes": ["*.h", "crtbegin.o"],
-        },
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
             "type": "glob",
             "includes": ["*"],
@@ -55,222 +32,110 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*"],
         },
+        "third_party/llvm-build/Release+Asserts/bin:llddeps": {
+            "type": "glob",
+            "includes": [
+                "clang*",
+                "ld.lld",
+                "ld64.lld",
+                "lld",
+                "llvm-nm",
+                "llvm-objcopy",
+                "llvm-objdump",
+                "llvm-otool",
+                "llvm-readelf",
+                "llvm-readobj",
+                "llvm-strip",
+            ],
+        },
         "third_party/llvm-build/Release+Asserts/lib/clang:libs": {
             "type": "glob",
             "includes": ["*/lib/*/*", "*/lib/*", "*/share/*"],
         },
-        "build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu:libso": {
-            "type": "glob",
-            "includes": ["*.so*"],
-        },
-        "build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu:libs": {
-            "type": "glob",
-            "includes": ["*.o", "*.so*", "lib*.a"],
-        },
-        "build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu:libgcc": {
-            "type": "glob",
-            "includes": ["*.o", "*.a", "*.so"],
-        },
     }
-    if android.enabled(ctx):
-        for arch in android_archs:
-            for ver in android_versions:
-                group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%d:link" % (arch, ver)
-                fg[group] = {
-                    "type": "glob",
-                    "includes": ["*"],
-                }
 
+    def __add_sysroot_for_target_cpu(fg, cpu):
+        fg.update({
+            # for precomputed subtrees
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/include" % cpu) + ":include": {
+                "type": "glob",
+                "includes": ["*"],
+                # need bits/stab.def, c++/*
+            },
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/lib" % cpu) + ":headers": {
+                "type": "glob",
+                "includes": ["*.h", "crtbegin.o"],
+            },
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":libs": {
+                "type": "glob",
+                "includes": ["*.so*", "*.o", "*.a"],
+                "excludes": [
+                    "usr/lib/python*/*/*",
+                    "systemd/*/*",
+                    "usr/libexec/*/*",
+                ],
+            },
+        })
+        return fg
+
+    for cpu in target_cpus:
+        fg = __add_sysroot_for_target_cpu(fg, cpu)
+    if android.enabled(ctx):
+        fg.update(android.filegroups(ctx))
+    if fuchsia.enabled(ctx):
+        fg.update(fuchsia.filegroups(ctx))
     fg.update(clang_all.filegroups(ctx))
     return fg
 
-def __clang_compile_coverage(ctx, cmd):
-    clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
-    ctx.actions.fix(args = clang_command)
-
-__handlers = {
-    "clang_compile_coverage": __clang_compile_coverage,
-}
+__handlers = {}
+__handlers.update(clang_unix.handlers)
+__handlers.update(clang_all.handlers)
 
 def __step_config(ctx, step_config):
+    gn_logs_data = gn_logs.read(ctx)
+
+    # source_root is set only for CrOS's chroot builds that use
+    # rbe_exec_root="/".
+    root = gn_logs_data.get("source_root", "")
+
     step_config["input_deps"].update({
-        # sysroot headers for precomputed subtrees
-        "build/linux/debian_bullseye_amd64-sysroot:headers": [
-            "build/linux/debian_bullseye_amd64-sysroot/usr/include:include",
-            "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers",
-        ],
-        "build/linux/debian_bullseye_i386-sysroot:headers": [
-            "build/linux/debian_bullseye_i386-sysroot/usr/include:include",
-            "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers",
-        ],
-        "build/linux/debian_bullseye_amd64-sysroot:link": [
-            "build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu:libso",
-            "build/linux/debian_bullseye_amd64-sysroot/lib64/ld-linux-x86-64.so.2",
-            "build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu:libgcc",
-            "build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu:libs",
-            "third_party/llvm-build/Release+Asserts/bin/clang",
-            "third_party/llvm-build/Release+Asserts/bin/clang++",
-            "third_party/llvm-build/Release+Asserts/bin/ld.lld",
-            "third_party/llvm-build/Release+Asserts/bin/lld",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-nm",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-readelf",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
-            # The following inputs are used for sanitizer builds.
-            # It might be better to add them only for sanitizer builds if there is a performance issue.
-            "third_party/llvm-build/Release+Asserts/lib/clang:libs",
-        ],
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
         ],
+        "third_party/llvm-build/Release+Asserts/bin/clang++:link": [
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
+        ],
+        "third_party/llvm-build/Release+Asserts:link": [
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
+            "third_party/llvm-build/Release+Asserts/lib/clang:libs",
+        ],
     })
-    step_config["input_deps"].update(clang_all.input_deps)
 
-    input_root_absolute_path = gn_logs.read(ctx).get("clang_need_input_root_absolute_path") == "true"
-    canonicalize_dir = not input_root_absolute_path
+    def __add_sysroot_for_target_cpu(step_config, cpu):
+        step_config["input_deps"].update({
+            # sysroot headers for precomputed subtrees
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":headers": [
+                path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/include" % cpu) + ":include",
+                path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/lib" % cpu) + ":headers",
+            ],
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":link": [
+                path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":libs",
+                path.join(root, "third_party/llvm-build/Release+Asserts/bin") + ":llddeps",
+                # The following inputs are used for sanitizer builds.
+                # It might be better to add them only for sanitizer builds if there is a performance issue.
+                path.join(root, "third_party/llvm-build/Release+Asserts/lib/clang") + ":libs",
+            ],
+        })
 
-    step_config["rules"].extend([
-        {
-            "name": "clang/cxx",
-            "action": "(.*_)?cxx",
-            "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++ ",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/clang++",
-            ],
-            "exclude_input_patterns": ["*.stamp"],
-            "remote": True,
-            "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
-            "timeout": "2m",
-        },
-        {
-            "name": "clang/cc",
-            "action": "(.*_)?cc",
-            "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang ",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/clang",
-            ],
-            "exclude_input_patterns": ["*.stamp"],
-            "remote": True,
-            "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
-            "timeout": "2m",
-        },
-        {
-            "name": "clang/asm",
-            "action": "(.*_)?asm",
-            "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/clang",
-            ],
-            "remote": config.get(ctx, "cog"),
-            "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
-            "timeout": "2m",
-        },
-        {
-            "name": "clang-coverage/cxx",
-            "action": "(.*_)?cxx",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/clang++",
-            ],
-            "exclude_input_patterns": ["*.stamp"],
-            "handler": "clang_compile_coverage",
-            "remote": True,
-            "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
-            "timeout": "2m",
-        },
-        {
-            "name": "clang-coverage/cc",
-            "action": "(.*_)?cc",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/clang",
-            ],
-            "exclude_input_patterns": ["*.stamp"],
-            "handler": "clang_compile_coverage",
-            "remote": True,
-            "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
-            "timeout": "2m",
-        },
-    ])
+    for cpu in target_cpus:
+        __add_sysroot_for_target_cpu(step_config, cpu)
+    step_config["input_deps"].update(clang_all.input_deps(ctx))
 
-    # TODO: b/316267242 - Enable remote links for Android and CrOS toolchain builds.
-    if not android.enabled(ctx) and not (cros.custom_toolchain(ctx) or cros.custom_sysroot(ctx)):
-        step_config["rules"].extend([
-            {
-                "name": "clang/alink/llvm-ar",
-                "action": "(.*_)?alink",
-                "inputs": [
-                    # TODO: b/316267242 - Add inputs to GN config.
-                    "third_party/llvm-build/Release+Asserts/bin/llvm-ar",
-                ],
-                "exclude_input_patterns": [
-                    "*.cc",
-                    "*.h",
-                    "*.js",
-                    "*.pak",
-                    "*.py",
-                    "*.stamp",
-                ],
-                "remote": config.get(ctx, "remote-library-link"),
-                "canonicalize_dir": True,
-                "timeout": "2m",
-                "platform_ref": "large",
-                "accumulate": True,
-            },
-            {
-                "name": "clang/solink/gcc_solink_wrapper",
-                "action": "(.*_)?solink",
-                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
-                "inputs": [
-                    # TODO: b/316267242 - Add inputs to GN config.
-                    "build/toolchain/gcc_solink_wrapper.py",
-                    "build/toolchain/whole_archive.py",
-                    "build/toolchain/wrapper_utils.py",
-                    "build/linux/debian_bullseye_amd64-sysroot:link",
-                ],
-                "exclude_input_patterns": [
-                    "*.cc",
-                    "*.h",
-                    "*.js",
-                    "*.pak",
-                    "*.py",
-                    "*.stamp",
-                ],
-                "remote": config.get(ctx, "remote-library-link"),
-                "canonicalize_dir": True,
-                "platform_ref": "large",
-                "timeout": "2m",
-            },
-            {
-                "name": "clang/link/gcc_link_wrapper",
-                "action": "(.*_)?link",
-                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
-                "inputs": [
-                    # TODO: b/316267242 - Add inputs to GN config.
-                    "build/toolchain/gcc_link_wrapper.py",
-                    "build/toolchain/whole_archive.py",
-                    "build/toolchain/wrapper_utils.py",
-                    "build/linux/debian_bullseye_amd64-sysroot:link",
-                ],
-                "exclude_input_patterns": [
-                    "*.cc",
-                    "*.h",
-                    "*.js",
-                    "*.pak",
-                    "*.py",
-                    "*.stamp",
-                ],
-                "remote": config.get(ctx, "remote-exec-link"),
-                "canonicalize_dir": True,
-                "platform_ref": "large",
-                "timeout": "10m",
-            },
-        ])
+    step_config["rules"].extend(clang_unix.rules(ctx))
+    if win_sdk.enabled(ctx):
+        win_sdk.step_config(ctx, step_config)
+    step_config = clang_exception.step_config(ctx, step_config)
     return step_config
 
 clang = module(

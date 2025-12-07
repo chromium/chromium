@@ -10,10 +10,10 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "components/services/storage/partition_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,11 +22,11 @@
 
 namespace storage {
 
-class PartitionImpl;
-
+class LocalStorageImpl;
+class SessionStorageImpl;
 // Implementation of the main StorageService Mojo interface. This is the root
 // owner of all Storage service instance state, managing the set of active
-// persistent and in-memory partitions.
+// persistent and in-memory local and session storage instances.
 class StorageServiceImpl : public mojom::StorageService {
  public:
   // NOTE: |io_task_runner| is only used in sandboxed environments and can be
@@ -41,8 +41,6 @@ class StorageServiceImpl : public mojom::StorageService {
 
   ~StorageServiceImpl() override;
 
-  const auto& partitions() const { return partitions_; }
-
   // mojom::StorageService implementation:
   void EnableAggressiveDomStorageFlushing() override;
 #if !BUILDFLAG(IS_ANDROID)
@@ -50,16 +48,23 @@ class StorageServiceImpl : public mojom::StorageService {
       const base::FilePath& path,
       mojo::PendingRemote<mojom::Directory> directory) override;
 #endif
-  void BindPartition(const std::optional<base::FilePath>& path,
-                     mojo::PendingReceiver<mojom::Partition> receiver) override;
+  void BindLocalStorageControl(
+      const std::optional<base::FilePath>& path,
+      mojo::PendingReceiver<mojom::LocalStorageControl> receiver) override;
+  void BindSessionStorageControl(
+      const std::optional<base::FilePath>& path,
+      mojo::PendingReceiver<mojom::SessionStorageControl> receiver) override;
   void BindTestApi(mojo::ScopedMessagePipeHandle test_api_receiver) override;
 
+  // These transfer ownership of the storage instance to a DeferredDeleter when
+  // performing ShutDown. This allows the storage instance to be deleted after
+  // ShutDown is complete. This prevents race conditions where a storage
+  // instance for a user data directory is rebound while we wait for the
+  // previous instance to ShutDown.
+  void ShutDownAndRemoveSessionStorage(SessionStorageImpl* storage);
+  void ShutDownAndRemoveLocalStorage(LocalStorageImpl* storage);
+
  private:
-  friend class PartitionImpl;
-
-  // Removes a partition from the set of tracked partitions.
-  void RemovePartition(PartitionImpl* partition);
-
 #if !BUILDFLAG(IS_ANDROID)
   // Binds a Directory receiver to the same remote implementation to which
   // |remote_data_directory_| is bound. It is invalid to call this when
@@ -78,16 +83,22 @@ class StorageServiceImpl : public mojom::StorageService {
   mojo::Remote<mojom::Directory> remote_data_directory_;
 #endif
 
-  // The set of all isolated partitions owned by the service. This includes both
-  // persistent and in-memory partitions.
-  std::set<std::unique_ptr<PartitionImpl>, base::UniquePtrComparator>
-      partitions_;
+  // Sets of all isolated local and session storages owned by the service. This
+  // includes both persistent and in-memory storages.
+  std::set<std::unique_ptr<LocalStorageImpl>, base::UniquePtrComparator>
+      local_storages_;
+  std::set<std::unique_ptr<SessionStorageImpl>, base::UniquePtrComparator>
+      session_storages_;
 
-  // A mapping from FilePath to the corresponding PartitionImpl instance in
-  // |partitions_|. The pointers stored here are not owned by this map and must
-  // be removed when removed from |partitions_|. Only persistent partitions have
-  // entries in this map.
-  std::map<base::FilePath, PartitionImpl*> persistent_partition_map_;
+  // Mappings from a profile directory within the user data directory to the
+  // corresponding storage instance in `local_storages` or `session_storages_`.
+  // The pointers in these maps are not owned by the map and must be removed
+  // when removed from `local_storages_` or `session_storages_`. Only persistent
+  // storages have entries in these maps.
+  std::map<base::FilePath, raw_ptr<LocalStorageImpl, CtnExperimental>>
+      persistent_local_storage_map_;
+  std::map<base::FilePath, raw_ptr<SessionStorageImpl, CtnExperimental>>
+      persistent_session_storage_map_;
 
   base::WeakPtrFactory<StorageServiceImpl> weak_ptr_factory_{this};
 };

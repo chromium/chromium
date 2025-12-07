@@ -4,6 +4,7 @@
 
 #include "chrome/browser/translate/translate_service.h"
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
@@ -11,7 +12,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -27,14 +27,18 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/app_id.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "extensions/common/constants.h"
 #endif
 
 namespace {
 // The singleton instance of TranslateService.
 TranslateService* g_translate_service = nullptr;
+
+// Controls whether EULA is checked for resource requests.
+// May be false only in test.
+bool g_wait_for_eula = true;
 }  // namespace
 
 TranslateService::TranslateService()
@@ -42,10 +46,14 @@ TranslateService::TranslateService()
           g_browser_process->local_state(),
           switches::kDisableBackgroundNetworking,
           base::BindOnce(&content::GetNetworkConnectionTracker)) {
-  resource_request_allowed_notifier_.Init(this, true /* leaky */);
+  if (!g_wait_for_eula) {
+    CHECK_IS_TEST();
+  }
+  resource_request_allowed_notifier_.Init(this, true /* leaky */,
+                                          g_wait_for_eula);
 }
 
-TranslateService::~TranslateService() {}
+TranslateService::~TranslateService() = default;
 
 // static
 void TranslateService::Initialize() {
@@ -76,14 +84,13 @@ void TranslateService::Shutdown() {
 }
 
 // static
-void TranslateService::InitializeForTesting(
-    network::mojom::ConnectionType type) {
-  if (!g_translate_service) {
-    TranslateService::Initialize();
-    translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
-  } else {
-    translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
-  }
+void TranslateService::InitializeForTesting(network::mojom::ConnectionType type,
+                                            bool wait_for_eula) {
+  g_wait_for_eula = wait_for_eula;
+
+  translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
+  TranslateService::Initialize();
+  translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
 
   g_translate_service->resource_request_allowed_notifier_
       .SetConnectionTypeForTesting(type);
@@ -93,14 +100,14 @@ void TranslateService::InitializeForTesting(
 // static
 void TranslateService::ShutdownForTesting() {
   TranslateService::Shutdown();
+  g_wait_for_eula = true;
 }
 
 void TranslateService::OnResourceRequestsAllowed() {
   translate::TranslateLanguageList* language_list =
       translate::TranslateDownloadManager::GetInstance()->language_list();
   if (!language_list) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   language_list->SetResourceRequestsAllowed(
@@ -138,7 +145,7 @@ bool TranslateService::IsTranslatableURL(const GURL& url) {
   return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(chrome::kChromeNativeScheme) &&
          !url.SchemeIs(content::kChromeDevToolsScheme) &&
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
          !(url.SchemeIs(extensions::kExtensionScheme) &&
            url.DomainIs(file_manager::kFileManagerAppId)) &&
 #endif

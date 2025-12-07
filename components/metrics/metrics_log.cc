@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "components/metrics/metrics_log.h"
 
 #include <stddef.h>
 
 #include <algorithm>
 #include <cstring>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -22,14 +24,13 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/flags_ui/flags_ui_switches.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/histogram_encoder.h"
@@ -40,6 +41,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
+#include "components/webui/flags/flags_ui_switches.h"
 #include "crypto/random.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
@@ -47,7 +49,8 @@
 #include "third_party/metrics_proto/user_action_event.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -68,7 +71,7 @@ namespace metrics {
 LogMetadata::LogMetadata()
     : samples_count(std::nullopt), user_id(std::nullopt) {}
 LogMetadata::LogMetadata(
-    const std::optional<base::HistogramBase::Count> samples_count,
+    const std::optional<base::HistogramBase::Count32> samples_count,
     const std::optional<uint64_t> user_id,
     const std::optional<metrics::UkmLogSourceType> log_source_type)
     : samples_count(samples_count),
@@ -77,7 +80,7 @@ LogMetadata::LogMetadata(
 LogMetadata::LogMetadata(const LogMetadata& other) = default;
 LogMetadata::~LogMetadata() = default;
 
-void LogMetadata::AddSampleCount(base::HistogramBase::Count sample_count) {
+void LogMetadata::AddSampleCount(base::HistogramBase::Count32 sample_count) {
   if (samples_count.has_value()) {
     samples_count = samples_count.value() + sample_count;
   } else {
@@ -86,6 +89,12 @@ void LogMetadata::AddSampleCount(base::HistogramBase::Count sample_count) {
 }
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// The foreground/background ID. When a MetricsLog instance is created, its
+// `fg_bg_id` system profile field will be set to this value.
+static int g_fg_bg_id_counter = 1;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Convenience function to return the given time at a resolution in seconds.
 static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
@@ -166,8 +175,7 @@ metrics::SystemProfileProto::OS::XdgSessionType ToProtoSessionType(
       return metrics::SystemProfileProto::OS::MIR;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return metrics::SystemProfileProto::OS::UNSET;
+  NOTREACHED();
 }
 
 metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
@@ -196,19 +204,19 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
       return metrics::SystemProfileProto::OS::XFCE;
     case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_LXQT:
       return metrics::SystemProfileProto::OS::LXQT;
+    case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_COSMIC:
+      return metrics::SystemProfileProto::OS::COSMIC;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return metrics::SystemProfileProto::OS::OTHER;
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Gets the hash of this session. A random hash is generated the first time this
 // is called (which is cached and returned for the remainder of the session).
 uint64_t GetSessionHash() {
-  static const std::vector<uint8_t> session_hash =
-      crypto::RandBytesAsVector(/*length=*/8);
-  return *reinterpret_cast<const uint64_t*>(session_hash.data());
+  static const uint64_t session_hash = base::RandUint64();
+  return session_hash;
 }
 
 }  // namespace
@@ -217,10 +225,12 @@ namespace internal {
 
 SystemProfileProto::InstallerPackage ToInstallerPackage(
     std::string_view installer_package_name) {
-  if (installer_package_name.empty())
+  if (installer_package_name.empty()) {
     return SystemProfileProto::INSTALLER_PACKAGE_NONE;
-  if (installer_package_name == "com.android.vending")
+  }
+  if (installer_package_name == "com.android.vending") {
     return SystemProfileProto::INSTALLER_PACKAGE_GOOGLE_PLAY_STORE;
+  }
   return SystemProfileProto::INSTALLER_PACKAGE_OTHER;
 }
 
@@ -264,8 +274,9 @@ MetricsLog::MetricsLog(const std::string& client_id,
 
   const int32_t product = client_->GetProduct();
   // Only set the product if it differs from the default value.
-  if (product != uma_proto_.product())
+  if (product != uma_proto_.product()) {
     uma_proto_.set_product(product);
+  }
 
   SystemProfileProto* system_profile = uma_proto()->mutable_system_profile();
   // Record the unhashed the client_id to system profile. This is used to
@@ -302,8 +313,9 @@ uint64_t MetricsLog::Hash(const std::string& value) {
 // static
 int64_t MetricsLog::GetBuildTime() {
   static int64_t integral_build_time = 0;
-  if (!integral_build_time)
+  if (!integral_build_time) {
     integral_build_time = static_cast<int64_t>(base::GetBuildTime().ToTimeT());
+  }
   return integral_build_time;
 }
 
@@ -312,10 +324,27 @@ int64_t MetricsLog::GetCurrentTime() {
   return ToMonotonicSeconds(base::TimeTicks::Now());
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// static
+void MetricsLog::IncrementFgBgId() {
+  g_fg_bg_id_counter++;
+}
+
+void MetricsLog::ClearFgBgId() {
+  uma_proto_.mutable_system_profile()->clear_fg_bg_id();
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 void MetricsLog::AssignFinalizedRecordId(PrefService* local_state) {
   DCHECK(!uma_proto_.has_finalized_record_id());
   uma_proto_.set_finalized_record_id(
       IncrementAndUpdate(local_state, prefs::kMetricsLogFinalizedRecordId));
+}
+
+void MetricsLog::SetLogCreationType(
+    ChromeUserMetricsExtension::LogType log_type) {
+  CHECK(!uma_proto_.has_log_type());
+  uma_proto_.set_log_type(log_type);
 }
 
 void MetricsLog::AssignRecordId(PrefService* local_state) {
@@ -343,8 +372,9 @@ void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
       client->GetAppPackageNameIfLoggable(), system_profile);
 
   std::string brand_code;
-  if (client->GetBrand(&brand_code))
+  if (client->GetBrand(&brand_code)) {
     system_profile->set_brand_code(brand_code);
+  }
 
   // Records 32-bit hashes of the command line keys.
   base::CommandLine command_line_copy(*base::CommandLine::ForCurrentProcess());
@@ -376,8 +406,9 @@ void MetricsLog::RecordCoreSystemProfile(
   system_profile->set_build_timestamp(metrics::MetricsLog::GetBuildTime());
   system_profile->set_app_version(version);
   system_profile->set_channel(channel);
-  if (is_extended_stable_channel)
+  if (is_extended_stable_channel) {
     system_profile->set_is_extended_stable_channel(true);
+  }
   system_profile->set_application_locale(application_locale);
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
@@ -387,24 +418,25 @@ void MetricsLog::RecordCoreSystemProfile(
 
   system_profile->set_session_hash(GetSessionHash());
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  system_profile->set_fg_bg_id(g_fg_bg_id_counter);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();
   hardware->set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
   auto app_os_arch = base::SysInfo::ProcessCPUArchitecture();
-  if (!app_os_arch.empty())
+  if (!app_os_arch.empty()) {
     hardware->set_app_cpu_architecture(app_os_arch);
-  hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
+  }
+  hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemory().InMiB());
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
 #if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
   metrics::SystemProfileProto::OS* os = system_profile->mutable_os();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The Lacros browser runs on Chrome OS, but reports a special OS name to
-  // differentiate itself from the built-in ash browser + window manager binary.
-  os->set_name("Lacros");
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   os->set_name("CrOS");
 #else
   os->set_name(base::SysInfo::OperatingSystemName());
@@ -413,21 +445,21 @@ void MetricsLog::RecordCoreSystemProfile(
 
 // On ChromeOS, KernelVersion refers to the Linux kernel version and
 // OperatingSystemVersion refers to the ChromeOS release version.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   os->set_kernel_version(base::SysInfo::KernelVersion());
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   // Linux operating system version is copied over into kernel version to be
   // consistent.
   os->set_kernel_version(base::SysInfo::OperatingSystemVersion());
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-  os->set_build_fingerprint(build_info->android_build_fp());
-  if (!package_name.empty() && package_name != "com.android.chrome")
+  os->set_build_fingerprint(base::android::android_info::android_build_fp());
+  if (!package_name.empty() && package_name != "com.android.chrome") {
     system_profile->set_app_package_name(package_name);
-  system_profile->set_installer_package(
-      internal::ToInstallerPackage(build_info->installer_package_name()));
+  }
+  system_profile->set_installer_package(internal::ToInstallerPackage(
+      base::android::apk_info::installer_package_name()));
 #elif BUILDFLAG(IS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif
@@ -440,11 +472,12 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 }
 
-void MetricsLog::RecordHistogramDelta(const std::string& histogram_name,
+void MetricsLog::RecordHistogramDelta(std::string_view histogram_name,
                                       const base::HistogramSamples& snapshot) {
   DCHECK(!closed_);
   log_metadata_.AddSampleCount(snapshot.TotalCount());
-  EncodeHistogramDelta(histogram_name, snapshot, &uma_proto_);
+  EncodeHistogramDelta(histogram_name, snapshot,
+                       uma_proto_.add_histogram_event());
 }
 
 void MetricsLog::RecordPreviousSessionData(
@@ -458,18 +491,10 @@ void MetricsLog::RecordPreviousSessionData(
 }
 
 void MetricsLog::RecordCurrentSessionData(
-    base::TimeDelta incremental_uptime,
-    base::TimeDelta uptime,
     DelegatingProvider* delegating_provider,
     PrefService* local_state) {
   DCHECK(!closed_);
   DCHECK(has_environment_);
-
-  // Record recent delta for critical stability metrics. We can't wait for a
-  // restart to gather these, as that delay biases our observation away from
-  // users that run happily for a looooong time.  We send increments with each
-  // UMA log upload, just as we send histogram data.
-  WriteRealtimeStabilityAttributes(incremental_uptime, uptime);
 
   delegating_provider->ProvideCurrentSessionData(uma_proto());
   // Schedule a Local State write to flush updated prefs to disk. This is done
@@ -502,24 +527,6 @@ void MetricsLog::WriteMetricsEnableDefault(EnableMetricsDefault metrics_default,
   }
 }
 
-void MetricsLog::WriteRealtimeStabilityAttributes(
-    base::TimeDelta incremental_uptime,
-    base::TimeDelta uptime) {
-  // Update the stats which are critical for real-time stability monitoring.
-  // Since these are "optional," only list ones that are non-zero, as the counts
-  // are aggregated (summed) server side.
-
-  SystemProfileProto::Stability* stability =
-      uma_proto()->mutable_system_profile()->mutable_stability();
-
-  const uint64_t incremental_uptime_sec = incremental_uptime.InSeconds();
-  if (incremental_uptime_sec)
-    stability->set_incremental_uptime_sec(incremental_uptime_sec);
-  const uint64_t uptime_sec = uptime.InSeconds();
-  if (uptime_sec)
-    stability->set_uptime_sec(uptime_sec);
-}
-
 const SystemProfileProto& MetricsLog::RecordEnvironment(
     DelegatingProvider* delegating_provider) {
   // If |has_environment_| is true, then the system profile in |uma_proto_| has
@@ -534,10 +541,25 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   // persistent histograms .pma file.
   if (has_environment_) {
     std::string client_uuid = uma_proto_.system_profile().client_uuid();
+    auto fg_bg_id =
+        uma_proto_.system_profile().has_fg_bg_id()
+            ? std::optional<int>(uma_proto_.system_profile().fg_bg_id())
+            : std::nullopt;
+
     uma_proto_.clear_system_profile();
     MetricsLog::RecordCoreSystemProfile(client_,
                                         uma_proto_.mutable_system_profile());
+
     uma_proto_.mutable_system_profile()->set_client_uuid(client_uuid);
+    // Ensure that the re-filled system profile keeps the same `fg_bg_id` as
+    // before. For example, it may have been cleared due to backgrounding and/or
+    // foregrounding while logs could not be closed yet -- so this ensures that
+    // this remains cleared. See MetricsService::OnAppEnter(Back|Fore)ground().
+    if (fg_bg_id.has_value()) {
+      uma_proto_.mutable_system_profile()->set_fg_bg_id(fg_bg_id.value());
+    } else {
+      uma_proto_.mutable_system_profile()->clear_fg_bg_id();
+    }
   }
 
   has_environment_ = true;
@@ -574,8 +596,9 @@ void MetricsLog::FinalizeLog(
     const std::string& current_app_version,
     std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string* encoded_log) {
-  if (truncate_events)
+  if (truncate_events) {
     TruncateEvents();
+  }
   RecordLogWrittenByAppVersionIfNeeded(current_app_version);
   if (close_time.has_value()) {
     *uma_proto_.mutable_time_log_closed() = std::move(close_time.value());
@@ -637,12 +660,12 @@ void MetricsLog::TruncateEvents() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void MetricsLog::SetUserId(const std::string& user_id) {
   uint64_t hashed_user_id = Hash(user_id);
   uma_proto_.set_user_id(hashed_user_id);
   log_metadata_.user_id = hashed_user_id;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace metrics

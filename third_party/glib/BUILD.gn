@@ -1,0 +1,576 @@
+import("//build/config/linux/pkg_config.gni")
+import("//third_party/glib/visibility.gni")
+
+assert(is_linux)
+
+pkg_config("pcre2") {
+  packages = [ "libpcre2-8" ]
+}
+
+config("glib_common_config") {
+  cflags_c = [
+    # cflags as per upstream toplevel meson.build:
+    "-D_GNU_SOURCE",
+    "-fno-strict-aliasing",
+    "-DG_DISABLE_ASSERT",
+    "-DG_DISABLE_CAST_CHECKS",
+    "-Wimplicit-fallthrough",
+    "-Wmisleading-indentation",
+    "-Wmissing-field-initializers",
+    "-Wnonnull",
+    "-Wnull-dereference",
+    "-Wno-unused-parameter",
+    "-Wno-cast-function-type",
+    "-Wno-pedantic",
+    "-Wno-format-zero-length",
+    "-Wno-variadic-macros",
+    "-Werror=format=2",
+    "-Werror=init-self",
+    "-Werror=missing-include-dirs",
+    "-Werror=pointer-arith",
+    "-Werror=unused-result",
+    "-Wstrict-prototypes",
+    "-Wno-bad-function-cast",
+    "-Werror=implicit-function-declaration",
+    "-Werror=missing-prototypes",
+    "-Werror=pointer-sign",
+  ]
+
+  # gvariant.c triggers a -Walloc-size warning which seems benign; see
+  # crbug.com/443913107#comment1.
+  cflags_c += [ "-Wno-alloc-size" ]
+
+  include_dirs = [ "include" ]
+}
+
+config("glib_public_config") {
+  include_dirs = [
+    "include",
+    "include/glib",
+    "src",
+    "src/glib",
+  ]
+}
+
+shared_library("glib") {
+  testonly = true
+
+  output_name = "glib-2.0"
+  output_extension = "so.0"
+
+  # charset defines
+  defines = [ "GLIB_CHARSETALIAS_DIR=\"/usr/lib\"" ]
+
+  cflags_c = [
+    # cflags as per upstream meson.build:
+    "-DG_LOG_DOMAIN=\"GLib\"",
+    "-DGLIB_COMPILATION",
+  ]
+
+  # charset includes
+  include_dirs = [ "src/glib/libcharset" ]
+
+  sources = [
+    "src/glib/deprecated/gallocator.c",
+    "src/glib/deprecated/gcache.c",
+    "src/glib/deprecated/gcompletion.c",
+    "src/glib/deprecated/grel.c",
+    "src/glib/deprecated/gthread-deprecated.c",
+    "src/glib/garcbox.c",
+    "src/glib/garray.c",
+    "src/glib/gasyncqueue.c",
+    "src/glib/gatomic.c",
+    "src/glib/gbacktrace.c",
+    "src/glib/gbase64.c",
+    "src/glib/gbitlock.c",
+    "src/glib/gbookmarkfile.c",
+    "src/glib/gbytes.c",
+    "src/glib/gcharset.c",
+    "src/glib/gchecksum.c",
+    "src/glib/gconvert.c",
+    "src/glib/gdataset.c",
+    "src/glib/gdate.c",
+    "src/glib/gdatetime-private.c",
+    "src/glib/gdatetime.c",
+    "src/glib/gdir.c",
+    "src/glib/genviron.c",
+    "src/glib/gerror.c",
+    "src/glib/gfileutils.c",
+    "src/glib/ggettext.c",
+    "src/glib/ghash.c",
+    "src/glib/ghmac.c",
+    "src/glib/ghook.c",
+    "src/glib/ghostutils.c",
+    "src/glib/giochannel.c",
+    "src/glib/giounix.c",
+    "src/glib/gjournal-private.c",
+    "src/glib/gkeyfile.c",
+    "src/glib/glib-init.c",
+    "src/glib/glib-private.c",
+    "src/glib/glib-unix.c",
+    "src/glib/glist.c",
+    "src/glib/gmain.c",
+    "src/glib/gmappedfile.c",
+    "src/glib/gmarkup.c",
+    "src/glib/gmem.c",
+    "src/glib/gmessages.c",
+    "src/glib/gnode.c",
+    "src/glib/goption.c",
+    "src/glib/gpathbuf.c",
+    "src/glib/gpattern.c",
+    "src/glib/gpoll.c",
+    "src/glib/gprimes.c",
+    "src/glib/gprint.c",
+    "src/glib/gprintf.c",
+    "src/glib/gprintprivate.h",
+    "src/glib/gqsort.c",
+    "src/glib/gquark.c",
+    "src/glib/gqueue.c",
+    "src/glib/grand.c",
+    "src/glib/grcbox.c",
+    "src/glib/grefcount.c",
+    "src/glib/grefstring.c",
+    "src/glib/gregex.c",
+    "src/glib/gscanner.c",
+    "src/glib/gsequence.c",
+    "src/glib/gshell.c",
+    "src/glib/gslice.c",
+    "src/glib/gslist.c",
+    "src/glib/gspawn-posix.c",
+    "src/glib/gspawn.c",
+    "src/glib/gstdio.c",
+    "src/glib/gstrfuncs.c",
+    "src/glib/gstring.c",
+    "src/glib/gstringchunk.c",
+    "src/glib/gstrvbuilder.c",
+    "src/glib/gtestutils.c",
+    "src/glib/gthread.c",
+    "src/glib/gthreadpool.c",
+    "src/glib/gtimer.c",
+    "src/glib/gtimezone.c",
+    "src/glib/gtrace.c",
+    "src/glib/gtranslit.c",
+    "src/glib/gtrashstack.c",
+    "src/glib/gtree.c",
+    "src/glib/gunibreak.c",
+    "src/glib/gunicollate.c",
+    "src/glib/gunidecomp.c",
+    "src/glib/guniprop.c",
+    "src/glib/guri.c",
+    "src/glib/gutf8.c",
+    "src/glib/gutils.c",
+    "src/glib/guuid.c",
+    "src/glib/gvariant-core.c",
+    "src/glib/gvariant-parser.c",
+    "src/glib/gvariant-serialiser.c",
+    "src/glib/gvariant.c",
+    "src/glib/gvarianttype-private.h",
+    "src/glib/gvarianttype.c",
+    "src/glib/gvarianttypeinfo.c",
+    "src/glib/gversion.c",
+    "src/glib/gwakeup.c",
+    "src/glib/gwin32private.h",
+
+    # charset sources
+    "src/glib/libcharset/localcharset.c",
+  ]
+
+  configs += [
+    ":glib_common_config",
+    ":pcre2",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":glib_public_config" ]
+}
+
+config("gobject_public_config") {
+  include_dirs = [
+    "include/gobject",
+    "src/gobject",
+  ]
+}
+
+shared_library("gobject") {
+  testonly = true
+
+  output_name = "gobject-2.0"
+  output_extension = "so.0"
+
+  cflags_c = [
+    # cflags as per upstream meson.build:
+    "-DG_LOG_DOMAIN=\"GLib-GObject\"",
+    "-DGOBJECT_COMPILATION",
+  ]
+
+  sources = [
+    "src/gobject/gatomicarray.c",
+    "src/gobject/gbinding.c",
+    "src/gobject/gbindinggroup.c",
+    "src/gobject/gboxed.c",
+    "src/gobject/gclosure.c",
+    "src/gobject/genums.c",
+    "src/gobject/gmarshal.c",
+    "src/gobject/gobject.c",
+    "src/gobject/gparam.c",
+    "src/gobject/gparamspecs.c",
+    "src/gobject/gsignal.c",
+    "src/gobject/gsignalgroup.c",
+    "src/gobject/gsourceclosure.c",
+    "src/gobject/gtype.c",
+    "src/gobject/gtypemodule.c",
+    "src/gobject/gtypeplugin.c",
+    "src/gobject/gvalue.c",
+    "src/gobject/gvaluearray.c",
+    "src/gobject/gvaluetransform.c",
+    "src/gobject/gvaluetypes.c",
+
+    # generated sources
+    "gobject/glib-enumtypes.c",
+  ]
+
+  configs += [
+    ":glib_common_config",
+    "//build/config/linux/libffi",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":gobject_public_config" ]
+
+  deps = [ ":glib" ]
+}
+
+config("gmodule_public_config") {
+  include_dirs = [
+    "include/gmodule",
+    "src/gmodule",
+  ]
+}
+
+shared_library("gmodule") {
+  testonly = true
+
+  output_name = "gmodule-2.0"
+  output_extension = "so.0"
+
+  sources = [
+    "src/gmodule/gmodule-deprecated.c",
+    "src/gmodule/gmodule.c",
+  ]
+
+  cflags_c = [
+    # cflags as per upstream meson.build:
+    "-DG_LOG_DOMAIN=\"GModule\"",
+    "-DGMODULE_COMPILATION",
+  ]
+
+  configs += [ ":glib_common_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":gmodule_public_config" ]
+
+  deps = [ ":glib" ]
+}
+
+shared_library("gio") {
+  testonly = true
+
+  output_name = "gio-2.0"
+  output_extension = "so.0"
+
+  # xdgmime defines
+  defines = [
+    "HAVE_CONFIG_H",
+    "XDG_PREFIX=_gio_xdg",
+  ]
+
+  cflags_c = [
+    # cflags as per upstream meson.build:
+    "-DG_LOG_DOMAIN=\"GLib-GIO\"",
+    "-DG_LOG_DOMAIN=\"GLib-GIO\"",
+    "-DGIO_LAUNCH_DESKTOP=\"/usr/libexec/gio-launch-desktop\"",
+    "-DGIO_MODULE_DIR=\"/usr/lib/gio/modules\"",
+    "-DLOCALSTATEDIR=\"/var\"",
+    "-DGIO_COMPILATION",
+  ]
+
+  include_dirs = [
+    "include/gio",
+    "src/gio",
+    "src/gio/inotify",
+    "src/gio/xdgmime",
+  ]
+
+  sources = [
+    "src/gio/gaction.c",
+    "src/gio/gactiongroup.c",
+    "src/gio/gactiongroupexporter.c",
+    "src/gio/gactionmap.c",
+    "src/gio/gappinfo.c",
+    "src/gio/gapplication.c",
+    "src/gio/gapplicationcommandline.c",
+    "src/gio/gapplicationimpl-dbus.c",
+    "src/gio/gasynchelper.c",
+    "src/gio/gasyncinitable.c",
+    "src/gio/gasyncresult.c",
+    "src/gio/gbufferedinputstream.c",
+    "src/gio/gbufferedoutputstream.c",
+    "src/gio/gbytesicon.c",
+    "src/gio/gcancellable.c",
+    "src/gio/gcharsetconverter.c",
+    "src/gio/gcontenttype-fdo.c",
+    "src/gio/gcontenttype.c",
+    "src/gio/gcontextspecificgroup.c",
+    "src/gio/gconverter.c",
+    "src/gio/gconverterinputstream.c",
+    "src/gio/gconverteroutputstream.c",
+    "src/gio/gcredentials.c",
+    "src/gio/gdatagrambased.c",
+    "src/gio/gdatainputstream.c",
+    "src/gio/gdataoutputstream.c",
+    "src/gio/gdbusactiongroup.c",
+    "src/gio/gdbusaddress.c",
+    "src/gio/gdbusauth.c",
+    "src/gio/gdbusauthmechanism.c",
+    "src/gio/gdbusauthmechanismanon.c",
+    "src/gio/gdbusauthmechanismexternal.c",
+    "src/gio/gdbusauthmechanismsha1.c",
+    "src/gio/gdbusauthobserver.c",
+    "src/gio/gdbusconnection.c",
+    "src/gio/gdbusdaemon.c",
+    "src/gio/gdbuserror.c",
+    "src/gio/gdbusinterface.c",
+    "src/gio/gdbusinterfaceskeleton.c",
+    "src/gio/gdbusintrospection.c",
+    "src/gio/gdbusmenumodel.c",
+    "src/gio/gdbusmessage.c",
+    "src/gio/gdbusmethodinvocation.c",
+    "src/gio/gdbusnameowning.c",
+    "src/gio/gdbusnamewatching.c",
+    "src/gio/gdbusobject.c",
+    "src/gio/gdbusobjectmanager.c",
+    "src/gio/gdbusobjectmanagerclient.c",
+    "src/gio/gdbusobjectmanagerserver.c",
+    "src/gio/gdbusobjectproxy.c",
+    "src/gio/gdbusobjectskeleton.c",
+    "src/gio/gdbusprivate.c",
+    "src/gio/gdbusproxy.c",
+    "src/gio/gdbusserver.c",
+    "src/gio/gdbusutils.c",
+    "src/gio/gdebugcontroller.c",
+    "src/gio/gdebugcontrollerdbus.c",
+    "src/gio/gdelayedsettingsbackend.c",
+    "src/gio/gdesktopappinfo.c",
+    "src/gio/gdocumentportal.c",
+    "src/gio/gdrive.c",
+    "src/gio/gdtlsclientconnection.c",
+    "src/gio/gdtlsconnection.c",
+    "src/gio/gdtlsserverconnection.c",
+    "src/gio/gdummyfile.c",
+    "src/gio/gdummyproxyresolver.c",
+    "src/gio/gdummytlsbackend.c",
+    "src/gio/gemblem.c",
+    "src/gio/gemblemedicon.c",
+    "src/gio/gfdonotificationbackend.c",
+    "src/gio/gfile.c",
+    "src/gio/gfileattribute.c",
+    "src/gio/gfiledescriptorbased.c",
+    "src/gio/gfileenumerator.c",
+    "src/gio/gfileicon.c",
+    "src/gio/gfileinfo.c",
+    "src/gio/gfileinputstream.c",
+    "src/gio/gfileiostream.c",
+    "src/gio/gfilemonitor.c",
+    "src/gio/gfilenamecompleter.c",
+    "src/gio/gfileoutputstream.c",
+    "src/gio/gfilterinputstream.c",
+    "src/gio/gfilteroutputstream.c",
+    "src/gio/ggtknotificationbackend.c",
+    "src/gio/ghttpproxy.c",
+    "src/gio/gicon.c",
+    "src/gio/ginetaddress.c",
+    "src/gio/ginetaddressmask.c",
+    "src/gio/ginetsocketaddress.c",
+    "src/gio/ginitable.c",
+    "src/gio/ginputstream.c",
+    "src/gio/gioerror.c",
+    "src/gio/giomodule-priv.c",
+    "src/gio/giomodule.c",
+    "src/gio/gioscheduler.c",
+    "src/gio/giostream.c",
+    "src/gio/giounix-private.c",
+    "src/gio/gkeyfilesettingsbackend.c",
+    "src/gio/glistmodel.c",
+    "src/gio/gliststore.c",
+    "src/gio/gloadableicon.c",
+    "src/gio/glocalfile.c",
+    "src/gio/glocalfileenumerator.c",
+    "src/gio/glocalfileinfo.c",
+    "src/gio/glocalfileinputstream.c",
+    "src/gio/glocalfileiostream.c",
+    "src/gio/glocalfilemonitor.c",
+    "src/gio/glocalfileoutputstream.c",
+    "src/gio/glocalvfs.c",
+    "src/gio/gmarshal-internal.c",
+    "src/gio/gmemoryinputstream.c",
+    "src/gio/gmemorymonitor.c",
+    "src/gio/gmemorymonitorbase.c",
+    "src/gio/gmemorymonitorbase.h",
+    "src/gio/gmemorymonitordbus.c",
+    "src/gio/gmemorymonitorpoll.c",
+    "src/gio/gmemorymonitorpoll.h",
+    "src/gio/gmemorymonitorportal.c",
+    "src/gio/gmemorymonitorpsi.c",
+    "src/gio/gmemorymonitorpsi.h",
+    "src/gio/gmemoryoutputstream.c",
+    "src/gio/gmemorysettingsbackend.c",
+    "src/gio/gmenu.c",
+    "src/gio/gmenuexporter.c",
+    "src/gio/gmenumodel.c",
+    "src/gio/gmount.c",
+    "src/gio/gmountoperation.c",
+    "src/gio/gnativesocketaddress.c",
+    "src/gio/gnativevolumemonitor.c",
+    "src/gio/gnetworkaddress.c",
+    "src/gio/gnetworking.c",
+    "src/gio/gnetworkmonitor.c",
+    "src/gio/gnetworkmonitorbase.c",
+    "src/gio/gnetworkmonitornetlink.c",
+    "src/gio/gnetworkmonitornm.c",
+    "src/gio/gnetworkmonitorportal.c",
+    "src/gio/gnetworkservice.c",
+    "src/gio/gnotification.c",
+    "src/gio/gnotificationbackend.c",
+    "src/gio/gnullsettingsbackend.c",
+    "src/gio/gopenuriportal.c",
+    "src/gio/goutputstream.c",
+    "src/gio/gpermission.c",
+    "src/gio/gpollableinputstream.c",
+    "src/gio/gpollableoutputstream.c",
+    "src/gio/gpollableutils.c",
+    "src/gio/gpollfilemonitor.c",
+    "src/gio/gportalnotificationbackend.c",
+    "src/gio/gportalsupport.c",
+    "src/gio/gpowerprofilemonitor.c",
+    "src/gio/gpowerprofilemonitordbus.c",
+    "src/gio/gpowerprofilemonitorportal.c",
+    "src/gio/gpropertyaction.c",
+    "src/gio/gproxy.c",
+    "src/gio/gproxyaddress.c",
+    "src/gio/gproxyaddressenumerator.c",
+    "src/gio/gproxyresolver.c",
+    "src/gio/gproxyresolverportal.c",
+    "src/gio/gremoteactiongroup.c",
+    "src/gio/gresolver.c",
+    "src/gio/gresource.c",
+    "src/gio/gresourcefile.c",
+    "src/gio/gsandbox.c",
+    "src/gio/gseekable.c",
+    "src/gio/gsettings-mapping.c",
+    "src/gio/gsettings.c",
+    "src/gio/gsettingsbackend.c",
+    "src/gio/gsettingsschema.c",
+    "src/gio/gsimpleaction.c",
+    "src/gio/gsimpleactiongroup.c",
+    "src/gio/gsimpleasyncresult.c",
+    "src/gio/gsimpleiostream.c",
+    "src/gio/gsimplepermission.c",
+    "src/gio/gsimpleproxyresolver.c",
+    "src/gio/gsocket.c",
+    "src/gio/gsocketaddress.c",
+    "src/gio/gsocketaddressenumerator.c",
+    "src/gio/gsocketclient.c",
+    "src/gio/gsocketconnectable.c",
+    "src/gio/gsocketconnection.c",
+    "src/gio/gsocketcontrolmessage.c",
+    "src/gio/gsocketinputstream.c",
+    "src/gio/gsocketlistener.c",
+    "src/gio/gsocketoutputstream.c",
+    "src/gio/gsocketservice.c",
+    "src/gio/gsocks4aproxy.c",
+    "src/gio/gsocks4proxy.c",
+    "src/gio/gsocks5proxy.c",
+    "src/gio/gsrvtarget.c",
+    "src/gio/gsubprocess.c",
+    "src/gio/gsubprocesslauncher.c",
+    "src/gio/gtask.c",
+    "src/gio/gtcpconnection.c",
+    "src/gio/gtcpwrapperconnection.c",
+    "src/gio/gtestdbus.c",
+    "src/gio/gthemedicon.c",
+    "src/gio/gthreadedresolver.c",
+    "src/gio/gthreadedsocketservice.c",
+    "src/gio/gtlsbackend.c",
+    "src/gio/gtlscertificate.c",
+    "src/gio/gtlsclientconnection.c",
+    "src/gio/gtlsconnection.c",
+    "src/gio/gtlsdatabase.c",
+    "src/gio/gtlsfiledatabase.c",
+    "src/gio/gtlsinteraction.c",
+    "src/gio/gtlspassword.c",
+    "src/gio/gtlsserverconnection.c",
+    "src/gio/gtrashportal.c",
+    "src/gio/gunionvolumemonitor.c",
+    "src/gio/gunixconnection.c",
+    "src/gio/gunixcredentialsmessage.c",
+    "src/gio/gunixfdlist.c",
+    "src/gio/gunixfdmessage.c",
+    "src/gio/gunixinputstream.c",
+    "src/gio/gunixmount.c",
+    "src/gio/gunixmounts.c",
+    "src/gio/gunixoutputstream.c",
+    "src/gio/gunixsocketaddress.c",
+    "src/gio/gunixvolume.c",
+    "src/gio/gunixvolumemonitor.c",
+    "src/gio/gvfs.c",
+    "src/gio/gvolume.c",
+    "src/gio/gvolumemonitor.c",
+    "src/gio/gzlibcompressor.c",
+    "src/gio/gzlibdecompressor.c",
+    "src/gio/thumbnail-verify.c",
+
+    # generated sources
+    "gio/gdbus-daemon-generated.c",
+    "gio/gioenumtypes.c",
+    "gio/xdp-dbus.c",
+
+    # inotify sources
+    "src/gio/inotify/ginotifyfilemonitor.c",
+    "src/gio/inotify/inotify-helper.c",
+    "src/gio/inotify/inotify-kernel.c",
+    "src/gio/inotify/inotify-missing.c",
+    "src/gio/inotify/inotify-path.c",
+    "src/gio/inotify/inotify-sub.c",
+
+    # xdgmime sources
+    "src/gio/xdgmime/xdgmime.c",
+    "src/gio/xdgmime/xdgmimealias.c",
+    "src/gio/xdgmime/xdgmimecache.c",
+    "src/gio/xdgmime/xdgmimeglob.c",
+    "src/gio/xdgmime/xdgmimeicon.c",
+    "src/gio/xdgmime/xdgmimeint.c",
+    "src/gio/xdgmime/xdgmimemagic.c",
+    "src/gio/xdgmime/xdgmimeparent.c",
+  ]
+
+  configs += [
+    ":glib_common_config",
+    "//build/config/linux:libresolv",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = [
+    ":glib",
+    ":gmodule",
+    ":gobject",
+    "//third_party/gvdb",
+    "//third_party/zlib",
+  ]
+}

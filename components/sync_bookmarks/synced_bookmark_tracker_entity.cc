@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -26,7 +27,7 @@ namespace {
 
 void HashSpecifics(const sync_pb::EntitySpecifics& specifics,
                    std::string* hash) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   *hash =
       base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()));
 }
@@ -50,6 +51,13 @@ bool SyncedBookmarkTrackerEntity::IsUnsynced() const {
   return metadata_.sequence_number() > metadata_.acked_sequence_number();
 }
 
+bool SyncedBookmarkTrackerEntity::IsUnsyncedLocalCreation() const {
+  // `kUncommittedVersion` implies that the entity is unsynced but add this
+  // condition for clarity.
+  return metadata_.server_version() == syncer::kUncommittedVersion &&
+         IsUnsynced();
+}
+
 bool SyncedBookmarkTrackerEntity::MatchesData(
     const syncer::EntityData& data) const {
   if (metadata_.is_deleted() || data.is_deleted()) {
@@ -62,7 +70,7 @@ bool SyncedBookmarkTrackerEntity::MatchesData(
 bool SyncedBookmarkTrackerEntity::MatchesSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) const {
   DCHECK(!metadata_.is_deleted());
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   std::string hash;
   HashSpecifics(specifics, &hash);
   return hash == metadata_.specifics_hash();

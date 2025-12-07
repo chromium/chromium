@@ -22,6 +22,7 @@
 #include "services/network/public/mojom/proxy_config_with_annotation.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+class CookieEncryptionProviderImpl;
 class PrefProxyConfigTracker;
 
 namespace base {
@@ -40,6 +41,10 @@ class URLLoaderFactory;
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace chromecast {
 namespace shell {
 
@@ -52,7 +57,8 @@ class CastNetworkContexts : public net::ProxyConfigService::Observer,
                             public network::mojom::ProxyConfigPollerClient {
  public:
   explicit CastNetworkContexts(
-      std::vector<std::string> cors_exempt_headers_list);
+      std::vector<std::string> cors_exempt_headers_list,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   CastNetworkContexts(const CastNetworkContexts&) = delete;
   CastNetworkContexts& operator=(const CastNetworkContexts&) = delete;
@@ -129,6 +135,8 @@ class CastNetworkContexts : public net::ProxyConfigService::Observer,
 
   const std::vector<std::string> cors_exempt_headers_list_;
   std::vector<std::string> allowed_domains_for_persistent_cookies_;
+
+  std::unique_ptr<CookieEncryptionProviderImpl> cookie_encryption_provider_;
 
   // The system NetworkContext.
   mojo::Remote<network::mojom::NetworkContext> system_network_context_;

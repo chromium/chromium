@@ -21,7 +21,8 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleAccess {
       WebContentDecryptionModuleResult,
       scoped_refptr<base::SingleThreadTaskRunner>) = 0;
   virtual WebMediaKeySystemConfiguration GetConfiguration() = 0;
-  virtual WebString GetKeySystem() = 0;
+  virtual WebString GetRequestedKeySystem() = 0;
+  virtual WebString GetInternalKeySystem() = 0;
   virtual bool UseHardwareSecureCodecs() const = 0;
 };
 

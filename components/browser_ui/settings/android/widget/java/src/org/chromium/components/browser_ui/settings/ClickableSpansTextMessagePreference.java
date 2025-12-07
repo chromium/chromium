@@ -12,21 +12,27 @@ import android.view.View;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
- * A preference wrapper for {@link TextViewWithClickableSpans}, which makes the
- * {@link TextMessagePreference} with one or more ClickableSpans accessible.
+ * A preference wrapper for {@link TextViewWithClickableSpans}, which makes the {@link
+ * TextMessagePreference} with one or more ClickableSpans accessible.
  */
+@NullMarked
 public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
-    private CharSequence mTitle;
-    private CharSequence mSummary;
+    private @Nullable CharSequence mTitle;
+    private @Nullable CharSequence mSummary;
 
+    @SuppressWarnings("NullAway.Init")
     private TextViewWithClickableSpans mTitleView;
+
+    @SuppressWarnings("NullAway.Init")
     private TextViewWithClickableSpans mSummaryView;
 
     /** Constructor for inflating from XML. */
-    public ClickableSpansTextMessagePreference(Context context, AttributeSet attrs) {
+    public ClickableSpansTextMessagePreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.clickable_spans_text_message_preference_layout);
         setSelectable(false);
@@ -57,7 +63,7 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     }
 
     @Override
-    public void setTitle(CharSequence title) {
+    public void setTitle(@Nullable CharSequence title) {
         if (!TextUtils.equals(mTitle, title)) {
             mTitle = title;
             notifyChanged();
@@ -70,7 +76,7 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     }
 
     @Override
-    public void setSummary(CharSequence summary) {
+    public void setSummary(@Nullable CharSequence summary) {
         if (!TextUtils.equals(mSummary, summary)) {
             mSummary = summary;
             notifyChanged();
@@ -80,5 +86,10 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     @Override
     public void setSummary(int summaryResId) {
         setSummary(getContext().getString(summaryResId));
+    }
+
+    @Override
+    public int getCustomBackgroundStyle() {
+        return BackgroundStyle.NONE;
     }
 }

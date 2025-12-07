@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangulski način Ahnmatae</translation>
 <translation id="1155759005174418845">katalonščina</translation>
 <translation id="1168100932582989117">Googlovi imenski strežniki</translation>
+<translation id="1170788066030116158">Datum posnetka</translation>
 <translation id="1172970565351728681">Preostali čas: približno <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1173916544412572294">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">Zvrst</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
 <translation id="1272293450992660632">Vrednosti PIN se ne ujemajo.</translation>
+<translation id="1279040297980392566">Čakanje na dokončanje pregleda, poskusite znova pozneje</translation>
 <translation id="1280820357415527819">Iskanje mobilnih omrežij</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1297922636971898492">Google Drive trenutno ni na voljo. Ko bo spet na voljo, se bo prenos samodejno začel znova.</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">Pregled pravilnika skrbnika</translation>
 <translation id="158849752021629804">Potrebno je domače omrežje</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugalščina z mednarodno tipkovnico za angleščino (Združene države)</translation>
 <translation id="1629521517399325891">Uporabniško potrdilo ni na voljo za preverjanje pristnosti omrežja.</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">Predogled ni na voljo</translation>
 <translation id="1812302367230252929">amharščina (transkripcija)</translation>
 <translation id="1813278315230285598">Storitve</translation>
+<translation id="181434555916624618">Rezultati z osebami za zdaj ne bodo prikazani. Poskusite uporabiti drug poziv.</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Nalaganje podatkov …</translation>
 <translation id="1832073788765803750">Katakana polovične širine</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">Oseba, ki se podpisuje v zahvalo</translation>
 <translation id="2088690981887365033">Omrežje VPN</translation>
 <translation id="209653272837065803">Ni dovolj prostora za shranjevanje, da bi se sinhronizacija datotek nadaljevala</translation>
-<translation id="2111134541987263231">Vklopite <ph name="BEGIN_BOLD" />Omogoči v anonimnem načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementov bo izbrisanih in ne boste jih mogli obnoviti.</translation>
 <translation id="2122305276694332719">Samodejna povezava s skritim omrežjem omogoča drugim, da vidijo vašo napravo in nekatere nastavitve omrežja, zato tega ne priporočamo.</translation>
 <translation id="2125607626296734455">kmerščina</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">Pogon <ph name="VOLUME_NAME" /> je bil izvržen.</translation>
 <translation id="2307462900900812319">Konfiguriranje omrežja</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Razširitve z ID-jem <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}one{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}two{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}few{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}other{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}}</translation>
 <translation id="2325650632570794183">Ta vrsta datoteke ni podprta. Obiščite spletno trgovino Chrome in poiščite aplikacijo, ki lahko odpre to vrsto datoteke.</translation>
 <translation id="2326539130272988168">bolgarščina</translation>
 <translation id="233822363739146957">Ni dovolj prostora za shranjevanje, da bi lahko sinhronizirali vse datoteke</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">maratščina</translation>
 <translation id="2923240520113693977">estonščina</translation>
 <translation id="2938685643439809023">mongolščina</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Razširitve ni mogoče najti}one{Razširitev ni mogoče najti}two{Razširitev ni mogoče najti}few{Razširitev ni mogoče najti}other{Razširitev ni mogoče najti}}</translation>
 <translation id="2943503720238418293">Uporabite krajše ime</translation>
 <translation id="2949781154072577687">Formatiranje pogona <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">Dokončano</translation>
 <translation id="3358452157379365236">Kitara</translation>
 <translation id="3368922792935385530">Povezano</translation>
-<translation id="3372635229069101468">Kliknite <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepalščina s tipkovnico InScript</translation>
 <translation id="338691029516748599">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, vzpostavitev povezave</translation>
 <translation id="3408072735282270043">Aktiviraj, <ph name="NETWORK_NAME" /></translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">Izbrana je ena datoteka</translation>
 <translation id="3817579325494460411">Ni navedeno</translation>
 <translation id="3819448694985509187">Napačna koda PIN. Imate še 1 poskus.</translation>
-<translation id="3822559385185038546">Ta strežnik proxy je uveljavil skrbnik</translation>
 <translation id="3830674330436234648">Predvajanje ni na voljo</translation>
 <translation id="383652340667548381">srbščina</translation>
 <translation id="3839045880592694915">Operater ne dovoljuje povezave modema. Za več podrobnosti se obrnite na operaterja.</translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Samorog</translation>
 <translation id="4131235941541910880">Nepotrebne elemente premaknite v smetnjak.</translation>
 <translation id="4134804435730168042">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviranje po nastavitvi naprave</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Vklopite to razširitev v anonimnem načinu:}one{Vklopite te razširitve v anonimnem načinu:}two{Vklopite te razširitve v anonimnem načinu:}few{Vklopite te razširitve v anonimnem načinu:}other{Vklopite te razširitve v anonimnem načinu:}}</translation>
 <translation id="4153015322587141338">Z desnim gumbom kliknite datoteko in izberite ukaz »<ph name="PIN_COMMAND" />«, če želite hitro dostopati do datotek na polici.</translation>
 <translation id="4157569377477607576">Pravilnik skrbnika ne priporoča:</translation>
 <translation id="4159731583141908892">Premaknjeno: <ph name="FILE_NAME" />.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Ta element je v smetnjaku</translation>
 <translation id="4186579485882418952">Omogoči delo brez povezave</translation>
 <translation id="4193154014135846272">Googlov dokument</translation>
-<translation id="4197674956721858839">Stisni izbor v datoteko zip</translation>
 <translation id="4202378258276439759">španščina (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzinščina</translation>
 <translation id="421017592316736757">Če želite dostopati do datoteke, mora biti vzpostavljena povezava z internetom.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Potrdilo za preverjanje pristnosti je bilo zavrnjeno na oddaljeni lokaciji</translation>
 <translation id="4394214039309501350">Zunanja povezava</translation>
 <translation id="4394980935660306080">Prej v tem tednu</translation>
+<translation id="4397435965699247285">OneDrive ni na voljo brez povezave</translation>
 <translation id="4398096759193130964">Obnovite elemente ali jih povlecite v novo mapo zunaj smetnjaka.</translation>
 <translation id="4401287888955153199">Razširi vse</translation>
 <translation id="4410695710508688828">Dejanje ekstrahiranja ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Obdrži obe</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Obnavljanje elementov (<ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Če želite uporabljati anonimni način, vaša organizacija zahteva razširitev}one{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}two{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}few{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}other{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}}</translation>
 <translation id="4826849268470072925">tamilščina (ITRANS)</translation>
-<translation id="482932175346970750">V brskalnik vnesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Naprave Chromebase</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="485316830061041779">nemščina</translation>
@@ -558,7 +554,6 @@
         na enem mestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Obnovljene datoteke iz Googla Drive</translation>
 <translation id="5278111733643988471">Če želite obnoviti ta element, ga povlecite v novo mapo zunaj smetnjaka. Prvotna mapa »<ph name="PARENT_FOLDER_NAME" />« za ta element je bila izbrisana.</translation>
-<translation id="5283101102242354279">Vklopite razširitev v anonimnem načinu:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Premikanje te datoteke blokira skrbniški pravilnik</translation>
 <translation id="5305688511332277257">Ni nameščenih</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5602622065581044566">bolgarščina s fonetično tipkovnico</translation>
 <translation id="5605830556594064952">Združene države – Dvorak</translation>
+<translation id="560739212255190568">Skrbnik je poleg uveljavljanja tega strežnika proxy nastavil pravila za preglasitev strežnika proxy</translation>
 <translation id="5618330573454123917">Ta datoteka je zasnovana za računalnike s programsko opremo Macintosh, in ni združljiva z vašo napravo, ki uporablja sistem Chrome OS. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="5625294776298156701">tamilščina s tipkovnico Tamil99</translation>
 <translation id="5633226425545095130">Če boste premaknili ta element, bo deljen z vsemi osebami, ki jim je vidna deljena mapa »<ph name="DESTINATION_NAME" />«.</translation>
@@ -662,7 +658,7 @@
 <translation id="6096979789310008754">Besedilo iskanja je izbrisano, prikaz vseh datotek in map.</translation>
 <translation id="610101264611565198">Premikanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Besedilna datoteka CSV</translation>
-<translation id="6129953537138746214">Presledek</translation>
+<translation id="6129953537138746214">Preslednica</translation>
 <translation id="6133173853026656527">Premikanje datoteke <ph name="FILE_NAME" /> ...</translation>
 <translation id="6133877453787250710">Skrbnik nadzira:</translation>
 <translation id="613750717151263950">japonščina z angleško tipkovnico (ZDA)</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
-<translation id="7252604552361840748">Poiščite razširitev zgoraj</translation>
 <translation id="7256405249507348194">Neprepoznana napaka: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Razpoložljive storitve</translation>
 <translation id="7291818353625820805">Želite, da se tipke ponovijo? Izklopite naglasna znamenja v nastavitvah tipkovnice</translation>
@@ -927,7 +922,7 @@
 <translation id="8055538340801153769">Ta mapa</translation>
 <translation id="807187749540895545">Razširjanje datoteke <ph name="FILE_NAME" /> …</translation>
 <translation id="8087576439476816834">Prenos, <ph name="PROFILE_NAME" /></translation>
-<translation id="8106045200081704138">V skupni rabi z menoj</translation>
+<translation id="8106045200081704138">Deljeno z mano</translation>
 <translation id="8116072619078571545">Voda z ledom</translation>
 <translation id="8120392982188717723">Omogočanje sinhronizacije v omrežjih z omejenim prenosom podatkov</translation>
 <translation id="8124093710070495550">Težava s sinhronizacijo</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">angleščina (ZDA)</translation>
 <translation id="854655314928502177">URL za samodejno odkrivanje spletnega strežnika proxy:</translation>
+<translation id="8547747809824590510">Skrbnik je nastavil pravila za preglasitev strežnika proxy</translation>
 <translation id="8549186985808798022">italijanščina</translation>
 <translation id="8551494947769799688">latvijščina</translation>
 <translation id="8560515948038859357">kantonščina</translation>
@@ -1061,6 +1057,7 @@
 <translation id="9038620279323455325">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="9065512565307033593">Če ne preverite, bo dostop do omrežja onemogočen.</translation>
+<translation id="9079844694307518094">Skrbnik uveljavlja ta strežnik proxy</translation>
 <translation id="908378762078012445">ruščina s fonetično tipkovnico AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Število strani</translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">Namestitev je bila uspešno začeta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Mesečeva pokrajina</translation>
+<translation id="931652069802536959">Omrežje je blokirano s pravilnikom</translation>
 <translation id="938470336146445890">Namestite uporabniško potrdilo.</translation>
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="943972244133411984">Spremenil(-a):</translation>

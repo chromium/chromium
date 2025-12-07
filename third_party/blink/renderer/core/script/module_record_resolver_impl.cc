@@ -14,19 +14,19 @@ namespace blink {
 void ModuleRecordResolverImpl::RegisterModuleScript(
     const ModuleScript* module_script) {
   DCHECK(module_script);
-  v8::Local<v8::Module> module = module_script->V8Module();
-  if (module.IsEmpty())
+  if (module_script->HasEmptyRecord()) {
     return;
+  }
 
-  v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-  BoxedV8Module* record = MakeGarbageCollected<BoxedV8Module>(isolate, module);
+  BoxedV8Module* record = module_script->BoxModuleRecord();
+
   DVLOG(1) << "ModuleRecordResolverImpl::RegisterModuleScript(url="
            << module_script->BaseUrl().GetString()
-           << ", hash=" << WTF::GetHash(record) << ")";
+           << ", hash=" << GetHash(record) << ")";
 
   auto result = record_to_module_script_map_.Set(record, module_script);
 
-  DCHECK(result.is_new_entry);
+  CHECK(result.is_new_entry);
 }
 
 void ModuleRecordResolverImpl::UnregisterModuleScript(
@@ -40,7 +40,7 @@ void ModuleRecordResolverImpl::UnregisterModuleScript(
   BoxedV8Module* record = MakeGarbageCollected<BoxedV8Module>(isolate, module);
   DVLOG(1) << "ModuleRecordResolverImpl::UnregisterModuleScript(url="
            << module_script->BaseUrl().GetString()
-           << ", hash=" << WTF::GetHash(record) << ")";
+           << ", hash=" << GetHash(record) << ")";
 
   record_to_module_script_map_.erase(record);
 }
@@ -57,17 +57,13 @@ const ModuleScript* ModuleRecordResolverImpl::GetModuleScriptFromModuleRecord(
   return it->value.Get();
 }
 
-// <specdef
-// href="https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier)">
-v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
+ModuleScript* ModuleRecordResolverImpl::ResolveImpl(
     const ModuleRequest& module_request,
-    v8::Local<v8::Module> referrer,
-    ExceptionState& exception_state) {
+    v8::Local<v8::Module> referrer) {
   v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-  DVLOG(1) << "ModuleRecordResolverImpl::resolve(specifier=\""
+  DVLOG(1) << "ModuleRecordResolverImpl::ResolveImpl(specifier=\""
            << module_request.specifier << ", referrer.hash="
-           << WTF::GetHash(
-                  MakeGarbageCollected<BoxedV8Module>(isolate, referrer))
+           << GetHash(MakeGarbageCollected<BoxedV8Module>(isolate, referrer))
            << ")";
 
   // <spec step="3">If referencingScriptOrModule is not null, then:</spec>
@@ -104,19 +100,53 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
 
   // <spec step="7">Let resolved module script be moduleMap[url]. (This entry
   // must exist for us to have gotten to this point.)</spec>
-  ModuleScript* module_script =
-      modulator_->GetFetchedModuleScript(url, child_module_type);
+  return modulator_->GetFetchedModuleScript(url, child_module_type);
+}
 
+// <specdef href="https://html.spec.whatwg.org/C/#hostloadimportedmodule">
+v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
+    const ModuleRequest& module_request,
+    v8::Local<v8::Module> referrer,
+    ExceptionState& exception_state) {
+  CHECK_EQ(module_request.import_phase, ModuleImportPhase::kEvaluation);
+  ModuleScript* module_script = ResolveImpl(module_request, referrer);
   // <spec step="8">Assert: resolved module script is a module script (i.e., is
   // not null or "fetching").</spec>
   //
   // <spec step="9">Assert: resolved module script's record is not null.</spec>
   DCHECK(module_script);
+  if (module_script->IsWasmModuleRecord()) {
+    exception_state.ThrowSyntaxError(
+        StrCat({module_request.specifier, kWasmImportInEvaluationPhaseError}));
+    return v8::Local<v8::Module>();
+  }
   v8::Local<v8::Module> record = module_script->V8Module();
   CHECK(!record.IsEmpty());
 
   // <spec step="10">Return resolved module script's record.</spec>
   return record;
+}
+
+v8::Local<v8::WasmModuleObject> ModuleRecordResolverImpl::ResolveSource(
+    const ModuleRequest& module_request,
+    v8::Local<v8::Module> referrer,
+    ExceptionState& exception_state) {
+  DCHECK_EQ(module_request.import_phase, ModuleImportPhase::kSource);
+  ModuleScript* module_script = ResolveImpl(module_request, referrer);
+  // <spec step="8">Assert: resolved module script is a module script (i.e., is
+  // not null or "fetching").</spec>
+  //
+  // <spec step="9">Assert: resolved module script's record is not null.</spec>
+  DCHECK(module_script);
+  if (!module_script->IsWasmModuleRecord()) {
+    exception_state.ThrowSyntaxError(
+        StrCat({module_request.specifier, kNonWasmImportInSourcePhaseError}));
+    return v8::Local<v8::WasmModuleObject>();
+  }
+  v8::Local<v8::WasmModuleObject> module_source = module_script->WasmModule();
+  CHECK(!module_source.IsEmpty());
+  // <spec step="10">Return resolved module script's record.</spec>
+  return module_source;
 }
 
 void ModuleRecordResolverImpl::ContextDestroyed() {

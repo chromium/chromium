@@ -26,7 +26,7 @@ class CORE_EXPORT InspectorIssueReporter final
     : public GarbageCollected<InspectorIssueReporter> {
  public:
   explicit InspectorIssueReporter(InspectorIssueStorage* storage);
-  virtual ~InspectorIssueReporter();
+  ~InspectorIssueReporter();
   InspectorIssueReporter(const InspectorIssueReporter&) = delete;
   InspectorIssueReporter& operator=(const InspectorIssueReporter&) = delete;
 

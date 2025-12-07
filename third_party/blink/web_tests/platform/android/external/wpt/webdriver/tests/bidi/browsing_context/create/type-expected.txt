@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_type[tab]
+  AssertionError
+[FAIL] test_type[window]
+  asyncio.exceptions.CancelledError
+Harness: the test ran to completion.
+

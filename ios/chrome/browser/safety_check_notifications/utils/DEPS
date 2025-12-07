@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/passwords/model",
+  "+ios/chrome/browser/push_notification/model",
+  "+ios/chrome/browser/safety_check/model",
+]

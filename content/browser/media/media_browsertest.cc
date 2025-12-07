@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -53,14 +52,8 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 
   std::vector<base::test::FeatureRef> enabled_features = {
-    media::kBuiltInH264Decoder,
-
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
-#endif
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-    media::kBuiltInHlsPlayer,
 #endif
   };
 
@@ -298,12 +291,34 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleFileBear) {
+// TODO(crbug.com/384342045): Failing on win11-arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_HLSSingleFileBear DISABLED_HLSSingleFileBear
+#else
+#define MAYBE_HLSSingleFileBear HLSSingleFileBear
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSSingleFileBear) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, HLSMultivariantBitrateBear) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_HLSSingleWithoutExtension DISABLED_HLSSingleWithoutExtension
+#else
+#define MAYBE_HLSSingleWithoutExtension HLSSingleWithoutExtension
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSSingleWithoutExtension) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("hls/mp_ts_avc1.hls");
+}
+
+// TODO(crbug.com/384342045): Failing on win11-arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_HLSMultivariantBitrateBear DISABLED_HLSMultivariantBitrateBear
+#else
+#define MAYBE_HLSMultivariantBitrateBear HLSMultivariantBitrateBear
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSMultivariantBitrateBear) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("hls/multi-bitrate-multivariant-bear/playlist.m3u8");
 }
@@ -348,26 +363,26 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 // HEVC video stream with 8-bit 422 range extension profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit422) {
-  MaybePlayVideo("hev1.4.10.L93.9d.8",
-                 "bear-1280x720-hevc-8bit-422-no-audio.mp4");
+  MaybePlayVideo("hvc1.4.10.L93.9D.08",
+                 "quick-brown-fox-1280x720-hevc-rext-8bit-422-no-audio.mp4");
 }
 
 // HEVC video stream with 8-bit 444 range extension profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit444) {
-  MaybePlayVideo("hev1.4.10.L93.9e.8",
-                 "bear-1280x720-hevc-8bit-444-no-audio.mp4");
+  MaybePlayVideo("hvc1.4.10.L93.9E.08",
+                 "quick-brown-fox-1280x720-hevc-rext-8bit-444-no-audio.mp4");
 }
 
 // HEVC video stream with 10-bit 422 range extension profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit422) {
-  MaybePlayVideo("hev1.4.10.L93.9d.8",
-                 "bear-1280x720-hevc-10bit-422-no-audio.mp4");
+  MaybePlayVideo("hvc1.4.10.L93.9D.08",
+                 "quick-brown-fox-1280x720-hevc-rext-10bit-422-no-audio.mp4");
 }
 
 // HEVC video stream with 10-bit 444 range extension profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit444) {
-  MaybePlayVideo("hev1.4.10.L93.9c.8",
-                 "bear-1280x720-hevc-10bit-444-no-audio.mp4");
+  MaybePlayVideo("hvc1.4.10.L93.9C.08",
+                 "quick-brown-fox-1280x720-hevc-rext-10bit-444-no-audio.mp4");
 }
 
 // HEVC video stream with 8-bit main profile
@@ -448,6 +463,10 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoTulipWebm) {
   PlayVideo("tulip2.webm");
 }
 
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoEbu3213Primary) {
+  PlayVideo("ebu-3213-e-vp9.mp4");
+}
+
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorMissingResource) {
   RunErrorMessageTest("video", "nonexistent_file.webm",
                       "MEDIA_ELEMENT_ERROR: Format error");
@@ -471,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, Navigate) {
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioOnly_XHE_AAC_MP4) {
-  if (media::IsSupportedAudioType(
+  if (media::IsDecoderSupportedAudioType(
           {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     PlayAudio("noise-xhe-aac.mp4");
   }

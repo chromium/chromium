@@ -21,6 +21,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -28,7 +29,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
@@ -92,10 +92,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Registers per-install prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // If user was signed in, load the primary account and then load credentials
-  // in the token service.
-  void Initialize();
-
   // Returns whether the user's primary account is available. If consent is
   // |ConsentLevel::kSync| then true implies that the user has blessed this
   // account for sync.
@@ -132,7 +128,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   // Signout API surfaces (not supported on ChromeOS, where signout is not
   // permitted).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Clears the primary account, erasing all keys associated with the primary
   // account (also cancels all auth in progress).
   // It removes all accounts from the identity manager by revoking all refresh
@@ -145,7 +141,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void RemovePrimaryAccountButKeepTokens(
       signin_metrics::ProfileSignout signout_source_metric);
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Rovokes the sync consent but leaves the primary account and the rest of
   // the accounts untouched.
@@ -190,11 +186,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
                                  bool consented_to_sync,
                                  ScopedPrefCommit& scoped_pref_commit);
 
-  // Invoked during initialization, it logs metrics to understand what fraction
-  // of users have a sync-enabled primary account in the past, on the same
-  // profile.
-  void RecordHadPreviousSyncAccount() const;
-
   // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
                     RemoveAccountsOption remove_option);
@@ -211,16 +202,16 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Fires OnPrimaryAccountChanged() notifications on all observers.
   void FirePrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent::State& previous_state,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+      std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source,
       ScopedPrefCommit& scoped_pref_commit);
 
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;
 
-  // Sets the value for `pref::kExplicitBrowserSignin` pref based on the access
-  // point when signing in.
-  void ComputeExplicitBrowserSignin(
+  // Sets the values for various sign-in prefs based on the sign-in access point
+  // and feature enabled states.
+  void SetExplicitBrowserSigninPrefs(
       const signin::PrimaryAccountChangeEvent& event_details,
       ScopedPrefCommit& scoped_pref_commit);
 

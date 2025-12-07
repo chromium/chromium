@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -26,14 +25,15 @@
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host_common.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -137,6 +137,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kAuthenticationFlowAutoReloadInterval,
       constants::kDefaultAuthenticationFlowAutoReloadInterval);
+
+  registry->RegisterBooleanPref(prefs::kAutoEnrollmentCheckExited, false);
 }
 
 // static
@@ -174,6 +176,10 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterListPref(prefs::kOobeCategoriesSelected);
   }
 
+  if (features::IsOobePerksDiscoveryEnabled()) {
+    registry->RegisterBooleanPref(prefs::kOobePerksDiscoveryGamgeeShown, false);
+  }
+
   if (features::IsOobeDisplaySizeEnabled()) {
     registry->RegisterDoublePref(prefs::kOobeDisplaySizeFactorDeferred, 1.0);
   }
@@ -205,6 +211,11 @@ void StartupUtils::MarkOobeCompleted() {
 
   // Successful enrollment implies that recovery is not required.
   SaveBoolPreferenceForced(::prefs::kEnrollmentRecoveryRequired, false);
+
+  // If `kOobeComplete` is already true, the `kAutoEnrollmentCheckExited` pref
+  // is no longer needed as its purpose is to potentially block OOBE completion.
+  g_browser_process->local_state()->ClearPref(
+      prefs::kAutoEnrollmentCheckExited);
 }
 
 // static
@@ -323,15 +334,16 @@ std::string StartupUtils::GetInitialLocale() {
 
 // static
 void StartupUtils::SetInitialLocale(const std::string& locale) {
-  if (l10n_util::IsValidLocaleSyntax(locale))
+  if (l10n_util::IsValidLocaleSyntax(locale)) {
     SaveStringPreferenceForced(::prefs::kInitialLocale, locale);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 }
 
 // static
 bool StartupUtils::IsDeviceOwned() {
-  return !user_manager::UserManager::Get()->GetUsers().empty() ||
+  return !user_manager::UserManager::Get()->GetPersistedUsers().empty() ||
          ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 

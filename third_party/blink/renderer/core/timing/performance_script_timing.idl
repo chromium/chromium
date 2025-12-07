@@ -5,11 +5,11 @@
 enum ScriptInvokerType {
     "classic-script",
     "module-script",
-    "execute-script",
     "event-listener",
     "user-callback",
     "resolve-promise",
-    "reject-promise"
+    "reject-promise",
+    "user-entry-point"
 };
 
 enum ScriptWindowAttribution {
@@ -17,7 +17,7 @@ enum ScriptWindowAttribution {
 };
 
 // https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
-[Exposed=Window, RuntimeEnabled=LongAnimationFrameTiming]
+[Exposed=Window]
 interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute ScriptInvokerType invokerType;
     readonly attribute DOMString invoker;
@@ -29,5 +29,7 @@ interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute DOMString sourceURL;
     readonly attribute DOMString sourceFunctionName;
     readonly attribute long long sourceCharPosition;
+    [RuntimeEnabled=LongAnimationFrameSourceLineColumnInterface] readonly attribute long long sourceLine;
+    [RuntimeEnabled=LongAnimationFrameSourceLineColumnInterface] readonly attribute long long sourceColumn;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

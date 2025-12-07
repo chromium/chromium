@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "components/webapps/common/web_app_id.h"
@@ -35,6 +37,25 @@ struct DeviceInfo {
   std::optional<base::Time> oobe_timestamp;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
+
+// An allow list for a set of preinstalled web app that will be installed even
+// if `switches::kDisableDefaultApps` is set.
+using PreinstallUrlAllowList = std::optional<base::flat_set<GURL>>;
+PreinstallUrlAllowList& GetPreinstallUrlAllowListForTesting();
+
+// Temporarily sets an allow list for a set of install URLs that will be
+// permitted to be preinstalled even if `switches::kDisableDefaultApps` is set.
+// This allows tests to enable particular preinstalled web apps without enabling
+// all of them. Enabling all has the side effect of installing a queue of web
+// apps, some of which require network access that hit a 30s timeout period (see
+// `WebAppUrlLoader`), causing the test to timeout when waiting on a particular
+// web app that happens to get placed at the end of the install queue.
+// By only enabling the necessary ones this avoids test timeouts caused by
+// unrelated web app preinstalls.
+using ScopedPreinstallUrlAllowList =
+    base::AutoReset<std::optional<base::flat_set<GURL>>>;
+ScopedPreinstallUrlAllowList SetPreinstallUrlAllowListForTesting(
+    PreinstallUrlAllowList preinstall_url_allow_list);
 
 bool PreinstalledWebAppsDisabled();
 

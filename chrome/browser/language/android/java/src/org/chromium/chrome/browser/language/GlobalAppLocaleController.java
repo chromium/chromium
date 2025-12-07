@@ -12,9 +12,11 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 
 import java.lang.annotation.Retention;
@@ -22,14 +24,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
- * The global application language controller that uses the locale from
- * {@link AppLocaleUtils#getAppLanguagePref} to override the locales in
- * {@link ChromeApplication} and {@link ChromeActivity} and default Locale.
+ * The global application language controller that uses the locale from {@link
+ * AppLocaleUtils#getAppLanguagePref} to override the locales in {@link ChromeApplication} and
+ * {@link ChromeActivity} and default Locale.
  */
+@NullUnmarked
 public class GlobalAppLocaleController {
     private static final GlobalAppLocaleController INSTANCE = new GlobalAppLocaleController();
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static final String IS_SYSTEM_LANGUAGE_HISTOGRAM =
             "LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage";
 
@@ -55,7 +58,7 @@ public class GlobalAppLocaleController {
 
     // Set the original system language before Locale.getDefault() is overridden.
     private Locale mOriginalSystemLocale = Locale.getDefault();
-    private String mOverrideLanguage;
+    private @Nullable String mOverrideLanguage;
     private boolean mIsOverridden;
 
     private GlobalAppLocaleController() {}
@@ -63,6 +66,7 @@ public class GlobalAppLocaleController {
     /**
      * Sets the global override language and override state based on the {@link AppLocaleUitls}
      * shared preference. Should be called very early in {@link ChromeActivity#attachBaseContext}.
+     *
      * @param context The Context to use to get the shared preference from.
      * @return boolean Whether or not an override language is set.
      */
@@ -92,6 +96,7 @@ public class GlobalAppLocaleController {
     /**
      * If the application locale should be overridden returns an updated override Configuration.
      * Called early in {@link ChromeActivity#attachBaseContext}.
+     *
      * @param base The base Context for the application and has the system locales.
      * @return Configuration to override application context with or null.
      */
@@ -121,7 +126,7 @@ public class GlobalAppLocaleController {
         Resources resources = base.getResources();
         // Resources#updateConfiguration() seems to reset densityDpi if it's not specified by the
         // configuration, regardless of whether it's specified by the input DisplayMetrics.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             config.densityDpi = resources.getConfiguration().densityDpi;
         }
         // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated
@@ -168,10 +173,11 @@ public class GlobalAppLocaleController {
 
     /**
      * Get the status of the override language compared to the system language.
+     *
      * @return The {@link OverrideLanguageStatus} that describes the relationship between the system
-     * language and override language.
+     *     language and override language.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static @OverrideLanguageStatus int getOverrideVsSystemLanguageStatus(
             String overrideLanguage, String systemLanguage) {
         // When following the system language there is no override so Chrome tracks the System UI.
@@ -190,11 +196,12 @@ public class GlobalAppLocaleController {
     /**
      * Deterimine if the app locale should be overridden based on the override and system languages
      * provided.
+     *
      * @param overrideLanguage A BCP 47 tag representing which override language should be used.
      * @param overrideLanguage A BCP 47 tag representing the original system language.
      * @return Whether or not the app locale should be overridden.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static boolean shouldOverrideAppLocale(String overrideLanguage, String systemLanguage) {
         return !TextUtils.isEmpty(overrideLanguage)
                 && !TextUtils.equals(systemLanguage, overrideLanguage);

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -35,6 +34,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/event.h"
@@ -93,15 +93,15 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
       web_contents_(web_contents) {
   DCHECK(on_closing_);
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TITLE);
 
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DialogLaunched"));
 }
 
 QRCodeGeneratorBubble::~QRCodeGeneratorBubble() {
-  if (qrcode_action_item_) {
-    qrcode_action_item_->SetIsShowingBubble(false);
+  if (qrcode_action_item_.get()) {
+    qrcode_action_item_.get()->SetIsShowingBubble(false);
   }
 }
 
@@ -111,19 +111,23 @@ void QRCodeGeneratorBubble::Show() {
   UpdateQRContent();
   ShowForReason(USER_GESTURE);
   Browser* browser = chrome::FindLastActive();
-  if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
-    qrcode_action_item_ = actions::ActionManager::Get().FindAction(
-        kActionQrCodeGenerator, browser->browser_actions()->root_action_item());
-    qrcode_action_item_->SetIsShowingBubble(true);
+  if (browser) {
+    qrcode_action_item_ =
+        actions::ActionManager::Get()
+            .FindAction(kActionQrCodeGenerator,
+                        browser->browser_actions()->root_action_item())
+            ->GetAsWeakPtr();
+    qrcode_action_item_.get()->SetIsShowingBubble(true);
   }
 }
 
 void QRCodeGeneratorBubble::Hide() {
-  if (on_closing_)
+  if (on_closing_) {
     std::move(on_closing_).Run();
+  }
   CloseBubble();
-  if (qrcode_action_item_) {
-    qrcode_action_item_->SetIsShowingBubble(false);
+  if (qrcode_action_item_.get()) {
+    qrcode_action_item_.get()->SetIsShowingBubble(false);
   }
 }
 
@@ -226,8 +230,9 @@ bool QRCodeGeneratorBubble::ShouldShowCloseButton() const {
 }
 
 void QRCodeGeneratorBubble::WindowClosing() {
-  if (on_closing_)
+  if (on_closing_) {
     std::move(on_closing_).Run();
+  }
 }
 
 void QRCodeGeneratorBubble::Init() {
@@ -360,8 +365,9 @@ void QRCodeGeneratorBubble::Init() {
 }
 
 void QRCodeGeneratorBubble::AddedToWidget() {
-  if (!on_back_button_pressed_)
+  if (!on_back_button_pressed_) {
     return;
+  }
 
   // Adding a title view will replace the default title.
   GetBubbleFrameView()->SetTitleView(
@@ -402,10 +408,11 @@ bool QRCodeGeneratorBubble::HandleMouseEvent(
 /*static*/
 const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     const GURL& url) {
-  if (!url.has_host() || url.HostIsIPAddress())
+  if (!url.has_host() || url.HostIsIPAddress()) {
     return u"qrcode_chrome.png";
+  }
 
-  return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
+  return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.GetHost(), ".png"}));
 }
 
 void QRCodeGeneratorBubble::SetQRCodeErrorForTesting(

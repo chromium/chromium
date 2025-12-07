@@ -33,7 +33,7 @@ class SanitizeAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(SanitizeAppIntegrationTest, SanitizeAppInLauncher) {
   const GURL url((ash::kChromeUISanitizeAppURL));
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      ash::SystemWebAppType::OS_SANITIZE, url, "Sanitize"));
+      ash::SystemWebAppType::OS_SANITIZE, url, "Safety reset"));
 
   histogram_tester_.ExpectBucketCount(
       "Webapp.InstallResult.System.Apps.Sanitize",

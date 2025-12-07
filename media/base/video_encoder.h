@@ -5,7 +5,9 @@
 #ifndef MEDIA_BASE_VIDEO_ENCODER_H_
 #define MEDIA_BASE_VIDEO_ENCODER_H_
 
+#include <cstdint>
 #include <optional>
+#include <vector>
 
 #include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
@@ -17,6 +19,7 @@
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -32,6 +35,12 @@ MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
                                                    uint32_t framerate);
 
 MEDIA_EXPORT int GetNumberOfThreadsForSoftwareEncoding(gfx::Size frame_size);
+
+// Converts AV1/VP9 qindex (0-255) to the quantizer parameter (0-63).
+MEDIA_EXPORT uint8_t QIndexToQuantizer(VideoCodec codec, uint8_t q_index);
+
+// Converts AV1/VP9 quantizer parameter (0-63) to qindex (0-255) range.
+MEDIA_EXPORT uint8_t QuantizerToQIndex(VideoCodec codec, uint8_t quantizer);
 
 // Encoded video frame, its data and metadata.
 struct MEDIA_EXPORT VideoEncoderOutput {
@@ -72,6 +81,9 @@ class MEDIA_EXPORT VideoEncoder {
     Options();
     Options(const Options&);
     ~Options();
+
+    std::string ToString();
+
     std::optional<Bitrate> bitrate;
     std::optional<double> framerate;
 
@@ -96,6 +108,9 @@ class MEDIA_EXPORT VideoEncoder {
 
     // Only used for HEVC encoding.
     HevcOptions hevc;
+
+    // Allow clients to choose reference pattern for frames.
+    bool manual_reference_buffer_control = false;
   };
 
   struct MEDIA_EXPORT EncodeOptions {
@@ -107,6 +122,18 @@ class MEDIA_EXPORT VideoEncoder {
     // Per-frame codec-specific quantizer value.
     // Should only be used when encoder configured with kExternal bitrate mode.
     std::optional<int> quantizer;
+
+    // Ids of the encoder's buffers (past frames) that this frame can reference
+    // for inter-frame prediction.
+    // Valid values: [0..VideoEncoderInfo::number_of_manual_reference_buffers)
+    absl::InlinedVector<uint8_t, 4> reference_buffers;
+
+    // Id of the encoder's buffer where this frame should be kept after
+    // encoding. This frames can later be referenced via `reference_buffers`.
+    // If empty, this frame can't be used for inter-frame prediction by future
+    // frames.
+    // Valid values: [0..VideoEncoderInfo::number_of_manual_reference_buffers)
+    std::optional<uint8_t> update_buffer;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.

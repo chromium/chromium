@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<link rel="match" href="text-shrink-per-line-scale-minimum-setting-ref.html">
+<meta name="flags" content="ahem">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+.target {
+  text-shrink: per-line scale 5px;
+  white-space: pre;
+  width: 100px;
+  font: 20px/normal Ahem;
+  border: 1px solid green;
+}
+</style>
+<body>
+<script>
+internals.settings.setMinimumFontSize(15);
+</script>
+
+<div class="target">ABCDEABCDE</div>
+
+</body>

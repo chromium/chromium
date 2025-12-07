@@ -11,7 +11,7 @@ import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import type {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 // </if>
 
@@ -88,13 +88,13 @@ export class SettingsSyncEncryptionOptionsElement extends PolymerElement {
     };
   }
 
-  syncPrefs: SyncPrefs|null;
-  syncStatus: SyncStatus|null;
-  existingPassphraseLabel: string;
-  private creatingNewPassphrase_: boolean;
-  private passphrase_: string;
-  private confirmation_: string;
-  private disableEncryptionOptions_: boolean;
+  declare syncPrefs: SyncPrefs|null;
+  declare syncStatus: SyncStatus|null;
+  declare existingPassphraseLabel: string;
+  declare private creatingNewPassphrase_: boolean;
+  declare private passphrase_: string;
+  declare private confirmation_: string;
+  declare private disableEncryptionOptions_: boolean;
   private isSettingEncryptionPassphrase_: boolean;
 
   constructor() {
@@ -107,7 +107,7 @@ export class SettingsSyncEncryptionOptionsElement extends PolymerElement {
     this.isSettingEncryptionPassphrase_ = false;
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   /**
    * Returns the encryption options CrRadioGroupElement.
    */

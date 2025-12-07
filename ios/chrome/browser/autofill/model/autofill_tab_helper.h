@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
@@ -13,12 +13,14 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @class AutofillAgent;
+@protocol AutofillAgentDelegate;
 @protocol AutofillCommands;
-class ChromeBrowserState;
 @protocol FormSuggestionProvider;
+@protocol SnackbarCommands;
 @class UIViewController;
 
 namespace autofill {
+class AutofillClientIOS;
 class ChromeAutofillClientIOS;
 }
 
@@ -35,14 +37,13 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
 
-  void SetCommandsHandler(id<AutofillCommands> commands_handler);
+  void SetAutofillHandler(id<AutofillCommands> autofill_handler);
+  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();
 
-  autofill::ChromeAutofillClientIOS* autofill_client() {
-    return autofill_client_.get();
-  }
+  autofill::AutofillClientIOS* autofill_client();
 
  private:
   friend class web::WebStateUserData<AutofillTabHelper>;
@@ -50,13 +51,14 @@ class AutofillTabHelper : public web::WebStateObserver,
   explicit AutofillTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
+  void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // autofill::ChildFrameRegistrarObserver implementation.
   void OnDidDoubleRegistration(autofill::LocalFrameToken local) override;
 
-  // The BrowserState associated with this WebState.
-  raw_ptr<ChromeBrowserState> browser_state_;
+  // The delegate for the AutofillAgent.
+  __strong id<AutofillAgentDelegate> autofill_agent_delegate_;
 
   // The Objective-C AutofillAgent instance.
   __strong AutofillAgent* autofill_agent_;
@@ -67,7 +69,9 @@ class AutofillTabHelper : public web::WebStateObserver,
   // The WebState holding this instance of the helper.
   raw_ptr<web::WebState> web_state_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
+  // Scoped WebState observation.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_

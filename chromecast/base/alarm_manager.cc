@@ -23,7 +23,7 @@
 namespace chromecast {
 
 namespace {
-int kClockPollInterval = 5;
+constexpr int kClockPollInterval = 5;
 
 void VerifyHandleCallback(base::OnceClosure task,
                           base::WeakPtr<AlarmHandle> handle) {

@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Ukubhekana nemvelo</translation>
 <translation id="1196338895211115272">Yehlulekile ukuthumela ukhiye oyimfihlo.</translation>
 <translation id="132960226125594336">Ayikwazanga ukulayisha ifayela le-'<ph name="RELATIVE_PATH" />' lesikripthi sokuqukethwe njengoba lizodlula usayizi omkhulu wesikripthi noma inani selilonke lobukhulu besandiso besayizi yesikripthi sokuqukethwe.</translation>
-<translation id="1420684932347524586">Eshu! Yehlulekile ukukhiqiza ukhiye oyimfihlo wase-RSA ongahleliwe.</translation>
 <translation id="1445572445564823378">Lesi sandiso senza i-<ph name="PRODUCT_NAME" /> ihambe kancane. Kuzomele uyikhubaze ukuze ubuyisele ukusebenza kwe-<ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">I-WebGL ayisekelwe</translation>
 <translation id="1610570795592207282">Ayikwazanga ukulayisha 'i-<ph name="RELATIVE_PATH" />' ye-css yesikripthi.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Yehlulekile ukufaka esikhundleni sefayela le-crx. Hlola ukuze ubone uma ngabe ifayela lisetshenziswa.</translation>
 <translation id="3163201441334626963">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Ayikwazi ukukhipha isandiso. Ukuze ukhiphe ngokuvikelekile isandiso, kumele kube nendlela eya kumkhombandlela wephrofayela yakho oqala ngohlamvu lwedrayivu futhi ingafaki indawo, iphoyinti lokukhweza, noma i-symlink. Ayikho indlela enjalo ekhona kuphrofayela yakho.</translation>
 <translation id="3393440416772303020">I-<ph name="PRODUCT_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inani elingavumelekile lokhiye oyimfihlo kumele kube yindlela evumelekile.</translation>
 <translation id="388442998277590542">Ayikwazanga ukulayisha ikhasi lezinketho i-'<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Iphutha ngenkathi isayina isandiso.</translation>
-<translation id="4115165561519362854">Umlawuli walo mshini udinga i-<ph name="EXTENSION_NAME" /> ibe nenguqulo yobuncane obungu-<ph name="EXTENSION_VERSION" />. Ayikwazi ukunikwa amandla ize ibuyekezelwe kuleyo nguqulo (noma ngaphezulu).</translation>
 <translation id="4233778200880751280">Ayikwazanga ukulayisha ikhasi elimayelana ne-'<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Yehlulekile ukukhipha ukhiye oyimfihlo.</translation>
 <translation id="4811956658694082538">Ayikwazanga ukufaka iphakheji ngoba inqubo yensiza isaphazekile. Zama ukuqala kabusha i-Chrome bese uyazama futhi.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Umlawuli walo mshini udnga i--<ph name="EXTENSION_NAME" /> ukuthi ifakwe. Ayikwazi ukukhishwa.</translation>
 <translation id="6027032947578871493">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela ku-<ph name="VENDOR_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Ayikwazi ukukhipha isandiso. Ukuze ukhiphe ngokuvikelekile, kuzomele kube nendlela eya kunkombandlela yephrofayela lakho engaqukethe i-symlink. Ayikho indlela enjalo ekhona kuphrofayela lakho.</translation>
 <translation id="6322279351188361895">Yehlulekile ukufunda ukhiye oyimfihlo.</translation>
 <translation id="6391538222494443604">Kumele kube khona umkhombandlela wokokufaka.</translation>
 <translation id="641087317769093025">Ayikwazanga ukususa ukuzipha kusandiso</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Ifayela le-manifest alivumelekile</translation>
 <translation id="7217838517480956708">Umlawuli walo mshini udinga ukuthi i-<ph name="EXTENSION_NAME" /> ifakwe. Ayikwazi ukususwa noma iguqulwe.</translation>
 <translation id="7612608473764576263">Inani lokufaka lokhiye wobumfihlo kumele libe ifomethi evumelekile (PKCS#8-ifomethi PEM-ukhiye we-RSA obetheliwe).</translation>
+<translation id="7876803335449432072">Ayikwazanga ukulayisha ifayela elithi '<ph name="RELATIVE_PATH" />' leskripthi sekhontenti, amashidi esitayela eskripthi sekhontenti singalayishwa kuphela ukusuka kumafayela eshidi lesitayela asekelwayo njengamafayela okuthi .css.</translation>
 <translation id="7939686037314084444">Isandiso sihlulekile ukulayisha ngokufanelekile. Kungenzeka singakwazi ukuhlangabeza izicelo zenethiwekhi.</translation>
 <translation id="7972881773422714442">Izinketho: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Ukubhekana nomsebenzisi</translation>
 <translation id="8047248493720652249">Lesi sandiso sihlulekile ukuqamba ukulanda kwe-"<ph name="ATTEMPTED_FILENAME" />" ngoba esinye isandiso (<ph name="EXTENSION_NAME" />) sinqume igama lefayela elihlukile elingu-"<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> kusuka ku-<ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Ifayela le-manifest alikho noma alifundeki</translation>
+<translation id="8621383749470166852">Ayikwazanga ukulayisha ifayela elithi '<ph name="RELATIVE_PATH" />' leskripthi sekhontenti, iskripthi sekhontenti singalayishwa kuphela ukusuka kumafayela eJavaScript asekelwayo njengamafayela okuthi .js.</translation>
 <translation id="8636666366616799973">Iphakheji alivumelekile. Imininingwane: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">I-"<ph name="APP_NAME" />" icela ukufinyelela kweyodwa  yamadivayisi akho.</translation>
 <translation id="8885905466771744233">Ukhiye oyimfihlo wesandiso esicacisiwe sowuvele ukhona. Phinda usebenzise loyo khiye noma wususe kuqala.</translation>

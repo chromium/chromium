@@ -53,7 +53,7 @@ chrome.test.runTests([
       });
     });
   },
-  // Test OnSettingsChanged event gets raised when settings are updated.
+  // Test onInputMethodOptionsChanged event being raised upon settings update.
   function eventRaisedWhenSettingToInitialValue() {
     const settings = { 'enableDoubleSpacePeriod': true };
     const listener = (ime) => {

@@ -5,24 +5,28 @@
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+class YearComboboxModelTest : public testing::Test {
+ public:
+  YearComboboxModelTest() {
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
+  }
 
-}  // namespace
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
-TEST(YearComboboxModelTest, ExpirationYear) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
-
+TEST_F(YearComboboxModelTest, ExpirationYear) {
   YearComboboxModel model;
   ASSERT_EQ(11u, model.GetItemCount());  // Placeholder + 2017-2026.
   EXPECT_EQ(
@@ -41,10 +45,7 @@ TEST(YearComboboxModelTest, ExpirationYear) {
 }
 
 // Tests that we show the correct years, including an additional year.
-TEST(YearComboboxModelTest, ShowAdditionalYear) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
-
+TEST_F(YearComboboxModelTest, ShowAdditionalYear) {
   YearComboboxModel model(2016);
   ASSERT_EQ(12u, model.GetItemCount());  // Placeholder + 2016 + 2017-2026.
   EXPECT_EQ(
@@ -65,10 +66,7 @@ TEST(YearComboboxModelTest, ShowAdditionalYear) {
 
 // Tests that we show the additional year, even if it is more than 10 years from
 // now.
-TEST(YearComboboxModelTest, ExpirationYear_ShowFarFutureYear) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
-
+TEST_F(YearComboboxModelTest, ExpirationYear_ShowFarFutureYear) {
   YearComboboxModel model(2042);
   ASSERT_EQ(12u, model.GetItemCount());  // Placeholder + 2017-2026 + 2042.
   EXPECT_EQ(
@@ -87,19 +85,13 @@ TEST(YearComboboxModelTest, ExpirationYear_ShowFarFutureYear) {
   EXPECT_EQ(u"2042", model.GetItemAt(11));
 }
 
-TEST(YearComboboxModelTest, SetDefaultIndexByYear) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
-
+TEST_F(YearComboboxModelTest, SetDefaultIndexByYear) {
   YearComboboxModel model;
   model.SetDefaultIndexByYear(2017);
   ASSERT_EQ(u"2017", model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
-TEST(YearComboboxModelTest, SetDefaultIndexByYearOutOfRange) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
-
+TEST_F(YearComboboxModelTest, SetDefaultIndexByYearOutOfRange) {
   YearComboboxModel model;
   model.SetDefaultIndexByYear(2016);
   ASSERT_EQ(
@@ -107,10 +99,7 @@ TEST(YearComboboxModelTest, SetDefaultIndexByYearOutOfRange) {
       model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
-TEST(YearComboboxModelTest, SetDefaultIndexByYearAdditionalYear) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
-
+TEST_F(YearComboboxModelTest, SetDefaultIndexByYearAdditionalYear) {
   YearComboboxModel model(2042);
   model.SetDefaultIndexByYear(2042);
   ASSERT_EQ(u"2042", model.GetItemAt(model.GetDefaultIndex().value()));
@@ -130,4 +119,5 @@ TEST(MonthComboboxModelTest, SetDefaultIndexByMonthOutOfRange) {
       model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
+}  // namespace
 }  // namespace autofill

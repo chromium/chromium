@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/remote_commands/job_profile_picker.h"
 
+#include <variant>
+
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +28,7 @@ JobProfilePicker::~JobProfilePicker() = default;
 
 bool JobProfilePicker::ParseCommandPayload(
     const base::Value::Dict& command_payload) {
-  if (absl::holds_alternative<raw_ptr<Profile>>(profile_or_profile_manager_)) {
+  if (std::holds_alternative<raw_ptr<Profile>>(profile_or_profile_manager_)) {
     return true;
   }
 
@@ -55,7 +57,7 @@ bool JobProfilePicker::ParseCommandPayload(
   // fail in the same manner as if the profile didn't exist, which is the
   // expected behavior.
   ProfileAttributesStorage& storage =
-      absl::get<raw_ptr<ProfileManager>>(profile_or_profile_manager_)
+      std::get<raw_ptr<ProfileManager>>(profile_or_profile_manager_)
           ->GetProfileAttributesStorage();
   for (ProfileAttributesEntry* entry : storage.GetAllProfilesAttributes()) {
     base::FilePath entry_path = entry->GetPath();
@@ -71,10 +73,10 @@ bool JobProfilePicker::ParseCommandPayload(
 }
 
 Profile* JobProfilePicker::GetProfile() {
-  if (absl::holds_alternative<raw_ptr<Profile>>(profile_or_profile_manager_)) {
-    return absl::get<raw_ptr<Profile>>(profile_or_profile_manager_);
+  if (std::holds_alternative<raw_ptr<Profile>>(profile_or_profile_manager_)) {
+    return std::get<raw_ptr<Profile>>(profile_or_profile_manager_);
   }
-  return absl::get<raw_ptr<ProfileManager>>(profile_or_profile_manager_)
+  return std::get<raw_ptr<ProfileManager>>(profile_or_profile_manager_)
       ->GetProfileByPath(profile_path_);
 }
 

@@ -4,7 +4,6 @@
 
 #include <set>
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -12,15 +11,17 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +47,9 @@ class UnaffiliatedArcAllowedTest
     set_exit_when_last_browser_closes(false);
     affiliation_mixin_.set_affiliated(GetParam().affiliated);
     cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    cryptohome_mixin_.ApplyAuthConfig(
+        affiliation_mixin_.account_id(),
+        ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
   }
 
   UnaffiliatedArcAllowedTest(const UnaffiliatedArcAllowedTest&) = delete;

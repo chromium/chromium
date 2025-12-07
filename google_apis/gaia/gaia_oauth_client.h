@@ -6,11 +6,11 @@
 #define GOOGLE_APIS_GAIA_GAIA_OAUTH_CLIENT_H_
 
 #include <memory>
-#include <string>
-#include <vector>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 
 namespace network {
@@ -140,13 +140,16 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaOAuthClient {
                           Delegate* delegate);
 
   // Call the account capabilities API, returning a dictionary of response
-  // values. Only fetches values for capabilities listed in
-  // |capabilities_names|. The provided access token must have
+  // values. The provided access token must have
   // https://www.googleapis.com/auth/account.capabilities in its scopes. See
   // |max_retries| docs above.
+  // When `gaia::features::kGetAccountCapabilitiesUsesGetAllVisibleUrl` is
+  // enabled, this fetches all available capabilities and `capabilities_names`
+  // is ignored. Otherwise, this only fetches values for capabilities listed in
+  // `capabilities_names`.
   void GetAccountCapabilities(
       const std::string& oauth_access_token,
-      const std::vector<std::string>& capabilities_names,
+      base::span<const std::string_view> capabilities_names,
       int max_retries,
       Delegate* delegate);
 

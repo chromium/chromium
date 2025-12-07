@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -28,8 +29,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -38,11 +41,12 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
@@ -54,14 +58,14 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
-#include "ipc/ipc_channel_factory.h"
-#include "ipc/ipc_logging.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_sync_message.h"
+#include "net/base/address_list.h"
+#include "net/socket/tcp_client_socket.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -102,8 +106,18 @@ const int kAutofillActionNumRetries = 5;
 const char kWebPageReplayCertSPKI[] =
     "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
 
-const char kClockNotSetMessage[] =
-    "No AutofillClock override set from wpr archive: ";
+const char kTimeClockOverrideNotSetMessage[] =
+    "No TimeClock override set from wpr archive: ";
+
+// A helper class to override the current time.
+struct TimeOverrideHelper {
+  static base::Time TimeNow() { return current_time; }
+
+  // Used as the current time in captured sites tests.
+  static base::Time current_time;
+};
+
+base::Time TimeOverrideHelper::current_time;
 
 // Check and return that the caller wants verbose WPR output (off by default).
 bool IsVerboseWprLoggingEnabled() {
@@ -134,15 +148,15 @@ and then write commands into it:
 }
 
 std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
-  static auto map = []() {
+  static auto map = [] {
     std::map<std::string_view, autofill::FieldType> map;
-    for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
-      map[autofill::AutofillType(field_type).ToStringView()] = field_type;
+    for (autofill::FieldType field_type : autofill::FieldTypeSet::all()) {
+      map[autofill::FieldTypeToStringView(field_type)] = field_type;
     }
     for (autofill::HtmlFieldType html_field_type :
-         autofill::kAllHtmlFieldTypes) {
-      autofill::AutofillType field_type(html_field_type);
-      map[field_type.ToStringView()] = field_type.GetStorableType();
+         autofill::HtmlFieldTypeSet::all()) {
+      map[autofill::FieldTypeToStringView(html_field_type)] =
+          autofill::HtmlFieldTypeToBestCorrespondingFieldType(html_field_type);
     }
     return map;
   }();
@@ -154,13 +168,13 @@ std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
 }
 
 // Command types to control and debug execution.
-// * The |kAbsoluteLimit| and |kRelativeLimit| commands indicate that
-//   execution shall not proceed if the next action's position is >= |param|
-//   or >= current_index + |param|, respectively.
-// * The |kSkipAction| command jumps |param| actions forward or backward.
-// * The |kShowAction| command prints the |param| previous (if < 0) or
+// * The `kAbsoluteLimit` and `kRelativeLimit` commands indicate that
+//   execution shall not proceed if the next action's position is >= `param`
+//   or >= current_index + `param`, respectively.
+// * The `kSkipAction` command jumps `param` actions forward or backward.
+// * The `kShowAction` command prints the `param` previous (if < 0) or
 //   upcoming (if > 0) actions.
-// * The |kWhereAmI| command prints the current execution position.
+// * The `kWhereAmI` command prints the current execution position.
 enum class ExecutionCommandType {
   kAbsoluteLimit,
   kRelativeLimit,
@@ -175,7 +189,7 @@ struct ExecutionCommand {
   int param = std::numeric_limits<int>::max();
 };
 
-// Blockingly reads the content of |command_file_path|, parses it into
+// Blockingly reads the content of `command_file_path`, parses it into
 // ExecutionCommands, and returns the result.
 std::vector<ExecutionCommand> ReadExecutionCommands(
     const base::FilePath& command_file_path) {
@@ -232,8 +246,8 @@ struct ExecutionState {
   bool pause_on_failure = false;
 };
 
-// Blockingly reads the commands from |command_file_path| and executes them.
-// Execution primarily means manipulation of the |execution_state|, particularly
+// Blockingly reads the commands from `command_file_path` and executes them.
+// Execution primarily means manipulation of the `execution_state`, particularly
 // `execution_state.limit`.
 ExecutionState ProcessCommands(ExecutionState execution_state,
                                const base::Value::List* action_list,
@@ -294,12 +308,12 @@ struct AllowNull {
 std::optional<std::string> FindPopulateString(
     const base::Value::Dict& container,
     std::string_view key_name,
-    absl::variant<std::string_view, AllowNull> key_descriptor) {
+    std::variant<std::string_view, AllowNull> key_descriptor) {
   const std::string* value = container.FindString(key_name);
   if (!value) {
-    if (absl::holds_alternative<std::string_view>(key_descriptor)) {
+    if (std::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
-                    << absl::get<std::string_view>(key_descriptor)
+                    << std::get<std::string_view>(key_descriptor)
                     << "' string from container!";
     }
     return std::nullopt;
@@ -311,12 +325,12 @@ std::optional<std::string> FindPopulateString(
 std::optional<std::vector<std::string>> FindPopulateStringVector(
     const base::Value::Dict& container,
     std::string_view key_name,
-    absl::variant<std::string_view, AllowNull> key_descriptor) {
+    std::variant<std::string_view, AllowNull> key_descriptor) {
   const base::Value::List* list = container.FindList(key_name);
   if (!list) {
-    if (absl::holds_alternative<std::string_view>(key_descriptor)) {
+    if (std::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
-                    << absl::get<std::string_view>(key_descriptor)
+                    << std::get<std::string_view>(key_descriptor)
                     << "' strings from container!";
     }
     return std::nullopt;
@@ -325,9 +339,9 @@ std::optional<std::vector<std::string>> FindPopulateStringVector(
   std::vector<std::string> strings;
   for (const base::Value& item : *list) {
     if (!item.is_string()) {
-      if (absl::holds_alternative<std::string_view>(key_descriptor)) {
+      if (std::holds_alternative<std::string_view>(key_descriptor)) {
         ADD_FAILURE() << "Failed to extract element of '"
-                      << absl::get<std::string_view>(key_descriptor)
+                      << std::get<std::string_view>(key_descriptor)
                       << "' vector from container!";
       }
       return std::nullopt;
@@ -365,6 +379,9 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   std::string json_text;
   if (!base::ReadFileToString(config_file_path, &json_text)) {
     LOG(WARNING) << "Could not read json file: " << config_file_path;
+    LOG(WARNING)
+        << "Did you forget to set checkout_chromium_autofill_test_dependencies "
+           "to True in .gclient and gclient sync?";
     return sites;
   }
   // Parse json text content to json value node.
@@ -443,6 +460,27 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   return sites;
 }
 
+std::optional<base::Value::Dict> ReadRecipeFile(
+    const base::FilePath& recipe_file_path) {
+  // Read the text of the recipe file.
+  base::ScopedAllowBlockingForTesting for_testing;
+  std::string json_text;
+  if (!base::ReadFileToString(recipe_file_path, &json_text)) {
+    ADD_FAILURE() << "Failed to read recipe file '" << recipe_file_path << "'!";
+    return std::nullopt;
+  }
+
+  // Convert the file text into a json object.
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!parsed_json) {
+    ADD_FAILURE() << "Failed to deserialize json text!";
+    return std::nullopt;
+  }
+  DCHECK(parsed_json->is_dict());
+  return std::move(*parsed_json).TakeDict();
+}
+
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 #if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(str);
@@ -489,7 +527,7 @@ IFrameWaiter::IFrameWaiter(content::WebContents* web_contents)
       query_type_(URL),
       target_frame_(nullptr) {}
 
-IFrameWaiter::~IFrameWaiter() {}
+IFrameWaiter::~IFrameWaiter() = default;
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
     const std::string& name,
@@ -610,10 +648,12 @@ bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
 WebPageReplayServerWrapper::WebPageReplayServerWrapper(
     const bool start_as_replay,
     int host_http_port,
-    int host_https_port)
+    int host_https_port,
+    std::vector<std::string> extra_args)
     : host_http_port_(host_http_port),
       host_https_port_(host_https_port),
-      start_as_replay_(start_as_replay) {}
+      start_as_replay_(start_as_replay),
+      extra_args_(std::move(extra_args)) {}
 
 WebPageReplayServerWrapper::~WebPageReplayServerWrapper() = default;
 
@@ -637,13 +677,7 @@ bool WebPageReplayServerWrapper::Start(
       args.push_back("--quiet_mode");
   }
   args.push_back(base::StringPrintf(
-      "--inject_scripts=%s,%s",
-      FilePathToUTF8(src_dir.AppendASCII("third_party")
-                         .AppendASCII("catapult")
-                         .AppendASCII("web_page_replay_go")
-                         .AppendASCII("deterministic.js")
-                         .value())
-          .c_str(),
+      "--inject_scripts=%s",
       FilePathToUTF8(src_dir.AppendASCII("chrome")
                          .AppendASCII("test")
                          .AppendASCII("data")
@@ -651,6 +685,7 @@ bool WebPageReplayServerWrapper::Start(
                          .AppendASCII("automation_helper.js")
                          .value())
           .c_str()));
+  args.push_back("--no_archive_certificates");
 
   // Specify the capture file.
   args.push_back(base::StringPrintf(
@@ -658,12 +693,46 @@ bool WebPageReplayServerWrapper::Start(
   if (!RunWebPageReplayCmd(args))
     return false;
 
-  // Sleep 5 seconds to wait for the web page replay server to start.
-  // TODO(crbug.com/40578543): create a process std stream reader class to use
-  // the process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
+  // This socket is created and destroyed on the IO thread, but it's simplest to
+  // declare it here, since its deleted by a callback that may be invoked
+  // asynchronously by its connect method, or calls its Connect method,
+  // depending on whether the connection attempt completes synchronously. Having
+  // two deletion paths makes BindOnce() not work well with it.
+  std::unique_ptr<net::TCPClientSocket> client_socket;
+
+  size_t connect_attempts = 0;
+  base::RepeatingCallback<void(int)> on_connect_complete;
+  auto bind_new_socket = base::BindLambdaForTesting([&]() {
+    net::AddressList addr(
+        net::IPEndPoint(net::IPAddress(127, 0, 0, 1), host_http_port_));
+    ++connect_attempts;
+    client_socket = std::make_unique<net::TCPClientSocket>(
+        addr, nullptr, nullptr, nullptr, net::NetLogSource());
+    int connect_result = client_socket->Connect(on_connect_complete);
+    // On ERR_IO_PENDING, `on_connect_complete` will be invoked
+    // asynchronously, so need to let the message loop spin until that
+    // happens.
+    if (connect_result == net::ERR_IO_PENDING) {
+      return;
+    }
+    // Otherwise, run `on_connect_complete` immediately.
+    on_connect_complete.Run(connect_result);
+  });
+
+  // Called on the IO thread once connection has completed. Destroys the
+  // `client_socket`, which may or may not be the object invoking the callback.
+  on_connect_complete = base::BindLambdaForTesting([&](int connect_result) {
+    client_socket.reset();
+    if (connect_result == net::OK || connect_attempts > 30) {
+      wpr_launch_waiter.Quit();
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, bind_new_socket, base::Seconds(1));
+    }
+  });
+
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, bind_new_socket);
   wpr_launch_waiter.Run();
 
   if (!web_page_replay_server_.IsValid()) {
@@ -679,17 +748,24 @@ bool WebPageReplayServerWrapper::Stop() {
     bool did_terminate = false;
     if (!start_as_replay_) {
 #if BUILDFLAG(IS_POSIX)
-      // For Replay sessions, we can terminate the WPR process immediately as
-      // we don't Record sessions, we want to try and send a SIGINT to close and
-      // write the WPR archive file gracefully. If that fails, we will Terminate
-      // via Process::Terminate which will send SIGTERM and then SIGKILL.
-      did_terminate = kill(web_page_replay_server_.Handle(), SIGINT) == 0;
-      if (!did_terminate) {
-        ADD_FAILURE() << "Failed to close a recording WPR server cleanly!";
+      bool error_when_terminating_record_mode = false;
+      // For Replay sessions, this function can terminate the WPR process
+      // immediately as it doesn't need to write the archive file. In Record
+      // sessions, this function will try to send a SIGINT and use
+      // `WaitForExit()` to close and write the WPR archive file gracefully. If
+      // this fails, the function will terminate via Process::Terminate which
+      // will send SIGTERM and then SIGKILL.
+      if (kill(web_page_replay_server_.Handle(), SIGINT) != 0) {
+        ADD_FAILURE() << "Failed to send SIGINT to a recording WPR server!";
+        error_when_terminating_record_mode = true;
+      } else if (!web_page_replay_server_.WaitForExit(nullptr)) {
+        ADD_FAILURE() << "Failed to wait for a recording WPR server to exit!";
+        error_when_terminating_record_mode = true;
       }
+      did_terminate = !error_when_terminating_record_mode;
 #else
       ADD_FAILURE()
-          << "Clean termination of recrording WPR server is only supported on "
+          << "Clean termination of recording WPR server is only supported on "
              "OS_POSIX. New archive may not be saved properly.";
 #endif
     }
@@ -749,7 +825,13 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 #elif BUILDFLAG(IS_MAC)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("mac"))
+#if defined(ARCH_CPU_ARM64)
+          .AppendASCII("arm64")
+#elif defined(ARCH_CPU_X86_64)
           .AppendASCII("x86_64")
+#else
+#error Mac CPU arch is not supported.
+#endif
           .AppendASCII("wpr");
 #elif BUILDFLAG(IS_POSIX)
   base::FilePath wpr_executable_binary =
@@ -799,6 +881,10 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
           web_page_replay_support_file_dir.AppendASCII("ecdsa_key.pem").value())
           .c_str()));
 
+  for (const auto& arg : extra_args_) {
+    full_command.AppendArg(arg);
+  }
+
   for (const auto& arg : args)
     full_command.AppendArg(arg);
 
@@ -831,6 +917,13 @@ bool ProfileDataController::AddAutofillProfileInfo(
     ADD_FAILURE() << "Unable to recognize autofill field type '" << field_type
                   << "'!";
     return false;
+  }
+
+  // PhoneNumber only allows PHONE_HOME_WHOLE_NUMBER to be set directly, so if
+  // any other phone type is set, convert it to PHONE_HOME_WHOLE_NUMBER.
+  if (GroupTypeOfFieldType(type.value()) == autofill::FieldTypeGroup::kPhone &&
+      type.value() != autofill::FieldType::PHONE_HOME_WHOLE_NUMBER) {
+    type = autofill::FieldType::PHONE_HOME_WHOLE_NUMBER;
   }
 
   if (base::StartsWith(field_type, "HTML_TYPE_CREDIT_CARD_",
@@ -875,8 +968,9 @@ bool TestRecipeReplayer::ReplayTest(
   logging::SetMinLogLevel(logging::LOGGING_WARNING);
   if (!web_page_replay_server_wrapper()->Start(capture_file_path))
     return false;
-  if (OverrideAutofillClock(capture_file_path))
-    VLOG(1) << "AutofillClock was set to:" << autofill::AutofillClock::Now();
+  if (OverrideTimeClock(capture_file_path)) {
+    VLOG(1) << "OverrideTimeClock was set to:" << base::Time::Now();
+  }
   return ReplayRecordedActions(recipe_file_path, command_file_path);
 }
 
@@ -886,38 +980,46 @@ TestRecipeReplayer::GetValidationFailures() const {
 }
 
 // Extracts the time of the wpr recording from the wpr archive file and
-// overrides the autofill::AutofillClock to match that time.
-bool TestRecipeReplayer::OverrideAutofillClock(
+// overrides the base::Time::Now() to match that time.
+bool TestRecipeReplayer::OverrideTimeClock(
     const base::FilePath capture_file_path) {
   std::string json_text;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     if (!base::ReadFileToString(capture_file_path, &json_text)) {
-      VLOG(1) << kClockNotSetMessage << "Could not read file";
+      VLOG(1) << kTimeClockOverrideNotSetMessage << "Could not read file";
       return false;
     }
   }
   // Decompress the json text from gzip.
   std::string decompressed_json_text;
   if (!compression::GzipUncompress(json_text, &decompressed_json_text)) {
-    VLOG(1) << kClockNotSetMessage << "Could not gzip decompress file";
+    VLOG(1) << kTimeClockOverrideNotSetMessage
+            << "Could not gzip decompress file";
     return false;
   }
   // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(decompressed_json_text);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      decompressed_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
-    VLOG(1) << kClockNotSetMessage << "Failed to deserialize json";
+    VLOG(1) << kTimeClockOverrideNotSetMessage << "Failed to deserialize json";
     return false;
   }
 
   const std::optional<double> time_value =
       parsed_json->GetDict().FindDouble("DeterministicTimeSeedMs");
   if (!time_value) {
-    VLOG(1) << kClockNotSetMessage << "No DeterministicTimeSeedMs found";
+    VLOG(1) << kTimeClockOverrideNotSetMessage
+            << "No DeterministicTimeSeedMs found";
     return false;
   }
-  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(*time_value));
+
+  TimeOverrideHelper::current_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(*time_value);
+  time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+      &TimeOverrideHelper::TimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
   return true;
 }
 
@@ -967,6 +1069,26 @@ content::WebContents* TestRecipeReplayer::GetWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
+namespace {
+// Runs the given closure if the `WebContent`'s main frame changes.
+class RenderFrameHostChangedObserver : public content::WebContentsObserver {
+ public:
+  RenderFrameHostChangedObserver(content::WebContents* wc,
+                                 base::OnceClosure closure)
+      : content::WebContentsObserver(wc), closure_(std::move(closure)) {}
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override {
+    changed_ = true;
+    std::move(closure_).Run();
+  }
+  bool changed() { return changed_; }
+
+ private:
+  base::OnceClosure closure_;
+  bool changed_ = false;
+};
+}  // namespace
+
 void TestRecipeReplayer::WaitTillPageIsIdle(
     base::TimeDelta continuous_paint_timeout) {
   // Loop continually while WebContents are waiting for response or loading.
@@ -993,33 +1115,47 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
     }
   }
   finished_load_time = base::TimeTicks::Now();
+  bool frame_changed = false;
   while (true) {
     // Now, rely on the render frame count to be the indicator of page activity.
     // Once all the frames are drawn, we're free to continue.
     content::RenderFrameSubmissionObserver frame_submission_observer(
         GetWebContents());
-    {
-      base::RunLoop heart_beat;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
-      heart_beat.Run();
-    }
-    if (frame_submission_observer.render_frame_count() == 0) {
-      // If the render r has stopped submitting frames
+    base::RunLoop heart_beat;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
+    // `frame_submission_observer` holds a reference to metadata from a frame
+    // that will be destroyed if a navigation occurs. We need to destroy the
+    // observer before the frame is destroyed to avoid a dangling raw
+    // pointer. See https://crbug.com/396232961.
+    RenderFrameHostChangedObserver frame_observer(GetWebContents(),
+                                                  heart_beat.QuitClosure());
+    heart_beat.Run();
+    if (frame_observer.changed()) {
+      VLOG(1) << "The render frame has changed.";
+      frame_changed = true;
+      break;
+    } else if (frame_submission_observer.render_frame_count() == 0) {
+      // If the renderer has stopped submitting frames
+      VLOG(1) << "The renderer has stopped submitting frames.";
       break;
     } else if ((base::TimeTicks::Now() - finished_load_time) >
                continuous_paint_timeout) {
-      // |continuous_paint_timeout| has expired since Chrome loaded the page.
+      // `continuous_paint_timeout` has expired since Chrome loaded the page.
       // During this period of time, Chrome has been continuously painting
       // the page. In this case, the page is probably idle, but a bug, a
       // blinking caret or a persistent animation is keeping the
-      // |render_frame_count| from reaching zero. Exit.
+      // `render_frame_count` from reaching zero. Exit.
       VLOG(1) << "Wait for render frame count timed out after "
               << continuous_paint_timeout.InSeconds()
               << " seconds with the frame count still at: "
               << frame_submission_observer.render_frame_count();
       break;
     }
+  }
+  // Start waiting on the new frame.
+  if (frame_changed) {
+    WaitTillPageIsIdle(continuous_paint_timeout);
   }
 }
 
@@ -1059,28 +1195,16 @@ void TestRecipeReplayer::CleanupSiteData() {
 bool TestRecipeReplayer::ReplayRecordedActions(
     const base::FilePath& recipe_file_path,
     const std::optional<base::FilePath>& command_file_path) {
-  // Read the text of the recipe file.
-  base::ScopedAllowBlockingForTesting for_testing;
-  std::string json_text;
-  if (!base::ReadFileToString(recipe_file_path, &json_text)) {
-    ADD_FAILURE() << "Failed to read recipe file '" << recipe_file_path << "'!";
+  std::optional<base::Value::Dict> recipe = ReadRecipeFile(recipe_file_path);
+  if (!recipe) {
     return false;
   }
-
-  // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
-  if (!parsed_json) {
-    ADD_FAILURE() << "Failed to deserialize json text!";
+  if (!InitializeBrowserToExecuteRecipe(recipe.value())) {
     return false;
   }
-
-  DCHECK(parsed_json->is_dict());
-  base::Value::Dict recipe = std::move(*parsed_json).TakeDict();
-  if (!InitializeBrowserToExecuteRecipe(recipe))
-    return false;
 
   // Iterate through and execute each action in the recipe.
-  base::Value::List* action_list = recipe.FindList("actions");
+  base::Value::List* action_list = recipe.value().FindList("actions");
   if (!action_list) {
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;
@@ -1318,19 +1442,26 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
 bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
   std::string xpath;
   content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
     return false;
+  }
 
   VLOG(1) << "Left mouse clicking `" << xpath << "`.";
-  if (!ScrollElementIntoView(xpath, frame))
+  if (!ScrollElementIntoView(xpath, frame)) {
     return false;
+  }
   WaitTillPageIsIdle(scroll_wait_timeout);
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+    return false;
+  }
 
   gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect))
+  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
-  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame))
+  }
+  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame)) {
     return false;
+  }
 
   WaitTillPageIsIdle();
   return true;
@@ -1384,21 +1515,28 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
 bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
   std::string xpath;
   content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
     return false;
+  }
 
   VLOG(1) << "Hovering over `" << xpath << "`.";
 
-  if (!ScrollElementIntoView(xpath, frame))
+  if (!ScrollElementIntoView(xpath, frame)) {
     return false;
+  }
   WaitTillPageIsIdle(scroll_wait_timeout);
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+    return false;
+  }
 
   gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect))
+  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
+  }
 
-  if (!SimulateMouseHoverAt(frame, rect.CenterPoint()))
+  if (!SimulateMouseHoverAt(frame, rect.CenterPoint())) {
     return false;
+  }
 
   if (!WaitForVisualUpdate()) {
     ADD_FAILURE() << "The page did not respond to a mouse hover action!";
@@ -1748,13 +1886,11 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
   }
 
   content::RenderFrameHost* frame;
-  if (!GetTargetFrameFromAction(action, &frame))
-    return false;
-
   VLOG(1) << "Waiting for page to reach a state.";
 
   // Wait for all of the assertions to become true on the current page.
-  return WaitForStateChange(frame, state_assertions, default_action_timeout);
+  return WaitForStateChange(action, &frame, state_assertions,
+                            default_action_timeout);
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
@@ -1867,26 +2003,28 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
     bool set_focus,
     bool relaxed_visibility,
     bool ignore_failure) {
-  if (!GetTargetHTMLElementXpathFromAction(action, xpath))
+  if (!GetTargetHTMLElementXpathFromAction(action, xpath)) {
     return false;
+  }
 
   int visibility_enum_val;
   if (!GetTargetHTMLElementVisibilityEnumFromAction(action,
-                                                    &visibility_enum_val))
+                                                    &visibility_enum_val)) {
     return false;
-  if (!GetTargetFrameFromAction(action, frame))
-    return false;
+  }
 
   // If we're just validating we don't care about on_top-ness, as copied from
   // chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js
   // to TestRecipeReplayer::DomElementReadyState enum
   // So remove (DomElementReadyState::kReadyStateOnTop)
-  if (relaxed_visibility)
+  if (relaxed_visibility) {
     visibility_enum_val &= ~kReadyStateOnTop;
+  }
 
-  if (!WaitForElementToBeReady(*xpath, visibility_enum_val, *frame,
-                               ignore_failure))
+  if (!WaitForElementToBeReady(*xpath, visibility_enum_val, action, frame,
+                               ignore_failure)) {
     return false;
+  }
 
   if (set_focus) {
     std::vector<std::string> frame_path;
@@ -1969,25 +2107,33 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
 bool TestRecipeReplayer::WaitForElementToBeReady(
     const std::string& xpath,
     const int visibility_enum_val,
-    content::RenderFrameHost* frame,
+    const base::Value::Dict& action,
+    content::RenderFrameHost** frame,
     bool ignore_failure) {
   std::vector<std::string> state_assertions;
   state_assertions.push_back(base::StringPrintf(
       "return automation_helper.isElementWithXpathReady(`%s`, %d);",
       xpath.c_str(), visibility_enum_val));
   return WaitForStateChange(
-      frame, state_assertions,
+      action, frame, state_assertions,
       ignore_failure ? click_fallback_timeout : default_action_timeout,
       ignore_failure);
 }
 
 bool TestRecipeReplayer::WaitForStateChange(
-    content::RenderFrameHost* frame,
+    const base::Value::Dict& action,
+    content::RenderFrameHost** frame,
     const std::vector<std::string>& state_assertions,
     const base::TimeDelta& timeout,
     bool ignore_failure) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!AllAssertionsPassed(frame, state_assertions)) {
+  while (true) {
+    if (!GetTargetFrameFromAction(action, frame)) {
+      return false;
+    }
+    if (AllAssertionsPassed(*frame, state_assertions)) {
+      return true;
+    }
     if (base::TimeTicks::Now() - start_time > timeout) {
       if (!ignore_failure) {
         ADD_FAILURE() << "State change hasn't completed within timeout.";
@@ -1996,22 +2142,39 @@ bool TestRecipeReplayer::WaitForStateChange(
     }
     WaitTillPageIsIdle();
   }
-  return true;
 }
 
 bool TestRecipeReplayer::AllAssertionsPassed(
     const content::ToRenderFrameHost& frame,
     const std::vector<std::string>& assertions) {
+  // We may be dealing with a frame that is mid-/post-navigation. `EvalJs`
+  // will fail if the frame is e.g. unloading or in back/forward-cache. Don't
+  // even try unless the frame is active.
+  if (frame.render_frame_host()->GetLifecycleState() !=
+      content::RenderFrameHost::LifecycleState::kActive) {
+    VLOG(1) << "Frame not active, not testing assertions. "
+            << (int)frame.render_frame_host()->GetLifecycleState();
+    return false;
+  }
   for (const std::string& assertion : assertions) {
-    if (!EvalJs(frame, base::StringPrintf("(function() {"
-                                          "  try {"
-                                          "    %s"
-                                          "  } catch (ex) {}"
-                                          "  return false;"
-                                          "})();",
-                                          assertion.c_str()))
-             .ExtractBool()) {
-      VLOG(1) << "'" << assertion << "' failed!";
+    content::EvalJsResult result =
+        EvalJs(frame, base::StringPrintf("(function() {"
+                                         "  try {"
+                                         "    %s"
+                                         "  } catch (ex) {}"
+                                         "  return false;"
+                                         "})();",
+                                         assertion.c_str()));
+    if (!result.is_ok()) {
+      VLOG(1) << "'" << assertion << "' failed: " << result.ExtractError();
+      return false;
+    }
+    if (!result.is_bool()) {
+      VLOG(1) << "'" << assertion << "' failed: Did not return boolean.";
+      return false;
+    }
+    if (!result.ExtractBool()) {
+      VLOG(1) << "'" << assertion << "' failed: Returned false.";
       return false;
     }
   }
@@ -2045,11 +2208,11 @@ bool TestRecipeReplayer::GetElementProperty(
                  "    }();"
                  "    return function(target){%s}(element);})();",
                  element_xpath.c_str(), get_property_function_body.c_str()));
-  if (result.error.empty() && result.value.is_string()) {
+  if (result.is_string()) {
     *property = result.ExtractString();
     return true;
   }
-  *property = result.error;
+  *property = result.is_ok() ? "" : result.ExtractError();
   return false;
 }
 
@@ -2075,7 +2238,7 @@ bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
                : expected_value == actual_value;
   };
 
-  if (base::ranges::none_of(expected_values, is_expected)) {
+  if (std::ranges::none_of(expected_values, is_expected)) {
     std::string error_message = base::StrCat(
         {"Field xpath: `", element_xpath, "` ", validation_field, ", ",
          "Expected: '", base::JoinString(expected_values, " or "),
@@ -2106,7 +2269,7 @@ bool TestRecipeReplayer::ScrollElementIntoView(
 
 bool TestRecipeReplayer::PlaceFocusOnElement(
     const std::string& element_xpath,
-    const std::vector<std::string> iframe_path,
+    const std::vector<std::string>& iframe_path,
     content::RenderFrameHost* frame) {
   if (!ScrollElementIntoView(element_xpath, frame))
     return false;
@@ -2122,14 +2285,13 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
 
   content::EvalJsResult result =
       content::EvalJs(frame, focus_on_target_field_js);
-  if (result.error.empty() && result.value.is_bool() && result.ExtractBool()) {
+  if (result.is_ok() && result.is_bool() && result.ExtractBool()) {
     return true;
   } else {
     VLOG(1) << "Failed to focus element through script:"
-            << (result.error.empty()
-                    ? (result.value.is_bool() ? "Not a valid bool"
-                                              : "Returned false")
-                    : result.error);
+            << (result.is_ok()
+                    ? (result.is_bool() ? "Returned false" : "Not a valid bool")
+                    : result.ExtractError());
 
     // Failing focusing on an element through script, use the less preferred
     // method of left mouse clicking the element.
@@ -2211,7 +2373,7 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
 
 bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
     const std::string& target_element_xpath,
-    const std::vector<std::string> iframe_path,
+    const std::vector<std::string>& iframe_path,
     content::RenderFrameHost* frame,
     gfx::Rect* output_rect) {
   gfx::Vector2d offset;
@@ -2359,9 +2521,9 @@ bool TestRecipeReplayer::SetupSavedPasswords(
 
 // TestRecipeReplayChromeFeatureActionExecutor --------------------------------
 TestRecipeReplayChromeFeatureActionExecutor::
-    TestRecipeReplayChromeFeatureActionExecutor() {}
+    TestRecipeReplayChromeFeatureActionExecutor() = default;
 TestRecipeReplayChromeFeatureActionExecutor::
-    ~TestRecipeReplayChromeFeatureActionExecutor() {}
+    ~TestRecipeReplayChromeFeatureActionExecutor() = default;
 
 bool TestRecipeReplayChromeFeatureActionExecutor::AutofillForm(
     const std::string& focus_element_css_selector,

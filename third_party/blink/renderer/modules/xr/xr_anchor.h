@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,11 +24,11 @@ class XRAnchor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRAnchor(uint64_t id,
+  XRAnchor(device::AnchorId id,
            XRSession* session,
            const device::mojom::blink::XRAnchorData& anchor_data);
 
-  uint64_t id() const;
+  device::AnchorId id() const;
 
   XRSpace* anchorSpace(ExceptionState& exception_state) const;
 
@@ -44,7 +45,7 @@ class XRAnchor : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  const uint64_t id_;
+  const device::AnchorId id_;
 
   bool is_deleted_;
 

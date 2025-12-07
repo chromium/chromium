@@ -10,6 +10,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -78,8 +79,9 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
   void OnDestruct() override { delete this; }
   void OnPageVisibilityChanged(
       content::PageVisibilityState visibility_state) override {
-    if (visibility_state != content::PageVisibilityState::kVisible)
+    if (visibility_state != content::PageVisibilityState::kVisible) {
       return;
+    }
     std::move(continue_loading_cb_).Run();
     delete this;
   }

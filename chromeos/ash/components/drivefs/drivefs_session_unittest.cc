@@ -37,7 +37,6 @@ static const std::optional<base::TimeDelta> kEmptyDelay;
 static const std::optional<base::TimeDelta> kDefaultDelay = base::Seconds(5);
 
 using testing::_;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using MountFailure = DriveFsSession::MountObserver::MountFailure;
 
@@ -191,10 +190,7 @@ class MockDriveFsConnection : public DriveFsConnection,
   }
 
  private:
-  mojom::DriveFs* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  mojom::DriveFs* GetForwardingInterface() override { NOTREACHED(); }
 
   raw_ptr<mojom::DriveFsDelegate, DanglingUntriaged> delegate_ = nullptr;
   base::OnceClosure on_disconnected_;

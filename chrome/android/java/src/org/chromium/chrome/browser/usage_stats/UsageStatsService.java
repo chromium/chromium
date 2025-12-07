@@ -5,18 +5,18 @@
 package org.chromium.chrome.browser.usage_stats;
 
 import android.app.Activity;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -26,44 +26,40 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Public interface for all usage stats related functionality. All calls to instances of
  * UsageStatsService must be made on the UI thread.
  */
+@NullMarked
 public class UsageStatsService implements Destroyable {
     private static final String TAG = "UsageStatsService";
 
-    private static ProfileKeyedMap<UsageStatsService> sProfileMap =
+    private static final ProfileKeyedMap<UsageStatsService> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables(
                     ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
 
-    private Profile mProfile;
-    private EventTracker mEventTracker;
-    private SuspensionTracker mSuspensionTracker;
-    private TokenTracker mTokenTracker;
-    private UsageStatsBridge mBridge;
+    private final Profile mProfile;
+    private final EventTracker mEventTracker;
+    private final SuspensionTracker mSuspensionTracker;
+    private final TokenTracker mTokenTracker;
+    private final UsageStatsBridge mBridge;
     // PageViewObservers are scoped to a given ChromeTabbedActivity, but UsageStatsService isn't. To
     // allow for GC of the observer to happen when the activity goes away, we only hold weak
     // references here.
-    private List<WeakReference<PageViewObserver>> mPageViewObservers;
+    private final List<WeakReference<PageViewObserver>> mPageViewObservers;
 
-    private DigitalWellbeingClient mClient;
+    private final DigitalWellbeingClient mClient;
     private boolean mOptInState;
-
-    /** Returns if the UsageStatsService is enabled on this device */
-    public static boolean isEnabled() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    }
 
     /** Return the {@link UsageStatsService} for the given {@link Profile}. */
     public static UsageStatsService getForProfile(Profile profile) {
-        assert isEnabled();
         return sProfileMap.getForProfile(profile, UsageStatsService::new);
     }
 
     /**
-     * Creates a UsageStatsService for the given Activity if the feature is enabled.
+     * Creates a UsageStatsService for the given Activity.
      *
      * @param activity The activity in which page view events are occurring.
      * @param profile The {@link Profile} associated with the activity.
@@ -75,8 +71,6 @@ public class UsageStatsService implements Destroyable {
             Profile profile,
             ActivityTabProvider activityTabProvider,
             Supplier<TabContentManager> tabContentManagerSupplier) {
-        if (!isEnabled()) return;
-
         getForProfile(profile)
                 .createPageViewObserver(activity, activityTabProvider, tabContentManagerSupplier);
     }
@@ -89,7 +83,12 @@ public class UsageStatsService implements Destroyable {
         mSuspensionTracker = new SuspensionTracker(mBridge, mProfile);
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
-        mClient = AppHooks.get().createDigitalWellbeingClient();
+
+        DigitalWellbeingClient client = ServiceLoaderUtil.maybeCreate(DigitalWellbeingClient.class);
+        if (client == null) {
+            client = new DigitalWellbeingClient();
+        }
+        mClient = client;
 
         mSuspensionTracker
                 .getAllSuspendedWebsites()
@@ -188,16 +187,17 @@ public class UsageStatsService implements Destroyable {
     }
 
     /**
-     * Stops tracking the site associated with the given token.
-     * If the token was not associated with a site, this does nothing.
+     * Stops tracking the site associated with the given token. If the token was not associated with
+     * a site, this does nothing.
      */
-    public Promise<Void> stopTrackingTokenAsync(String token) {
+    public Promise<@Nullable Void> stopTrackingTokenAsync(String token) {
         ThreadUtils.assertOnUiThread();
         return mTokenTracker.stopTrackingToken(token);
     }
 
     /** Suspend or unsuspend every site in FQDNs, depending on the value of {@code suspended}. */
-    public Promise<Void> setWebsitesSuspendedAsync(List<String> fqdns, boolean suspended) {
+    public Promise<@Nullable Void> setWebsitesSuspendedAsync(
+            List<String> fqdns, boolean suspended) {
         ThreadUtils.assertOnUiThread();
         notifyObserversOfSuspensions(fqdns, suspended);
 
@@ -295,13 +295,9 @@ public class UsageStatsService implements Destroyable {
         return "1";
     }
 
-    public void stopTrackingToken(String token) {
-        return;
-    }
+    public void stopTrackingToken(String token) {}
 
-    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {
-        return;
-    }
+    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {}
 
     public List<String> getAllSuspendedWebsites() {
         return new ArrayList<>();

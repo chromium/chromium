@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "crypto/ec_private_key.h"
 #include "crypto/unexportable_key.h"
 
 namespace enterprise_connectors {
 
 // An implementation of crypto::UnexportableKeyProvider that creates
-// crypto::UnexportableSigningKey keys based on crypto::ECPrivateKey.
+// crypto::UnexportableSigningKey keys based on crypto::keypair::Private. Note
+// that despite this subclassing crypto::UnexportableKeyProvider, this class
+// actually stores its keys unprotected in software.
 class ECSigningKeyProvider : public crypto::UnexportableKeyProvider {
  public:
   ECSigningKeyProvider();
@@ -29,7 +30,8 @@ class ECSigningKeyProvider : public crypto::UnexportableKeyProvider {
           acceptable_algorithms) override;
   std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override;
+  crypto::StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override;
 };
 
 }  // namespace enterprise_connectors

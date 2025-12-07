@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -33,6 +35,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textarea/textarea.h"
@@ -132,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
                 PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId),
             nullptr);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Proceed.
   EXPECT_CALL(cb_, Run(/*user_justification=*/std::optional<std::u16string>(),
                        /*should_proceed=*/true))
@@ -167,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kWindow);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
   // Cancel.
@@ -209,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, JustificationTextarea) {
 
   // The OK button should be disabled if there is no text in the justification
   // area.
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   const size_t max_chars = dialog->GetMaxBypassJustificationLengthForTesting();
   const std::u16string valid_justification = GenerateText(max_chars);
@@ -219,21 +223,21 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, JustificationTextarea) {
   justification_area->InsertText(
       valid_justification,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // The OK button should also be disabled if an extra char is added.
   justification_area->InsertText(
       GenerateText(1),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // Reset a valid justification by deleting the extra char to proceed the
   // warning.
   justification_area->DeleteRange(gfx::Range(max_chars, max_chars + 1));
 
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Proceed.
   EXPECT_CALL(cb_, Run({valid_justification}, /*should_proceed=*/true))
       .Times(1);
@@ -290,12 +294,12 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
     }
   }
 
-  std::u16string GetTitle(FilesPolicyErrorDialog* dialog,
-                          FilesPolicyDialog::BlockReason reason) {
+  std::u16string_view GetTitle(FilesPolicyErrorDialog* dialog,
+                               FilesPolicyDialog::BlockReason reason) {
     views::View* title_label =
         dialog->GetViewByID(FilesPolicyDialog::MapBlockReasonToViewID(reason));
     if (!title_label) {
-      return u"";
+      return {};
     }
     // The view ID is attached to the title label.
     return static_cast<views::Label*>(title_label)->GetText();
@@ -333,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Accept -> dismiss.
   dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());
@@ -363,7 +367,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kWindow);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
   // Accept -> dismiss.
@@ -418,6 +422,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, AllErrorSections) {
       FilesPolicyDialog::BlockReason::kDlp,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectors};

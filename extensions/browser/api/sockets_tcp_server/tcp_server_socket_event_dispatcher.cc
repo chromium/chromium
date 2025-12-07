@@ -4,10 +4,12 @@
 
 #include "extensions/browser/api/sockets_tcp_server/tcp_server_socket_event_dispatcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
@@ -41,9 +43,9 @@ TCPServerSocketEventDispatcher* TCPServerSocketEventDispatcher::Get(
 
 TCPServerSocketEventDispatcher::TCPServerSocketEventDispatcher(
     content::BrowserContext* context)
-    : thread_id_(Socket::kThreadId), browser_context_(context) {
+    : thread_id_(Socket::kThreadId), browser_context_(context->GetWeakPtr()) {
   ApiResourceManager<ResumableTCPServerSocket>* server_manager =
-      ApiResourceManager<ResumableTCPServerSocket>::Get(browser_context_);
+      ApiResourceManager<ResumableTCPServerSocket>::Get(context);
   DCHECK(server_manager)
       << "There is no server socket manager. "
          "If this assertion is failing during a test, then it is likely that "
@@ -52,7 +54,7 @@ TCPServerSocketEventDispatcher::TCPServerSocketEventDispatcher(
   server_sockets_ = server_manager->data_;
 
   ApiResourceManager<ResumableTCPSocket>* client_manager =
-      ApiResourceManager<ResumableTCPSocket>::Get(browser_context_);
+      ApiResourceManager<ResumableTCPSocket>::Get(context);
   DCHECK(client_manager)
       << "There is no client socket manager. "
          "If this assertion is failing during a test, then it is likely that "
@@ -93,7 +95,7 @@ void TCPServerSocketEventDispatcher::StartSocketAccept(
 
   AcceptParams params;
   params.thread_id = thread_id_;
-  params.browser_context_id = browser_context_;
+  params.browser_context = browser_context_->GetWeakPtr();
   params.extension_id = extension_id;
   params.server_sockets = server_sockets_;
   params.client_sockets = client_sockets_;
@@ -116,8 +118,9 @@ void TCPServerSocketEventDispatcher::StartAccept(const AcceptParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another accept if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   socket->Accept(
       base::BindOnce(&TCPServerSocketEventDispatcher::AcceptCallback, params));
@@ -164,9 +167,9 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     accept_error_info.socket_id = params.socket_id;
     accept_error_info.result_code = result_code;
     auto args = sockets_tcp_server::OnAcceptError::Create(accept_error_info);
-    std::unique_ptr<Event> event(new Event(
+    auto event = std::make_unique<Event>(
         events::SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR,
-        sockets_tcp_server::OnAcceptError::kEventName, std::move(args)));
+        sockets_tcp_server::OnAcceptError::kEventName, std::move(args));
     PostEvent(params, std::move(event));
 
     // Since we got an error, the socket is now "paused" until the application
@@ -185,24 +188,24 @@ void TCPServerSocketEventDispatcher::PostEvent(const AcceptParams& params,
   DCHECK_CURRENTLY_ON(params.thread_id);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
+      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context,
                                 params.extension_id, std::move(event)));
 }
 
 // static
 void TCPServerSocketEventDispatcher::DispatchEvent(
-    void* browser_context_id,
+    base::WeakPtr<content::BrowserContext> browser_context,
     const ExtensionId& extension_id,
     std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  content::BrowserContext* context =
-      reinterpret_cast<content::BrowserContext*>(browser_context_id);
-  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
+  if (!browser_context) {
     return;
-  EventRouter* router = EventRouter::Get(context);
+  }
+  DCHECK(ExtensionsBrowserClient::Get()->IsValidContext(browser_context.get()));
+  EventRouter* router = EventRouter::Get(browser_context.get());
   if (router) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Terminal app is the only non-extension to use sockets
     // (crbug.com/1350479).
     if (extension_id == kCrOSTerminal) {

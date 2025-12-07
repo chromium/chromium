@@ -1,37 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "tether.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "InstantTetheringAllowed": false
-        },
-        "prefs": {
-          "tether.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "InstantTetheringAllowed": true
-        },
-        "prefs": {
-          "tether.allowed": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "tether.allowed",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

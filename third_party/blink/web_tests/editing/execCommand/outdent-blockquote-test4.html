@@ -1,30 +1,36 @@
-<html>
-<head>
-    <script>
-        if (window.testRunner)
-             testRunner.dumpAsText();
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
 
-        function test() {
-            var selection = window.getSelection();
-            selection.selectAllChildren(document.getElementById("contentDiv"));
-            document.execCommand("Outdent", false, "");
+// Because everything is selected, outdent should remove the outermost blockquote,
+// leaving the remaining content as-is. That is consistent with Firefox. We insert
+// a <br>.
 
-            console.log(document.getElementById("contentDiv").firstChild.tagName == "BLOCKQUOTE"
-                ? "SUCCESS: Nodes stayed in order after outdent."
-                : "FAILED: Nodes became out of order after outdent.");
-        }
-    </script>
-</head>
-<body onload="test()">
-    <div id="description">This test uses the execCommand to Outdent the text below. <b>This test that nodes, with different relationships with blockquotes, stay in the correct order after an outdent.</b></div>
-    <br>
-    <div contenteditable="true" id="contentDiv"><blockquote class="webkit-indent-blockquote">
-            <blockquote class="webkit-indent-blockquote">
-                <br>A
-            </blockquote>
-            <br>
-            B
-        </blockquote>
-    </div>
-</body>
-</html>
+selection_test(
+    [
+        '<div contenteditable="true" id="contentDiv">',
+            '^<blockquote class="webkit-indent-blockquote">',
+                '<blockquote class="webkit-indent-blockquote">',
+                    '<br>',
+                    'A',
+                '</blockquote>',
+                '<br>',
+                'B',
+            '</blockquote>|',
+        '</div>',
+    ],
+    'outdent',
+    [
+        '<div contenteditable="true" id="contentDiv">',
+            '<blockquote class="webkit-indent-blockquote">',
+                '^<br>',
+                'A',
+                '<br>',
+            '</blockquote>',
+            '<br>',
+            'B|',
+        '</div>',
+    ]);
+</script>

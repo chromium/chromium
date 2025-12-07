@@ -8,6 +8,7 @@
 #include <cstring>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -27,14 +28,14 @@ std::optional<uint32_t> GetForwardBackMouseButtonProperty(const Event& event) {
 
   CHECK_LE(iter->second.size(), sizeof(uint32_t));
   uint32_t result = 0;
-  std::memcpy(&result, iter->second.data(), iter->second.size());
+  UNSAFE_TODO(std::memcpy(&result, iter->second.data(), iter->second.size()));
   return result;
 }
 
 void SetForwardBackMouseButtonProperty(Event& event, uint32_t button) {
   std::vector<uint8_t> buffer;
   buffer.resize(sizeof(uint32_t));
-  std::memcpy(buffer.data(), &button, buffer.size());
+  UNSAFE_TODO(std::memcpy(buffer.data(), &button, buffer.size()));
   Event::Properties properties =
       event.properties() ? *event.properties() : Event::Properties();
   properties.emplace(kForwardBackMouseButtonPropertyName, std::move(buffer));

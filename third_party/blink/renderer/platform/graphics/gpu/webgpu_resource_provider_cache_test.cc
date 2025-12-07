@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 
+#include <array>
+
 #include "base/test/task_environment.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -35,9 +38,9 @@ class WebGPURecyclableResourceCacheTest : public testing::Test {
 
 void WebGPURecyclableResourceCacheTest::SetUp() {
   Platform::SetMainThreadTaskRunnerForTesting();
-  test_context_provider_ = viz::TestContextProvider::Create();
-  InitializeSharedGpuContextGLES2(test_context_provider_.get(),
-                                  &image_decode_cache_);
+  test_context_provider_ = viz::TestContextProvider::CreateRaster();
+  InitializeSharedGpuContextRaster(test_context_provider_.get(),
+                                   &image_decode_cache_);
 
   recyclable_resource_cache_ = std::make_unique<WebGPURecyclableResourceCache>(
       SharedGpuContext::ContextProviderWrapper(),
@@ -76,10 +79,10 @@ TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
-  const SkImageInfo kInfos[] = {
+  const auto kInfos = std::to_array<SkImageInfo>({
       SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
       SkImageInfo::Make(20, 20, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
-  };
+  });
   Vector<CanvasResourceProvider*> returned_resource_providers;
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =

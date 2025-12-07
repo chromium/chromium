@@ -44,7 +44,8 @@ class FakeLanguageDetectionTabHelperObserver
 
   // Stops observing the IOSLanguageDetectionTabHelper instance associated with
   // `web_state_` and sets `web_state_` to null.
-  void StopObservingIOSLanguageDetectionTabHelper();
+  void StopObservingIOSLanguageDetectionTabHelper(
+      language::IOSLanguageDetectionTabHelper* tab_helper);
 };
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_LANGUAGE_DETECTION_TAB_HELPER_OBSERVER_H_

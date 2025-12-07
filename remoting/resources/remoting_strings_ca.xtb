@@ -4,7 +4,7 @@
 <translation id="1002108253973310084">S'ha detectat una versió del protocol incompatible. Assegureu-vos que tingueu instal·lada la versió més recent del programari als dos ordinadors i torneu-ho a provar.</translation>
 <translation id="1008557486741366299">Ara no</translation>
 <translation id="1201402288615127009">Següent</translation>
-<translation id="1297009705180977556">S'ha produït un error en connectar amb <ph name="HOSTNAME" /></translation>
+<translation id="1297009705180977556">Hi ha hagut un error en connectar amb <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">L'objecte sol·licitat no existeix.</translation>
 <translation id="1480046233931937785">Crèdits</translation>
 <translation id="1520828917794284345">Ajusta la mida de l'escriptori</translation>
@@ -14,7 +14,7 @@
 <translation id="177040763384871009">Per permetre que els enllaços en què es faci clic al dispositiu remot s'obrin al navegador client, has de canviar el navegador web del sistema per "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP del canal del client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Suprimeix</translation>
-<translation id="2009755455353575666">S'ha produït un error en la connexió</translation>
+<translation id="2009755455353575666">Hi ha hagut un error en la connexió</translation>
 <translation id="2038229918502634450">L'amfitrió s'està reiniciant per aplicar un canvi en la política.</translation>
 <translation id="2078880767960296260">Procés de l'amfitrió</translation>
 <translation id="20876857123010370">Mode de ratolí tàctil</translation>
@@ -28,17 +28,19 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="2329392777730037872">No s'ha pogut obrir <ph name="URL" /> al client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">No es pot connectar amb l'amfitrió. Probablement, això passa a causa de la configuració de la xarxa que esteu fent servir.</translation>
+<translation id="242591256144136845">Copyright 2025. Google LLC. Tots els drets reservats.</translation>
 <translation id="2504109125669302160">Concedeix a <ph name="PRODUCT_NAME" /> el permís Accessibilitat</translation>
 <translation id="2509394361235492552">Connectat a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Voleu compartir aquest ordinador perquè un altre usuari el pugui veure i controlar?</translation>
 <translation id="2579271889603567289">L'amfitrió s'ha bloquejat o no s'ha pogut iniciar.</translation>
 <translation id="2599300881200251572">Aquest servei permet les connexions entrants de clients d'Escriptori remot de Chrome.</translation>
 <translation id="2647232381348739934">Servei de Chromoting</translation>
-<translation id="2676780859508944670">S'hi està treballant...</translation>
+<translation id="2676780859508944670">En procés...</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">S'ha produït un problema d'autenticació. Torna a iniciar la sessió.</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
 <translation id="2919669478609886916">Esteu compartint aquest ordinador amb un altre usuari. Voleu continuar compartint-lo?</translation>
+<translation id="2929683002824598593">Comparteix el dispositiu</translation>
 <translation id="2939145106548231838">Autenticació a l'amfitrió</translation>
 <translation id="3027681561976217984">Mode tàctil</translation>
 <translation id="3106379468611574572">L'ordinador remot no respon a les sol·licituds de connexió. Verifiqueu que estigui en línia i torneu-ho a provar.</translation>
@@ -91,6 +93,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="4987330545941822761">Escriptori remot de Chrome no ha pogut determinar quin navegador s'ha d'utilitzar per obrir els URL localment. Tria'n un de la llista següent.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (fora de línia)</translation>
 <translation id="507204348399810022">Confirmes que vols desactivar les connexions remotes a <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Informes d'errors</translation>
 <translation id="5170982930780719864">L'identificador de l'amfitrió no és vàlid.</translation>
 <translation id="5204575267916639804">Preguntes més freqüents</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
@@ -102,7 +105,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="544077782045763683">L'amfitrió s'ha tancat.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5708869785009007625">Esteu compartint l'escriptori amb <ph name="USER" />.</translation>
+<translation id="5708869785009007625">Compartiu l'escriptori amb <ph name="USER" />.</translation>
 <translation id="579702532610384533">Torna a connectar</translation>
 <translation id="5810269635982033450">La pantalla fa de ratolí tàctil</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure la teva pantalla i controlar el teclat i el ratolí. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no esperaves aquesta sol·licitud. En cas contrari, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió quan estiguis a punt.</translation>
@@ -110,16 +113,18 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="5841343754884244200">Opcions de visualització</translation>
 <translation id="6033507038939587647">Opcions del teclat</translation>
 <translation id="6040143037577758943">Tanca</translation>
-<translation id="6062854958530969723">S'ha produït un error en iniciar l'amfitrió.</translation>
+<translation id="6062854958530969723">Hi ha hagut un error en iniciar l'amfitrió.</translation>
 <translation id="6099500228377758828">Servei d'escriptori remot de Chrome</translation>
 <translation id="6122191549521593678">En línia</translation>
 <translation id="6178645564515549384">Amfitrió de missatgeria nativa per a l'assistència remota</translation>
 <translation id="618120821413932081">Actualitza la resolució remota perquè coincideixi amb la finestra</translation>
 <translation id="6223301979382383752">Obre el tauler de preferències Gravació de la pantalla</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure la teva pantalla i controlar el teclat i el ratolí. Vols compartir el dispositiu?</translation>
 <translation id="6284412385303060032">L'amfitrió que s'executa a la pantalla d'inici de la consola s'ha aturat per admetre el mode Curtain, i fa servir un amfitrió que s'executa en una sessió específica de l'usuari.</translation>
 <translation id="6542902059648396432">Informa d'un problema...</translation>
 <translation id="6583902294974160967">Assistència</translation>
 <translation id="6612717000975622067">Envia Ctrl-Alt-Supr</translation>
+<translation id="6625262630437221505">{0,plural, =1{Si no fas res, el dispositiu es començarà a compartir automàticament d'aquí a # segon.}other{Si no fas res, el dispositiu es començarà a compartir automàticament d'aquí a # segons.}}</translation>
 <translation id="6654753848497929428">Comparteix</translation>
 <translation id="677755392401385740">L'amfitrió ha començat per a l'usuari: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicació d'ajuda per obrir un URL al client <ph name="PRODUCT_NAME" /></translation>
@@ -133,6 +138,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="7067321367069083429">La pantalla fa de pantalla tàctil</translation>
 <translation id="7116737094673640201">Et donem la benvinguda a Escriptori remot de Chrome</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
+<translation id="7298392173540380852">Copyright 2025. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="7312846573060934304">L'amfitrió no està connectat</translation>
 <translation id="7319983568955948908">Deixa de compartir</translation>
 <translation id="7359298090707901886">No es pot utilitzar el navegador escollit per obrir URL a l'equip local.</translation>
@@ -149,7 +155,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="7693372326588366043">Actualitza la llista d'amfitrions</translation>
 <translation id="7714222945760997814">Informa'n</translation>
 <translation id="7868137160098754906">Introduïu el vostre PIN de l'ordinador remot.</translation>
-<translation id="7881455334687220899">Copyright 2024. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="7895403300744144251">Les polítiques de seguretat de l'ordinador remot no permeten les connexions des del teu compte.</translation>
 <translation id="7936528439960309876">Fixa a la dreta</translation>
 <translation id="7970576581263377361">L'autenticació ha fallat. Torneu a iniciar la sessió a Chromium.</translation>
@@ -181,7 +186,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="8747048596626351634">La sessió s'ha bloquejat o no s'ha pogut iniciar. Si s'ha introduït ~/.chrome-remote-desktop-session a l'ordinador remot, comprova que s'iniciï un procés llarg en primer pla, com ara un entorn d'escriptori o un gestor de finestres.</translation>
 <translation id="8804164990146287819">Política de privadesa</translation>
 <translation id="8906511416443321782">Es requereix accés al micròfon per capturar l'àudio i reproduir-lo en continu al client d'Escriptori remot de Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024. Google LLC. Tots els drets reservats.</translation>
 <translation id="9111855907838866522">Estàs connectat al dispositiu remot. Toca la pantalla amb quatre dits per obrir el menú.</translation>
 <translation id="9126115402994542723">No tornis a demanar el PIN en connectar amb aquest amfitrió des d'aquest dispositiu</translation>
 <translation id="916856682307586697">Inicia la sessió X predeterminada</translation>

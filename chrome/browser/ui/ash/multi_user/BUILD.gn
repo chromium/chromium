@@ -2,32 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("multi_user") {
   sources = [
-    "multi_profile_support.cc",
-    "multi_profile_support.h",
     "multi_user_context_menu.h",
     "multi_user_context_menu_chromeos.cc",
     "multi_user_util.cc",
     "multi_user_util.h",
-    "multi_user_window_manager_helper.cc",
-    "multi_user_window_manager_helper.h",
-    "multi_user_window_manager_stub.cc",
-    "multi_user_window_manager_stub.h",
+    "multi_user_window_manager_browser_adaptor.cc",
+    "multi_user_window_manager_browser_adaptor.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+  ]
 
   deps = [
     "//ash",
     "//ash/public/cpp",
     "//base",
     "//chrome/app:command_ids",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
@@ -35,11 +31,14 @@ static_library("multi_user") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/floating_workspace",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/prefs",
     "//components/user_manager",
@@ -53,25 +52,7 @@ static_library("multi_user") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/system_web_apps/apps",
-  ]
-}
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "test_multi_user_window_manager.cc",
-    "test_multi_user_window_manager.h",
-  ]
-
-  deps = [
-    ":multi_user",
-    "//ash/public/cpp",
-    "//base",
-    "//chrome/browser/ui",
-    "//components/account_id",
   ]
 }
 
@@ -79,9 +60,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "multi_profile_support_unittest.cc",
     "multi_user_context_menu_chromeos_unittest.cc",
     "multi_user_util_chromeos_unittest.cc",
+    "multi_user_window_manager_browser_adaptor_unittest.cc",
   ]
 
   deps = [
@@ -90,14 +71,19 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/signin",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/new_window",
+    "//chrome/browser/ui/ash/session",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/user_manager",
   ]
 }

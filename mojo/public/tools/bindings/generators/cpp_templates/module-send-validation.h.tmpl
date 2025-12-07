@@ -1,0 +1,87 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- from 'cpp_macros.tmpl' import
+  namespace_begin, namespace_end, include_guard %}
+{%- from 'enum_macros.tmpl' import enum_forward %}
+
+{%- set header_guard = include_guard('', module.path ~ '_send_validation', variant) %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "{{module.path}}-shared-internal.h"
+{%- for import in imports %}
+#include "{{import.path}}-shared.h"
+{%- endfor %}
+
+#include "{{module.path}}-data-view.h"
+
+#include "mojo/public/cpp/bindings/lib/send_validation_type.h"
+#include "mojo/public/cpp/bindings/lib/send_validation.h"
+
+{%- if interfaces %}
+#include "mojo/public/cpp/bindings/lib/interface_serialization_send_validation.h"
+{%- endif %}
+
+{%- if enums %}
+#include "mojo/public/cpp/bindings/lib/has_send_validation_helper.h"
+{%- endif %}
+
+namespace mojo::internal {
+
+{#--- Enums ---#}
+{%- for enum in enums %}
+{%-   if not enum|is_native_only_kind %}
+{%-     set mojom_type = enum|get_qualified_name_for_kind(flatten_nested_kind=True) %}
+template <typename MaybeConstUserType>
+struct HasSendValidationSerialize<{{mojom_type}}, MaybeConstUserType>
+    : std::false_type {};
+{%-   endif %}
+{%- endfor %}
+
+{#--- Structs ---#}
+{%- import "struct_macros.tmpl" as struct_macros %}
+{%- for struct in structs %}
+{%-   if not struct|use_custom_serializer %}
+{%-     set data_view = struct|get_qualified_name_for_kind ~ "DataView" %}
+{%-     set data_type = struct|get_qualified_name_for_kind(internal=True) %}
+
+template <typename MaybeConstUserType, mojo::internal::SendValidation send_validation>
+struct SendValidationSerializer<{{data_view}}, MaybeConstUserType, send_validation> {
+  using UserType = typename std::remove_const<MaybeConstUserType>::type;
+  using Traits = StructTraits<{{data_view}}, UserType>;
+  static void Serialize(
+      MaybeConstUserType& input,
+      mojo::internal::MessageFragment<{{data_type}}>& fragment) {
+    if (CallIsNullIfExists<Traits>(input))
+      return;
+    {{struct_macros.serialize(
+          struct, struct.name ~ " struct", "Traits::%s(input)", "fragment", "template",
+          True)|indent(4)}}
+  }
+};
+{%-   endif %}
+{%- endfor %}
+
+{#--- Unions ---#}
+{%- import "union_macros.tmpl" as union_macros %}
+{%- for union in unions %}
+{%-   set data_view = union|get_qualified_name_for_kind ~ "DataView" %}
+{%-   set data_type = union|get_qualified_name_for_kind(internal=True) %}
+template <typename MaybeConstUserType, SendValidation send_validation>
+struct SendValidationSerializer<{{data_view}}, MaybeConstUserType, send_validation> {
+  using UserType = typename std::remove_const<MaybeConstUserType>::type;
+  using Traits = UnionTraits<{{data_view}}, UserType>;
+  static void Serialize(MaybeConstUserType& input,
+                        MessageFragment<{{data_type}}>& fragment,
+                        bool inlined) {
+    {{union_macros.serialize(union, "template")}}
+  }
+};
+{%- endfor %}
+
+}  // namespace mojo::internal
+
+#endif  // {{header_guard}}

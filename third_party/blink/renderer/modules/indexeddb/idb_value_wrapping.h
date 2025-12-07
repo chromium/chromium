@@ -8,8 +8,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -46,12 +47,10 @@ class SerializedScriptValue;
 //    once.
 //
 // Example usage:
-//     auto wrapper = new IDBValueWrapper();
+//     IDBValueWrapper wrapper;
 //     wrapper.Clone(...);  // Structured clone used to extract keys.
 //     wrapper.DoneCloning();
-//     wrapper.TakeWireBytes();
-//     wrapper.TakeBlobDataHandles();
-//     wrapper.TakeBlobInfo();
+//     std::unique_ptr<IDBValue> value = std::move(wrapper).Build();
 //
 // V8 values are first serialized via SerializedScriptValue (SSV), which is
 // essentially a byte array plus an array of attached Blobs. The SSV output's
@@ -97,7 +96,8 @@ class MODULES_EXPORT IDBValueWrapper {
       v8::Isolate*,
       v8::Local<v8::Value>,
       SerializedScriptValue::SerializeOptions::WasmSerializationPolicy,
-      ExceptionState&);
+      ExceptionState&,
+      bool backend_uses_sqlite);
   ~IDBValueWrapper();
 
   // Creates a clone of the serialized value.
@@ -116,48 +116,12 @@ class MODULES_EXPORT IDBValueWrapper {
   // is called, Clone() cannot be called anymore.
   void DoneCloning();
 
-  // Obtains the byte array for the serialized value.
+  // Transfers ownership of the serialized byte array, blob infos, and FSA
+  // tokens to the returned `IDBValue`.
   //
   // This method must be called at most once, and must be called after
   // WrapIfBiggerThan().
-  Vector<char> TakeWireBytes();
-
-  // Obtains the BlobDataHandles from the serialized value's Blob array.
-  //
-  // This method must be called at most once, and must be called after
-  // DoneCloning().
-  Vector<scoped_refptr<BlobDataHandle>> TakeBlobDataHandles() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_blob_handles_) << __func__ << " called twice";
-    owns_blob_handles_ = false;
-#endif  // DCHECK_IS_ON()
-
-    return std::move(blob_handles_);
-  }
-
-  // Obtains WebBlobInfos for the serialized value's Blob array.
-  //
-  // This method must be called at most once, and must be called after
-  // DoneCloning().
-  inline Vector<WebBlobInfo> TakeBlobInfo() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_blob_info_) << __func__ << " called twice";
-    owns_blob_info_ = false;
-#endif  // DCHECK_IS_ON()
-    return std::move(blob_info_);
-  }
-
-  Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
-  TakeFileSystemAccessTransferTokens() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_file_system_handles_) << __func__ << " called twice";
-    owns_file_system_handles_ = false;
-#endif  // DCHECK_IS_ON()
-    return std::move(serialized_value_->FileSystemAccessTokens());
-  }
+  std::unique_ptr<IDBValue> Build() &&;
 
   size_t DataLengthBeforeWrapInBytes() { return original_data_length_; }
 
@@ -172,7 +136,14 @@ class MODULES_EXPORT IDBValueWrapper {
     wrapping_threshold_override_ = threshold;
   }
 
+  void set_compression_threshold_for_test(size_t threshold) {
+    compression_threshold_override_ = threshold;
+  }
+
  private:
+  // Evaluates if the specified uncompressed length merits a compression
+  // attempt.
+  bool ShouldCompress(size_t uncompressed_length) const;
   // Tries to compress `wire_bytes_` via Snappy, storing the output in
   // `wire_data_buffer_`. If the compression effect is small, the compression
   // will be discarded and an uncompressed value will be stored in
@@ -183,9 +154,10 @@ class MODULES_EXPORT IDBValueWrapper {
   // Stores `wire_bytes_` in a Blob if it is over the size threshold.
   void MaybeStoreInBlob();
 
+  bool backend_uses_sqlite_;
+
   // V8 value serialization state.
   scoped_refptr<SerializedScriptValue> serialized_value_;
-  Vector<scoped_refptr<BlobDataHandle>> blob_handles_;
   Vector<WebBlobInfo> blob_info_;
 
   // Buffer for wire data that is not stored in SerializedScriptValue.
@@ -194,20 +166,19 @@ class MODULES_EXPORT IDBValueWrapper {
   Vector<char> wire_data_buffer_;
 
   // Points into SerializedScriptValue's data buffer, or into wire_data_buffer_.
-  base::span<const uint8_t> wire_data_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t> wire_data_;
 
   size_t original_data_length_ = 0;
 
   std::optional<unsigned> wrapping_threshold_override_;
+  std::optional<size_t> compression_threshold_override_;
 
 #if DCHECK_IS_ON()
   // Accounting for lifecycle stages.
   bool had_exception_ = false;
   bool done_cloning_ = false;
-  bool owns_blob_handles_ = true;
-  bool owns_blob_info_ = true;
   bool owns_wire_bytes_ = true;
-  bool owns_file_system_handles_ = true;
 #endif  // DCHECK_IS_ON()
 };
 
@@ -236,9 +207,12 @@ class MODULES_EXPORT IDBValueUnwrapper {
   static void Unwrap(Vector<char>&& wrapper_blob_content,
                      IDBValue& wrapped_value);
 
-  // Decompresses the value in `buffer` and stores in `out_buffer`. Returns true
-  // on success.
-  static bool Decompress(const Vector<char>& buffer, Vector<char>* out_buffer);
+  // Decompresses the value in `buffer` and stores in one of the two provided
+  // buffers (exactly one must be provided). Returns true on success.
+  static bool Decompress(
+      base::span<const uint8_t> buffer,
+      Vector<char>* out_buffer,
+      SerializedScriptValue::DataBufferPtr* out_buffer_in_place);
 
   // Parses the wrapper Blob information from a wrapped IDBValue.
   //
@@ -250,10 +224,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Returns the size of the Blob obtained by the last Unwrap() call.
   //
   // Should only be called after a successful result from Unwrap().
-  inline unsigned WrapperBlobSize() const {
-    DCHECK(end_);
-    return blob_size_;
-  }
+  inline unsigned WrapperBlobSize() const { return blob_size_; }
 
   // Returns a handle to the Blob obtained by the last Unwrap() call.
   //
@@ -271,13 +242,10 @@ class MODULES_EXPORT IDBValueUnwrapper {
   bool Reset();
 
   // Deserialization cursor in the `data_` of the IDBValue being unwrapped.
-  const uint8_t* current_;
-
-  // Smallest invalid position_ value.
-  const uint8_t* end_;
+  base::span<const uint8_t> parse_span_;
 
   // The size of the Blob holding the data for the last unwrapped IDBValue.
-  unsigned blob_size_;
+  unsigned blob_size_ = 0;
 
   // Handle to the Blob holding the data for the last unwrapped IDBValue.
   scoped_refptr<BlobDataHandle> blob_handle_;

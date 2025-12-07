@@ -4,10 +4,10 @@
 
 #include "chrome/browser/task_manager/task_manager_interface.h"
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,21 +18,15 @@
 #include "content/public/browser/child_process_host.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_dialogs.h"  // nogncheck
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/task_manager_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace task_manager {
 
 // static
 void TaskManagerInterface::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kTaskManagerWindowPlacement);
+  registry->RegisterIntegerPref(prefs::kTaskManagerCategory, 1);
   registry->RegisterDictionaryPref(prefs::kTaskManagerColumnVisibility);
   registry->RegisterBooleanPref(prefs::kTaskManagerEndProcessEnabled, true);
 }
@@ -53,8 +47,8 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
 // static
 void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
     content::GlobalRenderFrameHostId render_frame_host_id,
-    int64_t recv_bytes,
-    int64_t sent_bytes) {
+    base::ByteCount recv_bytes,
+    base::ByteCount sent_bytes) {
   // Don't create a task manager if it hasn't already been created.
   if (TaskManagerImpl::IsCreated()) {
     TaskManagerImpl::GetInstance()->UpdateAccumulatedStatsNetworkForRoute(
@@ -74,6 +68,10 @@ void TaskManagerInterface::AddObserver(TaskManagerObserver* observer) {
     StartUpdating();
   }
 
+  // Observer was removed as part of StartUpdating.
+  if (!observers_.HasObserver(observer)) {
+    return;
+  }
   if (observer->desired_refresh_time() > current_refresh_time)
     return;
 
@@ -117,6 +115,10 @@ void TaskManagerInterface::RecalculateRefreshFlags() {
   SetEnabledResourceFlags(flags);
 }
 
+bool TaskManagerInterface::IsTaskValid(TaskId task_id) const {
+  return true;
+}
+
 bool TaskManagerInterface::IsResourceRefreshEnabled(RefreshType type) const {
   return (enabled_resources_flags_ & type) != 0;
 }
@@ -153,12 +155,6 @@ void TaskManagerInterface::NotifyObserversOnTaskUnresponsive(TaskId id) {
     observer.OnTaskUnresponsive(id);
 }
 
-void TaskManagerInterface::NotifyObserversOnActiveTaskFetched(TaskId id) {
-  for (TaskManagerObserver& observer : observers_) {
-    observer.OnActiveTaskFetched(id);
-  }
-}
-
 base::TimeDelta TaskManagerInterface::GetCurrentRefreshTime() const {
   return refresh_timer_->IsRunning() ? refresh_timer_->GetCurrentDelay()
                                      : base::TimeDelta::Max();
@@ -170,17 +166,6 @@ void TaskManagerInterface::ResourceFlagsAdded(int64_t flags) {
 
 void TaskManagerInterface::SetEnabledResourceFlags(int64_t flags) {
   enabled_resources_flags_ = flags;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set refresh flags of the remote task manager if lacros is enabled.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->task_manager_ash()
-        ->SetRefreshFlags(enabled_resources_flags_);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void TaskManagerInterface::ScheduleRefresh(base::TimeDelta refresh_time) {

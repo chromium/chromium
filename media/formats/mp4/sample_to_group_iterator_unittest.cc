@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "media/formats/mp4/sample_to_group_iterator.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,8 +17,13 @@ namespace media {
 namespace mp4 {
 
 namespace {
-const SampleToGroupEntry kCompactSampleToGroupTable[] =
-    {{10, 8}, {9, 5}, {25, 7}, {48, 63}, {8, 2}};
+const auto kCompactSampleToGroupTable = std::to_array<SampleToGroupEntry>({
+    {10, 8},
+    {9, 5},
+    {25, 7},
+    {48, 63},
+    {8, 2},
+});
 }  // namespace
 
 class SampleToGroupIteratorTest : public testing::Test {
@@ -32,8 +39,10 @@ class SampleToGroupIteratorTest : public testing::Test {
     }
 
     sample_to_group_.entries.assign(
-        kCompactSampleToGroupTable,
-        kCompactSampleToGroupTable + std::size(kCompactSampleToGroupTable));
+        kCompactSampleToGroupTable.data(),
+        base::span<const SampleToGroupEntry>(kCompactSampleToGroupTable)
+            .subspan(std::size(kCompactSampleToGroupTable))
+            .data());
     sample_to_group_iterator_.reset(
         new SampleToGroupIterator(sample_to_group_));
   }

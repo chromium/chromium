@@ -1,11 +1,22 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-<p id="description">Tests that text with font-size:0 has zero height and width.</p>
-<div id="console"></div>
-<script src="script-tests/font-size-zero.js"></script>
+<script>
+test(() => {
+  const s = document.createElement('span');
+  s.style.fontSize = 0;
+  s.innerHTML = 'Text';
+  document.body.appendChild(s);
+
+  assert_equals(s.getBoundingClientRect().height, 0);
+  assert_equals(s.getBoundingClientRect().width, 0);
+
+  s.remove();
+}, 'Tests that text with font-size:0 has zero height and width.');
+</script>
 </body>
 </html>

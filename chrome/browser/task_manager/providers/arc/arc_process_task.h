@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
-#include "ash/components/arc/mojom/process.mojom-forward.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/task_manager/providers/task.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/process/arc_process.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 
 namespace task_manager {
 
@@ -32,7 +32,7 @@ class ArcProcessTask
   Type GetType() const override;
   int GetChildProcessUniqueID() const override;
   bool IsKillable() override;
-  void Kill() override;
+  bool Kill() override;
   bool IsRunningInVM() const override;
 
   // arc::ConnectionObserver<arc::mojom::IntentHelperInstance>:

@@ -10,10 +10,9 @@
 #include <ostream>
 
 #include "base/dcheck_is_on.h"
-#include "base/logging.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
-#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -25,6 +24,7 @@ class AXObject;
 class ContainerNode;
 class Document;
 class Node;
+class OffsetMapping;
 
 // When converting to a DOM position from an |AXPosition| or vice versa, and the
 // corresponding position is invalid, doesn't exist, or is inside an ignored
@@ -77,11 +77,13 @@ class MODULES_EXPORT AXPosition final {
           AXPositionAdjustmentBehavior::kMoveRight);
   static const AXPosition FromPosition(
       const Position&,
+      const AXObjectCacheImpl& ax_object_cache,
       const TextAffinity = TextAffinity::kDownstream,
       const AXPositionAdjustmentBehavior =
           AXPositionAdjustmentBehavior::kMoveRight);
   static const AXPosition FromPosition(
       const PositionWithAffinity&,
+      const AXObjectCacheImpl& ax_object_cache,
       const AXPositionAdjustmentBehavior =
           AXPositionAdjustmentBehavior::kMoveRight);
 
@@ -169,7 +171,8 @@ class MODULES_EXPORT AXPosition final {
       const Document& document,
       const Node& child_node,
       const ContainerNode* container_node,
-      const AXPositionAdjustmentBehavior adjustment_behavior);
+      const AXPositionAdjustmentBehavior adjustment_behavior,
+      const AXObjectCacheImpl& ax_object_cache);
 
   // Returns true if `character` is not included in the accessible text.
   // Ignored characters include zero-width space and isolate characters.
@@ -233,7 +236,6 @@ class MODULES_EXPORT AXPosition final {
 };
 
 MODULES_EXPORT bool operator==(const AXPosition&, const AXPosition&);
-MODULES_EXPORT bool operator!=(const AXPosition&, const AXPosition&);
 MODULES_EXPORT bool operator<(const AXPosition&, const AXPosition&);
 MODULES_EXPORT bool operator<=(const AXPosition&, const AXPosition&);
 MODULES_EXPORT bool operator>(const AXPosition&, const AXPosition&);

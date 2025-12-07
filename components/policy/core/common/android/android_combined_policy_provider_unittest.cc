@@ -44,7 +44,7 @@ TEST_F(AndroidCombinedPolicyProviderTest, SetShouldWaitForPolicy) {
   SchemaRegistry registry;
   AndroidCombinedPolicyProvider manager(&registry);
   EXPECT_FALSE(manager.IsInitializationComplete(POLICY_DOMAIN_CHROME));
-  manager.FlushPolicies(nullptr, nullptr);
+  manager.FlushPolicies(nullptr);
   EXPECT_TRUE(manager.IsInitializationComplete(POLICY_DOMAIN_CHROME));
   // If the manager is deleted (by going out of scope) without being shutdown
   // first it DCHECKs.
@@ -70,9 +70,8 @@ TEST_F(AndroidCombinedPolicyProviderTest, FlushPolices) {
       ConvertUTF8ToJavaString(env, "TestPolicy");
   ScopedJavaLocalRef<jstring> jvalue =
       ConvertUTF8ToJavaString(env, "TestValue");
-  manager.GetPolicyConverterForTesting()->SetPolicyString(env, nullptr, jpolicy,
-                                                          jvalue);
-  manager.FlushPolicies(env, nullptr);
+  manager.GetPolicyConverterForTesting()->SetPolicyString(env, jpolicy, jvalue);
+  manager.FlushPolicies(env);
   const PolicyBundle& bundle = manager.policies();
   const PolicyMap& map = bundle.Get(ns);
   const base::Value* value =

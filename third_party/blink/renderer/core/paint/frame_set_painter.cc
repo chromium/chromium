@@ -34,8 +34,9 @@ void FrameSetPainter::PaintObject(const PaintInfo& paint_info,
   if (box_fragment_.Children().size() == 0)
     return;
 
-  if (box_fragment_.Style().Visibility() != EVisibility::kVisible)
+  if (box_fragment_.Style().Visibility() != EVisibility::kVisible) {
     return;
+  }
 
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   PaintChildren(paint_info_for_descendants);
@@ -51,12 +52,8 @@ void FrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
     const PhysicalFragment& child_fragment = *link;
     if (child_fragment.HasSelfPaintingLayer())
       continue;
-    if (To<PhysicalBoxFragment>(child_fragment).CanTraverse()) {
-      BoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
-          .Paint(paint_info);
-    } else {
-      child_fragment.GetLayoutObject()->Paint(paint_info);
-    }
+    BoxFragmentPainter::PaintFragment(To<PhysicalBoxFragment>(child_fragment),
+                                      paint_info);
   }
 }
 

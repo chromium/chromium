@@ -17,15 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SEGMENTED_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SEGMENTED_STRING_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -52,13 +48,15 @@ class PLATFORM_EXPORT SegmentedSubstring {
     if (len) {
       if (string_.Is8Bit()) {
         is_8bit_ = true;
-        data_.string8_ptr = string_.Characters8();
-        data_last_char_ = data_.string8_ptr + len - 1;
+        data_.string8_ptr = UNSAFE_TODO(string_.Characters8());
+        // SAFETY: len is length of string and checked to be non-zero.
+        data_last_char_ = UNSAFE_BUFFERS(data_.string8_ptr + len - 1);
       } else {
         is_8bit_ = false;
-        data_.string16_ptr = string_.Characters16();
-        data_last_char_ =
-            reinterpret_cast<const LChar*>(data_.string16_ptr + len - 1);
+        data_.string16_ptr = UNSAFE_TODO(string_.Characters16());
+        // SAFETY: len is length of string and checked to be non-zero.
+        data_last_char_ = UNSAFE_BUFFERS(
+            reinterpret_cast<const LChar*>(data_.string16_ptr + len - 1));
       }
     } else {
       is_8bit_ = true;
@@ -99,16 +97,21 @@ class PLATFORM_EXPORT SegmentedSubstring {
     if (data_.string8_ptr == data_start_)
       return false;
 
+    // SAFETY: if the string pointer is not at the start, then it points
+    // into the string data and is safe to index one before it.
+
     if (is_8bit_) {
-      if (*(data_.string8_ptr - 1) != c)
+      if (*(UNSAFE_BUFFERS(data_.string8_ptr - 1)) != c) {
         return false;
+      }
 
-      --data_.string8_ptr;
+      UNSAFE_BUFFERS(--data_.string8_ptr);
     } else {
-      if (*(data_.string16_ptr - 1) != c)
+      if (*(UNSAFE_BUFFERS(data_.string16_ptr - 1)) != c) {
         return false;
+      }
 
-      --data_.string16_ptr;
+      UNSAFE_BUFFERS(--data_.string16_ptr);
     }
 
     return true;
@@ -129,15 +132,16 @@ class PLATFORM_EXPORT SegmentedSubstring {
   unsigned Advance(unsigned delta) {
     DCHECK_NE(0, length());
     delta = std::min(static_cast<unsigned>(length()) - 1, delta);
+    // Unsafe since a stronger check for non-zero length is required.
     if (is_8bit_)
-      data_.string8_ptr += delta;
+      UNSAFE_TODO(data_.string8_ptr += delta);
     else
-      data_.string16_ptr += delta;
+      UNSAFE_TODO(data_.string16_ptr += delta);
     return delta;
   }
 
   ALWAYS_INLINE UChar Advance() {
-    return is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
+    return UNSAFE_TODO(is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr);
   }
 
   StringView CurrentSubString(unsigned len) const {
@@ -158,7 +162,7 @@ class PLATFORM_EXPORT SegmentedSubstring {
   ALWAYS_INLINE const LChar* data_end() const {
     if (!data_last_char_)
       return nullptr;
-    return data_last_char_ + 1 + !is_8bit_;
+    return UNSAFE_TODO(data_last_char_ + 1 + !is_8bit_);
   }
 
   union {
@@ -277,8 +281,8 @@ class PLATFORM_EXPORT SegmentedString {
   }
 
   ALWAYS_INLINE UChar AdvanceAndASSERTIgnoringCase(UChar expected_character) {
-    DCHECK_EQ(WTF::unicode::FoldCase(CurrentChar()),
-              WTF::unicode::FoldCase(expected_character));
+    DCHECK_EQ(unicode::FoldCase(CurrentChar()),
+              unicode::FoldCase(expected_character));
     return Advance();
   }
 
@@ -293,10 +297,6 @@ class PLATFORM_EXPORT SegmentedString {
     UpdateLineNumber();
     return Advance();
   }
-
-  // Writes the consumed characters into consumedCharacters, which must
-  // have space for at least |count| characters.
-  void Advance(unsigned count, UChar* consumed_characters);
 
   ALWAYS_INLINE int NumberOfCharactersConsumed() const {
     int number_of_pushed_characters = 0;
@@ -325,6 +325,10 @@ class PLATFORM_EXPORT SegmentedString {
 
   UChar AdvanceSubstring();
 
+  // Consume characters into `characters`, which should not be bigger than
+  // `length()`.
+  void AdvanceAndCollect(base::span<UChar> characters);
+
   inline LookAheadResult LookAheadInline(const String& string,
                                          TextCaseSensitivity case_sensitivity) {
     if (string.length() <= static_cast<unsigned>(current_string_.length())) {
@@ -342,10 +346,10 @@ class PLATFORM_EXPORT SegmentedString {
     unsigned count = string.length();
     if (count > length())
       return kNotEnoughCharacters;
-    UChar* consumed_characters;
+    base::span<UChar> consumed_characters;
     String consumed_string =
         String::CreateUninitialized(count, consumed_characters);
-    Advance(count, consumed_characters);
+    AdvanceAndCollect(consumed_characters);
     LookAheadResult result = kDidNotMatch;
     if (consumed_string.StartsWith(string, case_sensitivity))
       result = kDidMatch;

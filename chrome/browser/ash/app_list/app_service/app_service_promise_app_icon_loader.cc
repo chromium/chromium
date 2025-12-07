@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
@@ -27,7 +26,7 @@ AppServicePromiseAppIconLoader::AppServicePromiseAppIconLoader(
     Profile* profile,
     int resource_size_in_dip,
     AppIconLoaderDelegate* delegate)
-    : AppIconLoader(profile, resource_size_in_dip, delegate) {
+    : AppIconLoader(resource_size_in_dip, delegate), profile_(profile) {
   promise_app_registry_cache_observation_.Observe(
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache());
@@ -42,9 +41,6 @@ bool AppServicePromiseAppIconLoader::CanLoadImageForApp(const std::string& id) {
 // static
 bool AppServicePromiseAppIconLoader::CanLoadImage(Profile* profile,
                                                   const std::string& id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return false;
-  }
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return false;
   }

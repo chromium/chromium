@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.text.TextUtils;
@@ -10,6 +12,8 @@ import android.view.animation.Interpolator;
 
 import androidx.core.view.animation.PathInterpolatorCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -18,26 +22,45 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
  * Controls the image shown in the {@link ContextualSearchBarControl}. Owns animating between the
  * search provider icon and custom image (either a thumbnail or card icon) for the current query.
  */
+@NullMarked
 public class ContextualSearchImageControl {
+
+    interface ImageListener {
+        /** Called when the custom image visibility is updated. */
+        void onUpdateCustomImageVisibility(
+                boolean customImageIsVisible, float visibilityPercentage);
+    }
+
     /** The {@link ContextualSearchPanel} that this class belongs to. */
     private final ContextualSearchPanel mPanel;
 
     /** The percentage that the image is visible that is based upon the panel position. */
     private float mVisibilityPercentageBasedOnPanelPosition;
 
-    public ContextualSearchImageControl(ContextualSearchPanel panel) {
+    /** Listener for updates to the image. */
+    private final ImageListener mListener;
+
+    public ContextualSearchImageControl(ContextualSearchPanel panel, ImageListener listener) {
         mPanel = panel;
+        mListener = listener;
     }
 
     /**
      * Updates the Bar image when in transition between peeked to expanded states.
+     *
      * @param percentage The percentage to the more opened state.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
         if (mCardIconVisible || mThumbnailVisible) {
-            mCustomImageVisibilityPercentage = 1.f - percentage;
+            setCustomImageVisibility(1.f - percentage);
             mVisibilityPercentageBasedOnPanelPosition = percentage;
         }
+    }
+
+    private void setCustomImageVisibility(float percentage) {
+        mCustomImageVisibilityPercentage = percentage;
+        mListener.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ percentage > 0, percentage);
     }
 
     // ============================================================================================
@@ -78,7 +101,7 @@ public class ContextualSearchImageControl {
     // ============================================================================================
 
     /** The URL of the thumbnail to display. */
-    private String mThumbnailUrl;
+    private @Nullable String mThumbnailUrl;
 
     /** Whether the thumbnail is visible. */
     private boolean mThumbnailVisible;
@@ -177,16 +200,16 @@ public class ContextualSearchImageControl {
 
         mThumbnailUrl = "";
         mThumbnailVisible = false;
-        mCustomImageVisibilityPercentage = 0.f;
+        setCustomImageVisibility(0.f);
     }
 
     // ============================================================================================
     // Thumbnail Animation
     // ============================================================================================
 
-    private CompositorAnimator mImageVisibilityAnimator;
+    private @Nullable CompositorAnimator mImageVisibilityAnimator;
 
-    private Interpolator mCustomImageVisibilityInterpolator;
+    private @Nullable Interpolator mCustomImageVisibilityInterpolator;
 
     private void animateCustomImageVisibility(boolean visible) {
         // If the panel is expanded then #onUpdateFromPeekToExpand() is responsible for setting
@@ -208,7 +231,7 @@ public class ContextualSearchImageControl {
                         OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
                         animator -> {
                             if (mVisibilityPercentageBasedOnPanelPosition > 0.f) return;
-                            mCustomImageVisibilityPercentage = animator.getAnimatedValue();
+                            setCustomImageVisibility(animator.getAnimatedValue());
                         });
         mImageVisibilityAnimator.setInterpolator(mCustomImageVisibilityInterpolator);
         mImageVisibilityAnimator.addListener(
@@ -216,7 +239,7 @@ public class ContextualSearchImageControl {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (mCustomImageVisibilityPercentage == 0.f) onCustomImageHidden();
-                        mImageVisibilityAnimator.removeAllListeners();
+                        assumeNonNull(mImageVisibilityAnimator).removeAllListeners();
                         mImageVisibilityAnimator = null;
                     }
                 });

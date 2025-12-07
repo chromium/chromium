@@ -21,14 +21,13 @@
 #include "base/timer/timer.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
-#include "content/browser/tracing/background_tracing_config_impl.h"
-#include "content/browser/tracing/trace_report/trace_report_database.h"
-#include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_upload_list.h"
+#include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
 #include "content/browser/tracing/tracing_scenario.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 
 namespace tracing::mojom {
@@ -40,11 +39,7 @@ namespace content {
 namespace mojom {
 class ChildProcess;
 }  // namespace mojom
-
-class BackgroundTracingActiveScenario;
 class TracingDelegate;
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingDatabase);
 
 class BackgroundTracingManagerImpl
     : public BackgroundTracingManager,
@@ -76,20 +71,20 @@ class BackgroundTracingManagerImpl
   enum class Metrics {
     SCENARIO_ACTIVATION_REQUESTED = 0,
     SCENARIO_ACTIVATED_SUCCESSFULLY = 1,
-    RECORDING_ENABLED = 2,
-    PREEMPTIVE_TRIGGERED = 3,
-    REACTIVE_TRIGGERED = 4,
-    FINALIZATION_ALLOWED = 5,
-    FINALIZATION_DISALLOWED = 6,
+    // RECORDING_ENABLED = 2, Obsolete
+    // PREEMPTIVE_TRIGGERED = 3, Obsolete
+    // REACTIVE_TRIGGERED = 4, Obsolete
+    // FINALIZATION_ALLOWED = 5, Obsolete
+    // FINALIZATION_DISALLOWED = 6, Obsolete
     FINALIZATION_STARTED = 7,
-    OBSOLETE_FINALIZATION_COMPLETE = 8,
+    // OBSOLETE_FINALIZATION_COMPLETE = 8, Obsolete
     SCENARIO_ACTION_FAILED_LOWRES_CLOCK = 9,
     UPLOAD_FAILED = 10,
     UPLOAD_SUCCEEDED = 11,
-    STARTUP_SCENARIO_TRIGGERED = 12,
+    // STARTUP_SCENARIO_TRIGGERED = 12, Obsolete
     LARGE_UPLOAD_WAITING_TO_RETRY = 13,
-    SYSTEM_TRIGGERED = 14,
-    REACHED_CODE_SCENARIO_TRIGGERED = 15,
+    // SYSTEM_TRIGGERED = 14, Obsolete
+    // REACHED_CODE_SCENARIO_TRIGGERED = 15, Obsolete
     FINALIZATION_STARTED_WITH_LOCAL_OUTPUT = 16,
     DATABASE_INITIALIZATION_FAILED = 17,
     DATABASE_CLEANUP_FAILED = 18,
@@ -101,7 +96,8 @@ class BackgroundTracingManagerImpl
 
   CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
-  BackgroundTracingManagerImpl();
+  explicit CONTENT_EXPORT BackgroundTracingManagerImpl(
+      TracingDelegate* delegate);
   ~BackgroundTracingManagerImpl() override;
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
@@ -117,24 +113,24 @@ class BackgroundTracingManagerImpl
       const perfetto::protos::gen::TracingTriggerRulesConfig& config) override;
   bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-      DataFiltering data_filtering) override;
+      DataFiltering data_filtering,
+      bool force_upload,
+      size_t upload_limit_kb) override;
   std::vector<std::string> AddPresetScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) override;
-  std::vector<std::pair<std::string, std::string>> GetAllPresetScenarios()
-      const override;
   bool SetEnabledScenarios(
       std::vector<std::string> enabled_scenarios_hashes) override;
-  std::vector<std::string> GetEnabledScenarios() const override;
 
-  bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,
-                         DataFiltering data_filtering) override;
   bool HasActiveScenario() override;
   void DeleteTracesInDateRange(base::Time start, base::Time end) override;
 
   // TracingScenario::Delegate:
   bool OnScenarioActive(TracingScenario* scenario) override;
   bool OnScenarioIdle(TracingScenario* scenario) override;
+  void OnScenarioError(TracingScenario* scenario,
+                       perfetto::TracingError error) override;
+  bool OnScenarioCloned(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
   void SaveTrace(TracingScenario* scenario,
                  base::Token trace_uuid,
@@ -146,14 +142,23 @@ class BackgroundTracingManagerImpl
   void RemoveNamedTriggerObserver(const std::string& trigger_name,
                                   BackgroundTracingRule* observer);
 
+  // Returns the list of scenario hashes and names that were saved,
+  // whether or not enabled.
+  CONTENT_EXPORT std::vector<traces_internals::mojom::ScenarioPtr>
+  GetAllScenarios() const;
+
+  std::vector<std::string> OverwritePresetScenarios(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering);
+
+  // Returns the list of scenario hashes that are currently enabled. These are
+  // either all preset scenarios or all field scenarios.
+  CONTENT_EXPORT std::vector<std::string> GetEnabledScenarios() const;
+
   bool HasTraceToUpload() override;
-  void GetTraceToUpload(
-      base::OnceCallback<void(std::optional<std::string>,
-                              std::optional<std::string>)>) override;
-  std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
-      const std::string& trial_name) override;
-  void SetSystemProfileRecorder(
-      base::RepeatingCallback<std::string()> recorder) override;
+  void GetTraceToUpload(base::OnceCallback<void(std::optional<std::string>,
+                                                std::optional<std::string>,
+                                                base::OnceClosure)>) override;
 
   CONTENT_EXPORT size_t GetScenarioSavedCount(const std::string& scenario_name);
   CONTENT_EXPORT void InitializeTraceReportDatabase(
@@ -182,19 +187,17 @@ class BackgroundTracingManagerImpl
   void AddAgentObserver(AgentObserver* observer);
   void RemoveAgentObserver(AgentObserver* observer);
 
-  void AddMetadataGeneratorFunction();
-
-  // Called by BackgroundTracingActiveScenario
   void OnStartTracingDone();
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
                            const std::string& rule_name,
+                           std::optional<int32_t> rule_value,
                            bool privacy_filter_enabled,
-                           bool is_crash_scenario,
+                           bool is_local_scenario,
+                           bool force_upload,
                            const base::Token& uuid);
 
   // For tests
-  CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();
   CONTENT_EXPORT void InvalidateTriggersCallbackForTesting();
   CONTENT_EXPORT bool IsTracingForTesting();
   CONTENT_EXPORT void AbortScenarioForTesting() override;
@@ -202,27 +205,37 @@ class BackgroundTracingManagerImpl
                                           const std::string& scenario_name,
                                           const std::string& rule_name,
                                           const base::Token& uuid) override;
+  CONTENT_EXPORT void SetUploadLimitsForTesting(size_t upload_limit_kb,
+                                                size_t upload_limit_network_kb);
   CONTENT_EXPORT void SetPreferenceManagerForTesting(
       std::unique_ptr<PreferenceManager> preferences);
-
- private:
-#if BUILDFLAG(IS_ANDROID)
-  // ~1MB compressed size.
-  constexpr static int kUploadLimitKb = 5 * 1024;
-#else
-  // Less than 10MB compressed size.
-  constexpr static int kUploadLimitKb = 30 * 1024;
-#endif
-
-  bool RequestActivateScenario();
-
-  // Named triggers
-  bool DoEmitNamedTrigger(const std::string& trigger_name,
-                          std::optional<int32_t>) override;
 
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  // ~1MB compressed size.
+  constexpr static int kDefaultUploadLimitKb = 5 * 1024;
+#else
+  // Less than 10MB compressed size.
+  constexpr static int kDefaultUploadLimitKb = 30 * 1024;
+#endif
+
+  bool RequestActivateScenario();
+  void DisableScenarios();
+  void AddMetadataGeneratorFunction();
+  std::vector<std::string> AddPresetScenariosImpl(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering,
+      bool overwrite_conflicts);
+
+  // Named triggers
+  bool DoEmitNamedTrigger(const std::string& trigger_name,
+                          std::optional<int32_t>,
+                          uint64_t) override;
+
   void OnScenarioAborted();
   static void AddPendingAgent(
       int child_process_id,
@@ -237,21 +250,20 @@ class BackgroundTracingManagerImpl
                               bool success);
   void OnTraceDatabaseUpdated(ScenarioCountMap scenario_saved_counts);
   void OnTraceSaved(const std::string& scenario_name,
-                    std::optional<NewTraceReport> trace_to_upload,
+                    std::optional<BaseTraceReport> trace_to_upload,
                     bool success);
   void CleanDatabase();
-  size_t GetTraceUploadLimitKb() const;
 
-  std::unique_ptr<TracingDelegate> delegate_;
-  std::unique_ptr<BackgroundTracingActiveScenario> legacy_active_scenario_;
+  raw_ptr<TracingDelegate> delegate_;
+  std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
   std::vector<std::unique_ptr<TracingScenario>> field_scenarios_;
   base::flat_map<std::string, std::unique_ptr<TracingScenario>>
       preset_scenarios_;
   std::vector<raw_ptr<TracingScenario>> enabled_scenarios_;
   raw_ptr<TracingScenario> active_scenario_{nullptr};
+  base::TimeTicks scenario_start_time_;
   std::vector<std::unique_ptr<BackgroundTracingRule>> trigger_rules_;
   ReceiveCallback receive_callback_;
-  base::RepeatingCallback<std::string()> system_profile_recorder_;
 
   std::map<std::string, base::ObserverList<BackgroundTracingRule>>
       named_trigger_observers_;
@@ -278,7 +290,7 @@ class BackgroundTracingManagerImpl
   std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  std::optional<NewTraceReport> trace_report_to_upload_;
+  std::optional<BaseTraceReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;
@@ -287,7 +299,8 @@ class BackgroundTracingManagerImpl
   // compression the data size usually reduces by 3x for size < 10MB, and the
   // compression ratio grows up to 8x if the buffer size is around 100MB.
   size_t upload_limit_network_kb_ = 1024;
-  size_t upload_limit_kb_ = kUploadLimitKb;
+  size_t upload_limit_kb_ = kDefaultUploadLimitKb;
+  bool force_uploads_ = false;
 
   base::WeakPtrFactory<BackgroundTracingManagerImpl> weak_factory_{this};
 };

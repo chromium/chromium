@@ -1,12 +1,27 @@
 <script>
-iterLimit = 2;
-if (location.search !== '')
-  iterLimit = parseInt(location.search.substr(1));
+let iterLimit = 2;
+let trustedBiddingSignalsURL = undefined;
+let trustedBiddingSignalsCoordinator = undefined;
+
+if (location.search !== '') {
+  let searchParams = new URLSearchParams(location.search);
+  iterLimit = searchParams.get("count") ?? iterLimit;
+  if (searchParams.get("useTrustedBiddingSignals") === "true") {
+    trustedBiddingSignalsURL =
+        "https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.json.php";
+  }
+  let coordinator = searchParams.get("coordinator");
+  if (coordinator) {
+    trustedBiddingSignalsCoordinator = coordinator;
+  }
+}
 for (var i = 0; i < iterLimit; ++i) {
   navigator.joinAdInterestGroup({
     name: i,
     owner: "https://a.test:8443/",
     biddingLogicURL: "https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php",
+    trustedBiddingSignalsURL,
+    trustedBiddingSignalsCoordinator,
     ads: [{
       renderURL: 'https://example.com/render' + i,
       metadata: {ad: 'metadata', here: [1, 2, 3]}

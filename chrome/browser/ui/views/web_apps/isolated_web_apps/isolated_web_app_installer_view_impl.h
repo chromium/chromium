@@ -14,10 +14,6 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace gfx {
-class Size;
-}  // namespace gfx
-
 namespace ui {
 class DialogModelLabel;
 class ImageModel;
@@ -27,8 +23,11 @@ namespace views {
 class Widget;
 }  // namespace views
 
+class SkBitmap;
+
 namespace web_app {
 
+class InstallerDialogView;
 class DisabledView;
 class GetMetadataView;
 class InstallView;
@@ -61,9 +60,6 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   views::Widget* ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog) override;
 
-  // `views::View`:
-  gfx::Size GetMaximumSize() const override;
-
  private:
   template <class T, class... Args>
   T* MakeAndAddChildView(Args&&... args) {
@@ -81,6 +77,9 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
                                  const ui::ImageModel& icon,
                                  std::optional<int> ok_label);
 
+  void OnIconMaskedUpdateAppIcon(InstallerDialogView* view,
+                                 SkBitmap masked_bitmap);
+
   void ShowChildView(views::View* view);
 
   void OnChildDialogDestroying();
@@ -94,6 +93,7 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   raw_ptr<InstallSuccessView> install_success_view_;
 
   bool dialog_visible_;
+  bool icon_masked_ = false;
 
   base::WeakPtrFactory<IsolatedWebAppInstallerViewImpl> weak_ptr_factory_{this};
 };

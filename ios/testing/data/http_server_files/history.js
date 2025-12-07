@@ -2,57 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.onload = function() {
-  window.addEventListener('popstate', onPopstate);
-  updateOnloadDivText('onload');
-  pollForURLAndStateChanges();
-};
-
-var onPopstate = function(e) {
-  var state = e.state;
-  var displayText = !state ? '' : state.button || state;
+function onPopstate(e) {
+  const state = e.state;
+  const displayText = !state ? '' : state.button || state;
   updateStatusText(displayText);
   // Only clear the onload text for popstate events.  Cross-document navigations
   // to pages with state objects should display both onload and the state.
-  if (displayText)
+  if (displayText) {
     clearOnloadDivText();
-};
+  }
+}
 
-var updateOnloadDivText = function(text) {
+function updateOnloadDivText(text) {
   document.getElementById('onloaddiv').innerHTML = text;
-};
+}
 
-var clearOnloadDivText = function() {
+function clearOnloadDivText() {
   updateOnloadDivText('');
-};
+}
 
-var pollForURLAndStateChanges = function() {
+function pollForURLAndStateChanges() {
   document.getElementById('currentUrl').innerHTML = window.location.href;
-  var state = window.history.state;
-  var displayText = !state ? '' : state.button || state;
+  const state = window.history.state;
+  const displayText = !state ? '' : state.button || state;
   updateStatusText(displayText);
   window.setTimeout(pollForURLAndStateChanges, 50);
-};
+}
 
-var updateStatusText = function(text) {
-  if (!text)
+function updateStatusText(text) {
+  if (!text) {
     document.getElementById('status').innerHTML = '';
-  else {
+  } else {
     document.getElementById('status').innerHTML = 'Action: ' + text;
   }
-};
+}
 
 function pushStateHashWithObject() {
   clearOnloadDivText();
-  var state = {
+  const state = {
     button: 'pushStateHashWithObject',
     a: new Date(),
     b: 1,
-    c: true
+    c: true,
   };
   window.history.pushState(state, 'Push with object', '#pushWithObject');
   updateStatusText('pushStateHashWithObject');
-};
+}
 
 function pushStateHashString() {
   clearOnloadDivText();
@@ -61,47 +56,47 @@ function pushStateHashString() {
       'Push hash string',
       '#string');
   updateStatusText('pushStateHashString');
-};
+}
 
 function pushStateRootPath() {
   clearOnloadDivText();
   window.history.pushState(
       'pushStateRootPath', 'Push root path', '/ios/rootpath');
   updateStatusText('pushStateRootPath');
-};
+}
 
 function pushStatePath() {
   clearOnloadDivText();
   window.history.pushState('pushStatePath', 'Push path', 'path');
   updateStatusText('pushStatePath');
-};
+}
 
 function pushStatePathSpace() {
   clearOnloadDivText();
   window.history.pushState('pushStatePathSpace', 'Push path space', 'pa th');
   updateStatusText('pushStatePathSpace');
-};
+}
 
 function replaceStateHashWithObject() {
   clearOnloadDivText();
-  var state = {
-    button: "replaceStateHashWithObject",
+  const state = {
+    button: 'replaceStateHashWithObject',
     a: [1, 2, 3, 4, 5],
-    b: ['foo', false, 'bar', 3.6]
+    b: ['foo', false, 'bar', 3.6],
   };
   window.history.replaceState(
       state,
       'Replace with object',
       '#replaceWithObject');
   updateStatusText('replaceStateHashWithObject');
-};
+}
 
 function replaceStateHashString() {
   clearOnloadDivText();
   window.history.replaceState(
       'replaceStateHashString', 'Replace state hash', '#replace');
   updateStatusText('replaceStateHashString');
-};
+}
 
 function replaceStateRootPathSpace() {
   clearOnloadDivText();
@@ -110,13 +105,13 @@ function replaceStateRootPathSpace() {
       'Replace root path',
       '/ios/rep lace');
   updateStatusText('replaceStateRootPathSpace');
-};
+}
 
 function replaceStatePath() {
   clearOnloadDivText();
   window.history.replaceState('replaceStatePath', 'Replace path', 'replace');
   updateStatusText('replaceStatePath');
-};
+}
 
 function replaceStateThenPushState() {
   clearOnloadDivText();
@@ -139,58 +134,64 @@ function pushStateThenReplaceState() {
 function goBack() {
   clearOnloadDivText();
   window.history.back();
-};
+}
 
 function goBack2() {
   clearOnloadDivText();
   window.history.go(-2);
-};
+}
 
 function goBack3() {
   clearOnloadDivText();
   window.history.go(-3);
-};
+}
 
 function goBack4() {
   clearOnloadDivText();
   window.history.go(-4);
-};
+}
 
 function goForward() {
   clearOnloadDivText();
   window.history.forward();
-};
+}
 
 function goForward2() {
   clearOnloadDivText();
   window.history.go(2);
-};
+}
 
 function goForward4() {
   clearOnloadDivText();
   window.history.go(4);
-};
+}
 
 function pushStateUnicode() {
-  var unicodeChar = String.fromCharCode(0x1111);
+  const unicodeChar = String.fromCharCode(0x1111);
   clearOnloadDivText();
   window.history.pushState(
       'pushStateUnicode' + unicodeChar,
       'Push unicode',
       '#unicode' + unicodeChar);
   updateStatusText('pushStateUnicode' + unicodeChar);
-};
+}
 
 function pushStateUnicode2() {
-  var unicodeChar = String.fromCharCode(0x2222);
+  const unicodeChar = String.fromCharCode(0x2222);
   clearOnloadDivText();
-  var state = {
-    button: "pushStateUnicode2" + unicodeChar,
-    title: "Push unicode 2" + unicodeChar
+  const state = {
+    button: 'pushStateUnicode2' + unicodeChar,
+    title: 'Push unicode 2' + unicodeChar,
   };
   window.history.pushState(
       state,
       '',
       '#unicode2' + unicodeChar);
   updateStatusText('pushStateUnicode2' + unicodeChar);
+}
+
+window.onload = function() {
+  window.addEventListener('popstate', onPopstate);
+  updateOnloadDivText('onload');
+  pollForURLAndStateChanges();
 };

@@ -1,0 +1,32 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsSound}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsSoundDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.SOUND]]"
+      allow-option-label="$i18n{siteSettingsSoundAllowed}"
+      allow-option-icon="privacy:volume-up"
+      block-option-label="$i18n{siteSettingsSoundBlocked}"
+      block-option-sub-label="$i18n{siteSettingsSoundBlockedSubLabel}"
+      block-option-icon="privacy:volume-off">
+  </settings-category-default-radio-group>
+  <settings-toggle-button
+      id="blockAutoplaySetting"
+      class="hr"
+      label="$i18n{siteSettingsBlockAutoplaySetting}"
+      pref="{{blockAutoplayStatus_.pref}}"
+      disabled="[[!blockAutoplayStatus_.enabled]]"
+      hidden="[[!enableBlockAutoplayContentSetting_]]"
+      on-settings-boolean-control-change="onBlockAutoplayToggleChange_"
+      no-set-pref>
+  </settings-toggle-button>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.SOUND]]"
+      allow-header="$i18n{siteSettingsSoundAllowedExceptions}"
+      block-header="$i18n{siteSettingsSoundBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

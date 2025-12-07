@@ -25,7 +25,7 @@ static const char kPaymentDetailsTotal[] = "total";
 
 }  // namespace
 
-PaymentDetails::PaymentDetails() {}
+PaymentDetails::PaymentDetails() = default;
 PaymentDetails::~PaymentDetails() = default;
 
 PaymentDetails::PaymentDetails(const PaymentDetails& other) {
@@ -55,10 +55,6 @@ bool PaymentDetails::operator==(const PaymentDetails& other) const {
          display_items == other.display_items &&
          shipping_options == other.shipping_options &&
          modifiers == other.modifiers && error == other.error;
-}
-
-bool PaymentDetails::operator!=(const PaymentDetails& other) const {
-  return !(*this == other);
 }
 
 bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,

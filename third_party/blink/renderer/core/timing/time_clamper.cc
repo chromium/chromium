@@ -28,7 +28,8 @@ base::TimeDelta TimeClamper::ClampTimeResolution(
   // that.
   if (time_microseconds < 0) {
     was_negative = true;
-    time_microseconds = -time_microseconds;
+    time_microseconds =
+        -std::max(-std::numeric_limits<int64_t>::max(), time_microseconds);
   }
 
   // Split the time_microseconds to lower and upper digits to prevent uniformity
@@ -56,7 +57,9 @@ base::TimeDelta TimeClamper::ClampTimeResolution(
   if (time_lower_digits >= tick_threshold)
     clamped_time += resolution;
 
-  // Add back the upper digits portion.
+  // Add back the upper digits portion while avoiding signed integer overflow.
+  time_upper_digits = std::min(
+      time_upper_digits, std::numeric_limits<int64_t>::max() - clamped_time);
   clamped_time += time_upper_digits;
 
   // Flip the number back to being negative if it started that way.

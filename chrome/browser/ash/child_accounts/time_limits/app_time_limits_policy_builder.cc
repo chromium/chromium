@@ -6,8 +6,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 AppTimeLimitsPolicyBuilder::AppTimeLimitsPolicyBuilder() {
   value_.Set(policy::kAppLimitsArray, base::Value::List());
@@ -37,5 +36,4 @@ void AppTimeLimitsPolicyBuilder::SetAppActivityReportingEnabled(bool enabled) {
   value_.Set(policy::kActivityReportingEnabled, enabled);
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

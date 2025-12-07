@@ -22,15 +22,17 @@ inline constexpr const char kMinPrioritySql[] =
 // property is only guaranteed because of the use of AUTOINCREMENT on the
 // source_id column, which prevents reuse upon row deletion.
 inline constexpr const char kGetMatchingSourcesSql[] =
-    "SELECT I.source_id,I.num_attributions,"
-    "I.num_aggregatable_attribution_reports "
+    "SELECT I.priority,I.source_id,I.num_attributions>0 OR "
+    "I.num_aggregatable_attribution_reports>0,"
+    "I.attribution_scopes_data,I.source_time "
     "FROM sources I "
-    "JOIN source_destinations D "
-    "ON D.source_id=I.source_id AND D.destination_site=? "
     "WHERE I.reporting_origin=? "
     "AND(I.event_level_active=1 OR I.aggregatable_active=1)"
     "AND I.expiry_time>? "
-    "ORDER BY I.priority DESC,I.source_id DESC";
+    "AND I.source_id IN("
+    "SELECT source_id FROM source_destinations D "
+    "WHERE D.destination_site IN(?,?,?)"
+    ")";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "
@@ -65,8 +67,6 @@ inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
     "AND(event_level_active=1 OR aggregatable_active=1)"
     "AND expiry_time>?";
 
-inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
-
 inline constexpr const char kDedupKeySql[] =
     "SELECT dedup_key,report_type FROM dedup_keys WHERE source_id=?";
 
@@ -83,11 +83,26 @@ inline constexpr const char kGetNullReportsDataKeysSql[] =
 inline constexpr const char kGetRateLimitDataKeysSql[] =
     "SELECT reporting_origin FROM rate_limits";
 
-inline constexpr const char kCountReportsForDestinationSql[] =
+inline constexpr const char kGetAggregatableDebugRateLimitDataKeysSql[] =
+    "SELECT reporting_origin FROM aggregatable_debug_rate_limits";
+
+static_assert(static_cast<int>(
+                  attribution_reporting::mojom::ReportType::kEventLevel) == 0,
+              "update `report_type=0` clause below");
+inline constexpr const char kCountEventLevelReportsForDestinationSql[] =
     "SELECT COUNT(*)FROM source_destinations D "
     "JOIN reports R "
     "ON R.source_id=D.source_id "
-    "WHERE D.destination_site=? AND R.report_type=?";
+    "WHERE D.destination_site=? AND R.report_type=0";
+
+static_assert(
+    static_cast<int>(
+        attribution_reporting::mojom::ReportType::kAggregatableAttribution) ==
+        1,
+    "update `report_type=1` clause below");
+inline constexpr const char kCountAggregatableReportsForDestinationSql[] =
+    "SELECT COUNT(*)FROM reports "
+    "WHERE context_site=? AND report_type=1";
 
 inline constexpr char kNextReportTimeSql[] =
     "SELECT MIN(report_time)FROM reports WHERE report_time>?";
@@ -125,6 +140,8 @@ inline constexpr const char kSetReportTimeSql[] =
   prefix "remaining_aggregatable_debug_budget," \
   prefix "aggregatable_source,"                \
   prefix "filter_data,"                        \
+  prefix "attribution_scopes_data,"            \
+  prefix "aggregatable_named_budgets,"         \
   prefix "event_level_active,"                 \
   prefix "aggregatable_active,"                \
   prefix "read_only_source_data"
@@ -145,7 +162,7 @@ inline constexpr const char kGetActiveSourcesSql[] =
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                        \
   ",R.report_id,R.trigger_time,R.report_time,R.initial_report_time,"          \
   "R.failed_send_attempts,R.external_report_id,R.debug_key,R.context_origin," \
-  "R.reporting_origin,R.report_type,R.metadata "                              \
+  "R.reporting_origin,R.report_type,R.metadata,R.context_site "               \
   "FROM reports R "                                                           \
   "LEFT JOIN sources I ON R.source_id=I.source_id "
 
@@ -168,7 +185,7 @@ inline constexpr const char kUpdateFailedReportSql[] =
 static_assert(static_cast<int>(
                   attribution_reporting::mojom::ReportType::kEventLevel) == 0,
               "update `report_type=0` clause below");
-inline constexpr const char kDeleteEventLevelReportsForDestinationLimitSql[] =
+inline constexpr const char kDeletePendingEventLevelReportsForSourceSql[] =
   "DELETE FROM reports "
   "WHERE report_type=0 AND source_id=? AND trigger_time>=? "
   "RETURNING report_id";
@@ -252,6 +269,21 @@ inline constexpr const char kRateLimitSelectSourceReportingOriginsBySiteSql[] =
     " AND reporting_site=?"
     " AND time>?";
 
+inline constexpr const char
+    kRateLimitCountUniqueReportingOriginsPerReportingSiteForSourceSql[] =
+        "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
+        "WHERE " RATE_LIMIT_SOURCE_CONDITION
+        " AND reporting_site=?"
+        " AND time>?";
+
+inline constexpr const char
+    kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql[] =
+        "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
+        "WHERE " RATE_LIMIT_SOURCE_CONDITION
+        " AND destination_site=?"
+        " AND reporting_site=?"
+        " AND time>?";
+
 static_assert(RateLimitTable::kUnsetRecordId == -1,
               "update `report_id!=-1` query below");
 #define RATE_LIMIT_REPORT_ID_SET_CONDITION "report_id!=-1"
@@ -306,6 +338,31 @@ inline constexpr const char kSelectAggregatableDebugRateLimitsForDeletionSql[] =
 inline constexpr const char kDeleteAggregatableDebugRateLimitRangeSql[] =
     "DELETE FROM aggregatable_debug_rate_limits "
     "WHERE time BETWEEN ?1 AND ?2";
+
+inline constexpr const char kDeleteExpiredOsRegistrationsSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE time<=?";
+
+inline constexpr const char kSelectOsRegistrationsForDeletionSql[] =
+    "SELECT registration_origin,time "
+    "FROM os_registrations "
+    "WHERE time BETWEEN ?1 AND ?2";
+
+inline constexpr const char kDeleteOsRegistrationsRangeSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE time BETWEEN ?1 AND ?2";
+
+inline constexpr const char kDeleteOsRegistrationAtTimeSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE registration_origin=? AND time=?";
+
+inline constexpr const char kDeleteOsRegistrationSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE registration_origin=? "
+    "AND time BETWEEN ? AND ?";
+
+inline constexpr const char kGetOsRegistrationDataKeysSql[] =
+    "SELECT DISTINCT registration_origin FROM os_registrations";
 
 }  // namespace content::attribution_queries
 

@@ -11,13 +11,11 @@
 #include <vector>
 
 #include "base/atomic_ref_count.h"
-#include "base/auto_reset.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/ref_counted.h"
@@ -27,16 +25,15 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
@@ -49,7 +46,9 @@
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -57,6 +56,9 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
@@ -94,12 +96,16 @@ std::string CurrentAppShortcutsArch() {
   return base::SysInfo::OperatingSystemArchitecture();
 }
 #else
-// Non-mac platforms do not update shortcuts.
-const int kCurrentAppShortcutsVersion = 0;
 std::string CurrentAppShortcutsArch() {
   return "";
 }
-#endif
+#if BUILDFLAG(IS_WIN)
+const int kCurrentAppShortcutsVersion = 1;
+#else
+// Non-mac/win platforms do not update shortcuts.
+const int kCurrentAppShortcutsVersion = 0;
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Delay in seconds before running UpdateShortcutsForAllApps.
 const int kUpdateShortcutsForAllAppsDelay = 10;
@@ -200,10 +206,6 @@ void OsIntegrationManager::Start() {
   CHECK(provider_);
   CHECK(file_handler_manager_);
 
-  // Profile manager can be null in unit tests.
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
-    profile_manager_observation_.Observe(profile_manager);
-  }
   file_handler_manager_->Start();
   if (protocol_handler_manager_) {
     protocol_handler_manager_->Start();
@@ -211,14 +213,11 @@ void OsIntegrationManager::Start() {
   UpdateShortcutsForAllAppsIfNeeded();
 }
 
-void OsIntegrationManager::Shutdown() {
-  profile_manager_observation_.Reset();
-}
-
 void OsIntegrationManager::Synchronize(
     const webapps::AppId& app_id,
     base::OnceClosure callback,
     std::optional<SynchronizeOsOptions> options) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   first_synchronize_called_ = true;
 
   // This is usually called to clean up OS integration states on the OS,
@@ -247,9 +246,41 @@ void OsIntegrationManager::Synchronize(
     return;
   }
 
-  std::unique_ptr<proto::WebAppOsIntegrationState> desired_states =
-      std::make_unique<proto::WebAppOsIntegrationState>();
-  proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    LOG(ERROR)
+        << "Can't perform OS integration while the browser is shutting down.";
+    std::move(callback).Run();
+    return;
+  }
+
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      ScopedProfileKeepAlive::TryAcquire(profile_,
+                                         ProfileKeepAliveOrigin::kWebAppUpdate);
+  if (!profile_keep_alive) {
+    // Profile is scheduled for destruction, abort.
+    std::move(callback).Run();
+    return;
+  }
+  std::unique_ptr<ScopedKeepAlive> browser_keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_INSTALL,
+                                        KeepAliveRestartOption::DISABLED);
+
+  auto end_keep_alive_then_run_callback =
+      base::OnceClosure(
+          base::DoNothingWithBoundArgs(std::move(profile_keep_alive),
+                                       std::move(browser_keep_alive)))
+          .Then(std::move(callback));
+#else
+  // TODO(crbug.com/394384898): Do this for ChromeOS too once it
+  // doesn't break browser tests using InstallSystemAppsForTesting.
+  auto end_keep_alive_then_run_callback = std::move(callback);
+#endif
+
+  std::unique_ptr<proto::os_state::WebAppOsIntegration> desired_states =
+      std::make_unique<proto::os_state::WebAppOsIntegration>();
+  proto::os_state::WebAppOsIntegration* desired_states_ptr =
+      desired_states.get();
 
   // Note: Sometimes the execute step is a no-op based on feature flags or if os
   // integration is disabled for testing. This logic is in the
@@ -259,7 +290,8 @@ void OsIntegrationManager::Synchronize(
       sub_managers_.size(),
       base::BindOnce(&OsIntegrationManager::StartSubManagerExecutionIfRequired,
                      weak_ptr_factory_.GetWeakPtr(), app_id, options,
-                     std::move(desired_states), std::move(callback)));
+                     std::move(desired_states),
+                     std::move(end_keep_alive_then_run_callback)));
 
   for (const auto& sub_manager : sub_managers_) {
     // This dereference is safe because the barrier closure guarantees that it
@@ -307,11 +339,12 @@ void OsIntegrationManager::GetShortcutInfoForAppFromRegistrar(
       GetDesiredIconSizesForShortcut());
 
   if (!icon_sizes_in_px.empty()) {
-    provider_->icon_manager().ReadIcons(
-        app_id, IconPurpose::ANY, icon_sizes_in_px,
-        base::BindOnce(&OsIntegrationManager::OnIconsRead,
-                       weak_ptr_factory_.GetWeakPtr(), app_id,
-                       std::move(callback)));
+    provider_->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id, icon_sizes_in_px, IconPurpose::ANY,
+        web_app::WebAppIconManager::BitmapsFromIconMetadataExtractor(
+            base::BindOnce(&OsIntegrationManager::OnIconsRead,
+                           weak_ptr_factory_.GetWeakPtr(), app_id,
+                           std::move(callback))));
     return;
   }
 
@@ -347,7 +380,8 @@ std::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
 }
 
 std::vector<custom_handlers::ProtocolHandler>
-OsIntegrationManager::GetAppProtocolHandlers(const webapps::AppId& app_id) {
+OsIntegrationManager::GetAppProtocolHandlers(
+    const webapps::AppId& app_id) const {
   if (!protocol_handler_manager_)
     return std::vector<custom_handlers::ProtocolHandler>();
 
@@ -382,21 +416,19 @@ FakeOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
   return nullptr;
 }
 
-void OsIntegrationManager::OnProfileMarkedForPermanentDeletion(
-    Profile* profile_to_be_deleted) {
-  if (profile_ != profile_to_be_deleted) {
-    return;
-  }
-
-  WebAppRegistrar& registrar = provider_->registrar_unsafe();
-
-  for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-    UnregisterOsIntegrationOnProfileMarkedForDeletion(app_id);
-  }
-}
-
-void OsIntegrationManager::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
+void OsIntegrationManager::UnregisterOsIntegrationOnProfileMarkedForDeletion(
+    base::PassKey<WebAppProfileDeletionManager>,
+    const webapps::AppId& app_id) {
+  CHECK_OS_INTEGRATION_ALLOWED();
+  // This is used to keep the profile from being deleted while doing a
+  // ForceUnregister when profile deletion is started.
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
+  ForceUnregisterOsIntegrationOnSubManager(
+      app_id, 0,
+      base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(profile_keep_alive)));
 }
 
 void OsIntegrationManager::SetForceUnregisterCalledForTesting(
@@ -407,7 +439,7 @@ void OsIntegrationManager::SetForceUnregisterCalledForTesting(
 void OsIntegrationManager::StartSubManagerExecutionIfRequired(
     const webapps::AppId& app_id,
     std::optional<SynchronizeOsOptions> options,
-    std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
+    std::unique_ptr<proto::os_state::WebAppOsIntegration> desired_states,
     base::OnceClosure on_all_execution_done) {
   // The "execute" step is skipped in the following cases:
   // 1. The app is no longer in the registrar. The whole synchronize process is
@@ -420,7 +452,8 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
     return;
   }
 
-  proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
+  proto::os_state::WebAppOsIntegration* desired_states_ptr =
+      desired_states.get();
   auto write_state_to_db = base::BindOnce(
       &OsIntegrationManager::WriteStateToDB, weak_ptr_factory_.GetWeakPtr(),
       app_id, std::move(desired_states), std::move(on_all_execution_done));
@@ -439,8 +472,8 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
 void OsIntegrationManager::ExecuteNextSubmanager(
     const webapps::AppId& app_id,
     std::optional<SynchronizeOsOptions> options,
-    proto::WebAppOsIntegrationState* desired_state,
-    const proto::WebAppOsIntegrationState current_state,
+    proto::os_state::WebAppOsIntegration* desired_state,
+    const proto::os_state::WebAppOsIntegration current_state,
     size_t index,
     base::OnceClosure on_all_execution_done_db_write) {
   CHECK(index < sub_managers_.size());
@@ -459,7 +492,7 @@ void OsIntegrationManager::ExecuteNextSubmanager(
 
 void OsIntegrationManager::WriteStateToDB(
     const webapps::AppId& app_id,
-    std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
+    std::unique_ptr<proto::os_state::WebAppOsIntegration> desired_states,
     base::OnceClosure callback) {
   // Exit early if the app is already uninstalled. We still need to write the
   // desired_states to the web_app DB during the uninstallation process since
@@ -479,20 +512,6 @@ void OsIntegrationManager::WriteStateToDB(
   }
 
   std::move(callback).Run();
-}
-
-void OsIntegrationManager::UnregisterOsIntegrationOnProfileMarkedForDeletion(
-    const webapps::AppId& app_id) {
-  CHECK_OS_INTEGRATION_ALLOWED();
-  // This is used to keep the profile from being deleted while doing a
-  // ForceUnregister when profile deletion is started.
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
-  ForceUnregisterOsIntegrationOnSubManager(
-      app_id, 0,
-      base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
-                     weak_ptr_factory_.GetWeakPtr(), app_id,
-                     std::move(profile_keep_alive)));
 }
 
 void OsIntegrationManager::SubManagersUnregistered(
@@ -624,6 +643,7 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfoForWebApp(
 
   shortcut_info->app_id = app->app_id();
   shortcut_info->url = app->start_url();
+  shortcut_info->is_diy_app = app->is_diy_app();
   shortcut_info->title = base::UTF8ToUTF16(
       provider_->registrar_unsafe().GetAppShortName(app->app_id()));
   shortcut_info->description = base::UTF8ToUTF16(

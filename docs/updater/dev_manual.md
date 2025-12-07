@@ -9,8 +9,10 @@ including tips and tricks.
 ## Code Organization
 
 ## Bots & Lab
+
 >**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.
+
 ### Builders / Testers
 There are two sets of configuration files for our builders/testers. One is
 for chromium-branded and locates in `src`. The other one is for chrome-branded
@@ -141,6 +143,27 @@ To update these copies of the updaters:
         script. The min version usually is different per-platform, since
         Chromium does not archive a version at every CL. After making these
         changes, 3pp will import the new versions within a few hours.
+    *   As an example, let us suppose that
+        [revision 1371769](https://crrev.com/1371769)
+        is the change that needs to be picked up for the checked-in version.
+        * Look up the chrome version by checking
+          [chromiumdash](https://chromiumdash.appspot.com/).
+        * It shows that version `132.0.6791.0` is the version `1371769` was
+          released with.
+        * Make sure the `updater` is shipping at a `version` higher than
+          `132.0.6791.0`
+          [here](https://versionhistory.googleapis.com/v1/chromium_updater/platforms/win/channels/canary/versions/all/releases?filter=endtime=none)
+          .
+        * Look up the chromium versions under
+          [commondatastorage](https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html)
+          , in the folders corresponding to `get_platform()` for each
+          `fetch.py`, for instance, the `Win`, `Win_x64`, and `Win_Arm64`
+          folders for the Windows `fetch.py` files, and look up a build with a
+          revision greater than `1371781`, corresponding to `r1371769`, and make
+          sure that the `updater.zip` file is present in those folders.
+        * Make changes to the `fetch.py` files based on the lookups, and send it
+          out for review.
+        * After the change lands, give it a few hours for the fetch to complete.
 3.  Update //DEPS to point to the new versions.
 
 ## Developing
@@ -149,6 +172,78 @@ Where possible, cross-platform code is preferred to other alternatives. This
 means that the source code of the updater is organized in sub-directories,
 first by functionality (or feature), and second by platform name. For example,
 the source code contains `updater\net` instead of `updater\mac\net`.
+
+### Strings and file paths
+
+Strings in `Posix` are 8-bit encoded characters, usually (but not always) using
+`UTF8` encoding.
+
+Strings in `Windows` can be 8-bit or 16-bit characters, usually `UTF8` or
+`UTF16` respectively. The `updater` project uses 16-bit strings for most
+Windows-specific literals, since that is the Chromium coding style for Windows,
+and there are some Windows APIs that only have the `W` variant that require
+16-bit strings.
+
+The `updater` project uses 8-bit literals and 8-bit characters for
+cross-platform code, and uses conversion functions such as `base::UTF8ToWide`
+and `base::WideToUTF8` to convert to and from 8-bit strings for Windows-specific
+code paths that are called from the cross-platform code.
+
+Using the `ASCII` functions is not allowed in the `updater` codebase, unless
+there is no alternative native or `UTF8` function.
+
+#### Appending strings to a file path
+
+When appending strings to a `FilePath`, there are several functions available,
+such as:
+* `Append`: appends a string using the native format
+* `AppendUTF8`: appends a UTF8-encoded string
+* `AppendASCII`: appends an ASCII-encoded string. ASCII is a subset of UTF8.
+  This function is not used in the `updater` project.
+
+These are the rules to follow when appending strings to a `FilePath`:
+
+1. Use `base::FilePath::Append` for platform-specific code
+    *   Since `Append` does not do any conversions, it is the safest function to
+        use for platform-specific code, since the characters can retain their
+        native format without undergoing any conversions.
+2. Use `base::FilePath::Append` for cross-platform code where
+   `FILE_PATH_LITERAL` can be used to wrap the literals
+    *   Since `Append` does not do any conversions, it is the most efficient
+        function to use in this case.
+3. Use `base::FilePath::AppendUTF8` for all other cross-platform code
+    *   cross-platform code is expected to use UTF8 literals or UTF8 strings
+        only.
+
+#### Creating a file path from a string
+
+These are the rules to follow when constructing a `FilePath` from a string:
+
+1. Use the `base::FilePath` constructor for platform-specific code
+    *   Since the `base::FilePath` constructor does not do any conversions, it
+        is the safest function to use for platform-specific code, since the
+        characters can retain their native format without undergoing any
+        conversions.
+2. Use the `base::FilePath` constructor for cross-platform code where
+   `FILE_PATH_LITERAL` can be used to wrap the literals
+    *   Since the `base::FilePath` constructor does not do any conversions, it
+        is the most efficient function to use in this case.
+3. Use `base::FilePath::FromUTF8Unsafe` for all other cross-platform code
+    *   cross-platform code is expected to use UTF8 literals or UTF8 strings
+        only.
+
+#### Converting a file path to a string
+
+These are the rules to follow when converting a `FilePath` to a string:
+
+1. Use `base::FilePath::value()` for platform-specific code
+    *   Since `value()` does not do any conversions, it is the safest function
+        to use for platform-specific code, since the characters can retain their
+        native format without undergoing any conversions.
+2. Use `base::FilePath::AsUTF8Unsafe` for cross-platform code
+    *   `AsUTF8Unsafe` is safe to use for both `Posix` (where it returns the
+        underlying string unmodified) and `Windows` (where the underlying wide
+        string is converted using `base::WideToUTF8`).
 
 ### Mind the dependencies
 
@@ -221,6 +316,25 @@ Updater branding affects the path the updater installs itself to, among other
 things. Differently-branded copies of Chromium Updater are intended to coexist
 on a machine, operating independently from each other.
 
+### Build output
+The build generates the following main files:
+
+  - `updater.exe` (Windows) / `ChromiumUpdater.app` (macOS): The actual updater
+    application.
+  - `UpdaterSetup.exe` (Windows): The self-extracting "metainstaller", suitable
+    for tagging, signing, and further distribution.
+  - `UpdaterSigning`: A collection of scripts and tools used to sign the
+    updater.
+  - `qualification_app` (.exe on Windows): A simple app run by each version of
+    the updater prior to taking over as the active updater. Updaters will
+    download and run whatever version is actually released (not what you've
+    built), and the qualification app can be version skewed with the updater.
+  - `ChromiumUpdaterUtil` (macOS): A utility program for debugging the updater.
+  - `chrome/updater/.install` (macOS): A Keystone-compatible install script that
+    drives the updater's installation during update.
+  - `updater.zip`: A zip file containing all of the above, for uploading to the
+    archive / signing infrastructure.
+
 ### Cleaning the build output
 Running `ninja` with `t clean` cleans the build out directory. For example:
 ```
@@ -249,6 +363,27 @@ Build outputs will land in the directory created by `gn gen` that you have been
 providing to assorted `gn`, `ninja`, and `autoninja` commands. `updater.zip`
 contains copies of the "final" outputs created by the build. `UpdaterSetup` is
 probably what you want for installing the updater you have built.
+
+## Signing
+
+GoogleUpdater signing doesn't take place on Chromium infra, but rather on
+proprietary Google infrastructure (go/o4signing). The build system packages all
+necessary ingredients for signing in updater.zip, which is uploaded by Chrome
+archive builders to the unsigned builds bucket in GCS. The zip contains both
+the artifacts to be signed and scripts to sign them. Signing infrastructure is
+triggered after each upload, ingests the files, injects the key material, signs,
+and then uploads the results to the signed builds bucket. More detail is
+available for Googlers at go/o4signing.
+
+On Windows, it's important to sign updater.exe, and then package that into
+UpdaterSetup.exe, and sign UpdaterSetup.exe. The signing scripts take an
+unsigned UpdaterSetup.exe, extract updater.exe, sign, reconstruct, and then
+sign the new UpdaterSetup.exe.
+
+On macOS, the GoogleUpdater.app bundle is signed directly, and then notarized
+(sent to Apple for countersigning). Notarization is "stapled" into the app
+bundle, and then the entire thing is packaged into a DMG, which in turn is
+signed, notarized, and stapled.
 
 ## Code Coverage
 Gerrit now down-votes the changes that do not have enough coverage. And it's
@@ -434,10 +569,29 @@ and chrome\app\google_chrome_strings_grd\IDS_NO_NETWORK_PRESENT_ERROR.png.sha1.
 * Add these `.sha1` files to your CL. Do not add the actual `.png` images to
 your CL.
 * Once the images are successfully uploaded via `upload_screenshots.py`, delete
-them from your local enlistment. However, if `upload_screenshots.py` encounters
-the following error:
-`ServiceException: 401 Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).`
-see crbug.com/1491876 for a resolution or workaround to upload the images.
+them from your local enlistment.
+
+However, if `upload_screenshots.py` encounters the following error, then the
+screenshots have to be manually uploaded to
+https://storage.cloud.google.com/chromium-translation-screenshots/.
+
+```
+ServiceException: 401 Anonymous caller does not have storage.objects.list
+access to the Google Cloud Storage bucket. Permission 'storage.objects.list'
+denied on resource (or it may not exist).
+```
+
+To manually upload each screenshot:
+* Get the `sha1` generated from the tool. So for example, for
+chrome/app/chromium_strings_grd/IDS_UNKNOWN_APPLICATION.png, the `sha1` is
+`085c88707d854787e0c1310d93b519e93d906592`.
+* Rename the `.png` file to the `sha1` hash name. So for example, rename
+`chrome/app/chromium_strings_grd/IDS_UNKNOWN_APPLICATION.png` to
+`chrome/app/chromium_strings_grd/085c88707d854787e0c1310d93b519e93d906592`.
+* upload
+`chrome/app/chromium_strings_grd/085c88707d854787e0c1310d93b519e93d906592` to
+https://storage.cloud.google.com/chromium-translation-screenshots/.
+* Edit the `content-type` from `application/octet-stream` to `image/png`.
 
 ## Troubleshooting
 
@@ -458,3 +612,23 @@ see crbug.com/1491876 for a resolution or workaround to upload the images.
   `gn args` to verify that `symbol_level=1` (or `0`) is present. If it's not,
   you're running into a known issue where the default symbol level, `2`,
   outputs symbols too large for the linker to comprehend.
+
+### Interpreting numeric exit codes and error codes
+
+* Chrome installer exit codes: early in
+[chrome/installer/util/util_constants.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/util/util_constants.h)
+* Updater installer and update service errors: as of 2025-08-15, they start at
+line 327 of
+[chrome/updater/constants.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/constants.h)
+* Update client errors:
+[components/update_client/update_client_errors.h](https://chromium.googlesource.com/chromium/src/+/main/components/update_client/update_client_errors.h)
+* Response codes reported from the network fetcher are standard HTTP
+  response codes.
+* Update service state and result codes in general:
+[chrome/updater/mojom/updater_service.mojom](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/mojom/updater_service.mojom)
+which are intended to stay in sync with the equivalent enumerations in
+[chrome/updater/update_service.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/update_service.h)
+* Chromium Mini-Installer exit codes:
+[chrome/installer/mini_installer/exit_code.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/mini_installer/exit_code.h)
+* LZMA unpacker error codes:
+[chrome/installer/util/lzma_util.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/util/lzma_util.h)

@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Enterprise Reporting WebUI is ChromeOS Ash only.")
+assert(is_chromeos, "Enterprise Reporting WebUI is ChromeOS only.")
 
 mojom("mojo_bindings") {
   sources = [ "enterprise_reporting.mojom" ]
@@ -40,11 +40,12 @@ static_library("enterprise_reporting") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/chromeos/enterprise_reporting:resources",
-    "//chrome/browser/ui/webui",
     "//components/reporting/util:status",
     "//components/version_info",
     "//content/public/browser",
+    "//ui/webui",
   ]
 }
 

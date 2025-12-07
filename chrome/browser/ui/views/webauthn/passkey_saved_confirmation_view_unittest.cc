@@ -6,7 +6,15 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
+
+namespace {
+
+constexpr char kRpId[] = "touhou.example.com";
 
 class PasskeySavedConfirmationViewTest : public PasswordBubbleViewTestBase {
  public:
@@ -15,7 +23,8 @@ class PasskeySavedConfirmationViewTest : public PasswordBubbleViewTestBase {
 
   void CreateViewAndShow() {
     CreateAnchorViewAndShow();
-    view_ = new PasskeySavedConfirmationView(web_contents(), anchor_view());
+    view_ =
+        new PasskeySavedConfirmationView(web_contents(), anchor_view(), kRpId);
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 
@@ -36,3 +45,5 @@ TEST_F(PasskeySavedConfirmationViewTest, ShowsTitle) {
   CreateViewAndShow();
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
 }
+
+}  // namespace

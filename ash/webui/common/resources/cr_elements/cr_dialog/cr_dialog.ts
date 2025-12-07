@@ -30,8 +30,8 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrContainerShadowMixin} from '../cr_container_shadow_mixin.js';
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
-import {CrInputElement} from '../cr_input/cr_input.js';
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from '../cr_input/cr_input.js';
 
 import {getTemplate} from './cr_dialog.html.js';
 
@@ -334,7 +334,7 @@ export class CrDialogElement extends CrDialogElementBase {
     // Only show pulse animation if user left-clicked outside of the dialog
     // contents.
     if (e.button !== 0 ||
-        (e.composedPath()[0]! as HTMLElement).tagName !== 'DIALOG') {
+        (e.composedPath()[0] as HTMLElement).tagName !== 'DIALOG') {
       return;
     }
 

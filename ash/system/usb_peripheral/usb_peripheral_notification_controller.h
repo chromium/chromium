@@ -39,6 +39,7 @@ class ASH_EXPORT UsbPeripheralNotificationController
   void OnInvalidUSB4CableWarning() override;
   void OnInvalidTBTCableWarning() override;
   void OnSpeedLimitingCableWarning() override;
+  void OnUsbDeviceOrEndpointLimit() override;
 
   // Stubs from PCIE Notification controller
   void OnLimitedPerformancePeripheralReceived() override {}

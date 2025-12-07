@@ -46,7 +46,7 @@ void MojoCdmServiceContext::UnregisterCdm(
   cdm_services_.erase(cdm_id);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 base::UnguessableToken MojoCdmServiceContext::RegisterRemoteCdmContext(
     chromeos::RemoteCdmContext* remote_context) {
   DCHECK(remote_context);
@@ -63,7 +63,7 @@ void MojoCdmServiceContext::UnregisterRemoteCdmContext(
   DCHECK(remote_cdm_contexts_.count(cdm_id));
   remote_cdm_contexts_.erase(cdm_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
     const base::UnguessableToken& cdm_id) {
@@ -75,19 +75,18 @@ std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
     auto cdm_service = cdm_services_.find(cdm_id);
     if (cdm_service != cdm_services_.end()) {
       if (!cdm_service->second->GetCdm()->GetCdmContext()) {
-        NOTREACHED_IN_MIGRATION() << "All CDMs should support CdmContext.";
-        return nullptr;
+        NOTREACHED() << "All CDMs should support CdmContext.";
       }
       return std::make_unique<CdmContextRefImpl>(cdm_service->second->GetCdm());
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   // Try the remote contexts now.
   auto remote_context = remote_cdm_contexts_.find(cdm_id);
   if (remote_context != remote_cdm_contexts_.end())
     return remote_context->second->GetCdmContextRef();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   LOG(ERROR) << "CdmContextRef cannot be obtained for CDM ID: " << cdm_id;
   return nullptr;

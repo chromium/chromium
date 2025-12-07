@@ -4,20 +4,18 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("privacy_hub") {
   sources = [
-    "privacy_hub_hats_trigger.cc",
-    "privacy_hub_hats_trigger.h",
     "privacy_hub_util.cc",
     "privacy_hub_util.h",
   ]
 
   deps = [
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
+    "//chromeos/ash/components/camera_presence_notifier",
     "//components/session_manager/core",
   ]
 
@@ -33,11 +31,19 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "privacy_hub_hats_trigger_browsertest.cc" ]
+  sources = [ "privacy_hub_geolocation_browsertest.cc" ]
 
   deps = [
-    "//base",
-    "//chrome/browser/ash/hats",
-    "//chrome/test:test_support",
+    ":privacy_hub",
+    "//ash",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/geolocation",
+    "//testing/gtest",
   ]
 }

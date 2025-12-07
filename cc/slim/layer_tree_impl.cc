@@ -11,7 +11,11 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram.h"
-#include "base/ranges/algorithm.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/base/histograms.h"
@@ -31,6 +35,7 @@
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -64,6 +69,16 @@ class LayerTreeImplScopedKeepSurfaceAlive
   const viz::SurfaceRange range_;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// This enum is used for the "Compositing.Slim.BeginFrameResult" histogram.
+enum class SlimBeginFrameResult {
+  kEarlyOutNoDraw = 0,
+  kEarlyOutProcessed = 1,
+  kFrameProduced = 2,
+  kMaxValue = kFrameProduced,
+};
+
 }  // namespace
 
 LayerTreeImpl::PresentationCallbackInfo::PresentationCallbackInfo(
@@ -90,6 +105,7 @@ LayerTreeImpl::LayerTreeImpl(LayerTreeClient* client,
 
 LayerTreeImpl::~LayerTreeImpl() {
   SetRoot(nullptr);
+  FlushBeginFrameResults();
 }
 
 cc::UIResourceManager* LayerTreeImpl::GetUIResourceManager() {
@@ -159,7 +175,7 @@ void LayerTreeImpl::RequestCopyOfOutput(
     std::unique_ptr<viz::CopyOutputRequest> request) {
   if (request->has_source()) {
     const base::UnguessableToken& source = request->source();
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         copy_requests_for_next_frame_,
         [&source](const std::unique_ptr<viz::CopyOutputRequest>& x) {
           return x->has_source() && x->source() == source;
@@ -240,6 +256,7 @@ void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
 
 void LayerTreeImpl::ReleaseLayerTreeFrameSink() {
   DCHECK(!IsVisible());
+  MaybeReleaseResources();
   frame_sink_.reset();
   damage_from_previous_frame_.clear();
 }
@@ -267,10 +284,18 @@ bool LayerTreeImpl::BeginFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
+  base::ElapsedTimer timer;
+  if (begin_frame_not_needed_count_ + begin_frame_processed_count_ +
+          begin_frame_produced_count_ >=
+      100) {
+    FlushBeginFrameResults();
+  }
+
   // Skip any delayed BeginFrame messages that arrive even after we no longer
   // need it.
   if (!NeedsDraw()) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotNeeded", TRACE_EVENT_SCOPE_THREAD);
+    ++begin_frame_not_needed_count_;
     num_begin_frames_with_no_draw_++;
     frame_sink_->SetNeedsBeginFrame(NeedsBeginFrames());
     return false;
@@ -291,6 +316,7 @@ bool LayerTreeImpl::BeginFrame(
   needs_draw_ = false;
 
   if (!root_ || device_viewport_rect_.IsEmpty()) {
+    ++begin_frame_processed_count_;
     UpdateNeedsBeginFrame();
     return false;
   }
@@ -298,6 +324,13 @@ bool LayerTreeImpl::BeginFrame(
   GenerateCompositorFrame(args, out_frame, out_resource_ids,
                           out_hit_test_region_list);
   UpdateNeedsBeginFrame();
+
+  ++begin_frame_produced_count_;
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.Browser.BeginFrame.Produced.Duration.Subsampled",
+        timer.Elapsed(), base::Microseconds(1), base::Milliseconds(30), 50);
+  }
   return true;
 }
 
@@ -342,6 +375,7 @@ void LayerTreeImpl::DidPresentCompositorFrame(
 
 void LayerTreeImpl::DidLoseLayerTreeFrameSink() {
   client_->DidLoseLayerTreeFrameSink();
+  MaybeReleaseResources();
   frame_sink_.reset();
   MaybeRequestFrameSink();
 }
@@ -443,6 +477,45 @@ bool LayerTreeImpl::NeedsDraw() const {
   return client_needs_one_begin_frame_ || needs_draw_;
 }
 
+void LayerTreeImpl::FlushBeginFrameResults() {
+  if (begin_frame_not_needed_count_ == 0 && begin_frame_processed_count_ == 0 &&
+      begin_frame_produced_count_ == 0) {
+    return;
+  }
+
+  // The UMA_HISTOGRAM_ENUMERATION macro is not suitable for adding a count > 1.
+  // Instead, we get the histogram pointer and use AddCount(). For performance,
+  // the pointer is cached in a static variable.
+  static base::HistogramBase* histogram = nullptr;
+  if (!histogram) {
+    constexpr char kHistogramName[] = "Compositing.Slim.BeginFrameResult";
+    // For enums, the max value is one higher than the max enumerator value.
+    constexpr int kBoundary =
+        static_cast<int>(SlimBeginFrameResult::kMaxValue) + 1;
+    // The number of buckets is boundary + 1 to include the overflow bucket.
+    histogram = base::LinearHistogram::FactoryGet(
+        kHistogramName, 1, kBoundary, kBoundary + 1,
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+  }
+
+  if (begin_frame_not_needed_count_ > 0) {
+    histogram->AddCount(static_cast<int>(SlimBeginFrameResult::kEarlyOutNoDraw),
+                        begin_frame_not_needed_count_);
+    begin_frame_not_needed_count_ = 0;
+  }
+  if (begin_frame_processed_count_ > 0) {
+    histogram->AddCount(
+        static_cast<int>(SlimBeginFrameResult::kEarlyOutProcessed),
+        begin_frame_processed_count_);
+    begin_frame_processed_count_ = 0;
+  }
+  if (begin_frame_produced_count_ > 0) {
+    histogram->AddCount(static_cast<int>(SlimBeginFrameResult::kFrameProduced),
+                        begin_frame_produced_count_);
+    begin_frame_produced_count_ = 0;
+  }
+}
+
 bool LayerTreeImpl::NeedsBeginFrames() const {
   return NeedsDraw() ||
          num_begin_frames_with_no_draw_ < num_unneeded_begin_frame_before_stop_;
@@ -453,15 +526,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
-  TRACE_EVENT(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(args.trace_id), [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_GENERATE_COMPOSITOR_FRAME);
-      });
-
   for (auto& resource_request :
        ui_resource_manager_.TakeUIResourcesRequests()) {
     switch (resource_request.GetType()) {
@@ -500,7 +564,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
     // embed something. There is no way to provide an offset value without an
     // embedded viz::Surface to look the value up from.
     // TODO(b/334144355): Don't tag quads if no definition is added.
-    if (layer->surface_id().is_valid()) {
+    if (layer->surface_range().IsValid()) {
       out_frame.metadata.offset_tag_definitions.push_back(
           layer->GetOffsetTagDefinition(tag));
     }
@@ -566,8 +630,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
   for (const auto& pass : out_frame.render_pass_list) {
     total_quad_count += pass->quad_list.size();
     for (const auto* quad : pass->quad_list) {
-      for (viz::ResourceId resource_id : quad->resources) {
-        out_resource_ids.insert(resource_id);
+      if (quad->resource_id != viz::kInvalidResourceId) {
+        out_resource_ids.insert(quad->resource_id);
       }
     }
   }
@@ -625,6 +689,15 @@ void LayerTreeImpl::Draw(Layer& layer,
       registered_offset_tags_.contains(layer.offset_tag())) {
     // A layer can't have a different offset tag than it's ancestor.
     CHECK(!data.offset_tag);
+
+    // If a mask filter from a parent layer that applies to tagged `layer` then
+    // the mask filter bounds shouldn't move based on offset. Currently viz
+    // assumes that mask bounds should move so don't allow this case. Allowing
+    // this would require plumbing a bool to viz that indicates if
+    // `SharedQuadState::mask_filter_info` should be translated, see
+    // crbug.com/361804880 for details
+    CHECK(!data.mask_filter_info_in_target.HasRoundedCorners() &&
+          !data.mask_filter_info_in_target.HasGradientMask());
 
     offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
 
@@ -1051,6 +1124,19 @@ void LayerTreeImpl::ProcessDamageForRenderPass(
   render_pass.damage_rect = damage;
   render_pass.has_damage_from_contributing_content =
       !render_pass.damage_rect.IsEmpty();
+}
+
+void LayerTreeImpl::MaybeReleaseResources() {
+  if (frame_sink_ && root_) {
+    ReleaseResourcesFromLayerAndChildren(root_.get());
+  }
+}
+
+void LayerTreeImpl::ReleaseResourcesFromLayerAndChildren(Layer* layer) {
+  layer->ReleaseResources();
+  for (auto& child : layer->children()) {
+    ReleaseResourcesFromLayerAndChildren(child.get());
+  }
 }
 
 }  // namespace cc::slim

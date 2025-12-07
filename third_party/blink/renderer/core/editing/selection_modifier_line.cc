@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 
 namespace blink {
@@ -60,8 +61,8 @@ class AbstractLineBox {
     if (cursor_.Current().IsEmptyLineBox())
       return false;
     const PhysicalSize physical_size = cursor_.Current().Size();
-    const LogicalSize logical_size = physical_size.ConvertToLogical(
-        cursor_.Current().Style().GetWritingMode());
+    const LogicalSize logical_size = ToLogicalSize(
+        physical_size, cursor_.Current().Style().GetWritingMode());
     if (!logical_size.block_size)
       return false;
     for (InlineCursor cursor(cursor_); cursor; cursor.MoveToNext()) {
@@ -117,6 +118,10 @@ class AbstractLineBox {
       bool only_editable_leaves) const {
     return PositionForPoint(cursor_, point_in_container, only_editable_leaves);
   }
+  const LayoutBlockFlow& GetBlock() const {
+    DCHECK(IsNotNull());
+    return *cursor_.GetLayoutBlockFlow();
+  }
 
  private:
   explicit AbstractLineBox(const InlineCursor& cursor)
@@ -124,10 +129,6 @@ class AbstractLineBox {
     DCHECK(cursor_.Current().IsLineBox());
   }
 
-  const LayoutBlockFlow& GetBlock() const {
-    DCHECK(IsNotNull());
-    return *cursor_.GetLayoutBlockFlow();
-  }
 
   LayoutUnit PhysicalBlockOffset() const {
     DCHECK(IsNotNull());
@@ -154,9 +155,10 @@ class AbstractLineBox {
     DCHECK(line.Current().IsLineBox());
     const PhysicalSize unit_square(LayoutUnit(1), LayoutUnit(1));
     const LogicalOffset logical_point =
-        point.ConvertToLogical({line.Current().Style().GetWritingMode(),
-                                line.Current().BaseDirection()},
-                               line.Current().Size(), unit_square);
+        WritingModeConverter({line.Current().Style().GetWritingMode(),
+                              line.Current().BaseDirection()},
+                             line.Current().Size())
+            .ToLogical(point, unit_square);
     const LayoutUnit inline_offset = logical_point.inline_offset;
     InlineCursor closest_leaf_child;
     LayoutUnit closest_leaf_distance;
@@ -394,8 +396,9 @@ PositionInFlatTreeWithAffinity SelectionModifier::PreviousLinePosition(
   AbstractLineBox line = AbstractLineBox::CreateFor(position);
   if (line) {
     line = line.PreviousLine();
-    if (!line || !line.CanBeCaretContainer())
+    if (!line || !line.CanBeCaretContainer()) {
       line = AbstractLineBox();
+    }
   }
 
   if (!line) {

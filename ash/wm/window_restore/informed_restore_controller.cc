@@ -5,7 +5,6 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 
 #include "ash/birch/birch_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -45,11 +44,14 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -69,10 +71,8 @@ bool ShouldShowInformedRestoreImage(const gfx::ImageSkia& image) {
   const gfx::Size image_size = image.size();
   const bool is_image_landscape = image_size.width() > image_size.height();
 
-  // TODO(minch|sammiequon): The informed restore dialog will only be shown
-  // inside the primary display for now. Change the logic here if it changes.
   const display::Display display_with_dialog =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   const bool is_display_landscape = chromeos::IsLandscapeOrientation(
       chromeos::GetDisplayCurrentOrientation(display_with_dialog));
 
@@ -139,7 +139,7 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true);
-  dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog->SetModalType(ui::mojom::ModalType::kSystem);
   dialog->SetTopContentView(
       views::Builder<views::ImageView>()
           .SetImage(
@@ -183,17 +183,36 @@ void InformedRestoreController::
   data->restore_callback = std::move(split.first);
   data->cancel_callback = std::move(split.second);
 
+  // Helper to allow us to convert a vector of a pair of strings which is easy
+  // to initialize into a vector of `InformedRestoreContentsData::TabInfo`.
+  auto make_tab_infos =
+      [](const std::vector<std::pair<std::string, std::string>>& tab_list) {
+        std::vector<InformedRestoreContentsData::TabInfo> tab_infos;
+        for (const auto& url_title_pair : tab_list) {
+          tab_infos.push_back(InformedRestoreContentsData::TabInfo(
+              GURL(url_title_pair.first), url_title_pair.second));
+        }
+        return tab_infos;
+      };
+
   // NOTE: Comment/uncomment the following apps locally, but avoid changes as to
   // reduce merge conflicts.
   // Chrome.
-  data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Reddit",
-      /*window_id=*/0,
-      std::vector<GURL>{
-          GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
-          GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
-          GURL("https://www.google.com/")},
-      /*tab_count=*/10u, /*lacros_profile_id=*/0);
+  data->apps_infos.emplace_back("mgndgikekgjfcpckkfioiadnlibdjbkf",
+                                /*tab_title=*/"Reddit",
+                                /*window_id=*/0,
+                                make_tab_infos({
+                                    {"https://www.cnn.com/", "Cnn"},
+                                    {"https://www.reddit.com/", "Reddit"},
+                                    {"https://www.youtube.com/", "Youtube"},
+                                    {"https://www.waymo.com/", "Waymo"},
+                                    {"https://www.google.com/", "Google"},
+                                    {"https://www.cnn.com/", "Cnn"},
+                                    {"https://www.reddit.com/", "Reddit"},
+                                    {"https://www.youtube.com/", "Youtube"},
+                                    {"https://www.waymo.com/", "Waymo"},
+                                    {"https://www.google.com/", "Google"},
+                                }));
   // PWA.
   data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", "Meet",
                                 /*window_id=*/0);
@@ -209,26 +228,25 @@ void InformedRestoreController::
                                 "Calculator", /*window_id=*/0);
 
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps", /*window_id=*/0,
-      std::vector<GURL>{GURL("https://www.google.com/maps/")},
-      /*tab_count=*/1, /*lacros_profile_id=*/0);
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps",
+      /*window_id=*/0,
+      make_tab_infos({{"https://www.google.com/maps/", "Maps"}}));
   data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files",
                                 /*window_id=*/0);
-  data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Twitter",
-      /*window_id=*/0,
-      std::vector<GURL>{GURL("https://www.twitter.com/"),
-                        GURL("https://www.youtube.com/"),
-                        GURL("https://www.google.com/")},
-      /*tab_count=*/3u, /*lacros_profile_id=*/0);
+  data->apps_infos.emplace_back("mgndgikekgjfcpckkfioiadnlibdjbkf",
+                                /*tab_title=*/"Twitter",
+                                /*window_id=*/0,
+                                make_tab_infos({
+                                    {"https://www.twitter.com/", "Twitter"},
+                                    {"https://www.youtube.com/", "Youtube"},
+                                    {"https://www.google.com/", "Google"},
+                                }));
 
   MaybeStartInformedRestoreSession(std::move(data));
 }
 
 void InformedRestoreController::MaybeStartInformedRestoreSession(
     std::unique_ptr<InformedRestoreContentsData> contents_data) {
-  CHECK(features::IsForestFeatureEnabled());
-
   if (OverviewController::Get()->InOverviewSession()) {
     return;
   }
@@ -265,7 +283,7 @@ void InformedRestoreController::MaybeStartInformedRestoreSession(
 
 void InformedRestoreController::MaybeEndInformedRestoreSession() {
   contents_data_.reset();
-  OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
+  OverviewController::Get()->EndOverview(OverviewEndAction::kPine,
                                          OverviewEnterExitType::kNormal);
 }
 
@@ -300,13 +318,6 @@ void InformedRestoreController::OnOverviewModeEndingAnimationComplete(bool cance
 
   in_informed_restore_ = false;
 
-  // In multi-user scenario, forest may have been available for the user that
-  // started overview, but not for the current user. (Switching users ends
-  // overview.)
-  if (!features::IsForestFeatureEnabled()) {
-    return;
-  }
-
   PrefService* prefs = GetActivePrefService();
   if (!prefs) {
     return;
@@ -326,15 +337,24 @@ void InformedRestoreController::OnOverviewModeEndingAnimationComplete(bool cance
     return;
   }
 
+  const ui::ImageModel& nudge_image =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed([]() {
+        if (Shell::Get()->keyboard_capability()->UseRefreshedIcons()) {
+          return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                     ? IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_DM
+                     : IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_LM;
+        }
+
+        return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                   ? IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM
+                   : IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM;
+      }());
+
   AnchoredNudgeData nudge_data(
       informed_restore::kSuggestionsNudgeId,
       NudgeCatalogName::kInformedRestoreEducationNudge,
       l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE));
-  nudge_data.image_model =
-      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-              ? IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM
-              : IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM);
+  nudge_data.image_model = nudge_image;
   nudge_data.fill_image_size = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
@@ -355,8 +375,14 @@ void InformedRestoreController::OnWindowActivated(ActivationReason reason,
 void InformedRestoreController::OnInformedRestoreImageDecoded(
     base::TimeTicks start_time,
     const gfx::ImageSkia& image) {
-  CHECK(contents_data_);
   RecordScreenshotDecodeDuration(base::TimeTicks::Now() - start_time);
+
+  // `contents_data_` may be invalidated if the user or system activates a
+  // window while the image is decoding. If a window is activated, there is no
+  // need to show the informed restore dialog anymore so we can bail out here.
+  if (!contents_data_) {
+    return;
+  }
 
   if (ShouldShowInformedRestoreImage(image)) {
     contents_data_->image = image;
@@ -397,10 +423,8 @@ void InformedRestoreController::StartInformedRestoreSession() {
 
   base::UmaHistogramBoolean(kFullRestoreDialogHistogram, true);
 
-  // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(
-      OverviewStartAction::kAccelerator,
-      OverviewEnterExitType::kInformedRestore);
+      OverviewStartAction::kPine, OverviewEnterExitType::kInformedRestore);
 }
 
 void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {
@@ -410,6 +434,7 @@ void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {
   // Only do this if we have contents data.
   if (contents_data_) {
     onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
+        views::WidgetDelegate::RegisterDeleteCallbackPassKey(),
         base::BindOnce(
             [](const base::WeakPtr<InformedRestoreController>& weak_this) {
               if (weak_this) {

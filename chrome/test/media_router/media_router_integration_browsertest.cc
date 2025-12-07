@@ -16,8 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -43,9 +43,9 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::WebContents;
 using testing::Optional;
@@ -81,30 +81,23 @@ class NoRoutesObserver : public MediaRoutesObserver {
 
 }  // namespace
 
-MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
-  switch (GetParam()) {
-    case UiForBrowserTest::kCast:
-      feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
-      break;
-    case UiForBrowserTest::kGmc:
-      feature_list_.InitWithFeatures(
-          {
-              media::kGlobalMediaControls,
-              kGlobalMediaControlsCastStartStop,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-              // Without this flag, SodaInstaller::GetInstance() fails a DCHECK
-              // on Chrome OS. The call to SodaInstaller::GetInstance() is in
-              // MediaDialogView::AddedToWidget(), which is called indirectly
-              // from MediaDialogView::ShowDialogForPresentationRequest().
-              ash::features::kOnDeviceSpeechRecognition,
+MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest(
+    UiForBrowserTest test_ui_type)
+    : test_ui_type_(test_ui_type) {
+  feature_list_.InitWithFeatures(
+      {
+          media::kGlobalMediaControls,
+#if BUILDFLAG(IS_CHROMEOS)
+          // Without this flag, SodaInstaller::GetInstance() fails a DCHECK
+          // on Chrome OS. The call to SodaInstaller::GetInstance() is in
+          // MediaDialogView::AddedToWidget(), which is called indirectly
+          // from MediaDialogView::ShowDialogForPresentationRequest().
+          ash::features::kOnDeviceSpeechRecognition,
+#else
+          media::kGlobalMediaControlsUpdatedUI,
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
-              media::kGlobalMediaControlsUpdatedUI,
-#endif
-          },
-          {});
-      break;
-  }
+      },
+      {});
 }
 
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
@@ -133,19 +126,18 @@ void MediaRouterIntegrationBrowserTest::SetUp() {
 
 void MediaRouterIntegrationBrowserTest::InitTestUi() {
   auto* const web_contents = GetActiveWebContents();
-  auto* const context = browser()->profile();
   if (test_ui_) {
     test_ui_->TearDown();
   }
-  switch (GetParam()) {
+  switch (test_ui_type_) {
     case UiForBrowserTest::kCast:
-      CHECK(!GlobalMediaControlsCastStartStopEnabled(context));
       test_ui_ = std::make_unique<MediaRouterCastUiForTest>(web_contents);
       break;
     case UiForBrowserTest::kGmc:
-      CHECK(GlobalMediaControlsCastStartStopEnabled(context));
       test_ui_ = std::make_unique<MediaRouterGmcUiForTest>(web_contents);
       break;
+    default:
+      NOTREACHED() << base::to_underlying(test_ui_type_);
   }
 }
 
@@ -282,14 +274,14 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndChooseSink() {
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPage(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringViewType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path)));
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringViewType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestPageUrl(full_path),
@@ -316,7 +308,7 @@ void MediaRouterIntegrationBrowserTest::CheckStartFailed(
 }
 
 base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
-    base::FilePath::StringPieceType relative_path) const {
+    base::FilePath::StringViewType relative_path) const {
   const base::FilePath full_path =
       base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
           .Append(FILE_PATH_LITERAL("media_router/browser_test_resources/"))
@@ -450,25 +442,37 @@ bool MediaRouterIntegrationBrowserTest::RequiresMediaRouteProviders() const {
 // TODO(crbug.com/1238758): Test is flaky on Windows and Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_Basic MANUAL_Basic
+#elif BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
 #endif
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
   RunBasicTest();
 }
 
 // TODO(crbug.com/40784325): Test is flaky on Windows and Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_SendAndOnMessage MANUAL_SendAndOnMessage
+#elif BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_SendAndOnMessage DISABLED_SendAndOnMessage
 #else
 #define MAYBE_SendAndOnMessage SendAndOnMessage
 #endif
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                        MAYBE_SendAndOnMessage) {
   RunSendMessageTest("foo");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_CloseOnError DISABLED_CloseOnError
+#else
+#define MAYBE_CloseOnError CloseOnError
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MAYBE_CloseOnError) {
   test_provider_->set_close_route_error_on_send();
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
@@ -482,45 +486,83 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
 #endif
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                        MAYBE_Fail_SendMessage) {
   RunFailToSendMessageTest();
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_CreateRoute) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_Fail_CreateRoute DISABLED_Fail_CreateRoute
+#else
+#define MAYBE_Fail_CreateRoute Fail_CreateRoute
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_CreateRoute) {
   test_provider_->set_route_error_message("Unknown sink");
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckStartFailed(web_contents, "UnknownError", "Unknown sink");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, ReconnectSession) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_ReconnectSession DISABLED_ReconnectSession
+#else
+#define MAYBE_ReconnectSession ReconnectSession
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_ReconnectSession) {
   RunReconnectSessionTest();
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       Fail_ReconnectSession) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_Fail_ReconnectSession DISABLED_Fail_ReconnectSession
+#else
+#define MAYBE_Fail_ReconnectSession Fail_ReconnectSession
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_ReconnectSession) {
   RunFailedReconnectSessionTest();
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_Fail_StartCancelled DISABLED_Fail_StartCancelled
+#else
+#define MAYBE_Fail_StartCancelled Fail_StartCancelled
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_StartCancelled) {
   WebContents* web_contents = StartSessionWithTestPageAndSink();
   test_ui_->HideDialog();
   CheckStartFailed(web_contents, "NotAllowedError", "Dialog closed.");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       Fail_StartCancelledNoSinks) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_Fail_StartCancelledNoSinks DISABLED_Fail_StartCancelledNoSinks
+#else
+#define MAYBE_Fail_StartCancelledNoSinks Fail_StartCancelledNoSinks
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_StartCancelledNoSinks) {
   test_provider_->set_empty_sink_list();
   StartSessionAndAssertNotFoundError();
 }
 
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       Fail_StartCancelledNoSupportedSinks) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/380369297): Test fixture is not compatible with ChromeOS.
+#define MAYBE_Fail_StartCancelledNoSupportedSinks \
+  DISABLED_Fail_StartCancelledNoSupportedSinks
+#else
+#define MAYBE_Fail_StartCancelledNoSupportedSinks \
+  Fail_StartCancelledNoSupportedSinks
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_StartCancelledNoSupportedSinks) {
   test_provider_->set_unsupported_media_sources_list();
   StartSessionAndAssertNotFoundError();
 }
-
-INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
-    MediaRouterIntegrationBrowserTest);
 
 }  // namespace media_router

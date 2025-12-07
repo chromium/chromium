@@ -22,71 +22,34 @@ namespace base {
 // must be aware that all tests sharing a process will have the same state,
 // regardless of future ScopedFeatureList instances.
 
-BASE_FEATURE(kUseUtilityThreadGroup,
-             "UseUtilityThreadGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNoWorkerThreadReclaim,
-             "NoWorkerThreadReclaim",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDelayFirstWorkerWake,
-             "DelayFirstWorkerWake",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseUtilityThreadGroup, FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
-                                                     "leeway", kDefaultLeeway};
-const base::FeatureParam<TimeDelta> kMaxPreciseDelay{
-    &kAddTaskLeewayFeature, "max_precise_delay", kDefaultMaxPreciseDelay};
+// Note: Do not use the prepared macro as of no need for a local cache.
+constinit const FeatureParam<TimeDelta> kTaskLeewayParam{
+    &kAddTaskLeewayFeature, "leeway", kDefaultLeeway};
+BASE_FEATURE_PARAM(TimeDelta,
+                   kMaxPreciseDelay,
+                   &kAddTaskLeewayFeature,
+                   "max_precise_delay",
+                   kDefaultMaxPreciseDelay);
 
-BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlignWakeUps, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimerSlackMac,
-             "TimerSlackMac",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTimerSlackMac, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExplicitHighResolutionTimerWin,
-             "ExplicitHighResolutionTimerWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUIPumpImprovementsWin, FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUIPumpImprovementsWin,
-             "UIPumpImprovementsWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPumpFastToSleepAndroid,
-             "PumpFastToSleepAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPumpFastToSleepAndroid, FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunTasksByBatches,
-             "RunTasksByBatches",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+             FEATURE_ENABLED_BY_DEFAULT);
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kThreadPoolCap2,
-             "ThreadPoolCap2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
-    &kThreadPoolCap2, "restricted_count", 3};
-
-BASE_FEATURE(kMaxDelayedStarvationTasks,
-             "MaxDelayedStarvationTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
-    &kMaxDelayedStarvationTasks, "count", 3};
-
-BASE_FEATURE(kThreadGroupSemaphore,
-             "ThreadGroupSemaphore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kMaxNumWorkersCreated{
-    &kThreadGroupSemaphore, "max_num_workers_created", 2};
 
 }  // namespace base

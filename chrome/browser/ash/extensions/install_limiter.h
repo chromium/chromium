@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -65,7 +66,7 @@ class InstallLimiter : public KeyedService {
   // Otherwise, it just runs the installer.
   void AddWithSize(const scoped_refptr<CrxInstaller>& installer,
                    const CRXFileInfo& file_info,
-                   int64_t size);
+                   std::optional<int64_t> size);
 
   // Checks and runs deferred big app installs when appropriate.
   void CheckAndRunDeferrredInstalls();

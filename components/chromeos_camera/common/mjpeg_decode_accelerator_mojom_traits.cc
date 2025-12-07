@@ -35,8 +35,7 @@ EnumTraits<chromeos_camera::mojom::DecodeError,
     case chromeos_camera::MjpegDecodeAccelerator::PLATFORM_FAILURE:
       return chromeos_camera::mojom::DecodeError::PLATFORM_FAILURE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return chromeos_camera::mojom::DecodeError::NO_ERRORS;
+  NOTREACHED();
 }
 
 // static
@@ -64,8 +63,7 @@ bool EnumTraits<chromeos_camera::mojom::DecodeError,
       *out = chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

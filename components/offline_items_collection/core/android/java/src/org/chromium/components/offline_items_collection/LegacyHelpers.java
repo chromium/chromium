@@ -6,9 +6,11 @@ package org.chromium.components.offline_items_collection;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Legacy helper information meant to help with the migration process to OfflineItems. */
+@NullMarked
 public class LegacyHelpers {
     // These are legacy namespaces for the purpose of ID generation that will only affect the UI.
     public static final String LEGACY_OFFLINE_PAGE_NAMESPACE = "LEGACY_OFFLINE_PAGE";
@@ -24,7 +26,7 @@ public class LegacyHelpers {
      * @param guid          The {@code guid} of the download.
      * @return              A new {@link ContentId} instance.
      */
-    public static ContentId buildLegacyContentId(boolean isOfflinePage, String guid) {
+    public static ContentId buildLegacyContentId(boolean isOfflinePage, @Nullable String guid) {
         String namespace =
                 isOfflinePage ? LEGACY_OFFLINE_PAGE_NAMESPACE : LEGACY_DOWNLOAD_NAMESPACE;
         return new ContentId(namespace, guid);

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "video_bitrate_allocation.h"
 
+#include <array>
 #include <cstring>
 #include <limits>
 #include <numeric>
@@ -120,7 +116,7 @@ Bitrate::Mode VideoBitrateAllocation::GetMode() const {
 
 std::string VideoBitrateAllocation::ToString() const {
   size_t num_active_spatial_layers = 0;
-  size_t num_temporal_layers[kMaxSpatialLayers] = {};
+  std::array<size_t, kMaxSpatialLayers> num_temporal_layers = {};
   for (size_t sid = 0; sid < kMaxSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < kMaxTemporalLayers; ++tid) {
       if (bitrates_[sid][tid] > 0)
@@ -172,10 +168,7 @@ std::string VideoBitrateAllocation::ToString() const {
 
 bool VideoBitrateAllocation::operator==(
     const VideoBitrateAllocation& other) const {
-  if (sum_bitrate_ != other.sum_bitrate_) {
-    return false;
-  }
-  return memcmp(bitrates_, other.bitrates_, sizeof(bitrates_)) == 0;
+  return sum_bitrate_ == other.sum_bitrate_ && bitrates_ == other.bitrates_;
 }
 
 }  // namespace media

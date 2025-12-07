@@ -15,6 +15,12 @@ Impression::Impression(SchedulerClientType type,
 
 Impression::Impression(const Impression& other) = default;
 
+Impression::Impression(Impression&& other) = default;
+
+Impression& Impression::operator=(const Impression& other) = default;
+
+Impression& Impression::operator=(Impression&& other) = default;
+
 Impression::~Impression() = default;
 
 bool Impression::operator==(const Impression& other) const {
@@ -47,6 +53,12 @@ ClientState::ClientState()
       negative_events_count(0) {}
 
 ClientState::ClientState(const ClientState& other) = default;
+
+ClientState::ClientState(ClientState&& other) = default;
+
+ClientState& ClientState::operator=(const ClientState& other) = default;
+
+ClientState& ClientState::operator=(ClientState&& other) = default;
 
 ClientState::~ClientState() = default;
 

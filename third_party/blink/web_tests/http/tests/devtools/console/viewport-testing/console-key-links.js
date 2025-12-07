@@ -5,7 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as Platform from 'devtools/core/platform/platform.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
@@ -144,8 +144,8 @@ import * as Console from 'devtools/panels/console/console.js';
 
   function dumpFocus(activeElement, messageIndex = 0, skipObjectCheck) {
     const firstMessage = consoleView.visibleViewMessages[messageIndex];
-    const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle');
-    const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden');
+    const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle .console-message-expand-icon');
+    const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden-stack-trace');
     const hasCollapsedObject = firstMessage.element().querySelector('.console-view-object-properties-section:not(.expanded)');
     const hasExpandedObject = firstMessage.element().querySelector('.console-view-object-properties-section.expanded');
 
@@ -169,7 +169,7 @@ import * as Console from 'devtools/panels/console/console.js';
 
     if (!activeElement)
       return;
-    var element = Platform.DOMUtilities.deepActiveElement(document);
+    var element = UI.DOMUtilities.deepActiveElement(document);
     if (!element) {
       TestRunner.addResult('null');
       return;

@@ -7,16 +7,19 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
-import {resetRouterForTesting, loadTimeData, pageVisibility, Router} from 'chrome://settings/settings.js';
+import {AutofillSettingsReferrer, resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, resetPageVisibilityForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
 suite('SettingsMenu', function() {
   let settingsMenu: SettingsMenuElement;
   let routes: SettingsRoutes;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   function createSettingsMenu() {
     routes = Router.getInstance().getRoutes();
@@ -27,7 +30,13 @@ suite('SettingsMenu', function() {
   }
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     createSettingsMenu();
+  });
+
+  teardown(function() {
+    resetPageVisibilityForTesting();
   });
 
   // Test that navigating via the paper menu always clears the current
@@ -77,23 +86,8 @@ suite('SettingsMenu', function() {
     assertFalse(!!selector.selected);
   });
 
-  // <if expr="_google_chrome">
-  test('navigateToGetMostChrome', function() {
-    loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
-    resetRouterForTesting();
-    createSettingsMenu();
-    Router.getInstance().navigateTo(routes.GET_MOST_CHROME);
-    flush();
-
-    // GET_MOST_CHROME should select the 'About Chrome' entry.
-    const selector = settingsMenu.$.menu;
-    assertTrue(!!selector.selected);
-    assertEquals('/help', selector.selected.toString());
-  });
-  // </if>
-
   test('noExperimental', async function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+    loadTimeData.overrideValues({showAiPage: false});
     resetRouterForTesting();
     createSettingsMenu();
     await flushTasks();
@@ -104,7 +98,7 @@ suite('SettingsMenu', function() {
   });
 
   test('navigateToExperimental', async function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    loadTimeData.overrideValues({showAiPage: true});
     resetRouterForTesting();
     createSettingsMenu();
     Router.getInstance().navigateTo(routes.AI);
@@ -126,8 +120,8 @@ suite('SettingsMenu', function() {
         // <if expr="not is_chromeos">
         'defaultBrowser',
         // </if>
-        'downloads', 'languages', 'onStartup', 'people', 'reset',
-        // <if expr="not chromeos_ash">
+        'downloads', 'languages', 'onStartup', 'people', 'performance', 'reset',
+        // <if expr="not is_chromeos">
         'system',
         // </if>
       ];
@@ -144,23 +138,105 @@ suite('SettingsMenu', function() {
     assertPagesHidden(false);
 
     // Set the visibility of the pages under test to "false".
-    settingsMenu.pageVisibility = Object.assign(pageVisibility || {}, {
+    resetPageVisibilityForTesting({
       a11y: false,
-      advancedSettings: false,
       appearance: false,
       defaultBrowser: false,
       downloads: false,
       languages: false,
-      multidevice: false,
       onStartup: false,
       people: false,
+      performance: false,
       reset: false,
-      safetyCheck: false,
       system: false,
     });
-    flush();
+    createSettingsMenu();
 
     // Now, the menu items should be hidden.
     assertPagesHidden(true);
+  });
+
+  test('aiPageMenuClick', async function() {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+    });
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry =
+        settingsMenu.shadowRoot!.querySelector<HTMLElement>('a[href=\'/ai\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    // Ensure UMA is logged.
+    entry.click();
+    assertEquals(
+        'SettingsMenu_AiPageEntryPointClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+
+    await microtasksFinished();
+    assertEquals(routes.AI, Router.getInstance().getCurrentRoute());
+  });
+
+  test('autofillPageMenuClick', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+      'a[href=\'/autofill\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    entry.click();
+    const [histogramName, referrer] = await metricsBrowserProxy.whenCalled(
+        'recordAutofillSettingsReferrer');
+    assertEquals(
+        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
+        histogramName);
+    assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
+
+    await microtasksFinished();
+    assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
+  });
+
+  test('yourSavedInfoHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/yourSavedInfo\']');
+    assertTrue(!!entry);
+    assertFalse(isVisible(entry));
+  });
+
+  test('yourSavedInfoMenuItemClick', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/yourSavedInfo\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    entry.click();
+    await microtasksFinished();
+    const [histogramName, referrer] =
+        await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
+    assertEquals(
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer', histogramName);
+    assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
+
+    const selector = settingsMenu.$.menu;
+    assertTrue(!!selector.selected);
+    assertEquals('/yourSavedInfo', selector.selected.toString());
+    assertEquals(
+        routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
   });
 });

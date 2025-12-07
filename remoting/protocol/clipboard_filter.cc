@@ -24,15 +24,15 @@ void ClipboardFilter::InjectClipboardEvent(const ClipboardEvent& event) {
     return;
   }
 
-  if (max_size_.has_value() && max_size_.value() == 0) {
+  if (max_size_.has_value() && *max_size_ == 0) {
     return;
   }
 
-  if (!max_size_.has_value() || max_size_.value() >= event.data().size()) {
+  if (!max_size_.has_value() || *max_size_ >= event.data().size()) {
     clipboard_stub_->InjectClipboardEvent(event);
   } else {
     ClipboardEvent resized_event(event);
-    resized_event.mutable_data()->resize(max_size_.value());
+    resized_event.mutable_data()->resize(*max_size_);
     clipboard_stub_->InjectClipboardEvent(resized_event);
   }
 }

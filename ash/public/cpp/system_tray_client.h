@@ -200,9 +200,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // reached end of life.
   virtual void ShowEolInfoPage() = 0;
 
-  // Records a UMA metric that the end of life notice was shown.
-  virtual void RecordEolNoticeShown() = 0;
-
   // Returns 'true' if the user preference is set to allow users to submit
   // feedback, 'false' otherwise.
   virtual bool IsUserFeedbackEnabled() = 0;
@@ -222,12 +219,16 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
 
   // Shows a page about premium plans.
   virtual void ShowYouTubeMusicPremiumPage() = 0;
+  virtual void ShowChromebookPerksYouTubePage() = 0;
 
   // Shows settings related to keyboards.
   virtual void ShowKeyboardSettings() = 0;
 
   // Shows settings related to pointing sticks.
   virtual void ShowPointingStickSettings() = 0;
+
+  // Shows settings related to Quick Share (formerly Nearby Share).
+  virtual void ShowNearbyShareSettings() = 0;
 
  protected:
   SystemTrayClient() {}

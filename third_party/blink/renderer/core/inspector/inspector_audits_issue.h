@@ -7,39 +7,37 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
-#include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace WTF {
-class String;
-}
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 namespace blink {
 
+class Document;
 class DocumentLoader;
 class Element;
 class ExecutionContext;
-class LocalFrame;
-class ResourceError;
+class KURL;
 class LocalDOMWindow;
 class LocalFrame;
+class ResourceError;
 class SecurityPolicyViolationEventInit;
 class SourceLocation;
 
-namespace protocol {
-namespace Audits {
+namespace protocol::Audits {
 class InspectorIssue;
-}
-}  // namespace protocol
+}  // namespace protocol::Audits
 
 enum class RendererCorsIssueCode {
   kDisallowedByMode,
@@ -61,6 +59,16 @@ enum class MixedContentResolutionStatus {
 enum class ClientHintIssueReason {
   kMetaTagAllowListInvalidOrigin,
   kMetaTagModifiedHTML,
+};
+
+enum class ElementAccessibilityIssueReason {
+  kDisallowedSelectChild,
+  kDisallowedOptGroupChild,
+  kNonPhrasingContentOptionChild,
+  kInteractiveContentOptionChild,
+  kInteractiveContentLegendChild,
+  kInteractiveContentSummaryDescendant,
+  kValidChild,
 };
 
 // |AuditsIssue| is a thin wrapper around the Audits::InspectorIssue
@@ -99,17 +107,17 @@ class CORE_EXPORT AuditsIssue {
                                     String loader_id);
 
   static void ReportCorsIssue(ExecutionContext* execution_context,
-                              int64_t identifier,
                               RendererCorsIssueCode code,
-                              WTF::String url,
-                              WTF::String initiator_origin,
-                              WTF::String failedParameter,
+                              String url,
+                              String initiator_origin,
+                              String failedParameter,
                               std::optional<base::UnguessableToken> issue_id);
 
   static void ReportAttributionIssue(
       ExecutionContext* execution_context,
       mojom::blink::AttributionReportingIssueType type,
       Element* element,
+      const String& request_url,
       const String& request_id,
       const String& invalid_parameter);
 
@@ -162,17 +170,20 @@ class CORE_EXPORT AuditsIssue {
                                  mojom::blink::GenericIssueErrorType error_type,
                                  int violating_node_id,
                                  const String& violating_node_attribute);
-
+  static void ReportPartitioningBlobURLIssue(
+      LocalDOMWindow* window,
+      String blob_url,
+      mojom::blink::PartitioningBlobURLInfo info);
   static void ReportStylesheetLoadingLateImportIssue(Document* document,
                                                      const KURL& url,
-                                                     WTF::OrdinalNumber line,
-                                                     WTF::OrdinalNumber column);
+                                                     OrdinalNumber line,
+                                                     OrdinalNumber column);
 
   static void ReportPropertyRuleIssue(
       Document* document,
       const KURL& url,
-      WTF::OrdinalNumber line,
-      WTF::OrdinalNumber column,
+      OrdinalNumber line,
+      OrdinalNumber column,
       protocol::Audits::PropertyRuleIssueReason reason,
       const String& propertyValue);
 
@@ -181,9 +192,35 @@ class CORE_EXPORT AuditsIssue {
       const KURL& url,
       const String& request_id,
       const KURL& initiator_url,
-      WTF::OrdinalNumber initiator_line,
-      WTF::OrdinalNumber initiator_column,
+      OrdinalNumber initiator_line,
+      OrdinalNumber initiator_column,
       const String& failureMessage);
+
+  static void ReportElementAccessibilityIssue(
+      Document* document,
+      DOMNodeId node_id,
+      ElementAccessibilityIssueReason issue_reason,
+      bool has_disallowed_attributes);
+
+  static void ReportUserReidentificationResourceBlockedIssue(
+      LocalFrame* frame,
+      std::optional<std::string> devtools_request_id,
+      const KURL& affected_request_url);
+
+  static void ReportUserReidentificationCanvasNoisedIssue(
+      SourceLocation* source_location,
+      ExecutionContext* execution_context);
+
+  static void ReportPermissionElementIssue(
+      ExecutionContext* execution_context,
+      DOMNodeId node_id,
+      protocol::Audits::PermissionElementIssueType issue_type,
+      const String& type,
+      bool is_warning,
+      const String& permissionName = String(),
+      const String& occluderNodeInfo = String(),
+      const String& occluderParentNodeInfo = String(),
+      const String& disableReason = String());
 
  private:
 

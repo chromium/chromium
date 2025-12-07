@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
@@ -33,7 +32,9 @@ class IMFMediaType;
 namespace media {
 
 // Helper function to print HRESULT to std::string.
-const auto PrintHr = logging::SystemErrorCodeToString;
+inline std::string PrintHr(logging::SystemErrorCode error_code) {
+  return logging::SystemErrorCodeToString(error_code);
+}
 
 // Helper macro for DVLOG with function name and this pointer.
 #define DVLOG_FUNC(level) DVLOG(level) << __func__ << ": (" << this << ") "
@@ -44,26 +45,32 @@ const auto PrintHr = logging::SystemErrorCodeToString;
 // See discussion thread at:
 // https://groups.google.com/a/chromium.org/d/msg/cxx/zw5Xmcs--S4/r7Fwb-TsCAAJ
 
-#define RETURN_IF_FAILED(expr)                                          \
-  do {                                                                  \
-    HRESULT hresult = (expr);                                           \
-    if (FAILED(hresult)) {                                              \
-      DLOG(ERROR) << __func__ << ": failed with \"" << PrintHr(hresult) \
-                  << "\"";                                              \
-      return hresult;                                                   \
-    }                                                                   \
+#define RETURN_IF_FAILED(expr)                                         \
+  do {                                                                 \
+    HRESULT hresult = (expr);                                          \
+    if (FAILED(hresult)) {                                             \
+      LOG(ERROR) << __func__ << ": failed with \"" << PrintHr(hresult) \
+                 << "\"";                                              \
+      return hresult;                                                  \
+    }                                                                  \
   } while (0)
 
 #define RETURN_ON_FAILURE(success, log, ret) \
   do {                                       \
     if (!(success)) {                        \
-      DLOG(ERROR) << log;                    \
+      LOG(ERROR) << log;                     \
       return ret;                            \
     }                                        \
   } while (0)
 
-#define RETURN_ON_HR_FAILURE(hresult, log, ret) \
-  RETURN_ON_FAILURE(SUCCEEDED(hresult), log << ", " << PrintHr(hresult), ret);
+#define RETURN_ON_HR_FAILURE(expr, log, ret)         \
+  do {                                               \
+    HRESULT hresult = (expr);                        \
+    if (FAILED(hresult)) {                           \
+      LOG(ERROR) << log << ", " << PrintHr(hresult); \
+      return ret;                                    \
+    }                                                \
+  } while (0)
 
 // Creates a Media Foundation sample with one buffer of length |buffer_length|
 // on a |align|-byte boundary. Alignment must be a perfect power of 2 or 0.
@@ -82,20 +89,15 @@ class MEDIA_EXPORT MediaBufferScopedPointer {
 
   ~MediaBufferScopedPointer();
 
-  uint8_t* get() { return buffer_; }
-  DWORD current_length() const { return current_length_; }
-  DWORD max_length() const { return max_length_; }
+  base::span<uint8_t> as_span() { return data_; }
 
  private:
   Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION uint8_t* buffer_;
-  DWORD max_length_;
-  DWORD current_length_;
+  base::raw_span<uint8_t> data_;
 };
 
-// Copies |in_string| to |out_string| that is allocated with CoTaskMemAlloc().
+// Copies null-terminated `in_string` to `out_string`
+// that is allocated with CoTaskMemAlloc().
 MEDIA_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
                                              LPWSTR* out_string);
 
@@ -140,7 +142,7 @@ GetDefaultAudioType(const AudioDecoderConfig decoder_config,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 // Given an AudioDecoderConfig which represents AAC audio, get its
 // corresponding IMFMediaType format (by calling GetDefaultAudioType)
-// and populate the aac_extra_data in the decoder_config into the
+// and copy the extra_data from the decoder_config into the
 // returned IMFMediaType.
 MEDIA_EXPORT HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
                                      IMFMediaType** media_type_out);
@@ -185,7 +187,7 @@ VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format);
 
 // Converts `primaries` into an MFVideoPrimaries value
 MEDIA_EXPORT MFVideoPrimaries
-VideoPrimariesToMFVideoPrimaries(VideoColorSpace::PrimaryID primaries);
+VideoPrimariesToMFVideoPrimaries(gfx::ColorSpace::PrimaryID primaries);
 
 // Callback to transform a Media Foundation sample when converting from the
 // DecoderBuffer if needed.
@@ -207,6 +209,13 @@ CreateDecryptConfigFromSample(IMFSample* mf_sample,
                               const GUID& key_id,
                               std::unique_ptr<DecryptConfig>* decrypt_config);
 
+// Create a MF sample on provided d3d11 texture.
+MEDIA_EXPORT Microsoft::WRL::ComPtr<IMFSample> CreateSampleFromTexture(
+    Microsoft::WRL::ComPtr<ID3D11Device> device,
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
+    bool need_perform_copy);
+
 // Converts `frame` into an IMFSample, using an underlying D3D texture,
 // reading back from the GPU, or copying the frame contents as necessary.
 MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
@@ -216,6 +225,47 @@ MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture,
     DWORD buffer_alignment,
     IMFSample** sample_out);
+
+class CommandBufferHelper;
+
+// Parameters:
+//   frame: The original video frame.
+//   sample: The generated IMFSample, or nullptr if a shared handle is needed.
+//   texture_handle: Optional shared texture handle for cross-device scenarios.
+//                   When the texture producer and consumer are on different
+//                   devices, a shared texture handle is created to enable
+//                   texture sharing across devices. If both are on the same
+//                   device, this will be std::nullopt and the IMFSample is
+//                   used directly instead.
+//   texture_has_been_copied: Optional boolean indicating whether the texture
+//                            has already been copied and the texture can be fed
+//                            to the encoder directly.
+//   hr: Indicating success or failure of the resource generation.
+typedef base::OnceCallback<void(
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<IMFSample> sample,
+    std::optional<base::win::ScopedHandle> texture_handle,
+    std::optional<bool> texture_has_been_copied,
+    HRESULT hr)>
+    ResourceAvailableCB;
+
+// Generates a resource (IMFSample or shared texture handle) from a shared
+// image backed video frame.
+//
+// Parameters:
+//   frame: The original video frame.
+//   use_same_device: Whether the texture producer and consumer are on the same
+//                    D3D device. When true, generates an IMFSample directly;
+//                    when false, creates a shared handle to enable texture
+//                    sharing across devices.
+//   command_buffer_helper: Helper for accessing shared images.
+//   sample_available_cb: Callback invoked when the resource is ready. See
+//                        ResourceAvailableCB for detailed reference.
+MEDIA_EXPORT void GenerateResourceFromSharedImageVideoFrame(
+    scoped_refptr<VideoFrame> frame,
+    bool use_same_device,
+    scoped_refptr<CommandBufferHelper> command_buffer_helper,
+    ResourceAvailableCB sample_available_cb);
 
 }  // namespace media
 

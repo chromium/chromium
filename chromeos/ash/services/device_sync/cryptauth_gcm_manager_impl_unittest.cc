@@ -10,13 +10,15 @@
 #include "chromeos/ash/services/device_sync/pref_names.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
-#include "components/gcm_driver/gcm_client.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::SaveArg;
+using ::testing::WithArg;
 
 namespace ash {
 
@@ -26,8 +28,12 @@ namespace {
 
 const char kCryptAuthGCMAppId[] = "com.google.chrome.cryptauth";
 const char kCryptAuthGCMSenderId[] = "381449029288";
-const char kExistingGCMRegistrationId[] = "cirrus";
-const char kNewGCMRegistrationId[] = "stratus";
+const char kDeprecatedGCMRegistrationId[] =
+    "APA91bEMJr4m6X8GGZ8ZaOfrD8Yiqr1Tu-r9EyQGL";
+const char kExistingGCMRegistrationId[] =
+    "mtAK6jy7mB9U:APA91bEMJr4m6X8GGZ8ZaOfrD8Yiqr1Tu-r9EyQGL";
+const char kNewGCMRegistrationId[] =
+    "eNSVPJ1dHHU:APA91bHRxfu0Cz0vts7IJX2KoIBw57J52Lnvnuy8mz-S";
 const char kCryptAuthMessageCollapseKey[] =
     "collapse_cryptauth_sync_DEVICES_SYNC";
 const char kSessionId1[] = "session_id_1";
@@ -36,6 +42,57 @@ const CryptAuthFeatureType kFeatureType1 =
     CryptAuthFeatureType::kBetterTogetherHostEnabled;
 const CryptAuthFeatureType kFeatureType2 =
     CryptAuthFeatureType::kEasyUnlockHostEnabled;
+
+class MockInstanceID : public instance_id::InstanceID {
+ public:
+  explicit MockInstanceID(gcm::FakeGCMDriver* gcm_driver)
+      : InstanceID(kCryptAuthGCMAppId, gcm_driver) {}
+  ~MockInstanceID() override = default;
+  MOCK_METHOD(void, GetID, (GetIDCallback callback), (override));
+  MOCK_METHOD(void,
+              GetCreationTime,
+              (GetCreationTimeCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               base::TimeDelta time_to_live,
+               std::set<Flags> flags,
+               GetTokenCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ValidateToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               const std::string& token,
+               ValidateTokenCallback callback),
+              (override));
+
+ protected:
+  MOCK_METHOD(void,
+              DeleteTokenImpl,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               DeleteTokenCallback callback),
+              (override));
+  MOCK_METHOD(void, DeleteIDImpl, (DeleteIDCallback callback), (override));
+};
+
+class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
+ public:
+  MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  ~MockInstanceIDDriver() override = default;
+  MOCK_METHOD(instance_id::InstanceID*,
+              GetInstanceID,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, RemoveInstanceID, (const std::string& app_id), (override));
+  MOCK_METHOD(bool,
+              ExistsInstanceID,
+              (const std::string& app_id),
+              (const override));
+};
 
 // Mock GCMDriver implementation for testing.
 class MockGCMDriver : public gcm::FakeGCMDriver {
@@ -70,31 +127,31 @@ class DeviceSyncCryptAuthGCMManagerImplTest
 
  protected:
   DeviceSyncCryptAuthGCMManagerImplTest()
-      : gcm_manager_(&gcm_driver_, &pref_service_) {}
+      : gcm_manager_(&gcm_driver_, &mock_instance_id_driver_, &pref_service_) {}
 
   // testing::Test:
   void SetUp() override {
     CryptAuthGCMManager::RegisterPrefs(pref_service_.registry());
     gcm_manager_.AddObserver(this);
+    ON_CALL(mock_instance_id_driver_, GetInstanceID(kCryptAuthGCMAppId))
+        .WillByDefault(Return(&mock_instance_id_));
     EXPECT_CALL(gcm_driver_, AddAppHandler(kCryptAuthGCMAppId, &gcm_manager_));
     gcm_manager_.StartListening();
   }
 
   void TearDown() override { gcm_manager_.RemoveObserver(this); }
 
-  void RegisterWithGCM(gcm::GCMClient::Result registration_result) {
-    std::vector<std::string> sender_ids;
-    EXPECT_CALL(gcm_driver_, RegisterImpl(kCryptAuthGCMAppId, _))
-        .WillOnce(SaveArg<1>(&sender_ids));
-    gcm_manager_.RegisterWithGCM();
+  void RegisterWithGCM(instance_id::InstanceID::Result registration_result) {
+    EXPECT_CALL(mock_instance_id_, GetToken(kCryptAuthGCMSenderId, _, _, _, _))
+        .WillOnce(WithArg<4>([registration_result](
+                                 MockInstanceID::GetTokenCallback callback) {
+          std::move(callback).Run(kNewGCMRegistrationId, registration_result);
+        }));
 
-    ASSERT_EQ(1u, sender_ids.size());
-    EXPECT_EQ(kCryptAuthGCMSenderId, sender_ids[0]);
-
-    bool success = (registration_result == gcm::GCMClient::SUCCESS);
+    bool success = (registration_result == instance_id::InstanceID::SUCCESS);
     EXPECT_CALL(*this, OnGCMRegistrationResultProxy(success));
-    gcm_driver_.RegisterFinished(kCryptAuthGCMAppId, kNewGCMRegistrationId,
-                                 registration_result);
+
+    gcm_manager_.RegisterWithGCM();
   }
 
   // CryptAuthGCMManager::Observer:
@@ -123,6 +180,8 @@ class DeviceSyncCryptAuthGCMManagerImplTest
                     std::optional<CryptAuthFeatureType> feature_type));
 
   testing::StrictMock<MockGCMDriver> gcm_driver_;
+  testing::NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
+  testing::NiceMock<MockInstanceID> mock_instance_id_{&gcm_driver_};
 
   TestingPrefServiceSimple pref_service_;
 
@@ -135,9 +194,21 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, RegisterPrefs) {
   EXPECT_TRUE(pref_service.FindPreference(prefs::kCryptAuthGCMRegistrationId));
 }
 
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, IsRegistrationIdDeprecated) {
+  // Deprecated V3 tokens should return true.
+  EXPECT_TRUE(CryptAuthGCMManager::IsRegistrationIdDeprecated(
+      kDeprecatedGCMRegistrationId));
+  EXPECT_TRUE(CryptAuthGCMManager::IsRegistrationIdDeprecated("test-token"));
+
+  EXPECT_FALSE(CryptAuthGCMManager::IsRegistrationIdDeprecated(
+      kExistingGCMRegistrationId));
+  EXPECT_FALSE(
+      CryptAuthGCMManager::IsRegistrationIdDeprecated(kNewGCMRegistrationId));
+}
+
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, RegistrationSucceeds) {
   EXPECT_EQ(std::string(), gcm_manager_.GetRegistrationId());
-  RegisterWithGCM(gcm::GCMClient::SUCCESS);
+  RegisterWithGCM(instance_id::InstanceID::SUCCESS);
   EXPECT_EQ(kNewGCMRegistrationId, gcm_manager_.GetRegistrationId());
 }
 
@@ -146,7 +217,7 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   pref_service_.SetString(prefs::kCryptAuthGCMRegistrationId,
                           kExistingGCMRegistrationId);
   EXPECT_EQ(kExistingGCMRegistrationId, gcm_manager_.GetRegistrationId());
-  RegisterWithGCM(gcm::GCMClient::SUCCESS);
+  RegisterWithGCM(instance_id::InstanceID::SUCCESS);
   EXPECT_EQ(kNewGCMRegistrationId, gcm_manager_.GetRegistrationId());
   EXPECT_EQ(kNewGCMRegistrationId,
             pref_service_.GetString(prefs::kCryptAuthGCMRegistrationId));
@@ -154,7 +225,7 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
 
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, RegisterWithGCMFails) {
   EXPECT_EQ(std::string(), gcm_manager_.GetRegistrationId());
-  RegisterWithGCM(gcm::GCMClient::SERVER_ERROR);
+  RegisterWithGCM(instance_id::InstanceID::SERVER_ERROR);
   EXPECT_EQ(std::string(), gcm_manager_.GetRegistrationId());
   EXPECT_EQ(std::string(),
             pref_service_.GetString(prefs::kCryptAuthGCMRegistrationId));
@@ -165,7 +236,7 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   pref_service_.SetString(prefs::kCryptAuthGCMRegistrationId,
                           kExistingGCMRegistrationId);
   EXPECT_EQ(kExistingGCMRegistrationId, gcm_manager_.GetRegistrationId());
-  RegisterWithGCM(gcm::GCMClient::SERVER_ERROR);
+  RegisterWithGCM(instance_id::InstanceID::SERVER_ERROR);
   EXPECT_EQ(kExistingGCMRegistrationId, gcm_manager_.GetRegistrationId());
   EXPECT_EQ(kExistingGCMRegistrationId,
             pref_service_.GetString(prefs::kCryptAuthGCMRegistrationId));
@@ -173,23 +244,17 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
 
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, RegistrationFailsThenSucceeds) {
   EXPECT_EQ(std::string(), gcm_manager_.GetRegistrationId());
-  RegisterWithGCM(gcm::GCMClient::NETWORK_ERROR);
+  RegisterWithGCM(instance_id::InstanceID::NETWORK_ERROR);
   EXPECT_EQ(std::string(), gcm_manager_.GetRegistrationId());
-  RegisterWithGCM(gcm::GCMClient::SUCCESS);
+  RegisterWithGCM(instance_id::InstanceID::SUCCESS);
   EXPECT_EQ(kNewGCMRegistrationId, gcm_manager_.GetRegistrationId());
 }
 
-TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, ConcurrentRegistrations) {
-  // If multiple RegisterWithGCM() calls are made concurrently, only one
-  // registration attempt should actually be made.
-  EXPECT_CALL(gcm_driver_, RegisterImpl(kCryptAuthGCMAppId, _));
-  gcm_manager_.RegisterWithGCM();
-  gcm_manager_.RegisterWithGCM();
-  gcm_manager_.RegisterWithGCM();
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, MultipleRegistrations) {
+  RegisterWithGCM(instance_id::InstanceID::SUCCESS);
+  RegisterWithGCM(instance_id::InstanceID::SUCCESS);
+  RegisterWithGCM(instance_id::InstanceID::SUCCESS);
 
-  EXPECT_CALL(*this, OnGCMRegistrationResultProxy(true));
-  gcm_driver_.RegisterFinished(kCryptAuthGCMAppId, kNewGCMRegistrationId,
-                               gcm::GCMClient::SUCCESS);
   EXPECT_EQ(kNewGCMRegistrationId, gcm_manager_.GetRegistrationId());
 }
 

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AuthCompletedCredentials, Authenticator, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import type {AuthCompletedCredentials, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import {Authenticator} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
-import {EduCoexistenceBrowserProxy, EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
+import type {EduCoexistenceBrowserProxy} from './edu_coexistence_browser_proxy.js';
+import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
 const MILLISECONDS_PER_SECOND = 1000;
 

@@ -14,18 +14,22 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/install_prompt_permissions.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/browser/install_prompt_permissions.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionInstallPromptShowParams;
 class Profile;
@@ -38,7 +42,6 @@ class WebContents;
 namespace extensions {
 class CrxInstallError;
 class Extension;
-class ExtensionInstallUI;
 class PermissionSet;
 }  // namespace extensions
 
@@ -111,6 +114,8 @@ class ExtensionInstallPrompt {
                          double average_rating,
                          int rating_count,
                          const std::string& localized_rating_count);
+    void SetInitialExtensionsProviderName(
+        std::u16string initial_extensions_provider_name);
 
     PromptType type() const { return type_; }
 
@@ -136,18 +141,12 @@ class ExtensionInstallPrompt {
 
     // Getters for webstore metadata. Only populated when the type is
     // INLINE_INSTALL_PROMPT, EXTERNAL_INSTALL_PROMPT, or REPAIR_PROMPT.
-
-    // The star display logic replicates the one used by the webstore (from
-    // components.ratingutils.setFractionalYellowStars). Callers pass in an
-    // "appender", which will be repeatedly called back with the star images
-    // that they append to the star display area.
-    typedef void(*StarAppender)(const gfx::ImageSkia*, void*);
-    void AppendRatingStars(StarAppender appender, void* data) const;
+    std::vector<const gfx::ImageSkia*> GetRatingStars() const;
     std::u16string GetRatingCount() const;
     std::u16string GetUserCount() const;
     size_t GetPermissionCount() const;
+    extensions::InstallPromptPermissions GetPermissions() const;
     std::u16string GetPermission(size_t index) const;
-    std::u16string GetPermissionsDetails(size_t index) const;
 
     const extensions::Extension* extension() const { return extension_; }
     void set_extension(const extensions::Extension* extension) {
@@ -179,6 +178,10 @@ class ExtensionInstallPrompt {
 
    private:
     const PromptType type_;
+
+    // When this is non empty, means that this extension is an initial
+    // pre-installed one.
+    std::u16string initial_extensions_provider_name_;
 
     // Permissions that are being requested (may not be all of an extension's
     // permissions if only additional ones are being requested)
@@ -215,9 +218,6 @@ class ExtensionInstallPrompt {
     // webstore.
     bool has_webstore_data_;
 
-    std::vector<base::FilePath> retained_files_;
-    std::vector<std::u16string> retained_device_messages_;
-
     base::ObserverList<Observer> observers_;
   };
 
@@ -251,14 +251,14 @@ class ExtensionInstallPrompt {
   // The implementations of this function are platform-specific.
   static ShowDialogCallback GetDefaultShowDialogCallback();
 
-  // Returns the appropriate prompt type for the given |extension|.
+  // Returns the appropriate prompt type for the given `extension`.
   // TODO(devlin): This method is yucky - callers probably only care about one
   // prompt type. We just need to comb through and figure out what it is.
   static PromptType GetReEnablePromptTypeForExtension(
       content::BrowserContext* context,
       const extensions::Extension* extension);
 
-  // Creates a dummy extension from the |manifest|, replacing the name and
+  // Creates a dummy extension from the `manifest`, replacing the name and
   // description with the localizations if provided.
   static scoped_refptr<extensions::Extension> GetLocalizedExtensionForDisplay(
       const base::Value::Dict& manifest,
@@ -266,7 +266,7 @@ class ExtensionInstallPrompt {
       const std::string& id,
       const std::string& localized_name,
       const std::string& localized_description,
-      std::string* error);
+      std::u16string* error);
 
   // Creates a prompt with a parent web content.
   explicit ExtensionInstallPrompt(content::WebContents* contents);
@@ -281,22 +281,20 @@ class ExtensionInstallPrompt {
 
   virtual ~ExtensionInstallPrompt();
 
-  extensions::ExtensionInstallUI* install_ui() const {
-    return install_ui_.get();
-  }
+  ExtensionInstallUI* install_ui() const { return install_ui_.get(); }
 
-  // Starts the process to show the install dialog. Loads the icon (if |icon| is
-  // null), sets up the Prompt, and calls |show_dialog_callback| when ready to
+  // Starts the process to show the install dialog. Loads the icon (if `icon` is
+  // null), sets up the Prompt, and calls `show_dialog_callback` when ready to
   // show.
-  // |extension| can be null in the case of a bndle install.
-  // If |icon| is null, this will attempt to load the extension's icon.
-  // |prompt| is used to pass in a prompt with additional data (like retained
-  // device permissions) or a different type. If not provided, |prompt| will
+  // `extension` can be null in the case of a bundle install.
+  // If `icon` is null, this will attempt to load the extension's icon.
+  // `prompt` is used to pass in a prompt with additional data (like retained
+  // device permissions) or a different type. If not provided, `prompt` will
   // be created as an INSTALL_PROMPT.
-  // |custom_permissions| will be used if provided; otherwise, the extensions
+  // `custom_permissions` will be used if provided; otherwise, the extensions
   // current permissions are used.
   //
-  // The |install_callback| *MUST* eventually be called.
+  // The `install_callback` *MUST* eventually be called.
   void ShowDialog(DoneCallback install_callback,
                   const extensions::Extension* extension,
                   const SkBitmap* icon,
@@ -306,10 +304,7 @@ class ExtensionInstallPrompt {
                   const SkBitmap* icon,
                   std::unique_ptr<Prompt> prompt,
                   const ShowDialogCallback& show_dialog_callback);
-  // Declared virtual for testing purposes.
-  // Note: if all you want to do is automatically confirm or cancel, prefer
-  // ScopedTestDialogAutoConfirm from extension_dialog_auto_confirm.h
-  virtual void ShowDialog(
+  void ShowDialog(
       DoneCallback install_callback,
       const extensions::Extension* extension,
       const SkBitmap* icon,
@@ -330,7 +325,7 @@ class ExtensionInstallPrompt {
   std::unique_ptr<Prompt> GetPromptForTesting();
 
  private:
-  // Sets the icon that will be used in any UI. If |icon| is NULL, or contains
+  // Sets the icon that will be used in any UI. If `icon` is NULL, or contains
   // an empty bitmap, then a default icon will be used instead.
   void SetIcon(const SkBitmap* icon);
 
@@ -364,7 +359,7 @@ class ExtensionInstallPrompt {
   std::unique_ptr<const extensions::PermissionSet> custom_permissions_;
 
   // The object responsible for doing the UI specific actions.
-  std::unique_ptr<extensions::ExtensionInstallUI> install_ui_;
+  std::unique_ptr<ExtensionInstallUI> install_ui_;
 
   // Parameters to show the confirmation UI.
   std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
@@ -378,7 +373,7 @@ class ExtensionInstallPrompt {
   // Used to show the confirm dialog.
   ShowDialogCallback show_dialog_callback_;
 
-  // Whether or not the |show_dialog_callback_| was called.
+  // Whether or not the `show_dialog_callback_` was called.
   bool did_call_show_dialog_;
 
   base::WeakPtrFactory<ExtensionInstallPrompt> weak_factory_{this};

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMPUTE_PASS_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMPUTE_PASS_ENCODER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_pass_encoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -25,7 +26,7 @@ class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
   GPUComputePassEncoder(const GPUComputePassEncoder&) = delete;
   GPUComputePassEncoder& operator=(const GPUComputePassEncoder&) = delete;
 
-  // gpu_compute_pass_encoder.idl
+  // gpu_compute_pass_encoder.idl {{{
   void setBindGroup(uint32_t index,
                     const DawnObject<wgpu::BindGroup>* bindGroup) {
     GetHandle().SetBindGroup(
@@ -50,6 +51,25 @@ class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
     std::string label = markerLabel.Utf8();
     GetHandle().InsertDebugMarker(label.c_str());
   }
+  void setImmediates(uint32_t range_offset,
+                     const DOMArrayBufferBase* data,
+                     uint64_t data_offset,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const DOMArrayBufferBase* data,
+                     uint64_t data_offset,
+                     uint64_t size,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const MaybeShared<DOMArrayBufferView>& data,
+                     uint64_t data_offset,
+                     ExceptionState& exception_state);
+  void setImmediates(uint32_t range_offset,
+                     const MaybeShared<DOMArrayBufferView>& data,
+                     uint64_t data_offset,
+                     uint64_t size,
+                     ExceptionState& exception_state);
+
   void setPipeline(const DawnObject<wgpu::ComputePipeline>* pipeline) {
     GetHandle().SetPipeline(pipeline->GetHandle());
   }
@@ -69,8 +89,9 @@ class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
                       uint32_t queryIndex,
                       ExceptionState& exception_state);
   void end() { GetHandle().End(); }
+  // }}} End of WebIDL binding implementation.
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

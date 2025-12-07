@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Unit tests for helper functions for the Chrome Extensions Proxy Settings API.
 
 #include "chrome/browser/extensions/api/proxy/proxy_api_helpers.h"
@@ -18,9 +13,12 @@
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -178,9 +176,9 @@ TEST(ExtensionProxyApiHelpers, GetProxyRulesStringFromExtensionPref) {
   EXPECT_EQ(std::string(), error);
 
   base::Value::Dict proxy_rules;
-  proxy_rules.Set(proxy_api_helpers::field_name[1],
+  proxy_rules.Set(proxy_api_helpers::kFieldNames[1],
                   CreateTestProxyServerDict("proxy1"));
-  proxy_rules.Set(proxy_api_helpers::field_name[2],
+  proxy_rules.Set(proxy_api_helpers::kFieldNames[2],
                   CreateTestProxyServerDict("proxy2"));
   proxy_config.Set(keys::kProxyConfigRules, std::move(proxy_rules));
 

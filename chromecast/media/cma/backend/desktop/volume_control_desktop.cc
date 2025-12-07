@@ -54,9 +54,7 @@ class VolumeControlInternal {
 
   void RemoveVolumeObserver(VolumeObserver* observer) {
     base::AutoLock lock(observer_lock_);
-    volume_observers_.erase(std::remove(volume_observers_.begin(),
-                                        volume_observers_.end(), observer),
-                            volume_observers_.end());
+    std::erase(volume_observers_, observer);
   }
 
   float GetVolume(AudioContentType type) {
@@ -68,8 +66,7 @@ class VolumeControlInternal {
                  AudioContentType type,
                  float level) {
     if (type == AudioContentType::kOther) {
-      NOTREACHED_IN_MIGRATION() << "Can't set volume for content type kOther";
-      return;
+      NOTREACHED() << "Can't set volume for content type kOther";
     }
 
     level = std::clamp(level, 0.0f, 1.0f);
@@ -87,9 +84,7 @@ class VolumeControlInternal {
                 AudioContentType type,
                 bool muted) {
     if (type == AudioContentType::kOther) {
-      NOTREACHED_IN_MIGRATION()
-          << "Can't set mute state for content type kOther";
-      return;
+      NOTREACHED() << "Can't set mute state for content type kOther";
     }
 
     thread_.task_runner()->PostTask(

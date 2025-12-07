@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/history_status.pb.h"
 #include "net/base/url_util.h"
@@ -141,9 +142,9 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() {
     // Web and app activity query.
     response_body_ = base::StringPrintf(
         "{ \"history_recording_enabled\": %s }",
-        service_->IsWebAndAppActivityEnabled() ? "true" : "false");
+        base::ToString(service_->IsWebAndAppActivityEnabled()));
 
-  } else if (url_.host() == kSyncServerHost) {
+  } else if (url_.GetHost() == kSyncServerHost) {
     // Other forms of browsing history query.
     std::unique_ptr<sync_pb::HistoryStatusResponse> history_status(
         new sync_pb::HistoryStatusResponse());
@@ -217,7 +218,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
   // return anything. This means that the most recent results are returned
   // first.
   std::sort(visits_.begin(), visits_.end(),
-            [](const Visit& lhs, const Visit rhs) -> bool {
+            [](const Visit& lhs, const Visit& rhs) -> bool {
               return lhs.timestamp > rhs.timestamp;
             });
   *more_results_left = false;

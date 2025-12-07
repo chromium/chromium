@@ -27,7 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_H_
 
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -38,13 +40,17 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/events/types/scroll_types.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
-namespace gfx {
-class Rect;
+namespace ui {
+class ColorProvider;
 }
 
 namespace blink {
 
+class LayoutBox;
 class LayoutObject;
 class ScrollableArea;
 class ScrollbarTheme;
@@ -95,6 +101,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   ScrollbarPart PressedPart() const { return pressed_part_; }
   ScrollbarPart HoveredPart() const { return hovered_part_; }
+  WebThemeEngine::State GetStateForPart(ScrollbarPart) const;
 
   virtual void StyleChanged() {}
   void SetScrollbarsHiddenFromExternalAnimator(bool);
@@ -108,7 +115,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   virtual void OffsetDidChange(mojom::blink::ScrollType scroll_type);
 
   virtual void DisconnectFromScrollableArea();
-  ScrollableArea* GetScrollableArea() const { return scrollable_area_.Get(); }
 
   int PressedPos() const { return pressed_pos_; }
 
@@ -164,11 +170,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
 
   void MoveThumb(int pos, bool dragging_document = false);
-
-  float ElasticOverscroll() const { return elastic_overscroll_; }
-  void SetElasticOverscroll(float elastic_overscroll) {
-    elastic_overscroll_ = elastic_overscroll;
-  }
 
   // Use SetNeedsPaintInvalidation to cause the scrollbar (or parts thereof)
   // to repaint.
@@ -236,6 +237,15 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   void Trace(Visitor*) const override;
 
+  LayoutBox* GetLayoutBox() const;
+  bool IsScrollCornerVisible() const;
+  bool ShouldPaint() const;
+  bool LastKnownMousePositionInFrameRect() const;
+
+  const ui::ColorProvider* GetColorProvider(mojom::blink::ColorScheme) const;
+  mojom::blink::PreferredContrast GetPreferredContrast() const;
+  bool InForcedColorsMode() const;
+
  protected:
   void AutoscrollTimerFired(TimerBase*);
   void StartTimerIfNeeded(base::TimeDelta delay);
@@ -270,13 +280,15 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   HeapTaskRunnerTimer<Scrollbar> scroll_timer_;
 
-  float elastic_overscroll_;
-
  private:
   float ScrollableAreaCurrentPos() const;
   float ScrollableAreaTargetPos() const;
   bool ThumbWillBeUnderMouse() const;
   bool DeltaWillScroll(ScrollOffset delta) const;
+
+  // Theme color set as a web pref that will only be applied to root scrollbars
+  // when no other modification is present (high contrast or css styling).
+  std::optional<blink::Color> RootScrollbarThemeColor() const;
 
   bool track_and_buttons_need_repaint_ = true;
   bool thumb_needs_repaint_ = true;

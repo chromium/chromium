@@ -53,7 +53,7 @@ void GaiaOAuthClient::OnGetTokensResponse(const std::string& refresh_token,
 void GaiaOAuthClient::OnRefreshTokenResponse(const std::string& access_token,
                                              int expires_in_seconds) {
   // We never request a refresh token, so this call is not expected.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GaiaOAuthClient::SendResponse(const std::string& user_email,

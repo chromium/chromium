@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -35,7 +36,7 @@ class SessionBindingHelper {
     kLoadKeyFailure = 1,
     kCreateAssertionFailure = 2,
     kSignAssertionFailure = 3,
-    kVerifySignatureFailure = 4,
+    // kVerifySignatureFailure = 4, obsolete.
     kAppendSignatureFailure = 5,
     kMaxValue = kAppendSignatureFailure
   };
@@ -53,7 +54,7 @@ class SessionBindingHelper {
   virtual ~SessionBindingHelper();
 
   // Asynchronously loads the `wrapped_binding_key_` if loading it hasn't
-  // started yet.
+  // started yet or the previous loading attempt failed.
   // Virtual for testing.
   virtual void MaybeLoadBindingKey();
 

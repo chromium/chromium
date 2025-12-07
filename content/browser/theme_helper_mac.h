@@ -24,7 +24,7 @@ class ThemeHelperMac : public content::RenderProcessHostCreationObserver {
  public:
   // Return pointer to the singleton instance for the current process, or NULL
   // if none.
-  static ThemeHelperMac* GetInstance();
+  CONTENT_EXPORT static ThemeHelperMac* GetInstance();
 
   ThemeHelperMac(const ThemeHelperMac&) = delete;
   ThemeHelperMac& operator=(const ThemeHelperMac&) = delete;
@@ -34,6 +34,8 @@ class ThemeHelperMac : public content::RenderProcessHostCreationObserver {
   base::ReadOnlySharedMemoryRegion DuplicateReadOnlyColorMapRegion();
 
  private:
+  friend class SystemAccentColorTest;
+
   ThemeHelperMac();
   ~ThemeHelperMac() override;
 
@@ -47,6 +49,9 @@ class ThemeHelperMac : public content::RenderProcessHostCreationObserver {
   // of writable_color_map_ where the colors for the current appearance should
   // be stored.
   void LoadSystemColorsForCurrentAppearance(base::span<SkColor> values);
+
+  // Test-only method to set accent color for testing.
+  CONTENT_EXPORT void SetAccentColorForTesting(SkColor accent_color);
 
   // Overridden from content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;

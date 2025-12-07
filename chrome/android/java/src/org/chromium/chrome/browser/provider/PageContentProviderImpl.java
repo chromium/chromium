@@ -1,0 +1,717 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.provider;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
+import android.util.Pair;
+
+import androidx.annotation.GuardedBy;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.base.SplitCompatContentProvider;
+import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.provider.PageContentProviderMetrics.Format;
+import org.chromium.chrome.browser.provider.PageContentProviderMetrics.PageContentProviderEvent;
+import org.chromium.chrome.browser.provider.PageContentProviderMetrics.RequestType;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.optimization_guide.content.PageContentProtoProviderBridge;
+import org.chromium.content_public.browser.WebContents;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * ContentProvider that returns the InnerText of the current web page. It generates a URI for the
+ * current web page that is attached to {@link android.app.assist.AssistContent} whenever an
+ * assistant is invoked when ChromeActivity is visible. The assistant app calls the query method to
+ * start the text extraction process and it gets the resulting text in a synchronous fashion.
+ * switches).
+ */
+@UsedByReflection("PageContentProvider.java")
+@NullMarked
+public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
+
+    private static final String TAG = "PageContentProvider";
+
+    private static final int INVALIDATE_URI_DELAY_MS = 60_000;
+    private static final int PAGE_EXTRACTION_TIMEOUT_MS = 10_000;
+
+    static final class PageContentInvocationState {
+
+        PageContentInvocationState(
+                String invocationId, String invokedUrl, ActivityTabProvider activityTabProvider) {
+            mInvocationId = invocationId;
+            mInvokedUrl = invokedUrl;
+            mActivityTabProvider = activityTabProvider;
+            mInvocationStartTimestampMs = TimeUtils.elapsedRealtimeMillis();
+        }
+
+        private final String mInvocationId;
+        private final String mInvokedUrl;
+        private final ActivityTabProvider mActivityTabProvider;
+
+        private long mInvocationStartTimestampMs;
+        private long mExtractionStartTimestampMs;
+    }
+
+    private static final String AUTHORITY_SUFFIX = ".PageContentProvider";
+    private static final String TEXT_FORMAT_PATH = "text";
+    private static final String PROTO_FORMAT_PATH = "proto";
+
+    private static final int URI_MATCH_TEXT_FORMAT = 1;
+    private static final int URI_MATCH_PROTO_FORMAT = 2;
+
+    private @Nullable UriMatcher mUriMatcher;
+
+    @GuardedBy("sLock")
+    private static @Nullable PageContentInvocationState sInvocationState;
+
+    private static final Object sLock = new Object();
+
+    @EnsuresNonNull("mUriMatcher")
+    private void ensureUriMatcherInitialized() {
+        if (mUriMatcher != null) {
+            return;
+        }
+
+        mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        String authority = ContextUtils.getApplicationContext().getPackageName() + AUTHORITY_SUFFIX;
+        mUriMatcher.addURI(authority, TEXT_FORMAT_PATH + "/*", URI_MATCH_TEXT_FORMAT);
+        mUriMatcher.addURI(authority, PROTO_FORMAT_PATH + "/*", URI_MATCH_PROTO_FORMAT);
+    }
+
+    /**
+     * Method called by external apps. {@link uri} must be a valid URI generated by {@code
+     * getAssistContentStructuredDataForUrl()}.
+     *
+     * <p>Calling with a valid URI starts the content extraction process for the associated page.
+     * The call will block the binder thread until the text is extracted from the page or the task
+     * times out.
+     *
+     * <p>It returns a {@link Cursor} with 4 columns and 1 row: - "_id": The current page URL. -
+     * "success": 1 if page extraction is successful, 0 otherwise. - "contents": The contents from
+     * the current page if "success" is 1, empty string otherwise. - "error_message": An error
+     * message if "success" is 0.
+     */
+    @Override
+    public @Nullable Cursor query(
+            Uri uri,
+            String @Nullable [] strings,
+            @Nullable String s,
+            String @Nullable [] strings1,
+            @Nullable String s1) {
+        try (var t = TraceEvent.scoped("PageContentProviderImpl.query")) {
+            ThreadUtils.assertOnBackgroundThread();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)) {
+                return null;
+            }
+
+            Log.w(TAG, "This API may fail with large pages, openFile is preferred.");
+
+            synchronized (sLock) {
+                MatrixCursor cursor =
+                        new MatrixCursor(
+                                new String[] {"_id", "success", "contents", "error_message"});
+
+                ensureUriMatcherInitialized();
+                final int match = mUriMatcher.match(uri);
+                var invocationId = uri.getLastPathSegment();
+                if (match == UriMatcher.NO_MATCH) {
+                    setErrorToCursor(cursor, "Invalid URI");
+                    //  There's no way to tell which format was requested, record this event in the
+                    // "proto" histogram.
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.QUERY,
+                            Format.PROTO,
+                            PageContentProviderEvent.REQUEST_FAILED_INVALID_URL);
+                    return cursor;
+                }
+
+                var format = match == URI_MATCH_TEXT_FORMAT ? Format.TEXT : Format.PROTO;
+
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        RequestType.QUERY, format, PageContentProviderEvent.REQUEST_STARTED);
+
+                var pageContentFuture =
+                        getPageContentsBytesAsync(invocationId, RequestType.QUERY, format);
+                try {
+                    var pageContentBytes =
+                            pageContentFuture.get(
+                                    PAGE_EXTRACTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    recordExtractionStartToEndLatency(RequestType.QUERY, format);
+                    assert sInvocationState != null;
+                    if (format == Format.TEXT) {
+                        var contentsString = new String(pageContentBytes, StandardCharsets.UTF_8);
+                        setResultToCursor(cursor, sInvocationState.mInvokedUrl, contentsString);
+                    } else {
+                        setResultToCursor(cursor, sInvocationState.mInvokedUrl, pageContentBytes);
+                    }
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.QUERY,
+                            format,
+                            PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED);
+                    return cursor;
+
+                } catch (InterruptedException e) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.QUERY,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_INTERRUPTED);
+                    setErrorToCursor(cursor, "Extraction process was interrupted");
+                    return cursor;
+                } catch (TimeoutException e) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.QUERY,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_TIMED_OUT);
+                    setErrorToCursor(cursor, "Timed out during extraction");
+                    return cursor;
+                } catch (ExecutionException e) {
+                    if (e.getCause() != null && e.getCause().getMessage() != null) {
+                        setErrorToCursor(cursor, e.getCause().getMessage());
+                    } else {
+                        PageContentProviderMetrics.recordPageProviderEvent(
+                                RequestType.QUERY,
+                                format,
+                                PageContentProviderEvent.REQUEST_FAILED_EXCEPTION);
+                        setErrorToCursor(cursor, "ExecutionException during extraction");
+                    }
+                    return cursor;
+                }
+            }
+        }
+    }
+
+    @Override
+    public @Nullable String getType(Uri uri) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Uri insert(Uri uri, @Nullable ContentValues contentValues) {
+        return null;
+    }
+
+    @Override
+    public int delete(Uri uri, @Nullable String s, String @Nullable [] strings) {
+        return 0;
+    }
+
+    @Override
+    public int update(
+            Uri uri,
+            @Nullable ContentValues contentValues,
+            @Nullable String s,
+            String @Nullable [] strings) {
+        return 0;
+    }
+
+    /**
+     * Method called by external apps. {@link uri} must be a valid URI generated by {@code
+     * getAssistContentStructuredDataForUrl()}.
+     *
+     * <p>Calling with a valid URI starts the content extraction process for the associated page.
+     * The call will block the binder thread until the text is extracted from the page or the task
+     * times out.
+     *
+     * <p>Page contents are returned in a {@code ParcelFileDescriptor}, where its contents can be
+     * streamed. In case the extraction process fails or the URI is invalid a {@code
+     * FileNotFoundException} is thrown.
+     */
+    @Override
+    public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
+            throws FileNotFoundException {
+        try (var t = TraceEvent.scoped("PageContentProviderImpl.openFile")) {
+            ThreadUtils.assertOnBackgroundThread();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)) {
+                throw new FileNotFoundException("Not enabled");
+            }
+
+            synchronized (sLock) {
+                ensureUriMatcherInitialized();
+                final int match = mUriMatcher.match(uri);
+                if (match == UriMatcher.NO_MATCH) {
+                    //  There's no way to tell which format was requested, record this event in the
+                    // "proto" histogram.
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.OPEN_FILE,
+                            Format.PROTO,
+                            PageContentProviderEvent.REQUEST_FAILED_INVALID_URL);
+                    throw new FileNotFoundException("Invalid URI");
+                }
+
+                var format = match == URI_MATCH_TEXT_FORMAT ? Format.TEXT : Format.PROTO;
+                var invocationId = uri.getLastPathSegment();
+
+                var pageContentFuture =
+                        getPageContentsBytesAsync(invocationId, RequestType.OPEN_FILE, format);
+                try {
+                    var pageContentBytes =
+                            pageContentFuture.get(
+                                    PAGE_EXTRACTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    recordExtractionStartToEndLatency(RequestType.OPEN_FILE, format);
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.OPEN_FILE,
+                            format,
+                            PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED);
+                    return createOutputFileDescriptorForBytes(pageContentBytes);
+                } catch (IOException e) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.OPEN_FILE,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_EXCEPTION);
+                    throw new FileNotFoundException("IO Exception");
+                } catch (ExecutionException e) {
+                    if (e.getCause() != null && e.getCause().getMessage() != null) {
+                        throw new FileNotFoundException(e.getCause().getMessage());
+                    } else {
+                        PageContentProviderMetrics.recordPageProviderEvent(
+                                RequestType.OPEN_FILE,
+                                format,
+                                PageContentProviderEvent.REQUEST_FAILED_EXCEPTION);
+                    }
+                    throw new FileNotFoundException("ExecutionException during extraction");
+                } catch (InterruptedException e) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.OPEN_FILE,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_INTERRUPTED);
+                    throw new FileNotFoundException("Extraction process was interrupted");
+                } catch (TimeoutException e) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            RequestType.OPEN_FILE,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_TIMED_OUT);
+                    throw new FileNotFoundException("Timed out during extraction");
+                }
+            }
+        }
+    }
+
+    private Future<byte[]> getPageContentsBytesAsync(
+            @Nullable String invocationId, @RequestType int requestType, @Format int format) {
+        synchronized (sLock) {
+            var future = new CompletableFuture<byte[]>();
+
+            if (invocationId == null
+                    || sInvocationState == null
+                    || !invocationId.equals(sInvocationState.mInvocationId)) {
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        requestType, format, PageContentProviderEvent.REQUEST_FAILED_INVALID_ID);
+                future.completeExceptionally(new Exception("Invalid ID"));
+                return future;
+            }
+
+            ActivityTabProvider tabProvider = sInvocationState.mActivityTabProvider;
+            Pair<String, WebContents> currentTabUrlAndWebContents =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                try (var u =
+                                        TraceEvent.scoped(
+                                                "PageContentProviderImpl.queryGetVisibleUrl")) {
+                                    Tab currentTab = tabProvider.get();
+
+                                    if (currentTab == null
+                                            || currentTab.getUrl() == null
+                                            || currentTab.getWebContents() == null
+                                            || currentTab.getWebContents().getMainFrame() == null) {
+                                        return null;
+                                    }
+                                    PageContentProviderMetrics.recordPageContentRequestedUkm(
+                                            currentTab);
+
+                                    return Pair.create(
+                                            currentTab.getUrl().getSpec(),
+                                            currentTab.getWebContents());
+                                }
+                            });
+            if (currentTabUrlAndWebContents == null
+                    || !sInvocationState.mInvokedUrl.equals(currentTabUrlAndWebContents.first)) {
+                if (currentTabUrlAndWebContents == null) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            requestType,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_TO_GET_CURRENT_TAB);
+                    future.completeExceptionally(new Exception("Failed to get current tab"));
+                } else {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            requestType,
+                            format,
+                            PageContentProviderEvent.REQUEST_FAILED_CURRENT_TAB_CHANGED);
+                    future.completeExceptionally(
+                            new Exception("Current tab changed before extraction"));
+                }
+                return future;
+            }
+
+            recordCreateToExtractionStartLatency(requestType, format);
+
+            if (format == Format.TEXT) {
+                return requestStringPageContentsAsync(
+                        requestType, currentTabUrlAndWebContents.second);
+            } else {
+                return requestProtoPageContentsAsync(
+                        requestType, currentTabUrlAndWebContents.second);
+            }
+        }
+    }
+
+    private ParcelFileDescriptor createOutputFileDescriptorForBytes(byte[] bytes)
+            throws IOException {
+        ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createReliablePipe();
+        ParcelFileDescriptor readSide = pipe[0];
+        ParcelFileDescriptor writeSide = pipe[1];
+        // Post a task to write bytes after returning readSide, otherwise the write loop gets stuck
+        // because there's nothing reading from it.
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            try (ParcelFileDescriptor.AutoCloseOutputStream outputStream =
+                                    new AutoCloseOutputStream(writeSide)) {
+                                ByteArrayInputStream bytesStream = new ByteArrayInputStream(bytes);
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = bytesStream.read(buffer)) != -1) {
+                                    outputStream.write(buffer, 0, bytesRead);
+                                }
+                                outputStream.flush();
+                            } finally {
+                                if (writeSide != null) {
+                                    writeSide.close();
+                                }
+                            }
+                        } catch (IOException ex) {
+                            try {
+                                writeSide.closeWithError("IOException on write side");
+                            } catch (IOException ignored) {
+                            }
+                        }
+                    }
+                });
+        return readSide;
+    }
+
+    private static @Nullable String getIdForUrl(
+            String url, ActivityTabProvider activityTabProvider) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)) {
+            return null;
+        }
+
+        synchronized (sLock) {
+            if (url == null) return null;
+
+            if (sInvocationState != null && sInvocationState.mInvokedUrl.equals(url)) {
+                return sInvocationState.mInvocationId;
+            } else {
+                clearCachedContent(/* invocationId= */ null);
+
+                sInvocationState =
+                        new PageContentInvocationState(
+                                UUID.randomUUID().toString(), url, activityTabProvider);
+
+                grantAccessToId(sInvocationState.mInvocationId);
+
+                // Invalidate this ID after 60 seconds.
+                String invocationId = sInvocationState.mInvocationId;
+                PostTask.postDelayedTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> clearCachedContent(invocationId),
+                        INVALIDATE_URI_DELAY_MS);
+
+                return sInvocationState.mInvocationId;
+            }
+        }
+    }
+
+    private void setResultToCursor(MatrixCursor cursor, String pageUrl, byte[] pageContents) {
+        assert cursor.getCount() == 0 : "Only one row should be set";
+        cursor.addRow(new Object[] {pageUrl, 1, pageContents, ""});
+    }
+
+    private void setResultToCursor(MatrixCursor cursor, String pageUrl, String pageContents) {
+        assert cursor.getCount() == 0 : "Only one row should be set";
+        cursor.addRow(new Object[] {pageUrl, 1, pageContents, ""});
+    }
+
+    private void setErrorToCursor(MatrixCursor cursor, @Nullable String errorMessage) {
+        assert cursor.getCount() == 0 : "Only one row should be set";
+        cursor.addRow(new Object[] {"", 0, "", errorMessage != null ? errorMessage : ""});
+    }
+
+    /**
+     * Generates a JSON string to be attached to AssistContent to be shared with an assistant app.
+     *
+     * @param url The URL of the currently active page, the returned URI will only work for this
+     *     URL.
+     * @param activityTabProvider Provider used to ensure that {@code url} is still active on all
+     *     calls to {@code query()}
+     * @param isManagedProfile Whether the current profile has an enterprise owner.
+     * @return A JSON string containing a URI to be used with the {@code query()} method to extract
+     *     the text of {@code url}.
+     */
+    public static @Nullable String getAssistContentStructuredDataForUrl(
+            String url, ActivityTabProvider activityTabProvider, boolean isManagedProfile) {
+        String invocationId = getIdForUrl(url, activityTabProvider);
+        if (invocationId == null) {
+            PageContentProviderMetrics.recordPageProviderEvent(
+                    PageContentProviderEvent.GET_CONTENT_URI_FAILED);
+            return null;
+        }
+
+        String structuredData;
+
+        try {
+            structuredData =
+                    new JSONObject()
+                            .put(
+                                    "page_metadata",
+                                    new JSONObject()
+                                            .put("is_work_profile", isManagedProfile)
+                                            .put("content_uri", buildTextFormatUri(invocationId))
+                                            .put(
+                                                    "proto_content_uri",
+                                                    buildProtoFormatUri(invocationId)))
+                            .toString();
+        } catch (JSONException e) {
+            PageContentProviderMetrics.recordPageProviderEvent(
+                    PageContentProviderEvent.GET_CONTENT_URI_FAILED);
+            return null;
+        }
+
+        PageContentProviderMetrics.recordPageProviderEvent(
+                PageContentProviderEvent.GET_CONTENT_URI_SUCCESS);
+        return structuredData;
+    }
+
+    private static Uri buildContentUri(String format, String id) {
+        Uri uri =
+                new Uri.Builder()
+                        .scheme(ContentResolver.SCHEME_CONTENT)
+                        .authority(
+                                ContextUtils.getApplicationContext().getPackageName()
+                                        + AUTHORITY_SUFFIX)
+                        .appendPath(format)
+                        .appendPath(id)
+                        .build();
+        return uri;
+    }
+
+    private static Uri buildTextFormatUri(String invocationId) {
+        return buildContentUri(TEXT_FORMAT_PATH, invocationId);
+    }
+
+    private static Uri buildProtoFormatUri(String invocationId) {
+        return buildContentUri(PROTO_FORMAT_PATH, invocationId);
+    }
+
+    private static void grantAccessToId(String invocationId) {
+        var assistantPackageName =
+                PackageUtils.getDefaultAssistantPackageName(ContextUtils.getApplicationContext());
+        RecordHistogram.recordBooleanHistogram(
+                "Android.AssistContent.WebPageContentProvider.GetAssistantPackageResult",
+                assistantPackageName != null);
+        if (assistantPackageName == null) {
+            return;
+        }
+
+        // TODO: Calls to grantUriPermission seem to cause ANRs, maybe call this asynchronously or
+        // grant the permission before AssistContent is requested.
+        ContextUtils.getApplicationContext()
+                .grantUriPermission(
+                        assistantPackageName,
+                        buildTextFormatUri(invocationId),
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        ContextUtils.getApplicationContext()
+                .grantUriPermission(
+                        assistantPackageName,
+                        buildProtoFormatUri(invocationId),
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    private static void revokeAccessToId(String invocationId) {
+        ContextUtils.getApplicationContext()
+                .revokeUriPermission(
+                        buildTextFormatUri(invocationId), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        ContextUtils.getApplicationContext()
+                .revokeUriPermission(
+                        buildProtoFormatUri(invocationId), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    /**
+     * Clears the cached content related to an invocationId, meant to be used with a timer to clear
+     * out data related to URIs that are never queried.
+     *
+     * @param invocationId Invocation ID to clear, used to avoid clearing a newer request
+     *     prematurely.
+     */
+    @VisibleForTesting
+    protected static void clearCachedContent(@Nullable String invocationId) {
+        synchronized (sLock) {
+            if (sInvocationState == null) return;
+            if (invocationId != null && !sInvocationState.mInvocationId.equals(invocationId)) {
+                return;
+            }
+
+            revokeAccessToId(sInvocationState.mInvocationId);
+            sInvocationState = null;
+            if (invocationId != null) {
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        PageContentProviderEvent.URI_INVALIDATED_TIMEOUT);
+            } else {
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        PageContentProviderEvent.URI_INVALIDATED_NEW_REQUEST);
+            }
+        }
+    }
+
+    private Future<byte[]> requestStringPageContentsAsync(
+            @RequestType int requestType, WebContents webContents) {
+        var pageContentFuture = new CompletableFuture<byte[]>();
+
+        try (var t = TraceEvent.scoped("PageContentProvider.requestStringPageContentsAsync")) {
+            ThreadUtils.runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+
+                            try (var u =
+                                    TraceEvent.scoped(
+                                            "PageContentProvider.requestStringPageContentsAsyncOnUiThread")) {
+                                InnerTextBridge.getInnerText(
+                                        webContents.getMainFrame(),
+                                        result -> {
+                                            if (result == null) {
+                                                PageContentProviderMetrics.recordPageProviderEvent(
+                                                        requestType,
+                                                        Format.TEXT,
+                                                        PageContentProviderEvent
+                                                                .REQUEST_FAILED_EMPTY_RESULT);
+                                                pageContentFuture.completeExceptionally(
+                                                        new Exception("Error during extraction"));
+                                            } else {
+                                                pageContentFuture.complete(
+                                                        result.getBytes(StandardCharsets.UTF_8));
+                                            }
+                                        });
+                            }
+                        }
+                    });
+        }
+        return pageContentFuture;
+    }
+
+    private Future<byte[]> requestProtoPageContentsAsync(
+            @RequestType int requestType, WebContents webContents) {
+        var pageContentFuture = new CompletableFuture<byte[]>();
+
+        try (var t = TraceEvent.scoped("PageContentProvider.requestProtoPageContentsAsync")) {
+            ThreadUtils.runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            try (var u =
+                                    TraceEvent.scoped(
+                                            "PageContentProvider.requestProtoPageContentsAsyncOnUiThread")) {
+                                PageContentProtoProviderBridge.getAiPageContent(
+                                        webContents,
+                                        result -> {
+                                            if (result == null) {
+                                                PageContentProviderMetrics.recordPageProviderEvent(
+                                                        requestType,
+                                                        Format.PROTO,
+                                                        PageContentProviderEvent
+                                                                .REQUEST_FAILED_EMPTY_RESULT);
+                                                pageContentFuture.completeExceptionally(
+                                                        new Exception("Error during extraction"));
+                                            } else {
+                                                pageContentFuture.complete(result.toByteArray());
+                                            }
+                                        });
+                            }
+                        }
+                    });
+        }
+        return pageContentFuture;
+    }
+
+    private static void recordCreateToExtractionStartLatency(
+            @RequestType int requestType, @Format int format) {
+        synchronized (sLock) {
+            if (sInvocationState == null) return;
+
+            if (sInvocationState.mInvocationStartTimestampMs != 0) {
+                PageContentProviderMetrics.recordCreateToExtractionStartLatency(
+                        requestType,
+                        format,
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mInvocationStartTimestampMs);
+                sInvocationState.mExtractionStartTimestampMs = TimeUtils.elapsedRealtimeMillis();
+            }
+        }
+    }
+
+    private static void recordExtractionStartToEndLatency(
+            @RequestType int requestType, @Format int format) {
+        synchronized (sLock) {
+            if (sInvocationState == null) return;
+
+            if (sInvocationState.mExtractionStartTimestampMs != 0) {
+                PageContentProviderMetrics.recordExtractionStartToEndLatency(
+                        requestType,
+                        format,
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mExtractionStartTimestampMs);
+                sInvocationState.mExtractionStartTimestampMs = 0;
+            }
+
+            if (sInvocationState.mInvocationStartTimestampMs != 0) {
+                PageContentProviderMetrics.recordTotalLatency(
+                        requestType,
+                        format,
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mInvocationStartTimestampMs);
+                sInvocationState.mInvocationStartTimestampMs = 0;
+            }
+        }
+    }
+}

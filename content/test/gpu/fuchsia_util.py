@@ -10,7 +10,10 @@ import subprocess
 from gpu_path_util import CHROMIUM_SRC_DIR, setup_fuchsia_paths
 # pylint: enable=unused-import
 
-from common import register_common_args  # pylint: disable=import-error
+# This needs to come after setup_fuchsia_paths so we can actually import this.
+# pylint: disable=wrong-import-order,import-error
+from common import register_common_args
+# pylint: enable=wrong-import-order,import-error
 
 
 def RunTestOnFuchsiaDevice(script_type):

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "chrome/browser/badging/badge_manager_delegate.h"
-#include "chrome/browser/ui/browser.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace badging {
@@ -26,7 +26,7 @@ class BadgeManagerDelegateWin : public BadgeManagerDelegate {
 
  private:
   // Determines if a browser is for a specific hosted app, on this profile.
-  bool IsAppBrowser(Browser* browser, const std::string& app_id);
+  bool IsAppBrowser(BrowserWindowInterface* browser, const std::string& app_id);
 };
 
 }  // namespace badging

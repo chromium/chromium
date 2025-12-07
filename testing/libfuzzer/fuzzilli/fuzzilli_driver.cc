@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/threading/thread_restrictions.h"
 #include "v8/src/fuzzilli/cov.h"
 
 #define WEAK_SANCOV_DEF(return_type, name, ...)                           \
@@ -47,6 +54,8 @@ constexpr base::PlatformFile kDataReadFd = 102;
 int LLVMFuzzerRunDriverImpl(int* argc,
                             char*** argv,
                             int (*UserCb)(const uint8_t* Data, size_t Size)) {
+  // Allow blocking for the whole fuzzing session.
+  base::ScopedAllowBlockingForTesting allow_blocking;
   // Open files for communication with Fuzzilli.
   auto ctrl_read_file = base::File(base::ScopedPlatformFile(kControlReadFd));
   auto ctrl_write_file = base::File(base::ScopedPlatformFile(kControlWriteFd));
@@ -60,16 +69,16 @@ int LLVMFuzzerRunDriverImpl(int* argc,
   ctrl_write_file.WriteAtCurrentPosAndCheck(base::as_bytes(kHelloMessage));
   char actual_magic[kExpectedSize] = {};
   ctrl_read_file.ReadAtCurrentPosAndCheck(
-      base::as_writable_bytes(base::make_span(actual_magic)));
+      base::as_writable_byte_span(actual_magic));
 
-  CHECK(base::ranges::equal(kHelloMessage, actual_magic));
+  CHECK(std::ranges::equal(kHelloMessage, actual_magic));
 
   while (true) {
     // Read the action message ("exec") from Fuzzilli.
     constexpr auto kExpectedAction = base::span_from_cstring("exec");
     uint8_t action_msg[kExpectedAction.size()];
-    if (!ctrl_read_file.ReadAtCurrentPosAndCheck(base::make_span(action_msg)) ||
-        !base::ranges::equal(kExpectedAction, action_msg)) {
+    if (!ctrl_read_file.ReadAtCurrentPosAndCheck(base::span(action_msg)) ||
+        !std::ranges::equal(kExpectedAction, action_msg)) {
       LOG(WARNING) << "Unexpected message from Fuzzilli: " << action_msg;
       return 0;
     }
@@ -82,7 +91,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
     // Read the JavaScript script from Fuzzilli.
     std::vector<uint8_t> buffer(script_size + 1);
     data_read_file.ReadAtCurrentPosAndCheck(
-        base::make_span(buffer.data(), script_size));
+        base::span(buffer.data(), script_size));
     buffer[script_size] = 0;
 
     // Run the script:

@@ -10,22 +10,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /** Delegate that handles the display of the HelpAndFeedback flows. */
+@NullMarked
 public interface HelpAndFeedbackLauncherDelegate {
-    static final String FALLBACK_SUPPORT_URL = "https://support.google.com/chrome/topic/6069782";
+    String FALLBACK_SUPPORT_URL = "https://support.google.com/chrome/topic/6069782";
 
     /**
      * Starts an activity showing a help page for the specified context ID.
      *
-     * @param activity The activity to use for starting the help activity and to take a
-     *                 screenshot of.
+     * @param activity The activity to use for starting the help activity and to take a screenshot
+     *     of.
      * @param helpContext One of the CONTEXT_* constants. This should describe the user's current
-     *                    context and will be used to show a more relevant help page.
+     *     context and will be used to show a more relevant help page.
      * @param collector the {@link FeedbackCollector} to use for extra data. Must not be null.
      */
-    void show(Activity activity, String helpContext, @NonNull FeedbackCollector collector);
+    void show(Activity activity, String helpContext, FeedbackCollector collector);
 
     /**
      * Starts an activity prompting the user to enter feedback.
@@ -34,7 +35,7 @@ public interface HelpAndFeedbackLauncherDelegate {
      *                 screenshot of.
      * @param collector the {@link FeedbackCollector} to use for extra data. Must not be null.
      */
-    void showFeedback(Activity activity, @NonNull FeedbackCollector collector);
+    void showFeedback(Activity activity, FeedbackCollector collector);
 
     /**
      * Handles the fallback help case of opening the URL in the browser.

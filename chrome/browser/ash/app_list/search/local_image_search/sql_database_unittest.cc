@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,7 +78,7 @@ class SqlDatabaseTest : public testing::Test {
     test_directory_ = temp_dir.GetPath();
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
     sql_database_ = std::make_unique<SqlDatabase>(
-        std::move(test_db), /*histogram_tag=*/"test",
+        std::move(test_db), sql::test::kTestTag,
         /*current_version_number=*/3, base::BindRepeating(CreateTestSchema),
         base::BindRepeating(MigrateTestSchema));
   }
@@ -172,7 +173,7 @@ TEST_F(SqlDatabaseTest, Downgrade) {
   sql_database_->Close();
 
   sql_database_ = std::make_unique<SqlDatabase>(
-      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      test_directory_.AppendASCII("test.db"), sql::test::kTestTag,
       /*current_version_number=*/2, base::BindRepeating(CreateOldTestSchema),
       base::BindRepeating(MigrateOldTestSchema));
 
@@ -211,7 +212,7 @@ TEST_F(SqlDatabaseTest, Downgrade) {
 
 TEST_F(SqlDatabaseTest, Upgrade) {
   sql_database_ = std::make_unique<SqlDatabase>(
-      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      test_directory_.AppendASCII("test.db"), sql::test::kTestTag,
       /*current_version_number=*/2, base::BindRepeating(CreateOldTestSchema),
       base::BindRepeating(MigrateOldTestSchema));
   EXPECT_TRUE(sql_database_->Initialize());
@@ -227,7 +228,7 @@ TEST_F(SqlDatabaseTest, Upgrade) {
   sql_database_->Close();
 
   sql_database_ = std::make_unique<SqlDatabase>(
-      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      test_directory_.AppendASCII("test.db"), sql::test::kTestTag,
       /*current_version_number=*/3, base::BindRepeating(CreateTestSchema),
       base::BindRepeating(MigrateTestSchema));
   EXPECT_TRUE(sql_database_->Initialize());
@@ -257,7 +258,7 @@ TEST_F(SqlDatabaseTest, Upgrade) {
 
 TEST_F(SqlDatabaseTest, InitializationFail) {
   sql_database_ = std::make_unique<SqlDatabase>(
-      base::FilePath("/wrong_dir.db"), /*histogram_tag=*/"test",
+      base::FilePath("/wrong_dir.db"), sql::test::kTestTag,
       /*current_version_number=*/3, base::BindRepeating(CreateTestSchema),
       base::BindRepeating(MigrateTestSchema));
   EXPECT_FALSE(sql_database_->Initialize());

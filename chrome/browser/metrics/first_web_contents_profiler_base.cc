@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -16,28 +18,39 @@ namespace metrics {
 
 FirstWebContentsProfilerBase::FirstWebContentsProfilerBase(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {
+  // On ChromeOS, session restore can create the profiler *before* the
+  // navigation for a restored tab has started. In this case, GetPendingEntry()
+  // will return nullptr. We store this initial state so that the first
+  // DidStartNavigation event is correctly identified as the initial navigation
+  // rather than an abandoned one. On other platforms, a navigation is
+  // typically pending at construction.
+  first_navigation_started_ = web_contents->GetController().GetPendingEntry();
+}
 
 FirstWebContentsProfilerBase::~FirstWebContentsProfilerBase() = default;
 
 // static
 content::WebContents* FirstWebContentsProfilerBase::GetVisibleContents(
-    Browser* browser) {
-  if (!browser->window()->IsVisible())
+    BrowserWindowInterface* browser) {
+  if (!browser->GetWindow()->IsVisible()) {
     return nullptr;
+  }
 
   // The active WebContents may be hidden when the window height is small.
   content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
 
   // It is incorrect to have a visible browser window with no active
   // WebContents, but reports on show that it happens.
   // See https://crbug.com/1032348 for Mac or https://crbug.com/1414831 for Win.
-  if (!contents)
+  if (!contents) {
     return nullptr;
+  }
 
-  if (contents->GetVisibility() != content::Visibility::VISIBLE)
+  if (contents->GetVisibility() != content::Visibility::VISIBLE) {
     return nullptr;
+  }
 
   return contents;
 }
@@ -47,6 +60,14 @@ void FirstWebContentsProfilerBase::DidStartNavigation(
   // The profiler is concerned with the primary main frame navigation only.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  // If a navigation wasn't pending when this profiler was created, the first
+  // DidStartNavigation we see is the initial navigation. We should not treat
+  // it as an abandoned navigation.
+  if (!first_navigation_started_) {
+    first_navigation_started_ = true;
     return;
   }
 

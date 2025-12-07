@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/system/focus_mode/focus_mode_retry_util.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash {
@@ -28,6 +30,9 @@ class TaskFetcher;
 // collection so the list id needs to be retained.
 struct TaskId {
   bool empty() const { return !pending && (id.empty() || list_id.empty()); }
+
+  // Returns true if the task id is suitable for retrieval from the Tasks API.
+  bool IsValid() const;
 
   std::strong_ordering operator<=>(const TaskId& other) const;
   bool operator==(const TaskId& other) const = default;
@@ -66,7 +71,7 @@ struct ASH_EXPORT FocusModeTask {
 };
 
 // A specialized interface that Focus Mode can use to fetch a filtered list of
-// tasks to display. Currently only provides dummy data.
+// tasks to display.
 class ASH_EXPORT FocusModeTasksProvider {
  public:
   // Done callback for `AddTask` and `UpdateTaskTitle`. If the request completes
@@ -118,18 +123,49 @@ class ASH_EXPORT FocusModeTasksProvider {
   // This kicks off a fetch of tasks from the backend.
   void ScheduleTaskListUpdate();
 
+  // Clears all the cached tasks data.
+  void Reset();
+
+  const std::vector<FocusModeTask> TasksForTesting() const;
+
  private:
   void OnTasksFetched();
-  void OnTasksFetchedForTask(const std::string& task_list_id,
-                             const std::string& task_id,
-                             OnGetTaskCallback callback,
-                             bool success,
-                             const ui::ListModel<api::Task>* api_tasks);
-  void OnTaskSaved(const std::string& task_list_id,
-                   const std::string& task_id,
-                   bool completed,
+  void OnTasksFetchedForTask(
+      const base::Time start_time,
+      const std::string& task_list_id,
+      const std::string& task_id,
+      OnGetTaskCallback callback,
+      bool success,
+      std::optional<google_apis::ApiErrorCode> http_error,
+      const ui::ListModel<api::Task>* api_tasks);
+  void OnTaskAdded(const base::Time start_time,
+                   const std::string& title,
                    OnTaskSavedCallback callback,
+                   google_apis::ApiErrorCode http_error,
                    const api::Task* api_task);
+  void OnTaskUpdated(const base::Time start_time,
+                     const std::string& task_list_id,
+                     const std::string& task_id,
+                     const std::string& title,
+                     bool completed,
+                     OnTaskSavedCallback callback,
+                     google_apis::ApiErrorCode http_error,
+                     const api::Task* api_task);
+
+  // Requests the server to add the new task.
+  void AddTaskInternal(const std::string& title, OnTaskSavedCallback callback);
+
+  // Requests the server to update the existing task.
+  void UpdateTaskInternal(const std::string& task_list_id,
+                          const std::string& task_id,
+                          const std::string& title,
+                          bool completed,
+                          OnTaskSavedCallback callback);
+
+  // Called only after the add or update request is successful.
+  void UpdateOrInsertTask(const std::string& task_list_id,
+                          const api::Task* api_task,
+                          OnTaskSavedCallback callback);
 
   // Returns cached tasks according to this sort order:
   // 1. Entries added/updated by the user during the lifetime of this provider.
@@ -163,6 +199,12 @@ class ASH_EXPORT FocusModeTasksProvider {
 
   // The timestamp of the last task fetch.
   base::Time task_fetch_time_;
+
+  FocusModeRetryState get_task_retry_state_;
+
+  // Retry states for adding and updating tasks.
+  FocusModeRetryState add_task_retry_state_;
+  FocusModeRetryState update_task_retry_state_;
 
   base::WeakPtrFactory<FocusModeTasksProvider> weak_factory_{this};
 };

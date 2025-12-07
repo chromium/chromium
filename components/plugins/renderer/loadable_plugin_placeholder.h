@@ -27,8 +27,9 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
   LoadablePluginPlaceholder& operator=(const LoadablePluginPlaceholder&) =
       delete;
 
-  void set_blocked_for_prerendering(bool blocked_for_prerendering) {
-    is_blocked_for_prerendering_ = blocked_for_prerendering;
+  void set_blocked_for_no_state_prefetching(
+      bool blocked_for_no_state_prefetching) {
+    is_blocked_for_no_state_prefetching_ = blocked_for_no_state_prefetching;
   }
 
   void AllowLoading() { allow_loading_ = true; }
@@ -41,7 +42,7 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
                             const blink::WebPluginParams& params);
   ~LoadablePluginPlaceholder() override;
 
-  void OnSetIsPrerendering(bool is_prerendering);
+  void OnSetIsNoStatePrefetching(bool is_no_state_prefetching);
 
   void SetPluginInfo(const content::WebPluginInfo& plugin_info);
   const content::WebPluginInfo& GetPluginInfo() const;
@@ -74,9 +75,9 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
   std::u16string message_;
 
-  // True if the plugin was blocked because the page was being prerendered.
+  // True if the plugin was blocked because the page was being prefetched.
   // Plugin may be automatically be loaded when the page is displayed.
-  bool is_blocked_for_prerendering_ = false;
+  bool is_blocked_for_no_state_prefetching_ = false;
 
   bool allow_loading_ = false;
 

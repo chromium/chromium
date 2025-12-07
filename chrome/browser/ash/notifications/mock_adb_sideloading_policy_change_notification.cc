@@ -7,7 +7,10 @@
 namespace ash {
 
 MockAdbSideloadingPolicyChangeNotification::
-    MockAdbSideloadingPolicyChangeNotification() = default;
+    MockAdbSideloadingPolicyChangeNotification(
+        const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : AdbSideloadingPolicyChangeNotification(browser_policy_connector_ash) {}
+
 MockAdbSideloadingPolicyChangeNotification::
     ~MockAdbSideloadingPolicyChangeNotification() = default;
 

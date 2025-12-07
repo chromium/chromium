@@ -1,0 +1,11 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "price_tracking_promo_constants.h",
+    "price_tracking_promo_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

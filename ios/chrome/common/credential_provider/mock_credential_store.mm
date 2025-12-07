@@ -23,6 +23,11 @@
   return _credentials;
 }
 
+- (void)getCredentialsWithCompletion:
+    (void (^)(NSArray<id<Credential>>*))completion {
+  completion(_credentials);
+}
+
 // Returns a credential with matching `recordIdentifier` or nil if none.
 - (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier {
   NSArray<id<Credential>>* matchingCredentials = [self.credentials

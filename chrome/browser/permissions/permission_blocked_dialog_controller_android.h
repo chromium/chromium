@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 
 namespace content {
 class WebContents;
@@ -43,6 +43,7 @@ class PermissionBlockedDialogController {
   void ShowDialog(
       permissions::PermissionUiSelector::QuietUiReason quiet_ui_reason);
   void DismissDialog();
+  void ShowPageInfo();
 
   void OnPrimaryButtonClicked(JNIEnv* env);
   void OnNegativeButtonClicked(JNIEnv* env);

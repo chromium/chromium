@@ -19,13 +19,11 @@
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
-
-gin::WrapperInfo APIBindingJSUtil::kWrapperInfo = {gin::kEmbedderNativeGin};
-
 APIBindingJSUtil::APIBindingJSUtil(APITypeReferenceMap* type_refs,
                                    APIRequestHandler* request_handler,
                                    APIEventHandler* event_handler,
@@ -61,6 +59,10 @@ gin::ObjectTemplateBuilder APIBindingJSUtil::GetObjectTemplateBuilder(
       .SetMethod("addCustomSignature", &APIBindingJSUtil::AddCustomSignature);
 }
 
+const gin::WrapperInfo* APIBindingJSUtil::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 void APIBindingJSUtil::SendRequest(
     gin::Arguments* arguments,
     const std::string& name,
@@ -76,13 +78,11 @@ void APIBindingJSUtil::SendRequest(
   v8::Local<v8::Function> custom_callback;
   if (!options.IsEmpty() && !options->IsUndefined() && !options->IsNull()) {
     if (!options->IsObject()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     v8::Local<v8::Object> options_obj = options.As<v8::Object>();
-    if (!options_obj->GetPrototype()->IsNull()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+    if (!options_obj->GetPrototypeV2()->IsNull()) {
+      NOTREACHED();
     }
     gin::Dictionary options_dict(isolate, options_obj);
     // NOTE: We don't throw any errors here if customCallback is of an invalid
@@ -136,8 +136,7 @@ void APIBindingJSUtil::CreateCustomEvent(gin::Arguments* arguments,
   std::string event_name;
   if (!v8_event_name->IsUndefined()) {
     if (!v8_event_name->IsString()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     event_name = gin::V8ToString(isolate, v8_event_name);
   }
@@ -169,12 +168,10 @@ void APIBindingJSUtil::CreateCustomDeclarativeEvent(
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  gin::Handle<DeclarativeEvent> event = gin::CreateHandle(
-      isolate,
-      new DeclarativeEvent(event_name, type_refs_, request_handler_,
-                           actions_list, conditions_list, webview_instance_id));
-
-  arguments->Return(event.ToV8());
+  auto* event = cppgc::MakeGarbageCollected<DeclarativeEvent>(
+      isolate->GetCppHeap()->GetAllocationHandle(), event_name, type_refs_,
+      request_handler_, actions_list, conditions_list, webview_instance_id);
+  arguments->Return(event->GetWrapper(isolate).ToLocalChecked());
 }
 
 void APIBindingJSUtil::InvalidateEvent(gin::Arguments* arguments,
@@ -235,7 +232,7 @@ void APIBindingJSUtil::RunCallbackWithLastError(
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
 
   request_handler_->last_error()->SetError(context, error);
-  JSRunner::Get(context)->RunJSFunction(callback, context, 0, nullptr);
+  JSRunner::Get(context)->RunJSFunction(callback, context, {});
 
   bool report_if_unchecked = true;
   request_handler_->last_error()->ClearError(context, report_if_unchecked);
@@ -283,8 +280,7 @@ void APIBindingJSUtil::ValidateType(gin::Arguments* arguments,
   if (!spec) {
     // We shouldn't be asked to validate unknown specs, but since this comes
     // from JS, assume nothing.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::string error;
@@ -307,15 +303,13 @@ void APIBindingJSUtil::AddCustomSignature(
     return;
 
   if (!signature->IsArray()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::unique_ptr<base::Value> base_signature =
       content::V8ValueConverter::Create()->FromV8Value(signature, context);
   if (!base_signature->is_list()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   type_refs_->AddCustomSignature(
@@ -335,13 +329,12 @@ void APIBindingJSUtil::ValidateCustomSignature(
   const APISignature* signature =
       type_refs_->GetCustomSignature(custom_signature_name);
   if (!signature) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   v8::LocalVector<v8::Value> vector_arguments(isolate);
   if (!gin::ConvertFromV8(isolate, arguments_to_validate, &vector_arguments)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   APISignature::V8ParseResult parse_result =

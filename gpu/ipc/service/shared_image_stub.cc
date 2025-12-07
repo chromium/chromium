@@ -9,7 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -22,10 +24,9 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -39,42 +40,24 @@ constexpr char kSICreationFailureError[] =
 
 }  // namespace
 
-#if BUILDFLAG(IS_WIN)
-namespace base {
-bool operator<(const scoped_refptr<gfx::D3DSharedFence>& lhs,
-               const scoped_refptr<gfx::D3DSharedFence>& rhs) {
-  return lhs->GetDXGIHandleToken() < rhs->GetDXGIHandleToken();
-}
-
-bool operator<(const gfx::DXGIHandleToken& lhs,
-               const scoped_refptr<gfx::D3DSharedFence>& rhs) {
-  return lhs < rhs->GetDXGIHandleToken();
-}
-
-bool operator<(const scoped_refptr<gfx::D3DSharedFence>& lhs,
-               const gfx::DXGIHandleToken& rhs) {
-  return lhs->GetDXGIHandleToken() < rhs;
-}
-
-}  // namespace base
-#endif
-
 namespace gpu {
 SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
-                                                     channel_->task_runner())),
-      sync_point_client_state_(
-          channel->sync_point_manager()->CreateSyncPointClientState(
-              CommandBufferNamespace::GPU_IO,
-              command_buffer_id_,
-              sequence_)) {}
+      sequence_(
+          channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                               channel_->task_runner(),
+                                               CommandBufferNamespace::GPU_IO,
+                                               command_buffer_id_)),
+      memory_tracker_(base::MakeRefCounted<MemoryTracker>(
+          command_buffer_id_,
+          channel_->client_tracing_id(),
+          channel_->gpu_channel_manager()->peak_memory_monitor(),
+          GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB)) {}
 
 SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);
-  sync_point_client_state_->Destroy();
   if (factory_ && factory_->HasImages()) {
     // Some of the backings might require a current GL context to be destroyed.
     bool have_context = MakeContextCurrent(/*needs_gl=*/true);
@@ -107,27 +90,23 @@ std::unique_ptr<SharedImageStub> SharedImageStub::Create(GpuChannel* channel,
 }
 
 void SharedImageStub::ExecuteDeferredRequest(
-    mojom::DeferredSharedImageRequestPtr request,
-    uint64_t release_count) {
+    mojom::DeferredSharedImageRequestPtr request) {
   switch (request->which()) {
     case mojom::DeferredSharedImageRequest::Tag::kNop:
       break;
 
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImage:
-      OnCreateSharedImage(std::move(request->get_create_shared_image()),
-                          release_count);
+      OnCreateSharedImage(std::move(request->get_create_shared_image()));
       break;
 
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithData:
       OnCreateSharedImageWithData(
-          std::move(request->get_create_shared_image_with_data()),
-          release_count);
+          std::move(request->get_create_shared_image_with_data()));
       break;
 
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithBuffer:
       OnCreateSharedImageWithBuffer(
-          std::move(request->get_create_shared_image_with_buffer()),
-          release_count);
+          std::move(request->get_create_shared_image_with_buffer()));
       break;
 
     case mojom::DeferredSharedImageRequest::Tag::kRegisterUploadBuffer:
@@ -137,14 +116,13 @@ void SharedImageStub::ExecuteDeferredRequest(
 
     case mojom::DeferredSharedImageRequest::Tag::kUpdateSharedImage: {
       auto& update = *request->get_update_shared_image();
-      OnUpdateSharedImage(update.mailbox, release_count,
-                          std::move(update.in_fence_handle));
+      OnUpdateSharedImage(update.mailbox, std::move(update.in_fence_handle));
       break;
     }
 
     case mojom::DeferredSharedImageRequest::Tag::kAddReferenceToSharedImage: {
       const auto& add_ref = *request->get_add_reference_to_shared_image();
-      OnAddReference(add_ref.mailbox, release_count);
+      OnAddReference(add_ref.mailbox);
       break;
     }
 
@@ -152,22 +130,23 @@ void SharedImageStub::ExecuteDeferredRequest(
       OnDestroySharedImage(request->get_destroy_shared_image());
       break;
 
-#if BUILDFLAG(IS_WIN)
     case mojom::DeferredSharedImageRequest::Tag::kCopyToGpuMemoryBuffer: {
       auto& params = *request->get_copy_to_gpu_memory_buffer();
-      OnCopyToGpuMemoryBuffer(params.mailbox, release_count);
+      OnCopyToGpuMemoryBuffer(params.mailbox);
       break;
     }
 
-    case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
-      OnCreateSwapChain(std::move(request->get_create_swap_chain()),
-                        release_count);
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImagePool:
+      OnCreateSharedImagePool(
+          std::move(request->get_create_shared_image_pool()));
       break;
 
-    case mojom::DeferredSharedImageRequest::Tag::kPresentSwapChain:
-      OnPresentSwapChain(request->get_present_swap_chain()->mailbox,
-                         release_count);
+    case mojom::DeferredSharedImageRequest::Tag::kDestroySharedImagePool:
+      OnDestroySharedImagePool(
+          std::move(request->get_destroy_shared_image_pool()));
       break;
+
+#if BUILDFLAG(IS_WIN)
     case mojom::DeferredSharedImageRequest::Tag::kRegisterDxgiFence: {
       auto& reg = *request->get_register_dxgi_fence();
       OnRegisterDxgiFence(reg.mailbox, reg.dxgi_token,
@@ -188,41 +167,19 @@ void SharedImageStub::ExecuteDeferredRequest(
   }
 }
 
-bool SharedImageStub::GetGpuMemoryBufferHandleInfo(
-    const gpu::Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle& handle,
-    viz::SharedImageFormat& format,
-    gfx::Size& size,
-    gfx::BufferUsage& buffer_usage) {
-  TRACE_EVENT0("gpu", "SharedImageStub::GetGpuMemoryBufferHandleInfo");
-  // Note that we are not making |context_state_| current here as of now since
-  // it is not needed to get the handle from the backings. Make context current
-  // if we find that it is required.
-
-  if (!factory_->GetGpuMemoryBufferHandleInfo(mailbox, handle, format, size,
-                                              buffer_usage)) {
-    LOG(ERROR) << "SharedImageStub: Unable to get GpuMemoryBufferHandle";
-    return false;
-  }
-  return true;
-}
-
-bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
-                                        gfx::GpuMemoryBufferHandle handle,
-                                        viz::SharedImageFormat format,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        SharedImageUsageSet usage,
-                                        std::string debug_label) {
+bool SharedImageStub::CreateSharedImage(
+    const Mailbox& mailbox,
+    gfx::GpuMemoryBufferHandle handle,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    SharedImageUsageSet usage,
+    std::string debug_label,
+    std::optional<SharedImagePoolId> pool_id) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
-  if (format.IsLegacyMultiplanar()) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
-    OnError();
-    return false;
-  }
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   if (format.PrefersExternalSampler()) {
     LOG(ERROR) << "SharedImageStub: Incompatible format.";
@@ -237,9 +194,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  if (!factory_->CreateSharedImage(mailbox, format, size, color_space,
-                                   surface_origin, alpha_type, usage,
-                                   GetLabel(debug_label), std::move(handle))) {
+  if (!factory_->CreateSharedImage(
+          mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+          GetLabel(debug_label), std::move(handle), std::move(pool_id))) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
     return false;
@@ -271,8 +228,7 @@ void SharedImageStub::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
 }
 
 void SharedImageStub::OnCreateSharedImage(
-    mojom::CreateSharedImageParamsPtr params,
-    uint64_t release_count) {
+    mojom::CreateSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
@@ -287,19 +243,41 @@ void SharedImageStub::OnCreateSharedImage(
           params->si_info->meta.size, params->si_info->meta.color_space,
           params->si_info->meta.surface_origin,
           params->si_info->meta.alpha_type, gpu::kNullSurfaceHandle,
-          params->si_info->meta.usage,
-          GetLabel(params->si_info->debug_label))) {
+          params->si_info->meta.usage, GetLabel(params->si_info->debug_label),
+          std::move(params->pool_id))) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
     return;
   }
+}
 
-  sync_point_client_state_->ReleaseFenceSync(release_count);
+void SharedImageStub::OnCreateSharedImagePool(
+    mojom::CreateSharedImagePoolParamsPtr params) {
+  TRACE_EVENT1("gpu", "SharedImageStub::OnCreateSharedImagePool", "pool_id",
+               params->pool_id.ToString());
+
+  if (!factory_->CreateSharedImagePool(params->pool_id,
+                                       std::move(params->client_remote))) {
+    LOG(ERROR) << "Unable to create SharedImagePool.";
+    OnError();
+    return;
+  }
+}
+
+void SharedImageStub::OnDestroySharedImagePool(
+    mojom::DestroySharedImagePoolParamsPtr params) {
+  TRACE_EVENT1("gpu", "SharedImageStub::OnDestroySharedImagePool", "pool_id",
+               params->pool_id.ToString());
+
+  if (!factory_->DestroySharedImagePool(params->pool_id)) {
+    LOG(ERROR) << "Unable to destroy SharedImagePool.";
+    OnError();
+    return;
+  }
 }
 
 void SharedImageStub::OnCreateSharedImageWithData(
-    mojom::CreateSharedImageWithDataParamsPtr params,
-    uint64_t release_count) {
+    mojom::CreateSharedImageWithDataParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithData", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
@@ -346,50 +324,63 @@ void SharedImageStub::OnCreateSharedImageWithData(
     upload_memory_mapping_ = base::ReadOnlySharedMemoryMapping();
     upload_memory_ = base::ReadOnlySharedMemoryRegion();
   }
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
 void SharedImageStub::OnCreateSharedImageWithBuffer(
-    mojom::CreateSharedImageWithBufferParamsPtr params,
-    uint64_t release_count) {
+    mojom::CreateSharedImageWithBufferParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithBuffer", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
+  gfx::GpuMemoryBufferHandle buffer_handle = std::move(params->buffer_handle);
+
+#if BUILDFLAG(IS_OZONE)
+  if (channel_->enable_extra_handles_validation() &&
+      buffer_handle.type == gfx::NATIVE_PIXMAP) {
+    const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
+    auto format = params->si_info->meta.format;
+    if (!gfx::CanFitImageForSizeAndFormat(
+            pixmap_handle, params->si_info->meta.size, format,
+            /*assume_single_memory_object=*/false)) {
+      LOG(ERROR)
+          << "SharedImageStub: Unable to import buffer, failed validation.";
+      OnError();
+      return;
+    }
+    if (gfx::CloneHandleForIPC(pixmap_handle).planes.empty()) {
+      LOG(ERROR) << "SharedImageStub: Unable to import buffer, failed to dup "
+                    "buffer fds.";
+      OnError();
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+
   if (!CreateSharedImage(
-          params->mailbox, std::move(params->buffer_handle),
+          params->mailbox, std::move(buffer_handle),
           params->si_info->meta.format, params->si_info->meta.size,
           params->si_info->meta.color_space,
           params->si_info->meta.surface_origin,
           params->si_info->meta.alpha_type, params->si_info->meta.usage,
-          GetLabel(params->si_info->debug_label))) {
+          GetLabel(params->si_info->debug_label), std::move(params->pool_id))) {
     return;
   }
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
 void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
-                                          uint64_t release_count,
                                           gfx::GpuFenceHandle in_fence_handle) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateSharedImage");
 
   if (!UpdateSharedImage(mailbox, std::move(in_fence_handle)))
     return;
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
-void SharedImageStub::OnAddReference(const Mailbox& mailbox,
-                                     uint64_t release_count) {
+void SharedImageStub::OnAddReference(const Mailbox& mailbox) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateSharedImage");
   if (!factory_->AddSecondaryReference(mailbox)) {
     LOG(ERROR) << "SharedImageStub: Unable to add secondary reference";
     OnError();
     return;
   }
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
 void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
@@ -412,9 +403,7 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 #endif
 }
 
-#if BUILDFLAG(IS_WIN)
-void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
-                                              uint64_t release_count) {
+void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCopyToGpuMemoryBuffer");
   if (!MakeContextCurrent()) {
     OnError();
@@ -425,12 +414,11 @@ void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
     OnError();
     return;
   }
-  sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
+#if BUILDFLAG(IS_WIN)
 void SharedImageStub::CopyToGpuMemoryBufferAsync(
     const Mailbox& mailbox,
-    uint64_t release_count,
     base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("gpu", "SharedImageStub::CopyToGpuMemoryBufferAsync");
   auto split_cb = base::SplitOnceCallback(std::move(callback));
@@ -441,45 +429,6 @@ void SharedImageStub::CopyToGpuMemoryBufferAsync(
     OnError();
     return;
   }
-  sync_point_client_state_->ReleaseFenceSync(release_count);
-}
-
-void SharedImageStub::OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params,
-                                        uint64_t release_count) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->CreateSwapChain(params->front_buffer_mailbox,
-                                 params->back_buffer_mailbox, params->format,
-                                 params->size, params->color_space,
-                                 params->surface_origin, params->alpha_type,
-                                 SharedImageUsageSet(params->usage))) {
-    DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
-    OnError();
-    return;
-  }
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
-}
-
-void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,
-                                         uint64_t release_count) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnPresentSwapChain");
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->PresentSwapChain(mailbox)) {
-    DLOG(ERROR) << "SharedImageStub: Unable to present swap chain";
-    OnError();
-    return;
-  }
-
-  sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
 void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
@@ -502,9 +451,9 @@ void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
     return;
   }
 
-  mailbox_fences.emplace_hint(mailbox_fences.begin(),
-                              gfx::D3DSharedFence::CreateFromScopedHandle(
-                                  fence_handle.Release(), dxgi_token));
+  mailbox_fences.emplace(dxgi_token,
+                         gfx::D3DSharedFence::CreateFromScopedHandle(
+                             fence_handle.Release(), dxgi_token));
 }
 
 void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
@@ -535,7 +484,7 @@ void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
     return;
   }
 
-  scoped_refptr<gfx::D3DSharedFence> fence = *fence_it;
+  scoped_refptr<gfx::D3DSharedFence> fence = fence_it->second;
   fence->Update(fence_value);
 
   channel_->gpu_channel_manager()->shared_image_manager()->UpdateExternalFence(
@@ -563,6 +512,10 @@ void SharedImageStub::OnUnregisterDxgiFence(const Mailbox& mailbox,
   }
 
   mailbox_fences.erase(fence_it);
+
+  if (mailbox_fences.empty()) {
+    registered_dxgi_fences_.erase(mailbox_fences_it);
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -571,7 +524,7 @@ void SharedImageStub::OnUnregisterDxgiFence(const Mailbox& mailbox,
 void SharedImageStub::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   if (!service_handle || !sysmem_token) {
@@ -643,7 +596,7 @@ ContextResult SharedImageStub::Initialize() {
       channel_manager->gpu_preferences(),
       channel_manager->gpu_driver_bug_workarounds(),
       channel_manager->gpu_feature_info(), context_state_.get(),
-      channel_manager->shared_image_manager(), this,
+      channel_manager->shared_image_manager(), memory_tracker(),
       /*is_for_display_compositor=*/false);
   gpu_channel_shared_image_interface_ =
       base::MakeRefCounted<GpuChannelSharedImageInterface>(
@@ -655,37 +608,14 @@ void SharedImageStub::OnError() {
   channel_->OnChannelError();
 }
 
-void SharedImageStub::TrackMemoryAllocatedChange(int64_t delta) {
-  DCHECK(delta >= 0 || size_ >= static_cast<uint64_t>(-delta));
-  uint64_t old_size = size_;
-  size_ += delta;
-  channel_->gpu_channel_manager()
-      ->peak_memory_monitor()
-      ->OnMemoryAllocatedChange(
-          command_buffer_id_, old_size, size_,
-          GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB);
-}
-
-uint64_t SharedImageStub::GetSize() const {
-  return size_;
-}
-
-uint64_t SharedImageStub::ClientTracingId() const {
-  return channel_->client_tracing_id();
-}
-
-int SharedImageStub::ClientId() const {
-  return channel_->client_id();
-}
-
-uint64_t SharedImageStub::ContextGroupTracingId() const {
-  return sync_point_client_state_->command_buffer_id().GetUnsafeValue();
-}
-
 SharedImageStub::SharedImageDestructionCallback
 SharedImageStub::GetSharedImageDestructionCallback(const Mailbox& mailbox) {
   return base::BindOnce(&SharedImageStub::DestroySharedImage,
                         weak_factory_.GetWeakPtr(), mailbox);
+}
+
+uint64_t SharedImageStub::GetSize() const {
+  return memory_tracker_->GetSize();
 }
 
 void SharedImageStub::DestroySharedImage(const Mailbox& mailbox,

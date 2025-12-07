@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/core/insertion_ordered_set.h"
-#include "components/optimization_guide/core/optimization_guide_navigation_data.h"
+#include "components/optimization_guide/core/hints/insertion_ordered_set.h"
+#include "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents.h"

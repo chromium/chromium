@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 
@@ -38,7 +34,7 @@ constexpr char kFilePath1[] = "test1.txt";
 constexpr char kFilePath2[] = "test2.txt";
 
 bool CreateDummyFile(const base::FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+  return WriteFile(path, "42");
 }
 }  // namespace
 
@@ -76,9 +72,9 @@ class DlpFilesControllerTest : public DlpFilesTestBase {
   void SetUp() override {
     DlpFilesTestBase::SetUp();
 
-    ASSERT_TRUE(rules_manager_);
+    ASSERT_TRUE(rules_manager());
     files_controller_ =
-        std::make_unique<MockDlpFilesController>(*rules_manager_);
+        std::make_unique<MockDlpFilesController>(*rules_manager());
 
     chromeos::DlpClient::InitializeFake();
     chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);

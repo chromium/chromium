@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_ASSOCIATED_URL_LOADER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_ASSOCIATED_URL_LOADER_IMPL_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"

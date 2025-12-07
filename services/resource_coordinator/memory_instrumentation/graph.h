@@ -165,8 +165,11 @@ class GlobalDumpGraph {
       guid_ = guid;
     }
     GlobalDumpGraph::Edge* owns_edge() const { return owns_edge_; }
-    std::map<std::string, Node*>* children() { return &children_; }
-    const std::map<std::string, Node*>& const_children() const {
+    std::map<std::string, raw_ptr<Node, CtnExperimental>>* children() {
+      return &children_;
+    }
+    const std::map<std::string, raw_ptr<Node, CtnExperimental>>&
+    const_children() const {
       return children_;
     }
     std::vector<raw_ptr<GlobalDumpGraph::Edge, VectorExperimental>>*
@@ -185,7 +188,7 @@ class GlobalDumpGraph {
     const raw_ptr<Node> parent_;
     base::trace_event::MemoryAllocatorDumpGuid guid_;
     std::map<std::string, Entry> entries_;
-    std::map<std::string, Node*> children_;
+    std::map<std::string, raw_ptr<Node, CtnExperimental>> children_;
     bool explicit_ = false;
     bool weak_ = false;
     uint64_t not_owning_sub_size_ = 0;
@@ -252,8 +255,8 @@ class GlobalDumpGraph {
 
   using ProcessDumpGraphMap =
       std::map<base::ProcessId, std::unique_ptr<GlobalDumpGraph::Process>>;
-  using GuidNodeMap =
-      std::map<base::trace_event::MemoryAllocatorDumpGuid, Node*>;
+  using GuidNodeMap = std::map<base::trace_event::MemoryAllocatorDumpGuid,
+                               raw_ptr<Node, CtnExperimental>>;
 
   GlobalDumpGraph();
 

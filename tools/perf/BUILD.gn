@@ -2,13 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+COMMON_PERF_DATA = [
+  "//third_party/crossbench/.vpython3",
+  "//third_party/crossbench/cb.py",
+  "//third_party/crossbench/crossbench/",
+  "//third_party/crossbench/config/",
+  "//third_party/crossbench/protoc/",
+]
+
 if (!is_android) {
   group("perf") {
     testonly = true
-    data = [
-      "//third_party/crossbench/cb.py",
-      "//third_party/crossbench/crossbench/",
-    ]
+    data = COMMON_PERF_DATA
     data_deps = [
       ":perf_without_chrome",
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
@@ -18,14 +23,15 @@ if (!is_android) {
     }
   }
 } else {
+  import("//build/config/android/config.gni")
   template("perf_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
       testonly = true
-      data = [
-        "//third_party/crossbench/cb.py",
-        "//third_party/crossbench/crossbench/",
-      ]
+      data = COMMON_PERF_DATA
+      if (enable_chrome_android_internal) {
+        data += [ "//clank/android_webview/tools/crossbench_config/" ]
+      }
       data_deps = [
         ":perf_without_chrome",
         "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
@@ -77,9 +83,12 @@ group("perf_without_chrome") {
 
     # For blink_perf benchmarks.
     "//third_party/blink/perf_tests/",
-    
+
     # For Speedometer benchmarks.
-    "//third_party/speedometer/v3.0",
+    "//third_party/speedometer",
+
+    # For Jetstream benchmarks.
+    "//third_party/jetstream",
 
     # For smoothness.tough_canvas_cases
     "//chrome/test/data/perf/",
@@ -89,6 +98,12 @@ group("perf_without_chrome") {
 
     # For Pylib used by VR tests
     "//build/android/pylib/",
+
+    # For process perf results
+    "//build/util/lib/",
+
+    # For Crossbench WPR network
+    "//third_party/webpagereplay/",
   ]
 
   # Runs a script which generates the ad tagging ruleset.

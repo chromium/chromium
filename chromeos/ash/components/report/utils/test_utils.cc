@@ -44,12 +44,9 @@ GetPreservedFileTestCase(
     }
   }
 
-  LOG(ERROR) << "Error finding test_name "
-             << private_computing::PrivateComputingClientRegressionTestData::
-                    TestName_Name(test_name);
-  NOTREACHED_IN_MIGRATION();
-  return private_computing::PrivateComputingClientRegressionTestData::
-      TestCase();
+  NOTREACHED() << "Error finding test_name "
+               << private_computing::PrivateComputingClientRegressionTestData::
+                      TestName_Name(test_name);
 }
 
 }  // namespace ash::report::utils

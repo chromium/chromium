@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Values and Units Test: attr 43
+  assert_equals: Value 'attr(data-foo type(<url>))', where 'data-foo=url("https://does-not-exist.test/404.png")' should be valid for the property '--x'. expected "url(\\"https://does-not-exist.test/404.png\\")" but got ""
+Harness: the test ran to completion.
+

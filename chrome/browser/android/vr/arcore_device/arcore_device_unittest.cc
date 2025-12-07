@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore_gl.h"
@@ -31,6 +30,7 @@
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/types/display_constants.h"
 
 namespace device {
 
@@ -42,7 +42,8 @@ class StubArImageTransport : public ArImageTransport {
         shared_buffer_(std::make_unique<WebXrSharedBuffer>()) {}
 
   void Initialize(WebXrPresentationState*,
-                  XrInitStatusCallback callback) override {
+                  XrInitStatusCallback callback,
+                  bool webgpu_session) override {
     std::move(callback).Run(true);
   }
 
@@ -149,9 +150,10 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       SurfaceTouchCallback touch_callback,
       JavaShutdownCallback destroyed_callback,
       XrSessionButtonTouchedCallback button_touched_callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void EndSession() override {}
+  void EndSession(JavaShutdownCallback destroyed_callback) override {}
 
   bool EnsureARCoreLoaded() override { return true; }
 
@@ -167,7 +169,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
     jmethodID getApplication = env->GetMethodID(
         activityThread, "getApplication", "()Landroid/app/Application;");
     jobject context = env->CallObjectMethod(at, getApplication);
-    return base::android::ScopedJavaLocalRef<jobject>(env, context);
+    return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, context);
   }
 
   base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(
@@ -217,8 +219,11 @@ class StubCompositorFrameSink
   void SetDisplayVSyncParameters(base::TimeTicks timebase,
                                  base::TimeDelta interval) override {}
   void ForceImmediateDrawAndSwapIfPossible() override {}
-  void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
+  void SetAdaptiveRefreshRateInfo(
+      bool has_support,
+      float suggested_high,
+      float device_scale_factor) override {}
   void SetSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override {}
   void PreserveChildSurfaceControls() override {}
@@ -231,33 +236,24 @@ class StubCompositorFrameSink
   void SetSwapCompletionCallbackEnabled(bool enable) override {}
   void SetStandaloneBeginFrameObserver(
       mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
-  void SetMaxVrrInterval(
-      std::optional<base::TimeDelta> max_vrr_interval) override {}
+  void SetMaxVSyncAndVrr(std::optional<base::TimeDelta> max_vsync_interval,
+                         display::VariableRefreshRateState vrr_state) override {
+  }
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
-  void SetWantsAnimateOnlyBeginFrames() override {}
-  void SetWantsBeginFrameAcks() override {}
-  void SetAutoNeedsBeginFrame() override {}
+  void SetParams(viz::mojom::CompositorFrameSinkParamsPtr params) override {}
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {}
   void DidNotProduceFrame(const viz::BeginFrameAck& begin_frame_ack) override {}
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {}
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
-  void SubmitCompositorFrameSync(
-      const viz::LocalSurfaceId& local_surface_id,
-      viz::CompositorFrame frame,
-      std::optional<viz::HitTestRegionList> hit_test_region_list,
-      uint64_t submit_time,
-      SubmitCompositorFrameSyncCallback callback) override {}
-  void InitializeCompositorFrameSinkType(
-      viz::mojom::CompositorFrameSinkType type) override {}
-  void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override {}
-  void SetThreadIds(const std::vector<int32_t>& thread_ids) override {}
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
+  void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
+                        viz::mojom::LayerContextSettingsPtr settings) override {
+  }
+  void SetThreads(const std::vector<viz::Thread>& threads) override {}
 
   // mojom::ExternalBeginFrameController implementation.
   void IssueExternalBeginFrame(
@@ -321,8 +317,8 @@ std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory(int32_t, int32_t) {
 
 class ArCoreDeviceTest : public testing::Test {
  public:
-  ArCoreDeviceTest() {}
-  ~ArCoreDeviceTest() override {}
+  ArCoreDeviceTest() = default;
+  ~ArCoreDeviceTest() override = default;
 
   void OnSessionCreated(mojom::XRRuntimeSessionResultPtr session_result) {
     DVLOG(1) << __func__;

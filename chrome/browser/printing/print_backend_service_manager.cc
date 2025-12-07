@@ -7,7 +7,9 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -16,14 +18,12 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "content/public/common/content_switches.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -58,17 +59,38 @@ namespace printing {
 
 namespace {
 
-// Histogram name for capturing if any printer drivers were encountered that
-// required fallback to workaround an access-denied error.  Determining if this
-// happens in the wild would be the impetus to pursue further efforts to
-// identify and possibly better rectify such cases.
-constexpr char kPrintBackendRequiresElevatedPrivilegeHistogramName[] =
-    "Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered";
-
 // For fetching remote IDs when there is no printer name.
 constexpr char kEmptyPrinterName[] = "";
 
 PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
+
+// Helper when dispatching callbacks with base::expected<copyable, copyable>.
+template <typename T, typename E, typename... Args>
+  requires(std::copy_constructible<T>)
+void MaybeCloneOrCopy(
+    base::OnceCallback<void(base::expected<T, E>, Args... rest)> cb,
+    const base::expected<T, E>& result,
+    Args... rest) {
+  // Implicit copy of result.
+  std::move(cb).Run(result, rest...);
+}
+
+// Helper when dispatching callbacks with base::expected<!copyable, copyable>.
+// Copies the the expected type using mojo's Clone().
+template <typename T, typename E, typename... Args>
+  requires(!std::copy_constructible<T>)
+void MaybeCloneOrCopy(
+    base::OnceCallback<void(base::expected<T, E>, Args... rest)> cb,
+    const base::expected<T, E>& result,
+    Args... rest) {
+  base::expected<T, E> clone;
+  if (result.has_value()) {
+    clone = base::ok(result.value().Clone());
+  } else {
+    clone = base::unexpected(result.error());
+  }
+  std::move(cb).Run(std::move(clone), rest...);
+}
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 // TODO(crbug.com/40561724):  Update for other platforms as they are made able
@@ -77,8 +99,7 @@ uint32_t NativeViewToUint(gfx::NativeView view) {
 #if BUILDFLAG(IS_WIN)
   return base::win::HandleToUint32(views::HWNDForNativeView(view));
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 #endif
@@ -176,7 +197,14 @@ std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
     ClientId id) {
   const auto iter = query_with_ui_clients_.find(id);
-  CHECK(iter != query_with_ui_clients_.end());
+  if (iter == query_with_ui_clients_.end()) {
+    // If the client is gone then that suggests that the renderer process
+    // terminated while the system print dialog was displayed.  Proceeding
+    // with printing will not be possible in such a case.
+    VLOG(1) << "Registering a print document client reusing client " << id
+            << " failed because that client is no longer registered";
+    return std::nullopt;
+  }
   return RegisterClient(ClientType::kPrintDocument, iter->second);
 }
 
@@ -281,7 +309,7 @@ void PrintBackendServiceManager::GetDefaultPrinterName(
                      base::Unretained(this), std::move(result.context)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
@@ -304,7 +332,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
           &PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults,
           base::Unretained(this), std::move(result.context)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 void PrintBackendServiceManager::GetPaperPrintableArea(
@@ -596,12 +624,7 @@ void PrintBackendServiceManager::
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "Destination '" << printer_name
           << "' requires elevated privileges.";
-  if (drivers_requiring_elevated_privilege_.emplace(printer_name).second &&
-      drivers_requiring_elevated_privilege_.size() == 1) {
-    // First time we've detected a problem for any driver.
-    base::UmaHistogramBoolean(
-        kPrintBackendRequiresElevatedPrivilegeHistogramName, /*sample=*/true);
-  }
+  drivers_requiring_elevated_privilege_.emplace(printer_name);
 }
 
 void PrintBackendServiceManager::SetServiceForTesting(
@@ -693,19 +716,19 @@ PrintBackendServiceManager::GetRemoteIdForPrintDocumentClientId(
       return item.first;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterClient(
     ClientType client_type,
-    absl::variant<std::string, RemoteId> destination) {
+    std::variant<std::string, RemoteId> destination) {
   ClientId client_id = ClientId(++last_client_id_);
   RemoteId remote_id =
-      absl::holds_alternative<std::string>(destination)
+      std::holds_alternative<std::string>(destination)
           ? GetRemoteIdForPrinterName(
-                /*printer_name=*/absl::get<std::string>(destination))
-          : absl::get<RemoteId>(destination);
+                /*printer_name=*/std::get<std::string>(destination))
+          : std::get<RemoteId>(destination);
 
   VLOG(1) << "Registering a client with ID " << client_id << " (client type "
           << ClientTypeToString(client_type) << ") for print backend service.";
@@ -750,7 +773,7 @@ PrintBackendServiceManager::RegisterClient(
   } else {
     // Service not already available, so launch it now so that it will be
     // ready by the time the client gets to point of invoking a Mojo call.
-    if (absl::holds_alternative<RemoteId>(destination)) {
+    if (std::holds_alternative<RemoteId>(destination)) {
       // When the destination is to reuse an existing remote, and that remote
       // is gone, then any expected context in that remote is also gone.  Such
       // a loss of context should be treated as a failure for the user's request
@@ -758,7 +781,7 @@ PrintBackendServiceManager::RegisterClient(
       return std::nullopt;
     }
     bool should_sandbox = ShouldServiceBeSandboxed(
-        /*printer_name=*/absl::get<std::string>(destination), client_type);
+        /*printer_name=*/std::get<std::string>(destination), client_type);
     GetService(remote_id, client_type, should_sandbox);
   }
 
@@ -833,16 +856,6 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
   }
 
   if (sandboxed) {
-    // On the first print that will try to use sandboxed service, make note that
-    // so far no drivers have been discovered to require fallback beyond any
-    // predetermined known cases.
-    if (first_sandboxed_print_) {
-      first_sandboxed_print_ = false;
-      base::UmaHistogramBoolean(
-          kPrintBackendRequiresElevatedPrivilegeHistogramName,
-          /*sample=*/false);
-    }
-
     return GetServiceFromBundle(remote_id, client_type, /*sandboxed=*/true,
                                 sandboxed_remotes_bundles_);
   }
@@ -872,14 +885,19 @@ PrintBackendServiceManager::GetServiceFromBundle(
             << (sandboxed ? "sandboxed" : "unsandboxed") << " for `"
             << remote_id << "`";
 
+    std::vector<std::string> extra_switches;
+#if BUILDFLAG(IS_LINUX)
+    if (auto* linux_ui = ui::LinuxUi::instance()) {
+      extra_switches = linux_ui->GetCmdLineFlagsForCopy();
+    }
+    extra_switches.push_back(switches::kMessageLoopTypeUi);
+#endif
     mojo::Remote<T>& host = bundle->host;
     content::ServiceProcessHost::Launch(
         host.BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
             .WithDisplayName(IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME)
-#if BUILDFLAG(IS_LINUX)
-            .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-#endif
+            .WithExtraCommandLineSwitches(std::move(extra_switches))
             .Pass());
     host->BindBackend(service.BindNewPipeAndPassReceiver());
 
@@ -1093,7 +1111,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
     mojo::Remote<printing::mojom::PrintBackendService>& service,
     bool sandboxed,
     const RemoteId& remote_id,
-    const base::TimeDelta& timeout) {
+    base::TimeDelta timeout) {
   DVLOG(1) << "Updating idle timeout for "
            << (sandboxed ? "sandboxed" : "unsandboxed")
            << " print backend service id `" << remote_id << "` to " << timeout;
@@ -1112,7 +1130,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
 
 void PrintBackendServiceManager::UpdateServiceIdleTimeoutByRemoteId(
     const RemoteId& remote_id,
-    const base::TimeDelta& timeout) {
+    base::TimeDelta timeout) {
   auto sandboxed_iter = sandboxed_remotes_bundles_.find(remote_id);
   if (sandboxed_iter != sandboxed_remotes_bundles_.end()) {
     RemotesBundle<mojom::SandboxedPrintBackendHost>* bundle =
@@ -1152,37 +1170,35 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
   } else {
     unsandboxed_remotes_bundles_.erase(remote_id);
   }
-  RunSavedCallbacksStructResult(
-      GetRemoteSavedEnumeratePrintersCallbacks(sandboxed), remote_id,
-      mojom::PrinterListResult::NewResultCode(mojom::ResultCode::kFailed));
-  RunSavedCallbacksStructResult(
-      GetRemoteSavedFetchCapabilitiesCallbacks(sandboxed), remote_id,
-      mojom::PrinterCapsAndInfoResult::NewResultCode(
-          mojom::ResultCode::kFailed));
-  RunSavedCallbacksStructResult(
+  RunSavedResultCallbacks(GetRemoteSavedEnumeratePrintersCallbacks(sandboxed),
+                          remote_id,
+                          base::unexpected(mojom::ResultCode::kFailed));
+  RunSavedResultCallbacks(GetRemoteSavedFetchCapabilitiesCallbacks(sandboxed),
+                          remote_id,
+                          base::unexpected(mojom::ResultCode::kFailed));
+  RunSavedResultCallbacks(
       GetRemoteSavedGetDefaultPrinterNameCallbacks(sandboxed), remote_id,
-      mojom::DefaultPrinterNameResult::NewResultCode(
-          mojom::ResultCode::kFailed));
-  RunSavedCallbacksStructResult(
+      base::unexpected(mojom::ResultCode::kFailed));
+#if BUILDFLAG(IS_CHROMEOS)
+  RunSavedResultCallbacks(
       GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(sandboxed),
-      remote_id,
-      mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(
-          mojom::ResultCode::kFailed));
+      remote_id, base::unexpected(mojom::ResultCode::kFailed));
+#endif
 #if BUILDFLAG(IS_WIN)
   RunSavedCallbacks(GetRemoteSavedGetPaperPrintableAreaCallbacks(sandboxed),
                     remote_id, gfx::Rect());
 #endif
-  RunSavedCallbacksStructResult(
-      GetRemoteSavedUseDefaultSettingsCallbacks(sandboxed), remote_id,
-      mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+  RunSavedResultCallbacks(GetRemoteSavedUseDefaultSettingsCallbacks(sandboxed),
+                          remote_id,
+                          base::unexpected(mojom::ResultCode::kFailed));
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  RunSavedCallbacksStructResult(
-      GetRemoteSavedAskUserForSettingsCallbacks(sandboxed), remote_id,
-      mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+  RunSavedResultCallbacks(GetRemoteSavedAskUserForSettingsCallbacks(sandboxed),
+                          remote_id,
+                          base::unexpected(mojom::ResultCode::kFailed));
 #endif
-  RunSavedCallbacksStructResult(
-      GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
-      mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+  RunSavedResultCallbacks(GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed),
+                          remote_id,
+                          base::unexpected(mojom::ResultCode::kFailed));
   RunSavedCallbacks(GetRemoteSavedStartPrintingCallbacks(sandboxed), remote_id,
                     mojom::ResultCode::kFailed, PrintingContext::kNoPrintJobId);
 #if BUILDFLAG(IS_WIN)
@@ -1217,6 +1233,7 @@ PrintBackendServiceManager::GetRemoteSavedGetDefaultPrinterNameCallbacks(
                    : unsandboxed_saved_get_default_printer_name_callbacks_;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 PrintBackendServiceManager::
     RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
     PrintBackendServiceManager::
@@ -1226,6 +1243,7 @@ PrintBackendServiceManager::
              ? sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_
              : unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 PrintBackendServiceManager::RemoteSavedGetPaperPrintableAreaCallbacks&
@@ -1353,12 +1371,12 @@ void PrintBackendServiceManager::ServiceCallbackDone(
     const base::UnguessableToken& saved_callback_id,
     X... data) {
   auto found_callback_map = saved_callbacks.find(remote_id);
-  CHECK(found_callback_map != saved_callbacks.end(), base::NotFatalUntil::M130);
+  CHECK(found_callback_map != saved_callbacks.end());
 
   SavedCallbacks<T...>& callback_map = found_callback_map->second;
 
   auto callback_entry = callback_map.find(saved_callback_id);
-  CHECK(callback_entry != callback_map.end(), base::NotFatalUntil::M130);
+  CHECK(callback_entry != callback_map.end());
   auto callback = std::move(callback_entry->second);
   callback_map.erase(callback_entry);
 
@@ -1368,7 +1386,7 @@ void PrintBackendServiceManager::ServiceCallbackDone(
 
 void PrintBackendServiceManager::OnDidEnumeratePrinters(
     const CallbackContext& context,
-    mojom::PrinterListResultPtr printer_list) {
+    mojom::PrintBackendService::EnumeratePrintersResult printer_list) {
   LogCallbackFromRemote("EnumeratePrinters", context);
   ServiceCallbackDone(
       GetRemoteSavedEnumeratePrintersCallbacks(context.is_sandboxed),
@@ -1377,7 +1395,7 @@ void PrintBackendServiceManager::OnDidEnumeratePrinters(
 
 void PrintBackendServiceManager::OnDidFetchCapabilities(
     const CallbackContext& context,
-    mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
+    mojom::PrintBackendService::FetchCapabilitiesResult printer_caps_and_info) {
   LogCallbackFromRemote("FetchCapabilities", context);
   ServiceCallbackDone(
       GetRemoteSavedFetchCapabilitiesCallbacks(context.is_sandboxed),
@@ -1387,22 +1405,25 @@ void PrintBackendServiceManager::OnDidFetchCapabilities(
 
 void PrintBackendServiceManager::OnDidGetDefaultPrinterName(
     const CallbackContext& context,
-    mojom::DefaultPrinterNameResultPtr printer_name) {
+    mojom::PrintBackendService::GetDefaultPrinterNameResult printer_name) {
   LogCallbackFromRemote("GetDefaultPrinterName", context);
   ServiceCallbackDone(
       GetRemoteSavedGetDefaultPrinterNameCallbacks(context.is_sandboxed),
       context.remote_id, context.saved_callback_id, std::move(printer_name));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults(
     const CallbackContext& context,
-    mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
+    mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsResult
+        printer_caps) {
   LogCallbackFromRemote("GetPrinterSemanticCapsAndDefaults", context);
   ServiceCallbackDone(GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(
                           context.is_sandboxed),
                       context.remote_id, context.saved_callback_id,
                       std::move(printer_caps));
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 void PrintBackendServiceManager::OnDidGetPaperPrintableArea(
@@ -1417,7 +1438,7 @@ void PrintBackendServiceManager::OnDidGetPaperPrintableArea(
 
 void PrintBackendServiceManager::OnDidUseDefaultSettings(
     const CallbackContext& context,
-    mojom::PrintSettingsResultPtr settings) {
+    PrintSettingsResult settings) {
   LogCallbackFromRemote("UseDefaultSettings", context);
   ServiceCallbackDone(
       GetRemoteSavedUseDefaultSettingsCallbacks(context.is_sandboxed),
@@ -1427,7 +1448,7 @@ void PrintBackendServiceManager::OnDidUseDefaultSettings(
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrintBackendServiceManager::OnDidAskUserForSettings(
     const CallbackContext& context,
-    mojom::PrintSettingsResultPtr settings) {
+    PrintSettingsResult settings) {
   LogCallbackFromRemote("AskUserForSettings", context);
   ServiceCallbackDone(
       GetRemoteSavedAskUserForSettingsCallbacks(context.is_sandboxed),
@@ -1437,7 +1458,7 @@ void PrintBackendServiceManager::OnDidAskUserForSettings(
 
 void PrintBackendServiceManager::OnDidUpdatePrintSettings(
     const CallbackContext& context,
-    mojom::PrintSettingsResultPtr settings) {
+    PrintSettingsResult settings) {
   LogCallbackFromRemote("UpdatePrintSettings", context);
   ServiceCallbackDone(
       GetRemoteSavedUpdatePrintSettingsCallbacks(context.is_sandboxed),
@@ -1488,32 +1509,7 @@ void PrintBackendServiceManager::OnDidCancel(const CallbackContext& context) {
                       context.remote_id, context.saved_callback_id);
 }
 
-template <class T>
-void PrintBackendServiceManager::RunSavedCallbacksStructResult(
-    RemoteSavedStructCallbacks<T>& saved_callbacks,
-    const RemoteId& remote_id,
-    mojo::StructPtr<T> result_to_clone) {
-  auto found_callbacks_map = saved_callbacks.find(remote_id);
-  if (found_callbacks_map == saved_callbacks.end())
-    return;  // No callbacks to run.
-
-  SavedCallbacks<mojo::StructPtr<T>>& callbacks_map =
-      found_callbacks_map->second;
-  for (auto& iter : callbacks_map) {
-    const base::UnguessableToken& saved_callback_id = iter.first;
-    DVLOG(1) << "Propagating print backend callback, saved callback ID "
-             << saved_callback_id << " for remote `" << remote_id << "`";
-
-    // Don't remove entries from the map while we are iterating through it,
-    // just run the callbacks.
-    base::OnceCallback<void(mojo::StructPtr<T>)>& callback = iter.second;
-    std::move(callback).Run(result_to_clone.Clone());
-  }
-
-  // Now that we're done iterating we can safely delete all of the callbacks.
-  callbacks_map.clear();
-}
-
+// For cases that do not need to clone `result...`.
 template <class... T>
 void PrintBackendServiceManager::RunSavedCallbacks(
     RemoteSavedCallbacks<T...>& saved_callbacks,
@@ -1533,6 +1529,33 @@ void PrintBackendServiceManager::RunSavedCallbacks(
     // just run the callbacks.
     base::OnceCallback<void(T...)>& callback = iter.second;
     std::move(callback).Run(result...);
+  }
+
+  // Now that we're done iterating we can safely delete all of the callbacks.
+  callbacks_map.clear();
+}
+
+// For cases that need to copy a single base::expected<T,E>
+template <class... T>
+void PrintBackendServiceManager::RunSavedResultCallbacks(
+    RemoteSavedCallbacks<T...>& saved_callbacks,
+    const RemoteId& remote_id,
+    typename std::remove_reference<T>::type... result) {
+  auto found_callbacks_map = saved_callbacks.find(remote_id);
+  if (found_callbacks_map == saved_callbacks.end())
+    return;  // No callbacks to run.
+
+  SavedCallbacks<T...>& callbacks_map = found_callbacks_map->second;
+  for (auto& iter : callbacks_map) {
+    const base::UnguessableToken& saved_callback_id = iter.first;
+    DVLOG(1) << "Propagating print backend callback, saved callback ID "
+             << saved_callback_id << " for remote `" << remote_id << "`";
+
+    // Don't remove entries from the map while we are iterating through it,
+    // just run the callbacks.
+    base::OnceCallback<void(T...)>& callback = iter.second;
+    // Callback parameters that must be moved need cloning first.
+    MaybeCloneOrCopy(std::move(callback), result...);
   }
 
   // Now that we're done iterating we can safely delete all of the callbacks.

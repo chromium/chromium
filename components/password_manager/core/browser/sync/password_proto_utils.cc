@@ -28,6 +28,7 @@ base::Time ConvertToBaseTime(uint64_t time) {
 // Trims the notes field in the sync_pb::PasswordSpecificsData proto. If neither
 // the high level notes field nor any of the individual notes contains populated
 // fields, the high level field is cleared.
+// LINT.IfChange(TrimPasswordSpecificsDataNotesForCaching)
 void TrimPasswordSpecificsDataNotesForCaching(
     sync_pb::PasswordSpecificsData& trimmed_password_data) {
   // `notes` field should be cleared if all notes are empty.
@@ -64,6 +65,7 @@ void TrimPasswordSpecificsDataNotesForCaching(
     trimmed_password_data.clear_notes();
   }
 }
+// LINT.ThenChange(//components/sync/protocol/password_specifics.proto:Notes)
 
 }  // namespace
 
@@ -181,6 +183,7 @@ sync_pb::PasswordSpecificsData_Notes PasswordNotesToProto(
 
 sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
     const sync_pb::PasswordSpecificsData& password_specifics_data) {
+  // LINT.IfChange(TrimPasswordSpecificsDataForCaching)
   sync_pb::PasswordSpecificsData trimmed_password_data =
       sync_pb::PasswordSpecificsData(password_specifics_data);
   trimmed_password_data.clear_scheme();
@@ -199,6 +202,7 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_avatar_url();
   trimmed_password_data.clear_federation_url();
   trimmed_password_data.clear_date_last_used();
+  trimmed_password_data.clear_date_last_filled_windows_epoch_micros();
   trimmed_password_data.clear_password_issues();
   trimmed_password_data.clear_date_password_modified_windows_epoch_micros();
   trimmed_password_data.clear_sender_email();
@@ -206,6 +210,7 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_date_received_windows_epoch_micros();
   trimmed_password_data.clear_sharing_notification_displayed();
   trimmed_password_data.clear_sender_profile_image_url();
+  // LINT.ThenChange(//components/sync/protocol/password_specifics.proto:PasswordSpecificsData)
 
   TrimPasswordSpecificsDataNotesForCaching(trimmed_password_data);
 
@@ -254,6 +259,9 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
       base::UTF16ToUTF8(password_form.password_value));
   password_data.set_date_last_used(
       password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  password_data.set_date_last_filled_windows_epoch_micros(
+      password_form.date_last_filled.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
   password_data.set_date_password_modified_windows_epoch_micros(
       password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
@@ -321,6 +329,8 @@ PasswordForm PasswordFromSpecifics(
         base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
   }
 
+  password.date_last_filled =
+      ConvertToBaseTime(password_data.date_last_filled_windows_epoch_micros());
   password.date_password_modified = ConvertToBaseTime(
       password_data.has_date_password_modified_windows_epoch_micros()
           ? password_data.date_password_modified_windows_epoch_micros()

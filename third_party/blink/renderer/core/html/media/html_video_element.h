@@ -26,16 +26,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_VIDEO_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_VIDEO_ELEMENT_H_
 
-#include "third_party/blink/public/common/media/display_type.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
+class VideoFrameCallbackRequester;
 class ImageBitmapOptions;
 class IntersectionObserverEntry;
 class MediaCustomControlsFullscreenDetector;
@@ -45,11 +47,9 @@ class PictureInPictureInterstitial;
 class StaticBitmapImage;
 class VideoWakeLock;
 
-class CORE_EXPORT HTMLVideoElement final
-    : public HTMLMediaElement,
-      public CanvasImageSource,
-      public ImageBitmapSource,
-      public Supplementable<HTMLVideoElement> {
+class CORE_EXPORT HTMLVideoElement final : public HTMLMediaElement,
+                                           public CanvasImageSource,
+                                           public ImageBitmapSource {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -70,10 +70,7 @@ class CORE_EXPORT HTMLVideoElement final
   gfx::Size videoVisibleSize() const;
 
   // Fullscreen
-  void webkitEnterFullscreen();
-  void webkitExitFullscreen();
-  bool webkitSupportsFullscreen();
-  bool webkitDisplayingFullscreen();
+  void EnterFullscreen();
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
@@ -81,12 +78,10 @@ class CORE_EXPORT HTMLVideoElement final
   unsigned webkitDecodedFrameCount() const;
   unsigned webkitDroppedFrameCount() const;
 
-  // Used by canvas to gain raw pixel access
-  //
-  // |paint_flags| is optional. If unspecified, its blend mode defaults to kSrc.
+  // Used by canvas to gain raw pixel access.
   void PaintCurrentFrame(cc::PaintCanvas*,
                          const gfx::Rect&,
-                         const cc::PaintFlags* paint_flags) const;
+                         const cc::PaintFlags&) const;
 
   bool HasAvailableVideoFrame() const;
   bool HasReadableVideoFrame() const;
@@ -105,17 +100,17 @@ class CORE_EXPORT HTMLVideoElement final
   // StaticBitmapImage of the current VideoFrame. If `allow_accelerated_images`
   // is set to false a software backed CanvasResourceProvider will be used to
   // produce the StaticBitmapImage. If `size` is specified, the image will be
-  // scaled to it, otherwise the image will be in its natural size.
+  // scaled to it, otherwise the image will be in its natural size. If
+  // `reinterpret_as_srgb` is true, then reinterpret the video as thought it
+  // is in sRGB color space.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
       bool allow_accelerated_images = true,
-      std::optional<gfx::Size> size = std::nullopt);
+      std::optional<gfx::Size> size = std::nullopt,
+      bool reinterpret_as_srgb = false);
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
+                                               const gfx::SizeF&) override;
   bool IsVideoElement() const override { return true; }
   bool WouldTaintOrigin() const override;
   gfx::SizeF ElementSize(const gfx::SizeF&,
@@ -127,7 +122,7 @@ class CORE_EXPORT HTMLVideoElement final
   bool IsAccelerated() const override { return false; }
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const override;
+  ImageBitmapSourceStatus CheckUsability() const override;
   ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect> crop_rect,
@@ -136,6 +131,9 @@ class CORE_EXPORT HTMLVideoElement final
 
   // WebMediaPlayerClient implementation.
   void OnRequestVideoFrameCallback() final;
+  void SetCcLayer(cc::Layer*) final;
+  void StyleDidChange(const ComputedStyle* old_style,
+                      const ComputedStyle& new_style);
 
   bool IsPersistent() const;
 
@@ -144,8 +142,12 @@ class CORE_EXPORT HTMLVideoElement final
   void MediaRemotingStarted(const WebString& remote_device_friendly_name) final;
   bool SupportsPictureInPicture() const final;
   void MediaRemotingStopped(int error_code) final;
-  DisplayType GetDisplayType() const final;
+  WebMediaPlayer::DisplayType GetDisplayType() const final;
   bool IsInAutoPIP() const final;
+  void DidPlayerMediaPositionStateChange(double playback_rate,
+                                         base::TimeDelta duration,
+                                         base::TimeDelta position,
+                                         bool end_of_media) final;
   void OnPictureInPictureStateChange() final;
   void SetPersistentState(bool persistent) final;
 
@@ -165,6 +167,13 @@ class CORE_EXPORT HTMLVideoElement final
 
   MediaVideoVisibilityTracker* visibility_tracker_for_tests() const {
     return visibility_tracker_.Get();
+  }
+
+  VideoFrameCallbackRequester* GetVideoFrameCallbackRequester() const {
+    return video_frame_callback_requester_;
+  }
+  void SetVideoFrameCallbackRequester(VideoFrameCallbackRequester* requester) {
+    video_frame_callback_requester_ = requester;
   }
 
  protected:
@@ -196,7 +205,7 @@ class CORE_EXPORT HTMLVideoElement final
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   bool IsURLAttribute(const Attribute&) const override;
   const AtomicString ImageSourceURL() const override;
 
@@ -229,6 +238,8 @@ class CORE_EXPORT HTMLVideoElement final
   void CreateVisibilityTrackerIfNeeded();
 
   void ReportVisibility(bool meets_visibility_threshold);
+
+  void ResetCache(TimerBase*);
 
   Member<HTMLImageLoader> image_loader_;
   Member<MediaCustomControlsFullscreenDetector>
@@ -269,6 +280,16 @@ class CORE_EXPORT HTMLVideoElement final
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  bool allow_accelerated_images_ = true;
+  HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
+
+  // Paint flags set based on CSS properties, which must be propagated to the
+  // cc::Layer.
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
+  cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
+
+  Member<VideoFrameCallbackRequester> video_frame_callback_requester_;
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
@@ -23,7 +24,9 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -42,10 +45,9 @@ using ::testing::SizeIs;
 
 namespace {
 // Must match message in
-// chrome/browser/resources/webui_js_error/webui_js_error.js, but with URL
-// escapes.
+// chrome/browser/resources/webui_js_error/webui_js_error.js.
 constexpr char kPageLoadMessage[] =
-    "WebUI%20JS%20Error%3A%20printing%20error%20on%20page%20load";
+    "WebUI JS Error: printing error on page load";
 
 // A simple webpage that generates a JavaScript error on load.
 constexpr char kJavaScriptErrorPage[] = R"(
@@ -129,17 +131,22 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
  public:
   WebUIJSErrorReportingTest() : error_url_(chrome::kChromeUIWebUIJsErrorURL) {
     CHECK(error_url_.is_valid());
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebUIJSErrorReportingExtended);
   }
 
   void SetUpOnMainThread() override {
     error_page_test_server_.RegisterRequestHandler(
         base::BindRepeating(&ReturnErrorPage));
     EXPECT_TRUE(error_page_test_server_.Start());
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
 
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   // NoErrorsAfterNavigation needs a second embedded test server to serve up
   // its error page, since embedded_test_server() is in use by the
   // MockCrashEndpoint.
@@ -161,10 +168,12 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   // Look for page load error report.
   MockCrashEndpoint::Report report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(1));
-  EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage)) << report;
+  EXPECT_THAT(report.GetQueryParam("error_message").value_or(""),
+              HasSubstr(kPageLoadMessage));
   // Expect that we get a good stack trace as well
-  EXPECT_THAT(report.content, AllOf(HasSubstr("logsErrorDuringPageLoadOuter"),
-                                    HasSubstr("logsErrorDuringPageLoadInner")))
+  EXPECT_THAT(report.content(),
+              AllOf(HasSubstr("logsErrorDuringPageLoadOuter"),
+                    HasSubstr("logsErrorDuringPageLoadInner")))
       << report;
 
   endpoint.clear_last_report();
@@ -172,29 +181,32 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
       browser()->tab_strip_model()->GetActiveWebContents();
   // Trigger uncaught exception. Simulating mouse clicks on a button requires
   // there to not be CSP on the JavaScript, so use accesskeys instead.
+  // On mac, the accesskey is activated by Ctrl+Option+Key. On other platforms,
+  // the accesskey is activate by Alt+Key.
+  constexpr bool press_ctrl = BUILDFLAG(IS_MAC);
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_T,
-                            ui::VKEY_T, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_T, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(2));
-  constexpr char kExceptionButtonMessage[] =
-      "WebUI%20JS%20Error%3A%20exception%20button%20clicked";
-  EXPECT_THAT(report.query, HasSubstr(kExceptionButtonMessage)) << report;
-  EXPECT_THAT(report.content, AllOf(HasSubstr("throwExceptionHandler"),
-                                    HasSubstr("throwExceptionInner")))
+  EXPECT_THAT(report.GetQueryParam("error_message").value_or(""),
+              HasSubstr("WebUI JS Error: exception button clicked"))
+      << report;
+  EXPECT_THAT(report.content(), AllOf(HasSubstr("throwExceptionHandler"),
+                                      HasSubstr("throwExceptionInner")))
       << report;
 
   endpoint.clear_last_report();
   // Trigger console.error call.
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_L,
-                            ui::VKEY_L, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_L, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(3));
-  constexpr char kTriggeredErrorMessage[] =
-      "WebUI%20JS%20Error%3A%20printing%20error%20on%20button%20click";
-  EXPECT_THAT(report.query, HasSubstr(kTriggeredErrorMessage)) << report;
-  EXPECT_THAT(report.content,
+  EXPECT_THAT(report.GetQueryParam("error_message").value_or(""),
+              HasSubstr("WebUI JS Error: printing error on button click"))
+      << report;
+  EXPECT_THAT(report.content(),
               AllOf(HasSubstr("logsErrorFromButtonClickHandler"),
                     HasSubstr("logsErrorFromButtonClickInner")))
       << report;
@@ -202,13 +214,12 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   endpoint.clear_last_report();
   // Trigger unhandled promise rejection.
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_P,
-                            ui::VKEY_P, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_P, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(4));
-  constexpr char kUnhandledPromiseRejectionMessage[] =
-      "WebUI%20JS%20Error%3A%20The%20rejector%20always%20rejects!";
-  EXPECT_THAT(report.query, HasSubstr(kUnhandledPromiseRejectionMessage))
+  EXPECT_THAT(report.GetQueryParam("error_message").value_or(""),
+              HasSubstr("WebUI JS Error: The rejector always rejects!"))
       << report;
   // V8 doesn't produce stacks for unhandle promise rejections.
 }
@@ -225,7 +236,6 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   Profile* profile = browser()->profile();
   SessionStartupPref pref(SessionStartupPref::LAST);
   SessionStartupPref::SetStartupPref(profile, pref);
-  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
   chrome::NewTab(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url_));
@@ -257,7 +267,9 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   MockCrashEndpoint::Report report = endpoint.WaitForReport();
 
   EXPECT_THAT(endpoint.all_reports(), SizeIs(2));
-  EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage)) << report;
+  EXPECT_THAT(report.GetQueryParam("error_message").value_or(""),
+              HasSubstr(kPageLoadMessage))
+      << report;
 }
 
 // Show that navigating from a WebUI page to a http page that produces
@@ -310,6 +322,6 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ExperimentListSmokeTest) {
   ui_test_utils::NavigateToURL(&navigate);
 
   MockCrashEndpoint::Report report = endpoint.WaitForReport();
-  EXPECT_THAT(report.query, HasSubstr("num-experiments=")) << report;
-  EXPECT_THAT(report.query, HasSubstr("variations=")) << report;
+  EXPECT_TRUE(report.GetQueryParam("num-experiments")) << report;
+  EXPECT_TRUE(report.GetQueryParam("variations")) << report;
 }

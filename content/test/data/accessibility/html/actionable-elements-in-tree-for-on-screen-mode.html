@@ -1,0 +1,41 @@
+<!--
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:role*
+-->
+<html>
+<head>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .viewport-section {
+    height: 100vh; /* Make each section the height of the viewport */
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    font-size: 2em;
+  }
+</style>
+</head>
+<body>
+  <button style="position:absolute; top:-100px;">offscreen</button>
+       <button disabled>disabled</button>
+       <a href="https://www.google.com/" aria-label="link1">link1</a>
+      <! -- The syntax here for this input tag is not correct; It is, however, how it is represented in switchAccess browser
+        tests All/SwitchAccessMV2PredicateTest.IsActionable/0 and we are trying to capture the same behavior here to test
+        that. -->
+       <input type="text" aria-label="input1">input1</input>
+       <button>button3</button>
+       <input type="range" aria-label="slider" value=5 min=0 max=10>
+      <! -- It is very likely that an empty item is not necessary and even useful to ATs, but it is used as a part of testing
+        strategy inside of the a11y code. To make sure that the AXOnScreenMode can handle these scenarios, it is included here
+        as part of this test. -->
+       <ol><div id="clickable" role="listitem" onclick="2+2"></div></ol>
+       <div id="div1"><p>p1</p></div>
+  </body>
+</html>

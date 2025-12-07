@@ -4,11 +4,11 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -20,19 +20,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
-namespace {
-
-using HolderPtr = std::unique_ptr<BulkLeakCheckImpl::CredentialHolder>;
-HolderPtr RemoveFromQueue(BulkLeakCheckImpl::CredentialHolder* weak_holder,
-                          base::circular_deque<HolderPtr>* queue) {
-  auto it = base::ranges::find(*queue, weak_holder, &HolderPtr::get);
-  CHECK(it != queue->end());
-  HolderPtr holder = std::move(*it);
-  queue->erase(it);
-  return holder;
-}
-
-}  // namespace
 
 // Holds all necessary payload for the request to the server for one credential.
 struct BulkLeakCheckImpl::CredentialHolder {
@@ -54,6 +41,20 @@ struct BulkLeakCheckImpl::CredentialHolder {
   // Network request for the API call.
   std::unique_ptr<LeakDetectionRequestInterface> network_request_;
 };
+
+namespace {
+
+using HolderPtr = std::unique_ptr<BulkLeakCheckImpl::CredentialHolder>;
+HolderPtr RemoveFromQueue(BulkLeakCheckImpl::CredentialHolder* weak_holder,
+                          base::circular_deque<HolderPtr>* queue) {
+  auto it = std::ranges::find(*queue, weak_holder, &HolderPtr::get);
+  CHECK(it != queue->end());
+  HolderPtr holder = std::move(*it);
+  queue->erase(it);
+  return holder;
+}
+
+}  // namespace
 
 LeakCheckCredential::LeakCheckCredential(std::u16string username,
                                          std::u16string password)

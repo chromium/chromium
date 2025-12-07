@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_hovered="true">
+    <shape android:shape="rectangle">
+      <solid android:color="@color/color_on_surface_with_alpha_8" />
+      <corners android:radius="@dimen/focused_list_item_background_radius" />
+    </shape>
+  </item>
+  <item android:state_focused="true">
+    <shape android:shape="rectangle">
+      <solid android:color="@android:color/transparent" />
+      <corners android:radius="@dimen/focused_list_item_background_radius" />
+      <stroke
+          android:color="@macro/default_control_color_active"
+          android:width="@dimen/focused_outline_stroke_width" />
+    </shape>
+  </item>
+  <item android:state_pressed="true">
+    <shape android:shape="rectangle">
+      <solid android:color="@color/color_on_surface_with_alpha_12" />
+      <corners android:radius="@dimen/focused_list_item_background_radius" />
+    </shape>
+  </item>
+  <item>
+    <shape android:shape="rectangle">
+      <solid android:color="@android:color/transparent" />
+    </shape>
+  </item>
+</selector>

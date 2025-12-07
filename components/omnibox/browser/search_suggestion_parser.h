@@ -23,6 +23,7 @@
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
@@ -190,9 +191,6 @@ class SearchSuggestionParser {
       return suggestion_group_id_;
     }
 
-    void SetAnswer(const SuggestionAnswer& answer);
-    const std::optional<SuggestionAnswer>& answer() const { return answer_; }
-
     void SetRichAnswerTemplate(
         const omnibox::RichAnswerTemplate& answer_template);
     const std::optional<omnibox::RichAnswerTemplate>& answer_template() const {
@@ -204,6 +202,16 @@ class SearchSuggestionParser {
 
     void SetEntityInfo(const omnibox::EntityInfo&);
     const omnibox::EntityInfo& entity_info() const { return entity_info_; }
+
+    void SetSuggestTemplateInfo(
+        const omnibox::SuggestTemplateInfo& suggest_template_info);
+    const std::optional<omnibox::SuggestTemplateInfo>& suggest_template_info()
+        const {
+      return suggest_template_info_;
+    }
+
+    void SetMatchContents(const std::u16string& match_contents);
+    void SetAnnotation(const std::u16string& annotation);
 
     bool should_prefetch() const { return should_prefetch_; }
     bool should_prerender() const { return should_prerender_; }
@@ -238,9 +246,6 @@ class SearchSuggestionParser {
     // config for the group this suggestion belongs to from the server response.
     std::optional<omnibox::GroupId> suggestion_group_id_;
 
-    // Optional short answer to the input that produced this suggestion.
-    std::optional<SuggestionAnswer> answer_;
-
     // Optional proto that contains answer info for rich answers.
     std::optional<omnibox::RichAnswerTemplate> answer_template_;
 
@@ -249,6 +254,9 @@ class SearchSuggestionParser {
 
     // Proto containing various pieces of data related to entity suggestions.
     omnibox::EntityInfo entity_info_;
+
+    // Proto containing generalized suggestion information.
+    std::optional<omnibox::SuggestTemplateInfo> suggest_template_info_;
 
     // Should this result be prefetched?
     bool should_prefetch_;
@@ -312,6 +320,7 @@ class SearchSuggestionParser {
   typedef std::vector<NavigationResult> NavigationResults;
   typedef std::vector<omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2>
       ExperimentStatsV2s;
+  typedef std::vector<int64_t> GwsEventIdHashes;
 
   // A simple structure bundling most of the information (including
   // both SuggestResults and NavigationResults) returned by a call to
@@ -354,6 +363,9 @@ class SearchSuggestionParser {
     // If the active suggest field trial (if any) has triggered.
     bool field_trial_triggered;
 
+    // GWS event ID hashes, if any. To be logged to SearchboxStats.
+    GwsEventIdHashes gws_event_id_hashes;
+
     // The ExperimentStatsV2 containing GWS experiment details, if any. To be
     // logged to SearchboxStats.
     ExperimentStatsV2s experiment_stats_v2s;
@@ -363,19 +375,21 @@ class SearchSuggestionParser {
 
     // The map of suggestion group IDs to suggestion group information.
     omnibox::GroupConfigMap suggestion_groups_map;
+
+    // The smart compose inline hint.
+    std::string smart_compose_inline_hint;
   };
 
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the
   // result.
   //
-  // |source| must be the SimpleURLLoader that loaded the data; it is used to
+  // `source` must be the SimpleURLLoader that loaded the data; it is used to
   // lookup the body's encoding from response headers.
   // Note: It can be nullptr in tests.
   //
-  // |response_body| must be the body of the response; it may be null.
-  static std::string ExtractJsonData(
-      const network::SimpleURLLoader* source,
-      std::unique_ptr<std::string> response_body);
+  // `response_body` must be the body of the response; it may be empty.
+  static std::string ExtractJsonData(const network::SimpleURLLoader* source,
+                                     std::optional<std::string> response_body);
 
   // Parses JSON response received from the provider, stripping XSSI
   // protection if needed. Returns the parsed data if successful, NULL

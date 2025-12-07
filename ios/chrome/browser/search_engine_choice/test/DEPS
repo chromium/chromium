@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h",
+  "+ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h",
+]

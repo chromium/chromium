@@ -26,23 +26,28 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::_;
+using ::testing::ElementsAre;
+
+using PeerConnectionInfoPtr = ::blink::mojom::blink::PeerConnectionInfoPtr;
 
 namespace blink {
 
 const char* kDefaultTransceiverString =
-    "getTransceivers()[0]:{\n"
-    "  mid:null,\n"
-    "  kind:'audio',\n"
-    "  sender:{\n"
-    "    track:'senderTrackId',\n"
-    "    streams:['senderStreamId'],\n"
-    "  },\n"
-    "  receiver:{\n"
-    "    track:'receiverTrackId',\n"
-    "    streams:['receiverStreamId'],\n"
-    "  },\n"
-    "  direction:'sendonly',\n"
-    "  currentDirection:null,\n"
+    "{\"mid\":null,"
+    "\"kind\":\"audio\","
+    "\"sender\":{"
+    "\"track\":\"senderTrackId\","
+    "\"streams\":[\"senderStreamId\"],"
+    "\"encodings\":[]"
+    "},"
+    "\"receiver\":{"
+    "\"track\":\"receiverTrackId\","
+    "\"streams\":[\"receiverStreamId\"]"
+    "},"
+    "\"direction\":\"sendonly\","
+    "\"currentDirection\":null,"
+    "\"reason\":\"setLocalDescription\","
+    "\"transceiverIndex\":0"
     "}";
 
 class MockPeerConnectionTrackerHost
@@ -65,8 +70,8 @@ class MockPeerConnectionTrackerHost
                void(int, const String&, const String&, const String&));
   MOCK_METHOD3(GetDisplayMediaFailure, void(int, const String&, const String&));
   MOCK_METHOD2(WebRtcEventLogWrite, void(int, const Vector<uint8_t>&));
+  MOCK_METHOD2(WebRtcDataChannelLogWrite, void(int, const Vector<uint8_t>&));
   MOCK_METHOD2(AddStandardStats, void(int, base::Value::List));
-  MOCK_METHOD2(AddLegacyStats, void(int, base::Value::List));
 
   mojo::PendingRemote<blink::mojom::blink::PeerConnectionTrackerHost>
   CreatePendingRemoteAndBind() {
@@ -110,7 +115,10 @@ class MockPeerConnectionHandler : public RTCPeerConnectionHandler {
             MakeGarbageCollected<MockRTCPeerConnectionHandlerClient>()) {}
   MOCK_METHOD0(CloseClientPeerConnection, void());
   MOCK_METHOD1(OnThermalStateChange, void(mojom::blink::DeviceThermalState));
-  MOCK_METHOD1(OnSpeedLimitChange, void(int));
+  MOCK_METHOD0(StartDataChannelLog, void());
+  MOCK_METHOD0(StopDataChannelLog, void());
+  MOCK_METHOD1(StartEventLog, void(int));
+  MOCK_METHOD0(StopEventLog, void());
 
  private:
   explicit MockPeerConnectionHandler(
@@ -146,12 +154,19 @@ class PeerConnectionTrackerTest : public ::testing::Test {
         base::PassKey<PeerConnectionTrackerTest>());
   }
 
-  void CreateAndRegisterPeerConnectionHandler() {
+  PeerConnectionInfoPtr CreateAndRegisterPeerConnectionHandler() {
     mock_handler_ = std::make_unique<MockPeerConnectionHandler>();
-    EXPECT_CALL(*mock_host_, AddPeerConnection(_));
+    PeerConnectionInfoPtr res;
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_host_, AddPeerConnection)
+        .WillOnce([&res, &run_loop](PeerConnectionInfoPtr info) {
+          res = std::move(info);
+          run_loop.Quit();
+        });
     tracker_->RegisterPeerConnection(mock_handler_.get(), DefaultConfig(),
                                      nullptr);
-    base::RunLoop().RunUntilIdle();
+    run_loop.Run();
+    return res;
   }
 
  protected:
@@ -167,13 +182,13 @@ TEST_F(PeerConnectionTrackerTest, TrackCreateOffer) {
   // Note: blink::RTCOfferOptionsPlatform is not mockable. So we can't write
   // tests for anything but a null options parameter.
   RTCOfferOptionsPlatform* options =
-      MakeGarbageCollected<RTCOfferOptionsPlatform>(0, 0, false, false);
+      MakeGarbageCollected<RTCOfferOptionsPlatform>(1, 1, true, true);
   EXPECT_CALL(
       *mock_host_,
       UpdatePeerConnection(
           _, String("createOffer"),
-          String("options: {offerToReceiveVideo: 0, offerToReceiveAudio: 0, "
-                 "voiceActivityDetection: false, iceRestart: false}")));
+          String("{\"offerToReceiveAudio\":true,\"offerToReceiveVideo\":true,"
+                 "\"voiceActivityDetection\":true,\"iceRestart\":true}")));
   tracker_->TrackCreateOffer(mock_handler_.get(), options);
   base::RunLoop().RunUntilIdle();
 }
@@ -215,14 +230,100 @@ TEST_F(PeerConnectionTrackerTest, OnThermalStateChange) {
   tracker_->OnThermalStateChange(mojom::blink::DeviceThermalState::kCritical);
 }
 
-TEST_F(PeerConnectionTrackerTest, OnSpeedLimitChange) {
+TEST_F(PeerConnectionTrackerTest, StartDataChannelLogCalled) {
   CreateTrackerWithMocks();
-  CreateAndRegisterPeerConnectionHandler();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
 
-  EXPECT_CALL(*mock_handler_, OnSpeedLimitChange(22));
-  tracker_->OnSpeedLimitChange(22);
-  EXPECT_CALL(*mock_handler_, OnSpeedLimitChange(33));
-  tracker_->OnSpeedLimitChange(33);
+  EXPECT_CALL(*mock_handler_, StartDataChannelLog);
+  tracker_->StartDataChannelLog(info->lid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest,
+       StartDataChannelLogNotCalledIfMismatchBetweenLidAndPeerConnection) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StartDataChannelLog).Times(0);
+  tracker_->StartDataChannelLog(info->lid + 1);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, StopDataChannelLogCalled) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StopDataChannelLog);
+  tracker_->StopDataChannelLog(info->lid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest,
+       StopDataChannelLogNotCalledIfMismatchBetweenLidAndPeerConnection) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StopDataChannelLog).Times(0);
+  tracker_->StopDataChannelLog(info->lid + 1);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, DataChannelLoggingWrite) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_host_,
+              WebRtcDataChannelLogWrite(info->lid, ElementsAre(1, 2, 3)));
+  tracker_->TrackRtcDataChannelLogWrite(mock_handler_.get(), {1, 2, 3});
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, StartEventLogCalled) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StartEventLog(123));
+  tracker_->StartEventLog(info->lid, 123);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest,
+       StartEventLogNotCalledIfMismatchBetweenLidAndPeerConnection) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StartEventLog).Times(0);
+  tracker_->StartEventLog(info->lid + 1, 321);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, StopEventLogCalled) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StopEventLog);
+  tracker_->StopEventLog(info->lid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest,
+       StopEventLogNotCalledIfMismatchBetweenLidAndPeerConnection) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StopEventLog).Times(0);
+  tracker_->StopEventLog(info->lid + 1);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, EventLoggingWrite) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_host_,
+              WebRtcEventLogWrite(info->lid, ElementsAre(1, 2, 3)));
+  tracker_->TrackRtcEventLogWrite(mock_handler_.get(), {1, 2, 3});
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(PeerConnectionTrackerTest, ReportInitialThermalState) {
@@ -290,21 +391,21 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesPresent) {
       0u);
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "Caused by: addTrack\n"
-      "\n"
-      "getTransceivers()[0]:{\n"
-      "  mid:'midValue',\n"
-      "  kind:'audio',\n"
-      "  sender:{\n"
-      "    track:'senderTrackId',\n"
-      "    streams:['streamIdA','streamIdB'],\n"
-      "  },\n"
-      "  receiver:{\n"
-      "    track:'receiverTrackId',\n"
-      "    streams:['streamIdC'],\n"
-      "  },\n"
-      "  direction:'sendrecv',\n"
-      "  currentDirection:'inactive',\n"
+      "{\"mid\":\"midValue\","
+      "\"kind\":\"audio\","
+      "\"sender\":{"
+      "\"track\":\"senderTrackId\","
+      "\"streams\":[\"streamIdA\",\"streamIdB\"],"
+      "\"encodings\":[]"
+      "},"
+      "\"receiver\":{"
+      "\"track\":\"receiverTrackId\","
+      "\"streams\":[\"streamIdC\"]"
+      "},"
+      "\"direction\":\"sendrecv\","
+      "\"currentDirection\":\"inactive\","
+      "\"reason\":\"addTrack\","
+      "\"transceiverIndex\":0"
       "}");
   EXPECT_EQ(expected_value, update_value);
 }
@@ -315,7 +416,7 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
   blink::FakeRTCRtpTransceiverImpl transceiver(
       String(),
       blink::FakeRTCRtpSenderImpl(
-          std::nullopt, {},
+          String(), {},
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
       blink::FakeRTCRtpReceiverImpl(
           "receiverTrackId", {},
@@ -332,21 +433,21 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
       transceiver, 1u);
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "Caused by: addTransceiver\n"
-      "\n"
-      "getTransceivers()[1]:{\n"
-      "  mid:null,\n"
-      "  kind:'audio',\n"
-      "  sender:{\n"
-      "    track:null,\n"
-      "    streams:[],\n"
-      "  },\n"
-      "  receiver:{\n"
-      "    track:'receiverTrackId',\n"
-      "    streams:[],\n"
-      "  },\n"
-      "  direction:'inactive',\n"
-      "  currentDirection:null,\n"
+      "{\"mid\":null,"
+      "\"kind\":\"audio\","
+      "\"sender\":{"
+      "\"track\":null,"
+      "\"streams\":[],"
+      "\"encodings\":[]"
+      "},"
+      "\"receiver\":{"
+      "\"track\":\"receiverTrackId\","
+      "\"streams\":[]"
+      "},"
+      "\"direction\":\"inactive\","
+      "\"currentDirection\":null,"
+      "\"reason\":\"addTransceiver\","
+      "\"transceiverIndex\":1"
       "}");
   EXPECT_EQ(expected_value, update_value);
 }
@@ -364,29 +465,94 @@ TEST_F(PeerConnectionTrackerTest, ModifyTransceiver) {
       PeerConnectionTracker::TransceiverUpdatedReason::kSetLocalDescription,
       *transceiver, 0u);
   base::RunLoop().RunUntilIdle();
-  String expected_value("Caused by: setLocalDescription\n\n" +
-                        String(kDefaultTransceiverString));
+  String expected_value(kDefaultTransceiverString);
   EXPECT_EQ(expected_value, update_value);
 }
 
-TEST_F(PeerConnectionTrackerTest, IceCandidateError) {
+TEST_F(PeerConnectionTrackerTest, OnSignalingStateChange) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();
   auto transceiver = CreateDefaultTransceiver();
   String update_value;
   EXPECT_CALL(*mock_host_,
-              UpdatePeerConnection(_, String("icecandidateerror"), _))
+              UpdatePeerConnection(_, String("onsignalingstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackSignalingStateChange(
+      mock_handler_.get(),
+      webrtc::PeerConnectionInterface::SignalingState::kStable);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"stable\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceGatheringStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onicegatheringstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackIceGatheringStateChange(
+      mock_handler_.get(), webrtc::PeerConnectionInterface::IceGatheringState::
+                               kIceGatheringComplete);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"complete\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceConnectionStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("oniceconnectionstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackIceConnectionStateChange(
+      mock_handler_.get(), webrtc::PeerConnectionInterface::IceConnectionState::
+                               kIceConnectionDisconnected);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"disconnected\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnConnectionStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onconnectionstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackConnectionStateChange(
+      mock_handler_.get(),
+      webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"disconnected\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceCandidateError) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onicecandidateerror"), _))
       .WillOnce(testing::SaveArg<2>(&update_value));
   tracker_->TrackIceCandidateError(mock_handler_.get(), "1.1.1.1", 15, "[::1]",
                                    "test url", 404, "test error");
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "url: test url\n"
-      "address: 1.1.1.1\n"
-      "port: 15\n"
-      "host_candidate: [::1]\n"
-      "error_text: test error\n"
-      "error_code: 404");
+      "{"
+      "\"url\":\"test url\","
+      "\"address\":\"1.1.1.1\","
+      "\"port\":15,"
+      "\"host_candidate\":\"[::1]\","
+      "\"error_text\":\"test error\","
+      "\"error_code\":404"
+      "}");
   EXPECT_EQ(expected_value, update_value);
 }
 

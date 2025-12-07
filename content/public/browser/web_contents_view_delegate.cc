@@ -5,12 +5,13 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "content/public/common/drop_data.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 
@@ -33,7 +34,7 @@ void WebContentsViewDelegate::DismissContextMenu() {}
 
 void WebContentsViewDelegate::ExecuteCommandForTesting(int command_id,
                                                        int event_flags) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsViewDelegate::StoreFocus() {
@@ -64,5 +65,7 @@ void WebContentsViewDelegate::OnPerformingDrop(
     DropCompletionCallback callback) {
   return std::move(callback).Run(drop_data);
 }
+
+void WebContentsViewDelegate::WebContentsDragEnded() {}
 
 }  // namespace content

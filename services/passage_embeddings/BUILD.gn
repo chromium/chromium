@@ -3,12 +3,15 @@
 # found in the LICENSE file.
 
 import("//components/optimization_guide/features.gni")
+import("//services/on_device_model/on_device_model.gni")
 
 source_set("passage_embeddings") {
   sources = [
     "passage_embeddings_service.cc",
     "passage_embeddings_service.h",
   ]
+  public_deps = [ "//mojo/public/cpp/bindings" ]
+  deps = [ "//services/passage_embeddings/public/mojom" ]
 
   if (build_with_tflite_lib) {
     sources += [
@@ -16,43 +19,35 @@ source_set("passage_embeddings") {
       "passage_embedder.h",
       "passage_embedder_execution_task.cc",
       "passage_embedder_execution_task.h",
+      "passage_embeddings_op_resolver.cc",
+      "passage_embeddings_op_resolver.h",
     ]
-  }
-
-  public_deps = [ "//mojo/public/cpp/bindings" ]
-
-  if (build_with_tflite_lib) {
     public_deps += [
+      "//third_party/sentencepiece",
+      "//third_party/sentencepiece:sentencepiece_proto",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
-  }
-
-  deps = [
-    "//components/history_embeddings",
-    "//services/passage_embeddings/public/mojom",
-    "//third_party/sentencepiece:sentencepiece",
-    "//third_party/sentencepiece:sentencepiece_proto",
-  ]
-
-  if (build_with_tflite_lib) {
     deps += [
       "//components/optimization_guide:machine_learning_tflite_buildflags",
-      "//components/optimization_guide/core:machine_learning",
+      "//components/optimization_guide/core/inference:op_resolver",
+      "//services/on_device_model:ml_internal_buildflags",
     ]
+  }
+
+  if (enable_ml_internal) {
+    deps += [ "//services/on_device_model/ml" ]
   }
 }
 
 source_set("tests") {
   testonly = true
-
   sources = [ "passage_embeddings_service_unittest.cc" ]
   deps = [
     ":passage_embeddings",
     "//base/test:test_support",
-    "//services/on_device_model/public/mojom",
     "//testing/gtest",
   ]
 }

@@ -15,7 +15,7 @@
 #include "extensions/common/extension.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
 namespace extensions {
 
@@ -53,7 +53,7 @@ StartScanRunner::StartScanRunner(gfx::NativeWindow native_window,
       approved_(false) {
   CHECK(extension_);
   if (native_window_) {
-    native_window_tracker_ = views::NativeWindowTracker::Create(native_window_);
+    native_window_tracker_ = ui::NativeWindowTracker::Create(native_window_);
   }
 }
 
@@ -137,9 +137,6 @@ void StartScanRunner::SendStartScanRequest() {
       scanner_handle_, std::move(options_),
       base::BindOnce(&StartScanRunner::OnStartScanResponse,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(b/312757530): Clean up the pending call if the DocumentScan service
-  // goes away without running our callback.
 }
 
 void StartScanRunner::OnStartScanResponse(

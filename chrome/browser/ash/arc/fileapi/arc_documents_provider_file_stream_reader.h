@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -26,7 +26,6 @@ namespace arc {
 
 // FileStreamReader implementation for ARC documents provider file system.
 // It actually delegates operations to ArcContentFileSystemFileStreamReader.
-// TODO(crbug.com/678886): Write unit tests.
 class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
  public:
   ArcDocumentsProviderFileStreamReader(const storage::FileSystemURL& url,

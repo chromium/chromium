@@ -5,12 +5,21 @@
 #include "ash/wm/overview/birch/birch_bar_util.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
+#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_view.h"
+#include "ash/wm/overview/birch/birch_chip_button.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash::birch_bar_util {
 
@@ -32,6 +41,18 @@ std::unique_ptr<views::Button> CreateAddonButton(
   auto button = std::make_unique<PillButton>(
       std::move(callback), label, PillButton::Type::kSecondaryWithoutIcon);
   button->SetProperty(views::kMarginsKey, kAddonMargins);
+  return button;
+}
+
+std::unique_ptr<views::Button> CreateCoralAddonButton(
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& button_icon) {
+  auto button = std::make_unique<IconButton>(
+      std::move(callback), IconButton::Type::kMediumProminent, &button_icon,
+      /*is_togglable=*/true, /*has_border=*/true);
+  button->SetProperty(views::kMarginsKey, kAddonMargins);
+  button->SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated);
+  button->SetIconColor(cros_tokens::kCrosSysSecondary);
   return button;
 }
 
@@ -61,6 +82,56 @@ std::unique_ptr<views::View> CreateWeatherTemperatureView(
   typography_provider->StyleLabel(kWeatherUnitLabelFont, *unit);
 
   return weather_view;
+}
+
+BirchSuggestionType CommandIdToSuggestionType(int command_id) {
+  using CommandId = BirchBarContextMenuModel::CommandId;
+  switch (command_id) {
+    case base::to_underlying(CommandId::kCalendarSuggestions):
+      return BirchSuggestionType::kCalendar;
+    case base::to_underlying(CommandId::kWeatherSuggestions):
+      return BirchSuggestionType::kWeather;
+    case base::to_underlying(CommandId::kDriveSuggestions):
+      return BirchSuggestionType::kDrive;
+    case base::to_underlying(CommandId::kChromeTabSuggestions):
+      return BirchSuggestionType::kChromeTab;
+    case base::to_underlying(CommandId::kMediaSuggestions):
+      return BirchSuggestionType::kMedia;
+    case base::to_underlying(CommandId::kCoralSuggestions):
+      return BirchSuggestionType::kCoral;
+    default:
+      break;
+  }
+  NOTREACHED() << "No matching suggestion type for command Id: " << command_id;
+}
+
+TabAppSelectionHost* GetVisibleTabAppSelectionHost() {
+  auto* birch_bar_controller = BirchBarController::Get();
+  if (!birch_bar_controller) {
+    return nullptr;
+  }
+
+  const std::vector<raw_ptr<BirchBarView>> bar_views =
+      birch_bar_controller->bar_views();
+  for (BirchBarView* bar_view : bar_views) {
+    auto iter =
+        std::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* chip) {
+          CoralChipButton* coral_chip =
+              views::AsViewClass<CoralChipButton>(chip);
+          if (!coral_chip) {
+            return false;
+          }
+
+          TabAppSelectionHost* selection_host =
+              coral_chip->tab_app_selection_widget();
+          return selection_host && selection_host->IsVisible();
+        });
+    if (iter != bar_view->chips().end()) {
+      return views::AsViewClass<CoralChipButton>(*iter)
+          ->tab_app_selection_widget();
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace ash::birch_bar_util

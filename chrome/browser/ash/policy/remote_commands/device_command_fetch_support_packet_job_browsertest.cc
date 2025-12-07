@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,43 +20,46 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/test/managed_guest_session_test_helpers.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/test_support/remote_commands_service_mixin.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome_device_policy.pb.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
-#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/storage/test_storage_module.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/browser_main_parts.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
 
+using ash::kiosk::test::LaunchAppManually;
+using ash::kiosk::test::TheKioskApp;
+using ash::kiosk::test::WaitKioskLaunched;
 using base::test::IsJson;
 using ::testing::_;
 using ::testing::WithArg;
@@ -63,10 +69,10 @@ namespace policy {
 namespace {
 
 constexpr char kUnaffiliatedUser[] = "user@gmail.com";
-constexpr char kUnaffiliatedGaiaID[] = "11111";
+constexpr GaiaId::Literal kUnaffiliatedGaiaID("11111");
 
 constexpr char kAffiliatedUser[] = "user@example.com";
-constexpr char kAffiliatedGaiaID[] = "22222";
+constexpr GaiaId::Literal kAffiliatedGaiaID("22222");
 
 // Use a number larger than int32 to catch truncation errors.
 const int64_t kInitialCommandId = (1LL << 35) + 1;
@@ -216,10 +222,8 @@ class DeviceCommandFetchSupportPacketBrowserTest
           DevicePolicyCrosBrowserTest> {};
 
 // Tests FETCH_SUPPORT_PACKET command on different session types
-// (affiliated/unaffiliated user sessions, managed guest session). For other
-// session types, please see
-// DeviceCommandFetchSupportPacketBrowserTestAutoLaunchKioskSession and
-// DeviceCommandFetchSupportPacketBrowserTestManualKioskSession tests.
+// (affiliated/unaffiliated user sessions, managed guest session). For Kiosk
+// sessions refer to DeviceCommandFetchSupportPacketBrowserTestKioskSession.
 class DeviceCommandFetchSupportPacketBrowserTestParameterized
     : public DeviceCommandFetchSupportPacketBrowserTest,
       public ::testing::WithParamInterface<test::SessionInfo> {
@@ -246,7 +250,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
         ASSERT_NO_FATAL_FAILURE(LaunchMGS());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -256,20 +260,15 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
       bool is_affiliated) {
     login_manager_mixin_.LoginWithDefaultContext(user);
     login_manager_mixin_.WaitForActiveSession();
-    // UserManager is initialized as ash::FakeChromeUserManager by the included
-    // mixins so it's safe to cast.
-    ash::FakeChromeUserManager* fake_user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
-            user_manager::UserManager::Get());
-    fake_user_manager->SetUserAffiliationForTesting(user.account_id,
-                                                    is_affiliated);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user.account_id, /*is_managed=*/true, is_affiliated);
   }
 
   void LaunchMGS() {
     // Set up MGS auto-launch mode.
     em::ChromeDeviceSettingsProto& proto(
         policy_helper()->device_policy()->payload());
-    ash::AppendAutoLaunchManagedGuestSessionAccount(&proto);
+    ash::test::AppendAutoLaunchManagedGuestSessionAccount(&proto);
 
     policy_helper()->RefreshDevicePolicy();
     ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
@@ -302,42 +301,45 @@ INSTANTIATE_TEST_SUITE_P(
         test::SessionInfo{test::TestSessionType::kManagedGuestSession,
                           /*pii_allowed=*/false}));
 
-class DeviceCommandFetchSupportPacketBrowserTestAutoLaunchKioskSession
-    : public DeviceCommandFetchSupportPacketBrowserTest {
- protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    DeviceCommandFetchSupportPacketBrowserTest::
-        SetUpInProcessBrowserTestFixture();
-    // Set up kiosk auto-launch mode.
-    em::ChromeDeviceSettingsProto& proto(
-        policy_helper()->device_policy()->payload());
-    ash::KioskAppsMixin::AppendAutoLaunchKioskAccount(&proto);
-    policy_helper()->RefreshDevicePolicy();
-  }
-
- private:
-  ash::LoginManagerMixin login_manager_mixin_{&mixin_host_, {}};
-};
-
-class DeviceCommandFetchSupportPacketBrowserTestManualKioskSession
+class DeviceCommandFetchSupportPacketBrowserTestKioskSession
     : public DeviceCommandFetchSupportPacketBrowserTestBase<
-          ash::KioskBaseTest> {
+          MixinBasedInProcessBrowserTest>,
+      public testing::WithParamInterface<ash::KioskMixin::Config> {
  protected:
-  DeviceCommandFetchSupportPacketBrowserTestManualKioskSession() = default;
+  DeviceCommandFetchSupportPacketBrowserTestKioskSession() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
 
-  void SetLogUploadEnabledPolicy(bool enabled) {
-    em::ChromeDeviceSettingsProto& proto(
-        policy_helper()->device_policy()->payload());
-    proto.mutable_device_log_upload_settings()->set_system_log_upload_enabled(
-        true);
-    policy_helper()->RefreshDevicePolicy();
-    settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
+  void SetUpInProcessBrowserTestFixture() override {
+    DeviceCommandFetchSupportPacketBrowserTestBase<
+        MixinBasedInProcessBrowserTest>::SetUpInProcessBrowserTestFixture();
+    kiosk_.device_state_mixin()
+        .RequestDevicePolicyUpdate()
+        ->policy_payload()
+        ->mutable_device_log_upload_settings()
+        ->set_system_log_upload_enabled(true);
+  }
+
+  void SetUpOnMainThread() override {
+    DeviceCommandFetchSupportPacketBrowserTestBase<
+        MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
+    if (IsManualLaunch()) {
+      ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+    }
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
  private:
-  ash::DeviceStateMixin device_state_{
-      &mixin_host_,
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  bool IsManualLaunch() {
+    return !GetParam().auto_launch_account_id.has_value();
+  }
+
+  ash::KioskMixin kiosk_{&mixin_host_,
+                         /*cached_configuration=*/GetParam()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -396,10 +398,10 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -435,10 +437,10 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -446,12 +448,9 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
       EnterpriseFetchSupportPacketFailureType::kNoFailure, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DeviceCommandFetchSupportPacketBrowserTestAutoLaunchKioskSession,
-    SuccessCommandRequestWithoutPii) {
+IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestKioskSession,
+                       SuccessCommandRequestWithoutPii) {
   ASSERT_TRUE(chromeos::IsKioskSession());
-
-  SetLogUploadEnabledPolicy(true);
 
   base::test::TestFuture<ash::reporting::LogUploadEvent>
       log_upload_event_future;
@@ -473,10 +472,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -484,11 +483,8 @@ IN_PROC_BROWSER_TEST_F(
       EnterpriseFetchSupportPacketFailureType::kNoFailure, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DeviceCommandFetchSupportPacketBrowserTestAutoLaunchKioskSession,
-    SuccessCommandRequestWithPii) {
-  SetLogUploadEnabledPolicy(true);
-
+IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestKioskSession,
+                       SuccessCommandRequestWithPii) {
   ASSERT_TRUE(chromeos::IsKioskSession());
 
   base::test::TestFuture<ash::reporting::LogUploadEvent>
@@ -513,10 +509,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -524,90 +520,27 @@ IN_PROC_BROWSER_TEST_F(
       EnterpriseFetchSupportPacketFailureType::kNoFailure, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DeviceCommandFetchSupportPacketBrowserTestManualKioskSession,
-    SuccessCommandRequestWithoutPii) {
-  SetLogUploadEnabledPolicy(true);
-
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchWithOptions(false /* check launch data */,
-                              false /* terminate app */,
-                              true /* keep app open */);
-  ASSERT_TRUE(chromeos::IsKioskSession());
-
-  base::test::TestFuture<ash::reporting::LogUploadEvent>
-      log_upload_event_future;
-  test::CaptureUpcomingLogUploadEventOnReportingStorage(
-      reporting_storage(), log_upload_event_future.GetRepeatingCallback());
-
-  auto payload = base::WriteJson(test::GetFetchSupportPacketCommandPayloadDict(
-      GetAllAvailableDataCollectorsOnDevice()));
-  ASSERT_TRUE(payload.has_value());
-  int64_t command_id = WaitForCommandExecution(
-      RemoteCommandBuilder()
-          .SetType(em::RemoteCommand::FETCH_SUPPORT_PACKET)
-          .SetPayload(payload.value())
-          .Build());
-
-  ash::reporting::LogUploadEvent event = log_upload_event_future.Take();
-  CheckLogUploadEventContents(event, command_id, /*expect_pii_note=*/false);
-
-  // Check contents of the resulting file.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
-    base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
-  }
-
-  histogram_tester().ExpectUniqueSample(
-      kFetchSupportPacketFailureHistogramName,
-      EnterpriseFetchSupportPacketFailureType::kNoFailure, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DeviceCommandFetchSupportPacketBrowserTestManualKioskSession,
-    SuccessCommandRequestWithPii) {
-  SetLogUploadEnabledPolicy(true);
-
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchWithOptions(false /* check launch data */,
-                              false /* terminate app */,
-                              true /* keep app open */);
-  ASSERT_TRUE(chromeos::IsKioskSession());
-
-  base::test::TestFuture<ash::reporting::LogUploadEvent>
-      log_upload_event_future;
-  test::CaptureUpcomingLogUploadEventOnReportingStorage(
-      reporting_storage(), log_upload_event_future.GetRepeatingCallback());
-
-  auto payload = base::WriteJson(test::GetFetchSupportPacketCommandPayloadDict(
-      GetAllAvailableDataCollectorsOnDevice(), {support_tool::PiiType::EMAIL}));
-  ASSERT_TRUE(payload.has_value());
-  int64_t command_id = WaitForCommandExecution(
-      RemoteCommandBuilder()
-          .SetType(em::RemoteCommand::FETCH_SUPPORT_PACKET)
-          .SetPayload(payload.value())
-          .Build());
-
-  ash::reporting::LogUploadEvent event = log_upload_event_future.Take();
-  CheckLogUploadEventContents(event, command_id,
-                              // PII is allowed on kiosk sessions.
-                              /*expect_pii_note=*/false);
-
-  // Check contents of the resulting file.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
-    base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
-  }
-
-  histogram_tester().ExpectUniqueSample(
-      kFetchSupportPacketFailureHistogramName,
-      EnterpriseFetchSupportPacketFailureType::kNoFailure, 1);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceCommandFetchSupportPacketBrowserTestKioskSession,
+    // TODO(crbug.com/379633748): Add IWA.
+    ::testing::Values(
+        ash::KioskMixin::Config{
+            /*name=*/"WebAppAutoLaunch",
+            ash::KioskMixin::AutoLaunchAccount{
+                ash::KioskMixin::SimpleWebAppOption().account_id},
+            {ash::KioskMixin::SimpleWebAppOption()}},
+        ash::KioskMixin::Config{
+            /*name=*/"ChromeAppAutoLaunch",
+            ash::KioskMixin::AutoLaunchAccount{
+                ash::KioskMixin::SimpleChromeAppOption().account_id},
+            {ash::KioskMixin::SimpleChromeAppOption()}},
+        ash::KioskMixin::Config{/*name=*/"WebAppManualLaunch",
+                                /*auto_launch_account_id=*/{},
+                                {ash::KioskMixin::SimpleWebAppOption()}},
+        ash::KioskMixin::Config{/*name=*/"ChromeAppManualLaunch",
+                                /*auto_launch_account_id=*/{},
+                                {ash::KioskMixin::SimpleChromeAppOption()}}),
+    ash::KioskMixin::ConfigName);
 
 }  // namespace policy

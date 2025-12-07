@@ -35,8 +35,9 @@
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController
                         windowFrame:(CGRect)windowFrame {
-  if (self = [super initWithPresentedViewController:presentedViewController
-                           presentingViewController:presentingViewController]) {
+  if ((self =
+           [super initWithPresentedViewController:presentedViewController
+                         presentingViewController:presentingViewController])) {
     _windowFrame = windowFrame;
   }
   return self;
@@ -88,8 +89,9 @@
 }
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.presentedViewController = [[UIViewController alloc] init];
   self.viewController.modalPresentationStyle = UIModalPresentationCustom;
   self.viewController.transitioningDelegate = self;
@@ -103,8 +105,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   [self.baseViewController
       dismissViewControllerAnimated:animated
                          completion:^{

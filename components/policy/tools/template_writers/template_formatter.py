@@ -7,7 +7,6 @@ writers and emits various template and doc files (admx, html, json etc.).
 '''
 
 import argparse
-import codecs
 import collections
 import json
 import os
@@ -211,7 +210,7 @@ def main():
         _LANG_PLACEHOLDER, lang)
     # Loads the localized policy json file which must be a valid json file
     # encoded in utf-8.
-    with codecs.open(policy_templates_json_path, 'r', 'utf-8') as policy_file:
+    with open(policy_templates_json_path, 'r', encoding='utf-8') as policy_file:
       policy_data = json.loads(
           policy_file.read(), object_hook=_JsonToUtf8Encoding)
 
@@ -254,7 +253,10 @@ def main():
           os.makedirs(output_dir)
 
         # Write output file.
-        with codecs.open(output_path, 'w', writer_desc.encoding) as output_file:
+        with open(output_path,
+                  'w',
+                  encoding=writer_desc.encoding,
+                  newline='\n') as output_file:
           output_file.write(output_data)
 
 

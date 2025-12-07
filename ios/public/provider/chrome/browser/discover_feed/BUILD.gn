@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 source_set("discover_feed_api") {
-  sources = [ "discover_feed_api.h" ]
+  sources = [
+    "discover_feed_api.h",
+    "discover_feed_visibility_provider.h",
+  ]
   public_deps = [ "//ios/chrome/browser/discover_feed/model" ]
 }

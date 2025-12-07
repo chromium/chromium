@@ -1,0 +1,119 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("../build_webui_tests.gni")
+
+out_dir = "$target_gen_dir/glic"
+
+group("generate_test_files") {
+  data_deps = [
+    ":build_extra_ts",
+    ":move_html",
+    ":test_client_api_deps",
+    ":test_client_external_files",
+    ":test_glic_deps",
+  ]
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}
+
+ts_library("build_extra_ts") {
+  out_dir = out_dir
+  in_files = [
+    "browser_tests/browser_test_base.ts",
+    "browser_tests/glic_api_browsertest.ts",
+    "browser_tests/glic_api_interactive_uitest.ts",
+    "api_boot.ts",
+    "test_client/client.ts",
+    "test_client/test_client.ts",
+    "test_client/page_element_types.ts",
+    "test_client/sections/capture_region.ts",
+    "test_client/sections/audio_capture.ts",
+    "test_client/sections/autofill_dialog.ts",
+    "test_client/sections/get_page_context.ts",
+    "test_client/sections/page_metadata.ts",
+    "test_client/sections/apc.ts",
+    "test_client/sections/multi_tab.ts",
+    "test_client/sections/scroll_to.ts",
+    "test_client/sections/sizing.ts",
+    "test_client/sections/permissions.ts",
+    "test_client/sections/file.ts",
+    "test_client/sections/action.ts",
+    "test_client/sections/additional_context.ts",
+    "test_client/sections/interaction.ts",
+    "test_client/sections/view.ts",
+  ]
+  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+
+  definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
+
+  path_mappings = [
+    "/glic/glic_api/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/*",
+            target_gen_dir),
+
+    # Not all files under glic/ are copied. See test_glic_deps.
+    "/glic/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/glic/tsc/*",
+                    target_gen_dir),
+  ]
+  tsconfig_base = "tsconfig.base.json"
+}
+
+# Copy deps of the test client over to out_dir.
+preprocess_if_expr("move_html") {
+  in_files = [
+    "browser_tests/test.html",
+    "test_client/fre.html",
+    "test_client/index.html",
+    "test_client/metadata_test_page.html",
+  ]
+  out_folder = out_dir
+}
+
+copy("test_client_external_files") {
+  sources = [ "//content/test/data/media/bear-opus.ogg" ]
+  outputs = [ "$out_dir/test_client/{{source_file_part}}" ]
+}
+
+copy("test_client_api_deps") {
+  sources =
+      [ "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api.js" ]
+  outputs = [ "$out_dir/glic_api/{{source_file_part}}" ]
+  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+}
+
+copy("test_glic_deps") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/glic/tsc/observable.js" ]
+  outputs = [ "$out_dir/{{source_file_part}}" ]
+  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+}
+
+build_webui_tests("build") {
+  files = [
+    "unit_tests/webview_test.ts",
+    "unit_tests/observable_test.ts",
+    "unit_tests/glic_api_host_test.ts",
+  ]
+
+  ts_path_mappings = [ "chrome://glic/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/glic/tsc/*",
+                           target_gen_dir) ]
+
+  ts_deps = [
+    "//chrome/browser/resources/glic:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  ts_definitions = [
+    "//chrome/browser/resources/glic/url_pattern.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
+  ]
+}

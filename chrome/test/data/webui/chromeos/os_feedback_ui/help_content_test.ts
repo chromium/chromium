@@ -5,10 +5,10 @@
 import 'chrome://os-feedback/help_content.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {fakeHelpContentList, fakePopularHelpContentList} from 'chrome://os-feedback/fake_data.js';
-import {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
-import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
+import type {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
+import type {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 import {HelpContentType} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
@@ -73,7 +73,7 @@ suite('helpContentTestSuite', () => {
             .items!.length);
     const helpLinks =
         helpContentElement.shadowRoot!.querySelectorAll('.help-item a');
-    assertEquals(2, helpLinks!.length);
+    assertEquals(2, helpLinks.length);
 
     // Verify the help links are displayed in order with correct title, url
     // and icon.
@@ -81,12 +81,12 @@ suite('helpContentTestSuite', () => {
     assertEquals('fake article', link1.innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=article', link1.href);
-    verifyIconName(link1, fakePopularHelpContentList![0]!.contentType);
+    verifyIconName(link1, fakePopularHelpContentList[0]!.contentType);
 
     const link2 = helpLinks[1] as HTMLAnchorElement;
     assertEquals('fake forum', link2.innerText.trim());
     assertEquals('https://support.google.com/chromebook/?q=forum', link2.href);
-    verifyIconName(link2, fakePopularHelpContentList![1]!.contentType);
+    verifyIconName(link2, fakePopularHelpContentList[1]!.contentType);
   }
 
   function goOffline() {

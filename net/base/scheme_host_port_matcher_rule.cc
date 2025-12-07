@@ -12,6 +12,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace net {
@@ -78,9 +79,8 @@ SchemeHostPortMatcherRule::FromUntrimmedRawString(
   std::string::size_type pos_colon = raw.rfind(':');
   port = -1;
   if (pos_colon != std::string::npos) {
-    if (!ParseInt32(
-            base::MakeStringPiece(raw.begin() + pos_colon + 1, raw.end()),
-            ParseIntFormat::NON_NEGATIVE, &port) ||
+    if (!ParseInt32(raw.substr(pos_colon + 1), ParseIntFormat::NON_NEGATIVE,
+                    &port) ||
         port > 0xFFFF) {
       return nullptr;  // Port was invalid.
     }
@@ -129,14 +129,14 @@ SchemeHostPortMatcherResult SchemeHostPortMatcherHostnamePatternRule::Evaluate(
     return SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  if (!optional_scheme_.empty() && url.scheme() != optional_scheme_) {
+  if (!optional_scheme_.empty() && url.GetScheme() != optional_scheme_) {
     // Didn't match scheme expectation.
     return SchemeHostPortMatcherResult::kNoMatch;
   }
 
   // Note it is necessary to lower-case the host, since GURL uses capital
   // letters for percent-escaped characters.
-  return base::MatchPattern(url.host(), hostname_pattern_)
+  return base::MatchPattern(url.GetHost(), hostname_pattern_)
              ? SchemeHostPortMatcherResult::kInclude
              : SchemeHostPortMatcherResult::kNoMatch;
 }
@@ -187,14 +187,14 @@ SchemeHostPortMatcherResult SchemeHostPortMatcherIPHostRule::Evaluate(
     return SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  if (!optional_scheme_.empty() && url.scheme() != optional_scheme_) {
+  if (!optional_scheme_.empty() && url.GetScheme() != optional_scheme_) {
     // Didn't match scheme expectation.
     return SchemeHostPortMatcherResult::kNoMatch;
   }
 
   // Note it is necessary to lower-case the host, since GURL uses capital
   // letters for percent-escaped characters.
-  return base::MatchPattern(url.host(), ip_host_)
+  return base::MatchPattern(url.GetHost(), ip_host_)
              ? SchemeHostPortMatcherResult::kInclude
              : SchemeHostPortMatcherResult::kNoMatch;
 }
@@ -231,7 +231,7 @@ SchemeHostPortMatcherResult SchemeHostPortMatcherIPBlockRule::Evaluate(
   if (!url.HostIsIPAddress())
     return SchemeHostPortMatcherResult::kNoMatch;
 
-  if (!optional_scheme_.empty() && url.scheme() != optional_scheme_) {
+  if (!optional_scheme_.empty() && url.GetScheme() != optional_scheme_) {
     // Didn't match scheme expectation.
     return SchemeHostPortMatcherResult::kNoMatch;
   }

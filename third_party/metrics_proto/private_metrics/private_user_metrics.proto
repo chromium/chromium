@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package private_metrics;
+
+import "private_metrics/system_profiles/rc_coarse_system_profile.proto";
+import "private_metrics/system_profiles/search_system_profile.proto";
+import "histogram_event.proto";
+
+// Private user metrics.
+// This is the top-level log proto for PUMA logs.
+// Next tag: 5
+message PrivateUserMetrics {
+  // The PrivateUserMetrics client_id. Not joinable with UMA / UKM or any other
+  // client ids.
+  optional fixed64 client_id = 1;
+
+  // A list of histogram events which is the actual metric data being reported
+  repeated metrics.HistogramEventProto histogram_events = 2;
+
+  // Only one system profile type can be set.
+  oneof system_profile {
+    RcCoarseSystemProfile rc_profile = 3;
+    SearchSystemProfile search_profile = 4;
+  }
+}

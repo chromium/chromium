@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build_overrides/ipcz.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 enable_multiprocess_tests = is_linux
@@ -24,7 +25,10 @@ shared_library("ipcz_shared") {
     "//third_party/abseil-cpp:absl",
   ]
   public_deps = [ ":ipcz_header" ]
-  defines = [ "IPCZ_SHARED_LIBRARY" ]
+  defines = [
+    "IPCZ_SHARED_LIBRARY",
+    "IPCZ_STANDALONE",
+  ]
   public_configs = [ ":ipcz_include_dir" ]
   configs += [ ":ipcz_include_src_dir" ]
 }
@@ -183,7 +187,7 @@ ipcz_source_set("reference_drivers") {
   }
 
   if (is_android) {
-    deps += [ "//third_party/ashmem" ]
+    deps += [ "//base/android/linker:ashmem" ]
   }
 }
 
@@ -193,11 +197,11 @@ ipcz_source_set("util") {
   public = [
     "util/log.h",
     "util/multi_mutex_lock.h",
-    "util/overloaded.h",
     "util/ref_counted.h",
     "util/stack_trace.h",
     "util/strong_alias.h",
     "util/unique_ptr_comparator.h",
+    "util/unsafe_buffers.h",
   ]
 
   sources = [ "util/ref_counted.cc" ]
@@ -247,7 +251,6 @@ ipcz_source_set("impl") {
     "ipcz/sequence_number.h",
     "ipcz/sequenced_queue.h",
     "ipcz/sublink_id.h",
-    "ipcz/test_messages.h",
   ]
   sources = [
     "ipcz/api_context.cc",
@@ -270,21 +273,11 @@ ipcz_source_set("impl") {
     "ipcz/link_type.cc",
     "ipcz/local_router_link.cc",
     "ipcz/message.cc",
-    "ipcz/message_macros/message_base_declaration_macros.h",
-    "ipcz/message_macros/message_declaration_macros.h",
-    "ipcz/message_macros/message_definition_macros.h",
-    "ipcz/message_macros/message_listener_declaration_macros.h",
-    "ipcz/message_macros/message_listener_definition_macros.h",
-    "ipcz/message_macros/message_listener_dispatch_macros.h",
-    "ipcz/message_macros/message_params_declaration_macros.h",
-    "ipcz/message_macros/message_versions_declaration_macros.h",
-    "ipcz/message_macros/undef_message_macros.h",
     "ipcz/node.cc",
     "ipcz/node_connector.cc",
     "ipcz/node_link.cc",
     "ipcz/node_link_memory.cc",
     "ipcz/node_messages.cc",
-    "ipcz/node_messages_generator.h",
     "ipcz/node_name.cc",
     "ipcz/parcel.cc",
     "ipcz/parcel_wrapper.cc",
@@ -296,8 +289,6 @@ ipcz_source_set("impl") {
     "ipcz/router.cc",
     "ipcz/router_descriptor.h",
     "ipcz/router_link_state.cc",
-    "ipcz/test_messages.cc",
-    "ipcz/test_messages_generator.h",
     "ipcz/trap_event_dispatcher.cc",
     "ipcz/trap_event_dispatcher.h",
     "ipcz/trap_set.cc",
@@ -367,6 +358,10 @@ ipcz_source_set("ipcz_test_support") {
     ":reference_drivers",
     ":util",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 ipcz_source_set("ipcz_tests_sources") {
@@ -384,6 +379,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/driver_transport_test.cc",
     "ipcz/fragment_test.cc",
     "ipcz/message_test.cc",
+    "ipcz/message_test_types.h",
     "ipcz/node_connector_test.cc",
     "ipcz/node_link_memory_test.cc",
     "ipcz/node_link_test.cc",
@@ -392,6 +388,8 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/route_edge_test.cc",
     "ipcz/router_link_test.cc",
     "ipcz/sequenced_queue_test.cc",
+    "ipcz/test_messages.cc",
+    "ipcz/test_messages.h",
     "merge_portals_test.cc",
     "parcel_test.cc",
     "reference_drivers/sync_reference_driver_test.cc",
@@ -442,6 +440,34 @@ test("ipcz_tests") {
     "//testing/gtest",
   ]
   configs += [ ":ipcz_include_src_dir" ]
+}
+
+ipcz_source_set("fuzzer_sources") {
+  testonly = true
+  sources = [
+    "fuzzer/driver.cc",
+    "fuzzer/driver.h",
+    "fuzzer/fuzzer.cc",
+    "fuzzer/fuzzer.h",
+    "fuzzer/ipcz_fuzzer_testcase.cc",
+    "fuzzer/ipcz_fuzzer_testcase.h",
+  ]
+  ipcz_deps = [
+    ":ipcz",
+    ":reference_drivers",
+    ":util",
+  ]
+  deps = [ "//third_party/abseil-cpp:absl" ]
+  public_configs = [
+    ":ipcz_include_dir",
+    ":ipcz_include_src_dir",
+  ]
+}
+
+fuzzer_test("ipcz_fuzzer") {
+  sources = [ "fuzzer/ipcz_fuzzer.cc" ]
+  deps = [ ":fuzzer_sources_standalone" ]
+  defines = [ "IPCZ_STANDALONE" ]
 }
 
 group("all") {

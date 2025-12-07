@@ -109,7 +109,7 @@ privacy-sandbox-dialog-learn-more {
 }
 
 .content-area.can-scroll {
-  border-bottom-color: var(--scrollable-border-color);
+  border-bottom-color: var(--cr-scrollable-border-color);
 }
 
 ul,
@@ -198,4 +198,12 @@ img.logo {
 
 #moreButton {
   border-radius: 100px;
+}
+
+.learn-more-bullet-description {
+  margin-bottom: 1rem;
+}
+
+a:focus {
+  outline-color: var(--cr-focus-outline-color);
 }

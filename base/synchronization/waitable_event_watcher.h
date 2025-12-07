@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -119,7 +120,7 @@ class BASE_EXPORT WaitableEventWatcher
 
   EventCallback callback_;
   raw_ptr<WaitableEvent, AcrossTasksDanglingUntriaged> event_ = nullptr;
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_APPLE) && (!BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK))
   // Invokes the callback and resets the source. Must be called on the task
   // runner on which StartWatching() was called.
   void InvokeCallback();

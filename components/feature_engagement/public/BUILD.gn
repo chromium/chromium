@@ -2,17 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_chromeos) {
-  import("//build/config/chromeos/ui_mode.gni")
-}
-
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-source_set("public") {
+component("feature_constants") {
+  defines = [ "IS_FEATURE_ENGAGEMENT_FEATURE_CONSTANTS_IMPL" ]
+
+  sources = [
+    "feature_constants.cc",
+    "feature_constants.h",
+    "feature_list.cc",
+    "feature_list.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/webui/flags",
+    "//extensions/buildflags",
+  ]
+}
+
+static_library("public") {
   sources = [
     "configuration.cc",
     "configuration.h",
@@ -22,12 +36,10 @@ source_set("public") {
     "default_session_controller.h",
     "event_constants.cc",
     "event_constants.h",
+    "feature_activation.cc",
+    "feature_activation.h",
     "feature_configurations.cc",
     "feature_configurations.h",
-    "feature_constants.cc",
-    "feature_constants.h",
-    "feature_list.cc",
-    "feature_list.h",
     "field_trial_configuration_provider.cc",
     "field_trial_configuration_provider.h",
     "field_trial_utils.cc",
@@ -47,12 +59,16 @@ source_set("public") {
     "tracker.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":feature_constants",
+    "//base",
+  ]
+
   deps = [
     "//build:branding_buildflags",
     "//components/feed:feature_list",
-    "//components/flags_ui",
     "//components/keyed_service/core",
+    "//components/webui/flags",
     "//extensions/buildflags",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -73,7 +89,7 @@ source_set("public") {
     ]
   }
 
-  if (is_chromeos && is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "scalable_iph_feature_configurations.cc",
       "scalable_iph_feature_configurations.h",
@@ -135,4 +151,17 @@ if (is_android) {
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java" ]
   }
+}
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
 }

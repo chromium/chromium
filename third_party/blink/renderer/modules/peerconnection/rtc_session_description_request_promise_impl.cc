@@ -17,23 +17,16 @@ namespace blink {
 RTCSessionDescriptionRequestPromiseImpl*
 RTCSessionDescriptionRequestPromiseImpl::Create(
     RTCPeerConnection* requester,
-    ScriptPromiseResolver<RTCSessionDescriptionInit>* resolver,
-    const char* interface_name,
-    const char* property_name) {
+    ScriptPromiseResolver<RTCSessionDescriptionInit>* resolver) {
   return MakeGarbageCollected<RTCSessionDescriptionRequestPromiseImpl>(
-      requester, resolver, interface_name, property_name);
+      requester, resolver);
 }
 
 RTCSessionDescriptionRequestPromiseImpl::
     RTCSessionDescriptionRequestPromiseImpl(
         RTCPeerConnection* requester,
-        ScriptPromiseResolver<RTCSessionDescriptionInit>* resolver,
-        const char* interface_name,
-        const char* property_name)
-    : requester_(requester),
-      resolver_(resolver),
-      interface_name_(interface_name),
-      property_name_(property_name) {
+        ScriptPromiseResolver<RTCSessionDescriptionInit>* resolver)
+    : requester_(requester), resolver_(resolver) {
   DCHECK(requester_);
   DCHECK(resolver_);
 }
@@ -45,7 +38,8 @@ void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
     RTCSessionDescriptionPlatform* platform_session_description) {
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
     auto* description = RTCSessionDescriptionInit::Create();
-    description->setType(platform_session_description->GetType());
+    description->setType(
+        V8RTCSdpType::Create(platform_session_description->GetType()).value());
     description->setSdp(platform_session_description->Sdp());
     requester_->NoteSdpCreated(*description);
     resolver_->Resolve(description);
@@ -61,12 +55,7 @@ void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
 void RTCSessionDescriptionRequestPromiseImpl::RequestFailed(
     const webrtc::RTCError& error) {
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
-    ScriptState::Scope scope(resolver_->GetScriptState());
-    ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                   v8::ExceptionContext::kOperation,
-                                   interface_name_, property_name_);
-    ThrowExceptionFromRTCError(error, exception_state);
-    resolver_->Reject(exception_state);
+    RejectPromiseFromRTCError(error, resolver_);
   } else {
     // This is needed to have the resolver release its internal resources
     // while leaving the associated promise pending as specified.

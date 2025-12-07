@@ -7,6 +7,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/bookmarks/common/user_folder_load_stats.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +19,17 @@ const BookmarkNode* FindNodeByUuid(const UuidIndex& index,
                                    const base::Uuid& uuid) {
   auto it = index.find(uuid);
   return it == index.end() ? nullptr : *it;
+}
+
+BookmarkNode* AddFolder(int64_t id, BookmarkNode* parent) {
+  return parent->Add(std::make_unique<BookmarkNode>(
+      id, base::Uuid::GenerateRandomV4(), GURL()));
+}
+
+BookmarkNode* AddUrl(int64_t id, BookmarkNode* parent, const GURL& url) {
+  CHECK(!url.is_empty());
+  return parent->Add(
+      std::make_unique<BookmarkNode>(id, base::Uuid::GenerateRandomV4(), url));
 }
 
 TEST(BookmarkLoadDetails, CreateEmpty) {
@@ -44,9 +56,12 @@ TEST(BookmarkLoadDetailsTest, AddAccountPermanentNodes) {
   ASSERT_EQ(nullptr, details.account_mobile_folder_node());
 
   details.AddAccountPermanentNodes(
-      BookmarkPermanentNode::CreateBookmarkBar(/*id=*/100),
-      BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/200),
-      BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/300));
+      BookmarkPermanentNode::CreateBookmarkBar(/*id=*/100,
+                                               /*is_account_node=*/true),
+      BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/200,
+                                                  /*is_account_node=*/true),
+      BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/300,
+                                                   /*is_account_node=*/true));
 
   EXPECT_NE(nullptr, details.account_bb_node());
   EXPECT_NE(nullptr, details.account_other_folder_node());
@@ -119,9 +134,12 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
 
   BookmarkLoadDetails details;
   details.AddAccountPermanentNodes(
-      BookmarkPermanentNode::CreateBookmarkBar(/*id=*/100),
-      BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/200),
-      BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/300));
+      BookmarkPermanentNode::CreateBookmarkBar(/*id=*/100,
+                                               /*is_account_node=*/true),
+      BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/200,
+                                                  /*is_account_node=*/true),
+      BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/300,
+                                                   /*is_account_node=*/true));
 
   ASSERT_NE(nullptr, details.bb_node());
   ASSERT_NE(nullptr, details.other_folder_node());
@@ -202,6 +220,86 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
   // Besides the nodes listed above, there should be nothing else.
   EXPECT_EQ(8u, local_or_syncable_uuid_index.size());
   EXPECT_EQ(7u, account_uuid_index.size());
+}
+
+TEST(BookmarkLoadDetailsTest, ComputeUserFolderStats) {
+  BookmarkLoadDetails details;
+  details.AddAccountPermanentNodes(
+      BookmarkPermanentNode::CreateBookmarkBar(/*id=*/100,
+                                               /*is_account_node=*/true),
+      BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/200,
+                                                  /*is_account_node=*/true),
+      BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/300,
+                                                   /*is_account_node=*/true));
+
+  ASSERT_NE(nullptr, details.bb_node());
+  ASSERT_NE(nullptr, details.other_folder_node());
+  ASSERT_NE(nullptr, details.mobile_folder_node());
+  ASSERT_NE(nullptr, details.account_bb_node());
+  ASSERT_NE(nullptr, details.account_other_folder_node());
+  ASSERT_NE(nullptr, details.account_mobile_folder_node());
+
+  UserFolderLoadStats before_stats = details.ComputeUserFolderStats();
+  EXPECT_EQ(0, before_stats.total_top_level_folders);
+  EXPECT_EQ(0, before_stats.total_folders);
+  EXPECT_EQ(0, before_stats.bookmark_bar_top_level_items);
+
+  // Make the following folder structure:
+  //
+  // (BookmarkBar)
+  //   (400)
+  // (OtherBookmarks)
+  //   (500)
+  // (MobileBookmarks)
+  //   (600)
+  //     (601)
+  //     (602)
+  //       (603 - URL)
+  //   (700)
+  // (100 ACCOUNT BookmarkBar)
+  //   (800)
+  //     (802 - URL)
+  //     (803 - URL)
+  //   (804 - URL)
+  //   (805 - URL)
+  // (200 ACCOUNT OtherBookmarks)
+  //   (900)
+  // (300 ACCOUNT MobileBookmarks)
+  //   (1000)
+  //     (1100)
+  AddFolder(/*id=*/400, details.bb_node());
+  AddFolder(/*id=*/500, details.other_folder_node());
+  BookmarkNode* folder_600 =
+      AddFolder(/*id=*/600, details.mobile_folder_node());
+  AddFolder(/*id=*/601, folder_600);
+  BookmarkNode* folder_602 = AddFolder(/*id=*/602, folder_600);
+  AddUrl(/*id=*/603, folder_602, GURL("https://www.foo.com"));
+  AddFolder(/*id=*/700, details.mobile_folder_node());
+
+  BookmarkNode* folder_800 = AddFolder(/*id=*/800, details.account_bb_node());
+  AddUrl(/*id=*/802, folder_800, GURL("https://www.bar.com"));
+  AddUrl(/*id=*/803, folder_800, GURL("https://www.baz.com"));
+  AddUrl(/*id=*/804, details.account_bb_node(), GURL("https://www.foobar.com"));
+  AddUrl(/*id=*/805, details.account_bb_node(), GURL("https://www.barbaz.com"));
+
+  AddFolder(/*id=*/900, details.account_other_folder_node());
+  BookmarkNode* folder_1000 =
+      AddFolder(/*id=*/1000, details.account_mobile_folder_node());
+  AddFolder(/*id=*/1100, folder_1000);
+
+  UserFolderLoadStats stats = details.ComputeUserFolderStats();
+
+  // This should include top-level folders, account or local, but not the
+  // permanent folders, which are: {400, 500, 600, 700, 800, 900, 1000}.
+  EXPECT_EQ(7, stats.total_top_level_folders);
+
+  // This should include all folders, account or local, but not the permanent
+  // folders, which are: {400, 500, 600, 601, 602, 700, 800, 900, 1000, 1100}.
+  EXPECT_EQ(10, stats.total_folders);
+
+  // This should only include the top-level items of the account bookmark bar,
+  // which are: {800, 804, 805}.
+  EXPECT_EQ(3, stats.bookmark_bar_top_level_items);
 }
 
 }  // namespace

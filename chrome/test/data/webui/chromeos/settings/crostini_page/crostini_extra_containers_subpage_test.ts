@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, CrostiniBrowserProxyImpl, ExtraContainersCreateDialog, ExtraContainersElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrToggleElement, IronCollapseElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {ContainerInfo, ExtraContainersCreateDialog, ExtraContainersElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, VmType} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement, CrToggleElement, IronCollapseElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +15,8 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {clearBody} from '../utils.js';
 
-import {SharedVmDevices, TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
+import type {SharedVmDevices} from './test_crostini_browser_proxy.js';
+import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<settings-crostini-extra-containers>', () => {
   let crostiniBrowserProxy: TestCrostiniBrowserProxy;
@@ -22,15 +25,27 @@ suite('<settings-crostini-extra-containers>', () => {
   setup(async () => {
     const allContainers: ContainerInfo[] = [
       {
-        id: {container_name: 'penguin', vm_name: 'termina'},
+        id: {
+          container_name: 'penguin',
+          vm_name: 'termina',
+          vm_type: VmType.TERMINA,
+        },
         ipv4: null,
       },
       {
-        id: {container_name: 'custom_container_1', vm_name: 'termina'},
+        id: {
+          container_name: 'custom_container_1',
+          vm_name: 'termina',
+          vm_type: VmType.TERMINA,
+        },
         ipv4: null,
       },
       {
-        id: {container_name: 'custom_container_2', vm_name: 'not_termina'},
+        id: {
+          container_name: 'custom_container_2',
+          vm_name: 'not_termina',
+          vm_type: VmType.UNKNOWN,
+        },
         ipv4: null,
       },
     ];
@@ -253,7 +268,11 @@ suite('<settings-crostini-extra-containers>', () => {
       const args = crostiniBrowserProxy.getArgs('createContainer')[0];
       assertArrayEquals(
           [
-            {vm_name: 'termina', container_name: 'advanced_container'},
+            {
+              vm_name: 'termina',
+              container_name: 'advanced_container',
+              vm_type: VmType.TERMINA,
+            },
             '',
             '',
             'test_backup.tini',
@@ -436,7 +455,11 @@ suite('<settings-crostini-extra-containers>', () => {
       const args1 = crostiniBrowserProxy.getArgs('setVmDeviceShared')[0];
       assertArrayEquals(
           [
-            {vm_name: 'termina', container_name: 'penguin'},
+            {
+              vm_name: 'termina',
+              container_name: 'penguin',
+              vm_type: VmType.TERMINA,
+            },
             'microphone',
             false,
           ],
@@ -446,7 +469,11 @@ suite('<settings-crostini-extra-containers>', () => {
       const args2 = crostiniBrowserProxy.getArgs('isVmDeviceShared')[0];
       assertArrayEquals(
           [
-            {vm_name: 'termina', container_name: 'penguin'},
+            {
+              vm_name: 'termina',
+              container_name: 'penguin',
+              vm_type: VmType.TERMINA,
+            },
             'microphone',
           ],
           args2);

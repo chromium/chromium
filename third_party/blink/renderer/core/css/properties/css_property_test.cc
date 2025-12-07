@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+
 #include <cstring>
+
+#include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -40,20 +43,23 @@ class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
 
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&) override {
     return (required_mode_ == GetMode()) ? std::optional<LayoutUnit>(1)
                                          : std::optional<LayoutUnit>();
   }
 
   std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
-      const ScopedCSSName*,
+      const StylePositionAnchor&,
       PositionArea) override {
     return std::nullopt;
   }
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder& builder) override {
     return std::nullopt;
+  }
+  WritingDirectionMode GetContainerWritingDirection() const override {
+    return {WritingMode::kHorizontalTb, TextDirection::kLtr};
   }
 
  private:
@@ -95,7 +101,7 @@ class CSSPropertyTest : public PageTestBase {
 
     StyleResolverState state(GetDocument(), *GetDocument().body(),
                              &style_recalc_context);
-    state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
+    state.CreateNewClonedStyle(GetDocument().GetStyleResolver().InitialStyle());
 
     StyleBuilder::ApplyProperty(property, state, *value);
     const ComputedStyle* style = state.TakeStyle();
@@ -144,7 +150,16 @@ TEST_F(CSSPropertyTest, InternalFontSizeDeltaNotWebExposed) {
       CSSProperty::Get(CSSPropertyID::kInternalFontSizeDelta).IsWebExposed());
 }
 
-TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
+class VisitedPropertiesCanParseValues
+    : public CSSPropertyTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(CSSPropertyTest,
+                         VisitedPropertiesCanParseValues,
+                         ::testing::Bool());
+
+TEST_P(VisitedPropertiesCanParseValues, ParsesAllProperties) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(GetParam());
   const ComputedStyle& initial_style =
       GetDocument().GetStyleResolver().InitialStyle();
 
@@ -163,7 +178,6 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
         initial_style, nullptr /* layout_object */,
         false /* allow_visited_style */, CSSValuePhase::kComputedValue);
     ASSERT_TRUE(initial_value);
-    String css_text = initial_value->CssText();
 
     // Parse the initial value using both the regular property, and the
     // accompanying 'visited' property.
@@ -172,9 +186,30 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
     const CSSValue* parsed_visited_value = css_test_helpers::ParseLonghand(
         GetDocument(), *visited, initial_value->CssText());
 
-    // The properties should have identical parsing behavior.
-    EXPECT_TRUE(
-        base::ValuesEquivalent(parsed_regular_value, parsed_visited_value));
+    // Special handling for 'column-rule-color' when gap decorations are
+    // enabled. In this case, the regular property returns a `CSSValueList` with
+    // a single value, while the visited property returns a single `CSSValue`.
+    // This discrepancy arises because visited styles are not applied to
+    // 'column-rule-color' when multiple values are used. To ensure accurate
+    // comparison, we extract the sole value from the regular property's list
+    // and compare it directly with the visited value.
+    //
+    // TODO(crbug.com/357648037): Remove this check once the visited
+    // partitioning work is done.
+    if (GetParam() && property_id == CSSPropertyID::kColumnRuleColor) {
+      EXPECT_TRUE(parsed_regular_value->IsValueList());
+      const CSSValueList* parsed_regular_value_list =
+          DynamicTo<CSSValueList>(parsed_regular_value);
+      EXPECT_EQ(parsed_regular_value_list->length(), 1);
+      const CSSValue* parsed_regular_color =
+          &parsed_regular_value_list->Item(0);
+      EXPECT_TRUE(
+          base::ValuesEquivalent(parsed_regular_color, parsed_visited_value));
+    } else {
+      // The properties should have identical parsing behavior.
+      EXPECT_TRUE(
+          base::ValuesEquivalent(parsed_regular_value, parsed_visited_value));
+    }
 
     num_visited++;
   }
@@ -283,12 +318,12 @@ TEST_F(CSSPropertyTest, AlternativePropertyData) {
                 alternative.GetPropertyNameAtomicString());
       EXPECT_EQ(property.GetPropertyNameString(),
                 alternative.GetPropertyNameString());
-      EXPECT_EQ(std::strcmp(property.GetPropertyName(),
-                            alternative.GetPropertyName()),
-                0);
-      EXPECT_EQ(std::strcmp(property.GetJSPropertyName(),
-                            alternative.GetJSPropertyName()),
-                0);
+      UNSAFE_TODO(EXPECT_EQ(std::strcmp(property.GetPropertyName(),
+                                        alternative.GetPropertyName()),
+                            0));
+      UNSAFE_TODO(EXPECT_EQ(std::strcmp(property.GetJSPropertyName(),
+                                        alternative.GetJSPropertyName()),
+                            0));
 
       // Alternative properties should should also use the same CSSSampleId.
       EXPECT_EQ(GetCSSSampleId(property_id), GetCSSSampleId(alternative_id));
@@ -312,7 +347,7 @@ TEST_F(CSSPropertyTest, AlternativePropertyExposure) {
       bool alternative_exposed = alternative.Exposure() != CSSExposure::kNone;
 
       // If the alternative is exposed, the main property can not be exposed.
-      EXPECT_TRUE(alternative_exposed ? !property_exposed : true);
+      EXPECT_TRUE(!alternative_exposed || !property_exposed);
     }
   }
 }
@@ -431,8 +466,8 @@ TEST_F(CSSPropertyTest, AnchorModeLeft) {
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
 }
 
-TEST_F(CSSPropertyTest, AnchorModeSize) {
-  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kSize);
+TEST_F(CSSPropertyTest, AnchorModeWidth) {
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kWidth);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
   EXPECT_EQ("0px", ComputedValue("top", "anchor(top, 0px)", context));
@@ -440,73 +475,183 @@ TEST_F(CSSPropertyTest, AnchorModeSize) {
   EXPECT_EQ("0px", ComputedValue("bottom", "anchor(top, 0px)", context));
   EXPECT_EQ("0px", ComputedValue("left", "anchor(top, 0px)", context));
   EXPECT_EQ("1px", ComputedValue("width", "anchor-size(width, 0px)", context));
-  EXPECT_EQ("1px", ComputedValue("height", "anchor-size(width, 0px)", context));
+  EXPECT_EQ("0px", ComputedValue("height", "anchor-size(width, 0px)", context));
   EXPECT_EQ("1px",
+            ComputedValue("min-width", "anchor-size(width, 0px)", context));
+  EXPECT_EQ("0px",
+            ComputedValue("min-height", "anchor-size(width, 0px)", context));
+  EXPECT_EQ("1px",
+            ComputedValue("max-width", "anchor-size(width, 0px)", context));
+  EXPECT_EQ("0px",
+            ComputedValue("max-height", "anchor-size(width, 0px)", context));
+}
+
+TEST_F(CSSPropertyTest, AnchorModeHeight) {
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kHeight);
+  StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
+
+  EXPECT_EQ("0px", ComputedValue("top", "anchor(top, 0px)", context));
+  EXPECT_EQ("0px", ComputedValue("right", "anchor(top, 0px)", context));
+  EXPECT_EQ("0px", ComputedValue("bottom", "anchor(top, 0px)", context));
+  EXPECT_EQ("0px", ComputedValue("left", "anchor(top, 0px)", context));
+  EXPECT_EQ("0px", ComputedValue("width", "anchor-size(width, 0px)", context));
+  EXPECT_EQ("1px", ComputedValue("height", "anchor-size(width, 0px)", context));
+  EXPECT_EQ("0px",
             ComputedValue("min-width", "anchor-size(width, 0px)", context));
   EXPECT_EQ("1px",
             ComputedValue("min-height", "anchor-size(width, 0px)", context));
-  EXPECT_EQ("1px",
+  EXPECT_EQ("0px",
             ComputedValue("max-width", "anchor-size(width, 0px)", context));
   EXPECT_EQ("1px",
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
 }
 
-TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeEnabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
-  ScopedCSSPositionTryOptionsForTest options_enabled(true);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryFallbacks);
+TEST_F(CSSPropertyTest, IdentFunctionFeatureDisabled) {
+  ScopedCSSIdentFunctionForTest scoped_feature(false);
+
+  EXPECT_FALSE(Parse("view-transition-name", "ident(a)"));
 }
 
-TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeDisabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(false);
-  ScopedCSSPositionTryOptionsForTest options_enabled(true);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryOptions);
+struct DirectionAwarePropertyData {
+  CSSPropertyID physical;
+  CSSPropertyID logical;
+  WritingDirectionMode writing_mode;
+};
+
+const DirectionAwarePropertyData DirectionAwareConverterTestData[] = {
+    {CSSPropertyID::kMarginRight,
+     CSSPropertyID::kMarginBlockEnd,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kMarginTop,
+     CSSPropertyID::kMarginBlockStart,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kMarginTop,
+     CSSPropertyID::kMarginBlockStart,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kPaddingLeft,
+     CSSPropertyID::kPaddingInlineStart,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kPaddingTop,
+     CSSPropertyID::kPaddingInlineEnd,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kPaddingBottom,
+     CSSPropertyID::kPaddingBlockEnd,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kPaddingRight,
+     CSSPropertyID::kPaddingBlockStart,
+     {WritingMode::kSidewaysRl, TextDirection::kLtr}},
+    {CSSPropertyID::kPaddingLeft,
+     CSSPropertyID::kPaddingBlockEnd,
+     {WritingMode::kSidewaysRl, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kBlockSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalRl, TextDirection::kLtr}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalRl, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kSidewaysRl, TextDirection::kRtl}},
+    {CSSPropertyID::kMinHeight,
+     CSSPropertyID::kMinBlockSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kMaxHeight,
+     CSSPropertyID::kMaxBlockSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kMaxWidth,
+     CSSPropertyID::kMaxInlineSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kMinWidth,
+     CSSPropertyID::kMinInlineSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kWidth,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderStartStartRadius,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderStartEndRadius,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderEndStartRadius,
+     {WritingMode::kVerticalRl, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderEndEndRadius,
+     {WritingMode::kSidewaysRl, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderTopRightRadius,
+     CSSPropertyID::kBorderStartStartRadius,
+     {WritingMode::kSidewaysRl, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderBottomLeftRadius,
+     CSSPropertyID::kBorderStartEndRadius,
+     {WritingMode::kVerticalLr, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderBottomLeftRadius,
+     CSSPropertyID::kBorderStartStartRadius,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderBottomLeftRadius,
+     CSSPropertyID::kBorderEndEndRadius,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderBottomRightRadius,
+     CSSPropertyID::kBorderEndEndRadius,
+     {WritingMode::kSidewaysLr, TextDirection::kRtl}},
+    {CSSPropertyID::kTop,
+     CSSPropertyID::kInsetInlineEnd,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kLeft,
+     CSSPropertyID::kInsetInlineStart,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kBottom,
+     CSSPropertyID::kInsetBlockEnd,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kRight,
+     CSSPropertyID::kInsetBlockStart,
+     {WritingMode::kVerticalRl, TextDirection::kRtl}},
+};
+
+class DirectionAwareConverterTest
+    : public CSSPropertyTest,
+      public testing::WithParamInterface<DirectionAwarePropertyData> {};
+
+INSTANTIATE_TEST_SUITE_P(CSSPropertyTest,
+                         DirectionAwareConverterTest,
+                         testing::ValuesIn(DirectionAwareConverterTestData));
+
+TEST_P(DirectionAwareConverterTest, ToPhysical) {
+  DirectionAwarePropertyData property_data = GetParam();
+
+  const CSSProperty& property = CSSProperty::Get(property_data.logical);
+  EXPECT_EQ(static_cast<int>(
+                property.ToPhysical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(property_data.physical));
 }
 
-TEST_F(CSSPropertyTest, PositionTryOptionsDisabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
-  ScopedCSSPositionTryOptionsForTest options_enabled(false);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryFallbacks);
+TEST_P(DirectionAwareConverterTest, TestToLogical) {
+  DirectionAwarePropertyData property_data = GetParam();
+  const CSSProperty& property = CSSProperty::Get(property_data.physical);
+  EXPECT_EQ(static_cast<int>(
+                property.ToLogical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(property_data.logical));
 }
 
-TEST_F(CSSPropertyTest, PositionAreaDisabled) {
-  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(true);
-  ScopedCSSPositionAreaPropertyForTest position_area_enabled(false);
-  auto* declarations = ParseShorthand("position-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 0u);
-  declarations = ParseShorthand("inset-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 1u);
-}
-
-TEST_F(CSSPropertyTest, InsetAreaDisabled) {
-  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(false);
-  ScopedCSSPositionAreaPropertyForTest position_area_enabled(true);
-  auto* declarations = ParseShorthand("position-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 1u);
-  declarations = ParseShorthand("inset-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 0u);
+TEST_P(DirectionAwareConverterTest, TestConvertsEquality) {
+  DirectionAwarePropertyData property_data = GetParam();
+  const CSSProperty& physical = CSSProperty::Get(property_data.physical);
+  const CSSProperty& logical = CSSProperty::Get(property_data.logical);
+  EXPECT_EQ(static_cast<int>(
+                physical.ToLogical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(logical.PropertyID()));
+  EXPECT_EQ(static_cast<int>(physical.PropertyID()),
+            static_cast<int>(
+                logical.ToPhysical(property_data.writing_mode).PropertyID()));
 }
 
 }  // namespace blink

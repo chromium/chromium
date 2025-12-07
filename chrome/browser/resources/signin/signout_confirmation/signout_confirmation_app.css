@@ -1,0 +1,72 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --dialog-padding: 20px;
+}
+
+#signoutConfirmationDialog {
+  display: flex;
+  flex-direction: column;
+  padding: var(--dialog-padding);
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+#subtitle {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+extensions-section {
+  margin-bottom: 1em;
+}
+
+#action-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+<if expr="is_macosx or is_linux">
+#action-row {
+  flex-flow: row-reverse;
+  justify-content: flex-start;
+}
+</if>
+
+.delete-button {
+  --cr-button-background-color: var(--google-red-600);
+  --cr-button-text-color: var(--google-grey-50);
+}
+
+.delete-button:hover {
+  --cr-button-background-color: rgba(var(--google-red-600-rgb), .9);
+}
+
+@media (prefers-color-scheme: dark) {
+  .delete-button {
+    --cr-button-background-color: var(--google-red-300);
+    --cr-button-text-color: var(--google-grey-900);
+  }
+
+  .delete-button:hover {
+    --cr-button-background-color: var(--google-red-300)
+        linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
+  }
+}

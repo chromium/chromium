@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An established session refreshes across origins if the site is included
+  assert_equals: expected 200 but got 401
+Harness: the test ran to completion.
+

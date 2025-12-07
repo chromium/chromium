@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/filled_button_ripple_color">
+
+    <item
+        android:id="@android:id/mask"
+        android:top="8dp"
+        android:left="8dp"
+        android:bottom="8dp"
+        android:right="8dp">
+
+        <shape android:shape="oval">
+            <solid android:color="@android:color/white"/>
+        </shape>
+
+    </item>
+
+    <item
+        android:top="8dp"
+        android:left="8dp"
+        android:bottom="8dp"
+        android:right="8dp">
+
+        <shape android:shape="oval">
+            <solid android:color="@color/baseline_primary_50"/>
+        </shape>
+
+    </item>
+
+</ripple>

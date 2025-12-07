@@ -36,7 +36,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -52,9 +52,6 @@
 #include "ui/display/types/display_constants.h"
 
 namespace blink {
-
-class AudioBus;
-class WebAudioDestinationConsumer;
 
 // GarbageCollected wrapper of a WebPlatformMediaStreamSource, which acts as a
 // source backing one or more MediaStreamTracks.
@@ -82,8 +79,6 @@ class PLATFORM_EXPORT MediaStreamSource final
     kReadyStateMuted = 1,
     kReadyStateEnded = 2
   };
-
-  enum class EchoCancellationMode { kDisabled, kBrowser, kAec3, kSystem };
 
   MediaStreamSource(
       const String& id,
@@ -122,7 +117,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     return platform_source_.get();
   }
 
-  void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation_mode,
+  void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation,
                                     bool auto_gain_control,
                                     bool noise_supression,
                                     bool voice_isolation);
@@ -130,17 +125,19 @@ class PLATFORM_EXPORT MediaStreamSource final
   void GetSettings(MediaStreamTrackPlatform::Settings&);
 
   struct Capabilities {
-    // Vector is used to store an optional range for the below numeric
-    // fields. All of them should have 0 or 2 values representing min/max.
+    // Vector is used to store an optional range for the below fields.
+    // Numeric fields should have 0 or 2 values representing min/max.
+    // Boolean or enum fields can have 0 or more entries representing supported
+    // values.
     Vector<uint32_t> width;
     Vector<uint32_t> height;
     Vector<double> aspect_ratio;
     Vector<double> frame_rate;
-    Vector<bool> echo_cancellation;
-    Vector<String> echo_cancellation_type;
+    Vector<EchoCancellationMode> echo_cancellation;
     Vector<bool> auto_gain_control;
     Vector<bool> noise_suppression;
     Vector<bool> voice_isolation;
+    std::optional<Vector<bool>> restrict_own_audio;
     Vector<int32_t> sample_size;
     Vector<int32_t> channel_count;
     Vector<int32_t> sample_rate;
@@ -161,41 +158,14 @@ class PLATFORM_EXPORT MediaStreamSource final
     capabilities_ = capabilities;
   }
 
-  void SetAudioFormat(int number_of_channels, float sample_rate);
-  void ConsumeAudio(AudioBus*, int number_of_frames);
-
-  // Only used if this is a WebAudio source.
-  // The WebAudioDestinationConsumer is not owned, and has to be disposed of
-  // separately after calling removeAudioConsumer.
-  bool RequiresAudioConsumer() const { return requires_consumer_; }
-  void SetAudioConsumer(WebAudioDestinationConsumer*);
-  bool RemoveAudioConsumer();
-
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
   void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
 
   void Trace(Visitor*) const;
-
   void Dispose();
 
  private:
-  class PLATFORM_EXPORT ConsumerWrapper final {
-    USING_FAST_MALLOC(ConsumerWrapper);
-
-   public:
-    explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer);
-
-    void SetFormat(int number_of_channels, float sample_rate);
-    void ConsumeAudio(AudioBus* bus, int number_of_frames);
-
-    // m_consumer is not owned by this class.
-    raw_ptr<WebAudioDestinationConsumer, DanglingUntriaged> consumer_;
-    // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
-    // member variable is to not have to reallocate it for each call.
-    Vector<const float*> bus_vector_;
-  };
-
   // The ID of this MediaStreamSource object itself.
   String id_;
   // If this MediaStreamSource object is associated with a display,
@@ -208,14 +178,10 @@ class PLATFORM_EXPORT MediaStreamSource final
   String group_id_;
   bool remote_;
   ReadyState ready_state_;
-  bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
-  base::Lock audio_consumer_lock_;
-  std::unique_ptr<ConsumerWrapper> audio_consumer_
-      GUARDED_BY(audio_consumer_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   Capabilities capabilities_;
-  std::optional<EchoCancellationMode> echo_cancellation_mode_;
+  std::optional<EchoCancellationMode> echo_cancellation_;
   std::optional<bool> auto_gain_control_;
   std::optional<bool> noise_supression_;
   std::optional<bool> voice_isolation_;

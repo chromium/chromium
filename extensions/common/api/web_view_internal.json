@@ -333,7 +333,12 @@
             "description": "Details of the content scripts to add.",
             "minItems": 1
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the provided content scripts are registered.",
+          "parameters": []
+        }
       },
       {
         "name": "removeContentScripts",
@@ -355,7 +360,12 @@
             "optional": true,
             "description": "A list of names of content scripts that will be removed. If the list is empty, all the content scripts added to the <webview> page will be removed."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the provided content scripts are unregistered.",
+          "parameters": []
+        }
       },
       {
         "name": "setZoom",

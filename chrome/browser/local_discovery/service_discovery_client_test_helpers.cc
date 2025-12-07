@@ -22,6 +22,20 @@ void MockServiceWatcher::SimulateServiceUpdated(UpdateType update,
   updated_callback_.Run(update, std::string(service_name));
 }
 
+// MockServiceResolver
+MockServiceResolver::MockServiceResolver(
+    ServiceResolver::ResolveCompleteCallback callback)
+    : resolve_complete_callback_(std::move(callback)) {}
+MockServiceResolver::~MockServiceResolver() = default;
+
+void MockServiceResolver::SimulateResolveComplete(
+    RequestStatus status,
+    const ServiceDescription& service_description) {
+  if (resolve_complete_callback_) {
+    std::move(resolve_complete_callback_).Run(status, service_description);
+  }
+}
+
 // MockServiceDiscoveryDeviceListerDelegate
 MockServiceDiscoveryDeviceListerDelegate::
     MockServiceDiscoveryDeviceListerDelegate() = default;

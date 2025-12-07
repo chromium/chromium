@@ -10,6 +10,6 @@
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  hunspell::BDict::Verify(base::make_span(data, size));
+  hunspell::BDict::Verify(base::span(data, size));
   return 0;
 }

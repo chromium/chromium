@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -21,12 +22,11 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_migration_constants.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -393,8 +393,10 @@ void EncryptionMigrationScreen::CheckAvailableStorage() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EncryptionMigrationScreen::OnGetAvailableStorage(int64_t size) {
-  if (size >= arc::kMigrationMinimumAvailableStorage || IsTestingUI()) {
+void EncryptionMigrationScreen::OnGetAvailableStorage(
+    std::optional<int64_t> size) {
+  if (size.value_or(-1) >= arc::kMigrationMinimumAvailableStorage.InBytes() ||
+      IsTestingUI()) {
     RecordFirstScreen(GetFirstScreenForMode(mode_));
     if (IsStartImmediately()) {
       WaitBatteryAndMigrate();
@@ -407,7 +409,7 @@ void EncryptionMigrationScreen::OnGetAvailableStorage(int64_t size) {
     if (GetRemote()->is_bound()) {
       (*GetRemote())
           ->SetSpaceInfoInString(
-              ui::FormatBytes(size),
+              ui::FormatBytes(base::ByteCount(size.value_or(-1))),
               ui::FormatBytes(arc::kMigrationMinimumAvailableStorage));
       UpdateUIState(screens_login::mojom::EncryptionMigrationPage::UIState::
                         kNotEnoughStorage);

@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -63,14 +64,14 @@ std::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
 
 std::optional<base::TimeDelta> ExtractUserSessionDelayFromPayload(
     const std::string& command_payload) {
-  const std::optional<base::Value> root =
-      base::JSONReader::Read(command_payload);
-  if (!root || !root->is_dict()) {
+  const std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!root) {
     return std::nullopt;
   }
 
   std::optional<int> delay_in_seconds =
-      root->GetDict().FindInt(kPayloadUserSessionRebootDelayField);
+      root->FindInt(kPayloadUserSessionRebootDelayField);
   if (!delay_in_seconds || delay_in_seconds.value() < 0) {
     return std::nullopt;
   }

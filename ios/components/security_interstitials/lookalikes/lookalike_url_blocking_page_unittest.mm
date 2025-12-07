@@ -23,11 +23,11 @@
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "testing/platform_test.h"
 
-using security_interstitials::IOSSecurityInterstitialPage;
-using security_interstitials::SecurityInterstitialCommand;
-using security_interstitials::MetricsHelper;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kSpinDelaySeconds;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using security_interstitials::IOSSecurityInterstitialPage;
+using security_interstitials::MetricsHelper;
+using security_interstitials::SecurityInterstitialCommand;
 
 namespace {
 
@@ -109,13 +109,13 @@ TEST_F(LookalikeUrlBlockingPageTest, HandleProceedCommand) {
   page_ = CreateBlockingPage(&web_state_, safe_url, url_);
   LookalikeUrlTabAllowList* allow_list =
       LookalikeUrlTabAllowList::FromWebState(&web_state_);
-  ASSERT_FALSE(allow_list->IsDomainAllowed(url_.host()));
+  ASSERT_FALSE(allow_list->IsDomainAllowed(url_.GetHost()));
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
 
   // Send the proceed command.
   SendCommand(security_interstitials::CMD_PROCEED);
 
-  EXPECT_TRUE(allow_list->IsDomainAllowed(url_.host()));
+  EXPECT_TRUE(allow_list->IsDomainAllowed(url_.GetHost()));
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 
   // Verify that metrics are recorded correctly.

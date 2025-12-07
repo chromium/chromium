@@ -9,7 +9,6 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -18,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,7 +28,8 @@ using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr char kUser1[] = "user1@test.com";
-const AccountId kAccount1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+const AccountId kAccount1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("1111"));
 constexpr char kDummyCollectionId[] = "testCollectionId";
 
 // Returns a set of images with the given |type|.

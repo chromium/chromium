@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_constants.h"
 
 NSString* const
+    kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier =
+        @"kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier";
+NSString* const
     kCardUnmaskAuthenticationSelectionAcceptanceButtonAccessibilityIdentifier =
         @"CardUnmaskAuthenticationSelectionAcceptanceButtonAccessiblityId";
 NSString* const

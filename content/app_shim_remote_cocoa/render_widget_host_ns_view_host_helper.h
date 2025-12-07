@@ -9,6 +9,8 @@
 
 #include <vector>
 
+@class NSWindow;
+
 namespace blink {
 class WebGestureEvent;
 class WebMouseEvent;
@@ -83,12 +85,10 @@ class RenderWidgetHostNSViewHostHelper {
   virtual void ForwardWheelEvent(
       const blink::WebMouseWheelEvent& web_event) = 0;
 
-  // Handling pinch gesture events.
-  virtual void GestureBegin(blink::WebGestureEvent begin_event,
-                            bool is_synthetically_injected) = 0;
-  virtual void GestureUpdate(blink::WebGestureEvent update_event) = 0;
-  virtual void GestureEnd(blink::WebGestureEvent end_event) = 0;
-  virtual void SmartMagnify(
+  // Handling gesture events.
+  virtual void PinchEvent(blink::WebGestureEvent pinch_event,
+                          bool is_synthetically_injected) = 0;
+  virtual void SmartMagnifyEvent(
       const blink::WebGestureEvent& smart_magnify_event) = 0;
 };
 

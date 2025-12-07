@@ -19,7 +19,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_util.h"
 #include "services/device/geolocation/wifi_data.h"
 
 namespace device {

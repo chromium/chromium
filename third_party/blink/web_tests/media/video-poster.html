@@ -27,7 +27,7 @@ var posterInfo = [
     },
     {
         description: "Testing poster '', with only a 'width' attribute so size should have the same aspect ratio as <video> default.",
-        url: "", reflectedUrl: "video-poster.html", expectedWidth: 600, expectedHeight: 300, widthAttr: 600
+        url: "", reflectedUrl: "video-poster.html", expectedWidth: 600, expectedHeight: 150, widthAttr: 600
     },
     {
         description: "Testing 152x206 poster 'content/abe.png', with only a 'width' attribute so size should equal a scaled up image size with the same aspect ratio as the original image.",
@@ -35,7 +35,7 @@ var posterInfo = [
     },
     {
         description: "Testing 600x300 poster 'content/bogus.png', invalid url w/ width attribute so size should have the same aspect ratio as <video> default.",
-        url: "content/bogus.png", expectedWidth: 600, expectedHeight: 300, widthAttr: 600
+        url: "content/bogus.png", expectedWidth: 600, expectedHeight: 150, widthAttr: 600
     }
 ];
 

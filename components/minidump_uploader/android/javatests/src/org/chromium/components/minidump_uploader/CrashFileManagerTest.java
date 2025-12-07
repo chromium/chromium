@@ -789,7 +789,7 @@ public class CrashFileManagerTest {
         long initialTimestamp = new Date().getTime();
         File[] minidumps = fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000);
         for (int n = 0; n < minidumps.length; n++) {
-            if (!minidumps[n].setLastModified(initialTimestamp + n * 1000)) {
+            if (!minidumps[n].setLastModified(initialTimestamp + n * 1000L)) {
                 throw new RuntimeException(
                         "Couldn't modify timestamp of " + minidumps[n].getAbsolutePath());
             }

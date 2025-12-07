@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 
 @implementation FakeSystemIdentityDetails {
   AccountCapabilities _pendingCapabilities;
@@ -13,12 +14,12 @@
   std::unique_ptr<AccountCapabilitiesTestMutator> _pendingCapabilitiesMutator;
 }
 
-- (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
+- (instancetype)initWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   if ((self = [super init])) {
     _pendingCapabilitiesMutator =
         std::make_unique<AccountCapabilitiesTestMutator>(&_pendingCapabilities);
-    _identity = identity;
-    DCHECK(_identity);
+    _fakeIdentity = fakeIdentity;
+    DCHECK(_fakeIdentity);
   }
   return self;
 }

@@ -25,12 +25,31 @@
 
 // https://w3c.github.io/speech-api/#speechrecognition
 
+enum AvailabilityStatus {
+    // On-device speech recognition is not supported.
+    "unavailable",
+
+    // On-device speech recognition is supported but not installed or downloading.
+    "downloadable",
+
+    // On-device speech recognition is supported and downloading.
+    "downloading",
+
+    // On-device speech recognition is supported and installed.
+    "available",
+};
+
+dictionary SpeechRecognitionOptions {
+  required sequence<DOMString> langs; // BCP-47 language tags
+  boolean processLocally = false;  // Instructs the recognition to be performed on-device. If `false` (default), any available recognition method may be used.
+};
+
 [
     ActiveScriptWrappable,
     LegacyWindowAlias=webkitSpeechRecognition,
     LegacyWindowAlias_Measure,
     LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
-    LegacyNoInterfaceObject
+    Exposed=Window, RuntimeEnabled=UnprefixedSpeechRecognition
 ] interface SpeechRecognition : EventTarget {
     [CallWith=ExecutionContext, Measure] constructor();
     // recognition parameters
@@ -39,8 +58,8 @@
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
-    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute boolean localService;
-    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute boolean allowCloudFallback;
+    [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute boolean processLocally;
+    [RuntimeEnabled=WebSpeechRecognitionContext] attribute ObservableArray<SpeechRecognitionPhrase> phrases;
 
     // methods to drive the speech interaction
     [RaisesException, Measure] void start();
@@ -51,7 +70,12 @@
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=OnDeviceWebSpeechAvailable
-    ] Promise<boolean> onDeviceWebSpeechAvailable(DOMString lang);
+    ] static Promise<AvailabilityStatus> available(SpeechRecognitionOptions options);
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        RuntimeEnabled=InstallOnDeviceSpeechRecognition
+    ] static Promise<boolean> install(SpeechRecognitionOptions options);
 
     // event methods
     attribute EventHandler onaudiostart;

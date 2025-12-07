@@ -4,7 +4,10 @@
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
 
+#include <unordered_map>
+
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -23,7 +26,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/traced_value.h"
 
 namespace viz {
@@ -59,9 +61,9 @@ void AggregatedRenderPass::SetAll(
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
-    const cc::FilterOperations& filters,
-    const cc::FilterOperations& backdrop_filters,
-    const std::optional<gfx::RRectF>& backdrop_filter_bounds,
+    const cc::FilterOperations& pass_filters,
+    const cc::FilterOperations& pass_backdrop_filters,
+    const std::optional<SkPath>& pass_backdrop_filter_bounds,
     gfx::ContentColorUsage color_usage,
     bool has_transparent_background,
     bool cache_render_pass,
@@ -73,9 +75,9 @@ void AggregatedRenderPass::SetAll(
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
-  this->filters = filters;
-  this->backdrop_filters = backdrop_filters;
-  this->backdrop_filter_bounds = backdrop_filter_bounds;
+  this->filters = pass_filters;
+  this->backdrop_filters = pass_backdrop_filters;
+  this->backdrop_filter_bounds = pass_backdrop_filter_bounds;
   content_color_usage = color_usage;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
@@ -137,21 +139,14 @@ DrawQuad* AggregatedRenderPass::CopyFromAndAppendDrawQuad(
     case DrawQuad::Material::kVideoHole:
       CopyFromAndAppendTypedDrawQuad<VideoHoleDrawQuad>(quad);
       break;
-    case DrawQuad::Material::kYuvVideoContent:
-      CopyFromAndAppendTypedDrawQuad<YUVVideoDrawQuad>(quad);
-      break;
     case DrawQuad::Material::kSharedElement:
-      CHECK(false)
+      NOTREACHED()
           << "Shared Element quads should be resolved before aggregation";
-      break;
     // RenderPass quads need to use specific CopyFrom function.
     case DrawQuad::Material::kAggregatedRenderPass:
     case DrawQuad::Material::kCompositorRenderPass:
     case DrawQuad::Material::kInvalid:
-      // TODO(danakj): Why is this a check instead of dcheck, and validate from
-      // IPC?
-      CHECK(false);  // Invalid DrawQuad material.
-      break;
+      NOTREACHED();
   }
   quad_list.back()->shared_quad_state = shared_quad_state_list.back();
   return quad_list.back();
@@ -225,11 +220,12 @@ bool AggregatedRenderPass::HasCapture() const {
 
 void AggregatedRenderPass::AsValueInto(
     base::trace_event::TracedValue* value) const {
-  RenderPassInternal::AsValueInto(value);
+  // TODO(zmo): Improve this mapping for AggregatedFrame.
+  std::unordered_map<ResourceId, size_t> resource_id_to_index_map;
+  RenderPassInternal::AsValueInto(value, resource_id_to_index_map);
 
   value->SetInteger("content_color_usage",
                     base::to_underlying(content_color_usage));
-  value->SetBoolean("is_color_conversion_pass", is_color_conversion_pass);
   value->SetBoolean("is_from_surface_root_pass", is_from_surface_root_pass);
 #if BUILDFLAG(IS_WIN)
   value->SetBoolean("will_backing_be_read_by_viz", will_backing_be_read_by_viz);
@@ -238,9 +234,11 @@ void AggregatedRenderPass::AsValueInto(
 #endif
   value->SetBoolean("video_capture_enabled", video_capture_enabled);
 
+  // id.value() is a 64-bit uint even on 32-bit architectures, so
+  // using reinterpret_cast for the intentional conversion to a TracedValue::Id.
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "AggregatedRenderPass",
-      reinterpret_cast<void*>(static_cast<uint64_t>(id)));
+      TracedValue::Id(reinterpret_cast<void*>(id.value())));
 }
 
 }  // namespace viz

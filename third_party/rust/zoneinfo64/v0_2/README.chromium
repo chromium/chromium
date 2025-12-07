@@ -1,0 +1,11 @@
+Name: zoneinfo64
+URL: https://crates.io/crates/zoneinfo64
+Version: 0.2.1
+Revision: a45a095c80ef0f3e213f79cb23a699474cbfc67d
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/zoneinfo64-v0_2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Working with ICU zoneinfo64.res timezone data bundles

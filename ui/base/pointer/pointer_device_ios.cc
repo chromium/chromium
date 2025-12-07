@@ -4,7 +4,19 @@
 
 #include "ui/base/pointer/pointer_device.h"
 
+#include <utility>
+
+#include "ui/events/devices/input_device_observer_ios.h"
+
 namespace ui {
+
+std::pair<int, int> GetAvailablePointerAndHoverTypesImpl() {
+  static InputDeviceObserverIOS* input_device_observer_ios =
+      InputDeviceObserverIOS::GetInstance();
+  return {POINTER_TYPE_COARSE, input_device_observer_ios->GetHasMouseDevice()
+                                   ? HOVER_TYPE_HOVER
+                                   : HOVER_TYPE_NONE};
+}
 
 TouchScreensAvailability GetTouchScreensAvailability() {
   return TouchScreensAvailability::ENABLED;
@@ -12,30 +24,6 @@ TouchScreensAvailability GetTouchScreensAvailability() {
 
 int MaxTouchPoints() {
   return 5;
-}
-
-int GetAvailablePointerTypes() {
-  return POINTER_TYPE_COARSE;
-}
-
-int GetAvailableHoverTypes() {
-  return HOVER_TYPE_HOVER;
-}
-
-PointerType GetPrimaryPointerType(int available_pointer_types) {
-  return POINTER_TYPE_COARSE;
-}
-
-HoverType GetPrimaryHoverType(int available_hover_types) {
-  return HOVER_TYPE_NONE;
-}
-
-std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key) {
-  return std::nullopt;
-}
-
-std::vector<PointerDevice> GetPointerDevices() {
-  return {};
 }
 
 }  // namespace ui

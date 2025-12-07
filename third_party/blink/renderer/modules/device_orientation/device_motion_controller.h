@@ -16,14 +16,11 @@ namespace blink {
 class DeviceMotionEventPump;
 class Event;
 class ScriptState;
-class V8DeviceOrientationPermissionState;
+class V8PermissionState;
 
 class MODULES_EXPORT DeviceMotionController final
-    : public DeviceSingleWindowEventController,
-      public Supplement<LocalDOMWindow> {
+    : public DeviceSingleWindowEventController {
  public:
-  static const char kSupplementName[];
-
   explicit DeviceMotionController(LocalDOMWindow&);
   ~DeviceMotionController() override;
 
@@ -35,8 +32,7 @@ class MODULES_EXPORT DeviceMotionController final
 
   void Trace(Visitor*) const override;
 
-  ScriptPromise<V8DeviceOrientationPermissionState> RequestPermission(
-      ScriptState*);
+  ScriptPromise<V8PermissionState> RequestPermission(ScriptState*);
 
  private:
   // Inherited from PlatformEventController.
@@ -48,6 +44,9 @@ class MODULES_EXPORT DeviceMotionController final
   Event* LastEvent() const override;
   const AtomicString& EventTypeName() const override;
   bool IsNullEvent(Event*) const override;
+
+  Member<LocalDOMWindow> local_dom_window_;
+
   Member<DeviceMotionEventPump> motion_event_pump_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

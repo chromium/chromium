@@ -48,8 +48,7 @@ mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory(
 
 FileBackedBlobFactoryDispatcher::FileBackedBlobFactoryDispatcher(
     ExecutionContext& context)
-    : Supplement<ExecutionContext>(context),
-      ExecutionContextClient(&context),
+    : ExecutionContextClient(&context),
       frame_remote_(&context),
       worker_remote_(&context) {}
 
@@ -85,7 +84,6 @@ void FileBackedBlobFactoryDispatcher::FlushForTesting() {
 }
 
 void FileBackedBlobFactoryDispatcher::Trace(Visitor* visitor) const {
-  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(frame_remote_);
   visitor->Trace(worker_remote_);
@@ -94,23 +92,17 @@ void FileBackedBlobFactoryDispatcher::Trace(Visitor* visitor) const {
 // static
 FileBackedBlobFactoryDispatcher* FileBackedBlobFactoryDispatcher::From(
     ExecutionContext& context) {
-  auto* dispatcher =
-      Supplement<ExecutionContext>::From<FileBackedBlobFactoryDispatcher>(
-          &context);
+  FileBackedBlobFactoryDispatcher* dispatcher =
+      context.GetFileBackedBlobFactoryDispatcher();
   if (!dispatcher) {
     dispatcher = MakeGarbageCollected<FileBackedBlobFactoryDispatcher>(context);
-    Supplement<ExecutionContext>::ProvideTo(context, dispatcher);
+    context.SetFileBackedBlobFactoryDispatcher(dispatcher);
   }
   return dispatcher;
 }
 
 mojom::blink::FileBackedBlobFactory*
 FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kEnableFileBackedBlobFactory)) {
-    return nullptr;
-  }
-
   auto* execution_context = GetExecutionContext();
   if (!execution_context) {
     return nullptr;
@@ -126,9 +118,5 @@ FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory() {
   }
   return blink::GetFileBackedBlobFactory(worker_remote_, execution_context);
 }
-
-// static
-const char FileBackedBlobFactoryDispatcher::kSupplementName[] =
-    "FileBackedBlobFactoryDispatcher";
 
 }  // namespace blink

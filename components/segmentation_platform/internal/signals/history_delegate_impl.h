@@ -67,7 +67,7 @@ class HistoryDelegateImpl : public UrlSignalHandler::HistoryDelegate {
   // List of URLs visited in the current session.
   // TODO(ssid): This list grows indefnitely, consider having a limit or LRU
   // cache.
-  std::unordered_set<UrlId, UrlId::Hasher> cached_history_urls_;
+  std::unordered_set<UrlId> cached_history_urls_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<HistoryDelegateImpl> weak_factory_{this};

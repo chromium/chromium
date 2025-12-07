@@ -8,6 +8,8 @@ static_library("default_model") {
   sources = [
     "android_home_module_ranker.cc",
     "android_home_module_ranker.h",
+    "chrome_user_engagement.cc",
+    "chrome_user_engagement.h",
     "contextual_page_actions_model.cc",
     "contextual_page_actions_model.h",
     "cross_device_user_segment.cc",
@@ -18,8 +20,12 @@ static_library("default_model") {
     "device_switcher_model.h",
     "device_switcher_result_dispatcher.cc",
     "device_switcher_result_dispatcher.h",
+    "fedcm_user_segment.cc",
+    "fedcm_user_segment.h",
     "feed_user_segment.cc",
     "feed_user_segment.h",
+    "ios_default_browser_promo.cc",
+    "ios_default_browser_promo.h",
     "ios_module_ranker.cc",
     "ios_module_ranker.h",
     "low_user_engagement_model.cc",
@@ -40,13 +46,15 @@ static_library("default_model") {
     "shopping_user_model.h",
     "tab_resumption_ranker.cc",
     "tab_resumption_ranker.h",
+    "tips_notifications_ranker.cc",
+    "tips_notifications_ranker.h",
     "url_visit_resumption_ranker.cc",
     "url_visit_resumption_ranker.h",
   ]
   deps = [
     "//base",
     "//components/compose:buildflags",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
@@ -76,7 +84,7 @@ static_library("default_model") {
       "compose_promotion.cc",
       "compose_promotion.h",
     ]
-    deps += [ "//components/compose/core/browser:browser" ]
+    deps += [ "//components/compose/core/browser" ]
   }
 }
 
@@ -87,11 +95,13 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "android_home_module_ranker_unittest.cc",
+    "chrome_user_engagement_unittest.cc",
     "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
     "database_api_clients_unittest.cc",
     "device_switcher_model_unittest.cc",
     "device_switcher_result_dispatcher_unittest.cc",
+    "fedcm_user_segment_unittest.cc",
     "feed_user_segment_unittest.cc",
     "ios_module_ranker_unittest.cc",
     "low_user_engagement_model_unittest.cc",
@@ -103,6 +113,7 @@ source_set("unit_tests") {
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
     "tab_resumption_ranker_unittest.cc",
+    "tips_notifications_ranker_unittest.cc",
     "url_visit_resumption_ranker_unittest.cc",
   ]
 
@@ -125,7 +136,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
-    "//components/segmentation_platform/public:public",
+    "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/segmentation_platform/public/proto",
     "//components/sync:test_support",
@@ -137,7 +148,7 @@ source_set("unit_tests") {
 
   if (enable_compose) {
     sources += [ "compose_promotion_unittest.cc" ]
-    deps += [ "//components/compose/core/browser:browser" ]
+    deps += [ "//components/compose/core/browser" ]
   }
 }
 

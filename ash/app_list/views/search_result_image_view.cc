@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "cc/paint/display_item_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -24,6 +25,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_utils.h"
@@ -66,8 +68,8 @@ class ImagePreviewView : public views::ImageButton {
       return;
     }
 
-    SkPath mask;
-    mask.addRoundRect(gfx::RectToSkRect(GetContentsBounds()),
+    const SkPath mask =
+        SkPath::RRect(gfx::RectToSkRect(GetContentsBounds()),
                       kRoundedCornerRadius, kRoundedCornerRadius);
     canvas->ClipPath(mask, true);
     views::ImageButton::PaintButtonContents(canvas);

@@ -6,19 +6,39 @@ source_set("utils") {
   sources = [
     "backoff_operator.cc",
     "backoff_operator.h",
+    "safe_browsing_web_app_utils.cc",
+    "safe_browsing_web_app_utils.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//url",
+  ]
+}
+
+source_set("url_loader_factory_params") {
+  sources = [
+    "url_loader_factory_params.cc",
+    "url_loader_factory_params.h",
+  ]
+
+  deps = [ "//services/network/public/mojom" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "backoff_operator_unittest.cc" ]
+  sources = [
+    "backoff_operator_unittest.cc",
+    "safe_browsing_web_app_utils_unittest.cc",
+  ]
   deps = [
     ":utils",
     "//base/test:test_support",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//url",
   ]
   if (is_ios) {
     deps += [ "//components/test:safe_browsing_test_bundle_data" ]

@@ -35,7 +35,7 @@ class ShellTestHelperAura {
   // Cleans up.
   void TearDown();
 
-  // Initializes |app_window| for testing.
+  // Initializes `app_window` for testing.
   void InitAppWindow(AppWindow* app_window, const gfx::Rect& bounds = {});
 
  private:

@@ -1,0 +1,38 @@
+// Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
+// source: dwa.xml
+
+#include "test-relpath/dwa_decode.h"
+#include "test-relpath/dwa_builders.h"
+
+namespace dwa::builders {
+
+std::map<uint64_t, EntryDecoder> CreateDecodeMap() {
+  return {
+
+    {
+      UINT64_C(10084375266486398523),
+      {
+        DwaTestMetric::kEntryName,
+        {
+
+    {DwaTestMetric::kHasVideoNameHash, DwaTestMetric::kHasVideoName},
+
+    {DwaTestMetric::kLatencyNameHash, DwaTestMetric::kLatencyName},
+
+        },
+        {
+
+    {DwaTestMetric::kACTStudyNameHash, DwaTestMetric::kACTStudyName},
+
+    {DwaTestMetric::kLegacyStudyNameHash, DwaTestMetric::kLegacyStudyName},
+
+    {DwaTestMetric::kModeBStudyNameHash, DwaTestMetric::kModeBStudyName},
+
+        }
+      }
+    },
+
+  };
+}
+
+}  // namespace dwa::builders

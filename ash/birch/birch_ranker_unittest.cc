@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_item.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
@@ -470,33 +471,27 @@ TEST(BirchRankerTest, RankRecentTabItems) {
 
   // Create phone tab with a timestamp in the last 5 minutes.
   BirchTabItem item0(u"item0", GURL(), TimeFromString("22 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
 
   // Create tablet tab with a timestamp in the last 5 minutes.
   BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:58 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet);
 
   // Create phone tab with a timestamp in the last hour.
   BirchTabItem item2(u"item2", GURL(), TimeFromString("22 Feb 2024 08:31 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
 
   // Create a desktop tab with timestamp in the last hour.
   BirchTabItem item3(u"item3", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp in the last day.
   BirchTabItem item4(u"item4", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp more than a day ago.
   BirchTabItem item5(u"item5", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -538,8 +533,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
   ASSERT_TRUE(ranker.IsMorning());
 
   // Create a weather item.
-  BirchWeatherItem item(u"Sunny", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, GURL("http://icon.com/"));
   std::vector<BirchWeatherItem> items = {item};
 
   ranker.RankWeatherItems(&items);
@@ -547,7 +541,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
   ASSERT_EQ(1u, items.size());
 
   // The item had a ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 4.f);
 }
 
 TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
@@ -559,8 +553,7 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
   ASSERT_FALSE(ranker.IsMorning());
 
   // Create a weather item.
-  BirchWeatherItem item(u"Sunny", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, GURL("http://icon.com/"));
   std::vector<BirchWeatherItem> items = {item};
 
   ranker.RankWeatherItems(&items);
@@ -569,6 +562,23 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
 
   // The item was not ranked.
   EXPECT_FLOAT_EQ(items[0].ranking(), std::numeric_limits<float>::max());
+}
+
+TEST(BirchRankerTest, RankCoralItems) {
+  // Create a coral item.
+  BirchCoralItem item(u"Title", u"Subtext", CoralSource::kInSession,
+                      /*group_id=*/base::Token());
+  std::vector<BirchCoralItem> items = {item};
+
+  // Simulate 9 AM.
+  base::Time now = TimeFromString("22 Feb 2024 09:00 UTC");
+  BirchRanker ranker(now);
+  ranker.RankCoralItems(&items);
+
+  ASSERT_EQ(1u, items.size());
+
+  // The item had a ranking assigned.
+  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
 }
 
 }  // namespace

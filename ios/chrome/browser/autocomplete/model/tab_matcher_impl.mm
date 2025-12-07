@@ -9,20 +9,18 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-TabMatcherImpl::TabMatcherImpl(ChromeBrowserState* browser_state)
-    : browser_state_{browser_state} {
-  DCHECK(browser_state);
+TabMatcherImpl::TabMatcherImpl(ProfileIOS* profile) : profile_{profile} {
+  DCHECK(profile);
 }
 
 bool TabMatcherImpl::IsTabOpenWithURL(const GURL& url,
                                       const AutocompleteInput* input) const {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   const BrowserList::BrowserType browser_types =
-      browser_state_->IsOffTheRecord()
+      profile_->IsOffTheRecord()
           ? BrowserList::BrowserType::kIncognito
           : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);

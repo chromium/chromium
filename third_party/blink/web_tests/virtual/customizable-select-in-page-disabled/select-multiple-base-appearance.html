@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<link rel=author href="mailto:jarhar@chromium.org">
+
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select multiple>
+  <option>one</option>
+  <option>
+    two
+    <div>div</div>
+    <button>button</button>
+  </option>
+</select>
+
+<select multiple size=2>
+  <option>one</option>
+  <option>two</option>
+  <option>three</option>
+  <option>four</option>
+</select>
+
+<select size=2>
+  <option>option
+    <button>button</button>
+  </option>
+</select>
+
+<select id=needsmultiple>
+  <option selected>option</option>
+</select>
+
+<script>
+requestAnimationFrame(() => {
+  document.getElementById('needsmultiple').setAttribute('multiple', '');
+  requestAnimationFrame(() => {
+    document.documentElement.classList.remove('reftest-wait');
+  });
+});
+</script>

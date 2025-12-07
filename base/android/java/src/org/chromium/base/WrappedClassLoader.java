@@ -6,10 +6,14 @@ package org.chromium.base;
 
 import dalvik.system.BaseDexClassLoader;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class wraps two given ClassLoader objects and delegates findClass() and findLibrary() calls
  * to the first one that returns a match.
  */
+@NullMarked
 public class WrappedClassLoader extends ClassLoader {
     private final ClassLoader mPrimaryClassLoader;
     private final ClassLoader mSecondaryClassLoader;
@@ -34,7 +38,7 @@ public class WrappedClassLoader extends ClassLoader {
     }
 
     @Override
-    public String findLibrary(String name) {
+    public @Nullable String findLibrary(String name) {
         String path = null;
         // BaseDexClassLoader has a public findLibrary method, but ClassLoader's is protected
         // so we can only do this for classloaders that actually do extend BaseDexClassLoader.

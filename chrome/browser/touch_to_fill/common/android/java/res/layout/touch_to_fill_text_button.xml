@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.ui.widget.ButtonCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/touch_to_fill_text_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+    android:layout_marginHorizontal="@dimen/ttf_buttons_horizontal_margin"
+    android:minHeight="@dimen/min_touch_target_size"
+    android:gravity="center"
+    android:ellipsize="end"
+    android:singleLine="true"
+    style="@style/TextButton"/>

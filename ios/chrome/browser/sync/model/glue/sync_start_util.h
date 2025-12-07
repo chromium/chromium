@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_GLUE_SYNC_START_UTIL_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_GLUE_SYNC_START_UTIL_H_
 
-#include "components/sync/model/syncable_service.h"
+#import "components/sync/model/syncable_service.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 // Various utilities for kicking off sync initialization from data types or
 // other services.
@@ -21,7 +21,7 @@ namespace sync_start_util {
 // The flare built by this function is designed to be Run()able from any thread
 // so that non-UI types don't have to deal with posting tasks.
 syncer::SyncableService::StartSyncFlare GetFlareForSyncableService(
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
 
 }  // namespace sync_start_util
 }  // namespace ios

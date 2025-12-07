@@ -8,27 +8,23 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AutocompleteClassifier;
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace ios {
+
 // Singleton that owns all AutocompleteClassifiers and associates them with
-// ChromeBrowserState.
-class AutocompleteClassifierFactory : public BrowserStateKeyedServiceFactory {
+// profiles.
+class AutocompleteClassifierFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static AutocompleteClassifier* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static AutocompleteClassifier* GetForProfile(ProfileIOS* profile);
   static AutocompleteClassifierFactory* GetInstance();
 
   // Returns the default factory used to build AutocompleteClassifiers. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
-
-  AutocompleteClassifierFactory(const AutocompleteClassifierFactory&) = delete;
-  AutocompleteClassifierFactory& operator=(
-      const AutocompleteClassifierFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AutocompleteClassifierFactory>;
@@ -36,12 +32,9 @@ class AutocompleteClassifierFactory : public BrowserStateKeyedServiceFactory {
   AutocompleteClassifierFactory();
   ~AutocompleteClassifierFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

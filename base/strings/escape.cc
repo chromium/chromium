@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/escape.h"
 
+#include <array>
 #include <ostream>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -29,10 +27,10 @@ namespace {
 // Does quick bit-flicking to lookup needed characters.
 struct Charmap {
   bool Contains(unsigned char c) const {
-    return ((map[c >> 5] & (1 << (c & 31))) != 0);
+    return (map[c >> 5] & (1 << (c & 31))) != 0;
   }
 
-  uint32_t map[8];
+  std::array<uint32_t, 8> map;
 };
 
 // Given text to escape and a Charmap defining which values to escape,
@@ -162,7 +160,7 @@ static const Charmap kExternalHandlerCharmap = {
 // not unescaped, to avoid turning a valid url according to spec into an
 // invalid one.
 // clang-format off
-const char kUrlUnescape[128] = {
+const std::array<char, 128> kUrlUnescape = {
 //   Null, control chars...
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -187,10 +185,12 @@ const char kUrlUnescape[128] = {
 bool UnescapeUnsignedByteAtIndex(std::string_view escaped_text,
                                  size_t index,
                                  unsigned char* value) {
-  if ((index + 2) >= escaped_text.size())
+  if ((index + 2) >= escaped_text.size()) {
     return false;
-  if (escaped_text[index] != '%')
+  }
+  if (escaped_text[index] != '%') {
     return false;
+  }
   char most_sig_digit(escaped_text[index + 1]);
   char least_sig_digit(escaped_text[index + 2]);
   if (IsHexDigit(most_sig_digit) && IsHexDigit(least_sig_digit)) {
@@ -212,9 +212,10 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
                                   std::string* unescaped_out) {
   DCHECK(unescaped_out->empty());
 
-  unsigned char bytes[CBU8_MAX_LENGTH];
-  if (!UnescapeUnsignedByteAtIndex(escaped_text, index, &bytes[0]))
+  std::array<unsigned char, CBU8_MAX_LENGTH> bytes{};
+  if (!UnescapeUnsignedByteAtIndex(escaped_text, index, &bytes[0])) {
     return false;
+  }
 
   size_t num_bytes = 1;
 
@@ -232,18 +233,19 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
     }
   }
 
+  base::span<char> bytes_span = base::as_writable_chars(base::span(bytes));
   size_t char_index = 0;
   // Check if the unicode "character" that was just unescaped is valid.
-  if (!ReadUnicodeCharacter(reinterpret_cast<char*>(bytes), num_bytes,
-                            &char_index, code_point_out)) {
+  if (!ReadUnicodeCharacter(bytes_span.data(), num_bytes, &char_index,
+                            code_point_out)) {
     return false;
   }
 
   // It's possible that a prefix of |bytes| forms a valid UTF-8 character,
   // and the rest are not valid UTF-8, so need to update |num_bytes| based
   // on the result of ReadUnicodeCharacter().
-  num_bytes = char_index + 1;
-  *unescaped_out = std::string(reinterpret_cast<char*>(bytes), num_bytes);
+  bytes_span = bytes_span.first(char_index + 1);
+  *unescaped_out = std::string(bytes_span.begin(), bytes_span.end());
   return true;
 }
 
@@ -388,11 +390,13 @@ std::string UnescapeURLWithAdjustmentsImpl(
     std::string_view escaped_text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
-  if (adjustments)
+  if (adjustments) {
     adjustments->clear();
+  }
   // Do not unescape anything, return the |escaped_text| text.
-  if (rules == UnescapeRule::NONE)
+  if (rules == UnescapeRule::NONE) {
     return std::string(escaped_text);
+  }
 
   // The output of the unescaping is always smaller than the input, so we can
   // reserve the input size to make sure we have enough buffer and don't have
@@ -401,10 +405,11 @@ std::string UnescapeURLWithAdjustmentsImpl(
   result.reserve(escaped_text.length());
 
   // Locations of adjusted text.
+  std::string unescaped;
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     // Try to unescape the character.
     base_icu::UChar32 code_point;
-    std::string unescaped;
+    unescaped.clear();
     if (!UnescapeUTF8CharacterAtIndex(escaped_text, i, &code_point,
                                       &unescaped)) {
       // Check if the next character can be unescaped, but not as a valid UTF-8
@@ -416,8 +421,9 @@ std::string UnescapeURLWithAdjustmentsImpl(
       unsigned char non_utf8_byte;
       if (UnescapeUnsignedByteAtIndex(escaped_text, i, &non_utf8_byte)) {
         result.push_back(static_cast<char>(non_utf8_byte));
-        if (adjustments)
-          adjustments->push_back(OffsetAdjuster::Adjustment(i, 3, 1));
+        if (adjustments) {
+          adjustments->emplace_back(i, 3, 1);
+        }
         i += 3;
         continue;
       }
@@ -448,7 +454,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
     result.append(unescaped);
     if (adjustments) {
       for (size_t j = 0; j < unescaped.length(); ++j) {
-        adjustments->push_back(OffsetAdjuster::Adjustment(i + j * 3, 3, 1));
+        adjustments->emplace_back(i + j * 3, 3, 1);
       }
     }
     i += 3 * unescaped.length();
@@ -542,8 +548,9 @@ std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
   // unescape, so we can take the fast path.
   if (escaped_text.find('%') == std::string_view::npos) {
     std::string unescaped_text(escaped_text);
-    if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
+    if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE) {
       std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');
+    }
     return unescaped_text;
   }
 
@@ -597,8 +604,9 @@ bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
     illegal_encoded_bytes.insert('/');
     illegal_encoded_bytes.insert('\\');
   }
-  if (ContainsEncodedBytes(escaped_text, illegal_encoded_bytes))
+  if (ContainsEncodedBytes(escaped_text, illegal_encoded_bytes)) {
     return false;
+  }
 
   *unescaped_text = UnescapeBinaryURLComponent(escaped_text);
   return true;
@@ -611,8 +619,9 @@ bool ContainsEncodedBytes(std::string_view escaped_text,
     // UnescapeUnsignedByteAtIndex does bounds checking, so this is always safe
     // to call.
     if (UnescapeUnsignedByteAtIndex(escaped_text, i, &byte)) {
-      if (bytes.find(byte) != bytes.end())
+      if (bytes.find(byte) != bytes.end()) {
         return true;
+      }
 
       i += 3;
       continue;
@@ -625,26 +634,31 @@ bool ContainsEncodedBytes(std::string_view escaped_text,
 }
 
 std::u16string UnescapeForHTML(std::u16string_view input) {
-  static const struct {
+  struct EscapeToChars {
     const char* ampersand_code;
     const char16_t replacement;
-  } kEscapeToChars[] = {
-      {"&lt;", '<'},   {"&gt;", '>'},   {"&amp;", '&'},
-      {"&quot;", '"'}, {"&#39;", '\''},
   };
+  static const auto kEscapeToChars = std::to_array<EscapeToChars>({
+      {"&lt;", '<'},
+      {"&gt;", '>'},
+      {"&amp;", '&'},
+      {"&quot;", '"'},
+      {"&#39;", '\''},
+  });
   constexpr size_t kEscapeToCharsCount = std::size(kEscapeToChars);
 
-  if (input.find(u"&") == std::string::npos)
+  if (input.find(u"&") == std::string::npos) {
     return std::u16string(input);
+  }
 
-  std::u16string ampersand_chars[kEscapeToCharsCount];
+  std::array<std::u16string, kEscapeToCharsCount> ampersand_chars;
   std::u16string text(input);
   for (std::u16string::iterator iter = text.begin(); iter != text.end();
        ++iter) {
     if (*iter == '&') {
       // Potential ampersand encode char.
       size_t index = static_cast<size_t>(iter - text.begin());
-      for (size_t i = 0; i < std::size(kEscapeToChars); i++) {
+      for (size_t i = 0; i < kEscapeToCharsCount; i++) {
         if (ampersand_chars[i].empty()) {
           ampersand_chars[i] = ASCIIToUTF16(kEscapeToChars[i].ampersand_code);
         }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -51,9 +52,9 @@ class ToolbarInkDropUtilTest : public ChromeViewsTestBase {
 // Basic test to check for various inkdrop properties for toolbar buttons.
 TEST_F(ToolbarInkDropUtilTest, ConfigureInkDropForToolbarTest) {
   ConfigureInkDropForToolbar(button_host_.get());
-    EXPECT_EQ(views::InkDrop::Get(button_host_.get())->GetLayerRegion(),
-              views::LayerRegion::kAbove);
-    std::unique_ptr<views::InkDropHighlight> highlight =
-        views::InkDrop::Get(button_host_.get())->CreateInkDropHighlight();
-    EXPECT_NE(highlight, nullptr);
+  EXPECT_EQ(views::InkDrop::Get(button_host_.get())->GetLayerRegion(),
+            views::LayerRegion::kAbove);
+  std::unique_ptr<views::InkDropHighlight> highlight =
+      views::InkDrop::Get(button_host_.get())->CreateInkDropHighlight();
+  EXPECT_NE(highlight, nullptr);
 }

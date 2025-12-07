@@ -18,10 +18,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridge;
 @class GaiaAuthFetcherIOSURLSessionDelegate;
 @class NSHTTPURLResponse;
 @class NSURLSession;
-
-namespace web {
-class BrowserState;
-}
+class ProfileIOS;
 
 // Specialization of GaiaAuthFetcher on iOS, using NSURLSession to send
 // requests.
@@ -29,7 +26,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
  public:
   GaiaAuthFetcherIOSNSURLSessionBridge(
       GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
-      web::BrowserState* browser_state);
+      ProfileIOS* profile);
 
   GaiaAuthFetcherIOSNSURLSessionBridge(
       const GaiaAuthFetcherIOSNSURLSessionBridge&) = delete;
@@ -106,8 +103,8 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
   virtual NSURLSession* CreateNSURLSession(
       id<NSURLSessionTaskDelegate> url_session_delegate);
 
-  // Browser state associated with the bridge.
-  raw_ptr<web::BrowserState> browser_state_;
+  // Profile associated with the bridge.
+  raw_ptr<ProfileIOS> profile_;
 
   // Request currently processed by the bridge.
   Request request_;

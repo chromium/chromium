@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store/encrypt_decrypt_intrface.h"
+#include "components/password_manager/core/browser/password_store/encrypt_decrypt_interface.h"
 #include "components/password_manager/core/browser/password_store/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store/password_notes_table.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -50,25 +50,15 @@ extern const int kCompatibleVersionNumber;
 // the login information.
 class LoginDatabase : public EncryptDecryptInterface {
  public:
-  struct LoginDatabaseEmptinessState {
-    // True if the login database has 0 passwords stored.
-    bool no_login_found = true;
-    // True if the database has autofillable credentials. Used to decide whether
-    // password suggestions can be displayed via manual fallbacks. Not
-    // autofillable entries are: blocklisted entries, federated credentials and
-    // username-only credentials.
-    bool autofillable_credentials_exist = false;
+  using DeletingUndecryptablePasswordsEnabled =
+      base::StrongAlias<class DeletingUndecryptablePasswordsEnabledTag, bool>;
+  using OnUndecryptablePasswordsRemoved =
+      base::RepeatingCallback<void(password_manager::IsAccountStore)>;
 
-    friend bool operator==(const LoginDatabaseEmptinessState&,
-                           const LoginDatabaseEmptinessState&) = default;
-  };
-
-  using IsEmptyCallback =
-      base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
-  using ClearingUndecryptablePasswordsCallback =
-      base::RepeatingCallback<void(bool)>;
-
-  LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
+  LoginDatabase(const base::FilePath& db_path,
+                IsAccountStore is_account_store,
+                DeletingUndecryptablePasswordsEnabled can_delete =
+                    DeletingUndecryptablePasswordsEnabled(true));
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
 
@@ -81,9 +71,13 @@ class LoginDatabase : public EncryptDecryptInterface {
   //        syncing users.
   bool is_account_store() const { return is_account_store_.value(); }
 
+  const base::FilePath& db_path() const { return db_path_; }
+
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
-  virtual bool Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  virtual bool Init(
+      OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
+      os_crypt_async::Encryptor encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -174,8 +168,6 @@ class LoginDatabase : public EncryptDecryptInterface {
   // whether further use of this login database will succeed is unspecified.
   bool DeleteAndRecreateDatabaseFile();
 
-  LoginDatabaseEmptinessState IsEmpty();
-
   // On MacOS, it deletes all logins from the database that cannot be decrypted
   // when encryption key from Keychain is available. If the Keychain is locked,
   // it does nothing and returns ENCRYPTION_UNAVAILABLE. If it's not running on
@@ -193,22 +185,6 @@ class LoginDatabase : public EncryptDecryptInterface {
   void RollbackTransaction();
   bool CommitTransaction();
 
-  // `is_empty_cb`is called to signal whether the database is empty (i.e.
-  // without any logins *or* blocklists) and whether there are any autofillable
-  // logins. The call happens when initializing the database and when
-  // adding/removing entries, regardless of success.
-  void SetIsEmptyCb(IsEmptyCallback is_empty_cb);
-
-  // `clearing_undecryptable_passwords`is called to signal whether user
-  // interacted with the kClearUndecryptablePasswords experiment. It is needed
-  // to ensure that experiment groups stay balaced. This method will be deleted
-  // after a successful rollout.
-  void SetClearingUndecryptablePasswordsCb(
-      ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords);
-
-  void SetIsDeletingUndecryptableLoginsDisabledByPolicy(bool is_disabled) {
-    is_deleting_undecryptable_logins_disabled_by_policy_ = is_disabled;
-  }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetIsUserDataDirPolicySet(bool is_set) {
     is_user_data_dir_policy_set_ = is_set;
@@ -249,8 +225,8 @@ class LoginDatabase : public EncryptDecryptInterface {
   struct PrimaryKeyAndPassword;
   class SyncMetadataStore : public PasswordStoreSync::MetadataStore {
    public:
-    // |db| must be not null and must outlive |this|.
-    explicit SyncMetadataStore(sql::Database* db);
+    // `login_db` must be not null and must outlive `this`.
+    explicit SyncMetadataStore(LoginDatabase* login_db);
     SyncMetadataStore(const SyncMetadataStore&) = delete;
     SyncMetadataStore& operator=(const SyncMetadataStore&) = delete;
     ~SyncMetadataStore() override;
@@ -297,7 +273,7 @@ class LoginDatabase : public EncryptDecryptInterface {
         base::RepeatingCallback<void(bool)> callback) override;
     bool HasUnsyncedPasswordDeletions() override;
 
-    raw_ptr<sql::Database> const db_;
+    const raw_ptr<LoginDatabase> login_db_;
     // A callback to be invoked whenever all pending deletions have been
     // processed
     // by Sync - see
@@ -309,6 +285,11 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseSyncMetadataTest,
                            GetSyncEntityMetadataForStorageKey);
+  FRIEND_TEST_ALL_PREFIXES(
+      LoginDatabaseUndecryptableLoginsTest,
+      DontDeleteUndecryptableLoginsIfEncryptionNotAvailiableTest);
+  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseUndecryptableLoginsTest,
+                           KeychainLockedTest);
 
   void ReportNumberOfAccountsMetrics(bool custom_passphrase_sync_enabled);
   void ReportTimesPasswordUsedMetrics(bool custom_passphrase_sync_enabled);
@@ -371,19 +352,20 @@ class LoginDatabase : public EncryptDecryptInterface {
   // Returns password notes corresponding to `primary_key`.
   std::vector<PasswordNote> GetPasswordNotes(FormPrimaryKey primary_key) const;
 
-  // Updates the `password_notes` table if `notes` changed for `primary_key`.
-  void UpdatePasswordNotes(FormPrimaryKey primary_key,
+  // Updates the `password_notes` table if `notes` changed for `primary_key` and
+  // returns true if `notes` have changed in `password_notes` table.
+  bool UpdatePasswordNotes(FormPrimaryKey primary_key,
                            const std::vector<PasswordNote>& notes);
-
-  // If a non-null `is_empty_cb` was passed on construction, computes whether
-  // the DB is empty (SQL statement) and invokes the callback with the result.
-  void TriggerIsEmptyCb();
 
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
-  IsEmptyCallback is_empty_cb_ = base::NullCallback();
+
+  // `on_undecryptable_passwords_removed_`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balanced. This callback will be
+  // deleted after a successful rollout.
   // TODO(b/40286735): Remove after this feature is launched.
-  ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords_ =
+  OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed_ =
       base::NullCallback();
 
   mutable sql::Database db_;
@@ -391,12 +373,13 @@ class LoginDatabase : public EncryptDecryptInterface {
   StatisticsTable stats_table_;
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
-  SyncMetadataStore password_sync_metadata_store_{&db_};
+  SyncMetadataStore password_sync_metadata_store_{this};
   std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
 
   std::optional<bool> were_undecryptable_logins_deleted_;
   bool is_user_data_dir_policy_set_ = false;
-  bool is_deleting_undecryptable_logins_disabled_by_policy_ = false;
+  DeletingUndecryptablePasswordsEnabled
+      is_deleting_undecryptable_logins_enabled_by_policy_;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

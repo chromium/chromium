@@ -21,9 +21,6 @@ class MessageAttachment;
 // A MessageAttachmentSet is an ordered set of MessageAttachment objects
 // associated with an IPC message. All attachments are wrapped in a mojo handle
 // if necessary and sent over the mojo message pipe.
-//
-// For ChannelNacl under SFI NaCl, only Type::PLATFORM_FILE is supported. In
-// that case, the FD is sent over socket.
 // -----------------------------------------------------------------------------
 class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
     : public base::RefCountedThreadSafe<MessageAttachmentSet> {

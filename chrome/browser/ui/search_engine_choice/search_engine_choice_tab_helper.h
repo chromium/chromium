@@ -56,16 +56,19 @@ class SearchEngineChoiceTabHelper
 // `chrome/browser/ui/views/search_engine_choice/search_engine_choice_dialog_view.cc`
 // because there isn't a dependency between `chrome/browser/ui/` and
 // `chrome/browser/ui/views/`.
-// `boundary_dimensions_for_test` can be set to specify an upper bound for
-// dialog's width and height. Leaving it empty will make the dialog use the
-// window size as upper bound.
-// `zoom_factor_for_test` can be set to specify the zoom factor needed. This is
-// used to be able to display the full content of the dialog in screenshot
-// tests. Leaving it empty will make the dialog use a zoom of 1.;
-void ShowSearchEngineChoiceDialog(
-    Browser& browser,
-    std::optional<gfx::Size> boundary_dimensions_for_test = std::nullopt,
-    std::optional<double> zoom_factor_for_test_ = std::nullopt);
+class SearchEngineChoiceDialog {
+ public:
+  // `boundary_dimensions_for_test` can be set to specify an upper bound for
+  // dialog's width and height. Leaving it empty will make the dialog use the
+  // window size as upper bound.
+  // `zoom_factor_for_test` can be set to specify the zoom factor needed. This
+  // is used to be able to display the full content of the dialog in screenshot
+  // tests. Leaving it empty will make the dialog use a zoom of 1.;
+  static void Show(
+      Browser& browser,
+      std::optional<gfx::Size> boundary_dimensions_for_test = std::nullopt,
+      std::optional<double> zoom_factor_for_test_ = std::nullopt);
+};
 
 // Implemented in
 // `chrome/browser/ui/views/search_engine_choice/search_engine_choice_dialog_view.cc`

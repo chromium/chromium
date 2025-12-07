@@ -17,12 +17,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -33,6 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,11 +40,11 @@
 #include "base/win/win_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "base/test/scoped_command_line.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 
@@ -622,7 +621,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   EXPECT_EQ(*sanitized_policy_result, *value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PolicyHandlerAshTest : public ::testing::Test {
  public:
   PolicyHandlerAshTest() = default;
@@ -642,25 +641,10 @@ class PolicyHandlerAshTest : public ::testing::Test {
     Test::TearDown();
   }
 
-  void EnableLacros() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
-        /*disabled_features=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
-  void DisableLacros() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
-  }
-
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       scoped_user_manager_;
   base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 class ExtensionInstallBlockListPolicyHandlerAshTest
@@ -686,30 +670,7 @@ class ExtensionInstallForceListPolicyHandlerAshTest
 };
 
 TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
-       ShouldClearBlockListIfAshBrowserIsDisabled) {
-  EnableLacros();
-
-  policy::PolicyMap policy_map;
-  PrefValueMap prefs;
-
-  policy_map.Set(policy_key(), policy::POLICY_LEVEL_MANDATORY,
-                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(base::Value::List()
-                                 .Append("abcdefghijklmnopabcdefghijklmnop")
-                                 .Append("*")),
-                 nullptr);
-
-  ExtensionInstallBlockListPolicyHandler handler;
-  handler.ApplyPolicySettings(policy_map, &prefs);
-
-  base::Value* value = nullptr;
-  EXPECT_FALSE(prefs.GetValue(pref_name(), &value));
-}
-
-TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
        ShouldKeepBlockListIfAshBrowserIsEnabled) {
-  DisableLacros();
-
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
 
@@ -734,54 +695,7 @@ TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
 }
 
 TEST_F(ExtensionInstallForceListPolicyHandlerAshTest,
-       BlockNonOSExtensionsIfAshBrowserDisabled) {
-  EnableLacros();
-
-  policy::PolicyMap policy_map;
-  PrefValueMap prefs;
-
-  policy_map.Set(
-      policy_key(), policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-      policy::POLICY_SOURCE_CLOUD,
-      base::Value(base::Value::List()
-                      // Add an arbitrary extension.
-                      .Append(base::StrCat({"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                            ";", "http://www.example.com/crx"}))
-                      // Add an extension in keep list. Check
-                      // `ExtensionRunsInOS()` for details.
-                      .Append(base::StrCat(
-                          {extension_misc::kAccessibilityCommonExtensionId, ";",
-                           "http://www.access.com/crx"}))
-                      // Add an extension app in keep list. Check
-                      // `ExtensionAppRunsInOS()` for details.
-                      .Append(base::StrCat({extension_misc::kGnubbyAppId, ";",
-                                            "http://www.gnubby.com/crx"}))),
-      nullptr);
-
-  ExtensionInstallForceListPolicyHandler handler{};
-  handler.ApplyPolicySettings(policy_map, &prefs);
-
-  base::Value* value;
-  EXPECT_TRUE(prefs.GetValue(pref_name(), &value));
-  ASSERT_TRUE(value->is_dict());
-
-  // The arbitrary extension should have been filtered out.
-  auto expected =
-      base::Value::Dict()
-          .Set(extension_misc::kAccessibilityCommonExtensionId,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       "http://www.access.com/crx"))
-          .Set(extension_misc::kGnubbyAppId,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       "http://www.gnubby.com/crx"));
-
-  ASSERT_EQ(value->GetDict(), expected);
-}
-
-TEST_F(ExtensionInstallForceListPolicyHandlerAshTest,
        AllowNonOSExtensionsIfAshBrowserEnabled) {
-  DisableLacros();
-
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
 
@@ -825,6 +739,6 @@ TEST_F(ExtensionInstallForceListPolicyHandlerAshTest,
 
   ASSERT_EQ(value->GetDict(), expected);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

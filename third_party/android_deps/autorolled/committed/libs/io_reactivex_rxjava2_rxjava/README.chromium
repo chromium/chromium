@@ -1,0 +1,19 @@
+Name: RxJava
+Short Name: rxjava
+URL: https://repo.maven.apache.org/maven2/io/reactivex/rxjava2/rxjava/2.2.6/rxjava-2.2.6.jar
+Version: 2.2.6
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Reactive Extensions for Java
+
+See also: https://github.com/ReactiveX/RxJava
+
+
+Local Modifications:
+No modifications.

@@ -40,12 +40,8 @@ class EventCounts final : public ScriptWrappable, public Maplike<EventCounts> {
  private:
   // Maplike implementation.
   PairSyncIterable<EventCounts>::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
-  bool GetMapEntry(ScriptState*,
-                   const String& key,
-                   uint64_t& value,
-                   ExceptionState&) override;
+      ScriptState*) override;
+  bool GetMapEntry(ScriptState*, const String& key, uint64_t& value) override;
 
   HashMap<AtomicString, uint64_t> event_count_map_;
 };

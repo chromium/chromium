@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
-
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -17,6 +17,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
@@ -36,22 +38,24 @@ import java.util.List;
  * Downloads the Web Manifest if the web site still uses the {@link manifestUrl} passed to the
  * constructor.
  */
+@NullMarked
 public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     /** Observes fetching of the Web Manifest. */
     public interface Observer {
         /**
          * Called when the Web Manifest has been successfully fetched (including on the initial URL
          * load).
-         * @param fetchedInfo    The fetched Web Manifest data.
+         *
+         * @param fetchedInfo The fetched Web Manifest data.
          * @param primaryIconUrl The icon URL in {@link fetchedInfo#iconUrlToMurmur2HashMap()} best
-         *                       suited for use as the launcher icon on this device.
-         * @param splashIconUrl  The icon URL in {@link fetchedInfo#iconUrlToMurmur2HashMap()} best
-         *                       suited for use as the splash icon on this device.
+         *     suited for use as the launcher icon on this device.
+         * @param splashIconUrl The icon URL in {@link fetchedInfo#iconUrlToMurmur2HashMap()} best
+         *     suited for use as the splash icon on this device.
          */
         void onGotManifestData(
-                BrowserServicesIntentDataProvider fetchedInfo,
-                String primaryIconUrl,
-                String splashIconUrl);
+                @Nullable BrowserServicesIntentDataProvider fetchedInfo,
+                @Nullable String primaryIconUrl,
+                @Nullable String splashIconUrl);
     }
 
     /**
@@ -61,16 +65,17 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     private long mNativePointer;
 
     /** The tab that is being observed. */
-    private Tab mTab;
+    private @Nullable Tab mTab;
 
     /** Web Manifest data at the time that the WebAPK was generated. */
-    private WebappInfo mOldInfo;
+    private @Nullable WebappInfo mOldInfo;
 
-    private Observer mObserver;
+    private @Nullable Observer mObserver;
 
     /** Starts observing page loads in order to fetch the Web Manifest after each page load. */
     public boolean start(Tab tab, WebappInfo oldInfo, Observer observer) {
-        if (tab.getWebContents() == null || TextUtils.isEmpty(oldInfo.manifestUrl())) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null || TextUtils.isEmpty(oldInfo.manifestUrl())) {
             return false;
         }
 
@@ -78,17 +83,16 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
         mOldInfo = oldInfo;
         mObserver = observer;
 
-        mTab.addObserver(this);
+        tab.addObserver(this);
         mNativePointer =
                 WebApkUpdateDataFetcherJni.get()
                         .initialize(
-                                WebApkUpdateDataFetcher.this,
-                                mOldInfo.manifestStartUrl(),
-                                mOldInfo.scopeUrl(),
-                                mOldInfo.manifestUrl(),
-                                mOldInfo.manifestId());
-        WebApkUpdateDataFetcherJni.get()
-                .start(mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
+                                this,
+                                oldInfo.manifestStartUrl(),
+                                oldInfo.scopeUrl(),
+                                oldInfo.manifestUrl(),
+                                oldInfo.manifestId());
+        WebApkUpdateDataFetcherJni.get().start(mNativePointer, webContents);
         return true;
     }
 
@@ -96,13 +100,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     public void destroy() {
         if (mTab == null) return;
         mTab.removeObserver(this);
-        WebApkUpdateDataFetcherJni.get().destroy(mNativePointer, WebApkUpdateDataFetcher.this);
+        WebApkUpdateDataFetcherJni.get().destroy(mNativePointer);
         mNativePointer = 0;
-    }
-
-    @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        updatePointers();
     }
 
     @Override
@@ -112,26 +111,25 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
 
     /** Updates which WebContents the native WebApkUpdateDataFetcher is monitoring. */
     private void updatePointers() {
-        WebApkUpdateDataFetcherJni.get()
-                .replaceWebContents(
-                        mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
+        assumeNonNull(mTab);
+        WebApkUpdateDataFetcherJni.get().replaceWebContents(mNativePointer, mTab.getWebContents());
     }
 
     /** Called when the updated Web Manifest has been fetched. */
     @CalledByNative
     protected void onDataAvailable(
-            String manifestStartUrl,
-            String scopeUrl,
-            String name,
-            String shortName,
-            String manifestUrl,
+            @JniType("std::string") String manifestStartUrl,
+            @JniType("std::string") String scopeUrl,
+            @JniType("std::u16string") String name,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String manifestUrl,
             String manifestId,
-            String primaryIconUrl,
-            String primaryIconMurmur2Hash,
+            @JniType("std::string") String primaryIconUrl,
+            @JniType("std::string") String primaryIconMurmur2Hash,
             Bitmap primaryIconBitmap,
             boolean isPrimaryIconMaskable,
-            String splashIconUrl,
-            String splashIconMurmur2Hash,
+            @JniType("std::string") String splashIconUrl,
+            @JniType("std::string") String splashIconMurmur2Hash,
             byte[] splashIconData,
             boolean isSplashIconMaskable,
             String[] iconUrls,
@@ -141,9 +139,9 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
             long backgroundColor,
             long darkThemeColor,
             long darkBackgroundColor,
-            String shareAction,
-            String shareParamsTitle,
-            String shareParamsText,
+            @JniType("std::string") String shareAction,
+            @JniType("std::u16string") String shareParamsTitle,
+            @JniType("std::u16string") String shareParamsText,
             boolean isShareMethodPost,
             boolean isShareEncTypeMultipart,
             String[] shareParamsFileNames,
@@ -152,7 +150,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
             byte[][] shortcutIconData) {
         Context appContext = ContextUtils.getApplicationContext();
 
-        HashMap<String, String> iconUrlToMurmur2HashMap = new HashMap<String, String>();
+        HashMap<String, String> iconUrlToMurmur2HashMap = new HashMap<>();
         for (String iconUrl : iconUrls) {
             String murmur2Hash = null;
             if (iconUrl.equals(primaryIconUrl)) {
@@ -190,6 +188,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
                             shareParamsAccepts);
         }
 
+        assumeNonNull(mOldInfo);
+        assumeNonNull(mObserver);
         int defaultBackgroundColor = SplashLayout.getDefaultBackgroundColor(appContext);
         BrowserServicesIntentDataProvider intentDataProvider =
                 WebApkIntentDataProviderFactory.create(
@@ -232,22 +232,17 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     @NativeMethods
     interface Natives {
         long initialize(
-                WebApkUpdateDataFetcher caller,
-                @JniType("std::string") String startUrl,
-                @JniType("std::string") String scope,
-                @JniType("std::string") String webManifestUrl,
+                WebApkUpdateDataFetcher self,
+                @Nullable @JniType("std::string") String startUrl,
+                @Nullable @JniType("std::string") String scope,
+                @Nullable @JniType("std::string") String webManifestUrl,
                 @Nullable String webManifestId);
 
         void replaceWebContents(
-                long nativeWebApkUpdateDataFetcher,
-                WebApkUpdateDataFetcher caller,
-                WebContents webContents);
+                long nativeWebApkUpdateDataFetcher, @Nullable WebContents webContents);
 
-        void destroy(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller);
+        void destroy(long nativeWebApkUpdateDataFetcher);
 
-        void start(
-                long nativeWebApkUpdateDataFetcher,
-                WebApkUpdateDataFetcher caller,
-                WebContents webContents);
+        void start(long nativeWebApkUpdateDataFetcher, WebContents webContents);
     }
 }

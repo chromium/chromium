@@ -8,10 +8,13 @@ import android.content.res.Resources;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Provides util function to format Preference icons for use with favicons from
  * FaviconLoader.java.
  */
+@NullMarked
 public class FaviconViewUtils {
     /**
      * Formats the icon of a Preference for displaying a favicon by adding a

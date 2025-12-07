@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -26,7 +27,7 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 // process.
 void ClearMediaRouterStoredPrefsForTesting();
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 // Enables the media router. Can be disabled in tests unrelated to
 // Media Router where it interferes. Can also be useful to disable for local
 // development on Mac because DIAL local discovery opens a local port
@@ -37,9 +38,6 @@ BASE_DECLARE_FEATURE(kMediaRouter);
 // addresses, not just RFC1918/RFC4193 private addresses. Workaround for
 // https://crbug.com/813974.
 BASE_DECLARE_FEATURE(kCastAllowAllIPsFeature);
-
-// Determine whether global media controls are used to start and stop casting.
-BASE_DECLARE_FEATURE(kGlobalMediaControlsCastStartStop);
 
 // If enabled, allows all websites to request to start mirroring via
 // Presentation API. If disabled, only the allowlisted sites can do so.
@@ -62,16 +60,10 @@ BASE_DECLARE_FEATURE(kShowCastPermissionRejectedError);
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 
-// If enabled, mirroring sessions use the playout delay specified by
-// `kCastMirroringPlayoutDelayMs`.
-BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
-
-// When enabled, Cast virtual connections are removed without explicitly sending
-// a close connection request to the receiver when the sender webpage navigates
-// away.
-// TODO(crbug.com/1508704): Remove the flag when confident that the default-
-// enabled feature is not causing a regression.
-BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
+// When enabled, messages between websites and Chrome, and Chrome and Cast
+// receivers will be logged in chrome://media-router-internals.  These messages
+// can be frequent and contain sensitive information, so disabled by default.
+BASE_DECLARE_FEATURE(kCastMessageLogging);
 
 #if BUILDFLAG(IS_MAC)
 // If enabled, Chrome uses the Network Framework API for local device discovery
@@ -100,14 +92,17 @@ std::string GetReceiverIdHashToken(PrefService* pref_service);
 // also disables SSDP-based discovery for Cast devices.
 bool DialMediaRouteProviderEnabled();
 
-// Returns true if global media controls are used to start and stop casting and
-// Media Router is enabled for |context|.
-bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
-
 // Returns the optional value to use for mirroring playout delay from the
 // relevant command line flag or feature, if any are set.
 std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay();
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+// When enabled, logs of all the messages exchanged between Cast devices,
+// Chrome, and Web pages using the Presentation API into
+// chrome://media-router-internals.  These logs can verbose and contain
+// sensitive information, so use with caution.
+bool IsCastMessageLoggingEnabled();
+#endif  // !BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 }  // namespace media_router
 

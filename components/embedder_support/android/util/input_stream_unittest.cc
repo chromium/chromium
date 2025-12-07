@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/embedder_support/android/util/input_stream.h"
 
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,7 +21,6 @@
 #include "components/embedder_support/android/native_j_unittests_jni_headers/InputStreamUnittest_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ScopedJavaLocalRef;
 using embedder_support::InputStream;
 using net::IOBuffer;
 using net::IOBufferWithSize;
@@ -43,7 +37,7 @@ using testing::Test;
 
 class InputStreamTest : public Test {
  public:
-  InputStreamTest() {}
+  InputStreamTest() = default;
 
  protected:
   void SetUp() override {
@@ -54,12 +48,9 @@ class InputStreamTest : public Test {
   scoped_refptr<IOBuffer> DoReadCountedStreamTest(int stream_size,
                                                   int bytes_requested,
                                                   int* bytes_read) {
-    ScopedJavaLocalRef<jobject> counting_jstream =
+    std::unique_ptr<InputStream> input_stream =
         Java_InputStreamUnittest_getCountingStream(env_, stream_size);
-    EXPECT_TRUE(counting_jstream);
-
-    std::unique_ptr<InputStream> input_stream(
-        new InputStream(counting_jstream));
+    EXPECT_TRUE(input_stream);
     auto buffer = base::MakeRefCounted<IOBufferWithSize>(bytes_requested);
 
     EXPECT_TRUE(input_stream->Read(buffer.get(), bytes_requested, bytes_read));
@@ -69,12 +60,17 @@ class InputStreamTest : public Test {
   raw_ptr<JNIEnv> env_;
 };
 
-TEST_F(InputStreamTest, ReadEmptyStream) {
-  ScopedJavaLocalRef<jobject> empty_jstream =
-      Java_InputStreamUnittest_getEmptyStream(env_);
-  EXPECT_TRUE(empty_jstream);
+TEST_F(InputStreamTest, NullStreamJniConversion) {
+  std::unique_ptr<InputStream> input_stream =
+      Java_InputStreamUnittest_getNullStream(env_);
+  EXPECT_FALSE(input_stream);
+}
 
-  std::unique_ptr<InputStream> input_stream(new InputStream(empty_jstream));
+TEST_F(InputStreamTest, ReadEmptyStream) {
+  std::unique_ptr<InputStream> input_stream =
+      Java_InputStreamUnittest_getEmptyStream(env_);
+  EXPECT_TRUE(input_stream);
+
   const int bytes_requested = 10;
   int bytes_read = 0;
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(bytes_requested);
@@ -111,7 +107,7 @@ TEST_F(InputStreamTest, CheckContentsReadCorrectly) {
       DoReadCountedStreamTest(bytes_requested, bytes_requested, &bytes_read);
   EXPECT_EQ(bytes_requested, bytes_read);
   for (int i = 0; i < bytes_requested; ++i) {
-    EXPECT_EQ(i, (unsigned char)buffer->data()[i]);
+    UNSAFE_TODO(EXPECT_EQ(i, (unsigned char)buffer->data()[i]));
   }
 }
 
@@ -143,11 +139,9 @@ TEST_F(InputStreamTest, CustomInputStreamBufferSize) {
 }
 
 TEST_F(InputStreamTest, DoesNotCrashWhenExceptionThrown) {
-  ScopedJavaLocalRef<jobject> throw_jstream =
+  std::unique_ptr<InputStream> input_stream =
       Java_InputStreamUnittest_getThrowingStream(env_);
-  EXPECT_TRUE(throw_jstream);
-
-  std::unique_ptr<InputStream> input_stream(new InputStream(throw_jstream));
+  EXPECT_TRUE(input_stream);
 
   int64_t bytes_skipped;
   EXPECT_FALSE(input_stream->Skip(10, &bytes_skipped));
@@ -162,5 +156,7 @@ TEST_F(InputStreamTest, DoesNotCrashWhenExceptionThrown) {
   EXPECT_EQ(0, bytes_read);
 
   // This closes the stream.
-  input_stream.reset(NULL);
+  input_stream.reset(nullptr);
 }
+
+DEFINE_JNI(InputStreamUnittest)

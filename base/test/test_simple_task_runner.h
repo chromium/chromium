@@ -42,6 +42,9 @@ class TimeDelta;
 // handles the running of tasks that in turn call back into itself
 // (e.g., to post more tasks).
 //
+// Tasks are only run with explicit invocation of `TestSimpleTaskRunner::Run*()`
+// methods.
+//
 // Note that, like any TaskRunner, TestSimpleTaskRunner is
 // ref-counted.
 class TestSimpleTaskRunner : public SingleThreadTaskRunner {

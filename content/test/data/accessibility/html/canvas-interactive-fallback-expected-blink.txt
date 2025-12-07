@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++canvas
+++++++++link name='Interactive fallback'
+++++++++++staticText name='Interactive fallback'
+++++++canvas
+++++++++link name='Interactive fallback'
+++++++++++staticText name='Interactive fallback'
+++++++++++++inlineTextBox name='Interactive '
+++++++++++++inlineTextBox name='fallback'

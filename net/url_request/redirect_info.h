@@ -13,6 +13,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/url_request/referrer_policy.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -42,6 +43,7 @@ struct NET_EXPORT RedirectInfo {
       FirstPartyURLPolicy original_first_party_url_policy,
       ReferrerPolicy original_referrer_policy,
       const std::string& original_referrer,
+      const std::optional<url::Origin>& original_initiator,
       // The HTTP status code of the redirect response.
       int http_status_code,
       // The new location URL of the redirect response.
@@ -57,6 +59,10 @@ struct NET_EXPORT RedirectInfo {
       bool copy_fragment = true,
       // Whether the redirect is caused by a failure of signed exchange loading.
       bool is_signed_exchange_fallback_redirect = false);
+
+  // The original request's initiator. This is used for some checks if a
+  // redirect is safe.
+  std::optional<url::Origin> original_initiator;
 
   // The status code for the redirect response. This is almost redundant with
   // the response headers, but some URLRequestJobs emit redirects without

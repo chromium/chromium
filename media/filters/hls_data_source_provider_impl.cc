@@ -4,13 +4,15 @@
 
 #include "media/filters/hls_data_source_provider_impl.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "media/base/cross_origin_data_source.h"
 #include "media/formats/hls/types.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -24,11 +26,10 @@ void OnMultiBufferReadComplete(
     std::unique_ptr<HlsDataSourceStream> stream,
     HlsDataSourceProviderImpl::ReadCb callback,
     base::OnceCallback<void(HlsDataSourceStream&)> update_metadata,
-    int requested_read_size,
+    size_t requested_read_size,
     uint64_t trace_key,
     int read_size) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "HLS::ReadExistingStream", trace_key,
-                                  "size", read_size);
+  TRACE_EVENT_END("media", perfetto::Track(trace_key), "size", read_size);
   switch (read_size) {
     case DataSource::kReadError: {
       stream->UnlockStreamPostWrite(0, true);
@@ -50,8 +51,6 @@ void OnMultiBufferReadComplete(
 }
 
 }  // namespace
-
-HlsDataSourceProviderImpl::DataSourceFactory::~DataSourceFactory() = default;
 
 HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
     std::unique_ptr<DataSourceFactory> factory)
@@ -105,22 +104,23 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // try to make one. Creating a new data source will re-enter this function to
   // complete `callback`.
   if (stream->RequiresNextDataSource()) {
-    auto new_uri = stream->GetNextSegmentURI();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::CreateDataSource", this,
-                                      "uri", new_uri);
+    auto [new_uri, bypass_cache] = stream->GetNextSegmentURIAndCacheStatus();
+    TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource",
+                      perfetto::Track::FromPointer(this), "uri", new_uri);
     data_source_factory_->CreateDataSource(
-        std::move(new_uri),
+        std::move(new_uri), bypass_cache,
         base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
                        weak_factory_.GetWeakPtr(), std::move(stream),
                        std::move(callback)));
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "HLS::ReadExistingStream", this);
+  TRACE_EVENT_BEGIN("media", "HLS::ReadExistingStream",
+                    perfetto::Track::FromPointer(this));
   // A finished stream may have removed any attached data source, so it might
   // not be present in the map.
   if (!stream->CanReadMore()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::ReadExistingStream", this);
+    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
     std::move(callback).Run(std::move(stream));
     return;
   }
@@ -128,14 +128,14 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // Any stream which can read more _must_ have an active data source attached.
   auto it = data_source_map_.find(stream->stream_id());
   if (it == data_source_map_.end()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::ReadExistingStream", this);
+    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
     std::move(callback).Run(ReadStatus::Codes::kError);
     return;
   }
 
   size_t read_size = kDefaultReadSize;
-  auto pos = stream->read_position();
-  auto max_position = stream->max_read_position();
+  const size_t pos = stream->read_position();
+  const std::optional<size_t> max_position = stream->max_read_position();
   if (max_position.has_value()) {
     // If the read head is greater than max, `CanReadMore` should have returned
     // false.
@@ -143,18 +143,17 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
     read_size = std::min(read_size, max_position.value() - pos);
   }
 
-  auto int_read_size = base::checked_cast<int>(read_size);
-  auto* buffer_data = stream->LockStreamForWriting(int_read_size);
+  base::span<uint8_t> buffer_data = stream->LockStreamForWriting(read_size);
   auto stream_id = stream->stream_id();
   uint64_t async_event_key = reinterpret_cast<std::uintptr_t>(this);
 
   it->second->Read(
-      base::checked_cast<int64_t>(pos), int_read_size, buffer_data,
+      base::checked_cast<int64_t>(pos), buffer_data,
       base::BindOnce(
           &OnMultiBufferReadComplete, std::move(stream), std::move(callback),
           base::BindOnce(&HlsDataSourceProviderImpl::UpdateStreamMetadata,
                          weak_factory_.GetWeakPtr(), stream_id),
-          int_read_size, async_event_key));
+          read_size, async_event_key));
 }
 
 void HlsDataSourceProviderImpl::OnDataSourceCreated(
@@ -195,7 +194,7 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::CreateDataSource", this);
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
   ReadFromExistingStream(std::move(stream), std::move(callback));
 }
 

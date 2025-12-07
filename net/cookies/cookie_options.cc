@@ -27,18 +27,13 @@ CookieOptions::SameSiteCookieContext::MakeInclusiveForSet() {
 CookieOptions::SameSiteCookieContext::ContextType
 CookieOptions::SameSiteCookieContext::GetContextForCookieInclusion() const {
   DCHECK_LE(schemeful_context_, context_);
-
-  if (cookie_util::IsSchemefulSameSiteEnabled())
-    return schemeful_context_;
-
-  return context_;
+  return schemeful_context_;
 }
 
 const CookieOptions::SameSiteCookieContext::ContextMetadata&
 CookieOptions::SameSiteCookieContext::GetMetadataForCurrentSchemefulMode()
     const {
-  return cookie_util::IsSchemefulSameSiteEnabled() ? schemeful_metadata()
-                                                   : metadata();
+  return schemeful_metadata();
 }
 
 void CookieOptions::SameSiteCookieContext::SetContextTypesForTesting(
@@ -58,26 +53,6 @@ bool operator==(const CookieOptions::SameSiteCookieContext& lhs,
                 const CookieOptions::SameSiteCookieContext& rhs) {
   return std::tie(lhs.context_, lhs.schemeful_context_) ==
          std::tie(rhs.context_, rhs.schemeful_context_);
-}
-
-bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
-                const CookieOptions::SameSiteCookieContext& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator==(
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return std::tie(lhs.cross_site_redirect_downgrade,
-                  lhs.redirect_type_bug_1221316) ==
-         std::tie(rhs.cross_site_redirect_downgrade,
-                  rhs.redirect_type_bug_1221316);
-}
-
-bool operator!=(
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return !(lhs == rhs);
 }
 
 // Keep default values in sync with

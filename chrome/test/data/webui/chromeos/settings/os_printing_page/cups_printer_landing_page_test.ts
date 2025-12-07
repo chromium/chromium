@@ -4,17 +4,20 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType, SettingsCupsEditPrinterDialogElement, SettingsCupsEnterprisePrintersElement, SettingsCupsNearbyPrintersElement, SettingsCupsPrintersElement, SettingsCupsPrintersEntryElement, SettingsCupsSavedPrintersElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {CupsPrinterInfo, PrinterListEntry, SettingsCupsEditPrinterDialogElement, SettingsCupsEnterprisePrintersElement, SettingsCupsNearbyPrintersElement, SettingsCupsPrintersElement, SettingsCupsPrintersEntryElement, SettingsCupsSavedPrintersElement} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement, CrSearchableDropDownElement, CrToastElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotReached, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -365,9 +368,11 @@ suite('CupsSavedPrintersTests', () => {
   test('ReconfigureSavedPrinter', async () => {
     const expectedName = 'edited name';
     const expectedAddress = '1.1.1.1';
+    const ppdUrl = 'file:///foo/bar/bazppd';
+    const ppdFileName = 'bazppd';
 
     createCupsPrinterPage([
-      createCupsPrinterInfo('google', '4', 'id4'),
+      createCupsPrinterInfo('google', '4', 'id4', false, ppdUrl),
       createCupsPrinterInfo('test1', '1', 'id1'),
       createCupsPrinterInfo('test2', '2', 'id2'),
     ]);
@@ -404,6 +409,23 @@ suite('CupsSavedPrintersTests', () => {
     addressField.value = expectedAddress;
     addressField.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+
+    // Managed printer PPD textbox should be hidden.
+    const managedPrinterPPD =
+        editDialog.shadowRoot!.querySelector<HTMLElement>('#managedPrinterPPD');
+    assertTrue(!!managedPrinterPPD);
+    const parentElement = managedPrinterPPD.parentElement;
+    assertTrue(!!parentElement);
+    assertTrue(parentElement.hidden);
+
+    // Regular printer PPD textbox should be visible.
+    const printerPPD =
+        editDialog.shadowRoot!.querySelector<CrInputElement>('#printerPPD');
+    assertTrue(!!printerPPD);
+    assertFalse(printerPPD.hidden);
+    // Local PPD file should display only the file name.
+    assertEquals(ppdFileName, printerPPD.value);
+
     const cancelButton =
         editDialog.shadowRoot!.querySelector<HTMLButtonElement>(
             '.cancel-button');
@@ -642,9 +664,6 @@ suite('CupsSavedPrintersTests', () => {
   // Verify the printer statuses received from the 'local-printers-updated'
   // event are added to the printer status cache.
   test('LocalPrintersUpdatedPrinterStatusCache', async () => {
-    loadTimeData.overrideValues({
-      isLocalPrinterObservingEnabled: true,
-    });
     createCupsPrinterPage([]);
     await flushTasks();
     const element =
@@ -700,10 +719,6 @@ suite('CupsSavedPrintersTests', () => {
     assertTrue(printerStatusReasonCache.has(id1));
     assertTrue(printerStatusReasonCache.has(id2));
     assertFalse(printerStatusReasonCache.has(id3));
-
-    // This verifies that no printer status query timers are scheduled when the
-    // "local-printer-observing" flag is enabled.
-    assertEquals(0, savedPrintersElement.getTimeoutIdsForTesting().length);
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', async () => {
@@ -1091,6 +1106,63 @@ suite('CupsSavedPrintersTests', () => {
             'Printing.CUPS.SettingsUserAction',
             PrinterSettingsUserAction.EDIT_PRINTER));
   });
+
+  // Verify that make (manufacturer) and model are always visible for
+  // non-managed printers.
+  test('MakeAndModelNonManagedVisibility', async () => {
+    createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1'),
+    ]);
+    await cupsPrintersBrowserProxy.whenCalled('getCupsSavedPrintersList');
+    // Wait for saved printers to populate.
+    flush();
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-saved-printers');
+    assertTrue(!!element);
+    savedPrintersElement = element;
+    const savedPrinterEntries = getPrinterEntries(savedPrintersElement);
+    // Edit the first entry.
+    const button =
+        savedPrinterEntries[0]!.shadowRoot!.querySelector<HTMLButtonElement>(
+            '.icon-more-vert');
+    assertTrue(!!button);
+    clickButton(button);
+    const editButton =
+        savedPrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#editButton');
+    assertTrue(!!editButton);
+    clickButton(editButton);
+    flush();
+    const editDialog = initializeEditDialog(page);
+
+    // Grab the manufacturer and model fields, and their parent fields as well.
+    const manufacturer =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDManufacturer');
+    const model =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDModel');
+    assertTrue(!!manufacturer);
+    assertTrue(!!model);
+    const manufacturerParent = manufacturer.parentElement;
+    const modelParent = model.parentElement;
+    assertTrue(!!manufacturerParent);
+    assertTrue(!!modelParent);
+
+    // NB: The hiding is done on the parent fields.
+
+    // Manufacturer and model values are non-empty, the fields should be
+    // visible.
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+
+    // Set both manufacturer and model values to the empty string, both fields
+    // should still be visible.
+    editDialog.set('pendingPrinter_.ppdManufacturer', '');
+    editDialog.set('pendingPrinter_.ppdModel', '');
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+  });
 });
 
 suite('CupsNearbyPrintersTests', () => {
@@ -1099,26 +1171,29 @@ suite('CupsNearbyPrintersTests', () => {
   let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
   let printerEntryListTestElement: HTMLElement;
   let wifi1: NetworkStateProperties;
+  let networkConfigRemote: FakeNetworkConfig;
 
-
-  setup(() => {
+  setup(async function() {
     cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
 
     CupsPrintersBrowserProxyImpl.setInstanceForTesting(
         cupsPrintersBrowserProxy);
 
-    // Simulate internet connection.
-    wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
-    wifi1.connectionState = ConnectionStateType.kOnline;
+    networkConfigRemote = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        networkConfigRemote);
 
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
 
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
-    page.onActiveNetworksChanged([wifi1]);
+    await flushTasks();
 
-    flush();
+    // Simulate internet connection.
+    wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
+    wifi1.connectionState = ConnectionStateType.kOnline;
+    page.onActiveNetworksChanged([wifi1]);
   });
 
   teardown(() => {
@@ -1389,11 +1464,7 @@ suite('CupsNearbyPrintersTests', () => {
     // connected to a network.
     assertTrue(!!page.shadowRoot!.querySelector('#cloudOffIcon'));
     assertTrue(!!page.shadowRoot!.querySelector('#connectionMessage'));
-    const addManualPrinterButton =
-        page.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#addManualPrinterButton');
-    assertTrue(!!addManualPrinterButton);
-    assertTrue(addManualPrinterButton.disabled);
+    assertFalse(!!page.shadowRoot!.querySelector('#addManualPrinterButton'));
   });
 
   test('checkNetworkConnection', async () => {
@@ -1407,11 +1478,8 @@ suite('CupsNearbyPrintersTests', () => {
     // connected.
     assertTrue(!!page.shadowRoot!.querySelector('#cloudOffIcon'));
     assertTrue(!!page.shadowRoot!.querySelector('#connectionMessage'));
-    const addManualPrinterButton =
-        page.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#addManualPrinterButton');
-    assertTrue(!!addManualPrinterButton);
-    assertTrue(addManualPrinterButton.disabled);
+    assertFalse(!!page.shadowRoot!.querySelector('#addManualPrinterButton'));
+
     // Simulate connecting to a network with connectivity.
     wifi1.connectionState = ConnectionStateType.kOnline;
     page.onActiveNetworksChanged([wifi1]);
@@ -1586,8 +1654,7 @@ suite('CupsEnterprisePrintersTests', () => {
     enterprisePrintersElement.remove();
   });
 
-
-  function createCupsPrinterPage(printers: CupsPrinterInfo[]) {
+  async function createCupsPrinterPage(printers: CupsPrinterInfo[]) {
     printerList = printers;
     // |cupsPrinterBrowserProxy| needs to have a list of printers before
     // initializing the landing page.
@@ -1600,22 +1667,53 @@ suite('CupsEnterprisePrintersTests', () => {
     assertTrue(!!page);
 
     flush();
+
+    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
+    // Wait for enterprise printers to populate.
+    flush();
+
+    // Cache the enterprise printers element.
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
+    assertTrue(!!element);
+    enterprisePrintersElement = element;
+  }
+
+  function openDialogForPrinter(index: number):
+      SettingsCupsEditPrinterDialogElement {
+    // Get the printer entries.
+    const enterprisePrinterEntries:
+        NodeListOf<SettingsCupsPrintersEntryElement> =
+            getPrinterEntries(enterprisePrintersElement);
+
+    // Get the printer at position index and click on the more button.
+    assertTrue(index >= 0 && index < enterprisePrinterEntries.length);
+    const button = enterprisePrinterEntries[index]!.shadowRoot!
+                       .querySelector<HTMLButtonElement>('.icon-more-vert');
+    assertTrue(!!button);
+    clickButton(button);
+    // Click on the view button.
+    const viewButton =
+        enterprisePrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#viewButton');
+    assertTrue(!!viewButton);
+    clickButton(viewButton);
+    flush();
+
+    // Fetch the edit dialog (and customize a couple of things).
+    const editDialog: SettingsCupsEditPrinterDialogElement =
+        initializeEditDialog(page);
+    return editDialog;
   }
 
   // Verifies that enterprise printers are correctly shown on the OS settings
   // page.
   test('EnterprisePrinters', async () => {
-    createCupsPrinterPage([
+    await createCupsPrinterPage([
       createCupsPrinterInfo('test1', '1', 'id1', /*isManaged=*/ true),
       createCupsPrinterInfo('test2', '2', 'id2', /*isManaged=*/ true),
     ]);
-    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
-    // Wait for saved printers to populate.
-    flush();
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
-    assertTrue(!!element);
-    enterprisePrintersElement = element;
+
     const listElement =
         enterprisePrintersElement.shadowRoot!.querySelector<HTMLElement>(
             '#printerEntryList');
@@ -1629,37 +1727,19 @@ suite('CupsEnterprisePrintersTests', () => {
 
   // Verifies that enterprise printers are not editable.
   test('EnterprisePrinterDialog', async () => {
-    createCupsPrinterPage([
-      createCupsPrinterInfo('test1', '1', 'id1', true),
+    const ppdUrl = 'https://foo.bar.baz/ppd';
+    await createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1', true, ppdUrl),
     ]);
-    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
-    // Wait for enterprise printers to populate.
-    flush();
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
-    assertTrue(!!element);
-    enterprisePrintersElement = element;
-    const enterprisePrinterEntries:
-        NodeListOf<SettingsCupsPrintersEntryElement> =
-            getPrinterEntries(enterprisePrintersElement);
+
     // Users are not allowed to remove enterprise printers.
     const removeButton =
         enterprisePrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
             '#removeButton');
     assertTrue(!!removeButton);
     assertTrue(removeButton.disabled);
-    const button = enterprisePrinterEntries[0]!.shadowRoot!
-                       .querySelector<HTMLButtonElement>('.icon-more-vert');
-    assertTrue(!!button);
-    clickButton(button);
-    const viewButton =
-        enterprisePrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#viewButton');
-    assertTrue(!!viewButton);
-    clickButton(viewButton);
-    flush();
-    const editDialog: SettingsCupsEditPrinterDialogElement =
-        initializeEditDialog(page);
+
+    const editDialog = openDialogForPrinter(0);
     const nameField = editDialog.shadowRoot!.querySelector<CrInputElement>(
         '.printer-name-input');
     assertTrue(!!nameField);
@@ -1682,6 +1762,7 @@ suite('CupsEnterprisePrintersTests', () => {
             '#printerPPDManufacturer');
     assertTrue(!!printerPPDManufacturer);
     assertTrue(printerPPDManufacturer.readonly);
+
     // The "specify PDD" section should be hidden.
     const browseButton =
         editDialog.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -1690,10 +1771,30 @@ suite('CupsEnterprisePrintersTests', () => {
     const parentElement = browseButton.parentElement;
     assertTrue(!!parentElement);
     assertTrue(parentElement.hidden);
+
+    // Managed printer PPD textbox should be visible.
+    const managedPrinterPPD =
+        editDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#managedPrinterPPD');
+    assertTrue(!!managedPrinterPPD);
+    assertFalse(managedPrinterPPD.hidden);
+    // Remote PPD file should display the full URL.
+    assertEquals(ppdUrl, managedPrinterPPD.value);
+
+    // View printer PPD button should be visible. Help text should be hidden.
     const ppdLabel =
         editDialog.shadowRoot!.querySelector<HTMLElement>('#ppdLabel');
     assertTrue(!!ppdLabel);
-    assertTrue(ppdLabel.hidden);
+    assertFalse(ppdLabel.hidden);
+    const ppdButton =
+        editDialog.shadowRoot!.querySelector<HTMLElement>('.ppd-button');
+    assertTrue(!!ppdButton);
+    assertFalse(ppdButton.hidden);
+    const localizedLink =
+        editDialog.shadowRoot!.querySelector<HTMLElement>('localized-link');
+    assertTrue(!!localizedLink);
+    assertTrue(localizedLink.hidden);
+
     // Save and Cancel buttons should be hidden. Close button should be
     // visible.
     const cancelButton =
@@ -1713,19 +1814,13 @@ suite('CupsEnterprisePrintersTests', () => {
   });
 
   test('PressShowMoreButton', async () => {
-    createCupsPrinterPage([
+    await createCupsPrinterPage([
       createCupsPrinterInfo('test1', '1', 'id1', true),
       createCupsPrinterInfo('test2', '2', 'id2', true),
       createCupsPrinterInfo('test3', '3', 'id3', true),
       createCupsPrinterInfo('test4', '4', 'id4', true),
     ]);
-    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
-    // Wait for enterprise printers to populate.
-    flush();
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
-    assertTrue(!!element);
-    enterprisePrintersElement = element;
+
     const printerEntryListTestElement =
         enterprisePrintersElement.shadowRoot!.querySelector(
             '#printerEntryList');
@@ -1757,5 +1852,49 @@ suite('CupsEnterprisePrintersTests', () => {
       createPrinterListEntry('test3', '3', 'id3', PrinterType.ENTERPRISE),
       createPrinterListEntry('test4', '4', 'id4', PrinterType.ENTERPRISE),
     ]);
+  });
+
+  // Verify that make (manufacturer) and model are hidden for managed printers
+  // if they are both empty, and they are shown if either one is non-empty.
+  test('MakeAndModelManagedVisibility', async () => {
+    // Create the page and populate with one managed printer.
+    await createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1', true, '/foo/bar/bazppd'),
+    ]);
+
+    // Open the edit dialog for the first printer.
+    const editDialog = openDialogForPrinter(0);
+
+    // Grab the manufacturer and model fields, and their parent fields as well.
+    const manufacturer =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDManufacturer');
+    const model =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDModel');
+    assertTrue(!!manufacturer);
+    assertTrue(!!model);
+    const manufacturerParent = manufacturer.parentElement;
+    const modelParent = model.parentElement;
+    assertTrue(!!manufacturerParent);
+    assertTrue(!!modelParent);
+
+    // NB: The hiding is done on the parent fields.
+
+    // Manufacturer and model values are non-empty, the fields should be
+    // visible.
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+
+    // Set just model to the empty string, both fields should still be visible.
+    editDialog.set('pendingPrinter_.ppdModel', '');
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+
+    // Set also manufacturer to the empty string, both fields should be hidden
+    // now.
+    editDialog.set('pendingPrinter_.ppdManufacturer', '');
+    assertTrue(manufacturerParent.hidden);
+    assertTrue(modelParent.hidden);
   });
 });

@@ -25,7 +25,7 @@ class DefaultInfobarOverlayRequestConfig
   }
 
  private:
-  OVERLAY_USER_DATA_SETUP(DefaultInfobarOverlayRequestConfig);
+  friend class OverlayUserData<DefaultInfobarOverlayRequestConfig>;
   explicit DefaultInfobarOverlayRequestConfig(InfoBarIOS* infobar,
                                               InfobarOverlayType overlay_type);
 

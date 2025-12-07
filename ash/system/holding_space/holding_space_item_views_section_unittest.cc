@@ -18,14 +18,16 @@
 #include "ash/system/holding_space/test_holding_space_item_views_section.h"
 #include "ash/system/holding_space/test_holding_space_tray_child_bubble.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
+
+// Helpers ---------------------------------------------------------------------
 
 std::vector<std::pair<HoldingSpaceSectionId, HoldingSpaceItem::Type>>
 GetSectionIdItemTypePairs() {
@@ -46,6 +48,8 @@ GetSectionIdItemTypePairs() {
 
 }  // namespace
 
+// HoldingSpaceItemViewsSectionTest --------------------------------------------
+
 class HoldingSpaceItemViewsSectionTest
     : public HoldingSpaceAshTestBase,
       public testing::WithParamInterface<
@@ -63,7 +67,7 @@ class HoldingSpaceItemViewsSectionTest
   }
 
  private:
-  // HoldingSpaceAshTestBase
+  // HoldingSpaceAshTestBase:
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
     widget_ = std::make_unique<views::Widget>();
@@ -119,6 +123,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceItemViewsSectionTest,
                          testing::ValuesIn(GetSectionIdItemTypePairs()));
 
+// Tests -----------------------------------------------------------------------
+
 // Verifies the items are ordered as expected.
 TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
   const std::optional<size_t> section_max_views =
@@ -133,7 +139,7 @@ TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
 
   // Reverse the items so that the are the same order that we expect from the
   // views.
-  std::reverse(items.begin(), items.end());
+  std::ranges::reverse(items);
 
   auto views = item_views_section()->GetHoldingSpaceItemViews();
 

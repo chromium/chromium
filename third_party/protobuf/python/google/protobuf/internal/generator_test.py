@@ -1,34 +1,11 @@
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# https://developers.google.com/protocol-buffers/
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of Google Inc. nor the names of its
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
 
-# TODO(robinson): Flesh this out considerably.  We focused on reflection_test.py
+# TODO: Flesh this out considerably.  We focused on reflection_test.py
 # first, since it's testing the subtler code, and since it provides decent
 # indirect testing of the protocol compiler output.
 
@@ -42,15 +19,15 @@ __author__ = 'robinson@google.com (Will Robinson)'
 import unittest
 
 from google.protobuf.internal import test_bad_identifiers_pb2
-from google.protobuf import unittest_custom_options_pb2
+from google.protobuf import symbol_database
 from google.protobuf import unittest_import_pb2
 from google.protobuf import unittest_import_public_pb2
 from google.protobuf import unittest_mset_pb2
 from google.protobuf import unittest_mset_wire_format_pb2
-from google.protobuf import unittest_no_generic_services_pb2
 from google.protobuf import unittest_pb2
-from google.protobuf import service
-from google.protobuf import symbol_database
+from google.protobuf import unittest_retention_pb2
+from google.protobuf import unittest_custom_options_pb2
+from google.protobuf import unittest_no_generic_services_pb2
 
 MAX_EXTENSION = 536870912
 
@@ -66,7 +43,7 @@ class GeneratorTest(unittest.TestCase):
 
   def testEnums(self):
     # We test only module-level enums here.
-    # TODO(robinson): Examine descriptors directly to check
+    # TODO: Examine descriptors directly to check
     # enum descriptor output.
     self.assertEqual(4, unittest_pb2.FOREIGN_FOO)
     self.assertEqual(5, unittest_pb2.FOREIGN_BAR)
@@ -149,8 +126,84 @@ class GeneratorTest(unittest.TestCase):
     proto = unittest_custom_options_pb2.TestMessageWithCustomOptions()
     enum_options = proto.DESCRIPTOR.enum_types_by_name['AnEnum'].GetOptions()
     self.assertTrue(enum_options is not None)
-    # TODO(gps): We really should test for the presence of the enum_opt1
+    # TODO: We really should test for the presence of the enum_opt1
     # extension and for its value to be set to -789.
+
+  # Options that are explicitly marked RETENTION_SOURCE should not be present
+  # in the descriptors in the binary.
+  def testOptionRetention(self):
+    # Direct options
+    options = unittest_retention_pb2.DESCRIPTOR.GetOptions()
+    self.assertTrue(options.HasExtension(unittest_retention_pb2.plain_option))
+    self.assertTrue(
+        options.HasExtension(unittest_retention_pb2.runtime_retention_option)
+    )
+    self.assertFalse(
+        options.HasExtension(unittest_retention_pb2.source_retention_option)
+    )
+
+    def check_options_message_is_stripped_correctly(options):
+      self.assertEqual(options.plain_field, 1)
+      self.assertEqual(options.runtime_retention_field, 2)
+      self.assertFalse(options.HasField('source_retention_field'))
+      self.assertEqual(options.source_retention_field, 0)
+
+    # Verify that our test OptionsMessage is stripped correctly on all
+    # different entity types.
+    check_options_message_is_stripped_correctly(
+        options.Extensions[unittest_retention_pb2.file_option]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.TopLevelMessage.DESCRIPTOR.GetOptions().Extensions[
+            unittest_retention_pb2.message_option
+        ]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.TopLevelMessage.NestedMessage.DESCRIPTOR.GetOptions().Extensions[
+            unittest_retention_pb2.message_option
+        ]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2._TOPLEVELENUM.GetOptions().Extensions[
+            unittest_retention_pb2.enum_option
+        ]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2._TOPLEVELMESSAGE_NESTEDENUM.GetOptions().Extensions[
+            unittest_retention_pb2.enum_option
+        ]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2._TOPLEVELENUM.values[0]
+        .GetOptions()
+        .Extensions[unittest_retention_pb2.enum_entry_option]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.DESCRIPTOR.extensions_by_name['i']
+        .GetOptions()
+        .Extensions[unittest_retention_pb2.field_option]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.TopLevelMessage.DESCRIPTOR.fields[0]
+        .GetOptions()
+        .Extensions[unittest_retention_pb2.field_option]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.TopLevelMessage.DESCRIPTOR.oneofs[0]
+        .GetOptions()
+        .Extensions[unittest_retention_pb2.oneof_option]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.DESCRIPTOR.services_by_name['Service']
+        .GetOptions()
+        .Extensions[unittest_retention_pb2.service_option]
+    )
+    check_options_message_is_stripped_correctly(
+        unittest_retention_pb2.DESCRIPTOR.services_by_name['Service']
+        .methods[0]
+        .GetOptions()
+        .Extensions[unittest_retention_pb2.method_option]
+    )
 
   def testNestedTypes(self):
     self.assertEqual(
@@ -187,21 +240,21 @@ class GeneratorTest(unittest.TestCase):
   def testPackage(self):
     self.assertEqual(
         unittest_pb2.TestAllTypes.DESCRIPTOR.file.package,
-        'protobuf_unittest')
+        'proto2_unittest')
     desc = unittest_pb2.TestAllTypes.NestedMessage.DESCRIPTOR
-    self.assertEqual(desc.file.package, 'protobuf_unittest')
+    self.assertEqual(desc.file.package, 'proto2_unittest')
     self.assertEqual(
         unittest_import_pb2.ImportMessage.DESCRIPTOR.file.package,
-        'protobuf_unittest_import')
+        'proto2_unittest_import')
 
     self.assertEqual(
-        unittest_pb2._FOREIGNENUM.file.package, 'protobuf_unittest')
+        unittest_pb2._FOREIGNENUM.file.package, 'proto2_unittest')
     self.assertEqual(
         unittest_pb2._TESTALLTYPES_NESTEDENUM.file.package,
-        'protobuf_unittest')
+        'proto2_unittest')
     self.assertEqual(
         unittest_import_pb2._IMPORTENUM.file.package,
-        'protobuf_unittest_import')
+        'proto2_unittest_import')
 
   def testExtensionRange(self):
     self.assertEqual(
@@ -216,7 +269,7 @@ class GeneratorTest(unittest.TestCase):
   def testFileDescriptor(self):
     self.assertEqual(unittest_pb2.DESCRIPTOR.name,
                      'google/protobuf/unittest.proto')
-    self.assertEqual(unittest_pb2.DESCRIPTOR.package, 'protobuf_unittest')
+    self.assertEqual(unittest_pb2.DESCRIPTOR.package, 'proto2_unittest')
     self.assertFalse(unittest_pb2.DESCRIPTOR.serialized_pb is None)
     self.assertEqual(unittest_pb2.DESCRIPTOR.dependencies,
                      [unittest_import_pb2.DESCRIPTOR])
@@ -228,12 +281,6 @@ class GeneratorTest(unittest.TestCase):
     self.assertTrue(hasattr(unittest_no_generic_services_pb2, "TestMessage"))
     self.assertTrue(hasattr(unittest_no_generic_services_pb2, "FOO"))
     self.assertTrue(hasattr(unittest_no_generic_services_pb2, "test_extension"))
-
-    # Make sure unittest_no_generic_services_pb2 has no services subclassing
-    # Proto2 Service class.
-    if hasattr(unittest_no_generic_services_pb2, "TestService"):
-      self.assertFalse(issubclass(unittest_no_generic_services_pb2.TestService,
-                                  service.Service))
 
   def testMessageTypesByName(self):
     file_type = unittest_pb2.DESCRIPTOR
@@ -290,8 +337,15 @@ class GeneratorTest(unittest.TestCase):
     self.assertEqual(0, desc.oneofs[0].index)
     self.assertIs(desc, desc.oneofs[0].containing_type)
     self.assertIs(desc.oneofs[0], desc.oneofs_by_name['oneof_field'])
-    nested_names = set(['oneof_uint32', 'oneof_nested_message',
-                        'oneof_string', 'oneof_bytes'])
+    nested_names = set([
+        'oneof_uint32',
+        'oneof_nested_message',
+        'oneof_string',
+        'oneof_bytes',
+        'oneof_cord',
+        'oneof_string_piece',
+        'oneof_lazy_nested_message',
+    ])
     self.assertEqual(
         nested_names,
         set([field.name for field in desc.oneofs[0].fields]))
@@ -318,31 +372,31 @@ class SymbolDatabaseRegistrationTest(unittest.TestCase):
   def testGetSymbol(self):
     self.assertEqual(
         unittest_pb2.TestAllTypes, symbol_database.Default().GetSymbol(
-            'protobuf_unittest.TestAllTypes'))
+            'proto2_unittest.TestAllTypes'))
     self.assertEqual(
         unittest_pb2.TestAllTypes.NestedMessage,
         symbol_database.Default().GetSymbol(
-            'protobuf_unittest.TestAllTypes.NestedMessage'))
+            'proto2_unittest.TestAllTypes.NestedMessage'))
     with self.assertRaises(KeyError):
-      symbol_database.Default().GetSymbol('protobuf_unittest.NestedMessage')
+      symbol_database.Default().GetSymbol('proto2_unittest.NestedMessage')
     self.assertEqual(
         unittest_pb2.TestAllTypes.OptionalGroup,
         symbol_database.Default().GetSymbol(
-            'protobuf_unittest.TestAllTypes.OptionalGroup'))
+            'proto2_unittest.TestAllTypes.OptionalGroup'))
     self.assertEqual(
         unittest_pb2.TestAllTypes.RepeatedGroup,
         symbol_database.Default().GetSymbol(
-            'protobuf_unittest.TestAllTypes.RepeatedGroup'))
+            'proto2_unittest.TestAllTypes.RepeatedGroup'))
 
   def testEnums(self):
     self.assertEqual(
-        'protobuf_unittest.ForeignEnum',
+        'proto2_unittest.ForeignEnum',
         symbol_database.Default().pool.FindEnumTypeByName(
-            'protobuf_unittest.ForeignEnum').full_name)
+            'proto2_unittest.ForeignEnum').full_name)
     self.assertEqual(
-        'protobuf_unittest.TestAllTypes.NestedEnum',
+        'proto2_unittest.TestAllTypes.NestedEnum',
         symbol_database.Default().pool.FindEnumTypeByName(
-            'protobuf_unittest.TestAllTypes.NestedEnum').full_name)
+            'proto2_unittest.TestAllTypes.NestedEnum').full_name)
 
   def testFindFileByName(self):
     self.assertEqual(

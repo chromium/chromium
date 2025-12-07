@@ -26,10 +26,6 @@
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 
-namespace base {
-class Value;
-}
-
 namespace sync_pb {
 class EntitySpecifics;
 class PreferenceSpecifics;
@@ -92,10 +88,13 @@ class PrefModelAssociator final : public syncer::SyncableService,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
   void OnBrowserShutdown(syncer::DataType type) override;
+  void StayStoppedAndMaybeClearData(syncer::DataType type) override;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
 
   // PrefStore::Observer implementation.
   void OnPrefValueChanged(std::string_view name) override;

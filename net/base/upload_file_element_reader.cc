@@ -30,7 +30,7 @@ UploadFileElementReader::UploadFileElementReader(
     const base::FilePath& path,
     uint64_t range_offset,
     uint64_t range_length,
-    const base::Time& expected_modification_time)
+    base::Time expected_modification_time)
     : task_runner_(task_runner),
       path_(path),
       range_offset_(range_offset),
@@ -46,7 +46,7 @@ UploadFileElementReader::UploadFileElementReader(
     const base::FilePath& path,
     uint64_t range_offset,
     uint64_t range_length,
-    const base::Time& expected_modification_time)
+    base::Time expected_modification_time)
     : task_runner_(task_runner),
       path_(path),
       range_offset_(range_offset),
@@ -56,10 +56,6 @@ UploadFileElementReader::UploadFileElementReader(
 }
 
 UploadFileElementReader::~UploadFileElementReader() = default;
-
-const UploadFileElementReader* UploadFileElementReader::AsFileReader() const {
-  return this;
-}
 
 int UploadFileElementReader::Init(CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
@@ -153,8 +149,7 @@ int UploadFileElementReader::DoLoop(int result) {
     next_state_ = State::IDLE;
     switch (state) {
       case State::IDLE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case State::OPEN:
         // Ignore previous result here. It's typically OK, but if Init()
         // interrupted the previous operation, it may be an error.

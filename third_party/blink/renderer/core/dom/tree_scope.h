@@ -27,12 +27,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_map.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
-#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -41,21 +38,22 @@
 namespace blink {
 
 class Animation;
-class ContainerNode;
 class CSSStyleSheet;
+class ContainerNode;
+class CustomElementRegistry;
 class DOMSelection;
 class Document;
 class Element;
 class HTMLMapElement;
+class HitTestRequest;
 class HitTestResult;
 class IdTargetObserverRegistry;
 class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
+class ScriptState;
 class StyleSheetList;
-class CreateElementFlags;
-class QualifiedName;
-class V8UnionElementCreationOptionsOrString;
+class V8ObservableArrayCSSStyleSheet;
 
 // The root node of a document tree (in which case this is a Document) or of a
 // shadow tree (in which case this is a ShadowRoot). Various things, like
@@ -75,7 +73,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Element* activeElement() const;
   StyleSheetList* styleSheets() { return &StyleSheets(); }
   V8ObservableArrayCSSStyleSheet* adoptedStyleSheets() {
-    return AdoptedStyleSheets();
+    return &EnsureAdoptedStyleSheets();
   }
   DOMSelection* getSelection() { return GetSelection(); }
   HeapVector<Member<Animation>> getAnimations();
@@ -93,7 +91,11 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   bool IsInclusiveAncestorTreeScopeOf(const TreeScope&) const;
 
-  Element* AdjustedFocusedElement() const;
+  // is_pseudo_allowed:
+  // - if true, PseudoElement can be returned
+  // - if false, PseudoElement will be retargeted to some Element according to
+  // the rules.
+  Element* AdjustedFocusedElement(bool is_pseudo_allowed = true) const;
   // Finds a retargeted element to the given argument, when the retargeted
   // element is in this TreeScope. Returns null otherwise.
   // TODO(kochi): once this algorithm is named in the spec, rename the method
@@ -143,9 +145,11 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   ContainerNode& RootNode() const { return *root_node_; }
 
-  IdTargetObserverRegistry& GetIdTargetObserverRegistry() const {
-    return *id_target_observer_registry_.Get();
+  IdTargetObserverRegistry* GetIdTargetObserverRegistry() const {
+    return id_target_observer_registry_ ? id_target_observer_registry_.Get()
+                                        : nullptr;
   }
+  IdTargetObserverRegistry& EnsureIdTargetObserverRegistry();
 
   RadioButtonGroupScope& GetRadioButtonGroupScope() {
     return radio_button_group_scope_;
@@ -174,56 +178,43 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   V8ObservableArrayCSSStyleSheet* AdoptedStyleSheets() const {
     return adopted_style_sheets_.Get();
   }
+  V8ObservableArrayCSSStyleSheet& EnsureAdoptedStyleSheets();
   bool HasAdoptedStyleSheets() const;
-  void SetAdoptedStyleSheetsForTesting(HeapVector<Member<CSSStyleSheet>>&);
+  void AppendAdoptedStyleSheets(HeapVector<Member<CSSStyleSheet>>&&);
+  void SetAdoptedStyleSheetsForTesting(HeapVector<Member<CSSStyleSheet>>);
   void ClearAdoptedStyleSheets();
 
-  Element* CreateElementForBinding(const AtomicString& local_name,
-                                   ExceptionState& = ASSERT_NO_EXCEPTION);
-  Element* CreateElementForBinding(
-      const AtomicString& local_name,
-      const V8UnionElementCreationOptionsOrString* string_or_options,
-      ExceptionState& exception_state);
-  Element* createElementNS(const AtomicString& namespace_uri,
-                           const AtomicString& qualified_name,
-                           ExceptionState&);
-  Element* createElementNS(
-      const AtomicString& namespace_uri,
-      const AtomicString& qualified_name,
-      const V8UnionElementCreationOptionsOrString* string_or_options,
-      ExceptionState& exception_state);
 
-  // "create an element" defined in DOM standard. This supports both of
-  // autonomous custom elements and customized built-in elements.
-  Element* CreateElement(const QualifiedName&,
-                         const CreateElementFlags,
-                         const AtomicString& is);
+  CustomElementRegistry* customElementRegistry() const;
+  // Return true when custom element registry was set successfully, return false
+  // otherwise.
+  bool SetCustomElementRegistry(CustomElementRegistry*);
+
+  bool IsWaitingForScopedRegistry() const;
+
+  // Given a `node` targeteted by an event, returns the element that this event
+  // should be dispatched to.
+  Element* ElementForHitTest(Node*, HitTestPointType) const;
 
  protected:
-  explicit TreeScope(ContainerNode&,
-                     Document&,
-                     V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback,
-                     V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback);
-  explicit TreeScope(Document&,
-                     V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback,
-                     V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback);
+  TreeScope(ContainerNode&, Document&);
+  explicit TreeScope(Document&);
   virtual ~TreeScope();
 
   void SetDocument(Document& document) { document_ = &document; }
   void SetParentTreeScope(TreeScope&);
 
-  virtual void OnAdoptedStyleSheetSet(ScriptState*,
-                                      V8ObservableArrayCSSStyleSheet&,
-                                      uint32_t,
-                                      Member<CSSStyleSheet>&,
-                                      ExceptionState&);
-  virtual void OnAdoptedStyleSheetDelete(ScriptState*,
-                                         V8ObservableArrayCSSStyleSheet&,
-                                         uint32_t,
-                                         ExceptionState&);
-
  private:
-  Element* HitTestPointInternal(Node*, HitTestPointType) const;
+  static void OnAdoptedStyleSheetSet(GarbageCollectedMixin*,
+                                     ScriptState*,
+                                     V8ObservableArrayCSSStyleSheet&,
+                                     uint32_t,
+                                     Member<CSSStyleSheet>&);
+  static void OnAdoptedStyleSheetDelete(GarbageCollectedMixin*,
+                                        ScriptState*,
+                                        V8ObservableArrayCSSStyleSheet&,
+                                        uint32_t);
+
   Element* FindAnchorWithName(const String& name);
 
   void StyleSheetWasAdded(CSSStyleSheet* sheet);
@@ -249,6 +240,14 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Member<StyleSheetList> style_sheet_list_;
 
   Member<V8ObservableArrayCSSStyleSheet> adopted_style_sheets_;
+
+  Member<CustomElementRegistry> custom_element_registry_;
+  // By default, TreeScope attempts to retrieve the global custom element
+  // registry before it has been explicitly set. In cases where TreeScope is
+  // waiting for registry initialization, we use this flag to indicate that the
+  // registry is currently NULL. This ensures that nullptr is returned instead
+  // of falling back to the default global registry behavior.
+  bool waiting_for_registry_ = false;
 };
 
 inline bool TreeScope::HasElementWithId(const AtomicString& id) const {
@@ -263,12 +262,7 @@ inline bool TreeScope::ContainsMultipleElementsWithId(
 
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(TreeScope)
 
-HitTestResult HitTestInDocument(
-    Document*,
-    double x,
-    double y,
-    const HitTestRequest& = HitTestRequest::kReadOnly |
-                            HitTestRequest::kActive);
+HitTestResult HitTestInDocument(Document*, double x, double y);
 
 }  // namespace blink
 

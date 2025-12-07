@@ -18,7 +18,6 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,29 +83,13 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
            feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
            feedwire::Capability::CONTENT_LIFETIME,
            feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING,
-           feedwire::Capability::SPORTS_IN_GAME_UPDATE}));
+           feedwire::Capability::SPORTS_IN_GAME_UPDATE,
+           feedwire::Capability::DYNAMIC_COLORS}));
 }
 
-TEST(ProtoUtilTest, HeartsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kInterestFeedV2Hearts}, {});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::HEART));
-}
-
-// kFeedBottomSyncStringRemoval is mobile-only.
+// SYNC_STRING_REMOVAL is mobile-only.
 #if BUILDFLAG(IS_ANDROID)
 TEST(ProtoUtilTest, SyncRestringEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kFeedBottomSyncStringRemoval}, {});
   feedwire::FeedRequest request =
       CreateFeedQueryRefreshRequest(
           StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
@@ -223,21 +206,6 @@ TEST(ProtoUtilTest, StampEnabled) {
               Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
 }
 
-TEST(ProtoUtilTest, DynamicColorEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kFeedDynamicColors}, {});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::DYNAMIC_COLORS));
-}
-
 // ReadLater is enabled by default everywhere with the exception of iOS which
 // has a build-flag to enable it.
 #if !BUILDFLAG(IS_IOS)
@@ -260,6 +228,9 @@ TEST(ProtoUtilTest, ReadLaterEnabled) {
 #endif
 
 TEST(ProtoUtilTest, CormorantEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   RequestMetadata request_metadata;
   request_metadata.country = "US";
 
@@ -279,22 +250,6 @@ TEST(ProtoUtilTest, CormorantEnabled) {
             feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_MENU);
 }
 
-TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, {kInfoCardAcknowledgementTracking});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(
-      request.client_capability(),
-      Not(Contains(feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING)));
-}
-
 TEST(ProtoUtilTest, FeedSignedOutViewDemotionEnablesCapability) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedSignedOutViewDemotion}, {});
@@ -308,6 +263,21 @@ TEST(ProtoUtilTest, FeedSignedOutViewDemotionEnablesCapability) {
 
   ASSERT_THAT(request.client_capability(),
               Contains(feedwire::Capability::ON_DEVICE_VIEW_HISTORY));
+}
+
+TEST(ProtoUtilTest, FeedStreamingEnablesCapability) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedStreaming}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(
+          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+          /*request_metadata=*/{},
+          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
+          /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::STREAMING_FULL));
 }
 
 TEST(ProtoUtilTest, TabGroupsEnabledForReplaced) {

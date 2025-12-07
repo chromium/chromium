@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +15,7 @@ String DecodeByteByByte(TextResourceDecoder& decoder,
                         base::span<const uint8_t> data) {
   String decoded;
   for (const uint8_t c : data)
-    decoded = decoded + decoder.Decode(reinterpret_cast<const char*>(&c), 1);
+    decoded = decoded + decoder.Decode(base::span_from_ref(c));
   return decoded + decoder.Flush();
 }
 
@@ -32,10 +27,9 @@ TEST(TextResourceDecoderTest, UTF8Decode) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateUTF8Decode());
   const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
-  WTF::String decoded = decoder->Decode(
-      reinterpret_cast<const char*>(kFooUTF8WithBOM), sizeof(kFooUTF8WithBOM));
+  String decoded = decoder->Decode(base::span(kFooUTF8WithBOM));
   decoded = decoded + decoder->Flush();
-  EXPECT_EQ(WTF::UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ("foo", decoded);
 }
 
@@ -45,10 +39,9 @@ TEST(TextResourceDecoderTest, UTF8DecodeWithoutBOM) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM());
   const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
-  WTF::String decoded = decoder->Decode(
-      reinterpret_cast<const char*>(kFooUTF8WithBOM), sizeof(kFooUTF8WithBOM));
+  String decoded = decoder->Decode(base::span(kFooUTF8WithBOM));
   decoded = decoded + decoder->Flush();
-  EXPECT_EQ(WTF::UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ(
       "\xef\xbb\xbf"
       "foo",
@@ -60,12 +53,11 @@ TEST(TextResourceDecoderTest, BasicUTF16) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent));
-  WTF::String decoded;
+  String decoded;
 
   const unsigned char kFooLE[] = {0xff, 0xfe, 0x66, 0x00,
                                   0x6f, 0x00, 0x6f, 0x00};
-  decoded =
-      decoder->Decode(reinterpret_cast<const char*>(kFooLE), sizeof(kFooLE));
+  decoded = decoder->Decode(base::span(kFooLE));
   decoded = decoded + decoder->Flush();
   EXPECT_EQ("foo", decoded);
 
@@ -73,8 +65,7 @@ TEST(TextResourceDecoderTest, BasicUTF16) {
       TextResourceDecoderOptions::kPlainTextContent));
   const unsigned char kFooBE[] = {0xfe, 0xff, 0x00, 0x66,
                                   0x00, 0x6f, 0x00, 0x6f};
-  decoded =
-      decoder->Decode(reinterpret_cast<const char*>(kFooBE), sizeof(kFooBE));
+  decoded = decoder->Decode(base::span(kFooBE));
   decoded = decoded + decoder->Flush();
   EXPECT_EQ("foo", decoded);
 }
@@ -87,9 +78,7 @@ TEST(TextResourceDecoderTest, BrokenBOMs) {
             TextResourceDecoderOptions::kPlainTextContent));
 
     const uint8_t kBrokenUTF8BOM[] = {0xef, 0xbb};
-    EXPECT_EQ(g_empty_string,
-              decoder->Decode(reinterpret_cast<const char*>(kBrokenUTF8BOM),
-                              sizeof(kBrokenUTF8BOM)));
+    EXPECT_EQ(g_empty_string, decoder->Decode(base::span(kBrokenUTF8BOM)));
     EXPECT_EQ("\xef\xbb", decoder->Flush());
     EXPECT_EQ(Latin1Encoding(), decoder->Encoding());
   }
@@ -99,8 +88,7 @@ TEST(TextResourceDecoderTest, BrokenBOMs) {
             TextResourceDecoderOptions::kPlainTextContent));
 
     const uint8_t c = 0xff;  // Half UTF-16LE BOM.
-    EXPECT_EQ(g_empty_string,
-              decoder->Decode(reinterpret_cast<const char*>(&c), 1));
+    EXPECT_EQ(g_empty_string, decoder->Decode(base::span_from_ref(c)));
     EXPECT_EQ("\xff", decoder->Flush());
     EXPECT_EQ(Latin1Encoding(), decoder->Encoding());
   }
@@ -110,8 +98,7 @@ TEST(TextResourceDecoderTest, BrokenBOMs) {
             TextResourceDecoderOptions::kPlainTextContent));
 
     const uint8_t c = 0xfe;  // Half UTF-16BE BOM.
-    EXPECT_EQ(g_empty_string,
-              decoder->Decode(reinterpret_cast<const char*>(&c), 1));
+    EXPECT_EQ(g_empty_string, decoder->Decode(base::span_from_ref(c)));
     EXPECT_EQ("\xfe", decoder->Flush());
     EXPECT_EQ(Latin1Encoding(), decoder->Encoding());
   }
@@ -124,8 +111,8 @@ TEST(TextResourceDecoderTest, UTF8DecodePieces) {
           TextResourceDecoderOptions::CreateUTF8Decode());
 
   const uint8_t kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
-  String decoded = DecodeByteByByte(*decoder, base::make_span(kFooUTF8WithBOM));
-  EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
+  String decoded = DecodeByteByByte(*decoder, base::span(kFooUTF8WithBOM));
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ("foo", decoded);
 }
 
@@ -137,15 +124,15 @@ TEST(TextResourceDecoderTest, UTF16Pieces) {
 
   {
     const uint8_t kFooLE[] = {0xff, 0xfe, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00};
-    String decoded = DecodeByteByByte(*decoder, base::make_span(kFooLE));
-    EXPECT_EQ(UTF16LittleEndianEncoding(), decoder->Encoding());
+    String decoded = DecodeByteByByte(*decoder, base::span(kFooLE));
+    EXPECT_EQ(Utf16LittleEndianEncoding(), decoder->Encoding());
     EXPECT_EQ("foo", decoded);
   }
 
   {
     const uint8_t kFooBE[] = {0xfe, 0xff, 0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f};
-    String decoded = DecodeByteByByte(*decoder, base::make_span(kFooBE));
-    EXPECT_EQ(UTF16BigEndianEncoding(), decoder->Encoding());
+    String decoded = DecodeByteByByte(*decoder, base::span(kFooBE));
+    EXPECT_EQ(Utf16BigEndianEncoding(), decoder->Encoding());
     EXPECT_EQ("foo", decoded);
   }
 }
@@ -156,10 +143,9 @@ TEST(TextResourceDecoderTest, XMLDeclPieces) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions(TextResourceDecoderOptions::kHTMLContent));
 
-  const uint8_t kXMLDeclUtf8[] = "<?xml encoding='utf-8'?>foo";
   String decoded = DecodeByteByByte(
-      *decoder, base::make_span(kXMLDeclUtf8, sizeof(kXMLDeclUtf8) - 1));
-  EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
+      *decoder, base::byte_span_from_cstring("<?xml encoding='utf-8'?>foo"));
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ("<?xml encoding='utf-8'?>foo", decoded);
 }
 
@@ -169,10 +155,9 @@ TEST(TextResourceDecoderTest, CSSCharsetPieces) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions(TextResourceDecoderOptions::kCSSContent));
 
-  const uint8_t kCSSCharsetUtf8[] = "@charset \"utf-8\";\n:root{}";
   String decoded = DecodeByteByByte(
-      *decoder, base::make_span(kCSSCharsetUtf8, sizeof(kCSSCharsetUtf8) - 1));
-  EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
+      *decoder, base::byte_span_from_cstring("@charset \"utf-8\";\n:root{}"));
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ("@charset \"utf-8\";\n:root{}", decoded);
 }
 
@@ -181,8 +166,8 @@ TEST(TextResourceDecoderTest, ContentSniffingStopsAfterSuccess) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateWithAutoDetection(
-              TextResourceDecoderOptions::kPlainTextContent,
-              WTF::UTF8Encoding(), WTF::UTF8Encoding(), KURL("")));
+              TextResourceDecoderOptions::kPlainTextContent, Utf8Encoding(),
+              Utf8Encoding(), KURL("")));
 
   std::string utf8_bytes =
       "tnegirjji gosa gii beare s\xC3\xA1htt\xC3\xA1 \xC4\x8D\xC3"
@@ -194,10 +179,25 @@ TEST(TextResourceDecoderTest, ContentSniffingStopsAfterSuccess) {
       "\xBB\xF1\xBE\xF0\xCA\xF3\xA4\xCE\xA5\xD5\xA5\xA3\xA5\xB9\xA5\xB3</"
       "TITLE>";
 
-  decoder->Decode(utf8_bytes.c_str(), utf8_bytes.length());
-  EXPECT_EQ(WTF::UTF8Encoding(), decoder->Encoding());
-  decoder->Decode(eucjp_bytes.c_str(), eucjp_bytes.length());
-  EXPECT_EQ(WTF::UTF8Encoding(), decoder->Encoding());
+  decoder->Decode(utf8_bytes);
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
+  decoder->Decode(eucjp_bytes);
+  EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
+}
+
+TEST(TextResourceDecoderTest, DoNotAutoDetectISO2022JP) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateWithAutoDetection(
+              TextResourceDecoderOptions::kHTMLContent, Utf8Encoding(),
+              UnknownEncoding(), NullURL()));
+  // ISO-2022-JP escape sequences.
+  const unsigned char kISO2022JP[] = {0x1b, 0x24, 0x42, 0x30, 0x42,
+                                      0x30, 0x44, 0x1b, 0x28, 0x42};
+  String auto_detected_charset;
+  decoder->Decode(base::span(kISO2022JP), &auto_detected_charset);
+  EXPECT_TRUE(auto_detected_charset.empty());
 }
 
 }  // namespace blink

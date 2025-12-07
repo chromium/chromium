@@ -49,6 +49,13 @@ class IOSSecurityInterstitialPage {
   // Displays the infobar promo attached to the interstitial page.
   virtual void ShowInfobar();
 
+  // Used to account for any user interaction that navigates away from the
+  // blocking page that isn't considered from blocking page commands such as
+  // tapping a button to return to the previous page. Some interactions
+  // considered in this method would be using the back button or closing the
+  // tab.
+  virtual void WasDismissed();
+
  protected:
   // Returns true if the interstitial should create a new navigation item.
   virtual bool ShouldCreateNewNavigation() const = 0;
@@ -72,7 +79,8 @@ class IOSSecurityInterstitialPage {
 
   // Used to interact with the embedder. Unowned pointer; must outlive `this`
   // instance.
-  const raw_ptr<IOSBlockingPageControllerClient> client_ = nullptr;
+  const raw_ptr<IOSBlockingPageControllerClient, DanglingUntriaged> client_ =
+      nullptr;
 };
 
 }  // namespace security_interstitials

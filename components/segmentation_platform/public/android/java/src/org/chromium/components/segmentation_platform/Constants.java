@@ -4,11 +4,17 @@
 
 package org.chromium.components.segmentation_platform;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Stores constants related to segmentation models. */
+@NullMarked
 public final class Constants {
     // Custom inputs for contextual page action's model. Model defined in
     // contextual_page_actions_model.cc.
     public static final String CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT = "can_track_price";
     public static final String CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT = "has_reader_mode";
     public static final String CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT = "has_price_insights";
+    public static final String CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT = "has_discounts";
+    public static final String CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT =
+            "has_tab_grouping_suggestion";
 }

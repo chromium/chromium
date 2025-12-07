@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<body>
+<div>BBBBBBBBB</div>
+<div id="shadow-root"></div>
+<script>
+  const shadowRoot = document.getElementById("shadow-root");
+  const shadowContent = shadowRoot.attachShadow({ mode: "open" });
+  const shadowDiv = document.createElement("div");
+  shadowDiv.style.width = '100px';
+  shadowDiv.style.wordWrap = 'break-word';
+  shadowDiv.innerHTML = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  shadowContent.appendChild(shadowDiv);
+</script>
+</body>
+</html>

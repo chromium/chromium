@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_GROWTH_UI_ACTION_PERFORMER_H_
 #define CHROME_BROWSER_ASH_GROWTH_UI_ACTION_PERFORMER_H_
 
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/growth/metrics.h"

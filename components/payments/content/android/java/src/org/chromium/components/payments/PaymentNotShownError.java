@@ -4,9 +4,11 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.payments.mojom.PaymentErrorReason;
 
 /** The error of payment UIs not being shown. */
+@NullMarked
 public class PaymentNotShownError {
     private final String mErrorMessage;
     private final int mReason;

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
@@ -30,6 +29,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnC
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.CredentialBase;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -65,9 +66,9 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Contains the logic for the TouchToFill component. It sets the state of the model and reacts to
@@ -84,9 +85,7 @@ class TouchToFillMediator {
     private PropertyModel mModel;
     private LargeIconBridge mLargeIconBridge;
     private @Px int mDesiredIconSize;
-    private List<WebauthnCredential> mWebAuthnCredentials;
-    private List<Credential> mCredentials;
-    private boolean mManagePasskeysHidesPasswords;
+    private List<CredentialBase> mCredentials;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private ImageFetcher mImageFetcher;
 
@@ -111,22 +110,18 @@ class TouchToFillMediator {
     void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            List<WebauthnCredential> webAuthnCredentials,
-            List<Credential> credentials,
+            List<CredentialBase> credentials,
             boolean showMorePasskeys,
             boolean triggerSubmission,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption) {
         assert credentials != null;
-
-        mManagePasskeysHidesPasswords = managePasskeysHidesPasswords;
 
         ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
         final PropertyModel headerModel =
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(TITLE, getTitle(webAuthnCredentials, credentials))
+                        .with(TITLE, getTitle(credentials))
                         .with(
                                 SUBTITLE,
                                 getSubtitle(url, isOriginSecure, triggerSubmission, credentials))
@@ -139,11 +134,13 @@ class TouchToFillMediator {
                         .build();
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER, headerModel));
 
-        Set<GURL> avatarUrls =
-                getSharedPasswordsThatRequireNotification(credentials).stream()
-                        .map(Credential::getSenderProfileImageUrl)
-                        .collect(Collectors.toSet());
-        if (!avatarUrls.isEmpty()) {
+        List<Credential> passwordsThatRequireNotification =
+                getSharedPasswordsThatRequireNotification(credentials);
+        if (!passwordsThatRequireNotification.isEmpty()) {
+            Set<GURL> avatarUrls = new HashSet<>();
+            for (Credential credential : passwordsThatRequireNotification) {
+                avatarUrls.add(credential.getSenderProfileImageUrl());
+            }
             // Set a placeholder until the avatar images are loaded.
             headerModel.set(
                     AVATAR,
@@ -157,43 +154,46 @@ class TouchToFillMediator {
                             });
         }
 
-        int fillableItemsTotal = credentials.size() + webAuthnCredentials.size();
+        int fillableItemsTotal = credentials.size();
         int fillableItemPosition = 0;
 
-        mWebAuthnCredentials = webAuthnCredentials;
-        for (WebauthnCredential credential : webAuthnCredentials) {
-            final PropertyModel model =
-                    createWebAuthnModel(
-                            credential,
-                            new FillableItemCollectionInfo(
-                                    ++fillableItemPosition, fillableItemsTotal));
-            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL, model));
-            if (shouldCreateConfirmationButton(
-                    credentials, webAuthnCredentials, showMorePasskeys)) {
-                sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
-            }
-            requestWebAuthnIconOrFallbackImage(model, url);
-        }
-
         mCredentials = credentials;
-        for (Credential credential : credentials) {
-            final PropertyModel model =
-                    createModel(
-                            credential,
-                            triggerSubmission,
-                            new FillableItemCollectionInfo(
-                                    ++fillableItemPosition, fillableItemsTotal));
-            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
-            if (shouldCreateConfirmationButton(
-                    credentials, webAuthnCredentials, showMorePasskeys)) {
-                sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
+        for (CredentialBase credential : credentials) {
+            if (credential instanceof WebauthnCredential) {
+                final PropertyModel model =
+                        createWebAuthnModel(
+                                (WebauthnCredential) credential,
+                                new FillableItemCollectionInfo(
+                                        ++fillableItemPosition, fillableItemsTotal));
+                sheetItems.add(
+                        new ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL, model));
+                if (shouldCreateConfirmationButton(credentials, showMorePasskeys)) {
+                    sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
+                }
+                requestWebAuthnIconOrFallbackImage(model, url);
+            } else {
+                assert credential instanceof Credential;
+                Credential passwordCredential = (Credential) credential;
+                final PropertyModel model =
+                        createModel(
+                                passwordCredential,
+                                triggerSubmission,
+                                new FillableItemCollectionInfo(
+                                        ++fillableItemPosition, fillableItemsTotal));
+                sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
+                if (shouldCreateConfirmationButton(credentials, showMorePasskeys)) {
+                    sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
+                }
+                if (!passwordCredential.isBackupCredential()) {
+                    // Backup credentials display the history icon instead.
+                    requestIconOrFallbackImage(model, url);
+                }
             }
-            requestIconOrFallbackImage(model, url);
         }
 
         if (showMorePasskeys) {
             String morePasskeyTitle =
-                    webAuthnCredentials.size() == 0
+                    webAuthnCredentialCount(credentials) == 0
                             ? mContext.getString(R.string.touch_to_fill_select_passkey)
                             : mContext.getString(R.string.touch_to_fill_more_passkeys);
             sheetItems.add(
@@ -212,9 +212,7 @@ class TouchToFillMediator {
                         TouchToFillProperties.ItemType.FOOTER,
                         new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                                 .with(ON_CLICK_MANAGE, this::onManagePasswordSelected)
-                                .with(
-                                        MANAGE_BUTTON_TEXT,
-                                        getManageButtonText(credentials, webAuthnCredentials))
+                                .with(MANAGE_BUTTON_TEXT, getManageButtonText(credentials))
                                 .with(ON_CLICK_HYBRID, this::onHybridSignInSelected)
                                 .with(SHOW_HYBRID, showHybridPasskeyOption)
                                 .build()));
@@ -223,8 +221,7 @@ class TouchToFillMediator {
         mModel.set(VISIBLE, true);
     }
 
-    private String getTitle(
-            List<WebauthnCredential> webAuthnCredentials, List<Credential> credentials) {
+    private String getTitle(List<CredentialBase> credentials) {
         int sharedPasswordsRequireNotificationCount =
                 getSharedPasswordsThatRequireNotification(credentials).size();
         if (sharedPasswordsRequireNotificationCount > 0) {
@@ -233,8 +230,8 @@ class TouchToFillMediator {
                             R.plurals.touch_to_fill_sheet_shared_passwords_title,
                             sharedPasswordsRequireNotificationCount);
         }
-        if (webAuthnCredentials.size() > 0) {
-            return (credentials.size() > 0)
+        if (webAuthnCredentialCount(credentials) > 0) {
+            return (passwordCredentialCount(credentials) > 0)
                     ? mContext.getString(R.string.touch_to_fill_sheet_title_password_or_passkey)
                     : mContext.getString(R.string.touch_to_fill_sheet_title_passkey);
         }
@@ -246,7 +243,7 @@ class TouchToFillMediator {
             GURL url,
             boolean isOriginSecure,
             boolean triggerSubmission,
-            List<Credential> credentials) {
+            List<CredentialBase> credentials) {
         String formattedUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         List<Credential> sharedCredentials = getSharedPasswordsThatRequireNotification(credentials);
@@ -276,13 +273,32 @@ class TouchToFillMediator {
         }
     }
 
-    private String getManageButtonText(
-            List<Credential> credentials, List<WebauthnCredential> webAuthnCredentials) {
-        if (webAuthnCredentials.size() == 0) {
+    private int webAuthnCredentialCount(List<CredentialBase> credentials) {
+        int count = 0;
+        for (CredentialBase credential : credentials) {
+            if (credential instanceof WebauthnCredential) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int passwordCredentialCount(List<CredentialBase> credentials) {
+        int count = 0;
+        for (CredentialBase credential : credentials) {
+            if (credential instanceof Credential) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private String getManageButtonText(List<CredentialBase> credentials) {
+        if (webAuthnCredentialCount(credentials) == 0) {
             return mContext.getString(R.string.manage_passwords);
         }
 
-        if (credentials.size() > 0 && !mManagePasskeysHidesPasswords) {
+        if (passwordCredentialCount(credentials) > 0) {
             return mContext.getString(R.string.manage_passwords_and_passkeys);
         }
 
@@ -351,8 +367,8 @@ class TouchToFillMediator {
         return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
-    private void reportCredentialSelection(int userAction, int index) {
-        if (mCredentials.size() + mWebAuthnCredentials.size() > 1) {
+    private void reportCredentialSelection(int index) {
+        if (mCredentials.size() > 1) {
             // We only record this histogram in case multiple credentials were shown to the user.
             // Otherwise the single credential case where position should always be 0 will dominate
             // the recording.
@@ -362,16 +378,13 @@ class TouchToFillMediator {
 
     private void onSelectedCredential(Credential credential) {
         mModel.set(VISIBLE, false);
-        reportCredentialSelection(UserAction.SELECTED_CREDENTIAL, mCredentials.indexOf(credential));
+        reportCredentialSelection(mCredentials.indexOf(credential));
         mDelegate.onCredentialSelected(credential);
     }
 
     private void onSelectedWebAuthnCredential(WebauthnCredential credential) {
         mModel.set(VISIBLE, false);
-        // The index assumes WebAuthn credentials are listed after password credentials.
-        reportCredentialSelection(
-                UserAction.SELECTED_PASSKEY_CREDENTIAL,
-                mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
+        reportCredentialSelection(mCredentials.indexOf(credential));
         mDelegate.onWebAuthnCredentialSelected(credential);
     }
 
@@ -387,13 +400,13 @@ class TouchToFillMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 UMA_TOUCH_TO_FILL_DISMISSAL_REASON,
                 reason,
-                BottomSheetController.StateChangeReason.MAX_VALUE + 1);
+                BottomSheetController.StateChangeReason.MAX_VALUE);
         mDelegate.onDismissed();
     }
 
     private void onManagePasswordSelected() {
         mModel.set(VISIBLE, false);
-        boolean passkeysShown = (mWebAuthnCredentials.size() > 0);
+        boolean passkeysShown = (webAuthnCredentialCount(mCredentials) > 0);
         mDelegate.onManagePasswordsSelected(passkeysShown);
     }
 
@@ -407,11 +420,9 @@ class TouchToFillMediator {
      * @return True if a confirmation button should be shown at the end of the bottom sheet.
      */
     private boolean shouldCreateConfirmationButton(
-            List<Credential> credentials,
-            List<WebauthnCredential> webauthnCredentials,
-            boolean shouldShowMorePasskeys) {
+            List<CredentialBase> credentials, boolean shouldShowMorePasskeys) {
         if (shouldShowMorePasskeys) return false;
-        return credentials.size() + webauthnCredentials.size() == 1;
+        return credentials.size() == 1;
     }
 
     private PropertyModel createModel(
@@ -421,7 +432,6 @@ class TouchToFillMediator {
         return new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                 .with(CREDENTIAL, credential)
                 .with(ON_CLICK_LISTENER, this::onSelectedCredential)
-                .with(FORMATTED_ORIGIN, credential.getDisplayName())
                 .with(SHOW_SUBMIT_BUTTON, triggerSubmission)
                 .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
                 .build();
@@ -440,13 +450,17 @@ class TouchToFillMediator {
     // Returns a list of the credentials that have been received via the password sharing feature,
     // for which the user hasn't been notified yet.
     private static List<Credential> getSharedPasswordsThatRequireNotification(
-            List<Credential> credentials) {
+            List<CredentialBase> credentials) {
         // TODO(http://crbug.com/1504098) : Add render test for a bottom sheet with shared passwords
         // after the UI is complete.
-        List<Credential> sharedCredentials = new ArrayList<Credential>();
-        for (Credential credential : credentials) {
-            if (credential.isShared() && !credential.isSharingNotificationDisplayed()) {
-                sharedCredentials.add(credential);
+        List<Credential> sharedCredentials = new ArrayList<>();
+        for (CredentialBase credential : credentials) {
+            if (credential instanceof Credential) {
+                Credential passwordCredential = (Credential) credential;
+                if (passwordCredential.isShared()
+                        && !passwordCredential.isSharingNotificationDisplayed()) {
+                    sharedCredentials.add(passwordCredential);
+                }
             }
         }
         return sharedCredentials;
@@ -477,7 +491,7 @@ class TouchToFillMediator {
             }
         }
 
-        private void onImageFetched(Bitmap image) {
+        private void onImageFetched(@Nullable Bitmap image) {
             if (image != null) {
                 mAvatarImages.add(image);
             }

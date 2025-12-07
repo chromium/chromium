@@ -34,7 +34,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/filter/gzip_source_stream.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request_error_job.h"
 #include "url/gurl.h"
@@ -106,14 +106,15 @@ bool URLRequestTestJobBackedByFile::GetMimeType(std::string* mime_type) const {
 
 void URLRequestTestJobBackedByFile::SetExtraRequestHeaders(
     const HttpRequestHeaders& headers) {
-  std::string range_header;
-  if (headers.GetHeader(HttpRequestHeaders::kRange, &range_header)) {
+  std::optional<std::string_view> range_header =
+      headers.GetHeaderView(HttpRequestHeaders::kRange);
+  if (range_header) {
     // This job only cares about the Range header. This method stashes the value
     // for later use in DidOpen(), which is responsible for some of the range
     // validation as well. NotifyStartError is not legal to call here since
     // the job has not started.
     std::vector<HttpByteRange> ranges;
-    if (HttpUtil::ParseRangeHeader(range_header, &ranges)) {
+    if (HttpUtil::ParseRangeHeader(*range_header, &ranges)) {
       if (ranges.size() == 1) {
         byte_range_ = ranges[0];
       } else {
@@ -151,7 +152,7 @@ URLRequestTestJobBackedByFile::SetUpSourceStream() {
   if (!base::EqualsCaseInsensitiveASCII(file_path_.Extension(), ".svgz"))
     return source;
 
-  return GzipSourceStream::Create(std::move(source), SourceStream::TYPE_GZIP);
+  return GzipSourceStream::Create(std::move(source), SourceStreamType::kGzip);
 }
 
 std::unique_ptr<URLRequestTestJobBackedByFile::FileMetaInfo>

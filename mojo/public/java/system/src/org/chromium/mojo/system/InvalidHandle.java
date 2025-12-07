@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core.HandleSignalsState;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
@@ -12,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /** A handle that will always be invalid. */
+@NullMarked
 public class InvalidHandle
         implements UntypedHandle,
                 MessagePipeHandle,
@@ -53,7 +56,7 @@ public class InvalidHandle
      * @see Handle#getCore()
      */
     @Override
-    public Core getCore() {
+    public @Nullable Core getCore() {
         return null;
     }
 
@@ -198,7 +201,10 @@ public class InvalidHandle
      *      MessagePipeHandle.WriteFlags)
      */
     @Override
-    public void writeMessage(ByteBuffer bytes, List<? extends Handle> handles, WriteFlags flags) {
+    public void writeMessage(
+            @Nullable ByteBuffer bytes,
+            @Nullable List<? extends Handle> handles,
+            WriteFlags flags) {
         throw new MojoException(MojoResult.INVALID_ARGUMENT);
     }
 

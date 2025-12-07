@@ -9,22 +9,22 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
-#include "ash/wm/raster_scale/raster_scale_layer_observer.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/transient_window_client_observer.h"
+#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace aura {
-class ScopedWindowEventTargetingBlocker;
 class Window;
 }  // namespace aura
 
@@ -153,11 +153,13 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  void OnDragStarted();
+  void OnDragEnded();
+
   // If true, makes `CloseWidget()` execute synchronously when used in tests.
   static void SetImmediateCloseForTests(bool immediate);
 
  private:
-  friend class OverviewFocusCyclerOldTest;
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
   class LayerCachingAndFilteringObserver;
@@ -171,6 +173,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   void AddHiddenTransientWindows(
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
           transient_windows);
+
+  void RestoreWindowTree();
 
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.
@@ -198,18 +202,29 @@ class ASH_EXPORT ScopedOverviewTransformWindow
       cached_and_filtered_layer_observers_;
 
   // For the duration of this object |window_| and its transient childrens'
-  // event targeting policy will be sent to NONE. Store the originals so we can
-  // change it back when destroying |this|.
-  base::flat_map<aura::Window*,
-                 std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>>
-      event_targeting_blocker_map_;
+  // event targeting policy will be sent to NONE. In addition, bubble should not
+  // adjust their bounds using the display info as it should stay as is.  Store
+  // the original states so we can change them back when destroying |this|.
+  class TransientInfo {
+   public:
+    explicit TransientInfo(aura::Window* transient);
+    TransientInfo(const TransientInfo&) = delete;
+    TransientInfo& operator=(aura::Window* transient) = delete;
+    ~TransientInfo();
+
+   private:
+    bool adjust_if_offscreen = true;
+    aura::ScopedWindowEventTargetingBlocker event_targeting_blocker;
+  };
+  base::flat_map<aura::Window*, std::unique_ptr<TransientInfo>>
+      transient_windows_info_map_;
 
   // The original clipping on the layer of the window before entering overview
   // mode.
   gfx::Rect original_clip_rect_;
 
   // Removes clipping on `window_` during destruction in the case it was not
-  // removed in `RestoreWindw()`. See destructor for more information.
+  // removed in `RestoreWindow()`. See destructor for more information.
   bool reset_clip_on_shutdown_ = true;
 
   std::unique_ptr<ScopedOverviewHideWindows> hidden_transient_children_;
@@ -217,11 +232,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 
-  std::unique_ptr<ScopedWindowTreeSynchronizer> window_tree_synchronizer_;
+  std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_;
+  std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_during_drag_;
 
-  // While the transform window exists, apply dynamic raster scale to the
-  // underlying window.
-  std::optional<ScopedRasterScaleLayerObserverLock> raster_scale_observer_lock_;
+  std::optional<gfx::RRectF> synchronized_bounds_at_origin_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -66,7 +63,7 @@ size_t FillBusWithLinearRamp(AudioBus* target_bus, size_t starting_value) {
   for (unsigned c = 0; c < target_bus->NumberOfChannels(); ++c) {
     float* bus_channel = target_bus->Channel(c)->MutableData();
     for (size_t i = 0; i < target_bus->Channel(c)->length(); ++i) {
-      bus_channel[i] = static_cast<float>(starting_value + i);
+      UNSAFE_TODO(bus_channel[i]) = static_cast<float>(starting_value + i);
     }
   }
   return starting_value + target_bus->length();
@@ -79,9 +76,10 @@ bool VerifyBusValueAtIndex(AudioBus* target_bus,
                            float expected_value) {
   for (unsigned c = 0; c < target_bus->NumberOfChannels(); ++c) {
     float* bus_channel = target_bus->Channel(c)->MutableData();
-    if (bus_channel[index] != expected_value) {
+    if (UNSAFE_TODO(bus_channel[index]) != expected_value) {
       LOG(ERROR) << ">> [FAIL] expected " << expected_value << " at index "
-                 << index << " but got " << bus_channel[index] << ".";
+                 << index << " but got " << UNSAFE_TODO(bus_channel[index])
+                 << ".";
       return false;
     }
   }
@@ -153,7 +151,7 @@ TEST_P(PushPullFIFOFeatureTest, FeatureTests) {
   // Iterate all the scheduled push/pull actions.
   size_t frame_counter = 0;
   for (const auto& action : setup.fifo_actions) {
-    if (strcmp(action.action, "PUSH") == 0) {
+    if (UNSAFE_TODO(strcmp(action.action, "PUSH")) == 0) {
       scoped_refptr<AudioBus> input_bus =
           AudioBus::Create(setup.number_of_channels, action.number_of_frames);
       frame_counter = FillBusWithLinearRamp(input_bus.get(), frame_counter);
@@ -394,20 +392,20 @@ TEST_P(PushPullFIFOEarmarkFramesTest, FeatureTests) {
   // Iterate all the scheduled push/pull actions.
   size_t frame_counter = 0;
   for (const auto& action : setup.fifo_actions) {
-    if (strcmp(action.action, "PUSH") == 0) {
+    if (UNSAFE_TODO(strcmp(action.action, "PUSH")) == 0) {
       scoped_refptr<AudioBus> input_bus =
           AudioBus::Create(setup.number_of_channels, action.number_of_frames);
       frame_counter = FillBusWithLinearRamp(input_bus.get(), frame_counter);
       fifo->Push(input_bus.get());
       LOG(INFO) << "PUSH " << action.number_of_frames
                 << " frames (frameCounter=" << frame_counter << ")";
-    } else if (strcmp(action.action, "PULL_EARMARK") == 0) {
+    } else if (UNSAFE_TODO(strcmp(action.action, "PULL_EARMARK")) == 0) {
       output_bus =
           AudioBus::Create(setup.number_of_channels, action.number_of_frames);
       fifo->PullAndUpdateEarmark(output_bus.get(), action.number_of_frames);
       LOG(INFO) << "PULL_EARMARK " << action.number_of_frames << " frames";
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

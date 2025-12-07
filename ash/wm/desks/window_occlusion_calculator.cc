@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/aura/window_occlusion_change_builder.h"
 #include "ui/aura/window_tracker.h"
 
@@ -139,6 +140,7 @@ aura::Window::OcclusionState WindowOcclusionCalculator::GetOcclusionState(
 void WindowOcclusionCalculator::AddObserver(
     const aura::Window::Windows& parent_windows_to_track,
     Observer* observer) {
+  TRACE_EVENT0("ui", "WindowOcclusionCalculator::AddObserver");
   RegisterWindows(parent_windows_to_track);
   // Add observer after the initial occlusion calculation is done. That ensures
   // the `observer` is not notified immediately of the initial occlusion state
@@ -154,6 +156,7 @@ void WindowOcclusionCalculator::AddObserver(
 }
 
 void WindowOcclusionCalculator::RemoveObserver(Observer* observer) {
+  TRACE_EVENT0("ui", "WindowOcclusionCalculator::RemoveObserver");
   aura::WindowOcclusionTracker::ScopedPause occlusion_calculation_barrier(
       &occlusion_tracker_);
   auto iter = occlusion_change_observers_.begin();
@@ -206,6 +209,7 @@ WindowOcclusionCalculator::AsWeakPtr() {
 // results in dangling `raw_ptr` failures.
 void WindowOcclusionCalculator::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
+  TRACE_EVENT0("ui", "WindowOcclusionCalculator::OnWindowHierarchyChanged");
   // Only process hierarchy change notifications sent to the target window's
   // parent. Additional notifications sent to the target window's other
   // ancestors are ignored because they would be no-ops/duplicate notifications
@@ -228,6 +232,7 @@ void WindowOcclusionCalculator::OnWindowHierarchyChanged(
 // bookkeeping internally when a tracked window gets destroyed. So this only
 // has to do bookkeeping for `WindowOcclusionCalculator` specific things.
 void WindowOcclusionCalculator::OnWindowDestroyed(aura::Window* window) {
+  TRACE_EVENT0("ui", "WindowOcclusionCalculator::OnWindowDestroyed");
   all_window_observations_.RemoveObservation(window);
   // Erasure makes `GetOcclusionState()` return `UNKNOWN` if the caller happens
   // to request the occlusion state of a window that was being tracked
@@ -244,6 +249,7 @@ void WindowOcclusionCalculator::OnWindowDestroyed(aura::Window* window) {
 void WindowOcclusionCalculator::OnWindowPropertyChanged(aura::Window* window,
                                                         const void* key,
                                                         intptr_t old) {
+  TRACE_EVENT0("ui", "WindowOcclusionCalculator::OnWindowPropertyChanged");
   if (key != kHideInDeskMiniViewKey) {
     return;
   }
@@ -294,6 +300,7 @@ void WindowOcclusionCalculator::RegisterWindows(
 void WindowOcclusionCalculator::SetOcclusionState(
     aura::Window* window,
     aura::Window::OcclusionState occlusion_state) {
+  TRACE_EVENT0("ui", "WindowOcclusionCalculator::SetOcclusionState");
   if (IsSnapshotWindow(window)) {
     return;
   }

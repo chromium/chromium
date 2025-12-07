@@ -13,6 +13,7 @@
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -182,7 +183,7 @@ TEST(
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span("should encrypt this message")),
+          base::as_byte_span("should encrypt this message"),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -206,7 +207,7 @@ TEST(NigoriStateTest,
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span("should encrypt this message")),
+          base::as_byte_span("should encrypt this message"),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 

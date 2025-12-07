@@ -10,7 +10,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
               "builder_group": "chromium.memory",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -38,7 +37,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-memory-archive",
               "builder_group": "chromium.memory",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -79,7 +77,9 @@
           "group": "tryserver.chromium.linux"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Chromium OS ASan LSan Tests (1)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

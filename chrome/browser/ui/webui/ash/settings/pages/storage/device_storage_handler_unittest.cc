@@ -9,10 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/byte_count.h"
 #include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/chrome_features.h"
@@ -38,11 +38,16 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -103,6 +108,7 @@ class StorageHandlerTest : public testing::Test {
   void SetUp() override {
     // Initialize fake DBus clients.
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     SpacedClient::InitializeFake();
     UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
 
@@ -110,10 +116,15 @@ class StorageHandlerTest : public testing::Test {
     // ArcServiceManager and ArcSessionManager.
     disks::DiskMountManager::InitializeForTesting(
         new disks::FakeDiskMountManager);
+    cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
+    arc_dlc_installer_ =
+        std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     // Initialize profile.
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -159,16 +170,9 @@ class StorageHandlerTest : public testing::Test {
         file_manager::util::GetDownloadsMountPointName(profile_),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_path));
-
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    new_window_provider_.reset();
     web_ui_.reset();
     total_disk_space_test_api_.reset();
     free_disk_space_test_api_.reset();
@@ -179,10 +183,13 @@ class StorageHandlerTest : public testing::Test {
     crostini_size_test_api_.reset();
     other_users_size_test_api_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
+    cros_settings_test_helper_.reset();
     disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     SpacedClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     ConciergeClient::Shutdown();
   }
 
@@ -282,6 +289,8 @@ class StorageHandlerTest : public testing::Test {
     ASSERT_EQ(expected_size, stat.st_size);
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   raw_ptr<StorageHandler, DanglingUntriaged> handler_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::BrowserTaskEnvironment task_environment_;
@@ -296,14 +305,14 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<DriveOfflineSizeTestAPI> drive_offline_size_test_api_;
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
   MockUserDataAuthClient userdataauth_;
 
  private:
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(StorageHandlerTest, RoundByteSize) {
@@ -331,7 +340,8 @@ TEST_F(StorageHandlerTest, RoundByteSize) {
 
   for (auto& c : cases) {
     int64_t rounded_bytes = RoundByteSize(c.bytes);
-    EXPECT_EQ(base::ASCIIToUTF16(c.expected), ui::FormatBytes(rounded_bytes));
+    EXPECT_EQ(base::ASCIIToUTF16(c.expected),
+              ui::FormatBytes(base::ByteCount(rounded_bytes)));
   }
 }
 
@@ -339,8 +349,10 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
   // Get local filesystem storage statistics.
   const base::FilePath mount_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
-  int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  int64_t available_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t total_size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
+  int64_t available_size =
+      base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
 
   // Round the total size.
   int64_t rounded_total_size = RoundByteSize(total_size);
@@ -363,9 +375,9 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
       *dictionary.FindString("usedSize");
   double storage_handler_used_ratio = *dictionary.FindDouble("usedRatio");
 
-  EXPECT_EQ(ui::FormatBytes(available_size),
+  EXPECT_EQ(ui::FormatBytes(base::ByteCount(available_size)),
             base::ASCIIToUTF16(storage_handler_available_size));
-  EXPECT_EQ(ui::FormatBytes(used_size),
+  EXPECT_EQ(ui::FormatBytes(base::ByteCount(used_size)),
             base::ASCIIToUTF16(storage_handler_used_size));
   double diff = used_ratio > storage_handler_used_ratio
                     ? used_ratio - storage_handler_used_ratio
@@ -710,7 +722,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
 }
 
 TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {
-  EXPECT_CALL(*new_window_delegate_primary_,
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(chrome::kChromeUISettingsURL)
                           .Resolve(chrome::kClearBrowserDataSubPage),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

@@ -12,8 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
-#include "components/optimization_guide/core/model_handler.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
@@ -61,14 +61,16 @@ AutocompleteScoringModelHandler::AutocompleteScoringModelHandler(
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
     std::unique_ptr<AutocompleteScoringModelExecutor> model_executor,
     OptimizationTarget optimization_target,
-    const std::optional<optimization_guide::proto::Any>& model_metadata)
+    const std::optional<optimization_guide::proto::Any>& model_metadata,
+    scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner)
     : optimization_guide::ModelHandler<ModelOutput, ModelInput>(
           model_provider,
           model_executor_task_runner,
           std::move(model_executor),
           /*model_inference_timeout=*/std::nullopt,
           optimization_target,
-          model_metadata) {
+          model_metadata,
+          model_loading_task_runner) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since model inference is latency sensitive and it
   // cannot wait for the model to be loaded from disk.
@@ -97,14 +99,13 @@ AutocompleteScoringModelHandler::GetBatchModelInput(
     const std::vector<const ScoringSignals*>& scoring_signals_vec) {
   std::vector<std::vector<float>> batch_model_input;
   for (const auto* scoring_signals : scoring_signals_vec) {
-    const std::optional<std::vector<float>> model_input =
+    std::optional<std::vector<float>> model_input =
         GetModelInput(*scoring_signals);
-    if (model_input) {
-      batch_model_input.push_back(std::move(*model_input));
-    } else {
+    if (!model_input) {
       // Return null if any input in the batch is invalid.
       return std::nullopt;
     }
+    batch_model_input.push_back(std::move(*model_input));
   }
   return batch_model_input;
 }
@@ -296,6 +297,56 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
 
         val = static_cast<float>(matches_title_or_host_or_shortcut_text);
       } break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_NUM_INPUT_TERMS_MATCHED_BY_BOOKMARK_TITLE:
+        if (scoring_signals.has_num_input_terms_matched_by_bookmark_title()) {
+          val = static_cast<float>(
+              scoring_signals.num_input_terms_matched_by_bookmark_title());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_SITE_ENGAGEMENT:
+        if (scoring_signals.has_site_engagement()) {
+          val = static_cast<float>(scoring_signals.site_engagement());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_SEARCH_SUGGEST_RELEVANCE:
+        if (scoring_signals.has_search_suggest_relevance()) {
+          val = static_cast<float>(scoring_signals.search_suggest_relevance());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_IS_SEARCH_SUGGEST_ENTITY:
+        if (scoring_signals.has_is_search_suggest_entity()) {
+          val = static_cast<float>(scoring_signals.is_search_suggest_entity());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_VERBATIM:
+        if (scoring_signals.has_is_verbatim()) {
+          val = static_cast<float>(scoring_signals.is_verbatim());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_NAVSUGGEST:
+        if (scoring_signals.has_is_navsuggest()) {
+          val = static_cast<float>(scoring_signals.is_navsuggest());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_IS_SEARCH_SUGGEST_TAIL:
+        if (scoring_signals.has_is_search_suggest_tail()) {
+          val = static_cast<float>(scoring_signals.is_search_suggest_tail());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_ANSWER_SUGGEST:
+        if (scoring_signals.has_is_answer_suggest()) {
+          val = static_cast<float>(scoring_signals.is_answer_suggest());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_CALCULATOR_SUGGEST:
+        if (scoring_signals.has_is_calculator_suggest()) {
+          val = static_cast<float>(scoring_signals.is_calculator_suggest());
+        }
+        break;
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_UNKNOWN:
       default:
         // Reached when the metadata is updated to have a new signal that

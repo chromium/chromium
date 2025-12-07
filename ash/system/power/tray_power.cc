@@ -52,6 +52,9 @@ PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
 
   previous_battery_saver_state_ = PowerStatus::Get()->IsBatterySaverActive();
   PowerStatus::Get()->AddObserver(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+  UpdateAccessibleName();
 }
 
 PowerTrayView::~PowerTrayView() {
@@ -71,22 +74,8 @@ gfx::Size PowerTrayView::CalculatePreferredSize(
   return gfx::Size(standard_size.width(), kUnifiedTrayIconSize);
 }
 
-void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kImage;
-  std::u16string accessible_name =
-      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true);
-  if (!accessible_name.empty()) {
-    node_data->SetNameChecked(accessible_name);
-  }
-}
-
 views::View* PowerTrayView::GetTooltipHandlerForPoint(const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-std::u16string PowerTrayView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
 }
 
 void PowerTrayView::OnThemeChanged() {
@@ -114,8 +103,9 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
   PowerStatus::BatteryImageInfo info =
       PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
 
-  image_view()->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
+  image_view()->SetImage(
+      ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
+          info, kUnifiedTrayBatteryIconSize, GetColorProvider())));
 }
 
 void PowerTrayView::OnPowerStatusChanged() {
@@ -127,13 +117,10 @@ void PowerTrayView::OnPowerStatusChanged() {
 void PowerTrayView::UpdateStatus(bool icon_color_changed) {
   UpdateImage(icon_color_changed);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
-  GetViewAccessibility().SetName(
-      PowerStatus::Get()->GetAccessibleNameString(/* full_description */ true));
-  tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
+  UpdateAccessibleName();
+  SetTooltipText(PowerStatus::Get()->GetInlinedStatusString());
   // Currently ChromeVox only reads the inner view when touching the icon.
   // As a result this node's accessible node data will not be read.
-  // TODO(crbug.com/325137417): This line should not be needed. Investigate to
-  // confirm and remove.
   image_view()->GetViewAccessibility().SetName(
       GetViewAccessibility().GetCachedName());
 }
@@ -158,6 +145,17 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
   info_ = info;
 
   UpdateLabelOrImageViewColor(is_active());
+}
+
+void PowerTrayView::UpdateAccessibleName() {
+  std::u16string accessible_name =
+      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true);
+  if (!accessible_name.empty()) {
+    GetViewAccessibility().SetName(accessible_name);
+  } else {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 BEGIN_METADATA(PowerTrayView)

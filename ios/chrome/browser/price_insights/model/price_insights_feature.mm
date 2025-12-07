@@ -5,43 +5,31 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
-const char kLowPriceParam[] = "LowPriceStringParam";
+bool IsPriceInsightsRegionEnabled() {
+  return commerce::IsRegionLockedFeatureEnabled(
+      commerce::kPriceInsights,
+      GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+}
 
-const char kLowPriceParamPriceIsLow[] = "PriceIsLow";
-
-const char kLowPriceParamGoodDealNow[] = "GoodDealNow";
-
-const char kLowPriceParamSeePriceHistory[] = "SeePriceHistory";
-
-bool IsPriceInsightsEnabled(ChromeBrowserState* browser_state) {
-  if (!base::FeatureList::IsEnabled(commerce::kPriceInsightsIos)) {
-    return false;
-  }
-
-  DCHECK(browser_state);
+bool IsPriceInsightsEnabled(ProfileIOS* profile) {
+  DCHECK(profile);
   commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state);
+      commerce::ShoppingServiceFactory::GetForProfile(profile);
 
   if (!service) {
     return false;
   }
 
-  return service->IsPriceInsightsEligible() ||
-         service->IsCommercePriceTrackingEnabled();
-}
-
-std::string GetLowPriceParamValue() {
-  std::string low_price_value = base::GetFieldTrialParamValueByFeature(
-      commerce::kPriceInsightsIos, kLowPriceParam);
-  return low_price_value.empty() ? std::string(kLowPriceParamPriceIsLow)
-                                 : low_price_value;
-}
-
-bool IsPriceInsightsHighPriceEnabled() {
-  return base::FeatureList::IsEnabled(commerce::kPriceInsightsHighPriceIos);
+  return commerce::IsPriceInsightsEligible(service->GetAccountChecker());
 }

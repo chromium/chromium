@@ -11,9 +11,6 @@ namespace blink {
 
 class FetchParameters;
 class ResourceFetcher;
-class FeatureContext;
-
-bool CompressionDictionaryTransportFullyEnabled(const FeatureContext*);
 
 // This is the implementation of Resource for <link rel='dictionary'>.
 class LinkDictionaryResource final : public Resource {

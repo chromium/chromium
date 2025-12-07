@@ -83,20 +83,24 @@ void StringCache::Dispose() {
 static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
                                                 String string) {
   if (string.Is8Bit()) {
-    StringResource8* string_resource = new StringResource8(std::move(string));
+    StringResource8* string_resource =
+        new StringResource8(isolate, std::move(string));
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
+      string_resource->Unaccount(isolate);
       delete string_resource;
       return v8::String::Empty(isolate);
     }
     return new_string;
   }
 
-  StringResource16* string_resource = new StringResource16(std::move(string));
+  StringResource16* string_resource =
+      new StringResource16(isolate, std::move(string));
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
+    string_resource->Unaccount(isolate);
     delete string_resource;
     return v8::String::Empty(isolate);
   }
@@ -106,20 +110,24 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
 static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
                                                 const ParkableString string) {
   if (string.Is8Bit()) {
-    auto* string_resource = new ParkableStringResource8(std::move(string));
+    auto* string_resource =
+        new ParkableStringResource8(isolate, std::move(string));
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
+      string_resource->Unaccount(isolate);
       delete string_resource;
       return v8::String::Empty(isolate);
     }
     return new_string;
   }
 
-  auto* string_resource = new ParkableStringResource16(std::move(string));
+  auto* string_resource =
+      new ParkableStringResource16(isolate, std::move(string));
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
+    string_resource->Unaccount(isolate);
     delete string_resource;
     return v8::String::Empty(isolate);
   }

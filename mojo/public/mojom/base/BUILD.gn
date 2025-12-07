@@ -2,20 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 mojom_component("base") {
   generate_java = true
-  generate_rust = true
   sources = [
     "absl_status.mojom",
     "application_state.mojom",
+    "battery_power_status.mojom",
     "big_buffer.mojom",
     "big_string.mojom",
     "binder.mojom",
+    "byte_count.mojom",
+    "byte_size.mojom",
     "byte_string.mojom",
+    "empty.mojom",
+    "error.mojom",
     "file.mojom",
     "file_error.mojom",
     "file_info.mojom",
@@ -23,13 +26,13 @@ mojom_component("base") {
     "generic_pending_associated_receiver.mojom",
     "generic_pending_receiver.mojom",
     "int128.mojom",
+    "jserror.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
     "process_id.mojom",
     "process_priority.mojom",
     "read_only_buffer.mojom",
-    "read_only_file.mojom",
     "ref_counted_memory.mojom",
     "safe_base_name.mojom",
     "shared_memory.mojom",
@@ -42,6 +45,7 @@ mojom_component("base") {
     "uuid.mojom",
     "values.mojom",
     "version.mojom",
+    "work_in_progress.mojom",
   ]
 
   if (is_win) {
@@ -58,12 +62,6 @@ mojom_component("base") {
   }
 
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
-
-  # Still widely used by Closure Compiler targets on ChromeOS, so generate
-  # WebUI bindings in JavaScript for that platform.
-  if (is_chromeos_ash) {
-    generate_webui_js_bindings = true
-  }
 
   # Always generate legacy bindings since this target is used by Blink, fuzzers,
   # etc and not just by WebUI.
@@ -105,6 +103,48 @@ mojom_component("base") {
     {
       types = [
         {
+          mojom = "mojo_base.mojom.ByteCount"
+          cpp = "::base::ByteCount"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_count_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteSize"
+          cpp = "::base::ByteSize"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_size_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteSizeDelta"
+          cpp = "::base::ByteSizeDelta"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_size_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "mojo_base.mojom.ByteString"
           cpp = "std::string"
         },
@@ -139,6 +179,15 @@ mojom_component("base") {
         "//mojo/public/cpp/base",
         "//mojo/public/cpp/base:shared_typemap_traits",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Empty"
+          cpp = "::std::monostate"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/empty_mojom_traits.h" ]
     },
     {
       types = [
@@ -241,17 +290,6 @@ mojom_component("base") {
     },
     {
       types = [
-        {
-          mojom = "mojo_base.mojom.PlatformSharedMemoryHandle"
-          cpp =
-              "::base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle"
-          move_only = true
-        },
-        {
-          mojom = "mojo_base.mojom.PlatformSharedMemoryRegion"
-          cpp = "::base::subtle::PlatformSharedMemoryRegion"
-          move_only = true
-        },
         {
           mojom = "mojo_base.mojom.ReadOnlySharedMemoryRegion"
           cpp = "::base::ReadOnlySharedMemoryRegion"
@@ -436,7 +474,7 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojom_base.mojom.MemoryAllocatorDumpCrossProcessUid"
+          mojom = "mojo_base.mojom.MemoryAllocatorDumpCrossProcessUid"
           cpp = "::base::trace_event::MemoryAllocatorDumpGuid"
         },
       ]
@@ -450,7 +488,7 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.MemoryPressureLevel"
-          cpp = "::base::MemoryPressureListener::MemoryPressureLevel"
+          cpp = "::base::MemoryPressureLevel"
         },
       ]
       traits_headers =
@@ -548,6 +586,20 @@ mojom_component("base") {
         "//mojo/public/cpp/base:typemap_traits",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.BatteryPowerStatus"
+          cpp = "::base::PowerStateObserver::BatteryPowerStatus"
+        },
+      ]
+      traits_headers =
+          [ "//mojo/public/cpp/base/battery_power_status_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:typemap_traits",
+      ]
+    },
   ]
 
   if (is_android) {
@@ -610,7 +662,7 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.BigString"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
         },
       ]
@@ -624,13 +676,13 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.BigString16"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
           force_serialize = true
         },
         {
           mojom = "mojo_base.mojom.String16"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
           force_serialize = true
         },
@@ -640,15 +692,70 @@ mojom_component("base") {
       ]
     },
   ]
+
+  ts_typemaps = [
+    {
+      source = "time_converters.ts"
+      types = [
+        {
+          converter = "JsTimeConverter"
+          mojom = "mojo_base.mojom.JSTime"
+          ts = "Date"
+        },
+      ]
+    },
+    {
+      source = "jserror_converter.ts"
+      types = [
+        {
+          converter = "JsErrorConverter"
+          mojom = "mojo_base.mojom.JsError"
+          ts = "Object"
+        },
+      ]
+    },
+    {
+      source = "string16_converter.ts"
+      types = [
+        {
+          converter = "String16Converter"
+          mojom = "mojo_base.mojom.String16"
+          ts = "string"
+        },
+      ]
+    },
+    {
+      source = "unguessable_token_converter.ts"
+      types = [
+        {
+          converter = "UnguessableTokenConverter"
+          mojom = "mojo_base.mojom.UnguessableToken"
+
+          # Tokens will be in the form of a 32 char hexadecimal string
+          # which represents the underlying 128 bits of token. E.g.:
+          #   "00001111222233334444555566667777"
+          # Note that *all* tokens must be 32 char strings, it is not
+          # permissible to use a truncated representation of a token,
+          # for example:
+          #   "01" <== not permissible!
+          # this is because APIs would typically use string operations
+          # when working with the mapped token. Therefore, the equality
+          # and comparison operators should be transitive between the mapped
+          # type and the mojo type. For example:
+          #   str(token) === str(mojo(str(token)))
+          # we do NOT want to allow the following scenario:
+          #   "0x1" != "0x00001", but mojo("0x1") == mojo("0x00001)
+          ts = "string"
+        },
+      ]
+    },
+  ]
 }
 
 mojom_component("protobuf_support") {
   sources = [ "proto_wrapper.mojom" ]
   generate_java = true
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
-  if (is_chromeos_ash) {
-    generate_webui_js_bindings = true
-  }
   generate_legacy_js_bindings = true
   output_prefix = "mojo_base_mojom_protobuf_support"
   macro_prefix = "MOJO_BASE_MOJOM_PROTOBUF_SUPPORT"

@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeNotificationManager : public NotificationManager {
  public:
@@ -57,7 +56,6 @@ class FakeNotificationManager : public NotificationManager {
   std::vector<InlineReplyMetadata> inline_replies_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_MANAGER_H_

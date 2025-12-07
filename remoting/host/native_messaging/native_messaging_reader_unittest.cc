@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -96,7 +97,7 @@ void NativeMessagingReaderTest::WriteMessage(const std::string& message) {
 }
 
 void NativeMessagingReaderTest::WriteData(const char* data, int length) {
-  int written = write_file_.WriteAtCurrentPos(data, length);
+  int written = UNSAFE_TODO(write_file_.WriteAtCurrentPos(data, length));
   ASSERT_EQ(length, written);
 }
 

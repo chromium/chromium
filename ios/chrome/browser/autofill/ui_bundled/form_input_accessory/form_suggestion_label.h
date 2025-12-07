@@ -26,7 +26,7 @@
 // Designated initializer. Initializes with `delegate` for `suggestion`.
 - (instancetype)initWithSuggestion:(FormSuggestion*)suggestion
                              index:(NSUInteger)index
-                    numSuggestions:(NSUInteger)numSuggestions
+               numberOfSuggestions:(NSUInteger)numberOfSuggestions
              accessoryTrailingView:(UIView*)accessoryTrailingView
                           delegate:(id<FormSuggestionLabelDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
@@ -34,6 +34,12 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+// Returns the label's associated suggestion.
+- (FormSuggestion*)suggestion;
+
+// Returns the label's associated suggestion's index.
+- (NSUInteger)suggestionIndex;
 
 @end
 

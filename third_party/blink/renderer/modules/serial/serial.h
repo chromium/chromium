@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -31,14 +30,11 @@ class SerialPortRequestOptions;
 class SerialPortFilter;
 
 class MODULES_EXPORT Serial final : public EventTarget,
-                                    public Supplement<NavigatorBase>,
                                     public ExecutionContextLifecycleObserver,
                                     public mojom::blink::SerialServiceClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Web-exposed navigator.serial
   static Serial* serial(NavigatorBase&);
 
@@ -94,6 +90,7 @@ class MODULES_EXPORT Serial final : public EventTarget,
   void OnRequestPort(ScriptPromiseResolver<SerialPort>*,
                      mojom::blink::SerialPortInfoPtr);
 
+  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::SerialService> service_;
   HeapMojoReceiver<mojom::blink::SerialServiceClient, Serial> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<SerialPort>>>>

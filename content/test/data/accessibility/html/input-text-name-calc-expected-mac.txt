@@ -1,0 +1,35 @@
+AXWebArea
+++AXTextField AXDescription='Title0'
+++AXTextField AXTitle='Label1'
+++AXTextField AXDescription='AriaLabel2'
+++AXTextField AXTitle='LabelledBy3'
+++AXTextField
+++AXTextField
+++AXTextField
+++AXTextField AXDescription='Title5'
+++AXTextField AXTitle='LabelledBy6'
+++AXTextField AXDescription='AriaLabel7'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Label1'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='Label2'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='Label3'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='Label6'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='LabelledBy3'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='LabelledBy6'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='DescribedBy6'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='DescribedBy7'

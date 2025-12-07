@@ -18,11 +18,14 @@ EnumTraits<mac_notifications::mojom::NotificationOperation,
     case NotificationOperation::kSettings:
       return mac_notifications::mojom::NotificationOperation::kSettings;
     case NotificationOperation::kDisablePermission:
+    case NotificationOperation::kReportAsSafe:
+    case NotificationOperation::kReportWarnedAsSpam:
+    case NotificationOperation::kReportUnwarnedAsSpam:
+    case NotificationOperation::kShowOriginalNotification:
       // This is not supported in macOS notifications.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mac_notifications::mojom::NotificationOperation::kClick;
+  NOTREACHED();
 }
 
 // static
@@ -41,8 +44,7 @@ bool EnumTraits<mac_notifications::mojom::NotificationOperation,
       *output = NotificationOperation::kSettings;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

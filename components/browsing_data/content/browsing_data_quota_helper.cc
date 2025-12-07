@@ -16,11 +16,8 @@ BrowsingDataQuotaHelper::QuotaInfo::QuotaInfo(
 
 BrowsingDataQuotaHelper::QuotaInfo::QuotaInfo(
     const blink::StorageKey& storage_key,
-    int64_t temporary_usage,
-    int64_t syncable_usage)
-    : storage_key(storage_key),
-      temporary_usage(temporary_usage),
-      syncable_usage(syncable_usage) {}
+    int64_t usage)
+    : storage_key(storage_key), usage(usage) {}
 
 BrowsingDataQuotaHelper::QuotaInfo::~QuotaInfo() = default;
 
@@ -36,12 +33,10 @@ BrowsingDataQuotaHelper::~BrowsingDataQuotaHelper() = default;
 
 bool BrowsingDataQuotaHelper::QuotaInfo::operator<(
     const BrowsingDataQuotaHelper::QuotaInfo& rhs) const {
-  return std::tie(storage_key, temporary_usage, syncable_usage) <
-         std::tie(rhs.storage_key, rhs.temporary_usage, rhs.syncable_usage);
+  return std::tie(storage_key, usage) < std::tie(rhs.storage_key, rhs.usage);
 }
 
 bool BrowsingDataQuotaHelper::QuotaInfo::operator==(
     const BrowsingDataQuotaHelper::QuotaInfo& rhs) const {
-  return std::tie(storage_key, temporary_usage, syncable_usage) ==
-         std::tie(rhs.storage_key, rhs.temporary_usage, rhs.syncable_usage);
+  return std::tie(storage_key, usage) == std::tie(rhs.storage_key, rhs.usage);
 }

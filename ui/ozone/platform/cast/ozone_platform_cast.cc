@@ -21,7 +21,7 @@
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/cast/overlay_manager_cast.h"
 #include "ui/ozone/platform/cast/platform_window_cast.h"
 #include "ui/ozone/platform/cast/surface_factory_cast.h"
@@ -91,13 +91,8 @@ class OzonePlatformCast : public OzonePlatform {
   InputController* GetInputController() override {
     return event_factory_ozone_->input_controller();
   }
-  std::unique_ptr<PlatformScreen> CreateScreen() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
-  void InitScreen(PlatformScreen* screen) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  std::unique_ptr<PlatformScreen> CreateScreen() override { NOTREACHED(); }
+  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return gpu_platform_support_host_.get();
   }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<title>crbug.com/394983447</title>
+<style>
+body {
+  text-align: justify;
+}
+</style>
+<body>
+<ruby>
+AxBxC DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+<input />
+<rt dir="ltr">
+c tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
+</rt>
+<ins>E F</ins>G HxIxJ
+KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+</ruby>
+<script>
+test(() => {
+}, 'Do not crash if a ruby-base ends with a trailing white-space and a text follows to it.');
+</script>

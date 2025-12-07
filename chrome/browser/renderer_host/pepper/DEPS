@@ -1,6 +1,0 @@
-include_rules = [
-  # ppapi/host and ppapi/proxy are already added at a higher level DEPS file.
-  "+ppapi/shared_impl",
-  "+services/device/public/mojom",
-]
-

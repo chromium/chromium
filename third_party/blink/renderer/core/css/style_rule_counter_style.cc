@@ -92,8 +92,7 @@ Member<const CSSValue>& StyleRuleCounterStyle::GetDescriptorReference(
     case AtRuleDescriptorID::SpeakAs:
       return speak_as_;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return speak_as_;
+      NOTREACHED();
   }
 }
 
@@ -142,7 +141,6 @@ void StyleRuleCounterStyle::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(symbols_);
   visitor->Trace(additive_symbols_);
   visitor->Trace(speak_as_);
-  visitor->Trace(layer_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared settings-page-styles iron-flex">
+    <style include="cr-shared-style settings-shared">
       :host {
         --about-page-image-space: 10px;
       }
@@ -18,7 +18,7 @@
         margin-top: auto;
       }
 
-      img {
+      #product-logo {
         margin-inline-end: var(--about-page-image-space);
       }
 
@@ -28,19 +28,24 @@
         text-align: center;
       }
 
-      iron-icon[icon='settings:check-circle'] {
+      cr-icon[icon='cr:check-circle'] {
         fill: var(--cr-checked-color);
       }
 
-      iron-icon[icon='cr:error'] {
+      cr-icon[icon='cr:error'] {
         fill: var(--settings-error-color);
+      }
+
+      #throbber {
+        height: var(--cr-icon-size);
+        vertical-align: middle;
       }
 
       cr-button {
         white-space: nowrap;
       }
     </style>
-    <settings-section page-title="$i18n{aboutPageTitle}" section="about">
+    <settings-section page-title="$i18n{aboutPageTitle}">
       <div class="cr-row two-line first">
         <img id="product-logo" on-click="onProductLogoClick_"
             srcset="chrome://theme/current-channel-logo@1x 1x,
@@ -52,19 +57,22 @@
       <div class="cr-row two-line">
         <!-- Set the icon from the iconset (when it's obsolete/EOL and
           when update is done) or set the src (when it's updating). -->
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
         <div class="icon-container"
             hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
-          <iron-icon
-              icon$="[[getUpdateStatusIcon_(
+          <cr-icon
+              hidden="[[shouldShowThrobber_(
                   obsoleteSystemInfo_, currentUpdateStatusEvent_)]]"
-              src="[[getThrobberSrcIfUpdating_(
+              icon$="[[getUpdateStatusIcon_(
                   obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
-          </iron-icon>
+          </cr-icon>
+          <img id="throbber" src="chrome://resources/images/throbber_small.svg"
+              hidden="[[!shouldShowThrobber_(
+                  obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
         </div>
 </if>
         <div class="flex cr-padded-text">
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
           <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
             <div role="alert" aria-live="polite"
                 inner-h-t-m-l="[[getUpdateStatusMessage_(
@@ -88,7 +96,7 @@
 </if>
           <div class="secondary">$i18n{aboutBrowserVersion}</div>
         </div>
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
         <div class="separator" hidden="[[!showButtonContainer_]]"></div>
         <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
           <cr-button id="relaunch" hidden="[[!showRelaunch_]]"
@@ -120,17 +128,13 @@
         </div>
       </template>
 </if>
-      <template is="dom-if" if="[[!showGetTheMostOutOfChromeSection_]]">
-        <cr-link-row class="hr" id="help" on-click="onHelpClick_"
-            label="$i18n{aboutGetHelpUsingChrome}"
-            external></cr-link-row>
-      </template>
+      <cr-link-row class="hr" id="help" on-click="onHelpClick_"
+          label="$i18n{aboutGetHelpUsingChrome}"
+          external></cr-link-row>
 <if expr="_google_chrome">
-      <template is="dom-if" if="[[!showGetTheMostOutOfChromeSection_]]">
-        <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
-            hidden="[[!prefs.feedback_allowed.value]]"
-            label="$i18n{aboutReportAnIssue}" external></cr-link-row>
-      </template>
+      <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
+          hidden="[[!prefs.feedback_allowed.value]]"
+          label="$i18n{aboutReportAnIssue}" external></cr-link-row>
       <cr-link-row class="hr" id="privacyPolicy"
         on-click="onPrivacyPolicyClick_" label="$i18n{aboutPrivacyPolicy}"
         external></cr-link-row>
@@ -140,21 +144,6 @@
           role-description="$i18n{subpageArrowRoleDescription}"
           hidden$="[[!isManaged_]]"></cr-link-row>
     </settings-section>
-
-<if expr="_google_chrome">
-    <template is="dom-if" if="[[showGetTheMostOutOfChromeSection_]]">
-      <get-most-chrome-section></get-most-chrome-section>
-
-      <settings-section page-title="Get Help">
-        <cr-link-row id="help" on-click="onHelpClick_"
-            label="$i18n{aboutGetHelpUsingChrome}"
-            external></cr-link-row>
-        <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
-            hidden="[[!prefs.feedback_allowed.value]]"
-            label="$i18n{aboutReportAnIssue}" external></cr-link-row>
-      </settings-section>
-    </template>
-</if>
 
     <settings-section>
       <div class="info-sections">
@@ -171,7 +160,7 @@
           <a id="tos" href="$i18n{aboutTermsURL}">$i18n{aboutProductTos}</a>
         </div>
 </if>
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
   <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
     <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RELAUNCH]]"
         on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>

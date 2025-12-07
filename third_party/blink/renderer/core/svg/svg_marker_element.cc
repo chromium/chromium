@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_marker_element.h"
 
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
@@ -36,10 +37,10 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGMarkerUnitsType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGMarkerUnitsUserSpaceOnUse, "userSpaceOnUse"},
-      {kSVGMarkerUnitsStrokeWidth, "strokeWidth"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "userSpaceOnUse",
+      "strokeWidth",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -101,18 +102,15 @@ AffineTransform SVGMarkerElement::ViewBoxToViewTransform(
 void SVGMarkerElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  bool viewbox_attribute_changed = SVGFitToViewBox::IsKnownAttribute(attr_name);
-  bool length_attribute_changed = attr_name == svg_names::kRefXAttr ||
-                                  attr_name == svg_names::kRefYAttr ||
-                                  attr_name == svg_names::kMarkerWidthAttr ||
-                                  attr_name == svg_names::kMarkerHeightAttr;
-  if (length_attribute_changed)
-    UpdateRelativeLengthsInformation();
+  bool length_or_viewbox_attribute_changed =
+      attr_name == svg_names::kRefXAttr || attr_name == svg_names::kRefYAttr ||
+      attr_name == svg_names::kMarkerWidthAttr ||
+      attr_name == svg_names::kMarkerHeightAttr ||
+      SVGFitToViewBox::IsKnownAttribute(attr_name);
 
-  if (viewbox_attribute_changed || length_attribute_changed ||
+  if (length_or_viewbox_attribute_changed ||
       attr_name == svg_names::kMarkerUnitsAttr ||
       attr_name == svg_names::kOrientAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     auto* resource_container =
         To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (resource_container) {
@@ -120,7 +118,7 @@ void SVGMarkerElement::SvgAttributeChanged(
 
       // The marker transform depends on both viewbox attributes, and the marker
       // size attributes (width, height).
-      if (viewbox_attribute_changed || length_attribute_changed) {
+      if (length_or_viewbox_attribute_changed) {
         resource_container->SetNeedsTransformUpdate();
         resource_container->SetNeedsLayoutAndFullPaintInvalidation(
             layout_invalidation_reason::kSvgResourceInvalidated);

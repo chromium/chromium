@@ -36,13 +36,13 @@ public final class LogcatCapture implements Closeable {
      * <p>By default, this only captures the {@code main} log and filters out all tags and levels.
      * Use {@code additionalArgs} to customize this behavior.
      *
-     * @param additionalArgs Additional arguments to pass to the logcat command. This can be used
-     * to select which tags and levels to capture, e.g. {@code cr_MyTag:I}. Refer to the
-     * documentation of the {@code logcat} command for details.
+     * @param additionalArgs Additional arguments to pass to the logcat command. This can be used to
+     *     select which tags and levels to capture, e.g. {@code cr_MyTag:I}. Refer to the
+     *     documentation of the {@code logcat} command for details.
      */
     LogcatCapture(List<String> additionalArgs) throws IOException {
         List<String> args =
-                new ArrayList<String>(
+                new ArrayList<>(
                         Arrays.asList("logcat", "-s", "-b", "main", Log.normalizeTag(TAG) + ":I"));
         args.addAll(additionalArgs);
         mLogcat = new ProcessBuilder().command(args).start();

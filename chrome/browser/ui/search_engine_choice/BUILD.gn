@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("search_engine_choice") {
+    sources = [ "search_engine_choice_tab_helper.h" ]
+
+    public_deps = [
+      "//content/public/browser",
+      "//ui/gfx/geometry",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [ "search_engine_choice_tab_helper.cc" ]
+    deps = [
+      ":search_engine_choice",
+      "//base",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engine_choice",
+      "//components/search_engines",
+      "//content/public/browser",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chromeos/components/kiosk" ]
+    }
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}

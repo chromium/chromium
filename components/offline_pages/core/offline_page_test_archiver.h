@@ -7,10 +7,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/offline_pages/core/offline_page_archiver.h"
 
@@ -28,7 +29,7 @@ class OfflinePageTestArchiver : public OfflinePageArchiver {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void SetLastPathCreatedByArchiver(
         const base::FilePath& file_path) = 0;
   };

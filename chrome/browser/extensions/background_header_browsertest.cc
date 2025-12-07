@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -25,11 +26,6 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
   BackgroundHeaderTest(const BackgroundHeaderTest& other) = delete;
   BackgroundHeaderTest& operator=(const BackgroundHeaderTest& other) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   GURL GetSecFetchUrl(const std::string& hostname) {
     if (hostname.empty()) {
       return https_test_server_.GetURL("/echoheader?sec-fetch-site");
@@ -45,7 +41,7 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
     ExtensionBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_test_server_.SetCertHostnames({"example.com", "example2.com"});
     https_test_server_.AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(https_test_server_.Start());
   }

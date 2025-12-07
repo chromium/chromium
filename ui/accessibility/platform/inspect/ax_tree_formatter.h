@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -50,12 +50,20 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   // |root| must be non-null and must be in web content.
   virtual std::string Format(AXPlatformNodeDelegate* root) const = 0;
 
+  // Formats an accessible tree identified by the given selector.
+  virtual std::string Format(const AXTreeSelector&) const = 0;
+
   // Formats a given web node (i.e. without children).
   virtual std::string FormatNode(AXPlatformNodeDelegate* node) const = 0;
+
+  // Formats an accessible element specified by the given selector.
+  virtual std::string FormatNode(const AXTreeSelector&) const = 0;
 
   // Similar to BuildTree, but generates a dictionary just for the current
   // web node (i.e. without children).
   virtual base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const = 0;
+  virtual base::Value::Dict BuildNodeForSelector(
+      const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for any window or pattern supplied by
   // the selector object.
@@ -84,11 +92,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
       const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for an application with |node| as the root.
-  virtual base::Value::Dict BuildTreeForNode(ui::AXNode* node) const = 0;
+  virtual base::Value::Dict BuildTreeForNode(AXNode* node) const = 0;
 
   // Returns a string representing the internal tree represented by |tree_id|.
   virtual std::string DumpInternalAccessibilityTree(
-      ui::AXTreeID tree_id,
+      AXTreeID tree_id,
       const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Dumps accessibility tree.
@@ -125,6 +133,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   // Set regular expression filters that apply to every node before output.
   virtual void SetNodeFilters(
       const std::vector<AXNodeFilter>& node_filters) = 0;
+
+  // Set a pattern to match for dumping only a subtree. When set, only the
+  // subtree starting from the first node matching this pattern will be dumped.
+  virtual void SetSubtreePattern(const std::string& pattern) = 0;
 
   // If true, the internal accessibility id of each node will be included
   // in its output.

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
@@ -30,6 +29,12 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
       const GpuDriverBugWorkarounds& workarounds);
 
   ~OzoneImageBackingFactory() override;
+
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      viz::VulkanContextProvider* vulkan_context_provider,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage);
 
   // SharedImageBackingFactory implementation
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -65,6 +70,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override;
 
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

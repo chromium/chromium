@@ -27,16 +27,15 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   ~BackgroundTaskUpdateScheduler() override;
 
   // UpdateScheduler:
-  void Schedule(const base::TimeDelta& initial_delay,
-                const base::TimeDelta& delay,
+  void Schedule(base::TimeDelta initial_delay,
+                base::TimeDelta delay,
                 const UserTask& user_task,
                 const OnStopTaskCallback& on_stop) override;
   void Stop() override;
 
   // JNI:
-  void OnStartTask(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj);
-  void OnStopTask(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnStartTask(JNIEnv* env);
+  void OnStopTask(JNIEnv* env);
 
  private:
   void OnStartTaskDelayed();

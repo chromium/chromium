@@ -13,11 +13,14 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -26,8 +29,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_util.h"
 #include "components/services/font/public/cpp/font_loader.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_font_helpers.h"
 #include "third_party/blink/public/platform/web_font_description.h"
@@ -36,6 +39,12 @@
 namespace chrome_pdf {
 
 namespace {
+
+// Enables enumerating all system fonts via FontConfig instead of just Arial
+// and PDFium's default fonts. This sends all font family names over IPC,
+// which could be large on systems with many fonts.
+// TODO(crbug.com/449573621): Remove this kill switch after a safe rollout.
+BASE_FEATURE(kPdfEnumerateAllSystemFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // GetFontTable loads a specified font table from an open SFNT file.
 //   fd: a file descriptor to the SFNT file. The position doesn't matter.
@@ -70,7 +79,7 @@ bool GetFontTable(int fd,
       return false;
     }
     // Font data is stored in net (big-endian) order.
-    uint16_t num_tables = base::numerics::U16FromBigEndian(bytes);
+    uint16_t num_tables = base::U16FromBigEndian(bytes);
 
     // Read the table directory.
     static const size_t kTableEntrySize = 16u;
@@ -86,12 +95,11 @@ bool GetFontTable(int fd,
     for (uint16_t i = 0u; i < num_tables; ++i) {
       auto entry = table_entries.subspan(i * kTableEntrySize, kTableEntrySize);
       // The `table_tag` is encoded in the same endian as the tag in the table.
-      auto tag = base::numerics::U32FromNativeEndian(entry.first<4u>());
+      auto tag = base::U32FromNativeEndian(entry.first<4u>());
       if (tag == table_tag) {
         // Font data is stored in net (big-endian) order.
-        data_offset = base::numerics::U32FromBigEndian(entry.subspan<8u, 4u>());
-        data_length =
-            base::numerics::U32FromBigEndian(entry.subspan<12u, 4u>());
+        data_offset = base::U32FromBigEndian(entry.subspan<8u, 4u>());
+        data_length = base::U32FromBigEndian(entry.subspan<12u, 4u>());
         break;
       }
     }
@@ -187,6 +195,62 @@ class BlinkFontMapper {
     return size;
   }
 
+  // This list is for CPWL_FontMap::GetDefaultFontByCharset().
+  // We pretend to have these font natively and let the browser (or underlying
+  // fontconfig) pick the proper font on the system.
+  //
+  // NOTE: When version 2 is enabled (features::kPdfiumPerRequestFontMatching),
+  // PDFium does NOT call this function. Instead, it calls MapFont() directly
+  // for each font request, eliminating the need for upfront enumeration.
+  void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(
+        !base::FeatureList::IsEnabled(features::kPdfiumPerRequestFontMatching));
+
+    if (!base::FeatureList::IsEnabled(kPdfEnumerateAllSystemFonts)) {
+      FPDF_AddInstalledFont(mapper, "Arial", FXFONT_DEFAULT_CHARSET);
+
+      size_t count = FPDF_GetDefaultTTFMapCount();
+      for (size_t i = 0; i < count; ++i) {
+        const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMapEntry(i);
+        if (font_map) {
+          FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
+        }
+      }
+      return;
+    }
+
+    std::set<std::pair<std::string, int>> seen_fonts;
+
+    if (sk_sp<SkFontConfigInterface> fci = SkFontConfigInterface::RefGlobal();
+        fci &&
+        fci.get() != SkFontConfigInterface::GetSingletonDirectInterface()) {
+      auto* font_loader = static_cast<font_service::FontLoader*>(fci.get());
+      for (const std::string& family_name : font_loader->ListFamilies()) {
+        CHECK(!family_name.empty());
+        if (bool inserted =
+                seen_fonts.emplace(family_name, FXFONT_DEFAULT_CHARSET).second;
+            inserted) {
+          FPDF_AddInstalledFont(mapper, family_name.c_str(),
+                                FXFONT_DEFAULT_CHARSET);
+        }
+      }
+    }
+
+    size_t count = FPDF_GetDefaultTTFMapCount();
+    for (size_t i = 0; i < count; ++i) {
+      const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMapEntry(i);
+      if (font_map) {
+        if (bool inserted =
+                seen_fonts.emplace(font_map->fontname, font_map->charset)
+                    .second;
+            inserted) {
+          FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
+        }
+      }
+    }
+  }
+
  private:
   static base::File* FileFromFontId(FontId font_id) {
     return reinterpret_cast<base::File*>(font_id);
@@ -200,19 +264,13 @@ BlinkFontMapper& GetBlinkFontMapper() {
   return *mapper;
 }
 
-// This list is for CPWL_FontMap::GetDefaultFontByCharset().
-// We pretend to have these font natively and let the browser (or underlying
-// fontconfig) pick the proper font on the system.
 void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
-  FPDF_AddInstalledFont(mapper, "Arial", FXFONT_DEFAULT_CHARSET);
-
-  size_t count = FPDF_GetDefaultTTFMapCount();
-  for (size_t i = 0; i < count; ++i) {
-    const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMapEntry(i);
-    if (font_map) {
-      FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
-    }
+  if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
+    CHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
+    return;
   }
+
+  GetBlinkFontMapper().EnumFonts(sysfontinfo, mapper);
 }
 
 void* MapFont(FPDF_SYSFONTINFO*,
@@ -252,12 +310,28 @@ void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
   GetBlinkFontMapper().DeleteFont(font_id);
 }
 
-FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
-                                GetFontData, 0, 0,         DeleteFont};
+FPDF_SYSFONTINFO g_font_info = {.version = 1,
+                                .Release = nullptr,
+                                .EnumFonts = EnumFonts,
+                                .MapFont = MapFont,
+                                .GetFont = nullptr,
+                                .GetFontData = GetFontData,
+                                .GetFaceName = nullptr,
+                                .GetFontCharset = nullptr,
+                                .DeleteFont = DeleteFont};
 
 }  // namespace
 
 void InitializeLinuxFontMapper() {
+  // Set version based on feature flag. Version 2 uses per-request font
+  // matching (MapFont called directly) instead of upfront enumeration
+  // (EnumFonts). This eliminates the expensive ListFamilies() IPC.
+  if (base::FeatureList::IsEnabled(features::kPdfiumPerRequestFontMatching)) {
+    g_font_info.version = 2;
+  } else {
+    g_font_info.version = 1;
+  }
+
   FPDF_SetSystemFontInfo(&g_font_info);
 }
 

@@ -14,19 +14,19 @@
 
 #include "base/time/time.h"
 #include "base/token.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "components/variations/variations_associated_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 namespace sessions {
 
@@ -79,6 +79,9 @@ struct SESSIONS_EXPORT SessionTab {
   // The tab's group ID, if any.
   std::optional<tab_groups::TabGroupId> group;
 
+  // The tab's split ID, if any.
+  std::optional<split_tabs::SplitTabId> split_id;
+
   // True if the tab is pinned.
   bool pinned;
 
@@ -124,7 +127,7 @@ struct SESSIONS_EXPORT SessionTabGroup {
 
   ~SessionTabGroup();
 
-  // Uniquely identifies this group. Initialized to zero and must be set be
+  // Uniquely identifies this group. Initialized to zero and must be set by
   // user. Unlike SessionID this should be globally unique, even across
   // different sessions.
   tab_groups::TabGroupId id;
@@ -134,6 +137,27 @@ struct SESSIONS_EXPORT SessionTabGroup {
   // Used to notify the SavedTabGroupModel that this restore group was once
   // saved and should track any changes made on the group.
   std::optional<std::string> saved_guid;
+};
+
+// SessionSplitTab -----------------------------------------------------------
+
+// Describes a split referenced by some SessionTab entry in its split_id
+// field. By default, this is initialized with placeholder values that are
+// visually obvious.
+struct SESSIONS_EXPORT SessionSplitTab {
+  explicit SessionSplitTab(const split_tabs::SplitTabId& id);
+
+  SessionSplitTab(const SessionSplitTab&) = delete;
+  SessionSplitTab& operator=(const SessionSplitTab&) = delete;
+
+  ~SessionSplitTab();
+
+  // Uniquely identifies this split. Initialized to zero and must be set by
+  // user. Unlike SessionID this should be globally unique, even across
+  // different sessions.
+  split_tabs::SplitTabId id_;
+
+  split_tabs::SplitTabVisualData split_visual_data_;
 };
 
 // SessionWindow -------------------------------------------------------------
@@ -155,7 +179,7 @@ struct SESSIONS_EXPORT SessionWindow {
     TYPE_APP = 2,
     TYPE_DEVTOOLS = 3,
     TYPE_APP_POPUP = 4,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TYPE_CUSTOM_TAB = 5,
 #endif
   };
@@ -197,12 +221,16 @@ struct SESSIONS_EXPORT SessionWindow {
   // The tabs, ordered by visual order.
   std::vector<std::unique_ptr<SessionTab>> tabs;
 
-  // Tab groups in no particular order. For each group in |tab_groups|, there
-  // should be at least one tab in |tabs| in the group.
+  // Tab groups in no particular order. For each group in `tab_groups`, there
+  // should be at least one tab in `tabs` in the group.
   std::vector<std::unique_ptr<SessionTabGroup>> tab_groups;
 
+  // Split tabs in no particular order. For each split in `split_tabs`, there
+  // should be at least one tab in `tabs` in the split.
+  std::vector<std::unique_ptr<SessionSplitTab>> split_tabs;
+
   // Is the window maximized, minimized, or normal?
-  ui::WindowShowState show_state;
+  ui::mojom::WindowShowState show_state;
 
   std::string app_name;
 

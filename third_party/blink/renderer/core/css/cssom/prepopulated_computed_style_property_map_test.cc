@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -20,8 +21,8 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   PrepopulatedComputedStylePropertyMapTest() = default;
 
   void SetElementWithStyle(const String& value) {
-    GetDocument().body()->setInnerHTML("<div id='target' style='" + value +
-                                       "'></div>");
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+        "<div id='target' style='" + value + "'></div>");
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -62,31 +63,39 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, NativePropertyAccessors) {
           GetDocument(), element->ComputedStyleRef(), native_properties,
           empty_custom_properties);
 
-  DummyExceptionStateForTesting exception_state;
+  {
+    DummyExceptionStateForTesting exception_state;
 
-  map->get(GetDocument().GetExecutionContext(), "color", exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+    map->get(GetDocument().GetExecutionContext(), "color", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
 
-  map->has(GetDocument().GetExecutionContext(), "color", exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+    map->has(GetDocument().GetExecutionContext(), "color", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
 
-  map->getAll(GetDocument().GetExecutionContext(), "color", exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+    map->getAll(GetDocument().GetExecutionContext(), "color", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+  }
 
-  map->get(GetDocument().GetExecutionContext(), "align-contents",
-           exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  exception_state.ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    map->get(GetDocument().GetExecutionContext(), "align-contents",
+             exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  map->has(GetDocument().GetExecutionContext(), "align-contents",
-           exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  exception_state.ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    map->has(GetDocument().GetExecutionContext(), "align-contents",
+             exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  map->getAll(GetDocument().GetExecutionContext(), "align-contents",
-              exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  exception_state.ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    map->getAll(GetDocument().GetExecutionContext(), "align-contents",
+                exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 }
 
 TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {

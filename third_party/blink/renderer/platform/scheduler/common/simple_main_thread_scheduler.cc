@@ -28,9 +28,7 @@ void SimpleMainThreadScheduler::PostDelayedIdleTask(const base::Location&,
                                                     base::TimeDelta delay,
                                                     Thread::IdleTask) {}
 
-void SimpleMainThreadScheduler::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {}
+void SimpleMainThreadScheduler::RemoveCancelledIdleTasks() {}
 
 void SimpleMainThreadScheduler::AddRAILModeObserver(
     RAILModeObserver* observer) {}
@@ -39,9 +37,9 @@ void SimpleMainThreadScheduler::RemoveRAILModeObserver(
     RAILModeObserver const* observer) {}
 
 void SimpleMainThreadScheduler::ForEachMainThreadIsolate(
-    base::RepeatingCallback<void(v8::Isolate* isolate)> callback) {
+    base::FunctionRef<void(v8::Isolate* isolate)> function) {
   if (isolate_) {
-    callback.Run(isolate_.get());
+    function(isolate_.get());
   }
 }
 

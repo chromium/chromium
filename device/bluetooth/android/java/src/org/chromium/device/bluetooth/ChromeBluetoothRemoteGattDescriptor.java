@@ -4,11 +4,15 @@
 
 package org.chromium.device.bluetooth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 
 /**
  * Exposes android.bluetooth.BluetoothGattDescriptor as necessary
@@ -17,16 +21,17 @@ import org.chromium.base.Log;
  * Lifetime is controlled by device::BluetoothRemoteGattDescriptorAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothRemoteGattDescriptor {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothRemoteGattDescriptorAndroid;
-    final Wrappers.BluetoothGattDescriptorWrapper mDescriptor;
+    final BluetoothGattDescriptorWrapper mDescriptor;
     final ChromeBluetoothDevice mChromeDevice;
 
     private ChromeBluetoothRemoteGattDescriptor(
             long nativeBluetoothRemoteGattDescriptorAndroid,
-            Wrappers.BluetoothGattDescriptorWrapper descriptorWrapper,
+            BluetoothGattDescriptorWrapper descriptorWrapper,
             ChromeBluetoothDevice chromeDevice) {
         mNativeBluetoothRemoteGattDescriptorAndroid = nativeBluetoothRemoteGattDescriptorAndroid;
         mDescriptor = descriptorWrapper;
@@ -55,7 +60,6 @@ final class ChromeBluetoothRemoteGattDescriptor {
             ChromeBluetoothRemoteGattDescriptorJni.get()
                     .onRead(
                             mNativeBluetoothRemoteGattDescriptorAndroid,
-                            ChromeBluetoothRemoteGattDescriptor.this,
                             status,
                             mDescriptor.getValue());
         }
@@ -69,10 +73,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
                 status == android.bluetooth.BluetoothGatt.GATT_SUCCESS ? "OK" : "Error");
         if (mNativeBluetoothRemoteGattDescriptorAndroid != 0) {
             ChromeBluetoothRemoteGattDescriptorJni.get()
-                    .onWrite(
-                            mNativeBluetoothRemoteGattDescriptorAndroid,
-                            ChromeBluetoothRemoteGattDescriptor.this,
-                            status);
+                    .onWrite(mNativeBluetoothRemoteGattDescriptorAndroid, status);
         }
     }
 
@@ -83,7 +84,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
     @CalledByNative
     private static ChromeBluetoothRemoteGattDescriptor create(
             long nativeBluetoothRemoteGattDescriptorAndroid,
-            Wrappers.BluetoothGattDescriptorWrapper descriptorWrapper,
+            BluetoothGattDescriptorWrapper descriptorWrapper,
             ChromeBluetoothDevice chromeDevice) {
         return new ChromeBluetoothRemoteGattDescriptor(
                 nativeBluetoothRemoteGattDescriptorAndroid, descriptorWrapper, chromeDevice);
@@ -98,7 +99,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
     // Implements BluetoothRemoteGattDescriptorAndroid::ReadRemoteDescriptor.
     @CalledByNative
     private boolean readRemoteDescriptor() {
-        if (!mChromeDevice.mBluetoothGatt.readDescriptor(mDescriptor)) {
+        if (!assumeNonNull(mChromeDevice.mBluetoothGatt).readDescriptor(mDescriptor)) {
             Log.i(TAG, "readRemoteDescriptor readDescriptor failed.");
             return false;
         }
@@ -112,7 +113,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
             Log.i(TAG, "writeRemoteDescriptor setValue failed.");
             return false;
         }
-        if (!mChromeDevice.mBluetoothGatt.writeDescriptor(mDescriptor)) {
+        if (!assumeNonNull(mChromeDevice.mBluetoothGatt).writeDescriptor(mDescriptor)) {
             Log.i(TAG, "writeRemoteDescriptor writeDescriptor failed.");
             return false;
         }
@@ -122,16 +123,9 @@ final class ChromeBluetoothRemoteGattDescriptor {
     @NativeMethods
     interface Natives {
         // Binds to BluetoothRemoteGattDescriptorAndroid::OnRead.
-        void onRead(
-                long nativeBluetoothRemoteGattDescriptorAndroid,
-                ChromeBluetoothRemoteGattDescriptor caller,
-                int status,
-                byte[] value);
+        void onRead(long nativeBluetoothRemoteGattDescriptorAndroid, int status, byte[] value);
 
         // Binds to BluetoothRemoteGattDescriptorAndroid::OnWrite.
-        void onWrite(
-                long nativeBluetoothRemoteGattDescriptorAndroid,
-                ChromeBluetoothRemoteGattDescriptor caller,
-                int status);
+        void onWrite(long nativeBluetoothRemoteGattDescriptorAndroid, int status);
     }
 }

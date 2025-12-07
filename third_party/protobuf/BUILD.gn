@@ -1,8 +1,9 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/linux/gtk/gtk.gni")
-import("//build/config/sanitizers/sanitizers.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 # Includes default args like 'enable_js_protobuf'.
 import("proto_library.gni")
@@ -15,28 +16,28 @@ config("protobuf_config") {
   include_dirs = [ "src" ]
   defines = [
     "GOOGLE_PROTOBUF_NO_RTTI",
-    "GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER",
-    "GOOGLE_PROTOBUF_INTERNAL_DONATE_STEAL_INLINE=0",
+    "PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT",
   ]
   if (!is_win) {
     defines += [ "HAVE_PTHREAD" ]
   }
 }
 
-config("protobuf_warnings") {
-  cflags = []
+config("protobuf_config_internal") {
+  include_dirs = [ "./third_party/utf8_range" ]
+
   if (is_clang) {
-    # protobuf-3 contains a few functions that are unused.
-    cflags += [ "-Wno-unused-function" ]
+    cflags = [
+      # For src/google/protobuf/map.cc:
+      "-Wno-deprecated-this-capture",
+      # For src/google/protobuf/generated_message_reflection.cc
+      "-Wno-unused-lambda-capture",
+    ]
   }
 }
 
-config("protoc_warnings") {
-  cflags = []
-  if (is_clang) {
-    # Some generates contain a few fields that are not used.
-    cflags += [ "-Wno-unused-private-field" ]
-  }
+proto_library("struct_proto") {
+  sources = [ "src/google/protobuf/struct.proto" ]
 }
 
 if (is_component_build) {
@@ -48,45 +49,30 @@ if (is_component_build) {
 # This config should be applied to targets using generated code from the proto
 # compiler. It sets up the include directories properly.
 config("using_proto") {
-  include_dirs = [
-    "src",
-    "$root_gen_dir/protoc_out",
-  ]
+  include_dirs = [ "src" ]
 }
 
-config("allow_deprecated_proto_fields") {
-  if (is_clang) {
-    cflags = [ "-DPROTOBUF_ALLOW_DEPRECATED=1" ]
-  }
+# On Android, we must use a static library to avoid symbol conflicts with
+# the system's version of protobuf.
+# Exclude Android fuzzing builds since having targets that include a proto_library
+# and a fuzzable_proto_library leads to symbol conflicts due to the inclusion of
+# the protobuf lite_runtime and full_runtime.
+# TODO(448809154): Investigate whether symbol conflicts with the system's protobuf
+# version appear on our android fuzzing devices.
+if (is_android && !use_fuzzing_engine_with_lpm) {
+  _protobuf_lite_target_type = "static_library"
+} else {
+  _protobuf_lite_target_type = "component"
 }
 
-protobuf_lite_cflags = []
-if (is_win) {
-  protobuf_lite_cflags = [
-    "/wd4018",  # signed/unsigned mismatch in comparison
-    "/wd4065",  # switch statement contains 'default' but no 'case' labels
-    "/wd4146",  # unary minus operator applied to unsigned type
-    "/wd4244",  # implicit conversion, possible loss of data
-    "/wd4267",  # size_t to int truncation
-    "/wd4291",  # no matching operator delete for a placement new.
-    "/wd4305",  # double to float truncation
-    "/wd4355",  # 'this' used in base member initializer list
-    "/wd4506",  # no definition for inline function (protobuf issue #240)
-    "/wd4715",  # not all control paths return a value (fixed in trunk)
-  ]
-}
-
-component("protobuf_lite") {
-  sources = protobuf_lite_sources + protobuf_headers
+target(_protobuf_lite_target_type, "protobuf_lite") {
+  sources = protobuf_lite_sources
+  public = protobuf_headers
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 
-    # Must be after no_chromium_code for warning flags to be ordered
-    # correctly.
-    ":protobuf_warnings",
-  ]
+  configs += [ ":protobuf_config_internal" ]
 
   # Build protobuf_lite with full optimizations so Clang can optimize the
   # initializer out. See 0029-make-initializers-optimizable.patch.
@@ -107,14 +93,12 @@ component("protobuf_lite") {
 
   public_configs = [ ":protobuf_config" ]
 
-  if (is_android) {
-    libs = [ "log" ]  # Used by src/google/protobuf/stubs/common.cc
-  }
+  deps = [ ":utf8_range" ]
 
-  cflags = protobuf_lite_cflags
+  public_deps = [ "${protobuf_abseil_dir}:absl" ]
 
   # Required for component builds. See http://crbug.com/172800.
-  if (is_component_build) {
+  if (is_component_build && _protobuf_lite_target_type == "component") {
     public_configs += [ ":protobuf_use_dlls" ]
     defines = [ "LIBPROTOBUF_EXPORTS" ]
   }
@@ -153,8 +137,6 @@ static_library("protobuf_full") {
       "//gpu:gl_lpm_fuzzer_proto",
       "//gpu:gl_lpm_fuzzer_proto_gen",
       "//gpu:gl_lpm_shader_to_string_unittest",
-      "//testing/libfuzzer/fuzzers:command_buffer_lpm_fuzzer_proto",
-      "//testing/libfuzzer/fuzzers:command_buffer_lpm_fuzzer_proto_gen",
       "//third_party/sqlite:sqlite3_lpm_corpus_gen",
 
       # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not included
@@ -182,10 +164,21 @@ static_library("protobuf_full") {
 
       # The Cast Core gRPC generator tool.
       "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
+
+      # The proto_extras plugin generates code that some of the above fuzzers
+      # use, and thus needs to know the full types.
+      "//components/proto_extras:protobuf_full_support",
+
+      # Sync requires descriptors for testing.
+      "//components/sync:sync_full_proto_unittests",
+      "//components/sync/protocol:full_proto",
+
+      # third_party/federated_compute requires it for testing.
+      "//third_party/federated_compute:federated_compute_tests",
     ]
   }
 
-  deps = [ "//third_party/zlib" ]
+  deps = [ ":utf8_range" ]
 
   # In component build, protobuf_full can't depend on protobuf_lite because
   # it uses non-PROTOBUF_EXPORT symbols; in non-component build, protobuf_full
@@ -193,24 +186,20 @@ static_library("protobuf_full") {
   # protobuf_lite_sources to avoid ODR violations in targets that link both.
   # See crbug.com/1338164.
   if (is_component_build) {
-    sources = protobuf_lite_sources + protobuf_sources + protobuf_headers
+    sources = protobuf_lite_sources + protobuf_sources
   } else {
-    sources = protobuf_sources + protobuf_headers
+    sources = protobuf_sources
     deps += [ ":protobuf_lite" ]
   }
 
-  if (is_android) {
-    libs = [ "log" ]  # Used by src/google/protobuf/stubs/common.cc
-  }
+  public = protobuf_headers
+
+  public_deps = [ "${protobuf_abseil_dir}:absl" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 
-    # Must be after no_chromium_code for warning flags to be ordered
-    # correctly.
-    ":protobuf_warnings",
-  ]
+  configs += [ ":protobuf_config_internal" ]
 
   # Remove coverage and Sanitizers other than ASan for a performance boost when
   # fuzzing. ASan can't be removed here because of a bug preventing unsanitized
@@ -222,77 +211,112 @@ static_library("protobuf_full") {
     configs -= [ "//build/config/win:lean_and_mean" ]
   }
   public_configs = [ ":protobuf_config" ]
-
-  cflags = protobuf_lite_cflags
-
-  defines = [ "HAVE_ZLIB" ]
 }
 
 # Only compile the compiler for the host architecture.
 if (current_toolchain == host_toolchain) {
-  # protoc compiler is separated into protoc library and executable targets to
-  # support protoc plugins that need to link libprotoc, but not the main()
-  # itself. See src/google/protobuf/compiler/plugin.h
-  source_set("protoc_java") {
-    sources = protoc_java_sources + protoc_java_headers
+  # Code for compiling bindings for individual languages are pulled into
+  # separate build targets for two reasons:
+  # 1. To avoid naming collisions between files in the same source set.
+  # 2. Because Chromium doesn't need a lot of the languages.
+
+  # Note we have to separate the 3 Java directories (java/, java/full/ and
+  # java/lite/) into 3 different GN targets because they contain .cc files with
+  # identical names (e.g. message.cc), and source_set() doesn't support multiple
+  # .cc files with the same basename. We use a single target for the headers as
+  # these directories tend to cross-#include each other which makes things
+  # challenging for GN header dependency checks.
+  source_set("protoc_java_all_headers") {
+    sources = protoc_java_all_headers
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
+    configs += [ "//build/config/compiler:no_chromium_code" ]
 
-      # Must be after no_chromium_code for warning flags to be ordered
-      # correctly.
-      ":protobuf_warnings",
-      ":protoc_warnings",
-    ]
-
-    public_configs = [ ":protobuf_config" ]
-
-    cflags = protobuf_lite_cflags
+    configs += [ ":protobuf_config_internal" ]
 
     public_deps = [ ":protobuf_full" ]
   }
+  source_set("protoc_java") {
+    sources = protoc_java_sources
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [
+      ":protobuf_full",
+      ":protoc_java_all_headers",
+    ]
+  }
+  source_set("protoc_java_full") {
+    sources = protoc_java_full_sources
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [
+      ":protobuf_full",
+      ":protoc_java_all_headers",
+    ]
+  }
+  source_set("protoc_java_lite") {
+    sources = protoc_java_lite_sources
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [
+      ":protobuf_full",
+      ":protoc_java_all_headers",
+    ]
+  }
+
+  source_set("protoc_cpp") {
+    sources = protoc_cpp_sources + protoc_cpp_headers
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [ ":protobuf_full" ]
+  }
+
   source_set("protoc_python") {
     sources = protoc_python_sources + protoc_python_headers
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
+    configs += [ "//build/config/compiler:no_chromium_code" ]
 
-      # Must be after no_chromium_code for warning flags to be ordered
-      # correctly.
-      ":protobuf_warnings",
-      ":protoc_warnings",
-    ]
-
-    public_configs = [ ":protobuf_config" ]
-
-    cflags = protobuf_lite_cflags
+    configs += [ ":protobuf_config_internal" ]
 
     public_deps = [ ":protobuf_full" ]
   }
+
+  # protoc generates language-specific bindings from protos.
   static_library("protoc_lib") {
     sources = protoc_sources + protoc_headers
 
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
-
-      # Must be after no_chromium_code for warning flags to be ordered
-      # correctly.
-      ":protobuf_warnings",
-      ":protoc_warnings",
-    ]
-    if (is_win) {
-      # This is defined internally, don't warn on duplicate.
-      configs -= [ "//build/config/win:lean_and_mean" ]
-    }
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":protobuf_config_internal" ]
 
     public_configs = [ ":protobuf_config" ]
 
-    cflags = protobuf_lite_cflags
-
     public_deps = [ ":protobuf_full" ]
     deps = [
+      ":protoc_cpp",
       ":protoc_java",
+      ":protoc_java_all_headers",
+      ":protoc_java_full",
+      ":protoc_java_lite",
+      ":protoc_python",
+    ]
+    allow_circular_includes_from = [
+      ":protoc_java",
+      ":protoc_java_all_headers",
+      ":protoc_java_full",
+      ":protoc_java_lite",
+      ":protoc_cpp",
       ":protoc_python",
     ]
   }
@@ -302,14 +326,15 @@ if (current_toolchain == host_toolchain) {
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    cflags = protobuf_lite_cflags
+    configs += [ ":protobuf_config_internal" ]
 
     deps = [
+      ":protoc_cpp",
+      ":protoc_java",
+      ":protoc_java_full",
+      ":protoc_java_lite",
       ":protoc_lib",
-
-      # Default manifest on Windows (a no-op elsewhere).
-      "//build/win:default_exe_manifest",
+      ":protoc_python",
     ]
     if (enable_js_protobuf) {
       deps += [ "//third_party/protobuf-javascript:protoc-gen-js" ]
@@ -317,21 +342,32 @@ if (current_toolchain == host_toolchain) {
   }
 }
 
-google_python_dir = "$root_out_dir/pyproto/google"
+source_set("utf8_range") {
+  sources = [
+    "third_party/utf8_range/utf8_range.c",
+    "third_party/utf8_range/utf8_range.h",
+    "third_party/utf8_range/utf8_validity.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":protobuf_config_internal" ]
+
+  deps = [ "${protobuf_abseil_dir}:absl" ]
+}
 
 copy("copy_google_protobuf") {
-  # TODO(ncarter): protoc's python generator treats descriptor.proto
-  # specially, but only when the input path is exactly
-  # "google/protobuf/descriptor.proto".  I'm not sure how to execute a rule
-  # from a different directory.  For now, use a manually-generated copy of
-  # descriptor_pb2.py.
+  # See README.chromium for how this file is generated.
   sources = pyproto_sources + [ "python/google/protobuf/descriptor_pb2.py" ]
-  outputs = [ "$google_python_dir/protobuf/{{source_file_part}}" ]
+  outputs = [ "$proto_python_root/google/protobuf/{{source_file_part}}" ]
 }
 
 copy("copy_google_protobuf_internal") {
-  sources = pyproto_internal_sources
-  outputs = [ "$google_python_dir/protobuf/internal/{{source_file_part}}" ]
+  # See README.chromium for how this file is generated.
+  sources = pyproto_internal_sources +
+            [ "python/google/protobuf/internal/python_edition_defaults.py" ]
+  outputs =
+      [ "$proto_python_root/google/protobuf/internal/{{source_file_part}}" ]
 }
 
 # Build time dependency for action rules.
@@ -340,6 +376,14 @@ group("py_proto") {
     ":copy_google_protobuf",
     ":copy_google_protobuf_internal",
   ]
+}
+
+# Note: This exists for Cronet in AOSP where we can't import prebuilts. We import
+# the raw sources and compile them using a specialized pipeline. See crbug.com/419480317.
+if (is_android && is_cronet_for_aosp_build) {
+  android_library("proto_runtime_lite_java") {
+    sources = javaproto_sources
+  }
 }
 
 # Runtime dependency if the target needs the python scripts.
@@ -357,6 +401,8 @@ if (enable_js_protobuf) {
     sources = [
       "//third_party/google-closure-library/closure/goog/array/array.js",
       "//third_party/google-closure-library/closure/goog/asserts/asserts.js",
+      "//third_party/google-closure-library/closure/goog/asserts/dom.js",
+      "//third_party/google-closure-library/closure/goog/async/throwexception.js",
       "//third_party/google-closure-library/closure/goog/base.js",
       "//third_party/google-closure-library/closure/goog/crypt/base64.js",
       "//third_party/google-closure-library/closure/goog/crypt/crypt.js",
@@ -364,11 +410,13 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/dom/asserts.js",
       "//third_party/google-closure-library/closure/goog/dom/browserfeature.js",
       "//third_party/google-closure-library/closure/goog/dom/dom.js",
+      "//third_party/google-closure-library/closure/goog/dom/element.js",
       "//third_party/google-closure-library/closure/goog/dom/htmlelement.js",
       "//third_party/google-closure-library/closure/goog/dom/nodetype.js",
       "//third_party/google-closure-library/closure/goog/dom/safe.js",
       "//third_party/google-closure-library/closure/goog/dom/tagname.js",
       "//third_party/google-closure-library/closure/goog/dom/tags.js",
+      "//third_party/google-closure-library/closure/goog/flags/flags.js",
       "//third_party/google-closure-library/closure/goog/fs/blob.js",
       "//third_party/google-closure-library/closure/goog/fs/url.js",
       "//third_party/google-closure-library/closure/goog/functions/functions.js",
@@ -384,6 +432,8 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/i18n/bidi.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/browser.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/engine.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/highentropy/highentropydata.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/highentropy/highentropyvalue.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/platform.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/useragent.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/util.js",
@@ -400,15 +450,31 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/useragent/product.js",
       "//third_party/google-closure-library/closure/goog/useragent/useragent.js",
       "//third_party/protobuf-javascript/src/asserts.js",
+      "//third_party/protobuf-javascript/src/binary/any_field_type.js",
       "//third_party/protobuf-javascript/src/binary/arith.js",
-      "//third_party/protobuf-javascript/src/binary/constants.js",
+      "//third_party/protobuf-javascript/src/binary/binary_constants.js",
+      "//third_party/protobuf-javascript/src/binary/bytesource.js",
       "//third_party/protobuf-javascript/src/binary/decoder.js",
+      "//third_party/protobuf-javascript/src/binary/decoder_alias.js",
       "//third_party/protobuf-javascript/src/binary/encoder.js",
+      "//third_party/protobuf-javascript/src/binary/encoder_alias.js",
+      "//third_party/protobuf-javascript/src/binary/errors.js",
+      "//third_party/protobuf-javascript/src/binary/internal_buffer.js",
       "//third_party/protobuf-javascript/src/binary/reader.js",
+      "//third_party/protobuf-javascript/src/binary/reader_alias.js",
+      "//third_party/protobuf-javascript/src/binary/repeated_field_type.js",
+      "//third_party/protobuf-javascript/src/binary/scalar_field_type.js",
+      "//third_party/protobuf-javascript/src/binary/utf8.js",
       "//third_party/protobuf-javascript/src/binary/utils.js",
       "//third_party/protobuf-javascript/src/binary/writer.js",
+      "//third_party/protobuf-javascript/src/binary/writer_alias.js",
+      "//third_party/protobuf-javascript/src/bytestring.js",
+      "//third_party/protobuf-javascript/src/internal_bytes.js",
+      "//third_party/protobuf-javascript/src/internal_options.js",
+      "//third_party/protobuf-javascript/src/internal_public.js",
       "//third_party/protobuf-javascript/src/map.js",
       "//third_party/protobuf-javascript/src/message.js",
+      "//third_party/protobuf-javascript/src/unsafe_bytestring.js",
     ]
   }
 }

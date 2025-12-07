@@ -6,8 +6,9 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -16,41 +17,24 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "net/base/features.h"
 #include "url/gurl.h"
 
 namespace privacy_sandbox {
 
 TrackingProtectionSettings::TrackingProtectionSettings(
     PrefService* pref_service,
-    HostContentSettingsMap* host_content_settings_map,
-    TrackingProtectionOnboarding* onboarding_service,
     bool is_incognito)
     : pref_service_(pref_service),
-      host_content_settings_map_(host_content_settings_map),
-      onboarding_service_(onboarding_service),
       is_incognito_(is_incognito) {
   CHECK(pref_service_);
-  CHECK(host_content_settings_map_);
 
   pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kEnableDoNotTrack,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kFingerprintingProtectionEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnFingerprintingProtectionPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kIpProtectionEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnIpProtectionPrefChanged,
-          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kBlockAll3pcToggleEnabled,
       base::BindRepeating(
@@ -73,42 +57,23 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
           base::Unretained(this)));
 
-  if (onboarding_service_) {
-    // Onboarding status may change based on a flag before this service starts.
-    OnTrackingProtectionOnboardingUpdated(
-        onboarding_service_->GetOnboardingStatus());
-    onboarding_observation_.Observe(onboarding_service_);
-  }
-
-  MaybeInitializeIppPref();
+// This logic accesses prefs that aren't registered on iOS.
+#if !BUILDFLAG(IS_IOS)
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
-
-  // If feature status changed then we need to migrate content settings.
-  if (base::FeatureList::IsEnabled(kTrackingProtectionContentSettingFor3pcb) &&
-      !pref_service_->GetBoolean(prefs::kUserBypass3pcExceptionsMigrated)) {
-    MigrateUserBypassExceptions(ContentSettingsType::COOKIES,
-                                ContentSettingsType::TRACKING_PROTECTION);
-    pref_service_->SetBoolean(prefs::kUserBypass3pcExceptionsMigrated, true);
-  } else if (!base::FeatureList::IsEnabled(
-                 kTrackingProtectionContentSettingFor3pcb) &&
-             pref_service_->GetBoolean(
-                 prefs::kUserBypass3pcExceptionsMigrated)) {
-    MigrateUserBypassExceptions(ContentSettingsType::TRACKING_PROTECTION,
-                                ContentSettingsType::COOKIES);
-    pref_service_->SetBoolean(prefs::kUserBypass3pcExceptionsMigrated, false);
+  // Set Mode B pref to force rollback flow.
+  if (privacy_sandbox::kRollBackModeBForced.Get()) {
+    pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   }
+#endif
 }
 
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
 
 void TrackingProtectionSettings::Shutdown() {
   observers_.Clear();
-  host_content_settings_map_ = nullptr;
   pref_change_registrar_.Reset();
   pref_service_ = nullptr;
-  onboarding_service_ = nullptr;
-  onboarding_observation_.Reset();
 }
 
 bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
@@ -124,69 +89,6 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
           is_incognito_);
 }
 
-bool TrackingProtectionSettings::IsFingerprintingProtectionEnabled() const {
-  return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kFingerprintingProtectionSetting);
-}
-
-bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
-  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kIpProtectionV1);
-}
-
-bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
-  return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
-}
-
-void TrackingProtectionSettings::AddTrackingProtectionException(
-    const GURL& first_party_url,
-    bool is_user_bypass_exception) {
-  content_settings::ContentSettingConstraints constraints;
-  if (is_user_bypass_exception) {
-    constraints.set_lifetime(
-        content_settings::features::kUserBypassUIExceptionExpiration.Get());
-  }
-
-  host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW,
-      constraints);
-}
-
-void TrackingProtectionSettings::RemoveTrackingProtectionException(
-    const GURL& first_party_url) {
-  // Exceptions added via `AddTrackingProtectionException` are site scoped. This
-  // resets both origin scoped and site scoped exceptions.
-  auto pattern =
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url);
-  content_settings::SettingInfo info;
-  host_content_settings_map_->GetContentSetting(
-      GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, &info);
-  if (!info.secondary_pattern.HasDomainWildcard()) {
-    pattern = info.secondary_pattern;
-  }
-  host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(), pattern,
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
-}
-
-ContentSetting TrackingProtectionSettings::GetTrackingProtectionSetting(
-    const GURL& first_party_url,
-    content_settings::SettingInfo* info) const {
-  return host_content_settings_map_->GetContentSetting(
-      GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, info);
-}
-
-void TrackingProtectionSettings::MaybeInitializeIppPref() {
-  if (pref_service_->GetBoolean(prefs::kIpProtectionInitializedByDogfood) ||
-      !base::FeatureList::IsEnabled(kIpProtectionDogfoodDefaultOn)) {
-    return;
-  }
-  pref_service_->SetBoolean(prefs::kIpProtectionEnabled, true);
-  pref_service_->SetBoolean(prefs::kIpProtectionInitializedByDogfood, true);
-}
-
 // TODO(https://b/333527273): Delete with Mode B cleanup
 void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   if (!IsTrackingProtection3pcdEnabled()) {
@@ -197,67 +99,6 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
       pref_service_->IsManagedPreference(
           prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)) {
     pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-  }
-}
-
-// TODO(https://b/333527273): Update with Mode B cleanup
-void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
-    TrackingProtectionOnboarding::OnboardingStatus onboarding_status) {
-  switch (onboarding_status) {
-    case TrackingProtectionOnboarding::OnboardingStatus::kIneligible:
-    case TrackingProtectionOnboarding::OnboardingStatus::kEligible:
-      pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-      return;
-    case TrackingProtectionOnboarding::OnboardingStatus::kOnboarded:
-      pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-      return;
-  }
-}
-void TrackingProtectionSettings::MigrateUserBypassExceptions(
-    ContentSettingsType from,
-    ContentSettingsType to) {
-  // Gives us a bit of padding and there's no need to migrate an exception
-  // expiring within the next 5 minutes.
-  const base::Time now = base::Time::Now() + base::Minutes(5);
-  ContentSettingsForOneType existing_exceptions =
-      host_content_settings_map_->GetSettingsForOneType(from);
-  for (auto exception : existing_exceptions) {
-    // Ensure the exception comes from user bypass.
-    if (exception.metadata.expiration() <= now ||
-        !exception.primary_pattern.MatchesAllHosts() ||
-        exception.secondary_pattern.MatchesAllHosts() ||
-        exception.setting_value != CONTENT_SETTING_ALLOW) {
-      continue;
-    }
-    // Add an exception for the type we're migrating to.
-    content_settings::ContentSettingConstraints constraints;
-    constraints.set_lifetime(exception.metadata.expiration() -
-                             base::Time::Now());
-    host_content_settings_map_->SetContentSettingCustomScope(
-        ContentSettingsPattern::Wildcard(), exception.secondary_pattern, to,
-        CONTENT_SETTING_ALLOW, constraints);
-    // Remove the exception for the type we're migrating from.
-    host_content_settings_map_->SetContentSettingCustomScope(
-        ContentSettingsPattern::Wildcard(), exception.secondary_pattern, from,
-        CONTENT_SETTING_DEFAULT);
-  }
-}
-
-void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnDoNotTrackEnabledChanged();
-  }
-}
-
-void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnIpProtectionEnabledChanged();
-  }
-}
-
-void TrackingProtectionSettings::OnFingerprintingProtectionPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnFingerprintingProtectionEnabledChanged();
   }
 }
 
@@ -283,6 +124,38 @@ void TrackingProtectionSettings::AddObserver(
 void TrackingProtectionSettings::RemoveObserver(
     TrackingProtectionSettingsObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
+                                PrefService* prefs) {
+  // Only set prefs if:
+  // 1. User is in Mode B and rollback feature is enabled.
+  if (!prefs->GetBoolean(prefs::kTrackingProtection3pcdEnabled) ||
+      !base::FeatureList::IsEnabled(kRollBackModeB)) {
+    return;
+  }
+  // 2. We are not waiting for pref sync updates.
+  if (sync_service && sync_service->IsSyncFeatureEnabled() &&
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPreferences) &&
+      sync_service->GetDownloadStatusFor(syncer::DataType::PREFERENCES) ==
+          syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates) {
+    return;
+  }
+
+  // Hardcoded as using CookieControlsMode creates a circular dependency.
+  const int kBlockThirdParty = 1;
+  bool allowed_3pcs =
+      !prefs->GetBoolean(prefs::kBlockAll3pcToggleEnabled) &&
+      prefs->GetInteger(prefs::kCookieControlsMode) != kBlockThirdParty;
+  if (!allowed_3pcs) {
+    prefs->SetInteger(prefs::kCookieControlsMode, kBlockThirdParty);
+  }
+  // If 3PCs are allowed then we should show the notice.
+  prefs->SetBoolean(prefs::kShowRollbackUiModeB, allowed_3pcs);
+  base::UmaHistogramBoolean("Privacy.3PCD.RollbackNotice.ShouldShow",
+                            allowed_3pcs);
+  prefs->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
 }
 
 }  // namespace privacy_sandbox

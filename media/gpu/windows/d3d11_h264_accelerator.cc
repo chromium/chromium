@@ -9,6 +9,7 @@
 
 #include "media/gpu/windows/d3d11_h264_accelerator.h"
 
+#include <tuple>
 #include <type_traits>
 
 #include "base/memory/ptr_util.h"
@@ -301,7 +302,7 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
       return H264DecoderStatus::kFail;
     }
 
-    memcpy(params_buffer.data(), &pic_param, sizeof(pic_param));
+    params_buffer.data().copy_prefix_from(base::byte_span_from_ref(pic_param));
 
     if (!params_buffer.Commit()) {
       return H264DecoderStatus::kFail;
@@ -315,11 +316,20 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
     const auto& scaling_list4x4_source = pps->pic_scaling_matrix_present_flag
                                              ? pps->scaling_list4x4
                                              : sps_.scaling_list4x4;
-    static_assert(std::is_same<
-                  std::remove_reference_t<decltype(iq_matrix.bScalingLists4x4)>,
-                  std::remove_const_t<std::remove_reference_t<
-                      decltype(scaling_list4x4_source)>>>::value);
-    memcpy(iq_matrix.bScalingLists4x4, scaling_list4x4_source,
+    static_assert(
+        std::is_same<
+            std::remove_reference_t<decltype(iq_matrix.bScalingLists4x4[0][0])>,
+            std::remove_const_t<std::remove_reference_t<
+                decltype(scaling_list4x4_source[0][0])>>>::value);
+    static_assert(
+        std::extent<decltype(iq_matrix.bScalingLists4x4)>() <=
+        std::tuple_size<
+            std::remove_reference_t<decltype(scaling_list4x4_source)>>());
+    static_assert(
+        std::extent<decltype(iq_matrix.bScalingLists4x4[0])>() <=
+        std::tuple_size<
+            std::remove_reference_t<decltype(scaling_list4x4_source[0])>>());
+    memcpy(iq_matrix.bScalingLists4x4, scaling_list4x4_source.data(),
            sizeof(iq_matrix.bScalingLists4x4));
 
     const auto& scaling_list8x8_source = pps->pic_scaling_matrix_present_flag
@@ -327,14 +337,18 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
                                              : sps_.scaling_list8x8;
     static_assert(
         std::is_same<
-            std::remove_reference_t<decltype(iq_matrix.bScalingLists8x8[0])>,
+            std::remove_reference_t<decltype(iq_matrix.bScalingLists8x8[0][0])>,
             std::remove_const_t<std::remove_reference_t<
-                decltype(scaling_list8x8_source[0])>>>::value);
+                decltype(scaling_list8x8_source[0][0])>>>::value);
     static_assert(
         std::extent<decltype(iq_matrix.bScalingLists8x8)>() <=
-        std::extent<
+        std::tuple_size<
             std::remove_reference_t<decltype(scaling_list8x8_source)>>());
-    memcpy(iq_matrix.bScalingLists8x8, scaling_list8x8_source,
+    static_assert(
+        std::extent<decltype(iq_matrix.bScalingLists8x8[0])>() <=
+        std::tuple_size<
+            std::remove_reference_t<decltype(scaling_list8x8_source[0])>>());
+    memcpy(iq_matrix.bScalingLists8x8, scaling_list8x8_source.data(),
            sizeof(iq_matrix.bScalingLists8x8));
 
     auto iq_matrix_buffer =
@@ -345,7 +359,8 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
       return H264DecoderStatus::kFail;
     }
 
-    memcpy(iq_matrix_buffer.data(), &iq_matrix, sizeof(iq_matrix));
+    iq_matrix_buffer.data().copy_prefix_from(
+        base::byte_span_from_ref(iq_matrix));
 
     if (!iq_matrix_buffer.Commit()) {
       return H264DecoderStatus::kFail;

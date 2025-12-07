@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -32,6 +33,8 @@ CustomLinksStore::CustomLinksStore(PrefService* prefs) : prefs_(prefs) {
 CustomLinksStore::~CustomLinksStore() = default;
 
 std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
+  static bool has_recorded_first_load_stats = false;
+
   std::vector<CustomLinksManager::Link> links;
 
   const base::Value::List& stored_links =
@@ -57,6 +60,13 @@ std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
     links.emplace_back(CustomLinksManager::Link{
         std::move(url), base::UTF8ToUTF16(*title_string), is_most_visited});
   }
+
+  if (!has_recorded_first_load_stats) {
+    has_recorded_first_load_stats = true;
+    ntp_tiles::metrics::RecordNumberOfCustomTilesOnFirstNtp(
+        static_cast<int>(links.size()));
+  }
+
   return links;
 }
 

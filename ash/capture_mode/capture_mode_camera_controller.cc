@@ -30,12 +30,13 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -108,7 +109,7 @@ bool DidDevicesChange(
   for (const auto& incoming_camera : incoming_list) {
     const auto& device_id = incoming_camera.descriptor.device_id;
     const auto iter =
-        base::ranges::find(current_list, device_id, &CameraInfo::device_id);
+        std::ranges::find(current_list, device_id, &CameraInfo::device_id);
     if (iter == current_list.end())
       return true;
 
@@ -171,7 +172,7 @@ bool ShouldCameraActLikeAMirror(const CameraInfo& camera_info) {
 // nullptr if no such item exists.
 const CameraInfo* GetCameraInfoById(const CameraId& id,
                                     const CameraInfoList& list) {
-  const auto iter = base::ranges::find(list, id, &CameraInfo::camera_id);
+  const auto iter = std::ranges::find(list, id, &CameraInfo::camera_id);
   return iter == list.end() ? nullptr : &(*iter);
 }
 
@@ -265,7 +266,7 @@ void UpdateFloatingPanelBoundsIfNeeded(aura::Window* root_window) {
 gfx::Size CalculatePreviewInitialSize() {
   int max_shorter_side = 0;
   for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const auto work_area = display::Screen::GetScreen()
+    const auto work_area = display::Screen::Get()
                                ->GetDisplayNearestWindow(root_window)
                                .work_area();
     const int shorter_side = std::min(work_area.width(), work_area.height());
@@ -367,8 +368,9 @@ CameraId::CameraId(std::string model_id_or_display_name, int number)
 }
 
 bool CameraId::operator<(const CameraId& rhs) const {
-  const int result = std::strcmp(model_id_or_display_name_.c_str(),
-                                 rhs.model_id_or_display_name_.c_str());
+  const int result =
+      UNSAFE_TODO(std::strcmp(model_id_or_display_name_.c_str(),
+                              rhs.model_id_or_display_name_.c_str()));
   return result != 0 ? result : (number_ < rhs.number_);
 }
 

@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+static_library("browser") {
+  sources = [
+    "content_walletable_pass_ingestion_controller.cc",
+    "content_walletable_pass_ingestion_controller.h",
+    "walletable_pass_barcode_detector.h",
+    "walletable_pass_barcode_detector_impl.cc",
+    "walletable_pass_barcode_detector_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/content/browser",
+    "//components/wallet/content/common/mojom",
+    "//components/wallet/core/browser",
+    "//content/public/browser",
+    "//services/shape_detection/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "walletable_pass_barcode_detector_impl_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/wallet/content/common/mojom",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/shape_detection/public/mojom",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -9,7 +9,6 @@
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -18,7 +17,6 @@ namespace ash {
 
 class AppListView;
 class AppListViewDelegate;
-class ApplicationDragAndDropHost;
 class ContentsView;
 class PaginationModel;
 class SearchBoxView;
@@ -44,11 +42,6 @@ class ASH_EXPORT AppListMainView : public views::View,
 
   SearchBoxView* search_box_view() const { return search_box_view_; }
 
-  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
-  // operations outside the application list.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
-
   ContentsView* contents_view() const { return contents_view_; }
   AppListViewDelegate* view_delegate() { return delegate_; }
 
@@ -62,7 +55,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   // Overridden from SearchBoxViewDelegate:
   void QueryChanged(const std::u16string& trimmed_query,
                     bool initiated_by_user) override;
-  void AssistantButtonPressed() override;
   void CloseButtonPressed() override;
   void ActiveChanged(SearchBoxViewBase* sender) override;
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;

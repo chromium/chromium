@@ -8,7 +8,7 @@
  * zone customization section.
  */
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr, getPresetColors, GREEN, INDIGO, RAINBOW, RED, WALLPAPER, YELLOW} from '../utils.js';

@@ -35,14 +35,11 @@ MediaFoundationMojoMediaClient::CreateMediaFoundationRenderer(
     mojom::FrameInterfaceFactory* frame_interfaces,
     mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
-        renderer_extension_receiver,
-    mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-        client_extension_remote) {
+        renderer_extension_receiver) {
   DVLOG_FUNC(1);
   return std::make_unique<MediaFoundationRendererWrapper>(
       std::move(task_runner), frame_interfaces, std::move(media_log_remote),
-      std::move(renderer_extension_receiver),
-      std::move(client_extension_remote));
+      std::move(renderer_extension_receiver));
 }
 
 std::unique_ptr<CdmFactory> MediaFoundationMojoMediaClient::CreateCdmFactory(

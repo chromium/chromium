@@ -20,8 +20,7 @@ HeadlessModePolicy::HeadlessMode HeadlessModePolicy::GetPolicy(
   int value = pref_service->GetInteger(headless::prefs::kHeadlessMode);
   if (value < static_cast<int>(HeadlessMode::kMinValue) ||
       value > static_cast<int>(HeadlessMode::kMaxValue)) {
-    NOTREACHED_IN_MIGRATION();
-    return HeadlessMode::kDefaultValue;
+    NOTREACHED();
   }
 
   return static_cast<HeadlessMode>(value);

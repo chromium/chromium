@@ -38,6 +38,8 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   void DlcStateChangedForTest(dbus::Signal* signal) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void WaitForServiceToBeAvailable(
+      base::OnceCallback<void(bool)> callback) override;
 
   void NotifyObserversForTest(const dlcservice::DlcState& dlc_state);
 
@@ -59,6 +61,15 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   // successful, even when it returns an error.
   void set_skip_adding_dlc_info_on_error(bool skip) {
     skip_adding_dlc_info_on_error_ = skip;
+  }
+
+  // Sets whether the install progress callback should be triggered on install.
+  void set_trigger_install_progress(bool trigger) {
+    should_trigger_install_progress_ = trigger;
+  }
+
+  void set_service_availability(bool available) {
+    service_available_ = available;
   }
 
   void set_install_root_path(std::string_view path) {
@@ -92,7 +103,10 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
 
   std::string install_err_ = dlcservice::kErrorNone;
   base::circular_deque<std::string> extra_install_errs_;
+  bool is_progress_completed_ = false;
   bool skip_adding_dlc_info_on_error_ = false;
+  bool should_trigger_install_progress_ = false;
+  bool service_available_ = true;
   std::string uninstall_err_ = dlcservice::kErrorNone;
   std::string purge_err_ = dlcservice::kErrorNone;
   std::string get_existing_dlcs_err_ = dlcservice::kErrorNone;

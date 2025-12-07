@@ -5,12 +5,12 @@
 // Custom binding for the image writer private API.
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setUpdateArgumentsPostValidate(
       'writeFromFile', function(device, fileEntry, callback) {
-    var fileSystemName = fileEntry.filesystem.name;
-    var relativePath = $String.slice(fileEntry.fullPath, 1);
-    return [device, fileSystemName, relativePath, callback];
-  });
+        const fileSystemName = fileEntry.filesystem.name;
+        const relativePath = $String.slice(fileEntry.fullPath, 1);
+        return [device, fileSystemName, relativePath, callback];
+      });
 });

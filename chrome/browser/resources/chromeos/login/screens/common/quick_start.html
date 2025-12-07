@@ -135,6 +135,13 @@ found in the LICENSE file.
 </style>
 <!-- INITIAL UI STEP - EMPTY -->
 <oobe-adaptive-dialog for-step="default">
+  <h1 slot="title" hidden="[[!isOobeOverlayDebuggerEnabled]]">
+    Debug Notice:
+  </h1>
+  <div slot="subtitle" hidden="[[!isOobeOverlayDebuggerEnabled]]">
+    <div>QuickStart cannot be used when the OOBE overlay debugger is enabled.
+    </div>
+  </div>
 </oobe-adaptive-dialog>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
 <oobe-loading-dialog id="loadingDialog" for-step="connecting_to_phone"
@@ -276,7 +283,8 @@ found in the LICENSE file.
   </div>
 </oobe-adaptive-dialog>
 <!-- SETUP COMPLETE STEP -->
-<oobe-adaptive-dialog for-step="setup_complete" aria-live="polite">
+<oobe-adaptive-dialog id="setupCompleteDialog"
+    for-step="setup_complete" aria-live="polite">
   <iron-icon slot="icon" icon="oobe-32:googleg">
   </iron-icon>
   <h1 slot="title">
@@ -284,7 +292,7 @@ found in the LICENSE file.
     </div>
   </h1>
   <div slot="subtitle">
-    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale, 
+    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale,
       userEmail, didTransferWiFi)]]">
     </div>
   </div>

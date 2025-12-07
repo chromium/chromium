@@ -33,7 +33,7 @@ namespace blink {
 
 // Implementation of a generic delay line with no dependencies.  It does not
 // have any thread affinity and there is no consideration on thread safety.
-class PLATFORM_EXPORT Delay {
+class PLATFORM_EXPORT Delay final {
  public:
   Delay(double max_delay_time,
         float sample_rate,
@@ -66,7 +66,7 @@ class PLATFORM_EXPORT Delay {
   }
 
   // Fill the return value of this before calling `ProcessARate()`
-  float* DelayTimes() { return delay_times_.Data(); }
+  base::span<float> DelayTimes() { return delay_times_.as_span(); }
 
  protected:
   // Main processing loop for ProcessARate using scalar operations.  Returns the

@@ -30,6 +30,7 @@ from pylib.local.emulator import ini
 from pylib.local.emulator.proto import avd_pb2
 
 from lib.proto import exception_recorder
+from lib.proto import measures
 
 # A common root directory to store the CIPD packages for creating or starting
 # the emulator instance, e.g. emulator binary, system images, AVDs.
@@ -48,6 +49,17 @@ _BACKING_FILES = ('system.img', 'vendor.img')
 _DEFAULT_AVDMANAGER_PATH = os.path.join(constants.ANDROID_SDK_ROOT,
                                         'cmdline-tools', 'latest', 'bin',
                                         'avdmanager')
+
+# Additional debug tags we would like to have when "--debug-tags" is passed.
+_DEFAULT_DEBUG_TAGS = (
+    'time',  # Show the timestamp in the logs.
+    '-asconnector',  # Keep reporting connection error so disable.
+    # The following are disabled because they flood the logs.
+    '-qemud',
+    '-gps',
+    '-sensors',
+)
+
 # Default to a 480dp mdpi screen (a relatively large phone).
 # See https://developer.android.com/training/multiscreen/screensizes
 # and https://developer.android.com/training/multiscreen/screendensities
@@ -106,7 +118,7 @@ def _Load(avd_proto_path):
   """
   with open(avd_proto_path) as avd_proto_file:
     # python generated codes are simplified since Protobuf v3.20.0 and cause
-    # pylint error. See https://github.com/protocolbuffers/protobuf/issues/9730
+    # pylint error: https://github.com/protocolbuffers/protobuf/issues/9730
     # pylint: disable=no-member
     return text_format.Merge(avd_proto_file.read(), avd_pb2.Avd())
 
@@ -149,6 +161,16 @@ def _FindMinSdkFile(apk_dir, min_sdk):
                  min_sdk, min_sdk_found['file_name'],
                  min_sdk_found['version_name'])
     return os.path.join(apk_dir, min_sdk_found['file_name'])
+
+
+def ProcessDebugTags(debug_tags_str, default_debug_tags=None):
+  """Given a string of debug tags, process them and return as a list."""
+  tags = set(debug_tags_str.split(','))
+  if default_debug_tags:
+    tags |= set(default_debug_tags)
+  # The disabled tags, i.e. tags with prefix '-', should come later otherwise
+  # the logging will not work properly.
+  return sorted(tags, key=lambda t: (t.startswith('-'), t))
 
 
 class _AvdManagerAgent:
@@ -274,6 +296,7 @@ class AvdConfig:
       avd_proto_path: path to a textpb file containing an Avd message.
     """
     self.avd_proto_path = avd_proto_path
+    self.avd_proto_name = os.path.splitext(os.path.basename(avd_proto_path))[0]
     self._config = _Load(avd_proto_path)
 
     self._initialized = False
@@ -286,7 +309,8 @@ class AvdConfig:
     It corresponds to the environment variable $ANDROID_EMULATOR_HOME.
     Configs like advancedFeatures.ini are expected to be under this dir.
     """
-    return os.path.join(COMMON_CIPD_ROOT, self._config.avd_package.dest_path)
+    return os.path.join(COMMON_CIPD_ROOT,
+                        self.GetDestPath(self._config.avd_package))
 
   @property
   def emulator_sdk_root(self):
@@ -299,8 +323,8 @@ class AvdConfig:
 
     Also, it is expected to have subdirecotries "emulator" and "system-images".
     """
-    emulator_sdk_root = os.path.join(COMMON_CIPD_ROOT,
-                                     self._config.emulator_package.dest_path)
+    emulator_sdk_root = os.path.join(
+        COMMON_CIPD_ROOT, self.GetDestPath(self._config.emulator_package))
     # Ensure this is a valid sdk root.
     required_dirs = [
         os.path.join(emulator_sdk_root, 'platforms'),
@@ -316,6 +340,11 @@ class AvdConfig:
   def emulator_path(self):
     """The path to the emulator binary."""
     return os.path.join(self.emulator_sdk_root, 'emulator', 'emulator')
+
+  @property
+  def crashreport_path(self):
+    """The path to the crashreport binary."""
+    return os.path.join(self.emulator_sdk_root, 'emulator', 'crashreport')
 
   @property
   def qemu_img_path(self):
@@ -340,6 +369,14 @@ class AvdConfig:
     This defines how to configure the AVD at creation.
     """
     return self._config.avd_settings
+
+  @property
+  def avd_variants(self):
+    """Get the AvdVairants in the avd proto file as a map.
+
+    An AvdVariant can include additional AvdSettings to apply to the AVD.
+    """
+    return self._config.avd_variants
 
   @property
   def avd_launch_settings(self):
@@ -381,7 +418,7 @@ class AvdConfig:
     This is used to rebase the paths in qcow2 images.
     """
     return os.path.join(COMMON_CIPD_ROOT,
-                        self._config.system_image_package.dest_path,
+                        self.GetDestPath(self._config.system_image_package),
                         *self._config.system_image_name.split(';'))
 
   @property
@@ -421,12 +458,36 @@ class AvdConfig:
 
     return os.path.join(qt_config_dir, 'Emulator.conf')
 
+  def GetMetadata(self):
+    """Return a dict containing metadata of this avd config.
+
+    Including avd proto path, avd name, avd variant names, and etc.
+    """
+    metadata = {
+        'avd_proto_path': self.avd_proto_path,
+        'is_available': self.IsAvailable(),
+    }
+    avd_variant_keys = sorted(self.avd_variants.keys())
+    if avd_variant_keys:
+      metadata['avd_variants'] = avd_variant_keys
+
+    return metadata
+
+  def GetDestPath(self, cipd_pkg):
+    """Get the "dest_path" of a given CIPDPackage message.
+
+    Fall back to "self.avd_proto_name" if "dest_path" is empty.
+    """
+    return cipd_pkg.dest_path or self.avd_proto_name
+
   def HasSnapshot(self, snapshot_name):
     """Check if a given snapshot exists or not."""
-    snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name)
+    snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name,
+                                 'ram.bin')
     return os.path.exists(snapshot_path)
 
   def Create(self,
+             avd_variant_name=None,
              force=False,
              snapshot=False,
              keep=False,
@@ -448,6 +509,8 @@ class AvdConfig:
      - optionally deletes the AVD (default yes)
 
     Args:
+      avd_variant_name: The name of the AvdVariant to use. Extra avd settings
+        from the variant will be applied during creation.
       force: bool indicating whether to force create the AVD.
       snapshot: bool indicating whether to snapshot the AVD before creating
         the CIPD package.
@@ -463,6 +526,9 @@ class AvdConfig:
       dry_run: When set to True, it will skip the CIPD package creation
         after creating the AVD.
     """
+    avd_settings = self.GetAvdSettings(avd_variant_name)
+    logging.info('avd_settings: %r', avd_settings)
+
     logging.info('Installing required packages.')
     self._InstallCipdPackages(_PACKAGES_CREATION)
 
@@ -486,43 +552,14 @@ class AvdConfig:
         # creation. So explicitly clear its content to exclude any leftover
         # from previous creation.
         f_ini_contents.clear()
-        f_ini_contents.update(self.avd_settings.advanced_features)
+        f_ini_contents.update(avd_settings.advanced_features)
 
-      with ini.update_ini_file(self._config_ini_path) as config_ini_contents:
-        # Update avd_properties first so that they won't override settings
-        # like screen and ram_size
-        config_ini_contents.update(self.avd_settings.avd_properties)
-
-        height = self.avd_settings.screen.height or _DEFAULT_SCREEN_HEIGHT
-        width = self.avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH
-        density = self.avd_settings.screen.density or _DEFAULT_SCREEN_DENSITY
-
-        config_ini_contents.update({
-            'disk.dataPartition.size': '4G',
-            'hw.keyboard': 'yes',
-            'hw.lcd.density': density,
-            'hw.lcd.height': height,
-            'hw.lcd.width': width,
-            'hw.mainKeys': 'no',  # Show nav buttons on screen
-        })
-
-        if self.avd_settings.ram_size:
-          config_ini_contents['hw.ramSize'] = self.avd_settings.ram_size
-
-        config_ini_contents['hw.sdCard'] = 'yes'
-        if self.avd_settings.sdcard.size:
-          sdcard_path = os.path.join(self._avd_dir, _SDCARD_NAME)
-          cmd_helper.RunCmd([
-              self.mksdcard_path,
-              self.avd_settings.sdcard.size,
-              sdcard_path,
-          ])
-          config_ini_contents['hw.sdCard.path'] = sdcard_path
+      self._UpdateAvdConfigFile(self._config_ini_path, avd_settings)
 
       if not additional_apks:
         additional_apks = []
       for pkg in self._config.additional_apk:
-        apk_dir = os.path.join(COMMON_CIPD_ROOT, pkg.dest_path)
+        apk_dir = os.path.join(COMMON_CIPD_ROOT, self.GetDestPath(pkg))
         apk_file = _FindMinSdkFile(apk_dir, self._config.min_sdk)
         # Some of these files come from chrome internal, so may not be
         # available to non-internal permissioned users.
@@ -533,7 +570,7 @@ class AvdConfig:
       if not privileged_apk_tuples:
         privileged_apk_tuples = []
       for pkg in self._config.privileged_apk:
-        apk_dir = os.path.join(COMMON_CIPD_ROOT, pkg.dest_path)
+        apk_dir = os.path.join(COMMON_CIPD_ROOT, self.GetDestPath(pkg))
         apk_file = _FindMinSdkFile(apk_dir, self._config.min_sdk)
         # Some of these files come from chrome internal, so may not be
         # available to non-internal permissioned users.
@@ -557,8 +594,6 @@ class AvdConfig:
           writable_system=writable_system,
           gpu_mode=gpu_mode,
           debug_tags=debug_tags,
-          # Set this flag to True to align with swarming AVD run.
-          require_fast_start=True,
       )
 
       assert instance.device is not None, '`instance.device` not initialized.'
@@ -599,9 +634,11 @@ class AvdConfig:
         instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
                                         as_root=True,
                                         check_return=True)
+        # Certain system image like tablet does not have data service
+        # So don't check return status here.
         instance.device.RunShellCommand(['svc', 'data', 'disable'],
                                         as_root=True,
-                                        check_return=True)
+                                        check_return=False)
 
       if snapshot:
         logging.info('Wait additional 60 secs before saving snapshot for AVD')
@@ -678,6 +715,62 @@ class AvdConfig:
         logging.info('Deleting AVD.')
         avd_manager.Delete(avd_name=self.avd_name)
 
+  def GetAvdSettings(self, avd_variant_name=None):
+    # python generated codes are simplified since Protobuf v3.20.0 and cause
+    # pylint error: https://github.com/protocolbuffers/protobuf/issues/9730
+    # pylint: disable=no-member
+    avd_settings = avd_pb2.AvdSettings()
+    avd_settings.MergeFrom(self.avd_settings)
+
+    if self.avd_variants:
+      if avd_variant_name is None:
+        raise AvdException('Avd variant not set for the avd config.')
+      if avd_variant_name not in self.avd_variants:
+        raise AvdException(
+            'Avd variant %r not found in avd config. Must be one of %r' %
+            (avd_variant_name, list(self.avd_variants.keys())))
+
+      avd_settings.MergeFrom(self.avd_variants[avd_variant_name])
+    elif avd_variant_name is not None:
+      raise AvdException('The avd config has no avd variants.')
+
+    return avd_settings
+
+  def _UpdateAvdConfigFile(self, config_file_path, avd_settings):
+    config_contents = {
+        'disk.dataPartition.size': '4G',
+        'hw.keyboard': 'yes',
+        'hw.mainKeys': 'no',  # Show nav buttons on screen
+        'hw.sdCard': 'yes',
+    }
+    # Update avd_properties first so that they won't override settings
+    # like screen and ram_size
+    config_contents.update(avd_settings.avd_properties)
+
+    height = avd_settings.screen.height or _DEFAULT_SCREEN_HEIGHT
+    width = avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH
+    density = avd_settings.screen.density or _DEFAULT_SCREEN_DENSITY
+    config_contents.update({
+        'hw.lcd.density': density,
+        'hw.lcd.height': height,
+        'hw.lcd.width': width,
+    })
+
+    if avd_settings.ram_size:
+      config_contents['hw.ramSize'] = avd_settings.ram_size
+
+    if avd_settings.sdcard.size:
+      sdcard_path = os.path.join(self._avd_dir, _SDCARD_NAME)
+      cmd_helper.RunCmd([
+          self.mksdcard_path,
+          avd_settings.sdcard.size,
+          sdcard_path,
+      ])
+      config_contents['hw.sdCard.path'] = sdcard_path
+
+    with ini.update_ini_file(config_file_path) as config_ini_contents:
+      config_ini_contents.update(config_contents)
+
   def IsAvailable(self):
     """Returns whether emulator is up-to-date."""
     if not os.path.exists(self._config_ini_path):
@@ -753,7 +846,8 @@ class AvdConfig:
     Returns: None
     Raises: AvdException on failure to install.
     """
-    self._InstallCipdPackages(_PACKAGES_RUNTIME)
+    with measures.time_consumption('emulator', 'install', 'cipd_packages'):
+      self._InstallCipdPackages(_PACKAGES_RUNTIME)
     self._MakeWriteable()
     self._UpdateConfigs()
     self._RebaseQcow2Images()
@@ -818,7 +912,7 @@ class AvdConfig:
     pkgs_by_dir = collections.defaultdict(list)
     for pkg in self._ListPackages(packages):
       if pkg.version:
-        pkgs_by_dir[pkg.dest_path].append(pkg)
+        pkgs_by_dir[self.GetDestPath(pkg)].append(pkg)
       elif check_version:
         raise AvdException('Expecting a version for the package %s' %
                            pkg.package_name)
@@ -958,6 +1052,7 @@ class _AvdInstance:
     self._avd_name = avd_config.avd_name
     self._emulator_home = avd_config.emulator_home
     self._emulator_path = avd_config.emulator_path
+    self._crashreport_path = avd_config.crashreport_path
     self._emulator_proc = None
     self._emulator_serial = None
     self._emulator_device = None
@@ -981,14 +1076,15 @@ class _AvdInstance:
             debug_tags=None,
             disk_size=None,
             enable_network=False,
-            require_fast_start=False,
+            # TODO(crbug.com/364943269): Remove after clean all the references.
+            require_fast_start=False,  # pylint: disable=unused-argument
             retries=0):
     """Starts the emulator running an instance of the given AVD.
 
     Note when ensure_system_settings is True, the program will wait until the
     emulator is fully booted, and then update system settings.
     """
-    is_slow_start = not require_fast_start
+    is_slow_start = False
     # Force to load system snapshot if detected.
     if self.HasSystemSnapshot():
       if not writable_system:
@@ -1026,17 +1122,14 @@ class _AvdInstance:
       avd_type = self._avd_name.split('_')[1]
       logging.info('Emulator Type: %s', avd_type)
 
-      if avd_type in ('car', '32'):
-        logging.info('Auto, Tablet emulator will start slow')
+      if avd_type in ('car', '32', '34', '35'):
+        logging.info('Emulator will start slow')
         is_slow_start = True
 
       if wipe_data:
         emulator_cmd.append('-wipe-data')
       if disk_size:
         emulator_cmd.extend(['-partition-size', str(disk_size)])
-      elif not require_fast_start:
-        # This emulator is being run locally, ensure it has a large enough disk.
-        emulator_cmd.extend(['-partition-size', '12000'])
 
       if read_only:
         emulator_cmd.append('-read-only')
@@ -1053,9 +1146,8 @@ class _AvdInstance:
                     or _DEFAULT_GPU_MODE)
       emulator_cmd.extend(['-gpu', gpu_mode])
       if debug_tags:
-        self._debug_tags = set(debug_tags.split(','))
-        # Always print timestamp when debug tags are set.
-        self._debug_tags.add('time')
+        self._debug_tags = ProcessDebugTags(
+            debug_tags, default_debug_tags=_DEFAULT_DEBUG_TAGS)
         emulator_cmd.extend(['-debug', ','.join(self._debug_tags)])
         if 'kernel' in self._debug_tags or 'all' in self._debug_tags:
           # TODO(crbug.com/40885864): newer API levels need "-virtio-console"
@@ -1067,6 +1159,8 @@ class _AvdInstance:
           'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '1',
           # Sets the emulator configuration directory
           'ANDROID_EMULATOR_HOME': self._emulator_home,
+          # emulator tools like crashreport need $USER info to locate data.
+          'USER': os.environ.get('USER'),
       }
       if 'DISPLAY' in os.environ:
         emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
@@ -1113,12 +1207,14 @@ class _AvdInstance:
           return 'emulator-%d' % int(val)
 
       try:
-        self._emulator_serial = timeout_retry.Run(
-            listen_for_serial,
-            timeout=120 if is_slow_start else 30,
-            retries=retries,
-            args=[sock])
-        logging.info('%s started', self._emulator_serial)
+        with measures.time_consumption('emulator', 'start',
+                                       'listen_for_serial'):
+          self._emulator_serial = timeout_retry.Run(
+              listen_for_serial,
+              timeout=300 if is_slow_start else 120,
+              retries=retries,
+              args=[sock])
+          logging.info('%s started', self._emulator_serial)
       except base_error.BaseError as e:
         self.Stop(force=True)
         raise AvdStartException(str(e)) from e
@@ -1137,7 +1233,9 @@ class _AvdInstance:
 
       if enable_network:
         _EnableNetwork(self.device)
+
     except base_error.BaseError as e:
+      self.UploadCrashreport()
       raise AvdStartException(str(e)) from e
 
   def Stop(self, force=False):
@@ -1169,6 +1267,16 @@ class _AvdInstance:
       self._emulator_proc = None
       self._emulator_serial = None
       self._emulator_device = None
+
+  def UploadCrashreport(self):
+    # The crashreport binary only exists in newer emulator releases.
+    if not os.path.exists(self._crashreport_path):
+      return
+
+    logging.info('Uploading local crashing reports.')
+    output = cmd_helper.GetCmdOutput([self._crashreport_path, '-u'])
+    for line in output.splitlines():
+      logging.info('  %s', line)
 
   def GetSnapshotName(self):
     """Return the snapshot name to load/save.
@@ -1246,6 +1354,16 @@ def _EnsureSystemSettings(device):
   logging.info('Hide system error dialogs such as crash and ANR dialogs.')
   device.RunShellCommand(
       ['settings', 'put', 'global', 'hide_error_dialogs', '1'])
+
+  # There is a change in soft keyboard behavior since Android 16.
+  # See https://crbug.com/443782461 for more details.
+  if device.build_version_sdk >= version_codes.BAKLAVA:
+    logging.info('Update Gboard preferences.')
+    with device.GboardPreferences() as gboard_prefs:
+      # Disable the stylus.
+      gboard_prefs.SetBoolean('enable_scribe', False)
+      # Always show the soft keyboards.
+      gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
 
 def _EnableNetwork(device):

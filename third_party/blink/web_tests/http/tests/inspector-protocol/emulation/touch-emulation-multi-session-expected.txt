@@ -1,0 +1,5 @@
+Testing that touch emulation works with multiple sessions
+before the second session created : true
+after the second session : true
+after navigation session : true
+

@@ -71,12 +71,13 @@ void SupervisedUserFaviconRequestHandler::OnGetFaviconFromCacheFinished(
     const favicon_base::LargeIconResult& result) {
   // Check if fetching the favicon from the cache was successful.
   const favicon_base::FaviconRawBitmapResult& bitmap_result = result.bitmap;
-  if (bitmap_result.is_valid() &&
-      gfx::PNGCodec::Decode(bitmap_result.bitmap_data->data(),
-                            bitmap_result.bitmap_data->size(), &favicon_)) {
-    large_icon_service_->TouchIconFromGoogleServer(bitmap_result.icon_url);
-    std::move(on_fetched_callback_).Run();
-    return;
+  if (bitmap_result.is_valid()) {
+    favicon_ = gfx::PNGCodec::Decode(*bitmap_result.bitmap_data);
+    if (!favicon_.isNull()) {
+      large_icon_service_->TouchIconFromGoogleServer(bitmap_result.icon_url);
+      std::move(on_fetched_callback_).Run();
+      return;
+    }
   }
 
   // Do not make another network request if one has already been made.

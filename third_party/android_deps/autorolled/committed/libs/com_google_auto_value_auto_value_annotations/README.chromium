@@ -1,0 +1,19 @@
+Name: AutoValue Annotations
+Short Name: auto-value-annotations
+URL: https://repo.maven.apache.org/maven2/com/google/auto/value/auto-value-annotations/1.11.0/auto-value-annotations-1.11.0.jar
+Version: 1.11.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Immutable value-type code generation for Java 8+.
+
+See also: https://github.com/google/auto/tree/main/value
+
+
+Local Modifications:
+No modifications.

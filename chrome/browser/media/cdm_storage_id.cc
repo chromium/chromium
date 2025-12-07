@@ -7,27 +7,17 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cdm_storage_id_key.h"
 #include "chrome/browser/media/media_storage_id_salt.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "media/media_buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/functional/bind.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/content_protection.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -77,15 +67,14 @@ std::vector<uint8_t> CalculateStorageId(
   // Build the identifier as follows:
   // SHA256(machine_id + origin + storage_id_key + profile_salt)
   std::string origin_str = origin.Serialize();
-  std::unique_ptr<crypto::SecureHash> sha256 =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  sha256->Update(machine_id.data(), machine_id.length());
-  sha256->Update(origin_str.data(), origin_str.length());
-  sha256->Update(storage_id_key.data(), storage_id_key.length());
-  sha256->Update(profile_salt.data(), profile_salt.size());
+  crypto::hash::Hasher sha256(crypto::hash::kSha256);
+  sha256.Update(machine_id);
+  sha256.Update(origin_str);
+  sha256.Update(storage_id_key);
+  sha256.Update(profile_salt);
 
-  std::vector<uint8_t> result(crypto::kSHA256Length);
-  sha256->Finish(result.data(), result.size());
+  std::vector<uint8_t> result(crypto::hash::kSha256Size);
+  sha256.Finish(result);
   return result;
 }
 
@@ -112,26 +101,11 @@ void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
   std::move(callback).Run(
       CalculateStorageId(storage_id_key, profile_salt, origin, machine_id));
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   CdmStorageIdCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   std::vector<uint8_t>());
   ash::SystemSaltGetter::Get()->GetSystemSalt(
-      base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
-                     std::move(scoped_callback)));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() ||
-      lacros_service->GetInterfaceVersion<crosapi::mojom::ContentProtection>() <
-          1) {
-    std::move(callback).Run(std::vector<uint8_t>());
-    return;
-  }
-  CdmStorageIdCallback scoped_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  std::vector<uint8_t>());
-  lacros_service->GetRemote<crosapi::mojom::ContentProtection>()->GetSystemSalt(
       base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
                      std::move(scoped_callback)));
 #else

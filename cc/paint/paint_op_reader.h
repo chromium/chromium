@@ -18,6 +18,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
+#include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 
 struct SkGainmapInfo;
@@ -74,9 +75,11 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   void Read(SkScalar* data);
   void Read(uint8_t* data);
+  void Read(uint16_t* data);
   void Read(uint32_t* data);
   void Read(uint64_t* data);
   void Read(int32_t* data);
+  void Read(SkPoint* point);
   void Read(SkRect* rect);
   void Read(SkIRect* rect);
   void Read(SkRRect* rect);
@@ -85,8 +88,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkPath* path);
   void Read(PaintFlags* flags);
   void Read(CorePaintFlags* flags);
-  void Read(PaintImage* image,
-            PaintFlags::DynamicRangeLimitMixture dynamic_range_limit);
+  void Read(PaintImage* image);
   void Read(sk_sp<SkData>* data);
   void Read(sk_sp<sktext::gpu::Slug>* slug);
   void Read(sk_sp<DrawLooper>* looper);
@@ -105,8 +107,12 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkHighContrastConfig* config);
   void Read(gfx::HDRMetadata* hdr_metadata);
   void Read(SkGradientShader::Interpolation* interpolation);
-
   void Read(scoped_refptr<SkottieWrapper>* skottie);
+  void Read(SkString* sk_string);
+  void Read(std::vector<PaintShader::FloatUniform>* uniforms);
+  void Read(std::vector<PaintShader::Float2Uniform>* uniforms);
+  void Read(std::vector<PaintShader::Float4Uniform>* uniforms);
+  void Read(std::vector<PaintShader::IntUniform>* uniforms);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
@@ -119,6 +125,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
   void Read(SkColorType* color_type) {
     ReadEnum<SkColorType, kLastEnum_SkColorType>(color_type);
+  }
+  void Read(SkAlphaType* alpha_type) {
+    ReadEnum<SkAlphaType, kLastEnum_SkAlphaType>(alpha_type);
   }
   void Read(PaintFlags::FilterQuality* quality) {
     ReadEnum<PaintFlags::FilterQuality, PaintFlags::FilterQuality::kLast>(
@@ -135,6 +144,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
   void Read(SkMipmapMode* mipmap_mode) {
     ReadEnum<SkMipmapMode, SkMipmapMode::kLast>(mipmap_mode);
+  }
+  void Read(SkPathFillType* fill_type) {
+    ReadEnum<SkPathFillType, SkPathFillType::kInverseEvenOdd>(fill_type);
   }
 
   void Read(bool* data) {
@@ -156,13 +168,13 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   template <typename T>
-  void Read(std::vector<T>* vec) {
+    requires(!std::is_const_v<T>)
+  void Read(std::vector<T>& vec) {
     size_t size = 0;
     ReadSize(&size);
-    if (!CanReadVector(size, *vec)) [[unlikely]] {
-      return;
+    if (CanReadVector(size, vec)) [[likely]] {
+      ReadVectorContent(size, vec);
     }
-    ReadVectorContent(size, vec);
   }
 
   // Returns a pointer to the next block of memory of size |bytes|, and treats
@@ -181,6 +193,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
  private:
+  template <typename ValueType>
+  friend void ReadSimpleValueUniformsHelper(
+      PaintOpReader&,
+      std::vector<PaintShader::Uniform<ValueType>>*);
+
   enum class DeserializationError {
     // Enum values must remain synchronized with PaintOpDeserializationError
     // in tools/metrics/histograms/metadata/gpu/enums.xml.
@@ -242,8 +259,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kHdrMetadataDeserializeFailure = 55,
     kNonFiniteSkColor4f = 56,
     kInvalidSkColor4fAlpha = 57,
+    kInvalidColorsSize_Read_PaintShader_ColorSize = 58,
 
-    kMaxValue = kInvalidSkColor4fAlpha
+    kMaxValue = kInvalidColorsSize_Read_PaintShader_ColorSize
   };
 
   template <typename T>
@@ -349,18 +367,12 @@ class CC_PAINT_EXPORT PaintOpReader {
   void DidRead(size_t bytes_read);
 
   template <typename T>
-    requires(std::is_trivially_copyable_v<T>)
-  void ReadVectorContent(size_t size, std::vector<T>* vec) {
-    vec->resize(size);
-    ReadData(base::as_writable_byte_span(*vec));
-  }
-
-  template <typename T>
-    requires(!std::is_trivially_copyable_v<T>)
-  void ReadVectorContent(size_t size, std::vector<T>* vec) {
-    vec->resize(size);
-    for (size_t i = 0; i < size; ++i) {
-      Read(&(*vec)[i]);
+    requires(!std::is_const_v<T>)
+  void ReadVectorContent(size_t size, std::vector<T>& vec) {
+    vec.resize(size);
+    for (base::span span(vec); !span.empty();
+         span = span.template subspan<1>()) {
+      Read(&span.front());
     }
   }
 

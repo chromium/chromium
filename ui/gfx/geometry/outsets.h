@@ -5,8 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_OUTSETS_H_
 #define UI_GFX_GEOMETRY_OUTSETS_H_
 
+#include "base/component_export.h"
 #include "base/numerics/clamped_math.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 
@@ -14,7 +14,7 @@ namespace gfx {
 
 // This can be used to represent a space surrounding a rectangle, by
 // "expanding" the rectangle by the outset amount on all four sides.
-class Outsets : public InsetsOutsetsBase<Outsets> {
+class COMPONENT_EXPORT(GEOMETRY) Outsets : public InsetsOutsetsBase<Outsets> {
  public:
   using InsetsOutsetsBase::InsetsOutsetsBase;
 

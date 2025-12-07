@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -29,10 +31,6 @@
 #include "net/url_request/url_request_context.h"
 
 namespace {
-
-// Number of events that can build up in |write_queue_| before a task is posted
-// to the file task runner to flush them to disk.
-const int kNumWriteQueueEvents = 15;
 
 // TODO(eroman): Should use something other than 10 for number of files?
 const int kDefaultNumFiles = 10;
@@ -74,16 +72,18 @@ size_t WriteToFile(base::File* file,
   size_t bytes_written = 0;
 
   if (file->IsValid()) {
-    // Append each of data1, data2 and data3.
-    if (!data1.empty())
+    if (!data1.empty()) {
       bytes_written +=
-          std::max(0, file->WriteAtCurrentPos(data1.data(), data1.size()));
-    if (!data2.empty())
+          file->WriteAtCurrentPos(base::as_byte_span(data1)).value_or(0);
+    }
+    if (!data2.empty()) {
       bytes_written +=
-          std::max(0, file->WriteAtCurrentPos(data2.data(), data2.size()));
-    if (!data3.empty())
+          file->WriteAtCurrentPos(base::as_byte_span(data2)).value_or(0);
+    }
+    if (!data3.empty()) {
       bytes_written +=
-          std::max(0, file->WriteAtCurrentPos(data3.data(), data3.size()));
+          file->WriteAtCurrentPos(base::as_byte_span(data3)).value_or(0);
+    }
   }
 
   return bytes_written;
@@ -93,24 +93,29 @@ size_t WriteToFile(base::File* file,
 // then deletes |source_path|.
 void AppendToFileThenDelete(const base::FilePath& source_path,
                             base::File* destination_file,
-                            char* read_buffer,
-                            size_t read_buffer_size) {
-  base::ScopedFILE source_file(base::OpenFile(source_path, "rb"));
-  if (!source_file)
+                            base::span<uint8_t> read_buffer) {
+  base::File source_file(source_path, base::File::FLAG_OPEN |
+                                          base::File::FLAG_READ |
+                                          base::File::FLAG_DELETE_ON_CLOSE);
+  if (!source_file.IsValid()) {
     return;
-
-  // Read |source_path|'s contents in chunks of read_buffer_size and append
-  // to |destination_file|.
-  size_t num_bytes_read;
-  while ((num_bytes_read =
-              fread(read_buffer, 1, read_buffer_size, source_file.get())) > 0) {
-    WriteToFile(destination_file,
-                std::string_view(read_buffer, num_bytes_read));
   }
 
-  // Now that it has been copied, delete the source file.
-  source_file.reset();
-  base::DeleteFile(source_path);
+  // Read `source_path`'s contents in chunks of read_buffer_size and append
+  // to `destination_file`.
+  while (true) {
+    std::optional<size_t> num_bytes_read =
+        source_file.ReadAtCurrentPos(read_buffer);
+    // ReadAtCurrentPos() returns 0 on EOF, but nullopt on other errors, so need
+    // to check for both of those cases.
+    if (!num_bytes_read.has_value() || num_bytes_read.value() == 0) {
+      break;
+    }
+    WriteToFile(destination_file,
+                base::as_string_view(read_buffer.first(*num_bytes_read)));
+  }
+
+  // `source_file` should fall out of scope and be deleted.
 }
 
 base::FilePath SiblingInprogressDirectory(const base::FilePath& log_path) {
@@ -433,9 +438,9 @@ void FileNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
 
   // If events build up in |write_queue_|, trigger the file task runner to drain
   // the queue. Because only 1 item is added to the queue at a time, if
-  // queue_size > kNumWriteQueueEvents a task has already been posted, or will
-  // be posted.
-  if (queue_size == kNumWriteQueueEvents) {
+  // queue_size > num_write_queue_events_ a task has already been posted, or
+  // will be posted.
+  if (queue_size == num_write_queue_events_) {
     file_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&FileNetLogObserver::FileWriter::Flush,
@@ -519,6 +524,8 @@ FileNetLogObserver::FileNetLogObserver(
 
 std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
   switch (mode) {
+    case NetLogCaptureMode::kHeavilyRedacted:
+      return "HeavilyRedacted";
     case NetLogCaptureMode::kDefault:
       return "Default";
     case NetLogCaptureMode::kIncludeSensitive:
@@ -526,8 +533,7 @@ std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
     case NetLogCaptureMode::kEverything:
       return "Everything";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN";
+  NOTREACHED();
 }
 
 FileNetLogObserver::WriteQueue::WriteQueue(uint64_t memory_max)
@@ -755,8 +761,7 @@ void FileNetLogObserver::FileWriter::WritePolledDataToFile(
 
   // Write the polled data (if any).
   if (polled_data) {
-    std::string polled_data_json;
-    base::JSONWriter::Write(*polled_data, &polled_data_json);
+    std::string polled_data_json = base::WriteJson(*polled_data).value_or("");
     if (!polled_data_json.empty())
       WriteToFile(file, ",\n\"polledData\": ", polled_data_json, "\n");
   }
@@ -781,8 +786,8 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
 
   // Allocate a 64K buffer used for reading the files. At most kReadBufferSize
   // bytes will be in memory at a time.
-  const size_t kReadBufferSize = 1 << 16;  // 64KiB
-  auto read_buffer = std::make_unique<char[]>(kReadBufferSize);
+  constexpr size_t kReadBufferSize = 1 << 16;  // 64KiB
+  std::vector<uint8_t> read_buffer(kReadBufferSize, 0);
 
   if (final_log_file_.IsValid()) {
     // Truncate the final log file.
@@ -790,7 +795,7 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
 
     // Append the constants file.
     AppendToFileThenDelete(GetConstantsFilePath(), &final_log_file_,
-                           read_buffer.get(), kReadBufferSize);
+                           read_buffer);
 
     // Iterate over the events files, from oldest to most recent, and append
     // them to the final destination. Note that "file numbers" start at 1 not 0.
@@ -802,8 +807,7 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
     for (size_t filenumber = begin_filenumber; filenumber < end_filenumber;
          ++filenumber) {
       AppendToFileThenDelete(GetEventFilePath(FileNumberToIndex(filenumber)),
-                             &final_log_file_, read_buffer.get(),
-                             kReadBufferSize);
+                             &final_log_file_, read_buffer);
     }
 
     // Account for the final event line ending in a ",\n". Strip it to form
@@ -811,8 +815,7 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
     RewindIfWroteEventBytes(&final_log_file_);
 
     // Append the polled data.
-    AppendToFileThenDelete(GetClosingFilePath(), &final_log_file_,
-                           read_buffer.get(), kReadBufferSize);
+    AppendToFileThenDelete(GetClosingFilePath(), &final_log_file_, read_buffer);
   }
 
   // Delete the inprogress directory (and anything that may still be left inside

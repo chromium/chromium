@@ -6,6 +6,7 @@
 
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -32,13 +33,13 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UserTiming) {
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Check web perf API.
-  const base::Value eval_result =
-      EvalJs(web_contents(), "runtest()").ExtractList();
-  const double fully_loaded = eval_result.GetList()[0].GetDouble();
+  const base::Value::List eval_result =
+      EvalJs(web_contents(), "runtest()").TakeValue().TakeList();
+  const double fully_loaded = eval_result[0].GetDouble();
   EXPECT_GT(fully_loaded, 0.0);
-  const double fully_visible = eval_result.GetList()[1].GetDouble();
+  const double fully_visible = eval_result[1].GetDouble();
   EXPECT_GT(fully_visible, 0.0);
-  const double interactive = eval_result.GetList()[2].GetDouble();
+  const double interactive = eval_result[2].GetDouble();
   EXPECT_GT(interactive, 0.0);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

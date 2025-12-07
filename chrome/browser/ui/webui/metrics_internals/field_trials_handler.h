@@ -56,7 +56,13 @@ class FieldTrialsHandler : public content::WebUIMessageHandler {
   void HandleLookupTrialOrGroupName(const base::Value::List& args);
 
   // One-time initialization for this class.
-  void InitializeFieldTrials();
+  void InitializeFieldTrials(
+      base::OnceCallback<void(base::ValueView)> done_callback);
+
+  // Refreshes the field trial overrides with the given `studies`.
+  void RefreshFieldTrialOverrides(
+      base::OnceCallback<void(base::ValueView)> done_callback,
+      std::vector<variations::StudyGroupNames> studies);
 
   // Turns on or off an experiment override, which will be realized after a
   // restart.
@@ -65,9 +71,14 @@ class FieldTrialsHandler : public content::WebUIMessageHandler {
   raw_ptr<Profile> profile_;
   bool show_names_ = false;
   bool restart_required_ = false;
-  bool initialized_field_trials_ = false;
-  std::vector<variations::StudyGroupNames> studies_;
+
+  // The studies available to force. This is only populated after the first
+  // call to `InitializeFieldTrials()`.
+  std::optional<std::vector<variations::StudyGroupNames>> studies_;
+
   base::flat_map<std::string, std::string> overrides_;
+
+  base::WeakPtrFactory<FieldTrialsHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_

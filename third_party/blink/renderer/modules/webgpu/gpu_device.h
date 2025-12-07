@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -23,6 +24,7 @@ namespace blink {
 class ExecutionContext;
 class ExternalTextureCache;
 class GPUAdapter;
+class GPUAdapterInfo;
 class GPUBuffer;
 class GPUBufferDescriptor;
 class GPUCommandEncoder;
@@ -75,12 +77,21 @@ class GPUDevice final : public EventTarget,
   USING_PRE_FINALIZER(GPUDevice, Dispose);
 
  public:
-  explicit GPUDevice(ExecutionContext* execution_context,
-                     scoped_refptr<DawnControlClientHolder> dawn_control_client,
-                     GPUAdapter* adapter,
-                     wgpu::Device dawn_device,
-                     const GPUDeviceDescriptor* descriptor,
-                     GPUDeviceLostInfo* lost_info = nullptr);
+  // Creates the device without a handle so that some callbacks can be set up
+  // in the wgpu::DeviceDescriptor that will be used to create this device.
+  // Initialize is where the handle is given, and the rest of the initialization
+  // happens.
+  GPUDevice(ExecutionContext* execution_context,
+            scoped_refptr<DawnControlClientHolder> dawn_control_client,
+            GPUAdapter* adapter,
+            const String& label);
+
+  // The second step of the initialization once we have the result from
+  // wgpu::Adapter::RequestDevice. The lost_info if non-null will be used to
+  // resolve the lost property.
+  void Initialize(wgpu::Device handle,
+                  const GPUDeviceDescriptor* descriptor,
+                  GPUDeviceLostInfo* lost_info);
 
   GPUDevice(const GPUDevice&) = delete;
   GPUDevice& operator=(const GPUDevice&) = delete;
@@ -89,14 +100,15 @@ class GPUDevice final : public EventTarget,
 
   void Trace(Visitor* visitor) const override;
 
-  // gpu_device.idl
+  // gpu_device.idl {{{
   GPUAdapter* adapter() const;
   GPUSupportedFeatures* features() const;
   GPUSupportedLimits* limits() const { return limits_.Get(); }
+  GPUAdapterInfo* adapterInfo() const;
   ScriptPromise<GPUDeviceLostInfo> lost(ScriptState* script_state);
+  // }}} End of WebIDL binding implementation.
 
   GPUQueue* queue();
-  bool destroyed() const;
 
   void destroy(v8::Isolate* isolate);
 
@@ -119,8 +131,7 @@ class GPUDevice final : public EventTarget,
       const GPUPipelineLayoutDescriptor* descriptor);
 
   GPUShaderModule* createShaderModule(
-      const GPUShaderModuleDescriptor* descriptor,
-      ExceptionState& exception_state);
+      const GPUShaderModuleDescriptor* descriptor);
   GPURenderPipeline* createRenderPipeline(
       ScriptState* script_state,
       const GPURenderPipelineDescriptor* descriptor);
@@ -129,7 +140,8 @@ class GPUDevice final : public EventTarget,
       ExceptionState& exception_state);
   ScriptPromise<GPURenderPipeline> createRenderPipelineAsync(
       ScriptState* script_state,
-      const GPURenderPipelineDescriptor* descriptor);
+      const GPURenderPipelineDescriptor* descriptor,
+      ExceptionState&);
   ScriptPromise<GPUComputePipeline> createComputePipelineAsync(
       ScriptState* script_state,
       const GPUComputePipelineDescriptor* descriptor);
@@ -152,20 +164,24 @@ class GPUDevice final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  bool IsDestroyed() const;
+  std::string GetFormattedLabel() const;
   void InjectError(wgpu::ErrorType type, const char* message);
   void AddConsoleWarning(const String& message);
   void AddConsoleWarning(const char* message);
+  void AddConsoleWarning(wgpu::StringView message);
   void AddSingletonWarning(GPUSingletonWarning type);
 
   void TrackTextureWithMailbox(GPUTexture* texture);
   void UntrackTextureWithMailbox(GPUTexture* texture);
 
+  void TrackBufferWithMailbox(GPUBuffer* buffer);
+  void UntrackBufferWithMailbox(GPUBuffer* buffer);
+
   bool ValidateTextureFormatUsage(V8GPUTextureFormat format,
                                   ExceptionState& exception_state);
   bool ValidateBlendFactor(V8GPUBlendFactor blend_factor,
                            ExceptionState& exception_state);
-
-  std::string formattedLabel() const;
 
   // Store the buffer in a weak hash set so we can unmap it when the
   // device is destroyed.
@@ -173,6 +189,11 @@ class GPUDevice final : public EventTarget,
   // Untrack the GPUBuffer. This is called eagerly when the buffer is
   // destroyed.
   void UntrackMappableBuffer(GPUBuffer* buffer);
+
+  // Helper used to set the wgpu::DeviceDescriptor callbacks during the first
+  // steps of GPUDevice creation. Note that this helper should only ever be
+  // called once per GPUDevice.
+  void SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc);
 
  private:
   using LostProperty = ScriptPromiseProperty<GPUDeviceLostInfo, IDLUndefined>;
@@ -182,30 +203,37 @@ class GPUDevice final : public EventTarget,
   void DissociateMailboxes();
   void UnmapAllMappableBuffers(v8::Isolate* isolate);
 
-  void OnUncapturedError(WGPUErrorType errorType, const char* message);
-  void OnLogging(WGPULoggingType loggingType, const char* message);
-  void OnDeviceLostError(WGPUDeviceLostReason, const char* message);
+  void OnUncapturedError(const wgpu::Device& device,
+                         wgpu::ErrorType errorType,
+                         wgpu::StringView message);
+  void OnLogging(wgpu::LoggingType loggingType, wgpu::StringView message);
+  void OnDeviceLost(
+      std::unique_ptr<
+          WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>,
+      const wgpu::Device& device,
+      wgpu::DeviceLostReason reason,
+      wgpu::StringView message);
 
   void OnPopErrorScopeCallback(
       ScriptPromiseResolver<IDLNullable<GPUError>>* resolver,
       wgpu::PopErrorScopeStatus status,
       wgpu::ErrorType type,
-      const char* message);
+      wgpu::StringView message);
 
   void OnCreateRenderPipelineAsyncCallback(
       const String& label,
       ScriptPromiseResolver<GPURenderPipeline>* resolver,
       wgpu::CreatePipelineAsyncStatus status,
       wgpu::RenderPipeline render_pipeline,
-      const char* message);
+      wgpu::StringView message);
   void OnCreateComputePipelineAsyncCallback(
       const String& label,
       ScriptPromiseResolver<GPUComputePipeline>* resolver,
       wgpu::CreatePipelineAsyncStatus status,
       wgpu::ComputePipeline compute_pipeline,
-      const char* message);
+      wgpu::StringView message);
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }
@@ -213,25 +241,20 @@ class GPUDevice final : public EventTarget,
   Member<GPUAdapter> adapter_;
   Member<GPUSupportedFeatures> features_;
   Member<GPUSupportedLimits> limits_;
+  Member<GPUAdapterInfo> adapter_info_;
   Member<GPUQueue> queue_;
   Member<LostProperty> lost_property_;
-  std::unique_ptr<WGPURepeatingCallback<void(WGPUErrorType, const char*)>>
-      error_callback_;
-  std::unique_ptr<WGPURepeatingCallback<void(WGPULoggingType, const char*)>>
+  std::unique_ptr<WGPURepeatingCallback<wgpu::LoggingCallback<void>>>
       logging_callback_;
-  // lost_callback_ is stored as a unique_ptr since it may never be called.
-  // We need to be sure to free it on deletion of the device.
-  // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
-  // free.
-  std::unique_ptr<
-      WGPURepeatingCallback<void(WGPUDeviceLostReason, const char*)>>
-      lost_callback_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
 
   // Textures with mailboxes that should be dissociated before device.destroy().
   HeapHashSet<WeakMember<GPUTexture>> textures_with_mailbox_;
+
+  // Buffers with mailboxes that should be dissociated before device.destroy().
+  HeapHashSet<WeakMember<GPUBuffer>> buffers_with_mailbox_;
 
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
 

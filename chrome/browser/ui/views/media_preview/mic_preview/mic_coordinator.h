@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/audio_stream_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_mediator.h"

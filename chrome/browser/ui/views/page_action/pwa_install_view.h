@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
@@ -40,12 +41,20 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   // PageActionIconView:
   void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
+  // This returns nullptr, which helps decoupling the showing of the PWA's
+  // install dialog with the workings of the `PwaInstallView`.
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
+  // Called when the IPH is shown.
+  void OnIphShown(user_education::FeaturePromoResult result);
+
   // Called when IPH is closed.
   void OnIphClosed(const webapps::WebAppBannerData& data);
+
+  // Whether the IPH is trying to show.
+  bool iph_pending_ = false;
 
   // Track whether IPH is closed because of install icon being clicked.
   bool install_icon_clicked_after_iph_shown_ = false;

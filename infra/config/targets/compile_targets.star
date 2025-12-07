@@ -2,7 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/targets.star", "targets")
+"""Compile target declarations
+
+Compile targets can be referenced in additional_compile_targets for a builder in
+waterfalls.pyl or as additional_compile_targets in a bundle declaration.
+"""
+
+load("@chromium-luci//targets.star", "targets")
 
 targets.compile_target(
     name = "all",
@@ -11,6 +17,8 @@ targets.compile_target(
 targets.compile_target(
     name = "android_lint",
     label = "//chrome/android:android_lint",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -21,16 +29,22 @@ targets.compile_target(
 targets.compile_target(
     name = "base_nocompile_tests",
     label = "//base:base_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "blink_platform_nocompile_tests",
     label = "//third_party/blink/renderer/platform:blink_platform_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "blink_probes_nocompile_tests",
     label = "//third_party/blink/renderer/core/probe:blink_probes_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -46,21 +60,36 @@ targets.compile_target(
 targets.compile_target(
     name = "cast_junit_test_lists",
     label = "//chromecast:cast_junit_test_lists",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "cast_shell",
     label = "//chromecast:cast_shell",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
-    name = "cast_shell_apk",
-    label = "//chromecast:cast_shell_apk",
+    name = "cast_browser_apk",
+    label = "//chromecast:cast_browser_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
+    name = "cast_browser_dist_aar",
+    label = "//chromecast:cast_browser_dist_aar",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "cast_test_lists",
     label = "//chromecast:cast_test_lists",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -71,6 +100,8 @@ targets.compile_target(
 targets.compile_target(
     name = "chrome_nocompile_tests",
     label = "//chrome/android:chrome_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -189,58 +220,94 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "content_shell",
+    label = "//content/shell:content_shell",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
     name = "content_nocompile_tests",
     label = "//content/test:content_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
+    name = "core_runtime_simple",
+    label = "//chromecast/cast_core:core_runtime_simple",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
+    name = "core_runtime_starboard",
+    label = "//chromecast/cast_core:core_runtime_starboard",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
+    name = "cronet_gn2bp_aosp_feedback_loop",
+    label = "//components/cronet/android:cronet_gn2bp_aosp_feedback_loop",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "cronet_package",
     label = "//components/cronet:cronet_package",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "cronet_package_ci",
     label = "//components/cronet/android:cronet_package_ci",
-)
-
-targets.compile_target(
-    name = "cronet_perf_test_apk",
-    label = "//components/cronet/android:cronet_perf_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "empty_main",
     label = "//testing:empty_main",
-)
-
-targets.compile_target(
-    name = "test_ash_chrome_cipd_yaml",
-    label = "//chrome/test:test_ash_chrome_cipd_yaml",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "gn_all",
     label = "//:gn_all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "image_processor_perf_test",
     label = "//media/gpu/chromeos:image_processor_perf_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "ios/chrome/app:chrome",
     label = "//ios/chrome/app:chrome",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "ios/chrome/test:all_fuzzer_tests",
     label = "//ios/chrome/test:all_fuzzer_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "ios_chrome_clusterfuzz_asan_build",
     label = "//ios/chrome/test/wpt:ios_chrome_clusterfuzz_asan_build",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -254,15 +321,10 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "mojo_rust",
-    # Since we can't build rust tests on Android now, add this for build
-    # coverage.
-    label = "//mojo/public/rust:mojo_rust",
-)
-
-targets.compile_target(
     name = "check_chrome_static_initializers",
     label = "//chrome/android:check_chrome_static_initializers",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -283,13 +345,10 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "ondevice_model_example",
-    label = "//components/optimization_guide/internal:ondevice_model_example",
-)
-
-targets.compile_target(
     name = "pdf_fuzzers",
     label = "//pdf/pdfium/fuzzers:pdf_fuzzers",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -313,11 +372,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "remoting/client:client",
-    label = "//remoting/client:client",
-)
-
-targets.compile_target(
     name = "remoting/host:host",
     label = "//remoting/host:host",
 )
@@ -325,11 +379,8 @@ targets.compile_target(
 targets.compile_target(
     name = "rust_build_tests",
     label = "//build/rust/tests",
-)
-
-targets.compile_target(
-    name = "strip_lacros_files",
-    label = "//chrome:strip_lacros_files",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -355,6 +406,8 @@ targets.compile_target(
 targets.compile_target(
     name = "trace_processor_shell",
     label = "//third_party/perfetto/src/trace_processor:trace_processor_shell",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -363,33 +416,43 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "traffic_annotation_proto",
+    label = "//chrome/browser/privacy:traffic_annotation_proto",
+)
+
+targets.compile_target(
     name = "chrome/updater:all",
     label = "//chrome/updater:all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "v4l2_stateless_decoder",
     label = "//media/gpu/v4l2:v4l2_stateless_decoder",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "v4l2_unittest",
     label = "//media/gpu/v4l2:v4l2_unittest",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "video_decode_accelerator_perf_tests",
     label = "//media/gpu/test:video_decode_accelerator_perf_tests",
-)
-
-targets.compile_target(
-    name = "video_encode_accelerator_tests",
-    label = "//media/gpu/test:video_encode_accelerator_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "video_encode_accelerator_perf_tests",
     label = "//media/gpu/test:video_encode_accelerator_perf_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -400,4 +463,6 @@ targets.compile_target(
 targets.compile_target(
     name = "chrome/enterprise_companion:all",
     label = "//chrome/enterprise_companion:all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )

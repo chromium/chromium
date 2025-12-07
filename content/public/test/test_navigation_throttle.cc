@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/public/test/test_navigation_throttle.h"
 
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 
 namespace content {
 
-TestNavigationThrottle::TestNavigationThrottle(NavigationHandle* handle)
-    : NavigationThrottle(handle) {}
+TestNavigationThrottle::TestNavigationThrottle(
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 TestNavigationThrottle::~TestNavigationThrottle() {}
 
@@ -88,8 +85,9 @@ void TestNavigationThrottle::OnWillRespond() {}
 NavigationThrottle::ThrottleCheckResult TestNavigationThrottle::ProcessMethod(
     ThrottleMethod method) {
   method_properties_[method].call_count++;
-  if (!method_properties_[method].callback.is_null())
+  if (!method_properties_[method].callback.is_null()) {
     method_properties_[method].callback.Run();
+  }
 
   NavigationThrottle::ThrottleCheckResult result =
       method_properties_[method].result;

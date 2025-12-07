@@ -25,7 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_utils.h"
@@ -72,10 +72,6 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
-
   auto NavigateAndRequestMidi() {
     return Steps(
         InstrumentTab(kWebContentsElementId),
@@ -100,8 +96,8 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
 
 // Display MIDI permission prompt.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest, PermissionPrompt) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       CheckViewProperty(
           PermissionPromptBubbleBaseView::kMainViewId,
           &PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting,
@@ -113,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest, PermissionPrompt) {
 // Display MIDI permission state in page info when denied.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionInPageInfo) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       PressButton(kLocationIconElementId),  // open page info.
@@ -125,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
             for (PermissionToggleRowView* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
               if (permission_toggle_row->GetRowTitleForTesting() ==
-                         l10n_util::GetStringUTF16(
-                             IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX)) {
+                  l10n_util::GetStringUTF16(
+                      IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX)) {
                 includes_midi_sysex = true;
               }
             }
@@ -137,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
 // Display MIDI permission state in page info when allowed.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        AllowedMidiPermissionInPageInfo) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       PressButton(kLocationIconElementId),  // open page info.
@@ -149,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
             for (PermissionToggleRowView* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
               if (permission_toggle_row->GetRowTitleForTesting() ==
-                         l10n_util::GetStringUTF16(
-                             IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX)) {
+                  l10n_util::GetStringUTF16(
+                      IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX)) {
                 includes_midi_sysex = true;
               }
             }
@@ -161,41 +157,39 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
 // Display blockage indicator of MIDI when blocked.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionIndicator) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(
-          ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
-          base::BindOnce([](ui::TrackedElement* element) {
-            auto* element_view = AsView<ContentSettingImageView>(element);
-            EXPECT_EQ(element_view->get_icon_for_testing(),
-                      &vector_icons::kMidiOffChromeRefreshIcon);
-            EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                      &gfx::kNoneIcon);
-            EXPECT_EQ(
-                element_view->get_tooltip_text_for_testing(),
-                l10n_util::GetStringUTF16(IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
-          })));
+      AfterShow(ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
+                base::BindOnce([](ui::TrackedElement* element) {
+                  auto* element_view = AsView<ContentSettingImageView>(element);
+                  EXPECT_EQ(element_view->get_icon_for_testing(),
+                            &vector_icons::kMidiOffChromeRefreshIcon);
+                  EXPECT_EQ(element_view->get_icon_badge_for_testing(),
+                            &gfx::VectorIcon::EmptyIcon());
+                  EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
+                            l10n_util::GetStringUTF16(
+                                IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
+                })));
 }
 
 // Display in-use indicator of MIDI when allowed.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        AllowedMidiPermissionIndicator) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(
-          ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
-          base::BindOnce([](ui::TrackedElement* element) {
-            auto* element_view = AsView<ContentSettingImageView>(element);
-            EXPECT_EQ(element_view->get_icon_for_testing(),
-                      &vector_icons::kMidiChromeRefreshIcon);
-            EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                      &gfx::kNoneIcon);
-            EXPECT_EQ(
-                element_view->get_tooltip_text_for_testing(),
-                l10n_util::GetStringUTF16(IDS_ALLOWED_MIDI_SYSEX_MESSAGE));
-          })));
+      AfterShow(ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
+                base::BindOnce([](ui::TrackedElement* element) {
+                  auto* element_view = AsView<ContentSettingImageView>(element);
+                  EXPECT_EQ(element_view->get_icon_for_testing(),
+                            &vector_icons::kMidiChromeRefreshIcon);
+                  EXPECT_EQ(element_view->get_icon_badge_for_testing(),
+                            &gfx::VectorIcon::EmptyIcon());
+                  EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
+                            l10n_util::GetStringUTF16(
+                                IDS_ALLOWED_MIDI_SYSEX_MESSAGE));
+                })));
 }

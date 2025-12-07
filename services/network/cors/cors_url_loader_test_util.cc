@@ -125,7 +125,7 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
 
 void TestURLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // RESET FACTORY PARAMS
@@ -203,6 +203,7 @@ void CorsURLLoaderTestBase::CreateLoaderAndStart(
   if (request.mode == mojom::RequestMode::kNavigate)
     request.navigation_redirect_chain.push_back(url);
   request.request_initiator = url::Origin::Create(origin);
+  request.devtools_request_id = "devtools";
   if (devtools_observer_for_next_request_) {
     request.trusted_params = ResourceRequest::TrustedParams();
     request.trusted_params->devtools_observer =
@@ -216,9 +217,10 @@ void CorsURLLoaderTestBase::CreateLoaderAndStart(
     const ResourceRequest& request) {
   test_cors_loader_client_ = std::make_unique<TestURLLoaderClient>();
   url_loader_.reset();
+  ResourceRequest request_copy(request);
   cors_url_loader_factory_->CreateLoaderAndStart(
       url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
-      mojom::kURLLoadOptionNone, request,
+      mojom::kURLLoadOptionNone, request_copy,
       test_cors_loader_client_->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 }

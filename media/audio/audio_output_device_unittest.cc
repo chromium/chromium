@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -81,7 +83,7 @@ class MockAudioOutputIPC : public AudioOutputIPC {
   MOCK_METHOD1(SetVolume, void(double volume));
 };
 
-}  // namespace.
+}  // namespace
 
 class AudioOutputDeviceTest : public testing::Test {
  public:
@@ -144,7 +146,7 @@ void AudioOutputDeviceTest::CreateDevice(const std::string& device_id,
   if (audio_device_)
     StopAudioDevice();
 
-  audio_device_ = new AudioOutputDevice(
+  audio_device_ = base::MakeRefCounted<AudioOutputDevice>(
       std::make_unique<NiceMock<MockAudioOutputIPC>>(),
       task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), device_id), timeout);
@@ -197,7 +199,7 @@ void AudioOutputDeviceTest::CallOnStreamCreated() {
   ASSERT_TRUE(shared_memory_region_.IsValid());
   shared_memory_mapping_ = shared_memory_region_.Map();
   ASSERT_TRUE(shared_memory_mapping_.IsValid());
-  memset(shared_memory_mapping_.memory(), 0xff, kMemorySize);
+  std::ranges::fill(shared_memory_mapping_.GetMemoryAsSpan<uint8_t>(), 0xff);
 
   ASSERT_TRUE(CancelableSyncSocket::CreatePair(&browser_socket_,
                                                &renderer_socket_));
@@ -232,7 +234,7 @@ void AudioOutputDeviceTest::FlushAudioDevice() {
 }
 
 void AudioOutputDeviceTest::Render() {
-  browser_socket_.Send(&counter_, sizeof(counter_));
+  browser_socket_.Send(base::byte_span_from_ref(counter_));
   ++counter_;
 }
 
@@ -356,7 +358,7 @@ TEST_F(AudioOutputDeviceTest,
 TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
   // Clear audio device set by fixture.
   StopAudioDevice();
-  audio_device_ = new AudioOutputDevice(
+  audio_device_ = base::MakeRefCounted<AudioOutputDevice>(
       std::make_unique<NiceMock<MockAudioOutputIPC>>(),
       task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), kDefaultDeviceId),
@@ -456,4 +458,4 @@ TEST_F(AudioOutputDeviceTest, StreamIsFlushed) {
   StopAudioDevice();
 }
 
-}  // namespace media.
+}  // namespace media

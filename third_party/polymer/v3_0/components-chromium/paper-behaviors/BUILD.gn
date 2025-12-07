@@ -8,7 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("paper-ripple-mixin") {
   deps = [
-    "../paper-ripple:paper-ripple",
+    "../paper-ripple",
     "../polymer:polymer_bundled",
   ]
 }

@@ -5,6 +5,7 @@
 #include "content/common/input/synthetic_mouse_driver.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/input/synthetic_gesture_target.h"

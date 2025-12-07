@@ -4,8 +4,13 @@
 
 #include "net/base/proxy_string_util.h"
 
+#include <string>
+#include <vector>
+
+#include "build/buildflag.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/net_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -72,6 +77,15 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
        "https://1.2.3.4:10", ProxyServer::SCHEME_HTTPS, "1.2.3.4", 10,
        "HTTPS 1.2.3.4:10"},
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+      // QUIC proxy URIs:
+      {"quic://foopy",  // no port
+       "quic://foopy:443", ProxyServer::SCHEME_QUIC, "foopy", 443,
+       "QUIC foopy:443"},
+      {"quic://foopy:80", "quic://foopy:80", ProxyServer::SCHEME_QUIC, "foopy",
+       80, "QUIC foopy:80"},
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
       // Hostname canonicalization:
       {"[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:10",  // No scheme.
        "[fedc:ba98:7654:3210:fedc:ba98:7654:3210]:10", ProxyServer::SCHEME_HTTP,
@@ -91,8 +105,8 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
   };
 
   for (const auto& test : tests) {
-    ProxyServer uri =
-        ProxyUriToProxyServer(test.input_uri, ProxyServer::SCHEME_HTTP);
+    ProxyServer uri = ProxyUriToProxyServer(
+        test.input_uri, ProxyServer::SCHEME_HTTP, /*is_quic_allowed=*/true);
     EXPECT_TRUE(uri.is_valid());
     EXPECT_EQ(test.expected_uri, ProxyServerToProxyUri(uri));
     EXPECT_EQ(test.expected_scheme, uri.scheme());
@@ -101,6 +115,30 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
     EXPECT_EQ(test.expected_pac_string, ProxyServerToPacResultElement(uri));
   }
 }
+
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+// In a build where the quic proxy support build flag is enabled, if the
+// boolean for allowing quic proxy support is false, it will be considered in an
+// invalid scheme as QUIC should not be parsed.
+TEST(ProxySpecificationUtilTest,
+     ProxyUriToProxyServerBuildFlagEnabledQuicDisallowedIsInvalid) {
+  ProxyServer proxy_server = ProxyUriToProxyServer(
+      "quic://foopy:443", ProxyServer::SCHEME_HTTP, /*is_quic_allowed=*/false);
+  EXPECT_FALSE(proxy_server.is_valid());
+  EXPECT_EQ(ProxyServer::SCHEME_INVALID, proxy_server.scheme());
+}
+#else
+// In a build where the quic proxy support build flag is disabled, if the
+// boolean for allowing quic proxy support is true, it will be considered in an
+// invalid scheme as QUIC is not allowed in this type of build.
+TEST(ProxySpecificationUtilTest,
+     ProxyUriToProxyServerBuildFlagDisabledQuicAllowedIsInvalid) {
+  ProxyServer proxy_server = ProxyUriToProxyServer(
+      "quic://foopy:443", ProxyServer::SCHEME_HTTP, /*is_quic_allowed=*/true);
+  EXPECT_FALSE(proxy_server.is_valid());
+  EXPECT_EQ(ProxyServer::SCHEME_INVALID, proxy_server.scheme());
+}
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // Test parsing of the special URI form "direct://".
 TEST(ProxySpecificationUtilTest, DirectProxyUriToProxyChain) {
@@ -121,6 +159,25 @@ TEST(ProxySpecificationUtilTest, DirectProxyUriToProxyChain) {
       ProxyUriToProxyChain("direct://xyz", ProxyServer::SCHEME_HTTP);
   EXPECT_FALSE(invalid_uri.IsValid());
   EXPECT_FALSE(invalid_uri.is_direct());
+}
+
+// A multi-proxy string containing URIs is not acceptable input for the
+// ProxyUriToProxyChain function and should return an invalid `ProxyChain()`.
+TEST(ProxySpecificationUtilTest, ProxyUriToProxyChainWithBracketsInvalid) {
+  // Release builds should return an invalid proxy chain for multi-proxy chains.
+  const char* const invalid_multi_proxy_uris[] = {
+      "[]",
+      "[direct://]",
+      "[https://foopy]",
+      "[https://foopy https://hoopy]",
+  };
+
+  for (const char* uri : invalid_multi_proxy_uris) {
+    ProxyChain multi_proxy_uri =
+        ProxyUriToProxyChain(uri, ProxyServer::SCHEME_HTTP);
+    EXPECT_FALSE(multi_proxy_uri.IsValid());
+    EXPECT_FALSE(multi_proxy_uri.is_direct());
+  }
 }
 
 // Test parsing some invalid inputs.
@@ -250,5 +307,182 @@ TEST(ProxySpecificationUtilTest, InvalidPacResultElementToProxyServer) {
   }
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+// A multi-proxy chain that contains any mention of direct will be considered an
+// invalid `ProxyChain()`.
+TEST(ProxySpecificationUtilTest,
+     MultiProxyUrisToProxyChainMultiProxyDirectIsInvalid) {
+  const char* const invalid_multi_proxy_uris[] = {
+      "[direct://xyz]",             // direct with ports
+      "[direct:// direct://]",      // Two directs in chain
+      "[direct:// https://foopy]",  // direct first in chain
+      "[https://foopy direct://]",  // direct later in chain
+  };
+
+  for (const char* uri : invalid_multi_proxy_uris) {
+    ProxyChain multi_proxy_uri =
+        MultiProxyUrisToProxyChain(uri, ProxyServer::SCHEME_HTTPS);
+    EXPECT_FALSE(multi_proxy_uri.IsValid());
+    EXPECT_FALSE(multi_proxy_uri.is_direct());
+  }
+}
+
+// A input containing a single uri of direct will be valid.
+TEST(ProxySpecificationUtilTest,
+     MultiProxyUrisToProxyChainSingleDirectIsValid) {
+  const char* const valid_direct_uris[] = {
+      "direct://",    // non-bracketed direct
+      "[direct://]",  // bracketed direct
+  };
+
+  for (const char* uri : valid_direct_uris) {
+    ProxyChain multi_proxy_uri =
+        MultiProxyUrisToProxyChain(uri, ProxyServer::SCHEME_HTTPS);
+    EXPECT_TRUE(multi_proxy_uri.IsValid());
+    EXPECT_TRUE(multi_proxy_uri.is_direct());
+  }
+}
+
+TEST(ProxySpecificationUtilTest, MultiProxyUrisToProxyChainValid) {
+  const struct {
+    const char* const input_uri;
+    const std::vector<std::string> expected_uris;
+    ProxyServer::Scheme expected_scheme;
+  } tests[] = {
+      // 1 Proxy (w/ and w/o brackets):
+      {"[https://foopy:443]", {"https://foopy:443"}, ProxyServer::SCHEME_HTTPS},
+      {"https://foopy:443", {"https://foopy:443"}, ProxyServer::SCHEME_HTTPS},
+
+      // 2 Proxies:
+      {"[https://foopy:443 https://hoopy:443]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+
+      // Extra padding in uris string ignored:
+      {" [https://foopy:443 https://hoopy:443] ",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+      {"[\thttps://foopy:443 https://hoopy:443\t       ] ",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+      {"     \t[       https://foopy:443 https://hoopy:443\t        ]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+      {"[https://foopy:443  https://hoopy:443]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},  // Delimiter is two spaces.
+      {"[https://foopy \thttps://hoopy]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},  // Delimiter is followed by tab.
+
+      // 3 Proxies:
+      {"[https://foopy:443 https://hoopy:443 https://loopy:443]",
+       {"https://foopy:443", "https://hoopy:443", "https://loopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+  };
+
+  for (const auto& test : tests) {
+    ProxyChain proxy_chain =
+        MultiProxyUrisToProxyChain(test.input_uri, test.expected_scheme);
+
+    EXPECT_TRUE(proxy_chain.IsValid());
+    EXPECT_EQ(proxy_chain.length(), test.expected_uris.size());
+
+    std::vector<ProxyServer> proxies = proxy_chain.proxy_servers();
+    for (size_t i = 0; i < proxies.size(); i++) {
+      const ProxyServer& proxy = proxies[i];
+      EXPECT_TRUE(proxy.is_valid());
+      EXPECT_EQ(test.expected_uris[i], ProxyServerToProxyUri(proxy));
+    }
+  }
+}
+
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+// Quic proxy schemes are parsed properly
+TEST(ProxySpecificationUtilTest, MultiProxyUrisToProxyChainValidQuic) {
+  const struct {
+    const char* const input_uri;
+    const std::vector<std::string> expected_uris;
+    ProxyServer::Scheme default_scheme;
+    const std::vector<ProxyServer::Scheme> expected_schemes;
+  } tests[] = {
+      // single quic proxy scheme (unbracketed)
+      {"quic://foopy",  // missing port number
+       {"quic://foopy:443"},
+       ProxyServer::SCHEME_HTTP,
+       {ProxyServer::SCHEME_QUIC}},
+      {"quic://foopy:80",
+       {"quic://foopy:80"},
+       ProxyServer::SCHEME_HTTP,
+       {ProxyServer::SCHEME_QUIC}},
+
+      // single quic proxy scheme (bracketed)
+      {"[quic://foopy:80]",
+       {"quic://foopy:80"},
+       ProxyServer::SCHEME_HTTP,
+       {ProxyServer::SCHEME_QUIC}},
+
+      // multi-proxy chain
+      // 2 quic schemes in a row
+      {"[quic://foopy:80 quic://loopy:80]",
+       {"quic://foopy:80", "quic://loopy:80"},
+       ProxyServer::SCHEME_HTTP,
+       {ProxyServer::SCHEME_QUIC, ProxyServer::SCHEME_QUIC}},
+      // Quic scheme followed by HTTPS in a row
+      {"[quic://foopy:80 https://loopy:80]",
+       {"quic://foopy:80", "https://loopy:80"},
+       ProxyServer::SCHEME_HTTP,
+       {ProxyServer::SCHEME_QUIC, ProxyServer::SCHEME_HTTPS}},
+  };
+
+  for (const auto& test : tests) {
+    ProxyChain proxy_chain = MultiProxyUrisToProxyChain(
+        test.input_uri, test.default_scheme, /*is_quic_allowed=*/true);
+
+    EXPECT_TRUE(proxy_chain.IsValid());
+    EXPECT_EQ(proxy_chain.length(), test.expected_uris.size());
+
+    std::vector<ProxyServer> proxies = proxy_chain.proxy_servers();
+    for (size_t i = 0; i < proxies.size(); i++) {
+      const ProxyServer& proxy = proxies[i];
+      EXPECT_TRUE(proxy.is_valid());
+      EXPECT_EQ(test.expected_uris[i], ProxyServerToProxyUri(proxy));
+      EXPECT_EQ(test.expected_schemes[i], proxy.scheme());
+    }
+  }
+}
+
+// If a multi-proxy chain contains a quic scheme proxy, it must only be followed
+// by another quic or https proxy. This ensures this logic still applies.
+TEST(ProxySpecificationUtilTest, MultiProxyUrisToProxyChainInvalidQuicCombo) {
+  ProxyChain proxy_chain = MultiProxyUrisToProxyChain(
+      "[https://loopy:80 quic://foopy:80]", ProxyServer::SCHEME_HTTP);
+
+  EXPECT_FALSE(proxy_chain.IsValid());
+}
+
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+// If the input URIs is invalid, an invalid `ProxyChain()` will be returned.
+TEST(ProxySpecificationUtilTest,
+     MultiProxyUrisToProxyChainInvalidFormatReturnsInvalidProxyChain) {
+  const char* const invalid_multi_proxy_uris[] = {
+      "",                                 // Empty string
+      "   ",                              // String with only spaces
+      "[]",                               // No proxies within brackets
+      "https://foopy https://hoopy",      // Missing brackets
+      "[https://foopy https://hoopy",     // Missing bracket
+      "https://foopy https://hoopy]",     // Missing bracket
+      "https://foopy \t   https://hoopy"  // Missing brackets and bad delimiter
+  };
+
+  for (const char* uri : invalid_multi_proxy_uris) {
+    ProxyChain multi_proxy_uri =
+        MultiProxyUrisToProxyChain(uri, ProxyServer::SCHEME_HTTPS);
+    EXPECT_FALSE(multi_proxy_uri.IsValid());
+    EXPECT_FALSE(multi_proxy_uri.is_direct());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 }  // namespace
 }  // namespace net

@@ -45,7 +45,7 @@ class NET_EXPORT_PRIVATE QuicHttp3Logger : public quic::Http3DebugVisitor {
       quic::QuicStreamId stream_id,
       quic::QuicByteCount compressed_headers_length) override;
   void OnHeadersDecoded(quic::QuicStreamId stream_id,
-                        quic::QuicHeaderList headers) override;
+                        const quic::QuicHeaderList& headers) override;
 
   void OnUnknownFrameReceived(quic::QuicStreamId stream_id,
                               uint64_t frame_type,

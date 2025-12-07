@@ -14,7 +14,7 @@ import {AsyncJobQueue, queuedAsyncCallback} from '../async_job_queue.js';
 import {
   CameraConfig,
   CameraManager,
-  CameraViewUI,
+  CameraViewUi,
   getDefaultScanCorners,
   GifResult,
   PhotoResult,
@@ -75,7 +75,7 @@ import {
 } from './document_review.js';
 import {Flash} from './flash.js';
 import {OptionPanel} from './option_panel.js';
-import {PTZPanel} from './ptz_panel.js';
+import {PtzPanel} from './ptz_panel.js';
 import * as review from './review.js';
 import {PrimarySettings} from './settings/primary.js';
 import {View} from './view.js';
@@ -84,7 +84,7 @@ import {WarningType} from './warning.js';
 /**
  * Camera-view controller.
  */
-export class Camera extends View implements CameraViewUI {
+export class Camera extends View implements CameraViewUi {
   private readonly documentReview: DocumentReview;
 
   private currentLowStorageType: LowStorageDialogType|null = null;
@@ -165,7 +165,7 @@ export class Camera extends View implements CameraViewUI {
     this.subViews = [
       new PrimarySettings(this.cameraManager),
       new OptionPanel(),
-      new PTZPanel(),
+      new PtzPanel(),
       this.review,
       this.documentReview,
       this.lowStorageDialogView,
@@ -254,7 +254,7 @@ export class Camera extends View implements CameraViewUI {
       offLabel: I18nString.RECORD_VIDEO_PAUSE_BUTTON,
     });
 
-    this.cameraManager.registerCameraUI({
+    this.cameraManager.registerCameraUi({
       onTryingNewConfig: (config: CameraConfig) => {
         this.updateMode(config.mode);
       },
@@ -353,7 +353,7 @@ export class Camera extends View implements CameraViewUI {
 
   private initVideoEncoderOptions() {
     const options = this.videoEncoderOptions;
-    this.cameraManager.registerCameraUI({
+    this.cameraManager.registerCameraUi({
       onUpdateConfig: () => {
         if (state.get(Mode.VIDEO)) {
           const {width, height, frameRate} =

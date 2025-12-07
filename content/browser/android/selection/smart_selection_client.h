@@ -34,13 +34,11 @@ class SmartSelectionClient {
 
   // Sends asynchronius request to retrieve the text.
   void RequestSurroundingText(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
                               int num_extra_characters,
                               int callback_data);
 
   // Cancels all pending requests.
-  void CancelAllRequests(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void CancelAllRequests(JNIEnv* env);
 
  private:
   void OnSurroundingTextReceived(int callback_data,

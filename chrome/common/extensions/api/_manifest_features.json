@@ -7,11 +7,6 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 
 {
-  "action": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "min_manifest_version": 3
-  },
   "app.linked_icons": {
     "channel": "stable",
     "extension_types": ["hosted_app"]
@@ -29,20 +24,6 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "platforms": ["win", "mac"]
-  },
-  "chrome_url_overrides": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
-  "chrome_url_overrides.activationmessage": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "platforms": ["chromeos"]
-  },
-  "chrome_url_overrides.keyboard": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "platforms": ["chromeos"]
   },
   "content_scripts": [
     {
@@ -62,10 +43,6 @@
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app"
     ]
-  },
-  "devtools_page": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "display_in_launcher": [
     {
@@ -113,7 +90,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
@@ -161,27 +138,9 @@
       "login_screen_extension"
     ]
   },
-  "system_indicator": {
-    "channel": "stable",
-    "allowlist": [
-      "F29716B08705C9D3C12CDFE3F638BAE709570C31",  // Tests
-      // See crbug.com/245730 for details on the Hangouts allowlist.
-      "53041A2FA309EECED01FFC751E7399186E860B2C",  // Hangouts
-      "312745D9BF916161191143F6490085EEA0434997",  // Hangouts beta
-      "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Hangouts alpha
-      "E7E2461CE072DF036CF9592740196159E2D7C089",  // Hangouts debug
-      "49DA0B9CCEEA299186C6E7226FD66922D57543DC"   // Hangouts dev
-    ],
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["linux", "mac", "win"]
-  },
   "theme": {
     "channel": "stable",
     "extension_types": ["theme"]
-  },
-  "tts_engine": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "url_handlers": {
     "channel": "stable",

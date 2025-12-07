@@ -21,8 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetLibraryLoader;
 
 /** Unit tests for {@code MockCertVerifier}. */
 @RunWith(AndroidJUnit4.class)
@@ -36,8 +37,8 @@ public class MockCertVerifierTest {
     @Before
     public void setUp() throws Exception {
         // Load library first to create MockCertVerifier.
-        System.loadLibrary("cronet_tests");
-
+        CronetLibraryLoader.switchToTestLibrary();
+        CronetLibraryLoader.loadLibrary();
         assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
@@ -54,7 +55,9 @@ public class MockCertVerifierTest {
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.mError).isNotNull();
-        assertThat(callback.mError).hasMessageThat().contains("ERR_CERT_AUTHORITY_INVALID");
+        // ERR_CERT_COMMON_NAME_INVALID because we are trying to connect to localhost, but the test
+        // server is presenting a certificate for test.example.com.
+        assertThat(callback.mError).hasMessageThat().contains("ERR_CERT_COMMON_NAME_INVALID");
     }
 
     @Test

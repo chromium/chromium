@@ -18,10 +18,10 @@
 
 namespace {
 
-using ::cricket::Connection;
-using ::cricket::IceControllerInterface;
-using ::cricket::IceRecheckEvent;
-using ::cricket::IceSwitchReason;
+using ::webrtc::Connection;
+using ::webrtc::IceControllerInterface;
+using ::webrtc::IceRecheckEvent;
+using ::webrtc::IceSwitchReason;
 
 using ::blink::IcePingProposal;
 using ::blink::IcePruneProposal;

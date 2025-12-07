@@ -3,6 +3,7 @@
 // META: script=/resources/testdriver-vendor.js
 // META: script=/webhid/resources/common.js
 // META: script=resources/automation.js
+// META: timeout=long
 'use strict';
 
 const kTestVendorId = 0x1234;

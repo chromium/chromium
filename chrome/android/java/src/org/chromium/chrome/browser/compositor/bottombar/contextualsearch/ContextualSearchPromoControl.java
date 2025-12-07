@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
@@ -23,19 +27,20 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /**
  * Controls the Contextual Search Opt-in/out privacy Promo that shows within the Panel just below
  * the Bar for users that have not yet accepted or declined our privacy policy.
  */
+@NullMarked
 public class ContextualSearchPromoControl extends OverlayPanelInflater {
     // The percentage that inicates we've reached full size (for this mode) and are now stationary.
     private static final float STATIONARY_PERCENTAGE = 1.0f;
@@ -85,8 +90,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
             OverlayPanel panel,
             ContextualSearchPromoHost host,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 panel,
                 R.layout.contextual_search_promo_view,
@@ -314,7 +319,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View view = getView();
+        View view = assumeNonNull(getView());
 
         // "Allow" button.
         Button allowButton = view.findViewById(R.id.contextual_search_allow_button);
@@ -329,8 +334,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         // Fill in text with link to Settings.
         TextView promoText = view.findViewById(R.id.contextual_search_promo_text);
 
-        NoUnderlineClickableSpan settingsLink =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan settingsLink =
+                new ChromeClickableSpan(
                         view.getContext(),
                         (View ignored) ->
                                 ContextualSearchPromoControl.this.handleClickSettingsLink());
@@ -373,10 +378,11 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                         new Runnable() {
                             @Override
                             public void run() {
-                                SettingsLauncher settingsLauncher =
-                                        SettingsLauncherFactory.createSettingsLauncher();
-                                settingsLauncher.launchSettingsActivity(
-                                        getContext(), ContextualSearchSettingsFragment.class);
+                                SettingsNavigation settingsNavigation =
+                                        SettingsNavigationFactory.createSettingsNavigation();
+                                settingsNavigation.startSettings(
+                                        assumeNonNull(getContext()),
+                                        ContextualSearchSettingsFragment.class);
                             }
                         });
     }

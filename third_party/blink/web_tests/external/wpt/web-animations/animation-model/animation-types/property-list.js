@@ -25,6 +25,18 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'flex-start', 'flex-end' ] ] }
     ]
   },
+  'anchor-name': {
+    // https://drafts.csswg.org/css-anchor-position-1/#name
+    types: [
+      { type: 'discrete', options: [ [ 'none', '--anchor' ] ] }
+    ]
+  },
+  'anchor-scope': {
+    // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'all' ] ] }
+    ]
+  },
   'appearance': {
     // https://drafts.csswg.org/css-ui/#appearance-switching
     types: [
@@ -104,10 +116,22 @@ const gCSSProperties1 = {
     types: [
     ]
   },
+  'block-step-align': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-align
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'center'], ['end', 'start'], ['start', 'center'] ] }
+    ]
+  },
   'block-step-insert': {
     // https://drafts.csswg.org/css-rhythm/#block-step-insert
     types: [
-      { type: 'discrete', options: [ [ 'margin', 'padding' ] ] }
+      { type: 'discrete', options: [ [ 'margin-box', 'padding-box'], ['margin-box', 'content-box'], ['padding-box', 'content-box'] ] }
+    ]
+  },
+  'block-step-round': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-round
+    types: [
+      { type: 'discrete', options: [ [ 'up', 'down'], ['down', 'nearest'], ['nearest', 'up'] ] }
     ]
   },
   'block-step-size': {
@@ -421,6 +445,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'auto', 'balance' ] ] }
     ]
   },
+  'column-wrap': {
+    // https://drafts.csswg.org/css-multicol-2/#cwr
+    types: [
+      { type: 'discrete', options: [ [ 'nowrap', 'wrap' ] ] }
+    ]
+  },
   'column-rule-style': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-rule-style
     types: [
@@ -438,6 +468,12 @@ const gCSSProperties1 = {
   },
   'column-width': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-width
+    types: [ 'length',
+      { type: 'discrete', options: [ [ 'auto', '1px' ] ] }
+    ]
+  },
+  'column-height': {
+    // https://drafts.csswg.org/css-multicol-2/#ch
     types: [ 'length',
       { type: 'discrete', options: [ [ 'auto', '1px' ] ] }
     ]
@@ -557,6 +593,10 @@ const gCSSProperties1 = {
     types: [
       { type: 'discrete', options: [ [ 'italic', 'oblique' ] ] }
     ]
+  },
+  'font-width': {
+    // https://drafts.csswg.org/css-fonts-4/#propdef-font-width
+    types: [ 'percentage' ]
   },
   'float': {
     // https://drafts.csswg.org/css-page-floats/#propdef-float
@@ -826,7 +866,7 @@ const gCSSProperties2 = {
   },
   'letter-spacing': {
     // https://drafts.csswg.org/css-text-3/#propdef-letter-spacing
-    types: [ 'length' ]
+    types: [ 'lengthPercentageOrCalc' ]
   },
   'lighting-color': {
     // https://drafts.fxtf.org/filters/#LightingColorProperty
@@ -864,6 +904,22 @@ const gCSSProperties2 = {
     types: [
       { type: 'discrete', options: [ [ 'circle', 'square' ] ] }
     ]
+  },
+  "math-depth": {
+    // https://w3c.github.io/mathml-core/#propdef-math-depth
+    types: [ "integer" ],
+  },
+  "math-shift": {
+    // https://w3c.github.io/mathml-core/#propdef-math-shift
+    types: [
+      { type: "discrete", options: [ [ "normal", "compact" ] ] },
+    ],
+  },
+  "math-style": {
+    // https://w3c.github.io/mathml-core/#propdef-math-style
+    types: [
+      { type: "discrete", options: [ [ "normal", "compact" ] ] },
+    ],
   },
   'margin-block-end': {
     // https://drafts.csswg.org/css-logical-props/#propdef-margin-block-end
@@ -1245,6 +1301,30 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'absolute', 'fixed' ] ] }
     ]
   },
+  'position-anchor': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-anchor
+    types: [
+      { type: 'discrete', options: [ [ 'auto', '--anchor' ] ] }
+    ]
+  },
+  'position-visibility': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-visibility
+    types: [
+      { type: 'discrete', options: [ [ 'always', 'anchors-valid' ] ] }
+    ]
+  },
+  'position-try-fallbacks': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-try-fallbacks
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'flip-block' ] ] }
+    ]
+  },
+  'position-try-order': {
+    // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
+    types: [
+      { type: 'discrete', options: [ [ 'normal', 'most-width' ] ] }
+    ]
+  },
   'quotes': {
     // https://drafts.csswg.org/css-content-3/#propdef-quotes
     types: [
@@ -1421,13 +1501,13 @@ const gCSSProperties2 = {
   'text-box-edge': {
     // https://drafts.csswg.org/css-inline-3/#text-edges
     types: [
-      { type: 'discrete', options: [ [ 'leading', 'text' ] ] }
+      { type: 'discrete', options: [ [ 'auto', 'text' ] ] }
     ]
   },
   'text-box-trim': {
     // https://drafts.csswg.org/css-inline-3/#propdef-text-box-trim
     types: [
-      { type: 'discrete', options: [ [ 'none', 'start' ] ] }
+      { type: 'discrete', options: [ [ 'none', 'trim-start' ] ] }
     ]
   },
   'text-decoration': {
@@ -1590,6 +1670,12 @@ const gCSSProperties2 = {
   'vertical-align': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-vertical-align
     types: [
+    ]
+  },
+  'view-transition-class': {
+    // https://drafts.csswg.org/css-view-transitions/#propdef-view-transition-name
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'card scale-animation' ] ] },
     ]
   },
   'view-transition-name': {

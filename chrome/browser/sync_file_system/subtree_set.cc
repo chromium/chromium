@@ -22,9 +22,9 @@ SubtreeSet::Node::Node(bool contained_as_subtree_root,
       number_of_subtrees_below(number_of_subtrees_below) {
 }
 
-SubtreeSet::SubtreeSet() {}
+SubtreeSet::SubtreeSet() = default;
 SubtreeSet::SubtreeSet(const SubtreeSet& other) = default;
-SubtreeSet::~SubtreeSet() {}
+SubtreeSet::~SubtreeSet() = default;
 
 bool SubtreeSet::IsDisjointWith(const base::FilePath& subtree_root) const {
   base::FilePath::StringType normalized_subtree_root =
@@ -89,8 +89,7 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
 
     auto found = inclusive_ancestors_of_subtree_roots_.find(path.value());
     if (found == inclusive_ancestors_of_subtree_roots_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     DCHECK(!found->second.contained_as_subtree_root);

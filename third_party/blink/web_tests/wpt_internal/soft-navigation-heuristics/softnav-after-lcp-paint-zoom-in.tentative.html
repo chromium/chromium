@@ -10,37 +10,19 @@
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 </head>
 <body>
+  <a id=link>Click Me!</a>
   <main id=main>
-    <div>
-      <a id=link><img id="initial_image" src="/images/lcp-256x256.png"></a>
-    </div>
+    <img id="initial_image" src="/images/lcp-256x256.png">
   </main>
   <script>
-    if (window.testRunner) {
-      testRunner.setPageZoomFactor(2);
-    }
-    const link = document.getElementById("link");
     testSoftNavigation({
-      addContent: async () => {
-        // Remove the initial image, so that the text would be painted on screen.
-        document.getElementById("initial_image").remove();
-        let lcp_element_painted;
-        const lcp_element_paint_promise = new Promise((r) => { lcp_element_painted = r; });
-        // Add an LCP element, but have it be small enough to not trigger the
-        // Soft Navigation heuristics.
-        const p = addTextParagraphToMain("Lorem Ipsu", /*element_timing=*/"lcp");
-        (new PerformanceObserver(list => {
-          // Once the first element is fully painted:
-          lcp_element_painted();
-        })).observe({type: "element", buffered: true});
-        await lcp_element_paint_promise;
-        // Add a smaller element that gets us over that threshold.
-        addTextParagraphToMain("m");
+      testName: "Test soft navigation LCP, even after 2x zoom levels.",
+      extraSetup: (t) => {
+        if (window.testRunner) {
+          testRunner.setPageZoomFactor(0.75);
+        }
       },
-      link: link,
-      test: "Test that an image LCP followed by a smaller soft navigation LCP"
-        + " properly queues an LCP entry, even when the soft navigation is"
-        + " detected after the LCP, even at 2x zoom levels."});
+    });
   </script>
 </body>
 </html>

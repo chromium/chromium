@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_key.h"
 
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
@@ -12,9 +13,8 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
-#include "url/gurl.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -28,72 +28,95 @@ TEST(QuicSessionKeyTest, Equality) {
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false);
-  EXPECT_EQ(key,
-            QuicSessionKey("www.example.org", 80, PRIVACY_MODE_DISABLED,
-                           ProxyChain::Direct(), SessionUsage::kDestination,
-                           SocketTag(), NetworkAnonymizationKey(),
-                           SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false);
   EXPECT_EQ(
-      key, QuicSessionKey(
-               quic::QuicServerId("www.example.org", 80, PRIVACY_MODE_DISABLED),
-               ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-               NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-               /*require_dns_https_alpn=*/false));
+      key, QuicSessionKey("www.example.org", 80, PRIVACY_MODE_DISABLED,
+                          ProxyChain::Direct(), SessionUsage::kDestination,
+                          SocketTag(), NetworkAnonymizationKey(),
+                          SecureDnsPolicy::kAllow,
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false));
+  EXPECT_EQ(
+      key, QuicSessionKey(quic::QuicServerId("www.example.org", 80),
+                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                          SessionUsage::kDestination, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false));
   EXPECT_NE(
       key, QuicSessionKey(HostPortPair("otherproxy", 80), PRIVACY_MODE_DISABLED,
                           ProxyChain::Direct(), SessionUsage::kDestination,
                           SocketTag(), NetworkAnonymizationKey(),
                           SecureDnsPolicy::kAllow,
-                          /*require_dns_https_alpn=*/false));
-  EXPECT_NE(key,
-            QuicSessionKey(HostPortPair("www.example.org", 80),
-                           PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
-                           SessionUsage::kDestination, SocketTag(),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false));
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false));
+  EXPECT_NE(
+      key, QuicSessionKey(HostPortPair("www.example.org", 80),
+                          PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
+                          SessionUsage::kDestination, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false));
   EXPECT_NE(key, QuicSessionKey(
                      HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::FromSchemeHostAndPort(
                          ProxyServer::Scheme::SCHEME_HTTPS, "otherproxy", 443),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false));
+  // Note that this isn't a session key we would actually use because if the
+  // session usage is `kProxy` then `disable_cert_verification_network_fetches`
+  // should be true to prevent possible deadlocks, but we use it here for
+  // testing.
   EXPECT_NE(key, QuicSessionKey(
                      HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false));
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_NE(key,
-            QuicSessionKey(HostPortPair("www.example.org", 80),
-                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                           SessionUsage::kDestination, SocketTag(999, 999),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false));
+  EXPECT_NE(
+      key, QuicSessionKey(HostPortPair("www.example.org", 80),
+                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                          SessionUsage::kDestination, SocketTag(999, 999),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false));
 #endif  // BUILDFLAG(IS_ANDROID)
   if (NetworkAnonymizationKey::IsPartitioningEnabled()) {
-    EXPECT_NE(key, QuicSessionKey(HostPortPair("www.example.org", 80),
-                                  PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                                  SessionUsage::kDestination, SocketTag(),
-                                  NetworkAnonymizationKey::CreateSameSite(
-                                      SchemefulSite(GURL("http://a.test/"))),
-                                  SecureDnsPolicy::kAllow,
-                                  /*require_dns_https_alpn=*/false));
+    EXPECT_NE(key,
+              QuicSessionKey(
+                  HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
+                  ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+                  NetworkAnonymizationKey::CreateSameSite(
+                      SchemefulSite(GURL("http://a.test/"))),
+                  SecureDnsPolicy::kAllow,
+                  /*require_dns_https_alpn=*/false,
+                  /*disable_cert_verification_network_fetches=*/false));
   }
-  EXPECT_NE(key,
-            QuicSessionKey(HostPortPair("www.example.org", 80),
-                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                           SessionUsage::kDestination, SocketTag(),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                           /*require_dns_https_alpn=*/false));
+  EXPECT_NE(
+      key, QuicSessionKey(HostPortPair("www.example.org", 80),
+                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                          SessionUsage::kDestination, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false));
+  EXPECT_NE(
+      key, QuicSessionKey("www.example.org", 80, PRIVACY_MODE_DISABLED,
+                          ProxyChain::Direct(), SessionUsage::kDestination,
+                          SocketTag(), NetworkAnonymizationKey(),
+                          SecureDnsPolicy::kAllow,
+                          /*require_dns_https_alpn=*/true,
+                          /*disable_cert_verification_network_fetches=*/false));
   EXPECT_NE(key,
             QuicSessionKey("www.example.org", 80, PRIVACY_MODE_DISABLED,
                            ProxyChain::Direct(), SessionUsage::kDestination,
                            SocketTag(), NetworkAnonymizationKey(),
                            SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/true));
+                           /*require_dns_https_alpn=*/false,
+                           /*disable_cert_verification_network_fetches=*/true));
 }
 
 // The operator< implementation is suitable for storing distinct keys in a set.
@@ -103,23 +126,34 @@ TEST(QuicSessionKeyTest, Set) {
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
       QuicSessionKey(HostPortPair("otherproxy", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_ENABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
+      QuicSessionKey(HostPortPair("www.example.org", 80),
+                     PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
+                     ProxyChain::Direct(), SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::FromSchemeHostAndPort(
                          ProxyServer::Scheme::SCHEME_HTTPS, "otherproxy", 443),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain({
                          ProxyServer::FromSchemeHostAndPort(
@@ -129,37 +163,53 @@ TEST(QuicSessionKeyTest, Set) {
                      }),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
+      // Note that this isn't a session key we would actually use because if the
+      // session usage is `kProxy` then
+      // `disable_cert_verification_network_fetches` should be true to prevent
+      // possible deadlocks, but we use it here for testing.
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
 #if BUILDFLAG(IS_ANDROID)
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(999, 999), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
 #endif  // BUILDFLAG(IS_ANDROID)
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kDisable,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/true),
+                     /*require_dns_https_alpn=*/true,
+                     /*disable_cert_verification_network_fetches=*/false),
+      QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(), SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/true),
   };
   if (NetworkAnonymizationKey::IsPartitioningEnabled()) {
-    session_keys.emplace_back(HostPortPair("www.example.org", 80),
-                              PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                              SessionUsage::kDestination, SocketTag(),
-                              NetworkAnonymizationKey::CreateSameSite(
-                                  SchemefulSite(GURL("http://a.test/"))),
-                              SecureDnsPolicy::kAllow,
-                              /*require_dns_https_alpn=*/false);
+    session_keys.emplace_back(
+        HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
+        ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+        NetworkAnonymizationKey::CreateSameSite(
+            SchemefulSite(GURL("http://a.test/"))),
+        SecureDnsPolicy::kAllow,
+        /*require_dns_https_alpn=*/false,
+        /*disable_cert_verification_network_fetches=*/false);
   }
   std::set<QuicSessionKey> key_set(session_keys.begin(), session_keys.end());
   ASSERT_EQ(session_keys.size(), key_set.size());

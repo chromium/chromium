@@ -41,7 +41,8 @@ void MojoVideoEncodeAcceleratorProviderFactory::
       std::make_unique<MojoVideoEncodeAcceleratorProvider>(
           base::BindRepeating(&GpuVideoEncodeAcceleratorFactory::CreateVEA),
           gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
-          gpu::GPUInfo::GPUDevice());
+          gpu::GPUInfo::GPUDevice(), /*media_gpu_channel_manager=*/nullptr,
+          base::SingleThreadTaskRunner::GetCurrentDefault());
 
   video_encoder_providers_.Add(std::move(provider), std::move(receiver));
 }

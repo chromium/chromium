@@ -425,7 +425,19 @@ TEST_F(VcTileUiControllerTest, InitialDownloadStatesForMultipleDlcs) {
   tile_waiter.Wait(tile.get(), FeatureTile::DownloadState::kDownloading);
   EXPECT_EQ(FeatureTile::DownloadState::kDownloading,
             tile->download_state_for_testing());
-  EXPECT_EQ(75, tile->download_progress_for_testing());
+  EXPECT_EQ(50, tile->download_progress_for_testing());
+
+  // Case: Some DLCs still not installed, some still in progress.
+  // Expectation: Tile starts in `FeatureTile::DownloadState::kNone` state.
+  SetDlcState(dlc_id_1,
+              dlcservice::DlcState_State::DlcState_State_NOT_INSTALLED,
+              /*progress=*/0);
+  SetDlcState(dlc_id_2, dlcservice::DlcState_State::DlcState_State_INSTALLING,
+              /*progress=*/0.5);
+  tile = test_controller()->CreateTile();
+  // tile_waiter.Wait(tile.get(), FeatureTile::DownloadState::kNone);
+  EXPECT_EQ(FeatureTile::DownloadState::kNone,
+            tile->download_state_for_testing());
 
   // Case: All DLCs still in progress.
   // Expectation: Tile starts in `FeatureTile::DownloadState::kDownloading`

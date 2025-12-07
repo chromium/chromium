@@ -1,0 +1,27 @@
+{
+  data: [
+    {
+      name: "Feature1",
+      browser_process_read_write_access: false,
+      status: "stable",
+    },
+    {
+      name: "Feature2",
+      status: "test",
+    },
+    {
+      name: "Feature4",
+      status: "stable",
+    },
+    {
+      name: "Feature5",
+      browser_process_read_write_access: true,
+      status: "stable",
+    },
+    {
+      name: "Feature6",
+      origin_trial_feature_name: "Feature6OT",
+      status: "experimental",
+    },
+  ],
+}

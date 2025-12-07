@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content::shell::protocol {
 
@@ -44,7 +45,7 @@ Response BrowserHandler::Disable() {
 }
 
 Response BrowserHandler::GetWindowForTarget(
-    Maybe<std::string> target_id,
+    std::optional<std::string> target_id,
     int* out_window_id,
     std::unique_ptr<Browser::Bounds>* out_bounds) {
   scoped_refptr<DevToolsAgentHost> agent_host =

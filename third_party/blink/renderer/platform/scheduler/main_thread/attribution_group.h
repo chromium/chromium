@@ -18,7 +18,7 @@ struct AttributionGroup {
   explicit AttributionGroup(WebInputEventAttribution attribution)
       : attribution(attribution) {}
 
-  explicit AttributionGroup(WTF::HashTableDeletedValueType)
+  explicit AttributionGroup(HashTableDeletedValueType)
       : is_deleted_value(true) {}
 
   AttributionGroup() = default;
@@ -35,19 +35,16 @@ struct AttributionGroup {
 };
 
 }  // namespace scheduler
-}  // namespace blink
-
-namespace WTF {
 
 template <>
-struct HashTraits<blink::scheduler::AttributionGroup>
-    : SimpleClassHashTraits<blink::scheduler::AttributionGroup> {
-  static unsigned GetHash(const blink::scheduler::AttributionGroup& group) {
+struct HashTraits<scheduler::AttributionGroup>
+    : SimpleClassHashTraits<scheduler::AttributionGroup> {
+  static unsigned GetHash(const scheduler::AttributionGroup& group) {
     return static_cast<unsigned>(group.attribution.GetHash());
   }
   static const bool kEmptyValueIsZero = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_ATTRIBUTION_GROUP_H_

@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
@@ -45,7 +44,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
  public:
   explicit ScriptContextSet(
       // Set of the IDs of extensions that are active in this process.
-      // Must outlive this. TODO(kalman): Combine this and |extensions|.
+      // Must outlive this. TODO(kalman): Combine this and `extensions`.
       ExtensionIdSet* active_extension_ids);
 
   ScriptContextSet(const ScriptContextSet&) = delete;
@@ -81,8 +80,8 @@ class ScriptContextSet : public ScriptContextSetIterable {
       const v8::Local<v8::Context>& context);
 
   // Returns the ScriptContext corresponding to the V8 context that created the
-  // given |object|.
-  // Note: The provided |object| may belong to a v8::Context in another frame,
+  // given `object`.
+  // Note: The provided `object` may belong to a v8::Context in another frame,
   // as can happen when a parent frame uses an object of an embedded iframe.
   // In this case, there may be no associated ScriptContext, since the child
   // frame can be hosted in another process. Thus, callers of this need to
@@ -91,7 +90,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
   static ScriptContext* GetContextByObject(const v8::Local<v8::Object>& object);
 
   // Returns the ScriptContext corresponding to the main world of the
-  // |render_frame|.
+  // `render_frame`.
   static ScriptContext* GetMainWorldContextForFrame(
       content::RenderFrame* render_frame);
 
@@ -101,7 +100,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
       content::RenderFrame* render_frame,
       const base::RepeatingCallback<void(ScriptContext*)>& callback) override;
 
-  // Runs |callback| after verifying |render_frame| matches context's.
+  // Runs `callback` after verifying `render_frame` matches context's.
   void ExecuteCallbackWithContext(
       ScriptContext* context,
       content::RenderFrame* render_frame,
@@ -110,16 +109,12 @@ class ScriptContextSet : public ScriptContextSetIterable {
   // Cleans up contexts belonging to an unloaded extension.
   void OnExtensionUnloaded(const ExtensionId& extension_id);
 
-  void set_is_lock_screen_context(bool is_lock_screen_context) {
-    is_lock_screen_context_ = is_lock_screen_context;
-  }
-
-  // Adds the given |context| for testing purposes.
+  // Adds the given `context` for testing purposes.
   void AddForTesting(std::unique_ptr<ScriptContext> context);
 
  private:
   // Finds the extension for the JavaScript context associated with the
-  // specified |frame| and isolated world. If |world_id| is zero, finds the
+  // specified `frame` and isolated world. If `world_id` is zero, finds the
   // extension ID associated with the main world's JavaScript context. If the
   // JavaScript context isn't from an extension, returns empty string.
   const Extension* GetExtensionFromFrameAndWorld(blink::WebLocalFrame* frame,
@@ -141,10 +136,6 @@ class ScriptContextSet : public ScriptContextSetIterable {
 
   // The set of all ScriptContexts we own.
   std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;
-
-  // Whether the script context set is associated with the renderer active on
-  // the Chrome OS lock screen.
-  bool is_lock_screen_context_ = false;
 };
 
 }  // namespace extensions

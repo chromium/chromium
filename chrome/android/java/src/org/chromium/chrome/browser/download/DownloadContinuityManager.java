@@ -9,10 +9,11 @@ import static org.chromium.chrome.browser.download.DownloadSnackbarController.IN
 import android.app.Notification;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadNotificationService.DownloadStatus;
 
 import java.util.HashMap;
@@ -21,14 +22,15 @@ import java.util.Map;
 
 /**
  * Base class responsible for managing foreground service or user-initiated jobs life cycle for
- * ensuring download continuity. A foreground service (for android < U) or user-initiated task
- * (for android >= U) is spawn to ensure that chrome doesn't get killed even if chrome is in
- * background when there are active downloads.
+ * ensuring download continuity. A foreground service (for android < U) or user-initiated task (for
+ * android >= U) is spawn to ensure that chrome doesn't get killed even if chrome is in background
+ * when there are active downloads.
  */
+@NullMarked
 public abstract class DownloadContinuityManager {
     protected static class DownloadUpdate {
         int mNotificationId;
-        Notification mNotification;
+        @Nullable Notification mNotification;
         @DownloadStatus int mDownloadStatus;
         Context mContext;
 

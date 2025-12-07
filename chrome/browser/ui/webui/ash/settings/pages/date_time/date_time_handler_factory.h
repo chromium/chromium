@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/new_date_time_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

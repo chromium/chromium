@@ -12,14 +12,13 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "components/variations/variations_crash_keys.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace variations {
 
 namespace {
 
 ChildProcessFieldTrialSyncer* g_instance = nullptr;
-ABSL_CONST_INIT thread_local bool in_set_field_trial_group_from_browser = false;
+constinit thread_local bool in_set_field_trial_group_from_browser = false;
 
 }  // namespace
 

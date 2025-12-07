@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>:host::-webkit-scrollbar should be considered on :host</title>
+<link rel="help" href="https://crbug.com/438792843">
+<link rel="match" href="webkit-scrollbar-with-pseudo-element-ref.html">
+<div>
+  <template shadowrootmode="open">
+    <style>
+      :host {
+        height: 100px;
+        overflow-y: scroll;
+      }
+      :host::-webkit-scrollbar {
+        width: 8px;
+      }
+      :host::-webkit-scrollbar-track {
+        background: red;
+      }
+    </style>
+    <div style="height: 400px"></div>
+  </template>
+</div>

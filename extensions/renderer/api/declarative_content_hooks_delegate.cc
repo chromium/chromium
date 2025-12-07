@@ -12,6 +12,7 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_selector.h"
 #include "v8/include/v8-container.h"
@@ -35,7 +36,8 @@ void RunDeclarativeContentHooksDelegateHandlerCallback(
   v8::Local<v8::External> external = info.Data().As<v8::External>();
   auto* callback =
       static_cast<DeclarativeContentHooksDelegate::HandlerCallback*>(
-          external->Value());
+          external->Value(
+              gin::kDeclarativeContentHooksDelegateHandlerCallbackTag));
   callback->Run(info);
 }
 
@@ -75,7 +77,7 @@ bool V8Assign(v8::Local<v8::Context> context,
 bool CanonicalizeCssSelectors(v8::Local<v8::Context> context,
                               v8::Local<v8::Object> object,
                               std::string* error) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> key =
       gin::StringToSymbol(isolate, declarative_content_constants::kCss);
   v8::Maybe<bool> has_css = object->HasOwnProperty(context, key);
@@ -137,7 +139,7 @@ bool Validate(const ArgumentSpec* spec,
     return false;
   }
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Maybe<bool> set_result = this_object->CreateDataProperty(
       context,
       gin::StringToSymbol(isolate,
@@ -198,7 +200,9 @@ void DeclarativeContentHooksDelegate::InitializeTemplate(
         gin::StringToSymbol(isolate, type.exposed_name),
         v8::FunctionTemplate::New(
             isolate, &RunDeclarativeContentHooksDelegateHandlerCallback,
-            v8::External::New(isolate, callbacks_.back().get())));
+            v8::External::New(
+                isolate, callbacks_.back().get(),
+                gin::kDeclarativeContentHooksDelegateHandlerCallbackTag)));
   }
 }
 
@@ -222,8 +226,7 @@ void DeclarativeContentHooksDelegate::HandleCall(
   v8::Local<v8::Object> this_object = info.This();
   if (this_object.IsEmpty()) {
     // Crazy script (e.g. declarativeContent.Foo.apply(null, args);).
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // TODO(devlin): Find a way to use APISignature here? It's a little awkward

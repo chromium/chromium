@@ -4,47 +4,25 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
 import org.junit.Assert;
-import org.mockito.Mockito;
 
-import org.chromium.base.Log;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.components.feature_engagement.Tracker;
 
 /**
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
  */
 public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabActivity> {
     protected static final long LONG_TIMEOUT_MS = 10L * 1000;
-    private static final String TAG = "CustomTabTestRule";
     private static int sCustomTabId;
 
     public CustomTabActivityTestRule() {
         super(CustomTabActivity.class);
-    }
-
-    @Override
-    protected void before() throws Throwable {
-        super.before();
-        // TODO(crbug.com/342240475): Find a better way to deal with IPH in tests.
-        Log.w(
-                TAG,
-                "A mock Tracker is set in CustomTabActivityTestRule. This will"
-                        + " prevent any IPH from showing. See crbug.com/342240475.");
-        Tracker tracker = Mockito.mock(Tracker.class);
-        // Disable IPH to prevent it from interfering with the tests.
-        when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
-        TrackerFactory.setTrackerForTests(tracker);
     }
 
     public static void putCustomTabIdInIntent(Intent intent) {
@@ -57,9 +35,9 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     }
 
     @Override
-    public void launchActivity(@NonNull Intent intent) {
+    public CustomTabActivity launchActivity(@NonNull Intent intent) {
         putCustomTabIdInIntent(intent);
-        super.launchActivity(intent);
+        return super.launchActivity(intent);
     }
 
     /**
@@ -77,7 +55,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
      */
     public void startCustomTabActivityWithIntentNotWaitingForFirstFrame(Intent intent) {
         startActivityCompletely(intent);
-        final Tab tab = getActivity().getActivityTab();
+        final Tab tab = getActivityTab();
         Assert.assertTrue(TabTestUtils.isCustomTab(tab));
     }
 }

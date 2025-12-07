@@ -52,7 +52,7 @@ public class SelectableItemViewBaseTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mHandleNonSelectionClickHelper = new CallbackHelper();
         mSelectableItemViewBase =
-                new SelectableItemViewBaseTestImpl<Integer>(
+                new SelectableItemViewBaseTestImpl<>(
                         activity, /* attrs= */ null, mHandleNonSelectionClickHelper);
     }
 
@@ -61,7 +61,7 @@ public class SelectableItemViewBaseTest {
         SelectionDelegate<Integer> selectionDelegate = new SelectionDelegate<>();
         mSelectableItemViewBase.setSelectionDelegate(selectionDelegate);
 
-        Integer item = new Integer(1);
+        Integer item = 1;
         assertNull(mSelectableItemViewBase.getItem());
         mSelectableItemViewBase.setItem(item);
         assertEquals(item, mSelectableItemViewBase.getItem());
@@ -87,7 +87,7 @@ public class SelectableItemViewBaseTest {
 
     @Test
     public void testSelection_NullDelegate() {
-        Integer item = new Integer(1);
+        Integer item = 1;
         assertNull(mSelectableItemViewBase.getItem());
         mSelectableItemViewBase.setItem(item);
         assertNull(mSelectableItemViewBase.getItem());

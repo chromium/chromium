@@ -1,0 +1,7 @@
+johnchen@chromium.org
+jeffyoon@google.com
+faridzad@google.com
+cbruni@chromium.org
+
+# Service account used by CBB production workflow
+pinpoint-worker@skia-infra-corp.iam.gserviceaccount.com

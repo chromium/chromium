@@ -1,0 +1,65 @@
+caption: Enterprise search aggregator settings
+desc: |-
+  This policy allows administrators to set a designated enterprise search aggregator that will provide search recommendations and results within the omnibox (address bar) and the search box on the New Tab page.
+
+  By default, enterprise search suggestions will be blended and shown alongside regular <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> recommendations. Users can explicitly scope their search to just the enterprise search aggregator by typing the keyword specified in the <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> field with or without the @ prefix (e.g. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS">@work</ph>) followed by Space or Tab in the omnibox. Scoped enterprise searches (triggered by a keyword) are currently only supported in the omnibox and not in the search box on the New Tab page.
+
+  The following fields are required: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD">name</ph>, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph>, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph>, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph>.
+
+  The <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD">name</ph> field corresponds to the search engine name shown to the user in the address bar.
+
+  The <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> field corresponds to the keyword that the user enters to trigger the search. The shortcut can include plain words and characters, but cannot include spaces or start with the @ symbol. Shortcuts must be unique.
+
+  The <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph> field specifies the URL on which to search. Enter the web address for the search engine's results page, and use <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> in place of the query.
+
+  The <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> field specifies the URL that provides search suggestions. A POST request will be made and the user's query will be passed in the POST params under key <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY">'query'</ph>.
+
+  The <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">icon_url</ph> field specifies the URL to an image that will be used on the search suggestions. A default icon will be used when this field is not set. It's recommended to use a favicon (example <ph name="ICON_URL_EXAMPLE">https://www.google.com/favicon.ico</ph>). Supported image file formats: JPEG, PNG, and ICO.
+
+  The <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">require_shortcut</ph> field specifies whether the address bar <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> is required to see search recommendations. If required, suggestions will not be shown in the search box on the New Tab page, but will continue to be shown in the omnibox (address bar) in scoped search mode. If this field is not set, the address bar <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> is not required.
+
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+
+example_value:
+  name: My Search Aggregator
+  shortcut: work
+  search_url: https://www.aggregator.com/search?q={searchTerms}
+  suggest_url: https://www.aggregator.com/suggest
+  icon_url: https://www.google.com/favicon.ico
+  require_shortcut: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- ftirelo@chromium.org
+- alexwchen@chromium.org
+- jdonnelly@chromium.org
+- mahmadi@chromium.org
+schema:
+  type: object
+  properties:
+    name:
+      type: string
+    shortcut:
+      type: string
+    search_url:
+      type: string
+    suggest_url:
+      type: string
+    icon_url:
+      type: string
+    require_shortcut:
+      type: boolean
+  required:
+  - name
+  - shortcut
+  - suggest_url
+  - search_url
+sensitive: true
+supported_on:
+- chrome.*:135-
+- chrome_os:135-
+tags: []
+type: dict

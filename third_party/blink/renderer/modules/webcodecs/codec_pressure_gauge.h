@@ -69,7 +69,7 @@ class MODULES_EXPORT CodecPressureGauge {
 
  private:
   using PressureCallbacks =
-      WTF::HashMap<PressureCallbackId, PressureThresholdChangedCallback>;
+      HashMap<PressureCallbackId, PressureThresholdChangedCallback>;
 
   // Used on platforms with a pressure limit shared by encoders and decoders.
   static CodecPressureGauge& SharedInstance();
@@ -89,7 +89,7 @@ class MODULES_EXPORT CodecPressureGauge {
 
   size_t pressure_threshold_ GUARDED_BY(lock_);
 
-  // Start at 1, because WTF::HashMap uses 0 to denote deleted elements.
+  // Start at 1, because HashMap uses 0 to denote deleted elements.
   PressureCallbackId next_pressure_callback_id_ GUARDED_BY(lock_) = 1u;
   PressureCallbacks pressure_callbacks_ GUARDED_BY(lock_);
 };

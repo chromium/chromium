@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_section.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -36,8 +36,6 @@ namespace {
 
 constexpr OsSettingsIdentifier kAudioPageOsSettingsId = {
     .subpage = mojom::Subpage::kAudio};
-constexpr OsSettingsIdentifier kKeyboardOsSettingsId = {
-    .subpage = mojom::Subpage::kKeyboard};
 constexpr OsSettingsIdentifier kPerDeviceKeyboardOsSettingsId = {
     .subpage = mojom::Subpage::kPerDeviceKeyboard};
 constexpr OsSettingsIdentifier kKeyboardBlockMetaFkeyRewritesOsSettingsId = {
@@ -110,7 +108,6 @@ class DeviceSectionTest : public testing::Test {
   }
   FakeCupsPrintersManager* printers_manager() { return &printers_manager_; }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<DeviceSection> device_section_;
 
  private:
@@ -126,7 +123,6 @@ class DeviceSectionTest : public testing::Test {
 
 // Verify registry updated with Audio search tags.
 TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
-  feature_list_.Reset();
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), printers_manager(), pref_service());
 
@@ -137,8 +133,6 @@ TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
 
 // Verify registry updated with Printing search tags.
 TEST_F(DeviceSectionTest, SearchResultIncludePrinting) {
-  feature_list_.InitAndEnableFeature(
-      ash::features::kOsSettingsRevampWayfinding);
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), printers_manager(), pref_service());
 
@@ -161,7 +155,6 @@ TEST_F(DeviceSectionTest, SearchResultIncludePrinting) {
 // Verify registry updated with per device settings search tags when flag is
 // enabled.
 TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
-  feature_list_.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), printers_manager(), pref_service());
 
@@ -172,22 +165,6 @@ TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
       IDS_OS_SETTINGS_TAG_KEYBOARD_BLOCK_META_FKEY_COMBO_REWRITES);
   EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
   EXPECT_TRUE(search_tag_registry()->GetTagMetadata(switch_top_row_key_id));
-}
-
-// Verify registry updated with regular settings search tags when flag is
-// disabled.
-TEST_F(DeviceSectionTest, SearchResultChangeBackWithoutFlag) {
-  feature_list_.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  device_section_ = std::make_unique<DeviceSection>(
-      profile(), search_tag_registry(), printers_manager(), pref_service());
-
-  std::string result_id = GetSubpageSearchResultId(
-      kKeyboardOsSettingsId, IDS_OS_SETTINGS_TAG_KEYBOARD);
-  std::string switch_top_row_key_id = GetSettingsSearchResultId(
-      kKeyboardBlockMetaFkeyRewritesOsSettingsId,
-      IDS_OS_SETTINGS_TAG_KEYBOARD_BLOCK_META_FKEY_COMBO_REWRITES);
-  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
-  EXPECT_FALSE(search_tag_registry()->GetTagMetadata(switch_top_row_key_id));
 }
 
 }  // namespace ash::settings

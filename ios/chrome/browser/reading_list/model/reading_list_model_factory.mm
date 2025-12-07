@@ -10,49 +10,30 @@
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
-#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
-namespace {
-
-// Returns what the local-or-syncable instance should do when sync is disabled,
-// that is, whether reading list entries might need to be deleted.
-syncer::WipeModelUponSyncDisabledBehavior
-GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
-  if (IsFirstSessionAfterDeviceRestore() != signin::Tribool::kTrue) {
-    return syncer::WipeModelUponSyncDisabledBehavior::kNever;
-  }
-
-  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
-}
-
-}  // namespace
-
 // static
-ReadingListModel* ReadingListModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<ReadingListModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<ReadingListModel>(
+      profile, /*create=*/true);
 }
 
 // static
 reading_list::DualReadingListModel*
-ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<reading_list::DualReadingListModel*>(
-      GetForBrowserState(browser_state));
+ReadingListModelFactory::GetAsDualReadingListModelForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<reading_list::DualReadingListModel>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -62,32 +43,27 @@ ReadingListModelFactory* ReadingListModelFactory::GetInstance() {
 }
 
 ReadingListModelFactory::ReadingListModelFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ReadingListModel",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ReadingListModel",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ReadingListModelFactory::~ReadingListModelFactory() {}
 
 std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   syncer::OnceDataTypeStoreFactory store_factory =
-      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
-          ->GetStoreFactory();
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   auto local_storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
   auto reading_list_model_for_local_storage =
       std::make_unique<ReadingListModelImpl>(
           std::move(local_storage), syncer::StorageType::kUnspecified,
-          GetWipeModelUponSyncDisabledBehaviorForSyncableModel(),
+          syncer::WipeModelUponSyncDisabledBehavior::kNever,
           base::DefaultClock::GetInstance());
 
   syncer::OnceDataTypeStoreFactory store_factory_for_account_storage =
-      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+      DataTypeStoreServiceFactory::GetForProfile(profile)
           ->GetStoreFactoryForAccountStorage();
   auto account_storage = std::make_unique<ReadingListModelStorageImpl>(
       std::move(store_factory_for_account_storage));
@@ -100,9 +76,4 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
       /*local_or_syncable_model=*/std::move(
           reading_list_model_for_local_storage),
       /*account_model=*/std::move(reading_list_model_for_account_storage));
-}
-
-web::BrowserState* ReadingListModelFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }

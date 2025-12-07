@@ -238,16 +238,6 @@ var defaultTests = [
     });
   },
 
-  async function douleStopArc() {
-    try {
-      await promisify(chrome.autotestPrivate.stopArc);
-      chrome.test.fail();
-    } catch (error) {
-      chrome.test.assertEq("ARC is already stopped", error.message);
-      chrome.test.succeed();
-    }
-  },
-
   // This test verifies that Play Store window is not shown by default but
   // Chrome is shown.
   function isAppShown() {
@@ -333,46 +323,6 @@ var defaultTests = [
     chrome.autotestPrivate.getPrinterList(function(){
       chrome.test.succeed();
     });
-  },
-  // The state dumped in Assistant API error message is AssistantAllowedState
-  // defined in ash/public/cpp/assistant/assistant_state_base.h
-  // 3 is DISALLOWED_BY_NONPRIMARY_USER from IsAssistantAllowedForProfile when
-  // running under test without setting up a primary account.
-  function setAssistantEnabled() {
-    chrome.autotestPrivate.setAssistantEnabled(true, 1000 /* timeout_ms */,
-        chrome.test.callbackFail(
-            'Assistant not allowed - state: 3'));
-  },
-  function sendAssistantTextQuery() {
-    chrome.autotestPrivate.sendAssistantTextQuery(
-        'what time is it?' /* query */,
-        1000 /* timeout_ms */,
-        chrome.test.callbackFail(
-            'Assistant not allowed - state: 3'));
-  },
-  function waitForAssistantQueryStatus() {
-    chrome.autotestPrivate.waitForAssistantQueryStatus(10 /* timeout_s */,
-        chrome.test.callbackFail(
-            'Assistant not allowed - state: 3'));
-  },
-  // This test verifies the error message when trying to set Assistant-related
-  // preferences without enabling Assistant service first.
-  function setAllowedPref() {
-    chrome.autotestPrivate.setAllowedPref(
-        'settings.voice_interaction.hotword.enabled' /* pref_name */,
-        true /* value */,
-        chrome.test.callbackFail(
-            'Unable to set the pref because Assistant has not been enabled.'));
-    chrome.autotestPrivate.setAllowedPref(
-        'settings.voice_interaction.context.enabled' /* pref_name */,
-        true /* value */,
-        chrome.test.callbackFail(
-            'Unable to set the pref because Assistant has not been enabled.'));
-    // Note that onboarding pref is a counter that can be set without
-    // enabling Assistant at the same time.
-    chrome.autotestPrivate.setAllowedPref(
-        'ash.assistant.num_sessions_where_onboarding_shown' /* pref_name */,
-        3 /* value */, chrome.test.callbackPass());
   },
   // This test verifies that getArcState returns provisioned False in case ARC
   // is not provisioned by default.
@@ -753,7 +703,7 @@ var defaultTests = [
         }
         browserFrameIndex = i;
         // Sanity check
-        chrome.test.assertEq('BrowserFrame', window.name);
+        chrome.test.assertEq('BrowserWidget', window.name);
         chrome.test.assertTrue(window.title.includes('New Tab') > 0);
         chrome.test.assertEq('Browser', window.windowType);
         chrome.test.assertEq(window.stateType, 'Normal');
@@ -1369,27 +1319,6 @@ var arcEnabledTests = [
           chrome.test.assertEq(false, packageInfo.vpnProvider);
           chrome.test.succeed();
         }));
-  },
-
-  async function douleStartArc() {
-    try {
-      await promisify(
-          chrome.autotestPrivate.startArc);
-          chrome.test.fail();
-    } catch (error) {
-      chrome.test.assertEq("ARC is already started", error.message);
-      chrome.test.succeed();
-    }
-  },
-
-  // This test verifies restating ARC.
-  function restartArc() {
-    chrome.autotestPrivate.stopArc(function() {
-          chrome.test.assertNoLastError();
-          chrome.autotestPrivate.startArc(
-              chrome.test.callbackPass(function() {
-          }));
-    });
   }
 ];
 
@@ -1726,6 +1655,33 @@ var setDeviceLanguage = [
   }
 ];
 
+var getDeviceEventLog = [
+  function getDeviceEventLogSingle() {
+    chrome.autotestPrivate.getDeviceEventLog('printer',
+      chrome.test.callbackPass(logs => {
+        chrome.test.assertTrue(logs.includes('PrinterTestLog'));
+        chrome.test.assertFalse(logs.includes('NetworkTestLog'));
+        chrome.test.assertFalse(logs.includes('USBTestLog'));
+      }));
+  },
+  function getDeviceEventLogMultiple() {
+    chrome.autotestPrivate.getDeviceEventLog('printer,network',
+      chrome.test.callbackPass(logs => {
+        chrome.test.assertTrue(logs.includes('PrinterTestLog'));
+        chrome.test.assertTrue(logs.includes('NetworkTestLog'));
+        chrome.test.assertFalse(logs.includes('USBTestLog'));
+      }));
+  },
+  function getDeviceEventLogAll() {
+    chrome.autotestPrivate.getDeviceEventLog('',
+      chrome.test.callbackPass(logs => {
+        chrome.test.assertTrue(logs.includes('PrinterTestLog'));
+        chrome.test.assertTrue(logs.includes('NetworkTestLog'));
+        chrome.test.assertTrue(logs.includes('USBTestLog'));
+      }));
+  }
+];
+
 // Tests that requires a concrete system web app installation.
 var systemWebAppsTests = [
   function getRegisteredSystemWebApps() {
@@ -1775,28 +1731,6 @@ var systemWebAppsTests = [
   },
 ]
 
-    var lacrosEnabledTests = [
-      function checkLacrosInfoFields() {
-        chrome.autotestPrivate.getLacrosInfo(
-            chrome.test.callbackPass(function(lacrosInfo) {
-              chrome.test.assertEq(typeof lacrosInfo, 'object');
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('state'));
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('isKeepAlive'));
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('lacrosPath'));
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('mode'));
-            }));
-      },
-      function checkLacrosInfoFieldValue() {
-        chrome.autotestPrivate.getLacrosInfo(
-            chrome.test.callbackPass(function(lacrosInfo) {
-              chrome.test.assertEq('Unavailable', lacrosInfo['state']);
-              chrome.test.assertTrue(lacrosInfo['isKeepAlive']);
-              chrome.test.assertEq('', lacrosInfo['lacrosPath']);
-              chrome.test.assertEq('Only', lacrosInfo['mode']);
-            }));
-      },
-    ]
-
     var test_suites = {
       'default': defaultTests,
       'arcEnabled': arcEnabledTests,
@@ -1812,11 +1746,11 @@ var systemWebAppsTests = [
       'isFeatureEnabled': isFeatureEnabledTests,
       'holdingSpace': holdingSpaceTests,
       'systemWebApps': systemWebAppsTests,
-      'lacrosEnabled': lacrosEnabledTests,
       'launcherSearchBoxState': launcherSearchBoxStateTests,
       'isFieldTrialActive': isFieldTrialActiveTests,
       'clearAllowedPref': clearAllowedPrefTests,
-      'setDeviceLanguage': setDeviceLanguage
+      'setDeviceLanguage': setDeviceLanguage,
+      'getDeviceEventLog': getDeviceEventLog
     };
 
 chrome.test.getConfig(function(config) {

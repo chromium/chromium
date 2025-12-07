@@ -1,0 +1,6 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+This is a testharness.js-based test.
+[FAIL] a variable set to node-set of a string should not halt processing
+  Failed to construct 'XSLTProcessor': XSLT is disabled
+Harness: the test ran to completion.
+

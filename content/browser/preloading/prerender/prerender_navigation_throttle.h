@@ -9,7 +9,6 @@
 
 namespace content {
 
-class NavigationRequest;
 class PrerenderHost;
 enum class PrerenderFinalStatus;
 
@@ -22,10 +21,9 @@ enum class PrerenderFinalStatus;
 // - Cross-origin navigation from a prerendered page
 class PrerenderNavigationThrottle : public NavigationThrottle {
  public:
-  ~PrerenderNavigationThrottle() override;
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
-  static std::unique_ptr<PrerenderNavigationThrottle> MaybeCreateThrottleFor(
-      NavigationHandle* navigation_handle);
+  ~PrerenderNavigationThrottle() override;
 
   // NavigationThrottle
   const char* GetNameForLogging() override;
@@ -34,7 +32,7 @@ class PrerenderNavigationThrottle : public NavigationThrottle {
   ThrottleCheckResult WillProcessResponse() override;
 
  private:
-  explicit PrerenderNavigationThrottle(NavigationRequest* navigation_request);
+  explicit PrerenderNavigationThrottle(NavigationThrottleRegistry& registry);
 
   ThrottleCheckResult WillStartOrRedirectRequest(bool is_redirection);
 
@@ -44,8 +42,7 @@ class PrerenderNavigationThrottle : public NavigationThrottle {
   // Cancels prerendering hosting this navigation with `final_status`.
   void CancelPrerendering(PrerenderFinalStatus final_status);
 
-  // Raw ptr should be safe as `prerender_host_` indirectly owns `this`.
-  const raw_ptr<PrerenderHost> prerender_host_ = nullptr;
+  const base::WeakPtr<PrerenderHost> prerender_host_ = nullptr;
 
   bool is_same_site_cross_origin_prerender_ = false;
   bool same_site_cross_origin_prerender_did_redirect_ = false;

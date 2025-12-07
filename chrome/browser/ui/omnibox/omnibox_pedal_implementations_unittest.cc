@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -16,13 +15,20 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures({}, {});
+    feature_list_.InitWithFeatures(
+        {
+#if !BUILDFLAG(IS_CHROMEOS)
+            syncer::kUnoPhase2FollowUp
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+        },
+        {});
     InitPedals();
   }
 
@@ -56,19 +62,17 @@ class OmniboxPedalImplementationsTest : public testing::Test {
     InitPedals();
   }
 
-  void OnAutocompleteAccept(
-      const GURL& destination_url,
-      TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
-      ui::PageTransition transition,
-      AutocompleteMatchType::Type match_type,
-      base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme,
-      bool destination_url_entered_with_http_scheme,
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) {
+  void OnAutocompleteAccept(const GURL& destination_url,
+                            TemplateURLRef::PostContent* post_content,
+                            WindowOpenDisposition disposition,
+                            ui::PageTransition transition,
+                            AutocompleteMatchType::Type match_type,
+                            base::TimeTicks match_selection_timestamp,
+                            bool destination_url_entered_without_scheme,
+                            bool destination_url_entered_with_http_scheme,
+                            const std::u16string& text,
+                            const AutocompleteMatch& match,
+                            const AutocompleteMatch& alternative_nav_match) {
     last_destination_url_ = destination_url;
   }
 
@@ -11039,6 +11043,15 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "sync settings google",
             "sync settings google chrome",
             "sync settings manage",
+#if !BUILDFLAG(IS_CHROMEOS)
+            "manage my stuff",
+            "manage my chrome stuff",
+            "manage my chrome data",
+            "manage my chrome info",
+            "manage bookmarks and stuff",
+            "edit what I save",
+            "edit what's in my account",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
         },
 
         // ID#12
@@ -17953,7 +17966,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
           sequence.ResetLinks();
           return pedal.second->IsConceptMatch(sequence);
         };
-        auto iter = base::ranges::find_if(pedals, is_match);
+        auto iter = std::ranges::find_if(pedals, is_match);
         EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
         EXPECT_EQ(iter->second.get(), canonical_pedal)
             << "Found wrong Pedal for: " << expression;

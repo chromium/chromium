@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/native_file_util.h"
 #include "storage/browser/file_system/obfuscated_file_util_delegate.h"

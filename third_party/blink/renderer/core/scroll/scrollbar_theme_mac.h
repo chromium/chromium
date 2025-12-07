@@ -91,8 +91,6 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
       bool jump_on_track_click);
 
  protected:
-  int MaxOverlapBetweenPages() const override { return 40; }
-
   bool ShouldDragDocumentInsteadOfThumb(const Scrollbar&,
                                         const WebMouseEvent&) const override;
 
@@ -111,12 +109,9 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
                             const Scrollbar&,
                             const gfx::Rect&) override;
   void PaintScrollCorner(GraphicsContext&,
-                         const Scrollbar* vertical_scrollbar,
+                         const ScrollableArea&,
                          const DisplayItemClient&,
-                         const gfx::Rect& corner_rect,
-                         mojom::blink::ColorScheme color_scheme,
-                         bool in_forced_colors,
-                         const ui::ColorProvider* color_provider) override;
+                         const gfx::Rect& corner_rect) override;
 };
 }  // namespace blink
 

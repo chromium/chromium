@@ -6,56 +6,58 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 
 TestBrowser::TestBrowser(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     SceneState* scene_state,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate,
     Type type)
     : type_(type),
-      browser_state_(browser_state),
+      profile_(profile),
       scene_state_(scene_state),
       web_state_list_delegate_(std::move(web_state_list_delegate)),
       command_dispatcher_([[CommandDispatcher alloc] init]) {
-  DCHECK(browser_state_);
+  DCHECK(profile_);
   DCHECK(web_state_list_delegate_);
   web_state_list_ =
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 }
 
-TestBrowser::TestBrowser(ChromeBrowserState* browser_state,
-                         SceneState* scene_state)
-    : TestBrowser(browser_state,
-                  scene_state,
-                  std::make_unique<FakeWebStateListDelegate>(),
-                  browser_state->IsOffTheRecord() ? Type::kIncognito
-                                                  : Type::kRegular) {}
+TestBrowser::TestBrowser(ProfileIOS* profile, SceneState* scene_state)
+    : TestBrowser(
+          profile,
+          scene_state,
+          std::make_unique<FakeWebStateListDelegate>(),
+          profile->IsOffTheRecord() ? Type::kIncognito : Type::kRegular) {}
 
 TestBrowser::TestBrowser(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
-    : TestBrowser(browser_state,
-                  nil,
-                  std::move(web_state_list_delegate),
-                  browser_state->IsOffTheRecord() ? Type::kIncognito
-                                                  : Type::kRegular) {}
+    : TestBrowser(
+          profile,
+          nil,
+          std::move(web_state_list_delegate),
+          profile->IsOffTheRecord() ? Type::kIncognito : Type::kRegular) {}
 
-TestBrowser::TestBrowser(ChromeBrowserState* browser_state)
-    : TestBrowser(browser_state,
-                  nil,
-                  std::make_unique<FakeWebStateListDelegate>(),
-                  browser_state->IsOffTheRecord() ? Type::kIncognito
-                                                  : Type::kRegular) {}
+TestBrowser::TestBrowser(ProfileIOS* profile)
+    : TestBrowser(
+          profile,
+          nil,
+          std::make_unique<FakeWebStateListDelegate>(),
+          profile->IsOffTheRecord() ? Type::kIncognito : Type::kRegular) {}
 
 TestBrowser::~TestBrowser() {
+  // Ensure all WebStates are closed before destroying the Browser.
+  CloseAllWebStates(*web_state_list_, WebStateList::ClosingReason::kDefault);
   for (auto& observer : observers_) {
     observer.BrowserDestroyed(this);
   }
+  ClearAllUserData();
 }
 
 #pragma mark - Browser
@@ -64,8 +66,8 @@ Browser::Type TestBrowser::type() const {
   return type_;
 }
 
-ChromeBrowserState* TestBrowser::GetBrowserState() {
-  return browser_state_;
+ProfileIOS* TestBrowser::GetProfile() {
+  return profile_;
 }
 
 WebStateList* TestBrowser::GetWebStateList() {
@@ -107,8 +109,8 @@ Browser* TestBrowser::GetInactiveBrowser() {
 Browser* TestBrowser::CreateInactiveBrowser() {
   CHECK_EQ(type_, Type::kRegular);
   inactive_browser_ = std::make_unique<TestBrowser>(
-      browser_state_, scene_state_,
-      std::make_unique<FakeWebStateListDelegate>(), Type::kInactive);
+      profile_, scene_state_, std::make_unique<FakeWebStateListDelegate>(),
+      Type::kInactive);
   SnapshotBrowserAgent::CreateForBrowser(inactive_browser_.get());
   SnapshotBrowserAgent::FromBrowser(inactive_browser_.get())
       ->SetSessionID("some_id");
@@ -116,5 +118,9 @@ Browser* TestBrowser::CreateInactiveBrowser() {
 }
 
 void TestBrowser::DestroyInactiveBrowser() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+void TestBrowser::SetCommandDispatcher(CommandDispatcher* dispatcher) {
+  command_dispatcher_ = dispatcher;
 }

@@ -69,12 +69,12 @@ ParsedSpecifier ParsedSpecifier::Create(const String& specifier,
   return ParsedSpecifier();
 }
 
-String ParsedSpecifier::GetImportMapKeyString() const {
+AtomicString ParsedSpecifier::GetImportMapKeyString() const {
   switch (GetType()) {
     case Type::kInvalid:
-      return String();
+      return g_empty_atom;
     case Type::kBare:
-      return bare_specifier_;
+      return AtomicString(bare_specifier_);
     case Type::kURL:
       return url_.GetString();
   }

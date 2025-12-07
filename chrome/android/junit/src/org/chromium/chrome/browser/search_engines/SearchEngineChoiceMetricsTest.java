@@ -12,10 +12,12 @@ import static org.mockito.Mockito.doReturn;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -35,6 +37,7 @@ public final class SearchEngineChoiceMetricsTest {
     private static final String HISTOGRAM_AFTER_CHOICE =
             "Android.SearchEngineChoice.ChosenSearchEngine";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mInitialSearchEngine;
     @Mock private TemplateUrl mAlternativeSearchEngine;
@@ -42,7 +45,6 @@ public final class SearchEngineChoiceMetricsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         // Sets up appropriate responses from Template URL service.
         ProfileManager.setLastUsedProfileForTesting(mProfile);

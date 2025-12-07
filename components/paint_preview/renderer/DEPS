@@ -3,6 +3,6 @@ include_rules = [
   "+content/public/renderer",
   "+content/public/test",
   "+third_party/blink/public",
-  "+ui/native_theme/native_theme_features.h",
+  "+ui/native_theme/features/native_theme_features.h",
   "+third_party/skia/include/codec",
 ]

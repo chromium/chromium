@@ -10,19 +10,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "content/browser/btm/btm_service_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 
 namespace media {
 class VideoDecodePerfHistory;
 class WebrtcVideoPerfHistory;
-namespace learning {
-class LearningSession;
-class LearningSessionImpl;
-}  // namespace learning
 }  // namespace media
 
 namespace storage {
@@ -40,10 +37,13 @@ class BrowserContextImpl;
 class BrowsingDataRemoverImpl;
 class DownloadManager;
 class InMemoryFederatedPermissionContext;
-class NavigationEntryScreenshotManager;
 class PermissionController;
 class PrefetchService;
 class StoragePartitionImplMap;
+
+#if BUILDFLAG(IS_ANDROID)
+class NavigationEntryScreenshotManager;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // content-internal parts of BrowserContext.
 //
@@ -73,8 +73,6 @@ class CONTENT_EXPORT BrowserContextImpl {
 
   BrowsingDataRemoverImpl* GetBrowsingDataRemover();
 
-  media::learning::LearningSession* GetLearningSession();
-
   storage::ExternalMountPoints* GetMountPoints();
 
   DownloadManager* GetDownloadManager();
@@ -102,7 +100,9 @@ class CONTENT_EXPORT BrowserContextImpl {
   void SetPrefetchServiceForTesting(
       std::unique_ptr<PrefetchService> prefetch_service);
 
+#if BUILDFLAG(IS_ANDROID)
   NavigationEntryScreenshotManager* GetNavigationEntryScreenshotManager();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   InMemoryFederatedPermissionContext* GetFederatedPermissionContext();
   void ResetFederatedPermissionContext();
@@ -111,9 +111,16 @@ class CONTENT_EXPORT BrowserContextImpl {
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
-  ResourceContext* GetResourceContext() const {
-    return resource_context_.get();
-  }
+  BtmServiceImpl* GetBtmService();
+  // If the BTM database file should be deleted, wait for it. Otherwise, return
+  // immediately.
+  //
+  // TODO: crbug.com/356624038 - delete this method when the BTM feature flag is
+  // removed.
+  void WaitForBtmCleanupForTesting();
+
+  // (See BrowserContext::BackfillPopupHeuristicGrants().)
+  void BackfillPopupHeuristicGrants(base::OnceCallback<void(bool)> callback);
 
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
@@ -121,6 +128,13 @@ class CONTENT_EXPORT BrowserContextImpl {
   // because all SiteInstances should have similar performance and stats are not
   // exposed to the web directly, so privacy is not compromised.
   std::unique_ptr<media::WebrtcVideoPerfHistory> CreateWebrtcVideoPerfHistory();
+
+  // Delete any existing BTM database file if BTM is disabled (because it's not
+  // possible for the user to clear it through the browser UI).
+  //
+  // TODO: crbug.com/356624038 - delete this method when the BTM feature flag is
+  // removed.
+  void MaybeCleanupBtm();
 
   // BrowserContextImpl is owned and build from BrowserContext constructor.
   // TODO(crbug.com/40169693): Invert the dependency. Make BrowserContext
@@ -141,24 +155,33 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<PermissionController> permission_controller_;
   scoped_refptr<BackgroundSyncScheduler> background_sync_scheduler_;
   std::unique_ptr<PrefetchService> prefetch_service_;
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NavigationEntryScreenshotManager>
       nav_entry_screenshot_manager_;
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<InMemoryFederatedPermissionContext>
       federated_permission_context_;
 
-  std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
-  // TODO(crbug.com/40604019): Get rid of ResourceContext.
-  // Created on the UI thread, otherwise lives on and is destroyed on the IO
-  // thread.
-  std::unique_ptr<ResourceContext> resource_context_ =
-      std::make_unique<ResourceContext>();
+  // Manages BTM for all WebContentses using this browser context.
+  std::unique_ptr<BtmServiceImpl> btm_service_;
+  // If BTM is disabled, any existing database file is asynchronously deleted
+  // when the BrowserContextImpl is created. This RunLoop allows tests to wait
+  // for the deletion to complete.
+  //
+  // TODO: crbug.com/356624038 - delete this when the BTM feature flag is
+  // removed.
+  base::RunLoop btm_cleanup_loop_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;
 #endif
+
+  // TODO: crbug.com/40169693 - BrowserContext and BrowserContextImpl both have
+  // WeakPtrFactories. Remove one once the inheritance is sorted out.
+  base::WeakPtrFactory<BrowserContextImpl> weak_factory_{this};
 };
 
 }  // namespace content

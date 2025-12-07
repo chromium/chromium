@@ -20,6 +20,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.test.TestAwContentsClient.OnFormResubmissionHelper;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
@@ -147,7 +148,7 @@ public class AwContentsClientOnFormResubmissionTest extends AwParameterizedTest 
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
         Assert.assertEquals(1, onPageFinishedHelper.getCallCount());
-        TestAwContentsClient.OnFormResubmissionHelper onFormResubmissionHelper =
+        OnFormResubmissionHelper onFormResubmissionHelper =
                 mContentsClient.getOnFormResubmissionHelper();
         // Run reload on UI thread.
         ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getNavigationController().reload(true));

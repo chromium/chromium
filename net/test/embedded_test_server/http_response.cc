@@ -4,6 +4,7 @@
 
 #include "net/test/embedded_test_server/http_response.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <string>
@@ -13,9 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -86,7 +85,7 @@ base::StringPairs BasicHttpResponse::BuildHeaders() const {
   headers.emplace_back("Content-Length", base::NumberToString(content_.size()));
   headers.emplace_back("Content-Type", content_type_);
 
-  base::ranges::copy(custom_headers_, std::back_inserter(headers));
+  std::ranges::copy(custom_headers_, std::back_inserter(headers));
 
   return headers;
 }

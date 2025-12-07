@@ -11,7 +11,7 @@ have interfaces for both, e.g. `BluetoothAdapter` & `BluetoothDevice`.
 
 |           | Classic |  Low Energy |
 |-----------|:-------:|:-----------:|
-| Android   |   no    |     yes     |
+| Android   |   some  |     yes     |
 | Chrome OS |   yes   |     yes     |
 | Linux     |   yes   |     yes     |
 | Mac       |   yes   |     yes     |
@@ -62,38 +62,39 @@ See also the [Refactoring meta issue](https://crbug.com/580406).
 ## Android
 
 The android implementation requires crossing from C++ to Java using
-[__JNI__](https://www.chromium.org/developers/design-documents/android-jni).
+[JNI](https://www.chromium.org/developers/design-documents/android-jni).
 
 Object ownership is rooted in the C++ classes, starting with the Adapter, which
-owns Devices, Services, etc. Java counter parts interface with the Android
+owns Devices, Services, etc. Java counterparts interface with the Android
 Bluetooth objects. E.g.
 
 For testing, the Android objects are __wrapped__ in:
-`android/java/src/org/chromium/device/bluetooth/Wrappers.java`. <br>
+* `android/java/src/org/chromium/device/bluetooth/wrapper/`.
+
 and __fakes__ implemented in:
-`test/android/java/src/org/chromium/device/bluetooth/Fakes.java`.
+* `test/android/java/src/org/chromium/device/bluetooth/Fakes.java`.
 
 Thus:
 
 * `bluetooth_adapter_android.h` owns:
     * `android/.../ChromeBluetoothAdapter.java` uses:
-        * `android/.../Wrappers.java`: `BluetoothAdapterWrapper`
+        * `android/.../wrapper/BluetoothAdapterWrapper.java`
             * Which under test is a `FakeBluetoothAdapter`
-    * `bluetooth_device_android.h` owns:
-        * `android/.../ChromeBluetoothDevice.java` uses:
-            * `android/.../Wrappers.java`: `BluetoothDeviceWrapper`
-                * Which under test is a `FakeBluetoothDevice`
-        * `bluetooth_gatt_service_android.h` owns:
-            * `android/.../ChromeBluetoothService.java` uses:
-                * `android/.../Wrappers.java`: `BluetoothServiceWrapper`
-                    * Which under test is a `FakeBluetoothService`
-            * ... and so on for characteristics and descriptors.
+* `bluetooth_device_android.h` owns:
+    * `android/.../ChromeBluetoothDevice.java` uses:
+        * `android/.../wrapper/BluetoothDeviceWrapper.java`
+            * Which under test is a `FakeBluetoothDevice`
+* `bluetooth_gatt_service_android.h` owns:
+    * `android/.../ChromeBluetoothRemoteGattService.java` uses:
+        * `android/.../wrapper/BluetoothGattServiceWrapper.java`
+            * Which under test is a `FakeBluetoothGattService`
+    * ... and so on for characteristics and descriptors.
 
 Fake objects are controlled by `bluetooth_test_android.cc`.
 
 See also: [Class Diagram of Web Bluetooth through Bluetooth Android][Class]
 
-[Class]: https://sites.google.com/a/chromium.org/dev/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram
+[Class]: https://www.chromium.org/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram/
 
 ## ChromeOS
 Within this directory, [BluetoothAdapter](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/bluetooth_adapter.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) exposes Bluetooth stack agnostic APIs for performing various operations and this is implemented by various platform specific classes. For ChromeOS, BluetoothAdapter is implemented by [BluetoothAdapterFloss](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/floss/bluetooth_adapter_floss.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) and [BluetoothAdapterBluez] (https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/bluez/bluetooth_adapter_bluez.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f).
@@ -112,7 +113,7 @@ from Bluez to Fluoride. This project is titled [Floss](https://sites.google.com/
 Various Bluetooth UI surfaces in ChromeOS perform their operations by using APIs defined in
 [CrosBluetoothConfig] (https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/cros_bluetooth_config.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
 
-CrosBluetoothConfig in turn utilizes classes in this directory to interact with the Bluetooth stack. It is usually preferrerd to use CrosBluetoothConfig API for performing Bluetooth related operations and direct interaction with adapters in this directory should only be necessary if more granular functionality is required.
+CrosBluetoothConfig in turn utilizes classes in this directory to interact with the Bluetooth stack. It is usually preferred to use CrosBluetoothConfig API for performing Bluetooth related operations and direct interaction with adapters in this directory should only be necessary if more granular functionality is required.
 
 ## Testing
 See [test/README.md](test/README.md)

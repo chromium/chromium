@@ -22,7 +22,7 @@ enum class AndroidAutofillAvailabilityStatus {
   kNotAllowedByPolicy = 1,
 
   // The Android version doesn't provide a compatible Autofill framework.
-  kAndroidVersionTooOld = 2,
+  // Deprecated: kAndroidVersionTooOld = 2,
 
   // The Autofill Manager is not available or even provided by the OEM.
   kAndroidAutofillManagerNotAvailable = 3,

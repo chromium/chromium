@@ -9,6 +9,8 @@ import android.content.res.Resources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
@@ -20,15 +22,20 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.Origin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Shows modal dialog asking user whether they want to share their identity with website. */
+@NullMarked
 public class DigitalIdentitySafetyInterstitialController {
     private PropertyModel mDialogModel;
-    private Origin mOrigin;
+    private final Origin mOrigin;
 
     public DigitalIdentitySafetyInterstitialController(Origin origin) {
         mOrigin = origin;
     }
 
+    @Initializer
     public void show(
             ModalDialogManager modalDialogManager,
             @DigitalIdentityInterstitialType int interstitialType,
@@ -62,11 +69,6 @@ public class DigitalIdentitySafetyInterstitialController {
                 interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
                         ? R.string.digital_identity_interstitial_high_risk_negative_button_text
                         : R.string.digital_identity_interstitial_low_risk_negative_button_text;
-        @ModalDialogProperties.ButtonStyles
-        int buttonStyles =
-                interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
-                        ? ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED
-                        : ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE;
 
         Context context = ContextUtils.getApplicationContext();
         String bodyText =
@@ -74,6 +76,7 @@ public class DigitalIdentitySafetyInterstitialController {
                         bodyTextResourceId,
                         UrlFormatter.formatOriginForSecurityDisplay(
                                 mOrigin, SchemeDisplay.OMIT_CRYPTOGRAPHIC));
+        ArrayList<CharSequence> messages = new ArrayList<>(List.of(bodyText));
 
         Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =
@@ -83,7 +86,7 @@ public class DigitalIdentitySafetyInterstitialController {
                                 ModalDialogProperties.TITLE,
                                 resources,
                                 R.string.digital_identity_interstitial_dialog_title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, bodyText)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, messages)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,
@@ -92,13 +95,15 @@ public class DigitalIdentitySafetyInterstitialController {
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
                                 negativeButtonTextResourceId)
-                        .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
 
         mDialogModel = dialogModelBuilder.build();
-        modalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        modalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
     public void abort() {
@@ -108,7 +113,14 @@ public class DigitalIdentitySafetyInterstitialController {
                         R.string.digital_identity_interstitial_request_aborted_dialog_text,
                         UrlFormatter.formatOriginForSecurityDisplay(
                                 mOrigin, SchemeDisplay.OMIT_CRYPTOGRAPHIC));
-        mDialogModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2, abortedMessage);
+
+        ArrayList<CharSequence> messages =
+                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS);
+        assert messages.size() == 1
+                : "DigitalIdentitySafetyInterstitialController.abort() call was invalid.";
+        messages.add(abortedMessage);
+
+        mDialogModel.set(ModalDialogProperties.MESSAGE_PARAGRAPHS, messages);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 }

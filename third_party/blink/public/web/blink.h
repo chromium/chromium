@@ -31,9 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "v8/include/v8-isolate.h"
 
 namespace mojo {
@@ -95,15 +96,13 @@ BLINK_EXPORT void SetFontAntialiasingEnabledForTest(bool);
 BLINK_EXPORT bool FontAntialiasingEnabledForTest();
 
 // Purge the plugin list cache. This can cause a web-visible and out-of-spec
-// change to |navigator.plugins| if the plugin list has changed (see
-// https://crbug.com/735854). |reloadPages| is unsupported and must be false.
-BLINK_EXPORT void ResetPluginCache(bool reload_pages = false);
-
-// The embedder should call this periodically in an attempt to balance overall
-// performance and memory usage.
-BLINK_EXPORT void DecommitFreeableMemory();
+// change to `navigator.plugins` if the plugin list has changed (see
+// https://crbug.com/735854).
+BLINK_EXPORT void ResetPluginCache();
 
 // Send memory pressure notification to isolates.
+// This should be use as last resort only to prevent an OOM. Avoid using this
+// as a general way of reducing memory footprint.
 BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
     v8::MemoryPressureLevel);
 
@@ -153,7 +152,7 @@ BLINK_EXPORT bool IsIsolatedContext();
 // Set a list of CORS exempt headers. This list is used for fetching resources
 // from frames.
 BLINK_EXPORT void SetCorsExemptHeaderList(
-    const WebVector<WebString>& web_cors_exempt_header_list);
+    const std::vector<WebString>& web_cors_exempt_header_list);
 
 // Notification the process hosting blink is in the foreground/background.
 BLINK_EXPORT void OnProcessForegrounded();

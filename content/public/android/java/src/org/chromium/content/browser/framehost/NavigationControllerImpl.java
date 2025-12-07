@@ -15,6 +15,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -32,6 +34,7 @@ import org.chromium.url.Origin;
 @JNINamespace("content")
 // TODO(tedchoc): Remove the package restriction once this class moves to a non-public content
 //                package whose visibility will be enforced via DEPS.
+@NullMarked
 /* package */ class NavigationControllerImpl implements NavigationController {
     private static final String TAG = "NavigationController";
 
@@ -54,17 +57,14 @@ import org.chromium.url.Origin;
     @Override
     public boolean canGoBack() {
         return mNativeNavigationControllerAndroid != 0
-                && NavigationControllerImplJni.get()
-                        .canGoBack(
-                                mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                && NavigationControllerImplJni.get().canGoBack(mNativeNavigationControllerAndroid);
     }
 
     @Override
     public boolean canGoForward() {
         return mNativeNavigationControllerAndroid != 0
                 && NavigationControllerImplJni.get()
-                        .canGoForward(
-                                mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                        .canGoForward(mNativeNavigationControllerAndroid);
     }
 
     @Override
@@ -72,20 +72,14 @@ import org.chromium.url.Origin;
     public boolean canGoToOffset(int offset) {
         return mNativeNavigationControllerAndroid != 0
                 && NavigationControllerImplJni.get()
-                        .canGoToOffset(
-                                mNativeNavigationControllerAndroid,
-                                NavigationControllerImpl.this,
-                                offset);
+                        .canGoToOffset(mNativeNavigationControllerAndroid, offset);
     }
 
     @Override
     public void goToOffset(int offset) {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .goToOffset(
-                            mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
-                            offset);
+                    .goToOffset(mNativeNavigationControllerAndroid, offset);
         }
     }
 
@@ -93,26 +87,21 @@ import org.chromium.url.Origin;
     public void goToNavigationIndex(int index) {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .goToNavigationIndex(
-                            mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
-                            index);
+                    .goToNavigationIndex(mNativeNavigationControllerAndroid, index);
         }
     }
 
     @Override
     public void goBack() {
         if (mNativeNavigationControllerAndroid != 0) {
-            NavigationControllerImplJni.get()
-                    .goBack(mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+            NavigationControllerImplJni.get().goBack(mNativeNavigationControllerAndroid);
         }
     }
 
     @Override
     public void goForward() {
         if (mNativeNavigationControllerAndroid != 0) {
-            NavigationControllerImplJni.get()
-                    .goForward(mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+            NavigationControllerImplJni.get().goForward(mNativeNavigationControllerAndroid);
         }
     }
 
@@ -120,16 +109,13 @@ import org.chromium.url.Origin;
     public boolean isInitialNavigation() {
         return mNativeNavigationControllerAndroid != 0
                 && NavigationControllerImplJni.get()
-                        .isInitialNavigation(
-                                mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                        .isInitialNavigation(mNativeNavigationControllerAndroid);
     }
 
     @Override
     public void loadIfNecessary() {
         if (mNativeNavigationControllerAndroid != 0) {
-            NavigationControllerImplJni.get()
-                    .loadIfNecessary(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+            NavigationControllerImplJni.get().loadIfNecessary(mNativeNavigationControllerAndroid);
         }
     }
 
@@ -137,24 +123,19 @@ import org.chromium.url.Origin;
     public boolean needsReload() {
         return mNativeNavigationControllerAndroid != 0
                 && NavigationControllerImplJni.get()
-                        .needsReload(
-                                mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                        .needsReload(mNativeNavigationControllerAndroid);
     }
 
     @Override
     public void setNeedsReload() {
-        NavigationControllerImplJni.get()
-                .setNeedsReload(mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+        NavigationControllerImplJni.get().setNeedsReload(mNativeNavigationControllerAndroid);
     }
 
     @Override
     public void reload(boolean checkForRepost) {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .reload(
-                            mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
-                            checkForRepost);
+                    .reload(mNativeNavigationControllerAndroid, checkForRepost);
         }
     }
 
@@ -162,10 +143,7 @@ import org.chromium.url.Origin;
     public void reloadBypassingCache(boolean checkForRepost) {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .reloadBypassingCache(
-                            mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
-                            checkForRepost);
+                    .reloadBypassingCache(mNativeNavigationControllerAndroid, checkForRepost);
         }
     }
 
@@ -173,8 +151,7 @@ import org.chromium.url.Origin;
     public void cancelPendingReload() {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .cancelPendingReload(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                    .cancelPendingReload(mNativeNavigationControllerAndroid);
         }
     }
 
@@ -182,13 +159,12 @@ import org.chromium.url.Origin;
     public void continuePendingReload() {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .continuePendingReload(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                    .continuePendingReload(mNativeNavigationControllerAndroid);
         }
     }
 
     @Override
-    public NavigationHandle loadUrl(LoadUrlParams params) {
+    public @Nullable NavigationHandle loadUrl(LoadUrlParams params) {
         NavigationHandle navigationHandle = null;
         if (mNativeNavigationControllerAndroid != 0) {
             String headers =
@@ -206,7 +182,6 @@ import org.chromium.url.Origin;
                     NavigationControllerImplJni.get()
                             .loadUrl(
                                     mNativeNavigationControllerAndroid,
-                                    NavigationControllerImpl.this,
                                     params.getUrl(),
                                     params.getLoadUrlType(),
                                     params.getTransitionType(),
@@ -245,37 +220,30 @@ import org.chromium.url.Origin;
     @Override
     public void clearHistory() {
         if (mNativeNavigationControllerAndroid != 0) {
-            NavigationControllerImplJni.get()
-                    .clearHistory(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+            NavigationControllerImplJni.get().clearHistory(mNativeNavigationControllerAndroid);
         }
     }
 
     @Override
-    public NavigationHistory getNavigationHistory() {
+    public @Nullable NavigationHistory getNavigationHistory() {
         if (mNativeNavigationControllerAndroid == 0) return null;
         NavigationHistory history = new NavigationHistory();
         int currentIndex =
                 NavigationControllerImplJni.get()
-                        .getNavigationHistory(
-                                mNativeNavigationControllerAndroid,
-                                NavigationControllerImpl.this,
-                                history);
+                        .getNavigationHistory(mNativeNavigationControllerAndroid, history);
+
         history.setCurrentEntryIndex(currentIndex);
         return history;
     }
 
     @Override
-    public NavigationHistory getDirectedNavigationHistory(boolean isForward, int itemLimit) {
+    public @Nullable NavigationHistory getDirectedNavigationHistory(
+            boolean isForward, int itemLimit) {
         if (mNativeNavigationControllerAndroid == 0) return null;
         NavigationHistory history = new NavigationHistory();
         NavigationControllerImplJni.get()
                 .getDirectedNavigationHistory(
-                        mNativeNavigationControllerAndroid,
-                        NavigationControllerImpl.this,
-                        history,
-                        isForward,
-                        itemLimit);
+                        mNativeNavigationControllerAndroid, history, isForward, itemLimit);
         return history;
     }
 
@@ -283,8 +251,7 @@ import org.chromium.url.Origin;
     public void clearSslPreferences() {
         if (mNativeNavigationControllerAndroid != 0) {
             NavigationControllerImplJni.get()
-                    .clearSslPreferences(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                    .clearSslPreferences(mNativeNavigationControllerAndroid);
         }
     }
 
@@ -292,63 +259,55 @@ import org.chromium.url.Origin;
     public boolean getUseDesktopUserAgent() {
         if (mNativeNavigationControllerAndroid == 0) return false;
         return NavigationControllerImplJni.get()
-                .getUseDesktopUserAgent(
-                        mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                .getUseDesktopUserAgent(mNativeNavigationControllerAndroid);
     }
 
     @Override
-    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange, int caller) {
+    public void setUseDesktopUserAgent(
+            boolean override, boolean reloadOnChange, boolean skipOnInitialNavigation) {
         if (mNativeNavigationControllerAndroid != 0) {
             Log.i(
                     TAG,
                     "Thread dump for debugging, override: "
                             + override
                             + " reloadOnChange: "
-                            + reloadOnChange
-                            + " caller: "
-                            + caller);
+                            + reloadOnChange);
             Thread.dumpStack();
 
             NavigationControllerImplJni.get()
                     .setUseDesktopUserAgent(
                             mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
                             override,
                             reloadOnChange,
-                            caller);
+                            skipOnInitialNavigation);
         }
     }
 
     @Override
-    public NavigationEntry getEntryAtIndex(int index) {
+    public @Nullable NavigationEntry getEntryAtIndex(int index) {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
-                    .getEntryAtIndex(
-                            mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
-                            index);
+                    .getEntryAtIndex(mNativeNavigationControllerAndroid, index);
         }
 
         return null;
     }
 
     @Override
-    public NavigationEntry getVisibleEntry() {
+    public @Nullable NavigationEntry getVisibleEntry() {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
-                    .getVisibleEntry(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                    .getVisibleEntry(mNativeNavigationControllerAndroid);
         }
 
         return null;
     }
 
     @Override
-    public NavigationEntry getPendingEntry() {
+    public @Nullable NavigationEntry getPendingEntry() {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
-                    .getPendingEntry(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                    .getPendingEntry(mNativeNavigationControllerAndroid);
         }
 
         return null;
@@ -358,20 +317,25 @@ import org.chromium.url.Origin;
     public int getLastCommittedEntryIndex() {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
-                    .getLastCommittedEntryIndex(
-                            mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+                    .getLastCommittedEntryIndex(mNativeNavigationControllerAndroid);
         }
         return -1;
+    }
+
+    @Override
+    public boolean canViewSource() {
+        if (mNativeNavigationControllerAndroid != 0) {
+            return NavigationControllerImplJni.get()
+                    .canViewSource(mNativeNavigationControllerAndroid);
+        }
+        return false;
     }
 
     @Override
     public boolean removeEntryAtIndex(int index) {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
-                    .removeEntryAtIndex(
-                            mNativeNavigationControllerAndroid,
-                            NavigationControllerImpl.this,
-                            index);
+                    .removeEntryAtIndex(mNativeNavigationControllerAndroid, index);
         }
         return false;
     }
@@ -379,32 +343,33 @@ import org.chromium.url.Origin;
     @Override
     public void pruneForwardEntries() {
         if (mNativeNavigationControllerAndroid == 0) return;
-        NavigationControllerImplJni.get()
-                .pruneForwardEntries(
-                        mNativeNavigationControllerAndroid, NavigationControllerImpl.this);
+        NavigationControllerImplJni.get().pruneForwardEntries(mNativeNavigationControllerAndroid);
     }
 
     @Override
-    public String getEntryExtraData(int index, String key) {
+    public @Nullable String getEntryExtraData(int index, String key) {
         if (mNativeNavigationControllerAndroid == 0) return null;
         return NavigationControllerImplJni.get()
-                .getEntryExtraData(
-                        mNativeNavigationControllerAndroid,
-                        NavigationControllerImpl.this,
-                        index,
-                        key);
+                .getEntryExtraData(mNativeNavigationControllerAndroid, index, key);
     }
 
     @Override
     public void setEntryExtraData(int index, String key, String value) {
         if (mNativeNavigationControllerAndroid == 0) return;
         NavigationControllerImplJni.get()
-                .setEntryExtraData(
+                .setEntryExtraData(mNativeNavigationControllerAndroid, index, key, value);
+    }
+
+    @Override
+    public void copyStateFrom(NavigationController sourceNavigationController) {
+        if (mNativeNavigationControllerAndroid == 0) return;
+        NavigationControllerImpl sourceImpl = (NavigationControllerImpl) sourceNavigationController;
+        if (sourceImpl.mNativeNavigationControllerAndroid == 0) return;
+        NavigationControllerImplJni.get()
+                .copyStateFrom(
                         mNativeNavigationControllerAndroid,
-                        NavigationControllerImpl.this,
-                        index,
-                        key,
-                        value);
+                        sourceImpl.mNativeNavigationControllerAndroid,
+                        /* needsReload= */ true);
     }
 
     @CalledByNative
@@ -437,137 +402,102 @@ import org.chromium.url.Origin;
 
     @NativeMethods
     interface Natives {
-        boolean canGoBack(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        boolean canGoBack(long nativeNavigationControllerAndroid);
 
-        boolean canGoForward(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        boolean canGoForward(long nativeNavigationControllerAndroid);
 
-        boolean isInitialNavigation(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        boolean isInitialNavigation(long nativeNavigationControllerAndroid);
 
-        void loadIfNecessary(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void loadIfNecessary(long nativeNavigationControllerAndroid);
 
-        boolean needsReload(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        boolean needsReload(long nativeNavigationControllerAndroid);
 
-        void setNeedsReload(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void setNeedsReload(long nativeNavigationControllerAndroid);
 
-        boolean canGoToOffset(
-                long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                int offset);
+        boolean canGoToOffset(long nativeNavigationControllerAndroid, int offset);
 
-        void goBack(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void goBack(long nativeNavigationControllerAndroid);
 
-        void goForward(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void goForward(long nativeNavigationControllerAndroid);
 
-        void goToOffset(
-                long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                int offset);
+        void goToOffset(long nativeNavigationControllerAndroid, int offset);
 
-        void goToNavigationIndex(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller, int index);
+        void goToNavigationIndex(long nativeNavigationControllerAndroid, int index);
 
-        void cancelPendingReload(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void cancelPendingReload(long nativeNavigationControllerAndroid);
 
-        void continuePendingReload(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void continuePendingReload(long nativeNavigationControllerAndroid);
 
-        void reload(
-                long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                boolean checkForRepost);
+        void reload(long nativeNavigationControllerAndroid, boolean checkForRepost);
 
-        void reloadBypassingCache(
-                long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                boolean checkForRepost);
+        void reloadBypassingCache(long nativeNavigationControllerAndroid, boolean checkForRepost);
 
         NavigationHandle loadUrl(
                 long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
                 String url,
                 int loadUrlType,
                 int transitionType,
-                String referrerUrl,
+                @Nullable String referrerUrl,
                 int referrerPolicy,
                 int uaOverrideOption,
-                String extraHeaders,
-                ResourceRequestBody postData,
-                String baseUrlForDataUrl,
-                String virtualUrlForSpecialCases,
-                String dataUrlAsString,
+                @Nullable String extraHeaders,
+                @Nullable ResourceRequestBody postData,
+                @Nullable String baseUrlForDataUrl,
+                @Nullable String virtualUrlForSpecialCases,
+                @Nullable String dataUrlAsString,
                 boolean canLoadLocalResources,
                 boolean isRendererInitiated,
                 boolean shouldReplaceCurrentEntry,
-                Origin initiatorOrigin,
+                @Nullable Origin initiatorOrigin,
                 boolean hasUserGesture,
                 boolean shouldClearHistoryList,
-                AdditionalNavigationParams additionalNavigationParams,
+                @Nullable AdditionalNavigationParams additionalNavigationParams,
                 long inputStart,
                 long navigationUIDataPtr,
                 boolean isPdf);
 
-        void clearHistory(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void clearHistory(long nativeNavigationControllerAndroid);
 
-        int getNavigationHistory(
-                long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                Object history);
+        int getNavigationHistory(long nativeNavigationControllerAndroid, Object history);
 
         void getDirectedNavigationHistory(
                 long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
                 NavigationHistory history,
                 boolean isForward,
                 int itemLimit);
 
-        void clearSslPreferences(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        void clearSslPreferences(long nativeNavigationControllerAndroid);
 
-        boolean getUseDesktopUserAgent(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        boolean getUseDesktopUserAgent(long nativeNavigationControllerAndroid);
 
         void setUseDesktopUserAgent(
                 long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
                 boolean override,
                 boolean reloadOnChange,
-                int source);
+                boolean skipOnInitialNavigation);
 
-        NavigationEntry getEntryAtIndex(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller, int index);
+        NavigationEntry getEntryAtIndex(long nativeNavigationControllerAndroid, int index);
 
-        NavigationEntry getVisibleEntry(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        NavigationEntry getVisibleEntry(long nativeNavigationControllerAndroid);
 
-        NavigationEntry getPendingEntry(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        NavigationEntry getPendingEntry(long nativeNavigationControllerAndroid);
 
-        int getLastCommittedEntryIndex(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        int getLastCommittedEntryIndex(long nativeNavigationControllerAndroid);
 
-        boolean removeEntryAtIndex(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller, int index);
+        boolean canViewSource(long nativeNavigationControllerAndroid);
 
-        void pruneForwardEntries(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
+        boolean removeEntryAtIndex(long nativeNavigationControllerAndroid, int index);
 
-        String getEntryExtraData(
-                long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                int index,
-                String key);
+        void pruneForwardEntries(long nativeNavigationControllerAndroid);
+
+        String getEntryExtraData(long nativeNavigationControllerAndroid, int index, String key);
 
         void setEntryExtraData(
+                long nativeNavigationControllerAndroid, int index, String key, String value);
+
+        void copyStateFrom(
                 long nativeNavigationControllerAndroid,
-                NavigationControllerImpl caller,
-                int index,
-                String key,
-                String value);
+                long nativeSourceNavigationControllerAndroid,
+                boolean needsReload);
     }
 }

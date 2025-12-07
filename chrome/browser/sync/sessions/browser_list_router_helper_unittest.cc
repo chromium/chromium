@@ -31,6 +31,8 @@ class MockLocalSessionEventHandler : public LocalSessionEventHandler {
     seen_ids_.push_back(modified_tab->GetSessionId());
   }
 
+  void OnLocalTabClosed() override {}
+
   std::vector<GURL>* seen_urls() { return &seen_urls_; }
   std::vector<SessionID>* seen_ids() { return &seen_ids_; }
 
@@ -52,9 +54,8 @@ TEST_F(BrowserListRouterHelperTest, ObservationScopedToSingleProfile) {
   TestingProfile* profile_2 =
       profile_manager()->CreateTestingProfile("testing_profile2");
 
-  std::unique_ptr<BrowserWindow> window_2(CreateBrowserWindow());
   std::unique_ptr<Browser> browser_2(
-      CreateBrowser(profile_2, browser()->type(), false, window_2.get()));
+      CreateBrowser(profile_2, browser()->type(), false));
 
   SyncSessionsWebContentsRouterFactory::GetInstance()
       ->GetForProfile(profile_1)
@@ -77,13 +78,10 @@ TEST_F(BrowserListRouterHelperTest, ObservationScopedToSingleProfile) {
   EXPECT_FALSE(base::Contains(*handler_2_urls, gurl_1));
 
   // Add a browser for each profile.
-  std::unique_ptr<BrowserWindow> window_3(CreateBrowserWindow());
-  std::unique_ptr<BrowserWindow> window_4(CreateBrowserWindow());
-
   std::unique_ptr<Browser> new_browser_in_first_profile(
-      CreateBrowser(profile_1, browser()->type(), false, window_3.get()));
+      CreateBrowser(profile_1, browser()->type(), false));
   std::unique_ptr<Browser> new_browser_in_second_profile(
-      CreateBrowser(profile_2, browser()->type(), false, window_4.get()));
+      CreateBrowser(profile_2, browser()->type(), false));
 
   GURL gurl_3("http://foo3.com");
   GURL gurl_4("http://foo4.com");
@@ -111,9 +109,8 @@ TEST_F(BrowserListRouterHelperTest, NotifyOnDiscardTab) {
   TestingProfile* profile_2 =
       profile_manager()->CreateTestingProfile("testing_profile2");
 
-  std::unique_ptr<BrowserWindow> window_2(CreateBrowserWindow());
   std::unique_ptr<Browser> browser_2(
-      CreateBrowser(profile_2, browser()->type(), false, window_2.get()));
+      CreateBrowser(profile_2, browser()->type(), false));
 
   SyncSessionsWebContentsRouterFactory::GetInstance()
       ->GetForProfile(profile_1)

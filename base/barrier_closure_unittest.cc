@@ -17,7 +17,7 @@ namespace {
 TEST(BarrierClosureTest, RunImmediatelyForZeroClosures) {
   int count = 0;
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      0, base::BindLambdaForTesting([&count]() { ++count; }));
+      0, base::BindLambdaForTesting([&count] { ++count; }));
   EXPECT_EQ(1, count);
 }
 
@@ -26,13 +26,13 @@ TEST(BarrierClosureTest, ChecksIfCalledForZeroClosures) {
       base::BarrierClosure(0, base::DoNothing());
   EXPECT_FALSE(barrier_closure.is_null());
 
-  EXPECT_CHECK_DEATH(barrier_closure.Run());
+  EXPECT_NOTREACHED_DEATH(barrier_closure.Run());
 }
 
 TEST(BarrierClosureTest, RunAfterNumClosures) {
   int count = 0;
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      2, base::BindLambdaForTesting([&count]() { ++count; }));
+      2, base::BindLambdaForTesting([&count] { ++count; }));
   EXPECT_EQ(0, count);
 
   barrier_closure.Run();
@@ -45,7 +45,7 @@ TEST(BarrierClosureTest, RunAfterNumClosures) {
 class DestructionIndicator {
  public:
   // Sets |*destructed| to true in destructor.
-  DestructionIndicator(bool* destructed) : destructed_(destructed) {
+  explicit DestructionIndicator(bool* destructed) : destructed_(destructed) {
     *destructed_ = false;
   }
 
@@ -78,7 +78,7 @@ TEST(BarrierClosureTest, ReleasesDoneClosureWhenDone) {
 TEST(BarrierClosureTest, KeepingClosureAliveUntilDone) {
   base::RepeatingClosure barrier_closure;
   barrier_closure =
-      base::BarrierClosure(1, base::BindLambdaForTesting([&barrier_closure]() {
+      base::BarrierClosure(1, base::BindLambdaForTesting([&barrier_closure] {
                              barrier_closure = base::RepeatingClosure();
                            }));
   barrier_closure.Run();

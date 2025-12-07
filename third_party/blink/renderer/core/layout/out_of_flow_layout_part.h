@@ -8,21 +8,24 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
+class AnchorEvaluatorImpl;
 class BlockBreakToken;
 class LayoutBox;
 class LayoutObject;
@@ -90,6 +93,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // directly to the fragment builder.
   void SetChildFragmentStorage(
       FragmentBuilder::ChildrenVector* child_fragment_storage) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     child_fragment_storage_ = child_fragment_storage;
   }
 
@@ -100,11 +104,15 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   void SetColumnBalancingInfo(
       ColumnBalancingInfo* column_balancing_info,
       FragmentBuilder::ChildrenVector* child_fragment_storage) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     DCHECK(column_balancing_info);
     DCHECK(child_fragment_storage);
     column_balancing_info_ = column_balancing_info;
     SetChildFragmentStorage(child_fragment_storage);
   }
+
+  // Go through each page area fragment and propagate OOF descendants.
+  void PropagateOOFsFromPageAreas();
 
   // Handle the layout of any OOF elements in a fragmentation context.
   void HandleFragmentation();
@@ -113,6 +121,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // pages that were laid out need to know the total page count (to support
   // counter(pages) in page margin boxes).
   bool NeedsTotalPageCount() { return needs_total_page_count_; }
+
+  bool AdditionalPagesWereAdded() const {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    return additional_pages_were_added_;
+  }
 
   // Information needed to position descendant within a containing block.
   // Geometry expressed here is complicated:
@@ -131,8 +144,14 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // The writing direction of the container.
     WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
                                               TextDirection::kLtr};
+    // If the container is scrollable.
+    bool is_scroll_container;
+    // If the container is hidden for paint, which is also true for the OOFs.
+    bool is_hidden_for_paint;
     // Size and offset of the container.
     LogicalRect rect;
+    // https://drafts.csswg.org/css-position-4/#scrollable-containing-block
+    std::optional<LogicalRect> scroll_rect;
     // The relative positioned offset to be applied after fragmentation is
     // completed.
     LogicalOffset relative_offset;
@@ -151,6 +170,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     DISALLOW_NEW();
 
    public:
+    MulticolChildInfo() {
+      DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    }
     Member<const BlockBreakToken> parent_break_token;
 
     void Trace(Visitor* visitor) const;
@@ -168,8 +190,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     const OofContainingBlock<LogicalOffset> containing_block;
     const OofContainingBlock<LogicalOffset> fixedpos_containing_block;
     const OofInlineContainer<LogicalOffset> fixedpos_inline_container;
+    Member<const BlockBreakToken> break_token;
     bool requires_content_before_breaking = false;
-    bool is_hidden_for_paint = false;
 
     NodeInfo(BlockNode node,
              const LogicalStaticPosition static_position,
@@ -179,8 +201,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              const OofContainingBlock<LogicalOffset>& containing_block,
              const OofContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const OofInlineContainer<LogicalOffset>& fixedpos_inline_container,
-             bool requires_content_before_breaking,
-             bool is_hidden_for_paint)
+             const BlockBreakToken* break_token,
+             bool requires_content_before_breaking)
         : node(node),
           static_position(static_position),
           base_container_info(base_container_info),
@@ -188,8 +210,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
           containing_block(containing_block),
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
-          requires_content_before_breaking(requires_content_before_breaking),
-          is_hidden_for_paint(is_hidden_for_paint) {}
+          break_token(break_token),
+          requires_content_before_breaking(requires_content_before_breaking) {}
 
     void Trace(Visitor* visitor) const;
   };
@@ -232,7 +254,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // position-try-fallbacks. We have to retain the IMCB to implement
     // position-try-order, which decides which of the various candidates styles
     // we should select based on the biggest IMCB size (in some axis).
-    std::optional<InsetModifiedContainingBlock> imcb_for_position_order;
+    std::optional<PhysicalSize> imcb_size_for_try_order;
 
     bool inline_size_depends_on_min_max_sizes = false;
 
@@ -245,7 +267,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // True if the element overflows the inset-modified containing block.
     bool overflows_containing_block = false;
 
-    Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
+    Member<Element> accessibility_anchor;
+    Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
     void Trace(Visitor* visitor) const;
   };
@@ -256,7 +279,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
    public:
     NodeInfo node_info;
     OffsetInfo offset_info;
-    Member<const BlockBreakToken> break_token;
 
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the
@@ -299,7 +321,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       LogicalOffset containing_block_offset = LogicalOffset(),
       bool adjust_for_fragmentation = false);
 
-  void LayoutCandidates();
+  void LayoutCandidates(const HeapVector<LogicalOofPositionedNode>&);
 
   void HandleMulticolsWithPendingOOFs(BoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
@@ -318,10 +340,12 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   AnchorEvaluatorImpl CreateAnchorEvaluator(
       const ContainingBlockInfo& container_info,
       const BlockNode& candidate,
-      const LogicalAnchorQueryMap* anchor_queries) const;
+      bool is_inside_fragmentation_context) const;
 
-  ContainingBlockInfo ApplyPositionAreaOffsets(
+  LogicalRect ApplyPositionAreaOffsets(
+      const LogicalRect& base_rect,
       const PositionAreaOffsets& offsets,
+      PhysicalOffset default_anchor_scroll_shift,
       const ContainingBlockInfo& container_info) const;
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);
@@ -333,9 +357,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   // TODO(almaher): We are calculating more than just the offset. Consider
   // changing this to a more accurate name.
-  OffsetInfo CalculateOffset(
-      const NodeInfo& node_info,
-      const LogicalAnchorQueryMap* anchor_queries = nullptr);
+  OffsetInfo CalculateOffset(const NodeInfo& node_info,
+                             bool is_inside_fragmentation_context);
   // Calculates offsets with the given ComputedStyle. Returns nullopt if
   // |try_fit_available_space| is true and the layout result does not fit the
   // available space.
@@ -343,7 +366,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const NodeInfo& node_info,
       const ComputedStyle& style,
       AnchorEvaluatorImpl&,
+      std::optional<wtf_size_t> option_index,
       bool try_fit_available_space,
+      PhysicalOffset default_anchor_scroll_shift,
       NonOverflowingScrollRange* out_scroll_range);
 
   const LayoutResult* Layout(
@@ -395,13 +420,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   // This saves the static-position for an OOF-positioned object into its
   // paint-layer.
-  void SaveStaticPositionOnPaintLayer(
-      LayoutBox* layout_box,
-      const LogicalStaticPosition& position) const;
-  LogicalStaticPosition ToStaticPositionForLegacy(
-      LogicalStaticPosition position) const;
+  void SaveStaticPositionOnPaintLayer(LayoutBox* layout_box,
+                                      LogicalStaticPosition position) const;
 
   const FragmentBuilder::ChildrenVector& FragmentationContextChildren() const {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     DCHECK(container_builder_->IsBlockFragmentationContextRoot());
     return child_fragment_storage_ ? *child_fragment_storage_
                                    : container_builder_->Children();
@@ -434,13 +457,13 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   const BlockBreakToken* PreviousFragmentainerBreakToken(wtf_size_t) const;
 
   BoxFragmentBuilder* container_builder_;
-  // The builder for the outer block fragmentation context when this is an inner
-  // layout of nested block fragmentation.
-  BoxFragmentBuilder* outer_container_builder_ = nullptr;
-  ContainingBlockInfo default_containing_block_info_for_absolute_;
-  ContainingBlockInfo default_containing_block_info_for_fixed_;
+  ContainingBlockInfo default_containing_block_;
+  std::optional<ContainingBlockInfo> viewport_containing_block_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>
       containing_blocks_map_;
+
+  // List of repeated fixed-positioned boxes laid out in this pass.
+  HeapVector<Member<LayoutBox>> repeated_fixed_pos_boxes_;
 
   // Out-of-flow positioned nodes that we should lay out at a later time. For
   // example, if the containing block has not finished layout.
@@ -464,13 +487,19 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   LayoutUnit fragmentainer_consumed_block_size_;
   bool is_absolute_container_ = false;
   bool is_fixed_container_ = false;
-  bool has_block_fragmentation_ = false;
+
+  // Only set if the FragmentedOofInCb feature is disabled, and we're inside
+  // block fragmentation.
+  bool should_add_outer_fragmentainer_children_ = false;
+
   // A fixedpos containing block was found in an outer fragmentation context.
   bool outer_context_has_fixedpos_container_ = false;
 
   // Set if any additional pages that were laid out need to know the total page
   // count.
   bool needs_total_page_count_ = false;
+
+  bool additional_pages_were_added_ = false;
 };
 
 }  // namespace blink

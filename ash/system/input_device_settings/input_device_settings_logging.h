@@ -12,7 +12,6 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "components/peripherals/logging/logging.h"
 
 namespace ash {

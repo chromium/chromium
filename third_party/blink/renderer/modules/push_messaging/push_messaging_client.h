@@ -5,16 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_MESSAGING_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_MESSAGING_CLIENT_H_
 
-#include <stdint.h>
-
-#include <memory>
-
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
-#include "third_party/blink/renderer/modules/push_messaging/push_subscription_callbacks.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -24,14 +19,13 @@ enum class PushRegistrationStatus;
 
 class KURL;
 class LocalDOMWindow;
+class PushSubscription;
 class PushSubscriptionOptions;
 class ServiceWorkerRegistration;
 
 class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
-                                  public Supplement<LocalDOMWindow> {
+                                  public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   explicit PushMessagingClient(LocalDOMWindow&);
 
   PushMessagingClient(const PushMessagingClient&) = delete;
@@ -44,7 +38,7 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
   void Subscribe(ServiceWorkerRegistration* service_worker_registration,
                  PushSubscriptionOptions* options,
                  bool user_gesture,
-                 std::unique_ptr<PushSubscriptionCallbacks> callbacks);
+                 ScriptPromiseResolver<PushSubscription>* resolver);
   void Trace(Visitor*) const override;
 
  private:
@@ -55,7 +49,7 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
   void DidGetManifest(ServiceWorkerRegistration* service_worker_registration,
                       mojom::blink::PushSubscriptionOptionsPtr options,
                       bool user_gesture,
-                      std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+                      ScriptPromiseResolver<PushSubscription>* resolver,
                       mojom::blink::ManifestRequestResult result,
                       const KURL& manifest_url,
                       mojom::blink::ManifestPtr manifest);
@@ -63,13 +57,14 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
   void DoSubscribe(ServiceWorkerRegistration* service_worker_registration,
                    mojom::blink::PushSubscriptionOptionsPtr options,
                    bool user_gesture,
-                   std::unique_ptr<PushSubscriptionCallbacks> callbacks);
+                   ScriptPromiseResolver<PushSubscription>* resolver);
 
   void DidSubscribe(ServiceWorkerRegistration* service_worker_registration,
-                    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+                    ScriptPromiseResolver<PushSubscription>* resolver,
                     mojom::blink::PushRegistrationStatus status,
                     mojom::blink::PushSubscriptionPtr subscription);
 
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
 };
 

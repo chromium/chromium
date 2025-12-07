@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <tuple>
+#include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,19 +30,21 @@ EnterpriseManagementAuthority ManagementStatusProvider::GetAuthority() {
   if (!RequiresCache())
     return FetchAuthority();
 
-  if (absl::holds_alternative<PrefService*>(cache_) &&
-      absl::get<PrefService*>(cache_) &&
-      absl::get<PrefService*>(cache_)->HasPrefPath(cache_pref_name_))
+  if (std::holds_alternative<PrefService*>(cache_) &&
+      std::get<PrefService*>(cache_) &&
+      std::get<PrefService*>(cache_)->HasPrefPath(cache_pref_name_)) {
     return static_cast<EnterpriseManagementAuthority>(
-        absl::get<PrefService*>(cache_)->GetInteger(cache_pref_name_));
+        std::get<PrefService*>(cache_)->GetInteger(cache_pref_name_));
+  }
 
-  if (absl::holds_alternative<scoped_refptr<PersistentPrefStore>>(cache_) &&
-      absl::holds_alternative<scoped_refptr<PersistentPrefStore>>(cache_)) {
+  if (std::holds_alternative<scoped_refptr<PersistentPrefStore>>(cache_) &&
+      std::holds_alternative<scoped_refptr<PersistentPrefStore>>(cache_)) {
     const base::Value* value = nullptr;
-    if (absl::get<scoped_refptr<PersistentPrefStore>>(cache_)->GetValue(
+    if (std::get<scoped_refptr<PersistentPrefStore>>(cache_)->GetValue(
             cache_pref_name_, &value) &&
-        value->is_int())
+        value->is_int()) {
       return static_cast<EnterpriseManagementAuthority>(value->GetInt());
+    }
   }
   return EnterpriseManagementAuthority::NONE;
 }
@@ -52,10 +55,10 @@ bool ManagementStatusProvider::RequiresCache() const {
 
 void ManagementStatusProvider::UpdateCache(
     EnterpriseManagementAuthority authority) {
-  DCHECK(absl::holds_alternative<PrefService*>(cache_))
+  DCHECK(std::holds_alternative<PrefService*>(cache_))
       << "A PrefService is required to refresh the management "
          "status provider cache.";
-  absl::get<PrefService*>(cache_)->SetInteger(cache_pref_name_, authority);
+  std::get<PrefService*>(cache_)->SetInteger(cache_pref_name_, authority);
 }
 
 void ManagementStatusProvider::UsePrefStoreAsCache(
@@ -104,12 +107,21 @@ void ManagementService::RefreshCache(CacheRefreshCallback callback) {
     if (provider->RequiresCache()) {
       provider->UpdateCache(provider->FetchAuthority());
     }
-
-    ManagementAuthorityTrustworthiness next =
-        GetManagementAuthorityTrustworthiness();
-    if (callback)
-      std::move(callback).Run(previous, next);
   }
+
+  ManagementAuthorityTrustworthiness next =
+      GetManagementAuthorityTrustworthiness();
+  if (callback) {
+    std::move(callback).Run(previous, next);
+  }
+}
+
+ui::ImageModel* ManagementService::GetManagementIconForProfile() {
+  return nullptr;
+}
+
+gfx::Image* ManagementService::GetManagementIconForBrowser() {
+  return nullptr;
 }
 
 bool ManagementService::HasManagementAuthority(
@@ -194,6 +206,14 @@ bool ManagementService::IsBrowserManaged() {
              policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
 }
 
+void ManagementService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ManagementService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void ManagementService::SetManagementStatusProvider(
     std::vector<std::unique_ptr<ManagementStatusProvider>> providers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -204,6 +224,18 @@ void ManagementService::AddManagementStatusProvider(
     std::unique_ptr<ManagementStatusProvider> provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   management_status_providers_.push_back(std::move(provider));
+}
+
+void ManagementService::NotifyEnterpriseLabelUpdated() {
+  for (auto& observer : observers_) {
+    observer.OnEnterpriseLabelUpdated();
+  }
+}
+
+void ManagementService::NotifyEnterpriseLogoForBrowserUpdated() {
+  for (auto& observer : observers_) {
+    observer.OnEnterpriseLogoUpdatedForBrowser();
+  }
 }
 
 }  // namespace policy

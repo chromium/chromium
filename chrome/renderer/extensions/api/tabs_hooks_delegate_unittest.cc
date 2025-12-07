@@ -27,7 +27,7 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
   SCOPED_TRACE(base::StringPrintf("Args: `%s`", args));
   constexpr char kTemplate[] = "(function() { chrome.tabs.%s(%s); })";
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   // Just verify some error was thrown. Expecting the exact error message
   // tends to rely too much on our argument spec code, which is tested
@@ -45,12 +45,12 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 
 class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
-  TabsHooksDelegateTest() {}
+  TabsHooksDelegateTest() = default;
 
   TabsHooksDelegateTest(const TabsHooksDelegateTest&) = delete;
   TabsHooksDelegateTest& operator=(const TabsHooksDelegateTest&) = delete;
 
-  ~TabsHooksDelegateTest() override {}
+  ~TabsHooksDelegateTest() override = default;
 
   // NativeExtensionBindingsSystemUnittest:
   void SetUp() override {

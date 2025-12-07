@@ -69,7 +69,7 @@ function timeToMojo(mark: bigint): TimeDelta {
  */
 
 export interface MetricsReporter {
-  mark(name: string): void;
+  mark(name: string, time?: bigint): void;
   measure(startMark: string, endMark?: string): Promise<bigint>;
   hasMark(name: string): Promise<boolean>;
   hasLocalMark(name: string): boolean;
@@ -101,8 +101,8 @@ export class MetricsReporterImpl implements MetricsReporter {
     instance = newInstance;
   }
 
-  mark(name: string) {
-    this.marks_.set(name, this.browserProxy_.now());
+  mark(name: string, time?: bigint) {
+    this.marks_.set(name, time ?? this.browserProxy_.now());
   }
 
   async measure(startMark: string, endMark?: string): Promise<bigint> {

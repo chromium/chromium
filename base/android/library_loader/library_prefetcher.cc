@@ -9,33 +9,34 @@
 
 #include "base/android/library_loader/library_prefetcher.h"
 
-#include <stddef.h>
 #include <sys/mman.h>
-#include <sys/resource.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
 
-#include <atomic>
-#include <cstdlib>
-#include <memory>
-#include <utility>
-#include <vector>
+#include <algorithm>
+#include <array>
+#include <cerrno>
+#include <csignal>
+#include <cstddef>
+#include <string>
 
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/bits.h"
-#include "base/files/file.h"
-#include "base/format_macros.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
-#include "base/android/orderfile/orderfile_instrumentation.h"
+#include "base/android/orderfile/orderfile_instrumentation.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
@@ -45,128 +46,14 @@ namespace android {
 
 namespace {
 
-// Valid for all Android architectures.
-constexpr size_t kPageSize = 4096;
-
-// Populates the per-page residency between |start| and |end| in |residency|. If
-// successful, |residency| has the size of |end| - |start| in pages.
-// Returns true for success.
-bool Mincore(size_t start, size_t end, std::vector<unsigned char>* residency) {
-  if (start % kPageSize || end % kPageSize)
-    return false;
-  size_t size = end - start;
-  size_t size_in_pages = size / kPageSize;
-  if (residency->size() != size_in_pages)
-    residency->resize(size_in_pages);
-  int err = HANDLE_EINTR(
-      mincore(reinterpret_cast<void*>(start), size, &(*residency)[0]));
-  PLOG_IF(ERROR, err) << "mincore() failed";
-  return !err;
-}
-
-// Returns the start and end of .text, aligned to the lower and upper page
-// boundaries, respectively.
-std::pair<size_t, size_t> GetTextRange() {
-  // |kStartOfText| may not be at the beginning of a page, since .plt can be
-  // before it, yet in the same mapping for instance.
-  size_t start_page = kStartOfText - kStartOfText % kPageSize;
-  // Set the end to the page on which the beginning of the last symbol is. The
-  // actual symbol may spill into the next page by a few bytes, but this is
-  // outside of the executable code range anyway.
-  size_t end_page = bits::AlignUp(kEndOfText, kPageSize);
-  return {start_page, end_page};
-}
-
-// Returns the start and end pages of the unordered section of .text, aligned to
-// lower and upper page boundaries, respectively.
-std::pair<size_t, size_t> GetOrderedTextRange() {
-  size_t start_page = kStartOfOrderedText - kStartOfOrderedText % kPageSize;
-  // kEndOfUnorderedText is not considered ordered, but the byte immediately
-  // before is considered ordered and so can not be contained in the start page.
-  size_t end_page = bits::AlignUp(kEndOfOrderedText, kPageSize);
-  return {start_page, end_page};
-}
-
-// Calls madvise(advice) on the specified range. Does nothing if the range is
-// empty.
-void MadviseOnRange(const std::pair<size_t, size_t>& range, int advice) {
-  if (range.first >= range.second) {
-    return;
-  }
-  size_t size = range.second - range.first;
-  int err = madvise(reinterpret_cast<void*>(range.first), size, advice);
-  if (err) {
-    PLOG(ERROR) << "madvise() failed";
-  }
-}
-
-// Timestamp in ns since Unix Epoch, and residency, as returned by mincore().
-struct TimestampAndResidency {
-  uint64_t timestamp_nanos;
-  std::vector<unsigned char> residency;
-
-  TimestampAndResidency(uint64_t timestamp_nanos,
-                        std::vector<unsigned char>&& residency)
-      : timestamp_nanos(timestamp_nanos), residency(residency) {}
-};
-
-// Returns true for success.
-bool CollectResidency(size_t start,
-                      size_t end,
-                      std::vector<TimestampAndResidency>* data) {
-  // Not using TimeTicks() to not call too many base:: symbol that would pollute
-  // the reached symbols dumps.
-  struct timespec ts;
-  if (HANDLE_EINTR(clock_gettime(CLOCK_MONOTONIC, &ts))) {
-    PLOG(ERROR) << "Cannot get the time.";
-    return false;
-  }
-  uint64_t now = static_cast<uint64_t>(ts.tv_sec) * 1000 * 1000 * 1000 +
-                 static_cast<uint64_t>(ts.tv_nsec);
-  std::vector<unsigned char> residency;
-  if (!Mincore(start, end, &residency))
-    return false;
-
-  data->emplace_back(now, std::move(residency));
-  return true;
-}
-
-void DumpResidency(size_t start,
-                   size_t end,
-                   std::unique_ptr<std::vector<TimestampAndResidency>> data) {
-  LOG(WARNING) << "Dumping native library residency";
-  auto path = FilePath(
-      StringPrintf("/data/local/tmp/chrome/residency-%d.txt", getpid()));
-  auto file = File(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
-  if (!file.IsValid()) {
-    PLOG(ERROR) << "Cannot open file to dump the residency data "
-                << path.value();
-    return;
-  }
-
-  // First line: start-end of text range.
-  CHECK(AreAnchorsSane());
-  CHECK_LE(start, kStartOfText);
-  CHECK_LE(kEndOfText, end);
-  auto start_end = StringPrintf("%" PRIuS " %" PRIuS "\n", kStartOfText - start,
-                                kEndOfText - start);
-  file.WriteAtCurrentPos(start_end.c_str(), static_cast<int>(start_end.size()));
-
-  for (const auto& data_point : *data) {
-    auto timestamp = StringPrintf("%" PRIu64 " ", data_point.timestamp_nanos);
-    file.WriteAtCurrentPos(timestamp.c_str(),
-                           static_cast<int>(timestamp.size()));
-
-    std::vector<char> dump;
-    dump.reserve(data_point.residency.size() + 1);
-    for (auto c : data_point.residency)
-      dump.push_back(c ? '1' : '0');
-    dump[dump.size() - 1] = '\n';
-    file.WriteAtCurrentPos(&dump[0], checked_cast<int>(dump.size()));
-  }
-}
-
 #if !BUILDFLAG(ORDERFILE_INSTRUMENTATION)
+// The binary is aligned to a minimum 16K page size on AArch64 Android, else 4K.
+// This might not match base::GetPageSize(), the booted Kernel's page size.
+#if defined(ARCH_CPU_ARM64)
+constexpr size_t kBinaryPageSize = 16384;
+#else
+constexpr size_t kBinaryPageSize = 4096;
+#endif
 // Reads a byte per page between |start| and |end| to force it into the page
 // cache.
 // Heap allocations, syscalls and library functions are not allowed in this
@@ -183,62 +70,107 @@ void Prefetch(size_t start, size_t end) {
   unsigned char* start_ptr = reinterpret_cast<unsigned char*>(start);
   unsigned char* end_ptr = reinterpret_cast<unsigned char*>(end);
   [[maybe_unused]] unsigned char dummy = 0;
-  for (unsigned char* ptr = start_ptr; ptr < end_ptr; ptr += kPageSize) {
+  // It's possible that using kBinaryPageSize instead of page_size (or some
+  // other value) is a bit arbitrary for the read stepping here. In practice,
+  // disk readahead is greater than either, so probably doesn't matter too much.
+  for (unsigned char* ptr = start_ptr; ptr < end_ptr; ptr += kBinaryPageSize) {
     // Volatile is required to prevent the compiler from eliminating this
     // loop.
     dummy ^= *static_cast<volatile unsigned char*>(ptr);
   }
 }
 
+// Call madvise from |start| to |end| in chunks of |target_length| (rounded up
+// to a whole page). |target_length| can be 0 to madvise the entire range in a
+// single call. |start| must already be aligned to a page.
+int MadviseRange(size_t start, size_t end, int advice, size_t target_length) {
+  if (target_length == 0) {
+    target_length = end - start;
+  }
+  target_length = bits::AlignUp(target_length, base::GetPageSize());
+  for (size_t current = start; current < end; current += target_length) {
+    // madvise will round `end - current` up to a page size if required.
+    size_t length = std::min(target_length, end - current);
+    if (madvise(reinterpret_cast<void*>(current), length, advice) != 0) {
+      return errno;
+    }
+  }
+  return 0;
+}
+
+struct Section {
+  static Section CreateAligned(std::string_view name,
+                               size_t start_anchor,
+                               size_t end_anchor) {
+    return Section{
+        .name = name,
+        .start = start_anchor - start_anchor % kBinaryPageSize,
+        .end = bits::AlignUp(end_anchor, kBinaryPageSize),
+    };
+  }
+
+  std::string_view name;
+  size_t start;
+  size_t end;
+};
+
 // These values were used in the past for recording
 // "LibraryLoader.PrefetchDetailedStatus".
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. See PrefetchStatus in enums.xml.
 enum class PrefetchStatus {
   kSuccess = 0,
   kWrongOrdering = 1,
   kForkFailed = 2,
   kChildProcessCrashed = 3,
   kChildProcessKilled = 4,
-  kMaxValue = kChildProcessKilled
+  kMadviseFailed = 5,
+  kMaxValue = kMadviseFailed,
 };
 
-PrefetchStatus ForkAndPrefetch(bool ordered_only) {
-  if (!IsOrderingSane()) {
-    LOG(WARNING) << "Incorrect code ordering";
-    return PrefetchStatus::kWrongOrdering;
+PrefetchStatus PrefetchWithMadvise(base::span<const Section> sections,
+                                   int madvise_advice,
+                                   size_t madvise_length) {
+  TRACE_EVENT("startup", "LibraryPrefetcher::PrefetchWithMadvise");
+  for (const auto& section : sections) {
+    int result = MadviseRange(section.start, section.end, madvise_advice,
+                              madvise_length);
+    if (result != 0) {
+      PLOG(WARNING) << "madvise failed for " << section.name << " section";
+      return PrefetchStatus::kMadviseFailed;
+    }
   }
+  return PrefetchStatus::kSuccess;
+}
 
-  // Looking for ranges is done before the fork, to avoid syscalls and/or memory
-  // allocations in the forked process. The child process inherits the lock
-  // state of its parent thread. It cannot rely on being able to acquire any
-  // lock (unless special care is taken in a pre-fork handler), including being
-  // able to call malloc().
-  //
-  // Always prefetch the ordered section first, as it's reached early during
-  // startup, and not necessarily located at the beginning of .text.
-  std::vector<std::pair<size_t, size_t>> ranges = {GetOrderedTextRange()};
-  if (!ordered_only)
-    ranges.push_back(GetTextRange());
-
+PrefetchStatus PrefetchWithFork(base::span<const Section> sections) {
+  TRACE_EVENT("startup", "LibraryPrefetcher::PrefetchWithFork");
+  base::TimeTicks fork_start_time = base::TimeTicks::Now();
   pid_t pid = fork();
   if (pid == 0) {
     // Android defines the background priority to this value since at least 2009
     // (see Process.java).
     constexpr int kBackgroundPriority = 10;
     setpriority(PRIO_PROCESS, 0, kBackgroundPriority);
-    // _exit() doesn't call the atexit() handlers.
-    for (const auto& range : ranges) {
-      Prefetch(range.first, range.second);
+    for (const auto& section : sections) {
+      Prefetch(section.start, section.end);
     }
+    // _exit() doesn't call the atexit() handlers.
     _exit(EXIT_SUCCESS);
   } else {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Android.LibraryLoader.Prefetch.ForkDuration",
+        base::TimeTicks::Now() - fork_start_time, base::Microseconds(1),
+        base::Seconds(1), 50);
     if (pid < 0) {
       return PrefetchStatus::kForkFailed;
     }
     int status;
     const pid_t result = HANDLE_EINTR(waitpid(pid, &status, 0));
     if (result == pid) {
-      if (WIFEXITED(status))
+      if (WIFEXITED(status)) {
         return PrefetchStatus::kSuccess;
+      }
       if (WIFSIGNALED(status)) {
         int signal = WTERMSIG(status);
         switch (signal) {
@@ -259,90 +191,82 @@ PrefetchStatus ForkAndPrefetch(bool ordered_only) {
     return PrefetchStatus::kChildProcessKilled;
   }
 }
+
+PrefetchStatus PrefetchWithForkOrMadvise() {
+  if (!IsOrderingSane()) {
+    LOG(WARNING) << "Incorrect code ordering";
+    return PrefetchStatus::kWrongOrdering;
+  }
+
+  const std::array<const Section, 2> sections{
+      // Fetch the ordered section first.
+      Section::CreateAligned("ordered", kStartOfOrderedText, kEndOfOrderedText),
+      Section::CreateAligned("text", kStartOfText, kEndOfText),
+  };
+
+  if (base::FeatureList::IsEnabled(features::kLibraryPrefetcherMadvise)) {
+    // MADV_POPULATE_READ was an alternative considered. The differences being:
+    // - It can be used reliably on the entire range at once.
+    // - It takes longer than multiple WILLNEEDs of moderate (~64K) length.
+    // - It grows attributed RSS aggressively. (WILLNEED doesn't.)
+    // - It is not as widely supported as WILLNEED.
+    // - (At time of writing) it is not already allowlisted in our seccomp BPF.
+    constexpr int madvise_advice = MADV_WILLNEED;
+
+    // The man page for madvise(2) expressly supports using madvise(0, 0, ...)
+    // as a way to probe support, but it still trips -Wnonnull.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+    bool supported = madvise(nullptr, 0, madvise_advice) == 0;
+#pragma clang diagnostic pop
+    if (!supported) {
+      // PLOG immediately after check so that nothing overwrites errno.
+      PLOG(WARNING) << "madvise not supported for library prefetch";
+    }
+    base::UmaHistogramBoolean("Android.LibraryLoader.Prefetch.Madvise",
+                              supported);
+
+    if (supported) {
+      base::ThreadType old_thread_type =
+          base::PlatformThread::GetCurrentThreadType();
+      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kBackground);
+      PrefetchStatus status =
+          PrefetchWithMadvise(sections, madvise_advice,
+                              features::kLibraryPrefetcherMadviseLength.Get());
+      base::PlatformThread::SetCurrentThreadType(old_thread_type);
+      return status;
+    }
+
+    if (!features::kLibraryPrefetcherMadviseFallback.Get()) {
+      return PrefetchStatus::kMadviseFailed;
+    }
+    LOG(WARNING) << "falling back to fork-based library prefetch";
+  }
+
+  return PrefetchWithFork(sections);
+}
 #endif  // !BUILDFLAG(ORDERFILE_INSTRUMENTATION)
 
 }  // namespace
 
 // static
-void NativeLibraryPrefetcher::ForkAndPrefetchNativeLibrary(bool ordered_only) {
+void NativeLibraryPrefetcher::PrefetchNativeLibrary() {
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
   // Avoid forking with orderfile instrumentation because the child process
   // would create a dump as well.
   return;
 #else
-  PrefetchStatus status = ForkAndPrefetch(ordered_only);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  PrefetchStatus status = PrefetchWithForkOrMadvise();
+  base::UmaHistogramMediumTimes("Android.LibraryLoader.Prefetch.Duration",
+                                base::TimeTicks::Now() - start_time);
+  base::UmaHistogramEnumeration("Android.LibraryLoader.Prefetch.Status",
+                                status);
   if (status != PrefetchStatus::kSuccess) {
     LOG(WARNING) << "Cannot prefetch the library. status = "
                  << static_cast<int>(status);
   }
 #endif  // BUILDFLAG(ORDERFILE_INSTRUMENTATION)
-}
-
-// static
-int NativeLibraryPrefetcher::PercentageOfResidentCode(size_t start,
-                                                      size_t end) {
-  size_t total_pages = 0;
-  size_t resident_pages = 0;
-
-  std::vector<unsigned char> residency;
-  bool ok = Mincore(start, end, &residency);
-  if (!ok)
-    return -1;
-  total_pages += residency.size();
-  resident_pages += static_cast<size_t>(
-      ranges::count_if(residency, [](unsigned char x) { return x & 1; }));
-  if (total_pages == 0)
-    return -1;
-  return static_cast<int>((100 * resident_pages) / total_pages);
-}
-
-// static
-int NativeLibraryPrefetcher::PercentageOfResidentNativeLibraryCode() {
-  if (!AreAnchorsSane()) {
-    LOG(WARNING) << "Incorrect code ordering";
-    return -1;
-  }
-  const auto& range = GetTextRange();
-  return PercentageOfResidentCode(range.first, range.second);
-}
-
-// static
-void NativeLibraryPrefetcher::PeriodicallyCollectResidency() {
-  CHECK_EQ(static_cast<long>(kPageSize), sysconf(_SC_PAGESIZE));
-
-  LOG(WARNING) << "Spawning thread to periodically collect residency";
-  const auto& range = GetTextRange();
-  auto data = std::make_unique<std::vector<TimestampAndResidency>>();
-  // Collect residency for about minute (the actual time spent collecting
-  // residency can vary, so this is only approximate).
-  for (int i = 0; i < 120; ++i) {
-    if (!CollectResidency(range.first, range.second, data.get()))
-      return;
-    usleep(5e5);
-  }
-  DumpResidency(range.first, range.second, std::move(data));
-}
-
-// static
-void NativeLibraryPrefetcher::MadviseForOrderfile() {
-  if (!IsOrderingSane()) {
-    LOG(WARNING) << "Code not ordered, madvise optimization skipped";
-    return;
-  }
-  // First MADV_RANDOM on all of text, then turn the ordered text range back to
-  // normal. The ordered range may be placed anywhere within .text.
-  MadviseOnRange(GetTextRange(), MADV_RANDOM);
-  MadviseOnRange(GetOrderedTextRange(), MADV_NORMAL);
-}
-
-// static
-void NativeLibraryPrefetcher::MadviseForResidencyCollection() {
-  if (!AreAnchorsSane()) {
-    LOG(WARNING) << "Code not ordered, cannot madvise";
-    return;
-  }
-  LOG(WARNING) << "Performing madvise for residency collection";
-  MadviseOnRange(GetTextRange(), MADV_RANDOM);
 }
 
 }  // namespace android

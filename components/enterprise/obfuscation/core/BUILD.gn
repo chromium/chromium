@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("enterprise_obfuscation") {
+  defines = [ "IS_ENTERPRISE_OBFUSCATION_IMPL" ]
+
+  sources = [
+    "download_obfuscator.cc",
+    "download_obfuscator.h",
+    "utils.cc",
+    "utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "obfuscated_file_reader.cc",
+      "obfuscated_file_reader.h",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "download_obfuscator_unittest.cc",
+    "utils_unittest.cc",
+  ]
+
+  if (!is_android) {
+    sources += [ "obfuscated_file_reader_unittest.cc" ]
+  }
+
+  deps = [
+    ":enterprise_obfuscation",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -4,27 +4,30 @@
 
 package org.chromium.chrome.test.transit.settings;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
-import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
 /**
- * The initial and main Settings screen.
+ * A Settings screen.
  *
- * <p>TODO(crbug.com/328277614): This is a stub; add more elements and methods.
+ * @param <FragmentT> type of ChromeBaseSettingsFragment shown in this screen
  */
-public class SettingsStation extends Station {
+public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
+        extends Station<SettingsActivity> {
+    public final FragmentElement<FragmentT, SettingsActivity> fragmentElement;
 
-    public static final ViewSpec SEARCH_ENGINE = viewSpec(withText("Search engine"));
+    public SettingsStation(Class<FragmentT> fragmentClass) {
+        super(SettingsActivity.class);
+        fragmentElement = declareElement(new FragmentElement<>(fragmentClass, mActivityElement));
+    }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        elements.declareActivity(SettingsActivity.class);
-        elements.declareView(SEARCH_ENGINE);
+    public PreferenceFacility scrollToPref(String prefKey) {
+        assertInPhase(Phase.ACTIVE);
+        String title = fragmentElement.value().findPreference(prefKey).getTitle().toString();
+        return runOnUiThreadTo(() -> fragmentElement.value().scrollToPreference(prefKey))
+                .withPossiblyAlreadyFulfilled()
+                .enterFacility(new PreferenceFacility(title));
     }
 }

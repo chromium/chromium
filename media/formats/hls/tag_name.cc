@@ -111,7 +111,7 @@ TagKind GetTagKind(TagName name) {
     return TagKind::kMediaPlaylistTag;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<TagName> ParseTagName(std::string_view name) {
@@ -125,13 +125,13 @@ std::optional<TagName> ParseTagName(std::string_view name) {
 }
 
 std::string_view TagNameToString(TagName name) {
-  for (auto entry : kTagNames) {
+  for (const auto& entry : kTagNames) {
     if (name == entry.second) {
       return entry.first;
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace media::hls

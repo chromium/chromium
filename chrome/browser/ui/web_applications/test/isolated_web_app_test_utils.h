@@ -15,11 +15,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/version_info/channel.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -54,12 +57,18 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   ~IsolatedWebAppBrowserTestHarness() override;
 
  protected:
+  void PreRunTestOnMainThread() override;
+
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
-      const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+      base::FilePath::StringViewType chrome_test_data_relative_root);
+
+  virtual ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider();
+
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
-  content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
-                                    std::string_view path = "");
+  content::RenderFrameHost* OpenApp(
+      const webapps::AppId& app_id,
+      std::optional<std::string_view> path = std::nullopt);
   content::RenderFrameHost* NavigateToURLInNewTab(
       Browser* window,
       const GURL& url,
@@ -73,35 +82,78 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   // stable channel doesn't enable a required feature.
   // TODO(b/309153867): Remove this when underlying issue is figured out.
   extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
+
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
+};
+
+class UpdateDiscoveryTaskResultWaiter
+    : public IsolatedWebAppUpdateManager::Observer {
+  using TaskResultCallback = base::OnceCallback<void(
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status)>;
+
+ public:
+  UpdateDiscoveryTaskResultWaiter(WebAppProvider& provider,
+                                  const webapps::AppId expected_app_id,
+                                  TaskResultCallback callback);
+  ~UpdateDiscoveryTaskResultWaiter() override;
+
+  // IsolatedWebAppUpdateManager::Observer:
+  void OnUpdateDiscoveryTaskCompleted(
+      const webapps::AppId& app_id,
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) override;
+
+ private:
+  const webapps::AppId expected_app_id_;
+  TaskResultCallback callback_;
+  const raw_ref<WebAppProvider> provider_;
+
+  base::ScopedObservation<IsolatedWebAppUpdateManager,
+                          IsolatedWebAppUpdateManager::Observer>
+      observation_{this};
+};
+
+class UpdateApplyTaskResultWaiter
+    : public IsolatedWebAppUpdateManager::Observer {
+  using TaskResultCallback =
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult status)>;
+
+ public:
+  UpdateApplyTaskResultWaiter(WebAppProvider& provider,
+                              const webapps::AppId expected_app_id,
+                              TaskResultCallback callback);
+  ~UpdateApplyTaskResultWaiter() override;
+
+  // IsolatedWebAppUpdateManager::Observer:
+  void OnUpdateApplyTaskCompleted(
+      const webapps::AppId& app_id,
+      IsolatedWebAppApplyUpdateCommandResult status) override;
+
+ private:
+  const webapps::AppId expected_app_id_;
+  TaskResultCallback callback_;
+  const raw_ref<WebAppProvider> provider_;
+
+  base::ScopedObservation<IsolatedWebAppUpdateManager,
+                          IsolatedWebAppUpdateManager::Observer>
+      observation_{this};
 };
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+    base::FilePath::StringViewType chrome_test_data_relative_root);
 
 IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
     Profile* profile,
     const url::Origin& proxy_origin);
 
-content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const webapps::AppId& app_id,
-                                             std::string_view path = "");
+content::RenderFrameHost* OpenIsolatedWebApp(
+    Profile* profile,
+    const webapps::AppId& app_id,
+    std::optional<std::string_view> path = std::nullopt);
 
 void CreateIframe(content::RenderFrameHost* parent_frame,
                   const std::string& iframe_id,
                   const GURL& url,
                   const std::string& permissions_policy);
-
-// Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
-// filepath for |IsolatedWebAppLocation|.
-webapps::AppId AddDummyIsolatedAppToRegistry(
-    Profile* profile,
-    const GURL& start_url,
-    const std::string& name,
-    const WebApp::IsolationData& isolation_data = WebApp::IsolationData(
-        IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-        base::Version("1.0.0")),
-    webapps::WebappInstallSource install_source =
-        webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 
 // Simulates navigating `web_contents` main frame to the provided isolated-app:
 // URL for unit tests. `TestWebContents::NavigateAndCommit` won't work for IWAs
@@ -162,30 +214,27 @@ MATCHER_P5(IsolationDataIs,
            integrity_block_data,
            "") {
   return ExplainMatchResult(
-      Optional(
-          AllOf(Field("location", &WebApp::IsolationData::location, location),
-                Field("version", &WebApp::IsolationData::version, version),
-                Field("controlled_frame_partitions",
-                      &WebApp::IsolationData::controlled_frame_partitions,
-                      controlled_frame_partitions),
-                Property("pending_update_info",
-                         &WebApp::IsolationData::pending_update_info,
-                         pending_update_info),
-                Field("integrity_block_data",
-                      &WebApp::IsolationData::integrity_block_data,
-                      integrity_block_data))),
+      Optional(AllOf(
+          Property("location", &IsolationData::location, location),
+          Property("version", &IsolationData::version, version),
+          Property("controlled_frame_partitions",
+                   &IsolationData::controlled_frame_partitions,
+                   controlled_frame_partitions),
+          Property("pending_update_info", &IsolationData::pending_update_info,
+                   pending_update_info),
+          Property("integrity_block_data", &IsolationData::integrity_block_data,
+                   integrity_block_data))),
       arg, result_listener);
 }
 
 MATCHER_P3(PendingUpdateInfoIs, location, version, integrity_block_data, "") {
   return ExplainMatchResult(
       Optional(AllOf(
-          Field("location", &WebApp::IsolationData::PendingUpdateInfo::location,
+          Field("location", &IsolationData::PendingUpdateInfo::location,
                 location),
-          Field("version", &WebApp::IsolationData::PendingUpdateInfo::version,
-                version),
+          Field("version", &IsolationData::PendingUpdateInfo::version, version),
           Field("integrity_block_data",
-                &WebApp::IsolationData::PendingUpdateInfo::integrity_block_data,
+                &IsolationData::PendingUpdateInfo::integrity_block_data,
                 integrity_block_data))),
       arg, result_listener);
 }

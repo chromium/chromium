@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -14,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -29,19 +31,19 @@
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "content/public/test/browser_test.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
@@ -126,7 +128,9 @@ class FakeIconLoader : public apps::IconLoader {
 
 class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  AppListSortBrowserTest() = default;
+  AppListSortBrowserTest() {
+    ash::AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
+  }
   AppListSortBrowserTest(const AppListSortBrowserTest&) = delete;
   AppListSortBrowserTest& operator=(const AppListSortBrowserTest&) = delete;
   ~AppListSortBrowserTest() override = default;
@@ -1458,8 +1462,9 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
         icon_size / 2, icon_color, icon);
     const sk_sp<SkImage> image = SkImages::RasterFromBitmap(*icon.bitmap());
     const sk_sp<SkData> png_data =
-        SkPngEncoder::Encode(nullptr, image.get(), {});
-    icon_file.Write(0, (const char*)png_data->data(), png_data->size());
+        skia::EncodePngAsSkData(nullptr, image.get());
+    UNSAFE_TODO(
+        icon_file.Write(0, (const char*)png_data->data(), png_data->size()));
     icon_file.Close();
 
     // Prepare the app manifest file.
@@ -1476,7 +1481,8 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     char manifest_buffer[300];
     int count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
                                            app_name.c_str(), json_buffer);
-    EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count));
+    UNSAFE_TODO(
+        EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count)));
     manifest_file.Close();
 
     return extension_path;

@@ -10,12 +10,12 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
               "builder_group": "chromium.chromiumos",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb"
+                  "mb",
+                  "shared_build_dir"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -32,8 +32,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "chromeos",
-                  "chromium_with_telemetry_dependencies",
-                  "checkout_lacros_sdk"
+                  "chromium_with_telemetry_dependencies"
                 ],
                 "config": "chromium"
               }
@@ -46,7 +45,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
               "builder_group": "chromium.chromiumos",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -67,8 +65,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "checkout_lacros_sdk"
+                  "chromeos"
                 ],
                 "config": "chromium"
               },
@@ -94,7 +91,9 @@
           "group": "tryserver.chromium.chromiumos"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/chromeos-amd64-generic-rel-tast/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -24,7 +24,7 @@
 //! degenerate inputs from consuming too much stack. Thus structures that are
 //! deeper than this will serialise but that result cannot be parsed back to
 //! the same value. Aside from this exception, all values should round-trip
-//! correctly. This is checked with `proptest`.
+//! correctly.
 //!
 //! ```
 //! let value = cbor::Value::String("hello".to_string());
@@ -52,8 +52,10 @@ use core::ops::Deref;
 
 // This code assumes that `usize` fits in a `u64` because it uses `as u64` in a
 // couple of places.
-const _: () =
-    assert!(core::mem::size_of::<usize>() <= core::mem::size_of::<u64>(), "usize too large");
+const _: () = assert!(
+    core::mem::size_of::<usize>() <= core::mem::size_of::<u64>(),
+    "usize too large"
+);
 
 /// MAX_DEPTH is the maximum "depth" of a structure that will be parsed.
 /// Each array or map increases the depth by one.
@@ -117,8 +119,9 @@ mod debug {
     use alloc::string::String;
     use core::fmt;
 
-    const HEX_CHARS: [char; 16] =
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+    const HEX_CHARS: [char; 16] = [
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+    ];
 
     fn hex_encode(bytes: &[u8]) -> String {
         let mut ret = String::with_capacity(bytes.len() * 2);
@@ -348,7 +351,7 @@ pub enum MapKey {
 }
 
 impl MapKey {
-    fn as_ref(&self) -> MapKeyRef {
+    fn as_ref(&self) -> MapKeyRef<'_> {
         match self {
             MapKey::Int(v) => MapKeyRef::Int(*v),
             MapKey::Bytestring(b) => MapKeyRef::Slice(b),
@@ -459,13 +462,14 @@ impl PartialOrd for MapKeyRef<'_> {
 
 impl Ord for MapKeyRef<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.type_arg_and_payload().cmp(&other.type_arg_and_payload())
+        self.type_arg_and_payload()
+            .cmp(&other.type_arg_and_payload())
     }
 }
 
 /// To be used with [`MapKeyRef`]. See the documentation for that type.
 pub trait MapLookupKey {
-    fn to_key(&self) -> MapKeyRef;
+    fn to_key(&self) -> MapKeyRef<'_>;
 }
 
 impl PartialEq for dyn MapLookupKey + '_ {
@@ -489,13 +493,13 @@ impl Ord for dyn MapLookupKey + '_ {
 }
 
 impl MapLookupKey for MapKey {
-    fn to_key(&self) -> MapKeyRef {
+    fn to_key(&self) -> MapKeyRef<'_> {
         self.as_ref()
     }
 }
 
 impl<'a> MapLookupKey for MapKeyRef<'a> {
-    fn to_key(&self) -> MapKeyRef {
+    fn to_key(&self) -> MapKeyRef<'_> {
         self.clone()
     }
 }
@@ -521,7 +525,11 @@ pub fn parse(input_vec: Vec<u8>) -> Result<Value, Error> {
 /// having to make a copy of the intermediate byte string.
 pub fn parse_bytes(mut input: Bytes) -> Result<Value, Error> {
     let ret = parse_value(&mut input, 0)?;
-    if !input.is_empty() { Err(Error::TrailingData(input.len())) } else { Ok(ret) }
+    if !input.is_empty() {
+        Err(Error::TrailingData(input.len()))
+    } else {
+        Ok(ret)
+    }
 }
 
 fn parse_value(input: &mut Bytes, depth: usize) -> Result<Value, Error> {
@@ -656,7 +664,6 @@ mod tests {
     extern crate hex;
     use super::*;
     use alloc::{format, vec};
-    use proptest::prelude::*;
 
     #[test]
     fn test_inputs() {
@@ -777,8 +784,14 @@ mod tests {
     fn test_macro() {
         assert_eq!(cbor!(1), Value::Int(1));
         assert_eq!(cbor!("test"), Value::String(String::from("test")));
-        assert_eq!(cbor!(b"123"), Value::Bytestring(Bytes::from(b"\x31\x32\x33".as_slice())));
-        assert_eq!(cbor!([1, 2]), Value::Array(vec![Value::Int(1), Value::Int(2)]));
+        assert_eq!(
+            cbor!(b"123"),
+            Value::Bytestring(Bytes::from(b"\x31\x32\x33".as_slice()))
+        );
+        assert_eq!(
+            cbor!([1, 2]),
+            Value::Array(vec![Value::Int(1), Value::Int(2)])
+        );
         assert_eq!(
             cbor!([1, true, "str"]),
             Value::Array(vec![
@@ -816,7 +829,10 @@ mod tests {
         );
         assert_eq!(
             cbor!({b"0": 1}),
-            Value::Map(BTreeMap::from([(MapKey::Bytestring(vec![0x30u8]), Value::Int(1)),]))
+            Value::Map(BTreeMap::from([(
+                MapKey::Bytestring(vec![0x30u8]),
+                Value::Int(1)
+            ),]))
         );
     }
 
@@ -838,57 +854,5 @@ mod tests {
             debug,
             "{1: 2, \"five\": [6, 7, \"eight\"], \"nine\": {\"ten\": [11], \"twelve\": {h\"3133\": 14}}, \"three\": \"four\"}"
         );
-    }
-
-    fn arb_map_key() -> impl Strategy<Value = MapKey> {
-        prop_oneof![
-            any::<i64>().prop_map(MapKey::Int),
-            ".*".prop_map(MapKey::String),
-            prop::collection::vec(0..255u8, 0..32).prop_map(MapKey::Bytestring),
-        ]
-    }
-
-    fn arb_value() -> impl Strategy<Value = Value> {
-        let leaf = prop_oneof![
-            any::<i64>().prop_map(Value::Int),
-            prop::collection::vec(0..255u8, 0..512)
-                .prop_map(Bytes::from)
-                .prop_map(Value::Bytestring),
-            ".*".prop_map(Value::String),
-            any::<bool>().prop_map(Value::Boolean),
-        ];
-        leaf.prop_recursive(
-            8,   // 8 levels deep
-            256, // maximum size of 256 nodes
-            10,  // up to 10 items per collection
-            |inner| {
-                prop_oneof![
-                    prop::collection::vec(inner.clone(), 0..10).prop_map(Value::Array),
-                    prop::collection::btree_map(arb_map_key(), inner, 0..10).prop_map(Value::Map),
-                ]
-            },
-        )
-    }
-
-    proptest! {
-        #![proptest_config(ProptestConfig::with_cases(500))]
-        #[test]
-        fn test_serialize(a in arb_value()) {
-            assert_eq!(parse(a.to_bytes()).unwrap(), a);
-        }
-    }
-
-    proptest! {
-        #![proptest_config(ProptestConfig::with_cases(100))]
-        #[test]
-        fn test_map_key_ordering(a in arb_map_key(), b in arb_map_key()) {
-            // Ordering of MapKeys should match the ordering of their
-            // serialisations.
-            let mut a_bytes = Vec::new();
-            a.append_bytes(&mut a_bytes);
-            let mut b_bytes = Vec::new();
-            b.append_bytes(&mut b_bytes);
-            assert_eq!(a_bytes.cmp(&b_bytes), a.cmp(&b));
-        }
     }
 }

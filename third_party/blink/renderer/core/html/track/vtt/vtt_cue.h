@@ -32,7 +32,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -43,10 +42,12 @@ namespace blink {
 
 class Document;
 class ExecutionContext;
+class HTMLMediaElement;
 class V8UnionAutoKeywordOrDouble;
 class VTTCueBox;
 class VTTRegion;
 class VTTScanner;
+class V8DirectionSetting;
 
 using AlignSetting = V8AlignSetting::Enum;
 using VTTRegionMap = HeapHashMap<String, Member<VTTRegion>>;
@@ -107,8 +108,8 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   VTTRegion* region() const { return region_.Get(); }
   void setRegion(VTTRegion*);
 
-  const String& vertical() const;
-  void setVertical(const String&);
+  V8DirectionSetting vertical() const;
+  void setVertical(const V8DirectionSetting&);
 
   bool snapToLines() const { return snap_to_lines_; }
   void setSnapToLines(bool);

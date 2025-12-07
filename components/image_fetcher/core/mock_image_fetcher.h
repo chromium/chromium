@@ -15,16 +15,18 @@ class MockImageFetcher : public ImageFetcher {
   MockImageFetcher();
   ~MockImageFetcher() override;
 
-  MOCK_METHOD4(FetchImageAndData_,
-               void(const GURL&,
-                    ImageDataFetcherCallback*,
-                    ImageFetcherCallback*,
-                    ImageFetcherParams));
+  MOCK_METHOD(void,
+              FetchImageAndData_,
+              (const GURL&,
+               ImageDataFetcherCallback*,
+               ImageFetcherCallback*,
+               ImageFetcherParams),
+              ());
   void FetchImageAndData(const GURL& image_url,
                          ImageDataFetcherCallback image_data_callback,
                          ImageFetcherCallback image_callback,
                          ImageFetcherParams params) override;
-  MOCK_METHOD0(GetImageDecoder, image_fetcher::ImageDecoder*());
+  MOCK_METHOD(image_fetcher::ImageDecoder*, GetImageDecoder, (), (override));
 };
 
 }  // namespace image_fetcher

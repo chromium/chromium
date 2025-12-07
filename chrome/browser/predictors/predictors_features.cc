@@ -19,41 +19,30 @@ constexpr base::FeatureState kFeatureEnabledOnlyOnAndroid =
 
 // Whether local predictions should be used to make preconnect predictions.
 BASE_FEATURE(kLoadingPredictorUseLocalPredictions,
-             "LoadingPredictorUseLocalPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Modifies loading predictor so that it only learns about subresources and
 // origins that are high priority.
 BASE_FEATURE(kLoadingOnlyLearnHighPriorityResources,
-             "LoadingOnlyLearnHighPriorityResources",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Configures the loading predictor table size and other base parameters.
-BASE_FEATURE(kLoadingPredictorTableConfig,
-             "LoadingPredictorTableConfig",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLoadingPredictorTableConfig, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Modifies loading predictor so that the predictions also contain origins of
 // the redirect target of the navigation.
 BASE_FEATURE(kLoadingPreconnectToRedirectTarget,
-             "LoadingPreconnectToRedirectTarget",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Modifies loading predictor so that the value of the |always_access_network|
 // attribute is not used when computing the predicting score for an origin.
 BASE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork,
-             "LoadingPredictorDisregardAlwaysAccessesNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureState
-    kLoadingPredictorUseOptimizationGuideDefaultFeatureState =
-        kFeatureEnabledOnlyOnAndroid;
 
 // Modifies loading predictor so that it can also use predictions coming from
 // the optimization guide.
 BASE_FEATURE(kLoadingPredictorUseOptimizationGuide,
-             "LoadingPredictorUseOptimizationGuide",
-             kLoadingPredictorUseOptimizationGuideDefaultFeatureState);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
     kFeatureEnabledOnlyOnAndroid;
@@ -61,13 +50,11 @@ constexpr base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
 // Modifies loading predictor so that it does prefetches of subresources instead
 // of preconnects.
 BASE_FEATURE(kLoadingPredictorPrefetch,
-             "LoadingPredictorPrefetch",
              kLoadingPredictorPrefetchDefaultFeatureState);
 
 // Use the kURLLoadOptionReadAndDiscardBody option to URLLoader to avoid
 // unnecessarily copying response body data.
 BASE_FEATURE(kLoadingPredictorPrefetchUseReadAndDiscardBody,
-             "LoadingPredictorPrefetchUseReadAndDiscardBody",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<PrefetchSubresourceType>::Option
@@ -80,10 +67,6 @@ const base::FeatureParam<PrefetchSubresourceType>
     kLoadingPredictorPrefetchSubresourceType{
         &kLoadingPredictorPrefetch, "subresource_type",
         PrefetchSubresourceType::kAll, &kPrefetchSubresourceTypeParamOptions};
-
-BASE_FEATURE(kLoadingPredictorInflightPredictiveActions,
-             "kLoadingPredictorInflightPredictiveActions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ShouldUseLocalPredictions() {
   return base::FeatureList::IsEnabled(kLoadingPredictorUseLocalPredictions);
@@ -103,22 +86,7 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
       false);
 }
 
-size_t GetMaxInflightPrefetches() {
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-      kLoadingPredictorInflightPredictiveActions, "max_inflight_prefetches",
-      3));
-}
-
-// If this is enabled, LoadingPredictor avoids prefetching during
-// browser startup.
-BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
-             "AvoidLoadingPredictorPrefetchDuringBrowserStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If this is enabled, LoadingPredictor restricts the number of preconnects for
-// the same destination to one.
-BASE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount,
-             "LoadingPredictorLimitPreconnectSocketCount",
+BASE_FEATURE(kPrefetchManagerUseNetworkContextPrefetch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

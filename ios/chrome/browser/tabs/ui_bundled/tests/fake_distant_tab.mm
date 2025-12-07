@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tabs/ui_bundled/tests/fake_distant_tab.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "url/gurl.h"
 

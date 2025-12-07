@@ -8,20 +8,30 @@
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class WebDatabaseService;
 class KeywordWebDataService;
-
-namespace search_engines {
-class SearchEngineChoiceService;
-}
+class WebDatabaseService;
 
 namespace base {
 class RunLoop;
+}
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+namespace policy {
+class ManagementService;
+}
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
+namespace search_engines {
+class SearchEngineChoiceService;
 }
 
 void RegisterPrefsForTemplateURLService(
@@ -57,6 +67,15 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
 
   PrefService& pref_service() { return pref_service_; }
 
+  regional_capabilities::RegionalCapabilitiesService&
+  regional_capabilities_service() {
+    return *regional_capabilities_service_.get();
+  }
+
+  TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver() {
+    return *prepopulate_data_resolver_.get();
+  }
+
   search_engines::SearchEngineChoiceService& search_engine_choice_service() {
     return *search_engine_choice_service_.get();
   }
@@ -68,9 +87,18 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
  protected:
   virtual std::unique_ptr<TemplateURLService> CreateService();
 
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
+
  private:
+  signin::IdentityTestEnvironment identity_test_env_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
+  std::unique_ptr<TemplateURLPrepopulateData::Resolver>
+      prepopulate_data_resolver_;
+  std::unique_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
@@ -99,9 +127,8 @@ class LoadedTemplateURLServiceUnitTestBase
       std::u16string keyword);
 
  private:
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::MainThreadType::UI};
   scoped_refptr<WebDatabaseService> database_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<KeywordWebDataService> keyword_data_service_;
   TemplateURLServiceLoadWaiter template_url_service_load_waiter_;
 };

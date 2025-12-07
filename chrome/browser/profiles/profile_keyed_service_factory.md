@@ -63,7 +63,7 @@ needed)
 (e.g. signin profile, lock screen profile).
 - Android and Ash don't have system profiles.
 - Android and Ash don't support multiple regular user profiles.
-- Lacros and Ash have a "device-level" guest mode where all the profiles are
+- Ash has a "device-level" guest mode where all the profiles are
 guest. `IsGuestSession()` returns true for all profiles, and is no longer
 exclusive with other profile type getter functions.
 - iOS does not use profiles at all. It has another subclass of BrowserContext

@@ -18,7 +18,7 @@ class PaymentRequestUpdateEventListener
     : public payments::PaymentHandlerHost::Delegate {
  public:
   explicit PaymentRequestUpdateEventListener(
-      const base::android::JavaParamRef<jobject>& listener);
+      const base::android::JavaRef<jobject>& listener);
   ~PaymentRequestUpdateEventListener() override;
 
   // PaymentHandlerHost::Delegate implementation:

@@ -11,9 +11,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size_f.h"
 #include "ui/native_theme/scrollbar_animator_mac.h"
 
 namespace blink {
@@ -34,7 +31,7 @@ class CORE_EXPORT MacScrollbarImplV2
   // Function to call upon interaction with this scrollbar.
   void MouseDidEnter();
   void MouseDidExit();
-  void DidScroll();
+  bool DidScroll();
 
   // MacScrollbar:
   void SetEnabled(bool) final {}
@@ -63,27 +60,15 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void Trace(Visitor* visitor) const final {
     MacScrollbarAnimator::Trace(visitor);
   }
-  void ContentAreaWillPaint() const final {}
-  void MouseEnteredContentArea() const final {}
-  void MouseExitedContentArea() const final {}
-  void MouseMovedInContentArea() const final {}
   void MouseEnteredScrollbar(Scrollbar&) const final;
   void MouseExitedScrollbar(Scrollbar&) const final;
-  void ContentsResized() const final {}
   void DidAddVerticalScrollbar(Scrollbar&) final;
   void WillRemoveVerticalScrollbar(Scrollbar&) final;
   void DidAddHorizontalScrollbar(Scrollbar&) final;
   void WillRemoveHorizontalScrollbar(Scrollbar&) final;
-  bool SetScrollbarsVisibleForTesting(bool) final { return true; }
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
-  void UpdateScrollerStyle() final { NOTREACHED_IN_MIGRATION(); }
-  bool ScrollbarPaintTimerIsActive() const final {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
-  void StartScrollbarPaintTimer() final { NOTREACHED_IN_MIGRATION(); }
-  void StopScrollbarPaintTimer() final { NOTREACHED_IN_MIGRATION(); }
   void Dispose() final;
+  bool FadeInScrollbarIfExists(bool horizontal, bool vertical) final;
 
  private:
   std::unique_ptr<MacScrollbarImplV2> horizontal_scrollbar_;

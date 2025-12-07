@@ -6,11 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/functional/bind.h"
-#include "base/no_destructor.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "base/values.h"
+#import "base/functional/bind.h"
+#import "base/no_destructor.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/values.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 
@@ -30,7 +30,7 @@ void ProcessPreviousAndNextElementsPresenceResult(
   // 1) When there is an exception running the JS
   // 2) There is a race when the page is changing due to which
   // SuggestionControllerJavaScriptFeature has not yet injected the
-  // __gCrWeb.suggestion object.
+  // gCrWeb suggestion API.
   // Handle this case gracefully.
   if (!res || !res->is_dict() || res->GetDict().size() != 2) {
     std::move(completion_handler).Run(false, false);

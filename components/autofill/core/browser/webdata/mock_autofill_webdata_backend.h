@@ -35,6 +35,14 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               RemoveObserver,
               (AutofillWebDataServiceObserverOnDBSequence * observer),
               (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (AutofillWebDataServiceObserverOnUISequence * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (AutofillWebDataServiceObserverOnUISequence * observer),
+              (override));
   MOCK_METHOD(void, CommitChanges, (), (override));
   MOCK_METHOD(void,
               NotifyOfAutofillProfileChanged,
@@ -55,6 +63,14 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
   MOCK_METHOD(void,
               NotifyOnServerCvcChanged,
               (const ServerCvcChange& change),
+              (override));
+  MOCK_METHOD(void,
+              NotifyOnEntityInstanceChanged,
+              (const EntityInstanceChange& change),
+              (override));
+  MOCK_METHOD(void,
+              NotifyOnServerEntityMetadataChanged,
+              (const EntityInstanceMetadataChange& change),
               (override));
 };
 

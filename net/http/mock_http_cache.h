@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -19,12 +20,14 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/request_priority.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction_test_util.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 
 namespace net {
 
@@ -59,15 +62,14 @@ class MockDiskEntry : public disk_cache::Entry,
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
-  int32_t GetDataSize(int index) const override;
+  int64_t GetDataSize(int index) const override;
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override;
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,
@@ -86,10 +88,10 @@ class MockDiskEntry : public disk_cache::Entry,
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   Error ReadyForSparseIO(CompletionOnceCallback completion_callback) override;
+  void SetEntryInMemoryData(uint8_t data) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
   uint8_t in_memory_data() const { return in_memory_data_; }
-  void set_in_memory_data(uint8_t val) { in_memory_data_ = val; }
 
   // Fail subsequent requests, specified via FailOp bits.
   void set_fail_requests(int mask) { fail_requests_ = mask; }
@@ -135,7 +137,7 @@ class MockDiskEntry : public disk_cache::Entry,
   static const int kNumCacheEntryDataIndices = 3;
 
   std::string key_;
-  std::vector<char> data_[kNumCacheEntryDataIndices];
+  std::array<std::vector<uint8_t>, kNumCacheEntryDataIndices> data_;
   uint8_t in_memory_data_ = 0;
   int test_mode_;
   int max_file_size_;
@@ -160,7 +162,8 @@ class MockDiskCache : public disk_cache::Backend {
   MockDiskCache();
   ~MockDiskCache() override;
 
-  int32_t GetEntryCount() const override;
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 RequestPriority request_priority,
                                 EntryResultCallback callback) override;
@@ -185,7 +188,6 @@ class MockDiskCache : public disk_cache::Backend {
   void GetStats(base::StringPairs* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
   uint8_t GetEntryInMemoryData(const std::string& key) override;
-  void SetEntryInMemoryData(const std::string& key, uint8_t data) override;
   int64_t MaxFileSize() const override;
 
   // Returns number of times a cache entry was successfully opened.
@@ -253,7 +255,8 @@ class MockDiskCache : public disk_cache::Backend {
   const std::vector<std::string>& GetExternalCacheHits() const;
 
  private:
-  using EntryMap = std::map<std::string, MockDiskEntry*>;
+  using EntryMap =
+      std::map<std::string, raw_ptr<MockDiskEntry, CtnExperimental>>;
   class NotImplementedIterator;
 
   void CallbackLater(base::OnceClosure callback);
@@ -288,7 +291,9 @@ class MockHttpCache {
  public:
   MockHttpCache();
   explicit MockHttpCache(
-      std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory);
+      std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
+      std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations =
+          nullptr);
 
   HttpCache* http_cache() { return &http_cache_; }
 
@@ -298,8 +303,8 @@ class MockHttpCache {
   disk_cache::Backend* backend();
   MockDiskCache* disk_cache();
 
-  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY...)
-  int CreateTransaction(std::unique_ptr<HttpTransaction>* trans);
+  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY)
+  std::unique_ptr<HttpTransaction> CreateTransaction();
 
   // Wrapper to simulate cache lock timeout for new transactions.
   void SimulateCacheLockTimeout();

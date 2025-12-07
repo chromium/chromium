@@ -107,7 +107,7 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
   // asynchronous logic to complete, revealing whether a DBus call was correctly
   // or incorrectly made.
   void SimulateLogin() {
-    SimulateUserLogin("testuser@gmail.com");
+    SimulateUserLogin({"testuser@gmail.com"});
     task_environment()->FastForwardBy(kShortTime);
   }
 
@@ -169,9 +169,7 @@ TEST_F(SnoopingProtectionControllerTestAbsent, PresenceChange) {
 
 // Test that daemon signals are only enabled when session and pref state means
 // they will be used.
-//
-// TODO(crbug.com/40254348): Flaky test.
-TEST_F(SnoopingProtectionControllerTestAbsent, DISABLED_ReconfigureOnPrefs) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnPrefs) {
   // When the service becomes available for the first time, one disable is
   // performed in case the last session ended in a crash without de-configuring
   // the daemon.
@@ -206,9 +204,7 @@ TEST_F(SnoopingProtectionControllerTestAbsent, DISABLED_ReconfigureOnPrefs) {
 
 // Test that daemon signals are correctly enabled/disabled when the daemon
 // starts and stops.
-//
-// TODO(crbug.com/40254348): Flaky test.
-TEST_F(SnoopingProtectionControllerTestAbsent, DISABLED_ReconfigureOnRestarts) {
+TEST_F(SnoopingProtectionControllerTestAbsent, ReconfigureOnRestarts) {
   SimulateLogin();
   SetEnabledPref(true);
 
@@ -294,11 +290,9 @@ TEST_F(SnoopingProtectionControllerTestPresent, Oobe) {
   TestSessionControllerClient* session = GetSessionControllerClient();
 
   // Simulate end of OOBE when user is logged in.
-  session->AddUserSession("testuser@gmail.com",
-                          user_manager::UserType::kRegular,
-                          /*provide_pref_service=*/true,
-                          /*is_new_profile=*/true);
-  session->SwitchActiveUser(AccountId::FromUserEmail("testuser@gmail.com"));
+  SimulateUserLogin({.display_email = "testuser@gmail.com",
+                     .is_new_profile = true,
+                     .activate_session = false});
   session->SetSessionState(session_manager::SessionState::OOBE);
 
   // Shouldn't configure, as the session isn't active.

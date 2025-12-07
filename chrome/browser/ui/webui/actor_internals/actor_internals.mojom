@@ -1,0 +1,57 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module actor_internals.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Describes a single journal entry.
+struct JournalEntry {
+  // This url on which the event occurred. This may be invalid.
+  // It should only used for display purposes.
+  string url;
+
+  // The event name of the event.
+  string event;
+
+  // What type of event, 'B' == Begin, 'E' == End, 'I' == Instant.
+  string type;
+
+  // Any additional details.
+  map<string, string> details;
+
+  // Timestamp the event occurred at.
+  mojo_base.mojom.JSTime timestamp;
+
+  // The task id of the event.
+  int32 task_id;
+
+  // The track of the event.
+  string track;
+
+  // A base64 encoded screenshot of the page.
+  array<uint8>? screenshot;
+};
+
+// Interface for browser-to-page events
+interface Page {
+  // Event indicatiing a journal entry was added.
+  JournalEntryAdded(JournalEntry entry);
+};
+
+// Interface that implements page-to-browser events.
+interface PageHandler {
+  // Start trace logging. This will present a file picker to the user.
+  StartLogging();
+
+  // Stop any active trace logging.
+  StopLogging();
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // Creates and binds a new PageHandler instance for the requesting page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};

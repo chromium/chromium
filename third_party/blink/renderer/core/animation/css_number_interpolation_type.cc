@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/number_property_functions.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -61,34 +62,41 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertInitial(
   std::optional<double> initial_number =
       NumberPropertyFunctions::GetInitialNumber(
           CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
-  if (!initial_number)
+  if (!initial_number) {
     return nullptr;
+  }
   return CreateNumberValue(*initial_number);
 }
 
 InterpolationValue CSSNumberInterpolationType::MaybeConvertInherit(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  if (!state.ParentStyle())
+  if (!state.ParentStyle()) {
     return nullptr;
+  }
   std::optional<double> inherited =
       NumberPropertyFunctions::GetNumber(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedNumberChecker>(CssProperty(), inherited));
-  if (!inherited)
+  if (!inherited) {
     return nullptr;
+  }
   return CreateNumberValue(*inherited);
 }
 
 InterpolationValue CSSNumberInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
-    ConversionCheckers&) const {
-  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-  if (!primitive_value ||
-      !(primitive_value->IsNumber() || primitive_value->IsPercentage()))
+    const StyleResolverState& state,
+    ConversionCheckers& conversion_checkers) const {
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value || !primitive_value->IsNumber()) {
     return nullptr;
-  return CreateNumberValue(primitive_value->GetDoubleValue());
+  }
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
+  if (primitive_value->IsElementDependent()) {
+    conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
+  }
+  return CreateNumberValue(primitive_value->ComputeNumber(length_resolver));
 }
 
 InterpolationValue
@@ -96,9 +104,21 @@ CSSNumberInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   std::optional<double> underlying_number =
       NumberPropertyFunctions::GetNumber(CssProperty(), style);
-  if (!underlying_number)
+  if (!underlying_number) {
     return nullptr;
+  }
   return CreateNumberValue(*underlying_number);
+}
+
+InterpolationValue
+CSSNumberInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (number_value->IsNumber()) {
+      return CreateNumberValue(number_value->ClampedDoubleValue());
+    }
+  }
+  return nullptr;
 }
 
 void CSSNumberInterpolationType::ApplyStandardPropertyValue(

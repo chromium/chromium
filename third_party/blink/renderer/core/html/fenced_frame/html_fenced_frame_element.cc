@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
@@ -37,11 +39,13 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -63,8 +67,7 @@ String DeprecatedFencedFrameModeToString(
       return "opaque-ads";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Helper function that returns whether the mode of the parent tree is different
@@ -128,8 +131,8 @@ double ComputeSizeLossFunction(const PhysicalSize& requested_size,
   return wasted_area_fraction + resolution_penalty;
 }
 
-std::optional<WTF::AtomicString> ConvertEventTypeToFencedEventType(
-    const WTF::String& event_type) {
+std::optional<AtomicString> ConvertEventTypeToFencedEventType(
+    const String& event_type) {
   if (!CanNotifyEventTypeAcrossFence(event_type.Ascii())) {
     return std::nullopt;
   }
@@ -174,10 +177,10 @@ void HTMLFencedFrameElement::DisconnectContentFrame() {
   HTMLFrameOwnerElement::DisconnectContentFrame();
 }
 
-ParsedPermissionsPolicy HTMLFencedFrameElement::ConstructContainerPolicy()
-    const {
+network::ParsedPermissionsPolicy
+HTMLFencedFrameElement::ConstructContainerPolicy() const {
   if (!GetExecutionContext()) {
-    return ParsedPermissionsPolicy();
+    return network::ParsedPermissionsPolicy();
   }
 
   scoped_refptr<const SecurityOrigin> src_origin =
@@ -187,7 +190,7 @@ ParsedPermissionsPolicy HTMLFencedFrameElement::ConstructContainerPolicy()
 
   PolicyParserMessageBuffer logger;
 
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
                                               logger, GetExecutionContext());
 
@@ -255,6 +258,9 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
           "HTMLFencedFrameElement.canLoadOpaqueURL() is deprecated and will be "
           "removed. Please use navigator.canLoadAdAuctionFencedFrame() "
           "instead."));
+
+  UseCounter::Count(LocalDOMWindow::From(script_state)->document(),
+                    WebFeature::kFencedFrameCanLoadOpaqueURL);
 
   LocalFrame* frame_to_check = LocalDOMWindow::From(script_state)->GetFrame();
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -341,9 +347,8 @@ void HTMLFencedFrameElement::ParseAttribute(
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            WebString::FromUTF8(
-                "Error while parsing the 'sandbox' attribute: " +
-                parsed.error_message)));
+            StrCat({"Error while parsing the 'sandbox' attribute: ",
+                    String::FromUTF8(parsed.error_message)})));
       }
     }
     SetSandboxFlags(current_flags);
@@ -371,7 +376,7 @@ bool HTMLFencedFrameElement::IsPresentationAttribute(
 void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   } else if (name == html_names::kHeightAttr) {
@@ -438,10 +443,10 @@ void HTMLFencedFrameElement::Navigate(
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Cannot create a fenced frame with mode '" +
-            DeprecatedFencedFrameModeToString(GetDeprecatedMode()) +
-            "' nested in a fenced frame with mode '" +
-            DeprecatedFencedFrameModeToString(parent_mode) + "'."));
+        StrCat({"Cannot create a fenced frame with mode '",
+                DeprecatedFencedFrameModeToString(GetDeprecatedMode()),
+                "' nested in a fenced frame with mode '",
+                DeprecatedFencedFrameModeToString(parent_mode), "'."})));
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kIncompatibleMode);
     return;
@@ -547,8 +552,8 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
     return;
   if (GetDocument().IsPrerendering()) {
     GetDocument().AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&HTMLFencedFrameElement::CreateDelegateAndNavigate,
-                      WrapWeakPersistent(this)));
+        BindOnce(&HTMLFencedFrameElement::CreateDelegateAndNavigate,
+                 WrapWeakPersistent(this)));
     return;
   }
 
@@ -575,8 +580,10 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
-bool HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
-  return frame_delegate_ && frame_delegate_->SupportsFocus();
+FocusableState HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
+  return (frame_delegate_ && frame_delegate_->SupportsFocus())
+             ? FocusableState::kFocusable
+             : FocusableState::kNotFocusable;
 }
 
 PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
@@ -746,10 +753,10 @@ void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
 }
 
 void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
-  setAttribute(html_names::kWidthAttr, String::Format("%dpx", size.width()),
-               ASSERT_NO_EXCEPTION);
-  setAttribute(html_names::kHeightAttr, String::Format("%dpx", size.height()),
-               ASSERT_NO_EXCEPTION);
+  setAttribute(html_names::kWidthAttr,
+               AtomicString(String::Format("%dpx", size.width())));
+  setAttribute(html_names::kHeightAttr,
+               AtomicString(String::Format("%dpx", size.height())));
 
   frame_delegate_->MarkContainerSizeStale();
 }
@@ -803,9 +810,8 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
   }
 }
 
-void HTMLFencedFrameElement::DispatchFencedEvent(
-    const WTF::String& event_type) {
-  std::optional<WTF::AtomicString> fenced_event_type =
+void HTMLFencedFrameElement::DispatchFencedEvent(const String& event_type) {
+  std::optional<AtomicString> fenced_event_type =
       ConvertEventTypeToFencedEventType(event_type);
   CHECK(fenced_event_type.has_value());
   // Note: This method sets isTrusted = true on the event object, to indicate

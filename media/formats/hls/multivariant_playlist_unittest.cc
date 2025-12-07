@@ -8,6 +8,7 @@
 
 #include "media/formats/hls/multivariant_playlist_test_builder.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,7 @@ TEST(HlsMultivariantPlaylistTest, VariableSubstitution) {
     auto fork = builder;
     fork.AppendLine(R"(#EXT-X-STREAM-INF:BANDWIDTH=101,CODECS="{$CODEX}")");
     fork.AppendLine("{$HOST}/playlist2.m3u8");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kVariableUndefined);
   }
 
   // Variable references outside of valid substitution points should not be
@@ -60,7 +61,7 @@ TEST(HlsMultivariantPlaylistTest, VariableSubstitution) {
     fork.AppendLine(R"(#EXT-X-DEFINE:NAME="BW",VALUE="102")");
     fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH={$BW}");
     fork.AppendLine("playlist3.m3u8");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kFailedToParseDecimalInteger);
   }
   {
     auto fork = builder;
@@ -68,28 +69,28 @@ TEST(HlsMultivariantPlaylistTest, VariableSubstitution) {
     fork.AppendLine(
         "#EXT-X-STREAM-INF:BANDWIDTH=100,AVERAGE-BANDWIDTH={$AVG-BW}");
     fork.AppendLine("playlist3.m3u8");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kFailedToParseDecimalInteger);
   }
   {
     auto fork = builder;
     fork.AppendLine(R"(#EXT-X-DEFINE:NAME="SCORE",VALUE="10")");
     fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,SCORE={$SCORE}");
     fork.AppendLine("playlist3.m3u8");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   }
   {
     auto fork = builder;
     fork.AppendLine(R"(#EXT-X-DEFINE:NAME="RES",VALUE="1920x1080")");
     fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,RESOLUTION={$RES}");
     fork.AppendLine("playlist3.m3u8");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kFailedToParseDecimalResolution);
   }
   {
     auto fork = builder;
     fork.AppendLine(R"(#EXT-X-DEFINE:NAME="FR",VALUE="30")");
     fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,FRAME-RATE={$FR}");
     fork.AppendLine("playlist3.m3u8");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   }
 
   // Redefinition is not allowed
@@ -129,7 +130,12 @@ TEST(HlsMultivariantPlaylistTest, MediaPlaylistTag) {
     auto tag_line = "#" + std::string{TagNameToString(name)};
     auto fork = builder;
     fork.AppendLine(tag_line);
-    fork.ExpectError(ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
+    if (HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
+      fork.ExpectOk();
+    } else {
+      fork.ExpectError(
+          ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
+    }
   }
 }
 
@@ -154,7 +160,7 @@ TEST(HlsMultivariantPlaylistTest, XStreamInfTag) {
   {
     auto fork = builder;
     fork.AppendLine("#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=101");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kMissingStreamInfAttribute);
   }
 
   // EXT-X-STREAM-INF tags that are not immediately followed by URIs are
@@ -287,10 +293,10 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   // Invalid EXT-X-MEDIA tags should cause the playlist to be rejected
   auto fork = builder;
   fork.AppendLine("#EXT-X-MEDIA");
-  fork.ExpectError(ParseStatusCode::kMalformedTag);
+  fork.ExpectError(ParseStatusCode::kNoTagBody);
   fork = builder;
   fork.AppendLine("#EXT-X-MEDIA:TYPE=AUDIO");
-  fork.ExpectError(ParseStatusCode::kMalformedTag);
+  fork.ExpectError(ParseStatusCode::kMissingMediaAttribute);
 
   // Rendition group ids that are referenced by EXT-X-STREAM-INF tags but not by
   // EXT-X-MEDIA tags should result in an error.
@@ -350,7 +356,6 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   fork.ExpectAudioRenditionGroup("foo", HasDefaultRendition, std::nullopt);
   fork.ExpectOk();
 
-  // Two EXT-X-MEDIA tags in the same group may not have the same name
   fork = builder;
   fork.AppendLine(
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
@@ -358,7 +363,12 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   fork.AppendLine(
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI="
       "\"english2.m3u8\"");
-  fork.ExpectError(ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
+  if (HLSQuirks::DeduplicateRenditionNamesInGroup()) {
+    fork.ExpectOk();
+  } else {
+    fork.ExpectError(
+        ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
+  }
 
   // .. Unless they are in different groups
   fork = builder;

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -26,18 +25,19 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** This class tests the functionality of the {@link BottomSheetObserver}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -109,7 +109,7 @@ public class BottomSheetObserverTest {
     private TestSheetObserver mObserver;
     private TestBottomSheetContent mSheetContent;
     private BottomSheetControllerImpl mBottomSheetController;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private BottomSheetTestSupport mTestSupport;
 
     @BeforeClass
@@ -123,27 +123,13 @@ public class BottomSheetObserverTest {
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
-        mScrimCoordinator =
-                new ScrimCoordinator(
-                        sTestRule.getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-                        },
-                        rootView,
-                        Color.WHITE);
-
         mBottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
+                            mScrimManager =
+                                    new ScrimManager(
+                                            sTestRule.getActivity(), rootView, ScrimClient.NONE);
+                            Supplier<ScrimManager> scrimSupplier = () -> mScrimManager;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(
                                     scrimSupplier,
@@ -152,7 +138,8 @@ public class BottomSheetObserverTest {
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> rootView,
                                     false,
-                                    () -> 0);
+                                    () -> 0,
+                                    /* desktopWindowStateManager= */ null);
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -175,7 +162,7 @@ public class BottomSheetObserverTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController.destroy();
-                    mScrimCoordinator.destroy();
+                    mScrimManager.destroy();
                 });
     }
 

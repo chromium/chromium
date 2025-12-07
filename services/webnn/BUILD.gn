@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//services/webnn/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
@@ -12,49 +13,33 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
+    "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
   ]
 }
 
-if (is_posix) {
-  source_set("coreml_graph_builder") {
-    sources = [
-      "coreml/graph_builder_coreml.cc",
-      "coreml/graph_builder_coreml.h",
-    ]
-    deps = [
-      ":webnn_utils",
-      "//base",
-      "//services/webnn/public/mojom",
-      "//third_party/coremltools:modelformat_proto",
-      "//third_party/fp16",
-    ]
-  }
-}
-
-source_set("tflite_graph_builder") {
-  sources = [
-    "tflite/graph_builder_tflite.cc",
-    "tflite/graph_builder_tflite.h",
-  ]
-  public_deps = [
-    ":webnn_utils",
-    "//base",
-    "//services/webnn/public/mojom",
-    "//third_party/flatbuffers",
-    "//third_party/tflite:tflite_public_headers",
-  ]
-}
-
 source_set("webnn_switches") {
-  sources = [ "webnn_switches.h" ]
+  sources = [
+    "webnn_switches.cc",
+    "webnn_switches.h",
+  ]
+  deps = [
+    ":buildflags",
+    "//base",
+  ]
 }
 
 component("webnn_service") {
+  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+
   sources = [
     "error.h",
-    "webnn_buffer_impl.cc",
-    "webnn_buffer_impl.h",
+    "scoped_gpu_sequence.cc",
+    "scoped_gpu_sequence.h",
+    "sequence_deleter.cc",
+    "sequence_deleter.h",
+    "webnn_constant_operand.cc",
+    "webnn_constant_operand.h",
     "webnn_context_impl.cc",
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
@@ -64,31 +49,39 @@ component("webnn_service") {
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
     "webnn_object_impl.h",
+    "webnn_pending_constant_operand.cc",
+    "webnn_pending_constant_operand.h",
+    "webnn_tensor_impl.cc",
+    "webnn_tensor_impl.h",
+    "webnn_utils.cc",
+    "webnn_utils.h",
   ]
 
   deps = [
     ":buildflags",
     ":webnn_switches",
-    ":webnn_utils",
     "//base",
+    "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
     "//services/webnn/public/mojom",
+    "//third_party/tflite:buildflags",
   ]
 
   if (is_win) {
     sources += [
       "dml/adapter.cc",
       "dml/adapter.h",
-      "dml/buffer_impl_dml.cc",
-      "dml/buffer_impl_dml.h",
       "dml/command_queue.cc",
       "dml/command_queue.h",
       "dml/command_recorder.cc",
       "dml/command_recorder.h",
       "dml/context_impl_dml.cc",
       "dml/context_impl_dml.h",
+      "dml/context_provider_dml.cc",
+      "dml/context_provider_dml.h",
       "dml/error.h",
       "dml/graph_builder_dml.cc",
       "dml/graph_builder_dml.h",
@@ -98,6 +91,8 @@ component("webnn_service") {
       "dml/platform_functions.h",
       "dml/tensor_desc.cc",
       "dml/tensor_desc.h",
+      "dml/tensor_impl_dml.cc",
+      "dml/tensor_impl_dml.h",
       "dml/utils.cc",
       "dml/utils.h",
     ]
@@ -111,86 +106,137 @@ component("webnn_service") {
     libs = [ "dxgi.lib" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
-      "coreml/buffer_impl_coreml.h",
-      "coreml/buffer_impl_coreml.mm",
+      "coreml/buffer_content_coreml.h",
+      "coreml/buffer_content_coreml.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
+      "coreml/graph_builder_coreml.cc",
+      "coreml/graph_builder_coreml.h",
       "coreml/graph_impl_coreml.h",
       "coreml/graph_impl_coreml.mm",
+      "coreml/tensor_impl_coreml.h",
+      "coreml/tensor_impl_coreml.mm",
       "coreml/utils_coreml.h",
       "coreml/utils_coreml.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
       "CoreML.framework",
+      "CoreVideo.framework",
       "Foundation.framework",
+      "IOSurface.framework",
     ]
-    deps += [ ":coreml_graph_builder" ]
+    deps += [
+      "//third_party/coremltools:modelformat_proto",
+      "//third_party/fp16",
+    ]
   }
 
   if (webnn_use_tflite) {
     sources += [
-      "tflite/buffer_content.cc",
-      "tflite/buffer_content.h",
-      "tflite/buffer_impl_tflite.cc",
-      "tflite/buffer_impl_tflite.h",
-      "tflite/buffer_state.cc",
-      "tflite/buffer_state.h",
-      "tflite/buffer_task.cc",
-      "tflite/buffer_task.h",
+      "tflite/buffer_content_tflite.cc",
+      "tflite/buffer_content_tflite.h",
+      "tflite/context_impl_tflite.cc",
+      "tflite/context_impl_tflite.h",
+      "tflite/graph_builder_tflite.cc",
+      "tflite/graph_builder_tflite.h",
+      "tflite/graph_impl_tflite.cc",
+      "tflite/graph_impl_tflite.h",
+      "tflite/op_resolver.cc",
+      "tflite/op_resolver.h",
+      "tflite/tensor_impl_tflite.cc",
+      "tflite/tensor_impl_tflite.h",
     ]
 
-    if (is_chromeos) {
-      sources += [
-        "tflite/context_impl_cros.cc",
-        "tflite/context_impl_cros.h",
-        "tflite/graph_impl_cros.cc",
-        "tflite/graph_impl_cros.h",
-      ]
-
-      deps += [ "//chromeos/services/machine_learning/public/cpp" ]
-    } else {
-      sources += [
-        "tflite/context_impl_tflite.cc",
-        "tflite/context_impl_tflite.h",
-        "tflite/graph_impl_tflite.cc",
-        "tflite/graph_impl_tflite.h",
-        "tflite/op_resolver.cc",
-        "tflite/op_resolver.h",
-      ]
-
-      deps += [ "//third_party/tflite:tflite_builtin_op_resolver" ]
-    }
-
     deps += [
-      ":tflite_graph_builder",
-      "//components/ml/mojom",
+      "//third_party/flatbuffers",
+      "//third_party/fp16",
       "//third_party/tflite",
-      "//third_party/tflite:buildflags",
+      "//third_party/tflite:tflite_builtin_op_resolver",
+      "//third_party/tflite:tflite_public_headers",
     ]
 
     if (build_tflite_with_xnnpack) {
       deps += [ "//third_party/xnnpack" ]
     }
+
+    if (enable_ml_internal) {
+      deps += [ "//services/on_device_model/ml" ]
+
+      defines += [ "ENABLE_ML_INTERNAL" ]
+    }
   }
 
-  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+  if (is_win) {
+    sources += [
+      "ort/context_impl_ort.cc",
+      "ort/context_impl_ort.h",
+      "ort/context_provider_ort.cc",
+      "ort/context_provider_ort.h",
+      "ort/device_allocator.cc",
+      "ort/device_allocator.h",
+      "ort/environment.cc",
+      "ort/environment.h",
+      "ort/external_weights_manager.cc",
+      "ort/external_weights_manager.h",
+      "ort/graph_builder_ort.cc",
+      "ort/graph_builder_ort.h",
+      "ort/graph_impl_ort.cc",
+      "ort/graph_impl_ort.h",
+      "ort/logging.cc",
+      "ort/logging.h",
+      "ort/model_editor.cc",
+      "ort/model_editor.h",
+      "ort/ort_data_type.cc",
+      "ort/ort_data_type.h",
+      "ort/ort_session_options.cc",
+      "ort/ort_session_options.h",
+      "ort/ort_status.cc",
+      "ort/ort_status.h",
+      "ort/platform_functions_ort.cc",
+      "ort/platform_functions_ort.h",
+      "ort/scoped_ort_types.h",
+      "ort/tensor_impl_ort.cc",
+      "ort/tensor_impl_ort.h",
+    ]
+    deps += [ "//third_party/windows_app_sdk_headers" ]
+
+    libs += [ "runtimeobject.lib" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+
+  if (is_apple || webnn_use_tflite) {
+    sources += [
+      "queueable_resource_state.h",
+      "queueable_resource_state_base.cc",
+      "queueable_resource_state_base.h",
+      "resource_task.cc",
+      "resource_task.h",
+    ]
+  }
 }
 
-component("webnn_utils") {
+source_set("webnn_test_support") {
+  testonly = true
   sources = [
-    "webnn_utils.cc",
-    "webnn_utils.h",
+    "webnn_test_environment.cc",
+    "webnn_test_environment.h",
   ]
 
   deps = [
+    ":webnn_service",
     "//base",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
     "//services/webnn/public/mojom",
   ]
-
-  defines = [ "IS_WEBNN_UTILS_IMPL" ]
 }
 
 source_set("tests") {
@@ -220,15 +266,24 @@ source_set("tests") {
 
   if (webnn_use_tflite || is_mac || is_win) {
     sources += [
-      "webnn_buffer_impl_backend_test.cc",
       "webnn_graph_impl_backend_test.cc",
+      "webnn_tensor_impl_backend_test.cc",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "ort/model_editor_test.cc",
+      "ort/platform_functions_ort_test.cc",
+      "ort/test_base_ort.cc",
+      "ort/test_base_ort.h",
     ]
   }
 
   deps = [
     ":buildflags",
     ":webnn_service",
-    ":webnn_utils",
+    ":webnn_test_support",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -244,13 +299,6 @@ source_set("tests") {
       "//ui/gl/init",
     ]
   }
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/services/machine_learning/public/cpp",
-      "//chromeos/services/machine_learning/public/cpp:stub",
-    ]
-  }
 }
 
 mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
@@ -259,18 +307,16 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
   proto_source = "webnn_graph_mojolpm_fuzzer.proto"
 
   proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
-
+  testcase_proto_kind = "services.fuzzing.webnn_graph.proto.Testcase"
+  seed_corpus_sources =
+      [ "webnn_graph_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
   deps = [
-    ":tflite_graph_builder",
     ":webnn_service",
+    ":webnn_test_support",
     "//base",
     "//base/test:test_support",
     "//content/test/fuzzer:mojolpm_fuzzer_support",
-    "//services/webnn/public/mojom",
+    "//services/webnn/public/mojom:mojom_mojolpm",
     "//third_party/libprotobuf-mutator",
   ]
-
-  if (is_posix) {
-    deps += [ ":coreml_graph_builder" ]
-  }
 }

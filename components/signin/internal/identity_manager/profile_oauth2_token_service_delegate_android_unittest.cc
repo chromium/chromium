@@ -10,11 +10,15 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,25 +29,20 @@ using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrictMock;
 
-namespace signin {
-
-namespace {
-const std::vector<CoreAccountId> kEmptyVector;
 class OAuth2TokenServiceDelegateAndroidForTest
     : public ProfileOAuth2TokenServiceDelegateAndroid {
  public:
   OAuth2TokenServiceDelegateAndroidForTest(
       AccountTrackerService* account_tracker_service)
       : ProfileOAuth2TokenServiceDelegateAndroid(account_tracker_service) {}
-  MOCK_METHOD1(SetAccounts, void(const std::vector<CoreAccountId>&));
+  void SetAccounts(const std::vector<CoreAccountId>& account_ids) {
+    ProfileOAuth2TokenServiceDelegateAndroid::SetAccounts(account_ids);
+  }
 };
 
-class TestObserver : public ProfileOAuth2TokenServiceObserver {
- public:
-  MOCK_METHOD1(OnRefreshTokenAvailable, void(const CoreAccountId&));
-  MOCK_METHOD1(OnRefreshTokenRevoked, void(const CoreAccountId&));
-  MOCK_METHOD0(OnRefreshTokensLoaded, void());
-};
+namespace signin {
+
+namespace {
 
 MATCHER(CoreAccountInfoEq,
         /* std::tuple<const AccountInfo&, const AccountInfo&> arg, */
@@ -53,9 +52,7 @@ MATCHER(CoreAccountInfoEq,
 }
 }  // namespace
 
-class OAuth2TokenServiceDelegateAndroidTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
+class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
  public:
   OAuth2TokenServiceDelegateAndroidTest()
       : account_tracker_service_(CreateAccountTrackerService()) {}
@@ -63,432 +60,290 @@ class OAuth2TokenServiceDelegateAndroidTest
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(switches::kSeedAccountsRevamp,
-                                              IsSeedAccountsRevampEnabled());
     testing::Test::SetUp();
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     account_tracker_service_.Initialize(&pref_service_, base::FilePath());
-    SetUpMockAccountManagerFacade();
+    SetUpFakeAccountManagerFacade();
     delegate_ = std::make_unique<OAuth2TokenServiceDelegateAndroidForTest>(
         &account_tracker_service_);
     delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
-    token_service_observation_.Observe(delegate_.get());
-    CreateAndSeedAccounts();
+    observer_ = std::make_unique<
+        testing::StrictMock<MockProfileOAuth2TokenServiceObserver>>(
+        delegate_.get());
+    // Ignore uniteresting calls to `OnEndBatchChanges()`, the tests don't
+    // verify them.
+    EXPECT_CALL(*observer_, OnEndBatchChanges).Times(testing::AnyNumber());
+
+    // `LoadCredentials` should happen before
+    // `SeedAccountsThenReloadAllAccountsWithPrimaryAccount` is invoked.
+    EXPECT_CALL(*observer_, OnRefreshTokensLoaded());
+    delegate_->LoadCredentials(CoreAccountId());
+
+    account1_ =
+        CreateAccountInfo(GaiaId("gaia-id-user-1"), "user-1@example.com");
+    account2_ =
+        CreateAccountInfo(GaiaId("gaia-id-user-2"), "user-2@example.com");
+    account3_ =
+        CreateAccountInfo(GaiaId("gaia-id-user-3"), "user-3@example.com");
   }
 
   AccountTrackerService CreateAccountTrackerService() {
 #if BUILDFLAG(IS_ANDROID)
-    SetUpMockAccountManagerFacade();
+    SetUpFakeAccountManagerFacade();
 #endif
     return AccountTrackerService();
   }
 
-  bool IsSeedAccountsRevampEnabled() const { return GetParam(); }
-
-  AccountInfo CreateAccountInfo(const std::string& gaia_id,
+  AccountInfo CreateAccountInfo(const GaiaId& gaia_id,
                                 const std::string& email) {
-    AccountInfo account_info;
-
-    account_info.gaia = gaia_id;
-    account_info.email = email;
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.hosted_domain = "example.com";
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
-    account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
-        account_info.gaia, account_info.email);
-
-    DCHECK(account_info.IsValid());
-
+    AccountInfo account_info =
+        AccountInfo::Builder(gaia_id, email)
+            .SetFullName("fullname")
+            .SetGivenName("givenname")
+            .SetHostedDomain("example.com")
+            .SetLocale("en")
+            .SetAvatarUrl("https://example.com")
+            .SetAccountId(account_tracker_service_.PickAccountIdForAccount(
+                gaia_id, email))
+            .Build();
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_features(true);
+    CHECK(account_info.IsValid());
     return account_info;
   }
 
-  void CreateAndSeedAccounts() {
-    account1_ = CreateAccountInfo("gaia-id-user-1", "user-1@example.com");
-    account2_ = CreateAccountInfo("gaia-id-user-2", "user-2@example.com");
-    // SeedAccountInfo is required for
-    // OAuth2TokenServiceDelegateAndrod::MapAccountNameToAccountId
-    if (IsSeedAccountsRevampEnabled()) {
-      account_tracker_service_.SeedAccountsInfo(
-          {account1_, account2_},
-          /*primary_account_id=*/std::nullopt,
-          /*should_remove_stale_accounts=*/false);
-    } else {
-      account_tracker_service_.SeedAccountInfo(account1_);
-      account_tracker_service_.SeedAccountInfo(account2_);
+  void SetAccounts(const std::vector<AccountInfo>& accounts) {
+    account_tracker_service_.SeedAccountsInfo(
+        accounts,
+        /*primary_account_id=*/std::nullopt,
+        /*should_remove_stale_accounts=*/false);
+    std::vector<CoreAccountId> account_ids;
+    for (const auto& account : accounts) {
+      account_ids.push_back(account.account_id);
     }
+    delegate_->SetAccounts(account_ids);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   AccountTrackerService account_tracker_service_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<OAuth2TokenServiceDelegateAndroidForTest> delegate_;
-  StrictMock<TestObserver> observer_;
-  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
-                          ProfileOAuth2TokenServiceObserver>
-      token_service_observation_{&observer_};
+  std::unique_ptr<StrictMock<MockProfileOAuth2TokenServiceObserver>> observer_;
 
   AccountInfo account1_;
   AccountInfo account2_;
+  AccountInfo account3_;
 };
 
-TEST_P(OAuth2TokenServiceDelegateAndroidTest,
-       SeedAndReloadAccountsNoAccountsWithoutPrimaryAccount) {
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector)).WillOnce(Return());
-  // No observer call expected
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom0To0WithoutPrimaryAccount) {
+  // No observer call expected.
+
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {}, CoreAccountId());
+      /*accounts=*/{},
+      /*primary_account_id=*/std::nullopt);
+
+  EXPECT_TRUE(delegate_->GetAccounts().empty());
   EXPECT_TRUE(account_tracker_service_.GetAccounts().empty());
 }
 
-TEST_P(OAuth2TokenServiceDelegateAndroidTest,
-       SeedAndReloadAccountsWith1AccountWithoutPrimaryAccount) {
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector)).WillOnce(Return());
-  // No observer call expected
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom1To0AWithoutPrimaryAccount) {
+  SetAccounts({account1_});
+  Sequence seq;
+  // Previously stored account is removed.
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account1_}, CoreAccountId());
+      /*accounts=*/{},
+      /*primary_account_id=*/std::nullopt);
+
+  EXPECT_TRUE(delegate_->GetAccounts().empty());
+  EXPECT_TRUE(account_tracker_service_.GetAccounts().empty());
+}
+
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom1To1WithoutPrimaryAccount) {
+  SetAccounts({account1_});
+  Sequence seq;
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+
+  delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      {account1_},
+      /*primary_account_id=*/std::nullopt);
+
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>({account1_.account_id}));
   EXPECT_THAT(
-      std::vector<AccountInfo>{account1_},
+      std::vector<AccountInfo>({account1_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
-TEST_P(OAuth2TokenServiceDelegateAndroidTest,
-       SeedAndReloadAccountsWith1AccountWithPrimaryAccount) {
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom1To1WithPrimaryAccount) {
+  SetAccounts({account1_});
   Sequence seq;
-  EXPECT_CALL(*delegate_,
-              SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+
+  delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      {account1_}, account1_.account_id);
+
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>({account1_.account_id}));
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account1_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
+}
+
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom1To1DifferentWithPrimaryAccount) {
+  SetAccounts({account1_});
+  Sequence seq;
+  // Primary account is available.
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account2_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+  // Previously stored account is removed.
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+
+  delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      {account2_}, account2_.account_id);
+
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>({account2_.account_id}));
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account2_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
+}
+
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsWhenDifferentAccountsInDelegateAndTrackerService) {
+  account_tracker_service_.SeedAccountsInfo(
+      {account1_},
+      /*primary_account_id=*/std::nullopt,
+      /*should_remove_stale_accounts=*/false);
+  delegate_->SetAccounts({account2_.account_id});
+  Sequence seq;
+  // Primary account is available.
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account3_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account3_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+  // Previously stored account is removed.
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+
+  delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      {account3_}, account3_.account_id);
+
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>({account3_.account_id}));
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account3_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
+}
+
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom0To1WithPrimaryAccount) {
+  Sequence seq;
+  // Primary account is available.
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+
+  delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      {account1_}, account1_.account_id);
+
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>({account1_.account_id}));
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account1_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
+}
+
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom2To1WithPrimaryAccount) {
+  SetAccounts({account1_, account2_});
+  Sequence seq;
+  // OnRefreshTokenAvailable fired, primary account should go first.
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+      .InSequence(seq)
+      .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+  // Previously stored account is removed.
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       {account1_}, account1_.account_id);
+
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>({account1_.account_id}));
   EXPECT_THAT(
-      std::vector<AccountInfo>{account1_},
+      std::vector<AccountInfo>({account1_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
-TEST_P(OAuth2TokenServiceDelegateAndroidTest,
-       SeedAndReloadAccountsNoAccountWithPrimaryAccount) {
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       ReloadAccountsFrom1To2WithPrimaryAccount) {
+  SetAccounts({account1_});
   Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector))
+  // OnRefreshTokenAvailable fired, primary account should go first.
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  // No observer call expected
-  delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {}, account1_.account_id);
-  EXPECT_THAT(
-      std::vector<AccountInfo>{account1_},
-      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidTest,
-       SeedAndReloadAccountsWith2AccountsWithPrimaryAccount) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(std::vector<CoreAccountId>(
-                              {account1_.account_id, account2_.account_id})))
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account2_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account2_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       {account1_, account2_}, account2_.account_id);
+
+  EXPECT_EQ(
+      delegate_->GetAccounts(),
+      std::vector<CoreAccountId>({account1_.account_id, account2_.account_id}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account1_, account2_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
-
-INSTANTIATE_TEST_SUITE_P(SeedAccountsRevampEnabled,
-                         OAuth2TokenServiceDelegateAndroidTest,
-                         ::testing::Values(true));
-
-class OAuth2TokenServiceDelegateAndroidParamTest
-    : public OAuth2TokenServiceDelegateAndroidTest {
- public:
-  OAuth2TokenServiceDelegateAndroidParamTest() = default;
-
-  OAuth2TokenServiceDelegateAndroidParamTest(
-      const OAuth2TokenServiceDelegateAndroidParamTest&) = delete;
-  OAuth2TokenServiceDelegateAndroidParamTest& operator=(
-      const OAuth2TokenServiceDelegateAndroidParamTest&) = delete;
-};
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith0SystemAccount0AccountAndNotSignedIn) {
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector)).WillOnce(Return());
-  // No observer call expected
-  delegate_->UpdateAccountList(CoreAccountId(), {}, {});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_TRUE(account_tracker_service_.GetAccounts().empty());
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount0AccountAndNotSignedIn) {
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector)).WillOnce(Return());
-  // No observer call expected
-  delegate_->UpdateAccountList(CoreAccountId(), {}, {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount1AccountAndNotSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector))
-      .InSequence(seq)
-      .WillOnce(Return());
-  // Stored account from |GetAccounts| must fire a revoked event
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(CoreAccountId(), {account1_.account_id},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount0AccountAndSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_,
-              SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account1_.account_id, {},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount1AccountAndSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_,
-              SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account1_.account_id, {account1_.account_id},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount1AccountDifferentAndSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_,
-              SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
-      .InSequence(seq)
-      .WillOnce(Return());
-  // Previously stored account is removed, new account is available
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account2_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account1_.account_id, {account2_.account_id},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith0SystemAccount1AccountSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account1_.account_id, {account1_.account_id},
-                               {});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_TRUE(account_tracker_service_.GetAccounts().empty());
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount0AccountAndSignedInDifferent) {
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector)).WillOnce(Return());
-
-  delegate_->UpdateAccountList(account2_.account_id, {},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-// Test Getsysaccounts return a user != from signed user while GetAccounts not
-// empty
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount1AccountAndSignedInDifferent) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account2_.account_id, {account1_.account_id},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>{account1_},
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith2SystemAccount0AccountAndSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(std::vector<CoreAccountId>(
-                              {account1_.account_id, account2_.account_id})))
-      .InSequence(seq)
-      .WillOnce(Return());
-  // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account2_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account2_.account_id, {},
-                               {account1_.account_id, account2_.account_id});
-  EXPECT_THAT(
-      std::vector<AccountInfo>({account1_, account2_}),
-      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith2SystemAccount1AccountAndSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_, SetAccounts(std::vector<CoreAccountId>(
-                              {account1_.account_id, account2_.account_id})))
-      .InSequence(seq)
-      .WillOnce(Return());
-  // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account2_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-  delegate_->UpdateAccountList(account1_.account_id, {account2_.account_id},
-                               {account1_.account_id, account2_.account_id});
-  EXPECT_THAT(
-      std::vector<AccountInfo>({account1_, account2_}),
-      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-}
-
-TEST_P(OAuth2TokenServiceDelegateAndroidParamTest,
-       UpdateAccountListWith1SystemAccount2AccountAndSignedIn) {
-  Sequence seq;
-  EXPECT_CALL(*delegate_,
-              SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
-      .InSequence(seq)
-      .WillOnce(Return());
-  // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account2_.account_id))
-      .InSequence(seq)
-      .WillOnce(Return());
-
-  delegate_->UpdateAccountList(account1_.account_id,
-                               {account1_.account_id, account2_.account_id},
-                               {account1_.account_id});
-  if (IsSeedAccountsRevampEnabled()) {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_, account2_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  } else {
-    EXPECT_THAT(
-        std::vector<AccountInfo>({account1_}),
-        Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OAuth2TokenServiceDelegateAndroidParamTest,
-                         ::testing::Bool());
 
 }  // namespace signin

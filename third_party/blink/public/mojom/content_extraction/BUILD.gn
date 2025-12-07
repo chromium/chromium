@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# This is a separate target to produce legacy bindings so that
+# these interfaces can be used in Blink and WebUI clients.
+mojom("content_extraction") {
+  sources = [ "ai_page_content_metadata.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  export_class_attribute = "BLINK_COMMON_EXPORT"
+  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
+  export_header = "third_party/blink/public/common/common_export.h"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  generate_java = true
+
+  webui_module_path = "/"
+
+  # Used by Blink as well as WebUI, so needs legacy bindings for Blink.
+  generate_legacy_js_bindings = true
+}

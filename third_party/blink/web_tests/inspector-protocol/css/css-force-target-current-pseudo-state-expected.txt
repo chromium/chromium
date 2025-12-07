@@ -1,0 +1,4 @@
+Test CSS.forcePseudoStates method for :target-current
+Color without forced :target-current: rgb(255, 0, 0)
+Color with forced :target-current: rgb(0, 128, 0)
+

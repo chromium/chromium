@@ -9,13 +9,14 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink-forward.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
-#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -25,22 +26,28 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
+#include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
+
 namespace blink {
 
 class ExecutionContext;
-class MLBuffer;
-class MLBufferDescriptor;
-class MLComputeResult;
+class MLTensor;
+class MLTensorDescriptor;
 class MLContextLostInfo;
 class MLOpSupportLimits;
+class GPUBuffer;
+class GPUDevice;
 
 class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -50,7 +57,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
       ExecutionContext* execution_context,
       const V8MLDeviceType device_type,
       const V8MLPowerPreference power_preference,
-      const unsigned int num_threads,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
   MLContext(const MLContext&) = delete;
@@ -60,7 +66,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   V8MLDeviceType GetDeviceType() const;
   V8MLPowerPreference GetPowerPreference() const;
-  unsigned int GetNumThreads() const;
 
   const webnn::ContextProperties& GetProperties() { return properties_; }
 
@@ -71,68 +76,62 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // IDL interface:
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
 
-  ScriptPromise<MLComputeResult> compute(ScriptState* script_state,
-                                         MLGraph* graph,
-                                         const MLNamedArrayBufferViews& inputs,
-                                         const MLNamedArrayBufferViews& outputs,
-                                         ExceptionState& exception_state);
+  void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
-  ScriptPromise<MLBuffer> createBuffer(ScriptState* script_state,
-                                       const MLBufferDescriptor* descriptor,
+  ScriptPromise<MLTensor> createTensor(ScriptState* script_state,
+                                       const MLTensorDescriptor* descriptor,
                                        ExceptionState& exception_state);
 
-  // Writes data specified by array buffer view from offset in elements.
-  void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
-                   const MaybeShared<DOMArrayBufferView>& src_data,
-                   uint64_t src_element_offset,
+  ScriptPromise<MLTensor> createExportableTensor(
+      ScriptState* script_state,
+      const MLTensorDescriptor* descriptor,
+      GPUDevice* device,
+      ExceptionState& exception_state);
+
+  ScriptPromise<MLTensor> createConstantTensor(
+      ScriptState* script_state,
+      const MLOperandDescriptor* descriptor,
+      AllowSharedBufferSource* src_data,
+      ExceptionState& exception_state);
+
+  void writeTensor(ScriptState* script_state,
+                   MLTensor* dst_tensor,
+                   AllowSharedBufferSource* src_data,
                    ExceptionState& exception_state);
 
-  // Writes data specified by array buffer view from offset and size in
-  // elements.
-  void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
-                   const MaybeShared<DOMArrayBufferView>& src_data,
-                   uint64_t src_element_offset,
-                   uint64_t src_element_count,
-                   ExceptionState& exception_state);
-
-  // Writes array buffer data from offset in bytes.
-  void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
-                   const DOMArrayBufferBase* src_data,
-                   uint64_t src_byte_offset,
-                   ExceptionState& exception_state);
-
-  // Writes array buffer data from offset and size in bytes.
-  void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
-                   const DOMArrayBufferBase* src_data,
-                   uint64_t src_byte_offset,
-                   uint64_t src_byte_size,
-                   ExceptionState& exception_state);
-
-  ScriptPromise<DOMArrayBuffer> readBuffer(ScriptState* script_state,
-                                           MLBuffer* src_buffer,
+  ScriptPromise<DOMArrayBuffer> readTensor(ScriptState* script_state,
+                                           MLTensor* src_tensor,
                                            ExceptionState& exception_state);
+
+  ScriptPromise<IDLUndefined> readTensor(ScriptState* script_state,
+                                         MLTensor* src_tensor,
+                                         AllowSharedBufferSource* dst_data,
+                                         ExceptionState& exception_state);
 
   void dispatch(ScriptState* script_state,
                 MLGraph* graph,
-                const MLNamedBuffers& inputs,
-                const MLNamedBuffers& outputs,
+                const MLNamedTensors& inputs,
+                const MLNamedTensors& outputs,
                 ExceptionState& exception_state);
 
-  void CreateWebNNGraphBuilder(
-      mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNGraphBuilder>
-          pending_receiver,
-      ExceptionState& exception_state);
+  ScriptPromise<GPUBuffer> exportToGPU(ScriptState* script_state,
+                                       MLTensor* tensor,
+                                       ExceptionState& exception_state);
 
-  // Creates platform specific buffer described by `buffer_info`.
-  void CreateWebNNBuffer(
-      webnn::mojom::blink::BufferInfoPtr buffer_info,
-      webnn::mojom::blink::WebNNContext::CreateBufferCallback callback);
+  MLGraphBuilder* CreateWebNNGraphBuilder(ScriptState* script_state,
+                                          ExceptionState& exception_state);
 
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
+
+  void OnGraphCreated(MLGraph* graph);
+
+  const mojo::ScopedDataPipeProducerHandle& write_tensor_producer() const {
+    return write_tensor_producer_;
+  }
+
+  const mojo::ScopedDataPipeConsumerHandle& read_tensor_consumer() const {
+    return read_tensor_consumer_;
+  }
 
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
@@ -140,28 +139,16 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // Close the `context_remote_` pipe because the context has been lost.
   void OnLost(uint32_t custom_reason, const std::string& description);
 
-  // Validate and write ArrayBuffer data to hardware accelerated OS
-  // machine learning buffers in the WebNN Service.
-  // `src_data` is the source span of the array buffer data.
-  // `src_element_offset` is the start of the data to write from in the span.
-  // `src_element_count` is optional to denote when the entire span will be
-  // written.
-  void WriteWebNNBuffer(ScriptState* script_state,
-                        MLBuffer* dst_buffer,
-                        base::span<const uint8_t> src_data,
-                        uint64_t src_element_offset,
-                        unsigned src_data_type_size_bytes,
-                        std::optional<uint64_t> src_element_count,
-                        ExceptionState& exception_state);
-
-  void DidCreateWebNNBuffer(ScopedMLTrace scoped_trace,
-                            ScriptPromiseResolver<blink::MLBuffer>* resolver,
+  void DidCreateWebNNTensor(webnn::ScopedTrace scoped_trace,
+                            ScriptPromiseResolver<blink::MLTensor>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
-                            webnn::mojom::blink::CreateBufferResultPtr result);
+                            webnn::MLTensorUsage usage,
+                            scoped_refptr<gpu::ClientSharedImage> shared_image,
+                            GPUDevice* gpu_device,
+                            webnn::mojom::blink::CreateTensorResultPtr result);
 
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;
-  unsigned int num_threads_;
 
   Member<LostProperty> lost_property_;
 
@@ -170,8 +157,19 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   HeapMojoRemote<webnn::mojom::blink::WebNNContext> context_remote_;
   webnn::ContextProperties properties_;
 
+  mojo::ScopedDataPipeProducerHandle write_tensor_producer_;
+  mojo::ScopedDataPipeConsumerHandle read_tensor_consumer_;
+
   // Identifies this `WebNNContext` mojo instance in the service process.
   const blink::WebNNContextToken webnn_handle_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<MLTensor>>> pending_resolvers_;
+
+  HeapHashSet<WeakMember<MLGraph>> graphs_;
+  HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
+  HeapHashSet<WeakMember<MLTensor>> tensors_;
 };
 
 }  // namespace blink

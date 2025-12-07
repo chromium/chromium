@@ -2,15 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("smbprovider") {
   output_name = "ash_smbprovider"
   defines = [ "IS_ASH_DBUS_SMBPROVIDER_IMPL" ]
-  deps = [
+  public_deps = [
     ":proto",
     "//base",
     "//chromeos/dbus/common",
@@ -22,6 +21,7 @@ component("smbprovider") {
     "smb_provider_client.cc",
     "smb_provider_client.h",
   ]
+  deps = [ "//ash/constants" ]
 }
 
 proto_library("proto") {

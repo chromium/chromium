@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-features.h"
-#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-forward.h"
-#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-shared.h"
-#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom.h"
-
 #include <utility>
 
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,6 +29,10 @@
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
+#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-features.h"
+#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-forward.h"
+#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-shared.h"
+#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

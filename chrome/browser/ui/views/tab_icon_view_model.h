@@ -19,7 +19,7 @@ class TabIconViewModel {
   virtual ui::ImageModel GetFaviconForTabIconView() = 0;
 
  protected:
-  virtual ~TabIconViewModel() {}
+  virtual ~TabIconViewModel() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_ICON_VIEW_MODEL_H_

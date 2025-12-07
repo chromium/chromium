@@ -108,6 +108,7 @@ TEST_F(GLTest, FeatureFlagsMatchCapabilities) {
   const auto& flags = features->feature_flags();
   EXPECT_EQ(caps.egl_image_external, flags.oes_egl_image_external);
   EXPECT_EQ(caps.texture_format_bgra8888, flags.ext_texture_format_bgra8888);
+  EXPECT_EQ(gl_caps.sync_query, flags.chromium_sync_query);
   EXPECT_EQ(caps.sync_query, flags.chromium_sync_query);
   EXPECT_EQ(caps.texture_rg, flags.ext_texture_rg);
   EXPECT_EQ(caps.image_ycbcr_420v, flags.chromium_image_ycbcr_420v);

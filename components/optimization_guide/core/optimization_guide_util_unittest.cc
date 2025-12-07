@@ -7,7 +7,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/proto/loading_predictor_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

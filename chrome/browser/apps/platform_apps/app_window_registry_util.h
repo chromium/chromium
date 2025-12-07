@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_APP_WINDOW_REGISTRY_UTIL_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_APP_WINDOW_REGISTRY_UTIL_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 class AppWindow;

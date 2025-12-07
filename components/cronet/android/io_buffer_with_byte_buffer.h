@@ -22,11 +22,10 @@ class IOBufferWithByteBuffer : public net::WrappedIOBuffer {
   // |limit| is the the index of the first element that should not be read or
   // written, preserved to verify that buffer is not changed externally during
   // networking operations.
-  IOBufferWithByteBuffer(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbyte_buffer,
-      jint position,
-      jint limit);
+  IOBufferWithByteBuffer(JNIEnv* env,
+                         const base::android::JavaRef<jobject>& jbyte_buffer,
+                         jint position,
+                         jint limit);
 
   IOBufferWithByteBuffer(const IOBufferWithByteBuffer&) = delete;
   IOBufferWithByteBuffer& operator=(const IOBufferWithByteBuffer&) = delete;

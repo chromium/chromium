@@ -47,14 +47,12 @@ ForwardCodePointStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
       code_units_to_be_deleted_ = 0;
       return TextSegmentationMachineState::kInvalid;
   }
-  NOTREACHED_IN_MIGRATION();
-  return TextSegmentationMachineState::kInvalid;
+  NOTREACHED();
 }
 
 TextSegmentationMachineState
 ForwardCodePointStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
-  NOTREACHED_IN_MIGRATION();
-  return TextSegmentationMachineState::kInvalid;
+  NOTREACHED();
 }
 
 bool ForwardCodePointStateMachine::AtCodePointBoundary() {

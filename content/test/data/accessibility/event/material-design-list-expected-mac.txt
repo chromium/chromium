@@ -1,0 +1,71 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web List Events'
+++AXGroup AXDescription='Ready'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+=== End accessibility tree ===
+AXFocusedUIElementChanged on AXGroup
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web List Events'
+++AXGroup AXDescription='Ready'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web List Events'
+++AXGroup AXDescription='Ready'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+=== End accessibility tree ===
+AXFocusedUIElementChanged on AXGroup
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web List Events'
+++AXGroup AXDescription='Ready'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+=== End accessibility tree ===

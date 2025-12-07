@@ -148,10 +148,10 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return T::service_name(); }
 
-  // Change the resource mapped to this |extension_id| at this
-  // |api_resource_id| to |resource|. Returns true and succeeds unless
-  // |api_resource_id| does not already identify a resource held by
-  // |extension_id|.
+  // Change the resource mapped to this `extension_id` at this
+  // `api_resource_id` to `resource`. Returns true and succeeds unless
+  // `api_resource_id` does not already identify a resource held by
+  // `extension_id`.
   bool Replace(const ExtensionId& extension_id,
                int api_resource_id,
                T* resource) {
@@ -235,10 +235,10 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       return GetOwnedResource(extension_id, api_resource_id);
     }
 
-    // Change the resource mapped to this |extension_id| at this
-    // |api_resource_id| to |resource|. Returns true and succeeds unless
-    // |api_resource_id| does not already identify a resource held by
-    // |extension_id|.
+    // Change the resource mapped to this `extension_id` at this
+    // `api_resource_id` to `resource`. Returns true and succeeds unless
+    // `api_resource_id` does not already identify a resource held by
+    // `extension_id`.
     bool Replace(const ExtensionId& extension_id,
                  int api_resource_id,
                  T* api_resource) {
@@ -285,8 +285,9 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     T* GetOwnedResource(const ExtensionId& extension_id, int api_resource_id) {
       const std::unique_ptr<T>& ptr = api_resource_map_[api_resource_id];
       T* resource = ptr.get();
-      if (resource && extension_id == resource->owner_extension_id())
+      if (resource && extension_id == resource->owner_extension_id()) {
         return resource;
+      }
       return NULL;
     }
 
@@ -295,8 +296,9 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       ExtensionToResourceMap::iterator it =
           extension_resource_map_.find(extension_id);
-      if (it == extension_resource_map_.end())
-        return NULL;
+      if (it == extension_resource_map_.end()) {
+        return nullptr;
+      }
       return &(it->second);
     }
 
@@ -316,10 +318,11 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
       ExtensionToResourceMap::iterator extension_it =
           extension_resource_map_.find(extension_id);
-      if (extension_it == extension_resource_map_.end())
+      if (extension_it == extension_resource_map_.end()) {
         return;
+      }
 
-      // Remove all resources, or the non persistent ones only if |remove_all|
+      // Remove all resources, or the non persistent ones only if `remove_all`
       // is false.
       std::unordered_set<int>& resource_ids = extension_it->second;
       for (std::unordered_set<int>::iterator it = resource_ids.begin();
@@ -350,14 +353,14 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     void Cleanup() {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-      // Subtle: Move |api_resource_map_| to a temporary and clear that.
-      // |api_resource_map_| will become empty and any destructors called
-      // transitively from clearing |local_api_resource_map| will see empty
-      // |api_resource_map_| instead of trying to access being-destroyed map.
+      // Subtle: Move `api_resource_map_` to a temporary and clear that.
+      // `api_resource_map_` will become empty and any destructors called
+      // transitively from clearing `local_api_resource_map` will see empty
+      // `api_resource_map_` instead of trying to access being-destroyed map.
       ApiResourceMap local_api_resource_map;
       api_resource_map_.swap(local_api_resource_map);
       local_api_resource_map.clear();
-      // Do the same as above for |extension_resource_map_|.
+      // Do the same as above for `extension_resource_map_`.
       ExtensionToResourceMap local_extension_resource_map;
       extension_resource_map_.swap(local_extension_resource_map);
       local_extension_resource_map.clear();

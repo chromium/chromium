@@ -1,9 +1,10 @@
 caption: Allow users to create and use secondary profiles, and use guest mode in the
   <ph name="LACROS_NAME">Lacros</ph> browser
+deprecated: true
 default: true
 default_for_enterprise_users: false
 desc: |-
-  This setting allows users to create and use secondary profiles, and use guest mode in the <ph name="LACROS_NAME">Lacros</ph> browser.
+  This setting is deprecated. Allows users to create and use secondary profiles, and use guest mode in the <ph name="LACROS_NAME">Lacros</ph> browser.
 
         Similar to both <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME">BrowserAddPersonEnabled</ph> and <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME">BrowserGuestModeEnabled</ph>, if this policy is set to false or unset, the user cannot create or use secondary profiles, and use guest mode. Previously created secondary profiles, if any, will be unavailable.
 
@@ -27,6 +28,6 @@ schema:
   type: boolean
 supported_on:
 - chrome.linux:91-92
-- chrome_os:91-
+- chrome_os:91-130
 tags: []
 type: main

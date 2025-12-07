@@ -66,8 +66,9 @@ function throwNoStreamError() {
 
 function createStreamInfoPromise() {
   return servicePtr.getStreamInfo().then(function(result) {
-    if (!result.streamInfo)
+    if (!result.streamInfo) {
       throw new Error(STREAM_ABORTED_ERROR);
+    }
     return result.streamInfo;
   }, throwNoStreamError);
 }
@@ -92,8 +93,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   handleRequestWithPromiseDoNotUse(
       apiFunctions, 'mimeHandlerPrivate', 'getStreamInfo',
       function() {
-    if (!streamInfoPromise)
+    if (!streamInfoPromise) {
       streamInfoPromise = createStreamInfoPromise();
+    }
     return streamInfoPromise.then(constructStreamInfoDict);
   });
 

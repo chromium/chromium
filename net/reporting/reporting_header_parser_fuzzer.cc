@@ -22,9 +22,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// Silence logging from the protobuf library.
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
 namespace net_reporting_header_parser_fuzzer {
 
 void FuzzReportingHeaderParser(const std::string& data_json,
@@ -34,8 +31,8 @@ void FuzzReportingHeaderParser(const std::string& data_json,
                                     policy);
   // Emulate what ReportingService::OnHeader does before calling
   // ReportingHeaderParser::ParseHeader.
-  std::optional<base::Value> data_value =
-      base::JSONReader::Read("[" + data_json + "]");
+  std::optional<base::Value> data_value = base::JSONReader::Read(
+      "[" + data_json + "]", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!data_value)
     return;
 

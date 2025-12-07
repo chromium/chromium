@@ -48,16 +48,12 @@ to its clients.
 
 External clients create constraints on PartitionAlloc's implementation.
 
-### C++17
+### C++20
 
-PartitionAlloc targets C++17. This is aligned with our first external
-client, PDFium, and may be further constrained by other clients. These
-impositions prevent us from moving in lockstep with Chrome's target
-C++ version.
-
-We do not even have guarantees of backported future features, e.g.
-C++20's designated initializers. Therefore, these cannot ship with
-PartitionAlloc.
+PartitionAlloc targets C++20. This is the lowest common denominator in between
+chrome, pdfium, dawn, angle, v8, skia.
+These impositions prevent us from moving in lockstep with Chrome's target C++
+version.
 
 ### MSVC Support
 

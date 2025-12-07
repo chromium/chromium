@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -137,9 +137,10 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle) {
 
 bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
                                  const gfx::Size& size,
-                                 gfx::BufferFormat format,
+                                 viz::SharedImageFormat format,
                                  bool assume_single_memory_object) {
-  size_t expected_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+  CHECK(viz::HasEquivalentBufferFormat(format));
+  size_t expected_planes = format.NumberOfPlanes();
   if (expected_planes == 0 || handle.planes.size() != expected_planes)
     return false;
 
@@ -162,18 +163,15 @@ bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
   for (size_t i = 0; i < handle.planes.size(); ++i) {
     const size_t plane_stride =
         base::strict_cast<size_t>(handle.planes[i].stride);
-    size_t min_stride = 0;
-    if (!gfx::RowSizeForBufferFormatChecked(
-            base::checked_cast<size_t>(size.width()), format, i, &min_stride) ||
-        plane_stride < min_stride) {
+
+    auto min_stride = viz::SharedMemoryRowSizeForSharedImageFormat(
+        format, i, base::checked_cast<size_t>(size.width()));
+    if (!min_stride || plane_stride < min_stride.value()) {
       return false;
     }
 
-    const size_t subsample_factor = SubsamplingFactorForBufferFormat(format, i);
     const base::CheckedNumeric<size_t> plane_height =
-        base::CheckDiv(base::CheckAdd(base::checked_cast<size_t>(size.height()),
-                                      base::CheckSub(subsample_factor, 1)),
-                       subsample_factor);
+        format.GetPlaneSize(i, size).height();
     const base::CheckedNumeric<size_t> min_size = plane_height * plane_stride;
     if (!min_size.IsValid<uint64_t>() ||
         handle.planes[i].size < min_size.ValueOrDie<uint64_t>()) {

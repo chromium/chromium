@@ -15,11 +15,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"
 
-class Profile;
+class PolicyBlocklistService;
+class PrefService;
 
 namespace base {
 class Time;
@@ -45,11 +48,13 @@ class TasksClientImpl : public TasksClient {
   // Provides an instance of `google_apis::RequestSender` for the client.
   using CreateRequestSenderCallback =
       base::RepeatingCallback<std::unique_ptr<google_apis::RequestSender>(
-          const std::vector<std::string>& scopes,
+          signin::OAuthConsumerId oauth_consumer_id,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   TasksClientImpl(
-      Profile* profile,
+      PrefService* pref_service,
+      apps::AppServiceProxy* app_service_proxy,
+      PolicyBlocklistService* policy_blocklist_service,
       const CreateRequestSenderCallback& create_request_sender_callback,
       net::NetworkTrafficAnnotationTag traffic_annotation_tag);
   TasksClientImpl(const TasksClientImpl&) = delete;
@@ -222,9 +227,11 @@ class TasksClientImpl : public TasksClient {
 
   // To be called when requests to get user's task lists complete.
   // It sets the task lists fetch status to `final_fetch_status`, and runs all
-  // pending callbacks in `task_lists_fetch_state_`.
+  // pending callbacks in `task_lists_fetch_state_`. `http_error` will have a
+  // value from the Google Tasks API request.
   void RunGetTaskListsCallbacks(
       FetchStatus final_fetch_status,
+      std::optional<google_apis::ApiErrorCode> http_error,
       std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
           accumulated_raw_task_lists);
 
@@ -235,6 +242,7 @@ class TasksClientImpl : public TasksClient {
   void RunGetTasksCallbacks(
       const std::string& task_list_id,
       FetchStatus final_fetch_status,
+      std::optional<google_apis::ApiErrorCode> http_error,
       std::vector<std::unique_ptr<google_apis::tasks::Task>>
           accumulated_raw_tasks);
 
@@ -245,8 +253,9 @@ class TasksClientImpl : public TasksClient {
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
-  // The profile for which this instance was created.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.

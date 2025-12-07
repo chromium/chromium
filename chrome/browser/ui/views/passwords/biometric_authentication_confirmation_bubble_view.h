@@ -7,13 +7,17 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class BiometricAuthenticationConfirmationBubbleView
     : public PasswordBubbleViewBase {
+  METADATA_HEADER(BiometricAuthenticationConfirmationBubbleView,
+                  PasswordBubbleViewBase)
+
  public:
   BiometricAuthenticationConfirmationBubbleView(
       content::WebContents* web_contents,
-      views::View* anchor_view);
+      views::BubbleAnchor anchor_view);
   ~BiometricAuthenticationConfirmationBubbleView() override;
 
  private:

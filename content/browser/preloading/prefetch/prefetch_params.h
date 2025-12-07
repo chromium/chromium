@@ -6,15 +6,14 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 
 #include <optional>
-#include <string_view>
 
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+class PrefetchType;
 
 // The url of the tunnel proxy.
 CONTENT_EXPORT GURL PrefetchProxyHost(const GURL& default_proxy_url);
@@ -33,14 +32,6 @@ bool PrefetchAllowAllDomains();
 // proxy, so long as the user opted-in to extended preloading.
 bool PrefetchAllowAllDomainsForExtendedPreloading();
 
-// The maximum number of mainframes allowed to be prefetched at the same time.
-size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches();
-
-// The maximum number of prefetch requests to start from a page. A return value
-// of nullopt means unlimited. Negative values given by the field trial return
-// nullopt.
-std::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage();
-
 // Returns true if an ineligible prefetch request should be put on the network,
 // but not cached, to disguise the presence of cookies (or other criteria). The
 // return value is randomly decided based on variation params since always
@@ -56,16 +47,13 @@ base::TimeDelta PrefetchTimeoutDuration();
 // bytes.
 size_t PrefetchMainframeBodyLengthLimit();
 
-// Whether idle sockets should be closed after every prefetch.
-bool PrefetchCloseIdleSockets();
-
 // Whether a spare renderer should be started after prefetching.
 bool PrefetchStartsSpareRenderer();
 
-// The amount of time |PrefetchService| will keep an owned |PrefetchContainer|
-// alive. If this value is zero or less, the service will keep the prefetch
-// forever.
-base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
+// The default amount of time `PrefetchService` will keep an owned
+// `PrefetchContainer` alive. If this value is zero or less, the service will
+// keep the prefetch forever. This can be overridden in the `PrefetchContainer`.
+base::TimeDelta PrefetchContainerDefaultTtlInPrefetchService();
 
 // Returns if the specified host should have the prefetch proxy bypassed for
 // testing purposes. Currently this is only used for WPT test servers.
@@ -108,27 +96,32 @@ int PrefetchCanaryCheckRetries();
 // The maximum amount of time to block until the head of a prefetch is received.
 // If the value is zero or less, then a navigation can be blocked indefinitely.
 CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    const PrefetchType& prefetch_type);
+    const PrefetchType& prefetch_type,
+    bool should_disable_block_until_head_timeout,
+    bool is_nav_prerender);
 
-// Gets the histogram suffix to use for the given eagerness parameter.
-CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(
-    blink::mojom::SpeculationEagerness eagerness);
+// Gets the histogram suffix for the given `prefetch_type` and
+// `embedder_histogram_suffix`.
+// `embedder_histogram_suffix` will be utilized directly to generate the
+// histogram names. `TriggerTypeAndEagerness` in
+// //tools/metrics/histograms/metadata/prefetch/histograms.xml should be updated
+// if we start using a new one.
+CONTENT_EXPORT std::string GetMetricsSuffixTriggerTypeAndEagerness(
+    const PrefetchType prefetch_type,
+    const std::optional<std::string>& embedder_histogram_suffix);
 
-// Returns true if |kPrefetchNewLimits| is enabled.
-bool PrefetchNewLimitsEnabled();
-// Returns the max number of eager prefetches allowed (only used when
-// PrefetchNewLimits is enabled).
-size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
-// Returns the max number of non-eager prefetches allowed (only used when
-// PrefetchNewLimits is enabled).
-size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+// The max number of immediate prefetches allowed.
+inline constexpr size_t kMaxNumberOfImmediatePrefetchesPerPage = 50;
+// The max number of non-immediate prefetches allowed.
+inline constexpr size_t kMaxNumberOfNonImmediatePrefetchesPerPage = 2;
 
 // Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
 bool PrefetchNIKScopeEnabled();
 
-// Returns true if browser-initiated prefetch is enabled.
-// Please see crbug.com/40946257 for more details.
-bool PrefetchBrowserInitiatedTriggersEnabled();
+size_t GetPrefetchDataPipeTeeBodySizeLimit();
+
+// Returns true iff we should use `PrefetchScheduler`.
+CONTENT_EXPORT bool UsePrefetchScheduler();
 
 }  // namespace content
 

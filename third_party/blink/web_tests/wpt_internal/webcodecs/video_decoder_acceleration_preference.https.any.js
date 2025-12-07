@@ -31,8 +31,15 @@ function cycleAccelerationPreferences(codec, expected_success, desc) {
       var support = await VideoDecoder.isConfigSupported(decoderConfig);
 
       assert_equals(support.supported, value, iteration_name);
-      assert_object_equals(support.config, decoderConfig, iteration_name);
-
+      assert_equals(support.config.codec, decoderConfig.codec, iteration_name);
+      assert_equals(
+          support.config.codedWidth, decoderConfig.codedWidth, iteration_name);
+      assert_equals(
+          support.config.codedHeight, decoderConfig.codedHeight,
+          iteration_name);
+      assert_equals(
+          support.config.hardwareAcceleration,
+          decoderConfig.hardwareAcceleration, iteration_name);
       decoder.configure(decoderConfig);
 
       try {

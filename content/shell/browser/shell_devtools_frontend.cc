@@ -27,10 +27,7 @@ static GURL GetFrontendURL() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const char* query_string = "";
 #else
-  const char* query_string = base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                 switches::kContentShellDevToolsTabTarget)
-                                 ? "?targetType=tab"
-                                 : "";
+  const char* query_string = "?targetType=tab";
 #endif
 
   return GURL(base::StringPrintf(

@@ -5,7 +5,7 @@
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 
 #include "base/memory/ptr_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace headless {
 

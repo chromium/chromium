@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_HOLDING_SPACE_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_HOLDING_SPACE_H_
 
-#include "chromeos/ash/components/file_manager/indexing/search_results.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -36,7 +35,6 @@ class FileManagerPrivateGetHoldingSpaceStateFunction
 
  protected:
   ~FileManagerPrivateGetHoldingSpaceStateFunction() override;
-  void OnSearchResult(::ash::file_manager::SearchResults result);
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

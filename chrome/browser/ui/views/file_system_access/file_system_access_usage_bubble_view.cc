@@ -14,27 +14,35 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_views_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -178,8 +186,9 @@ class CollapsibleListView : public views::View {
     button->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
-    if (model->RowCount() < 3)
+    if (model->RowCount() < 3) {
       expand_collapse_button_->SetVisible(false);
+    }
     int preferred_width = label_container->GetPreferredSize().width();
     AddChildView(std::move(label_container));
 
@@ -267,10 +276,10 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
   // user has already granted the site access to.
   if (row < files_.size()) {
     return file_system_access_ui_helper::GetPathForDisplayAsParagraph(
-        files_[row]);
+        content::PathInfo(files_[row]));
   }
   return file_system_access_ui_helper::GetPathForDisplayAsParagraph(
-      directories_[row - files_.size()]);
+      content::PathInfo(directories_[row - files_.size()]));
 }
 
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
@@ -283,8 +292,9 @@ ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
     size_t row) {
-  if (row < files_.size())
+  if (row < files_.size()) {
     return files_[row].LossyDisplayName();
+  }
   return directories_[row - files_.size()].LossyDisplayName();
 }
 
@@ -295,6 +305,19 @@ void FileSystemAccessUsageBubbleView::FilePathListModel::SetObserver(
 FileSystemAccessUsageBubbleView* FileSystemAccessUsageBubbleView::bubble_ =
     nullptr;
 
+void FileSystemAccessUsageBubbleView::UpdateBubbleVisibilityState(
+    bool is_bubble_visible) {
+  Browser* browser = chrome::FindBrowserWithTab(bubble_->web_contents());
+  if (!browser) {
+    return;
+  }
+  auto* action_item = actions::ActionManager::Get().FindAction(
+      kActionShowFileSystemAccess,
+      browser->browser_actions()->root_action_item());
+  CHECK(action_item);
+  action_item->SetIsShowingBubble(is_bubble_visible);
+}
+
 // static
 void FileSystemAccessUsageBubbleView::ShowBubble(
     content::WebContents* web_contents,
@@ -304,8 +327,9 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
       base::UserMetricsAction("NativeFileSystemAPI.OpenedBubble"));
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   ToolbarButtonProvider* button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
@@ -324,22 +348,27 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
     return base::Contains(writable_files, path);
   });
 
+  // TODO(crbug.com/376282751): An action ID should be created and used here
+  // when File System Access is migrated to the new page actions framework.
   bubble_ = new FileSystemAccessUsageBubbleView(
-      button_provider->GetAnchorView(PageActionIconType::kFileSystemAccess),
-      web_contents, origin, std::move(usage));
+      button_provider->GetAnchorView(std::nullopt), web_contents, origin,
+      std::move(usage));
 
-  bubble_->SetHighlightedButton(button_provider->GetPageActionIconView(
-      PageActionIconType::kFileSystemAccess));
+  bubble_->SetHighlightedButton(
+      button_provider->GetPageActionView(kActionShowFileSystemAccess));
   views::BubbleDialogDelegateView::CreateBubble(bubble_);
 
   bubble_->ShowForReason(DisplayReason::USER_GESTURE,
                          /*allow_refocus_alert=*/true);
+  bubble_->UpdateBubbleVisibilityState(/*is_bubble_visible=*/true);
 }
 
 // static
 void FileSystemAccessUsageBubbleView::CloseCurrentBubble() {
-  if (bubble_)
+  if (bubble_) {
+    bubble_->UpdateBubbleVisibilityState(/*is_bubble_visible=*/false);
     bubble_->CloseBubble();
+  }
 }
 
 // static
@@ -361,9 +390,10 @@ FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
                             std::move(usage_.readable_directories)),
       writable_paths_model_(std::move(usage_.writable_files),
                             std::move(usage_.writable_directories)) {
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_DONE));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_DONE));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_REMOVE_ACCESS));
   SetCancelCallback(
       base::BindOnce(&FileSystemAccessUsageBubbleView::OnDialogCancelled,
@@ -387,13 +417,14 @@ std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.
-  if (!browser)
+  if (!browser) {
     return {};
+  }
 
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar_button_provider()
-      ->GetPageActionIconView(PageActionIconType::kFileSystemAccess)
-      ->GetTextForTooltipAndAccessibleName();
+      ->GetPageActionView(kActionShowFileSystemAccess)
+      ->GetTooltipText();
 }
 
 bool FileSystemAccessUsageBubbleView::ShouldShowCloseButton() const {
@@ -466,14 +497,16 @@ void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
   base::RecordAction(
       base::UserMetricsAction("NativeFileSystemAPI.RevokePermissions"));
 
-  if (!web_contents())
+  if (!web_contents()) {
     return;
+  }
 
   content::BrowserContext* profile = web_contents()->GetBrowserContext();
   auto* context =
       FileSystemAccessPermissionContextFactory::GetForProfileIfExists(profile);
-  if (!context)
+  if (!context) {
     return;
+  }
 
   context->RevokeGrants(origin_);
 }
@@ -481,13 +514,16 @@ void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
 void FileSystemAccessUsageBubbleView::WindowClosing() {
   // |bubble_| can be a new bubble by this point (as Close(); doesn't
   // call this right away). Only set to nullptr when it's this bubble.
-  if (bubble_ == this)
+  if (bubble_ == this) {
+    UpdateBubbleVisibilityState(/*is_bubble_visible=*/false);
     bubble_ = nullptr;
+  }
 }
 
 void FileSystemAccessUsageBubbleView::CloseBubble() {
   // Widget's Close() is async, but we don't want to use bubble_ after
   // this. Additionally web_contents() may have been destroyed.
+  UpdateBubbleVisibilityState(/*is_bubble_visible=*/false);
   bubble_ = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
 }

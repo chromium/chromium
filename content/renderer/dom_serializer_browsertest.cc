@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
@@ -17,7 +19,6 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -33,7 +34,6 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -58,7 +58,6 @@ using blink::WebMetaElement;
 using blink::WebNode;
 using blink::WebString;
 using blink::WebURL;
-using blink::WebVector;
 using blink::WebView;
 
 namespace content {
@@ -70,7 +69,8 @@ bool HasDocType(const WebDocument& doc) {
 // https://crbug.com/788788
 #if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
-#elif defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER)
+#elif defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(ADDRESS_SANITIZER)
 // http://crbug.com/1350508
 #define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
 #else
@@ -91,7 +91,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   }
 
   // DomSerializerDelegate.
-  void DidSerializeDataForFrame(const WebVector<char>& data,
+  void DidSerializeDataForFrame(const std::vector<char>& data,
                                 FrameSerializationStatus status) override {
     // Check finish status of current frame.
     ASSERT_FALSE(serialization_reported_end_of_data_);
@@ -509,17 +509,9 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
-// TODO(crbug.com/40681859): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SerializeHTMLDOMWithEntitiesInText \
-  DISABLED_SerializeHTMLDOMWithEntitiesInText
-#else
-#define MAYBE_SerializeHTMLDOMWithEntitiesInText \
-  SerializeHTMLDOMWithEntitiesInText
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test situation of html entities in text when serializing HTML DOM.
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       MAYBE_SerializeHTMLDOMWithEntitiesInText) {
+                       SerializeHTMLDOMWithEntitiesInText) {
   // Need to spin up the renderer and also navigate to a file url so that the
   // renderer code doesn't attempt a fork when it sees a load to file scheme
   // from non-file scheme.
@@ -739,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
         // Each link is relative link.
         if (!value.IsNull()) {
           GURL link(value.Utf8());
-          ASSERT_TRUE(link.scheme().empty());
+          ASSERT_TRUE(link.GetScheme().empty());
         }
       }
     }
@@ -787,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
         // Each link is absolute link.
         if (!value.IsNull()) {
           GURL link(std::string(value.Utf8()));
-          ASSERT_FALSE(link.scheme().empty());
+          ASSERT_FALSE(link.GetScheme().empty());
         }
       }
     }

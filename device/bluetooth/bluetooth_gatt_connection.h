@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace device {
@@ -72,4 +72,4 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
 
 }  // namespace device
 
-#endif  //  DEVICE_BLUETOOTH_BLUETOOTH_GATT_CONNECTION_H_
+#endif  // DEVICE_BLUETOOTH_BLUETOOTH_GATT_CONNECTION_H_

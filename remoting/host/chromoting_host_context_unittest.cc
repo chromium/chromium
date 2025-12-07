@@ -20,7 +20,7 @@ TEST(ChromotingHostContextTest, StartAndStop) {
   base::RunLoop run_loop;
 
   scoped_refptr<network::TestSharedURLLoaderFactory> test_url_loader_factory;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_url_loader_factory = new network::TestSharedURLLoaderFactory();
 #endif
 

@@ -25,9 +25,6 @@
 #include "base/version.h"
 #include "components/update_client/utils.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/nonembedded/nonembedded_jni_headers/ComponentsProviderPathUtil_jni.h"
-
 namespace android_webview {
 
 namespace {
@@ -43,7 +40,7 @@ AwComponentInstallerPolicy::AwComponentInstallerPolicy() = default;
 
 void AwComponentInstallerPolicy::OnCustomUninstall() {
   // Uninstallation isn't supported in WebView.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Copy the components file from `install_dir` to the serving directory of the
@@ -78,12 +75,8 @@ void AwComponentInstallerPolicy::ComponentReady(
     base::Value::Dict manifest) {
   base::FilePath cps_component_base_path =
       GetComponentsProviderServiceDirectory();
-
-  JNIEnv* env = jni_zero::AttachCurrentThread();
   int highest_sequence_number =
-      Java_ComponentsProviderPathUtil_getTheHighestSequenceNumber(
-          env, base::android::ConvertUTF8ToJavaString(
-                   env, cps_component_base_path.MaybeAsASCII()));
+      GetHighestSequenceNumber(cps_component_base_path);
 
   // Do nothing, if the highest sequence number refers to the same `version`.
   if (base::PathExists(cps_component_base_path.AppendASCII(
@@ -110,7 +103,6 @@ void AwComponentInstallerPolicy::ComponentReady(
       GetVersionDirName(highest_sequence_number + 1, version.GetString());
   const base::FilePath temp_copy_path =
       temp_dir.GetPath().AppendASCII(new_sequence_version_string);
-  // TODO(crbug.com/40747851) use file links to optimize copies number.
   if (!base::CopyDirectory(install_dir, temp_copy_path,
                            /* recursive= */ true)) {
     LOG(ERROR) << "Error copying from " << install_dir << " to "
@@ -138,15 +130,14 @@ base::FilePath
 AwComponentInstallerPolicy::GetComponentsProviderServiceDirectory() {
   std::vector<uint8_t> hash;
   GetHash(&hash);
-  std::string component_id = update_client::GetCrxIdFromPublicKeyHash(hash);
+  return AwComponentUpdateService::GetInstance()
+      ->GetComponentsProviderServiceDirectory(hash);
+}
 
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::FilePath(
-             base::android::ConvertJavaStringToUTF8(
-                 env,
-                 Java_ComponentsProviderPathUtil_getComponentsServingDirectoryPath(
-                     env)))
-      .AppendASCII(component_id);
+int AwComponentInstallerPolicy::GetHighestSequenceNumber(
+    base::FilePath cps_component_base_path) {
+  return AwComponentUpdateService::GetInstance()->GetHighestSequenceNumber(
+      cps_component_base_path);
 }
 
 }  // namespace android_webview

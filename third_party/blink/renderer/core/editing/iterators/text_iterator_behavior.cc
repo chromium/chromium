@@ -150,10 +150,6 @@ bool TextIteratorBehavior::operator==(const TextIteratorBehavior& other) const {
   return values_.all == other.values_.all;
 }
 
-bool TextIteratorBehavior::operator!=(const TextIteratorBehavior& other) const {
-  return !operator==(other);
-}
-
 // static
 TextIteratorBehavior
 TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior() {
@@ -182,6 +178,16 @@ TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior() {
   return TextIteratorBehavior::Builder()
       .SetEmitsObjectReplacementCharacter(true)
       .SetEmitsCharactersBetweenAllVisiblePositions(true)
+      .Build();
+}
+
+// static
+TextIteratorBehavior TextIteratorBehavior::
+    AllVisiblePositionsIncludingShadowRootRangeLengthBehavior() {
+  return TextIteratorBehavior::Builder()
+      .SetEmitsObjectReplacementCharacter(true)
+      .SetEmitsCharactersBetweenAllVisiblePositions(true)
+      .SetEntersOpenShadowRoots(true)
       .Build();
 }
 

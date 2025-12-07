@@ -18,5 +18,6 @@ js_library("error_screen") {
 
 html_to_wrapper("html_wrapper_files") {
   in_files = [ "error_screen.html" ]
+  template = "polymer"
   use_js = true
 }

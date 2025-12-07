@@ -83,9 +83,20 @@ class BLINK_COMMON_EXPORT WebMouseWheelEvent : public WebMouseEvent {
   ui::ScrollGranularity delta_units = ui::ScrollGranularity::kScrollByPixel;
 
   WebMouseWheelEvent(Type type, int modifiers, base::TimeTicks time_stamp)
-      : WebMouseEvent(type, modifiers, time_stamp, kMousePointerId) {}
+      : WebMouseEvent(type,
+                      Type::kMouseWheel,
+                      Type::kMouseWheel,
+                      modifiers,
+                      time_stamp,
+                      kMousePointerId) {}
 
-  WebMouseWheelEvent() : WebMouseEvent(kMousePointerId) {}
+  WebMouseWheelEvent()
+      : WebMouseEvent(Type::kUndefined,
+                      Type::kMouseWheel,
+                      Type::kMouseWheel,
+                      kNoModifiers,
+                      base::TimeTicks(),
+                      kMousePointerId) {}
 
   float DeltaXInRootFrame() const;
   float DeltaYInRootFrame() const;

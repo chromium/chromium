@@ -9,15 +9,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -83,8 +85,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     // be associated with a DOM element.
     CHECK(!should_collapse_initiator);
 
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
     OnBeforeRequestCompleted(result);
@@ -106,8 +109,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
                     &WebTransportHandshakeProxy::OnBeforeSendHeadersCompleted,
                     base::Unretained(this)),
                 &request_headers_);
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
     // See the comments in the OnBeforeSendHeadersCompleted to see why
@@ -146,16 +150,20 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
 
   // WebTransportHandshakeClient implementation:
   // Proxing should be finished with either of below functions.
+  void OnBeforeConnect(const net::IPEndPoint& server_address) override {}
+
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      const std::optional<std::string>& selected_application_protocol,
       network::mojom::WebTransportStatsPtr initial_stats) override {
     receiver_.reset();
     pending_transport_ = std::move(transport);
     pending_client_ = std::move(client);
     initial_stats_ = std::move(initial_stats);
     response_headers_ = response_headers;
+    selected_application_protocol_ = selected_application_protocol;
 
     bool should_collapse_initiator = false;
 
@@ -175,8 +183,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     // be associated with a DOM element.
     CHECK(!should_collapse_initiator);
 
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
     OnHeadersReceivedCompleted(result);
@@ -203,7 +212,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
 
     remote_->OnConnectionEstablished(
         std::move(pending_transport_), std::move(pending_client_),
-        response.headers, std::move(initial_stats_));
+        response.headers, selected_application_protocol_,
+        std::move(initial_stats_));
 
     OnCompleted();
     // `this` is deleted.
@@ -258,6 +268,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   raw_ptr<content::BrowserContext> browser_context_;
   WebRequestInfo info_;
   net::HttpRequestHeaders request_headers_;
+  std::optional<std::string> selected_application_protocol_;
   GURL redirect_url_;
   mojo::Remote<WebTransportHandshakeClient> remote_;
   mojo::Receiver<WebTransportHandshakeClient> receiver_{this};
@@ -290,7 +301,7 @@ void StartWebRequestProxyingWebTransport(
   request.url = url;
   request.request_initiator = initiator_origin;
 
-  const int process_id = render_process_host.GetID();
+  const int process_id = render_process_host.GetDeprecatedID();
 
   WebRequestInfoInitParams params =
       WebRequestInfoInitParams(request_id, process_id, frame_routing_id,

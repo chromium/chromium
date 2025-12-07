@@ -54,7 +54,7 @@ export class CrToastManagerElement extends CrLitElement {
     };
   }
 
-  duration: number = 0;
+  accessor duration: number = 0;
 
   get isToastOpen(): boolean {
     return this.$.toast.open;

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback_metrics.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -54,20 +55,17 @@ void MediaControlCastButtonElement::TryShowOverlay() {
   if (ElementFromCenter(*this) != &MediaElement()) {
     SetIsWanted(false);
   }
-
-  base::UmaHistogramBoolean("Media.Controls.OverlayCastButtonIsCovered",
-                            !IsWanted());
 }
 
 void MediaControlCastButtonElement::UpdateDisplayType() {
   if (IsPlayingRemotely()) {
-    setAttribute(html_names::kAriaLabelAttr,
-                 WTF::AtomicString(
-                     GetLocale().QueryString(IDS_AX_MEDIA_CAST_ON_BUTTON)));
+    setAttribute(
+        html_names::kAriaLabelAttr,
+        AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_CAST_ON_BUTTON)));
   } else {
-    setAttribute(html_names::kAriaLabelAttr,
-                 WTF::AtomicString(
-                     GetLocale().QueryString(IDS_AX_MEDIA_CAST_OFF_BUTTON)));
+    setAttribute(
+        html_names::kAriaLabelAttr,
+        AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_CAST_OFF_BUTTON)));
   }
   UpdateOverflowString();
   SetClass("on", IsPlayingRemotely());

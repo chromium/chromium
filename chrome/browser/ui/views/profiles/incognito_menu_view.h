@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
 namespace views {
 class Button;
 }
@@ -22,8 +26,8 @@ class Browser;
 // incognito mode and displays the incognito menu.
 class IncognitoMenuView : public ProfileMenuViewBase {
  public:
-  IncognitoMenuView(views::Button* anchor_button,
-                    Browser* browser);
+  // `browser` must not be nullptr.
+  IncognitoMenuView(ui::TrackedElement* anchor_element, Browser* browser);
 
   IncognitoMenuView(const IncognitoMenuView&) = delete;
   IncognitoMenuView& operator=(const IncognitoMenuView&) = delete;

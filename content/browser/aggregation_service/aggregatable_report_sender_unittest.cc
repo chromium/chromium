@@ -4,6 +4,8 @@
 
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -12,10 +14,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/isolation_info.h"
@@ -48,6 +53,30 @@ void ExpectHistograms(
     std::optional<AggregatableReportRequest::DelayType> delay_type,
     AggregatableReportSender::RequestStatus request_status,
     int http_response_or_net_error) {
+  EXPECT_THAT(
+      metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+      testing::ElementsAre(testing::Pointee(testing::AllOf(
+          testing::Field(
+              &metrics::dwa::mojom::DwaEntry::event_hash,
+              base::HashMetricName(
+                  "PrivacySandbox.AggregationService.ReportSenderAttempt")),
+
+          // The content is set as the reporting origin, which is based off
+          // `kExampleURL` in our tests. DWA content sanitization extracts the
+          // eTLD+1 from this value, yielding "a.com".
+          testing::Field(&metrics::dwa::mojom::DwaEntry::content_hash,
+                         base::HashMetricName("a.com")),
+          testing::Field(&metrics::dwa::mojom::DwaEntry::metrics,
+                         testing::UnorderedElementsAre(testing::Pair(
+                             base::HashMetricName("Status"),
+                             static_cast<int64_t>(request_status))))))));
+
+  // Ensures that metrics are only counted since the last call to
+  // `ExpectHistograms()`.
+  // TODO(crbug.com/403946431): Consider implementing a scoped object to improve
+  // ergonomics.
+  metrics::dwa::DwaRecorder::Get()->Purge();
+
   auto GetName = [](auto... pieces) -> std::string {
     constexpr std::string_view kHistogramPrefix =
         "PrivacySandbox.AggregationService.ReportSender";
@@ -101,10 +130,20 @@ class AggregatableReportSenderTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_))) {}
 
+  void SetUp() override {
+    metrics::dwa::DwaRecorder::Get()->EnableRecording();
+
+    // Remove any earlier metrics in case recording has already been enabled.
+    metrics::dwa::DwaRecorder::Get()->Purge();
+    ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+                testing::IsEmpty());
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<AggregatableReportSender> sender_;
+  base::test::ScopedFeatureList scoped_feature_list_{metrics::dwa::kDwaFeature};
 };
 
 TEST_F(AggregatableReportSenderTest, ReportSent_RequestAttributesSet) {

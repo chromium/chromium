@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -23,16 +22,14 @@ class ResizeObserver;
 // In each iteration, only notifications deeper than the
 // shallowest notification from previous iteration are delivered.
 class CORE_EXPORT ResizeObserverController final
-    : public GarbageCollected<ResizeObserverController>,
-      public Supplement<LocalDOMWindow> {
+    : public GarbageCollected<ResizeObserverController> {
  public:
   static const size_t kDepthBottom = 4096;
 
-  static const char kSupplementName[];
   static ResizeObserverController* From(LocalDOMWindow&);
   static ResizeObserverController* FromIfExists(LocalDOMWindow&);
 
-  explicit ResizeObserverController(LocalDOMWindow&);
+  ResizeObserverController() = default;
 
   void AddObserver(ResizeObserver&);
 
@@ -54,7 +51,7 @@ class CORE_EXPORT ResizeObserverController final
     loop_limit_error_dispatched = is_dispatched;
   }
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   // For testing only.
   const HeapLinkedHashSet<WeakMember<ResizeObserver>>& Observers() {

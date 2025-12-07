@@ -4,6 +4,8 @@
 
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 
+#include <utility>
+
 #include "base/compiler_specific.h"
 
 namespace chrome_pdf {

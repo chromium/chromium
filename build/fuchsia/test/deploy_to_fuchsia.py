@@ -34,9 +34,9 @@ def main():
     args = parser.parse_args()
 
     fuchsia_out_dir = os.path.expanduser(args.fuchsia_out_dir)
+    args.repo = os.path.join(fuchsia_out_dir, 'amber-files')
     package_paths = read_package_paths(args.out_dir, args.package)
-    publish_packages(package_paths, os.path.join(fuchsia_out_dir,
-                                                 'amber-files'))
+    publish_packages(package_paths, args)
     install_symbols(package_paths, fuchsia_out_dir)
 
 

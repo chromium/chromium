@@ -72,7 +72,7 @@ separate preferences, their default values, and that either `IdleActionAC` or
 {
   ...
   "IdleAction": {
-    "os": ["chromeos_ash"],
+    "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
         "note": "Check default values (no policies set)",
@@ -159,8 +159,7 @@ needs to have at least one test case. Valid values are:
 - `win`
 - `linux`
 - `mac`
-- `chromeos_ash`
-- `chromeos_lacros`
+- `chromeos`
 - `android`
 - `fuchsia`
 - `ios` (tested via separate [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping))
@@ -274,7 +273,7 @@ one `PolicyPrefMappingTest` for the pref's default value and one
 ```
 [
   {
-    "os": array<string>, // subset of ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "ios"]
+    "os": array<string>, // subset of ["win", "linux", "mac", "chromeos", "android", "ios"]
     "official_only": boolean, // optional, defaults to false
     "can_be_recommended": boolean, // optional, defaults to false
     "reason_for_missing_test": string // optional, should be only field then

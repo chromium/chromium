@@ -15,6 +15,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -24,7 +25,7 @@ namespace views {
 
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(InkDropHost, kInkDropKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(InkDropHost, kInkDropKey)
 
 // TODO(pbos): Remove this by changing the constructor parameters to
 // InkDropImpl.
@@ -128,19 +129,18 @@ void InkDrop::RemoveObserver(InkDropObserver* observer) {
 InkDrop::InkDrop() = default;
 
 void InkDrop::NotifyInkDropAnimationStarted() {
-  for (InkDropObserver& observer : observers_)
-    observer.InkDropAnimationStarted();
+  observers_.Notify(&InkDropObserver::InkDropAnimationStarted);
 }
 
 void InkDrop::NotifyInkDropRippleAnimationEnded(InkDropState ink_drop_state) {
-  for (InkDropObserver& observer : observers_)
-    observer.InkDropRippleAnimationEnded(ink_drop_state);
+  observers_.Notify(&InkDropObserver::InkDropRippleAnimationEnded,
+                    ink_drop_state);
 }
 
 InkDropContainerView::InkDropContainerView() {
   // Ensure the container View is found as the EventTarget instead of this.
   SetCanProcessEventsWithinSubtree(false);
-  SetProperty(kIsDecorativeViewKey, true);
+  SetProperty(kViewIgnoredByLayoutKey, true);
 }
 
 InkDropContainerView::~InkDropContainerView() = default;
@@ -155,8 +155,7 @@ void InkDropContainerView::SetAutoMatchParentBounds(
     return;
   }
   auto_match_parent_bounds_ = auto_match_parent_bounds;
-  OnPropertyChanged(&auto_match_parent_bounds_,
-                    PropertyEffects::kPropertyEffectsNone);
+  OnPropertyChanged(&auto_match_parent_bounds_, PropertyEffects::kNone);
   if (parent()) {
     OnViewBoundsChanged(parent());
   }

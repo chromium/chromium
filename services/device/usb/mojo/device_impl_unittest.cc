@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/mojo/device_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -19,13 +15,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -374,7 +371,7 @@ class USBDeviceImplTest : public testing::Test {
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
     ASSERT_EQ(bytes.size(), buffer->size());
     for (size_t i = 0; i < bytes.size(); ++i) {
-      EXPECT_EQ(bytes[i], buffer->front()[i])
+      UNSAFE_TODO(EXPECT_EQ(bytes[i], buffer->front()[i]))
           << "Contents differ at index: " << i;
     }
     mock_outbound_data_.pop();
@@ -444,7 +441,7 @@ class USBDeviceImplTest : public testing::Test {
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
     ASSERT_EQ(buffer->size(), bytes.size());
     for (size_t i = 0; i < bytes.size(); ++i) {
-      EXPECT_EQ(bytes[i], buffer->front()[i])
+      UNSAFE_TODO(EXPECT_EQ(bytes[i], buffer->front()[i]))
           << "Contents differ at index: " << i;
     }
     mock_outbound_data_.pop();
@@ -471,7 +468,8 @@ class USBDeviceImplTest : public testing::Test {
   bool is_device_open_ = false;
   bool allow_reset_ = false;
 
-  std::map<uint8_t, const mojom::UsbConfigurationInfo*> mock_configs_;
+  std::map<uint8_t, raw_ptr<const mojom::UsbConfigurationInfo, CtnExperimental>>
+      mock_configs_;
 
   base::queue<std::vector<uint8_t>> mock_inbound_data_;
   base::queue<std::vector<uint8_t>> mock_outbound_data_;
@@ -583,14 +581,14 @@ TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
 
   UsbDevice::OpenCallback saved_callback;
   EXPECT_CALL(mock_device(), OpenInternal(_))
-      .WillOnce(Invoke([&saved_callback](UsbDevice::OpenCallback& callback) {
+      .WillOnce([&saved_callback](UsbDevice::OpenCallback& callback) {
         saved_callback = std::move(callback);
-      }));
+      });
   EXPECT_CALL(device_client, OnDeviceOpened()).Times(0);
   EXPECT_CALL(device_client, OnDeviceClosed()).Times(0);
 
   device->Open(base::BindOnce(
-      [](mojom::UsbOpenDeviceResultPtr result) { NOTREACHED_IN_MIGRATION(); }));
+      [](mojom::UsbOpenDeviceResultPtr result) { NOTREACHED(); }));
   device.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -804,7 +802,7 @@ TEST_F(USBDeviceImplTest, ClaimAndReleaseInterface) {
 
 TEST_F(USBDeviceImplTest, ClaimProtectedInterface) {
   mojo::Remote<mojom::UsbDevice> device =
-      GetMockDeviceProxyWithBlockedInterfaces({{2}});
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{2}));
 
   EXPECT_CALL(mock_device(), OpenInternal(_));
 
@@ -991,11 +989,11 @@ TEST_F(USBDeviceImplTest, GenericTransfer) {
 
   std::string message1 = "say hello please";
   std::vector<uint8_t> fake_outbound_data(message1.size());
-  base::ranges::copy(message1, fake_outbound_data.begin());
+  std::ranges::copy(message1, fake_outbound_data.begin());
 
   std::string message2 = "hello world!";
   std::vector<uint8_t> fake_inbound_data(message2.size());
-  base::ranges::copy(message2, fake_inbound_data.begin());
+  std::ranges::copy(message2, fake_inbound_data.begin());
 
   AddMockConfig(ConfigBuilder(1).AddInterface(7, 0, 1, 2, 3).Build());
   AddMockOutboundData(fake_outbound_data);
@@ -1061,11 +1059,11 @@ TEST_F(USBDeviceImplTest, IsochronousTransfer) {
 
   std::string outbound_data = "aaaaaaaabbbbbbbbccccccccdddddddd";
   std::vector<uint8_t> fake_outbound_data(outbound_data.size());
-  base::ranges::copy(outbound_data, fake_outbound_data.begin());
+  std::ranges::copy(outbound_data, fake_outbound_data.begin());
 
   std::string inbound_data = "ddddddddccccccccbbbbbbbbaaaaaaaa";
   std::vector<uint8_t> fake_inbound_data(inbound_data.size());
-  base::ranges::copy(inbound_data, fake_inbound_data.begin());
+  std::ranges::copy(inbound_data, fake_inbound_data.begin());
 
   AddMockConfig(ConfigBuilder(1).AddInterface(7, 0, 1, 2, 3).Build());
   AddMockOutboundPackets(fake_outbound_data, std::move(fake_packets_in));
@@ -1117,11 +1115,11 @@ TEST_F(USBDeviceImplTest, IsochronousTransferOutBufferSizeMismatch) {
 
   std::string outbound_data = "aaaaaaaabbbbbbbbccccccccdddddddd";
   std::vector<uint8_t> fake_outbound_data(outbound_data.size());
-  base::ranges::copy(outbound_data, fake_outbound_data.begin());
+  std::ranges::copy(outbound_data, fake_outbound_data.begin());
 
   std::string inbound_data = "ddddddddccccccccbbbbbbbbaaaaaaaa";
   std::vector<uint8_t> fake_inbound_data(inbound_data.size());
-  base::ranges::copy(inbound_data, fake_inbound_data.begin());
+  std::ranges::copy(inbound_data, fake_inbound_data.begin());
 
   AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
                     .AddInterface(/*interface_number=*/7,
@@ -1170,11 +1168,11 @@ TEST_F(USBDeviceImplTest, IsochronousTransferPacketLengthsOverflow) {
 
   std::string outbound_data = "aaaaaaaabbbbbbbb";
   std::vector<uint8_t> fake_outbound_data(outbound_data.size());
-  base::ranges::copy(outbound_data, fake_outbound_data.begin());
+  std::ranges::copy(outbound_data, fake_outbound_data.begin());
 
   std::string inbound_data = "bbbbbbbbaaaaaaaa";
   std::vector<uint8_t> fake_inbound_data(inbound_data.size());
-  base::ranges::copy(inbound_data, fake_inbound_data.begin());
+  std::ranges::copy(inbound_data, fake_inbound_data.begin());
 
   AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
                     .AddInterface(/*interface_number=*/7,
@@ -1400,7 +1398,8 @@ TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
   const char* data_str = mojom::UsbControlTransferParams::kSecurityKeyAOAModel;
   const std::vector<uint8_t> data(
       reinterpret_cast<const uint8_t*>(data_str),
-      reinterpret_cast<const uint8_t*>(data_str) + strlen(data_str));
+      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(data_str) +
+                  strlen(data_str)));
 
   if (allow_security_key_requests) {
     AddMockOutboundData(data);

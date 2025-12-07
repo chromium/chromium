@@ -4,13 +4,13 @@
 
 #include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -153,7 +153,7 @@ void TrustTokenRequestIssuanceHelper::Begin(
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
     std::move(done).Run(std::nullopt,
-                        mojom::TrustTokenOperationStatus::kResourceLimited);
+                        mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
     return;
   }
 
@@ -185,6 +185,8 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
   }
 
   protocol_version_ = commitment_result->protocol_version;
+  base::UmaHistogramEnumeration("Net.TrustTokens.ProtocolVersion",
+                                protocol_version_);
   if (!commitment_result->batch_size ||
       !cryptographer_->Initialize(protocol_version_,
                                   commitment_result->batch_size)) {
@@ -260,19 +262,22 @@ void TrustTokenRequestIssuanceHelper::Finalize(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_ISSUANCE);
 
-  std::string header_value;
+  // EnumerateHeader(|iter|=nullptr) asks for a previous instance of the header,
+  // and returns the next one.
+  std::optional<std::string_view> header_value =
+      response_headers.EnumerateHeader(
+          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader);
 
-  // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
-  // if any.
-  if (!response_headers.EnumerateHeader(
-          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
+  if (!header_value) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
-  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
-  ProcessIssuanceResponse(std::move(header_value), std::move(done));
+  ProcessIssuanceResponse(std::string(*header_value), std::move(done));
+  // Can only remove the header after the last user of `header_value`, since it
+  // holds a pointer to the kTrustTokensSecTrustTokenHeader header's value.
+  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 }
 
 void TrustTokenRequestIssuanceHelper::ProcessIssuanceResponse(
@@ -311,7 +316,7 @@ void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
     return;
   }
 
-  token_store_->AddTokens(*issuer_, base::make_span(maybe_tokens->tokens),
+  token_store_->AddTokens(*issuer_, base::span(maybe_tokens->tokens),
                           maybe_tokens->body_of_verifying_key);
 
   num_obtained_tokens_ = maybe_tokens->tokens.size();

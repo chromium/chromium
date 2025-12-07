@@ -1,0 +1,67 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "data_import_credential_conflict_mutator.h",
+    "data_import_credential_conflict_resolution_view_controller.h",
+    "data_import_credential_conflict_resolution_view_controller.mm",
+    "data_import_import_stage_transition_handler.h",
+    "data_import_invalid_passwords_view_controller.h",
+    "data_import_invalid_passwords_view_controller.mm",
+    "import_data_item_table_view.h",
+    "import_data_item_table_view.mm",
+  ]
+  deps = [
+    ":password_import_cell_configuration",
+    ":ui_utils",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/data_import/public:metrics",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("password_import_cell_configuration") {
+  sources = [
+    "password_import_item_cell_content_configuration.h",
+    "password_import_item_cell_content_configuration.mm",
+    "password_import_item_cell_content_view.h",
+    "password_import_item_cell_content_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("ui_utils") {
+  sources = [
+    "ui_utils.h",
+    "ui_utils.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -10,7 +10,7 @@
 namespace content {
 class WebContents;
 class WebContentsViewDelegate;
-}
+}  // namespace content
 
 std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(
     content::WebContents* web_contents);

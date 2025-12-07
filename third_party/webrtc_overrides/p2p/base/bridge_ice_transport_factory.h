@@ -5,11 +5,10 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_BRIDGE_ICE_TRANSPORT_FACTORY_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_BRIDGE_ICE_TRANSPORT_FACTORY_H_
 
-#include <memory>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-
 #include "third_party/webrtc/api/ice_transport_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
@@ -27,7 +26,7 @@ class RTC_EXPORT BridgeIceTransportFactory final
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~BridgeIceTransportFactory() override = default;
 
-  rtc::scoped_refptr<webrtc::IceTransportInterface> CreateIceTransport(
+  webrtc::scoped_refptr<webrtc::IceTransportInterface> CreateIceTransport(
       const std::string& transport_name,
       int component,
       webrtc::IceTransportInit init) override;

@@ -10,22 +10,30 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -53,54 +61,58 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
 }  // namespace
 
-@interface StartSurfaceSceneAgent () <AppStateObserver>
+@interface StartSurfaceSceneAgent () <ProfileStateObserver>
 
 // Caches the previous activation level.
 @property(nonatomic, assign) SceneActivationLevel previousActivationLevel;
 
-// YES if The AppState was not ready before the SceneState reached a valid
-// activation level, so therefore this agent needs to wait for the AppState's
+// YES if The ProfileState was not ready before the SceneState reached a valid
+// activation level, so therefore this agent needs to wait for the ProfileState
 // initStage to reach a valid stage before checking whether the Start Surface
 // should be shown.
-@property(nonatomic, assign) BOOL waitingForAppStateAfterSceneStateReady;
+@property(nonatomic, assign) BOOL waitingForProfileStateAfterSceneStateReady;
 
 @end
 
 @implementation StartSurfaceSceneAgent
-
-- (id)init {
-  self = [super init];
-  if (self) {
-    self.previousActivationLevel = SceneActivationLevelUnattached;
-  }
-  return self;
-}
 
 #pragma mark - ObservingSceneAgent
 
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.appState addObserver:self];
+  [sceneState.profileState addObserver:self];
+  [self sceneState:sceneState
+      transitionedToActivationLevel:sceneState.activationLevel];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage >= InitStageFirstRun &&
-      self.waitingForAppStateAfterSceneStateReady) {
-    self.waitingForAppStateAfterSceneStateReady = NO;
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kFinal &&
+      self.waitingForProfileStateAfterSceneStateReady) {
+    self.waitingForProfileStateAfterSceneStateReady = NO;
     [self showStartSurfaceIfNecessary];
+    [self showTabGroupInGridIfNecessary];
   }
 }
 
 #pragma mark - SceneStateObserver
 
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  if (self.waitingForProfileStateAfterSceneStateReady) {
+    self.waitingForProfileStateAfterSceneStateReady = NO;
+    [self showStartSurfaceIfNecessary];
+    [self showTabGroupInGridIfNecessary];
+  }
+}
+
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
-  [self.sceneState.appState removeObserver:self];
-  self.waitingForAppStateAfterSceneStateReady = NO;
+  [self.sceneState.profileState removeObserver:self];
+  self.waitingForProfileStateAfterSceneStateReady = NO;
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -114,46 +126,45 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
   if (level == SceneActivationLevelBackground &&
       self.previousActivationLevel > SceneActivationLevelBackground) {
-    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
+    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs) &&
+        !IsAvoidNTPCleanupOnBackgroundEnabled()) {
       // Remove duplicate NTP pages upon background event.
-      if (self.sceneState.browserProviderInterface.mainBrowserProvider
-              .browser) {
-        [self removeExcessNTPsInBrowser:self.sceneState.browserProviderInterface
-                                            .mainBrowserProvider.browser];
-      }
-      if (self.sceneState.browserProviderInterface.incognitoBrowserProvider
-              .browser) {
-        [self removeExcessNTPsInBrowser:self.sceneState.browserProviderInterface
-                                            .incognitoBrowserProvider.browser];
-      }
+      [self removeExcessNTPs];
     }
   }
   if (level >= SceneActivationLevelForegroundInactive &&
       self.previousActivationLevel < SceneActivationLevelForegroundInactive) {
     [self logBackgroundDurationMetricForActivationLevel:level];
     [self showStartSurfaceIfNecessary];
+    [self showTabGroupInGridIfNecessary];
   }
   self.previousActivationLevel = level;
 }
 
 - (void)showStartSurfaceIfNecessary {
-  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // NO if the app is not yet ready to present normal UI that is required by
     // Start Surface.
-    self.waitingForAppStateAfterSceneStateReady = YES;
+    self.waitingForProfileStateAfterSceneStateReady = YES;
     return;
   }
 
+  if (!self.sceneState.UIEnabled) {
+    self.waitingForProfileStateAfterSceneStateReady = YES;
+    return;
+  }
+
+  CHECK(self.sceneState.browserProviderInterface);
   Browser* browser =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
   // are loaded in iSL.
-  if (IsPrefetchingSystemCapabilitiesOnAppStartup()) {
-    RunSystemCapabilitiesPrefetch(
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser->GetBrowserState())
-            ->GetAllIdentities());
-  }
+  ProfileIOS* profile = browser->GetProfile();
+  RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;
@@ -172,9 +183,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   // Note that activeWebState could only be nullptr when the Tab grid is active
   // for now.
   web::WebState* activeWebState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList()
-          ->GetActiveWebState();
+      browser->GetWebStateList()->GetActiveWebState();
   if (!activeWebState || IsUrlNtp(activeWebState->GetVisibleURL())) {
     return;
   }
@@ -182,14 +191,31 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
 
-  // Activate the existing NTP tab for the Start surface.
+  StartupRemediationsType startUpRemediationFeatureType =
+      GetIOSStartTimeStartupRemediationsEnabledType();
   WebStateList* webStateList = browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    web::WebState* webState = webStateList->GetWebStateAt(i);
-    if (IsUrlNtp(webState->GetVisibleURL())) {
-      NewTabPageTabHelper::FromWebState(webState)->SetShowStartSurface(true);
-      webStateList->ActivateWebStateAt(i);
-      return;
+  if (startUpRemediationFeatureType == StartupRemediationsType::kDisabled) {
+    // Iterate through the WebStateList and activate the existing NTP tab for
+    // the Start surface (if any).
+    for (int i = webStateList->count() - 1; i >= 0; --i) {
+      if ([self activateNTPForWebStateList:webStateList atIndex:i]) {
+        return;
+      }
+    }
+  } else if (startUpRemediationFeatureType ==
+             StartupRemediationsType::kSaveNewNTPWebState) {
+    // If the tab at index kIOSLastKnownNTPWebStateIndex is still a valid
+    // ungrouped NTP page, activate it and return early.
+    PrefService* prefService = browser->GetProfile()->GetPrefs();
+    int knownNTPWebStateIndex =
+        prefService->GetInteger(prefs::kIOSLastKnownNTPWebStateIndex);
+    prefService->ClearPref(prefs::kIOSLastKnownNTPWebStateIndex);
+    if (webStateList->ContainsIndex(knownNTPWebStateIndex) &&
+        !webStateList->GetGroupOfWebStateAt(knownNTPWebStateIndex)) {
+      if ([self activateNTPForWebStateList:webStateList
+                                   atIndex:knownNTPWebStateIndex]) {
+        return;
+      }
     }
   }
 
@@ -203,38 +229,69 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   insertion_agent->InsertWebState(web_load_params, tab_insertion_params);
 }
 
-// Removes empty NTP tabs (i.e. NTPs with no further navigation) in `browser`'s
-// WebStateList.
+// Removes empty NTP tabs.
+- (void)removeExcessNTPs {
+  id<BrowserProviderInterface> providerInterface =
+      self.sceneState.browserProviderInterface;
+
+  [self removeExcessNTPsInBrowser:providerInterface.mainBrowserProvider];
+  [self removeExcessNTPsInBrowser:providerInterface.incognitoBrowserProvider];
+}
+
+// Removes empty NTP tabs (i.e. NTPs with no further navigation) in the
+// WebStateList attached to the Browser accessible via `browserProvider`
 //
 // NTPs with navigation are all preserved. If there are none, an empty NTP is
 // preserved.
-- (void)removeExcessNTPsInBrowser:(Browser*)browser {
+//
+// Also sets pref kIOSLastKnownNTPWebStateIndex with the post-removal index of
+// an NTP tab. The pref will be used to find an existing active NTP page in
+// -showStartSurfaceIfNecessary.
+- (void)removeExcessNTPsInBrowser:(id<BrowserProvider>)browserProvider {
+  Browser* browser = browserProvider.browser;
+  if (!browser) {
+    return;
+  }
+
   WebStateList* webStateList = browser->GetWebStateList();
+  DCHECK(webStateList);
 
   // Map groups to the indices of its empty NTPs, and whether the group contains
   // at least one non-empty NTP (an NTP with navigation), which will be kept.
   // Ungrouped tabs correspond to the `nullptr` entry in the map.
+  int numberOfTabsToDelete = 0;
+  int knownNTPWebStateIndex = -1;
   std::map<const TabGroup*, std::pair<std::vector<int>, bool>> groupsToNTPs;
   for (int index = 0; index < webStateList->count(); ++index) {
     const web::WebState* webState = webStateList->GetWebStateAt(index);
     const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
     if (IsEmptyNTP(webState)) {
       groupsToNTPs[tabGroup].first.push_back(index);
+      numberOfTabsToDelete++;
     } else if (IsNTP(webState)) {
       groupsToNTPs[tabGroup].second = true;
+      // This NTP tab will be kept, so save its future index (index after the
+      // prior tabs are deleted).
+      knownNTPWebStateIndex = index - numberOfTabsToDelete;
     }
   }
 
   // For each group (respectively the ungrouped tabs case), if there are only
   // empty NTPs, preserve one NTP by removing it from the list of indices to
   // close for the group (respectively the ungrouped tabs case).
+  numberOfTabsToDelete = 0;
   for (auto& [group, NTPs] : groupsToNTPs) {
     auto& indicesToRemoveInGroup = NTPs.first;
+    numberOfTabsToDelete += indicesToRemoveInGroup.size();
     const bool groupHasNonEmptyNTP = NTPs.second;
     if (indicesToRemoveInGroup.empty() || groupHasNonEmptyNTP) {
       continue;
     }
-    // Remove the last empty NTP from the list of tabs to close.
+    // Remove the last empty NTP from the list of tabs to close and save its
+    // future index.
+    numberOfTabsToDelete--;
+    knownNTPWebStateIndex =
+        indicesToRemoveInGroup.back() - numberOfTabsToDelete;
     indicesToRemoveInGroup.pop_back();
   }
 
@@ -252,6 +309,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // Perform the operations on the WebStateList, if needed.
   if (indicesToRemove.empty()) {
+    // If knownNTPWebStateIndex was set, save it to
+    // kIOSLastKnownNTPWebStateIndex.
+    if (browserProvider.browser->type() != Browser::Type::kIncognito &&
+        knownNTPWebStateIndex >= 0) {
+      browser->GetProfile()->GetPrefs()->SetInteger(
+          prefs::kIOSLastKnownNTPWebStateIndex, knownNTPWebStateIndex);
+    }
     return;
   }
   const WebStateList::ScopedBatchOperation batch =
@@ -280,22 +344,58 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       tabInsertionParams.should_skip_new_tab_animation = true;
       TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
           webLoadParams, tabInsertionParams);
+      // This NTP tab will be kept, so save its future index.
+      knownNTPWebStateIndex =
+          webStateList->count() - indicesToRemove.size() - 1;
     }
+  }
+
+  // Set kIOSLastKnownNTPWebStateIndex if knownNTPWebStateIndex was set.
+  if (browserProvider.browser->type() != Browser::Type::kIncognito &&
+      knownNTPWebStateIndex >= 0) {
+    browser->GetProfile()->GetPrefs()->SetInteger(
+        prefs::kIOSLastKnownNTPWebStateIndex, knownNTPWebStateIndex);
   }
 
   // Close the excessive NTPs.
   webStateList->CloseWebStatesAtIndices(
-      WebStateList::CLOSE_NO_FLAGS,
+      WebStateList::ClosingReason::kDefault,
       RemovingIndexes(std::move(indicesToRemove)));
+
+  if (IsDiamondPrototypeEnabled()) {
+    for (int index = webStateList->count() - 1; index >= 0; --index) {
+      const web::WebState* webState = webStateList->GetWebStateAt(index);
+      const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
+      if (IsNTP(webState) && !tabGroup) {
+        webStateList->CloseWebStateAt(index,
+                                      WebStateList::ClosingReason::kDefault);
+      }
+    }
+  }
+}
+
+// Returns YES if the WebState at the given index has been activated. Only
+// activates NTPs.
+- (BOOL)activateNTPForWebStateList:(WebStateList*)webStateList
+                           atIndex:(int)index {
+  web::WebState* lastKnownWebState = webStateList->GetWebStateAt(index);
+  if (IsUrlNtp(lastKnownWebState->GetVisibleURL())) {
+    webStateList->ActivateWebStateAt(index);
+    NewTabPageTabHelper::FromWebState(lastKnownWebState)
+        ->SetShowStartSurface(true);
+    return YES;
+  }
+  return NO;
 }
 
 - (void)logBackgroundDurationMetricForActivationLevel:
     (SceneActivationLevel)level {
   const base::TimeDelta timeSinceBackground =
-      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState);
+      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState)
+          .value_or(base::TimeDelta());
   const BOOL isColdStart =
       (level > SceneActivationLevelBackground &&
-       self.sceneState.appState.startupInformation.isColdStart);
+       self.sceneState.profileState.startupInformation.isColdStart);
   if (isColdStart) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeColdStart",
                                 timeSinceBackground.InMinutes(), 1,
@@ -307,4 +407,52 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 }
 
+// Shows the active tab group in tab grid view if chrome becomes active during a
+// specific time interval since last activation.
+- (void)showTabGroupInGridIfNecessary {
+  if (!IsShowTabGroupInGridOnStartEnabled()) {
+    return;
+  }
+
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+    // Do not show if the app is not yet ready to present normal UI that is
+    // required by tab group in grid.
+    self.waitingForProfileStateAfterSceneStateReady = YES;
+    return;
+  }
+
+  Browser* browser =
+      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
+
+  // Do not show if in IncognitoMode
+  if (browser->type() != Browser::Type::kRegular) {
+    return;
+  }
+
+  // Do not show if already visible.
+  if (self.sceneState.controller.isTabGridVisible) {
+    return;
+  }
+
+  if (!ShouldShowTabGroupInGridForSceneState(self.sceneState)) {
+    return;
+  }
+
+  WebStateList* webStateList = browser->GetWebStateList();
+  int index = webStateList->active_index();
+  const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
+  if (!tabGroup) {
+    // Do not show if active tab is not part of a group.
+    return;
+  }
+
+  // Increment the IOS.TabGroupInGridOnStart.Show metric.
+  base::RecordAction(base::UserMetricsAction("IOS.TabGroupInGridOnStart.Show"));
+
+  // Activate the tab group in grid view.
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+}
 @end

@@ -2,6 +2,8 @@
 
 This is a list of changes to [First Input Delay](https://web.dev/fid).
 
+* September 9, 2024
+  * Deprecated in favor of [Interaction to Next Paint](https://web.dev/articles/inp)
 * Chrome 91
   * Chrome change affecting metric: [Disable double-tap-to-zoom on mobile viewports](2021_05_fid.md)
 * Chrome 83

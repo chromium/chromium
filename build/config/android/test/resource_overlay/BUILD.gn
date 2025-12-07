@@ -43,6 +43,19 @@ test_resources("root_tagged_root_resources") {
   deps = [ ":root_tagged_dependency_resources" ]
 }
 
+test_resources("both_tagged_dependency_resources") {
+  resource_overlay = true
+  resource_name = "resource_overlay_both_tagged_secret"
+  resource_value = 41
+}
+
+test_resources("both_tagged_root_resources") {
+  resource_overlay = true
+  resource_name = "resource_overlay_both_tagged_secret"
+  resource_value = 42
+  deps = [ ":both_tagged_dependency_resources" ]
+}
+
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
@@ -50,6 +63,7 @@ android_library("unit_device_javatests") {
   ]
   resources_package = "org.chromium.build.resource_overlay"
   deps = [
+    ":both_tagged_root_resources",
     ":dependency_tagged_root_resources",
     ":root_tagged_root_resources",
     "//base:base_java_test_support",

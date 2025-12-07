@@ -12,9 +12,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
@@ -23,7 +22,8 @@ import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, EditAction, MetaKey, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import type {Accelerator, AcceleratorSource, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorKeyState, AcceleratorState, AcceleratorType, EditAction, MetaKey} from './shortcut_types.js';
 import {getAccelerator, getAriaLabelForStandardAcceleratorInfo} from './shortcut_utils.js';
 
 export type RequestUpdateAcceleratorEvent =
@@ -171,8 +171,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         if (configResult.result.result === AcceleratorConfigResult.kConflict) {
           this.statusMessage = this.i18n(
               'restoreDefaultConflictMessage',
-              mojoString16ToString(
-                  configResult.result.shortcutName as String16));
+              configResult.result.shortcutName as String16);
         }
         return;
       } else {

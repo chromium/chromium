@@ -1,0 +1,4 @@
+include_rules = [
+  "+google_apis/common",
+  "+components/signin/public/identity_manager"
+]

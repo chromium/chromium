@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -21,29 +20,34 @@
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck crbug.com/423799622
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using signin::ConsentLevel;
 using signin::PrimaryAccountChangeEvent;
@@ -61,7 +65,7 @@ IdentityAPI::IdentityAPI(content::BrowserContext* context)
                   ExtensionPrefs::Get(context),
                   EventRouter::Get(context)) {}
 
-IdentityAPI::~IdentityAPI() {}
+IdentityAPI::~IdentityAPI() = default;
 
 IdentityMintRequestQueue* IdentityAPI::mint_queue() { return &mint_queue_; }
 
@@ -70,20 +74,20 @@ IdentityTokenCache* IdentityAPI::token_cache() {
 }
 
 void IdentityAPI::SetGaiaIdForExtension(const std::string& extension_id,
-                                        const std::string& gaia_id) {
+                                        const GaiaId& gaia_id) {
   DCHECK(!gaia_id.empty());
   extension_prefs_->UpdateExtensionPref(extension_id, kIdentityGaiaIdPref,
-                                        base::Value(gaia_id));
+                                        base::Value(gaia_id.ToString()));
 }
 
-std::optional<std::string> IdentityAPI::GetGaiaIdForExtension(
+std::optional<GaiaId> IdentityAPI::GetGaiaIdForExtension(
     const std::string& extension_id) {
   std::string gaia_id;
   if (!extension_prefs_->ReadPrefAsString(extension_id, kIdentityGaiaIdPref,
                                           &gaia_id)) {
     return std::nullopt;
   }
-  return gaia_id;
+  return GaiaId(gaia_id);
 }
 
 void IdentityAPI::EraseGaiaIdForExtension(const std::string& extension_id) {
@@ -98,7 +102,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
     return;
   auto accounts = GetAccountsWithRefreshTokensForExtensions();
   for (const ExtensionId& extension_id : extension_prefs_->GetExtensions()) {
-    std::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
+    std::optional<GaiaId> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
       continue;
     if (!base::Contains(accounts, *gaia_id, &CoreAccountInfo::gaia)) {
@@ -143,8 +147,9 @@ IdentityAPI::GetAccountsWithRefreshTokensForExtensions() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void IdentityAPI::MaybeShowChromeSigninDialog(std::string_view extension_name,
-                                              base::OnceClosure on_complete) {
+void IdentityAPI::MaybeShowChromeSigninDialog(
+    const std::u16string& extension_name_for_display,
+    base::OnceClosure on_complete) {
   if (HasAccessToChromeAccounts() ||
       identity_manager_->GetAccountsWithRefreshTokens().empty()) {
     DVLOG(1) << "The user is not signed in on the web!";
@@ -175,10 +180,12 @@ void IdentityAPI::MaybeShowChromeSigninDialog(std::string_view extension_name,
   }
   on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
   is_chrome_signin_dialog_open_ = true;
-  browser->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
-      extension_name,
-      base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
-                     weak_ptr_factory_.GetWeakPtr()));
+  browser->GetFeatures()
+      .signin_view_controller()
+      ->MaybeShowChromeSigninDialogForExtensions(
+          extension_name_for_display,
+          base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IdentityAPI::OnChromeSigninDialogDestroyed() {
@@ -225,7 +232,7 @@ void IdentityAPI::OnPrimaryAccountChanged(
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       EraseStaleGaiaIdsForAllExtensions();
-      base::flat_set<std::string> tracked_accounts;
+      base::flat_set<GaiaId> tracked_accounts;
       std::swap(tracked_accounts, accounts_known_to_extensions_);
       for (auto& account_id : tracked_accounts) {
         FireOnAccountSignInChanged(account_id, /*is_signed_in=*/false);
@@ -264,11 +271,11 @@ void IdentityAPI::OnExtendedAccountInfoRemoved(
   FireOnAccountSignInChanged(account_info.gaia, false);
 }
 
-void IdentityAPI::FireOnAccountSignInChanged(const std::string& gaia_id,
+void IdentityAPI::FireOnAccountSignInChanged(const GaiaId& gaia_id,
                                              bool is_signed_in) {
   CHECK(!gaia_id.empty());
   api::identity::AccountInfo api_account_info;
-  api_account_info.id = gaia_id;
+  api_account_info.id = gaia_id.ToString();
 
   auto args =
       api::identity::OnSignInChanged::Create(api_account_info, is_signed_in);

@@ -27,10 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_TEXT_RENDERING_MODE_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -41,8 +38,8 @@ enum TextRenderingMode {
   kGeometricPrecision
 };
 
-PLATFORM_EXPORT WTF::String ToString(TextRenderingMode);
-PLATFORM_EXPORT WTF::String ToStringForIdl(TextRenderingMode);
+PLATFORM_EXPORT String ToString(TextRenderingMode);
+PLATFORM_EXPORT String ToStringForIdl(TextRenderingMode);
 
 }  // namespace blink
 

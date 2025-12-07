@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,9 +37,6 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   // Covers most cases where content is a simple label containing a message.
   // The eventual theme changes will be handled internally.
   void SetTextContent(const std::u16string& message);
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   raw_ptr<views::View, DanglingUntriaged> content_ = nullptr;

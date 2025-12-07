@@ -18,6 +18,8 @@ namespace net {
 // returned to the global counter.
 class NET_EXPORT OwnedUDPSocketCount {
  public:
+  static constexpr int kMaxUdpSockets = 6000;
+
   // The default constructor builds an empty OwnedUDPSocketCount (does not own a
   // count).
   OwnedUDPSocketCount();
@@ -48,7 +50,7 @@ class NET_EXPORT OwnedUDPSocketCount {
   friend NET_EXPORT OwnedUDPSocketCount TryAcquireGlobalUDPSocketCount();
   explicit OwnedUDPSocketCount(bool empty);
 
-  bool empty_;
+  bool empty_ = true;
 };
 
 // Attempts to increase the global "open UDP socket" [1] count.

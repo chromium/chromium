@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/views/widget/any_widget_observer_singleton.h"
-#include "ui/views/widget/any_widget_observer.h"
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace views::internal {
 
@@ -18,14 +18,14 @@ AnyWidgetObserverSingleton* AnyWidgetObserverSingleton::GetInstance() {
 
 #define PROPAGATE_NOTIFICATION(method)                      \
   void AnyWidgetObserverSingleton::method(Widget* widget) { \
-    for (AnyWidgetObserver & obs : observers_)              \
-      obs.method(widget);                                   \
+    observers_.Notify(&AnyWidgetObserver::method, widget);  \
   }
 
 PROPAGATE_NOTIFICATION(OnAnyWidgetInitialized)
 PROPAGATE_NOTIFICATION(OnAnyWidgetShown)
 PROPAGATE_NOTIFICATION(OnAnyWidgetHidden)
 PROPAGATE_NOTIFICATION(OnAnyWidgetClosing)
+PROPAGATE_NOTIFICATION(OnAnyWidgetActivated)
 
 #undef PROPAGATE_NOTIFICATION
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
 <script src="resources/snav-testharness.js"></script>
 
 <style>
@@ -23,31 +24,32 @@
   snav.assertSnavEnabledAndTestable();
   t = async_test("Spatial Navigation scrolls visual viewport.");
 
-  addEventListener('load', () => {
-    t.step(() => {
-      const scale = 2;
-      const spacer = document.getElementById('spacer');
+  window.onload = t.step_func(async function() {
+    const scale = 2;
+    const spacer = document.getElementById('spacer');
 
-      window.internals.setPageScaleFactor(scale);
+    window.internals.setPageScaleFactor(scale);
+    await waitForCompositorCommit();
 
-      assert_equals(window.visualViewport.offsetTop, 0,
-                    "Visual Viewport should start unscrolled.");
+    assert_equals(window.visualViewport.offsetTop, 0,
+                  "Visual Viewport should start unscrolled.");
 
+    snav.triggerMove('Down');
+    await waitForCompositorCommit();
+
+    assert_greater_than(window.visualViewport.offsetTop, 0,
+                        "Visual Viewport should have been scrolled.");
+
+    // Scroll a bunch and check if we reached the bottom.
+    for(let i = 0; i < 20; ++i)
       snav.triggerMove('Down');
+    await waitForCompositorCommit();
 
-      assert_greater_than(window.visualViewport.offsetTop, 0,
-                          "Visual Viewport should have been scrolled.");
+    assert_equals(window.visualViewport.offsetTop, window.innerHeight / scale,
+                  "Visual viewport should have been fully scrolled.");
+    assert_equals(window.scrollY, spacer.clientHeight - window.innerHeight,
+                  "Layout viewport should have been fully scrolled.");
 
-      // Scroll a bunch and check if we reached the bottom.
-      for(let i = 0; i < 20; ++i)
-        snav.triggerMove('Down');
-
-      assert_equals(window.visualViewport.offsetTop, window.innerHeight / scale,
-                    "Visual viewport should have been fully scrolled.");
-      assert_equals(window.scrollY, spacer.clientHeight - window.innerHeight,
-                    "Layout viewport should have been fully scrolled.");
-
-      t.done();
-    });
+    t.done();
   });
 </script>

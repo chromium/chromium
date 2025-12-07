@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="org.khronos.openxr.openxr_loader_for_android">
+  <!--
+  Copyright (c) 2020-2025 The Khronos Group Inc.
+  SPDX-License-Identifier: Apache-2.0 OR MIT
+  -->
+  <uses-permission android:name="org.khronos.openxr.permission.OPENXR" />
+  <uses-permission android:name="org.khronos.openxr.permission.OPENXR_SYSTEM" />
+
+  <queries>
+    <!-- to talk to the broker -->
+    <provider android:authorities="org.khronos.openxr.runtime_broker;org.khronos.openxr.system_runtime_broker" />
+
+    <!-- so client-side code of runtime/layers can talk to their service sides -->
+    <intent>
+      <action android:name="org.khronos.openxr.OpenXRRuntimeService" />
+    </intent>
+    <intent>
+      <action android:name="org.khronos.openxr.OpenXRApiLayerService" />
+    </intent>
+  </queries>
+</manifest>

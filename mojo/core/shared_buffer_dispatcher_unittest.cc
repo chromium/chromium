@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/shared_buffer_dispatcher.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -72,7 +68,7 @@ TEST_F(SharedBufferDispatcherTest, ValidateCreateOptionsValid) {
   MojoCreateSharedBufferFlags flags_values[] = {
       MOJO_CREATE_SHARED_BUFFER_FLAG_NONE};
   for (size_t i = 0; i < std::size(flags_values); i++) {
-    const MojoCreateSharedBufferFlags flags = flags_values[i];
+    const MojoCreateSharedBufferFlags flags = UNSAFE_TODO(flags_values[i]);
 
     // Different capacities (size 1).
     for (uint32_t capacity = 1; capacity <= 100 * 1000 * 1000; capacity *= 10) {
@@ -129,7 +125,7 @@ TEST_F(SharedBufferDispatcherTest, CreateAndMapBuffer) {
   ASSERT_TRUE(mapping1->GetBase());
   EXPECT_EQ(100u, mapping1->GetLength());
   // Write something.
-  static_cast<char*>(mapping1->GetBase())[50] = 'x';
+  UNSAFE_TODO(static_cast<char*>(mapping1->GetBase())[50]) = 'x';
 
   std::unique_ptr<PlatformSharedMemoryMapping> mapping2;
   EXPECT_EQ(MOJO_RESULT_OK, dispatcher->MapBuffer(50, 50, &mapping2));
@@ -142,8 +138,8 @@ TEST_F(SharedBufferDispatcherTest, CreateAndMapBuffer) {
 
   // Check that we can still read/write to mappings after the dispatcher has
   // gone away.
-  static_cast<char*>(mapping2->GetBase())[1] = 'y';
-  EXPECT_EQ('y', static_cast<char*>(mapping1->GetBase())[51]);
+  UNSAFE_TODO(static_cast<char*>(mapping2->GetBase())[1]) = 'y';
+  UNSAFE_TODO(EXPECT_EQ('y', static_cast<char*>(mapping1->GetBase())[51]));
 }
 
 TEST_F(SharedBufferDispatcherTest, CreateAndMapBufferFromPlatformBuffer) {
@@ -166,7 +162,7 @@ TEST_F(SharedBufferDispatcherTest, CreateAndMapBufferFromPlatformBuffer) {
   ASSERT_TRUE(mapping1->GetBase());
   EXPECT_EQ(100u, mapping1->GetLength());
   // Write something.
-  static_cast<char*>(mapping1->GetBase())[50] = 'x';
+  UNSAFE_TODO(static_cast<char*>(mapping1->GetBase())[50]) = 'x';
 
   std::unique_ptr<PlatformSharedMemoryMapping> mapping2;
   EXPECT_EQ(MOJO_RESULT_OK, dispatcher->MapBuffer(50, 50, &mapping2));
@@ -179,8 +175,8 @@ TEST_F(SharedBufferDispatcherTest, CreateAndMapBufferFromPlatformBuffer) {
 
   // Check that we can still read/write to mappings after the dispatcher has
   // gone away.
-  static_cast<char*>(mapping2->GetBase())[1] = 'y';
-  EXPECT_EQ('y', static_cast<char*>(mapping1->GetBase())[51]);
+  UNSAFE_TODO(static_cast<char*>(mapping2->GetBase())[1]) = 'y';
+  UNSAFE_TODO(EXPECT_EQ('y', static_cast<char*>(mapping1->GetBase())[51]));
 }
 
 TEST_F(SharedBufferDispatcherTest, DuplicateBufferHandle) {

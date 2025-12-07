@@ -4,28 +4,25 @@
 
 package org.chromium.components.payments;
 
-import android.content.Context;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperTypeConverter;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -42,186 +39,92 @@ import java.util.Set;
 
 /**
  * The point of interaction with a locally installed 3rd party native Android payment app.
- * https://developers.google.com/web/fundamentals/payments/payment-apps-developer-guide/android-payment-apps
+ * https://web.dev/articles/android-payment-apps-developers-guide
  */
+@NullMarked
 public class AndroidPaymentApp extends PaymentApp
-        implements IsReadyToPayServiceHelper.ResultHandler {
+        implements IsReadyToPayServiceHelper.ResultHandler, WindowAndroid.IntentCallback {
     private final Handler mHandler;
-    private final Launcher mLauncher;
+    private final AndroidIntentLauncher mLauncher;
+    private final @Nullable DialogController mDialogController;
     private final Set<String> mMethodNames;
     private final boolean mIsIncognito;
     private final String mPackageName;
     private final String mPayActivityName;
-    private final String mIsReadyToPayServiceName;
-    private IsReadyToPayCallback mIsReadyToPayCallback;
-    private InstrumentDetailsCallback mInstrumentDetailsCallback;
-    private IsReadyToPayServiceHelper mIsReadyToPayServiceHelper;
-    @Nullable private String mApplicationIdentifierToHide;
-    private boolean mBypassIsReadyToPayServiceInTest;
+    private final @Nullable String mIsReadyToPayServiceName;
+    private final @Nullable String mPaymentDetailsUpdateServiceName;
     private final SupportedDelegations mSupportedDelegations;
+    private final boolean mAllowShowWithoutReadyToPay;
+    private final boolean mShowReadyToPayDebugInfo;
+    private final boolean mRemoveDeprecatedFields;
+    private final int mPaymentDetailsUpdateServiceMaxRetryNumber;
+
+    private @Nullable IsReadyToPayCallback mIsReadyToPayCallback;
+    private @Nullable InstrumentDetailsCallback mInstrumentDetailsCallback;
+    private @Nullable IsReadyToPayServiceHelper mIsReadyToPayServiceHelper;
+    private @Nullable PaymentDetailsUpdateConnection mPaymentDetailsUpdateConnection;
+    private final @Nullable String mApplicationIdentifierToHide;
+    private boolean mBypassIsReadyToPayServiceInTest;
+    private boolean mIsReadyToPayResponseInTest = true;
     private boolean mIsPreferred;
+    private boolean mHasEnrolledInstrumentResult;
 
     // Set inside launchPaymentApp and used to validate the received response.
-    @Nullable private WebPaymentIntentHelperType.PaymentOptions mPaymentOptions;
-
-    /**
-     * The interface for launching Android payment apps and for showing a warning about leaving
-     * incognito mode when launching an Android payment app.
-     */
-    public interface Launcher {
-        /**
-         * Show a warning about leaving incognito mode with a prompt to continue into the payment
-         * app.
-         * @param denyCallback The callback invoked when the user denies or dismisses the prompt.
-         * @param approveCallback The callback invoked when the user approves the prompt.
-         */
-        default void showLeavingIncognitoWarning(
-                Callback<String> denyCallback, Runnable approveCallback) {}
-
-        /**
-         * Launch the payment app via an intent.
-         * @param intent The intent that includes the payment app identification and parameters.
-         * @param errorCallback The callback invoked when invoking the payment app fails.
-         * @param intentCallback The callback invoked when the payment app responds to the intent.
-         */
-        default void launchPaymentApp(
-                Intent intent,
-                Callback<String> errorCallback,
-                Callback<IntentResult> intentCallback) {}
-    }
-
-    /** The result of invoking an Android app. */
-    public static class IntentResult {
-        /** Activity result, either Activity.RESULT_OK or Activity.RESULT_CANCELED. */
-        public int resultCode;
-
-        /** The data returned from the payment app. */
-        public Intent data;
-    }
-
-    /**
-     * The default implementation of payment app launcher that uses WindowAndroid for invoking
-     * Android apps.
-     */
-    public static class LauncherImpl implements Launcher, WindowAndroid.IntentCallback {
-        private final WebContents mWebContents;
-        private Callback<IntentResult> mIntentCallback;
-
-        /**
-         * @param webContents The web contents whose WindowAndroid should be used for invoking
-         * Android payment apps and receiving the result.
-         */
-        public LauncherImpl(WebContents webContents) {
-            mWebContents = webContents;
-        }
-
-        @Nullable
-        private Context getActivityContext() {
-            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
-            return window == null ? null : window.getActivity().get();
-        }
-
-        // Launcher implementation.
-        @Override
-        public void showLeavingIncognitoWarning(
-                Callback<String> denyCallback, Runnable approveCallback) {
-            Context context = getActivityContext();
-            if (context == null) {
-                denyCallback.onResult(ErrorStrings.ACTIVITY_NOT_FOUND);
-                return;
-            }
-            new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                    .setTitle(R.string.external_app_leave_incognito_warning_title)
-                    .setMessage(R.string.external_payment_app_leave_incognito_warning)
-                    .setPositiveButton(
-                            R.string.ok, (OnClickListener) (dialog, which) -> approveCallback.run())
-                    .setNegativeButton(
-                            R.string.cancel,
-                            (OnClickListener)
-                                    (dialog, which) ->
-                                            denyCallback.onResult(ErrorStrings.USER_CANCELLED))
-                    .setOnCancelListener(
-                            dialog -> denyCallback.onResult(ErrorStrings.USER_CANCELLED))
-                    .show();
-        }
-
-        // Launcher implementation.
-        @Override
-        public void launchPaymentApp(
-                Intent intent,
-                Callback<String> errorCallback,
-                Callback<IntentResult> intentCallback) {
-            assert mIntentCallback == null;
-
-            if (mWebContents.isDestroyed()) {
-                errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
-                return;
-            }
-
-            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
-            if (window == null) {
-                errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
-                return;
-            }
-
-            mIntentCallback = intentCallback;
-            try {
-                if (!window.showIntent(
-                        intent, /* callback= */ this, R.string.payments_android_app_error)) {
-                    errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
-                }
-            } catch (SecurityException e) {
-                // Payment app does not have android:exported="true" on the PAY activity.
-                errorCallback.onResult(ErrorStrings.PAYMENT_APP_PRIVATE_ACTIVITY);
-            }
-        }
-
-        // WindowAndroid.IntentCallback implementation.
-        @Override
-        public void onIntentCompleted(int resultCode, Intent data) {
-            assert mIntentCallback != null;
-            IntentResult intentResult = new IntentResult();
-            intentResult.resultCode = resultCode;
-            intentResult.data = data;
-            mIntentCallback.onResult(intentResult);
-            mIntentCallback = null;
-        }
-    }
+    private WebPaymentIntentHelperType.@Nullable PaymentOptions mPaymentOptions;
 
     /**
      * Builds the point of interaction with a locally installed 3rd party native Android payment
      * app.
      *
-     * @param launcher Helps querying and launching the Android payment app. Overridden in unit
-     *         tests.
+     * @param launcher Helps launching the Android payment app.
+     * @param dialogController Helps showing informational or warning dialogs.
      * @param packageName The name of the package of the payment app.
      * @param activity The name of the payment activity in the payment app.
-     * @param isReadyToPayService The name of the service that can answer "is ready to pay"
-     *         query, or null of none.
+     * @param isReadyToPayService The name of the service that can answer "is ready to pay" query,
+     *     or null of none.
+     * @param paymentDetailsUpdateServiceName The name of the payment app's service for dynamically
+     *     updating the payment details (e.g., the total price) based on changes in user's payment
+     *     method, shipping address, or shipping option.
      * @param label The UI label to use for the payment app.
      * @param icon The icon to use in UI for the payment app.
      * @param isIncognito Whether the user is in incognito mode.
      * @param appToHide The identifier of the application that this app can hide.
      * @param supportedDelegations Delegations which this app can support.
+     * @param allowShowWithoutReadyToPay Whether the app can be shown regardless of the "is ready to
+     *     pay" query's result.
+     * @param showReadyToPayDebugInfo Whether IS_READY_TO_PAY intent should be displayed in a debug
+     *     dialog.
+     * @param removeDeprecatedFields Whether intents should omit deprecated fields.
+     * @param paymentDetailsUpdateServiceMaxRetryNumber The maximum number of times to attempt to
+     *     reconnect to the UPDATE_PAYMENT_DETAILS service in the payment app, if it unexpectedly
+     *     disconnects during payment.
      */
     public AndroidPaymentApp(
-            Launcher launcher,
+            AndroidIntentLauncher launcher,
+            @Nullable DialogController dialogController,
             String packageName,
             String activity,
             @Nullable String isReadyToPayService,
+            @Nullable String paymentDetailsUpdateServiceName,
             String label,
             Drawable icon,
             boolean isIncognito,
             @Nullable String appToHide,
-            SupportedDelegations supportedDelegations) {
+            SupportedDelegations supportedDelegations,
+            boolean allowShowWithoutReadyToPay,
+            boolean showReadyToPayDebugInfo,
+            boolean removeDeprecatedFields,
+            int paymentDetailsUpdateServiceMaxRetryNumber) {
         super(packageName, label, null, icon);
         ThreadUtils.assertOnUiThread();
         mHandler = new Handler();
         mLauncher = launcher;
+        mDialogController = dialogController;
 
         mPackageName = packageName;
         mPayActivityName = activity;
         mIsReadyToPayServiceName = isReadyToPayService;
+        mPaymentDetailsUpdateServiceName = paymentDetailsUpdateServiceName;
 
         if (mIsReadyToPayServiceName != null) {
             assert !isIncognito;
@@ -231,7 +134,12 @@ public class AndroidPaymentApp extends PaymentApp
         mIsIncognito = isIncognito;
         mApplicationIdentifierToHide = appToHide;
         mSupportedDelegations = supportedDelegations;
+        mAllowShowWithoutReadyToPay = allowShowWithoutReadyToPay;
+        mShowReadyToPayDebugInfo = showReadyToPayDebugInfo;
+        mRemoveDeprecatedFields = removeDeprecatedFields;
+        mPaymentDetailsUpdateServiceMaxRetryNumber = paymentDetailsUpdateServiceMaxRetryNumber;
         mIsPreferred = false;
+        mHasEnrolledInstrumentResult = false;
     }
 
     /** @param methodName A payment method that this app supports, e.g., "https://bobpay.com". */
@@ -249,12 +157,45 @@ public class AndroidPaymentApp extends PaymentApp
         void onIsReadyToPayResponse(AndroidPaymentApp app, boolean isReadyToPay);
     }
 
+    private static String buildReadyToPayDebugInfoString(
+            String serviceName,
+            String packageName,
+            String origin,
+            String iframeOrigin,
+            Map<String, PaymentMethodData> methodDataMap) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("IS_READY_TO_PAY sent to ");
+        sb.append(serviceName);
+        sb.append(" in ");
+        sb.append(packageName);
+        sb.append(" with {\"topLevelOrigin\": \"");
+        sb.append(origin);
+        sb.append("\", \"paymentRequestOrigin\": \"");
+        sb.append(iframeOrigin);
+        sb.append("\", \"methodNames\": [");
+        for (String methodName : methodDataMap.keySet()) {
+            sb.append("\"");
+            sb.append(methodName);
+            sb.append("\"");
+        }
+        sb.append("], \"methodData\": [");
+        for (Map.Entry<String, PaymentMethodData> entry : methodDataMap.entrySet()) {
+            sb.append("{\"");
+            sb.append(entry.getKey());
+            sb.append("\": ");
+            sb.append(entry.getValue().stringifiedData);
+            sb.append("}");
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
+
     /** Queries the IS_READY_TO_PAY service. */
     public void maybeQueryIsReadyToPayService(
             Map<String, PaymentMethodData> methodDataMap,
             String origin,
             String iframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentDetailsModifier> modifiers,
             IsReadyToPayCallback callback) {
         ThreadUtils.assertOnUiThread();
@@ -270,10 +211,22 @@ public class AndroidPaymentApp extends PaymentApp
 
         assert !mIsIncognito;
 
+        if (mShowReadyToPayDebugInfo && mDialogController != null) {
+            mDialogController.showReadyToPayDebugInfo(
+                    buildReadyToPayDebugInfoString(
+                            mIsReadyToPayServiceName,
+                            mPackageName,
+                            origin,
+                            iframeOrigin,
+                            methodDataMap));
+        }
+
         Intent isReadyToPayIntent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(
-                        /* packageName= */ mPackageName,
-                        /* serviceName= */ mIsReadyToPayServiceName,
+                        /* callerPackageName= */ ContextUtils.getApplicationContext()
+                                .getPackageName(),
+                        /* paymentAppPackageName= */ mPackageName,
+                        /* paymentAppServiceName= */ mIsReadyToPayServiceName,
                         removeUrlScheme(origin),
                         removeUrlScheme(iframeOrigin),
                         certificateChain,
@@ -281,9 +234,10 @@ public class AndroidPaymentApp extends PaymentApp
                                 methodDataMap),
                         // TODO(crbug.com/40212375): Re-enable clearing of identity for
                         // IS_READY_TO_PAY
-                        /* clearIdFields= */ false);
+                        /* clearIdFields= */ false,
+                        mRemoveDeprecatedFields);
         if (mBypassIsReadyToPayServiceInTest) {
-            respondToIsReadyToPayQuery(true);
+            respondToIsReadyToPayQuery(mIsReadyToPayResponseInTest);
             return;
         }
         mIsReadyToPayServiceHelper =
@@ -299,6 +253,11 @@ public class AndroidPaymentApp extends PaymentApp
         mBypassIsReadyToPayServiceInTest = true;
     }
 
+    @VisibleForTesting
+    public void setIsReadyToPayResponseInTest(boolean isReadyToPay) {
+        mIsReadyToPayResponseInTest = isReadyToPay;
+    }
+
     private void respondToIsReadyToPayQuery(boolean isReadyToPay) {
         ThreadUtils.assertOnUiThread();
         if (mIsReadyToPayCallback == null) return;
@@ -307,8 +266,7 @@ public class AndroidPaymentApp extends PaymentApp
     }
 
     @Override
-    @Nullable
-    public String getApplicationIdentifierToHide() {
+    public @Nullable String getApplicationIdentifierToHide() {
         return mApplicationIdentifierToHide;
     }
 
@@ -323,7 +281,7 @@ public class AndroidPaymentApp extends PaymentApp
             final String merchantName,
             String origin,
             String iframeOrigin,
-            final byte[][] certificateChain,
+            final byte @Nullable [][] certificateChain,
             final Map<String, PaymentMethodData> methodDataMap,
             final PaymentItem total,
             final List<PaymentItem> displayItems,
@@ -354,7 +312,12 @@ public class AndroidPaymentApp extends PaymentApp
             return;
         }
 
-        mLauncher.showLeavingIncognitoWarning(this::notifyErrorInvokingPaymentApp, launchRunnable);
+        // The dialog controller can be null only in WebView, which does not have a concept of
+        // incognito mode, i.e., `mIsIncognito` is always false in WebView.
+        assert mDialogController != null;
+
+        mDialogController.showLeavingIncognitoWarning(
+                this::notifyErrorInvokingPaymentApp, launchRunnable);
     }
 
     @Override
@@ -398,6 +361,24 @@ public class AndroidPaymentApp extends PaymentApp
         return mSupportedDelegations.getPayerPhone();
     }
 
+    @Override
+    public boolean hasEnrolledInstrument() {
+        if (mAllowShowWithoutReadyToPay) {
+            return mHasEnrolledInstrumentResult;
+        }
+
+        return super.hasEnrolledInstrument();
+    }
+
+    /**
+     * @param hasEnrolledInstrumentResult Whether the payment app can support the current payment
+     *     request.
+     */
+    void setHasEnrolledInstrument(boolean hasEnrolledInstrumentResult) {
+        if (!mAllowShowWithoutReadyToPay) return;
+        mHasEnrolledInstrumentResult = hasEnrolledInstrumentResult;
+    }
+
     private static String removeUrlScheme(String url) {
         return UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
     }
@@ -407,7 +388,7 @@ public class AndroidPaymentApp extends PaymentApp
             String merchantName,
             String origin,
             String iframeOrigin,
-            byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             List<PaymentItem> displayItems,
@@ -436,10 +417,25 @@ public class AndroidPaymentApp extends PaymentApp
                                 modifiers),
                         mPaymentOptions,
                         WebPaymentIntentHelperTypeConverter.fromMojoShippingOptionList(
-                                shippingOptions));
+                                shippingOptions),
+                        mRemoveDeprecatedFields);
 
         mLauncher.launchPaymentApp(
-                payIntent, this::notifyErrorInvokingPaymentApp, this::onIntentCompleted);
+                payIntent, this::notifyErrorInvokingPaymentApp, /* intentCallback= */ this);
+
+        if (!TextUtils.isEmpty(mPaymentDetailsUpdateServiceName)) {
+            mPaymentDetailsUpdateConnection =
+                    new PaymentDetailsUpdateConnection(
+                            ContextUtils.getApplicationContext(),
+                            WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
+                                    /* callerPackageName= */ ContextUtils.getApplicationContext()
+                                            .getPackageName(),
+                                    mPackageName,
+                                    mPaymentDetailsUpdateServiceName),
+                            new PaymentDetailsUpdateService().getBinder(),
+                            mPaymentDetailsUpdateServiceMaxRetryNumber);
+            mPaymentDetailsUpdateConnection.connectToService();
+        }
     }
 
     private void notifyErrorInvokingPaymentApp(String errorMessage) {
@@ -453,16 +449,17 @@ public class AndroidPaymentApp extends PaymentApp
                 });
     }
 
-    public void onIntentCompletedForTesting(IntentResult intentResult) {
-        onIntentCompleted(intentResult);
-    }
-
-    private void onIntentCompleted(IntentResult intentResult) {
+    // WindowAndroid.IntentCallback:
+    @Override
+    public void onIntentCompleted(int resultCode, @Nullable Intent data) {
         assert mInstrumentDetailsCallback != null;
         ThreadUtils.assertOnUiThread();
+        if (mPaymentDetailsUpdateConnection != null) {
+            mPaymentDetailsUpdateConnection.terminateConnection();
+        }
         WebPaymentIntentHelper.parsePaymentResponse(
-                intentResult.resultCode,
-                intentResult.data,
+                resultCode,
+                data,
                 mPaymentOptions,
                 this::notifyErrorInvokingPaymentApp,
                 this::onPaymentSuccess);

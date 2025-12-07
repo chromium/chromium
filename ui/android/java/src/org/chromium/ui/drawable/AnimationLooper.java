@@ -7,21 +7,20 @@ package org.chromium.ui.drawable;
 import android.animation.ValueAnimator;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Handler;
-import android.provider.Settings;
 
-import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Encapsulates the logic to loop animated drawables from both Android Framework. The animation
  * should be started and stopped using {@link #start()} and {@link #stop()}.
  */
+@NullMarked
 public class AnimationLooper {
     private static @Nullable Boolean sAreAnimatorsEnabledForTests;
 
@@ -70,15 +69,7 @@ public class AnimationLooper {
     private static boolean areAnimatorsEnabled() {
         if (sAreAnimatorsEnabledForTests != null) return sAreAnimatorsEnabledForTests;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return ValueAnimator.areAnimatorsEnabled();
-        } else {
-            return Settings.Global.getFloat(
-                            ContextUtils.getApplicationContext().getContentResolver(),
-                            Settings.Global.ANIMATOR_DURATION_SCALE,
-                            1.0f)
-                    != 0.0f;
-        }
+        return ValueAnimator.areAnimatorsEnabled();
     }
 
     static void setAreAnimatorsEnabledForTests(@Nullable Boolean areAnimatorsEnabled) {

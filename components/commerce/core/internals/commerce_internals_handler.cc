@@ -10,8 +10,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
+#include "components/commerce/core/mojom/shared.mojom.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
@@ -23,19 +27,18 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 
-shopping_service::mojom::BookmarkProductInfoPtr GetBookmarkProductInfo(
+commerce::shared::mojom::BookmarkProductInfoPtr GetBookmarkProductInfo(
     const bookmarks::BookmarkNode* bookmark,
     power_bookmarks::PowerBookmarkMeta* meta,
     const std::string& locale_on_startup) {
   const power_bookmarks::ShoppingSpecifics& specifics =
       meta->shopping_specifics();
-  auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();
+  auto bookmark_info = commerce::shared::mojom::BookmarkProductInfo::New();
   bookmark_info->bookmark_id = bookmark->id();
-  bookmark_info->info = shopping_service::mojom::ProductInfo::New();
+  bookmark_info->info = commerce::shared::mojom::ProductInfo::New();
   bookmark_info->info->title = specifics.title();
   bookmark_info->info->product_url = bookmark->url();
   bookmark_info->info->domain = base::UTF16ToUTF8(
@@ -77,7 +80,7 @@ std::vector<commerce::mojom::SubscriptionPtr> GetSubscriptionsMojom(
       std::vector<const bookmarks::BookmarkNode*> bookmarks =
           commerce::GetBookmarksWithClusterId(bookmark_model, cluster_id);
 
-      std::vector<shopping_service::mojom::BookmarkProductInfoPtr> info_list;
+      std::vector<commerce::shared::mojom::BookmarkProductInfoPtr> info_list;
       for (auto* bookmark : bookmarks) {
         std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
             power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model, bookmark);
@@ -137,50 +140,6 @@ void CommerceInternalsHandler::GetIsShoppingListEligible(
       shopping_service_ ? shopping_service_->IsShoppingListEligible() : false);
 }
 
-void CommerceInternalsHandler::GetShoppingListEligibleDetails(
-    GetShoppingListEligibleDetailsCallback callback) {
-  mojom::ShoppingListEligibleDetailPtr detail =
-      mojom::ShoppingListEligibleDetail::New();
-
-  if (!shopping_service_) {
-    std::move(callback).Run(std::move(detail));
-    return;
-  }
-
-  detail->is_region_locked_feature_enabled = mojom::EligibleEntry::New(
-      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
-                                   shopping_service_->country_on_startup_,
-                                   shopping_service_->locale_on_startup_),
-      /*expected_value=*/true);
-  detail->is_shopping_list_allowed_for_enterprise = mojom::EligibleEntry::New(
-      shopping_service_->pref_service_ &&
-          IsShoppingListAllowedForEnterprise(shopping_service_->pref_service_),
-      /*expected_value=*/true);
-
-  auto* account_checker = shopping_service_->account_checker_.get();
-  if (!account_checker) {
-    detail->is_account_checker_valid =
-        mojom::EligibleEntry::New(false, /*expected_value=*/true);
-    std::move(callback).Run(std::move(detail));
-    return;
-  }
-  detail->is_account_checker_valid =
-      mojom::EligibleEntry::New(true, /*expected_value=*/true);
-  detail->is_signed_in =
-      mojom::EligibleEntry::New(account_checker->IsSignedIn(),
-                                /*expected_value=*/true);
-  detail->is_syncing_bookmarks = mojom::EligibleEntry::New(
-      account_checker->IsSyncingBookmarks(), /*expected_value=*/true);
-  detail->is_anonymized_url_data_collection_enabled = mojom::EligibleEntry::New(
-      account_checker->IsAnonymizedUrlDataCollectionEnabled(),
-      /*expected_value=*/true);
-  detail->is_subject_to_parental_controls =
-      mojom::EligibleEntry::New(account_checker->IsSubjectToParentalControls(),
-                                /*expected_value=*/false);
-
-  std::move(callback).Run(std::move(detail));
-}
-
 void CommerceInternalsHandler::ResetPriceTrackingEmailPref() {
   if (!shopping_service_) {
     return;
@@ -192,7 +151,7 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
     const GURL& url,
     GetProductInfoForUrlCallback callback) {
   if (!shopping_service_) {
-    std::move(callback).Run(shopping_service::mojom::ProductInfo::New());
+    std::move(callback).Run(commerce::shared::mojom::ProductInfo::New());
     return;
   }
 
@@ -204,7 +163,7 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
              const std::optional<const ProductInfo>& info) {
             if (!service || !info) {
               std::move(callback).Run(
-                  shopping_service::mojom::ProductInfo::New());
+                  commerce::shared::mojom::ProductInfo::New());
               return;
             }
 
@@ -250,11 +209,13 @@ void CommerceInternalsHandler::GetProductSpecificationsDetails(
     product_specifications->update_time =
         base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(spec.update_time()));
     product_specifications->name = spec.name();
-    std::vector<GURL> urls;
-    for (const GURL& url : spec.urls()) {
-      urls.push_back(url);
+    auto& url_infos = product_specifications->url_infos;
+    for (const UrlInfo& url_info : spec.url_infos()) {
+      auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
+      url_info_ptr->url = url_info.url;
+      url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
+      url_infos.push_back(std::move(url_info_ptr));
     }
-    product_specifications->urls = std::move(urls);
     product_specifications_list.push_back(std::move(product_specifications));
   }
   std::move(callback).Run(std::move(product_specifications_list));
@@ -273,8 +234,8 @@ void CommerceInternalsHandler::ResetProductSpecifications() {
       base::Time::Now());
   shopping_service_->pref_service_->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown));
+      static_cast<int>(
+          product_specifications::mojom::DisclosureVersion::kUnknown));
   product_specifications_service->GetAllProductSpecifications(base::BindOnce(
       &CommerceInternalsHandler::DeleteAllProductSpecificationSets,
       weak_ptr_factory_.GetWeakPtr()));
@@ -289,4 +250,67 @@ void CommerceInternalsHandler::DeleteAllProductSpecificationSets(
         set.uuid().AsLowercaseString());
   }
 }
+
+void CommerceInternalsHandler::GetShoppingEligibilityDetails(
+    GetShoppingEligibilityDetailsCallback callback) {
+  auto details = mojom::ShoppingEligibilityDetails::New();
+
+  if (!shopping_service_) {
+    std::move(callback).Run(std::move(details));
+    return;
+  }
+
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsShoppingListEligible", shopping_service_->IsShoppingListEligible(),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsRegionLockedFeatureEnabled(kShoppingList)",
+      IsRegionLockedFeatureEnabled(kShoppingList,
+                                   shopping_service_->country_on_startup_,
+                                   shopping_service_->locale_on_startup_),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsShoppingListAllowedForEnterprise",
+      shopping_service_->pref_service_ &&
+          IsShoppingListAllowedForEnterprise(shopping_service_->pref_service_),
+      /*expected_value=*/true));
+
+  auto account_checker = shopping_service_->account_checker_.get();
+  if (!account_checker) {
+    details->details.push_back(mojom::EligibilityDetail::New(
+        "IsAccountCheckerValid", false, /*expected_value=*/true));
+    return;
+  }
+
+  details->country = account_checker->GetCountry();
+  details->locale = account_checker->GetLocale();
+
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSignedIn", account_checker->IsSignedIn(), /*expected_value=*/true));
+  details->details.push_back(
+      mojom::EligibilityDetail::New("IsSyncTypeEnabled(kBookmarks)",
+                                    account_checker->IsSyncTypeEnabled(
+                                        syncer::UserSelectableType::kBookmarks),
+                                    /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSyncTypeEnabled(kProductComparison)",
+      account_checker->IsSyncTypeEnabled(
+          syncer::UserSelectableType::kProductComparison),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsAnonymizedUrlDataCollectionEnabled",
+      account_checker->IsAnonymizedUrlDataCollectionEnabled(),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSubjectToParentalControls",
+      account_checker->IsSubjectToParentalControls(),
+      /*expected_value=*/false));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "CanUseModelExecutionFeatures",
+      account_checker->CanUseModelExecutionFeatures(),
+      /*expected_value=*/true));
+
+  std::move(callback).Run(std::move(details));
+}
+
 }  // namespace commerce

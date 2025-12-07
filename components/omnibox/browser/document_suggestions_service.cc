@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -65,9 +66,7 @@ std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
                       base::Value(base::i18n::GetConfiguredLocale()));
   root.Set("requestOptions", std::move(request_options));
 
-  std::string result;
-  base::JSONWriter::Write(root, &result);
-  return result;
+  return base::WriteJson(root).value_or("");
 }
 
 }  // namespace
@@ -77,11 +76,29 @@ DocumentSuggestionsService::DocumentSuggestionsService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
+      account_is_workspace_managed_(IsAccountWorkspaceManaged()),
       token_fetcher_(nullptr) {
-  DCHECK(url_loader_factory);
+  if (identity_manager_) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
 }
 
-DocumentSuggestionsService::~DocumentSuggestionsService() {}
+DocumentSuggestionsService::~DocumentSuggestionsService() = default;
+
+bool DocumentSuggestionsService::HasPrimaryAccount() {
+  if (has_primary_account_for_testing_) {
+    return true;
+  }
+
+  return identity_manager_ &&
+         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+void DocumentSuggestionsService::SetAccountStateForTesting(bool valid) {
+  has_primary_account_for_testing_ = valid;
+  account_is_workspace_managed_for_testing_ = valid;
+  account_is_workspace_managed_ = IsAccountWorkspaceManaged();
+}
 
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
     const std::u16string& query,
@@ -101,7 +118,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
         semantics {
           sender: "Omnibox"
           description:
-            "Request for Google Drive document suggestions from the omnibox."
+            "Request for Google Drive document suggestions from the omnibox. "
             "User must be signed in and have default search provider set to "
             "Google."
           trigger: "Signed-in user enters text in the omnibox."
@@ -111,8 +128,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
         policy {
           cookies_allowed: YES
           cookies_store: "user"
-          setting:
-            "Coupled to Google default search plus signed-in"
+          setting: "Coupled to Google default search plus signed-in."
           chrome_policy {
             SearchSuggestEnabled {
                 policy_options {mode: MANDATORY}
@@ -138,11 +154,8 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
 
   std::move(creation_callback).Run(request.get());
 
-  // Create and fetch an OAuth2 token.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "document_suggestions_service", identity_manager_, scopes,
+      signin::OAuthConsumerId::kDocumentSuggestionsService, identity_manager_,
       base::BindOnce(&DocumentSuggestionsService::AccessTokenAvailable,
                      base::Unretained(this), std::move(request),
                      std::move(request_body), traffic_annotation,
@@ -154,6 +167,22 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
 void DocumentSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       token_fetcher_deleter(std::move(token_fetcher_));
+}
+
+signin::Tribool DocumentSuggestionsService::IsAccountWorkspaceManaged() {
+  if (!HasPrimaryAccount()) {
+    return signin::Tribool::kFalse;
+  }
+
+  if (account_is_workspace_managed_for_testing_) {
+    return signin::Tribool::kTrue;
+  }
+
+  const auto& account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const auto& account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.capabilities.is_subject_to_enterprise_features();
 }
 
 void DocumentSuggestionsService::AccessTokenAvailable(
@@ -187,6 +216,11 @@ void DocumentSuggestionsService::StartDownloadAndTransferLoader(
     net::NetworkTrafficAnnotationTag traffic_annotation,
     StartCallback start_callback,
     CompletionCallback completion_callback) {
+  // Loader factory may be null in tests.
+  if (!url_loader_factory_) {
+    return;
+  }
+
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   if (!request_body.empty()) {
@@ -197,4 +231,21 @@ void DocumentSuggestionsService::StartDownloadAndTransferLoader(
       base::BindOnce(std::move(completion_callback), loader.get()));
 
   std::move(start_callback).Run(std::move(loader), request_body);
+}
+
+void DocumentSuggestionsService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  account_is_workspace_managed_ = IsAccountWorkspaceManaged();
+}
+
+void DocumentSuggestionsService::OnExtendedAccountInfoUpdated(
+    const AccountInfo& account_info) {
+  account_is_workspace_managed_ =
+      account_info.capabilities.is_subject_to_enterprise_features();
+}
+
+void DocumentSuggestionsService::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
 }

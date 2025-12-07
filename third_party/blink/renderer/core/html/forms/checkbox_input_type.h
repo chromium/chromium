@@ -43,11 +43,13 @@ class CheckboxInputType final : public BaseCheckableInputType {
 
  private:
   void CountUsage() override;
-  ControlPart AutoAppearance() const override;
+  AppearanceValue AutoAppearance() const override;
   String ValueMissingText() const override;
   void HandleKeyupEvent(KeyboardEvent&) override;
-  ClickHandlingState* WillDispatchClick() override;
-  void DidDispatchClick(Event&, const ClickHandlingState&) override;
+  // https://html.spec.whatwg.org/#the-input-element:legacy-pre-activation-behavior.
+  ClickHandlingState* LegacyPreActivationBehavior() override;
+  // https://html.spec.whatwg.org/C#checkbox-state-(type=checkbox):input-activation-behavior.
+  void RunInputActivationBehavior(Event&, const ClickHandlingState&) override;
   bool ShouldAppearIndeterminate() const override;
 };
 

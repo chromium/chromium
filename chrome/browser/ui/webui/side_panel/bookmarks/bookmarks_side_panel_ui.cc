@@ -2,33 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources_map.h"
@@ -37,16 +35,15 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -55,14 +52,24 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
+
+const char kSidePanelRootBookmarkID[] = "SIDE_PANEL_ROOT_BOOKMARK_ID";
+const char kSidePanelBookmarkBarID[] = "SIDE_PANEL_BOOKMARK_BAR_ID";
+const char kSidePanelOtherBookmarksID[] = "SIDE_PANEL_OTHER_BOOKMARKS_ID";
+const char kSidePanelMobileBookmarksID[] = "SIDE_PANEL_MOBILE_BOOKMARKS_ID";
+const char kSidePanelManagedBookmarksID[] = "SIDE_PANEL_MANAGED_BOOKMARKS_ID";
 
 BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUIBookmarksSidePanelHost) {}
 
 bool BookmarksSidePanelUIConfig::IsPreloadable() {
-  return true;
+  // TODO(crbug.com/373838921): re-enable preloading once the backend image
+  // service is no longer overwhelmed. This might be fixed by either adding a
+  // backend caching layer (crbug.com/379143109), or by us not requesting image
+  // during preloading.
+  return false;
 }
 
 std::optional<int> BookmarksSidePanelUIConfig::GetCommandIdForTesting() {
@@ -140,6 +147,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuOpenNewTabGroup", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB_GROUP},
       {"menuOpenNewTabGroupWithCount",
        IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP_WITH_COUNT},
+      {"menuOpenSplitView", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_SPLIT_VIEW},
       {"menuMoveToBookmarksBar", IDS_BOOKMARKS_MOVE_TO_BOOKMARKS_BAR},
       {"menuMoveToAllBookmarks", IDS_BOOKMARKS_MOVE_TO_ALL_BOOKMARKS},
       {"menuTrackPrice", IDS_SIDE_PANEL_TRACK_BUTTON},
@@ -177,8 +185,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"primaryFilterHeading", IDS_BOOKMARKS_PRIMARY_FILTER_HEADING},
       {"secondaryFilterHeading", IDS_BOOKMARKS_SECONDARY_FILTER_HEADING},
   };
-  for (const auto& str : kLocalizedStrings)
+  for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
@@ -191,9 +200,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       !prefs->GetList(bookmarks::prefs::kManagedBookmarks).empty());
   source->AddBoolean("shoppingListEnabled",
                      commerce::IsShoppingListAllowedForEnterprise(prefs));
-  source->AddBoolean(
-      "urlImagesEnabled",
-      base::FeatureList::IsEnabled(page_image_service::kImageService));
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
@@ -201,6 +207,13 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "bookmarksTreeViewEnabled",
       base::FeatureList::IsEnabled(features::kBookmarksTreeView));
+  source->AddBoolean("splitViewEnabled",
+                     base::FeatureList::IsEnabled(features::kSideBySide));
+  // TODO(crbug.com/380818698): Replace this with the flag which will be used to
+  // launch account storage for bookmarks.
+  source->AddBoolean("isBookmarksInTransportModeEnabled",
+                     base::FeatureList::IsEnabled(
+                         switches::kSyncEnableBookmarksInTransportMode));
   source->AddInteger(
       "sortOrder",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));
@@ -208,40 +221,18 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       "viewType",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksViewType));
 
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
-  source->AddString(
-      "bookmarksBarId",
-      base::NumberToString(bookmark_model && bookmark_model->bookmark_bar_node()
-                               ? bookmark_model->bookmark_bar_node()->id()
-                               : -1));
-  source->AddString(
-      "otherBookmarksId",
-      base::NumberToString(bookmark_model && bookmark_model->other_node()
-                               ? bookmark_model->other_node()->id()
-                               : -1));
-  source->AddString(
-      "mobileBookmarksId",
-      base::NumberToString(bookmark_model && bookmark_model->mobile_node()
-                               ? bookmark_model->mobile_node()->id()
-                               : -1));
-  bookmarks::ManagedBookmarkService* managed =
-      ManagedBookmarkServiceFactory::GetForProfile(profile);
-  source->AddString("managedBookmarksFolderId",
-                    managed && managed->managed_node()
-                        ? base::NumberToString(managed->managed_node()->id())
-                        : "");
+  source->AddString("rootBookmarkId", kSidePanelRootBookmarkID);
+  source->AddString("bookmarksBarId", kSidePanelBookmarkBarID);
+  source->AddString("otherBookmarksId", kSidePanelOtherBookmarksID);
+  source->AddString("mobileBookmarksId", kSidePanelMobileBookmarksID);
+  source->AddString("managedBookmarksFolderId", kSidePanelManagedBookmarksID);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   const int resource = IDR_SIDE_PANEL_BOOKMARKS_POWER_BOOKMARKS_HTML;
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSidePanelBookmarksResources,
-                                              kSidePanelBookmarksResourcesSize),
-                              resource);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelBookmarksResources, resource);
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
@@ -272,10 +263,11 @@ void BookmarksSidePanelUI::BindInterface(
 }
 
 void BookmarksSidePanelUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
+    mojo::PendingReceiver<
+        commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
+        receiver) {
+  price_tracking_factory_receiver_.reset();
+  price_tracking_factory_receiver_.Bind(std::move(receiver));
 }
 
 void BookmarksSidePanelUI::BindInterface(
@@ -298,13 +290,13 @@ BookmarksSidePanelUI::GetShoppingListContextMenuController() {
 }
 
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(
+    mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
-  bookmarks_page_handler_ =
-      std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
+  bookmarks_page_handler_ = std::make_unique<BookmarksPageHandler>(
+      std::move(receiver), std::move(page), this, web_ui());
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -316,11 +308,27 @@ void BookmarksSidePanelUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker, nullptr, nullptr);
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker, nullptr, nullptr);
+}
+
+void BookmarksSidePanelUI::CreatePriceTrackingHandler(
+    mojo::PendingRemote<commerce::price_tracking::mojom::Page> page,
+    mojo::PendingReceiver<commerce::price_tracking::mojom::PriceTrackingHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
+      std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
+      bookmark_model);
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
-          bookmark_model, shopping_service, shopping_service_handler_.get());
+          bookmark_model, shopping_service, price_tracking_handler_.get());
 }
 
 bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {

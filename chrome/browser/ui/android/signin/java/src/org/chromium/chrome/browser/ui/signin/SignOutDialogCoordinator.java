@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,15 +16,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -43,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * shown for managed accounts. This dialog can be used to only turn off sync without signing out
  * child accounts that are syncing.
  */
+@NullMarked
 final class SignOutDialogCoordinator {
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
@@ -54,7 +56,7 @@ final class SignOutDialogCoordinator {
      */
     public static class ClearDataProgressDialog extends DialogFragment {
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             // Don't allow the dialog to be recreated by Android, since it wouldn't ever be
             // dismissed after recreation.
@@ -62,7 +64,7 @@ final class SignOutDialogCoordinator {
         }
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
             setCancelable(false);
             ProgressDialog dialog = new ProgressDialog(getActivity());
             dialog.setTitle(getString(R.string.wiping_profile_data_title));
@@ -131,13 +133,13 @@ final class SignOutDialogCoordinator {
     }
 
     private static @StringRes int getTitleRes(Profile profile, @SignoutReason int signOutReason) {
-        if (!IdentityServicesProvider.get()
-                .getIdentityManager(profile)
+        if (!assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return R.string.signout_title;
         }
         final String managedDomain =
-                IdentityServicesProvider.get().getSigninManager(profile).getManagementDomain();
+                assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile))
+                        .getManagementDomain();
         if (managedDomain != null) {
             return R.string.signout_managed_account_title;
         }
@@ -150,20 +152,17 @@ final class SignOutDialogCoordinator {
     }
 
     private static String getMessage(Context context, Profile profile) {
-        if (!IdentityServicesProvider.get()
-                .getIdentityManager(profile)
+        if (!assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return context.getString(R.string.signout_message);
         }
         final String managedDomain =
-                IdentityServicesProvider.get().getSigninManager(profile).getManagementDomain();
+                assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile))
+                        .getManagementDomain();
         if (managedDomain != null) {
             return context.getString(R.string.signout_managed_account_message, managedDomain);
         }
-        return context.getString(
-                PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(UserPrefs.get(profile))
-                        ? R.string.turn_off_sync_and_signout_message_without_passwords
-                        : R.string.turn_off_sync_and_signout_message);
+        return context.getString(R.string.turn_off_sync_and_signout_message_without_passwords);
     }
 
     private static int getCheckBoxVisibility(Profile profile) {
@@ -171,12 +170,13 @@ final class SignOutDialogCoordinator {
         // SigninManager.
         final boolean allowDeletingData =
                 UserPrefs.get(profile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        // TODO(crbug.com/40066949): Remove when ConsentLevel.SYNC becomes unreachable on Android.
         final boolean hasSyncConsent =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(profile)
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                         .hasPrimaryAccount(ConsentLevel.SYNC);
         final String managedDomain =
-                IdentityServicesProvider.get().getSigninManager(profile).getManagementDomain();
+                assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile))
+                        .getManagementDomain();
         final boolean showCheckBox = (managedDomain == null) && allowDeletingData && hasSyncConsent;
         return showCheckBox ? View.VISIBLE : View.GONE;
     }
@@ -224,10 +224,6 @@ final class SignOutDialogCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ButtonType.POSITIVE) {
-                    if (mCheckBox.getVisibility() == View.VISIBLE) {
-                        RecordHistogram.recordBooleanHistogram(
-                                "Signin.UserRequestedWipeDataOnSignout", mCheckBox.isChecked());
-                    }
                     boolean forceWipeData =
                             mCheckBox.getVisibility() == View.VISIBLE && mCheckBox.isChecked();
                     signOut(forceWipeData);
@@ -270,18 +266,14 @@ final class SignOutDialogCoordinator {
                         };
                 SigninManager signinManager =
                         IdentityServicesProvider.get().getSigninManager(mProfile);
+                assumeNonNull(signinManager);
                 signinManager.runAfterOperationInProgress(
                         () -> {
-                            // In case sign-out allowed changed while the dialog was displayed, we
-                            // return early to avoid a native crash.
-                            if (!signinManager.isSignOutAllowed()) {
-                                return;
-                            }
                             if (mSignOutReason
                                     == SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS) {
                                 signinManager.revokeSyncConsent(
                                         mSignOutReason, dataWipeCallback, forceWipeUserData);
-                            } else {
+                            } else if (signinManager.isSignOutAllowed()) {
                                 signinManager.signOut(
                                         mSignOutReason, dataWipeCallback, forceWipeUserData);
                             }

@@ -86,7 +86,7 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
             if not os.path.exists(dst_path):
                 if not os.path.exists(os.path.dirname(dst_path)):
                     os.makedirs(os.path.dirname(dst_dir))
-                g_archive_inputs.append(src_path)
+                g_archive_inputs.append(os.path.relpath(src_path, src_dir))
                 shutil.copy(src_path, dst_path)
                 os.utime(dst_path, (os.stat(dst_path).st_atime, timestamp))
         os.utime(dst_dir, (os.stat(dst_dir).st_atime, timestamp))
@@ -183,12 +183,13 @@ def CreateArchiveFile(options, staging_dir, timestamp):
                                 staging_file)
 
         # Finally, write the depfile referencing the inputs.
+        inputs = sorted(set(g_archive_inputs))
         with open(options.depfile, 'wb') as f:
             f.write(
                 PathFixup(os.path.relpath(archive_file, options.build_dir)) +
                 ': \\\n')
-            f.write('  ' +
-                    ' \\\n  '.join(PathFixup(x) for x in g_archive_inputs))
+            f.write('  ' + ' \\\n  '.join(PathFixup(x) for x in inputs))
+            f.write('\n')
 
     # It is important to use abspath to create the path to the directory because
     # if you use a relative path without any .. sequences then 7za.exe uses the
@@ -271,7 +272,8 @@ def DoComponentBuildTasks(staging_dir, build_dir, setup_runtime_deps):
     setup_component_dlls = ParseDLLsFromDeps(build_dir, setup_runtime_deps)
 
     for setup_component_dll in setup_component_dlls:
-        g_archive_inputs.append(setup_component_dll)
+        g_archive_inputs.append(os.path.relpath(setup_component_dll,
+                                                build_dir))
         shutil.copy(setup_component_dll, installer_dir)
 
 

@@ -4,9 +4,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/autofill_data_util.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/validation.h"
+#import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#import "components/autofill/core/browser/data_quality/validation.h"
 #import "components/autofill/core/common/credit_card_number_validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
@@ -23,7 +24,8 @@
   NSString* bankName =
       base::SysUTF16ToNSString(base::ASCIIToUTF16(creditCard.bank_name()));
   NSString* cardHolder = autofill::GetCreditCardName(
-      creditCard, GetApplicationContext()->GetApplicationLocale());
+      creditCard,
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   NSString* number = nil;
   if (creditCard.record_type() !=
       autofill::CreditCard::RecordType::kMaskedServerCard) {
@@ -61,7 +63,10 @@
 
   NSString* CVC = nil;
   if (creditCard.record_type() ==
-      autofill::CreditCard::RecordType::kVirtualCard) {
+          autofill::CreditCard::RecordType::kVirtualCard ||
+      creditCard.card_info_retrieval_enrollment_state() ==
+          autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+              kRetrievalEnrolled) {
     if (creditCard.cvc().empty()) {
       // For virtual cards, if the CVC() value is empty, it means no
       // verification has been done and the `creditCard` object contains only
@@ -75,21 +80,36 @@
       // information.
       CVC = base::SysUTF16ToNSString(creditCard.cvc());
     }
+  } else if (creditCard.record_type() ==
+             autofill::CreditCard::RecordType::kLocalCard) {
+    // For local card, the CVC should be shown.
+    if (!creditCard.cvc().empty()) {
+      CVC = base::SysUTF16ToNSString(creditCard.cvc());
+    }
+  } else {
+    // For server card, the CVC should be masked.
+    if (!creditCard.cvc().empty()) {
+      CVC =
+          base::SysUTF16ToNSString(autofill::CreditCard::GetMidlineEllipsisDots(
+              autofill::GetCvcLengthForCardNetwork(creditCard.network())));
+    }
   }
 
   return [self initWithGUID:GUID
-                       network:network
-                          icon:icon
-                      bankName:bankName
-                    cardHolder:cardHolder
-                        number:number
-              obfuscatedNumber:obfuscatedNumber
-      networkAndLastFourDigits:networkAndLastFourDigits
-                expirationYear:expirationYear
-               expirationMonth:expirationMonth
-                           CVC:CVC
-                    recordType:creditCard.record_type()
-               canFillDirectly:canFillDirectly];
+                               network:network
+                                  icon:icon
+                              bankName:bankName
+                            cardHolder:cardHolder
+                                number:number
+                      obfuscatedNumber:obfuscatedNumber
+              networkAndLastFourDigits:networkAndLastFourDigits
+                        expirationYear:expirationYear
+                       expirationMonth:expirationMonth
+                                   CVC:CVC
+                            recordType:creditCard.record_type()
+      cardInfoRetrievalEnrollmentState:
+          creditCard.card_info_retrieval_enrollment_state()
+                       canFillDirectly:canFillDirectly];
 }
 
 @end

@@ -11,22 +11,15 @@ bool StructTraits<media::mojom::SupportedVideoDecoderConfigDataView,
                   media::SupportedVideoDecoderConfig>::
     Read(media::mojom::SupportedVideoDecoderConfigDataView input,
          media::SupportedVideoDecoderConfig* output) {
-  if (!input.ReadProfileMin(&output->profile_min))
+  if (!input.ReadProfileMin(&output->profile_min) ||
+      !input.ReadProfileMax(&output->profile_max) ||
+      !input.ReadCodedSizeMin(&output->coded_size_min) ||
+      !input.ReadCodedSizeMax(&output->coded_size_max)) {
     return false;
-
-  if (!input.ReadProfileMax(&output->profile_max))
-    return false;
-
-  if (!input.ReadCodedSizeMin(&output->coded_size_min))
-    return false;
-
-  if (!input.ReadCodedSizeMax(&output->coded_size_max))
-    return false;
-
+  }
   output->allow_encrypted = input.allow_encrypted();
   output->require_encrypted = input.require_encrypted();
-
-  return true;
+  return output->IsValid();
 }
 
 }  // namespace mojo

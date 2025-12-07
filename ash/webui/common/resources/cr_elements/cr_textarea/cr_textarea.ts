@@ -158,6 +158,7 @@ export class CrTextareaElement extends PolymerElement {
   disabled: boolean;
   readonly: boolean;
   required: boolean;
+  maxlength: number;
   rows: number;
   label: string;
   value: string;

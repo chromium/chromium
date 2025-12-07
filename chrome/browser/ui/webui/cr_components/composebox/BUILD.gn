@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("composebox") {
+  sources = [
+    "composebox_handler.cc",
+    "composebox_handler.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/contextual_search:public",
+    "//components/lens",
+    "//components/metrics",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//skia",
+    "//third_party/metrics_proto",
+    "//ui/base",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+    "//url",
+  ]
+}

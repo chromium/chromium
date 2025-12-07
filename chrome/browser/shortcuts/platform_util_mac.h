@@ -29,14 +29,6 @@ void SetIconForFile(NSImage* image,
                     const base::FilePath& file,
                     base::OnceCallback<void(bool)> callback);
 
-// Wrapper around NSWorkspace setDefaultApplicationAtURL:toOpenFileAtURL:. The
-// NSWorkspace method only exists on macOS 12.0 and newer; this method polyfills
-// its implementation for older macOS versions.
-void SetDefaultApplicationToOpenFile(
-    NSURL* file_url,
-    NSURL* application_url,
-    base::OnceCallback<void(NSError*)> callback);
-
 // Return a version of `title` that is safe to use as a filename on macOS.
 std::optional<base::SafeBaseName> SanitizeTitleForFileName(
     const std::string& title);

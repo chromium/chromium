@@ -38,7 +38,8 @@ bool SharedQuadState::Equals(const SharedQuadState& other) const {
          opacity == other.opacity && blend_mode == other.blend_mode &&
          sorting_context_id == other.sorting_context_id &&
          layer_id == other.layer_id &&
-         layer_namespace_id == other.layer_namespace_id;
+         layer_namespace_id == other.layer_namespace_id &&
+         offset_tag == other.offset_tag;
 }
 
 void SharedQuadState::SetAll(const SharedQuadState& other) {
@@ -54,6 +55,7 @@ void SharedQuadState::SetAll(const SharedQuadState& other) {
   layer_id = other.layer_id;
   layer_namespace_id = other.layer_namespace_id;
   is_fast_rounded_corner = other.is_fast_rounded_corner;
+  offset_tag = other.offset_tag;
 }
 
 void SharedQuadState::SetAll(const gfx::Transform& transform,
@@ -81,23 +83,12 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
 }
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
-  cc::MathUtil::AddToTracedValue("transform", quad_to_target_transform, value);
-  cc::MathUtil::AddToTracedValue("layer_content_rect", quad_layer_rect, value);
-  cc::MathUtil::AddToTracedValue("layer_visible_content_rect",
+  cc::MathUtil::AddToTracedValue("quad_to_target_transform",
+                                 quad_to_target_transform, value);
+  cc::MathUtil::AddToTracedValue("quad_layer_rect", quad_layer_rect, value);
+  cc::MathUtil::AddToTracedValue("visible_quad_layer_rect",
                                  visible_quad_layer_rect, value);
-  cc::MathUtil::AddToTracedValue("mask_filter_bounds",
-                                 mask_filter_info.bounds(), value);
-  if (mask_filter_info.HasRoundedCorners()) {
-    cc::MathUtil::AddCornerRadiiToTracedValue(
-        "mask_filter_rounded_corners_radii",
-        mask_filter_info.rounded_corner_bounds(), value);
-  }
-  if (mask_filter_info.HasGradientMask()) {
-    cc::MathUtil::AddToTracedValue("mask_filter_gradient_mask",
-                                   mask_filter_info.gradient_mask().value(),
-                                   value);
-  }
-
+  value->SetString("mask_filter_info", mask_filter_info.ToString());
   if (clip_rect) {
     cc::MathUtil::AddToTracedValue("clip_rect", *clip_rect, value);
   }
@@ -106,12 +97,13 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetDouble("opacity", opacity);
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
   value->SetInteger("sorting_context_id", sorting_context_id);
-  value->SetInteger("layer_id", layer_id);
-  value->SetInteger("layer_namespace_id", layer_id);
+  // Skip |layer_id| and |layer_namespace_id| because their values are
+  // different in renderer and viz under TreesInViz mode.
   value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
-  TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
-      TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
-      this);
+  // Skip overlay_damage_index because it's only used by viz.
+  if (offset_tag) {
+    value->SetString("offset_tag", offset_tag.ToString());
+  }
 }
 
 }  // namespace viz

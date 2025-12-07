@@ -5,16 +5,20 @@
 #include "media/audio/android/aaudio_input.h"
 
 #include "base/task/bind_post_task.h"
+#include "media/audio/android/audio_device.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 namespace media {
 
 AAudioInputStream::AAudioInputStream(AudioManagerAndroid* manager,
-                                     const AudioParameters& params)
+                                     const AudioParameters& params,
+                                     android::AudioDevice device)
     : audio_manager_(manager),
       params_(params),
+      device_(std::move(device)),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(audio_manager_),
                                          /*trace_start=*/true)) {
@@ -30,7 +34,7 @@ AAudioInputStream::~AAudioInputStream() = default;
 void AAudioInputStream::CreateStreamWrapper() {
   CHECK(!stream_wrapper_);
   stream_wrapper_ = std::make_unique<AAudioStreamWrapper>(
-      this, AAudioStreamWrapper::StreamType::kInput, params_,
+      this, AAudioStreamWrapper::StreamType::kInput, params_, device_,
       AAUDIO_USAGE_VOICE_COMMUNICATION);
 }
 
@@ -68,6 +72,7 @@ void AAudioInputStream::Start(AudioInputCallback* callback) {
 
   if (stream_wrapper_->Start()) {
     // Successfully started `stream_wrapper_`.
+    audio_manager_->OnStartAAudioInputStream(this);
     return;
   }
 
@@ -97,6 +102,8 @@ void AAudioInputStream::Stop() {
     callback_ = nullptr;
   }
 
+  audio_manager_->OnStopAAudioInputStream(this);
+
   if (!stream_wrapper_->Stop()) {
     temp_error_callback->OnError();
   }
@@ -106,6 +113,7 @@ void AAudioInputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (stream_wrapper_) {
+    Stop();
     stream_wrapper_->Close();
   }
 
@@ -179,6 +187,13 @@ void AAudioInputStream::HandleDeviceChange() {
   if (!stream_wrapper_->Start()) {
     callback_->OnError();
   }
+}
+
+std::optional<android::AudioDeviceId> AAudioInputStream::GetActualDeviceId() {
+  if (!stream_wrapper_) {
+    return std::nullopt;
+  }
+  return stream_wrapper_->GetActualDeviceId();
 }
 
 double AAudioInputStream::GetMaxVolume() {

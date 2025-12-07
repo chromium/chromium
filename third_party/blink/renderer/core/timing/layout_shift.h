@@ -23,6 +23,9 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   // Maximum number of attributions (shifted elements) to record in any single
   // animation frame.
   static constexpr int kMaxAttributions = 5;
+  // AttributionList contains up to kMaxAttributions elements, sorted by
+  // impact area in descending order (largest first). Impact area is the
+  // union of previousRect and currentRect for each attribution.
   typedef HeapVector<Member<LayoutShiftAttribution>, kMaxAttributions>
       AttributionList;
 
@@ -31,14 +34,16 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
                              bool input_detected,
                              double input_timestamp,
                              AttributionList sources,
-                             DOMWindow* source);
+                             DOMWindow* source,
+                             uint32_t navigation_id);
 
   explicit LayoutShift(double start_time,
                        double value,
                        bool input_detected,
                        double input_timestamp,
                        AttributionList sources,
-                       DOMWindow* source);
+                       DOMWindow* source,
+                       uint32_t navigation_id);
 
   ~LayoutShift() override;
 

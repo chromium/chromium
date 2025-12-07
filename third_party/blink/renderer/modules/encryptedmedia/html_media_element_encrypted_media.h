@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace media {
 enum class EmeInitDataType;
@@ -29,10 +28,10 @@ class WebContentDecryptionModule;
 
 class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
     : public GarbageCollected<HTMLMediaElementEncryptedMedia>,
-      public Supplement<HTMLMediaElement>,
-      public WebMediaPlayerEncryptedMediaClient {
+      public WebMediaPlayerEncryptedMediaClient,
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static MediaKeys* mediaKeys(HTMLMediaElement&);
   static ScriptPromise<IDLUndefined> setMediaKeys(ScriptState*,
@@ -44,8 +43,7 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
 
   // WebMediaPlayerEncryptedMediaClient methods
   void Encrypted(media::EmeInitDataType init_data_type,
-                 const unsigned char* init_data,
-                 unsigned init_data_length) final;
+                 base::span<const uint8_t> init_data) final;
   void DidBlockPlaybackWaitingForKey() final;
   void DidResumePlaybackBlockedForKey() final;
   WebContentDecryptionModule* ContentDecryptionModule();
@@ -65,8 +63,10 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
                                  EventListener*);
   EventListener* GetAttributeEventListener(const AtomicString& event_type);
 
+  Member<HTMLMediaElement> html_media_element_;
+
   // Internal values specified by the EME spec:
-  // http://w3c.github.io/encrypted-media/#idl-def-HTMLMediaElement
+  // https://w3c.github.io/encrypted-media/#htmlmediaelement-extensions
   // The following internal values are added to the HTMLMediaElement:
   // - waiting for key, which shall have a boolean value
   // - attaching media keys, which shall have a boolean value

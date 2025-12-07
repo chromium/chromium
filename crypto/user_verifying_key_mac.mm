@@ -21,10 +21,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
-#include "crypto/apple_keychain_v2.h"
-#include "crypto/scoped_lacontext.h"
+#include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/unexportable_key_mac.h"
 #include "crypto/unexportable_key.h"
-#include "crypto/unexportable_key_mac.h"
 
 namespace crypto {
 
@@ -113,8 +112,8 @@ DoGenerateKey(base::span<const SignatureVerifier::SignatureAlgorithm>
                   acceptable_algorithms,
               UnexportableKeyProvider::Config config,
               LAContext* lacontext) {
-  std::unique_ptr<UnexportableKeyProviderMac> key_provider =
-      GetUnexportableKeyProviderMac(std::move(config));
+  std::unique_ptr<apple::UnexportableKeyProviderMac> key_provider =
+      apple::GetUnexportableKeyProviderMac(std::move(config));
   if (!key_provider) {
     return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
@@ -132,8 +131,8 @@ base::expected<std::unique_ptr<UserVerifyingSigningKey>,
 DoGetKey(std::vector<uint8_t> wrapped_key,
          UnexportableKeyProvider::Config config,
          LAContext* lacontext) {
-  std::unique_ptr<UnexportableKeyProviderMac> key_provider =
-      GetUnexportableKeyProviderMac(std::move(config));
+  std::unique_ptr<apple::UnexportableKeyProviderMac> key_provider =
+      apple::GetUnexportableKeyProviderMac(std::move(config));
   if (!key_provider) {
     return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
@@ -152,7 +151,10 @@ bool DoDeleteKey(std::vector<uint8_t> wrapped_key,
   if (!key_provider) {
     return false;
   }
-  return key_provider->DeleteSigningKeySlowly(wrapped_key);
+  StatefulUnexportableKeyProvider* stateful_key_provider =
+      key_provider->AsStatefulUnexportableKeyProvider();
+  return !stateful_key_provider ||
+         stateful_key_provider->DeleteSigningKeySlowly(wrapped_key);
 }
 
 class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
@@ -239,7 +241,7 @@ void AreMacUnexportableKeysAvailable(UserVerifyingKeyProvider::Config config,
     return;
   }
   std::move(callback).Run(
-      AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+      crypto::apple::KeychainV2::GetInstance().LAContextCanEvaluatePolicy(
           LAPolicyDeviceOwnerAuthentication, /*error=*/nil));
 }
 

@@ -4,7 +4,7 @@
 
 import '../cr_shared_vars.css.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {FocusRow} from '//resources/js/focus_row.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
@@ -83,6 +83,8 @@ function getStartPointWithAnchor(
     case AnchorAlignment.AFTER_END:
       startPoint = end;
       break;
+    default:
+      assertNotReachedCase(anchorAlignment);
   }
 
   if (startPoint + menuLength > max) {
@@ -153,10 +155,10 @@ export class CrActionMenuElement extends CrLitElement {
     };
   }
 
-  accessibilityLabel?: string;
-  autoReposition: boolean = false;
-  open: boolean = false;
-  roleDescription?: string;
+  accessor accessibilityLabel: string|undefined;
+  accessor autoReposition: boolean = false;
+  accessor open: boolean = false;
+  accessor roleDescription: string|undefined;
 
   private boundClose_: (() => void)|null = null;
   private resizeObserver_: ResizeObserver|null = null;
@@ -312,7 +314,7 @@ export class CrActionMenuElement extends CrLitElement {
     // accurate for where the menu should be shown.
     this.anchorElement_.scrollIntoViewIfNeeded();
 
-    const rect = this.anchorElement_!.getBoundingClientRect();
+    const rect = this.anchorElement_.getBoundingClientRect();
 
     let height = rect.height;
     if (config && !config.noOffset &&

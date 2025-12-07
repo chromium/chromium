@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <deque>
 #include <memory>
 #include <string>
@@ -315,8 +316,8 @@ class DisassemblerElfArm : public DisassemblerElf<TRAITS> {
 
  protected:
   // Sorted file offsets of rel32 locations for each rel32 address type.
-  std::deque<offset_t>
-      rel32_locations_table_[Traits::ArmReferenceType::kTypeCount];
+  std::array<std::deque<offset_t>, Traits::ArmReferenceType::kTypeCount>
+      rel32_locations_table_;
 };
 
 // Disassembler for ELF with AArch32 (AKA ARM32).

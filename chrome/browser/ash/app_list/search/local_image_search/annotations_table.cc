@@ -18,7 +18,7 @@ bool AnnotationsTable::Create(SqlDatabase* db) {
       // clang-format off
       "CREATE TABLE annotations("
           "term_id INTEGER PRIMARY KEY,"
-          "term TEXT UNIQUE)";
+          "term TEXT UNIQUE) STRICT";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =

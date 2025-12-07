@@ -3,19 +3,24 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/textfield/textfield.js';
+import 'chrome://resources/cros_components/snackbar/snackbar.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
-import './cra/cra-tooltip.js';
 import './recording-title-suggestion.js';
 
+import {
+  Snackbar,
+} from 'chrome://resources/cros_components/snackbar/snackbar.js';
 import {
   Textfield,
 } from 'chrome://resources/cros_components/textfield/textfield.js';
 import {
+  createRef,
   css,
   html,
   nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
@@ -23,7 +28,6 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {ModelId} from '../core/on_device_model/types.js';
 import {
   ReactiveLitElement,
   ScopedAsyncComputed,
@@ -31,8 +35,10 @@ import {
 import {computed, signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
-import {assertInstanceof} from '../core/utils/assert.js';
+import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 
+import {CraIconButton} from './cra/cra-icon-button.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {RecordingTitleSuggestion} from './recording-title-suggestion.js';
 
 /**
@@ -53,33 +59,31 @@ export class RecordingTitle extends ReactiveLitElement {
     recording-title-suggestion {
       position: absolute;
       position-anchor: --title-textfield;
-      inset-area: bottom span-right;
+      position-area: bottom span-right;
       margin-top: 4.5px;
-      max-width: 402px;
+
+      /* Prevents overflow and excessive resizing beyond content size. */
+      max-width: calc-size(
+        fit-content,
+        /* Excludes page margins, icon-button size, and header padding. */
+        min(size, 100vw - 16px * 2 - 44px - var(--header-padding))
+      );
       min-width: 360px;
+      width: fit-content;
     }
 
     #title {
       anchor-name: --title;
       border-radius: 12px;
       box-sizing: border-box;
-      font: var(--cros-button-1-font);
+      font: var(--cros-headline-1-font);
       overflow: hidden;
       padding: 8px 16px;
       text-overflow: ellipsis;
       white-space: nowrap;
 
-      & > cra-tooltip {
-        position-anchor: --title;
-        display: none;
-      }
-
       &:hover {
         background-color: var(--cros-sys-hover_on_subtle);
-
-        & > cra-tooltip {
-          display: block;
-        }
       }
     }
   `;
@@ -101,21 +105,42 @@ export class RecordingTitle extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly renameContainer = createRef<HTMLDivElement>();
+
+  private readonly snackBar = createRef<Snackbar>();
+
+  private readonly suggestTitleButton = createRef<CraIconButton>();
+
+  private readonly recordingTitleSuggestion =
+    createRef<RecordingTitleSuggestion>();
+
+  get renameContainerForTest(): HTMLDivElement {
+    return assertExists(this.renameContainer.value);
+  }
+
+  get suggestTitleButtonForTest(): CraIconButton {
+    return assertExists(this.suggestTitleButton.value);
+  }
+
+  get titleSuggestionForTest(): RecordingTitleSuggestion {
+    return assertExists(this.recordingTitleSuggestion.value);
+  }
+
+  private readonly recordingId = computed(() => {
+    return this.recordingMetadataSignal.value?.id ?? null;
+  });
+
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
-    if (this.recordingMetadataSignal.value === null) {
+    if (this.recordingId.value === null) {
       return null;
     }
-    return this.recordingDataManager.getTranscription(
-      this.recordingMetadataSignal.value.id,
-    );
+    return this.recordingDataManager.getTranscription(this.recordingId.value);
   });
 
   private readonly shouldShowTitleSuggestion = computed(() => {
-    const modelState = this.platformHandler.getModelState(
-      ModelId.GEMINI_XXS_IT_BASE,
-    );
+    const modelState = this.platformHandler.getGenAiModelState();
     return (
-      modelState.value.kind === 'installed' &&
+      modelState.kind === 'installed' &&
       settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
       this.transcription.value !== null && !this.transcription.value.isEmpty()
     );
@@ -124,33 +149,32 @@ export class RecordingTitle extends ReactiveLitElement {
   private readonly suggestedTitles = new ScopedAsyncComputed(this, async () => {
     // TODO(pihsun): Cache title suggestion between hide/show the suggestion
     // dialog?
-    if (!this.suggestionShown.value || this.recordingMetadata === null ||
-        !this.shouldShowTitleSuggestion.value) {
+    if (!this.suggestionShown.value || !this.shouldShowTitleSuggestion.value) {
       return null;
     }
     if (this.transcription.value === null) {
       return null;
     }
+
     // TODO(pihsun): Have a specific format for transcription to be used as
     // model input.
     const text = this.transcription.value.toPlainText();
-    const model = await this.platformHandler.loadModel(
-      ModelId.GEMINI_XXS_IT_BASE,
-    );
-    try {
-      return await model.suggestTitles(text);
-      // TODO(pihsun): Handle error.
-    } finally {
-      model.close();
-    }
+    const language = this.transcription.value.language;
+    this.platformHandler.perfLogger.start({
+      kind: 'titleSuggestion',
+      wordCount: this.transcription.value.getWordCount(),
+    });
+
+    const {titleSuggestionModelLoader} = this.platformHandler;
+    const suggestions =
+      await titleSuggestionModelLoader.loadAndExecute(text, language);
+    this.platformHandler.perfLogger.finish('titleSuggestion');
+
+    return suggestions;
   });
 
   private get editTextfield(): Textfield|null {
     return this.shadowRoot?.querySelector('cros-textfield') ?? null;
-  }
-
-  private get titleSuggestionDialog(): RecordingTitleSuggestion|null {
-    return this.shadowRoot?.querySelector('recording-title-suggestion') ?? null;
   }
 
   private async startEditTitle() {
@@ -166,22 +190,43 @@ export class RecordingTitle extends ReactiveLitElement {
   }
 
   private onFocusout(ev: FocusEvent) {
+    if (this.suggestionShown.value) {
+      // Suggestion dialog is shown, don't auto-close everything on focus out.
+      return;
+    }
     const newTarget = ev.relatedTarget;
-    if (newTarget !== null && newTarget instanceof Node &&
-        (this.editTextfield?.contains(newTarget) ||
-         this.titleSuggestionDialog?.contains(newTarget))) {
+    if (newTarget instanceof Node && this.editTextfield?.contains(newTarget)) {
       // New target is a child of the textfield or title suggestion, don't stop
       // editing.
       return;
     }
     this.editing.value = false;
-    this.suggestionShown.value = false;
     // TODO(pihsun): The focusout/blur event got triggered synchronously on
     // render when an element is removed, which breaks the assumption in the
     // reactive/lit.ts implementation of ReactiveLitElement, so setting values
     // above won't trigger rerender. Call requestUpdate() by ourselves to
     // workaround this.
     this.requestUpdate();
+  }
+
+  private onTextfieldKeyDown(ev: KeyboardEvent) {
+    const target = assertInstanceof(ev.target, Textfield);
+    if (ev.key === 'Escape') {
+      // Revert back to the old name and exit textfield.
+      target.value = this.recordingMetadata?.title ?? '';
+      target.blurTextfield();
+    } else if (ev.key === 'Enter') {
+      // Exit text field.
+      target.blurTextfield();
+    }
+  }
+
+  private onSuggestTitleButtonKeyDown(ev: KeyboardEvent) {
+    ev.stopPropagation();
+    if (ev.key === 'Escape') {
+      // Turn focus back to text field.
+      this.editTextfield?.focusTextfield();
+    }
   }
 
   private setTitle(title: string) {
@@ -193,11 +238,16 @@ export class RecordingTitle extends ReactiveLitElement {
       ...meta,
       title,
     });
+    const snackBar = assertExists(this.snackBar.value);
+    snackBar.showPopover();
   }
 
   private onChangeTitle(ev: Event) {
     const target = assertInstanceof(ev.target, Textfield);
-    this.setTitle(target.value);
+    // Change title when the text field is not empty.
+    if (target.value !== '') {
+      this.setTitle(target.value);
+    }
   }
 
   private onSuggestTitle(ev: CustomEvent<string>) {
@@ -205,10 +255,6 @@ export class RecordingTitle extends ReactiveLitElement {
   }
 
   private openSuggestionDialog() {
-    // We focus on the text field before showing the suggestion, so the
-    // focusout event from the icon button won't cause edit to be exited.
-    // TODO(pihsun): Check a11y on where we should focus in this case.
-    this.editTextfield?.focusTextfield();
     this.suggestionShown.value = true;
   }
 
@@ -225,14 +271,16 @@ export class RecordingTitle extends ReactiveLitElement {
     }
 
     return html`<recording-title-suggestion
-      @focusout=${this.onFocusout}
       @close=${this.closeSuggestionDialog}
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
+      .wordCount=${this.transcription.value?.getWordCount() ?? 0}
+      .transcription=${this.transcription.value?.toPlainText() ?? ''}
+      ${ref(this.recordingTitleSuggestion)}
     ></recording-title-suggestion>`;
   }
 
-  override render(): RenderResult {
+  private renderTitle(): RenderResult {
     if (this.editing.value) {
       const suggestionIconButton =
         this.suggestionShown.value || !this.shouldShowTitleSuggestion.value ?
@@ -243,32 +291,48 @@ export class RecordingTitle extends ReactiveLitElement {
               slot="trailing"
               shape="circle"
               @click=${this.openSuggestionDialog}
+              @keydown=${this.onSuggestTitleButtonKeyDown}
+              ${ref(this.suggestTitleButton)}
+              aria-label=${i18n.titleSuggestionButtonTooltip}
+              ${withTooltip()}
             >
               <cra-icon slot="icon" name="pen_spark"></cra-icon>
             </cra-icon-button>`;
-      // TODO(pihsun): Handle keyboard event like "enter".
       return html`<cros-textfield
           type="text"
           .value=${this.recordingMetadata?.title ?? ''}
           @change=${this.onChangeTitle}
           @focusout=${this.onFocusout}
+          @keydown=${this.onTextfieldKeyDown}
+          aria-label=${i18n.titleTextfieldAriaLabel}
         >
           ${suggestionIconButton}
         </cros-textfield>
         ${this.renderSuggestionDialog()}`;
     }
-    // TODO(pihsun): Have a directive for tooltip instead of having user to
-    // manually add <cra-tooltip> and CSS styles.
+
     return html`
       <div
         id="title"
         tabindex="0"
         @focus=${this.startEditTitle}
         @click=${this.startEditTitle}
+        ${ref(this.renameContainer)}
+        ${withTooltip(i18n.titleEditTooltip)}
       >
         ${this.recordingMetadata?.title ?? ''}
-        <cra-tooltip>${i18n.titleRenameTooltip}</cra-tooltip>
       </div>
+    `;
+  }
+
+  override render(): RenderResult {
+    return html`
+      <cros-snackbar
+        message=${i18n.titleEditSnackbarMessage}
+        timeoutMs="4000"
+        ${ref(this.snackBar)}
+      ></cros-snackbar>
+      ${this.renderTitle()}
     `;
   }
 }

@@ -7,7 +7,7 @@
 #include <atomic>
 
 #include "base/files/file.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 
@@ -32,21 +32,24 @@ void FileTracing::SetProvider(FileTracing::Provider* provider) {
 
 FileTracing::ScopedEnabler::ScopedEnabler() {
   FileTracing::Provider* provider = GetProvider();
-  if (provider)
+  if (provider) {
     provider->FileTracingEnable(this);
+  }
 }
 
 FileTracing::ScopedEnabler::~ScopedEnabler() {
   FileTracing::Provider* provider = GetProvider();
-  if (provider)
+  if (provider) {
     provider->FileTracingDisable(this);
+  }
 }
 
 FileTracing::ScopedTrace::~ScopedTrace() {
   if (id_) {
     FileTracing::Provider* provider = GetProvider();
-    if (provider)
+    if (provider) {
       provider->FileTracingEventEnd(name_, id_);
+    }
   }
 }
 
@@ -55,7 +58,7 @@ void FileTracing::ScopedTrace::Initialize(const char* name,
                                           int64_t size) {
   id_ = &file->trace_enabler_;
   name_ = name;
-  GetProvider()->FileTracingEventBegin(name_, id_, file->tracing_path_, size);
+  GetProvider()->FileTracingEventBegin(name_, id_, file->path_, size);
 }
 
 }  // namespace base

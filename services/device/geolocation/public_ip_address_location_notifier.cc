@@ -120,20 +120,18 @@ void PublicIpAddressLocationNotifier::MakeNetworkLocationRequest() {
 }
 
 void PublicIpAddressLocationNotifier::OnNetworkLocationResponse(
-    mojom::GeopositionResultPtr result,
-    const bool server_error,
-    const WifiData& /* wifi_data */,
-    mojom::NetworkLocationResponsePtr /* response data */) {
+    LocationResponseResult result,
+    const WifiData& wifi_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (server_error) {
+  if (result.result_code != NetworkLocationRequestResult::kSuccess) {
     network_changed_since_last_request_ = true;
     DCHECK(!latest_result_);
   } else {
-    latest_result_ = result.Clone();
+    latest_result_ = result.position.Clone();
   }
   // Notify all clients.
   for (QueryNextPositionCallback& callback : callbacks_)
-    std::move(callback).Run(result.Clone());
+    std::move(callback).Run(result.position.Clone());
   callbacks_.clear();
   network_location_request_.reset();
 }

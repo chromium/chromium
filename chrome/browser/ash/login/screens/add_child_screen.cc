@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/network/network_state.h"

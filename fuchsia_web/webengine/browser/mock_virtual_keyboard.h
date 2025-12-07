@@ -13,6 +13,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockVirtualKeyboardController
@@ -80,7 +81,7 @@ class MockVirtualKeyboardControllerCreator
   // fuchsia_input_virtualkeyboard implementation.
   void Create(CreateRequest& request, CreateCompleter::Sync& completer) final;
 
-  MockVirtualKeyboardController* pending_controller_ = nullptr;
+  raw_ptr<MockVirtualKeyboardController> pending_controller_ = nullptr;
   base::ScopedNaturalServiceBinding<
       fuchsia_input_virtualkeyboard::ControllerCreator>
       binding_;

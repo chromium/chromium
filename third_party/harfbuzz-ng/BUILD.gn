@@ -4,8 +4,6 @@
 
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
-import("//build/config/freetype/freetype.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
@@ -14,13 +12,17 @@ if (use_system_harfbuzz) {
   import("//build/config/linux/pkg_config.gni")
   pkg_config("harfbuzz_from_pkgconfig") {
     visibility = [
-      "//third_party:freetype_harfbuzz",
-      "//third_party/freetype:freetype_source",
+      "//third_party/freetype",
+      "//third_party/harfbuzz-ng",
     ]
     packages = [
       "harfbuzz",
       "harfbuzz-subset",
     ]
+  }
+
+  component("harfbuzz-ng") {
+    public_configs = [ ":harfbuzz_from_pkgconfig" ]
   }
 } else {
   config("harfbuzz_config") {
@@ -34,9 +36,7 @@ if (use_system_harfbuzz) {
     }
   }
 
-  source_set("harfbuzz_source") {
-    visibility = [ "//third_party:freetype_harfbuzz" ]
-
+  component("harfbuzz-ng") {
     public = [
       "src/src/hb-blob.h",
       "src/src/hb-buffer.h",
@@ -69,9 +69,9 @@ if (use_system_harfbuzz) {
       "src/src/OT/Color/sbix/sbix.hh",
       "src/src/OT/Color/svg/svg.hh",
       "src/src/OT/Layout/GDEF/GDEF.hh",
-      "src/src/OT/glyf/VarCompositeGlyph.hh",
+      "src/src/OT/Var/VARC/VARC.cc",
+      "src/src/OT/Var/VARC/VARC.hh",
       "src/src/OT/glyf/composite-iter.hh",
-      "src/src/OT/glyf/coord-setter.hh",
       "src/src/OT/name/name.hh",
       "src/src/graph/classdef-graph.hh",
       "src/src/graph/coverage-graph.hh",
@@ -104,6 +104,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-bit-page.hh",
       "src/src/hb-bit-set-invertible.hh",
       "src/src/hb-bit-set.hh",
+      "src/src/hb-bit-vector.hh",
       "src/src/hb-blob.cc",
       "src/src/hb-blob.hh",
       "src/src/hb-buffer-deserialize-json.hh",
@@ -132,8 +133,12 @@ if (use_system_harfbuzz) {
       "src/src/hb-face.hh",
       "src/src/hb-font.cc",
       "src/src/hb-font.hh",
+      "src/src/hb-fontations.h",
+      "src/src/hb-geometry.hh",
+      "src/src/hb-harfrust.cc",
       "src/src/hb-icu.cc",
       "src/src/hb-iter.hh",
+      "src/src/hb-kbts.cc",
       "src/src/hb-kern.hh",
       "src/src/hb-limits.hh",
       "src/src/hb-machinery.hh",
@@ -244,14 +249,14 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-var-gvar-table.hh",
       "src/src/hb-ot-var-hvar-table.hh",
       "src/src/hb-ot-var-mvar-table.hh",
+      "src/src/hb-ot-var-varc-table.hh",
       "src/src/hb-ot-var.cc",
       "src/src/hb-ot-vorg-table.hh",
-      "src/src/hb-paint-extents.cc",
-      "src/src/hb-paint-extents.hh",
       "src/src/hb-pool.hh",
       "src/src/hb-priority-queue.hh",
       "src/src/hb-repacker.hh",
       "src/src/hb-sanitize.hh",
+      "src/src/hb-script-list.h",
       "src/src/hb-serialize.hh",
       "src/src/hb-set-digest.hh",
       "src/src/hb-set.cc",
@@ -276,11 +281,19 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-instancer-iup.hh",
       "src/src/hb-subset-instancer-solver.cc",
       "src/src/hb-subset-instancer-solver.hh",
+      "src/src/hb-subset-plan-layout.cc",
       "src/src/hb-subset-plan-member-list.hh",
+      "src/src/hb-subset-plan-var.cc",
       "src/src/hb-subset-plan.cc",
       "src/src/hb-subset-plan.hh",
-      "src/src/hb-subset-repacker.cc",
-      "src/src/hb-subset-repacker.h",
+      "src/src/hb-subset-serialize.cc",
+      "src/src/hb-subset-serialize.h",
+      "src/src/hb-subset-table-cff.cc",
+      "src/src/hb-subset-table-color.cc",
+      "src/src/hb-subset-table-layout.cc",
+      "src/src/hb-subset-table-other.cc",
+      "src/src/hb-subset-table-var.cc",
+      "src/src/hb-subset-table.hh",
       "src/src/hb-subset.cc",
       "src/src/hb-subset.hh",
       "src/src/hb-ucd-table.hh",
@@ -300,10 +313,17 @@ if (use_system_harfbuzz) {
       "src/src/hb-cairo-utils.hh",
       "src/src/hb-cairo.cc",
       "src/src/hb-cairo.h",
+      "src/src/hb-coretext-font.cc",
+      "src/src/hb-coretext-shape.cc",
       "src/src/hb-coretext.cc",
       "src/src/hb-coretext.h",
+      "src/src/hb-coretext.hh",
+      "src/src/hb-decycler.hh",
+      "src/src/hb-directwrite-font.cc",
+      "src/src/hb-directwrite-shape.cc",
       "src/src/hb-directwrite.cc",
       "src/src/hb-directwrite.h",
+      "src/src/hb-directwrite.hh",
       "src/src/hb-fallback-shape.cc",
       "src/src/hb-ft-colr.hh",
       "src/src/hb-ft.cc",
@@ -317,6 +337,10 @@ if (use_system_harfbuzz) {
       "src/src/hb-graphite2.h",
       "src/src/hb-outline.cc",
       "src/src/hb-outline.hh",
+      "src/src/hb-paint-bounded.cc",
+      "src/src/hb-paint-bounded.hh",
+      "src/src/hb-paint-extents.cc",
+      "src/src/hb-paint-extents.hh",
       "src/src/hb-paint.cc",
       "src/src/hb-paint.h",
       "src/src/hb-paint.hh",
@@ -343,8 +367,10 @@ if (use_system_harfbuzz) {
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
       "HB_NO_MMAP",
-      "HB_NO_PAINT",
       "HB_NO_RESOURCE_FORK",
+
+      # Use assignment to empty value to work around a build failure.
+      "HB_NO_PAINT=",
 
       # Size reductions by disabling parts that we do not currently require:
 
@@ -403,28 +429,12 @@ if (use_system_harfbuzz) {
 
     if (is_component_build) {
       if (is_win) {
-        defines += [ "HB_EXTERN=__declspec (dllexport)" ]
+        defines += [ "HB_EXTERN=__declspec(dllexport)" ]
       } else {
         defines += [ "HB_EXTERN=__attribute__((visibility(\"default\")))" ]
-        # Exposing symbols in component builds can cause a mixture of system
-        # harfbuzz symbols and //third_party harfbuzz symbols to be loaded at
-        # the same time.  This can cause issues for libraries that indirectly
-        # load harfbuzz like pango (see https://crbug.com/1146397), so we need
-        # to include metrics symbols (i.e. have HB_NO_METRICS undefined) to
-        # prevent pango from using the system library. Currently, HB_NO_METRICS
-        # is always disabled, due to
-        # https://github.com/harfbuzz/harfbuzz/issues/3482 - if that changes
-        # "HB_NO_METRICS" needs to be removed from the defines list here.
-        # TODO(https://crbug.com/1148459): Remove this workaround once bug
-        # 1148459 is fixed.
       }
     }
 
-    if (use_system_freetype) {
-      configs += [ "//build/linux:freetype_from_pkgconfig" ]
-    } else {
-      configs += [ "//third_party/freetype:freetype_component_config" ]
-    }
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
@@ -458,7 +468,7 @@ if (build_with_chromium) {
     sources = [ "fuzz/hb_shape_fuzzer.cc" ]
     deps = [
       "//base",
-      "//third_party:freetype_harfbuzz",
+      "//third_party/harfbuzz-ng",
     ]
     seed_corpus = "fuzz/seed_corpus"
   }
@@ -467,7 +477,7 @@ if (build_with_chromium) {
     sources = [ "fuzz/hb_subset_fuzzer.cc" ]
     deps = [
       "//base",
-      "//third_party:freetype_harfbuzz",
+      "//third_party/harfbuzz-ng",
     ]
     seed_corpus = "fuzz/seed_corpus"
   }

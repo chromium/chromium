@@ -12,8 +12,9 @@
 #import "base/functional/callback.h"
 
 @protocol SystemIdentity;
+@class UIImage;
 
-// A Drive item (file or folder).
+// A Drive item (file, folder or shared drive).
 struct DriveItem {
   DriveItem();
   DriveItem(const DriveItem& other);
@@ -21,6 +22,34 @@ struct DriveItem {
   ~DriveItem();
   DriveItem& operator=(const DriveItem& other);
   DriveItem& operator=(DriveItem&& other);
+
+  // Possible types of image for an item.
+  enum class ImageType {
+    // A generic icon which usually depends on the file type.
+    kIcon,
+    // A thumbnail i.e. preview of the file.
+    kThumbnail,
+    // A background image, only for shared drives.
+    kBackground,
+    // A shortcut image which depends on the target mime type (for shortcuts).
+    kShortcut,
+  };
+
+  // Returns whether this is a folder, shortcut to a folder or shared drive.
+  bool CanBeBrowsed() const;
+
+  // Returns the placeholder image for `item`.
+  UIImage* GetPlaceholderImage() const;
+  // Returns the type of image which should be used for this item.
+  ImageType GetImageType() const;
+  // Returns the appropriate image link to use for a given `item`.
+  // If there is no such link, returns nil instead.
+  NSString* GetImageLink() const;
+
+  // Comparison operator relies on `identifier` only.
+  bool operator==(const DriveItem& rhs) const {
+    return [identifier isEqualToString:rhs.identifier];
+  }
 
   // Unique identifier for this item.
   NSString* identifier = nil;
@@ -30,10 +59,29 @@ struct DriveItem {
   NSString* icon_link = nil;
   // Link to the item's thumbnail, if available.
   NSString* thumbnail_link = nil;
+  // Link to this shared drive's background image. Only populated for shared
+  // drives.
+  NSString* background_image_link = nil;
+  // The time the item was created.
+  NSDate* created_time = nil;
   // The last time the item was modified by anyone.
   NSDate* modified_time = nil;
+  // The last time the item was modified by the user.
+  NSDate* modified_by_me_time = nil;
+  // The last time the item was viewed by the user.
+  NSDate* viewed_by_me_time = nil;
+  // The time the item was shared with the current user.
+  NSDate* shared_with_me_time = nil;
   // Identifier of the item's parent folder.
   NSString* parent_identifier = nil;
+  // Whether the item is a shortcut.
+  bool is_shortcut = false;
+  // If the item is a shortcut, the identifier of the target.
+  NSString* shortcut_target_identifier = nil;
+  // If the item is a shortcut, the MIME type of the target.
+  NSString* shortcut_target_mime_type = nil;
+  // Whether the item is a shared drive.
+  bool is_shared_drive = false;
   // Whether the item is a folder.
   bool is_folder = false;
   // If this item is a file, the MIME type of the file.
@@ -45,6 +93,16 @@ struct DriveItem {
   // If this is a file which cannot be downloaded directly, then it can only be
   // exported to a different MIME type.
   bool can_download = false;
+  // If this item is a file, the MD5 checksum of that file.
+  NSString* md5_checksum = nil;
+};
+
+// std::hash specialization for DriveItem.
+template <>
+struct std::hash<DriveItem> {
+  size_t operator()(const DriveItem& item) const {
+    return size_t{item.identifier.hash};
+  }
 };
 
 // Results reported by the completion block of a query to list/search for files.
@@ -86,6 +144,11 @@ struct DriveListQuery {
   // https://developers.google.com/drive/api/reference/rest/v3/files/list#query-parameters.
   // Order by which to sort the results.
   NSString* order_by = nil;
+  // The maximum number of items to return per page. Default value is 20.
+  // If `pageSize <= 0`, then the Drive API default page size will be used.
+  // See
+  // https://developers.google.com/drive/api/reference/rest/v3/files/list#query-parameters.
+  NSInteger page_size = 20;
   // If not nil, the page token to use to continue a previous list/search. The
   // other fields in this object need to be the same as in previous requests.
   NSString* page_token = nil;
@@ -109,8 +172,23 @@ class DriveList {
   // List items in Drive matching the given `query`.
   // The final result, including possible error details, is returned
   // asynchronously through `completion_callback`.
+  // TODO(crbug.com/344812086): This is being replaced with `ListFiles`. When
+  // subclasses do not override this method anymore, remove it.
   virtual void ListItems(const DriveListQuery& query,
-                         DriveListCompletionCallback completion_callback) = 0;
+                         DriveListCompletionCallback completion_callback);
+  // List files and folders in Drive matching the given `query`.
+  // The final result, including possible error details, is returned
+  // asynchronously through `completion_callback`.
+  // TODO(crbug.com/344812086): Make pure virtual once implemented everywhere.
+  virtual void ListFiles(const DriveListQuery& query,
+                         DriveListCompletionCallback completion_callback);
+  // List shared drives in Drive matching the given `query`.
+  // The final result, including possible error details, is returned
+  // asynchronously through `completion_callback`.
+  // TODO(crbug.com/344812086): Make pure virtual once implemented everywhere.
+  virtual void ListSharedDrives(
+      const DriveListQuery& query,
+      DriveListCompletionCallback completion_callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_LIST_H_

@@ -45,7 +45,7 @@ ShoppingCollectionIphView::ShoppingCollectionIphView() {
       l10n_util::GetStringUTF16(IDS_SHOPPING_COLLECTION_IPH_BODY);
   views::Label* body_label = AddChildView(std::make_unique<views::Label>(
       body_text, label_context, views::style::STYLE_BODY_5));
-  body_label->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  body_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
   body_label->SetMultiLine(true);
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_label->SetFontList(body_label->font_list().DeriveWithSizeDelta(-1));

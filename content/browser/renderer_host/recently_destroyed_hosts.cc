@@ -5,11 +5,12 @@
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace content {
@@ -20,44 +21,70 @@ namespace {
 // potential for process reuse (crbug.com/894253).
 const void* const kRecentlyDestroyedHostTrackerKey =
     "RecentlyDestroyedHostTrackerKey";
-// Sentinel value indicating that no recently destroyed process matches the
-// host currently seeking a process. Changing this invalidates the histogram.
-constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
-    base::Seconds(20);
-
-void RecordMetric(base::TimeDelta value) {
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "SiteIsolation.ReusePendingOrCommittedSite."
-      "TimeSinceReusableProcessDestroyed",
-      value, base::Milliseconds(1), kRecentlyDestroyedNotFoundSentinel, 50);
-}
 
 }  // namespace
 
-constexpr base::TimeDelta
-    RecentlyDestroyedHosts::kRecentlyDestroyedStorageTimeout;
+constexpr base::TimeDelta RecentlyDestroyedHosts::kSubframeStorageTimeout;
+constexpr base::TimeDelta RecentlyDestroyedHosts::kMainFrameStorageTimeout;
 
 RecentlyDestroyedHosts::~RecentlyDestroyedHosts() = default;
 
 // static
 void RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+    Context context,
     const base::TimeTicks& reusable_host_lookup_time,
     const ProcessLock& process_lock,
     BrowserContext* browser_context) {
   auto* instance = GetInstance(browser_context);
-  instance->RemoveExpiredEntries();
-  const auto iter = instance->recently_destroyed_hosts_.find(process_lock);
-  if (iter != instance->recently_destroyed_hosts_.end()) {
-    // A host was recently destroyed that matched |process_lock|. Record the
-    // interval between when the host was destroyed and when |process_lock|
-    // looked for a reusable host.
-    const base::TimeDelta reuse_interval =
-        reusable_host_lookup_time - iter->second;
-    RecordMetric(reuse_interval);
-    instance->AddReuseInterval(reuse_interval);
-    return;
+
+  switch (context) {
+    case Context::kMainFrame: {
+      instance->RemoveExpiredHostsForMainFrameReuse();
+      const auto iter =
+          instance->recently_destroyed_hosts_for_main_frame_reuse_.find(
+              process_lock);
+
+      const bool found =
+          iter !=
+          instance->recently_destroyed_hosts_for_main_frame_reuse_.end();
+      base::UmaHistogramBoolean(
+          "SiteIsolation.MissedReuseOpportunity.Found.MainFrame", found);
+
+      if (found) {
+        const base::TimeDelta reuse_interval =
+            reusable_host_lookup_time - iter->second;
+        base::UmaHistogramCustomTimes(
+            "SiteIsolation.ReusePendingOrCommittedSite."
+            "TimeSinceReusableProcessDestroyed.MainFrame2",
+            reuse_interval, base::Milliseconds(1), kMainFrameStorageTimeout,
+            50);
+        instance->recently_destroyed_hosts_for_main_frame_reuse_.erase(iter);
+      }
+      break;
+    }
+    case Context::kSubframe: {
+      instance->RemoveExpiredHostsForSubframeReuse();
+      const auto iter =
+          instance->recently_destroyed_hosts_for_subframe_reuse_.find(
+              process_lock);
+
+      const bool found =
+          iter != instance->recently_destroyed_hosts_for_subframe_reuse_.end();
+      base::UmaHistogramBoolean(
+          "SiteIsolation.MissedReuseOpportunity.Found.Subframe", found);
+
+      if (found) {
+        const base::TimeDelta reuse_interval =
+            reusable_host_lookup_time - iter->second;
+        base::UmaHistogramCustomTimes(
+            "SiteIsolation.ReusePendingOrCommittedSite."
+            "TimeSinceReusableProcessDestroyed.Subframe2",
+            reuse_interval, base::Milliseconds(1), kSubframeStorageTimeout, 50);
+        instance->recently_destroyed_hosts_for_subframe_reuse_.erase(iter);
+      }
+      break;
+    }
   }
-  RecordMetric(kRecentlyDestroyedNotFoundSentinel);
   // Add zero to the list of recent reuse intervals to reduce the calculated
   // delay when no reuse has been possible for a while.
   instance->AddReuseInterval(base::TimeDelta());
@@ -68,32 +95,44 @@ void RecentlyDestroyedHosts::Add(
     RenderProcessHost* host,
     const base::TimeDelta& time_spent_running_unload_handlers,
     BrowserContext* browser_context) {
-  if (time_spent_running_unload_handlers > kRecentlyDestroyedStorageTimeout)
+  if (time_spent_running_unload_handlers > kSubframeStorageTimeout) {
     return;
+  }
 
   ProcessLock process_lock = host->GetProcessLock();
 
   // Don't record sites with an empty process lock. This includes sites on
-  // Android that are not isolated, and some special cases on desktop (e.g.,
-  // chrome-extension://). These sites would not be affected by increased
-  // process reuse, so are irrelevant for the metric being recorded.
-  if (!process_lock.is_locked_to_site())
+  // Android that are not isolated. These sites would not be affected by
+  // increased process reuse, so are irrelevant for the metric being recorded.
+  if (!process_lock.IsLockedToSite()) {
     return;
+  }
 
   // Record the time before |time_spent_running_unload_handlers| to exclude time
   // spent in delayed-shutdown state from the metric. This makes it consistent
   // across processes that were delayed by DelayProcessShutdown(), and those
   // that weren't.
   auto* instance = GetInstance(browser_context);
-  instance->recently_destroyed_hosts_[process_lock] =
+  const base::TimeTicks destruction_time =
       base::TimeTicks::Now() - time_spent_running_unload_handlers;
 
-  // Clean up list of recently destroyed hosts if it's getting large. This is
-  // a fallback in case a subframe process hasn't been created in a long time
-  // (which would clean up |recently_destroyed_hosts_|), e.g., on low-memory
-  // Android where site isolation is not used.
-  if (instance->recently_destroyed_hosts_.size() > 20)
-    instance->RemoveExpiredEntries();
+  instance->recently_destroyed_hosts_for_subframe_reuse_[process_lock] =
+      destruction_time;
+  instance->recently_destroyed_hosts_for_main_frame_reuse_[process_lock] =
+      destruction_time;
+
+  // Periodically clean up the tracking maps if they get large. This is a
+  // fallback in case no lookups have occurred recently to trigger the main
+  // cleanup logic. The main frame map has a larger size limit because its
+  // entries are retained for a long time (2 hours) to track session-level
+  // reuse. The subframe map has a much shorter retention period (60 seconds),
+  // so a smaller size limit is sufficient.
+  if (instance->recently_destroyed_hosts_for_subframe_reuse_.size() > 20) {
+    instance->RemoveExpiredHostsForSubframeReuse();
+  }
+  if (instance->recently_destroyed_hosts_for_main_frame_reuse_.size() > 200) {
+    instance->RemoveExpiredHostsForMainFrameReuse();
+  }
 }
 
 RecentlyDestroyedHosts::RecentlyDestroyedHosts() = default;
@@ -114,13 +153,26 @@ RecentlyDestroyedHosts* RecentlyDestroyedHosts::GetInstance(
   return recently_destroyed_hosts;
 }
 
-void RecentlyDestroyedHosts::RemoveExpiredEntries() {
+void RecentlyDestroyedHosts::RemoveExpiredHostsForSubframeReuse() {
   const auto expired_cutoff_time =
-      base::TimeTicks::Now() - kRecentlyDestroyedStorageTimeout;
-  for (auto iter = recently_destroyed_hosts_.begin();
-       iter != recently_destroyed_hosts_.end();) {
+      base::TimeTicks::Now() - kSubframeStorageTimeout;
+  for (auto iter = recently_destroyed_hosts_for_subframe_reuse_.begin();
+       iter != recently_destroyed_hosts_for_subframe_reuse_.end();) {
     if (iter->second < expired_cutoff_time) {
-      iter = recently_destroyed_hosts_.erase(iter);
+      iter = recently_destroyed_hosts_for_subframe_reuse_.erase(iter);
+    } else {
+      ++iter;
+    }
+  }
+}
+
+void RecentlyDestroyedHosts::RemoveExpiredHostsForMainFrameReuse() {
+  const auto expired_cutoff_time =
+      base::TimeTicks::Now() - kMainFrameStorageTimeout;
+  for (auto iter = recently_destroyed_hosts_for_main_frame_reuse_.begin();
+       iter != recently_destroyed_hosts_for_main_frame_reuse_.end();) {
+    if (iter->second < expired_cutoff_time) {
+      iter = recently_destroyed_hosts_for_main_frame_reuse_.erase(iter);
     } else {
       ++iter;
     }
@@ -135,7 +187,7 @@ void RecentlyDestroyedHosts::AddReuseInterval(const base::TimeDelta& interval) {
   reuse_intervals_.insert({interval, base::TimeTicks::Now()});
   if (reuse_intervals_.size() > kReuseIntervalsMaxSize) {
     auto oldest_entry =
-        std::min_element(reuse_intervals_.begin() + 1, reuse_intervals_.end(),
+        std::min_element(reuse_intervals_.begin(), reuse_intervals_.end(),
                          [](ReuseInterval a, ReuseInterval b) {
                            return a.time_added < b.time_added;
                          });

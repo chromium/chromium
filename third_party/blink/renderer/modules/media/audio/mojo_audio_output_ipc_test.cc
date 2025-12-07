@@ -22,14 +22,12 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using testing::_;
 using testing::AtLeast;
-using testing::Invoke;
 using testing::Mock;
 using testing::StrictMock;
 
@@ -47,7 +45,7 @@ media::AudioParameters Params() {
 }
 
 MojoAudioOutputIPC::FactoryAccessorCB NullAccessor() {
-  return WTF::BindRepeating(
+  return BindRepeating(
       []() -> blink::mojom::blink::RendererAudioOutputStreamFactory* {
         return nullptr;
       });
@@ -174,7 +172,7 @@ class TestRemoteFactory
   }
 
   MojoAudioOutputIPC::FactoryAccessorCB GetAccessor() {
-    return WTF::BindRepeating(&TestRemoteFactory::get, WTF::Unretained(this));
+    return BindRepeating(&TestRemoteFactory::get, Unretained(this));
   }
 
  private:
@@ -449,11 +447,11 @@ TEST(MojoAudioOutputIPC, DeviceNotAuthorized_Propagates) {
       OnDeviceAuthorized(
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
           _, std::string()))
-      .WillOnce(Invoke([&](media::OutputDeviceStatus,
-                           const media::AudioParameters&, const std::string&) {
+      .WillOnce([&](media::OutputDeviceStatus, const media::AudioParameters&,
+                    const std::string&) {
         ipc->CloseStream();
         ipc.reset();
-      }));
+      });
   EXPECT_CALL(delegate, OnError()).Times(AtLeast(0));
   base::RunLoop().RunUntilIdle();
 }
@@ -480,11 +478,11 @@ TEST(MojoAudioOutputIPC,
       OnDeviceAuthorized(
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL, _,
           std::string()))
-      .WillOnce(Invoke([&](media::OutputDeviceStatus,
-                           const media::AudioParameters&, const std::string&) {
+      .WillOnce([&](media::OutputDeviceStatus, const media::AudioParameters&,
+                    const std::string&) {
         ipc->CloseStream();
         ipc.reset();
-      }));
+      });
   stream_factory.Disconnect();
   base::RunLoop().RunUntilIdle();
 }

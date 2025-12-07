@@ -1,0 +1,208 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_H_
+#define MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_H_
+
+#include <memory>
+
+#include "base/functional/callback_forward.h"
+#include "base/task/sequenced_task_runner.h"
+#include "media/base/decoder.h"
+#include "media/base/media_log.h"
+#include "media/base/overlay_info.h"
+#include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_decoder.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
+#include "media/video/gpu_video_accelerator_factories.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+
+namespace media {
+
+// Assists the MojoGpuVideoAcceleratorFactories class with hardware decoder and
+// encoder functionalities.
+//
+// It is a base class that handles the encoder resources
+// via mojom::VideoEncodeAcceleratorProvider. Its derived classes
+// implement how to connect to hardware decoder resources.
+class MojoCodecFactory {
+ public:
+  // `media_task_runner` - task runner for running multi-media operations.
+  // `context_provider` - context provider for creating a video decoder.
+  // `video_decode_accelerator_enabled` - whether the video decode accelerator
+  //    is enabled.
+  // `video_encode_accelerator_enabled` - whether the video encode accelerator
+  //    is enabled.
+  // `pending_vea_provider_remote` - bound pending
+  //    mojom::VideoEncodeAcceleratorProvider remote.
+  MojoCodecFactory(
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
+      bool video_decode_accelerator_enabled,
+      bool video_encode_accelerator_enabled,
+      mojo::PendingRemote<mojom::VideoEncodeAcceleratorProvider>
+          pending_vea_provider_remote);
+
+  MojoCodecFactory(const MojoCodecFactory&) = delete;
+  MojoCodecFactory& operator=(const MojoCodecFactory&) = delete;
+  virtual ~MojoCodecFactory();
+
+  // `gpu_factories` - pointer to the GpuVideoAcceleratorFactories that
+  //    owns |this|.
+  // `media_log` - process-wide pointer to log to chrome://media-internals log.
+  // `request_overlay_info_cb` - callback that gets the overlay information.
+  // `rendering_color_space` - color space for the purpose of color conversion.
+  //
+  // Derived class should construct its own type of video decoder.
+  virtual std::unique_ptr<VideoDecoder> CreateVideoDecoder(
+      GpuVideoAcceleratorFactories* gpu_factories,
+      MediaLog* media_log,
+      RequestOverlayInfoCB request_overlay_info_cb,
+      const gfx::ColorSpace& rendering_color_space) = 0;
+
+  std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator();
+
+  // Returns VideoDecoderType::kUnknown in cases where IsDecoderSupportKnown()
+  // is false.
+  // Otherwise, it returns the type of decoder that provided the
+  // configs for the config support check.
+  VideoDecoderType GetVideoDecoderType();
+
+  // Returns a nullopt if we have not yet gotten the configs.
+  // Returns an optional that contains an empty vector if we have gotten the
+  // result and there are no supported configs.
+  std::optional<SupportedVideoDecoderConfigs> GetSupportedVideoDecoderConfigs();
+
+  // Returns a nullopt if we have not yet gotten the profiles.
+  // Returns an optional that contains an empty vector if we have gotten the
+  // result and there are no supported profiles.
+  std::optional<VideoEncodeAccelerator::SupportedProfiles>
+  GetVideoEncodeAcceleratorSupportedProfiles();
+
+  // Returns Supported::kUnknown if we have not yet gotten the configs.
+  // Returns Supported::kTrue if any of the supported configs match and
+  // Supported::kFalse otherwise.
+  GpuVideoAcceleratorFactories::Supported IsDecoderConfigSupported(
+      const VideoDecoderConfig& config);
+
+  // Returns true if SupportedVideoDecoderConfigs are populated.
+  bool IsDecoderSupportKnown();
+
+  // Returns true if VideoEncodeAccelerator::SupportedProfiles are
+  // populated.
+  bool IsEncoderSupportKnown();
+
+  // If the current decoder support is not yet known, use this to register a
+  // callback that is notified once the support is known. At that point, calling
+  // GetSupportedVideoDecoderConfigs will give the set of supported decoder
+  // configs.
+  //
+  // There is no way to unsubscribe a callback, it is recommended to use a
+  // WeakPtr if you need this feature.
+  void NotifyDecoderSupportKnown(base::OnceClosure callback);
+
+  // If the current encoder support is not yet known, use this to register a
+  // callback that is notified once the support is known. At that point, calling
+  // GetVideoEncodeAcceleratorSupportedProfiles will give the set of supported
+  // encoder profiles.
+  //
+  // There is no way to unsubscribe a callback, it is recommended to use a
+  // WeakPtr if you need this feature.
+  void NotifyEncoderSupportKnown(base::OnceClosure callback);
+
+  // Provides this instance with the gpu channel token for the
+  // associated gpu channel.
+  void OnChannelTokenReady(const base::UnguessableToken& token,
+                           int32_t route_id);
+
+ protected:
+  class Notifier {
+   public:
+    Notifier();
+    ~Notifier();
+
+    void Register(base::OnceClosure callback);
+    void Notify();
+
+    bool is_notified() { return is_notified_; }
+
+   private:
+    bool is_notified_ = false;
+    std::vector<base::OnceClosure> callbacks_;
+  };
+
+  void OnDecoderSupportFailed();
+  void OnGetSupportedDecoderConfigs();
+
+  void OnEncoderSupportFailed();
+  void OnGetVideoEncodeAcceleratorSupportedProfiles(
+      const VideoEncodeAccelerator::SupportedProfiles& supported_profiles);
+  bool IsEncoderReady() EXCLUSIVE_LOCKS_REQUIRED(supported_profiles_lock_);
+
+  // Task runner on the Media thread for running multi-media operations
+  // (e.g., creating a video decoder).
+  // In Fuchsia, it needs to be started with the IO message pump for FIDL calls.
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+
+  // Shared pointer to a shared context provider. All access should happen only
+  // on the media thread.
+  const scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
+
+  // Whether video acceleration encoding/decoding should be enabled.
+  const bool video_decode_accelerator_enabled_;
+  const bool video_encode_accelerator_enabled_;
+
+  base::Lock supported_profiles_lock_;
+
+  // If the Optional is empty, then we have not yet gotten the configs.
+  // If the Optional contains an empty vector, then we have gotten the result
+  // and there are no supported configs.
+  std::optional<SupportedVideoDecoderConfigs> supported_decoder_configs_
+      GUARDED_BY(supported_profiles_lock_);
+  std::optional<VideoEncodeAccelerator::SupportedProfiles>
+      supported_vea_profiles_ GUARDED_BY(supported_profiles_lock_);
+
+  VideoDecoderType video_decoder_type_ GUARDED_BY(supported_profiles_lock_) =
+      VideoDecoderType::kUnknown;
+
+  Notifier decoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
+  Notifier encoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
+
+ private:
+  void BindOnTaskRunner(
+      mojo::PendingRemote<mojom::VideoEncodeAcceleratorProvider>
+          pending_vea_provider_remote);
+
+  mojo::Remote<mojom::VideoEncodeAcceleratorProvider> vea_provider_;
+  base::UnguessableToken channel_token_;
+  int32_t route_id_;
+};
+
+// MojoCodecFactoryDefault is the default derived class, which has no
+// decoder provider. It does not have any supported video decoder configs and
+// returns a null pointer when creating a hardware video decoder.
+class MojoCodecFactoryDefault final : public MojoCodecFactory {
+ public:
+  MojoCodecFactoryDefault(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
+      bool video_decode_accelerator_enabled,
+      bool video_encode_accelerator_enabled,
+      mojo::PendingRemote<mojom::VideoEncodeAcceleratorProvider>
+          pending_vea_provider_remote);
+  ~MojoCodecFactoryDefault() override;
+
+  // Returns nullptr since there is no decoder provider.
+  std::unique_ptr<VideoDecoder> CreateVideoDecoder(
+      GpuVideoAcceleratorFactories* gpu_factories,
+      MediaLog* media_log,
+      RequestOverlayInfoCB request_overlay_info_cb,
+      const gfx::ColorSpace& rendering_color_space) override;
+};
+
+}  // namespace media
+
+#endif  // MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_H_

@@ -1,15 +1,19 @@
 <script>
 if (window.testRunner)
     testRunner.dumpAsText();
-    
+
 function runTest() {
     var result = document.getElementById('result');
-    
-    var text = document.getElementById('iframe').contentDocument.documentElement.outerText;
-    if (text == 'REPLACED')
-        result.innerHTML = 'SUCCESS';
-    else
-        result.innerHTML = 'FAILURE - Got "' + text + '"';
+    var contentDoc = document.getElementById('iframe').contentDocument;
+    try {
+      var text = contentDoc.documentElement.outerText;
+      if (text == 'REPLACED')
+          result.innerHTML = 'SUCCESS';
+      else
+          result.innerHTML = 'FAILURE - Got "' + text + '"';
+    } catch {
+      result.innerHTML = 'FAILURE - could not access documentElement, likely because the pending load was not canceled and the origin of the iframe changed.';
+    }
 }
 
 </script>

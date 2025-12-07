@@ -10,6 +10,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -20,7 +21,7 @@
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -209,7 +210,7 @@ void OfflinePageTabHelper::DidFinishNavigation(
   if (reading_list::IsOfflineReloadURL(navigation_context->GetUrl())) {
     if (dont_reload_online_on_next_navigation_) {
       dont_reload_online_on_next_navigation_ = false;
-    } else if (reloading_from_offline_) {
+    } else {
       ReplaceLocationUrlAndReload(
           reading_list::ReloadURLForOfflineURL(navigation_context->GetUrl()));
       return;
@@ -221,7 +222,14 @@ void OfflinePageTabHelper::DidFinishNavigation(
 }
 
 void OfflinePageTabHelper::ReplaceLocationUrlAndReload(const GURL& url) {
-  DCHECK(presenting_offline_page_);
+  if (!reading_list::IsOfflineURL(web_state_->GetNavigationManager()
+                                      ->GetLastCommittedItem()
+                                      ->GetVirtualURL())) {
+    // This should not be possible as thisfunction is nomminally only called
+    // when reloading from and offline page. But in case the user directly loads
+    // a chrome://offline URL, do not execute the javascript in a random page.
+    return;
+  }
   web_state_->GetNavigationManager()->GetLastCommittedItem()->SetVirtualURL(
       url);
   reloading_from_offline_ = true;
@@ -239,7 +247,7 @@ void OfflinePageTabHelper::ReplaceLocationUrlAndReload(const GURL& url) {
 
 GURL OfflinePageTabHelper::GetOnlineURLFromNavigationURL(
     const GURL& url) const {
-  if (url.host() == kChromeUIOfflineHost) {
+  if (url.GetHost() == kChromeUIOfflineHost) {
     return reading_list::EntryURLForOfflineURL(url);
   }
   return url;
@@ -343,10 +351,10 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
   }
 
   base::FilePath offline_path = entry->DistilledPath();
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   base::FilePath offline_root =
-      ReadingListDownloadServiceFactory::GetForBrowserState(browser_state)
+      ReadingListDownloadServiceFactory::GetForProfile(profile)
           ->OfflineRoot()
           .DirName();
 
@@ -361,10 +369,10 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
 }
 
 void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   base::FilePath offline_root =
-      ReadingListDownloadServiceFactory::GetForBrowserState(browser_state)
+      ReadingListDownloadServiceFactory::GetForProfile(profile)
           ->OfflineRoot()
           .DirName();
 
@@ -441,5 +449,3 @@ void OfflinePageTabHelper::CheckLoadingProgress(const GURL& url) {
     timer_->Stop();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OfflinePageTabHelper)

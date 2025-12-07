@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace autofill {
@@ -31,8 +31,15 @@ class UpdateAddressBubbleController : public content::WebContentsObserver {
       const UpdateAddressBubbleController&) = delete;
   ~UpdateAddressBubbleController() override;
 
-  virtual std::u16string GetWindowTitle() const;
+  // `has_empty_original_values` indicates if the profile had original empty
+  // values meaning the prompt is being shown to add new info to an existing
+  // profile.
+  virtual std::u16string GetWindowTitle(bool has_empty_original_values) const;
   virtual std::u16string GetFooterMessage() const;
+  virtual std::u16string GetPositiveButtonText(
+      bool has_empty_original_values) const;
+  virtual std::u16string GetNegativeButtonText(
+      bool has_empty_original_values) const;
   virtual const AutofillProfile& GetProfileToSave() const;
   virtual const AutofillProfile& GetOriginalProfile() const;
 

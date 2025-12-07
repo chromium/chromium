@@ -165,7 +165,7 @@ bool HotseatTransitionAnimator::ShouldDoAnimation(HotseatState old_state,
           old_state == HotseatState::kShownHomeLauncher) &&
          !(new_state == HotseatState::kShownClamshell ||
            old_state == HotseatState::kShownClamshell) &&
-         display::Screen::GetScreen()->InTabletMode();
+         display::Screen::Get()->InTabletMode();
 }
 
 void HotseatTransitionAnimator::NotifyHotseatTransitionAnimationEnded(

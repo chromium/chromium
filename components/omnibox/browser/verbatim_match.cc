@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/verbatim_match.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -11,12 +12,40 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/constants.h"
+#endif
 
 namespace {
-using ScoringSignals = ::metrics::OmniboxScoringSignals;
-}
+#if BUILDFLAG(IS_ANDROID)
+// Note: On Android, restrict the verbatim URLs allowed to be default. We
+// explicitly exclude schemes that may be used to execute Javascript code
+// snippet in the context of the current page on mobile devices.
+constexpr auto kAndroidNavigableSchemes =
+    base::MakeFixedFlatSet<std::string_view>({
+        url::kHttpScheme,
+        url::kHttpsScheme,
+        url::kAboutScheme,
+        content::kChromeUIScheme,
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+        // On desktop, extensions are always enabled, `kAndroidNavigableSchemes`
+        // is not used, and verbatim extension URLs are always allowed to be
+        // default. On mobile android, extensions are disabled,
+        // `ENABLE_EXTENSIONS_CORE` is false, and verbatim extension URLs are
+        // not allowed to be default. On desktop android, extensions are enabled
+        // and verbatim extension URLs are allowed to be default depending on
+        // `ENABLE_EXTENSIONS_CORE`.
+        extensions::kExtensionScheme,
+#endif
+    });
+#endif  // BUILDFLAG(IS_ANDROID)
+}  // namespace
 
 AutocompleteMatch VerbatimMatchForURL(
     AutocompleteProvider* provider,
@@ -97,6 +126,13 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
     match.allowed_to_be_default_match =
         (input.type() == metrics::OmniboxInputType::URL) ||
         !has_default_search_provider;
+#if BUILDFLAG(IS_ANDROID)
+    // Disallow non-navigable schemes to be default. This prevents javascript:
+    // snippets from being accidentally executed upon paste, refine, edit, etc.
+    match.allowed_to_be_default_match &=
+        kAndroidNavigableSchemes.contains(destination_url.GetScheme());
+#endif
+
     // NOTE: Don't set match.inline_autocompletion to something non-empty here;
     // it's surprising and annoying.
 
@@ -112,10 +148,14 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
 
-    if (!match.scoring_signals) {
-      match.scoring_signals = std::make_optional<ScoringSignals>();
+    // Only set scoring signals for eligible matches.
+    if (match.IsMlSignalLoggingEligible()) {
+      if (!match.scoring_signals) {
+        match.scoring_signals =
+            std::make_optional<::metrics::OmniboxScoringSignals>();
+      }
+      match.scoring_signals->set_is_verbatim(true);
     }
-    match.scoring_signals->set_is_verbatim(true);
   }
 
   return match;

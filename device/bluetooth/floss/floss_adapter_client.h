@@ -154,6 +154,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // some amount of time ago).
     virtual void AdapterClearedDevice(const FlossDeviceId& device_cleared) {}
 
+    // Notification sent when a found device has forgotten its keys or been
+    // reset. It will be sent when bond loss is detected.
+    virtual void AdapterKeyMissingDevice(const FlossDeviceId& device) {}
+
     // Notification sent when a device property has changed.
     virtual void AdapterDevicePropertyChanged(BtPropertyType prop_type,
                                               const FlossDeviceId& device) {}
@@ -185,10 +189,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // Notification sent when a remote device becomes disconnected.
     virtual void AdapterDeviceDisconnected(const FlossDeviceId& device) {}
 
+    // Notification sent when a remote device fails to connect.
+    virtual void AdapterDeviceConnectionFailed(const FlossDeviceId& device,
+                                               uint32_t status) {}
+
     // Notification sent when requested SDP search has completed.
     virtual void SdpSearchComplete(const FlossDeviceId device,
                                    const device::BluetoothUUID uuid,
-                                   const std::vector<BtSdpRecord> records) {}
+                                   const std::vector<BtSdpRecord>& records) {}
 
     // Notification sent when an SDP record has finished being created and
     // assigned a handle.
@@ -406,6 +414,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void OnDeviceCleared(dbus::MethodCall* method_call,
                        dbus::ExportedObject::ResponseSender response_sender);
 
+  // Handle callback |OnDeviceKeyMissing| on exported object path.
+  void OnDeviceKeyMissing(dbus::MethodCall* method_call,
+                          dbus::ExportedObject::ResponseSender response_sender);
+
   // Handle callback |OnDevicePropertiesChanged| on exported object path.
   void OnDevicePropertiesChanged(
       dbus::MethodCall* method_call,
@@ -442,6 +454,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Handle callback |OnDeviceDisconnected| on exported object path.
   void OnDeviceDisconnected(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDeviceConnectionFailed| on exported object path.
+  void OnDeviceConnectionFailed(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 

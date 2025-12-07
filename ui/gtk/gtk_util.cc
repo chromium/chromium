@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/gtk_util.h"
 
 #include <locale.h>
@@ -21,22 +16,18 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/event_utils.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_types.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
@@ -66,6 +57,10 @@ GskRenderNode* GetRenderNodeChild(GskRenderNode* node) {
       return gsk_blur_node_get_child(node);
     case GSK_DEBUG_NODE:
       return gsk_debug_node_get_child(node);
+    case GSK_MASK_NODE:
+      return gsk_mask_node_get_mask(node);
+    case GSK_SUBSURFACE_NODE:
+      return gsk_subsurface_node_get_child(node);
     default:
       return nullptr;
   }
@@ -200,7 +195,7 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
   // Callers should have already called setlocale(LC_ALL, "") and
   // setlocale(LC_NUMERIC, "C") by now. Chrome does this in
   // service_manager::Main.
-  DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0);
+  UNSAFE_TODO(DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0));
   // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
@@ -227,9 +222,15 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
 }
 
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
+  CHECK(dialog);
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
-  GtkUi::GetPlatform()->ClearTransientFor(
-      parent->GetHost()->GetAcceleratedWidget());
+
+  if (!parent || !parent->GetHost()) {
+    return;
+  }
+
+  gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
+  GtkUi::GetPlatform()->ClearTransientFor(parent_id);
 }
 
 base::OnceClosure DisableHostInputHandling(GtkWidget* dialog,
@@ -289,6 +290,15 @@ CairoSurface::CairoSurface(SkBitmap& bitmap)
           cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bitmap.width()))),
       cairo_(cairo_create(surface_)) {}
 
+CairoSurface::CairoSurface(void* pixels, int width, int height)
+    : surface_(cairo_image_surface_create_for_data(
+          static_cast<unsigned char*>(pixels),
+          CAIRO_FORMAT_ARGB32,
+          width,
+          height,
+          cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width))),
+      cairo_(cairo_create(surface_)) {}
+
 CairoSurface::CairoSurface(const gfx::Size& size)
     : surface_(cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
                                           size.width(),
@@ -322,7 +332,7 @@ SkColor CairoSurface::GetAveragePixelValue(bool frame) {
   long a = 0, r = 0, g = 0, b = 0;
   unsigned int max_alpha = 0;
   for (int i = 0; i < width * height; i++) {
-    SkColor color = data[i];
+    SkColor color = UNSAFE_TODO(data[i]);
     max_alpha = std::max(SkColorGetA(color), max_alpha);
     a += SkColorGetA(color);
     r += SkColorGetR(color);
@@ -392,8 +402,7 @@ GtkStateFlags StateToStateFlags(ui::NativeTheme::State state) {
       return static_cast<GtkStateFlags>(GTK_STATE_FLAG_PRELIGHT |
                                         GTK_STATE_FLAG_ACTIVE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return GTK_STATE_FLAG_NORMAL;
+      NOTREACHED();
   }
 }
 
@@ -418,6 +427,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
       {"disabled", GTK_STATE_FLAG_INSENSITIVE},
       {"indeterminate", GTK_STATE_FLAG_INCONSISTENT},
       {"focus", GTK_STATE_FLAG_FOCUSED},
+      {"focus-within", GTK_STATE_FLAG_FOCUS_WITHIN},
       {"backdrop", GTK_STATE_FLAG_BACKDROP},
       {"link", GTK_STATE_FLAG_LINK},
       {"visited", GTK_STATE_FLAG_VISITED},
@@ -447,7 +457,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
           part_type = CSS_PSEUDOCLASS;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
       switch (part_type) {
@@ -463,16 +473,21 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
         case CSS_PSEUDOCLASS: {
           GtkStateFlags state_flag = GTK_STATE_FLAG_NORMAL;
           for (const auto& pseudo_class_entry : pseudo_classes) {
-            if (strcmp(pseudo_class_entry.name, t.token().c_str()) == 0) {
+            if (UNSAFE_TODO(
+                    strcmp(pseudo_class_entry.name, t.token().c_str())) == 0) {
               state_flag = pseudo_class_entry.state_flag;
               break;
             }
           }
-          state = static_cast<GtkStateFlags>(state | state_flag);
+          constexpr GtkStateFlags kLargestGtk3State =
+              GTK_STATE_FLAG_DROP_ACTIVE;
+          if (state_flag <= kLargestGtk3State || GtkCheckVersion(4)) {
+            state = static_cast<GtkStateFlags>(state | state_flag);
+          }
           break;
         }
         case CSS_NONE:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }
@@ -520,7 +535,13 @@ SkColor GetBgColorFromStyleContext(GtkCssContext context) {
 }
 
 SkColor GetFgColor(const std::string& css_selector) {
-  return GtkStyleContextGetColor(GetStyleContextFromCss(css_selector));
+  auto context = GetStyleContextFromCss(css_selector);
+  auto fg = GtkStyleContextGetColor(context);
+  if (SkColorGetA(fg) == SK_AlphaOPAQUE) {
+    return fg;
+  }
+  return color_utils::GetResultingPaintColor(
+      fg, GetBgColorFromStyleContext(context));
 }
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
@@ -564,11 +585,12 @@ SkColor GetBorderColor(const std::string& css_selector) {
   gfx::Size size(24, 24);
   CairoSurface surface(size);
   gtk_render_frame(context, surface.cairo(), 0, 0, size.width(), size.height());
-  return surface.GetAveragePixelValue(true);
-}
-
-SkColor GetSelectionBgColor(const std::string& css_selector) {
-  return GetBgColorFromStyleContext(GetStyleContextFromCss(css_selector));
+  auto border = surface.GetAveragePixelValue(true);
+  if (SkColorGetA(border) == SK_AlphaOPAQUE) {
+    return border;
+  }
+  return color_utils::GetResultingPaintColor(
+      border, GetBgColorFromStyleContext(context));
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
@@ -623,108 +645,6 @@ std::string GetGtkSettingsStringProperty(GtkSettings* settings,
   return prop_value;
 }
 
-int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group) {
-  return state | ((group & 0x3) << 13);
-}
-
-GdkModifierType ExtractGdkEventStateFromKeyEventFlags(int flags) {
-  auto event_flags = static_cast<ui::EventFlags>(flags);
-  static const struct {
-    ui::EventFlags event_flag;
-    GdkModifierType gdk_modifier;
-  } mapping[] = {
-      {ui::EF_SHIFT_DOWN, GDK_SHIFT_MASK},
-      {ui::EF_CAPS_LOCK_ON, GDK_LOCK_MASK},
-      {ui::EF_CONTROL_DOWN, GDK_CONTROL_MASK},
-      {ui::EF_ALT_DOWN, GDK_ALT_MASK},
-      {ui::EF_LEFT_MOUSE_BUTTON, GDK_BUTTON1_MASK},
-      {ui::EF_MIDDLE_MOUSE_BUTTON, GDK_BUTTON2_MASK},
-      {ui::EF_RIGHT_MOUSE_BUTTON, GDK_BUTTON3_MASK},
-      {ui::EF_BACK_MOUSE_BUTTON, GDK_BUTTON4_MASK},
-      {ui::EF_FORWARD_MOUSE_BUTTON, GDK_BUTTON5_MASK},
-  };
-  unsigned int gdk_modifier_type = 0;
-  for (const auto& map : mapping) {
-    if (event_flags & map.event_flag) {
-      gdk_modifier_type = gdk_modifier_type | map.gdk_modifier;
-    }
-  }
-  return static_cast<GdkModifierType>(gdk_modifier_type);
-}
-
-int GetKeyEventProperty(const ui::KeyEvent& key_event,
-                        const char* property_key) {
-  auto* properties = key_event.properties();
-  if (!properties) {
-    return 0;
-  }
-  auto it = properties->find(property_key);
-  DCHECK(it == properties->end() || it->second.size() == 1);
-  return (it != properties->end()) ? it->second[0] : 0;
-}
-
-GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
-  // ui::KeyEvent uses a normalized modifier state which is not respected by
-  // Gtk, so instead we obtain the original value from annotated properties.
-  // See also x11_event_translation.cc where it is annotated.
-  // cf) https://crbug.com/1086946#c11.
-  const ui::Event::Properties* properties = key_event.properties();
-  if (!properties) {
-    return static_cast<GdkModifierType>(0);
-  }
-  auto it = properties->find(ui::kPropertyKeyboardState);
-  if (it == properties->end()) {
-    return static_cast<GdkModifierType>(0);
-  }
-  DCHECK_EQ(it->second.size(), 4u);
-  // Stored in little endian.
-  int result = 0;
-  int bitshift = 0;
-  for (uint8_t value : it->second) {
-    result |= value << bitshift;
-    bitshift += 8;
-  }
-  return static_cast<GdkModifierType>(result);
-}
-
-GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
-  DCHECK(!GtkCheckVersion(4));
-  GdkEventType event_type = key_event.type() == ui::EventType::kKeyPressed
-                                ? GdkKeyPress()
-                                : GdkKeyRelease();
-  auto event_time = key_event.time_stamp() - base::TimeTicks();
-  int hw_code = GetKeyEventProperty(key_event, ui::kPropertyKeyboardHwKeyCode);
-  int group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
-
-  // Get GdkKeymap
-  GdkKeymap* keymap = GtkUi::GetPlatform()->GetGdkKeymap();
-
-  // Get keyval and state
-  GdkModifierType state = GetGdkKeyEventState(key_event);
-  guint keyval = GDK_KEY_VoidSymbol;
-  GdkModifierType consumed;
-  gdk_keymap_translate_keyboard_state(keymap, hw_code, state, group, &keyval,
-                                      nullptr, nullptr, &consumed);
-  gdk_keymap_add_virtual_modifiers(keymap, &state);
-  DCHECK(keyval != GDK_KEY_VoidSymbol);
-
-  // Build GdkEvent
-  GdkEvent* gdk_event = gdk_event_new(event_type);
-  GdkEventKey* gdk_event_key = reinterpret_cast<GdkEventKey*>(gdk_event);
-  gdk_event_key->type = event_type;
-  gdk_event_key->time = event_time.InMilliseconds();
-  gdk_event_key->hardware_keycode = hw_code;
-  gdk_event_key->keyval = keyval;
-  gdk_event_key->state = BuildXkbStateFromGdkEvent(state, group);
-  gdk_event_key->group = group;
-  gdk_event_key->send_event = key_event.flags() & ui::EF_FINAL;
-  gdk_event_key->is_modifier = state & GDK_MODIFIER_MASK;
-  gdk_event_key->length = 0;
-  gdk_event_key->string = nullptr;
-
-  return gdk_event;
-}
-
 GtkIconTheme* GetDefaultIconTheme() {
   return GtkCheckVersion(4)
              ? gtk_icon_theme_get_for_display(gdk_display_get_default())
@@ -765,8 +685,19 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
     return nullptr;
   }
 
-  if (gsk_render_node_get_node_type(node) == GSK_TEXTURE_NODE) {
-    return gsk_texture_node_get_texture(node);
+  auto node_type = gsk_render_node_get_node_type(node);
+  if (node_type > GSK_RENDER_NODE_MAX_VALUE) {
+    LOG(ERROR) << "Unexpected node type: " << node_type;
+    return nullptr;
+  }
+
+  switch (node_type) {
+    case GSK_TEXTURE_NODE:
+      return gsk_texture_node_get_texture(node);
+    case GSK_TEXTURE_SCALE_NODE:
+      return gsk_texture_node_get_texture(node);
+    default:
+      break;
   }
 
   if (auto* texture = GetTextureFromRenderNode(GetRenderNodeChild(node))) {

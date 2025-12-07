@@ -99,6 +99,10 @@ class WebContentsTester {
   // main frame of |opener|.
   virtual void SetOpener(WebContents* opener) = 0;
 
+  // Simulate this WebContents' main frame having a live original opener chain
+  // where the root of the chain points to the main frame of `opener`.
+  virtual void SetOriginalOpener(WebContents* opener) = 0;
+
   // Sets the process state for the primary main frame renderer.
   virtual void SetIsCrashed(base::TerminationStatus status, int error_code) = 0;
 
@@ -120,6 +124,14 @@ class WebContentsTester {
       int http_status_code,
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) = 0;
+
+  // Simulates a console message event and notifies web contents observers.
+  virtual bool TestDidAddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel log_level,
+      const std::u16string& message,
+      int32_t line_no,
+      const std::u16string& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) = 0;
 
   // Simulates initial favicon urls set.
   virtual void TestSetFaviconURL(
@@ -155,6 +167,9 @@ class WebContentsTester {
   // Simulates terminating an load with a network error.
   virtual void TestDidFailLoadWithError(const GURL& url, int error_code) = 0;
 
+  // Simulates the first non-empty paint.
+  virtual void TestDidFirstVisuallyNonEmptyPaint() = 0;
+
   // Returns whether PauseSubresourceLoading was called on this web contents.
   virtual bool GetPauseSubresourceLoadingCalled() = 0;
 
@@ -172,6 +187,14 @@ class WebContentsTester {
   virtual void TestIncrementUsbActiveFrameCount() = 0;
   virtual void TestDecrementUsbActiveFrameCount() = 0;
 
+  // Increments/decrements the number of frames with connected HID devices.
+  virtual void TestIncrementHidActiveFrameCount() = 0;
+  virtual void TestDecrementHidActiveFrameCount() = 0;
+
+  // Increments/decrements the number of frames actively using serial ports.
+  virtual void TestIncrementSerialActiveFrameCount() = 0;
+  virtual void TestDecrementSerialActiveFrameCount() = 0;
+
   // Increments/decrements the number of connected Bluetooth devices.
   virtual void TestIncrementBluetoothConnectedDeviceCount() = 0;
   virtual void TestDecrementBluetoothConnectedDeviceCount() = 0;
@@ -183,7 +206,7 @@ class WebContentsTester {
   // Starts prerendering a page with |url|, and returns the root frame tree node
   // id of the page. The page has a pending navigation in the root frame tree
   // node when this method returns.
-  virtual int AddPrerender(const GURL& url) = 0;
+  virtual FrameTreeNodeId AddPrerender(const GURL& url) = 0;
   // Starts prerendering a page, simulates a navigation to |url| in the main
   // frame and returns the main frame of the page after the navigation is
   // complete.
@@ -209,6 +232,9 @@ class WebContentsTester {
   virtual void SetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,
       std::vector<std::string> ids) = 0;
+
+  // Sets the return value for GetCurrentlyPlayingVideoCount().
+  virtual void SetCurrentlyPlayingVideoCount(int count) = 0;
 };
 
 }  // namespace content

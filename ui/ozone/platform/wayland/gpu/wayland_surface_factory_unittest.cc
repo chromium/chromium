@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
+
 #include <drm_fourcc.h>
+#include <wayland-util.h>
 
 #include <cstdint>
 #include <memory>
@@ -17,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gbm_device.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
@@ -26,7 +30,6 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
-#include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -46,8 +49,6 @@ using ::testing::Values;
 namespace ui {
 
 namespace {
-
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
 
 // Holds a NativePixmap used for scheduling overlay planes. It must become busy
 // when scheduled and be associated with the swap id to track correct order of
@@ -197,14 +198,13 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
     WaylandTest::SetUp();
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(
-        std::move(manager_ptr), kSupportedFormatsWithModifiers,
-        /*supports_dma_buf=*/false,
-        /*supports_viewporter=*/true,
-        /*supports_acquire_fence=*/false,
-        /*supports_overlays=*/true, kAugmentedSurfaceNotSupportedVersion,
-        /*supports_single_pixel_buffer=*/true,
-        /*server_version=*/{});
+    buffer_manager_gpu_->Initialize(std::move(manager_ptr),
+                                    kSupportedFormatsWithModifiers,
+                                    /*supports_dma_buf=*/false,
+                                    /*supports_viewporter=*/true,
+                                    /*supports_acquire_fence=*/false,
+                                    /*supports_overlays=*/true,
+                                    /*supports_single_pixel_buffer=*/true);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();
@@ -240,6 +240,8 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
             gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
             gfx::ColorSpace::CreateSRGB(), std::nullopt));
   }
+
+  SurfaceFactoryOzone* surface_factory() { return surface_factory_.get(); }
 
   uint32_t surface_id_ = 0;
 };
@@ -277,8 +279,8 @@ TEST_P(WaylandSurfaceFactoryTest,
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 4; ++i) {
     auto size_px = window_->applied_state().size_px;
-    auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, size_px, gfx::BufferFormat::BGRA_8888,
+    auto native_pixmap = surface_factory()->CreateNativePixmap(
+        widget_, nullptr, size_px, viz::SinglePlaneFormat::kBGRA_8888,
         gfx::BufferUsage::SCANOUT);
     fake_overlay_image.push_back(
         base::MakeRefCounted<OverlayImageHolder>(native_pixmap, size_px));
@@ -629,8 +631,8 @@ TEST_P(WaylandSurfaceFactoryTest,
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 5; ++i) {
     auto size_px = window_->applied_state().size_px;
-    auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, size_px, gfx::BufferFormat::BGRA_8888,
+    auto native_pixmap = surface_factory()->CreateNativePixmap(
+        widget_, nullptr, size_px, viz::SinglePlaneFormat::kBGRA_8888,
         gfx::BufferUsage::SCANOUT);
     fake_overlay_image.push_back(
         base::MakeRefCounted<OverlayImageHolder>(native_pixmap, size_px));
@@ -963,7 +965,7 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
 
           // Release the buffer immediately as the test always attaches the same
           // buffer.
-          mock_surface->ReleaseBufferFenced(buffer_resource, {});
+          mock_surface->ReleaseBuffer(buffer_resource);
 
           mock_surface->SendFrameCallback();
         });
@@ -1081,7 +1083,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasBufferSwapAck) {
       auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
       auto* buffer_resource = mock_surface->prev_attached_buffer();
       ASSERT_TRUE(buffer_resource);
-      mock_surface->ReleaseBufferFenced(buffer_resource, {});
+      mock_surface->ReleaseBuffer(buffer_resource);
     });
 
     base::RunLoop().RunUntilIdle();
@@ -1182,7 +1184,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasBufferSwapAck2) {
       auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
       auto* buffer_resource = mock_surface->prev_attached_buffer();
       ASSERT_TRUE(buffer_resource);
-      mock_surface->ReleaseBufferFenced(buffer_resource, {});
+      mock_surface->ReleaseBuffer(buffer_resource);
     });
 
     base::RunLoop().RunUntilIdle();
@@ -1347,7 +1349,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
   });
 
   gfx::Size test_buffer_size = {300, 100};
-  gfx::RectF crop_uv = {0.1f, 0.2f, 0.5, 0.5f};
+  gfx::RectF crop_uv = {0.1f, 0.2f, 0.5f, 0.5f};
   gfx::Rect expected_src = gfx::ToEnclosingRect(
       gfx::ScaleRect({0.2f, 0.4f, 0.5f, 0.5f}, test_buffer_size.height(),
                      test_buffer_size.width()));
@@ -1355,8 +1357,8 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
 
   // Create buffer and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
-  auto native_pixmap = surface_factory_->CreateNativePixmap(
-      widget_, nullptr, test_buffer_size, gfx::BufferFormat::BGRA_8888,
+  auto native_pixmap = surface_factory()->CreateNativePixmap(
+      widget_, nullptr, test_buffer_size, viz::SinglePlaneFormat::kBGRA_8888,
       gfx::BufferUsage::SCANOUT);
   ASSERT_TRUE(native_pixmap);
   fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(

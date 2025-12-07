@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 
-#include "ash/components/arc/mojom/memory.mojom-forward.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
+#include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 
@@ -71,6 +71,8 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   // directly, it should always be retrieved via
   // WorkingSetTrimmer::GetInstance().
   WorkingSetTrimmerChromeOS();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<content::BrowserContext> context_for_testing_ = nullptr;
 

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/reporting/metrics/periodic_collector.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -57,7 +53,7 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
   settings_->SetReportingEnabled(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
-  MetricData metric_data_list[5];
+  std::array<MetricData, 5> metric_data_list;
   metric_data_list[0].mutable_telemetry_data();
   metric_data_list[1].mutable_info_data();
   metric_data_list[2].mutable_event_data();

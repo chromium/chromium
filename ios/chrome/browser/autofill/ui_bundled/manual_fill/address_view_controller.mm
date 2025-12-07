@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -18,11 +21,9 @@
 
 namespace manual_fill {
 
-NSString* const AddressTableViewAccessibilityIdentifier =
-    @"kManualFillAddressTableViewAccessibilityIdentifier";
-
 enum ManualFallbackItemType : NSInteger {
   kNoAddressesMessage = kItemTypeEnumZero,
+  kPlusAddress
 };
 
 }  // namespace manual_fill
@@ -39,7 +40,27 @@ enum ManualFallbackItemType : NSInteger {
   [super viewDidLoad];
 
   self.tableView.accessibilityIdentifier =
-      manual_fill::AddressTableViewAccessibilityIdentifier;
+      manual_fill::kAddressTableViewAccessibilityIdentifier;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  DCHECK_EQ(tableView, self.tableView);
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+
+  switch (itemType) {
+    case manual_fill::ManualFallbackItemType::kPlusAddress:
+      // Retrieve favicons for credential cells.
+      [self loadFaviconForPlusAddressCell:cell indexPath:indexPath];
+      break;
+    default:
+      break;
+  }
+  return cell;
 }
 
 #pragma mark - ManualFillAddressConsumer
@@ -50,18 +71,19 @@ enum ManualFallbackItemType : NSInteger {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.PresentedOptions.Profiles",
                            addresses.count);
 
-  if (!addresses.count && IsKeyboardAccessoryUpgradeEnabled()) {
+  self.noRegularDataItemsToShowHeaderItem = nil;
+  if (!addresses.count) {
     TableViewTextHeaderFooterItem* textHeaderFooterItem =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:manual_fill::ManualFallbackItemType::
                              kNoAddressesMessage];
     textHeaderFooterItem.text =
         l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES);
-    self.noDataItemsToShowHeaderItem = textHeaderFooterItem;
+    self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     _addresses = (NSArray<TableViewItem*>*)addresses;
     [self presentItems];
   } else {
@@ -78,7 +100,14 @@ enum ManualFallbackItemType : NSInteger {
 - (void)presentPlusAddresses:
     (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
   _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
+  for (ManualFillPlusAddressItem* item : _plusAddresses) {
+    item.type = manual_fill::ManualFallbackItemType::kPlusAddress;
+  }
   [self presentItems];
+}
+
+- (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
+  [self presentPlusAddressActionItems:actions];
 }
 
 #pragma mark - Private
@@ -97,6 +126,28 @@ enum ManualFallbackItemType : NSInteger {
 
   CHECK(items);
   [self presentDataItems:items];
+}
+
+// Retrieves favicon from FaviconLoader and sets image in `cell` for plus
+// addresses.
+- (void)loadFaviconForPlusAddressCell:(UITableViewCell*)cell
+                            indexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  ManualFillPlusAddressItem* plusAddressItem =
+      base::apple::ObjCCastStrict<ManualFillPlusAddressItem>(item);
+  CHECK(item);
+
+  ManualFillPlusAddressCell* plusAddressCell =
+      base::apple::ObjCCastStrict<ManualFillPlusAddressCell>(cell);
+
+  [self
+      loadFaviconForCellIdentifier:plusAddressCell.uniqueIdentifier
+                    itemIdentifier:plusAddressItem.uniqueIdentifier
+                        faviconURL:plusAddressItem.faviconURL
+                        completion:^(FaviconAttributes* faviconAttributes) {
+                          [plusAddressCell
+                              configureWithFaviconAttributes:faviconAttributes];
+                        }];
 }
 
 @end

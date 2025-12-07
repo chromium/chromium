@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_INFOBAR_IOS_H_
 
 #import <UIKit/UIKit.h>
+
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
@@ -70,7 +71,6 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   base::WeakPtr<InfoBarIOS> GetWeakPtr();
 
  protected:
-
  private:
   // InfoBarControllerDelegate overrides:
   bool IsOwned() override;

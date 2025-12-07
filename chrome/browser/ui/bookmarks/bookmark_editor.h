@@ -10,10 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class GURL;
 class Profile;
@@ -52,8 +54,8 @@ class BookmarkEditor {
       std::vector<BookmarkData> children;
     };
 
-    // Returns the type of the existing or new node.
-    bookmarks::BookmarkNode::Type GetNodeType() const;
+    // Returns whether the existing/new node has an URL that can be modified.
+    bool CanChangeUrl() const;
 
     // Returns the resource id for the string resource to use on the window
     // title for this edit operation.
@@ -61,6 +63,14 @@ class BookmarkEditor {
 
     // Returns an EditDetails instance for the user editing the given bookmark.
     static EditDetails EditNode(const bookmarks::BookmarkNode* node);
+
+    // Returns an EditDetails instance for the user moving the given selection
+    // of bookmarks. The initial parent node will be computed based on the
+    // `nodes` storages and their parents similarity.
+    static EditDetails MoveNodes(
+        bookmarks::BookmarkModel* model,
+        const std::vector<
+            raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes);
 
     // Returns an EditDetails instance for the user adding a bookmark within
     // a given parent node with a specified index.
@@ -75,6 +85,11 @@ class BookmarkEditor {
     static EditDetails AddFolder(const bookmarks::BookmarkNode* parent_node,
                                  size_t index);
 
+    static EditDetails TabGroupToFolder(
+        const bookmarks::BookmarkNode* parent_node,
+        size_t index,
+        const std::u16string& title);
+
     enum Type {
       // The user is editing an existing node in the model. The node the user
       // is editing is set in |existing_node|.
@@ -87,7 +102,16 @@ class BookmarkEditor {
       // A new folder bookmark should be created if the user accepts the edit.
       // The contents of the folder should be that of |urls|.
       // |existing_node| is null in this case.
-      NEW_FOLDER
+      NEW_FOLDER,
+
+      // The user is moving one or multiple existing nodes in the model. The
+      // nodes the user is moving are set in `existing_nodes_to_move`.
+      MOVE,
+
+      // Convert a tab group to a bookmark folder. Similar to `NEW_FOLDER`
+      // except different localization strings and has a default title of tab
+      // group name.
+      CONVERT_TAB_GROUP_TO_FOLDER,
     };
 
     EditDetails(const EditDetails& other);
@@ -99,8 +123,11 @@ class BookmarkEditor {
     // If type == EXISTING_NODE this gives the existing node.
     raw_ptr<const bookmarks::BookmarkNode> existing_node = nullptr;
 
-    // If type == NEW_URL or type == NEW_FOLDER this gives the initial parent
-    // node to place the new node in.
+    // If type == MOVE this gives the existing nodes to move.
+    base::flat_set<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+        existing_nodes_to_move;
+
+    // This gives the initial parent node to place the node(s) in.
     raw_ptr<const bookmarks::BookmarkNode> parent_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the index to insert
@@ -117,35 +144,21 @@ class BookmarkEditor {
   };
 
   // Shows the bookmark editor. The bookmark editor allows editing an existing
-  // node or creating a new bookmark node (as determined by |details.type|).
-  // |details.parent_node| is only used if |details.existing_node| is null.
+  // node, moving one or multiple existing nodes, or creating a new bookmark
+  // node (as determined by |details.type|). |details.parent_node| is only used
+  // if |details.existing_node| is null.
   static void Show(gfx::NativeWindow parent_window,
                    Profile* profile,
                    const EditDetails& details,
                    Configuration configuration,
                    OnSaveCallback on_save_callback = base::DoNothing());
 
-  // Modifies a bookmark node (assuming that there's no magic that needs to be
-  // done regarding moving from one folder to another).  If a new node is
-  // explicitly being added, returns a pointer to the new node that was created.
-  // Otherwise the return value is identically |node|.
-  static const bookmarks::BookmarkNode* ApplyEditsWithNoFolderChange(
-      bookmarks::BookmarkModel* model,
-      const bookmarks::BookmarkNode* parent,
-      const EditDetails& details,
-      const std::u16string& new_title,
-      const GURL& new_url);
-
-  // Modifies a bookmark node assuming that the parent of the node may have
-  // changed and the node will need to be removed and reinserted.  If a new node
-  // is explicitly being added, returns a pointer to the new node that was
-  // created.  Otherwise the return value is identically |node|.
-  static const bookmarks::BookmarkNode* ApplyEditsWithPossibleFolderChange(
-      bookmarks::BookmarkModel* model,
-      const bookmarks::BookmarkNode* new_parent,
-      const EditDetails& details,
-      const std::u16string& new_title,
-      const GURL& new_url);
+  // Modifies a bookmark node.
+  static void ApplyEdits(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* new_parent,
+                         const EditDetails& details,
+                         const std::u16string& new_title,
+                         const GURL& new_url);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDITOR_H_

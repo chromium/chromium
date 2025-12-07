@@ -23,6 +23,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -32,7 +33,7 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -96,18 +97,19 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
       history::HistoryService* history_service,
       ZeroSuggestCacheService* zero_suggest_cache_service,
       TemplateURLService* template_url_service)
-      : PageContentAnnotationsService(
-            "en-US",
-            "us",
-            optimization_guide_model_provider,
-            history_service,
-            template_url_service,
-            zero_suggest_cache_service,
-            nullptr,
-            base::FilePath(),
-            nullptr,
-            nullptr,
-            nullptr) {}
+      : PageContentAnnotationsService("en-US",
+                                      "us",
+                                      optimization_guide_model_provider,
+                                      history_service,
+                                      template_url_service,
+                                      zero_suggest_cache_service,
+                                      nullptr,
+                                      base::FilePath(),
+                                      nullptr,
+                                      nullptr,
+                                      nullptr,
+                                      nullptr,
+                                      nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
   void Annotate(const HistoryVisit& visit) override {
@@ -146,12 +148,11 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
 std::unique_ptr<KeyedService> BuildTestTemplateURLService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
 
   // Set up a simple template URL service with a default search engine.
-  auto template_url_service = std::make_unique<TemplateURLService>(
-      *profile->GetPrefs(), *search_engine_choice_service, kTemplateURLData);
+  auto template_url_service =
+      TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
+          profile, kTemplateURLData);
   TemplateURL* template_url = template_url_service->GetTemplateURLForKeyword(
       kDefaultTemplateURLKeyword);
   template_url_service->SetUserSelectedDefaultSearchProvider(template_url);

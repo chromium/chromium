@@ -1,39 +1,20 @@
 # -*- coding: utf-8 -*-
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# https://developers.google.com/protocol-buffers/
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of Google Inc. nor the names of its
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
 
 """Unittest for nested public imports."""
 
 import unittest
 
+from google.protobuf import unknown_fields
 from google.protobuf.internal.import_test_package import outer_pb2
+
+from google.protobuf import unittest_custom_options_pb2
+from google.protobuf import unittest_import_option_pb2
 
 
 class ImportTest(unittest.TestCase):
@@ -43,6 +24,59 @@ class ImportTest(unittest.TestCase):
 
     msg = outer_pb2.Outer()
     self.assertEqual(58, msg.import_public_nested.value)
+
+  def testImportOptionKnown(self):
+    file_descriptor = unittest_import_option_pb2.DESCRIPTOR
+    message_descriptor = unittest_import_option_pb2.TestMessage.DESCRIPTOR
+    field_descriptor = message_descriptor.fields_by_name['field1']
+
+    self.assertEqual(
+        file_descriptor.GetOptions().Extensions[
+            unittest_custom_options_pb2.file_opt1
+        ],
+        1,
+    )
+    self.assertEqual(
+        message_descriptor.GetOptions().Extensions[
+            unittest_custom_options_pb2.message_opt1
+        ],
+        2,
+    )
+    self.assertEqual(
+        field_descriptor.GetOptions().Extensions[
+            unittest_custom_options_pb2.field_opt1
+        ],
+        3,
+    )
+
+  def testImportOptionUnknown(self):
+    file_descriptor = unittest_import_option_pb2.DESCRIPTOR
+    message_descriptor = unittest_import_option_pb2.TestMessage.DESCRIPTOR
+    field_descriptor = message_descriptor.fields_by_name['field1']
+
+    # Options from import option that are not linked in should be in unknown
+    # fields.
+    unknown_fields_file = unknown_fields.UnknownFieldSet(
+        file_descriptor.GetOptions()
+    )
+    unknown_fields_message = unknown_fields.UnknownFieldSet(
+        message_descriptor.GetOptions()
+    )
+    unknown_fields_field = unknown_fields.UnknownFieldSet(
+        field_descriptor.GetOptions()
+    )
+
+    self.assertEqual(len(unknown_fields_file), 1)
+    self.assertEqual(unknown_fields_file[0].field_number, 7736975)
+    self.assertEqual(unknown_fields_file[0].data, 1)
+
+    self.assertEqual(len(unknown_fields_message), 1)
+    self.assertEqual(unknown_fields_message[0].field_number, 7739037)
+    self.assertEqual(unknown_fields_message[0].data, 2)
+
+    self.assertEqual(len(unknown_fields_field), 1)
+    self.assertEqual(unknown_fields_field[0].field_number, 7740937)
+    self.assertEqual(unknown_fields_field[0].data, 3)
 
 
 if __name__ == '__main__':

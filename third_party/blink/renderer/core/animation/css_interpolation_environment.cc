@@ -13,13 +13,17 @@ namespace blink {
 
 const CSSValue* CSSInterpolationEnvironment::Resolve(
     const PropertyHandle& property,
-    const CSSValue* value) const {
+    const CSSValue* value,
+    const TreeScope* tree_scope) const {
   DCHECK(cascade_);
   DCHECK(cascade_resolver_);
   if (!value)
     return value;
-  return cascade_->Resolve(property.GetCSSPropertyName(), *value,
-                           CascadeOrigin::kAnimation, *cascade_resolver_);
+  // TODO: If we support env() within @keyframe, we may need to support
+  // non-nullptr env_bindings here.
+  return cascade_->Resolve(property.GetCSSPropertyName(), *value, tree_scope,
+                           /*env_bindings=*/nullptr, CascadeOrigin::kAnimation,
+                           *cascade_resolver_);
 }
 
 }  // namespace blink

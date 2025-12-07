@@ -86,7 +86,7 @@ class NetworkNameUtilTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper network_state_test_helper_{
-      false /* use_default_devices_and_services */};
+      /*use_default_devices_and_services=*/false};
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;

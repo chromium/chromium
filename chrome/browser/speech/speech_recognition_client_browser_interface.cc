@@ -7,15 +7,14 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/unguessable_token.h"
-#include "build/build_config.h"
-#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/live_caption/live_caption_controller.h"
-#include "components/live_caption/live_caption_ui_remote_driver.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 
@@ -27,7 +26,6 @@ SpeechRecognitionClientBrowserInterface::
     SpeechRecognitionClientBrowserInterface(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   profile_prefs_ = profile->GetPrefs();
-  controller_ = captions::LiveCaptionControllerFactory::GetForProfile(profile);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_prefs_);
@@ -36,12 +34,21 @@ SpeechRecognitionClientBrowserInterface::
   pref_change_registrar_->Add(
       prefs::kLiveCaptionEnabled,
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
-                              OnSpeechRecognitionAvailabilityChanged,
+                              OnLiveCaptionAvailabilityChanged,
                           base::Unretained(this)));
+  // Reuse the same callback, since it does the same thing regardless of which
+  // pref changed.  Ignore the pref if the feature is off, though.
+  if (captions::IsHeadlessCaptionFeatureSupported()) {
+    pref_change_registrar_->Add(
+        prefs::kHeadlessCaptionEnabled,
+        base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
+                                OnLiveCaptionAvailabilityChanged,
+                            base::Unretained(this)));
+  }
   pref_change_registrar_->Add(
       prefs::kLiveCaptionLanguageCode,
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
-                              OnSpeechRecognitionLanguageChanged,
+                              OnLiveCaptionLanguageChanged,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kLiveCaptionMaskOffensiveWords,
@@ -66,57 +73,36 @@ void SpeechRecognitionClientBrowserInterface::
     BindSpeechRecognitionBrowserObserver(
         mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
             pending_remote) {
-  speech_recognition_availibility_observers_.Add(std::move(pending_remote));
-  OnSpeechRecognitionAvailabilityChanged();
+  live_caption_availibility_observers_.Add(std::move(pending_remote));
+  OnLiveCaptionAvailabilityChanged();
 }
 
-void SpeechRecognitionClientBrowserInterface::BindRecognizerToRemoteClient(
-    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-        client_receiver,
-    mojo::PendingReceiver<media::mojom::SpeechRecognitionSurfaceClient>
-        surface_client_receiver,
-    mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> surface_remote,
-    media::mojom::SpeechRecognitionSurfaceMetadataPtr metadata) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui_drivers_.Add(
-      std::make_unique<captions::LiveCaptionUiRemoteDriver>(
-          controller_, std::move(surface_client_receiver),
-          std::move(surface_remote), metadata->session_id.ToString()),
-      std::move(client_receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+void SpeechRecognitionClientBrowserInterface::REMOVED_1() {
+  NOTIMPLEMENTED();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void SpeechRecognitionClientBrowserInterface::REMOVED_2(
+    mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
+        pending_remote) {
+  NOTIMPLEMENTED();
+}
+#endif
 
 void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_))
-    return;
-  NotifyObservers(profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
+  NotifyLiveCaptionObserversIfNeeded();
 }
 
 void SpeechRecognitionClientBrowserInterface::
-    OnSpeechRecognitionAvailabilityChanged() {
-  if (speech_recognition_availibility_observers_.empty())
-    return;
-
-  bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
-
-  if (enabled) {
-    const std::string live_caption_locale =
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
-    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-            speech::GetLanguageCode(live_caption_locale))) {
-      NotifyObservers(enabled);
-    }
-  } else {
-    NotifyObservers(enabled);
-  }
+    OnLiveCaptionAvailabilityChanged() {
+  NotifyLiveCaptionObserversIfNeeded();
 }
 
-void SpeechRecognitionClientBrowserInterface::
-    OnSpeechRecognitionLanguageChanged() {
+void SpeechRecognitionClientBrowserInterface::OnLiveCaptionLanguageChanged() {
   const std::string language =
       prefs::GetLiveCaptionLanguageCode(profile_prefs_);
-  for (auto& observer : speech_recognition_availibility_observers_) {
+  for (auto& observer : live_caption_availibility_observers_) {
     observer->SpeechRecognitionLanguageChanged(language);
   }
 }
@@ -125,13 +111,34 @@ void SpeechRecognitionClientBrowserInterface::
     OnSpeechRecognitionMaskOffensiveWordsChanged() {
   bool mask_offensive_words =
       profile_prefs_->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords);
-  for (auto& observer : speech_recognition_availibility_observers_) {
+  for (auto& observer : live_caption_availibility_observers_) {
     observer->SpeechRecognitionMaskOffensiveWordsChanged(mask_offensive_words);
   }
 }
 
-void SpeechRecognitionClientBrowserInterface::NotifyObservers(bool enabled) {
-  for (auto& observer : speech_recognition_availibility_observers_) {
+void SpeechRecognitionClientBrowserInterface::
+    NotifyLiveCaptionObserversIfNeeded() {
+  if (live_caption_availibility_observers_.empty()) {
+    return;
+  }
+
+  bool is_language_installed =
+      speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+          speech::GetLanguageCode(
+              prefs::GetLiveCaptionLanguageCode(profile_prefs_)));
+  if (!is_language_installed) {
+    // Don't notify until the language pack is installed, regardless of whether
+    // recognition is enabled or not.
+    return;
+  }
+
+  // Captioning is enabled if either Live Caption or Headless Caption.
+  bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+  if (captions::IsHeadlessCaptionFeatureSupported()) {
+    enabled |= profile_prefs_->GetBoolean(prefs::kHeadlessCaptionEnabled);
+  }
+
+  for (auto& observer : live_caption_availibility_observers_) {
     observer->SpeechRecognitionAvailabilityChanged(enabled);
   }
 }

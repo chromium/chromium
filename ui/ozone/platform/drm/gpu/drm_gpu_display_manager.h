@@ -13,7 +13,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
@@ -23,6 +22,7 @@ using drmModeModeInfo = struct _drmModeModeInfo;
 namespace display {
 struct ColorCalibration;
 struct ColorTemperatureAdjustment;
+struct DisplayConfigurationParams;
 struct GammaAdjustment;
 }  // namespace display
 
@@ -52,7 +52,7 @@ class DrmGpuDisplayManager {
 
   // Takes/releases the control of the DRM devices.
   bool TakeDisplayControl();
-  void RelinquishDisplayControl();
+  bool RelinquishDisplayControl();
 
   // Whether or not a udev display change event triggered by a DRM property
   // should go through or get blocked.
@@ -61,7 +61,8 @@ class DrmGpuDisplayManager {
 
   bool ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ModesetFlags modeset_flags);
+      display::ModesetFlags modeset_flags,
+      std::vector<display::DisplayConfigurationParams>& out_requests);
   bool SetHdcpKeyProp(int64_t display_id, const std::string& key);
   bool GetHDCPState(int64_t display_id,
                     display::HDCPState* state,
@@ -120,6 +121,9 @@ class DrmGpuDisplayManager {
       const display::DisplayMode& request_mode,
       const DrmDisplay& display,
       bool is_seamless);
+
+  // Returns true if any of the displays is a tiled display.
+  bool HasTiledDisplay() const;
 
   const raw_ptr<ScreenManager> screen_manager_;         // Not owned.
   const raw_ptr<DrmDeviceManager> drm_device_manager_;  // Not owned.

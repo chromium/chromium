@@ -4,7 +4,7 @@
 
 module chrome.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 
@@ -21,6 +21,6 @@ enum IconSize {
 interface UtilReadIcon {
   // Reads the primary icon from |file| with the scaling factor |scale|
   // using |size| as a hint.
-  ReadIcon(mojo_base.mojom.ReadOnlyFile file, IconSize size, float scale) =>
-      (gfx.mojom.ImageSkia? icon);
+  ReadIcon(mojo_base.mojom.ReadOnlyFile file, IconSize size, float scale)
+      => (gfx.mojom.ImageSkia? icon);
 };

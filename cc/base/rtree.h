@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_BASE_RTREE_H_
 #define CC_BASE_RTREE_H_
 
@@ -21,7 +16,10 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -102,8 +100,8 @@ class RTree {
  private:
   // These values were empirically determined to produce reasonable performance
   // in most cases.
-  static constexpr int kMinChildren = 6;
-  static constexpr int kMaxChildren = 11;
+  static constexpr size_t kMinChildren = 6;
+  static constexpr size_t kMaxChildren = 11;
 
   template <typename U>
   struct Node;
@@ -128,33 +126,36 @@ class RTree {
 
   template <typename U>
   struct Node {
-    uint16_t num_children = 0u;
-    uint16_t level = 0u;
+    uint16_t num_children = 0;
+    uint16_t level = 0;
     Branch<U> children[kMaxChildren];
 
     explicit Node(uint16_t level) : level(level) {}
   };
 
   template <typename ResultFunctor>
-  void SearchRecursive(Node<T>* root,
+  void SearchRecursive(const Node<T>& node,
                        const gfx::Rect& query,
                        const ResultFunctor& result_handler) const;
 
   // The following two functions are slow fallback versions of SearchRecursive
   // and SearchRefsRecursive for when !has_valid_bounds().
   template <typename ResultFunctor>
-  void SearchRecursiveFallback(Node<T>* root,
+  void SearchRecursiveFallback(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const;
 
   // Consumes the input array.
-  Branch<T> BuildRecursive(std::vector<Branch<T>>* branches, int level);
-  Node<T>* AllocateNodeAtLevel(int level);
+  Branch<T> BuildRecursive(std::vector<Branch<T>>* branches, uint16_t level);
+  Node<T>* AllocateNodeAtLevel(uint16_t level);
 
-  void GetAllBoundsRecursive(Node<T>* root,
+  void GetAllBoundsRecursive(const Node<T>& node,
                              std::map<T, gfx::Rect>* results) const;
 
-  // This is the count of data elements (rather than total nodes in the tree)
+  NOINLINE void AddCrashKeysForTreeSizeAndCrash(size_t node_count) const;
+
+  // This is the count of data elements (rather than total nodes in the
+  // tree)
   size_t num_data_elements_ = 0u;
   std::vector<Node<T>> nodes_;
   Branch<T> root_;
@@ -189,8 +190,9 @@ void RTree<T>::Build(size_t item_count,
 
   for (size_t i = 0; i < item_count; i++) {
     const gfx::Rect& bounds = bounds_getter(i);
-    if (bounds.IsEmpty())
+    if (bounds.IsEmpty()) {
       continue;
+    }
     branches.emplace_back(payload_getter(i), bounds);
   }
 
@@ -216,16 +218,27 @@ void RTree<T>::Build(size_t item_count,
         static_cast<size_t>((std::pow(branch_count, depth) - 1) /
                             (branch_count - 1)) +
         kMinChildren;
+
+    // TODO(crbug.com/447555058): This check merely exists to replicate the
+    // check in Vector<RTree<T>::Node<T>>::reserve(). This check should never
+    // fail but, inexplicably, is failing for some users. If additional debug
+    // data shows this bug is non-actionable, this code should be removed. Until
+    // then, the perf impact should be minimal, since it is comparing a value in
+    // a register to a const.
+    if (node_count > nodes_.max_size()) [[unlikely]] {
+      AddCrashKeysForTreeSizeAndCrash(node_count);
+      NOTREACHED();
+    }
+
     nodes_.reserve(node_count);
     root_ = BuildRecursive(&branches, 0);
   }
   // We should've wasted at most kMinChildren nodes.
-  DCHECK_LE(nodes_.capacity() - nodes_.size(),
-            static_cast<size_t>(kMinChildren));
+  DCHECK_LE(nodes_.capacity() - nodes_.size(), kMinChildren);
 }
 
 template <typename T>
-auto RTree<T>::AllocateNodeAtLevel(int level) -> Node<T>* {
+auto RTree<T>::AllocateNodeAtLevel(uint16_t level) -> Node<T>* {
   // We don't allow reallocations, since that would invalidate references to
   // existing nodes, so verify that capacity > size.
   DCHECK_GT(nodes_.capacity(), nodes_.size());
@@ -234,33 +247,35 @@ auto RTree<T>::AllocateNodeAtLevel(int level) -> Node<T>* {
 }
 
 template <typename T>
-auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
+auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, uint16_t level)
     -> Branch<T> {
   // Only one branch.  It will be the root.
-  if (branches->size() == 1)
+  if (branches->size() == 1) {
     return std::move((*branches)[0]);
+  }
 
   // TODO(vmpstr): Investigate if branches should be sorted in y.
   // The comment from Skia reads:
   // We might sort our branches here, but we expect Blink gives us a reasonable
   // x,y order. Skipping a call to sort (in Y) here resulted in a 17% win for
   // recording with negligible difference in playback speed.
-  int remainder = static_cast<int>(branches->size() % kMaxChildren);
+  size_t remainder = branches->size() % kMaxChildren;
 
   if (remainder > 0) {
     // If the remainder isn't enough to fill a node, we'll add fewer nodes to
     // other branches.
-    if (remainder >= kMinChildren)
+    if (remainder >= kMinChildren) {
       remainder = 0;
-    else
+    } else {
       remainder = kMinChildren - remainder;
+    }
   }
 
   size_t current_branch = 0;
 
   size_t new_branch_index = 0;
   while (current_branch < branches->size()) {
-    int increment_by = kMaxChildren;
+    size_t increment_by = kMaxChildren;
     if (remainder != 0) {
       // if need be, omit some nodes to make up for remainder
       if (remainder <= kMaxChildren - kMinChildren) {
@@ -283,7 +298,7 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
     int y = branch.bounds.y();
     int right = branch.bounds.right();
     int bottom = branch.bounds.bottom();
-    for (int k = 1; k < increment_by && current_branch < branches->size();
+    for (size_t k = 1; k < increment_by && current_branch < branches->size();
          ++k) {
       // We use a custom union instead of gfx::Rect::Union here, since this
       // bypasses some empty checks and extra setters, which improves
@@ -294,7 +309,7 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
       right = std::max(right, bounds.right());
       bottom = std::max(bottom, bounds.bottom());
 
-      node->children[k] = (*branches)[current_branch];
+      UNSAFE_TODO(node->children[k]) = (*branches)[current_branch];
       ++node->num_children;
       ++current_branch;
     }
@@ -321,10 +336,11 @@ void RTree<T>::Search(const gfx::Rect& query,
   if (num_data_elements_ == 0) {
     return;
   }
+  CHECK(root_.subtree);
   if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree, query, result_handler);
+    SearchRecursiveFallback(*root_.subtree, query, result_handler);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree, query, result_handler);
+    SearchRecursive(*root_.subtree, query, result_handler);
   }
 }
 
@@ -355,15 +371,17 @@ void RTree<T>::SearchRefs(const gfx::Rect& query,
 
 template <typename T>
 template <typename ResultFunctor>
-void RTree<T>::SearchRecursive(Node<T>* node,
+void RTree<T>::SearchRecursive(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (query.Intersects(node->children[i].bounds)) {
-      if (node->level == 0) {
-        result_handler(node->children[i].payload, node->children[i].bounds);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    const auto& child = UNSAFE_TODO(node.children[i]);
+    if (query.Intersects(child.bounds)) {
+      if (node.level == 0) {
+        result_handler(child.payload, child.bounds);
       } else {
-        SearchRecursive(node->children[i].subtree, query, result_handler);
+        CHECK(child.subtree);
+        SearchRecursive(*child.subtree, query, result_handler);
       }
     }
   }
@@ -374,16 +392,18 @@ void RTree<T>::SearchRecursive(Node<T>* node,
 template <typename T>
 template <typename ResultFunctor>
 void RTree<T>::SearchRecursiveFallback(
-    Node<T>* node,
+    const Node<T>& node,
     const gfx::Rect& query,
     const ResultFunctor& result_handler) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0) {
-      if (query.Intersects(node->children[i].bounds)) {
-        result_handler(node->children[i].payload, node->children[i].bounds);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    const auto& child = UNSAFE_TODO(node.children[i]);
+    if (node.level == 0) {
+      if (query.Intersects(child.bounds)) {
+        result_handler(child.payload, child.bounds);
       }
     } else {
-      SearchRecursive(node->children[i].subtree, query, result_handler);
+      CHECK(child.subtree);
+      SearchRecursive(*child.subtree, query, result_handler);
     }
   }
 }
@@ -399,20 +419,52 @@ std::optional<gfx::Rect> RTree<T>::bounds() const {
 template <typename T>
 std::map<T, gfx::Rect> RTree<T>::GetAllBoundsForTracing() const {
   std::map<T, gfx::Rect> results;
-  if (num_data_elements_ > 0)
-    GetAllBoundsRecursive(root_.subtree, &results);
+  if (num_data_elements_ > 0) {
+    CHECK(root_.subtree);
+    GetAllBoundsRecursive(*root_.subtree, &results);
+  }
   return results;
 }
 
 template <typename T>
-void RTree<T>::GetAllBoundsRecursive(Node<T>* node,
+void RTree<T>::GetAllBoundsRecursive(const Node<T>& node,
                                      std::map<T, gfx::Rect>* results) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0)
-      (*results)[node->children[i].payload] = node->children[i].bounds;
-    else
-      GetAllBoundsRecursive(node->children[i].subtree, results);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    const auto& child = UNSAFE_TODO(node.children[i]);
+    if (node.level == 0) {
+      (*results)[child.payload] = child.bounds;
+    } else {
+      CHECK(child.subtree);
+      GetAllBoundsRecursive(*child.subtree, results);
+    }
   }
+}
+
+// See comment in RTree<T>::Build. For triage: This is not a new bug. Previous
+// crashes may have been filed under DisplayItemList::Finalize(). This function
+// was written to collect these crashes with additional telemetry for
+// investigation. Please be sure that calling this function is causing a novel
+// crash before reverting/removing it.
+template <typename T>
+void RTree<T>::AddCrashKeysForTreeSizeAndCrash(size_t node_count) const {
+  double branches_log = log(num_data_elements_);
+  double depth = branches_log / log(kMaxChildren);
+  double branch_pow = std::pow(kMaxChildren, depth);
+  size_t node_count_recalculated =
+      static_cast<size_t>((branch_pow - 1) / (kMaxChildren - 1)) + kMinChildren;
+
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "initial_calcd_node_count",
+                            base::NumberToString(node_count));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalc_ln_data_elements",
+                            base::NumberToString(branches_log));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalculated_depth",
+                            base::NumberToString(depth));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalculated_branch_pow",
+                            base::NumberToString(branch_pow));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalculated_node_count",
+                            base::NumberToString(node_count_recalculated));
+
+  NOTREACHED();
 }
 
 }  // namespace cc

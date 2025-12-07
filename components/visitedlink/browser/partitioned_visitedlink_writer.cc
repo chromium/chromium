@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -138,6 +138,19 @@ void PartitionedVisitedLinkWriter::TableBuilder::OnVisitedLink(
   const uint64_t salt = GetOrAddLocalOriginSalt(frame_origin);
   fingerprints_.push_back(
       VisitedLinkWriter::ComputePartitionedFingerprint(link, salt));
+
+  // Attempt to add the self-link version of this visited links to the
+  // partitioned hashtable if the feature is enabled.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
+    std::optional<VisitedLink> self_link = link.MaybeCreateSelfLink();
+    if (self_link.has_value()) {
+      const uint64_t self_salt =
+          GetOrAddLocalOriginSalt(self_link->frame_origin);
+      fingerprints_.push_back(VisitedLinkWriter::ComputePartitionedFingerprint(
+          self_link.value(), self_salt));
+    }
+  }
 }
 
 // NOTE: in prod, this function should not be called on the UI thread.
@@ -261,7 +274,7 @@ bool PartitionedVisitedLinkWriter::CreateVisitedLinkTableHelper(
     return false;
   }
 
-  memset(memory->mapping.memory(), 0, alloc_size);
+  UNSAFE_TODO(memset(memory->mapping.memory(), 0, alloc_size));
 
   // Save the header for other processes to read.
   PartitionedSharedHeader* header =
@@ -317,7 +330,7 @@ void PartitionedVisitedLinkWriter::ResizeTable(int32_t new_size) {
     // Now we have two tables, our local copy which is the old one, and the new
     // one loaded into this object where we need to copy the data.
     for (int32_t i = 0; i < old_table_length; i++) {
-      Fingerprint cur = old_hash_table[i];
+      Fingerprint cur = UNSAFE_TODO(old_hash_table[i]);
       if (cur) {
         AddFingerprint(cur, false);
       }
@@ -349,8 +362,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
   if (!hash_table_ || table_length_ == 0) {
     base::UmaHistogramEnumeration("History.VisitedLinks.TryToAddFingerprint",
                                   AddFingerprint::kTableError);
-    NOTREACHED_IN_MIGRATION();  // Not initialized.
-    return null_hash_;
+    NOTREACHED();  // Not initialized.
   }
 
   Hash cur_hash = HashFingerprint(fingerprint);
@@ -365,7 +377,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
 
     if (cur_fingerprint == null_fingerprint_) {
       // End of probe sequence found, insert here.
-      hash_table_[cur_hash] = fingerprint;
+      UNSAFE_TODO(hash_table_[cur_hash]) = fingerprint;
       used_items_++;
       // If allowed, notify listener that a new visited link was added.
       if (send_notifications) {
@@ -385,8 +397,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
       // logic, so stop here.
       base::UmaHistogramEnumeration("History.VisitedLinks.TryToAddFingerprint",
                                     AddFingerprint::kTableError);
-      NOTREACHED_IN_MIGRATION();
-      return null_hash_;
+      NOTREACHED();
     }
   }
 }
@@ -404,8 +415,7 @@ void PartitionedVisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
 
 bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
   if (!hash_table_ || table_length_ == 0) {
-    NOTREACHED_IN_MIGRATION();  // Not initialized.
-    return false;
+    NOTREACHED();  // Not initialized.
   }
   if (!IsVisited(fingerprint)) {
     return false;  // Not in the database to delete.
@@ -425,7 +435,7 @@ bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
     if (next_hash == deleted_hash) {
       break;  // We wrapped around and the whole table is full.
     }
-    if (!hash_table_[next_hash]) {
+    if (!UNSAFE_TODO(hash_table_[next_hash])) {
       break;  // Found the last spot.
     }
     end_range = next_hash;
@@ -438,15 +448,15 @@ bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
   absl::InlinedVector<Fingerprint, 32> shuffled_fingerprints;
   Hash stop_loop = IncrementHash(end_range);  // The end range is inclusive.
   for (Hash i = deleted_hash; i != stop_loop; i = IncrementHash(i)) {
-    if (hash_table_[i] != fingerprint) {
+    if (UNSAFE_TODO(hash_table_[i]) != fingerprint) {
       // Don't save the one we're deleting!
-      shuffled_fingerprints.push_back(hash_table_[i]);
+      shuffled_fingerprints.push_back(UNSAFE_TODO(hash_table_[i]));
 
       // This will balance the increment of this value in AddFingerprint below
       // so there is no net change.
       used_items_--;
     }
-    hash_table_[i] = null_fingerprint_;
+    UNSAFE_TODO(hash_table_[i]) = null_fingerprint_;
   }
 
   if (!shuffled_fingerprints.empty()) {
@@ -531,20 +541,21 @@ uint32_t PartitionedVisitedLinkWriter::NewTableSizeForCount(
     int32_t item_count) const {
   // These table sizes are selected to be the maximum prime number less than
   // a "convenient" multiple of 1K.
-  static const int table_sizes[] = {
-      16381,      // 16K  = 16384   <- don't shrink below this table size
-                  //                   (should be == default_table_size)
-      32767,      // 32K  = 32768
-      65521,      // 64K  = 65536
-      130051,     // 128K = 131072
-      262127,     // 256K = 262144
-      524269,     // 512K = 524288
-      1048549,    // 1M   = 1048576
-      2097143,    // 2M   = 2097152
-      4194301,    // 4M   = 4194304
-      8388571,    // 8M   = 8388608
-      16777199,   // 16M  = 16777216
-      33554347};  // 32M  = 33554432
+  static const auto table_sizes = std::to_array<int>({
+      16381,     // 16K  = 16384   <- don't shrink below this table size
+                 //                   (should be == default_table_size)
+      32767,     // 32K  = 32768
+      65521,     // 64K  = 65536
+      130051,    // 128K = 131072
+      262127,    // 256K = 262144
+      524269,    // 512K = 524288
+      1048549,   // 1M   = 1048576
+      2097143,   // 2M   = 2097152
+      4194301,   // 4M   = 4194304
+      8388571,   // 8M   = 8388608
+      16777199,  // 16M  = 16777216
+      33554347,
+  });  // 32M  = 33554432
 
   // Try to leave the table 33% full.
   int desired = item_count * 3;
@@ -565,10 +576,31 @@ void PartitionedVisitedLinkWriter::AddVisitedLink(const VisitedLink& link) {
   TRACE_EVENT0("browser", "PartitionedVisitedLinkWriter::AddVisitedLink");
   base::UmaHistogramCounts10M("History.VisitedLinks.HashTableUsageOnLinkAdded",
                               used_items_);
-  Hash index = TryToAddVisitedLink(link);
-  if (!table_builder_ && index != null_hash_) {
-    // Not building the table from the VisitedLinkDatabase, so we may need to
-    // resize the table.
+  // Attempt to add the visited link to the in-memory partitioned hashtable and
+  // record whether we returned a valid hash index.
+  bool did_add_link = (TryToAddVisitedLink(link) != null_hash_);
+
+  // When kPartitionVisitedLinkDatabaseWithSelfLinks is enabled, we attempt to
+  // add <link_url, link_url, link_url> to the in-memory partitioned hashtable
+  // as well.
+  bool did_add_self_link = false;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
+    std::optional<VisitedLink> self_link = link.MaybeCreateSelfLink();
+    if (self_link.has_value()) {
+      // Attempt to add the self-link and record whether we returned a valid
+      // hash index.
+      did_add_self_link =
+          (TryToAddVisitedLink(self_link.value()) != null_hash_);
+    }
+  }
+
+  // If we have added a link and/or a self-link, we need to call
+  // ResizeTableIfNecessary() to determine whether we need to increase the
+  // available space in the partitioned hashtable. Before doing so, we also
+  // check that the table isn't currently building, which would make this
+  // operation redundant.
+  if (!table_builder_ && (did_add_link || did_add_self_link)) {
     ResizeTableIfNecessary();
   }
 }
@@ -579,8 +611,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::TryToAddVisitedLink(
   // TODO(boliu): Move this check to HistoryService when IsOffTheRecord is
   // removed from BrowserContext.
   if (browser_context_ && browser_context_->IsOffTheRecord()) {
-    NOTREACHED_IN_MIGRATION();
-    return null_hash_;
+    NOTREACHED();
   }
 
   // We don't want to add any invalid VisitedLinks to the hashtable.
@@ -623,7 +654,8 @@ void PartitionedVisitedLinkWriter::DeleteAllVisitedLinks() {
 
   // Clear the hash table.
   used_items_ = 0;
-  memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint));
+  UNSAFE_TODO(
+      memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint)));
 
   // Resize it if it is now too empty. Resize may write the new table out for
   // us, otherwise, schedule writing the new table to disk ourselves.
@@ -639,6 +671,10 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
     return;
   }
 
+  // Cache the feature status to avoid frequent calculation.
+  const bool are_self_links_enabled = base::FeatureList::IsEnabled(
+      blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+
   // Notify reader instances that hashtable state has changed.
   listener_->Reset(false);
 
@@ -646,23 +682,34 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
     // A build is in progress, save this deletion in the temporary
     // list so it can be deleted once the build is complete.
     while (links->HasNextVisitedLink()) {
+      // Obtain the next link we want to delete from the hashtable.
       const VisitedLink& link(links->NextVisitedLink());
-
       if (!link.IsValid()) {
         continue;
       }
-
       deleted_during_build_.insert(link);
-
       // If the VisitedLink  was just added and now we're deleting it, it may be
       // in the list of things added since the last build. Delete it from that
       // list.
       added_during_build_.erase(link);
+
+      // If self-links are enabled, we have added links to the in-memory
+      // partitioned hashtable that do not exist in the VisitedLinkDatabase. As
+      // a result, we must construct the self-link counterpart to each of these
+      // VisitedLinks deleted from the VisitedLinkDatabase, so that both the
+      // link and self-link are removed from the partitioned hashtable.
+      if (are_self_links_enabled) {
+        std::optional<VisitedLink> self_link = link.MaybeCreateSelfLink();
+        if (self_link.has_value()) {
+          deleted_during_build_.insert(self_link.value());
+          added_during_build_.erase(self_link.value());
+        }
+      }
     }
     return;
   }
 
-  // Compute the deleted URLs' fingerprints and delete them
+  // Compute the deleted URLs' fingerprints and delete them.
   std::set<Fingerprint> deleted_fingerprints;
   while (links->HasNextVisitedLink()) {
     const VisitedLink& link(links->NextVisitedLink());
@@ -675,6 +722,24 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
     }
     deleted_fingerprints.insert(
         ComputePartitionedFingerprint(link, salt.value()));
+
+    // If self-links are enabled, we have added links to the in-memory
+    // partitioned hashtable that do not exist in the VisitedLinkDatabase. As
+    // a result, we must construct the self-link counterpart to each of these
+    // VisitedLinks deleted from the VisitedLinkDatabase, so that both the
+    // link and self-link are removed from the partitioned hashtable.
+    if (are_self_links_enabled) {
+      std::optional<VisitedLink> self_link = link.MaybeCreateSelfLink();
+      if (self_link.has_value()) {
+        const std::optional<uint64_t> self_salt =
+            GetOrAddOriginSalt(self_link->frame_origin);
+        if (!self_salt.has_value()) {
+          continue;
+        }
+        deleted_fingerprints.insert(ComputePartitionedFingerprint(
+            self_link.value(), self_salt.value()));
+      }
+    }
   }
   DeleteFingerprintsFromCurrentTable(deleted_fingerprints);
 }
@@ -703,12 +768,12 @@ std::optional<uint64_t> PartitionedVisitedLinkWriter::GetOrAddOriginSalt(
 // static
 VisitedLinkCommon::Fingerprint*
 PartitionedVisitedLinkWriter::GetHashTableFromMapping(
-    const base::WritableSharedMemoryMapping& hash_table_mapping) {
+    base::WritableSharedMemoryMapping& hash_table_mapping) {
   DCHECK(hash_table_mapping.IsValid());
   // Our table pointer is just the data immediately following the header.
   return reinterpret_cast<Fingerprint*>(
-      static_cast<char*>(hash_table_mapping.memory()) +
-      sizeof(PartitionedSharedHeader));
+      UNSAFE_TODO(static_cast<char*>(hash_table_mapping.memory()) +
+                  sizeof(PartitionedSharedHeader)));
 }
 
 }  // namespace visitedlink

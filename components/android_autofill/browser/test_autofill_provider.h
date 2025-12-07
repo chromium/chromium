@@ -23,27 +23,25 @@ class TestAutofillProvider : public AutofillProvider {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source) override {}
-  void OnTextFieldDidChange(AndroidAutofillManager* manager,
-                            const FormData& form,
-                            const FormFieldData& field,
-                            const base::TimeTicks timestamp) override {}
+  void OnTextFieldValueChanged(AndroidAutofillManager* manager,
+                               const FormData& form,
+                               const FormFieldData& field,
+                               const base::TimeTicks timestamp) override {}
   void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field) override {}
-  void OnSelectControlDidChange(AndroidAutofillManager* manager,
-                                const FormData& form,
-                                const FormFieldData& field) override {}
+  void OnSelectControlSelectionChanged(AndroidAutofillManager* manager,
+                                       const FormData& form,
+                                       const FormFieldData& field) override {}
   void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
-                       bool known_success,
                        mojom::SubmissionSource source) override {}
   void OnFocusOnNonFormField(AndroidAutofillManager* manager) override {}
   void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
                           const FormFieldData& field) override {}
-  void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
-                                 const FormData& form,
-                                 base::TimeTicks timestamp) override {}
+  void OnDidAutofillForm(AndroidAutofillManager* manager,
+                         const FormData& form) override {}
   void OnHidePopup(AndroidAutofillManager* manager) override {}
   void OnServerPredictionsAvailable(AndroidAutofillManager&,
                                     FormGlobalId form) override {}

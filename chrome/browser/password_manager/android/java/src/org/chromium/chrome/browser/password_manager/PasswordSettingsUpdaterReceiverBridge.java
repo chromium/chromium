@@ -10,13 +10,15 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import java.util.Optional;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Java-counterpart of the native PasswordSettingsUpdaterAndroidReceiverBridge. It forwards
  * passwords settings update callbacks from the downstream java implementation to native.
  */
 @JNINamespace("password_manager")
+@NullMarked
 public class PasswordSettingsUpdaterReceiverBridge {
     private long mNativeReceiverBridge;
 
@@ -32,15 +34,15 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     void onSettingValueFetched(
             @PasswordManagerSetting int setting,
-            Optional<Boolean> settingValue,
+            @Nullable Boolean settingValue,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
-        if (settingValue.isPresent()) {
+        if (settingValue != null) {
             PasswordSettingsUpdaterReceiverBridgeJni.get()
-                    .onSettingValueFetched(mNativeReceiverBridge, setting, settingValue.get());
+                    .onSettingValueFetched(mNativeReceiverBridge, setting, settingValue);
             return;
         }
         PasswordSettingsUpdaterReceiverBridgeJni.get()

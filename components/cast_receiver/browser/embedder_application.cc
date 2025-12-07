@@ -69,12 +69,6 @@ StreamingConfigManager* EmbedderApplication::GetStreamingConfigManager() {
   return ptr;
 }
 
-std::unique_ptr<content::WebUIControllerFactory>
-EmbedderApplication::CreateWebUIControllerFactory(
-    std::vector<std::string> hosts) {
-  return nullptr;
-}
-
 void EmbedderApplication::NavigateToPage(const GURL& gurl) {
   content::WebContents* web_contents = GetWebContents();
   DCHECK(web_contents);

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 
@@ -18,7 +19,6 @@ class Point;
 }
 
 namespace ui {
-enum class CursorSize;
 struct CursorData;
 }  // namespace ui
 
@@ -33,13 +33,13 @@ namespace wm {
 COMPONENT_EXPORT(UI_WM)
 std::optional<ui::CursorData> GetCursorData(
     ui::mojom::CursorType type,
-    ui::CursorSize size,
     float scale,
     std::optional<int> target_cursor_size_in_px,
-    display::Display::Rotation rotation);
+    display::Display::Rotation rotation,
+    SkColor color);
 
 // Scale and rotate the cursor's bitmap and hotpoint.
-// |bitmap_in_out| and |hotpoint_in_out| are used as
+// `bitmap_in_out` and `hotpoint_in_out` are used as
 // both input and output.
 COMPONENT_EXPORT(UI_WM)
 void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
@@ -52,12 +52,22 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
 // should be animated. Returns false if resource data for `type` isn't
 // available.
 COMPONENT_EXPORT(UI_WM)
-bool GetCursorDataFor(ui::CursorSize cursor_size,
-                      ui::mojom::CursorType type,
-                      float scale_factor,
+bool GetCursorDataFor(ui::mojom::CursorType type,
                       int* resource_id,
                       gfx::Point* point,
                       bool* is_animated);
+
+// Applies `cursor_color` on black pixels only and recolors `bitmap`.
+// This is a fallback function to the cases when dynamic coloration with
+// lottie is not feasible.
+COMPONENT_EXPORT(UI_WM)
+SkBitmap GetColorAdjustedBitmap(const SkBitmap& bitmap, SkColor cursor_color);
+
+// Invalidates the cache of lottie animations for cursors. This is necessary
+// when properties that affect cursor lottie animation rendering, like color,
+// are changed.
+COMPONENT_EXPORT(UI_WM)
+void ClearCursorAnimationCache();
 
 }  // namespace wm
 

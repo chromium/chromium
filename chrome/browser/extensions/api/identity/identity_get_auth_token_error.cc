@@ -7,6 +7,9 @@
 #include <string_view>
 
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -67,12 +70,14 @@ std::string IdentityGetAuthTokenError::ToString() const {
       return identity_constants::kPageLoadFailure;
     case State::kInvalidConsentResult:
       return identity_constants::kInvalidConsentResult;
-    case State::kCanceled:
-      return identity_constants::kCanceled;
     case State::kInteractivityDenied:
       return identity_constants::kGetAuthTokenInteractivityDeniedError;
     case State::kCannotCreateWindow:
       return identity_constants::kCannotCreateWindow;
+    case State::kBrowserContextShutDown:
+      return identity_constants::kBrowserContextShutDown;
+    case State::kSetRemoteConsentResolutionCookiesFailed:
+      return identity_constants::kCannotSetRemoteConsentResolutionCookies;
   }
 }
 

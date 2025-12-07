@@ -5,12 +5,15 @@
 #include "components/sharing_message/sharing_fcm_handler.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/proto/sharing_message_type.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_handler_registry.h"
@@ -18,6 +21,7 @@
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -102,7 +106,7 @@ void SharingFCMHandler::OnMessage(const std::string& app_id,
          components_sharing_message::SharingMessage::PAYLOAD_NOT_SET)
       << "No payload set in SharingMessage received";
 
-  components_sharing_message::MessageType message_type =
+  sharing_message::MessageType message_type =
       SharingPayloadCaseToMessageType(payload_case);
   LogSharingMessageReceived(payload_case);
 
@@ -180,7 +184,7 @@ SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
 
 void SharingFCMHandler::SendAckMessage(
     std::string original_message_id,
-    components_sharing_message::MessageType original_message_type,
+    sharing_message::MessageType original_message_type,
     std::optional<components_sharing_message::FCMChannelConfiguration>
         fcm_channel,
     std::optional<components_sharing_message::ServerChannelConfiguration>
@@ -193,10 +197,9 @@ void SharingFCMHandler::SendAckMessage(
   }
 
   int trace_id = GenerateSharingTraceId();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "sharing", "Sharing.SendAckMessage", TRACE_ID_LOCAL(trace_id),
-      "original_message_type",
-      SharingMessageTypeToString(original_message_type));
+  TRACE_EVENT_BEGIN("sharing", "Sharing.SendAckMessage",
+                    perfetto::Track(trace_id), "original_message_type",
+                    SharingMessageTypeToString(original_message_type));
 
   components_sharing_message::SharingMessage sharing_message;
   components_sharing_message::AckMessage* ack_message =
@@ -226,7 +229,7 @@ void SharingFCMHandler::SendAckMessage(
 
 void SharingFCMHandler::OnAckMessageSent(
     std::string original_message_id,
-    components_sharing_message::MessageType original_message_type,
+    sharing_message::MessageType original_message_type,
     SharingDevicePlatform sender_device_type,
     int trace_id,
     SharingSendMessageResult result,
@@ -236,7 +239,7 @@ void SharingFCMHandler::OnAckMessageSent(
     LOG(ERROR) << "Failed to send ack mesage for " << original_message_id;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("sharing", "Sharing.SendAckMessage",
-                                  TRACE_ID_LOCAL(trace_id), "result",
-                                  SharingSendMessageResultToString(result));
+  TRACE_EVENT_END("sharing",
+                  /* Sharing.SendAckMessage */ perfetto::Track(trace_id),
+                  "result", SharingSendMessageResultToString(result));
 }

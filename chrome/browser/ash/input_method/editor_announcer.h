@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/input_method/ui/announcement_view.h"
+#include "chrome/browser/ui/ash/input_method/announcement_view.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash::input_method {

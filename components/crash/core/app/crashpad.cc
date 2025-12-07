@@ -13,7 +13,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -27,7 +26,6 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
@@ -73,7 +71,8 @@ bool InitializeCrashpadImpl(bool initial_client,
                             const std::string& user_data_dir,
                             const base::FilePath& exe_path,
                             const std::vector<std::string>& initial_arguments,
-                            bool embedded_handler) {
+                            bool embedded_handler,
+                            const std::vector<base::FilePath>& attachments) {
   static bool initialized = false;
   DCHECK(!initialized);
   initialized = true;
@@ -96,7 +95,8 @@ bool InitializeCrashpadImpl(bool initial_client,
            process_type == "os-update-handler" ||
            process_type == "platform-experience-helper" ||
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-           process_type == "GCPW Installer" || process_type == "GCPW DLL");
+           process_type == "GCPW Installer" || process_type == "GCPW DLL" ||
+           process_type == "elevated-tracing-service");
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     DCHECK(browser_process);
 #else
@@ -110,7 +110,7 @@ bool InitializeCrashpadImpl(bool initial_client,
   base::FilePath database_path;
   if (!internal::PlatformCrashpadInitialization(
           initial_client, browser_process, embedded_handler, user_data_dir,
-          exe_path, initial_arguments, &database_path)) {
+          exe_path, initial_arguments, attachments, &database_path)) {
     return false;
   }
 
@@ -179,7 +179,7 @@ bool InitializeCrashpadImpl(bool initial_client,
     g_database =
         crashpad::CrashReportDatabase::Initialize(database_path).release();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     // On Android crashpad doesn't handle uploads. Android uses
     // //components/minidump_uploader which queries metrics sample/consent opt
     // in from preferences.
@@ -195,17 +195,19 @@ bool InitializeCrashpadImpl(bool initial_client,
 bool InitializeCrashpad(bool initial_client, const std::string& process_type) {
   return InitializeCrashpadImpl(initial_client, process_type, std::string(),
                                 base::FilePath(), std::vector<std::string>(),
-                                /*embedded_handler=*/false);
+                                /*embedded_handler=*/false, /*attachments=*/{});
 }
 
 #if BUILDFLAG(IS_WIN)
-bool InitializeCrashpadWithEmbeddedHandler(bool initial_client,
-                                           const std::string& process_type,
-                                           const std::string& user_data_dir,
-                                           const base::FilePath& exe_path) {
+bool InitializeCrashpadWithEmbeddedHandler(
+    bool initial_client,
+    const std::string& process_type,
+    const std::string& user_data_dir,
+    const base::FilePath& exe_path,
+    const std::vector<base::FilePath>& attachments) {
   return InitializeCrashpadImpl(initial_client, process_type, user_data_dir,
                                 exe_path, std::vector<std::string>(),
-                                /*embedded_handler=*/true);
+                                /*embedded_handler=*/true, attachments);
 }
 
 bool InitializeCrashpadWithDllEmbeddedHandler(
@@ -213,10 +215,11 @@ bool InitializeCrashpadWithDllEmbeddedHandler(
     const std::string& process_type,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments) {
+    const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments) {
   return InitializeCrashpadImpl(initial_client, process_type, user_data_dir,
                                 exe_path, initial_arguments,
-                                /*embedded_handler=*/true);
+                                /*embedded_handler=*/true, attachments);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -238,7 +241,7 @@ void DestroyCrashpadClient() {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void SetUploadConsent(bool consent) {
   if (!g_database)
     return;
@@ -259,7 +262,7 @@ void SetUploadConsent(bool consent) {
                               crash_reporter_client->GetCollectStatsInSample());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 void DumpWithoutCrashing() {
@@ -278,6 +281,26 @@ void DumpWithoutCrashAndDeferProcessingAtPath(const base::FilePath& path) {
 void OverridePlatformValue(const std::string& platform_value) {
   // "platform" is used to determine device_model on the crash server.
   PlatformStorage().Set(platform_value);
+}
+
+crashpad::SimpleAddressRangeBag* ExtraMemoryRanges() {
+  return crashpad::CrashpadInfo::GetCrashpadInfo()->extra_memory_ranges();
+}
+
+void SetExtraMemoryRanges(crashpad::SimpleAddressRangeBag* address_range_bag) {
+  crashpad::CrashpadInfo::GetCrashpadInfo()->set_extra_memory_ranges(
+      address_range_bag);
+}
+
+crashpad::SimpleAddressRangeBag* IntermediateDumpExtraMemoryRanges() {
+  return crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->intermediate_dump_extra_memory_ranges();
+}
+
+void SetIntermediateDumpExtraMemoryRanges(
+    crashpad::SimpleAddressRangeBag* address_range_bag) {
+  crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->set_intermediate_dump_extra_memory_ranges(address_range_bag);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

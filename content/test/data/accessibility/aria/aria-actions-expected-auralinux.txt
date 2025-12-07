@@ -1,0 +1,19 @@
+[document web] actions=(doDefault, showContextMenu)
+++[page tab list] horizontal actions=(doDefault, showContextMenu)
+++++[page tab] name='your-file-name.pdf Close' selectable actions=(doDefault, showContextMenu, custom_edit, custom_open, custom_delete)
+++++++[static] name='your-file-name.pdf ' actions=(doDefault, showContextMenu)
+++++++[push button] name='Edit' actions=(press, showContextMenu)
+++++++[link] name='Open' actions=(jump, showContextMenu)
+++++++++[static] name='Open' actions=(clickAncestor, showContextMenu)
+++++++[toggle button] name='Close' checkable actions=(doDefault, showContextMenu) checkable:true
+++[push button] name='Delete' actions=(press, showContextMenu)
+=== Start Continuation ===
+[document web] name='change-aria-action-id' actions=(doDefault, showContextMenu)
+++[page tab list] horizontal actions=(doDefault, showContextMenu)
+++++[page tab] name='your-file-name.pdf Edit Open' selectable actions=(doDefault, showContextMenu, custom_close)
+++++++[static] name='your-file-name.pdf ' actions=(doDefault, showContextMenu)
+++++++[push button] name='Edit' actions=(press, showContextMenu)
+++++++[link] name='Open' actions=(jump, showContextMenu)
+++++++++[static] name='Open' actions=(clickAncestor, showContextMenu)
+++++++[toggle button] name='Close' checkable actions=(doDefault, showContextMenu) checkable:true
+++[push button] name='Delete' actions=(press, showContextMenu)

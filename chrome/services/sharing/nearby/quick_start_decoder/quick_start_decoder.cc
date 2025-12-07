@@ -12,13 +12,12 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -274,8 +273,7 @@ QuickStartDecoder::DecodeSecondDeviceAuthPayload(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
   }
   uint8_t ctap_status = response_bytes[0];
-  base::span<const uint8_t> cbor_bytes(response_bytes);
-  cbor_bytes = cbor_bytes.subspan(1);
+  auto cbor_bytes = base::as_byte_span(response_bytes).subspan<1>();
   if (ctap_status != kCtapDeviceResponseSuccess) {
     LOG(ERROR) << "Ctap Device Response Status Code is not Success(0x00). Got: "
                << ctap_status;

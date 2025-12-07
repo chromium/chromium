@@ -13,7 +13,9 @@
 #include "base/strings/string_split.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/libfuzzer/buildflags.h"
 
+using testing::ElementsAre;
 
 TEST(FuzzerConfigTest, DictOnly) {
   // Test of automatically generated .options file for fuzzer with dict option.
@@ -81,7 +83,6 @@ TEST(FuzzerConfigTest, ConfigAndDict) {
   EXPECT_EQ(fuzzer_args[3], "use_traces=1");
 }
 
-
 TEST(FuzzerConfigTest, ConfigAndSeedCorpus) {
   // Test of .options file for fuzzer with libfuzzer_options and seed corpus.
   base::FilePath exe_path;
@@ -97,10 +98,8 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpus) {
   std::vector<std::string> fuzzer_args = base::SplitString(
       output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  EXPECT_EQ(2UL, fuzzer_args.size());
-
-  EXPECT_EQ(fuzzer_args[0], "some_test_option=test_value");
-  EXPECT_EQ(fuzzer_args[1], "max_len=1024");
+  EXPECT_THAT(fuzzer_args,
+              ElementsAre("some_test_option=test_value", "max_len=1024"));
 
   // Test seed_corpus archive.
   launcher_path =
@@ -109,12 +108,16 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpus) {
   cmd = base::CommandLine(std::vector<std::string>(
       {launcher_path, "test_config_and_seed_corpus_seed_corpus.zip"}));
   success = base::GetAppOutputAndError(cmd, &output);
+
+#if BUILDFLAG(ARCHIVE_SEED_CORPUS)
   EXPECT_TRUE(success);
   std::vector<std::string> seed_corpus_info = base::SplitString(
       output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  EXPECT_EQ(1UL, seed_corpus_info.size());
-  EXPECT_EQ(seed_corpus_info[0], "3");
+  EXPECT_THAT(seed_corpus_info, ElementsAre("3"));
+#else  // BUILDFLAG(ARCHIVE_SEED_CORPUS)
+  EXPECT_FALSE(success);
+#endif
 }
 
 
@@ -133,10 +136,8 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpuses) {
   std::vector<std::string> fuzzer_args = base::SplitString(
       output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  EXPECT_EQ(2UL, fuzzer_args.size());
-
-  EXPECT_EQ(fuzzer_args[0], "some_test_option=another_test_value");
-  EXPECT_EQ(fuzzer_args[1], "max_len=1337");
+  EXPECT_THAT(fuzzer_args, ElementsAre("some_test_option=another_test_value",
+                                       "max_len=1337"));
 
   // Test seed_corpus archive.
   launcher_path =
@@ -145,12 +146,16 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpuses) {
   cmd = base::CommandLine(std::vector<std::string>(
       {launcher_path, "test_config_and_seed_corpuses_seed_corpus.zip"}));
   success = base::GetAppOutputAndError(cmd, &output);
+
+#if BUILDFLAG(ARCHIVE_SEED_CORPUS)
   EXPECT_TRUE(success);
   std::vector<std::string> seed_corpus_info = base::SplitString(
       output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  EXPECT_EQ(1UL, seed_corpus_info.size());
-  EXPECT_EQ(seed_corpus_info[0], "5");
+  EXPECT_THAT(seed_corpus_info, ElementsAre("5"));
+#else   // BUILDFLAG(ARCHIVE_SEED_CORPUS)
+  EXPECT_FALSE(success);
+#endif  // BUILDFLAG(ARCHIVE_SEED_CORPUS)
 }
 
 

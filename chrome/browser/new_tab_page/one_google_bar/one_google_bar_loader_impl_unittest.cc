@@ -12,11 +12,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,10 +30,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
 
 using testing::_;
 using testing::DoAll;
@@ -47,6 +44,11 @@ const char kApplicationLocale[] = "de";
 
 const char kMinimalValidResponse[] = R"json({"update": { "ogb": {
   "html": { "private_do_not_access_or_else_safe_html_wrapped_value": "" },
+  "page_hooks": {}
+}}})json";
+
+const char kMinimalBarPartsValidResponse[] = R"json({"update": { "ogb_parts": {
+  "right_html": { "private_do_not_access_or_else_safe_html_wrapped_value": "" },
   "page_hooks": {}
 }}})json";
 
@@ -89,14 +91,10 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    InitOneGoogleBarLoader();
+  }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!chromeos::LacrosService::Get()) {
-      scoped_lacros_test_helper_ =
-          std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-    }
-#endif
-
+  void InitOneGoogleBarLoader() {
     one_google_bar_loader_ = std::make_unique<OneGoogleBarLoaderImpl>(
         test_shared_loader_factory_, kApplicationLocale,
         account_consistency_mirror_required_);
@@ -132,7 +130,7 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
   // variations::AppendVariationHeaders requires browser threads.
   content::BrowserTaskEnvironment task_environment_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // Supports JSON decoding in the loader implementation.
@@ -144,10 +142,6 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
 
   GURL last_request_url_;
   net::HttpRequestHeaders last_request_headers_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      scoped_lacros_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<OneGoogleBarLoaderImpl> one_google_bar_loader_;
 };
 
@@ -165,26 +159,51 @@ TEST_F(OneGoogleBarLoaderImplTest, RequestUrlContainsLanguage) {
   // Make sure the request URL contains the "hl=" query param.
   std::string expected_query =
       base::StringPrintf("hl=%s&async=fixed:0", kApplicationLocale);
-  EXPECT_EQ(expected_query, last_request_url().query());
+  EXPECT_EQ(expected_query, last_request_url().GetQuery());
 }
 
 TEST_F(OneGoogleBarLoaderImplTest, RequestUrlWithAdditionalQueryParams) {
-  one_google_bar_loader()->SetAdditionalQueryParams("&test&hl=&async=");
-  EXPECT_EQ("test&hl=&async=",
-            one_google_bar_loader()->GetLoadURLForTesting().query());
-  one_google_bar_loader()->SetAdditionalQueryParams("&test&hl=");
-  EXPECT_EQ("test&hl=&async=fixed:0",
-            one_google_bar_loader()->GetLoadURLForTesting().query());
-  one_google_bar_loader()->SetAdditionalQueryParams("&test&async=");
-  EXPECT_EQ(base::StringPrintf("hl=%s&test&async=", kApplicationLocale),
-            one_google_bar_loader()->GetLoadURLForTesting().query());
-  one_google_bar_loader()->SetAdditionalQueryParams("&test");
-  EXPECT_EQ(base::StringPrintf("hl=%s&test&async=fixed:0", kApplicationLocale),
-            one_google_bar_loader()->GetLoadURLForTesting().query());
+  one_google_bar_loader()->SetAdditionalQueryParams({{"test", ""}, {"hl", ""}});
+  EXPECT_EQ("hl=&test=",
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
+
+  one_google_bar_loader()->SetAdditionalQueryParams(
+      {{"test", ""}, {"hl", ""}, {"async", ""}});
+  EXPECT_EQ("async=&hl=&test=",
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
+
+  one_google_bar_loader()->SetAdditionalQueryParams({{"test", ""}});
+  EXPECT_EQ(base::StringPrintf("hl=%s&test=", kApplicationLocale),
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
+
+  one_google_bar_loader()->SetAdditionalQueryParams(
+      {{"test", ""}, {"async", ""}});
+  EXPECT_EQ(base::StringPrintf("hl=%s&async=&test=", kApplicationLocale),
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
 }
 
 TEST_F(OneGoogleBarLoaderImplTest, RequestReturns) {
   SetUpResponseWithData(kMinimalValidResponse);
+
+  base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
+  one_google_bar_loader()->Load(callback.Get());
+
+  std::optional<OneGoogleBarData> data;
+  base::RunLoop loop;
+  EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::OK, _))
+      .WillOnce(DoAll(SaveArg<1>(&data), Quit(&loop)));
+  loop.Run();
+
+  EXPECT_TRUE(data.has_value());
+}
+
+TEST_F(OneGoogleBarLoaderImplTest, BarPartsRequestReturns) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpOneGoogleBarAsyncBarParts},
+      /*disabled_features=*/{});
+  InitOneGoogleBarLoader();
+  SetUpResponseWithData(kMinimalBarPartsValidResponse);
 
   base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
   one_google_bar_loader()->Load(callback.Get());

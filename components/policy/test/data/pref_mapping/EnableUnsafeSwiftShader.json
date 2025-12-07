@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enable_unsafe_swiftshader",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

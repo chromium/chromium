@@ -16,6 +16,8 @@
 
 namespace autofill {
 
+using ::testing::ElementsAre;
+
 class AutofillSaveCardDelegateAndroidTest
     : public ChromeRenderViewHostTestHarness {
  protected:
@@ -23,7 +25,8 @@ class AutofillSaveCardDelegateAndroidTest
     ChromeRenderViewHostTestHarness::SetUp();
 
     delegate_ = std::make_unique<AutofillSaveCardDelegateAndroid>(
-        CreateSaveCardCallback(), AutofillClient::SaveCreditCardOptions(),
+        CreateSaveCardCallback(),
+        payments::PaymentsAutofillClient::SaveCreditCardOptions(),
         web_contents());
     auto bridge = std::make_unique<TestDeviceLockBridge>();
     test_bridge_ = bridge.get();
@@ -38,10 +41,12 @@ class AutofillSaveCardDelegateAndroidTest
   std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate_;
   raw_ptr<TestDeviceLockBridge> test_bridge_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
-  std::vector<AutofillClient::SaveCardOfferUserDecision> save_card_decisions_;
+  std::vector<payments::PaymentsAutofillClient::SaveCardOfferUserDecision>
+      save_card_decisions_;
 
  private:
-  void SaveCardCallback(AutofillClient::SaveCardOfferUserDecision decision) {
+  void SaveCardCallback(
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision decision) {
     save_card_decisions_.push_back(decision);
   }
 
@@ -66,8 +71,8 @@ TEST_F(AutofillSaveCardDelegateAndroidTest, DeviceLockRequirementsMet) {
       /*are_device_lock_requirements_met=*/true);
 
   EXPECT_THAT(save_card_decisions_,
-              testing::ElementsAre(
-                  AutofillClient::SaveCardOfferUserDecision::kAccepted));
+              ElementsAre(payments::PaymentsAutofillClient::
+                              SaveCardOfferUserDecision::kAccepted));
 }
 
 // Tests that card is not saved if device lock requirements are not met.
@@ -81,8 +86,8 @@ TEST_F(AutofillSaveCardDelegateAndroidTest, DeviceLockRequirementsNotMet) {
   test_bridge_->SimulateFinishedCheckingDeviceLockRequirements(
       /*are_device_lock_requirements_met=*/false);
   EXPECT_THAT(save_card_decisions_,
-              testing::ElementsAre(
-                  AutofillClient::SaveCardOfferUserDecision::kIgnored));
+              ElementsAre(payments::PaymentsAutofillClient::
+                              SaveCardOfferUserDecision::kIgnored));
 }
 
 }  // namespace autofill

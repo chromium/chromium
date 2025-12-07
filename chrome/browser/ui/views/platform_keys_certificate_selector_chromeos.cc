@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/platform_keys_certificate_selector_chromeos.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -36,7 +37,7 @@ class ClientCertIdentityPlatformKeys : public net::ClientCertIdentity {
   void AcquirePrivateKey(
       base::OnceCallback<void(scoped_refptr<net::SSLPrivateKey>)>
           private_key_callback) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -72,8 +73,9 @@ PlatformKeysCertificateSelector::PlatformKeysCertificateSelector(
 PlatformKeysCertificateSelector::~PlatformKeysCertificateSelector() {
   // Ensure to call back even if the dialog was closed because of the views
   // hierarchy being destroyed.
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(nullptr);
+  }
 }
 
 void PlatformKeysCertificateSelector::Init() {

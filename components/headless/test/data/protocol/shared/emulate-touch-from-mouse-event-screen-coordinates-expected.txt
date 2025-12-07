@@ -1,0 +1,7 @@
+Tests screen coordinates for emulated touch events from mouse.
+{
+    clientX : 80
+    clientY : 90
+    isScreenXOffsetCorrect : true
+    isScreenYOffsetCorrect : true
+}

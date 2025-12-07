@@ -5,20 +5,26 @@
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
+#include "components/variations/service/variations_service.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,24 +37,19 @@ AddressEditorController::AddressEditorController(
     bool is_validatable)
     : profile_to_edit_(profile_to_edit),
       pdm_(*pdm),
-      locale_(g_browser_process->GetApplicationLocale()),
+      locale_(g_browser_process->GetFeatures()
+                  ->application_locale_storage()
+                  ->Get()),
       is_validatable_(is_validatable) {
-  base::RepeatingCallback<bool(const std::string&)> filter;
-  if (should_filter_out_unsupported_countries()) {
-    // TODO(crbug.com/40263955): remove temporary unsupported countries
-    // filtering.
-    filter = base::BindRepeating(
-        [](const PersonalDataManager* personal_data,
-           const std::string& country) {
-          return personal_data->address_data_manager()
-              .IsCountryEligibleForAccountStorage(country);
-        },
-        &pdm_.get());
-  }
-  countries_.SetCountries(pdm_.get(), std::move(filter), locale_);
+  const variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  countries_.SetCountries(
+      GeoIpCountryCode(variations_service
+                           ? variations_service->GetLatestCountry()
+                           : std::string()),
+      locale_);
   std::u16string profile_country_code =
       profile_to_edit_.GetRawInfo(ADDRESS_HOME_COUNTRY);
-  CHECK(!profile_country_code.empty());
   UpdateEditorFields(base::UTF16ToASCII(profile_country_code));
 }
 
@@ -147,7 +148,7 @@ AddressEditorController::AddIsValidChangedCallback(
 }
 
 bool AddressEditorController::IsValid(const EditorField& field,
-                                      const std::u16string& value) {
+                                      std::u16string_view value) {
   if (is_validatable_ && field.is_required &&
       base::CollapseWhitespace(value, true).empty()) {
     return false;

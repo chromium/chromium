@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -48,7 +49,7 @@ class SafeSearchURLCheckerClient : public URLCheckerClient {
   using CheckList = std::list<std::unique_ptr<Check>>;
 
   void OnSimpleLoaderComplete(CheckList::iterator it,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;

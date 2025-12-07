@@ -10,10 +10,13 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/android/window_android.h"
 
 using password_manager::CreateDialogTraits;
+using password_manager::CredentialLeakType;
 using password_manager::PasswordCheckReferrerAndroid;
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LeakDialogMetricsRecorder;
@@ -33,7 +36,7 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
       username_(username),
       profile_(profile),
       window_android_(window_android),
-      leak_dialog_traits_(CreateDialogTraits(leak_type)),
+      leak_dialog_traits_(CreateDialogTraits(leak_type_)),
       checkup_launcher_(std::move(checkup_launcher)),
       metrics_recorder_(std::move(metrics_recorder)),
       account_email_(account_email) {}

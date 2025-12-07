@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/listChoiceBackgroundIndicator"
+    android:orientation="horizontal"
+    style="@style/ListMenuItemStyle"
+    android:contentDescription="@string/submenu_header_back">
+
+    <ImageView
+        android:id="@+id/submenu_arrow"
+        android:src="@drawable/ic_arrow_back_24dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        style="@style/ListMenuItemIconStyle.Start" />
+
+    <TextView
+        android:id="@+id/menu_row_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="@style/TextAppearance.DensityAdaptive.ListMenuItem.Bold" />
+</LinearLayout>

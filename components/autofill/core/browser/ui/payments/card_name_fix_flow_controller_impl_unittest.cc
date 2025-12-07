@@ -5,13 +5,14 @@
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +26,7 @@ class TestCardNameFixFlowView : public CardNameFixFlowView {
 
 class CardNameFixFlowControllerImplGenericTest {
  public:
-  CardNameFixFlowControllerImplGenericTest() {}
+  CardNameFixFlowControllerImplGenericTest() = default;
 
   CardNameFixFlowControllerImplGenericTest(
       const CardNameFixFlowControllerImplGenericTest&) = delete;
@@ -72,7 +73,7 @@ class CardNameFixFlowControllerImplTest
     : public CardNameFixFlowControllerImplGenericTest,
       public testing::Test {
  public:
-  CardNameFixFlowControllerImplTest() {}
+  CardNameFixFlowControllerImplTest() = default;
 
   CardNameFixFlowControllerImplTest(const CardNameFixFlowControllerImplTest&) =
       delete;

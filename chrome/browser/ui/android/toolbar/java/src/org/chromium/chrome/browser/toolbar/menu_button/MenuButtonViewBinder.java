@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.view.View;
 
+import androidx.core.graphics.Insets;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
+@NullMarked
 class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, PropertyKey> {
     // Whether MenuButtonState supplier was set already. The supplier needs to be set before
     // some other properties.
@@ -53,6 +57,13 @@ class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, Prop
                     themeProperty.mBrandedColorScheme);
         } else if (propertyKey == MenuButtonProperties.TRANSLATION_X) {
             view.setTranslationX(model.get(MenuButtonProperties.TRANSLATION_X));
+        } else if (propertyKey == MenuButtonProperties.ON_KEY_LISTENER) {
+            view.setOnKeyListener(model.get(MenuButtonProperties.ON_KEY_LISTENER));
+        } else if (propertyKey == MenuButtonProperties.BACKGROUND_HIGHLIGHT) {
+            view.setBackground(model.get(MenuButtonProperties.BACKGROUND_HIGHLIGHT));
+        } else if (propertyKey == MenuButtonProperties.BACKGROUND_INSETS) {
+            Insets insets = model.get(MenuButtonProperties.BACKGROUND_INSETS);
+            view.setPadding(insets.left, insets.top, insets.right, insets.bottom);
         }
     }
 }

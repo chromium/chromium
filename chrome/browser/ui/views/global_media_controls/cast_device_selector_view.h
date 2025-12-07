@@ -39,7 +39,6 @@ class IssueHoverButton : public HoverButton {
   // HoverButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int w) const override;
 
   views::Label* device_name_label() { return device_name_label_; }
   views::Label* status_text_label() { return status_text_label_; }
@@ -83,11 +82,13 @@ class CastDeviceSelectorView
   // global_media_controls::mojom::DeviceListClient:
   void OnDevicesUpdated(
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
+  void OnPermissionRejected() override;
 
   // Helper functions for testing:
-  bool GetHasIssueForTesting();
+  bool GetHasDeviceIssueForTesting();
   global_media_controls::MediaActionButton* GetCloseButtonForTesting();
   views::View* GetDeviceContainerViewForTesting();
+  views::View* GetPermissionRejectedViewForTesting();
 
  private:
   // Build a device entry view for the given device information.
@@ -106,17 +107,25 @@ class CastDeviceSelectorView
   // Callback for when the close button is pressed.
   void CloseButtonPressed();
 
+  // Returns true if there are available devices or
+  // `has_permission_rejected_issue_` is True.
+  bool IsDeviceSelectorAvailable();
+
   // Records whether the device list is expanded.
   bool is_expanded_ = false;
 
   // Records whether any of the available devices has an issue to be displayed.
-  bool has_issue_ = false;
+  bool has_device_issue_ = false;
+
+  // True if the local discovery permission has been rejected.
+  bool has_permission_rejected_issue_ = false;
 
   raw_ptr<global_media_controls::MediaItemUIUpdatedView>
       media_item_ui_updated_view_ = nullptr;
 
   raw_ptr<global_media_controls::MediaActionButton> close_button_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_container_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> permission_rejected_view_ = nullptr;
 
   mojo::Remote<global_media_controls::mojom::DeviceListHost> device_list_host_;
   mojo::Receiver<global_media_controls::mojom::DeviceListClient>

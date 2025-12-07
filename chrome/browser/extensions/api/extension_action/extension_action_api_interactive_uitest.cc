@@ -19,6 +19,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/result_catcher.h"
@@ -265,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
   GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
 
   const ExtensionAction* extension_action =
       ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);

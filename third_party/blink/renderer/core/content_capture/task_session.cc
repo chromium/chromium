@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/content_capture/task_session.h"
 
 #include <utility>
+#include <vector>
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -43,7 +44,7 @@ bool TaskSession::DocumentSession::AddDetachedNode(const Node& node) {
   return false;
 }
 
-WebVector<int64_t> TaskSession::DocumentSession::MoveDetachedNodes() {
+std::vector<int64_t> TaskSession::DocumentSession::MoveDetachedNodes() {
   return std::move(detached_nodes_);
 }
 

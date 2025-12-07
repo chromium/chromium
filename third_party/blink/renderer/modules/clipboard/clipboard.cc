@@ -8,40 +8,100 @@
 
 #include "net/base/mime_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
-// static
-const char Clipboard::kSupplementName[] = "Clipboard";
-
 Clipboard* Clipboard::clipboard(Navigator& navigator) {
-  Clipboard* clipboard = Supplement<Navigator>::From<Clipboard>(navigator);
+  Clipboard* clipboard = navigator.GetClipboard();
   if (!clipboard) {
     clipboard = MakeGarbageCollected<Clipboard>(navigator);
-    ProvideTo(navigator, clipboard);
+    navigator.SetClipboard(clipboard);
   }
   return clipboard;
 }
 
-Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
+Clipboard::Clipboard(Navigator& navigator) : navigator_(navigator) {}
 
 ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
-    ClipboardUnsanitizedFormats* formats,
+    ClipboardReadOptions* options,
     ExceptionState& exception_state) {
+  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
+  if (local_frame && local_frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnClipboardRead);
+  }
+
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
-                                         formats, exception_state);
+                                         options, exception_state);
 }
 
 ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
                                              ExceptionState& exception_state) {
+  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
+  if (local_frame && local_frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnClipboardRead);
+  }
+
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
                                              script_state, exception_state);
+}
+
+void Clipboard::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  EventTarget::AddedEventListener(event_type, registered_listener);
+
+  if (!RuntimeEnabledFeatures::ClipboardChangeEventEnabled(
+          GetExecutionContext()) ||
+      event_type != event_type_names::kClipboardchange) {
+    return;
+  }
+
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kClipboardChangeEventAddListener);
+
+  if (!clipboard_change_event_controller_) {
+    Navigator& navigator = *navigator_;
+    if (navigator.DomWindow()) {
+      clipboard_change_event_controller_ =
+          MakeGarbageCollected<ClipboardChangeEventController>(navigator, this);
+    }
+  }
+
+  if (clipboard_change_event_controller_) {
+    clipboard_change_event_controller_->RegisterWithDispatcher();
+  }
+}
+
+void Clipboard::RemovedEventListener(
+    const AtomicString& event_type,
+    const RegisteredEventListener& registered_listener) {
+  EventTarget::RemovedEventListener(event_type, registered_listener);
+
+  if (!RuntimeEnabledFeatures::ClipboardChangeEventEnabled(
+          GetExecutionContext()) ||
+      event_type != event_type_names::kClipboardchange) {
+    return;
+  }
+
+  if (clipboard_change_event_controller_ &&
+      !HasEventListeners(event_type_names::kClipboardchange)) {
+    clipboard_change_event_controller_->UnregisterWithDispatcher();
+  }
 }
 
 ScriptPromise<IDLUndefined> Clipboard::write(
@@ -65,7 +125,7 @@ const AtomicString& Clipboard::InterfaceName() const {
 }
 
 ExecutionContext* Clipboard::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return navigator_->DomWindow();
 }
 
 // static
@@ -87,7 +147,8 @@ String Clipboard::ParseWebCustomFormat(const String& format) {
 
 void Clipboard::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
+  visitor->Trace(clipboard_change_event_controller_);
 }
 
 }  // namespace blink

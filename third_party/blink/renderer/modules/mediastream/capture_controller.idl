@@ -6,7 +6,6 @@
 
 // For APIs marked as RuntimeEnabled = CapturedSurfaceControl, see the spec at:
 // https://screen-share.github.io/captured-surface-control/
-// TODO(crbug.com/1466247): Measure these APIs.
 
 enum CaptureStartFocusBehavior {
   "focus-capturing-application",
@@ -36,31 +35,45 @@ interface CaptureController : EventTarget {
     MeasureAs = CapturedSurfaceControl,
     CallWith = ScriptState
   ]
-  Promise<undefined> sendWheel(CapturedWheelAction action);
-
-  [
-    RuntimeEnabled = CapturedSurfaceControl,
-    MeasureAs = CapturedSurfaceControl
-  ]
-  static sequence<long> getSupportedZoomLevels();
+  Promise<undefined> forwardWheel(HTMLElement? element);
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl,
     RaisesException
   ]
-  long getZoomLevel();
+  sequence<long> getSupportedZoomLevels();
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl
+  ]
+  readonly attribute long? zoomLevel;
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl,
     CallWith = ScriptState
   ]
-  Promise<undefined> setZoomLevel(long zoomLevel);
+  Promise<undefined> increaseZoomLevel();
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl,
+    CallWith = ScriptState
+  ]
+  Promise<undefined> decreaseZoomLevel();
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl,
+    CallWith = ScriptState
+  ]
+  Promise<undefined> resetZoomLevel();
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl
   ]
-  attribute EventHandler oncapturedzoomlevelchange;
+  attribute EventHandler onzoomlevelchange;
 };

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -24,7 +24,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"
@@ -34,8 +33,6 @@ class BrowserContext;
 }  // namespace content
 
 namespace page_load_metrics {
-
-class PageLoadMetricsMemoryTracker;
 
 namespace {
 
@@ -55,7 +52,9 @@ class TestPageLoadMetricsEmbedderInterface
 
   // Forward the registration logic to the test class so that derived classes
   // can override the logic there without depending on the embedder interface.
-  void RegisterObservers(PageLoadTracker* tracker) override {
+  void RegisterObservers(
+      PageLoadTracker* tracker,
+      content::NavigationHandle* navigation_handle) override {
     test_->RegisterObservers(tracker);
   }
 
@@ -65,23 +64,21 @@ class TestPageLoadMetricsEmbedderInterface
     return std::move(timer);
   }
 
+  bool HasWebUIConfig(const GURL& url) override { return false; }
+
   bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return false;
   }
 
   bool IsExtensionUrl(const GURL& url) override { return false; }
 
-  bool IsSidePanel(content::WebContents* web_contents) override {
-    return false;
+  bool IsNonTabWebUI(const GURL& url) override {
+    return test_->is_non_tab_webui();
   }
 
-  bool IsNonTabWebUI() override { return test_->is_non_tab_webui(); }
+  bool IsInternalWebUI(const GURL& url) override { return true; }
 
-  page_load_metrics::PageLoadMetricsMemoryTracker*
-  GetMemoryTrackerForBrowserContext(
-      content::BrowserContext* browser_context) override {
-    return nullptr;
-  }
+  bool ShouldObserveScheme(std::string_view scheme) override { return false; }
 
  private:
   raw_ptr<PageLoadMetricsObserverTester> test_;
@@ -103,7 +100,7 @@ PageLoadMetricsObserverTester::PageLoadMetricsObserverTester(
               std::make_unique<TestPageLoadMetricsEmbedderInterface>(this))),
       is_non_tab_webui_(is_non_tab_webui) {}
 
-PageLoadMetricsObserverTester::~PageLoadMetricsObserverTester() {}
+PageLoadMetricsObserverTester::~PageLoadMetricsObserverTester() = default;
 
 void PageLoadMetricsObserverTester::StartNavigation(const GURL& gurl) {
   std::unique_ptr<content::NavigationSimulator> navigation =
@@ -324,7 +321,8 @@ void PageLoadMetricsObserverTester::SimulateFrameReceivedUserActivation(
 
 void PageLoadMetricsObserverTester::SimulateInputEvent(
     const blink::WebInputEvent& event) {
-  metrics_web_contents_observer_->OnInputEvent(event);
+  metrics_web_contents_observer_->OnInputEvent(
+      *web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(), event);
 }
 
 void PageLoadMetricsObserverTester::SimulateAppEnterBackground() {
@@ -375,17 +373,6 @@ void PageLoadMetricsObserverTester::RegisterObservers(
     PageLoadTracker* tracker) {
   if (!register_callback_.is_null())
     register_callback_.Run(tracker);
-}
-
-void PageLoadMetricsObserverTester::SimulateMemoryUpdate(
-    content::RenderFrameHost* render_frame_host,
-    int64_t delta_bytes) {
-  DCHECK(render_frame_host);
-  if (delta_bytes != 0) {
-    std::vector<MemoryUpdate> update(
-        {MemoryUpdate(render_frame_host->GetGlobalId(), delta_bytes)});
-    metrics_web_contents_observer_->OnV8MemoryChanged(update);
-  }
 }
 
 }  // namespace page_load_metrics

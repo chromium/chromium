@@ -1,0 +1,26 @@
+include_rules = [
+  "+ios/chrome/browser/app_store_rating/ui_bundled",
+  "+ios/chrome/browser/credential_provider_promo/ui_bundled",
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/default_promo/ui_bundled",
+  "+ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/post_restore_signin/ui_bundled",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/whats_new/coordinator",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/promo",
+  "+ios/chrome/browser/welcome_back/ui/welcome_back_display_handler.h",
+  "+ios/chrome/browser/first_run/ui_bundled/features.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/features.h",
+  "+ios/chrome/browser/safari_data_import/coordinator/safari_data_import_reminder_promo_display_handler.h",
+  "+ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h",
+  "+ios/chrome/browser/welcome_back/model/features.h"
+]
+
+specific_include_rules = {
+  "utils\.mm" : [
+    "+ios/chrome/browser/policy/ui_bundled",
+  ]
+}

@@ -7,10 +7,12 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
+#include "ui/latency/latency_info.h"
 
 namespace cc {
 
@@ -42,18 +44,16 @@ int64_t LatencyInfoSwapPromise::GetTraceId() const {
 
 // Trace the original LatencyInfo of a LatencyInfoSwapPromise
 void LatencyInfoSwapPromise::OnCommit() {
-  using perfetto::protos::pbzero::ChromeLatencyInfo;
   using perfetto::protos::pbzero::TrackEvent;
 
+  int64_t trace_id = GetTraceId();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [this](perfetto::EventContext ctx) {
-                ChromeLatencyInfo* latency_info =
-                    ctx.event()->set_chrome_latency_info();
-                latency_info->set_trace_id(GetTraceId());
-                latency_info->set_step(
-                    ChromeLatencyInfo::STEP_HANDLE_INPUT_EVENT_MAIN_COMMIT);
-                tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                       GetTraceId());
+              [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_HANDLE_INPUT_EVENT_MAIN_COMMIT);
               });
 }
 

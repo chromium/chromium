@@ -45,6 +45,8 @@ interface ManagedDataResponse {
   eolMessage: string;
   eolAdminMessage: string;
   showMonitoredNetworkPrivacyDisclosure: boolean;
+  showWindowsNoticeForDeskSync: boolean;
+  showCookiesNoticeForDeskSync: boolean;
 }
 
 interface ThreatProtectionPermission {
@@ -82,6 +84,7 @@ export enum DeviceReportingType {
   PERIPHERALS = 'peripherals',
   LEGACY_TECH = 'legacy-tech',
   WEBSITE_INFO_AND_ACTIVITY = 'website info and activity',
+  FILE_EVENTS = 'file events',
 }
 
 
@@ -136,6 +139,15 @@ export interface ManagementBrowserProxy {
    * @return The list of profile reporting info messages.
    */
   initProfileReportingInfo(): Promise<BrowserReportingResponse[]>;
+
+  /**
+   * @return Whether the promotion banner should be shown.
+   */
+  shouldShowPromotion(): Promise<boolean>;
+
+  setBannerDismissed(): Promise<void>;
+
+  recordBannerRedirected(): Promise<void>;
 }
 
 export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
@@ -183,6 +195,18 @@ export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
 
   initProfileReportingInfo() {
     return sendWithPromise('initProfileReportingInfo');
+  }
+
+  shouldShowPromotion() {
+    return sendWithPromise('shouldShowPromotion');
+  }
+
+  setBannerDismissed() {
+    return sendWithPromise('setBannerDismissed');
+  }
+
+  recordBannerRedirected() {
+    return sendWithPromise('recordBannerRedirected');
   }
 
   static getInstance(): ManagementBrowserProxy {

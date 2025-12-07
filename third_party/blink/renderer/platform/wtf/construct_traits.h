@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
-namespace WTF {
+namespace blink {
 
 // ConstructTraits is used to construct elements in WTF collections.
 // All in-place constructions that may assign Oilpan objects must be
@@ -23,7 +24,7 @@ class ConstructTraits {
   // placement new.
   template <typename... Args>
   static T* Construct(void* location, Args&&... args) {
-    return ::new (NotNullTag::kNotNull, location)
+    return ::new (base::NotNullTag::kNotNull, location)
         T(std::forward<Args>(args)...);
   }
 
@@ -40,11 +41,14 @@ class ConstructTraits {
     return object;
   }
 
-  static void NotifyNewElements(T* array, size_t len) {
-    Allocator::template NotifyNewObjects<T, Traits>(array, len);
+  static void NotifyNewElements(base::span<T> elements) {
+    if (elements.empty()) {
+      return;
+    }
+    Allocator::template NotifyNewObjects<T, Traits>(elements);
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_

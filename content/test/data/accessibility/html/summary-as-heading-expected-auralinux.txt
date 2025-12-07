@@ -1,0 +1,9 @@
+[document web] focusable focused
+++[panel]
+++++[heading] name='details tag' expandable focusable level:5 posinset:1 setsize:2
+++++++[static] name='details tag'
+++[panel]
+++++[heading] name='details tag open' expandable expanded focusable level:5 posinset:2 setsize:2
+++++++[static] name='details tag open'
+++++[paragraph]
+++++++[static] name='The details tag with open specifies that the details should be visible (open) to the user.'

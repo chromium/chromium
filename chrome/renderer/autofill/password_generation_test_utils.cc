@@ -22,7 +22,6 @@ using blink::WebElement;
 using blink::WebFormControlElement;
 using blink::WebFormElement;
 using blink::WebString;
-using blink::WebVector;
 
 namespace autofill {
 

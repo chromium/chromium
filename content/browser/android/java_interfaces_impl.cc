@@ -91,3 +91,5 @@ void BindInterfaceRegistryForRenderFrameHost(
 }
 
 }  // namespace content
+
+DEFINE_JNI(InterfaceRegistrarImpl)

@@ -119,7 +119,7 @@ void exp_rotation(celt_norm *X, int len, int dir, int stride, int K, int spread)
 /** Takes the pitch vector and the decoded residual vector, computes the gain
     that will give ||p+g*y||=1 and mixes the residual with the pitch. */
 static void normalise_residual(int * OPUS_RESTRICT iy, celt_norm * OPUS_RESTRICT X,
-      int N, opus_val32 Ryy, opus_val16 gain)
+      int N, opus_val32 Ryy, opus_val32 gain)
 {
    int i;
 #ifdef FIXED_POINT
@@ -132,7 +132,7 @@ static void normalise_residual(int * OPUS_RESTRICT iy, celt_norm * OPUS_RESTRICT
    k = celt_ilog2(Ryy)>>1;
 #endif
    t = VSHR32(Ryy, 2*(k-7));
-   g = MULT16_16_P15(celt_rsqrt_norm(t),gain);
+   g = MULT32_32_Q31(celt_rsqrt_norm(t),gain);
 
    i=0;
    do
@@ -328,7 +328,7 @@ opus_val16 op_pvq_search_c(celt_norm *X, int *iy, int K, int N, int arch)
 }
 
 unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B, ec_enc *enc,
-      opus_val16 gain, int resynth, int arch)
+      opus_val32 gain, int resynth, int arch)
 {
    VARDECL(int, iy);
    opus_val16 yy;
@@ -361,7 +361,7 @@ unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B, ec_enc *enc,
 /** Decode pulse vector and combine the result with the pitch vector to produce
     the final normalised signal in the current band. */
 unsigned alg_unquant(celt_norm *X, int N, int K, int spread, int B,
-      ec_dec *dec, opus_val16 gain)
+      ec_dec *dec, opus_val32 gain)
 {
    opus_val32 Ryy;
    unsigned collapse_mask;
@@ -380,7 +380,7 @@ unsigned alg_unquant(celt_norm *X, int N, int K, int spread, int B,
 }
 
 #ifndef OVERRIDE_renormalise_vector
-void renormalise_vector(celt_norm *X, int N, opus_val16 gain, int arch)
+void renormalise_vector(celt_norm *X, int N, opus_val32 gain, int arch)
 {
    int i;
 #ifdef FIXED_POINT
@@ -395,7 +395,7 @@ void renormalise_vector(celt_norm *X, int N, opus_val16 gain, int arch)
    k = celt_ilog2(E)>>1;
 #endif
    t = VSHR32(E, 2*(k-7));
-   g = MULT16_16_P15(celt_rsqrt_norm(t),gain);
+   g = MULT32_32_Q31(celt_rsqrt_norm(t),gain);
 
    xptr = X;
    for (i=0;i<N;i++)

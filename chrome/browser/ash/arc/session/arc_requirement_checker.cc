@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
@@ -19,6 +16,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -273,7 +273,7 @@ void ArcRequirementChecker::OnAndroidManagementChecked(
           .Run(RequirementCheckResult::kAndroidManagementCheckError);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
@@ -295,20 +295,13 @@ void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
           .Run(BackgroundCheckResult::kNoActionRequired);
       break;
     case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
-      if (base::FeatureList::IsEnabled(
-              arc::kEnableUnmanagedToManagedTransitionFeature)) {
-        state_ = State::kWaitingForPoliciesBackground;
-        WaitForPoliciesLoad();
-      } else {
-        state_ = State::kStopped;
-        std::move(background_check_callback_)
-            .Run(BackgroundCheckResult::kArcShouldBeDisabled);
-      }
+      state_ = State::kWaitingForPoliciesBackground;
+      WaitForPoliciesLoad();
       break;
     case ArcAndroidManagementChecker::CheckResult::ERROR:
       // This code should not be reached. For background check,
       // retry_on_error should be set.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

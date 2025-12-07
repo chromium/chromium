@@ -6,26 +6,18 @@
 
 namespace media_router {
 
-DiscoveryNetworkInfo::DiscoveryNetworkInfo() {}
+DiscoveryNetworkInfo::DiscoveryNetworkInfo() = default;
 
 DiscoveryNetworkInfo::DiscoveryNetworkInfo(const std::string& name,
                                            const std::string& network_id)
     : name(name), network_id(network_id) {}
 
-DiscoveryNetworkInfo::~DiscoveryNetworkInfo() {}
+DiscoveryNetworkInfo::~DiscoveryNetworkInfo() = default;
 
 DiscoveryNetworkInfo::DiscoveryNetworkInfo(const DiscoveryNetworkInfo&) =
     default;
 
 DiscoveryNetworkInfo& DiscoveryNetworkInfo::operator=(
     const DiscoveryNetworkInfo&) = default;
-
-bool DiscoveryNetworkInfo::operator==(const DiscoveryNetworkInfo& other) const {
-  return name == other.name && network_id == other.network_id;
-}
-
-bool DiscoveryNetworkInfo::operator!=(const DiscoveryNetworkInfo& o) const {
-  return !(*this == o);
-}
 
 }  // namespace media_router

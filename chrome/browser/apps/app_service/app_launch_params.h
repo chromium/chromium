@@ -105,14 +105,26 @@ struct AppLaunchParams {
   // not launched with intent.
   IntentPtr intent;
 
-  // When PWA is launched as a URL handler, the URL that we should launch the
-  // PWA to. Null when it's not a URL handler launch.
-  std::optional<GURL> url_handler_launch_url;
-
   // When a PWA is launched as a protocol handler, the protocol URL that we
   // should translate and then launch the PWA to. Null when it's not a protocol
   // handler launch.
   std::optional<GURL> protocol_handler_launch_url;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Tells the publisher that this launch comes from a trusted source (say,
+  // after the protocol handler disambiguation dialog shown to the user, etc)
+  // and the publisher-specific pre-launch confirmations are not necessary. The
+  // publisher is expected to take the respective action if this field is
+  // specified.
+  enum class ConfirmationDialogAction {
+    // Instructs the publisher to skip launch confirmation for this launch.
+    kForceSkip,
+    // Instructs the publisher to skip launch confirmations permanently (for
+    // this and subsequent launches of similar type).
+    kPersistentlyForceSkip,
+  };
+  std::optional<ConfirmationDialogAction> confirmation_dialog_action;
+#endif
 
   // Whether or not to have the resulting Browser be omitted from session
   // restore.

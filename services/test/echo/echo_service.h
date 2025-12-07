@@ -35,7 +35,7 @@ class EchoService : public mojom::EchoService {
 #if BUILDFLAG(IS_WIN)
   void DelayLoad() override;
   void LoadNativeLibrary(const ::base::FilePath& library,
-                         bool call_sec32_fn,
+                         bool call_winmm_fn,
                          LoadNativeLibraryCallback callback) override;
 #endif
 

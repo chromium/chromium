@@ -8,14 +8,16 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for subresource_filter base::Features.
  *
- * Note: Features must be added to the array |kFeaturesExposedToJava| in
+ * <p>Note: Features must be added to the array |kFeaturesExposedToJava| in
  * //components/subresource_filter/core/browser/subresource_filter_feature_map.cc.
  */
 @JNINamespace("subresource_filter")
+@NullMarked
 public final class SubresourceFilterFeatureMap extends FeatureMap {
     // Features exposed through this FeatureMap
     public static final String SUBRESOURCE_FILTER = "SubresourceFilter";

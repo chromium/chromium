@@ -5,15 +5,15 @@
 #ifndef NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 #define NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
-
 #include <memory>
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
+#include "net/base/proxy_delegate.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
 
 namespace net {
@@ -51,7 +51,8 @@ class NET_EXPORT WindowsSystemProxyResolutionService
                    ProxyInfo* results,
                    CompletionOnceCallback callback,
                    std::unique_ptr<ProxyResolutionRequest>* request,
-                   const NetLogWithSource& net_log) override;
+                   const NetLogWithSource& net_log,
+                   RequestPriority priority) override;
   void ReportSuccess(const ProxyInfo& proxy_info) override;
   void SetProxyDelegate(ProxyDelegate* delegate) override;
   void OnShutdown() override;
@@ -84,11 +85,14 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   // Called when proxy resolution has completed (either synchronously or
   // asynchronously). Handles logging the result, and cleaning out
   // bad entries from the results list.
-  int DidFinishResolvingProxy(const GURL& url,
-                              const std::string& method,
-                              ProxyInfo* result,
-                              WinHttpStatus winhttp_status,
-                              const NetLogWithSource& net_log);
+  int DidFinishResolvingProxy(
+      const GURL& url,
+      const std::string& method,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      ProxyInfo* result,
+      WinHttpStatus winhttp_status,
+      int windows_error,
+      const NetLogWithSource& net_log);
 
   // Map of the known bad proxies and the information about the retry time.
   ProxyRetryInfoMap proxy_retry_info_;
@@ -104,6 +108,11 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   // This is the log for any generated events.
   raw_ptr<NetLog> net_log_;
 
+  // Optional delegate for customizing proxy resolution behavior and receiving
+  // proxy-related callbacks.
+  raw_ptr<ProxyDelegate> proxy_delegate_ = nullptr;
+
+  // Ensures all method calls are made on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

@@ -48,14 +48,9 @@ bool BackgroundFetchRegistrationId::operator==(
   return unique_id_ == other.unique_id_;
 }
 
-bool BackgroundFetchRegistrationId::operator!=(
+std::weak_ordering BackgroundFetchRegistrationId::operator<=>(
     const BackgroundFetchRegistrationId& other) const {
-  return unique_id_ != other.unique_id_;
-}
-
-bool BackgroundFetchRegistrationId::operator<(
-    const BackgroundFetchRegistrationId& other) const {
-  return unique_id_ < other.unique_id_;
+  return unique_id_ <=> other.unique_id_;
 }
 
 bool BackgroundFetchRegistrationId::is_null() const {

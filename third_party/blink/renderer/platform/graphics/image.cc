@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -172,7 +173,7 @@ PaintImage Image::ResizeAndOrientImage(
     sampling = SkSamplingOptions(SkCubicResampler::CatmullRom());
 
   SkCanvas* canvas = surface->getCanvas();
-  canvas->concat(AffineTransformToSkMatrix(transform));
+  canvas->concat(transform.ToSkMatrix());
   canvas->drawImage(image.GetSwSkImage(), 0, 0, sampling, &paint);
 
   return PaintImageBuilder::WithProperties(std::move(image))
@@ -236,7 +237,6 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
 }
 
 SkTileMode ComputeTileMode(float left, float right, float min, float max) {
-  DCHECK(left < right);
   return left >= min && right <= max ? SkTileMode::kClamp : SkTileMode::kRepeat;
 }
 
@@ -259,7 +259,7 @@ void Image::DrawPattern(GraphicsContext& context,
   // Fetch orientation data if needed.
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
   if (draw_options.respect_orientation)
-    orientation = CurrentFrameOrientation();
+    orientation = Orientation();
 
   // |tiling_info.image_rect| is in source image space, unscaled but oriented.
   // image-resolution information is baked into |tiling_info.scale|,
@@ -323,7 +323,7 @@ void Image::DrawPattern(GraphicsContext& context,
 
   StartAnimation();
 
-  if (CurrentFrameIsLazyDecoded()) {
+  if (IsLazyDecoded()) {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
                          "LazyPixelRef", image_id);
@@ -388,7 +388,7 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
 
     ImageOrientation orientation = ImageOrientationEnum::kDefault;
     if (respect_image_orientation == kRespectImageOrientation)
-      orientation = bitmap_image->CurrentFrameOrientation();
+      orientation = bitmap_image->Orientation();
 
     gfx::Vector2dF image_scale(1, 1);
     if (density_corrected_size != paint_image_size) {
@@ -420,7 +420,7 @@ DarkModeImageCache* Image::GetDarkModeImageCache() {
 
 gfx::RectF Image::CorrectSrcRectForImageOrientation(gfx::SizeF image_size,
                                                     gfx::RectF src_rect) const {
-  ImageOrientation orientation = CurrentFrameOrientation();
+  ImageOrientation orientation = Orientation();
   DCHECK(orientation != ImageOrientationEnum::kDefault);
   AffineTransform forward_map = orientation.TransformFromDefault(image_size);
   AffineTransform inverse_map = forward_map.Inverse();

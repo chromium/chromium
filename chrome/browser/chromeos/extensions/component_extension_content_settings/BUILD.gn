@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("component_extension_content_settings") {
+  sources = [
+    "component_extension_content_settings_allowlist.cc",
+    "component_extension_content_settings_allowlist.h",
+    "component_extension_content_settings_allowlist_factory.cc",
+    "component_extension_content_settings_allowlist_factory.h",
+    "component_extension_content_settings_provider.cc",
+    "component_extension_content_settings_provider.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//extensions/common",
+    "//url",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "component_extension_content_settings_provider_unittest.cc" ]
+
+  deps = [
+    ":component_extension_content_settings",
+    "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

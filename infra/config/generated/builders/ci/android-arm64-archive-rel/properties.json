@@ -24,7 +24,7 @@
               "builder_group": "chromium",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -32,7 +32,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -57,18 +57,15 @@
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-arm64-archive-rel/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },
@@ -81,10 +78,10 @@
   },
   "builder_group": "chromium",
   "gardener_rotations": [
-    "chromium"
+    "android"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "android"
   ]
 }

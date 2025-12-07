@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 template("ts_definitions") {
   node(target_name) {
@@ -83,18 +83,19 @@ template("ts_definitions") {
       "//resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
               "//third_party/polymer/v3_0/components-chromium/polymer/polymer-element.d.ts",
               target_gen_dir),
+      "chrome://resources/cros_components/*|" + rebase_path(
+              "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten/*",
+              target_gen_dir),
+      "//resources/cros_components/*|" + rebase_path(
+              "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten/*",
+              target_gen_dir),
+      "chrome://resources/ash/common/*|" +
+          rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                      target_gen_dir),
+      "//resources/ash/common/*|" +
+          rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                      target_gen_dir),
     ]
-
-    if (is_chromeos_ash) {
-      path_mappings += [
-        "chrome://resources/ash/common/*|" + rebase_path(
-                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
-                target_gen_dir),
-        "//resources/ash/common/*|" + rebase_path(
-                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
-                target_gen_dir),
-      ]
-    }
 
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {

@@ -29,7 +29,8 @@
 
 namespace blink {
 
-EXTFragDepth::EXTFragDepth(WebGLRenderingContextBase* context)
+EXTFragDepth::EXTFragDepth(WebGLRenderingContextBase* context,
+                           ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_frag_depth");
 }

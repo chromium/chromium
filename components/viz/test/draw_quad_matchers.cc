@@ -7,6 +7,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "ui/gfx/overlay_layer_id.h"
 
 namespace viz {
 namespace {
@@ -33,8 +34,6 @@ const char* MaterialToString(DrawQuad::Material material) {
       return "kTextureContent";
     case DrawQuad::Material::kTiledContent:
       return "kTiledContent";
-    case DrawQuad::Material::kYuvVideoContent:
-      return "kYuvVideoContent";
     case DrawQuad::Material::kVideoHole:
       return "kVideoHole";
   }
@@ -45,12 +44,6 @@ testing::Matcher<const DrawQuad*> IsQuadType(
     DrawQuad::Material expected_material) {
   return testing::Field("material", &DrawQuad::material,
                         testing::Eq(expected_material));
-}
-
-testing::Matcher<const DrawQuad*> HasSharedQuadState(
-    testing::Matcher<const SharedQuadState*> matcher) {
-  return testing::Field("shared_quad_state", &DrawQuad::shared_quad_state,
-                        matcher);
 }
 
 }  // namespace
@@ -107,6 +100,12 @@ testing::Matcher<const DrawQuad*> HasVisibleRect(
                         testing::Eq(visible_rect));
 }
 
+testing::Matcher<const DrawQuad*> HasSharedQuadState(
+    testing::Matcher<const SharedQuadState*> matcher) {
+  return testing::Field("shared_quad_state", &DrawQuad::shared_quad_state,
+                        matcher);
+}
+
 testing::Matcher<const DrawQuad*> HasTransform(
     const gfx::Transform& transform) {
   return HasSharedQuadState(testing::Field(
@@ -142,7 +141,7 @@ testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id) {
 }
 
 testing::Matcher<const DrawQuad*> HasLayerNamespaceId(
-    uint32_t layer_namespace_id) {
+    const gfx::OverlayLayerId::NamespaceId& layer_namespace_id) {
   return HasSharedQuadState(testing::Field("layer_namespace_id",
                                            &SharedQuadState::layer_namespace_id,
                                            testing::Eq(layer_namespace_id)));

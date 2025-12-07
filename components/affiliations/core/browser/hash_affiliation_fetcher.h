@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_HASH_AFFILIATION_FETCHER_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_HASH_AFFILIATION_FETCHER_H_
 
+#include <optional>
 #include <string>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 
@@ -29,21 +32,20 @@ namespace affiliations {
 // including those actually required.
 class HashAffiliationFetcher : public AffiliationFetcherInterface {
  public:
-  HashAffiliationFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate);
+  explicit HashAffiliationFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~HashAffiliationFetcher() override;
 
   // AffiliationFetcherInterface
-  void StartRequest(const std::vector<FacetURI>& facet_uris,
-                    RequestInfo request_info) override;
+  void StartRequest(
+      const std::vector<FacetURI>& facet_uris,
+      RequestInfo request_info,
+      base::OnceCallback<void(FetchResult)> result_callback) override;
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
 
   // Builds the URL for the Affiliation API's lookup method.
   static GURL BuildQueryURL();
   static bool IsFetchPossible();
-
-  AffiliationFetcherDelegate* delegate() const;
 
  private:
   // Actually starts the request to retrieve affiliations and optionally
@@ -64,14 +66,15 @@ class HashAffiliationFetcher : public AffiliationFetcherInterface {
   // member of exactly one returned equivalence class.
   // Returns false if the response was gravely ill-formed or self-inconsistent.
   // Unknown kinds of facet URIs and new protocol buffer fields will be ignored.
-  bool ParseResponse(const std::string& serialized_response,
-                     AffiliationFetcherDelegate::Result* result) const;
+  bool ParseResponse(
+      const std::string& serialized_response,
+      AffiliationFetcherInterface::ParsedFetchResponse* result) const;
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   std::vector<FacetURI> requested_facet_uris_;
+  base::OnceCallback<void(FetchResult)> result_callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<AffiliationFetcherDelegate> delegate_;
   base::ElapsedTimer fetch_timer_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;

@@ -19,17 +19,17 @@ namespace media {
 class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
  public:
   // Size of an MPEG-1 frame header in bytes.
-  static constexpr int kHeaderSize = 4;
+  static constexpr size_t kHeaderSize = 4;
 
   // Versions and layers as defined in ISO/IEC 11172-3.
-  enum Version {
+  enum Version : uint8_t {
     kVersion1 = 3,
     kVersion2 = 2,
     kVersionReserved = 1,
     kVersion2_5 = 0,
   };
 
-  enum Layer {
+  enum Layer : uint8_t {
     kLayer1 = 3,
     kLayer2 = 2,
     kLayer3 = 1,
@@ -63,7 +63,7 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
   // Returns false if the header is not valid.
   static bool ParseHeader(MediaLog* media_log,
                           size_t* media_log_limit,
-                          const uint8_t* data,
+                          base::span<const uint8_t> data,
                           Header* header);
 
   MPEG1AudioStreamParser();
@@ -75,12 +75,11 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
 
  private:
   // MPEGAudioStreamParserBase overrides.
-  int ParseFrameHeader(const uint8_t* data,
-                       int size,
-                       int* frame_size,
-                       int* sample_rate,
+  int ParseFrameHeader(base::span<const uint8_t> data,
+                       size_t* frame_size,
+                       size_t* sample_rate,
                        ChannelLayout* channel_layout,
-                       int* sample_count,
+                       size_t* sample_count,
                        bool* metadata_frame,
                        std::vector<uint8_t>* extra_data) override;
 

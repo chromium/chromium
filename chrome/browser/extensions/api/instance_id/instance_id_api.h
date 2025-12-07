@@ -7,6 +7,9 @@
 
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

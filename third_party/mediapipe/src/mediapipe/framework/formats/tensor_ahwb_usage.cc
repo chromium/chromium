@@ -7,36 +7,39 @@
 
 namespace mediapipe {
 
-bool HasIncompleteUsage(TensorAhwbUsage& ahwb_usage) {
-  if (ahwb_usage.is_complete_fn != nullptr &&
-      !ahwb_usage.is_complete_fn(/*force_completion=*/false)) {
-    return true;
+bool TensorAhwbUsage::IsComplete() const {
+  if (is_complete_fn != nullptr &&
+      !is_complete_fn(/*force_completion=*/false)) {
+    return false;
   }
-  return false;
+  return true;
 }
 
-bool HasIncompleteUsages(std::list<TensorAhwbUsage>& ahwb_usages) {
+void TensorAhwbUsage::Reset() {
+  if (is_complete_fn != nullptr &&
+      !is_complete_fn(/*force_completion=*/false) &&
+      !is_complete_fn(/*force_completion=*/true)) {
+    ABSL_LOG(DFATAL) << "Failed to force-complete AHWB usage.";
+  }
+  for (auto& release_callback : release_callbacks) {
+    release_callback();
+  }
+  is_complete_fn = nullptr;
+  release_callbacks.clear();
+}
+
+bool HasIncompleteUsages(const std::list<TensorAhwbUsage>& ahwb_usages) {
   for (auto& ahwb_usage : ahwb_usages) {
-    if (HasIncompleteUsage(ahwb_usage)) {
+    if (!ahwb_usage.IsComplete()) {
       return true;
     }
   }
   return false;
 }
 
-void EraseCompletedUsage(TensorAhwbUsage& ahwb_usage) {
-  if (!HasIncompleteUsage(ahwb_usage)) {
-    for (auto& release_callback : ahwb_usage.release_callbacks) {
-      release_callback();
-    }
-    ahwb_usage.is_complete_fn = nullptr;
-    ahwb_usage.release_callbacks.clear();
-  }
-}
-
 void EraseCompletedUsages(std::list<TensorAhwbUsage>& ahwb_usages) {
   for (auto it = ahwb_usages.begin(); it != ahwb_usages.end();) {
-    if (!HasIncompleteUsage(*it)) {
+    if (it->IsComplete()) {
       for (auto& release_callback : it->release_callbacks) {
         release_callback();
       }
@@ -47,22 +50,9 @@ void EraseCompletedUsages(std::list<TensorAhwbUsage>& ahwb_usages) {
   }
 }
 
-void CompleteAndEraseUsage(TensorAhwbUsage& ahwb_usage) {
-  if (ahwb_usage.is_complete_fn != nullptr &&
-      !ahwb_usage.is_complete_fn(/*force_completion=*/false) &&
-      !ahwb_usage.is_complete_fn(/*force_completion=*/true)) {
-    ABSL_LOG(DFATAL) << "Failed to force-complete AHWB usage.";
-  }
-  for (auto& release_callback : ahwb_usage.release_callbacks) {
-    release_callback();
-  }
-  ahwb_usage.is_complete_fn = nullptr;
-  ahwb_usage.release_callbacks.clear();
-}
-
 void CompleteAndEraseUsages(std::list<TensorAhwbUsage>& ahwb_usages) {
   for (auto& ahwb_usage : ahwb_usages) {
-    CompleteAndEraseUsage(ahwb_usage);
+    ahwb_usage.Reset();
   }
   ahwb_usages.clear();
 }

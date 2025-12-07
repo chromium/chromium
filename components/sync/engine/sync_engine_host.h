@@ -25,8 +25,8 @@ class SyncEngineHost {
   // process changes. If success is false, initialization wasn't able to be
   // completed and should be retried.
   //
-  // |js_backend| is what chrome://sync-internals interacts with. It is
-  // initialized only if |success| is true.
+  // `js_backend` is what chrome://sync-internals interacts with. It is
+  // initialized only if `success` is true.
 
   virtual void OnEngineInitialized(bool success,
                                    bool is_first_time_sync_configure) = 0;
@@ -44,7 +44,7 @@ class SyncEngineHost {
   // The status of the connection to the sync server has changed.
   virtual void OnConnectionStatusChange(ConnectionStatus status) = 0;
 
-  // Called to perform migration of |types|.
+  // Called to perform migration of `types`.
   virtual void OnMigrationNeededForTypes(DataTypeSet types) = 0;
 
   // Called when the sync cycle returns there is an user actionable error.

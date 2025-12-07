@@ -9,13 +9,11 @@
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
-#include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/lock_screen_media_view.h"
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/login/ui/login_user_view.h"
-#include "ash/login/ui/note_action_launch_button.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/check.h"
@@ -59,17 +57,8 @@ ScrollableUsersListView* LockContentsViewTestApi::users_list() const {
   return view_->users_list_;
 }
 
-LockScreenMediaControlsView* LockContentsViewTestApi::media_controls_view()
-    const {
-  return view_->media_controls_view_;
-}
-
 LockScreenMediaView* LockContentsViewTestApi::media_view() const {
   return view_->media_view_;
-}
-
-views::View* LockContentsViewTestApi::note_action() const {
-  return view_->note_action_;
 }
 
 views::View* LockContentsViewTestApi::management_bubble() const {
@@ -117,6 +106,11 @@ const std::vector<UserState>& LockContentsViewTestApi::users() const {
 LoginCameraTimeoutView* LockContentsViewTestApi::login_camera_timeout_view()
     const {
   return view_->login_camera_timeout_view_;
+}
+
+base::WeakPtr<ManagementDisclosureDialog>
+LockContentsViewTestApi::management_disclosure_dialog() const {
+  return view_->management_disclosure_dialog_;
 }
 
 LoginBigUserView* LockContentsViewTestApi::FindBigUser(

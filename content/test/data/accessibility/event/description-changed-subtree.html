@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button id="myButton" aria-describedby="description1">Click Me</button>
+<p id="description1">This is description one.</p>
+<p id="description2">This is description two.</p>
+
+<script>
+  const button = document.getElementById('myButton');
+
+  function go() {
+    button.setAttribute('aria-describedby', 'description2');
+  }
+</script>
+</body>
+</html>

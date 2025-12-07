@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
+import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.V2_GOOGLE_COM_FBS;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Base64;
 
@@ -20,19 +19,21 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelMetadata;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,24 +42,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Utility methods and classes for testing home Surface. */
 public class HomeSurfaceTestUtils {
-    public static final String IMMEDIATE_RETURN_TEST_PARAMS =
-            "force-fieldtrial-params=Study.Group:"
-                    + ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS_PARAM
-                    + "/0";
+    public static final String START_SURFACE_RETURN_TIME_IMMEDIATE =
+            ChromeFeatureList.START_SURFACE_RETURN_TIME
+                    + ":start_surface_return_time_on_tablet_seconds/0";
 
     private static final long MAX_TIMEOUT_MS = 30000L;
-
-    /**
-     * Only launch Chrome without waiting for a current tab. This method could not use {@link
-     * ChromeTabbedActivityTestRule#startMainActivityFromLauncher()} because of its {@link
-     * org.chromium.chrome.browser.tab.Tab} dependency.
-     */
-    public static void startMainActivityFromLauncher(ChromeActivityTestRule activityTestRule) {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        activityTestRule.prepareUrlIntent(intent, null);
-        activityTestRule.launchActivity(intent);
-    }
 
     /**
      * Wait for the tab state to be initialized.
@@ -77,7 +65,7 @@ public class HomeSurfaceTestUtils {
      *
      * @param tabIds all the Tab IDs in the normal tab model.
      */
-    public static void createTabStatesAndMetadataFile(int[] tabIds) throws IOException {
+    public static void createTabStatesAndMetadataFile(int[] tabIds) {
         createTabStatesAndMetadataFile(tabIds, null, null, 0);
     }
 
@@ -87,8 +75,7 @@ public class HomeSurfaceTestUtils {
      * @param tabIds all the Tab IDs in the normal tab model.
      * @param rootIds all the root IDs in the normal tab model.
      */
-    public static void createTabStatesAndMetadataFile(int[] tabIds, @Nullable int[] rootIds)
-            throws IOException {
+    public static void createTabStatesAndMetadataFile(int[] tabIds, @Nullable int[] rootIds) {
         createTabStatesAndMetadataFile(tabIds, rootIds, null, 0);
     }
 
@@ -101,8 +88,7 @@ public class HomeSurfaceTestUtils {
      * @param selectedIndex the selected index of normal tab model.
      */
     public static void createTabStatesAndMetadataFile(
-            int[] tabIds, @Nullable int[] rootIds, @Nullable String[] urls, int selectedIndex)
-            throws IOException {
+            int[] tabIds, @Nullable int[] rootIds, @Nullable String[] urls, int selectedIndex) {
         createTabStatesAndMetadataFile(tabIds, rootIds, urls, selectedIndex, true);
     }
 
@@ -111,10 +97,8 @@ public class HomeSurfaceTestUtils {
             int[] rootIds,
             @Nullable String[] urls,
             int selectedIndex,
-            boolean createStateFile)
-            throws IOException {
-        TabPersistentStore.TabModelMetadata normalInfo =
-                new TabPersistentStore.TabModelMetadata(selectedIndex);
+            boolean createStateFile) {
+        TabModelMetadata normalInfo = new TabModelMetadata(selectedIndex);
         for (int i = 0; i < tabIds.length; i++) {
             normalInfo.ids.add(tabIds[i]);
             String url = urls != null ? urls[i] : "about:blank";
@@ -122,21 +106,20 @@ public class HomeSurfaceTestUtils {
 
             if (createStateFile) {
                 int rootId = rootIds == null ? tabIds[i] : rootIds[i];
-                saveTabState(tabIds[i], rootId, false);
+                saveTabState(tabIds[i], rootId);
             }
         }
-        TabPersistentStore.TabModelMetadata incognitoInfo =
-                new TabPersistentStore.TabModelMetadata(0);
+        TabModelMetadata incognitoInfo = new TabModelMetadata(0);
 
-        TabPersistentStore.TabModelSelectorMetadata selectorMetaData =
-                new TabPersistentStore.TabModelSelectorMetadata(normalInfo, incognitoInfo);
+        TabModelSelectorMetadata selectorMetaData =
+                new TabModelSelectorMetadata(normalInfo, incognitoInfo);
 
-        TabPersistentStore.saveTabModelPrefs(normalInfo, incognitoInfo, 0, ActiveTabState.OTHER);
+        TabPersistentStoreImpl.saveTabModelPrefs(0, ActiveTabState.OTHER);
         File metadataFile =
                 new File(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
-        TabPersistentStore.saveListToFile(metadataFile, selectorMetaData);
+        TabMetadataFileManager.saveListToFile(metadataFile, selectorMetaData);
     }
 
     /**
@@ -162,12 +145,11 @@ public class HomeSurfaceTestUtils {
             int tabId, BrowserControlsStateProvider browserControlsStateProvider) {
         final int height = 100;
         final int width =
-                (int)
-                        Math.round(
-                                height
-                                        * TabUtils.getTabThumbnailAspectRatio(
-                                                ContextUtils.getApplicationContext(),
-                                                browserControlsStateProvider));
+                Math.round(
+                        height
+                                * TabUtils.getTabThumbnailAspectRatio(
+                                        ContextUtils.getApplicationContext(),
+                                        browserControlsStateProvider));
         final Bitmap thumbnailBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         try {
@@ -194,7 +176,7 @@ public class HomeSurfaceTestUtils {
      *
      * @param cta The ChromeTabbedActivity under test.
      */
-    public static Tab getCurrentTabFromUIThread(ChromeTabbedActivity cta) {
+    public static Tab getCurrentTabFromUiThread(ChromeTabbedActivity cta) {
         AtomicReference<Tab> tab = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> tab.set(TabModelUtils.getCurrentTab(cta.getCurrentTabModel())));
@@ -205,21 +187,24 @@ public class HomeSurfaceTestUtils {
      * Create a file so that a TabState can be restored later.
      *
      * @param tabId the Tab ID
-     * @param tabId the Root ID
-     * @param encrypted for Incognito mode
+     * @param rootId the Root ID
      */
-    private static void saveTabState(int tabId, int rootId, boolean encrypted) {
+    private static void saveTabState(int tabId, int rootId) {
         File file =
                 TabStateFileManager.getTabStateFile(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         tabId,
-                        encrypted,
-                        /* isFlatBuffer= */ false);
-        writeFile(file, M26_GOOGLE_COM.encodedTabState);
+                        /* encrypted= */ false,
+                        /* isFlatbuffer= */ true);
+        writeFile(file, V2_GOOGLE_COM_FBS.encodedTabState);
 
-        TabState tabState = TabStateFileManager.restoreTabStateInternal(file, false);
+        CipherFactory unusedCipherFactory = new CipherFactory();
+        TabState tabState =
+                TabStateFileManager.restoreTabStateInternal(
+                        file, /* isEncrypted= */ false, unusedCipherFactory);
         tabState.rootId = rootId;
-        TabStateFileManager.saveStateInternal(file, tabState, encrypted);
+        TabStateFileManager.saveStateInternal(
+                file, tabState, /* encrypted= */ false, unusedCipherFactory);
     }
 
     private static void writeFile(File file, String data) {

@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This will raise an error as the dict should be a partial dictionary.
+dictionary ExtensionManifest {
+  DOMString string_key;
+};
+
+// Example WebIDL schema which is invalid as it defines an ExtensionManifest
+// dictionary for defining associated manifest keys, but doesn't make it
+// partial.
+interface TestWebIdl {
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

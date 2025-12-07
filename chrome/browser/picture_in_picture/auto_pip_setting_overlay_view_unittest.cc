@@ -13,8 +13,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -55,17 +55,13 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
 
-    // Define the browser view overridden bounds.
-    const gfx::Rect browser_view_overridden_bounds(0, 0, 500, 500);
-
     animation_duration_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     setting_overlay_ =
         widget_->SetContentsView(std::make_unique<AutoPipSettingOverlayView>(
-            cb().Get(), origin_, browser_view_overridden_bounds, anchor_view,
-            views::BubbleBorder::TOP_CENTER));
+            cb().Get(), origin_, anchor_view, views::BubbleBorder::TOP_CENTER));
   }
 
   void TearDown() override {
@@ -119,14 +115,12 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
   const GURL origin_{"https://example.com"};
 
   // Used to force a non-zero animation duration.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
 };
 
 TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
   EXPECT_TRUE(widget()->IsVisible());
-  EXPECT_EQ(
-      background()->GetColorProvider()->GetColor(kColorPipWindowBackground),
-      background()->GetBackground()->get_color());
+  EXPECT_EQ(kColorPipWindowBackground, background()->GetBackground()->color());
   EXPECT_EQ(4.0f, blur_view()->layer()->background_blur());
 }
 

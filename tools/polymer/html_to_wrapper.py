@@ -157,7 +157,7 @@ def main(argv):
   parser.add_argument('--use_js', action='store_true')
   parser.add_argument('--template',
                       choices=['polymer', 'lit', 'native', 'detect'],
-                      default='polymer')
+                      default='lit')
   parser.add_argument('--scheme',
                       choices=['chrome', 'relative'],
                       default='relative')
@@ -174,24 +174,15 @@ def main(argv):
   wrapper_in_folder = in_folder
 
   if args.minify:
-    # Minify the HTML files with html-minifier before generating the wrapper
-    # .ts files.
-    # Note: Passing all HTML files to html-minifier all at once because
-    # passing them individually takes a lot longer.
+    # Minify any inlined CSS styles with a postcss plugin before generating the
+    # wrapper .ts files.
     # Storing the output in a temporary folder, which is used further below when
     # creating the final wrapper files.
     tmp_out_dir = tempfile.mkdtemp(dir=out_folder)
     try:
       wrapper_in_folder = tmp_out_dir
-
-      # Using the programmatic Node API to invoke html-minifier, because the
-      # built-in command line API does not support explicitly specifying
-      # multiple files to be processed, and only supports specifying an input
-      # folder, which would lead to potentially processing unnecessary HTML
-      # files that are not part of the build (stale), or handled by other
-      # html_to_wrapper targets.
       node.RunNode(
-          [path.join(_HERE_PATH, 'html_minifier.js'), in_folder, tmp_out_dir] +
+          [path.join(_HERE_PATH, 'css_minifier.js'), in_folder, tmp_out_dir] +
           args.in_files)
     except RuntimeError as err:
       shutil.rmtree(tmp_out_dir)

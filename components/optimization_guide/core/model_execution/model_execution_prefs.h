@@ -6,8 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
 
 #include "base/component_export.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "base/time/time.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/prefs/prefs_export.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -15,11 +16,13 @@ class PrefService;
 namespace optimization_guide::model_execution::prefs {
 
 // The possible values for the model execution enterprise policy.
+// LINT.IfChange(ModelExecutionEnterprisePolicyValue)
 enum class ModelExecutionEnterprisePolicyValue {
   kAllow = 0,
   kAllowWithoutLogging = 1,
   kDisable = 2,
 };
+// LINT.ThenChange(/chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue)
 
 enum class GenAILocalFoundationalModelEnterprisePolicySettings {
   kAllowed = 0,
@@ -30,23 +33,7 @@ enum class GenAILocalFoundationalModelEnterprisePolicySettings {
 };
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kTabOrganizationEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kComposeEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kWallpaperSearchEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kHistorySearchEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kTabCompareSettingsEnterprisePolicyAllowed[];
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-// Returns the name of the pref to check for enterprise policy for `feature`.
-// Null is returned when no enterprise policy is defined for the `feature`.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature);
 
 namespace localstate {
 
@@ -55,23 +42,17 @@ extern const char kOnDeviceModelChromeVersion[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelCrashCount[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOnDeviceModelTimeoutCount[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelValidationResult[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClass[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kLastTimeComposeWasUsed[];
+extern const char kOnDevicePerformanceClassVersion[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kLastTimePromptApiWasUsed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kLastTimeTestFeatureWasUsed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kLastTimeHistorySearchWasUsed[];
+extern const char kLastUsageByFeature[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelQualityLogggingClientId[];
+extern const char kModelQualityLoggingClientId[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kGenAILocalFoundationalModelEnterprisePolicySettings[];
 
@@ -83,11 +64,20 @@ bool IsLocalFoundationalModelEnterprisePolicyAllowed();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-// Returns the value of the local state pref to check for whether an on-device
-// eligible `feature` was recently used. All on-device eligible features should
-// have this pref defined.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-const char* GetOnDeviceFeatureRecentlyUsedPref(ModelBasedCapabilityKey feature);
+void RegisterLegacyUsagePrefsForMigration(PrefRegistrySimple* registry);
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+void MigrateLegacyUsagePrefs(PrefService* local_state);
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+void PruneOldUsagePrefs(PrefService* local_state);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+void RecordFeatureUsage(PrefService* local_state,
+                        mojom::OnDeviceFeature feature);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool WasFeatureRecentlyUsed(const PrefService* local_state,
+                            mojom::OnDeviceFeature feature);
 
 }  // namespace optimization_guide::model_execution::prefs
 

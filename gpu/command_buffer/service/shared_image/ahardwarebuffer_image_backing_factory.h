@@ -18,6 +18,10 @@ class Size;
 class ColorSpace;
 }  // namespace gfx
 
+namespace viz {
+class VulkanContextProvider;
+}
+
 namespace gpu {
 
 namespace gles2 {
@@ -34,7 +38,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
  public:
   explicit AHardwareBufferImageBackingFactory(
       const gles2::FeatureInfo* feature_info,
-      const GpuPreferences& gpu_preferences);
+      const GpuPreferences& gpu_preferences,
+      const scoped_refptr<viz::VulkanContextProvider>& vulkan_context_provider);
 
   AHardwareBufferImageBackingFactory(
       const AHardwareBufferImageBackingFactory&) = delete;
@@ -75,6 +80,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override;
   bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,
@@ -85,6 +91,12 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
   SharedImageBackingType GetBackingType() override;
   bool IsFormatSupported(viz::SharedImageFormat format);
+  bool IsSupportedForMappableBuffer(SharedImageUsageSet usage,
+                                    viz::SharedImageFormat format,
+                                    gfx::GpuMemoryBufferType gmb_type);
+  static bool CopyNativeBufferToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory);
 
  private:
   struct FormatInfo {
@@ -132,6 +144,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
     CHECK(iter != format_infos_.end());
     return iter->second;
   }
+
+  scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 
   base::flat_map<viz::SharedImageFormat, FormatInfo> format_infos_;
 

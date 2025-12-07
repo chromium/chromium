@@ -37,18 +37,6 @@ class PreferredAppsImpl {
     Host& operator=(const Host&) = delete;
     ~Host() = default;
 
-    // Called when the PreferredAppsList has been loaded from disk, and can
-    // be used to initialize subscribers.
-    // Only implemented in Ash, to support initializing the Lacros copy of the
-    // PreferredAppsList.
-    virtual void InitializePreferredAppsForAllSubscribers() {}
-
-    // Called when changes have been made to the PreferredAppsList which should
-    // be propagated to subscribers.
-    // Only implemented in Ash, to support updating the Lacros copy of the
-    // PreferredAppsList.
-    virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes) {}
-
     // Notifies the host that the supported links preference for a particular
     // `app_id` was enabled/disabled. Used by the host to notify the app
     // publisher (if any) of the change.
@@ -70,6 +58,12 @@ class PreferredAppsImpl {
   void RemovePreferredApp(const std::string& app_id);
   void SetSupportedLinksPreference(const std::string& app_id,
                                    IntentFilters all_link_filters);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetProtocolLinkPreference(const std::string& app_id,
+                                 IntentFilterPtr protocol_link_filter);
+  void RemoveProtocolLinkFilters(const std::string& app_id,
+                                 IntentFilters protocol_link_filters);
+#endif
   void RemoveSupportedLinksPreference(const std::string& app_id);
 
   PreferredAppsListHandle& preferred_apps_list() {
@@ -100,6 +94,12 @@ class PreferredAppsImpl {
   void RemovePreferredAppImpl(const std::string& app_id);
   void SetSupportedLinksPreferenceImpl(const std::string& app_id,
                                        IntentFilters all_link_filters);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetProtocolLinkPreferenceImpl(const std::string& app_id,
+                                     IntentFilterPtr protocol_link_filter);
+  void RemoveProtocolLinkFiltersImpl(const std::string& app_id,
+                                     IntentFilters protocol_link_filters);
+#endif
   void RemoveSupportedLinksPreferenceImpl(const std::string& app_id);
 
   // `host_` owns `this`.

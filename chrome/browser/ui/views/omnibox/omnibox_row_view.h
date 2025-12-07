@@ -29,8 +29,7 @@ class OmniboxRowView : public views::View {
   OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view);
 
   // Sets the header that appears above this row. Also shows the header.
-  void ShowHeader(const std::u16string& header_text,
-                  bool suggestion_group_hidden);
+  void ShowHeader(const std::u16string& header_text);
 
   // Hides the header.
   void HideHeader();
@@ -40,6 +39,8 @@ class OmniboxRowView : public views::View {
 
   // The result view associated with this row.
   OmniboxResultView* result_view() const { return result_view_; }
+
+  size_t line() const { return line_; }
 
   // Invoked when the model's selection state has changed.
   void OnSelectionStateChanged();
@@ -52,11 +53,11 @@ class OmniboxRowView : public views::View {
   gfx::Insets GetInsets() const override;
 
  private:
-  // Line number of this row.
-  const size_t line_;
-
   // Non-owning pointer to the popup view for this row. This is never nullptr.
   const raw_ptr<OmniboxPopupViewViews> popup_view_;
+
+  // The line number of this row.
+  const size_t line_;
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.

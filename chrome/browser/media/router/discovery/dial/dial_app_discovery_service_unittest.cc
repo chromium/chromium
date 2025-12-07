@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -41,8 +40,9 @@ class TestSafeDialAppInfoParser : public SafeDialAppInfoParser {
 
   void InvokeParseCallback(std::unique_ptr<ParsedDialAppInfo> app_info,
                            ParsingResult parsing_result) {
-    if (!parse_callback_)
+    if (!parse_callback_) {
       return;
+    }
     std::move(parse_callback_).Run(std::move(app_info), parsing_result);
   }
 
@@ -73,10 +73,11 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   void OnAppInfo(const MediaSink::Id& sink_id,
                  const std::string& app_name,
                  DialAppInfoResult result) {
-    if (result.app_info)
+    if (result.app_info) {
       OnAppInfoSuccess(sink_id, app_name, *result.app_info, result.result_code);
-    else
+    } else {
       OnAppInfoFailure(sink_id, app_name, result.result_code);
+    }
   }
 
   // Returns a raw pointer to the PendingRequest tracked in
@@ -128,11 +129,11 @@ TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoFetchURL) {
   auto* request = AddFetchRequest(dial_sink, kYouTubeName);
 
   EXPECT_CALL(*test_parser_, ParseInternal(_))
-      .WillOnce(Invoke([&](const std::string& xml_text) {
+      .WillOnce([&](const std::string& xml_text) {
         test_parser_->InvokeParseCallback(
             std::make_unique<ParsedDialAppInfo>(parsed_app_info),
             SafeDialAppInfoParser::ParsingResult::kSuccess);
-      }));
+      });
   EXPECT_CALL(*this, OnAppInfoSuccess(sink_id, kYouTubeName, parsed_app_info,
                                       DialAppInfoResultCode::kOk));
   OnDialAppInfoFetchComplete(request, "<xml>appInfo</xml>");
@@ -175,10 +176,10 @@ TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoParseError) {
   const MediaSink::Id& sink_id = dial_sink.sink().id();
   auto* request = AddFetchRequest(dial_sink, kYouTubeName);
   EXPECT_CALL(*test_parser_, ParseInternal(_))
-      .WillOnce(Invoke([&](const std::string& xml_text) {
+      .WillOnce([&](const std::string& xml_text) {
         test_parser_->InvokeParseCallback(
             nullptr, SafeDialAppInfoParser::ParsingResult::kMissingName);
-      }));
+      });
   EXPECT_CALL(*this, OnAppInfoFailure(sink_id, kYouTubeName,
                                       DialAppInfoResultCode::kParsingError));
   OnDialAppInfoFetchComplete(request, "<xml>appInfo</xml>");

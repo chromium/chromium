@@ -4,31 +4,53 @@
 
 package org.chromium.components.browser_ui.device_lock;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * This class provides a way to access {@link DeviceLockActivityLauncher} from {@link
  * WindowAndroid}.
  */
-public class DeviceLockActivityLauncherSupplier
-        extends UnownedUserDataSupplier<DeviceLockActivityLauncher> {
-    private static final UnownedUserDataKey<DeviceLockActivityLauncherSupplier> KEY =
-            new UnownedUserDataKey<DeviceLockActivityLauncherSupplier>(
-                    DeviceLockActivityLauncherSupplier.class);
+@NullMarked
+public class DeviceLockActivityLauncherSupplier {
+    private static final UnownedUserDataKey<ObservableSupplier<DeviceLockActivityLauncher>> KEY =
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link DeviceLockActivityLauncher} supplier associated with the given {@link
      * WindowAndroid}.
      */
-    public static ObservableSupplier<DeviceLockActivityLauncher> from(WindowAndroid windowAndroid) {
+    public static @Nullable ObservableSupplier<DeviceLockActivityLauncher> from(
+            WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    /** Constructs a ShareDelegateSupplier and attaches it to the {@link WindowAndroid} */
-    public DeviceLockActivityLauncherSupplier() {
-        super(KEY);
+    /**
+     * Return the {@link DeviceLockActivityLauncher} associated with the given {@link
+     * WindowAndroid}.
+     */
+    public static @Nullable DeviceLockActivityLauncher get(WindowAndroid windowAndroid) {
+        ObservableSupplier<DeviceLockActivityLauncher> supplier = from(windowAndroid);
+        return supplier != null ? supplier.get() : null;
     }
+
+    /**
+     * Attach to the specified host.
+     *
+     * @param host The host to attach the supplier to.
+     */
+    public static void attach(
+            UnownedUserDataHost host, ObservableSupplier<DeviceLockActivityLauncher> supplier) {
+        KEY.attachToHost(host, supplier);
+    }
+
+    public static void destroy(ObservableSupplier<DeviceLockActivityLauncher> supplier) {
+        KEY.detachFromAllHosts(supplier);
+    }
+
+    private DeviceLockActivityLauncherSupplier() {}
 }

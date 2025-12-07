@@ -4,10 +4,14 @@
 
 // clang-format off
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {CrLitElement, html as litHtml} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {PolymerElement, html as polymerHtml} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -15,9 +19,13 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 let viewManager: CrViewManagerElement;
 let parent: HTMLElement;
 
-const suiteName = 'CrElementsViewManagerTest';
+function assertViewVisible(id: string, expectIsVisible: boolean) {
+  assertEquals(
+      expectIsVisible,
+      isChildVisible(viewManager, `#${id}`, /*checkLightDom=*/ true));
+}
 
-suite(suiteName, function() {
+suite('CrElementsViewManagerTest', function() {
   // Initialize an cr-view-manager inside a parent div before
   // each test.
   setup(function() {
@@ -34,13 +42,7 @@ suite(suiteName, function() {
     viewManager = document.body.querySelector('#viewManager')!;
   });
 
-  test('visibility', async function() {
-    function assertViewVisible(id: string, expectIsVisible: boolean) {
-      assertEquals(
-          expectIsVisible,
-          isChildVisible(viewManager, `#${id}`, /*checkLightDom=*/ true));
-    }
-
+  test('switchView', async function() {
     assertViewVisible('viewOne', false);
     assertViewVisible('viewTwo', false);
     assertViewVisible('viewThree', false);
@@ -54,6 +56,52 @@ suite(suiteName, function() {
     assertViewVisible('viewOne', false);
     assertViewVisible('viewTwo', false);
     assertViewVisible('viewThree', true);
+  });
+
+  test('switchViews', async function() {
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
+
+    await viewManager.switchViews(['viewOne', 'viewTwo']);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', false);
+
+    await viewManager.switchViews(['viewTwo', 'viewThree']);
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', true);
+
+    await viewManager.switchViews(['viewOne', 'viewTwo', 'viewThree']);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', true);
+
+    await viewManager.switchViews([]);
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
+  });
+
+  test('visibility with show-all', async function() {
+    // Initial state.
+    await viewManager.switchView('viewOne');
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
+
+    // Turn on, check that everything is visible.
+    viewManager.toggleAttribute('show-all', true);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', true);
+
+    // Turn off. Check that initial state is restored.
+    viewManager.toggleAttribute('show-all', false);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
   });
 
   test('event firing', async function() {
@@ -92,6 +140,14 @@ suite(suiteName, function() {
     verifyEventFiredAndBubbled('view-enter-start', true);
     verifyEventFiredAndBubbled('view-enter-finish', true);
 
+    // calling switchView() with an already active view should not result in the
+    // events being refired.
+    fired = new Set();
+    bubbled = new Set();
+    await viewManager.switchView('viewOne');
+    verifyEventFiredAndBubbled('view-enter-start', false);
+    verifyEventFiredAndBubbled('view-enter-finish', false);
+
     const exitPromises = viewManager.switchView('viewTwo');
     verifyEventFiredAndBubbled('view-exit-start', true);
     // view-exit-finish is waiting on the animation.
@@ -109,5 +165,85 @@ suite(suiteName, function() {
     verifyEventFiredAndBubbled('view-enter-finish', false);
     await enterPromises;
     verifyEventFiredAndBubbled('view-enter-finish', true);
+  });
+});
+
+suite('CrLazyRenderInCrViewManagerTest', function() {
+  class TestApp extends PolymerElement {
+    static get is() {
+      return 'test-app';
+    }
+
+    static get template() {
+      return polymerHtml`
+        <cr-view-manager id="viewManager">
+          <div slot="view" id="viewOne">view one</div>
+          <cr-lazy-render id="lazy">
+            <template>
+              <div slot="view" id="lazyView"></div>
+            </template>
+          </cr-lazy-render>
+        </cr-view-manager>`;
+    }
+  }
+
+  class TestAppLit extends CrLitElement {
+    static get is() {
+      return 'test-app-lit';
+    }
+
+    override render() {
+      return litHtml`
+        <cr-view-manager id="viewManager">
+          <div slot="view" id="viewOne">view one</div>
+          <cr-lazy-render-lit id="lazy"
+              .template="${
+          () => litHtml`<div slot="view" id="lazyView"></div>`}">
+          </cr-lazy-render-lit>
+        </cr-view-manager>`;
+    }
+  }
+
+  customElements.define(TestApp.is, TestApp);
+  customElements.define(TestAppLit.is, TestAppLit);
+
+  function setupTest(isLit: boolean) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const testApp = isLit ? document.createElement('test-app-lit') :
+                            document.createElement('test-app');
+    document.body.appendChild(testApp);
+
+    viewManager = testApp.shadowRoot!.querySelector('#viewManager')!;
+    assertTrue(!!viewManager);
+  }
+
+  test('switch to cr-lazy-render view', async function() {
+    setupTest(/*isLit=*/ false);
+
+    assertViewVisible('viewOne', false);
+    assertViewVisible('lazyView', false);
+
+    await viewManager.switchView('viewOne');
+    assertViewVisible('viewOne', true);
+    assertViewVisible('lazyView', false);
+
+    await viewManager.switchView('lazy');
+    assertViewVisible('viewOne', false);
+    assertViewVisible('lazyView', true);
+  });
+
+  test('switch to cr-lazy-render-lit view', async function() {
+    setupTest(/*isLit=*/ true);
+
+    assertViewVisible('viewOne', false);
+    assertViewVisible('lazyView', false);
+
+    await viewManager.switchView('viewOne');
+    assertViewVisible('viewOne', true);
+    assertViewVisible('lazyView', false);
+
+    await viewManager.switchView('lazy');
+    assertViewVisible('viewOne', false);
+    assertViewVisible('lazyView', true);
   });
 });

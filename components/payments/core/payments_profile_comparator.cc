@@ -10,12 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/contact_info.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/payments/core/payment_options_provider.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -30,7 +31,7 @@ PaymentsProfileComparator::PaymentsProfileComparator(
     const PaymentOptionsProvider& options)
     : autofill::AutofillProfileComparator(app_locale), options_(options) {}
 
-PaymentsProfileComparator::~PaymentsProfileComparator() {}
+PaymentsProfileComparator::~PaymentsProfileComparator() = default;
 
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetMissingProfileFields(
@@ -101,8 +102,11 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
         !super.HasInfo(autofill::NAME_FULL)) {
       return false;
     }
-    if (!HaveMergeableNames(super, sub))
+    if (!autofill::NameInfo::AreNamesMergeable(
+            sub.GetNameInfo(), sub.GetAddressCountryCode(), super.GetNameInfo(),
+            super.GetAddressCountryCode())) {
       return false;
+    }
   }
   if (options_->request_payer_phone()) {
     if (sub.HasInfo(autofill::PHONE_HOME_WHOLE_NUMBER) &&
@@ -288,9 +292,7 @@ std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
     case 0:
-      NOTREACHED_IN_MIGRATION()
-          << "Title should not be requested if no fields are missing";
-      return std::u16string();
+      NOTREACHED() << "Title should not be requested if no fields are missing";
     case kName:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_NAME);
     case kPhone:

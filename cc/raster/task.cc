@@ -60,8 +60,7 @@ std::string TaskState::ToString() const {
     case Value::kCanceled:
       return "CANCELED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void TaskState::DidSchedule() {
@@ -89,7 +88,7 @@ void TaskState::DidCancel() {
   value_ = Value::kCanceled;
 }
 
-Task::Task() = default;
+Task::Task() : trace_task_id_(base::trace_event::GetNextGlobalTraceId()) {}
 
 Task::~Task() = default;
 
@@ -102,15 +101,13 @@ TaskGraph::~TaskGraph() = default;
 TaskGraph::Node::Node(scoped_refptr<Task> new_task,
                       uint16_t category,
                       uint16_t priority,
-                      uint32_t dependencies)
+                      uint32_t dependencies,
+                      bool has_external_dependency)
     : task(std::move(new_task)),
       category(category),
       priority(priority),
-      dependencies(dependencies) {
-  // Set a trace task id to use for connecting from where the task was posted.
-  if (task) {
-    task->set_trace_task_id(base::trace_event::GetNextGlobalTraceId());
-  }
+      dependencies(dependencies),
+      has_external_dependency(has_external_dependency) {
 }
 
 TaskGraph::Node::Node(Node&& other) = default;
@@ -122,8 +119,10 @@ void TaskGraph::Swap(TaskGraph* other) {
 }
 
 void TaskGraph::Reset() {
-  nodes.clear();
+  // Clear edges first to avoid dangling raw_ptrs into Tasks that can be
+  // destroyed when clearing nodes.
   edges.clear();
+  nodes.clear();
 }
 
 }  // namespace cc

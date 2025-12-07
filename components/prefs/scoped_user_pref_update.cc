@@ -19,6 +19,12 @@
 
 namespace subtle {
 
+ScopedUserPrefUpdateBase::ScopedUserPrefUpdateBase(PrefService& service,
+                                                   std::string_view path)
+    : service_(service), path_(path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service_->sequence_checker_);
+}
+
 ScopedUserPrefUpdateBase::ScopedUserPrefUpdateBase(PrefService* service,
                                                    std::string_view path)
     : service_(CHECK_DEREF(service)), path_(path) {

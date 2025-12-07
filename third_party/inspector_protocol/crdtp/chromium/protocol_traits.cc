@@ -8,8 +8,11 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 
@@ -51,9 +54,8 @@ Binary Binary::fromString(std::string data) {
 }
 
 // static
-Binary Binary::fromSpan(const uint8_t* data, size_t size) {
-  return Binary(scoped_refptr<base::RefCountedBytes>(
-      new base::RefCountedBytes(data, size)));
+Binary Binary::fromSpan(base::span<const uint8_t> data) {
+  return Binary(base::MakeRefCounted<base::RefCountedBytes>(data));
 }
 
 // static
@@ -61,8 +63,7 @@ bool ProtocolTypeTraits<Binary>::Deserialize(DeserializerState* state,
                                              Binary* value) {
   auto* tokenizer = state->tokenizer();
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::BINARY) {
-    const span<uint8_t> bin = tokenizer->GetBinary();
-    *value = Binary::fromSpan(bin.data(), bin.size());
+    *value = Binary::fromSpan(tokenizer->GetBinary());
     return true;
   }
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::STRING8) {
@@ -134,7 +135,7 @@ bool DeserializeDict(DeserializerState* state, base::Value::Dict* dict) {
       return false;
     }
     auto key = tokenizer->GetString8();
-    std::string name(reinterpret_cast<const char*>(key.begin()), key.size());
+    std::string name(reinterpret_cast<const char*>(key.data()), key.size());
     tokenizer->Next();
     base::Value value;
     if (!ProtocolTypeTraits<base::Value>::Deserialize(state, &value))
@@ -256,8 +257,7 @@ void ProtocolTypeTraits<base::Value>::Serialize(const base::Value& value,
     }
     case base::Value::Type::BINARY:
       // TODO(caseq): support this?
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case base::Value::Type::DICT:
       SerializeDict(value.GetDict(), bytes);
       return;

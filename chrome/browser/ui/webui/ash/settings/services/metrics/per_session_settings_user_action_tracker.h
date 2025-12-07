@@ -9,6 +9,7 @@
 #include <set>
 
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 

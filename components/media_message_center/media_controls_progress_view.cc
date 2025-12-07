@@ -4,7 +4,10 @@
 
 #include "components/media_message_center/media_controls_progress_view.h"
 
+#include <string_view>
+
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
@@ -168,8 +171,8 @@ void MediaControlsProgressView::SetTextColor(SkColor color) {
 }
 
 void MediaControlsProgressView::SetTextColorId(ui::ColorId color_id) {
-  progress_time_->SetEnabledColorId(color_id);
-  duration_->SetEnabledColorId(color_id);
+  progress_time_->SetEnabledColor(color_id);
+  duration_->SetEnabledColor(color_id);
 }
 
 bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {
@@ -210,12 +213,12 @@ const views::ProgressBar* MediaControlsProgressView::progress_bar_for_testing()
   return progress_bar_;
 }
 
-const std::u16string& MediaControlsProgressView::progress_time_for_testing()
+std::u16string_view MediaControlsProgressView::progress_time_for_testing()
     const {
   return progress_time_->GetText();
 }
 
-const std::u16string& MediaControlsProgressView::duration_for_testing() const {
+std::u16string_view MediaControlsProgressView::duration_for_testing() const {
   return duration_->GetText();
 }
 
@@ -227,11 +230,11 @@ void MediaControlsProgressView::SetBarProgress(double progress) {
   progress_bar_->SetValue(progress);
 }
 
-void MediaControlsProgressView::SetProgressTime(const std::u16string& time) {
+void MediaControlsProgressView::SetProgressTime(std::u16string_view time) {
   progress_time_->SetText(time);
 }
 
-void MediaControlsProgressView::SetDuration(const std::u16string& duration) {
+void MediaControlsProgressView::SetDuration(std::u16string_view duration) {
   duration_->SetText(duration);
 }
 

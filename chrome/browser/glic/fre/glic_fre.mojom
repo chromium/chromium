@@ -1,0 +1,77 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.mojom;
+
+import "url/mojom/url.mojom";
+
+// Factory for PageHandler used in chrome://glic-fre.
+interface FrePageHandlerFactory {
+  // Creates the PageHandler for chrome://glic-fre.
+  CreatePageHandler(pending_receiver<FrePageHandler> receiver);
+};
+
+// Page handler for the glic FRE WebUI.
+interface FrePageHandler {
+  // Closes the glic FRE modal dialog and opens the widget hosting the main
+  // glic WebUI.
+  AcceptFre();
+
+  // Rejects the glic FRE modal dialog.
+  RejectFre();
+
+  // Closes the glic FRE modal dialog. The `panel` identifies which panel was
+  // closed.
+  DismissFre(FreWebUiState panel);
+
+  // Called when the user clicks 'Try Again'.
+  FreReloaded();
+
+  // Prepare the webview for loading the client. Sync Google account sign-in
+  // cookies to the webview, if necessary, so that it can sign-in automatically.
+  // If this returns false, the web client cannot be created due to an error.
+  PrepareForClient() => (bool success);
+
+  // Opens `url` in a new backgrounded tab when a link is clicked in the FRE
+  // modal dialog if `url` uses the Google domain.
+  ValidateAndOpenLinkInNewTab(url.mojom.Url url);
+
+  // Notifies the PageHandler that the state of the WebUI has changed.
+  WebUiStateChanged(FreWebUiState new_state);
+
+  // Notifies the PageHandler that the FRE exceeded the loading timeout and
+  // entered the error state.
+  ExceededTimeoutError();
+
+  // Signal to the fre controller that the WebUI framework has completed
+  // loading and the remote web content is about to start loading in the
+  // webview. This is used to record timing metrics.
+  LogWebUiLoadComplete();
+};
+
+// LINT.IfChange(FreWebUiState)
+enum FreWebUiState {
+  // Glic fre app controller not started.
+  kUninitialized,
+  // Web client begins loading; no visible UI.
+  kBeginLoading,
+  // Loading panel is displayed. This state, combined with the `hold-loading`
+  // state, will be held for `kMinHoldLoadingTimeMs` if entered.
+  kShowLoading,
+  // Loading panel is still displayed, but the web client is ready. This
+  // state will be held for the remainder of `kMinHoldLoadingTimeMs`.
+  kHoldLoading,
+  // Loading panel is displayed until web client is ready, or until
+  // `kMaxWaitTimeMs` timeout is reached.
+  kFinishLoading,
+  // "Something went wrong" error panel is displayed.
+  kError,
+  // Connection offline panel is displayed.
+  kOffline,
+  // Web view is displayed.
+  kReady,
+  // The admin has explicitly disabled Glic.
+  kDisabledByAdmin,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:FreWebUiState)

@@ -123,6 +123,11 @@ class CC_EXPORT NinePatchGenerator {
   void AsValueInto(base::trace_event::TracedValue* state) const;
   void CheckGeometryLimitations();
 
+  const gfx::Rect& image_aperture() const { return image_aperture_; }
+  const gfx::Rect& border() const { return border_; }
+  const gfx::Rect& output_occlusion() const { return output_occlusion_; }
+  bool fill_center() const { return fill_center_; }
+
  private:
   std::vector<Patch> ComputeQuadsWithOcclusion() const;
   std::vector<Patch> ComputeQuadsWithoutOcclusion() const;

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.share.share_sheet;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with rendering an item in the share sheet. */
+@NullMarked
 final class ShareSheetItemViewProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();

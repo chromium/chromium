@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/usage_scenario/tab_usage_scenario_tracker.h"
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -94,7 +93,7 @@ TabUsageScenarioTracker::TabUsageScenarioTracker(
 TabUsageScenarioTracker::~TabUsageScenarioTracker() {
   // Make sure that this doesn't get destroyed after destroying the global
   // screen instance.
-  DCHECK(display::Screen::GetScreen());
+  DCHECK(display::Screen::Get());
 }
 
 void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
@@ -155,6 +154,26 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
   } else if (was_visible && !is_visible) {
     // The tab was previously visible and it's now hidden or occluded.
     OnTabBecameHidden(&iter);
+  }
+}
+
+void TabUsageScenarioTracker::OnTabDiscarded(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Record that the ukm::SourceID associated with this tab isn't visible
+  // anymore, if necessary.
+  auto iter = visible_tabs_.find(web_contents);
+  CHECK_EQ(iter != visible_tabs_.end(),
+           web_contents->GetVisibility() == content::Visibility::VISIBLE);
+  if (iter != visible_tabs_.end() &&
+      iter->second.first != ukm::kInvalidSourceId) {
+    usage_scenario_data_store_->OnUkmSourceBecameHidden(iter->second.first,
+                                                        iter->second.second);
+    // Discard may destroy the associated WebContents or replace the
+    // WebContent's primary document with an empty docoument. For the latter
+    // case the source id must be invalidated as the UKM source should no longer
+    // be considered valid.
+    iter->second.first = ukm::kInvalidSourceId;
   }
 }
 
@@ -241,7 +260,7 @@ void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
 
   if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     auto iter = visible_tabs_.find(web_contents);
-    CHECK(iter != visible_tabs_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != visible_tabs_.end());
 
     // If there's already an entry with a valid SourceID for this in
     // |visible_tabs_| then it means that there's been a main frame navigation
@@ -290,7 +309,7 @@ void TabUsageScenarioTracker::OnDisplaysRemoved(const display::Displays&) {
 }
 
 int TabUsageScenarioTracker::GetNumDisplays() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   DCHECK(screen);
   return screen->GetNumDisplays();
 }

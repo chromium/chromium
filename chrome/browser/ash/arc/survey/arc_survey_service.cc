@@ -7,16 +7,17 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 
 namespace arc {
 
@@ -92,14 +93,16 @@ ArcSurveyService::~ArcSurveyService() {
 }
 
 bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
-  std::optional<base::Value> root = base::JSONReader::Read(survey_data);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(survey_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     LOG(ERROR) << "Unable to find JSON root. Trying char substitutions.";
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{@})", ":");
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{~})", ",");
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{%})", ".");
     DVLOG(1) << "Data after substitution: " << survey_data;
-    root = base::JSONReader::Read(survey_data);
+    root = base::JSONReader::Read(survey_data,
+                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       LOG(ERROR) << "Unable to find JSON root after substitution";
       return false;
@@ -234,7 +237,7 @@ const std::set<std::string>* ArcSurveyService::GetAllowedPackagesForTesting() {
 }
 
 void ArcSurveyService::AddAllowedPackageNameForTesting(
-    const std::string package_name) {
+    const std::string& package_name) {
   allowed_packages_.emplace(package_name);
 }
 

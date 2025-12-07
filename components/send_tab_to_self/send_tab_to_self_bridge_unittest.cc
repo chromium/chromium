@@ -11,10 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/model/entity_change.h"
@@ -92,7 +96,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet(),
-      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
 }
 
 sync_pb::DataTypeState StateWithEncryption(
@@ -126,6 +130,11 @@ class SendTabToSelfBridgeTest : public testing::Test {
   SendTabToSelfBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
+  void SetUp() override {
+    pref_service_.registry()->RegisterStringPref(
+        prefs::kIOSSendTabToSelfLastReceivedTabURLPref, std::string());
+  }
+
   void InitializeLocalDeviceIfNeeded() {
     if (local_device_) {
       return;
@@ -151,7 +160,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
         syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
-        /*history_service=*/nullptr, &device_info_tracker_);
+        /*history_service=*/nullptr, &device_info_tracker_, &pref_service_);
     bridge_->AddObserver(&mock_observer_);
     base::RunLoop().RunUntilIdle();
   }
@@ -227,6 +236,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
   SendTabToSelfBridge* bridge() { return bridge_.get(); }
 
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+
   MockSendTabToSelfModelObserver* mock_observer() { return &mock_observer_; }
 
   base::SimpleTestClock* clock() { return &clock_; }
@@ -246,6 +257,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 
   syncer::FakeDeviceInfoTracker device_info_tracker_;
+
+  TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<SendTabToSelfBridge> bridge_;
 
@@ -337,7 +350,8 @@ TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesOneDeletion) {
                                         std::move(add_changes));
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
   syncer::EntityChangeList delete_changes;
-  delete_changes.push_back(syncer::EntityChange::CreateDelete("guid1"));
+  delete_changes.push_back(
+      syncer::EntityChange::CreateDelete("guid1", syncer::EntityData()));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
@@ -444,8 +458,8 @@ TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesInMemory) {
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(
-      syncer::EntityChange::CreateDelete(specifics.guid()));
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      specifics.guid(), syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
 
@@ -463,7 +477,8 @@ TEST_F(SendTabToSelfBridgeTest, ApplyDeleteNonexistent) {
   EXPECT_CALL(*processor(), Delete(_, _, _)).Times(0);
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateDelete("guid"));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete("guid", syncer::EntityData()));
   auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes), std::move(entity_change_list));
   EXPECT_FALSE(error);
@@ -915,6 +930,66 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
                               std::move(remote_input));
 
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
+}
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(SendTabToSelfBridgeTest, WriteToLastTabReceivedPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
+        {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
+          "true"}}}},
+      {});
+
+  InitializeBridge();
+
+  // Add two remote entries.
+  SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
+                           AdvanceAndGetTime(), "device",
+                           kLocalDeviceCacheGuid);
+  SendTabToSelfEntry entry2("guid2", GURL("http://www.example2.com/"), "title",
+                            AdvanceAndGetTime(), "device",
+                            kLocalDeviceCacheGuid);
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry)));
+  add_changes.push_back(
+      syncer::EntityChange::CreateAdd("guid2", MakeEntityData(entry2)));
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+  bridge()->ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                        std::move(add_changes));
+
+  // Assert that the URL for the latest entry is written to the pref.
+  EXPECT_TRUE(pref_service()->GetString(
+                  prefs::kIOSSendTabToSelfLastReceivedTabURLPref) ==
+              "http://www.example2.com/");
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryOpened_QueueUnknownGuid) {
+  InitializeBridge();
+  SetLocalDeviceCacheGuid("Device1");
+
+  // Call MarkEntryOpened before entry is added.
+  bridge()->MarkEntryOpened("guid1");
+
+  // Add an entry targeting this device.
+  syncer::EntityChangeList remote_input;
+  SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
+                            AdvanceAndGetTime(), "device", "Device1");
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
+
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+
+  EXPECT_CALL(*processor(), Put("guid1", _, _)).Times(1);
+
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              std::move(remote_input));
+
+  EXPECT_TRUE(bridge()->GetEntryByGUID("guid1")->IsOpened());
 }
 
 TEST_F(SendTabToSelfBridgeTest,

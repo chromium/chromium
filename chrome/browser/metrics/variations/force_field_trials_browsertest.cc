@@ -16,7 +16,6 @@
 #include "base/test/mock_entropy_provider.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -126,14 +125,14 @@ IN_PROC_BROWSER_TEST_P(ForceFieldTrialsBrowserTest, PRE_ForceTrials) {
 }
 
 IN_PROC_BROWSER_TEST_P(ForceFieldTrialsBrowserTest, ForceTrials) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(asvitkine): This test fails on Linux Chrome OS bots. Since it passes
   // on proper Chrome OS bots, and Linux Chrome OS is not an end user
   // configuration, disable there for now. Would be good to understand the
   // problem at some point, though. crbug.com/947132
   if (!base::SysInfo::IsRunningOnChromeOS())
     return;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Create twenty one-time randomized field trials. Note: Loop is 1-indexed so
   // that we get trial names from "_TestTrial_1" to "_TestTrial_20". Since they

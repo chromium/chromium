@@ -9,7 +9,6 @@
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_dom_activity_logger.h"
 #include "v8/include/v8-forward.h"
 
@@ -58,14 +57,12 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   void LogMethod(v8::Isolate* isolate,
                  v8::Local<v8::Context> context,
                  const blink::WebString& api_name,
-                 int argc,
-                 const v8::Local<v8::Value>* argv,
+                 base::span<const v8::Local<v8::Value>> args,
                  const blink::WebURL& url,
                  const blink::WebString& title) override;
   void LogEvent(blink::WebLocalFrame& frame,
                 const blink::WebString& event_name,
-                int argc,
-                const blink::WebString* argv,
+                base::span<const blink::WebString> args,
                 const blink::WebURL& url,
                 const blink::WebString& title) override;
 

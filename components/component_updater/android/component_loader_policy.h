@@ -43,10 +43,19 @@ enum class ComponentLoadResult {
   kMaxValue = kInvalidVersion,
 };
 
+inline constexpr char kManifestFileName[] = "manifest.json";
+inline constexpr char kMetadataFileName[] = "aw_extra_component_metadata.json";
+
+inline constexpr char kMetadataFileCohortIdKey[] = "cohortId";
+
+inline constexpr char kComponentsCrashKeyName[] = "crx-components";
+inline constexpr char kCohortHashCrashKeyName[] =
+    "crx-components-cohort-hashes";
+
 // Components should use `AndroidComponentLoaderPolicy` by defining a class that
 // implements the members of `ComponentLoaderPolicy`, and then registering a
 // `AndroidComponentLoaderPolicy` that has been constructed with an instance of
-// that class in an instance of embedded WebView or WebLayer with the Java
+// that class in an instance of embedded WebView with the Java
 // AndroidComponentLoaderPolicy. The `AndroidComponentLoaderPolicy` will fetch
 // the components files from the Android `ComponentsProviderService` and invoke
 // the callbacks defined in this class.
@@ -137,8 +146,10 @@ class AndroidComponentLoaderPolicy {
 
   std::string GetComponentId() const;
 
-  void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
-                        std::optional<base::Value::Dict> manifest);
+  void NotifyNewVersion(
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
+      std::pair<std::optional<base::Value::Dict>,
+                std::optional<base::Value::Dict>> component_files);
 
   void ComponentLoadFailedInternal(ComponentLoadResult error);
 

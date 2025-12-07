@@ -5,7 +5,7 @@
 // strings.m.js is generated when we enable it via UseStringsJs() in webUI
 // controller. When loading it, it will populate data such as localized strings
 // into |loadTimeData|.
-import './strings.m.js';
+import '/strings.m.js';
 import './parent_access_after.js';
 import './parent_access_before.js';
 import './parent_access_disabled.js';
@@ -15,7 +15,7 @@ import './parent_access_ui.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
+import type {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

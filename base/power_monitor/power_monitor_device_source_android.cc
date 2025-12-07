@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
+
+#include "base/android/scoped_java_ref.h"
+#include "base/power_monitor/energy_monitor_android.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/PowerMonitorReading_jni.h"
 #include "base/base_jni/PowerMonitor_jni.h"
 
 namespace base {
@@ -68,12 +72,30 @@ PowerThermalObserver::DeviceThermalState MapToDeviceThermalState(
 // Native implementation of PowerMonitor.java. Note: This will be invoked by
 // PowerMonitor.java shortly after startup to set the correct initial value for
 // "is on battery power."
-void JNI_PowerMonitor_OnBatteryChargingChanged(JNIEnv* env) {
+static void JNI_PowerMonitor_OnBatteryChargingChanged(JNIEnv* env) {
   ProcessPowerEventHelper(PowerMonitorSource::POWER_STATE_EVENT);
 }
 
-void JNI_PowerMonitor_OnThermalStatusChanged(JNIEnv* env, int thermal_status) {
+static void JNI_PowerMonitor_OnThermalStatusChanged(JNIEnv* env,
+                                                    int thermal_status) {
   ProcessThermalEventHelper(MapToDeviceThermalState(thermal_status));
+}
+
+int GetRemainingBatteryCapacity() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::android::Java_PowerMonitor_getRemainingBatteryCapacity(env);
+}
+
+std::vector<PowerMonitorReading> GetTotalEnergyConsumed() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::android::Java_PowerMonitor_getTotalEnergyConsumed(env);
+}
+
+PowerMonitorReading FromJavaPowerMonitorReading(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobject) {
+  return {Java_PowerMonitorReading_getConsumer(env, jobject),
+          Java_PowerMonitorReading_getTotalEnergy(env, jobject)};
 }
 
 // Note: Android does not have the concept of suspend / resume as it's known by
@@ -82,21 +104,22 @@ void JNI_PowerMonitor_OnThermalStatusChanged(JNIEnv* env, int thermal_status) {
 
 }  // namespace android
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::android::Java_PowerMonitor_isBatteryPower(env);
-}
-
-int PowerMonitorDeviceSource::GetRemainingBatteryCapacity() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::android::Java_PowerMonitor_getRemainingBatteryCapacity(env);
+  int battery_power =
+      base::android::Java_PowerMonitor_getBatteryPowerStatus(env);
+  return static_cast<PowerStateObserver::BatteryPowerStatus>(battery_power);
 }
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorDeviceSource::GetCurrentThermalState() {
+PowerMonitorDeviceSource::GetCurrentThermalState() const {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return android::MapToDeviceThermalState(
       android::Java_PowerMonitor_getCurrentThermalStatus(env));
 }
 
 }  // namespace base
+
+DEFINE_JNI(PowerMonitorReading)
+DEFINE_JNI(PowerMonitor)

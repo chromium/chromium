@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting expanded_state=1
+++++++android.view.View collection invisible item_count=3 row_count=3 column_count=1 selection_mode=1
+++++++++android.view.View clickable collection_item focusable selected interesting
+++++++++android.view.View clickable collection_item focusable invisible item_index=1 row_index=1
+++++++++android.view.View clickable collection_item focusable invisible item_index=2 row_index=2

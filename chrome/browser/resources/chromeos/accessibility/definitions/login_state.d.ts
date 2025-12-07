@@ -10,7 +10,7 @@
  * regenerate.
  */
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
+import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 declare global {
   export namespace chrome {
@@ -20,6 +20,7 @@ declare global {
       export enum ProfileType {
         SIGNIN_PROFILE = 'SIGNIN_PROFILE',
         USER_PROFILE = 'USER_PROFILE',
+        LOCK_PROFILE = 'LOCK_PROFILE',
       }
 
       export enum SessionState {

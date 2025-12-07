@@ -5,18 +5,17 @@
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill {
 
 // static
-AutofillImageFetcherImpl* AutofillImageFetcherFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AutofillImageFetcherImpl*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AutofillImageFetcherImpl* AutofillImageFetcherFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AutofillImageFetcherImpl>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -26,16 +25,15 @@ AutofillImageFetcherFactory* AutofillImageFetcherFactory::GetInstance() {
 }
 
 AutofillImageFetcherFactory::AutofillImageFetcherFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutofillImageFetcher",
-          BrowserStateDependencyManager::GetInstance()) {}
-AutofillImageFetcherFactory::~AutofillImageFetcherFactory() {}
+    : ProfileKeyedServiceFactoryIOS("AutofillImageFetcher") {}
+
+AutofillImageFetcherFactory::~AutofillImageFetcherFactory() = default;
 
 std::unique_ptr<KeyedService>
 AutofillImageFetcherFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<autofill::AutofillImageFetcherImpl>(
-      context->GetSharedURLLoaderFactory());
+      profile->GetSharedURLLoaderFactory());
 }
 
 }  // namespace autofill

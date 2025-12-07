@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -57,6 +58,7 @@ public class PaymentRequestPaymentAppsSortingTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @DisabledTest(message = "Flaky test, see crbug.com/441324330")
     public void testPaymentAppsSortingByFrecency() throws TimeoutException {
         // Install a payment app with Bob Pay and Alice Pay, and another payment app with Charlie
         // Pay.
@@ -96,7 +98,7 @@ public class PaymentRequestPaymentAppsSortingTest {
         PaymentPreferencesUtil.setPaymentAppUseCountForTest(charliePayId, 15);
         PaymentPreferencesUtil.setPaymentAppLastUseDate(charliePayId, 15);
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -123,7 +125,7 @@ public class PaymentRequestPaymentAppsSortingTest {
         PaymentPreferencesUtil.setPaymentAppUseCountForTest(alicePayId, 20);
         PaymentPreferencesUtil.setPaymentAppLastUseDate(alicePayId, 20);
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 

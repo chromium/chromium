@@ -14,13 +14,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.NativeTestServer;
@@ -39,13 +40,21 @@ public class CronetURLStreamHandlerFactoryTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private HttpURLConnection mUrlConnection;
+    private NativeTestServer mNativeTestServer;
+
+    @Before
+    public void setUp() throws Exception {
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
+    }
 
     @After
     public void tearDown() {
         if (mUrlConnection != null) {
             mUrlConnection.disconnect();
         }
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -58,14 +67,9 @@ public class CronetURLStreamHandlerFactoryTest {
     }
 
     public void internalSetUrlStreamFactoryUsesCronet() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
-
         URL.setURLStreamHandlerFactory(
                 mTestRule.getTestFramework().getEngine().createURLStreamHandlerFactory());
-        URL url = new URL(NativeTestServer.getEchoMethodURL());
+        URL url = new URL(mNativeTestServer.getEchoMethodURL());
         mUrlConnection = (HttpURLConnection) url.openConnection();
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
@@ -78,8 +82,8 @@ public class CronetURLStreamHandlerFactoryTest {
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason =
                     "URL#setURLStreamHandlerFactory can be called at most once during JVM lifetime."
-                            + " Running against both impls through CronetTestRule would violate that."
-                            + " Instead duplicate the test targets")
+                        + " Running against both impls through CronetTestRule would violate that."
+                        + " Instead duplicate the test targets")
     public void testSetUrlStreamFactoryUsesCronetForNative() throws Exception {
         internalSetUrlStreamFactoryUsesCronet();
     }
@@ -90,8 +94,8 @@ public class CronetURLStreamHandlerFactoryTest {
             implementations = {CronetImplementation.STATICALLY_LINKED},
             reason =
                     "URL#setURLStreamHandlerFactory can be called at most once during JVM lifetime."
-                            + " Running against both impls through CronetTestRule would violate that."
-                            + " Instead duplicate the test targets")
+                        + " Running against both impls through CronetTestRule would violate that."
+                        + " Instead duplicate the test targets")
     @RequiresMinAndroidApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSetUrlStreamFactoryUsesCronetForHttpEngine() throws Exception {
         internalSetUrlStreamFactoryUsesCronet();

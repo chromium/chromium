@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 
 #include <algorithm>
+#include <array>
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/bitrate.h"
 
@@ -77,11 +75,12 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncodingWithBitrates(
 
   // The same bitrate factors as the software encoder.
   // https://source.chromium.org/chromium/chromium/src/+/main:media/video/vpx_video_encoder.cc;l=131;drc=d383d0b3e4f76789a6de2a221c61d3531f4c59da
-  constexpr double kTemporalLayersBitrateScaleFactors[][kMaxTemporalLayers] = {
-      {1.00, 0.00, 0.00},  // For one temporal layer.
-      {0.60, 0.40, 0.00},  // For two temporal layers.
-      {0.50, 0.20, 0.30},  // For three temporal layers.
-  };
+  constexpr auto kTemporalLayersBitrateScaleFactors =
+      std::to_array<std::array<double, kMaxTemporalLayers>>({
+          {1.00, 0.00, 0.00},  // For one temporal layer.
+          {0.60, 0.40, 0.00},  // For two temporal layers.
+          {0.50, 0.20, 0.30},  // For three temporal layers.
+      });
 
   CHECK_GT(num_temporal_layers, 0u);
   CHECK_LE(num_temporal_layers, std::size(kTemporalLayersBitrateScaleFactors));
@@ -161,8 +160,7 @@ std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
     case 3:
       return {kFullAllocation / 4, kFullAllocation / 2, kFullAllocation};
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported temporal layers";
-      return {};
+      NOTREACHED() << "Unsupported temporal layers";
   }
 }
 
@@ -206,11 +204,12 @@ VideoBitrateAllocation AllocateDefaultBitrateForTesting(
     const size_t num_temporal_layers,
     const Bitrate& bitrate) {
   // Higher spatial layers (those to the right) get more bitrate.
-  constexpr double kSpatialLayersBitrateScaleFactors[][kMaxSpatialLayers] = {
-      {1.00, 0.00, 0.00},  // For one spatial layer.
-      {0.30, 0.70, 0.00},  // For two spatial layers.
-      {0.07, 0.23, 0.70},  // For three spatial layers.
-  };
+  constexpr auto kSpatialLayersBitrateScaleFactors =
+      std::to_array<std::array<double, kMaxSpatialLayers>>({
+          {1.00, 0.00, 0.00},  // For one spatial layer.
+          {0.30, 0.70, 0.00},  // For two spatial layers.
+          {0.07, 0.23, 0.70},  // For three spatial layers.
+      });
 
   CHECK_GT(num_spatial_layers, 0u);
   CHECK_LE(num_spatial_layers, std::size(kSpatialLayersBitrateScaleFactors));
@@ -229,6 +228,63 @@ VideoBitrateAllocation AllocateDefaultBitrateForTesting(
   if (use_vbr)
     allocation.SetPeakBps(bitrate.peak_bps());
   return allocation;
+}
+
+VideoBitrateAllocation BitrateToBitrateAllocation(const Bitrate& bitrate) {
+  VideoBitrateAllocation allocation(bitrate.mode());
+  switch (bitrate.mode()) {
+    case Bitrate::Mode::kVariable:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      allocation.SetPeakBps(bitrate.peak_bps());
+      break;
+    case Bitrate::Mode::kConstant:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      break;
+    case Bitrate::Mode::kExternal:
+      break;
+  }
+  return allocation;
+}
+
+VEAEncodingLatencyMetricsHelper::VEAEncodingLatencyMetricsHelper(
+    const std::string& uma_prefix,
+    VideoCodec codec)
+    : uma_name_(uma_prefix + GetCodecNameForUMA(codec)) {}
+
+VEAEncodingLatencyMetricsHelper::~VEAEncodingLatencyMetricsHelper() {
+  if (frame_count_ == 0) {
+    return;
+  }
+
+  base::UmaHistogramCounts1000(uma_name_, total_encode_time_ms_ / frame_count_);
+}
+
+void VEAEncodingLatencyMetricsHelper::EncodeOneFrame(
+    bool is_key_frame,
+    base::TimeDelta time_delta) {
+  const uint64_t delta_ms = time_delta.InMilliseconds();
+
+  if (!base::CheckAdd(total_encode_time_ms_, delta_ms).IsValid()) {
+    // If overflow happens, report the metrics and reset the counters.
+    // Use checked math to detect overflow when adding delta_ms to
+    // total_encode_time_ms_. This avoids manual limit arithmetic and is
+    // clearer about intent.
+    if (frame_count_ > 0) {
+      base::UmaHistogramCounts1000(uma_name_,
+                                   total_encode_time_ms_ / frame_count_);
+    }
+    frame_count_ = 0;
+    total_encode_time_ms_ = 0;
+  }
+
+  frame_count_++;
+  total_encode_time_ms_ += delta_ms;
+  if (is_key_frame) {
+    base::UmaHistogramCounts1000(uma_name_,
+                                 total_encode_time_ms_ / frame_count_);
+    frame_count_ = 0;
+    total_encode_time_ms_ = 0;
+  }
 }
 
 }  // namespace media

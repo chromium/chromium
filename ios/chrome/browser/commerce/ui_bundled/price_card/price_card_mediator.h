@@ -5,18 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
 
-#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_view.h"
-
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_data_source.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_view.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 namespace web {
 class WebState;
 }  // namespace web
 
 // Return data to power PriceCardView for a given WebState
-PriceCardItem* CreatePriceCardItem(web::WebState* web_state);
+void CreatePriceCardItem(web::WebState* web_state,
+                         base::OnceCallback<void(PriceCardItem*)> callback);
 // Return a WebState for a tab identifier, given the WebStateList
 web::WebState* GetWebState(WebStateList* webStateList, NSString* tab_id);
 

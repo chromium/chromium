@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/color_chooser_popup_ui_controller.h"
 
+#include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -82,6 +85,10 @@ AXObject* ColorChooserPopupUIController::RootAXObject(Element* popup_owner) {
   return popup_ ? popup_->RootAXObject(popup_owner) : nullptr;
 }
 
+bool ColorChooserPopupUIController::IsPickerVisible() const {
+  return popup_;
+}
+
 void ColorChooserPopupUIController::WriteDocument(SegmentedBuffer& data) {
   if (client_->ShouldShowSuggestions()) {
     WriteColorSuggestionPickerDocument(data);
@@ -92,6 +99,10 @@ void ColorChooserPopupUIController::WriteDocument(SegmentedBuffer& data) {
 
 void ColorChooserPopupUIController::WriteColorPickerDocument(
     SegmentedBuffer& data) {
+#if BUILDFLAG(IS_ANDROID)
+  // We don't create PagePopups on Android.
+  NOTREACHED() << "We should never reach PagePopupClient code on Android";
+#else
   gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreenDIPs(
       client_->ElementRectRelativeToLocalRoot(), frame_->View());
 
@@ -115,10 +126,6 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
 #if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
-  // We don't create PagePopups on Android, so these strings are excluded
-  // from blink_strings.grd on Android to save binary size.  We have to
-  // exclude them here as well to avoid an Android build break.
-#if !BUILDFLAG(IS_ANDROID)
   AddLocalizedProperty("axColorWellLabel", IDS_AX_COLOR_WELL, data);
   AddLocalizedProperty("axColorWellRoleDescription",
                        IDS_AX_COLOR_WELL_ROLEDESCRIPTION, data);
@@ -136,14 +143,12 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddLocalizedProperty("axFormatTogglerLabel", IDS_AX_COLOR_FORMAT_TOGGLER,
                        data);
   AddLocalizedProperty("axEyedropperLabel", IDS_AX_COLOR_EYEDROPPER, data);
-#else
-  CHECK(false) << "We should never reach PagePopupClient code on Android";
-#endif
   PagePopupClient::AddString("};\n", data);
   data.Append(ChooserResourceLoader::GetPickerCommonJS());
   data.Append(ChooserResourceLoader::GetColorPickerJS());
   data.Append(ChooserResourceLoader::GetColorPickerCommonJS());
   PagePopupClient::AddString("</script></body>\n", data);
+#endif
 }
 
 void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
@@ -198,7 +203,8 @@ Locale& ColorChooserPopupUIController::GetLocale() {
 
 void ColorChooserPopupUIController::SetValueAndClosePopup(
     int num_value,
-    const String& string_value) {
+    const String& string_value,
+    bool is_keyboard_event) {
   DCHECK(popup_);
   DCHECK(client_);
   if (num_value == kColorPickerPopupActionSetValue)
@@ -276,11 +282,11 @@ void ColorChooserPopupUIController::OpenEyeDropper() {
   frame_->GetBrowserInterfaceBroker().GetInterface(
       eye_dropper_chooser_.BindNewPipeAndPassReceiver(
           frame_->GetTaskRunner(TaskType::kUserInteraction)));
-  eye_dropper_chooser_.set_disconnect_handler(WTF::BindOnce(
+  eye_dropper_chooser_.set_disconnect_handler(BindOnce(
       &ColorChooserPopupUIController::EndChooser, WrapWeakPersistent(this)));
   eye_dropper_chooser_->Choose(
-      WTF::BindOnce(&ColorChooserPopupUIController::EyeDropperResponseHandler,
-                    WrapWeakPersistent(this)));
+      BindOnce(&ColorChooserPopupUIController::EyeDropperResponseHandler,
+               WrapWeakPersistent(this)));
 }
 
 void ColorChooserPopupUIController::AdjustSettings(Settings& popup_settings) {

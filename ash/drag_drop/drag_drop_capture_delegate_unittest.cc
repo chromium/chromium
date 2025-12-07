@@ -39,7 +39,8 @@ class DragDropCaptureDelegateTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     drag_drop_capture_delegate_.reset(new DragDropCaptureDelegate());
-    AshTestBase::SetUp(std::make_unique<TestShellDelegate>());
+    set_shell_delegate(std::make_unique<TestShellDelegate>());
+    AshTestBase::SetUp();
   }
 
   void TearDown() override {
@@ -96,8 +97,8 @@ class TestDragDelegate : public ToplevelWindowDragDelegate {
 TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow) {
   TestWindowDelegate source_window_delegate;
 
-  auto source_window = base::WrapUnique(CreateTestWindowInShellWithDelegate(
-      &source_window_delegate, -1, gfx::Rect(0, 0, 100, 100)));
+  auto source_window = base::WrapUnique(CreateTestWindowInShell(
+      {.delegate = &source_window_delegate, .bounds = {100, 100}}));
   source_window->Show();
   EXPECT_FALSE(source_window_delegate.touch_cancel_received);
 
@@ -124,8 +125,8 @@ TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow) {
 TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow2) {
   TestWindowDelegate source_window_delegate;
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &source_window_delegate, -1, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &source_window_delegate, .bounds = {100, 100}}));
 
   ui::test::EventGenerator generator(window->GetRootWindow(), window.get());
 
@@ -160,8 +161,8 @@ TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow2) {
 TEST_F(DragDropCaptureDelegateTest, ReleaseCapture) {
   TestWindowDelegate source_window_delegate;
 
-  auto source_window = base::WrapUnique(CreateTestWindowInShellWithDelegate(
-      &source_window_delegate, -1, gfx::Rect(0, 0, 100, 100)));
+  auto source_window = base::WrapUnique(CreateTestWindowInShell(
+      {.delegate = &source_window_delegate, .bounds = {100, 100}}));
   source_window->Show();
   EXPECT_FALSE(source_window_delegate.touch_cancel_received);
 

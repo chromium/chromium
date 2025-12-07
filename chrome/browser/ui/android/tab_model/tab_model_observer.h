@@ -31,11 +31,12 @@ class TabModelObserver {
   virtual void WillCloseTab(TabAndroid* tab);
 
   // Called right before a |tab| has been destroyed.
-  virtual void OnFinishingTabClosure(int tab_id, bool incognito);
+  virtual void OnFinishingTabClosure(TabAndroid* tab,
+                                     TabModel::TabClosingSource source);
 
   // Called right before all |tabs| are destroyed.
   virtual void OnFinishingMultipleTabClosure(
-      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,
+      const std::vector<TabAndroid*>& tabs,
       bool canRestore);
 
   // Called before a |tab| is added to the TabModel.
@@ -48,20 +49,20 @@ class TabModelObserver {
   // another.
   virtual void DidMoveTab(TabAndroid* tab, int new_index, int old_index);
 
-  // Called when a tab is pending closure (ie, the user has just closed it, but
-  // it can still be undone). At this point the |tab| has been removed from the
+  // Called when tabs are pending closure (ie, the user has just closed it, but
+  // it can still be undone). At this point the tabs have been removed from the
   // TabModel.
-  virtual void TabPendingClosure(TabAndroid* tab);
+  virtual void OnTabClosePending(const std::vector<TabAndroid*>& tabs,
+                                 TabModel::TabClosingSource source);
+
+  // Called when all |tabs| closure is undone.
+  virtual void OnTabCloseUndone(const std::vector<TabAndroid*>& tabs);
 
   // Called when a |tab| closure is undone.
   virtual void TabClosureUndone(TabAndroid* tab);
 
   // Called when a |tab| closure is committed and can't be undone anymore.
   virtual void TabClosureCommitted(TabAndroid* tab);
-
-  // Called when all |tabs| are pending closure.
-  virtual void AllTabsPendingClosure(
-      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
 
   // Called when an all tabs closure has been committed and can't be undone
   // anymore.

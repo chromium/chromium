@@ -11,27 +11,24 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class ExceptionState;
-class NavigatorBase;
+class ExecutionContext;
 class WebPrinter;
 
 class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
-                                          public Supplement<NavigatorBase> {
+                                          public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  // Getter for printing (available in the window global scope)
+  static WebPrintingManager* GetWebPrintingManager(ExecutionContext&);
 
-  // Getter for navigator.printing
-  static WebPrintingManager* GetWebPrintingManager(NavigatorBase&);
+  explicit WebPrintingManager(ExecutionContext*);
 
-  explicit WebPrintingManager(NavigatorBase&);
-
-  // navigator.printing.getPrinters()
+  // printing.getPrinters()
   ScriptPromise<IDLSequence<WebPrinter>> getPrinters(ScriptState*,
                                                      ExceptionState&);
 
@@ -43,6 +40,9 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
   void OnPrintersRetrieved(ScriptPromiseResolver<IDLSequence<WebPrinter>>*,
                            mojom::blink::GetPrintersResultPtr result);
 
+  ExecutionContext* GetExecutionContext();
+
+  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;
 };
 

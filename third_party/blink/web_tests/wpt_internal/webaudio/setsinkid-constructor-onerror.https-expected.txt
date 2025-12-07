@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] AudioContext constructor with an invalid sinkId
+  assert_equals: Sink ID expected "" but got "an-invalid-sink-id"
+Harness: the test ran to completion.
+

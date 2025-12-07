@@ -1,0 +1,8 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='x' restriction=disabled controlsIds=genericContainer
+++++++++genericContainer
+++++++++++staticText name='x'
+++++++++++++inlineTextBox name='x'
+++++++genericContainer

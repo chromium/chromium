@@ -14,14 +14,16 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/unguessable_token.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -56,10 +58,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   void ReleaseAllFrames() override;
   std::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
-  // Returns the original frame from a frame's shared memory ID. We need this
+  // Returns the original frame from a frame's tracking_token. We need this
   // method to determine whether the frame returned by GetFrame() is the same
   // one after recycling, and bind destruction callback at original frames.
-  FrameResource* GetOriginalFrame(gfx::GenericSharedMemoryId frame_id);
+  FrameResource* GetOriginalFrame(const base::UnguessableToken& tracking_token);
 
   // Returns the number of frames in the pool for testing purposes.
   size_t GetPoolSizeForTesting();
@@ -105,6 +107,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // The function used to allocate new frames.
   CreateFrameCB create_frame_cb_ GUARDED_BY(lock_);
 
+  // Used to guarantee that frames are produced with unique tracking tokens.
+  media::UniqueTrackingTokenHelper frame_tracking_token_helper_
+      GUARDED_BY(lock_);
+
   // The storage type that |create_frame_cb_| produces.
   VideoFrame::StorageType frame_storage_type_ GUARDED_BY(lock_);
 
@@ -119,9 +125,9 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // should be the same as |format_| and |coded_size_|.
   base::circular_deque<scoped_refptr<FrameResource>> free_frames_
       GUARDED_BY(lock_);
-  // Mapping from the frame's shared memory ID to the original frame.
-  std::map<gfx::GenericSharedMemoryId, FrameResource*> frames_in_use_
-      GUARDED_BY(lock_);
+  // Mapping from the frame's tracking token to the original frame.
+  std::map<base::UnguessableToken, raw_ptr<FrameResource, CtnExperimental>>
+      frames_in_use_ GUARDED_BY(lock_);
 
   // The maximum number of frames created by the pool.
   size_t max_num_frames_ GUARDED_BY(lock_) = 0;
@@ -130,7 +136,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   bool use_protected_ GUARDED_BY(lock_) = false;
 
   // True if we need to allocate GPU buffers in a way that is accessible from
-  // the CPU with a linear layout. Can only be set once per instance.
+  // the CPU with a linear layout. Can not be changed during Initialize() unless
+  // |use_protected| also changes.
   std::optional<bool> use_linear_buffers_ GUARDED_BY(lock_);
 
   // Callback which is called when the pool is not exhausted.

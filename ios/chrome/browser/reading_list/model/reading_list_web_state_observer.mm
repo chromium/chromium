@@ -13,7 +13,6 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -282,5 +281,3 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
   reading_list_model_->SetReadStatusIfExists(entry->URL(), true);
   UMA_HISTOGRAM_BOOLEAN("ReadingList.OfflineVersionDisplayed", true);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ReadingListWebStateObserver)

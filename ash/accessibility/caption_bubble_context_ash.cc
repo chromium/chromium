@@ -43,6 +43,10 @@ bool CaptionBubbleContextAsh::IsActivatable() const {
   return false;
 }
 
+bool CaptionBubbleContextAsh::ShouldAvoidOverlap() const {
+  return false;
+}
+
 std::unique_ptr<::captions::CaptionBubbleSessionObserver>
 CaptionBubbleContextAsh::GetCaptionBubbleSessionObserver() {
   return nullptr;

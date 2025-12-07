@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,9 +44,7 @@ namespace {
 class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
  public:
   explicit TestBackForwardMenuDelegate(base::OnceClosure quit_closure)
-      : was_icon_changed_called_(false),
-        was_menu_model_changed_called_(false),
-        quit_closure_(std::move(quit_closure)) {}
+      : quit_closure_(std::move(quit_closure)) {}
 
   TestBackForwardMenuDelegate(const TestBackForwardMenuDelegate&) = delete;
   TestBackForwardMenuDelegate& operator=(const TestBackForwardMenuDelegate&) =
@@ -67,8 +66,8 @@ class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
   }
 
  private:
-  bool was_icon_changed_called_;
-  bool was_menu_model_changed_called_;
+  bool was_icon_changed_called_ = false;
+  bool was_menu_model_changed_called_ = false;
   base::OnceClosure quit_closure_;
 };
 
@@ -92,17 +91,19 @@ class BackFwdMenuModelTest : public ChromeRenderViewHostTestHarness {
     size_t c = std::min(BackForwardMenuModel::kMaxChapterStops, chapter_stops);
     EXPECT_EQ(h, model->GetHistoryItemCount());
     EXPECT_EQ(c, model->GetChapterStopCount(h));
-    if (h > 0)
+    if (h > 0) {
       h += 2;  // Separator and View History link.
-    if (c > 0)
+    }
+    if (c > 0) {
       ++c;
+    }
     EXPECT_EQ(h + c, model->GetItemCount());
   }
 
   void LoadURLAndUpdateState(const char* url, const char* title) {
     NavigateAndCommit(GURL(url));
-    web_contents()->UpdateTitleForEntry(
-        controller().GetLastCommittedEntry(), base::UTF8ToUTF16(title));
+    web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                        base::UTF8ToUTF16(title));
   }
 
   // Navigate back or forward the given amount and commits the entry (which
@@ -165,8 +166,7 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
   EXPECT_EQ(0u, forward_model->GetItemCount());
   EXPECT_EQ(u"C2", back_model->GetLabelAt(0));
   EXPECT_EQ(u"A1", back_model->GetLabelAt(6));
-  EXPECT_EQ(back_model->GetShowFullHistoryLabel(),
-            back_model->GetLabelAt(8));
+  EXPECT_EQ(back_model->GetShowFullHistoryLabel(), back_model->GetLabelAt(8));
 
   EXPECT_TRUE(back_model->ItemHasCommand(0));
   EXPECT_TRUE(back_model->ItemHasCommand(6));
@@ -197,8 +197,7 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
   EXPECT_EQ(5u, forward_model->GetItemCount());
   EXPECT_EQ(u"B1", back_model->GetLabelAt(0));
   EXPECT_EQ(u"A1", back_model->GetLabelAt(3));
-  EXPECT_EQ(back_model->GetShowFullHistoryLabel(),
-            back_model->GetLabelAt(5));
+  EXPECT_EQ(back_model->GetShowFullHistoryLabel(), back_model->GetLabelAt(5));
   EXPECT_EQ(u"C1", forward_model->GetLabelAt(0));
   EXPECT_EQ(u"C3", forward_model->GetLabelAt(2));
   EXPECT_EQ(forward_model->GetShowFullHistoryLabel(),
@@ -259,17 +258,16 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
   EXPECT_EQ(0u, forward_model->GetItemCount());
   EXPECT_EQ(u"K1", back_model->GetLabelAt(0));
   EXPECT_EQ(back_model->GetShowFullHistoryLabel(),
-      back_model->GetLabelAt(BackForwardMenuModel::kMaxHistoryItems + 1 +
-                               chapter_stop_offset));
+            back_model->GetLabelAt(BackForwardMenuModel::kMaxHistoryItems + 1 +
+                                   chapter_stop_offset));
 
   // Test for out of bounds (beyond Show Full History).
   EXPECT_FALSE(back_model->ItemHasCommand(
       BackForwardMenuModel::kMaxHistoryItems + chapter_stop_offset + 2));
 
-  EXPECT_TRUE(back_model->ItemHasCommand(
-              BackForwardMenuModel::kMaxHistoryItems - 1));
-  EXPECT_TRUE(back_model->IsSeparator(
-              BackForwardMenuModel::kMaxHistoryItems));
+  EXPECT_TRUE(
+      back_model->ItemHasCommand(BackForwardMenuModel::kMaxHistoryItems - 1));
+  EXPECT_TRUE(back_model->IsSeparator(BackForwardMenuModel::kMaxHistoryItems));
 
   NavigateToIndex(0);
 
@@ -278,8 +276,8 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
   EXPECT_EQ(0u, back_model->GetItemCount());
   EXPECT_EQ(u"A2", forward_model->GetLabelAt(0));
   EXPECT_EQ(forward_model->GetShowFullHistoryLabel(),
-      forward_model->GetLabelAt(BackForwardMenuModel::kMaxHistoryItems + 1 +
-                                    chapter_stop_offset));
+            forward_model->GetLabelAt(BackForwardMenuModel::kMaxHistoryItems +
+                                      1 + chapter_stop_offset));
 
   // Out of bounds
   EXPECT_FALSE(forward_model->ItemHasCommand(
@@ -287,8 +285,8 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
 
   EXPECT_TRUE(forward_model->ItemHasCommand(
       BackForwardMenuModel::kMaxHistoryItems - 1));
-  EXPECT_TRUE(forward_model->IsSeparator(
-      BackForwardMenuModel::kMaxHistoryItems));
+  EXPECT_TRUE(
+      forward_model->IsSeparator(BackForwardMenuModel::kMaxHistoryItems));
 }
 
 TEST_F(BackFwdMenuModelTest, ChapterStops) {
@@ -421,13 +419,12 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   ValidateModel(forward_model.get(), BackForwardMenuModel::kMaxHistoryItems, 0);
   // Go forward (still no chapter stop)
   NavigationSimulator::GoForward(web_contents());
-  ValidateModel(forward_model.get(),
-                BackForwardMenuModel::kMaxHistoryItems - 1, 0);
+  ValidateModel(forward_model.get(), BackForwardMenuModel::kMaxHistoryItems - 1,
+                0);
   // Go back two (one chapter stop should show up)
   NavigationSimulator::GoBack(web_contents());
   NavigationSimulator::GoBack(web_contents());
-  ValidateModel(forward_model.get(),
-                BackForwardMenuModel::kMaxHistoryItems, 1);
+  ValidateModel(forward_model.get(), BackForwardMenuModel::kMaxHistoryItems, 1);
 
   // Go to beginning.
   NavigateToIndex(0);
@@ -445,7 +442,7 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   // Empty string indicates item is a separator.
   EXPECT_EQ(std::u16string(), forward_model->GetLabelAt(index + 1));
   EXPECT_EQ(forward_model->GetShowFullHistoryLabel(),
-      forward_model->GetLabelAt(index + 2));
+            forward_model->GetLabelAt(index + 2));
 
   // If we advance one we should still see the same chapter stop at the end.
   NavigationSimulator::GoForward(web_contents());
@@ -590,13 +587,13 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   SkBitmap valid_icon_bitmap = *valid_icon.GetImage().ToSkBitmap();
 
   // Verify we did not get the default favicon.
-  EXPECT_NE(
+  UNSAFE_TODO(EXPECT_NE(
       0, memcmp(default_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
-                default_icon_bitmap.computeByteSize()));
+                default_icon_bitmap.computeByteSize())));
   // Verify we did get the expected favicon.
-  EXPECT_EQ(0,
-            memcmp(new_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
-                   new_icon_bitmap.computeByteSize()));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(new_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
+                new_icon_bitmap.computeByteSize())));
 
   // Make sure the browser deconstructor doesn't have problems.
   browser->tab_strip_model()->CloseAllTabs();

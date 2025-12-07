@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/layout/flex/flex_layout_algorithm.h"
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -61,6 +65,733 @@ TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
   EXPECT_EQ(PhysicalSize(50, 22), fragment->Size());
   ASSERT_EQ(1u, fragment->Children().size());
   EXPECT_EQ(PhysicalSize(29, 22), fragment->Children()[0]->Size());
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapDecorationsOneLine) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+    #flexbox {
+      border: 2px dotted rgb(96 139 168);
+      display: flex;
+      column-gap: 20px;
+      row-gap: 10px;
+      row-rule-style: solid;
+      width: 170px;
+      flex-wrap: wrap;
+    }
+    .items {
+      background-color: rgb(96 139 168 / 0.2);
+      flex-shrink: 1;
+      height: 50px;
+    }
+
+    #item1 {
+      width: 50px;
+    }
+
+    #item2 {
+      width: 100px;
+    }
+    </style>
+    <div id="flexbox">
+      <div class="items" id="item1">One</div>
+      <div class="items" id="item2">Two</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(62), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kBoth)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 0);
+  EXPECT_EQ(column_gaps.size(), 1);
+
+  // No Main Gaps so we don't expect an inline start or end.
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(52));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapDecorationsBasic) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+    #flexbox {
+      border: 2px dotted rgb(96 139 168);
+      display: flex;
+      column-gap: 10px;
+      row-gap: 10px;
+      row-rule-style: solid;
+      width: 170px;
+      flex-wrap: wrap;
+    }
+    .items {
+      background-color: rgb(96 139 168 / 0.2);
+      flex-shrink: 1;
+      width: 50px;
+      height: 50px;
+    }
+    </style>
+    <div id="flexbox">
+      <div class="items">One</div>
+      <div class="items">Two</div>
+      <div class="items">Three</div>
+      <div class="items">Four</div>
+      <div class="items">Five</div>
+      <div class="items">Six</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */
+                                       nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(57))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1);
+  EXPECT_EQ(column_gaps.size(), 4);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(112));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapDecorationsContentEndPastContainer) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+
+    #flexbox>* {
+        background-color: rgb(96 139 168 / 0.2);
+    }
+
+    #flexbox {
+        border: 2px solid rgb(96 139 168);
+        border-width: 2px;
+        display: flex;
+        column-gap: 10px;
+        column-rule-style: solid;
+        column-rule-width: 10px;
+        column-rule-color: red;
+        width: 200px;
+        flex-wrap: nowrap;
+    }
+
+    .items {
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+    }
+</style>
+
+<div id="flexbox">
+    <div class="items">One</div>
+    <div class="items">Two</div>
+    <div class="items">Three</div>
+    <div class="items">Four</div>
+    <div class="items">Five</div>
+    <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(300), LayoutUnit(300)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */
+                                       nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  // The elements overflow, so the content end should be past the container end.
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(297));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(52));
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapDecorationsNonAlignedColumn) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  display: flex;
+  column-gap: 10px;
+  row-gap: 10px;
+  row-rule-style: solid;
+  width: 170px;
+  flex-wrap: wrap;
+}
+
+.items {
+  background-color: rgb(96 139 168 / 0.2);
+  flex-shrink: 1;
+  width: 50px;
+  height: 50px;
+}
+
+#spanner {
+  width: 100px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items" id="spanner">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+  <div class="items">Seven</div>
+  <div class="items">Eight</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(57)),
+                                             MainGap(LayoutUnit(117))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(107), LayoutUnit(57))),
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 2u);
+  EXPECT_EQ(column_gaps.size(), 5u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapDecorationsNonAlignedColumn2) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  display: flex;
+  column-gap: 10px;
+  row-gap: 10px;
+  row-rule-style: solid;
+  width: 170px;
+  flex-wrap: wrap;
+}
+
+.items {
+  background-color: rgb(96 139 168 / 0.2);
+  flex-shrink: 1;
+  width: 50px;
+  height: 50px;
+}
+
+#item4 {
+  width: 100px;
+}
+
+#item6 {
+  width: 160px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items" id="item4">Four</div>
+  <div class="items">Five</div>
+  <div id="item6" class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(57)),
+                                             MainGap(LayoutUnit(117))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(57), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(117), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(107), LayoutUnit(57)))};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 2u);
+  EXPECT_EQ(column_gaps.size(), 3u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(172));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapDecorationsVerticalFlexAlignedCenter) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+}
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  border-width: 4px 2px 2px 2px;
+  display: flex;
+  column-gap: 10px;
+  row-gap: 30px;
+  row-rule-style: solid;
+  height: 300px;
+  width: 300px;
+  flex-wrap: wrap;
+  align-content: center;
+  writing-mode: vertical-lr;
+}
+
+.items {
+  width: 70px;
+  height: 70px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(152))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(63)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(63)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1u);
+  EXPECT_EQ(column_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(4));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(304));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(63));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(241));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapDecorationsVerticalFlexAlignedStart) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+}
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  border-width: 4px 2px 2px 2px;
+  display: flex;
+  column-gap: 10px;
+  row-gap: 30px;
+  row-rule-style: solid;
+  height: 300px;
+  width: 300px;
+  flex-wrap: wrap;
+  align-content: start;
+  writing-mode: vertical-lr;
+}
+
+.items {
+  width: 70px;
+  height: 70px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(91))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(91)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(91)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1u);
+  EXPECT_EQ(column_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(4));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(304));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(180));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest,
+       GapDecorationsVerticalFlexAlignedStretch) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+body {
+    margin: 0px;
+}
+
+#flexbox > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+}
+#flexbox {
+  border: 2px dotted rgb(96 139 168);
+  border-width: 4px 2px 2px 2px;
+  display: flex;
+  column-gap: 10px;
+  row-gap: 30px;
+  row-rule-style: solid;
+  height: 300px;
+  width: 300px;
+  flex-wrap: wrap;
+  align-content: stretch;
+  writing-mode: vertical-lr;
+}
+
+.items {
+  width: 70px;
+  height: 70px;
+}
+</style>
+
+<div id="flexbox">
+  <div class="items">One</div>
+  <div class="items">Two</div>
+  <div class="items">Three</div>
+  <div class="items">Four</div>
+  <div class="items">Five</div>
+  <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(152))};
+  const Vector<CrossGap> expected_column_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(2)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(83), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(167), LayoutUnit(152)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(row_gaps.size(), 1u);
+  EXPECT_EQ(column_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(4));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(304));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(302));
+
+  VerifyMainGaps(expected_row_gaps, row_gaps);
+  VerifyCrossGaps(expected_column_gaps, column_gaps);
+}
+
+TEST_F(FlexLayoutAlgorithmTest, GapDecorationsColumnFlexDirection) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+
+    #flexbox {
+        border: 2px solid rgb(96 139 168);
+        display: flex;
+        column-gap: 20px;
+        row-gap: 10px;
+        width: 120px;
+        height: 170px;
+        flex-wrap: wrap;
+        flex-direction: column;
+        column-rule-style: solid;
+        column-rule-color: red;
+        column-rule-width: 10px;
+    }
+
+    .items {
+        background-color: rgb(96 139 168 / 0.2);
+        flex-shrink: 1;
+        width: 50px;
+        height: 50px;
+    }
+
+</style>
+
+<div id="flexbox">
+    <div class="items">One</div>
+    <div class="items">Two</div>
+    <div class="items">Three</div>
+    <div class="items">Four</div>
+    <div class="items">Five</div>
+    <div class="items">Six</div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_main_gaps = {MainGap(LayoutUnit(62))};
+  const Vector<CrossGap> expected_cross_gaps = {
+      CrossGap(LogicalOffset(LayoutUnit(2), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(2), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(62), LayoutUnit(57)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(62), LayoutUnit(117)),
+               CrossGap::EdgeIntersectionState::kEnd)};
+
+  const Vector<MainGap>& main_gaps = gap_geometry->GetMainGaps();
+  const Vector<CrossGap>& cross_gaps = gap_geometry->GetCrossGaps();
+  EXPECT_EQ(main_gaps.size(), 1u);
+  EXPECT_EQ(cross_gaps.size(), 4u);
+
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(122));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
+
+  VerifyMainGaps(expected_main_gaps, main_gaps);
+  VerifyCrossGaps(expected_cross_gaps, cross_gaps);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, DevtoolsBasic) {
@@ -249,547 +980,6 @@ TEST_F(FlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
 
   devtools = LayoutForDevtools();
   EXPECT_TRUE(devtools);
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUma1) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;" id=flexbox>
-      <div style="position: absolute; justify-self: stretch; align-self: flex-end; width:50px; height:50px;" id=item></div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  auto* flex = To<LayoutFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
-  LayoutObject* item = GetLayoutObjectByElementId("item");
-  ItemPosition pos = FlexibleBoxAlgorithm::AlignmentForChild(flex->StyleRef(),
-                                                             item->StyleRef());
-  ASSERT_EQ(pos, ItemPosition::kFlexEnd);
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaDifferent) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "justify and align are clearly different";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaDifferentButRow) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "justify and align are clearly different but we don't count row "
-         "flexboxes";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaBothCenter) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: center; align-self: center; "></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "justify and align are both center";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaEndFlexEnd) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: end; "></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "justify and align map to same even though specified differently";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaLeftEnd) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: left; align-self: end;"></div>
-    </div>
-  )HTML");
-  // current: top right
-  // proposed: top left
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaVerticalWritingMode) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px; writing-mode: vertical-rl;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end;"></div>
-    </div>
-  )HTML");
-  // current: left bottom
-  // proposed: left top
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaOrthogonalWritingMode) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: end; align-self: self-start; writing-mode: vertical-rl;"></div>
-    </div>
-  )HTML");
-  // current: right top
-  // proposed: right top
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
-}
-
-// column-reverse switches main-axis order (start placing items at block-end)
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaFlexEndReverseStart) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column-reverse; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: start;"></div>
-    </div>
-  )HTML");
-  // current: item is at bottom (b/c column-reverse) left (b/c start)
-  // proposed: item is at bottom (b/c column-reverse) right (b/c flex-end)
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
-}
-
-// wrap-reverse switches cross-axis order (of the lines)
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaFlexEndWrapReverse) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column wrap-reverse; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: start;"></div>
-    </div>
-  )HTML");
-  // current: item is at top left
-  // proposed: item is at top left
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "justify and align map to same even though specified differently";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaAlignItemsSame) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px; align-items: end;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: end;"></div>
-    </div>
-  )HTML");
-  // current: top right
-  // proposed: top right
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "align-items' default value for align-self is same as "
-         "justify-self";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaAlignItemsDifferent) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px; align-items: end;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: start;"></div>
-    </div>
-  )HTML");
-  // current: top right
-  // proposed: top left
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "align-items' default value for align-self differs from justify-self";
-}
-
-// These next 4 tests are disabled because we don't have a good way to compare
-// the abspos size to the static position rectangle. This means we overcount the
-// number of pages that will be changed by the abspos proposal in
-// https://github.com/w3c/csswg-drafts/issues/5843.
-
-TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUma0px) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column;">
-      <div style="position: absolute; justify-self: start; align-self: end;">
-      </div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "static pos rectangle and item are both 0px";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSize) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: relative; width: 80px;">
-      <div style="display: flex; flex-flow: column; width: 70px; height: 100px;">
-        <div style="position: absolute; justify-self: start; align-self: end; width: 80px; height: 50px;">
-        </div>
-      </div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "static pos rectangle is same size as item's margin box";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSizeWithMargin) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width: 70px; height: 100px;">
-      <div style="position: absolute; justify-self: start; align-self: end; margin: 25px 25px; height: 50px;">
-      </div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "static pos rectangle is same size as item's margin box";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, DISABLED_AbsPosUmaAutoInsetsSameSize) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:100px; justify-self: start; align-self: end; inset: 1px auto 1px auto"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "auto insets in the axis of same size means no change";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaNoAutoInsets) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end; inset: 1px 1px auto auto"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "justify and align are different but has non-auto insets";
-}
-
-TEST_F(FlexLayoutAlgorithmTest, AbsPosUmaAutoInsetsDifferentSize) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
-      <div style="position: absolute; height:100px; width:50px; justify-self: start; align-self: end; inset: 1px auto 1px auto"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
-      << "auto insets in the axis of different size means change";
-}
-
-// Current:  item is at top of container.
-// Proposed: item is at bottom of container.
-TEST_F(FlexLayoutAlgorithmTest, UseCounter1) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: flex-end; height: 50px">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter1b) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: flex-end; height: 50px; flex-wrap: wrap;">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: baseline; height: 50px">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2b) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px; align-content: end;">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2c) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px; align-content: end;">
-      <div style="height:20px; align-self: baseline;">other stuff</div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2d) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px; align-content: end;">
-      <div style="align-self: baseline;">other stuff</div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2e) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px; align-content: start;">
-      <div style="align-self: baseline;">other stuff</div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2f) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px; align-content: center;">
-      <div style="align-self: baseline;">other stuff</div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter2g) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px; align-content: end;">
-      <div style="align-self: baseline;">blah<br>blah</div>
-      <div style="align-self: baseline;">other stuff</div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter3) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: initial; height: 50px">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter4) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: stretch; height: 50px">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter5) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: flex-start; height: 50px">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter6) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; height: 50px">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter7) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: flex-end;">
-      <div style="height:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current:  item gets 50px height.
-// Proposed: item gets 0px height and abuts bottom edge of container.
-TEST_F(FlexLayoutAlgorithmTest, UseCounter9) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: flex-end; height: 50px;">
-      <div></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current:  item abuts left edge of container.
-// Proposed: item abuts right edge of container.
-TEST_F(FlexLayoutAlgorithmTest, UseCounter10) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end;">
-      <div style="width:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter11) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end;">
-      <div style="width:20px;"></div>
-      <div></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current:  items abut left edge of container.
-// Proposed: items abut right edge of container.
-TEST_F(FlexLayoutAlgorithmTest, UseCounter12) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end;">
-      <div style="width:20px;"></div>
-      <div style="width:20px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter14) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
-      <div style="align-self: flex-end"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
-      <div style="align-self: flex-end; width: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current: item at top
-// Proposed: item at bottom
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15b) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: end; height: 200px">
-      <div style="align-self: flex-start; height: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15c) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: end; height: 200px;">
-      <div style="height: 100px; align-self: self-end;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current: item at top
-// Proposed: item in center
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15d) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: space-around; height: 200px;">
-      <div style="height: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15e) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: space-around; height: 200px;">
-      <div style="height: 100px; align-self: center;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15f) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: space-between; height: 200px;">
-      <div style="height: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current: first item is on the top
-// Proposed: first item is on the bottom
-TEST_F(FlexLayoutAlgorithmTest, UseCounter15g) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: end; height: 200px;">
-      <div style="height: 100px; align-self: start"></div>
-      <div style="height: 100px; align-self: end"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current: item is on the right.
-// Proposed: item is on the left.
-TEST_F(FlexLayoutAlgorithmTest, UseCounter16) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-start; width: 200px">
-      <div style="align-self: flex-end; width: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current: first item's right edge abuts container's right edge
-//          second item is horizontally centered
-// Proposal: both abut container's right edge
-TEST_F(FlexLayoutAlgorithmTest, UseCounter17) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
-      <div style="align-self: flex-end; width: 100px;"></div>
-      <div style="align-self: center; width: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// Current: first item's bottom edge abuts container's bottom edge
-//          second item is vertically centered
-// Proposal: both abut container's bottom edge
-TEST_F(FlexLayoutAlgorithmTest, UseCounter18) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; align-content: flex-end; height: 200px">
-      <div style="align-self: flex-end; height: 100px;"></div>
-      <div style="align-self: center; height: 100px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
-}
-
-// This case has no behavior change but checking the used width of each item
-// against the flex container's width is too difficult without fully
-// implementing the new behavior.
-TEST_F(FlexLayoutAlgorithmTest, UseCounter19) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 20px">
-      <div style="width:20px;"></div>
-      <div style="width:10px;"></div>
-    </div>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFlexboxAlignSingleLineDifference));
 }
 
 }  // namespace

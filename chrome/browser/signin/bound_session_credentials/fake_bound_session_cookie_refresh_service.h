@@ -47,6 +47,7 @@ class FakeBoundSessionCookieRefreshService
       base::RepeatingClosure updated_callback) override {}
   void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) override {}
+  void StopCookieRotation(const BoundSessionKey& key) override {}
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

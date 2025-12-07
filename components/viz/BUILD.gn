@@ -17,9 +17,6 @@ if (is_ios && (skia_use_dawn || skia_use_metal)) {
 
 viz_test("viz_unittests") {
   configs = []
-  if (is_chromeos_lacros && is_chromeos_device) {
-    configs += [ "//build/lacros:optional_shared_libgcc" ]
-  }
 
   use_xvfb = use_xvfb_in_this_config
 
@@ -98,7 +95,7 @@ if (is_android) {
     # External code should depend on ":viz_java" instead.
     visibility = [ ":*" ]
     sources = [ "common/features.cc" ]
-    template = "common/java/src/org/chromium/components/viz/common/VizFeatures.java.tmpl"
+    class_name = "org.chromium.components.viz.common.VizFeatures"
   }
 
   android_library("viz_java") {

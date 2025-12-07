@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,14 +19,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -33,6 +37,58 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+class TestDragDropRequestHandler
+    : public enterprise_connectors::test::FakeClipboardRequestHandler {
+ public:
+  static std::unique_ptr<ClipboardRequestHandler> Create(
+      enterprise_connectors::test::FakeContentAnalysisDelegate* delegate,
+      enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
+      safe_browsing::BinaryUploadService* upload_service,
+      Profile* profile,
+      GURL url,
+      Type type,
+      enterprise_connectors::DeepScanAccessPoint access_point,
+      enterprise_connectors::ContentMetaData::CopiedTextSource clipboard_source,
+      std::string source_content_area_email,
+      std::string content_transfer_method,
+      std::string data,
+      CompletionCallback callback) {
+    auto handler = base::WrapUnique(new TestDragDropRequestHandler(
+        content_analysis_info, upload_service, profile, std::move(url), type,
+        access_point, std::move(clipboard_source),
+        std::move(source_content_area_email),
+        std::move(content_transfer_method), std::move(data),
+        std::move(callback)));
+    handler->delegate_ = delegate;
+    return handler;
+  }
+
+ protected:
+  using FakeClipboardRequestHandler::FakeClipboardRequestHandler;
+
+ private:
+  void UploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::ClipboardAnalysisRequest> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
+
+    safe_browsing::BinaryUploadService::Request::Data data;
+    request->GetRequestData(base::BindLambdaForTesting(
+        [&data](enterprise_connectors::ScanRequestUploadResult,
+                safe_browsing::BinaryUploadService::Request::Data data_arg) {
+          data = std::move(data_arg);
+        }));
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TestDragDropRequestHandler::OnContentAnalysisResponse,
+                       base::Unretained(this),
+                       enterprise_connectors::ScanRequestUploadResult::kSuccess,
+                       delegate_->GetStatus(data.contents, base::FilePath())));
+  }
+};
 
 class DragDropTestContentAnalysisDelegate
     : public enterprise_connectors::test::FakeContentAnalysisDelegate {
@@ -65,32 +121,15 @@ class DragDropTestContentAnalysisDelegate
             base::BindRepeating(&DragDropTestContentAnalysisDelegate::
                                     FakeUploadFileForDeepScanning,
                                 base::Unretained(ret.get()))));
+    enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(TestDragDropRequestHandler::Create,
+                            base::Unretained(ret.get())));
     return ret;
   }
 
  private:
-  void UploadTextForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override {
-    ASSERT_EQ(request->reason(),
-              enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
-
-    enterprise_connectors::test::FakeContentAnalysisDelegate::
-        UploadTextForDeepScanning(std::move(request));
-  }
-
-  void UploadImageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override {
-    ASSERT_EQ(request->reason(),
-              enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
-
-    enterprise_connectors::test::FakeContentAnalysisDelegate::
-        UploadImageForDeepScanning(std::move(request));
-  }
-
   void FakeUploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       enterprise_connectors::test::FakeFilesRequestHandler::
@@ -222,7 +261,13 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
                   EXPECT_TRUE(successful_file_paths.count(filename.path));
                 }
                 if (successful_text_scan) {
-                  EXPECT_EQ(result_data->url_title, data.url_title);
+                  if (data.url_infos.empty()) {
+                    EXPECT_TRUE(result_data->url_infos.empty());
+                  } else {
+                    ASSERT_FALSE(result_data->url_infos.empty());
+                    EXPECT_EQ(result_data->url_infos.front().title,
+                              data.url_infos.front().title);
+                  }
                   EXPECT_EQ(result_data->text, data.text);
                   EXPECT_EQ(result_data->html, data.html);
                 }
@@ -312,7 +357,8 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
 TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   content::DropData data;
   data.document_is_handling_drag = true;
-  data.url_title = base::UTF8ToUTF16(large_text());
+  data.url_infos = {ui::ClipboardUrlInfo(GURL("https://example.com"),
+                                         base::UTF8ToUTF16(large_text()))};
 
   SetExpectedRequestsCount(0);
   RunTest(data, /*enable=*/false, /*successful_text_scan=*/true,
@@ -324,7 +370,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/true,
           /*successful_file_paths*/ {});
 
-  data.url_title = base::UTF8ToUTF16(small_text());
+  data.url_infos.front().title = base::UTF8ToUTF16(small_text());
   SetExpectedRequestsCount(0);
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/true,
           /*successful_file_paths*/ {});
@@ -388,8 +434,8 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
   ASSERT_TRUE(file_1.IsValid());
   ASSERT_TRUE(file_2.IsValid());
 
-  file_1.WriteAtCurrentPos("foo content", 11);
-  file_2.WriteAtCurrentPos("bar content", 11);
+  file_1.WriteAtCurrentPos(base::byte_span_from_cstring("foo content"));
+  file_2.WriteAtCurrentPos(base::byte_span_from_cstring("bar content"));
 
   content::DropData data;
   data.document_is_handling_drag = true;
@@ -436,7 +482,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
   for (const auto& path : {path_1, path_2, path_3, path_4, path_5}) {
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(file.IsValid());
-    file.WriteAtCurrentPos("foo content", 11);
+    file.WriteAtCurrentPos(base::byte_span_from_cstring("foo content"));
   }
 
   content::DropData data;

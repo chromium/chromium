@@ -1,0 +1,154 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("file_system_access") {
+  sources = [
+    "chrome_file_system_access_permission_context.h",
+    "file_system_access_features.h",
+    "file_system_access_permission_context_factory.h",
+    "file_system_access_permission_request_manager.h",
+    "file_system_access_tab_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/permissions",
+    "//chrome/browser/profiles:profile",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/common:files_scan_data",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+  if (!is_android) {
+    public_deps += [
+      "//chrome/browser/web_applications",
+      "//components/permissions",
+      "//components/permissions:permissions_common",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_file_system_access_permission_context.cc",
+    "file_system_access_features.cc",
+    "file_system_access_permission_context_factory.cc",
+    "file_system_access_permission_request_manager.cc",
+    "file_system_access_tab_helper.cc",
+  ]
+  deps = [
+    ":file_system_access",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/file_system_access",
+    "//components/content_settings/core/browser",
+    "//components/guest_view/buildflags",
+    "//components/pdf/common:util",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  } else {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
+
+  if (enable_platform_apps) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "chrome_file_system_access_permission_context_browsertest.cc",
+      "file_system_access_picker_requires_user_gesture_browsertest.cc",
+      "file_system_access_tab_helper_browsertest.cc",
+      "file_system_file_handle_browsertest.cc",
+      "file_system_observer_browsertest.cc",
+    ]
+
+    deps = [
+      ":file_system_access",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/browser:cookie_settings",
+      "//components/content_settings/core/common",
+      "//components/permissions",
+      "//components/permissions:permissions_common",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:common_constants",
+      "//components/policy/core/common:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//ui/shell_dialogs",
+      "//url",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/apps/app_service" ]
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_file_system_access_permission_context_unittest.cc" ]
+  deps = [
+    ":file_system_access",
+    "//base/test:test_support",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//ui/shell_dialogs",
+    "//ui/webui",
+  ]
+
+  if (enterprise_cloud_content_analysis) {
+    deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+  }
+
+  if (!is_android) {
+    deps +=
+        [ "//chrome/browser/web_applications:web_applications_test_support" ]
+  }
+}

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/image_writer_private/write_from_url_operation.h"
 
 #include <utility>
@@ -15,6 +10,8 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "crypto/obsolete/md5.h"
 
 namespace extensions {
 namespace image_writer {
@@ -207,12 +205,10 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, DownloadFile) {
 }
 
 TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
-  base::HeapArray<char> char_buffer =
-      base::HeapArray<char>::Uninit(kTestFileSize);
-  base::ReadFile(test_utils_.GetImagePath(), char_buffer);
-  base::MD5Digest expected_digest;
-  base::MD5Sum(base::as_bytes(char_buffer.as_span()), &expected_digest);
-  std::string expected_hash = base::MD5DigestToBase16(expected_digest);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(kTestFileSize);
+  base::ReadFile(test_utils_.GetImagePath(), buffer);
+  std::string expected_hash = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(buffer.as_span()));
 
   scoped_refptr<WriteFromUrlOperationForTest> operation =
       CreateOperation(GURL(""), expected_hash);

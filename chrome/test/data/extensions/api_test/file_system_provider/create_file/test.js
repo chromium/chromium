@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -34,13 +36,13 @@ var TESTING_NEW_FILE = Object.freeze({
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
   chrome.fileSystemProvider.onCreateFileRequested.addListener(
-      test_util.onCreateFileRequested);
+      testUtil.onCreateFileRequested);
 
-  test_util.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
+  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -50,7 +52,7 @@ function runTests() {
   chrome.test.runTests([
     // Create a file which doesn't exist. Should succeed.
     function createFileSuccessSimple() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_NEW_FILE.name, {create: true},
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_NEW_FILE.name, entry.name);
@@ -62,7 +64,7 @@ function runTests() {
 
     // Create a file which exists, non-exclusively. Should succeed.
     function createFileOrOpenSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name, {create: true, exclusive: false},
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_FILE.name, entry.name);
@@ -74,7 +76,7 @@ function runTests() {
 
     // Create a file which exists, exclusively. Should fail.
     function createFileExistsError() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name, {create: true, exclusive: true},
           function(entry) {
             chrome.test.fail('Created a file, but should fail.');
@@ -85,5 +87,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

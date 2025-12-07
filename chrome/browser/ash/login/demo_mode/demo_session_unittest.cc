@@ -13,36 +13,40 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -75,11 +79,14 @@ class DemoSessionTest : public testing::Test {
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
     InitializeComponentManager();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
     // TODO(b/321321392): Test loading growth campaigns at session start.
     scoped_feature_list_.InitAndDisableFeature(
         ash::features::kGrowthCampaignsInDemoMode);
@@ -89,6 +96,7 @@ class DemoSessionTest : public testing::Test {
     DemoSession::ShutDownIfInitialized();
     DemoSession::ResetDemoConfigForTesting();
 
+    browser_controller_.reset();
     wallpaper_controller_client_.reset();
     ConciergeClient::Shutdown();
 
@@ -123,7 +131,7 @@ class DemoSessionTest : public testing::Test {
   // Creates a dummy demo user with a testing profile and logs in.
   TestingProfile* LoginDemoUser() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
+        AccountId::FromUserEmailGaiaId("demo@test.com", GaiaId("demo_user")));
     fake_user_manager_->AddPublicAccountUser(account_id);
 
     auto prefs =
@@ -146,9 +154,11 @@ class DemoSessionTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  base::UserActionTester user_action_tester_;
 
  private:
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
+  std::unique_ptr<BrowserControllerImpl> browser_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -174,6 +184,26 @@ TEST_F(DemoSessionTest, ShutdownResetsInstance) {
   EXPECT_TRUE(DemoSession::Get());
   DemoSession::ShutDownIfInitialized();
   EXPECT_FALSE(DemoSession::Get());
+}
+
+TEST_F(DemoSessionTest, LoginDemoSession) {
+  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
+  ASSERT_TRUE(demo_session);
+  // There should be no user action DemoMode.DemoSessionStarts reported
+  // before the user login
+  EXPECT_EQ(0,
+            user_action_tester_.GetActionCount("DemoMode.DemoSessionStarts"));
+
+  LoginDemoUser();
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("DemoMode.DemoSessionStarts"));
+}
+
+TEST_F(DemoSessionTest, CannotLockScreen) {
+  ASSERT_TRUE(DemoSession::StartIfInDemoMode());
+  EXPECT_TRUE(DemoSession::Get());
+  EXPECT_FALSE(SessionControllerClientImpl::CanLockScreen());
 }
 
 TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {

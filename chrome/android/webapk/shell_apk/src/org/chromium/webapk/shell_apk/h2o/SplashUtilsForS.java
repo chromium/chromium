@@ -4,6 +4,7 @@
 
 package org.chromium.webapk.shell_apk.h2o;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.webapk.shell_apk.h2o.SplashUtils.createScaledBitmapAndCanvas;
 
 import android.app.Activity;
@@ -22,10 +23,12 @@ import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.WebApkUtils;
 
 /** Contains splash screen related utility methods that require Android S APIs. */
+@NullMarked
 class SplashUtilsForS {
     private SplashUtilsForS() {}
 
@@ -57,7 +60,7 @@ class SplashUtilsForS {
                             Bitmap bitmap =
                                     screenshotSplashScreenView(
                                             splashView,
-                                            splashView.getIconView(),
+                                            assertNonNull(splashView.getIconView()),
                                             systemBarInsets,
                                             backgroundColor,
                                             SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
@@ -77,7 +80,6 @@ class SplashUtilsForS {
      * Activity bounds, so to make sure that the screen doesn't change between the shell and Chrome,
      * we provide a screenshot without the areas normally covered by the status and navigation bar.
      */
-    @RequiresApi(api = VERSION_CODES.Q)
     private static Bitmap screenshotSplashScreenView(
             View splashView, View iconView, Insets insets, int backgroundColor, int maxSizeBytes) {
         int width = splashView.getWidth() - insets.right - insets.left;
@@ -115,7 +117,6 @@ class SplashUtilsForS {
      * approximation of the Android S splash screen instead (which is good enough since the user
      * will never see them side by side).
      */
-    @RequiresApi(api = VERSION_CODES.O)
     static View createSplashView(Context context) {
         View view = LayoutInflater.from(context).inflate(R.layout.splash_screen_view, null);
         if (WebApkUtils.isSplashIconAdaptive(context)) {

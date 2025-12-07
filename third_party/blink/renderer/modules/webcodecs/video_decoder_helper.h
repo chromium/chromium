@@ -54,8 +54,7 @@ class MODULES_EXPORT VideoDecoderHelper {
   // via |status_out|.
   static std::unique_ptr<VideoDecoderHelper> Create(
       media::VideoType video_type,
-      const uint8_t* configuration_record,
-      int configuration_record_size,
+      base::span<const uint8_t> configuration_record,
       Status* status_out);
 
   // Calculates needed buffer size for the bitstream converted into bytestream.
@@ -65,12 +64,15 @@ class MODULES_EXPORT VideoDecoderHelper {
   //     Pointer to buffer containing NAL units in MP4 format.
   //   input_size
   //     Size of the buffer in bytes.
+  //   is_first_chunk
+  //     True if this chunk is the first in the stream (follows a configure() or
+  //     a flush()).
   // Returns
   //   Required buffer size for the output NAL unit buffer when converted to
   //   bytestream format, or 0 if could not determine the size of the output
   //   buffer from the data in |input|.
-  uint32_t CalculateNeededOutputBufferSize(const uint8_t* input,
-                                           uint32_t input_size) const;
+  uint32_t CalculateNeededOutputBufferSize(base::span<const uint8_t> input,
+                                           bool is_first_chunk) const;
 
   // ConvertNalUnitStreamToByteStream converts the NAL unit from MP4 format
   // to bytestream format. Client is responsible for making sure the output
@@ -87,19 +89,28 @@ class MODULES_EXPORT VideoDecoderHelper {
   //   output_size (i/o)
   //     Pointer to the size of the output buffer. Will contain the number of
   //     bytes written to output after successful call.
+  //   is_first_chunk
+  //     True if this chunk is the first in the stream (follows a configure() or
+  //     a flush()).
   //
   // Returns
   //    kSucceed  if successful conversion
   //    kBitstreamConvertFailed if conversion not successful (output_size will
   //    hold the amount of converted data)
-  Status ConvertNalUnitStreamToByteStream(const uint8_t* input,
-                                          uint32_t input_size,
-                                          uint8_t* output,
-                                          uint32_t* output_size);
+  Status ConvertNalUnitStreamToByteStream(base::span<const uint8_t> input,
+                                          base::span<uint8_t> output,
+                                          uint32_t* output_size,
+                                          bool is_first_chunk);
+
+  // Returns true if the configuration data suggests that hardware decoding is
+  // unavailable for this type of content (e.g., interlacing).
+  bool RequiresSoftwareDecoder() const { return requires_software_decoder_; }
 
  private:
-  Status Initialize(const uint8_t* configuration_record,
-                    int configuration_record_size);
+  Status Initialize(base::span<const uint8_t> configuration_record);
+
+  bool requires_software_decoder_ = false;
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter_;
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_PASSWORDS_ALL_PASSWORDS_BOTTOM_SHEET_VIEW_H_
 #define CHROME_BROWSER_UI_ANDROID_PASSWORDS_ALL_PASSWORDS_BOTTOM_SHEET_VIEW_H_
 
+#include <memory>
+#include <vector>
+
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 
 namespace password_manager {

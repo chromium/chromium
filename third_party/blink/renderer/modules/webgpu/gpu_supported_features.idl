@@ -5,26 +5,33 @@
 // https://gpuweb.github.io/gpuweb/
 
 enum GPUFeatureName {
+    "core-features-and-limits",
     "depth-clip-control",
     "depth32float-stencil8",
     "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
     "texture-compression-etc2",
     "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
     "timestamp-query",
     "indirect-first-instance",
     "shader-f16",
     "rg11b10ufloat-renderable",
     "bgra8unorm-storage",
     "float32-filterable",
+    "float32-blendable",
+    "clip-distances",
+    "dual-source-blending",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "primitive-index",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",
-    "chromium-experimental-subgroups",
-    "chromium-experimental-subgroup-uniform-control-flow",
-    "dual-source-blending",
-    // Currently subgroups features are under OT.
-    "subgroups",
-    "subgroups-f16",
+    "chromium-experimental-multi-draw-indirect",
+    "chromium-experimental-subgroup-matrix",
 };
 
 [

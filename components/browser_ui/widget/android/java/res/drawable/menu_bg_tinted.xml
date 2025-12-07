@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- LINT.IfChange -->
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/menu_bg_shadow"/>
+    <item android:drawable="@drawable/menu_bg_shape"/>
+</layer-list>
+<!-- LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml) -->

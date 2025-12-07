@@ -1,0 +1,49 @@
+This is a testharness.js-based test.
+[FAIL] new Notification(): Setup
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'Notification': Actions are only supported for persistent notifications shown using ServiceWorkerRegistration.showNotification()."
+[FAIL] new Notification(): Attribute exists with expected value: title
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'title')"
+[FAIL] new Notification(): Attribute exists with expected value: dir
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'dir')"
+[FAIL] new Notification(): Attribute exists with expected value: lang
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'lang')"
+[FAIL] new Notification(): Attribute exists with expected value: body
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'body')"
+[FAIL] new Notification(): Attribute exists with expected value: tag
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'tag')"
+[FAIL] new Notification(): Attribute exists with expected value: icon
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'icon')"
+[FAIL] new Notification(): Attribute exists with expected value: requireInteraction
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'requireInteraction')"
+[FAIL] new Notification(): Attribute exists with expected value: silent
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'silent')"
+[FAIL] new Notification(): Attribute exists with expected value: data
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'data')"
+[FAIL] new Notification(): Attribute exists with expected value: actions
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'actions')"
+[FAIL] getNotifications(): Attribute exists with expected value: actions
+  assert_object_equals: unexpected property "icon"
+[FAIL] notificationclose: Setup
+  assert_equals: The list should include one notification expected 1 but got 0
+[FAIL] notificationclose: Attribute exists with expected value: title
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'title')"
+[FAIL] notificationclose: Attribute exists with expected value: dir
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'dir')"
+[FAIL] notificationclose: Attribute exists with expected value: lang
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'lang')"
+[FAIL] notificationclose: Attribute exists with expected value: body
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'body')"
+[FAIL] notificationclose: Attribute exists with expected value: tag
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'tag')"
+[FAIL] notificationclose: Attribute exists with expected value: icon
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'icon')"
+[FAIL] notificationclose: Attribute exists with expected value: requireInteraction
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'requireInteraction')"
+[FAIL] notificationclose: Attribute exists with expected value: silent
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'silent')"
+[FAIL] notificationclose: Attribute exists with expected value: data
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'data')"
+[FAIL] notificationclose: Attribute exists with expected value: actions
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'actions')"
+Harness: the test ran to completion.
+

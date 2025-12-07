@@ -9,25 +9,20 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
+#include "base/types/expected_macros.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/utility/importer/bookmark_html_reader.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/url_formatter/url_fixer.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/common/importer_data_types.h"
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 #include "content/public/common/url_constants.h"
-
-namespace {
-
-bool IsImporterCancelled(BookmarksFileImporter* importer) {
-  return importer->cancelled();
-}
-
-}  // namespace
 
 namespace internal {
 
@@ -55,7 +50,7 @@ bool CanImportURL(const GURL& url) {
   // that we support.
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(url::kAboutScheme)) {
-    if (url.host_piece() == chrome::kChromeUIAboutHost) {
+    if (url.host() == chrome::kChromeUIAboutHost) {
       return true;
     }
 
@@ -67,7 +62,7 @@ bool CanImportURL(const GURL& url) {
       }
     }
 
-    if (base::Contains(chrome::ChromeDebugURLs(), fixed_url)) {
+    if (base::Contains(chrome::ChromeDebugURLs(), fixed_url.spec())) {
       return true;
     }
 
@@ -83,40 +78,47 @@ bool CanImportURL(const GURL& url) {
 
 }  // namespace internal
 
-BookmarksFileImporter::BookmarksFileImporter() {}
+BookmarksFileImporter::BookmarksFileImporter() = default;
 
-BookmarksFileImporter::~BookmarksFileImporter() {}
+BookmarksFileImporter::~BookmarksFileImporter() = default;
 
 void BookmarksFileImporter::StartImport(
-    const importer::SourceProfile& source_profile,
+    const user_data_importer::SourceProfile& source_profile,
     uint16_t items,
     ImporterBridge* bridge) {
   // The only thing this importer can import is a bookmarks file, aka
   // "favorites".
-  DCHECK_EQ(importer::FAVORITES, items);
+  DCHECK_EQ(user_data_importer::FAVORITES, items);
+  bridge_ = bridge;
 
   bridge->NotifyStarted();
-  bridge->NotifyItemStarted(importer::FAVORITES);
+  bridge->NotifyItemStarted(user_data_importer::FAVORITES);
 
-  std::vector<ImportedBookmarkEntry> bookmarks;
-  std::vector<importer::SearchEngineInfo> search_engines;
-  favicon_base::FaviconUsageDataList favicons;
+  std::string raw_html;
 
-  bookmark_html_reader::ImportBookmarksFile(
-      base::BindRepeating(IsImporterCancelled, base::Unretained(this)),
-      base::BindRepeating(internal::CanImportURL), source_profile.source_path,
-      &bookmarks, &search_engines, &favicons);
+  // ReadFileToString can return false, but still populate something into
+  // `raw_html`. In that case, try to recover as much data as possible.
+  base::ReadFileToString(source_profile.source_path, &raw_html);
+  user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks =
+      user_data_importer::ParseBookmarksUnsafe(raw_html);
 
-  if (!bookmarks.empty() && !cancelled()) {
+  if (!parsed_bookmarks.bookmarks.empty()) {
     std::u16string first_folder_name =
-        bridge->GetLocalizedString(IDS_BOOKMARK_GROUP);
-    bridge->AddBookmarks(bookmarks, first_folder_name);
-  }
-  if (!search_engines.empty())
-    bridge->SetKeywords(search_engines, false);
-  if (!favicons.empty())
-    bridge->SetFavicons(favicons);
+        bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP);
+    std::erase_if(parsed_bookmarks.bookmarks,
+                  [](user_data_importer::ImportedBookmarkEntry bookmark) {
+                    return !internal::CanImportURL(bookmark.url);
+                  });
 
-  bridge->NotifyItemEnded(importer::FAVORITES);
-  bridge->NotifyEnded();
+    bridge_->AddBookmarks(parsed_bookmarks.bookmarks, first_folder_name);
+  }
+  if (!parsed_bookmarks.search_engines.empty()) {
+    bridge_->SetKeywords(parsed_bookmarks.search_engines, false);
+  }
+  if (!parsed_bookmarks.favicons.empty()) {
+    bridge_->SetFavicons(parsed_bookmarks.favicons);
+  }
+
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  bridge_->NotifyEnded();
 }

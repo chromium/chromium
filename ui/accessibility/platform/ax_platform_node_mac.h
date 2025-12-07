@@ -19,7 +19,6 @@ namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeMac
     : public AXPlatformNodeBase {
  public:
-  ~AXPlatformNodeMac() override;
   AXPlatformNodeMac(const AXPlatformNodeMac&) = delete;
   AXPlatformNodeMac& operator=(const AXPlatformNodeMac&) = delete;
 
@@ -39,14 +38,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeMac
 
  protected:
   AXPlatformNodeMac();
+  ~AXPlatformNodeMac() override;
 
   void AddAttributeToList(const char* name,
                           const char* value,
                           PlatformAttributeList* attributes) override;
 
  private:
-  friend AXPlatformNode* AXPlatformNode::Create(
-      AXPlatformNodeDelegate* delegate);
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
+      AXPlatformNodeDelegate& delegate);
 
   struct ObjCStorage;
   std::unique_ptr<ObjCStorage> objc_storage_;

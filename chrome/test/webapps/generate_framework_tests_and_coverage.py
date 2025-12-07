@@ -224,7 +224,8 @@ def main(argv=None):
     default_tests_location = os.path.join(script_dir, "..", "..", "browser",
                                           "ui", "views", "web_apps")
     sync_tests_location = os.path.join(script_dir, "..", "..", "browser",
-                                       "sync", "test", "integration")
+                                       "sync", "test", "integration",
+                                       "web_apps")
 
     # These describe where existing browsertests are to be found, and where the
     # script runner will be directed to write tests to.

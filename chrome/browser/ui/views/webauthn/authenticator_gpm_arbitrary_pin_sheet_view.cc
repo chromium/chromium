@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 AuthenticatorGPMArbitraryPinSheetView::AuthenticatorGPMArbitraryPinSheetView(
     std::unique_ptr<AuthenticatorGpmArbitraryPinSheetModel> sheet_model)
@@ -41,6 +43,14 @@ AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
       ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 
+int AuthenticatorGPMArbitraryPinSheetView::
+    GetSpacingBetweenTitleAndDescription() {
+  return kWebAuthnGpmDialogSpacingBetweenTitleAndDescription;
+}
+
 void AuthenticatorGPMArbitraryPinSheetView::OnPinChanged(std::u16string pin) {
   gpm_arbitrary_pin_sheet_model()->SetPin(std::move(pin));
 }
+
+BEGIN_METADATA(AuthenticatorGPMArbitraryPinSheetView)
+END_METADATA

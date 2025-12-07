@@ -8,17 +8,13 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 
 class GURL;
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace safe_browsing {
 struct ThreatMetadata;
@@ -28,7 +24,7 @@ namespace subresource_filter {
 
 class SubresourceFilterSafeBrowsingClient;
 
-// This class is scoped to a single database check, and it lives on the IO
+// This class is scoped to a single database check, and it lives on the UI
 // thread exclusively.
 class SubresourceFilterSafeBrowsingClientRequest
     : public safe_browsing::SafeBrowsingDatabaseManager::Client {
@@ -38,7 +34,6 @@ class SubresourceFilterSafeBrowsingClientRequest
       base::TimeTicks start_time_,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       SubresourceFilterSafeBrowsingClient* client);
 
   SubresourceFilterSafeBrowsingClientRequest(

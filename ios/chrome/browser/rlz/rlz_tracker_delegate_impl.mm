@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
+#import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
 #import "components/omnibox/browser/omnibox_log.h"
@@ -15,7 +16,7 @@
 #import "ios/chrome/browser/google/model/google_brand.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -25,11 +26,10 @@ RLZTrackerDelegateImpl::RLZTrackerDelegateImpl() {}
 RLZTrackerDelegateImpl::~RLZTrackerDelegateImpl() {}
 
 // static
-bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(
-    ChromeBrowserState* browser_state) {
+bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(ProfileIOS* profile) {
   bool is_google_default_search = false;
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   if (template_url_service) {
     const TemplateURL* url_template =
         template_url_service->GetDefaultSearchProvider();
@@ -41,15 +41,13 @@ bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(
 }
 
 // static
-bool RLZTrackerDelegateImpl::IsGoogleHomepage(
-    ChromeBrowserState* browser_state) {
+bool RLZTrackerDelegateImpl::IsGoogleHomepage(ProfileIOS* profile) {
   // iOS does not have a notion of home page.
   return false;
 }
 
 // static
-bool RLZTrackerDelegateImpl::IsGoogleInStartpages(
-    ChromeBrowserState* browser_state) {
+bool RLZTrackerDelegateImpl::IsGoogleInStartpages(ProfileIOS* profile) {
   // iOS does not have a notion of start pages.
   return false;
 }
@@ -115,16 +113,15 @@ void RLZTrackerDelegateImpl::SetOmniboxSearchCallback(
 
 void RLZTrackerDelegateImpl::SetHomepageSearchCallback(
     base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RLZTrackerDelegateImpl::RunHomepageSearchCallback() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool RLZTrackerDelegateImpl::ShouldUpdateExistingAccessPointRlz() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox(OmniboxLog* log) {
@@ -132,11 +129,13 @@ void RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // it did previously.  The RLZ folks want RLZ's "first search" detection
   // to remain as unaffected as possible by this change.  This test is
   // there to keep the old behavior.
-  if (!log->is_popup_open)
+  if (!log->is_popup_open) {
     return;
+  }
 
   on_omnibox_url_opened_subscription_ = {};
 
-  if (!on_omnibox_search_callback_.is_null())
+  if (!on_omnibox_search_callback_.is_null()) {
     std::move(on_omnibox_search_callback_).Run();
+  }
 }

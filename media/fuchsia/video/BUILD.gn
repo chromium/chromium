@@ -9,6 +9,7 @@ source_set("video") {
     ":unittests",
     "//content/renderer/*",
     "//media/gpu/*",
+    "//media/mojo/clients/*",
     "//third_party/blink/renderer/modules/webcodecs/*",
   ]
   public = [
@@ -40,7 +41,7 @@ source_set("video") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//third_party/libyuv:libyuv",
+    "//third_party/libyuv",
     "//ui/ozone",
   ]
 }
@@ -65,4 +66,8 @@ source_set("unittests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

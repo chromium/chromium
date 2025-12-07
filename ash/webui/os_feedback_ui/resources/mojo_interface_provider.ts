@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {FeedbackServiceProvider, FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackServiceProviderInterface, HelpContentProviderInterface} from './os_feedback_ui.mojom-webui.js';
+import {FeedbackServiceProvider, HelpContentProvider} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview

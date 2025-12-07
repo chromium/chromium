@@ -9,6 +9,7 @@
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,7 @@ TestSubresourceFilterObserver::TestSubresourceFilterObserver(
   Observe(web_contents);
 }
 
-TestSubresourceFilterObserver::~TestSubresourceFilterObserver() {}
+TestSubresourceFilterObserver::~TestSubresourceFilterObserver() = default;
 
 void TestSubresourceFilterObserver::OnSubresourceFilterGoingAway() {
   CHECK(scoped_observation_.IsObserving());
@@ -49,10 +50,11 @@ void TestSubresourceFilterObserver::OnChildFrameNavigationEvaluated(
 void TestSubresourceFilterObserver::OnIsAdFrameChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_ad_frame) {
-  if (is_ad_frame)
+  if (is_ad_frame) {
     ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
-  else
+  } else {
     ad_frames_.erase(render_frame_host->GetFrameTreeNodeId());
+  }
 }
 
 void TestSubresourceFilterObserver::DidFinishNavigation(
@@ -61,8 +63,9 @@ void TestSubresourceFilterObserver::DidFinishNavigation(
   bool did_compute = it != pending_activations_.end();
   if (!navigation_handle->IsInMainFrame() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
-    if (did_compute)
+    if (did_compute) {
       pending_activations_.erase(it);
+    }
     return;
   }
 
@@ -79,7 +82,8 @@ TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
   return base::OptionalFromPtr(base::FindOrNull(page_activations_, url));
 }
 
-bool TestSubresourceFilterObserver::GetIsAdFrame(int frame_tree_node_id) const {
+bool TestSubresourceFilterObserver::GetIsAdFrame(
+    content::FrameTreeNodeId frame_tree_node_id) const {
   return base::Contains(ad_frames_, frame_tree_node_id);
 }
 

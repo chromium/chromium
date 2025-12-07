@@ -5,6 +5,7 @@
 #include "ash/style/system_textfield.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield_controller.h"
@@ -269,7 +270,7 @@ void SystemTextfield::UpdateBackground() {
     return;
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id_.value_or(cros_tokens::kCrosSysHoverOnSubtle),
       corner_radius_));
 }
@@ -278,7 +279,7 @@ gfx::Size SystemTextfield::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // The width of container equals to the content width with horizontal padding.
   // The height of the container dependents on the type.
-  const std::u16string& text = GetText();
+  std::u16string_view text = GetText();
   int width = 0;
   int height = 0;
   gfx::Canvas::SizeStringInt(text.empty() ? GetPlaceholderText() : text,

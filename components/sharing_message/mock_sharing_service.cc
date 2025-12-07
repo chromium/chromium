@@ -9,13 +9,12 @@
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 #include "components/sharing_message/sharing_sync_preference.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
  public:
-  FakeSharingDeviceRegistration() {}
+  FakeSharingDeviceRegistration() = default;
   ~FakeSharingDeviceRegistration() override = default;
 
   void RegisterDevice(
@@ -44,7 +43,6 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
 MockSharingService::MockSharingService()
     : SharingService(
           /*sync_prefs=*/nullptr,
-          /*vapid_key_manager=*/nullptr,
           std::make_unique<FakeSharingDeviceRegistration>(),
           /*message_sender=*/nullptr,
           /*device_source=*/nullptr,
@@ -53,7 +51,9 @@ MockSharingService::MockSharingService()
                                               /*sharing_fcm_sender=*/nullptr,
                                               /*sync_preference=*/nullptr,
                                               /*handler_registry=*/nullptr),
-          /*sync_service*/ nullptr,
+          /*sync_service=*/nullptr,
+          /*favicon_service=*/nullptr,
+          /*send_tab_model=*/nullptr,
           /*task_runner=*/nullptr) {}
 
 MockSharingService::~MockSharingService() = default;

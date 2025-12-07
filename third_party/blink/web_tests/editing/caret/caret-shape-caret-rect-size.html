@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <style>
+    body {
+      font: 20px/1 Ahem;
+    }
+
+    .large {
+      font-size: 200%;
+    }
+
+    .small {
+      font-size: 50%;
+    }
+
+    #testBlock {
+      caret-shape: block;
+    }
+
+    #testUnderscore {
+      caret-shape: underscore;
+    }
+  </style>
+</head>
+
+<body>
+  <p>Test that caret rect size should be obtained from the visible character after the insertion point for caret-shape:
+    block and caret-shape: underscore.</p>
+  <div contenteditable id="testBlock">
+    <span id="normal_font1">a</span>
+    <span class="large" id="large_font1">a</span>
+    <span class="small" id="small_font1">a</span>
+  </div>
+  <div contenteditable id="testUnderscore">
+    <span id="normal_font2">a</span>
+    <span class="large" id="large_font2">a</span>
+    <span class="small" id="small_font2">a</span>
+  </div>
+</body>
+<script>
+
+  test(function () {
+    assert_true(!!window.internals, "This test only works with internals exposed present");
+  }, "internals are exposed");
+
+  test(function () {
+    // caret-shape: block
+    var textNode1 = document.getElementById("testBlock");
+    textNode1.focus();
+
+    var normal_text_node1 = document.getElementById("normal_font1");
+    getSelection().collapse(normal_text_node1.firstChild, 0);
+    let rects1 = internals.absoluteCaretBounds();
+
+    var large_text1 = document.getElementById("large_font1");
+    getSelection().collapse(large_text1.firstChild, 0);
+    let rects2 = internals.absoluteCaretBounds();
+    assert_equals(rects1.height * 2, rects2.height);
+    assert_equals(rects1.width * 2, rects2.width);
+
+    var small_text1 = document.getElementById("small_font1");
+    getSelection().collapse(small_text1.firstChild, 0);
+    let rects3 = internals.absoluteCaretBounds();
+    assert_equals(rects1.height * 0.5, rects3.height);
+    assert_equals(rects1.width * 0.5, rects3.width);
+  }, "caret-shape: block caret size is obtained from the visible character after the insertion point.");
+
+  test(function () {
+
+    // caret-shape: underscore
+    var textNode2 = document.getElementById("testUnderscore");
+    textNode2.focus();
+
+    var normal_text_node2 = document.getElementById("normal_font2");
+    getSelection().collapse(normal_text_node2.firstChild, 0);
+    let rects1 = internals.absoluteCaretBounds();
+
+    var large_text2 = document.getElementById("large_font2");
+    getSelection().collapse(large_text2.firstChild, 0);
+    let rects2 = internals.absoluteCaretBounds();
+    assert_equals(rects1.height, rects2.height);
+    assert_equals(rects1.width * 2, rects2.width);
+
+    var small_text2 = document.getElementById("small_font2");
+    getSelection().collapse(small_text2.firstChild, 0);
+    let rects3 = internals.absoluteCaretBounds();
+    assert_equals(rects1.height, rects3.height);
+    assert_equals(rects1.width * 0.5, rects3.width);
+  }, "caret-shape: underscore caret size is obtained from the visible character after the insertion point.");
+</script>
+
+</html>

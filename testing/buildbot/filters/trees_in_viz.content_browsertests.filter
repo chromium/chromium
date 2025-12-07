@@ -1,0 +1,5 @@
+# Won't fix the following three failing tests. See details in
+# https://g-issues.chromium.org/issues/411467363#comment7
+-PrerenderBrowserDeathTest.PrerenderCannotHaveInnerContents
+-RenderFrameHostImplDeathTest.ReloadInPendingDeletionOrBFCache
+-SecurityExploitBrowserTest.AllowBindingsForNonWebUIProcess

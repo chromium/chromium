@@ -8,7 +8,7 @@ Running: testOverridenGeolocation
 Latitude: 50 Longitude: 100
 
 Running: testInvalidParam
-error: Protocol Error: Invalid type of argument 'latitude' for method 'Emulation.setGeolocationOverride' call. It must be 'number' but it is 'boolean'.
+error: Request Emulation.setGeolocationOverride failed. {"code":-32602,"message":"Invalid parameters","data":"Failed to deserialize params.latitude - BINDINGS: double value expected at position 17"}
 
 Running: testInvalidGeolocation
 Latitude: 50 Longitude: 100

@@ -47,7 +47,7 @@ void CurrentLocaleView::OnLocaleListSet() {
     if (entry.iso_code == locale_model->current_locale_iso_code()) {
       const std::u16string description = l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_INDICATOR_LOCALE_TOOLTIP, entry.display_name);
-      label()->SetTooltipText(description);
+      label()->SetCustomTooltipText(description);
       label()->SetCustomAccessibleName(description);
       break;
     }
@@ -61,15 +61,11 @@ void CurrentLocaleView::HandleLocaleChange() {
 }
 
 void CurrentLocaleView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    label()->SetEnabledColorId(kColorAshIconColorPrimary);
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  label()->SetEnabledColorId(active
-                                 ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                                 : cros_tokens::kCrosSysOnSurface);
+  label()->SetEnabledColor(active
+                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                               : cros_tokens::kCrosSysOnSurface);
 }
 
 BEGIN_METADATA(CurrentLocaleView)

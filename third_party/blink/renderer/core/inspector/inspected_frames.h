@@ -25,7 +25,6 @@ class CORE_EXPORT InspectedFrames final
     Iterator operator++(int);
     Iterator& operator++();
     bool operator==(const Iterator& other) const;
-    bool operator!=(const Iterator& other) const;
     LocalFrame* operator*() { return current_; }
     LocalFrame* operator->() { return current_; }
 
@@ -47,7 +46,7 @@ class CORE_EXPORT InspectedFrames final
   Iterator begin();
   Iterator end();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   Member<LocalFrame> root_;

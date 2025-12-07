@@ -138,7 +138,7 @@ std::string GetCategoryString(AppListSearchControlCategory category) {
     case AppListSearchControlCategory::kWeb:
       return "Web";
     case AppListSearchControlCategory::kCannotToggle:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -177,8 +177,7 @@ void AppListRecordPageSwitcherSourceByEventType(ui::EventType type) {
       source = kMouseDrag;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   RecordPageSwitcherSource(source);
 }
@@ -209,12 +208,12 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
     case AppListShowSource::kScrollFromShelf:
       return "Scroll";
     case AppListShowSource::kTabletMode:
-    case AppListShowSource::kAssistantEntryPoint:
+    case AppListShowSource::kAssistantEntryPoint_DEPRECATED:
     case AppListShowSource::kBrowser:
     case AppListShowSource::kWelcomeTour:
       return "Others";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RecordAppListUserJourneyTime(AppListShowSource source,
@@ -446,11 +445,9 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::DEPRECATED_LAUNCH_TYPE_FULLSCREEN:
     case CommandId::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case CommandId::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void ReportPaginationSmoothness(int smoothness) {
@@ -521,7 +518,7 @@ void ResetContinueSectionFileRemovedCountForTest() {
 void RecordHideContinueSectionMetric() {
   const bool hide_continue_section =
       Shell::Get()->app_list_controller()->ShouldHideContinueSection();
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::UmaHistogramBoolean(
         "Apps.AppList.ContinueSectionHiddenByUser.TabletMode",
         hide_continue_section);

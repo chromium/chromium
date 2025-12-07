@@ -20,16 +20,17 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr BinaryUploadService::Result kAllBinaryUploadServiceResults[]{
-    BinaryUploadService::Result::UNKNOWN,
-    BinaryUploadService::Result::SUCCESS,
-    BinaryUploadService::Result::UPLOAD_FAILURE,
-    BinaryUploadService::Result::TIMEOUT,
-    BinaryUploadService::Result::FILE_TOO_LARGE,
-    BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
-    BinaryUploadService::Result::UNAUTHORIZED,
-    BinaryUploadService::Result::FILE_ENCRYPTED,
-};
+constexpr enterprise_connectors::ScanRequestUploadResult
+    kAllBinaryUploadServiceResults[]{
+        enterprise_connectors::ScanRequestUploadResult::kUnknown,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
+        enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
+        enterprise_connectors::ScanRequestUploadResult::kTimeout,
+        enterprise_connectors::ScanRequestUploadResult::kFileTooLarge,
+        enterprise_connectors::ScanRequestUploadResult::kFailedToGetToken,
+        enterprise_connectors::ScanRequestUploadResult::kUnauthorized,
+        enterprise_connectors::ScanRequestUploadResult::kFileEncrypted,
+    };
 
 #if !BUILDFLAG(USE_CRASH_KEY_STUBS)
 constexpr std::pair<ScanningCrashKey, const char*> kAllCrashKeys[] = {
@@ -53,22 +54,28 @@ constexpr base::TimeDelta kInvalidDuration = base::Seconds(0);
 
 class DeepScanningUtilsUMATest
     : public testing::TestWithParam<
-          std::tuple<bool, DeepScanAccessPoint, BinaryUploadService::Result>> {
+          std::tuple<bool,
+                     enterprise_connectors::DeepScanAccessPoint,
+                     enterprise_connectors::ScanRequestUploadResult>> {
  public:
-  DeepScanningUtilsUMATest() {}
+  DeepScanningUtilsUMATest() = default;
 
   bool is_cloud() const { return std::get<0>(GetParam()); }
 
-  DeepScanAccessPoint access_point() const { return std::get<1>(GetParam()); }
+  enterprise_connectors::DeepScanAccessPoint access_point() const {
+    return std::get<1>(GetParam());
+  }
 
   std::string access_point_string() const {
     return DeepScanAccessPointToString(access_point());
   }
 
-  BinaryUploadService::Result result() const { return std::get<2>(GetParam()); }
+  enterprise_connectors::ScanRequestUploadResult result() const {
+    return std::get<2>(GetParam());
+  }
 
   bool success() const {
-    return result() == BinaryUploadService::Result::SUCCESS;
+    return result() == enterprise_connectors::ScanRequestUploadResult::kSuccess;
   }
 
   std::string result_value(bool success) const {
@@ -89,14 +96,16 @@ class DeepScanningUtilsUMATest
 INSTANTIATE_TEST_SUITE_P(
     Tests,
     DeepScanningUtilsUMATest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(DeepScanAccessPoint::DOWNLOAD,
-                                     DeepScanAccessPoint::UPLOAD,
-                                     DeepScanAccessPoint::DRAG_AND_DROP,
-                                     DeepScanAccessPoint::PASTE,
-                                     DeepScanAccessPoint::PRINT,
-                                     DeepScanAccessPoint::FILE_TRANSFER),
-                     testing::ValuesIn(kAllBinaryUploadServiceResults)));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+            enterprise_connectors::DeepScanAccessPoint::UPLOAD,
+            enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP,
+            enterprise_connectors::DeepScanAccessPoint::PASTE,
+            enterprise_connectors::DeepScanAccessPoint::PRINT,
+            enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER),
+        testing::ValuesIn(kAllBinaryUploadServiceResults)));
 
 TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   // Record metrics for the 5 successful scan possibilities:
@@ -127,7 +136,8 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
                           result(), response);
   }
 
-  if (result() == BinaryUploadService::Result::UNAUTHORIZED) {
+  if (result() ==
+      enterprise_connectors::ScanRequestUploadResult::kUnauthorized) {
     EXPECT_EQ(0u, histograms().GetTotalCountsForPrefix(metric_prefix()).size());
   } else {
     // We expect at least 2 histograms (<access-point>.Duration and
@@ -165,7 +175,8 @@ TEST_P(DeepScanningUtilsUMATest, UnsuccessfulDlpScanVerdicts) {
                           result(), response);
   }
 
-  if (result() == BinaryUploadService::Result::UNAUTHORIZED) {
+  if (result() ==
+      enterprise_connectors::ScanRequestUploadResult::kUnauthorized) {
     EXPECT_EQ(0u, histograms().GetTotalCountsForPrefix(metric_prefix()).size());
   } else {
     auto recorded = histograms().GetTotalCountsForPrefix(metric_prefix());
@@ -193,7 +204,8 @@ TEST_P(DeepScanningUtilsUMATest, UnsuccessfulMalwareScanVerdict) {
                           result(), response);
   }
 
-  if (result() == BinaryUploadService::Result::UNAUTHORIZED) {
+  if (result() ==
+      enterprise_connectors::ScanRequestUploadResult::kUnauthorized) {
     EXPECT_EQ(0u, histograms().GetTotalCountsForPrefix(metric_prefix()).size());
   } else {
     auto recorded = histograms().GetTotalCountsForPrefix(metric_prefix());

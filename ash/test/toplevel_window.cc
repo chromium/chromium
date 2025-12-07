@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/widget/widget.h"
 
@@ -19,7 +20,7 @@ namespace {
 
 struct SavedState {
   gfx::Rect bounds;
-  ui::WindowShowState show_state;
+  ui::mojom::WindowShowState show_state;
 };
 
 // The last window state in ash_shell. We don't bother deleting
@@ -71,8 +72,9 @@ bool ToplevelWindow::ShouldSaveWindowPlacement() const {
   return true;
 }
 
-void ToplevelWindow::SaveWindowPlacement(const gfx::Rect& bounds,
-                                         ui::WindowShowState show_state) {
+void ToplevelWindow::SaveWindowPlacement(
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   if (!saved_state)
     saved_state = new SavedState;
   saved_state->bounds = bounds;
@@ -82,7 +84,7 @@ void ToplevelWindow::SaveWindowPlacement(const gfx::Rect& bounds,
 bool ToplevelWindow::GetSavedWindowPlacement(
     const views::Widget* widget,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   bool is_saved_bounds = !!saved_state;
   if (saved_state && use_saved_placement_) {
     *bounds = saved_state->bounds;

@@ -11,8 +11,8 @@
 
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 NSURL* testStorageFileURL() {
   NSURL* temporaryDirectory = [NSURL fileURLWithPath:NSTemporaryDirectory()];
@@ -42,6 +42,7 @@ ArchivableCredential* TestCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
+                              registryControlledDomain:@"example.com"
                                               username:@"user"
                                                   note:@"note"];
 }
@@ -80,6 +81,7 @@ TEST_F(ArchivableCredentialStoreTest, update) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"
                                         serviceName:@"other_serviceName"
+                           registryControlledDomain:@"otherexample.com"
                                            username:@"other_user"
                                                note:@"other_note"];
 
@@ -155,4 +157,4 @@ TEST_F(ArchivableCredentialStoreTest, createFolder) {
   [deepFolderURL checkResourceIsReachableAndReturnError:&error];
   EXPECT_FALSE(error);
 }
-}
+}  // namespace

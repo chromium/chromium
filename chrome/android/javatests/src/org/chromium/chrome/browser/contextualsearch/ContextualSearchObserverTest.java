@@ -23,7 +23,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests system and application interaction with Contextual Search using instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -80,7 +80,7 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testNotifyObserversAfterNonResolve() throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
@@ -101,7 +101,7 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
     public void testNotifyObserversAfterLongPressWithoutSurroundings() throws Exception {
         // Mark the user undecided so we won't allow sending surroundings.
@@ -125,7 +125,7 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testNotifyObserversAfterResolve() throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));

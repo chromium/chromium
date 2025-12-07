@@ -8,12 +8,20 @@ component("certificate_provider") {
   sources = [
     "certificate_info.cc",
     "certificate_info.h",
+    "certificate_provider.h",
+    "certificate_requests.cc",
+    "certificate_requests.h",
+    "sign_requests.cc",
+    "sign_requests.h",
+    "thread_safe_certificate_map.cc",
+    "thread_safe_certificate_map.h",
   ]
 
   defines = [ "IS_CERTIFICATE_PROVIDER_IMPL" ]
 
   public_deps = [
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//components/account_id",
+    "//net",
   ]
 }

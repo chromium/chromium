@@ -43,11 +43,10 @@ class LensTabHelper : public web::WebStatePolicyDecider,
   // Opens the Lens input selection UI with the given entry point.
   void OpenLensInputSelection(LensEntrypoint entry_point);
 
-  // Handler used to request showing the password bottom sheet.
+  // Handler for Lens commands.
   __weak id<LensCommands> commands_handler_;
 
   friend class web::WebStateUserData<LensTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_LENS_MODEL_LENS_TAB_HELPER_H_

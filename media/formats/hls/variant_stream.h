@@ -9,15 +9,30 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
+#include "media/formats/hls/rendition.h"
+#include "media/formats/hls/rendition_group.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
 
-class AudioRenditionGroup;
-
 class MEDIA_EXPORT VariantStream {
  public:
+  // Used to control how a variant stream should be formatted. If all variant
+  // streams are the same resolution, then it might be ideal to display only
+  // frame rate, or only bandwidth. The container for all supported variants
+  // should make this determination, and use a span of components to help format
+  // an instance of VariantStream for human consumption.
+  enum class FormatComponent {
+    kResolution,
+    kFrameRate,
+    kCodecs,
+    kScore,
+    kBandwidth,
+    kUri,
+    kIndex,
+  };
+
   VariantStream(GURL primary_rendition_uri,
                 types::DecimalInteger bandwidth,
                 std::optional<types::DecimalInteger> average_bandwidth,
@@ -25,13 +40,20 @@ class MEDIA_EXPORT VariantStream {
                 std::optional<std::vector<std::string>> codecs,
                 std::optional<types::DecimalResolution> resolution,
                 std::optional<types::DecimalFloatingPoint> frame_rate,
-                scoped_refptr<AudioRenditionGroup> audio_renditions,
-                std::optional<std::string> video_rendition_group_name);
+                std::unique_ptr<RenditionGroup::View> audio_renditions,
+                std::unique_ptr<RenditionGroup::View> video_renditions);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
   VariantStream& operator=(const VariantStream&) = delete;
   VariantStream& operator=(VariantStream&&) = delete;
+
+  // Determine an optimal way to format media tracks that point back to the
+  // collection of variants. This determines both the minimum set of unique
+  // properties that can be used to uniquely identify a variant as well as an
+  // order of precedence.
+  static std::vector<FormatComponent> OptimalFormatForCollection(
+      const std::vector<VariantStream>& streams);
 
   // The URI of the rendition provided by the playlist for clients that do not
   // support multiple renditions.
@@ -96,16 +118,13 @@ class MEDIA_EXPORT VariantStream {
     return frame_rate_;
   }
 
-  // Returns the audio rendition group that should be used when playing this
-  // variant.
-  const scoped_refptr<AudioRenditionGroup>& GetAudioRenditionGroup() const {
-    return audio_rendition_group_;
-  }
+  const auto& GetAudioRenditionGroup() const { return *audio_renditions_; }
+  const auto& GetVideoRenditionGroup() const { return *video_renditions_; }
 
-  // Returns the name of the video rendition group, if it exists.
-  const std::optional<std::string> GetVideoRenditionGroupName() const {
-    return video_rendition_group_name_;
-  }
+  void UpdateImplicitRenditionMediaTrackName(std::string name);
+
+  const std::string Format(const std::vector<FormatComponent>& components,
+                           uint32_t stream_index) const;
 
  private:
   GURL primary_rendition_uri_;
@@ -115,8 +134,8 @@ class MEDIA_EXPORT VariantStream {
   std::optional<std::vector<std::string>> codecs_;
   std::optional<types::DecimalResolution> resolution_;
   std::optional<types::DecimalFloatingPoint> frame_rate_;
-  scoped_refptr<AudioRenditionGroup> audio_rendition_group_;
-  std::optional<std::string> video_rendition_group_name_;
+  std::unique_ptr<RenditionGroup::View> audio_renditions_;
+  std::unique_ptr<RenditionGroup::View> video_renditions_;
 };
 
 }  // namespace media::hls

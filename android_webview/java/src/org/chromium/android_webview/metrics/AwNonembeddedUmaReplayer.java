@@ -9,12 +9,14 @@ import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.RecordType;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Replay the recorded method calls recorded by {@link AwProcessUmaRecorder}.
  *
- * Should be used in processes which have initialized Uma, such as the browser process.
+ * <p>Should be used in processes which have initialized Uma, such as the browser process.
  */
+@NullMarked
 public class AwNonembeddedUmaReplayer {
     private static final String TAG = "AwNonembedUmaReplay";
 

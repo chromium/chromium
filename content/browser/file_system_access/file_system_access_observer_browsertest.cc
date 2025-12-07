@@ -4,10 +4,13 @@
 
 #include <memory>
 
+#include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/windows_version.h"
 #include "build/buildflag.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,15 +29,115 @@ namespace content {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && \
+    !BUILDFLAG(IS_MAC)
 constexpr int kBFCacheTestTimeoutMs = 3000;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
+        // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_MAC)
+constexpr char kAttemptToObserveSymlinkHistogram[] =
+    "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction";
 
 enum class TestFileSystemType {
   kBucket,
   kLocal,
 };
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+enum class CreateSymbolicLinkResult {
+  // The symbolic link creation failed because the platform does not support it.
+  // On Windows, that may be due to the lack of the required privilege.
+  kUnsupported = -1,
+
+  // The symbolic link creation failed.
+  kFailed,
+
+  // The symbolic link was created successfully.
+  kSucceeded,
+};
+
+#if BUILDFLAG(IS_WIN)
+CreateSymbolicLinkResult CreateWinSymbolicLink(const base::FilePath& target,
+                                               const base::FilePath& symlink,
+                                               bool is_directory = false) {
+  // Creating symbolic links on Windows requires Administrator privileges.
+  // However, recent versions of Windows introduced the
+  // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag, which allows the
+  // creation of symbolic links by processes with lower privileges, provided
+  // that Developer Mode is enabled.
+  //
+  // On older versions of Windows where the
+  // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag does not exist, the OS
+  // will return the error code ERROR_INVALID_PARAMETER when attempting to
+  // create a symbolic link without sufficient privileges.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+    return CreateSymbolicLinkResult::kUnsupported;
+  }
+
+  DWORD flags = is_directory ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0;
+
+  if (!::CreateSymbolicLink(
+          symlink.value().c_str(), target.value().c_str(),
+          flags | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE)) {
+    // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE works only if Developer
+    // Mode is enabled.
+    if (::GetLastError() == ERROR_PRIVILEGE_NOT_HELD) {
+      return CreateSymbolicLinkResult::kUnsupported;
+    }
+    return CreateSymbolicLinkResult::kFailed;
+  }
+
+  return CreateSymbolicLinkResult::kSucceeded;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+CreateSymbolicLinkResult CreateSymbolicLinkForTesting(
+    const base::FilePath& target,
+    const base::FilePath& symlink) {
+  // base::ScopedAllowBlockingForTesting allow_blocking;
+#if BUILDFLAG(IS_WIN)
+  return CreateWinSymbolicLink(target, symlink);
+#elif BUILDFLAG(IS_POSIX)
+  if (!base::CreateSymbolicLink(target, symlink)) {
+    return CreateSymbolicLinkResult::kFailed;
+  }
+  return CreateSymbolicLinkResult::kSucceeded;
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+std::optional<base::FilePath> CreateSymlinkToBePicked(
+    base::ScopedTempDir& temp_dir,
+    Shell* shell,
+    const GURL& test_url) {
+  base::FilePath file_path;
+  base::FilePath symlink_path = temp_dir.GetPath().AppendASCII("symlink1");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Create the temporary file in the `temp_dir`.
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+
+    // Create a symbolic link to the temporary file
+    CreateSymbolicLinkResult result =
+        CreateSymbolicLinkForTesting(file_path, symlink_path);
+    if (result == CreateSymbolicLinkResult::kUnsupported) {
+      return std::nullopt;
+    }
+    EXPECT_EQ(result, CreateSymbolicLinkResult::kSucceeded);
+  }
+
+  // Set up the file dialog factory with the symlink path
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{symlink_path}));
+
+  // Navigate to the test URL
+  EXPECT_TRUE(NavigateToURL(shell, test_url));
+
+  return symlink_path;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
@@ -125,11 +228,25 @@ enum class TestFileSystemType {
 class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
  public:
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 #if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     // Convert path to long format to avoid mixing long and 8.3 formats in test.
     ASSERT_TRUE(temp_dir_.Set(base::MakeLongFilePath(temp_dir_.Take())));
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
+    // Temporary files in Mac are created under /var/, which is a symlink that
+    // resolves to /private/var/. Set `temp_dir_` directly to the resolved file
+    // path, given that the expected FSEvents event paths are reported as
+    // resolved paths.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    base::FilePath resolved_path =
+        base::MakeAbsoluteFilePath(temp_dir_.GetPath());
+    if (!resolved_path.empty()) {
+      temp_dir_.Take();
+      ASSERT_TRUE(temp_dir_.Set(resolved_path));
+    }
+#else
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+#endif
 
     ASSERT_TRUE(embedded_test_server()->Start());
     test_url_ = embedded_test_server()->GetURL("/title1.html");
@@ -179,21 +296,6 @@ class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
   GURL test_url_;
 };
 
-class FileSystemAccessObserverDefaultBrowserTest
-    : public FileSystemAccessObserverBrowserTestBase {};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverDefaultBrowserTest,
-                       DisabledByDefault) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  auto result =
-      EvalJs(shell(),
-             "(async () => {"
-             "const observer = new FileSystemObserver(() => {}); })()");
-  EXPECT_TRUE(result.error.find("not defined") != std::string::npos)
-      << result.error;
-}
-
 class FileSystemAccessObserveWithFlagBrowserTest
     : public FileSystemAccessObserverBrowserTestBase {
  public:
@@ -217,8 +319,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
       observer.unobserve(root);
     })()
     )""");
-  EXPECT_TRUE(result.error.find("is not a function") != std::string::npos)
-      << result.error;
+  EXPECT_TRUE(result.ExtractError().find("is not a function") !=
+              std::string::npos)
+      << result;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
@@ -274,9 +377,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          "accessHandle.close();"
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
 }
 
@@ -313,9 +416,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          "accessHandle.close();"
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::SizeIs(3));
-  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::SizeIs(3));
+  EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
 }
 
@@ -336,9 +439,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          "accessHandle.close();"
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
 }
 
@@ -361,9 +464,40 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          SET_CHANGE_TIMEOUT
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::IsEmpty());
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::IsEmpty());
 }
+
+// Local file system access - including the open*Picker() methods used here
+// - is not supported on Android or iOS. Fuchsia does not support symlinks.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       SymlinkCannotBeObserved) {
+  base::HistogramTester histogram_tester;
+  std::optional<base::FilePath> symlink_path =
+      CreateSymlinkToBePicked(temp_dir_, shell(), test_url_);
+  if (!symlink_path.has_value()) {
+    GTEST_SKIP() << "Platform does not support symlinks.";
+  }
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(TestFileSystemType::kLocal)
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
+
+  // Check if a JavaScript error occurred.
+  EXPECT_TRUE(result.ExtractError().find("InvalidModificationError") !=
+              std::string::npos)
+      << "Unexpected result: " << result;
+  histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
+                                      /*sample=*/true, 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 class FileSystemAccessObserveWithUnobserveFlagBrowserTest
     : public FileSystemAccessObserveWithFlagBrowserTest {
@@ -414,26 +548,6 @@ class FileSystemAccessObserverBrowserTest
   }
 
   TestFileSystemType GetTestFileSystemType() const { return GetParam(); }
-
-  bool SupportsReportingModifiedPath() const {
-    if (GetTestFileSystemType() == TestFileSystemType::kBucket) {
-      return true;
-    }
-
-    // TODO(crbug.com/321980270): Some platforms do not support reporting the
-    // modified path.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-    return true;
-#else
-    return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-  }
-
-  bool SupportsChangeInfo() const {
-    // TODO(crbug.com/321980270): Reporting change info and the modified path
-    // are both only supported on inotify and Windows, for now.
-    return SupportsReportingModifiedPath();
-  }
 };
 
 // `base::FilePatchWatcher` is not implemented on Fuchsia. See
@@ -454,8 +568,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
       "})()";
   // clang-format on
   auto result = EvalJs(shell(), script);
-  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
-      << result.error;
+  EXPECT_TRUE(result.ExtractError().find("did not support") !=
+              std::string::npos)
+      << result;
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -468,7 +583,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, CreateObserver) {
              "const observer = new FileSystemObserver(() => {}); })()"));
 }
 
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
+  base::HistogramTester histogram_tester;
   base::FilePath file_path = CreateFileToBePicked();
 
   const std::string script =
@@ -480,9 +598,14 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
+  if (GetTestFileSystemType() == TestFileSystemType::kLocal) {
+    histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
+                                        /*sample=*/false, 1);
+  }
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -496,18 +619,16 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
   // The `relativePathComponents` should be an empty array, since the change
   // occurred on the path corresponding to the handle passed to `observe()`.
-  EXPECT_THAT(
-      *records.GetList().front().GetDict().FindList("relativePathComponents"),
-      testing::IsEmpty());
+  EXPECT_THAT(*records.front().GetDict().FindList("relativePathComponents"),
+              testing::IsEmpty());
   // Similarly, optional `relativePathMovedFrom` is not specified, since the
   // change occurred on the path corresponding to the handle passed to
   // `observe()`.
-  EXPECT_FALSE(
-      records.GetList().front().GetDict().FindList("relativePathMovedFrom"));
+  EXPECT_FALSE(records.front().GetDict().FindList("relativePathMovedFrom"));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
@@ -522,8 +643,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -543,9 +664,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto result = EvalJs(shell(), script);
 
-  // Check if a JavaScript error occurred and contains "NotFoundError"
-  EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
-      << "Unexpected result: " << result.error;
+  // Check if a JavaScript error occurred and contains "NotFoundError".
+  EXPECT_TRUE(result.ExtractError().find("NotFoundError") != std::string::npos)
+      << "Unexpected result: " << result;
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -566,9 +687,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto result = EvalJs(shell(), script);
 
-  // Check if a JavaScript error occurred and contains "NotFoundError"
-  EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
-      << "Unexpected result: " << result.error;
+  // Check if a JavaScript error occurred and contains "NotFoundError".
+  EXPECT_TRUE(result.ExtractError().find("NotFoundError") != std::string::npos)
+      << "Unexpected result: " << result;
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -599,8 +720,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -652,8 +773,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::IsEmpty());
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -686,12 +807,15 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::IsEmpty());
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::IsEmpty());
 }
 
 // TODO(crbug.com/321980469): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
+//
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -708,14 +832,14 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/343961295): Windows reports two events when a swap file is
-// closed: a "disappear" for the target file being overwritten, and a "move" for
-// the swap file being moved to the target file.
-#if !BUILDFLAG(IS_WIN)
+// TODO(crbug.com/357134621): FSEvents (Mac) reports two events when the swap
+// file is closed. This test fails due to a "disappear" event being reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsType) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -729,17 +853,25 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  // TODO(crbug.com/321980270): Support change types for the local file system
-  // on more platforms.
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
-  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
-              testing::StrEq(expected_change_type));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // On Linux or ChromeOS, the change type can be "modified" if the swap file is
+  // 'renamed' to observed file's name. On other occasions, this can be a 2 step
+  // process where we see a deleted event on the CrSwap file and then an
+  // "appeared" event on the observed file.
+  EXPECT_THAT(
+      *records.front().GetDict().FindString("type"),
+      testing::AnyOf(testing::StrEq("modified"), testing::StrEq("appeared")));
+#else
+  EXPECT_THAT(*records.front().GetDict().FindString("type"),
+              testing::StrEq("modified"));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectHandle) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -776,33 +908,41 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   // The `relativePathComponents` should be an empty array, since the change
   // occurred on the path corresponding to the handle passed to `observe()`.
-  EXPECT_THAT(
-      *records.GetList().front().GetDict().FindList("relativePathComponents"),
-      testing::IsEmpty());
+  EXPECT_THAT(*records.front().GetDict().FindList("relativePathComponents"),
+              testing::IsEmpty());
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryReportsCorrectHandle) {
+                       ObserveDirectoryReportsCorrectChangeTypeForSubDir) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
-
-  // TODO(crbug.com/321980270): Some platforms do not report the modified path.
-  // In these cases, `changedHandle` will always be the handle passed to
-  // observe().
-  const std::string changed_handle =
-      SupportsReportingModifiedPath() ? "subDir" : "dir";
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
+#if BUILDFLAG(IS_MAC)
+         "let appearedEventCount = 0;"
+#endif
          "async function onChange(records, observer) {"
          "  const record = records[0];"
+#if BUILDFLAG(IS_MAC)
+         // TODO(crbug.com/343801378): Check for and ignore at most, one
+         // appeared event.
+         "  if (record.type === 'appeared') {"
+         "    appearedEventCount += 1;"
+         "    if (appearedEventCount > 1) {"
+         "      promiseResolve(false);"
+         "    }"
+         "    return;"
+         "  }"
+#endif
          "  promiseResolve(await dir.isSameEntry(record.root) &&"
-         "await "+ changed_handle +".isSameEntry(record.changedHandle));"
+         "      record.changedHandle == null && record.type == 'disappeared');"
          "};"
          GET_DIRECTORY(GetTestFileSystemType())
          // Create and declare `subDir` before starting the observation, to
@@ -817,33 +957,32 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
-// There is no way to know the correct handle type on Windows in this scenario.
-//
-// Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
-// file path type. Since `fileInDir` is deleted, there is nothing to call
-// base::GetFileInfo on.
-#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryReportsCorrectHandleType) {
+                       ObserveDirectoryReportsCorrectChangeTypeForFileInDir) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
-
-  // The modified handle is a file, so the change record should contain a
-  // FileSystemFileHandle.
-  //
-  // TODO(crbug.com/321980270): Some platforms do not report the modified path.
-  // In these cases, `changedHandle` will always be the handle passed to
-  // observe().
-  const std::string changed_handle =
-      SupportsReportingModifiedPath() ? "fileInDir" : "dir";
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
+#if BUILDFLAG(IS_MAC)
+         "let appearedEventCount = 0;"
+#endif
          "async function onChange(records, observer) {"
          "  const record = records[0];"
+#if BUILDFLAG(IS_MAC)
+         // TODO(crbug.com/343801378): Check for and ignore at most, one
+         // appeared event.
+         "  if (record.type === 'appeared') {"
+         "    appearedEventCount += 1;"
+         "    if (appearedEventCount > 1) {"
+         "      promiseResolve(false);"
+         "    }"
+         "    return;"
+         "  }"
+#endif
          "  promiseResolve(await dir.isSameEntry(record.root) &&"
-         "await "+ changed_handle +".isSameEntry(record.changedHandle));"
+         "      record.changedHandle == null && record.type == 'disappeared');"
          "};"
          GET_DIRECTORY(GetTestFileSystemType())
          // Create and declare `fileInDir` before starting the observation, to
@@ -857,7 +996,6 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
-#endif  // !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectRelativePathComponents) {
@@ -872,15 +1010,18 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  const auto relative_path_component_matcher = testing::Conditional(
-      SupportsReportingModifiedPath(), testing::SizeIs(1), testing::IsEmpty());
-  EXPECT_THAT(
-      *records.GetList().front().GetDict().FindList("relativePathComponents"),
-      relative_path_component_matcher);
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(*records.front().GetDict().FindList("relativePathComponents"),
+              testing::SizeIs(1));
 }
 
+// TODO(b/321980270): Re-enable these tests on Mac, after fixing the failing
+// expectations. It's possible that some of the failing expectations are due to
+// historical create flags, which can affect the reported change type (reporting
+// 'create' events when other change types should be reported). See b/357062364
+// for more context.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsMoveChangeInfo) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
@@ -902,25 +1043,20 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  auto& record_dict = records.GetList().front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "moved" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("subdir", "newFile.txt"));
-    EXPECT_THAT(*record_dict.FindList("relativePathMovedFrom"),
-                testing::ElementsAre("subdir", "oldFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-    EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
-  }
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.front().GetDict();
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("moved"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("subdir", "newFile.txt"));
+  EXPECT_THAT(*record_dict.FindList("relativePathMovedFrom"),
+              testing::ElementsAre("subdir", "oldFile.txt"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/321980270) Re-enable these tests on Mac, which only fail when the
+// modified path is reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsAppearedOnMoveIntoScope) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
@@ -942,20 +1078,12 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  auto& record_dict = records.GetList().front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("newFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.front().GetDict();
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("appeared"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("newFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 
@@ -980,20 +1108,12 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  auto& record_dict = records.GetList().front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "disappeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("oldFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.front().GetDict();
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("disappeared"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("oldFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 
@@ -1019,23 +1139,19 @@ IN_PROC_BROWSER_TEST_P(
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  auto& record_dict = records.GetList().front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "disappeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("oldFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.front().GetDict();
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("disappeared"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("oldFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/321980270) Re-enable this test on Mac, which only fails when the
+// modified path is reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(
     FileSystemAccessObserverBrowserTest,
     NonRecursiveWatchReportsAppearedWhenDirectDescendentMovedFromNonDirectDescendent) {
@@ -1058,27 +1174,23 @@ IN_PROC_BROWSER_TEST_P(
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  auto& record_dict = records.GetList().front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    // Moved-to path is out of the watched scope, so moved-from path is reported
-    // as `relativePathComponents`.
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("newFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.front().GetDict();
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("appeared"));
+  // Moved-to path is out of the watched scope, so moved-from path is reported
+  // as `relativePathComponents`.
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("newFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/321980270): Filter out changes to swap files reported by FSEvents,
+// and re-enable this test on Mac.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       IgnoreSwapFileChanges) {
+                       WritableReportsSingleModifiedEventOnClose) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   // Set up the directory structure.
@@ -1103,26 +1215,26 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  const auto relative_path_component_matcher = testing::Conditional(
-      SupportsReportingModifiedPath(), testing::ElementsAre("file.txt"),
-      testing::IsEmpty());
-  EXPECT_THAT(
-      *records.GetList().front().GetDict().FindList("relativePathComponents"),
-      relative_path_component_matcher);
 
-  // Check that none of the events are for swap files.
-  const auto relative_path_component_matcher_for_swap_file =
-      testing::Conditional(
-          SupportsReportingModifiedPath(),
-          testing::ElementsAre(testing::Not("file.txt.crswap")),
-          testing::IsEmpty());
-  for (const auto& record : records.GetList()) {
-    EXPECT_THAT(*record.GetDict().FindList("relativePathComponents"),
-                relative_path_component_matcher_for_swap_file);
-  }
+  // Expect one modified event upon closing the writable.
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::SizeIs(1));
+  auto& record_dict = records.front().GetDict();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // On Linux or ChromeOS, the change type can be "modified" if the swap file is
+  // 'renamed' to the target file's name. On other occasions, this can be a 2
+  // step process where we see a deleted event on the CrSwap file and then an
+  // "appeared" event on the target file.
+  EXPECT_THAT(
+      *record_dict.FindString("type"),
+      testing::AnyOf(testing::StrEq("modified"), testing::StrEq("appeared")));
+#else
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("modified"));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("file.txt"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
@@ -1161,6 +1273,10 @@ class FileSystemAccessObserverWithBFCacheBrowserTest
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
+// TODO(b/360153904): This test is flaky on Mac, likely as a result of FSEvents
+// reporting events later than expected, on occasion. Re-enable once flake is
+// resolved.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        ReceivesFileUpdatesAfterReturningFromBFCache) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -1247,6 +1363,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                 .ExtractInt(),
             1);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        NotifyOnReturnFromBFCacheWhenFileUpdates) {
@@ -1285,8 +1402,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 
   // Navigate back and restore `initial_rfh` as the primary main frame.
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
@@ -1300,9 +1417,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  records = EvalJs(shell(), script).ExtractList();
-  EXPECT_THAT(records.GetList(), testing::SizeIs(1));
-  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+  records = EvalJs(shell(), script).TakeValue().TakeList();
+  EXPECT_THAT(records, testing::SizeIs(1));
+  EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("unknown"));
 }
 
@@ -1344,8 +1461,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::IsEmpty());
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
+  ASSERT_THAT(records, testing::IsEmpty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_FUCHSIA)

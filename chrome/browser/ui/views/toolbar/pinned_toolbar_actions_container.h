@@ -21,12 +21,21 @@
 #include "ui/views/drag_controller.h"
 
 class BrowserView;
+class ToolbarButtonProvider;
+
+namespace base {
+class ScopedClosureRunner;
+}
 
 namespace views {
 class ActionViewController;
 }
 
-// Container for pinned actions shown in the toolbar.
+// Container for pinned and epheremeral actions shown in the toolbar.
+// Pinned actions are tracked by `pinned_buttons_`. Ephemeral actions are
+// tracked by `popped_out_buttons_`. Pinned actions are determined by listening
+// to PinnedToolbarActionsModel. Ephemeral actions are determined by external
+// callers via the methods UpdateActionState() and  UpdateEphemeralAction().
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
@@ -35,16 +44,23 @@ class PinnedToolbarActionsContainer
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
-  explicit PinnedToolbarActionsContainer(BrowserView* browser_view);
+  explicit PinnedToolbarActionsContainer(
+      BrowserView* browser_view,
+      ToolbarButtonProvider* button_provider);
   PinnedToolbarActionsContainer(const PinnedToolbarActionsContainer&) = delete;
   PinnedToolbarActionsContainer& operator=(
       const PinnedToolbarActionsContainer&) = delete;
   ~PinnedToolbarActionsContainer() override;
 
+  // TODO(https://crbug.com/363743077): This method is almost but not quite
+  // identical to ShowActionEphemerallyInToolbar(). This doesn't make sense and
+  // one should be removed.
   void UpdateActionState(actions::ActionId id, bool is_active);
   // Updates whether the button is shown ephemerally in the toolbar (in the
   // popped out region unless also pinned) regardless of whether it is active.
   void ShowActionEphemerallyInToolbar(actions::ActionId id, bool show);
+  void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin);
+
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   // ToolbarIconContainerView:
@@ -52,6 +68,7 @@ class PinnedToolbarActionsContainer
 
   // views::View:
   void OnThemeChanged() override;
+  void AddedToWidget() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool AreDropTypesRequired() override;
@@ -63,11 +80,8 @@ class PinnedToolbarActionsContainer
       const ui::DropTargetEvent& event) override;
 
   // PinnedToolbarActionsModel::Observer:
-  void OnActionAdded(const actions::ActionId& id) override;
-  void OnActionRemoved(const actions::ActionId& id) override;
-  void OnActionMoved(const actions::ActionId& id,
-                     int from_index,
-                     int to_index) override;
+  void OnActionAddedLocally(actions::ActionId id) override;
+  void OnActionRemovedLocally(actions::ActionId id) override;
   void OnActionsChanged() override;
 
   // views::DragController:
@@ -80,15 +94,35 @@ class PinnedToolbarActionsContainer
                            const gfx::Point& p) override;
 
   // ToolbarController::PinnedActionsDelegate:
-  actions::ActionItem* GetActionItemFor(const actions::ActionId& id) override;
-  bool IsOverflowed(const actions::ActionId& id) override;
+  actions::ActionItem* GetActionItemFor(actions::ActionId id) override;
+  bool IsOverflowed(actions::ActionId id) override;
   views::View* GetContainerView() override;
   bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override;
 
-  bool IsActionPinned(const actions::ActionId& id);
-  bool IsActionPoppedOut(const actions::ActionId& id);
-  bool IsActionPinnedOrPoppedOut(const actions::ActionId& id);
-  PinnedActionToolbarButton* GetButtonFor(const actions::ActionId& id);
+  bool IsActionPinned(actions::ActionId id);
+  bool IsActionPoppedOut(actions::ActionId id);
+  bool IsActionPinnedOrPoppedOut(actions::ActionId id);
+
+  // Returns the button associated with `id`. This does not return permanent
+  // buttons which are currently invisible, an accessor for these can be
+  // obtained on creation via `CreatePermanentButtonFor`.
+  PinnedActionToolbarButton* GetButtonFor(actions::ActionId id);
+
+  // Removes the popped out button if it should no longer remain in the toolbar.
+  void MaybeRemovePoppedOutButtonFor(actions::ActionId id);
+
+  // Ensures that if `id` is unpinned, the associated button object will not
+  // get destroyed. This is useful for features which need to maintain a
+  // persistent reference to the button.
+  PinnedActionToolbarButton* CreatePermanentButtonFor(actions::ActionId id);
+
+  gfx::Size GetDefaultButtonSize() const;
+
+  const std::vector<actions::ActionId>& PinnedActionIds() const override;
+
+  base::WeakPtr<PinnedToolbarActionsContainer> GetWeakPtrForTesting() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class PinnedSidePanelInteractiveTest;
@@ -96,14 +130,13 @@ class PinnedToolbarActionsContainer
 
   // A struct representing the position and action being dragged.
   struct DropInfo;
+  class BrowserObserver;
 
-  PinnedActionToolbarButton* AddPoppedOutButtonFor(const actions::ActionId& id);
-  // Removes the popped out button if it should no longer remain in the toolbar.
-  void MaybeRemovePoppedOutButtonFor(const actions::ActionId& id);
-  void AddPinnedActionButtonFor(const actions::ActionId& id);
-  void RemovePinnedActionButtonFor(const actions::ActionId& id);
-  PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
-  PinnedActionToolbarButton* GetPoppedOutButtonFor(const actions::ActionId& id);
+  PinnedActionToolbarButton* AddPoppedOutButtonFor(actions::ActionId id);
+  void AddPinnedActionButtonFor(actions::ActionId id);
+  void RemovePinnedActionButtonFor(actions::ActionId id);
+  PinnedActionToolbarButton* GetPinnedButtonFor(actions::ActionId id);
+  PinnedActionToolbarButton* GetPoppedOutButtonFor(actions::ActionId id);
   bool ShouldRemainPoppedOutInToolbar(PinnedActionToolbarButton* button);
   // Returns the size based on the layout manager's default flex specification.
   gfx::Size DefaultFlexRule(const views::SizeBounds& size_bounds);
@@ -122,26 +155,32 @@ class PinnedToolbarActionsContainer
 
   // Moves the dragged action `action_id`.
   void MovePinnedAction(
-      const actions::ActionId& action_id,
+      actions::ActionId action_id,
       size_t index,
       base::ScopedClosureRunner cleanup,
       const ui::DropTargetEvent& event,
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
+  std::unique_ptr<PinnedActionToolbarButton> CreateOrGetButtonForAction(
+      actions::ActionId id);
+
   // Performs clean up after dragging.
-  void DragDropCleanup(const actions::ActionId& dragged_action_id);
+  void DragDropCleanup(actions::ActionId dragged_action_id);
 
   // Utility function for going from width to icon counts.
   size_t WidthToIconCount(int x_offset);
 
-  const raw_ptr<BrowserView> browser_view_;
+  const std::unique_ptr<BrowserObserver> browser_observer_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<ToolbarButtonProvider> button_provider_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
   std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
       pinned_buttons_;
   std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
       popped_out_buttons_;
+  std::vector<std::unique_ptr<PinnedActionToolbarButton>> permanent_buttons_;
   raw_ptr<views::View> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 

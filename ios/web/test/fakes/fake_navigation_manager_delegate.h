@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_TEST_FAKES_FAKE_NAVIGATION_MANAGER_DELEGATE_H_
 #define IOS_WEB_TEST_FAKES_FAKE_NAVIGATION_MANAGER_DELEGATE_H_
 
-#import "ios/web/navigation/navigation_manager_delegate.h"
-
 #import "base/memory/raw_ptr.h"
+#import "ios/web/navigation/navigation_manager_delegate.h"
 
 @protocol CRWWebViewNavigationProxy;
 
@@ -31,6 +30,7 @@ class FakeNavigationManagerDelegate : public NavigationManagerDelegate {
   void RemoveWebView() override;
   NavigationItemImpl* GetPendingItem() override;
   GURL GetCurrentURL() const override;
+  void UpdateSSLStatusForCurrentNavigationItem() override;
 
   // Setters for tests to inject dependencies.
   void SetWebViewNavigationProxy(id test_web_view);

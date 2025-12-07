@@ -9,10 +9,11 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
@@ -21,9 +22,11 @@
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -66,7 +69,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.request_initiator = url::Origin::Create(original.url);
   original.isolated_world_origin =
       url::Origin::Create(GURL("chrome-extension://blah"));
-  original.referrer = GURL("https://referrer.com/");
+  original.referrer = GURL("https://referrer.test/");
   original.referrer_policy =
       net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
   original.headers.SetHeader("Accept", "text/xml");
@@ -84,6 +87,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.credentials_mode = mojom::CredentialsMode::kInclude;
   original.redirect_mode = mojom::RedirectMode::kFollow;
   original.fetch_integrity = "dummy_fetch_integrity";
+  original.expected_public_keys = {};
   original.keepalive = true;
   original.browsing_topics = true;
   original.ad_auction_headers = true;
@@ -107,12 +111,9 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID()));
   original.net_log_reference_info = std::make_optional(net::NetLogSource(
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID()));
-  original.devtools_accepted_stream_types =
-      std::vector<net::SourceStream::SourceType>(
-          {net::SourceStream::SourceType::TYPE_BROTLI,
-           net::SourceStream::SourceType::TYPE_GZIP,
-           net::SourceStream::SourceType::TYPE_DEFLATE});
-  original.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  original.devtools_accepted_stream_types = std::vector<net::SourceStreamType>(
+      {net::SourceStreamType::kBrotli, net::SourceStreamType::kGzip,
+       net::SourceStreamType::kDeflate});
   original.storage_access_api_status =
       net::StorageAccessApiStatus::kAccessViaAPI;
 
@@ -124,10 +125,22 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.trusted_params->disable_secure_dns = true;
   original.trusted_params->allow_cookies_from_browser = true;
   original.trusted_params->include_request_cookies_with_response = true;
+  original.trusted_params->enabled_client_hints.emplace();
+  original.trusted_params->enabled_client_hints->origin =
+      url::Origin::Create(GURL("https://a.test"));
+  original.trusted_params->enabled_client_hints->is_outermost_main_frame = true;
+  original.trusted_params->enabled_client_hints->hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  original.trusted_params->enabled_client_hints->not_allowed_hints = {
+      network::mojom::WebClientHintsType::kUAPlatform,
+      network::mojom::WebClientHintsType::kUAModel,
+  };
 
   original.trust_token_params = network::mojom::TrustTokenParams();
   original.trust_token_params->issuers.push_back(
-      url::Origin::Create(GURL("https://issuer.com")));
+      url::Origin::Create(GURL("https://issuer.test")));
   original.trust_token_params->operation =
       mojom::TrustTokenOperationType::kRedemption;
   original.trust_token_params->include_timestamp_header = true;
@@ -135,10 +148,72 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       mojom::TrustTokenSignRequestData::kInclude;
   original.trust_token_params->additional_signed_headers.push_back(
       "some_header");
+#if BUILDFLAG(IS_ANDROID)
+  original.socket_tag = net::SocketTag(1, 2);
+#else
+  original.socket_tag = net::SocketTag();
+#endif
+
+  network::ParsedPermissionsPolicy empty_container_policy;
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy =
+      PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr,
+          /*header_policy=*/
+          {{{network::mojom::PermissionsPolicyFeature::
+                 kBrowsingTopics, /*allowed_origins=*/
+             {*network::OriginWithPossibleWildcards::FromOrigin(
+                 url::Origin::Create(original.url))},
+             /*self_if_matches=*/std::nullopt,
+             /*matches_all_origins=*/false,
+             /*matches_opaque_src=*/false},
+            {network::mojom::PermissionsPolicyFeature::
+                 kSharedStorage, /*allowed_origins=*/
+             {*network::OriginWithPossibleWildcards::FromOrigin(
+                 url::Origin::Create(original.url))},
+             /*self_if_matches=*/std::nullopt,
+             /*matches_all_origins=*/false,
+             /*matches_opaque_src=*/false}}},
+          /*container_policy=*/empty_container_policy,
+          url::Origin::Create(original.url));
+  original.permissions_policy = *permissions_policy.get();
 
   network::ResourceRequest copied;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));
+  EXPECT_TRUE(original.EqualsForTesting(copied));
+}
+
+TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
+  network::ResourceRequest::TrustedParams original;
+  original.disable_secure_dns = true;
+  original.allow_cookies_from_browser = true;
+  original.include_request_cookies_with_response = true;
+  original.enabled_client_hints.emplace();
+  original.enabled_client_hints->origin =
+      url::Origin::Create(GURL("https://a.test"));
+  original.enabled_client_hints->is_outermost_main_frame = true;
+  original.enabled_client_hints->hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  original.enabled_client_hints->not_allowed_hints = {
+      network::mojom::WebClientHintsType::kUAPlatform,
+      network::mojom::WebClientHintsType::kUAModel,
+  };
+  network::ResourceRequest::TrustedParams copied;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::TrustedUrlRequestParams>(
+          original, copied));
+  EXPECT_TRUE(original.EqualsForTesting(copied));
+}
+
+TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams_NullOpt) {
+  network::ResourceRequest::TrustedParams original;
+  original.enabled_client_hints = std::nullopt;
+  network::ResourceRequest::TrustedParams copied;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::TrustedUrlRequestParams>(
+          original, copied));
   EXPECT_TRUE(original.EqualsForTesting(copied));
 }
 

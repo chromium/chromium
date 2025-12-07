@@ -40,9 +40,7 @@ class WebStateObserverMock : public web::WebStateObserver {
   WebStateObserverMock& operator=(const WebStateObserverMock&) = delete;
 
   MOCK_METHOD2(PermissionStateChanged, void(web::WebState*, web::Permission));
-  void WebStateDestroyed(web::WebState* web_state) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
 };
 
 // Web client that simulates prerendering for testing purpose.
@@ -62,8 +60,8 @@ class TestPrerenderWebClient : public web::WebClient {
   }
 
  private:
-  raw_ptr<web::WebTestWithWebState> test_case_;
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebTestWithWebState, DanglingUntriaged> test_case_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
 };
 
 // Verifies that the current permission states matches expected.
@@ -129,7 +127,7 @@ class PermissionsInttest : public WebTestWithWebController {
 // not supported by gtest. Related logic and behaviors would be tested on real
 // devices in integration tests.
 #if TARGET_OS_SIMULATOR
-  
+
 namespace {
 
 // This is the timeout used to wait for the WKUIDelegate's decision handler
@@ -141,7 +139,7 @@ const base::TimeDelta kWebViewDecisionHandlingTimeout = base::Milliseconds(100);
 constexpr std::string_view kSecureUrl = "https://www.chromium.org";
 constexpr std::string_view kInsecureUrl = "http://www.chromium.org";
 
-} // namespace
+}  // namespace
 
 // Tests that web state observer gets invoked for camera only when the website
 // only requests for camera permissions and changed via web_state() setter

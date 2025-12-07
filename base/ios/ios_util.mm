@@ -34,6 +34,16 @@ bool IsRunningOnIOS17OrLater() {
   return is_running_on_or_later;
 }
 
+bool IsRunningOnIOS18OrLater() {
+  static const bool is_running_on_or_later = IsRunningOnOrLater(18, 0, 0);
+  return is_running_on_or_later;
+}
+
+bool IsRunningOnIOS26OrLater() {
+  static const bool is_running_on_or_later = IsRunningOnOrLater(26, 0, 0);
+  return is_running_on_or_later;
+}
+
 bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
   static const class OSVersion {
    public:
@@ -44,8 +54,9 @@ bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
 
     bool IsRunningOnOrLater(int32_t version[3]) const {
       for (size_t i = 0; i < std::size(current_version_); ++i) {
-        if (current_version_[i] != version[i])
+        if (current_version_[i] != version[i]) {
           return current_version_[i] > version[i];
+        }
       }
       return true;
     }

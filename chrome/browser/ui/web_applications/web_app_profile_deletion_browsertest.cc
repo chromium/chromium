@@ -8,7 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -33,13 +32,15 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
 #endif
 
 namespace web_app {
@@ -127,14 +128,21 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
     return deleting_web_contents;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void CreateSession(const AccountId& account_id) {
-    auto* session_manager = session_manager::SessionManager::Get();
-    session_manager->CreateSession(account_id, account_id.GetUserEmail(),
-                                   false);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    WebAppBrowserTestBase::SetUpLocalStatePrefService(local_state);
+
+    // Register a persisted user.
+    user_manager::TestHelper::RegisterPersistedUser(*local_state,
+                                                    test_account_id_);
   }
 
   Profile& StartUserSession(const AccountId& account_id) {
+    auto* session_manager = session_manager::SessionManager::Get();
+    session_manager->CreateSession(account_id, account_id.GetUserEmail(),
+                                   /*new_user=*/false,
+                                   /*has_active_session=*/false);
+
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     Profile& profile = profiles::testing::CreateProfileSync(
         profile_manager,
@@ -143,7 +151,6 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
                 ->FindUser(account_id)
                 ->username_hash()));
 
-    auto* session_manager = session_manager::SessionManager::Get();
     session_manager->NotifyUserProfileLoaded(account_id);
     session_manager->SessionStarted();
     return profile;
@@ -152,10 +159,10 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
  protected:
   // Use a real domain to avoid policy loading problems.
   const std::string kTestUserName = "test@gmail.com";
-  const std::string kTestUserGaiaId = "9876543210";
+  const GaiaId kTestUserGaiaId = GaiaId("9876543210");
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
  private:
   base::AutoReset<bool> skip_preinstalled_;
 };
@@ -175,8 +182,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
 
   /// Create a new profile and install a web app.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CreateSession(test_account_id_);
+#if BUILDFLAG(IS_CHROMEOS)
   Profile& profile_to_delete = StartUserSession(test_account_id_);
 #else
   base::FilePath profile_path_to_delete =
@@ -209,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
                        CommandsNotScheduledAfterProfileMarkedForDeletion) {
   // Create a new profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CreateSession(test_account_id_);
+#if BUILDFLAG(IS_CHROMEOS)
   Profile& profile_to_delete = StartUserSession(test_account_id_);
 #else
   base::FilePath profile_path_to_delete =
@@ -249,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
 
   /// Create a new profile and install a web app.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CreateSession(test_account_id_);
+#if BUILDFLAG(IS_CHROMEOS)
   Profile& profile_to_delete = StartUserSession(test_account_id_);
 #else
   base::FilePath profile_path_to_delete =
@@ -287,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
   EXPECT_EQ(app_id_future.Get(), app_id);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40283231): Figure out a way having this test be run on
 // ChromeOS Ash, i.e. properly trigger a browser context shutdown.
 
@@ -313,8 +317,14 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
             webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed);
 }
 
+// Flaky on Linux, see https://crbug.com/454830629.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_IconDownloading DISABLED_IconDownloading
+#else
+#define MAYBE_IconDownloading IconDownloading
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
-                       IconDownloading) {
+                       MAYBE_IconDownloading) {
   WebAppIconDownloader icon_downloader;
 
   std::unique_ptr<content::WebContents> deleting_web_contents =
@@ -393,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   icon_urls.insert(IconUrlWithSize::CreateForUnspecifiedSize(
       GURL("https://www.example.com/favicon.ico")));
   data_retriever.GetIcons(deleting_web_contents.get(), icon_urls,
-                          /*skip_page_favicons=*/false,
+                          /*download_page_favicons=*/true,
                           /*fail_all_if_any_fail=*/false,
                           icon_download_future.GetCallback());
   EXPECT_TRUE(icon_download_future.Wait());
@@ -402,6 +412,6 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
             IconsDownloadedResult::kPrimaryPageChanged);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

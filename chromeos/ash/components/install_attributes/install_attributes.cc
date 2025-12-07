@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 #include <stddef.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -157,15 +154,11 @@ void InstallAttributes::Init(const base::FilePath& cache_file) {
     return;
   }
 
-  google::protobuf::RepeatedPtrField<
-      const cryptohome::SerializedInstallAttributes::Attribute>::iterator entry;
   std::map<std::string, std::string> attr_map;
-  for (entry = install_attrs_proto.attributes().begin();
-       entry != install_attrs_proto.attributes().end(); ++entry) {
+  for (const auto& entry : install_attrs_proto.attributes()) {
     // The protobuf values contain terminating null characters, so we have to
     // sanitize the value here.
-    attr_map.insert(
-        std::make_pair(entry->name(), std::string(entry->value().c_str())));
+    attr_map.emplace(entry.name(), std::string(entry.value().c_str()));
   }
 
   DecodeInstallAttributes(attr_map);
@@ -216,8 +209,9 @@ void InstallAttributes::ReadAttributesIfReady(
     for (size_t i = 0; i < std::size(kEnterpriseAttributes); ++i) {
       std::string value;
       if (install_attributes_util::InstallAttributesGet(
-              kEnterpriseAttributes[i], &value))
-        attr_map[kEnterpriseAttributes[i]] = value;
+              UNSAFE_TODO(kEnterpriseAttributes[i]), &value)) {
+        attr_map[UNSAFE_TODO(kEnterpriseAttributes[i])] = value;
+      }
     }
 
     DecodeInstallAttributes(attr_map);
@@ -435,7 +429,7 @@ void InstallAttributes::OnTpmStatusComplete(
     return;
   }
 
-  base::HistogramBase::Sample state;
+  base::HistogramBase::Sample32 state;
   // If we get the TPM status successfully, we are interested if install
   // attributes file exists (device_locked_), if the device is enrolled
   // (registration_mode_) and if the TPM is locked, meaning the TPM password
@@ -512,8 +506,7 @@ std::string InstallAttributes::GetDeviceModeString(policy::DeviceMode mode) {
     case policy::DEVICE_MODE_NOT_SET:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid device mode: " << mode;
-  return std::string();
+  NOTREACHED() << "Invalid device mode: " << mode;
 }
 
 policy::DeviceMode InstallAttributes::GetDeviceModeFromString(
@@ -547,6 +540,10 @@ void InstallAttributes::DecodeInstallAttributes(
   const std::string realm = ReadMapKey(attr_map, kAttrEnterpriseRealm);
   const std::string device_id = ReadMapKey(attr_map, kAttrEnterpriseDeviceId);
 
+  SYSLOG(INFO) << "Found attributes " << kAttrEnterpriseOwned << "="
+               << enterprise_owned << ", " << kAttrEnterpriseMode << "="
+               << mode;
+
   if (enterprise_owned == "true") {
     registration_device_id_ = device_id;
 
@@ -555,7 +552,8 @@ void InstallAttributes::DecodeInstallAttributes(
     if (registration_mode_ != policy::DEVICE_MODE_ENTERPRISE &&
         registration_mode_ != policy::DEVICE_MODE_DEMO) {
       if (!mode.empty()) {
-        LOG(WARNING) << "Bad " << kAttrEnterpriseMode << ": " << mode;
+        LOG(WARNING) << "Bad " << kAttrEnterpriseMode << ": " << mode
+                     << ", will default to DEVICE_MODE_ENTERPRISE";
       }
       registration_mode_ = policy::DEVICE_MODE_ENTERPRISE;
     }

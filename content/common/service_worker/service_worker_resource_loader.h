@@ -86,10 +86,6 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   // Tells if the class is main resource's class or not.
   virtual bool IsMainResourceLoader() = 0;
 
-  // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
-  virtual void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr& response_head) = 0;
-
   // Calls url_loader_client_->OnReceiveResponse() with |response_body| and
   // |cached_metadata|.
   virtual void CommitResponseBody(

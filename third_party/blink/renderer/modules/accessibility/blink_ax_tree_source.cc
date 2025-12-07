@@ -6,36 +6,26 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-#include <set>
-
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
-#include "ui/accessibility/ax_common.h"
-#include "ui/accessibility/ax_enum_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
-BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                                     bool truncate_inline_textboxes)
-    : ax_object_cache_(ax_object_cache),
-      truncate_inline_textboxes_(truncate_inline_textboxes) {}
+BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache)
+    : ax_object_cache_(ax_object_cache) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() = default;
 
@@ -46,8 +36,7 @@ static ax::mojom::blink::TextAffinity ToAXAffinity(TextAffinity affinity) {
     case TextAffinity::kDownstream:
       return ax::mojom::blink::TextAffinity::kDownstream;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ax::mojom::blink::TextAffinity::kDownstream;
+      NOTREACHED();
   }
 }
 
@@ -77,8 +66,11 @@ void BlinkAXTreeSource::Selection(
 
   const auto ax_selection =
       focus->IsAtomicTextField()
-          ? AXSelection::FromCurrentSelection(ToTextControl(*focus->GetNode()))
-          : AXSelection::FromCurrentSelection(*focus->GetDocument());
+          ? AXSelection::FromCurrentSelection(ToTextControl(*focus->GetNode()),
+                                              *ax_object_cache_)
+          : AXSelection::FromCurrentSelection(
+                *focus->GetDocument(), *ax_object_cache_,
+                AXSelectionBehavior::kExtendToValidRange);
   if (!ax_selection)
     return;
 
@@ -122,8 +114,9 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   tree_data->title = document.title().Utf8();
   tree_data->url = document.Url().GetString().Utf8();
 
-  if (const AXObject* focus = GetFocusedObject())
+  if (const AXObject* focus = GetFocusedObject()) {
     tree_data->focus_id = focus->AXObjectID();
+  }
 
   bool is_selection_backward = false;
   const AXObject *anchor_object, *focus_object;
@@ -173,18 +166,20 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
         }
         // TODO(chrishtr): replace the below with elem->outerHTML().
         String tag = elem->tagName().LowerASCII();
-        String html = "<" + tag;
+        StringBuilder html;
+        html << "<" << tag;
         for (unsigned i = 0; i < elem->Attributes().size(); i++) {
-          html = html + String(" ") + elem->Attributes().at(i).LocalName() +
-                 String("=\"") + elem->Attributes().at(i).Value() + "\"";
+          html << " " << elem->Attributes().at(i).LocalName() << "=\""
+               << elem->Attributes().at(i).Value() << "\"";
         }
-        html = html + String(">") + elem->innerHTML() + String("</") + tag +
-               String(">");
-        tree_data->metadata.push_back(html.Utf8());
+        html << ">" << elem->GetInnerHTMLString() << "</" << tag << ">";
+        if (!tree_data->metadata.has_value()) {
+          tree_data->metadata.emplace();
+        }
+        tree_data->metadata->push_back(html.ReleaseString().Utf8());
       }
     }
   }
-
   return true;
 }
 
@@ -233,34 +228,32 @@ int32_t BlinkAXTreeSource::GetId(const AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
-  if (truncate_inline_textboxes_ &&
-      ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
-    return 0;
+  if (ax_object_cache_->GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    // If kOnScreenOnly is set, we don't want to serialize children of nodes
+    // that are off-screen, thus pruning the tree that is sent to
+    // clients.
+    if (!node->WasEverOnScreen()) {
+      return 0;
+    }
   }
   return node->ChildCountIncludingIgnored();
 }
 
 AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
-  if (truncate_inline_textboxes_) {
-    CHECK(!ui::CanHaveInlineTextBoxChildren(node->RoleValue()));
-  }
   auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
 
   // The child may be invalid due to issues in blink accessibility code.
   CHECK(child);
   if (child->IsDetached()) {
-    NOTREACHED(base::NotFatalUntil::M127)
-        << "Should not try to serialize an invalid child:" << "\nParent: "
-        << node->ToString().Utf8() << "\nChild: " << child->ToString().Utf8();
-    return nullptr;
+    NOTREACHED() << "Should not try to serialize an invalid child:"
+                 << "\nParent: " << node->ToString().Utf8()
+                 << "\nChild: " << child->ToString().Utf8();
   }
 
   if (!child->IsIncludedInTree()) {
-    NOTREACHED(base::NotFatalUntil::M127)
-        << "Should not receive unincluded child."
-        << "\nChild: " << child->ToString().Utf8()
-        << "\nParent: " << node->ToString().Utf8();
-    return nullptr;
+    NOTREACHED() << "Should not receive unincluded child."
+                 << "\nChild: " << child->ToString().Utf8()
+                 << "\nParent: " << node->ToString().Utf8();
   }
 
   // These should not be produced by Blink. They are only needed on Mac and
@@ -309,11 +302,7 @@ void BlinkAXTreeSource::SerializeNode(const AXObject* src,
 #endif
 
   if (!src || src->IsDetached() || !src->IsIncludedInTree()) {
-    dst->AddState(ax::mojom::blink::State::kIgnored);
-    dst->id = -1;
-    dst->role = ax::mojom::blink::Role::kUnknown;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   src->Serialize(dst, ax_object_cache_->GetAXMode());

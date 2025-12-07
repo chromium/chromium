@@ -3,12 +3,13 @@
 <translationbundle lang="eu">
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="111910763555783249">Jakinarazpen-ezarpenak</translation>
-<translation id="1127811143501539442">{DAYS,plural, =1{Duela 1 egun}other{Duela # egun}}</translation>
-<translation id="1156623771253174079">{SECONDS,plural, =1{Duela 1 minutu}other{Duela # minutu}}</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{Duela egun bat}other{Duela # egun}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{Duela minutu bat}other{Duela # minutu}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="1178017578188974117">{DAYS,plural, =1{Duela egun bat}other{Duela # egun}}</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1243314992276662751">Kargatu</translation>
+<translation id="1253734725326687145">Ukipen-eremua gora eta eskuinera eraman da. Sakatu hau.</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Saiatu testua zati txikiagotan partekatzen.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">Eginbide berri bat da hau</translation>
 <translation id="2006524834898217237">Ziurtatu gailua Internetera konektatuta dagoela.</translation>
 <translation id="208586643495776849">Saiatu berriro</translation>
+<translation id="2111134541987263231">Aktibatu <ph name="BEGIN_BOLD" />Baimendu ezkutuko moduan<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 egun}other{# egun}}</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="2168039046890040389">Orrian gora</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">Sakatu pantailan adierazitako elementuak.</translation>
 <translation id="2295140143284145483">Inkesta</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Ezin da aurkitu <ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatzailearekin lotutako luzapenik. Jarri administratzailearekin harremanetan.}other{Ezin da aurkitu <ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatzaileekin lotutako luzapenik. Jarri administratzailearekin harremanetan.}}</translation>
 <translation id="2353636109065292463">Internetera konektatuta zaudela egiaztatzea</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2388990488038464401">Zenbaki honetara deitu nahi duzu telefonotik?</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="24452542372838207">Zabaldu jakinarazpena</translation>
 <translation id="2445449901874883781">Erabili dentsitate handia</translation>
+<translation id="2448407890032181691">Ukipen-eremua behera eta eskuinera eraman da. Sakatu hau.</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2497284189126895209">Fitxategi guztiak</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -66,10 +70,11 @@
 <translation id="2653844658857826081">BERRIA</translation>
 <translation id="2666092431469916601">Goiko elementua</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> gailutik partekatu da</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{Duela 1 urte}other{Duela # urte}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{Duela urtebete}other{Duela # urte}}</translation>
 <translation id="2878511608894704031">Ezabatu guztiak</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 egun barru}other{# egun barru}}</translation>
 <translation id="2922712708897119705">"<ph name="COLUMN_NAME" />" zutabea beherantz ordenatu da.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Ezin da aurkitu luzapena}other{Ezin dira aurkitu luzapenak}}</translation>
 <translation id="3036649622769666520">Ireki fitxategiak</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Behekoa</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">Deitu honen bidez:</translation>
 <translation id="3306688585798492231">Pantaila integratua</translation>
 <translation id="335581015389089642">Hizketa</translation>
+<translation id="3372635229069101468">Sakatu <ph name="BEGIN_BOLD" />Xehetasunak<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Testua luzeegia da</translation>
 <translation id="3406306243914553062">HTML edukia</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 egun gelditzen da}other{# egun gelditzen dira}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">"<ph name="COLUMN_NAME" />" zutabea gorantz ordenatu da.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Irakurri gabeko 1 jakinarazpen}other{Irakurri gabeko # jakinarazpen}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Aktibatu luzapen hau ezkutuko moduan:}other{Aktibatu luzapen hauek ezkutuko moduan:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Duela 1 hilabete}other{Duela # hilabete}}</translation>
+<translation id="4277033906326892359">"<ph name="COLUMN_NAME" />" zutabea gorantz ordenatu da</translation>
 <translation id="4289300219472526559">Hasi hitz egiten</translation>
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="4491109536499578614">Irudia</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">zenbakia</translation>
 <translation id="4746179598275229723">Kendu da luzapenaren aingura</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 hilabete gelditzen da}other{# hilabete gelditzen dira}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Ezkutuko modua erabiltzeko, zure erakundeak luzapen bat eskatzen du}other{Ezkutuko modua erabiltzeko, zure erakundeak luzapen batzuk eskatzen ditu}}</translation>
+<translation id="482932175346970750">Idatzi <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> arakatzailean.</translation>
 <translation id="4888938634149558681">Deitu</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 segundo}other{# segundo}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">It&amp;satsi</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Ezin izan da bidali</translation>
+<translation id="5283101102242354279">Aktibatu luzapen bat ezkutuko moduan:</translation>
 <translation id="528468243742722775">Amaitu</translation>
 <translation id="5329858601952122676">&amp;Ezabatu</translation>
 <translation id="5361107212971249203">testua</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">Ezin izan da kargatu orria ez dagoelako instalatuta garatzailearen erabiltzaile-interfazearen modulua (dev_ui)</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> sistema</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
+<translation id="5606865426897221650">Fitxa</translation>
 <translation id="5613020302032141669">Ezkerrera gezia</translation>
 <translation id="5633029987065897167">Hutsik</translation>
+<translation id="5651438382973553530">Ukipen-eremua behera eta ezkerrera eraman da. Sakatu hau.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{Aktibo gaur}=1{Aktibo duela 1 egun}other{Aktibo duela # egun}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktibo gaur}=1{Aktibo duela egun bat}other{Aktibo duela # egun}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 egun eta }other{# egun eta }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Irudia.</translation>
+<translation id="5860491529813859533">Aktibatu</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 urte barru}other{# urte barru}}</translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 segundo gelditzen da}other{# segundo gelditzen dira}}</translation>
@@ -151,17 +165,20 @@
 <translation id="6264365405983206840">Hautatu &amp;guztiak</translation>
 <translation id="6346952829206698721">Itsatsi arbeletik</translation>
 <translation id="6364916375976753737">Joan ezkerrera</translation>
+<translation id="63712816010840859">Oraingo pantaila ukipen-pantaila ez bada, sakatu Ihes.</translation>
 <translation id="6394627529324717982">Koma</translation>
 <translation id="6397363302884558537">Utzi hitz egiteari</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{Duela 1 s}other{Duela # s}}</translation>
 <translation id="6430678249303439055">Blokeatu aplikazio honen jakinarazpen guztiak</translation>
-<translation id="6483402905448010557">{SECONDS,plural, =1{Duela 1 segundo}other{Duela # segundo}}</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{Duela segundo bat}other{Duela # segundo}}</translation>
 <translation id="6503257047630241175">RTF fitxategiko edukia</translation>
 <translation id="6539092367496845964">Arazoren bat izan da. Saiatu berriro geroago.</translation>
 <translation id="654149438358937226">Blokeatu jakinarazpen guztiak</translation>
 <translation id="6612467943526193239">Kalibraziotik irteteko, sakatu Ihes tekla.</translation>
 <translation id="6620110761915583480">Gorde fitxategia</translation>
 <translation id="6699343763173986273">Hurrengo pista</translation>
+<translation id="6738856801552481343">Pantaila hau ukipen-pantaila ez bada, sakatu Ihes.</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> zutabea</translation>
 <translation id="6808150112686056157">Gelditu multimedia-elementua</translation>
 <translation id="6845383723252244143">Hautatu karpeta</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ordu gelditzen da}other{# ordu gelditzen dira}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">Aplikazioaren bistaratze-ezarpenek aplikazioa berrabiarazten denean izango dute eragina.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min gelditzen da}other{# min gelditzen dira}}</translation>
+<translation id="7252604552361840748">Aurkitu goiko luzapena.</translation>
 <translation id="7363164521834647158">Bidali erantzuna</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Duela 1 min}other{Duela # min}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Irakurri gabeko jakinarazpen bat baino gehiago dago}other{Irakurri gabeko # jakinarazpen baino gehiago daude}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 min barru}other{# min barru}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Zenbakiaren jatorria: <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{Duela 1 ordu}other{Duela # ordu}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{Duela ordubete}other{Duela # ordu}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 s gelditzen da}other{# s gelditzen dira}}</translation>
 <translation id="8134065097954893699">Orri hau berriro kargatzea</translation>
+<translation id="813785873406874127">"<ph name="COLUMN_NAME" />" zutabea ordenatzeari utzi zaio</translation>
 <translation id="815598010540052116">Egin behera</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8210608804940886430">Orrian behera</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tabuladorea</translation>
 <translation id="8259556432390118667">Kolore hamaseitarraren balioa</translation>
 <translation id="8328145009876646418">Ezkerreko ertza</translation>
 <translation id="8331626408530291785">Egin gora</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">Bidali mezua</translation>
 <translation id="8394908167088220973">Erreproduzitu/Pausatu multimedia-elementua</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 urte}other{# urte}}</translation>
+<translation id="8582972250170726813">"<ph name="COLUMN_NAME" />" zutabea beherantz ordenatu da</translation>
 <translation id="8598144894266192959">% <ph name="NUMBER" /></translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> fitxategia (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>
 <translation id="9059834730836941392">Tolestu jakinarazpena</translation>
 <translation id="9170848237812810038">&amp;Desegin</translation>
+<translation id="9195990613383871904">Bihar</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Hasiera</translation>
 <translation id="944069440740578670">Irakurri gabeko jakinarazpenak</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Duela segundo bat}other{Duela # segundo}}</translation>

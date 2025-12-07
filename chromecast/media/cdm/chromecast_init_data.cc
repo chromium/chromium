@@ -5,6 +5,7 @@
 #include "chromecast/media/cdm/chromecast_init_data.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "media/base/bit_reader.h"
 #include "media/cdm/cenc_utils.h"
 
@@ -43,9 +44,10 @@ bool FindChromecastInitData(const std::vector<uint8_t>& init_data,
 
   std::vector<uint8_t> pssh_data;
   if (!::media::GetPsshData(
-          init_data, std::vector<uint8_t>(kChromecastPlayreadyUuid,
-                                          kChromecastPlayreadyUuid +
-                                              sizeof(kChromecastPlayreadyUuid)),
+          init_data,
+          std::vector<uint8_t>(kChromecastPlayreadyUuid,
+                               UNSAFE_TODO(kChromecastPlayreadyUuid +
+                                           sizeof(kChromecastPlayreadyUuid))),
           &pssh_data)) {
     return false;
   }

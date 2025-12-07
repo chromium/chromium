@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #===- lib/asan/scripts/asan_symbolize.py -----------------------------------===#
 #
 # Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
@@ -28,7 +28,7 @@ import os
 import re
 import subprocess
 import sys
-from distutils.spawn import find_executable
+import shutil
 
 symbolizers = {}
 demangle = False
@@ -155,7 +155,7 @@ class Addr2LineSymbolizer(Symbolizer):
     addr2line_tool = 'addr2line'
     if binutils_prefix:
       addr2line_tool = binutils_prefix + addr2line_tool
-    logging.debug('addr2line binary is %s' % find_executable(addr2line_tool))
+    logging.debug('addr2line binary is %s' % shutil.which(addr2line_tool))
     cmd = [addr2line_tool, '-fi']
     if demangle:
       cmd += ['--demangle']
@@ -492,13 +492,15 @@ class SymbolizationLoop(object):
     self.current_line = line.rstrip()
     # Unsymbolicated:
     # #0 0x7f6e35cf2e45  (/blah/foo.so+0x11fe45)
+    # or
+    # CRASH LOG: #0 0x7f6e35cf2e45  (/blah/foo.so+0x11fe45)
     # Partially symbolicated:
     # #0 0x7f6e35cf2e45 in foo (foo.so+0x11fe45)
     # NOTE: We have to very liberal with symbol
     # names in the regex because it could be an
     # Objective-C or C++ demangled name.
     stack_trace_line_format = (
-        '^( *#([0-9]+) *)(0x[0-9a-f]+) *(?:in *.+)? *\((.*)\+(0x[0-9a-f]+)\)')
+        '^((?:CRASH LOG:)? *#([0-9]+) *)(0x[0-9a-f]+) *(?:in *.+)? *\((.*)\+(0x[0-9a-f]+)\)')
     match = re.match(stack_trace_line_format, line)
     if not match:
       logging.debug('Line "{}" does not match regex'.format(line))

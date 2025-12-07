@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/audio/audio_device_id.h"
 
+#include <sstream>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"

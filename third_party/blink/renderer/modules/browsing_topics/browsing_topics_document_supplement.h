@@ -20,10 +20,8 @@ class BrowsingTopicsOptions;
 // Explainer: https://github.com/jkarlin/topics
 class MODULES_EXPORT BrowsingTopicsDocumentSupplement
     : public GarbageCollected<BrowsingTopicsDocumentSupplement>,
-      public Supplement<Document> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   // Supplement functionality.
   static BrowsingTopicsDocumentSupplement* From(Document&);
   static ScriptPromise<IDLSequence<BrowsingTopic>> browsingTopics(

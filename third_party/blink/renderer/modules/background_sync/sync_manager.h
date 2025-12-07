@@ -45,7 +45,7 @@ class SyncManager final : public ScriptWrappable {
   static void GetRegistrationsCallback(
       ScriptPromiseResolver<IDLSequence<IDLString>>*,
       mojom::blink::BackgroundSyncError,
-      WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
+      Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
 
   Member<ServiceWorkerRegistration> registration_;
   HeapMojoRemote<mojom::blink::OneShotBackgroundSyncService>

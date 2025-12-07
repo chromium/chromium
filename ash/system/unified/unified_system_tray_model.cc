@@ -165,9 +165,9 @@ void UnifiedSystemTrayModel::KeyboardBrightnessChanged(
 const display::Display UnifiedSystemTrayModel::GetDisplay() const {
   // |shelf_| might be null in unit tests, returns primary display as default.
   if (!shelf_)
-    return display::Screen::GetScreen()->GetPrimaryDisplay();
+    return display::Screen::Get()->GetPrimaryDisplay();
 
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+  return display::Screen::Get()->GetDisplayNearestWindow(
       shelf_->GetStatusAreaWidget()
           ->GetRootView()
           ->GetWidget()

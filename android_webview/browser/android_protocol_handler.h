@@ -7,6 +7,7 @@
 
 #include <jni.h>
 #include <memory>
+#include <string>
 
 class GURL;
 

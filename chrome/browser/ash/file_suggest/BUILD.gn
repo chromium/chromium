@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("file_suggest") {
   sources = [
@@ -34,6 +34,7 @@ static_library("file_suggest") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/ranking",
@@ -42,7 +43,10 @@ static_library("file_suggest") {
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
+    "//components/application_locale_storage",
     "//components/drive",
     "//components/google/core/common",
     "//components/prefs",
@@ -95,9 +99,9 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/test:test_support",
@@ -127,7 +131,6 @@ source_set("browser_tests") {
     ":test_support",
     "//ash/constants",
     "//base/test:test_support",
-    "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

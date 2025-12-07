@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,12 +16,12 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
 namespace base {
@@ -33,18 +34,11 @@ class SiteForCookies;
 
 namespace blink {
 
+class AcceptLanguagesWatcher;
 class WebDocumentSubresourceFilter;
 class URLLoaderFactory;
 class WebURLRequest;
 class URLLoaderThrottle;
-
-// Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
-// upon an accept languages update. This class will be extended by
-// WorkerNavigator.
-class AcceptLanguagesWatcher {
- public:
-  virtual void NotifyUpdate() = 0;
-};
 
 // WebWorkerFetchContext is a per-worker object created on the main thread,
 // passed to a worker (dedicated, shared and service worker) and initialized on
@@ -89,13 +83,20 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // The returned URLLoaderFactory is owned by |this|.
   virtual URLLoaderFactory* GetScriptLoaderFactory() { return nullptr; }
 
+  // Called before a request is looked up from the cache. Allows the worker
+  // to override the url.
+  virtual std::optional<WebURL> WillSendRequest(const WebURL& url) {
+    return std::nullopt;
+  }
+
   // Called when a request is about to be sent out to modify the request to
   // handle the request correctly in the loading stack later. (Example: service
-  // worker)
-  virtual void WillSendRequest(WebURLRequest&) = 0;
+  // worker). Clients that need to change the url should do it in
+  // OverrideRequestUrl(), not here.
+  virtual void FinalizeRequest(WebURLRequest&) = 0;
 
   // Creates URLLoaderThrottles for the `request`.
-  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+  virtual std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) = 0;
 
   // Returns whether a controller service worker exists and if it has fetch
@@ -144,10 +145,6 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // Returns the current list of user preferred languages.
   virtual blink::WebString GetAcceptLanguages() const = 0;
 
-  // This flag is set to disallow all network accesses in the context. Used for
-  // offline capability detection in service workers.
-  virtual void SetIsOfflineMode(bool is_offline_mode) = 0;
-
   // Creates a notifier used to notify loading stats for workers.
   virtual std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() {
@@ -157,6 +154,11 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
 
   virtual bool IsDedicatedWorkerOrSharedWorkerFetchContext() const {
     return false;
+  }
+
+  virtual std::unique_ptr<WebServiceWorkerProvider>
+  CreateServiceWorkerProvider() {
+    return nullptr;
   }
 };
 

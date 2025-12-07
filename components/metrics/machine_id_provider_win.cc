@@ -18,15 +18,17 @@
 
 namespace metrics {
 
-// static
-bool MachineIdProvider::HasId() {
+MachineIdProvider::MachineIdProvider() = default;
+
+MachineIdProvider::~MachineIdProvider() = default;
+
+bool MachineIdProvider::HasId() const {
   return true;
 }
 
 // On windows, the machine id is based on the serial number of the drive Chrome
 // is running from.
-// static
-std::string MachineIdProvider::GetMachineId() {
+std::string MachineIdProvider::GetMachineId() const {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -35,17 +37,11 @@ std::string MachineIdProvider::GetMachineId() {
   // This is fine as we do not support migrating Chrome installs to new drives.
   base::FilePath executable_path;
 
-  if (!base::PathService::Get(base::FILE_EXE, &executable_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
-  }
+  CHECK(base::PathService::Get(base::FILE_EXE, &executable_path));
 
   std::vector<base::FilePath::StringType> path_components =
       executable_path.GetComponents();
-  if (path_components.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
-  }
+  CHECK(!path_components.empty());
   base::FilePath::StringType drive_name = L"\\\\.\\" + path_components[0];
 
   base::win::ScopedHandle drive_handle(
@@ -64,8 +60,9 @@ std::string MachineIdProvider::GetMachineId() {
       sizeof(STORAGE_PROPERTY_QUERY), &header,
       sizeof(STORAGE_DESCRIPTOR_HEADER), &bytes_returned, nullptr);
 
-  if (!status)
+  if (!status) {
     return std::string();
+  }
 
   // Query for the actual serial number.
   std::vector<int8_t> output_buf(header.Size);
@@ -74,8 +71,9 @@ std::string MachineIdProvider::GetMachineId() {
                       sizeof(STORAGE_PROPERTY_QUERY), &output_buf[0],
                       output_buf.size(), &bytes_returned, nullptr);
 
-  if (!status)
+  if (!status) {
     return std::string();
+  }
 
   const STORAGE_DEVICE_DESCRIPTOR* device_descriptor =
       reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(&output_buf[0]);
@@ -83,16 +81,18 @@ std::string MachineIdProvider::GetMachineId() {
   // The serial number is stored in the |output_buf| as a null-terminated
   // string starting at the specified offset.
   const DWORD offset = device_descriptor->SerialNumberOffset;
-  if (offset >= output_buf.size())
+  if (offset >= output_buf.size()) {
     return std::string();
+  }
 
   // Make sure that the null-terminator exists.
   const std::vector<int8_t>::iterator serial_number_begin =
       output_buf.begin() + offset;
   const std::vector<int8_t>::iterator null_location =
       std::find(serial_number_begin, output_buf.end(), '\0');
-  if (null_location == output_buf.end())
+  if (null_location == output_buf.end()) {
     return std::string();
+  }
 
   const char* serial_number =
       reinterpret_cast<const char*>(&output_buf[offset]);

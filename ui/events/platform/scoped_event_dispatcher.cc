@@ -9,7 +9,7 @@
 namespace ui {
 
 ScopedEventDispatcher::ScopedEventDispatcher(
-    PlatformEventDispatcher** scoped_dispatcher,
+    raw_ptr<PlatformEventDispatcher>* scoped_dispatcher,
     PlatformEventDispatcher* new_dispatcher)
     : original_(*scoped_dispatcher),
       restore_(scoped_dispatcher, new_dispatcher) {}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    let nadcAttributeTest = internals.nadcAttributeTest();
+    function testAttributeSet(value) {
+      nadcAttributeTest.float64Value = value;
+    }
+
+    %PrepareFunctionForOptimization(testAttributeSet);
+    testAttributeSet(12.5);
+    testAttributeSet(7.5);
+    %OptimizeFunctionOnNextCall(testAttributeSet);
+    testAttributeSet(5.5);
+    assert_equals(nadcAttributeTest.float64Value, 5.5);
+  }, "Test attribute setter with fast API");
+</script>

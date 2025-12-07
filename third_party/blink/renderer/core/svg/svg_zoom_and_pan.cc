@@ -19,11 +19,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
 
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -43,30 +38,34 @@ bool SVGZoomAndPan::ParseAttribute(const QualifiedName& name,
     return false;
   zoom_and_pan_ = kSVGZoomAndPanUnknown;
   if (!value.empty()) {
-    zoom_and_pan_ =
-        WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-          return Parse(chars, chars + length);
-        });
+    size_t position = 0;
+    zoom_and_pan_ = VisitCharacters(
+        value, [&](auto chars) { return Parse(chars, position); });
   }
   return true;
 }
 
 template <typename CharType>
-static SVGZoomAndPanType ParseZoomAndPanInternal(const CharType*& start,
-                                                 const CharType* end) {
-  if (SkipToken(start, end, "disable"))
+static SVGZoomAndPanType ParseZoomAndPanInternal(
+    const base::span<const CharType> chars,
+    size_t& position) {
+  if (SkipToken(chars, "disable", position)) {
     return kSVGZoomAndPanDisable;
-  if (SkipToken(start, end, "magnify"))
+  }
+  if (SkipToken(chars, "magnify", position)) {
     return kSVGZoomAndPanMagnify;
+  }
   return kSVGZoomAndPanUnknown;
 }
 
-SVGZoomAndPanType SVGZoomAndPan::Parse(const LChar*& start, const LChar* end) {
-  return ParseZoomAndPanInternal(start, end);
+SVGZoomAndPanType SVGZoomAndPan::Parse(const base::span<const LChar> chars,
+                                       size_t& position) {
+  return ParseZoomAndPanInternal(chars, position);
 }
 
-SVGZoomAndPanType SVGZoomAndPan::Parse(const UChar*& start, const UChar* end) {
-  return ParseZoomAndPanInternal(start, end);
+SVGZoomAndPanType SVGZoomAndPan::Parse(const base::span<const UChar> chars,
+                                       size_t& position) {
+  return ParseZoomAndPanInternal(chars, position);
 }
 
 }  // namespace blink

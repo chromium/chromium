@@ -71,9 +71,6 @@ class TryValueFlipsTest : public PageTestBase {
     add(CSSPropertyID::kAlignSelf, flips.align_self);
     add(CSSPropertyID::kJustifySelf, flips.justify_self);
     add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-    // TODO(crbug.com/352360007): this can be removed when inset-area is
-    // removed.
-    add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
     add_if_flipped(CSSPropertyID::kBlockSize, flips.block_size);
     add_if_flipped(CSSPropertyID::kInlineSize, flips.inline_size);
     add_if_flipped(CSSPropertyID::kMinBlockSize, flips.min_block_size);
@@ -89,8 +86,7 @@ class TryValueFlipsTest : public PageTestBase {
   // for debugging failing tests.
   Vector<String> DeclarationStrings(const CSSPropertyValueSet* set) {
     Vector<String> result;
-    for (unsigned i = 0; i < set->PropertyCount(); ++i) {
-      CSSPropertyValueSet::PropertyReference ref = set->PropertyAt(i);
+    for (const CSSPropertyValue& ref : set->Properties()) {
       result.push_back(ref.Name().ToAtomicString() + ":" +
                        ref.Value().CssText());
     }
@@ -103,13 +99,15 @@ class TryValueFlipsTest : public PageTestBase {
 
   Vector<String> ActualFlipsVector(const TryTacticList& tactic_list) {
     TryValueFlips flips;
-    return DeclarationStrings(flips.FlipSet(tactic_list));
+    return DeclarationStrings(
+        flips.FlipSet(tactic_list, WritingMode::kHorizontalTb));
   }
 };
 
 TEST_F(TryValueFlipsTest, None) {
   TryValueFlips flips;
-  EXPECT_FALSE(flips.FlipSet(Tactics(TryTactic::kNone)));
+  EXPECT_FALSE(
+      flips.FlipSet(Tactics(TryTactic::kNone), WritingMode::kHorizontalTb));
 }
 
 // Flips without kFlipStart:
@@ -326,7 +324,7 @@ Declaration ParseDeclaration(String string) {
       css_test_helpers::ParseDeclarationBlock(string);
   CHECK(set);
   CHECK_EQ(1u, set->PropertyCount());
-  CSSPropertyValueSet::PropertyReference ref = set->PropertyAt(0);
+  const CSSPropertyValue& ref = set->PropertyAt(0);
   return Declaration{.property_id = ref.Name().Id(), .value = &ref.Value()};
 }
 
@@ -846,7 +844,8 @@ TEST_P(FlipValueTest, All) {
   FlipValueTestData param = GetParam();
   Declaration input = ParseDeclaration(String(param.input));
   Declaration expected = ParseDeclaration(String(param.expected));
-  TryTacticTransform transform = TryTacticTransform(param.tactic);
+  TryTacticTransform transform = TryTacticTransform(
+      param.tactic, param.writing_direction.GetWritingMode());
   const CSSValue* actual_value = TryValueFlips::FlipValue(
       input.property_id, input.value, transform, param.writing_direction);
   ASSERT_TRUE(actual_value);
@@ -936,7 +935,8 @@ INSTANTIATE_TEST_SUITE_P(TryValueFlipsTest,
 TEST_P(NoFlipValueTest, All) {
   NoFlipValueTestData param = GetParam();
   Declaration input = ParseDeclaration(String(param.input));
-  TryTacticTransform transform = TryTacticTransform(param.tactic);
+  TryTacticTransform transform = TryTacticTransform(
+      param.tactic, param.writing_direction.GetWritingMode());
   const CSSValue* actual_value = TryValueFlips::FlipValue(
       input.property_id, input.value, transform, param.writing_direction);
   ASSERT_TRUE(actual_value);

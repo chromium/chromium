@@ -29,11 +29,11 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -62,6 +62,7 @@ using net::test_server::HttpResponse;
 const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("heuristics");
 
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 // To disable a data driven test, please add the name of the test file
 // (i.e., FILE_PATH_LITERAL("NNN_some_site.html")) to the initializer_list given
 // to the failing_test_names constructor.
@@ -69,9 +70,10 @@ const auto& GetFailingTestNames() {
   static std::set<base::FilePath::StringType> failing_test_names{};
   return failing_test_names;
 }
+#endif
 
 const base::FilePath& GetTestDataDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     dir = dir.AppendASCII("components").AppendASCII("test").AppendASCII("data");
@@ -135,7 +137,7 @@ std::string FormStructuresToString(
         }
       }
       string_form += base::JoinString(
-          {field->Type().ToStringView(), base::UTF16ToUTF8(field->name()),
+          {field->Type().ToString(), base::UTF16ToUTF8(field->name()),
            base::UTF16ToUTF8(field->label()), base::UTF16ToUTF8(field->value()),
            section},
           " | ");
@@ -146,8 +148,6 @@ std::string FormStructuresToString(
   sort(string_forms.begin(), string_forms.end());
   return base::JoinString(string_forms, "\n");
 }
-
-}  // namespace
 
 // A data-driven test for verifying Autofill heuristics. Each input is an HTML
 // file that contains one or more forms. The corresponding output file lists the
@@ -181,7 +181,7 @@ class FormStructureBrowserTest
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     TestAutofillManagerWaiter& waiter() { return waiter_; }
 
@@ -208,33 +208,36 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/40160818) Remove once launched.
-          features::kAutofillEnableDependentLocalityParsing,
-          features::kAutofillPageLanguageDetection,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          // TODO(crbug.com/40230674): Remove once launched.
-          features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
-          // TODO(crbug.com/40220393): Remove once launched.
-          features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-          features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          // TODO(crbug.com/40279279): Clean up when launched.
-          features::kAutofillDefaultToCityAndNumber,
+          features::kAutofillIgnoreCheckableElements,
+          // TODO(crbug.com/369503318): Remove once launched.
+          features::kAutofillSupportSplitZipCode,
       },
       // Disabled
-      {// TODO(crbug.com/40220393): Remove once launched.
-       // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
-       // As it is not supported on iOS yet, it is disabled.
-       features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-       // TODO(crbug.com/40222716): Remove once launched. This feature is
-       // disabled since it is not supported on iOS.
-       features::kAutofillAlwaysParsePlaceholders,
-       // TODO(crbug.com/1493145): Remove when/if launched. This feature changes
-       // default parsing behavior, so must be disabled to avoid
-       // fieldtrial_testing_config interference.
-       features::kAutofillEnableEmailHeuristicOnlyAddressForms});
+      {
+          // TODO(crbug.com/320965828): This feature is not supported on the iOS
+          // renderer side and disabled to avoid too many differences between
+          // the expectations.
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport,
+          // TODO(crbug.com/395831853): Remove once launched.
+          features::kAutofillEnableLoyaltyCardsFilling,
+          // TODO(crbug.com/360322019): kAutofillPageLanguageDetection needs to
+          // be disabled because the page language detection is an asynchronous
+          // process in the renderer. If the form parsing in the browser
+          // completes before the language detection triggers a second run with
+          // a known language, the results are different from results without
+          // such a second run: Form parsing with a known language applies fewer
+          // regular expressions than formparsing without a known language. It
+          // would be ideal if the browser could just wait until the page
+          // language detection is complete but at the moment the browser is
+          // only informed if a non-null language could be determined. See
+          // crbug.com/409067352. We disable page language detection to get a
+          // deterministic result until this is fixed.
+          features::kAutofillPageLanguageDetection,
+      });
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;
@@ -246,11 +249,6 @@ void FormStructureBrowserTest::SetUpCommandLine(
   command_line->AppendSwitchASCII(switches::kLoggingLevel, "2");
   command_line->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "us");
-  // SelectParserRelaxation affects the results from the test data because the
-  // test data has unclosed <select> tags. Since SelectParserRelaxation is not
-  // enabled by default, we are disabling it for this test.
-  command_line->AppendSwitchASCII("disable-blink-features",
-                                  "SelectParserRelaxation");
 }
 
 void FormStructureBrowserTest::SetUpOnMainThread() {
@@ -267,7 +265,7 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   html_content_.clear();
   html_content_.reserve(input.length());
   for (const char c : input) {
-    // Strip `\n`, `\t`, `\r` from |html| to match old `data:` URL behavior.
+    // Strip `\n`, `\t`, `\r` from `html` to match old `data:` URL behavior.
     // TODO(crbug.com/40317270): the tests expect weird concatenation behavior
     // based
     //   legacy data URL behavior. Fix this so the the tests better represent
@@ -295,26 +293,22 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
   return std::move(response);
 }
 
-// TODO(https://crbug.com/41493195): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_DataDrivenHeuristics DISABLED_DataDrivenHeuristics
+IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
+                  "parsing patterns";
 #else
-#define MAYBE_DataDrivenHeuristics DataDrivenHeuristics
-#endif
-IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
-  if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
-    GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
-                    "parsing patterns";
-  }
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetOutputDirectory(), is_expected_to_pass);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(AllForms,
                          FormStructureBrowserTest,
                          testing::ValuesIn(GetTestFiles()));
 
+}  // namespace
 }  // namespace autofill

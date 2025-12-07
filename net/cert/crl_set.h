@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -45,7 +46,7 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   //       value
   //   issuer_spki_hash: the SHA256 of the SubjectPublicKeyInfo of the CRL
   //       signer
-  Result CheckSerial(std::string_view serial_number,
+  Result CheckSerial(base::span<const uint8_t> serial_number,
                      std::string_view issuer_spki_hash) const;
 
   // CheckSubject returns the information contained in the set for a given,
@@ -57,7 +58,7 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // Returns true if |spki_hash|, the SHA256 of the SubjectPublicKeyInfo,
   // is known to be used for interception by a party other than the device
   // or machine owner.
-  bool IsKnownInterceptionKey(std::string_view spki_hash) const;
+  bool IsKnownInterceptionKey(base::span<const uint8_t> spki_hash) const;
 
   // IsExpired returns true iff the current time is past the NotAfter time
   // specified in the CRLSet.
@@ -70,7 +71,8 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
 
   // CRLList contains a map of (issuer SPKI hash, revoked serial numbers)
   // pairs.
-  using CRLList = std::unordered_map<std::string, std::vector<std::string>>;
+  using CRLList =
+      std::unordered_map<std::string, std::vector<std::vector<uint8_t>>>;
 
   // crls returns the internal state of this CRLSet. It should only be used in
   // testing.
@@ -98,7 +100,7 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   static scoped_refptr<CRLSet> ForTesting(
       bool is_expired,
       const SHA256HashValue* issuer_spki,
-      std::string_view serial_number,
+      base::span<const uint8_t> serial_number,
       std::string_view utf8_common_name,
       const std::vector<std::string>& acceptable_spki_hashes_for_cn);
 

@@ -12,6 +12,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -23,11 +24,13 @@ namespace ui {
 
 CrtcController::CrtcController(const scoped_refptr<DrmDevice>& drm,
                                uint32_t crtc,
-                               uint32_t connector)
+                               uint32_t connector,
+                               std::optional<TileProperty> tile_property)
     : drm_(drm),
       crtc_(crtc),
       connector_(connector),
-      state_(drm->plane_manager()->GetCrtcStateForCrtcId(crtc)) {}
+      state_(drm->plane_manager()->GetCrtcStateForCrtcId(crtc)),
+      tile_property_(std::move(tile_property)) {}
 
 CrtcController::~CrtcController() {
   if (is_enabled()) {
@@ -59,8 +62,15 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
     return true;
   }
 
-  if (!drm_->plane_manager()->AssignOverlayPlanes(plane_list, overlays,
-                                                  crtc_)) {
+  std::optional<gfx::Point> crtc_offset = std::nullopt;
+  if (CurrentModeIsTiled()) {
+    crtc_offset = GetTileCrtcOffset(*tile_property_);
+    crtc_offset->set_x(crtc_offset->x() * -1);
+    crtc_offset->set_y(crtc_offset->y() * -1);
+  }
+
+  if (!drm_->plane_manager()->AssignOverlayPlanes(plane_list, overlays, crtc_,
+                                                  crtc_offset)) {
     return false;
   }
 
@@ -71,19 +81,27 @@ std::vector<uint64_t> CrtcController::GetFormatModifiers(uint32_t format) {
   return drm_->plane_manager()->GetFormatModifiers(crtc_, format);
 }
 
-bool CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
+void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
   if (is_enabled() && !drm_->SetCursor(crtc_, handle, size)) {
-    PLOG(WARNING) << "drmModeSetCursor: device " << drm_->device_path().value()
-                  << " crtc " << crtc_ << " handle " << handle << " size "
-                  << size.ToString();
-    return false;
+    PLOG(ERROR) << "drmModeSetCursor: device " << drm_->device_path().value()
+                << " crtc " << crtc_ << " handle " << handle << " size "
+                << size.ToString();
   }
-  return true;
 }
 
 void CrtcController::MoveCursor(const gfx::Point& location) {
   if (!is_enabled())
     return;
+
+  if (CurrentModeIsTiled()) {
+    const gfx::Point tiled_offset = GetTileCrtcOffset(*tile_property_);
+    gfx::Point translated_location(location.x() - tiled_offset.x(),
+                                   location.y() - tiled_offset.y());
+
+    drm_->MoveCursor(crtc_, translated_location);
+    return;
+  }
+
   drm_->MoveCursor(crtc_, location);
 }
 
@@ -94,6 +112,15 @@ void CrtcController::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("connector", connector_);
 
   DrmWriteIntoTraceHelper(state_->mode, dict.AddItem("mode"));
+}
+
+bool CrtcController::CurrentModeIsTiled() const {
+  if (!tile_property_.has_value()) {
+    return false;
+  }
+
+  return mode().hdisplay == tile_property_->tile_size.width() &&
+         mode().vdisplay == tile_property_->tile_size.height();
 }
 
 }  // namespace ui

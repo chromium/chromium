@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -53,7 +54,8 @@ std::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
   if (!base::ReadFileToString(file_path, &file_contents))
     return std::nullopt;
 
-  return base::JSONReader::Read(file_contents);
+  return base::JSONReader::Read(file_contents,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 }  // namespace
@@ -72,10 +74,6 @@ bool operator==(const Status& a, const Status& b) {
     return true;
   return a.error_type() == b.error_type() &&
          a.error_details() == b.error_details();
-}
-
-bool operator!=(const Status& a, const Status& b) {
-  return !(a == b);
 }
 
 static std::string ErrorTypeToString(blink::WebCryptoErrorType type) {
@@ -317,7 +315,8 @@ std::optional<base::Value::Dict> GetJwkDictionary(
     const std::vector<uint8_t>& json) {
   std::string_view json_string(reinterpret_cast<const char*>(json.data()),
                                json.size());
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(value.has_value());
   EXPECT_TRUE(value.value().is_dict());
   return std::make_optional(std::move(*value).TakeDict());
@@ -578,8 +577,7 @@ blink::WebCryptoNamedCurve CurveNameToCurve(std::string_view name) {
   if (name == "P-521")
     return blink::kWebCryptoNamedCurveP521;
 
-  CHECK(false) << "Invalid curve name in test data: " << name;
-  return blink::kWebCryptoNamedCurveP384;
+  NOTREACHED() << "Invalid curve name in test data: " << name;
 }
 
 blink::WebCryptoAlgorithm CreateHmacImportAlgorithm(

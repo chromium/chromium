@@ -21,6 +21,7 @@ namespace views {
 class BoxLayoutFlexSpecification;
 class DialogDelegate;
 class FlexSpecification;
+class FocusManager;
 class HighlightPathGenerator;
 class Widget;
 
@@ -89,37 +90,42 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
     kTableVertAlignKey;
 
 // Property indicating whether a view should be ignored by a layout. Supported
-// by View::DefaultFillLayout and BoxLayout.
+// by View::DefaultFillLayout, BoxLayout, and all LayoutManagerBase-derived
+// layouts including FlexLayout.
 // TODO(kylixrd): Use for other layouts.
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
     kViewIgnoredByLayoutKey;
-
-// A decorative view, e.g. FocusRing, is a view that logically attaches to other
-// views and decorates them. It manages its own visibility and layout and does
-// not participate in its container's layout.
-VIEWS_EXPORT extern const ui::ClassProperty<bool>* const kIsDecorativeViewKey;
 
 // Tag for the view associated with ui::ElementTracker.
 VIEWS_EXPORT extern const ui::ClassProperty<ui::ElementIdentifier>* const
     kElementIdentifierKey;
 
+// A property to store a FocusManager* that should be used for a view that is
+// not (yet) attached to a widget. This makes View::GetFocusManager() work.
+VIEWS_EXPORT extern const ui::ClassProperty<FocusManager*>* const
+    kDetachedViewFocusManagerKey;
+
 }  // namespace views
 
-// Declaring the template specialization here to make sure that the
-// compiler in all builds, including jumbo builds, always knows about
-// the specialization before the first template instance use. Using a
-// template instance before its specialization is declared in a
-// translation unit is a C++ error.
+// Declare template specializations introduced by Views here to make sure that
+// the compiler knows about them before the first template instance use. Using a
+// template instance before its specialization is declared in a translation unit
+// is an error.
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Insets*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, ui::ElementIdentifier)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
+                                        views::BoxLayoutFlexSpecification*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::DialogDelegate*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::FlexSpecification*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                         views::HighlightPathGenerator*)
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::FlexSpecification*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::LayoutAlignment*)
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Size*)
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, ui::ElementIdentifier)
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, bool)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::View*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::Widget*)
+
+#if !defined(USE_AURA)
+// aura_constants.h declares this.
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Size*)
+#endif
 
 #endif  // UI_VIEWS_VIEW_CLASS_PROPERTIES_H_

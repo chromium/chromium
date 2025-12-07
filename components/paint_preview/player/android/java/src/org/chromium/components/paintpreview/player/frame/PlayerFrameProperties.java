@@ -11,12 +11,14 @@ import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
 /** Contains all properties that a player frame {@link PropertyModel} can have. */
+@NullMarked
 class PlayerFrameProperties {
     /** A matrix of bitmap tiles that collectively make the entire content. */
     static final PropertyModel.WritableObjectPropertyKey<Bitmap[][]> BITMAP_MATRIX =

@@ -17,10 +17,11 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
-#include "components/search_engines/template_url_service.h"
 
 class Browser;
+class TemplateURLService;
 
 namespace search_engines {
 
@@ -73,9 +74,13 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // corresponding preferences.
   // `prepopulate_id` is the `prepopulate_id` of the search engine found in
   // `components/search_engines/template_url_data.h`. It will always be > 0.
-  // `entry_point` is the view in which the UI is rendered.
-  // Virtual to be able to mock in tests.
-  virtual void NotifyChoiceMade(int prepopulate_id, EntryPoint entry_point);
+  // `save_guest_mode_selection` will save the guest mode selection so that the
+  // users are not prompted at every guest session launch.
+  // `entry_point` is the view in which the UI is rendered. Virtual to be able
+  // to mock in tests.
+  virtual void NotifyChoiceMade(int prepopulate_id,
+                                bool save_guest_mode_selection,
+                                EntryPoint entry_point);
 
   // Informs the service that the learn more link was clicked. This is used to
   // record histograms. `entry_point` is the view in which the UI is rendered.
@@ -84,6 +89,10 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // Informs the service that the "More" button was clicked. This is used to
   // record histograms. `entry_point` is the view in which the UI is rendered.
   void NotifyMoreButtonClicked(EntryPoint entry_point);
+
+  // Helper, forwards to `SearchEngineChoiceService::RecordChoiceScreenEvent`.
+  void RecordChoiceScreenEvent(
+      search_engines::SearchEngineChoiceScreenEvents event);
 
   // Returns the eligibility status for newly triggering a choice screen dialog.
   //

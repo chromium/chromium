@@ -59,6 +59,8 @@ const encoderPreference = new Map([
   ['corsola', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['dedede', {profile: h264.Profile.HIGH, multiplier: 8}],
   ['geralt', {profile: h264.Profile.HIGH, multiplier: 8}],
+  ['nissa', {profile: h264.Profile.HIGH, multiplier: 8}],
+  ['rauru', {profile: h264.Profile.HIGH, multiplier: 8}],
   ['strongbad', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['trogdor', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['volteer', {profile: h264.Profile.HIGH, multiplier: 8}],
@@ -498,7 +500,8 @@ export class Video extends ModeBase {
     }
     const preference = encoderPreference.get(loadTimeData.getBoard()) ??
         {profile: h264.Profile.HIGH, multiplier: 2};
-    let {profile, multiplier} = preference;
+    const {profile} = preference;
+    let {multiplier} = preference;
     if (this.recordingType === RecordType.TIME_LAPSE) {
       multiplier = Math.max(multiplier, TIME_LAPSE_MIN_BITRATE_MULTIPLIER);
     }
@@ -515,6 +518,12 @@ export class Video extends ModeBase {
               `profile: ${h264.getProfileName(profile)} bitrate: ${bitrate}`));
       return null;
     }
+    // Adding a console.log for now for debugging video recording issue.
+    // TODO(b/374657378): Remove the log after the root cause is found.
+    // eslint-disable-next-line no-console
+    console.log(
+        'video encode parameter used: ',
+        {width, height, frameRate, profile, level, bitrate});
     return {profile, level, bitrate};
   }
 

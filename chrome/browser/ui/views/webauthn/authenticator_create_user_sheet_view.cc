@@ -4,8 +4,15 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_create_user_sheet_view.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 AuthenticatorCreateUserSheetView::AuthenticatorCreateUserSheetView(
     std::unique_ptr<AuthenticatorSheetModelBase> sheet_model)
@@ -22,3 +29,6 @@ AuthenticatorCreateUserSheetView::BuildStepSpecificContent() {
   return std::make_pair(CreatePasskeyWithUsernameLabel(username),
                         AutoFocus::kNo);
 }
+
+BEGIN_METADATA(AuthenticatorCreateUserSheetView)
+END_METADATA

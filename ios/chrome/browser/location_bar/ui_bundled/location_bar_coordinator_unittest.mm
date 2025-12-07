@@ -15,21 +15,28 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -74,35 +81,39 @@ class LocationBarCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_profile_builder;
 
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::AutocompleteClassifierFactory::GetInstance(),
         ios::AutocompleteClassifierFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
-    browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+    // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
+    // must be created first. Please maintain this order.
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetCurrentURL(GURL("http://test/"));
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
@@ -121,6 +132,16 @@ class LocationBarCoordinatorTest : public PlatformTest {
     id mock_toolbar_handler = OCMProtocolMock(@protocol(ToolbarCommands));
     [dispatcher startDispatchingToTarget:mock_toolbar_handler
                              forProtocol:@protocol(ToolbarCommands)];
+    id mock_contextual_sheet_handler =
+        OCMProtocolMock(@protocol(ContextualSheetCommands));
+    [dispatcher startDispatchingToTarget:mock_contextual_sheet_handler
+                             forProtocol:@protocol(ContextualSheetCommands)];
+    id mock_contextual_panel_entrypoint_iph_handler =
+        OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+    [dispatcher
+        startDispatchingToTarget:mock_contextual_panel_entrypoint_iph_handler
+                     forProtocol:@protocol(
+                                     ContextualPanelEntrypointIPHCommands)];
 
     // Set up application and settings handler mocks.
     id mock_application_handler =
@@ -135,6 +156,20 @@ class LocationBarCoordinatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(QuickDeleteCommands));
     [dispatcher startDispatchingToTarget:mock_quick_delete_handler
                              forProtocol:@protocol(QuickDeleteCommands)];
+
+    id mock_page_action_menu_handler =
+        OCMProtocolMock(@protocol(PageActionMenuCommands));
+    [dispatcher startDispatchingToTarget:mock_page_action_menu_handler
+                             forProtocol:@protocol(PageActionMenuCommands)];
+
+    id mock_bwg_handler = OCMProtocolMock(@protocol(BWGCommands));
+    [dispatcher startDispatchingToTarget:mock_bwg_handler
+                             forProtocol:@protocol(BWGCommands)];
+
+    id mock_browser_coordinator_handler =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler
+                             forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 
@@ -153,10 +188,10 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   LocationBarCoordinator* coordinator_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   TestOmniboxFocusDelegate* delegate_;
 };
@@ -172,7 +207,8 @@ TEST_F(LocationBarCoordinatorTest, Stops) {
 // Removes the existing WebState to ensure that nothing breaks when there is no
 // active WebState.
 TEST_F(LocationBarCoordinatorTest, RemoveLastWebState) {
-  browser_->GetWebStateList()->CloseWebStateAt(0, 0);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
 }
 
 // Calls -loadGURLFromLocationBar:transition: with https://www.google.com/ URL.
@@ -180,7 +216,7 @@ TEST_F(LocationBarCoordinatorTest, RemoveLastWebState) {
 // variations header.
 TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
   ASSERT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            VariationsIdsProvider::GetInstance()->ForceVariationIds(
+            VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
 
   GURL url("https://www.google.com/");
@@ -201,7 +237,8 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
   EXPECT_EQ(web::ReferrerPolicyDefault,
             url_loader->last_params.web_params.referrer.policy);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      transition, url_loader->last_params.web_params.transition_type));
+      transition, PageTransitionStripQualifier(
+                      url_loader->last_params.web_params.transition_type)));
   EXPECT_FALSE(url_loader->last_params.web_params.is_renderer_initiated);
   ASSERT_EQ(1U, url_loader->last_params.web_params.extra_headers.count);
   EXPECT_GT([url_loader->last_params.web_params.extra_headers[@"X-Client-Data"]
@@ -215,7 +252,7 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
 // header.
 TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   ASSERT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            VariationsIdsProvider::GetInstance()->ForceVariationIds(
+            VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
 
   GURL url("https://www.nongoogle.com/");
@@ -237,7 +274,8 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   EXPECT_EQ(web::ReferrerPolicyDefault,
             url_loader->last_params.web_params.referrer.policy);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      transition, url_loader->last_params.web_params.transition_type));
+      transition, PageTransitionStripQualifier(
+                      url_loader->last_params.web_params.transition_type)));
   EXPECT_FALSE(url_loader->last_params.web_params.is_renderer_initiated);
   ASSERT_EQ(0U, url_loader->last_params.web_params.extra_headers.count);
   EXPECT_EQ(disposition, url_loader->last_params.disposition);

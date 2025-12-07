@@ -19,6 +19,14 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
       <!-- TODO(crbug.com/40559214): Update to androidx ExifInterface. -->
       <ignore regexp="components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java"/>
   </issue>
+  <!-- Linter is incorrectly treating existing APIs that are being deprecated
+    using a flag as if they were newly introduced, and also treating some APIs
+    that were released in SDK35/36 as still requiring a flag.
+    Until this is fixed we just disable the FlaggedApi lint for upstream code
+    which isn't likely to reference any genuinely flagged APIs anyway since
+    flagged APIs are not present in the public SDK jar.
+    See: b/404752927, b/425396018 -->
+  <issue id="FlaggedApi" severity="ignore"/>
   <issue id="IconDensities">
     <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
     <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png"/>
@@ -77,7 +85,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="Field requires API level .*`android.app.TaskInfo"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
-  <!-- This warning just adds a lot of false positives. -->
+  <!-- This check doesn't tend to catch new violations except when we increase
+  our minSdkVersion. We prefer to clean up these obsolete checks
+  incrementally after increasing minSdkVersion. -->
   <issue id="ObsoleteSdkInt" severity="ignore"/>
   <issue id="OldTargetApi" severity="ignore"/>
   <issue id="OnClick">
@@ -125,11 +135,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
        https://crbug.com/941164 -->
   <issue id="StringFormatInvalid" severity="ignore"/>
   <issue id="StringFormatMatches" severity="ignore"/>
-  <issue id="TypographyDashes">
-    <!-- The double dash in the following file is a command line flag. -->
-    <ignore regexp="chrome/app/policy/android/values-v21/restriction_values.xml"/>
-    <ignore regexp="components/strings/components_strings_grd.resources.zip/values-th/components_strings.xml"/>
-  </issue>
+  <issue id="TypographyDashes" severity="ignore" />
   <issue id="TypographyEllipsis">
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-uz/android_chrome_strings.xml"/>
   </issue>
@@ -207,6 +213,8 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.accessibility_omnibox_most_visited_tile` appears to be unused"/>
     <!-- 1: Some strings in components_strings_grd are not used in other targets. -->
     <ignore regexp="webview_.*__lint.*components_strings_grd"/>
+    <!-- TODO(crbug.com/371923550): Remove this suppression once plus address strings are migrated to the public repository. -->
+    <ignore regexp="components/plus_addresses/core/browser/resources/strings/"/>
     <!-- 2: resource is used in C++ components/error_page. -->
     <ignore regexp="The resource `R.string.show_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>
@@ -243,11 +251,13 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
 
-    <!--TODO(crbug.com/40208161): Remove unused resources when UX is finalized. -->
-    <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
+    <!-- 2: TODO(crbug.com/404262360) Remove when IPH is implemented. -->
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_page_summary_iph` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_review_pdf_iph` appears to be unused"/>
 
-    <!-- Temporarily suppressed until impelmentation is ready, see: https://crbug.com/1330631 -->
-    <ignore regexp="The resource `R.string.price_drop_spotted_iph` appears to be unused"/>
+    <!--TODO(crbug.com/408284509): Remove unused shopping string resources. -->
+    <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.discount_icon_expanded_text` appears to be unused"/>
 
     <!-- TODO(crbug.com/40227734): Remove unused resources when UX is finalized. -->
     <ignore regexp="The resource `R.string.search_resumption_module_title_short` appears to be unused"/>
@@ -255,10 +265,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(crbug.com/40225008): Remove the following 2 lines after the bug is resolved. -->
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_accessibility_text` appears to be unused"/>
-
-    <!--TODO(crbug.com/41487877): Remove suppressions once implementation is ready. -->
-    <ignore regexp="The resource `R.string.tab_resumption_module_other_devices_name` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_resumption_module_other_devices_context_menu_hide` appears to be unused"/>
 
     <!-- TODO(crbug.com/41487877): Remove the following 2 lines after the tab resumption module is implemented. -->
     <ignore regexp="The resource `R.string.home_modules_tab_resumption_one_tab_title` appears to be unused"/>
@@ -279,6 +285,91 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.tab_group_surface_iph_with_sync` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_group_surface_iph_no_sync` appears to be unused"/>
     <ignore regexp="The resource `R.string.newly_synced_tab_group_iph` appears to be unused"/>
+
+    <!-- TODO(b/356947395): Remove this once the improved management disclosure uses the *_no_link version. -->
+    <ignore regexp="The resource `R.string.management_legacy_tech_report_no_link` appears to be unused"/>
+
+    <!-- TODO(b/362360807): Remove the following 2 lines after the bug is resolved. -->
+    <ignore regexp="The resource `R.string.discount_code_copied_button_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.discount_code_copy_button_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.discount_container_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.discount_expiration_date_android` appears to be unused"/>
+
+    <!-- TODO(b/379316800): Remove this once data sharing and collaboration is using these. -->
+    <ignore regexp="The resource `R.string.collaboration_manage_group_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_manage_stop_sharing_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_stop_sharing_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_remove_member_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_remove_member_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_preview_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_failed_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_leave_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_leave_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_block_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_block_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_delete_last_tab_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_delete_last_tab_cancel` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_last_tab_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_member_delete_last_tab_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_share_group_share_as` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_stop_sharing_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_remove_member_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_failed_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_join_group_as` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_leave_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_block_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_learn_more` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_last_tab_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_last_tab_body_2` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_member_delete_last_tab_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_learn_about_shared_groups` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_people_with_access` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_edit_access` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_join_toggle` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_cancel` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_something_went_wrong_header` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_something_went_wrong_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_chrome_out_of_date_error_dialog_header` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_chrome_out_of_date_error_dialog_update_button` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_chrome_out_of_date_error_dialog_not_now_button` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_chrome_out_of_date_error_dialog_continue_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_shared_tab_groups_panel_out_of_date_message_cell_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.data_sharing_recent_activity_bottom_sheet_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.update` appears to be unused"/>
+
+    <!-- TODO(crbug.com/380086456): Remove this once a decision is made to use either the short or the long version of the strings. -->
+    <ignore regexp="The resource `R.string.auxiliary_search_module_content_short` appears to be unused"/>
+    <ignore regexp="The resource `R.string.auxiliary_search_module_content_default_off_short` appears to be unused"/>
+
+    <ignore regexp="The resource `R.string.ntp_customization_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_subtitle` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_setting_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.feed_setting_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.feed_section_on` appears to be unused"/>
+
+    <!-- TODO(https://crbug.com/423579377): Remove the following 3 lines after the NTP appearance bottom sheet is implemented. -->
+    <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_opened_full` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_theme_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_default_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_upload_image_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_chrome_colors_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_theme_collections_option` appears to be unused"/>
+
+    <!-- TODO(https://crbug.com/455627033): Remove the following 4 lines after the pin/unpin tabs menu item in list editor is implemented. -->
+    <ignore regexp="The resource `R.plurals.tab_selection_editor_pin_tabs` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.accessibility_tab_selection_editor_pin_tabs` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.tab_selection_editor_unpin_tabs` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.accessibility_tab_selection_editor_unpin_tabs` appears to be unused"/>
+
+    <!-- TODO(https://crbug.com/461840249): Remove the following 1 line after lint migrates to using merged manifests. -->
+    <ignore regexp="The resource `R.string.menu` appears to be unused"/>
 
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>

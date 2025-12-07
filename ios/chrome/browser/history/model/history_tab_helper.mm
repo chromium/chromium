@@ -4,18 +4,23 @@
 
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
 
+#import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/history/core/browser/features.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/common/language_detection_details.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -45,8 +50,9 @@ HistoryTabHelper::~HistoryTabHelper() {
 void HistoryTabHelper::UpdateHistoryForNavigation(
     const history::HistoryAddPageArgs& add_page_args) {
   history::HistoryService* history_service = GetHistoryService();
-  if (!history_service)
+  if (!history_service) {
     return;
+  }
 
   // Update the previous navigation's end time.
   if (cached_navigation_state_) {
@@ -80,7 +86,10 @@ void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
 history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     web::NavigationItem* last_committed_item,
     web::NavigationContext* navigation_context) {
-  const GURL& url = last_committed_item->GetURL();
+  const GURL& url =
+      lens_url_processing_enabled_
+          ? lens::ProcessURLForHistory(last_committed_item->GetURL())
+          : last_committed_item->GetURL();
 
   const ui::PageTransition transition =
       last_committed_item->GetTransitionType();
@@ -95,8 +104,6 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
         url.EqualsIgnoringRef(original_url)) {
       redirects.push_back(referrer_url);
     }
-    // TODO(crbug.com/40511880): the redirect chain is not constructed the same
-    // way as desktop so this part needs to be revised.
     redirects.push_back(original_url);
     redirects.push_back(url);
   }
@@ -105,14 +112,24 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // contribute to Most Visited.
   const bool content_suggestions_navigation = ui::PageTransitionCoreTypeIs(
       transition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  const bool consider_for_ntp_most_visited =
-      !content_suggestions_navigation &&
-      referrer_url != kReadingListReferrerURL;
 
   const int http_response_code =
       navigation_context->GetResponseHeaders()
           ? navigation_context->GetResponseHeaders()->response_code()
           : 0;
+
+  // If `history::kVisitedLinksOn404` is enabled, visits to
+  // reachable URLs that result in a 404 response will be saved to history. We
+  // don't want to count error navigations as visits when calculating the Most
+  // Visited, so we filter them out here.
+  const bool status_code_qualifies_for_ntp_most_visited =
+      !(base::FeatureList::IsEnabled(history::kVisitedLinksOn404) &&
+        http_response_code == 404);
+
+  const bool consider_for_ntp_most_visited =
+      status_code_qualifies_for_ntp_most_visited &&
+      !content_suggestions_navigation &&
+      referrer_url != kReadingListReferrerURL;
 
   // Hide navigations that result in an error in order to prevent the omnibox
   // from suggesting URLs that have never been navigated to successfully.
@@ -125,11 +142,11 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   context_annotations.browser_type =
       history::VisitContextAnnotations::BrowserType::kTabbed;
 
-  IOSChromeSessionTabHelper* session_tab_helper =
-      IOSChromeSessionTabHelper::FromWebState(web_state_);
-  if (session_tab_helper) {
-    context_annotations.window_id = session_tab_helper->window_id();
-    context_annotations.tab_id = session_tab_helper->session_id();
+  IOSChromeSyncedTabDelegate* sync_tab_helper =
+      IOSChromeSyncedTabDelegate::FromWebState(web_state_);
+  if (sync_tab_helper) {
+    context_annotations.window_id = sync_tab_helper->GetWindowId();
+    context_annotations.tab_id = sync_tab_helper->GetSessionId();
   }
 
   IOSTaskTabHelper* task_tab_helper =
@@ -148,18 +165,25 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
   context_annotations.response_code = http_response_code;
 
+  history::VisitResponseCodeCategory response_code_category =
+      http_response_code == 404 ? history::VisitResponseCodeCategory::k404
+                                : history::VisitResponseCodeCategory::kNot404;
+
   return history::HistoryAddPageArgs(
       url, last_committed_item->GetTimestamp(), GetContextID(),
       last_committed_item->GetUniqueID(), navigation_context->GetNavigationId(),
       referrer_url, redirects, transition, hidden, history::SOURCE_BROWSED,
+      response_code_category,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
+      history::VisitContextEphemerality::kNotEphemeral,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : std::nullopt,
       // TODO(crbug.com/40279742): due to WebKit constraints, iOS does not
       // support triple-key partitioning. Once supported, we need to populate
-      // `top_level_url` with the correct value. Until then, :visited history on
-      // iOS is unpartitioned.
+      // `top_level_url` and `frame_url` with the correct value. Until then,
+      // :visited history on iOS is unpartitioned.
       /*top_level_url=*/std::nullopt,
+      /*frame_url=*/std::nullopt,
       /*opener=*/std::nullopt,
       /*bookmark_id=*/std::nullopt,
       /*app_id=*/std::nullopt,
@@ -219,19 +243,26 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
   }
 
-  // Do not record failed navigation nor 404 to the history (to prevent them
+  // Do not record failed navigation to the history (to prevent them
   // from showing up as Most Visited tiles on NTP).
+  UMA_HISTOGRAM_BOOLEAN("History.Is4XXOr5XXStatusCode",
+                        navigation_context->GetError());
+  UMA_HISTOGRAM_BOOLEAN("History.ShouldUpdateHistory",
+                        navigation_context->GetError());
   if (navigation_context->GetError()) {
     return;
   }
 
+  // If `history::kVisitedLinksOn404` is enabled, record 404s in History.
+  const bool should_record_404 =
+      base::FeatureList::IsEnabled(history::kVisitedLinksOn404);
+
   if (navigation_context->GetResponseHeaders() &&
-      navigation_context->GetResponseHeaders()->response_code() == 404) {
+      navigation_context->GetResponseHeaders()->response_code() == 404 &&
+      !should_record_404) {
     return;
   }
 
-  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
-  // HasComitted has been fixed.
   if (!navigation_context->HasCommitted() ||
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {
     // Navigation was replaced or aborted.
@@ -290,8 +321,9 @@ void HistoryTabHelper::TitleWasSet(web::WebState* web_state) {
   }
 
   // Protect against pages changing their title too often during page load.
-  if (num_title_changes_ >= history::kMaxTitleChanges)
+  if (num_title_changes_ >= history::kMaxTitleChanges) {
     return;
+  }
 
   // Only store page titles into history if they were set while the page was
   // loading or during a brief span after load is complete. This fixes the case
@@ -315,7 +347,10 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
   translate_observation_.Reset();
 
   history::HistoryService* history_service = GetHistoryService();
-  if (history_service) {
+  // A WebState cannot go from realized to unrealized. If it is unrealized
+  // it cannot have any cached state that would need to be updated or
+  // cleared.
+  if (web_state_->IsRealized() && history_service) {
     // If there is a current history-eligible navigation in this tab (i.e.
     // `cached_navigation_state_` exists), that visit is concluded now, so
     // update its end time.
@@ -333,13 +368,12 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 history::HistoryService* HistoryTabHelper::GetHistoryService() {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  if (browser_state->IsOffTheRecord())
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (profile->IsOffTheRecord()) {
     return nullptr;
+  }
 
-  return ios::HistoryServiceFactory::GetForBrowserState(
-      browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+  return ios::HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(HistoryTabHelper)

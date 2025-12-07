@@ -21,7 +21,7 @@ size_t WTFHashCombine(size_t seed, const T& value) {
   // Based on proposal in:
   // http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2005/n1756.pdf
   //
-  // TODO(tibell): We'd like to use WTF::DefaultHash instead of std::hash, but
+  // TODO(tibell): We'd like to use blink::DefaultHash instead of std::hash, but
   //     there is no general template specialization of DefaultHash for enums
   //     and there can't be an instance for bool.
   return seed ^ (std::hash<T>()(value) + (seed << 6) + (seed >> 2));
@@ -46,9 +46,9 @@ struct WTFHashTraits<T, false> {
 };
 
 template <>
-struct WTFHashTraits<WTF::String, false> {
-  static size_t Hash(size_t seed, const WTF::String& value) {
-    return HashCombine(seed, WTF::GetHash(value));
+struct WTFHashTraits<blink::String, false> {
+  static size_t Hash(size_t seed, const blink::String& value) {
+    return HashCombine(seed, blink::GetHash(value));
   }
 };
 
@@ -60,7 +60,7 @@ size_t WTFHash(size_t seed, const T& value) {
 }  // namespace internal
 }  // namespace mojo
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 struct HashTraits<mojo::StructPtr<T>>
@@ -108,6 +108,6 @@ struct HashTraits<mojo::InlinedStructPtr<T>>
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_LIB_WTF_HASH_UTIL_H_

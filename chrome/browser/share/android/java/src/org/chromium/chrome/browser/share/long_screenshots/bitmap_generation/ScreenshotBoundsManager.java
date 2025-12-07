@@ -4,28 +4,34 @@
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
+import org.chromium.paint_preview.mojom.ClipCoordOverride;
 import org.chromium.ui.display.DisplayAndroid;
 
 /**
- * Responsible for calculating and tracking the bounds of the capture and composited
- * LongScreenshot Entries.
+ * Responsible for calculating and tracking the bounds of the capture and composited LongScreenshot
+ * Entries.
  */
+@NullMarked
 public class ScreenshotBoundsManager {
     private static final int NUM_VIEWPORTS_CAPTURE = 10;
     private static final int NUM_VIEWPORTS_CAPTURE_ABOVE_FOR_FULL_CAPTURE = 2;
     private static final int NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE = 4;
 
-    private Tab mTab;
+    private final Tab mTab;
     private Rect mCaptureRect;
-    private Size mContentSize;
-    private Point mScrollOffset;
+    private @Nullable Size mContentSize;
+    private @Nullable Point mScrollOffset;
     private int mClipHeightScaled;
 
     /**
@@ -39,7 +45,7 @@ public class ScreenshotBoundsManager {
     }
 
     /** For testing only. */
-    private ScreenshotBoundsManager(Context context, Tab tab, int clipHeight) {
+    private ScreenshotBoundsManager(Tab tab, int clipHeight) {
         mTab = tab;
         mClipHeightScaled = clipHeight;
         calculateCaptureBounds();
@@ -48,19 +54,20 @@ public class ScreenshotBoundsManager {
     /**
      * To only be used for testing purposes.
      *
-     * @param context An instance of current Android {@link Context}.
      * @param tab Tab to generate the bitmap for.
      * @param clipHeight The height of the device.
      * @return an instance of ScreenshotBoundsManager.
      */
-    public static ScreenshotBoundsManager createForTests(Context context, Tab tab, int clipHeight) {
-        return new ScreenshotBoundsManager(context, tab, clipHeight);
+    public static ScreenshotBoundsManager createForTests(
+            Context unused_context, Tab tab, int clipHeight) {
+        return new ScreenshotBoundsManager(tab, clipHeight);
     }
 
     /** Calculates the height of the phone used to determine the height of the bitmaps. */
     private void calculateClipHeightScaled(Context context) {
         DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
-        RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
+        RenderCoordinates coords =
+                RenderCoordinates.fromWebContents(assumeNonNull(mTab.getWebContents()));
         // mClipHeight should be in renderer physical coordinates as this is the coordinate system
         // in which the capture takes place. We want mClipHeight to represent the height of one
         // viewport in the physical coordinate system so we need to divide the display height by the
@@ -73,13 +80,9 @@ public class ScreenshotBoundsManager {
 
     /** Defines the bounds of the capture. */
     private void calculateCaptureBounds() {
-        // Rect top == -1 will default the capture to be centered about the scroll offset.
-        // This will capture 1/2 NUM_VIEWPORTS_CAPTURE above and below the scroll offset if
-        // possible. If the amount above or below would exceed the document bounds, this will
-        // clamp the capture to the start/end and extend in the direction with remaining room.
         // We subtract -1 from the bottom so mCaptureRect.height() will be a multiple of
         // mClipHeightScaled.
-        mCaptureRect = new Rect(0, -1, 0, mClipHeightScaled * NUM_VIEWPORTS_CAPTURE - 1);
+        mCaptureRect = new Rect(0, 0, 0, mClipHeightScaled * NUM_VIEWPORTS_CAPTURE - 1);
     }
 
     /**
@@ -89,13 +92,30 @@ public class ScreenshotBoundsManager {
         return mCaptureRect;
     }
 
+    /**
+     * @return The clip X coordinate override of the capture.
+     */
+    public @ClipCoordOverride.EnumType int getClipXCoordinateOverride() {
+        return ClipCoordOverride.NONE;
+    }
+
+    /**
+     * @return The clip Y coordinate override of the capture.
+     */
+    public @ClipCoordOverride.EnumType int getClipYCoordinateOverride() {
+        // This will capture 1/2 NUM_VIEWPORTS_CAPTURE above and below the scroll offset if
+        // possible. If the amount above or below would exceed the document bounds, this will
+        // clamp the capture to the start/end and extend in the direction with remaining room.
+        return ClipCoordOverride.CENTER_ON_SCROLL_OFFSET;
+    }
+
     /** Sets the composited rect. */
-    public void setCompositedSize(Size size) {
+    public void setCompositedSize(@Nullable Size size) {
         mContentSize = size;
     }
 
     /** Set the composited scroll offset. */
-    public void setCompositedScrollOffset(Point offset) {
+    public void setCompositedScrollOffset(@Nullable Point offset) {
         mScrollOffset = offset;
     }
 
@@ -105,7 +125,7 @@ public class ScreenshotBoundsManager {
      *
      * @param yAxisRef Where on the scrolled page the capture and compositing should start.
      */
-    public Rect calculateClipBoundsAbove(int yAxisRef) {
+    public @Nullable Rect calculateClipBoundsAbove(int yAxisRef) {
         if (yAxisRef <= 0) {
             // Already at the top of the capture
             return null;
@@ -121,7 +141,7 @@ public class ScreenshotBoundsManager {
      *
      * @param yAxisRef Where on the scrolled page the capture and compositing should start.
      */
-    public Rect calculateClipBoundsBelow(int yAxisRef) {
+    public @Nullable Rect calculateClipBoundsBelow(int yAxisRef) {
         assert mContentSize != null;
         if (yAxisRef >= mContentSize.getHeight()) {
             // Already at the bottom of the capture
@@ -167,12 +187,13 @@ public class ScreenshotBoundsManager {
     }
 
     /**
-     * Calculates the scale factor to be used for bitmaps based on the composited width of the
-     * frame at default scale.
+     * Calculates the scale factor to be used for bitmaps based on the composited width of the frame
+     * at default scale.
+     *
      * @return the scale factor to be used for generating bitmaps.
      */
     public float getBitmapScaleFactor() {
-        if (mTab.getWebContents() == null || mContentSize.getWidth() == 0) {
+        if (mTab.getWebContents() == null || mContentSize == null || mContentSize.getWidth() == 0) {
             // If the web contents crashes/vanished during capture then assume 1f.
             return 1f;
         }

@@ -6,6 +6,7 @@ module video_capture.mojom;
 
 import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
 
 // Describes a new frame that is ready for consumption in the buffer with id
 // |buffer_id| and allows it to read the data from the buffer. The producer
@@ -72,15 +73,16 @@ interface VideoFrameHandler {
 
   OnFrameDropped(media.mojom.VideoCaptureFrameDropReason reason);
 
-  // Called to indicate that a new |sub_capture_target_version| has been set,
+  // Called to indicate that a new |capture_version| has been set,
   // and that all frames which will subsequently be delivered using
-  // OnFrameCaptured(), will have a sub-capture-target-version that is
+  // OnFrameCaptured(), will have a capture-target-version that is
   // greater-than-or-equal-to this one.
+  //
   // This allows the Promise which cropTo() or restrictTo() returned to be
   // resolved promptly, even if frames are not being produced over the track
   // at the moment, which can happen if the track is cropped to an invisible
   // target, or is paused, or is muted.
-  OnNewSubCaptureTargetVersion(uint32 sub_capture_target_version);
+  OnNewCaptureVersion(media.mojom.CaptureVersion capture_version);
 
   // Called when a frame is *not* delivered because Region Capture was applied,
   // but the cropped-to region consists of zero pixels. This is needed because

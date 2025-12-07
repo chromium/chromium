@@ -85,8 +85,8 @@ void ExpectVirtualPathRoundtrip(
   base::FilePath virtual_path(virtual_path_string);
   GURL result = VirtualPathToExternalFileURL(virtual_path);
   EXPECT_TRUE(result.is_valid());
-  EXPECT_EQ(content::kExternalFileScheme, result.scheme());
-  EXPECT_EQ(expected_url, result.path());
+  EXPECT_EQ(content::kExternalFileScheme, result.GetScheme());
+  EXPECT_EQ(expected_url, result.GetPath());
   EXPECT_EQ(virtual_path.value(), ExternalFileURLToVirtualPath(result).value());
 }
 

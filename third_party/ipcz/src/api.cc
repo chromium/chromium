@@ -19,6 +19,7 @@
 #include "ipcz/parcel_wrapper.h"
 #include "ipcz/router.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 extern "C" {
 
@@ -392,7 +393,7 @@ IPCZ_EXPORT IpczResult IPCZ_API IpczGetAPI(IpczAPI* api) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  memcpy(api, &kCurrentAPI, kVersion0APISize);
+  IPCZ_UNSAFE_TODO(memcpy(api, &kCurrentAPI, kVersion0APISize));
   return IPCZ_RESULT_OK;
 }
 

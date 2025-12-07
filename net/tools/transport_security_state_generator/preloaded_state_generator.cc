@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/tools/transport_security_state_generator/preloaded_state_generator.h"
 
 #include <string>
@@ -35,10 +30,6 @@ std::string FormatAcceptedKeyName(const std::string& name) {
 
 std::string FormatRejectedKeyName(const std::string& name) {
   return "k" + name + "RejectedCerts";
-}
-
-std::string FormatReportURIName(const std::string& name) {
-  return "k" + name + "ReportURI";
 }
 
 // Replaces the first occurrence of "[[" + name + "]]" in |*tpl| with
@@ -90,21 +81,19 @@ std::string FormatVectorAsArray(const std::vector<uint8_t>& bytes) {
 
 std::string WritePinsetList(const std::string& name,
                             const std::vector<std::string>& pins) {
-  std::string output = "static const char* const " + name + "[] = {";
+  std::string output =
+      "static constexpr SHA256HashValue const * " + name + "[] = {";
   output.append(kNewLine);
 
   for (const auto& pin_name : pins) {
     output.append(kIndent);
     output.append(kIndent);
+    output.append("&");
     output.append(FormatSPKIName(pin_name));
     output.append(",");
     output.append(kNewLine);
   }
 
-  output.append(kIndent);
-  output.append(kIndent);
-  output.append("nullptr,");
-  output.append(kNewLine);
   output.append("};");
 
   return output;
@@ -135,7 +124,7 @@ std::string PreloadedStateGenerator::Generate(
     const std::string& preload_template,
     const TransportSecurityStateEntries& entries,
     const Pinsets& pinsets,
-    const base::Time& timestamp) {
+    base::Time timestamp) {
   std::string output = preload_template;
 
   ProcessSPKIHashes(pinsets, &output);
@@ -198,25 +187,22 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
     const std::string& name = current.first;
     const SPKIHash& hash = current.second;
 
-    output.append("static const char " + FormatSPKIName(name) + "[] =");
+    output.append("static constexpr SHA256HashValue " + FormatSPKIName(name) +
+                  " = {");
     output.append(kNewLine);
 
     for (size_t i = 0; i < hash.size() / 16; ++i) {
       output.append(kIndent);
       output.append(kIndent);
-      output.append("\"");
 
       for (size_t j = i * 16; j < ((i + 1) * 16); ++j) {
-        base::StringAppendF(&output, "\\x%02x", hash.data()[j]);
+        base::StringAppendF(&output, "0x%02x, ", hash.span()[j]);
       }
 
-      output.append("\"");
-      if (i + 1 == hash.size() / 16) {
-        output.append(";");
-      }
       output.append(kNewLine);
     }
 
+    output.append("};");
     output.append(kNewLine);
   }
 
@@ -243,7 +229,9 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
         WritePinsetList(accepted_pins_names, pinset_ptr->static_spki_hashes()));
     certs_output.append(kNewLine);
 
-    std::string rejected_pins_names = "kNoRejectedPublicKeys";
+    // Initialized with a placeholder for when no public keys are rejected.
+    std::string rejected_pins_names = "{}";
+
     if (pinset_ptr->bad_static_spki_hashes().size()) {
       rejected_pins_names = FormatRejectedKeyName(uppercased_name);
       certs_output.append(WritePinsetList(
@@ -251,21 +239,10 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
       certs_output.append(kNewLine);
     }
 
-    std::string report_uri = "kNoReportURI";
-    if (pinset_ptr->report_uri().size()) {
-      report_uri = FormatReportURIName(uppercased_name);
-      certs_output.append("static const char " + report_uri + "[] = ");
-      certs_output.append("\"");
-      certs_output.append(pinset_ptr->report_uri());
-      certs_output.append("\";");
-      certs_output.append(kNewLine);
-    }
-    certs_output.append(kNewLine);
-
     pinsets_output.append(kIndent);
     pinsets_output.append(kIndent);
     pinsets_output.append("{" + accepted_pins_names + ", " +
-                          rejected_pins_names + ", " + report_uri + "},");
+                          rejected_pins_names + "},");
     pinsets_output.append(kNewLine);
 
     pinset_map->insert(NameIDPair(pinset_ptr->name(),

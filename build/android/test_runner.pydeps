@@ -10,8 +10,6 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_proto_classes.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/encoder.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/wire_format.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
 ../../third_party/catapult/common/py_utils/py_utils/binary_manager.py
@@ -49,14 +47,12 @@
 ../../third_party/catapult/devil/devil/android/device_signal.py
 ../../third_party/catapult/devil/devil/android/device_temp_file.py
 ../../third_party/catapult/devil/devil/android/device_utils.py
+../../third_party/catapult/devil/devil/android/devil_util.py
 ../../third_party/catapult/devil/devil/android/flag_changer.py
 ../../third_party/catapult/devil/devil/android/forwarder.py
-../../third_party/catapult/devil/devil/android/install_commands.py
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
-../../third_party/catapult/devil/devil/android/md5sum.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
-../../third_party/catapult/devil/devil/android/ports.py
 ../../third_party/catapult/devil/devil/android/sdk/__init__.py
 ../../third_party/catapult/devil/devil/android/sdk/aapt.py
 ../../third_party/catapult/devil/devil/android/sdk/adb_wrapper.py
@@ -64,6 +60,7 @@
 ../../third_party/catapult/devil/devil/android/sdk/bundletool.py
 ../../third_party/catapult/devil/devil/android/sdk/intent.py
 ../../third_party/catapult/devil/devil/android/sdk/keyevent.py
+../../third_party/catapult/devil/devil/android/sdk/shared_prefs.py
 ../../third_party/catapult/devil/devil/android/sdk/split_select.py
 ../../third_party/catapult/devil/devil/android/sdk/version_codes.py
 ../../third_party/catapult/devil/devil/android/tools/__init__.py
@@ -81,7 +78,6 @@
 ../../third_party/catapult/devil/devil/utils/__init__.py
 ../../third_party/catapult/devil/devil/utils/cmd_helper.py
 ../../third_party/catapult/devil/devil/utils/file_utils.py
-../../third_party/catapult/devil/devil/utils/host_utils.py
 ../../third_party/catapult/devil/devil/utils/lazy/__init__.py
 ../../third_party/catapult/devil/devil/utils/lazy/weak_constant.py
 ../../third_party/catapult/devil/devil/utils/logging_common.py
@@ -93,7 +89,6 @@
 ../../third_party/catapult/devil/devil/utils/signal_handler.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../third_party/catapult/devil/devil/utils/zip_utils.py
 ../../third_party/catapult/third_party/six/six.py
 ../../third_party/colorama/src/colorama/__init__.py
 ../../third_party/colorama/src/colorama/ansi.py
@@ -138,11 +133,20 @@
 ../skia_gold_common/skia_gold_session_manager.py
 ../util/lib/__init__.py
 ../util/lib/common/__init__.py
-../util/lib/common/chrome_test_server_spawner.py
+../util/lib/common/decorators.py
+../util/lib/common/google_storage_helper.py
 ../util/lib/common/unittest_util.py
 ../util/lib/proto/__init__.py
+../util/lib/proto/average.py
+../util/lib/proto/count.py
+../util/lib/proto/data_points.py
 ../util/lib/proto/exception_occurrences_pb2.py
 ../util/lib/proto/exception_recorder.py
+../util/lib/proto/measure.py
+../util/lib/proto/measures.py
+../util/lib/proto/metric.py
+../util/lib/proto/test_script_metrics_pb2.py
+../util/lib/proto/time_consumption.py
 ../util/lib/results/__init__.py
 ../util/lib/results/result_sink.py
 ../util/lib/results/result_types.py
@@ -167,7 +171,6 @@ pylib/base/test_instance.py
 pylib/base/test_instance_factory.py
 pylib/base/test_run.py
 pylib/base/test_run_factory.py
-pylib/base/test_server.py
 pylib/constants/__init__.py
 pylib/constants/host_paths.py
 pylib/gtest/__init__.py
@@ -186,6 +189,7 @@ pylib/local/device/local_device_environment.py
 pylib/local/device/local_device_gtest_run.py
 pylib/local/device/local_device_instrumentation_test_run.py
 pylib/local/device/local_device_monkey_test_run.py
+pylib/local/device/local_device_network_environment.py
 pylib/local/device/local_device_test_run.py
 pylib/local/emulator/__init__.py
 pylib/local/emulator/avd.py
@@ -193,7 +197,6 @@ pylib/local/emulator/ini.py
 pylib/local/emulator/local_emulator_environment.py
 pylib/local/emulator/proto/__init__.py
 pylib/local/emulator/proto/avd_pb2.py
-pylib/local/local_test_server_spawner.py
 pylib/local/machine/__init__.py
 pylib/local/machine/local_machine_environment.py
 pylib/local/machine/local_machine_hostside_test_run.py
@@ -220,11 +223,9 @@ pylib/symbols/stack_symbolizer.py
 pylib/utils/__init__.py
 pylib/utils/chrome_proxy_utils.py
 pylib/utils/code_coverage_utils.py
-pylib/utils/decorators.py
 pylib/utils/device_dependencies.py
 pylib/utils/dexdump.py
 pylib/utils/gold_utils.py
-pylib/utils/google_storage_helper.py
 pylib/utils/instrumentation_tracing.py
 pylib/utils/local_utils.py
 pylib/utils/logdog_helper.py

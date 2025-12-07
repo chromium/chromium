@@ -2,23 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "net/filter/filter_source_stream.h"
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/expected.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
-#include "net/filter/filter_source_stream.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -31,7 +35,7 @@ const size_t kSmallBufferSize = 1;
 class TestFilterSourceStreamBase : public FilterSourceStream {
  public:
   explicit TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+      : FilterSourceStream(SourceStreamType::kNone, std::move(upstream)) {}
 
   TestFilterSourceStreamBase(const TestFilterSourceStreamBase&) = delete;
   TestFilterSourceStreamBase& operator=(const TestFilterSourceStreamBase&) =
@@ -51,7 +55,8 @@ class TestFilterSourceStreamBase : public FilterSourceStream {
   size_t WriteBufferToOutput(IOBuffer* output_buffer,
                              size_t output_buffer_size) {
     size_t bytes_to_filter = std::min(buffer_.length(), output_buffer_size);
-    memcpy(output_buffer->data(), buffer_.data(), bytes_to_filter);
+    output_buffer->span().copy_prefix_from(
+        base::as_byte_span(buffer_).first(bytes_to_filter));
     buffer_.erase(0, bytes_to_filter);
     return bytes_to_filter;
   }
@@ -84,7 +89,8 @@ class NeedsAllInputFilterSourceStream : public TestFilterSourceStreamBase {
                                            size_t input_buffer_size,
                                            size_t* consumed_bytes,
                                            bool upstream_eof_reached) override {
-    buffer_.append(input_buffer->data(), input_buffer_size);
+    buffer_.append(
+        base::as_string_view(input_buffer->first(input_buffer_size)));
     EXPECT_GE(expected_input_bytes_, input_buffer_size);
     expected_input_bytes_ -= input_buffer_size;
     *consumed_bytes = input_buffer_size;
@@ -120,8 +126,9 @@ class MultiplySourceStream : public TestFilterSourceStreamBase {
       size_t* consumed_bytes,
       bool /*upstream_eof_reached*/) override {
     for (size_t i = 0; i < input_buffer_size; i++) {
-      for (int j = 0; j < multiplier_; j++)
-        buffer_.append(input_buffer->data() + i, 1);
+      for (int j = 0; j < multiplier_; j++) {
+        buffer_.push_back(input_buffer->span()[i]);
+      }
     }
     *consumed_bytes = input_buffer_size;
     return WriteBufferToOutput(output_buffer, output_buffer_size);
@@ -148,7 +155,8 @@ class PassThroughFilterSourceStream : public TestFilterSourceStreamBase {
       size_t input_buffer_size,
       size_t* consumed_bytes,
       bool /*upstream_eof_reached*/) override {
-    buffer_.append(input_buffer->data(), input_buffer_size);
+    buffer_.append(
+        base::as_string_view(input_buffer->first(input_buffer_size)));
     *consumed_bytes = input_buffer_size;
     return WriteBufferToOutput(output_buffer, output_buffer_size);
   }
@@ -171,10 +179,12 @@ class ThrottleSourceStream : public TestFilterSourceStreamBase {
       size_t input_buffer_size,
       size_t* consumed_bytes,
       bool /*upstream_eof_reached*/) override {
-    buffer_.append(input_buffer->data(), input_buffer_size);
+    buffer_.append(
+        base::as_string_view(input_buffer->first(input_buffer_size)));
     *consumed_bytes = input_buffer_size;
     size_t bytes_to_read = std::min(size_t{1}, buffer_.size());
-    memcpy(output_buffer->data(), buffer_.data(), bytes_to_read);
+    output_buffer->span().copy_prefix_from(
+        base::as_byte_span(buffer_).first(bytes_to_read));
     buffer_.erase(0, bytes_to_read);
     return bytes_to_read;
   }
@@ -217,7 +227,7 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
 class ErrorFilterSourceStream : public FilterSourceStream {
  public:
   explicit ErrorFilterSourceStream(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+      : FilterSourceStream(SourceStreamType::kNone, std::move(upstream)) {}
 
   ErrorFilterSourceStream(const ErrorFilterSourceStream&) = delete;
   ErrorFilterSourceStream& operator=(const ErrorFilterSourceStream&) = delete;
@@ -274,12 +284,13 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnNoBytesExceptLast) {
   size_t num_reads = 0;
   // Add a sequence of small reads.
   for (size_t offset = 0; offset < input.length(); offset += read_size) {
-    source->AddReadResult(input.data() + offset,
-                          std::min(read_size, input.length() - offset), OK,
-                          GetParam());
+    source->AddReadResult(
+        base::as_byte_span(input).subspan(
+            offset, std::min(read_size, input.length() - offset)),
+        OK, GetParam());
     num_reads++;
   }
-  source->AddReadResult(input.data(), 0, OK, GetParam());  // EOF
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());  // EOF
   num_reads++;
 
   MockSourceStream* mock_stream = source.get();
@@ -296,7 +307,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnNoBytesExceptLast) {
     if (rv == OK)
       break;
     ASSERT_GT(rv, OK);
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ(input, actual_output);
 }
@@ -305,8 +316,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnNoBytesExceptLast) {
 // EOF.
 TEST_P(FilterSourceStreamTest, FilterDataReturnNoByte) {
   auto source = std::make_unique<MockSourceStream>();
-  std::string input;
-  source->AddReadResult(input.data(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   MockSourceStream* mock_stream = source.get();
   PassThroughFilterSourceStream stream(std::move(source));
   scoped_refptr<IOBufferWithSize> output_buffer =
@@ -327,13 +337,14 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputNoData) {
   size_t num_reads = 0;
   // Add a sequence of small reads.
   for (size_t offset = 0; offset < input.length(); offset += read_size) {
-    source->AddReadResult(input.data() + offset,
-                          std::min(read_size, input.length() - offset), OK,
-                          GetParam());
+    source->AddReadResult(
+        base::as_byte_span(input).subspan(
+            offset, std::min(read_size, input.length() - offset)),
+        OK, GetParam());
     num_reads++;
   }
   // Add a 0 byte read to signal EOF.
-  source->AddReadResult(input.data() + input.length(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   num_reads++;
   MockSourceStream* mock_stream = source.get();
   NoOutputSourceStream stream(std::move(source), input.length());
@@ -355,12 +366,13 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnData) {
   size_t read_size = 2;
   // Add a sequence of small reads.
   for (size_t offset = 0; offset < input.length(); offset += read_size) {
-    source->AddReadResult(input.data() + offset,
-                          std::min(read_size, input.length() - offset), OK,
-                          GetParam());
+    source->AddReadResult(
+        base::as_byte_span(input).subspan(
+            offset, std::min(read_size, input.length() - offset)),
+        OK, GetParam());
   }
   // Add a 0 byte read to signal EOF.
-  source->AddReadResult(input.data() + input.length(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   MockSourceStream* mock_stream = source.get();
   PassThroughFilterSourceStream stream(std::move(source));
   scoped_refptr<IOBufferWithSize> output_buffer =
@@ -375,7 +387,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnData) {
       break;
     ASSERT_GE(static_cast<int>(read_size), rv);
     ASSERT_GT(rv, OK);
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ(input, actual_output);
 }
@@ -387,12 +399,13 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnMoreData) {
   size_t read_size = 2;
   // Add a sequence of small reads.
   for (size_t offset = 0; offset < input.length(); offset += read_size) {
-    source->AddReadResult(input.data() + offset,
-                          std::min(read_size, input.length() - offset), OK,
-                          GetParam());
+    source->AddReadResult(
+        base::as_byte_span(input).subspan(
+            offset, std::min(read_size, input.length() - offset)),
+        OK, GetParam());
   }
   // Add a 0 byte read to signal EOF.
-  source->AddReadResult(input.data() + input.length(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   MockSourceStream* mock_stream = source.get();
   int multiplier = 2;
   MultiplySourceStream stream(std::move(source), multiplier);
@@ -408,7 +421,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnMoreData) {
       break;
     ASSERT_GE(static_cast<int>(read_size) * multiplier, rv);
     ASSERT_GT(rv, OK);
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ("hheelllloo,,  wwoorrlldd!!", actual_output);
 }
@@ -421,12 +434,13 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputSpace) {
   size_t read_size = 2;
   // Add a sequence of small reads.
   for (size_t offset = 0; offset < input.length(); offset += read_size) {
-    source->AddReadResult(input.data() + offset,
-                          std::min(read_size, input.length() - offset), OK,
-                          GetParam());
+    source->AddReadResult(
+        base::as_byte_span(input).subspan(
+            offset, std::min(read_size, input.length() - offset)),
+        OK, GetParam());
   }
   // Add a 0 byte read to signal EOF.
-  source->AddReadResult(input.data() + input.length(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   // Use an extremely small buffer size, so FilterData will need more output
   // space.
   scoped_refptr<IOBufferWithSize> output_buffer =
@@ -444,7 +458,7 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputSpace) {
       break;
     ASSERT_GT(rv, OK);
     ASSERT_GE(kSmallBufferSize, static_cast<size_t>(rv));
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ(input, actual_output);
 }
@@ -453,8 +467,7 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputSpace) {
 // the result of calling Read().
 TEST_P(FilterSourceStreamTest, FilterDataReturnError) {
   auto source = std::make_unique<MockSourceStream>();
-  std::string input;
-  source->AddReadResult(input.data(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   scoped_refptr<IOBufferWithSize> output_buffer =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   MockSourceStream* mock_stream = source.get();
@@ -473,8 +486,8 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnError) {
 TEST_P(FilterSourceStreamTest, FilterChaining) {
   auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
-  source->AddReadResult(input.data(), input.length(), OK, GetParam());
-  source->AddReadResult(input.data(), 0, OK, GetParam());  // EOF
+  source->AddReadResult(base::as_byte_span(input), OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());  // EOF
 
   MockSourceStream* mock_stream = source.get();
   auto pass_through_source =
@@ -501,7 +514,7 @@ TEST_P(FilterSourceStreamTest, FilterChaining) {
     if (rv == OK)
       break;
     ASSERT_GT(rv, OK);
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ(input, actual_output);
   // Type string (from left to right) should be the order of data flow.
@@ -514,9 +527,9 @@ TEST_P(FilterSourceStreamTest, FilterChaining) {
 TEST_P(FilterSourceStreamTest, OutputSpaceForOneRead) {
   auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
-  source->AddReadResult(input.data(), input.length(), OK, GetParam());
+  source->AddReadResult(base::as_byte_span(input), OK, GetParam());
   // Add a 0 byte read to signal EOF.
-  source->AddReadResult(input.data() + input.length(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   // Use an extremely small buffer size (1 byte), so FilterData will need more
   // output space.
   scoped_refptr<IOBufferWithSize> output_buffer =
@@ -534,7 +547,7 @@ TEST_P(FilterSourceStreamTest, OutputSpaceForOneRead) {
       break;
     ASSERT_GT(rv, OK);
     ASSERT_GE(kSmallBufferSize, static_cast<size_t>(rv));
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ(input, actual_output);
 }
@@ -544,9 +557,9 @@ TEST_P(FilterSourceStreamTest, OutputSpaceForOneRead) {
 TEST_P(FilterSourceStreamTest, ThrottleSourceStream) {
   auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
-  source->AddReadResult(input.data(), input.length(), OK, GetParam());
+  source->AddReadResult(base::as_byte_span(input), OK, GetParam());
   // Add a 0 byte read to signal EOF.
-  source->AddReadResult(input.data() + input.length(), 0, OK, GetParam());
+  source->AddReadResult(base::span<uint8_t>(), OK, GetParam());
   scoped_refptr<IOBufferWithSize> output_buffer =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   MockSourceStream* mock_stream = source.get();
@@ -563,9 +576,103 @@ TEST_P(FilterSourceStreamTest, ThrottleSourceStream) {
     ASSERT_GT(rv, OK);
     // ThrottleSourceStream returns 1 byte at a time.
     ASSERT_GE(1u, static_cast<size_t>(rv));
-    actual_output.append(output_buffer->data(), rv);
+    actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
   EXPECT_EQ(input, actual_output);
 }
 
+TEST(FilterSourceStreamTest, GetContentEncodingTypes) {
+  struct {
+    const std::string_view headers;
+    const std::optional<base::flat_set<SourceStreamType>> accepted_stream_types;
+    const std::vector<SourceStreamType> expected_result;
+    const std::string_view test_comment;
+  } kTestCases[] = {
+      {"HTTP/1.1 200 OK\n", std::nullopt, {}, "No Content-Encoding header"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: deflate\n",
+       std::nullopt,
+       {SourceStreamType::kDeflate},
+       "Single deflate encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip\n",
+       std::nullopt,
+       {SourceStreamType::kGzip},
+       "Single gzip encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: x-gzip\n",
+       std::nullopt,
+       {SourceStreamType::kGzip},
+       "Single x-gzip encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br\n",
+       std::nullopt,
+       {SourceStreamType::kBrotli},
+       "Single br encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: zstd\n",
+       std::nullopt,
+       {SourceStreamType::kZstd},
+       "Single zstd encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br, gzip\n",
+       std::nullopt,
+       {SourceStreamType::kBrotli, SourceStreamType::kGzip},
+       "Multiple encodings (brotli and gzip)"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip, br\n",
+       std::nullopt,
+       {SourceStreamType::kGzip, SourceStreamType::kBrotli},
+       "Multiple encodings (gzip and brotli) - different order"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: unknown\n",
+       std::nullopt,
+       {},
+       "Unknown encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: identity\n",
+       std::nullopt,
+       {},
+       "Identity encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip, unknown\n",
+       std::nullopt,
+       {},
+       "Unknown encoding after gzip"},
+      {"HTTP/1.1 200 OK\nContent-Encoding:  gzip, br\n",
+       std::nullopt,
+       {SourceStreamType::kGzip, SourceStreamType::kBrotli},
+       "Extra spaces between encodings"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br\n",
+       base::flat_set<SourceStreamType>({SourceStreamType::kBrotli}),
+       {SourceStreamType::kBrotli},
+       "Accepted types match"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip\n",
+       base::flat_set<SourceStreamType>({SourceStreamType::kBrotli}),
+       {},
+       "No accepted types match"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br, gzip\n",
+       base::flat_set<SourceStreamType>({SourceStreamType::kBrotli}),
+       {},
+       "Unaccepted type found"},
+      {"HTTP/1.1 200 OK\ncontent-encoding: GZip\n",
+       std::nullopt,
+       {SourceStreamType::kGzip},
+       "Case-insensitive gzip"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: BR\n",
+       std::nullopt,
+       {SourceStreamType::kBrotli},
+       "Case-insensitive brotli"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: deflate, gzip, br\n",
+       std::nullopt,
+       {SourceStreamType::kDeflate, SourceStreamType::kGzip,
+        SourceStreamType::kBrotli},
+       "Three encodings"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: deflate, gzip, br\n",
+       base::flat_set<SourceStreamType>(
+           {SourceStreamType::kDeflate, SourceStreamType::kBrotli}),
+       {},
+       "Three encodings, two accepted"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.test_comment);
+    auto headers = base::MakeRefCounted<HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(test_case.headers));
+    std::vector<SourceStreamType> types =
+        FilterSourceStream::GetContentEncodingTypes(
+            test_case.accepted_stream_types, *headers);
+    EXPECT_THAT(types, test_case.expected_result);
+  }
+}
 }  // namespace net

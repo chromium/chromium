@@ -10,8 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
@@ -19,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -28,7 +25,6 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
@@ -39,20 +35,18 @@ import java.lang.ref.WeakReference;
 @Batch(Batch.PER_CLASS)
 public class AddUsernameDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AddUsernameDialogBridge.Natives mBridgeJniMock;
     @Mock private WindowAndroid mWindowAndroid;
 
     private static final long sTestNativePointer = 1;
 
-    private FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
+    private final FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
     private AddUsernameDialogBridge mBridge;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mJniMocker.mock(AddUsernameDialogBridgeJni.TEST_HOOKS, mBridgeJniMock);
+        AddUsernameDialogBridgeJni.setInstanceForTesting(mBridgeJniMock);
 
         mBridge = new AddUsernameDialogBridge(sTestNativePointer, mWindowAndroid);
     }
@@ -74,7 +68,7 @@ public class AddUsernameDialogBridgeTest {
     @Test
     public void testDialogIsDismissedFromNative() {
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(createActivity()));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(createActivity()));
 
         mBridge.showAddUsernameDialog("username");
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();

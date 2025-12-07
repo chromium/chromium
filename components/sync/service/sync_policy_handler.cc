@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
@@ -32,9 +32,19 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
       syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
                                                  UserSelectableType::kPayments);
     }
+
+    // If tabs are disabled, also disable saved tab groups, and vice-versa.
+    if (*type == UserSelectableType::kTabs) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(
+          prefs, UserSelectableType::kSavedTabGroups);
+    }
+    if (*type == UserSelectableType::kSavedTabGroups) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
+                                                 UserSelectableType::kTabs);
+    }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Check for OS types. This includes types that used to be browser types,
   // like "apps" and "preferences".
   std::optional<UserSelectableOsType> os_type =
@@ -42,7 +52,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   if (os_type.has_value()) {
     syncer::SyncPrefs::SetOsTypeDisabledByPolicy(prefs, *os_type);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace

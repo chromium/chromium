@@ -18,12 +18,11 @@ namespace policies {
 // is no need for more than one of these to be instantiated at a time (enforced
 // by a DCHECK). This policy expects to be attached to an empty graph (also
 // enforced by a DCHECK).
-class ProcessPriorityPolicy : public GraphOwned,
-                              public ProcessNode::ObserverDefaultImpl {
+class ProcessPriorityPolicy : public GraphOwned, public ProcessNodeObserver {
  public:
   using SetPriorityOnUiThreadCallback =
       base::RepeatingCallback<void(RenderProcessHostProxy rph_proxy,
-                                   base::Process::Priority)>;
+                                   base::Process::Priority priority)>;
 
   ProcessPriorityPolicy();
   ProcessPriorityPolicy(const ProcessPriorityPolicy&) = delete;

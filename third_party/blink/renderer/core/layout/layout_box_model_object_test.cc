@@ -62,15 +62,15 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
       writing-mode: vertical-lr;
     }
     </style>
-    <div id='target-rl' class="target"></div>
-    <div id='target-lr' class="target"></div>
+    <div contenteditable id='target-rl' class="target"></div>
+    <div contenteditable id='target-lr' class="target"></div>
 
-    <div style="writing-mode:vertical-rl;">
+    <div contenteditable style="writing-mode:vertical-rl;">
     <br>
     <span id="target-inline-rl" class="target"></span>
     </div>
 
-    <div style="writing-mode:vertical-lr;">
+    <div contenteditable style="writing-mode:vertical-lr;">
     <br>
     <span id="target-inline-lr" class="target"></span>
     </div>
@@ -80,32 +80,126 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
   constexpr LayoutUnit kPaddingRight = LayoutUnit(3);
   constexpr LayoutUnit kPaddingLeft = LayoutUnit(7);
   constexpr LayoutUnit kFontHeight = LayoutUnit(10);
+  constexpr LayoutUnit kFontWidth = LayoutUnit(10);
+  // width for bar and height for underscore.
   constexpr LayoutUnit kCaretWidth = LayoutUnit(1);
 
   {
     auto* rl = GetLayoutBoxByElementId("target-rl");
-    EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
-                           kPaddingTop, kFontHeight, kCaretWidth),
-              rl->LocalCaretRect(0));
+    EXPECT_EQ(
+        PhysicalRect(rl->StitchedSize().width - kPaddingRight - kFontHeight,
+                     kPaddingTop, kFontHeight, kCaretWidth),
+        rl->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(
+        PhysicalRect(rl->StitchedSize().width - kPaddingRight - kFontHeight,
+                     kPaddingTop, kFontHeight, kFontWidth),
+        rl->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(rl->StitchedSize().width - kPaddingRight -
+                               kFontHeight - kCaretWidth,
+                           kPaddingTop, kCaretWidth, kFontWidth),
+              rl->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
     auto* lr = GetLayoutBoxByElementId("target-lr");
     EXPECT_EQ(PhysicalRect(kPaddingLeft, kPaddingTop, kFontHeight, kCaretWidth),
-              lr->LocalCaretRect(0));
+              lr->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(kPaddingLeft, kPaddingTop, kFontHeight, kFontWidth),
+              lr->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(kPaddingLeft + kFontHeight, kPaddingTop, kCaretWidth,
+                           kFontWidth),
+              lr->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
     auto* inline_rl =
         To<LayoutInline>(GetLayoutObjectByElementId("target-inline-rl"));
     EXPECT_EQ(PhysicalRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
-              inline_rl->LocalCaretRect(0, nullptr));
+              inline_rl->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
+                           kFontWidth),
+              inline_rl->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(LayoutUnit() - kCaretWidth,
+                           kPaddingTop - kCaretWidth, kCaretWidth, kFontWidth),
+              inline_rl->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
     auto* inline_lr =
         To<LayoutInline>(GetLayoutObjectByElementId("target-inline-lr"));
     EXPECT_EQ(PhysicalRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
-              inline_lr->LocalCaretRect(0, nullptr));
+              inline_lr->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(PhysicalRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
+                           kFontWidth),
+              inline_lr->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(kFontHeight + kFontHeight, kPaddingTop - kCaretWidth,
+                           kCaretWidth, kFontWidth),
+              inline_lr->LocalCaretRect(0, CaretShape::kUnderscore));
+  }
+}
+
+TEST_P(LayoutBoxModelObjectTest, BorderAndPaddingLogicalLeftRight) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .target {
+      border-color: red;
+      border-style: solid;
+      border-width: 2px 4px 11px 13px;
+      padding: 1px 3px 5px 7px;
+      block-size: 40px;
+      inline-size: 33px;
+    }
+    #target-htb {
+      writing-mode: horizontal-tb;
+    }
+    #target-vrl {
+      writing-mode: vertical-rl;
+    }
+    #target-vlr {
+      writing-mode: vertical-lr;
+    }
+    #target-srl {
+      writing-mode: sideways-rl;
+    }
+    #target-slr {
+      writing-mode: sideways-lr;
+    }
+    </style>
+    <div id='target-htb' class="target"></div>
+    <div id='target-vrl' class="target"></div>
+    <div id='target-vlr' class="target"></div>
+    <div id='target-srl' class="target"></div>
+    <div id='target-slr' class="target"></div>
+  })HTML");
+
+  constexpr LayoutUnit kTop = LayoutUnit(2 + 1);
+  constexpr LayoutUnit kRight = LayoutUnit(4 + 3);
+  constexpr LayoutUnit kBottom = LayoutUnit(11 + 5);
+  constexpr LayoutUnit kLeft = LayoutUnit(13 + 7);
+
+  {
+    auto* target = GetLayoutBoxByElementId("target-htb");
+    EXPECT_EQ(kLeft, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kRight, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-vrl");
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-vlr");
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-srl");
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-slr");
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineEnd());
   }
 }
 
@@ -285,14 +379,14 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   EXPECT_EQ(10.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
-  // unscrolled scroller.
-  EXPECT_EQ(gfx::Rect(2000, 100, 200, 400),
+  // unscrolled scroller, and not corrected for scroll origin.
+  EXPECT_EQ(gfx::Rect(-100, 100, 200, 400),
             ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   EXPECT_EQ(
-      gfx::Rect(2190, 100, 10, 10),
+      gfx::Rect(90, 100, 10, 10),
       ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(-2100, 0, 100, 100),
             ToEnclosingRect(constraints->constraining_rect));
 }
 
@@ -1127,7 +1221,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedFixedPos) {
   )HTML");
 
   // The view size is set by the base class. This test depends on it.
-  ASSERT_EQ(PhysicalSize(800, 600), GetLayoutView().Size());
+  ASSERT_EQ(PhysicalSize(800, 600), GetLayoutView().StitchedSize());
 
   auto* outer_sticky = GetLayoutBoxModelObjectByElementId("outerSticky");
   auto* inner_sticky_top = GetLayoutBoxModelObjectByElementId("innerStickyTop");
@@ -1211,12 +1305,11 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
   auto* target_element = GetElementById("target");
   auto* target = target_element->GetLayoutBoxModelObject();
   auto* parent = target->Parent();
-  auto* original_compositing_container =
-      target->Layer()->CompositingContainer();
+  auto* original_painting_container = target->Layer()->PaintingContainer();
   EXPECT_FALSE(target->IsStackingContext());
   EXPECT_TRUE(target->IsStacked());
   EXPECT_FALSE(parent->IsStacked());
-  EXPECT_NE(parent, original_compositing_container->GetLayoutObject());
+  EXPECT_NE(parent, original_painting_container->GetLayoutObject());
 
   target_element->setAttribute(html_names::kClassAttr,
                                AtomicString("non-stacked"));
@@ -1225,9 +1318,9 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
 
   EXPECT_FALSE(target->IsStacked());
   EXPECT_TRUE(target->Layer()->SelfNeedsRepaint());
-  EXPECT_TRUE(original_compositing_container->DescendantNeedsRepaint());
-  auto* new_compositing_container = target->Layer()->CompositingContainer();
-  EXPECT_EQ(parent, new_compositing_container->GetLayoutObject());
+  EXPECT_TRUE(original_painting_container->DescendantNeedsRepaint());
+  auto* new_painting_container = target->Layer()->PaintingContainer();
+  EXPECT_EQ(parent, new_painting_container->GetLayoutObject());
 
   UpdateAllLifecyclePhasesForTest();
   target_element->setAttribute(html_names::kClassAttr, AtomicString("stacked"));
@@ -1236,9 +1329,8 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
 
   EXPECT_TRUE(target->IsStacked());
   EXPECT_TRUE(target->Layer()->SelfNeedsRepaint());
-  EXPECT_TRUE(new_compositing_container->DescendantNeedsRepaint());
-  EXPECT_EQ(original_compositing_container,
-            target->Layer()->CompositingContainer());
+  EXPECT_TRUE(new_painting_container->DescendantNeedsRepaint());
+  EXPECT_EQ(original_painting_container, target->Layer()->PaintingContainer());
 }
 
 TEST_P(LayoutBoxModelObjectTest, BackfaceVisibilityChange) {
@@ -1417,7 +1509,7 @@ TEST_P(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
         animation: op 0.001s;
       }
     </style>
-    <select multiple size=1>
+    <select multiple size=4>
       <option id=opt>PASS</option>
     </select>
   )HTML");
@@ -1478,7 +1570,8 @@ TEST_P(LayoutBoxModelObjectTest, RemoveStickyUnderContain) {
 
   // This should not crash.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 }
 

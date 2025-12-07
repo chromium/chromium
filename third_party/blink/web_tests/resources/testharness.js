@@ -1011,13 +1011,13 @@
         /**
          * Stop listening for events
          */
-        function stop_watching() {
+        this.stop_watching = function() {
             for (var i = 0; i < eventTypes.length; i++) {
                 watchedNode.removeEventListener(eventTypes[i], eventHandler, false);
             }
         };
 
-        test._add_cleanup(stop_watching);
+        test._add_cleanup(this.stop_watching);
 
         return this;
     }
@@ -1094,7 +1094,7 @@
     {
         if (typeof func !== "function") {
             tests.set_status(tests.status.ERROR,
-                             "promise_test invoked without a function");
+                             "`promise_setup` invoked without a function");
             tests.complete();
             return;
         }
@@ -1330,6 +1330,15 @@
         "0xffff": "uffff",
     };
 
+    const formatEscapeMap = {
+        "\\": "\\\\",
+        '"': '\\"'
+    };
+    for (const p in replacements) {
+        formatEscapeMap[String.fromCharCode(p)] = "\\" + replacements[p];
+    }
+    const formatEscapePattern = new RegExp(`[${Object.keys(formatEscapeMap).map(k => k === "\\" ? "\\\\" : k).join("")}]`, "g");
+
     /**
      * Convert a value to a nice, human-readable string
      *
@@ -1380,12 +1389,7 @@
 
         switch (typeof val) {
         case "string":
-            val = val.replace(/\\/g, "\\\\");
-            for (var p in replacements) {
-                var replace = "\\" + replacements[p];
-                val = val.replace(RegExp(String.fromCharCode(p), "g"), replace);
-            }
-            return '"' + val.replace(/"/g, '\\"') + '"';
+            return '"' + val.replace(formatEscapePattern, match => formatEscapeMap[match]) + '"';
         case "boolean":
         case "undefined":
             return String(val);
@@ -2032,30 +2036,46 @@
 
 
     /**
-     * Assert that ``object`` has a property named ``property_name`` and that the property is readonly.
+     * Assert that ``object`` has a property named ``property_name`` and that the property is not writable or has no setter.
      *
-     * Note: The implementation tries to update the named property, so
-     * any side effects of updating will be triggered. Users are
-     * encouraged to instead inspect the property descriptor of ``property_name`` on ``object``.
-     *
-     * @param {Object} object - Object that should have the given property in its prototype chain.
+     * @param {Object} object - Object that should have the given (not necessarily own) property.
      * @param {string} property_name - Expected property name.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_readonly(object, property_name, description)
     {
-         var initial_value = object[property_name];
-         try {
-             //Note that this can have side effects in the case where
-             //the property has PutForwards
-             object[property_name] = initial_value + "a"; //XXX use some other value here?
-             assert(same_value(object[property_name], initial_value),
-                    "assert_readonly", description,
-                    "changing property ${p} succeeded",
-                    {p:property_name});
-         } finally {
-             object[property_name] = initial_value;
-         }
+        assert(property_name in object,
+               "assert_readonly", description,
+               "property ${p} not found",
+               {p:property_name});
+
+        let desc;
+        while (object && (desc = Object.getOwnPropertyDescriptor(object, property_name)) === undefined) {
+            object = Object.getPrototypeOf(object);
+        }
+
+        assert(desc !== undefined,
+               "assert_readonly", description,
+               "could not find a descriptor for property ${p}",
+               {p:property_name});
+
+        if (desc.hasOwnProperty("value")) {
+            // We're a data property descriptor
+            assert(desc.writable === false, "assert_readonly", description,
+                   "descriptor [[Writable]] expected false got ${actual}", {actual:desc.writable});
+        } else if (desc.hasOwnProperty("get") || desc.hasOwnProperty("set")) {
+            // We're an accessor property descriptor
+            assert(desc.set === undefined, "assert_readonly", description,
+                   "property ${p} is an accessor property with a [[Set]] attribute, cannot test readonly-ness",
+                   {p:property_name});
+        } else {
+            // We're a generic property descriptor
+            // This shouldn't happen, because Object.getOwnPropertyDescriptor
+            // forwards the return value of [[GetOwnProperty]] (P), which must
+            // be a fully populated Property Descriptor or Undefined.
+            assert(false, "assert_readonly", description,
+                   "Object.getOwnPropertyDescriptor must return a fully populated property descriptor");
+        }
     }
     expose_assert(assert_readonly, "assert_readonly");
 
@@ -4408,13 +4428,20 @@
     {
         var substitution_re = /\$\{([^ }]*)\}/g;
 
-        function do_substitution(input) {
+        function do_substitution(input)
+        {
             var components = input.split(substitution_re);
             var rv = [];
-            for (var i = 0; i < components.length; i += 2) {
-                rv.push(components[i]);
-                if (components[i + 1]) {
-                    rv.push(String(substitutions[components[i + 1]]));
+            if (components.length === 1) {
+                rv = components;
+            } else if (substitutions) {
+                for (var i = 0; i < components.length; i += 2) {
+                    if (components[i]) {
+                        rv.push(components[i]);
+                    }
+                    if (substitutions[components[i + 1]]) {
+                        rv.push(String(substitutions[components[i + 1]]));
+                    }
                 }
             }
             return rv;
@@ -4765,7 +4792,8 @@
             return META_TITLE;
         }
         if ('location' in global_scope && 'pathname' in location) {
-            return location.pathname.substring(location.pathname.lastIndexOf('/') + 1, location.pathname.indexOf('.'));
+            var filename = location.pathname.substring(location.pathname.lastIndexOf('/') + 1);
+            return filename.substring(0, filename.indexOf('.'));
         }
         return "Untitled";
     }

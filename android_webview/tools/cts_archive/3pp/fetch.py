@@ -8,25 +8,25 @@ import json
 
 
 def do_latest():
-  print('2024.05.15')  # Update to current date when updating the URLs below
+  print('2025.11.17')  # Update to current date when updating the URLs below
 
 
 def get_download_url():
   filenames = [
-      "android-cts-8.0_R26-linux_x86-arm.zip",
-      "android-cts-8.0_R26-linux_x86-x86.zip",
-      "android-cts-9.0_r20-linux_x86-arm.zip",
-      "android-cts-9.0_r20-linux_x86-x86.zip",
       "android-cts-10_r16-linux_x86-arm.zip",
       "android-cts-10_r16-linux_x86-x86.zip",
-      "android-cts-11_r15-linux_x86-arm.zip",
-      "android-cts-11_r15-linux_x86-x86.zip",
-      "android-cts-12_r11-linux_x86-arm.zip",
-      "android-cts-12_r11-linux_x86-x86.zip",
-      "android-cts-13_r7-linux_x86-arm.zip",
-      "android-cts-13_r7-linux_x86-x86.zip",
-      "android-cts-14_r3-linux_x86-arm.zip",
-      "android-cts-14_r3-linux_x86-x86.zip",
+      "android-cts-11_r16-linux_x86-arm.zip",
+      "android-cts-11_r16-linux_x86-x86.zip",
+      "android-cts-12_r16-linux_x86-arm.zip",
+      "android-cts-12_r16-linux_x86-x86.zip",
+      "android-cts-13_r14-linux_x86-arm.zip",
+      "android-cts-13_r14-linux_x86-x86.zip",
+      "android-cts-14_r10-linux_x86-arm.zip",
+      "android-cts-14_r10-linux_x86-x86.zip",
+      "android-cts-15_r6-linux_x86-arm.zip",
+      "android-cts-15_r6-linux_x86-x86.zip",
+      "android-cts-16_r3-linux_x86-arm.zip",
+      "android-cts-16_r3-linux_x86-x86.zip",
   ]
   url_prefix = "https://dl.google.com/dl/android/cts/"
   urls = [url_prefix + f for f in filenames]

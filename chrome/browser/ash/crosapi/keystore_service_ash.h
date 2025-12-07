@@ -13,7 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,6 +44,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
  public:
   using KeystoreType = mojom::KeystoreType;
   using SigningScheme = mojom::KeystoreSigningScheme;
+  using KeystoreKeyAttributeType = mojom::KeystoreKeyAttributeType;
 
   explicit KeystoreServiceAsh(content::BrowserContext* fixed_context);
   // Allows to create the service early. It will use the current primary profile
@@ -64,7 +65,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       mojom::KeystoreType type,
       const std::vector<uint8_t>& challenge,
       bool migrate,
-      mojom::KeystoreSigningAlgorithmName algorithm,
+      mojom::KeystoreAlgorithmName algorithm,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
   void SelectClientCertificates(
@@ -79,10 +80,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                          const std::vector<uint8_t>& certificate,
                          RemoveCertificateCallback callback) override;
   void GetPublicKey(const std::vector<uint8_t>& certificate,
-                    mojom::KeystoreSigningAlgorithmName algorithm_name,
+                    mojom::KeystoreAlgorithmName algorithm_name,
                     GetPublicKeyCallback callback) override;
   void GenerateKey(mojom::KeystoreType keystore,
-                   mojom::KeystoreSigningAlgorithmPtr algorithm,
+                   mojom::KeystoreAlgorithmPtr algorithm,
                    GenerateKeyCallback callback) override;
   void RemoveKey(KeystoreType keystore,
                  const std::vector<uint8_t>& public_key,
@@ -101,11 +102,16 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void CanUserGrantPermissionForKey(
       const std::vector<uint8_t>& public_key,
       CanUserGrantPermissionForKeyCallback callback) override;
+  void SetAttributeForKey(KeystoreType keystore,
+                          const std::vector<uint8_t>& public_key,
+                          KeystoreKeyAttributeType attribute_type,
+                          const std::vector<uint8_t>& attribute_value,
+                          SetAttributeForKeyCallback callback) override;
 
   // DEPRECATED, use `GenerateKey` instead.
   void DEPRECATED_ExtensionGenerateKey(
       mojom::KeystoreType keystore,
-      mojom::KeystoreSigningAlgorithmPtr algorithm,
+      mojom::KeystoreAlgorithmPtr algorithm,
       const std::optional<std::string>& extension_id,
       DEPRECATED_ExtensionGenerateKeyCallback callback) override;
   // DEPRECATED, use `Sign` instead.
@@ -119,7 +125,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // DEPRECATED, use `GetPublicKey` instead.
   void DEPRECATED_GetPublicKey(
       const std::vector<uint8_t>& certificate,
-      mojom::KeystoreSigningAlgorithmName algorithm_name,
+      mojom::KeystoreAlgorithmName algorithm_name,
       DEPRECATED_GetPublicKeyCallback callback) override;
   // DEPRECATED, use `GetKeyStores` instead.
   void DEPRECATED_GetKeyStores(
@@ -193,6 +199,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                             chromeos::platform_keys::Status status);
   static void DidAddKeyTags(AddKeyTagsCallback callback,
                             chromeos::platform_keys::Status status);
+  static void DidSetAttributeForKey(SetAttributeForKeyCallback callback,
+                                    chromeos::platform_keys::Status status);
 
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in

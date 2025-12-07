@@ -4,6 +4,8 @@
 
 // These tests make sure SettingsOverridePermission values are set correctly.
 
+#include "extensions/common/permissions/settings_override_permission.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -14,13 +16,15 @@
 #include "build/build_config.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "components/version_info/version_info.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/permissions/settings_override_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::APIPermissionID;
 
@@ -87,8 +91,8 @@ TEST_F(SettingsOverridePermissionTest, HomePage) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(permission_set.HasAPIPermission(APIPermissionID::kHomepage));
-  VerifyOnePermissionMessage(extension->permissions_data(),
-                             "Change your home page to: google.com");
+  EXPECT_TRUE(VerifyOnePermissionMessage(
+      extension->permissions_data(), "Change your home page to: google.com"));
 #else
   EXPECT_FALSE(permission_set.HasAPIPermission(APIPermissionID::kHomepage));
 #endif
@@ -105,8 +109,8 @@ TEST_F(SettingsOverridePermissionTest, StartupPages) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(permission_set.HasAPIPermission(APIPermissionID::kStartupPages));
-  VerifyOnePermissionMessage(extension->permissions_data(),
-                             "Change your start page to: startup.com");
+  EXPECT_TRUE(VerifyOnePermissionMessage(
+      extension->permissions_data(), "Change your start page to: startup.com"));
 #else
   EXPECT_FALSE(permission_set.HasAPIPermission(APIPermissionID::kStartupPages));
 #endif
@@ -124,8 +128,9 @@ TEST_F(SettingsOverridePermissionTest, SearchSettings) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(
       permission_set.HasAPIPermission(APIPermissionID::kSearchProvider));
-  VerifyOnePermissionMessage(extension->permissions_data(),
-                             "Change your search settings to: google.com");
+  EXPECT_TRUE(
+      VerifyOnePermissionMessage(extension->permissions_data(),
+                                 "Change your search settings to: google.com"));
 #else
   EXPECT_FALSE(
       permission_set.HasAPIPermission(APIPermissionID::kSearchProvider));

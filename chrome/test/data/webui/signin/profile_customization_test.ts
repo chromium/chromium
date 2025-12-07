@@ -10,8 +10,8 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestProfileCustomizationBrowserProxy} from './test_profile_customization_browser_proxy.js';
 
@@ -33,6 +33,7 @@ suite('ProfileCustomizationTest', function() {
       backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_1,
       isManaged: false,
+      hasEnterpriseLabel: false,
       welcomeTitle: '',
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
@@ -47,7 +48,7 @@ suite('ProfileCustomizationTest', function() {
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId)!;
+    const img = app.shadowRoot.querySelector<HTMLImageElement>(elementId)!;
     assertEquals(expectedUrl, img.src);
   }
 
@@ -91,6 +92,12 @@ suite('ProfileCustomizationTest', function() {
     const doneButton = app.$.doneButton;
     assertTrue(doneButton.disabled);
 
+    // No policy indicator is shown.
+    const policyIndicator =
+        nameInput.shadowRoot.querySelector<HTMLElement>('#policyIcon');
+    assertEquals(policyIndicator, null);
+
+
     // Empty name.
     nameInput.value = '';
     await nameInput.updateComplete;
@@ -112,10 +119,31 @@ suite('ProfileCustomizationTest', function() {
     assertEquals('Bob', profileName);
   });
 
+  test('ChangeNameDisabledForWorkProfile', async function() {
+    await initializeApp();
+    webUIListenerCallback('on-profile-info-changed', {
+      backgroundColor: 'rgb(0, 255, 0)',
+      pictureUrl: AVATAR_URL_1,
+      isManaged: true,
+      hasEnterpriseLabel: true,
+      welcomeTitle: '',
+    });
+    await microtasksFinished();
+
+    const nameInput = app.$.nameInput;
+    await nameInput.updateComplete;
+    assertEquals('TestName', nameInput.value);
+    assertFalse(nameInput.invalid);
+    assertTrue(nameInput.disabled);
+    const policyIndicator =
+        nameInput.shadowRoot.querySelector<HTMLElement>('#policyIcon');
+    assertFalse(!!policyIndicator && policyIndicator.hidden);
+  });
+
   test('ProfileInfo', async function() {
     await initializeApp();
     // Check initial info.
-    assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+    assertNotEquals(null, app.$.title.innerText.match(STATIC_TITLE_PATTERN));
     checkImageUrl('#avatar', AVATAR_URL_1);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
@@ -127,7 +155,8 @@ suite('ProfileCustomizationTest', function() {
       isManaged: true,
       welcomeTitle: '',
     });
-    assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+    await microtasksFinished();
+    assertNotEquals(null, app.$.title.innerText.match(STATIC_TITLE_PATTERN));
     checkImageUrl('#avatar', AVATAR_URL_2);
     assertTrue(isChildVisible(app, '#workBadge'));
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
@@ -135,7 +164,7 @@ suite('ProfileCustomizationTest', function() {
 
   test('ThemeColorPicker', async function() {
     await initializeApp();
-    assertTrue(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
+    assertTrue(!!app.shadowRoot.querySelector('cr-theme-color-picker'));
   });
 
   // Checks that there is no Delete Profile button in the default Profile
@@ -151,7 +180,7 @@ suite('ProfileCustomizationTest', function() {
     await initializeApp();
     assertTrue(isChildVisible(app, '#skipButton'));
     const skipButton =
-        app.shadowRoot!.querySelector<CrButtonElement>('#skipButton')!;
+        app.shadowRoot.querySelector<CrButtonElement>('#skipButton')!;
     skipButton.click();
     return browserProxy.whenCalled('skip');
   });
@@ -164,7 +193,7 @@ suite(`LocalProfileCreationTest`, function() {
   const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
   const WELCOME_TITLE = 'Welcome!';
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({
       profileName: 'TestName',
       isLocalProfileCreation: true,
@@ -174,17 +203,19 @@ suite(`LocalProfileCreationTest`, function() {
       backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_1,
       isManaged: false,
+      hasEnterpriseLabel: false,
       welcomeTitle: '',
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('profile-customization-app');
     document.body.append(app);
-    return browserProxy.whenCalled('initialized');
+    await browserProxy.whenCalled('initialized');
+    return microtasksFinished();
   });
 
   test('LocalProfileCreationDialog', function() {
-    assertEquals(app.$.title.innerText, WELCOME_TITLE);
+    assertEquals(WELCOME_TITLE, app.$.title.innerText);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertTrue(isChildVisible(app, '#customizeAvatarIcon'));
     assertTrue(isChildVisible(app, '#deleteProfileButton'));
@@ -192,22 +223,22 @@ suite(`LocalProfileCreationTest`, function() {
 
     const activeView = 'active';
     const profileCustomizationDialog =
-        app.shadowRoot!.querySelector<HTMLElement>('#customizeDialog')!;
+        app.shadowRoot.querySelector<HTMLElement>('#customizeDialog')!;
     const avatarSelectionDialog =
-        app.shadowRoot!.querySelector<HTMLElement>('#selectAvatarDialog')!;
+        app.shadowRoot.querySelector<HTMLElement>('#selectAvatarDialog')!;
     assertTrue(profileCustomizationDialog.classList.contains(activeView));
     assertFalse(avatarSelectionDialog.classList.contains(activeView));
 
     // Open avatar customization.
     const avatarCustomizationButton =
-        app.shadowRoot!.querySelector<CrIconButtonElement>(
+        app.shadowRoot.querySelector<CrIconButtonElement>(
             '#customizeAvatarIcon')!;
     avatarCustomizationButton.click();
     assertFalse(profileCustomizationDialog.classList.contains(activeView));
     assertTrue(avatarSelectionDialog.classList.contains(activeView));
 
     const selectAvatarConfirmButton =
-        app.shadowRoot!.querySelector<CrButtonElement>(
+        app.shadowRoot.querySelector<CrButtonElement>(
             '#selectAvatarConfirmButton')!;
     selectAvatarConfirmButton.click();
     assertTrue(profileCustomizationDialog.classList.contains(activeView));
@@ -217,8 +248,45 @@ suite(`LocalProfileCreationTest`, function() {
   test('ClickDeleteProfileButton', function() {
     assertTrue(isChildVisible(app, '#deleteProfileButton'));
     const deleteProfileButton =
-        app.shadowRoot!.querySelector<CrButtonElement>('#deleteProfileButton')!;
+        app.shadowRoot.querySelector<CrButtonElement>('#deleteProfileButton')!;
     deleteProfileButton.click();
     return browserProxy.whenCalled('deleteProfile');
+  });
+});
+
+suite('ProfileCustomizationLocalProfileFrictionReductionExp', function() {
+  let app: ProfileCustomizationAppElement;
+  let browserProxy: TestProfileCustomizationBrowserProxy;
+
+  setup(function() {
+    loadTimeData.overrideValues({
+      profileName: 'TestNameLocalProfile',
+      isLocalProfileCreation: true,
+      shouldShowDefaultProfileName: true,
+    });
+    browserProxy = new TestProfileCustomizationBrowserProxy();
+    ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
+  });
+
+  async function initializeApp() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('profile-customization-app');
+    document.body.append(app);
+    await browserProxy.whenCalled('initialized');
+  }
+
+  test('PrefillProfileNameInFrictionReductionExp', async function() {
+    await initializeApp();
+    await app.$.nameInput.updateComplete;
+    await app.$.nameInput.updateComplete;
+
+    const doneButton = app.$.doneButton;
+    assertFalse(doneButton.disabled);
+    doneButton.click();
+
+    const profileName = await browserProxy.whenCalled('done');
+    assertEquals('TestNameLocalProfile', profileName);
+
+    return microtasksFinished();
   });
 });

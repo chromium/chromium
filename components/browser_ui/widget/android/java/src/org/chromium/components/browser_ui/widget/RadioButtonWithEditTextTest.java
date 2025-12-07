@@ -49,7 +49,7 @@ public class RadioButtonWithEditTextTest {
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private class TestListener implements RadioButtonWithEditText.OnTextChangeListener {
+    private static class TestListener implements RadioButtonWithEditText.OnTextChangeListener {
         private CharSequence mCurrentText;
         private int mNumberOfTimesTextChanged;
 
@@ -115,9 +115,8 @@ public class RadioButtonWithEditTextTest {
                                             R.layout.radio_button_with_edit_text_test, null, false);
                     sContentView.addView(layout, MATCH_PARENT, WRAP_CONTENT);
 
-                    mRadioButtonWithEditText =
-                            (RadioButtonWithEditText) layout.findViewById(R.id.test_radio_button);
-                    mDummyButton = (Button) layout.findViewById(R.id.dummy_button);
+                    mRadioButtonWithEditText = layout.findViewById(R.id.test_radio_button);
+                    mDummyButton = layout.findViewById(R.id.dummy_button);
                     Assert.assertNotNull(mRadioButtonWithEditText);
                     Assert.assertNotNull(mDummyButton);
 
@@ -358,8 +357,7 @@ public class RadioButtonWithEditTextTest {
                 () -> {
                     Criteria.checkThat(
                             "Keyboard visibility does not consist with test setting.",
-                            KeyboardVisibilityDelegate.getInstance()
-                                    .isKeyboardShowing(sActivity, mEditText),
+                            KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(mEditText),
                             Matchers.is(isVisible));
                 });
     }

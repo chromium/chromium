@@ -32,7 +32,7 @@
     Exposed=(Window,DedicatedWorker),
     ImplementedAs=DedicatedWorker
 ] interface Worker : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(ScriptURLString scriptURL, optional WorkerOptions options = {});
+    [CallWith=ExecutionContext, RaisesException] constructor((USVString or TrustedScriptURL) scriptURL, optional WorkerOptions options = {});
     void terminate();
 
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);

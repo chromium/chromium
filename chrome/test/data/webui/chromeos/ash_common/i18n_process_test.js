@@ -33,7 +33,7 @@ I18nProcessTest.prototype = {
     '//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js',
     '//ui/webui/resources/js/load_time_data_deprecated.js',
     '//third_party/node/node_modules/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
+    '//chrome/test/data/webui/chromeos/mocha_adapter.js',
   ],
 };
 

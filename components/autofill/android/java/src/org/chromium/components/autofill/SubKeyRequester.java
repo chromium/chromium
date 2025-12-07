@@ -12,9 +12,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** A class used handle SubKey requests. */
 @JNINamespace("autofill")
+@NullMarked
 public class SubKeyRequester {
     /** Callback for subKeys request. */
     public interface GetSubKeysRequestDelegate {

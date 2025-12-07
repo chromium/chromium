@@ -102,11 +102,11 @@ class CompressedPointerBaseGlobal final {
   static constexpr uintptr_t kUsefulBitsMask =
       PartitionAddressSpace::CorePoolsSize() - 1;
 
-  static union alignas(kPartitionCachelineSize)
+  PA_CONSTINIT static union alignas(kPartitionCachelineSize)
       PA_COMPONENT_EXPORT(PARTITION_ALLOC) Base {
     uintptr_t base;
     char cache_line[kPartitionCachelineSize];
-  } g_base_ PA_CONSTINIT;
+  } g_base_;
 
   PA_ALWAYS_INLINE static bool IsBaseConsistent() {
     return kUsefulBitsMask == (g_base_.base & kUsefulBitsMask);

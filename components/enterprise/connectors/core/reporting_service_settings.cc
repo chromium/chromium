@@ -4,7 +4,8 @@
 
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "base/logging.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 
 namespace enterprise_connectors {
 namespace {
@@ -51,7 +52,7 @@ ReportingServiceSettings::ReportingServiceSettings(
     // when new events may be added in the future. And this is also to support
     // existing customer policies that were created before we introduced the
     // concept of enabling/disabling events.
-    for (const char* event : kAllReportingEvents) {
+    for (const char* event : kAllReportingEnabledEvents) {
       enabled_event_names_.insert(event);
     }
   }
@@ -81,9 +82,6 @@ ReportingServiceSettings::GetReportingSettings() const {
     return std::nullopt;
 
   ReportingSettings settings;
-
-  settings.reporting_url = GURL(reporting_config_->url);
-  DCHECK(settings.reporting_url.is_valid());
 
   settings.enabled_event_names.insert(enabled_event_names_.begin(),
                                       enabled_event_names_.end());

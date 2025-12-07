@@ -10,13 +10,13 @@
 #include "ui/events/devices/ui_events_devices_jni_headers/InputDeviceObserver_jni.h"
 
 using jni_zero::AttachCurrentThread;
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 
 namespace ui {
 
-InputDeviceObserverAndroid::InputDeviceObserverAndroid() {}
+InputDeviceObserverAndroid::InputDeviceObserverAndroid() = default;
 
-InputDeviceObserverAndroid::~InputDeviceObserverAndroid() {}
+InputDeviceObserverAndroid::~InputDeviceObserverAndroid() = default;
 
 InputDeviceObserverAndroid* InputDeviceObserverAndroid::GetInstance() {
   return base::Singleton<
@@ -38,18 +38,18 @@ void InputDeviceObserverAndroid::RemoveObserver(
   Java_InputDeviceObserver_removeObserver(env);
 }
 
-static void JNI_InputDeviceObserver_InputConfigurationChanged(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+static void JNI_InputDeviceObserver_InputConfigurationChanged(JNIEnv* env) {
   InputDeviceObserverAndroid::GetInstance()
       ->NotifyObserversDeviceConfigurationChanged();
 }
 
 void InputDeviceObserverAndroid::NotifyObserversDeviceConfigurationChanged() {
-  for (ui::InputDeviceEventObserver& observer : observers_)
-    observer.OnInputDeviceConfigurationChanged(
-        InputDeviceEventObserver::kMouse | InputDeviceEventObserver::kKeyboard |
-        InputDeviceEventObserver::kTouchpad);
+  observers_.Notify(
+      &ui::InputDeviceEventObserver::OnInputDeviceConfigurationChanged,
+      InputDeviceEventObserver::kMouse | InputDeviceEventObserver::kKeyboard |
+          InputDeviceEventObserver::kTouchpad);
 }
 
 }  // namespace ui
+
+DEFINE_JNI(InputDeviceObserver)

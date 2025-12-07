@@ -6,27 +6,20 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsReviewPanelElement} from 'chrome://extensions/extensions.js';
-import {ExtensionsHatsBrowserProxyImpl, PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestExtensionsHatsBrowserProxy} from './test_extension_hats_browser_proxy.js';
 import {createExtensionInfo, MockItemDelegate} from './test_util.js';
 
 suite('ExtensionsReviewPanel', function() {
   let element: ExtensionsReviewPanelElement;
   let pluralString: TestPluralStringProxy;
-  let browserProxy: TestExtensionsHatsBrowserProxy;
 
   setup(function() {
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
-    browserProxy = new TestExtensionsHatsBrowserProxy();
-    ExtensionsHatsBrowserProxyImpl.setInstance(browserProxy);
-    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('extensions-review-panel');
     const extensionItems = [
@@ -38,11 +31,10 @@ suite('ExtensionsReviewPanel', function() {
     ];
     element.extensions = extensionItems;
     document.body.appendChild(element);
-    return flushTasks();
+    return microtasksFinished();
   });
 
-  test('ReviewPanelTextExists', async function() {
-    await browserProxy.whenCalled('panelShown');
+  test('ReviewPanelTextExists', function() {
     // Review panel should be visible.
     const reviewPanelContainer = element.$.reviewPanelContainer;
     assertTrue(!!reviewPanelContainer);
@@ -74,7 +66,7 @@ suite('ExtensionsReviewPanel', function() {
     const expandButton = element.$.expandButton;
     assertTrue(!!expandButton);
 
-    const extensionsList = element.shadowRoot!.querySelector('cr-collapse');
+    const extensionsList = element.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!extensionsList);
 
     // Button and list start out expanded.
@@ -83,7 +75,7 @@ suite('ExtensionsReviewPanel', function() {
 
     // User collapses the list.
     expandButton.click();
-    await expandButton.updateComplete;
+    await microtasksFinished();
 
     // Button and list are collapsed.
     assertFalse(expandButton.expanded);
@@ -91,16 +83,16 @@ suite('ExtensionsReviewPanel', function() {
 
     // User expands the list.
     expandButton.click();
-    await expandButton.updateComplete;
+    await microtasksFinished();
 
     // Button and list are expanded.
     assertTrue(expandButton.expanded);
     assertTrue(extensionsList.opened);
   });
 
-  test('ReviewPanelUnsafeExtensionRowsExist', async function() {
+  test('ReviewPanelUnsafeExtensionRowsExist', function() {
     const extensionNameContainers =
-        element.shadowRoot!.querySelectorAll('.panel-extension-row');
+        element.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(extensionNameContainers.length, 1);
     assertEquals(
         extensionNameContainers[0]
@@ -113,19 +105,19 @@ suite('ExtensionsReviewPanel', function() {
       'CompletionStateShouldNotBeShownIfNoExtensionsAndNoAction',
       async function() {
         const completionTextContainer =
-            element.shadowRoot!.querySelector('.completion-container');
+            element.shadowRoot.querySelector('.completion-container');
         assertTrue(!!completionTextContainer);
         assertFalse(isVisible(completionTextContainer));
 
-        element.set('extensions', []);
-        await flushTasks();
+        element.extensions = [];
+        await microtasksFinished();
 
         assertFalse(isVisible(completionTextContainer));
       });
 
   test('CompletionStateShouldBeShownAfterDeletingItems', async function() {
     const completionTextContainer =
-        element.shadowRoot!.querySelector('.completion-container');
+        element.shadowRoot.querySelector('.completion-container');
     assertFalse(isVisible(completionTextContainer));
     class MockUninstallItemDelegate extends MockItemDelegate {
       override uninstallItem(id: string): Promise<void> {
@@ -137,9 +129,8 @@ suite('ExtensionsReviewPanel', function() {
       override setItemSafetyCheckWarningAcknowledged(): void {}
     }
     element.delegate = new MockUninstallItemDelegate();
-    element.shadowRoot!.querySelector('cr-icon-button')?.click();
-    await flushTasks();
-    await browserProxy.whenCalled('extensionRemovedAction');
+    element.shadowRoot.querySelector('cr-icon-button')?.click();
+    await microtasksFinished();
     const completionText = pluralString.getArgs('getPluralString')[5];
     assertTrue(!!completionTextContainer);
     assertTrue(isVisible(completionTextContainer));
@@ -151,7 +142,7 @@ suite('ExtensionsReviewPanel', function() {
       'CompletionStateShouldBeShownAfterDeletingMultipleExtensions',
       async function() {
         const completionTextContainer =
-            element.shadowRoot!.querySelector('.completion-container');
+            element.shadowRoot.querySelector('.completion-container');
         assertFalse(isVisible(completionTextContainer));
         class MockDeleteItemDelegate extends MockItemDelegate {
           override deleteItems(ids: string[]) {
@@ -180,12 +171,17 @@ suite('ExtensionsReviewPanel', function() {
         ];
         element.extensions = extensionItems;
         element.delegate = new MockDeleteItemDelegate();
-        // Wait until the async response comes back.
-        element.shadowRoot!.querySelector<HTMLElement>(
-                               '#removeAllButton')!.click();
-        await flushTasks();
-        await browserProxy.whenCalled('removeAllAction');
-        const completionText = pluralString.getArgs('getPluralString')[7];
+
+        // Wait for the UI to finish rendering and reset plural string calls.
+        await microtasksFinished();
+        pluralString.resetResolver('getPluralString');
+
+        // Wait until the async response comes back. This should trigger 3
+        // calls for plural strings.
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#removeAllButton')!.click();
+        await microtasksFinished();
+        const completionText = pluralString.getArgs('getPluralString')[2];
         assertTrue(!!completionTextContainer);
         assertTrue(isVisible(completionTextContainer));
         assertEquals(completionText.messageName, 'safetyCheckAllDoneForNow');
@@ -194,18 +190,18 @@ suite('ExtensionsReviewPanel', function() {
 
   test('CompletionStateShouldBeShownAfterKeepingItems', async function() {
     const completionTextContainer =
-        element.shadowRoot!.querySelector('.completion-container');
+        element.shadowRoot.querySelector('.completion-container');
     class MockKeepItemDelegate extends MockItemDelegate {
       override setItemSafetyCheckWarningAcknowledged(): void {
         // Update extensions to be an empty list since the only previous
         // extension was marked as acknowledged.
-        element.set('extensions', []);
+        element.extensions = [];
       }
     }
     element.delegate = new MockKeepItemDelegate();
     assertFalse(isVisible(completionTextContainer));
     const extensionRowContainers =
-        element.shadowRoot!.querySelectorAll('.panel-extension-row');
+        element.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(1, extensionRowContainers.length);
     const menuButton = extensionRowContainers[0]!.querySelector<HTMLElement>(
         '.icon-more-vert')!;
@@ -214,12 +210,13 @@ suite('ExtensionsReviewPanel', function() {
 
     // Open the three dots action menu.
     menuButton.click();
+    await microtasksFinished();
     // The three dots action menu should be open.
     assertTrue(actionMenu.open);
 
     // Click the Keep the Extension button.
     actionMenu.querySelector('button')!.click();
-    await browserProxy.whenCalled('extensionKeptAction');
+    await microtasksFinished();
 
     // The extension row should be removed and the completion state should be
     // shown.

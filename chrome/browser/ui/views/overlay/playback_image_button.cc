@@ -9,15 +9,43 @@
 #include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/vector_icons.h"
+
+namespace {
+
+constexpr int kPlaybackButtonIconSize = 24;
+
+}  // namespace
 
 PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
+  SetSize(gfx::Size(kCenterButtonSize, kCenterButtonSize));
+
+  // We use a solid background color in the UI, and that ends up sitting above
+  // the ink drop layer, so we need to force the ink drop layer higher here.
+  views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
+
+  play_image_ = ui::ImageModel::FromVectorIcon(
+      vector_icons::kPlayArrowIcon, ui::kColorSysOnSecondaryContainer,
+      kPlaybackButtonIconSize);
+  pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
+                                                kColorPipWindowForeground,
+                                                kPlaybackButtonIconSize);
+  replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayIcon,
+                                                 kColorPipWindowForeground,
+                                                 kPlaybackButtonIconSize);
+
+  UpdateImageAndText();
+
   // Accessibility.
   const std::u16string playback_accessible_button_label(
       l10n_util::GetStringUTF16(
@@ -25,22 +53,11 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   GetViewAccessibility().SetName(playback_accessible_button_label);
 }
 
-void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
-  const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
-  play_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPlayArrowIcon, kColorPipWindowForeground, icon_size);
-  pause_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPauseIcon, kColorPipWindowForeground, icon_size);
-  replay_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kReplayIcon, kColorPipWindowForeground, icon_size);
-
-  UpdateImageAndText();
-}
-
 void PlaybackImageButton::SetPlaybackState(
     const VideoOverlayWindowViews::PlaybackState playback_state) {
-  if (playback_state_ == playback_state)
+  if (playback_state_ == playback_state) {
     return;
+  }
 
   playback_state_ = playback_state;
   UpdateImageAndText();
@@ -50,6 +67,7 @@ void PlaybackImageButton::UpdateImageAndText() {
   switch (playback_state_) {
     case VideoOverlayWindowViews::kPlaying: {
       SetImageModel(views::Button::STATE_NORMAL, pause_image_);
+      SetPauseButtonBackground();
       std::u16string pause_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PAUSE_CONTROL_TEXT);
       SetTooltipText(pause_text);
@@ -58,6 +76,7 @@ void PlaybackImageButton::UpdateImageAndText() {
     }
     case VideoOverlayWindowViews::kPaused: {
       SetImageModel(views::Button::STATE_NORMAL, play_image_);
+      SetPlayButtonBackground();
       std::u16string play_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PLAY_CONTROL_TEXT);
       SetTooltipText(play_text);
@@ -66,6 +85,7 @@ void PlaybackImageButton::UpdateImageAndText() {
     }
     case VideoOverlayWindowViews::kEndOfVideo: {
       SetImageModel(views::Button::STATE_NORMAL, replay_image_);
+      SetPauseButtonBackground();
       std::u16string replay_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_REPLAY_CONTROL_TEXT);
       SetTooltipText(replay_text);
@@ -73,7 +93,18 @@ void PlaybackImageButton::UpdateImageAndText() {
       break;
     }
   }
+
   SchedulePaint();
+}
+
+void PlaybackImageButton::SetPlayButtonBackground() {
+  SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysSecondaryContainer, kCenterButtonSize / 2));
+}
+
+void PlaybackImageButton::SetPauseButtonBackground() {
+  SetBackground(views::CreateRoundedRectBackground(
+      SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kCenterButtonSize / 2));
 }
 
 BEGIN_METADATA(PlaybackImageButton)

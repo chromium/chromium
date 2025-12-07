@@ -1,5 +1,4 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++slider horizontal ignored invisible name='Slider #2 now focusable'
 ++++++group name='finished'

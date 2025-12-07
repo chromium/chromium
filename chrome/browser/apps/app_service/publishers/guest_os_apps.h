@@ -24,8 +24,6 @@ class Profile;
 
 namespace apps {
 
-class PublisherHost;
-
 // GuestOSApps holds the common code for GuestOS app publishers (in the App
 // Service sense). Subclasses like CrostiniApps and BruschettaApps should
 // inherit from this.
@@ -40,6 +38,8 @@ class GuestOSApps : public KeyedService,
 
   void InitializeForTesting();
 
+  virtual void Initialize();
+
  protected:
   // Returns false if this kind of GuestOS isn't supported, e.g. missing
   // hardware capabilities. This prevents the app publisher from being
@@ -48,8 +48,6 @@ class GuestOSApps : public KeyedService,
 
   virtual apps::AppType AppType() const = 0;
   virtual guest_os::VmType VmType() const = 0;
-
-  virtual void Initialize();
 
   // Returns launch args where files in the intent are converted to URLs.
   std::vector<guest_os::LaunchArg> ArgsFromIntent(const apps::Intent* intent);
@@ -65,8 +63,6 @@ class GuestOSApps : public KeyedService,
   }
 
  private:
-  friend class PublisherHost;  // It calls Initialize().
-
   // apps::AppPublisher overrides.
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,

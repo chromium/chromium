@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_SYSTEM_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_SYSTEM_CALLBACKS_H_
 
+#include "base/functional/callback.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_entry_callback.h"
@@ -113,7 +114,7 @@ class EntryCallbacks final : public FileSystemCallbacksBase {
 
 class EntriesCallbacks final : public FileSystemCallbacksBase {
  public:
-  using SuccessCallback = base::RepeatingCallback<void(EntryHeapVector*)>;
+  using SuccessCallback = base::RepeatingCallback<void(GCedEntryHeapVector*)>;
   using ErrorCallback = base::OnceCallback<void(base::File::Error)>;
 
   EntriesCallbacks(const SuccessCallback&,
@@ -138,7 +139,7 @@ class EntriesCallbacks final : public FileSystemCallbacksBase {
   ErrorCallback error_callback_;
   Persistent<DirectoryReaderBase> directory_reader_;
   String base_path_;
-  Persistent<HeapVector<Member<Entry>>> entries_;
+  Persistent<GCedEntryHeapVector> entries_;
 };
 
 class FileSystemCallbacks final : public FileSystemCallbacksBase {

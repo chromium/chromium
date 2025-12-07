@@ -14,7 +14,6 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1045,15 +1044,13 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
             "Scanning.DiscoverySession.Result", session.response.result(),
             static_cast<lorgnette::OperationResult>(
                 lorgnette::OperationResult_ARRAYSIZE));
-        base::UmaHistogramMediumTimes("Scanning.DiscoverySession.MaxInterval",
-                                      session.max_event_interval);
         DCHECK(session.session_end_callback);
         std::move(*session.session_end_callback)
             .Run(std::move(session.response));
         discovery_sessions_.erase(session.session_id);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     if (discovery_sessions_.size() == 0) {

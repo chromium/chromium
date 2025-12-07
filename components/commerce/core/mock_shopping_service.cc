@@ -32,6 +32,9 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
                                 nullptr) {
   product_specifications_service_ =
       std::make_unique<testing::NiceMock<MockProductSpecificationsService>>();
@@ -54,20 +57,17 @@ void MockShoppingService::SetupPermissiveMock() {
       .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(std::nullopt);
   SetResponseForIsShoppingPage(std::nullopt);
-  SetResponseForGetDiscountInfoForUrls(default_discounts_map_);
+  SetResponseForGetDiscountInfoForUrl(std::vector<DiscountInfo>());
   SetSubscribeCallbackValue(true);
   SetUnsubscribeCallbackValue(true);
   SetIsSubscribedCallbackValue(true);
   SetGetAllSubscriptionsCallbackValue(std::vector<CommerceSubscription>());
   SetIsShoppingListEligible(true);
-  SetIsMerchantViewerEnabled(true);
   SetGetAllPriceTrackedBookmarksCallbackValue(
       std::vector<const bookmarks::BookmarkNode*>());
   SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*>());
-  SetIsPriceInsightsEligible(true);
   SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
-  SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
 }
 
 void MockShoppingService::SetAccountChecker(AccountChecker* account_checker) {
@@ -213,11 +213,6 @@ void MockShoppingService::SetIsReady(bool ready) {
           });
 }
 
-void MockShoppingService::SetIsMerchantViewerEnabled(bool is_enabled) {
-  ON_CALL(*this, IsMerchantViewerEnabled)
-      .WillByDefault(testing::Return(is_enabled));
-}
-
 void MockShoppingService::SetGetAllPriceTrackedBookmarksCallbackValue(
     std::vector<const bookmarks::BookmarkNode*> bookmarks) {
   ON_CALL(*this, GetAllPriceTrackedBookmarks)
@@ -236,47 +231,14 @@ void MockShoppingService::SetGetAllShoppingBookmarksValue(
       .WillByDefault(testing::Return(bookmarks));
 }
 
-void MockShoppingService::SetIsPriceInsightsEligible(bool is_eligible) {
-  ON_CALL(*this, IsPriceInsightsEligible)
-      .WillByDefault(testing::Return(is_eligible));
-}
-
-void MockShoppingService::SetIsDiscountEligibleToShowOnNavigation(
-    bool is_eligible) {
-  ON_CALL(*this, IsDiscountEligibleToShowOnNavigation)
-      .WillByDefault(testing::Return(is_eligible));
-}
-
-void MockShoppingService::SetResponseForGetDiscountInfoForUrls(
-    const DiscountsMap& discounts_map) {
-  ON_CALL(*this, GetDiscountInfoForUrls)
-      .WillByDefault([discounts_map](const std::vector<GURL>& urls,
-                                     DiscountInfoCallback callback) {
+void MockShoppingService::SetResponseForGetDiscountInfoForUrl(
+    const std::vector<DiscountInfo>& infos) {
+  ON_CALL(*this, GetDiscountInfoForUrl)
+      .WillByDefault([infos](const GURL& url, DiscountInfoCallback callback) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
+            FROM_HERE, base::BindOnce(std::move(callback), url, infos));
       });
 }
-
-void MockShoppingService::SetIsParcelTrackingEligible(bool is_eligible) {
-  ON_CALL(*this, IsParcelTrackingEligible)
-      .WillByDefault(testing::Return(is_eligible));
-}
-
-void MockShoppingService::SetGetAllParcelStatusesCallbackValue(
-    std::vector<ParcelTrackingStatus> parcels) {
-  ON_CALL(*this, GetAllParcelStatuses)
-      .WillByDefault(
-          [parcels = std::move(parcels)](GetParcelStatusCallback callback) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    std::move(callback), true,
-                    make_unique<std::vector<ParcelTrackingStatus>>(parcels)));
-          });
-}
-
-void StopTrackingParcel(const std::string& tracking_id,
-                        base::OnceCallback<void(bool)> callback) {}
 
 void MockShoppingService::SetResponseForGetProductSpecificationsForUrls(
     ProductSpecifications specs) {

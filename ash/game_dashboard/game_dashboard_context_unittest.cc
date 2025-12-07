@@ -16,13 +16,15 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
+#include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
+#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
@@ -37,39 +39,56 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_palette_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/power/battery_saver_controller.h"
+#include "ash/system/power/power_status.h"
+#include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_util.h"
-#include "base/check.h"
+#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "extensions/common/constants.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -351,6 +370,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     game_dashboard_utils::SetShowWelcomeDialog(false);
     game_dashboard_utils::SetShowToolbar(false);
     GetContext()->AddPostTargetHandler(&post_target_event_capturer_);
+    cros_network_ =
+        std::make_unique<chromeos::network_config::FakeCrosNetworkConfig>();
   }
 
   void TearDown() override {
@@ -414,6 +435,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     frame_header_height_ =
         game_dashboard_utils::GetFrameHeaderHeight(game_window_.get());
     DCHECK_GT(frame_header_height_, 0);
+    EXPECT_NEAR(test_api_->GetGameDashboardButtonCornerRadius(),
+                frame_header_height_ / 2, /*abs_error=*/0.000001f);
 
     if (is_arc_window && set_arc_game_controls_flags_prop) {
       // Initially, Game Controls is not available.
@@ -519,7 +542,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         return gfx::Point(window_center_point.x() - x_offset,
                           window_center_point.y() + y_offset);
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -765,8 +788,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_EQ(test_api_->GetToolbarSnapLocation(), desired_location);
   }
 
-  void CreateAnArcAppInFullscreen(std::unique_ptr<chromeos::CaptionButtonModel>
-                                      caption_button_model = nullptr) {
+  void CreateAnArcAppAndToggleFullscreen(
+      std::unique_ptr<chromeos::CaptionButtonModel> caption_button_model =
+          nullptr) {
     // Create an ARC game window.
     SetAppBounds(gfx::Rect(50, 50, 800, 700));
     CreateGameWindow(/*is_arc_window=*/true,
@@ -780,7 +804,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     if (caption_button_model) {
       // Override the caption button model and ensure the values referencing the
       // model are updated.
-      auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+      auto* frame_view = FrameViewAsh::Get(game_window_.get());
       ASSERT_TRUE(frame_view);
       frame_view->SetCaptionButtonModel(std::move(caption_button_model));
     }
@@ -790,7 +814,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // not visible.
     ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
     ToggleFullScreen(window_state, /*delegate=*/nullptr);
-    auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+    auto* frame_view = FrameViewAsh::Get(game_window_.get());
     chromeos::FrameCaptionButtonContainerView::TestApi test_api(
         frame_view->GetHeaderView()->caption_button_container());
     test_api.EndAnimations();
@@ -835,6 +859,34 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void UpdatePowerStatus(double battery_percent,
+                         base::TimeDelta time_to_empty) {
+    power_manager::PowerSupplyProperties props;
+
+    // Determine battery state.
+    auto external_power =
+        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+    auto battery_state =
+        power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
+
+    // Set battery percentage.
+    props.set_battery_percent(battery_percent);
+
+    // Set battery state.
+    props.set_external_power(external_power);
+    props.set_battery_state(battery_state);
+
+    // Set time.
+    props.set_is_calculating_battery_time(false);
+    props.set_battery_time_to_empty_sec(time_to_empty.InSecondsF());
+
+    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
+  }
+
+  chromeos::network_config::FakeCrosNetworkConfig* cros_network() {
+    return cros_network_.get();
+  }
+
   std::unique_ptr<aura::Window> game_window_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
   int frame_header_height_ = 0;
@@ -842,6 +894,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   EventCapturer post_target_event_capturer_;
 
  private:
+  std::unique_ptr<chromeos::network_config::FakeCrosNetworkConfig>
+      cros_network_;
   gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
 };
 
@@ -1370,7 +1424,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeNonTogglable) {
 TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
   // Create an ARC game window in fullscreen that can be resized via the size
   // button in the frame header.
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
 
   // Open the Game Dashboard menu with the accelerator.
   AcceleratorControllerImpl* controller =
@@ -1389,7 +1443,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
 // description within the screen size row.
 TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenNonTogglable) {
   // Create an ARC game window in fullscreen that can't be resized.
-  CreateAnArcAppInFullscreen(
+  CreateAnArcAppAndToggleFullscreen(
       /*caption_button_model=*/std::make_unique<NonResizableButtonModel>());
 
   // Open the Game Dashboard menu with the accelerator.
@@ -1471,6 +1525,144 @@ TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
   RecordGameAndVerifyButtons(
       /*recording_window_test_api=*/&gfn_window_test_api,
       /*other_window_test_api=*/test_api_.get());
+}
+
+// Verifies that the battery view in the Main Menu has desired functionality in
+// terms of visibility, responsiveness and formatting.
+TEST_F(GameDashboardContextTest, MainMenuBatteryView) {
+  // Enable Game Dashboard utilities flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  test_api_->OpenTheMainMenu();
+  auto* battery_view = test_api_->GetMainMenuBatteryView();
+
+  // Ensure that the battery view is visible.
+  ASSERT_TRUE(battery_view);
+  ASSERT_TRUE(battery_view->GetVisible());
+
+  // Ensure that the battery view updates accordingly when the theme changes.
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
+  const auto light_theme_image = battery_view->GetImageModel();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(true);
+  const auto dark_theme_image = battery_view->GetImageModel();
+  ASSERT_NE(light_theme_image, dark_theme_image);
+
+  // Ensure that the battery view updates when the power status changes.
+  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
+  UpdatePowerStatus(features::kBatterySaverActivationChargePercent.Get(),
+                    base::Hours(8));
+  EXPECT_TRUE(PowerStatus::Get()->IsBatterySaverActive());
+  ASSERT_NE(dark_theme_image, battery_view->GetImageModel());
+}
+
+// Verifies that the clock view in the Main Menu has desired functionality in
+// terms of visibility, responsiveness and formatting.
+TEST_F(GameDashboardContextTest, MainMenuClockView) {
+  // Enable Game Dashboard utilities flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Set current time to 08:00.
+  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                   base::Hours(32) - base::Time::Now());
+
+  test_api_->OpenTheMainMenu();
+  auto* clock_view = test_api_->GetMainMenuClockView();
+  // Ensure that the time and "AM/PM" text is visible and that a 12 hour clock
+  // is used by default.
+  ASSERT_TRUE(clock_view);
+  ASSERT_TRUE(clock_view->GetVisible());
+  ASSERT_EQ(clock_view->GetAmPmClockTypeForTesting(),
+            base::AmPmClockType::kKeepAmPm);
+  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
+            base::HourClockType::k12HourClock);
+
+  const auto* horizontal_time_label =
+      clock_view->GetHorizontalTimeLabelForTesting();
+  const std::u16string current_time(horizontal_time_label->GetText());
+  // Verify that the "AM/PM" text is visible.
+  ASSERT_NE(current_time.ends_with(u"AM"), current_time.ends_with(u"PM"));
+  // Ensure that the clock increments as the time changes.
+  AdvanceClock(base::Hours(12));
+  const std::u16string_view next_time = horizontal_time_label->GetText();
+  const std::u16string next_am_pm =
+      current_time.ends_with(u"AM") ? u"PM" : u"AM";
+  ASSERT_NE(current_time, next_time);
+  // Verify that the "AM/PM" text changes after advancing 12 hours.
+  ASSERT_TRUE(next_time.ends_with(next_am_pm));
+
+  // Change the clock to a 24 hour view.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
+  // Verify that the clock is still visible.
+  ASSERT_TRUE(clock_view->GetVisible());
+  // Verify that the clock view is 24 hours.
+  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
+            base::HourClockType::k24HourClock);
+  const auto hour_24_current_time = horizontal_time_label->GetText();
+  // Verify that the "AM/PM" text is not visible.
+  ASSERT_FALSE(hour_24_current_time.ends_with(u"AM") ||
+               hour_24_current_time.ends_with(u"PM"));
+
+  // Revert to the default 12 hour view.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(false);
+  // Verify that the clock is still visible.
+  ASSERT_TRUE(clock_view->GetVisible());
+  // Verify that the clock view is 12 hours.
+  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
+            base::HourClockType::k12HourClock);
+  const auto reverted_current_time = horizontal_time_label->GetText();
+  // Verify that the "AM/PM" text is visible.
+  ASSERT_NE(reverted_current_time.ends_with(u"AM"),
+            reverted_current_time.ends_with(u"PM"));
+}
+
+TEST_F(GameDashboardContextTest, MainMenuNetworkView) {
+  // Enable Game Dashboard utilities flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+
+  auto network = network_config::CrosNetworkConfigTestHelper::
+      CreateStandaloneNetworkProperties(
+          "wifi", chromeos::network_config::mojom::NetworkType::kWiFi,
+          chromeos::network_config::mojom::ConnectionStateType::kNotConnected);
+
+  cros_network()->AddNetworkAndDevice(mojo::Clone(network));
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  test_api_->OpenTheMainMenu();
+  auto* network_view = test_api_->GetMainMenuNetworkView();
+  ASSERT_TRUE(network_view);
+
+  // Ensure that the network view updates during an animation.
+  auto network_icon = gfx::Image(network_view->GetImage());
+  network_view->NetworkIconChanged();
+  EXPECT_NE(network_icon, gfx::Image(network_view->GetImage()));
+
+  // Ensure that the network view updates when the active network state changes.
+  network_icon = gfx::Image(network_view->GetImage());
+  network_view->ActiveNetworkStateChanged();
+  EXPECT_NE(network_icon, gfx::Image(network_view->GetImage()));
+
+  // Ensure that the network view updates when the connection type changes.
+  network_icon = gfx::Image(network_view->GetImage());
+  cros_network()->ClearNetworksAndDevices();
+  network = network_config::CrosNetworkConfigTestHelper::
+      CreateStandaloneNetworkProperties(
+          "ethernet", chromeos::network_config::mojom::NetworkType::kEthernet,
+          chromeos::network_config::mojom::ConnectionStateType::kOnline);
+  cros_network()->AddNetworkAndDevice(mojo::Clone(network));
+  EXPECT_NE(network_icon,
+            gfx::Image(test_api_->GetMainMenuNetworkView()->GetImage()));
 }
 
 TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
@@ -1703,6 +1895,28 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {
   ASSERT_TRUE(button_widget->IsVisible());
 }
 
+TEST_F(GameDashboardContextTest, GameDashboardButtonInFullscreen) {
+  // Create an ARC game window in fullscreen.
+  views::Widget* widget =
+      views::test::TestWidgetBuilder()
+          .SetBounds(kScreenBounds)
+          .SetDelegate(CreateTestWidgetBuilderDelegate())
+          .SetWindowProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP)
+          .SetShowState(ui::mojom::WindowShowState::kFullscreen)
+          .BuildOwnedByNativeWidget();
+  game_window_ = base::WrapUnique(widget->GetNativeWindow());
+  game_window_->SetProperty(kAppIDKey, TestGameDashboardDelegate::kGameAppId);
+  test_api_ = std::make_unique<GameDashboardContextTestApi>(
+      GameDashboardController::Get()->GetGameDashboardContext(
+          game_window_.get()),
+      GetEventGenerator());
+
+  // Verify window is in full screen and GameDashboardButton is hidden.
+  auto* window_state = WindowState::Get(game_window_.get());
+  ASSERT_TRUE(window_state->IsFullscreen());
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+}
+
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
   // Create an ARC game window.
   SetAppBounds(gfx::Rect(50, 50, 800, 700));
@@ -1743,7 +1957,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
 
 TEST_F(GameDashboardContextTest,
        GameDashboardButtonFullscreen_MouseOverAndTouchGesture) {
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -1794,7 +2008,7 @@ TEST_F(GameDashboardContextTest,
 }
 
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -1814,6 +2028,21 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   event_generator->PressTouch(app_bounds.right_center());
   event_generator->ReleaseTouch();
   ASSERT_FALSE(button_widget->IsVisible());
+}
+
+// Verifies that destroying the game window while in fullscreen mode does not
+// cause a crash. This is a regression test for crbug.com/449107622.
+TEST_F(GameDashboardContextTest, NoCrashOnWindowDestroyInFullscreen) {
+  // Create an ARC game window and put it in fullscreen.
+  CreateAnArcAppAndToggleFullscreen();
+
+  // Verify that the reveal controller is created.
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
+
+  // Destroy the window. If the test completes without crashing, it's a success.
+  CloseGameWindow();
+
+  SUCCEED() << "Window destroyed in fullscreen without crashing.";
 }
 
 TEST_F(GameDashboardContextTest,
@@ -1852,8 +2081,8 @@ TEST_F(GameDashboardContextTest,
 // are not visible.
 TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
   // Prevent short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -1901,8 +2130,8 @@ TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
 // widgets are not visible.
 TEST_F(GameDashboardContextTest, UIVisibilityWithWindowFloatAnimation) {
   // Do not short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -2008,8 +2237,8 @@ TEST_F(GameDashboardContextTest, OverviewModeWithTwoWindows) {
   EnterOverview();
   ExitOverview();
   ASSERT_FALSE(gfn_game_window->HasFocus());
-  ASSERT_FALSE(arc_game_window->HasFocus());
-  ASSERT_TRUE(arc_gamepad_button->HasFocus());
+  ASSERT_TRUE(arc_game_window->HasFocus());
+  ASSERT_FALSE(arc_gamepad_button->HasFocus());
 }
 
 TEST_F(GameDashboardContextTest, TabNavigationMainMenu) {
@@ -2148,20 +2377,7 @@ TEST_F(GameDashboardContextTest, TabNavigationToolbar) {
   EXPECT_TRUE(test_api_->GetToolbarScreenshotButton()->HasFocus());
 }
 
-class SnapGroupGameDashboardContextTest : public GameDashboardContextTest {
- public:
-  SnapGroupGameDashboardContextTest()
-      : scoped_feature_list_(features::kSnapGroup) {}
-
-  SnapGroupGameDashboardContextTest(const SnapGroupGameDashboardContextTest&) =
-      delete;
-  SnapGroupGameDashboardContextTest& operator=(
-      const SnapGroupGameDashboardContextTest&) = delete;
-  ~SnapGroupGameDashboardContextTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupGameDashboardContextTest = GameDashboardContextTest;
 
 // Tests no crash when the game window in a snap group is fullscreen'ed then
 // forces a work area change. Regression test for http://b/348668590.
@@ -2879,13 +3095,13 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
 
   // App is launched in desktop mode in Setup and switch to the tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   EXPECT_TRUE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   // Switch back to the desktop mode and this feature is resumed.
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
   EXPECT_FALSE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
@@ -2893,7 +3109,7 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
 
   // No toast shown when there is no game window.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
 
@@ -2904,7 +3120,7 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   // Switch back to the desktop mode and this feature is resumed.
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true);
   EXPECT_FALSE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
@@ -2967,8 +3183,8 @@ class OnOverviewModeEndedWaiter : public OverviewObserver {
   const raw_ptr<OverviewController> overview_controller_;
 };
 
-// Verifies that in overview mode, the Game Dashboard button is not visible, the
-// main menu is closed, and the toolbar visibility is unchanged.
+// Verifies that in overview mode, the Game Dashboard button
+// and toolbar are not visible and the main menu is closed.
 TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   auto* game_dashboard_button_widget =
       test_api_->GetGameDashboardButtonWidget();
@@ -2997,7 +3213,7 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   // Verify states in overview mode.
   EXPECT_FALSE(game_dashboard_button_widget->IsVisible());
   ASSERT_EQ(toolbar_widget, test_api_->GetToolbarWidget());
-  EXPECT_TRUE(toolbar_widget->IsVisible());
+  EXPECT_FALSE(toolbar_widget->IsVisible());
   EXPECT_FALSE(test_api_->GetMainMenuWidget());
 
   OnOverviewModeEndedWaiter waiter;
@@ -3018,10 +3234,10 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewModeWithTabletMode) {
   const auto* overview_controller = OverviewController::Get();
 
   // 1. Clamshell -> overview -> tablet-> exit overview.
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/true);
+  VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/false);
   ash::TabletModeControllerTestApi().EnterTabletMode();
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   ExitOverview();
@@ -3029,27 +3245,27 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewModeWithTabletMode) {
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
 
   // 2. Tablet -> overview -> exit overview -> clamshell.
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   ExitOverview();
   ASSERT_FALSE(overview_controller->InOverviewSession());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
 
   // 3. Tablet -> overview -> clamshell -> exit overview.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/true);
+  VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/false);
   ExitOverview();
   ASSERT_FALSE(overview_controller->InOverviewSession());
   VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);

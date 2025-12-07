@@ -74,7 +74,10 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
     const bool is_default = false;
   };
 
-  OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent);
+  OmahaWnd(int dialog_id,
+           WTL::CMessageLoop* message_loop,
+           HWND parent,
+           const std::wstring& lang);
 
   // Message and command handlers.
   LRESULT OnClose(UINT msg,
@@ -110,6 +113,7 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
   }
 
   WTL::CMessageLoop* message_loop() { return message_loop_; }
+  std::wstring lang() const { return lang_; }
   bool is_complete() { return is_complete_; }
   bool is_close_enabled() { return is_close_enabled_; }
   UpdaterScope scope() { return scope_; }
@@ -132,6 +136,7 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
 
   raw_ptr<WTL::CMessageLoop> message_loop_;
   HWND parent_;
+  const std::wstring lang_;
 
   bool is_complete_;
   bool is_close_enabled_;

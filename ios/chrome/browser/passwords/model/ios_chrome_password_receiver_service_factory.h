@@ -5,22 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_RECEIVER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_RECEIVER_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace password_manager {
 class PasswordReceiverService;
 }
 
-// Creates instances of PasswordReceiverService per BrowserState.
+// Creates instances of PasswordReceiverService per profile.
 class IOSChromePasswordReceiverServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the factory instance.
   static IOSChromePasswordReceiverServiceFactory* GetInstance();
-  static password_manager::PasswordReceiverService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+
+  // Returns the IOSChromePasswordReceiverServiceFactory associated with
+  // `profile`.
+  static password_manager::PasswordReceiverService* GetForProfile(
+      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<IOSChromePasswordReceiverServiceFactory>;
@@ -29,7 +33,7 @@ class IOSChromePasswordReceiverServiceFactory
   ~IOSChromePasswordReceiverServiceFactory() override;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_RECEIVER_SERVICE_FACTORY_H_

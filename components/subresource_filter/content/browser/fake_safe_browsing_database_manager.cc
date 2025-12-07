@@ -15,8 +15,7 @@
 
 FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager()
     : safe_browsing::TestSafeBrowsingDatabaseManager(
-          content::GetUIThreadTaskRunner({}),
-          content::GetIOThreadTaskRunner({})) {}
+          content::GetUIThreadTaskRunner({})) {}
 
 void FakeSafeBrowsingDatabaseManager::AddBlocklistedUrl(
     const GURL& url,
@@ -47,7 +46,7 @@ void FakeSafeBrowsingDatabaseManager::SimulateTimeout() {
   simulate_timeout_ = true;
 }
 
-FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {}
+FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() = default;
 
 bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,

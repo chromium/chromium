@@ -16,7 +16,7 @@ namespace policy {
 // PolicyMigrator with chrome-specific helper functions.
 class ChromeExtensionPolicyMigrator : public PolicyMigrator {
  public:
-  ~ChromeExtensionPolicyMigrator() override {}
+  ~ChromeExtensionPolicyMigrator() override = default;
 
  protected:
   // Helper function intended for implementers who want to rename policies and

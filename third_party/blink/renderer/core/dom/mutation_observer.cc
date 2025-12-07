@@ -43,13 +43,16 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/patching/patch.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
 using SlotChangeList = HeapVector<Member<HTMLSlotElement>>;
+using PatchList = HeapVector<Member<Patch>>;
 
 static unsigned g_observer_priority = 0;
 struct MutationObserver::ObserverLessThan {
@@ -61,31 +64,35 @@ struct MutationObserver::ObserverLessThan {
 
 class MutationObserverAgentData
     : public GarbageCollected<MutationObserverAgentData>,
-      public Supplement<Agent> {
+      public GarbageCollectedMixin {
  public:
-  constexpr static const char kSupplementName[] = "MutationObserverAgentData";
-
-  explicit MutationObserverAgentData(Agent& agent) : Supplement<Agent>(agent) {}
+  explicit MutationObserverAgentData(Agent& agent) : agent_(agent) {}
 
   static MutationObserverAgentData& From(Agent& agent) {
     MutationObserverAgentData* supplement =
-        Supplement<Agent>::From<MutationObserverAgentData>(agent);
+        agent.GetMutationObserverAgentData();
     if (!supplement) {
       supplement = MakeGarbageCollected<MutationObserverAgentData>(agent);
-      ProvideTo(agent, supplement);
+      agent.SetMutationObserverAgentData(supplement);
     }
     return *supplement;
   }
 
   void Trace(Visitor* visitor) const override {
-    Supplement<Agent>::Trace(visitor);
+    visitor->Trace(agent_);
     visitor->Trace(active_mutation_observers_);
     visitor->Trace(active_slot_change_list_);
+    visitor->Trace(pending_patches_);
   }
 
   void EnqueueSlotChange(HTMLSlotElement& slot) {
     EnsureEnqueueMicrotask();
     active_slot_change_list_.push_back(&slot);
+  }
+
+  void EnqueuePatch(Patch& patch) {
+    EnsureEnqueueMicrotask();
+    pending_patches_.push_back(&patch);
   }
 
   void CleanSlotChangeList(Document& document) {
@@ -96,6 +103,17 @@ class MutationObserverAgentData
         kept.push_back(slot);
     }
     active_slot_change_list_.swap(kept);
+  }
+
+  void CleanPatchList(Document& document) {
+    PatchList kept;
+    kept.reserve(pending_patches_.size());
+    for (auto& patch : pending_patches_) {
+      if (patch->GetDocument() != document) {
+        kept.push_back(patch);
+      }
+    }
+    pending_patches_.swap(kept);
   }
 
   void ActivateObserver(MutationObserver* observer) {
@@ -111,9 +129,9 @@ class MutationObserverAgentData
   void EnsureEnqueueMicrotask() {
     if (active_mutation_observers_.empty() &&
         active_slot_change_list_.empty()) {
-      GetSupplementable()->event_loop()->EnqueueMicrotask(
-          WTF::BindOnce(&MutationObserverAgentData::DeliverMutations,
-                        WrapWeakPersistent(this)));
+      agent_->event_loop()->EnqueueMicrotask(
+          BindOnce(&MutationObserverAgentData::DeliverMutations,
+                   WrapWeakPersistent(this)));
     }
   }
 
@@ -125,6 +143,8 @@ class MutationObserverAgentData
     active_mutation_observers_.clear();
     SlotChangeList slots;
     slots.swap(active_slot_change_list_);
+    PatchList patches;
+    patches.swap(pending_patches_);
     for (const auto& slot : slots)
       slot->ClearSlotChangeEventEnqueued();
     std::sort(observers.begin(), observers.end(),
@@ -133,12 +153,17 @@ class MutationObserverAgentData
       observer->Deliver();
     for (const auto& slot : slots)
       slot->DispatchSlotChangeEvent();
+    for (const auto& patch : patches) {
+      patch->DispatchPatchEvent();
+    }
   }
 
  private:
+  Member<Agent> agent_;
   // For MutationObserver.
   MutationObserverSet active_mutation_observers_;
   SlotChangeList active_slot_change_list_;
+  PatchList pending_patches_;
 };
 
 class MutationObserver::V8DelegateImpl final
@@ -318,6 +343,18 @@ void MutationObserver::CleanSlotChangeList(Document& document) {
       .CleanSlotChangeList(document);
 }
 
+// static
+void MutationObserver::EnqueuePatch(Patch& patch) {
+  DCHECK(IsMainThread());
+  MutationObserverAgentData::From(patch.GetDocument().GetAgent())
+      .EnqueuePatch(patch);
+}
+
+// static
+void MutationObserver::CleanPatchList(Document& document) {
+  MutationObserverAgentData::From(document.GetAgent()).CleanPatchList(document);
+}
+
 static void ActivateObserver(MutationObserver* observer) {
   if (!observer->GetExecutionContext())
     return;
@@ -327,10 +364,12 @@ static void ActivateObserver(MutationObserver* observer) {
 
 void MutationObserver::EnqueueMutationRecord(MutationRecord* mutation) {
   DCHECK(IsMainThread());
+  if (records_.empty()) {
+    async_task_context_.Schedule(delegate_->GetExecutionContext(),
+                                 mutation->type());
+  }
   records_.push_back(mutation);
   ActivateObserver(this);
-  mutation->async_task_context()->Schedule(delegate_->GetExecutionContext(),
-                                           mutation->type());
 }
 
 void MutationObserver::SetHasTransientRegistration() {
@@ -362,9 +401,7 @@ void MutationObserver::ContextDestroyed() {
 }
 
 void MutationObserver::CancelInspectorAsyncTasks() {
-  for (auto& record : records_) {
-    record->async_task_context()->Cancel();
-  }
+  async_task_context_.Cancel();
 }
 
 void MutationObserver::Deliver() {
@@ -390,7 +427,7 @@ void MutationObserver::Deliver() {
 
   // Report the first (earliest) stack as the async cause.
   probe::AsyncTask async_task(delegate_->GetExecutionContext(),
-                              records.front()->async_task_context());
+                              &async_task_context_);
   delegate_->Deliver(records, *this);
 }
 

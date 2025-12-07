@@ -29,6 +29,9 @@ enum class ClusteringRequestSource {
 struct QueryClustersFilterParams {
   QueryClustersFilterParams();
   QueryClustersFilterParams(const QueryClustersFilterParams&);
+  QueryClustersFilterParams(QueryClustersFilterParams&&);
+  QueryClustersFilterParams& operator=(const QueryClustersFilterParams&);
+  QueryClustersFilterParams& operator=(QueryClustersFilterParams&&);
   ~QueryClustersFilterParams();
 
   // Parameters related to the minimum requirements for returned clusters.
@@ -94,8 +97,8 @@ struct QueryClustersContinuationParams {
   // Most of the values don't matter, but `exhausted_unclustered_visits` and
   // `exhausted_all_visits` should be true.
   static const QueryClustersContinuationParams DoneParams() {
-    static QueryClustersContinuationParams kDoneParams = {base::Time(), true,
-                                                          false, true, true};
+    static const QueryClustersContinuationParams kDoneParams = {
+        base::Time(), true, false, true, true};
     return kDoneParams;
   }
 

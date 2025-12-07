@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniBrowserProxyImpl, CrostiniPortSetting, CrostiniSettingsCardElement, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrostiniPortSetting, CrostiniSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -20,9 +21,7 @@ import {clearBody} from '../utils.js';
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<crostini-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const hostRoute = isRevampWayfindingEnabled ? routes.ABOUT : routes.CROSTINI;
+  const hostRoute = routes.ABOUT;
 
   let crostiniSettingsCard: CrostiniSettingsCardElement;
   let guestOsBrowserProxy: TestGuestOsBrowserProxy;

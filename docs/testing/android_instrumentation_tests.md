@@ -5,15 +5,58 @@ can be either unit tests or integration test.
 
 [TOC]
 
+## Unit vs Integration Tests
+
+**When the code under test is library-like code**, mainly defined by its
+contract, intended to be used in many contexts, internally complex, and related
+bugs are more likely to be introduced to the logic inside it than due to
+interactions with other code, **write unit tests**. Unit tests are mostly
+Robolectric (`junit` build targets), but some are Instrumentation tests
+(`unit_device_javatests` build targets).
+
+**When the code under test is application-like code**, mainly defined by its
+behavior, intended to be used in a small number of contexts (often only one),
+internally simple, and related bugs are more likely to be in how/when it is
+called or due to interactions with other code rather its internal business
+logic, **write integration tests**. Integration tests are all Instrumentation
+tests (`javatests` build targets).
+
+## Robolectric (workstation) vs Instrumentation (on-device) Tests
+
+When a unit test doesn't require rendering or interacting with the native
+library, Robolectric tests, which run on workstations, are preferable to
+instrumentation tests, which run on devices and emulators. Robolectric tests are
+faster to compile and run.
+
+See [android_robolectric_tests.md] for more info on Robolectric tests.
+
+For integration app-like tests, use an Instrumentation test.
+
+Where supported, use the existing [Transit
+Layer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/android/javatests/src/org/chromium/chrome/test/transit)
+to navigate through the app.
+
+Where not supported yet, expand the Transit Layer by defining the expected app
+behavior. See the
+[Public Transit README.md](/base/test/android/javatests/src/org/chromium/base/test/transit/README.md)
+and follow examples in the Transit Layer.
+
+## Examples of Instrumentation Tests
+
+* Instrumentation Integration test example:
+  [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+* Instrumentation Unit test example:
+  [ExampleOnDeviceUnitTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleOnDeviceUnitTest.java)
+
 ## Tracing
 
 Enabling tracing during a test run allows all the function calls involved to be
 observed in a visual display (using Chrome's built-in chrome://tracing feature).
 To run a test with tracing, add the `--trace-output` flag to the command used to
 call the instrumentation test (either running the test_runner.py script, or a
-generated binary such as `run_chrome_public_test_apk`). The `--trace-output` flag
-takes a filename, which, after the test run, will contain a JSON file readable
-by chrome://tracing.
+generated binary such as `run_chrome_public_test_apk`). The `--trace-output`
+flag takes a filename, which, after the test run, will contain a JSON file
+readable by chrome://tracing.
 
 By default, the trace includes only certain function calls important to the test
 run, both within the Python test runner framework and the Java code running on
@@ -22,33 +65,39 @@ This causes every function called on the Python side to be added to the trace.
 
 ## Test Batching Annotations
 
-The [`@Batch("group_name")`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Batch.java)
+In Robolectric, all tests are effectively batched.
+
+For Instrumentation tests, see [batching_instrumentation_tests.md] or the summary below:
+
+The
+[`@Batch`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Batch.java)
 annotation is used to run all tests with the same batch group name in the same
-instrumentation invocation. In other words, the browser process is not
-restarted between these tests, and so any changes to global state, like
-launching an Activity, will persist between tests within a batch group. The
-benefit of this is that these tests run significantly faster - the per-test cost
-of restarting the process can be as high as 10 seconds (usually around 2
-seconds), and that doesn't count the cost of starting an Activity like
-ChromeTabbedActivity.
+instrumentation invocation. In other words, the browser process is not restarted
+between these tests, and so most changes to global state, like launching an
+Activity, may persist between tests within a batch group. The benefit of this is
+that these tests run significantly faster - the per-test cost of restarting the
+process can be as high as 10 seconds (usually around 2 seconds), and that
+doesn't count the cost of starting an Activity like ChromeTabbedActivity.
 
 ## Size Annotations
 
 Size annotations are [used by the test runner] to determine the length of time
-to wait before considering a test hung (i.e., its timeout duration).
+to wait before considering a test hung (i.e., its timeout duration), however the
+limits aren't very different currently because all tests get a 60s timeout
+added.
 
 Annotations from `androidx.test.filters`:
 
- - [`@SmallTest`](https://developer.android.com/reference/androidx/test/filters/SmallTest.html) (timeout: **10 seconds**)
- - [`@MediumTest`](https://developer.android.com/reference/androidx/test/filters/MediumTest.html) (timeout: **30 seconds**)
- - [`@LargeTest`](https://developer.android.com/reference/androidx/test/filters/LargeTest.html) (timeout: **2 minutes**)
+ - [`@SmallTest`](https://developer.android.com/reference/androidx/test/filters/SmallTest.html) (timeout: **10 (+60) seconds**)
+ - [`@MediumTest`](https://developer.android.com/reference/androidx/test/filters/MediumTest.html) (timeout: **30 (+60) seconds**)
+ - [`@LargeTest`](https://developer.android.com/reference/androidx/test/filters/LargeTest.html) (timeout: **2 (+1) minutes**)
 
 Annotations from `//base`:
 
  - [`@EnormousTest`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java)
-(timeout: **5 minutes**) Typically used for tests that require WiFi.
+(timeout: **5 (+1) minutes**) Typically used for tests that require WiFi.
  - [`@IntegrationTest`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java)
-(timeout: **10 minutes**) Used for tests that run against real services.
+(timeout: **10 (+1) minutes**) Used for tests that run against real services.
  - [`@Manual`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Manual.java)
 (timeout: **10 hours**) Used for manual tests.
 

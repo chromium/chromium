@@ -4,12 +4,11 @@
 
 // clang-format off
 import type {SettingsCategoryDefaultRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-//import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 // clang-format on
@@ -24,12 +23,12 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a settings-category-default-radio-group before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement =
         document.createElement('settings-category-default-radio-group');
@@ -71,16 +70,14 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
    */
   async function testCategoryEnabled(
       element: SettingsCategoryDefaultRadioGroupElement,
-      proxy: TestSiteSettingsPrefsBrowserProxy, prefs: SiteSettingsPref,
+      proxy: TestSiteSettingsBrowserProxy, prefs: SiteSettingsPref,
       expectedCategory: ContentSettingsTypes, expectedEnabled: boolean,
       expectedEnabledContentSetting: ContentSetting) {
     proxy.reset();
     proxy.setPrefs(prefs);
-    let whenChanged = eventToPromise(
-        'selected-changed', element.$.settingsCategoryDefaultRadioGroup);
     element.set('category', expectedCategory);
     let category = await proxy.whenCalled('getDefaultValueForContentType');
-    await whenChanged;
+    await microtasksFinished();
     let categoryEnabled = element.$.enabledRadioOption.checked;
     assertEquals(expectedCategory, category);
     assertEquals(expectedEnabled, categoryEnabled);
@@ -93,12 +90,15 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     element.shadowRoot!.querySelector<HTMLElement>(
                            oppositeRadioButton)!.click();
 
-    whenChanged = eventToPromise(
-        'selected-changed', element.$.settingsCategoryDefaultRadioGroup);
+    let whenChanged =
+        eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+    let selectedChangedEventPromise =
+        eventToPromise('selected-changed', element);
     let setting;
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     await whenChanged;
+    await selectedChangedEventPromise;
     assertEquals(expectedCategory, category);
     const oppositeSetting =
         expectedEnabled ? ContentSetting.BLOCK : expectedEnabledContentSetting;
@@ -112,12 +112,14 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     const initialRadioButton =
         expectedEnabled ? '#enabledRadioOption' : '#disabledRadioOption';
     element.shadowRoot!.querySelector<HTMLElement>(initialRadioButton)!.click();
-    whenChanged = eventToPromise(
-        'selected-changed', element.$.settingsCategoryDefaultRadioGroup);
+    whenChanged =
+        eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+    selectedChangedEventPromise = eventToPromise('selected-changed', element);
 
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     await whenChanged;
+    await selectedChangedEventPromise;
     assertEquals(expectedCategory, category);
     const initialSetting =
         expectedEnabled ? expectedEnabledContentSetting : ContentSetting.BLOCK;
@@ -168,7 +170,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
               setting: ContentSetting.BLOCK,
-              source: ContentSettingProvider.EXTENSION,
+              source: DefaultSettingSource.EXTENSION,
             }))],
         []);
     browserProxy.reset();

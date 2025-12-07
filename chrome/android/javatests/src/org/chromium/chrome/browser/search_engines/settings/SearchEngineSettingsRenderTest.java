@@ -27,8 +27,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -36,6 +36,7 @@ import org.chromium.components.favicon.GoogleFaviconServerRequestStatus;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -52,19 +53,19 @@ import java.util.Map;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class SearchEngineSettingsRenderTest {
+    private static final int RENDER_TEST_REVISION = 2;
     public final @Rule BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     public final @Rule ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();
 
-    public final @Rule JniMocker mJniMocker = new JniMocker();
-
+    private @Mock RegionalCapabilitiesService mMockRegionalCapabilities;
     private @Mock TemplateUrlService mMockTemplateUrlService;
     private @Mock Profile mProfile;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
@@ -73,30 +74,17 @@ public class SearchEngineSettingsRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderWithSecFeature() throws Exception {
-        testRender("search_engine_settings", true);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testRenderWithoutSecFeature() throws Exception {
-        testRender("search_engine_settings_flag_off", false);
-    }
-
-    private void testRender(String screenshotId, boolean shouldShowUpdatedSettings)
-            throws Exception {
         TemplateUrl engine1 = buildTemplateUrl("Custom Engine", 0);
         GURL engine1Gurl = new GURL("https://gurl1.example.com");
         TemplateUrl engine2 = buildTemplateUrl("Prepopulated Engine", 2);
         GURL engine2Gurl = new GURL("https://gurl2.example.com");
         List<TemplateUrl> templateUrls = List.of(engine1, engine2);
 
+        doReturn(true).when(mMockRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mMockRegionalCapabilities);
+
         doReturn(new ArrayList<>(templateUrls)).when(mMockTemplateUrlService).getTemplateUrls();
         doReturn(engine1).when(mMockTemplateUrlService).getDefaultSearchEngineTemplateUrl();
-        doReturn(true).when(mMockTemplateUrlService).isEeaChoiceCountry();
-        doReturn(shouldShowUpdatedSettings)
-                .when(mMockTemplateUrlService)
-                .shouldShowUpdatedSettings();
         doReturn(true).when(mMockTemplateUrlService).isLoaded();
         String engine1Keyword = engine1.getKeyword();
         doReturn(engine1Gurl.getSpec())
@@ -108,7 +96,7 @@ public class SearchEngineSettingsRenderTest {
                 .getSearchEngineUrlFromTemplateUrl(engine2Keyword);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNativeMock);
 
         mActivityTestRule.launchActivity(null);
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge(mProfile);
@@ -146,22 +134,20 @@ public class SearchEngineSettingsRenderTest {
                             return fragment.getView();
                         });
 
-        if (shouldShowUpdatedSettings) {
-            // Wait for icons to be requested.
-            CriteriaHelper.pollUiThread(() -> largeIconBridge.getCallbackCount() == 2);
+        // Wait for icons to be requested.
+        CriteriaHelper.pollUiThread(() -> largeIconBridge.getCallbackCount() == 2);
 
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        Bitmap bitmap1 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
-                        bitmap1.eraseColor(Color.GREEN);
-                        largeIconBridge.provideFaviconForUrl(engine1Gurl, bitmap1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Bitmap bitmap1 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
+                    bitmap1.eraseColor(Color.GREEN);
+                    largeIconBridge.provideFaviconForUrl(engine1Gurl, bitmap1);
 
-                        Bitmap bitmap2 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
-                        bitmap2.eraseColor(Color.BLUE);
-                        largeIconBridge.provideFaviconForUrl(engine2Gurl, bitmap2);
-                    });
-        }
-        mRenderTestRule.render(view, screenshotId);
+                    Bitmap bitmap2 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
+                    bitmap2.eraseColor(Color.BLUE);
+                    largeIconBridge.provideFaviconForUrl(engine2Gurl, bitmap2);
+                });
+        mRenderTestRule.render(view, "search_engine_settings");
     }
 
     private static TemplateUrl buildTemplateUrl(String shortName, int prepopulatedId) {
@@ -171,7 +157,7 @@ public class SearchEngineSettingsRenderTest {
         return templateUrl;
     }
 
-    private class TestLargeIconBridge extends LargeIconBridge {
+    private static class TestLargeIconBridge extends LargeIconBridge {
         private final Map<GURL, LargeIconCallback> mCallbacks = new HashMap<>();
 
         TestLargeIconBridge(BrowserContextHandle browserContextHandle) {

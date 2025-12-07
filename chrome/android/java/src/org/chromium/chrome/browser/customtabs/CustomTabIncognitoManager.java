@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -25,36 +25,29 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 
-import javax.inject.Inject;
-
 /**
- * Implements incognito tab host for the given instance of Custom Tab activity.
- * This class exists for every custom tab, but its only active if
- * |isEnabledIncognitoCCT| returns true.
+ * Implements incognito tab host for the given instance of Custom Tab activity. This class exists
+ * for every custom tab, but its only active if |isEnabledIncognitoCCT| returns true.
  */
-@ActivityScope
+@NullMarked
 public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObserver {
     private final Activity mActivity;
     private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Nullable private IncognitoCustomTabHost mIncognitoTabHost;
+    private @Nullable IncognitoCustomTabHost mIncognitoTabHost;
 
-    private final IncognitoTabHostRegistry mIncognitoTabHostRegistry;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
-    @Inject
     public CustomTabIncognitoManager(
             Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityNavigationController navigationController,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            IncognitoTabHostRegistry incognitoTabHostRegistry,
-            OneshotSupplier<ProfileProvider> profileProviderSupplier) {
+            BrowserServicesIntentDataProvider intentDataProvider,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mIntentDataProvider = intentDataProvider;
         mNavigationController = navigationController;
-        mIncognitoTabHostRegistry = incognitoTabHostRegistry;
         mProfileProviderSupplier = profileProviderSupplier;
 
         lifecycleDispatcher.register(this);
@@ -70,25 +63,19 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     @Override
     public void onDestroy() {
         if (mIncognitoTabHost != null) {
-            mIncognitoTabHostRegistry.unregister(mIncognitoTabHost);
+            IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
         }
 
-        if (mProfileProviderSupplier.get().hasOffTheRecordProfile()) {
-            ProfileManager.destroyWhenAppropriate(
-                    mProfileProviderSupplier
-                            .get()
-                            .getOffTheRecordProfile(/* createIfNeeded= */ false));
+        Profile otrProfile = assumeNonNull(mProfileProviderSupplier.get()).getOffTheRecordProfile();
+        if (otrProfile != null) {
+            ProfileManager.destroyWhenAppropriate(otrProfile);
         }
-    }
-
-    public Profile getProfile() {
-        return mProfileProviderSupplier.get().getOffTheRecordProfile(/* createIfNeeded= */ true);
     }
 
     private void initializeIncognito() {
         if (mIntentDataProvider.isOpenedByChrome()) {
             mIncognitoTabHost = new IncognitoCustomTabHost();
-            mIncognitoTabHostRegistry.register(mIncognitoTabHost);
+            IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
         }
 
         maybeCreateIncognitoTabSnapshotController();
@@ -108,11 +95,6 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
      */
     private class IncognitoCustomTabHost implements IncognitoTabHost {
         @Override
-        public boolean isActiveModel() {
-            return true;
-        }
-
-        @Override
         public boolean hasIncognitoTabs() {
             return !mActivity.isFinishing();
         }
@@ -120,6 +102,16 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         @Override
         public void closeAllIncognitoTabs() {
             mNavigationController.finish(CustomTabActivityNavigationController.FinishReason.OTHER);
+        }
+
+        @Override
+        public void closeAllIncognitoTabsOnInit() {
+            closeAllIncognitoTabs();
+        }
+
+        @Override
+        public boolean isActiveModel() {
+            return true;
         }
     }
 }

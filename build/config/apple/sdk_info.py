@@ -12,7 +12,6 @@ import re
 import subprocess
 import sys
 
-
 # This script prints information about the build system, the operating
 # system and the iOS or Mac SDK (depending on the platform "iphonesimulator",
 # "iphoneos" or "macosx" generally).
@@ -61,8 +60,10 @@ def FillXcodeVersion(settings, developer_dir):
 
   lines = subprocess.check_output(['xcodebuild',
                                    '-version']).decode('UTF-8').splitlines()
-  settings['xcode_version'] = FormatVersion(lines[0].split()[-1])
+  version_verbatim = lines[0].split()[-1]
+  settings['xcode_version'] = FormatVersion(version_verbatim)
   settings['xcode_version_int'] = int(settings['xcode_version'], 10)
+  settings['xcode_version_verbatim'] = version_verbatim
   settings['xcode_build'] = lines[-1].split()[-1]
 
 
@@ -134,7 +135,15 @@ def main():
                       default='.',
                       help='Value of gn $root_build_dir')
   parser.add_argument('platform',
-                      choices=['iphoneos', 'iphonesimulator', 'macosx'])
+                      choices=[
+                          'appletvos',
+                          'appletvsimulator',
+                          'iphoneos',
+                          'iphonesimulator',
+                          'macosx',
+                          'watchos',
+                          'watchsimulator',
+                      ])
   args = parser.parse_args()
   if args.developer_dir:
     os.environ['DEVELOPER_DIR'] = args.developer_dir

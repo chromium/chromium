@@ -8,10 +8,13 @@
  */
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '../settings_page/settings_subpage.js';
 import '../site_favicon.js';
 import '../simple_confirmation_dialog.js';
 // <if expr="is_macosx">
@@ -26,6 +29,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 // <if expr="is_macosx">
 import type {PasskeyEditDialogElement, SavedPasskeyEditedEvent} from './passkey_edit_dialog.js';
@@ -45,7 +49,10 @@ export interface SettingsPasskeysSubpageElement {
   };
 }
 
-export class SettingsPasskeysSubpageElement extends PolymerElement {
+const SettingsPasskeysSubpageElementBase = SettingsViewMixin(PolymerElement);
+
+export class SettingsPasskeysSubpageElement extends
+    SettingsPasskeysSubpageElementBase {
   static get is() {
     return 'settings-passkeys-subpage';
   }
@@ -57,10 +64,14 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   static get properties() {
     return {
       /** Substring to filter the passkeys by. */
-      filter: {
+      filter_: {
         type: String,
         value: '',
       },
+      passkeys_: Array,
+      showDeleteConfirmationDialog_: Boolean,
+      noManagement_: Boolean,
+
       // <if expr="is_macosx">
       showEditDialog_: Boolean,
       username_: String,
@@ -70,17 +81,17 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   }
 
   // <if expr="is_macosx">
-  private showEditDialog_: boolean;
-  private username_: string;
-  private relyingPartyId_: string;
+  declare private showEditDialog_: boolean;
+  declare private username_: string;
+  declare private relyingPartyId_: string;
   // </if>
 
-  private filter: string;
-  private passkeys_: Passkey[];
-  private showDeleteConfirmationDialog_: boolean;
+  declare private filter_: string;
+  declare private passkeys_: Passkey[];
+  declare private showDeleteConfirmationDialog_: boolean;
   // Set if the current platform doesn't support passkey management.
   // (E.g. Windows prior to 2022H2.)
-  private noManagement_: boolean;
+  declare private noManagement_: boolean;
   // Contains the credentialId of the passkey that the action menu was opened
   // for.
   private credentialIdForActionMenu_: string|null;
@@ -99,7 +110,7 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   private filterFunction_(): ((passkey: Passkey) => boolean) {
     return passkey => [passkey.relyingPartyId, passkey.userName].some(
                str => str.toLowerCase().includes(
-                   this.filter.trim().toLowerCase()));
+                   this.filter_.trim().toLowerCase()));
   }
 
   /**
@@ -233,7 +244,13 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
         .then(this.onEditComplete_.bind(this));
   }
   // </if>
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
+
 declare global {
   interface HTMLElementTagNameMap {
     'settings-passkeys-subpage': SettingsPasskeysSubpageElement;

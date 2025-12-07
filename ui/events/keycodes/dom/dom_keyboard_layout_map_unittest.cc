@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,68 +47,67 @@ DomKey GetKeyFromFullLookupTable(DomCode dom_code) {
   // use this table to retrieve valid DomKeys for each DomCode to simulate a
   // 'complete' keyboard layout.  They can also use this to construct a partial
   // layout with valid DomKey values for the populated entries.
-  static base::flat_map<DomCode, DomKey> kFullLookupTable(
-      {{DomCode::DIGIT0, DomKey::FromCharacter('0')},
-       {DomCode::DIGIT1, DomKey::FromCharacter('1')},
-       {DomCode::DIGIT2, DomKey::FromCharacter('2')},
-       {DomCode::DIGIT3, DomKey::FromCharacter('3')},
-       {DomCode::DIGIT4, DomKey::FromCharacter('4')},
-       {DomCode::DIGIT5, DomKey::FromCharacter('5')},
-       {DomCode::DIGIT6, DomKey::FromCharacter('6')},
-       {DomCode::DIGIT7, DomKey::FromCharacter('7')},
-       {DomCode::DIGIT8, DomKey::FromCharacter('8')},
-       {DomCode::DIGIT9, DomKey::FromCharacter('9')},
-       {DomCode::US_A, DomKey::FromCharacter('a')},
-       {DomCode::US_B, DomKey::FromCharacter('b')},
-       {DomCode::US_C, DomKey::FromCharacter('c')},
-       {DomCode::US_D, DomKey::FromCharacter('d')},
-       {DomCode::US_E, DomKey::FromCharacter('e')},
-       {DomCode::US_F, DomKey::FromCharacter('f')},
-       {DomCode::US_G, DomKey::FromCharacter('g')},
-       {DomCode::US_H, DomKey::FromCharacter('h')},
-       {DomCode::US_I, DomKey::FromCharacter('i')},
-       {DomCode::US_J, DomKey::FromCharacter('j')},
-       {DomCode::US_K, DomKey::FromCharacter('k')},
-       {DomCode::US_L, DomKey::FromCharacter('l')},
-       {DomCode::US_M, DomKey::FromCharacter('m')},
-       {DomCode::US_N, DomKey::FromCharacter('n')},
-       {DomCode::US_O, DomKey::FromCharacter('o')},
-       {DomCode::US_P, DomKey::FromCharacter('p')},
-       {DomCode::US_Q, DomKey::FromCharacter('q')},
-       {DomCode::US_R, DomKey::FromCharacter('r')},
-       {DomCode::US_S, DomKey::FromCharacter('s')},
-       {DomCode::US_T, DomKey::FromCharacter('t')},
-       {DomCode::US_U, DomKey::FromCharacter('u')},
-       {DomCode::US_V, DomKey::FromCharacter('v')},
-       {DomCode::US_W, DomKey::FromCharacter('w')},
-       {DomCode::US_X, DomKey::FromCharacter('x')},
-       {DomCode::US_Y, DomKey::FromCharacter('y')},
-       {DomCode::US_Z, DomKey::FromCharacter('z')},
-       {DomCode::BACKQUOTE, DomKey::FromCharacter('`')},
-       {DomCode::MINUS, DomKey::FromCharacter('-')},
-       {DomCode::EQUAL, DomKey::FromCharacter('=')},
-       {DomCode::INTL_YEN, DomKey::DeadKeyFromCombiningCharacter(0x00A5)},
-       {DomCode::BRACKET_LEFT, DomKey::FromCharacter('{')},
-       {DomCode::BRACKET_RIGHT, DomKey::FromCharacter('}')},
-       {DomCode::BACKSLASH, DomKey::FromCharacter('\\')},
-       {DomCode::SEMICOLON, DomKey::FromCharacter(';')},
-       {DomCode::QUOTE, DomKey::FromCharacter('\'')},
-       {DomCode::INTL_BACKSLASH, DomKey::FromCharacter('/')},
-       {DomCode::COMMA, DomKey::FromCharacter(',')},
-       {DomCode::PERIOD, DomKey::FromCharacter('.')},
-       {DomCode::SLASH, DomKey::FromCharacter('/')},
-       {DomCode::INTL_RO, DomKey::DeadKeyFromCombiningCharacter(0x308D)}});
+  static constexpr auto kFullLookupTable =
+      base::MakeFixedFlatMap<DomCode, DomKey>(
+          {{DomCode::DIGIT0, DomKey::FromCharacter('0')},
+           {DomCode::DIGIT1, DomKey::FromCharacter('1')},
+           {DomCode::DIGIT2, DomKey::FromCharacter('2')},
+           {DomCode::DIGIT3, DomKey::FromCharacter('3')},
+           {DomCode::DIGIT4, DomKey::FromCharacter('4')},
+           {DomCode::DIGIT5, DomKey::FromCharacter('5')},
+           {DomCode::DIGIT6, DomKey::FromCharacter('6')},
+           {DomCode::DIGIT7, DomKey::FromCharacter('7')},
+           {DomCode::DIGIT8, DomKey::FromCharacter('8')},
+           {DomCode::DIGIT9, DomKey::FromCharacter('9')},
+           {DomCode::US_A, DomKey::FromCharacter('a')},
+           {DomCode::US_B, DomKey::FromCharacter('b')},
+           {DomCode::US_C, DomKey::FromCharacter('c')},
+           {DomCode::US_D, DomKey::FromCharacter('d')},
+           {DomCode::US_E, DomKey::FromCharacter('e')},
+           {DomCode::US_F, DomKey::FromCharacter('f')},
+           {DomCode::US_G, DomKey::FromCharacter('g')},
+           {DomCode::US_H, DomKey::FromCharacter('h')},
+           {DomCode::US_I, DomKey::FromCharacter('i')},
+           {DomCode::US_J, DomKey::FromCharacter('j')},
+           {DomCode::US_K, DomKey::FromCharacter('k')},
+           {DomCode::US_L, DomKey::FromCharacter('l')},
+           {DomCode::US_M, DomKey::FromCharacter('m')},
+           {DomCode::US_N, DomKey::FromCharacter('n')},
+           {DomCode::US_O, DomKey::FromCharacter('o')},
+           {DomCode::US_P, DomKey::FromCharacter('p')},
+           {DomCode::US_Q, DomKey::FromCharacter('q')},
+           {DomCode::US_R, DomKey::FromCharacter('r')},
+           {DomCode::US_S, DomKey::FromCharacter('s')},
+           {DomCode::US_T, DomKey::FromCharacter('t')},
+           {DomCode::US_U, DomKey::FromCharacter('u')},
+           {DomCode::US_V, DomKey::FromCharacter('v')},
+           {DomCode::US_W, DomKey::FromCharacter('w')},
+           {DomCode::US_X, DomKey::FromCharacter('x')},
+           {DomCode::US_Y, DomKey::FromCharacter('y')},
+           {DomCode::US_Z, DomKey::FromCharacter('z')},
+           {DomCode::BACKQUOTE, DomKey::FromCharacter('`')},
+           {DomCode::MINUS, DomKey::FromCharacter('-')},
+           {DomCode::EQUAL, DomKey::FromCharacter('=')},
+           {DomCode::INTL_YEN, DomKey::DeadKeyFromCombiningCharacter(0x00A5)},
+           {DomCode::BRACKET_LEFT, DomKey::FromCharacter('{')},
+           {DomCode::BRACKET_RIGHT, DomKey::FromCharacter('}')},
+           {DomCode::BACKSLASH, DomKey::FromCharacter('\\')},
+           {DomCode::SEMICOLON, DomKey::FromCharacter(';')},
+           {DomCode::QUOTE, DomKey::FromCharacter('\'')},
+           {DomCode::INTL_BACKSLASH, DomKey::FromCharacter('/')},
+           {DomCode::COMMA, DomKey::FromCharacter(',')},
+           {DomCode::PERIOD, DomKey::FromCharacter('.')},
+           {DomCode::SLASH, DomKey::FromCharacter('/')},
+           {DomCode::INTL_RO, DomKey::DeadKeyFromCombiningCharacter(0x308D)}});
 
   // Ensure the 'full' lookup table contains the same number of elements as the
-  // writing system table used by the class under test.  Ideally this would be a
-  // static assert however that doesn't work since the other table is in a
-  // different compilation unit.
-  DCHECK_EQ(std::size(kFullLookupTable), kWritingSystemKeyDomCodeEntries);
+  // writing system table used by the class under test.
+  static_assert(kFullLookupTable.size() == kWritingSystemKeyDomCodes.size());
 
   if (kFullLookupTable.count(dom_code) == 0)
     return DomKey::NONE;
 
-  return kFullLookupTable[dom_code];
+  return kFullLookupTable.at(dom_code);
 }
 
 DomKey GetKeyFromCombiningLayoutTable(DomCode dom_code) {
@@ -191,8 +191,7 @@ DomKey TestDomKeyboardLayoutMap::GetDomKeyFromDomCodeForLayout(
   if (test_layout_id == kKeyboardLayoutWithNoValidKeys)
     return GetDomKeyForLayoutWithNoValidKeys();
 
-  NOTREACHED_IN_MIGRATION();
-  return DomKey::NONE;
+  NOTREACHED();
 }
 
 void TestDomKeyboardLayoutMap::AddKeyboardLayout(uint32_t test_layout_id) {

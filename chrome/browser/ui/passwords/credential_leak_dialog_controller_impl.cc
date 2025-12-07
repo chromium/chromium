@@ -17,23 +17,18 @@ using password_manager::metrics_util::LeakDialogMetricsRecorder;
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
     CredentialLeakType leak_type,
-    const GURL& url,
-    const std::u16string& username,
     std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder)
     : delegate_(delegate),
       leak_dialog_traits_(CreateDialogTraits(leak_type)),
-      url_(url),
-      username_(username),
       metrics_recorder_(std::move(metrics_recorder)) {}
 
-CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
-  ResetDialog();
-}
+CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() =
+    default;
 
 void CredentialLeakDialogControllerImpl::ShowCredentialLeakPrompt(
-    CredentialLeakPrompt* dialog) {
+    std::unique_ptr<CredentialLeakPrompt> dialog) {
   DCHECK(dialog);
-  credential_leak_dialog_ = dialog;
+  credential_leak_dialog_ = std::move(dialog);
   credential_leak_dialog_->ShowCredentialLeakPrompt();
 }
 
@@ -67,10 +62,7 @@ void CredentialLeakDialogControllerImpl::OnCloseDialog() {
 }
 
 void CredentialLeakDialogControllerImpl::ResetDialog() {
-  if (credential_leak_dialog_) {
-    credential_leak_dialog_->ControllerGone();
-    credential_leak_dialog_ = nullptr;
-  }
+  credential_leak_dialog_.reset();
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()

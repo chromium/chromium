@@ -26,19 +26,18 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -49,7 +48,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // See: https://crbug.com/1120707
-@DisableIf.Device(type = {UiDisableIf.TABLET})
+@DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
 @Batch(PER_CLASS)
 public class TrustedWebActivityPermissionsTest {
     @Rule
@@ -63,7 +62,6 @@ public class TrustedWebActivityPermissionsTest {
     private String mTestPage;
     private Origin mOrigin;
     private String mPackage;
-    private InstalledWebappPermissionManager mPermissionManager;
 
     @Before
     public void setUp() throws TimeoutException {
@@ -84,14 +82,13 @@ public class TrustedWebActivityPermissionsTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(), mTestPage));
 
-        mPermissionManager = ChromeApplicationImpl.getComponent().resolvePermissionManager();
-        mPermissionManager.clearForTesting();
+        WebappRegistry.getInstance().getPermissionStore().clearForTesting();
         assertEquals("\"default\"", getNotificationPermission());
     }
 
     @After
     public void tearDown() {
-        mPermissionManager.clearForTesting();
+        WebappRegistry.getInstance().getPermissionStore().clearForTesting();
     }
 
     @Test
@@ -99,8 +96,8 @@ public class TrustedWebActivityPermissionsTest {
     public void allowNotifications() throws TimeoutException {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
+                        InstalledWebappPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
     }
 
@@ -109,8 +106,8 @@ public class TrustedWebActivityPermissionsTest {
     public void blockNotifications() throws TimeoutException {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.BLOCK));
+                        InstalledWebappPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.BLOCK));
         assertEquals("\"denied\"", getNotificationPermission());
     }
 
@@ -119,11 +116,11 @@ public class TrustedWebActivityPermissionsTest {
     public void unregisterTwa() throws TimeoutException {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
+                        InstalledWebappPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
 
-        runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
+        runOnUiThreadBlocking(() -> InstalledWebappPermissionManager.unregister(mOrigin));
         assertEquals("\"default\"", getNotificationPermission());
     }
 
@@ -132,11 +129,11 @@ public class TrustedWebActivityPermissionsTest {
     public void detectTwa() {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
+                        InstalledWebappPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.ALLOW));
         assertTrue(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
 
-        runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
+        runOnUiThreadBlocking(() -> InstalledWebappPermissionManager.unregister(mOrigin));
         assertFalse(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
     }
 
@@ -145,10 +142,10 @@ public class TrustedWebActivityPermissionsTest {
     public void allowGeolocation() {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
-                                mOrigin, mPackage, GEOLOCATION, ContentSettingValues.ALLOW));
+                        InstalledWebappPermissionManager.updatePermission(
+                                mOrigin, mPackage, GEOLOCATION, ContentSetting.ALLOW));
         assertEquals(
-                Integer.valueOf(ContentSettingValues.ALLOW),
+                Integer.valueOf(ContentSetting.ALLOW),
                 WebappRegistry.getInstance()
                         .getPermissionStore()
                         .getPermission(GEOLOCATION, mOrigin));
@@ -159,10 +156,10 @@ public class TrustedWebActivityPermissionsTest {
     public void blockGeolocation() {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
-                                mOrigin, mPackage, GEOLOCATION, ContentSettingValues.BLOCK));
+                        InstalledWebappPermissionManager.updatePermission(
+                                mOrigin, mPackage, GEOLOCATION, ContentSetting.BLOCK));
         assertEquals(
-                Integer.valueOf(ContentSettingValues.BLOCK),
+                Integer.valueOf(ContentSetting.BLOCK),
                 WebappRegistry.getInstance()
                         .getPermissionStore()
                         .getPermission(GEOLOCATION, mOrigin));

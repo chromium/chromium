@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_partition_key_collection.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -11,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_partition_key.h"
@@ -18,25 +20,33 @@
 
 namespace net {
 
-CookiePartitionKeyCollection::CookiePartitionKeyCollection() = default;
+CookiePartitionKeyCollection::CookiePartitionKeyCollection()
+    : CookiePartitionKeyCollection(base::flat_set<CookiePartitionKey>()) {}
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(
+    CookiePartitionKey key)
+    : CookiePartitionKeyCollection(
+          base::flat_set<CookiePartitionKey>({std::move(key)})) {}
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(
+    base::flat_set<CookiePartitionKey> keys)
+    : state_(std::move(keys)) {}
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(PrivateTag,
+                                                           InternalState state)
+    : state_(std::move(state)) {}
+
+CookiePartitionKeyCollection::CookiePartitionKeyCollection(
+    std::optional<CookiePartitionKey> opt_key)
+    : state_(opt_key ? base::flat_set<CookiePartitionKey>(
+                           {std::move(opt_key).value()})
+                     : base::flat_set<CookiePartitionKey>()) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     const CookiePartitionKeyCollection& other) = default;
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     CookiePartitionKeyCollection&& other) = default;
-
-CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    const CookiePartitionKey& key)
-    : CookiePartitionKeyCollection(base::flat_set<CookiePartitionKey>({key})) {}
-
-CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    base::flat_set<CookiePartitionKey> keys)
-    : keys_(std::move(keys)) {}
-
-CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    bool contains_all_keys)
-    : contains_all_keys_(contains_all_keys) {}
 
 CookiePartitionKeyCollection& CookiePartitionKeyCollection::operator=(
     const CookiePartitionKeyCollection& other) = default;
@@ -48,20 +58,23 @@ CookiePartitionKeyCollection::~CookiePartitionKeyCollection() = default;
 
 bool CookiePartitionKeyCollection::Contains(
     const CookiePartitionKey& key) const {
-  return contains_all_keys_ || base::Contains(keys_, key);
+  return ContainsAllKeys() || state_.value().contains(key);
 }
 
-bool operator==(const CookiePartitionKeyCollection& lhs,
-                const CookiePartitionKeyCollection& rhs) {
-  if (lhs.ContainsAllKeys()) {
-    return rhs.ContainsAllKeys();
-  }
+CookiePartitionKeyCollection CookiePartitionKeyCollection::MatchesSite(
+    const net::SchemefulSite& top_level_site) {
+  base::expected<net::CookiePartitionKey, std::string> same_site_key =
+      CookiePartitionKey::FromWire(
+          top_level_site, CookiePartitionKey::AncestorChainBit::kSameSite);
+  base::expected<net::CookiePartitionKey, std::string> cross_site_key =
+      CookiePartitionKey::FromWire(
+          top_level_site, CookiePartitionKey::AncestorChainBit::kCrossSite);
 
-  if (rhs.ContainsAllKeys()) {
-    return false;
-  }
+  CHECK(cross_site_key.has_value());
+  CHECK(same_site_key.has_value());
 
-  return lhs.PartitionKeys() == rhs.PartitionKeys();
+  return net::CookiePartitionKeyCollection(
+      {same_site_key.value(), cross_site_key.value()});
 }
 
 std::ostream& operator<<(std::ostream& os,

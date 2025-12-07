@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Size;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.RemoteViews;
 
 import androidx.annotation.LayoutRes;
@@ -29,11 +27,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -53,10 +55,13 @@ import java.util.Locale;
 /** Tests for the QuickActionSearchWidgetProviderDelegate. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Batch(Batch.PER_CLASS)
 public class QuickActionSearchWidgetProviderDelegateTest {
     @Rule
     public BaseActivityTestRule<Activity> mActivityTestRule =
             new BaseActivityTestRule<>(Activity.class);
+
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private View mWidgetView;
     private View mDinoWidgetView;
@@ -73,13 +78,12 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext =
                 InstrumentationRegistry.getInstrumentation()
                         .getTargetContext()
                         .getApplicationContext();
 
-        mClient = new SearchActivityClientImpl();
+        mClient = new SearchActivityClientImpl(mContext, IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
 
         mDelegate =
                 new QuickActionSearchWidgetProviderDelegate(
@@ -174,15 +178,9 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     }
 
     private void setUpViews() {
-        FrameLayout parentView = new FrameLayout(mContext);
-
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
         SearchActivityPreferences prefs =
                 new SearchActivityPreferences(
                         "EngineName", new GURL("http://engine"), true, true, true);
-
-        Resources res = mContext.getResources();
-        float density = res.getDisplayMetrics().density;
 
         mWidgetView =
                 mDelegate
@@ -346,7 +344,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
-    public void getElementSizeInDP_noMargins() {
+    public void getElementSizeInDp_noMargins() {
         Resources res = mContext.getResources();
 
         // Convert a simple dimension into DP.
@@ -363,7 +361,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
-    public void getElementSizeInDP_withMargins() {
+    public void getElementSizeInDp_withMargins() {
         Resources res = mContext.getResources();
 
         // Convert a single dimension + surrounding margins into DP.
@@ -554,7 +552,6 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         //   scale factor = target size / reference size
         // a scale factor of 1.0 means the area will host the widget as it was designed
         // without any scaling.
-        Resources r = mContext.getResources();
         Assert.assertEquals(
                 1.f,
                 mDelegate.computeScaleFactorForDinoWidget(
@@ -621,7 +618,6 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     @SmallTest
     public void resizeDinoWidgetToFillTargetCellArea_repositionContent() {
         final Resources r = mContext.getResources();
-        final float density = r.getDisplayMetrics().density;
 
         // Again, apply half the size of what the widget was designed for.
         final int areaWidthDp = mDinoWidgetEdgeSizeDp / 2;
@@ -648,13 +644,18 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
-    public void resizeDinoWidgetToFillTargetCellArea_repositionContentRTL() {
+    public void resizeDinoWidgetToFillTargetCellArea_repositionContentRtl() {
         final Configuration c = new Configuration(mContext.getResources().getConfiguration());
         c.setLayoutDirection(Locale.forLanguageTag("ar")); // arabic
 
         final Resources r = mContext.getResources();
         r.updateConfiguration(c, null);
-        final float density = r.getDisplayMetrics().density;
+
+        ResettersForTesting.register(
+                () -> {
+                    c.setLayoutDirection(Locale.getDefault());
+                    r.updateConfiguration(c, null);
+                });
 
         // Again, apply half the size of what the widget was designed for.
         final int areaWidthDp = mDinoWidgetEdgeSizeDp / 4;

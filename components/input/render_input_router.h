@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_
 #define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -14,19 +15,18 @@
 #include "components/input/fling_scheduler_base.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_router_impl.h"
-#include "components/input/peak_gpu_memory_tracker.h"
 #include "components/input/render_input_router_delegate.h"
 #include "components/input/render_input_router_iterator.h"
 #include "components/input/render_input_router_latency_tracker.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 namespace content {
 class MockRenderInputRouter;
@@ -58,11 +58,12 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void SetupInputRouter(float device_scale_factor);
+  void SetFlingScheduler(std::unique_ptr<FlingSchedulerBase> fling_scheduler);
 
   void BindRenderInputRouterInterfaces(
       mojo::PendingRemote<blink::mojom::RenderInputRouterClient> remote);
 
-  void RendererWidgetCreated(bool for_frame_widget);
+  void RendererWidgetCreated(bool for_frame_widget, bool is_in_viz);
 
   InputRouter* input_router() { return input_router_.get(); }
   RenderInputRouterDelegate* delegate() { return delegate_; }
@@ -73,16 +74,20 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void ProgressFlingIfNeeded(base::TimeTicks current_time);
   void StopFling();
 
+  bool IsAnyScrollGestureInProgress() const;
+
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler();
 
   void SetView(RenderWidgetHostViewInput* view);
+
+  void SetBeginFrameSourceForFlingScheduler(
+      viz::BeginFrameSource* begin_frame_source);
 
   // InputRouterClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
   StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
@@ -96,17 +101,16 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
       bool unadjusted_movement,
       InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
+  void OnUnconfirmedTapConvertedToTap() override;
 
   // InputRouterImplClient overrides.
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& event,
       const ui::LatencyInfo& latency_info) override;
   void IncrementInFlightEventCount() override;
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override;
   void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) override;
-  void DidOverscroll(const ui::DidOverscrollParams& params) override;
+  void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
   void DidStartScrollingViewport() override;
   void OnSetCompositorAllowedTouchAction(cc::TouchAction) override {}
   void OnInvalidInputEventSource() override;
@@ -116,6 +120,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;
+  DispatchToRendererCallback GetDispatchToRendererCallback() override;
 
   // InputDispositionHandler
   void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
@@ -139,6 +144,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
       const blink::WebTouchEvent& touch_event,
       const ui::LatencyInfo& latency);  // Virtual for testing
 
+  void ForwardGestureEvent(const blink::WebGestureEvent& gesture_event);
+
   // Retrieve an iterator over any RenderInputRouters that are
   // immediately embedded within this one. This does not return
   // RenderInputRouters that are embedded indirectly (i.e. nested within
@@ -148,10 +155,11 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   // |point| specifies the location in RenderWidget's coordinates for invoking
   // the context menu.
   void ShowContextMenuAtPoint(const gfx::Point& point,
-                              const ui::MenuSourceType source_type);
+                              const ui::mojom::MenuSourceType source_type);
 
   void SendGestureEventWithLatencyInfo(
-      const GestureEventWithLatencyInfo& gesture_with_latency);
+      const GestureEventWithLatencyInfo& gesture_with_latency,
+      DispatchToRendererCallback& dispatch_callback);
 
   // Signals if this host has forwarded a GestureScrollBegin without yet having
   // forwarded a matching GestureScrollEnd/GestureFlingStart.
@@ -189,13 +197,58 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
     return input_target_client_;
   }
 
+  size_t in_flight_event_count() const { return in_flight_event_count_; }
+
   void SetInputTargetClientForTesting(
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
+  void SetWidgetInputHandlerForTesting(
+      mojo::Remote<blink::mojom::WidgetInputHandler> widget_input_handler);
+  FlingSchedulerBase* GetFlingSchedulerForTesting() {
+    return fling_scheduler_.get();
+  }
+
+  void RenderProcessBlockedStateChanged(bool blocked);
+
+  // Stops all existing hang monitor timeouts and assumes the renderer is
+  // responsive.
+  void StopInputEventAckTimeout();
+  void RestartInputEventAckTimeoutIfNecessary();
+
+  void StartInputEventAckTimeoutForTesting() { StartInputEventAckTimeout(); }
 
  private:
   friend content::MockRenderInputRouter;
 
+  // Called when an input event gets finally dispatched to renderer or ended up
+  // getting filtered.
+  void OnInputDispatchedToRendererResult(const blink::WebInputEvent& event,
+                                         DispatchToRendererResult result);
+
+  // Starts a hang monitor timeout. If there's already a hang monitor timeout
+  // the new one will only fire if it has a shorter delay than the time
+  // left on the existing timeouts.
+  void StartInputEventAckTimeout();
+
+  // Called by |input_event_ack_timeout_| when an input event timed out without
+  // getting an ack from the renderer.
+  void OnInputEventAckTimeout();
+
   bool is_currently_scrolling_viewport_ = false;
+
+  // We access this value quite a lot, so we cache switches::kDisableHangMonitor
+  // here.
+  const bool should_disable_hang_monitor_;
+
+  // This value denotes the number of input events yet to be acknowledged
+  // by the renderer.
+  int in_flight_event_count_ = 0;
+
+  bool is_blocked_ = false;
+
+  base::OneShotTimer input_event_ack_timeout_;
+
+  // This value indicates how long to wait before we consider a renderer hung.
+  base::TimeDelta hung_renderer_delay_;
 
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
@@ -209,9 +262,10 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
              base::checked_cast<size_t>(blink::WebGestureDevice::kMaxValue) + 1>
       is_in_gesture_scroll_ = {{false}};
   bool is_in_touchpad_gesture_fling_ = false;
+  bool gsb_filtered_for_paint_holding_ = false;
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
-  std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
+  std::unique_ptr<viz::PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
   raw_ptr<RenderInputRouterClient> render_input_router_client_;
 
@@ -228,6 +282,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   bool force_enable_zoom_ = false;
 
   base::WeakPtr<RenderWidgetHostViewInput> view_input_;
+
+  base::WeakPtrFactory<RenderInputRouter> weak_factory_{this};
 };
 
 }  // namespace input

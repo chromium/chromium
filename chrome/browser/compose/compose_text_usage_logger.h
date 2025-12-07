@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_COMPOSE_COMPOSE_TEXT_USAGE_LOGGER_H_
 #define CHROME_BROWSER_COMPOSE_COMPOSE_TEXT_USAGE_LOGGER_H_
 
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/signatures.h"
 #include "content/public/browser/document_user_data.h"
 
@@ -20,10 +21,10 @@ class ComposeTextUsageLogger
   ~ComposeTextUsageLogger() override;
 
   // autofill::AutofillManager::Observer:
-  void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
-                                 autofill::FormGlobalId form,
-                                 autofill::FieldGlobalId field,
-                                 const std::u16string& text_value) override;
+  void OnAfterTextFieldValueChanged(autofill::AutofillManager& manager,
+                                    autofill::FormGlobalId form,
+                                    autofill::FieldGlobalId field,
+                                    const std::u16string& text_value) override;
 
  private:
   // No public constructors to force going through static methods of
@@ -47,6 +48,7 @@ class ComposeTextUsageLogger
 
     std::u16string initial_text;
     std::u16string final_text;
+    int64_t previous_text_length = 0;
     bool is_autofill_field_type = false;
     // Is it either a textarea or a contenteditable.
     bool is_long_field = false;

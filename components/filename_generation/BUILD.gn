@@ -15,8 +15,7 @@ static_library("filename_generation") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//net",
     "//url",
   ]
@@ -29,9 +28,12 @@ source_set("unit_tests") {
   deps = [
     ":filename_generation",
     "//base",
-    "//build:chromeos_buildflags",
     "//net",
     "//testing/gtest",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

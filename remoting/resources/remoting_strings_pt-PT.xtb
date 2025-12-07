@@ -9,7 +9,7 @@
 <translation id="1480046233931937785">Créditos</translation>
 <translation id="1520828917794284345">Redimensionar o ambiente de trabalho para ajustar ao tamanho</translation>
 <translation id="1546934824884762070">Ocorreu um erro inesperado. Comunique este problema aos programadores.</translation>
-<translation id="1697532407822776718">O processo está concluído!</translation>
+<translation id="1697532407822776718">Está tudo pronto!</translation>
 <translation id="1742469581923031760">A ligar...</translation>
 <translation id="177040763384871009">Para permitir que os links clicados no dispositivo remoto sejam abertos no navegador do cliente, tem de alterar o navegador de Internet do sistema para "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP do canal para o cliente: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" ip_anfitrião="<ph name="HOST_IP_ADDRESS_AND_PORT" />" canal="<ph name="CHANNEL_TYPE" />" ligação="<ph name="CONNECTION_TYPE" />".</translation>
@@ -28,6 +28,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível contactar o anfitrião. Provavelmente, isso deve-se à configuração da rede que está a utilizar.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2504109125669302160">Conceda a autorização "Acessibilidade" ao <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Ligado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Quer partilhar este computador e permitir que outro utilizador o veja e controle?</translation>
@@ -39,6 +40,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="2758123043070977469">Ocorreu um problema na autenticação. Inicie sessão novamente.</translation>
 <translation id="2803375539583399270">Introduzir PIN</translation>
 <translation id="2919669478609886916">Está atualmente a partilhar este computador com outro utilizador. Quer continuar a partilhar?</translation>
+<translation id="2929683002824598593">Partilhar dispositivo</translation>
 <translation id="2939145106548231838">Autenticar para anfitrião</translation>
 <translation id="3027681561976217984">Modo tátil</translation>
 <translation id="3106379468611574572">O computador remoto não está a responder aos pedidos de ligação. Verifique se está online e tente novamente.</translation>
@@ -90,7 +92,8 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="4985296110227979402">Primeiro, tem de configurar o computador para acesso remoto</translation>
 <translation id="4987330545941822761">O Ambiente de Trabalho Remoto do Chrome não consegue determinar o navegador para abrir URLs localmente. Escolha-o na lista abaixo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
-<translation id="507204348399810022">Tem a certeza de que quer desativar as ligações remotas a <ph name="HOSTNAME" />?</translation>
+<translation id="507204348399810022">Quer mesmo desativar as ligações remotas a <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Relatórios de falhas</translation>
 <translation id="5170982930780719864">ID de anfitrião inválido.</translation>
 <translation id="5204575267916639804">Perguntas frequentes</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
@@ -116,10 +119,12 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="6178645564515549384">Anfitrião de mensagens nativo para assistência remota</translation>
 <translation id="618120821413932081">Atualizar resolução remota para corresponder à janela</translation>
 <translation id="6223301979382383752">Abrir as preferências Gravação de ecrã</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> pediu acesso para ver o seu ecrã e controlar o teclado e o rato. Quer partilhar o seu dispositivo?</translation>
 <translation id="6284412385303060032">O anfitrião em execução no ecrã de início de sessão da consola foi encerrado para suportar o modo de cortina ao alternar para um anfitrião em execução numa sessão específica de utilizador.</translation>
 <translation id="6542902059648396432">Comunicar um problema...</translation>
 <translation id="6583902294974160967">Apoio técnico</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Se não tomar medidas, o seu dispositivo vai começar automaticamente a partilhar a localização dentro de # segundo.}other{Se não tomar medidas, o seu dispositivo vai começar automaticamente a partilhar a localização dentro de # segundos.}}</translation>
 <translation id="6654753848497929428">Partilhar</translation>
 <translation id="677755392401385740">O anfitrião começou para o utilizador: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicação de ajuda para abrir um URL no cliente do <ph name="PRODUCT_NAME" /></translation>
@@ -133,6 +138,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="7067321367069083429">O ecrã funciona como um ecrã tátil</translation>
 <translation id="7116737094673640201">Bem-vindo ao Ambiente de Trabalho Remoto do Chrome</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="7312846573060934304">O anfitrião está offline.</translation>
 <translation id="7319983568955948908">Terminar Partilha</translation>
 <translation id="7359298090707901886">Não é possível utilizar o navegador escolhido para abrir URLs na máquina local.</translation>
@@ -149,7 +155,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="7693372326588366043">Atualizar a lista de anfitriões</translation>
 <translation id="7714222945760997814">Denunciar isto</translation>
 <translation id="7868137160098754906">Introduza o PIN para o computador remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="7895403300744144251">As políticas de segurança do computador remoto não permitem ligações a partir da sua conta.</translation>
 <translation id="7936528439960309876">Colocar à direita</translation>
 <translation id="7970576581263377361">Falha na autenticação. Inicie sessão novamente no Chromium.</translation>
@@ -181,7 +186,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="8747048596626351634">Falha da sessão ou falha ao iniciar a sessão. Se ~/.chrome-remote-desktop-session existir no computador remoto, certifique-se de que inicia um processo em primeiro plano de longa execução, como um gestor de janelas ou um ambiente de trabalho.</translation>
 <translation id="8804164990146287819">Política de Privacidade</translation>
 <translation id="8906511416443321782">O acesso ao microfone é necessário para capturar áudio e fazer stream do mesmo para o cliente do Ambiente de Trabalho Remoto do Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Todos os direitos reservados.</translation>
 <translation id="9111855907838866522">Está ligado ao seu dispositivo remoto. Para abrir o menu, toque no ecrã com quatro dedos.</translation>
 <translation id="9126115402994542723">Não voltar a pedir um PIN ao ligar a este anfitrião a partir deste dispositivo.</translation>
 <translation id="916856682307586697">Inicie a XSession predefinida.</translation>

@@ -28,6 +28,7 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   CrabbyAVIFImageDecoder(AlphaOption,
                          HighBitDepthDecodingOption,
                          ColorBehavior,
+                         cc::AuxImage,
                          wtf_size_t max_decoded_bytes,
                          AnimationOption);
   CrabbyAVIFImageDecoder(const CrabbyAVIFImageDecoder&) = delete;
@@ -47,7 +48,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   void DecodeToYUV() override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
@@ -63,19 +63,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   gfx::ColorSpace GetColorSpaceForTesting() const;
 
  private:
-  // If the AVIF image has a clean aperture ('clap') property, what kind of
-  // clean aperture it is. Values synced with 'AVIFCleanApertureType' in
-  // src/tools/metrics/histograms/enums.xml.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class AVIFCleanApertureType {
-    kInvalid = 0,        // The clean aperture property is invalid.
-    kNonzeroOrigin = 1,  // The origin of the clean aperture is not (0, 0).
-    kZeroOrigin = 2,     // The origin of the clean aperture is (0, 0).
-    kMaxValue = kZeroOrigin,
-  };
-
   struct AvifIOData {
     AvifIOData();
     AvifIOData(scoped_refptr<const SegmentReader> reader,
@@ -129,6 +116,11 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   // |buffer|, if desired.
   void ColorCorrectImage(int from_row, int to_row, ImageFrame* buffer);
 
+  // Returns decoder_->image or decoder_->image->gainMap->image depending on
+  // aux_image_. May be nullptr if requesting the gain map image
+  // (cc::AuxImage::kGainmap) but no gain map is present.
+  crabbyavif::avifImage* GetDecoderImage() const;
+
   bool have_parsed_current_data_ = false;
   // The image width and height (before cropping, if any) from the container.
   //
@@ -142,7 +134,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
   bool progressive_ = false;
   // Number of displayed rows for a non-progressive still image.
   int incrementally_displayed_height_ = 0;
@@ -154,7 +145,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
   base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
-  std::optional<AVIFCleanApertureType> clap_type_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.
   bool ignore_clap_ = false;

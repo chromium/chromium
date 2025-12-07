@@ -43,7 +43,7 @@ class DevToolsContentsResizingStrategy {
 // is allowed.
 void ApplyDevToolsContentsResizingStrategy(
     const DevToolsContentsResizingStrategy& strategy,
-    const gfx::Size& container_size,
+    const gfx::Rect& container_bounds,
     gfx::Rect* new_devtools_bounds,
     gfx::Rect* new_contents_bounds);
 

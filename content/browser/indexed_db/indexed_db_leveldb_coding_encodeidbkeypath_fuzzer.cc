@@ -52,12 +52,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fuzzed_data(data, size);
   IndexedDBKeyPath key_path = GetKeyPath(&fuzzed_data);
   std::string result;
-  content::EncodeIDBKeyPath(key_path, &result);
+  content::indexed_db::EncodeIDBKeyPath(key_path, &result);
 
   // Ensure that |result| can be decoded back into the original key path.
   IndexedDBKeyPath decoded_key_path;
   auto result_str_view = std::string_view(result);
-  std::ignore = content::DecodeIDBKeyPath(&result_str_view, &decoded_key_path);
+  std::ignore = content::indexed_db::DecodeIDBKeyPath(&result_str_view,
+                                                      &decoded_key_path);
   assert(decoded_key_path == key_path);
   return 0;
 }

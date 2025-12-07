@@ -4,6 +4,22 @@
 
 #import "ios/chrome/credential_provider_extension/ui/mock_credential_response_handler.h"
 
+#import "base/strings/string_number_conversions.h"
+#import "ios/chrome/credential_provider_extension/passkey_request_details.h"
+
+namespace {
+
+NSArray<NSData*>* TrustedVaultKeys() {
+  std::vector<uint8_t> sds;
+  base::HexStringToBytes(
+      "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
+  return [NSArray arrayWithObjects:[NSData dataWithBytes:sds.data()
+                                                  length:sds.size()],
+                                   nil];
+}
+
+}  // namespace
+
 @implementation MockCredentialResponseHandler
 
 - (void)userSelectedPassword:(ASPasswordCredential*)credential {
@@ -13,12 +29,19 @@
   }
 }
 
-- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
-    API_AVAILABLE(ios(17.0)) {
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential {
   self.passkeyCredential = credential;
   if (self.receivedPasskeyBlock) {
     self.receivedPasskeyBlock();
   }
+}
+
+- (void)userSelectedPasskey:(id<Credential>)passkey
+      passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
+  [self userSelectedPasskey:[passkeyRequestDetails
+                                    assertPasskeyCredential:passkey
+                                           trustedVaultKeys:TrustedVaultKeys()
+                                didCompleteUserVerification:NO]];
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
@@ -30,6 +53,10 @@
 
 - (void)completeExtensionConfigurationRequest {
   // No-op.
+}
+
+- (NSString*)gaia {
+  return nil;
 }
 
 @end

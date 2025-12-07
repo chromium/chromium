@@ -6,7 +6,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
@@ -89,7 +88,7 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
     return result.Get<webapps::AppId>();
   }
 
-  void SetWebAppSettingsListPref(const std::string_view pref) {
+  void SetWebAppSettingsListPref(std::string_view pref) {
     ASSERT_OK_AND_ASSIGN(
         auto result,
         base::JSONReader::ReadAndReturnValueWithError(
@@ -115,13 +114,14 @@ TEST_F(RunOnOsLoginSubManagerConfigureTest,
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    // on installation, both values are set to NOT_RUN.
-    ASSERT_TRUE(os_integration_state.has_run_on_os_login());
-    const proto::RunOnOsLogin& run_on_os_login =
-        os_integration_state.run_on_os_login();
-    ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
-                testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  // on installation, both values are set to NOT_RUN.
+  ASSERT_TRUE(os_integration_state.has_run_on_os_login());
+  const proto::os_state::RunOnOsLogin& run_on_os_login =
+      os_integration_state.run_on_os_login();
+  ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::os_state::RunOnOsLogin::MODE_NOT_RUN));
 }
 
 TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
@@ -134,12 +134,13 @@ TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_TRUE(os_integration_state.has_run_on_os_login());
-    const proto::RunOnOsLogin& run_on_os_login =
-        os_integration_state.run_on_os_login();
-    ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
-                testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_TRUE(os_integration_state.has_run_on_os_login());
+  const proto::os_state::RunOnOsLogin& run_on_os_login =
+      os_integration_state.run_on_os_login();
+  ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::os_state::RunOnOsLogin::MODE_WINDOWED));
 }
 
 TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
@@ -162,12 +163,13 @@ TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_TRUE(os_integration_state.has_run_on_os_login());
-    const proto::RunOnOsLogin& run_on_os_login =
-        os_integration_state.run_on_os_login();
-    ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
-                testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_TRUE(os_integration_state.has_run_on_os_login());
+  const proto::os_state::RunOnOsLogin& run_on_os_login =
+      os_integration_state.run_on_os_login();
+  ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::os_state::RunOnOsLogin::MODE_NOT_RUN));
 }
 
 TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
@@ -190,12 +192,13 @@ TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_TRUE(os_integration_state.has_run_on_os_login());
-    const proto::RunOnOsLogin& run_on_os_login =
-        os_integration_state.run_on_os_login();
-    ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
-                testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_TRUE(os_integration_state.has_run_on_os_login());
+  const proto::os_state::RunOnOsLogin& run_on_os_login =
+      os_integration_state.run_on_os_login();
+  ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::os_state::RunOnOsLogin::MODE_WINDOWED));
 }
 
 TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
@@ -218,12 +221,13 @@ TEST_F(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_TRUE(os_integration_state.has_run_on_os_login());
-    const proto::RunOnOsLogin& run_on_os_login =
-        os_integration_state.run_on_os_login();
-    ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
-                testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_TRUE(os_integration_state.has_run_on_os_login());
+  const proto::os_state::RunOnOsLogin& run_on_os_login =
+      os_integration_state.run_on_os_login();
+  ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::os_state::RunOnOsLogin::MODE_NOT_RUN));
 }
 
 TEST_F(RunOnOsLoginSubManagerConfigureTest, StatesEmptyOnUninstall) {
@@ -437,7 +441,7 @@ TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
     EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
         profile(), app_id, app_name));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   // This should have no affect.
   SynchronizeOsOptions options;

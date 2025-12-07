@@ -17,8 +17,7 @@ enum class AutofillPreferenceSetter {
   kUnknown = 0,
   // The pref was set by the user.
   kUserSetting = 1,
-  // ChromeOS only. The pref is set by a standalone browser (lacros).
-  kStandaloneBrowser = 2,
+  // kStandaloneBrowser = 2,  // Removed. No longer used.
   // The pref was set by an extension.
   kExtension = 3,
   // The pref was set by the custodian of the (supervised) user.
@@ -27,6 +26,54 @@ enum class AutofillPreferenceSetter {
   kAdminPolicy = 5,
   kMaxValue = kAdminPolicy
 };
+
+// The reason Chrome Sync was deemed disabled when attempting to upload a card
+// to Google Payments.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyncDisabledReason)
+enum class SyncDisabledReason {
+  // The user is not signed in.
+  kNotSignedIn = 0,
+  // Chrome Sync (the service) is disabled by enterprise policy.
+  kSyncDisabledByPolicy = 1,
+  // The sync type was selected to be enabled, but is not currently active.
+  // Generally, "selected" and "active" work out to the same thing, but "active"
+  // is the stronger condition (checking for Sync service being active, no auth
+  // errors, etc.)
+  kSelectedButNotActive = 2,
+  // The sync type was disabled by an enterprise policy.
+  kTypeDisabledByPolicy = 3,
+  // The sync type was disabled by a custodian (i.e. parent/guardian of a child
+  // account).
+  kTypeDisabledByCustodian = 4,
+  // The sync type was disabled for a reason other than the above, which by
+  // process of elimination was most likely user selection.
+  kTypeProbablyDisabledByUser = 5,
+  kMaxValue = kTypeProbablyDisabledByUser
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSyncDisabledReason)
+
+// LINT.IfChange(AutofillSettingsReferrer)
+// Enumerates referrers that can trigger a navigation to one of the Autofill
+// settings pages.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutofillSettingsReferrer {
+  // Corresponds to the profile chooser menu.
+  kProfileMenu = 0,
+  // Corresponds to Chrome's main settings menu.
+  kSettingsMenu = 1,
+  // Corresponds to the "Autofill and Passwords" settings page.
+  kAutofillAndPasswordsPage = 2,
+  // Corresponds to the dropdown shown when clicking into a form field.
+  kFillingFlowDropdown = 3,
+  kMaxValue = kFillingFlowDropdown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSettingsReferrer)
 
 // This should be called each time a page containing forms is loaded.
 void LogIsAutofillEnabledAtPageLoad(
@@ -75,6 +122,9 @@ void LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
 // `prefs::kAutofillProfileEnabled` is disabled and controlled by the user or an
 // extension.
 void MaybeLogAutofillProfileDisabled(const PrefService& pref_service);
+
+// Logs the reason the kPayments sync toggle was disabled.
+void LogAutofillPaymentsSyncDisabled(SyncDisabledReason reason);
 
 }  // namespace autofill::autofill_metrics
 

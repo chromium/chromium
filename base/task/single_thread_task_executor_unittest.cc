@@ -69,7 +69,7 @@ namespace {
 
 class Foo : public RefCounted<Foo> {
  public:
-  Foo() : test_count_(0) {}
+  Foo() = default;
 
   Foo(const Foo&) = delete;
   Foo& operator=(const Foo&) = delete;
@@ -101,14 +101,14 @@ class Foo : public RefCounted<Foo> {
   }
 
   int test_count() const { return test_count_; }
-  const std::string& result() const { return result_; }
+  const std::string& result() const LIFETIME_BOUND { return result_; }
 
  private:
   friend class RefCounted<Foo>;
 
   ~Foo() = default;
 
-  int test_count_;
+  int test_count_ = 0;
   std::string result_;
 };
 
@@ -117,8 +117,9 @@ static void SlowFunc(TimeDelta pause,
                      int* quit_counter,
                      base::OnceClosure quit_closure) {
   PlatformThread::Sleep(pause);
-  if (--(*quit_counter) == 0)
+  if (--(*quit_counter) == 0) {
     std::move(quit_closure).Run();
+  }
 }
 
 // This function records the time when Run was called in a Time object, which is
@@ -186,16 +187,15 @@ std::ostream& operator<<(std::ostream& os, TaskType type) {
       os << "SLEEP";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      os << "Unknown TaskType";
-      break;
+      NOTREACHED();
   }
   return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const TaskItem& item) {
-  if (item.start)
+  if (item.start) {
     return os << item.type << " " << item.cookie << " starts";
+  }
   return os << item.type << " " << item.cookie << " ends";
 }
 
@@ -296,8 +296,9 @@ void MessageBoxFunc(TaskList* order, int cookie, bool is_reentrant) {
   order->RecordStart(MESSAGEBOX, cookie);
   std::optional<CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop>
       maybe_allow_nesting;
-  if (is_reentrant)
+  if (is_reentrant) {
     maybe_allow_nesting.emplace();
+  }
   ::MessageBox(NULL, L"Please wait...", kMessageBoxTitle, MB_OK);
   order->RecordEnd(MESSAGEBOX, cookie);
 }
@@ -374,8 +375,9 @@ void Post128KTasksThenQuit(SingleThreadTaskRunner* executor_task_runner,
   // detailed logging for diagnosis where this flakes.
   const auto now = TimeTicks::Now();
   const auto scheduling_delay = now - last_post_ticks;
-  if (scheduling_delay > slowest_delay)
+  if (scheduling_delay > slowest_delay) {
     slowest_delay = scheduling_delay;
+  }
 
   if (num_posts_done == kNumTimes) {
     std::move(on_done).Run();
@@ -409,7 +411,7 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
                      DWORD error) override;
 
   void Init();
-  OVERLAPPED* context() { return &context_.overlapped; }
+  OVERLAPPED* context() { return context_.GetOverlapped(); }
   DWORD size() { return sizeof(buffer_); }
 
  private:
@@ -421,7 +423,7 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
 
 TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
     : MessagePumpForIO::IOHandler(FROM_HERE), signal_(signal) {
-  memset(buffer_, 0, sizeof(buffer_));
+  UNSAFE_TODO(memset(buffer_, 0, sizeof(buffer_)));
 
   file_.Set(CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING,
                        FILE_FLAG_OVERLAPPED, NULL));
@@ -429,7 +431,9 @@ TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
 }
 
 void TestIOHandler::Init() {
-  CurrentIOThread::Get()->RegisterIOHandler(file_.get(), this);
+  const bool success =
+      CurrentIOThread::Get()->RegisterIOHandler(file_.get(), this);
+  ASSERT_TRUE(success);
 
   DWORD read;
   EXPECT_FALSE(ReadFile(file_.get(), buffer_, size(), &read, context()));
@@ -493,7 +497,7 @@ class SingleThreadTaskExecutorTypedTest
   SingleThreadTaskExecutorTypedTest& operator=(
       const SingleThreadTaskExecutorTypedTest&) = delete;
 
-  ~SingleThreadTaskExecutorTypedTest() = default;
+  ~SingleThreadTaskExecutorTypedTest() override = default;
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<MessagePumpType> param_info) {
@@ -515,8 +519,7 @@ class SingleThreadTaskExecutorTypedTest
         break;
 #endif  // BUILDFLAG(IS_APPLE)
     }
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 };
 
@@ -673,10 +676,11 @@ TEST_P(SingleThreadTaskExecutorTypedTest, PostDelayedTask_InPostOrder_3) {
   TimeTicks run_time1, run_time2;
   base::RunLoop loop;
   // Clutter the ML with tasks.
-  for (int i = 1; i < num_tasks; ++i)
+  for (int i = 1; i < num_tasks; ++i) {
     executor.task_runner()->PostTask(
         FROM_HERE, BindOnce(&RecordRunTimeFunc, &run_time1, &num_tasks,
                             loop.QuitWhenIdleClosure()));
+  }
 
   executor.task_runner()->PostDelayedTask(
       FROM_HERE,
@@ -747,9 +751,10 @@ class RecordDeletionProbe : public RefCounted<RecordDeletionProbe> {
 
   ~RecordDeletionProbe() {
     *was_deleted_ = true;
-    if (post_on_delete_.get())
+    if (post_on_delete_.get()) {
       SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, BindOnce(&RecordDeletionProbe::Run, post_on_delete_));
+    }
   }
 
   scoped_refptr<RecordDeletionProbe> post_on_delete_;
@@ -1367,8 +1372,8 @@ TEST_P(SingleThreadTaskExecutorTypedTest,
 TEST_P(SingleThreadTaskExecutorTypedTest, IsIdleForTesting) {
   SingleThreadTaskExecutor executor(GetParam());
   EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
-  executor.task_runner()->PostTask(FROM_HERE, BindOnce([]() {}));
-  executor.task_runner()->PostDelayedTask(FROM_HERE, BindOnce([]() {}),
+  executor.task_runner()->PostTask(FROM_HERE, BindOnce([] {}));
+  executor.task_runner()->PostDelayedTask(FROM_HERE, BindOnce([] {}),
                                           Milliseconds(10));
   EXPECT_FALSE(CurrentThread::Get()->IsIdleForTesting());
   RunLoop().RunUntilIdle();
@@ -1384,14 +1389,14 @@ TEST_P(SingleThreadTaskExecutorTypedTest, IsIdleForTestingNonNestableTask) {
   EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
   bool nested_task_run = false;
   executor.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
 
         executor.task_runner()->PostNonNestableTask(
-            FROM_HERE, BindLambdaForTesting([&]() { nested_task_run = true; }));
+            FROM_HERE, BindLambdaForTesting([&] { nested_task_run = true; }));
 
         executor.task_runner()->PostTask(
-            FROM_HERE, BindLambdaForTesting([&]() {
+            FROM_HERE, BindLambdaForTesting([&] {
               EXPECT_FALSE(nested_task_run);
               EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
             }));
@@ -1873,8 +1878,7 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
  public:
   MLDestructionObserver(bool* task_destroyed, bool* destruction_observer_called)
       : task_destroyed_(task_destroyed),
-        destruction_observer_called_(destruction_observer_called),
-        task_destroyed_before_message_loop_(false) {}
+        destruction_observer_called_(destruction_observer_called) {}
   void WillDestroyCurrentMessageLoop() override {
     task_destroyed_before_message_loop_ = *task_destroyed_;
     *destruction_observer_called_ = true;
@@ -1886,7 +1890,7 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
  private:
   raw_ptr<bool> task_destroyed_;
   raw_ptr<bool> destruction_observer_called_;
-  bool task_destroyed_before_message_loop_;
+  bool task_destroyed_before_message_loop_ = false;
 };
 
 }  // namespace
@@ -1963,16 +1967,18 @@ void EndTest(bool* did_run, HWND hwnd) {
   PostMessage(hwnd, WM_CLOSE, 0, 0);
 }
 
-int kMyMessageFilterCode = 0x5002;
+constexpr int kMyMessageFilterCode = 0x5002;
 
 LRESULT CALLBACK TestWndProcThunk(HWND hwnd,
                                   UINT message,
                                   WPARAM wparam,
                                   LPARAM lparam) {
-  if (message == WM_CLOSE)
+  if (message == WM_CLOSE) {
     EXPECT_TRUE(DestroyWindow(hwnd));
-  if (message != kSignalMsg)
+  }
+  if (message != kSignalMsg) {
     return DefWindowProc(hwnd, message, wparam, lparam);
+  }
 
   switch (lparam) {
     case 1:
@@ -1998,14 +2004,16 @@ LRESULT CALLBACK TestWndProcThunk(HWND hwnd,
       // If it doesn't, then we'll loop here until the test times out.
       MSG msg;
       while (GetMessage(&msg, 0, 0, 0)) {
-        if (!CallMsgFilter(&msg, kMyMessageFilterCode))
+        if (!CallMsgFilter(&msg, kMyMessageFilterCode)) {
           DispatchMessage(&msg);
+        }
         // If this message is a WM_CLOSE, explicitly exit the modal loop.
         // Posting a WM_QUIT should handle this, but unfortunately
         // MessagePumpWin eats WM_QUIT messages even when running inside a modal
         // loop.
-        if (msg.message == WM_CLOSE)
+        if (msg.message == WM_CLOSE) {
           break;
+        }
       }
       EXPECT_TRUE(did_run);
 
@@ -2075,10 +2083,10 @@ TEST(SingleThreadTaskExecutorTest, SequenceLocalStorageSetGet) {
   SequenceLocalStorageSlot<int> slot;
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { slot.emplace(11); }));
+      FROM_HERE, BindLambdaForTesting([&] { slot.emplace(11); }));
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { EXPECT_EQ(*slot, 11); }));
+      FROM_HERE, BindLambdaForTesting([&] { EXPECT_EQ(*slot, 11); }));
 
   RunLoop().RunUntilIdle();
   EXPECT_EQ(*slot, 11);
@@ -2092,7 +2100,7 @@ TEST(SingleThreadTaskExecutorTest, SequenceLocalStorageDifferentMessageLoops) {
   {
     SingleThreadTaskExecutor executor;
     SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() { slot.emplace(11); }));
+        FROM_HERE, BindLambdaForTesting([&] { slot.emplace(11); }));
 
     RunLoop().RunUntilIdle();
     EXPECT_EQ(*slot, 11);
@@ -2100,7 +2108,7 @@ TEST(SingleThreadTaskExecutorTest, SequenceLocalStorageDifferentMessageLoops) {
 
   SingleThreadTaskExecutor executor;
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { EXPECT_FALSE(slot); }));
+      FROM_HERE, BindLambdaForTesting([&] { EXPECT_FALSE(slot); }));
 
   RunLoop().RunUntilIdle();
   EXPECT_NE(slot.GetOrCreateValue(), 11);
@@ -2110,7 +2118,7 @@ namespace {
 
 class PostTaskOnDestroy {
  public:
-  PostTaskOnDestroy(int times) : times_remaining_(times) {}
+  explicit PostTaskOnDestroy(int times) : times_remaining_(times) {}
 
   PostTaskOnDestroy(const PostTaskOnDestroy&) = delete;
   PostTaskOnDestroy& operator=(const PostTaskOnDestroy&) = delete;

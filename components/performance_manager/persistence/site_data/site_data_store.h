@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/functional/callback_forward.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
 #include "url/origin.h"
@@ -26,10 +27,10 @@ class SiteDataStore {
       base::OnceCallback<void(std::optional<SiteDataProto> site_data_proto)>;
   using GetStoreSizeCallback =
       base::OnceCallback<void(std::optional<int64_t> num_rows,
-                              std::optional<int64_t> on_disk_size_kb)>;
+                              std::optional<base::ByteCount> on_disk_size)>;
 
   SiteDataStore() = default;
-  virtual ~SiteDataStore() {}
+  virtual ~SiteDataStore() = default;
 
   // Checks the if there's an entry with the key |origin| and if pass the
   // corresponding proto to |callback|.

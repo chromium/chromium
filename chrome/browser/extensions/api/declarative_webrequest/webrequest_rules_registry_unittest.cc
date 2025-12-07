@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -32,14 +28,11 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extensions::declarative_webrequest_constants;
@@ -79,7 +72,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   explicit TestWebRequestRulesRegistry(content::BrowserContext* context)
       : WebRequestRulesRegistry(context,
                                 nullptr /* cache_delegate */,
-                                RulesRegistryService::kDefaultRulesRegistryID),
+                                rules_registry_ids::kDefaultRulesRegistryID),
         num_clear_cache_calls_(0) {}
 
   // Returns how often the in-memory caches of the renderers were instructed
@@ -93,7 +86,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   }
 
  protected:
-  ~TestWebRequestRulesRegistry() override {}
+  ~TestWebRequestRulesRegistry() override = default;
 
   void ClearCacheOnNavigation() override { ++num_clear_cache_calls_; }
 
@@ -234,10 +227,6 @@ class WebRequestRulesRegistryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   TestingProfile profile_;
   // Two extensions with host permissions for all URLs and the DWR permission.
   // Installation times will be so that |extension_| is older than
@@ -263,11 +252,10 @@ void WebRequestRulesRegistryTest::SetUp() {
   CHECK(ExtensionRegistry::Get(&profile_));
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension_);
   ExtensionPrefs::Get(&profile_)->OnExtensionInstalled(
-      extension_.get(), Extension::State::ENABLED, syncer::StringOrdinal(), "");
+      extension_.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension2_);
   ExtensionPrefs::Get(&profile_)->OnExtensionInstalled(
-      extension2_.get(), Extension::State::ENABLED, syncer::StringOrdinal(),
-      "");
+      extension2_.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
 }
 
 
@@ -646,12 +634,12 @@ TEST_F(WebRequestRulesRegistryTest, GetMatchesDifferentUrls) {
 
   std::set<const WebRequestRule*> matches;
 
-  const GURL urls[] = {
-    GURL("http://url.example.com"),  // matching
-    GURL("http://www.example.com")   // non-matching
-  };
+  const auto urls = std::to_array<GURL>({
+      GURL("http://url.example.com"),  // matching
+      GURL("http://www.example.com")   // non-matching
+  });
   // Which rules should match in subsequent test iterations.
-  const char* const matchingRuleIds[] = { kRuleId1, kRuleId2 };
+  const auto matchingRuleIds = std::to_array<const char*>({kRuleId1, kRuleId2});
   static_assert(std::size(urls) == std::size(matchingRuleIds),
                 "urls and matchingRuleIds must have the same number "
                 "of elements");

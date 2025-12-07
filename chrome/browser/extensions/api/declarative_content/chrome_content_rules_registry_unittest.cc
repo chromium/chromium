@@ -14,8 +14,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -100,7 +103,7 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
   void RequestImmediateEvaluation(content::WebContents* contents,
                                   bool evaluation_result) {
     next_evaluation_result_ = evaluation_result;
-    delegate_->RequestEvaluation(contents);
+    delegate_->NotifyPredicateStateUpdated(contents);
   }
 
   void RequestEvaluationOnNextOperation(content::WebContents* contents,
@@ -112,7 +115,8 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
  private:
   void RequestEvaluationIfSpecified() {
     if (contents_for_next_operation_evaluation_) {
-      delegate_->RequestEvaluation(contents_for_next_operation_evaluation_);
+      delegate_->NotifyPredicateStateUpdated(
+          contents_for_next_operation_evaluation_);
     }
     contents_for_next_operation_evaluation_ = nullptr;
   }
@@ -136,7 +140,7 @@ std::vector<std::unique_ptr<ContentPredicateEvaluator>> CreateTestEvaluator(
 
 class DeclarativeChromeContentRulesRegistryTest : public testing::Test {
  public:
-  DeclarativeChromeContentRulesRegistryTest() {}
+  DeclarativeChromeContentRulesRegistryTest() = default;
 
   DeclarativeChromeContentRulesRegistryTest(
       const DeclarativeChromeContentRulesRegistryTest&) = delete;

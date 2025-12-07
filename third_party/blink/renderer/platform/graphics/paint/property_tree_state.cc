@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+
 namespace blink {
 
 namespace {
@@ -65,22 +67,6 @@ bool ClipChainInTransformCompositingBoundary(
 
 }  // namespace
 
-const PropertyTreeState& PropertyTreeStateOrAlias::Root() {
-  DEFINE_STATIC_LOCAL(
-      const PropertyTreeState, root,
-      (TransformPaintPropertyNode::Root(), ClipPaintPropertyNode::Root(),
-       EffectPaintPropertyNode::Root()));
-  return root;
-}
-
-bool PropertyTreeStateOrAlias::Changed(
-    PaintPropertyChangeType change,
-    const PropertyTreeState& relative_to) const {
-  return Transform().Changed(change, relative_to.Transform()) ||
-         Clip().Changed(change, relative_to, &Transform()) ||
-         Effect().Changed(change, relative_to, &Transform());
-}
-
 std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
     const PropertyTreeState& guest,
     IsCompositedScrollFunction is_composited_scroll) const {
@@ -137,8 +123,9 @@ String PropertyTreeStateOrAlias::ToString() const {
 #if DCHECK_IS_ON()
 
 String PropertyTreeStateOrAlias::ToTreeString() const {
-  return "transform:\n" + Transform().ToTreeString() + "\nclip:\n" +
-         Clip().ToTreeString() + "\neffect:\n" + Effect().ToTreeString();
+  return StrCat({"transform:\n", Transform().ToTreeString(), "\nclip:\n",
+                 Clip().ToTreeString(), "\neffect:\n",
+                 Effect().ToTreeString()});
 }
 
 #endif
@@ -149,11 +136,6 @@ std::unique_ptr<JSONObject> PropertyTreeStateOrAlias::ToJSON() const {
   result->SetObject("clip", clip_->ToJSON());
   result->SetObject("effect", effect_->ToJSON());
   return result;
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         const PropertyTreeStateOrAlias& state) {
-  return os << state.ToString().Utf8();
 }
 
 }  // namespace blink

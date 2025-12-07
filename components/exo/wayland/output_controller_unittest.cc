@@ -46,7 +46,7 @@ class OutputControllerTest : public test::WaylandServerTest {
 
 TEST_F(OutputControllerTest, OutputControllerInitialization) {
   UpdateDisplay("800x600,800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   const int64_t primary_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_id = screen->GetAllDisplays()[1].id();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
@@ -63,7 +63,7 @@ TEST_F(OutputControllerTest, OutputControllerInitialization) {
 
 TEST_F(OutputControllerTest, OutputControllerRemoveDisplay) {
   UpdateDisplay("800x600,800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   const int64_t primary_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_id = screen->GetAllDisplays()[1].id();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
@@ -83,7 +83,7 @@ TEST_F(OutputControllerTest, OutputControllerRemoveDisplay) {
 
 TEST_F(OutputControllerTest, OutputControllerAddDisplay) {
   UpdateDisplay("800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   const int64_t primary_id = screen->GetAllDisplays()[0].id();
   ASSERT_EQ(1u, screen->GetAllDisplays().size());
 
@@ -116,7 +116,7 @@ TEST_F(OutputControllerTest, ActiveDisplay) {
     // display::DisplayManagerObserver:
     void OnDidProcessDisplayChanges(
         const DisplayConfigurationChange& configuration_change) override {
-      auto* screen = display::Screen::GetScreen();
+      auto* screen = display::Screen::Get();
       EXPECT_EQ(2u, screen->GetAllDisplays().size());
       screen->SetDisplayForNewWindows(screen->GetAllDisplays()[1].id());
     }
@@ -129,7 +129,7 @@ TEST_F(OutputControllerTest, ActiveDisplay) {
 
   // Setup the environment with a single display.
   UpdateDisplay("800x600");
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   const int64_t primary_id = screen->GetAllDisplays()[0].id();
   ASSERT_EQ(1u, screen->GetAllDisplays().size());
   OutputController output_controller(&delegate_);

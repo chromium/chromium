@@ -10,7 +10,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 
 namespace viz {

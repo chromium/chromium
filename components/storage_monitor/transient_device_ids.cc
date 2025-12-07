@@ -13,9 +13,9 @@
 
 namespace storage_monitor {
 
-TransientDeviceIds::TransientDeviceIds() {}
+TransientDeviceIds::TransientDeviceIds() = default;
 
-TransientDeviceIds::~TransientDeviceIds() {}
+TransientDeviceIds::~TransientDeviceIds() = default;
 
 std::string TransientDeviceIds::GetTransientIdForDeviceId(
     const std::string& device_id) {

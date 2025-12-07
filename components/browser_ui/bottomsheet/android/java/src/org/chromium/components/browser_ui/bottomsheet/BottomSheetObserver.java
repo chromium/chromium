@@ -4,12 +4,13 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
 /** An interface for notifications about the state of the bottom sheet. */
+@NullMarked
 public interface BottomSheetObserver {
     /**
      * A notification that the sheet has been opened, meaning the sheet is any height greater
@@ -46,4 +47,7 @@ public interface BottomSheetObserver {
      * @param newContent The new {@link BottomSheetContent}, or null if the sheet has no content.
      */
     void onSheetContentChanged(@Nullable BottomSheetContent newContent);
+
+    /** Called when the sheet background color override is changed. */
+    default void onSheetBackgroundColorOverrideChanged() {}
 }

@@ -28,12 +28,8 @@ class GlanceablesTestNewWindowDelegateImpl : public TestNewWindowDelegate {
 };
 
 GlanceablesTestNewWindowDelegate::GlanceablesTestNewWindowDelegate() {
-  auto new_window_delegate =
+  new_window_delegate_ =
       std::make_unique<GlanceablesTestNewWindowDelegateImpl>();
-  new_window_delegate_ = new_window_delegate.get();
-  new_window_delegate_provider_ =
-      std::make_unique<TestNewWindowDelegateProvider>(
-          std::move(new_window_delegate));
 }
 
 GlanceablesTestNewWindowDelegate::~GlanceablesTestNewWindowDelegate() = default;

@@ -10,8 +10,13 @@
   let resourceCounter = 0;
   dp.Network.onRequestWillBeSent(() => { resourceCounter++ });
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Page.navigate({
+  dp.Page.navigate({
       url: testRunner.url('resources/virtual-time-error-loop.html')});
+  // TODO(caseq): this avoids a race between the completion of main resource
+  // loading and granting of the new budget. Without this, we may grant either
+  // before or after the time as advanced when the resource completes loading.
+  // We should probably do something on the backend to avoid the race.
+  await dp.Network.loadingFinished();
   dp.Emulation.setVirtualTimePolicy({
       policy: 'pauseIfNetworkFetchesPending',
       budget: 5000,

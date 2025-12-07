@@ -13,11 +13,11 @@
 
 #include "base/component_export.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device {
 
@@ -79,6 +79,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // Whether a large blob was successfully written as part of this GetAssertion
   // request.
   bool large_blob_written = false;
+
+  // Populated only when largeBlob.write succeeded for enclave responses where
+  // the passkey is modified by a large blob write.
+  std::optional<std::vector<uint8_t>> updated_encrypted_passkey;
 
   // Contains the compressed largeBlob data when the extension form is used.
   // This will be decompressed during processing and used to populate

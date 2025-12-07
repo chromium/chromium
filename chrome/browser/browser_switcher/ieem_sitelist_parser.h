@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
-#include "url/gurl.h"
 
 namespace browser_switcher {
 

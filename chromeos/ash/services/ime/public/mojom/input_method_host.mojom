@@ -387,6 +387,7 @@ interface InputMethodHost {
   // Reports a histogram sample to UMA.
   // The name of the histogram must start with 'Untrusted.'. (e.g.
   // 'Untrusted.InputMethod.CharacterCount'), or else this sample is dropped.
-  [MinVersion=10] ReportHistogramSample@15(BucketedHistogram histogram,
+  // DEPRECATED: Do not use.
+  [MinVersion=10] DEPRECATED_ReportHistogramSample@15(BucketedHistogram histogram,
                                            uint16 value);
 };

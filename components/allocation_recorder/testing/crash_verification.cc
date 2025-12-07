@@ -5,16 +5,14 @@
 #include "components/allocation_recorder/testing/crash_verification.h"
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 #include <memory>
-#include <set>
+#include <ostream>
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -100,7 +98,6 @@ class CrashpadIntegration {
   base::FilePath database_dir_;
 
   std::unique_ptr<crashpad::CrashReportDatabase> crash_report_database_;
-  std::set<crashpad::UUID> ids_of_old_reports_;
 
   std::unique_ptr<crashpad::CrashReportDatabase::Report> report_;
   std::unique_ptr<crashpad::ProcessSnapshotMinidump> minidump_process_snapshot_;
@@ -114,37 +111,25 @@ void CrashpadIntegration::SetUp(const base::FilePath& crashpad_database_path) {
   ASSERT_NE(crash_report_database_, nullptr)
       << "Failed to load crash database. database='" << database_dir_ << '\'';
 
-  std::vector<crashpad::CrashReportDatabase::Report> old_reports;
-
+  std::vector<crashpad::CrashReportDatabase::Report> reports;
   ASSERT_EQ(crashpad::CrashReportDatabase::kNoError,
-            crash_report_database_->GetPendingReports(&old_reports))
+            crash_report_database_->GetPendingReports(&reports))
       << "Failed to read list of old pending reports. database='"
       << database_dir_ << '\'';
-
-  base::ranges::transform(
-      old_reports,
-      std::inserter(ids_of_old_reports_, std::end(ids_of_old_reports_)),
-      [](const crashpad::CrashReportDatabase::Report& report) {
-        return report.uuid;
-      });
+  ASSERT_EQ(reports.size(), 0u)
+      << "Expected no reports at setup time. "
+      << "Please choose a unique temporary crashpad_database_path.";
 }
 
 void CrashpadIntegration::ShutDown() {
   if (report_) {
-    // On Android, deleting the report or even looking up report details
-    // regularly fails due to 'report no found'. Therefore, we simply try to
-    // delete the report but do no assert or expect success.
-    [[maybe_unused]] const auto report_deletion_result =
+    const auto report_deletion_result =
         crash_report_database_->DeleteReport(report_->uuid);
-
-#if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(crashpad::CrashReportDatabase::kNoError, report_deletion_result);
-#endif
   }
 
   minidump_process_snapshot_ = {};
   report_ = {};
-  ids_of_old_reports_ = {};
   crash_report_database_ = {};
   database_dir_ = {};
 }
@@ -153,8 +138,7 @@ void CrashpadIntegration::CrashDatabaseHasReport() {
   // The Crashpad report might not have been written yet. Try to read the report
   // multiple times without asserting success. Only in the very last try we
   // assert that a new report is present.
-
-  constexpr auto maximum_total_retry_duration = base::Seconds(30);
+  constexpr auto maximum_total_retry_duration = base::Seconds(5);
   constexpr auto wait_time_between_retries = base::Milliseconds(200);
 
   const auto time_out_to_last_nonfatal_try =
@@ -213,33 +197,12 @@ CrashpadIntegration::GetAllocationRecorderStreams() {
 
 void CrashpadIntegration::TryReadCreatedReport() {
   std::vector<crashpad::CrashReportDatabase::Report> reports;
-
   ASSERT_EQ(crashpad::CrashReportDatabase::kNoError,
             crash_report_database_->GetPendingReports(&reports))
       << "Failed to read list of pending reports. database='" << database_dir_
       << '\'';
-
-  // We assume the report under consideration was not present in the set of
-  // reports that we retrieved in SetUp.
-  const auto is_new_report_predicate =
-      [&](const crashpad::CrashReportDatabase::Report& report) {
-        return ids_of_old_reports_.find(report.uuid) ==
-               std::end(ids_of_old_reports_);
-      };
-
-  const auto it_new_report = std::find_if(
-      std::begin(reports), std::end(reports), is_new_report_predicate);
-
-  if (it_new_report == std::end(reports)) {
-    return;
-  }
-
-  ASSERT_FALSE(std::any_of(std::next(it_new_report), std::end(reports),
-                           is_new_report_predicate))
-      << "Found multiple new report. database='" << database_dir_ << '\'';
-
-  report_ =
-      std::make_unique<crashpad::CrashReportDatabase::Report>(*it_new_report);
+  ASSERT_EQ(reports.size(), 1u);
+  report_ = std::make_unique<crashpad::CrashReportDatabase::Report>(reports[0]);
 }
 
 void CrashpadIntegration::CheckHasNoAllocationRecorderStream() {
@@ -248,7 +211,7 @@ void CrashpadIntegration::CheckHasNoAllocationRecorderStream() {
 
   const auto allocation_recorder_streams = GetAllocationRecorderStreams();
 
-  EXPECT_EQ(std::size(allocation_recorder_streams), 0ul)
+  EXPECT_EQ(std::size(allocation_recorder_streams), 0u)
       << "Found at least one allocation recorder stream.";
 }
 
@@ -257,7 +220,7 @@ void CrashpadIntegration::GetAllocationRecorderStream(
     const crashpad::MinidumpStream*& allocation_recorder_stream) {
   const auto allocation_recorder_streams = GetAllocationRecorderStreams();
 
-  ASSERT_EQ(std::size(allocation_recorder_streams), 1ul)
+  ASSERT_EQ(std::size(allocation_recorder_streams), 1u)
       << "Didn't find expected number of allocation recorder streams.";
   ASSERT_NE(allocation_recorder_streams.front(), nullptr)
       << "The only allocation recorder stream is nullptr.";
@@ -283,23 +246,6 @@ void CrashpadIntegration::GetPayload(allocation_recorder::Payload& payload) {
 
 namespace allocation_recorder::testing {
 
-void VerifyCrashCreatesCrashpadReportWithoutAllocationRecorderStream(
-    const base::FilePath& crashpad_database_path,
-    base::OnceClosure crash_function) {
-  ASSERT_TRUE(crash_function);
-
-  CrashpadIntegration crashpad_integration;
-
-  ASSERT_NO_FATAL_FAILURE(crashpad_integration.SetUp(crashpad_database_path));
-
-  ASSERT_NO_FATAL_FAILURE(std::move(crash_function).Run());
-
-  ASSERT_NO_FATAL_FAILURE(
-      crashpad_integration.CheckHasNoAllocationRecorderStream());
-
-  ASSERT_NO_FATAL_FAILURE(crashpad_integration.ShutDown());
-}
-
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 void VerifyCrashCreatesCrashpadReportWithAllocationRecorderStream(
     const base::FilePath& crashpad_database_path,
@@ -307,11 +253,8 @@ void VerifyCrashCreatesCrashpadReportWithAllocationRecorderStream(
     base::OnceCallback<void(const allocation_recorder::Payload& payload)>
         payload_verification) {
   ASSERT_TRUE(crash_function);
-
   CrashpadIntegration crashpad_integration;
-
   ASSERT_NO_FATAL_FAILURE(crashpad_integration.SetUp(crashpad_database_path));
-
   ASSERT_NO_FATAL_FAILURE(std::move(crash_function).Run());
 
   allocation_recorder::Payload payload;
@@ -320,30 +263,50 @@ void VerifyCrashCreatesCrashpadReportWithAllocationRecorderStream(
   if (payload_verification) {
     ASSERT_NO_FATAL_FAILURE(std::move(payload_verification).Run(payload));
   }
-
   ASSERT_NO_FATAL_FAILURE(crashpad_integration.ShutDown());
 }
 
 void VerifyPayload(const bool expect_report_with_content,
                    const allocation_recorder::Payload& payload) {
-  ASSERT_TRUE(payload.has_operation_report());
-  const auto& operation_report = payload.operation_report();
-
-  ASSERT_TRUE(operation_report.has_statistics());
-  const auto& statistics = operation_report.statistics();
-
   if (expect_report_with_content) {
+    if (payload.has_processing_failures()) {
+      const auto& failures = payload.processing_failures();
+      const auto& messages = failures.messages();
+      ASSERT_GT(messages.size(), 0);
+      FAIL() << "Payload has unexpected processing failure:\n" << messages[0];
+    }
+    ASSERT_TRUE(payload.has_operation_report());
+    const auto& operation_report = payload.operation_report();
+
+    ASSERT_TRUE(operation_report.has_statistics());
+    const auto& statistics = operation_report.statistics();
+
     EXPECT_GT(operation_report.memory_operations_size(), 0);
-    EXPECT_GT(statistics.total_number_of_operations(), 0ul);
-  } else {
-    EXPECT_EQ(operation_report.memory_operations_size(), 0);
-    EXPECT_EQ(statistics.total_number_of_operations(), 0ul);
-  }
+    EXPECT_GT(statistics.total_number_of_operations(), 0u);
 
 #if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
-  EXPECT_TRUE(statistics.has_total_number_of_collisions());
+    EXPECT_TRUE(statistics.has_total_number_of_collisions());
 #endif
+  } else {
+    ASSERT_TRUE(payload.has_processing_failures());
+    const auto& failures = payload.processing_failures();
+    const auto& messages = failures.messages();
+    ASSERT_EQ(messages.size(), 1);
+    ASSERT_EQ(
+        messages[0],
+        "No annotation found! required-name=allocation-recorder-crash-info");
+  }
 }
-#endif
+#else
+void VerifyCrashCreatesCrashpadReportWithoutAllocationRecorderStream(
+    const base::FilePath& crashpad_database_path,
+    base::OnceClosure crash_function) {
+  ASSERT_TRUE(crash_function);
+  CrashpadIntegration crashpad_integration;
+  ASSERT_NO_FATAL_FAILURE(crashpad_integration.SetUp(crashpad_database_path));
+  ASSERT_NO_FATAL_FAILURE(std::move(crash_function).Run());
+  ASSERT_NO_FATAL_FAILURE(crashpad_integration.ShutDown());
+}
+#endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 
 }  // namespace allocation_recorder::testing

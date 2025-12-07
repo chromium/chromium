@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojom") {
   disable_variants = true
@@ -33,6 +32,7 @@ static_library("input_device_settings") {
     "//ash/public/cpp",
     "//ash/public/mojom:input_device_settings",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/dbus/power",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
@@ -44,7 +44,7 @@ static_library("input_device_settings") {
     "//ash/constants",
     "//ash/public/cpp:accelerator_actions",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/profiles:profile",
     "//chromeos/dbus/power:power_manager_proto",
@@ -80,4 +80,8 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

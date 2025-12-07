@@ -1,5 +1,6 @@
 specific_include_rules = {
   "layout_theme\.cc|layout_theme_mac\.mm": [
+    "+ui/gfx/color_utils.h",
     "+ui/native_theme/native_theme.h",
   ],
 }

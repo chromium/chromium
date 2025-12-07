@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -49,7 +45,6 @@
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Ne;
 using ::testing::SizeIs;
 using ::testing::StrEq;
@@ -125,9 +120,10 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     signed_encryption_key.set_public_key_id(public_key_id);
     // Sign public key.
     uint8_t value_to_sign[sizeof(Encryptor::PublicKeyId) + kKeySize];
-    memcpy(value_to_sign, &public_key_id, sizeof(Encryptor::PublicKeyId));
-    memcpy(value_to_sign + sizeof(Encryptor::PublicKeyId), public_value,
-           kKeySize);
+    UNSAFE_TODO(
+        memcpy(value_to_sign, &public_key_id, sizeof(Encryptor::PublicKeyId)));
+    UNSAFE_TODO(memcpy(value_to_sign + sizeof(Encryptor::PublicKeyId),
+                       public_value, kKeySize));
     uint8_t signature[kSignatureSize];
     test::SignMessage(
         signing_private_key_,

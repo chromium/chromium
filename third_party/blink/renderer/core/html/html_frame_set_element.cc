@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -84,10 +85,13 @@ bool HTMLFrameSetElement::IsPresentationAttribute(
 void HTMLFrameSetElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  if (name == html_names::kBordercolorAttr)
-    AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
-  else
+    HeapVector<CSSPropertyValue, 8>& style) {
+  if (name == html_names::kBordercolorAttr) {
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderLeftColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderRightColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderBottomColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderTopColor, value);
+  } else
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 

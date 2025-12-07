@@ -109,9 +109,9 @@ NSDragOperation DragDropClientMac::DragUpdate(id<NSDraggingInfo> sender) {
     source_operation_ = ui::DragDropTypes::NSDragOperationToDragOperation(
         sender.draggingSourceOperationMask);
   }
-
   last_operation_ = drop_helper_.OnDragOver(
-      *exchange_data_, LocationInView([sender draggingLocation]),
+      *exchange_data_,
+      LocationInView(sender.draggingLocation, sender.draggingDestinationWindow),
       source_operation_);
   return ui::DragDropTypes::DragOperationToNSDragOperation(last_operation_);
 }
@@ -132,14 +132,16 @@ void DragDropClientMac::EndDrag() {
   is_drag_source_ = false;
 
   // Allow a test to invoke EndDrag() without spinning the nested run loop.
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 void DragDropClientMac::DragExit() {
   drop_helper_.OnDragExit();
-  if (!is_drag_source_)
+  if (!is_drag_source_) {
     exchange_data_.reset();
+  }
 }
 
 gfx::Point DragDropClientMac::LocationInView(NSPoint point) const {
@@ -148,4 +150,16 @@ gfx::Point DragDropClientMac::LocationInView(NSPoint point) const {
   return gfx::Point(point.x, NSHeight(content_rect) - point.y);
 }
 
+// In immersive fullscreen, the `NSToolbarFullScreenWindow` hosts both the tab
+// strip and toolbar. Convert the point to the corresponding hosted view's
+// coordinates.
+gfx::Point DragDropClientMac::LocationInView(
+    NSPoint point,
+    NSWindow* destination_window) const {
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(destination_window)) {
+    NSView* overlay_view = [destination_window.contentView hitTest:point];
+    point = [overlay_view convertPoint:point fromView:nil];
+  }
+  return LocationInView(point);
+}
 }  // namespace views

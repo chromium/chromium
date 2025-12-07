@@ -2,36 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test_utils.h"
-
-#include <memory>
 
 #include <sys/mman.h>
 
-#include "base/bits.h"
-#include "base/logging.h"
+#include <memory>
 
+#include "base/bits.h"
+#include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/gpu/test/local_gpu_memory_buffer_manager.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "media/gpu/test/test_gbm_buffer_manager.h"
 #endif
 
 namespace media {
 namespace vaapi_test_utils {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -80,40 +74,40 @@ void Detile4(uint8_t* linear_dest,
           int tile_x = 0;
           // Copy 1 row from 4 subtiles.
           for (; tile_x < kTile4ZWidth; tile_x++) {
-            memcpy(linear_dest, row_ptr, kTile4SubtileWidth);
-            linear_dest += kTile4SubtileWidth;
-            row_ptr += kTile4SubtileSizeBytes;
+            UNSAFE_TODO(memcpy(linear_dest, row_ptr, kTile4SubtileWidth));
+            UNSAFE_TODO(linear_dest += kTile4SubtileWidth);
+            UNSAFE_TODO(row_ptr += kTile4SubtileSizeBytes);
           }
-          row_ptr += kTile4ZWidth * kTile4SubtileSizeBytes;
+          UNSAFE_TODO(row_ptr += kTile4ZWidth * kTile4SubtileSizeBytes);
           // Copy 1 row from another 4 subtiles.
           for (; tile_x < kTile4TileWidth; tile_x++) {
-            memcpy(linear_dest, row_ptr, kTile4SubtileWidth);
-            linear_dest += kTile4SubtileWidth;
-            row_ptr += kTile4SubtileSizeBytes;
+            UNSAFE_TODO(memcpy(linear_dest, row_ptr, kTile4SubtileWidth));
+            UNSAFE_TODO(linear_dest += kTile4SubtileWidth);
+            UNSAFE_TODO(row_ptr += kTile4SubtileSizeBytes);
           }
 
           // Advance to the tile to the right.
-          row_ptr +=
-              kTile4TileSizeBytes - (3 * kTile4ZWidth * kTile4SubtileSizeBytes);
+          UNSAFE_TODO(row_ptr += kTile4TileSizeBytes -
+                                 (3 * kTile4ZWidth * kTile4SubtileSizeBytes));
         }
 
         // Advance to the next row in the subtile.
-        tiled_src += kTile4SubtileWidth;
+        UNSAFE_TODO(tiled_src += kTile4SubtileWidth);
       }
 
       // Advance to the next row in the tile.
       if (tile_y % 2 == 0) {
-        tiled_src +=
-            kTile4ZWidth * kTile4SubtileSizeBytes - kTile4SubtileSizeBytes;
+        UNSAFE_TODO(tiled_src += kTile4ZWidth * kTile4SubtileSizeBytes -
+                                 kTile4SubtileSizeBytes);
       } else {
-        tiled_src +=
-            3 * kTile4ZWidth * kTile4SubtileSizeBytes - kTile4SubtileSizeBytes;
+        UNSAFE_TODO(tiled_src += 3 * kTile4ZWidth * kTile4SubtileSizeBytes -
+                                 kTile4SubtileSizeBytes);
       }
     }
 
     // Advance to the tile below.
-    tiled_src +=
-        width * kTile4TileHeight * kTile4SubtileHeight - kTile4TileSizeBytes;
+    UNSAFE_TODO(tiled_src += width * kTile4TileHeight * kTile4SubtileHeight -
+                             kTile4TileSizeBytes);
   }
 }
 
@@ -128,7 +122,7 @@ std::string TestParamToString(
   return param_info.param.test_name;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image) {
   DecodedImage decoded_image{};
@@ -145,11 +139,12 @@ DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image) {
   // This is safe because |number_of_planes| is retrieved from the VA-API and it
   // can not be greater than 3, which is also the size of the |planes| array.
   for (uint32_t i = 0u; i < decoded_image.number_of_planes; ++i) {
-    decoded_image.planes[i].data =
-        static_cast<uint8_t*>(scoped_va_image->va_buffer()->data()) +
-        scoped_va_image->image()->offsets[i];
-    decoded_image.planes[i].stride =
-        base::checked_cast<int>(scoped_va_image->image()->pitches[i]);
+    UNSAFE_TODO(
+        decoded_image.planes[i].data =
+            static_cast<uint8_t*>(scoped_va_image->va_buffer()->data()) +
+            scoped_va_image->image()->offsets[i]);
+    UNSAFE_TODO(decoded_image.planes[i].stride = base::checked_cast<int>(
+                    scoped_va_image->image()->pitches[i]));
   }
 
   return decoded_image;
@@ -163,52 +158,51 @@ class NativePixmapMapping {
   virtual gfx::Size GetSize() const = 0;
 };
 
-class GpuMemoryBufferMapping : public NativePixmapMapping {
+class GbmBufferMapping : public NativePixmapMapping {
  public:
-  static std::unique_ptr<GpuMemoryBufferMapping> CreateGpuMemoryBufferMapping(
+  static std::unique_ptr<GbmBufferMapping> CreateGbmBufferMapping(
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
-      const gfx::BufferFormat& format) {
-    std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager =
-        std::make_unique<LocalGpuMemoryBufferManager>();
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-        gpu_memory_buffer_manager->ImportDmaBuf(handle, size, format);
+      viz::SharedImageFormat format) {
+    std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager =
+        std::make_unique<TestGbmBufferManager>();
+    std::unique_ptr<TestGbmBuffer> gbm_buffer =
+        gbm_buffer_manager->ImportDmaBuf(handle, size, format);
 
-    if (!gpu_memory_buffer->Map()) {
-      LOG(ERROR) << "Failed to map GPU memory buffer!";
+    if (!gbm_buffer->Map()) {
+      LOG(ERROR) << "Failed to map GBM buffer!";
       return nullptr;
     }
 
-    return std::make_unique<GpuMemoryBufferMapping>(
-        std::move(gpu_memory_buffer_manager), std::move(gpu_memory_buffer));
+    return std::make_unique<GbmBufferMapping>(std::move(gbm_buffer_manager),
+                                              std::move(gbm_buffer));
   }
 
-  GpuMemoryBufferMapping(
-      std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer)
-      : gpu_memory_buffer_manager_(std::move(gpu_memory_buffer_manager)),
-        gpu_memory_buffer_(std::move(gpu_memory_buffer)) {}
+  GbmBufferMapping(std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager,
+                   std::unique_ptr<TestGbmBuffer> gbm_buffer)
+      : gbm_buffer_manager_(std::move(gbm_buffer_manager)),
+        gbm_buffer_(std::move(gbm_buffer)) {}
 
-  ~GpuMemoryBufferMapping() override { gpu_memory_buffer_->Unmap(); }
+  ~GbmBufferMapping() override { gbm_buffer_->Unmap(); }
 
   raw_ptr<uint8_t> GetData(size_t plane_idx) const override {
-    return static_cast<uint8_t*>(gpu_memory_buffer_->memory(plane_idx));
+    return static_cast<uint8_t*>(gbm_buffer_->memory(plane_idx));
   }
 
   int GetStride(size_t plane_idx) const override {
-    return gpu_memory_buffer_->stride(plane_idx);
+    return gbm_buffer_->stride(plane_idx);
   }
 
-  gfx::Size GetSize() const override { return gpu_memory_buffer_->GetSize(); }
+  gfx::Size GetSize() const override { return gbm_buffer_->GetSize(); }
 
  private:
   // It's very important these two objects are initialized in this order,
   // because C++ guarantees they will be destroyed in the reverse order.
-  // Unfortunately, the destructor for GpuMemoryBuffer calls the GBM device that
-  // gets destroyed by the LocalGpuMemoryBufferManager destructor, so there is
-  // an order we need to do this in to prevent a segfault.
-  const std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager_;
-  const std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  // Unfortunately, the destructor for TestGbmBuffer calls the GBM
+  // device that gets destroyed by the TestGbmBufferManager destructor,
+  // so there is an order we need to do this in to prevent a segfault.
+  const std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager_;
+  const std::unique_ptr<TestGbmBuffer> gbm_buffer_;
 };
 
 class Tile4Mapping : public NativePixmapMapping {
@@ -216,7 +210,7 @@ class Tile4Mapping : public NativePixmapMapping {
   static std::unique_ptr<Tile4Mapping> CreateTile4Mapping(
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
-      const gfx::BufferFormat& format) {
+      viz::SharedImageFormat format) {
     size_t plane_strides[2];
     size_t plane_sizes[2];
     uint8_t* plane_addrs[2];
@@ -240,24 +234,23 @@ class Tile4Mapping : public NativePixmapMapping {
     CHECK_EQ(handle.modifier, I915_FORMAT_MOD_4_TILED);
     handle.modifier = gfx::NativePixmapHandle::kNoModifier;
 
-    LocalGpuMemoryBufferManager gpu_memory_buffer_manager;
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-        gpu_memory_buffer_manager.ImportDmaBuf(handle, size, format);
+    TestGbmBufferManager gbm_buffer_manager;
+    std::unique_ptr<TestGbmBuffer> gbm_buffer =
+        gbm_buffer_manager.ImportDmaBuf(handle, size, format);
 
-    if (!gpu_memory_buffer->Map()) {
-      LOG(ERROR) << "Failed to map GPU memory buffer!";
+    if (!gbm_buffer->Map()) {
+      LOG(ERROR) << "Failed to map GBM buffer!";
       return nullptr;
     }
 
     CHECK_EQ(handle.planes.size(), 2u);
     for (size_t plane_idx = 0; plane_idx < handle.planes.size(); plane_idx++) {
-      int width = plane_strides[plane_idx];
-      int height = plane_sizes[plane_idx] / width;
-      const uint8_t* src =
-          static_cast<uint8_t*>(gpu_memory_buffer->memory(plane_idx));
+      int width = UNSAFE_TODO(plane_strides[plane_idx]);
+      int height = UNSAFE_TODO(plane_sizes[plane_idx]) / width;
+      const uint8_t* src = static_cast<uint8_t*>(gbm_buffer->memory(plane_idx));
       uint8_t* dest = static_cast<uint8_t*>(
-          mmap(nullptr, plane_sizes[plane_idx], PROT_READ | PROT_WRITE,
-               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+          mmap(nullptr, UNSAFE_TODO(plane_sizes[plane_idx]),
+               PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
       if (dest == MAP_FAILED) {
         PLOG(ERROR) << "Failed to create detiled mapping!";
         return nullptr;
@@ -265,20 +258,20 @@ class Tile4Mapping : public NativePixmapMapping {
 
       Detile4(dest, src, width, height);
 
-      plane_addrs[plane_idx] = dest;
+      UNSAFE_TODO(plane_addrs[plane_idx]) = dest;
 
       // We don't want to give the user the impression that this mapping is
       // bidirectional. We are performing a one-off detile operation to allow
       // this Tile4 buffer to be read, but we have no way of propagating writes
       // from our temporary linear buffer to the underlying Tile4 buffer. So, we
       // mark these pages as read only.
-      if (mprotect(dest, plane_sizes[plane_idx], PROT_READ)) {
+      if (mprotect(dest, UNSAFE_TODO(plane_sizes[plane_idx]), PROT_READ)) {
         PLOG(ERROR) << "Failed to mark detiled mapping read only!";
         return nullptr;
       }
     }
 
-    gpu_memory_buffer->Unmap();
+    gbm_buffer->Unmap();
 
     handle.modifier = I915_FORMAT_MOD_4_TILED;
 
@@ -291,15 +284,15 @@ class Tile4Mapping : public NativePixmapMapping {
                size_t plane_sizes[2],
                uint8_t* plane_addrs[2])
       : size_(size),
-        plane_strides_{plane_strides[0], plane_strides[1]},
-        plane_sizes_{plane_sizes[0], plane_sizes[1]},
-        plane_addrs_{plane_addrs[0], plane_addrs[1]} {}
+        plane_strides_{UNSAFE_TODO(plane_strides[0], plane_strides[1])},
+        plane_sizes_{UNSAFE_TODO(plane_sizes[0], plane_sizes[1])},
+        plane_addrs_{UNSAFE_TODO(plane_addrs[0], plane_addrs[1])} {}
 
   ~Tile4Mapping() override {
     for (size_t plane_idx = 0; plane_idx < std::size(plane_addrs_);
          plane_idx++) {
-      munmap(static_cast<void*>(plane_addrs_[plane_idx]),
-             plane_sizes_[plane_idx]);
+      munmap(static_cast<void*>(UNSAFE_TODO(plane_addrs_[plane_idx])),
+             UNSAFE_TODO(plane_sizes_[plane_idx]));
     }
   }
 
@@ -308,7 +301,7 @@ class Tile4Mapping : public NativePixmapMapping {
       return nullptr;
     }
 
-    return plane_addrs_[plane_idx];
+    return UNSAFE_TODO(plane_addrs_[plane_idx]);
   }
 
   int GetStride(size_t plane_idx) const override {
@@ -316,7 +309,7 @@ class Tile4Mapping : public NativePixmapMapping {
       return -1;
     }
 
-    return plane_strides_[plane_idx];
+    return UNSAFE_TODO(plane_strides_[plane_idx]);
   }
 
   gfx::Size GetSize() const override { return size_; }
@@ -331,13 +324,12 @@ class Tile4Mapping : public NativePixmapMapping {
 std::unique_ptr<NativePixmapMapping> CreateNativePixmapMapping(
     gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
-    const gfx::BufferFormat& format) {
+    viz::SharedImageFormat format) {
   if (handle.modifier == I915_FORMAT_MOD_4_TILED) {
     return Tile4Mapping::CreateTile4Mapping(handle, size, format);
   }
 
-  return GpuMemoryBufferMapping::CreateGpuMemoryBufferMapping(handle, size,
-                                                              format);
+  return GbmBufferMapping::CreateGbmBufferMapping(handle, size, format);
 }
 
 struct NativePixmapDecodedImage : public DecodedImage {
@@ -352,8 +344,8 @@ struct NativePixmapDecodedImage : public DecodedImage {
     this->size = size;
 
     for (size_t plane_idx = 0; plane_idx < number_of_planes; plane_idx++) {
-      planes[plane_idx].data = mapping_->GetData(plane_idx);
-      planes[plane_idx].stride = mapping_->GetStride(plane_idx);
+      UNSAFE_TODO(planes[plane_idx].data) = mapping_->GetData(plane_idx);
+      UNSAFE_TODO(planes[plane_idx].stride) = mapping_->GetStride(plane_idx);
     }
   }
 
@@ -364,17 +356,17 @@ struct NativePixmapDecodedImage : public DecodedImage {
 std::unique_ptr<DecodedImage> NativePixmapToDecodedImage(
     gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
-    const gfx::BufferFormat& format) {
+    const viz::SharedImageFormat& format) {
   uint32_t fourcc;
   uint32_t number_of_planes;
-  if (format == gfx::BufferFormat::YVU_420) {
+  if (format == viz::MultiPlaneFormat::kYV12) {
     fourcc = VA_FOURCC_I420;
     number_of_planes = 3;
-  } else if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     fourcc = VA_FOURCC_NV12;
     number_of_planes = 2;
   } else {
-    LOG(ERROR) << "Unsupported format " << gfx::BufferFormatToString(format);
+    LOG(ERROR) << "Unsupported format " << format.ToString();
     return nullptr;
   }
 

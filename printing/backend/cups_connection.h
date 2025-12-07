@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 #include "printing/backend/cups_deleters.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/backend/cups_printer.h"

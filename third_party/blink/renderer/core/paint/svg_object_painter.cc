@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 
+#include "base/types/optional_util.h"
 #include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
 
@@ -97,12 +99,10 @@ SvgContextPaints::ContextPaint SVGObjectPainter::ResolveContextPaint(
     const SVGPaint& initial_paint) {
   switch (initial_paint.type) {
     case SVGPaintType::kContextFill:
-      DCHECK(RuntimeEnabledFeatures::SvgContextPaintEnabled());
       return context_paints_
                  ? context_paints_->fill
                  : SvgContextPaints::ContextPaint(layout_object_, SVGPaint());
     case SVGPaintType::kContextStroke:
-      DCHECK(RuntimeEnabledFeatures::SvgContextPaintEnabled());
       return context_paints_
                  ? context_paints_->stroke
                  : SvgContextPaints::ContextPaint(layout_object_, SVGPaint());

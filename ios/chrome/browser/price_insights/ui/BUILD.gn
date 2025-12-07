@@ -20,9 +20,9 @@ source_set("price_insights_ui") {
     "//base",
     "//components/strings",
     "//ios/chrome/browser/contextual_panel/ui:public",
+    "//ios/chrome/browser/price_notifications/ui_bundled/cells",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
@@ -44,6 +44,10 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 swift_source_set("price_history_swift") {
@@ -53,6 +57,7 @@ swift_source_set("price_history_swift") {
     "price_history_provider.swift",
   ]
   deps = [
+    "//ios/chrome/browser/contextual_panel/ui:public",
     "//ios/chrome/browser/price_insights/ui/resources",
     "//ios/chrome/browser/shared/public/metrics:metrics_bridge",
     "//ios/chrome/common/ui/colors",

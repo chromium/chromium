@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
@@ -15,11 +16,9 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -27,7 +26,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
@@ -54,21 +52,25 @@ bool IsValueInRange(int value, std::optional<int> max_value) {
 
 base::expected<int, ParseError> ParseValue(const base::Value::Dict& dict,
                                            std::optional<int> max_value) {
-  std::optional<int> int_value = dict.FindInt(kValue);
-  if (!int_value.has_value() || !IsValueInRange(*int_value, max_value)) {
+  const base::Value* value = dict.Find(kValue);
+  if (!value) {
     return base::unexpected(ParseError());
   }
-  return *int_value;
+
+  ASSIGN_OR_RETURN(int int_value, ParseInt(*value));
+
+  if (!IsValueInRange(int_value, max_value)) {
+    return base::unexpected(ParseError());
+  }
+  return int_value;
 }
 
-base::expected<int, AggregatableDebugReportingConfigError> ParseBudget(
-    const base::Value::Dict& dict) {
-  std::optional<int> int_value = dict.FindInt(kBudget);
-  if (!int_value.has_value() || !IsAggregatableValueInRange(*int_value)) {
-    return base::unexpected(
-        AggregatableDebugReportingConfigError::kBudgetInvalid);
+base::expected<int, ParseError> ParseBudget(const base::Value::Dict& dict) {
+  const base::Value* value = dict.Find(kBudget);
+  if (!value) {
+    return base::unexpected(ParseError());
   }
-  return *int_value;
+  return ParseAggregatableValue(*value);
 }
 
 base::expected<absl::uint128, ParseError> ParseKeyPiece(
@@ -170,7 +172,7 @@ ParseDebugData(base::Value::Dict& dict,
   std::optional<AggregatableDebugReportingContribution>
       unspecified_contribution;
 
-  for (std::set<std::string> unknown_types; base::Value & v : *l) {
+  for (std::set<std::string> unknown_types; base::Value& v : *l) {
     RETURN_IF_ERROR(ParseDebugDataElement(v, data, unspecified_contribution,
                                           unknown_types, max_value,
                                           parse_debug_data_type));
@@ -212,11 +214,11 @@ void SerializeConfig(base::Value::Dict& dict,
 
 bool IsValid(int budget,
              const AggregatableDebugReportingConfig::DebugData& data) {
-  if (!IsRemainingAggregatableBudgetInRange(budget)) {
+  if (!IsAggregatableBudgetInRange(budget)) {
     return false;
   }
 
-  return base::ranges::all_of(data, [&](const auto& p) {
+  return std::ranges::all_of(data, [&](const auto& p) {
     return IsValueInRange(p.second.value(), budget);
   });
 }
@@ -258,7 +260,9 @@ ParseSourceConfig(base::Value::Dict& dict) {
         AggregatableDebugReportingConfigError::kRootInvalid);
   }
 
-  ASSIGN_OR_RETURN(int budget, ParseBudget(*d));
+  ASSIGN_OR_RETURN(int budget, ParseBudget(*d), [](ParseError) {
+    return AggregatableDebugReportingConfigError::kBudgetInvalid;
+  });
 
   ASSIGN_OR_RETURN(auto config, ParseConfig(*d, budget, SourceDebugDataTypes(),
                                             &ParseSourceDebugDataType));
@@ -324,11 +328,6 @@ uint32_t AggregatableDebugReportingContribution::value() const {
 base::expected<AggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
 AggregatableDebugReportingConfig::Parse(base::Value::Dict& dict) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
-    return AggregatableDebugReportingConfig();
-  }
-
   auto parsed = ParseTriggerConfig(dict);
   if (!parsed.has_value()) {
     base::UmaHistogramEnumeration(
@@ -365,11 +364,6 @@ AggregatableDebugReportingConfig& AggregatableDebugReportingConfig::operator=(
 
 void AggregatableDebugReportingConfig::Serialize(
     base::Value::Dict& dict) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
-    return;
-  }
-
   base::Value::Dict body;
   SerializeConfig(body, *this);
   dict.Set(kAggregatableDebugReporting, std::move(body));
@@ -379,11 +373,6 @@ void AggregatableDebugReportingConfig::Serialize(
 base::expected<SourceAggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
 SourceAggregatableDebugReportingConfig::Parse(base::Value::Dict& dict) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
-    return SourceAggregatableDebugReportingConfig();
-  }
-
   auto parsed = ParseSourceConfig(dict);
   if (!parsed.has_value()) {
     base::UmaHistogramEnumeration(
@@ -433,8 +422,8 @@ SourceAggregatableDebugReportingConfig::operator=(
 
 void SourceAggregatableDebugReportingConfig::Serialize(
     base::Value::Dict& dict) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
+  // `budget_` is 0 when aggregatable debug reporting is not opted in.
+  if (budget_ == 0) {
     return;
   }
 

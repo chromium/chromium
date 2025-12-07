@@ -5,24 +5,23 @@
  /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=./config_toggle.css.js
  * #scheme=relative
+ * #include=cr-spinner-style-lit config-toggle
  * #css_wrapper_metadata_end */
 
-:host h1 {
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   color: var(--cr-primary-text-color);
+  padding: 8px 12px;
+  overflow-y: auto;
 }
 
 :host h3 {
   color: var(--cr-secondary-text-color);
-}
-
-.label {
-  font-size: 1.2em;
-  color: var(--cr-primary-text-color);
-}
-
-.config-row {
-  padding: 4px 0;
 }
 
 .action-panel {
@@ -31,12 +30,10 @@
   gap: 16px;
 }
 
-.config-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 20px;
-  grid-row-gap: 15px;
-  margin-bottom: 20px;
+.scenario-list-container {
+  flex-direction: column;
+  display: flex;
+  margin: 0 8px;
 }
 
 .loading-spinner {
@@ -47,18 +44,12 @@
 }
 
 .spinner {
-  --spinner-size: 20px;
-  mask-image: url(chrome://resources/images/throbber_small.svg);
-  mask-position: center;
-  mask-repeat: no-repeat;
-  background-color: var(--google-blue-500);
-  mask-size: var(--spinner-size) var(--spinner-size);
-  height: var(--spinner-size);
-  width: var(--spinner-size);
+  --cr-spinner-size: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .spinner {
-    background-color: var(--google-blue-300);
-  }
+<if expr="is_win">
+/** Windows system tracing -------------------------------------------------- */
+#system-tracing-shield {
+  padding-inline-start: 12px;
 }
+</if>

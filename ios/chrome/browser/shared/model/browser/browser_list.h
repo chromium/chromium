@@ -22,9 +22,9 @@ class Browser;
 // This service doesn't modify the lifetimes of Browser objects; it keeps (and
 // vends) only weak pointers to them.
 //
-// There's a single service instance for both regular and OTR browser states;
-// fetching the service for the OTR browser state will return the regular
-// browser state's service instance.
+// There's a single service instance for both regular and OTR profiles;
+// fetching the service for the OTR profile will return the regular
+// profile's service instance.
 class BrowserList final : public KeyedService, public BrowserObserver {
  public:
   enum class BrowserType {
@@ -32,6 +32,18 @@ class BrowserList final : public KeyedService, public BrowserObserver {
     kInactive,
     kIncognito,
     kRegularAndInactive,
+    kRegularAndIncognito,
+
+    // This iterate over absolutely all Browsers, including the inactive
+    // ones. As the inactive Browser does not force the realization of its
+    // active WebState, this WebState may not have any tab helpers leading
+    // to crashes if the code expect them to exists.
+    //
+    // Prefer to use kRegularAndIncognito instead which is likely a better
+    // fit for your feature (unless you know all the limitation of working
+    // with inactive Browser).
+    //
+    // See https://crbug.com/432020830 for details.
     kAll,
   };
 

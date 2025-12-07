@@ -6,7 +6,7 @@ package org.chromium.android_browsertests_apk;
 
 import android.content.Intent;
 
-import org.chromium.base.test.util.UrlUtils;
+import org.chromium.base.PathUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.native_test.NativeBrowserTest;
@@ -18,7 +18,7 @@ import java.io.File;
 public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     private static final String TAG = "browser_test";
 
-    private NativeTest mTest = new NativeTest();
+    private final NativeTest mTest = new NativeTest();
 
     @Override
     public void performPreInflationStartup() {
@@ -37,7 +37,15 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         mTest.appendCommandLineFlags(
                 "--remote-debugging-socket-name android_browsertests_devtools_remote");
 
-        NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
+        // Explicitly set the "--user-data-dir" switch to a private data dir
+        // so that c++ test won't create the temp dir.
+        // This is to keep the private data dir when needed, e.g. PRE tests.
+        String userDataDirFlag = "--user-data-dir=" + getPrivateDataDirectory();
+        mTest.appendCommandLineFlags(userDataDirFlag);
+
+        if (!mTest.shouldKeepUserDataDir()) {
+            NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
+        }
 
         // Replace ContentMain() with running our NativeTest suite.
         BrowserStartupController.getInstance()
@@ -67,26 +75,32 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     }
 
     /**
-     * This is the point at which Java initialization tasks are done and tests can be run.
-     * While mTest.postStart() runs the test harness, it waits for Java initialization
-     * tasks, and this signals that they are done.
+     * This is the point at which Java initialization tasks are done and tests can be run. While
+     * mTest.postStart() runs the test harness, it waits for Java initialization tasks, and this
+     * signals that they are done.
      */
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
+        NativeBrowserTest.setActivityTeardownCallback(() -> finishAndRemoveTask());
         NativeBrowserTest.javaStartupTasksComplete();
     }
 
     private File getPrivateDataDirectory() {
-        // TODO(agrieve): We should not be touching the side-loaded test data directory.
-        //     https://crbug.com/617734
         return new File(
-                UrlUtils.getIsolatedTestRoot(),
+                PathUtils.getDataDirectory(),
                 ChromeBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
     }
 
     @Override
+    public void onDestroyInternal() {
+        super.onDestroyInternal();
+        NativeBrowserTest.activityTeardownComplete();
+    }
+
+    @Override
     public void recreate() {
+        super.recreate();
         throw new AssertionError(
                 "Unexpected call of recreate() in "
                         + TAG

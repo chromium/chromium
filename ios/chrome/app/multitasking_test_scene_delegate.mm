@@ -8,7 +8,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/chrome_overlay_window.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
 namespace {
 
@@ -85,9 +85,9 @@ const CGFloat kWidthLandscapeSplitViewOnLargeIPad = 678.0;
       size.height = kRegularIPadPortraitSize.width;
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unsupported multitasking test mode. Only "
-                                 "--enable-slide-over-test-mode and "
-                                 "--enable-split-view-test-mode are supported.";
+    NOTREACHED() << "Unsupported multitasking test mode. Only "
+                    "--enable-slide-over-test-mode and "
+                    "--enable-split-view-test-mode are supported.";
   }
   return size;
 }

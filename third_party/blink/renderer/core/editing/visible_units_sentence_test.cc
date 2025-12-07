@@ -91,10 +91,8 @@ TEST_F(VisibleUnitsSentenceTest, startOfSentence) {
 
 TEST_F(VisibleUnitsSentenceTest, SentenceBoundarySkipTextControl) {
   SetBodyContent("foo <input value=\"xx. xx.\"> bar.");
-  const Node* foo =
-      GetDocument().QuerySelector(AtomicString("input"))->previousSibling();
-  const Node* bar =
-      GetDocument().QuerySelector(AtomicString("input"))->nextSibling();
+  const Node* foo = QuerySelector("input")->previousSibling();
+  const Node* bar = QuerySelector("input")->nextSibling();
 
   EXPECT_EQ(Position(bar, 5), EndOfSentence(Position(foo, 1)).GetPosition());
   EXPECT_EQ(PositionInFlatTree(bar, 5),

@@ -5,11 +5,9 @@
 #ifndef ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
 #define ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#error "Ash-only"
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace ash {
 
@@ -55,7 +53,7 @@ enum class SystemWebAppType {
   // You can find information about this SWA at: http://go/shimless-ux.
   //
   // Source: //ash/webui/shimless_rma/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   SHIMLESS_RMA = 17,
 
   // A System Web App that launches on Demo Mode startup, to display animated
@@ -72,7 +70,7 @@ enum class SystemWebAppType {
   // feedback report on Chrome OS.
   //
   // Source: //ash/webui/os_feedback_ui
-  // contact: cros-feedback-app@google.com
+  // contact: cros-device-enablement@google.com
   OS_FEEDBACK = 19,
 
   // Projector aka Screencast (go/projector-player-dd) aims to make it simple
@@ -88,17 +86,14 @@ enum class SystemWebAppType {
   // will have a mock page.
   PROJECTOR = 20,
 
-  // OsUrlHandler is called by Lacros to show Ash internal chrome:// pages as
-  // applications to the user. Note that these pages are accessible to the user
-  // as os://<page> through search.
-  // contact: skuhne@google.com
-  OS_URL_HANDLER = 21,
+  // OsUrlHandler was removed.
+  // OS_URL_HANDLER = 21,
 
   // FIRMWARE UPDATE App is SWA that lets users update all their peripheral
   // firmwares in one place.
   // You can find information about this SWA at: http://go/fwupd-app.
   // Source: //ash/webui/firmware_update/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   FIRMWARE_UPDATE = 22,
 
   // OsFlags is called by Lacros to show the chrome://flags page as
@@ -118,7 +113,7 @@ enum class SystemWebAppType {
 
   // CrOS implementation of the print preview surface.
   // Source: //ash/webui/print_preview_cros/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   PRINT_PREVIEW_CROS = 26,
 
   // Boca implementation.
@@ -142,6 +137,12 @@ enum class SystemWebAppType {
   // Source: //ash/webui/recorder_app_ui/
   // Contact: chromeos-recorder-app@google.com
   RECORDER = 30,
+
+  // Graduation app for ChromeOS EDU users.
+  //
+  // Source: //ash/webui/graduation_ui/
+  // Contact: cros-families-eng@google.com
+  GRADUATION = 31,
 
   // When adding a new System App, remember to:
   //
@@ -182,7 +183,7 @@ enum class SystemWebAppType {
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = RECORDER,
+  kMaxValue = GRADUATION,
 };
 
 }  // namespace ash

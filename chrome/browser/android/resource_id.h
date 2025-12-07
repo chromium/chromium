@@ -43,14 +43,14 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
                  R.drawable.google_pay_with_divider)
 
 // Android only messages (an alternative UI to infobars)
-DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_VIDEOCAM,
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
                     R.drawable.ic_videocam_24dp)
-DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
-                    R.drawable.ic_storage)
-DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                     R.drawable.ic_photo_camera_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_XR,
                     R.drawable.gm_filled_cardboard_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_HAND_TRACKING,
+                    R.drawable.gm_filled_hand_gesture_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SETTINGS, R.drawable.settings_cog)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD_BLUE,
                     R.drawable.blue_google_shield)
@@ -58,7 +58,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD_GRAY, R.drawable.gray_shield)
 DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR,
                     R.drawable.ic_key_error)
 DECLARE_RESOURCE_ID(IDR_ANDROID_IC_MOBILE_FRIENDLY,
-                    R.drawable.ic_mobile_friendly)
+                    R.drawable.ic_mobile_friendly_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_LOCATION_OFF,
                     R.drawable.permission_location_off)
 
@@ -86,6 +86,10 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS,
 // We use PNG files for the following images.
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_BACK, R.drawable.cvc_icon)
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX, R.drawable.cvc_icon_amex)
+
+// A generic info outline icon.
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFO_OUTLINE_LOGO_24DP,
+                    R.drawable.ic_info_outline_grey_24dp)
 
 // About this site resources
 // Page insights logo is used for Google branded builds only.

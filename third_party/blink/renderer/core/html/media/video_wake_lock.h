@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_VIDEO_WAKE_LOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_VIDEO_WAKE_LOCK_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -58,6 +57,12 @@ class CORE_EXPORT VideoWakeLock final
   bool active_for_tests() const { return active_; }
   float GetSizeThresholdForTests() const;
   bool HasStrictWakeLockForTests() const;
+
+  // Anecdotally, most screen timeouts are at least 5s, so we don't need high
+  // frequency intersection updates. Choose a value such that we're never more
+  // than 5s apart w/ a 100ms of delivery leeway.
+  static constexpr base::TimeDelta kIntersectionObserverDelay =
+      base::Milliseconds(5000 / 2 - 100);
 
  private:
   friend class VideoWakeLockTest;

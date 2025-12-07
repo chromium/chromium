@@ -15,12 +15,10 @@ class CORE_EXPORT CSSValueClampingUtils {
 
  public:
   static double ClampDouble(double value);
-  static double ClampAngle(double value);
   static double ClampLength(double value);
-  static double ClampTime(double value);
   static float ClampLength(float value);
-  // TODO(crbug.com/1133390): The clamping functions for specific properties
-  // (i.e. <angle> .. ) will be added.
+  static double ClampTime(double value);
+  static double ClampAngle(double value);
 };
 
 }  // namespace blink

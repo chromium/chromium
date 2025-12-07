@@ -4,11 +4,11 @@
 
 #include "components/password_manager/core/browser/generation/password_generator.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -43,13 +43,12 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
   // Symbols are not covered because there is not fixed definition and because
   // symbols are treated like other character classes, so the importance of
   // dealing with them here is limited.
-  NOTREACHED_IN_MIGRATION() << "Don't call IsCharInClass for symbols";
-  return false;
+  NOTREACHED() << "Don't call IsCharInClass for symbols";
 }
 
 size_t CountCharsInClass(const std::u16string& password,
                          const std::string& class_name) {
-  return base::ranges::count_if(password, [&class_name](char16_t c) {
+  return std::ranges::count_if(password, [&class_name](char16_t c) {
     return IsCharInClass(c, class_name);
   });
 }
@@ -68,8 +67,7 @@ PasswordRequirementsSpec_CharacterClass* GetMutableCharClass(
   } else if (class_name == kSymbol) {
     return spec->mutable_symbols();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 class PasswordGeneratorTest : public testing::Test {
@@ -314,12 +312,8 @@ TEST_F(PasswordGeneratorTest, ZeroLength) {
 class PasswordGeneratorChunkingTest : public testing::Test {
  public:
   PasswordGeneratorChunkingTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{password_manager::features::
-                                   kPasswordGenerationExperiment,
-                               {{"password_generation_variation",
-                                 "chunk_password"}}}},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordGenerationChunking);
   }
   ~PasswordGeneratorChunkingTest() override = default;
 

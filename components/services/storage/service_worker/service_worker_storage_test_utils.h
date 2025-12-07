@@ -7,10 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
-#include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
 namespace storage {

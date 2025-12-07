@@ -70,9 +70,6 @@ class PLATFORM_EXPORT ImageOrientation final {
   inline bool operator==(const ImageOrientation& other) const {
     return other.orientation_ == orientation_;
   }
-  inline bool operator!=(const ImageOrientation& other) const {
-    return !(*this == other);
-  }
 
   ImageOrientationEnum Orientation() const { return orientation_; }
 

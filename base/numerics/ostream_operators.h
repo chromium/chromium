@@ -6,13 +6,16 @@
 #define BASE_NUMERICS_OSTREAM_OPERATORS_H_
 
 #include <ostream>
+#include <type_traits>
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class ClampedNumeric;
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class StrictNumeric;
 
 // Overload the ostream output operator to make logging work nicely.
@@ -29,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const ClampedNumeric<T>& value) {
   return os;
 }
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_OSTREAM_OPERATORS_H_

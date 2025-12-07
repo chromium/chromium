@@ -157,7 +157,7 @@ function runTests()
         try {
             importScripts(source1, {toString: function() { throw new Error("user error"); }}, source2);
         } catch (e) {
-            if (e.message == "user error")
+            if (e.message.includes("user error"))
                 postMessage("PASS: User error recieved in toString");
             else
                 postMessage("FAIL: Unexpected error: " + e);

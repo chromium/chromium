@@ -18,6 +18,8 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
+class Profile;
+
 namespace extensions {
 class ExtensionViewHost;
 }
@@ -43,7 +45,7 @@ class ExtensionViewViews : public views::WebView,
     virtual void OnViewDestroying() = 0;
   };
 
-  explicit ExtensionViewViews(extensions::ExtensionViewHost* host);
+  ExtensionViewViews(Profile* profile, extensions::ExtensionViewHost* host);
   ExtensionViewViews(const ExtensionViewViews&) = delete;
   ExtensionViewViews& operator=(const ExtensionViewViews&) = delete;
   ~ExtensionViewViews() override;

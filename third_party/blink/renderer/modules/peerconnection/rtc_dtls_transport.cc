@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_transport_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -27,22 +29,24 @@
 namespace blink {
 
 namespace {
-String TransportStateToString(webrtc::DtlsTransportState state) {
+V8RTCDtlsTransportState::Enum TransportStateToEnum(
+    webrtc::DtlsTransportState state) {
   switch (state) {
     case webrtc::DtlsTransportState::kNew:
-      return String("new");
+      return V8RTCDtlsTransportState::Enum::kNew;
     case webrtc::DtlsTransportState::kConnecting:
-      return String("connecting");
+      return V8RTCDtlsTransportState::Enum::kConnecting;
     case webrtc::DtlsTransportState::kConnected:
-      return String("connected");
+      return V8RTCDtlsTransportState::Enum::kConnected;
     case webrtc::DtlsTransportState::kClosed:
-      return String("closed");
+      return V8RTCDtlsTransportState::Enum::kClosed;
     case webrtc::DtlsTransportState::kFailed:
-      return String("failed");
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return String("failed");
+      return V8RTCDtlsTransportState::Enum::kFailed;
+    case webrtc::DtlsTransportState::kNumValues:
+      // Should not happen.
+      break;
   }
+  NOTREACHED();
 }
 
 std::unique_ptr<DtlsTransportProxy> CreateProxy(
@@ -63,7 +67,7 @@ std::unique_ptr<DtlsTransportProxy> CreateProxy(
 
 RTCDtlsTransport::RTCDtlsTransport(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport,
+    webrtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport,
     RTCIceTransport* ice_transport)
     : ExecutionContextClient(context),
       current_state_(webrtc::DtlsTransportState::kNew),
@@ -73,11 +77,11 @@ RTCDtlsTransport::RTCDtlsTransport(
 
 RTCDtlsTransport::~RTCDtlsTransport() {}
 
-String RTCDtlsTransport::state() const {
+V8RTCDtlsTransportState RTCDtlsTransport::state() const {
   if (closed_from_owner_) {
-    return TransportStateToString(webrtc::DtlsTransportState::kClosed);
+    return V8RTCDtlsTransportState(V8RTCDtlsTransportState::Enum::kClosed);
   }
-  return TransportStateToString(current_state_.state());
+  return V8RTCDtlsTransportState(TransportStateToEnum(current_state_.state()));
 }
 
 const HeapVector<Member<DOMArrayBuffer>>&
@@ -133,31 +137,26 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
   // If the certificates have changed, copy them as DOMArrayBuffers.
   // This makes sure that getRemoteCertificates() == getRemoteCertificates()
   if (current_state_.remote_ssl_certificates()) {
-    const rtc::SSLCertChain* certs = current_state_.remote_ssl_certificates();
+    const webrtc::SSLCertChain* certs =
+        current_state_.remote_ssl_certificates();
     if (certs->GetSize() != remote_certificates_.size()) {
       remote_certificates_.clear();
       for (size_t i = 0; i < certs->GetSize(); i++) {
         auto& cert = certs->Get(i);
-        rtc::Buffer der_cert;
+        webrtc::Buffer der_cert;
         cert.ToDER(&der_cert);
-        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(
-            der_cert.data(), static_cast<unsigned int>(der_cert.size()));
+        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(der_cert);
         remote_certificates_.push_back(dab_cert);
       }
     } else {
       // Replace certificates that have changed, if any
-      for (WTF::wtf_size_t i = 0; i < certs->GetSize(); i++) {
+      for (wtf_size_t i = 0; i < certs->GetSize(); i++) {
         auto& cert = certs->Get(i);
-        rtc::Buffer der_cert;
+        webrtc::Buffer der_cert;
         cert.ToDER(&der_cert);
-        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(
-            der_cert.data(), static_cast<unsigned int>(der_cert.size()));
         // Don't replace the certificate if it's unchanged.
-        // Should have been "if (*dab_cert != *remote_certificates_[i])"
-        if (dab_cert->ByteLength() != remote_certificates_[i]->ByteLength() ||
-            memcmp(dab_cert->Data(), remote_certificates_[i]->Data(),
-                   dab_cert->ByteLength()) != 0) {
-          remote_certificates_[i] = dab_cert;
+        if (base::span(der_cert) != remote_certificates_[i]->ByteSpan()) {
+          remote_certificates_[i] = DOMArrayBuffer::Create(der_cert);
         }
       }
     }

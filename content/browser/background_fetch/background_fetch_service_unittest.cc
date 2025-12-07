@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,6 +44,11 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
+
 namespace content {
 namespace {
 
@@ -66,7 +71,7 @@ blink::Manifest::ImageResource CreateIcon(const std::string& src,
 
 bool ContainsHeader(const base::flat_map<std::string, std::string>& headers,
                     const std::string& target) {
-  return base::ranges::any_of(headers, [target](const auto& pair) {
+  return std::ranges::any_of(headers, [target](const auto& pair) {
     return base::EqualsCaseInsensitiveASCII(pair.first, target);
   });
 }
@@ -305,7 +310,9 @@ class BackgroundFetchServiceTest
     std::unique_ptr<MockPermissionManager> mock_permission_manager(
         new testing::NiceMock<MockPermissionManager>());
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatus(blink::PermissionType::BACKGROUND_FETCH, _, _))
+            GetPermissionStatus(
+                PermissionTypeMatcher(blink::PermissionType::BACKGROUND_FETCH),
+                _, _))
         .WillByDefault(
             testing::Return(blink::mojom::PermissionStatus::GRANTED));
     browser_context()->SetPermissionControllerDelegate(
@@ -683,7 +690,7 @@ TEST_F(BackgroundFetchServiceTest, FetchSuccessEventDispatch) {
         EXPECT_FALSE(ContainsHeader(fetches[i]->response->headers, "X-Cat"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // TODO(peter): change-detector tests for unsupported properties.
@@ -787,7 +794,7 @@ TEST_F(BackgroundFetchServiceTest, FetchFailEventDispatch) {
         EXPECT_FALSE(fetches[i]->response);
         continue;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     EXPECT_TRUE(fetches[i]->response->headers.empty());

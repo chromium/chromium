@@ -5,8 +5,10 @@
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -64,7 +66,7 @@ DrmOverlayPlane::DrmOverlayPlane(
           buffer,
           overlay_plane_data.color_space,
           overlay_plane_data.z_order,
-          absl::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform),
+          std::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform),
           overlay_plane_data.damage_rect,
           gfx::ToNearestRect(overlay_plane_data.display_bounds),
           overlay_plane_data.crop_rect,

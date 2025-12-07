@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
@@ -127,10 +126,11 @@ void ManifestUpdateCheckCommand::DownloadNewManifestData(
       base::BindOnce(&ManifestUpdateCheckCommand::StashNewManifestJson,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommand::DownloadNewIconBitmaps,
-                     GetWeakPtr()),
+      base::BindOnce(
+          &ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo,
+          GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommand::StashNewIconBitmaps,
+      base::BindOnce(&ManifestUpdateCheckCommand::ValidateAndStashWebAppInfo,
                      GetWeakPtr()),
 
       base::BindOnce(&ManifestUpdateCheckCommand::ValidateNewScopeExtensions,
@@ -176,24 +176,20 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppNotEligible);
     return;
   }
-  DCHECK(opt_manifest);
-  CHECK(!new_install_info_);
+  CHECK(opt_manifest);
 
-  new_install_info_ = std::make_unique<WebAppInstallInfo>(
-      CreateWebAppInfoFromManifest(*opt_manifest));
-
-  if (app_id_ !=
-      GenerateAppIdFromManifestId(new_install_info_->manifest_id())) {
+  if (app_id_ != GenerateAppIdFromManifestId(opt_manifest->id)) {
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppIdMismatch);
     return;
   }
 
+  opt_manifest_ = std::move(opt_manifest);
   std::move(next_step_callback).Run();
 }
 
-void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
-    WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+void ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo(
+    WebAppInstallInfoCreationCallback creation_callback) {
+  CHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
@@ -201,34 +197,35 @@ void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
     return;
   }
 
-  CHECK(new_install_info_);
-  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*new_install_info_);
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.fail_all_if_any_fail = true;
+  construct_options.record_icon_results_on_update = true;
+  construct_options.use_manifest_icons_as_trusted =
+      lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
 
-  IconDownloaderOptions options = {.skip_page_favicons = true,
-                                   .fail_all_if_any_fail = true};
-  icon_downloader_->Start(web_contents_.get(), icon_urls,
-                          std::move(next_step_callback), options);
+  // The `background_installation` and `install_source` fields here don't matter
+  // because this is not logged anywhere.
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *opt_manifest_, *data_retriever_.get(),
+          /*background_installation=*/false,
+          webapps::WebappInstallSource::MENU_BROWSER_TAB, web_contents_,
+          [](IconUrlSizeSet&) {}, GetMutableDebugValue(),
+          std::move(creation_callback), construct_options);
 }
 
-void ManifestUpdateCheckCommand::StashNewIconBitmaps(
+void ManifestUpdateCheckCommand::ValidateAndStashWebAppInfo(
     base::OnceClosure next_step_callback,
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  CHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+  CHECK(!new_install_info_);
+  new_install_info_ = std::move(install_info);
 
-  GetMutableDebugValue().Set("icon_download_result", base::ToString(result));
-
-  RecordIconDownloadMetrics(result, icons_http_results);
-
-  if (result != IconsDownloadedResult::kCompleted) {
+  if (new_install_info_->is_generated_icon) {
     CompleteCommandAndSelfDestruct(
         ManifestUpdateCheckResult::kIconDownloadFailed);
     return;
   }
-
-  PopulateOtherIcons(new_install_info_.get(), icons_map);
-  PopulateProductIcons(new_install_info_.get(), &icons_map);
 
   std::move(next_step_callback).Run();
 }
@@ -303,16 +300,17 @@ void ManifestUpdateCheckCommand::LoadExistingAppIcons(
 
 void ManifestUpdateCheckCommand::StashExistingAppIcons(
     base::OnceClosure next_step_callback,
-    IconBitmaps icon_bitmaps) {
+    WebAppIconManager::WebAppBitmaps icon_bitmaps) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
 
-  if (icon_bitmaps.empty()) {
+  if (icon_bitmaps.manifest_icons.empty()) {
     CompleteCommandAndSelfDestruct(
         ManifestUpdateCheckResult::kIconReadFromDiskFailed);
     return;
   }
 
-  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
+  existing_app_icon_bitmaps_ = std::move(icon_bitmaps.manifest_icons);
+  existing_app_icon_trusted_bitmaps_ = std::move(icon_bitmaps.trusted_icons);
   std::move(next_step_callback).Run();
 }
 
@@ -418,14 +416,13 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
   // Web apps that were installed by sync but have generated icons get a window
   // of time where they can "fix" themselves silently to use the site provided
   // icons.
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppSyncGeneratedIconUpdateFix) &&
-      web_app.is_generated_icon() &&
+  if (web_app.is_generated_icon() &&
       web_app.latest_install_source() == webapps::WebappInstallSource::SYNC &&
       generated_icon_fix_util::IsWithinFixTimeWindow(web_app)) {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     generated_icon_fix_util::EnsureFixTimeWindowStarted(
-        *lock_, update, app_id_, GeneratedIconFixSource_MANIFEST_UPDATE);
+        *lock_, update, app_id_,
+        proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 
@@ -483,7 +480,7 @@ void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
       /*icon_change=*/
       manifest_data_changes_.app_icon_identity_change.has_value(),
       /*old_title=*/base::UTF8ToUTF16(GetWebApp().untranslated_name()),
-      /*new_title=*/new_install_info_->title,
+      /*new_title=*/new_install_info_->title.value(),
       /*old_icon=*/*before_icon,
       /*new_icon=*/*after_icon, web_contents_.get(),
       base::BindOnce(
@@ -538,7 +535,10 @@ void ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded() {
     // struct to make this a single assignment and less likely to miss fields as
     // they get added in future.
     new_install_info_->manifest_icons = web_app.manifest_icons();
+    new_install_info_->trusted_icons = web_app.trusted_icons();
     new_install_info_->icon_bitmaps = existing_app_icon_bitmaps_;
+    new_install_info_->trusted_icon_bitmaps =
+        existing_app_icon_trusted_bitmaps_;
     new_install_info_->is_generated_icon = web_app.is_generated_icon();
     new_install_info_->generated_icon_fix = web_app.generated_icon_fix();
     manifest_data_changes_.app_icon_identity_change.reset();
@@ -588,7 +588,7 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
       case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
         return CommandResult::kFailure;
       case ManifestUpdateCheckResult::kSystemShutdown:
-        NOTREACHED_NORETURN() << "This should be handled by OnShutdown()";
+        NOTREACHED() << "This should be handled by OnShutdown()";
     }
   }();
 

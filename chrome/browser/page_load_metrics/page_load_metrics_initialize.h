@@ -9,11 +9,7 @@ namespace content {
 class WebContents;
 }
 
-namespace chrome {
-
 void InitializePageLoadMetricsForWebContents(
     content::WebContents* web_contents);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_PAGE_LOAD_METRICS_INITIALIZE_H_

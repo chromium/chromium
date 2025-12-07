@@ -9,9 +9,9 @@
 
 #include "base/sequence_checker.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
+#include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_decoder.h"
-#include "chromecast/starboard/media/media/starboard_resampler.h"
 
 namespace chromecast {
 namespace media {
@@ -40,8 +40,11 @@ class StarboardAudioDecoder : public StarboardDecoder,
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
   int GetStartThresholdInFrames() override;
 
+  // StarboardDecoder implementation:
+  std::optional<EncryptionScheme> GetEncryptionScheme() override;
+
  private:
-  // StarboardDecoder impl:
+  // StarboardDecoder implementation:
   void InitializeInternal() override;
 
   SEQUENCE_CHECKER(sequence_checker_);

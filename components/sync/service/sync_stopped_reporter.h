@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_STOPPED_REPORTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/timer/timer.h"
@@ -32,7 +33,7 @@ class SyncStoppedReporter {
   ~SyncStoppedReporter();
 
   // Inform the sync server that sync was stopped on this device.
-  // |access_token|, |cache_guid|, and |birthday| must not be empty.
+  // `access_token`, `cache_guid`, and `birthday` must not be empty.
   void ReportSyncStopped(const std::string& access_token,
                          const std::string& cache_guid,
                          const std::string& birthday);
@@ -45,7 +46,7 @@ class SyncStoppedReporter {
   // Callback for a request timing out.
   void OnTimeout();
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Handles timing out requests.
   base::OneShotTimer timer_;

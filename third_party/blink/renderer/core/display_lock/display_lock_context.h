@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 
+#include <array>
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -90,24 +90,42 @@ class CORE_EXPORT DisplayLockContext final
 
   // Lifecycle state functions.
   ALWAYS_INLINE bool ShouldStyleChildren() const {
+    // Any of the following allows style:
+    // - This isn't locked.
+    // - Style and layout tree are forced for this lock.
+    // - This is an activatable lock and all activatable locks are forced.
+    // - This is content-visibility: auto within an element with a non-none
+    //   scroll-marker-group property.
+    // - This is an activatable for a11y lock and a11y is enabled.
     return !is_locked_ ||
            forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
            (IsActivatable(DisplayLockActivationReason::kAny) &&
             ActivatableDisplayLocksForced()) ||
+           (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
            (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-            document_->ExistingAXObjectCache());
+            IsScreenReaderActive());
   }
 
   void DidStyleSelf();
   void DidStyleChildren();
   ALWAYS_INLINE bool ShouldLayoutChildren() const {
+    // Any of the following allows layout:
+    // - This isn't locked.
+    // - Layout is forced for this lock.
+    // - This is an activatable lock and all activatable locks are forced.
+    // - We're doing a container query, and one of the following is true:
+    //   - This is content-visibility: auto within an element with a non-none
+    //     scroll-marker-group property.
+    //   - This is an activatable for a11y lock and a11y is enabled.
+    // TODO(400977357): Optimize layout for the scroll-marker-group cases.
     return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
            (IsActivatable(DisplayLockActivationReason::kAny) &&
             ActivatableDisplayLocksForced()) ||
-           (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-            document_->ExistingAXObjectCache() &&
-            document_->GetStyleEngine().SkippedContainerRecalc());
+           (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
+           ShouldActivateForScreenReader();
   }
+
+  bool ShouldActivateForScreenReader() const;
   void DidLayoutChildren();
   ALWAYS_INLINE bool ShouldPrePaintChildren() const {
     return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
@@ -189,11 +207,14 @@ class CORE_EXPORT DisplayLockContext final
 
   void SetNeedsPrePaintSubtreeWalk(
       bool needs_effective_allowed_touch_action_update,
-      bool needs_blocking_wheel_event_handler_update) {
+      bool needs_blocking_wheel_event_handler_update,
+      bool needs_soft_navigation_context_update) {
     needs_effective_allowed_touch_action_update_ =
         needs_effective_allowed_touch_action_update;
     needs_blocking_wheel_event_handler_update_ =
         needs_blocking_wheel_event_handler_update;
+    needs_soft_navigation_context_update_ =
+        needs_soft_navigation_context_update;
     needs_prepaint_subtree_walk_ = true;
   }
 
@@ -252,6 +273,16 @@ class CORE_EXPORT DisplayLockContext final
   // Computes whether there is a descendant that is the anchor target of
   // an OOF positioned element from outside the display lock's subtree.
   bool DescendantIsAnchorTargetFromOutsideDisplayLock();
+
+  // Sets whether this lock is in a subtree of an element with a
+  // scroll-marker-group non-none property. This is set after setting the
+  // requested state of the lock. Note that this affects whether auto locks
+  // process style and layout, but does not affect whether the context is
+  // unlocked.
+  void SetHasScrollerWithScrollMarkerGroup(bool flag) {
+    render_affecting_state_[static_cast<int>(
+        RenderAffectingState::kHasScrollerWithScrollMarkerGroup)] = flag;
+  }
 
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
@@ -391,6 +422,15 @@ class CORE_EXPORT DisplayLockContext final
   void ScheduleStateChangeEventIfNeeded();
   void DispatchStateChangeEventIfNeeded();
 
+  // Returns true if this lock is within an element with a non-none
+  // scroll-marker-group property.
+  ALWAYS_INLINE bool HasScrollerWithScrollMarkerGroup() const {
+    return render_affecting_state_[static_cast<int>(
+        RenderAffectingState::kHasScrollerWithScrollMarkerGroup)];
+  }
+
+  bool IsScreenReaderActive() const;
+
   WeakMember<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
@@ -400,8 +440,7 @@ class CORE_EXPORT DisplayLockContext final
     bool is_forced(ForcedPhase phase) const {
       switch (phase) {
         case ForcedPhase::kNone:
-          NOTREACHED_IN_MIGRATION();
-          return false;
+          NOTREACHED();
         case ForcedPhase::kStyleAndLayoutTree:
           return style_update_forced_ || layout_update_forced_ ||
                  prepaint_update_forced_;
@@ -460,6 +499,7 @@ class CORE_EXPORT DisplayLockContext final
 
   bool needs_effective_allowed_touch_action_update_ = false;
   bool needs_blocking_wheel_event_handler_update_ = false;
+  bool needs_soft_navigation_context_update_ = false;
   bool needs_prepaint_subtree_walk_ = false;
   bool needs_compositing_dependent_flag_update_ = false;
 
@@ -508,14 +548,16 @@ class CORE_EXPORT DisplayLockContext final
     kSubtreeHasTopLayerElement,
     kDescendantIsViewTransitionElement,
     kDescendantIsAnchorTarget,
+    kHasScrollerWithScrollMarkerGroup,
     kNumRenderAffectingStates
   };
   void SetRenderAffectingState(RenderAffectingState state, bool flag);
   void NotifyRenderAffectingStateChanged();
   const char* RenderAffectingStateName(int state) const;
 
-  bool render_affecting_state_[static_cast<int>(
-      RenderAffectingState::kNumRenderAffectingStates)] = {false};
+  std::array<bool,
+             static_cast<int>(RenderAffectingState::kNumRenderAffectingStates)>
+      render_affecting_state_ = {false};
   int keep_unlocked_count_ = 0;
 
   bool had_lifecycle_update_since_last_unlock_ = false;

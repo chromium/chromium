@@ -7,11 +7,16 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
-class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
+class MockIdpNetworkRequestManager : public webid::IdpNetworkRequestManager {
  public:
   MockIdpNetworkRequestManager();
   ~MockIdpNetworkRequestManager() override;
@@ -34,15 +39,19 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
       FetchClientMetadata,
       (const GURL&, const std::string&, int, int, FetchClientMetadataCallback),
       (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SendAccountsRequest,
-              (const GURL&, const std::string&, AccountsRequestCallback),
+              (const url::Origin& idp_origin,
+               const GURL&,
+               const std::string&,
+               AccountsRequestCallback),
               (override));
   MOCK_METHOD(void,
               SendTokenRequest,
               (const GURL&,
                const std::string&,
                const std::string&,
+               bool,
                TokenRequestCallback,
                ContinueOnCallback,
                RecordErrorMetricsCallback),
@@ -57,7 +66,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
               (override));
   MOCK_METHOD(void,
               SendFailedTokenRequestMetrics,
-              (const GURL&, MetricsEndpointErrorCode code),
+              (const GURL&, bool, webid::MetricsEndpointErrorCode),
               (override));
   MOCK_METHOD(void,
               SendLogout,
@@ -66,6 +75,15 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MOCK_METHOD(void,
               DownloadAndDecodeImage,
               (const GURL&, ImageCallback),
+              (override));
+  MOCK_METHOD(void,
+              DownloadAndDecodeCachedImage,
+              (const url::Origin& idp_origin, const GURL&, ImageCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              CacheAccountPictures,
+              (const url::Origin&, const std::vector<GURL>&),
               (override));
 };
 

@@ -9,7 +9,7 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -61,7 +61,7 @@ export class ToggleRowElement extends WithPersonalizationStore {
 
   private onAmbientModeToggled_(event: Event) {
     const toggleButton = event.currentTarget as CrToggleElement;
-    const ambientModeEnabled = toggleButton!.checked;
+    const ambientModeEnabled = toggleButton.checked;
     setAmbientModeEnabled(
         ambientModeEnabled, getAmbientProvider(), this.getStore());
   }

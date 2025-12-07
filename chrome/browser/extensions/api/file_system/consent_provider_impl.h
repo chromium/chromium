@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace content {
@@ -36,7 +37,7 @@ namespace file_system_api {
 // member functions with static methods.
 class ConsentProviderImpl : public ConsentProvider {
  public:
-  using ShowDialogCallback = base::OnceCallback<void(ui::DialogButton)>;
+  using ShowDialogCallback = base::OnceCallback<void(ui::mojom::DialogButton)>;
 
   // Interface for delegating user interaction for granting permissions.
   class DelegateInterface {
@@ -105,9 +106,9 @@ class ConsentProviderDelegate : public ConsentProviderImpl::DelegateInterface,
  private:
   friend ScopedSkipRequestFileSystemDialog;
 
-  // Sets a fake result for the user consent dialog. If ui::DIALOG_BUTTON_NONE
-  // then disabled.
-  static void SetAutoDialogButtonForTest(ui::DialogButton button);
+  // Sets a fake result for the user consent dialog. If
+  // ui::mojom::DialogButton::kNone then disabled.
+  static void SetAutoDialogButtonForTest(ui::mojom::DialogButton button);
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;

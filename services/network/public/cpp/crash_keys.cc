@@ -19,7 +19,7 @@ base::debug::CrashKeyString* GetCrashKey() {
 }  // namespace
 
 void SetDeserializationCrashKeyString(std::string_view str) {
-  base::debug::SetCrashKeyString(GetCrashKey(), std::move(str));
+  base::debug::SetCrashKeyString(GetCrashKey(), str);
 }
 
 void ClearDeserializationCrashKeyString() {

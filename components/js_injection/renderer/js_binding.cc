@@ -2,30 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/js_injection/renderer/js_binding.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
@@ -34,9 +29,12 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 namespace {
+
 constexpr char kPostMessage[] = "postMessage";
 constexpr char kOnMessage[] = "onmessage";
 constexpr char kAddEventListener[] = "addEventListener";
@@ -59,27 +57,27 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::make_span(static_cast<const uint8_t*>(array_buffer_->Data()),
-                           array_buffer_->ByteLength());
+    return UNSAFE_TODO(
+        base::span(static_cast<const uint8_t*>(array_buffer_->Data()),
+                   array_buffer_->ByteLength()));
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
     CHECK_GE(dest.size(), array_buffer_->ByteLength());
-    memcpy(dest.data(), array_buffer_->Data(), array_buffer_->ByteLength());
+    UNSAFE_TODO(memcpy(dest.data(), array_buffer_->Data(),
+                       array_buffer_->ByteLength()));
   }
 
  private:
   v8::Local<v8::ArrayBuffer> array_buffer_;
 };
 
-}  // anonymous namespace
+}  // namespace
 
 namespace js_injection {
 
-gin::WrapperInfo JsBinding::kWrapperInfo = {gin::kEmbedderNativeGin};
-
 // static
-base::WeakPtr<JsBinding> JsBinding::Install(
+cppgc::WeakPersistent<JsBinding> JsBinding::Install(
     content::RenderFrame* render_frame,
     const std::u16string& js_object_name,
     base::WeakPtr<JsCommunication> js_communication,
@@ -102,24 +100,21 @@ base::WeakPtr<JsBinding> JsBinding::Install(
 
     context_scope.emplace(context);
   }
-  // The call to CreateHandle() takes ownership of `js_binding` (but only on
-  // success).
-  JsBinding* js_binding =
-      new JsBinding(render_frame, js_object_name, js_communication);
-  gin::Handle<JsBinding> bindings = gin::CreateHandle(isolate, js_binding);
-  if (bindings.IsEmpty()) {
-    delete js_binding;
+  JsBinding* js_binding = cppgc::MakeGarbageCollected<JsBinding>(
+      isolate->GetCppHeap()->GetAllocationHandle(), render_frame,
+      js_object_name, js_communication);
+  v8::Local<v8::Object> wrapper;
+  if (!js_binding->GetWrapper(isolate).ToLocal(&wrapper)) {
     return nullptr;
   }
 
   v8::Local<v8::Object> global = context->Global();
   global
-      ->CreateDataProperty(context,
-                           gin::StringToSymbol(isolate, js_object_name),
-                           bindings.ToV8())
+      ->CreateDataProperty(
+          context, gin::StringToSymbol(isolate, js_object_name), wrapper)
       .Check();
 
-  return js_binding->weak_ptr_factory_.GetWeakPtr();
+  return js_binding;
 }
 
 JsBinding::JsBinding(content::RenderFrame* render_frame,
@@ -153,8 +148,8 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(true);
 
-  v8::Local<v8::Value> v8_message = absl::visit(
-      base::Overloaded{
+  v8::Local<v8::Value> v8_message = std::visit(
+      absl::Overload{
           [isolate](std::u16string& string_value) -> v8::Local<v8::Value> {
             return gin::ConvertToV8(isolate, std::move(string_value));
           },
@@ -164,9 +159,9 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
                 isolate, array_buffer_value->GetLength());
             CHECK(backing_store->ByteLength() ==
                   array_buffer_value->GetLength());
-            array_buffer_value->CopyInto(
-                base::make_span(static_cast<uint8_t*>(backing_store->Data()),
-                                backing_store->ByteLength()));
+            array_buffer_value->CopyInto(UNSAFE_TODO(
+                base::span(static_cast<uint8_t*>(backing_store->Data()),
+                           backing_store->ByteLength())));
             return v8::ArrayBuffer::New(isolate, std::move(backing_store));
           }},
       message);
@@ -192,7 +187,7 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   }
   for (const auto& listener : listeners_copy) {
     // Ensure the listener is still registered.
-    if (base::Contains(listeners_, listener)) {
+    if (find_listener(listener) != listeners_.end()) {
       web_frame->RequestExecuteV8Function(context, listener, self, 1, argv, {});
     }
   }
@@ -294,12 +289,12 @@ void JsBinding::AddEventListener(gin::Arguments* args) {
     return;
   }
 
-  if (base::Contains(listeners_, listener))
+  if (find_listener(listener) != listeners_.end()) {
     return;
+  }
 
-  v8::Local<v8::Context> context = args->GetHolderCreationContext();
   listeners_.push_back(
-      v8::Global<v8::Function>(context->GetIsolate(), listener));
+      v8::Global<v8::Function>(v8::Isolate::GetCurrent(), listener));
 }
 
 // RemoveEventListener() needs to match EventTarget's RemoveEventListener() in
@@ -326,11 +321,9 @@ void JsBinding::RemoveEventListener(gin::Arguments* args) {
     return;
   }
 
-  auto iter = base::ranges::find(listeners_, listener);
-  if (iter == listeners_.end())
-    return;
-
-  listeners_.erase(iter);
+  if (auto iter = find_listener(listener); iter != listeners_.end()) {
+    listeners_.erase(iter);
+  }
 }
 
 v8::Local<v8::Function> JsBinding::GetOnMessage(v8::Isolate* isolate) {
@@ -342,6 +335,10 @@ void JsBinding::SetOnMessage(v8::Isolate* isolate, v8::Local<v8::Value> value) {
     on_message_.Reset(isolate, value.As<v8::Function>());
   else
     on_message_.Reset();
+}
+
+const gin::WrapperInfo* JsBinding::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 }  // namespace js_injection

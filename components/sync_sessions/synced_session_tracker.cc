@@ -10,9 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
@@ -128,6 +128,10 @@ void PopulateSyncedSessionFromSpecifics(
   if (header_specifics.has_client_name()) {
     synced_session->SetSessionName(header_specifics.client_name());
   }
+  if (header_specifics.has_session_start_time_unix_epoch_millis()) {
+    synced_session->SetStartTime(base::Time::FromMillisecondsSinceUnixEpoch(
+        header_specifics.session_start_time_unix_epoch_millis()));
+  }
 
   syncer::DeviceInfo::FormFactor device_form_factor =
       syncer::ToDeviceInfoFormFactor(header_specifics.device_form_factor());
@@ -186,6 +190,15 @@ void SyncedSessionTracker::InitLocalSession(
   local_session->SetDeviceTypeAndFormFactor(local_device_type,
                                             local_device_form_factor);
   local_session->SetSessionTag(local_session_tag);
+  // Note: Do *not* call `SetStartTime()` here! `InitLocalSession()` gets called
+  // on every browser startup (if sessions sync is enabled), but the session
+  // start time should only be set when the session is initially created.
+}
+
+void SyncedSessionTracker::SetLocalSessionStartTime(
+    base::Time local_session_start_time) {
+  SyncedSession* local_session = GetSession(local_session_tag_);
+  local_session->SetStartTime(local_session_start_time);
 }
 
 const std::string& SyncedSessionTracker::GetLocalSessionTag() const {
@@ -491,8 +504,8 @@ void SyncedSessionTracker::PutTabInWindow(const std::string& session_tag,
     for (auto& [existing_window_id, existing_window] :
          GetSession(session_tag)->windows) {
       auto existing_tab_iter =
-          base::ranges::find(existing_window->wrapped_window.tabs, tab_ptr,
-                             &std::unique_ptr<sessions::SessionTab>::get);
+          std::ranges::find(existing_window->wrapped_window.tabs, tab_ptr,
+                            &std::unique_ptr<sessions::SessionTab>::get);
       if (existing_tab_iter != existing_window->wrapped_window.tabs.end()) {
         tab = std::move(*existing_tab_iter);
         existing_window->wrapped_window.tabs.erase(existing_tab_iter);
@@ -658,8 +671,8 @@ void SyncedSessionTracker::ReassociateLocalTab(int tab_node_id,
              session->synced_session.windows) {
           auto& existing_window_tabs = existing_window->wrapped_window.tabs;
           auto tab_iter =
-              base::ranges::find(existing_window_tabs, new_tab_ptr,
-                                 &std::unique_ptr<sessions::SessionTab>::get);
+              std::ranges::find(existing_window_tabs, new_tab_ptr,
+                                &std::unique_ptr<sessions::SessionTab>::get);
           if (tab_iter != existing_window_tabs.end()) {
             existing_window_tabs.erase(tab_iter);
             break;

@@ -1,0 +1,60 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./print_preview_vars.css.js
+ * #import=./throbber.css.js
+ * #include=cr-hidden-style-lit throbber
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+#list {
+  min-height: var(--destination-item-height);
+}
+
+.throbber-container {
+  display: flex;
+  margin-inline-start:
+      calc((var(--search-icon-size) - var(--throbber-size))/2);
+  min-height: var(--destination-item-height);
+}
+
+.throbber {
+  align-self: center;
+}
+
+.no-destinations-message {
+  padding-bottom: 8px;
+  padding-inline-start: 18px;
+  padding-top: 8px;
+}
+
+.list-item {
+  transition: background-color 150ms;
+}
+
+.list-item:hover,
+.list-item:focus {
+  background-color: rgb(228, 236, 247);
+}
+
+@media (prefers-color-scheme: dark) {
+  .list-item:-webkit-any(:hover, :focus) {
+    background-color: var(--cr-menu-background-focus-color);
+  }
+}
+
+.list-item:focus {
+  outline: none;
+}

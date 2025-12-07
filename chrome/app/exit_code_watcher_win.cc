@@ -43,7 +43,7 @@ ExitCodeWatcher::ExitCodeWatcher()
     : background_thread_("ExitCodeWatcherThread"),
       exit_code_(STILL_ACTIVE),
       stop_watching_handle_(::CreateEvent(nullptr, TRUE, FALSE, nullptr)) {
-  DCHECK(stop_watching_handle_.IsValid());
+  DCHECK(stop_watching_handle_.is_valid());
 }
 
 ExitCodeWatcher::~ExitCodeWatcher() = default;
@@ -88,7 +88,7 @@ bool ExitCodeWatcher::StartWatching() {
 }
 
 void ExitCodeWatcher::StopWatching() {
-  if (stop_watching_handle_.IsValid()) {
+  if (stop_watching_handle_.is_valid()) {
     ::SetEvent(stop_watching_handle_.Get());
   }
 }

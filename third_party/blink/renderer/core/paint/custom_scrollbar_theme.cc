@@ -137,12 +137,9 @@ gfx::Rect CustomScrollbarTheme::ConstrainTrackRectToTrackPieces(
 
 void CustomScrollbarTheme::PaintScrollCorner(
     GraphicsContext& context,
-    const Scrollbar* vertical_scrollbar,
+    const ScrollableArea&,
     const DisplayItemClient& display_item_client,
-    const gfx::Rect& corner_rect,
-    mojom::blink::ColorScheme color_scheme,
-    bool in_forced_colors,
-    const ui::ColorProvider* color_provider) {
+    const gfx::Rect& corner_rect) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))
     return;
@@ -157,11 +154,6 @@ void CustomScrollbarTheme::PaintTrackBackgroundAndButtons(
     GraphicsContext& context,
     const Scrollbar& scrollbar,
     const gfx::Rect& rect) {
-  // Custom scrollbars are always painted in their original coordinate space,
-  // i.e. the space of Scrollbar::FrameRect() and ScrollbarTheme::XXXRect()
-  // which is |context|'s current space.
-  CHECK_EQ(rect, scrollbar.FrameRect());
-
   PaintPart(context, scrollbar, rect, kScrollbarBGPart);
 
   if (HasButtons(scrollbar)) {
@@ -218,6 +210,14 @@ void CustomScrollbarTheme::PaintIntoRect(
       graphics_context, CullRect(ToPixelSnappedRect(rect)),
       PaintPhase::kForeground,
       layout_custom_scrollbar_part.ChildPaintBlockedByDisplayLock());
+
+  // LayoutBox-derived objects normally paint via BoxFragmentPainter, which
+  // determines which FragmentData to use, but that won't work for
+  // LayoutCustomScrollbarPart, since it creates no fragments. It's not even
+  // attached to the layout tree. So do it manually here.
+  paint_info.SetFragmentDataOverride(
+      &layout_custom_scrollbar_part.FirstFragment());
+
   ObjectPainter(layout_custom_scrollbar_part)
       .PaintAllPhasesAtomically(paint_info);
 }

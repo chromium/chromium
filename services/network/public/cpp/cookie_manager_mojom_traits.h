@@ -18,7 +18,6 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
-#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/cookie_partition_key.mojom.h"
 
@@ -61,6 +60,15 @@ struct EnumTraits<network::mojom::CookieAccessSemantics,
       net::CookieAccessSemantics input);
   static bool FromMojom(network::mojom::CookieAccessSemantics input,
                         net::CookieAccessSemantics* output);
+};
+
+template <>
+struct EnumTraits<network::mojom::CookieScopeSemantics,
+                  net::CookieScopeSemantics> {
+  static network::mojom::CookieScopeSemantics ToMojom(
+      net::CookieScopeSemantics input);
+  static bool FromMojom(network::mojom::CookieScopeSemantics input,
+                        net::CookieScopeSemantics* output);
 };
 
 template <>
@@ -146,12 +154,6 @@ struct StructTraits<
       redirect_type_bug_1221316(
           const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
     return m.redirect_type_bug_1221316;
-  }
-
-  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
-  http_method_bug_1221316(
-      const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
-    return m.http_method_bug_1221316;
   }
 
   static bool Read(network::mojom::CookieSameSiteContextMetadataDataView,
@@ -259,9 +261,7 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   static const std::string& name(const net::CanonicalCookie& c) {
     return c.Name();
   }
-  static const std::string& value(const net::CanonicalCookie& c) {
-    return c.Value();
-  }
+  static std::string value(const net::CanonicalCookie& c) { return c.Value(); }
   static const std::string& domain(const net::CanonicalCookie& c) {
     return c.Domain();
   }
@@ -341,6 +341,10 @@ struct StructTraits<network::mojom::CookieAccessResultDataView,
   static const net::CookieAccessSemantics& access_semantics(
       const net::CookieAccessResult& c) {
     return c.access_semantics;
+  }
+  static const net::CookieScopeSemantics& scope_semantics(
+      const net::CookieAccessResult& c) {
+    return c.scope_semantics;
   }
   static bool is_allowed_to_access_secure_cookies(
       const net::CookieAccessResult& c) {

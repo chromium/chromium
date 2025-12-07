@@ -3,7 +3,7 @@ import pytest
 from tests.support.asserts import assert_success
 from tests.support.image import png_dimensions
 
-from . import element_dimensions
+from . import element_dimensions, take_element_screenshot
 
 DEFAULT_CONTENT = "<div id='content'>Lorem ipsum dolor sit amet.</div>"
 
@@ -57,16 +57,6 @@ INNER_IFRAME_STYLE = """
 """
 
 
-def take_element_screenshot(session, element_id):
-    return session.transport.send(
-        "GET",
-        "session/{session_id}/element/{element_id}/screenshot".format(
-            session_id=session.session_id,
-            element_id=element_id,
-        )
-    )
-
-
 def test_frame_element(session, inline, iframe):
     # Create a reference element which looks exactly like the frame's content
     session.url = inline("{0}{1}".format(REFERENCE_STYLE, REFERENCE_CONTENT))
@@ -83,7 +73,7 @@ def test_frame_element(session, inline, iframe):
     session.url = inline("""{0}{1}""".format(OUTER_IFRAME_STYLE, iframe(iframe_content)))
 
     frame = session.find.css("iframe", all=False)
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
     div = session.find.css("div", all=False)
     div_dimensions = element_dimensions(session, div)
     assert div_dimensions == ref_dimensions

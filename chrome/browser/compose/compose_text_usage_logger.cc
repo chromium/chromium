@@ -26,7 +26,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(ComposeTextUsageLogger);
 
 namespace {
 constexpr int MAX_FIELD_METRIC_COUNT = 100;
-// Note: Although OnAfterTextFieldDidChange is only called for user
+// Note: Although OnAfterTextFieldValueChanged is only called for user
 // actions like typing or pastes, we need to handle the case where the
 // user edits the field after it was modified by the page. In this case,
 // we'd rather be conservative when recording text changes as user typing. If
@@ -77,12 +77,12 @@ ComposeTextUsageLogger::~ComposeTextUsageLogger() {
   }
 }
 
-void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
+void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
     const std::u16string& text_value) {
-  autofill::FormType form_type = autofill::FormType::kUnknownFormType;
+  autofill::DenseSet<autofill::FormType> form_types;
   int64_t form_control_type = -1;
   autofill::FieldSignature field_signature;
   autofill::FormSignature form_signature;
@@ -93,7 +93,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
     const autofill::AutofillField* field_data =
         form_structure->GetFieldById(field);
     if (field_data) {
-      form_type = FieldTypeGroupToFormType(field_data->Type().group());
+      form_types = field_data->Type().GetFormTypes();
       form_control_type = static_cast<int64_t>(field_data->form_control_type());
 
       switch (field_data->form_control_type()) {
@@ -126,6 +126,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
   if (!metrics.initialized) {
     if (text_value.length() > MAX_CHARS_TYPED_AT_ONCE) {
       metrics.initial_text = text_value;
+      metrics.previous_text_length = text_value.length();
     }
     metrics.initialized = true;
   } else {
@@ -136,25 +137,28 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
   }
   metrics.last_update_time = base::TimeTicks::Now();
 
-  switch (form_type) {
-    case autofill::FormType::kUnknownFormType:
-      break;
-    case autofill::FormType::kAddressForm:
-      metrics.is_autofill_field_type = true;
-      break;
-    case autofill::FormType::kStandaloneCvcForm:
-    case autofill::FormType::kCreditCardForm:
-    case autofill::FormType::kPasswordForm:
-      metrics.sensitive_field = true;
-      metrics.is_autofill_field_type = true;
-      break;
+  for (autofill::FormType form_type : form_types) {
+    switch (form_type) {
+      case autofill::FormType::kUnknownFormType:
+        break;
+      case autofill::FormType::kAddressForm:
+      case autofill::FormType::kLoyaltyCardForm:
+        metrics.is_autofill_field_type = true;
+        break;
+      case autofill::FormType::kStandaloneCvcForm:
+      case autofill::FormType::kCreditCardForm:
+      case autofill::FormType::kPasswordForm:
+      case autofill::FormType::kOneTimePasswordForm:
+        metrics.sensitive_field = true;
+        metrics.is_autofill_field_type = true;
+        break;
+    }
   }
 
   // Note that field_data->value doesn't have the current value, so we use
   // text_value instead.
   const int64_t new_length = text_value.size();
-  const int64_t delta =
-      new_length - static_cast<int64_t>(metrics.initial_text.size());
+  const int64_t delta = new_length - metrics.previous_text_length;
   if (delta > 0 && delta <= MAX_CHARS_TYPED_AT_ONCE) {
     metrics.estimate_typed_characters += delta;
   }
@@ -165,6 +169,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
   metrics.field_signature = field_signature;
   metrics.form_signature = form_signature;
 
+  metrics.previous_text_length = text_value.length();
   metrics.final_text = std::move(text_value);
 }
 

@@ -14,13 +14,7 @@
 
 namespace media::mp4 {
 
-AAC::AAC()
-    : profile_(0),
-      frequency_index_(0),
-      channel_config_(0),
-      frequency_(0),
-      extension_frequency_(0),
-      channel_layout_(CHANNEL_LAYOUT_UNSUPPORTED) {}
+AAC::AAC() = default;
 
 AAC::AAC(const AAC& other) = default;
 
@@ -120,7 +114,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
   }
 
   if (frequency_ == 0) {
-    if (frequency_index_ >= kADTSFrequencyTableSize) {
+    if (frequency_index_ >= kADTSFrequencyTable.size()) {
       MEDIA_LOG(ERROR, media_log)
           << "Sampling Frequency Index(0x" << std::hex
           << static_cast<int>(frequency_index_)
@@ -132,7 +126,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
   }
 
   if (extension_frequency_ == 0 && extension_frequency_index != 0xff) {
-    if (extension_frequency_index >= kADTSFrequencyTableSize) {
+    if (extension_frequency_index >= kADTSFrequencyTable.size()) {
       MEDIA_LOG(ERROR, media_log)
           << "Extension Sampling Frequency Index(0x" << std::hex
           << static_cast<int>(extension_frequency_index)
@@ -147,7 +141,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
   if (ps_present && channel_config_ == 1) {
     channel_layout_ = CHANNEL_LAYOUT_STEREO;
   } else {
-    if (channel_config_ >= kADTSChannelLayoutTableSize) {
+    if (channel_config_ >= kADTSChannelLayoutTable.size()) {
       MEDIA_LOG(ERROR, media_log)
           << "Channel Configuration(" << static_cast<int>(channel_config_)
           << ") is not supported. Please see ISO 14496-3:2009 Table 1.19 "
@@ -174,8 +168,7 @@ int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
   // Table 1.25. (Table 1.11 refers to the capping to 48000, Table 1.25 refers
   // to SBR doubling the AAC sample rate.)
   // TODO(acolwell) : Extend sample rate cap to 96kHz for Level 5 content.
-  DCHECK_GT(frequency_, 0);
-  return std::min(2 * frequency_, 48000);
+  return std::min(2 * frequency_, 48000u);
 }
 
 ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
@@ -191,14 +184,15 @@ ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
 
 base::HeapArray<uint8_t> AAC::CreateAdtsFromEsds(
     base::span<const uint8_t> buffer,
-    int* adts_header_size) const {
+    size_t* adts_header_size) const {
   *adts_header_size = 0;
-  if (profile_ == kXHeAAcType) {
+  if (!fits_in_adts()) {
     return {};
   }
 
-  DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
-         channel_config_ <= 7);
+  DCHECK_GE(profile_, 1);
+  DCHECK_LE(profile_, 4);
+  DCHECK_LE(channel_config_, 7);
 
   // `total_size` might be too big; ADTS represents packet size in 13 bits.
   const size_t total_size = buffer.size() + kADTSHeaderMinSize;

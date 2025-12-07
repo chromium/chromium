@@ -22,11 +22,6 @@ inline constexpr char kCookieControlsMode[] = "profile.cookie_controls_mode";
 inline constexpr char kContentSettingsVersion[] =
     "profile.content_settings.pref_version";
 
-// Integer that specifies the index of the tab the user was on when they
-// last visited the content settings window.
-inline constexpr char kContentSettingsWindowLastTabIndex[] =
-    "content_settings_window.last_tab_index";
-
 // Preferences that are exclusively used to store managed values for default
 // content settings.
 inline constexpr char kManagedDefaultAdsSetting[] =
@@ -37,6 +32,8 @@ inline constexpr char kManagedDefaultCookiesSetting[] =
     "profile.managed_default_content_settings.cookies";
 inline constexpr char kManagedDefaultGeolocationSetting[] =
     "profile.managed_default_content_settings.geolocation";
+inline constexpr char kManagedDefaultIdleDetectionSetting[] =
+    "profile.managed_default_content_settings.idle_detection";
 inline constexpr char kManagedDefaultImagesSetting[] =
     "profile.managed_default_content_settings.images";
 inline constexpr char kManagedDefaultInsecureContentSetting[] =
@@ -61,8 +58,6 @@ inline constexpr char kManagedDefaultFileSystemWriteGuardSetting[] =
     "profile.managed_default_content_settings.file_system_write_guard";
 inline constexpr char kManagedDefaultSerialGuardSetting[] =
     "profile.managed_default_content_settings.serial_guard";
-inline constexpr char kManagedDefaultInsecurePrivateNetworkSetting[] =
-    "profile.managed_default_content_settings.insecure_private_network";
 inline constexpr char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
 inline constexpr char kManagedDefaultJavaScriptOptimizerSetting[] =
@@ -79,6 +74,19 @@ inline constexpr char kManagedDefaultWebPrintingSetting[] =
     "profile.managed_default_content_settings.web_printing";
 inline constexpr char kManagedDefaultDirectSocketsSetting[] =
     "profile.managed_default_content_settings.direct_sockets";
+inline constexpr char
+    kManagedDefaultDirectSocketsPrivateNetworkAccessSetting[] =
+        "profile.managed_default_content_settings.direct_sockets_pna";
+inline constexpr char kManagedDefaultLegacyCookieScope[] =
+    "profile.managed_default_content_settings.legacy_cookie_scope";
+inline constexpr char kManagedDefaultControlledFrameSetting[] =
+    "profile.managed_default_content_settings.controlled_frame";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kManagedDefaultSmartCardConnectSetting[] =
+    "profile.managed_default_content_settings.smart_card_connect";
+inline constexpr char kManagedDefaultDeviceAttributesSetting[] =
+    "profile.managed_default_content_settings.device_attributes";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.
@@ -98,6 +106,10 @@ inline constexpr char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 inline constexpr char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
+inline constexpr char kManagedPreciseGeolocationAllowedForUrls[] =
+    "profile.managed_geolocation_allowed_for_urls";
+inline constexpr char kManagedGeolocationBlockedForUrls[] =
+    "profile.managed_geolocation_blocked_for_urls";
 inline constexpr char
     kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls[] =
         "profile.managed_access_to_get_all_screens_media_in_session_allowed_"
@@ -110,6 +122,10 @@ inline constexpr char kManagedInsecureContentAllowedForUrls[] =
     "profile.managed_insecure_content_allowed_for_urls";
 inline constexpr char kManagedInsecureContentBlockedForUrls[] =
     "profile.managed_insecure_content_blocked_for_urls";
+inline constexpr char kManagedIdleDetectionAllowedForUrls[] =
+    "profile.managed_idle_detection_allowed_for_urls";
+inline constexpr char kManagedIdleDetectionBlockedForUrls[] =
+    "profile.managed_idle_detection_blocked_for_urls";
 inline constexpr char kManagedJavaScriptAllowedForUrls[] =
     "profile.managed_javascript_allowed_for_urls";
 inline constexpr char kManagedJavaScriptBlockedForUrls[] =
@@ -146,8 +162,6 @@ inline constexpr char kManagedSerialAskForUrls[] =
     "profile.managed_serial_ask_for_urls";
 inline constexpr char kManagedSerialBlockedForUrls[] =
     "profile.managed_serial_blocked_for_urls";
-inline constexpr char kManagedInsecurePrivateNetworkAllowedForUrls[] =
-    "profile.managed_insecure_private_network_allowed_for_urls";
 inline constexpr char kManagedJavaScriptJitAllowedForSites[] =
     "profile.managed_javascript_jit_allowed_for_sites";
 inline constexpr char kManagedJavaScriptJitBlockedForSites[] =
@@ -178,6 +192,33 @@ inline constexpr char kManagedDirectSocketsAllowedForUrls[] =
     "profile.managed_direct_sockets_allowed_for_urls";
 inline constexpr char kManagedDirectSocketsBlockedForUrls[] =
     "profile.managed_direct_sockets_blocked_for_urls";
+inline constexpr char
+    kManagedDirectSocketsPrivateNetworkAccessAllowedForUrls[] =
+        "profile.managed_direct_sockets_pna_allowed_for_urls";
+inline constexpr char
+    kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls[] =
+        "profile.managed_direct_sockets_pna_blocked_for_urls";
+inline constexpr char kManagedLegacyCookieScopeForDomains[] =
+    "profile.managed_legacy_cookie_scope_for_domains";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kManagedSmartCardConnectAllowedForUrls[] =
+    "profile.managed_smart_card_connect_allowed_for_urls";
+inline constexpr char kManagedSmartCardConnectBlockedForUrls[] =
+    "profile.managed_smart_card_connect_blocked_for_urls";
+inline constexpr char kManagedDeviceAttributesAllowedForOrigins[] =
+    "profile.managed_device_attributes_allowed_for_origins";
+inline constexpr char kManagedDeviceAttributesBlockedForOrigins[] =
+    "profile.managed_device_attributes_blocked_for_origins";
+#endif
+inline constexpr char kManagedControlledFrameAllowedForUrls[] =
+    "profile.managed_controlled_frame_allowed_for_urls";
+inline constexpr char kManagedControlledFrameBlockedForUrls[] =
+    "profile.managed_controlled_frame_blocked_for_urls";
+
+inline constexpr char kManagedLocalNetworkAccessAllowedForUrls[] =
+    "profile.managed_local_network_access_allowed_for_urls";
+inline constexpr char kManagedLocalNetworkAccessBlockedForUrls[] =
+    "profile.managed_local_network_access_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true
@@ -209,13 +250,6 @@ inline constexpr char kEnableNotificationCPSS[] =
 inline constexpr char kEnableGeolocationCPSS[] =
     "profile.content_settings.enable_cpss.geolocation";
 
-// Enum indicating by which method the quiet UI has been enabled for
-// notification permission requests. This is stored as of M88 and will be
-// backfilled if the quiet UI is enabled but this preference has no value.
-inline constexpr char kQuietNotificationPermissionUiEnablingMethod[] =
-    "profile.content_settings.enable_quiet_permission_ui_enabling_method."
-    "notifications";
-
 // Time value indicating when the quiet notification UI was last disabled by the
 // user. Only permission action history after this point is taken into account
 // for adaptive quiet UI activation.
@@ -231,6 +265,11 @@ inline constexpr char kInContextCookieControlsOpened[] =
 // Enable vibration for web notifications.
 inline constexpr char kNotificationsVibrateEnabled[] =
     "notifications.vibrate_enabled";
+
+// Boolean that indicates whether the desktop site global setting was enabled by
+// the user.
+inline constexpr char kRequestDesktopSiteGlobalSettingUserEnabled[] =
+    "Chrome.RequestDesktopSiteGlobalSetting.UserEnabled";
 
 // Window setting for request desktop site. When enabled, we will request
 // mobile site if the window is narrow.

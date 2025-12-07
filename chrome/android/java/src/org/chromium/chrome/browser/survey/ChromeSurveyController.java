@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.survey;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Class that controls if and when to show surveys. One instance of this class is associated with
  * one trigger ID, which is used to fetch a survey, at the time it is created.
  */
+@NullMarked
 public class ChromeSurveyController {
     private static final String TRIGGER_STARTUP_SURVEY = "startup_survey";
     private static boolean sForceUmaEnabledForTesting;
@@ -52,9 +53,9 @@ public class ChromeSurveyController {
      * @param activity The {@link Activity} on which the survey will be shown.
      * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
-    public static ChromeSurveyController initialize(
+    public static @Nullable ChromeSurveyController initialize(
             TabModelSelector tabModelSelector,
-            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             Activity activity,
             MessageDispatcher messageDispatcher,
             Profile profile) {
@@ -65,7 +66,7 @@ public class ChromeSurveyController {
             return null;
         }
 
-        SurveyConfig config = SurveyConfig.get(TRIGGER_STARTUP_SURVEY);
+        SurveyConfig config = SurveyConfig.get(profile, TRIGGER_STARTUP_SURVEY);
         if (config == null) return null;
 
         assert SurveyClientFactory.getInstance() != null;
@@ -85,7 +86,8 @@ public class ChromeSurveyController {
                         tabModelSelector,
                         ChromeSurveyController::isUMAEnabled);
         SurveyClient client =
-                SurveyClientFactory.getInstance().createClient(config, messageDelegate, profile);
+                SurveyClientFactory.getInstance()
+                        .createClient(config, messageDelegate, profile, tabModelSelector);
         if (client == null) return null;
 
         ChromeSurveyController chromeSurveyController = new ChromeSurveyController(client);

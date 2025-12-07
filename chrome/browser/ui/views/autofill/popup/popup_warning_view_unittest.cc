@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -48,11 +49,11 @@ class PopupWarningViewTest : public ChromeViewsTestBase {
 
 TEST_F(PopupWarningViewTest, AccessibleProperties) {
   constexpr char16_t kText[] = u"Sample text";
-  ShowView(Suggestion(kText));
+  ShowView(Suggestion(kText, SuggestionType::kAutocompleteEntry));
   ui::AXNodeData node_data;
 
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(ax::mojom::Role::kAlert, node_data.role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, node_data.role);
   EXPECT_EQ(kText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }

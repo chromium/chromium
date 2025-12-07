@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <ostream>
+#include <variant>
 
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
@@ -181,12 +182,12 @@ inline void PrintTo(const CPUTimeResult& result, std::ostream* os) {
 }
 
 inline void PrintTo(const MemorySummaryResult& result, std::ostream* os) {
-  *os << "rss:" << result.resident_set_size_kb
-      << ",pmf:" << result.private_footprint_kb
-      << ",metadata:" << ::testing::PrintToString(result.metadata);
+  *os << "rss:" << result.resident_set_size
+      << ", pmf:" << result.private_footprint
+      << ", metadata:" << ::testing::PrintToString(result.metadata);
 }
 
-// PrintTo() matches the generic absl::variant overload before ResourceContext,
+// PrintTo() matches the generic std::variant overload before ResourceContext,
 // so each context type needs a separate printer.
 
 inline void PrintTo(const FrameContext& context, std::ostream* os) {

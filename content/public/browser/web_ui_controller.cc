@@ -4,9 +4,9 @@
 
 #include "content/public/browser/web_ui_controller.h"
 
+#include "base/no_destructor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_managed_interface.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "url/gurl.h"
 
@@ -18,8 +18,10 @@ namespace {
 // with interfaces exposed to MojoJS. If such a mapping exists, we instantiate
 // the broker in ReadyToCommitNavigation, enable MojoJS bindings for this
 // frame, and ask renderer to use it to handle Mojo.bindInterface calls.
-base::LazyInstance<WebUIBrowserInterfaceBrokerRegistry>::Leaky
-    g_web_ui_browser_interface_broker_registry = LAZY_INSTANCE_INITIALIZER;
+WebUIBrowserInterfaceBrokerRegistry& GetWebUIBrowserInterfaceBrokerRegistry() {
+  static base::NoDestructor<WebUIBrowserInterfaceBrokerRegistry> registry;
+  return *registry;
+}
 }  // namespace
 
 WebUIController::WebUIController(WebUI* web_ui) : web_ui_(web_ui) {}
@@ -45,12 +47,8 @@ bool WebUIController::IsJavascriptErrorReportingEnabled() {
 
 void WebUIController::WebUIReadyToCommitNavigation(
     RenderFrameHost* render_frame_host) {
-  GURL site_url = render_frame_host->GetSiteInstance()->GetSiteURL();
-  GetContentClient()->browser()->LogWebUIUrl(site_url);
-
   broker_ =
-      g_web_ui_browser_interface_broker_registry.Get().CreateInterfaceBroker(
-          *this);
+      GetWebUIBrowserInterfaceBrokerRegistry().CreateInterfaceBroker(*this);
 
   if (broker_) {
     RenderFrameHostImpl* rfh =

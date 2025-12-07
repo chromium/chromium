@@ -73,10 +73,12 @@ bool RulesetConverter::Convert() {
                         css_rules_output, chrome_version_));
   }
 
-  if (primary_output)
+  if (primary_output) {
     CHECK(primary_output->Finish());
-  if (secondary_output)
+  }
+  if (secondary_output) {
     CHECK(secondary_output->Finish());
+  }
   return true;
 }
 

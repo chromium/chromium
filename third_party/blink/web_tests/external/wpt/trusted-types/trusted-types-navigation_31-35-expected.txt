@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Navigate a window via form-submission with javascript:-urls w/ a default policy throwing an exception in enforcing mode.
+  promise_test: Unhandled rejection with value: "Unexpected message received: \\"No securitypolicyviolation reported!\\""
+[FAIL] Navigate a window via form-submission with javascript:-urls w/ a default policy throwing an exception in report-only mode.
+  promise_test: Unhandled rejection with value: "Unexpected message received: \\"No securitypolicyviolation reported!\\""
+Harness: the test ran to completion.
+

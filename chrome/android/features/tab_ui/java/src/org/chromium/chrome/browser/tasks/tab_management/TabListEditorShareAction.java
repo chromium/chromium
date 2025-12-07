@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -23,22 +25,28 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 /** Share action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorShareAction extends TabListEditorAction {
     private static final List<String> UNSUPPORTED_SCHEMES =
             new ArrayList<>(
@@ -46,10 +54,12 @@ public class TabListEditorShareAction extends TabListEditorAction {
                             UrlConstants.CHROME_SCHEME,
                             UrlConstants.CHROME_NATIVE_SCHEME,
                             ContentUrlConstants.ABOUT_SCHEME));
-    private static Callback<Intent> sIntentCallbackForTesting;
-    private Context mContext;
+    private static @Nullable Callback<Intent> sIntentCallbackForTesting;
+
+    private final Context mContext;
+    private final BroadcastReceiver mBroadcastReceiver;
+
     private boolean mSkipUrlCheckForTesting;
-    private BroadcastReceiver mBroadcastReceiver;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -59,6 +69,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
         TabListEditorShareActionState.ALL_TABS_FILTERED,
         TabListEditorShareActionState.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorShareActionState {
         int UNKNOWN = 0;
         int SUCCESS = 1;
@@ -115,7 +126,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         boolean enableShare = false;
         List<Tab> selectedTabs = getTabsOrTabsAndRelatedTabsFromSelection();
 
@@ -126,30 +137,32 @@ public class TabListEditorShareAction extends TabListEditorAction {
             }
         }
 
-        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : tabIds.size();
+        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : itemIds.size();
         setEnabledAndItemCount(enableShare, size);
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
         TabList tabList = getTabGroupModelFilter().getTabModel();
-        List<Integer> sortedTabIndexList = filterTabs(tabs, tabList);
+        List<Tab> sortedTabList = filterTabs(tabs, tabList);
 
-        if (sortedTabIndexList.size() == 0) {
+        if (sortedTabList.size() == 0) {
             TabUiMetricsHelper.recordShareStateHistogram(
                     TabListEditorShareActionState.ALL_TABS_FILTERED);
             return false;
         }
 
-        boolean isOnlyOneTab = (sortedTabIndexList.size() == 1);
-        String tabText =
-                isOnlyOneTab ? "" : getTabListStringForSharing(sortedTabIndexList, tabList);
-        String tabTitle =
-                isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getTitle() : "";
-        String tabUrl =
-                isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getUrl().getSpec() : "";
+        boolean isOnlyOneTab = (sortedTabList.size() == 1);
+        Tab tab = sortedTabList.get(0);
+        assumeNonNull(tab);
+        String tabText = isOnlyOneTab ? "" : getTabListStringForSharing(sortedTabList);
+        String tabTitle = isOnlyOneTab ? tab.getTitle() : "";
+        String tabUrl = isOnlyOneTab ? tab.getUrl().getSpec() : "";
         @TabListEditorActionMetricGroups
         int actionId =
                 isOnlyOneTab
@@ -157,10 +170,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
                         : TabListEditorActionMetricGroups.SHARE_TABS;
 
         ShareParams shareParams =
-                new ShareParams.Builder(
-                                tabList.getTabAt(sortedTabIndexList.get(0)).getWindowAndroid(),
-                                tabTitle,
-                                tabUrl)
+                new ShareParams.Builder(assumeNonNull(tab.getWindowAndroid()), tabTitle, tabUrl)
                         .setText(tabText)
                         .build();
 
@@ -173,8 +183,8 @@ public class TabListEditorShareAction extends TabListEditorAction {
                 Intent.EXTRA_TITLE,
                 resources.getQuantityString(
                         R.plurals.tab_selection_editor_share_sheet_preview_message,
-                        sortedTabIndexList.size(),
-                        sortedTabIndexList.size()));
+                        sortedTabList.size(),
+                        sortedTabList.size()));
         shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         float padding =
@@ -223,10 +233,8 @@ public class TabListEditorShareAction extends TabListEditorAction {
                     drawable.draw(canvas);
 
                     ShareImageFileUtils.generateTemporaryUriFromBitmap(
-                            mContext.getResources()
-                                    .getString(
-                                            R.string
-                                                    .tab_selection_editor_share_sheet_preview_thumbnail),
+                            mContext.getString(
+                                    R.string.tab_selection_editor_share_sheet_preview_thumbnail),
                             bitmap,
                             uri -> {
                                 bitmap.recycle();
@@ -243,48 +251,45 @@ public class TabListEditorShareAction extends TabListEditorAction {
                                                     actionId);
                                             TabUiMetricsHelper.recordShareStateHistogram(
                                                     TabListEditorShareActionState.SUCCESS);
+                                            if (sIntentCallbackForTesting != null) {
+                                                sIntentCallbackForTesting.onResult(shareIntent);
+                                            }
                                         });
-
-                                if (sIntentCallbackForTesting != null) {
-                                    sIntentCallbackForTesting.onResult(shareIntent);
-                                }
                             });
                 });
     }
 
     // TODO(crbug.com/40871819): Current filtering does not remove duplicates or show a "Toast" if
     // no shareable URLs are present after filtering.
-    private List<Integer> filterTabs(List<Tab> tabs, TabList tabList) {
+    private List<Tab> filterTabs(List<Tab> tabs, TabList tabList) {
         assert tabs.size() > 0;
-        List<Integer> sortedTabIndexList = new ArrayList<Integer>();
+        List<Tab> sortedTabList = new ArrayList<>();
 
-        HashSet<Tab> selectedTabs = new HashSet<Tab>(tabs);
-        for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
+        HashSet<Tab> selectedTabs = new HashSet<>(tabs);
+        for (Tab tab : tabList) {
             if (!selectedTabs.contains(tab)) continue;
 
             if (!shouldFilterUrl(tab.getUrl())) {
-                sortedTabIndexList.add(i);
+                sortedTabList.add(tab);
             }
         }
-        return sortedTabIndexList;
+        return sortedTabList;
     }
 
-    private String getTabListStringForSharing(List<Integer> sortedTabIndexList, TabList list) {
+    private String getTabListStringForSharing(List<Tab> sortedTabList) {
         StringBuilder sb = new StringBuilder();
 
         // TODO(crbug.com/40871819): Check if this string builder assembles the shareable URLs in
         // accordance with internationalization and translation standards
-        for (int i = 0; i < sortedTabIndexList.size(); i++) {
-            sb.append(i + 1)
-                    .append(". ")
-                    .append(list.getTabAt(sortedTabIndexList.get(i)).getUrl().getSpec())
-                    .append("\n");
+        for (int i = 0; i < sortedTabList.size(); i++) {
+            Tab tab = sortedTabList.get(i);
+            assumeNonNull(tab);
+            sb.append(i + 1).append(". ").append(tab.getUrl().getSpec()).append("\n");
         }
         return sb.toString();
     }
 
-    private boolean shouldFilterUrl(GURL url) {
+    private boolean shouldFilterUrl(@Nullable GURL url) {
         if (mSkipUrlCheckForTesting) return false;
 
         return url == null

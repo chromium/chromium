@@ -104,8 +104,6 @@ class GridPosition {
            named_grid_line_ == other.named_grid_line_;
   }
 
-  bool operator!=(const GridPosition& other) const { return !(*this == other); }
-
   bool ShouldBeResolvedAgainstOppositePosition() const {
     return IsAuto() || IsSpan();
   }

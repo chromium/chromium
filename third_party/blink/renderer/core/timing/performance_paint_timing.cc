@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -24,22 +27,27 @@ AtomicString FromPaintTypeToString(PerformancePaintTiming::PaintType type) {
       return kFirstContentfulPaint;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_atom;
+  NOTREACHED();
 }
 
 }  // namespace
 
 PerformancePaintTiming::PerformancePaintTiming(
     PaintType type,
-    double start_time,
+    const DOMPaintTimingInfo& paint_timing_info,
     DOMWindow* source,
-    bool is_triggered_by_soft_navigation)
-    : PerformanceEntry(FromPaintTypeToString(type),
-                       start_time,
-                       start_time,
-                       source,
-                       is_triggered_by_soft_navigation) {}
+    uint32_t navigation_id)
+    : PerformanceEntry(
+          /*duration=*/0.0,
+          FromPaintTypeToString(type),
+          // https://w3c.github.io/paint-timing/#report-paint-timing
+          // Set newEntry’s startTime attribute to the default paint timestamp
+          // given paintTimingInfo.
+          paint_timing_info.presentation_time,
+          source,
+          navigation_id) {
+  SetPaintTimingInfo(paint_timing_info);
+}
 
 PerformancePaintTiming::~PerformancePaintTiming() = default;
 

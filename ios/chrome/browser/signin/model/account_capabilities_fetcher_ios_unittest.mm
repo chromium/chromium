@@ -10,16 +10,16 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/capabilities_dict.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -42,14 +42,13 @@ void CheckHaveEmailAddressDisplayed(
 class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
  public:
   AccountCapabilitiesFetcherIOSTest()
-      : chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
   ~AccountCapabilitiesFetcherIOSTest() override = default;
 
   void SetUp() override {
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   // Ensure that callback gets `capability_enabled` on
@@ -67,7 +66,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     // Register a fake identity and set the expected capabilities.
     id<SystemIdentity> identity = [FakeSystemIdentity
         identityWithEmail:base::SysUTF8ToNSString(account_info.email)
-                   gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
+                   gaiaID:account_info.gaia];
     system_identity_manager->AddIdentity(identity);
 
     if (capability_fetched.has_value() &&
@@ -93,9 +92,9 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 

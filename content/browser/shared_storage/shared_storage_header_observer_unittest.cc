@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"
@@ -28,7 +29,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/test/test_web_contents.h"
-#include "services/network/public/mojom/optional_bool.mojom.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -50,8 +55,8 @@ const char kTestOrigin1[] = "https://a.test";
 const char kTestOrigin2[] = "https://b.test";
 const char kTestOrigin3[] = "https://c.test";
 
-using OperationPtr = network::mojom::SharedStorageOperationPtr;
-using OperationType = network::mojom::SharedStorageOperationType;
+using MethodWithOptionsPtr =
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 using ContextType = StoragePartitionImpl::ContextType;
@@ -69,83 +74,25 @@ enum class TestCaseType {
   kRenderFrameHostContextNoRenderFrameHost = 9,
 };
 
-[[nodiscard]] blink::ParsedPermissionsPolicy MakeSharedStoragePermissionsPolicy(
-    const url::Origin& request_origin,
-    bool shared_storage_enabled_for_request,
-    bool shared_storage_enabled_for_all) {
-  std::vector<blink::OriginWithPossibleWildcards> allowed_origins =
+using OperationAndResult = SharedStorageWriteOperationAndResult;
+
+[[nodiscard]] network::ParsedPermissionsPolicy
+MakeSharedStoragePermissionsPolicy(const url::Origin& request_origin,
+                                   bool shared_storage_enabled_for_request,
+                                   bool shared_storage_enabled_for_all) {
+  std::vector<network::OriginWithPossibleWildcards> allowed_origins =
       shared_storage_enabled_for_request
-          ? std::vector<blink::OriginWithPossibleWildcards>(
-                {*blink::OriginWithPossibleWildcards::FromOrigin(
+          ? std::vector<network::OriginWithPossibleWildcards>(
+                {*network::OriginWithPossibleWildcards::FromOrigin(
                     request_origin)})
-          : std::vector<blink::OriginWithPossibleWildcards>();
-  return blink::ParsedPermissionsPolicy(
-      {blink::ParsedPermissionsPolicyDeclaration(
-          blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+          : std::vector<network::OriginWithPossibleWildcards>();
+  return network::ParsedPermissionsPolicy(
+      {network::ParsedPermissionsPolicyDeclaration(
+          network::mojom::PermissionsPolicyFeature::kSharedStorage,
           std::move(allowed_origins),
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/shared_storage_enabled_for_all,
           /*matches_opaque_src=*/false)});
-}
-
-[[nodiscard]] OperationPtr MakeSharedStorageOperationPtr(
-    OperationType operation_type,
-    std::optional<std::string> key,
-    std::optional<std::string> value,
-    std::optional<bool> ignore_if_present) {
-  return network::mojom::SharedStorageOperation::New(
-      operation_type, std::move(key), std::move(value),
-      AbslToMojomOptionalBool(ignore_if_present));
-}
-
-[[nodiscard]] std::vector<OperationPtr> MakeOperationVector(
-    std::vector<std::tuple<OperationType,
-                           std::optional<std::string>,
-                           std::optional<std::string>,
-                           std::optional<bool>>> operation_tuples) {
-  std::vector<OperationPtr> operations;
-  for (const auto& operation_tuple : operation_tuples) {
-    OperationPtr operation = MakeSharedStorageOperationPtr(
-        std::get<0>(operation_tuple), std::get<1>(operation_tuple),
-        std::get<2>(operation_tuple), std::get<3>(operation_tuple));
-    operations.push_back(std::move(operation));
-  }
-  return operations;
-}
-
-[[nodiscard]] SharedStorageWriteOperationAndResult SetOperation(
-    const url::Origin& request_origin,
-    std::string key,
-    std::string value,
-    std::optional<bool> ignore_if_present,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult::SetOperation(
-      request_origin, std::move(key), std::move(value), ignore_if_present,
-      result);
-}
-
-[[nodiscard]] SharedStorageWriteOperationAndResult AppendOperation(
-    const url::Origin& request_origin,
-    std::string key,
-    std::string value,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult::AppendOperation(
-      request_origin, std::move(key), std::move(value), result);
-}
-
-[[nodiscard]] SharedStorageWriteOperationAndResult DeleteOperation(
-    const url::Origin& request_origin,
-    std::string key,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult::DeleteOperation(
-      request_origin, std::move(key), result);
-}
-
-[[nodiscard]] SharedStorageWriteOperationAndResult ClearOperation(
-    const url::Origin& request_origin,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult::ClearOperation(request_origin,
-                                                              result);
 }
 
 class MockContentBrowserClient : public ContentBrowserClient {
@@ -182,7 +129,7 @@ class SharedStorageHeaderObserverTest
       public testing::WithParamInterface<TestCaseType> {
  public:
   SharedStorageHeaderObserverTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
   ~SharedStorageHeaderObserverTest() override = default;
@@ -262,7 +209,7 @@ class SharedStorageHeaderObserverTest
       case TestCaseType::kRenderFrameHostContextNoRenderFrameHost:
         return ContextType::kRenderFrameHostContext;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -345,7 +292,7 @@ class SharedStorageHeaderObserverTest
         }
         return handle_for_null_rfh_.get();
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -470,7 +417,8 @@ class SharedStorageHeaderObserverTest
   }
 
   void RunHeaderReceived(const url::Origin& request_origin,
-                         std::vector<OperationPtr> operations) {
+                         std::vector<MethodWithOptionsPtr> methods_with_options,
+                         const std::optional<std::string>& with_lock) {
     base::RunLoop loop;
     base::OnceCallback<void(std::string_view error)> bad_message_callback =
         base::BindLambdaForTesting([&](std::string_view error) {
@@ -481,8 +429,9 @@ class SharedStorageHeaderObserverTest
         GetNavigationOrDocumentHandle(request_origin);
     observer_->HeaderReceived(
         request_origin, GetContextType(), navigation_or_document_handle,
-        std::move(operations), loop.QuitClosure(),
-        std::move(bad_message_callback), /*can_defer=*/true);
+        CloneSharedStorageMethods(methods_with_options), with_lock,
+        loop.QuitClosure(), std::move(bad_message_callback),
+        /*can_defer=*/true);
     loop.Run();
 
     if (GetContextType() == ContextType::kRenderFrameHostContext &&
@@ -508,8 +457,8 @@ class SharedStorageHeaderObserverTest
           break;
         default:
           LOG(ERROR)
-              << "Encountered unexpectedly deferred shared storage operations";
-          NOTREACHED_NORETURN();
+              << "Encountered unexpectedly deferred shared storage methods";
+          NOTREACHED();
       }
       commit_loop.Run();
     }
@@ -595,7 +544,7 @@ auto describe_test_case_type = [](const auto& info) {
     case TestCaseType::kRenderFrameHostContextNoRenderFrameHost:
       return "NullRFH";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 };
 
@@ -623,27 +572,77 @@ TEST_P(SharedStorageHeaderObserverTest, SharedStorageNotAllowed) {
 
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
-  std::vector<OperationPtr> operations = MakeOperationVector(
-      {std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
-                       /*value*/ std::nullopt,
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kSet, "key1", "value1",
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kAppend, "key1", "value1",
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kSet, "key1", "value2",
-                       /*ignore_if_present*/ true),
-       std::make_tuple(OperationType::kSet, "key2", "value2",
-                       /*ignore_if_present*/ false),
-       std::make_tuple(OperationType::kDelete, "key2", /*value*/ std::nullopt,
-                       /*ignore_if_present*/ std::nullopt)});
+  std::vector<MethodWithOptionsPtr> methods_with_options;
+  methods_with_options.push_back(MojomClearMethod());
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value1",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(
+      MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/true));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key2",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(MojomDeleteMethod(/*key=*/u"key2"));
 
   // No operations are invoked because we've simulated shared storage being
   // disabled in user preferences.
-  RunHeaderReceived(kOrigin1, std::move(operations));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options),
+                    /*with_lock=*/std::nullopt);
   EXPECT_TRUE(observer_->header_results().empty());
   EXPECT_TRUE(observer_->operations().empty());
   EXPECT_EQ(Length(kOrigin1), 0);
+}
+
+TEST_P(SharedStorageHeaderObserverTest, Append_NoCapacity) {
+  set_bypass_shared_storage_allowed_count(1);
+
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
+
+  auto* manager = GetSharedStorageManager();
+  DCHECK(manager);
+
+  // Set the value at `key` to the maximum allowed length.
+  base::test::TestFuture<OperationResult> future;
+  std::u16string key(u"key1");
+  std::u16string value(
+      network::kMaxSharedStorageBytesPerOrigin / 2u - key.size(), u'a');
+  manager->Set(kOrigin1, key, value, future.GetCallback(),
+               storage::SharedStorageManager::SetBehavior::kDefault);
+  OperationResult result = future.Take();
+
+  ASSERT_EQ(result, OperationResult::kSet);
+
+  std::vector<MethodWithOptionsPtr> methods_with_options;
+
+  methods_with_options.push_back(MojomAppendMethod(key, /*value=*/u"a"));
+
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options),
+                    /*with_lock=*/std::nullopt);
+
+  if (!ExpectSuccess()) {
+    EXPECT_TRUE(observer_->header_results().empty());
+    EXPECT_TRUE(observer_->operations().empty());
+    return;
+  }
+
+  ASSERT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().back(), kOrigin1);
+
+  observer_->WaitForOperations(1);
+
+  // Expect that the database attempted the 'append' method but failed. This is
+  // due to insufficient capacity for the origin.
+  EXPECT_EQ(observer_->operations()[0],
+            OperationAndResult(kOrigin1,
+                               CloneSharedStorageMethods(methods_with_options),
+                               /*with_lock=*/std::nullopt,
+                               /*success=*/false));
+
+  EXPECT_EQ(GetExistingValue(kOrigin1, base::UTF16ToUTF8(key)),
+            base::UTF16ToUTF8(value));
 }
 
 TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
@@ -651,22 +650,23 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
 
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
-  std::vector<OperationPtr> operations = MakeOperationVector(
-      {std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
-                       /*value*/ std::nullopt,
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kSet, "key1", "value1",
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kAppend, "key1", "value1",
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kSet, "key1", "value2",
-                       /*ignore_if_present*/ true),
-       std::make_tuple(OperationType::kSet, "key2", "value2",
-                       /*ignore_if_present*/ false),
-       std::make_tuple(OperationType::kDelete, "key2", /*value*/ std::nullopt,
-                       /*ignore_if_present*/ std::nullopt)});
+  std::vector<MethodWithOptionsPtr> methods_with_options;
+  methods_with_options.push_back(MojomClearMethod());
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value1",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(
+      MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/true));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key2",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(MojomDeleteMethod(/*key=*/u"key2"));
 
-  RunHeaderReceived(kOrigin1, std::move(operations));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options),
+                    /*with_lock=*/std::nullopt);
 
   if (!ExpectSuccess()) {
     EXPECT_TRUE(observer_->header_results().empty());
@@ -676,23 +676,14 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
   }
 
   ASSERT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin1);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true, true, true, true, true));
+  EXPECT_EQ(observer_->header_results().back(), kOrigin1);
 
-  observer_->WaitForOperations(6);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(kOrigin1, OperationResult::kSuccess),
-          SetOperation(kOrigin1, "key1", "value1", std::nullopt,
-                       OperationResult::kSet),
-          AppendOperation(kOrigin1, "key1", "value1", OperationResult::kSet),
-          SetOperation(kOrigin1, "key1", "value2", true,
-                       OperationResult::kIgnored),
-          SetOperation(kOrigin1, "key2", "value2", false,
-                       OperationResult::kSet),
-          DeleteOperation(kOrigin1, "key2", OperationResult::kSuccess)));
+  observer_->WaitForOperations(1);
+  EXPECT_EQ(observer_->operations()[0],
+            OperationAndResult(kOrigin1,
+                               CloneSharedStorageMethods(methods_with_options),
+                               /*with_lock=*/std::nullopt,
+                               /*success=*/true));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, "key1"), "value1value1");
   EXPECT_TRUE(ValueNotFound(kOrigin1, "key2"));
@@ -706,21 +697,27 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   const url::Origin kOrigin2 = url::Origin::Create(GURL(kTestOrigin2));
   const url::Origin kOrigin3 = url::Origin::Create(GURL(kTestOrigin3));
 
-  std::vector<OperationPtr> operations1 = MakeOperationVector(
-      {std::make_tuple(OperationType::kSet, "a", "b",
-                       /*ignore_if_present*/ std::nullopt)});
-  std::vector<OperationPtr> operations2 =
-      MakeOperationVector({std::make_tuple(OperationType::kSet, "a", "c",
-                                           /*ignore_if_present*/ true)});
-  std::vector<OperationPtr> operations3 = MakeOperationVector(
-      {std::make_tuple(OperationType::kDelete, "a", /*value=*/std::nullopt,
-                       /*ignore_if_present*/ std::nullopt)});
+  std::vector<MethodWithOptionsPtr> methods_with_options1;
+  methods_with_options1.push_back(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                                 /*ignore_if_present=*/false));
 
-  RunHeaderReceived(kOrigin1, std::move(operations1));
+  std::vector<MethodWithOptionsPtr> methods_with_options2;
+  methods_with_options2.push_back(
+      MojomSetMethod(/*key=*/u"a", /*value=*/u"c", /*ignore_if_present=*/true));
+
+  std::vector<MethodWithOptionsPtr> methods_with_options3;
+  methods_with_options3.push_back(MojomDeleteMethod(/*key=*/u"a"));
+
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options1),
+                    /*with_lock=*/"lock1");
 
   if (!ExpectSuccess()) {
-    RunHeaderReceived(kOrigin2, std::move(operations2));
-    RunHeaderReceived(kOrigin3, std::move(operations3));
+    RunHeaderReceived(kOrigin2,
+                      CloneSharedStorageMethods(methods_with_options2),
+                      /*with_lock=*/std::nullopt);
+    RunHeaderReceived(kOrigin3,
+                      CloneSharedStorageMethods(methods_with_options3),
+                      /*with_lock=*/std::nullopt);
     EXPECT_TRUE(observer_->header_results().empty());
     EXPECT_TRUE(observer_->operations().empty());
     EXPECT_EQ(Length(kOrigin1), 0);
@@ -730,29 +727,19 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   }
 
   ASSERT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin1);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true));
+  EXPECT_EQ(observer_->header_results().back(), kOrigin1);
 
-  RunHeaderReceived(kOrigin2, std::move(operations2));
+  RunHeaderReceived(kOrigin2, CloneSharedStorageMethods(methods_with_options2),
+                    /*with_lock=*/std::nullopt);
   ASSERT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin2);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true));
+  EXPECT_EQ(observer_->header_results().back(), kOrigin2);
 
-  RunHeaderReceived(kOrigin3, std::move(operations3));
+  RunHeaderReceived(kOrigin3, CloneSharedStorageMethods(methods_with_options3),
+                    /*with_lock=*/std::nullopt);
   ASSERT_EQ(observer_->header_results().size(), 3u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin3);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true));
+  EXPECT_EQ(observer_->header_results().back(), kOrigin3);
 
   observer_->WaitForOperations(3);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          SetOperation(kOrigin1, "a", "b", std::nullopt, OperationResult::kSet),
-          SetOperation(kOrigin2, "a", "c", true, OperationResult::kSet),
-          DeleteOperation(kOrigin3, "a", OperationResult::kSuccess)));
 
   // Operations on different origins don't affect each other.
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");
@@ -761,206 +748,6 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   EXPECT_EQ(Length(kOrigin1), 1);
   EXPECT_EQ(Length(kOrigin2), 1);
   EXPECT_EQ(Length(kOrigin3), 0);
-}
-
-TEST_P(SharedStorageHeaderObserverTest, SkipMissingParams) {
-  set_bypass_shared_storage_allowed_count(1);
-
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
-
-  std::vector<OperationPtr> operations = MakeOperationVector({
-      std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // success
-      std::make_tuple(OperationType::kSet, "a", /*value*/ std::nullopt,
-                      /*ignore_if_present*/ false),  // fail
-      std::make_tuple(OperationType::kSet, /*key*/ std::nullopt, "b",
-                      /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kSet, /*key*/ std::nullopt,
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kAppend, "a", /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, "a", "b",
-                      /*ignore_if_present*/ std::nullopt),  // success
-      std::make_tuple(OperationType::kAppend, /*key*/ std::nullopt, "b",
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, /*key*/ std::nullopt,
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kSet, "a", "c",
-                      /*ignore_if_present*/ true),  // success
-      std::make_tuple(OperationType::kSet, "d", "c",
-                      /*ignore_if_present*/ std::nullopt),  // success
-      std::make_tuple(OperationType::kDelete, /*key*/ std::nullopt,
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kDelete, "anything",
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // success
-  });
-
-  RunHeaderReceived(kOrigin1, std::move(operations));
-
-  if (!ExpectSuccess()) {
-    EXPECT_TRUE(observer_->header_results().empty());
-    EXPECT_TRUE(observer_->operations().empty());
-    EXPECT_EQ(Length(kOrigin1), 0);
-    return;
-  }
-
-  ASSERT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin1);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, false, false, false, false, true,
-                                   false, false, true, true, false, true));
-
-  observer_->WaitForOperations(5);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(kOrigin1, OperationResult::kSuccess),
-          AppendOperation(kOrigin1, "a", "b", OperationResult::kSet),
-          SetOperation(kOrigin1, "a", "c", true, OperationResult::kIgnored),
-          SetOperation(kOrigin1, "d", "c", std::nullopt, OperationResult::kSet),
-          DeleteOperation(kOrigin1, "anything", OperationResult::kSuccess)));
-
-  EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");
-  EXPECT_EQ(GetExistingValue(kOrigin1, "d"), "c");
-  EXPECT_TRUE(ValueNotFound(kOrigin1, "anything"));
-  EXPECT_EQ(Length(kOrigin1), 2);
-}
-
-TEST_P(SharedStorageHeaderObserverTest, SkipInvalidParams) {
-  set_bypass_shared_storage_allowed_count(1);
-
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
-  const std::string kLong(2621441, 'x');
-
-  std::vector<OperationPtr> operations = MakeOperationVector({
-      std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // success
-      std::make_tuple(OperationType::kSet, "a", kLong,
-                      /*ignore_if_present*/ false),  // fail
-      std::make_tuple(OperationType::kSet, kLong, "b",
-                      /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kSet, "", "b",
-                      /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kSet, kLong, kLong,
-                      /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kSet, "", kLong,
-                      /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kAppend, "a", kLong,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, "a", "b",
-                      /*ignore_if_present*/ std::nullopt),  // success
-      std::make_tuple(OperationType::kAppend, kLong, "b",
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, "", "b",
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, kLong, kLong,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, "", kLong,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kSet, "a", "c",
-                      /*ignore_if_present*/ true),  // success
-      std::make_tuple(OperationType::kSet, "d", "c",
-                      /*ignore_if_present*/ std::nullopt),  // success
-      std::make_tuple(OperationType::kDelete, kLong,
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kDelete, "",
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // fail
-      std::make_tuple(OperationType::kDelete, "anything",
-                      /*value*/ std::nullopt,
-                      /*ignore_if_present*/ std::nullopt),  // success
-  });
-
-  RunHeaderReceived(kOrigin1, std::move(operations));
-
-  if (!ExpectSuccess()) {
-    EXPECT_TRUE(observer_->header_results().empty());
-    EXPECT_TRUE(observer_->operations().empty());
-    EXPECT_EQ(Length(kOrigin1), 0);
-    return;
-  }
-
-  ASSERT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin1);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, false, false, false, false, false,
-                                   false, true, false, false, false, false,
-                                   true, true, false, false, true));
-
-  observer_->WaitForOperations(5);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(kOrigin1, OperationResult::kSuccess),
-          AppendOperation(kOrigin1, "a", "b", OperationResult::kSet),
-          SetOperation(kOrigin1, "a", "c", true, OperationResult::kIgnored),
-          SetOperation(kOrigin1, "d", "c", std::nullopt, OperationResult::kSet),
-          DeleteOperation(kOrigin1, "anything", OperationResult::kSuccess)));
-
-  EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");
-  EXPECT_EQ(GetExistingValue(kOrigin1, "d"), "c");
-  EXPECT_TRUE(ValueNotFound(kOrigin1, "anything"));
-  EXPECT_EQ(Length(kOrigin1), 2);
-}
-
-TEST_P(SharedStorageHeaderObserverTest, IgnoreExtraParams) {
-  set_bypass_shared_storage_allowed_count(1);
-
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
-
-  std::vector<OperationPtr> operations = MakeOperationVector(
-      {std::make_tuple(OperationType::kClear, "key1", "value2",
-                       /*ignore_if_present*/ true),  // extra params
-       std::make_tuple(OperationType::kSet, "key1", "value1",
-                       /*ignore_if_present*/ std::nullopt),
-       std::make_tuple(OperationType::kAppend, "key1", "value1",
-                       /*ignore_if_present*/ false),  // extra param
-       std::make_tuple(OperationType::kSet, "key1", "value2",
-                       /*ignore_if_present*/ true),
-       std::make_tuple(OperationType::kSet, "key2", "value2",
-                       /*ignore_if_present*/ false),
-       std::make_tuple(OperationType::kDelete, "key2", "value2",
-                       /*ignore_if_present*/ false)});  // extra params
-
-  RunHeaderReceived(kOrigin1, std::move(operations));
-
-  if (!ExpectSuccess()) {
-    EXPECT_TRUE(observer_->header_results().empty());
-    EXPECT_TRUE(observer_->operations().empty());
-    EXPECT_EQ(Length(kOrigin1), 0);
-    return;
-  }
-
-  ASSERT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, kOrigin1);
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true, true, true, true, true));
-
-  // Superfluous parameters are omitted.
-  observer_->WaitForOperations(6);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(kOrigin1, OperationResult::kSuccess),
-          SetOperation(kOrigin1, "key1", "value1", std::nullopt,
-                       OperationResult::kSet),
-          AppendOperation(kOrigin1, "key1", "value1", OperationResult::kSet),
-          SetOperation(kOrigin1, "key1", "value2", true,
-                       OperationResult::kIgnored),
-          SetOperation(kOrigin1, "key2", "value2", false,
-                       OperationResult::kSet),
-          DeleteOperation(kOrigin1, "key2", OperationResult::kSuccess)));
-
-  EXPECT_EQ(GetExistingValue(kOrigin1, "key1"), "value1value1");
-  EXPECT_TRUE(ValueNotFound(kOrigin1, "key2"));
-  EXPECT_EQ(Length(kOrigin1), 1);
 }
 
 }  // namespace content

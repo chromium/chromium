@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
@@ -98,18 +97,15 @@ component("services") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//gpu/ipc/service",
     "//media",
-    "//media:shared_memory_support",
     "//media/gpu",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/service",
-    "//media/learning/impl",
-    "//media/learning/mojo:impl",
     "//media/mojo/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//services/metrics/public/mojom",
     "//services/service_manager/public/mojom",
   ]
 
@@ -119,7 +115,7 @@ component("services") {
     sources += [ "gpu_mojo_media_client_mac.cc" ]
   } else if (is_win) {
     sources += [ "gpu_mojo_media_client_win.cc" ]
-  } else if (use_vaapi || use_v4l2_codec) {
+  } else if (use_linux_video_acceleration) {
     if (is_linux) {
       sources += [ "gpu_mojo_media_client_linux.cc" ]
     } else {
@@ -134,7 +130,7 @@ component("services") {
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (use_linux_video_acceleration) {
     sources += [
       "mojo_video_encode_accelerator_provider_factory.cc",
       "mojo_video_encode_accelerator_provider_factory.h",
@@ -204,21 +200,23 @@ component("services") {
     deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
-  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
+  if (allow_hosting_oop_video_decoder) {
     sources += [
-      "stable_video_decoder_factory_process_service.cc",
-      "stable_video_decoder_factory_process_service.h",
-      "stable_video_decoder_factory_service.cc",
-      "stable_video_decoder_factory_service.h",
-      "stable_video_decoder_service.cc",
-      "stable_video_decoder_service.h",
+      "oop_video_decoder_factory_process_service.cc",
+      "oop_video_decoder_factory_process_service.h",
+      "oop_video_decoder_factory_service.cc",
+      "oop_video_decoder_factory_service.h",
+      "oop_video_decoder_service.cc",
+      "oop_video_decoder_service.h",
     ]
 
-    public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
+    public_deps += [ "//media/mojo/mojom" ]
 
     deps += [
       "//components/viz/common",
       "//media/gpu/chromeos",
+      "//media/mojo/common",
+      "//services/viz/public/cpp/gpu",
     ]
   }
 
@@ -286,7 +284,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/ukm:test_support",
     "//media:test_support",
-    "//media/learning/common",
     "//media/mojo:test_support",
     "//media/mojo/clients",
     "//media/mojo/common",
@@ -320,14 +317,15 @@ source_set("unit_tests") {
     deps += [ "//third_party/widevine/cdm:headers" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
     ]
   }
 
-  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
-    sources += [ "stable_video_decoder_service_unittest.cc" ]
+  if (allow_hosting_oop_video_decoder) {
+    sources += [ "oop_video_decoder_service_unittest.cc" ]
+    deps += [ "//gpu:test_support" ]
   }
 
   if (is_fuchsia) {
@@ -338,6 +336,10 @@ source_set("unit_tests") {
 
     deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 mojolpm_fuzzer_test("webrtc_video_perf_mojolpm_fuzzer") {
@@ -359,6 +361,7 @@ mojolpm_fuzzer_test("webrtc_video_perf_mojolpm_fuzzer") {
     "//components/leveldb_proto:test_support",
     "//media",
     "//media/capabilities:webrtc_video_stats_proto",
+    "//media/mojo/mojom:mojom_mojolpm",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
     "//third_party/libprotobuf-mutator",

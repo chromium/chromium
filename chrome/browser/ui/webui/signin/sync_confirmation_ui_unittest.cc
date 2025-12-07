@@ -15,6 +15,8 @@ using testing::HasSubstr;
 using testing::Not;
 using testing::ValuesIn;
 
+namespace {
+
 struct TestParam {
   // Syncable data types to disable, simulating effects of policies.
   const UserSelectableTypeSet disabled_types;
@@ -68,7 +70,7 @@ const TestParam kGetSyncBenefitsListJSONParams[] = {
 void DisableTypes(syncer::TestSyncService& test_sync_service,
                   syncer::UserSelectableTypeSet types) {
   for (auto type : types) {
-    test_sync_service.GetUserSettings()->SetTypeIsManaged(type, true);
+    test_sync_service.GetUserSettings()->SetTypeIsManagedByPolicy(type, true);
   }
 }
 
@@ -92,3 +94,5 @@ TEST_P(SyncConfirmationUITest, GetSyncBenefitsListJSON) {
 INSTANTIATE_TEST_SUITE_P(,
                          SyncConfirmationUITest,
                          ValuesIn(kGetSyncBenefitsListJSONParams));
+
+}  // namespace

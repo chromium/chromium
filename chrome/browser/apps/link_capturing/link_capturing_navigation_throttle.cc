@@ -10,22 +10,24 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
+#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/origin.h"
 
 namespace apps {
@@ -154,14 +156,13 @@ bool LinkCapturingNavigationThrottle::
 LinkCapturingNavigationThrottle::Delegate::~Delegate() = default;
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-LinkCapturingNavigationThrottle::MaybeCreate(
-    content::NavigationHandle* handle,
+bool LinkCapturingNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<Delegate> delegate) {
   // If the reimplementation params of the link capturing feature flag is
-  // enabled, turn off the "old" link capturing behavior.
-  if (features::IsLinkCapturingReimplementationEnabled()) {
-    return nullptr;
+  // enabled for all navigations, turn off the "old" link capturing behavior.
+  if (features::IsNavigationCapturingReimplEnabled()) {
+    return false;
   }
 
   // Don't handle navigations in subframes or main frames that are in a nested
@@ -171,25 +172,26 @@ LinkCapturingNavigationThrottle::MaybeCreate(
   // prerender, the prerender-activating navigation doesn't run throttles so we
   // must cancel it during initial loading to get a standard (non-prerendering)
   // navigation at link-click-time.
-  if (!handle->IsInOutermostMainFrame()) {
-    return nullptr;
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInOutermostMainFrame()) {
+    return false;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
+  content::WebContents* web_contents = handle.GetWebContents();
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr) {
-    return nullptr;
+    return false;
   }
 
-  if (delegate->ShouldCancelThrottleCreation(handle)) {
-    return nullptr;
+  if (delegate->ShouldCancelThrottleCreation(registry)) {
+    return false;
   }
 
   // If there is no browser attached to this web-contents yet, this was a
   // middle-mouse-click action, which should not be captured.
   // TODO(crbug.com/40279479): Find a better way to detect middle-clicks.
   if (chrome::FindBrowserWithTab(web_contents) == nullptr) {
-    return nullptr;
+    return false;
   }
 
   // Never link capture links that open in a popup window. Popups are closely
@@ -199,11 +201,12 @@ LinkCapturingNavigationThrottle::MaybeCreate(
       GetLinkCapturingSourceDisposition(web_contents);
   if (disposition == WindowOpenDisposition::NEW_POPUP &&
       !web_contents->GetLastCommittedURL().is_valid()) {
-    return nullptr;
+    return false;
   }
 
-  return base::WrapUnique(
-      new LinkCapturingNavigationThrottle(handle, std::move(delegate)));
+  registry.AddThrottle(base::WrapUnique(
+      new LinkCapturingNavigationThrottle(registry, std::move(delegate))));
+  return true;
 }
 
 LinkCapturingNavigationThrottle::LaunchCallbackForTesting&
@@ -238,7 +241,7 @@ bool LinkCapturingNavigationThrottle::IsGoogleRedirectorUrl(const GURL& url) {
     return false;
   }
 
-  return url.path_piece() == "/url" && url.has_query();
+  return url.path() == "/url" && url.has_query();
 }
 
 // If the previous url and current url are not the same (AKA a redirection),
@@ -268,6 +271,13 @@ bool LinkCapturingNavigationThrottle::ShouldOverrideUrlIfRedirected(
 ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   content::NavigationHandle* handle = navigation_handle();
 
+  // Exit early if the reimplementation data is attached, to avoid running two
+  // different throttles simultaneously. Note: this cannot be checked in
+  // `MaybeCreate()` since the data might get attached after it's executed.
+  if (web_app::NavigationCapturingProcess::GetForNavigationHandle(*handle)) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   // If the navigation will update the same document, don't consider as a
   // capturable link.
   if (handle->IsSameDocument()) {
@@ -296,8 +306,9 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<LaunchCallback> launch_link_capture =
-      delegate_->CreateLinkCaptureLaunchClosure(profile, web_contents, url,
-                                                is_navigation_from_link);
+      delegate_->CreateLinkCaptureLaunchClosure(
+          profile, web_contents, url, is_navigation_from_link,
+          handle->GetRedirectChain().size());
   if (!launch_link_capture.has_value()) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -359,9 +370,8 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
 }
 
 LinkCapturingNavigationThrottle::LinkCapturingNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<Delegate> delegate)
-    : content::NavigationThrottle(navigation_handle),
-      delegate_(std::move(delegate)) {}
+    : content::NavigationThrottle(registry), delegate_(std::move(delegate)) {}
 
 }  // namespace apps

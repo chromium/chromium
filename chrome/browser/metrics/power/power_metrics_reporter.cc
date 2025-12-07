@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
@@ -63,8 +64,7 @@ const char* GetMetricSuffixFromProcessType(MonitoredProcessType type) {
     case MonitoredProcessType::kOther:
       return "OtherProcess";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

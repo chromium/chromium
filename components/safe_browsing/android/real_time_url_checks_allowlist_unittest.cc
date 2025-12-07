@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/android/real_time_url_checks_allowlist.h"
-#include "components/safe_browsing/android/proto/realtimeallowlist.pb.h"
 
 #include <string.h>
 
@@ -11,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/safe_browsing/core/common/proto/realtimeallowlist.pb.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

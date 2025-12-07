@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("app_mode") {
+  sources = [
+    "app_mode_utils.cc",
+    "app_mode_utils.h",
+  ]
+
+  public_deps = [ "//url" ]
+
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/app:command_ids",
+    "//chrome/browser/policy:policy_util",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//components/content_settings/core/common",
+    "//components/permissions:permissions_common",
+    "//components/prefs",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
+  }
+}

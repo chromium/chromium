@@ -6,11 +6,11 @@ html
 | <body>
 
 ../resources/tests_innerHTML_1.dat:
-80
-81
-82
+76
+77
+78
 
-Test 80 of 85 in ../resources/tests_innerHTML_1.dat failed. Input:
+Test 76 of 81 in ../resources/tests_innerHTML_1.dat failed. Input:
 <input><option>
 Got:
 | <input>
@@ -18,7 +18,7 @@ Got:
 Expected:
 | <option>
 
-Test 81 of 85 in ../resources/tests_innerHTML_1.dat failed. Input:
+Test 77 of 81 in ../resources/tests_innerHTML_1.dat failed. Input:
 <keygen><option>
 Got:
 | <keygen>
@@ -26,7 +26,7 @@ Got:
 Expected:
 | <option>
 
-Test 82 of 85 in ../resources/tests_innerHTML_1.dat failed. Input:
+Test 78 of 81 in ../resources/tests_innerHTML_1.dat failed. Input:
 <textarea><option>
 Got:
 | <textarea>

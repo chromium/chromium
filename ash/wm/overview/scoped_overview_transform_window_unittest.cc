@@ -220,7 +220,7 @@ TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
   EXPECT_EQ(OverviewItemFillMode::kPillarBoxed, scoped_tall.fill_mode());
   EXPECT_EQ(OverviewItemFillMode::kNormal, scoped_normal.fill_mode());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const display::Display& display = screen->GetPrimaryDisplay();
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,

@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -51,6 +52,8 @@ constexpr uint8_t kSha256Hash[] = {
     0x0b, 0x50, 0x60, 0x2b, 0x7f, 0x6c, 0x64, 0x80, 0x09, 0x04};
 
 constexpr char kTestVersion[] = "1.0.0.6";
+constexpr char kTestVersionWithSeqNum[] = "0_1.0.0.6";
+constexpr char kCohortId[] = "test_cohort_id";
 
 base::FilePath GetTestFile(const std::string& file_name) {
   return base::android::GetIsolatedTestRoot()
@@ -66,11 +69,12 @@ void CreateTestFiles(const base::FilePath& install_dir) {
 }
 
 void AssertOnDemandRequest(bool on_demand, std::string post_data) {
-  const auto root = base::JSONReader::Read(post_data);
+  const auto root =
+      base::JSONReader::Read(post_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   const auto* request = root->GetDict().FindDict("request");
   ASSERT_TRUE(request);
-  const auto& app = (*request->FindList("app"))[0].GetDict();
+  const auto& app = (*request->FindList("apps"))[0].GetDict();
   if (on_demand) {
     EXPECT_EQ("ondemand", *app.FindString("installsource"));
   } else {
@@ -96,10 +100,11 @@ class FailingNetworkFetcher : public update_client::NetworkFetcher {
       PostRequestCompleteCallback post_request_complete_callback) override {
     AssertOnDemandRequest(false, post_data);
     std::move(post_request_complete_callback)
-        .Run(/* response_body= */ std::make_unique<std::string>(""),
+        .Run(/* response_body= */ std::string(""),
              /* network_error= */ -2,
              /* header_etag= */ "",
              /* header_x_cup_server_proof= */ "",
+             /* header_set_cookie= */ "",
              /* x_header_retry_after_sec= */ 0ll);
   }
 
@@ -137,10 +142,11 @@ class OnDemandNetworkFetcher : public update_client::NetworkFetcher {
       PostRequestCompleteCallback post_request_complete_callback) override {
     AssertOnDemandRequest(true, post_data);
     std::move(post_request_complete_callback)
-        .Run(/* response_body= */ std::make_unique<std::string>(""),
+        .Run(/* response_body= */ std::string(),
              /* network_error= */ -2,
              /* header_etag= */ "",
              /* header_x_cup_server_proof= */ "",
+             /* header_set_cookie= */ "",
              /* x_header_retry_after_sec= */ 0ll);
   }
 
@@ -193,10 +199,11 @@ class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
       network_error = -2;
     }
     std::move(post_request_complete_callback)
-        .Run(/* response_body= */ std::make_unique<std::string>(response_body),
+        .Run(/* response_body= */ std::move(response_body),
              /* network_error= */ network_error,
              /* header_etag= */ "",
              /* header_x_cup_server_proof= */ "",
+             /* header_set_cookie= */ "",
              /* x_header_retry_after_sec= */ 0ll);
   }
 
@@ -365,20 +372,37 @@ class AwComponentUpdateServiceTest : public testing::Test {
   // Override from testing::Test
   void SetUp() override {
     update_client::RegisterPrefs(test_pref_->registry());
+    auto persisted_data = update_client::CreatePersistedData(
+        base::BindRepeating(
+            [](PrefService* pref_service) { return pref_service; },
+            test_pref_.get()),
+        nullptr);
+    persisted_data->SetCohort(kComponentId, kCohortId);
 
     ASSERT_TRUE(base::android::GetDataDirectory(&component_install_dir_));
     component_install_dir_ = component_install_dir_.AppendASCII("components")
                                  .AppendASCII("cus")
                                  .AppendASCII(kComponentId);
+
+    ASSERT_TRUE(base::android::GetDataDirectory(&component_provider_dir_));
+    component_provider_dir_ = component_provider_dir_.AppendASCII("components")
+                                  .AppendASCII("cps")
+                                  .AppendASCII(kComponentId);
   }
 
   void TearDown() override {
-    if (base::PathExists(component_install_dir_))
+    if (base::PathExists(component_install_dir_)) {
       ASSERT_TRUE(base::DeletePathRecursively(component_install_dir_));
+    }
+
+    if (base::PathExists(component_provider_dir_)) {
+      ASSERT_TRUE(base::DeletePathRecursively(component_provider_dir_));
+    }
   }
 
  protected:
   base::FilePath component_install_dir_;
+  base::FilePath component_provider_dir_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_ =
       std::make_unique<TestingPrefServiceSimple>();
 
@@ -457,6 +481,35 @@ TEST_F(AwComponentUpdateServiceTest, TestOnDemandUpdateRequest) {
   EXPECT_EQ(service.GetMockPolicy()->GetVersion().GetString(), kTestVersion);
   EXPECT_EQ(service.GetMockPolicy()->GetInstallDir(),
             component_install_dir_.AppendASCII(kTestVersion));
+}
+
+TEST_F(AwComponentUpdateServiceTest, TestExtraMetadataFile) {
+  CreateTestFiles(component_install_dir_.AppendASCII(kTestVersion));
+  CreateTestFiles(component_provider_dir_.AppendASCII(kTestVersionWithSeqNum));
+  base::RunLoop run_loop;
+  TestAwComponentUpdateService service(base::MakeRefCounted<MockConfigurator>(
+      test_pref_.get(),
+      base::MakeRefCounted<
+          MockNetworkFetcherFactory<OnDemandNetworkFetcher>>()));
+  base::OnceClosure closure = run_loop.QuitClosure();
+  service.StartComponentUpdateService(
+      base::BindOnce(
+          [](base::OnceClosure closure, int) { std::move(closure).Run(); },
+          std::move(closure)),
+      true);
+  run_loop.Run();
+
+  base::FilePath metadata_file_path =
+      component_provider_dir_.AppendASCII(kTestVersionWithSeqNum)
+          .AppendASCII("aw_extra_component_metadata.json");
+  std::string metadata_file_contents;
+
+  EXPECT_TRUE(base::PathExists(metadata_file_path));
+  ASSERT_TRUE(
+      base::ReadFileToString(metadata_file_path, &metadata_file_contents));
+  EXPECT_EQ(metadata_file_contents,
+            "{\"" + std::string(component_updater::kMetadataFileCohortIdKey) +
+                "\":\"" + std::string(kCohortId) + "\"}");
 }
 
 }  // namespace android_webview

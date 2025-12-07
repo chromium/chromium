@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_test_utils.h"
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "net/base/io_buffer.h"
@@ -38,8 +37,8 @@ FakeP2PSocketDelegate::~FakeP2PSocketDelegate() {
 }
 
 void FakeP2PSocketDelegate::DestroySocket(P2PSocket* socket) {
-  auto it = base::ranges::find(sockets_to_be_destroyed_, socket,
-                               &std::unique_ptr<P2PSocket>::get);
+  auto it = std::ranges::find(sockets_to_be_destroyed_, socket,
+                              &std::unique_ptr<P2PSocket>::get);
   CHECK(it != sockets_to_be_destroyed_.end());
   sockets_to_be_destroyed_.erase(it);
 }
@@ -47,22 +46,9 @@ void FakeP2PSocketDelegate::DestroySocket(P2PSocket* socket) {
 void FakeP2PSocketDelegate::DumpPacket(base::span<const uint8_t> data,
                                        bool incoming) {}
 
-void FakeP2PSocketDelegate::AddAcceptedConnection(
-    std::unique_ptr<P2PSocket> accepted) {
-  accepted_.push_back(std::move(accepted));
-}
-
 void FakeP2PSocketDelegate::ExpectDestruction(
     std::unique_ptr<P2PSocket> socket) {
   sockets_to_be_destroyed_.push_back(std::move(socket));
-}
-
-std::unique_ptr<P2PSocket> FakeP2PSocketDelegate::pop_accepted_socket() {
-  if (accepted_.empty())
-    return nullptr;
-  auto result = std::move(accepted_.front());
-  accepted_.pop_front();
-  return result;
 }
 
 FakeSocket::FakeSocket(std::string* written_data)
@@ -74,15 +60,18 @@ FakeSocket::FakeSocket(std::string* written_data)
 
 FakeSocket::~FakeSocket() {}
 
-void FakeSocket::AppendInputData(const char* data, int data_size) {
-  input_data_.insert(input_data_.end(), data, data + data_size);
+void FakeSocket::AppendInputData(std::string_view data) {
+  input_data_.append(data);
   // Complete pending read if any.
   if (read_pending_) {
     read_pending_ = false;
     int result = std::min(read_buffer_size_,
                           static_cast<int>(input_data_.size() - input_pos_));
     CHECK(result > 0);
-    memcpy(read_buffer_->data(), &input_data_[0] + input_pos_, result);
+    read_buffer_->span().copy_prefix_from(
+        base::as_byte_span(input_data_)
+            .subspan(base::checked_cast<size_t>(input_pos_),
+                     base::checked_cast<size_t>(result)));
     input_pos_ += result;
     read_buffer_ = nullptr;
     std::move(read_callback_).Run(result);
@@ -104,7 +93,10 @@ int FakeSocket::Read(net::IOBuffer* buf,
   if (input_pos_ < static_cast<int>(input_data_.size())) {
     int result =
         std::min(buf_len, static_cast<int>(input_data_.size()) - input_pos_);
-    memcpy(buf->data(), &(*input_data_.begin()) + input_pos_, result);
+    buf->span().copy_prefix_from(
+        base::as_byte_span(input_data_)
+            .subspan(base::checked_cast<size_t>(input_pos_),
+                     base::checked_cast<size_t>(result)));
     input_pos_ += result;
     return result;
   } else {
@@ -124,6 +116,9 @@ int FakeSocket::Write(
   DCHECK(buf);
   DCHECK(!write_pending_);
 
+  if (error_on_next_write_ != 0) {
+    return error_on_next_write_;
+  }
   if (async_write_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -135,8 +130,8 @@ int FakeSocket::Write(
   }
 
   if (written_data_) {
-    written_data_->insert(written_data_->end(), buf->data(),
-                          buf->data() + buf_len);
+    written_data_->append(
+        base::as_string_view(buf->first(base::checked_cast<size_t>(buf_len))));
   }
   return buf_len;
 }
@@ -147,8 +142,8 @@ void FakeSocket::DoAsyncWrite(scoped_refptr<net::IOBuffer> buf,
   write_pending_ = false;
 
   if (written_data_) {
-    written_data_->insert(written_data_->end(), buf->data(),
-                          buf->data() + buf_len);
+    written_data_->append(
+        base::as_string_view(buf->first(base::checked_cast<size_t>(buf_len))));
   }
   std::move(callback).Run(buf_len);
 }
@@ -168,7 +163,7 @@ int FakeSocket::Connect(net::CompletionOnceCallback callback) {
 }
 
 void FakeSocket::Disconnect() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeSocket::IsConnected() const {
@@ -190,8 +185,7 @@ int FakeSocket::GetLocalAddress(net::IPEndPoint* address) const {
 }
 
 const net::NetLogWithSource& FakeSocket::NetLog() const {
-  NOTREACHED_IN_MIGRATION();
-  return net_log_;
+  NOTREACHED();
 }
 
 bool FakeSocket::WasEverUsed() const {
@@ -199,7 +193,7 @@ bool FakeSocket::WasEverUsed() const {
 }
 
 net::NextProto FakeSocket::GetNegotiatedProtocol() const {
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool FakeSocket::GetSSLInfo(net::SSLInfo* ssl_info) {

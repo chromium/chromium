@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/modules/printing/web_printing_manager.h"
 
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/printing/web_printer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,7 +30,7 @@ bool CheckContextAndPermissions(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!execution_context->IsIsolatedContext() ||
       !execution_context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated)) {
+          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Frame is not sufficiently isolated to use Web Printing.");
@@ -37,7 +38,7 @@ bool CheckContextAndPermissions(ScriptState* script_state,
   }
 
   if (!execution_context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWebPrinting)) {
+          network::mojom::PermissionsPolicyFeature::kWebPrinting)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Permissions-Policy: web-printing is disabled.");
@@ -49,22 +50,21 @@ bool CheckContextAndPermissions(ScriptState* script_state,
 
 }  // namespace
 
-const char WebPrintingManager::kSupplementName[] = "PrintingManager";
-
 WebPrintingManager* WebPrintingManager::GetWebPrintingManager(
-    NavigatorBase& navigator) {
+    ExecutionContext& execution_context) {
   WebPrintingManager* printing_manager =
-      Supplement<NavigatorBase>::From<WebPrintingManager>(navigator);
+      execution_context.GetWebPrintingManager();
   if (!printing_manager) {
-    printing_manager = MakeGarbageCollected<WebPrintingManager>(navigator);
-    ProvideTo(navigator, printing_manager);
+    printing_manager =
+        MakeGarbageCollected<WebPrintingManager>(&execution_context);
+    execution_context.SetWebPrintingManager(printing_manager);
   }
   return printing_manager;
 }
 
-WebPrintingManager::WebPrintingManager(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      printing_service_(navigator.GetExecutionContext()) {}
+WebPrintingManager::WebPrintingManager(ExecutionContext* execution_context)
+    : execution_context_(*execution_context),
+      printing_service_(execution_context) {}
 
 ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
     ScriptState* script_state,
@@ -83,7 +83,7 @@ ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<WebPrinter>>>(
           script_state, exception_state.GetContext());
-  service->GetPrinters(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+  service->GetPrinters(resolver->WrapCallbackInScriptScope(BindOnce(
       &WebPrintingManager::OnPrintersRetrieved, WrapPersistent(this))));
   return resolver->Promise();
 }
@@ -91,13 +91,13 @@ ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
 void WebPrintingManager::Trace(Visitor* visitor) const {
   visitor->Trace(printing_service_);
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 mojom::blink::WebPrintingService* WebPrintingManager::GetPrintingService() {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   if (!printing_service_.is_bound()) {
-    auto* execution_context = GetSupplementable()->GetExecutionContext();
+    auto* execution_context = GetExecutionContext();
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         printing_service_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -124,9 +124,13 @@ void WebPrintingManager::OnPrintersRetrieved(
   HeapVector<Member<WebPrinter>> printers;
   for (auto& printer_info : result->get_printers()) {
     printers.push_back(MakeGarbageCollected<WebPrinter>(
-        GetSupplementable()->GetExecutionContext(), std::move(printer_info)));
+        GetExecutionContext(), std::move(printer_info)));
   }
   resolver->Resolve(printers);
+}
+
+ExecutionContext* WebPrintingManager::GetExecutionContext() {
+  return execution_context_;
 }
 
 }  // namespace blink

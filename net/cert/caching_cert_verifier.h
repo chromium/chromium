@@ -54,6 +54,12 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
              CompletionOnceCallback callback,
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+      const NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
   void AddObserver(CertVerifier::Observer* observer) override;
   void RemoveObserver(CertVerifier::Observer* observer) override;
@@ -110,6 +116,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
   void OnRequestFinished(uint32_t config_id,
                          const RequestParams& params,
                          base::Time start_time,
+                         base::TimeTicks start_time_ticks,
                          CompletionOnceCallback callback,
                          CertVerifyResult* verify_result,
                          int error);

@@ -18,6 +18,7 @@
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/data_type_registry.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
+#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 
@@ -26,7 +27,7 @@ class DataTypeRegistry;
 class ServerConnectionManager;
 
 // Default number of items a client can commit in a single message.
-static const int kDefaultMaxCommitBatchSize = 25;
+constexpr int kDefaultMaxCommitBatchSize = 25;
 
 // SyncCycleContext encapsulates the contextual information and engine
 // components specific to a SyncCycle.  Unlike the SyncCycle, the context

@@ -10,10 +10,9 @@
 #include "ash/public/cpp/resize_shadow_type.h"
 #include "ash/style/ash_color_id.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/color/color_provider_source_observer.h"
+#include "ui/color/color_variant.h"
 
 namespace aura {
 class Window;
@@ -32,9 +31,16 @@ namespace ash {
 // handled by the EventFilter.
 class ResizeShadow : public ui::ColorProviderSourceObserver {
  public:
-  // Resize shadow parameters. Default params values are unresizable window
+  // Resize shadow parameters. Default params values are non-resizable window
   // shadow.
   struct InitParams {
+    InitParams();
+
+    InitParams(const InitParams& other);
+    InitParams& operator=(const InitParams& other);
+
+    ~InitParams();
+
     // The width of the resize shadow that appears on edge of the window.
     int thickness = 8;
     // The corner radius of the resize shadow.
@@ -44,13 +50,13 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
     // The opacity of the resize shadow.
     float opacity = 0.6f;
     // The color of the resize shadow.
-    absl::variant<SkColor, ui::ColorId> color = kColorAshResizeShadowColor;
+    ui::ColorVariant color = kColorAshResizeShadowColor;
     // Controls whether the resize shadow shall respond to hit testing or not.
     bool hit_test_enabled = true;
     int hide_duration_ms = 100;
-    // True if the resize shadow is configured for a window with rounded
+    // True if the resize shadow is configured for a window with large rounded
     // corners.
-    bool is_for_rounded_window = false;
+    bool is_for_large_rounded_corners = false;
   };
 
   ResizeShadow(aura::Window* window,
@@ -61,7 +67,9 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
   ~ResizeShadow() override;
 
   bool visible() const { return visible_; }
-  bool is_for_rounded_window() const { return params_.is_for_rounded_window; }
+  bool is_for_large_rounded_corners() const {
+    return params_.is_for_large_rounded_corners;
+  }
 
   int GetLastHitTestForTest() const { return last_hit_test_; }
   const ui::Layer* GetLayerForTest() const { return layer_.get(); }

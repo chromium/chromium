@@ -23,11 +23,17 @@ declare global {
         elements: BookmarkNodeDataElement[];
       }
 
+      interface OpenInNewTabParams {
+        active?: boolean;
+        split?: boolean;
+      }
+
       export function copy(idList: string[]): Promise<void>;
       export function cut(idList: string[]): Promise<void>;
       export function paste(parentId: string, selectedIdList?: string[]):
           Promise<void>;
       export function canPaste(parentId: string): Promise<boolean>;
+      export function isActiveTabInSplit(): Promise<boolean>;
       export function sortChildren(parentId: string): void;
       export function startDrag(
           idList: string[], dragNodeIndex: number, isFromTouch: boolean,
@@ -38,9 +44,11 @@ declare global {
       export function removeTrees(idList: string[]): Promise<void>;
       export function undo(): void;
       export function redo(): void;
-      export function openInNewTab(id: string, active: boolean): void;
+      export function openInNewTab(
+          id: string, params?: OpenInNewTabParams): void;
       export function openInNewWindow(idList: string[], incognito: boolean):
           void;
+      export function openInNewTabGroup(idList: string[]): void;
       function importAlias(): Promise<void>;
       function exportAlias(): Promise<void>;
       export {importAlias as import};

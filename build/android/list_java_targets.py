@@ -25,11 +25,11 @@ build/android/list_java_targets.py -C out/Default --stats
 
 import argparse
 import collections
+import glob
 import json
 import logging
 import os
 import shlex
-import shutil
 import subprocess
 import sys
 
@@ -58,14 +58,6 @@ _VALID_TYPES = (
 )
 
 
-def _resolve_ninja():
-  # Prefer the version on PATH, but fallback to known version if PATH doesn't
-  # have one (e.g. on bots).
-  if shutil.which('ninja') is None:
-    return os.path.join(_SRC_ROOT, 'third_party', 'ninja', 'ninja')
-  return 'ninja'
-
-
 def _compile(output_dir, args, quiet=False):
   cmd = gn_helpers.CreateBuildCommand(output_dir) + args
   logging.info('Running: %s', shlex.join(cmd))
@@ -75,28 +67,43 @@ def _compile(output_dir, args, quiet=False):
     subprocess.run(cmd, check=True, stdout=sys.stderr)
 
 
-def _query_for_build_config_targets(output_dir):
+def _query_for_targets(output_dir):
   # Query ninja rather than GN since it's faster.
-  # Use ninja rather than autoninja to avoid extra output if user has set the
-  # NINJA_SUMMARIZE_BUILD environment variable.
-  cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
+  cmd = [
+      os.path.join(_SRC_ROOT, 'third_party', 'siso', 'cipd', 'siso'), 'query',
+      'targets', '-C', output_dir
+  ]
   logging.info('Running: %r', cmd)
-  ninja_output = subprocess.run(cmd,
-                                check=True,
-                                capture_output=True,
-                                encoding='ascii').stdout
-  ret = []
-  SUFFIX = '__build_config_crbug_908819'
-  SUFFIX_LEN = len(SUFFIX)
-  for line in ninja_output.splitlines():
+  try:
+    query_output = subprocess.run(cmd,
+                                  check=True,
+                                  capture_output=True,
+                                  encoding='ascii').stdout
+  except subprocess.CalledProcessError as e:
+    sys.stderr.write('Command output:\n' + e.stdout + e.stderr)
+    raise
+
+  # Dict of target name -> has_build_config
+  ret = {}
+  # java_prebuilt() targets do not write build_config files, so look for
+  # __assetres as well. Targets like android_assets() will not appear at all
+  # (oh well).
+  SUFFIX1 = '__build_config_crbug_908819'
+  SUFFIX_LEN1 = len(SUFFIX1)
+  SUFFIX2 = '__assetres'
+  SUFFIX_LEN2 = len(SUFFIX2)
+  for line in query_output.splitlines():
     ninja_target = line.rsplit(':', 1)[0]
     # Ignore root aliases by ensuring a : exists.
-    if ':' in ninja_target and ninja_target.endswith(SUFFIX):
-      ret.append(f'//{ninja_target[:-SUFFIX_LEN]}')
+    if ':' in ninja_target:
+      if ninja_target.endswith(SUFFIX1):
+        ret[f'//{ninja_target[:-SUFFIX_LEN1]}'] = True
+      elif ninja_target.endswith(SUFFIX2):
+        ret.setdefault(f'//{ninja_target[:-SUFFIX_LEN2]}', False)
   return ret
 
 
-def _query_json(*, json_dict: dict, query: str, path: str):
+def _query_json(*, json_dict: dict, query: str, target: str):
   """Traverses through the json dictionary according to the query.
 
   If at any point a key does not exist, return the empty string, but raise an
@@ -129,17 +136,19 @@ def _query_json(*, json_dict: dict, query: str, path: str):
         return ''
   except AttributeError as e:
     raise Exception(
-        f'Failed when attempting to get {queries} from {path}') from e
+        f'Failed when attempting to get {queries} from {target}') from e
   return value
 
 
 class _TargetEntry:
 
-  def __init__(self, gn_target):
+  def __init__(self, gn_target, has_build_config):
     assert gn_target.startswith('//'), f'{gn_target} does not start with //'
     assert ':' in gn_target, f'Non-root {gn_target} required'
     self.gn_target = gn_target
-    self._build_config = None
+    self.has_build_config = has_build_config
+    self._combined_config = None
+    self._params_json = None
 
   @property
   def ninja_target(self):
@@ -147,28 +156,48 @@ class _TargetEntry:
 
   @property
   def ninja_build_config_target(self):
+    assert self.has_build_config, 'No build config for ' + self.gn_target
     return self.ninja_target + '__build_config_crbug_908819'
 
   @property
   def build_config_path(self):
     """Returns the filepath of the project's .build_config.json."""
+    assert self.has_build_config, 'No build config for ' + self.gn_target
+    return self.params_path.replace('.params.json', '.build_config.json')
+
+  @property
+  def params_path(self):
+    """Returns the filepath of the project's .params.json."""
     ninja_target = self.ninja_target
     # Support targets at the root level. e.g. //:foo
     if ninja_target[0] == ':':
       ninja_target = ninja_target[1:]
-    subpath = ninja_target.replace(':', os.path.sep) + '.build_config.json'
-    return os.path.join(constants.GetOutDirectory(), 'gen', subpath)
+    subpath = ninja_target.replace(':', os.path.sep) + '.params.json'
+    return os.path.relpath(
+        os.path.join(constants.GetOutDirectory(), 'gen', subpath))
 
-  def build_config(self):
-    """Reads and returns the project's .build_config.json JSON."""
-    if not self._build_config:
-      with open(self.build_config_path) as jsonfile:
-        self._build_config = json.load(jsonfile)
-    return self._build_config
+  def params_values(self):
+    if not self._params_json:
+      with open(self.params_path) as f:
+        self._params_json = json.load(f)
+    return self._params_json
+
+  def combined_config_values(self):
+    """Union of .params.json and *.build_config.json"""
+    if not self._combined_config:
+      config = dict(self.params_values())
+      if self.has_build_config:
+        pattern = self.build_config_path.replace('.build_config.json',
+                                                 '*.build_config.json')
+        for p in glob.glob(pattern):
+          with open(p) as f:
+            config.update(json.load(f))
+      self._combined_config = config
+    return self._combined_config
 
   def get_type(self):
     """Returns the target type from its .build_config.json."""
-    return self.build_config()['deps_info']['type']
+    return self.params_values()['type']
 
   def proguard_enabled(self):
     """Returns whether proguard runs for this target."""
@@ -176,7 +205,7 @@ class _TargetEntry:
     # bundle level.
     if self.get_type() == 'android_app_bundle_module':
       return False
-    return self.build_config()['deps_info'].get('proguard_enabled', False)
+    return self.params_values().get('proguard_enabled', False)
 
 
 def main():
@@ -188,6 +217,9 @@ def main():
   parser.add_argument('--gn-labels',
                       action='store_true',
                       help='Print GN labels rather than ninja targets')
+  parser.add_argument('--omit-targets',
+                      action='store_true',
+                      help='Do not print the target / gn label')
   parser.add_argument(
       '--nested',
       action='store_true',
@@ -200,6 +232,9 @@ def main():
       '--print-build-config-paths',
       action='store_true',
       help='Print path to the .build_config.json of each target')
+  parser.add_argument('--print-params-paths',
+                      action='store_true',
+                      help='Print path to the .params.json of each target')
   parser.add_argument('--build',
                       action='store_true',
                       help='Build all .build_config.json files.')
@@ -216,9 +251,9 @@ def main():
   parser.add_argument('--query',
                       help='A dot separated string specifying a query for a '
                       'build config json value of each target. Example: Use '
-                      '--query deps_info.unprocessed_jar_path to show a list '
-                      'of all targets that have a non-empty deps_info dict and '
-                      'non-empty "unprocessed_jar_path" value in that dict.')
+                      '--query unprocessed_jar_path to show a list '
+                      'of all targets that have a non-empty '
+                      '"unprocessed_jar_path" value in that dict.')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
@@ -234,16 +269,33 @@ def main():
   constants.CheckOutputDirectory()
   output_dir = constants.GetOutDirectory()
 
+  if args.build:
+    _compile(output_dir, ['build.ninja'])
+
   # Query ninja for all __build_config_crbug_908819 targets.
-  targets = _query_for_build_config_targets(output_dir)
-  entries = [_TargetEntry(t) for t in targets]
+  # TODO(agrieve): java_group, android_assets, and android_resources do not
+  # write .build_config.json files, and so will not show up by this query.
+  # If we ever need them to, use "gn gen" into a temp dir, and set an extra
+  # gn arg that causes all write_build_config() template to print all targets.
+  result = _query_for_targets(output_dir)
+  entries = [_TargetEntry(t, v) for t, v in sorted(result.items())]
+  entries = [e for e in entries if os.path.exists(e.params_path)]
+
+  if not entries:
+    logging.warning('No targets found. Run with --build')
+    sys.exit(1)
 
   if args.build:
-    logging.warning('Building %d .build_config.json files...', len(entries))
-    _compile(output_dir, [e.ninja_build_config_target for e in entries],
-             quiet=args.quiet)
+    targets = [
+        e.ninja_build_config_target for e in entries if e.has_build_config
+    ]
+    logging.warning('Building %d .build_config.json files...', len(targets))
+    _compile(output_dir, targets, quiet=args.quiet)
 
   if args.type:
+    if set(args.type) & {'android_resources', 'android_assets', 'group'}:
+      logging.warning('Cannot filter by this type. See TODO.')
+      sys.exit(1)
     entries = [e for e in entries if e.get_type() in args.type]
 
   if args.proguard_enabled:
@@ -255,28 +307,37 @@ def main():
       print(f'{entry_type}: {count}')
   else:
     for e in entries:
-      if args.gn_labels:
-        to_print = e.gn_target
+      if args.omit_targets:
+        target_part = ''
       else:
-        to_print = e.ninja_target
+        if args.gn_labels:
+          target_part = e.gn_target
+        else:
+          target_part = e.ninja_target
 
-      # Convert to top-level target
-      if not args.nested:
-        to_print = to_print.replace('__test_apk', '').replace('__apk', '')
+        # Convert to top-level target
+        if not args.nested:
+          target_part = target_part.replace('__test_apk',
+                                            '').replace('__apk', '')
 
+      type_part = ''
       if args.print_types:
-        to_print = f'{to_print}: {e.get_type()}'
+        type_part = e.get_type()
       elif args.print_build_config_paths:
-        to_print = f'{to_print}: {e.build_config_path}'
+        type_part = e.build_config_path if e.has_build_config else 'N/A'
+      elif args.print_params_paths:
+        type_part = e.params_path
       elif args.query:
-        value = _query_json(json_dict=e.build_config(),
-                            query=args.query,
-                            path=e.build_config_path)
-        if not value:
+        type_part = _query_json(json_dict=e.combined_config_values(),
+                                query=args.query,
+                                target=e.gn_target)
+        if not type_part:
           continue
-        to_print = f'{to_print}: {value}'
 
-      print(to_print)
+      if target_part and type_part:
+        print(f'{target_part}: {type_part}')
+      elif target_part or type_part:
+        print(target_part or type_part)
 
 
 if __name__ == '__main__':

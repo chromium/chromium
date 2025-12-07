@@ -10,7 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
@@ -21,9 +20,10 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +81,7 @@ class BrowserAutofillManagerForPopupTest : public BrowserAutofillManager {
 //   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 //   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
 //   task_environment()->FastForwardBy(base::Milliseconds(500));
-//   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+//   client().suggestion_controller(manager()).AcceptSuggestion(/*index=*/0);
 // }
 //
 // The same test can be run on for the Keyboard Accessory on Android by simply
@@ -173,9 +173,10 @@ class AutofillSuggestionControllerTestBase
     FocusWebContentsOnFrame(
         static_cast<ContentAutofillDriver&>(manager.driver())
             .render_frame_host());
-    client().popup_controller(manager).Show(std::move(suggestions),
-                                            trigger_source,
-                                            AutoselectFirstSuggestion(false));
+    client().suggestion_controller(manager).Show(
+        AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+        std::move(suggestions), trigger_source,
+        AutoselectFirstSuggestion(false));
   }
 
   input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {
@@ -203,8 +204,8 @@ class AutofillSuggestionControllerTestBase
 };
 
 // Below are test versions of `AutofillClient`, `BrowserAutofillManager`,
-// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used in the
-// fixture above.
+// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used
+// in the fixture above.
 
 class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
  public:
@@ -213,17 +214,20 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
   ~AutofillExternalDelegateForPopupTest() override;
 
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  MOCK_METHOD(void,
+              OnSuggestionsShown,
+              (base::span<const Suggestion>),
+              (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
   MOCK_METHOD(void, DidSelectSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&,
-               const AutofillSuggestionDelegate::SuggestionPosition&),
+               const AutofillSuggestionDelegate::SuggestionMetadata&),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
-              (const Suggestion&),
+              (const Suggestion&, const SuggestionButtonAction&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
 };
@@ -242,10 +246,6 @@ class AutofillSuggestionControllerForTest
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
       const gfx::RectF& element_bounds
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
-#endif
   );
   ~AutofillSuggestionControllerForTest() override;
 

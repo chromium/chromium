@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page with text input for testing coordinate based target</title>
+    <style>
+      div {
+        margin-top: 8px;
+        background-color: #ddd;
+        border: 1px solid #000;
+        display: block;
+        width: 50px;
+        height: 50px;
+      }
+      #pseudoContainer {
+        position: relative;
+        width: 200px;
+        height: 40px;
+      }
+      #pseudoContainer::after {
+        content: 'Placeholder text';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+      #pseudoInput {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      #pseudoContainer:focus-within::after {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- method=dialog prevents the form from navigating the page -->
+    <form id="form" method="dialog">
+      <input class="input-event-test" type="text" name="input" id="input">
+      <input type="submit" id="submit">
+    </form>
+    <div id="editableDiv" contenteditable="true" class="input-event-test"></div>
+    <!-- tabindex="0" makes the div focusable -->
+    <div id="focusableDiv" tabindex="0" class="input-event-test"></div>
+    <div id="unfocusableDiv" class="input-event-test"></div>
+    <!-- This div contains an ::after CSS pseudo-element that obscures the input -->
+    <div id="pseudoContainer">
+      <input id="pseudoInput" class="input-event-test" type="text">
+    </div>
+    <script>
+      let input_event_log = [];
+      let log_handler = e => {
+        if (e.type === 'mousedown' || e.type === 'mouseup' || e.type === 'click') {
+          input_event_log.push(`${e.type}(${e.clientX},${e.clientY})`);
+        } else {
+          input_event_log.push(`${e.type}`);
+        }
+      }
+      document.querySelectorAll(".input-event-test").forEach((node)=>{
+        node.addEventListener('change', log_handler);
+        node.addEventListener('input', log_handler);
+        node.addEventListener('keydown', log_handler);
+        node.addEventListener('keyup', log_handler);
+        node.addEventListener('click', log_handler);
+        node.addEventListener('mousedown', log_handler);
+        node.addEventListener('mouseup', log_handler);
+      });
+      document.getElementById('submit').addEventListener('click', log_handler);
+      let body_input_event_log = [];
+      let body_log_handler = e => {
+        body_input_event_log.push(`${e.type}`);
+      }
+      document.body.addEventListener('keydown', body_log_handler);
+      document.body.addEventListener('keyup', body_log_handler);
+
+      document.getElementById('pseudoContainer').addEventListener('click', (ev) => {
+        document.getElementById('pseudoInput').focus();
+      });
+    </script>
+  </body>
+</html>

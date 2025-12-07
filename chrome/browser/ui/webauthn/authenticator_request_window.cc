@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -28,7 +28,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/fido/enclave/metrics.h"
-#include "device/fido/features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -46,24 +45,6 @@ const char kGpmPasskeyResetSuccessUrl[] =
     "https://passwords.google.com/embedded/passkeys/reset/done";
 const char kGpmPasskeyResetFailUrl[] =
     "https://passwords.google.com/embedded/passkeys/reset/error";
-
-// The kdi parameter here was generated from the following protobuf:
-//
-// {
-//   operation: RETRIEVAL
-//   retrieval_inputs: {
-//     security_domain_name: "hw_protected"
-//   }
-// }
-//
-// And then converted to bytes with:
-//
-// % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
-//       proto gaia_frontend.ClientDecryptableKeyDataInputs
-//
-// Then the contents of `/tmp/out.pb` need to be base64url-encoded to produce
-// the "kdi" parameter's value.
-const char kKdi[] = "CAESDgoMaHdfcHJvdGVjdGVk";
 
 GURL GetGpmResetPinUrl() {
   std::string command_line_url =
@@ -150,13 +131,13 @@ class PasskeyResetWebContentsObserver : public content::WebContentsObserver {
       return;
     }
     status_ = Status::kStarted;
-    if (url.path() == GURL(kGpmPasskeyResetSuccessUrl).path()) {
+    if (url.GetPath() == GURL(kGpmPasskeyResetSuccessUrl).GetPath()) {
       status_ = Status::kSuccess;
-    } else if (url.path() == GURL(kGpmPasskeyResetFailUrl).path()) {
+    } else if (url.GetPath() == GURL(kGpmPasskeyResetFailUrl).GetPath()) {
       status_ = Status::kFail;
     }
 
-    MaybeRunCallback(url.has_ref() ? url.ref() : "");
+    MaybeRunCallback(url.has_ref() ? url.GetRef() : "");
   }
 
   Status status() const { return status_; }
@@ -212,9 +193,11 @@ class AuthenticatorRequestWindow
                                          /*user_gesture=*/true);
     browser_params.omit_from_session_restore = true;
     browser_params.should_trigger_session_restore = false;
-    // This is empirically a good size for the MagicArch UI.
-    constexpr int kWidth = 400;
-    constexpr int kHeight = 700;
+    // This is empirically a good size for the MagicArch UI. (Note that the UI
+    // is much larger when the user needs to enter an unlock pattern, so don't
+    // size this purely based on PIN entry.)
+    constexpr int kWidth = 900;
+    constexpr int kHeight = 750;
     browser_params.initial_bounds =
         gfx::Rect(caller_center.x() - kWidth / 2,
                   caller_center.y() - kHeight / 2, kWidth, kHeight);
@@ -230,18 +213,16 @@ class AuthenticatorRequestWindow
     GURL url;
     switch (step_) {
       case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
-        url = GaiaUrls::GetInstance()->gaia_url().Resolve(
-            base::StrCat({"/encryption/unlock/desktop?kdi=", kKdi}));
+        url = GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url();
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
-        if (base::FeatureList::IsEnabled(device::kWebAuthnPasskeysReset)) {
-          passkey_reset_observer_ =
-              std::make_unique<PasskeyResetWebContentsObserver>(
-                  web_contents.get(),
-                  // Unretained: `passkey_reset_observer_` is owned by this
-                  // object so if it exists, this object also exists.
-                  base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
-                                 base::Unretained(this)));
-        }
+        webauthn::user_actions::RecordRecoveryShown(model_->request_type);
+        passkey_reset_observer_ =
+            std::make_unique<PasskeyResetWebContentsObserver>(
+                web_contents.get(),
+                // Unretained: `passkey_reset_observer_` is owned by this
+                // object so if it exists, this object also exists.
+                base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
+                               base::Unretained(this)));
         break;
 
       case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
@@ -255,7 +236,7 @@ class AuthenticatorRequestWindow
         break;
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     content::NavigationController::LoadURLParams load_params(url);
@@ -291,6 +272,7 @@ class AuthenticatorRequestWindow
       return;
     }
     if (model_->step() == step_) {
+      webauthn::user_actions::RecordRecoveryCancelled();
       model_->OnRecoverSecurityDomainClosed();
     }
   }
@@ -345,5 +327,7 @@ void ShowAuthenticatorRequestWindow(content::WebContents* web_contents,
 
 bool IsAuthenticatorRequestWindowUrl(const GURL& url) {
   std::string kdi;
-  return net::GetValueForKeyInQuery(url, "kdi", &kdi) && kdi == kKdi;
+  return net::GetValueForKeyInQuery(url, "kdi", &kdi) &&
+         kdi == GaiaUrls::GetInstance()
+                    ->signin_chrome_passkey_unlock_kdi_parameter();
 }

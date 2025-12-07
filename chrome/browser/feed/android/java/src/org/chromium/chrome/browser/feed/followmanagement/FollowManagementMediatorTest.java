@@ -19,12 +19,12 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.TestWebFeedFaviconFetcher;
@@ -46,6 +46,7 @@ import java.util.Arrays;
 /** Tests {@link FollowManagementMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FollowManagementMediatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private ModelList mModelList;
     private FollowManagementMediator mFollowManagementMediator;
@@ -61,8 +62,6 @@ public class FollowManagementMediatorTest {
 
     @Captor ArgumentCaptor<Callback<WebFeedBridge.FollowResults>> mFollowCallbackCaptor;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
@@ -74,9 +73,8 @@ public class FollowManagementMediatorTest {
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mModelList = new ModelList();
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
-        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJni);
+        FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
 
         mFollowManagementMediator =
                 new FollowManagementMediator(mActivity, mModelList, mObserver, mFaviconFetcher);
@@ -94,7 +92,7 @@ public class FollowManagementMediatorTest {
 
     @Test
     public void testEmptyWebFeedList() {
-        mFollowManagementMediator.fillRecyclerView(new ArrayList<WebFeedMetadata>());
+        mFollowManagementMediator.fillRecyclerView(new ArrayList<>());
 
         assertEquals("<empty>", modelListToString());
     }

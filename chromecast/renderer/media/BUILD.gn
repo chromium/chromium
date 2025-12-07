@@ -18,7 +18,7 @@ cast_source_set("media") {
     "//chromecast/common/mojom",
     "//chromecast/media",
     "//chromecast/media/cdm",
-    "//chromecast/public:public",
+    "//chromecast/public",
     "//components/cdm/renderer",
     "//content/public/renderer",
     "//media",

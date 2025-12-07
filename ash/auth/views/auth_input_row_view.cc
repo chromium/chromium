@@ -184,7 +184,7 @@ void AuthInputRowView::CreateAndConfigureInputRow() {
 
   input_row_ =
       input_row_container->AddChildView(std::make_unique<views::View>());
-  input_row_->SetBackground(views::CreateThemedRoundedRectBackground(
+  input_row_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kInputRowCornerRadiusDp));
 
   input_row_->SetBorder(std::make_unique<views::HighlightBorder>(
@@ -264,6 +264,8 @@ void AuthInputRowView::CreateAndConfigureSubmitButton() {
 
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
+
+  submit_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 void AuthInputRowView::CreateAndConfigureDisplayTextButton() {
@@ -272,10 +274,21 @@ void AuthInputRowView::CreateAndConfigureDisplayTextButton() {
           base::BindRepeating(&AuthInputRowView::ToggleTextDisplayingState,
                               base::Unretained(this))));
 
-  display_text_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW));
-  display_text_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
+  switch (auth_type_) {
+    case AuthType::kPassword:
+      display_text_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW));
+      display_text_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
+      break;
+    case AuthType::kPin:
+      display_text_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_SHOW));
+      display_text_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_HIDE));
+      break;
+  }
+
   display_text_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   display_text_button_->SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(display_text_button_)
@@ -316,7 +329,7 @@ void AuthInputRowView::OnTextfieldFocus() {
   }
 }
 
-void AuthInputRowView::OnContentsChanged(const std::u16string& new_contents) {
+void AuthInputRowView::OnContentsChanged(std::u16string_view new_contents) {
   bool enable_buttons = !textfield_->GetReadOnly() && !new_contents.empty();
   if (new_contents.empty() && textfield_->IsTextVisible()) {
     ToggleTextDisplayingState();
@@ -427,6 +440,8 @@ void AuthInputRowView::SetInputEnabled(bool enabled) {
   SetEnabled(enabled);
   textfield_->SetEnabled(enabled);
   textfield_->SetBorder(nullptr);
+  // Enable buttons only when the input is submittable.
+  enabled = enabled && IsInputSubmittable();
   submit_button_->SetEnabled(enabled);
   display_text_button_->SetEnabled(enabled);
 }

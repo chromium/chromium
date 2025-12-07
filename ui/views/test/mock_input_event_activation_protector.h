@@ -24,7 +24,7 @@ class MockInputEventActivationProtector : public InputEventActivationProtector {
 
   MOCK_METHOD(bool,
               IsPossiblyUnintendedInteraction,
-              (const ui::Event& event),
+              (const ui::Event& event, bool allow_key_events),
               (override));
 };
 

@@ -17,10 +17,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
-#include "ui/views/accessibility/ax_event_manager.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -81,22 +81,22 @@ class FakeAuthFactorModel : public AuthFactorModel {
   int do_handle_error_timeout_num_calls_ = 0;
 };
 
-class ScopedAXEventObserver : public views::AXEventObserver {
+class ScopedAXEventObserver : public views::AXUpdateObserver {
  public:
   ScopedAXEventObserver(views::View* view, ax::mojom::Event event_type)
       : view_(view), event_type_(event_type) {
-    views::AXEventManager::Get()->AddObserver(this);
+    views::AXUpdateNotifier::Get()->AddObserver(this);
   }
   ScopedAXEventObserver(const ScopedAXEventObserver&) = delete;
   ScopedAXEventObserver& operator=(const ScopedAXEventObserver&) = delete;
   ~ScopedAXEventObserver() override {
-    views::AXEventManager::Get()->RemoveObserver(this);
+    views::AXUpdateNotifier::Get()->RemoveObserver(this);
   }
 
   bool event_called = false;
 
  private:
-  // views::AXEventObserver:
+  // views::AXUpdateObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
     if (view == view_ && event_type == event_type_) {
       event_called = true;
@@ -192,8 +192,8 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
   }
 
   void TestArrowButtonClearsFocus(AuthFactorState state_after_click_required) {
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
     AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
 
     LoginAuthFactorsView::TestApi test_api(view_);
@@ -310,8 +310,8 @@ TEST_F(LoginAuthFactorsViewUnittest, MultipleAuthFactorsInReadyState) {
 // Note: At the moment, Smart Lock is the only auth factor that uses state
 // kClickRequired (hence no similar test for Fingerprint).
 TEST_F(LoginAuthFactorsViewUnittest, ClickRequired_SmartLock) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   ASSERT_FALSE(ShouldHidePasswordField());
@@ -341,8 +341,8 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickRequired_SmartLock) {
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   LoginAuthFactorsView::TestApi test_api(view_);
@@ -555,8 +555,8 @@ TEST_F(LoginAuthFactorsViewUnittest, CanUsePin) {
 // Ensure that when Smart Lock state is kClickRequired, the arrow button
 // automatically becomes focused.
 TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonRequestsFocus) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   LoginAuthFactorsView::TestApi test_api(view_);
   auth_factors_[0]->state_ = AuthFactorState::kReady;

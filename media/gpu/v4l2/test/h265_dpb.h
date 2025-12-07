@@ -18,6 +18,8 @@ namespace media::v4l2_test {
 // See spec at http://www.itu.int/rec/T-REC-H.265
 class H265Picture : public base::RefCountedThreadSafe<H265Picture> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   using Vector = std::vector<scoped_refptr<H265Picture>>;
 
   H265Picture();

@@ -47,21 +47,6 @@ class HTMLDocumentParserState
     kScheduledWithEndIfDelayed = 2
   };
 
-  enum class MetaCSPTokenState {
-    // If we've seen a meta CSP token in an upcoming HTML chunk, then we need to
-    // defer any preloads until we've added the CSP token to the document and
-    // applied the Content Security Policy.
-    kSeen = 0,
-    // Indicates that there is no meta CSP token in the upcoming chunk.
-    kNotSeen = 1,
-    // Indicates that we've added the CSP token to the document and we can now
-    // fetch preloads.
-    kProcessed = 2,
-    // Indicates that it's too late to apply a Content-Security policy (because
-    // we've exited the header section.)
-    kUnenforceable = 3,
-  };
-
   explicit HTMLDocumentParserState(ParserSynchronizationPolicy mode,
                                    int budget);
 
@@ -139,22 +124,6 @@ class HTMLDocumentParserState
   bool InPumpSession() const { return pump_session_nesting_level_; }
   bool InNestedPumpSession() const { return pump_session_nesting_level_ > 1; }
 
-  void SetSeenCSPMetaTag(const bool seen) {
-    if (meta_csp_state_ == MetaCSPTokenState::kUnenforceable)
-      return;
-    if (seen)
-      meta_csp_state_ = MetaCSPTokenState::kSeen;
-    else
-      meta_csp_state_ = MetaCSPTokenState::kNotSeen;
-  }
-
-  void SetExitedHeader() {
-    meta_csp_state_ = MetaCSPTokenState::kUnenforceable;
-  }
-  bool HaveExitedHeader() const {
-    return meta_csp_state_ == MetaCSPTokenState::kUnenforceable;
-  }
-
   bool ShouldYieldForPreloads() const {
     return preload_processing_mode_ == PreloadProcessingMode::kYield;
   }
@@ -162,6 +131,9 @@ class HTMLDocumentParserState
   bool ShouldProcessPreloads() const {
     return preload_processing_mode_ == PreloadProcessingMode::kImmediate;
   }
+
+  void SetExitedHeader() { exited_header_ = true; }
+  bool HaveExitedHeader() const { return exited_header_; }
 
  private:
   void EnterEndIfDelayedForbidden() { end_if_delayed_forbidden_++; }
@@ -182,7 +154,6 @@ class HTMLDocumentParserState
   }
 
   DeferredParserState state_;
-  MetaCSPTokenState meta_csp_state_;
   ParserSynchronizationPolicy mode_;
   const PreloadProcessingMode preload_processing_mode_;
   unsigned end_if_delayed_forbidden_ = 0;
@@ -199,6 +170,7 @@ class HTMLDocumentParserState
   bool end_was_delayed_ = false;
   bool added_pending_parser_blocking_stylesheet_ = false;
   bool is_waiting_for_stylesheets_ = false;
+  bool exited_header_ = false;
 };
 
 }  // namespace blink

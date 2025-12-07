@@ -96,10 +96,10 @@ void FlingingControllerBridge::RemoveMediaStatusObserver(
 
 void FlingingControllerBridge::OnMediaStatusUpdated(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_bridge,
-    const base::android::JavaParamRef<jobject>& j_status) {
-  if (!observer_)
+    const base::android::JavaRef<jobject>& j_status) {
+  if (!observer_) {
     return;
+  }
 
   media::MediaStatus status;
 
@@ -152,3 +152,6 @@ base::TimeDelta FlingingControllerBridge::GetApproximateCurrentTime() {
 }
 
 }  // namespace media_router
+
+DEFINE_JNI(FlingingControllerBridge)
+DEFINE_JNI(MediaStatusBridge)

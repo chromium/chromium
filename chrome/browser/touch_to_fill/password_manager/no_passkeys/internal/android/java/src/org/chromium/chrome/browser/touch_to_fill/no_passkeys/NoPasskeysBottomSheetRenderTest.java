@@ -8,7 +8,6 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
-import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -20,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -39,7 +37,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -62,7 +61,7 @@ public class NoPasskeysBottomSheetRenderTest {
     private static final String TEST_ORIGIN = "origin.com";
 
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),
@@ -96,7 +95,6 @@ public class NoPasskeysBottomSheetRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.openMocks(this);
         mActivityRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityRule.getActivity(), Stage.RESUMED);
         runOnUiThreadBlocking(
@@ -137,20 +135,10 @@ public class NoPasskeysBottomSheetRenderTest {
 
     private BottomSheetController createBottomSheetController() {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
-        ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(
-                        getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        activityContentView,
-                        Color.WHITE);
+        ScrimManager scrimManager =
+                new ScrimManager(getActivity(), activityContentView, ScrimClient.NONE);
         return BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                () -> scrimCoordinator,
+                () -> scrimManager,
                 (unused) -> {},
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),

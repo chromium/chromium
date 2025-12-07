@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
@@ -15,14 +16,14 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 
 namespace content {
 
-class BrowserContext;
+class NavigationHandle;
 class PolicyContainerHost;
 
 // A service that stores bound SharedURLLoaderFactory mojo pipes from renderers
@@ -74,7 +75,17 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     FactoryContext& operator=(const FactoryContext&) = delete;
 
     // Updates `weak_document_ptr` and other document-related fields.
-    void OnDidCommitNavigation(WeakDocumentPtr committed_document);
+    void OnDidCommitNavigation(NavigationHandle* navigation_handle);
+
+    // Updates `attribution_context` for fields relied on prerendered page
+    // activation, e.g. UKM source ID.
+    void OnDidCommitPrerenderedPageActivation();
+
+    // Called when a `KeepAliveURLLoader` is about to create.
+    // This updates RenderFrameHostImpl via `weak_document_ptr` about the
+    // creation of a keepalive request.
+    void OnBeforeKeepAliveURLLoaderCreated(
+        const network::ResourceRequest& resource_request);
 
     // Updates `factory` using the given `new_factory`.
     //
@@ -98,6 +109,15 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // will become null whenever the document navigates away.
     WeakDocumentPtr weak_document_ptr;
 
+    // Upon NavigationRequest::DidCommitNavigation(), `ukm_source_id` will
+    // be set to the PageUkmSourceId of the document that this `BindContext` is
+    // associated with. This includes UkmSourceId for prerendered page
+    // activation.
+    //
+    // It will never be reset even if the document has navigated away from the
+    // original page.
+    std::optional<ukm::SourceId> ukm_source_id;
+
     // The `PolicyContainerHost` of the document connecting to an implementation
     // of `KeepAliveURLLoaderFactoriesBase` using this context.
     //
@@ -120,13 +140,17 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // the `attribution_context` is created.
     std::optional<AttributionSuitableContext> attribution_context;
 
+    // On NavigationRequest::DidCommitNavigation(), this field is set to the
+    // network isolation key of the committed RenderFrameHostImpl.
+    net::NetworkIsolationKey network_isolation_key;
+
     // This must be the last member.
     base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
   };
 
-  // `browser_context` owns the StoragePartition creating the instance of this
-  // service. It must not be null and surpass the lifetime of this service.
-  explicit KeepAliveURLLoaderService(BrowserContext* browser_context);
+  // `storage_partition` creates and owns the instance of this service. It
+  //  must not be null and surpass the lifetime of this service.
+  explicit KeepAliveURLLoaderService(StoragePartitionImpl* storage_partition);
   ~KeepAliveURLLoaderService();
 
   // Not Copyable.
@@ -166,9 +190,22 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // down.
   void Shutdown();
 
+  // Called when user data is cleared that requires clearing pending retry
+  // loads as well.
+  void ClearKeepAliveURLLoadersAttemptingRetry();
+
+  // Called when a new document with the given NetworkIsolationKey became
+  // active, allowing potentially pending retry attempts with the same NIK
+  // that are waiting for a same-document NIK to continue.
+  void DidObserveNewlyActiveDocumentWithNIK(
+      const net::NetworkIsolationKey& nik);
+
   // For testing only:
+  base::WeakPtr<KeepAliveURLLoader> GetLoaderWithRequestIdForTesting(
+      int32_t request_id) const;
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
+  size_t NumLoadersAttemptingRetryForTesting(bool include_failed_retry) const;
   void SetLoaderObserverForTesting(
       scoped_refptr<KeepAliveURLLoader::TestObserver> observer);
   void SetURLLoaderThrottlesGetterForTesting(
@@ -192,8 +229,18 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // `loader_receivers_` or `disconnected_loaders_`.
   void RemoveLoader(mojo::ReceiverId loader_receiver_id);
 
-  // The browsing session that owns this instance of the service.
-  const raw_ptr<BrowserContext> browser_context_;
+  // Called when a loader with the given NetworkIsolationKey wants to attempt a
+  // retry. This function checks the limit of retries for the given factory /
+  // NetworkIsolationKey and returns whether a retry is allowed or not.
+  bool CheckRetryEligibility(const net::NetworkIsolationKey&);
+
+  // The continuation of the call above. This is called after we've determined
+  // that the retry is allowed, to update the global retry limit tracker.
+  void OnRetryScheduled(const net::NetworkIsolationKey&);
+
+  // The StoragePartition that owns this instance of the service. raw_ptr is OK
+  // since it must outlive this service.
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
 
   // Many-to-one mojo receiver of URLLoaderFactory for Fetch keepalive requests.
   std::unique_ptr<KeepAliveURLLoaderFactories> url_loader_factories_;
@@ -201,6 +248,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // Many-to-one mojo receiver of FetchLaterLoaderFactory for FetchLater
   // keepalive requests.
   std::unique_ptr<FetchLaterLoaderFactories> fetch_later_loader_factories_;
+
+  // Map for NetworkIsolationKey -> total retry attempt done for fetches
+  // initiated by a document with the given NetworkIsolationKey. This is used to
+  // limit the amount of retries that can be attempted per browsing session for
+  // a given NetworkIsolationKey.
+  base::LRUCache<net::NetworkIsolationKey, size_t> retry_counts_;
 
   // For testing only:
   // Not owned.

@@ -7,14 +7,11 @@
 
 #include "base/time/time.h"
 
-class Profile;
-
 namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 // Interface of the object generating app activity for child user.
 class AppActivityReportInterface {
@@ -28,14 +25,6 @@ class AppActivityReportInterface {
     bool anything_reported = false;
   };
 
-  // Factory method that returns object generating app activity for child user.
-  // feature. Provided to reduce the dependencies between API consumer and child
-  // user related code. AppActivityReportInterface object has a lifetime of a
-  // KeyedService.
-  static AppActivityReportInterface* Get(Profile* profile);
-
-  virtual ~AppActivityReportInterface();
-
   // Populates child status |report| with collected app activity.
   // Returns whether any data were populated.
   virtual ReportParams GenerateAppActivityReport(
@@ -47,7 +36,6 @@ class AppActivityReportInterface {
       base::Time report_generation_timestamp) = 0;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_ACTIVITY_REPORT_INTERFACE_H_

@@ -106,7 +106,7 @@ void TrustTokenRequestRedemptionHelper::Begin(
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
     std::move(done).Run(std::nullopt,
-                        mojom::TrustTokenOperationStatus::kResourceLimited);
+                        mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
     return;
   }
 
@@ -206,13 +206,14 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION);
 
-  // 1. If the response has no Sec-Private-State-Token header, return an error.
-  std::string header_value;
+  // EnumerateHeader(|iter|=nullptr) asks for a previous instance of the header,
+  // and returns the next one.
+  std::optional<std::string_view> header_value =
+      response_headers.EnumerateHeader(
+          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader);
 
-  // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
-  // if any.
-  if (!response_headers.EnumerateHeader(
-          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
+  // 1. If the response has no Sec-Private-State-Token header, return an error.
+  if (!header_value) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
     response_headers.RemoveHeader(
         kTrustTokensResponseHeaderSecTrustTokenLifetime);
@@ -220,12 +221,13 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     return;
   }
 
-  // 2. Strip the Sec-Private-State-Token header, from the response and pass the
-  // header to BoringSSL.
-  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
-
+  // 2. Pass the header to BoringSSL and Strip the Sec-Private-State-Token
+  // header. Removing the header will invalidate `header_value`, so have to pass
+  // it to BoringSSL before doing so.
   std::optional<std::string> maybe_redemption_record =
-      cryptographer_->ConfirmRedemption(header_value);
+      cryptographer_->ConfirmRedemption(*header_value);
+  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
+  header_value.reset();
 
   // 3. If BoringSSL fails its structural validation / signature check, return
   // an error.
@@ -239,24 +241,12 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     return;
   }
 
-  // 4. Get lifetime from response header
+  // 4. Get lifetime from response header.
   // If there are multiple lifetime headers, the last one is used.
-  bool has_lifetime = false;
-  uint64_t lifetime = 0;
-  if (response_headers.HasHeader(
-          kTrustTokensResponseHeaderSecTrustTokenLifetime)) {
-    // GetInt64HeaderValue returns -1 in case of errors, if not -1, then
-    // non-negative values ensuring non-negative values is important since we
-    // cast it to unsigned
-    int64_t maybe_lifetime = response_headers.GetInt64HeaderValue(
-        kTrustTokensResponseHeaderSecTrustTokenLifetime);
-    if (maybe_lifetime != -1) {
-      has_lifetime = true;
-      lifetime = static_cast<uint64_t>(maybe_lifetime);
-    }
-    response_headers.RemoveHeader(
-        kTrustTokensResponseHeaderSecTrustTokenLifetime);
-  }
+  std::optional<int64_t> lifetime = response_headers.GetInt64HeaderValue(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime);
+  response_headers.RemoveHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime);
 
   // 5. Otherwise, if these checks succeed, store the RR and return success.
   TrustTokenRedemptionRecord record_to_store;
@@ -265,8 +255,9 @@ void TrustTokenRequestRedemptionHelper::Finalize(
       std::move(token_verification_key_));
   *record_to_store.mutable_creation_time() =
       internal::TimeToTimestamp(base::Time::Now());
-  if (has_lifetime)
-    record_to_store.set_lifetime(lifetime);
+  if (lifetime) {
+    record_to_store.set_lifetime(lifetime.value());
+  }
   token_store_->SetRedemptionRecord(*issuer_, top_level_origin_,
                                     std::move(record_to_store));
 

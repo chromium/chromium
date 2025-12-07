@@ -1,0 +1,126 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --border-width: 2px;
+  --handle-size: 10px;
+  --border-padding: calc(var(--handle-size) / 2);
+  --handle-offset: calc(var(--border-width) / 2 + var(--border-padding));
+  /* Always use light mode version of cr-fallback-color-primary. */
+  --primary-color: rgb(11, 87, 208);
+  /* UX specified 10px/8px, subtracting the padding inside the border. */
+  --textarea-padding-inline: calc(10px - var(--border-padding));
+  --textarea-padding-vert: calc(8px - var(--border-padding));
+  --offset-x: calc(var(--border-width) + var(--textarea-padding-inline) +
+      2 * var(--border-padding));
+  --offset-y: calc(var(--border-width) + var(--textarea-padding-vert) +
+      2 * var(--border-padding));
+  --textbox-location-x: 0;
+  --textbox-location-y: 0;
+  cursor: move;
+  top: calc(var(--textbox-location-y) - var(--offset-y));
+  left: calc(var(--textbox-location-x) - var(--offset-x));
+  padding: var(--border-padding);
+  position: absolute;
+  z-index: 1;
+}
+
+:host([text-rotations_="1"]), :host([text-rotations_="3"]) {
+  /* Flip the padding values, since the text is oriented vertically. */
+  --textarea-padding-inline: calc(8px - var(--border-padding));
+  --textarea-padding-vert: calc(10px - var(--border-padding));
+}
+
+.handle {
+  background-color: var(--primary-color);
+  border: 1px solid white;
+  border-radius: 50%;
+  height: var(--handle-size);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: var(--handle-size);
+}
+
+.handle.top {
+  top: var(--handle-offset);
+}
+
+.handle.left {
+  left: var(--handle-offset);
+}
+
+.handle.right {
+  left: calc(100% - var(--handle-offset));
+}
+
+.handle.bottom {
+  top: calc(100% - var(--handle-offset));
+}
+
+.handle.left.center,
+.handle.right.center {
+  top: 50%;
+}
+
+.handle.top.center,
+.handle.bottom.center {
+  left: 50%;
+}
+
+.handle.left,
+.handle.right {
+  cursor: ew-resize;
+}
+
+.handle.top,
+.handle.bottom {
+  cursor: ns-resize;
+}
+
+.handle.top.right,
+.handle.bottom.left {
+  cursor: nesw-resize;
+}
+
+.handle.top.left,
+.handle.bottom.right {
+  cursor: nwse-resize;
+}
+
+.textbox-wrapper {
+  flex: 1;
+  overflow: hidden;
+  padding: var(--border-padding);
+  border: var(--border-width) solid var(--primary-color);
+  cursor: move;
+}
+
+textarea {
+  background: none;
+  border: none;
+  display: block;
+  outline: none;
+  overflow: hidden;
+  padding: var(--textarea-padding-vert) var(--textarea-padding-inline);
+  resize: none;
+}
+
+:host([text-rotations_="1"]) textarea {
+  writing-mode: vertical-rl;
+}
+
+:host([text-rotations_="2"]) textarea {
+  transform: rotate(180deg);
+}
+
+:host([text-rotations_="3"]) textarea {
+  writing-mode: sideways-lr;
+}

@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash,
-       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
 source_set("ui") {
   output_name = "quick_pair_ui"
@@ -25,20 +22,24 @@ source_set("ui") {
 
   deps = [
     "//ash/constants",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//third_party/protobuf:protobuf_lite",
     "//ui/base",
     "//ui/gfx",
     "//ui/message_center",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -78,7 +79,7 @@ source_set("unit_tests") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/proto:fastpair_proto",
-    "//ash/quick_pair/repository:repository",
+    "//ash/quick_pair/repository",
     "//ash/quick_pair/repository:test_support",
     "//base",
     "//base/test:test_support",

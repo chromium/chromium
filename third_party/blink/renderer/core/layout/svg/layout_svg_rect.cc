@@ -43,16 +43,24 @@ bool GeometryPropertiesChanged(const ComputedStyle& old_style,
          old_style.Rx() != new_style.Rx() || old_style.Ry() != new_style.Ry();
 }
 
+bool CalculateGeometryDependsOnViewport(const ComputedStyle& style) {
+  return style.Width().HasPercent() || style.Height().HasPercent() ||
+         style.X().HasPercent() || style.Y().HasPercent() ||
+         style.Rx().HasPercent() || style.Ry().HasPercent();
+}
+
 }  // namespace
 
 LayoutSVGRect::LayoutSVGRect(SVGRectElement* node) : LayoutSVGShape(node) {}
 
 LayoutSVGRect::~LayoutSVGRect() = default;
 
-void LayoutSVGRect::StyleDidChange(StyleDifference diff,
-                                   const ComputedStyle* old_style) {
+void LayoutSVGRect::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGShape::StyleDidChange(diff, old_style);
+  LayoutSVGShape::StyleDidChange(diff, old_style, style_change_context);
 
   if (old_style && GeometryPropertiesChanged(*old_style, StyleRef())) {
     SetNeedsShapeUpdate();
@@ -66,8 +74,10 @@ gfx::RectF LayoutSVGRect::UpdateShapeFromElement() {
   ClearPath();
   SetGeometryType(GeometryType::kEmpty);
 
-  const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = StyleRef();
+  SetGeometryDependsOnViewport(CalculateGeometryDependsOnViewport(style));
+
+  const SVGViewportResolver viewport_resolver(*this);
   const gfx::PointF origin =
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
   const gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
@@ -143,7 +153,7 @@ bool LayoutSVGRect::DefinitelyHasSimpleStroke() const {
   // miterlimits, the join style used might not be correct (e.g. a miterlimit
   // of 1.4142135 should result in bevel joins, but may be drawn using miter
   // joins).
-  return !style.HasDashArray() && style.JoinStyle() == kMiterJoin &&
+  return !style.StrokeDashArray() && style.JoinStyle() == kMiterJoin &&
          style.StrokeMiterLimit() >= 1.5;
 }
 

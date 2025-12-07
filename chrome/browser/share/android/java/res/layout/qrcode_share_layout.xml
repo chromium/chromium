@@ -39,7 +39,7 @@ found in the LICENSE file.
             android:background="@drawable/qrcode_background"
             android:gravity="center_horizontal"
             android:padding="16dp"
-            android:importantForAccessibility="no" />
+            android:contentDescription="@string/qr_code_a11y_label" />
 
         <TextView
             android:id="@+id/error_message"

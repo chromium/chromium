@@ -7,11 +7,11 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "content/public/browser/web_contents.h"
-#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 
 class EnterpriseCertSource : public CertificateManagerPageHandler::CertSource {
  public:

@@ -16,11 +16,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -28,7 +28,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
-#include "remoting/protocol/port_range.h"
+#include "remoting/base/port_range.h"
 
 #if !defined(NDEBUG)
 #include "base/json/json_reader.h"
@@ -99,6 +99,7 @@ std::unique_ptr<policy::SchemaRegistry> CreateSchemaRegistry() {
 base::Value::Dict CopyChromotingPoliciesIntoDictionary(
     const policy::PolicyMap& current) {
   const char kPolicyNameSubstring[] = "RemoteAccessHost";
+  const char kClassManagementEnabled[] = "ClassManagementEnabled";
   base::Value::Dict policy_dict;
   for (const auto& entry : current) {
     const std::string& key = entry.first;
@@ -107,9 +108,12 @@ base::Value::Dict CopyChromotingPoliciesIntoDictionary(
 
     // Copying only Chromoting-specific policies helps avoid false alarms
     // raised by NormalizePolicies below (such alarms shutdown the host).
+    // A special exception is the ClassManagementEnabled policy. This is used
+    // by education to allow teacher/student view-only CRD connections.
     // TODO(lukasza): Removing this somewhat brittle filtering will be possible
     //                after having separate, Chromoting-specific schema.
-    if (key.find(kPolicyNameSubstring) != std::string::npos) {
+    if ((key.find(kPolicyNameSubstring) != std::string::npos) ||
+        (key == kClassManagementEnabled)) {
       policy_dict.Set(key, value->Clone());
     }
   }
@@ -177,6 +181,7 @@ base::Value::Dict PolicyWatcher::GetDefaultPolicies() {
   result.Set(key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
              true);
   result.Set(key::kRemoteAccessHostAllowEnterpriseFileTransfer, false);
+  result.Set(key::kClassManagementEnabled, "disabled");
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   result.Set(key::kRemoteAccessHostMatchUsername, false);
@@ -447,10 +452,8 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   return base::WrapUnique(new PolicyWatcher(owned_policy_service.get(),
                                             std::move(owned_policy_service),
                                             nullptr, CreateSchemaRegistry()));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION()
-      << "CreateWithPolicyService() should be used on ChromeOS.";
-  return nullptr;
+#elif BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED() << "CreateWithPolicyService() should be used on ChromeOS.";
 #else
 #error OS that is not yet supported by PolicyWatcher code.
 #endif

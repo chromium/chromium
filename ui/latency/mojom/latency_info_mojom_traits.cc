@@ -4,6 +4,7 @@
 
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 
 namespace mojo {
@@ -110,8 +111,7 @@ EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType>::ToMojom(
       return ui::mojom::LatencyComponentType::
           INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::LatencyComponentType::kMaxValue;
+  NOTREACHED();
 }
 
 // static

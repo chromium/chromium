@@ -22,9 +22,11 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
@@ -39,15 +41,12 @@ namespace ui {
 // Transitioning between AVSampleBufferDisplayLayer and CALayer with IOSurface
 // contents can cause flickering.
 // https://crbug.com/1441762
-BASE_FEATURE(kFullscreenLowPowerBackdropMac,
-             "FullscreenLowPowerBackdropMac",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFullscreenLowPowerBackdropMac, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 // Show borders around RenderPassDrawQuad CALayers. which is the output of a
 // non-root render pass.
 BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
-             "ShowMacRenderPassDrawQuadBorders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -165,11 +164,16 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     CVBufferSetAttachment(cv_pixel_buffer.get(), kCVImageBufferYCbCrMatrixKey,
                           kCVImageBufferYCbCrMatrix_ITU_R_2020,
                           kCVAttachmentMode_ShouldPropagate);
+
     switch (io_surface_color_space.GetTransferID()) {
       case gfx::ColorSpace::TransferID::HLG:
         CVBufferSetAttachment(cv_pixel_buffer.get(),
                               kCVImageBufferTransferFunctionKey,
                               kCVImageBufferTransferFunction_ITU_R_2100_HLG,
+                              kCVAttachmentMode_ShouldPropagate);
+        CVBufferSetAttachment(cv_pixel_buffer.get(),
+                              kCVImageBufferAmbientViewingEnvironmentKey,
+                              gfx::GenerateAmbientViewingEnvironment().get(),
                               kCVAttachmentMode_ShouldPropagate);
         break;
       case gfx::ColorSpace::TransferID::PQ:
@@ -242,7 +246,7 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
     return found->second;
 
   const gfx::Size size(kSolidColorContentsSize, kSolidColorContentsSize);
-  gfx::BufferFormat buffer_format = gfx::BufferFormat::BGRA_8888;
+  viz::SharedImageFormat si_format = viz::SinglePlaneFormat::kBGRA_8888;
   SkColorType color_type = kBGRA_8888_SkColorType;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
@@ -254,7 +258,7 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
   }
 
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-      CreateIOSurface(size, buffer_format);
+      CreateIOSurface(size, si_format);
   if (!io_surface)
     return nullptr;
   IOSurfaceSetColorSpace(io_surface.get(), color_space);
@@ -265,8 +269,9 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
     IOSurfaceLock(io_surface.get(), /*options=*/0, /*seed=*/nullptr);
     char* base_address =
         reinterpret_cast<char*>(IOSurfaceGetBaseAddress(io_surface.get()));
-    SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
-                                         color_type, kPremul_SkAlphaType);
+    SkImageInfo info =
+        SkImageInfo::Make(size.width(), size.height(), color_type,
+                          kPremul_SkAlphaType, color_space.ToSkColorSpace());
     auto canvas = SkCanvas::MakeRasterDirect(info, base_address, bytes_per_row);
     DCHECK(canvas);
     canvas->clear(color);
@@ -310,10 +315,12 @@ CARendererLayerTree::SolidColorContents::GetMap() {
 
 CARendererLayerTree::CARendererLayerTree(
     bool allow_av_sample_buffer_display_layer,
-    bool allow_solid_color_layers)
+    bool allow_solid_color_layers,
+    id<MTLDevice> metal_device)
     : allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
-      allow_solid_color_layers_(allow_solid_color_layers) {}
+      allow_solid_color_layers_(allow_solid_color_layers),
+      metal_device_(metal_device) {}
 CARendererLayerTree::~CARendererLayerTree() = default;
 
 bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
@@ -1100,6 +1107,13 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         old_layer_->cv_pixel_buffer_ != cv_pixel_buffer_ ||
         old_layer_->solid_color_contents_ != solid_color_contents_ ||
         old_layer_->hdr_metadata_ != hdr_metadata_;
+    // If the HDR headroom has changed then the HDRCopierLayer's tone mapping
+    // may change, so re-draw this layer.
+    if (old_layer_->type_ == CALayerType::kHDRCopier &&
+        old_layer_->tree()->display_hdr_headroom_ !=
+            tree()->display_hdr_headroom_) {
+      update_contents = true;
+    }
     update_contents_rect = old_layer_->contents_rect_ != contents_rect_;
     update_rect = old_layer_->rect_ != rect_;
     update_background_color =
@@ -1114,6 +1128,13 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         break;
       case CALayerType::kVideo:
         av_layer_ = [[AVSampleBufferDisplayLayer alloc] init];
+        // Workaround for https://crbug.com/398425794. The documentation for
+        // geometryFlipped specifies that "The value of this property does not
+        // affect the rendering of the layer’s content." If this is not
+        // specified, then AVSampleBufferDisplayLayer, when rendering HDR
+        // content that is transformed (by, e.g, a 90 degree rotation), will
+        // be flipped vertically.
+        av_layer_.geometryFlipped = YES;
         ca_layer_ = av_layer_;
         av_layer_.videoGravity = AVLayerVideoGravityResize;
         if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
@@ -1150,6 +1171,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
       if (update_contents) {
         metal::UpdateHDRCopierLayer(ca_layer_, io_surface_.get(),
                                     tree()->metal_device_,
+                                    tree()->display_hdr_headroom_,
                                     io_surface_color_space_, hdr_metadata_);
       }
       break;
@@ -1260,8 +1282,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
             green = blue = 1;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case CALayerType::kDefault:

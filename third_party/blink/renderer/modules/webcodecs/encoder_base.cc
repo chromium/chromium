@@ -101,7 +101,7 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
   if (ThrowIfCodecStateClosed(state_, "configure", exception_state))
     return;
 
-  InternalConfigType* parsed_config = ParseConfig(config, exception_state);
+  InternalConfigType* parsed_config = OnNewConfigure(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
     return;
@@ -136,13 +136,16 @@ void EncoderBase<Traits>::encode(InputType* input,
 
   DCHECK(active_config_);
 
+  OnNewEncode(input, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
   // This will fail if |input| is already closed.
-  auto* internal_input = input->clone(exception_state);
+  // Remove exceptions relating to cloning closed input.
+  auto* internal_input = input->clone(IGNORE_EXCEPTION);
 
   if (!internal_input) {
-    // Remove exceptions relating to cloning closed input.
-    exception_state.ClearException();
-
     exception_state.ThrowTypeError("Cannot encode closed input.");
     return;
   }
@@ -171,6 +174,7 @@ void EncoderBase<Traits>::close(ExceptionState& exception_state) {
       DOMExceptionCode::kAbortError, "Aborted due to close()"));
   output_callback_.Clear();
   error_callback_.Clear();
+  logger_->log()->OnWebMediaPlayerDestroyed();
 }
 
 template <typename Traits>
@@ -249,8 +253,8 @@ void EncoderBase<Traits>::ResetInternal(DOMException* ex) {
 template <typename Traits>
 void EncoderBase<Traits>::QueueHandleError(DOMException* ex) {
   callback_runner_->PostTask(
-      FROM_HERE, WTF::BindOnce(&EncoderBase<Traits>::HandleError,
-                               WrapWeakPersistent(this), WrapPersistent(ex)));
+      FROM_HERE, BindOnce(&EncoderBase<Traits>::HandleError,
+                          WrapWeakPersistent(this), WrapPersistent(ex)));
 }
 
 template <typename Traits>
@@ -272,6 +276,7 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
   output_callback_.Clear();
 
   // Prevent further logging.
+  logger_->log()->OnWebMediaPlayerDestroyed();
   logger_->Neuter();
 
   if (!script_state_->ContextIsValid() || !error_callback)
@@ -309,7 +314,7 @@ void EncoderBase<Traits>::ProcessRequests() {
         ProcessFlush(request);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -420,9 +425,8 @@ void EncoderBase<Traits>::ScheduleDequeueEvent() {
   event->async_task_context()->Schedule(GetExecutionContext(), event->type());
 
   callback_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&EncoderBase<Traits>::DispatchDequeueEvent,
-                    WrapWeakPersistent(this), WrapPersistent(event)));
+      FROM_HERE, BindOnce(&EncoderBase<Traits>::DispatchDequeueEvent,
+                          WrapWeakPersistent(this), WrapPersistent(event)));
 }
 
 template <typename Traits>
@@ -478,9 +482,9 @@ void EncoderBase<Traits>::Request::StartTracingVideoEncode(
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(kCategory, TraceNameFromType(), this,
-                                    "key_frame", is_keyframe, "timestamp",
-                                    timestamp);
+  TRACE_EVENT_BEGIN(kCategory, perfetto::DynamicString(TraceNameFromType()),
+                    perfetto::Track::FromPointer(this), "key_frame",
+                    is_keyframe, "timestamp", timestamp);
 }
 
 template <typename Traits>
@@ -489,7 +493,8 @@ void EncoderBase<Traits>::Request::StartTracing() {
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategory, TraceNameFromType(), this);
+  TRACE_EVENT_BEGIN(kCategory, perfetto::DynamicString(TraceNameFromType()),
+                    perfetto::Track::FromPointer(this));
 }
 
 template <typename Traits>
@@ -498,8 +503,8 @@ void EncoderBase<Traits>::Request::EndTracing(bool aborted) {
   DCHECK(is_tracing);
   is_tracing = false;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_END1(kCategory, TraceNameFromType(), this,
-                                  "aborted", aborted);
+  TRACE_EVENT_END(kCategory, perfetto::Track::FromPointer(this), "aborted",
+                  aborted);
 }
 
 template class EncoderBase<VideoEncoderTraits>;

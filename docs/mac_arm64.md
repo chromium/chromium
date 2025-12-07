@@ -1,7 +1,8 @@
 # Chromium for Arm Macs
 
-This document describes the state of Chromium on Apple Silicon Macs.
-The short summary is that almost everything works, without needing Rosetta.
+Arm Macs are fully supported. You can build Chromium on an Arm Mac. You
+can cross-build for Arm on an Intel Mac. You can cross-build for Intel on
+an Arm Mac. You don't need Rosetta for anything.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
@@ -14,10 +15,7 @@ installed.
 
 There's also a [tester
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac12-arm64-rel-tests)
-that continuously runs tests. Most tests pass. The tester bots don't
-have Rosetta installed.
-
-ASan builds do not yet work ([tracking bug](https://crbug.com/1271140))
+that continuously runs tests. The tester bots don't have Rosetta installed.
 
 ## Building _for_ Arm Macs
 
@@ -43,12 +41,6 @@ valid: -67050`. To fix this, open a terminal and run
     % cd ~/Downloads && xattr -rc Chromium.app
 
 After that, it should start fine.
-
-As an alternative to building locally, changes can be submitted to the opt-in
-[mac12-arm64-rel
-trybot](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel). A small
-number of [swarming bots](https://goto.corp.google.com/run-on-dtk) are also
-available for Googlers to run tests on.
 
 Arm Mac-specific bugs are tagged with the
 [Mac-ARM64 label](https://crbug.com/?q=label%3Amac-arm64).
@@ -85,15 +77,4 @@ all-encompassing `gn` configuration because:
 
 ## Building _on_ arm Macs
 
-It's possible to build _on_ an arm Mac, without Rosetta. This
-configuration is covered by a [main waterfall
-bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-on-arm64-rel).
-
-Checking out and building (with reclient too) should just work.
-You should be able to run `fetch chromium` normally, and then build, using
-`gn`, `ninja` etc like normal.
-
-Building Chrome/Mac/Intel on an arm Mac currently needs a small local tweak
-to work, see [tracking bug](https://crbug.com/1280968).
-
-All tests should build, run, and mostly pass.
+This just works these days, without any caveats.

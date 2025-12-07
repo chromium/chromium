@@ -91,8 +91,7 @@ const char* SyncStatusCodeToString(SyncStatusCode status) {
     case SYNC_STATUS_RETRY:
       return "Sync: retry the operation.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown error.";
+  NOTREACHED();
 }
 
 SyncStatusCode LevelDBStatusToSyncStatusCode(const leveldb::Status& status) {
@@ -146,8 +145,7 @@ SyncStatusCode FileErrorToSyncStatusCode(
     case base::File::FILE_ERROR_IO:
       return SYNC_FILE_ERROR_IO;
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return SYNC_FILE_ERROR_FAILED;
+      NOTREACHED();
   }
   // Return the value as is, so the value converted by
   // SyncStatusCodeToFileError could be restored.

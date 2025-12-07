@@ -46,6 +46,12 @@ class PasswordBubbleControllerBase {
   // destroyed.
   void OnBubbleClosing();
 
+  // Called when the mouse enters the bubble view.
+  void OnMouseEntered();
+
+  // Called when the mouse exits the bubble view.
+  void OnMouseExited();
+
   Profile* GetProfile() const;
   content::WebContents* GetWebContents() const;
 

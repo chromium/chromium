@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -43,10 +45,20 @@ TEST(TypedBufferTest, Basic) {
   EXPECT_EQ(buffer.length(), sizeof(int) * 10);
 
   // Make sure that operator*() syntax works.
-  (*buffer).data[9] = 0x12345678;
+  UNSAFE_TODO((*buffer).data[9]) = 0x12345678;
 
   // Make sure that operator->() syntax works.
-  EXPECT_EQ(buffer->data[9], 0x12345678);
+  UNSAFE_TODO(EXPECT_EQ(buffer->data[9], 0x12345678));
+}
+
+// Test creating a const (reference to) buffer. (This is something of a
+// compilation test.)
+TEST(TypedBufferTest, ConstTypedBuffer) {
+  TypedBuffer<Data> buffer(sizeof(int) * 10);
+  ASSERT_THAT(buffer.get(), testing::NotNull());
+  (*buffer).data[0] = 0x12345678;
+  const auto& buffer_reference = buffer;
+  ASSERT_EQ(buffer_reference.get()->data[0], 0x12345678);
 }
 
 // Test passing ownership.
@@ -92,13 +104,6 @@ TEST(TypedBufferTest, Swap) {
   EXPECT_EQ(left.length(), sizeof(int) * 2);
   EXPECT_EQ(right.get(), raw_left);
   EXPECT_EQ(right.length(), sizeof(int));
-}
-
-TEST(TypedBufferTest, GetAtOffset) {
-  TypedBuffer<Data> buffer(sizeof(int) * 10);
-  EXPECT_EQ(buffer.get(), buffer.GetAtOffset(0));
-  EXPECT_EQ(reinterpret_cast<Data*>(&buffer->data[9]),
-            buffer.GetAtOffset(sizeof(int) * 9));
 }
 
 }  // namespace remoting

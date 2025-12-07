@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,8 +24,7 @@ void SerializeAndSend(extensions::NativeMessageHost* native_message_host,
   DCHECK(native_message_host);
   std::string message_string;
   if (!base::JSONWriter::Write(message, &message_string)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   native_message_host->OnMessage(message_string);
 }
@@ -113,7 +113,7 @@ void FakeArcSupport::TosLoadResult(bool success) {
   DCHECK(native_message_host_);
   native_message_host_->OnMessage(
       base::StrCat({"{\"event\": \"onTosLoadResult\", \"success\": ",
-                    success ? "true" : "false", "}"}));
+                    base::ToString(success), "}"}));
 }
 
 void FakeArcSupport::AddObserver(Observer* observer) {
@@ -136,15 +136,14 @@ void FakeArcSupport::UnsetMessageHost() {
 
 void FakeArcSupport::PostMessageFromNativeHost(
     const std::string& message_string) {
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(message_string);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(parsed_json);
 
   const base::Value::Dict& message = parsed_json->GetDict();
   const std::string* action = message.FindString("action");
   if (!action) {
-    NOTREACHED_IN_MIGRATION() << message_string;
-    return;
+    NOTREACHED() << message_string;
   }
 
   ArcSupportHost::UIPage prev_ui_page = ui_page_;
@@ -153,15 +152,14 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else if (*action == "showPage") {
     const std::string* page = message.FindString("page");
     if (!page) {
-      NOTREACHED_IN_MIGRATION() << message_string;
-      return;
+      NOTREACHED() << message_string;
     }
     if (*page == "terms") {
       ui_page_ = ArcSupportHost::UIPage::TERMS;
     } else if (*page == "arc-loading") {
       ui_page_ = ArcSupportHost::UIPage::ARC_LOADING;
     } else {
-      NOTREACHED_IN_MIGRATION() << message_string;
+      NOTREACHED() << message_string;
     }
   } else if (*action == "showErrorPage") {
     ui_page_ = ArcSupportHost::UIPage::ERROR;
@@ -174,22 +172,19 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else if (*action == "setMetricsMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
-      NOTREACHED_IN_MIGRATION() << message_string;
-      return;
+      NOTREACHED() << message_string;
     }
     metrics_mode_ = opt.value();
   } else if (*action == "setBackupAndRestoreMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
-      NOTREACHED_IN_MIGRATION() << message_string;
-      return;
+      NOTREACHED() << message_string;
     }
     backup_and_restore_mode_ = opt.value();
   } else if (*action == "setLocationServiceMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
-      NOTREACHED_IN_MIGRATION() << message_string;
-      return;
+      NOTREACHED() << message_string;
     }
     location_service_mode_ = opt.value();
   } else if (*action == "closeWindow") {
@@ -198,7 +193,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
     // Do nothing as emulation.
   } else {
     // Unknown or unsupported action.
-    NOTREACHED_IN_MIGRATION() << message_string;
+    NOTREACHED() << message_string;
   }
   if (prev_ui_page != ui_page_) {
     for (auto& observer : observer_list_)
@@ -207,7 +202,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
 }
 
 void FakeArcSupport::CloseChannel(const std::string& error_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace arc

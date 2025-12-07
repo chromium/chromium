@@ -8,15 +8,31 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("window_error") {
   deps = [
     ":error_js",
+    ":script_error_stack_util",
+    ":wrap_gcrweb_functions",
     "//base",
+    "//ios/web/common:features",
     "//ios/web/public/js_messaging",
     "//net",
     "//url",
   ]
 
   sources = [
-    "window_error_java_script_feature.h",
-    "window_error_java_script_feature.mm",
+    "catch_gcrweb_script_errors_java_script_feature.h",
+    "catch_gcrweb_script_errors_java_script_feature.mm",
+    "error_event_listener_java_script_feature.h",
+    "error_event_listener_java_script_feature.mm",
+    "script_error_message_handler_java_script_feature.h",
+    "script_error_message_handler_java_script_feature.mm",
+  ]
+}
+
+source_set("script_error_stack_util") {
+  deps = [ "//base" ]
+
+  sources = [
+    "script_error_stack_util.h",
+    "script_error_stack_util.mm",
   ]
 }
 
@@ -27,10 +43,21 @@ optimize_ts("error_js") {
   deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
+optimize_ts("wrap_gcrweb_functions") {
+  visibility = [ ":window_error" ]
+
+  sources = [ "resources/wrap_gcrweb_functions.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:error_reporting",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 source_set("unittests") {
   testonly = true
 
   deps = [
+    ":script_error_stack_util",
     ":window_error",
     "//base/test:test_support",
     "//ios/web/js_messaging:java_script_feature",
@@ -40,5 +67,8 @@ source_set("unittests") {
     "//testing/gtest",
   ]
 
-  sources = [ "window_error_java_script_feature_unittest.mm" ]
+  sources = [
+    "script_error_message_handler_java_script_feature_unittest.mm",
+    "script_error_stack_util_unittest.mm",
+  ]
 }

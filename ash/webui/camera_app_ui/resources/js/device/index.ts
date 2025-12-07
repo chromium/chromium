@@ -5,7 +5,6 @@
 
 export {CameraManager} from './camera_manager.js';
 export {getDefaultScanCorners, setAvc1Parameters} from './mode/index.js';
-export type{GifResult, PhotoResult, VideoResult} from './mode/index.js';
+export type {GifResult, PhotoResult, VideoResult} from './mode/index.js';
 export {CameraInfo} from './type.js';
-export type{CameraUI, CameraViewUI} from './type.js';
-export type{CameraConfig} from './type.js';
+export type {CameraConfig, CameraUi, CameraViewUi} from './type.js';

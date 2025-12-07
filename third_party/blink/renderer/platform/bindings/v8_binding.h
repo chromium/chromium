@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
@@ -54,22 +53,11 @@
 
 namespace blink {
 
-class ExceptionState;
-
 // This file contains bindings helper functions that do not have dependencies
 // to core/ or bindings/core. For core-specific helper functions, see
-// bindings/core/v8/V8BindingForCore.h.
+// bindings/core/v8/v8_binding_for_core.h.
 
-template <typename T>
-struct V8TypeOf {
-  STATIC_ONLY(V8TypeOf);
-  // |Type| provides C++ -> V8 type conversion for DOM wrappers.
-  // The Blink binding code generator will generate specialized version of
-  // V8TypeOf for each wrapper class.
-  typedef void Type;
-};
-
-// Convert v8::String to a WTF::String. If the V8 string is not already
+// Convert v8::String to a blink::String. If the V8 string is not already
 // an external string then it is transformed into an external string at this
 // point to avoid repeated conversions.
 inline String ToCoreString(v8::Isolate* isolate, v8::Local<v8::String> value) {
@@ -145,14 +133,15 @@ inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
         isolate, impl);
   }
   if (string.Is8Bit()) {
-    return v8::String::NewFromOneByte(
-               isolate, reinterpret_cast<const uint8_t*>(string.Characters8()),
-               v8::NewStringType::kNormal, static_cast<int>(string.length()))
+    base::span<const LChar> chars = string.Span8();
+    return v8::String::NewFromOneByte(isolate, chars.data(),
+                                      v8::NewStringType::kNormal,
+                                      static_cast<int>(chars.size()))
         .ToLocalChecked();
   }
-  return v8::String::NewFromTwoByte(
-             isolate, reinterpret_cast<const uint16_t*>(string.Characters16()),
-             v8::NewStringType::kNormal, static_cast<int>(string.length()))
+  return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
+                                    v8::NewStringType::kNormal,
+                                    static_cast<int>(string.length()))
       .ToLocalChecked();
 }
 
@@ -169,14 +158,6 @@ inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
       .ToLocalChecked();
 }
 
-inline v8::Local<v8::Value> V8StringOrNull(v8::Isolate* isolate,
-                                           const AtomicString& string) {
-  if (string.IsNull())
-    return v8::Null(isolate);
-  return V8PerIsolateData::From(isolate)->GetStringCache()->V8ExternalString(
-      isolate, string.Impl());
-}
-
 inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
                                       const ParkableString& string) {
   if (string.IsNull())
@@ -189,16 +170,15 @@ inline v8::Local<v8::String> V8AtomicString(v8::Isolate* isolate,
                                             const StringView& string) {
   DCHECK(isolate);
   if (string.Is8Bit()) {
-    return v8::String::NewFromOneByte(
-               isolate, reinterpret_cast<const uint8_t*>(string.Characters8()),
-               v8::NewStringType::kInternalized,
-               static_cast<int>(string.length()))
+    base::span<const LChar> chars = string.Span8();
+    return v8::String::NewFromOneByte(isolate, chars.data(),
+                                      v8::NewStringType::kInternalized,
+                                      static_cast<int>(chars.size()))
         .ToLocalChecked();
   }
-  return v8::String::NewFromTwoByte(
-             isolate, reinterpret_cast<const uint16_t*>(string.Characters16()),
-             v8::NewStringType::kInternalized,
-             static_cast<int>(string.length()))
+  return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
+                                    v8::NewStringType::kInternalized,
+                                    static_cast<int>(string.length()))
       .ToLocalChecked();
 }
 
@@ -266,22 +246,6 @@ constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
              : v8::Intercepted::kYes;
 }
 
-// Gets the url of the currently executing script. Returns empty string, if no
-// script is executing (e.g. during parsing of a meta tag in markup), or the
-// script context is otherwise unavailable.
-PLATFORM_EXPORT String GetCurrentScriptUrl(v8::Isolate* isolate);
-
-// Gets the urls of the scripts at the top of the currently executing stack.
-// If available, returns up to |unique_url_count| urls, filtering out duplicate
-// urls (e.g. if the stack includes multiple frames from the same script).
-// Returns an empty vector, if no script is executing (e.g. during parsing of a
-// meta tag in markup), or the script context is otherwise unavailable.
-// To minimize the cost of walking the stack, only the top frames (currently 10)
-// are examined, regardless of the value of |unique_url_count|.
-PLATFORM_EXPORT Vector<String> GetScriptUrlsFromCurrentStack(
-    v8::Isolate* isolate,
-    wtf_size_t unique_url_count);
-
 namespace bindings {
 
 struct V8PropertyDescriptorBag {
@@ -309,8 +273,7 @@ struct V8PropertyDescriptorBag {
 PLATFORM_EXPORT void V8ObjectToPropertyDescriptor(
     v8::Isolate* isolate,
     v8::Local<v8::Value> descriptor_object,
-    V8PropertyDescriptorBag& descriptor_bag,
-    ExceptionState& exception_state);
+    V8PropertyDescriptorBag& descriptor_bag);
 
 }  // namespace bindings
 

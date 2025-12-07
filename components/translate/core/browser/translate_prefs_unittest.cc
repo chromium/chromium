@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
@@ -45,13 +44,13 @@ using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
 static void ExpectEqualLanguageLists(
-    const base::Value::List& language_values,
-    const std::vector<std::string>& languages) {
-  const int input_size = languages.size();
-  ASSERT_EQ(input_size, static_cast<int>(language_values.size()));
+    const base::Value::List& pref_values,
+    const std::vector<std::string>& expected_languages) {
+  const int input_size = expected_languages.size();
+  ASSERT_EQ(input_size, static_cast<int>(pref_values.size()));
   for (int i = 0; i < input_size; ++i) {
-    ASSERT_TRUE(language_values[i].is_string());
-    EXPECT_EQ(languages[i], language_values[i].GetString());
+    ASSERT_TRUE(pref_values[i].is_string());
+    EXPECT_EQ(expected_languages[i], pref_values[i].GetString());
   }
 }
 
@@ -71,7 +70,7 @@ class TranslatePrefsTest : public testing::Test {
 
   void SetUp() override {
     prefs_.SetString(language::prefs::kAcceptLanguages, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     prefs_.SetString(language::prefs::kPreferredLanguages, std::string());
 #endif
     prefs_.registry()->RegisterBooleanPref(
@@ -80,10 +79,10 @@ class TranslatePrefsTest : public testing::Test {
   }
 
   void ExpectBlockedLanguageListContent(
-      const std::vector<std::string>& list) const {
+      const std::vector<std::string>& expected_languages) const {
     const base::Value::List& never_prompt_list =
         prefs_.GetList(prefs::kBlockedLanguages);
-    ExpectEqualLanguageLists(never_prompt_list, list);
+    ExpectEqualLanguageLists(never_prompt_list, expected_languages);
   }
 
   // Returns a vector of language codes from the elements of the given
@@ -136,31 +135,26 @@ class TranslatePrefsTest : public testing::Test {
 // on the given locale.
 TEST_F(TranslatePrefsTest, GetLanguageInfoListCorrectLocale) {
   std::vector<TranslateLanguageInfo> language_list;
-  std::vector<std::string> expected_codes;
 
-  l10n_util::GetAcceptLanguagesForLocale("en-US", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_allowed */,
+  TranslatePrefs::GetLanguageInfoList("en-US", /*translate_allowed=*/true,
                                       &language_list);
-  std::vector<std::string> codes = ExtractLanguageCodes(language_list);
-  EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
-
-  language_list.clear();
-  expected_codes.clear();
-  codes.clear();
-  l10n_util::GetAcceptLanguagesForLocale("ja", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("ja", true /* translate_allowed */,
-                                      &language_list);
-  codes = ExtractLanguageCodes(language_list);
-  EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
+  EXPECT_THAT(ExtractLanguageCodes(language_list),
+              UnorderedElementsAreArray(
+                  l10n_util::GetAcceptLanguagesForLocale("en-US")));
 
   language_list.clear();
-  expected_codes.clear();
-  codes.clear();
-  l10n_util::GetAcceptLanguagesForLocale("es-AR", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("es-AR", true /* translate_allowed */,
+  TranslatePrefs::GetLanguageInfoList("ja", /*translate_allowed=*/true,
                                       &language_list);
-  codes = ExtractLanguageCodes(language_list);
-  EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
+  EXPECT_THAT(
+      ExtractLanguageCodes(language_list),
+      UnorderedElementsAreArray(l10n_util::GetAcceptLanguagesForLocale("ja")));
+
+  language_list.clear();
+  TranslatePrefs::GetLanguageInfoList("es-AR", /*translate_allowed=*/true,
+                                      &language_list);
+  EXPECT_THAT(ExtractLanguageCodes(language_list),
+              UnorderedElementsAreArray(
+                  l10n_util::GetAcceptLanguagesForLocale("es-AR")));
 }
 
 // Check the output of GetLanguageInfoList().
@@ -290,6 +284,26 @@ TEST_F(TranslatePrefsTest, BlockLanguage) {
   translate_prefs_->BlockLanguage("zh-TW");
   translate_prefs_->BlockLanguage("zh-HK");
   ExpectBlockedLanguageListContent({"en", "zh-TW"});
+}
+
+TEST_F(TranslatePrefsTest, BlockDifferentTranslateCodes) {
+  // `en` is a default blocked language, it should be present already.
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->BlockLanguage("he");
+  translate_prefs_->BlockLanguage("fil");
+  translate_prefs_->BlockLanguage("mni-Mtei");
+  ExpectBlockedLanguageListContent({"en", "iw", "tl", "mni-Mtei"});
+}
+
+TEST_F(TranslatePrefsTest, BlockNonAcceptLanguage) {
+  // `en` is a default blocked language, it should be present already.
+  ExpectBlockedLanguageListContent({"en"});
+
+  // Blocked languages must be on the accept language list.
+  translate_prefs_->BlockLanguage("aa");
+  translate_prefs_->BlockLanguage("bb");
+  ExpectBlockedLanguageListContent({"en"});
 }
 
 TEST_F(TranslatePrefsTest, UnblockLanguage) {
@@ -591,7 +605,7 @@ TEST_F(TranslatePrefsTest, MoveLanguageUp) {
                                       {"it", "es"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("it,en,fr,es");
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   //---------------------------------------------------------------------------
   // Move with policy-forced languages present.
   // Forced languages should always remain at the top of the languages list and
@@ -720,7 +734,7 @@ TEST_F(TranslatePrefsTest, MoveLanguageUp) {
                                       {"en", "fr", "it", "es", "zh"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("es,en,fr,it,zh");
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   //---------------------------------------------------------------------------
   // Move with policy-forced languages present.
   // Only test on non-Chrome OS platforms.
@@ -810,7 +824,7 @@ TEST_F(TranslatePrefsTest, MoveLanguageDown) {
                                       {"fr", "it"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("en,fr,es,it");
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   //---------------------------------------------------------------------------
   // Move with policy-forced languages present.
   // Only test on non-Chrome OS platforms.
@@ -1164,6 +1178,13 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("tl");
 
   // AlwaysTranslateList should be empty now
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+}
+
+TEST_F(TranslatePrefsTest, AlwaysTranslateLanguagesMustBeTranslatable) {
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("bb", "es");
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 }
 

@@ -1,0 +1,43 @@
+Check FedCM request are getting captured in devtools
+msg.params: {
+    accounts : [
+        [0] : {
+            accountId : 1234
+            email : john_doe@idp.example
+            givenName : John
+            idpConfigUrl : https://127.0.0.1:8443/resources/fedcm/fedcm.json
+            idpLoginUrl : https://127.0.0.1:8443/resources/fedcm/signin.html
+            loginState : SignIn
+            name : John Doe
+            pictureUrl : https://127.0.0.1:8443/profile/123
+        }
+        [1] : {
+            accountId : 5678
+            email : aisha@idp.example
+            givenName : Aisha
+            idpConfigUrl : https://127.0.0.1:8443/resources/fedcm/fedcm.json
+            idpLoginUrl : https://127.0.0.1:8443/resources/fedcm/signin.html
+            loginState : SignUp
+            name : Aisha Ahmad
+            pictureUrl : https://127.0.0.1:8443/profile/567
+            privacyPolicyUrl : https://rp.example/privacy_policy.html
+            termsOfServiceUrl : https://rp.example/terms_of_service.html
+        }
+    ]
+    dialogId : <string>
+    dialogType : AccountChooser
+    title : Sign in to devtools.test
+}
+token: 1234
+urls loaded
+Url: https://127.0.0.1:8443/.well-known/web-identity, Status: 200::OK
+Url: https://127.0.0.1:8443/resources/fedcm/accounts.php, Status: 200::OK
+Url: https://127.0.0.1:8443/resources/fedcm/client_metadata.json?client_id=123, Status: 200::OK
+Url: https://127.0.0.1:8443/resources/fedcm/fedcm.json, Status: 200::OK
+Url: https://127.0.0.1:8443/resources/fedcm/token.php, Status: 200::OK
+  Payload from requestWillBeSent: client_id=123&nonce=2&account_id=1234&disclosure_text_shown=false&is_auto_selected=false&mode=passive&fields=name,email,picture
+  getRequestPostData did not capture POST data for https://127.0.0.1:8443/resources/fedcm/token.php
+urls failed
+Url: https://127.0.0.1:8443/profile/123, Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE
+Url: https://127.0.0.1:8443/profile/567, Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE
+

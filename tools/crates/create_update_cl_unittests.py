@@ -8,16 +8,10 @@ import os
 import unittest
 
 from create_update_cl import (
-    CHROMIUM_DIR,
-    ConvertCrateIdToCrateName,
-    ConvertCrateIdToCrateVersion,
-    ConvertCrateIdToEpochDir,
-    ConvertCrateIdToGnLabel,
-    ConvertCrateIdToVendorDir,
     CreateCommitDescription,
     CreateCommitTitle,
+    CreateCommitTitleForBreakingUpdate,
     DiffCrateIds,
-    GetEpoch,
     SortedMarkdownList,
 )
 
@@ -67,12 +61,30 @@ class DiffCrateIdsTests(unittest.TestCase):
 class CommitDescriptionTests(unittest.TestCase):
 
     def testTitle(self):
-        before = set(["updated_crate@2.0.1", "deleted@3.0.1"])
-        after = set(["updated_crate@2.0.2", "added@5.0.1"])
-        diff = DiffCrateIds(before, after, only_minor_updates=True)
-        actual_title = CreateCommitTitle("updated_crate@2.0.1", diff)
+        actual_title = CreateCommitTitle("updated_crate@2.0.1",
+                                         "updated_crate@2.0.2")
         expected_title = \
              "Roll updated_crate: 2.0.1 => 2.0.2 in //third_party/rust."
+        self.assertEqual(actual_title, expected_title)
+
+    def testBreakingUpdateTitle(self):
+        before = set(["updated_foo@2.0.1", "updated_bar@3.0.1"])
+        after = set(["updated_foo@3.0.2", "updated_bar@4.0.2"])
+        diff = DiffCrateIds(before, after, only_minor_updates=False)
+        actual_title = CreateCommitTitleForBreakingUpdate(diff)
+        expected_title = \
+              "Roll updated_bar: 3.0.1 => 4.0.2, updated_foo: 2.0.1 => 3.0.2"
+        self.assertEqual(actual_title, expected_title)
+
+    def testBreakingUpdateTitleLong(self):
+        before = set(
+            ["updated_foo@2.0.1", "updated_bar@3.0.1", "updated_baz@4.0.1"])
+        after = set(
+            ["updated_foo@3.0.2", "updated_bar@4.0.2", "updated_baz@5.0.2"])
+        diff = DiffCrateIds(before, after, only_minor_updates=False)
+        actual_title = CreateCommitTitleForBreakingUpdate(diff)
+        expected_title = \
+             "Roll updated_bar: 3.0.1 => 4.0.2, updated_baz: 4.0.1 => 5.0.2,..."
         self.assertEqual(actual_title, expected_title)
 
     def testFullDescription(self):
@@ -80,7 +92,7 @@ class CommitDescriptionTests(unittest.TestCase):
         after = set(["updated_crate@2.0.2", "added@5.0.1"])
         diff = DiffCrateIds(before, after, only_minor_updates=True)
 
-        actual_desc = CreateCommitDescription("Commit title.", diff, False)
+        actual_desc = CreateCommitDescription("Commit title.", diff)
         expected_desc = \
 """Commit title.
 
@@ -90,15 +102,16 @@ process and other details can be found at
 
 Updated crates:
 
-* updated_crate: 2.0.1 => 2.0.2
+* updated_crate: 2.0.1 => 2.0.2;
+  https://docs.rs/crate/updated_crate/2.0.2
 
 New crates:
 
-* added@5.0.1
+* added@5.0.1; https://docs.rs/crate/added/5.0.1
 
 Removed crates:
 
-* deleted@3.0.1
+* deleted@3.0.1; https://docs.rs/crate/deleted/3.0.1
 
 Bug: None
 Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
@@ -114,49 +127,6 @@ Disable-Rts: True
 
 
 class OtherTests(unittest.TestCase):
-
-    def testGetEpoch(self):
-        self.assertEqual(GetEpoch("0.1.2"), "v0_1")
-        self.assertEqual(GetEpoch("1.2.3"), "v1")
-
-    def testConvertCrateIdToEpochDir(self):
-        actual_dir = ConvertCrateIdToEpochDir("foo-bar@1.2.3")
-        expected_suffix = os.path.join("third_party", "rust", "foo_bar", "v1")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-        actual_dir = ConvertCrateIdToEpochDir("bar_baz@0.12.3")
-        expected_suffix = os.path.join("third_party", "rust", "bar_baz",
-                                       "v0_12")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-    def testConvertCrateIdToGnLabel(self):
-        self.assertEqual(ConvertCrateIdToGnLabel("foo-bar@1.2.3"),
-                         "//third_party/rust/foo_bar/v1:lib")
-        self.assertEqual(ConvertCrateIdToGnLabel("bar_baz@0.12.3"),
-                         "//third_party/rust/bar_baz/v0_12:lib")
-
-    def testConvertCrateIdToVendorDir(self):
-        actual_dir = ConvertCrateIdToVendorDir("foo-bar@1.2.3")
-        expected_suffix = os.path.join("third_party", "rust",
-                                       "chromium_crates_io", "vendor",
-                                       "foo-bar-1.2.3")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-        actual_dir = ConvertCrateIdToVendorDir("bar_baz@0.12.3")
-        expected_suffix = os.path.join("third_party", "rust",
-                                       "chromium_crates_io", "vendor",
-                                       "bar_baz-0.12.3")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-    def testConvertCrateIdToCrateName(self):
-        self.assertEqual(ConvertCrateIdToCrateName("foo-bar@1.2.3"), "foo-bar")
-
-    def testConvertCrateIdToCrateVersion(self):
-        self.assertEqual(ConvertCrateIdToCrateVersion("foo-bar@1.2.3"), "1.2.3")
 
     def testSortedMarkdownList(self):
         input = ["bbb " * 25, "aaa " * 30, "ccc " * 35]

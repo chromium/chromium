@@ -1,0 +1,23 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=MenuElements
+] interface HTMLMenuItemElement : HTMLElement {
+    [HTMLConstructor] constructor();
+    [CEReactions, Reflect] attribute boolean disabled;
+    // This is used to track live checked-ness.
+    [CEReactions] attribute boolean checked;
+    // This is used to track only *default* checked-ness. It reflects a content
+    // attribute with the same name; the `defaultchecked` content attribute
+    // exists so that JavaScript is not required to set the initial checkedness
+    // of a menu element, and its reflected IDL attribute exists here for
+    // developer convenience.
+    [CEReactions, Reflect] attribute boolean defaultChecked;
+
+    // Command Invokers
+    [CEReactions, Reflect=commandfor] attribute Element? commandForElement;
+    [CEReactions] attribute DOMString command;
+};

@@ -24,14 +24,16 @@ FileTasksNotifierFactory ::FileTasksNotifierFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
+// static
 FileTasksNotifierFactory* FileTasksNotifierFactory::GetInstance() {
   static base::NoDestructor<FileTasksNotifierFactory> instance;
   return instance.get();
 }
 
+// static
 FileTasksNotifier* FileTasksNotifierFactory::GetForProfile(Profile* profile) {
   return static_cast<FileTasksNotifier*>(
-      GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 std::unique_ptr<KeyedService>

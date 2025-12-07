@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -114,8 +113,12 @@ class MLInstallabilityPromoter
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   void AwaitMetricsCollectionTasksCompleteForTesting();
 
-  bool IsPendingVisibilityForTesting() {
+  bool IsPendingVisibilityForTesting() const {
     return state_ == MLPipelineState::kWaitingForVisibility;
+  }
+
+  bool IsCompleteForTesting() const {
+    return state_ == MLPipelineState::kComplete;
   }
 
  private:
@@ -161,7 +164,9 @@ class MLInstallabilityPromoter
 
   // content::ServiceWorkerContextObserver overrides
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override;
+                            const GURL& scope,
+                            const content::ServiceWorkerRegistrationInformation&
+                                service_worker_info) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   void ResetRunningStagesAndTasksMaybeReportResult();

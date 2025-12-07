@@ -10,11 +10,7 @@
 using ExpandableContainerViewTest = ChromeViewsTestBase;
 
 TEST_F(ExpandableContainerViewTest, DetailLevelVisibility) {
-  std::vector<std::u16string> details;
-  details.push_back(u"Detail 1");
-  details.push_back(u"Detail 2");
-  details.push_back(u"Detail 2");
-
+  std::u16string details = u"- Detail #1 \n - Detail #2 \n - Detail #3";
   auto container = std::make_unique<ExpandableContainerView>(details);
 
   // Initially the details view should not be expanded or visible.

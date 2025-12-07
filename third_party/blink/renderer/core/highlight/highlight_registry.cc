@@ -4,52 +4,69 @@
 
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_highlight_hit_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 HighlightRegistry* HighlightRegistry::From(LocalDOMWindow& window) {
-  HighlightRegistry* supplement =
-      Supplement<LocalDOMWindow>::From<HighlightRegistry>(window);
+  HighlightRegistry* supplement = window.GetHighlightRegistry();
   if (!supplement) {
     supplement = MakeGarbageCollected<HighlightRegistry>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, supplement);
+    window.SetHighlightRegistry(supplement);
   }
   return supplement;
 }
 
 HighlightRegistry::HighlightRegistry(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), frame_(window.GetFrame()) {}
+    : frame_(window.GetFrame()) {}
 
 HighlightRegistry::~HighlightRegistry() = default;
-
-const char HighlightRegistry::kSupplementName[] = "HighlightRegistry";
 
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
   visitor->Trace(frame_);
   visitor->Trace(active_highlights_in_node_);
   ScriptWrappable::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
   if (!node) {
     return nullptr;
   }
-  return node->GetDocument()
-      .domWindow()
-      ->Supplementable<LocalDOMWindow>::RequireSupplement<HighlightRegistry>();
+  return node->GetDocument().domWindow()->GetHighlightRegistry();
+}
+
+bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
+                                                 Document* document) const {
+  if (abstract_range->OwnerDocument() != document ||
+      abstract_range->collapsed() || !abstract_range->startContainer() ||
+      !abstract_range->startContainer()->isConnected() ||
+      !abstract_range->endContainer() ||
+      !abstract_range->endContainer()->isConnected()) {
+    return false;
+  }
+
+  auto* static_range = DynamicTo<StaticRange>(*abstract_range);
+  if (static_range && !static_range->IsValid()) {
+    return false;
+  }
+
+  return true;
 }
 
 // Deletes all HighlightMarkers and rebuilds them with the contents of
@@ -104,11 +121,7 @@ void HighlightRegistry::ValidateHighlightMarkers() {
     const auto& highlight_name = highlight_registry_map_entry->highlight_name;
     const auto& highlight = highlight_registry_map_entry->highlight;
     for (const auto& abstract_range : highlight->GetRanges()) {
-      if (abstract_range->OwnerDocument() == document &&
-          !abstract_range->collapsed()) {
-        auto* static_range = DynamicTo<StaticRange>(*abstract_range);
-        if (static_range && !static_range->IsValid())
-          continue;
+      if (IsAbstractRangePaintable(abstract_range, document)) {
         EphemeralRange eph_range(abstract_range);
         markers_controller.AddCustomHighlightMarker(eph_range, highlight_name,
                                                     highlight);
@@ -181,7 +194,7 @@ void HighlightRegistry::SetForTesting(AtomicString highlight_name,
     highlights_.erase(highlights_iterator);
   }
   highlights_.insert(MakeGarbageCollected<HighlightRegistryMapEntry>(
-      highlight_name, highlight));
+      highlight_name, highlight, highlights_registered_++));
   highlight->RegisterIn(this);
   ScheduleRepaint();
 }
@@ -231,29 +244,31 @@ bool HighlightRegistry::deleteForBinding(ScriptState*,
 
 int8_t HighlightRegistry::CompareOverlayStackingPosition(
     const AtomicString& highlight_name1,
-    const Highlight* highlight1,
-    const AtomicString& highlight_name2,
-    const Highlight* highlight2) const {
+    const AtomicString& highlight_name2) const {
   if (highlight_name1 == highlight_name2)
     return kOverlayStackingPositionEquivalent;
 
-  if (highlight1->priority() == highlight2->priority()) {
-    for (const auto& highlight_registry_map_entry : highlights_) {
-      const auto& highlight_name = highlight_registry_map_entry->highlight_name;
-      if (highlight_name == highlight_name1) {
-        DCHECK(highlight1 == highlight_registry_map_entry->highlight);
-        return kOverlayStackingPositionBelow;
-      }
-      if (highlight_name == highlight_name2) {
-        DCHECK(highlight2 == highlight_registry_map_entry->highlight);
-        return kOverlayStackingPositionAbove;
-      }
-    }
-    NOTREACHED_IN_MIGRATION();
+  auto highlights_iterator1 = GetMapIterator(highlight_name1);
+  CHECK(highlights_iterator1 != highlights_.end());
+  auto highlights_iterator2 = GetMapIterator(highlight_name2);
+  CHECK(highlights_iterator2 != highlights_.end());
+
+  if (highlights_iterator1 == highlights_.end() ||
+      highlights_iterator2 == highlights_.end()) {
     return kOverlayStackingPositionEquivalent;
   }
 
-  return highlight1->priority() > highlight2->priority()
+  auto highlight_priority1 = highlights_iterator1->Get()->highlight->priority();
+  auto highlight_priority2 = highlights_iterator2->Get()->highlight->priority();
+  if (highlight_priority1 != highlight_priority2) {
+    return highlight_priority1 > highlight_priority2
+               ? kOverlayStackingPositionAbove
+               : kOverlayStackingPositionBelow;
+  }
+
+  auto highlight_position1 = highlights_iterator1->Get()->registration_position;
+  auto highlight_position2 = highlights_iterator2->Get()->registration_position;
+  return highlight_position1 > highlight_position2
              ? kOverlayStackingPositionAbove
              : kOverlayStackingPositionBelow;
 }
@@ -273,8 +288,7 @@ HighlightRegistry::IterationSource::IterationSource(
 
 bool HighlightRegistry::IterationSource::FetchNextItem(ScriptState*,
                                                        String& key,
-                                                       Highlight*& value,
-                                                       ExceptionState&) {
+                                                       Highlight*& value) {
   if (index_ >= highlights_snapshot_.size())
     return false;
   key = highlights_snapshot_[index_]->highlight_name;
@@ -288,8 +302,90 @@ void HighlightRegistry::IterationSource::Trace(blink::Visitor* visitor) const {
 }
 
 HighlightRegistryMapIterable::IterationSource*
-HighlightRegistry::CreateIterationSource(ScriptState*, ExceptionState&) {
+HighlightRegistry::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<IterationSource>(*this);
 }
 
+HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
+    float x,
+    float y,
+    const HighlightsFromPointOptions* options) {
+  Document* document = frame_->GetDocument();
+  if (!document || !document->GetLayoutView()) {
+    return HeapVector<Member<HighlightHitResult>>();
+  }
+
+  Node* hit_node = HitTestInDocument(document, x, y).InnerNode();
+  if (!hit_node || !hit_node->IsTextNode()) {
+    return HeapVector<Member<HighlightHitResult>>();
+  }
+
+  // If the node hit is in a shadow tree whose root is not in |options|, we
+  // should return no highlights.
+  if (hit_node->IsInShadowTree() &&
+      (!options || !options->hasShadowRoots() ||
+       !options->shadowRoots().Contains(hit_node->GetTreeScope()))) {
+    return HeapVector<Member<HighlightHitResult>>();
+  }
+
+  auto active_highlights_in_node_iterator =
+      active_highlights_in_node_.find(To<Text>(hit_node));
+  if (active_highlights_in_node_iterator == active_highlights_in_node_.end()) {
+    return HeapVector<Member<HighlightHitResult>>();
+  }
+  Vector<AtomicString> highlight_names_at_hit_node(
+      active_highlights_in_node_iterator->value);
+  std::sort(highlight_names_at_hit_node.begin(),
+            highlight_names_at_hit_node.end(),
+            [this](const AtomicString& highlight_name1,
+                   const AtomicString& highlight_name2) {
+              return CompareOverlayStackingPosition(highlight_name1,
+                                                    highlight_name2) ==
+                     kOverlayStackingPositionAbove;
+            });
+
+  // |x| and |y| are in CSS pixels, which need to be converted to physical
+  // pixels to determine if they're inside layout rectangles.
+  gfx::PointF hit_point(x, y);
+  hit_point.Scale(frame_->DevicePixelRatio());
+
+  HeapVector<Member<HighlightHitResult>> highlight_hit_results;
+  for (const AtomicString& highlight_name : highlight_names_at_hit_node) {
+    auto highlights_iterator = GetMapIterator(highlight_name);
+    CHECK(highlights_iterator != highlights_.end());
+    Highlight* highlight = highlights_iterator->Get()->highlight;
+    HeapVector<Member<AbstractRange>> highlight_ranges_hit;
+    for (auto& abstract_range : highlight->GetRanges()) {
+      // If the range starts and ends in a different tree scope than the hit
+      // node (i.e., the range encloses a shadow tree), do not return it when
+      // the hit is on a node inside that shadow tree. Only consider ranges
+      // within the same tree scope as the hit node.
+      if (abstract_range->startContainer()->GetTreeScope() !=
+          hit_node->GetTreeScope()) {
+        continue;
+      }
+
+      if (IsAbstractRangePaintable(abstract_range, document)) {
+        EphemeralRange ephemeral_range(abstract_range);
+        Vector<gfx::QuadF> quads = ComputeTextBounds(ephemeral_range);
+        for (const auto& quad : quads) {
+          if (quad.Contains(hit_point)) {
+            highlight_ranges_hit.push_back(abstract_range);
+            break;
+          }
+        }
+      }
+    }
+
+    if (highlight_ranges_hit.size()) {
+      HighlightHitResult* highlight_hit_result =
+          MakeGarbageCollected<HighlightHitResult>();
+      highlight_hit_result->setHighlight(highlight);
+      highlight_hit_result->setRanges(highlight_ranges_hit);
+      highlight_hit_results.push_back(highlight_hit_result);
+    }
+  }
+
+  return highlight_hit_results;
+}
 }  // namespace blink

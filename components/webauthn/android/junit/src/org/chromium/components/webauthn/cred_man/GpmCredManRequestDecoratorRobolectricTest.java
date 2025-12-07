@@ -38,12 +38,12 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     private static final String ORIGIN = "www.coolwebsite.com";
     private static final byte[] USER_ID = new byte[] {3, 5, 8};
 
-    private CreateCredentialRequest.Builder mBuilder =
+    private final CreateCredentialRequest.Builder mBuilder =
             Shadow.newInstanceOf(CreateCredentialRequest.Builder.class);
     @Mock private CredManCreateCredentialRequestHelper mCreateHelper;
     @Mock private CredManGetCredentialRequestHelper mGetHelper;
 
-    private GpmCredManRequestDecorator mDecorator = GpmCredManRequestDecorator.getInstance();
+    private final GpmCredManRequestDecorator mDecorator = GpmCredManRequestDecorator.getInstance();
 
     @Before
     public void setUp() throws Exception {
@@ -86,7 +86,6 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     @SmallTest
     public void
             testUpdateGetCredentialRequestBundle_whenIgnoreGpmFalse_thenBundleContainsBranding() {
-        when(mGetHelper.getPlayServicesAvailable()).thenReturn(true);
         when(mGetHelper.getPreferImmediatelyAvailable()).thenReturn(true);
         when(mGetHelper.getIgnoreGpm()).thenReturn(false);
         Bundle bundle = new Bundle();
@@ -107,7 +106,6 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     @SmallTest
     public void
             testUpdateGetCredentialRequestBundle_whenIgnoreGpmTrue_thenBundleDoesNotContainBranding() {
-        when(mGetHelper.getPlayServicesAvailable()).thenReturn(true);
         when(mGetHelper.getPreferImmediatelyAvailable()).thenReturn(true);
         when(mGetHelper.getIgnoreGpm()).thenReturn(true);
         Bundle bundle = new Bundle();

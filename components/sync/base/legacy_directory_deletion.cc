@@ -18,7 +18,7 @@ void DeleteLegacyDirectoryFilesAndNigoriStorage(
     const base::FilePath& directory_path) {
   // We assume that the directory database files are all top level files, and
   // use no folders. We also assume that there might be child folders under
-  // |directory_path| that are used for non-directory things, like storing
+  // `directory_path` that are used for non-directory things, like storing
   // DataTypeStore/LevelDB data, and we expressly do not want to delete those.
   if (!base::DirectoryExists(directory_path)) {
     return;

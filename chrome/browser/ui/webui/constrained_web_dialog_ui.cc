@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -29,6 +30,10 @@ using content::RenderFrameHost;
 using content::WebContents;
 using content::WebUIMessageHandler;
 
+ConstrainedWebDialogUIConfig::ConstrainedWebDialogUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIConstrainedHTMLTestURL) {}
+
 namespace {
 
 const char kConstrainedWebDialogDelegateUserDataKey[] =
@@ -38,7 +43,8 @@ class ConstrainedWebDialogDelegateUserData
     : public base::SupportsUserData::Data {
  public:
   explicit ConstrainedWebDialogDelegateUserData(
-      ConstrainedWebDialogDelegate* delegate) : delegate_(delegate) {}
+      ConstrainedWebDialogDelegate* delegate)
+      : delegate_(delegate) {}
   ~ConstrainedWebDialogDelegateUserData() override = default;
   ConstrainedWebDialogDelegateUserData(
       const ConstrainedWebDialogDelegateUserData&) = delete;
@@ -71,8 +77,9 @@ void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
                           base::Unretained(this)));
 
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
 
   ui::WebDialogDelegate* dialog_delegate = delegate->GetWebDialogDelegate();
   std::vector<WebUIMessageHandler*> handlers;
@@ -89,15 +96,16 @@ void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
 void ConstrainedWebDialogUI::OnDialogCloseMessage(
     const base::Value::List& args) {
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
 
   std::string json_retval;
   if (!args.empty()) {
     if (args[0].is_string()) {
       json_retval = args[0].GetString();
     } else {
-      NOTREACHED_IN_MIGRATION() << "Could not read JSON argument";
+      NOTREACHED() << "Could not read JSON argument";
     }
   }
 
@@ -124,8 +132,8 @@ void ConstrainedWebDialogUI::ClearConstrainedDelegate(
 ConstrainedWebDialogDelegate* ConstrainedWebDialogUI::GetConstrainedDelegate() {
   ConstrainedWebDialogDelegateUserData* user_data =
       static_cast<ConstrainedWebDialogDelegateUserData*>(
-          web_ui()->GetWebContents()->
-              GetUserData(&kConstrainedWebDialogDelegateUserDataKey));
+          web_ui()->GetWebContents()->GetUserData(
+              &kConstrainedWebDialogDelegateUserDataKey));
 
   return user_data ? user_data->delegate() : nullptr;
 }

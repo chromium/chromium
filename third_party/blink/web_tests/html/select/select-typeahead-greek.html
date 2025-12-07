@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+    <p>This test verifies a select can refine the selection when we send keydown events consisting of Greek small characters.</p>
+    <select id="select">
+        <option value="-1">should not see me</option>
+        <option value="0">&#x0391;</option>
+        <option value="1">&#x0391;&#x0392;</option>
+        <option value="2">&#x0391;&#x0392;&#x0393;</option>
+        <option value="3">&#x0391;&#x0392;&#x0393;&#x0394;</option>
+        <option value="4">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;</option>
+        <option value="5">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;</option>
+        <option value="6">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;</option>
+        <option value="7">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;</option>
+        <option value="8">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;</option>
+        <option value="9">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;</option>
+        <option value="10">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;</option>
+        <option value="11">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;</option>
+        <option value="12">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;</option>
+        <option value="13">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;</option>
+        <option value="14">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;</option>
+        <option value="15">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;</option>
+        <option value="16">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;</option>
+        <option value="18">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;</option>
+        <option value="19">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;</option>
+        <option value="20">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;</option>
+        <option value="21">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;</option>
+        <option value="22">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;&#x03A7;</option>
+        <option value="23">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;&#x03A7;&#x03A8;</option>
+        <option value="24">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;&#x03A7;&#x03A8;&#x03A9;</option>
+    </select>
+    <ul id="console"></ul>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+</body>
+<script>
+// Set the input focus to the <select> element.
+var select = document.getElementById("select");
+select.focus();
+
+var base = 0x03B1;
+for (var i = base; i <= 0x03C9; i++) {
+  test(() => {
+    // We can skip U+03C2 (`ς` - Greek Small Letter Final Sigma) because there
+    // are 2 lower case Sigma letters in the Greek alphabet, based on the
+    // position of the letter in the word. `ς` (0x03C2) for final position in
+    // word, `σ` (0x03C3) for the other positions.
+    if (i != 0x03C2) {
+        // Send a key event consisting of a Greek small character.
+        eventSender.keyDown(String.fromCharCode(i));
+
+        // Compare the value of this <select> element with the expected result.
+        assert_equals(select.value, (i - base).toString());
+    }
+  });
+}
+</script>
+</html>

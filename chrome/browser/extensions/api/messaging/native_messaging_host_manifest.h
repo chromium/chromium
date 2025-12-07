@@ -10,7 +10,10 @@
 
 #include "base/files/file_path.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -30,7 +33,7 @@ class NativeMessagingHostManifest {
   // "([a-z0-9_]+.)*[a-z0-9_]+".
   static bool IsValidName(const std::string& name);
 
-  // Load manifest file from |file_path|.
+  // Load manifest file from `file_path`.
   static std::unique_ptr<NativeMessagingHostManifest> Load(
       const base::FilePath& file_path,
       std::string* error_message);
@@ -47,7 +50,7 @@ class NativeMessagingHostManifest {
  private:
   NativeMessagingHostManifest();
 
-  // Parses manifest |dictionary|. In case of an error sets |error_message| and
+  // Parses manifest `dictionary`. In case of an error sets `error_message` and
   // returns false.
   bool Parse(const base::Value::Dict& dict, std::string* error_message);
 

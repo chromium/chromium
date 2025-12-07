@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/strings/levenshtein_distance.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

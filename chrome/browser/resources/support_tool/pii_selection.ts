@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
@@ -62,10 +63,10 @@ export class PiiSelectionElement extends PiiSelectionElementBase {
     };
   }
 
-  private selectAll_: boolean;
-  private selectedRadioButton_: string;
-  private showPIISelection_: boolean;
-  private detectedPIIItems_: PiiDataItem[];
+  declare private selectAll_: boolean;
+  declare private selectedRadioButton_: string;
+  declare private showPIISelection_: boolean;
+  declare private detectedPIIItems_: PiiDataItem[];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   updateDetectedPiiItems(items: PiiDataItem[]) {

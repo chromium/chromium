@@ -1,0 +1,37 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* Variable declarations. */
+  --setup-list-background: var(--color-sys-surface);
+  --setup-list-border-radius: 12px;
+  --setup-list-item-spacing: 12px;
+  --setup-list-margin: 8px;
+  --setup-list-separator-color: var(--color-sys-base-container);
+  --setup-list-separator-size: 1px;
+}
+
+#promos {
+  background-color: var(--setup-list-background);
+  border: none;
+  border-radius: var(--setup-list-border-radius);
+  margin: var(--setup-list-margin);
+  overflow: hidden;
+}
+
+setup-list-item {
+  border-block-end: var(--setup-list-separator-size) solid
+    var(--setup-list-separator-color);
+}
+
+setup-list-item:last-child {
+  border-block-end: none;
+}

@@ -8,10 +8,16 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
+namespace auto_deletion {
+class AutoDeletionService;
+}  // namespace auto_deletion
 namespace base {
 class CommandLine;
 class SequencedTaskRunner;
@@ -55,18 +61,22 @@ class ApplicationContextImpl : public ApplicationContext {
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
+  void OnAppStartedBackgroundProcessing() override;
+  void OnAppFinishedBackgroundProcessing() override;
   bool WasLastShutdownClean() override;
   PrefService* GetLocalState() override;
   net::URLRequestContextGetter* GetSystemURLRequestContext() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
-  const std::string& GetApplicationLocale() override;
+  ApplicationLocaleStorage* GetApplicationLocaleStorage() override;
   const std::string& GetApplicationCountry() override;
-  ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
+  ProfileManagerIOS* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   variations::VariationsService* GetVariationsService() override;
   net::NetLog* GetNetLog() override;
@@ -80,26 +90,31 @@ class ApplicationContextImpl : public ApplicationContext {
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   id<SingleSignOnService> GetSingleSignOnService() override;
+  signin::AvatarProvider* GetIdentityAvatarProvider() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   AccountProfileMapper* GetAccountProfileMapper() override;
-  segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() override;
+  IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
-  UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
+  AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+  auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
+  optimization_guide::OptimizationGuideGlobalState*
+  GetOptimizationGuideGlobalState() override;
 
  private:
   // Represents the possible application states the app can be in.
   enum class AppState {
     kForeground,
-    kBackground,
+    kBackgroundFromActive,
+    kBackgroundProcessing,
+    kBackgroundIdle
   };
 
   // Helper method to implement the work required when transitioning between
   // application states.
   void OnAppEnterState(AppState app_state);
 
-  // Sets the locale used by the application.
+  // TODO(crbug.com/414379493): Remove this method.
   void SetApplicationLocale(const std::string& locale);
 
   // Create the local state.
@@ -108,7 +123,12 @@ class ApplicationContextImpl : public ApplicationContext {
   // Create the gcm driver.
   void CreateGCMDriver();
 
-  base::ThreadChecker thread_checker_;
+  // Requests a network::mojom::ProxyResolvingSocketFactory.
+  void RequestProxyResolvingSocketFactory(
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used internally for tracking whether the call to StartTearDown() has
   // happened already, to avoid recreating lazily-constructed objects after they
@@ -119,32 +139,34 @@ class ApplicationContextImpl : public ApplicationContext {
   // Will be null if breadcrumbs feature is not enabled.
   std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;
 
-  // Must be destroyed after `local_state_`. BrowserStatePolicyConnector isn't a
+  // Must be destroyed after `local_state_`. ProfilePolicyConnector isn't a
   // keyed service because the pref service, which isn't a keyed service, has a
   // hard dependency on the policy infrastructure. In order to outlive the pref
   // service, the policy connector must live outside the keyed services.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
 
-  // Must be destroyed after `chrome_browser_state_manager_` as some of the
-  // KeyedService register themselves as NetworkConnectionObserver and need
-  // to unregister themselves before NetworkConnectionTracker destruction. Must
-  // also be destroyed after `gcm_driver_` and `metrics_services_manager_` since
-  // these own objects that register themselves as NetworkConnectionObservers.
+  // Must be destroyed after `profile_manager_` as some of the KeyedService
+  // register themselves as NetworkConnectionObserver and need to unregister
+  // themselves before NetworkConnectionTracker destruction. Must also be
+  // destroyed after `gcm_driver_` and `metrics_services_manager_` since these
+  // own objects that register themselves as NetworkConnectionObservers.
   std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
   std::unique_ptr<network::NetworkConnectionTracker>
       network_connection_tracker_;
 
   std::unique_ptr<PrefService> local_state_;
+  std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   std::unique_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
+  std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
+      active_primary_accounts_metrics_recorder_;
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
-  std::unique_ptr<ChromeBrowserStateManager> chrome_browser_state_manager_;
-  std::string application_locale_;
+  std::unique_ptr<ProfileManagerIOS> profile_manager_;
   std::string application_country_;
 
   // Sequenced task runner for local state related I/O tasks.
@@ -153,17 +175,24 @@ class ApplicationContextImpl : public ApplicationContext {
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+  std::unique_ptr<signin::AvatarProvider> resized_avatar_caches_;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 
-  std::unique_ptr<segmentation_platform::OTRWebStateObserver>
-      segmentation_otr_web_state_observer_;
-
+  std::unique_ptr<IncognitoSessionTracker> incognito_session_tracker_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
-  __strong UpgradeCenter* upgrade_center_ = nil;
+  std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
+
+  std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
+
+  std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
+      optimization_guide_global_state_;
+
+  // Must be the last member variable.
+  base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

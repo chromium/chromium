@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {Coordinate2d} from './coordinate2d.js';
 import {Margins} from './margins.js';
@@ -15,7 +15,6 @@ export interface DocumentSettings {
   allPagesHaveCustomOrientation: boolean;
   hasSelection: boolean;
   isModifiable: boolean;
-  isFromArc: boolean;
   isScalingDisabled: boolean;
   fitToPageScaling: number;
   pageCount: number;
@@ -35,7 +34,20 @@ export interface PageLayoutInfo {
   printableAreaHeight: number;
 }
 
-const PrintPreviewDocumentInfoElementBase = WebUiListenerMixin(PolymerElement);
+export function createDocumentSettings(): DocumentSettings {
+  return {
+    allPagesHaveCustomSize: false,
+    allPagesHaveCustomOrientation: false,
+    hasSelection: false,
+    isModifiable: true,
+    isScalingDisabled: false,
+    fitToPageScaling: 100,
+    pageCount: 0,
+    title: '',
+  };
+}
+
+const PrintPreviewDocumentInfoElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class PrintPreviewDocumentInfoElement extends
     PrintPreviewDocumentInfoElementBase {
@@ -43,29 +55,11 @@ export class PrintPreviewDocumentInfoElement extends
     return 'print-preview-document-info';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       documentSettings: {
         type: Object,
         notify: true,
-        value() {
-          return {
-            allPagesHaveCustomSize: false,
-            allPagesHaveCustomOrientation: false,
-            hasSelection: false,
-            isModifiable: true,
-            isFromArc: false,
-            isScalingDisabled: false,
-            fitToPageScaling: 100,
-            pageCount: 0,
-            title: '',
-          };
-        },
-      },
-
-      inFlightRequestId: {
-        type: Number,
-        value: -1,
       },
 
       margins: {
@@ -81,9 +75,6 @@ export class PrintPreviewDocumentInfoElement extends
       pageSize: {
         type: Object,
         notify: true,
-        value() {
-          return new Size(612, 792);
-        },
       },
 
       /**
@@ -92,18 +83,16 @@ export class PrintPreviewDocumentInfoElement extends
       printableArea: {
         type: Object,
         notify: true,
-        value() {
-          return new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));
-        },
       },
     };
   }
 
-  documentSettings: DocumentSettings;
-  inFlightRequestId: number;
-  margins: Margins;
-  pageSize: Size;
-  printableArea: PrintableArea;
+  accessor documentSettings: DocumentSettings = createDocumentSettings();
+  inFlightRequestId: number = -1;
+  accessor margins: Margins|null = null;
+  accessor pageSize: Size = new Size(612, 792);
+  accessor printableArea: PrintableArea =
+      new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));
   private isInitialized_: boolean = false;
 
   override connectedCallback() {
@@ -122,17 +111,27 @@ export class PrintPreviewDocumentInfoElement extends
                 allPagesHaveCustomOrientation));
   }
 
+  // Whenever documentSettings needs to be modified need to use
+  // cloneAndModify_(), which implements the immutable data pattern, because
+  // modifying in-place will not trigger Lit observers.
+  private cloneAndModify_(
+      callback: (documentSettings: DocumentSettings) => void) {
+    const clone = structuredClone(this.documentSettings);
+    callback(clone);
+    this.documentSettings = clone;
+  }
+
   /**
    * Initializes the state of the data model.
    */
-  init(
-      isModifiable: boolean, isFromArc: boolean, title: string,
-      hasSelection: boolean) {
+  init(isModifiable: boolean, title: string, hasSelection: boolean) {
     this.isInitialized_ = true;
-    this.set('documentSettings.isModifiable', isModifiable);
-    this.set('documentSettings.isFromArc', isFromArc);
-    this.set('documentSettings.title', title);
-    this.set('documentSettings.hasSelection', hasSelection);
+
+    this.cloneAndModify_(documentSettings => {
+      documentSettings.isModifiable = isModifiable;
+      documentSettings.title = title;
+      documentSettings.hasSelection = hasSelection;
+    });
   }
 
   /**
@@ -140,7 +139,9 @@ export class PrintPreviewDocumentInfoElement extends
    */
   updateIsScalingDisabled(isScalingDisabled: boolean) {
     if (this.isInitialized_) {
-      this.set('documentSettings.isScalingDisabled', isScalingDisabled);
+      this.cloneAndModify_(documentSettings => {
+        documentSettings.isScalingDisabled = isScalingDisabled;
+      });
     }
   }
 
@@ -179,11 +180,11 @@ export class PrintPreviewDocumentInfoElement extends
     if (this.isInitialized_) {
       this.printableArea = new PrintableArea(origin, size);
       this.pageSize = pageSize;
-      this.set(
-          'documentSettings.allPagesHaveCustomSize', allPagesHaveCustomSize);
-      this.set(
-          'documentSettings.allPagesHaveCustomOrientation',
-          allPagesHaveCustomOrientation);
+      this.cloneAndModify_(documentSettings => {
+        documentSettings.allPagesHaveCustomSize = allPagesHaveCustomSize;
+        documentSettings.allPagesHaveCustomOrientation =
+            allPagesHaveCustomOrientation;
+      });
       this.margins = margins;
     }
   }
@@ -200,8 +201,11 @@ export class PrintPreviewDocumentInfoElement extends
     if (this.inFlightRequestId !== previewResponseId || !this.isInitialized_) {
       return;
     }
-    this.set('documentSettings.pageCount', pageCount);
-    this.set('documentSettings.fitToPageScaling', fitToPageScaling);
+
+    this.cloneAndModify_(documentSettings => {
+      documentSettings.pageCount = pageCount;
+      documentSettings.fitToPageScaling = fitToPageScaling;
+    });
   }
 }
 

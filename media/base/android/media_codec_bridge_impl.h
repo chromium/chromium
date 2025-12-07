@@ -67,6 +67,15 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // The name of decoder/encoder. It's used to create the MediaCodec instance.
   std::string name;
+
+  // Enables Block Model (LinearBlock).
+  bool use_block_model = false;
+
+  // Sets the low latency mode flag on the codec.
+  bool use_low_latency_mode = false;
+
+  // The profile of decoder.
+  VideoCodecProfile profile;
 };
 
 // A bridge to a Java MediaCodec.
@@ -76,16 +85,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // nullptr on failure.
   static std::unique_ptr<MediaCodecBridge> CreateVideoDecoder(
       const VideoCodecConfig& config);
-
-  // Creates and starts a new MediaCodec configured for encoding. Returns
-  // nullptr on failure.
-  static std::unique_ptr<MediaCodecBridge> CreateVideoEncoder(
-      VideoCodec codec,       // e.g. media::VideoCodec::kVP8
-      const gfx::Size& size,  // input frame size
-      int bit_rate,           // bits/second
-      int frame_rate,         // frames/second
-      int i_frame_interval,   // count
-      int color_format);      // MediaCodecInfo.CodecCapabilities.
 
   // Creates and starts a new MediaCodec configured for decoding. Returns
   // nullptr on failure.
@@ -117,24 +116,19 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   MediaCodecResult GetOutputSamplingRate(int* sampling_rate) override;
   MediaCodecResult GetOutputChannelCount(int* channel_count) override;
   MediaCodecResult GetOutputColorSpace(gfx::ColorSpace* color_space) override;
-  MediaCodecResult GetInputFormat(int* stride,
-                                  int* slice_height,
-                                  gfx::Size* encoded_size) override;
   MediaCodecResult QueueInputBuffer(int index,
-                                    const uint8_t* data,
-                                    size_t data_size,
+                                    base::span<const uint8_t> data,
                                     base::TimeDelta presentation_time) override;
+  MediaCodecResult QueueFilledInputBuffer(
+      int index,
+      size_t data_size,
+      base::TimeDelta presentation_time) override;
   MediaCodecResult QueueSecureInputBuffer(
       int index,
-      const uint8_t* data,
-      size_t data_size,
-      const std::string& key_id,
-      const std::string& iv,
-      const std::vector<SubsampleEntry>& subsamples,
-      EncryptionScheme encryption_scheme,
-      std::optional<EncryptionPattern> encryption_pattern,
-      base::TimeDelta presentation_time) override;
-  void QueueEOS(int input_buffer_index) override;
+      base::span<const uint8_t> data,
+      base::TimeDelta presentation_time,
+      const DecryptConfig& decrypt_config) override;
+  MediaCodecResult QueueEOS(int input_buffer_index) override;
   MediaCodecResult DequeueInputBuffer(base::TimeDelta timeout,
                                       int* index) override;
   MediaCodecResult DequeueOutputBuffer(base::TimeDelta timeout,
@@ -146,31 +140,33 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                        bool* key_frame) override;
 
   void ReleaseOutputBuffer(int index, bool render) override;
-  MediaCodecResult GetInputBuffer(int input_buffer_index,
-                                  uint8_t** data,
-                                  size_t* capacity) override;
+  base::span<uint8_t> GetInputBuffer(int input_buffer_index) override;
   MediaCodecResult CopyFromOutputBuffer(int index,
                                         size_t offset,
-                                        void* dst,
-                                        size_t num) override;
+                                        base::span<uint8_t> dst) override;
   std::string GetName() override;
+  bool IsSoftwareCodec() override;
   bool SetSurface(const base::android::JavaRef<jobject>& surface) override;
-  void SetVideoBitrate(int bps, int frame_rate) override;
-  void RequestKeyFrameSoon() override;
   CodecType GetCodecType() const override;
   size_t GetMaxInputSize() override;
 
  private:
   MediaCodecBridgeImpl(CodecType codec_type,
+                       std::optional<VideoCodec> video_decoder_codec,
                        base::android::ScopedJavaGlobalRef<jobject> j_bridge,
+                       bool use_block_model = false,
                        base::RepeatingClosure on_buffers_available_cb =
                            base::RepeatingClosure());
 
   // Fills the given input buffer. Returns false if |data_size| exceeds the
   // input buffer's capacity (and doesn't touch the input buffer in that case).
-  [[nodiscard]] bool FillInputBuffer(int index,
-                                     const uint8_t* data,
-                                     size_t data_size);
+  [[nodiscard]] bool FillInputBuffer(int index, base::span<const uint8_t> data);
+
+  // Used by QueueInputBuffer() when `use_block_model_` is true. Parameters
+  // match those given to QueueInputBuffer().
+  MediaCodecResult QueueInputBlock(int index,
+                                   base::span<const uint8_t> data,
+                                   base::TimeDelta presentation_time);
 
   // Gets the address of the data in the given output buffer given by |index|
   // and |offset|. The number of bytes available to read is written to
@@ -181,11 +177,16 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                           const uint8_t** addr,
                                           size_t* capacity);
 
-  void OnBuffersAvailable(
-      JNIEnv* /* env */,
-      const base::android::JavaParamRef<jobject>& /* obj */) override;
+  void OnBuffersAvailable(JNIEnv* /* env */) override;
+
+  void ReportAnyErrorToUMA(MediaCodecStatus status);
+
+  const bool use_block_model_;
 
   const CodecType codec_type_;
+
+  // Keep track of the codec used for decoding.
+  const std::optional<VideoCodec> video_decoder_codec_;
 
   base::RepeatingClosure on_buffers_available_cb_;
 

@@ -8,15 +8,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::HasSubstr;
 
 namespace autofill::payments {
-
 namespace {
 
 struct UploadCardOptions {
@@ -49,7 +48,7 @@ struct UploadCardOptions {
 
 std::unique_ptr<UploadCardRequest> CreateUploadCardRequest(
     UploadCardOptions upload_card_options) {
-  PaymentsNetworkInterface::UploadCardRequestDetails request_details;
+  UploadCardRequestDetails request_details;
   request_details.billing_customer_number =
       upload_card_options.billing_customer_number;
   request_details.card = test::GetCreditCard();
@@ -71,8 +70,6 @@ std::unique_ptr<UploadCardRequest> CreateUploadCardRequest(
       request_details, /*full_sync_enabled=*/true, base::DoNothing());
 }
 
-}  // namespace
-
 TEST(UploadCardRequestTest, UploadIncludesNonLocationData) {
   std::unique_ptr<UploadCardRequest> request =
       CreateUploadCardRequest(UploadCardOptions());
@@ -80,8 +77,7 @@ TEST(UploadCardRequestTest, UploadIncludesNonLocationData) {
   // Verify that the recipient name field and test names do appear in the upload
   // data.
   EXPECT_TRUE(request->GetRequestContent().find(
-                  PaymentsNetworkInterface::kRecipientName) !=
-              std::string::npos);
+                  PaymentsRequest::kRecipientName) != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("John") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("Smith") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("Pat") != std::string::npos);
@@ -90,7 +86,7 @@ TEST(UploadCardRequestTest, UploadIncludesNonLocationData) {
   // Verify that the phone number field and test numbers do appear in the upload
   // data.
   EXPECT_TRUE(request->GetRequestContent().find(
-                  PaymentsNetworkInterface::kPhoneNumber) != std::string::npos);
+                  PaymentsRequest::kPhoneNumber) != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("212") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("555") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("0162") != std::string::npos);
@@ -218,26 +214,11 @@ TEST(UploadCardRequestTest, UploadDoesNotIncludeCardNicknameEmptyNickname) {
                std::string::npos);
 }
 
-TEST(UploadCardRequestTest, DoesNotHaveTimeoutWithoutFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillUploadCardRequestTimeout);
-
+TEST(UploadCardRequestTest, HasTimeout) {
   std::unique_ptr<UploadCardRequest> request =
       CreateUploadCardRequest(UploadCardOptions());
-  EXPECT_FALSE(request->GetTimeout().has_value());
+  EXPECT_EQ(request->GetTimeout(), kUploadCardRequestTimeout);
 }
 
-TEST(UploadCardRequestTest, HasTimeoutWhenFlagSet) {
-  base::FieldTrialParams params;
-  params["autofill_upload_card_request_timeout_milliseconds"] = "6000";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillUploadCardRequestTimeout, params);
-
-  std::unique_ptr<UploadCardRequest> request =
-      CreateUploadCardRequest(UploadCardOptions());
-  EXPECT_EQ(*request->GetTimeout(), base::Milliseconds(6000));
-}
-
+}  // namespace
 }  // namespace autofill::payments

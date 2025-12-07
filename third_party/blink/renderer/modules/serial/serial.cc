@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/unguessable_token.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -70,7 +70,7 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
     security_origin = static_cast<WorkerGlobalScope*>(context)
                           ->top_level_frame_security_origin();
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   if (security_origin->IsOpaque()) {
@@ -83,7 +83,7 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
   }
 
   if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kSerial,
+          network::mojom::PermissionsPolicyFeature::kSerial,
           ReportOptions::kReportOnFailure)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(kFeaturePolicyBlocked);
@@ -96,20 +96,18 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
 
 }  // namespace
 
-const char Serial::kSupplementName[] = "Serial";
-
 Serial* Serial::serial(NavigatorBase& navigator) {
-  Serial* serial = Supplement<NavigatorBase>::From<Serial>(navigator);
+  Serial* serial = navigator.GetSerial();
   if (!serial) {
     serial = MakeGarbageCollected<Serial>(navigator);
-    ProvideTo(navigator, serial);
+    navigator.SetSerial(serial);
   }
   return serial;
 }
 
 Serial::Serial(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()),
       receiver_(this, navigator.GetExecutionContext()) {}
 
@@ -141,7 +139,7 @@ void Serial::OnPortConnectedStateChanged(
 ScriptPromise<IDLSequence<SerialPort>> Serial::getPorts(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockSerialServiceCall(navigator_base_->DomWindow(),
                                    GetExecutionContext(), &exception_state)) {
     return ScriptPromise<IDLSequence<SerialPort>>();
   }
@@ -152,8 +150,8 @@ ScriptPromise<IDLSequence<SerialPort>> Serial::getPorts(
   get_ports_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->GetPorts(WTF::BindOnce(&Serial::OnGetPorts, WrapPersistent(this),
-                                   WrapPersistent(resolver)));
+  service_->GetPorts(BindOnce(&Serial::OnGetPorts, WrapPersistent(this),
+                              WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -172,9 +170,8 @@ mojom::blink::SerialPortFilterPtr Serial::CreateMojoFilter(
       return nullptr;
     }
     mojo_filter->bluetooth_service_class_id =
-        ::bluetooth::mojom::blink::UUID::New(
-            GetBluetoothUUIDFromV8Value(filter->bluetoothServiceClassId()));
-    if (mojo_filter->bluetooth_service_class_id->uuid.empty()) {
+        GetBluetoothUUIDFromV8Value(filter->bluetoothServiceClassId());
+    if (mojo_filter->bluetooth_service_class_id.empty()) {
       exception_state.ThrowTypeError(
           "Invalid Bluetooth service class ID filter value.");
       return nullptr;
@@ -209,7 +206,7 @@ ScriptPromise<SerialPort> Serial::requestPort(
     ScriptState* script_state,
     const SerialPortRequestOptions* options,
     ExceptionState& exception_state) {
-  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockSerialServiceCall(navigator_base_->DomWindow(),
                                    GetExecutionContext(), &exception_state)) {
     return EmptyPromise();
   }
@@ -234,13 +231,11 @@ ScriptPromise<SerialPort> Serial::requestPort(
     }
   }
 
-  Vector<::bluetooth::mojom::blink::UUIDPtr>
-      allowed_bluetooth_service_class_ids;
+  Vector<String> allowed_bluetooth_service_class_ids;
   if (options && options->hasAllowedBluetoothServiceClassIds()) {
     for (const auto& id : options->allowedBluetoothServiceClassIds()) {
       allowed_bluetooth_service_class_ids.push_back(
-          ::bluetooth::mojom::blink::UUID::New(
-              GetBluetoothUUIDFromV8Value(id)));
+          GetBluetoothUUIDFromV8Value(id));
     }
   }
 
@@ -251,7 +246,7 @@ ScriptPromise<SerialPort> Serial::requestPort(
   EnsureServiceConnection();
   service_->RequestPort(std::move(filters),
                         std::move(allowed_bluetooth_service_class_ids),
-                        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                        resolver->WrapCallbackInScriptScope(BindOnce(
                             &Serial::OnRequestPort, WrapPersistent(this))));
 
   return resolver->Promise();
@@ -281,7 +276,7 @@ void Serial::Trace(Visitor* visitor) const {
   visitor->Trace(request_port_promises_);
   visitor->Trace(port_cache_);
   EventTarget::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -294,7 +289,7 @@ void Serial::AddedEventListener(const AtomicString& event_type,
     return;
   }
 
-  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockSerialServiceCall(navigator_base_->DomWindow(),
                                    GetExecutionContext(), nullptr)) {
     return;
   }
@@ -312,8 +307,8 @@ void Serial::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
-  service_.set_disconnect_handler(WTF::BindOnce(
-      &Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(
+      BindOnce(&Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   service_->SetClient(receiver_.BindNewPipeAndPassRemote(task_runner));
 }

@@ -8,7 +8,7 @@ import {getFavicon} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import type {Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
-import {TabNetworkState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {TabNetworkState} from 'chrome://tab-strip.top-chrome/tabs.mojom-webui.js';
 import {CloseTabAction, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -206,7 +206,7 @@ suite('Tab', function() {
     assertEquals(tabId, tab.id);
   });
 
-  test('ClickingElementClearsTouchPressedState', async () => {
+  test('ClickingElementClearsTouchPressedState', () => {
     const touchPressedAttrib = 'touch_pressed_';
     tabElement.setTouchPressed(true);
     assertTrue(tabElement.hasAttribute(touchPressedAttrib));
@@ -305,7 +305,7 @@ suite('Tab', function() {
     assertEquals(window.getComputedStyle(thumbnailImage).display, 'none');
   });
 
-  test('updates the thumbnail source', async () => {
+  test('updates the thumbnail source', () => {
     const thumbnailSource = 'data:mock-thumbnail-source';
     tabElement.updateThumbnail(thumbnailSource);
     assertEquals(

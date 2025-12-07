@@ -42,16 +42,16 @@ void MemoryReclaimer::ReclaimAll() {
   Reclaim(kFlags);
 }
 
-void MemoryReclaimer::ReclaimNormal() {
-  constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
-                         PurgeFlags::kDiscardUnusedSystemPages;
-  Reclaim(kFlags);
-}
-
 void MemoryReclaimer::ReclaimFast() {
   constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
                          PurgeFlags::kDiscardUnusedSystemPages |
                          PurgeFlags::kLimitDuration;
+  Reclaim(kFlags);
+}
+
+void MemoryReclaimer::ReclaimForTesting() {
+  constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
+                         PurgeFlags::kDiscardUnusedSystemPages;
   Reclaim(kFlags);
 }
 

@@ -73,8 +73,8 @@ class WebLinkPreviewTriggererTest : public PageTestBase {
         std::make_unique<MockWebLinkPreviewTriggerer>());
   }
 
-  void SetInnerHTML(const String& html) {
-    GetDocument().documentElement()->setInnerHTML(html);
+  void SetInnerHTMLWithoutTrustedTypes(const String& html) {
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(html);
   }
 };
 

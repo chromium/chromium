@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -213,17 +209,18 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
          kOpaque_SkAlphaType,
          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
          "TestLabel"},
         gpu::kNullSurfaceHandle);
 
-    gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
-    ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
+    auto ri_access = shared_image->BeginRasterAccess(
+        ri, shared_image->creation_sync_token(), /*readonly=*/false);
     ri->WritePixels(shared_image->mailbox(), 0, 0, GL_TEXTURE_2D,
                     frame_bitmap.pixmap());
 
-    ri->GenSyncTokenCHROMIUM(ri_token.GetData());
+    ri_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    int8_t* ri_token_data = ri_token.GetData();
+    ri->VerifySyncTokensCHROMIUM(&ri_token_data, 1);
     ri->ShallowFlushCHROMIUM();
     CHECK_EQ(ri->GetError(), static_cast<GLenum>(GL_NO_ERROR));
 
@@ -323,7 +320,7 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     info->metadata = metadata;
     info->strides = strides_.Clone();
 
-    const base::WritableSharedMemoryMapping& outgoing_buffer =
+    base::WritableSharedMemoryMapping& outgoing_buffer =
         outgoing_buffer_id_to_buffer_map_.at(buffer_id);
 
     static int frame_count = 0;
@@ -331,7 +328,7 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     const uint8_t dummy_value = frame_count % 256;
 
     // Reset the whole buffer to 0
-    memset(outgoing_buffer.memory(), 0, outgoing_buffer.size());
+    UNSAFE_TODO(memset(outgoing_buffer.memory(), 0, outgoing_buffer.size()));
 
     // Set all bytes affecting |info->visible_rect| to |dummy_value|.
     const int kYStride = info->strides ? info->strides->stride_by_plane[0]
@@ -387,19 +384,19 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
         row_count - visible_row_count - rows_to_skip_at_start;
 
     // Skip rows at start
-    (*write_ptr) += col_count * rows_to_skip_at_start;
+    UNSAFE_TODO((*write_ptr) += col_count * rows_to_skip_at_start);
     // Fill rows
     for (int i = 0; i < visible_row_count; i++) {
       // Skip cols at start
-      (*write_ptr) += cols_to_skip_at_start;
+      UNSAFE_TODO((*write_ptr) += cols_to_skip_at_start);
       // Fill visible bytes
-      memset(*write_ptr, fill_value, visible_col_count);
-      (*write_ptr) += visible_col_count;
+      UNSAFE_TODO(memset(*write_ptr, fill_value, visible_col_count));
+      UNSAFE_TODO((*write_ptr) += visible_col_count);
       // Skip cols at end
-      (*write_ptr) += kColsToSkipAtEnd;
+      UNSAFE_TODO((*write_ptr) += kColsToSkipAtEnd);
     }
     // Skip rows at end
-    (*write_ptr) += col_count * kRowsToSkipAtEnd;
+    UNSAFE_TODO((*write_ptr) += col_count * kRowsToSkipAtEnd);
   }
 
   media::mojom::PlaneStridesPtr strides_;

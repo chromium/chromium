@@ -44,16 +44,13 @@ var autoLoadDep = true;
  * @param {!Array<string>} provides
  * @param {!Array<string>} requires
  * @param {!Object<string, string>} loadFlags
- * @param {boolean} needsTranspile
  * @struct @constructor
  * @extends {goog.Dependency}
  */
-function FakeDependency(
-    path, relativePath, provides, requires, loadFlags, needsTranspile) {
+function FakeDependency(path, relativePath, provides, requires, loadFlags) {
   FakeDependency.base(
       this, 'constructor', path, relativePath, provides, requires, loadFlags);
   this.loadCalled = false;
-  this.needsTranspile = needsTranspile;
 }
 goog.inherits(FakeDependency, goog.Dependency);
 
@@ -88,12 +85,12 @@ goog.inherits(FakeDependencyFactory, goog.DependencyFactory);
 
 /** @override */
 FakeDependencyFactory.prototype.createDependency = function(
-    path, relativePath, provides, requires, loadFlags, needsTranspile) {
-  var dep = new FakeDependency(
-      path, relativePath, provides, requires, loadFlags, needsTranspile);
+    path, relativePath, provides, requires, loadFlags) {
+  var dep =
+      new FakeDependency(path, relativePath, provides, requires, loadFlags);
   testDependencies.push(dep);
   realDependencies.push(this.realFactory.createDependency(
-      path, relativePath, provides, requires, loadFlags, needsTranspile));
+      path, relativePath, provides, requires, loadFlags));
   return dep;
 };
 
@@ -169,7 +166,7 @@ function testLoadBaseWithQueryParamOk() {
   try {
     goog.global = {};
     goog.global.document = {
-      write: goog.nullFunction,
+      write: () => {},
       getElementsByTagName:
           goog.functions.constant([{src: '/path/to/base.js?zx=5'}])
     };
@@ -188,7 +185,7 @@ function testLoadBaseFromGlobalVariableOk() {
   try {
     goog.global = {};
     goog.global.document = {
-      write: goog.nullFunction,
+      write: () => {},
       getElementsByTagName:
           goog.functions.constant([{src: '/path/to/base.js?zx=5'}])
     };
@@ -207,7 +204,7 @@ function testLoadBaseFromGlobalVariableDOMClobbered() {
   try {
     goog.global = {};
     goog.global.document = {
-      write: goog.nullFunction,
+      write: () => {},
       getElementsByTagName:
           goog.functions.constant([{src: '/path/to/base.js?zx=5'}])
     };
@@ -231,7 +228,7 @@ function testLoadBaseFromCurrentScriptIgnoringOthers() {
   try {
     goog.global = {};
     goog.global.document = {
-      write: goog.nullFunction,
+      write: () => {},
       currentScript: {src: '/currentScript/base.js?zx=5'},
       getElementsByTagName:
           goog.functions.constant([{src: '/path/to/base.js?zx=5'}])
@@ -336,30 +333,7 @@ function testAddDependencyEs6Module() {
   assertDepData(
       realDependencies[0], 'mod-es6.js', ['testDep.es6'], [],
       {'module': 'es6'});
-  assertTrue(
-      realDependencies[0] instanceof
-      ('noModule' in document.createElement('script') ?
-           goog.Es6ModuleDependency :
-           goog.TranspiledDependency));
-}
-
-/** @suppress {visibility} */
-function testAddDependencyTranspile() {
-  var requireTranspilation = false;
-  stubs.set(goog.transpiler_, 'needsTranspile', function() {
-    return requireTranspilation;
-  });
-
-  addDependency(
-      'fancy.js', ['testDep.fancy'], [], {'lang': 'es6', 'module': 'goog'});
-  requireTranspilation = true;
-  addDependency('super.js', ['testDep.superFancy'], [], {'lang': 'es7'});
-
-  assertFalse(testDependencies[0].needsTranspile);
-  assertTrue(testDependencies[1].needsTranspile);
-
-  // Unset provided namespace so the test can be re-run.
-  testDep = undefined;
+  assertTrue(realDependencies[0] instanceof goog.Es6ModuleDependency);
 }
 
 

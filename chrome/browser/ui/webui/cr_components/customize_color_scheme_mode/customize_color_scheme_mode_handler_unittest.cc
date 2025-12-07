@@ -111,11 +111,10 @@ TEST_F(CustomizeColorSchemeModeHandlerTest, InitializeColorSchemeMode) {
   customize_color_scheme_mode::mojom::ColorSchemeMode color_scheme_mode;
   EXPECT_CALL(mock_client_, SetColorSchemeMode)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&color_scheme_mode](
-              customize_color_scheme_mode::mojom::ColorSchemeMode arg) {
-            color_scheme_mode = std::move(arg);
-          }));
+      .WillOnce([&color_scheme_mode](
+                    customize_color_scheme_mode::mojom::ColorSchemeMode arg) {
+        color_scheme_mode = std::move(arg);
+      });
 
   handler().InitializeColorSchemeMode();
   mock_client_.FlushForTesting();
@@ -131,11 +130,10 @@ TEST_F(CustomizeColorSchemeModeHandlerTest, OnThemeChanged) {
   customize_color_scheme_mode::mojom::ColorSchemeMode color_scheme_mode;
   EXPECT_CALL(mock_client_, SetColorSchemeMode)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&color_scheme_mode](
-              customize_color_scheme_mode::mojom::ColorSchemeMode arg) {
-            color_scheme_mode = std::move(arg);
-          }));
+      .WillOnce([&color_scheme_mode](
+                    customize_color_scheme_mode::mojom::ColorSchemeMode arg) {
+        color_scheme_mode = std::move(arg);
+      });
 
   handler().OnThemeChanged();
   mock_client_.FlushForTesting();
@@ -148,10 +146,9 @@ TEST_F(CustomizeColorSchemeModeHandlerTest, SetColorSchemeMode) {
   ThemeService::BrowserColorScheme color_scheme_mode;
   EXPECT_CALL(mock_theme_service(), SetBrowserColorScheme)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&color_scheme_mode](ThemeService::BrowserColorScheme arg) {
-            color_scheme_mode = std::move(arg);
-          }));
+      .WillOnce([&color_scheme_mode](ThemeService::BrowserColorScheme arg) {
+        color_scheme_mode = std::move(arg);
+      });
 
   handler().SetColorSchemeMode(
       customize_color_scheme_mode::mojom::ColorSchemeMode::kLight);

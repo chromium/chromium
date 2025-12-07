@@ -5,12 +5,13 @@
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 
 #include <utility>
+
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -19,9 +20,6 @@
 namespace trusted_vault {
 
 namespace {
-
-constexpr base::TimeDelta kFrequentDegradedRecoverabilityRefreshPeriod =
-    base::Minutes(1);
 
 base::TimeDelta ComputeTimeUntilNextRefresh(
     const base::TimeDelta& refresh_period,
@@ -50,22 +48,6 @@ MakeDegradedRecoverabilityState(
   return degraded_recoverability_state;
 }
 
-base::TimeDelta GetLongDegradedRecoverabilityRefreshPeriod() {
-  if (base::FeatureList::IsEnabled(
-          kTrustedVaultFrequentDegradedRecoverabilityPolling)) {
-    return kFrequentDegradedRecoverabilityRefreshPeriod;
-  }
-  return kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
-}
-
-base::TimeDelta GetShortDegradedRecoverabilityRefreshPeriod() {
-  if (base::FeatureList::IsEnabled(
-          kTrustedVaultFrequentDegradedRecoverabilityPolling)) {
-    return kFrequentDegradedRecoverabilityRefreshPeriod;
-  }
-  return kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
-}
-
 }  // namespace
 
 TrustedVaultDegradedRecoverabilityHandler::
@@ -91,10 +73,6 @@ TrustedVaultDegradedRecoverabilityHandler::
     }
   }
 
-  long_degraded_recoverability_refresh_period_ =
-      GetLongDegradedRecoverabilityRefreshPeriod();
-  short_degraded_recoverability_refresh_period_ =
-      GetShortDegradedRecoverabilityRefreshPeriod();
   UpdateCurrentRefreshPeriod();
 }
 
@@ -127,15 +105,15 @@ void TrustedVaultDegradedRecoverabilityHandler::GetIsRecoverabilityDegraded(
 void TrustedVaultDegradedRecoverabilityHandler::UpdateCurrentRefreshPeriod() {
   if (degraded_recoverability_value_ ==
       trusted_vault_pb::DegradedRecoverabilityValue::kDegraded) {
-    current_refresh_period_ = short_degraded_recoverability_refresh_period_;
+    current_refresh_period_ = kShortDegradedRecoverabilityRefreshPeriod;
     return;
   }
-  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
+  current_refresh_period_ = kLongDegradedRecoverabilityRefreshPeriod;
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::Start() {
   base::UmaHistogramExactLinear(
-      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue",
       degraded_recoverability_value_,
       trusted_vault_pb::DegradedRecoverabilityValue_ARRAYSIZE);
   next_refresh_timer_.Start(
@@ -159,7 +137,7 @@ void TrustedVaultDegradedRecoverabilityHandler::
     OnRecoverabilityIsDegradedDownloaded(
         TrustedVaultRecoverabilityStatus status) {
   base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultRecoverabilityStatusOnRequestCompletion", status);
+      "TrustedVault.RecoverabilityStatusOnRequestCompletion", status);
   trusted_vault_pb::DegradedRecoverabilityValue
       old_degraded_recoverability_value = degraded_recoverability_value_;
   switch (status) {

@@ -75,13 +75,15 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -95,16 +97,29 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   double current_value_for_testing() const;
   bool is_paused_for_testing() const;
   bool is_live_for_testing() const;
-  void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> test_timer);
+  bool use_paused_colors_for_testing() const;
+  void set_update_progress_timer_for_testing(
+      std::unique_ptr<base::OneShotTimer> test_timer);
+  void set_switch_progress_colors_delay_timer_for_testing(
+      std::unique_ptr<base::OneShotTimer> test_timer);
+  void set_progress_drag_started_delay_timer_for_testing(
+      std::unique_ptr<base::OneShotTimer> test_timer);
 
  private:
   // Fires an accessibility event if the progress has changed.
   void MaybeNotifyAccessibilityValueChanged();
 
   // Handles the event when user drags the progress line using a mouse or
-  // gesture on a tablet.
-  void OnProgressDragStarted();
+  // gesture on a tablet. If the user only intends to click, these functions are
+  // still called but the work will be skipped.
+  void OnProgressDragStarted(double location);
+  void DelayedProgressDragStarted(double location);
   void OnProgressDragEnded();
+  void PauseForDragging();
+
+  // Updates the colors of the progress view based on whether the media is
+  // paused.
+  void UpdateProgressColors(bool is_paused);
 
   // Handles the event when user seeks to a new location on the progress view.
   void HandleSeeking(double location);
@@ -151,8 +166,21 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // lines.
   gfx::SlideAnimation slide_animation_;
 
+  // Animation for progress line to transition between thicker and less thick
+  // states.
+  gfx::SlideAnimation thickness_animation_;
+
   // Timer to continuously update the progress value if the media is playing.
   std::unique_ptr<base::OneShotTimer> update_progress_timer_ =
+      std::make_unique<base::OneShotTimer>();
+
+  // Timer to delay switching the colors for the progress view.
+  std::unique_ptr<base::OneShotTimer> switch_progress_colors_delay_timer_ =
+      std::make_unique<base::OneShotTimer>();
+
+  // Timer to delay considering the user is dragging the progress view rather
+  // than clicking.
+  std::unique_ptr<base::OneShotTimer> progress_drag_started_delay_timer_ =
       std::make_unique<base::OneShotTimer>();
 
   // True if the media is paused.
@@ -165,9 +193,15 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // line.
   bool paused_for_dragging_ = false;
 
-  // Width for a foreground straight progress line. The value can change
-  // depending on whether the user is dragging the progress line.
-  int foreground_straight_line_width_ = 0;
+  // True if the user is currently dragging the progress line.
+  bool is_dragging_ = false;
+
+  // Whether we should use the paused colors for the progress view.
+  bool use_paused_colors_ = true;
+
+  // Stroke width for the straight progress line that changes depending on
+  // whether the user is dragging the progress line.
+  int straight_progress_stroke_width_ = 0;
 };
 
 }  // namespace global_media_controls

@@ -12,14 +12,14 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/encryption/primitives.h"
@@ -30,17 +30,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/user_names.h"  // nogncheck
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::_;
 using ::testing::Mock;
@@ -81,7 +77,7 @@ class DlpReportingManagerTest : public testing::Test {
 
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].source().url(), kCompanyUrl);
-    EXPECT_FALSE(events_[event_number].destination().has_url());
+    EXPECT_EQ(events_[event_number].destination().url(), "");
     EXPECT_EQ(events_[event_number].destination().component(), event_component);
     EXPECT_EQ(events_[event_number].restriction(),
               DlpPolicyEvent_Restriction_CLIPBOARD);
@@ -89,41 +85,21 @@ class DlpReportingManagerTest : public testing::Test {
     EXPECT_EQ(events_[event_number].triggered_rule_name(), kRuleName);
     EXPECT_EQ(events_[event_number].triggered_rule_id(), kRuleId);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReportEventAndCheckUser(user_manager::UserManager* user_manager,
                                const AccountId& account_id,
                                const user_manager::User* user,
                                DlpPolicyEvent_UserType DlpUserType,
-                               unsigned int event_number,
-                               bool is_child = false) {
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false, is_child);
+                               unsigned int event_number) {
+    user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     manager_->ReportEvent(kCompanyUrl, Rule::Restriction::kPrinting,
                           Rule::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), DlpUserType);
     user_manager->RemoveUserFromList(account_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  void SetSessionType(crosapi::mojom::SessionType session_type) {
-    auto init_params = crosapi::mojom::BrowserInitParams::New();
-    init_params->session_type = session_type;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-  }
-
-  void ReportEventAndCheckUser(DlpPolicyEvent_UserType dlp_user_type,
-                               unsigned int event_number) {
-    manager_->ReportEvent(kCompanyUrl, Rule::Restriction::kPrinting,
-                          Rule::Level::kBlock, kRuleName, kRuleId);
-    ASSERT_EQ(events_.size(), event_number + 1);
-    EXPECT_EQ(events_[event_number].user_type(), dlp_user_type);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -133,9 +109,6 @@ class DlpReportingManagerTest : public testing::Test {
   std::vector<DlpPolicyEvent> events_;
   base::ScopedTempDir location_;
   uint8_t signature_verification_public_key_[reporting::kKeySize];
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService lacros_service_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(DlpReportingManagerTest, ReportEvent) {
@@ -161,7 +134,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyUrl);
   EXPECT_EQ(events_[0].destination().url(), dst_url);
-  EXPECT_FALSE(events_[0].destination().has_component());
+  EXPECT_EQ(events_[0].destination().component(), DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_CLIPBOARD);
   EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
   EXPECT_EQ(events_[0].triggered_rule_name(), kRuleName);
@@ -202,8 +175,8 @@ TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {
   EXPECT_FALSE(events_[0].has_destination());
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_PRINTING);
   EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
-  EXPECT_FALSE(events_[0].has_triggered_rule_name());
-  EXPECT_FALSE(events_[0].has_triggered_rule_id());
+  EXPECT_EQ(events_[0].triggered_rule_name(), "");
+  EXPECT_EQ(events_[0].triggered_rule_id(), "");
 }
 
 TEST_F(DlpReportingManagerTest, MetricsReported) {
@@ -235,7 +208,7 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
       Rule::Restriction::kUnknownRestriction, 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DlpReportingManagerTest, UserType) {
   auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
@@ -246,11 +219,12 @@ TEST_F(DlpReportingManagerTest, UserType) {
       AccountId::FromUserEmail("managed-guest-session@example.com");
   const auto* mgs_user = user_manager->AddPublicAccountUser(mgs_account_id);
   AccountId kiosk_account_id = AccountId::FromUserEmail("kiosk@example.com");
-  const auto* kiosk_user = user_manager->AddKioskAppUser(kiosk_account_id);
+  const auto* kiosk_user =
+      user_manager->AddKioskChromeAppUser(kiosk_account_id);
   AccountId web_kiosk_account_id =
       AccountId::FromUserEmail("web-kiosk@example.com");
   const auto* web_kiosk_user =
-      user_manager->AddWebKioskAppUser(web_kiosk_account_id);
+      user_manager->AddKioskWebAppUser(web_kiosk_account_id);
   AccountId guest_user_id = user_manager::GuestAccountId();
   const auto* guest_user = user_manager->AddGuestUser();
   AccountId child_user_id = AccountId::FromUserEmail("child@example.com");
@@ -267,35 +241,10 @@ TEST_F(DlpReportingManagerTest, UserType) {
   ReportEventAndCheckUser(user_manager, guest_user_id, guest_user,
                           DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 4u);
   ReportEventAndCheckUser(user_manager, child_user_id, child_user,
-                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u,
-                          true);
+                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u);
   EXPECT_EQ(manager_->events_reported(), 6u);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(DlpReportingManagerTest, UserType) {
-  SetSessionType(crosapi::mojom::SessionType::kRegularSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_REGULAR, 0u);
-
-  SetSessionType(crosapi::mojom::SessionType::kPublicSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_MANAGED_GUEST, 1u);
-
-  SetSessionType(crosapi::mojom::SessionType::kAppKioskSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_KIOSK, 2u);
-
-  SetSessionType(crosapi::mojom::SessionType::kWebKioskSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_KIOSK, 3u);
-
-  SetSessionType(crosapi::mojom::SessionType::kGuestSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 4u);
-
-  SetSessionType(crosapi::mojom::SessionType::kChildSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u);
-
-  EXPECT_EQ(manager_->events_reported(), 6u);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
   DlpPolicyEvent event =
@@ -333,8 +282,8 @@ TEST_F(DlpReportingManagerTest, CreateEventWithEmptyRuleMetadata) {
   DlpPolicyEvent event = event_builder->Create();
   EXPECT_EQ(event.source().url(), kCompanyUrl);
   EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_BLOCK);
-  EXPECT_FALSE(event.has_triggered_rule_name());
-  EXPECT_FALSE(event.has_triggered_rule_id());
+  EXPECT_EQ(event.triggered_rule_name(), "");
+  EXPECT_EQ(event.triggered_rule_id(), "");
 }
 
 TEST_F(DlpReportingManagerTest, Timestamp) {
@@ -344,7 +293,6 @@ TEST_F(DlpReportingManagerTest, Timestamp) {
       CreateDlpPolicyEvent(kCompanyUrl, Rule::Restriction::kPrinting, kRuleName,
                            kRuleId, Rule::Level::kBlock);
 
-  ASSERT_TRUE(event.has_timestamp_micro());
   const base::TimeDelta time_since_epoch =
       base::Microseconds(event.timestamp_micro());
   const base::Time upper_bound = base::Time::Now();
@@ -394,8 +342,8 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
 }
 
 TEST_F(DlpReportingManagerTest, ReportLongEvent) {
-  const std::string rand_source_url = base::RandBytesAsString(64 * 1024);
-  const std::string rand_destination_url = base::RandBytesAsString(64 * 1024);
+  const std::string rand_source_url = std::string(64 * 1024, 'a');
+  const std::string rand_destination_url = std::string(64 * 1024, 'b');
 
   manager_->ReportEvent(rand_source_url, rand_destination_url,
                         Rule::Restriction::kPrinting, Rule::Level::kBlock,

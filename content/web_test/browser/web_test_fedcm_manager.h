@@ -6,11 +6,14 @@
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_FEDCM_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/webid/federated_auth_request_automation.test-mojom.h"
 
 namespace content {
 
-class FederatedAuthRequestImpl;
+namespace webid {
+class RequestService;
+}
+
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
@@ -28,8 +31,9 @@ class WebTestFedCmManager
   void GetDialogType(
       blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback)
       override;
-  void GetFedCmDialogTitle(blink::test::mojom::FederatedAuthRequestAutomation::
-                               GetFedCmDialogTitleCallback) override;
+  void GetFedCmDialogTitleAndSubtitle(
+      blink::test::mojom::FederatedAuthRequestAutomation::
+          GetFedCmDialogTitleAndSubtitleCallback) override;
   void SelectFedCmAccount(uint32_t account_index,
                           SelectFedCmAccountCallback) override;
   void DismissFedCmDialog(DismissFedCmDialogCallback) override;
@@ -37,9 +41,9 @@ class WebTestFedCmManager
                               ClickFedCmDialogButtonCallback) override;
 
  private:
-  // Returns the active FederatedAuthRequestImpl for the current Page,
+  // Returns the active RequestService for the current Page,
   // or nullptr if there isn't one.
-  FederatedAuthRequestImpl* GetAuthRequestImpl();
+  webid::RequestService* GetAuthRequestService();
 
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };

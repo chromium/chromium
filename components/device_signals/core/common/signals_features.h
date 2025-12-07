@@ -10,44 +10,48 @@
 
 namespace enterprise_signals::features {
 
-// Feature flag for new private SecureConnect functions exposing additional
-// device signals.
-BASE_DECLARE_FEATURE(kNewEvSignalsEnabled);
+// Allows the reporting of client certificates for managed users.
+BASE_DECLARE_FEATURE(kAllowClientCertificateReportingForUsers);
 
-// Feature parameters that can be used to turn off individual functions.
-extern const base::FeatureParam<bool> kDisableFileSystemInfo;
-extern const base::FeatureParam<bool> kDisableSettings;
-extern const base::FeatureParam<bool> kDisableAntiVirus;
-extern const base::FeatureParam<bool> kDisableHotfix;
+BASE_DECLARE_FEATURE(kProfileSignalsReportingEnabled);
+BASE_DECLARE_FEATURE(kBrowserSignalsReportingEnabled);
+BASE_DECLARE_FEATURE(kDetectedAgentSignalCollectionEnabled);
+BASE_DECLARE_FEATURE(kSystemSignalCollectionImprovementEnabled);
+BASE_DECLARE_FEATURE(kPolicyDataCollectionEnabled);
 
-// Enum used to map a given function to its kill switch.
-enum class NewEvFunction { kFileSystemInfo, kSettings, kAntiVirus, kHotfix };
+// Signals reporting related feature parameters.
+extern const base::FeatureParam<bool> kTriggerOnCookieChange;
+extern const base::FeatureParam<base::TimeDelta>
+    kProfileSignalsReportingInterval;
 
-// Returns true if the function pointed at by `new_ev_function` is considered
-// to be enabled based on the feature flag and its parameters.
-bool IsNewFunctionEnabled(NewEvFunction new_ev_function);
+// Returns true if additional device signals reporting for profile-level Chrome
+// reports has been enabled.
+bool IsProfileSignalsReportingEnabled();
+// Returns true if additional device signals reporting for browser-level Chrome
+// reports has been enabled.
+bool IsBrowserSignalsReportingEnabled();
+// Returns true if detected agent signal collection has been
+// enabled.
+bool IsDetectedAgentSignalCollectionEnabled();
+// Returns true if system signal collection improvement feature has been
+// enabled.
+bool IsSystemSignalCollectionImprovementEnabled();
+// Returns true if policy collection feature has been enabled.
+bool IsPolicyDataCollectionEnabled();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDeviceSignalsConsentDialog);
 
 // Returns true if device signals consent dialog has been enabled for
 // consent collection.
 bool IsConsentDialogEnabled();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Feature flag for supporting the new private SecureConnect functions in
 // unaffiliated contexts via the consent flow.
 BASE_DECLARE_FEATURE(kNewEvSignalsUnaffiliatedEnabled);
-
-// Feature flag to clear cached client certificates for given URLs when
-// the private enterprise.reportingPrivate.getCertificate extension API
-// is invoked.
-BASE_DECLARE_FEATURE(kClearClientCertsOnExtensionReport);
-
-// Returns true if `kClearClientCertsOnExtensionReport` is enabled.
-bool IsClearClientCertsOnExtensionReportEnabled();
 
 }  // namespace enterprise_signals::features
 

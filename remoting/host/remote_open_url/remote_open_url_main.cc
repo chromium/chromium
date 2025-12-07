@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/host/remote_open_url/remote_open_url_main.h"
 
 #include "base/at_exit.h"
@@ -13,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "remoting/base/breakpad.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -22,6 +26,14 @@
 #include "remoting/host/resources.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/base/crash/crash_reporting_crashpad.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+#include "remoting/base/crash/crash_reporting_breakpad.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -37,11 +49,15 @@ int RemoteOpenUrlMain(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   InitHostLogging();
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
   if (IsUsageStatsAllowed()) {
-    InitializeCrashReporting();
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   if (!ChromotingHostServicesClient::Initialize()) {
     return kInitializationFailed;

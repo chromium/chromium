@@ -1,0 +1,100 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 7
+
+module lobster.mojom;
+
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+struct Candidate {
+    uint32 id;
+    url.mojom.Url data_url;
+};
+
+// Response codes when querying from the server.
+[Extensible]
+enum StatusCode {
+    [Default] kUnknown,
+    kOk,
+    kBlockedOutputs,
+    kNoInternetConnection,
+    kResourceExhausted,
+    kInvalidArgument,
+    kBackendFailure,
+    kUnsupportedLanguage,
+    kRestrictedRegion,
+    [MinVersion=6] kContainsPeople,
+};
+
+// Errors after sending request to server.
+struct Error {
+    StatusCode code@0;
+    string message@1;
+};
+
+struct FeedbackPreview {
+  map<string, string> fields;
+  url.mojom.Url preview_data_url;
+};
+
+// Responses from the server.
+union Response {
+    array<Candidate> candidates@0;
+    Error error@1;
+};
+
+[Stable, Extensible]
+enum WebUIMetricEvent {
+  [Default] kUnknown = 0,
+  kQueryPageImpression = 1,
+  kRequestInitialCandidates = 2,
+  kRequestInitialCandidatesSuccess = 3,
+  kRequestInitialCandidatesError = 4,
+  kInitialCandidatesImpression = 5,
+  kRequestMoreCandidates = 6,
+  kRequestMoreCandidatesSuccess = 7,
+  kRequestMoreCandidatesError = 8,
+  kMoreCandidatesAppended = 9,
+  kFeedbackThumbsUp = 10,
+  kFeedbackThumbsDown = 11,
+};
+
+// This interface is used from an untrusted UI to communicate with the service.
+[RenamedFrom="lobster.mojom.LobsterPageHandler"]
+interface UntrustedLobsterPageHandler {
+  // Returns any image candidates generated.
+  RequestCandidates@0(string query, uint32 num_candidates)
+    => (Response response);
+
+  // Downloads a single full sized image to the user’s downloads folder.
+  DownloadCandidate@1(uint32 candidate_id) => (bool status);
+
+  // Queues the given candidate for insertion in a text field.
+  CommitAsInsert@2(uint32 candidate_id) => (bool status);
+
+  // Queues the given candidate for download
+  CommitAsDownload@3(uint32 candidate_id) => (bool status);
+
+  // Constructs and returns a feedback report preview
+  [MinVersion=2] PreviewFeedback@4(uint32 candidate_id)
+    => (FeedbackPreview preview);
+
+  // Constructs and submits a feedback report for the given candidate
+  [MinVersion=2] SubmitFeedback@5(uint32 candidate_id,
+                   string description) => (bool status);
+
+  // Requests the Lobster UI to show.
+  [MinVersion=3] ShowUI@6();
+
+  // Requests the Lobster UI to close.
+  [MinVersion=3] CloseUI@7();
+
+  // Sends a metric event for recording.
+  [MinVersion=4] EmitMetricEvent@8(WebUIMetricEvent metric_event);
+
+  // Open a URL in a new browser window.
+  [MinVersion=5] OpenUrlInNewWindow@9(url.mojom.Url url);
+};

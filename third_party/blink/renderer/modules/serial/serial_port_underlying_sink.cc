@@ -30,8 +30,8 @@ SerialPortUnderlyingSink::SerialPortUnderlyingSink(
       serial_port_(serial_port) {
   watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                 WTF::BindRepeating(&SerialPortUnderlyingSink::OnHandleReady,
-                                    WrapWeakPersistent(this)));
+                 BindRepeating(&SerialPortUnderlyingSink::OnHandleReady,
+                               WrapWeakPersistent(this)));
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSink::start(
@@ -101,8 +101,8 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSink::close(
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
-  serial_port_->Drain(WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
-                                    WrapPersistent(this)));
+  serial_port_->Drain(BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
+                               WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 
@@ -129,8 +129,8 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSink::abort(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kTransmit,
-                      WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
-                                    WrapPersistent(this)));
+                      BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
+                               WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 
@@ -148,8 +148,7 @@ void SerialPortUnderlyingSink::SignalError(SerialSendError error) {
   v8::Local<v8::Value> exception;
   switch (error) {
     case SerialSendError::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SerialSendError::DISCONNECTED:
       exception = V8ThrowDOMException::CreateOrDie(
           isolate, DOMExceptionCode::kNetworkError,
@@ -205,7 +204,7 @@ void SerialPortUnderlyingSink::OnHandleReady(MojoResult result,
       PipeClosed();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -258,7 +257,7 @@ void SerialPortUnderlyingSink::WriteData() {
       PipeClosed();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -266,6 +265,12 @@ void SerialPortUnderlyingSink::PipeClosed() {
   watcher_.Cancel();
   data_pipe_.reset();
   abort_handle_.Clear();
+}
+
+void SerialPortUnderlyingSink::Dispose() {
+  // Ensure that `watcher_` is disarmed so that `OnHandleReady()` is not called
+  // after this object becomes garbage.
+  PipeClosed();
 }
 
 }  // namespace blink

@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -254,16 +255,12 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     return &Top();
   }
 
-  // The target _unfencedTop should only be treated as a special name in
-  // opaque-ads mode fenced frames.
   if (EqualIgnoringASCIICase(name, "_unfencedTop")) {
     // In fenced frames, we set a flag that will later indicate to the browser
     // that this is an _unfencedTop navigation, and return the current frame
     // so that the renderer-side checks will succeed.
     // TODO(crbug.com/1315802): Refactor MPArch _unfencedTop handling.
-    if (current_frame->GetDeprecatedFencedFrameMode() ==
-            blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds &&
-        request != nullptr) {
+    if (current_frame->IsInFencedFrameTree() && request != nullptr) {
       request->SetIsUnfencedTopNavigation(true);
       return current_frame;
     }
@@ -423,10 +420,11 @@ static void PrintFrames(const blink::Frame* frame,
   PrintIndent(indent);
   printf("  document=%p\n", local_frame ? local_frame->GetDocument() : nullptr);
   PrintIndent(indent);
-  printf("  uri=%s\n\n",
-         local_frame && local_frame->GetDocument()
-             ? local_frame->GetDocument()->Url().GetString().Utf8().c_str()
-             : nullptr);
+  UNSAFE_TODO(
+      printf("  uri=%s\n\n",
+             local_frame && local_frame->GetDocument()
+                 ? local_frame->GetDocument()->Url().GetString().Utf8().c_str()
+                 : nullptr));
 
   for (blink::Frame* child = frame->Tree().FirstChild(); child;
        child = child->Tree().NextSibling())

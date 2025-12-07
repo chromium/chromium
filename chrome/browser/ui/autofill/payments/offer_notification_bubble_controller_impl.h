@@ -8,17 +8,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/commerce/coupons/coupon_service.h"
-#include "chrome/browser/commerce/coupons/coupon_service_observer.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/actions/action_id.h"
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace autofill {
 
-class AutofillOfferData;
 struct OfferNotificationOptions;
 
 // Implementation of per-tab class to control the offer notification bubble and
@@ -27,8 +30,7 @@ class OfferNotificationBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public OfferNotificationBubbleController,
       public content::WebContentsUserData<
-          OfferNotificationBubbleControllerImpl>,
-      public CouponServiceObserver {
+          OfferNotificationBubbleControllerImpl> {
  public:
   // An observer class used by browsertests that gets notified whenever
   // particular actions occur.
@@ -52,9 +54,7 @@ class OfferNotificationBubbleControllerImpl
   const CreditCard* GetLinkedCard() const override;
   const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
-  bool ShouldIconExpand() const override;
-  void OnIconExpanded() override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
 
   // Displays an offer notification for the given `offer` on the current page.
   // The information of the `card`, if present, will be displayed in the bubble
@@ -71,9 +71,10 @@ class OfferNotificationBubbleControllerImpl
   // Removes any visible bubble and the omnibox icon.
   void DismissNotification();
 
-  // CouponService::CouponServiceObserver:
-  void OnCouponInvalidated(
-      const autofill::AutofillOfferData& offer_data) override;
+  // BubbleControllerBase:
+  void OnBubbleDiscarded() override {}
+  BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
  protected:
   explicit OfferNotificationBubbleControllerImpl(
@@ -81,8 +82,12 @@ class OfferNotificationBubbleControllerImpl
 
   // AutofillBubbleControllerBase:
   void OnVisibilityChanged(content::Visibility visibility) override;
-  PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+  void UpdatePageActionIcon() override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+  bool ShouldShowPageAction() override;
+#endif  //! BUILDFLAG(IS_ANDROID)
 
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
@@ -92,6 +97,10 @@ class OfferNotificationBubbleControllerImpl
       OfferNotificationBubbleControllerImpl>;
   friend class OfferNotificationBubbleControllerImplTest;
   friend class OfferNotificationBubbleViewsTestBase;
+
+  // Configures the controller's state for displaying an offer notification.
+  // This includes setting the offer data and the linked card, if any.
+  void SetupOfferNotification(AutofillOfferData offer, const CreditCard* card);
 
   // Hides the bubble if it is visible and resets the bubble shown timestamp.
   // `should_show_icon` decides whether the icon should be visible after the
@@ -123,19 +132,15 @@ class OfferNotificationBubbleControllerImpl
   // Determines the appropriate hover tooltip for the button.
   bool promo_code_button_clicked_ = false;
 
-  // Used to update coupon last display timestamp.
-  raw_ptr<CouponService> coupon_service_;
-
   // Records the current state of the bubble.
   BubbleState bubble_state_ = BubbleState::kHidden;
 
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
-  // Denotes whether the icon should expand in the omnibox.
-  bool icon_should_expand_ = false;
+  const raw_ref<tabs::TabInterface> tab_interface_;
 
-  base::ScopedObservation<CouponService, CouponServiceObserver>
-      coupon_service_observation_{this};
+  base::WeakPtrFactory<OfferNotificationBubbleControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

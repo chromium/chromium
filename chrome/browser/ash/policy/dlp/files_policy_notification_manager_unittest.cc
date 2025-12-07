@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -117,7 +118,7 @@ FilesPolicyDialog::BlockReason ConvertPolicy(
       // return a generic reason.
       return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
     case file_manager::io_task::PolicyErrorType::kDlpWarningTimeout:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -831,6 +832,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         FilesPolicyDialog::BlockReason::kDlp,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult,
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,

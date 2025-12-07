@@ -25,45 +25,46 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   DrawRect(context, client, kForegroundType, gfx::Rect(15, 15, 10, 10));
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 
+  EXPECT_THAT(
+      GetNewPaintArtifact(context.GetPaintController()).GetDisplayItemList(),
+      ElementsAre(IsSameId(client.Id(), kBackgroundType),
+                  IsSameId(client.Id(), kForegroundType)));
+
   MockPaintCanvas canvas;
   cc::PaintFlags flags;
   EXPECT_CALL(canvas, drawPicture(_)).Times(1);
   builder.EndRecording(canvas);
-
-  EXPECT_THAT(context.GetPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(client.Id(), kBackgroundType),
-                          IsSameId(client.Id(), kForegroundType)));
-  EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 }
 
 TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
-  GraphicsContext context(GetPaintController());
   FakeDisplayItemClient& client =
       *MakeGarbageCollected<FakeDisplayItemClient>("client");
   PaintRecordBuilder builder;
   {
-    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     DrawRect(context, client, kBackgroundType, gfx::Rect(10, 10, 20, 20));
     DrawRect(context, client, kForegroundType, gfx::Rect(15, 15, 10, 10));
-    GetPaintController().CommitNewDisplayItems();
   }
-  EXPECT_THAT(GetPaintController().GetDisplayItemList(),
+  EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
               ElementsAre(IsSameId(client.Id(), kBackgroundType),
                           IsSameId(client.Id(), kForegroundType)));
   EXPECT_TRUE(ClientCacheIsValid(client));
 
   {
-    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
-    EXPECT_NE(&builder.Context().GetPaintController(), &GetPaintController());
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    EXPECT_TRUE(ClientCacheIsValid(client));
+    GraphicsContext context(paint_controller);
+    EXPECT_NE(&builder.Context().GetPaintController(), &paint_controller);
     DrawRect(builder.Context(), client, kBackgroundType,
              gfx::Rect(10, 10, 20, 20));
     builder.EndRecording();
   }
 
   // The transient PaintController in PaintRecordBuilder doesn't affect the
-  // client's cache status in another PaintController.
-  EXPECT_TRUE(ClientCacheIsValid(client));
+  // client's cache status in the persistent data.
+  EXPECT_TRUE(GetPersistentData().ClientCacheIsValid(client));
   EXPECT_FALSE(
       ClientCacheIsValid(builder.Context().GetPaintController(), client));
 }

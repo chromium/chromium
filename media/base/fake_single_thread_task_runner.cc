@@ -108,8 +108,7 @@ bool FakeSingleThreadTaskRunner::PostNonNestableDelayedTask(
     const base::Location& from_here,
     base::OnceClosure task,
     base::TimeDelta delay) {
-  NOTIMPLEMENTED();
-  return false;
+  return PostDelayedTask(from_here, std::move(task), delay);
 }
 
 }  // namespace media

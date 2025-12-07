@@ -32,8 +32,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -257,5 +256,4 @@ void CameraRollDownloadManagerImpl::DeleteFile(int64_t payload_id) {
   pending_downloads_.erase(it);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 
+#include "base/strings/to_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -107,15 +108,13 @@ TEST_P(AllowedByNosniffTest, AllowedOrNot) {
 
   for (auto& testcase : data) {
     SCOPED_TRACE(testing::Message()
-                 << "\n  mime type: " << testcase.mimetype
-                 << "\n  allowed: " << (testcase.allowed ? "true" : "false")
-                 << "\n  strict_allowed: "
-                 << (testcase.strict_allowed ? "true" : "false"));
+                 << "\n  mime type: " << testcase.mimetype << "\n  allowed: "
+                 << base::ToString(testcase.allowed) << "\n  strict_allowed: "
+                 << base::ToString(testcase.strict_allowed));
 
     const KURL url("https://bla.com/");
-    Persistent<MockUseCounter> use_counter = MockUseCounter::Create();
-    Persistent<MockConsoleLogger> logger =
-        MakeGarbageCollected<MockConsoleLogger>();
+    MockUseCounter* use_counter = MockUseCounter::Create();
+    MockConsoleLogger* logger = MakeGarbageCollected<MockConsoleLogger>();
     ResourceResponse response(url);
     response.SetHttpHeaderField(http_names::kContentType,
                                 AtomicString(testcase.mimetype));
@@ -211,9 +210,8 @@ TEST_P(AllowedByNosniffTest, Counters) {
                  << testcase.origin << "\n  mime type: " << testcase.mimetype
                  << "\n response type: " << testcase.response_type
                  << "\n  webfeature: " << testcase.expected);
-    Persistent<MockUseCounter> use_counter = MockUseCounter::Create();
-    Persistent<MockConsoleLogger> logger =
-        MakeGarbageCollected<MockConsoleLogger>();
+    MockUseCounter* use_counter = MockUseCounter::Create();
+    MockConsoleLogger* logger = MakeGarbageCollected<MockConsoleLogger>();
     ResourceResponse response(KURL(testcase.url));
     response.SetType(testcase.response_type);
     response.SetHttpHeaderField(http_names::kContentType,
@@ -293,8 +291,7 @@ TEST_P(AllowedByNosniffTest, AllTheSchemes) {
 
   for (auto& testcase : data) {
     auto* use_counter = MockUseCounter::Create();
-    Persistent<MockConsoleLogger> logger =
-        MakeGarbageCollected<MockConsoleLogger>();
+    MockConsoleLogger* logger = MakeGarbageCollected<MockConsoleLogger>();
     EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _))
         .Times(::testing::AnyNumber());
     SCOPED_TRACE(testing::Message() << "\n  url: " << testcase.url
@@ -313,6 +310,66 @@ TEST_P(AllowedByNosniffTest, AllTheSchemes) {
     EXPECT_EQ(testcase.allowed,
               AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
                                                  MimeTypeCheck::kLaxForWorker));
+  }
+}
+
+TEST(AllowedByNosniffTest, XMLExternalEntity) {
+  MockConsoleLogger* logger = MakeGarbageCollected<MockConsoleLogger>();
+
+  {
+    ResourceResponse response(KURL("https://example.com/"));
+    EXPECT_TRUE(
+        AllowedByNosniff::MimeTypeAsXMLExternalEntity(logger, response));
+  }
+
+  {
+    ResourceResponse response(KURL("https://example.com/"));
+    response.SetHttpHeaderField(http_names::kContentType,
+                                AtomicString("text/plain"));
+    EXPECT_TRUE(
+        AllowedByNosniff::MimeTypeAsXMLExternalEntity(logger, response));
+  }
+
+  {
+    ResourceResponse response(KURL("https://example.com/"));
+    response.SetHttpHeaderField(http_names::kXContentTypeOptions,
+                                AtomicString("nosniff"));
+    EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _));
+    EXPECT_FALSE(
+        AllowedByNosniff::MimeTypeAsXMLExternalEntity(logger, response));
+  }
+
+  {
+    ResourceResponse response(KURL("https://example.com/"));
+    response.SetHttpHeaderField(http_names::kContentType,
+                                AtomicString("text/plain"));
+    response.SetHttpHeaderField(http_names::kXContentTypeOptions,
+                                AtomicString("nosniff"));
+    EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _));
+    EXPECT_FALSE(
+        AllowedByNosniff::MimeTypeAsXMLExternalEntity(logger, response));
+  }
+
+  {
+    ResourceResponse response(KURL("https://example.com/"));
+    response.SetHttpHeaderField(
+        http_names::kContentType,
+        AtomicString("application/xml-external-parsed-entity"));
+    response.SetHttpHeaderField(http_names::kXContentTypeOptions,
+                                AtomicString("nosniff"));
+    EXPECT_TRUE(
+        AllowedByNosniff::MimeTypeAsXMLExternalEntity(logger, response));
+  }
+
+  {
+    ResourceResponse response(KURL("https://example.com/"));
+    response.SetHttpHeaderField(
+        http_names::kContentType,
+        AtomicString("text/xml-external-parsed-entity"));
+    response.SetHttpHeaderField(http_names::kXContentTypeOptions,
+                                AtomicString("nosniff"));
+    EXPECT_TRUE(
+        AllowedByNosniff::MimeTypeAsXMLExternalEntity(logger, response));
   }
 }
 

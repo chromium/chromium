@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos/ash")
 
 component("session_manager") {
   defines = [ "IS_SESSION_MANAGER_IMPL" ]
@@ -28,6 +27,8 @@ component("session_manager") {
   sources = [
     "fake_session_manager_client.cc",
     "fake_session_manager_client.h",
+    "policy_descriptor.cc",
+    "policy_descriptor.h",
     "session_manager_client.cc",
     "session_manager_client.h",
   ]
@@ -40,4 +41,17 @@ proto_library("login_manager_proto") {
   ]
 
   proto_out_dir = "chromeos/ash/components/dbus/login_manager"
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "policy_descriptor_unittest.cc" ]
+
+  deps = [
+    ":login_manager_proto",
+    ":session_manager",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }

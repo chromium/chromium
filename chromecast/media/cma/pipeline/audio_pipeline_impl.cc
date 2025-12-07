@@ -25,6 +25,16 @@ namespace media {
 namespace {
 const size_t kMaxAudioFrameSize = 32 * 1024;
 
+// Returns true if we should decrypt audio data before sending it to the
+// decoder.
+//
+// To maintain backwards compatibility with existing behavior, this will return
+// true if MediaPipelineBackend::AudioDecoder::RequiresDecryption is not
+// implemented.
+bool AudioDecoderRequiresDecryption() {
+  return !MediaPipelineBackend::AudioDecoder::RequiresDecryption ||
+         MediaPipelineBackend::AudioDecoder::RequiresDecryption();
+}
 }
 
 AudioPipelineImpl::AudioPipelineImpl(CmaBackend::AudioDecoder* decoder,
@@ -48,7 +58,10 @@ AudioPipelineImpl::~AudioPipelineImpl() = default;
   AudioConfig config =
       DecoderConfigAdapter::ToCastAudioConfig(kPrimary, audio_config);
   encryption_scheme_ = config.encryption_scheme;
-  config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+  if (AudioDecoderRequiresDecryption()) {
+    config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  }
 
   if (!audio_decoder_->SetConfig(config)) {
     return ::media::PIPELINE_ERROR_INITIALIZATION_FAILED;
@@ -72,7 +85,10 @@ void AudioPipelineImpl::OnUpdateConfig(
     AudioConfig config =
         DecoderConfigAdapter::ToCastAudioConfig(id, audio_config);
     encryption_scheme_ = config.encryption_scheme;
-    config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+    if (AudioDecoderRequiresDecryption()) {
+      config.encryption_scheme = EncryptionScheme::kUnencrypted;
+    }
     bool success = audio_decoder_->SetConfig(config);
     if (!success && !client().playback_error_cb.is_null())
       client().playback_error_cb.Run(::media::PIPELINE_ERROR_DECODE);

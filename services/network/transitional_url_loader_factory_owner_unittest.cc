@@ -5,6 +5,7 @@
 #include "services/network/transitional_url_loader_factory_owner.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/message_loop/message_pump_type.h"
@@ -55,7 +56,7 @@ class TransitionalURLLoaderFactoryOwnerTest : public ::testing::Test {
     base::RunLoop run_loop;
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
-        base::BindLambdaForTesting([&](std::unique_ptr<std::string> body) {
+        base::BindLambdaForTesting([&](std::optional<std::string> body) {
           ASSERT_TRUE(body);
           EXPECT_NE(std::string::npos, body->find("<title>Cache:")) << *body;
           run_loop.Quit();

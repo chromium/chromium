@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-actions.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+
+<div id="examples">
+  <div data-description="Set details relation when target is rich">
+    <div popover id="popover1"><input>Rich #1</div>
+    <button id="invoker1" interestfor="popover1">Button #1</button>
+  </div>
+
+  <div data-description="No details relation when interest for is next in the dom">
+    <button id="invoker2" interestfor="popover2">Button #2</button>
+    <div popover id="popover2"><input>Rich #2</div>
+  </div>
+
+  <div data-description="No details relation when target is not rich, will use as name">
+    <div popover id="popover3">Plain #3</div>
+    <button id="invoker3" interestfor="popover3">Button #3</button>
+  </div>
+
+  <div data-description="Use as description if there's already a name">
+    <div popover id="popover4">Plain #4</div>
+    <button id="invoker4" interestfor="popover4">Button #4</button>
+  </div>
+</div>
+
+
+<pre id="console"></pre>
+
+<style>
+  [interestfor] {
+    interest-delay: 0s 0s;
+  }
+</style>
+
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+
+function addLog(t) {
+  document.getElementById("console").innerText += t + '\n';
+}
+
+function buildAccessibilityTree(accessibilityObject, indent, rolesToIgnore) {
+  if (rolesToIgnore.map(r => 'AXRole: ' + r).includes(accessibilityObject.role)) {
+    return;
+  }
+  let str = ' '.repeat(indent*2) + accessibilityObject.role;
+  str += `, name ${accessibilityObject.name}, description ${accessibilityObject.value}`;
+  const attributes = ['isAtomic', 'isBusy', 'isRequired', 'isEditableRoot',
+      'Editable', 'isRichlyEditable', 'isFocused', 'isFocusable', 'isModal',
+      'isSelected', 'isSelectable', 'MultiLine', 'isMultiSelectable',
+      'isExpanded', 'isVisible', 'isVisited', 'isCollapsed', 'isValid',
+      'isReadOnly', 'isIgnored', 'checked', 'hasPopup'].toSorted();
+  for (const attr of attributes) {
+    if (eval(`accessibilityObject.${attr}`)) {
+      str += ` (${attr})`;
+    }
+  }
+  const lists = ['ariaControlsElementAtIndex', 'ariaDetailsElementAtIndex',
+      'ariaErrorMessageElementAtIndex', 'ariaFlowToElementAtIndex',
+      'ariaOwnsElementAtIndex'];
+  for (const list of lists) {
+    if (eval(`accessibilityObject.${list}(0)`) !== undefined) {
+      str += ` (has ${list.replace('ElementAtIndex','')})`;
+    }
+  }
+  addLog(str);
+
+  for (var i = 0; i < accessibilityObject.childrenCount; ++i) {
+    buildAccessibilityTree(accessibilityObject.childAtIndex(i), indent + 1, rolesToIgnore);
+  }
+}
+let idnum=1;
+function dumpTree(element) {
+  assert_false(element.hasAttribute('id'),'examples shouldn\'t have ids');
+  element.id = `example_${idnum++}`;
+  buildAccessibilityTree(accessibilityController.accessibleElementById(element.id), 0, ['AXInlineTextBox','AXStaticText']);
+}
+
+const kEscape = '\uE00C';
+async function render() {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+async function loseInterest() {
+  await new test_driver.Actions()
+    .keyDown(kEscape)
+    .keyUp(kEscape)
+    .send();
+  await render();
+}
+async function showInterest(element) {
+  element.focus();
+  await render();
+}
+function assert_true(cond,message) {
+  if (!cond) {
+    addLog(`FAIL: ${message}`);
+  }
+}
+function assert_false(cond,message) {
+  assert_true(!cond,message);
+}
+async function runTest() {
+  const examples = document.querySelectorAll('#examples>div');
+  for(let i=0;i<examples.length;i++) {
+    addLog(`\n------ ${examples[i].dataset.description}:`);
+    const invoker = examples[i].querySelector('[interestfor]');
+    const popover = examples[i].querySelector('[popover]');
+    assert_true(!!invoker && !!popover,'Unable to find elements');
+    assert_true(popover === document.getElementById(invoker.getAttribute('interestfor')),'invoker doesn\'t point to popover');
+    assert_false(popover.matches(':popover-open'),'popover should be closed to start');
+    await loseInterest();
+    assert_false(popover.matches(':popover-open'),'popover should still be closed after losing interest');
+    await showInterest(invoker);
+    assert_true(popover.matches(':popover-open'),'popover should be open after interest');
+    dumpTree(examples[i]);
+  }
+  document.querySelector('#examples').remove(); // To trim it out of the output
+  testRunner.notifyDone();
+}
+runTest();
+
+</script>

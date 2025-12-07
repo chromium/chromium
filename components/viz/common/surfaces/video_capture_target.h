@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_VIZ_COMMON_SURFACES_VIDEO_CAPTURE_TARGET_H_
 #define COMPONENTS_VIZ_COMMON_SURFACES_VIDEO_CAPTURE_TARGET_H_
 
+#include <variant>
+
 #include "base/token.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace viz {
 
@@ -18,20 +19,20 @@ namespace viz {
 // 1. aura::Window capture by use of SubtreeCaptureId.
 // 2. Element level capture by use of SubtreeCaptureId.
 // 3. Region level capture by use of a RegionCaptureCropId.
-// 4. Entire tab capture (e.g. tab capture) by use of absl::monostate.
+// 4. Entire tab capture (e.g. tab capture) by use of std::monostate.
 using VideoCaptureSubTarget =
-    absl::variant<absl::monostate, SubtreeCaptureId, RegionCaptureCropId>;
+    std::variant<std::monostate, SubtreeCaptureId, RegionCaptureCropId>;
 
 inline bool IsEntireTabCapture(const VideoCaptureSubTarget& sub_target) {
-  return absl::holds_alternative<absl::monostate>(sub_target);
+  return std::holds_alternative<std::monostate>(sub_target);
 }
 
 inline bool IsSubtreeCapture(const VideoCaptureSubTarget& sub_target) {
-  return absl::holds_alternative<SubtreeCaptureId>(sub_target);
+  return std::holds_alternative<SubtreeCaptureId>(sub_target);
 }
 
 inline bool IsRegionCapture(const VideoCaptureSubTarget& sub_target) {
-  return absl::holds_alternative<RegionCaptureCropId>(sub_target);
+  return std::holds_alternative<RegionCaptureCropId>(sub_target);
 }
 
 // All of the information necessary to select a target for capture.
@@ -45,7 +46,7 @@ struct VIZ_COMMON_EXPORT VideoCaptureTarget {
   explicit VideoCaptureTarget(FrameSinkId frame_sink_id);
 
   // If an invalid sub target is provided, it will be internally converted to an
-  // absl::monostate, equivalent to calling the single argument constructor
+  // std::monostate, equivalent to calling the single argument constructor
   // above.
   VideoCaptureTarget(FrameSinkId frame_sink_id,
                      VideoCaptureSubTarget capture_sub_target);

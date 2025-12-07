@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -16,8 +16,8 @@
 
 class Browser;
 class GURL;
-class TestChromeBrowserState;
 class PrefService;
+class TestProfileIOS;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -56,7 +56,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   raw_ptr<PrefService> pref_service_;

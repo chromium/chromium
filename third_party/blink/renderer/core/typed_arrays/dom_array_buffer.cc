@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/buffer_iterator.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -27,17 +26,18 @@ namespace blink {
 #endif
 
 const WrapperTypeInfo DOMArrayBuffer::wrapper_type_info_body_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     nullptr,
     nullptr,
     "ArrayBuffer",
     nullptr,
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kDOMArrayBufferTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kDOMArrayBufferTag),
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlBufferSourceType,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 const WrapperTypeInfo& DOMArrayBuffer::wrapper_type_info_ =
@@ -121,15 +121,13 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
                               ExceptionState& exception_state) {
   DOMArrayBuffer* to_transfer = this;
   if (!IsDetachable(isolate)) {
-    to_transfer = DOMArrayBuffer::Create(Content()->Data(), ByteLength());
+    to_transfer = DOMArrayBuffer::Create(Content()->ByteSpan());
   }
 
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   bool detach_result = false;
   if (!to_transfer->TransferDetachable(isolate, detach_key, result)
            .To(&detach_result)) {
-    // There was an exception. Rethrow it.
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return false;
   }
   if (!detach_result) {
@@ -203,38 +201,35 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
 
 DOMArrayBuffer* DOMArrayBuffer::Create(
     scoped_refptr<SharedBuffer> shared_buffer) {
-  ArrayBufferContents contents(shared_buffer->size(), 1,
-                               ArrayBufferContents::kNotShared,
-                               ArrayBufferContents::kDontInitialize);
-  if (!contents.IsValid()) [[unlikely]] {
-    OOM_CRASH(shared_buffer->size());
-  }
+  ArrayBufferContents contents(
+      shared_buffer->size(), 1, ArrayBufferContents::kNotShared,
+      ArrayBufferContents::kDontInitialize,
+      ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(contents.IsValid());
 
-  base::BufferIterator iterator(contents.ByteSpan());
+  auto contents_bytes = contents.ByteSpan();
   for (const auto& span : *shared_buffer) {
-    iterator.MutableSpan<char>(span.size()).copy_from(span);
+    contents_bytes.take_first(span.size()).copy_from(base::as_bytes(span));
   }
-
   return Create(std::move(contents));
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Create(
-    const Vector<base::span<const char>>& data) {
+    const Vector<base::span<const uint8_t>>& data) {
   size_t size = 0;
   for (const auto& span : data) {
     size += span.size();
   }
-  ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
-                               ArrayBufferContents::kDontInitialize);
-  if (!contents.IsValid()) [[unlikely]] {
-    OOM_CRASH(size);
-  }
+  ArrayBufferContents contents(
+      size, 1, ArrayBufferContents::kNotShared,
+      ArrayBufferContents::kDontInitialize,
+      ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(contents.IsValid());
 
-  base::BufferIterator iterator(contents.ByteSpan());
+  auto contents_bytes = contents.ByteSpan();
   for (const auto& span : data) {
-    iterator.MutableSpan<char>(span.size()).copy_from(span);
+    contents_bytes.take_first(span.size()).copy_from(span);
   }
-
   return Create(std::move(contents));
 }
 
@@ -257,6 +252,16 @@ DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(base::span<const uint8_t> source) {
 
   buffer->ByteSpan().copy_from(source);
   return buffer;
+}
+
+DOMArrayBuffer* DOMArrayBuffer::CreateUninitialized(size_t num_elements,
+                                                    size_t element_byte_size) {
+  ArrayBufferContents contents(
+      num_elements, element_byte_size, ArrayBufferContents::kNotShared,
+      ArrayBufferContents::kDontInitialize,
+      ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(contents.IsValid());
+  return Create(std::move(contents));
 }
 
 DOMArrayBuffer* DOMArrayBuffer::CreateUninitializedOrNull(

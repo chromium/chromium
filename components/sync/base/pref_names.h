@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_BASE_PREF_NAMES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace syncer::prefs {
 
@@ -26,11 +25,11 @@ inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 namespace internal {
 
 // Boolean specifying whether the user finished setting up sync at least once.
-// On ChromeOS-Ash, the concept of initial-sync-setup doesn't exist.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// On ChromeOS, the concept of initial-sync-setup doesn't exist.
+#if !BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
     "sync.has_setup_completed";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Boolean specifying whether to automatically sync all data types (including
 // future ones, as they're added).  If this is true, the following preferences
@@ -43,7 +42,12 @@ inline constexpr char kSyncKeepEverythingSynced[] =
 inline constexpr char kSelectedTypesPerAccount[] =
     "sync.selected_types_per_account";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Dict specifying the sync transport data (e.g. cache GUID, birthday, etc) per
+// account.
+inline constexpr char kSyncTransportDataPerAccount[] =
+    "sync.transport_data_per_account";
+
+#if BUILDFLAG(IS_CHROMEOS)
 // Boolean specifying whether sync was disabled due to a dashboard reset event.
 inline constexpr char kSyncDisabledViaDashboard[] =
     "sync.disabled_via_dashboard";
@@ -58,13 +62,7 @@ inline constexpr char kSyncAllOsTypes[] = "sync.all_os_types";
 inline constexpr char kSyncOsApps[] = "sync.os_apps";
 inline constexpr char kSyncOsPreferences[] = "sync.os_preferences";
 inline constexpr char kSyncWifiConfigurations[] = "sync.wifi_configurations";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// On Lacros, apps sync for primary profile is controlled by the OS. This
-// preference caches the last known value.
-inline constexpr char kSyncAppsEnabledByOs[] = "sync.apps_enabled_by_os";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Booleans specifying whether the user has selected to sync the following
 // user selectable types. Which are also used as keys within
@@ -83,7 +81,6 @@ inline constexpr char kSyncPreferences[] = "sync.preferences";
 inline constexpr char kSyncProductComparison[] = "sync.product_comparison";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
-inline constexpr char kSyncSharedTabGroupData[] = "sync.shared_tab_group_data";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
 
@@ -97,6 +94,11 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 // PassphraseType, see ProtoPassphraseInt32ToEnum() etc.
 inline constexpr char kSyncCachedPassphraseType[] =
     "sync.cached_passphrase_type";
+
+// Whether or not a persistent auth error is known to exist, cached in prefs
+// because IdentityManager doesn't persist this information.
+inline constexpr char kSyncCachedPersistentAuthErrorForMetrics[] =
+    "sync.cached_persistent_auth_error";
 
 // The user's TrustedVaultAutoUpgradeExperimentGroup, determined the first time
 // the engine is successfully initialized.
@@ -125,12 +127,27 @@ inline constexpr char kSyncPassphrasePromptMutedProductVersion[] =
 inline constexpr char kSyncFeatureStatusForSyncToSigninMigration[] =
     "sync.feature_status_for_sync_to_signin";
 // Prefix for boolean per-data-type statuses, to be suffixed with "." plus
-// GetDataTypeLowerCaseRootTag().
+// DataTypeToStableLowerCaseString().
 inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
     "sync.data_type_status_for_sync_to_signin";
 
 inline constexpr char kMigrateReadingListFromLocalToAccount[] =
     "sync.migrate_reading_list_from_local_to_account";
+
+// State of SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1() and
+// MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up after those
+// migration methods are gone.
+inline constexpr char kSyncToSigninMigrationState[] =
+    "sync.sync_to_signin_migration_state";
+
+// Set only if the kMigrateSyncingUserToSignedIn flag is enabled, reset if the
+// flag is disabled.
+// If the user has sync-the-feature enabled but TransportState::PAUSED, this
+// records the first time MaybeMigrateSyncingUserToSignedIn() is called.
+// This is not written for users who are in TransportState::PAUSED with
+// sync-the-feature disabled.
+inline constexpr char kFirstTimeTriedToMigrateSyncFeaturePausedToSignin[] =
+    "sync.first_time_tried_to_migrate_sync_feature_paused_to_signin";
 
 }  // namespace internal
 }  // namespace syncer::prefs

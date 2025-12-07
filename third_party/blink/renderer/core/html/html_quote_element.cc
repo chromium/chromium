@@ -38,7 +38,7 @@ HTMLQuoteElement::HTMLQuoteElement(const QualifiedName& tag_name,
 
 void HTMLQuoteElement::AdjustPseudoStyleLocale(
     ComputedStyleBuilder& pseudo_style_builder) {
-  // For quote, pseudo elements should use parent locale. We need to change the
+  // For quote, pseudo-elements should use parent locale. We need to change the
   // pseudo_style before QuoteContentData::CreateLayoutObject, where the
   // computed style is a const. Having the change here ensures correct pseudo
   // locale is rendered after style changes.

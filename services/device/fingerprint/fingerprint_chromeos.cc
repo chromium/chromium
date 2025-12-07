@@ -6,6 +6,9 @@
 
 #include <string.h>
 
+#include <utility>
+
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
@@ -14,7 +17,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace device {
 
@@ -36,8 +38,7 @@ device::mojom::BiometricType ToMojom(biod::BiometricType type) {
     case biod::BIOMETRIC_TYPE_FINGERPRINT:
       return device::mojom::BiometricType::FINGERPRINT;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return device::mojom::BiometricType::UNKNOWN;
+      NOTREACHED();
   }
 }
 device::mojom::ScanResult ToMojom(biod::ScanResult type) {
@@ -59,8 +60,7 @@ device::mojom::ScanResult ToMojom(biod::ScanResult type) {
     case biod::SCAN_RESULT_NO_MATCH:
       return device::mojom::ScanResult::NO_MATCH;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return device::mojom::ScanResult::NO_MATCH;
+      NOTREACHED();
   }
 }
 
@@ -83,8 +83,7 @@ device::mojom::FingerprintError ToMojom(biod::FingerprintError type) {
     case biod::ERROR_NO_TEMPLATES:
       return device::mojom::FingerprintError::NO_TEMPLATES;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return device::mojom::FingerprintError::UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -94,8 +93,7 @@ device::mojom::BiometricsManagerStatus ToMojom(
     case biod::BiometricsManagerStatus::INITIALIZED:
       return device::mojom::BiometricsManagerStatus::INITIALIZED;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return device::mojom::BiometricsManagerStatus::UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -280,37 +278,33 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
   // Convert ObjectPath to string, since mojom doesn't know definition of
   // dbus ObjectPath.
   std::vector<std::pair<std::string, std::vector<std::string>>> entries;
-  for (auto& item : matches) {
-    std::vector<std::string> paths;
-    for (auto& object_path : item.second) {
-      paths.push_back(object_path.value());
-    }
-    entries.emplace_back(std::move(item.first), std::move(paths));
+  for (const auto& item : matches) {
+    entries.emplace_back(std::move(item.first),
+                         base::ToVector(item.second, &dbus::ObjectPath::value));
   }
+  base::flat_map<std::string, std::vector<std::string>> entry_map(
+      std::move(entries));
 
-  device::mojom::FingerprintMessage converted_msg;
+  device::mojom::FingerprintMessagePtr converted_msg;
 
   switch (msg.msg_case()) {
     case biod::FingerprintMessage::MsgCase::kScanResult:
-      converted_msg.set_scan_result(ToMojom(msg.scan_result()));
-      CHECK(device::mojom::IsKnownEnumValue(converted_msg.get_scan_result()));
+      converted_msg = device::mojom::FingerprintMessage::NewScanResult(
+          ToMojom(msg.scan_result()));
+      CHECK(device::mojom::IsKnownEnumValue(converted_msg->get_scan_result()));
       break;
     case biod::FingerprintMessage::MsgCase::kError:
-      converted_msg.set_fingerprint_error(ToMojom(msg.error()));
+      converted_msg = device::mojom::FingerprintMessage::NewFingerprintError(
+          ToMojom(msg.error()));
       CHECK(device::mojom::IsKnownEnumValue(
-          converted_msg.get_fingerprint_error()));
+          converted_msg->get_fingerprint_error()));
       break;
     default:
-      LOG(ERROR) << "Unsupported fingerprint message received";
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED() << "Unsupported fingerprint message received";
   }
 
   for (auto& observer : observers_) {
-    observer->OnAuthScanDone(
-        {std::in_place, converted_msg},
-        // TODO(patrykd): Construct the map at the beginning of this function.
-        base::flat_map<std::string, std::vector<std::string>>(entries));
+    observer->OnAuthScanDone(converted_msg.Clone(), entry_map);
   }
 }
 

@@ -17,32 +17,40 @@ import './menu_item.js';
 
 import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {CrosNetworkConfigInterface, FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {BluetoothSystemProperties, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {DomRepeat, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
-import {androidAppsVisible, isInputDeviceSettingsSplitEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
-import {Constructor} from '../common/types.js';
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
+import {androidAppsVisible} from '../common/load_time_booleans.js';
+import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {Constructor} from '../common/types.js';
 import {FakeInputDeviceSettingsProvider} from '../device_page/fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from '../device_page/input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from '../device_page/input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from '../device_page/input_device_settings_types.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
-import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
-import {MultiDevicePageContentData, MultiDeviceSettingsMode} from '../multidevice_page/multidevice_constants.js';
-import {OsPageAvailability} from '../os_page_availability.js';
+import type {MultiDeviceBrowserProxy} from '../multidevice_page/multidevice_browser_proxy.js';
+import {MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
+import type {MultiDevicePageContentData} from '../multidevice_page/multidevice_constants.js';
+import {MultiDeviceSettingsMode} from '../multidevice_page/multidevice_constants.js';
+import type {OsPageAvailability} from '../os_page_availability.js';
 import {AccountManagerBrowserProxyImpl} from '../os_people_page/account_manager_browser_proxy.js';
-import {isAdvancedRoute, Route, Router} from '../router.js';
+import type {Route} from '../router.js';
 
 import {getTemplate} from './os_settings_menu.html.js';
 
@@ -53,9 +61,7 @@ interface MenuItemData {
   path: string;
   icon: string;
   label: string;
-
-  // Sublabels should only exist when OsSettingsRevampWayfinding is enabled.
-  sublabel?: string;
+  sublabel: string|null;
 }
 
 export interface OsSettingsMenuElement {
@@ -76,8 +82,7 @@ function capitalize(str: string): string {
 }
 
 function getPrioritizedConnectedNetwork(
-    networkStateList: OncMojo.NetworkStateProperties[]):
-    OncMojo.NetworkStateProperties|null {
+    networkStateList: NetworkStateProperties[]): NetworkStateProperties|null {
   // The priority of the network types. Both Cellular and Tether belongs to
   // the Mobile Data.
   const orderedNetworkTypes = [
@@ -89,18 +94,18 @@ function getPrioritizedConnectedNetwork(
   ];
 
   const networkStates:
-      Record<NetworkType, OncMojo.NetworkStateProperties[]> = {};
+      Partial<Record<NetworkType, NetworkStateProperties[]>> = {};
 
   for (const networkType of orderedNetworkTypes) {
     networkStates[networkType] = [];
   }
 
   for (const networkState of networkStateList) {
-    networkStates[networkState.type].push(networkState);
+    networkStates[networkState.type]!.push(networkState);
   }
 
   for (const type of orderedNetworkTypes) {
-    for (const networkState of networkStates[type]) {
+    for (const networkState of networkStates[type]!) {
       if (OncMojo.connectionStateIsConnected(networkState.connectionState)) {
         return networkState;
       }
@@ -135,12 +140,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         type: Object,
       },
 
-      advancedOpened: {
-        type: Boolean,
-        value: false,
-        notify: true,
-      },
-
       /**
        * If this menu exists in the drawer. Used to compute responsiveness in
        * smaller window sizes.
@@ -150,20 +149,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         value: false,
       },
 
-      basicMenuItems_: {
+      menuItems_: {
         type: Array,
-        computed: 'computeBasicMenuItems_(pageAvailability.*,' +
+        computed: 'computeMenuItems_(pageAvailability.*,' +
             'accountsMenuItemDescription_,' +
             'bluetoothMenuItemDescription_,' +
             'deviceMenuItemDescription_,' +
             'internetMenuItemDescription_,' +
             'multideviceMenuItemDescription_)',
-        readOnly: true,
-      },
-
-      advancedMenuItems_: {
-        type: Array,
-        computed: 'computeAdvancedMenuItems_(pageAvailability.*)',
         readOnly: true,
       },
 
@@ -173,19 +166,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       selectedItemPath_: {
         type: String,
         value: '',
-      },
-
-      aboutMenuItemPath_: {
-        type: String,
-        value: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
       },
 
       accountsMenuItemDescription_: {
@@ -235,15 +215,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     };
   }
 
-  advancedOpened: boolean;
   isDrawerMenu: boolean;
   pageAvailability: OsPageAvailability;
-  private basicMenuItems_: MenuItemData[];
-  private advancedMenuItems_: MenuItemData[];
-  private isRevampWayfindingEnabled_: boolean;
+  private menuItems_: MenuItemData[];
   private isRtl_: boolean;
   private selectedItemPath_: string;
-  private aboutMenuItemPath_: string;
 
   // Accounts section members.
   private accountsMenuItemDescription_: string;
@@ -259,9 +235,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private hasMouse_: boolean|undefined;
   private hasPointingStick_: boolean|undefined;
   private hasTouchpad_: boolean|undefined;
-  private isInputDeviceSettingsSplitEnabled_: boolean =
-      isInputDeviceSettingsSplitEnabled();
-  private devicePageBrowserProxy_: DevicePageBrowserProxy;
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface;
   private keyboardSettingsObserverReceiver_: KeyboardSettingsObserverReceiver|
       undefined;
@@ -284,65 +257,45 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   constructor() {
     super();
 
-    if (this.isInputDeviceSettingsSplitEnabled_) {
-      this.inputDeviceSettingsProvider_ = getInputDeviceSettingsProvider();
-    } else {
-      this.devicePageBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-    }
+    this.inputDeviceSettingsProvider_ = getInputDeviceSettingsProvider();
     this.multideviceBrowserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.isRevampWayfindingEnabled_) {
-      // Accounts menu item is not available in guest mode.
-      if (this.pageAvailability[Section.kPeople]) {
-        this.updateAccountsMenuItemDescription_();
-        this.addWebUiListener(
-            'accounts-changed',
-            this.updateAccountsMenuItemDescription_.bind(this));
-      }
+    // Accounts menu item is not available in guest mode.
+    if (this.pageAvailability[Section.kPeople]) {
+      this.updateAccountsMenuItemDescription_();
+      this.addWebUiListener(
+          'accounts-changed',
+          this.updateAccountsMenuItemDescription_.bind(this));
+    }
 
-      // Bluetooth menu item.
-      this.observeBluetoothProperties_();
+    // Bluetooth menu item.
+    this.observeBluetoothProperties_();
 
-      // Device menu item.
-      if (this.isInputDeviceSettingsSplitEnabled_) {
-        this.observeKeyboardSettings_();
-        this.observeMouseSettings_();
-        this.observePointingStickSettings_();
-        this.observeTouchpadSettings_();
-      } else {
-        // Before input device settings split, keyboard was always assumed to
-        // exist.
-        this.hasKeyboard_ = true;
-        this.addWebUiListener(
-            'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
-        this.addWebUiListener(
-            'has-pointing-stick-changed',
-            this.set.bind(this, 'hasPointingStick_'));
-        this.addWebUiListener(
-            'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
-        this.devicePageBrowserProxy_.initializePointers();
-      }
+    // Device menu item.
+    this.observeKeyboardSettings_();
+    this.observeMouseSettings_();
+    this.observePointingStickSettings_();
+    this.observeTouchpadSettings_();
 
-      // Internet menu item.
-      this.networkConfig_ =
-          MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-      this.computeIsDeviceCellularCapable_().then(() => {
-        this.updateInternetMenuItemDescription_();
-      });
+    // Internet menu item.
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+    this.computeIsDeviceCellularCapable_().then(() => {
+      this.updateInternetMenuItemDescription_();
+    });
 
-      // Multidevice menu item is not available in guest mode.
-      if (this.pageAvailability[Section.kMultiDevice]) {
-        this.addWebUiListener(
-            'settings.updateMultidevicePageContentData',
-            this.updateMultideviceMenuItemDescription_.bind(this));
+    // Multidevice menu item is not available in guest mode.
+    if (this.pageAvailability[Section.kMultiDevice]) {
+      this.addWebUiListener(
+          'settings.updateMultidevicePageContentData',
+          this.updateMultideviceMenuItemDescription_.bind(this));
 
-        this.multideviceBrowserProxy_.getPageContentData().then(
-            this.updateMultideviceMenuItemDescription_.bind(this));
-      }
+      this.multideviceBrowserProxy_.getPageContentData().then(
+          this.updateMultideviceMenuItemDescription_.bind(this));
     }
 
     this.isRtl_ = window.getComputedStyle(this).direction === 'rtl';
@@ -369,14 +322,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   override currentRouteChanged(newRoute: Route): void {
-    const urlSearchQuery =
-        Router.getInstance().getQueryParameters().get('search');
-    // If the route navigated to by a search result is in the advanced
-    // section, the advanced menu will expand.
-    if (urlSearchQuery && isAdvancedRoute(newRoute)) {
-      this.advancedOpened = true;
-    }
-
     this.setSelectedItemPathForRoute_(newRoute);
   }
 
@@ -403,222 +348,97 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.setSelectedItemPath_('');
   }
 
-  private computeBasicMenuItems_(): MenuItemData[] {
-    let basicMenuItems: MenuItemData[];
-    if (this.isRevampWayfindingEnabled_) {
-      basicMenuItems = [
-        {
-          section: Section.kNetwork,
-          path: `/${routesMojom.NETWORK_SECTION_PATH}`,
-          icon: 'os-settings:network-wifi',
-          label: this.i18n('internetPageTitle'),
-          sublabel: this.internetMenuItemDescription_,
-        },
-        {
-          section: Section.kBluetooth,
-          path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
-          icon: 'cr:bluetooth',
-          label: this.i18n('bluetoothPageTitle'),
-          sublabel: this.bluetoothMenuItemDescription_,
-        },
-        {
-          section: Section.kMultiDevice,
-          path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
-          icon: 'os-settings:connected-devices',
-          label: this.i18n('multidevicePageTitle'),
-          sublabel: this.multideviceMenuItemDescription_,
-        },
-        {
-          section: Section.kPeople,
-          path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
-          icon: 'os-settings:account',
-          label: this.i18n('osPeoplePageTitle'),
-          sublabel: this.accountsMenuItemDescription_,
-        },
-        {
-          section: Section.kKerberos,
-          path: `/${routesMojom.KERBEROS_SECTION_PATH}`,
-          icon: 'os-settings:auth-key',
-          label: this.i18n('kerberosPageTitle'),
-        },
-        {
-          section: Section.kDevice,
-          path: `/${routesMojom.DEVICE_SECTION_PATH}`,
-          icon: 'os-settings:laptop-chromebook',
-          label: this.i18n('devicePageTitle'),
-          sublabel: this.deviceMenuItemDescription_,
-        },
-        {
-          section: Section.kPersonalization,
-          path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
-          icon: 'os-settings:personalization',
-          label: this.i18n('personalizationPageTitle'),
-          sublabel: this.i18n('personalizationMenuItemDescription'),
-        },
-        {
-          section: Section.kPrivacyAndSecurity,
-          path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
-          icon: 'cr:security',
-          label: this.i18n('privacyPageTitle'),
-          sublabel: this.i18n('privacyMenuItemDescription'),
-        },
-        {
-          section: Section.kApps,
-          path: `/${routesMojom.APPS_SECTION_PATH}`,
-          icon: 'os-settings:apps',
-          label: this.i18n('appsPageTitle'),
-          sublabel: androidAppsVisible() ?
-              this.i18n('appsMenuItemDescription') :
-              this.i18n('appsmenuItemDescriptionArcUnavailable'),
-        },
-        {
-          section: Section.kAccessibility,
-          path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
-          icon: 'os-settings:accessibility-revamp',
-          label: this.i18n('a11yPageTitle'),
-          sublabel: this.i18n('a11yMenuItemDescription'),
-        },
-        {
-          section: Section.kSystemPreferences,
-          path: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
-          icon: 'os-settings:system-preferences',
-          label: this.i18n('systemPreferencesTitle'),
-          sublabel: this.i18n('systemPreferencesMenuItemDescription'),
-        },
-        {
-          section: Section.kAboutChromeOs,
-          path: this.aboutMenuItemPath_,
-          icon: 'os-settings:chrome',
-          label: this.i18n('aboutOsPageTitle'),
-          sublabel: this.i18n('aboutChromeOsMenuItemDescription'),
-        },
-      ];
-    } else {
-      basicMenuItems = [
-        {
-          section: Section.kNetwork,
-          path: `/${routesMojom.NETWORK_SECTION_PATH}`,
-          icon: 'os-settings:network-wifi',
-          label: this.i18n('internetPageTitle'),
-        },
-        {
-          section: Section.kBluetooth,
-          path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
-          icon: 'cr:bluetooth',
-          label: this.i18n('bluetoothPageTitle'),
-        },
-        {
-          section: Section.kMultiDevice,
-          path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
-          icon: 'os-settings:multidevice-better-together-suite',
-          label: this.i18n('multidevicePageTitle'),
-        },
-        {
-          section: Section.kPeople,
-          path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
-          icon: 'cr:person',
-          label: this.i18n('osPeoplePageTitle'),
-        },
-        {
-          section: Section.kKerberos,
-          path: `/${routesMojom.KERBEROS_SECTION_PATH}`,
-          icon: 'os-settings:auth-key',
-          label: this.i18n('kerberosPageTitle'),
-        },
-        {
-          section: Section.kDevice,
-          path: `/${routesMojom.DEVICE_SECTION_PATH}`,
-          icon: 'os-settings:laptop-chromebook',
-          label: this.i18n('devicePageTitle'),
-        },
-        {
-          section: Section.kPersonalization,
-          path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
-          icon: 'os-settings:paint-brush',
-          label: this.i18n('personalizationPageTitle'),
-        },
-        {
-          section: Section.kSearchAndAssistant,
-          path: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
-          icon: 'cr:search',
-          label: this.i18n('osSearchPageTitle'),
-        },
-        {
-          section: Section.kPrivacyAndSecurity,
-          path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
-          icon: 'cr:security',
-          label: this.i18n('privacyPageTitle'),
-        },
-        {
-          section: Section.kApps,
-          path: `/${routesMojom.APPS_SECTION_PATH}`,
-          icon: 'os-settings:apps',
-          label: this.i18n('appsPageTitle'),
-        },
-        {
-          section: Section.kAccessibility,
-          path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
-          icon: 'os-settings:accessibility',
-          label: this.i18n('a11yPageTitle'),
-        },
-      ];
-    }
-
-    return basicMenuItems.filter(
-        ({section}) => !!this.pageAvailability[section]);
-  }
-
-  private computeAdvancedMenuItems_(): MenuItemData[] {
-    // When OsSettingsRevampWayfinding is enabled, there is no Advanced menu.
-    if (this.isRevampWayfindingEnabled_) {
-      return [];
-    }
-
-    const advancedMenuItems: MenuItemData[] = [
+  private computeMenuItems_(): MenuItemData[] {
+    const menuItems: MenuItemData[] = [
       {
-        section: Section.kDateAndTime,
-        path: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
-        icon: 'os-settings:clock',
-        label: this.i18n('dateTimePageTitle'),
+        section: Section.kNetwork,
+        path: `/${routesMojom.NETWORK_SECTION_PATH}`,
+        icon: 'os-settings:network-wifi',
+        label: this.i18n('internetPageTitle'),
+        sublabel: this.internetMenuItemDescription_,
       },
       {
-        section: Section.kLanguagesAndInput,
-        path: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
-        icon: 'os-settings:language',
-        label: this.i18n('osLanguagesPageTitle'),
+        section: Section.kBluetooth,
+        path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
+        icon: 'cr:bluetooth',
+        label: this.i18n('bluetoothPageTitle'),
+        sublabel: this.bluetoothMenuItemDescription_,
       },
       {
-        section: Section.kFiles,
-        path: `/${routesMojom.FILES_SECTION_PATH}`,
-        icon: 'os-settings:folder-outline',
-        label: this.i18n('filesPageTitle'),
+        section: Section.kMultiDevice,
+        path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
+        icon: 'os-settings:connected-devices',
+        label: this.i18n('multidevicePageTitle'),
+        sublabel: this.multideviceMenuItemDescription_,
       },
       {
-        section: Section.kPrinting,
-        path: `/${routesMojom.PRINTING_SECTION_PATH}`,
-        icon: 'os-settings:print',
-        label: this.i18n('printingPageTitle'),
+        section: Section.kPeople,
+        path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
+        icon: 'os-settings:account',
+        label: this.i18n('osPeoplePageTitle'),
+        sublabel: this.accountsMenuItemDescription_,
       },
       {
-        section: Section.kCrostini,
-        path: `/${routesMojom.CROSTINI_SECTION_PATH}`,
-        icon: 'os-settings:developer-tags',
-        label: this.i18n('crostiniPageTitle'),
+        section: Section.kKerberos,
+        path: `/${routesMojom.KERBEROS_SECTION_PATH}`,
+        icon: 'os-settings:auth-key',
+        label: this.i18n('kerberosPageTitle'),
+        sublabel: null,
       },
       {
-        section: Section.kReset,
-        path: `/${routesMojom.RESET_SECTION_PATH}`,
-        icon: 'os-settings:restore',
-        label: this.i18n('resetPageTitle'),
+        section: Section.kDevice,
+        path: `/${routesMojom.DEVICE_SECTION_PATH}`,
+        icon: 'os-settings:laptop-chromebook',
+        label: this.i18n('devicePageTitle'),
+        sublabel: this.deviceMenuItemDescription_,
+      },
+      {
+        section: Section.kPersonalization,
+        path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
+        icon: 'os-settings:personalization-menu',
+        label: this.i18n('personalizationPageTitle'),
+        sublabel: this.i18n('personalizationMenuItemDescription'),
+      },
+      {
+        section: Section.kPrivacyAndSecurity,
+        path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
+        icon: 'cr:security',
+        label: this.i18n('privacyPageTitle'),
+        sublabel: this.i18n('privacyMenuItemDescription'),
+      },
+      {
+        section: Section.kApps,
+        path: `/${routesMojom.APPS_SECTION_PATH}`,
+        icon: 'os-settings:apps',
+        label: this.i18n('appsPageTitle'),
+        sublabel: androidAppsVisible() ?
+            this.i18n('appsMenuItemDescription') :
+            this.i18n('appsmenuItemDescriptionArcUnavailable'),
+      },
+      {
+        section: Section.kAccessibility,
+        path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
+        icon: 'os-settings:accessibility',
+        label: this.i18n('a11yPageTitle'),
+        sublabel: this.i18n('a11yMenuItemDescription'),
+      },
+      {
+        section: Section.kSystemPreferences,
+        path: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
+        icon: 'os-settings:system-preferences',
+        label: this.i18n('systemPreferencesTitle'),
+        sublabel: this.i18n('systemPreferencesMenuItemDescription'),
+      },
+      {
+        section: Section.kAboutChromeOs,
+        path: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
+        icon: 'os-settings:chrome',
+        label: this.i18n('aboutOsPageTitle'),
+        sublabel: this.i18n('aboutChromeOsMenuItemDescription'),
       },
     ];
 
-    return advancedMenuItems.filter(
-        ({section}) => !!this.pageAvailability[section]);
-  }
-
-  private onAdvancedButtonToggle_(): void {
-    this.advancedOpened = !this.advancedOpened;
+    return menuItems.filter(({section}) => !!this.pageAvailability[section]);
   }
 
   /**
@@ -773,13 +593,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
    * "Wi-Fi, mobile data".
    */
   private async updateInternetMenuItemDescription_(): Promise<void> {
-    // Return early if the feature revamp wayfinding is not enabled since
-    // `networkConfig_` is not defined and we don't need to show the description
-    // if the feature is disabled.
-    if (!this.isRevampWayfindingEnabled_) {
-      return;
-    }
-
     const {result: networkStateList} =
         await this.networkConfig_.getNetworkStateList({
           filter: FilterType.kVisible,
@@ -821,10 +634,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
    */
   private updateMultideviceMenuItemDescription_(
       pageContentData: MultiDevicePageContentData): void {
-    if (!this.isRevampWayfindingEnabled_) {
-      return;
-    }
-
     if (pageContentData.mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
       if (pageContentData.hostDeviceName) {
         this.multideviceMenuItemDescription_ = this.i18n(
@@ -932,10 +741,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
    * - "display"
    */
   private computeDeviceMenuItemDescription_(): string {
-    if (!this.isRevampWayfindingEnabled_) {
-      return '';
-    }
-
     const wordOptions: string[] = [];
 
     if (this.hasKeyboard_) {

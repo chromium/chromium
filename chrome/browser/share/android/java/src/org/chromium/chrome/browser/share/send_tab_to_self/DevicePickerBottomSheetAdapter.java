@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.widget.ChromeImageView;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Adapter to populate the Target Device Picker sheet. */
+@NullMarked
 class DevicePickerBottomSheetAdapter extends BaseAdapter {
     private final List<TargetDeviceInfo> mTargetDevices;
 

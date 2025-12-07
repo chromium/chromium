@@ -18,7 +18,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
@@ -98,9 +97,9 @@ InSessionAuthDialogContentsView::InSessionAuthDialogContentsView(
       .SetCollapseMargins(true);
 
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
-      ui::kColorPrimaryBackground);
-  border->SetCornerRadius(kCornerRadius);
+      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
+  border->SetColor(ui::kColorPrimaryBackground);
+  border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
 
@@ -199,13 +198,13 @@ void InSessionAuthDialogContentsView::AddTitle() {
   std::u16string title_text =
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
   title_->SetText(title_text);
-  title_->SetEnabledColorId(kColorAshTextColorPrimary);
+  title_->SetEnabledColor(kColorAshTextColorPrimary);
   title_->GetViewAccessibility().SetName(title_text);
 }
 
 void InSessionAuthDialogContentsView::AddPrompt(const std::string& prompt) {
   prompt_view_ = AddChildView(std::make_unique<views::Label>());
-  prompt_view_->SetEnabledColorId(kColorAshTextColorSecondary);
+  prompt_view_->SetEnabledColor(kColorAshTextColorSecondary);
   prompt_view_->SetSubpixelRenderingEnabled(false);
   prompt_view_->SetAutoColorReadabilityEnabled(false);
   prompt_view_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -259,7 +258,7 @@ void InSessionAuthDialogContentsView::ShowAuthError(AshAuthFactor factor) {
       break;
   }
 
-  title_->SetEnabledColorId(cros_tokens::kCrosSysError);
+  title_->SetEnabledColor(cros_tokens::kCrosSysError);
 }
 
 bool InSessionAuthDialogContentsView::OnKeyPressed(const ui::KeyEvent& event) {

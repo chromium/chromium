@@ -203,12 +203,8 @@ TEST_F(SpatialNavigationTest,
   Element* container = GetDocument().getElementById(AtomicString("container"));
   Node* enclosing_container = ScrollableAreaOrDocumentOf(content);
 
-  // TODO(crbug.com/889840):
-  // VisibleBoundsInLocalRoot does not (yet) take div-clipping into
-  // account. The node is off screen, but nevertheless VBIVV returns a non-
-  // empty rect. If you fix VisibleBoundsInLocalRoot, change to
-  // EXPECT_TRUE here and stop using LayoutObject in IsOffscreen().
-  EXPECT_FALSE(content->VisibleBoundsInLocalRoot().IsEmpty());  // EXPECT_TRUE.
+  // TODO(crbug.com/440374239): Update to EXPECT_TRUE once this is fixed.
+  EXPECT_FALSE(content->VisibleBoundsInLocalRoot().IsEmpty());
 
   EXPECT_TRUE(IsOffscreen(content));
   EXPECT_FALSE(IsOffscreen(container));
@@ -217,7 +213,7 @@ TEST_F(SpatialNavigationTest,
   EXPECT_TRUE(IsScrollableAreaOrDocument(enclosing_container));
 }
 
-TEST_F(SpatialNavigationTest, ZooomPutsElementOffScreen) {
+TEST_F(SpatialNavigationTest, ZoomPutsElementOffScreen) {
   SetBodyInnerHTML(
       "<!DOCTYPE html>"
       "<button id='a'>hello</button><br>"
@@ -372,12 +368,8 @@ TEST_F(SpatialNavigationTest, StartAtContainersEdge) {
       GetDocument().getElementById(AtomicString("container"));
   const PhysicalRect container_box = NodeRectInRootFrame(container);
 
-  // TODO(crbug.com/889840):
-  // VisibleBoundsInLocalRoot does not (yet) take div-clipping into
-  // account. The node is off screen, but nevertheless VBIVV returns a non-
-  // empty rect. If you fix VisibleBoundsInLocalRoot, change to
-  // EXPECT_TRUE here and stop using LayoutObject in IsOffscreen().
-  EXPECT_FALSE(b->VisibleBoundsInLocalRoot().IsEmpty());  // EXPECT_TRUE.
+  // TODO(crbug.com/440374239): Update to EXPECT_TRUE once this is fixed.
+  EXPECT_FALSE(b->VisibleBoundsInLocalRoot().IsEmpty());
   EXPECT_TRUE(IsOffscreen(b));
 
   // Go down.
@@ -497,7 +489,8 @@ TEST_F(SpatialNavigationTest, PartiallyVisible) {
   // Do some scrolling.
   ScrollableArea* root_scroller = GetDocument().View()->GetScrollableArea();
   root_scroller->SetScrollOffset(ScrollOffset(0, 600),
-                                 mojom::blink::ScrollType::kProgrammatic);
+                                 mojom::blink::ScrollType::kProgrammatic,
+                                 cc::ScrollSourceType::kNone);
   PhysicalRect button_after_scroll = NodeRectInRootFrame(b);
   ASSERT_NE(button_in_root_frame,
             button_after_scroll);  // As we scrolled, the
@@ -570,12 +563,8 @@ TEST_F(SpatialNavigationTest, DivsCanClipIframes) {
   Element* link = ChildDocument().QuerySelector(AtomicString("a"));
   EXPECT_FALSE(IsOffscreen(div));
 
-  // TODO(crbug.com/889840):
-  // VisibleBoundsInLocalRoot does not (yet) take div-clipping into
-  // account. The node is off screen, but nevertheless VBIVV returns a non-
-  // empty rect. If you fix VisibleBoundsInLocalRoot, change to
-  // EXPECT_TRUE here and stop using LayoutObject in IsOffscreen().
-  EXPECT_FALSE(iframe->VisibleBoundsInLocalRoot().IsEmpty());  // EXPECT_TRUE.
+  // TODO(crbug.com/440374239): Update to EXPECT_TRUE once this is fixed.
+  EXPECT_FALSE(iframe->VisibleBoundsInLocalRoot().IsEmpty());
 
   // The <iframe> is not displayed in the visual viewport because it is clipped
   // by the div. In other words, it is being offscreen. And so is also its

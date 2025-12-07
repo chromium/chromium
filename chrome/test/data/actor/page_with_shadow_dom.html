@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Button with Overlapping Shadow DOM</title>
+  <style>
+    #clickable {
+      width: 150px;
+      height: 50px;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="clickable" role="button" tabindex="0" aria-label="clickable">Host</div>
+  <script>
+    let button_clicked = false;
+
+    const hostButton = document.getElementById('clickable');
+    const shadowRoot = hostButton.attachShadow({ mode: 'open' });
+    const overlappingDiv = document.createElement('div');
+    overlappingDiv.textContent = 'This is the Shadow DOM';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      /* This CSS is encapsulated within the shadow DOM */
+      div {
+        width: 100%
+        height: 100%;
+        cursor: pointer;
+        box-sizing: border-box;
+      }
+    `;
+    shadowRoot.appendChild(style);
+    shadowRoot.appendChild(overlappingDiv);
+
+    hostButton.addEventListener('click', () => {
+        button_clicked = true;
+    });
+  </script>
+
+</body>
+</html>

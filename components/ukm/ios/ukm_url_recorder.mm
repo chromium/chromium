@@ -27,7 +27,8 @@ SourceUrlRecorderWebStateObserver::SourceUrlRecorderWebStateObserver(
   web_state->AddObserver(this);
 }
 
-SourceUrlRecorderWebStateObserver::~SourceUrlRecorderWebStateObserver() {}
+SourceUrlRecorderWebStateObserver::~SourceUrlRecorderWebStateObserver() =
+    default;
 
 void SourceUrlRecorderWebStateObserver::WebStateDestroyed(
     web::WebState* web_state) {
@@ -133,8 +134,6 @@ void SourceUrlRecorderWebStateObserver::MaybeRecordUrl(
       ukm::ConvertToSourceId(navigation_id, ukm::SourceIdType::NAVIGATION_ID);
   ukm_recorder->RecordNavigation(source_id, navigation_data);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SourceUrlRecorderWebStateObserver)
 
 }  // namespace internal
 

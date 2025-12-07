@@ -26,18 +26,18 @@ class ImageDataStore {
   // While this is false, initialization may have already started.
   virtual bool IsInitialized() = 0;
 
-  // Adds or updates the image data for the |key|.
+  // Adds or updates the image data for the `key`.
   virtual void SaveImage(const std::string& key,
                          std::string image_data,
                          bool needs_transcoding) = 0;
 
-  // Loads the image data for the |key| and passes it to |callback|. If the
+  // Loads the image data for the `key` and passes it to `callback`. If the
   // image isn't available, empty data will be returned.
   virtual void LoadImage(const std::string& key,
                          bool needs_transcoding,
                          ImageDataCallback callback) = 0;
 
-  // Deletes the image data for the |key|.
+  // Deletes the image data for the `key`.
   virtual void DeleteImage(const std::string& key) = 0;
 
   // Returns all the key this store has.

@@ -10,9 +10,14 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
+#include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
+#include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class Version;
@@ -26,7 +31,7 @@ namespace internal {
 
 // Class to hold extension management settings for one or a group of
 // extensions. Settings can be applied to an individual extension identified
-// by an ID, a group of extensions with specific |update_url| or all
+// by an ID, a group of extensions with specific `update_url` or all
 // extensions at once.
 // The settings applied to all extensions are the default settings and can be
 // overridden by per-extension or per-update-url settings.
@@ -36,7 +41,7 @@ namespace internal {
 // Since update URL is not directly associated to extension ID, per-extension
 // and per-update-url settings might be enforced at the same time, see per-field
 // comments below for details.
-// Some features do not support per-update-url setttings.
+// Some features do not support per-update-url settings.
 struct IndividualSettings {
   enum ParsingScope {
     // Parses the default settings.
@@ -58,19 +63,19 @@ struct IndividualSettings {
 
   void Reset();
 
-  // Parses the individual settings. |dict| is a sub-dictionary in extension
-  // management preference and |scope| represents the applicable range of the
+  // Parses the individual settings. `dict` is a sub-dictionary in extension
+  // management preference and `scope` represents the applicable range of the
   // settings, a single extension, a group of extensions or default settings.
-  // Note that in case of parsing errors, |this| will NOT be left untouched.
+  // Note that in case of parsing errors, `this` will NOT be left untouched.
   // This method is required to be called for SCOPE_DEFAULT first, then
   // for SCOPE_INDIVIDUAL and SCOPE_UPDATE_URL.
   bool Parse(const base::Value::Dict& dict, ParsingScope scope);
 
   // Extension installation mode. Setting this to INSTALLATION_FORCED or
   // INSTALLATION_RECOMMENDED will enable extension auto-loading (only
-  // applicable to single extension), and in this case the |update_url| must
+  // applicable to single extension), and in this case the `update_url` must
   // be specified, containing the update URL for this extension.
-  // Note that |update_url| will be ignored for INSTALLATION_ALLOWED and
+  // Note that `update_url` will be ignored for INSTALLATION_ALLOWED and
   // INSTALLATION_BLOCKED installation mode.
   // This setting will NOT merge from the default settings. Any settings from
   // the default settings that should be applied to an individual extension
@@ -78,12 +83,12 @@ struct IndividualSettings {
   // In case this setting is specified in both per-extensions and
   // per-update-url settings, per-extension settings will override
   // per-update-url settings.
-  ExtensionManagement::InstallationMode installation_mode;
+  ManagedInstallationMode installation_mode;
   std::string update_url;
 
   // Boolean to indicate whether the update URL of the extension/app is
   // overridden by the policy or not. It can be true only for extensions/apps
-  // which are marked as |force_installed|.
+  // which are marked as `force_installed`.
   bool override_update_url{false};
 
   // Permissions block list for extensions. This setting won't grant permissions
@@ -146,8 +151,7 @@ struct IndividualSettings {
   // Allows admins to control whether the extension icon should be pinned to
   // the toolbar next to the omnibar. If it is pinned, the icon is visible at
   // all times.
-  ExtensionManagement::ToolbarPinMode toolbar_pin =
-      ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
+  ManagedToolbarPinMode toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
 
   // Boolean to indicate whether the extension can navigate to file URLs.
   bool file_url_navigation_allowed{false};
@@ -177,11 +181,11 @@ struct GlobalSettings {
   void Reset();
 
   // Settings specifying which URLs are allowed to install extensions, will be
-  // enforced only if |has_restricted_install_sources| is set to true.
+  // enforced only if `has_restricted_install_sources` is set to true.
   std::optional<URLPatternSet> install_sources;
 
   // Settings specifying all allowed app/extension types, will be enforced
-  // only of |has_restricted_allowed_types| is set to true.
+  // only of `has_restricted_allowed_types` is set to true.
   std::optional<std::vector<Manifest::Type>> allowed_types;
 
   // An enum setting indicates if manifest v2 is allowed.

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/trees/layer_tree_host.h"
+
 #include <stdint.h>
 
 #include <sstream>
@@ -21,12 +23,12 @@
 #include "cc/test/layer_tree_json_parser.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
-#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/khronos/GLES2/gl2.h"
 
 namespace cc {
 namespace {
@@ -58,7 +60,7 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
         !layer_tree_host()->GetSettings().single_thread_proxy_scheduler;
     return std::make_unique<TestLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
-        gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
+        /*shared_image_interface=*/nullptr, renderer_settings, &debug_settings_,
         task_runner_provider(), synchronous_composite, disable_display_vsync,
         refresh_rate);
   }
@@ -92,8 +94,10 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
       CleanUpAndEndTest();
       return;
     }
-    if (!begin_frame_driven_drawing_)
-      host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+    if (!begin_frame_driven_drawing_) {
+      host_impl->SetNeedsRedraw(/*animation_only=*/false,
+                                /*skip_if_inside_draw=*/false);
+    }
     if (full_damage_each_frame_)
       host_impl->SetFullViewportDamage();
   }
@@ -330,10 +334,9 @@ class BrowserCompositorInvalidateLayerTreePerfTest
                                    next_fence_sync_);
     next_sync_token.SetVerifyFlush();
 
-    constexpr gfx::Size size(64, 64);
-    viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
-        gpu_mailbox, GL_TEXTURE_2D, next_sync_token, size,
-        viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
+    viz::TransferableResource resource = viz::TransferableResource::Make(
+        gpu::ClientSharedImage::CreateForTesting(),
+        viz::TransferableResource::ResourceSource::kTest, next_sync_token);
     next_fence_sync_++;
 
     tab_contents_->SetTransferableResource(resource, std::move(callback));

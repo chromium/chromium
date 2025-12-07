@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: custom colors for ::search-text</title>
+<link rel="author" title="Delan Azabani" href="mailto:dazabani@igalia.com">
+<meta name="assert" content="This test checks that it's possible to modify the color of a search result through ::search-text pseudo-element.">
+<link rel="match" href="search-text-color-003-ref.html">
+<link rel="stylesheet" href="support/highlights.css">
+<script src="../support/markers.js"></script>
+<style>
+  ::search-text {
+    color: yellow;
+    background-color: blue;
+  }
+  ::search-text:current {
+    background-color: green;
+  }
+</style>
+<div class="highlight_reftest" id="target">The quick brown fox jumps over the lazy dog.</div>
+<script>
+  addSearchTextMarker(target, 0, 3, true);
+  addSearchTextMarker(target, 31, 34);
+</script>

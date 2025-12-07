@@ -12,7 +12,6 @@
 class TabWidthConstraints {
  public:
   TabWidthConstraints(const TabLayoutState& state,
-                      const TabLayoutConstants& layout_constants,
                       const TabSizeInfo& size_info);
 
   // The smallest width this tab should ever have.
@@ -27,12 +26,13 @@ class TabWidthConstraints {
   // The width this tab would like to have, if space is available.
   float GetPreferredWidth() const;
 
+  const TabLayoutState get_state() const { return state_; }
+
  private:
   // All widths are affected by pinnedness and activeness in the same way.
   float TransformForPinnednessAndOpenness(float width) const;
 
   TabLayoutState state_;
-  TabLayoutConstants layout_constants_;
   TabSizeInfo size_info_;
 };
 

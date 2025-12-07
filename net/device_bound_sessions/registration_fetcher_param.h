@@ -11,13 +11,14 @@
 #include "base/containers/span.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/net_export.h"
+#include "net/device_bound_sessions/session.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 
-// Class to parse Sec-Session-Registration header.
+// Class to parse Secure-Session-Registration header.
 // See explainer for details:
 // https://github.com/WICG/dbsc/blob/main/README.md#start-session
 // The header format for the session registration is a list of
@@ -36,8 +37,12 @@ class NET_EXPORT RegistrationFetcherParam {
   RegistrationFetcherParam& operator=(const RegistrationFetcherParam&) = delete;
   ~RegistrationFetcherParam();
 
-  // Returns a vector of valid instances.
-  // TODO(chlily): Get IsolationInfo from the request as well
+  // Checks `headers` for any Secure-Session-Registration headers. Parses any
+  // valid ones that are found into `RegistrationFetcherParam` instances and
+  // returns a vector of these. `request_url` corresponds to the request that
+  // returned these headers; it is used to resolve any relative registration
+  // endpoints in the response headers and to validate that the scheme is
+  // appropriate.
   static std::vector<RegistrationFetcherParam> CreateIfValid(
       const GURL& request_url,
       const HttpResponseHeaders* headers);
@@ -47,7 +52,11 @@ class NET_EXPORT RegistrationFetcherParam {
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
-      std::string challenge);
+      std::string challenge,
+      std::optional<std::string> authorization,
+      std::optional<std::string> provider_key = std::nullopt,
+      std::optional<GURL> provider_url = std::nullopt,
+      std::optional<Session::Id> provider_session_id = std::nullopt);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
@@ -58,22 +67,50 @@ class NET_EXPORT RegistrationFetcherParam {
 
   const std::string& challenge() const { return challenge_; }
 
+  const std::optional<std::string>& authorization() const {
+    return authorization_;
+  }
+
+  const std::optional<std::string>& provider_key() const {
+    return provider_key_;
+  }
+
+  const std::optional<GURL>& provider_url() const { return provider_url_; }
+
+  const std::optional<Session::Id>& provider_session_id() const {
+    return provider_session_id_;
+  }
+
+  GURL TakeRegistrationEndpoint() { return std::move(registration_endpoint_); }
+
+  std::string TakeChallenge() { return std::move(challenge_); }
+
+  std::optional<std::string> TakeAuthorization() {
+    return std::move(authorization_);
+  }
+
  private:
   RegistrationFetcherParam(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
-      std::string challenge);
+      std::string challenge,
+      std::optional<std::string> authorization,
+      std::optional<std::string> provider_key,
+      std::optional<GURL> provider_url,
+      std::optional<Session::Id> provider_session_id);
 
   static std::optional<RegistrationFetcherParam> ParseItem(
       const GURL& request_url,
       const structured_headers::ParameterizedMember& session_registration);
 
-  // TODO(chlily): Store last-updated time and last-updated isolationinfo as
-  // needed.
   GURL registration_endpoint_;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::string challenge_;
+  std::optional<std::string> authorization_;
+  std::optional<std::string> provider_key_;
+  std::optional<GURL> provider_url_;
+  std::optional<Session::Id> provider_session_id_;
 };
 
 }  // namespace net::device_bound_sessions

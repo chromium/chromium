@@ -5,17 +5,19 @@
 package org.chromium.chrome.browser.feedback;
 
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Provides data about whether the feedback comes from a low-end device. */
+@NullMarked
 public class LowEndDeviceFeedbackSource implements FeedbackSource {
     private static final String LOW_END_DEVICE_KEY = "lowmem";
     private final HashMap<String, String> mMap;
 
     LowEndDeviceFeedbackSource() {
-        mMap = new HashMap<String, String>(1);
+        mMap = new HashMap<>(1);
         mMap.put(LOW_END_DEVICE_KEY, Boolean.toString(SysUtils.isLowEndDevice()));
     }
 

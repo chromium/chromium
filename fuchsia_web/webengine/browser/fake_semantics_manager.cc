@@ -5,7 +5,7 @@
 #include "fuchsia_web/webengine/browser/fake_semantics_manager.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 
 FakeSemanticsManager::FakeSemanticsManager() = default;

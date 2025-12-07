@@ -7,10 +7,10 @@
 #include <set>
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_controller.h"
@@ -104,7 +104,7 @@ ConnectJob::~ConnectJob() {
   // Log end of Connect event if ConnectJob was still in-progress when
   // destroyed.
   if (delegate_) {
-    LogConnectCompletion(ERR_ABORTED);
+    StopTimerAndLogConnectCompletion(ERR_ABORTED);
   }
   if (top_level_job_) {
     net_log().EndEvent(NetLogEventType::CONNECT_JOB);
@@ -130,7 +130,7 @@ int ConnectJob::Connect() {
   int rv = ConnectInternal();
 
   if (rv != ERR_IO_PENDING) {
-    LogConnectCompletion(rv);
+    StopTimerAndLogConnectCompletion(rv);
     delegate_ = nullptr;
   }
 
@@ -177,7 +177,7 @@ void ConnectJob::NotifyDelegateOfCompletion(int rv) {
   Delegate* delegate = delegate_;
   delegate_ = nullptr;
 
-  LogConnectCompletion(rv);
+  StopTimerAndLogConnectCompletion(rv);
   delegate->OnConnectJobComplete(rv, this);
 }
 
@@ -187,6 +187,11 @@ void ConnectJob::NotifyDelegateOfProxyAuth(
     base::OnceClosure restart_with_auth_callback) {
   delegate_->OnNeedsProxyAuth(response, auth_controller,
                               std::move(restart_with_auth_callback), this);
+}
+
+Error ConnectJob::HandleDnsAliasesResolved(
+    const std::set<std::string>& aliases) {
+  return delegate_->OnDestinationDnsAliasesResolved(aliases, this);
 }
 
 void ConnectJob::ResetTimer(base::TimeDelta remaining_time) {
@@ -205,7 +210,11 @@ void ConnectJob::LogConnectStart() {
   net_log().BeginEvent(net_log_connect_event_type_);
 }
 
-void ConnectJob::LogConnectCompletion(int net_error) {
+void ConnectJob::StopTimerAndLogConnectCompletion(int net_error) {
+  // Stop the timer on completion, if it's still running. ConnectJobs are
+  // generally deleted immediately, anyways, but best to be safe.
+  timer_.Stop();
+
   connect_timing_.connect_end = base::TimeTicks::Now();
   net_log().EndEventWithNetErrorCode(net_log_connect_event_type_, net_error);
 }

@@ -42,7 +42,7 @@ void VideoFrameRequestCallbackCollection::CancelFrameCallback(CallbackId id) {
 
 void VideoFrameRequestCallbackCollection::ExecuteFrameCallbacks(
     double high_res_now_ms,
-    const VideoFrameMetadata* metadata) {
+    const VideoFrameCallbackMetadata* metadata) {
   // First, generate a list of callbacks to consider. Callbacks registered from
   // this point on are considered only for the "next" frame, not this one.
   DCHECK(callbacks_to_invoke_.empty());
@@ -85,7 +85,7 @@ void VideoFrameRequestCallbackCollection::V8VideoFrameCallback::Trace(
 
 void VideoFrameRequestCallbackCollection::V8VideoFrameCallback::Invoke(
     double highResTime,
-    const VideoFrameMetadata* metadata) {
+    const VideoFrameCallbackMetadata* metadata) {
   callback_->InvokeAndReportException(nullptr, highResTime, metadata);
 }
 

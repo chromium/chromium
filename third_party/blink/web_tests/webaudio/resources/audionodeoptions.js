@@ -209,6 +209,39 @@ function testInvalidConstructor(should, name, context) {
   }, 'new ' + name + '(context, 42)').throw(TypeError);
 }
 
+// TODO(crbug.com/406463484): Remove _TH suffix when audit.js is deprecated.
+/**
+ * Tests invalid constructor scenarios for a given Web Audio node constructor
+ * using testharness.js.
+ * Verifies that the constructor throws TypeError for common misuse cases:
+ * - No arguments provided.
+ * - Invalid context (e.g., a number instead of an AudioContext).
+ * - Valid context with invalid options (e.g., a number instead of an object).
+ *
+ * @param {string} constructorName - The name of the Web Audio node constructor
+ * to test (e.g., 'MediaStreamAudioSourceNode').
+ * @param {AudioContext} context - A valid AudioContext instance to use in the
+ * constructor tests.
+ */
+function testInvalidConstructor_TH(constructorName, context) {
+  test(function () {
+    assert_throws_js(
+        TypeError, () => {
+          new window[constructorName]();
+    }, `new ${constructorName}() should throw TypeError`);
+
+    assert_throws_js(
+        TypeError, () => {
+          new window[constructorName](1);
+    }, `new ${constructorName}(1) should throw TypeError`);
+
+    assert_throws_js(
+        TypeError, () => {
+          new window[constructorName](context, 42);
+    }, `new ${name}(context, 42) should throw TypeError`);
+  }, `Invalid constructor tests for ${constructorName}`);
+}
+
 function testDefaultConstructor(should, name, context, options) {
   let node;
 

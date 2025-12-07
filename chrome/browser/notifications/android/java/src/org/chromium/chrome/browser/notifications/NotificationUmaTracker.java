@@ -4,26 +4,26 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.Manifest;
 import android.app.Notification;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.app.NotificationManager;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationChannelCompat;
-import androidx.core.app.NotificationManagerCompat;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * Helper class to make tracking notification UMA stats easier for various features. Having a single
  * entry point here to make more complex tracking easier to add in the future.
  */
+@NullMarked
 public class NotificationUmaTracker {
     /*
      * A list of notification types.  To add a type to this list please update
@@ -81,7 +82,11 @@ public class NotificationUmaTracker {
         SystemNotificationType.USB,
         SystemNotificationType.UPM_ERROR,
         SystemNotificationType.WEBAPK_INSTALL_FAILED,
-        SystemNotificationType.DATA_SHARING
+        SystemNotificationType.DATA_SHARING,
+        SystemNotificationType.UPM_ACCESS_LOSS_WARNING,
+        SystemNotificationType.TRACING,
+        SystemNotificationType.SERIAL,
+        SystemNotificationType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -126,8 +131,12 @@ public class NotificationUmaTracker {
         int UPM_ERROR = 37;
         int WEBAPK_INSTALL_FAILED = 38;
         int DATA_SHARING = 39;
+        int UPM_ACCESS_LOSS_WARNING = 40;
+        int TRACING = 41;
+        int SERIAL = 42;
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS = 43;
 
-        int NUM_ENTRIES = 40;
+        int NUM_ENTRIES = 44;
     }
 
     /*
@@ -159,7 +168,15 @@ public class NotificationUmaTracker {
         ActionType.PRE_UNSUBSCRIBE,
         ActionType.UNDO_UNSUBSCRIBE,
         ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT,
-        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT
+        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT,
+        ActionType.SHOW_ORIGINAL_NOTIFICATION,
+        ActionType.ALWAYS_ALLOW,
+        ActionType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK,
+        ActionType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW,
+        ActionType.REPORT_AS_SAFE,
+        ActionType.REPORT_WARNED_NOTIFICATION_AS_SPAM,
+        ActionType.REPORT_UNWARNED_NOTIFICATION_AS_SPAM,
+        ActionType.DOWNLOAD_DELETE_FROM_HISTORY
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -236,8 +253,34 @@ public class NotificationUmaTracker {
         // to implicitly committing `PRE_UNSUBSCRIBE`.
         int COMMIT_UNSUBSCRIBE_IMPLICIT = 33;
 
-        // Number of real entries, excluding `UNKNWON`.
-        int NUM_ENTRIES = 34;
+        // The "Show notification" button, used only for persistent web notifications that are
+        // suspicious.
+        int SHOW_ORIGINAL_NOTIFICATION = 34;
+
+        // The "Always allow" button, used for allowing suspicious web notifications from an origin.
+        int ALWAYS_ALLOW = 35;
+
+        // The "Got it" button on Safety Hub notification about unsubscribed notifications.
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK = 36;
+
+        // The "Review" button on Safety Hub notification about unsubscribed notifications.
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW = 37;
+
+        // The "Report as safe" button, used for sending non-suspicious notification contents to
+        // Google.
+        int REPORT_AS_SAFE = 38;
+        // The "Report as spam" button, used for sending suspicious notification contents to Google
+        // after the user unsubscribed from notifications when they received a warning.
+        int REPORT_WARNED_NOTIFICATION_AS_SPAM = 39;
+        // The "Report as spam" button, used for sending suspicious notification contents to Google
+        // after the user unsubscribed from notifications when they did not receive a warning.
+        int REPORT_UNWARNED_NOTIFICATION_AS_SPAM = 40;
+
+        // Delete from history button on user download notification.
+        int DOWNLOAD_DELETE_FROM_HISTORY = 41;
+
+        // Number of real entries, excluding `UNKNOWN`.
+        int NUM_ENTRIES = 41;
     }
 
     /**
@@ -325,13 +368,23 @@ public class NotificationUmaTracker {
         int NUM_ENTRIES = 6;
     }
 
+    /** The action during which the `WasGlobalStatePreserved` histogram is recorded. */
+    @IntDef({GlobalStatePreservedActionSuffix.UNDO, GlobalStatePreservedActionSuffix.COMMIT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface GlobalStatePreservedActionSuffix {
+        int UNDO = 0;
+        int COMMIT = 1;
+
+        int NUM_ENTRIES = 2;
+    }
+
     private static class LazyHolder {
         private static final NotificationUmaTracker INSTANCE = new NotificationUmaTracker();
     }
 
     // Cached objects.
     private final SharedPreferencesManager mSharedPreferences;
-    private final NotificationManagerCompat mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
 
     public static NotificationUmaTracker getInstance() {
         return LazyHolder.INSTANCE;
@@ -339,7 +392,7 @@ public class NotificationUmaTracker {
 
     private NotificationUmaTracker() {
         mSharedPreferences = ChromeSharedPreferences.getInstance();
-        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
     }
 
     /**
@@ -355,11 +408,7 @@ public class NotificationUmaTracker {
             @SystemNotificationType int type, @Nullable Notification notification) {
         if (type == SystemNotificationType.UNKNOWN || notification == null) return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            logNotificationShown(type, notification.getChannelId());
-        } else {
-            logNotificationShown(type, null);
-        }
+        logNotificationShown(type, notification.getChannelId());
     }
 
     /**
@@ -517,25 +566,9 @@ public class NotificationUmaTracker {
     /**
      * Records the result of an OS prompt for notification permissions.
      *
-     * @param permissions List of permissions requested, the only element should be the notification
-     *     permission.
-     * @param grantResults List of grant results.
+     * @param isPermissionGranted Whether permission is granted.
      */
-    public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
-        if (permissions == null
-                || permissions.length != 1
-                || grantResults.length != 1
-                || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
-            assert permissions != null : "Parameter permissions should not be null";
-            assert permissions.length == 1 : "A single permission should have been requested";
-            assert grantResults.length == 1 : "A single result should have been returned";
-            assert permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)
-                    : "The requested permission should be for notifications";
-            return;
-        }
-
-        boolean isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
+    public void recordNotificationPermissionRequestResult(boolean isPermissionGranted) {
         RecordHistogram.recordBooleanHistogram(
                 "Mobile.SystemNotification.Permission.OSPromptResult", isPermissionGranted);
     }
@@ -551,6 +584,22 @@ public class NotificationUmaTracker {
 
         RecordHistogram.recordBooleanHistogram(
                 "Mobile.SystemNotification.Permission.Change", isPermissionGranted);
+    }
+
+    /**
+     * Called when the channel notifications are blocked or allowed through Android settings.
+     *
+     * @param channelId The channel id for which the notifications enabled status is changed.
+     * @param blockedState If true all notifications are blocked.
+     */
+    public void onNotificationChannelPermissionSettingChange(
+            String channelId, boolean blockedState) {
+        boolean isPermissionGranted = !blockedState;
+
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.Change."
+                        + notificationChannelIdToSuffix(channelId),
+                isPermissionGranted);
     }
 
     /** Records the result of showing the notification permission rationale dialog. */
@@ -580,6 +629,52 @@ public class NotificationUmaTracker {
     }
 
     /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * real time, which includes time spent in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeRealDuration(long durationMillis) {
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeRealDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * `uptimeMillis`, which stops the clock when in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeDuration(long durationMillis) {
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records the time, as perceived by the user, that has elapsed between the most recent
+     * non-duplicate `PRE_UNSUBSCRIBE` intent and the current, duplicate `PRE_UNSUBSCRIBE` intent,
+     * including time spent in power-saving modes and/or display being dark.
+     */
+    public void recordDuplicatePreUnsubscribeRealDelay(long delayMillis) {
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "DuplicatePreUnsubscribeRealDelay",
+                delayMillis);
+    }
+
+    /**
+     * Records whether the Java global state was preserved between `PRE_UNSUBSCRIBE` and the
+     * `UNDO_UNSUBSCRIBE`/`COMMIT_UNSUBSCRIBE_*` events.
+     */
+    public void recordWasGlobalStatePreserved(
+            @GlobalStatePreservedActionSuffix int action, boolean wasPreserved) {
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe.WasGlobalStatePreserved."
+                        + (action == GlobalStatePreservedActionSuffix.UNDO ? "Undo" : "Commit"),
+                wasPreserved);
+    }
+
+    /**
      * Records a sample to indicate that the job to handle a notification intent has reached a given
      * stage.
      *
@@ -606,30 +701,70 @@ public class NotificationUmaTracker {
                 count);
     }
 
+    /**
+     * Records the number of suspicious notifications from an origin, when the user taps to show the
+     * original contents of the suspicious notifications. This number is displayed on the suspicious
+     * notification warning.
+     *
+     * @param count The suspicious notification count.
+     */
+    public static void recordSuspiciousNotificationCountOnShowOriginals(int count) {
+        RecordHistogram.recordCount100Histogram(
+                "SafeBrowsing.SuspiciousNotificationWarning."
+                        + "ShowOriginalNotifications.SuspiciousNotificationCount",
+                count);
+    }
+
+    /**
+     * Records the number of suspicious notifications that were unexpectedly not delivered to the
+     * user, when they tap to show the originals. Note: if all suspicious notifications are
+     * delivered as expected, then 0 will be logged.
+     *
+     * @param count The actual number of notifications that were not properly delivered.
+     */
+    public static void recordSuspiciousNotificationsDroppedCountOnShowOriginals(int count) {
+        RecordHistogram.recordCount100Histogram(
+                "SafeBrowsing.SuspiciousNotificationWarning."
+                        + "ShowOriginalNotifications.SuspiciousNotificationsDroppedCount",
+                count);
+    }
+
     private void logNotificationShown(
             @SystemNotificationType int type,
             @ChromeChannelDefinitions.ChannelId String channelId) {
-        if (!mNotificationManager.areNotificationsEnabled()) {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
             logPotentialBlockedCause();
             recordHistogram("Mobile.SystemNotification.Blocked", type);
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && channelId != null
-                && isChannelBlocked(channelId)) {
-            recordHistogram("Mobile.SystemNotification.ChannelBlocked", type);
+        if (channelId == null) {
+            saveLastShownNotification(type);
+            recordHistogram("Mobile.SystemNotification.Shown", type);
             return;
         }
-        saveLastShownNotification(type);
-        recordHistogram("Mobile.SystemNotification.Shown", type);
+
+        isChannelBlocked(
+                channelId,
+                (blocked) -> {
+                    if (blocked) {
+                        recordHistogram("Mobile.SystemNotification.ChannelBlocked", type);
+                    } else {
+                        saveLastShownNotification(type);
+                        recordHistogram("Mobile.SystemNotification.Shown", type);
+                    }
+                });
     }
 
-    @RequiresApi(26)
-    private boolean isChannelBlocked(@ChromeChannelDefinitions.ChannelId String channelId) {
-        NotificationChannelCompat channel =
-                mNotificationManager.getNotificationChannelCompat(channelId);
-        return channel != null
-                && channel.getImportance() == NotificationManagerCompat.IMPORTANCE_NONE;
+    private void isChannelBlocked(
+            @ChromeChannelDefinitions.ChannelId String channelId, Callback<Boolean> callback) {
+        mNotificationManager.getNotificationChannel(
+                channelId,
+                (channel) -> {
+                    callback.onResult(
+                            channel != null
+                                    && channel.getImportance()
+                                            == NotificationManager.IMPORTANCE_NONE);
+                });
     }
 
     private void saveLastShownNotification(@SystemNotificationType int type) {
@@ -680,5 +815,67 @@ public class NotificationUmaTracker {
                 1,
                 (int) (DateUtils.WEEK_IN_MILLIS / DateUtils.MINUTE_IN_MILLIS),
                 50);
+    }
+
+    private static String notificationChannelIdToSuffix(String channelId) {
+        // LINT.IfChange(NotificationChannelId)
+        switch (channelId) {
+            case ChannelId.BROWSER:
+                return "Browser";
+            case ChannelId.COLLABORATION:
+                return "Collaboration";
+            case ChannelId.DOWNLOADS:
+                return "Downloads";
+            case ChannelId.INCOGNITO:
+                return "Incognito";
+            case ChannelId.MEDIA_PLAYBACK:
+                return "Media";
+            case ChannelId.SCREEN_CAPTURE:
+                return "ScreenCapture";
+            case ChannelId.CONTENT_SUGGESTIONS:
+                return "ContentSuggestions";
+            case ChannelId.WEBAPP_ACTIONS:
+                return "WebappActions";
+            case ChannelId.SITES:
+                return "Sites";
+            case ChannelId.VR:
+                return "Vr";
+            case ChannelId.SHARING:
+                return "Sharing";
+            case ChannelId.UPDATES:
+                return "Updates";
+            case ChannelId.COMPLETED_DOWNLOADS:
+                return "CompletedDownloads";
+            case ChannelId.PERMISSION_REQUESTS:
+                return "PermissionRequests";
+            case ChannelId.PERMISSION_REQUESTS_HIGH:
+                return "PermissionRequestsHigh";
+            case ChannelId.ANNOUNCEMENT:
+                return "Announcement";
+            case ChannelId.WEBAPPS:
+                return "TwaDisclosureInitial";
+            case ChannelId.WEBAPPS_QUIET:
+                return "TwaDisclosureSubsequent";
+            case ChannelId.WEBRTC_CAM_AND_MIC:
+                return "WebrtcCamAndMic";
+            case ChannelId.PRICE_DROP:
+                return "ShoppingPriceDropAlerts";
+            case ChannelId.PRICE_DROP_DEFAULT:
+                return "ShoppingPriceDropAlertsDefault";
+            case ChannelId.SECURITY_KEY:
+                return "SecurityKey";
+            case ChannelId.BLUETOOTH:
+                return "Bluetooth";
+            case ChannelId.USB:
+                return "Usb";
+            case ChannelId.SERIAL:
+                return "Serial";
+            case ChannelId.TIPS:
+                return "Tips";
+            default:
+                assert false : "Invalid channel id: " + channelId;
+                return "";
+        }
+        // LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java:ChannelId)
     }
 }

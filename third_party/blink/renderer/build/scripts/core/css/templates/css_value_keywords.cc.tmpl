@@ -18,13 +18,14 @@
 #endif
 
 namespace blink {
-static const char valueListStringPool[] = {
+
+static const char kValueListStringPool[] = {
 {% for keyword in value_keywords %}
   "{{keyword.name}}\0"
 {% endfor %}
 };
 
-static const uint16_t valueListStringOffsets[] = {
+static const uint16_t kValueListStringOffsets[] = {
 {% for offset in value_keyword_offsets %}
   {{offset}},
 {% endfor %}
@@ -54,13 +55,17 @@ const Value* FindValue(const char* str, unsigned int len) {
   return CSSValueKeywordsHash::findValueImpl(str, len);
 }
 
-const char* getValueName(CSSValueID id) {
+std::string_view GetCSSValueName(CSSValueID id) {
   DCHECK_GT(id, CSSValueID::kInvalid);
-  DCHECK_LT(static_cast<int>(id), numCSSValueKeywords);
-  return valueListStringPool + valueListStringOffsets[static_cast<int>(id) - 1];
+  DCHECK_LT(static_cast<int>(id), kNumCSSValueKeywords);
+  const int raw_id = static_cast<int>(id);
+  const uint16_t start = kValueListStringOffsets[raw_id - 1];
+  // Subtract one to compensate for the null character.
+  const uint16_t end = kValueListStringOffsets[raw_id] - 1;
+  return std::string_view(kValueListStringPool + start, end - start);
 }
 
-bool isValueAllowedInMode(CSSValueID id, CSSParserMode mode) {
+bool IsValueAllowedInMode(CSSValueID id, CSSParserMode mode) {
   switch (id) {
 {% for ua_keyword in ua_sheet_mode_values_keywords %}
     case CSSValueID::{{ua_keyword.enum_name}}:

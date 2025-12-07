@@ -12,6 +12,7 @@
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_storage.mojom.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

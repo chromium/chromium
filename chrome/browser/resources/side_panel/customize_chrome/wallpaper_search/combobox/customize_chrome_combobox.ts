@@ -5,8 +5,9 @@
 import '../../check_mark_wrapper.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -38,8 +39,8 @@ let itemCount = 0;
 
 export interface CustomizeChromeComboboxElement {
   $: {
-    input: HTMLDivElement,
-    dropdown: HTMLDivElement,
+    input: HTMLElement,
+    dropdown: HTMLElement,
   };
 }
 
@@ -83,19 +84,19 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     };
   }
 
-  defaultOptionLabel: string = '';
-  protected expanded_: boolean = false;
-  private expandedGroups_: {[groupIndex: number]: boolean} = {};
+  accessor defaultOptionLabel: string = '';
+  protected accessor expanded_: boolean = false;
+  private accessor expandedGroups_: {[groupIndex: number]: boolean} = {};
   private highlightableElements_: HTMLElement[] = [];
-  private highlightedElement_: HTMLElement|null = null;
-  protected indentDefaultOption_: boolean = false;
-  items: ComboboxGroup[]|ComboboxItem[] = [];
-  label: string = '';
-  rightAlignDropbox: boolean = false;
+  private accessor highlightedElement_: HTMLElement|null = null;
+  protected accessor indentDefaultOption_: boolean = false;
+  accessor items: ComboboxGroup[]|ComboboxItem[] = [];
+  accessor label: string = '';
+  accessor rightAlignDropbox: boolean = false;
   private lastHighlightWasByKeyboard_: boolean = false;
   private domObserver_: MutationObserver|null = null;
-  private selectedElement_: OptionElement|null = null;
-  value: string|undefined;
+  private accessor selectedElement_: OptionElement|null = null;
+  accessor value: string|undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -186,7 +187,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   protected getInputLabel_(): string {
     if (this.selectedElement_ && this.selectedElement_.value &&
         this.selectedElement_.value === this.value) {
-      return this.selectedElement_.textContent!;
+      return this.selectedElement_.textContent;
     }
 
     return this.label;
@@ -223,7 +224,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
 
   private onDomChange_() {
     this.highlightableElements_ =
-        Array.from(this.shadowRoot!.querySelectorAll<HTMLElement>(
+        Array.from(this.shadowRoot.querySelectorAll<HTMLElement>(
             HIGHLIGHTABLE_ITEMS_SELECTOR));
 
     this.highlightableElements_.forEach(element => {
@@ -378,13 +379,15 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
       return;
     }
 
+    const key = e.key as 'ArrowDown' | 'ArrowUp' | 'Home' | 'End';
+
     e.preventDefault();
     e.stopPropagation();
 
     let index = this.highlightedElement_ ?
         this.highlightableElements_.indexOf(this.highlightedElement_) :
         -1;
-    switch (e.key) {
+    switch (key) {
       case 'ArrowDown':
         index++;
         break;
@@ -397,6 +400,8 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
       case 'End':
         index = this.highlightableElements_.length - 1;
         break;
+      default:
+        assertNotReachedCase(key);
     }
 
     if (index < 0) {
@@ -441,7 +446,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     await this.updateComplete;
     this.selectItem_(
         Array
-            .from(this.shadowRoot!.querySelectorAll<OptionElement>(
+            .from(this.shadowRoot.querySelectorAll<OptionElement>(
                 SELECTABLE_ITEMS_SELECTOR))
             .find(option => option.value === this.value) ||
         null);

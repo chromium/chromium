@@ -1,0 +1,17 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable
+++++++++genericContainer
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++navigation controlsIds=genericContainer
+++++++++link focusable name=' ' detailsIds=genericContainer
+++++++++link focusable name=' ' detailsIds=genericContainer
+++++++++link focusable name=' ' detailsIds=genericContainer

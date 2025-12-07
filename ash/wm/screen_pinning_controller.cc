@@ -356,10 +356,13 @@ void ScreenPinningController::OnWindowDestroying(aura::Window* window) {
 }
 
 void ScreenPinningController::KeepPinnedWindowOnTop() {
-  if (in_restacking_)
+  if (in_restacking_ || allow_window_stacking_with_pinned_window_) {
     return;
+  }
 
   base::AutoReset<bool> auto_reset(&in_restacking_, true);
+  base::AutoReset<bool> auto_reset_pinned_window_stacking(
+      &allow_window_stacking_with_pinned_window_, false);
   aura::Window* container = pinned_window_->parent();
   container->StackChildAtTop(pinned_window_);
   WindowDimmer* pinned_window_dimmer = window_dimmers_->Get(container);

@@ -44,6 +44,13 @@ class MojoCertVerifier : public net::CertVerifier,
              net::CompletionOnceCallback callback,
              std::unique_ptr<net::CertVerifier::Request>* out_req,
              const net::NetLogWithSource& net_log) override;
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override;
   void SetConfig(const net::CertVerifier::Config& config) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

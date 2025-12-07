@@ -15,7 +15,6 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/clamped_math.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -54,18 +53,18 @@ class LoopbackServerEntity;
 
 namespace {
 
-static const char kHistogramSuffix[] = "LoopBackServer";
+constexpr char kHistogramSuffix[] = "LoopBackServer";
 
-static const int kCurrentLoopbackServerProtoVersion = 1;
-static const int kKeystoreKeyLength = 16;
+constexpr int kCurrentLoopbackServerProtoVersion = 1;
+constexpr int kKeystoreKeyLength = 16;
 
 // Properties of the bookmark bar permanent folders.
-static const char kBookmarkBarFolderServerTag[] = "bookmark_bar";
-static const char kBookmarkBarFolderName[] = "Bookmark Bar";
-static const char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
-static const char kOtherBookmarksFolderName[] = "Other Bookmarks";
-static const char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
-static const char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
+constexpr char kBookmarkBarFolderServerTag[] = "bookmark_bar";
+constexpr char kBookmarkBarFolderName[] = "Bookmark Bar";
+constexpr char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
+constexpr char kOtherBookmarksFolderName[] = "Other Bookmarks";
+constexpr char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
+constexpr char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
 
 int GetServerMigrationVersion(
     const std::map<DataType, int>& server_migration_versions,
@@ -155,7 +154,7 @@ class UpdateSieve {
     return !datatypes_to_migrate->empty();
   }
 
-  // Sets the progress markers in |get_updates_response| based on the highest
+  // Sets the progress markers in `get_updates_response` based on the highest
   // version between request progress markers and response entities.
   void SetProgressMarkers(
       sync_pb::GetUpdatesResponse* get_updates_response) const {
@@ -167,13 +166,14 @@ class UpdateSieve {
     }
   }
 
-  // Determines whether the server should send an |entity| to the client as
+  // Determines whether the server should send an `entity` to the client as
   // part of a GetUpdatesResponse.
   bool ClientWantsItem(const LoopbackServerEntity& entity) const {
     DataType type = entity.GetDataType();
     auto it = request_version_map_.find(type);
-    if (it == request_version_map_.end())
+    if (it == request_version_map_.end()) {
       return false;
+    }
     DCHECK_NE(0U, response_version_map_.count(type));
     return it->second.entity_version() < entity.GetVersion();
   }
@@ -253,8 +253,9 @@ LoopbackServer::~LoopbackServer() {
 }
 
 void LoopbackServer::Init() {
-  if (LoadStateFromFile())
+  if (LoadStateFromFile()) {
     return;
+  }
 
   store_birthday_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
   keystore_keys_.push_back(GenerateNewKeystoreKey());
@@ -277,8 +278,9 @@ bool LoopbackServer::CreatePermanentBookmarkFolder(
       PersistentPermanentEntity::CreateNew(
           syncer::BOOKMARKS, server_tag, name,
           DataTypeToProtocolRootTag(syncer::BOOKMARKS));
-  if (!entity)
+  if (!entity) {
     return false;
+  }
 
   SaveEntity(std::move(entity));
   return true;
@@ -353,8 +355,7 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
         break;
       case sync_pb::ClientToServerMessage::DEPRECATED_3:
       case sync_pb::ClientToServerMessage::DEPRECATED_4:
-        NOTREACHED_IN_MIGRATION();
-        return net::HTTP_BAD_REQUEST;
+        NOTREACHED();
     }
 
     if (success) {
@@ -544,7 +545,7 @@ string LoopbackServer::CommitEntity(
     // NIGORI is the only permanent item type that should be updated by the
     // client.
     EntityMap::const_iterator iter = entities_.find(client_entity.id_string());
-    CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != entities_.end());
     entity = PersistentPermanentEntity::CreateUpdatedNigoriEntity(
         client_entity, *iter->second);
   } else if (type == syncer::BOOKMARKS) {
@@ -581,8 +582,9 @@ string LoopbackServer::CommitEntity(
     entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity);
   }
 
-  if (!entity)
+  if (!entity) {
     return string();
+  }
 
   const std::string id = entity->GetId();
   SaveEntity(std::move(entity));
@@ -599,7 +601,7 @@ void LoopbackServer::BuildEntryResponseForSuccessfulCommit(
     const std::string& entity_id,
     sync_pb::CommitResponse_EntryResponse* entry_response) {
   EntityMap::const_iterator iter = entities_.find(entity_id);
-  CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != entities_.end());
   const LoopbackServerEntity& entity = *iter->second;
   entry_response->set_response_type(response_type_override_
                                         ? response_type_override_.Run(entity)
@@ -618,8 +620,9 @@ bool LoopbackServer::IsChild(const string& id,
   }
 
   const LoopbackServerEntity& entity = *iter->second;
-  if (entity.GetParentId() == potential_parent_id)
+  if (entity.GetParentId() == potential_parent_id) {
     return true;
+  }
 
   // Recursively look up the tree.
   return IsChild(entity.GetParentId(), potential_parent_id);
@@ -627,7 +630,7 @@ bool LoopbackServer::IsChild(const string& id,
 
 void LoopbackServer::DeleteChildren(const string& parent_id) {
   std::vector<sync_pb::SyncEntity> tombstones;
-  // Find all the children of |parent_id|.
+  // Find all the children of `parent_id`.
   for (auto& [id, entity] : entities_) {
     if (IsChild(id, parent_id)) {
       sync_pb::SyncEntity proto;
@@ -680,20 +683,10 @@ bool LoopbackServer::HandleCommitRequest(
     }
 
     EntityMap::const_iterator iter = entities_.find(entity_id);
-    CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != entities_.end());
     committed_data_types.Put(iter->second->GetDataType());
 
-    // Notify observers about history having been synced.
     if (observer_for_tests_) {
-      if (iter->second->GetDataType() == HISTORY) {
-        const sync_pb::HistorySpecifics& specifics =
-            client_entity.specifics().history();
-        // The last entry of the redirect chain is the "actual" URL. In the case
-        // of no redirects, the "chain" has only a single entry.
-        observer_for_tests_->OnHistoryCommit(
-            specifics.redirect_entries(specifics.redirect_entries_size() - 1)
-                .url());
-      }
       if (client_entity.deleted() && client_entity.has_deletion_origin()) {
         observer_for_tests_->OnCommittedDeletionOrigin(
             iter->second->GetDataType(), client_entity.deletion_origin());
@@ -701,8 +694,9 @@ bool LoopbackServer::HandleCommitRequest(
     }
   }
 
-  if (observer_for_tests_)
+  if (observer_for_tests_) {
     observer_for_tests_->OnCommit(committed_data_types);
+  }
 
   return throttled_datatypes_in_request->empty();
 }
@@ -841,8 +835,9 @@ void LoopbackServer::SerializeState(sync_pb::LoopbackServerProto* proto) const {
   proto->set_version(kCurrentLoopbackServerProtoVersion);
   proto->set_store_birthday(store_birthday_);
   proto->set_last_version_assigned(version_);
-  for (const std::vector<uint8_t>& key : keystore_keys_)
+  for (const std::vector<uint8_t>& key : keystore_keys_) {
     proto->add_keystore_keys(key.data(), key.size());
+  }
   for (const auto& [id, entity] : entities_) {
     sync_pb::LoopbackServerEntity* new_entity =
         proto->mutable_entities()->Add();
@@ -865,8 +860,9 @@ bool LoopbackServer::DeSerializeState(
     std::unique_ptr<LoopbackServerEntity> entity =
         LoopbackServerEntity::CreateEntityFromProto(proto.entities(i));
     // Silently drop entities that cannot be successfully deserialized.
-    if (entity)
+    if (entity) {
       entities_[proto.entities(i).entity().id_string()] = std::move(entity);
+    }
   }
 
   // Report success regardless of if some entities were dropped.
@@ -879,12 +875,12 @@ std::optional<std::string> LoopbackServer::SerializeData() {
   SerializeState(&proto);
   std::string data;
   if (!proto.SerializeToString(&data)) {
-    LOG(ERROR) << "Loopback sync proto could not be serialized";
+    DVLOG(1) << "Loopback sync proto could not be serialized";
     return std::nullopt;
   }
   UMA_HISTOGRAM_MEMORY_KB(
       "Sync.Local.FileSizeKB",
-      base::saturated_cast<base::Histogram::Sample>(
+      base::saturated_cast<base::Histogram::Sample32>(
           base::ClampDiv(base::ClampAdd(data.size(), 512), 1024)));
   return data;
 }
@@ -892,7 +888,7 @@ std::optional<std::string> LoopbackServer::SerializeData() {
 bool LoopbackServer::ScheduleSaveStateToFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::CreateDirectory(persistent_file_.DirName())) {
-    LOG(ERROR) << "Loopback sync could not create the storage directory.";
+    DVLOG(1) << "Loopback sync could not create the storage directory.";
     return false;
   }
 
@@ -913,9 +909,9 @@ bool LoopbackServer::LoadStateFromFile() {
   if (state_file_error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION("Sync.Local.ReadPlatformFileError",
                               -state_file_error, -base::File::FILE_ERROR_MAX);
-    LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
-               << persistent_file_ << ") with error "
-               << base::File::ErrorToString(state_file_error);
+    DVLOG(1) << "Loopback sync cannot read the persistent state file ("
+             << persistent_file_ << ") with error "
+             << base::File::ErrorToString(state_file_error);
     return false;
   }
 
@@ -925,12 +921,12 @@ bool LoopbackServer::LoadStateFromFile() {
     if (serialized.length() > 0 && proto.ParseFromString(serialized)) {
       return DeSerializeState(proto);
     }
-    LOG(ERROR) << "Loopback sync cannot parse the persistent state file ("
-               << persistent_file_ << ").";
+    DVLOG(1) << "Loopback sync cannot parse the persistent state file ("
+             << persistent_file_ << ").";
     return false;
   }
-  LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
-             << persistent_file_ << ").";
+  DVLOG(1) << "Loopback sync cannot read the persistent state file ("
+           << persistent_file_ << ").";
   return false;
 }
 

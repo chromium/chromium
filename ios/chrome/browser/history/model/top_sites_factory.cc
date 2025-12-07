@@ -10,23 +10,20 @@
 #include "base/no_destructor.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/top_sites_impl.h"
-#include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/history/model/history_utils.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/web/public/thread/web_thread.h"
+#include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
 // static
-scoped_refptr<history::TopSites> TopSitesFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return base::WrapRefCounted(static_cast<history::TopSites*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+scoped_refptr<history::TopSites> TopSitesFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<history::TopSites>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -36,39 +33,31 @@ TopSitesFactory* TopSitesFactory::GetInstance() {
 }
 
 TopSitesFactory::TopSitesFactory()
-    : RefcountedBrowserStateKeyedServiceFactory(
+    : RefcountedProfileKeyedServiceFactoryIOS(
           "TopSites",
-          BrowserStateDependencyManager::GetInstance()) {
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 
-TopSitesFactory::~TopSitesFactory() {
-}
+TopSitesFactory::~TopSitesFactory() = default;
 
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+    ProfileIOS* profile) const {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto top_sites = base::MakeRefCounted<history::TopSitesImpl>(
-      browser_state->GetPrefs(), history_service,
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
+      profile->GetPrefs(), history_service,
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
       history::PrepopulatedPageList(), base::BindRepeating(CanAddURLToHistory));
-  top_sites->Init(
-      browser_state->GetStatePath().Append(history::kTopSitesFilename));
+  top_sites->Init(profile->GetStatePath().Append(history::kTopSitesFilename));
   return top_sites;
 }
 
-void TopSitesFactory::RegisterBrowserStatePrefs(
+void TopSitesFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   history::TopSitesImpl::RegisterPrefs(registry);
-}
-
-bool TopSitesFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

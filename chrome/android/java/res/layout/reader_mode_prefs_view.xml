@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/font_family_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="2dp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="@drawable/list_item_background_top" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/font_family_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxWidth=
+                "@dimen/reader_mode_prefs_font_style_container_width" >
+
+            <!-- Text property for these MaterialButtons defined in
+            ReaderModePrefsView.java to support multiple lines of text. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/font_sans_serif"
+                android:layout_width=
+                    "@dimen/reader_mode_prefs_font_style_button_size"
+                android:layout_height=
+                    "@dimen/reader_mode_prefs_font_style_button_size"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/font_serif"
+                app:layout_constraintHorizontal_chainStyle=
+                    "spread_inside"
+                style="@style/ReaderModeFontStyleButton"
+                app:backgroundTint=
+                    "@color/reader_mode_prefs_font_style_button_background_color"
+                android:checkable="true"
+                android:contentDescription=
+                    "@string/font_family_sans_serif_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/font_serif"
+                android:layout_width=
+                    "@dimen/reader_mode_prefs_font_style_button_size"
+                android:layout_height=
+                    "@dimen/reader_mode_prefs_font_style_button_size"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/font_sans_serif"
+                app:layout_constraintEnd_toStartOf="@+id/font_monospace"
+                style="@style/ReaderModeFontStyleButton"
+                app:backgroundTint=
+                    "@color/reader_mode_prefs_font_style_button_background_color"
+                android:checkable="true"
+                android:contentDescription=
+                    "@string/font_family_serif_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/font_monospace"
+                android:layout_width=
+                    "@dimen/reader_mode_prefs_font_style_button_size"
+                android:layout_height=
+                    "@dimen/reader_mode_prefs_font_style_button_size"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/font_serif"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/ReaderModeFontStyleButton"
+                app:backgroundTint=
+                    "@color/reader_mode_prefs_font_style_button_background_color"
+                android:checkable="true"
+                android:contentDescription=
+                    "@string/font_family_monospace_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/font_size_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center"
+        android:background="@drawable/list_item_background_middle" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxWidth="352dp" >
+
+            <TextView
+                android:id="@+id/text_size_signifier_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textAppearance=
+                    "@style/TextAppearance.DistilledPagePrefTextSizeSmall"
+                android:text="@string/text_size_signifier"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/font_size_slider"
+                app:layout_constraintHorizontal_chainStyle="packed" />
+
+<com.google.android.material.slider.Slider
+                android:id="@+id/font_size_slider"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf=
+                    "@+id/text_size_signifier_small"
+                app:layout_constraintEnd_toStartOf=
+                    "@+id/text_size_signifier_large"
+                app:thumbColor="?attr/colorPrimary"
+                app:trackColorActive="?attr/colorPrimary"
+                app:trackColorInactive="?attr/colorSecondaryContainer"
+                app:tickColorActive="?attr/colorPrimary"
+                app:tickColorInactive="?attr/colorOnSecondaryContainer"
+                android:orientation="horizontal"
+                android:contentDescription=
+                    "@string/font_size_slider_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
+            <TextView
+                android:id="@+id/text_size_signifier_large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:textAppearance=
+                    "@style/TextAppearance.DistilledPagePrefTextSizeLarge"
+                android:text="@string/text_size_signifier"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/font_size_slider"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/theme_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:background="@drawable/list_item_background_bottom" >
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/light_mode"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
+            app:backgroundTint="@android:color/white"
+            app:strokeColor=
+                "@color/reader_mode_prefs_theme_button_stroke_color"
+            app:strokeWidth="1dp"
+            android:checkable="true"
+            android:layout_marginEnd="32dp"
+            android:contentDescription=
+                "@string/light_theme_accessibility_label"
+            android:foreground="@drawable/focusable_item_foreground" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sepia_mode"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
+            app:backgroundTint=
+                "@color/reader_mode_prefs_sepia_theme_button_color"
+            app:strokeColor=
+                "@color/reader_mode_prefs_theme_button_stroke_color"
+            app:strokeWidth="1dp"
+            android:checkable="true"
+            android:layout_marginEnd="32dp"
+            android:contentDescription=
+                "@string/sepia_theme_accessibility_label"
+            android:foreground="@drawable/focusable_item_foreground" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dark_mode"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
+            app:backgroundTint="@android:color/black"
+            app:strokeColor=
+                "@color/reader_mode_prefs_theme_button_stroke_color"
+            app:strokeWidth="1dp"
+            android:checkable="true"
+            android:contentDescription=
+                "@string/dark_theme_accessibility_label"
+            android:foreground="@drawable/focusable_item_foreground" />
+    </LinearLayout>
+</org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView>

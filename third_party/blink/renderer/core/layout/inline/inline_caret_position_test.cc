@@ -39,7 +39,6 @@ class InlineCaretPositionTest : public RenderingTest {
     DCHECK(container_);
     context_ = To<LayoutBlockFlow>(container_->GetLayoutObject());
     DCHECK(context_);
-    DCHECK(context_->IsLayoutNGObject());
   }
 
   InlineCaretPosition ComputeInlineCaretPosition(unsigned offset,

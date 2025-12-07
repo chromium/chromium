@@ -7,8 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,9 +19,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -28,6 +27,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -72,7 +72,7 @@ int HttpErrorFailureReasonToInt(
   using Reason = plugin_vm::PluginVmInstaller::FailureReason;
   switch (reason) {
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Reason::DOWNLOAD_FAILED_401:
       return 401;
     case Reason::DOWNLOAD_FAILED_403:
@@ -134,21 +134,20 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   views::View* upper_container_view = new views::View();
   upper_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets()));
-  AddChildView(upper_container_view);
+  AddChildViewRaw(upper_container_view);
 
   views::View* lower_container_view = new views::View();
   lower_container_layout_ =
       lower_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
-  AddChildView(lower_container_view);
+  AddChildViewRaw(lower_container_view);
 
   views::ImageView* logo_image = new views::ImageView();
   logo_image->SetImageSize(kLogoImageSize);
   logo_image->SetImage(
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_LOGO_PLUGIN_VM_DEFAULT_192));
+      ui::ImageModel::FromResourceId(IDR_LOGO_PLUGIN_VM_DEFAULT_192));
   logo_image->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  upper_container_view->AddChildView(logo_image);
+  upper_container_view->AddChildViewRaw(logo_image);
 
   title_label_ = new views::Label(GetTitle(), {kTitleFont});
   title_label_->SetProperty(
@@ -156,31 +155,31 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
       gfx::Insets::TLBR(kTitleHeight - kTitleFontSize, 0, 0, 0));
   title_label_->SetMultiLine(false);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(title_label_.get());
+  upper_container_view->AddChildViewRaw(title_label_.get());
 
   views::View* message_container_view = new views::View();
   message_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(kMessageHeight - kMessageFontSize, 0, 0, 0)));
-  upper_container_view->AddChildView(message_container_view);
+  upper_container_view->AddChildViewRaw(message_container_view);
 
   message_label_ = new views::Label(GetMessage(), {kMessageFont});
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message_container_view->AddChildView(message_label_.get());
+  message_container_view->AddChildViewRaw(message_label_.get());
 
   learn_more_link_ = new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   learn_more_link_->SetCallback(base::BindRepeating(
       &PluginVmInstallerView::OnLinkClicked, base::Unretained(this)));
   learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message_container_view->AddChildView(learn_more_link_.get());
+  message_container_view->AddChildViewRaw(learn_more_link_.get());
 
   progress_bar_ = new views::ProgressBar();
   progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
-  upper_container_view->AddChildView(progress_bar_.get());
+  upper_container_view->AddChildViewRaw(progress_bar_.get());
 
   download_progress_message_label_ =
       new views::Label(std::u16string(), {kDownloadProgressMessageFont});
@@ -191,10 +190,10 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
           0, 0));
   download_progress_message_label_->SetMultiLine(false);
   download_progress_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(download_progress_message_label_.get());
+  upper_container_view->AddChildViewRaw(download_progress_message_label_.get());
 
   big_image_ = new views::ImageView();
-  lower_container_view->AddChildView(big_image_.get());
+  lower_container_view->AddChildViewRaw(big_image_.get());
 
   // Make sure the lower_container_view is pinned to the bottom of the dialog.
   lower_container_layout_->set_main_axis_alignment(
@@ -256,11 +255,10 @@ void PluginVmInstallerView::OnStateUpdated(InstallingState new_state) {
 }
 
 void PluginVmInstallerView::OnLinkClicked() {
-  NavigateParams params(profile_,
-                        GURL("https://support.google.com/chrome/a/?p=pluginvm"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL("https://support.google.com/chrome/a/?p=pluginvm"),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void PluginVmInstallerView::OnProgressUpdated(double fraction_complete) {
@@ -356,13 +354,13 @@ std::u16string PluginVmInstallerView::GetMessage() const {
       return l10n_util::GetStringFUTF16(
           IDS_PLUGIN_VM_INSTALLER_CONFIRMATION_MESSAGE,
           ui::FormatBytesWithUnits(
-              plugin_vm_installer_->RequiredFreeDiskSpace(),
-              ui::DATA_UNITS_GIBIBYTE,
+              base::ByteCount(plugin_vm_installer_->RequiredFreeDiskSpace()),
+              ui::DataUnits::kGibibyte,
               /*show_units=*/true));
     case State::kInstalling:
       switch (installing_state_) {
         case InstallingState::kInactive:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         case InstallingState::kCheckingLicense:
         case InstallingState::kCheckingForExistingVm:
         case InstallingState::kCheckingDiskSpace:
@@ -455,8 +453,9 @@ std::u16string PluginVmInstallerView::GetMessage() const {
           return l10n_util::GetStringFUTF16(
               IDS_PLUGIN_VM_INSUFFICIENT_DISK_SPACE_MESSAGE,
               ui::FormatBytesWithUnits(
-                  plugin_vm_installer_->RequiredFreeDiskSpace(),
-                  ui::DATA_UNITS_GIBIBYTE,
+                  base::ByteCount(
+                      plugin_vm_installer_->RequiredFreeDiskSpace()),
+                  ui::DataUnits::kGibibyte,
                   /*show_units=*/true),
               app_name_);
       }
@@ -472,50 +471,57 @@ PluginVmInstallerView::~PluginVmInstallerView() {
   VLOG(2) << "PluginVmInstallerView destroyed";
   plugin_vm_installer_->RemoveObserver();
   // We call |Cancel()| if the user hasn't started installation to log to UMA.
-  if (state_ == State::kConfirmInstall || state_ == State::kInstalling)
+  if (state_ == State::kConfirmInstall || state_ == State::kInstalling) {
     plugin_vm_installer_->Cancel();
+  }
   g_plugin_vm_installer_view = nullptr;
 }
 
 int PluginVmInstallerView::GetCurrentDialogButtons() const {
   switch (state_) {
     case State::kInstalling:
-      return ui::DIALOG_BUTTON_CANCEL;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel);
     case State::kConfirmInstall:
     case State::kImported:
     case State::kCreated:
-      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk);
     case State::kError:
       DCHECK(reason_);
-      if (ShowRetryButton(*reason_))
-        return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
-      return ui::DIALOG_BUTTON_CANCEL;
+      if (ShowRetryButton(*reason_)) {
+        return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+               static_cast<int>(ui::mojom::DialogButton::kOk);
+      }
+      return static_cast<int>(ui::mojom::DialogButton::kCancel);
   }
 }
 
 std::u16string PluginVmInstallerView::GetCurrentDialogButtonLabel(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK
+          button == ui::mojom::DialogButton::kOk
               ? IDS_PLUGIN_VM_INSTALLER_INSTALL_BUTTON
               : IDS_APP_CANCEL);
     case State::kInstalling:
-      DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+      DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
       return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
     case State::kCreated:
     case State::kImported: {
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK ? IDS_PLUGIN_VM_INSTALLER_LAUNCH_BUTTON
-                                         : IDS_APP_CLOSE);
+          button == ui::mojom::DialogButton::kOk
+              ? IDS_PLUGIN_VM_INSTALLER_LAUNCH_BUTTON
+              : IDS_APP_CLOSE);
     }
     case State::kError: {
       DCHECK(reason_);
-      DCHECK(ShowRetryButton(*reason_) || button == ui::DIALOG_BUTTON_CANCEL);
+      DCHECK(ShowRetryButton(*reason_) ||
+             button == ui::mojom::DialogButton::kCancel);
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK ? IDS_PLUGIN_VM_INSTALLER_RETRY_BUTTON
-                                         : IDS_APP_CANCEL);
+          button == ui::mojom::DialogButton::kOk
+              ? IDS_PLUGIN_VM_INSTALLER_RETRY_BUTTON
+              : IDS_APP_CANCEL);
     }
   }
 }
@@ -541,13 +547,14 @@ void PluginVmInstallerView::OnStateUpdated() {
 
   int buttons = GetCurrentDialogButtons();
   SetButtons(buttons);
-  if (buttons & ui::DIALOG_BUTTON_OK) {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_OK));
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kOk)) {
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kOk));
   }
-  if (buttons & ui::DIALOG_BUTTON_CANCEL) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kCancel)) {
+    SetButtonLabel(
+        ui::mojom::DialogButton::kCancel,
+        GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kCancel));
   }
 
   const bool progress_bar_visible = state_ == State::kInstalling;
@@ -563,8 +570,9 @@ void PluginVmInstallerView::OnStateUpdated() {
 
   if (state_ == State::kCreated || state_ == State::kImported ||
       state_ == State::kError) {
-    if (finished_callback_for_testing_)
+    if (finished_callback_for_testing_) {
       std::move(finished_callback_for_testing_).Run(state_ != State::kError);
+    }
   }
 }
 
@@ -577,12 +585,15 @@ std::u16string PluginVmInstallerView::GetDownloadProgressMessage(
   if (content_length > 0) {
     return l10n_util::GetStringFUTF16(
         IDS_PLUGIN_VM_INSTALLER_DOWNLOAD_PROGRESS_MESSAGE,
-        ui::FormatBytesWithUnits(bytes_downloaded, ui::DATA_UNITS_GIBIBYTE,
-                                 /*show_units=*/false),
-        ui::FormatBytesWithUnits(content_length, ui::DATA_UNITS_GIBIBYTE,
+        ui::FormatBytesWithUnits(base::ByteCount(bytes_downloaded),
+                                 ui::DataUnits::kGibibyte,
+                                 /*(show_units)=*/false),
+        ui::FormatBytesWithUnits(base::ByteCount(content_length),
+                                 ui::DataUnits::kGibibyte,
                                  /*show_units=*/true));
   } else {
-    return ui::FormatBytesWithUnits(bytes_downloaded, ui::DATA_UNITS_GIBIBYTE,
+    return ui::FormatBytesWithUnits(base::ByteCount(bytes_downloaded),
+                                    ui::DataUnits::kGibibyte,
                                     /*show_units=*/true);
   }
 }
@@ -607,8 +618,7 @@ void PluginVmInstallerView::SetBigImage() {
     big_image_->SetImageSize(size);
     lower_container_layout_->set_inside_border_insets(
         gfx::Insets::TLBR(0, 0, bottom_inset, 0));
-    big_image_->SetImage(
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
+    big_image_->SetImage(ui::ImageModel::FromResourceId(image_id));
   };
 
   if (state_ == State::kError) {
@@ -631,8 +641,9 @@ void PluginVmInstallerView::StartInstallation() {
   plugin_vm_installer_->SetObserver(this);
   std::optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
       plugin_vm_installer_->Start();
-  if (failure_reason)
+  if (failure_reason) {
     OnError(failure_reason.value());
+  }
 }
 
 BEGIN_METADATA(PluginVmInstallerView)

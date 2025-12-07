@@ -8,7 +8,6 @@
 #include <atomic>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_export.h"

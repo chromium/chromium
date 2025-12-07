@@ -8,7 +8,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
@@ -18,18 +17,19 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
+import org.chromium.chrome.modules.on_demand.OnDemandModule;
 
 /** Implementation of {@link ProcessScopeDependencyProvider}. */
 // TODO(b/286003870): Stop extending FeedProcessScopeDependencyProvider, and
 // remove all dependencies on Feed library.
+@NullMarked
 public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependencyProvider {
-
-    private static final String XSURFACE_SPLIT_NAME = "feedv2";
-
     private final Context mContext;
     private final @Nullable LibraryResolver mLibraryResolver;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
@@ -43,10 +43,10 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         mContext = createXsurfaceContext(ContextUtils.getApplicationContext());
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mApiKey = apiKey;
-        if (BundleUtils.isIsolatedSplitInstalled(XSURFACE_SPLIT_NAME)) {
+        if (BundleUtils.isIsolatedSplitInstalled(OnDemandModule.SPLIT_NAME)) {
             mLibraryResolver =
                     (libName) -> {
-                        return BundleUtils.getNativeLibraryPath(libName, XSURFACE_SPLIT_NAME);
+                        return BundleUtils.getNativeLibraryPath(libName, OnDemandModule.SPLIT_NAME);
                     };
         } else {
             mLibraryResolver = null;
@@ -88,7 +88,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
     }
 
     @Override
-    public LibraryResolver getLibraryResolver() {
+    public @Nullable LibraryResolver getLibraryResolver() {
         return mLibraryResolver;
     }
 
@@ -99,7 +99,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
     }
 
     public static Context createXsurfaceContext(Context context) {
-        return BundleUtils.createContextForInflation(context, XSURFACE_SPLIT_NAME);
+        return BundleUtils.createContextForInflation(context, OnDemandModule.SPLIT_NAME);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "image_memory_cache_size_percentage",
-                /* default= */ 100);
+                /* defaultValue= */ 100);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "bitmap_pool_size_percentage",
-                /* default= */ 100);
+                /* defaultValue= */ 100);
     }
 
     @Override

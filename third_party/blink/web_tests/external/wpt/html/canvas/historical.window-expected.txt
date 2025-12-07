@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CanvasRenderingContext2D.scrollPathIntoView method is removed
-  assert_equals: expected (undefined) undefined but got (function) function "function scrollPathIntoView() { [native code] }"
-Harness: the test ran to completion.
-

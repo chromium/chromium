@@ -4,6 +4,8 @@
 
 #include "ui/base/clipboard/file_info.h"
 
+#include <stdint.h>
+
 #include <string_view>
 
 namespace ui {

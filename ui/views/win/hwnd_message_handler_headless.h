@@ -12,7 +12,7 @@
 #include <optional>
 #include <string>
 
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"
@@ -41,8 +41,9 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
 
-  void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const override;
+  void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
 
   void SetSize(const gfx::Size& size) override;
   void CenterWindow(const gfx::Size& size) override;
@@ -52,7 +53,7 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   void StackAbove(HWND other_hwnd) override;
   void StackAtTop() override;
 
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& pixel_restore_bounds) override;
   void Hide() override;
 
@@ -96,9 +97,15 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   void SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
                          bool force_size_changed) override;
 
+  gfx::Rect GetZoomedWindowBounds();
+
   void RestoreBounds();
 
  private:
+  // Mimics HWNDMessageHandler::GetClientAreaInsets() behavior taking
+  // |frame_thickness| instead of |HMONITOR|.
+  bool GetClientAreaInsets(gfx::Insets* insets, int frame_thickness) const;
+
   // Sets headless window bounds which may be different from the platform window
   // bounds and updates Aura window property that stores headless window bounds
   // for the upper layers to retrieve.
@@ -107,6 +114,7 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   bool is_visible_ = false;
   bool is_active_ = false;
   bool is_always_on_top_ = false;
+  bool was_active_before_minimize_ = false;
 
   enum class WindowState {
     kNormal,

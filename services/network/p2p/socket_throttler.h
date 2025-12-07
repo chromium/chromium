@@ -10,10 +10,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-
-namespace rtc {
-class DataRateLimiter;
-}
+#include "third_party/webrtc/rtc_base/data_rate_limiter.h"
 
 namespace network {
 
@@ -34,7 +31,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PMessageThrottler {
   void SetSendIceBandwidth(int bandwith_kbps);
 
  private:
-  std::unique_ptr<rtc::DataRateLimiter> rate_limiter_;
+  std::unique_ptr<webrtc::DataRateLimiter> rate_limiter_;
 };
 
 }  // namespace network

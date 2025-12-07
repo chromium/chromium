@@ -29,10 +29,9 @@ const char kServicesKey[] = "services";
 
 // Decodes the JWT ID token to a dictionary. Returns whether the decoding was
 // successful.
-std::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
-  const std::vector<std::string_view> token_pieces =
-      base::SplitStringPiece(std::string_view(id_token), ".",
-                             base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+std::optional<base::Value::Dict> DecodeIdToken(std::string_view id_token) {
+  const std::vector<std::string_view> token_pieces = base::SplitStringPiece(
+      id_token, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (token_pieces.size() != 3) {
     VLOG(1) << "Invalid id_token: not in JWT format";
     return std::nullopt;
@@ -46,7 +45,8 @@ std::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
     VLOG(1) << "Invalid id_token: not in Base64Url encoding";
     return std::nullopt;
   }
-  std::optional<base::Value> decoded_payload = base::JSONReader::Read(payload);
+  std::optional<base::Value> decoded_payload =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!decoded_payload.has_value() ||
       decoded_payload->type() != base::Value::Type::DICT) {
     VLOG(1) << "Invalid id_token: paylod is not a well-formed JSON";
@@ -58,7 +58,7 @@ std::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
 // Obtains a vector of service flags from the encoded JWT ID token. Returns
 // whether decoding the ID token and obtaining the list of service flags from it
 // was successful.
-bool GetServiceFlags(const std::string id_token,
+bool GetServiceFlags(std::string_view id_token,
                      std::vector<std::string>* out_service_flags) {
   DCHECK(out_service_flags->empty());
 

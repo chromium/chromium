@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -39,7 +40,8 @@ void FakeStreamSocket::AppendInputData(const std::string& data) {
     int result = std::min(read_buffer_size_,
                           static_cast<int>(input_data_.size() - input_pos_));
     EXPECT_GT(result, 0);
-    memcpy(read_buffer_->data(), &(*input_data_.begin()) + input_pos_, result);
+    UNSAFE_TODO(memcpy(read_buffer_->data(),
+                       &(*input_data_.begin()) + input_pos_, result));
     input_pos_ += result;
     read_buffer_ = nullptr;
 
@@ -75,11 +77,12 @@ int FakeStreamSocket::Read(const scoped_refptr<net::IOBuffer>& buf,
   if (input_pos_ < static_cast<int>(input_data_.size())) {
     int result =
         std::min(buf_len, static_cast<int>(input_data_.size()) - input_pos_);
-    memcpy(buf->data(), &(*input_data_.begin()) + input_pos_, result);
+    UNSAFE_TODO(
+        memcpy(buf->data(), &(*input_data_.begin()) + input_pos_, result));
     input_pos_ += result;
     return result;
   } else if (next_read_error_.has_value()) {
-    int r = next_read_error_.value();
+    int r = *next_read_error_;
     next_read_error_.reset();
     return r;
   } else {
@@ -140,13 +143,15 @@ void FakeStreamSocket::DoAsyncWrite(const scoped_refptr<net::IOBuffer>& buf,
 
 void FakeStreamSocket::DoWrite(const scoped_refptr<net::IOBuffer>& buf,
                                int buf_len) {
-  written_data_.insert(written_data_.end(), buf->data(), buf->data() + buf_len);
+  written_data_.insert(written_data_.end(), buf->data(),
+                       UNSAFE_TODO(buf->data() + buf_len));
 
   if (peer_socket_) {
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&FakeStreamSocket::AppendInputData, peer_socket_,
-                       std::string(buf->data(), buf->data() + buf_len)));
+        base::BindOnce(
+            &FakeStreamSocket::AppendInputData, peer_socket_,
+            std::string(buf->data(), UNSAFE_TODO(buf->data() + buf_len))));
   }
 }
 

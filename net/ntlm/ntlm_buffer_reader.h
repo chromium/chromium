@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_NTLM_NTLM_BUFFER_READER_H_
 #define NET_NTLM_NTLM_BUFFER_READER_H_
 
@@ -94,13 +89,6 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
 
   // Reads |len| bytes and copies them into |buffer|.
   [[nodiscard]] bool ReadBytes(base::span<uint8_t> buffer);
-
-  // Reads |sec_buf.length| bytes from offset |sec_buf.offset| and copies them
-  // into |buffer|. If the security buffer specifies a payload outside the
-  // buffer, then the call fails. Unlike the other Read* methods, this does
-  // not move the cursor.
-  [[nodiscard]] bool ReadBytesFrom(const SecurityBuffer& sec_buf,
-                                   base::span<uint8_t> buffer);
 
   // Reads |sec_buf.length| bytes from offset |sec_buf.offset| and assigns
   // |reader| an |NtlmBufferReader| representing the payload. If the security
@@ -206,17 +194,15 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
   // method.
   void AdvanceCursor(size_t count) { SetCursor(GetCursor() + count); }
 
-  // Returns a constant pointer to the start of the buffer.
-  const uint8_t* GetBufferPtr() const { return buffer_.data(); }
-
-  // Returns a pointer to the underlying buffer at the current cursor
-  // position.
-  const uint8_t* GetBufferAtCursor() const { return GetBufferPtr() + cursor_; }
+  // Returns a span of given length starting from the current cursor position.
+  base::span<const uint8_t> GetSubspanAtCursor(size_t length) const {
+    return buffer_.subspan(cursor_, length);
+  }
 
   // Returns the byte at the current cursor position.
   uint8_t GetByteAtCursor() const {
     DCHECK(!IsEndOfBuffer());
-    return *(GetBufferAtCursor());
+    return buffer_[cursor_];
   }
 
   base::raw_span<const uint8_t> buffer_;

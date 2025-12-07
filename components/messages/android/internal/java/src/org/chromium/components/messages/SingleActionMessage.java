@@ -4,20 +4,25 @@
 
 package org.chromium.components.messages;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageContainer.MessageContainerA11yDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /** Coordinator to show / hide a banner message on given container and delegate events. */
+@NullMarked
 public class SingleActionMessage implements MessageStateHandler, MessageContainerA11yDelegate {
     /**
      * The interface that consumers of SingleActionMessage should implement to receive notification
@@ -28,8 +33,8 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         void invoke(PropertyModel messageProperties, int dismissReason);
     }
 
-    @Nullable private MessageBannerCoordinator mMessageBanner;
-    private MessageBannerView mView;
+    private @MonotonicNonNull MessageBannerCoordinator mMessageBanner;
+    private @MonotonicNonNull MessageBannerView mView;
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
     private final DismissCallback mDismissHandler;
@@ -40,10 +45,9 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private final boolean mIsFullyVisibileCallbackEnabled;
     private boolean mMessageDismissed;
     private boolean mFullyVisibleBefore;
-    private boolean mFullyVisibleCallbackInvoked;
     private final boolean mAreExtraHistogramsEnabled;
 
-    private long mMessageEnqueuedTime;
+    private final long mMessageEnqueuedTime;
     // The timestamp when the message was shown. Used for reproting visible duration.
     private long mMessageShownTime;
 
@@ -89,6 +93,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
         mModel.set(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK, this::handleSecondaryAction);
+        mModel.set(MessageBannerProperties.CLOSE_BUTTON_CLICK_LISTENER, this::handleCloseButton);
         mMessageEnqueuedTime = MessagesMetrics.now();
         mAreExtraHistogramsEnabled = MessageFeatureList.areExtraHistogramsEnabled();
     }
@@ -100,7 +105,6 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
      * @param toIndex The target position of the message view.
      * @return The animator to move the message view.
      */
-    @NonNull
     @Override
     public Animator show(int fromIndex, int toIndex) {
         if (mMessageBanner == null) {
@@ -115,15 +119,13 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                             mMaxTranslationSupplier,
                             mTopOffsetSupplier,
                             mContainer.getResources(),
-                            () -> {
-                                mDismissHandler.invoke(mModel, DismissReason.GESTURE);
-                            },
+                            mContainer,
+                            () -> mDismissHandler.invoke(mModel, DismissReason.GESTURE),
                             mSwipeAnimationHandler,
                             mAutodismissDurationMs,
-                            () -> {
-                                mDismissHandler.invoke(mModel, DismissReason.TIMER);
-                            });
+                            () -> mDismissHandler.invoke(mModel, DismissReason.TIMER));
         }
+        assumeNonNull(mView);
 
         // Update elevation to ensure background view is always behind the front one.
         int elevationDimen =
@@ -166,10 +168,11 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
      * @param animate Whether to show animation.
      * @return The animator to move the message view.
      */
-    @Nullable
     @Override
-    public Animator hide(int fromIndex, int toIndex, boolean animate) {
+    public @Nullable Animator hide(int fromIndex, int toIndex, boolean animate) {
         notifyVisibilityChange(false);
+        assumeNonNull(mMessageBanner);
+        assumeNonNull(mView);
         return mMessageBanner.hide(
                 fromIndex, toIndex, animate, () -> mContainer.removeMessage(mView));
     }
@@ -193,29 +196,20 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                     dismissReason == DismissReason.GESTURE,
                     MessagesMetrics.now() - mMessageShownTime);
         }
-        if (mAreExtraHistogramsEnabled) {
-            if (dismissReason == DismissReason.PRIMARY_ACTION
-                    || dismissReason == DismissReason.SECONDARY_ACTION
-                    || dismissReason == DismissReason.GESTURE
-                    || dismissReason == DismissReason.TIMER) {
-                if (getOnFullyVisibleCallback() != null && !mFullyVisibleCallbackInvoked) {
-                    MessagesMetrics.recordErrorFullyVisibleNotInformed(getMessageIdentifier());
-                }
-            }
-
-            if (!mFullyVisibleBefore) {
-                MessagesMetrics.recordDismissedWithoutFullyVisible(getMessageIdentifier());
-            }
+        if (mAreExtraHistogramsEnabled && !mFullyVisibleBefore) {
+            MessagesMetrics.recordDismissedWithoutFullyVisible(getMessageIdentifier());
         }
     }
 
     @Override
     public void onA11yFocused() {
+        assumeNonNull(mMessageBanner);
         mMessageBanner.cancelTimer();
     }
 
     @Override
     public void onA11yFocusCleared() {
+        assumeNonNull(mMessageBanner);
         mMessageBanner.startTimer();
     }
 
@@ -240,6 +234,11 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         mModel.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
     }
 
+    private void handleCloseButton(View v) {
+        if (mMessageDismissed) return;
+        mDismissHandler.invoke(mModel, DismissReason.CLOSE_BUTTON);
+    }
+
     @VisibleForTesting
     void notifyVisibilityChange(boolean fullyVisible) {
         if (!mIsFullyVisibileCallbackEnabled) return;
@@ -247,7 +246,6 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         var callback = getOnFullyVisibleCallback();
         if (callback == null) return;
         if (fullyVisible == mModel.get(MessageBannerProperties.IS_FULLY_VISIBLE)) return;
-        mFullyVisibleCallbackInvoked = true;
 
         mModel.set(MessageBannerProperties.IS_FULLY_VISIBLE, fullyVisible);
         callback.onResult(fullyVisible);

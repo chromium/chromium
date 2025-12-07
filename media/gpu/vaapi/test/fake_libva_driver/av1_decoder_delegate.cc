@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/vaapi/test/fake_libva_driver/av1_decoder_delegate.h"
 
@@ -90,13 +86,12 @@ void Av1DecoderDelegate::Run() {
   // superframes which would require specifying a data offset and updated
   // data size. Will need to find/compute the data offset/size from data
   // passed by Chrome to support these bitstreams.
-  CHECK_EQ(
-      dav1d_data_wrap(input_buffer.get(),
-                      static_cast<uint8_t*>(encoded_data_buffer_->GetData()),
-                      encoded_data_buffer_->GetDataSize(),
-                      /*free_callback=*/&NullFreeCallback,
-                      /*cookie=*/nullptr),
-      0);
+  CHECK_EQ(dav1d_data_wrap(input_buffer.get(),
+                           encoded_data_buffer_->GetData().data(),
+                           encoded_data_buffer_->GetData().size(),
+                           /*free_callback=*/&NullFreeCallback,
+                           /*cookie=*/nullptr),
+           0);
 
   CHECK_EQ(dav1d_send_data(dav1d_context_.get(), input_buffer.get()), 0);
 

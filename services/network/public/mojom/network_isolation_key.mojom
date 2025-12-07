@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/network_isolation_partition.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
 // Used to represent an empty `net::NetworkIsolationKey`.
@@ -25,6 +26,8 @@ struct NonEmptyNetworkIsolationKey {
   // resources cached by the HTTP cache). This value will only be set in cases
   // where the `net::NetworkIsolationKey` was created with a nonce.
   mojo_base.mojom.UnguessableToken? nonce;
+
+  NetworkIsolationPartition network_isolation_partition;
 };
 
 // Mapped to `net::NetworkIsolationKey`.

@@ -10,14 +10,16 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/login_delegate.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-LoginTabHelper::~LoginTabHelper() {}
+LoginTabHelper::~LoginTabHelper() = default;
 
 void LoginTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -29,8 +31,9 @@ void LoginTabHelper::DidStartNavigation(
   // response bodies that have subframes or can trigger same-document
   // navigations.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument())
+      navigation_handle->IsSameDocument()) {
     return;
+  }
 
   login_handler_.reset();
 }
@@ -192,7 +195,7 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
 std::unique_ptr<LoginHandler> LoginTabHelper::CreateLoginHandler(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return LoginHandler::Create(auth_info, web_contents,
                               std::move(auth_required_callback));
 }

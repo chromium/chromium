@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "remoting/host/security_key/security_key_extension_session.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -36,7 +38,7 @@ namespace remoting {
 namespace {
 
 // Test security key request data.
-const unsigned char kRequestData[] = {
+constexpr auto kRequestData = std::to_array<unsigned char>({
     0x00, 0x00, 0x00, 0x9a, 0x65, 0x1e, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
     0x00, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x60, 0x90,
     0x24, 0x71, 0xf8, 0xf2, 0xe5, 0xdf, 0x7f, 0x81, 0xc7, 0x49, 0xc4, 0xa3,
@@ -50,7 +52,8 @@ const unsigned char kRequestData[] = {
     0x20, 0x3c, 0x00, 0xc6, 0xe1, 0x73, 0x34, 0xe2, 0x23, 0x99, 0xc4, 0xfa,
     0x91, 0xc2, 0xd5, 0x97, 0xc1, 0x8b, 0xd0, 0x3c, 0x13, 0xba, 0xf0, 0xd7,
     0x5e, 0xa3, 0xbc, 0x02, 0x5b, 0xec, 0xe4, 0x4b, 0xae, 0x0e, 0xf2, 0xbd,
-    0xc8, 0xaa};
+    0xc8, 0xaa,
+});
 
 }  // namespace
 
@@ -77,6 +80,8 @@ class TestClientStub : public protocol::ClientStub {
 
   // protocol::CursorShapeStub implementation.
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override;
+  void SetHostCursorPosition(
+      const protocol::HostCursorPosition& position) override;
 
   // protocol::KeyboardLayoutStub implementation.
   void SetKeyboardLayout(const protocol::KeyboardLayout& layout) override;
@@ -119,6 +124,9 @@ void TestClientStub::InjectClipboardEvent(
 
 void TestClientStub::SetCursorShape(
     const protocol::CursorShapeInfo& cursor_shape) {}
+
+void TestClientStub::SetHostCursorPosition(
+    const protocol::HostCursorPosition& position) {}
 
 void TestClientStub::SetKeyboardLayout(const protocol::KeyboardLayout& layout) {
 }
@@ -211,13 +219,12 @@ void SecurityKeyExtensionSessionTest::WaitForAndVerifyHostMessage() {
   base::Value::List expected_data;
 
   // Skip first four bytes.
-  for (size_t i = 4; i < sizeof(kRequestData); ++i) {
+  for (size_t i = 4; i < kRequestData.size(); ++i) {
     expected_data.Append(kRequestData[i]);
   }
 
-  std::string expected_data_json;
-  base::JSONWriter::Write(expected_data, &expected_data_json);
-  client_stub_.CheckHostDataMessage(1, expected_data_json);
+  client_stub_.CheckHostDataMessage(
+      1, base::WriteJson(expected_data).value_or(""));
 }
 
 void SecurityKeyExtensionSessionTest::CreateSecurityKeyConnection() {

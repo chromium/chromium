@@ -2,31 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 #include <android/data_space.h>
 #include <android/hdr_metadata.h>
 #include <dlfcn.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/skcolorspace_trfn.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/color_space.h"
 
 extern "C" {
@@ -154,14 +151,17 @@ uint64_t g_agb_required_usage_bits = AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
   do {                                                       \
     func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func)); \
     if (!func##Fn) {                                         \
-      supported = false;                                     \
-      LOG(ERROR) << "Unable to load function " << #func;     \
+      LOG(FATAL) << "Unable to load function " << #func;     \
     }                                                        \
   } while (0)
 
-#define LOAD_FUNCTION_MAYBE(lib, func)                       \
-  do {                                                       \
-    func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func)); \
+#define LOAD_FUNCTION_MAYBE(lib, func, min_sdk_int)                        \
+  do {                                                                     \
+    if (base::android::android_info::sdk_int() >= min_sdk_int) {           \
+      func##Fn = reinterpret_cast<p##func>(dlsym(lib, #func));             \
+      LOG_IF(FATAL, !func##Fn) << "Unable to load " << #func << " on sdk " \
+                               << base::android::android_info::sdk_int();  \
+    }                                                                      \
   } while (0)
 
 struct SurfaceControlMethods {
@@ -223,43 +223,54 @@ struct SurfaceControlMethods {
   }
 
   SurfaceControlMethods(bool load_functions) {
-    if (!load_functions)
+    if (!load_functions) {
       return;
+    }
+
+    if (!SurfaceControl::IsSupported()) {
+      return;
+    }
 
     void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
     if (!main_dl_handle) {
-      LOG(ERROR) << "Couldnt load android so";
-      supported = false;
-      return;
+      LOG(FATAL) << "Couldnt load android so";
     }
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_createFromWindow);
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_create);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceControl_fromJava);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceControl_fromJava,
+                        base::android::android_info::SDK_VERSION_U);
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_release);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_create);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_delete);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_apply);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setOnComplete);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setOnCommit);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setOnCommit,
+                        base::android::android_info::SDK_VERSION_S);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_reparent);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setVisibility);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setZOrder);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBuffer);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setGeometry);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setPosition);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setScale);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setCrop);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setPosition,
+                        base::android::android_info::SDK_VERSION_S);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setScale,
+                        base::android::android_info::SDK_VERSION_S);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setCrop,
+                        base::android::android_info::SDK_VERSION_S);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferTransparency);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setDamageRegion);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferDataSpace);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_cta861_3);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_smpte2086);
     LOAD_FUNCTION_MAYBE(main_dl_handle,
-                        ASurfaceTransaction_setExtendedRangeBrightness);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameRate);
-    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameTimeline);
+                        ASurfaceTransaction_setExtendedRangeBrightness,
+                        base::android::android_info::SDK_VERSION_U);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameRate,
+                        base::android::android_info::SDK_VERSION_R);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameTimeline,
+                        base::android::android_info::SDK_VERSION_T);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getPresentFenceFd);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getLatchTime);
@@ -269,60 +280,66 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle,
                   ASurfaceTransactionStats_getPreviousReleaseFenceFd);
     LOAD_FUNCTION_MAYBE(main_dl_handle,
-                        ASurfaceTransaction_setEnableBackPressure);
+                        ASurfaceTransaction_setEnableBackPressure,
+                        base::android::android_info::SDK_VERSION_S);
   }
 
   ~SurfaceControlMethods() = default;
 
-  bool supported = true;
   // Surface methods.
-  pASurfaceControl_createFromWindow ASurfaceControl_createFromWindowFn;
-  pASurfaceControl_create ASurfaceControl_createFn;
-  pASurfaceControl_fromJava ASurfaceControl_fromJavaFn;
-  pASurfaceControl_release ASurfaceControl_releaseFn;
+  pASurfaceControl_createFromWindow ASurfaceControl_createFromWindowFn =
+      nullptr;
+  pASurfaceControl_create ASurfaceControl_createFn = nullptr;
+  pASurfaceControl_fromJava ASurfaceControl_fromJavaFn = nullptr;
+  pASurfaceControl_release ASurfaceControl_releaseFn = nullptr;
 
   // Transaction methods.
-  pASurfaceTransaction_create ASurfaceTransaction_createFn;
-  pASurfaceTransaction_delete ASurfaceTransaction_deleteFn;
-  pASurfaceTransaction_apply ASurfaceTransaction_applyFn;
-  pASurfaceTransaction_setOnComplete ASurfaceTransaction_setOnCompleteFn;
-  pASurfaceTransaction_setOnCommit ASurfaceTransaction_setOnCommitFn;
-  pASurfaceTransaction_reparent ASurfaceTransaction_reparentFn;
-  pASurfaceTransaction_setVisibility ASurfaceTransaction_setVisibilityFn;
-  pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn;
-  pASurfaceTransaction_setBuffer ASurfaceTransaction_setBufferFn;
-  pASurfaceTransaction_setGeometry ASurfaceTransaction_setGeometryFn;
-  pASurfaceTransaction_setPosition ASurfaceTransaction_setPositionFn;
-  pASurfaceTransaction_setScale ASurfaceTransaction_setScaleFn;
-  pASurfaceTransaction_setCrop ASurfaceTransaction_setCropFn;
+  pASurfaceTransaction_create ASurfaceTransaction_createFn = nullptr;
+  pASurfaceTransaction_delete ASurfaceTransaction_deleteFn = nullptr;
+  pASurfaceTransaction_apply ASurfaceTransaction_applyFn = nullptr;
+  pASurfaceTransaction_setOnComplete ASurfaceTransaction_setOnCompleteFn =
+      nullptr;
+  pASurfaceTransaction_setOnCommit ASurfaceTransaction_setOnCommitFn = nullptr;
+  pASurfaceTransaction_reparent ASurfaceTransaction_reparentFn = nullptr;
+  pASurfaceTransaction_setVisibility ASurfaceTransaction_setVisibilityFn =
+      nullptr;
+  pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn = nullptr;
+  pASurfaceTransaction_setBuffer ASurfaceTransaction_setBufferFn = nullptr;
+  pASurfaceTransaction_setGeometry ASurfaceTransaction_setGeometryFn = nullptr;
+  pASurfaceTransaction_setPosition ASurfaceTransaction_setPositionFn = nullptr;
+  pASurfaceTransaction_setScale ASurfaceTransaction_setScaleFn = nullptr;
+  pASurfaceTransaction_setCrop ASurfaceTransaction_setCropFn = nullptr;
   pASurfaceTransaction_setBufferTransparency
-      ASurfaceTransaction_setBufferTransparencyFn;
-  pASurfaceTransaction_setDamageRegion ASurfaceTransaction_setDamageRegionFn;
+      ASurfaceTransaction_setBufferTransparencyFn = nullptr;
+  pASurfaceTransaction_setDamageRegion ASurfaceTransaction_setDamageRegionFn =
+      nullptr;
   pASurfaceTransaction_setBufferDataSpace
-      ASurfaceTransaction_setBufferDataSpaceFn;
+      ASurfaceTransaction_setBufferDataSpaceFn = nullptr;
   pASurfaceTransaction_setHdrMetadata_cta861_3
-      ASurfaceTransaction_setHdrMetadata_cta861_3Fn;
+      ASurfaceTransaction_setHdrMetadata_cta861_3Fn = nullptr;
   pASurfaceTransaction_setHdrMetadata_smpte2086
-      ASurfaceTransaction_setHdrMetadata_smpte2086Fn;
+      ASurfaceTransaction_setHdrMetadata_smpte2086Fn = nullptr;
   pASurfaceTransaction_setExtendedRangeBrightness
-      ASurfaceTransaction_setExtendedRangeBrightnessFn;
+      ASurfaceTransaction_setExtendedRangeBrightnessFn = nullptr;
 
-  pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn;
-  pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn;
+  pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn =
+      nullptr;
+  pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn =
+      nullptr;
   pASurfaceTransaction_setEnableBackPressure
-      ASurfaceTransaction_setEnableBackPressureFn;
+      ASurfaceTransaction_setEnableBackPressureFn = nullptr;
 
   // TransactionStats methods.
   pASurfaceTransactionStats_getPresentFenceFd
-      ASurfaceTransactionStats_getPresentFenceFdFn;
+      ASurfaceTransactionStats_getPresentFenceFdFn = nullptr;
   pASurfaceTransactionStats_getLatchTime
-      ASurfaceTransactionStats_getLatchTimeFn;
+      ASurfaceTransactionStats_getLatchTimeFn = nullptr;
   pASurfaceTransactionStats_getASurfaceControls
-      ASurfaceTransactionStats_getASurfaceControlsFn;
+      ASurfaceTransactionStats_getASurfaceControlsFn = nullptr;
   pASurfaceTransactionStats_releaseASurfaceControls
-      ASurfaceTransactionStats_releaseASurfaceControlsFn;
+      ASurfaceTransactionStats_releaseASurfaceControlsFn = nullptr;
   pASurfaceTransactionStats_getPreviousReleaseFenceFd
-      ASurfaceTransactionStats_getPreviousReleaseFenceFdFn;
+      ASurfaceTransactionStats_getPreviousReleaseFenceFdFn = nullptr;
 };
 
 ARect RectToARect(const gfx::Rect& rect) {
@@ -355,8 +372,7 @@ int32_t OverlayTransformToWindowTransform(gfx::OverlayTransform transform) {
       return ANATIVEWINDOW_TRANSFORM_MIRROR_HORIZONTAL |
              ANATIVEWINDOW_TRANSFORM_ROTATE_90;
   };
-  NOTREACHED_IN_MIGRATION();
-  return ANATIVEWINDOW_TRANSFORM_IDENTITY;
+  NOTREACHED();
 }
 
 inline ADataSpace operator|(ADataSpace a, ADataSpace b) {
@@ -373,19 +389,19 @@ bool SetDataSpaceStandard(const gfx::ColorSpace& color_space,
                           ADataSpace& dataspace) {
   switch (color_space.GetPrimaryID()) {
     case gfx::ColorSpace::PrimaryID::BT709:
-      dataspace |= STANDARD_BT709;
+      dataspace |= ADATASPACE_STANDARD_BT709;
       return true;
     case gfx::ColorSpace::PrimaryID::BT470BG:
-      dataspace |= STANDARD_BT601_625;
+      dataspace |= ADATASPACE_STANDARD_BT601_625;
       return true;
     case gfx::ColorSpace::PrimaryID::SMPTE170M:
-      dataspace |= STANDARD_BT601_525;
+      dataspace |= ADATASPACE_STANDARD_BT601_525;
       return true;
     case gfx::ColorSpace::PrimaryID::BT2020:
-      dataspace |= STANDARD_BT2020;
+      dataspace |= ADATASPACE_STANDARD_BT2020;
       return true;
     case gfx::ColorSpace::PrimaryID::P3:
-      dataspace |= STANDARD_DCI_P3;
+      dataspace |= ADATASPACE_STANDARD_DCI_P3;
       return true;
     default:
       return false;
@@ -398,37 +414,37 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
   extended_range_brightness_ratio = 1.f;
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::SMPTE170M:
-      dataspace |= TRANSFER_SMPTE_170M;
+      dataspace |= ADATASPACE_TRANSFER_SMPTE_170M;
       return true;
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
-      dataspace |= TRANSFER_LINEAR;
+      dataspace |= ADATASPACE_TRANSFER_LINEAR;
       return true;
     case gfx::ColorSpace::TransferID::PQ:
-      dataspace |= TRANSFER_ST2084;
+      dataspace |= ADATASPACE_TRANSFER_ST2084;
       return true;
     case gfx::ColorSpace::TransferID::HLG:
-      dataspace |= TRANSFER_HLG;
+      dataspace |= ADATASPACE_TRANSFER_HLG;
       return true;
     case gfx::ColorSpace::TransferID::SRGB:
-      dataspace |= TRANSFER_SRGB;
+      dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     case gfx::ColorSpace::TransferID::BT709:
       // We use SRGB for BT709. See |ColorSpace::GetTransferFunction()| for
       // details.
-      dataspace |= TRANSFER_SRGB;
+      dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     default: {
       skcms_TransferFunction trfn;
       // Detect scaled versions of sRGB and linear for HDR content.
       if (color_space.GetTransferFunction(&trfn)) {
-        if (skia::IsScaledTransferFunction(SkNamedTransferFnExt::kSRGB, trfn,
+        if (skia::IsScaledTransferFunction(SkNamedTransferFn::kSRGB, trfn,
                                            &extended_range_brightness_ratio)) {
-          dataspace |= TRANSFER_SRGB;
+          dataspace |= ADATASPACE_TRANSFER_SRGB;
           return true;
         }
         if (skia::IsScaledTransferFunction(SkNamedTransferFn::kLinear, trfn,
                                            &extended_range_brightness_ratio)) {
-          dataspace |= TRANSFER_LINEAR;
+          dataspace |= ADATASPACE_TRANSFER_LINEAR;
           return true;
         }
       }
@@ -445,13 +461,13 @@ bool SetDataSpaceRange(const gfx::ColorSpace& color_space,
     case gfx::ColorSpace::RangeID::FULL:
       if (extended_range_brightness_ratio > 1.f ||
           desired_brightness_ratio > 1.f) {
-        dataspace |= RANGE_EXTENDED;
+        dataspace |= ADATASPACE_RANGE_EXTENDED;
       } else {
-        dataspace |= RANGE_FULL;
+        dataspace |= ADATASPACE_RANGE_FULL;
       }
       return true;
     case gfx::ColorSpace::RangeID::LIMITED:
-      dataspace |= RANGE_LIMITED;
+      dataspace |= ADATASPACE_RANGE_LIMITED;
       return true;
     default:
       return false;
@@ -483,10 +499,11 @@ SurfaceControl::TransactionStats ToTransactionStats(
       stats, &surface_controls, &size);
   transaction_stats.surface_stats.resize(size);
   for (size_t i = 0u; i < size; ++i) {
-    transaction_stats.surface_stats[i].surface = surface_controls[i];
+    transaction_stats.surface_stats[i].surface =
+        UNSAFE_TODO(surface_controls[i]);
     int fence_fd = SurfaceControlMethods::Get()
                        .ASurfaceTransactionStats_getPreviousReleaseFenceFdFn(
-                           stats, surface_controls[i]);
+                           stats, UNSAFE_TODO(surface_controls[i]));
     if (fence_fd != -1) {
       transaction_stats.surface_stats[i].fence = base::ScopedFD(fence_fd);
     }
@@ -504,8 +521,11 @@ struct TransactionAckCtx {
 };
 
 uint64_t GetTraceIdForTransaction(int transaction_id) {
-  constexpr uint64_t kMask =
-      base::MD5Hash64Constexpr("SurfaceControl::Transaction");
+  // Xor with a mask to reduce likelihood of flow id collision with non-surface
+  // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
+  // interpreted as a big-endian integer. Python snippet:
+  // hashlib.sha256(b'SurfaceControl::Transaction').hexdigest()[:16]
+  constexpr uint64_t kMask = 0x11119f59bb2a2b31;
   return kMask ^ transaction_id;
 }
 
@@ -515,8 +535,8 @@ void OnTransactionCompletedOnAnyThread(void* context,
                                        ASurfaceTransactionStats* stats) {
   auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
   auto transaction_stats = ToTransactionStats(stats);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,benchmark", "SurfaceControlTransaction",
-                                  ack_ctx->id);
+  TRACE_EVENT_END("gpu,benchmark", /*"SurfaceControlTransaction"*/
+                  perfetto::Track(ack_ctx->id));
   TRACE_EVENT_WITH_FLOW0(
       "toplevel.flow", "gfx::SurfaceControlTransaction completed",
       GetTraceIdForTransaction(ack_ctx->id), TRACE_EVENT_FLAG_FLOW_IN);
@@ -541,17 +561,17 @@ void OnTransactiOnCommittedOnAnyThread(void* context,
 
 // static
 bool SurfaceControl::IsSupported() {
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-
   // Disabled on Samsung devices due to a platform bug fixed in R.
-  int min_sdk_version = base::android::SDK_VERSION_Q;
-  if (base::EqualsCaseInsensitiveASCII(build_info->manufacturer(), "samsung"))
-    min_sdk_version = base::android::SDK_VERSION_R;
+  int min_sdk_version = base::android::android_info::SDK_VERSION_Q;
+  if (base::EqualsCaseInsensitiveASCII(
+          base::android::android_info::manufacturer(), "samsung")) {
+    min_sdk_version = base::android::android_info::SDK_VERSION_R;
+  }
 
-  if (build_info->sdk_int() < min_sdk_version)
+  if (base::android::android_info::sdk_int() < min_sdk_version) {
     return false;
+  }
 
-  CHECK(SurfaceControlMethods::Get().supported);
   return true;
 }
 
@@ -576,10 +596,11 @@ bool SurfaceControl::ColorSpaceToADataSpace(
     return true;
   }
 
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_S) {
     if (color_space == gfx::ColorSpace::CreateExtendedSRGB()) {
-      out_dataspace = STANDARD_BT709 | TRANSFER_SRGB | RANGE_EXTENDED;
+      out_dataspace = ADATASPACE_STANDARD_BT709 | ADATASPACE_TRANSFER_SRGB |
+                      ADATASPACE_RANGE_EXTENDED;
       return true;
     }
 
@@ -630,33 +651,34 @@ void SurfaceControl::EnableQualcommUBWC() {
 }
 
 bool SurfaceControl::SupportsSetFrameRate() {
-  // TODO(khushalsagar): Assert that this function is always available on R.
-  return IsSupported() &&
-         SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn !=
-             nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_R;
 }
 
 bool SurfaceControl::SupportsOnCommit() {
-  return IsSupported() &&
-         SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn !=
-             nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_S;
+}
+
+bool SurfaceControl::SupportsFrameRateCompatAtLeast() {
+  return SupportsSetFrameRate() &&
+         base::android::android_info::sdk_int() >=
+             base::android::android_info::SDK_VERSION_BAKLAVA;
 }
 
 bool SurfaceControl::SupportsSetFrameTimeline() {
-  return IsSupported() &&
-         SurfaceControlMethods::Get().ASurfaceTransaction_setFrameTimelineFn !=
-             nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_T;
 }
 
 bool SurfaceControl::SupportsSurfacelessControl() {
-  return IsSupported() &&
-         !!SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_U;
 }
 
 bool SurfaceControl::SupportsSetEnableBackPressure() {
-  return IsSupported() &&
-         SurfaceControlMethods::Get()
-                 .ASurfaceTransaction_setEnableBackPressureFn != nullptr;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_S;
 }
 
 void SurfaceControl::SetStubImplementationForTesting() {
@@ -697,7 +719,7 @@ SurfaceControl::Surface::Surface(ANativeWindow* parent, const char* name) {
 SurfaceControl::Surface::Surface(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_surface_control) {
-  CHECK(SupportsSurfacelessControl());
+  CHECK(SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn);
   owned_surface_ = SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn(
       env, j_surface_control.obj());
   if (!owned_surface_) {
@@ -796,8 +818,8 @@ void SurfaceControl::Transaction::SetBuffer(const Surface& surface,
   // In T OS, setBuffer call setOnComplete internally, so Apply() is required to
   // decrease ref count of SurfaceControl.
   // TODO(crbug.com/40249006): remove this if AOSP fix the issue
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_T) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_T) {
     need_to_apply_ = true;
   }
 }
@@ -880,7 +902,8 @@ void SurfaceControl::Transaction::SetColorSpace(
   SurfaceControlMethods::Get().ASurfaceTransaction_setBufferDataSpaceFn(
       transaction_, surface.surface(), data_space);
 
-  const bool extended_range = (data_space & RANGE_MASK) == RANGE_EXTENDED;
+  const bool extended_range =
+      (data_space & ADATASPACE_RANGE_MASK) == ADATASPACE_RANGE_EXTENDED;
 
   // Set the HDR metadata for not extended SRGB case.
   if (metadata && !extended_range) {
@@ -935,15 +958,28 @@ void SurfaceControl::Transaction::SetColorSpace(
   }
 }
 
-void SurfaceControl::Transaction::SetFrameRate(const Surface& surface,
-                                               float frame_rate) {
-  DCHECK(SupportsSetFrameRate());
+void SurfaceControl::Transaction::SetFrameRate(
+    const Surface& surface,
+    SurfaceControlFrameRate frame_rate) {
+  CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn);
+  int8_t compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+  switch (frame_rate.compatibility) {
+    case gfx::SurfaceControlFrameRateCompatibility::kFixedSource:
+      compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      break;
+    case gfx::SurfaceControlFrameRateCompatibility::kAtLeast:
+      if (SupportsFrameRateCompatAtLeast()) {
+        // Temporary hard code value until Android B NDK is available.
+        constexpr int8_t ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_AT_LEAST = 2u;
+        compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_AT_LEAST;
+      } else {
+        compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      }
+      break;
+  }
 
-  // We always used fixed source here since a non-default value is only used for
-  // videos which have a fixed playback rate.
   SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn(
-      transaction_, surface.surface(), frame_rate,
-      ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
+      transaction_, surface.surface(), frame_rate.frame_rate, compatibility);
 }
 
 void SurfaceControl::Transaction::SetParent(const Surface& surface,
@@ -972,8 +1008,8 @@ void SurfaceControl::Transaction::SetOnCommitCb(
 }
 
 void SurfaceControl::Transaction::Apply() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,benchmark",
-                                    "SurfaceControlTransaction", id_);
+  TRACE_EVENT_BEGIN("gpu,benchmark", "SurfaceControlTransaction",
+                    perfetto::Track(id_));
 
   PrepareCallbacks();
   SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);

@@ -9,26 +9,6 @@
 
 namespace ui {
 
-// This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
-// full restore, and read from disk by a possibly newer version of chrome. This
-// means that it's ok to add new values, but existing values should never be
-// changed or removed.
-//
-// Window "show" state.
-// TODO: Add snapped window state to immersive fullscreen state to
-// WindowShowState. Those are ChromeOS specific window states but we should make
-// it available here as well as Lacros also needs to know those states.
-enum WindowShowState {
-  // A default un-set state.
-  SHOW_STATE_DEFAULT = 0,
-  SHOW_STATE_NORMAL = 1,
-  SHOW_STATE_MINIMIZED = 2,
-  SHOW_STATE_MAXIMIZED = 3,
-  SHOW_STATE_INACTIVE = 4,  // Views only, not persisted.
-  SHOW_STATE_FULLSCREEN = 5,
-  SHOW_STATE_END = 6  // The end of show state enum.
-};
-
 // Specifies which edges of the window are tiled.
 //
 // Wayland can notify the application if certain edge of the window is
@@ -40,23 +20,8 @@ struct WindowTiledEdges {
   bool top{false};
   bool bottom{false};
 
-  bool operator==(const WindowTiledEdges& other) const {
-    return left == other.left && right == other.right && top == other.top &&
-           bottom == other.bottom;
-  }
-
-  bool operator!=(const WindowTiledEdges& other) const {
-    return left != other.left || right != other.right || top != other.top ||
-           bottom != other.bottom;
-  }
-};
-
-// Dialog button identifiers used to specify which buttons to show the user.
-enum DialogButton {
-  DIALOG_BUTTON_NONE = 0,
-  DIALOG_BUTTON_OK = 1,
-  DIALOG_BUTTON_CANCEL = 2,
-  DIALOG_BUTTON_LAST = DIALOG_BUTTON_CANCEL,
+  friend bool operator==(const WindowTiledEdges&,
+                         const WindowTiledEdges&) = default;
 };
 
 // MdTextButtons have various button styles that can change the button's
@@ -73,15 +38,6 @@ enum class ButtonStyle {
   kDefault,
   kTonal,
   kProminent,
-};
-
-// Specifies the type of modality applied to a window. Different modal
-// treatments may be handled differently by the window manager.
-enum ModalType {
-  MODAL_TYPE_NONE = 0,    // Window is not modal.
-  MODAL_TYPE_WINDOW = 1,  // Window is modal to its transient parent.
-  MODAL_TYPE_CHILD = 2,   // Window is modal to a child of its transient parent.
-  MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
 };
 
 // The class of window and its overall z-order. Only the Mac provides this
@@ -116,28 +72,6 @@ enum class ZOrderLevel {
   // situations where window modality (as in ModalType) cannot or should not be
   // used.
   kSecuritySurface,
-};
-
-// TODO(varunjain): Remove MENU_SOURCE_NONE (crbug.com/250964)
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
-// These are used in histograms, do not remove/renumber entries. Only add at the
-// end just before MENU_SOURCE_TYPE_LAST. Also remember to update the
-// MenuSourceType enum listing in tools/metrics/histograms/enums.xml.
-// Lastly, any new type here needs to be synced with ui_base_types.mojom.
-enum MenuSourceType {
-  MENU_SOURCE_NONE = 0,
-  MENU_SOURCE_MOUSE = 1,
-  MENU_SOURCE_KEYBOARD = 2,
-  MENU_SOURCE_TOUCH = 3,
-  MENU_SOURCE_TOUCH_EDIT_MENU = 4,
-  MENU_SOURCE_LONG_PRESS = 5,
-  MENU_SOURCE_LONG_TAP = 6,
-  MENU_SOURCE_TOUCH_HANDLE = 7,
-  MENU_SOURCE_STYLUS = 8,
-  MENU_SOURCE_ADJUST_SELECTION = 9,
-  MENU_SOURCE_ADJUST_SELECTION_RESET = 10,
-  MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
 };
 
 // Where an owned anchored window should be anchored to. Used by such backends

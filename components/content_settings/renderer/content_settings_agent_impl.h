@@ -20,9 +20,7 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -57,15 +55,9 @@ class ContentSettingsAgentImpl
     // blink::WebContentSettingsClient methods.
     virtual bool AllowReadFromClipboard();
     virtual bool AllowWriteToClipboard();
-    // If an optional value is
-    // returned, return std::nullopt to use the default logic.
-    virtual std::optional<bool> AllowMutationEvents();
   };
 
-  // Set `should_allowlist` to true if `render_frame()` contains content that
-  // should be allowlisted for content settings.
   ContentSettingsAgentImpl(content::RenderFrame* render_frame,
-                           bool should_allowlist,
                            std::unique_ptr<Delegate> delegate);
 
   ContentSettingsAgentImpl(const ContentSettingsAgentImpl&) = delete;
@@ -86,7 +78,6 @@ class ContentSettingsAgentImpl
   bool AllowStorageAccessSync(StorageType type) override;
   bool AllowReadFromClipboard() override;
   bool AllowWriteToClipboard() override;
-  bool AllowMutationEvents(bool default_value) override;
   void DidNotAllowImage() override;
   void DidNotAllowScript() override;
   bool AllowRunningInsecureContent(bool allowed_per_settings,
@@ -132,11 +123,6 @@ class ContentSettingsAgentImpl
   // Resets the `content_blocked_` array.
   void ClearBlockedContentSettings();
 
-  // Helpers.
-  // True if `render_frame()` contains content that is allowlisted for content
-  // settings.
-  bool IsAllowlistedForContentSettings() const;
-
   // A getter for `content_settings_manager_` that ensures it is bound.
   mojom::ContentSettingsManager& GetContentSettingsManager();
 
@@ -153,9 +139,6 @@ class ContentSettingsAgentImpl
   // Caches the result of AllowStorageAccess.
   using StoragePermissionsKey = std::pair<url::Origin, StorageType>;
   base::flat_map<StoragePermissionsKey, bool> cached_storage_permissions_;
-
-  // If true, IsAllowlistedForContentSettings will always return true.
-  const bool should_allowlist_;
 
   std::unique_ptr<Delegate> delegate_;
 

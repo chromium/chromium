@@ -26,14 +26,10 @@ class StyleRulePositionTry final : public StyleRuleBase {
   const CSSPropertyValueSet& Properties() const { return *properties_; }
   MutableCSSPropertyValueSet& MutableProperties();
 
-  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
-
   void TraceAfterDispatch(Visitor*) const;
 
  private:
   AtomicString name_;
-  Member<const CascadeLayer> layer_;
   Member<CSSPropertyValueSet> properties_;
 };
 

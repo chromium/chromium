@@ -19,11 +19,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_H_
 
@@ -36,14 +31,13 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
-
-typedef icu::BreakIterator TextBreakIterator;
 
 struct PLATFORM_EXPORT ReturnBreakIteratorToPool {
   void operator()(void* ptr) const;
@@ -70,12 +64,12 @@ AcquireLineBreakIterator(StringView, const AtomicString& locale);
 // platform UI conventions. One notable example where this can be different
 // from character break iterator is Thai prepend characters, see bug 24342.
 // Use this for insertion point and selection manipulations.
-PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
+PLATFORM_EXPORT TextBreakIterator* CursorMovementIteratorDeprecated(
     base::span<const UChar>);
-PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const String&,
-                                                     int start,
-                                                     int length);
+PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const StringView&);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
+PLATFORM_EXPORT std::unique_ptr<TextBreakIterator>
+CreateWordBreakIteratorForTest(const StringView&, const String& locale);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);
 
@@ -83,8 +77,6 @@ PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
 // it may not work as expected.
 // See https://ssl.icu-project.org/trac/ticket/13447 .
 PLATFORM_EXPORT bool IsWordTextBreak(TextBreakIterator*);
-
-const int kTextBreakDone = -1;
 
 // A Unicode Line Break Word Identifier (key "lw".)
 // https://www.unicode.org/reports/tr35/#UnicodeLineBreakWordIdentifier
@@ -214,20 +206,22 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   unsigned PreviousBreakOpportunity(unsigned offset, unsigned min = 0) const;
 
   static bool IsBreakableSpace(UChar ch) {
-    return ch == kSpaceCharacter || ch == kTabulationCharacter ||
-           ch == kNewlineCharacter;
+    return ch == uchar::kSpace || ch == uchar::kTab || ch == uchar::kLineFeed;
   }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, Strictness);
 
-  template <typename CharacterType, bool use_fast_table>
+  template <typename CharacterType>
   struct Context;
 
   const AtomicString& LocaleWithKeyword() const;
   void InvalidateLocaleWithKeyword();
 
-  void ReleaseIterator() const { iterator_ = nullptr; }
+  void ReleaseIterator() const {
+    iterator_ = nullptr;
+    character_iterator_.reset();
+  }
 
   // Obtain text break iterator, possibly previously cached, where this iterator
   // is (or has been) initialized to use the previously stored string as the
@@ -252,13 +246,13 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     return iterator_.get();
   }
 
-  template <typename CharacterType,
-            LineBreakType,
-            BreakSpaceType,
-            bool use_fast_table>
-  unsigned NextBreakablePosition(unsigned pos,
-                                 const CharacterType* str,
-                                 unsigned len) const;
+  CharacterBreakIterator& GetCharacterBreakIterator() const {
+    if (!character_iterator_) {
+      character_iterator_.emplace(StringView(string_, start_offset_));
+    }
+    return *character_iterator_;
+  }
+
   template <typename CharacterType, LineBreakType, BreakSpaceType>
   unsigned NextBreakablePosition(unsigned pos,
                                  const CharacterType* str,
@@ -276,6 +270,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   const LayoutLocale* locale_ = nullptr;
   mutable AtomicString locale_with_keyword_;
   mutable PooledBreakIterator iterator_;
+  mutable std::optional<CharacterBreakIterator> character_iterator_;
   unsigned start_offset_ = 0;
   LineBreakType break_type_;
   BreakSpaceType break_space_ = BreakSpaceType::kAfterSpaceRun;
@@ -323,77 +318,6 @@ inline void LazyLineBreakIterator::SetStrictness(
     InvalidateLocaleWithKeyword();
   }
 }
-
-// Iterates over "extended grapheme clusters", as defined in UAX #29.
-// Note that platform implementations may be less sophisticated - e.g. ICU prior
-// to version 4.0 only supports "legacy grapheme clusters".  Use this for
-// general text processing, e.g. string truncation.
-
-class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
-  STACK_ALLOCATED();
-
- public:
-  explicit NonSharedCharacterBreakIterator(const StringView&);
-  NonSharedCharacterBreakIterator(const UChar*, unsigned length);
-  NonSharedCharacterBreakIterator(const NonSharedCharacterBreakIterator&) =
-      delete;
-  NonSharedCharacterBreakIterator& operator=(
-      const NonSharedCharacterBreakIterator&) = delete;
-  ~NonSharedCharacterBreakIterator();
-
-  int Next();
-  int Current();
-
-  bool IsBreak(int offset) const;
-  int Preceding(int offset) const;
-  int Following(int offset) const;
-
-  bool operator!() const { return !is_8bit_ && !iterator_; }
-
- private:
-  void CreateIteratorForBuffer(const UChar*, unsigned length);
-
-  unsigned ClusterLengthStartingAt(unsigned offset) const {
-    DCHECK(is_8bit_);
-    // The only Latin-1 Extended Grapheme Cluster is CR LF
-    return IsCRBeforeLF(offset) ? 2 : 1;
-  }
-
-  bool IsCRBeforeLF(unsigned offset) const {
-    DCHECK(is_8bit_);
-    return charaters8_[offset] == '\r' && offset + 1 < length_ &&
-           charaters8_[offset + 1] == '\n';
-  }
-
-  bool IsLFAfterCR(unsigned offset) const {
-    DCHECK(is_8bit_);
-    return charaters8_[offset] == '\n' && offset >= 1 &&
-           charaters8_[offset - 1] == '\r';
-  }
-
-  bool is_8bit_;
-
-  // For 8 bit strings, we implement the iterator ourselves.
-  const LChar* charaters8_;
-  unsigned offset_;
-  unsigned length_;
-
-  // For 16 bit strings, we use a TextBreakIterator.
-  TextBreakIterator* iterator_;
-};
-
-// Counts the number of grapheme clusters. A surrogate pair or a sequence
-// of a non-combining character and following combining characters is
-// counted as 1 grapheme cluster.
-PLATFORM_EXPORT unsigned NumGraphemeClusters(const String&);
-
-// Returns the number of code units that the next grapheme cluster is made of.
-PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const String&, unsigned = 0);
-
-// Returns a list of graphemes cluster at each character using character break
-// rules.
-PLATFORM_EXPORT void GraphemesClusterList(const StringView& text,
-                                          Vector<unsigned>* graphemes);
 
 }  // namespace blink
 

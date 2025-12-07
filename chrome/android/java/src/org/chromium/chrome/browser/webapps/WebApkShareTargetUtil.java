@@ -15,14 +15,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.net.MimeTypeFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /** Computes data for Post Share Target. */
+@NullMarked
 public class WebApkShareTargetUtil {
     // A class containing data required to generate a share target post request.
     protected static class PostData {
@@ -60,12 +64,12 @@ public class WebApkShareTargetUtil {
         }
     }
 
-    private static String getFileTypeFromContentUri(Uri uri) {
+    private static @Nullable String getFileTypeFromContentUri(Uri uri) {
         return ContextUtils.getApplicationContext().getContentResolver().getType(uri);
     }
 
-    private static String getFileNameFromContentUri(Uri uri) {
-        if (uri.getScheme().equals("content")) {
+    private static @Nullable String getFileNameFromContentUri(Uri uri) {
+        if (Objects.equals(uri.getScheme(), "content")) {
             try (Cursor cursor =
                     ContextUtils.getApplicationContext()
                             .getContentResolver()
@@ -84,7 +88,7 @@ public class WebApkShareTargetUtil {
         return uri.getPath();
     }
 
-    public static String[] decodeJsonStringArray(String encodedJsonArray) {
+    public static String @Nullable [] decodeJsonStringArray(@Nullable String encodedJsonArray) {
         if (encodedJsonArray == null) {
             return null;
         }
@@ -101,7 +105,7 @@ public class WebApkShareTargetUtil {
         return null;
     }
 
-    public static String[][] decodeJsonAccepts(String encodedAcceptsArray) {
+    public static String @Nullable [][] decodeJsonAccepts(@Nullable String encodedAcceptsArray) {
         if (encodedAcceptsArray == null) {
             return null;
         }
@@ -123,17 +127,15 @@ public class WebApkShareTargetUtil {
     }
 
     /**
-     * Given a list of share target params file names, and the mime types each file name can
-     * accept, returns the first share target params file name which accepts the passed-in file URI.
+     * Given a list of share target params file names, and the mime types each file name can accept,
+     * returns the first share target params file name which accepts the passed-in file URI.
      */
-    private static String findFormFieldToShareFile(
-            Uri fileUri,
+    private static @Nullable String findFormFieldToShareFile(
+            @Nullable Uri fileUri,
             String fileType,
             String[] shareTargetParamsFileNames,
             String[][] shareTargetParamsFileAccepts) {
-        if (shareTargetParamsFileNames == null
-                || shareTargetParamsFileAccepts == null
-                || shareTargetParamsFileNames.length != shareTargetParamsFileAccepts.length) {
+        if (shareTargetParamsFileNames.length != shareTargetParamsFileAccepts.length) {
             return null;
         }
         for (int i = 0; i < shareTargetParamsFileNames.length; i++) {
@@ -148,10 +150,10 @@ public class WebApkShareTargetUtil {
 
     protected static void addFilesToMultipartPostData(
             PostData postData,
-            String fallbackNameForPlainTextFile,
+            @Nullable String fallbackNameForPlainTextFile,
             String[] shareTargetParamsFileNames,
             String[][] shareTargetParamsFileAccepts,
-            List<Uri> shareFiles) {
+            @Nullable List<Uri> shareFiles) {
         if (shareFiles == null) {
             return;
         }
@@ -215,10 +217,9 @@ public class WebApkShareTargetUtil {
         }
     }
 
-    protected static PostData computePostData(WebApkShareTarget shareTarget, ShareData shareData) {
-        if (shareTarget == null || !shareTarget.isShareMethodPost() || shareData == null) {
-            return null;
-        }
+    protected static @Nullable PostData computePostData(
+            WebApkShareTarget shareTarget, ShareData shareData) {
+        if (!shareTarget.isShareMethodPost()) return null;
 
         PostData postData = new PostData(shareTarget.isShareEncTypeMultipart());
 

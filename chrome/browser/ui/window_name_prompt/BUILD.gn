@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("window_name_prompt") {
+  sources = [ "window_name_prompt.cc" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//ui/base/interaction",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("browser_tests") {
+  assert(!is_android)
+
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "window_name_prompt_browsertest.cc" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
+  ]
+}

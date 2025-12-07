@@ -2,28 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_X_XPROTO_TYPES_H_
 #define UI_GFX_X_XPROTO_TYPES_H_
 
 #include <cstdint>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/gfx/x/error.h"
 
 namespace x11 {
-
-class Error;
 
 // A memory buffer where the size of the memory buffer is unknown because its
 // given as `void*` from a C api which expects us to dynamically cast it to
@@ -85,7 +81,7 @@ class COMPONENT_EXPORT(X11) ThrowAwaySizeRefCountedMemory final
 class COMPONENT_EXPORT(X11) SizedRefCountedMemory final
     : public base::RefCountedMemory {
  public:
-  // Safety: The caller must ensure that the `mem` buffer points to at least
+  // SAFETY: The caller must ensure that the `mem` buffer points to at least
   // `size` many bytes or Undefined Behaviour can result.
   UNSAFE_BUFFER_USAGE static scoped_refptr<SizedRefCountedMemory> From(
       scoped_refptr<UnsizedRefCountedMemory> mem,
@@ -188,7 +184,8 @@ class COMPONENT_EXPORT(X11) WriteBuffer {
     static_assert(std::is_trivially_copyable<T>::value, "");
     detail::VerifyAlignment(t, offset_);
     const uint8_t* start = reinterpret_cast<const uint8_t*>(t);
-    std::copy(start, start + sizeof(*t), std::back_inserter(current_buffer_));
+    std::copy(start, UNSAFE_TODO(start + sizeof(*t)),
+              std::back_inserter(current_buffer_));
     offset_ += sizeof(*t);
   }
 
@@ -196,7 +193,8 @@ class COMPONENT_EXPORT(X11) WriteBuffer {
   void AppendCurrentBuffer();
 
   std::vector<scoped_refptr<UnsizedRefCountedMemory>> owned_buffers_;
-  std::vector<base::span<uint8_t>> sized_buffers_;
+  // TODO(367764863) Rewrite to base::raw_span
+  RAW_PTR_EXCLUSION std::vector<base::span<uint8_t>> sized_buffers_;
   std::vector<uint8_t> current_buffer_;
   size_t offset_ = 0;
   std::vector<int> fds_;

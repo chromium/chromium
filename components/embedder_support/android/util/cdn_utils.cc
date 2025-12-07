@@ -44,8 +44,8 @@ bool IsTrustedCDN(const GURL& url) {
   }());
 
   // Allow any subdomain of the base URL.
-  return url.DomainIs(trusted_cdn_base_url->host_piece()) &&
-         (url.scheme_piece() == trusted_cdn_base_url->scheme_piece()) &&
+  return url.DomainIs(trusted_cdn_base_url->host()) &&
+         (url.scheme() == trusted_cdn_base_url->scheme()) &&
          (url.EffectiveIntPort() == trusted_cdn_base_url->EffectiveIntPort());
 }
 
@@ -67,13 +67,13 @@ GURL GetPublisherURL(content::RenderFrameHost* rfh) {
     return GURL();
   }
 
-  std::string publisher_url;
-  if (!response_head->headers->GetNormalizedHeader("x-amp-cache",
-                                                   &publisher_url)) {
+  std::optional<std::string> publisher_url =
+      response_head->headers->GetNormalizedHeader("x-amp-cache");
+  if (!publisher_url) {
     return GURL();
   }
 
-  return GURL(publisher_url);
+  return GURL(*publisher_url);
 }
 
 }  // namespace embedder_support

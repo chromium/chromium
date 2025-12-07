@@ -4,14 +4,13 @@
 
 #include "chrome/browser/chained_back_navigation_tracker.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
-
-namespace chrome {
 
 class ChainedBackNavigationTrackerTest
     : public ChromeRenderViewHostTestHarness {
@@ -176,5 +175,3 @@ TEST_F(ChainedBackNavigationTrackerTest,
     }
   }
 }
-
-}  // namespace chrome

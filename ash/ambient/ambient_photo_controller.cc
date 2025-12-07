@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -25,23 +26,30 @@
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/sha1.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
+
+namespace ambient {
+// Not placed in namespace {} so it can be friended from //crypto.
+std::string GetCachedImageHash(std::string_view image) {
+  return std::string(base::as_string_view(crypto::obsolete::Sha1::Hash(image)));
+}
+}  // namespace ambient
 
 namespace {
 
@@ -203,7 +211,6 @@ void AmbientPhotoController::FetchBackupImages() {
 
 void AmbientPhotoController::OnBackupImageFetched(bool success) {
   if (!success) {
-    // TODO(b/169807068) Change to retry individual failed images.
     active_backup_image_downloads_.clear();
     resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
     LOG(WARNING) << "Downloading backup image failed.";
@@ -376,7 +383,8 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
       base::BindOnce(
           &AmbientPhotoController::OnAllPhotoDecoded,
           weak_factory_.GetWeakPtr(), from_downloading,
-          /*hash=*/base::SHA1HashString(cache_entry_.primary_photo().image())));
+          /*hash=*/
+          ambient::GetCachedImageHash(cache_entry_.primary_photo().image())));
 
   DecodePhotoRawData(from_downloading,
                      /*is_related_image=*/false, on_done,

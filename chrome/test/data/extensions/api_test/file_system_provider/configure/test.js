@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * Sets up the tests. Called once per all test cases. In case of a failure,
  * the callback is not called.
@@ -11,7 +13,7 @@
  * @param {function()} callback Success callback.
  */
 function setUp(callback) {
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -48,7 +50,7 @@ function runTests() {
             chrome.test.assertEq('device', providers[0].source);
           }));
 
-      chrome.fileManagerPrivate.configureVolume(test_util.volumeId,
+      chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
           chrome.test.callbackPass(function() {}));
     },
 
@@ -66,7 +68,7 @@ function runTests() {
       chrome.fileSystemProvider.onConfigureRequested.addListener(
           onConfigureRequested);
 
-      chrome.fileManagerPrivate.configureVolume(test_util.volumeId,
+      chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
           chrome.test.callbackPass(function() {
             chrome.test.assertTrue(configured);
           }));
@@ -84,12 +86,19 @@ function runTests() {
       chrome.fileSystemProvider.onConfigureRequested.addListener(
           onConfigureRequested);
 
-      chrome.fileManagerPrivate.configureVolume(test_util.volumeId,
+      chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
           chrome.test.callbackFail('Failed to complete configuration.'));
     }
 
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

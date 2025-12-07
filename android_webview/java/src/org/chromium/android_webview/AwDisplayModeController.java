@@ -12,14 +12,17 @@ import android.view.View;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Display mode controller for WebView.
  *
- * Display mode will be used for display cutout controller's internal implementation since we only
- * apply display cutout to fullscreen mode. Also, display mode will be reported as CSS property.
+ * <p>Display mode will be used for display cutout controller's internal implementation since we
+ * only apply display cutout to fullscreen mode. Also, display mode will be reported as CSS
+ * property.
  */
 @Lifetime.WebView
+@NullMarked
 public class AwDisplayModeController {
     private static final boolean DEBUG = false;
     private static final String TAG = "DisplayMode";
@@ -33,7 +36,7 @@ public class AwDisplayModeController {
         int getDisplayHeight();
     }
 
-    private Delegate mDelegate;
+    private final Delegate mDelegate;
     private View mContainerView;
 
     // Reuse these structures to minimize memory impact.
@@ -102,10 +105,6 @@ public class AwDisplayModeController {
     }
 
     private static void getViewRectOnScreen(View view, Rect rect) {
-        if (view == null) {
-            rect.set(0, 0, 0, 0);
-            return;
-        }
         view.getLocationOnScreen(sCachedLocationOnScreen);
         int width = view.getMeasuredWidth();
         int height = view.getMeasuredHeight();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_ZUCCHINI_REL32_UTILS_H_
 #define COMPONENTS_ZUCCHINI_REL32_UTILS_H_
 
@@ -16,6 +11,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/arm_utils.h"
@@ -192,15 +188,17 @@ class Rel32MixerArm : public ReferenceMixer {
   ~Rel32MixerArm() override = default;
 
   ConstBufferView Mix(offset_t src_offset, offset_t dst_offset) override {
-    ConstBufferView::const_iterator new_it = dst_image_.begin() + dst_offset;
+    ConstBufferView::const_iterator new_it =
+        UNSAFE_TODO(dst_image_.begin() + dst_offset);
     MutableBufferView out_buffer_view(out_buffer_.data(), kCodeWidth);
-    std::copy(new_it, new_it + kCodeWidth, out_buffer_view.begin());
+    std::copy(new_it, UNSAFE_TODO(new_it + kCodeWidth),
+              out_buffer_view.begin());
 
     if (!ArmCopyDisp<ADDR_TRAITS>(src_image_, src_offset, out_buffer_view,
                                   0U)) {
       OutputArmCopyDispFailure(static_cast<uint32_t>(ADDR_TRAITS::addr_type));
       // Fall back to direct copy.
-      std::copy(new_it, new_it + kCodeWidth, out_buffer_.begin());
+      std::copy(new_it, UNSAFE_TODO(new_it + kCodeWidth), out_buffer_.begin());
     }
     return ConstBufferView(out_buffer_.data(), kCodeWidth);
   }

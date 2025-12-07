@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cast_streaming/browser/frame/stream_consumer.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -26,8 +22,9 @@ namespace cast_streaming {
 StreamConsumer::BufferDataWrapper::~BufferDataWrapper() = default;
 
 base::span<uint8_t> StreamConsumer::BufferDataWrapper::Get() {
-  return base::span<uint8_t>(&pending_buffer_[pending_buffer_offset_],
-                             pending_buffer_remaining_bytes_);
+  return UNSAFE_TODO(
+      base::span<uint8_t>(&pending_buffer_[pending_buffer_offset_],
+                          pending_buffer_remaining_bytes_));
 }
 
 base::span<uint8_t> StreamConsumer::BufferDataWrapper::Consume(
@@ -39,7 +36,8 @@ base::span<uint8_t> StreamConsumer::BufferDataWrapper::Consume(
 
   pending_buffer_offset_ += read_size;
   pending_buffer_remaining_bytes_ -= read_size;
-  return base::span<uint8_t>(&pending_buffer_[current_offset], read_size);
+  return UNSAFE_TODO(
+      base::span<uint8_t>(&pending_buffer_[current_offset], read_size));
 }
 
 bool StreamConsumer::BufferDataWrapper::Reset(uint32_t new_size) {

@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
@@ -116,10 +117,11 @@ class SharedRemoteBase
     RemoteWrapper(const RemoteWrapper&) = delete;
     RemoteWrapper& operator=(const RemoteWrapper&) = delete;
 
-    std::unique_ptr<ThreadSafeForwarder<InterfaceType>> CreateForwarder() {
+    std::unique_ptr<ThreadSafeForwarder<InterfaceType>> CreateForwarder(
+        const base::Location& location) {
       return std::make_unique<ThreadSafeForwarder<InterfaceType>>(
           remote_.internal_state()->CreateThreadSafeProxy(
-              base::MakeRefCounted<ProxyTarget>(this)));
+              base::MakeRefCounted<ProxyTarget>(this), location));
     }
 
     void set_disconnect_handler(
@@ -204,16 +206,21 @@ class SharedRemoteBase
     }
   };
 
-  explicit SharedRemoteBase(scoped_refptr<RemoteWrapper> wrapper)
-      : wrapper_(std::move(wrapper)), forwarder_(wrapper_->CreateForwarder()) {}
+  explicit SharedRemoteBase(scoped_refptr<RemoteWrapper> wrapper,
+                            const base::Location& location)
+      : wrapper_(std::move(wrapper)),
+        forwarder_(wrapper_->CreateForwarder(location)) {}
 
   // Creates a SharedRemoteBase bound to `pending_remote`. All messages sent
   // through the SharedRemote will first bounce through `task_runner`.
   static scoped_refptr<SharedRemoteBase> Create(
       PendingType pending_remote,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return new SharedRemoteBase(base::MakeRefCounted<RemoteWrapper>(
-        std::move(pending_remote), std::move(task_runner)));
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      const base::Location& location) {
+    return new SharedRemoteBase(
+        base::MakeRefCounted<RemoteWrapper>(std::move(pending_remote),
+                                            std::move(task_runner)),
+        location);
   }
 
   ~SharedRemoteBase() = default;
@@ -248,15 +255,18 @@ class SharedRemote {
 
   // Constructs a SharedRemote bound to `pending_remote` on the calling
   // sequence. See `Bind()` below for more details.
-  explicit SharedRemote(PendingRemote<Interface> pending_remote) {
-    Bind(std::move(pending_remote), nullptr);
+  explicit SharedRemote(
+      PendingRemote<Interface> pending_remote,
+      const base::Location& location = base::Location::Current()) {
+    Bind(std::move(pending_remote), nullptr, location);
   }
 
   // Constructs a SharedRemote bound to `pending_remote` on the sequence given
   // by `bind_task_runner`. See `Bind()` below for more details.
   SharedRemote(PendingRemote<Interface> pending_remote,
-               scoped_refptr<base::SequencedTaskRunner> bind_task_runner) {
-    Bind(std::move(pending_remote), std::move(bind_task_runner));
+               scoped_refptr<base::SequencedTaskRunner> bind_task_runner,
+               const base::Location& location = base::Location::Current()) {
+    Bind(std::move(pending_remote), std::move(bind_task_runner), location);
   }
 
   // SharedRemote supports both copy and move construction and assignment. These
@@ -311,31 +321,33 @@ class SharedRemote {
   // this call and re-bound to `pending_remote`. Any prior copies made are NOT
   // affected and will retain their reference to the original Remote.
   void Bind(PendingRemote<Interface> pending_remote,
-            scoped_refptr<base::SequencedTaskRunner> bind_task_runner) {
+            scoped_refptr<base::SequencedTaskRunner> bind_task_runner,
+            const base::Location& location = base::Location::Current()) {
     if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
       remote_.reset();
       return;
     }
     if (bind_task_runner && pending_remote) {
       remote_ = SharedRemoteBase<Remote<Interface>>::Create(
-          std::move(pending_remote), std::move(bind_task_runner));
+          std::move(pending_remote), std::move(bind_task_runner), location);
     } else if (pending_remote) {
       remote_ = SharedRemoteBase<Remote<Interface>>::Create(
           std::move(pending_remote),
-          base::SequencedTaskRunner::GetCurrentDefault());
+          base::SequencedTaskRunner::GetCurrentDefault(), location);
     }
   }
 
   // Creates a new pipe, binding this SharedRemote to one end on
   // `bind_task_runner` and returning the other end as a PendingReceiver.
   PendingReceiver<Interface> BindNewPipeAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> bind_task_runner = nullptr) {
+      scoped_refptr<base::SequencedTaskRunner> bind_task_runner = nullptr,
+      const base::Location& location = base::Location::Current()) {
     if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
       return PendingReceiver<Interface>();
     }
     PendingRemote<Interface> remote;
     auto receiver = remote.InitWithNewPipeAndPassReceiver();
-    Bind(std::move(remote), std::move(bind_task_runner));
+    Bind(std::move(remote), std::move(bind_task_runner), location);
     return receiver;
   }
 

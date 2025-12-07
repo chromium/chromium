@@ -4,6 +4,8 @@
 
 #include "ash/wm/mru_window_tracker.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -11,12 +13,12 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/ranges/algorithm.h"
 #include "components/app_restore/window_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -76,7 +78,7 @@ TEST_F(MruWindowTrackerTest, DraggedWindowsInListOnlyOnce) {
   // The dragged window should only be in the list once.
   MruWindowTracker::WindowList window_list =
       mru_window_tracker()->BuildWindowListIgnoreModal(kActiveDesk);
-  EXPECT_EQ(1, base::ranges::count(window_list, w1.get()));
+  EXPECT_EQ(1, std::ranges::count(window_list, w1.get()));
 }
 
 // Tests whether MRU order is properly restored for the window restore features.
@@ -202,8 +204,9 @@ TEST_P(MruWindowTrackerOrderTest, Basic) {
   EXPECT_EQ(w5.get(), window_list[3]);
   EXPECT_EQ(w6.get(), window_list[4]);
 
-  auto delegate = std::make_unique<views::WidgetDelegateView>();
-  delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  auto delegate = std::make_unique<views::WidgetDelegateView>(
+      views::WidgetDelegateView::CreatePassKey());
+  delegate->SetModalType(ui::mojom::ModalType::kSystem);
   std::unique_ptr<views::Widget> modal =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                        delegate.release(), kShellWindowId_Invalid);

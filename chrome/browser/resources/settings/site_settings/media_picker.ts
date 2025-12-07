@@ -15,8 +15,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './media_picker.html.js';
+import type {MediaPickerEntry} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
 
 interface MediaPickerElement {
   $: {
@@ -54,9 +54,9 @@ class MediaPickerElement extends MediaPickerElementBase {
     };
   }
 
-  type: string;
-  label: string;
-  devices: MediaPickerEntry[];
+  declare type: string;
+  declare label: string;
+  declare devices: MediaPickerEntry[];
 
   override ready() {
     super.ready();

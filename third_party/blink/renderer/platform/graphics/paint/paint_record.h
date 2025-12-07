@@ -9,13 +9,9 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
-using cc::PaintRecord;
-}
 
-namespace WTF {
-template <>
-struct CrossThreadCopier<cc::PaintRecord>
-    : public CrossThreadCopierPassThrough<cc::PaintRecord> {};
-}  // namespace WTF
+using cc::PaintRecord;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_RECORD_H_

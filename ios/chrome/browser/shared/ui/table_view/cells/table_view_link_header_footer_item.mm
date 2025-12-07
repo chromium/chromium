@@ -148,14 +148,23 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 - (void)setText:(NSString*)text
         withColor:(UIColor*)color
     textAlignment:(NSTextAlignment)textAlignment {
+  [self setText:text
+          withColor:color
+      textAlignment:textAlignment
+               font:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+}
+
+- (void)setText:(NSString*)text
+        withColor:(UIColor*)color
+    textAlignment:(NSTextAlignment)textAlignment
+             font:(UIFont*)font {
   StringWithTags parsedString = ParseStringWithLinks(text);
   NSMutableParagraphStyle* paragraphStyle =
       [[NSMutableParagraphStyle alloc] init];
   paragraphStyle.alignment = textAlignment;
 
   NSDictionary* textAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSFontAttributeName : font,
     NSForegroundColorAttributeName : color,
     NSParagraphStyleAttributeName : paragraphStyle
   };
@@ -202,19 +211,16 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
   };
 }
 
-#pragma mark - UITextViewDelegate
-
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
   DCHECK(self.textView == textView);
-  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:textItem.link];
   DCHECK(crurl.gurl.is_valid());
-  // DCHECK(base::Contains(self.urls, gURL));
-  [self.delegate view:self didTapLinkURL:crurl];
-  // Returns NO as the app is handling the opening of the URL.
-  return NO;
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate view:weakSelf didTapLinkURL:crurl];
+  }];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -15,15 +16,14 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -38,7 +38,6 @@ namespace {
 
 constexpr int kGetAuthCodeNetworkRetry = 3;
 
-constexpr char kConsumerName[] = "ArcAuthContext";
 constexpr char kToken[] = "token";
 constexpr char kErrorDescription[] = "error_description";
 constexpr char kDeviceId[] = "device_id";
@@ -51,14 +50,6 @@ constexpr char kRefreshToken[] = "refresh_token";
 constexpr char kGetAuthCodeKey[] = "Content-Type";
 constexpr char kGetAuthCodeValue[] = "application/json; charset=utf-8";
 constexpr char kContentTypeJSON[] = "application/json";
-
-}  // namespace
-
-namespace {
-
-signin::ScopeSet GetAccessTokenScopes() {
-  return signin::ScopeSet({GaiaConstants::kOAuth1LoginScope});
-}
 
 }  // namespace
 
@@ -100,7 +91,8 @@ void ArcBackgroundAuthCodeFetcher::AttemptToRecoverAccessToken(
     const signin::AccessTokenInfo& token_info) {
   DCHECK(!attempted_to_recover_access_token_);
   attempted_to_recover_access_token_ = true;
-  context_.RemoveAccessTokenFromCache(GetAccessTokenScopes(), token_info.token);
+  context_.RemoveAccessTokenFromCache(
+      signin::OAuthConsumerId::kArcBackgroundAuthCodeFetcher, token_info.token);
   StartFetchingAccessToken();
 }
 
@@ -108,7 +100,7 @@ void ArcBackgroundAuthCodeFetcher::StartFetchingAccessToken() {
   DCHECK(!simple_url_loader_);
   DCHECK(!access_token_fetcher_);
   access_token_fetcher_ = context_.CreateAccessTokenFetcher(
-      kConsumerName, GetAccessTokenScopes(),
+      signin::OAuthConsumerId::kArcBackgroundAuthCodeFetcher,
       base::BindOnce(&ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete,
                      base::Unretained(this)));
 }
@@ -127,15 +119,18 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string device_id = known_user.GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
-  DCHECK(!device_id.empty());
+  if (device_id.empty()) {
+    LOG(ERROR) << "device_id is empty";
+    // TODO(crbug.com/408155002): add new `OptInSilentAuthCode` and report it to
+    // UMA.
+  }
 
   base::Value::Dict request_data;
   request_data.Set(kRefreshToken, token_info.token);
   request_data.Set(kClientId, kClientIdArc);
   request_data.Set(kDeviceType, kDeviceTypeArc);
   request_data.Set(kDeviceId, device_id);
-  std::string request_string;
-  base::JSONWriter::Write(request_data, &request_string);
+  std::string request_string = base::WriteJson(request_data).value_or("");
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("arc_auth_code_fetcher", R"(
       semantics {
@@ -196,7 +191,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
 
 void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     signin::AccessTokenInfo token_info,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -204,8 +199,8 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
         simple_url_loader_->ResponseInfo()->headers->response_code();
   }
   int net_error = simple_url_loader_->NetError();
-  bool mandatory_proxy_failed = net_error ==
-                                net::ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+  bool mandatory_proxy_failed =
+      net_error == net::ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
 
   // If the network request has failed because of an unreachable PAC script,
   // retry the request without the proxy.
@@ -218,8 +213,9 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
   }
 
   std::string json_string;
-  if (response_body)
+  if (response_body) {
     json_string = std::move(*response_body);
+  }
 
   simple_url_loader_.reset();
 
@@ -235,10 +231,10 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
             : nullptr;
 
     LOG(WARNING) << "Server request failed."
-                 << " Net error: " << net_error
-                 << ": " << net::ErrorToString(net_error)
-                 << ", response code: " << response_code
-                 << ": " << (error ? *error : "Unknown") << ".";
+                 << " Net error: " << net_error << ": "
+                 << net::ErrorToString(net_error)
+                 << ", response code: " << response_code << ": "
+                 << (error ? *error : "Unknown") << ".";
 
     OptInSilentAuthCode uma_status;
     if (response_code >= 400 && response_code < 500) {
@@ -288,10 +284,11 @@ void ArcBackgroundAuthCodeFetcher::ReportResult(
     UpdateSilentAuthCodeUMA(uma_status);
   } else {
     // Not the initial provisioning.
-    if (is_primary_account_)
+    if (is_primary_account_) {
       UpdateReauthorizationSilentAuthCodeUMA(uma_status);
-    else
+    } else {
       UpdateSecondaryAccountSilentAuthCodeUMA(uma_status);
+    }
   }
   std::move(callback_).Run(!auth_code.empty(), auth_code);
 }

@@ -12,12 +12,16 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -55,6 +59,7 @@ struct TestResult {
   int64_t hour_offset;  // Visit time in hours past the baseline time.
   HistoryEntry::EntryType type;
   std::string remote_icon_url_for_uma;
+  VisitSource visit_source = VisitSource::SOURCE_BROWSED;
 };
 
 class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
@@ -142,7 +147,7 @@ class ReversedWebHistoryService : public TestWebHistoryService {
       bool* more_results_left) override {
     auto result = FakeWebHistoryService::GetVisitsBetween(begin, end, count,
                                                           more_results_left);
-    std::reverse(result.begin(), result.end());
+    std::ranges::reverse(result);
     return result;
   }
 };
@@ -209,18 +214,28 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
       if (entry.type == kLocal) {
         local_history()->AddPage(GURL(entry.url),
                                  OffsetToTime(entry.hour_offset),
-                                 VisitSource::SOURCE_BROWSED);
+                                 entry.visit_source);
       } else if (entry.type == kRemote) {
         web_history->AddSyncedVisit(entry.url, OffsetToTime(entry.hour_offset),
                                     entry.remote_icon_url_for_uma);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
 
   void AddHistory(const std::vector<TestResult>& data) {
     AddHistory(data, web_history());
+  }
+
+  HistoryEntry CreateEntry(const std::string& url,
+                           const std::vector<int>& hour_offsets) {
+    HistoryEntry entry;
+    entry.url = GURL(url);
+    for (int hour_offset : hour_offsets) {
+      entry.all_timestamps.insert(OffsetToTime(hour_offset));
+    }
+    return entry;
   }
 
   void VerifyEntry(const TestResult& expected, const HistoryEntry& actual) {
@@ -230,6 +245,8 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
               static_cast<int>(actual.entry_type));
     EXPECT_EQ(GURL(expected.remote_icon_url_for_uma),
               actual.remote_icon_url_for_uma);
+    EXPECT_EQ(expected.visit_source == VisitSource::SOURCE_ACTOR,
+              actual.is_actor_visit);
   }
 
   TestBrowsingHistoryDriver::QueryResult QueryHistory(size_t max_count = 0) {
@@ -266,13 +283,11 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   }
 
   void VerifyQueryResult(bool reached_beginning,
-                         bool has_synced_results,
                          const std::vector<TestResult>& expected_entries,
                          TestBrowsingHistoryDriver::QueryResult result) {
     EXPECT_EQ(reached_beginning, result.second.reached_beginning);
-    EXPECT_EQ(has_synced_results, result.second.has_synced_results);
     EXPECT_FALSE(result.second.sync_timed_out);
-    EXPECT_EQ(expected_entries.size(), result.first.size());
+    ASSERT_EQ(expected_entries.size(), result.first.size());
     for (size_t i = 0; i < expected_entries.size(); ++i) {
       VerifyEntry(expected_entries[i], result.first[i]);
     }
@@ -303,55 +318,70 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
+  // Allow saving 404 visits to History.
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  // Add a non-404 visit.
+  AddHistory({{kUrl1, 1, kLocal}});
+
+  // Add a 404 visit.
+  HistoryAddPageArgs page_404_args;
+  page_404_args.url = GURL(kUrl2);
+  page_404_args.time = OffsetToTime(2);
+  page_404_args.context_annotations = {.response_code = 404};
+  local_history()->AddPage(page_404_args);
+
+  BlockUntilHistoryProcessesPendingRequests();
+
+  // 404s should be excluded from query results.
+  VerifyQueryResult(/*reached_beginning=*/true, {{kUrl1, 1, kLocal}},
+                    QueryHistory());
+}
+
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, nullptr);
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ false, {}, QueryHistory());
+  VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustLocal) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), local_history(), nullptr);
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ false, {}, QueryHistory());
+  VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), local_history(), nullptr);
   AddHistory({{kUrl1, 1, kLocal}});
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ false, {{kUrl1, 1, kLocal}},
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kLocal}},
                     QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {
   ResetService(driver(), nullptr, nullptr);
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ true, {}, QueryHistory());
+  VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryDelayedWeb) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, sync());
   driver()->SetWebHistory(web_history());
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ true, {}, QueryHistory());
+  VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustWeb) {
   ResetService(driver(), nullptr, sync());
   AddHistory({{kUrl1, 1, kRemote}});
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ true, {{kUrl1, 1, kRemote}},
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kRemote}},
                     QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryBothSources) {
   ResetService(driver(), local_history(), sync());
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ true, {}, QueryHistory());
+  VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryAllSources) {
@@ -361,7 +391,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryAllSources) {
               {kUrl3, 3, kRemote},
               {kUrl1, 4, kRemote}});
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
+      /*reached_beginning*/ true,
       {{kUrl1, 4, kBoth}, {kUrl3, 3, kRemote}, {kUrl2, 2, kLocal}},
       QueryHistory());
 }
@@ -380,7 +410,6 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
   // this value, all this test cares about is that BrowsingHistoryService passes
   // the values through correctly.
   VerifyQueryResult(/*reached_beginning*/ false,
-                    /*has_synced_results*/ true,
                     {{kUrl3, 3, kLocal}, {kUrl2, 2, kLocal}},
                     QueryHistory(options));
 }
@@ -394,8 +423,8 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
   options.begin_time = OffsetToTime(2);
   options.end_time = OffsetToTime(4);
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
-      {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}}, QueryHistory(options));
+      /*reached_beginning*/ true, {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}},
+      QueryHistory(options));
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
@@ -406,56 +435,51 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
   options.host_only = false;
   VerifyQueryResult(
       /*reached_beginning*/ true,
-      /*has_synced_results*/ true,
+
       {{kUrl10, 3, kRemote}, {kUrl9, 2, kRemote}, {kUrl8, 1, kRemote}},
       QueryHistory(u"eight.com", options));
   options.host_only = true;
-  VerifyQueryResult(/*reached_beginning*/ true,
-                    /*has_synced_results*/ true, {{kUrl8, 1, kRemote}},
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl8, 1, kRemote}},
                     QueryHistory(u"eight.com", options));
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   VerifyQueryResult(/*reached_beginning*/ false,
-                    /*has_synced_results*/ true,
+
                     {{kUrl3, 3, kLocal}, {kUrl2, 2, kLocal}}, QueryHistory(2));
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
-      {{kUrl1, 1, kLocal}}, ContinueQuery());
+      /*reached_beginning*/ true, {{kUrl1, 1, kLocal}}, ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingFull) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
+      /*reached_beginning*/ true,
       {{kUrl3, 3, kLocal}, {kUrl2, 2, kLocal}, {kUrl1, 1, kLocal}},
       QueryHistory(3));
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true, {},
-      ContinueQuery());
+      /*reached_beginning*/ true, {}, ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemotePagingPartial) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   VerifyQueryResult(/*reached_beginning*/ false,
-                    /*has_synced_results*/ true,
+
                     {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}},
                     QueryHistory(2));
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
-      {{kUrl1, 1, kRemote}}, ContinueQuery());
+      /*reached_beginning*/ true, {{kUrl1, 1, kRemote}}, ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemotePagingFull) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
+      /*reached_beginning*/ true,
       {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}, {kUrl1, 1, kRemote}},
       QueryHistory(3));
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true, {},
-      ContinueQuery());
+      /*reached_beginning*/ true, {}, ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesSameDay) {
@@ -463,13 +487,13 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesSameDay) {
               {kUrl2, 1, kRemote},
               {kUrl1, 2, kRemote},
               {kUrl1, 3, kRemote}});
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl1, 3, kRemote}, {kUrl2, 1, kRemote}}, QueryHistory());
 }
 
 TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesNextDayNotRemoved) {
   AddHistory({{kUrl1, 0, kRemote}, {kUrl1, 23, kRemote}, {kUrl1, 24, kRemote}});
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl1, 24, kRemote}, {kUrl1, 23, kRemote}},
                     QueryHistory());
 }
@@ -483,7 +507,7 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesMultipleDays) {
               {kUrl1, 25, kRemote},
               {kUrl2, 26, kRemote},
               {kUrl1, 27, kRemote}});
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl1, 27, kRemote},
                      {kUrl2, 26, kRemote},
                      {kUrl1, 3, kRemote},
@@ -497,7 +521,7 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesVerifyTimestamps) {
               {kUrl1, 2, kRemote},
               {kUrl1, 3, kRemote}});
   auto results = QueryHistory();
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl1, 3, kRemote}, {kUrl2, 1, kRemote}}, results);
   EXPECT_EQ(3U, results.first[0].all_timestamps.size());
   EXPECT_EQ(1U, results.first[1].all_timestamps.size());
@@ -506,13 +530,13 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesVerifyTimestamps) {
 TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesKeepNonEmptyIconUrl) {
   AddHistory({{kUrl1, 0, kRemote, kIconUrl1}, {kUrl1, 1, kLocal}});
   auto results = QueryHistory();
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
-                    {{kUrl1, 1, kBoth, kIconUrl1}}, results);
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kBoth, kIconUrl1}},
+                    results);
 
   AddHistory({{kUrl1, 0, kLocal}, {kUrl1, 1, kRemote, kIconUrl1}});
   results = QueryHistory();
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
-                    {{kUrl1, 1, kBoth, kIconUrl1}}, results);
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kBoth, kIconUrl1}},
+                    results);
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryMerge) {
@@ -521,7 +545,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryMerge) {
               {kUrl3, 3, kLocal},
               {kUrl1, 4, kLocal}});
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
+      /*reached_beginning*/ true,
       {{kUrl1, 4, kBoth}, {kUrl3, 3, kLocal}, {kUrl2, 2, kRemote}},
       QueryHistory());
 }
@@ -532,14 +556,12 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPending) {
               {kUrl3, 3, kLocal},
               {kUrl4, 4, kLocal}});
   VerifyQueryResult(
-      /*reached_beginning*/ false, /*has_synced_results*/ true,
-      {{kUrl4, 4, kLocal}}, QueryHistory(1));
+      /*reached_beginning*/ false, {{kUrl4, 4, kLocal}}, QueryHistory(1));
   VerifyQueryResult(
-      /*reached_beginning*/ false, /*has_synced_results*/ true,
-      {{kUrl3, 3, kLocal}, {kUrl2, 2, kRemote}}, ContinueQuery());
+      /*reached_beginning*/ false, {{kUrl3, 3, kLocal}, {kUrl2, 2, kRemote}},
+      ContinueQuery());
   VerifyQueryResult(
-      /*reached_beginning*/ true, /*has_synced_results*/ true,
-      {{kUrl1, 1, kRemote}}, ContinueQuery());
+      /*reached_beginning*/ true, {{kUrl1, 1, kRemote}}, ContinueQuery());
 }
 
 // A full request worth of local results will sit in pending, resulting in us
@@ -548,11 +570,10 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPending) {
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryFullLocalPending) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   VerifyQueryResult(
-      /*reached_beginning*/ false, /*has_synced_results*/ true,
-      {{kUrl3, 3, kRemote}}, QueryHistory(1));
+      /*reached_beginning*/ false, {{kUrl3, 3, kRemote}}, QueryHistory(1));
 
   local_history()->DeleteURLs({GURL(kUrl1)});
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl2, 2, kRemote}, {kUrl1, 1, kLocal}}, ContinueQuery());
 }
 
@@ -567,10 +588,10 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialLocalPending) {
               {kUrl6, 6, kRemote},
               {kUrl7, 7, kLocal}});
   VerifyQueryResult(
-      /*reached_beginning*/ false, /*has_synced_results*/ true,
+      /*reached_beginning*/ false,
       {{kUrl7, 7, kLocal}, {kUrl6, 6, kRemote}, {kUrl5, 5, kRemote}},
       QueryHistory(2));
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl4, 4, kLocal},
                      {kUrl3, 3, kRemote},
                      {kUrl2, 2, kLocal},
@@ -583,11 +604,11 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialLocalPending) {
 // see the remote entry.
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryFullRemotePending) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
-  VerifyQueryResult(/*reached_beginning*/ false, /*has_synced_results*/ true,
-                    {{kUrl3, 3, kLocal}}, QueryHistory(1));
+  VerifyQueryResult(/*reached_beginning*/ false, {{kUrl3, 3, kLocal}},
+                    QueryHistory(1));
 
   web_history()->ClearSyncedVisits();
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl2, 2, kLocal}, {kUrl1, 1, kRemote}}, ContinueQuery());
 }
 
@@ -602,10 +623,10 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialRemotePending) {
               {kUrl6, 6, kLocal},
               {kUrl7, 7, kRemote}});
   VerifyQueryResult(
-      /*reached_beginning*/ false, /*has_synced_results*/ true,
+      /*reached_beginning*/ false,
       {{kUrl7, 7, kRemote}, {kUrl6, 6, kLocal}, {kUrl5, 5, kLocal}},
       QueryHistory(2));
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl4, 4, kRemote},
                      {kUrl3, 3, kLocal},
                      {kUrl2, 2, kRemote},
@@ -615,37 +636,34 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialRemotePending) {
 
 TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailureEmpty) {
   web_history()->SetupFakeResponse(false, 0);
-  VerifyQueryResult(/*reached_beginning*/ false, /*has_synced_results*/ false,
-                    {}, QueryHistory());
+  VerifyQueryResult(/*reached_beginning*/ false, {}, QueryHistory());
   web_history()->SetupFakeResponse(true, net::HTTP_OK);
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true, {},
-                    ContinueQuery());
+  VerifyQueryResult(/*reached_beginning*/ true, {}, ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingRemote) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
-  VerifyQueryResult(/*reached_beginning*/ false, /*has_synced_results*/ true,
+  VerifyQueryResult(/*reached_beginning*/ false,
                     {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}},
                     QueryHistory(2));
 
   web_history()->SetupFakeResponse(false, 0);
-  VerifyQueryResult(/*reached_beginning*/ false, /*has_synced_results*/ false,
-                    {}, ContinueQuery());
+  VerifyQueryResult(/*reached_beginning*/ false, {}, ContinueQuery());
 
   web_history()->SetupFakeResponse(true, net::HTTP_OK);
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
-                    {{kUrl1, 1, kRemote}}, ContinueQuery());
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kRemote}},
+                    ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingLocal) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   web_history()->SetupFakeResponse(false, 0);
-  VerifyQueryResult(/*reached_beginning*/ false, /*has_synced_results*/ false,
+  VerifyQueryResult(/*reached_beginning*/ false,
                     {{kUrl3, 3, kLocal}, {kUrl2, 2, kLocal}}, QueryHistory(2));
 
   web_history()->SetupFakeResponse(true, net::HTTP_OK);
-  VerifyQueryResult(/*reached_beginning*/ true, /*has_synced_results*/ true,
-                    {{kUrl1, 1, kLocal}}, ContinueQuery());
+  VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kLocal}},
+                    ContinueQuery());
 }
 
 TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
@@ -659,7 +677,6 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
   timer()->Fire();
   EXPECT_EQ(1U, driver()->GetQueryResults().size());
   EXPECT_FALSE(driver()->GetQueryResults()[0].second.reached_beginning);
-  EXPECT_FALSE(driver()->GetQueryResults()[0].second.has_synced_results);
   EXPECT_TRUE(driver()->GetQueryResults()[0].second.sync_timed_out);
 
   // WebHistoryService will DCHECK if we destroy it before the observer in
@@ -724,8 +741,8 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
               {kUrl6, 6, kRemote}},
              &reversed);
   VerifyQueryResult(
-      /*reached_beginning*/ false, /*has_synced_results*/ true,
-      {{kUrl6, 6, kRemote}, {kUrl5, 5, kBoth}}, QueryHistory(2));
+      /*reached_beginning*/ false, {{kUrl6, 6, kRemote}, {kUrl5, 5, kBoth}},
+      QueryHistory(2));
 
   // WebHistoryService will DCHECK if we destroy it before the observer in
   // BrowsingHistoryService is removed, so reset our first
@@ -733,6 +750,82 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, nullptr);
 }
+
+TEST_F(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
+  // `kUrl1` was visited 3 times on day 1, and 4 times on day 2. `kUrl2` was
+  // visited once on day 1. In total, there are 3 `HistoryEntry` instances
+  // (since every "entry" groups all visits to a URL for a single day).
+  // Note that for this test it doesn't matter that no such history entries were
+  // actually added to the service first.
+  const std::vector<HistoryEntry> entries{CreateEntry(kUrl1, {1, 2, 3}),
+                                          CreateEntry(kUrl2, {4}),
+                                          CreateEntry(kUrl1, {25, 26, 27, 28})};
+
+  {
+    base::HistogramTester histograms;
+
+    service()->RemoveVisits(entries);
+
+    histograms.ExpectUniqueSample(
+        "History.RemoveVisitsFromWebHistory.EntryCount", 3, 1);
+  }
+
+  {
+    // Simulate that history sync is disabled, so `WebHistoryService` is null.
+    driver()->SetWebHistory(nullptr);
+
+    base::HistogramTester histograms;
+
+    service()->RemoveVisits(entries);
+
+    // Without WebHistoryService, nothing should be recorded.
+    histograms.ExpectTotalCount("History.RemoveVisitsFromWebHistory.EntryCount",
+                                0);
+  }
+}
+
+TEST_F(BrowsingHistoryServiceTest, ActorVisitPropagated) {
+  AddHistory({
+      {kUrl1, 1, kRemote},
+      {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
+  });
+
+  VerifyQueryResult(
+      /*reached_beginning*/ true,
+      {{kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR}, {kUrl1, 1, kRemote}},
+      QueryHistory());
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(BrowsingHistoryServiceTest, ActorVisitDeduplication) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
+
+  AddHistory({
+      {kUrl1, 1, kRemote},
+      {kUrl1, 2, kLocal},
+      {kUrl1, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+      {kUrl2, 4, kLocal, "", VisitSource::SOURCE_ACTOR},
+      {kUrl2, 5, kLocal, "", VisitSource::SOURCE_ACTOR},
+  });
+
+  QueryOptions options;
+  options.include_actor_visits = true;
+  // Disable backend de-duplication to properly test the client-side
+  // de-duplication.
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+
+  VerifyQueryResult(
+      /*reached_beginning*/ true,
+      {{kUrl2, 5, kLocal, "",
+        VisitSource::SOURCE_ACTOR},  // Duplicate actor visits take the latest
+                                     // visit values.
+       {kUrl1, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+       {kUrl1, 2, kBoth}},  // Actor visits are not duplicated with non-actor
+                            // visits.
+      QueryHistory(options));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 

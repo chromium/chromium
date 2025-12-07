@@ -6,7 +6,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CountryDetailManager, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -14,27 +14,6 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createAddressEntry, TestAutofillManager} from './autofill_fake_data.js';
 // clang-format on
-
-/**
- * Test implementation.
- */
-export class CountryDetailManagerTestImpl implements CountryDetailManager {
-  getCountryList() {
-    return new Promise<chrome.autofillPrivate.CountryEntry[]>(function(
-        resolve) {
-      resolve([
-        {name: 'United States', countryCode: 'US'},  // Default test country.
-        {name: 'Israel', countryCode: 'IL'},
-        {name: 'United Kingdom', countryCode: 'GB'},
-      ]);
-    });
-  }
-
-  getAddressFormat(countryCode: string) {
-    return chrome.autofillPrivate.getAddressComponents(countryCode);
-  }
-}
-
 
 /**
  * Resolves the promise after the element fires the expected event. |causeEvent|
@@ -133,7 +112,14 @@ export async function initiateEditing(
 
   // Open menu and click the Edit button.
   menu.click();
-  section.$.menuEditAddress.click();
+  // Wait for the menu's items to render.
+  flush();
+
+  // Find and click the Edit button.
+  const editButton =
+      section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+  assertTrue(!!editButton, 'Edit button not found');
+  editButton.click();
 
   flush();
 
@@ -172,7 +158,11 @@ export function initiateRemoving(
 
   // Open menu and click the Delete button.
   menu.click();
-  section.$.menuRemoveAddress.click();
+  flush();
+  const removeButton =
+      section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveAddress');
+  assertTrue(!!removeButton, 'Remove button not found');
+  removeButton.click();
 
   flush();
 
@@ -193,6 +183,8 @@ export async function createRemoveAddressDialog(
     autofillManager: TestAutofillManager):
     Promise<SettingsAddressRemoveConfirmationDialogElement> {
   const address = createAddressEntry();
+  address.metadata!.recordType =
+      chrome.autofillPrivate.AddressRecordType.ACCOUNT;
 
   // Override the AutofillManagerImpl for testing.
   autofillManager.data.addresses = [address];
@@ -221,7 +213,7 @@ export async function deleteAddress(
   address.splice(index, 1);
   manager.data.addresses = address;
   manager.lastCallback.setPersonalDataManagerListener!
-      (address, [], [], manager.data.accountInfo);
+      (address, [], [], [], manager.data.accountInfo);
   await flushTasks();
 }
 

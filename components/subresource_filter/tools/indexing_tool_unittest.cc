@@ -30,15 +30,13 @@ std::vector<uint8_t> ReadFileContents(const base::FilePath& file_path) {
 
   size_t length = base::checked_cast<size_t>(file.GetLength());
   std::vector<uint8_t> contents(length);
-  static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
-  file.Read(0, reinterpret_cast<char*>(contents.data()),
-            base::checked_cast<int>(length));
+  file.Read(0, contents);
   return contents;
 }
 
 class IndexingToolTest : public ::testing::Test {
  public:
-  IndexingToolTest() {}
+  IndexingToolTest() = default;
 
   IndexingToolTest(const IndexingToolTest&) = delete;
   IndexingToolTest& operator=(const IndexingToolTest&) = delete;
@@ -130,7 +128,8 @@ TEST_F(IndexingToolTest, VersionMetadata) {
   WriteVersionMetadata(version_path, "1.2.3", checksum);
   std::string version_json;
   EXPECT_TRUE(base::ReadFileToString(version_path, &version_json));
-  std::optional<base::Value> json = base::JSONReader::Read(version_json);
+  std::optional<base::Value> json = base::JSONReader::Read(
+      version_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   std::string* actual_content = json->GetDict().FindStringByDottedPath(
       "subresource_filter.ruleset_version.content");

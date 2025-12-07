@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
@@ -53,7 +54,8 @@ CSSStyleValue* CreateStyleValueWithoutProperty(const CSSValue& value) {
 }
 
 CSSStyleValue* CreateStyleValue(const CSSValue& value) {
-  if (IsA<CSSIdentifierValue>(value) || IsA<CSSCustomIdentValue>(value)) {
+  if (IsA<CSSIdentifierValue>(value) || IsA<CSSCustomIdentValue>(value) ||
+      IsA<cssvalue::CSSScopedKeywordValue>(value)) {
     return CSSKeywordValue::FromCSSValue(value);
   }
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
@@ -304,8 +306,10 @@ CSSStyleValueVector StyleValueFactory::FromString(
   DCHECK_NE(property_id, CSSPropertyID::kInvalid);
   DCHECK_EQ(property_id == CSSPropertyID::kVariable,
             !custom_property_name.IsNull());
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
+  stream.EnsureLookAhead();
+  CSSParserTokenStream::State savepoint = stream.Save();
+
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   if (property_id != CSSPropertyID::kVariable &&
       CSSPropertyParser::ParseValue(
@@ -313,8 +317,8 @@ CSSStyleValueVector StyleValueFactory::FromString(
           parser_context, parsed_properties, StyleRule::RuleType::kStyle)) {
     if (parsed_properties.size() == 1) {
       const auto result = StyleValueFactory::CssValueToStyleValueVector(
-          CSSPropertyName(parsed_properties[0].Id()),
-          *parsed_properties[0].Value());
+          CSSPropertyName(parsed_properties[0].PropertyID()),
+          parsed_properties[0].Value());
       // TODO(801935): Handle list-valued properties.
       if (result.size() == 1U) {
         result[0]->SetCSSText(css_text);
@@ -330,19 +334,23 @@ CSSStyleValueVector StyleValueFactory::FromString(
     return result;
   }
 
-  CSSTokenizer tokenizer2(css_text);
-  const auto tokens = tokenizer2.TokenizeToEOF();
-  const CSSParserTokenRange range(tokens);
-
-  if ((property_id == CSSPropertyID::kVariable && !tokens.empty()) ||
-      CSSVariableParser::ContainsValidVariableReferences(
-          range, parser_context->GetExecutionContext())) {
-    const auto* variable_data = CSSVariableData::Create(
-        {range, StringView(css_text)}, false /* is_animation_tainted */,
-        false /* needs variable resolution */);
-    CSSStyleValueVector values;
-    values.push_back(CSSUnparsedValue::FromCSSVariableData(*variable_data));
-    return values;
+  stream.Restore(savepoint);
+  bool important_ignored;
+  const CSSVariableData* variable_data =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/false, /*comma_ends_declaration=*/false,
+          important_ignored, *parser_context);
+  if (variable_data) {
+    if ((property_id == CSSPropertyID::kVariable &&
+         variable_data->OriginalText().length() > 0) ||
+        variable_data->NeedsVariableResolution()) {
+      CSSStyleValueVector values;
+      values.push_back(CSSUnparsedValue::FromCSSVariableData(*variable_data));
+      return values;
+    }
   }
 
   return CSSStyleValueVector();

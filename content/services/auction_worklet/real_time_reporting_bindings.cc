@@ -18,6 +18,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/features.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -106,26 +107,25 @@ RealTimeReportingBindings::~RealTimeReportingBindings() = default;
 
 void RealTimeReportingBindings::AttachToContext(
     v8::Local<v8::Context> context) {
-  // Don't enable real time reporting in Mode A/B traffic.
   if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeRealTimeReporting) ||
-      base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
+          blink::features::kFledgeRealTimeReporting)) {
     return;
   }
 
   v8::Isolate* isolate = v8_helper_->isolate();
-  v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
+  v8::Local<v8::External> v8_this =
+      v8::External::New(isolate, this, gin::kRealTimeReportingBindingsTag);
   v8::Local<v8::Object> real_time_reporting = v8::Object::New(isolate);
 
-  v8::Local<v8::FunctionTemplate> real_time_histogram_template =
-      v8::FunctionTemplate::New(
-          isolate, &RealTimeReportingBindings::ContributeToHistogram, v8_this);
+  v8::Local<v8::Function> real_time_histogram =
+      v8::Function::New(
+          context, &RealTimeReportingBindings::ContributeToHistogram, v8_this)
+          .ToLocalChecked();
 
   real_time_reporting
       ->Set(context,
             v8_helper_->CreateStringFromLiteral("contributeToHistogram"),
-            real_time_histogram_template->GetFunction(context).ToLocalChecked())
+            real_time_histogram)
       .Check();
 
   context->Global()
@@ -141,7 +141,8 @@ void RealTimeReportingBindings::Reset() {
 void RealTimeReportingBindings::ContributeToHistogram(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   RealTimeReportingBindings* bindings = static_cast<RealTimeReportingBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())
+          ->Value(gin::kRealTimeReportingBindingsTag));
   ParseAndCollectContribution(bindings->v8_helper_.get(),
                               bindings->v8_logger_.get(), args,
                               bindings->real_time_reporting_contributions_);

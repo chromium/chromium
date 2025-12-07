@@ -21,8 +21,12 @@ class BrowserContext;
 
 class PrefService;
 
-class ClipboardRestrictionService : KeyedService {
+class ClipboardRestrictionService : public KeyedService {
  public:
+  // Use
+  // ClipboardRestrictionServiceFactory::BuildServiceInstanceForBrowserContext
+  // instead.
+  explicit ClipboardRestrictionService(PrefService* pref_service);
   ClipboardRestrictionService(const ClipboardRestrictionService&) = delete;
   ClipboardRestrictionService& operator=(const ClipboardRestrictionService&) =
       delete;
@@ -44,8 +48,6 @@ class ClipboardRestrictionService : KeyedService {
  private:
   friend class ClipboardRestrictionServiceTest;
   friend class ClipboardRestrictionServiceFactory;
-
-  explicit ClipboardRestrictionService(PrefService* pref_service);
 
   void UpdateSettings();
 
@@ -79,7 +81,7 @@ class ClipboardRestrictionServiceFactory : BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

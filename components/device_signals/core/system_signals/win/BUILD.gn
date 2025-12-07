@@ -33,7 +33,7 @@ static_library("win") {
   ]
 
   libs = [
-    "Crypt32.lib",
+    "crypt32.lib",
     "wintrust.lib",
   ]
 }

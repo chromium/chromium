@@ -10,6 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
@@ -46,15 +48,14 @@ class StorageBlock : public FileBlock {
   void CopyFrom(StorageBlock<T>* other);
 
   // FileBlock interface.
-  void* buffer() const override;
-  size_t size() const override;
+  base::span<uint8_t> as_span() const override;
   int offset() const override;
 
   // Allows the overide of dummy values passed on the constructor.
   bool LazyInit(MappedFile* file, Addr address);
 
   // Sets the internal storage to share the memory provided by other instance.
-  void SetData(T* other);
+  void SetData(base::span<T> other);
 
   // Deletes the data, even if it was modified and not saved. This object must
   // own the memory buffer (it cannot be shared).
@@ -71,6 +72,10 @@ class StorageBlock : public FileBlock {
 
   // Gets a pointer to the internal storage (allocates storage if needed).
   T* Data();
+
+  // Gets a span containing all data stored. This can have multiple `T` if
+  // the address for the entry requests multiple blocks.
+  base::span<T> AllData() { return data_; }
 
   // Returns true if there is data associated with this object.
   bool HasData() const;
@@ -94,14 +99,15 @@ class StorageBlock : public FileBlock {
   void DeleteData();
   uint32_t CalculateHash() const;
 
-  raw_ptr<T> data_ = nullptr;
+  base::HeapArray<T> owned_data_;
+  // This can point to either `owned_data_`, or externally.
+  base::raw_span<T> data_;
+
   // DanglingUntriaged is largely needed for when this class is owned by an
   // EntryImpl that is deleted after the Backend.
   raw_ptr<MappedFile, AcrossTasksDanglingUntriaged> file_;
   Addr address_;
   bool modified_ = false;
-  // Is data_ owned by this object or shared with someone else.
-  bool own_data_ = false;
 };
 
 }  // namespace disk_cache

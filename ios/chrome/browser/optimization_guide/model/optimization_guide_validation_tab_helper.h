@@ -6,7 +6,8 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_VALIDATION_TAB_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "base/sequence_checker.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
@@ -38,8 +39,6 @@ class OptimizationGuideValidationTabHelper
       const GURL& url,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

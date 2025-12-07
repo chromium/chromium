@@ -1,0 +1,4 @@
+file://chrome/browser/ai/OWNERS
+
+per-file sandbox_hook.*=set noparent
+per-file sandbox_hook.*=file://sandbox/linux/OWNERS

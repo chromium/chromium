@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/syslog_logging.h"
@@ -71,9 +72,7 @@ std::string CreatePayload(
           .Set(kIdFieldName, response->id)
           .Set(kStatusFieldName, static_cast<int>(response->status));
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 }  // namespace
 
@@ -90,17 +89,14 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root.has_value()) {
-    return false;
-  }
-  if (!root->is_dict()) {
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!root) {
     return false;
   }
 
-  base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid DiagnosticRoutineEnum.
-  std::optional<int> routine_enum = dict.FindInt(kRoutineEnumFieldName);
+  std::optional<int> routine_enum = root->FindInt(kRoutineEnumFieldName);
   if (!routine_enum.has_value()) {
     return false;
   }
@@ -113,7 +109,7 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
   // Make sure there's a dictionary with parameter values for the routine.
   // Validation of routine-specific parameters will be done before running the
   // routine, so here we just check that any dictionary was given to us.
-  auto* params_dict = dict.FindDict(kParamsFieldName);
+  auto* params_dict = root->FindDict(kParamsFieldName);
   if (!params_dict) {
     return false;
   }
@@ -131,8 +127,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
 
   switch (routine_enum_) {
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
-      NOTREACHED_IN_MIGRATION() << "This default value should not be used.";
-      break;
+      NOTREACHED() << "This default value should not be used.";
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity: {
       diagnostics_service->RunBatteryCapacityRoutine(base::BindOnce(

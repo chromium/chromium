@@ -7,9 +7,9 @@
 
 #include <va/va.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
@@ -72,7 +72,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
  private:
   void FillVAPicture(VAPictureHEVC* va_pic, scoped_refptr<H265Picture> pic);
   void FillVARefFramesFromRefList(const H265Picture::Vector& ref_pic_list,
-                                  VAPictureHEVC* va_pics);
+                                  base::span<VAPictureHEVC> va_pics);
 
   // Returns |kInvalidRefPicIndex| if it cannot find a picture.
   int GetRefPicIndex(int poc);
@@ -99,7 +99,11 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   size_t last_slice_size_{0};
   std::string last_transcrypt_params_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Indicate that a frame is dropped because it's not decodable
+  // (RASL frame). This is updated every SubmitFrameMetadata().
+  bool drop_frame_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS)
   // We need to hold onto this memory here because it's referenced by the
   // mapped buffer in libva across calls. It is filled in SubmitSlice() and
   // stays alive until SubmitDecode() or Reset().
@@ -108,7 +112,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // We need to retain this for the multi-slice case since that will aggregate
   // the encryption details across all the slices.
   VAEncryptionParameters crypto_params_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace media

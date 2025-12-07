@@ -10,14 +10,14 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
 
 namespace gpu {
 
-class GPU_EXPORT DecoderClient {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT DecoderClient {
  public:
   virtual ~DecoderClient() = default;
 
@@ -25,7 +25,7 @@ class GPU_EXPORT DecoderClient {
   virtual void OnConsoleMessage(int32_t id, const std::string& message) = 0;
 
   // Notifies the renderer process that the active GPU changed.
-  virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
+  virtual void OnGpuSwitched() {}
 
   // Cache a blob (i.e. shader intermediates, shader bytecodes, pipelines, etc)
   // to persistent storage.
@@ -47,9 +47,6 @@ class GPU_EXPORT DecoderClient {
   // because the fence completed.
   virtual void OnRescheduleAfterFinished() = 0;
 
-  // Called when SwapBuffers is called.
-  virtual void OnSwapBuffers(uint64_t swap_id, uint32_t flags) = 0;
-
   // Notifies the client that the shared GrContext may have been used by this
   // decoder and its GPU memory should be cleaned up.
   virtual void ScheduleGrContextCleanup() = 0;
@@ -58,6 +55,9 @@ class GPU_EXPORT DecoderClient {
 
   // Called by the decoder to pass a variable-size block of data to the client.
   virtual void HandleReturnData(base::span<const uint8_t> data) = 0;
+
+  // Returns true if rasterization should yield.
+  virtual bool ShouldYield() = 0;
 };
 
 }  // namespace gpu

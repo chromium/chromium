@@ -119,13 +119,14 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 }
 
 - (void)setProgress:(CGFloat)gestureAmount finished:(BOOL)finished {
+  DCHECK(self.view.superview);
   NSRect parentFrame = self.view.superview.frame;
   // When tracking the gesture, the height is constant and the alpha value
   // changes from [0.25, 0.65].
   CGFloat height = kShieldHeight;
-  CGFloat shieldAlpha = std::min(static_cast<CGFloat>(0.65),
-                                 std::max(gestureAmount,
-                                          static_cast<CGFloat>(0.25)));
+  CGFloat shieldAlpha =
+      std::min(static_cast<CGFloat>(0.65),
+               std::max(gestureAmount, static_cast<CGFloat>(0.25)));
 
   // When the gesture is very likely to be completed (90% in this case), grow
   // the semicircle's height and lock the alpha to 0.75.
@@ -140,18 +141,21 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
   frame.origin.y = (NSHeight(parentFrame) / 2) - (height / 2);
 
   CGFloat width = std::min(kShieldRadius * gestureAmount, kShieldRadius);
-  if (_mode == kHistoryOverlayModeForward)
+  if (_mode == kHistoryOverlayModeForward) {
     frame.origin.x = NSMaxX(parentFrame) - width;
-  else if (_mode == kHistoryOverlayModeBack)
+  } else if (_mode == kHistoryOverlayModeBack) {
     frame.origin.x = NSMinX(parentFrame) - kShieldWidth + width;
+  }
 
   self.view.frame = frame;
   _contentView.shieldAlpha = shieldAlpha;
 }
 
 - (void)showPanelForView:(NSView*)view {
-  [self setProgress:0 finished:NO];  // Set initial view position.
+  // The self.view should be added to the hierarchy before its initial position
+  // can be set, because setProgress:finished: depends on the superview's frame.
   [view addSubview:self.view];
+  [self setProgress:0 finished:NO];  // Set initial view position.
 }
 
 - (void)dismiss {

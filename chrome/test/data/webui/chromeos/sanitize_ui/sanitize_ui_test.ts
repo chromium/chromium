@@ -4,11 +4,12 @@
 
 
 
-import {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {SanitizeDoneElement} from 'chrome://sanitize/sanitize_done.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {SanitizeInitialElement} from 'chrome://sanitize/sanitize_initial.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -33,7 +34,7 @@ suite('SanitizeUITest', function() {
     // Verify the header element exists
     assert(titleDiv);
     // Check the header content
-    assertEquals('Your device is sanitized', titleDiv!.textContent);
+    assertEquals('Safety reset has been completed', titleDiv.textContent);
   });
 
   test('SanitizeDoneAccordionsAndLinksTest', async () => {
@@ -41,7 +42,7 @@ suite('SanitizeUITest', function() {
     // Check accordions exist
     const extensionsAccordion =
         doneElement.shadowRoot!.querySelector<CrExpandButtonElement>(
-            '#expandExtensions');
+            '#expandExtensionsInfo');
     assert(!!extensionsAccordion);
     const chromeOSSettingsAccordion =
         doneElement.shadowRoot!.querySelector<CrExpandButtonElement>(
@@ -149,5 +150,18 @@ suite('SanitizeUITest', function() {
     chromeLanguagesButton.click();
     const chromeLanguagesUrl = await openWindowProxy.whenCalled('openUrl');
     assertEquals(chromeLanguagesUrl, 'chrome://settings/languages');
+  });
+
+  test('PerformSanitize', async function() {
+    const appElement = new SanitizeInitialElement();
+    document.body.appendChild(appElement);
+    await flushTasks();
+
+    // Click the Safety reset button to begin the process.
+    const button =
+        appElement.shadowRoot!.querySelector<HTMLElement>('#sanitizeButton');
+    assertTrue(!!button);
+    button.click();
+    flushTasks();
   });
 });

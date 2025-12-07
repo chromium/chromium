@@ -4,11 +4,13 @@
 
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {getCurrentPage} from './test_util.js';
+
 const viewer = document.body.querySelector('pdf-viewer')!;
 const scroller = viewer.$.scroller;
 
 function simulateFormFocusChange(focused: boolean) {
-  const plugin = viewer.shadowRoot!.querySelector('embed')!;
+  const plugin = viewer.shadowRoot.querySelector('embed')!;
   plugin.dispatchEvent(
       new MessageEvent('message', {data: {type: 'formFocusChange', focused}}));
 }
@@ -17,10 +19,6 @@ function resetDocumentAndFocusOnForm() {
   viewer.viewport.fitToNone();
   viewer.viewport.goToPage(0);
   simulateFormFocusChange(true);
-}
-
-function getCurrentPage(): number {
-  return viewer.viewport.getMostVisiblePage();
 }
 
 const tests = [

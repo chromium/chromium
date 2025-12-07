@@ -40,7 +40,9 @@ TEST_F(VirtualKeyboardTest, EventsAreHandledBasedOnHitTestBounds) {
   // Create a test window in the background with the same size as the screen.
   aura::test::EventCountDelegate delegate;
   std::unique_ptr<aura::Window> background_window(
-      CreateTestWindowInShellWithDelegate(&delegate, 0, root_window->bounds()));
+      CreateTestWindowInShell({.delegate = &delegate,
+                               .bounds = root_window->bounds(),
+                               .window_id = 0}));
 
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(false);
@@ -90,7 +92,9 @@ TEST_F(VirtualKeyboardTest, HitTestBoundsAreResetWhenContainerTypeChanges) {
   // Create a test window in the background with the same size as the screen.
   aura::test::EventCountDelegate delegate;
   std::unique_ptr<aura::Window> background_window(
-      CreateTestWindowInShellWithDelegate(&delegate, 0, root_window->bounds()));
+      CreateTestWindowInShell({.delegate = &delegate,
+                               .bounds = root_window->bounds(),
+                               .window_id = 0}));
 
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(false);

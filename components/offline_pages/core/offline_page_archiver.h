@@ -81,7 +81,7 @@ class OfflinePageArchiver {
                               int64_t /* file_size */,
                               const std::string& /* digest */)>;
 
-  virtual ~OfflinePageArchiver() {}
+  virtual ~OfflinePageArchiver() = default;
 
   // Starts creating the archive in the |archives_dir| per
   // |create_archive_params|. Once archive is created |callback| will be called

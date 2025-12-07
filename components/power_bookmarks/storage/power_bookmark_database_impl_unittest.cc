@@ -4,13 +4,13 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -94,7 +94,7 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
   base::HistogramTester* histogram() { return &histogram_; }
 
   void InsertBadlyFormattedProtoToDB() {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
 
     static constexpr char kCreatePowerSaveSql[] =
@@ -132,8 +132,7 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
     sql::Statement blob_statement(
         db.GetCachedStatement(SQL_FROM_HERE, kCreatePowerBlobSql));
     blob_statement.BindString(0, power->guid_string());
-    std::string data = "badprotofortesting";
-    blob_statement.BindBlob(1, data);
+    blob_statement.BindBlob(1, std::string{"badprotofortesting"});
     EXPECT_TRUE(blob_statement.Run());
   }
 
@@ -179,11 +178,11 @@ TEST_F(PowerBookmarkDatabaseImplTest, InitDatabase) {
   }
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
 
-    // Database should have 4 tables: meta, saves, blobs and sync_meta.
-    EXPECT_EQ(4u, sql::test::CountSQLTables(&db));
+    // Database should have 3 tables: meta, saves, and blobs.
+    EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
   }
 }
 
@@ -210,7 +209,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, DatabaseNewVersion) {
 
   // Create an empty database with a newer schema version (version=1000000).
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
 
     sql::MetaTable meta_table;
@@ -242,7 +241,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, DatabaseHasSchemaNoMeta) {
 
   // Drop meta table.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
     sql::MetaTable::DeleteTableForTesting(&db);
   }
@@ -895,46 +894,6 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURLUnspecifiedType) {
   stored_powers = pbdb->GetPowersForURL(
       kGoogleUrl, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   EXPECT_EQ(0u, stored_powers.size());
-}
-
-TEST_F(PowerBookmarkDatabaseImplTest, GetAllPowers) {
-  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
-      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
-  EXPECT_TRUE(pbdb->Init());
-
-  EXPECT_TRUE(pbdb->CreatePower(MakePower(kGoogleUrl, kMockType)));
-
-  EXPECT_TRUE(
-      pbdb->CreatePower(MakePower(GURL("https://bing.com"), kMockType)));
-
-  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetAllPowers();
-  EXPECT_EQ(2u, stored_powers.size());
-}
-
-TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForGUIDs) {
-  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
-      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
-  EXPECT_TRUE(pbdb->Init());
-
-  auto power1 = MakePower(kGoogleUrl, kMockType);
-  auto power2 = MakePower(kGoogleUrl, kMockType);
-  auto power3 = MakePower(GURL("https://bing.com"), kMockType);
-  auto guid1 = power1->guid_string();
-  auto guid2 = power2->guid_string();
-
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power1)));
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power2)));
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power3)));
-
-  std::vector<std::unique_ptr<Power>> stored_powers =
-      pbdb->GetPowersForGUIDs({guid1, guid2});
-  EXPECT_EQ(2u, stored_powers.size());
-  EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
-  EXPECT_EQ(kGoogleUrl, stored_powers[1]->url());
-
-  stored_powers = pbdb->GetPowersForGUIDs({guid1});
-  EXPECT_EQ(1u, stored_powers.size());
-  EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest, GetPowerForGUID) {

@@ -34,6 +34,7 @@ def ProcessJavaFile(template, defines, include_dirs):
       '-x',
       'c-header',  # treat sources as C header files
       '-P',  # disable line markers, i.e. '#line 309'
+      '-Wno-gcc-install-dir-libstdcxx',  # don't worry about libstdc++ includes
   ]
   clang_cmd.extend('-D' + x for x in defines)
   clang_cmd.extend('-I' + x for x in include_dirs)

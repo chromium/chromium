@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/cocoa/task_manager_mac.h"
 
 #include <stddef.h>
@@ -14,13 +9,12 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/apple/bundle_locations.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
-#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -31,7 +25,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -125,8 +118,9 @@ NSString* ColumnIdentifier(int id) {
 
 - (void)sortShuffleArray {
   _viewToModelMap.resize(_tableModel->RowCount());
-  for (size_t i = 0; i < _viewToModelMap.size(); ++i)
+  for (size_t i = 0; i < _viewToModelMap.size(); ++i) {
     _viewToModelMap[i] = i;
+  }
 
   if (_currentSortDescriptor.sorted_column_id != -1) {
     task_manager::TaskManagerTableModel* tableModel = _tableModel;
@@ -150,15 +144,17 @@ NSString* ColumnIdentifier(int id) {
                        int cmp_result = tableModel->CompareValues(
                            aStart, bStart,
                            currentSortDescriptor.sorted_column_id);
-                       if (!currentSortDescriptor.is_ascending)
+                       if (!currentSortDescriptor.is_ascending) {
                          cmp_result = -cmp_result;
+                       }
                        return cmp_result < 0;
                      });
   }
 
   _modelToViewMap.resize(_viewToModelMap.size());
-  for (size_t i = 0; i < _viewToModelMap.size(); ++i)
+  for (size_t i = 0; i < _viewToModelMap.size(); ++i) {
     _modelToViewMap[_viewToModelMap[i]] = i;
+  }
 }
 
 - (void)reloadData {
@@ -184,8 +180,9 @@ NSString* ColumnIdentifier(int id) {
 
   // Reload the selection.
   NSMutableIndexSet* indexSet = [NSMutableIndexSet indexSet];
-  for (auto selectedItem : modelSelection)
+  for (auto selectedItem : modelSelection) {
     [indexSet addIndex:_modelToViewMap[selectedItem]];
+  }
   [_tableView selectRowIndexes:indexSet byExtendingSelection:NO];
 
   [self adjustSelectionAndEndProcessButton];
@@ -197,8 +194,9 @@ NSString* ColumnIdentifier(int id) {
 
   // Adjust for any added rows.
   for (size_t& selectedItem : modelSelection) {
-    if (selectedItem >= addedRowIndex)
+    if (selectedItem >= addedRowIndex) {
       selectedItem += addedRows;
+    }
   }
 
   [self reloadDataWithModelSelection:std::move(modelSelection)];
@@ -211,10 +209,11 @@ NSString* ColumnIdentifier(int id) {
   // Adjust for any removed rows.
   std::vector<size_t> newModelSelection;
   for (size_t selectedItem : modelSelection) {
-    if (selectedItem < removedRowIndex)
+    if (selectedItem < removedRowIndex) {
       newModelSelection.push_back(selectedItem);
-    else if (selectedItem >= removedRowIndex + removedRows)
+    } else if (selectedItem >= removedRowIndex + removedRows) {
       newModelSelection.push_back(selectedItem - removedRows);
+    }
   }
 
   [self reloadDataWithModelSelection:std::move(newModelSelection)];
@@ -256,8 +255,9 @@ NSString* ColumnIdentifier(int id) {
 
 - (void)tableWasDoubleClicked:(id)sender {
   NSInteger row = _tableView.clickedRow;
-  if (row < 0)
+  if (row < 0) {
     return;  // Happens e.g. if the table header is double-clicked.
+  }
   _tableModel->ActivateTask(_viewToModelMap[row]);
 }
 
@@ -456,8 +456,9 @@ NSString* ColumnIdentifier(int id) {
 // column associated with the clicked menu item.
 - (void)toggleColumn:(NSMenuItem*)item {
   CHECK([item isKindOfClass:[NSMenuItem class]]);
-  if (![item isKindOfClass:[NSMenuItem class]])
+  if (![item isKindOfClass:[NSMenuItem class]]) {
     return;
+  }
 
   NSTableColumn* column = item.representedObject;
   int columnId = column.identifier.intValue;
@@ -522,13 +523,15 @@ NSString* ColumnIdentifier(int id) {
        i = [selection indexLessThanIndex:i]) {
     int modelIndex = _viewToModelMap[i];
 
-    if (!_tableModel->IsTaskKillable(modelIndex))
+    if (!_tableModel->IsTaskKillable(modelIndex)) {
       allSelectionRowsAreKillableTasks = false;
+    }
 
     size_t groupStart, groupLength;
     _tableModel->GetRowsGroupRange(modelIndex, &groupStart, &groupLength);
-    for (size_t j = 0; j < groupLength; ++j)
+    for (size_t j = 0; j < groupLength; ++j) {
       [groupIndexes addIndex:_modelToViewMap[groupStart + j]];
+    }
   }
 
   [_tableView selectRowIndexes:groupIndexes byExtendingSelection:YES];
@@ -639,8 +642,9 @@ NSString* ColumnIdentifier(int id) {
 
 - (void)tableView:(NSTableView*)tableView
     sortDescriptorsDidChange:(NSArray*)oldDescriptors {
-  if (_withinSortDescriptorsDidChange)
+  if (_withinSortDescriptorsDidChange) {
     return;
+  }
 
   NSSortDescriptor* oldDescriptor = oldDescriptors.firstObject;
   NSSortDescriptor* newDescriptor = tableView.sortDescriptors.firstObject;
@@ -691,11 +695,12 @@ namespace task_manager {
 ////////////////////////////////////////////////////////////////////////////////
 // TaskManagerMac implementation:
 
-TaskManagerMac::TaskManagerMac()
+TaskManagerMac::TaskManagerMac(StartAction start_action)
     : table_model_(this),
       window_controller_([[TaskManagerWindowController alloc]
           initWithTaskManagerMac:this
                       tableModel:&table_model_]) {
+  task_manager::RecordNewOpenEvent(start_action);
   table_model_.SetObserver(this);  // Hook up the ui::TableModelObserver.
   table_model_.RetrieveSavedColumnsSettingsAndUpdateTable();
 
@@ -709,6 +714,7 @@ TaskManagerMac* TaskManagerMac::instance_ = nullptr;
 
 TaskManagerMac::~TaskManagerMac() {
   table_model_.SetObserver(nullptr);
+  task_manager::RecordCloseEvent(start_time_, base::TimeTicks::Now());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -755,8 +761,6 @@ void TaskManagerMac::SetSortDescriptor(const TableSortDescriptor& descriptor) {
   window_controller_.sortDescriptor = descriptor;
 }
 
-void TaskManagerMac::MaybeHighlightActiveTask() {}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Called by the TaskManagerWindowController:
 
@@ -783,12 +787,12 @@ void TaskManagerMac::OnAppTerminating() {
 }
 
 // static
-TaskManagerTableModel* TaskManagerMac::Show() {
+TaskManagerTableModel* TaskManagerMac::Show(StartAction start_action) {
   if (instance_) {
     [instance_->window_controller_.window
         makeKeyAndOrderFront:instance_->window_controller_];
   } else {
-    instance_ = new TaskManagerMac();
+    instance_ = new TaskManagerMac(start_action);
   }
 
   return &instance_->table_model_;
@@ -796,8 +800,9 @@ TaskManagerTableModel* TaskManagerMac::Show() {
 
 // static
 void TaskManagerMac::Hide() {
-  if (instance_)
+  if (instance_) {
     [instance_->window_controller_ close];
+  }
 }
 
 }  // namespace task_manager
@@ -805,12 +810,18 @@ void TaskManagerMac::Hide() {
 namespace chrome {
 
 // Declared in browser_dialogs.h.
-task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  return task_manager::TaskManagerMac::Show();
+task_manager::TaskManagerTableModel* ShowTaskManager(
+    Browser* browser,
+    task_manager::StartAction start_action) {
+  return base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+             ? ShowTaskManagerViews(browser, start_action)
+             : task_manager::TaskManagerMac::Show(start_action);
 }
 
 void HideTaskManager() {
-  task_manager::TaskManagerMac::Hide();
+  base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+      ? HideTaskManagerViews()
+      : task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

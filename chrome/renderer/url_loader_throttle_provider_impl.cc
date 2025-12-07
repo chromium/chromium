@@ -13,13 +13,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/google_url_loader_throttle.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
-#include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/content_features.h"
@@ -41,9 +40,17 @@
 #include "extensions/renderer/extension_throttle_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/renderer/ash_merge_session_loader_throttle.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
+#endif
 
 namespace {
 
@@ -155,13 +162,13 @@ URLLoaderThrottleProviderImpl::Clone() {
       main_thread_task_runner_, base::PassKey<URLLoaderThrottleProviderImpl>());
 }
 
-blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProviderImpl::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
   // Some throttles have already been added in the browser for frame resources.
   // Don't add them for frame requests.
@@ -171,38 +178,36 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   DCHECK(!is_frame_resource ||
          type_ == blink::URLLoaderThrottleProviderType::kFrame);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!is_frame_resource) {
     if (pending_safe_browsing_) {
       safe_browsing_.Bind(std::move(pending_safe_browsing_));
     }
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (pending_extension_web_request_reporter_) {
-      extension_web_request_reporter_.Bind(
-          std::move(pending_extension_web_request_reporter_));
-    }
-
     auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
         safe_browsing_.get(), local_frame_token,
-        extension_web_request_reporter_.get());
+        CloneExtensionWebRequestReporterPendingRemote());
 #else
     auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
         safe_browsing_.get(), local_frame_token);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     throttles.emplace_back(std::move(throttle));
   }
+#endif
 
   if (type_ == blink::URLLoaderThrottleProviderType::kFrame &&
       !is_frame_resource && local_frame_token.has_value()) {
     auto throttle = prerender::NoStatePrefetchHelper::MaybeCreateThrottle(
         local_frame_token.value());
-    if (throttle)
+    if (throttle) {
       throttles.emplace_back(std::move(throttle));
+    }
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!extension_throttle_manager_)
+  if (!extension_throttle_manager_) {
     extension_throttle_manager_ = CreateExtensionThrottleManager();
+  }
 
   if (extension_throttle_manager_) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -212,8 +217,9 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 
     std::unique_ptr<blink::URLLoaderThrottle> throttle =
         extension_throttle_manager_->MaybeCreateURLLoaderThrottle(request);
-    if (throttle)
+    if (throttle) {
       throttles.emplace_back(std::move(throttle));
+    }
   }
   std::unique_ptr<blink::URLLoaderThrottle> localization_throttle =
       extensions::ExtensionLocalizationThrottle::MaybeCreate(local_frame_token,
@@ -242,11 +248,20 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       chrome_content_renderer_client_->GetChromeObserver()
           ->GetDynamicParams()));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   throttles.emplace_back(std::make_unique<AshMergeSessionLoaderThrottle>(
       chrome_content_renderer_client_->GetChromeObserver()
           ->chromeos_listener()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  if (request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+          IsFeatureEnabled()) {
+    throttles.push_back(
+        std::make_unique<request_header_integrity::
+                             RequestHeaderIntegrityURLLoaderThrottle>());
+  }
+#endif
 
   if (local_frame_token.has_value()) {
     auto throttle =
@@ -267,8 +282,9 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
               }
             },
             local_frame_token.value(), main_thread_task_runner_));
-    if (throttle)
+    if (throttle) {
       throttles.push_back(std::move(throttle));
+    }
   }
 
   return throttles;
@@ -276,8 +292,9 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 
 void URLLoaderThrottleProviderImpl::SetOnline(bool is_online) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (extension_throttle_manager_)
+  if (extension_throttle_manager_) {
     extension_throttle_manager_->SetOnline(is_online);
+  }
 #endif
 }
 

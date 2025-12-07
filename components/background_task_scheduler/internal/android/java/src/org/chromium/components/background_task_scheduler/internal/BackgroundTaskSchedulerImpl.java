@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
@@ -18,6 +19,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
  *
  * To get an instance of this class, use {@link BackgroundTaskSchedulerFactory#getScheduler()}.
  */
+@NullMarked
 class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     private static final String SWITCH_IGNORE_BACKGROUND_TASKS = "ignore-background-tasks";
 
@@ -57,8 +59,8 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     }
 
     private class SchedulingVisitor implements TaskInfo.TimingInfoVisitor {
-        private Context mContext;
-        private TaskInfo mTaskInfo;
+        private final Context mContext;
+        private final TaskInfo mTaskInfo;
         private boolean mSuccess;
 
         SchedulingVisitor(Context context, TaskInfo taskInfo) {
@@ -83,7 +85,7 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     }
 
     // TODO(crbug.com/41477414): Update the documentation for the expiration feature.
-    private class MetricsVisitor implements TaskInfo.TimingInfoVisitor {
+    private static class MetricsVisitor implements TaskInfo.TimingInfoVisitor {
         private final int mTaskId;
 
         MetricsVisitor(int taskId) {

@@ -52,10 +52,6 @@ h1 {
   padding-bottom: 1.5em;
 }
 
-#third-party-conflicts-status {
-  padding-bottom: 1.5em;
-}
-
 div.content {
   margin-top: 5px;
 }
@@ -142,13 +138,6 @@ html[dir=rtl] .clearing {
 
   <dom-bind>
     <template>
-      <div id="third-party-conflicts-status">
-        Third-Party Module Features Status
-        <div>
-          <span>[[data.thirdPartyFeatureStatus]]</span>
-        </div>
-      </div>
-
       <div id="container" class="vbox-container">
         <div id="top" class="wbox">
           <div class="section-header">
@@ -187,9 +176,6 @@ html[dir=rtl] .clearing {
                     </th>
                     <th role="columnheader">
                       <span dir="ltr">Location</span>
-                    </th>
-                    <th role="columnheader" hidden$="[[!data.thirdPartyFeatureEnabled]]">
-                      <span dir="ltr">Conflicts Status</span>
                     </th>
                   </tr>
 
@@ -230,10 +216,6 @@ html[dir=rtl] .clearing {
                               )
                           </span>
                         </span>
-                      </td>
-                      <td valign="top" class="datacell nowrap"
-                          hidden$="[[!item.third_party_module_status.length]]">
-                        <span>[[item.third_party_module_status]]</span>
                       </td>
                     </tr>
                   </template>

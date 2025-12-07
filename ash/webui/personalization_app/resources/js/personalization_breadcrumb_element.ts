@@ -19,19 +19,22 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
-import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
+import {getSeaPenTemplates} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {cleanUpSeaPenQueryStates} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
-import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
+import type {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {logSeaPenTemplateSelect} from 'chrome://resources/ash/common/sea_pen/sea_pen_metrics_logger.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {getTemplateIdFromString, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {getTransitionEnabled, setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personalization_app.mojom-webui.js';
+import type {GooglePhotosAlbum, WallpaperCollection} from '../personalization_app.mojom-webui.js';
+import {TopicSource} from '../personalization_app.mojom-webui.js';
 
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
@@ -247,7 +250,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         if (isSeaPenTextInputEnabled()) {
-          breadcrumbs.push(this.i18n('seaPenFreeformWallpaperTemplatesLabel'));
+          breadcrumbs.push(this.i18n('seaPenTemplatesWallpaperLabel'));
         } else {
           breadcrumbs.push(this.i18n('seaPenLabel'));
         }
@@ -255,7 +258,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       case Paths.SEA_PEN_RESULTS:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         if (isSeaPenTextInputEnabled()) {
-          breadcrumbs.push(this.i18n('seaPenFreeformWallpaperTemplatesLabel'));
+          breadcrumbs.push(this.i18n('seaPenTemplatesWallpaperLabel'));
         } else {
           breadcrumbs.push(this.i18n('seaPenLabel'));
         }
@@ -269,7 +272,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_FREEFORM:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        breadcrumbs.push(this.i18n('seaPenLabel'));
+        breadcrumbs.push(this.i18n('seaPenFreeformWallpaperLabel'));
         break;
       case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));

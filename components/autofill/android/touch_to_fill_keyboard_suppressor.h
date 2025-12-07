@@ -10,8 +10,13 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#error "Android-only header"
+#endif
 
 namespace autofill {
 
@@ -89,11 +94,6 @@ class TouchToFillKeyboardSuppressor
       ContentAutofillDriverFactory& factory) override;
   void OnContentAutofillDriverCreated(ContentAutofillDriverFactory& factory,
                                       ContentAutofillDriver& driver) override;
-  void OnContentAutofillDriverStateChanged(
-      ContentAutofillDriverFactory& factory,
-      ContentAutofillDriver& driver,
-      AutofillDriver::LifecycleState old_state,
-      AutofillDriver::LifecycleState new_state) override;
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(

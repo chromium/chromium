@@ -44,6 +44,7 @@ def _project_settings(
         project_title,
         ref,
         chrome_project,
+        dawn_ref,
         is_main,
         platforms = {}):
     """Declare settings for the project.
@@ -59,12 +60,14 @@ def _project_settings(
       * project_title - A string identifying the project in title contexts (e.g.
         titles of consoles). No conditional logic should depend on this value,
         it should only be used where the title of a project is required.
-      * ref - The git ref containing the code for this branch.
+      * ref - The git ref containing the code for this branch. No logic should
+        depend on this value, it should only be used where a ref is required.
       * chrome_project - The name of the corresponding chrome project. No logic
         should depend on this value, it should only be used where the name of a
         project is required.
-      * ref - The git ref containing the code for this branch. No logic should
-        depend on this value, it should only be used where a ref is required.
+      * dawn_ref - The git ref for dawn corresponding to this branch. No logic
+        should depend on this value, it should only be used where a ref is
+        required.
       * is_main - Whether or not this is the project for the main ref.
       * platforms - A mapping from a platform ID value to the settings for the
         platform. The valid platform ID values are the members of the platform
@@ -93,6 +96,7 @@ def _project_settings(
         project_title = project_title,
         ref = ref,
         chrome_project = chrome_project,
+        dawn_ref = dawn_ref,
         is_main = is_main,
         platforms = platforms,
     )

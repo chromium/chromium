@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 
 namespace policy {
 

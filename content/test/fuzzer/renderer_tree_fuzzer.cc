@@ -7,9 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include <memory>
 #include <random>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -54,7 +56,7 @@ static size_t MutateString(std::string* str, size_t maxLen) {
   static std::vector<uint8_t> v;
   v.resize(maxLen);
   size_t inLen = std::min(maxLen, str->length());
-  memcpy(v.data(), str->data(), inLen);
+  UNSAFE_TODO(memcpy(v.data(), str->data(), inLen));
   size_t len =
       LLVMFuzzerMutate(reinterpret_cast<uint8_t*>(v.data()), inLen, maxLen);
   if (!len)
@@ -117,7 +119,8 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
     auto nodes = std::make_unique<NodeList>();
 
     std::optional<base::Value> value(base::JSONReader::Read(
-        std::string(reinterpret_cast<const char*>(data), size)));
+        std::string(reinterpret_cast<const char*>(data), size),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     if (value && value->is_list())
       nodes->ParseJsonList(value->GetList());
 
@@ -369,7 +372,7 @@ std::unique_ptr<Node> Node::CreateRandom(Random* rnd) {
     case 1:
       return Text::CreateRandom(rnd);
     default:
-      NOTREACHED_NORETURN() << "SHOULD NOT HAPPEN";
+      NOTREACHED() << "SHOULD NOT HAPPEN";
   }
 }
 
@@ -555,7 +558,7 @@ extern "C" size_t LLVMFuzzerCustomMutator(uint8_t* data,
     return 0;
   }
 
-  memcpy(data, result.data(), result.size());
+  UNSAFE_TODO(memcpy(data, result.data(), result.size()));
   return result.size();
 }
 

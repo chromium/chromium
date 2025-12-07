@@ -15,7 +15,7 @@
 import 'chrome://flags/app.js';
 
 import type {FlagsAppElement} from 'chrome://flags/app.js';
-import type {FlagsExperimentElement} from 'chrome://flags/experiment.js';
+import type {ExperimentElement} from 'chrome://flags/experiment.js';
 import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -29,11 +29,8 @@ const experimentalFeaturesData: ExperimentalFeaturesData = {
   'needsRestart': false,
   'showBetaChannelPromotion': false,
   'showDevChannelPromotion': false,
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   'showOwnerWarning': false,
-  // </if>
-  // <if expr="chromeos_lacros or chromeos_ash">
-  'showSystemFlagsLink': true,
   // </if>
 };
 const mockFeatures: Feature[] = [
@@ -63,66 +60,64 @@ const mockFeatures: Feature[] = [
   },
 ];
 
-suite('UrlWithSupportedFeatureTest', function() {
-  let app: FlagsAppElement;
-  let browserProxy: TestFlagsBrowserProxy;
+let app: FlagsAppElement;
+let browserProxy: TestFlagsBrowserProxy;
 
-  setup(async function() {
-    browserProxy = new TestFlagsBrowserProxy();
-    browserProxy.setFeatureData(Object.assign(
-        {}, experimentalFeaturesData, {supportedFeatures: mockFeatures}));
-    FlagsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('flags-app');
-    document.body.appendChild(app);
-    app.setAnnounceStatusDelayMsForTesting(0);
-    app.setSearchDebounceDelayMsForTesting(0);
-    await app.experimentalFeaturesReadyForTesting();
-  });
+function createFlagsAppElement(
+    featureType: 'supportedFeatures'|'unsupportedFeatures') {
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  browserProxy = new TestFlagsBrowserProxy();
+  browserProxy.setFeatureData(Object.assign(
+      {}, experimentalFeaturesData, {[featureType]: mockFeatures}));
+  FlagsBrowserProxyImpl.setInstance(browserProxy);
+  app = document.createElement('flags-app');
+  document.body.appendChild(app);
+  app.setAnnounceStatusDelayMsForTesting(0);
+  app.setSearchDebounceDelayMsForTesting(0);
+  return app.experimentalFeaturesReadyForTesting();
+}
 
-  test('check referenced experiment is highlighted', async function() {
-    // check the available tab is selected
-    assertTrue(app.getRequiredElement('#tab-available')
-                   .classList.contains('selected'));
+suite('UrlTest', function() {
+  function assertHighlightedExperimentInTab(selectedTab: number) {
+    // check tab is selected
+    const crTabs = app.getRequiredElement('cr-tabs');
+    assertEquals(selectedTab, crTabs.selected);
 
     const referencedExperiment =
-        app.getRequiredElement<FlagsExperimentElement>(window.location.hash);
+        app.getRequiredElement<ExperimentElement>(window.location.hash);
     assertTrue(!!referencedExperiment);
     assertEquals(referencedFlagName, referencedExperiment.id);
 
     // check experiment is highlighted
     assertTrue(referencedExperiment.classList.contains('referenced'));
-  });
+  }
+
+  test(
+      'check referenced experiment is highlighted for supported features',
+      async function() {
+        assertEquals('#test-feature', window.location.hash);
+        await createFlagsAppElement('supportedFeatures');
+        assertHighlightedExperimentInTab(0);
+        assertEquals('#test-feature', window.location.hash);
+      });
+
+  test(
+      'check referenced experiment is highlighted for unsupported features',
+      async function() {
+        assertEquals('#test-feature', window.location.hash);
+        await createFlagsAppElement('unsupportedFeatures');
+        assertHighlightedExperimentInTab(1);
+        assertEquals('#test-feature', window.location.hash);
+      });
 });
 
-suite('UrlWithUnsupportedFeatureTest', function() {
-  let app: FlagsAppElement;
-  let browserProxy: TestFlagsBrowserProxy;
+suite('UrlWithInvalidReferencedFlagHashTest', function() {
+  test('check invalid referenced flag hash is removed', async function() {
+    window.location.hash = '#invalid-hash.';
 
-  setup(async function() {
-    browserProxy = new TestFlagsBrowserProxy();
-    browserProxy.setFeatureData(Object.assign(
-        {}, experimentalFeaturesData, {unsupportedFeatures: mockFeatures}));
-    FlagsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('flags-app');
-    document.body.appendChild(app);
-    app.setAnnounceStatusDelayMsForTesting(0);
-    app.setSearchDebounceDelayMsForTesting(0);
-    await app.experimentalFeaturesReadyForTesting();
-  });
+    // Reload page.
+    await createFlagsAppElement('supportedFeatures');
 
-  test('check referenced experiment is highlighted', async function() {
-    // check the unavailable tab is selected
-    assertTrue(app.getRequiredElement('#tab-unavailable')
-                   .classList.contains('selected'));
-
-    const referencedExperiment =
-        app.getRequiredElement<FlagsExperimentElement>(window.location.hash);
-    assertTrue(!!referencedExperiment);
-    assertEquals(referencedFlagName, referencedExperiment.id);
-
-    // check experiment is highlighted
-    assertTrue(referencedExperiment.classList.contains('referenced'));
+    assertEquals('', window.location.hash);
   });
 });

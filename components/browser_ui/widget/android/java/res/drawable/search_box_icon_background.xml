@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+  android:color="?android:attr/colorControlHighlight">
+  <item
+    android:id="@android:id/content"
+    android:width="@dimen/search_box_icon_background_width"
+    android:height="@dimen/search_box_icon_background_height"
+    android:gravity="center"
+    android:drawable="@drawable/search_box_icon_background_selector" />
+</ripple>

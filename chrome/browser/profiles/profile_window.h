@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_WINDOW_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_WINDOW_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/startup/startup_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error "Not used on Android"
@@ -23,6 +22,11 @@ class Profile;
 namespace base {
 class FilePath;
 }
+
+namespace chrome::startup {
+enum class IsProcessStartup : bool;
+enum class IsFirstRun : bool;
+}  // namespace chrome::startup
 
 namespace profiles {
 
@@ -36,18 +40,20 @@ void FindOrCreateNewWindowForProfile(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
-    bool always_create);
+    bool always_create,
+    bool open_command_line_urls = false);
 
 // Opens a Browser for |profile|.
 // If |always_create| is true a window is created even if one already exists.
 // If |is_new_profile| is true a first run window is created.
-// If |unblock_extensions| is true, all extensions are unblocked.
+// If |open_command_line_urls| is true, urls provided via the command line will
+// be passed to the new browser.
 // |callback| is called with a nullptr `Browser` in case of failure.
 // |callback| may be null.
 void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
-                                 bool unblock_extensions,
+                                 bool open_command_line_urls,
                                  Profile* profile);
 
 // Loads the specified profile given by |path| asynchronously. Once profile is
@@ -62,7 +68,8 @@ void LoadProfileAsync(const base::FilePath& path,
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
                      base::OnceCallback<void(Browser*)> callback =
-                         base::OnceCallback<void(Browser*)>());
+                         base::OnceCallback<void(Browser*)>(),
+                     bool open_command_line_urls = false);
 
 // Opens a Browser for the guest profile and runs |callback| if it isn't null.
 void SwitchToGuestProfile(base::OnceCallback<void(Browser*)> callback =

@@ -70,7 +70,6 @@ using upload_contents_matchers::FieldVoteTypeIs;
 using upload_contents_matchers::HasPasswordLength;
 using upload_contents_matchers::IsPasswordUpload;
 using upload_contents_matchers::LoginFormSignatureIs;
-using upload_contents_matchers::SingleUsernameDataIs;
 using Field = ::autofill::AutofillUploadContents::Field;
 
 constexpr int kNumberOfPasswordAttributes =
@@ -85,21 +84,8 @@ FormPredictions MakeSimpleSingleUsernamePredictions() {
   form_predictions.form_signature = kSingleUsernameFormSignature;
   form_predictions.fields.emplace_back(
       kSingleUsernameRendererId, kSingleUsernameFieldSignature,
-      autofill::NO_SERVER_DATA, /*may_use_prefilled_placeholder=*/false,
-      /*is_override=*/false);
+      autofill::NO_SERVER_DATA, /*is_override=*/false);
   return form_predictions;
-}
-
-autofill::AutofillUploadContents::SingleUsernameData
-MakeSimpleSingleUsernameData() {
-  autofill::AutofillUploadContents::SingleUsernameData single_username_data;
-  single_username_data.set_username_form_signature(
-      kSingleUsernameFormSignature.value());
-  single_username_data.set_username_field_signature(
-      kSingleUsernameFieldSignature.value());
-  single_username_data.set_value_type(
-      autofill::AutofillUploadContents::USERNAME_LIKE);
-  return single_username_data;
 }
 
 auto SingleUsernameUploadField(FieldType type,
@@ -171,7 +157,7 @@ class VotesUploaderTest : public testing::Test {
   PasswordForm form_to_upload_;
   PasswordForm submitted_form_;
 
-  std::string login_form_signature_ = "123";
+  FormSignature login_form_signature_ = FormSignature(123);
 };
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
@@ -431,8 +417,10 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   PasswordForm password_form;
   password_form.username_element_renderer_id = username_field_renderer_id;
 
+  autofill::EncodeUploadRequestOptions options;
+
   votes_uploader.SetInitialHashValueOfUsernameField(username_field_renderer_id,
-                                                    &form_structure);
+                                                    form_structure, options);
 
   const uint32_t expected_hash = 1377800651 % kNumberOfHashValues;
 
@@ -440,8 +428,8 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   for (auto& f : form_structure) {
     if (f->renderer_id() == username_field_renderer_id) {
       found_fields++;
-      ASSERT_TRUE(f->initial_value_hash());
-      EXPECT_EQ(f->initial_value_hash().value(), expected_hash);
+      EXPECT_EQ(options.fields[f->global_id()].initial_value_hash,
+                expected_hash);
     }
   }
   EXPECT_EQ(found_fields, 1);
@@ -654,15 +642,12 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   form_predictions.fields.emplace_back(
       FieldRendererId(kSingleUsernameRendererId.value() - 1),
       FieldSignature(kSingleUsernameFieldSignature.value() - 1),
-      autofill::NO_SERVER_DATA,
-      /*may_use_prefilled_placeholder=*/false,
-      /*is_override=*/false);
+      autofill::NO_SERVER_DATA, /*is_override=*/false);
 
   // Add the username field.
   form_predictions.fields.emplace_back(
       kSingleUsernameRendererId, kSingleUsernameFieldSignature,
-      autofill::NO_SERVER_DATA, /*may_use_prefilled_placeholder=*/false,
-      /*is_override=*/false);
+      autofill::NO_SERVER_DATA, /*is_override=*/false);
 
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
@@ -699,13 +684,9 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
       1);
 }
 
-// Tests that a negeative vote is sent if the username candidate field
+// Tests that a negative vote is sent if the username candidate field
 // value contained whitespaces.
 TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
   VotesUploader votes_uploader(&client_, false);
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId,
@@ -732,31 +713,35 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
 
   votes_uploader.MaybeSendSingleUsernameVotes();
 
-  // Upload on the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data = MakeSimpleSingleUsernameData();
-  expected_single_username_data.set_value_type(
-      autofill::AutofillUploadContents::VALUE_WITH_WHITESPACE);
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::EDITED_NEGATIVE);
+}
+
+// Tests that a negative vote is sent if the username candidate field
+// value in forgot password form data contained whitespaces.
+TEST_F(VotesUploaderTest, UploadNotSingleUsernameForgotPasswordForWhitespaces) {
+  VotesUploader votes_uploader(&client_, false);
+  votes_uploader.AddForgotPasswordVoteData(SingleUsernameVoteData(
+      kSingleUsernameRendererId, /*username_value=*/u"some search query",
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      PasswordFormHadMatchingUsername(false)));
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
+
+  // Upload on the username form.
   auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
+      FormSignatureIs(kSingleUsernameFormSignature),
+      FieldsContain(SingleUsernameUploadField(FieldType::NOT_USERNAME,
+                                              Field::STRONG_FORGOT_PASSWORD)));
   EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(upload_contents_matcher, _,
                                  /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    FieldType::PASSWORD, std::string());
+
+  votes_uploader.MaybeSendSingleUsernameVotes();
 }
 
 // Verifies that SINGLE_USERNAME vote and NOT_EDITED_IN_PROMPT vote type
 // are sent if single username candidate value was suggested and accepted.
 TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
@@ -784,31 +769,12 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   }
 
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  // Upload on the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data = MakeSimpleSingleUsernameData();
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::NOT_EDITED_POSITIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(upload_contents_matcher, _,
-                                 /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    autofill::PASSWORD, std::string());
 }
 
 // Verifies that NOT_USERNAME vote and NOT_EDITED_IN_PROMPT vote type
 // are sent if value other than single username candidate was suggested and
 // accepted.
 TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
@@ -835,31 +801,12 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
         .Times(0);
   }
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  // Upload on the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data = MakeSimpleSingleUsernameData();
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::NOT_EDITED_NEGATIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(upload_contents_matcher, _,
-                                 /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    autofill::PASSWORD, std::string());
 }
 
 // Verifies that SINGLE_USERNAME vote and EDITED_IN_PROMPT vote type are sent
 // if value other than single username candidate was suggested, but the user
 // has inputted single username candidate value in prompt.
 TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
@@ -887,31 +834,12 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
         .Times(0);
   }
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  // Upload on the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data = MakeSimpleSingleUsernameData();
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::EDITED_POSITIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(upload_contents_matcher, _,
-                                 /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    autofill::PASSWORD, std::string());
 }
 
 // Verifies that NOT_USERNAME vote and EDITED_IN_PROMPT vote type are sent
 // if single username candidate value was suggested, but the user has deleted
 // it in prompt.
 TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
@@ -937,31 +865,12 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
         .Times(0);
   }
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  // Expect upload for the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data = MakeSimpleSingleUsernameData();
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::EDITED_NEGATIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(upload_contents_matcher, _,
-                                 /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    autofill::PASSWORD, std::string());
 }
 
 // Verifies that no vote is sent if the user has deleted the username value
 // suggested in prompt, and suggested value wasn't equal to single username
 // candidate value.
 TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
@@ -982,55 +891,6 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
           _))
       .Times(0);
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  // Expect upload for the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data = MakeSimpleSingleUsernameData();
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(upload_contents_matcher, _,
-                                 /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    autofill::PASSWORD, std::string());
-}
-
-// Verifies that NOT_USERNAME vote is sent on password form if no single
-// username typing had preceded single password typing.
-TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowFallbackCrowdsourcing);
-
-  VotesUploader votes_uploader(&client_, false);
-  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData());
-  votes_uploader.set_suggested_username(u"");
-  votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
-  votes_uploader.set_should_send_username_first_flow_votes(true);
-
-  votes_uploader.MaybeSendSingleUsernameVotes();
-
-  // Expect upload on the password form for the fallback classifier.
-  autofill::AutofillUploadContents::SingleUsernameData
-      expected_single_username_data;
-  expected_single_username_data.set_username_form_signature(0);
-  expected_single_username_data.set_username_field_signature(0);
-  expected_single_username_data.set_value_type(
-      autofill::AutofillUploadContents::NO_VALUE_TYPE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_.form_data)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
-              StartUploadRequest(upload_contents_matcher, _,
-                                 /*is_password_manager_upload=*/true));
-  votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
-                                    autofill::PASSWORD, std::string());
 }
 
 // Tests FieldNameCollisionInVotes metric doesn't report "true" when multiple

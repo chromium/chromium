@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.List;
 
 /** Keys for Read Aloud player model properties. */
+@NullMarked
 public class PlayerProperties {
     public static final WritableIntPropertyKey EXPANDED_PLAYER_VISIBILITY =
             new WritableIntPropertyKey();
@@ -44,6 +46,15 @@ public class PlayerProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey HIDDEN_AND_PLAYING =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey RESTORABLE_PLAYBACK =
+            new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey PLAYBACK_MODE_SELECTION_ENABLED =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey PLAYBACK_MODE = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey FEEDBACK_TYPE = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey REQUESTED_PLAYBACK_MODE =
+            new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY,
         TITLE,
@@ -62,5 +73,10 @@ public class PlayerProperties {
         VOICE_PREVIEW_PLAYBACK_STATE,
         SHOW_MINI_PLAYER_ON_DISMISS,
         HIDDEN_AND_PLAYING,
+        RESTORABLE_PLAYBACK,
+        PLAYBACK_MODE_SELECTION_ENABLED,
+        PLAYBACK_MODE,
+        FEEDBACK_TYPE,
+        REQUESTED_PLAYBACK_MODE,
     };
 }

@@ -5,27 +5,33 @@
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillUtil;
+import org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.GenerationCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /**
  * This class is responsible for rendering the password generation bottom sheet. It is a View in
  * this Model-View-Controller component and doesn't inherit but holds Android Views.
  */
+@NullMarked
 class TouchToFillPasswordGenerationView implements BottomSheetContent {
     private final View mContent;
     private final Context mContext;
-    private TextView mPasswordView;
+    private final TextView mPasswordView;
 
     // Minimum password length that allows to label the password as strong in
     // the UI. Must stay in sync with kLengthSufficientForStrongLabel in
@@ -36,12 +42,16 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         mContext = context;
         mContent = content;
 
+        mContent.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
+
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(
                 AppCompatResources.getDrawable(
                         context,
                         PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
         mPasswordView = mContent.findViewById(R.id.password);
+        TouchToFillUtil.addColorAndRippleToBackground(
+                mPasswordView, (GradientDrawable) mPasswordView.getBackground(), mContext);
     }
 
     void setSheetTitle(String generatedPassword) {
@@ -74,12 +84,20 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
                         generatedPassword));
     }
 
-    void setPasswordAcceptedCallback(Callback<String> callback) {
+    void setPasswordAcceptedCallback(GenerationCallback callback) {
         Button passwordAcceptedButton = mContent.findViewById(R.id.use_password_button);
         mPasswordView.setOnClickListener(
-                (v) -> callback.onResult(mPasswordView.getText().toString()));
+                (v) ->
+                        callback.onAccept(
+                                mPasswordView.getText().toString(),
+                                TouchToFillPasswordGenerationCoordinator.InteractionResult
+                                        .ACCEPTED_VIA_PASSWORD_VIEW));
         passwordAcceptedButton.setOnClickListener(
-                (v) -> callback.onResult(mPasswordView.getText().toString()));
+                (v) ->
+                        callback.onAccept(
+                                mPasswordView.getText().toString(),
+                                TouchToFillPasswordGenerationCoordinator.InteractionResult
+                                        .ACCEPTED_VIA_ACCEPT_BUTTON));
     }
 
     void setPasswordRejectedCallback(Runnable callback) {
@@ -92,9 +110,8 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         return mContent;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -117,24 +134,24 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.password_generation_bottom_sheet_content_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.password_generation_bottom_sheet_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.password_generation_bottom_sheet_content_description;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.password_generation_bottom_sheet_closed;
     }
 
@@ -146,10 +163,5 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
-    }
-
-    @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
     }
 }

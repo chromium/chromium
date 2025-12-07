@@ -16,17 +16,6 @@ BASE_DECLARE_FEATURE(kPreemptiveLinkToTextGeneration);
 // Sets the timeout length for pre-emptive link generation.
 extern const base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs;
 
-#if BUILDFLAG(IS_IOS)
-// Enables shared highlighting for AMP viewers pages.
-BASE_DECLARE_FEATURE(kSharedHighlightingAmp);
-#endif
-
-// Enables the new SharedHighlightingManager refactoring.
-BASE_DECLARE_FEATURE(kSharedHighlightingManager);
-
-// Feature flag that enable Shared Highlighting V2 in iOS.
-BASE_DECLARE_FEATURE(kIOSSharedHighlightingV2);
-
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();
 

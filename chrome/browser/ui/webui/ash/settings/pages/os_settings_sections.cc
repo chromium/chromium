@@ -97,35 +97,9 @@ OsSettingsSections::OsSettingsSections(
              std::make_unique<KerberosSection>(profile, search_tag_registry,
                                                kerberos_credentials_manager));
 
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    AddSection(mojom::Section::kSystemPreferences,
-               std::make_unique<SystemPreferencesSection>(
-                   profile, search_tag_registry, prefs));
-  } else {
-    AddSection(
-        mojom::Section::kCrostini,
-        std::make_unique<CrostiniSection>(profile, search_tag_registry, prefs));
-
-    AddSection(mojom::Section::kDateAndTime,
-               std::make_unique<DateTimeSection>(profile, search_tag_registry));
-
-    AddSection(mojom::Section::kFiles,
-               std::make_unique<FilesSection>(profile, search_tag_registry));
-
-    AddSection(mojom::Section::kLanguagesAndInput,
-               std::make_unique<LanguagesSection>(profile, search_tag_registry,
-                                                  prefs));
-
-    AddSection(mojom::Section::kPrinting,
-               std::make_unique<PrintingSection>(profile, search_tag_registry,
-                                                 printers_manager));
-
-    AddSection(mojom::Section::kReset,
-               std::make_unique<ResetSection>(profile, search_tag_registry));
-
-    AddSection(mojom::Section::kSearchAndAssistant,
-               std::make_unique<SearchSection>(profile, search_tag_registry));
-  }
+  AddSection(mojom::Section::kSystemPreferences,
+             std::make_unique<SystemPreferencesSection>(
+                 profile, search_tag_registry, prefs));
 }
 
 OsSettingsSections::OsSettingsSections() = default;

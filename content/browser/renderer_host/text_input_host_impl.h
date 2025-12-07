@@ -5,14 +5,14 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 
 namespace content {
 
-// Note that the methods should run on BrowserThread::IO to get pumped because
-// BrowserThread::UI is being blocked on a semaphore at TextInputClientMac.
-// http://crbug.com/121917
+// A class to implement the incoming response messages from the renderer process
+// for IME IPCs. See the class comment on TextInputClientMac.
 class TextInputHostImpl : public blink::mojom::TextInputHost {
  public:
   TextInputHostImpl();

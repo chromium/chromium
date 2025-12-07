@@ -15,7 +15,6 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context.h"
@@ -104,9 +103,7 @@ PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
   GURL effective_document_url =
       ScriptContext::GetEffectiveDocumentURLForInjection(
           frame, frame->GetDocument().Url(),
-          params_->match_about_blank
-              ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
-              : MatchOriginAsFallbackBehavior::kNever);
+          params_->match_origin_as_fallback_behavior);
   if (params_->is_web_view) {
     if (!frame->IsOutermostMainFrame()) {
       // This is a subframe inside <webview>, so allow it.
@@ -177,7 +174,7 @@ void ProgrammaticScriptInjector::OnInjectionComplete(
 void ProgrammaticScriptInjector::OnWillNotInject(InjectFailureReason reason) {
   std::string error;
   switch (reason) {
-    case NOT_ALLOWED:
+    case ScriptInjector::InjectFailureReason::kNotAllowed:
       if (!CanShowUrlInError()) {
         error = manifest_errors::kCannotAccessPage;
       } else if (!origin_for_about_error_.empty()) {
@@ -189,8 +186,9 @@ void ProgrammaticScriptInjector::OnWillNotInject(InjectFailureReason reason) {
             manifest_errors::kCannotAccessPageWithUrl, url_.spec());
       }
       break;
-    case EXTENSION_REMOVED:  // no special error here.
-    case WONT_INJECT:
+    case ScriptInjector::InjectFailureReason::kExtensionRemoved:  // no special
+                                                                  // error here.
+    case ScriptInjector::InjectFailureReason::kWontInject:
       break;
   }
   Finish(error);

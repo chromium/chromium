@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_SCROLL_MANAGER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -25,6 +26,17 @@ class PaintLayerScrollableArea;
 // Scroll directions used to check whether propagation is possible in a given
 // direction. Used in CanPropagate.
 enum class ScrollPropagationDirection { kHorizontal, kVertical, kBoth, kNone };
+
+// Result of a scroll attempt.
+//
+// kScrolled  – The current scroller consumed the scroll.
+// kContained – The scroll reached a boundary and was contained.
+// kBubbled   – The scroll could not be consumed and bubbled to a parent.
+enum class LogicalScrollResult {
+  kScrolled,
+  kContained,
+  kBubbled,
+};
 
 // This class is deprecated as scrolling is now handled by cc::InputHandler.
 // It is still involved with the following main-thread operations:
@@ -59,11 +71,11 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
   // granularity - The units that the  scroll delta parameter is in.
   // startNode - Optional. If provided, start chaining from the given node.
   //             If not, use the current focus or last clicked node.
-  bool LogicalScroll(mojom::blink::ScrollDirection,
-                     ui::ScrollGranularity,
-                     Node* start_node,
-                     Node* mouse_press_node,
-                     bool scrolling_via_key = false);
+  LogicalScrollResult LogicalScroll(mojom::blink::ScrollDirection,
+                                    ui::ScrollGranularity,
+                                    Node* start_node,
+                                    Node* mouse_press_node,
+                                    bool scrolling_via_key = false);
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
@@ -87,17 +99,20 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
                            ScrollPropagationDirection direction);
 
  private:
-  void RecomputeScrollChain(const Node& start_node,
-                            Deque<DOMNodeId>& scroll_chain,
-                            bool is_autoscroll);
-  bool CanScroll(const Node& current_node, bool for_autoscroll);
+  struct ScrollChainResult {
+    Deque<DOMNodeId> chain;
+    bool can_bubble = true;
+  };
+  ScrollChainResult RecomputeScrollChain(
+      const Node& start_node,
+      mojom::blink::ScrollDirection direction);
+  bool CanScroll(const Node& current_node);
 
   const Member<LocalFrame> frame_;
 
   Member<PaintLayerScrollableArea> resize_scrollable_area_;
 
-  // In the coords of resize_scrollable_area_.
-  gfx::Vector2d offset_from_resize_corner_;
+  gfx::Transform resize_position_to_size_transform_;
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_H_
 
+#include <array>
 #include <list>
 #include <map>
 #include <memory>
@@ -24,6 +25,7 @@
 #include "content/common/media/media_log_records.mojom.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "ipc/constants.mojom.h"
 #include "media/audio/audio_logging.h"
 #include "media/base/media_log.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -117,7 +119,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
       AudioComponent component,
       int component_id,
       int render_process_id = -1,
-      int render_frame_id = MSG_ROUTING_NONE);
+      int render_frame_id = IPC::mojom::kRoutingIdNone);
 
   // Strongly bounds |receiver| to a new media::mojom::AudioLog instance. Safe
   // to call from any thread.
@@ -126,7 +128,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
       int component_id,
       mojo::PendingReceiver<media::mojom::AudioLog> receiver,
       int render_process_id = -1,
-      int render_frame_id = MSG_ROUTING_NONE);
+      int render_frame_id = IPC::mojom::kRoutingIdNone);
 
   static void CreateMediaLogRecords(
       int render_process_id,
@@ -194,8 +196,10 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   base::Lock lock_;
   bool can_update_ = false;
   base::Value::Dict audio_streams_cached_data_;
-  int owner_ids_[base::to_underlying(
-      media::AudioLogFactory::AudioComponent::kAudiocomponentMax)] = {};
+  std::array<int,
+             base::to_underlying(
+                 media::AudioLogFactory::AudioComponent::kAudiocomponentMax)>
+      owner_ids_ = {};
 };
 
 }  // namespace content

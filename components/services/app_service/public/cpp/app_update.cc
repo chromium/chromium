@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_update.h"
 
+#include <variant>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,11 +46,11 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
 
   // `new_delta` should hold a bool icon version only.
   CHECK(!new_delta->icon_key.has_value() ||
-        absl::holds_alternative<bool>(new_delta->icon_key->update_version));
+        std::holds_alternative<bool>(new_delta->icon_key->update_version));
 
   // `delta` should hold a bool icon version only.
   CHECK(!delta || !delta->icon_key.has_value() ||
-        absl::holds_alternative<bool>(delta->icon_key->update_version));
+        std::holds_alternative<bool>(delta->icon_key->update_version));
 
   if (delta && delta->readiness != Readiness::kUnknown &&
       !apps_util::IsInstalled(delta->readiness)) {
@@ -67,8 +69,8 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
     // If `new_delta`'s `update_version` is true, or `delta`'s `update_version`
     // is true, the new `update_version` should be true.
     delta->icon_key->update_version =
-        absl::get<bool>(new_delta->icon_key->update_version) ||
-        absl::get<bool>(delta->icon_key->update_version);
+        std::get<bool>(new_delta->icon_key->update_version) ||
+        std::get<bool>(delta->icon_key->update_version);
   }
 
   new_delta->icon_key = std::move(delta->icon_key);
@@ -83,11 +85,11 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
 std::optional<apps::IconKey> MergeIconKey(const App* state, const App* delta) {
   //`state` should have int32_t `update_version` only.
   CHECK(!state || !state->icon_key.has_value() ||
-        absl::holds_alternative<int32_t>(state->icon_key->update_version));
+        std::holds_alternative<int32_t>(state->icon_key->update_version));
 
   // `delta` should hold a bool icon version only.
   CHECK(!delta || !delta->icon_key.has_value() ||
-        absl::holds_alternative<bool>(delta->icon_key->update_version));
+        std::holds_alternative<bool>(delta->icon_key->update_version));
 
   if (delta && delta->readiness != Readiness::kUnknown &&
       !apps_util::IsInstalled(delta->readiness)) {
@@ -114,9 +116,8 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
 
   if ((delta->app_type != state->app_type) ||
       (delta->app_id != state->app_id)) {
-    LOG(ERROR) << "inconsistent (app_type, app_id): ("
-               << EnumToString(delta->app_type) << ", " << delta->app_id
-               << ") vs (" << EnumToString(state->app_type) << ", "
+    LOG(ERROR) << "inconsistent (app_type, app_id): (" << delta->app_type
+               << ", " << delta->app_id << ") vs (" << state->app_type << ", "
                << state->app_id << ") ";
     return false;
   }
@@ -167,9 +168,12 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(paused);
   SET_OPTIONAL_VALUE(allow_window_mode_selection);
 
-  if (!delta->intent_filters.empty()) {
-    state->intent_filters.clear();
-    state->intent_filters = CloneIntentFilters(delta->intent_filters);
+  if (delta->intent_filters) {
+    if (delta->intent_filters->empty()) {
+      state->intent_filters = std::nullopt;
+    } else {
+      state->intent_filters = CloneIntentFilters(*delta->intent_filters);
+    }
   }
 
   SET_OPTIONAL_VALUE(resize_locked)
@@ -269,6 +273,9 @@ AppUpdate::AppUpdate(const App* state,
     DCHECK_EQ(state_->app_id, delta->app_id);
   }
 }
+
+AppUpdate::AppUpdate(const AppUpdate&) = default;
+AppUpdate& AppUpdate::operator=(const AppUpdate&) = default;
 
 bool AppUpdate::StateIsNull() const {
   return state_ == nullptr;
@@ -521,18 +528,23 @@ bool AppUpdate::PausedChanged() const {
 }
 
 apps::IntentFilters AppUpdate::IntentFilters() const {
-  if (delta_ && !delta_->intent_filters.empty()) {
-    return CloneIntentFilters(delta_->intent_filters);
+  if (delta_ && delta_->intent_filters) {
+    return CloneIntentFilters(*delta_->intent_filters);
   }
-  if (state_ && !state_->intent_filters.empty()) {
-    return CloneIntentFilters(state_->intent_filters);
+  if (state_ && state_->intent_filters) {
+    return CloneIntentFilters(*state_->intent_filters);
   }
-  return std::vector<IntentFilterPtr>{};
+  return {};
 }
 
 bool AppUpdate::IntentFiltersChanged() const {
-  return delta_ && !delta_->intent_filters.empty() &&
-         (!state_ || !IsEqual(delta_->intent_filters, state_->intent_filters));
+  if (!delta_ || !delta_->intent_filters) {
+    return false;
+  }
+  if (!state_ || !state_->intent_filters) {
+    return !delta_->intent_filters->empty();
+  }
+  return !IsEqual(*state_->intent_filters, *delta_->intent_filters);
 }
 
 std::optional<bool> AppUpdate::ResizeLocked() const {
@@ -632,9 +644,9 @@ bool AppUpdate::ExtraChanged() const {
 }
 
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
-  out << "AppType: " << EnumToString(app.AppType()) << std::endl;
+  out << "AppType: " << app.AppType() << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
-  out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
+  out << "Readiness: " << app.Readiness() << std::endl;
   out << "Name: " << app.Name() << std::endl;
   out << "ShortName: " << app.ShortName() << std::endl;
   out << "PublisherId: " << app.PublisherId() << std::endl;
@@ -657,8 +669,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
     out << permission->ToString() << std::endl;
   }
 
-  out << "InstallReason: " << EnumToString(app.InstallReason()) << std::endl;
-  out << "InstallSource: " << EnumToString(app.InstallSource()) << std::endl;
+  out << "InstallReason: " << app.InstallReason() << std::endl;
+  out << "InstallSource: " << app.InstallSource() << std::endl;
 
   out << "PolicyId: " << base::JoinString(app.PolicyIds(), ", ") << std::endl;
 
@@ -691,7 +703,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
       << std::endl;
   out << "AllowWindowModeSelection: "
       << PRINT_OPTIONAL_BOOL(app.AllowWindowModeSelection()) << std::endl;
-  out << "WindowMode: " << EnumToString(app.WindowMode()) << std::endl;
+  out << "WindowMode: " << app.WindowMode() << std::endl;
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
         << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;

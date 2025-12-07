@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "ios/web_view/public/cwv_credit_card_saver.h"
@@ -23,14 +23,14 @@ class CreditCard;
 // |saveOptions| Additional options that may apply to this save attempt.
 // |legalMessage| Contains messaging that must be displayed to the user.
 // |savePromptCallback| The callback to run when saving the card.
-- (instancetype)
-    initWithCreditCard:(const autofill::CreditCard&)creditCard
-           saveOptions:
-               (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
-     legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-    savePromptCallback:
-        (autofill::payments::PaymentsAutofillClient::
-             UploadSaveCardPromptCallback)uploadSavePromptCallback
+- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
+                       saveOptions:(autofill::payments::PaymentsAutofillClient::
+                                        SaveCreditCardOptions)saveOptions
+                 legalMessageLines:
+                     (autofill::LegalMessageLines)legalMessageLines
+                savePromptCallback:
+                    (autofill::payments::PaymentsAutofillClient::
+                         UploadSaveCardPromptCallback)uploadSavePromptCallback
     NS_DESIGNATED_INITIALIZER;
 
 // Called to notify when upload was completed.

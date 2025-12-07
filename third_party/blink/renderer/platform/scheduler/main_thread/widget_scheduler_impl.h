@@ -21,12 +21,15 @@ class RenderWidgetSignals;
 
 class PLATFORM_EXPORT WidgetSchedulerImpl : public WidgetScheduler {
  public:
-  WidgetSchedulerImpl(MainThreadSchedulerImpl*, RenderWidgetSignals*);
+  WidgetSchedulerImpl(MainThreadSchedulerImpl*,
+                      RenderWidgetSignals*,
+                      Delegate*);
   WidgetSchedulerImpl(const WidgetSchedulerImpl&) = delete;
   WidgetSchedulerImpl& operator=(const WidgetSchedulerImpl&) = delete;
   ~WidgetSchedulerImpl() override;
 
   // WidgetScheduler overrides:
+  void WillShutdown() override;
   void Shutdown() override;
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;
   void WillBeginFrame(const viz::BeginFrameArgs& args) override;
@@ -48,6 +51,15 @@ class PLATFORM_EXPORT WidgetSchedulerImpl : public WidgetScheduler {
   void DidRunBeginMainFrame() override;
   void SetHidden(bool hidden) override;
 
+  void RequestBeginMainFrameNotExpected(bool);
+
+  // Returns true if we know begin frame is not expected soon, and false if we
+  // don't know (signals haven't been requested) or we are expecting a frame
+  // soon.
+  bool IsBeginFrameNotExpectedSoon() const {
+    return begin_frame_not_expected_soon_;
+  }
+
  private:
   scoped_refptr<MainThreadTaskQueue> input_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
@@ -57,7 +69,9 @@ class PLATFORM_EXPORT WidgetSchedulerImpl : public WidgetScheduler {
   const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;
   const raw_ptr<RenderWidgetSignals, DanglingUntriaged> render_widget_signals_;
+  raw_ptr<Delegate> delegate_;
   bool hidden_ = false;
+  bool begin_frame_not_expected_soon_ = false;
 };
 
 }  // namespace blink::scheduler

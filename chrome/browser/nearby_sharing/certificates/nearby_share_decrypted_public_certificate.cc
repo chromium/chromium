@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 
+#include <array>
 #include <utility>
 
 #include "chrome/browser/nearby_sharing/certificates/common.h"
@@ -11,7 +12,7 @@
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
-#include "crypto/encryptor.h"
+#include "crypto/aes_ctr.h"
 #include "crypto/hmac.h"
 #include "crypto/signature_verifier.h"
 
@@ -20,12 +21,10 @@ namespace {
 bool IsDataValid(base::Time not_before,
                  base::Time not_after,
                  base::span<const uint8_t> public_key,
-                 crypto::SymmetricKey* secret_key,
                  base::span<const uint8_t> id,
                  base::span<const uint8_t> encrypted_metadata,
                  base::span<const uint8_t> metadata_encryption_key_tag) {
-  return not_before < not_after && !public_key.empty() && secret_key &&
-         secret_key->key().size() == kNearbyShareNumBytesSecretKey &&
+  return not_before < not_after && !public_key.empty() &&
          id.size() == kNearbyShareNumBytesCertificateId &&
          !encrypted_metadata.empty() &&
          metadata_encryption_key_tag.size() ==
@@ -36,23 +35,13 @@ bool IsDataValid(base::Time not_before,
 // Return std::nullopt if the decryption was unsuccessful.
 std::optional<std::vector<uint8_t>> DecryptMetadataKey(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
-    const crypto::SymmetricKey* secret_key) {
-  std::unique_ptr<crypto::Encryptor> encryptor =
-      CreateNearbyShareCtrEncryptor(secret_key, encrypted_metadata_key.salt());
-  if (!encryptor) {
-    CD_LOG(ERROR, Feature::NS)
-        << "Cannot decrypt metadata key: Could not create CTR encryptor.";
-    return std::nullopt;
-  }
+    base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key) {
+  auto counter = DeriveNearbyShareKey<crypto::aes_ctr::kCounterSize>(
+      encrypted_metadata_key.salt());
 
-  std::vector<uint8_t> decrypted_metadata_key;
-  if (!encryptor->Decrypt(base::as_bytes(base::make_span(
-                              encrypted_metadata_key.encrypted_key())),
-                          &decrypted_metadata_key)) {
-    return std::nullopt;
-  }
-
-  return decrypted_metadata_key;
+  return crypto::aes_ctr::Decrypt(
+      secret_key, counter,
+      base::as_byte_span(encrypted_metadata_key.encrypted_key()));
 }
 
 // Attempts to decrypt |encrypted_metadata| with |metadata_encryption_key|,
@@ -61,11 +50,11 @@ std::optional<std::vector<uint8_t>> DecryptMetadataKey(
 std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
     base::span<const uint8_t> encrypted_metadata,
     base::span<const uint8_t> metadata_encryption_key,
-    const crypto::SymmetricKey* secret_key) {
+    base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key) {
   // Init() keeps a reference to the input key, so that reference must outlive
   // the lifetime of |aead|.
-  std::vector<uint8_t> derived_key = DeriveNearbyShareKey(
-      metadata_encryption_key, kNearbyShareNumBytesAesGcmKey);
+  auto derived_key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
+      metadata_encryption_key);
 
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
@@ -73,8 +62,7 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
   return aead.Open(
       encrypted_metadata,
       /*nonce=*/
-      DeriveNearbyShareKey(base::as_bytes(base::make_span(secret_key->key())),
-                           kNearbyShareNumBytesAesGcmIv),
+      DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(secret_key),
       /*additional_data=*/base::span<const uint8_t>());
 }
 
@@ -83,13 +71,15 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
 bool VerifyMetadataEncryptionKeyTag(
     base::span<const uint8_t> decrypted_metadata_key,
     base::span<const uint8_t> metadata_encryption_key_tag) {
-  // This array of 0x00 is used to conform with the GmsCore implementation.
-  std::vector<uint8_t> key(kNearbyShareNumBytesMetadataEncryptionKeyTag, 0x00);
+  const auto tag =
+      metadata_encryption_key_tag.to_fixed_extent<crypto::hash::kSha256Size>();
 
-  std::vector<uint8_t> result(kNearbyShareNumBytesMetadataEncryptionKeyTag);
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  return hmac.Init(key) &&
-         hmac.Verify(decrypted_metadata_key, metadata_encryption_key_tag);
+  // This array of 0x00 is used to conform with the GmsCore implementation. This
+  // turns HMAC into a slow hash function; see b/433801272.
+  constexpr std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeyTag>
+      key = {0};
+  return tag.has_value() &&
+         crypto::hmac::VerifySha256(key, decrypted_metadata_key, *tag);
 }
 
 }  // namespace
@@ -108,9 +98,13 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
       public_certificate.end_time().seconds());
   std::vector<uint8_t> public_key(public_certificate.public_key().begin(),
                                   public_certificate.public_key().end());
-  std::unique_ptr<crypto::SymmetricKey> secret_key =
-      crypto::SymmetricKey::Import(crypto::SymmetricKey::Algorithm::AES,
-                                   public_certificate.secret_key());
+
+  auto secret_key = base::as_byte_span(public_certificate.secret_key())
+                        .to_fixed_extent<kNearbyShareNumBytesSecretKey>();
+  if (!secret_key) {
+    return std::nullopt;
+  }
+
   std::vector<uint8_t> id(public_certificate.secret_id().begin(),
                           public_certificate.secret_id().end());
   std::vector<uint8_t> encrypted_metadata(
@@ -120,8 +114,8 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
       public_certificate.metadata_encryption_key_tag().begin(),
       public_certificate.metadata_encryption_key_tag().end());
 
-  if (!IsDataValid(not_before, not_after, public_key, secret_key.get(), id,
-                   encrypted_metadata, metadata_encryption_key_tag)) {
+  if (!IsDataValid(not_before, not_after, public_key, id, encrypted_metadata,
+                   metadata_encryption_key_tag)) {
     return std::nullopt;
   }
 
@@ -133,7 +127,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   // certificates with the same encrypted metadata key until we find the correct
   // one.
   std::optional<std::vector<uint8_t>> decrypted_metadata_key =
-      DecryptMetadataKey(encrypted_metadata_key, secret_key.get());
+      DecryptMetadataKey(encrypted_metadata_key, *secret_key);
   if (!decrypted_metadata_key ||
       !VerifyMetadataEncryptionKeyTag(*decrypted_metadata_key,
                                       metadata_encryption_key_tag)) {
@@ -144,7 +138,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   // be decrypted.
   std::optional<std::vector<uint8_t>> decrypted_metadata_bytes =
       DecryptMetadataPayload(encrypted_metadata, *decrypted_metadata_key,
-                             secret_key.get());
+                             *secret_key);
   if (!decrypted_metadata_bytes) {
     CD_LOG(ERROR, Feature::NS)
         << "Metadata decryption failed: Failed to decrypt metadata "
@@ -162,26 +156,26 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   }
 
   return NearbyShareDecryptedPublicCertificate(
-      not_before, not_after, std::move(secret_key), std::move(public_key),
-      std::move(id), std::move(unencrypted_metadata),
-      public_certificate.for_self_share());
+      not_before, not_after, *secret_key, std::move(public_key), std::move(id),
+      std::move(unencrypted_metadata), public_certificate.for_self_share());
 }
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     base::Time not_before,
     base::Time not_after,
-    std::unique_ptr<crypto::SymmetricKey> secret_key,
+    base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
     std::vector<uint8_t> public_key,
     std::vector<uint8_t> id,
     nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
     bool for_self_share)
     : not_before_(not_before),
       not_after_(not_after),
-      secret_key_(std::move(secret_key)),
       public_key_(std::move(public_key)),
       id_(std::move(id)),
       unencrypted_metadata_(std::move(unencrypted_metadata)),
-      for_self_share_(for_self_share) {}
+      for_self_share_(for_self_share) {
+  base::span(secret_key_).copy_from(secret_key);
+}
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     const NearbyShareDecryptedPublicCertificate& other) {
@@ -196,8 +190,7 @@ NearbyShareDecryptedPublicCertificate::operator=(
 
   not_before_ = other.not_before_;
   not_after_ = other.not_after_;
-  secret_key_ = crypto::SymmetricKey::Import(
-      crypto::SymmetricKey::Algorithm::AES, other.secret_key_->key());
+  base::span(secret_key_).copy_from(other.secret_key_);
   public_key_ = other.public_key_;
   id_ = other.id_;
   unencrypted_metadata_ = other.unencrypted_metadata_;
@@ -231,10 +224,8 @@ bool NearbyShareDecryptedPublicCertificate::VerifySignature(
   return verifier.VerifyFinal();
 }
 
-std::vector<uint8_t>
+std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
 NearbyShareDecryptedPublicCertificate::HashAuthenticationToken(
     base::span<const uint8_t> authentication_token) const {
-  return ComputeAuthenticationTokenHash(
-      authentication_token,
-      base::as_bytes(base::make_span(secret_key_->key())));
+  return ComputeAuthenticationTokenHash(authentication_token, secret_key_);
 }

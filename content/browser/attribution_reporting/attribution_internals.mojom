@@ -33,6 +33,7 @@ struct AggregatableHistogramContribution {
   // Hex-encoded unsigned 128-bit integer.
   string key;
   uint32 value;
+  uint64 filtering_id;
 };
 
 // Contains aggregatable attribution data to be displayed.
@@ -60,6 +61,7 @@ union ReportStatus {
   // Contains the external report ID of the replacement report.
   string replaced_by_higher_priority_report;
   Empty prohibited_by_browser_policy;
+  Empty expired;
   NetworkStatus network_status;
   Empty failed_to_assemble;
 };
@@ -113,11 +115,11 @@ struct WebUISource {
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
-  // String instead of mojo_base.mojom.DictionaryValue because the value is
-  // simply displayed in the UI, never inspected. JSON is used instead of
-  // attribution_reporting.mojom.TriggerSpecs to avoid complex TypeScript-based
-  // formatting.
-  string trigger_specs_json;
+  attribution_reporting.mojom.EventReportWindows event_report_windows;
+  array<uint32> trigger_data;
+  // The maximum number of event-level reports that can be produced due to attribution to this
+  // source.
+  int32 max_event_level_reports;
   double aggregatable_report_window_time;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
@@ -130,10 +132,17 @@ struct WebUISource {
   array<uint64> aggregatable_dedup_keys;
   attribution_reporting.mojom.TriggerDataMatching trigger_data_matching;
   double event_level_epsilon;
-  bool debug_cookie_set;
+  bool cookie_based_debug_allowed;
   int32 remaining_aggregatable_debug_budget;
   // A hex-encoded 128-bit integer.
   string aggregatable_debug_key_piece;
+  // String instead of mojo_base.mojom.DictionaryValue because the value is
+  // simply displayed in the UI, never inspected. JSON is used instead of
+  // attribution_reporting.mojom.AttributionScopesData to avoid complex TypeScript-based
+  // formatting.
+  string attribution_scopes_data_json;
+  // String is used for the same reasons as described for `attribution_scopes_data_json`.
+  string aggregatable_named_budgets;
 
   enum Attributability {
     kAttributable,

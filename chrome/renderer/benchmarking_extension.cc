@@ -12,7 +12,7 @@
 #include "base/profiler/module_cache.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
 #include "v8-local-handle.h"
@@ -107,8 +107,16 @@ class BenchmarkingWrapper : public v8::Extension {
 
   static void GetRendererMainTid(
       const v8::FunctionCallbackInfo<v8::Value>& args) {
+    // The current thread ID might be an int64, however int64 values are not
+    // representable in JS and JSON (cf. crbug.com/40228085) since JS numbers
+    // are float64. Since thread IDs are likely to be allocated sequentially,
+    // truncation of the high bits is preferable to loss of precision in the low
+    // bits, as threads are more likely to differ in their low bit values, so we
+    // truncate the value to int32. Since this is only used for dumping
+    // benchmark state, the loss of information is not catastrophic and won't
+    // happen in normal browser execution.
     args.GetReturnValue().Set(
-        static_cast<int>(base::PlatformThread::CurrentId()));
+        base::PlatformThread::CurrentId().truncate_to_int32_for_display_only());
   }
 
  private:
@@ -121,7 +129,7 @@ class BenchmarkingWrapper : public v8::Extension {
   }
 
   static v8::Local<v8::String> GetString(v8::Isolate* isolate,
-                                         const std::string string) {
+                                         const std::string& string) {
     return v8::String::NewFromUtf8(isolate, string.data(),
                                    v8::NewStringType::kInternalized,
                                    string.length())

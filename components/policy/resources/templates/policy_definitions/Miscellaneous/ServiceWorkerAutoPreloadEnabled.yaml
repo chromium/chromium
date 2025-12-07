@@ -1,0 +1,33 @@
+caption: Allow ServiceWorker to dispatch navigation requests without waiting for its startup
+desc: |-
+  https://github.com/WICG/service-worker-auto-preload
+  The ServiceWorkerAutoPreload feature dispatches a network request for a main resource at the same time it begins the ServiceWorker bootstrap process.
+
+  Setting the policy to Enabled or leaving it unset means
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> enables ServiceWorkerAutoPreload. The navigation request is automatically dispatched while starting the ServiceWorker in some scenarios, e.g. ServiceWorker is not running,
+
+  If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not enable ServiceWorkerAutoPreload. The navigation request is dispatched always after starting the ServiceWorker.
+
+  This policy is a temporary measure to control the feature and will be removed in M144.
+default: true
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable ServiceWorkerAutoPreload
+  value: true
+- caption: Disable ServiceWorkerAutoPreload
+  value: false
+owners:
+- sisidovski@chromium.org
+- file://content/browser/service_worker/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:140-
+- chrome.*:140-
+- chrome_os:140-
+- fuchsia:140-
+tags: []
+type: main

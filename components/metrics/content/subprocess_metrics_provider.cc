@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -65,7 +67,7 @@ SubprocessMetricsProvider::RefCountedAllocator::~RefCountedAllocator() =
     default;
 
 SubprocessMetricsProvider::SubprocessMetricsProvider()
-    : task_runner_(CreateTaskRunner()) {
+    : allocators_by_id_(PassKey()), task_runner_(CreateTaskRunner()) {
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_ptr_factory_.GetWeakPtr());
   content::BrowserChildProcessObserver::Add(this);
@@ -78,7 +80,7 @@ SubprocessMetricsProvider::SubprocessMetricsProvider()
 
 SubprocessMetricsProvider::~SubprocessMetricsProvider() {
   // This object should never be deleted since it is leaky.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SubprocessMetricsProvider::RegisterSubprocessAllocator(
@@ -177,8 +179,9 @@ void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   std::unique_ptr<base::PersistentMemoryAllocator> allocator =
       host->TakeMetricsAllocator();
   // The allocator can be null in tests.
-  if (!allocator)
+  if (!allocator) {
     return;
+  }
 
   RegisterSubprocessAllocator(
       data.id, std::make_unique<base::PersistentHistogramAllocator>(
@@ -209,8 +212,9 @@ void SubprocessMetricsProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   // Sometimes, the same host will cause multiple notifications in tests so
   // could possibly do the same in a release build.
-  if (!scoped_observations_.IsObservingSource(host))
+  if (!scoped_observations_.IsObservingSource(host)) {
     scoped_observations_.AddObservation(host);
+  }
 }
 
 void SubprocessMetricsProvider::RenderProcessReady(
@@ -223,8 +227,9 @@ void SubprocessMetricsProvider::RenderProcessReady(
       host->TakeMetricsAllocator();
   if (allocator) {
     RegisterSubprocessAllocator(
-        host->GetID(), std::make_unique<base::PersistentHistogramAllocator>(
-                           std::move(allocator)));
+        host->GetDeprecatedID(),
+        std::make_unique<base::PersistentHistogramAllocator>(
+            std::move(allocator)));
   }
 }
 
@@ -233,7 +238,7 @@ void SubprocessMetricsProvider::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DeregisterSubprocessAllocator(host->GetID());
+  DeregisterSubprocessAllocator(host->GetDeprecatedID());
 }
 
 void SubprocessMetricsProvider::RenderProcessHostDestroyed(
@@ -244,7 +249,7 @@ void SubprocessMetricsProvider::RenderProcessHostDestroyed(
   // (above) being called so it's necessary to de-register also upon the
   // destruction of the host. If both get called, no harm is done.
 
-  DeregisterSubprocessAllocator(host->GetID());
+  DeregisterSubprocessAllocator(host->GetDeprecatedID());
   scoped_observations_.RemoveObservation(host);
 }
 
@@ -266,7 +271,21 @@ void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
     if (!histogram) {
       break;
     }
-    allocator_ptr->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
+    // We expect histograms to match as subprocesses shouldn't have version skew
+    // with the browser process.
+    bool merge_success =
+        allocator_ptr->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
+
+    // When merging child process histograms into the parent, we expect the
+    // merge operation to succeed. If it doesn't, it means the histograms have
+    // different types or buckets, which indicates a programming error (i.e.
+    // non-matching logging code across browser and child for a histogram). In
+    // this case DumpWithoutCrashing() with a crash key with the histogram name.
+    if (!merge_success) {
+      SCOPED_CRASH_KEY_STRING256("SubprocessMetricsProvider", "histogram",
+                                 histogram->histogram_name());
+      base::debug::DumpWithoutCrashing();
+    }
     ++histogram_count;
   }
 

@@ -230,10 +230,6 @@ extern const char kGenericPaymentMethodNotSupportedMessage[];
 // be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
 extern const char kNoLinkHeader[];
 
-// Used for errors downloading the payment method manifest. This format should
-// be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
-extern const char kNoContentAndNoLinkHeader[];
-
 // Used when the downloaded payment manifest A is empty. This format should be
 // used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
 extern const char kNoContentInPaymentManifest[];
@@ -277,6 +273,17 @@ extern const char kValidInstrumentIconRequired[];
 // not valid.
 extern const char kInvalidIcon[];
 
+// Used when the instrument details string is not valid UTF8 for the
+// "secure-payment-confirmation" method.
+extern const char kNonUtf8InstrumentDetailsString[];
+
+// Used when the instrument details string is present but is empty.
+extern const char kEmptyInstrumentDetailsString[];
+
+// Used when the instrument details string is too long for the
+// "secure-payment-confirmation" method.
+extern const char kTooLongInstrumentDetailsString[];
+
 // Used when the rpId field was not specified for the
 // "secure-payment-confirmation" method.
 extern const char kRpIdRequired[];
@@ -289,21 +296,23 @@ extern const char kPayeeOriginOrPayeeNameRequired[];
 // "secure-payment-confirmation" method.
 extern const char kPayeeOriginMustBeHttps[];
 
-// Used when the networkInfo field was specified but the networkInfo.name field
-// was empty for the "secure-payment-confirmation" method.
-extern const char kNetworkNameRequired[];
+// Used when a logo in the paymentEntitiesLogo list is null. A well-behaving
+// renderer cannot end up in this situation, but we must handle it gracefully as
+// renderers cannot be trusted.
+extern const char kNonNullPaymentEntityLogoRequired[];
 
-// Used when the networkInfo field was specified but the networkInfo.icon field
-// was not a valid URL in the "secure-payment-confirmation" method.
-extern const char kValidNetworkIconRequired[];
+// Used when a logo in the paymentEntitiesLogo list had a non-valid URL in its
+// url field in the "secure-payment-confirmation" method.
+extern const char kValidLogoUrlRequired[];
 
-// Used when the issuerInfo field was specified but the issuerInfo.name field
-// was empty for the "secure-payment-confirmation" method.
-extern const char kIssuerNameRequired[];
+// Used when a logo in the paymentEntitiesLogo list had a URL in its url field
+// whose scheme was not one of "https", "http", or "data" in the
+// "secure-payment-confirmation" method.
+extern const char kValidLogoUrlSchemeRequired[];
 
-// Used when the issuerInfo field was specified but the issuerInfo.icon field
-// was not a valid URL in the "secure-payment-confirmation" method.
-extern const char kValidIssuerIconRequired[];
+// Used when a logo in the paymentEntitiesLogo list had an empty label field in
+// the "secure-payment-confirmation" method.
+extern const char kLogoLabelRequired[];
 
 }  // namespace errors
 }  // namespace payments

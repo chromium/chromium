@@ -32,8 +32,7 @@ class MEDIA_EXPORT FileDataSource : public DataSource {
   void Stop() override;
   void Abort() override;
   void Read(int64_t position,
-            int size,
-            uint8_t* data,
+            base::span<uint8_t> data,
             DataSource::ReadCB read_cb) override;
   [[nodiscard]] bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;

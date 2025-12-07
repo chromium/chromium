@@ -24,8 +24,9 @@ TestEventRouter::TestEventRouter(content::BrowserContext* context)
 TestEventRouter::~TestEventRouter() = default;
 
 int TestEventRouter::GetEventCount(std::string event_name) const {
-  if (seen_events_.count(event_name) == 0)
+  if (seen_events_.count(event_name) == 0) {
     return 0;
+  }
   return seen_events_.find(event_name)->second;
 }
 
@@ -46,8 +47,9 @@ void TestEventRouter::BroadcastEvent(std::unique_ptr<Event> event) {
 
 void TestEventRouter::DispatchEventToExtension(const ExtensionId& extension_id,
                                                std::unique_ptr<Event> event) {
-  if (!expected_extension_id_.empty())
+  if (!expected_extension_id_.empty()) {
     DCHECK_EQ(expected_extension_id_, extension_id);
+  }
 
   IncrementEventCount(event->event_name);
 
@@ -56,8 +58,9 @@ void TestEventRouter::DispatchEventToExtension(const ExtensionId& extension_id,
 }
 
 void TestEventRouter::IncrementEventCount(const std::string& event_name) {
-  if (seen_events_.count(event_name) == 0)
+  if (seen_events_.count(event_name) == 0) {
     seen_events_[event_name] = 0;
+  }
   seen_events_[event_name]++;
 }
 

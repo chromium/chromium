@@ -11,6 +11,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -104,13 +105,13 @@ void WellKnownChangePasswordState::FetchNonExistingResource(
           base::Unretained(this)));
 }
 
-void WellKnownChangePasswordState::PrefetchChangePasswordURLs(
+void WellKnownChangePasswordState::PrefetchChangePasswordURL(
     affiliations::AffiliationService* affiliation_service,
-    const std::vector<GURL>& urls) {
+    const GURL& url) {
   prefetch_timer_.Start(FROM_HERE, kPrefetchTimeout, this,
                         &WellKnownChangePasswordState::ContinueProcessing);
-  affiliation_service->PrefetchChangePasswordURLs(
-      urls,
+  affiliation_service->PrefetchChangePasswordURL(
+      url,
       base::BindOnce(
           &WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback,
           weak_factory_.GetWeakPtr()));

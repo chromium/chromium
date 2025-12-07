@@ -33,6 +33,22 @@ class StructTraits<media::mojom::HypothesisPartsDataView,
 };
 
 template <>
+class StructTraits<media::mojom::MediaTimestampRangeDataView,
+                   media::MediaTimestampRange> {
+ public:
+  static base::TimeDelta start(const media::MediaTimestampRange& r) {
+    return r.start;
+  }
+
+  static base::TimeDelta end(const media::MediaTimestampRange& r) {
+    return r.end;
+  }
+
+  static bool Read(media::mojom::MediaTimestampRangeDataView data,
+                   media::MediaTimestampRange* out);
+};
+
+template <>
 class StructTraits<media::mojom::TimingInformationDataView,
                    media::TimingInformation> {
  public:
@@ -47,6 +63,11 @@ class StructTraits<media::mojom::TimingInformationDataView,
   static const ::std::optional<std::vector<media::HypothesisParts>>&
   hypothesis_parts(const media::TimingInformation& r) {
     return r.hypothesis_parts;
+  }
+
+  static const ::std::optional<std::vector<media::MediaTimestampRange>>&
+  originating_media_timestamps(const media::TimingInformation& r) {
+    return r.originating_media_timestamps;
   }
 
   static bool Read(media::mojom::TimingInformationDataView data,

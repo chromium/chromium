@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "services/device/public/mojom/nfc.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -46,7 +47,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   explicit NDEFRecord(device::mojom::NDEFRecordTypeCategory,
                       const String& record_type,
                       const String& id,
-                      WTF::Vector<uint8_t>);
+                      Vector<uint8_t>);
 
   // For constructing a "smart-poster", an external type or a local type record
   // whose payload is an NDEF message.
@@ -60,7 +61,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   explicit NDEFRecord(const String& id,
                       const String& encoding,
                       const String& lang,
-                      WTF::Vector<uint8_t>);
+                      Vector<uint8_t>);
 
   // Only for constructing "text" type record from just a text. The type
   // category will be device::mojom::NDEFRecordTypeCategory::kStandardized.
@@ -71,7 +72,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   // device::mojom::NDEFRecordTypeCategory::kStandardized.
   explicit NDEFRecord(const String& id,
                       const String& media_type,
-                      WTF::Vector<uint8_t>);
+                      Vector<uint8_t>);
 
   explicit NDEFRecord(const device::mojom::blink::NDEFRecord&);
 
@@ -80,12 +81,12 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   const String& id() const { return id_; }
   const String& encoding() const { return encoding_; }
   const String& lang() const { return lang_; }
-  DOMDataView* data() const;
+  NotShared<DOMDataView> data() const;
   std::optional<HeapVector<Member<NDEFRecord>>> toRecords(
       ExceptionState& exception_state) const;
 
   device::mojom::NDEFRecordTypeCategory category() const { return category_; }
-  const WTF::Vector<uint8_t>& payloadData() const { return payload_data_; }
+  const Vector<uint8_t>& payloadData() const { return payload_data_; }
   const NDEFMessage* payload_message() const { return payload_message_.Get(); }
 
   void Trace(Visitor*) const override;
@@ -99,7 +100,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   const String lang_;
   // Holds the NDEFRecord.[[PayloadData]] bytes defined at
   // https://w3c.github.io/web-nfc/#the-ndefrecord-interface.
-  const WTF::Vector<uint8_t> payload_data_;
+  const Vector<uint8_t> payload_data_;
   // |payload_data_| parsed as an NDEFMessage. This field will be set for some
   // "smart-poster", external, and local type records.
   const Member<NDEFMessage> payload_message_;

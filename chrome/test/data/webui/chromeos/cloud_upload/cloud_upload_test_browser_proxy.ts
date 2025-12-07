@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogArgs, DialogSpecificArgs, PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
-import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
+import type {DialogArgs, DialogSpecificArgs} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import type {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export interface ProxyOptions {

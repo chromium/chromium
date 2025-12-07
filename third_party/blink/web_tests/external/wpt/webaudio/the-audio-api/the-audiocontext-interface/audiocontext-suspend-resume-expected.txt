@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] X context.state is not equal to suspended. Got running.
-  assert_true: expected true got false
-[FAIL] < [resume-running-context] 1 out of 4 assertions were failed.
-  assert_true: expected true got false
-[FAIL] # AUDIT TASK RUNNER FINISHED: 1 out of 4 tasks were failed.
-  assert_true: expected true got false
+[FAIL] Test resuming a running online context
+  assert_equals: Initial state is suspended expected "suspended" but got "running"
 Harness: the test ran to completion.
 

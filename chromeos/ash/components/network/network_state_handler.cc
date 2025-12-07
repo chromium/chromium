@@ -43,7 +43,6 @@ constexpr char kReasonUpdate[] = "Update";
 constexpr char kReasonUpdateIPConfig[] = "UpdateIPConfig";
 constexpr char kReasonUpdateDeviceIPConfig[] = "UpdateDeviceIPConfig";
 constexpr char kReasonTether[] = "Tether Change";
-constexpr char kReasonPortal[] = "Portal State Change";
 
 bool ConnectionStateChanged(const NetworkState* network,
                             const std::string& prev_connection_state) {
@@ -64,8 +63,7 @@ std::string GetManagedStateLogType(const ManagedState* state) {
     case ManagedState::MANAGED_TYPE_DEVICE:
       return "Device";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetLogName(const ManagedState* state) {
@@ -120,7 +118,7 @@ class NetworkStateHandler::ActiveNetworkState {
         connect_requested_(network->connect_requested()),
         signal_strength_(network->signal_strength()),
         network_technology_(network->network_technology()),
-        portal_state_(network->GetPortalState()) {}
+        portal_state_(network->portal_state()) {}
 
   bool MatchesNetworkState(const NetworkState* network) {
     return guid_ == network->guid() &&
@@ -130,7 +128,7 @@ class NetworkStateHandler::ActiveNetworkState {
            (abs(signal_strength_ - network->signal_strength()) <
             NetworkState::kSignalStrengthChangeThreshold) &&
            network_technology_ == network->network_technology() &&
-           portal_state_ == network->GetPortalState();
+           portal_state_ == network->portal_state();
   }
 
  private:
@@ -637,26 +635,6 @@ void NetworkStateHandler::SetShillConnectError(
     return;
   }
   network->shill_connect_error_ = shill_connect_error;
-}
-
-void NetworkStateHandler::SetNetworkChromePortalState(
-    const std::string& service_path,
-    NetworkState::PortalState portal_state) {
-  CHECK(!features::IsRemoveDetectPortalFromChromeEnabled());
-
-  NetworkState* network = GetModifiableNetworkState(service_path);
-  if (!network) {
-    return;
-  }
-  NET_LOG(USER) << "Setting Chrome PortalState for "
-                << NetworkPathId(service_path) << " = " << portal_state;
-  auto prev_portal_state = network->GetPortalState();
-  network->SetChromePortalState(portal_state);
-  if (prev_portal_state == network->GetPortalState() ||
-      service_path != default_network_path_) {
-    return;
-  }
-  NotifyDefaultNetworkChanged(kReasonPortal);
 }
 
 std::string NetworkStateHandler::FormattedHardwareAddressForType(
@@ -1272,6 +1250,7 @@ void NetworkStateHandler::RequestUpdateForNetwork(
   }
   shill_property_handler_->RequestProperties(ManagedState::MANAGED_TYPE_NETWORK,
                                              service_path);
+  network_service_paths_with_stale_properties_.erase(service_path);
 }
 
 void NetworkStateHandler::RequestUpdateForDevice(
@@ -1426,7 +1405,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   CHECK(!notifying_network_observers_);
 
   ManagedStateList* managed_list = GetManagedList(type);
-  NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
+  NET_LOG(EVENT) << "UpdateManagedList: " << ManagedState::TypeToString(type)
                  << ": " << entries.size();
   // Create a map of existing entries. Assumes all entries in |managed_list|
   // are unique.
@@ -1560,6 +1539,10 @@ void NetworkStateHandler::UpdateManagedStateProperties(
   if (type == ManagedState::MANAGED_TYPE_NETWORK) {
     UpdateNetworkStateProperties(managed->AsNetworkState(), properties);
     managed->set_update_requested(false);
+    if (network_service_paths_with_stale_properties_.find(path) !=
+        network_service_paths_with_stale_properties_.end()) {
+      RequestUpdateForNetwork(path);
+    }
     return;
   }
 
@@ -1635,12 +1618,17 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
   SCOPED_NET_LOG_IF_SLOW();
   bool changed = false;
   NetworkState* network = GetModifiableNetworkState(service_path);
-  if (!network || !network->update_received()) {
-    // Shill may send a service property update before processing Chrome's
-    // initial GetProperties request. If this occurs, the initial request will
-    // include the changed property value so we can ignore this update.
+  if (!network) {
     return;
   }
+
+  // When shill::kProfileProperty is updated, the `ProfileListChanged` already
+  // requests the latest network properties, so we don't need to request again.
+  if (!network->update_received() && key != shill::kProfileProperty) {
+    network_service_paths_with_stale_properties_.insert(service_path);
+    return;
+  }
+
   std::string prev_connection_state = network->connection_state();
   std::string prev_profile_path = network->profile_path();
   bool had_icccid_before_update = !network->iccid().empty();
@@ -1882,7 +1870,7 @@ void NetworkStateHandler::ManagedStateListChanged(
       SyncStubCellularNetworks();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NetworkStateHandler::SortNetworkList() {
@@ -2179,8 +2167,7 @@ NetworkStateHandler::ManagedStateList* NetworkStateHandler::GetManagedList(
     case ManagedState::MANAGED_TYPE_DEVICE:
       return &device_list_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void NetworkStateHandler::OnNetworkConnectionStateChanged(
@@ -2260,9 +2247,9 @@ void NetworkStateHandler::UpdatePortalStateAndNotify(
   NetworkState::PortalState new_portal_state;
   std::string new_default_network_path;
   if (default_network &&
-      (default_network->GetPortalState() != default_network_portal_state_ ||
+      (default_network->portal_state() != default_network_portal_state_ ||
        default_network->proxy_config() != default_network_proxy_config_)) {
-    new_portal_state = default_network->GetPortalState();
+    new_portal_state = default_network->portal_state();
     new_default_network_path = default_network->path();
     if (default_network->proxy_config()) {
       default_network_proxy_config_ = default_network->proxy_config()->Clone();

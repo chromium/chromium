@@ -4,6 +4,7 @@
 
 #include "cc/benchmarks/micro_benchmark_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -40,7 +41,7 @@ class MicroBenchmarkControllerTest : public testing::Test {
     layer_tree_host_->InitializeForTesting(
         TaskRunnerProvider::Create(
             base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
-        std::unique_ptr<Proxy>(new FakeProxy));
+        std::make_unique<FakeProxy>());
   }
 
   void TearDown() override {

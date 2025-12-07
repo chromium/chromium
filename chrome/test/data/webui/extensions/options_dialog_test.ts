@@ -50,10 +50,10 @@ suite('ExtensionOptionsDialogTests', function() {
           assertLE(rect.height, OptionsDialogMaxHeight);
           // This is the header height with default font size.
           assertGE(rect.height, 68);
-          const nameElement = optionsDialog.shadowRoot!.querySelector(
+          const nameElement = optionsDialog.shadowRoot.querySelector(
               '#icon-and-name-wrapper span');
           assertTrue(!!nameElement);
-          assertEquals(data.name, nameElement.textContent!.trim());
+          assertEquals(data.name, nameElement.textContent.trim());
         });
   });
 });

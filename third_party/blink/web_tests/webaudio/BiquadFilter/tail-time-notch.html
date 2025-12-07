@@ -5,18 +5,15 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/biquad-filters.js"></script>
     <script src="test-tail-time.js"></script>
   </head>
 
   <body>
     <script>
-      let audit = Audit.createTaskRunner();
-
-      let sampleRate = 16384;
-      let renderSeconds = 1;
-      let renderFrames = renderSeconds * sampleRate;
+      const sampleRate = 16384;
+      const renderSeconds = 1;
+      const renderFrames = renderSeconds * sampleRate;
 
       // For a notch filter:
       //   b0 = 1
@@ -37,11 +34,11 @@
       // poles are real and distinct.  For 1-4*Q^2 = 0, there are two identical
       // real poles.
 
-      // Array of tests to run.  |descripton| is the task description for
+      // Array of tests to run.  |description| is the task description for
       // audit.define.  |parameters| is option for |testTailTime|.
-      let tests = [
+      const tests = [
         {
-          descripton:
+          description:
               {label: 'notch-complex-roots', description: 'complex roots'},
           parameters: {
             prefix: 'Notch complex roots',
@@ -52,7 +49,7 @@
           },
         },
         {
-          descripton: {
+          description: {
             label: 'notch-real-distinct-roots',
             description: 'real distinct roots'
           },
@@ -65,7 +62,7 @@
           },
         },
         {
-          descripton: {
+          description: {
             label: 'notch-repeated-roots',
             description: 'repeated real root'
           },
@@ -84,14 +81,11 @@
 
       // Define an appropriate task for each test.
       tests.forEach(entry => {
-        audit.define(entry.descripton, (task, should) => {
-          let context = new OfflineAudioContext(1, renderFrames, sampleRate);
-          testTailTime(should, context, entry.parameters)
-              .then(() => task.done());
-        });
+        promise_test(async () => {
+          const context = new OfflineAudioContext(1, renderFrames, sampleRate);
+          await testTailTime_W3CTH(context, entry.parameters);
+        }, `${entry.description.label}: ${entry.description.description}`);
       });
-
-      audit.run();
     </script>
   </body>
 </html>

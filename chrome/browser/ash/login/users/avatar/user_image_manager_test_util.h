@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -25,26 +24,17 @@ extern const char kUserAvatarImage3RelativePath[];
 // Returns `true` if the two given images are pixel-for-pixel identical.
 bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second);
 
-class ImageLoader : public ImageDecoder::ImageRequest {
+class ImageLoader {
  public:
   explicit ImageLoader(const base::FilePath& path);
-
   ImageLoader(const ImageLoader&) = delete;
   ImageLoader& operator=(const ImageLoader&) = delete;
-
-  ~ImageLoader() override;
+  ~ImageLoader();
 
   gfx::ImageSkia Load();
 
-  // ImageDecoder::ImageRequest:
-  void OnImageDecoded(const SkBitmap& decoded_image) override;
-  void OnDecodeImageFailed() override;
-
  private:
   base::FilePath path_;
-  base::RunLoop run_loop_;
-
-  gfx::ImageSkia decoded_image_;
 };
 
 class UserImageChangeWaiter : public user_manager::UserManager::Observer {

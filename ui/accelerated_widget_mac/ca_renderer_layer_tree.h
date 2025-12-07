@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -54,7 +55,8 @@ enum class CALayerType {
 class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
  public:
   CARendererLayerTree(bool allow_av_sample_buffer_display_layer,
-                      bool allow_solid_color_layers);
+                      bool allow_solid_color_layers,
+                      id<MTLDevice> metal_device = nil);
 
   CARendererLayerTree(const CARendererLayerTree&) = delete;
   CARendererLayerTree& operator=(const CARendererLayerTree&) = delete;
@@ -66,11 +68,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   // create any new CALayers until CommitScheduledCALayers is called. This
   // cannot be called anymore after CommitScheduledCALayers has been called.
   bool ScheduleCALayer(const CARendererLayerParams& params);
-
-  // Set the MTLDevice to use for any CAMetalLayers.
-  void SetMetalDevice(id<MTLDevice> metal_device) {
-    metal_device_ = metal_device;
-  }
 
   void SetDisplayHDRHeadroom(float display_hdr_headroom) {
     display_hdr_headroom_ = display_hdr_headroom;
@@ -322,7 +319,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
   float display_hdr_headroom_ = 1.f;
-  id<MTLDevice> __strong metal_device_ = nil;
+
+  // This is needed to ensure synchronization between the display compositor and
+  // the HDRCopierLayer. See https://crbug.com/1372898
+  id<MTLDevice> __strong metal_device_;
 
   // Map of content IOSurface.
   CALayerMap ca_layer_map_;

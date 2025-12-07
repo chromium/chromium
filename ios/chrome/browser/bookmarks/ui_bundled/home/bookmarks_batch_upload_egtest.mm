@@ -9,16 +9,17 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -39,14 +40,13 @@ NSString* const kPassphrase = @"hello";
 // formatted for `count` local bookmarks and `email` user email.
 void ExpectBatchUploadSection(int count, NSString* email) {
   // Verify that the batch upload section is visible.
-  NSString* text = nil;
   NSString* detailText = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(
               IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SECTION_DESCRIPTION),
           "count", count, "email", base::SysNSStringToUTF16(email)));
   // Build label for a TableViewImageItem.
-  NSString* label = [NSString stringWithFormat:@"%@, %@", text, detailText];
+  NSString* label = [NSString stringWithFormat:@"%@", detailText];
 
   [[EarlGrey
       selectElementWithMatcher:
@@ -85,11 +85,10 @@ void ExpectBatchUploadAlert(int count) {
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(alertTitle),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                         IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)),
-                     grey_sufficientlyVisible(), nil)]
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)]
       assertWithMatcher:grey_notNil()];
   // No checks for the "cancel" button since the cancel button is not shown on
   // iPads.
@@ -143,10 +142,10 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [BookmarkEarlGrey clearBookmarks];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 @end
@@ -159,20 +158,21 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 - (void)setUp {
   [super setUp];
   // Add last syncing account.
-  [ChromeEarlGrey setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+  [ChromeEarlGrey
+      setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString()
+         forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
   // Reset pref to offer upload sync left-behind bookamrks.
   [ChromeEarlGrey
       setBoolValue:false
        forUserPref:prefs::kIosBookmarkUploadSyncLeftBehindCompleted];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
-- (void)tearDown {
-  [super tearDown];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 #pragma mark - BookmarksBatchUploadEnabledTestCase Tests
@@ -183,34 +183,6 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
                                      URL:@"https://www.example1.com"
                                inStorage:BookmarkStorageType::kLocalOrSyncable];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [BookmarkEarlGreyUI openBookmarks];
-
-  // Verify that the batch upload section is not visible.
-  ExpectNoBatchUploadDialog();
-
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:0
-             forBucket:YES
-          forHistogram:
-              @"IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"],
-      @"Invalid metric count.");
-}
-
-// Tests that no batch upload dialog is shown if the user is syncing.
-- (void)testNoBatchUploadDialogIfSyncing {
-  // Add one local bookmark.
-  [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
-                                     URL:@"https://www.example1.com"
-                               inStorage:BookmarkStorageType::kLocalOrSyncable];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Adds `fakeIdentity` and turns sync on.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -308,14 +280,12 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
   // Verify the error section is showing.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap "Enter Passphrase" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
       performAction:grey_tap()];
   // Enter the passphrase.
   [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
@@ -414,8 +384,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload dialog is shown and has the correct string for a
 // single local bookmark.
-// TODO(crbug.com/357144922): Test failing.
-- (void)DISABLED_testBatchUploadDialogTestIfSingleLocalBookmark {
+- (void)testBatchUploadDialogTestIfSingleLocalBookmark {
   // Add one local bookmark.
   [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
                                      URL:@"https://www.example1.com"
@@ -637,8 +606,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   ExpectBatchUploadAlert(1);
 
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertAction(l10n_util::GetNSString(
-                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -709,15 +678,15 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   ExpectBatchUploadAlert(1);
 
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertAction(l10n_util::GetNSString(
-                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify only single "Mobile Bookmarks" is visible.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(@"Mobile Bookmarks"),
+                                   grey_accessibilityLabel(@"Mobile bookmarks"),
                                    grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 

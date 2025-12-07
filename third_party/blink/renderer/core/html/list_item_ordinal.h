@@ -15,6 +15,7 @@ namespace blink {
 class HTMLOListElement;
 class LayoutObject;
 class Node;
+class Element;
 
 // Represents an "ordinal value" and its related algorithms:
 // https://html.spec.whatwg.org/C/#ordinal-value
@@ -36,7 +37,8 @@ class CORE_EXPORT ListItemOrdinal {
   // Get/set/clear the explicit value; i.e., the 'value' attribute of an <li>
   // element.
   std::optional<int> ExplicitValue() const;
-  void SetExplicitValue(int, const Node&);
+  void SetExplicitValue(int, const Element&);
+  bool UseExplicitValue() const { return type_ == kExplicit; }
   void ClearExplicitValue(const Node&);
   void MarkDirty() { SetType(kNeedsUpdate); }
 
@@ -44,8 +46,8 @@ class CORE_EXPORT ListItemOrdinal {
   static bool IsListItem(const LayoutObject*);
   static bool IsInReversedOrderedList(const Node&);
 
-  // Compute the total item count of a list.
-  static unsigned ItemCountForOrderedList(const HTMLOListElement*);
+  // Compute the initial counter value of a reversed list.
+  static int InitialCounterForReversedOrderedList(const HTMLOListElement*);
 
   // Invalidate all ordinal values of a list.
   static void InvalidateAllItemsForOrderedList(const HTMLOListElement*);
@@ -59,7 +61,6 @@ class CORE_EXPORT ListItemOrdinal {
   enum ValueType { kNeedsUpdate, kUpdated, kExplicit };
   ValueType Type() const { return static_cast<ValueType>(type_); }
   void SetType(ValueType type) const { type_ = type; }
-  bool HasExplicitValue() const { return type_ == kExplicit; }
 
   static bool IsListOwner(const Node&);
   // https://drafts.csswg.org/css-contain-2/#containment-style
@@ -70,14 +71,22 @@ class CORE_EXPORT ListItemOrdinal {
     STACK_ALLOCATED();
 
    public:
-    Persistent<const Node> node;
+    const Node* node = nullptr;
     ListItemOrdinal* ordinal = nullptr;
     operator bool() const { return node; }
   };
+  struct NodeAndOrdinalWithIntermediateSum : NodeAndOrdinal {
+    STACK_ALLOCATED();
+
+   public:
+    int64_t intermediate_sum = 0;
+    bool counter_set_seen = false;
+  };
   static NodeAndOrdinal NextListItem(const Node* list_node,
                                      const Node* item_node = nullptr);
-  static NodeAndOrdinal PreviousListItem(const Node* list_node,
-                                         const Node* item_node);
+  static NodeAndOrdinalWithIntermediateSum PreviousListItem(
+      const Node* list_node,
+      const Node* item_node);
   static NodeAndOrdinal NextOrdinalItem(bool is_reversed,
                                         const Node* list_node,
                                         const Node* item_node = nullptr);
@@ -93,6 +102,9 @@ class CORE_EXPORT ListItemOrdinal {
   static void ItemUpdated(const LayoutObject*, UpdateType type);
 
   mutable int value_ = 0;
+  // `explicit_value_` represents the value of li elements. When the `type` is
+  // set to `kExplicit`, the value of `value_` is the same as `explicit_value_`.
+  mutable std::optional<int> explicit_value_;
   mutable unsigned type_ : 2;  // ValueType
 };
 

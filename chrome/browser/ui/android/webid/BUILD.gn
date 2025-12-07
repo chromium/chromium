@@ -31,6 +31,7 @@ android_library("public_java") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityCredentialTokenError.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderMetadata.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/data/RelyingPartyData.java",
   ]
 }
 
@@ -41,10 +42,14 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityCredentialTokenError.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderMetadata.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/data/RelyingPartyData.java",
   ]
   public_deps = [ "//chrome/browser/ui/android/webid/internal:jni" ]
 }
 
 java_cpp_enum("java_enums_srcjar") {
-  sources = [ "//content/public/browser/identity_request_dialog_controller.h" ]
+  sources = [
+    "//content/public/browser/webid/identity_request_account.h",
+    "//content/public/browser/webid/identity_request_dialog_controller.h",
+  ]
 }

@@ -238,24 +238,22 @@ def is_inside_comment(string, pos):
   # TODO(crbug.com/40629071): Add multi-line comment support.
 
 
-def may_contain_annotations(file_path: Path) -> bool:
+def may_contain_annotations(file_contents: str) -> bool:
   """Returns False if |file_path| is guaranteed not to contain annotations.
 
   This runs much faster than extract_annotations(), and is meant for
   pre-filtering. If this returns True, then |file_path| *might* contain
   annotations. Call extract_annotations() to know for sure."""
-  return bool(PREFILTER_REGEX.search(file_path.read_text(encoding="utf-8")))
+  return bool(PREFILTER_REGEX.search(file_contents))
 
 
-def extract_annotations(file_path: Path) -> List[Annotation]:
+def extract_annotations(file_path: Path, contents: str) -> List[Annotation]:
   """Extracts and returns annotations from the file at |file_path|."""
   if file_path.suffix not in LANGUAGE_MAPPING:
     raise ValueError("Unrecognized extension '{}' for file '{}'.".format(
         file_path.suffix, str(file_path)))
 
   language = LANGUAGE_MAPPING[file_path.suffix]
-
-  contents = file_path.read_text(encoding="utf-8")
 
   defs = []
 
@@ -364,7 +362,8 @@ def main():
     if not args.no_filter and file_path.resolve() not in compdb_files:
       continue
     try:
-      annotation_definitions.extend(extract_annotations(file_path))
+      annotation_definitions.extend(
+          extract_annotations(file_path, file_path.read_text(encoding="utf-8")))
     except SourceCodeParsingError:
       traceback.print_exc()
       return EX_PARSE_ERROR

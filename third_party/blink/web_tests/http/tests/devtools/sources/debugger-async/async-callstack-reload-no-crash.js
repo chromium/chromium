@@ -25,7 +25,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   SourcesTestRunner.startDebuggerTest(step1, true);
 
   async function step1() {
-    await TestRunner.DebuggerAgent.setAsyncCallStackDepth(maxAsyncCallStackDepth);
+    await TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: maxAsyncCallStackDepth});
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
   }
 
@@ -36,6 +36,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function afterReload() {
     TestRunner.addResult('PASS: Reloaded successfully.');
-    SourcesTestRunner.completeDebuggerTest();
+    TestRunner.completeTest();
   }
 })();

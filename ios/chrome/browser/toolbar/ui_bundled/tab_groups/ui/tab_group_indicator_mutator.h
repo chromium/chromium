@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_MUTATOR_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_MUTATOR_H_
+
+// Mutator for actions happening in the TabGroupIndicatorView.
+@protocol TabGroupIndicatorMutator
+
+// Starts sharing the local group.
+- (void)shareGroup;
+
+// Starts managing the shared group.
+- (void)manageGroup;
+
+// Shows the recent activity for the shared group.
+- (void)showRecentActivity;
+
+// Shows the tab group edit view.
+- (void)showTabGroupEdition;
+
+// Adds a new tab to the current group.
+- (void)addNewTabInGroup;
+
+// Closes the current group.
+- (void)closeGroup;
+
+// Ungroups the current group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)unGroupWithConfirmation:(BOOL)confirmation;
+
+// Deletes the current group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)deleteGroupWithConfirmation:(BOOL)confirmation;
+
+// Deletes the current shared group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)deleteSharedGroupWithConfirmation:(BOOL)confirmation;
+
+// Leaves the current shared group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)leaveSharedGroupWithConfirmation:(BOOL)confirmation;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_MUTATOR_H_

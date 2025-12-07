@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bwg_api") {
+  sources = [
+    "bwg_api.h",
+    "bwg_gateway_protocol.h",
+  ]
+  public_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/model",
+    "//services/network/public/cpp:cpp_base",
+  ]
+}

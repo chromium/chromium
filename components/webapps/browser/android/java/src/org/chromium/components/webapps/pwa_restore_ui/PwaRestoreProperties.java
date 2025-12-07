@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -20,13 +21,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Contains the properties that a pwa-restore {@link PropertyModel} can have. */
+@NullMarked
 public class PwaRestoreProperties {
     /** Encapsulates the information about an app to show in the PWA Restore dialog. */
     public static class AppInfo {
         private final String mAppId;
         private final String mAppName;
         private final Bitmap mAppIcon;
-        private int mLastUsedDaysAgo;
 
         // Whether the app is selected or not.
         private boolean mSelected;
@@ -35,13 +36,11 @@ public class PwaRestoreProperties {
          * @param appId the ID of the app.
          * @param appName the name of the app.
          * @param appIcon the app icon.
-         * @param lastUsedDaysAgo when the app was last used (days ago).
          */
-        public AppInfo(String appId, String appName, Bitmap appIcon, int lastUsedDaysAgo) {
+        public AppInfo(String appId, String appName, Bitmap appIcon) {
             mAppId = appId;
             mAppName = appName;
             mAppIcon = appIcon;
-            mLastUsedDaysAgo = lastUsedDaysAgo;
 
             mSelected = true;
         }
@@ -56,10 +55,6 @@ public class PwaRestoreProperties {
 
         public Bitmap getIcon() {
             return mAppIcon;
-        }
-
-        public long getLastUsedDaysAgo() {
-            return mLastUsedDaysAgo;
         }
 
         public boolean isSelected() {

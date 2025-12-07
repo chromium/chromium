@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parser.h"
@@ -16,10 +17,10 @@ namespace net::asn1 {
 namespace {
 
 // Parses input |in| which should point to the beginning of a Certificate, and
-// sets |*tbs_certificate| ready to parse the Subject. If parsing
+// sets |*tbs_certificate| ready to parse the Issuer. If parsing
 // fails, this function returns false and |*tbs_certificate| is left in an
 // undefined state.
-bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
+bool SeekToIssuer(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
   // From RFC 5280, section 4.1
   //    Certificate  ::=  SEQUENCE  {
   //      tbsCertificate       TBSCertificate,
@@ -60,6 +61,18 @@ bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
   }
   // signature
   if (!tbs_certificate->SkipTag(CBS_ASN1_SEQUENCE)) {
+    return false;
+  }
+
+  return true;
+}
+
+// Parses input |in| which should point to the beginning of a Certificate, and
+// sets |*tbs_certificate| ready to parse the Subject. If parsing
+// fails, this function returns false and |*tbs_certificate| is left in an
+// undefined state.
+bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
+  if (!SeekToIssuer(in, tbs_certificate)) {
     return false;
   }
   // issuer
@@ -200,7 +213,32 @@ bool ExtractSubjectFromDERCert(std::string_view cert,
   bssl::der::Input subject;
   if (!parser.ReadRawTLV(&subject))
     return false;
-  *subject_out = subject.AsStringView();
+  *subject_out = base::as_string_view(subject);
+  return true;
+}
+
+bool ExtractIssuerAndSubjectFromDERCert(
+    base::span<const uint8_t> cert,
+    base::span<const uint8_t>* issuer_out,
+    base::span<const uint8_t>* subject_out) {
+  bssl::der::Parser parser;
+  if (!SeekToIssuer(bssl::der::Input(cert), &parser)) {
+    return false;
+  }
+  bssl::der::Input issuer;
+  if (!parser.ReadRawTLV(&issuer)) {
+    return false;
+  }
+  *issuer_out = issuer;
+  // skip validity
+  if (!parser.SkipTag(CBS_ASN1_SEQUENCE)) {
+    return false;
+  }
+  bssl::der::Input subject;
+  if (!parser.ReadRawTLV(&subject)) {
+    return false;
+  }
+  *subject_out = subject;
   return true;
 }
 
@@ -212,7 +250,7 @@ bool ExtractSPKIFromDERCert(std::string_view cert, std::string_view* spki_out) {
   bssl::der::Input spki;
   if (!parser.ReadRawTLV(&spki))
     return false;
-  *spki_out = spki.AsStringView();
+  *spki_out = base::as_string_view(spki);
   return true;
 }
 
@@ -243,7 +281,7 @@ bool ExtractSubjectPublicKeyFromSPKI(std::string_view spki,
   if (!spki_parser.ReadTag(CBS_ASN1_BITSTRING, &spk)) {
     return false;
   }
-  *spk_out = spk.AsStringView();
+  *spk_out = base::as_string_view(spk);
   return true;
 }
 
@@ -316,8 +354,8 @@ bool ExtractSignatureAlgorithmsFromDERCert(
   if (!certificate.ReadRawTLV(&cert_algorithm))
     return false;
 
-  *cert_signature_algorithm_sequence = cert_algorithm.AsStringView();
-  *tbs_signature_algorithm_sequence = tbs_algorithm.AsStringView();
+  *cert_signature_algorithm_sequence = base::as_string_view(cert_algorithm);
+  *tbs_signature_algorithm_sequence = base::as_string_view(tbs_algorithm);
   return true;
 }
 
@@ -339,7 +377,7 @@ bool ExtractExtensionFromDERCert(std::string_view cert,
     return true;
 
   *out_extension_critical = extension.critical;
-  *out_contents = extension.value.AsStringView();
+  *out_contents = base::as_string_view(extension.value);
   return true;
 }
 

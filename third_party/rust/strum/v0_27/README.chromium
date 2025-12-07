@@ -1,0 +1,11 @@
+Name: strum
+URL: https://crates.io/crates/strum
+Version: 0.27.2
+Revision: c8d6241123d68b2e56a8d546300508294338f69a
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/strum-v0_27/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Helpful macros for working with enums and strings

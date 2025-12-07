@@ -27,18 +27,18 @@ TEST_F(GzipperTest, DeflateAndInflate) {
   Gzipper gzipper;
   std::vector<uint8_t> input = {0x01, 0x01, 0x01, 0x02, 0x02, 0x02};
   std::optional<mojo_base::BigBuffer> compressed;
-  gzipper.Deflate(input,
+  gzipper.Deflate({input},
                   base::BindOnce(&CopyResultCallback, std::ref(compressed)));
   ASSERT_TRUE(compressed.has_value());
-  EXPECT_THAT(base::make_span(*compressed),
-              testing::Not(testing::ElementsAreArray(base::make_span(input))));
+  EXPECT_THAT(base::span(*compressed),
+              testing::Not(testing::ElementsAreArray(base::span(input))));
 
   std::optional<mojo_base::BigBuffer> uncompressed;
   gzipper.Inflate(std::move(*compressed), input.size(),
                   base::BindOnce(&CopyResultCallback, std::ref(uncompressed)));
   ASSERT_TRUE(uncompressed.has_value());
-  EXPECT_THAT(base::make_span(*uncompressed),
-              testing::ElementsAreArray(base::make_span(input)));
+  EXPECT_THAT(base::span(*uncompressed),
+              testing::ElementsAreArray(base::span(input)));
 }
 
 // Test not allocating enough space to inflate data.
@@ -46,7 +46,7 @@ TEST_F(GzipperTest, InflateExceedsSize) {
   Gzipper gzipper;
   std::vector<uint8_t> input = {0x01, 0x01, 0x01, 0x02, 0x02, 0x02};
   std::optional<mojo_base::BigBuffer> compressed;
-  gzipper.Deflate(input,
+  gzipper.Deflate({input},
                   base::BindOnce(&CopyResultCallback, std::ref(compressed)));
   ASSERT_TRUE(compressed.has_value());
   std::optional<mojo_base::BigBuffer> uncompressed;
@@ -60,34 +60,34 @@ TEST_F(GzipperTest, InflateTrimsSize) {
   Gzipper gzipper;
   std::vector<uint8_t> input = {0x01, 0x01, 0x01, 0x02, 0x02, 0x02};
   std::optional<mojo_base::BigBuffer> compressed;
-  gzipper.Deflate(input,
+  gzipper.Deflate({input},
                   base::BindOnce(&CopyResultCallback, std::ref(compressed)));
   ASSERT_TRUE(compressed.has_value());
   std::optional<mojo_base::BigBuffer> uncompressed;
   gzipper.Inflate(std::move(*compressed), input.size() + 1,
                   base::BindOnce(&CopyResultCallback, std::ref(uncompressed)));
   ASSERT_TRUE(uncompressed.has_value());
-  EXPECT_THAT(base::make_span(*uncompressed),
-              testing::ElementsAreArray(base::make_span(input)));
+  EXPECT_THAT(base::span(*uncompressed),
+              testing::ElementsAreArray(base::span(input)));
 }
 
 TEST_F(GzipperTest, CompressAndUncompress) {
   Gzipper gzipper;
   std::vector<uint8_t> input = {0x01, 0x01, 0x01, 0x02, 0x02, 0x02};
   std::optional<mojo_base::BigBuffer> compressed;
-  gzipper.Compress(input,
+  gzipper.Compress({input},
                    base::BindOnce(&CopyResultCallback, std::ref(compressed)));
   ASSERT_TRUE(compressed.has_value());
-  EXPECT_THAT(base::make_span(*compressed),
-              testing::Not(testing::ElementsAreArray(base::make_span(input))));
+  EXPECT_THAT(base::span(*compressed),
+              testing::Not(testing::ElementsAreArray(base::span(input))));
 
   std::optional<mojo_base::BigBuffer> uncompressed;
   gzipper.Uncompress(
       std::move(*compressed),
       base::BindOnce(&CopyResultCallback, std::ref(uncompressed)));
   ASSERT_TRUE(uncompressed.has_value());
-  EXPECT_THAT(base::make_span(*uncompressed),
-              testing::ElementsAreArray(base::make_span(input)));
+  EXPECT_THAT(base::span(*uncompressed),
+              testing::ElementsAreArray(base::span(input)));
 }
 
 }  // namespace data_decoder

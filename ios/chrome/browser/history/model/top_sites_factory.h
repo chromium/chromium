@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_TOP_SITES_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_TOP_SITES_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace history {
 class TopSites;
@@ -17,15 +17,11 @@ class TopSites;
 
 namespace ios {
 // TopSitesFactory is a singleton that associates history::TopSites instance to
-// ChromeBrowserState.
-class TopSitesFactory : public RefcountedBrowserStateKeyedServiceFactory {
+// profiles.
+class TopSitesFactory : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
-  static scoped_refptr<history::TopSites> GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static scoped_refptr<history::TopSites> GetForProfile(ProfileIOS* profile);
   static TopSitesFactory* GetInstance();
-
-  TopSitesFactory(const TopSitesFactory&) = delete;
-  TopSitesFactory& operator=(const TopSitesFactory&) = delete;
 
  private:
   friend class base::NoDestructor<TopSitesFactory>;
@@ -33,12 +29,11 @@ class TopSitesFactory : public RefcountedBrowserStateKeyedServiceFactory {
   TopSitesFactory();
   ~TopSitesFactory() override;
 
-  // RefcountedBrowserStateKeyedServiceFactory implementation.
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
+      ProfileIOS* profile) const override;
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace ios

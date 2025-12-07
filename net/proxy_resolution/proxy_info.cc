@@ -8,6 +8,13 @@
 
 namespace net {
 
+// static
+ProxyInfo ProxyInfo::Direct() {
+  ProxyInfo proxy_info;
+  proxy_info.UseDirect();
+  return proxy_info;
+}
+
 ProxyInfo::ProxyInfo() = default;
 
 ProxyInfo::ProxyInfo(const ProxyInfo& other) = default;
@@ -84,8 +91,10 @@ bool ProxyInfo::Fallback(int net_error, const NetLogWithSource& net_log) {
 }
 
 void ProxyInfo::DeprioritizeBadProxyChains(
-    const ProxyRetryInfoMap& proxy_retry_info) {
-  proxy_list_.DeprioritizeBadProxyChains(proxy_retry_info);
+    const ProxyRetryInfoMap& proxy_retry_info,
+    bool remove_bad_proxy_chains) {
+  proxy_list_.DeprioritizeBadProxyChains(proxy_retry_info,
+                                         remove_bad_proxy_chains);
 }
 
 void ProxyInfo::RemoveProxiesWithoutScheme(int scheme_bit_field) {

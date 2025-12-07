@@ -6,6 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -29,6 +33,13 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                                    signin_metrics::PromoAction,
                                    content::WebContents*,
                                    const CoreAccountInfo&)>;
+  // Callback starting the History syncing. This is a repeating callback,
+  // because multiple `ProcessDiceHeaderDelegateImpl` may make copies of it.
+  using EnableHistorySyncOptinCallback =
+      base::RepeatingCallback<void(Profile*,
+                                   content::WebContents*,
+                                   const CoreAccountInfo&,
+                                   signin_metrics::AccessPoint)>;
 
   // Callback displaying a signin error to the user. This is a repeating
   // callback, because multiple `ProcessDiceHeaderDelegateImpl` may make copies
@@ -42,6 +53,9 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // Returns the default callback to enable sync in a browser window. Does
   // nothing if there is no browser associated with the web contents.
   static EnableSyncCallback GetEnableSyncCallbackForBrowser();
+  // Returns the default callback to turn on history sync in a browser window.
+  // Does nothing if there is no browser associated with the web contents.
+  static EnableHistorySyncOptinCallback GetHistorySyncOptinCallbackForBrowser();
 
   // Returns the default callback to show a signin error in a browser window.
   // Does nothing if there is no browser associated with the web contents.
@@ -53,29 +67,37 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   ~DiceTabHelper() override;
 
   signin_metrics::AccessPoint signin_access_point() const {
-    return state_.signin_access_point;
+    return state_->signin_access_point;
   }
 
   signin_metrics::PromoAction signin_promo_action() const {
-    return state_.signin_promo_action;
+    return state_->signin_promo_action;
   }
 
-  signin_metrics::Reason signin_reason() const { return state_.signin_reason; }
+  signin_metrics::Reason signin_reason() const { return state_->signin_reason; }
 
-  const GURL& redirect_url() const { return state_.redirect_url; }
+  const GURL& redirect_url() const { return state_->redirect_url; }
 
-  const GURL& signin_url() const { return state_.signin_url; }
+  const GURL& signin_url() const { return state_->signin_url; }
 
   const EnableSyncCallback& GetEnableSyncCallback() {
-    return state_.enable_sync_callback;
+    return state_->enable_sync_callback;
+  }
+
+  const EnableHistorySyncOptinCallback& GetHistorySyncOptinCallback() {
+    return state_->history_sync_optin_callback;
   }
 
   const ShowSigninErrorCallback& GetShowSigninErrorCallback() {
-    return state_.show_signin_error_callback;
+    return state_->show_signin_error_callback;
   }
 
   const OnSigninHeaderReceived& GetOnSigninHeaderReceived() {
-    return state_.on_signin_header_received_callback;
+    return state_->on_signin_header_received_callback;
+  }
+
+  void SetAccessPoint(signin_metrics::AccessPoint access_point) {
+    state_->signin_access_point = access_point;
   }
 
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
@@ -91,6 +113,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
       const GURL& redirect_url,
       bool record_signin_started_metrics,
       EnableSyncCallback enable_sync_callback,
+      EnableHistorySyncOptinCallback history_sync_optin_callback,
       OnSigninHeaderReceived on_signin_header_received_callback,
       ShowSigninErrorCallback show_signin_error_callback);
 
@@ -109,8 +132,28 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   // Called to notify that the sync signin is complete.
   void OnSyncSigninFlowComplete();
+  // Called to notify that the auth token exchange is complete.
+  // Starts a timer for the Sync header to arrive.
+  void OnTokenExchangeSuccess(
+      base::OnceClosure retry_interception_bubble_callback);
+
+  // Updates the callbacks used by the tab helper.
+  void UpdateSyncCallback(EnableSyncCallback enable_sync_callback);
+  void UpdateHistorySyncOptinCallback(
+      EnableHistorySyncOptinCallback history_sync_optin_callback);
+  void UpdateSigninErrorCallback(
+      ShowSigninErrorCallback show_signin_error_callback);
+  // Updates the redirection url, that is used used after enabling Sync or
+  // in case of errors.
+  void UpdateRedirectUrl(const GURL& redirect_url);
+
+  // Can be used in tests to reduce the delay before showing the interception
+  // bubble, after the auth token is received.
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetScopedInterceptionBubbleTimerForTesting(base::TimeDelta delay);
 
  private:
+
   friend class content::WebContentsUserData<DiceTabHelper>;
   explicit DiceTabHelper(content::WebContents* web_contents);
 
@@ -124,19 +167,17 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     ResetableState(const ResetableState& other) = delete;
     ResetableState& operator=(const ResetableState& other) = delete;
 
-    ResetableState(ResetableState&& other);
-    ResetableState& operator=(ResetableState&& other);
-
     GURL redirect_url;
     GURL signin_url;
     EnableSyncCallback enable_sync_callback;
+    EnableHistorySyncOptinCallback history_sync_optin_callback;
     OnSigninHeaderReceived on_signin_header_received_callback;
     ShowSigninErrorCallback show_signin_error_callback;
 
     // By default the access point refers to web signin, as after a reset the
     // user may sign in again in the same tab.
     signin_metrics::AccessPoint signin_access_point =
-        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+        signin_metrics::AccessPoint::kWebSignin;
 
     signin_metrics::PromoAction signin_promo_action =
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
@@ -144,6 +185,15 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
         signin_metrics::Reason::kUnknownReason;
     SyncSigninFlowStatus sync_signin_flow_status =
         SyncSigninFlowStatus::kNotStarted;
+
+    // Tracks the time between the LST exchange and the Sync header reception.
+    std::unique_ptr<base::ElapsedTimer> elapsed_time_since_lst_arrival_timer;
+    // Starts a timer upon receiving the LST token. If the Sync
+    // header is received within the window the timer is stopped.
+    // Otherwise at timeout we attempt to show the interception bubble
+    // assuming that the user completed a web signin instead of a
+    // browser signin.
+    base::OneShotTimer retry_interception_bubble_timer;
   };
 
   // content::WebContentsObserver:
@@ -159,7 +209,18 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // Resets the internal state to the initial values.
   void Reset();
 
-  ResetableState state_;
+  // Starts the timer before showing the interception bubble.
+  void StartInterceptionBubbleTimer(
+      base::OnceClosure retry_interception_bubble_callback);
+
+  // Stops the timer and aborts the interception bubble.
+  void StopInterceptionBubbleTimer();
+
+  bool IsTokenExchangeDone() const;
+
+  static base::TimeDelta g_delay_before_interception_bubble_retry;
+
+  std::unique_ptr<ResetableState> state_;
 
   bool is_chrome_signin_page_ = false;
   bool signin_page_load_recorded_ = false;

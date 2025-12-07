@@ -5,23 +5,12 @@
 #include "third_party/blink/renderer/core/style/style_ray.h"
 
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
-
-scoped_refptr<StyleRay> StyleRay::Create(
-    float angle,
-    RaySize size,
-    bool contain,
-    const BasicShapeCenterCoordinate& center_x,
-    const BasicShapeCenterCoordinate& center_y,
-    bool has_explicit_center) {
-  return base::AdoptRef(new StyleRay(angle, size, contain, center_x, center_y,
-                                     has_explicit_center));
-}
 
 StyleRay::StyleRay(float angle,
                    RaySize size,
@@ -44,10 +33,10 @@ bool StyleRay::IsEqualAssumingSameType(const BasicShape& o) const {
          has_explicit_center_ == other.has_explicit_center_;
 }
 
-void StyleRay::GetPath(Path&, const gfx::RectF&, float) const {
+Path StyleRay::GetPath(const gfx::RectF&, float, float) const {
   // ComputedStyle::ApplyMotionPathTransform cannot call GetPath
   // for rays as they may have infinite length.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 namespace {

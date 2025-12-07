@@ -10,7 +10,7 @@ be exposed.
 
 [TOC]
 
-## A quick introduction to Git submoduldes
+## A quick introduction to Git submodules
 
 [Git submodules](https://git-scm.com/docs/gitsubmodules) are managed via the
 combination of `.gitmodules` files and gitlinks. `.gitmodules` is a text file
@@ -48,7 +48,7 @@ Corresponding DEPS entry would look like:
 
 ## How to avoid accidental Git submodule updates?
 
-The simplest approach is to always run gclient sync after updated chromium
+The simplest approach is to always run `gclient sync -D` after updating chromium
 checkout (e.g. after `git pull`, or `git checkout`). You can automate that by
 adding post-checkout hook (example below). To confirm there are no changes, run
 `git status`. If you use `git commit -a`, check the "Changes to be committed"
@@ -63,7 +63,7 @@ directory, edit `.git/hooks/post-checkout`:
 #!/bin/sh
 
 set -u
-gclient sync
+gclient sync -D
 ```
 
 and set it to be executable: `chmod +x .git/hooks/post-checkout`. Repeat the
@@ -167,6 +167,33 @@ chromium/src):
 With the above, you can execute these commands by running `git s`, `git c`, etc.
 Or you may also use the pre-commit git hook detailed below.
 
+### Understanding diff.ignoreSubmodules
+
+`git config diff.ignoreSubmodules` sets a default behavior for `diff`, `status`,
+and several other git subcommands, using one of the [supported values of
+`--ignore-submodules`](https://www.git-scm.com/docs/git-diff/#Documentation/git-diff.txt---ignore-submodulesltwhengt).
+
+By default, `gclient sync` sets this to `dirty` as a local config in the
+chromium checkout. This elides submodule output for `git status` in a clean
+checkout, but will show submodules as modified when developers locally touch
+them.
+
+Manually setting this to `all` elides such output in all cases. This also omits
+submodule changes from `git commit -a`, which can decrease the likelihood of
+accidental submodule commits. However, it does not omit such changes from
+`git add -A`, meaning developers who use this flow are actually _more_ likely to
+commit accidental changes, since they'll be invisible beforehand unless
+developers manually set `--ignore-submodules=dirty` or use a lower-level command
+such as `git diff-tree`.
+
+Because `all` can result in misleading output and doesn't fully prevent
+accidental submodule commits, typical developers are likely better-served by
+leaving this configured to `dirty` and installing the
+[commit hook described below](#install-hook) to prevent such commits.
+Accordingly, `gclient sync` will warn if it detects a different setting locally;
+developers who understand the consequences can silence the warning via the
+`GCLIENT_SUPPRESS_SUBMODULE_WARNING` environment variable.
+
 ### Submodules during a 'git rebase-update'
 While resolving merge conflicts during a `git rebase-update` you may see
 submodules show up in unexpected places.
@@ -194,7 +221,7 @@ If you DID intentionally roll submodules, you can resolve this conflict just by
 resetting it:
 `gclient setdep -r {path}@{hash}`
 
-## Install a hook to help detect unintentional submodule commits
+## Install a hook to help detect unintentional submodule commits {#install-hook}
 
 depot_tools provides an opt-in pre-commit hook to detect unintentional submodule
  changes during `git commit` and remove them from the commit.
@@ -263,4 +290,3 @@ If you want to keep your gitlink, then run `git add <affected path>`.
 
 Please file [a bug under Infra>SDK
 component](https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ESDK).
-

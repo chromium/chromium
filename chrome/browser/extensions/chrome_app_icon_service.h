@@ -17,10 +17,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -42,7 +45,7 @@ class ChromeAppIconDelegate;
 // is bound to content::BrowserContext.
 // Usage: ChromeAppIconService::Get(context)->CreateIcon().
 class ChromeAppIconService : public KeyedService,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                              public ShelfAppUpdater::Delegate,
 #endif
                              public ExtensionRegistryObserver {
@@ -62,9 +65,9 @@ class ChromeAppIconService : public KeyedService,
   static ChromeAppIconService* Get(content::BrowserContext* context);
 
   // Creates extension app icon for requested app and size. Icon updates are
-  // dispatched via |delegate|.
-  // |resize_function| overrides icon resizing behavior if non-null. Otherwise
-  // IconLoader with perform the resizing. In both cases |resource_size_in_dip|
+  // dispatched via `delegate`.
+  // `resize_function` overrides icon resizing behavior if non-null. Otherwise
+  // IconLoader with perform the resizing. In both cases `resource_size_in_dip`
   // is used to pick the correct icon representation from resources.
   std::unique_ptr<ChromeAppIcon> CreateIcon(
       ChromeAppIconDelegate* delegate,
@@ -100,7 +103,7 @@ class ChromeAppIconService : public KeyedService,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ShelfAppUpdater::Delegate:
   void OnAppUpdated(content::BrowserContext* browser_context,
                     const std::string& app_id,
@@ -110,13 +113,13 @@ class ChromeAppIconService : public KeyedService,
   // Unowned pointer.
   raw_ptr<content::BrowserContext> context_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS this handles Chrome app life-cycle events that may change how
   // extension based app icon looks like.
   std::unique_ptr<ShelfExtensionAppUpdater> app_updater_;
 #endif
 
-  // Deletes the icon set for |app_id| from the map if it is empty.
+  // Deletes the icon set for `app_id` from the map if it is empty.
   void MaybeCleanupIconSet(const std::string& app_id);
 
   IconMap icon_map_;

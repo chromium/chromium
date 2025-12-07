@@ -4,35 +4,35 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
+import java.util.function.Supplier;
+
 /** Provides price tracking signal for showing contextual page action for a given tab. */
+@NullMarked
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<BookmarkModel> mBookmarkModelSupplier;
-    private final Supplier<Profile> mProfileSupplier;
 
     /** Constructor. */
     public PriceTrackingActionProvider(
             Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier,
-            Supplier<Profile> profileSupplier) {
+            Supplier<BookmarkModel> bookmarkModelSupplier) {
         mShoppingServiceSupplier = shoppingServiceSupplier;
         mBookmarkModelSupplier = bookmarkModelSupplier;
-        mProfileSupplier = profileSupplier;
     }
 
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
 
         if (tab == null || tab.getUrl() == null || !UrlUtilities.isHttpOrHttps(tab.getUrl())) {
-            signalAccumulator.setHasPriceTracking(false);
-            signalAccumulator.notifySignalAvailable();
+            signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING, false);
             return;
         }
 
@@ -43,9 +43,9 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
 
                     // If the user isn't allowed to have the shopping list feature, don't do any
                     // more work.
-                    if (!shoppingService.isShoppingListEligible()) {
-                        signalAccumulator.setHasPriceTracking(false);
-                        signalAccumulator.notifySignalAvailable();
+                    if (!CommerceFeatureUtils.isShoppingListEligible(shoppingService)) {
+                        signalAccumulator.setSignal(
+                                AdaptiveToolbarButtonVariant.PRICE_TRACKING, false);
                         return;
                     }
 
@@ -53,10 +53,10 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                             tab.getUrl(),
                             (url, info) -> {
                                 boolean canTrackPrice =
-                                        info != null && info.productClusterId.isPresent();
+                                        info != null && info.productClusterId != null;
 
-                                signalAccumulator.setHasPriceTracking(canTrackPrice);
-                                signalAccumulator.notifySignalAvailable();
+                                signalAccumulator.setSignal(
+                                        AdaptiveToolbarButtonVariant.PRICE_TRACKING, canTrackPrice);
                             });
                 });
     }

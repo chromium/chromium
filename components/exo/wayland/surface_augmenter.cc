@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/surface_augmenter.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/buffer.h"
 #include "components/exo/sub_surface.h"
@@ -154,7 +150,8 @@ void augmented_surface_set_background_color(wl_client* client,
   // Empty data means no color.
   if (color_data->size) {
     float* data = reinterpret_cast<float*>(color_data->data);
-    sk_color = {data[0], data[1], data[2], data[3]};
+    sk_color = {data[0], UNSAFE_TODO(data[1]), UNSAFE_TODO(data[2]),
+                UNSAFE_TODO(data[3])};
   }
 
   GetUserDataAs<AugmentedSurface>(resource)->SetBackgroundColor(sk_color);
@@ -314,12 +311,14 @@ void augmented_sub_surface_set_transform(wl_client* client,
     // | b d y | -> float[6] { a b c d x y }
     float* data = reinterpret_cast<float*>(matrix_data->data);
     // If b and c are 0, make a simplified transform using AxisTransform2d.
-    if (data[1] == 0 && data[2] == 0) {
+    if (UNSAFE_TODO(data[1]) == 0 && UNSAFE_TODO(data[2]) == 0) {
       transform = gfx::Transform(gfx::AxisTransform2d::FromScaleAndTranslation(
-          gfx::Vector2dF(data[0], data[3]), gfx::Vector2dF(data[4], data[5])));
+          gfx::Vector2dF(data[0], UNSAFE_TODO(data[3])),
+          gfx::Vector2dF(UNSAFE_TODO(data[4]), UNSAFE_TODO(data[5]))));
     } else {
-      transform = gfx::Transform::Affine(data[0], data[1], data[2], data[3],
-                                         data[4], data[5]);
+      transform = gfx::Transform::Affine(
+          data[0], UNSAFE_TODO(data[1]), UNSAFE_TODO(data[2]),
+          UNSAFE_TODO(data[3]), UNSAFE_TODO(data[4]), UNSAFE_TODO(data[5]));
     }
   } else if (matrix_data->size != 0) {
     wl_resource_post_error(resource, AUGMENTED_SUB_SURFACE_ERROR_INVALID_SIZE,
@@ -366,7 +365,8 @@ void augmenter_create_solid_color_buffer(wl_client* client,
                                          int width,
                                          int height) {
   float* data = reinterpret_cast<float*>(color_data->data);
-  SkColor4f color = {data[0], data[1], data[2], data[3]};
+  SkColor4f color = {data[0], UNSAFE_TODO(data[1]), UNSAFE_TODO(data[2]),
+                     UNSAFE_TODO(data[3])};
   std::unique_ptr<SolidColorBuffer> buffer =
       std::make_unique<SolidColorBuffer>(color, gfx::Size(width, height));
   wl_resource* buffer_resource = wl_resource_create(

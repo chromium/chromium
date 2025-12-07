@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/bindings/message_dumper.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -47,8 +48,7 @@ void WriteMessage(uint64_t identifier,
   base::File file(path,
                   base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
 
-  file.WriteAtCurrentPos(reinterpret_cast<const char*>(entry.data_bytes.data()),
-                         static_cast<int>(entry.data_bytes.size()));
+  file.WriteAtCurrentPos(entry.data_bytes);
 }
 
 }  // namespace
@@ -61,7 +61,7 @@ MessageDumper::MessageEntry::MessageEntry(const uint8_t* data,
                                           const char* method_name)
     : interface_name(interface_name),
       method_name(method_name),
-      data_bytes(data, data + data_size) {}
+      data_bytes(data, UNSAFE_TODO(data + data_size)) {}
 
 MessageDumper::MessageEntry::MessageEntry(const MessageEntry& entry) = default;
 

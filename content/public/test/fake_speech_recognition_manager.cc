@@ -184,6 +184,13 @@ void FakeSpeechRecognitionManager::AbortAllSessionsForRenderFrame(
   did_cancel_all_ = true;
 }
 
+void FakeSpeechRecognitionManager::UpdateRecognitionContextForSession(
+    int session_id,
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  VLOG(1) << "UpdateRecognitionContextForSession invoked.";
+  EXPECT_EQ(session_id_, session_id);
+}
+
 const SpeechRecognitionSessionConfig&
 FakeSpeechRecognitionManager::GetSessionConfig(int session_id) {
   EXPECT_EQ(session_id, session_id_);

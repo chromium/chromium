@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,14 +17,15 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
+#include "chrome/browser/ntp_tiles/chrome_enterprise_shortcuts_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/image_fetcher/core/features.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -37,9 +37,36 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
+
+namespace {
+
+bool ShouldCreateCustomLinksManager() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      chrome::android::kMostVisitedTilesCustomization);
+#else
+  return true;
+#endif
+}
+
+bool ShouldCreateEnterpriseShortcutsManager() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
+#else
+  return false;
+#endif
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ntp_tiles::MostVisitedSites>
@@ -51,10 +78,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   std::unique_ptr<data_decoder::DataDecoder> data_decoder;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          image_fetcher::features::kBatchImageDecoding)) {
-    data_decoder = std::make_unique<data_decoder::DataDecoder>();
-  }
+  data_decoder = std::make_unique<data_decoder::DataDecoder>();
 #endif
 
   bool is_default_chrome_app_migrated;
@@ -73,11 +97,12 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #else
       nullptr,
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-      ChromeCustomLinksManagerFactory::NewForProfile(profile),
-#else
-      nullptr,
-#endif
+      ShouldCreateCustomLinksManager()
+          ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
+          : nullptr,
+      ShouldCreateEnterpriseShortcutsManager()
+          ? ChromeEnterpriseShortcutsManagerFactory::NewForProfile(profile)
+          : nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),

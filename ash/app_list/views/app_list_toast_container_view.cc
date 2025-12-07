@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_toast_container_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
@@ -49,8 +50,7 @@ const gfx::VectorIcon* GetToastIconForOrder(AppListSortOrder order) {
       return &kSortColorIcon;
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -304,7 +304,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
   // The nudge view should be removed when the user triggers apps reordering.
   RemoveReorderNudgeView();
 
-  const std::u16string toast_text = CalculateToastTextFromOrder(*new_order);
+  std::u16string toast_text = CalculateToastTextFromOrder(*new_order);
   const gfx::VectorIcon* toast_icon = GetToastIconForOrder(*new_order);
   const std::u16string a11y_text_on_undo_button =
       GetA11yTextOnUndoButtonFromOrder(*new_order);
@@ -321,7 +321,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
     return;
   }
 
-  AppListToastView::Builder toast_view_builder(toast_text);
+  AppListToastView::Builder toast_view_builder(std::move(toast_text));
 
   toast_view_builder.SetCloseButton(base::BindRepeating(
       &AppListToastContainerView::OnReorderCloseButtonClicked,
@@ -453,8 +453,7 @@ std::u16string AppListToastContainerView::CalculateToastTextFromOrder(
           IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_FOR_COLOR_SORT);
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -470,8 +469,7 @@ std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
           IDS_ASH_LAUNCHER_UNDO_COLOR_SORT_TOAST_SPOKEN_TEXT);
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 

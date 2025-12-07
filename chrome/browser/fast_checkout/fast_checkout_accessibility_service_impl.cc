@@ -8,5 +8,6 @@
 
 void FastCheckoutAccessibilityServiceImpl::Announce(
     const std::u16string& text) {
-  autofill::AnnounceTextForA11y(text);
+  autofill::AutofillAccessibilityHelper::GetInstance()->AnnounceTextForA11y(
+      text);
 }

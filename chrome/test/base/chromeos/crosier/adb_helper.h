@@ -29,7 +29,7 @@ class AdbHelper {
   bool InstallApk(const base::FilePath& apk_path);
 
   // Runs the given command via adb.
-  bool Command(const std::string_view command);
+  bool Command(std::string_view command);
 
  private:
   // Waits for the first emulator device to be ready and extract serial.

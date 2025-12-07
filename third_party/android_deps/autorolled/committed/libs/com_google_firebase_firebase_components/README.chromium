@@ -1,0 +1,16 @@
+Name: firebase-components
+Short Name: firebase-components
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-components/19.0.0/firebase-components-19.0.0.aar
+Version: 19.0.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Provides dependency management for Firebase SDKs.
+
+Local Modifications:
+No modifications.

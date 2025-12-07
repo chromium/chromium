@@ -1,22 +1,32 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "IdleAction": 0
-        },
-        "prefs": {
-          "power.ac_idle_action": {
-            "value": 0
-          },
-          "power.battery_idle_action": {
-            "value": 0
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "power.ac_idle_action",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "power.battery_idle_action",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
   }
 ]

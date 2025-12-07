@@ -282,7 +282,7 @@ void BidirectionalStreamQuicImpl::OnReadInitialHeadersComplete(int rv) {
   }
 
   headers_bytes_received_ += rv;
-  negotiated_protocol_ = kProtoQUIC;
+  negotiated_protocol_ = NextProto::kProtoQUIC;
   connect_timing_ = session_->GetConnectTiming();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

@@ -87,14 +87,13 @@ PaintPreviewCompositorServiceImpl::CreateCompositor(
 }
 
 void PaintPreviewCompositorServiceImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   compositor_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](mojo::Remote<mojom::PaintPreviewCompositorCollection>* remote,
-             base::MemoryPressureListener::MemoryPressureLevel
-                 memory_pressure_level) {
+             base::MemoryPressureLevel memory_pressure_level) {
             if (!remote->is_bound()) {
               return;
             }

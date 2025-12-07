@@ -59,9 +59,7 @@ std::string CreateItemSuggestUpdateJsonString(
   suggest_item_update.Set("item", std::move(list_value));
   suggest_item_update.Set("suggestionSessionId", session_id);
 
-  std::string json_string;
-  base::JSONWriter::Write(suggest_item_update, &json_string);
-  return json_string;
+  return base::WriteJson(suggest_item_update).value_or("");
 }
 
 void WaitForFileSuggestionUpdate(

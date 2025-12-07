@@ -11,7 +11,8 @@ namespace blink {
 
 WebGLMultiDrawInstancedBaseVertexBaseInstance::
     WebGLMultiDrawInstancedBaseVertexBaseInstance(
-        WebGLRenderingContextBase* context)
+        WebGLRenderingContextBase* context,
+        ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_WEBGL_multi_draw_instanced_base_vertex_base_instance");
@@ -54,15 +55,15 @@ const char* WebGLMultiDrawInstancedBaseVertexBaseInstance::ExtensionName() {
 }
 
 void WebGLMultiDrawInstancedBaseVertexBaseInstance::
-    multiDrawArraysInstancedBaseInstanceImpl(
+    multiDrawArraysInstancedBaseInstanceWEBGL(
         GLenum mode,
-        const base::span<const int32_t> firsts,
+        base::span<const int32_t> firsts,
         GLuint firsts_offset,
-        const base::span<const int32_t> counts,
+        base::span<const int32_t> counts,
         GLuint counts_offset,
-        const base::span<const int32_t> instance_counts,
+        base::span<const int32_t> instance_counts,
         GLuint instance_counts_offset,
-        const base::span<const uint32_t> baseinstances,
+        base::span<const uint32_t> baseinstances,
         GLuint baseinstances_offset,
         GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
@@ -98,18 +99,18 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
 }
 
 void WebGLMultiDrawInstancedBaseVertexBaseInstance::
-    multiDrawElementsInstancedBaseVertexBaseInstanceImpl(
+    multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
         GLenum mode,
-        const base::span<const int32_t> counts,
+        base::span<const int32_t> counts,
         GLuint counts_offset,
         GLenum type,
-        const base::span<const int32_t> offsets,
+        base::span<const int32_t> offsets,
         GLuint offsets_offset,
-        const base::span<const int32_t> instance_counts,
+        base::span<const int32_t> instance_counts,
         GLuint instance_counts_offset,
-        const base::span<const int32_t> basevertices,
+        base::span<const int32_t> basevertices,
         GLuint basevertices_offset,
-        const base::span<const uint32_t> baseinstances,
+        base::span<const uint32_t> baseinstances,
         GLuint baseinstances_offset,
         GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);

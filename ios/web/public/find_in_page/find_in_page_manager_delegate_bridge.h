@@ -10,7 +10,7 @@
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 
 namespace web {
-class AbstractFindInPageManager;
+class FindInPageManager;
 }
 
 // Objective-C interface for web::FindInPageManagerDelegate
@@ -22,7 +22,7 @@ class AbstractFindInPageManager;
 // Will also be called if the total match count in the current page changes.
 // Client should check `query` to ensure that it is processing `match_count`
 // for the correct find.
-- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
+- (void)findInPageManager:(web::FindInPageManager*)manager
     didHighlightMatchesOfQuery:(NSString*)query
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState;
@@ -34,15 +34,14 @@ class AbstractFindInPageManager;
 // FindInPageManager::Find() with any FindInPageOptions to indicate the new
 // match number that was selected. This method is not called if
 // `FindInPageManager::Find` did not find any matches.
-- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
+- (void)findInPageManager:(web::FindInPageManager*)manager
     didSelectMatchAtIndex:(NSInteger)index
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState;
 
 // Called when the Find in Page manager detects the Find session has been ended
 // by the user through the system Find panel.
-- (void)userDismissedFindNavigatorForManager:
-    (web::AbstractFindInPageManager*)manager;
+- (void)userDismissedFindNavigatorForManager:(web::FindInPageManager*)manager;
 
 @end
 
@@ -65,15 +64,15 @@ class FindInPageManagerDelegateBridge : public web::FindInPageManagerDelegate {
   ~FindInPageManagerDelegateBridge() override;
 
   // FindInPageManagerDelegate overrides.
-  void DidHighlightMatches(AbstractFindInPageManager* manager,
+  void DidHighlightMatches(FindInPageManager* manager,
                            WebState* web_state,
                            int match_count,
                            NSString* query) override;
-  void DidSelectMatch(AbstractFindInPageManager* manager,
+  void DidSelectMatch(FindInPageManager* manager,
                       WebState* web_state,
                       int index,
                       NSString* context_string) override;
-  void UserDismissedFindNavigator(AbstractFindInPageManager* manager) override;
+  void UserDismissedFindNavigator(FindInPageManager* manager) override;
 
  private:
   __weak id<CRWFindInPageManagerDelegate> delegate_ = nil;

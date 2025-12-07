@@ -50,7 +50,7 @@ class CONTENT_EXPORT SharedStorageWorkletDevToolsAgentHost
 
   // DevToolsAgentHostImpl override.
   protocol::TargetAutoAttacher* auto_attacher() override;
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
 
   std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
   raw_ptr<SharedStorageWorkletHost> worklet_host_;

@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_password_view.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/hover_notifier.h"
@@ -17,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -26,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -35,7 +34,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -155,8 +153,8 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
     const ui::ColorId background_color =
         cros_tokens::kCrosSysSystemBaseElevated;
 
-    SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                           corner_radius));
+    SetBackground(
+        views::CreateRoundedRectBackground(background_color, corner_radius));
   }
 
   ~LoginPasswordRow() override = default;
@@ -209,6 +207,15 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
       on_focus_closure_.Run();
     }
     views::Textfield::OnFocus();
+  }
+
+  // views::Textfield:
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
+    // Prevent context menu on password input fields.
+    return;
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
@@ -355,14 +362,12 @@ LoginPasswordView::LoginPasswordView()
   password_row_ = password_row_container->AddChildView(
       std::make_unique<LoginPasswordRow>());
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    password_row_->SetBorder(std::make_unique<views::HighlightBorder>(
-        kJellyPasswordRowCornerRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  password_row_->SetBorder(std::make_unique<views::HighlightBorder>(
+      kJellyPasswordRowCornerRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-    password_row_->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase, kJellyPasswordRowCornerRadiusDp));
-  }
+  password_row_->SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kJellyPasswordRowCornerRadiusDp));
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -461,7 +466,7 @@ void LoginPasswordView::Reset() {
   textfield_->ClearEditHistory();
   // |ContentsChanged| won't be called by |Textfield| if the text is changed
   // by |Textfield::SetText()|.
-  ContentsChanged(textfield_, textfield_->GetText());
+  ContentsChanged(textfield_, std::u16string(textfield_->GetText()));
 }
 
 void LoginPasswordView::InsertNumber(int value) {
@@ -512,9 +517,8 @@ bool LoginPasswordView::IsReadOnly() const {
 
 gfx::Size LoginPasswordView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  views::SizeBounds content_available_size(available_size);
-  content_available_size.set_width(kPasswordTotalWidthDp);
-  gfx::Size size = views::View::CalculatePreferredSize(content_available_size);
+  gfx::Size size = views::View::CalculatePreferredSize(
+      views::SizeBounds(kPasswordTotalWidthDp, {}));
   size.set_width(kPasswordTotalWidthDp);
   return size;
 }
@@ -632,9 +636,8 @@ void LoginPasswordView::SubmitPassword() {
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
   const gfx::VectorIcon& capslock_icon =
-      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
-          ? kModifierSplitLockScreenCapsLockIcon
-          : kLockScreenCapsLockIcon;
+      features::IsModifierSplitEnabled() ? kModifierSplitLockScreenCapsLockIcon
+                                         : kLockScreenCapsLockIcon;
   const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
   const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(

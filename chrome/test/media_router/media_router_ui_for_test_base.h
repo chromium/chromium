@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -34,6 +35,9 @@ class MediaRouterUiForTestBase {
   // destructor will have already completed.
   void TearDown();
 
+  // NOTE: the dialog being showable depends on the button used to open it
+  // being visible. Callers should ensure that the button is visible before
+  // calling ShowDialog(), e.g. by playing video to make the GMC button appear.
   virtual void ShowDialog() = 0;
   virtual bool IsDialogShown() const = 0;
   virtual void HideDialog() = 0;

@@ -22,12 +22,9 @@ class CORE_EXPORT Variable : public Longhand {
   constexpr Variable() : Variable(true) {}
 
   bool IsAffectedByAll() const override { return false; }
-  CSSPropertyName GetCSSPropertyName() const override {
-    NOTREACHED_IN_MIGRATION();
-    return CSSPropertyName(g_empty_atom);
-  }
+  CSSPropertyName GetCSSPropertyName() const override { NOTREACHED(); }
   const char* GetPropertyName() const override { return "variable"; }
-  const WTF::AtomicString& GetPropertyNameAtomicString() const override {
+  const AtomicString& GetPropertyNameAtomicString() const override {
     DEFINE_STATIC_LOCAL(const AtomicString, name, ("variable"));
     return name;
   }
@@ -39,7 +36,8 @@ class CORE_EXPORT Variable : public Longhand {
       : Longhand(CSSPropertyID::kVariable,
                  kProperty | kValidForFirstLetter | kValidForFirstLine |
                      kValidForMarker | kValidForHighlightLegacy |
-                     kValidForHighlight | flags,
+                     kValidForHighlight | kNotVisited | kNotAnimation |
+                     kNotLegacyOverlapping | flags,
                  '\0') {}
 };
 

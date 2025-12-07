@@ -27,7 +27,7 @@ class MODULES_EXPORT ApplyConstraintsRequest final
   void RequestSucceeded();
   void RequestFailed(const String& constraint, const String& message);
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   Member<MediaStreamTrack> track_;

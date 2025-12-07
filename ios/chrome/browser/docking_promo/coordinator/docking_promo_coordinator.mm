@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_mediator.h"
 #import "ios/chrome/browser/docking_promo/model/utils.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
@@ -20,12 +21,12 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface DockingPromoCoordinator () <ConfirmationAlertActionHandler,
@@ -50,8 +51,8 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _firstRun = NO;
   }
   return self;
@@ -78,9 +79,9 @@
   }
 
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
+      PromosManagerFactory::GetForProfile(self.profile);
 
-  AppState* appState = self.browser->GetSceneState().appState;
+  AppState* appState = self.browser->GetSceneState().profileState.appState;
 
   std::optional<base::TimeDelta> timeSinceLastForeground =
       MinTimeSinceLastForeground(appState.foregroundScenes);
@@ -92,15 +93,11 @@
 
   if (_firstRun) {
     self.viewController = [[DockingPromoViewController alloc] init];
-    self.mediator.consumer = self.viewController;
     self.mediator.tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
     self.viewController.actionHandler = self;
     self.viewController.presentationController.delegate = self;
     self.viewController.modalInPresentation = YES;
-
-    [self.mediator configureConsumer];
 
     BOOL animated = self.baseNavigationController.topViewController != nil;
     [self.baseNavigationController setViewControllers:@[ self.viewController ]
@@ -135,14 +132,10 @@
   }
 
   self.viewController = [[DockingPromoViewController alloc] init];
-  self.mediator.consumer = self.viewController;
   self.mediator.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
-
-  [self.mediator configureConsumer];
 
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
@@ -157,15 +150,13 @@
   } else {
     [self hidePromo];
   }
-
   [self promoWasDismissed];
   RecordDockingPromoAction(IOSDockingPromoAction::kGotIt);
 }
 
 - (void)confirmationAlertSecondaryAction {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->NotifyEvent(feature_engagement::events::kDockingPromoRemindMeLater);
 
   if (_firstRun) {

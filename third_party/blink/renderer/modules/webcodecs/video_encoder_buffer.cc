@@ -6,8 +6,20 @@
 
 #include <string>
 
+#include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
+
 namespace blink {
 
-VideoEncoderBuffer::VideoEncoderBuffer() {}
+VideoEncoderBuffer::VideoEncoderBuffer(VideoEncoder* owner, size_t id)
+    : id_(id), owner_(owner) {}
+
+String VideoEncoderBuffer::id() const {
+  return String::Format("%zu", id_);
+}
+
+void VideoEncoderBuffer::Trace(Visitor* visitor) const {
+  visitor->Trace(owner_);
+  ScriptWrappable::Trace(visitor);
+}
 
 }  // namespace blink

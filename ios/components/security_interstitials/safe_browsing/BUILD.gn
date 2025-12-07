@@ -11,6 +11,8 @@ source_set("safe_browsing") {
     "safe_browsing_client.h",
     "safe_browsing_error.h",
     "safe_browsing_error.mm",
+    "safe_browsing_helper.cc",
+    "safe_browsing_helper.h",
     "safe_browsing_query_manager.h",
     "safe_browsing_query_manager.mm",
     "safe_browsing_service.h",
@@ -29,14 +31,14 @@ source_set("safe_browsing") {
     "//base",
     "//build:branding_buildflags",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/prefs",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
-    "//components/safe_browsing/core/browser/realtime:url_lookup_service",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
+    "//components/safe_browsing/core/browser/utils:url_loader_factory_params",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/safe_browsing/ios/browser/password_protection",
@@ -53,8 +55,8 @@ source_set("safe_browsing") {
 
 source_set("util") {
   sources = [
-    "unsafe_resource_util.h",
-    "unsafe_resource_util.mm",
+    "ios_unsafe_resource_util.h",
+    "ios_unsafe_resource_util.mm",
   ]
 
   deps = [
@@ -81,11 +83,16 @@ source_set("test_support") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/ios/browser:allow_list",
     "//ios/web/public",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -105,13 +112,11 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
-    "//components/keyed_service/ios",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_database",
     "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
@@ -123,7 +128,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core:unsafe_resource",
-    "//components/sync_preferences:sync_preferences",
+    "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/unified_consent",
     "//ios/web/public",

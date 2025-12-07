@@ -9,11 +9,10 @@
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -76,14 +75,11 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
         kTestAffiliationId);
   }
 
-  void EnableUsbPolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDevicePeripherals, true);
-  }
-
-  void DisableUsbPolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDevicePeripherals, false);
+  void SetUsbPolicy(bool value) {
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_peripherals(value);
   }
 
   bool NoUsbEventsEnqueued(const std::vector<Record>& records) {
@@ -150,7 +146,6 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
@@ -158,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
   chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
 
-  EnableUsbPolicy();
+  SetUsbPolicy(true);
 
   LoginAffiliatedUser();
 
@@ -202,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(
   chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
 
-  EnableUsbPolicy();
+  SetUsbPolicy(true);
 
   LoginAffiliatedUser();
 
@@ -234,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(
   chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
 
-  EnableUsbPolicy();
+  SetUsbPolicy(true);
 
   // Setup fake telemetry.
   auto usb_telemetry = CreateUsbTelemetry();
@@ -274,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(
   chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
 
-  EnableUsbPolicy();
+  SetUsbPolicy(true);
 
   LoginUnaffiliatedUser();
 
@@ -296,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
       usb_telemetry);
 
-  DisableUsbPolicy();
+  SetUsbPolicy(false);
 
   LoginAffiliatedUser();
 
@@ -318,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
       usb_telemetry);
 
-  DisableUsbPolicy();
+  SetUsbPolicy(false);
 
   LoginUnaffiliatedUser();
 

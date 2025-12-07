@@ -16,7 +16,7 @@ namespace nearby::share::metrics {
 
 NearbyShareMetricLogger::NearbyShareMetricLogger() = default;
 
-NearbyShareMetricLogger::~NearbyShareMetricLogger() {}
+NearbyShareMetricLogger::~NearbyShareMetricLogger() = default;
 
 void NearbyShareMetricLogger::OnShareTargetDiscoveryStarted() {
   discovery_start_time_ = base::TimeTicks::Now();
@@ -56,6 +56,7 @@ void NearbyShareMetricLogger::OnShareTargetRemoved(
   share_target_accept_time_.erase(share_target.id);
   share_target_upgrade_time_.erase(share_target.id);
   share_target_medium_.erase(share_target.id);
+  share_target_initial_medium_.erase(share_target.id);
   transfer_size_.erase(share_target.id);
   transfer_progress_.erase(share_target.id);
 }
@@ -85,8 +86,6 @@ void NearbyShareMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
   transfer_progress_[share_target.id] = progress_complete;
 }
 
-// TODO(b/266739400): Test this once there is Structured Metrics unittesting
-// infrastructure available.
 void NearbyShareMetricLogger::OnTransferCompleted(
     const ShareTarget& share_target,
     TransferMetadata::Status status) {
@@ -171,6 +170,7 @@ void NearbyShareMetricLogger::OnInitialMedium(
     const ShareTarget& share_target,
     nearby::connections::mojom::Medium medium) {
   share_target_initial_medium_[share_target.id] = medium;
+  share_target_medium_[share_target.id] = medium;
 }
 
 void NearbyShareMetricLogger::OnBandwidthUpgrade(

@@ -116,11 +116,10 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     // visible rect for |new_frame|.
     //
     // TODO(b/230370976): after https://crrev.com/c/3597211,
-    // PlatformVideoFramePool doesn't use a GpuMemoryBufferFactory for
-    // allocating dma-bufs which means DRM framebuffers won't be created for a
-    // dma-buf at allocation time (instead, it will be created at the moment of
-    // creating a SharedImage). That means that we probably don't need to take
-    // the |visible_rect_| into account for IsSameFormat_Locked() any more which
+    // PlatformVideoFramePool doesn't create DRM framebuffers for a dma-buf at
+    // allocation time (instead, they will be created at the moment of creating
+    // a SharedImage). That means that we probably don't need to take the
+    // |visible_rect| into account for IsSameFormat_Locked() any more which
     // implies that we can create |new_frame| using gfx::Rect(coded_size) as
     // the visible rectangle.
     CHECK(use_linear_buffers_.has_value());
@@ -146,6 +145,9 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     // correctly // set by the caller.
     CHECK_EQ((*new_frame)->storage_type(), frame_storage_type_);
 
+    // Sets and/or registers the frame's |tracking_token|.
+    frame_tracking_token_helper_.SetUniqueTrackingToken(new_frame->metadata());
+
     InsertFreeFrame_Locked(std::move(new_frame).value());
   }
 
@@ -158,8 +160,7 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
   scoped_refptr<FrameResource> wrapped_frame =
       origin_frame->CreateWrappingFrame(visible_rect_, natural_size_);
   DCHECK(wrapped_frame);
-  frames_in_use_.emplace(wrapped_frame->GetSharedMemoryId(),
-                         origin_frame.get());
+  frames_in_use_.emplace(wrapped_frame->tracking_token(), origin_frame.get());
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
@@ -190,9 +191,6 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  CHECK(!use_linear_buffers_ || *use_linear_buffers_ == use_linear_buffers);
-  use_linear_buffers_ = use_linear_buffers;
-
   // Only support the Fourcc that could map to VideoPixelFormat.
   VideoPixelFormat format = fourcc.ToVideoPixelFormat();
   if (format == PIXEL_FORMAT_UNKNOWN) {
@@ -206,6 +204,11 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     return CroStatus::Codes::kProtectedContentUnsupported;
   }
 #endif
+
+  // |use_linear_buffers| does not change unless we are switching in or out of
+  // using protected content.
+  CHECK(use_protected != use_protected_ || !use_linear_buffers_ ||
+        *use_linear_buffers_ == use_linear_buffers);
 
   // If the frame layout changed we need to allocate new frames so we will clear
   // the pool here. If only the visible rect or natural size changed, we don't
@@ -221,17 +224,22 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   // the same bottom-right corner map to the same framebuffer size.
   //
   // TODO(b/230370976): after https://crrev.com/c/3597211,
-  // PlatformVideoFramePool doesn't use a GpuMemoryBufferFactory for allocating
-  // dma-bufs which means DRM framebuffers won't be created for a dma-buf at
-  // allocation time (instead, it will be created at the moment of creating a
+  // PlatformVideoFramePool doesn't create DRM framebuffers for a dma-buf at
+  // allocation time (instead, they will be created at the moment of creating a
   // SharedImage). That means that we probably don't need to take the
   // |visible_rect| into account for IsSameFormat_Locked() any more.
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
+    // This loop clears the free frames' tokens from
+    // |frame_tracking_token_helper_|. The in-use frames' tokens will be cleared
+    // as the frames are released.
+    for (const auto& frame : free_frames_) {
+      frame_tracking_token_helper_.ClearToken(frame->tracking_token());
+    }
     free_frames_.clear();
     auto maybe_frame = create_frame_cb_.Run(
         format, coded_size, visible_rect, natural_size, use_protected,
-        *use_linear_buffers_,
+        use_linear_buffers,
         fourcc == Fourcc(Fourcc::MM21) || fourcc == Fourcc(Fourcc::MT2T),
         base::TimeDelta());
     if (!maybe_frame.has_value())
@@ -250,6 +258,7 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   natural_size_ = natural_size;
   max_num_frames_ = max_num_frames;
   use_protected_ = use_protected;
+  use_linear_buffers_ = use_linear_buffers;
 
   // The pool might become available because of |max_num_frames_| increased.
   // Notify the client if so.
@@ -282,11 +291,11 @@ bool PlatformVideoFramePool::IsExhausted_Locked() {
 }
 
 FrameResource* PlatformVideoFramePool::GetOriginalFrame(
-    gfx::GenericSharedMemoryId frame_id) {
+    const base::UnguessableToken& tracking_token) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  auto it = frames_in_use_.find(frame_id);
+  auto it = frames_in_use_.find(tracking_token);
   return (it == frames_in_use_.end()) ? nullptr : it->second;
 }
 
@@ -308,6 +317,7 @@ void PlatformVideoFramePool::ReleaseAllFrames() {
   base::AutoLock auto_lock(lock_);
   free_frames_.clear();
   frames_in_use_.clear();
+  frame_tracking_token_helper_.ClearTokens();
   weak_this_factory_.InvalidateWeakPtrs();
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -343,15 +353,16 @@ void PlatformVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  gfx::GenericSharedMemoryId frame_id = origin_frame->GetSharedMemoryId();
-  auto it = frames_in_use_.find(frame_id);
-  CHECK(it != frames_in_use_.end(), base::NotFatalUntil::M130);
+  auto it = frames_in_use_.find(origin_frame->tracking_token());
+  CHECK(it != frames_in_use_.end());
   frames_in_use_.erase(it);
 
   if (IsSameFormat_Locked(origin_frame->format(), origin_frame->coded_size(),
                           origin_frame->visible_rect(),
                           origin_frame->metadata().hw_protected)) {
     InsertFreeFrame_Locked(std::move(origin_frame));
+  } else {
+    frame_tracking_token_helper_.ClearToken(origin_frame->tracking_token());
   }
 
   if (frame_available_cb_ && !IsExhausted_Locked())

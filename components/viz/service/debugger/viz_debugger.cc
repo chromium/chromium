@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/debugger/viz_debugger.h"
 
 #include <algorithm>
@@ -15,12 +10,15 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -40,8 +38,8 @@ VizDebugger::BufferInfo::~BufferInfo() = default;
 VizDebugger::BufferInfo::BufferInfo(const BufferInfo& a) = default;
 
 VizDebugger* VizDebugger::GetInstance() {
-  static VizDebugger g_debugger;
-  return &g_debugger;
+  static base::NoDestructor<VizDebugger> g_debugger;
+  return g_debugger.get();
 }
 
 VizDebugger::FilterBlock::FilterBlock(const std::string file_str,
@@ -63,7 +61,9 @@ base::Value::Dict VizDebugger::CallSubmitCommon::GetDictionaryValue() const {
   return base::Value::Dict()
       .Set("drawindex", draw_index)
       .Set("source_index", source_index)
-      .Set("thread_id", thread_id)
+      // Since this is only for debugging, it's ok for thread ids to be
+      // truncated.
+      .Set("thread_id", static_cast<int32_t>(thread_id))
       .Set("option",
            base::Value::Dict()
                .Set("color", base::StringPrintf("#%02x%02x%02x", option.color_r,
@@ -140,7 +140,7 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   base::Value::List draw_calls;
 
   // Hash set to keep track of threads that have been registered already.
-  base::flat_set<int> registered_threads;
+  base::flat_set<base::PlatformThreadId::UnderlyingType> registered_threads;
   for (size_t i = 0; i < max_rect_calls_index; ++i) {
     base::Value::Dict dict = draw_rect_calls_[i].GetDictionaryValue();
     dict.Set("size", base::Value::List()
@@ -165,7 +165,9 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
     if (!draw_rect_calls_[i].text.empty()) {
       dict.Set("text", std::move(draw_rect_calls_[i].text));
     }
-    registered_threads.insert(draw_rect_calls_[i].thread_id);
+    registered_threads.insert(
+        base::saturated_cast<base::PlatformThreadId::UnderlyingType>(
+            draw_rect_calls_[i].thread_id));
     draw_calls.Append(std::move(dict));
   }
 
@@ -174,18 +176,12 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   base::Value::Dict buff_map;
 
   for (auto&& each : buffers_) {
-    SkDynamicMemoryWStream stream;
-    bool result = SkPngEncoder::Encode(
-        &stream, each.buffer_info.bitmap.pixmap(), SkPngEncoder::Options());
-    if (!result) {
+    std::string uri =
+        skia::EncodePngAsDataUri(each.buffer_info.bitmap.pixmap());
+    if (uri.empty()) {
       DLOG(ERROR) << "encode failed";
       continue;
     }
-    sk_sp<SkData> data = stream.detachAsData();
-    std::string uri =
-        "data:image/png;base64," +
-        base::Base64Encode(base::span<const uint8_t>(
-            static_cast<const uint8_t*>(data->data()), data->size()));
     buff_map.Set(base::NumberToString(each.id), std::move(uri));
   }
 
@@ -204,9 +200,10 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   base::Value::List new_threads;
   for (auto&& thread_id : registered_threads) {
     std::string cur_thread_name =
-        base::ThreadIdNameManager::GetInstance()->GetName(thread_id);
+        base::ThreadIdNameManager::GetInstance()->GetName(
+            base::PlatformThreadId(thread_id));
     new_threads.Append(base::Value::Dict()
-                           .Set("thread_id", thread_id)
+                           .Set("thread_id", static_cast<int32_t>(thread_id))
                            .Set("thread_name", cur_thread_name));
     registered_threads.insert(thread_id);
   }
@@ -259,7 +256,8 @@ void VizDebugger::ApplyFilters(VizDebugger::StaticSource* src) {
     if (filter_match.empty() || source_str == nullptr) {
       return true;
     }
-    return std::strstr(source_str, filter_match.c_str()) != nullptr;
+    return UNSAFE_TODO(std::strstr(source_str, filter_match.c_str())) !=
+           nullptr;
   };
 
   for (const auto& filter_block : cached_filters_) {
@@ -314,7 +312,8 @@ void VizDebugger::DrawInternal(const gfx::SizeF& obj_size,
     insertion_index = draw_calls_tail_idx_++;
     // If the insertion index is within bounds, insert call into buffer.
     if (static_cast<size_t>(insertion_index) < draw_rect_calls_.size()) {
-      int cur_thread_id = base::PlatformThread::CurrentId();
+      int64_t cur_thread_id =
+          static_cast<int64_t>(base::PlatformThread::CurrentId());
       draw_rect_calls_[insertion_index] = DrawCall{submission_count_++,
                                                    dcs->reg_index,
                                                    cur_thread_id,
@@ -437,7 +436,8 @@ void VizDebugger::AddLogMessage(std::string log,
     insertion_index = logs_tail_idx_++;
     // If the insertion index is within bounds, insert call into buffer.
     if (static_cast<size_t>(insertion_index) < logs_.size()) {
-      int cur_thread_id = base::PlatformThread::CurrentId();
+      int64_t cur_thread_id =
+          static_cast<int64_t>(base::PlatformThread::CurrentId());
       logs_[insertion_index] = LogCall{submission_count_++, dcs->reg_index,
                                        cur_thread_id, option, std::move(log)};
       // Return when call insertion is successful.

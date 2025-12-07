@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  const transport = new RtcTransport({
+    name: 'transport',
+    iceServers: [],
+    iceControlling: true,
+  });
+
+  assert_equals(transport.getReceivedPackets().length, 0);
+}, 'RtcTransport can be created');
+
+// This test verifies that we can create two RtcTransport objects,
+// get them to connect to each other, and send and receive data.
+promise_test(async t => {
+  const transport1 = new RtcTransport({
+    name: 'transport1',
+    iceServers: [],
+    iceControlling: true,
+  });
+  const transport2 = new RtcTransport({
+    name: 'transport2',
+    iceServers: [],
+    iceControlling: false,
+  });
+
+  transport1.onicecandidate = e => {
+    if (e.candidate) {
+      transport2.addRemoteCandidate(e.candidate);
+    }
+  };
+  transport2.onicecandidate = e => {
+    if (e.candidate) {
+      transport1.addRemoteCandidate(e.candidate);
+    }
+  };
+
+  // The client is the one that is not controlling ICE.
+  const clientDtlsParams = {
+    sslRole: 'client',
+    fingerprintDigestAlgorithm: transport1.fingerprintDigestAlgorithm,
+    fingerprint: transport1.fingerprint,
+  };
+  transport2.setRemoteDtlsParameters(clientDtlsParams);
+
+  const serverDtlsParams = {
+    sslRole: 'server',
+    fingerprintDigestAlgorithm: transport2.fingerprintDigestAlgorithm,
+    fingerprint: transport2.fingerprint,
+  };
+  transport1.setRemoteDtlsParameters(serverDtlsParams);
+
+  await t.step_wait(() => transport1.writable(), 'transport1 should become writable');
+  await t.step_wait(() => transport2.writable(), 'transport2 should become writable');
+
+  const message = 'Hello, world!';
+  const data = new TextEncoder().encode(message).buffer;  transport1.sendPackets([{id: 1, data: data}]);
+
+  // Poll for received packets.
+  while (true) {
+    const packets = transport2.getReceivedPackets();
+    if (packets.length > 0) {
+      assert_equals(packets.length, 1, 'Should have received one packet');
+      const receivedData = new ArrayBuffer(packets[0].payloadByteLength);
+      packets[0].copyPayloadTo(receivedData);
+      assert_equals(new TextDecoder().decode(receivedData), message,
+                        'Received data should match sent data');
+      t.done();
+      break;
+    }
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+  }
+}, 'RtcTransport can be created and used to send and receive data');
+
+promise_test(async t => {
+  const transport1 = new RtcTransport({
+    name: 'transport1',
+    iceServers: [],
+    iceControlling: true,
+  });
+  const transport2 = new RtcTransport({
+    name: 'transport2',
+    iceServers: [],
+    iceControlling: false,
+  });
+
+  transport1.onicecandidate = e => {
+    if (e.candidate) {
+      transport2.addRemoteCandidate(e.candidate);
+    }
+  };
+  transport2.onicecandidate = e => {
+    if (e.candidate) {
+      transport1.addRemoteCandidate(e.candidate);
+    }
+  };
+
+  transport2.setRemoteDtlsParameters({
+    sslRole: 'client',
+    fingerprintDigestAlgorithm: transport1.fingerprintDigestAlgorithm,
+    fingerprint: transport1.fingerprint,
+  });
+  transport1.setRemoteDtlsParameters({
+    sslRole: 'server',
+    fingerprintDigestAlgorithm: transport2.fingerprintDigestAlgorithm,
+    fingerprint: transport2.fingerprint,
+  });
+
+  await Promise.all([
+    t.step_wait(() => transport1.writable(), 'transport1 should become writable'),
+    t.step_wait(() => transport2.writable(), 'transport2 should become writable')
+  ]);
+
+  const messages1to2 = ['one', 'two', 'three'];
+  const messages2to1 = ['four', 'five'];
+
+  for (const msg of messages1to2) {
+    transport1.sendPackets([{id: 0, data: new TextEncoder().encode(msg).buffer}]);
+  }
+  for (const msg of messages2to1) {
+    transport2.sendPackets([{id: 0, data: new TextEncoder().encode(msg).buffer}]);
+  }
+
+  let received1 = [];
+  let received2 = [];
+
+  while (received1.length < messages2to1.length || received2.length < messages1to2.length) {
+    const packets1 = transport1.getReceivedPackets();
+    for(const packet of packets1) {
+      const receivedData = new ArrayBuffer(packet.payloadByteLength);
+      packet.copyPayloadTo(receivedData);
+      received1.push(new TextDecoder().decode(receivedData));
+    }
+    const packets2 = transport2.getReceivedPackets();
+    for(const packet of packets2) {
+      const receivedData = new ArrayBuffer(packet.payloadByteLength);
+      packet.copyPayloadTo(receivedData);
+      received2.push(new TextDecoder().decode(receivedData));
+    }
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+  }
+
+  assert_array_equals(received1.sort(), messages2to1.sort(), 'transport1 received all messages');
+  assert_array_equals(received2.sort(), messages1to2.sort(), 'transport2 received all messages');
+
+}, 'RtcTransport supports bidirectional, multi-packet communication');
+
+promise_test(async t => {
+  const transport1 = new RtcTransport({
+    name: 'transport1',
+    iceServers: [],
+    iceControlling: true,
+  });
+  const transport2 = new RtcTransport({
+    name: 'transport2',
+    iceServers: [],
+    iceControlling: true,
+  });
+
+  // This test passes if the writable() promise does *not* resolve to true
+  // within a reasonable timeout, because the connection should fail.
+  const result = await Promise.race([
+    Promise.all([
+      t.step_wait(() => transport1.writable(), 'transport1 should become writable'),
+      t.step_wait(() => transport2.writable(), 'transport2 should become writable')
+    ]),
+    new Promise(resolve => t.step_timeout(resolve, 500))
+  ]);
+
+  assert_equals(result, undefined, 'Connection should not become writable when both are ICE controlling');
+}, 'RtcTransport connection fails when both peers are ICE controlling');
+</script>

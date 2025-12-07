@@ -11,15 +11,6 @@
 // They are mainly used for communication between applications in the group.
 namespace app_group {
 
-// An enum of the different application member of the Chrome app group.
-// To ensure continuity in metrics log, applications can only be added at the
-// end.
-// Applications directly sending metrics must be added to this enum.
-enum AppGroupApplications {
-  APP_GROUP_CHROME = 0,
-  APP_GROUP_TODAY_EXTENSION,
-};
-
 // The different types of outcome used for UMA and created by the open
 // extension.
 // The entries should not be removed or reordered.
@@ -38,7 +29,12 @@ enum class OpenExtensionOutcome : NSInteger {
 enum ShareExtensionItemType {
   READING_LIST_ITEM = 0,
   BOOKMARK_ITEM,
-  OPEN_IN_CHROME_ITEM
+  OPEN_IN_CHROME_ITEM,
+  OPEN_IN_CHROME_INCOGNITO_ITEM,
+  IMAGE_SEARCH_ITEM,
+  TEXT_SEARCH_ITEM,
+  INCOGNITO_IMAGE_SEARCH_ITEM,
+  INCOGNITO_TEXT_SEARCH_ITEM
 };
 
 // The key of a preference containing a dictionary of capabilities supported by
@@ -49,9 +45,19 @@ extern NSString* const kChromeCapabilitiesPreference;
 // Show default browser promo capability.
 extern NSString* const kChromeShowDefaultBrowserPromoCapability;
 
+// Capability declaring a list of supported bundle IDs that can open incognito
+// links in chrome.
+extern NSString* const kChromeSupportOpenLinksParametersFromCapability;
+
+// Share default browser promo status capability.
+extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability;
+
 // The x-callback-url indicating that an application in the group requires a
 // command.
 extern const char kChromeAppGroupXCallbackCommand[];
+
+// The gaid id query name to add to a given URL.
+extern const char kGaiaIDQueryItemName[];
 
 // The key of a preference containing a dictionary of field trial values needed
 // in extensions.
@@ -72,11 +78,22 @@ extern const char kChromeAppGroupCommandCommandPreference[];
 // The command to open a URL. Parameter must contain the URL.
 extern const char kChromeAppGroupOpenURLCommand[];
 
+// The command to open a URL in incognito. Parameter must contain the URL.
+extern NSString* const kChromeAppGroupOpenURLInIcognitoCommand;
+
 // The command to search some text. Parameter must contain the text.
 extern const char kChromeAppGroupSearchTextCommand[];
 
+// The command to search some text in incognito. Parameter must contain the
+// text.
+extern NSString* const kChromeAppGroupIncognitoSearchTextCommand;
+
 // The command to search an image. Data parameter must contain the image.
 extern const char kChromeAppGroupSearchImageCommand[];
+
+// The command to search an image in incognito. Data parameter must contain the
+// image.
+extern NSString* const kChromeAppGroupIncognitoSearchImageCommand;
 
 // The command to trigger a voice search.
 extern const char kChromeAppGroupVoiceSearchCommand[];
@@ -128,10 +145,6 @@ extern const char kChromeAppGroupIsGoogleDefaultSearchEngine[];
 // provider.
 extern const char kChromeAppGroupEnableLensInWidget[];
 
-// The key of a preference containing whether the home screen widget should show
-// the color Lens and voice icons if Lens is shown.
-extern const char kChromeAppGroupEnableColorLensAndVoiceIconsInWidget[];
-
 // The key of a preference containing Chrome client ID reported in the metrics
 // client ID. If the user does not opt in, this value must be cleared from the
 // shared user defaults.
@@ -141,33 +154,37 @@ extern const char kChromeAppClientID[];
 // metrics reporting.
 extern const char kUserMetricsEnabledDate[];
 
-// The six keys of the items sent by the share extension to Chrome (source, URL,
-// title, date, cancel, type).
+// The seven keys of the items sent by the share extension to Chrome (source,
+// URL, title, date, cancel, type, gaiaID).
 extern NSString* const kShareItemSource;
 extern NSString* const kShareItemURL;
 extern NSString* const kShareItemTitle;
 extern NSString* const kShareItemDate;
 extern NSString* const kShareItemCancel;
 extern NSString* const kShareItemType;
+extern NSString* const kShareItemGaiaID;
 
 // The value used by Chrome Share extension in `kShareItemSource`.
 extern NSString* const kShareItemSourceShareExtension;
 
 // The values used by Chrome extensions in
 // `kChromeAppGroupCommandAppPreference`.
-extern NSString* const kOpenCommandSourceTodayExtension;
-extern NSString* const kOpenCommandSourceContentExtension;
-extern NSString* const kOpenCommandSourceSearchExtension;
 extern NSString* const kOpenCommandSourceShareExtension;
 extern NSString* const kOpenCommandSourceCredentialsExtension;
 extern NSString* const kOpenCommandSourceOpenExtension;
 
-// The value of the key for the sharedDefaults used by the Content Widget.
+// The value of the key for the sharedDefaults used by the Shortcuts Widget.
 extern NSString* const kSuggestedItems;
-
 // The value of the key for the sharedDefaults last modification date used by
 // the Shortcuts Widget.
 extern NSString* const kSuggestedItemsLastModificationDate;
+
+// NSUserDefaults key containing a dictionary with most visited sites data for a
+// given gaiaID. Used by the Shortcuts Widget.
+extern NSString* const kSuggestedItemsForMultiprofile;
+// NSUserDefaults key containing the last modification date. Used by
+// the Shortcuts Widget.
+extern NSString* const kSuggestedItemsLastModificationDateForMultiprofile;
 
 // The current epoch time, on the first run of chrome on this machine. It is set
 // once and must be attached to metrics reports forever thereafter.
@@ -190,6 +207,37 @@ extern NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme;
 // the outcomes of the Open Extension.
 extern NSString* const kOpenExtensionOutcomes;
 
+// Name of NSUserDefault key containing info about registered profiles to be
+// passed to widgets.
+extern NSString* const kAccountsOnDevice;
+// Names of keys in dictionary saved in kAccountsOnDevice.
+extern NSString* const kEmail;
+extern NSString* const kFullName;
+// Key used to save info for widgets when no account is signed-in.
+extern NSString* const kNoAccount;
+// Key used to save info for widgets when used with default account (the same
+// account used in the app).
+extern NSString* const kDefault;
+
+// Supported bundle IDs for opening incognito links in Chrome.
+extern NSString* const kYoutubeBundleID;
+
+// Stores in NSUserDefaults info about the latest changed primary account for
+// all profiles. Empty if last operation was a sign-out.
+extern NSString* const kPrimaryAccount;
+
+// Key used to store whether Chrome is likely the default browser.
+extern NSString* const kChromeLikelyDefaultBrowser;
+// Key used to store the timestamp when the default browser status was updated.
+extern NSString* const kChromeLikelyDefaultBrowserUpdateTimestamp;
+
+// Key to store GMO/SKO install attribution data in shared user defaults.
+extern NSString* const kGMOSKOInstallAttribution;
+
+// Key to store install attribution data from the App Preview in shared user
+// defaults.
+extern NSString* const kAppPreviewInstallAttribution;
+
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);
 OpenExtensionOutcome OutcomeTypeFromKey(NSString*);
@@ -209,9 +257,13 @@ NSURL* LegacyShareExtensionItemsFolder();
 // Gets the shared folder URL containing commands from other applications.
 NSURL* ExternalCommandsItemsFolder();
 
-// Gets the shared folder URL in which favicons used by the content widget are
+// Gets the shared folder URL in which favicons used by the shortcuts widget are
 // stored.
-NSURL* ContentWidgetFaviconsFolder();
+NSURL* ShortcutsWidgetFaviconsFolder();
+
+// Gets the shared folder URL in which avatar used by the widgets are
+// stored.
+NSURL* WidgetsAvatarFolder();
 
 // Gets the shared folder URL in which favicon attributes used by the credential
 // provider extensions are stored.
@@ -231,9 +283,6 @@ NSUserDefaults* GetGroupUserDefaults();
 // not (i.e. on simulator, or if entitlements do not allow it) returns
 // [NSUserDefaults standardUserDefaults].
 NSUserDefaults* GetCommonGroupUserDefaults();
-
-// The application name of `application`.
-NSString* ApplicationName(AppGroupApplications application);
 
 }  // namespace app_group
 

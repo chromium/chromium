@@ -109,9 +109,6 @@ class PLATFORM_EXPORT SharedFontFamily : public FontFamily,
 };
 
 PLATFORM_EXPORT bool operator==(const FontFamily&, const FontFamily&);
-inline bool operator!=(const FontFamily& a, const FontFamily& b) {
-  return !(a == b);
-}
 
 inline FontFamily::~FontFamily() {
   scoped_refptr<SharedFontFamily> reaper = std::move(next_);

@@ -35,18 +35,23 @@
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
-#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/platform_focus_ring.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
@@ -136,6 +141,8 @@ void GraphicsContext::CopyConfigFrom(GraphicsContext& other) {
   SetPrintingMetafile(other.printing_metafile_);
   SetPaintPreviewTracker(other.paint_preview_tracker_);
   SetPrinting(other.printing_);
+  SetPrintingInternalHeadersAndFooters(
+      other.printing_internal_headers_and_footers_);
 }
 
 DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
@@ -299,33 +306,6 @@ void GraphicsContext::DrawRecord(PaintRecord record) {
   canvas_->drawPicture(std::move(record));
 }
 
-void GraphicsContext::CompositeRecord(PaintRecord record,
-                                      const gfx::RectF& dest,
-                                      const gfx::RectF& src,
-                                      SkBlendMode op) {
-  if (record.empty()) {
-    return;
-  }
-  DCHECK(canvas_);
-
-  cc::PaintFlags flags;
-  flags.setBlendMode(op);
-
-  SkSamplingOptions sampling(cc::PaintFlags::FilterQualityToSkSamplingOptions(
-      static_cast<cc::PaintFlags::FilterQuality>(ImageInterpolationQuality())));
-  canvas_->save();
-  canvas_->concat(
-      SkM44::RectToRect(gfx::RectFToSkRect(src), gfx::RectFToSkRect(dest)));
-  canvas_->drawImage(
-      PaintImageBuilder::WithDefault()
-          .set_paint_record(std::move(record), gfx::ToRoundedRect(src),
-                            PaintImage::GetNextContentId())
-          .set_id(PaintImage::GetNextId())
-          .TakePaintImage(),
-      0, 0, sampling, &flags);
-  canvas_->restore();
-}
-
 void GraphicsContext::DrawFocusRingPath(const SkPath& path,
                                         const Color& color,
                                         float width,
@@ -345,159 +325,14 @@ void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
       width);
 }
 
-static void EnforceDotsAtEndpoints(GraphicsContext& context,
-                                   gfx::PointF& p1,
-                                   gfx::PointF& p2,
-                                   const int path_length,
-                                   const int width,
-                                   const cc::PaintFlags& flags,
-                                   const bool is_vertical_line,
-                                   const AutoDarkMode& auto_dark_mode) {
-  // For narrow lines, we always want integral dot and dash sizes, and start
-  // and end points, to prevent anti-aliasing from erasing the dot effect.
-  // For 1-pixel wide lines, we must make one end a dash. Otherwise we have
-  // a little more scope to distribute the error. But we never want to reduce
-  // the size of the end dots because doing so makes corners of all-dotted
-  // paths look odd.
-  //
-  // There is no way to give custom start and end dash sizes or gaps to Skia,
-  // so if we need non-uniform gaps we need to draw the start, and maybe the
-  // end dot ourselves, and move the line start (and end) to the start/end of
-  // the second dot.
-  DCHECK_LE(width, 3);  // Width is max 3 according to StrokeIsDashed
-  int mod_4 = path_length % 4;
-  int mod_6 = path_length % 6;
-  // New start dot to be explicitly drawn, if needed, and the amount to grow the
-  // start dot and the offset for first gap.
-  bool use_start_dot = false;
-  int start_dot_growth = 0;
-  int start_line_offset = 0;
-  // New end dot to be explicitly drawn, if needed, and the amount to grow the
-  // second dot.
-  bool use_end_dot = false;
-  int end_dot_growth = 0;
-  if ((width == 1 && path_length % 2 == 0) || (width == 3 && mod_6 == 0)) {
-    // Cases where we add one pixel to the first dot.
-    use_start_dot = true;
-    start_dot_growth = 1;
-    start_line_offset = 1;
-  }
-  if ((width == 2 && (mod_4 == 0 || mod_4 == 1)) ||
-      (width == 3 && (mod_6 == 1 || mod_6 == 2))) {
-    // Cases where we drop 1 pixel from the start gap
-    use_start_dot = true;
-    start_line_offset = -1;
-  }
-  if ((width == 2 && mod_4 == 0) || (width == 3 && mod_6 == 1)) {
-    // Cases where we drop 1 pixel from the end gap
-    use_end_dot = true;
-  }
-  if ((width == 2 && mod_4 == 3) ||
-      (width == 3 && (mod_6 == 4 || mod_6 == 5))) {
-    // Cases where we add 1 pixel to the start gap
-    use_start_dot = true;
-    start_line_offset = 1;
-  }
-  if (width == 3 && mod_6 == 5) {
-    // Case where we add 1 pixel to the end gap and leave the end
-    // dot the same size.
-    use_end_dot = true;
-  } else if (width == 3 && mod_6 == 0) {
-    // Case where we add one pixel gap and one pixel to the dot at the end
-    use_end_dot = true;
-    end_dot_growth = 1;  // Moves the larger end pt for this case
-  }
-
-  if (use_start_dot || use_end_dot) {
-    cc::PaintFlags fill_flags;
-    fill_flags.setColor(flags.getColor4f());
-    if (use_start_dot) {
-      SkRect start_dot;
-      if (is_vertical_line) {
-        start_dot.setLTRB(p1.x() - width / 2, p1.y(),
-                          p1.x() + width - width / 2,
-                          p1.y() + width + start_dot_growth);
-        p1.set_y(p1.y() + (2 * width + start_line_offset));
-      } else {
-        start_dot.setLTRB(p1.x(), p1.y() - width / 2,
-                          p1.x() + width + start_dot_growth,
-                          p1.y() + width - width / 2);
-        p1.set_x(p1.x() + (2 * width + start_line_offset));
-      }
-      context.DrawRect(start_dot, fill_flags, auto_dark_mode);
-    }
-    if (use_end_dot) {
-      SkRect end_dot;
-      if (is_vertical_line) {
-        end_dot.setLTRB(p2.x() - width / 2, p2.y() - width - end_dot_growth,
-                        p2.x() + width - width / 2, p2.y());
-        // Be sure to stop drawing before we get to the last dot
-        p2.set_y(p2.y() - (width + end_dot_growth + 1));
-      } else {
-        end_dot.setLTRB(p2.x() - width - end_dot_growth, p2.y() - width / 2,
-                        p2.x(), p2.y() + width - width / 2);
-        // Be sure to stop drawing before we get to the last dot
-        p2.set_x(p2.x() - (width + end_dot_growth + 1));
-      }
-      context.DrawRect(end_dot, fill_flags, auto_dark_mode);
-    }
-  }
+void GraphicsContext::SetPrinting(bool printing) {
+  printing_ = printing;
 }
 
-void GraphicsContext::DrawLine(const gfx::Point& point1,
-                               const gfx::Point& point2,
-                               const StyledStrokeData& styled_stroke,
-                               const AutoDarkMode& auto_dark_mode,
-                               bool is_text_line,
-                               const cc::PaintFlags* paint_flags) {
-  DCHECK(canvas_);
-
-  StrokeStyle pen_style = styled_stroke.Style();
-  if (pen_style == kNoStroke)
-    return;
-
-  gfx::PointF p1 = gfx::PointF(point1);
-  gfx::PointF p2 = gfx::PointF(point2);
-  bool is_vertical_line = (p1.x() == p2.x());
-  int width = roundf(styled_stroke.Thickness());
-
-  // We know these are vertical or horizontal lines, so the length will just
-  // be the sum of the displacement component vectors give or take 1 -
-  // probably worth the speed up of no square root, which also won't be exact.
-  gfx::Vector2dF disp = p2 - p1;
-  int length = SkScalarRoundToInt(disp.x() + disp.y());
-  cc::PaintFlags flags =
-      paint_flags ? *paint_flags : ImmutableState()->StrokeFlags();
-  styled_stroke.SetupPaint(&flags, {length, width, false});
-
-  if (pen_style == kDottedStroke) {
-    if (StyledStrokeData::StrokeIsDashed(width, pen_style)) {
-      // When the length of the line is an odd multiple of the width, things
-      // work well because we get dots at each end of the line, but if the
-      // length is anything else, we get gaps or partial dots at the end of the
-      // line. Fix that by explicitly enforcing full dots at the ends of lines.
-      // Note that we don't enforce end points when it's text line as enforcing
-      // is to improve border line quality.
-      if (!is_text_line) {
-        EnforceDotsAtEndpoints(*this, p1, p2, length, width, flags,
-                               is_vertical_line, auto_dark_mode);
-      }
-    } else {
-      // We draw thick dotted lines with 0 length dash strokes and round
-      // endcaps, producing circles. The endcaps extend beyond the line's
-      // endpoints, so move the start and end in.
-      if (is_vertical_line) {
-        p1.set_y(p1.y() + width / 2.f);
-        p2.set_y(p2.y() - width / 2.f);
-      } else {
-        p1.set_x(p1.x() + width / 2.f);
-        p2.set_x(p2.x() - width / 2.f);
-      }
-    }
-  }
-
-  AdjustLineToPixelBoundaries(p1, p2, width);
-  DrawLine(p1, p2, flags, auto_dark_mode);
+void GraphicsContext::SetPrintingInternalHeadersAndFooters(
+    bool printing_internal_headers_and_footers) {
+  printing_internal_headers_and_footers_ =
+      printing_internal_headers_and_footers;
 }
 
 void GraphicsContext::DrawText(const Font& font,
@@ -553,47 +388,27 @@ void GraphicsContext::DrawText(const Font& font,
   });
 }
 
-template <typename TextPaintInfo>
-void GraphicsContext::DrawEmphasisMarksInternal(
-    const Font& font,
-    const TextPaintInfo& text_info,
-    const AtomicString& mark,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawEmphasisMarks(const Font& font,
+                                        const TextFragmentPaintInfo& text_info,
+                                        const AtomicString& mark,
+                                        const gfx::PointF& point,
+                                        const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
     font.DrawEmphasisMarks(canvas_, text_info, mark, point,
                            DarkModeFlags(this, auto_dark_mode, flags));
   });
 }
 
-void GraphicsContext::DrawEmphasisMarks(const Font& font,
-                                        const TextRunPaintInfo& text_info,
-                                        const AtomicString& mark,
-                                        const gfx::PointF& point,
-                                        const AutoDarkMode& auto_dark_mode) {
-  DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
-}
-
-void GraphicsContext::DrawEmphasisMarks(const Font& font,
-                                        const TextFragmentPaintInfo& text_info,
-                                        const AtomicString& mark,
-                                        const gfx::PointF& point,
-                                        const AutoDarkMode& auto_dark_mode) {
-  DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
-}
-
-void GraphicsContext::DrawBidiText(
-    const Font& font,
-    const TextRunPaintInfo& run_info,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode,
-    Font::CustomFontNotReadyAction custom_font_not_ready_action) {
+void GraphicsContext::DrawBidiText(const Font& font,
+                                   const TextRun& run,
+                                   const gfx::PointF& point,
+                                   const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
-    if (font.DrawBidiText(canvas_, run_info, point,
-                          custom_font_not_ready_action,
-                          DarkModeFlags(this, auto_dark_mode, flags),
-                          printing_ ? Font::DrawType::kGlyphsAndClusters
-                                    : Font::DrawType::kGlyphsOnly)) {
+    if (PlainTextPainter::Shared().DrawWithBidiReorder(
+            run, 0, run.length(), font, Font::kDoNotPaintIfFontNotReady,
+            *canvas_, point, DarkModeFlags(this, auto_dark_mode, flags),
+            printing_ ? Font::DrawType::kGlyphsAndClusters
+                      : Font::DrawType::kGlyphsOnly)) {
       paint_controller_.SetTextPainted();
     }
   });
@@ -701,13 +516,13 @@ cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
   InterpolationQuality resampling;
   if (printing_) {
     resampling = kInterpolationNone;
-  } else if (image.CurrentFrameIsLazyDecoded()) {
-    resampling = kInterpolationDefault;
+  } else if (image.IsLazyDecoded()) {
+    resampling = GetDefaultInterpolationQuality();
   } else {
     resampling = ComputeInterpolationQuality(
         SkScalarToFloat(src.width()), SkScalarToFloat(src.height()),
         SkScalarToFloat(dest.width()), SkScalarToFloat(dest.height()),
-        image.CurrentFrameIsComplete());
+        image.FirstFrameIsComplete());
 
     if (resampling == kInterpolationNone) {
       // FIXME: This is to not break tests (it results in the filter bitmap flag
@@ -826,6 +641,27 @@ void GraphicsContext::FillRect(const gfx::RectF& rect,
   DrawRect(gfx::RectFToSkRect(rect), flags, auto_dark_mode);
 }
 
+void GraphicsContext::FillContouredRect(const ContouredRect& crect,
+                                        const Color& color,
+                                        const AutoDarkMode& auto_dark_mode) {
+  if (crect.HasRoundCurvature()) {
+    FillRoundedRect(crect.AsRoundedRect(), color, auto_dark_mode);
+    return;
+  }
+  const cc::PaintFlags& fill_flags = ImmutableState()->FillFlags();
+  Path path = crect.GetPath();
+  const SkColor4f sk_color = color.toSkColor4f();
+  if (sk_color == fill_flags.getColor4f()) {
+    DrawPath(path.GetSkPath(), fill_flags, auto_dark_mode);
+    return;
+  }
+
+  cc::PaintFlags flags = fill_flags;
+  flags.setColor(sk_color);
+
+  DrawPath(path.GetSkPath(), flags, auto_dark_mode);
+}
+
 void GraphicsContext::FillRoundedRect(const FloatRoundedRect& rrect,
                                       const Color& color,
                                       const AutoDarkMode& auto_dark_mode) {
@@ -925,16 +761,25 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
                      DarkModeFlags(this, auto_dark_mode, stroke_flags));
 }
 
-void GraphicsContext::FillRectWithRoundedHole(
+void GraphicsContext::FillRectWithContouredHole(
     const gfx::RectF& rect,
-    const FloatRoundedRect& rounded_hole_rect,
+    const ContouredRect& contoured_hole_rect,
     const Color& color,
     const AutoDarkMode& auto_dark_mode) {
   cc::PaintFlags flags(ImmutableState()->FillFlags());
   flags.setColor(color.toSkColor4f());
-  canvas_->drawDRRect(SkRRect::MakeRect(gfx::RectFToSkRect(rect)),
-                      SkRRect(rounded_hole_rect),
-                      DarkModeFlags(this, auto_dark_mode, flags));
+  const DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
+  if (contoured_hole_rect.HasRoundCurvature()) {
+    canvas_->drawDRRect(SkRRect::MakeRect(gfx::RectFToSkRect(rect)),
+                        SkRRect(contoured_hole_rect.AsRoundedRect()),
+                        dark_mode_flags);
+  } else {
+    SkPath path;
+    CHECK(Op(SkPath::Rect(gfx::RectFToSkRect(rect)),
+             contoured_hole_rect.GetPath().GetSkPath(), kDifference_SkPathOp,
+             &path));
+    canvas_->drawPath(path, dark_mode_flags);
+  }
 }
 
 void GraphicsContext::FillEllipse(const gfx::RectF& ellipse,
@@ -963,36 +808,35 @@ void GraphicsContext::StrokeRect(const gfx::RectF& rect,
   } else if (valid_w || valid_h) {
     // we are expected to respect the lineJoin, so we can't just call
     // drawLine -- we have to create a path that doubles back on itself.
-    SkPath path;
-    path.moveTo(r.fLeft, r.fTop);
-    path.lineTo(r.fRight, r.fBottom);
-    path.close();
+    const SkPath path = SkPathBuilder()
+                            .moveTo(r.fLeft, r.fTop)
+                            .lineTo(r.fRight, r.fBottom)
+                            .close()
+                            .detach();
     DrawPath(path, flags, auto_dark_mode);
   }
 }
 
-void GraphicsContext::ClipRoundedRect(const FloatRoundedRect& rrect,
-                                      SkClipOp clip_op,
-                                      AntiAliasingMode should_antialias) {
-  if (!rrect.IsRounded()) {
-    ClipRect(gfx::RectFToSkRect(rrect.Rect()), should_antialias, clip_op);
+void GraphicsContext::ClipContouredRect(const ContouredRect& contoured_rect,
+                                        SkClipOp clip_op,
+                                        AntiAliasingMode should_antialias) {
+  if (!contoured_rect.IsRounded()) {
+    ClipRect(gfx::RectFToSkRect(contoured_rect.Rect()), should_antialias,
+             clip_op);
     return;
   }
 
-  ClipRRect(SkRRect(rrect), should_antialias, clip_op);
+  if (contoured_rect.HasRoundCurvature()) {
+    ClipRRect(SkRRect(contoured_rect.AsRoundedRect()), should_antialias,
+              clip_op);
+    return;
+  }
+
+  ClipPath(contoured_rect.GetPath().GetSkPath(), should_antialias, clip_op);
 }
 
-void GraphicsContext::ClipOut(const Path& path_to_clip) {
-  // Use const_cast and temporarily toggle the inverse fill type instead of
-  // copying the path.
-  SkPath& path = const_cast<SkPath&>(path_to_clip.GetSkPath());
-  path.toggleInverseFillType();
-  ClipPath(path, kAntiAliased);
-  path.toggleInverseFillType();
-}
-
-void GraphicsContext::ClipOutRoundedRect(const FloatRoundedRect& rect) {
-  ClipRoundedRect(rect, SkClipOp::kDifference);
+void GraphicsContext::ClipOutContouredRect(const ContouredRect& rect) {
+  ClipContouredRect(rect, SkClipOp::kDifference);
 }
 
 void GraphicsContext::ClipRect(const SkRect& rect,
@@ -1016,24 +860,18 @@ void GraphicsContext::ClipRRect(const SkRRect& rect,
   canvas_->clipRRect(rect, op, aa == kAntiAliased);
 }
 
-void GraphicsContext::Rotate(float angle_in_radians) {
-  DCHECK(canvas_);
-  canvas_->rotate(
-      WebCoreFloatToSkScalar(angle_in_radians * (180.0f / 3.14159265f)));
-}
-
 void GraphicsContext::Translate(float x, float y) {
   DCHECK(canvas_);
 
   if (!x && !y)
     return;
 
-  canvas_->translate(WebCoreFloatToSkScalar(x), WebCoreFloatToSkScalar(y));
+  canvas_->translate(ClampNonFiniteToZero(x), ClampNonFiniteToZero(y));
 }
 
 void GraphicsContext::Scale(float x, float y) {
   DCHECK(canvas_);
-  canvas_->scale(WebCoreFloatToSkScalar(x), WebCoreFloatToSkScalar(y));
+  canvas_->scale(ClampNonFiniteToZero(x), ClampNonFiniteToZero(y));
 }
 
 void GraphicsContext::SetURLForRect(const KURL& link,
@@ -1069,28 +907,7 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
 }
 
 void GraphicsContext::ConcatCTM(const AffineTransform& affine) {
-  Concat(AffineTransformToSkM44(affine));
-}
-
-void GraphicsContext::AdjustLineToPixelBoundaries(gfx::PointF& p1,
-                                                  gfx::PointF& p2,
-                                                  float stroke_width) {
-  // For odd widths, we add in 0.5 to the appropriate x/y so that the float
-  // arithmetic works out.  For example, with a border width of 3, painting will
-  // pass us (y1+y2)/2, e.g., (50+53)/2 = 103/2 = 51 when we want 51.5.  It is
-  // always true that an even width gave us a perfect position, but an odd width
-  // gave us a position that is off by exactly 0.5.
-  if (static_cast<int>(stroke_width) % 2) {  // odd
-    if (p1.x() == p2.x()) {
-      // We're a vertical line.  Adjust our x.
-      p1.set_x(p1.x() + 0.5f);
-      p2.set_x(p2.x() + 0.5f);
-    } else {
-      // We're a horizontal line. Adjust our y.
-      p1.set_y(p1.y() + 0.5f);
-      p2.set_y(p2.y() + 0.5f);
-    }
-  }
+  Concat(affine.ToSkM44());
 }
 
 }  // namespace blink

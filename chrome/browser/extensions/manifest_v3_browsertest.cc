@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
@@ -27,12 +26,12 @@ namespace extensions {
 
 class ManifestV3BrowserTest : public ExtensionBrowserTest {
  public:
-  ManifestV3BrowserTest() {}
+  ManifestV3BrowserTest() = default;
 
   ManifestV3BrowserTest(const ManifestV3BrowserTest&) = delete;
   ManifestV3BrowserTest& operator=(const ManifestV3BrowserTest&) = delete;
 
-  ~ManifestV3BrowserTest() override {}
+  ~ManifestV3BrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
@@ -105,8 +104,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
       embedded_test_server()->GetURL("example.com", "/simple.html")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  EXPECT_EQ(u"My New Title",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"My New Title", GetActiveWebContents()->GetTitle());
 }
 
 // A simple end-to-end test exercising the new action API in Manifest V3.
@@ -176,8 +174,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, SynthesizedAction) {
       ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);
   ASSERT_TRUE(action);
   EXPECT_FALSE(action->GetIsVisible(ExtensionAction::kDefaultTabId));
-  int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 

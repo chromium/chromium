@@ -6,6 +6,7 @@
 
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/mock_media_notification_provider.h"
 #include "ash/system/status_area_widget.h"
@@ -15,7 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 using ::testing::_;
 
@@ -34,6 +37,7 @@ class MediaTrayTest : public AshTestBase {
   }
 
   void TearDown() override {
+    media_tray_ = nullptr;
     provider_.reset();
     AshTestBase::TearDown();
   }
@@ -55,6 +59,10 @@ class MediaTrayTest : public AshTestBase {
     return media_tray_->tray_bubble_wrapper_for_testing();
   }
 
+  std::u16string GetAccessibleNameForBubble() {
+    return media_tray_->GetAccessibleNameForBubble();
+  }
+
   StatusAreaWidget* status_area_widget() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget();
   }
@@ -67,7 +75,7 @@ class MediaTrayTest : public AshTestBase {
 
  private:
   std::unique_ptr<MockMediaNotificationProvider> provider_;
-  raw_ptr<MediaTray, DanglingUntriaged> media_tray_;
+  raw_ptr<MediaTray> media_tray_;
 };
 
 TEST_F(MediaTrayTest, MediaTrayVisibilityTest) {
@@ -252,6 +260,27 @@ TEST_F(MediaTrayTest, CloseBubbleIsNoopWhenNoBubble) {
   // `OnBubbleClosing()` should not be called when there is no bubble to close.
   EXPECT_CALL(*provider(), OnBubbleClosing).Times(0);
   media_tray()->CloseBubble();
+}
+
+TEST_F(MediaTrayTest, AccessibleNames) {
+  {
+    ui::AXNodeData node_data;
+    media_tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
+  }
+
+  media_tray()->ShowBubble();
+  ASSERT_TRUE(media_tray()->GetBubbleView());
+
+  {
+    ui::AXNodeData node_data;
+    media_tray()->GetBubbleView()->GetViewAccessibility().GetAccessibleNodeData(
+        &node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              GetAccessibleNameForBubble());
+  }
 }
 
 }  // namespace ash

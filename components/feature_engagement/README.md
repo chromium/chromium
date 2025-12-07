@@ -74,7 +74,7 @@ In addition, since each feature might have preconditions that must be met within
 the time window configured for the experiment, the frontend needs to inform the
 backend whenever such events happen.
 
-To ensure that it is possible to use whether a feature has been used or not as
+To ensure that it is possible to know whether a feature has been used or not as
 input to the algorithm to decide whether to show IPH and for tracking purposes,
 the frontend needs to inform whenever the feature has been used.
 
@@ -119,7 +119,7 @@ of the constant should be of the form:
 
 1.  `kIPH` prefix
 1.  Your unique CamelCased name, for example `GoatTeleportation`.
-1.  `Feature` suffix.
+1.  `Feature` variant (suffix).
 
 The example listed above would end up as `kIPHGoatTeleportationFeature`.
 
@@ -159,7 +159,7 @@ you would have to add it to the following places:
 1.  `//components/feature_engagement/public/feature_constants.h`:
 
     ```c++
-    BASE_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
+    FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
     ```
 
 1.  `//components/feature_engagement/public/feature_list.cc`:
@@ -186,19 +186,19 @@ configuration:
     *   The variant name must match the `base::Feature` `name` member of your
         feature.
 2.  Add feature to the actions file at: `//tools/metrics/actions/actions.xml`.
-    *   The suffix must match the `base::Feature` `name` member with `IPH_`
-        stripped.
-    *   Find the `<action-suffix>` entry at the end of the file, where the
-        following `<affected-action>`s are listed:
+    *   In the `<variants name="InProductHelp_Type">` element, add a new
+        `<variant>`. These variants are used by the following actions:
         *   `InProductHelp.NotifyEvent.IPH`
         *   `InProductHelp.NotifyUsedEvent.IPH`
         *   `InProductHelp.ShouldTriggerHelpUI.IPH`
         *   `InProductHelp.ShouldTriggerHelpUIResult.NotTriggered.IPH`
         *   `InProductHelp.ShouldTriggerHelpUIResult.Triggered.IPH`
         *   `InProductHelp.ShouldTriggerHelpUIResult.WouldHaveTriggered.IPH`
-    *   Add an alphebetically sorted entry to the list of `<suffix>`es like:
-        `<suffix name="GoatTeleportationFeature" label="For goat teleportation
-        feature."/>`
+    *   The `name` attribute must be the `base::Feature` `name` member of
+        your feature, with `IPH` stripped and an `_` prepended.
+    *   Keep the list sorted alphabetically by name.
+    *   For a feature with name `IPH_GoatTeleportation` you would add:
+        `<variant name="_GoatTeleportation" summary="For the goat teleportation feature."/>`
 
 ### Using the feature_engagement::Tracker
 
@@ -1007,7 +1007,7 @@ The configuration will look like this:
 In `//components/feature_engagement/public/feature_constants.h`:
 
 ```c++
-BASE_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
 ```
 
 In `//components/feature_engagement/public/event_constants.h`

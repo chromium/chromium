@@ -65,8 +65,8 @@ void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
 }
 
-void NetworkScreenHandler::SetQuickStartEnabled() {
-  CallExternalAPI("setQuickStartVisible");
+void NetworkScreenHandler::SetQuickStartEntryPointVisibility(bool visible) {
+  CallExternalAPI("setQuickStartEntryPointVisibility", visible);
 }
 
 base::WeakPtr<NetworkScreenView> NetworkScreenHandler::AsWeakPtr() {

@@ -8,13 +8,15 @@
 
 #include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace google_apis::classroom {
 
 using ::base::JSONReader;
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsEmptyResponse) {
-  auto raw_students = JSONReader::Read("{}");
+  auto raw_students =
+      JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   auto students = Students::CreateFrom(raw_students.value());
@@ -24,7 +26,8 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsEmptyResponse) {
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
-  const auto raw_students = JSONReader::Read(R"(
+  const auto raw_students =
+      JSONReader::Read(R"(
       {
          "students":[
             {
@@ -33,7 +36,8 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
                   "name":{
                      "fullName":"Student1 full"
                   },
-                  "emailAddress":"student1@foo.com"
+                  "emailAddress":"student1@foo.com",
+                  "photoUrl":"//s1"
                }
             },
             {
@@ -42,11 +46,13 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
                   "name":{
                      "fullName":"Student2 full"
                   },
-                  "emailAddress":"student2@foo.com"
+                  "emailAddress":"student2@foo.com",
+                  "photoUrl":"//s2"
                }
             }
          ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   const auto students = Students::CreateFrom(raw_students.value());
@@ -59,20 +65,24 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
             "Student1 full");
   EXPECT_EQ(students->items().at(0)->profile().email_address(),
             "student1@foo.com");
+  EXPECT_EQ(students->items().at(0)->profile().photo_url(), GURL("https://s1"));
 
   EXPECT_EQ(students->items().at(1)->profile().id(), "student-2");
   EXPECT_EQ(students->items().at(1)->profile().name().full_name(),
             "Student2 full");
   EXPECT_EQ(students->items().at(1)->profile().email_address(),
             "student2@foo.com");
+  EXPECT_EQ(students->items().at(1)->profile().photo_url(), GURL("https://s2"));
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsNextPageToken) {
-  const auto raw_students = JSONReader::Read(R"(
+  const auto raw_students =
+      JSONReader::Read(R"(
       {
         "students": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   const auto students = Students::CreateFrom(raw_students.value());
@@ -81,11 +91,13 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsNextPageToken) {
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, DoesNotCrashOnUnexpectedResponse) {
-  const auto raw_students = JSONReader::Read(R"(
+  const auto raw_students =
+      JSONReader::Read(R"(
       {
         "students": [{"id": []}],
         "nextPageToken": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   const auto students = Students::CreateFrom(raw_students.value());

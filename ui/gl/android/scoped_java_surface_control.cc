@@ -73,3 +73,5 @@ void ScopedJavaSurfaceControl::DestroyIfNeeded() {
 }
 
 }  // namespace gl
+
+DEFINE_JNI(ScopedJavaSurfaceControl)

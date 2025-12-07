@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
-var intersect = require('platformKeys.utils').intersect;
-var keyModule = require('platformKeys.Key');
-var Key = keyModule.Key;
-var KeyType = keyModule.KeyType;
-var KeyUsage = keyModule.KeyUsage;
+const utils = require('utils');
+const intersect = require('platformKeys.utils').intersect;
+const keyModule = require('platformKeys.Key');
+const Key = keyModule.Key;
+const KeyType = keyModule.KeyType;
+const KeyUsage = keyModule.KeyUsage;
 
 /**
  * Implementation of WebCrypto.CryptoKeyPair used in enterprise.platformKeys.
@@ -18,12 +18,15 @@ var KeyUsage = keyModule.KeyUsage;
  * @constructor
  */
 function KeyPairImpl(keyIdentifier, algorithm, usages) {
+  const allowedPublicKeyAlgorithms = [KeyUsage.verify];
+  const allowedPrivateKeyAlgorithms = [KeyUsage.sign, KeyUsage.unwrapKey];
+
   this.publicKey = new Key(
       KeyType.public, keyIdentifier, algorithm,
-      intersect([KeyUsage.verify], usages), /*extractable=*/ true);
+      intersect(allowedPublicKeyAlgorithms, usages), /*extractable=*/ true);
   this.privateKey = new Key(
       KeyType.private, keyIdentifier, algorithm,
-      intersect([KeyUsage.sign], usages), /*extractable=*/ false);
+      intersect(allowedPrivateKeyAlgorithms, usages), /*extractable=*/ false);
 }
 $Object.setPrototypeOf(KeyPairImpl.prototype, null);
 

@@ -15,6 +15,10 @@
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/common/content_export.h"
 
+namespace attribution_reporting {
+class AttributionScopesData;
+}
+
 namespace base {
 class Time;
 class TimeDelta;
@@ -63,8 +67,8 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   AttributionResolverDelegateImpl& operator=(
       const AttributionResolverDelegateImpl&) = delete;
   AttributionResolverDelegateImpl(AttributionResolverDelegateImpl&&) = delete;
-  AttributionResolverDelegateImpl& operator=(AttributionResolverDelegateImpl&&) =
-      delete;
+  AttributionResolverDelegateImpl& operator=(
+      AttributionResolverDelegateImpl&&) = delete;
   ~AttributionResolverDelegateImpl() override;
 
   // AttributionResolverDelegate:
@@ -75,17 +79,19 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
+  base::TimeDelta GetDeleteExpiredOsRegistrationsFrequency() const override;
   base::Uuid NewReportID() const override;
   std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
-  std::optional<double> GetRandomizedResponseRate(
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) override;
+      const attribution_reporting::TriggerDataSet&,
+      const attribution_reporting::EventReportWindows&,
+      attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon,
+      const std::optional<attribution_reporting::AttributionScopesData>&)
+      override;
   bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig)
@@ -93,8 +99,8 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
 
  protected:
   AttributionResolverDelegateImpl(AttributionNoiseMode noise_mode,
-                                 AttributionDelayMode delay_mode,
-                                 const AttributionConfig& config);
+                                  AttributionDelayMode delay_mode,
+                                  const AttributionConfig& config);
 
  private:
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);

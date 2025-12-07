@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace ui {
 
@@ -20,7 +20,7 @@ COMPONENT_EXPORT(UI_BASE_EMOJI) bool IsEmojiPanelSupported();
 // Invokes the commands to show the Emoji Panel.
 COMPONENT_EXPORT(UI_BASE_EMOJI) void ShowEmojiPanel();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Invokes the commands to show the Emoji Panel in tablet mode (ChromeOS only).
 COMPONENT_EXPORT(UI_BASE_EMOJI) void ShowTabletModeEmojiPanel();
 
@@ -54,7 +54,7 @@ void SetShowEmojiKeyboardCallback(EmojiKeyboardCallback callback);
 // Sets a callback to show the emoji panel in tablet mode (ChromeOS only).
 COMPONENT_EXPORT(UI_BASE_EMOJI)
 void SetTabletModeShowEmojiKeyboardCallback(base::RepeatingClosure callback);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
 

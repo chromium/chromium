@@ -10,11 +10,9 @@
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
-#include "components/memory_system/buildflags.h"
 #include "components/memory_system/memory_system_features.h"
 #include "components/memory_system/parameters.h"
 #include "partition_alloc/buildflags.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
 #include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
@@ -284,17 +282,22 @@ bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
     const DispatcherParameters& dispatcher_parameters) {
-#if BUILDFLAG(FORCE_ALLOCATION_TRACE_RECORDER)
-  return true;
-#else
+  if (!base::FeatureList::IsEnabled(features::kAllocationTraceRecorder)) {
+    return false;
+  }
+
+  if (features::kAllocationTraceRecorderForceAllProcesses.Get()) {
+    // Note: Force enable Allocation Trace Recorder in all processes, even if
+    // MTE (Memory Tagging Extension) is not present or is unavailable.
+    return true;
+  }
+
   switch (dispatcher_parameters.allocation_trace_recorder_inclusion) {
     case DispatcherParameters::AllocationTraceRecorderInclusion::kDynamic:
-      return base::CPU::GetInstanceNoAllocation().has_mte() &&
-             base::FeatureList::IsEnabled(features::kAllocationTraceRecorder);
+      return base::CPU::GetInstanceNoAllocation().has_mte();
     case DispatcherParameters::AllocationTraceRecorderInclusion::kIgnore:
       return false;
   }
-#endif
 }
 #endif
 

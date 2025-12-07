@@ -4,10 +4,9 @@
 
 #include "ui/base/ime/dummy_text_input_client.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -85,6 +84,19 @@ gfx::Rect DummyTextInputClient::GetSelectionBoundingBox() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
+
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> DummyTextInputClient::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  return std::nullopt;
+}
+
+std::optional<size_t> DummyTextInputClient::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& screen_point_in_dips,
+    IndexFromPointFlags flags) const {
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool DummyTextInputClient::GetCompositionCharacterBounds(
     size_t index,
@@ -210,11 +222,9 @@ bool DummyTextInputClient::AddGrammarFragments(
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void DummyTextInputClient::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {}
-#endif
 
 #if BUILDFLAG(IS_WIN)
 void DummyTextInputClient::SetActiveCompositionForAccessibility(

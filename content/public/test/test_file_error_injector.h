@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
-#include "url/gurl.h"
 
 namespace content {
 

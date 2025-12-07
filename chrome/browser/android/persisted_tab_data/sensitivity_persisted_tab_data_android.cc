@@ -5,7 +5,7 @@
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 
 #include "chrome/browser/android/persisted_tab_data/sensitivity_data.pb.h"
-#include "components/search_engines/template_url_service.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 
 SensitivityPersistedTabDataAndroid::SensitivityPersistedTabDataAndroid(
     TabAndroid* tab_android)
@@ -38,15 +38,13 @@ void SensitivityPersistedTabDataAndroid::From(
     TabAndroid* tab_android,
     PersistedTabDataAndroid::FromCallback from_callback) {
   PersistedTabDataAndroid::From(
-      tab_android->GetWeakPtr(),
+      tab_android->GetTabAndroidWeakPtr(),
       SensitivityPersistedTabDataAndroid::UserDataKey(),
-      base::BindOnce(
-          [](TabAndroid* tab_android)
-              -> std::unique_ptr<PersistedTabDataAndroid> {
-            return std::make_unique<SensitivityPersistedTabDataAndroid>(
-                tab_android);
-          },
-          tab_android),
+      base::BindOnce([](TabAndroid* tab_android)
+                         -> std::unique_ptr<PersistedTabDataAndroid> {
+        return std::make_unique<SensitivityPersistedTabDataAndroid>(
+            tab_android);
+      }),
       std::move(from_callback));
 }
 
@@ -54,9 +52,10 @@ std::unique_ptr<const std::vector<uint8_t>>
 SensitivityPersistedTabDataAndroid::Serialize() {
   sensitivity::SensitivityData sensitivity_data;
   sensitivity_data.set_is_sensitive(is_sensitive_);
+  sensitivity_data.set_sensitivity_score(sensitivity_score_);
   std::unique_ptr<std::vector<uint8_t>> data =
-      std::make_unique<std::vector<uint8_t>>(sensitivity_data.ByteSize());
-  sensitivity_data.SerializeToArray(data->data(), sensitivity_data.ByteSize());
+      std::make_unique<std::vector<uint8_t>>(sensitivity_data.ByteSizeLong());
+  sensitivity_data.SerializeToArray(data->data(), data->size());
   return data;
 }
 
@@ -67,18 +66,29 @@ void SensitivityPersistedTabDataAndroid::Deserialize(
     sensitivity_data.Clear();
   }
   is_sensitive_ = sensitivity_data.is_sensitive();
+  sensitivity_score_ = sensitivity_data.has_sensitivity_score()
+                           ? sensitivity_data.sensitivity_score()
+                           : -1.0;
 }
 
 void SensitivityPersistedTabDataAndroid::OnPageContentAnnotated(
-    const GURL& url,
+    const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
-  if (tab_->GetURL() != url) {
+  if (tab_->GetURL() != visit.url) {
     return;
   }
-  // Setting the cutoff value to 0.5 for binary classification of data
-  // sensitivity. This value ensures that we neither overclassify nor
-  // underclassify sensitive data
-  set_is_sensitive(result.GetContentVisibilityScore() < 0.5);
+  set_sensitivity_score(result.GetContentVisibilityScore());
+
+  if (!tab_->web_contents()) {
+    return;
+  }
+  content_capture::OnscreenContentProvider* onscreen_content_provider =
+      content_capture::OnscreenContentProvider::FromWebContents(
+          tab_->web_contents());
+  if (onscreen_content_provider) {
+    onscreen_content_provider->DidUpdateSensitivityScore(
+        result.GetContentVisibilityScore());
+  }
 }
 
 void SensitivityPersistedTabDataAndroid::ExistsForTesting(

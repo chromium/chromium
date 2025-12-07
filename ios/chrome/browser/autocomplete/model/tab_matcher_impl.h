@@ -6,19 +6,19 @@
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_TAB_MATCHER_IMPL_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/tab_matcher.h"
+#import "components/omnibox/browser/tab_matcher.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 class TabMatcherImpl : public TabMatcher {
  public:
-  explicit TabMatcherImpl(ChromeBrowserState* browser_state);
+  explicit TabMatcherImpl(ProfileIOS* profile);
 
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_TAB_MATCHER_IMPL_H_

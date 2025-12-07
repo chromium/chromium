@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

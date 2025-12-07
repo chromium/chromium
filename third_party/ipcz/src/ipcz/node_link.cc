@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ipcz/node_link.h"
-
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -21,6 +19,7 @@
 #include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "ipcz/node_connector.h"
+#include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
@@ -33,23 +32,9 @@
 #include "util/log.h"
 #include "util/ref_counted.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
-
-namespace {
-
-template <typename T>
-FragmentRef<T> MaybeAdoptFragmentRef(NodeLinkMemory& memory,
-                                     const FragmentDescriptor& descriptor) {
-  if (descriptor.is_null() || descriptor.size() < sizeof(T) ||
-      descriptor.offset() % 8 != 0) {
-    return {};
-  }
-
-  return memory.AdoptFragmentRef<T>(memory.GetFragment(descriptor));
-}
-
-}  // namespace
 
 // static
 Ref<NodeLink> NodeLink::CreateActive(Ref<Node> node,
@@ -144,6 +129,7 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
     return nullptr;
   }
 
+  DVLOG(4) << "Adding sublink " << sublink;
   auto [it, added] = sublinks_.try_emplace(
       sublink, Sublink(std::move(link), std::move(router)));
   if (!added) {
@@ -156,7 +142,9 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
 
 void NodeLink::RemoveRemoteRouterLink(SublinkId sublink) {
   absl::MutexLock lock(&mutex_);
+  DVLOG(4) << "Removing RemoteRouterLink for sublink " << sublink;
   sublinks_.erase(sublink);
+  deleted_sublinks_.Insert(sublink);
 }
 
 std::optional<NodeLink::Sublink> NodeLink::GetSublink(SublinkId sublink) {
@@ -288,8 +276,9 @@ void NodeLink::RelayMessage(const NodeName& to_node, Message& message) {
   relay.v0()->destination = to_node;
   relay.v0()->data = relay.AllocateArray<uint8_t>(message.data_view().size());
   relay.v0()->padding = 0;
-  memcpy(relay.GetArrayData(relay.v0()->data), message.data_view().data(),
-         message.data_view().size());
+  IPCZ_UNSAFE_TODO(memcpy(relay.GetArrayData(relay.v0()->data),
+                          message.data_view().data(),
+                          message.data_view().size()));
   relay.v0()->driver_objects =
       relay.AppendDriverObjects(message.driver_objects());
   Transmit(relay);
@@ -358,8 +347,33 @@ void NodeLink::Transmit(Message& message) {
     return;
   }
 
-  message.header().sequence_number = GenerateOutgoingSequenceNumber();
+  message.header().node_sequence_number = GenerateOutgoingSequenceNumber();
   transport_->Transmit(message);
+}
+
+size_t NodeLink::DeletedSublinkCountForTesting() {
+  absl::MutexLock lock(&mutex_);
+  return deleted_sublinks_.Size();
+}
+
+size_t NodeLink::EarlyParcelCountForTesting() {
+  absl::MutexLock lock(&mutex_);
+  return early_parcels_for_sublink_.size();
+}
+
+void NodeLink::AcceptEarlyParcelsForSublink(SublinkId sublink_id) {
+  std::vector<std::unique_ptr<Parcel>> early_parcels;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = early_parcels_for_sublink_.find(sublink_id);
+    if (it != early_parcels_for_sublink_.end()) {
+      early_parcels.swap(it->second);
+      early_parcels_for_sublink_.erase(it);
+    }
+  }
+  for (auto& early_parcel : early_parcels) {
+    AcceptCompleteParcel(sublink_id, std::move(early_parcel));
+  }
 }
 
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
@@ -489,8 +503,12 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
   if (auto* v1 = accept.v1()) {
     remote_features = Features::Deserialize(accept, v1->remote_features);
   }
-  auto transport = MakeRefCounted<DriverTransport>(
-      accept.TakeDriverObject(accept.v0()->transport));
+  DriverObject transport_object =
+      accept.TakeDriverObject(accept.v0()->transport);
+  if (!transport_object.is_valid()) {
+    return false;
+  }
+  auto transport = MakeRefCounted<DriverTransport>(std::move(transport_object));
   node()->AcceptIntroduction(
       *this, accept.v0()->name, accept.v0()->link_side,
       accept.v0()->remote_node_type, accept.v0()->remote_protocol_version,
@@ -539,6 +557,7 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
       accept.GetArrayView<HandleType>(accept.v0()->handle_types);
   absl::Span<const RouterDescriptor> new_routers =
       accept.GetArrayView<RouterDescriptor>(accept.v0()->new_routers);
+  const SublinkId for_sublink = accept.v0()->sublink;
   auto driver_objects = accept.driver_objects();
 
   // Note that on any validation failure below, we defer rejection at least
@@ -555,7 +574,8 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
           continue;
         }
 
-        Ref<Router> new_router = Router::Deserialize(new_routers[0], *this);
+        Ref<Router> new_router =
+            Router::Deserialize(new_routers[0], *this, for_sublink);
         if (!new_router) {
           parcel_valid = false;
           continue;
@@ -608,11 +628,11 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
     return false;
   }
 
-  const SublinkId for_sublink = accept.v0()->sublink;
   auto parcel = std::make_unique<Parcel>(accept.v0()->sequence_number);
   parcel->set_num_subparcels(num_subparcels);
   parcel->set_subparcel_index(subparcel_index);
   parcel->SetObjects(std::move(objects));
+  parcel->SetEnvelope(accept.TakeEnvelope());
   if (!parcel_valid) {
     return false;
   }
@@ -629,7 +649,8 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
       return true;
     }
 
-    if (!parcel->AdoptDataFragment(WrapRefCounted(&memory()), fragment)) {
+    if (fragment.is_null() ||
+        !parcel->AdoptDataFragment(WrapRefCounted(&memory()), fragment)) {
       return false;
     }
   } else {
@@ -714,8 +735,8 @@ bool NodeLink::OnAcceptBypassLink(msg::AcceptBypassLink& accept) {
     return true;
   }
 
-  auto link_state = MaybeAdoptFragmentRef<RouterLinkState>(
-      memory(), accept.v0()->new_link_state_fragment);
+  auto link_state = memory().AdoptFragmentRefIfValid<RouterLinkState>(
+      accept.v0()->new_link_state_fragment);
   if (link_state.is_null()) {
     // Bypass links must always come with a valid fragment for their
     // RouterLinkState. If one has not been provided, that's a validation
@@ -753,8 +774,8 @@ bool NodeLink::OnBypassPeerWithLink(msg::BypassPeerWithLink& bypass) {
     return true;
   }
 
-  auto link_state = MaybeAdoptFragmentRef<RouterLinkState>(
-      memory(), bypass.v0()->new_link_state_fragment);
+  auto link_state = memory().AdoptFragmentRefIfValid<RouterLinkState>(
+      bypass.v0()->new_link_state_fragment);
   if (link_state.is_null()) {
     return false;
   }
@@ -781,6 +802,10 @@ bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {
 }
 
 bool NodeLink::OnRequestMemory(msg::RequestMemory& request) {
+  if (request.v0()->size == 0) {
+    return false;
+  }
+
   DriverMemory memory(node_->driver(), request.v0()->size);
   msg::ProvideMemory provide;
   provide.v0()->size = request.v0()->size;
@@ -834,9 +859,16 @@ void NodeLink::OnTransportError() {
 
 void NodeLink::HandleTransportError() {
   SublinkMap sublinks;
+  SubparcelTrackerMap subparcel_trackers;
+  ReferralCallbackMap pending_referrals;
+  SublinkEarlyParcelsMap early_parcels_for_sublink;
   {
     absl::MutexLock lock(&mutex_);
     sublinks.swap(sublinks_);
+    deleted_sublinks_.Clear();
+    early_parcels_for_sublink_.swap(early_parcels_for_sublink);
+    subparcel_trackers.swap(subparcel_trackers_);
+    pending_referrals.swap(pending_referrals_);
   }
 
   for (auto& [id, sublink] : sublinks) {
@@ -846,8 +878,13 @@ void NodeLink::HandleTransportError() {
     sublink.receiver->NotifyLinkDisconnected(*sublink.router_link);
   }
 
+  for (auto& [id, callback] : pending_referrals) {
+    callback(/*link=*/nullptr, /*num_portals=*/0);
+  }
+
   Ref<NodeLink> self = WrapRefCounted(this);
   node_->DropConnection(*this);
+  memory_->NotifyLinkDisconnected();
 }
 
 void NodeLink::WaitForParcelFragmentToResolve(
@@ -962,10 +999,14 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
                                     std::unique_ptr<Parcel> parcel) {
   const std::optional<Sublink> sublink = GetSublink(for_sublink);
   if (!sublink) {
-    DVLOG(4) << "Dropping " << parcel->Describe() << " at "
-             << local_node_name_.ToString() << ", arriving from "
-             << remote_node_name_.ToString() << " via unknown sublink "
-             << for_sublink;
+    absl::MutexLock lock(&mutex_);
+    if (!deleted_sublinks_.Contains(for_sublink)) {
+      DVLOG(4) << "Queuing " << parcel->Describe() << " at "
+               << local_node_name_.ToString() << ", arriving from "
+               << remote_node_name_.ToString() << " via unknown sublink "
+               << for_sublink;
+      early_parcels_for_sublink_[for_sublink].emplace_back(std::move(parcel));
+    }
     return true;
   }
 
@@ -981,6 +1022,10 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
     SubparcelTracker& tracker = it->second;
     if (inserted) {
       tracker.subparcels.resize(num_subparcels);
+    } else if (tracker.subparcels.size() != num_subparcels) {
+      // Inconsistent subparcel count expectations across subparcels. This is
+      // a validation failure.
+      return false;
     }
 
     // Note that `index` has already been validated against the expected number
@@ -1041,6 +1086,51 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
   DVLOG(4) << "Accepting outbound " << parcel->Describe() << " at "
            << sublink->router_link->Describe();
   return sublink->receiver->AcceptOutboundParcel(std::move(parcel));
+}
+
+namespace {
+
+std::chrono::time_point<std::chrono::steady_clock> TimePointNow() {
+  return std::chrono::steady_clock::now();
+}
+
+}  // namespace
+
+NodeLink::AutoClearedSublinkSet::AutoClearedSublinkSet()
+    : last_clear_time_(TimePointNow()) {}
+
+void NodeLink::AutoClearedSublinkSet::ClearExpiredIdsIfNeeded() {
+  if (current_.empty() && previous_.empty()) {
+    // Fast path to avoid measuring time ticks.
+    return;
+  }
+
+  const auto now = TimePointNow();
+  if (now - last_clear_time_ > kClearDurationMinutes) {
+    previous_.clear();
+    previous_.swap(current_);
+    last_clear_time_ = now;
+  }
+}
+
+void NodeLink::AutoClearedSublinkSet::Insert(SublinkId id) {
+  ClearExpiredIdsIfNeeded();
+  current_.insert(id);
+}
+
+bool NodeLink::AutoClearedSublinkSet::Contains(SublinkId id) {
+  ClearExpiredIdsIfNeeded();
+  return current_.contains(id) || previous_.contains(id);
+}
+
+size_t NodeLink::AutoClearedSublinkSet::Size() {
+  return previous_.size() + current_.size();
+}
+
+void NodeLink::AutoClearedSublinkSet::Clear() {
+  previous_.clear();
+  current_.clear();
+  last_clear_time_ = TimePointNow();
 }
 
 NodeLink::Sublink::Sublink(Ref<RemoteRouterLink> router_link,

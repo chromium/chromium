@@ -13,10 +13,8 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(ViewSourceBrowserAgent)
-
 ViewSourceBrowserAgent::ViewSourceBrowserAgent(Browser* browser)
-    : browser_(browser) {}
+    : BrowserUserData(browser) {}
 
 ViewSourceBrowserAgent::~ViewSourceBrowserAgent() {}
 

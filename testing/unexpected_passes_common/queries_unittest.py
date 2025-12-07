@@ -7,6 +7,7 @@ from typing import Iterable, Optional
 import unittest
 from unittest import mock
 
+# //testing imports.
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
@@ -14,6 +15,8 @@ from unexpected_passes_common import expectations
 from unexpected_passes_common import queries
 from unexpected_passes_common import unittest_utils as uu
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class HelperMethodUnittest(unittest.TestCase):
   def testStripPrefixFromBuildIdValidId(self) -> None:
@@ -37,10 +40,10 @@ class BigQueryQuerierInitUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       uu.CreateGenericQuerier(num_samples=-1)
 
-  def testInvalidNumSamples(self):
-    """Tests that the number of samples is validated."""
-    with self.assertRaises(AssertionError):
-      uu.CreateGenericQuerier(num_samples=-1)
+  def testDefaultSamples(self):
+    """Tests that the number of samples is set to a default if not provided."""
+    querier = uu.CreateGenericQuerier(num_samples=0)
+    self.assertGreater(querier._num_samples, 0)
 
 
 class GetBuilderGroupedQueryResultsUnittest(unittest.TestCase):
@@ -261,7 +264,8 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
                                 True),
     ]
 
-    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure')
+    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure',
+                                         data_types.WildcardType.NON_WILDCARD)
     expectation_map = data_types.TestExpectationMap({
         'foo':
         data_types.ExpectationBuilderMap({

@@ -15,7 +15,7 @@
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_chooser_mediator.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 #import "url/origin.h"
 
 namespace content {
@@ -74,7 +74,7 @@ void ShellBluetoothChooserIOS::OnDialogFinished(DialogClosedState state,
       event_handler_.Run(BluetoothChooserEvent::SELECTED, device_id);
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

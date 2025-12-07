@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <string>
@@ -254,10 +259,12 @@ TEST_F(AACTest, XHE_AAC) {
 
   // ADTS conversion should do nothing since xHE-AAC can't be represented with
   // only two bits for the profile.
-  int adts_header_size = 1;  // Choose a non-zero value to make sure it's set.
+
+  // Choose a non-zero value to make sure it's set.
+  size_t adts_header_size = 1;
   auto adts_buffer = aac_.CreateAdtsFromEsds(data, &adts_header_size);
   EXPECT_TRUE(adts_buffer.empty());
-  EXPECT_EQ(adts_header_size, 0);
+  EXPECT_EQ(adts_header_size, 0u);
 }
 
 TEST_F(AACTest, CreateAdtsFromEsds) {
@@ -268,7 +275,7 @@ TEST_F(AACTest, CreateAdtsFromEsds) {
 
   uint8_t packet[] = {0x00, 0x01, 0x03, 0x04};
 
-  int adts_header_size = 0;
+  size_t adts_header_size = 0;
   auto adts_packet = aac_.CreateAdtsFromEsds(packet, &adts_header_size);
 
   const size_t total_size = sizeof(packet) + adts_header_size;
@@ -278,29 +285,40 @@ TEST_F(AACTest, CreateAdtsFromEsds) {
   EXPECT_EQ(adts_header_size, kADTSHeaderMinSize);
 
   // Verify the packet data.
-  EXPECT_EQ(
-      0, memcmp(adts_packet.data() + adts_header_size, packet, sizeof(packet)));
+  EXPECT_EQ(adts_packet.subspan(adts_header_size), base::span(packet));
 
   ADTSStreamParser adts_parser;
 
   // Verify the header data.
-  int frame_size = 0;
-  int sample_rate = 0;
+  size_t frame_size = 0;
+  size_t sample_rate = 0;
   ChannelLayout channel_layout;
-  int sample_count = 0;
+  size_t sample_count = 0;
   bool metadata_frame;
   std::vector<uint8_t> extra_data;
 
-  // TODO(b/40285824): Change ParseFrameHeader to take a span instead of a
-  // `const uint8_t* data` as its first arg.
-  adts_parser.ParseFrameHeader(adts_packet.data(), total_size, &frame_size,
+  adts_parser.ParseFrameHeader(adts_packet.first(total_size), &frame_size,
                                &sample_rate, &channel_layout, &sample_count,
                                &metadata_frame, &extra_data);
 
-  EXPECT_EQ(frame_size, static_cast<int>(total_size));
-  EXPECT_EQ(sample_rate, 44100);
+  EXPECT_EQ(frame_size, total_size);
+  EXPECT_EQ(sample_rate, 44100u);
   EXPECT_EQ(channel_layout, ChannelLayout::CHANNEL_LAYOUT_STEREO);
-  EXPECT_EQ(0, memcmp(extra_data.data(), buffer, extra_data.size()));
+  EXPECT_EQ(base::span(extra_data), base::span(buffer));
+}
+
+TEST_F(AACTest, FitsInAdts_ExplicitFrequencyReturnsFalse) {
+  // Corresponds to AAC-LC, explicit 22050Hz, Stereo.
+  // Audio Object Type (AOT) = 2 (AAC-LC) -> 5 bits: 00010
+  // Sampling Frequency Index (SFI) = 15 (escape value) -> 4 bits: 1111
+  // Sampling Frequency = 22050 -> 24 bits: 000000000101011000100010
+  // Channel Configuration = 2 (Stereo) -> 4 bits: 0010
+  // Combined: 00010111 10000000 00101011 00010001 00010000
+  uint8_t buffer[] = {0x17, 0x80, 0x2b, 0x11, 0x10};
+  std::vector<uint8_t> data(buffer, buffer + sizeof(buffer));
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_FALSE(aac_.fits_in_adts());
 }
 
 }  // namespace media::mp4

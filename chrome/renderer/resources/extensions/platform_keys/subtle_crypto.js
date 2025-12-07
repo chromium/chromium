@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
-var internalAPI = getInternalApi('platformKeysInternal');
-var keyModule = require('platformKeys.Key');
-var getKeyIdentifier = keyModule.getKeyIdentifier;
-var KeyUsage = keyModule.KeyUsage;
+const utils = require('utils');
+const internalAPI = getInternalApi('platformKeysInternal');
+const keyModule = require('platformKeys.Key');
+const getKeyIdentifier = keyModule.getKeyIdentifier;
+const KeyUsage = keyModule.KeyUsage;
 
-var normalizeAlgorithm =
+const normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // This error is thrown by the internal and public API's token functions and
 // must be re-thrown by this custom binding. Keep this in sync with the C++ part
 // of this API.
-var errorInvalidToken = 'The token is not valid.';
+const errorInvalidToken = 'The token is not valid.';
 
 // The following errors are specified in WebCrypto.
 // TODO(pneubeck): These should be DOMExceptions.
@@ -39,7 +39,7 @@ function CreateOperationError() {
 function catchInvalidTokenError(reject) {
   if (bindingUtil.hasLastError() &&
       bindingUtil.getLastErrorMessage() === errorInvalidToken) {
-    var error = chrome.runtime.lastError;
+    const error = chrome.runtime.lastError;
     bindingUtil.clearLastError();
     reject(error);
     return true;
@@ -77,13 +77,13 @@ function SubtleCryptoImpl(tokenId, softwareBacked) {
 $Object.setPrototypeOf(SubtleCryptoImpl.prototype, null);
 
 SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
-  var subtleCrypto = this;
+  const subtleCrypto = this;
   return new Promise(function(resolve, reject) {
     if (key.type !== 'private' || key.usages.indexOf(KeyUsage.sign) === -1) {
       throw CreateInvalidAccessError();
     }
 
-    var normalizedAlgorithmParameters = normalizeAlgorithm(algorithm, 'Sign');
+    const normalizedAlgorithmParameters = normalizeAlgorithm(algorithm, 'Sign');
     if (!normalizedAlgorithmParameters) {
       // TODO(pneubeck): It's not clear from the WebCrypto spec which error to
       // throw here.
@@ -99,8 +99,8 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
       throw CreateNotSupportedError();
     }
 
-    var algorithmName = normalizedAlgorithmParameters.name;
-    var hashAlgorithmName;
+    const algorithmName = normalizedAlgorithmParameters.name;
+    let hashAlgorithmName;
     if (algorithmName === 'RSASSA-PKCS1-v1_5') {
       // The hash algorithm when signing with RSASSA-PKCS1-v1_5 is specified at
       // key generation in RsaHashedKeyGenParameters. For more information about
@@ -115,8 +115,8 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
     }
     // Create an ArrayBuffer that equals the dataView. Note that dataView.buffer
     // might contain more data than dataView.
-    var data = dataView.buffer.slice(dataView.byteOffset,
-                                     dataView.byteOffset + dataView.byteLength);
+    const data = dataView.buffer.slice(
+        dataView.byteOffset, dataView.byteOffset + dataView.byteLength);
     internalAPI.sign(
         subtleCrypto.tokenId, getKeyIdentifier(key),
         normalizedAlgorithmParameters.name, hashAlgorithmName, data,

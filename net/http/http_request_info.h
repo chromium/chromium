@@ -15,6 +15,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_headers.h"
@@ -57,6 +58,9 @@ struct NET_EXPORT HttpRequestInfo {
 
   // True if it is a subframe's document resource.
   bool is_subframe_document_resource = false;
+
+  // True if it is a main frame navigation.
+  bool is_main_frame_navigation = false;
 
   // Any extra request headers (including User-Agent).
   HttpRequestHeaders extra_headers;
@@ -105,6 +109,11 @@ struct NET_EXPORT HttpRequestInfo {
   // dictionaries between different frame origins.
   std::optional<url::Origin> frame_origin;
 
+  // The origin of the context which initiated this request. nullptr for
+  // browser-initiated navigations. For more info, see
+  // `URLRequest::initiator()`.
+  std::optional<url::Origin> initiator;
+
   // Idempotency of the request, which determines that if it is safe to enable
   // 0-RTT for the request. By default, 0-RTT is only enabled for safe
   // HTTP methods, i.e., GET, HEAD, OPTIONS, and TRACE. For other methods,
@@ -126,6 +135,13 @@ struct NET_EXPORT HttpRequestInfo {
   // Used to get a shared dictionary for the request. This may be null if the
   // request does not use a shared dictionary.
   SharedDictionaryGetter dictionary_getter;
+
+  // Used to notify when a reconnect-attempt may be invoked (e.g. when a
+  // connection was closed, or when the connection could not be established).
+  std::optional<ConnectionManagementConfig> connection_management_config;
+
+  // True if the page is allowed to access cookies for the request.
+  bool is_shared_resource = false;
 };
 
 }  // namespace net

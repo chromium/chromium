@@ -22,7 +22,7 @@ public class RecyclerViewMatcherUtils {
      * @return A matcher that matches RecyclerView with its adapter item count.
      */
     public static Matcher<View> adapterHasItemCount(int itemCount) {
-        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+        return new BoundedMatcher<>(RecyclerView.class) {
             @Override
             protected boolean matchesSafely(RecyclerView recyclerView) {
                 return recyclerView.getAdapter().getItemCount() == itemCount;
@@ -39,16 +39,16 @@ public class RecyclerViewMatcherUtils {
      * This view matcher matches a RecyclerView that has a view that matches the given view matcher
      * at the given adapter position.
      *
-     * First this matcher scrolls the RecyclerView to the given position and then matches with the
-     * given view matcher.
+     * <p>First this matcher scrolls the RecyclerView to the given position and then matches with
+     * the given view matcher.
      *
      * @param position The matches adapter position.
      * @param itemMatcher A view matcher to match.
      * @return A matcher that matches RecyclerView with its adapter item position and the given view
-     *         matcher.
+     *     matcher.
      */
     public static Matcher<View> atPosition(int position, Matcher<View> itemMatcher) {
-        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+        return new BoundedMatcher<>(RecyclerView.class) {
             @Override
             protected boolean matchesSafely(RecyclerView recyclerView) {
                 recyclerView.scrollToPosition(position);
@@ -74,11 +74,11 @@ public class RecyclerViewMatcherUtils {
      * @param position The adapter position.
      * @param viewHolderMatcher A view holder to match.
      * @return A matcher that matches view at adapter position and matches the given viewHolder
-     *         matcher.
+     *     matcher.
      */
     public static Matcher<View> atPositionWithViewHolder(
             int position, Matcher<RecyclerView.ViewHolder> viewHolderMatcher) {
-        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+        return new BoundedMatcher<>(RecyclerView.class) {
             @Override
             protected boolean matchesSafely(RecyclerView recyclerView) {
                 recyclerView.scrollToPosition(position);

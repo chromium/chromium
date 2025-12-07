@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import android.content.Context;
 import android.os.Handler;
@@ -35,6 +38,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingAppIdType;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingLaunchTimeStorage;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -148,6 +152,7 @@ public class BrandingCheckerUnitTest {
                 "Branding check canceled, BrandingDecision should be the test default. ",
                 BrandingDecision.TOAST,
                 callbackDelegate.getBrandingDecision());
+        assertNull("MIM data should be null", callbackDelegate.getMimData());
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
         watcher.assertExpected();
     }
@@ -218,6 +223,27 @@ public class BrandingCheckerUnitTest {
                 mStorage.get(PACKAGE_2));
     }
 
+    @Test
+    public void testMimData_fetchedViaBrandingInfo() {
+        CallbackDelegate callbackDelegate = new CallbackDelegate();
+        final String appId = "org.cities.gotham";
+        final String accountId = "batman@gmail.com";
+        var mimData = new MismatchNotificationData();
+        var appData = new MismatchNotificationData.AppUiData();
+        appData.showCount = 32;
+        appData.closeType = CloseType.ACCEPTED.getNumber();
+        appData.userActCount = 4;
+        mimData.setAppData(accountId, appId, appData);
+        mStorage.putMimData(mimData);
+
+        BrandingChecker checker = createBrandingChecker(appId, callbackDelegate);
+        checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        mainLooper().idle();
+        var fetchedAppData = callbackDelegate.getMimData().getAppData(accountId, appId);
+        assertEquals("Retrived MIM data is not correct.", appData, fetchedAppData);
+    }
+
     private BrandingChecker createBrandingChecker(
             String packageName, CallbackDelegate callbackDelegate) {
         return new BrandingChecker(
@@ -238,27 +264,35 @@ public class BrandingCheckerUnitTest {
 
     private HistogramWatcher newHistogramWatcher() {
         return HistogramWatcher.newBuilder()
-                .expectAnyRecord("CustomTabs.Branding.BrandingCheckDuration")
+                .expectAnyRecord("CustomTabs.Branding.AppIdType")
                 .build();
     }
 
     private static class CallbackDelegate extends CallbackHelper {
-        private @BrandingDecision int mBrandingDecision;
+        private BrandingInfo mBrandingInfo;
 
-        public void notifyCalled(@BrandingDecision int decision) {
-            mBrandingDecision = decision;
+        public void notifyCalled(BrandingInfo info) {
+            mBrandingInfo = info;
             notifyCalled();
         }
 
         public @BrandingDecision int getBrandingDecision() {
-            assert getCallCount() > 0;
-            return mBrandingDecision;
+            assertThat(getCallCount()).isGreaterThan(0);
+            return mBrandingInfo.getDecision();
+        }
+
+        public MismatchNotificationData getMimData() {
+            return mBrandingInfo.mimData;
         }
     }
 
     /** BrandingLaunchTimeStorage that implemented with static map. */
     static class TestBrandingStorage implements BrandingLaunchTimeStorage {
         private final Map<String, Long> mLastBrandingTime = new HashMap<>();
+
+        private MismatchNotificationData mMimData;
+        private boolean mPutLastShowTimeGlobalCalled;
+        private boolean mPutMimDataCalled;
 
         @Override
         public long get(String packageName) {
@@ -271,6 +305,35 @@ public class BrandingCheckerUnitTest {
         @Override
         public void put(String packageName, long brandingLaunchTime) {
             mLastBrandingTime.put(packageName, brandingLaunchTime);
+        }
+
+        @Override
+        public long getLastShowTimeGlobal() {
+            return 0;
+        }
+
+        @Override
+        public void putLastShowTimeGlobal(long launchTime) {
+            mPutLastShowTimeGlobalCalled = true;
+        }
+
+        @Override
+        public MismatchNotificationData getMimData() {
+            return mMimData;
+        }
+
+        @Override
+        public void putMimData(MismatchNotificationData data) {
+            mMimData = data;
+            mPutMimDataCalled = true;
+        }
+
+        public boolean putLastShowTimeGlobalCalled() {
+            return mPutLastShowTimeGlobalCalled;
+        }
+
+        public boolean putMimDataCalled() {
+            return mPutMimDataCalled;
         }
     }
 }

@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_av1.h"
 
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -33,7 +40,7 @@ class V4L2AV1Picture : public AV1Picture {
   ~V4L2AV1Picture() override = default;
 
   scoped_refptr<AV1Picture> CreateDuplicate() override {
-    return new V4L2AV1Picture(dec_surface_);
+    return base::MakeRefCounted<V4L2AV1Picture>(dec_surface_);
   }
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
@@ -246,16 +253,22 @@ struct v4l2_av1_tile_info FillTileInfo(const libgav1::TileInfo& ti) {
         base::checked_cast<uint32_t>(ti.tile_row_start[i]);
   }
 
+  // Confirmed that |kMaxTileColumns| is enough size for
+  // |width_in_sbs_minus_1| and |kMaxTileRows| is enough size for
+  // |height_in_sbs_minus_1|
+  // https://b.corp.google.com/issues/187828854#comment19
+  static_assert(
+      std::size(decltype(v4l2_ti.width_in_sbs_minus_1){}) ==
+          libgav1::kMaxTileColumns,
+      "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+      "does not match libgav1 expectation");
+  static_assert(
+      std::size(decltype(v4l2_ti.height_in_sbs_minus_1){}) ==
+          libgav1::kMaxTileRows,
+      "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+      "does not match libgav1 expectation");
+
   if (!ti.uniform_spacing) {
-    // Confirmed that |kMaxTileColumns| is enough size for
-    // |width_in_sbs_minus_1| and |kMaxTileRows| is enough size for
-    // |height_in_sbs_minus_1|
-    // https://b.corp.google.com/issues/187828854#comment19
-    static_assert(
-        std::size(decltype(v4l2_ti.width_in_sbs_minus_1){}) ==
-            libgav1::kMaxTileColumns,
-        "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
-        "does not match libgav1 expectation");
     for (size_t i = 0; i < libgav1::kMaxTileColumns; i++) {
       if (ti.tile_column_width_in_superblocks[i] >= 1) {
         v4l2_ti.width_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
@@ -263,16 +276,54 @@ struct v4l2_av1_tile_info FillTileInfo(const libgav1::TileInfo& ti) {
       }
     }
 
-    static_assert(
-        std::size(decltype(v4l2_ti.height_in_sbs_minus_1){}) ==
-            libgav1::kMaxTileRows,
-        "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
-        "does not match libgav1 expectation");
     for (size_t i = 0; i < libgav1::kMaxTileRows; i++) {
       if (ti.tile_row_height_in_superblocks[i] >= 1) {
         v4l2_ti.height_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
             ti.tile_row_height_in_superblocks[i] - 1);
       }
+    }
+  } else {
+    // libgav1 doesn't provide tile_column_width_in_superblocks and
+    // tile_row_height_in_superblocks values when uniform_spacing is set,
+    // so we have to calculate width and height of superblocks via
+    // other column/row info.
+    const uint32_t cols4x4 =
+        base::checked_cast<uint32_t>(ti.tile_column_start[ti.tile_columns]);
+    const uint32_t sb_cols = base::checked_cast<uint32_t>(ti.sb_columns);
+    const uint32_t sb_cols_64 = (cols4x4 + 15) >> 4;
+    const uint32_t sb_cols_128 = (cols4x4 + 31) >> 5;
+    uint32_t sb_shift = 0;
+    if (sb_cols_64 == sb_cols) {
+      sb_shift = 4;
+    } else {
+      DCHECK_EQ(sb_cols_128, sb_cols);
+      sb_shift = 5;
+    }
+
+    const uint32_t sb_size_mi = 1u << sb_shift;
+
+    for (size_t i = 0; i < static_cast<uint32_t>(ti.tile_columns); ++i) {
+      const uint32_t mi_start =
+          base::checked_cast<uint32_t>(ti.tile_column_start[i]);
+      const uint32_t mi_end =
+          base::checked_cast<uint32_t>(ti.tile_column_start[i + 1]);
+      const uint32_t mi_width = mi_end - mi_start;
+
+      const uint32_t sb_w = (mi_width + sb_size_mi - 1) >> sb_shift;
+      DCHECK_GE(sb_w, 1u);
+      v4l2_ti.width_in_sbs_minus_1[i] = sb_w - 1;
+    }
+
+    for (size_t i = 0; i < static_cast<uint32_t>(ti.tile_rows); ++i) {
+      const uint32_t mi_start =
+          base::checked_cast<uint32_t>(ti.tile_row_start[i]);
+      const uint32_t mi_end =
+          base::checked_cast<uint32_t>(ti.tile_row_start[i + 1]);
+      const uint32_t mi_height = mi_end - mi_start;
+
+      const uint32_t sb_h = (mi_height + sb_size_mi - 1) >> sb_shift;
+      DCHECK_GE(sb_h, 1u);
+      v4l2_ti.height_in_sbs_minus_1[i] = sb_h - 1;
     }
   }
 
@@ -387,7 +438,7 @@ struct v4l2_av1_loop_restoration FillLoopRestorationParams(
         v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SWITCHABLE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid loop restoration type";
+        NOTREACHED() << "Invalid loop restoration type";
     }
 
     if (v4l2_lr.frame_restoration_type[i] != V4L2_AV1_FRAME_RESTORE_NONE) {
@@ -452,8 +503,8 @@ struct v4l2_av1_global_motion FillGlobalMotionParams(
         v4l2_gm.flags[i] |= V4L2_AV1_WARP_MODEL_AFFINE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, " << v4l2_gm.type[i];
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << v4l2_gm.type[i];
     }
 
     if (gm.type != libgav1::kGlobalMotionTransformationTypeIdentity)
@@ -563,8 +614,7 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
       v4l2_frame_params.frame_type = V4L2_AV1_SWITCH_FRAME;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid frame type, " << frame_header.frame_type;
+      NOTREACHED() << "Invalid frame type, " << frame_header.frame_type;
   }
 
   v4l2_frame_params.order_hint = frame_header.order_hint;
@@ -593,8 +643,8 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
           V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid interpolation filter, "
-                                << frame_header.interpolation_filter;
+      NOTREACHED() << "Invalid interpolation filter, "
+                   << frame_header.interpolation_filter;
   }
 
   switch (frame_header.tx_mode) {
@@ -608,7 +658,7 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
       v4l2_frame_params.tx_mode = V4L2_AV1_TX_MODE_SELECT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid tx mode, " << frame_header.tx_mode;
+      NOTREACHED() << "Invalid tx mode, " << frame_header.tx_mode;
   }
 
   v4l2_frame_params.frame_width_minus_1 = frame_header.width - 1;
@@ -759,7 +809,7 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1Picture(
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2AV1Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2AV1Picture>(std::move(dec_surface));
 }
 
 scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1PictureSecure(
@@ -771,7 +821,7 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1PictureSecure(
     return nullptr;
   }
 
-  return new V4L2AV1Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2AV1Picture>(std::move(dec_surface));
 }
 
 DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
@@ -816,7 +866,6 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   auto dec_surface = v4l2_pic->dec_surface();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return DecodeStatus::kFail;
   }

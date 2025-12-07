@@ -13,15 +13,17 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.media.MediaCodecUtil.CodecCreationInfo;
-import org.chromium.media.MediaCodecUtil.MimeTypes;
 
 @JNINamespace("media")
+@NullMarked
 class MediaCodecBridgeBuilder {
     private static final String TAG = "MediaCodecBridge";
 
     @CalledByNative
-    static MediaCodecBridge createVideoDecoder(
+    static @Nullable MediaCodecBridge createVideoDecoder(
             String mime,
             @CodecType int codecType,
             MediaCrypto mediaCrypto,
@@ -33,14 +35,18 @@ class MediaCodecBridgeBuilder {
             HdrMetadata hdrMetadata,
             boolean allowAdaptivePlayback,
             boolean useAsyncApi,
-            String decoderName) {
+            boolean useBlockModel,
+            boolean useLowLatencyMode,
+            String decoderName,
+            int profile) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
             Log.i(
                     TAG,
-                    "create MediaCodec video decoder, mime %s, decoder name %s",
+                    "create MediaCodec video decoder, mime %s, decoder name %s, block_model=%b",
                     mime,
-                    decoderName);
+                    decoderName,
+                    useBlockModel);
             if (!decoderName.isEmpty()) {
                 info = MediaCodecUtil.createDecoderByName(mime, decoderName);
             } else {
@@ -49,8 +55,7 @@ class MediaCodecBridgeBuilder {
 
             if (info.mediaCodec == null) return null;
 
-            MediaCodecBridge bridge =
-                    new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
+            MediaCodecBridge bridge = new MediaCodecBridge(info.mediaCodec, useAsyncApi);
             byte[][] csds = {csd0, csd1};
             MediaFormat format =
                     MediaFormatBuilder.createVideoDecoderFormat(
@@ -59,9 +64,28 @@ class MediaCodecBridgeBuilder {
                             height,
                             csds,
                             hdrMetadata,
-                            info.supportsAdaptivePlayback && allowAdaptivePlayback);
+                            info.supportsAdaptivePlayback && allowAdaptivePlayback,
+                            profile);
+            assert format != null;
+            if (useLowLatencyMode) {
+                // Note: We only set this key when `useLowLatencyMode` is true
+                // since setting it even to disabled (the default) breaks on
+                // some devices (e.g., Android X86 emulator).
+                format.setInteger(MediaFormat.KEY_LOW_LATENCY, 1);
 
-            if (!bridge.configureVideo(format, surface, mediaCrypto, 0)) return null;
+                // TODO(crbug.com/439294798): This should probably be limited to Dimensity chips.
+                if (decoderName.contains("mtk")) {
+                    format.setInteger("vendor.mtk.vdec.cpu.boost.mode.value", 1);
+                }
+            }
+
+            if (!bridge.configureVideo(
+                    format,
+                    surface,
+                    mediaCrypto,
+                    useBlockModel ? MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL : 0)) {
+                return null;
+            }
 
             if (!bridge.start()) {
                 bridge.release();
@@ -82,56 +106,7 @@ class MediaCodecBridgeBuilder {
     }
 
     @CalledByNative
-    static MediaCodecBridge createVideoEncoder(
-            String mime,
-            int width,
-            int height,
-            int bitrateMode,
-            int bitRate,
-            int frameRate,
-            int iFrameInterval,
-            int colorFormat) {
-        CodecCreationInfo info = new CodecCreationInfo();
-        try {
-            Log.i(TAG, "create MediaCodec video encoder, mime %s", mime);
-            info = MediaCodecUtil.createEncoder(mime);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to create MediaCodec video encoder: %s", mime, e);
-        }
-
-        if (info.mediaCodec == null) return null;
-
-        // Create MediaCodecEncoder for H264 to meet WebRTC requirements to IDR/keyframes.
-        // See https://crbug.com/761336 for more details.
-        MediaCodecBridge bridge =
-                mime.equals(MimeTypes.VIDEO_H264)
-                        ? new MediaCodecEncoder(info.mediaCodec, info.bitrateAdjuster)
-                        : new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, false);
-        MediaFormat format =
-                MediaFormatBuilder.createVideoEncoderFormat(
-                        mime,
-                        width,
-                        height,
-                        bitrateMode,
-                        bitRate,
-                        BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
-                        iFrameInterval,
-                        colorFormat,
-                        info.supportsAdaptivePlayback);
-
-        if (!bridge.configureVideo(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)) {
-            return null;
-        }
-
-        if (!bridge.start()) {
-            bridge.release();
-            return null;
-        }
-        return bridge;
-    }
-
-    @CalledByNative
-    static MediaCodecBridge createAudioDecoder(
+    static @Nullable MediaCodecBridge createAudioDecoder(
             String mime,
             MediaCrypto mediaCrypto,
             int sampleRate,
@@ -148,8 +123,7 @@ class MediaCodecBridgeBuilder {
 
             if (info.mediaCodec == null) return null;
 
-            MediaCodecBridge bridge =
-                    new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
+            MediaCodecBridge bridge = new MediaCodecBridge(info.mediaCodec, useAsyncApi);
             byte[][] csds = {csd0, csd1, csd2};
             MediaFormat format =
                     MediaFormatBuilder.createAudioFormat(

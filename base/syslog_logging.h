@@ -17,9 +17,8 @@ namespace logging {
 // and applied flags. Use only for important information that a system
 // administrator might need to maintain the browser installation.
 #define SYSLOG_STREAM(severity) \
-  COMPACT_GOOGLE_LOG_EX_ ## severity(EventLogMessage).stream()
-#define SYSLOG(severity) \
-  SYSLOG_STREAM(severity)
+  COMPACT_GOOGLE_LOG_EX_##severity(EventLogMessage).stream()
+#define SYSLOG(severity) SYSLOG_STREAM(severity)
 
 #if BUILDFLAG(IS_WIN)
 // Sets the name, category and event id of the event source for logging to the

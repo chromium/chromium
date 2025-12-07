@@ -1,0 +1,77 @@
+<html>
+
+<head>
+  <title>Digital Credentials MDocs Test Page</title>
+</head>
+<script>
+  async function request(fields) {
+    const mdoc = await navigator.credentials.get({
+      digital: {
+        requests: [{
+          protocol: "openid4vp",
+          data: {
+            presentation_definition: {
+              id: "mDL-request-demo",
+              input_descriptors: [{
+                id: "org.iso.18013.5.1.mDL",
+                constraints: {
+                  fields: fields
+                }
+              }]
+            }
+          }
+        }]
+      }
+    });
+   const token = mdoc.data.token;
+   document.getElementById("log").textContent += `${token}`;
+  }
+
+  async function requestAgeOnly() {
+    const fields = [{
+      path: [
+        "$['org.iso.18013.5.1']['age_over_21']"
+      ]
+    }];
+    request(fields);
+  }
+
+  async function requestAgeAndName() {
+    const fields = [{
+      path: [
+        "$['org.iso.18013.5.1']['age_over_21']"
+      ]
+    }, {
+      path: [
+        "$['org.iso.18013.5.1']['given_name']"
+      ]
+    }];
+    request(fields);
+  }
+  async function create() {
+    const response = await navigator.credentials.create({
+      digital: {
+        requests: [{
+          protocol: "openid4vci",
+          data: {
+            creation_definition: {
+              id: "mDL-request-demo",
+            }
+          }
+        }]
+      }
+    });
+   const token = response.data.token;
+   document.getElementById("log").textContent += `${token}`;
+  }
+
+</script>
+
+<body>
+  <button id="request_age_only_button" onclick="requestAgeOnly()">Request Age Only</button>
+  <button id="request_age_and_name_button" onclick="requestAgeAndName()">Request Age and Name</button>
+  <button id="create_button" onclick="create()">Create a digital credential</button>
+  <textarea id="log"></textarea>
+</body>
+
+</html>

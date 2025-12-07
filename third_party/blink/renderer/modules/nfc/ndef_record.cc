@@ -35,9 +35,9 @@ namespace blink {
 
 namespace {
 
-WTF::Vector<uint8_t> GetUTF8DataFromString(const String& string) {
-  StringUTF8Adaptor utf8_string(string);
-  WTF::Vector<uint8_t> data;
+Vector<uint8_t> GetUTF8DataFromString(const String& string) {
+  StringUtf8Adaptor utf8_string(string);
+  Vector<uint8_t> data;
   data.AppendSpan(base::span(utf8_string));
   return data;
 }
@@ -67,7 +67,7 @@ bool MaybeIsBufferSource(const ScriptValue& script_value) {
 }
 
 bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
-                            WTF::Vector<uint8_t>* target,
+                            Vector<uint8_t>* target,
                             ExceptionState& exception_state) {
   DOMArrayPiece array_piece;
   if (buffer_source->IsArrayBuffer()) {
@@ -75,17 +75,14 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
   } else if (buffer_source->IsArrayBufferView()) {
     array_piece = DOMArrayPiece(buffer_source->GetAsArrayBufferView().Get());
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return true;  // true to be consistent with `exception_state`.
+    NOTREACHED();
   }
-  wtf_size_t checked_length;
-  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength())
-           .AssignIfValid(&checked_length)) {
+  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength()).IsValid()) {
     exception_state.ThrowRangeError(
         "The provided buffer source exceeds the maximum supported length");
     return false;
   }
-  target->Append(array_piece.Bytes(), checked_length);
+  target->AppendSpan(array_piece.ByteSpan());
   return true;
 }
 
@@ -197,7 +194,7 @@ static NDEFRecord* CreateTextRecord(const ScriptState* script_state,
   }
 
   const String& encoding_label = record.getEncodingOr("utf-8");
-  WTF::Vector<uint8_t> bytes;
+  Vector<uint8_t> bytes;
 
   if (MaybeIsBufferSource(record.data())) {
     if (encoding_label != "utf-8" && encoding_label != "utf-16" &&
@@ -226,7 +223,7 @@ static NDEFRecord* CreateTextRecord(const ScriptState* script_state,
       return nullptr;
     bytes = GetUTF8DataFromString(data);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return MakeGarbageCollected<NDEFRecord>(id, encoding_label, language,
@@ -283,7 +280,7 @@ NDEFRecord* CreateMimeRecord(const ScriptState* script_state,
     mime_type = "application/octet-stream";
   }
 
-  WTF::Vector<uint8_t> bytes;
+  Vector<uint8_t> bytes;
   if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
     return nullptr;
 
@@ -300,7 +297,7 @@ NDEFRecord* CreateUnknownRecord(const ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
-  WTF::Vector<uint8_t> bytes;
+  Vector<uint8_t> bytes;
   if (!GetBytesOfBufferSource(buffer_source, &bytes, exception_state))
     return nullptr;
 
@@ -470,7 +467,7 @@ NDEFRecord* NDEFRecord::Create(const ScriptState* script_state,
     // https://w3c.github.io/web-nfc/#mapping-empty-record-to-ndef
     return MakeGarbageCollected<NDEFRecord>(
         device::mojom::blink::NDEFRecordTypeCategory::kStandardized,
-        record_type, /*id=*/String(), WTF::Vector<uint8_t>());
+        record_type, /*id=*/String(), Vector<uint8_t>());
   } else if (record_type == "text") {
     return CreateTextRecord(script_state, id, *record, exception_state);
   } else if (record_type == "url" || record_type == "absolute-url") {
@@ -503,7 +500,7 @@ NDEFRecord* NDEFRecord::Create(const ScriptState* script_state,
 NDEFRecord::NDEFRecord(device::mojom::blink::NDEFRecordTypeCategory category,
                        const String& record_type,
                        const String& id,
-                       WTF::Vector<uint8_t> data)
+                       Vector<uint8_t> data)
     : category_(category),
       record_type_(record_type),
       id_(id),
@@ -536,7 +533,7 @@ NDEFRecord::NDEFRecord(device::mojom::blink::NDEFRecordTypeCategory category,
 NDEFRecord::NDEFRecord(const String& id,
                        const String& encoding,
                        const String& lang,
-                       WTF::Vector<uint8_t> data)
+                       Vector<uint8_t> data)
     : category_(device::mojom::blink::NDEFRecordTypeCategory::kStandardized),
       record_type_("text"),
       id_(id),
@@ -553,7 +550,7 @@ NDEFRecord::NDEFRecord(const ScriptState* script_state, const String& text)
 
 NDEFRecord::NDEFRecord(const String& id,
                        const String& media_type,
-                       WTF::Vector<uint8_t> data)
+                       Vector<uint8_t> data)
     : category_(device::mojom::blink::NDEFRecordTypeCategory::kStandardized),
       record_type_("mime"),
       id_(id),
@@ -587,15 +584,14 @@ const String& NDEFRecord::mediaType() const {
   return media_type_;
 }
 
-DOMDataView* NDEFRecord::data() const {
+NotShared<DOMDataView> NDEFRecord::data() const {
   // Step 4 in https://w3c.github.io/web-nfc/#dfn-parse-an-ndef-record
   if (record_type_ == "empty") {
     DCHECK(payload_data_.empty());
-    return nullptr;
+    return NotShared<DOMDataView>();
   }
-  DOMArrayBuffer* dom_buffer =
-      DOMArrayBuffer::Create(payload_data_.data(), payload_data_.size());
-  return DOMDataView::Create(dom_buffer, 0, payload_data_.size());
+  DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(payload_data_);
+  return NotShared(DOMDataView::Create(dom_buffer, 0, payload_data_.size()));
 }
 
 // https://w3c.github.io/web-nfc/#dfn-convert-ndefrecord-data-bytes

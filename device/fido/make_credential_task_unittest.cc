@@ -13,21 +13,23 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_info_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mock_fido_device.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,6 +87,50 @@ TEST_F(FidoMakeCredentialTaskTest, MakeCredentialSuccess) {
   EXPECT_TRUE(std::get<1>(make_credential_future().Get()));
   EXPECT_EQ(device->supported_protocol(), ProtocolVersion::kCtap2);
   EXPECT_TRUE(device->device_info());
+}
+
+TEST_F(FidoMakeCredentialTaskTest, RedactLog) {
+  // This is a base 64 encoded CTAP make credential response with:
+  // * largeBlobKey
+  // * largeBlob extension
+  // * PRF extension
+  // All the values intended to be redacted are set to the string "secret".
+  // (The response is not valid, but that's okay here.)
+  constexpr char kTestCtapMakeCredentialResponse[] =
+      "AKUBZG5vbmUCWJTEbO+CrRtUZHdZHQCLCHWew+bS7LTzlHS/"
+      "6mlpkl0Dt10AAAAA6puNZk0BHSE85La0jLV11AAQICd/"
+      "yty9fBbIZa7eL+"
+      "4WpKUBAgMmIAEhWCCm7PMJaGqWTdGQn2Tae0XwaIwSQ13NK7BDQSUwBiot5yJYIAuec8BEHT"
+      "Onn3BP942qdWBtSSUxVQoAYGKjVhQzf30hA2ZzZWNyZXQFZnNlY3JldAaiY3ByZqJnZW5hYm"
+      "xlZPVncmVzdWx0c6FlZmlyc3Rmc2VjcmV0aWxhcmdlQmxvYmZzZWNyZXQ=";
+  auto device = MockFidoDevice::MakeCtap();
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorMakeCredential,
+      *base::Base64Decode(kTestCtapMakeCredentialResponse));
+
+  device_event_log::Initialize(/*max_entries=*/0);
+  const auto task = CreateMakeCredentialTask(device.get());
+  EXPECT_TRUE(make_credential_future().Wait());
+
+  // Signature.
+  std::string device_log = device_event_log::GetAsString(
+      device_event_log::NEWEST_FIRST, /*format=*/"level",
+      /*types=*/"fido",
+      /*max_level=*/device_event_log::LOG_LEVEL_EVENT, /*max_events=*/0);
+  EXPECT_THAT(device_log, testing::HasSubstr("3: \"[redacted]\""));
+  // Large blob key.
+  EXPECT_THAT(device_log, testing::HasSubstr("5: \"[redacted]\""));
+  // PRF.
+  EXPECT_THAT(
+      device_log,
+      testing::HasSubstr(
+          "6: {\"prf\": {\"enabled\": true, \"results\": \"[redacted]\""));
+  // Large blob extension.
+  EXPECT_THAT(device_log, testing::HasSubstr("\"largeBlob\": \"[redacted]\""));
+
+  // Verify that the data hasn't escaped redaction somehow.
+  EXPECT_THAT(device_log, testing::Not(testing::HasSubstr("secret")));
+  device_event_log::Shutdown();
 }
 
 TEST_F(FidoMakeCredentialTaskTest, TestRegisterSuccessWithFake) {

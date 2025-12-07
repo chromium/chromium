@@ -36,3 +36,5 @@ JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingDisabledByPolicy(
              metrics::prefs::kMetricsReportingEnabled) &&
          !local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 }
+
+DEFINE_JNI(PrivacyPreferencesManagerImpl)

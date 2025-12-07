@@ -6,7 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_state.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
@@ -16,25 +16,21 @@
 namespace blink {
 
 // static
-const char IdleManager::kSupplementName[] = "IdleManager";
-
-// static
 IdleManager* IdleManager::From(ExecutionContext* context) {
   DCHECK(context);
   DCHECK(context->IsContextThread());
 
-  IdleManager* manager =
-      Supplement<ExecutionContext>::From<IdleManager>(context);
+  IdleManager* manager = context->GetIdleManager();
   if (!manager) {
     manager = MakeGarbageCollected<IdleManager>(context);
-    Supplement<ExecutionContext>::ProvideTo(*context, manager);
+    context->SetIdleManager(manager);
   }
 
   return manager;
 }
 
 IdleManager::IdleManager(ExecutionContext* context)
-    : Supplement<ExecutionContext>(*context),
+    : execution_context_(*context),
       idle_service_(context),
       permission_service_(context) {}
 
@@ -43,7 +39,7 @@ IdleManager::~IdleManager() = default;
 ScriptPromise<V8PermissionState> IdleManager::RequestPermission(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  ExecutionContext* context = GetSupplementable();
+  ExecutionContext* context = execution_context_;
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
   // This function is annotated with [Exposed=Window].
@@ -77,8 +73,8 @@ ScriptPromise<V8PermissionState> IdleManager::RequestPermission(
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::IDLE_DETECTION),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
-      WTF::BindOnce(&IdleManager::OnPermissionRequestComplete,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&IdleManager::OnPermissionRequestComplete, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -86,7 +82,7 @@ void IdleManager::AddMonitor(
     mojo::PendingRemote<mojom::blink::IdleMonitor> monitor,
     mojom::blink::IdleManager::AddMonitorCallback callback) {
   if (!idle_service_.is_bound()) {
-    ExecutionContext* context = GetSupplementable();
+    ExecutionContext* context = execution_context_;
     // See https://bit.ly/2S0zRAS for task types.
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         context->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -100,12 +96,12 @@ void IdleManager::AddMonitor(
 void IdleManager::Trace(Visitor* visitor) const {
   visitor->Trace(idle_service_);
   visitor->Trace(permission_service_);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 void IdleManager::InitForTesting(
     mojo::PendingRemote<mojom::blink::IdleManager> idle_service) {
-  ExecutionContext* context = GetSupplementable();
+  ExecutionContext* context = execution_context_;
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       context->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -115,7 +111,7 @@ void IdleManager::InitForTesting(
 void IdleManager::OnPermissionRequestComplete(
     ScriptPromiseResolver<V8PermissionState>* resolver,
     mojom::blink::PermissionStatus status) {
-  resolver->Resolve(PermissionStatusToString(status));
+  resolver->Resolve(ToV8PermissionState(status));
 }
 
 }  // namespace blink

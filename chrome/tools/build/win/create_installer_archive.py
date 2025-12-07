@@ -32,7 +32,7 @@ CHROME_PATCH_FILE_SUFFIX = "_patch"  # prefixed by options.output_name
 COMPRESSED_ARCHIVE_SUFFIX = ".packed.7z"
 
 COMPRESSED_FILE_EXT = ".packed.7z"  # extension of patch archive file
-COURGETTE_EXEC = "courgette64.exe"
+ZUCCHINI_EXEC = "zucchini.exe"
 MINI_INSTALLER_INPUT_FILE = "packed_files.txt"
 PATCH_FILE_EXT = '.diff'
 SETUP_EXEC = "setup.exe"
@@ -203,13 +203,13 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
         for src_path in src_paths:
             dst_path = os.path.join(dst_dir, os.path.basename(src_path))
             if not os.path.exists(dst_path):
-                g_archive_inputs.append(src_path)
+                g_archive_inputs.append(os.path.relpath(src_path, src_dir))
                 shutil.copy(src_path, dst_dir)
 
 
 def GenerateDiffPatch(options, orig_file, new_file, patch_file):
-    if (options.diff_algorithm == "COURGETTE"):
-        exe_file = os.path.join(options.last_chrome_installer, COURGETTE_EXEC)
+    if (options.diff_algorithm == "ZUCCHINI"):
+        exe_file = os.path.join(options.last_chrome_installer, ZUCCHINI_EXEC)
         cmd = '%s -gen "%s" "%s" "%s"' % (exe_file, orig_file, new_file,
                                           patch_file)
     else:
@@ -341,13 +341,14 @@ def CreateArchiveFiles(options, staging_dir, current_version, prev_version):
                                 staging_file)
 
         # Finally, write the depfile referencing the inputs.
+        inputs = sorted(set(g_archive_inputs))
         with open(options.depfile, 'wb') as f:
             f.write(
                 (path_fixup(os.path.relpath(archive_file, options.build_dir)) +
                  ': \\\n').encode())
             f.write(
-                ('  ' + ' \\\n  '.join(path_fixup(x)
-                                       for x in g_archive_inputs)).encode())
+                ('  ' + ' \\\n  '.join(path_fixup(x) for x in inputs)).encode())
+            f.write('\n'.encode())
 
     # It is important to use abspath to create the path to the directory because
     # if you use a relative path without any .. sequences then 7za.exe uses the
@@ -425,18 +426,29 @@ def PrepareSetupExec(options, current_version, prev_version):
         CompressUsingLZMA(options.build_dir, setup_file_path, patch_file,
                           options.verbose, options.fast_archive_compression)
     else:
-        # Use makecab.py instead of makecab.exe so that this works when building
-        # on non-Windows hosts too.
+        setup_file_path = os.path.join(options.build_dir, SETUP_EXEC)
+        # The mtime of the setup file gets baked into makecab's output,
+        # so if build_time is specified, then apply it here too.
+        mtimestamp = os.path.getmtime(setup_file_path)
+        if options.build_time:
+            mtimestamp = int(options.build_time)
+        # Use makecab.py instead of makecab.exe so that this works when
+        # building on non-Windows hosts too. makecab.py is a Python scripts
+        # that acts like Microsoft makecab.exe, and use InputMtime as
+        # a custom option that we invented to make the output of makcab.py
+        # deterministic, which is not supported by makecab.exe.
         makecab_py = os.path.join(os.path.dirname(__file__), 'makecab.py')
         cmd = [
             sys.executable,
             makecab_py,
             '/D',
             'CompressionType=LZX',
+            '/D',
+            'InputMtime=%d' % mtimestamp,
             '/V1',
             '/L',
             options.output_dir,
-            os.path.join(options.build_dir, SETUP_EXEC),
+            setup_file_path,
         ]
         RunSystemCommand(cmd, options.verbose)
         setup_file = SETUP_EXEC[:-1] + "_"
@@ -515,31 +527,6 @@ def CopyAndAugmentManifest(build_dir, output_dir, manifest_name,
         f.write(''.join(manifest_lines))
 
 
-def CopyIfChanged(src, target_dir):
-    """Copy specified |src| file to |target_dir|, but only write to target if
-    the file has changed. This avoids a problem during packaging where parts of
-    the build have not completed and have the runtime DLL locked when we try to
-    copy over it. See http://crbug.com/305877 for details.
-    """
-    assert os.path.isdir(target_dir)
-    dest = os.path.join(target_dir, os.path.basename(src))
-    g_archive_inputs.append(src)
-    if os.path.exists(dest):
-        # We assume the files are OK to buffer fully into memory since we know
-        # they're only 1-2M.
-        with open(src, 'rb') as fsrc:
-            src_data = fsrc.read()
-        with open(dest, 'rb') as fdest:
-            dest_data = fdest.read()
-        if src_data != dest_data:
-            # This may still raise if we get here, but this really should almost
-            # never happen (it would mean that the contents of
-            # e.g. msvcr100d.dll had been changed).
-            shutil.copyfile(src, dest)
-    else:
-        shutil.copyfile(src, dest)
-
-
 def ParseDLLsFromDeps(build_dir, runtime_deps_file):
     """Parses the runtime_deps file and returns the set of DLLs in it, relative
     to build_dir.
@@ -572,7 +559,7 @@ def DoComponentBuildTasks(staging_dir, build_dir, target_arch,
     setup_component_dlls = ParseDLLsFromDeps(build_dir, setup_runtime_deps)
 
     for setup_component_dll in setup_component_dlls:
-        g_archive_inputs.append(setup_component_dll)
+        g_archive_inputs.append(os.path.relpath(setup_component_dll, build_dir))
         shutil.copy(setup_component_dll, installer_dir)
 
     # Stage all the component DLLs to the |version_dir| (for
@@ -592,7 +579,7 @@ def DoComponentBuildTasks(staging_dir, build_dir, target_arch,
                           not in staged_dlls]:
         component_dll_name = os.path.basename(component_dll)
         component_dll_filenames.append(component_dll_name)
-        g_archive_inputs.append(component_dll)
+        g_archive_inputs.append(os.path.relpath(component_dll, build_dir))
         shutil.copy(component_dll, version_dir)
 
     # Augment {version}.manifest to include all component DLLs as part of the
@@ -720,7 +707,7 @@ def _ParseOptions():
         '--last_chrome_installer',
         help='Generate differential installer. The value of this parameter '
         'specifies the directory that contains base versions of '
-        'setup.exe, courgette64.exe (if --diff_algorithm is COURGETTE) '
+        'setup.exe, zucchini.exe (if --diff_algorithm is ZUCCHINI) '
         '& chrome.7z.')
     parser.add_option(
         '-f',
@@ -732,7 +719,7 @@ def _ParseOptions():
         '--diff_algorithm',
         default='BSDIFF',
         help='Diff algorithm to use when generating differential patches '
-        '{BSDIFF|COURGETTE}.')
+        '{BSDIFF|ZUCCHINI}.')
     parser.add_option('-n',
                       '--output_name',
                       default='chrome',

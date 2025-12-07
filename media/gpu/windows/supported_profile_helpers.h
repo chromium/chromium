@@ -7,6 +7,8 @@
 
 #include <initguid.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_codecs.h"
@@ -118,11 +120,22 @@ DEFINE_GUID(DXVA_ModeHEVC_VLD_Main444_12_Intel,
             0xc1,
             0x97);
 
-// Get the private GUID for HEVC range extension profile supported by Intel.
+// Get the GUID for HEVC range extension profile. If
+// `use_dxva_device_for_hevc_rext` is false, return the Intel specific GUIDs.
+// Otherwise return the GUID defined in Windows SDK.
 MEDIA_GPU_EXPORT GUID
-GetHEVCRangeExtensionPrivateGUID(uint8_t bitdepth,
-                                 VideoChromaSampling chroma_sampling);
+GetHEVCRangeExtensionGUID(uint8_t bitdepth,
+                          VideoChromaSampling chroma_sampling,
+                          bool use_dxva_device_for_hevc_rext);
+
+// Check if the device supports HEVC range extension profiles through standard
+// DXVA devices.
+MEDIA_GPU_EXPORT bool SupportsHEVCRangeExtensionDXVAProfile(
+    ComD3D11Device device);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+// Get the GPU vendor ID from the DXGI device.
+MEDIA_GPU_EXPORT UINT GetGPUVendorID(ComDXGIDevice device);
 
 // Get the DXGI_FORMAT for the video decoder output texture, according to the
 // bit depth and chroma sampling format.
@@ -132,7 +145,7 @@ GetOutputDXGIFormat(uint8_t bitdepth, VideoChromaSampling chroma_sampling);
 struct SupportedResolutionRange {
   gfx::Size min_resolution;
   gfx::Size max_landscape_resolution;
-  gfx::Size max_portrait_resolution;
+  std::optional<gfx::Size> max_portrait_resolution;
 };
 
 using SupportedResolutionRangeMap =

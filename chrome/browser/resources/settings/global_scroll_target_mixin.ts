@@ -54,10 +54,10 @@ export const GlobalScrollTargetMixin = dedupingMixin(
           };
         }
 
-        scrollTarget: HTMLElement;
-        subpageScrollTarget: HTMLElement|null;
-        subpageRoute: Route;
-        private active_: boolean;
+        declare scrollTarget: HTMLElement;
+        declare subpageScrollTarget: HTMLElement|null;
+        declare subpageRoute: Route;
+        declare private active_: boolean;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -109,6 +109,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
 export interface GlobalScrollTargetMixinInterface extends
     RouteObserverMixinInterface {
   scrollTarget: HTMLElement;
+  subpageRoute: Route;
 }
 
 /**

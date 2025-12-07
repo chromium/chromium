@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -39,7 +40,7 @@ WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler()
 
 WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler(
     std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
-    rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory)
+    webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory)
     : video_encoder_factory_(std::move(video_encoder_factory)),
       audio_encoder_factory_(std::move(audio_encoder_factory)) {
   std::vector<webrtc::AudioCodecSpec> supported_audio_specs =
@@ -55,7 +56,7 @@ WebrtcEncodingInfoHandler::~WebrtcEncodingInfoHandler() = default;
 void WebrtcEncodingInfoHandler::EncodingInfo(
     const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
     const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
-    const std::optional<String> video_scalability_mode,
+    const String video_scalability_mode,
     OnMediaCapabilitiesEncodingInfoCallback callback) const {
   DCHECK(sdp_audio_format || sdp_video_format);
 
@@ -77,8 +78,8 @@ void WebrtcEncodingInfoHandler::EncodingInfo(
   // not specified).
   if (sdp_video_format && supported) {
     std::optional<std::string> scalability_mode =
-        video_scalability_mode
-            ? std::make_optional(video_scalability_mode->Utf8())
+        !video_scalability_mode.IsNull()
+            ? std::make_optional(video_scalability_mode.Utf8())
             : std::nullopt;
     webrtc::VideoEncoderFactory::CodecSupport support =
         video_encoder_factory_->QueryCodecSupport(*sdp_video_format,

@@ -16,9 +16,21 @@ class SettingsButton : public views::Button {
   METADATA_HEADER(SettingsButton, views::Button)
 
  public:
-  SettingsButton();
+  explicit SettingsButton(base::OnceClosure close_bubble_callback);
+  ~SettingsButton() override;
   SettingsButton(const SettingsButton&) = delete;
   SettingsButton& operator=(const SettingsButton&) = delete;
+
+ private:
+  class MenuController;
+
+  // Shows the context menu using `MenuController`. This method is passed in to
+  // the `Button` view as the `OnPressedCallback`.
+  void OnButtonActivated(const ui::Event& event);
+
+  // The context menu, which will be set as the controller to show the settings
+  // button menu view.
+  std::unique_ptr<MenuController> context_menu_;
 };
 
 }  // namespace ash::video_conference

@@ -6,7 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
-#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
@@ -16,21 +16,23 @@ namespace hud_display {
 SolidSourceBackground::SolidSourceBackground(SkColor color,
                                              SkScalar top_rounding_radius)
     : top_rounding_radius_(top_rounding_radius) {
-  SetNativeControlColor(color);
+  SetColor(color);
 }
 
 void SolidSourceBackground::Paint(gfx::Canvas* canvas,
                                   views::View* view) const {
+  const SkColor resolved_color =
+      color().ResolveToSkColor(view->GetColorProvider());
   if (top_rounding_radius_ == 0) {
     // Fill the background. Note that we don't constrain to the bounds as
     // canvas is already clipped for us.
-    canvas->DrawColor(get_color(), SkBlendMode::kSrc);
+    canvas->DrawColor(resolved_color, SkBlendMode::kSrc);
   } else {
     const SkScalar circle_size = top_rounding_radius_ * 2;
     const SkScalar right_edge = view->width();
     const SkScalar bottom_edge = view->height();
 
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(0, bottom_edge);
     // |false| will draw straight line to the start of the arc.
     path.arcTo({0, 0, circle_size, circle_size}, -180, 90, false);
@@ -42,8 +44,8 @@ void SolidSourceBackground::Paint(gfx::Canvas* canvas,
     flags.setAntiAlias(true);
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
-    canvas->DrawPath(path, flags);
+    flags.setColor(resolved_color);
+    canvas->DrawPath(path.detach(), flags);
   }
 }
 

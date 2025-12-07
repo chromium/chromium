@@ -5,20 +5,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_timing_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/timing/not_restored_reasons.h"
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_timing_confidence.h"
 
 namespace blink {
 
-class DocumentTiming;
+struct DocumentTimingValues;
+struct DocumentLoadTimingValues;
 class DocumentLoader;
-class DocumentLoadTiming;
 class LocalDOMWindow;
 class ExecutionContext;
 
@@ -31,7 +34,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
  public:
   PerformanceNavigationTiming(LocalDOMWindow&,
                               mojom::blink::ResourceTimingInfoPtr,
-                              base::TimeTicks time_origin);
+                              base::TimeTicks time_origin,
+                              uint32_t navigation_id);
   ~PerformanceNavigationTiming() override;
 
   // Attributes inherited from PerformanceEntry.
@@ -48,10 +52,10 @@ class CORE_EXPORT PerformanceNavigationTiming final
   DOMHighResTimeStamp domComplete() const;
   DOMHighResTimeStamp loadEventStart() const;
   DOMHighResTimeStamp loadEventEnd() const;
-  AtomicString type() const;
+  V8NavigationTimingType type() const;
   uint16_t redirectCount() const;
   NotRestoredReasons* notRestoredReasons() const;
-  AtomicString systemEntropy() const;
+  PerformanceTimingConfidence* confidence() const;
   DOMHighResTimeStamp criticalCHRestart(ScriptState* script_state) const;
 
   // PerformanceResourceTiming overrides:
@@ -71,18 +75,19 @@ class CORE_EXPORT PerformanceNavigationTiming final
  private:
   friend class PerformanceNavigationTimingActivationStart;
 
-  static AtomicString GetNavigationTimingType(WebNavigationType);
-
-  const DocumentTiming* GetDocumentTiming() const;
+  static V8NavigationTimingType::Enum GetNavigationTimingType(
+      WebNavigationType);
 
   DocumentLoader* GetDocumentLoader() const;
 
-  DocumentLoadTiming* GetDocumentLoadTiming() const;
-
-  bool AllowRedirectDetails() const;
-
   NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
+
+  const network::mojom::NavigationDeliveryType navigation_delivery_type_;
+  const WebNavigationType navigation_type_;
+
+  Member<DocumentTimingValues> document_timing_values_;
+  Member<DocumentLoadTimingValues> document_load_timing_values_;
 };
 }  // namespace blink
 

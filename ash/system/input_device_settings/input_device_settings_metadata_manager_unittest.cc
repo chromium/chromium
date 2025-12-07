@@ -13,20 +13,16 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
 namespace {
 
 const std::string test_device_key = "0000:0001";
-// Based on the default ImageSkia produced by `TestImageDownloader`.
-constexpr char kExpectedDataUri[] =
-    "data:image/"
-    "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAF0lEQVQokWNk+M+"
-    "ABzDhkxyVHpUmRRoAmpABJ+eiyP8AAAAASUVORK5CYII=";
 
 const AccountId account_1 =
-    AccountId::FromUserEmailGaiaId("user@example.com", "123");
+    AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("123"));
 
 }  // namespace
 
@@ -78,6 +74,13 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, DeviceImageForSettingsIsCached) {
   base::RunLoop().RunUntilIdle();
   const auto data_url = manager()->GetCachedDeviceImageDataUri(test_device_key);
   EXPECT_TRUE(data_url.has_value());
+
+  // Based on the default ImageSkia produced by `TestImageDownloader`.
+  const char* kExpectedDataUri =
+      "data:image/png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAH0lE"
+      "QVR4nOzJIQEAAADCsAv6V4YGKCSzE6YQvN+bDgAAAP//NgNJQQAA"
+      "AAZJREFUAwDP2AFQaaaRAwAAAABJRU5ErkJggg==";
   EXPECT_EQ(kExpectedDataUri, data_url.value());
 }
 

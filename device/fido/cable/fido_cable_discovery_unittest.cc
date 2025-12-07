@@ -11,7 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -28,14 +27,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/floss/floss_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/util.h"
@@ -166,10 +161,10 @@ class CableMockBluetoothAdvertisement : public BluetoothAdvertisement {
 
   void ExpectUnregisterAndSucceed() {
     EXPECT_CALL(*this, Unregister(_, _))
-        .WillOnce(::testing::WithArg<0>(::testing::Invoke([](auto success_cb) {
+        .WillOnce(::testing::WithArg<0>([](auto success_cb) {
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(success_cb));
-        })));
+        }));
   }
 
  private:
@@ -231,7 +226,7 @@ class CableMockAdapter : public MockBluetoothAdapter {
 
     std::vector<uint8_t> service_data(18);
     service_data[0] = 1 << 5;
-    base::ranges::copy(authenticator_eid, service_data.begin() + 2);
+    std::ranges::copy(authenticator_eid, service_data.begin() + 2);
     BluetoothDevice::ServiceDataMap service_data_map;
     service_data_map.emplace(kGoogleCableUUID128, std::move(service_data));
 
@@ -754,17 +749,8 @@ TEST_F(FidoCableDiscoveryTest, TestResumeDiscoveryAfterPoweredOn) {
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests regular successful discovery flow for Cable device on Floss.
 TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewDeviceFloss) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->is_floss_available = true;
-  init_params->use_floss_bluetooth = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   auto cable_discovery = CreateDiscovery();
   NiceMock<MockFidoDiscoveryObserver> mock_observer;

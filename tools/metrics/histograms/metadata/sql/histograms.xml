@@ -1,0 +1,298 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of SQL histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="DatabaseTag">
+  <variant name="Activity" summary="Activity"/>
+  <variant name="Affiliation" summary="Affiliation"/>
+  <variant name="AggregationService" summary="AggregationService"/>
+  <variant name="AnnotationStorage" summary="AnnotationStorage"/>
+  <variant name="BackgroundRequestQueue" summary="BackgroundRequestQueue"/>
+  <variant name="BrowsingTopics" summary="BrowsingTopics"/>
+  <variant name="CdmStorage" summary="CdmStorage"/>
+  <variant name="Chromoting" summary="Chromoting"/>
+  <variant name="CollaborationMessageStorage"
+      summary="CollaborationMessageStorage"/>
+  <variant name="Conversions" summary="Conversions"/>
+  <variant name="Cookie" summary="Cookie"/>
+  <variant name="DatabaseTracker" summary="DatabaseTracker"/>
+  <variant name="DataSharingGroupStorage" summary="DataSharingGroupStorage"/>
+  <variant name="DataSharingMigrationStateStorage"
+      summary="DataSharingMigrationStateStorage"/>
+  <variant name="DBSCSessions" summary="DBSCSessions"/>
+  <variant name="DIPS" summary="DIPS"/>
+  <variant name="DownloadRecord" summary="DownloadRecord"/>
+  <variant name="FileIndexService" summary="FileIndexService"/>
+  <variant name="FirefoxImporter" summary="FirefoxImporter"/>
+  <variant name="FirstPartySets" summary="FirstPartySets"/>
+  <variant name="FSPContextDatabase" summary="FSPContextDatabase"/>
+  <variant name="History" summary="History"/>
+  <variant name="HistoryEmbeddings" summary="HistoryEmbeddings"/>
+  <variant name="HistoryInMemoryDB" summary="HistoryInMemoryDB"/>
+  <variant name="HttpCacheDiskCache" summary="HttpCacheDiskCache"/>
+  <variant name="IndexedDB" summary="IndexedDB, on-disk DB"/>
+  <variant name="IndexedDBEphemeral" summary="IndexedDB, in-memory DB"/>
+  <variant name="InterestGroups" summary="InterestGroups"/>
+  <variant name="InterestGroupStorage" summary="InterestGroupStorage"/>
+  <variant name="KAnonymityService" summary="KAnonymityService"/>
+  <variant name="LocalTraces" summary="LocalTraces"/>
+  <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
+  <variant name="MediaLicense" summary="MediaLicense"/>
+  <variant name="OfflinePageMetadata" summary="OfflinePageMetadata"/>
+  <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
+  <variant name="PageContentStore" summary="Page Content Store"/>
+  <variant name="Passwords" summary="Passwords"/>
+  <variant name="PermissionAuditingLogs" summary="PermissionAuditingLogs"/>
+  <variant name="PersistentCache" summary="PersistentCache"/>
+  <variant name="PowerBookmarks" summary="PowerBookmarks"/>
+  <variant name="Predictor" summary="Predictor"/>
+  <variant name="PrivateAggregation" summary="PrivateAggregation"/>
+  <variant name="Quota" summary="Quota"/>
+  <variant name="RazeNullDB" summary="RazeNullDB"/>
+  <variant name="Recovery" summary="Recovery"/>
+  <variant name="ReportingAndNEL" summary="ReportingAndNEL"/>
+  <variant name="ServerCertificate" summary="ServerCertificate"/>
+  <variant name="SharedDictionary" summary="SharedDictionary"/>
+  <variant name="SharedStorage" summary="SharedStorage"/>
+  <variant name="Shortcuts" summary="Shortcuts"/>
+  <variant name="SQLiteDiagnostics" summary="SQLiteDiagnostics"/>
+  <variant name="TabStateStorage" summary="TabStateStorage"/>
+  <variant name="Test" summary="Test"/>
+  <variant name="Thumbnail" summary="Thumbnail"/>
+  <variant name="TopSites" summary="TopSites"/>
+  <variant name="TrustTokens" summary="TrustTokens"/>
+  <variant name="UKMMetrics" summary="UKMMetrics"/>
+  <variant name="UserAnnotations" summary="UserAnnotations"/>
+  <variant name="UserNotes" summary="UserNotes"/>
+  <variant name="Web" summary="Web"/>
+</variants>
+
+<histogram name="Sql.Database.Open.FailureReason.{DatabaseTag}"
+    enum="OpenDatabaseFailedReason" expires_after="2026-04-05">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the fine-grained reason for a failure in Database::Open. Recorded
+    once per failure to open the {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Open.FirstAttempt.Error.{DatabaseTag}"
+    enum="SqliteResultCode" expires_after="2026-04-05">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports sqlite errors triggered during the first attempt at opening the
+    {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Open.SecondAttempt.Error.{DatabaseTag}"
+    enum="SqliteResultCode" expires_after="2026-04-05">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports sqlite errors triggered during the second attempt at opening the
+    {DatabaseTag} database. Databases can sometimes trigger a second open
+    attempt if the caller-provided error callback razes the database on open
+    failure.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Raze.FailureReason.{DatabaseTag}"
+    enum="RazeDatabaseFailedReason" expires_after="2026-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Reports the fine-grained reason for a failure in Database::Raze. Recorded
+    once per failure to raze the {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Raze.UnhandledErrorCode.{DatabaseTag}"
+    enum="SqliteResultCode" expires_after="2026-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>jpgravel@chromium.org</owner>
+  <summary>
+    Reports sqlite errors that triggered when
+    Sql.Database.Raze.FailureReason.{DatabaseTag} is kUnknownError.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.RazeTime.{DatabaseTag}" units="microseconds"
+    expires_after="2026-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Reports the time spent in Raze, in microseconds. This typically executed
+    after an unrecoverable errors on {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Statement.Error.{DatabaseTag}"
+    enum="SqliteErrorCode" expires_after="2026-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Reports sqlite errors triggered during execution of statements on the
+    {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Success.OpenInternalTime.{DatabaseTag}"
+    units="microseconds" expires_after="2026-05-24">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time spent in OpenInternal, in microseconds, when opening the
+    {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Success.SqliteOpenTime.{DatabaseTag}"
+    units="microseconds" expires_after="2026-05-24">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time spent in the sqlite3_open_v2 library call, in microseconds,
+    when opening the {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
+    expires_after="2026-04-05">
+  <owner>etienneb@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Outcome of attempting to recover a database with sql::Recovery.
+  </summary>
+</histogram>
+
+<histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
+    expires_after="2026-04-05">
+  <owner>etienneb@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Outcome of attempting to recover the {DatabaseTag} database with
+    sql::Recovery.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
+    expires_after="2026-04-05">
+  <owner>etienneb@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    SQLite result code from attempting to recover a database with sql::Recovery.
+    Note that kNoError does not necessarily indicate that recovery succeeded
+    (see Sql.Recovery.Result for that information), since not all recoveries
+    fail due to SQLite errors (e.g. if a version number could not be read from
+    the meta table).
+  </summary>
+</histogram>
+
+<histogram name="Sql.Recovery.ResultCode.{DatabaseTag}"
+    enum="SqliteLoggedResultCode" expires_after="2026-02-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    SQLite result code from attempting to recover the {DatabaseTag} database
+    with sql::Recovery. Note that kNoError does not necessarily indicate that
+    recovery succeeded (see Sql.Recovery.Result for that information), since not
+    all recoveries fail due to SQLite errors (e.g. if a version number could not
+    be read from the meta table).
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.ExecutionTime.{DatabaseTag}"
+    units="microseconds" expires_after="2026-05-24">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the total time spent stepping for a given statement in database
+    {DatabaseTag}, in microseconds. Recorded when the statement is
+    reset/destructed, but only includes the time spent in `StepInternal` since
+    the statement's last reset.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.StepTime.{DatabaseTag}" units="microseconds"
+    expires_after="2026-05-24">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time of a single step of a statement running against
+    {DatabaseTag}, in microseconds. Recorded every time `Step` is called.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.{DatabaseTag}.VMSteps" units="count"
+    expires_after="2026-05-03">
+  <owner>etienneb@chromium.org</owner>
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The number of virtual machine operations executed for {DatabaseTag}
+    database. It is reported once per statement. It can be used as a proxy of
+    total work done by queries executed over the database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2026-05-10">
+  <owner>etienneb@chromium.org</owner>
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The time it takes to sync SQLite data to disk. The metric is recorded once
+    per flush. A SQLite operation may require multiple sync operation to ensure
+    database consistency.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

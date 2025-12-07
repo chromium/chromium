@@ -49,10 +49,16 @@ declare -A DISPLAY_RES=(
 # multi display example
 #DISPLAY_CONFIG=1200x800,1200+0-1000x800
 
-# Use FHD as default panel.
-DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
+# Use WXGA as default panel.
+DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 
 FEATURES=
+
+# GLIC specific feature flags.
+GLIC_BASIC_FEATURES=Glic,TabstripComboButton,GlicDevelopmentCookies,\
+ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,GlicFreWarming,\
+GlicUseNonClient
+GLIC_SIDE_PANEL_FEATURES=GlicSidePanel,GlicMultiInstance
 
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
 
@@ -85,12 +91,20 @@ function ensure_user_dir {
 
 # Build command arguments
 function build_args {
+  local guest_mode=$1
+  local login_args
+  if $guest_mode; then
+    login_args="--login-profile=user --bwsi --incognito --login-user=\$guest"
+  else
+    login_args="--login-manager  --login-profile=user"
+  fi
+
   ARGS="--user-data-dir=${USER_DATA_DIR} \
     --enable-wayland-server --ash-debug-shortcuts --overview-button-for-tests \
-    --enable-ui-devtools --ash-dev-shortcuts --login-manager \
-    --login-profile=user \
+    --enable-ui-devtools --ash-dev-shortcuts \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${FEATURES} \
+    ${login_args} \
     ${TOUCH_DEVICE_OPTION} \
     ${EXTRA_ARGS}"
 
@@ -100,7 +114,8 @@ function build_args {
 
 # Start ash chrome binary.
 function start_ash_chrome {
-  build_args
+  local guest_mode=$1
+  build_args $guest_mode
 
   check_chrome_dir "$ASH_CHROME_BUILD_DIR" ash-chrome-build-dir
   ensure_user_dir ${USER_DATA_DIR} "ash-chrome"
@@ -119,6 +134,21 @@ function start_wayland_client {
   exec $*
 }
 
+# Convert the list of panel names into host bounds list.
+function build_display_config {
+  panel_list=$*
+  IFS=,
+  local host_bounds_list=()
+  for panel in ${panel_list}; do
+    if [ -z ${DISPLAY_RES[${panel}]} ]; then
+      return;
+    fi
+    host_bounds_list+=( ${DISPLAY_RES[${panel}]} )
+  done
+  IFS=_
+  echo $(IFS=, ; echo "${host_bounds_list[*]}")
+}
+
 function help {
   exec cat <<EOF
 `basename $0` <command> [options]
@@ -131,14 +161,16 @@ command
 
 [options]
   --ash-chrome-build-dir specifies the build directory for ash-chrome.
-  --user-data-dir        specifies the user data dir
-  --touch-device-id=<id> Specify the input device to emulate touch. Use id from
-                         'show-xinput-device-id'.
-  --wayland-debug        Enable WAYLAND_DEBUG=1
-  --panel=<type>         specifies the panel type. Valid opptions are:
-                         wxga(1280x800), fwxga(1355x768), hdp(1600,900),
+  --guest                start in guest mode.
+  --panel=<list of type> specifies the panel type. Valid opptions are:
+                         wxga(1280x800 default), fwxga(1355x768), hdp(1600,900),
                          fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
                          qhdp(3200,1800), f4k(3840,2160)
+                         multiple panels can be specifid, e.g. "wxga,hdp"
+  --touch-device-id=<id> Specify the input device to emulate touch. Use id from
+                         'show-xinput-device-id'.
+  --user-data-dir        specifies the user data dir
+  --wayland-debug        Enable WAYLAND_DEBUG=1
   --<chrome commandline flags>
                          Pass extra command line flags to ash-chrome.
                          The script will reject if the string does not exist in
@@ -158,6 +190,7 @@ else
 fi
 
 SLEEP_IF_EXTRA_ARGS_NOT_MATCHED=false
+GUEST_MODE=false
 
 # Parse options.
 while [ ${#} -ne 0 ]
@@ -172,15 +205,24 @@ do
     --wayland-debug)
       export WAYLAND_DEBUG=1
       ;;
+    --glic)
+      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES}
+      ;;
+    --glic-side-panel)
+      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES},${GLIC_SIDE_PANEL_FEATURES}
+      ;;
     --touch-device-id=*)
       id=${1:18}
       TOUCH_DEVICE_OPTION="--touch-devices=${id} --force-show-cursor"
       ;;
+    --guest)
+      GUEST_MODE=true
+      ;;
     --panel=*)
       panel=${1:8}
-      DISPLAY_CONFIG=${DISPLAY_RES[${panel}]}
+      DISPLAY_CONFIG=$(build_display_config ${panel})
       if [ -z $DISPLAY_CONFIG ]; then
-        echo "Unknown display panel: $panel"
+        echo "Unknown display panel found in '$panel'"
         help
       fi
       ;;
@@ -210,7 +252,7 @@ if $SLEEP_IF_EXTRA_ARGS_NOT_MATCHED ; then
 fi
 
 case $command in
-  ash-chrome) start_ash_chrome ;;
+  ash-chrome) start_ash_chrome $GUEST_MODE;;
   help) help ;;
   show-xinput-device-id) exec xinput -list ;;
   *) echo "Unknown command $command"; help ;;

@@ -31,9 +31,9 @@
 namespace metrics {
 namespace {
 
-const wchar_t kDummyWindowsRegistryKey[] = L"";
+using ::variations::prefs::kVariationsCrashStreak;
 
-}  // namespace
+const wchar_t kDummyWindowsRegistryKey[] = L"";
 
 class TestCleanExitBeacon : public CleanExitBeacon {
  public:
@@ -108,7 +108,7 @@ TEST_F(CleanExitBeaconTest, CrashStreakMetricWithNoCrashes) {
   // change, so we explicitly set it to true here. Similarly, we explicitly set
   // kVariationsCrashStreak to 0.
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
-  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, 0);
+  prefs_.SetInteger(kVariationsCrashStreak, 0);
   TestCleanExitBeacon clean_exit_beacon(&prefs_);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 0,
                                        1);
@@ -120,7 +120,7 @@ TEST_F(CleanExitBeaconTest, CrashStreakMetricWithSomeCrashes) {
   // The default value for kStabilityExitedCleanly is true, but defaults can
   // change, so we explicitly set it to true here.
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
-  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, 1);
+  prefs_.SetInteger(kVariationsCrashStreak, 1);
   TestCleanExitBeacon clean_exit_beacon(&prefs_);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 1,
                                        1);
@@ -130,9 +130,9 @@ TEST_F(CleanExitBeaconTest, CrashStreakMetricWithSomeCrashes) {
 // last Chrome session did not exit cleanly.
 TEST_F(CleanExitBeaconTest, CrashIncrementsCrashStreak) {
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, false);
-  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, 1);
+  prefs_.SetInteger(kVariationsCrashStreak, 1);
   TestCleanExitBeacon clean_exit_beacon(&prefs_);
-  EXPECT_EQ(prefs_.GetInteger(variations::prefs::kVariationsCrashStreak), 2);
+  EXPECT_EQ(prefs_.GetInteger(kVariationsCrashStreak), 2);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 2,
                                        1);
 }
@@ -144,7 +144,7 @@ TEST_F(CleanExitBeaconTest,
        CrashIncrementsCrashStreakWithDefaultCrashStreakPref) {
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, false);
   TestCleanExitBeacon clean_exit_beacon(&prefs_);
-  EXPECT_EQ(prefs_.GetInteger(variations::prefs::kVariationsCrashStreak), 1);
+  EXPECT_EQ(prefs_.GetInteger(kVariationsCrashStreak), 1);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 1,
                                        1);
 }
@@ -262,6 +262,42 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   EXPECT_FALSE(clean_exit_beacon.exited_cleanly());
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);
+}
+
+TEST_F(CleanExitBeaconTest, RecordNoCrashStreakDiscrepancy) {
+  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
+  const base::FilePath temp_beacon_file_path =
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
+  const int num_crashes = 2;
+  ASSERT_TRUE(
+      base::WriteFile(temp_beacon_file_path,
+                      CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                          /*exited_cleanly=*/false,
+                          /*crash_streak=*/num_crashes)));
+
+  prefs_.SetInteger(kVariationsCrashStreak, num_crashes);
+
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.SafeMode.CrashStreakDiscrepancy", 0, 1);
+}
+
+TEST_F(CleanExitBeaconTest, RecordCrashStreakDiscrepancy) {
+  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
+  const base::FilePath temp_beacon_file_path =
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
+  const int num_crashes = 2;
+  ASSERT_TRUE(
+      base::WriteFile(temp_beacon_file_path,
+                      CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                          /*exited_cleanly=*/false,
+                          /*crash_streak=*/num_crashes)));
+  const int discrepancy = 10;
+  prefs_.SetInteger(kVariationsCrashStreak, num_crashes + discrepancy);
+
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.SafeMode.CrashStreakDiscrepancy", discrepancy, 1);
 }
 
 TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenNotExitingCleanly) {
@@ -440,4 +476,5 @@ TEST_P(BeaconFileAndPlatformBeaconConsistencyTest, BeaconConsistency) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+}  // namespace
 }  // namespace metrics

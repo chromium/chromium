@@ -20,16 +20,18 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "components/embedder_support/android/util/features.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/input_stream_reader.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -129,7 +131,7 @@ class InputStreamReaderWrapper
 
  private:
   friend class base::RefCountedThreadSafe<InputStreamReaderWrapper>;
-  ~InputStreamReaderWrapper() {}
+  ~InputStreamReaderWrapper() = default;
 
   std::unique_ptr<InputStream> input_stream_;
   std::unique_ptr<InputStreamReader> input_stream_reader_;
@@ -179,7 +181,7 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
       resource_request_.mode, is_request_considered_same_origin);
 }
 
-AndroidStreamReaderURLLoader::~AndroidStreamReaderURLLoader() {}
+AndroidStreamReaderURLLoader::~AndroidStreamReaderURLLoader() = default;
 
 void AndroidStreamReaderURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
@@ -188,8 +190,6 @@ void AndroidStreamReaderURLLoader::FollowRedirect(
     const std::optional<GURL>& new_url) {}
 void AndroidStreamReaderURLLoader::SetPriority(net::RequestPriority priority,
                                                int intra_priority_value) {}
-void AndroidStreamReaderURLLoader::PauseReadingBodyFromNet() {}
-void AndroidStreamReaderURLLoader::ResumeReadingBodyFromNet() {}
 
 void AndroidStreamReaderURLLoader::Start(
     std::unique_ptr<InputStream> input_stream) {
@@ -343,9 +343,8 @@ void AndroidStreamReaderURLLoader::SendBody() {
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  options.capacity_num_bytes = network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
   if (CreateDataPipe(&options, producer_handle_, consumer_handle_) !=
       MOJO_RESULT_OK) {
     RequestComplete(net::ERR_FAILED);
@@ -378,19 +377,15 @@ void AndroidStreamReaderURLLoader::SetCookies() {
   const std::string_view kSetCookieHeader("Set-Cookie");
 
   if (response_head_->headers->HasHeader(kSetCookieHeader)) {
-    base::Time response_date;
-    std::optional<base::Time> server_time = std::nullopt;
-    if (response_head_->headers->GetDateValue(&response_date)) {
-      server_time = std::make_optional(response_date);
-    }
+    std::optional<base::Time> server_time =
+        response_head_->headers->GetDateValue();
 
-    std::string cookie_string;
     size_t iter = 0;
 
-    while (response_head_->headers->EnumerateHeader(&iter, kSetCookieHeader,
-                                                    &cookie_string)) {
-      std::move(set_cookie_header_)
-          ->Run(resource_request_, cookie_string, server_time);
+    while (
+        std::optional<std::string_view> cookie_string =
+            response_head_->headers->EnumerateHeader(&iter, kSetCookieHeader)) {
+      set_cookie_header_->Run(resource_request_, *cookie_string, server_time);
     }
   }
 }
@@ -557,12 +552,13 @@ bool AndroidStreamReaderURLLoader::ParseRange(
     const net::HttpRequestHeaders& headers) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  std::string range_header;
-  if (headers.GetHeader(net::HttpRequestHeaders::kRange, &range_header)) {
+  std::optional<std::string> range_header =
+      headers.GetHeader(net::HttpRequestHeaders::kRange);
+  if (range_header) {
     // This loader only cares about the Range header so that we know how many
     // bytes in the stream to skip and how many to read after that.
     std::vector<net::HttpByteRange> ranges;
-    if (net::HttpUtil::ParseRangeHeader(range_header, &ranges)) {
+    if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges)) {
       // In case of multi-range request only use the first range.
       // We don't support multirange requests.
       if (ranges.size() == 1)

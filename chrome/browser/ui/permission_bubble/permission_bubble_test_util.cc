@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 
+#include "components/permissions/permission_request.h"
 #include "url/gurl.h"
 
 TestPermissionBubbleViewDelegate::TestPermissionBubbleViewDelegate() = default;
 
 TestPermissionBubbleViewDelegate::~TestPermissionBubbleViewDelegate() = default;
 
-const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
 TestPermissionBubbleViewDelegate::Requests() {
   return requests_;
 }
@@ -45,6 +46,11 @@ bool TestPermissionBubbleViewDelegate::RecreateView() {
   return false;
 }
 
+const permissions::PermissionPrompt*
+TestPermissionBubbleViewDelegate::GetCurrentPrompt() const {
+  return nullptr;
+}
+
 content::WebContents*
 TestPermissionBubbleViewDelegate::GetAssociatedWebContents() {
   return nullptr;
@@ -53,4 +59,15 @@ TestPermissionBubbleViewDelegate::GetAssociatedWebContents() {
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
 TestPermissionBubbleViewDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void TestPermissionBubbleViewDelegate::set_requests(
+    std::vector<std::unique_ptr<permissions::PermissionRequest>> requests) {
+  requests_ = std::move(requests);
+}
+
+GeolocationAccuracy
+TestPermissionBubbleViewDelegate::GetInitialGeolocationAccuracySelection()
+    const {
+  NOTREACHED();
 }

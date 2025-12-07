@@ -37,6 +37,21 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths)>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InstallationAttemptStep)
+  enum class InstallationAttemptStep {
+    kInstallationRequested = 0,
+    kHermesUnavailable = 1,
+    kInstallationStarted = 2,
+    kInstallationSucceeded = 3,
+    kInstallationNoResponse = 4,
+    kInstallationFailed = 5,
+    kMaxValue = kInstallationFailed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:InstallationAttemptStep)
+
   class TestInterface {
    public:
     enum class AddCarrierProfileBehavior {
@@ -183,6 +198,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // Called when an Euicc reset operation completes successfully.
     virtual void OnEuiccReset(const dbus::ObjectPath& euicc_path) {}
   };
+
+  static constexpr char kHermesInstallationAttemptStepsHistogram[] =
+      "Network.Ash.Cellular.ESim.HermesInstallationAttempt.Step";
 
   // Adds an observer for carrier profile lists changes on Hermes manager.
   virtual void AddObserver(Observer* observer);

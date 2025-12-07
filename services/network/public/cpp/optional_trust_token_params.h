@@ -49,9 +49,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) OptionalTrustTokenParams {
 
   // This comparison operator wraps mojo::Equals.
   bool operator==(const OptionalTrustTokenParams&) const;
-  bool operator!=(const OptionalTrustTokenParams& rhs) const {
-    return !(*this == rhs);
-  }
 
   explicit operator bool() const { return has_value(); }
   bool has_value() const { return !!ptr_; }

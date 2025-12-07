@@ -19,8 +19,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/verifier_formats.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 
@@ -107,7 +110,7 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
   }
 
  protected:
-  ~ValidateCrxHelper() override {}
+  ~ValidateCrxHelper() override = default;
 
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_root,

@@ -36,6 +36,7 @@ class MockTopSites : public TopSites {
   MOCK_CONST_METHOD0(loaded, bool());
   MOCK_METHOD0(GetPrepopulatedPages, history::PrepopulatedPageList());
   MOCK_METHOD1(OnNavigationCommitted, void(const GURL& url));
+  MOCK_CONST_METHOD0(NumBlockedSites, int());
 
   // Publicly expose notification to observers, since the implementation cannot
   // be overridden.

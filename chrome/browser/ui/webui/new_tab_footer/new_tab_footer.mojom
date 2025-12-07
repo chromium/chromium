@@ -1,0 +1,84 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module new_tab_footer.mojom;
+
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// NTP Type for the attached tab.
+// |kOther| includes non-NTP and NTP types other than 1P and extension.
+enum NewTabPageType {
+  kFirstPartyWebUI,
+  kExtension,
+  kOther,
+};
+
+// Enterprise browser management notice
+struct ManagementNotice {
+  // Human readable string for notice text. This will indicate that the browser
+  // is managed and the entity managing the browser, which is  customizable via
+  // the `EnterpriseCustomLabel` policy.
+  string text;
+  // Url to a custom management icon set by policy.
+  url.mojom.Url? custom_bitmap_data_url;
+};
+
+struct BackgroundAttribution {
+  // Human readable attributions of the background image.
+  string name;
+  // URL associated with the background image. Used for href.
+  url.mojom.Url? url;
+};
+
+// Used by the WebUI document to bootstrap bidirectional communication.
+interface NewTabFooterHandlerFactory {
+  // The WebUI page's |BrowserProxy| singleton calls this method when the
+  // document is first initialized.
+  CreateNewTabFooterHandler(pending_remote<NewTabFooterDocument> document,
+                            pending_receiver<NewTabFooterHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI document.
+interface NewTabFooterHandler {
+  // Updates name of the extension overriding the new tab page.
+  // Triggers a call to |SetExtensionName|.
+  UpdateNtpExtensionName();
+  // Updates the enterprise management notice for a managed
+  // browser. Triggers a call to |SetManagementNotice|.
+  UpdateManagementNotice();
+  // Updates the current tab state. Triggers a call to
+  // |AttachedTabStateUpdated|.
+  UpdateAttachedTabState();
+  // Updates the background attribition details for 1P NTP
+  // custom themes if present.
+  // Updates background attribution for 1P WebUI NTP themes.
+  UpdateBackgroundAttribution();
+  // Opens the options page for the extension identified by the last call
+  // to |UpdateNtpExtensionName|. If that call did not determine a valid ID,
+  // this opens the extension settings page.
+  OpenExtensionOptionsPageWithFallback();
+  // Opens the chrome://management page.
+  OpenManagementPage();
+  // Opens url in the current tab.
+  OpenUrlInCurrentTab(url.mojom.Url url);
+  // Shows context menu.
+  ShowContextMenu(gfx.mojom.Point point);
+  // Notifies that the customization button just got visible on the WebUI.
+  NotifyCustomizationButtonVisible();
+};
+
+// WebUI-side handler for requests from the browser.
+interface NewTabFooterDocument {
+  // Sets the name of the extension overriding the new tab page.
+  SetNtpExtensionName(string name);
+  // Sets the enterprise management notice for a managed browser.
+  SetManagementNotice(ManagementNotice? notice);
+  // Sets information about the tab that is attached to the
+  // NewTabFooterDocument.
+  AttachedTabStateUpdated(NewTabPageType ntp_type, bool can_customize_chrome);
+  // Sets the image name and url.
+  SetBackgroundAttribution(
+      BackgroundAttribution? background_image_attribution);
+};

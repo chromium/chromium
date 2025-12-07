@@ -2,17 +2,92 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
 import("//third_party/fontconfig/fontconfig.gni")
 
 assert(is_linux || is_chromeos)
 
 if (use_bundled_fontconfig) {
+  rust_bindgen("fontconfig_h_bindgen") {
+    header = "include/fontconfig/fontconfig.h"
+    bindgen_flags = [
+      "merge-extern-blocks",
+      "allowlist-item=(FcCharSet.*|FC_(SLANT|WEIGHT|WIDTH|DUAL|MONO|FAMILY|SPACING)(_.*)?|Fc(Lang|Font)Set(Add|Create|Destroy|Copy|HasLang).*|FcWeightFromOpenType.*)",
+    ]
+    crate_name = "fontconfig_bindings"
+    configs = [
+      ":fontconfig_config",
+      ":bindgen_config",
+    ]
+  }
+
+  rust_bindgen("fcint_h_bindgen") {
+    header = "src/src/fcint.h"
+
+    bindgen_flags = [
+      "merge-extern-blocks",
+      "allowlist-item=(FcPattern.*|FcRange.*|FcCharSet.*|FcLangSetFromCharSet|FC_.*_OBJECT)",
+      "blocklist-type=(FcCharSet|FcLangSet)",
+      "raw-line=pub use fontconfig_bindings::FcCharSet; pub use fontconfig_bindings::FcLangSet;",
+    ]
+    crate_name = "fcint_bindings"
+    deps = [ ":fontconfig_h_bindgen" ]
+    configs = [
+      ":fontconfig_config",
+      ":bindgen_config",
+    ]
+  }
+
+  rust_static_library("fontconfig_fontations_ffi") {
+    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    edition = "2021"
+    crate_root = "src/fc-fontations/mod.rs"
+    sources = [
+      "src/fc-fontations/attributes.rs",
+      "src/fc-fontations/bitmap.rs",
+      "src/fc-fontations/capabilities.rs",
+      "src/fc-fontations/charset.rs",
+      "src/fc-fontations/foundries.rs",
+      "src/fc-fontations/instance_enumerate.rs",
+      "src/fc-fontations/lang.rs",
+      "src/fc-fontations/mod.rs",
+      "src/fc-fontations/name_records.rs",
+      "src/fc-fontations/names.rs",
+      "src/fc-fontations/pattern_bindings/fc_wrapper.rs",
+      "src/fc-fontations/pattern_bindings/mod.rs",
+    ]
+    deps = [
+      ":fcint_h_bindgen",
+      ":fontconfig_h_bindgen",
+      "//third_party/rust/font_types/v0_10:lib",
+      "//third_party/rust/libc/v0_2:lib",
+      "//third_party/rust/read_fonts/v0_36:lib",
+      "//third_party/rust/skrifa/v0_39:lib",
+    ]
+  }
+
   config("fontconfig_config") {
-    include_dirs = [ "src" ]
+    include_dirs = [
+      "src",
+      "include/",
+      "include/fc-const/",
+      "include/fc-lang/",
+    ]
+  }
+
+  config("bindgen_config") {
+    include_dirs = [ "include" ]
+    defines = [
+      "BINDGEN_IGNORE_VISIBILITY=1",
+      "FC_NO_MT=1",
+      "FLEXIBLE_ARRAY_MEMBER=1",
+    ]
   }
 
   component("fontconfig") {
     sources = [
+      "include/fontconfig/fontconfig.h",
       "src/src/fcarch.h",
       "src/src/fcatomic.c",
       "src/src/fccache.c",
@@ -22,11 +97,13 @@ if (use_bundled_fontconfig) {
       "src/src/fcdbg.c",
       "src/src/fcdefault.c",
       "src/src/fcdir.c",
+      "src/src/fcfontations.c",
       "src/src/fcformat.c",
       "src/src/fcfreetype.c",
       "src/src/fcfs.c",
       "src/src/fchash.c",
       "src/src/fcinit.c",
+      "src/src/fcint.h",
       "src/src/fclang.c",
       "src/src/fclist.c",
       "src/src/fcmatch.c",
@@ -50,7 +127,10 @@ if (use_bundled_fontconfig) {
       "include/src",
     ]
 
-    defines = [ "HAVE_CONFIG_H" ]
+    defines = [
+      "HAVE_CONFIG_H",
+      "ENABLE_FONTATIONS",
+    ]
 
     # Fontconfig symbols should not be exported from chrome, nacl_helper, or
     # anything else.
@@ -62,6 +142,7 @@ if (use_bundled_fontconfig) {
     }
 
     deps = [
+      ":fontconfig_fontations_ffi",
       "//build/config/freetype",
       "//third_party/libxml",
       "//third_party/zlib",

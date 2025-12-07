@@ -1,0 +1,84 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//chrome/enterprise_companion/buildflags.gni")
+
+if (enable_enterprise_companion) {
+  if (is_mac) {
+    # Copies a macOS application bundle fetched from CIPD to the output directory,
+    # renaming the bundle to remove the "_test" suffix.
+    #
+    # Parameters
+    #
+    #   arch [required]
+    #       The architecture directory's suffix. One of "amd64" or "arm64".
+    #
+    template("old_enterprise_companion_bundle") {
+      _src_dir = "chromium_mac_${invoker.arch}/cipd/ChromiumEnterpriseCompanion_test.app/"
+      _dest_dir = "${root_out_dir}/old_enterprise_companion/chromium_mac_${invoker.arch}/cipd/ChromiumEnterpriseCompanion.app/"
+      copy("${target_name}__copy_exe") {
+        sources =
+            [ _src_dir + "Contents/MacOS/ChromiumEnterpriseCompanion_test" ]
+        outputs = [ _dest_dir + "Contents/MacOS/ChromiumEnterpriseCompanion" ]
+      }
+
+      copy("${target_name}__copy_pkginfo") {
+        sources = [ _src_dir + "Contents/PkgInfo" ]
+        outputs = [ _dest_dir + "Contents/{{source_file_part}}" ]
+      }
+
+      copy("${target_name}__copy_plist") {
+        sources = [ _src_dir + "Contents/Info.plist" ]
+        outputs = [ _dest_dir + "Contents/{{source_file_part}}" ]
+      }
+
+      group(target_name) {
+        data_deps = [
+          ":${target_name}__copy_exe",
+          ":${target_name}__copy_pkginfo",
+          ":${target_name}__copy_plist",
+        ]
+      }
+    }
+
+    old_enterprise_companion_bundle("old_enterprise_companion_amd64") {
+      arch = "amd64"
+    }
+
+    old_enterprise_companion_bundle("old_enterprise_companion_arm64") {
+      arch = "arm64"
+    }
+
+    group("old_enterprise_companion") {
+      assert(
+          !is_chrome_branded,
+          "Old enterprise companion versions are only available for Chromium-branded builds.")
+      data_deps = [
+        ":old_enterprise_companion_amd64",
+        ":old_enterprise_companion_arm64",
+      ]
+    }
+  } else {
+    copy("old_enterprise_companion") {
+      assert(
+          !is_chrome_branded,
+          "Old enterprise companion versions are only available for Chromium-branded builds.")
+      testonly = true
+      outputs = [
+        "$root_build_dir/old_enterprise_companion/{{source_target_relative}}",
+      ]
+      sources = []
+
+      if (is_linux) {
+        sources += [ "chromium_linux64/cipd/enterprise_companion_test" ]
+      } else if (is_win) {
+        sources += [
+          "chromium_win_x86/cipd/enterprise_companion_test.exe",
+          "chromium_win_x86_64/cipd/enterprise_companion_test.exe",
+        ]
+      }
+    }
+  }
+}

@@ -14,9 +14,9 @@ static_library("media_device_salt") {
 
   deps = [
     "//components/keyed_service/content",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
-    "//components/user_prefs:user_prefs",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/user_prefs",
     "//content/public/browser",
     "//sql",
   ]
@@ -36,7 +36,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
     "//content/test:test_support",
-    "//sql:sql",
+    "//sql",
     "//testing/gtest/",
   ]
 }

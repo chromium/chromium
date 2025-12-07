@@ -32,10 +32,12 @@ using testing::SaveArg;
 
 namespace {
 
+static constexpr int kSampleRate = 3000;
+
 AudioDecoderConfig CreateAudioConfig(AudioCodec codec) {
   return AudioDecoderConfig(codec, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
-                            EncryptionScheme::kUnencrypted);
+                            CHANNEL_LAYOUT_STEREO, kSampleRate,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 VideoDecoderConfig CreateVideoConfig(VideoCodec codec, int w, int h) {
@@ -114,7 +116,7 @@ class SourceBufferStateTest : public ::testing::Test {
   bool AppendDataAndReportTracks(const std::unique_ptr<SourceBufferState>& sbs,
                                  std::unique_ptr<MediaTracks> tracks) {
     const uint8_t kStreamData[] = "stream_data";
-    base::span<const uint8_t> stream_data = base::make_span(kStreamData);
+    base::span<const uint8_t> stream_data = base::span(kStreamData);
     base::TimeDelta t;
 
     // Ensure `stream_data` fits within one StreamParser::Parse() call.

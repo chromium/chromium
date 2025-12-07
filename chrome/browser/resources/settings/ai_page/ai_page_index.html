@@ -1,0 +1,62 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+
+  /* Necessary to display multiple cr-view-manager views (in this case "cards")
+     at the same time. */
+  cr-view-manager [slot=view]:not(.closing) {
+    position: initial;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-ai-info-card slot="view" id="aiInfoCard"></settings-ai-info-card>
+
+<if expr="enable_glic">
+  <template is="dom-if" if="[[showGlicSettings_]]">
+    <settings-glic-page slot="view" id="glic" prefs="{{prefs}}">
+    </settings-glic-page>
+
+    <settings-glic-subpage slot="view" id="gemini"
+        data-parent-view-id="glic" prefs="{{prefs}}"
+        route-path$="[[routes_.GEMINI.path]]">
+    </settings-glic-subpage>
+  </template>
+</if>
+
+  <template is="dom-if" if="[[showAiPageAiFeatureSection_]]">
+    <settings-ai-page slot="view" id="parent" prefs="{{prefs}}">
+    </settings-ai-page>
+  </template>
+
+  <template is="dom-if" if="[[showHistorySearchControl_]]">
+    <settings-history-search-page slot="view" id="historySearch"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.HISTORY_SEARCH.path]]">
+    </settings-history-search-page>
+  </template>
+
+  <template is="dom-if" if="[[showCompareControl_]]">
+    <settings-ai-compare-subpage slot="view" id="compare"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.COMPARE.path]]">
+    </settings-ai-compare-subpage>
+  </template>
+
+  <template is="dom-if" if="[[showComposeControl_]]">
+    <settings-offer-writing-help-page slot="view" id="compose"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.OFFER_WRITING_HELP.path]]">
+    </settings-offer-writing-help-page>
+  </template>
+
+  <template is="dom-if" if="[[showTabOrganizationControl_]]">
+    <settings-ai-tab-organization-subpage slot="view" id="tabOrganization"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.AI_TAB_ORGANIZATION.path]]">
+    </settings-ai-tab-organization-subpage>
+  </template>
+</cr-view-manager>

@@ -7,7 +7,6 @@
 #include "services/video_capture/test/mock_video_capture_device_test.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace video_capture {
 
@@ -17,8 +16,9 @@ TEST_F(MockVideoCaptureDeviceTest, DeviceIsStoppedWhenDiscardingDeviceClient) {
   {
     base::RunLoop wait_loop;
 
-    EXPECT_CALL(mock_device_, DoStopAndDeAllocate())
-        .WillOnce(Invoke([&wait_loop]() { wait_loop.Quit(); }));
+    EXPECT_CALL(mock_device_, DoStopAndDeAllocate()).WillOnce([&wait_loop]() {
+      wait_loop.Quit();
+    });
 
     device_->Start(requested_settings_, std::move(mock_subscriber_));
     mock_video_frame_handler_.reset();

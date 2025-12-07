@@ -9,8 +9,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -34,12 +35,12 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
     return kChromeUIUserDefaultsInternalsHost;
   }
 
-  std::string GetMimeType(const std::string& path) const override {
+  std::string GetMimeType(std::string_view path) const override {
     return "text/plain";
   }
 
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override {
     std::string response;
 
@@ -52,16 +53,34 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
     response.append(
         "<style>table, th, td {border: 1px solid black; "
         "border-collapse: collapse;}th {text-align: left;}</style>");
-    response.append("<h1>List of user defaults:</h1>\n\n");
 
-    NSDictionary<NSString*, id>* defaultsDict =
-        [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-    NSArray* sortedKeys = [[defaultsDict allKeys]
+    response.append("<h1>List of user defaults:</h1>\n\n");
+    response.append(TableWithDefaults([NSUserDefaults standardUserDefaults]));
+
+    response.append("<h1>List of application group user defaults:</h1>\n\n");
+    response.append(TableWithDefaults(app_group::GetGroupUserDefaults()));
+
+    FinishDataRequest(std::move(response), std::move(callback));
+  }
+
+  void FinishDataRequest(std::string html,
+                         web::URLDataSourceIOS::GotDataCallback callback) {
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(html)));
+  }
+
+  // Returns a table containing info about keys stored in `user_defaults`.
+  std::string TableWithDefaults(NSUserDefaults* user_defaults) {
+    std::string table;
+    NSDictionary<NSString*, id>* defaults_dict =
+        [user_defaults dictionaryRepresentation];
+
+    NSArray* sortedKeys = [[defaults_dict allKeys]
         sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 
-    response.append("<table>\n");
+    table.append("<table>\n");
     for (NSString* key in sortedKeys) {
-      id value = defaultsDict[key];
+      id value = defaults_dict[key];
       NSString* valueString;
       if ([value isKindOfClass:[NSArray class]]) {
         valueString = [value description];
@@ -77,20 +96,13 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
       } else if ([value isKindOfClass:[NSDate class]]) {
         valueString = [value description];
       }
-      response.append("<tr>\n");
-      response.append("<th>" + base::SysNSStringToUTF8(key) + "</th>\n");
-      response.append("<td>" + base::SysNSStringToUTF8(valueString) +
-                      "</td>\n");
-      response.append("</tr>\n");
+      table.append("<tr>\n");
+      table.append("<th>" + base::SysNSStringToUTF8(key) + "</th>\n");
+      table.append("<td>" + base::SysNSStringToUTF8(valueString) + "</td>\n");
+      table.append("</tr>\n");
     }
-    response.append("</table>\n<html>");
-    FinishDataRequest(std::move(response), std::move(callback));
-  }
-
-  void FinishDataRequest(std::string html,
-                         web::URLDataSourceIOS::GotDataCallback callback) {
-    std::move(callback).Run(
-        base::MakeRefCounted<base::RefCountedString>(std::move(html)));
+    table.append("</table>\n<html>");
+    return table;
   }
 
  private:
@@ -102,10 +114,9 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
 UserDefaultsInternalsUI::UserDefaultsInternalsUI(web::WebUIIOS* web_ui,
                                                  const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   web::URLDataSourceIOS::Add(
-      browser_state,
-      new UserDefaultsInternalsSource(browser_state->IsOffTheRecord()));
+      profile, new UserDefaultsInternalsSource(profile->IsOffTheRecord()));
 }
 
 UserDefaultsInternalsUI::~UserDefaultsInternalsUI() = default;

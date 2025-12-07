@@ -11,7 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
+#include "components/device_signals/core/common/common_types.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -48,8 +49,7 @@ struct ContextInfo {
   std::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger;
   bool chrome_remote_desktop_app_blocked;
-  std::optional<bool> third_party_blocking_enabled;
-  SettingValue os_firewall;
+  device_signals::SettingValue os_firewall;
   std::vector<std::string> system_dns_servers;
   std::optional<std::string> enterprise_profile_id;
 };
@@ -88,6 +88,7 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetProfileAffiliationIDs();
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   std::vector<std::string> GetAnalysisConnectorProviders(
       enterprise_connectors::AnalysisConnector connector);
 
@@ -95,8 +96,9 @@ class ContextInfoFetcher {
   GetRealtimeUrlCheckMode();
 
   std::vector<std::string> GetOnSecurityEventProviders();
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
-  SettingValue GetOSFirewall();
+  device_signals::SettingValue GetOSFirewall();
 
   ContextInfo FetchAsyncSignals(ContextInfo info);
 

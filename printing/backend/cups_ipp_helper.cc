@@ -18,7 +18,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
@@ -31,6 +30,7 @@
 #include "printing/units.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -136,6 +136,9 @@ void ExtractColor(const CupsOptionProvider& printer,
 
 void ExtractDuplexModes(const CupsOptionProvider& printer,
                         PrinterSemanticCapsAndDefaults* printer_info) {
+  printer_info->duplex_default = mojom::DuplexMode::kUnknownDuplexMode;
+  printer_info->duplex_modes.clear();
+
   std::vector<std::string_view> duplex_modes =
       printer.GetSupportedOptionValueStrings(kIppDuplex);
   for (std::string_view duplex : duplex_modes) {
@@ -145,15 +148,12 @@ void ExtractDuplexModes(const CupsOptionProvider& printer,
   }
 
   ipp_attribute_t* attr = printer.GetDefaultOptionValue(kIppDuplex);
-  if (!attr) {
-    printer_info->duplex_default = mojom::DuplexMode::kUnknownDuplexMode;
-    return;
+  if (attr) {
+    const char* const attr_str = ippGetString(attr, 0, nullptr);
+    if (attr_str) {
+      printer_info->duplex_default = DuplexModeFromIpp(attr_str);
+    }
   }
-
-  const char* const attr_str = ippGetString(attr, 0, nullptr);
-  printer_info->duplex_default = attr_str
-                                     ? DuplexModeFromIpp(attr_str)
-                                     : mojom::DuplexMode::kUnknownDuplexMode;
 }
 
 void CopiesRange(const CupsOptionProvider& printer,
@@ -207,6 +207,9 @@ void ExtractResolutions(const CupsOptionProvider& printer,
 #else
   constexpr gfx::Size kDefaultMissingDpi(kDefaultPdfDpi, kDefaultPdfDpi);
 #endif
+
+  printer_info->dpis.clear();
+  printer_info->default_dpi = gfx::Size();
 
   ipp_attribute_t* attr = printer.GetSupportedOptionValues(kIppResolution);
   if (!attr) {
@@ -290,7 +293,15 @@ PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
 
   return PrinterSemanticCapsAndDefaults::Paper(
       /*display_name=*/"", /*vendor_id=*/"", size_um, printable_area_um,
-      max_height_um);
+      max_height_um, /*has_borderless_variant=*/false
+#if BUILDFLAG(IS_CHROMEOS)
+      ,
+      PaperMargins(size->top_margin * kMicronsPerPwgUnit,
+                   size->right_margin * kMicronsPerPwgUnit,
+                   size->bottom_margin * kMicronsPerPwgUnit,
+                   size->left_margin * kMicronsPerPwgUnit)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 }
 
 bool PaperIsBorderless(const PrinterSemanticCapsAndDefaults::Paper& paper) {
@@ -369,6 +380,9 @@ void CorrectDefaultMediaType(PrinterSemanticCapsAndDefaults*& printer_info) {
 
 void ExtractMediaTypes(const CupsOptionProvider& printer,
                        PrinterSemanticCapsAndDefaults* printer_info) {
+  printer_info->media_types.clear();
+  printer_info->default_media_type =
+      PrinterSemanticCapsAndDefaults::MediaType();
   std::vector<std::string_view> names =
       printer.GetSupportedOptionValueStrings(kIppMediaType);
   if (names.empty()) {
@@ -499,10 +513,68 @@ size_t AddInputTray(const CupsOptionProvider& printer,
 void ExtractAdvancedCapabilities(const CupsOptionProvider& printer,
                                  PrinterSemanticCapsAndDefaults* printer_info) {
   AdvancedCapabilities* options = &printer_info->advanced_capabilities;
+  options->clear();
   size_t attr_count = AddInputTray(printer, options);
   attr_count += AddAttributes(printer, kIppJobAttributes, options);
   attr_count += AddAttributes(printer, kIppDocumentAttributes, options);
   base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesCount", attr_count);
+}
+
+// Convert string value to mojom::PrintScalingType
+mojom::PrintScalingType PrintScalingTypeFromString(
+    const std::string_view value) {
+  if (value == "auto") {
+    return mojom::PrintScalingType::kAuto;
+  }
+  if (value == "auto-fit") {
+    return mojom::PrintScalingType::kAutoFit;
+  }
+  if (value == "fill") {
+    return mojom::PrintScalingType::kFill;
+  }
+  if (value == "fit") {
+    return mojom::PrintScalingType::kFit;
+  }
+  if (value == "none") {
+    return mojom::PrintScalingType::kNone;
+  }
+
+  // Default to unknown for any unrecognized values.
+  return mojom::PrintScalingType::kUnknownPrintScalingType;
+}
+
+void ExtractPrintScaling(const CupsOptionProvider& printer,
+                         PrinterSemanticCapsAndDefaults* printer_info) {
+  printer_info->print_scaling_types.clear();
+  printer_info->print_scaling_type_default =
+      mojom::PrintScalingType::kUnknownPrintScalingType;
+
+  std::vector<std::string_view> values =
+      printer.GetSupportedOptionValueStrings(kIppPrintScaling);
+  for (const auto& value : values) {
+    auto type = PrintScalingTypeFromString(value);
+    if (type != mojom::PrintScalingType::kUnknownPrintScalingType) {
+      printer_info->print_scaling_types.emplace_back(type);
+    }
+  }
+
+  if (printer_info->print_scaling_types.empty()) {
+    return;
+  }
+
+  // Get default value
+  ipp_attribute_t* attr = printer.GetDefaultOptionValue(kIppPrintScaling);
+  if (const char* const name = ippGetString(attr, 0, nullptr)) {
+    printer_info->print_scaling_type_default = PrintScalingTypeFromString(name);
+  }
+
+  if (printer_info->print_scaling_type_default ==
+          mojom::PrintScalingType::kUnknownPrintScalingType &&
+      !printer_info->print_scaling_types.empty()) {
+    // If no default is provided, use the first value.
+    printer_info->print_scaling_type_default =
+        printer_info->print_scaling_types[0];
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -535,6 +607,9 @@ void CapsAndDefaultsFromPrinter(const CupsPrinter& printer,
 #if BUILDFLAG(IS_CHROMEOS)
   printer_info->pin_supported = PinSupported(printer);
   ExtractAdvancedCapabilities(printer, printer_info);
+  if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
+    ExtractPrintScaling(printer, printer_info);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ExtractCopies(printer, printer_info);
@@ -813,7 +888,7 @@ void FilterMediaColSizes(ScopedIppPtr& attributes) {
   // Finally, update the attribute that was passed in with the new entries.
   ippDeleteAttribute(attributes.get(), media_col_db);
   std::vector<const ipp_t*> raw_entries(new_entries.size());
-  base::ranges::transform(new_entries, raw_entries.begin(), &ScopedIppPtr::get);
+  std::ranges::transform(new_entries, raw_entries.begin(), &ScopedIppPtr::get);
   ippAddCollections(attributes.get(), IPP_TAG_PRINTER, kIppMediaColDatabase,
                     raw_entries.size(), raw_entries.data());
 }

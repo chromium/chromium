@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module_for_testing.h"
-
 #import <LocalAuthentication/LocalAuthentication.h>
 
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module_for_testing.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -62,7 +61,7 @@ class ReauthenticationModuleTest : public PlatformTest {
 // even if the time interval since the previous reauthentication is less
 // than 60 seconds.
 // TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ReauthReuseNotPermitted ReauthReuseNotPermitted
 #else
 #define MAYBE_ReauthReuseNotPermitted DISABLED_ReauthReuseNotPermitted
@@ -91,10 +90,10 @@ TEST_F(ReauthenticationModuleTest, MAYBE_ReauthReuseNotPermitted) {
 }
 
 // Tests that the previous reauthentication is reused when reuse is permitted
-// and the last successful reauthentication occured less than 60 seconds
+// and the last successful reauthentication occurred less than 60 seconds
 // before the current attempt.
 // TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ReauthReusePermittedLessThanSixtySeconds \
   ReauthReusePermittedLessThanSixtySeconds
 #else
@@ -133,10 +132,10 @@ TEST_F(ReauthenticationModuleTest,
 }
 
 // Tests that the previous reauthentication is not reused when reuse is
-// permitted, but the last successful reauthentication occured more than 60
+// permitted, but the last successful reauthentication occurred more than 60
 // seconds before the current attempt.
 // TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ReauthReusePermittedMoreThanSixtySeconds \
   ReauthReusePermittedMoreThanSixtySeconds
 #else

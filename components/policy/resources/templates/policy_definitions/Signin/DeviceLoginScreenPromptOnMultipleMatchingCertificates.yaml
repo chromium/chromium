@@ -17,8 +17,7 @@ items:
 - caption: Do not prompt the user to select a client certificate on the sign-in screen
   value: false
 owners:
-- emaxx@chromium.org
-- pmarko@chromium.org
+- miersh@google.com
 schema:
   type: boolean
 supported_on:

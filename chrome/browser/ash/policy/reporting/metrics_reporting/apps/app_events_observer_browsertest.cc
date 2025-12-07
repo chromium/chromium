@@ -8,12 +8,14 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -93,9 +95,11 @@ bool IsMetricEventOfType(MetricEventType metric_event_type,
 class AppEventsObserverBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
-  AppEventsObserverBrowserTest()
-      : scoped_feature_list_(kEnableAppEventsObserver) {
+  AppEventsObserverBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    crypto_home_mixin_.ApplyAuthConfig(
+        affiliation_mixin_.account_id(),
+        ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
     ::policy::SetDMTokenForTesting(
         ::policy::DMToken::CreateValidToken(kDMToken));
   }
@@ -140,7 +144,6 @@ class AppEventsObserverBrowserTest
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, PRE_ReportInstalledApp) {
@@ -231,7 +234,15 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsMetricEventOfType, MetricEventType::APP_LAUNCHED));
-  ::web_app::LaunchWebAppBrowser(profile(), app_id);
+
+  base::RunLoop run_loop;
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
+      apps::AppLaunchParams(
+          app_id, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromTest),
+      base::IgnoreArgs<apps::LaunchResult&&>(run_loop.QuitClosure()));
+  run_loop.Run();
+
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
   AssertRecordData(priority, record);
   MetricData metric_data;

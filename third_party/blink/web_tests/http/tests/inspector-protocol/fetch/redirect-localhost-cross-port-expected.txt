@@ -1,0 +1,14 @@
+Tests that Fetch.continueRequest correctly handles initiator path for cross-port localhost redirects.
+
+--- Scenario: Request from root document ('/') ---
+  Redirecting fetch request to: http://127.0.0.1:8080/inspector-protocol/resources/cors-data.php
+  Verification result: Success: Response text is "Some content"
+
+--- Scenario: Request from root document with a query parameter ---
+  Redirecting fetch request to: http://127.0.0.1:8080/inspector-protocol/resources/cors-data.php
+  Verification result: Success: Response text is "Some content"
+
+--- Scenario: Request from document with a path ---
+  Redirecting fetch request to: http://127.0.0.1:8080/inspector-protocol/resources/cors-data.php
+  Verification result: Success: Response text is "Some content"
+

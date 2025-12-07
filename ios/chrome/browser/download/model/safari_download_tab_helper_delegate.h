@@ -11,12 +11,16 @@
 @protocol SafariDownloadTabHelperDelegate
 
 // Called to download .mobileconfig file, `fileURL` points to the .mobileconfig
-// file that we are trying to download. `fileURL` cannot be nil.
+// file that we are trying to download. If `fileURL` is nil then this is no-op.
 - (void)presentMobileConfigAlertFromURL:(NSURL*)fileURL;
 
 // Called to download .ics file, `fileURL` points to the .ics
-// file that we are trying to download. `fileURL` cannot be nil.
+// file that we are trying to download. If `fileURL` is nil then this is no-op.
 - (void)presentCalendarAlertFromURL:(NSURL*)fileURL;
+
+// Called to download .order files, `fileURL` points to the .order file that we
+// are trying to download. If `fileURL` is nil then this is no-op.
+- (void)presentAppleWalletOrderAlertFromURL:(NSURL*)fileURL;
 
 @end
 

@@ -10,10 +10,12 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONObject;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.impl.CronetLogger;
 import org.chromium.net.impl.CronetLoggerFactory;
 
@@ -376,13 +378,15 @@ public abstract class CronetEngine {
         /**
          * Sets the thread priority of Cronet's internal thread.
          *
+         * @deprecated On modern versions of Cronet, this method does nothing.
          * @param priority the thread priority of Cronet's internal thread. A Linux priority level,
-         *         from
-         * -20 for highest scheduling priority to 19 for lowest scheduling priority. For more
-         * information on values, see {@link android.os.Process#setThreadPriority(int, int)} and
-         * {@link android.os.Process#THREAD_PRIORITY_DEFAULT THREAD_PRIORITY_*} values.
+         *     from -20 for highest scheduling priority to 19 for lowest scheduling priority. For
+         *     more information on values, see {@link android.os.Process#setThreadPriority(int,
+         *     int)} and {@link android.os.Process#THREAD_PRIORITY_DEFAULT THREAD_PRIORITY_*}
+         *     values.
          * @return the builder to facilitate chaining.
          */
+        @Deprecated
         public Builder setThreadPriority(int priority) {
             mBuilderDelegate.setThreadPriority(priority);
             return this;
@@ -503,6 +507,44 @@ public abstract class CronetEngine {
             return setConnectionMigrationOptions(connectionMigrationOptionsBuilder.build());
         }
 
+        /**
+         * Configures proxying behavior. This affects, in different ways: connections establishment,
+         * {@link UrlRequest} and {@link BidirectionalStream}. For more details, refer to the
+         * documentation of {@link Proxy}.
+         *
+         * <p>This is not to be confused with proxy configuration that have been set up by: the
+         * user; or some enterprise profile configuration, or (most likely) some network
+         * autoconfiguration (e.g., Web Proxy Auto-Discovery Protocol). This is usually referred to
+         * as "system" proxy configuration. If present, respecting the system proxy configuration is
+         * often a requirement to obtain local and/or internet connectivity. Cronet already handles
+         * the system proxy configuration internally.
+         *
+         * <p>A proxy configuration defined via this API are refererred to as "app" proxy
+         * configuration. App and system proxy configuration are separate and, most importantly,
+         * differ. Currently, app and system proxy configurations are mutually exclusive: specifying
+         * {@link ProxyOptions} overrides the system proxy configuration, if present. This might
+         * cause connectivity problems in some scenarios where a system proxy configuration is
+         * present. In such scenarios, users might end up with no internet access, unless {@link
+         * ProxyOptions} has been configured with a final, {@code null}, fallback. Refer to {@link
+         * ProxyOptions} documentation.
+         *
+         * @param proxyOptions ProxyOptions to be used for {@link UrlRequest}, {@link
+         *     BiridirectionalStream} and connections established by the {@link CronetEngine}
+         *     created by this builder.
+         * @return the builder to facilitate chaining.
+         */
+        @ProxyOptions.Experimental
+        public Builder setProxyOptions(@Nullable ProxyOptions proxyOptions) {
+            if (!mBuilderDelegate
+                    .getSupportedConfigOptions()
+                    .contains(ICronetEngineBuilder.PROXY_OPTIONS)) {
+                throw new UnsupportedOperationException(
+                        "This Cronet implementation does not support ProxyOptions");
+            }
+            mBuilderDelegate.setProxyOptions(proxyOptions);
+            return this;
+        }
+
         protected ExperimentalCronetEngine buildExperimental() {
             int implLevel = getImplApiLevel(mBuilderDelegate);
             if (implLevel != -1 && implLevel < getMaximumApiLevel()) {
@@ -547,39 +589,45 @@ public abstract class CronetEngine {
          * @return the created {@code ICronetEngineBuilder}.
          */
         private static ICronetEngineBuilder createBuilderDelegate(Context context) {
-            var startUptimeMillis = SystemClock.uptimeMillis();
-            CronetProvider.ProviderInfo providerInfo =
-                    getEnabledCronetProviders(
-                                    context,
-                                    new ArrayList<>(CronetProvider.getAllProviderInfos(context)))
-                            .get(0);
-            var logger = CronetLoggerFactory.createLogger(context, providerInfo.logSource);
-            var logInfo = new CronetLogger.CronetEngineBuilderInitializedInfo();
-            try {
-                logInfo.creationSuccessful = false;
-                logInfo.author = CronetLogger.CronetEngineBuilderInitializedInfo.Author.API;
-                logInfo.source = providerInfo.logSource;
-                logInfo.uid = Process.myUid();
-                logInfo.apiVersion = new CronetLogger.CronetVersion(ApiVersion.getCronetVersion());
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(
-                            TAG,
-                            String.format(
-                                    "Using '%s' provider for creating CronetEngine.Builder.",
-                                    providerInfo.provider));
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped("CronetEngine#createBuilderDelegate")) {
+                var startUptimeMillis = SystemClock.uptimeMillis();
+                CronetProvider.ProviderInfo providerInfo =
+                        getEnabledCronetProviders(
+                                        context,
+                                        new ArrayList<>(
+                                                CronetProvider.getAllProviderInfos(context)))
+                                .get(0);
+                var logger = CronetLoggerFactory.createLogger(context, providerInfo.logSource);
+                var logInfo = new CronetLogger.CronetEngineBuilderInitializedInfo();
+                try {
+                    logInfo.creationSuccessful = false;
+                    logInfo.author = CronetLogger.CronetEngineBuilderInitializedInfo.Author.API;
+                    logInfo.source = providerInfo.logSource;
+                    logInfo.uid = Process.myUid();
+                    logInfo.apiVersion =
+                            new CronetLogger.CronetVersion(ApiVersion.getCronetVersion());
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "Using '%s' provider for creating CronetEngine.Builder.",
+                                        providerInfo.provider));
+                    }
+                    var builderDelegate = providerInfo.provider.createBuilder().mBuilderDelegate;
+                    var implCronetVersion = getImplCronetVersion(builderDelegate);
+                    if (implCronetVersion != null) {
+                        logInfo.implVersion = new CronetLogger.CronetVersion(implCronetVersion);
+                    }
+                    logInfo.cronetInitializationRef =
+                            builderDelegate.getLogCronetInitializationRef();
+                    logInfo.creationSuccessful = true;
+                    return builderDelegate;
+                } finally {
+                    logInfo.engineBuilderCreatedLatencyMillis =
+                            (int) (SystemClock.uptimeMillis() - startUptimeMillis);
+                    logger.logCronetEngineBuilderInitializedInfo(logInfo);
                 }
-                var builderDelegate = providerInfo.provider.createBuilder().mBuilderDelegate;
-                var implCronetVersion = getImplCronetVersion(builderDelegate);
-                if (implCronetVersion != null) {
-                    logInfo.implVersion = new CronetLogger.CronetVersion(implCronetVersion);
-                }
-                logInfo.cronetInitializationRef = builderDelegate.getLogCronetInitializationRef();
-                logInfo.creationSuccessful = true;
-                return builderDelegate;
-            } finally {
-                logInfo.engineBuilderCreatedLatencyMillis =
-                        (int) (SystemClock.uptimeMillis() - startUptimeMillis);
-                logger.logCronetEngineBuilderInitializedInfo(logInfo);
             }
         }
 
@@ -779,25 +827,10 @@ public abstract class CronetEngine {
     public abstract void stopNetLog();
 
     /**
-     * Returns differences in metrics collected by Cronet since the last call to this method.
-     *
-     * <p>Cronet collects these metrics globally. This means deltas returned by {@code
-     * getGlobalMetricsDeltas()} will include measurements of requests processed by other {@link
-     * CronetEngine} instances. Since this function returns differences in metrics collected since
-     * the last call, and these metrics are collected globally, a call to any {@code CronetEngine}
-     * instance's {@code getGlobalMetricsDeltas()} method will affect the deltas returned by any
-     * other
-     * {@code CronetEngine} instance's {@code getGlobalMetricsDeltas()}.
-     *
-     * <p>Cronet starts collecting these metrics after the first call to {@code
-     * getGlobalMetricsDeltras()}, so the first call returns no useful data as no metrics have yet
-     * been collected.
-     *
-     * @return differences in metrics collected by Cronet, since the last call to {@code
-     * getGlobalMetricsDeltas()}, serialized as a <a
-     * href=https://developers.google.com/protocol-buffers>protobuf
-     * </a>.
+     * @deprecated In modern versions of Cronet, this will always return an empty array. In older
+     * versions, this used to return a serialized protobuf containing metrics data.
      */
+    @Deprecated
     public abstract byte[] getGlobalMetricsDeltas();
 
     /**

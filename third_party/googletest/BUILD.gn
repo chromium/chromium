@@ -23,12 +23,6 @@ config("gtest_config") {
     # and other systems, we tell gtest to always use its internal engine.
     "GTEST_HAS_POSIX_RE=0",
 
-    # Enables C++11 features.
-    "GTEST_LANG_CXX11=1",
-
-    # Prevents gtest from including both <tr1/tuple> and <tuple>.
-    "GTEST_HAS_TR1_TUPLE=0",
-
     # Use Abseil, but without flags support: Abseil flags uses the
     # `FastTypeId<T>()` pattern internally, which is known to be broken in
     # subtle ways in the component build.
@@ -60,8 +54,9 @@ config("gmock_config") {
   ]
 
   if (is_clang) {
-    # TODO(tikuta): remove this when the issue is fixed.
-    # https://github.com/google/googletest/issues/533
+    # TODO(crbug.com/40616204): remove this when we migrated to new MOCK_METHOD
+    # macro.
+    # ref: https://google.github.io/googletest/gmock_cook_book.html#old-style-mock_methodn-macros
     cflags = [ "-Wno-inconsistent-missing-override" ]
   }
 }
@@ -135,7 +130,7 @@ source_set("gtest") {
   # googletest only needs `absl`, but this makes gn check happier.
   deps = [ "//third_party/abseil-cpp:absl_full" ]
   public_deps = [ "//third_party/re2" ]
-  if (is_nacl || !build_with_chromium) {
+  if (!build_with_chromium) {
     defines += [ "GTEST_DISABLE_PRINT_STACK_TRACE" ]
     sources -= [
       "custom/gtest/internal/custom/stack_trace_getter.cc",

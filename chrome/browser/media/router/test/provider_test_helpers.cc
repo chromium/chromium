@@ -170,7 +170,6 @@ MediaSinkInternal CreateCastSink(int num) {
   MediaSink sink{CreateCastSink(unique_id, friendly_name)};
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = ip_endpoint;
-  extra_data.port = ip_endpoint.port();
   extra_data.model_name = base::StringPrintf("model name %d", num);
   extra_data.cast_channel_id = num;
   extra_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
@@ -195,7 +194,8 @@ std::unique_ptr<ParsedDialAppInfo> CreateParsedDialAppInfoPtr(
 
 std::unique_ptr<DialInternalMessage> ParseDialInternalMessage(
     const std::string& message) {
-  auto message_value = base::JSONReader::Read(message);
+  auto message_value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::string error_unused;
   return message_value && message_value->is_dict()
              ? DialInternalMessage::From(std::move(message_value->GetDict()),

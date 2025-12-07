@@ -1,210 +1,521 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './module_wrapper.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {ModuleInstance, ModuleWrapperElement} from 'module_wrapper.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import type {ModuleIdName} from '../new_tab_page.mojom-webui.js';
+import {recordBoolean, recordOccurrence, recordSmallCount, recordSparseValueWithPersistentHash} from '../metrics_utils.js';
+import type {ModuleIdName, PageCallbackRouter, PageHandlerRemote} from '../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
+import {WindowProxy} from '../window_proxy.js';
 
 import type {Module} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
-import {ModuleWrapperElement} from './module_wrapper.js';
-import {getTemplate} from './modules.html.js';
+import {getCss} from './modules.css.js';
+import {getHtml} from './modules.html.js';
 
-export type DismissModuleEvent =
+export interface NamedWidth {
+  name: string;
+  value: number;
+}
+
+export const SUPPORTED_MODULE_WIDTHS: NamedWidth[] = [
+  {name: 'narrow', value: 312},
+  {name: 'medium', value: 360},
+  {name: 'wide', value: 728},
+];
+
+interface QueryDetails {
+  maxWidth: number;
+  query: string;
+}
+
+const CONTAINER_GAP_WIDTH = 8;
+
+const MARGIN_WIDTH = 48;
+
+const METRIC_NAME_MODULE_DISABLED = 'NewTabPage.Modules.Disabled';
+
+export type UndoActionEvent =
     CustomEvent<{message: string, restoreCallback?: () => void}>;
-export type DisableModuleEvent = DismissModuleEvent;
+export type DismissModuleElementEvent = UndoActionEvent;
+export type DismissModuleInstanceEvent = UndoActionEvent;
+export type DisableModuleEvent = UndoActionEvent;
 
 declare global {
   interface HTMLElementEventMap {
-    'dismiss-module': DismissModuleEvent;
     'disable-module': DisableModuleEvent;
+    'dismiss-module-instance': DismissModuleInstanceEvent;
+    'dismiss-module-element': DismissModuleElementEvent;
   }
 }
 
 export interface ModulesElement {
   $: {
-    modules: HTMLElement,
-    removeModuleToast: CrToastElement,
-    removeModuleToastMessage: HTMLElement,
-    undoRemoveModuleButton: HTMLElement,
+    container: HTMLElement,
+    undoToast: CrToastElement,
+    undoToastMessage: HTMLElement,
   };
 }
 
+function createModuleInstances(module: Module): ModuleInstance[] {
+  return module.elements.map(element => {
+    return {
+      element,
+      descriptor: module.descriptor,
+      initialized: false,
+      impressed: false,
+    };
+  });
+}
+
 /** Container for the NTP modules. */
-export class ModulesElement extends PolymerElement {
+export class ModulesElement extends CrLitElement {
   static get is() {
     return 'ntp-modules';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      disabledModules_: {
-        type: Object,
-        value: () => ({all: true, ids: []}),
-      },
-
-      dismissedModules_: {
-        type: Array,
-        value: () => [],
-      },
-
-      dragEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
-        reflectToAttribute: true,
-      },
-
-      modulesLoaded_: Boolean,
-
-      modulesLoadedAndVisibilityDetermined_: {
-        type: Boolean,
-        computed: `computeModulesLoadedAndVisibilityDetermined_(
-          modulesLoaded_,
-          modulesVisibilityDetermined_)`,
-        observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
-      },
-
       modulesShownToUser: {
         type: Boolean,
         notify: true,
       },
-
-      modulesVisibilityDetermined_: Boolean,
-
-      /** Data about the most recently removed module. */
-      removedModuleData_: {
-        type: Object,
-        value: null,
-      },
+      moduleInstances_: {type: Array},
+      disabledModules_: {type: Object},
+      /** Data about the most recent un-doable action. */
+      undoData_: {type: Object},
     };
   }
 
-  static get observers() {
-    return ['onRemovedModulesChange_(dismissedModules_.*, disabledModules_)'];
-  }
+  accessor modulesShownToUser: boolean = false;
+  private waitToLoadModules_: boolean =
+      loadTimeData.getBoolean('waitToLoadModules');
+  accessor moduleInstances_: ModuleInstance[] = [];
+  accessor disabledModules_:
+      {all: boolean, ids: string[]} = {all: true, ids: []};
+  protected accessor undoData_: {message: string, undo?: () => void}|null =
+      null;
 
-  private dismissedModules_: string[];
-  private disabledModules_: {all: boolean, ids: string[]};
-  private dragEnabled_: boolean;
-  private modulesIdNames_: ModuleIdName[];
-  private modulesLoaded_: boolean;
-  private modulesLoadedAndVisibilityDetermined_: boolean;
-  private modulesShownToUser: boolean;
-  private modulesVisibilityDetermined_: boolean;
-  private removedModuleData_: {message: string, undo?: () => void}|null;
-  private setDisabledModulesListenerId_: number|null = null;
+  private maxColumnCount_: number =
+      loadTimeData.getInteger('modulesMaxColumnCount');
+  private availableWidth_: number = 0;
+  private containerMaxWidth_: number = 0;
   private eventTracker_: EventTracker = new EventTracker();
+  private setDisabledModulesListenerId_: number|null = null;
+  private setModulesLoadableListenerId_: number|null = null;
+
+  private availableModulesIds_: Set<string>|null = null;
+  private moduleLoadPromise_: Promise<void>|null = null;
+  // TODO(crbug.com/385174675): Remove |modulesReloadable_| flag when safe.
+  // Otherwise, when Microsoft modules are enabled ToT, the current
+  // behavior gated by |modulesReloadable_| should become the default module
+  // loading behavior.
+  private modulesReloadable_: boolean =
+      loadTimeData.getBoolean('modulesReloadable');
+
+  override render() {
+    return getHtml.bind(this)();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setDisabledModulesListenerId_ =
-        NewTabPageProxy.getInstance()
-            .callbackRouter.setDisabledModules.addListener(
-                (all: boolean, ids: string[]) => {
-                  this.disabledModules_ = {all, ids};
-                  this.modulesVisibilityDetermined_ = true;
-                });
-    NewTabPageProxy.getInstance().handler.updateDisabledModules();
+
+    const widths: Set<number> = new Set();
+    for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
+      const namedWidth = SUPPORTED_MODULE_WIDTHS[i]!;
+      for (let u = 1; u <= this.maxColumnCount_ - i; u++) {
+        const width = (namedWidth.value * u) + (CONTAINER_GAP_WIDTH * (u - 1));
+        if (width <= this.containerMaxWidth_) {
+          widths.add(width);
+        }
+      }
+    }
+    // Widths must be deduped and sorted to ensure the min-width and max-with
+    // media features in the queries produced below are correctly generated.
+    const thresholds = [...widths];
+    thresholds.sort((i, j) => i - j);
+
+    const queries: QueryDetails[] = [];
+    for (let i = 1; i < thresholds.length - 1; i++) {
+      queries.push({
+        maxWidth: (thresholds[i + 1]! - 1),
+        query: `(min-width: ${
+            thresholds[i]! + 2 * MARGIN_WIDTH}px) and (max-width: ${
+            thresholds[i + 1]! - 1 + (2 * MARGIN_WIDTH)}px)`,
+      });
+    }
+    queries.splice(0, 0, {
+      maxWidth: thresholds[0]!,
+      query: `(max-width: ${thresholds[0]! - 1 + (2 * MARGIN_WIDTH)}px)`,
+    });
+    queries.push({
+      maxWidth: thresholds[thresholds.length - 1]!,
+      query: `(min-width: ${
+          thresholds[thresholds.length - 1]! + (2 * MARGIN_WIDTH)}px)`,
+    });
+
+    // Produce media queries with relevant view thresholds at which module
+    // instance optimal widths should be re-evaluated.
+    queries.forEach(details => {
+      const query = WindowProxy.getInstance().matchMedia(details.query);
+      this.eventTracker_.add(query, 'change', (e: MediaQueryListEvent) => {
+        if (e.matches) {
+          this.updateContainerAndChildrenStyles_(details.maxWidth);
+        }
+      });
+    });
+
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
+
+    this.setDisabledModulesListenerId_ =
+        this.callbackRouter_.setDisabledModules.addListener(
+            (all: boolean, ids: string[]) => {
+              this.disabledModules_ = {all, ids};
+            });
+    this.pageHandler_.updateDisabledModules();
+
+    this.setModulesLoadableListenerId_ =
+        this.callbackRouter_.setModulesLoadable.addListener(() => {
+          if (this.waitToLoadModules_) {
+            this.waitToLoadModules_ = false;
+            this.moduleLoadPromise_ = this.loadModules_();
+          } else if (this.modulesReloadable_) {
+            this.handleModuleEnablement_(this.disabledModules_);
+          }
+        });
+    if (this.waitToLoadModules_) {
+      this.pageHandler_.updateModulesLoadable();
+    } else {
+      this.moduleLoadPromise_ = this.loadModules_();
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
     assert(this.setDisabledModulesListenerId_);
-    NewTabPageProxy.getInstance().callbackRouter.removeListener(
-        this.setDisabledModulesListenerId_);
+    this.callbackRouter_.removeListener(this.setDisabledModulesListenerId_);
+    assert(this.setModulesLoadableListenerId_);
+    this.callbackRouter_.removeListener(this.setModulesLoadableListenerId_);
+
     this.eventTracker_.removeAll();
   }
 
-  override ready() {
-    super.ready();
-    this.renderModules_();
+  override firstUpdated() {
+    this.style.setProperty('--container-gap', `${CONTAINER_GAP_WIDTH}px`);
+
+    assert(SUPPORTED_MODULE_WIDTHS[0]);
+    this.containerMaxWidth_ =
+        this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
+        (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
   }
 
-  private appendModuleContainers_(moduleContainers: HTMLElement[]) {
-    this.$.modules.innerHTML = window.trustedTypes!.emptyHTML;
-    this.modulesShownToUser = false;
-    moduleContainers.forEach((moduleContainer: HTMLElement) => {
-      if (!moduleContainer.hidden) {
-        this.modulesShownToUser = !moduleContainer.hidden;
-      }
-      this.$.modules.appendChild(moduleContainer);
-    });
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    this.availableWidth_ = Math.min(
+        document.body.clientWidth - 2 * MARGIN_WIDTH, this.containerMaxWidth_);
   }
 
-  private async renderModules_(): Promise<void> {
-    this.modulesIdNames_ =
-        (await NewTabPageProxy.getInstance().handler.getModulesIdNames()).data;
-    const modules =
-        await ModuleRegistry.getInstance().initializeModulesHavingIds(
-            this.modulesIdNames_.map(m => m.id),
-            loadTimeData.getInteger('modulesLoadTimeout'));
-    if (modules) {
-      NewTabPageProxy.getInstance().handler.onModulesLoadedWithData(
-          modules.map(module => module.descriptor.id));
-      const moduleContainers =
-          modules
-              .map(module => {
-                return module.elements.map(element => {
-                  const moduleWrapper = new ModuleWrapperElement();
-                  moduleWrapper.module = {
-                    element,
-                    descriptor: module.descriptor,
-                  };
-                  if (this.dragEnabled_) {
-                    moduleWrapper.addEventListener(
-                        'mousedown', e => this.onDragStart_(e));
-                  }
-                  moduleWrapper.addEventListener(
-                      'dismiss-module', e => this.onDismissModule_(e));
-                  moduleWrapper.addEventListener(
-                      'disable-module', e => this.onDisableModule_(e));
-
-                  const moduleContainer =
-                      this.ownerDocument.createElement('div');
-                  moduleContainer.classList.add('module-container');
-                  moduleContainer.hidden =
-                      this.moduleDisabled_(module.descriptor.id);
-                  moduleContainer.appendChild(moduleWrapper);
-                  return moduleContainer;
-                });
-              })
-              .flat();
-
-      chrome.metricsPrivate.recordSmallCount(
-          'NewTabPage.Modules.LoadedModulesCount', modules.length);
-
-      this.logModuleLoadedWithModules_(modules);
-      this.appendModuleContainers_(moduleContainers);
-      this.onModulesLoaded_();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('moduleInstances_') ||
+        changedProperties.has('disabledModules_')) {
+      this.updateContainerAndChildrenStyles_(this.availableWidth_);
     }
   }
 
-  private logModuleLoadedWithModules_(modules: Module[]) {
-    const moduleDescriptorIds = modules.map(m => m.descriptor.id);
+  get pageHandler_(): PageHandlerRemote {
+    return NewTabPageProxy.getInstance().handler;
+  }
+
+  get callbackRouter_(): PageCallbackRouter {
+    return NewTabPageProxy.getInstance().callbackRouter;
+  }
+
+  protected moduleDisabled_(instance: ModuleInstance): boolean {
+    return this.disabledModules_.all ||
+        this.disabledModules_.ids.includes(instance.descriptor.id);
+  }
+
+  /**
+   * Initializes the module container by loading all currently enabled modules.
+   * This method uses the `ModuleRegistry` to determine which modules to load
+   * and is called only when the container is empty.
+   */
+  private async loadModules_(): Promise<void> {
+    const modulesIdNames = (await this.pageHandler_.getModulesIdNames()).data;
+    const modules =
+        await ModuleRegistry.getInstance().initializeModulesHavingIds(
+            modulesIdNames.map((m: ModuleIdName) => m.id),
+            loadTimeData.getInteger('modulesLoadTimeout'));
+    if (modules.length > 0) {
+      this.pageHandler_.onModulesLoadedWithData(
+          modules.map(module => module.descriptor.id));
+
+      this.moduleInstances_ = modules
+                                  .map(module => {
+                                    return createModuleInstances(module);
+                                  })
+                                  .flat();
+    }
+    this.recordInitialLoadMetrics_(modules, modulesIdNames);
+    this.dispatchEvent(new CustomEvent<number|null>(
+        'modules-loaded', {detail: modules.length}));
+  }
+
+  private recordInitialLoadMetrics_(
+      modules: Module[], modulesIdNames: ModuleIdName[]) {
+    recordSmallCount('NewTabPage.Modules.LoadedModulesCount', modules.length);
+    modulesIdNames.forEach(({id}) => {
+      recordBoolean(
+          `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+          !this.disabledModules_.all &&
+              !this.disabledModules_.ids.includes(id));
+    });
+    recordSmallCount(
+        'NewTabPage.Modules.InstanceCount', this.moduleInstances_.length);
+    recordBoolean(
+        'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
+    this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ true);
+  }
+
+  private recordModuleLoadedWithModules_(onNtpLoad: boolean) {
+    const moduleDescriptorIds = [...new Set(
+        this.moduleInstances_.map(instance => instance.descriptor.id))];
+
+    const histogramBase = onNtpLoad ? 'NewTabPage.Modules.LoadedWith' :
+                                      'NewTabPage.Modules.ReloadedWith';
 
     for (const moduleDescriptorId of moduleDescriptorIds) {
       moduleDescriptorIds.forEach(id => {
         if (id !== moduleDescriptorId) {
-          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-              `NewTabPage.Modules.LoadedWith.${moduleDescriptorId}`, id);
+          recordSparseValueWithPersistentHash(
+              `${histogramBase}.${moduleDescriptorId}`, id);
         }
       });
     }
+  }
+
+  /**
+   * Manages the reloading of modules within the container based on
+   * updates to the disabled modules list.
+   *
+   * Subsequent calls handle potential reloads. Newly enabled modules are
+   * queued and loaded individually. The user does not see these modules until
+   * the entire container is reloaded after all queued modules have been loaded.
+   *
+   * @param disabledModules - An object containing the current list of disabled
+   * module ids.
+   */
+  private async handleModuleEnablement_(
+      disabledModules: {all: boolean, ids: string[]}): Promise<void> {
+    if (this.moduleLoadPromise_) {
+      await this.moduleLoadPromise_;
+    }
+
+    if (!this.availableModulesIds_) {
+      const modulesIdNames = (await this.pageHandler_.getModulesIdNames()).data;
+      // TODO(crbug.com/385174675): Set |this.availableModulesIds_| in
+      // |this.loadModules_()| when Microsoft modules are enabled ToT, as this
+      // experimental behavior is currently gated to the Microsoft modules.
+      this.availableModulesIds_ = new Set(modulesIdNames.map((m) => m.id));
+    }
+
+    const disabledModuleIds = disabledModules.ids;
+    const newlyEnabledModuleIds = [...this.availableModulesIds_.difference(
+        new Set(disabledModuleIds.concat(
+            this.moduleInstances_.map((m) => m.descriptor.id))))];
+    if (newlyEnabledModuleIds.length === 0) {
+      return;
+    }
+    // Load modules one by one until the queue is empty.
+    const newModuleInstances: ModuleInstance[] = [];
+    while (newlyEnabledModuleIds.length > 0) {
+      const moduleId = newlyEnabledModuleIds.shift()!;
+      const module = await ModuleRegistry.getInstance().initializeModuleById(
+          moduleId, loadTimeData.getInteger('modulesLoadTimeout'));
+      if (module) {
+        newModuleInstances.push(...createModuleInstances(module));
+      }
+    }
+
+    if (newModuleInstances.length > 0) {
+      newModuleInstances.push(...this.moduleInstances_);
+      const orderedIds = (await this.pageHandler_.getModulesOrder()).moduleIds;
+      if (orderedIds && orderedIds.length > 0) {
+        newModuleInstances.sort((a, b) => {
+          const aId = a.descriptor.id;
+          const bId = b.descriptor.id;
+          const aHasOrder = orderedIds.includes(aId);
+          const bHasOrder = orderedIds.includes(bId);
+          if (aHasOrder && bHasOrder) {
+            return orderedIds.indexOf(aId) - orderedIds.indexOf(bId);
+          }
+          return +bHasOrder - +aHasOrder;
+        });
+      }
+
+      this.moduleInstances_ = newModuleInstances;
+      recordSmallCount(
+          'NewTabPage.Modules.ReloadedModulesCount',
+          this.moduleInstances_.length);
+      this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ false);
+    }
+  }
+
+  private updateContainerAndChildrenStyles_(availableWidth: number) {
+    const visibleModuleInstances = this.disabledModules_.all ?
+        [] :
+        this.moduleInstances_.filter(
+            instance =>
+                !this.disabledModules_.ids.includes(instance.descriptor.id));
+
+    this.modulesShownToUser = visibleModuleInstances.length !== 0;
+    if (visibleModuleInstances.length === 0) {
+      return;
+    }
+
+    this.style.setProperty('--container-max-width', `${availableWidth}px`);
+
+    const clamp = (min: number, val: number, max: number) =>
+        Math.max(min, Math.min(val, max));
+    const rowMaxInstanceCount = clamp(
+        1,
+        Math.floor(
+            (availableWidth + CONTAINER_GAP_WIDTH) /
+            (CONTAINER_GAP_WIDTH + SUPPORTED_MODULE_WIDTHS[0]!.value)),
+        this.maxColumnCount_);
+
+    let index = 0;
+    while (index < visibleModuleInstances.length) {
+      const instances =
+          visibleModuleInstances.slice(index, index + rowMaxInstanceCount);
+      let namedWidth = SUPPORTED_MODULE_WIDTHS[0]!;
+      for (let i = 1; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
+        const moduleWidth = SUPPORTED_MODULE_WIDTHS[i];
+        assert(moduleWidth);
+        if (Math.floor(
+                (availableWidth -
+                 (CONTAINER_GAP_WIDTH * (instances.length - 1))) /
+                moduleWidth.value) < instances.length) {
+          break;
+        }
+        namedWidth = moduleWidth;
+      }
+
+      instances.slice(0, instances.length).forEach(instance => {
+        // The `format` attribute is leveraged by modules whose layout should
+        // change based on the available width.
+        instance.element.setAttribute('format', namedWidth.name);
+        instance.element.style.width = `${namedWidth.value}px`;
+      });
+
+      index += instances.length;
+    }
+  }
+
+  protected onDisableModule_(e: DisableModuleEvent) {
+    const moduleWrapper =
+        (e.target! as HTMLElement).parentNode as ModuleWrapperElement;
+    assert(moduleWrapper);
+    const module = moduleWrapper.module;
+    assert(module);
+    const id = module.descriptor.id;
+    const restoreCallback = e.detail.restoreCallback;
+    this.undoData_ = {
+      message: e.detail.message,
+      undo: () => {
+        if (restoreCallback) {
+          restoreCallback();
+        }
+        this.pageHandler_.setModuleDisabled(id, false);
+        recordSparseValueWithPersistentHash('NewTabPage.Modules.Enabled', id);
+        recordSparseValueWithPersistentHash(
+            'NewTabPage.Modules.Enabled.Toast', id);
+      },
+    };
+
+    this.pageHandler_.setModuleDisabled(id, true);
+    this.$.undoToast.show();
+    recordSparseValueWithPersistentHash(METRIC_NAME_MODULE_DISABLED, id);
+    recordSparseValueWithPersistentHash(
+        `${METRIC_NAME_MODULE_DISABLED}.ModuleRequest`, id);
+  }
+
+  /**
+   * @param e Event notifying a module instance was dismissed. Contains the
+   *     message to show in the toast.
+   */
+  protected onDismissModuleInstance_(e: DismissModuleInstanceEvent) {
+    const wrapper =
+        ((e.target! as HTMLElement).parentNode as ModuleWrapperElement);
+    const index = Array.from(wrapper.parentNode!.children).indexOf(wrapper);
+    const module = this.moduleInstances_[index];
+    assert(module);
+    this.moduleInstances_ = this.moduleInstances_.toSpliced(index, 1);
+
+    const restoreCallback = e.detail.restoreCallback;
+    this.undoData_ = {
+      message: e.detail.message,
+      undo: restoreCallback ?
+          () => {
+            this.moduleInstances_ =
+                this.moduleInstances_.toSpliced(index, 0, module);
+            restoreCallback();
+
+            recordOccurrence('NewTabPage.Modules.Restored');
+            recordOccurrence(
+                `NewTabPage.Modules.Restored.${module.descriptor.id}`);
+          } :
+          undefined,
+    };
+
+    // Notify the user.
+    this.$.undoToast.show();
+
+    this.pageHandler_.onDismissModule(module.descriptor.id);
+  }
+
+  protected onDismissModuleElement_(e: DismissModuleElementEvent) {
+    const restoreCallback = e.detail.restoreCallback;
+    this.undoData_ = {
+      message: e.detail.message,
+      undo: restoreCallback ?
+          () => {
+            restoreCallback();
+          } :
+          undefined,
+    };
+
+    // Notify the user.
+    this.$.undoToast.show();
+  }
+
+  protected onUndoButtonClick_() {
+    if (!this.undoData_) {
+      return;
+    }
+
+    // Restore to the previous state.
+    this.undoData_.undo!();
+    // Notify the user.
+    this.$.undoToast.hide();
+    this.undoData_ = null;
   }
 
   private onWindowKeydown_(e: KeyboardEvent) {
@@ -213,244 +524,8 @@ export class ModulesElement extends PolymerElement {
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
     // </if>
     if (ctrlKeyPressed && e.key === 'z') {
-      this.onUndoRemoveModuleButtonClick_();
+      this.onUndoButtonClick_();
     }
-  }
-
-  private onModulesLoaded_() {
-    this.modulesLoaded_ = true;
-  }
-
-  private computeModulesLoadedAndVisibilityDetermined_(): boolean {
-    return this.modulesLoaded_ && this.modulesVisibilityDetermined_;
-  }
-
-  private onModulesLoadedAndVisibilityDeterminedChange_() {
-    if (this.modulesLoadedAndVisibilityDetermined_) {
-      this.modulesIdNames_.forEach(({id}) => {
-        chrome.metricsPrivate.recordBoolean(
-            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
-            !this.disabledModules_.all &&
-                !this.disabledModules_.ids.includes(id));
-      });
-      chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
-      this.dispatchEvent(new Event('modules-loaded'));
-    }
-  }
-
-  /**
-   * @param e Event notifying a module was dismissed. Contains the message to
-   *     show in the toast.
-   */
-  private onDismissModule_(e: DismissModuleEvent) {
-    const id = (e.target as ModuleWrapperElement).module.descriptor.id;
-    const restoreCallback = e.detail.restoreCallback;
-    this.removedModuleData_ = {
-      message: e.detail.message,
-      undo: restoreCallback ?
-          () => {
-            this.splice(
-                'dismissedModules_', this.dismissedModules_.indexOf(id), 1);
-            restoreCallback();
-            NewTabPageProxy.getInstance().handler.onRestoreModule(id);
-          } :
-          undefined,
-    };
-    if (!this.dismissedModules_.includes(id)) {
-      this.push('dismissedModules_', id);
-    }
-
-    // Notify the user.
-    this.$.removeModuleToast.show();
-    // Notify the backend.
-    NewTabPageProxy.getInstance().handler.onDismissModule(id);
-  }
-
-  /**
-   * @param e Event notifying a module was disabled. Contains the message to
-   *     show in the toast.
-   */
-  private onDisableModule_(e: DisableModuleEvent) {
-    const id = (e.target as ModuleWrapperElement).module.descriptor.id;
-    const restoreCallback = e.detail.restoreCallback;
-    this.removedModuleData_ = {
-      message: e.detail.message,
-      undo: () => {
-        if (restoreCallback) {
-          restoreCallback();
-        }
-        NewTabPageProxy.getInstance().handler.setModuleDisabled(id, false);
-        chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-            'NewTabPage.Modules.Enabled', id);
-        chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-            'NewTabPage.Modules.Enabled.Toast', id);
-      },
-    };
-
-    NewTabPageProxy.getInstance().handler.setModuleDisabled(id, true);
-    this.$.removeModuleToast.show();
-    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Disabled', id);
-    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Disabled.ModuleRequest', id);
-  }
-
-  private moduleDisabled_(id: string): boolean {
-    return this.disabledModules_.all || this.dismissedModules_.includes(id) ||
-        this.disabledModules_.ids.includes(id);
-  }
-
-  private onUndoRemoveModuleButtonClick_() {
-    if (!this.removedModuleData_) {
-      return;
-    }
-
-    // Restore the module.
-    this.removedModuleData_.undo!();
-
-    // Notify the user.
-    this.$.removeModuleToast.hide();
-
-    this.removedModuleData_ = null;
-  }
-
-  /**
-   * Hides and reveals modules depending on removed status.
-   */
-  private onRemovedModulesChange_() {
-    this.shadowRoot!.querySelectorAll('ntp-module-wrapper')
-        .forEach(moduleWrapper => {
-          moduleWrapper.parentElement!.hidden =
-              this.moduleDisabled_(moduleWrapper.module.descriptor.id);
-        });
-    // Append modules again to accommodate for empty space from removed module.
-    const moduleContainers = [...this.shadowRoot!.querySelectorAll<HTMLElement>(
-        '.module-container')];
-    this.appendModuleContainers_(moduleContainers);
-  }
-
-  private onCustomizeModuleFre_() {
-    this.dispatchEvent(
-        new Event('customize-module', {bubbles: true, composed: true}));
-  }
-
-  /**
-   * Module is dragged by updating the module position based on the
-   * position of the pointer.
-   */
-  private onDragStart_(e: MouseEvent) {
-    assert(loadTimeData.getBoolean('modulesDragAndDropEnabled'));
-
-    const dragElement = e.target as HTMLElement;
-    const dragElementRect = dragElement.getBoundingClientRect();
-    // This is the offset between the pointer and module so that the
-    // module isn't dragged by the top-left corner.
-    const dragOffset = {
-      x: e.x - dragElementRect.x,
-      y: e.y - dragElementRect.y,
-    };
-
-    dragElement.parentElement!.style.width = `${dragElementRect.width}px`;
-    dragElement.parentElement!.style.height = `${dragElementRect.height}px`;
-
-    const undraggedModuleWrappers =
-        [...this.shadowRoot!.querySelectorAll('ntp-module-wrapper')].filter(
-            moduleWrapper => moduleWrapper !== dragElement);
-
-    const dragOver = (e: MouseEvent) => {
-      e.preventDefault();
-
-      dragElement.setAttribute('dragging', '');
-      dragElement.style.left = `${e.x - dragOffset.x}px`;
-      dragElement.style.top = `${e.y - dragOffset.y}px`;
-    };
-
-    const dragEnter = (e: MouseEvent) => {
-      // Move hidden module containers to end of list to ensure user's new
-      // layout stays intact.
-      const moduleContainers = [
-        ...this.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.module-container:not([hidden])'),
-        ...this.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.module-container[hidden]'),
-      ];
-      const dragIndex = moduleContainers.indexOf(dragElement.parentElement!);
-      const dropIndex =
-          moduleContainers.indexOf((e.target as HTMLElement).parentElement!);
-
-      const dragContainer = moduleContainers[dragIndex];
-
-      // To animate the modules as they are reordered we use the FLIP
-      // (First, Last, Invert, Play) animation approach by @paullewis.
-      // https://aerotwist.com/blog/flip-your-animations/
-
-      // The first and last positions of the modules are used to
-      // calculate how the modules have changed.
-      const firstRects = undraggedModuleWrappers.map(moduleWrapper => {
-        return moduleWrapper.getBoundingClientRect();
-      });
-
-      moduleContainers.splice(dragIndex, 1);
-      moduleContainers.splice(dropIndex, 0, dragContainer);
-      this.appendModuleContainers_(moduleContainers);
-
-      undraggedModuleWrappers.forEach((moduleWrapper, i) => {
-        const lastRect = moduleWrapper.getBoundingClientRect();
-        const invertX = firstRects[i].left - lastRect.left;
-        const invertY = firstRects[i].top - lastRect.top;
-        moduleWrapper.animate(
-            [
-              // A translation is applied to invert the module and make it
-              // appear to be in its first position when it actually is in its
-              // final position already.
-              {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 0},
-              // Removing the inversion translation animates the module from
-              // the fake first position to its current (final) position.
-              {transform: 'translate(0)', zIndex: 0},
-            ],
-            {duration: 800, easing: 'ease'});
-      });
-    };
-
-    undraggedModuleWrappers.forEach(moduleWrapper => {
-      moduleWrapper.addEventListener('mouseover', dragEnter);
-    });
-
-    this.ownerDocument.addEventListener('mousemove', dragOver);
-    this.ownerDocument.addEventListener('mouseup', () => {
-      this.ownerDocument.removeEventListener('mousemove', dragOver);
-
-      undraggedModuleWrappers.forEach(moduleWrapper => {
-        moduleWrapper.removeEventListener('mouseover', dragEnter);
-      });
-
-      // The FLIP approach is also used for the dropping animation
-      // of the dragged module because of the position changes caused
-      // by removing the dragging styles. (Removing the styles after
-      // the animation causes the animation to be fixed.)
-      const firstRect = dragElement.getBoundingClientRect();
-
-      dragElement.removeAttribute('dragging');
-      dragElement.style.removeProperty('left');
-      dragElement.style.removeProperty('top');
-
-      const lastRect = dragElement.getBoundingClientRect();
-      const invertX = firstRect.left - lastRect.left;
-      const invertY = firstRect.top - lastRect.top;
-
-      dragElement.animate(
-          [
-            {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 2},
-            {transform: 'translate(0)', zIndex: 2},
-          ],
-          {duration: 800, easing: 'ease'});
-
-      const moduleIds =
-          [...this.shadowRoot!.querySelectorAll('ntp-module-wrapper')].map(
-              moduleWrapper => moduleWrapper.module.descriptor.id);
-      NewTabPageProxy.getInstance().handler.setModulesOrder(moduleIds);
-    }, {once: true});
   }
 }
 

@@ -7,11 +7,13 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -24,7 +26,8 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   // Fetches the MediaRouterDebugger from the media router fetched from the
   // |frame_tree_node_id|. Must be called on the UI Thread. May return a
   // nullptr.
-  static MediaRouterDebugger* GetForFrameTreeNode(int frame_tree_node_id);
+  static MediaRouterDebugger* GetForFrameTreeNode(
+      content::FrameTreeNodeId frame_tree_node_id);
 
   explicit MediaRouterDebuggerImpl(content::BrowserContext* context);
 
@@ -44,7 +47,7 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   // mojom::Debugger overrides:
   void ShouldFetchMirroringStats(
       ShouldFetchMirroringStatsCallback callback) override;
-  void OnMirroringStats(const base::Value json_stats) override;
+  void OnMirroringStats(base::Value json_stats) override;
   void BindReceiver(mojo::PendingReceiver<mojom::Debugger> receiver) override;
 
  protected:
@@ -52,7 +55,7 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest,
                            ShouldFetchMirroringStatsFeatureDisabled);
 
-  void NotifyGetMirroringStats(const base::Value::Dict& json_logs);
+  void NotifyGetMirroringStats(base::Value::Dict json_logs);
   void LogMirroringStats();
 
   base::ObserverList<MirroringStatsObserver> observers_;

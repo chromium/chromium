@@ -9,6 +9,7 @@ import type {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.j
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -24,6 +25,7 @@ function waitUntilVisible(element: HTMLElement, intervalMs: number = 10) {
 }
 
 suite('SafetyHubModule', function() {
+  const opensInNewTabString = 'opens in new tab';
   let testElement: SettingsSafetyHubModuleElement;
 
   const mockData = [1, 2, 3, 4].map(i => ({
@@ -58,13 +60,17 @@ suite('SafetyHubModule', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-module');
     document.body.appendChild(testElement);
+
+    loadTimeData.overrideValues({
+      opensInNewTab: opensInNewTabString,
+    });
   });
 
   teardown(function() {
     testElement.remove();
   });
 
-  test('testHeaderAndSubheaderText', function() {
+  test('HeaderAndSubheaderText', function() {
     const headerText = 'Test header text';
     const subheaderText = 'Test subheader text';
     testElement.header = headerText;
@@ -74,25 +80,25 @@ suite('SafetyHubModule', function() {
     function assertTextContent(query: string, text: string) {
       const element = testElement.shadowRoot!.querySelector(query);
       assertTrue(!!element);
-      assertEquals(text, element.textContent!.trim());
+      assertEquals(text, element.textContent.trim());
     }
 
     assertTextContent('#header', headerText);
     assertTextContent('#subheader', subheaderText);
   });
 
-  test('testItemButton', async function() {
+  test('ItemButton', async function() {
     await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
     testElement.buttonAriaLabelId =
-        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
+        'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
     flush();
 
     // User clicks the button of the 2nd item in the list.
     const item = getEntries()[1]!;
     const button = item.querySelector('cr-icon-button');
     assertTrue(!!button);
-    assertEquals('cr20:block', button!.ironIcon);
+    assertEquals('cr20:block', button.ironIcon);
 
     const clickEventPromise =
         eventToPromise('sh-module-item-button-click', testElement);
@@ -103,7 +109,7 @@ suite('SafetyHubModule', function() {
     assertEquals(clickedItem.detail, mockData[1]!.detail);
   });
 
-  test('testItemList', async function() {
+  test('ItemList', async function() {
     // Check the item list is filled with the data.
     await assignAndShowTestData();
     flush();
@@ -119,11 +125,31 @@ suite('SafetyHubModule', function() {
       assertEquals(
           mockData[i]!.origin,
           entries[i]!.querySelector(
-                         '.site-representation')!.textContent!.trim());
+                         '.site-representation')!.textContent.trim());
       assertEquals(
           mockData[i]!.detail,
-          entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+          entries[i]!.querySelector('.cr-secondary-text')!.textContent.trim());
     }
+
+    // Check a link in secondary text has an aria description.
+    testElement.sites = [
+      {
+        origin: 'https://www.example.com',
+        detail: 'This detail has a <a href="#" target="_blank">link</a>.',
+      },
+      {
+        origin: 'https://www.example.com',
+        detail: 'This detail has a <a href="#">link</a>.',
+      },
+    ];
+    flush();
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    let link = getEntries()[0]!.querySelector('a')!;
+    assertEquals(opensInNewTabString, link.getAttribute('aria-description'));
+    link = getEntries()[1]!.querySelector('a')!;
+    assertEquals(null, link.getAttribute('aria-description'));
+
 
     // Check the item list and line is hidden when there is no item.
     testElement.sites = [];
@@ -133,13 +159,13 @@ suite('SafetyHubModule', function() {
     assertFalse(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
   });
 
-  test('testTooltip', async function() {
+  test('Tooltip', async function() {
     // Check the item list is filled with the data.
     const text = 'Dummy tooltip text';
     await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
     testElement.buttonAriaLabelId =
-        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
+        'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
     testElement.buttonTooltipText = text;
     flush();
 
@@ -159,6 +185,6 @@ suite('SafetyHubModule', function() {
     assertTrue(!!tooltip);
     await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));
-    assertEquals(text, tooltip!.textContent!.trim());
+    assertEquals(text, tooltip.textContent.trim());
   });
 });

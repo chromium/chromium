@@ -21,8 +21,7 @@ AwDrawFnRenderMode QueryRenderMode() {
 }
 
 int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int CreateFunctor_v3(void* data,

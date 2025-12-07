@@ -21,5 +21,5 @@ public @interface ArPlaybackFile {
     /**
      * @return The playback file to use.
      */
-    public String value();
+    String value();
 }

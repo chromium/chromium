@@ -7,15 +7,18 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -24,10 +27,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesSet {
   using Scopes = base::flat_set<std::string>;
 
   static base::expected<AttributionScopesSet, mojom::SourceRegistrationError>
-  FromJSON(base::Value::Dict&, std::optional<uint32_t> attribution_scope_limit);
+  FromJSON(base::DictValue&, uint32_t attribution_scope_limit);
 
   static base::expected<AttributionScopesSet, mojom::TriggerRegistrationError>
-  FromJSON(base::Value::Dict&);
+  FromJSON(base::DictValue&);
 
   explicit AttributionScopesSet(Scopes);
 
@@ -42,7 +45,13 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesSet {
 
   const Scopes& scopes() const { return scopes_; }
 
-  void Serialize(base::Value::Dict&) const;
+  Scopes TakeScopes() && { return std::move(scopes_); }
+
+  void SerializeForSource(base::DictValue&) const;
+
+  void SerializeForTrigger(base::DictValue&) const;
+
+  bool HasIntersection(const AttributionScopesSet& other_scopes) const;
 
   bool IsValidForSource(uint32_t scope_limit) const;
 

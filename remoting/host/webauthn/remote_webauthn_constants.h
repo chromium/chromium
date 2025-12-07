@@ -20,6 +20,7 @@ extern const char kClientDisconnectedMessageType[];
 // NMH message keys.
 extern const char kIsUvpaaResponseIsAvailableKey[];
 extern const char kGetRemoteStateResponseIsRemotedKey[];
+extern const char kGetRemoteStateResponseDesktopSessionTypeKey[];
 extern const char kCancelResponseWasCanceledKey[];
 extern const char kCreateRequestDataKey[];
 extern const char kCreateResponseDataKey[];

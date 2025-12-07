@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <optional>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -168,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
-  ShowUi(base::EmptyString());
+  ShowUi(std::string());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
@@ -184,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
 
-  base::test::TestFuture<bool, std::u16string> test_future;
+  base::test::TestFuture<std::optional<std::u16string>> test_future;
   OverrideShortcutShownCallback(test_future.GetCallback());
 
   ShowUi("ABC");
@@ -195,8 +199,9 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   destroy_waiter.Wait();
   EXPECT_TRUE(test_future.Wait());
 
-  EXPECT_TRUE(test_future.Get<bool>());
-  EXPECT_EQ(test_future.Get<std::u16string>(), u"ABC");
+  std::optional<std::u16string> dialog_result = test_future.Get();
+  EXPECT_TRUE(dialog_result.has_value());
+  EXPECT_EQ(dialog_result.value(), u"ABC");
 }
 
 IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
@@ -210,9 +215,11 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   base::test::TestFuture<Browser*> browser_future;
   // `is_new_profile` has to be set to false so that the profile picker is not
   // triggered.
-  profiles::OpenBrowserWindowForProfile(
-      browser_future.GetCallback(), /*always_create=*/true,
-      /*is_new_profile=*/false, /*unblock_extensions=*/false, new_profile);
+  profiles::OpenBrowserWindowForProfile(browser_future.GetCallback(),
+                                        /*always_create=*/true,
+                                        /*is_new_profile=*/false,
+                                        /*open_command_line_urls=*/false,
+                                        new_profile);
   EXPECT_TRUE(browser_future.Wait());
   Browser* new_browser = browser_future.Get();
   EXPECT_EQ(new_browser->profile(), new_profile);
@@ -221,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
 
-  base::test::TestFuture<bool, std::u16string> test_future;
+  base::test::TestFuture<std::optional<std::u16string>> test_future;
   OverrideShortcutShownCallback(test_future.GetCallback());
 
   ShowDialogInBrowser(new_browser, "ABC");
@@ -232,15 +239,17 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   destroy_waiter.Wait();
   EXPECT_TRUE(test_future.Wait());
 
-  EXPECT_TRUE(test_future.Get<bool>());
-  EXPECT_EQ(test_future.Get<std::u16string>(), u"ABC (Person 2)");
+  std::optional<std::u16string> dialog_result = test_future.Get();
+  EXPECT_TRUE(dialog_result.has_value());
+  EXPECT_EQ(dialog_result.value(), u"ABC (Person 1)");
 }
 
 IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        DontShowMultipleDialogsIfAlreadyShown) {
   base::UserActionTester action_tester;
-  std::u16string titles[] = {u"title1", u"title2"};
-  base::test::TestFuture<bool, std::u16string> test_future1, test_future2;
+  auto titles = std::to_array<std::u16string>({u"title1", u"title2"});
+  base::test::TestFuture<std::optional<std::u16string>> test_future1,
+      test_future2;
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
@@ -254,16 +263,17 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[1], test_future2.GetCallback());
   EXPECT_TRUE(test_future2.Wait());
-  EXPECT_EQ(test_future2.Get<std::u16string>(), titles[1]);
-  EXPECT_FALSE(test_future2.Get<bool>());
+  auto dialog_result2 = test_future2.Get();
+  EXPECT_FALSE(dialog_result2.has_value());
   EXPECT_FALSE(test_future1.IsReady());
   EXPECT_FALSE(widget->IsClosed());
 
   // The original dialog can still be accepted.
   views::test::AcceptDialog(widget);
   EXPECT_TRUE(test_future1.Wait());
-  EXPECT_EQ(test_future1.Get<std::u16string>(), titles[0]);
-  EXPECT_TRUE(test_future1.Get<bool>());
+  auto dialog_result1 = test_future1.Get();
+  EXPECT_TRUE(dialog_result1.has_value());
+  EXPECT_EQ(dialog_result1.value(), titles[0]);
   EXPECT_EQ(
       1, action_tester.GetActionCount("CreateDesktopShortcutDialogAccepted"));
 

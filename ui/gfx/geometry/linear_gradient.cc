@@ -43,7 +43,7 @@ void LinearGradient::AddStep(float fraction, uint8_t alpha) {
 }
 
 void LinearGradient::ReverseSteps() {
-  std::reverse(steps_.begin(), steps_.end());
+  std::ranges::reverse(steps_);
   std::rotate(steps_.begin(), steps_.end() - step_count_, steps_.end());
   for (size_t i = 0; i < step_count_; i++)
     steps_[i].fraction = 1.f - steps_[i].fraction;

@@ -12,6 +12,7 @@
 class TrustSafetySentimentServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static TrustSafetySentimentServiceFactory* GetInstance();
+  static void ShutDownForTesting(content::BrowserContext* context);
   static TrustSafetySentimentService* GetForProfile(Profile* profile);
 
  private:
@@ -21,7 +22,7 @@ class TrustSafetySentimentServiceFactory : public ProfileKeyedServiceFactory {
   ~TrustSafetySentimentServiceFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

@@ -12,16 +12,22 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
+#include "components/prefs/pref_value_map.h"
+#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/common/supervised_users.h"
-
-namespace base {
-class Value;
-}
+#include "base/memory/weak_ptr.h"
 
 class PrefValueMap;
 
 namespace supervised_user {
 class SupervisedUserSettingsService;
+
+// Writes default values to `pref_values` as used within the
+// SupervisedUserPrefStore. In this context "default" doesn't indicate the
+// bottom pref store in hierarchy which yields fallback values for the
+// PrefService, but rather preset values within a single PrefStore.
+void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values);
+
 }  // namespace supervised_user
 
 // A PrefStore that gets its values from supervised user settings via the
@@ -36,11 +42,15 @@ class SupervisedUserPrefStore : public PrefStore {
   // Construct the pref store on platforms with the settings service available.
   explicit SupervisedUserPrefStore(
       supervised_user::SupervisedUserSettingsService*
-          supervised_user_settings_service);
+          supervised_user_settings_service,
+      supervised_user::SupervisedUserContentFiltersService*
+          supervised_user_content_filters_service);
 
   // Subscribe to the settings service.
   void Init(supervised_user::SupervisedUserSettingsService*
-                supervised_user_settings_service);
+                supervised_user_settings_service,
+            supervised_user::SupervisedUserContentFiltersService*
+                supervised_user_content_filters_service);
 
   // PrefStore overrides:
   bool GetValue(std::string_view key, const base::Value** value) const override;
@@ -49,7 +59,13 @@ class SupervisedUserPrefStore : public PrefStore {
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
+
   void OnNewSettingsAvailable(const base::Value::Dict& settings);
+
+  void OnNewContentFiltersStateAvailable(supervised_user::SupervisedUserContentFiltersService::State state);
+
+  // Notifies observers about changes in the prefs_ compared to the diff_base.
+  void NotifyObserversAboutChanges(std::unique_ptr<PrefValueMap> diff_base);
 
  private:
   ~SupervisedUserPrefStore() override;
@@ -58,11 +74,15 @@ class SupervisedUserPrefStore : public PrefStore {
 
   base::CallbackListSubscription user_settings_subscription_;
 
+  base::CallbackListSubscription content_filter_settings_subscription_;
+
   base::CallbackListSubscription shutdown_subscription_;
 
   std::unique_ptr<PrefValueMap> prefs_;
 
   base::ObserverList<PrefStore::Observer, true> observers_;
+
+  base::WeakPtrFactory<SupervisedUserPrefStore> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREF_STORE_H_

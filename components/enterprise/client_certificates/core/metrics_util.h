@@ -11,6 +11,11 @@
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
+#include "components/leveldb_proto/public/proto_database.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/client_certificates/android/browser_binding/browser_key.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace client_certificates {
 
@@ -32,7 +37,7 @@ enum class ProvisioningScenario {
   kUnknown = 0,
   kCertificateCreation = 1,
   kCertificateRenewal = 2,
-  kPublicKeySync = 3,
+  kExistingIdentity = 3,
 };
 
 struct ProvisioningContext {
@@ -40,17 +45,27 @@ struct ProvisioningContext {
   ProvisioningScenario scenario{ProvisioningScenario::kUnknown};
 };
 
-void LogProvisioningError(ProvisioningError provisioning_error,
+void LogProvisioningError(const std::string& logging_context,
+                          ProvisioningError provisioning_error,
                           std::optional<StoreError> store_error);
 
-void LogKeySyncResponse(HttpCodeOrClientError upload_code);
-
-void LogCertificateCreationResponse(HttpCodeOrClientError upload_code,
+void LogCertificateCreationResponse(const std::string& logging_context,
+                                    HttpCodeOrClientError upload_code,
                                     bool has_certificate);
 
-void LogProvisioningContext(ProvisioningContext context, bool success);
+void LogProvisioningContext(const std::string& logging_context,
+                            ProvisioningContext context,
+                            bool success);
 
-void LogPrivateKeyCreationSource(PrivateKeySource source);
+void LogPrivateKeyCreationSource(const std::string& logging_context,
+                                 PrivateKeySource source);
+
+void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
+                          bool with_retry);
+
+#if BUILDFLAG(IS_ANDROID)
+void RecordClankKeySecurityLevel(BrowserKey::SecurityLevel security_level);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace client_certificates
 

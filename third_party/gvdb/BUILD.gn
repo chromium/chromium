@@ -1,0 +1,30 @@
+import("//build/config/linux/pkg_config.gni")
+import("//third_party/gvdb/visibility.gni")
+
+assert(is_linux)
+
+config("gvdb_public_config") {
+  include_dirs = [ "src" ]
+}
+
+source_set("gvdb") {
+  testonly = true
+
+  sources = [
+    "src/gvdb/gvdb-builder.c",
+    "src/gvdb/gvdb-builder.h",
+    "src/gvdb/gvdb-format.h",
+    "src/gvdb/gvdb-reader.c",
+    "src/gvdb/gvdb-reader.h",
+  ]
+
+  public_configs = [ ":gvdb_public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = [
+    "//third_party/glib",
+    "//third_party/glib:gmodule",
+  ]
+}

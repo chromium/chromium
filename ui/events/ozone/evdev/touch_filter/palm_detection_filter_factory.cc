@@ -10,12 +10,15 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/evdev/heatmap_palm_detector.h"
+#include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/touch_filter/heatmap_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/heuristic_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
@@ -52,7 +55,8 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   // look at the command line.
   std::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kOzoneNNPalmSwitchName));
+          kOzoneNNPalmSwitchName),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (ozone_switch_value.has_value() && ozone_switch_value->is_dict()) {
     std::string* switch_string_value = ozone_switch_value->GetDict().FindString(
         kOzoneNNPalmRadiusPolynomialProperty);
@@ -62,7 +66,7 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   }
 
   // TODO(robsc): Remove this when comfortable.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // We should really only be running in chromeos anyway; We do a check here
   // temporarily for hatch and reef.  These numbers should live in config on
   // chromeos side but for now during experiment are hard-coded here.
@@ -93,7 +97,8 @@ std::string FetchNeuralPalmModelVersion(const EventDeviceInfo& devinfo,
   // look at the command line.
   std::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kOzoneNNPalmSwitchName));
+          kOzoneNNPalmSwitchName),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (ozone_switch_value.has_value() && ozone_switch_value->is_dict()) {
     std::string* switch_string_value = ozone_switch_value->GetDict().FindString(
         kOzoneNNPalmModelVersionProperty);
@@ -141,6 +146,38 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
   }
 
   return std::make_unique<OpenPalmDetectionFilter>(shared_palm_state);
+}
+
+// The HeatmapPalmDetectionFilter is necessary for better user experience when
+// HeatmapPalmDetection flag is enabled. Create a separate function instead of
+// use CreatePalmDetectionFilter to allow more than one filter on some devices.
+std::unique_ptr<PalmDetectionFilter> CreateHeatmapPalmDetectionFilter(
+    const EventDeviceInfo& devinfo,
+    SharedPalmDetectionFilterState* shared_palm_state) {
+  if (base::FeatureList::IsEnabled(kEnableHeatmapPalmDetection) &&
+      HeatmapPalmDetectionFilter::CompatibleWithHeatmapPalmDetectionFilter(
+          devinfo)) {
+    HeatmapPalmDetector::ModelId model_id =
+        TouchEventConverterEvdev::GetHidrawModelId(devinfo);
+    uint32_t max_sample = 0;
+
+    if (model_id == HeatmapPalmDetector::ModelId::kRex) {
+      // TODO: crbug.com/394945512 - Rex ML model was developed for ~90hz touch
+      // device, need to test.
+      max_sample = 9;
+    } else if (model_id == HeatmapPalmDetector::ModelId::kGeralt) {
+      // Geralt ML model was developed for ~120hz touch device.
+      max_sample = 12;
+    } else {
+      return nullptr;
+    }
+    auto model_config =
+        std::make_unique<HeatmapPalmDetectionFilterModelConfig>(max_sample);
+    return std::make_unique<HeatmapPalmDetectionFilter>(
+        devinfo, std::move(model_config), shared_palm_state);
+  }
+
+  return nullptr;
 }
 
 }  // namespace ui

@@ -1,0 +1,20 @@
+Name: AsyncLayoutInflater
+Short Name: asynclayoutinflater
+URL: https://dl.google.com/dl/android/maven2/androidx/asynclayoutinflater/asynclayoutinflater/1.1.0/asynclayoutinflater-1.1.0.aar
+Version: 1.1.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Provides support for inflating layouts off the UI thread.
+
+See also: https://developer.android.com/jetpack/androidx/releases/asynclayoutinflater#1.1.0
+
+
+Local Modifications:
+No modifications.

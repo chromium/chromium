@@ -12,25 +12,15 @@ namespace compose::features {
 // runtime.
 BASE_FEATURE(kEnableCompose, "Compose", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeInputParams,
-             "ComposeInputParams",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeInputParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeInnerText,
-             "ComposeInnerText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeInnerText, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeAXSnapshot,
-             "ComposeAXSnapshot",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeAXSnapshot, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeAutoSubmit,
-             "ComposeAutoSubmit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeAutoSubmit, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeEligible,
-             "ComposeEligible",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeEligible, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeSavedStateNudge,
              "ComposeNudge",
@@ -38,19 +28,14 @@ BASE_FEATURE(kEnableComposeSavedStateNudge,
 
 BASE_FEATURE(kEnableComposeProactiveNudge,
              "ComposeProactiveNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableComposeSavedStateNotification,
-             "EnableComposeSavedStateNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableComposeNudgeAtCursor,
-             "EnableComposeNudgeAtCursor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableComposeSavedStateNotification,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableComposeSelectionNudge,
-             "EnableComposeSelectionNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableComposeNudgeAtCursor, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableComposeSelectionNudge, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeLanguageBypassForContextMenu,
              "ComposeLanguageBypassForContextMenu",
@@ -61,34 +46,31 @@ BASE_FEATURE(kEnableComposeWebUIAnimations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeOnDeviceDogfoodFooter,
-             "EnableComposeOnDeviceDogfoodFooter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeUiParams,
-             "ComposeUiParams",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeUiParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeTextOutputAnimation,
-             "ComposeTextOutputAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeTextOutputAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeTextSelection,
-             "ComposeTextSelection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kComposeRequestLatencyTimeout,
-             "ComposeRequestLatencyTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kComposeUiRefinement,
-             "ComposeUiRefinement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeRequestLatencyTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
              "ComposeEnableNudgeForUnspecifiedHint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableAdditionalTextMetrics,
-             "EnableAdditionalTextMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAdditionalTextMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHappinessTrackingSurveysForComposeAcceptance,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHappinessTrackingSurveysForComposeClose,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeAllowOnDeviceExecution, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeUpfrontInputModes, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace compose::features

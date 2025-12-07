@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -52,12 +51,11 @@ class IncomingStream::UnderlyingByteSource final
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
-    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  ScriptPromise<IDLUndefined> Cancel() override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()));
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
     uint8_t code = 0;
     WebTransportError* exception =
         V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
@@ -105,8 +103,7 @@ void IncomingStream::InitWithExistingReadableStream(
       data_pipe_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&IncomingStream::OnHandleReady,
-                         WrapWeakPersistent(this)));
+      BindRepeating(&IncomingStream::OnHandleReady, WrapWeakPersistent(this)));
   ReadableStream::InitByteStream(
       script_state_, stream,
       MakeGarbageCollected<UnderlyingByteSource>(script_state_, this),
@@ -198,16 +195,8 @@ void IncomingStream::ProcessClose() {
 
   if (fin_received_.value()) {
     ScriptState::Scope scope(script_state_);
-    ExceptionState exception_state(script_state_->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
-    CloseAbortAndReset(exception_state);
     // Ignore exception because stream will be errored soon.
-    if (exception_state.HadException()) {
-      DLOG(WARNING) << "CloseAbortAndReset throws exception "
-                    << exception_state.Code() << ", "
-                    << exception_state.Message();
-      exception_state.ClearException();
-    }
+    CloseAbortAndReset(IGNORE_EXCEPTION);
   }
 
   ScriptValue error;
@@ -277,8 +266,7 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
       return;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected result: " << result;
-      return;
+      NOTREACHED() << "Unexpected result: " << result;
   }
 }
 
@@ -293,9 +281,7 @@ size_t IncomingStream::RespondBYOBRequestOrEnqueueBytes(
   if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
     DOMArrayPiece view(request->view().Get());
     size_t byob_response_length = std::min(view.ByteLength(), source.size());
-    view.ByteSpan()
-        .first(byob_response_length)
-        .copy_from(source.first(byob_response_length));
+    view.ByteSpan().copy_prefix_from(source.first(byob_response_length));
     request->respond(script_state_, byob_response_length, exception_state);
     return byob_response_length;
   }

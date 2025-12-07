@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EARLY_BREAK_H_
 
 #include "base/check_op.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/break_appeal.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"

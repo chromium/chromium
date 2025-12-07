@@ -168,4 +168,21 @@ message UserConsentTypes {
     // or not given/revoked.
     optional ConsentStatus status = 3;
   }
+
+  // The User Consent for enabling or disabling speaker label feature in
+  // Recorder app.
+  message RecorderSpeakerLabelConsent {
+    // Ids of the strings of the Recorder speaker label consent text presented
+    // to the user.
+    repeated int32 description_grd_ids = 1;
+
+    // Id of the string of the UI element the user clicked in order to give or
+    // not give the consent and close the Recorder speaker label consent
+    // dialog.
+    optional int32 confirmation_grd_id = 2;
+
+    // The status of the Recorder speaker label consent. This specifies whether
+    // the consent was given or not given/revoked.
+    optional ConsentStatus status = 3;
+  }
 }

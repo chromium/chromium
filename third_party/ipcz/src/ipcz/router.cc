@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ipcz/router.h"
-
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
@@ -15,6 +13,7 @@
 #include "ipcz/node_link.h"
 #include "ipcz/parcel_wrapper.h"
 #include "ipcz/remote_router_link.h"
+#include "ipcz/router.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -23,6 +22,7 @@
 #include "util/log.h"
 #include "util/multi_mutex_lock.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -83,13 +83,16 @@ bool ValidateAndAcquireObjectsForTransitFrom(
 
 }  // namespace
 
-Router::Router() = default;
+Router::Router() {
+  DVLOG(5) << "Creating Router " << std::hex << this;
+}
 
 Router::~Router() {
   // A Router MUST be serialized or closed before it can be destroyed. Both
   // operations clear `traps_` and imply that no further traps should be added.
   absl::MutexLock lock(&mutex_);
   ABSL_ASSERT(traps_.empty());
+  DVLOG(5) << "Deleting Router " << std::hex << this;
 }
 
 // static
@@ -337,6 +340,9 @@ bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
   TrapEventDispatcher dispatcher;
   absl::InlinedVector<Ref<RouterLink>, 4> forwarding_links;
   {
+    // If we have to drop any undeliverable parcels, make sure they're destroyed
+    // outside of `lock` in case they have any attached Routers.
+    std::vector<std::unique_ptr<Parcel>> dropped_parcels;
     absl::MutexLock lock(&mutex_);
 
     DVLOG(4) << "Router " << this << " disconnected from "
@@ -344,9 +350,9 @@ bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
 
     is_disconnected_ = true;
     if (link_type.is_peripheral_inward()) {
-      outbound_parcels_.ForceTerminateSequence();
+      dropped_parcels = outbound_parcels_.ForceTerminateSequence();
     } else {
-      inbound_parcels_.ForceTerminateSequence();
+      dropped_parcels = inbound_parcels_.ForceTerminateSequence();
     }
 
     // Wipe out all remaining links and propagate the disconnection over them.
@@ -395,7 +401,8 @@ IpczResult Router::Put(absl::Span<const uint8_t> data,
   std::unique_ptr<Parcel> parcel =
       AllocateOutboundParcel(data.size(), /*allow_partial=*/false);
   if (!data.empty()) {
-    memcpy(parcel->data_view().data(), data.data(), data.size());
+    IPCZ_UNSAFE_TODO(
+        memcpy(parcel->data_view().data(), data.data(), data.size()));
   }
   parcel->CommitData(data.size());
   parcel->SetObjects(std::move(objects));
@@ -429,6 +436,7 @@ IpczResult Router::BeginPut(IpczBeginPutFlags flags,
   if (data) {
     *data = parcel->data_view().data();
   }
+  absl::MutexLock lock(&mutex_);
   if (!pending_puts_) {
     pending_puts_ = std::make_unique<PendingTransactionSet>();
   }
@@ -447,15 +455,18 @@ IpczResult Router::EndPut(IpczTransaction transaction,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  if (!pending_puts_) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
   std::unique_ptr<Parcel> parcel;
-  if (aborted) {
-    parcel = pending_puts_->FinalizeForPut(transaction, 0);
-  } else {
-    parcel = pending_puts_->FinalizeForPut(transaction, num_bytes_produced);
+  {
+    absl::MutexLock lock(&mutex_);
+    if (!pending_puts_) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+
+    if (aborted) {
+      parcel = pending_puts_->FinalizeForPut(transaction, 0);
+    } else {
+      parcel = pending_puts_->FinalizeForPut(transaction, num_bytes_produced);
+    }
   }
 
   if (!parcel) {
@@ -529,7 +540,7 @@ IpczResult Router::Get(IpczGetFlags flags,
     }
 
     if (data_size > 0) {
-      memcpy(data, p->data_view().data(), data_size);
+      IPCZ_UNSAFE_TODO(memcpy(data, p->data_view().data(), data_size));
     }
 
     const bool ok = inbound_parcels_.Pop(consumed_parcel);
@@ -697,8 +708,42 @@ IpczResult Router::MergeRoute(const Ref<Router>& other) {
 
 // static
 Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
-                                NodeLink& from_node_link) {
-  bool disconnected = false;
+                                NodeLink& from_node_link,
+                                SublinkId receiving_sublink) {
+  std::optional<SublinkId> new_decaying_sublink;
+  if (descriptor.proxy_already_bypassed) {
+    new_decaying_sublink = descriptor.new_decaying_sublink;
+  }
+
+  if (descriptor.new_sublink == receiving_sublink ||
+      descriptor.new_sublink == new_decaying_sublink ||
+      new_decaying_sublink == receiving_sublink) {
+    // New sublink IDs must be unique among each other, and must not identify
+    // the new Router as its own recipient.
+    return nullptr;
+  }
+
+  // Resolve and validate the link state fragment before acquiring the Router
+  // lock. This avoids a potential lock order inversion between `Router::mutex_`
+  // and `BufferPool::mutex_`, as `AdoptFragmentRefIfValid` may acquire the
+  // BufferPool lock.
+  FragmentRef<RouterLinkState> link_state;
+  if (new_decaying_sublink) {
+    link_state =
+        from_node_link.memory().AdoptFragmentRefIfValid<RouterLinkState>(
+            descriptor.new_link_state_fragment);
+    if (link_state.is_null()) {
+      // Central links require a valid link state fragment.
+      return nullptr;
+    }
+  } else {
+    if (!descriptor.new_link_state_fragment.is_null()) {
+      // No RouterLinkState fragment should be provided for this new
+      // peripheral link.
+      return nullptr;
+    }
+  }
+
   auto router = MakeRefCounted<Router>();
   Ref<RemoteRouterLink> new_outward_link;
   {
@@ -719,7 +764,7 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
       }
     }
 
-    if (descriptor.proxy_already_bypassed) {
+    if (new_decaying_sublink) {
       // When split from a local peer, our remote counterpart (our remote peer's
       // former local peer) will use this link to forward parcels it already
       // received from our peer. This link decays like any other decaying link
@@ -730,9 +775,9 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
       // The sequence length from the link is whatever had already been sent
       // to our counterpart back on the peer's node.
       Ref<RemoteRouterLink> new_decaying_link =
-          from_node_link.AddRemoteRouterLink(
-              descriptor.new_decaying_sublink, nullptr,
-              LinkType::kPeripheralOutward, LinkSide::kB, router);
+          from_node_link.AddRemoteRouterLink(*new_decaying_sublink, nullptr,
+                                             LinkType::kPeripheralOutward,
+                                             LinkSide::kB, router);
       if (!new_decaying_link) {
         return nullptr;
       }
@@ -746,11 +791,8 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
               : descriptor.next_incoming_sequence_number);
 
       new_outward_link = from_node_link.AddRemoteRouterLink(
-          descriptor.new_sublink,
-          from_node_link.memory().AdoptFragmentRef<RouterLinkState>(
-              from_node_link.memory().GetFragment(
-                  descriptor.new_link_state_fragment)),
-          LinkType::kCentral, LinkSide::kB, router);
+          descriptor.new_sublink, std::move(link_state), LinkType::kCentral,
+          LinkSide::kB, router);
       if (!new_outward_link) {
         return nullptr;
       }
@@ -760,13 +802,8 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                << from_node_link.remote_node_name().ToString() << " to "
                << from_node_link.local_node_name().ToString() << " via sublink "
                << descriptor.new_sublink << " and decaying sublink "
-               << descriptor.new_decaying_sublink;
+               << *new_decaying_sublink;
     } else {
-      if (!descriptor.new_link_state_fragment.is_null()) {
-        // No RouterLinkState fragment should be provided for this new
-        // peripheral link.
-        return nullptr;
-      }
       new_outward_link = from_node_link.AddRemoteRouterLink(
           descriptor.new_sublink, nullptr, LinkType::kPeripheralOutward,
           LinkSide::kB, router);
@@ -777,17 +814,16 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                  << from_node_link.remote_node_name().ToString() << " to "
                  << from_node_link.local_node_name().ToString()
                  << " via sublink " << descriptor.new_sublink;
-      } else if (!descriptor.peer_closed) {
-        // The new portal is DOA, either because the associated NodeLink is
-        // dead, or the sublink ID was already in use. The latter implies a bug
-        // or bad behavior, but it should be harmless to ignore beyond this
-        // point.
-        disconnected = true;
       }
     }
   }
 
-  if (disconnected) {
+  from_node_link.AcceptEarlyParcelsForSublink(descriptor.new_sublink);
+
+  if (!new_outward_link) {
+    // The new portal is DOA, either because the associated NodeLink is dead, or
+    // or the sublink ID was already in use. The latter implies a bug or bad
+    // behavior, but it should be harmless to ignore beyond this point.
     DVLOG(4) << "Disconnected new Router immediately after deserialization";
     router->AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
   } else if (descriptor.proxy_peer_node_name.is_valid()) {
@@ -818,6 +854,7 @@ void Router::SerializeNewRouter(NodeLink& to_node_link,
 
   if (local_peer && initiate_proxy_bypass &&
       SerializeNewRouterWithLocalPeer(to_node_link, descriptor, local_peer)) {
+    local_peer->Flush(kForceProxyBypassAttempt);
     return;
   }
 
@@ -984,6 +1021,7 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
   auto new_decaying_sublink =
       to_node_link.GetSublink(descriptor.new_decaying_sublink);
   if (!new_sublink) {
+    AcceptRouteDisconnectedFrom(LinkType::kPeripheralInward);
     Flush(kForceProxyBypassAttempt);
     return;
   }
@@ -1434,7 +1472,7 @@ void Router::Flush(FlushBehavior behavior) {
       DVLOG(4) << "Outward " << decaying_outward_link->Describe()
                << " fully decayed at " << outbound_sequence_length_sent
                << " sent and " << inbound_sequence_length_received
-               << " recived";
+               << " received";
       outward_link_decayed = true;
     }
 

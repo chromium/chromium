@@ -11,7 +11,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/types/expected_macros.h"
 #include "components/crash/core/common/crash_key.h"
 
 namespace {
@@ -144,60 +143,6 @@ base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
   }
 
   return requirement;
-}
-
-namespace {
-
-// Return a dictionary of attributes suitable for looking up `pid` with
-// `SecCodeCopyGuestWithAttributes`.
-base::apple::ScopedCFTypeRef<CFDictionaryRef> AttributesForGuestValidation(
-    pid_t pid,
-    SignatureValidationType validation_type,
-    std::string_view info_plist_xml) {
-  base::apple::ScopedCFTypeRef<CFNumberRef> pid_cf(
-      CFNumberCreate(nullptr, kCFNumberIntType, &pid));
-  size_t attribute_count = 1;
-  const void* attribute_keys[3] = {kSecGuestAttributePid};
-  const void* attribute_values[3] = {pid_cf.get()};
-
-  base::apple::ScopedCFTypeRef<CFDataRef> info_plist;
-  if (validation_type == SignatureValidationType::DynamicOnly) {
-    info_plist.reset(CFDataCreate(
-        nullptr, reinterpret_cast<const UInt8*>(info_plist_xml.data()),
-        info_plist_xml.length()));
-
-    attribute_keys[1] = kSecGuestAttributeDynamicCode;
-    attribute_values[1] = kCFBooleanTrue;
-    attribute_keys[2] = kSecGuestAttributeDynamicCodeInfoPlist;
-    attribute_values[2] = info_plist.get();
-    attribute_count = 3;
-  }
-
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
-      nullptr, attribute_keys, attribute_values, attribute_count,
-      &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-  return attributes;
-}
-
-}  // namespace
-
-// Verify the code signature of |pid| against |requirement|.
-OSStatus ProcessIsSignedAndFulfillsRequirement(
-    pid_t pid,
-    SecRequirementRef requirement,
-    SignatureValidationType validation_type,
-    std::string_view info_plist_xml) {
-  base::apple::ScopedCFTypeRef<SecCodeRef> code;
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes =
-      AttributesForGuestValidation(pid, validation_type, info_plist_xml);
-
-  OSStatus status = SecCodeCopyGuestWithAttributes(
-      nullptr, attributes.get(), kSecCSDefaultFlags, code.InitializeInto());
-  if (status != errSecSuccess) {
-    DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
-    return status;
-  }
-  return SecCodeCheckValidity(code.get(), kSecCSDefaultFlags, requirement);
 }
 
 }  // namespace apps

@@ -4,11 +4,19 @@
 
 #include "cc/metrics/frame_sorter.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_info.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
+namespace {
+const base::TimeDelta kDefaultSlidingWindowInterval = base::Seconds(1);
+}  // namespace
 
 using FrameState = FrameSorter::FrameState;
 
@@ -29,11 +37,18 @@ bool FrameState::IsComplete() const {
   return (on_begin_counter == ack_counter);
 }
 
-FrameSorter::FrameSorter(InOrderBeginFramesCallback callback)
-    : flush_callback_(std::move(callback)) {
-  DCHECK(!flush_callback_.is_null());
+FrameSorter::FrameSorter() = default;
+FrameSorter::~FrameSorter() {
+  observers_.Clear();
 }
-FrameSorter::~FrameSorter() = default;
+
+void FrameSorter::AddObserver(FrameSorterObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FrameSorter::RemoveObserver(FrameSorterObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   if (current_source_id_.has_value() &&
@@ -44,7 +59,7 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
       current_source_id_ < args.frame_id.source_id) {
     // The change in source_id can be as a result of crash on gpu process,
     // which invalidates existing pending frames (no ack is expected).
-    Reset();
+    Reset(true);
   }
 
   if (!pending_frames_.empty()) {
@@ -69,6 +84,19 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   }
 }
 
+void FrameSorter::AddFrameInfoToBuffer(const FrameInfo& frame_info) {
+  ring_buffer_.SaveToBuffer(frame_info.final_state);
+  ++total_frames_;
+  if (frame_info.final_state == FrameInfo::FrameFinalState::kDropped) {
+    ++total_dropped_;
+  } else if (frame_info.final_state ==
+                 FrameInfo::FrameFinalState::kPresentedPartialNewMain ||
+             frame_info.final_state ==
+                 FrameInfo::FrameFinalState::kPresentedPartialOldMain) {
+    ++total_partial_;
+  }
+}
+
 void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
                                  const FrameInfo& frame_info) {
   if (pending_frames_.empty() || current_source_id_ > args.frame_id.source_id) {
@@ -83,6 +111,13 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   if (!frame_states_.count(args.frame_id))
     return;
 
+  if (report_for_ui_) {
+    sliding_window_.emplace(args, frame_info);
+    if (frame_info.IsDroppedAffectingSmoothness()) {
+      DCHECK_GE(dropped_frame_count_in_window_ + 1, 0u);
+      dropped_frame_count_in_window_ += 1;
+    }
+  }
   const auto f = frame_infos_.find(args.frame_id);
   if (f != frame_infos_.end()) {
     f->second.MergeWith(frame_info);
@@ -118,6 +153,28 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
         << args.frame_id.ToString()
         << pending_frames_.front().frame_id.ToString();
   }
+
+  // Report frames on every frame for UI. This needs to happen after
+  // `FrameSorter::AddFrameResult` so that the current ending frame is included
+  // in the sliding window.
+  if (report_for_ui_) {
+    auto* recorder = CustomMetricRecorder::Get();
+    if (sliding_window_current_percent_dropped_ && recorder) {
+      recorder->ReportPercentDroppedFramesInOneSecondWindow2(
+          *sliding_window_current_percent_dropped_);
+    }
+
+    if (ComputeCurrentWindowSize() < kDefaultSlidingWindowInterval) {
+      return;
+    }
+    DCHECK_GE(dropped_frame_count_in_window_, 0u);
+    DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
+
+    while (ComputeCurrentWindowSize() > kDefaultSlidingWindowInterval) {
+      PopSlidingWindow(args);
+    }
+    DCHECK(!sliding_window_.empty());
+  }
 }
 
 bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
@@ -127,12 +184,17 @@ bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
   return it->second.is_dropped();
 }
 
-void FrameSorter::Reset() {
-  for (auto pending_frame : pending_frames_) {
+void FrameSorter::Reset(bool reset_fcp) {
+  total_frames_ = 0;
+  total_partial_ = 0;
+  total_dropped_ = 0;
+  for (const auto& pending_frame : pending_frames_) {
     const auto& frame_id = pending_frame.frame_id;
     auto& frame_state = frame_states_[frame_id];
     if (frame_state.IsComplete() && !frame_state.should_ignore()) {
-      flush_callback_.Run(pending_frame, frame_infos_[frame_id]);
+      for (auto& observer : observers_) {
+        observer.AddSortedFrame(pending_frame, frame_infos_[frame_id]);
+      }
       frame_states_.erase(frame_id);
       frame_infos_.erase(frame_id);
       continue;
@@ -140,6 +202,13 @@ void FrameSorter::Reset() {
     frame_state.OnReset();
   }
   pending_frames_.clear();
+  ring_buffer_.Clear();
+  if (reset_fcp) {
+    first_contentful_paint_received_ = false;
+  }
+  sliding_window_ = {};
+  sliding_window_current_percent_dropped_.reset();
+  dropped_frame_count_in_window_ = 0;
 }
 
 void FrameSorter::FlushFrames() {
@@ -152,12 +221,73 @@ void FrameSorter::FlushFrames() {
     if (!frame_state.IsComplete())
       break;
     ++flushed_count;
-    flush_callback_.Run(first, frame_infos_[frame_id]);
+    for (auto& observer : observers_) {
+      observer.AddSortedFrame(first, frame_infos_[frame_id]);
+    }
     frame_states_.erase(frame_id);
     frame_infos_.erase(frame_id);
     pending_frames_.pop_front();
   }
   DCHECK_GT(flushed_count, 0u);
+}
+
+uint32_t FrameSorter::GetAverageThroughput() const {
+  size_t good_frames = 0;
+  for (auto it = End(); it; --it) {
+    if (**it == FrameInfo::FrameFinalState::kPresentedAll ||
+        **it == FrameInfo::FrameFinalState::kPresentedPartialOldMain ||
+        **it == FrameInfo::FrameFinalState::kPresentedPartialNewMain) {
+      ++good_frames;
+    }
+  }
+  double throughput = 100. * good_frames / ring_buffer_.BufferSize();
+  return static_cast<uint32_t>(throughput);
+}
+
+void FrameSorter::OnFirstContentfulPaintReceived() {
+  DCHECK(!first_contentful_paint_received_);
+  first_contentful_paint_received_ = true;
+}
+
+base::TimeDelta FrameSorter::ComputeCurrentWindowSize() const {
+  if (sliding_window_.empty()) {
+    return {};
+  }
+  return sliding_window_.back().first.frame_time +
+         sliding_window_.back().first.interval -
+         sliding_window_.front().first.frame_time;
+}
+
+void FrameSorter::PopSlidingWindow(const viz::BeginFrameArgs& args) {
+  const auto removed_args = sliding_window_.front().first;
+  const auto removed_frame_info = sliding_window_.front().second;
+  if (removed_frame_info.IsDroppedAffectingSmoothness()) {
+    DCHECK_GE(dropped_frame_count_in_window_ - 1, 0u);
+    dropped_frame_count_in_window_ -= 1;
+  }
+  sliding_window_.pop();
+  if (sliding_window_.empty()) {
+    return;
+  }
+
+  // Don't count the newest element if it is outside the current window.
+  const auto newest_was_dropped =
+      sliding_window_.back().second.IsDroppedAffectingSmoothness();
+
+  uint32_t invalidated_frames = 0;
+  if (ComputeCurrentWindowSize() > kDefaultSlidingWindowInterval &&
+      newest_was_dropped) {
+    invalidated_frames++;
+  }
+
+  uint32_t dropped = dropped_frame_count_in_window_ - invalidated_frames;
+  auto total_frames_in_window = kDefaultSlidingWindowInterval / args.interval;
+  const double percent_dropped_frame =
+      std::min((dropped * 100.0) / total_frames_in_window, 100.0);
+  sliding_window_current_percent_dropped_ = percent_dropped_frame;
+}
+void FrameSorter::EnableReportForUI() {
+  report_for_ui_ = true;
 }
 
 }  // namespace cc

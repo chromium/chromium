@@ -32,7 +32,7 @@ const fakeDeviceInitParams = {
   world: createFakeWorld(5.0, 2.0, 5.0),  // webxr_test_constants_fake_world.js has detailed description of the fake world
 };
 
-const test_function_generator = function(isTransientTest, isGarbageCollectionTest) {
+const test_function_generator = function(isTransientTest) {
   return function(session, fakeDeviceController, t) {
 
     let controller = null;
@@ -57,12 +57,7 @@ const test_function_generator = function(isTransientTest, isGarbageCollectionTes
             assert_not_equals(hitTestResults, null, "Results should be non-null!");
           });
 
-          if(isGarbageCollectionTest) {
-            hitTestSource = null;
-            self.gc();
-          } else {
-            hitTestSource.cancel();
-          }
+          hitTestSource.cancel();
         };
 
         session.requestAnimationFrame(rAFcb);
@@ -87,25 +82,13 @@ const test_function_generator = function(isTransientTest, isGarbageCollectionTes
 }
 
 xr_session_promise_test("Ensures hit test source cancellation propagates to the device when manually cancelled.",
-  test_function_generator(/*isTransientTest=*/false, /*isGarbageCollectionTest=*/false),
+  test_function_generator(/*isTransientTest=*/false),
   fakeDeviceInitParams,
   'immersive-ar', { 'requiredFeatures': ['hit-test'] });
 
 xr_session_promise_test("Ensures transient input hit test source cancellation propagates to the device when manually cancelled.",
-  test_function_generator(/*isTransientTest=*/true, /*isGarbageCollectionTest=*/false),
+  test_function_generator(/*isTransientTest=*/true),
   fakeDeviceInitParams,
   'immersive-ar', { 'requiredFeatures': ['hit-test'] });
-
-if(self.gc) {
-  xr_session_promise_test("Ensures hit test source cancellation propagates to the device when relying on GC",
-    test_function_generator(/*isTransientTest=*/false, /*isGarbageCollectionTest=*/true),
-    fakeDeviceInitParams,
-    'immersive-ar', { 'requiredFeatures': ['hit-test'] });
-
-  xr_session_promise_test("Ensures transient input hit test source cancellation propagates to the device when relying on GC",
-    test_function_generator(/*isTransientTest=*/true, /*isGarbageCollectionTest=*/true),
-    fakeDeviceInitParams,
-    'immersive-ar', { 'requiredFeatures': ['hit-test'] });
-}
 
 </script>

@@ -6,19 +6,20 @@ import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {alphabeticalSort, getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
-import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {alphabeticalSort, getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppLanguageSelectionDialogEntryPoint} from '../common/app_language_selection_dialog/app_language_selection_dialog.js';
 import {AppManagementBrowserProxy} from '../common/app_management/browser_proxy.js';
-import {AppMap} from '../common/app_management/store.js';
+import type {AppMap} from '../common/app_management/store.js';
 import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 
 import {getTemplate} from './app_languages_page.html.js';
 
@@ -105,8 +106,8 @@ export class OsSettingsAppLanguagesPageElement extends
    */
   private getSelectedLocale_(app: App): string {
     if (app.selectedLocale?.localeTag) {
-      const displayName = app.selectedLocale!.displayName;
-      return displayName || app.selectedLocale!.localeTag;
+      const displayName = app.selectedLocale.displayName;
+      return displayName || app.selectedLocale.localeTag;
     }
     return this.i18n('appLanguageDeviceLanguageLabel');
   }
@@ -180,8 +181,8 @@ export class OsSettingsAppLanguagesPageElement extends
     });
 
     return filteredApps.sort((a, b) => {
-      assert(a!.title);
-      assert(b!.title);
+      assert(a.title);
+      assert(b.title);
       return alphabeticalSort(a.title, b.title);
     });
   }

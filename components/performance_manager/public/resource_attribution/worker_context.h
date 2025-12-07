@@ -8,6 +8,7 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -70,6 +71,12 @@ class WorkerContext {
   constexpr friend bool operator==(const WorkerContext& a,
                                    const WorkerContext& b) {
     return a.token_ == b.token_;
+  }
+
+  // Add WorkerContexts to absl hashes.
+  template <typename H>
+  friend H AbslHashValue(H h, const WorkerContext& c) {
+    return H::combine(std::move(h), c.token_);
   }
 
  private:

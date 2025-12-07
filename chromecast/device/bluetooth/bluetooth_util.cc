@@ -4,6 +4,7 @@
 
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
@@ -52,8 +53,9 @@ bool ParseAddr(const std::string& str, bluetooth_v2_shlib::Addr* addr) {
     return false;
   }
 
-  int ret = sscanf(str.c_str(), kFmtAddr, &(*addr)[5], &(*addr)[4], &(*addr)[3],
-                   &(*addr)[2], &(*addr)[1], &(*addr)[0]);
+  int ret =
+      UNSAFE_TODO(sscanf(str.c_str(), kFmtAddr, &(*addr)[5], &(*addr)[4],
+                         &(*addr)[3], &(*addr)[2], &(*addr)[1], &(*addr)[0]));
 
   return ret == static_cast<int>(addr->size());
 }
@@ -79,7 +81,8 @@ bool ParseUuid(const std::string& str, bluetooth_v2_shlib::Uuid* uuid) {
   // Check for 16-bit UUID
   if (str.size() == kUuid16bitLen) {
     *uuid = kUuidBase;
-    return sscanf(str.c_str(), "%02hhx%02hhx", &(*uuid)[2], &(*uuid)[3]) == 2;
+    return UNSAFE_TODO(sscanf(str.c_str(), "%02hhx%02hhx", &(*uuid)[2],
+                              &(*uuid)[3])) == 2;
   }
 
   if (str.size() > kUuidHexNumChars &&
@@ -88,18 +91,17 @@ bool ParseUuid(const std::string& str, bluetooth_v2_shlib::Uuid* uuid) {
   }
 
   std::string no_dashes = str;
-  no_dashes.erase(std::remove(no_dashes.begin(), no_dashes.end(), '-'),
-                  no_dashes.end());
+  std::erase(no_dashes, '-');
 
   if (no_dashes.size() != kUuidHexNumChars) {
     return false;
   }
 
-  int ret =
+  int ret = UNSAFE_TODO(
       sscanf(no_dashes.c_str(), kFmtUuidNoDashes, &(*uuid)[0], &(*uuid)[1],
              &(*uuid)[2], &(*uuid)[3], &(*uuid)[4], &(*uuid)[5], &(*uuid)[6],
              &(*uuid)[7], &(*uuid)[8], &(*uuid)[9], &(*uuid)[10], &(*uuid)[11],
-             &(*uuid)[12], &(*uuid)[13], &(*uuid)[14], &(*uuid)[15]);
+             &(*uuid)[12], &(*uuid)[13], &(*uuid)[14], &(*uuid)[15]));
 
   return ret == static_cast<int>(uuid->size());
 }

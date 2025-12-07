@@ -22,7 +22,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -111,7 +111,8 @@ void ShellPlatformDelegate::SetIsLoading(Shell* shell, bool loading) {
 void ShellPlatformDelegate::SetTitle(Shell* shell,
                                      const std::u16string& title) {}
 
-void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
+void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
+                                             RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   return false;  // Shell destroys itself.
@@ -158,9 +159,11 @@ void ShellPlatformDelegate::LoadProgressChanged(Shell* shell, double progress) {
 }
 
 // static
-void JNI_Shell_CloseShell(JNIEnv* env, jlong shellPtr) {
+static void JNI_Shell_CloseShell(JNIEnv* env, jlong shellPtr) {
   Shell* shell = reinterpret_cast<Shell*>(shellPtr);
   shell->Close();
 }
 
 }  // namespace content
+
+DEFINE_JNI(Shell)

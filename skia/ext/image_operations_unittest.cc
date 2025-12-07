@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/image_operations.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <numbers>
@@ -35,7 +31,7 @@ namespace {
 uint32_t AveragePixel(const SkBitmap& bmp,
                       int x_min, int x_max,
                       int y_min, int y_max) {
-  float accum[4] = {0, 0, 0, 0};
+  std::array<float, 4> accum = {0, 0, 0, 0};
   int count = 0;
   for (int y = y_min; y <= y_max; y++) {
     for (int x = x_min; x <= x_max; x++) {
@@ -56,9 +52,9 @@ uint32_t AveragePixel(const SkBitmap& bmp,
 
 // Computes the average pixel (/color) value for the given colors.
 SkColor AveragePixel(const SkColor colors[], size_t color_count) {
-  float accum[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  std::array<float, 4> accum = {0.0f, 0.0f, 0.0f, 0.0f};
   for (size_t i = 0; i < color_count; ++i) {
-    const SkColor cur = colors[i];
+    const SkColor cur = UNSAFE_TODO(colors[i]);
     accum[0] += static_cast<float>(SkColorGetA(cur));
     accum[1] += static_cast<float>(SkColorGetR(cur));
     accum[2] += static_cast<float>(SkColorGetG(cur));
@@ -170,18 +166,17 @@ void DrawCheckerToBitmap(int w, int h,
 
 #if DEBUG_BITMAP_GENERATION
 void SaveBitmapToPNG(const SkBitmap& bmp, const char* path) {
-  std::vector<unsigned char> png;
-  gfx::PNGCodec::ColorFormat color_format = gfx::PNGCodec::FORMAT_RGBA;
-  if (!gfx::PNGCodec::Encode(
-          reinterpret_cast<const unsigned char*>(bmp.getPixels()),
-          color_format, gfx::Size(bmp.width(), bmp.height()),
-          static_cast<int>(bmp.rowBytes()),
-          false, std::vector<gfx::PNGCodec::Comment>(), &png)) {
+  std::optional<std::vector<uint8_t>> png = gfx::PNGCodec::Encode(
+      reinterpret_cast<const unsigned char*>(bmp.getPixels()),
+      gfx::PNGCodec::FORMAT_RGBA, gfx::Size(bmp.width(), bmp.height()),
+      static_cast<int>(bmp.rowBytes()), false,
+      std::vector<gfx::PNGCodec::Comment>());
+  if (!png) {
     FAIL() << "Failed to encode image";
   }
 
   const base::FilePath fpath(path);
-  if (!base::WriteFile(fpath, png)) {
+  if (!base::WriteFile(fpath, png.value())) {
     FAIL() << "Failed to write dest \"" << path << '"';
   }
 }
@@ -238,20 +233,20 @@ void CheckResizeMethodShouldAverageGrid(
     bool* method_passed) {
   *method_passed = false;
 
-  const TestedPixel tested_pixels[] = {
-    // Corners
-    { 0,          0,           2.3f, "Top left corner"  },
-    { 0,          dest_h - 1,  2.3f, "Bottom left corner" },
-    { dest_w - 1, 0,           2.3f, "Top right corner" },
-    { dest_w - 1, dest_h - 1,  2.3f, "Bottom right corner" },
-    // Middle points of each side
-    { dest_w / 2, 0,           1.0f, "Top middle" },
-    { dest_w / 2, dest_h - 1,  1.0f, "Bottom middle" },
-    { 0,          dest_h / 2,  1.0f, "Left middle" },
-    { dest_w - 1, dest_h / 2,  1.0f, "Right middle" },
-    // Center
-    { dest_w / 2, dest_h / 2,  1.0f, "Center" }
-  };
+  const auto tested_pixels = std::to_array<TestedPixel>({
+      // Corners
+      {0, 0, 2.3f, "Top left corner"},
+      {0, dest_h - 1, 2.3f, "Bottom left corner"},
+      {dest_w - 1, 0, 2.3f, "Top right corner"},
+      {dest_w - 1, dest_h - 1, 2.3f, "Bottom right corner"},
+      // Middle points of each side
+      {dest_w / 2, 0, 1.0f, "Top middle"},
+      {dest_w / 2, dest_h - 1, 1.0f, "Bottom middle"},
+      {0, dest_h / 2, 1.0f, "Left middle"},
+      {dest_w - 1, dest_h / 2, 1.0f, "Right middle"},
+      // Center
+      {dest_w / 2, dest_h / 2, 1.0f, "Center"},
+  });
 
   // Resize the src
   const skia::ImageOperations::ResizeMethod method = tested_method.method;
@@ -391,8 +386,8 @@ TEST(ImageOperations, Halve) {
       if (!close) {
         char str[128];
         base::snprintf(str, sizeof(str),
-                       "exp[%d,%d] = %08X, actual[%d,%d] = %08X",
-                       x, y, expected_color, x, y, actual_color);
+                       "exp[%d,%d] = %08X, actual[%d,%d] = %08X", x, y,
+                       expected_color, x, y, actual_color);
         ADD_FAILURE() << str;
         PrintPixel(src, first_x, last_x, first_y, last_y);
       }
@@ -468,14 +463,14 @@ TEST(ImageOperations, ResizeShouldAverageColors) {
   const SkColor colors[] = { checker_color1, checker_color2 };
   const SkColor average_color = AveragePixel(colors, std::size(colors));
 
-  static const TestedResizeMethod tested_methods[] = {
-    { skia::ImageOperations::RESIZE_GOOD,     "GOOD",     0.0f },
-    { skia::ImageOperations::RESIZE_BETTER,   "BETTER",   0.0f },
-    { skia::ImageOperations::RESIZE_BEST,     "BEST",     0.0f },
-    { skia::ImageOperations::RESIZE_BOX,      "BOX",      0.0f },
-    { skia::ImageOperations::RESIZE_HAMMING1, "HAMMING1", 0.0f },
-    { skia::ImageOperations::RESIZE_LANCZOS3, "LANCZOS3", 0.0f },
-  };
+  static const auto tested_methods = std::to_array<TestedResizeMethod>({
+      {skia::ImageOperations::RESIZE_GOOD, "GOOD", 0.0f},
+      {skia::ImageOperations::RESIZE_BETTER, "BETTER", 0.0f},
+      {skia::ImageOperations::RESIZE_BEST, "BEST", 0.0f},
+      {skia::ImageOperations::RESIZE_BOX, "BOX", 0.0f},
+      {skia::ImageOperations::RESIZE_HAMMING1, "HAMMING1", 0.0f},
+      {skia::ImageOperations::RESIZE_LANCZOS3, "LANCZOS3", 0.0f},
+  });
 
   // Create our source bitmap.
   SkBitmap src;

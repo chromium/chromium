@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_CONTROL_REMOTING_RENDERER_RPC_CALL_TRANSLATOR_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "media/cast/openscreen/rpc_call_message_handler.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace openscreen::cast {
 class RpcMessage;

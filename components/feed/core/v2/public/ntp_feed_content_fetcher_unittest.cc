@@ -103,10 +103,9 @@ TEST_F(NtpFeedContentFetcherTest, FetchFollowingFeedArticles) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<NtpFeedContentFetcher::Article> articles) {
-            actual_articles = std::move(articles);
-          }));
+      .WillOnce([&](std::vector<NtpFeedContentFetcher::Article> articles) {
+        actual_articles = std::move(articles);
+      });
 
   // Inject a response of 5 articles. We should only get 3.
   feed_network_->InjectApiResponse<WebFeedListContentsDiscoverApi>(

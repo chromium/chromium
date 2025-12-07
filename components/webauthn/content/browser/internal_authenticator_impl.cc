@@ -49,14 +49,29 @@ void InternalAuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     blink::mojom::Authenticator::MakeCredentialCallback callback) {
   authenticator_common_->MakeCredential(effective_origin_, std::move(options),
+                                        std::move(payment_),
                                         std::move(callback));
 }
 
 void InternalAuthenticatorImpl::GetAssertion(
-    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-    blink::mojom::Authenticator::GetAssertionCallback callback) {
-  authenticator_common_->GetAssertion(effective_origin_, std::move(options),
-                                      std::move(payment_), std::move(callback));
+    blink::mojom::PublicKeyCredentialRequestOptionsPtr pk_options,
+    GetAssertionCallback callback) {
+  auto options = blink::mojom::GetCredentialOptions::New();
+  options->public_key = std::move(pk_options);
+  authenticator_common_->GetCredential(
+      effective_origin_, std::move(options), std::move(payment_),
+      base::BindOnce(
+          [](GetAssertionCallback get_assertion_callback,
+             blink::mojom::GetCredentialResponsePtr response) {
+            if (response.is_null() || !response->is_get_assertion_response()) {
+              return;
+            }
+            auto assertion = std::move(response->get_get_assertion_response());
+            std::move(get_assertion_callback)
+                .Run(assertion->status, std::move(assertion->credential),
+                     std::move(assertion->dom_exception_details));
+          },
+          std::move(callback)));
 }
 
 void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -77,7 +92,7 @@ void InternalAuthenticatorImpl::GetMatchingCredentialIds(
     bool require_third_party_payment_bit,
     webauthn::GetMatchingCredentialIdsCallback callback) {
   // Not yet supported on any desktop platform.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InternalAuthenticatorImpl::Cancel() {

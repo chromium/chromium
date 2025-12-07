@@ -14,8 +14,9 @@
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/gfx/geometry/rect.h"
 
-using GtkIMContext = struct _GtkIMContext;
 using GdkWindow = struct _GdkWindow;
+using GtkIMContext = struct _GtkIMContext;
+using GtkWidget = struct _GtkWidget;
 
 namespace gtk {
 
@@ -41,13 +42,10 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                    ui::TextInputType old_type,
                    const TextInputClientAttributes& new_client_attributes,
                    ui::TextInputClient::FocusReason reason) override;
-  void SetSurroundingText(
-      const std::u16string& text,
-      const gfx::Range& text_range,
-      const gfx::Range& composition_range,
-      const gfx::Range& selection_range,
-      const std::optional<ui::GrammarFragment>& fragment,
-      const std::optional<ui::AutocorrectInfo>& autocorrect) override;
+  void SetSurroundingText(const std::u16string& text,
+                          const gfx::Range& text_range,
+                          const gfx::Range& composition_range,
+                          const gfx::Range& selection_range) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
@@ -57,9 +55,6 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void OnPreeditChanged(GtkIMContext* context);
   void OnPreeditEnd(GtkIMContext* context);
   void OnPreeditStart(GtkIMContext* context);
-
-  // Only used on GTK3.
-  void SetContextClientWindow(GdkWindow* window, GtkIMContext* gtk_context);
 
   // Returns the IMContext depending on the currently connected input field
   // type.
@@ -72,12 +67,12 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   ui::TextInputType type_ = ui::TEXT_INPUT_TYPE_NONE;
 
   // IME's input GTK context.
-  raw_ptr<GtkIMContext> gtk_context_ = nullptr;
-  raw_ptr<GtkIMContext> gtk_simple_context_ = nullptr;
+  ScopedGObject<GtkIMContext> gtk_context_ = nullptr;
+  ScopedGObject<GtkIMContext> gtk_simple_context_ = nullptr;
 
-  // Only used on GTK3.
-  gpointer gdk_last_set_client_window_ = nullptr;
-  gpointer gdk_last_set_client_window_for_simple_ = nullptr;
+  // These correspond to the GtkImContexts above.
+  raw_ptr<GdkWindow> last_set_client_window_for_gtk_context_ = nullptr;
+  raw_ptr<GdkWindow> last_set_client_window_for_gtk_simple_comtext_ = nullptr;
 
   // Last known caret bounds relative to the screen coordinates, in DIPs.
   // Effective only on non-simple context.

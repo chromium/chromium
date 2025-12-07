@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"
 
+#include "pdf/buildflags.h"
+
 namespace file_manager {
 namespace test {
 
@@ -98,11 +100,6 @@ TestCase& TestCase::EnableSinglePartitionFormat() {
   return *this;
 }
 
-TestCase& TestCase::EnableMaterializedViews() {
-  options.enable_materialized_views = true;
-  return *this;
-}
-
 // Show the startup browser. Some tests invoke the file picker dialog during
 // the test. Requesting a file picker from a background page is forbidden by
 // the apps platform, and it's a bug that these tests do so.
@@ -169,11 +166,6 @@ TestCase& TestCase::EnableLocalImageSearch() {
   return *this;
 }
 
-TestCase& TestCase::EnableFSPsInRecents() {
-  options.enable_fsps_in_recents = true;
-  return *this;
-}
-
 TestCase& TestCase::DisableGoogleOneOfferFilesBanner() {
   options.enable_google_one_offer_files_banner = false;
   return *this;
@@ -218,6 +210,13 @@ TestCase& TestCase::EnableSkyVault() {
   options.enable_skyvault = true;
   return *this;
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+TestCase& TestCase::SetEnableOopifPdf(bool enable) {
+  options.enable_oopif_pdf = enable;
+  return *this;
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 std::string TestCase::GetFullName() const {
   std::string full_name = name;
@@ -285,10 +284,6 @@ std::string TestCase::GetFullName() const {
     full_name += "_LocalImageSearch";
   }
 
-  if (options.enable_fsps_in_recents) {
-    full_name += "_FSPsInRecents";
-  }
-
   // Google One offer is enabled by default. Append it to a test name only if
   // it's different from the default value.
   // TODO(b/315829911): Remove Google One offer files banner flag.
@@ -315,9 +310,11 @@ std::string TestCase::GetFullName() const {
     full_name += "_CrosComponents";
   }
 
-  if (options.enable_materialized_views) {
-    full_name += "_MaterializedViews";
+#if BUILDFLAG(ENABLE_PDF)
+  if (options.enable_oopif_pdf) {
+    full_name += "_OopifPdf";
   }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   switch (options.device_mode) {
     case kDeviceModeNotSet:
@@ -358,6 +355,15 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
 
 std::string PostTestCaseName(const ::testing::TestParamInfo<TestCase>& test) {
   return test.param.GetFullName();
+}
+
+std::string PostTestCaseNameWithBool(
+    const ::testing::TestParamInfo<std::tuple<TestCase, bool>>& test) {
+  if (std::get<1>(test.param)) {
+    return std::get<0>(test.param).GetFullName() + "UploadUseProto";
+  } else {
+    return std::get<0>(test.param).GetFullName() + "UploadUseJson";
+  }
 }
 
 }  // namespace test

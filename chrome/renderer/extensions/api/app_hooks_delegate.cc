@@ -24,6 +24,7 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -45,7 +46,8 @@ void AppHooksDelegate::IsInstalledGetterCallback(
     v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::HandleScope handle_scope(info.GetIsolate());
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.HolderV2()->GetCreationContextChecked(info.GetIsolate());
   ScriptContext* script_context =
       ScriptContextSet::GetContextByV8Context(context);
 
@@ -54,8 +56,8 @@ void AppHooksDelegate::IsInstalledGetterCallback(
   if (!script_context)
     return;
 
-  auto* hooks_delegate =
-      static_cast<AppHooksDelegate*>(info.Data().As<v8::External>()->Value());
+  auto* hooks_delegate = static_cast<AppHooksDelegate*>(
+      info.Data().As<v8::External>()->Value(gin::kAppHooksDelegateTag));
   // Since this is more-or-less an API, log it as an API call.
   APIActivityLogger::LogAPICall(hooks_delegate->ipc_sender_, context,
                                 "app.getIsInstalled",
@@ -87,7 +89,7 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
     const APITypeReferenceMap& refs) {
   using RequestResult = APIBindingHooks::RequestResult;
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::TryCatch try_catch(isolate);
   APISignature::V8ParseResult parse_result =
       signature->ParseArgumentsToV8(context, *arguments, refs);
@@ -123,7 +125,7 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
             binding::ResultModifierFunction());
     GetInstallState(script_context, request_details.request_id);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return result;
@@ -143,7 +145,7 @@ void AppHooksDelegate::InitializeTemplate(
   object_template->SetNativeDataProperty(
       gin::StringToSymbol(isolate, "isInstalled"),
       &AppHooksDelegate::IsInstalledGetterCallback, EmptySetterCallback,
-      v8::External::New(isolate, this));
+      v8::External::New(isolate, this, gin::kAppHooksDelegateTag));
 }
 
 v8::Local<v8::Value> AppHooksDelegate::GetDetails(

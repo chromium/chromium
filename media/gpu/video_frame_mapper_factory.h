@@ -18,28 +18,17 @@ namespace media {
 class MEDIA_GPU_EXPORT VideoFrameMapperFactory {
  public:
   // Tries to create a VideoFrameMapper suitable for mapping VideoFrames
-  // described by |format| and |storage_type|. If
-  // |must_support_intel_media_compressed_buffers| is true, the returned
-  // VideoFrameMapper (if any) can map Intel media compressed VideoFrames.
-  // Returns nullptr if no suitable VideoFrameMapper can be created.
+  // described by |format| and |storage_type|.
   static std::unique_ptr<VideoFrameMapper> CreateMapper(
       VideoPixelFormat format,
-      VideoFrame::StorageType storage_type,
-      bool must_support_intel_media_compressed_buffers);
+      VideoFrame::StorageType storage_type);
 
   // Tries to create a VideoFrameMapper suitable for mapping VideoFrames
-  // described by |format| and |storage_type|. If
-  // |must_support_intel_media_compressed_buffers| is true, the returned
-  // VideoFrameMapper (if any) can map Intel media compressed VideoFrames. If
-  // |force_linear_buffer_mapper| is true and the |storage_type| is not
-  // VideoFrame::STORAGE_GPU_MEMORY_BUFFER, the returned VideoFrameMapper (if
-  // any) won't attempt to linearize the buffer. Returns nullptr if no suitable
-  // VideoFrameMapper can be created.
+  // described by |format| and |storage_type|.
   static std::unique_ptr<VideoFrameMapper> CreateMapper(
       VideoPixelFormat format,
       VideoFrame::StorageType storage_type,
-      bool force_linear_buffer_mapper,
-      bool must_support_intel_media_compressed_buffers);
+      bool force_linear_buffer_mapper);
 };
 
 }  // namespace media

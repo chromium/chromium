@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/web_state.h"
-
 #import <memory>
 
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "build/blink_buildflags.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/web_state.h"
 
 #if BUILDFLAG(USE_BLINK)
 #import "ios/web/content/web_state/content_web_state.h"
@@ -28,16 +27,6 @@ using ConcreteWebStateType = WebStateImpl;
 /* static */
 std::unique_ptr<WebState> WebState::Create(const CreateParams& params) {
   return std::make_unique<ConcreteWebStateType>(params);
-}
-
-/* static */
-std::unique_ptr<WebState> WebState::CreateWithStorageSession(
-    const CreateParams& params,
-    CRWSessionStorage* session_storage,
-    NativeSessionFetcher session_fetcher) {
-  DCHECK(session_storage);
-  return std::make_unique<ConcreteWebStateType>(params, session_storage,
-                                                std::move(session_fetcher));
 }
 
 /* static */

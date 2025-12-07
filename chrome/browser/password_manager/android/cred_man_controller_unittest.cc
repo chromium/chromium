@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -27,7 +28,6 @@ using testing::Return;
 
 using webauthn::CredManSupport;
 using webauthn::WebAuthnCredManDelegate;
-using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -97,11 +97,10 @@ class CredManControllerTest : public testing::Test {
 TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
-  EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
-                                 std::move(filler),
-                                 /*frame_driver=*/nullptr,
-                                 /*is_webauthn_form=*/false));
+  EXPECT_FALSE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/false, CredManController::PasskeyDelayCallback()));
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
@@ -109,11 +108,10 @@ TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
       CredManSupport::DISABLED);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
-  EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
-                                 std::move(filler),
-                                 /*frame_driver=*/nullptr,
-                                 /*is_webauthn_form=*/true));
+  EXPECT_FALSE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
@@ -121,16 +119,14 @@ TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
       CredManSupport::PARALLEL_WITH_FIDO_2);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
-  EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
-                                 std::move(filler),
-                                 /*frame_driver=*/nullptr,
-                                 /*is_webauthn_form=*/true));
+  EXPECT_FALSE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
 
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_full_assertion_request;
@@ -138,10 +134,10 @@ TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
       /*has_results=*/false, mock_full_assertion_request.Get());
 
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
-                                 std::move(filler),
-                                 /*frame_driver=*/nullptr,
-                                 /*is_webauthn_form=*/true));
+  EXPECT_FALSE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 }
 
 TEST_F(CredManControllerTest, ShowIfResultsExist) {
@@ -155,10 +151,10 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
       /*has_results=*/true, mock_full_assertion_request.Get());
 
   EXPECT_CALL(visibility_controller(), SetVisible(_));
-  EXPECT_TRUE(controller().Show(web_authn_cred_man_delegate(),
-                                std::move(filler),
-                                /*frame_driver=*/nullptr,
-                                /*is_webauthn_form=*/true));
+  EXPECT_TRUE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 }
 
 TEST_F(CredManControllerTest, Fill) {
@@ -175,13 +171,14 @@ TEST_F(CredManControllerTest, Fill) {
   web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
       /*has_results=*/true, mock_full_assertion_request.Get());
 
-  EXPECT_TRUE(controller().Show(web_authn_cred_man_delegate(),
-                                std::move(filler),
-                                /*frame_driver=*/nullptr,
-                                /*is_webauthn_form=*/true));
+  EXPECT_TRUE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
   ON_CALL(last_filler(), ShouldTriggerSubmission()).WillByDefault(Return(true));
-  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword));
+  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _))
+      .WillOnce(base::test::RunOnceCallback<2>(/*triggered_submission=*/true));
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
   uma_recorder.ExpectBucketCount(
       "PasswordManager.CredMan.PasswordFormSubmissionTriggered", /*true*/ 1, 1);
@@ -198,16 +195,16 @@ TEST_F(CredManControllerTest, FillsPasswordIfReauthSuccessfull) {
   web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
       /*has_results=*/true, mock_full_assertion_request.Get());
 
-  ASSERT_TRUE(controller().Show(web_authn_cred_man_delegate(),
-                                std::move(filler),
-                                /*frame_driver=*/nullptr,
-                                /*is_webauthn_form=*/true));
+  ASSERT_TRUE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
   ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
       .WillByDefault(Return(true));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
-  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword));
+  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
 
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
 }
@@ -223,10 +220,10 @@ TEST_F(CredManControllerTest, DoesNotFillIfReauthFailed) {
   web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
       /*has_results=*/true, mock_full_assertion_request.Get());
 
-  ASSERT_TRUE(controller().Show(web_authn_cred_man_delegate(),
-                                std::move(filler),
-                                /*frame_driver=*/nullptr,
-                                /*is_webauthn_form=*/true));
+  ASSERT_TRUE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
   ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
       .WillByDefault(Return(true));
@@ -234,6 +231,60 @@ TEST_F(CredManControllerTest, DoesNotFillIfReauthFailed) {
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/false));
   EXPECT_CALL(last_filler(), FillUsernameAndPassword).Times(0);
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
+}
+
+TEST_F(CredManControllerTest, InvokeDelayCallbackWhenNotReady) {
+  bool delay_callback_invoked = false;
+  bool credential_availability_notified = false;
+  CredManController::PasskeyDelayCallback delay_callback =
+      base::BindLambdaForTesting(
+          [&delay_callback_invoked, &credential_availability_notified](
+              base::OnceCallback<void(base::OnceClosure)> callback) {
+            delay_callback_invoked = true;
+            base::OnceClosure notification_closure = base::BindLambdaForTesting(
+                [&credential_availability_notified]() {
+                  credential_availability_notified = true;
+                });
+            std::move(callback).Run(std::move(notification_closure));
+          });
+
+  EXPECT_CALL(visibility_controller(), SetVisible).Times(0);
+  EXPECT_TRUE(controller().Show(web_authn_cred_man_delegate(), PrepareFiller(),
+                                /*frame_driver=*/nullptr,
+                                /*is_webauthn_form=*/true,
+                                std::move(delay_callback)));
+  EXPECT_TRUE(delay_callback_invoked);
+
+  base::MockCallback<base::RepeatingCallback<void(bool)>>
+      mock_full_assertion_request;
+  web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*has_results=*/true, mock_full_assertion_request.Get());
+
+  EXPECT_TRUE(credential_availability_notified);
+}
+
+// Verify that if a passkey list has been received, but it is empty, the
+// `delay_callback` is not invoked, even when it is present.
+TEST_F(CredManControllerTest, DelayCallbackNotInvokedForEmptyPasskeyList) {
+  bool delay_callback_invoked = false;
+  CredManController::PasskeyDelayCallback delay_callback =
+      base::BindLambdaForTesting(
+          [&delay_callback_invoked](
+              base::OnceCallback<void(base::OnceClosure)> callback) {
+            delay_callback_invoked = true;
+          });
+
+  base::MockCallback<base::RepeatingCallback<void(bool)>>
+      mock_full_assertion_request;
+  web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*has_results=*/false, mock_full_assertion_request.Get());
+
+  EXPECT_CALL(visibility_controller(), SetVisible).Times(0);
+  EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(), PrepareFiller(),
+                                 /*frame_driver=*/nullptr,
+                                 /*is_webauthn_form=*/true,
+                                 std::move(delay_callback)));
+  EXPECT_FALSE(delay_callback_invoked);
 }
 
 }  // namespace password_manager

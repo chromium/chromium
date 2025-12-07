@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <optional>
-
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -17,6 +15,9 @@ class SceneUrlLoadingService;
 class Browser;
 class UrlLoadingNotifierBrowserAgent;
 struct UrlLoadParams;
+namespace web {
+class WebStateID;
+}
 
 // A delegate for URL loading that can handle UI animations that are needed at
 // specific points in the loading cycle.
@@ -47,7 +48,6 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
  private:
   friend class BrowserUserData<UrlLoadingBrowserAgent>;
   friend class FakeUrlLoadingBrowserAgent;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit UrlLoadingBrowserAgent(Browser* browser);
 
@@ -70,13 +70,14 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   // it to a separate function makes it safer not to capture state that can
   // become invalid when creating the asynchronous task).
   void LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                           std::optional<void*> hint);
+                           web::WebStateID active_tab_id);
 
   __weak id<URLLoadingDelegate> delegate_;
-  raw_ptr<Browser> browser_;
-  raw_ptr<UrlLoadingNotifierBrowserAgent> notifier_ = nullptr;
-  raw_ptr<UrlLoadingBrowserAgent> incognito_loader_ = nullptr;
-  raw_ptr<SceneUrlLoadingService> scene_service_ = nullptr;
+  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged> notifier_ =
+      nullptr;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> incognito_loader_ =
+      nullptr;
+  raw_ptr<SceneUrlLoadingService, DanglingUntriaged> scene_service_ = nullptr;
 
   base::WeakPtrFactory<UrlLoadingBrowserAgent> weak_ptr_factory_{this};
 };

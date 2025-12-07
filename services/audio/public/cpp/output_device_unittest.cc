@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/public/cpp/output_device.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_output_device.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -27,10 +24,8 @@
 #include "services/audio/sync_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::NotNull;
 using testing::StrictMock;
@@ -40,6 +35,7 @@ namespace audio {
 
 namespace {
 
+constexpr uint8_t kAudioByteData = 127;
 constexpr float kAudioData = 0.618;
 constexpr base::TimeDelta kDelay = base::Microseconds(123);
 constexpr char kDeviceId[] = "testdeviceid";
@@ -212,7 +208,8 @@ TEST_F(AudioServiceOutputDeviceTest, CreatePlayPause) {
 }
 
 // Flaky on Linux Chromium OS ASan LSan (https://crbug.com/889845)
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
+// Disabled on Android (crbug.com/395710100).
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_VerifyDataFlow DISABLED_VerifyDataFlow
 #else
 #define MAYBE_VerifyDataFlow VerifyDataFlow
@@ -243,21 +240,23 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
                                        .count = 123};
     EXPECT_CALL(env.render_callback,
                 Render(kDelay, env.time_stamp, glitch_info, NotNull()))
-        .WillOnce(WithArg<3>(Invoke([](media::AudioBus* client_bus) -> int {
+        .WillOnce(WithArg<3>([](media::AudioBus* client_bus) -> int {
           // Place some test data in the bus so that we can check that it was
           // copied to the audio service side.
-          std::fill_n(client_bus->channel(0), client_bus->frames(), kAudioData);
-          std::fill_n(client_bus->channel(1), client_bus->frames(), kAudioData);
+          std::ranges::fill(client_bus->channel_span(0), kAudioData);
+          std::ranges::fill(client_bus->channel_span(1), kAudioData);
           return client_bus->frames();
-        })));
+        }));
     env.reader->RequestMoreData(kDelay, env.time_stamp, glitch_info);
     env.reader->Read(test_bus.get(), false);
 
     Mock::VerifyAndClear(&env.render_callback);
-    for (int frame = 0; frame < kFrames; ++frame) {
-      EXPECT_EQ(kAudioData, test_bus->channel(0)[frame]);
-      EXPECT_EQ(kAudioData, test_bus->channel(1)[frame]);
-    }
+    constexpr auto samples_match = [](float sample) {
+      return sample == kAudioData;
+    };
+
+    EXPECT_TRUE(std::ranges::all_of(test_bus->channel_span(0), samples_match));
+    EXPECT_TRUE(std::ranges::all_of(test_bus->channel_span(1), samples_match));
   }
 }
 
@@ -301,28 +300,26 @@ TEST_F(AudioServiceOutputDeviceTest, CreateBitStreamStream) {
                                        .count = 123};
     EXPECT_CALL(env.render_callback,
                 Render(kDelay, env.time_stamp, glitch_info, NotNull()))
-        .WillOnce(WithArg<3>(Invoke([](media::AudioBus* renderer_bus) -> int {
+        .WillOnce(WithArg<3>([](media::AudioBus* renderer_bus) -> int {
           EXPECT_TRUE(renderer_bus->is_bitstream_format());
           // Place some test data in the bus so that we can check that it was
           // copied to the browser side.
-          std::fill_n(renderer_bus->channel(0),
-                      kBitstreamDataSize / sizeof(float), kAudioData);
           renderer_bus->SetBitstreamFrames(kBitstreamFrames);
-          renderer_bus->SetBitstreamDataSize(kBitstreamDataSize);
+          renderer_bus->SetBitstreamSize(kBitstreamDataSize);
+          std::ranges::fill(renderer_bus->bitstream_data(), kAudioByteData);
           return renderer_bus->frames();
-        })));
+        }));
     env.reader->RequestMoreData(kDelay, env.time_stamp, glitch_info);
     env.reader->Read(test_bus.get(), false);
 
     Mock::VerifyAndClear(&env.render_callback);
     EXPECT_TRUE(test_bus->is_bitstream_format());
     EXPECT_EQ(kBitstreamFrames, test_bus->GetBitstreamFrames());
-    EXPECT_EQ(kBitstreamDataSize, test_bus->GetBitstreamDataSize());
-    for (size_t datum = 0; datum < kBitstreamDataSize / sizeof(float);
-         ++datum) {
+    EXPECT_EQ(kBitstreamDataSize, test_bus->bitstream_data().size());
+    for (auto datum : test_bus->bitstream_data()) {
       // Note: if all of these fail, the bots will behave strangely due to the
       // large amount of text output. Assert is used to avoid this.
-      ASSERT_EQ(kAudioData, test_bus->channel(0)[datum]);
+      ASSERT_EQ(kAudioByteData, datum);
     }
   }
 

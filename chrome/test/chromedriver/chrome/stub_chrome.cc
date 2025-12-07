@@ -6,9 +6,9 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
-StubChrome::StubChrome() {}
+StubChrome::StubChrome() = default;
 
-StubChrome::~StubChrome() {}
+StubChrome::~StubChrome() = default;
 
 Status StubChrome::GetAsDesktop(ChromeDesktopImpl** desktop) {
   return Status(kUnknownError, "not supported");
@@ -22,8 +22,8 @@ bool StubChrome::HasCrashedWebView() {
   return false;
 }
 
-Status StubChrome::GetWebViewCount(size_t* web_view_count, bool w3c_compliant) {
-  return Status(kOk);
+int StubChrome::GetWebViewCount() const {
+  return 1;
 }
 
 Status StubChrome::GetWebViewIdForFirstTab(std::string* web_view_id,
@@ -31,8 +31,8 @@ Status StubChrome::GetWebViewIdForFirstTab(std::string* web_view_id,
   return Status(kOk);
 }
 
-Status StubChrome::GetWebViewIds(std::list<std::string>* web_view_ids,
-                                 bool w3c_compliant) {
+Status StubChrome::GetTopLevelWebViewIds(std::list<std::string>* tab_view_ids,
+                                         bool w3c_compliant) {
   return Status(kOk);
 }
 
@@ -40,9 +40,22 @@ Status StubChrome::GetWebViewById(const std::string& id, WebView** web_view) {
   return Status(kOk);
 }
 
+Status StubChrome::GetActivePageByWebViewId(const std::string& id,
+                                            WebView** web_view,
+                                            bool wait_for_page) {
+  return Status(kOk);
+}
+
+Status StubChrome::NewHiddenTarget(const std::string& target_id,
+                                   bool w3c_compliant,
+                                   std::string* window_handle) {
+  return Status(kOk);
+}
+
 Status StubChrome::NewWindow(const std::string& target_id,
                              WindowType type,
                              bool is_background,
+                             bool w3c_compliant,
                              std::string* window_handle) {
   return Status(kOk);
 }
@@ -83,7 +96,8 @@ Status StubChrome::SetAcceptInsecureCerts() {
 Status StubChrome::SetPermission(
     std::unique_ptr<base::Value::Dict> permission_descriptor,
     Chrome::PermissionState desired_state,
-    WebView* current_view) {
+    WebView* current_view,
+    const std::string& current_frame_id) {
   return Status(kOk);
 }
 
@@ -105,4 +119,8 @@ std::string StubChrome::page_load_strategy() const {
 
 Status StubChrome::Quit() {
   return Status(kOk);
+}
+
+DevToolsClient* StubChrome::Client() const {
+  return nullptr;
 }

@@ -77,6 +77,10 @@ class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
 
   raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;
   raw_ptr<V4L2Device> const device_;
+
+  // Indicate that a frame is dropped because it's not decodable
+  // (RASL frame). This is updated every SubmitFrameMetadata().
+  bool drop_frame_ = false;
 };
 
 }  // namespace media

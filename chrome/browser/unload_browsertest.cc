@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -125,18 +125,15 @@ class UnloadResults {
 
 class UnloadTest : public InProcessBrowserTest {
  public:
-  UnloadTest() {
-    scoped_feature_list.InitAndEnableFeature(
-        blink::features::kBeforeunloadEventCancelByPreventDefault);
-  }
   void SetUpCommandLine(base::CommandLine* command_line) override {
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    if (strstr(test_info->name(), "BrowserCloseTabWhenOtherTabHasListener") !=
+    if (UNSAFE_TODO(strstr(test_info->name(),
+                           "BrowserCloseTabWhenOtherTabHasListener")) !=
         nullptr) {
       command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
-    } else if (strstr(test_info->name(), "BrowserTerminateBeforeUnload") !=
-               nullptr) {
+    } else if (UNSAFE_TODO(strstr(test_info->name(),
+                                  "BrowserTerminateBeforeUnload")) != nullptr) {
 #if BUILDFLAG(IS_POSIX)
       DisableSIGTERMHandling();
 #endif
@@ -547,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest,
 
 // Tests terminating the browser with a beforeunload handler.
 // Currently only ChromeOS shuts down gracefully.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserTerminateBeforeUnload) {
   NavigateToDataURL(BEFORE_UNLOAD_HTML, "beforeunload");
   EXPECT_EQ(kill(base::GetCurrentProcessHandle(), SIGTERM), 0);
@@ -567,8 +564,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithInnerFocusedFrame) {
 // Tests closing the browser with a beforeunload handler that takes forever
 // by running an infinite loop.
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseInfiniteBeforeUnload) {
-  LoadUrlAndQuitBrowser(INFINITE_BEFORE_UNLOAD_HTML,
-                        "infinitebeforeunload");
+  LoadUrlAndQuitBrowser(INFINITE_BEFORE_UNLOAD_HTML, "infinitebeforeunload");
 }
 
 // Tests closing the browser on a page with an unload listener registered where
@@ -947,91 +943,6 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BeforeUnloadListenerCancelByReturnEmpty) {
   NavigateToDataURL(html.c_str(), "beforeunload");
 
   CloseBrowsersVerifyUnloadSuccess(false);
-}
-
-// TODO(crbug.com/40586353): Remove below test when feature
-// BeforeunloadEventCancelByPreventDefault is fully stable.
-class UnloadTestCancelByPreventDefaultDisabled : public UnloadTest {
- public:
-  UnloadTestCancelByPreventDefaultDisabled() {
-    scoped_feature_list.InitAndDisableFeature(
-        blink::features::kBeforeunloadEventCancelByPreventDefault);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
-};
-
-// Tests closing the browser with onbeforeunload handler and
-// event.preventDefault() will not prompt confirmation dialog when
-// BeforeunloadEventCancelByPreventDefault is disabled.
-IN_PROC_BROWSER_TEST_F(UnloadTestCancelByPreventDefaultDisabled,
-                       OnBeforeUnloadPreventDefault) {
-  std::string html =
-      GenerateDataURL("event.preventDefault()", /*is_onbeforeunload=*/true);
-  NavigateToDataURL(html.c_str(), "beforeunload");
-
-  CloseBrowsersVerifyUnloadSuccess(false);
-}
-
-// Tests closing the browser with onbeforeunload handler and
-// event.returnValue = "" will prompt confirmation dialog when
-// BeforeunloadEventCancelByPreventDefault is disabled.
-IN_PROC_BROWSER_TEST_F(UnloadTestCancelByPreventDefaultDisabled,
-                       OnBeforeUnloadEmptyString) {
-  std::string html = GenerateDataURL("event.returnValue = ''",
-                                     /*is_onbeforeunload=*/true);
-  NavigateToDataURL(html.c_str(), "beforeunload");
-  PrepareForDialog(browser());
-  chrome::CloseWindow(browser());
-
-  // We wait for the title to change after cancelling the closure of browser
-  // window, to ensure that in-flight IPCs from the renderer reach the browser.
-  // Otherwise the browser won't put up the beforeunload dialog because it's
-  // waiting for an ack from the renderer.
-  std::u16string expected_title = u"cancelled";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ClickModalDialogButton(false);
-  ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  ManuallyCloseWindow();
-}
-
-// Tests closing the browser with addEventListener('beforeunload') handler and
-// event.preventDefault() will not prompt confirmation dialog when
-// BeforeunloadEventCancelByPreventDefault is disabled.
-IN_PROC_BROWSER_TEST_F(UnloadTestCancelByPreventDefaultDisabled,
-                       BeforeUnloadPreventDefault) {
-  std::string html =
-      GenerateDataURL("event.preventDefault()", /*is_onbeforeunload=*/true);
-  NavigateToDataURL(html.c_str(), "beforeunload");
-
-  CloseBrowsersVerifyUnloadSuccess(false);
-}
-
-// Tests closing the browser with addEventListener('beforeunload') handler and
-// event.returnValue = "" will prompt confirmation dialog when
-// BeforeunloadEventCancelByPreventDefault is disabled.
-IN_PROC_BROWSER_TEST_F(UnloadTestCancelByPreventDefaultDisabled,
-                       BeforeUnloadEmptyString) {
-  std::string html = GenerateDataURL("event.returnValue = ''",
-                                     /*is_onbeforeunload=*/false);
-  NavigateToDataURL(html.c_str(), "beforeunload");
-  PrepareForDialog(browser());
-  chrome::CloseWindow(browser());
-
-  // We wait for the title to change after cancelling the closure of browser
-  // window, to ensure that in-flight IPCs from the renderer reach the browser.
-  // Otherwise the browser won't put up the beforeunload dialog because it's
-  // waiting for an ack from the renderer.
-  std::u16string expected_title = u"cancelled";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ClickModalDialogButton(false);
-  ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  ManuallyCloseWindow();
 }
 
 // TODO(ojan): Add tests for unload/beforeunload that have multiple tabs

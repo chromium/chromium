@@ -9,6 +9,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "base/base_export.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
@@ -16,8 +19,6 @@
 // For ssize_t
 #include <unistd.h>
 #endif
-
-#include "base/base_export.h"
 
 namespace base {
 namespace strings {
@@ -181,16 +182,17 @@ struct Arg {
   }
 
   // A C-style text string.
-  Arg(const char* s) : str(s), type(STRING) { }
-  Arg(char* s)       : str(s), type(STRING) { }
+  Arg(const char* s) : str(s), type(STRING) {}
+  Arg(char* s) : str(s), type(STRING) {}
 
   // Any pointer value that can be cast to a "void*".
-  template<class T> Arg(T* p) : ptr((void*)p), type(POINTER) { }
+  template <class T>
+  Arg(T* p) : ptr((void*)p), type(POINTER) {}
 
   union {
     // An integer-like value.
     struct {
-      int64_t       i;
+      int64_t i;
       unsigned char width;
     } integer;
 
@@ -207,8 +209,12 @@ struct Arg {
 
 // This is the internal function that performs the actual formatting of
 // an snprintf()-style format string.
-BASE_EXPORT ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt,
-                                 const Arg* args, size_t max_args);
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE().
+BASE_EXPORT ssize_t SafeSNPrintf(char* buf,
+                                 size_t sz,
+                                 const char* fmt,
+                                 const Arg* args,
+                                 size_t max_args);
 
 #if !defined(NDEBUG)
 // In debug builds, allow unit tests to artificially lower the kSSizeMax
@@ -220,27 +226,51 @@ BASE_EXPORT size_t GetSafeSPrintfSSizeMaxForTest();
 
 }  // namespace internal
 
-template<typename... Args>
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
+template <typename... Args>
 ssize_t SafeSNPrintf(char* buf, size_t N, const char* fmt, Args... args) {
   // Use Arg() object to record type information and then copy arguments to an
   // array to make it easier to iterate over them.
-  const internal::Arg arg_array[] = { args... };
-  return internal::SafeSNPrintf(buf, N, fmt, arg_array, sizeof...(args));
+  const internal::Arg arg_array[] = {args...};
+  // SAFTEY: required from caller.
+  return UNSAFE_BUFFERS(
+      internal::SafeSNPrintf(buf, N, fmt, arg_array, sizeof...(args)));
 }
 
-template<size_t N, typename... Args>
+template <size_t N, typename... Args>
 ssize_t SafeSPrintf(char (&buf)[N], const char* fmt, Args... args) {
   // Use Arg() object to record type information and then copy arguments to an
   // array to make it easier to iterate over them.
-  const internal::Arg arg_array[] = { args... };
-  return internal::SafeSNPrintf(buf, N, fmt, arg_array, sizeof...(args));
+  const internal::Arg arg_array[] = {args...};
+  // SAFETY: compiler deduced size of `buf`.
+  return UNSAFE_BUFFERS(
+      internal::SafeSNPrintf(buf, N, fmt, arg_array, sizeof...(args)));
+}
+
+template <typename... Args>
+ssize_t SafeSPrintf(base::span<char> buf, const char* fmt, Args... args) {
+  // Use Arg() object to record type information and then copy arguments to an
+  // array to make it easier to iterate over them.
+  const internal::Arg arg_array[] = {args...};
+  // SAFETY: size of buffer taken from span.
+  return UNSAFE_BUFFERS(internal::SafeSNPrintf(buf.data(), buf.size(), fmt,
+                                               arg_array, sizeof...(args)));
 }
 
 // Fast-path when we don't actually need to substitute any arguments.
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
 BASE_EXPORT ssize_t SafeSNPrintf(char* buf, size_t N, const char* fmt);
-template<size_t N>
+
+template <size_t N>
 inline ssize_t SafeSPrintf(char (&buf)[N], const char* fmt) {
-  return SafeSNPrintf(buf, N, fmt);
+  // SAFETY: size of buffer deduced by compiler.
+  return UNSAFE_BUFFERS(SafeSNPrintf(buf, N, fmt));
+}
+
+template <typename... Args>
+ssize_t SafeSPrintf(base::span<char> buf, const char* fmt) {
+  // SAFETY: size of buffer taken from span.
+  return UNSAFE_BUFFERS(SafeSNPrintf(buf.data(), buf.size(), fmt));
 }
 
 }  // namespace strings

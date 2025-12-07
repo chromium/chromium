@@ -51,7 +51,6 @@ class CORE_EXPORT CSSSyntaxStringParser {
   // the next input code point is not '+' or '#'.
   CSSSyntaxRepeat ConsumeRepeatIfPresent();
 
-  String string_;
   CSSTokenizerInputStream input_;
 };
 

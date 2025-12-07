@@ -15,33 +15,40 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/ustring.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
 // Provides a uniform interface for upper/lower/folding which take take
 // slightly varying parameters.
-typedef int32_t (*CaseMapperFunction)(UChar* dest, int32_t dest_capacity,
-                                      const UChar* src, int32_t src_length,
+typedef int32_t (*CaseMapperFunction)(UChar* dest,
+                                      int32_t dest_capacity,
+                                      const UChar* src,
+                                      int32_t src_length,
                                       UErrorCode* error);
 
-int32_t ToUpperMapper(UChar* dest, int32_t dest_capacity,
-                      const UChar* src, int32_t src_length,
+int32_t ToUpperMapper(UChar* dest,
+                      int32_t dest_capacity,
+                      const UChar* src,
+                      int32_t src_length,
                       UErrorCode* error) {
   // Use default locale.
   return u_strToUpper(dest, dest_capacity, src, src_length, nullptr, error);
 }
 
-int32_t ToLowerMapper(UChar* dest, int32_t dest_capacity,
-                      const UChar* src, int32_t src_length,
+int32_t ToLowerMapper(UChar* dest,
+                      int32_t dest_capacity,
+                      const UChar* src,
+                      int32_t src_length,
                       UErrorCode* error) {
   // Use default locale.
   return u_strToLower(dest, dest_capacity, src, src_length, nullptr, error);
 }
 
-int32_t FoldCaseMapper(UChar* dest, int32_t dest_capacity,
-                       const UChar* src, int32_t src_length,
+int32_t FoldCaseMapper(UChar* dest,
+                       int32_t dest_capacity,
+                       const UChar* src,
+                       int32_t src_length,
                        UErrorCode* error) {
   return u_strFoldCase(dest, dest_capacity, src, src_length,
                        U_FOLD_CASE_DEFAULT, error);
@@ -52,8 +59,9 @@ int32_t FoldCaseMapper(UChar* dest, int32_t dest_capacity,
 std::u16string CaseMap(std::u16string_view string,
                        CaseMapperFunction case_mapper) {
   std::u16string dest;
-  if (string.empty())
+  if (string.empty()) {
     return dest;
+  }
 
   // Provide an initial guess that the string length won't change. The typical
   // strings we use will very rarely change length in this process, so don't
@@ -89,5 +97,4 @@ std::u16string FoldCase(std::u16string_view string) {
   return CaseMap(string, &FoldCaseMapper);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

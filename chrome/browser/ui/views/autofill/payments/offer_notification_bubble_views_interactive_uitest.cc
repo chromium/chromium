@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 #include <string_view>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
@@ -21,13 +24,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -35,6 +37,7 @@
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
@@ -53,27 +56,51 @@ namespace autofill {
 struct OfferNotificationBubbleViewsInteractiveUiTestData {
   std::string name;
   AutofillOfferData::OfferType offer_type;
-  std::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
+  bool is_page_actions_migration_enabled = false;
 };
 
 std::string GetTestName(
     const ::testing::TestParamInfo<
-        OfferNotificationBubbleViewsInteractiveUiTestData>& info) {
-  return info.param.name;
+        std::tuple<OfferNotificationBubbleViewsInteractiveUiTestData, bool>>&
+        info) {
+  const auto& params = std::get<0>(info.param);
+  bool bubble_manager_enabled = std::get<1>(info.param);
+  return params.name + (bubble_manager_enabled ? "WithBubbleManagerEnabled"
+                                               : "WithBubbleManagerDisabled");
 }
 
 class OfferNotificationBubbleViewsInteractiveUiTest
     : public OfferNotificationBubbleViewsTestBase,
       public testing::WithParamInterface<
-          OfferNotificationBubbleViewsInteractiveUiTestData> {
+          std::tuple<OfferNotificationBubbleViewsInteractiveUiTestData, bool>> {
  public:
   OfferNotificationBubbleViewsInteractiveUiTest()
-      : test_offer_type_(GetParam().offer_type) {
-    if (GetParam().enabled_features.has_value()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          GetParam().enabled_features.value(),
-          /*disabled_features=*/{});
+      : test_offer_type_(std::get<0>(GetParam()).offer_type) {
+    const auto& params = std::get<0>(GetParam());
+    bool bubble_manager_enabled = std::get<1>(GetParam());
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (bubble_manager_enabled) {
+      enabled_features.push_back(
+          {features::kAutofillShowBubblesBasedOnPriorities, {}});
+    } else {
+      disabled_features.push_back(
+          features::kAutofillShowBubblesBasedOnPriorities);
     }
+
+    if (params.is_page_actions_migration_enabled) {
+      enabled_features.push_back(
+          {::features::kPageActionsMigration,
+           {{::features::kPageActionsMigrationOfferNotification.name,
+             "true"}}});
+    } else {
+      disabled_features.push_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   ~OfferNotificationBubbleViewsInteractiveUiTest() override = default;
@@ -87,13 +114,11 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
         ShowBubbleForCardLinkedOfferAndVerify();
         break;
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-        break;
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         ShowBubbleForGPayPromoCodeOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -134,11 +159,13 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     EXPECT_TRUE(IsIconVisible());
   }
 
-  void SimulateClickOnIconAndReshowBubble() {
-    auto* icon = GetOfferNotificationIconView();
+  void InvokeActionAndReshowBubble() {
+    auto* icon = GetOfferNotificationPageActionView();
     EXPECT_TRUE(icon);
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    chrome::ExecuteCommand(browser(), IDC_OFFERS_AND_REWARDS_FOR_PAGE);
+    actions::ActionManager::Get()
+        .FindAction(kActionOffersAndRewardsForPage)
+        ->InvokeAction();
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -150,10 +177,8 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         return "CardLinkedOffer";
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         return "GPayPromoCodeOffer";
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-        return "FreeListingCouponOffer";
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -169,17 +194,76 @@ class OfferNotificationBubbleViewsInteractiveUiTest
 
 // TODO(crbug.com/40228302): Split parameterized tests that are
 // applicable for only one offer type.
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GPayCardLinked DISABLED_GPayCardLinked
+#else
+#define MAYBE_GPayCardLinked GPayCardLinked
+#endif
 INSTANTIATE_TEST_SUITE_P(
-    GPayCardLinked,
+    MAYBE_GPayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayCardLinked",
-        AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER}));
+    testing::Combine(
+        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+            "GPayCardLinked",
+            AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
+        }),
+        testing::Bool()),
+    &GetTestName);
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GPayCardLinkedWithNewPageAction \
+  DISABLED_GPayCardLinkedWithNewPageAction
+#else
+#define MAYBE_GPayCardLinkedWithNewPageAction GPayCardLinkedWithNewPageAction
+#endif
 INSTANTIATE_TEST_SUITE_P(
-    GPayPromoCode,
+    MAYBE_GPayCardLinkedWithNewPageAction,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
+    testing::Combine(
+        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+            "GPayCardLinkedWithNewPageAction",
+            AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
+            /*is_page_actions_migration_enabled=*/true,
+        }),
+        testing::Bool()),
+    &GetTestName);
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GPayPromoCode DISABLED_GPayPromoCode
+#else
+#define MAYBE_GPayPromoCode GPayPromoCode
+#endif
+INSTANTIATE_TEST_SUITE_P(
+    MAYBE_GPayPromoCode,
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    testing::Combine(
+        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+            "GPayPromoCode",
+            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
+        testing::Bool()),
+    &GetTestName);
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GPayPromoCodeWithNewPageAction \
+  DISABLED_GPayPromoCodeWithNewPageAction
+#else
+#define MAYBE_GPayPromoCodeWithNewPageAction GPayPromoCodeWithNewPageAction
+#endif
+INSTANTIATE_TEST_SUITE_P(
+    MAYBE_GPayPromoCodeWithNewPageAction,
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    testing::Combine(
+        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+            "GPayPromoCodeWithNewPageAction",
+            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER,
+            /*is_page_actions_migration_enabled=*/true}),
+        testing::Bool()),
+    &GetTestName);
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.
 class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
@@ -191,11 +275,40 @@ class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
     command_line->AppendSwitch("disable-field-trial-config");
   }
 };
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GPayPromoCode DISABLED_GPayPromoCode
+#else
+#define MAYBE_GPayPromoCode GPayPromoCode
+#endif
 INSTANTIATE_TEST_SUITE_P(
-    GPayPromoCode,
+    MAYBE_GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
-    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
+    testing::Combine(
+        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+            "GPayPromoCode",
+            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
+        testing::Bool()),
+    &GetTestName);
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GPayPromoCodeWithNewPageAction \
+  DISABLED_GPayPromoCodeWithNewPageAction
+#else
+#define MAYBE_GPayPromoCodeWithNewPageAction GPayPromoCodeWithNewPageAction
+#endif
+INSTANTIATE_TEST_SUITE_P(
+    MAYBE_GPayPromoCodeWithNewPageAction,
+    OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
+    testing::Combine(
+        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+            "GPayPromoCodeWithNewPageAction",
+            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER,
+            /*is_page_actions_migration_enabled=*/true}),
+        testing::Bool()),
+    &GetTestName);
 
 // TODO(crbug.com/40817360): Flaky failures.
 #if BUILDFLAG(IS_LINUX)
@@ -286,8 +399,14 @@ IN_PROC_BROWSER_TEST_P(
 // 5. Switches to the blank site. Makes sure the bubble and icon will be gone.
 // 6. Switches to merchant site 2. Makes sure the icon is visible but the bubble
 // is not, since we have shown the offer bubble in the tab of merchant site 1.
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrossTabTracking DISABLED_CrossTabTracking
+#else
+#define MAYBE_CrossTabTracking CrossTabTracking
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       CrossTabTracking) {
+                       MAYBE_CrossTabTracking) {
   SetUpOfferDataWithDomains(test_offer_type_,
                             {GetUrl("www.merchantsite1.test", "/"),
                              GetUrl("www.merchantsite2.test", "/")});
@@ -349,8 +468,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 }
 
 // Tests that bubble behaves correctly after user dismisses it.
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DismissBubble DISABLED_DismissBubble
+#else
+#define MAYBE_DismissBubble DismissBubble
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       DismissBubble) {
+                       MAYBE_DismissBubble) {
   // Applies to card-linked offers only, as promo code offers do not have an OK
   // button.
   if (test_offer_type_ !=
@@ -374,147 +499,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IsIconVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Shown) {
-  base::HistogramTester histogram_tester;
-  ShowBubbleForOfferAndVerify();
-
-  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubbleOffer." +
-                                         GetSubhistogramNameForOfferType(),
-                                     /*firstshow*/ false, 1);
-
-  // Dismiss the bubble by clicking the close button.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-
-  // Click on the omnibox icon to reshow the bubble.
-  SimulateClickOnIconAndReshowBubble();
-
-  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubbleOffer." +
-                                         GetSubhistogramNameForOfferType(),
-                                     /*reshow*/ true, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Acknowledged) {
-  // Applies to card-linked offers only, as promo code offers do not have an OK
-  // button.
-  if (test_offer_type_ !=
-      AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER) {
-    return;
-  }
-
-  base::HistogramTester histogram_tester;
-  ShowBubbleForOfferAndVerify();
-
-  // Dismiss the bubble by clicking the ok button.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".FirstShow",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED,
-      1);
-
-  // Click on the omnibox icon to reshow the bubble.
-  SimulateClickOnIconAndReshowBubble();
-
-  // Click on the ok button to dismiss the bubble.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".Reshows",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Closed) {
-  base::HistogramTester histogram_tester;
-  ShowBubbleForOfferAndVerify();
-
-  // Dismiss the bubble by clicking the close button.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".FirstShow",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_CLOSED,
-      1);
-
-  // Click on the omnibox icon to reshow the bubble.
-  SimulateClickOnIconAndReshowBubble();
-
-  // Click on the close button to dismiss the bubble.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".Reshows",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_CLOSED,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_NotInteracted) {
-  base::HistogramTester histogram_tester;
-  ShowBubbleForOfferAndVerify();
-
-  // Mock browser being closed.
-  views::test::WidgetDestroyedWaiter destroyed_waiter(
-      GetOfferNotificationBubbleViews()->GetWidget());
-  browser()->tab_strip_model()->CloseAllTabs();
-  destroyed_waiter.Wait();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".FirstShow",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED,
-      1);
-}
-
-// TODO(crbug.com/343099568): Flaky failures on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Logging_LostFocus DISABLED_Logging_LostFocus
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowGPayPromoCodeBubble DISABLED_ShowGPayPromoCodeBubble
 #else
-#define MAYBE_Logging_LostFocus Logging_LostFocus
+#define MAYBE_ShowGPayPromoCodeBubble ShowGPayPromoCodeBubble
 #endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Logging_LostFocus) {
-  base::HistogramTester histogram_tester;
-  ShowBubbleForOfferAndVerify();
-
-  // Mock deactivation due to lost focus.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kLostFocus);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".FirstShow",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
-      1);
-
-  // Click on the omnibox icon to reshow the bubble.
-  SimulateClickOnIconAndReshowBubble();
-
-  // Mock deactivation due to lost focus.
-  CloseBubbleWithReason(views::Widget::ClosedReason::kLostFocus);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OfferNotificationBubbleResult." +
-          GetSubhistogramNameForOfferType() + ".Reshows",
-      autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       ShowGPayPromoCodeBubble) {
+                       MAYBE_ShowGPayPromoCodeBubble) {
   // Applies to GPay promo code offers only.
   if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER) {
     return;
@@ -542,8 +534,17 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       GURL(GetDefaultTestDetailsUrlString()));
 }
 
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows \
+  DISABLED_ReshowOfferNotificationBubble_OfferDeletedBetweenShows
+#else
+#define MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows \
+  ReshowOfferNotificationBubble_OfferDeletedBetweenShows
+#endif
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
   // Applies to GPay promo code offers and card linked offers only.
   if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER &&
       test_offer_type_ !=
@@ -562,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   personal_data()->payments_data_manager().ClearAllServerDataForTesting();
 
   // Simulate the user re-showing the bubble by clicking on the icon.
-  SimulateClickOnIconAndReshowBubble();
+  InvokeActionAndReshowBubble();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
   ASSERT_TRUE(IsIconVisible());
 
@@ -586,16 +587,22 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   }
 }
 
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IconViewAccessibleName DISABLED_IconViewAccessibleName
+#else
+#define MAYBE_IconViewAccessibleName IconViewAccessibleName
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       IconViewAccessibleName) {
-  EXPECT_EQ(
-      GetOfferNotificationIconView()->GetViewAccessibility().GetCachedName(),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
-  EXPECT_EQ(
-      GetOfferNotificationIconView()->GetTextForTooltipAndAccessibleName(),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+                       MAYBE_IconViewAccessibleName) {
+  EXPECT_EQ(GetOfferNotificationPageActionView()
+                ->GetViewAccessibility()
+                .GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  EXPECT_EQ(GetOfferNotificationPageActionView()->GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 }  // namespace autofill

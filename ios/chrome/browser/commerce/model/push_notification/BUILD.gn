@@ -12,21 +12,24 @@ source_set("push_notification") {
 
   deps = [
     "//base",
-    "//components/bookmarks/browser:browser",
+    "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/variations/service",
-    "//components/variations/service:service",
-    "//ios/chrome/browser/bookmarks/model:model",
+    "//components/variations/service",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//url:url",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//url",
   ]
 
   frameworks = [ "UserNotifications.framework" ]
@@ -44,23 +47,28 @@ source_set("unit_tests") {
     "//components/commerce/core:shopping_service",
     "//components/commerce/core:shopping_service_test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/session_proto_db:session_proto_db",
+    "//components/session_proto_db",
     "//components/sync_bookmarks",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/bookmarks/model:model",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:session_proto_db",
     "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/optimization_guide/model:model",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

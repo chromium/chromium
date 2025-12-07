@@ -9,9 +9,9 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -19,6 +19,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import type {DownloadsBrowserProxy} from './downloads_browser_proxy.js';
 import {DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
@@ -28,7 +30,7 @@ const SettingsDownloadsPageElementBase =
     WebUiListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsDownloadsPageElement extends
-    SettingsDownloadsPageElementBase {
+    SettingsDownloadsPageElementBase implements SettingsPlugin {
   static get is() {
     return 'settings-downloads-page';
   }
@@ -39,20 +41,12 @@ export class SettingsDownloadsPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       autoOpenDownloads_: {
         type: Boolean,
         value: false,
       },
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       /**
        * The download location string that is suitable to display in the UI.
        */
@@ -73,7 +67,7 @@ export class SettingsDownloadsPageElement extends
     };
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   static get observers() {
     return [
       'handleDownloadLocationChanged_(prefs.download.default_directory.value)',
@@ -82,13 +76,13 @@ export class SettingsDownloadsPageElement extends
   // </if>
 
 
-  private autoOpenDownloads_: boolean;
+  declare private autoOpenDownloads_: boolean;
 
-  // <if expr="chromeos_ash">
-  private downloadLocation_: string;
+  // <if expr="is_chromeos">
+  declare private downloadLocation_: string;
   // </if>
 
-  private downloadBubblePartialViewControlledByPref_: boolean;
+  declare private downloadBubblePartialViewControlledByPref_: boolean;
 
   private browserProxy_: DownloadsBrowserProxy =
       DownloadsBrowserProxyImpl.getInstance();
@@ -108,7 +102,7 @@ export class SettingsDownloadsPageElement extends
     this.browserProxy_.selectDownloadLocation();
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private handleDownloadLocationChanged_() {
     this.browserProxy_
         .getDownloadLocationText(
@@ -121,6 +115,12 @@ export class SettingsDownloadsPageElement extends
 
   private onClearAutoOpenFileTypesClick_() {
     this.browserProxy_.resetAutoOpenFileTypes();
+  }
+
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
   }
 }
 

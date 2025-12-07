@@ -15,9 +15,7 @@
 #include "base/test/test_timeouts.h"
 #endif
 
-namespace views {
-
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -76,7 +74,7 @@ class WidgetActivationWaiter : public WidgetObserver {
   bool observed_ = false;
   bool active_;
   const raw_ref<Widget> widget_;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
@@ -87,6 +85,4 @@ void WaitForWidgetActive(Widget* widget, bool active) {
   waiter.Wait();
 }
 
-}  // namespace test
-
-}  // namespace views
+}  // namespace views::test

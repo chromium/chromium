@@ -142,11 +142,13 @@ std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
   }
 #endif
 
-  if (route.media_sink_name().empty())
+  if (route.media_sink_name().empty()) {
     return base::UTF8ToUTF16(route.description());
+  }
 
-  if (route.description().empty())
+  if (route.description().empty()) {
     return base::UTF8ToUTF16(route.media_sink_name());
+  }
 
   const char kSeparator[] = " \xC2\xB7 ";  // "Middle dot" character.
   const std::string source_title =
@@ -184,8 +186,9 @@ CastMediaNotificationItem::~CastMediaNotificationItem() {
 void CastMediaNotificationItem::SetView(
     media_message_center::MediaNotificationView* view) {
   view_ = view;
-  if (view_)
+  if (view_) {
     view_->UpdateWithVectorIcon(&vector_icons::kMediaRouterIdleIcon);
+  }
 
   UpdateView();
 }
@@ -280,8 +283,9 @@ void CastMediaNotificationItem::OnRouteUpdated(
     metadata_.artist = new_artist;
     updated = true;
   }
-  if (updated && view_)
+  if (updated && view_) {
     view_->UpdateWithMediaMetadata(metadata_);
+  }
 }
 
 void CastMediaNotificationItem::StopCasting() {
@@ -321,8 +325,9 @@ void CastMediaNotificationItem::ImageDownloader::OnFetchComplete(
 }
 
 void CastMediaNotificationItem::ImageDownloader::Download(const GURL& url) {
-  if (url == url_)
+  if (url == url_) {
     return;
+  }
   url_ = url;
   bitmap_fetcher_ = bitmap_fetcher_factory_for_testing_
                         ? bitmap_fetcher_factory_for_testing_.Run(
@@ -341,21 +346,24 @@ void CastMediaNotificationItem::ImageDownloader::Reset() {
 }
 
 void CastMediaNotificationItem::UpdateView() {
-  if (!view_)
+  if (!view_) {
     return;
+  }
 
   view_->UpdateWithMediaMetadata(metadata_);
   view_->UpdateWithMediaActions(actions_);
   view_->UpdateWithMediaSessionInfo(session_info_.Clone());
   view_->UpdateWithMediaArtwork(
       gfx::ImageSkia::CreateFrom1xBitmap(image_downloader_.bitmap()));
-  if (!media_position_.duration().is_zero())
+  if (!media_position_.duration().is_zero()) {
     view_->UpdateWithMediaPosition(media_position_);
+  }
   view_->UpdateWithMuteStatus(is_muted_);
   view_->UpdateWithVolume(volume_);
 }
 
 void CastMediaNotificationItem::ImageChanged(const SkBitmap& bitmap) {
-  if (view_)
+  if (view_) {
     view_->UpdateWithMediaArtwork(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  }
 }

@@ -73,8 +73,7 @@ SavePageResult ArchiverResultToSavePageResult(ArchiverResult archiver_result) {
     case ArchiverResult::ERROR_DIGEST_CALCULATION_FAILED:
       return SavePageResult::DIGEST_CALCULATION_FAILED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SavePageResult::CONTENT_UNAVAILABLE;
+  NOTREACHED();
 }
 
 SavePageResult AddPageResultToSavePageResult(AddPageResult add_page_result) {
@@ -86,8 +85,7 @@ SavePageResult AddPageResultToSavePageResult(AddPageResult add_page_result) {
     case AddPageResult::STORE_FAILURE:
       return SavePageResult::STORE_FAILURE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SavePageResult::STORE_FAILURE;
+  NOTREACHED();
 }
 
 void ReportSavedPagesCount(MultipleOfflinePageItemCallback callback,

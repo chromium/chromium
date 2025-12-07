@@ -2,24 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 
 #include <optional>
 #include <thread>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -38,11 +33,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -111,7 +105,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
 }
 
 class EGLImageBackingFactoryThreadSafeTest
-    : public testing::TestWithParam<std::tuple<bool, viz::SharedImageFormat>> {
+    : public testing::TestWithParam<viz::SharedImageFormat> {
  public:
   EGLImageBackingFactoryThreadSafeTest()
       : shared_image_manager_(std::make_unique<SharedImageManager>(true)) {}
@@ -165,11 +159,12 @@ class EGLImageBackingFactoryThreadSafeTest
   }
 
   bool use_passthrough() {
-    return std::get<0>(GetParam()) &&
-           gles2::PassthroughCommandDecoderSupported();
+    static bool passthrough = gles2::UsePassthroughCommandDecoder(
+        base::CommandLine::ForCurrentProcess());
+    return passthrough;
   }
 
-  viz::SharedImageFormat get_format() { return std::get<1>(GetParam()); }
+  viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
@@ -211,11 +206,11 @@ class EGLImageBackingFactoryThreadSafeTest
 
     for (int i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
       EXPECT_EQ(pixel[0], expected_color[0]);
-      EXPECT_EQ(pixel[1], expected_color[1]);
-      EXPECT_EQ(pixel[2], expected_color[2]);
-      EXPECT_EQ(pixel[3], expected_color[3]);
+      UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
+      UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
+      UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
     }
   }
 
@@ -233,9 +228,10 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::Buffer buffer = device.CreateBuffer(&buffer_desc);
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
-    auto src = wgpu::ImageCopyTexture{.texture = texture, .origin = {0, 0, 0}};
-    auto dst = wgpu::ImageCopyBuffer{.layout = {.bytesPerRow = buffer_stride},
-                                     .buffer = buffer};
+    auto src =
+        wgpu::TexelCopyTextureInfo{.texture = texture, .origin = {0, 0, 0}};
+    auto dst = wgpu::TexelCopyBufferInfo{
+        .layout = {.bytesPerRow = buffer_stride}, .buffer = buffer};
     auto copy_size = wgpu::Extent3D{static_cast<uint32_t>(size.width()),
                                     static_cast<uint32_t>(size.height(), 1)};
     encoder.CopyTextureToBuffer(&src, &dst, &copy_size);
@@ -247,7 +243,7 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::FutureWaitInfo wait_info{
         buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
                         wgpu::CallbackMode::WaitAnyOnly,
-                        [&](wgpu::MapAsyncStatus status, const char*) {
+                        [&](wgpu::MapAsyncStatus status, wgpu::StringView) {
                           ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
                         })};
     wgpu::WaitStatus status =
@@ -259,11 +255,12 @@ class EGLImageBackingFactoryThreadSafeTest
     for (int row = 0; row < size.height(); row++) {
       for (int col = 0; col < size.width(); col++) {
         // Compare the pixel values.
-        const uint8_t* pixel = dst_pixels + (row * buffer_stride) + col * 4;
+        const uint8_t* pixel =
+            UNSAFE_TODO(dst_pixels + (row * buffer_stride) + col * 4);
         EXPECT_EQ(pixel[0], expected_color[0]);
-        EXPECT_EQ(pixel[1], expected_color[1]);
-        EXPECT_EQ(pixel[2], expected_color[2]);
-        EXPECT_EQ(pixel[3], expected_color[3]);
+        UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
+        UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
+        UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
       }
     }
   }
@@ -498,18 +495,17 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  WGPUInstanceDescriptor instance_desc = {
-      .features =
-          {
-              .timedWaitAnyEnable = true,
-          },
+  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
+  wgpu::InstanceDescriptor instance_desc = {
+      .requiredFeatureCount = 1,
+      .requiredFeatures = &kTimedWaitAny,
   };
   dawn::native::Instance instance(&instance_desc);
 
   // Create a Dawn OpenGLES device.
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.compatibilityMode = true;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
   std::vector<dawn::native::Adapter> adapters =
       instance.EnumerateAdapters(&adapter_options);
@@ -680,11 +676,12 @@ CreateAndValidateSharedImageRepresentations::
   // GL.
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE;
-  if (!is_thread_safe)
+  if (!is_thread_safe) {
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
+  }
   if (upload_initial_data) {
-    std::vector<uint8_t> initial_data(
-        viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
+    size_t required_size = format.MaybeEstimatedSizeInBytes(size_).value();
+    std::vector<uint8_t> initial_data(required_size);
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
         "TestLabel", /*is_thread_safe=*/true, initial_data);
@@ -791,19 +788,14 @@ const auto kSharedImageFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888);
 
 std::string TestParamToString(
-    const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&
-        param_info) {
-  const bool allow_passthrough = std::get<0>(param_info.param);
-  const viz::SharedImageFormat format = std::get<1>(param_info.param);
-  return base::StringPrintf(
-      "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
-      format.ToString().c_str());
+    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
+  const viz::SharedImageFormat format = param_info.param;
+  return format.ToString();
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,
                          EGLImageBackingFactoryThreadSafeTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kSharedImageFormats),
+                         kSharedImageFormats,
                          TestParamToString);
 
 }  // anonymous namespace

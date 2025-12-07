@@ -18,11 +18,15 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
-#include "components/sync/protocol/session_specifics.pb.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/tab_node_pool.h"
+
+namespace sync_pb {
+class SessionSpecifics;
+enum SyncEnums_BrowserType : int;
+enum SyncEnums_DeviceType : int;
+}  // namespace sync_pb
 
 namespace sync_sessions {
 
@@ -80,7 +84,7 @@ class SyncedSessionTracker {
   const sessions::SessionTab* LookupSessionTab(const std::string& session_tag,
                                                SessionID tab_id) const;
 
-  std::optional<sync_pb::SyncEnums::BrowserType> LookupWindowType(
+  std::optional<sync_pb::SyncEnums_BrowserType> LookupWindowType(
       const std::string& session_tag,
       SessionID window_id) const;
 
@@ -169,8 +173,13 @@ class SyncedSessionTracker {
   void InitLocalSession(
       const std::string& local_session_tag,
       const std::string& local_session_name,
-      sync_pb::SyncEnums::DeviceType local_device_type,
+      sync_pb::SyncEnums_DeviceType local_device_type,
       syncer::DeviceInfo::FormFactor local_device_form_factor);
+
+  // Populate the start-time of the local session. This should be called once,
+  // when syncing of sessions gets enabled (and then never again, unless syncing
+  // of sessions gets disabled and enabled again).
+  void SetLocalSessionStartTime(base::Time local_session_start_time);
 
   // Gets the session tag previously set with InitLocalSession().
   const std::string& GetLocalSessionTag() const;
@@ -245,8 +254,10 @@ class SyncedSessionTracker {
     // The SessionTab/SessionWindow objects referred to may be owned either by
     // the session in the |synced_session| or be temporarily unmapped and live
     // in the |unmapped_tabs|/|unmapped_windows| collections.
-    std::map<SessionID, sessions::SessionTab*> synced_tab_map;
-    std::map<SessionID, SyncedSessionWindow*> synced_window_map;
+    std::map<SessionID, raw_ptr<sessions::SessionTab, CtnExperimental>>
+        synced_tab_map;
+    std::map<SessionID, raw_ptr<SyncedSessionWindow, CtnExperimental>>
+        synced_window_map;
 
     // The collection of tabs/windows not owned by SyncedSession. This is the
     // case either because 1. (in the case of tabs) they were newly created by

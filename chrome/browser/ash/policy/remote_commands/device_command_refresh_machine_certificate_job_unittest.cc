@@ -23,7 +23,6 @@ namespace {
 
 using ::ash::attestation::MachineCertificateUploader;
 using ::ash::attestation::MockMachineCertificateUploader;
-using ::testing::Invoke;
 using ::testing::StrictMock;
 
 constexpr base::TimeDelta kWorldAge = base::Days(365);
@@ -106,9 +105,9 @@ TEST_F(DeviceCommandRefreshMachineCertificateJobTest,
       kDefaultCommandAge, fake_tick_clock_.NowTicks(), &cert_uploader_);
 
   EXPECT_CALL(cert_uploader_, RefreshAndUploadCertificate)
-      .WillOnce(Invoke([](MachineCertificateUploader::UploadCallback callback) {
+      .WillOnce([](MachineCertificateUploader::UploadCallback callback) {
         std::move(callback).Run(/*success=*/false);
-      }));
+      });
 
   EXPECT_TRUE(job->Run(fake_clock_.Now(), fake_tick_clock_.NowTicks(),
                        job_finished_future.GetCallback()));
@@ -123,9 +122,9 @@ TEST_F(DeviceCommandRefreshMachineCertificateJobTest,
       kDefaultCommandAge, fake_tick_clock_.NowTicks(), &cert_uploader_);
 
   EXPECT_CALL(cert_uploader_, RefreshAndUploadCertificate)
-      .WillOnce(Invoke([](MachineCertificateUploader::UploadCallback callback) {
+      .WillOnce([](MachineCertificateUploader::UploadCallback callback) {
         std::move(callback).Run(/*success=*/true);
-      }));
+      });
 
   EXPECT_TRUE(job->Run(fake_clock_.Now(), fake_tick_clock_.NowTicks(),
                        job_finished_future.GetCallback()));
@@ -140,9 +139,9 @@ TEST_F(DeviceCommandRefreshMachineCertificateJobTest,
       kVeryOldCommandAge, fake_tick_clock_.NowTicks(), &cert_uploader_);
 
   EXPECT_CALL(cert_uploader_, RefreshAndUploadCertificate)
-      .WillOnce(Invoke([](MachineCertificateUploader::UploadCallback callback) {
+      .WillOnce([](MachineCertificateUploader::UploadCallback callback) {
         std::move(callback).Run(/*success=*/true);
-      }));
+      });
 
   EXPECT_TRUE(job->Run(fake_clock_.Now(), fake_tick_clock_.NowTicks(),
                        job_finished_future.GetCallback()));

@@ -4,9 +4,66 @@ Copyright 2019 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/menu_row_text"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/ContextMenuItemText" />
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:descendantFocusability="afterDescendants">
+
+    <!-- The menu_row_item LinearLayout includes an optional start icon and
+        mandatory text title. The start icon is decorative and is part of the
+        same click target as the text. -->
+    <LinearLayout
+        android:id="@+id/menu_row_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="?attr/listChoiceBackgroundIndicator"
+        android:paddingHorizontal="@dimen/context_menu_list_lateral_padding">
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/menu_row_icon"
+            android:layout_width="@dimen/list_item_start_icon_width"
+            android:layout_height="@dimen/context_menu_chip_icon_size"
+            android:layout_marginEnd="6dp"
+            android:gravity="center"
+            android:duplicateParentState="true"
+            android:importantForAccessibility="no"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/menu_row_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:duplicateParentState="true"
+            style="@style/ContextMenuItemText"
+            tools:ignore="NestedWeights" />
+    </LinearLayout>
+
+    <!-- The share icon is used to show an app icon in any context menu share
+         items. The most recently used app's icon is shown (no icon is shown if
+         there is no history).
+         This is a different click target. The "Share" text opens the share
+         sheet where users could choose any app to share to, while this quick
+         share icon shares to that app directly. -->
+    <!-- We use tools:ignore instead of android:importantForAccessibility="no" here because this
+         view is important for accessibility, but there is no content description yet.
+         It will be populated programmatically (see
+         chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewBinder.java). -->
+    <ImageView
+        android:id="@+id/menu_row_share_icon"
+        android:layout_width="?attr/minInteractTargetSize"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="4dp"
+        android:scaleType="fitCenter"
+        android:paddingHorizontal="?attr/listItemIconPadding"
+        android:background="?attr/listChoiceBackgroundIndicator"
+        android:visibility="gone"
+        android:focusable="true"
+        tools:ignore="contentDescription" />
+</LinearLayout>

@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_NAVIGATOR_GAMEPAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_NAVIGATOR_GAMEPAD_H_
 
+#include <array>
+
 #include "base/time/time.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -36,7 +38,6 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -44,24 +45,22 @@ namespace device {
 template <class T>
 class GamepadImpl;
 using Gamepad = GamepadImpl<void>;
-}
+}  // namespace device
 
 namespace blink {
 
 class GamepadDispatcher;
 class GamepadHapticActuator;
+class GamepadStateCompareResult;
 class Navigator;
 
 class MODULES_EXPORT NavigatorGamepad final
     : public GarbageCollected<NavigatorGamepad>,
-      public Supplement<Navigator>,
       public ExecutionContextClient,
       public PlatformEventController,
       public LocalDOMWindow::EventListenerObserver,
       public Gamepad::Client {
  public:
-  static const char kSupplementName[];
-
   static NavigatorGamepad& From(Navigator&);
 
   explicit NavigatorGamepad(Navigator&);
@@ -78,7 +77,22 @@ class MODULES_EXPORT NavigatorGamepad final
   void DidRemoveGamepadEventListeners();
   bool StartUpdatingIfAttached();
   void SampleAndCompareGamepadState();
-  void DispatchGamepadEvent(const AtomicString&, Gamepad*);
+
+  // Dispatch gamepad events. Dispatching an event calls the event
+  // listeners synchronously.
+  //
+  // Note: In some instances the gamepad connection state may change while
+  // inside an event listener. This is most common when using test APIs
+  // that allow the gamepad state to be changed from javascript. The set
+  // of event listeners may also change if listeners are added or removed
+  // by another listener.
+  void MaybeDispatchGamepadEvents(
+      uint32_t index,
+      const GamepadStateCompareResult& compare_result);
+  void DispatchGamepadConnectionChangedEvent(const AtomicString&, Gamepad*);
+  void DispatchGamepadRawInputChangedEvent(
+      uint32_t index,
+      const GamepadStateCompareResult& compare_result);
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
@@ -99,8 +113,7 @@ class MODULES_EXPORT NavigatorGamepad final
       const Gamepad&) override;
   void SetTouchEvents(const Gamepad&,
                       GamepadTouchVector&,
-                      unsigned,
-                      const device::GamepadTouch*) override;
+                      base::span<const device::GamepadTouch>) override;
 
   // A reference to the buffer containing the last-received gamepad state. May
   // be nullptr if no data has been received yet. Do not overwrite this buffer
@@ -116,14 +129,18 @@ class MODULES_EXPORT NavigatorGamepad final
   // overwritten.
   HeapVector<Member<Gamepad>> gamepads_back_;
 
+  // True if the buffer referenced by |gamepads_back_| has been exposed to the
+  // page.
+  bool is_gamepads_back_exposed_ = false;
+
   HeapVector<Member<GamepadHapticActuator>> vibration_actuators_;
 
   // Together the following keep track of the nextTouchId per Gamepad
   using TouchIdMap =
-      WTF::HashMap<uint32_t, uint32_t, WTF::IntWithZeroKeyHashTraits<uint32_t>>;
+      HashMap<uint32_t, uint32_t, IntWithZeroKeyHashTraits<uint32_t>>;
 
-  TouchIdMap touch_id_map_[device::Gamepads::kItemsLengthCap];
-  uint32_t next_touch_id_[device::Gamepads::kItemsLengthCap];
+  std::array<TouchIdMap, device::Gamepads::kItemsLengthCap> touch_id_map_;
+  std::array<uint32_t, device::Gamepads::kItemsLengthCap> next_touch_id_;
 
   // The timestamp for the navigationStart attribute. Gamepad timestamps are
   // reported relative to this value.
@@ -137,6 +154,10 @@ class MODULES_EXPORT NavigatorGamepad final
   // True if there is at least one listener for gamepad connection or
   // disconnection events.
   bool has_connection_event_listener_ = false;
+
+  // True if there is at least one listener for gamepad raw input changed
+  // events.
+  bool has_input_changed_event_listener_ = false;
 
   // True while processing gamepad events.
   bool processing_events_ = false;

@@ -16,7 +16,7 @@ build_webui("build") {
     "network_ui.ts",
   ]
 
-  non_web_component_files = [ "network_ui_browser_proxy.ts" ]
+  ts_files = [ "network_ui_browser_proxy.ts" ]
 
   ts_definitions = [
     "//chrome/browser/resources/chromeos/network_ui/third_party/uPlot.iife.min.d.ts",

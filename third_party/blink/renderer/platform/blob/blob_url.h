@@ -33,10 +33,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -55,10 +52,10 @@ class PLATFORM_EXPORT BlobURL {
 
  public:
   static KURL CreatePublicURL(const SecurityOrigin*);
-  static WTF::String GetOrigin(const KURL&);
+  static String GetOrigin(const KURL&);
 
  private:
-  static KURL CreateBlobURL(const WTF::String& origin_string);
+  static KURL CreateBlobURL(const String& origin_string);
   static const char kBlobProtocol[];
 };
 

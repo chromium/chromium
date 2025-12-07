@@ -1,5 +1,13 @@
 include_rules = [
+  "+chromecast/common",
   "+chromecast/media",
   "+google_apis",
   "+media/base",
+  "+mojo/core/embedder",
+  "+mojo/public/cpp/bindings",
+  "+ui/base",
+  "+ui/display",
+  "+ui/events",
+  "+ui/gfx",
+  "+ui/platform_window",
 ]

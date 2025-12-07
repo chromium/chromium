@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 
@@ -28,8 +29,22 @@ class FileTypePoliciesTestOverlay;
 // The data to populate it is read from a ResourceBundle and then also
 // fetched periodically from Google to get the most up-to-date policies.
 //
+// Overrides based on download URL may also be applied, such that a file that
+// would ordinarily be treated as "dangerous" may have this policy overridden
+// and be treated as "not dangerous".
+//
 // This is thread safe. We assume it is updated at most every few hours.
 
+// Note: Although this class is used in Android download protection, for
+// historical reasons the current list of file types is only technically
+// applicable to Safe Browsing download protection on desktop platforms. Android
+// download protection (besides generic file type warnings) mostly bypasses
+// FileTypePolicies and hard-codes its own policies for which files to check via
+// DownloadProtectionDelegateAndroid.
+// TODO(chlily): Refactor DownloadFileType and DownloadFileTypeConfig to support
+// unifying platform-specific file type policy logic into this class. In
+// particular, we should support different values of ping_setting and
+// inspection_type per platform.
 class FileTypePolicies {
  public:
   FileTypePolicies(const FileTypePolicies&) = delete;
@@ -57,11 +72,16 @@ class FileTypePolicies {
 
   //
   // Accessors
+  // These do not take overrides into account.
   //
   bool IsArchiveFile(const base::FilePath& file) const;
 
   // SBClientDownloadExtensions UMA histogram bucket for this file's type.
   int64_t UmaValueForFile(const base::FilePath& file) const;
+
+  // Returns the SBClientDownloadExtensions UMA histogram bucket for a filename.
+  // See base::FilePath::AsUTF8Unsafe() comment for why this is unsafe.
+  int64_t UmaValueForUTF16FilenameUnsafe(const std::u16string& filename) const;
 
   // True if download protection should send a ping to check
   // this type of file.
@@ -71,20 +91,27 @@ class FileTypePolicies {
   bool IsAllowedToOpenAutomatically(const base::FilePath& file) const;
 
   // Return the danger level of this file type.
+  // If `source_url` is invalid, the danger level will always be obtained from
+  // the config and will not take overrides into account.
   DownloadFileType::DangerLevel GetFileDangerLevel(
       const base::FilePath& file,
       const GURL& source_url,
       const PrefService* prefs) const;
 
   // Return the type of ping we should send for this file
+  // Does not take overrides into account.
   DownloadFileType::PingSetting PingSettingForFile(
       const base::FilePath& file) const;
 
   float SampledPingProbability() const;
 
+  // If `source_url` is invalid, the policy will always be obtained from the
+  // config and will not take overrides into account.
   DownloadFileType PolicyForFile(const base::FilePath& file,
                                  const GURL& source_url,
                                  const PrefService* prefs) const;
+  // If `source_url` is invalid, the platform settings will always be obtained
+  // from the config and will not take overrides into account.
   DownloadFileType::PlatformSettings SettingsForFile(
       const base::FilePath& file,
       const GURL& source_url,
@@ -92,6 +119,7 @@ class FileTypePolicies {
 
   // Return max size for which unpacking and/or binary feature extraction is
   // supported for the given file extension.
+  // Does not take overrides into account.
   uint64_t GetMaxFileSizeToAnalyze(const std::string& ascii_ext) const;
   uint64_t GetMaxFileSizeToAnalyze(const base::FilePath& path) const;
 
@@ -129,6 +157,8 @@ class FileTypePolicies {
   static std::string CanonicalizedExtension(const base::FilePath& file);
 
   // Look up the policy for a given ASCII ext.
+  // If `source_url` is invalid, the policy will always be obtained from the
+  // config and will not take overrides into account.
   virtual const DownloadFileType& PolicyForExtension(
       const std::string& ext,
       const GURL& source_url,
@@ -150,7 +180,8 @@ class FileTypePolicies {
 
   // This references entries in config_.
   // Protected by lock_.
-  std::map<std::string, const DownloadFileType*> file_type_by_ext_;
+  std::map<std::string, raw_ptr<const DownloadFileType, CtnExperimental>>
+      file_type_by_ext_;
 
   // Type used if we can't load from disk.
   // Written only in the constructor.

@@ -9,18 +9,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
 const char kLinkCapturingHistogram[] = "ChromeOS.Intents.LinkCapturingEvent2";
-const char kLinkCapturingHistogramWeb[] =
-    "ChromeOS.Intents.LinkCapturingEvent2.WebApp";
-const char kLinkCapturingHistogramArc[] =
-    "ChromeOS.Intents.LinkCapturingEvent2.ArcApp";
 
 using PickerAction = apps::IntentHandlingMetrics::PickerAction;
 using IntentPickerAction = apps::IntentHandlingMetrics::IntentPickerAction;
@@ -57,14 +53,12 @@ IntentPickerAction GetIntentPickerAction(
         case apps::PickerEntryType::kDevice:
         case apps::PickerEntryType::kMacOs:
         case apps::PickerEntryType::kUnknown:
-          NOTREACHED_IN_MIGRATION();
-          return IntentPickerAction::kInvalid;
+          NOTREACHED();
       }
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       // For the HTTP/HTTPS Intent Picker, preferred app metrics are recorded
       // separately in RecordPreferredAppLinkClickMetrics.
-      NOTREACHED_IN_MIGRATION();
-      return IntentPickerAction::kInvalid;
+      NOTREACHED();
   }
 }
 
@@ -82,8 +76,7 @@ Platform GetIntentPickerDestinationPlatform(IntentPickerAction action) {
     case IntentPickerAction::kError:
       return Platform::CHROME;
     case IntentPickerAction::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return Platform::CHROME;
+      NOTREACHED();
   }
 }
 
@@ -112,40 +105,16 @@ void IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
 
 void IntentHandlingMetrics::RecordLinkCapturingEvent(PickerEntryType app_type,
                                                      LinkCapturingEvent event) {
-  switch (app_type) {
-    case PickerEntryType::kWeb:
-      base::UmaHistogramEnumeration(kLinkCapturingHistogramWeb, event);
-      break;
-    case PickerEntryType::kArc:
-      base::UmaHistogramEnumeration(kLinkCapturingHistogramArc, event);
-      break;
-    case PickerEntryType::kUnknown:
-    case PickerEntryType::kDevice:
-    case PickerEntryType::kMacOs:
-      // These cases do not represent entering an app and should not record
-      // any histograms.
-      return;
-  }
   base::UmaHistogramEnumeration(kLinkCapturingHistogram, event);
 }
 
 void IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(
     const std::vector<IntentPickerAppInfo>& app_infos) {
-  if (base::Contains(app_infos, PickerEntryType::kWeb,
-                     &IntentPickerAppInfo::type)) {
-    base::UmaHistogramEnumeration(kLinkCapturingHistogramWeb,
-                                  LinkCapturingEvent::kEntryPointShown);
-  }
-  if (base::Contains(app_infos, PickerEntryType::kArc,
-                     &IntentPickerAppInfo::type)) {
-    base::UmaHistogramEnumeration(kLinkCapturingHistogramArc,
-                                  LinkCapturingEvent::kEntryPointShown);
-  }
   base::UmaHistogramEnumeration(kLinkCapturingHistogram,
                                 LinkCapturingEvent::kEntryPointShown);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
     content::BrowserContext* context,
     PickerEntryType entry_type,
@@ -158,6 +127,6 @@ void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
         context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

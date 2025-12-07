@@ -7,7 +7,8 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
@@ -17,7 +18,11 @@
 TabGroupHighlight::TabGroupHighlight(TabGroupViews* tab_group_views,
                                      const tab_groups::TabGroupId& group,
                                      const TabGroupStyle& style)
-    : tab_group_views_(tab_group_views), group_(group), style_(style) {}
+    : tab_group_views_(tab_group_views), group_(group), style_(style) {
+  // Don't accept any mouse events, otherwise this will prevent tabs and group
+  // headers from getting clicked.
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 void TabGroupHighlight::UpdateBounds(views::View* leading_view,
                                      views::View* trailing_view) {
@@ -38,14 +43,8 @@ void TabGroupHighlight::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(TabStyle::Get()->GetTabBackgroundColor(
       TabStyle::TabSelectionState::kSelected, /*hovered=*/false,
-      GetWidget()->ShouldPaintAsActive(), *GetColorProvider()));
+      GetWidget()->ShouldPaintAsActive(), GetColorProvider()));
   canvas->DrawPath(path, flags);
-}
-
-bool TabGroupHighlight::GetCanProcessEventsWithinSubtree() const {
-  // Don't accept any mouse events, otherwise this will prevent tabs and group
-  // headers from getting clicked.
-  return false;
 }
 
 SkPath TabGroupHighlight::GetPath() const {
@@ -58,25 +57,26 @@ SkPath TabGroupHighlight::GetPath() const {
   const int corner_radius = TabStyle::Get()->GetBottomCornerRadius();
   const int top = GetLayoutConstant(TAB_STRIP_PADDING);
 
-  SkPath path;
-  path.moveTo(0, bounds().height());
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCCW, corner_radius,
-             bounds().height() - corner_radius);
-  path.lineTo(corner_radius, top + corner_radius);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, 2 * corner_radius, top);
-  path.lineTo(bounds().width() - 2 * corner_radius, top);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, bounds().width() - corner_radius,
-             top + corner_radius);
-  path.lineTo(bounds().width() - corner_radius,
-              bounds().height() - corner_radius);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCCW, bounds().width(), bounds().height());
-  path.close();
-
-  return path;
+  return SkPathBuilder()
+      .moveTo(0, bounds().height())
+      .arcTo(SkVector(corner_radius, corner_radius), 0,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+             SkPoint(corner_radius, bounds().height() - corner_radius))
+      .lineTo(corner_radius, top + corner_radius)
+      .arcTo(SkVector(corner_radius, corner_radius), 0,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(2 * corner_radius, top))
+      .lineTo(bounds().width() - 2 * corner_radius, top)
+      .arcTo(SkVector(corner_radius, corner_radius), 0,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(bounds().width() - corner_radius, top + corner_radius))
+      .lineTo(bounds().width() - corner_radius,
+              bounds().height() - corner_radius)
+      .arcTo(SkVector(corner_radius, corner_radius), 0,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+             SkPoint(bounds().width(), bounds().height()))
+      .close()
+      .detach();
 }
 
 BEGIN_METADATA(TabGroupHighlight)

@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
@@ -39,18 +38,14 @@ static_library("service") {
     "google_groups_manager_prefs.h",
     "limited_entropy_randomization.cc",
     "limited_entropy_randomization.h",
-    "limited_entropy_synthetic_trial.cc",
-    "limited_entropy_synthetic_trial.h",
     "safe_seed_manager.cc",
     "safe_seed_manager.h",
-    "safe_seed_manager_base.cc",
-    "safe_seed_manager_base.h",
     "ui_string_overrider.cc",
     "ui_string_overrider.h",
     "variations_field_trial_creator.cc",
     "variations_field_trial_creator.h",
-    "variations_field_trial_creator_base.cc",
-    "variations_field_trial_creator_base.h",
+    "variations_network_clock.cc",
+    "variations_network_clock.h",
     "variations_service.cc",
     "variations_service.h",
     "variations_service_client.cc",
@@ -62,9 +57,8 @@ static_library("service") {
   public_deps = [ "//base" ]
   deps = [
     ":buildflags",
-    "//base/version_info:channel",
+    "//base:build_time",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//components/country_codes",
     "//components/encrypted_messages",
@@ -72,6 +66,7 @@ static_library("service") {
     "//components/language/core/browser",
     "//components/metrics",
     "//components/network_time",
+    "//components/network_time/time_tracker",
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync/service",
@@ -91,10 +86,10 @@ source_set("unit_tests") {
   sources = [
     "google_groups_manager_unittest.cc",
     "limited_entropy_randomization_unittest.cc",
-    "limited_entropy_synthetic_trial_unittest.cc",
     "safe_seed_manager_unittest.cc",
     "ui_string_overrider_unittest.cc",
     "variations_field_trial_creator_unittest.cc",
+    "variations_network_clock_unittest.cc",
     "variations_service_unittest.cc",
     "variations_service_utils_unittest.cc",
   ]
@@ -103,10 +98,12 @@ source_set("unit_tests") {
     ":buildflags",
     ":service",
     "//base",
+    "//base:build_time",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics:test_support",
+    "//components/network_time",
     "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",

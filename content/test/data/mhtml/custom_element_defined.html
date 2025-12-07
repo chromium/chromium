@@ -1,0 +1,86 @@
+<body>
+
+Below is a custom element.
+<test-element>
+
+</test-element>
+
+<undefined-test-element>
+Hidden because undefined-test-element is not defined.
+</undefined-test-element>
+
+<b>Hidden with adopted stylesheet on document</b>
+
+<p class='my-paragraph' is="my-paragraph"></p>
+<p class='undefined-paragraph' is="undefined-paragraph">
+This is an undefined built-in custom element
+</p>
+
+<script>
+  // A customized built-in element.
+  class MyParagraph extends HTMLParagraphElement {
+    constructor() {
+        super();
+
+      const testContents = document.getElementById('test-contents');
+      const shadowRoot = this.attachShadow({mode: 'open'});
+
+      shadowRoot.innerHTML = `This is a defined built-in custom element`;
+    }
+  }
+  customElements.define('my-paragraph', MyParagraph, { extends: "p" });
+
+  // An autonomous custom element.
+  class TestElement extends HTMLElement {
+    constructor() {
+      super();
+
+      const testContents = document.getElementById('test-contents');
+      const shadowRoot = this.attachShadow({mode: 'open'});
+
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync("a { display: none; }");
+      shadowRoot.adoptedStyleSheets = [sheet];
+
+      shadowRoot.innerHTML = `
+<div>
+    Inside an Autonomous Custom Element
+    <a>Hidden with adopted stylesheet on shadowRoot</a>
+    <i>Hidden with stylesheet on shadowRoot</i>
+</div>
+<style>
+    /*This will be overridden by the adopted stylesheet.*/
+    a { display: block; }
+    i { display: none; }
+</style>
+`;
+    }
+  }
+  customElements.define('test-element', TestElement);
+
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync("b { display: none; }");
+  document.adoptedStyleSheets = [sheet];
+</script>
+</body>
+
+<style>
+    test-element:not(:defined) {
+        display: none;
+    }
+    undefined-test-element:not(:defined) {
+        display: none;
+    }
+    /* my-paragraph should be defined, so this rule shouldn't trigger. */
+    p.my-paragraph:not(:defined) {
+        display: none;
+    }
+    /* undefined-paragraph should not be defined, so this rule shouldn't
+       trigger */
+    p.undefined-paragraph:defined {
+        display: none;
+    }
+
+    /*This will be overridden by the adopted stylesheet.*/
+    b { display: block; }
+</style>

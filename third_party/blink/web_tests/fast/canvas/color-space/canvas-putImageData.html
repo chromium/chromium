@@ -6,7 +6,7 @@
 test(drawThenGetImageData,
     'tests creating ImageData using several methods, calling putImageData, and reading back the color.');
 
-function populate_array(data, data_color_space, data_storage_format) {
+function populate_array(data, data_color_space, data_pixel_format) {
   for (var i = 0; i < data.length / 4; ++i) {
     var color_srgb_f32 = [50/255., 100/255., 150/255., 1.0];
     var color_p3_f32 = [0.24304, 0.38818, 0.57227, 1.0];
@@ -20,11 +20,9 @@ function populate_array(data, data_color_space, data_storage_format) {
         data_color = color_rec2020_f32;
 
     var multiplier = 1;
-    if (data_storage_format == 'uint8')
+    if (data_pixel_format == 'rgba-unorm8')
       multiplier = 255;
-    if (data_storage_format == 'uint16')
-      multiplier = 65535;
-    if (data_storage_format == 'float32')
+    if (data_pixel_format == 'rgba-float16')
       multiplier = 1.0;
 
     data[4*i + 0] = multiplier * data_color[0];
@@ -34,11 +32,11 @@ function populate_array(data, data_color_space, data_storage_format) {
   }
 }
 
-function run_test(canvas_color_space, canvas_pixel_format, data_color_space, data_storage_format) {
+function run_test(canvas_color_space, canvas_pixel_format, data_color_space, data_pixel_format) {
   var canvas = document.createElement('canvas');
   canvas.width = 20;
   canvas.height = 16;
-  var ctx = canvas.getContext('2d', {colorSpace:canvas_color_space, pixelFormat:canvas_pixel_format});
+  var ctx = canvas.getContext('2d', {colorSpace:canvas_color_space, colorType:canvas_pixel_format});
 
   const num_subtests = 5;
   const data_width = Math.floor(canvas.width / num_subtests);
@@ -47,16 +45,16 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 
   // Create an ImageData using createImageData and populate its data array.
   {
-    var data_to_put = ctx.createImageData(data_width, data_height, {colorSpace:data_color_space, storageFormat:data_storage_format});
-    populate_array(data_to_put.data, data_color_space, data_storage_format);
+    var data_to_put = ctx.createImageData(data_width, data_height, {colorSpace:data_color_space, pixelFormat:data_pixel_format});
+    populate_array(data_to_put.data, data_color_space, data_pixel_format);
     ctx.putImageData(data_to_put, 0 * data_width, 0);
     subtest_name = 'createImageData';
   }
 
   // Create an ImageData using a constructor and populate its data array.
   {
-    var data_to_put = new ImageData(data_width, data_height, {colorSpace:data_color_space, storageFormat:data_storage_format});
-    populate_array(data_to_put.data, data_color_space, data_storage_format);
+    var data_to_put = new ImageData(data_width, data_height, {colorSpace:data_color_space, pixelFormat:data_pixel_format});
+    populate_array(data_to_put.data, data_color_space, data_pixel_format);
     ctx.putImageData(data_to_put, 1 * data_width, 0);
     subtest_name = 'constructor with width,height';
   }
@@ -65,17 +63,20 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   {
     var length = 4 * data_width * data_height;
     var data = [];
-    if (data_storage_format == 'uint8')
+    if (data_pixel_format == 'rgba-unorm8')
       data = new Uint8ClampedArray(length);
-    if (data_storage_format == 'uint16')
-      data = new Uint16Array(length);
-    if (data_storage_format == 'float32')
-      data = new Float32Array(length);
-    populate_array(data, data_color_space, data_storage_format);
+    if (data_pixel_format == 'rgba-float16')
+      data = new Float16Array(length);
+    populate_array(data, data_color_space, data_pixel_format);
 
-    var data_to_put = new ImageData(data, data_width, data_height, {colorSpace:data_color_space, storageFormat:data_storage_format});
+    var data_to_put = new ImageData(data, data_width, data_height, {colorSpace:data_color_space, pixelFormat:data_pixel_format});
     ctx.putImageData(data_to_put, 2 * data_width, 0);
     subtest_name = 'constructor with data,width,height,settings';
+  }
+
+  // To use any other pixel format, a `settings` parameter must be specified.
+  if (data_pixel_format != 'rgba-unorm8') {
+    return true;
   }
 
   // Create and populate an array, then use that array to create an ImageData
@@ -83,14 +84,8 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   // ImageDataSettings, so the color space will implicitly be sRGB.
   {
     var length = 4 * data_width * data_height;
-    var data = [];
-    if (data_storage_format == 'uint8')
-      data = new Uint8ClampedArray(length);
-    if (data_storage_format == 'uint16')
-      data = new Uint16Array(length);
-    if (data_storage_format == 'float32')
-      data = new Float32Array(length);
-    populate_array(data, 'srgb', data_storage_format);
+    var data = new Uint8ClampedArray(length);
+    populate_array(data, 'srgb', data_pixel_format);
 
     var data_to_put = new ImageData(data, data_width);
     ctx.putImageData(data_to_put, 3 * data_width, 0);
@@ -103,14 +98,8 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   // sRGB.
   {
     var length = 4 * data_width * data_height;
-    var data = [];
-    if (data_storage_format == 'uint8')
-      data = new Uint8ClampedArray(length);
-    if (data_storage_format == 'uint16')
-      data = new Uint16Array(length);
-    if (data_storage_format == 'float32')
-      data = new Float32Array(length);
-    populate_array(data, 'srgb', data_storage_format);
+    var data = new Uint8ClampedArray(length);
+    populate_array(data, 'srgb', data_pixel_format);
 
     var data_to_put = new ImageData(data, data_width, data_height);
     ctx.putImageData(data_to_put, 4 * data_width, 0);
@@ -131,7 +120,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
     if (!passed) {
       console.log('Failure! ' + subtest_name);
       console.log('  Canvas:    ' + canvas_color_space + ',' + canvas_pixel_format);
-      console.log('  ImageData: ' + data_color_space + ',' + data_storage_format);
+      console.log('  ImageData: ' + data_color_space + ',' + data_pixel_format);
       console.log('  Expected:  ' + pixel_expected);
       console.log('  Actual:    ' + [pixel_actual[0], pixel_actual[1], pixel_actual[2], pixel_actual[3]]);
       console.log('  Epsilon:   ' + epsilon);
@@ -143,13 +132,13 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 
 function drawThenGetImageData() {
   color_spaces = ['srgb', 'display-p3', 'rec2020'];
-  canvas_pixel_formats = ['uint8', 'float16'];
-  image_data_pixel_formats = ['uint8', 'uint16', 'float32'];
+  canvas_pixel_formats = ['unorm8', 'float16'];
+  image_data_pixel_formats = ['rgba-unorm8', 'rgba-float16'];
   var passed = true;
   for (var i = 0; i < 3; ++i) {
     for (var j = 0; j < 2; ++j) {
       for (var k = 0; k < 3; ++k) {
-        for (var l = 0; l < 3; ++l) {
+        for (var l = 0; l < 2; ++l) {
           if (!run_test(color_spaces[i],
                         canvas_pixel_formats[j],
                         color_spaces[k],

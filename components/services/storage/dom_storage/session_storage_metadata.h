@@ -8,41 +8,22 @@
 #include <stdint.h>
 
 #include <map>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
+class DomStorageBatchOperationLevelDB;
+class DomStorageDatabaseLevelDB;
 
 // Holds the metadata information for a session storage database. This includes
 // logic for parsing and saving database content.
 class SessionStorageMetadata {
  public:
-  // Version 0 represents the old SessionStorageDatabase where we never stored a
-  // version. This class stores '0' as the version in this case. Version 1
-  // removes 'namespaces-' dummy entry, and 'map-_-' refcount entries that are
-  // present in version 0.
-  static constexpr const int64_t kMinSessionStorageSchemaVersion = 0;
-  static constexpr const int64_t kLatestSessionStorageSchemaVersion = 1;
-
-  static constexpr const int64_t kInvalidDatabaseVersion = -1;
-  static constexpr const int64_t kInvalidMapId = -1;
-
-  static constexpr const uint8_t kDatabaseVersionBytes[] = {'v', 'e', 'r', 's',
-                                                            'i', 'o', 'n'};
-
-  static constexpr const uint8_t kNamespacePrefixBytes[] = {
-      'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', '-'};
-
-  // This is "next-map-id" (without the quotes).
-  static constexpr const uint8_t kNextMapIdKeyBytes[] = {
-      'n', 'e', 'x', 't', '-', 'm', 'a', 'p', '-', 'i', 'd'};
-
   // Represents a map which can be shared by multiple areas.
   // The |DeleteNamespace| and |DeleteArea| methods can destroy any MapData
   // objects who are no longer referenced by another namespace.
@@ -51,6 +32,7 @@ class SessionStorageMetadata {
    public:
     explicit MapData(int64_t map_number, blink::StorageKey storage_key);
 
+    int64_t map_id() const { return map_id_; }
     const blink::StorageKey& storage_key() const { return storage_key_; }
 
     // The number of namespaces that reference this map.
@@ -75,6 +57,13 @@ class SessionStorageMetadata {
     // The map number as bytes (e.g. "2"). These bytes are the string
     // representation of the map number.
     std::vector<uint8_t> number_as_bytes_;
+
+    // `number_as_bytes_` as an `int64_t`.
+    //
+    // TODO(crbug.com/377242771): Remove `number_as_bytes_` after refactoring to
+    // support a swappable backend for SQLite.
+    int64_t map_id_;
+
     std::vector<uint8_t> key_prefix_;
     blink::StorageKey storage_key_;
     int reference_count_ = 0;
@@ -85,79 +74,53 @@ class SessionStorageMetadata {
                std::map<blink::StorageKey, scoped_refptr<MapData>>>;
   using NamespaceEntry = NamespaceStorageKeyMap::iterator;
 
+  // Populates the `DomStorageDatabase::Metadata::map_metadata` vector with the
+  // `session_id`, storage key, and map ID for each `MapData` in `session`.
+  static DomStorageDatabase::Metadata ToDomStorageMetadata(
+      NamespaceEntry session);
+
   SessionStorageMetadata();
   ~SessionStorageMetadata();
 
-  // For a new database, this saves the database version, clears the metadata,
-  // and returns the operations needed to save to disk.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> SetupNewDatabase();
+  using BatchDatabaseTask =
+      base::OnceCallback<void(DomStorageBatchOperationLevelDB&,
+                              const DomStorageDatabaseLevelDB&)>;
 
-  // This parses the database version from the bytes that were stored on
-  // disk, or if there was no version saved then passes a std::nullopt. This
-  // call is not necessary on new databases. The |upgrade_tasks| are populated
-  // with any tasks needed to upgrade the databases versioning metadata. Note
-  // this is different than the namespaces metadata, which will be upgraded in
-  // ParseNamespaces.
-  //
-  // Returns |true| if the parsing is correct and we support the version read.
-  bool ParseDatabaseVersion(
-      std::optional<std::vector<uint8_t>> value,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* upgrade_tasks);
+  // Initializes a new test database, which clears the metadata and returns the
+  // operations needed to save to disk.
+  std::vector<BatchDatabaseTask> SetupNewDatabaseForTesting();
 
-  // Parses all namespaces and maps, and stores all metadata locally. This
-  // invalidates all NamespaceEntry and MapData objects. If there is a parsing
-  // error, the namespaces will be cleared.If the version given to
-  // |ParseDatabaseVersion| is an older version, any namespace metadata upgrades
-  // will be populated in |upgrade_tasks|. This call is not necessary on new
-  // databases.
-  bool ParseNamespaces(
-      std::vector<DomStorageDatabase::KeyValuePair> values,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* upgrade_tasks);
-
-  // Parses the next map id from the given bytes. If that fails, then it uses
-  // the next available id from parsing the namespaces. This call is not
-  // necessary on new databases.
-  void ParseNextMapId(const std::vector<uint8_t>& map_id);
+  // Populates `namespace_storage_key_map_` and sets `next_map_id_` using
+  // `source`.
+  void Initialize(DomStorageDatabase::Metadata source);
 
   // Creates new map data for the given namespace-StorageKey area. If the area
-  // entry exists, then it will decrement the refcount of the old map. Tasks
-  // appended to |*save_tasks| if run will save the new or modified area entry
-  // to disk, as well as saving the next available map id.
+  // entry exists, then it will decrement the refcount of the old map.
   //
   // NOTE: It is invalid to call this method for an area that has a map with
   // only one reference.
-  scoped_refptr<MapData> RegisterNewMap(
-      NamespaceEntry namespace_entry,
-      const blink::StorageKey& storage_key,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  scoped_refptr<MapData> RegisterNewMap(const std::string& namespace_id,
+                                        const blink::StorageKey& storage_key);
 
   // Registers an StorageKey-map in the |destination_namespace| from every
   // StorageKey-map in the |source_namespace|. The |destination_namespace| must
   // have no StorageKey-maps. All maps in the destination namespace are the same
-  // maps as the source namespace. All database operations to save the namespace
-  // StorageKey metadata are put in |save_tasks|.
-  void RegisterShallowClonedNamespace(
-      NamespaceEntry source_namespace,
-      NamespaceEntry destination_namespace,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  // maps as the source namespace.
+  void RegisterShallowClonedNamespace(NamespaceEntry source_namespace,
+                                      NamespaceEntry destination_namespace);
 
-  // Deletes the given namespace and any maps that no longer have any
-  // references. This will invalidate all NamespaceEntry objects for the
-  // |namespace_id|, and can invalidate any MapData objects whose reference
-  // count hits zero. Appends operations to |*save_tasks| which will commit the
-  // deletions to disk if run.
-  void DeleteNamespace(
-      const std::string& namespace_id,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  // Removes and returns a namespace's `MapData` instances from
+  // `namespace_storage_key_map_`. Decreases each of the returned `MapData`
+  // reference counts by 1.  Other namespaces in `namespace_storage_key_map_`
+  // may have outstanding references to the returned `MapData` instances.
+  std::map<blink::StorageKey, scoped_refptr<MapData>> TakeNamespace(
+      const std::string& namespace_id);
 
-  // This returns a BatchDatabaseTask to remove the metadata entry for this
-  // namespace-StorageKey area. If the map at this entry isn't referenced by any
-  // other area (refcount hits 0), then the task will also delete that map on
-  // disk and invalidate that MapData.
-  void DeleteArea(
-      const std::string& namespace_id,
-      const blink::StorageKey& storage_key,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  // Removes and returns a `MapData` from `namespace_storage_key_map_`,
+  // decreasing its `reference_count_`.  Returns nullptr when `MapData` is not
+  // found.
+  scoped_refptr<MapData> TakeExistingMap(const std::string& namespace_id,
+                                         const blink::StorageKey& storage_key);
 
   NamespaceEntry GetOrCreateNamespaceEntry(const std::string& namespace_id);
 
@@ -168,20 +131,7 @@ class SessionStorageMetadata {
   int64_t NextMapId() const { return next_map_id_; }
 
  private:
-  static std::vector<uint8_t> LatestDatabaseVersionAsVector();
-
-  static std::vector<uint8_t> GetNamespacePrefix(
-      const std::string& namespace_id);
-  static std::vector<uint8_t> GetAreaKey(const std::string& namespace_id,
-                                         const blink::StorageKey& storage_key);
-  static std::vector<uint8_t> GetMapPrefix(int64_t map_number);
-  static std::vector<uint8_t> GetMapPrefix(
-      const std::vector<uint8_t>& map_number_as_bytes);
-
-  int64_t initial_database_version_from_disk_ = kInvalidDatabaseVersion;
-  int64_t next_map_id_ = kInvalidMapId;
-  int64_t next_map_id_from_namespaces_ = 0;
-
+  int64_t next_map_id_ = 0;
   NamespaceStorageKeyMap namespace_storage_key_map_;
 };
 

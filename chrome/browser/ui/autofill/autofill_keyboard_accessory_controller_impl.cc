@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -15,27 +16,26 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -46,9 +46,57 @@ namespace autofill {
 namespace {
 
 using FillingSource = ManualFillingController::FillingSource;
+using RemovalConfirmationText =
+    AutofillKeyboardAccessoryController::RemovalConfirmationText;
 
 constexpr std::u16string_view kLabelSeparator = u" ";
 constexpr size_t kMaxBulletCount = 8;
+
+constexpr std::u16string_view kHomeAddressManagementUrl =
+    u"https://myaccount.google.com/address/"
+    u"home?utm_source=chrome&utm_campaign=manage_addresses";
+constexpr std::u16string_view kWorkAddressManagementUrl =
+    u"https://myaccount.google.com/address/"
+    u"work?utm_source=chrome&utm_campaign=manage_addresses";
+constexpr std::u16string_view kAccountNameAndEmailManagementUrl =
+    u"https://myaccount.google.com/personal-info"
+    u"?utm_source=chrome-settings&utm_medium=autofill";
+
+std::u16string ExtractPassword(const std::u16string& label) {
+  // `label` is never empty since `Suggestion::labels` must contain a password.
+  return label.substr(0, kMaxBulletCount);
+}
+
+Suggestion::Text FormatLabelsByFillingProduct(
+    const std::u16string& label,
+    const std::u16string& additional_label,
+    FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kPassword:
+      // The `Suggestion::additional_label` contains the signon_realm or is
+      // empty.
+      return Suggestion::Text(
+          additional_label.empty()
+              ? ExtractPassword(label)
+              : base::StrCat({additional_label, kLabelSeparator,
+                              ExtractPassword(label)}));
+    case FillingProduct::kAddress:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kCompose:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kOneTimePassword:
+    case FillingProduct::kPasskey:
+    case FillingProduct::kNone:
+      return Suggestion::Text(label);
+  }
+}
 
 // Creates a text label used by the keyboard accessory. For password
 // suggestions, constructs the label from the password stored in
@@ -64,22 +112,131 @@ Suggestion::Text CreateLabel(const Suggestion& suggestion) {
   // interface.
   CHECK_EQ(suggestion.labels.size(), 1U);
   CHECK_EQ(suggestion.labels[0].size(), 1U);
-  if (GetFillingProductFromSuggestionType(suggestion.type) ==
-      FillingProduct::kPassword) {
-    // The `Suggestion::labels` can never be empty since it must contain a
-    // password.
-    const std::u16string password =
-        suggestion.labels[0][0].value.substr(0, kMaxBulletCount);
+  return FormatLabelsByFillingProduct(
+      suggestion.labels[0][0].value, suggestion.additional_label,
+      GetFillingProductFromSuggestionType(suggestion.type));
+}
 
-    // The `Suggestion::additional_label` contains the signon_realm or is empty.
-    if (suggestion.additional_label.empty()) {
-      return Suggestion::Text(password);
-    }
-    return Suggestion::Text(
-        base::StrCat({suggestion.additional_label, kLabelSeparator, password}));
+std::u16string GetAccountEmail(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return {};
+  }
+  const std::optional<AccountInfo> account =
+      GetPrimaryAccountInfoFromBrowserContext(
+          web_contents->GetBrowserContext());
+  return account ? base::UTF8ToUTF16(account->email) : std::u16string();
+}
+
+// Gets the text for a dialog to confirm removing an autocomplete suggestion.
+// Returns `true` if the atucomplete entry can be deleted, `false` otherwise.
+[[nodiscard]] bool GetAutocompleteRemovalText(
+    const std::u16string& value,
+    RemovalConfirmationText* removal_text) {
+  if (removal_text) {
+    removal_text->title = value;
+    removal_text->body = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY);
+    removal_text->confirm_button_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON);
+  }
+  return true;
+}
+
+// Gets the text for a dialog to confirm removing a credit card suggestion.
+// Returns `true` if the card can be deleted, `false` otherwise.
+[[nodiscard]] bool GetCreditCardRemovalText(
+    const Suggestion::Payload& payload,
+    content::WebContents* web_contents,
+    RemovalConfirmationText* removal_text) {
+  if (!std::holds_alternative<Suggestion::Guid>(payload)) {
+    return false;
+  }
+  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+  const CreditCard* credit_card =
+      pdm->payments_data_manager().GetCreditCardByGUID(
+          std::get<Suggestion::Guid>(payload).value());
+  if (!credit_card || !CreditCard::IsLocalCard(credit_card)) {
+    return false;
   }
 
-  return Suggestion::Text(suggestion.labels[0][0].value);
+  if (removal_text) {
+    removal_text->title = credit_card->CardNameAndLastFourDigits();
+    removal_text->body = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY);
+    removal_text->confirm_button_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON);
+  }
+  return true;
+}
+
+// Gets the text for a dialog to confirm removing an address suggestion.
+// The text varies based on the profile type (e.g., local vs. Home/Work).
+// Returns `true` if the address profile can be deleted, `false` otherwise.
+[[nodiscard]] bool GetAddressRemovalText(
+    const Suggestion::Payload& payload,
+    const std::u16string& value,
+    content::WebContents* web_contents,
+    RemovalConfirmationText* removal_text) {
+  if (!std::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+    return false;
+  }
+  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+  const AutofillProfile* profile = pdm->address_data_manager().GetProfileByGUID(
+      std::get<Suggestion::AutofillProfilePayload>(payload).guid.value());
+  if (!profile) {
+    return false;
+  }
+
+  if (removal_text) {
+    switch (profile->record_type()) {
+      case AutofillProfile::RecordType::kLocalOrSyncable:
+      case AutofillProfile::RecordType::kAccount:
+        if (std::u16string street_address =
+                profile->GetRawInfo(ADDRESS_HOME_CITY);
+            !street_address.empty()) {
+          removal_text->title = std::move(street_address);
+        } else {
+          removal_text->title = value;
+        }
+        removal_text->body = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY);
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON);
+        break;
+      case AutofillProfile::RecordType::kAccountHome:
+        removal_text->title = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_TITLE);
+        removal_text->body = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+            GetAccountEmail(web_contents));
+        removal_text->body_link = kHomeAddressManagementUrl;
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
+        break;
+      case AutofillProfile::RecordType::kAccountWork:
+        removal_text->title = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_TITLE);
+        removal_text->body = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+            GetAccountEmail(web_contents));
+        removal_text->body_link = kWorkAddressManagementUrl;
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
+        break;
+      case AutofillProfile::RecordType::kAccountNameEmail:
+        removal_text->title = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_TITLE);
+        removal_text->body = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+            GetAccountEmail(web_contents));
+        removal_text->body_link = kAccountNameAndEmailManagementUrl;
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -110,8 +267,7 @@ AutofillSuggestionController::GetOrCreate(
     previous->Hide(SuggestionHidingReason::kViewDestroyed);
   }
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
-      delegate, web_contents, std::move(controller_common),
-      base::BindRepeating(&local_password_migration::ShowWarning));
+      delegate, web_contents, std::move(controller_common));
   return controller->GetWeakPtr();
 }
 
@@ -119,27 +275,16 @@ AutofillKeyboardAccessoryControllerImpl::
     AutofillKeyboardAccessoryControllerImpl(
         base::WeakPtr<AutofillSuggestionDelegate> delegate,
         content::WebContents* web_contents,
-        PopupControllerCommon controller_common,
-        ShowPasswordMigrationWarningCallback
-            show_pwd_migration_warning_callback)
+        PopupControllerCommon controller_common)
     : delegate_(delegate),
       web_contents_(web_contents->GetWeakPtr()),
-      controller_common_(std::move(controller_common)),
-      show_pwd_migration_warning_callback_(
-          std::move(show_pwd_migration_warning_callback)) {}
+      controller_common_(std::move(controller_common)) {}
 
 AutofillKeyboardAccessoryControllerImpl::
     ~AutofillKeyboardAccessoryControllerImpl() = default;
 
 void AutofillKeyboardAccessoryControllerImpl::Hide(
     SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == SuggestionHidingReason::kWidgetChanged ||
@@ -243,14 +388,21 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
   }
 }
 
-void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
+void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
+    int index,
+    autofill::AutofillMetrics::SuggestionAcceptedMethod accept_method) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
   if (!barrier_for_accepting_.value() && !disable_threshold_for_testing_) {
     return;
   }
 
-  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
+  if (base::checked_cast<size_t>(index) >= suggestions_.size() ||
+      !IsAcceptableSuggestionType(suggestions_[index].type)) {
+    // Prevents crashes from crbug.com/521133. It seems that in rare cases or
+    // races the suggestions_ and the user-selected index may be out of sync.
+    // If the index points out of bounds, Chrome will crash. Prevent this by
+    // ignoring the selection and wait for another signal from the user.
     return;
   }
   if (IsPointerLocked(web_contents_.get())) {
@@ -261,7 +413,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` invalidate the reference.
   Suggestion suggestion = suggestions_[index];
-  if (!suggestion.is_acceptable) {
+  if (!suggestion.IsAcceptable()) {
     return;
   }
 
@@ -275,25 +427,15 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     manual_filling_controller->Hide();
   }
 
-  NotifyUserEducationAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
-                                             suggestion);
+  NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
 
+  base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
+                                accept_method);
   delegate_->DidAcceptSuggestion(
-      suggestion, AutofillSuggestionDelegate::SuggestionPosition{.row = index});
-
-  if (suggestion.type == SuggestionType::kPasswordEntry &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    show_pwd_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kKeyboardAcessoryBar);
-  }
+      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{.row = index});
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
@@ -301,14 +443,14 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
   CHECK_EQ(removal_method,
            AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
-  std::u16string title;
-  std::u16string body;
-  if (!GetRemovalConfirmationText(index, &title, &body)) {
+  RemovalConfirmationText removal_text;
+  if (!GetRemovalConfirmationText(index, &removal_text)) {
     return false;
   }
 
   view_->ConfirmDeletion(
-      title, body,
+      removal_text.title, removal_text.body, removal_text.body_link,
+      removal_text.confirm_button_text,
       base::BindOnce(
           &AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed,
           GetWeakPtr(), index));
@@ -328,11 +470,24 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
 
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
-  if (!confirmed) {
-    if (filling_product == FillingProduct::kAddress) {
-      autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
-          /*user_accepted_delete=*/false);
+
+  if (filling_product == FillingProduct::kAddress && web_contents_) {
+    PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext());
+
+    const auto* payload = std::get_if<Suggestion::AutofillProfilePayload>(
+        &GetSuggestionAt(index).payload);
+    if (pdm && payload) {
+      const AutofillProfile* profile =
+          pdm->address_data_manager().GetProfileByGUID(payload->guid.value());
+      if (profile) {
+        AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory(
+            confirmed, profile->record_type());
+      }
     }
+  }
+
+  if (!confirmed) {
     return;
   }
 
@@ -341,27 +496,28 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   }
   switch (filling_product) {
     case FillingProduct::kAddress:
-      AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory();
+      // Address metrics are recorded earlier in this function because they are
+      // recorded even if user canceled the dialog.
       break;
     case FillingProduct::kAutocomplete:
       AutofillMetrics::OnAutocompleteSuggestionDeleted(
           AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
-      if (view_) {
-        view_->AxAnnounce(l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-            suggestions_[index].main_text.value));
-      }
       break;
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIban:
     case FillingProduct::kPassword:
+    case FillingProduct::kPasskey:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kOneTimePassword:
       break;
   }
 
@@ -402,9 +558,11 @@ AutofillKeyboardAccessoryControllerImpl::GetPopupScreenLocation() const {
 }
 
 void AutofillKeyboardAccessoryControllerImpl::Show(
+    UiSessionId ui_session_id,
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  ui_session_id_ = ui_session_id;
   suggestions_filling_product_ =
       !suggestions.empty() && IsStandaloneSuggestionType(suggestions[0].type)
           ? GetFillingProductFromSuggestionType(suggestions[0].type)
@@ -460,19 +618,35 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
       return;
     }
 
+    // Dynamic positioning requires calling the keyboard accessory view's Show()
+    // method before the ManualFillingController updates visibility. This
+    // ensures the bar's screen position is updated before the controller makes
+    // it visible.
+    bool should_show_before_mf = base::FeatureList::IsEnabled(
+        features::kAutofillAndroidKeyboardAccessoryDynamicPositioning);
+
+    if (should_show_before_mf) {
+      view_->Show();
+    }
     if (base::WeakPtr<ManualFillingController> manual_filling_controller =
             ManualFillingController::GetOrCreate(web_contents_.get())) {
       manual_filling_controller->UpdateSourceAvailability(
           FillingSource::AUTOFILL, !suggestions_.empty());
     }
-    if (view_) {
+    if (!should_show_before_mf) {
       view_->Show();
     }
   }
 
   barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
       kIgnoreEarlyClicksOnSuggestionsDuration);
-  delegate_->OnSuggestionsShown();
+  // TODO(crbug.com/364165357): Use actually shown suggestions.
+  delegate_->OnSuggestionsShown(suggestions_);
+}
+
+std::optional<AutofillSuggestionController::UiSessionId>
+AutofillKeyboardAccessoryControllerImpl::GetUiSessionId() const {
+  return view_ ? std::make_optional(ui_session_id_) : std::nullopt;
 }
 
 void AutofillKeyboardAccessoryControllerImpl::SetKeepPopupOpenForTesting(
@@ -492,10 +666,6 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   }
 }
 
-void AutofillKeyboardAccessoryControllerImpl::PinView() {
-  is_view_pinned_ = true;
-}
-
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
   return !suggestions_.empty() &&
          IsStandaloneSuggestionType(suggestions_[0].type);
@@ -511,75 +681,33 @@ AutofillKeyboardAccessoryControllerImpl::GetSuggestionLabelsAt(int row) const {
 
 bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     int index,
-    std::u16string* title,
-    std::u16string* body) {
+    RemovalConfirmationText* removal_text) {
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
-  const Suggestion::BackendId backend_id =
-      suggestions_[index].GetPayload<Suggestion::BackendId>();
+  const Suggestion::Payload& payload = suggestions_[index].payload;
 
   if (type == SuggestionType::kAutocompleteEntry) {
-    if (title) {
-      title->assign(value);
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
+    return GetAutocompleteRemovalText(value, removal_text);
   }
 
-  if (type != SuggestionType::kAddressEntry &&
-      type != SuggestionType::kCreditCardEntry) {
-    return false;
-  }
-  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext());
-
-  if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (!CreditCard::IsLocalCard(credit_card)) {
-      return false;
-    }
-    if (title) {
-      title->assign(credit_card->CardNameAndLastFourDigits());
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
+  if (type == SuggestionType::kCreditCardEntry) {
+    return GetCreditCardRemovalText(payload, web_contents_.get(), removal_text);
   }
 
-  if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (title) {
-      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      if (!street_address.empty()) {
-        title->swap(street_address);
-      } else {
-        title->assign(value);
-      }
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-    }
-
-    return true;
+  if (type == SuggestionType::kAddressEntry) {
+    return GetAddressRemovalText(payload, value, web_contents_.get(),
+                                 removal_text);
   }
 
-  return false;  // The ID was valid. The entry may have been deleted in a race.
+  return false;
 }
 
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is an Undo suggestion, move it to the front.
-  if (auto it = base::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
-                                   &Suggestion::type);
+  if (auto it = std::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
+                                  &Suggestion::type);
       it != suggestions_.end()) {
     std::rotate(suggestions_.begin(), it, it + 1);
   }

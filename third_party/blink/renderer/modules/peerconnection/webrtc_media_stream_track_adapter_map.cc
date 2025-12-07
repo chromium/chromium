@@ -6,10 +6,12 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -200,9 +202,9 @@ WebRtcMediaStreamTrackAdapterMap::GetOrCreateRemoteTrackAdapter(
   // key is set.
   auto adapter_ref = base::WrapUnique(
       new AdapterRef(this, AdapterRef::Type::kRemote, new_adapter));
-  main_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *main_thread_, FROM_HERE,
+      CrossThreadBindOnce(
           &WebRtcMediaStreamTrackAdapterMap::AdapterRef::InitializeOnMainThread,
           std::move(adapter_ref)));
   return base::WrapUnique(

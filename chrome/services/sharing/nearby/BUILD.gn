@@ -19,7 +19,10 @@ source_set("nearby") {
     "platform.cc",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [
+    "//build/config/compiler:unnecessary_virtual_specifier_warning",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     "decoder",
@@ -28,7 +31,7 @@ source_set("nearby") {
     "//base",
     "//chrome/services/sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:connections",
     "//third_party/nearby:connections_credential_proto",
@@ -38,9 +41,9 @@ source_set("nearby") {
   ]
 
   deps = [
-    "//chromeos/ash/components/nearby/presence/conversions:conversions",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/services/network_config/public/mojom",
-    "//components/cross_device/nearby:nearby",
+    "//components/cross_device/nearby",
   ]
 }
 
@@ -58,7 +61,7 @@ source_set("unit_tests") {
     "test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
-    "//chromeos/ash/components/nearby/presence/conversions:conversions",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//testing/gmock",
@@ -66,4 +69,8 @@ source_set("unit_tests") {
     "//third_party/nearby:connections_test_util",
     "//third_party/nearby:presence_test",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

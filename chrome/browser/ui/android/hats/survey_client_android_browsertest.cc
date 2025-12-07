@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/android/hats/survey_client_android.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/hats_service_android.h"
-#include "chrome/browser/ui/android/hats/survey_client_android.h"
 #include "chrome/browser/ui/android/hats/test/test_survey_utils_bridge.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
@@ -18,7 +20,9 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace hats {
+
 namespace {
+
 const char kTestSurveyTrigger[] = "testing";
 const SurveyBitsData kTestSurveyProductSpecificBitsData{
     {"Test Field 1", true},
@@ -86,7 +90,7 @@ class SurveyClientAndroidBrowserTest : public AndroidBrowserTest {
         window_android());
   }
 
-  void TearDown() override {
+  void PostRunTestOnMainThread() override {
     messages_test_helper_.ResetMessageDispatcherForTesting();
   }
 
@@ -122,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(SurveyClientAndroidBrowserTest, LaunchSurvey) {
         kTestSurveyTrigger, web_contents(), kTestSurveyProductSpecificBitsData,
         kTestSurveyProductSpecificStringData,
         base::BindOnce(&SurveyObserver::Accept, observer.GetWeakPtr()),
-        base::BindOnce(&SurveyObserver::Dismiss, observer.GetWeakPtr()));
+        base::BindOnce(&SurveyObserver::Dismiss, observer.GetWeakPtr()),
+        std::nullopt, HatsService::SurveyOptions());
     EXPECT_TRUE(waiter.Wait());
   }
 

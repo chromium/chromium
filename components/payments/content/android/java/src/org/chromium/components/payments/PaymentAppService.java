@@ -4,7 +4,8 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +15,16 @@ import java.util.Map;
 import java.util.Set;
 
 /** Creates payment apps. */
+@NullMarked
 public class PaymentAppService implements PaymentAppFactoryInterface {
+    /**
+     * The identity of the Google Pay internal app.
+     * TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+     */
+    public static final String GOOGLE_PAY_INTERNAL_APP_IDENTITY = "Google_Pay_Internal";
+
     private static final String UNTRACKED_FACTORY_ID_PREFIX = "Untracked factory - ";
-    private static PaymentAppService sInstance;
+    private static @Nullable PaymentAppService sInstance;
     private final Map<String, PaymentAppFactoryInterface> mFactories = new HashMap<>();
     private int mIdMax;
 
@@ -36,7 +44,7 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
      * @param factory The factory to add.
      */
     public void addFactory(PaymentAppFactoryInterface factory) {
-        String id = UNTRACKED_FACTORY_ID_PREFIX + (mIdMax++);
+        String id = UNTRACKED_FACTORY_ID_PREFIX + mIdMax++;
         mFactories.put(id, factory);
     }
 
@@ -119,6 +127,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
+        public boolean prefsCanMakePayment() {
+            return mDelegate.prefsCanMakePayment();
+        }
+
+        @Override
         public void setCanMakePaymentEvenWithoutApps() {
             mDelegate.setCanMakePaymentEvenWithoutApps();
         }
@@ -150,9 +163,27 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         public CSPChecker getCSPChecker() {
             return mDelegate.getCSPChecker();
         }
+
+        @Override
+        public @Nullable DialogController getDialogController() {
+            return mDelegate.getDialogController();
+        }
+
+        @Override
+        public @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
+            return mDelegate.getAndroidIntentLauncher();
+        }
+
+        @Override
+        public boolean isFullDelegationRequired() {
+            return mDelegate.isFullDelegationRequired();
+        }
     }
 
     private static Set<PaymentApp> deduplicatePaymentApps(List<PaymentApp> apps) {
+        // TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+        apps = maybeRemoveNonInternalGooglePayApps(apps);
+
         Map<String, PaymentApp> identifierToAppMapping = new HashMap<>();
         int numberOfApps = apps.size();
         for (int i = 0; i < numberOfApps; i++) {
@@ -189,5 +220,40 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         return uniquePaymentApps;
+    }
+
+    /**
+     * Removes non-internal versions of the Google Pay app, if the internal version of Google Pay
+     * app is present.
+     * TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+     *
+     * @param apps The apps to filter.
+     * @return The apps without Google Pay duplicates.
+     */
+    private static List<PaymentApp> maybeRemoveNonInternalGooglePayApps(List<PaymentApp> apps) {
+        PaymentApp googlePayInternalApp = null;
+        for (PaymentApp app : apps) {
+            if (GOOGLE_PAY_INTERNAL_APP_IDENTITY.equals(app.getIdentifier())) {
+                googlePayInternalApp = app;
+                break;
+            }
+        }
+
+        if (googlePayInternalApp == null) {
+            return apps;
+        }
+
+        List<PaymentApp> result = new ArrayList<>();
+        for (PaymentApp app : apps) {
+            Set<String> methodNames = app.getInstrumentMethodNames();
+            boolean isGooglePayApp =
+                    methodNames.contains(MethodStrings.GOOGLE_PAY)
+                            || methodNames.contains(MethodStrings.GOOGLE_PAY_AUTHENTICATION);
+            if (app == googlePayInternalApp || !isGooglePayApp) {
+                result.add(app);
+            }
+        }
+
+        return result;
     }
 }

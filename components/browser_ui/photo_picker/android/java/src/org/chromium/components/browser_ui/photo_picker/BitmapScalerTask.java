@@ -11,17 +11,20 @@ import android.util.LruCache;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** A worker task to scale bitmaps in the background. */
-class BitmapScalerTask extends AsyncTask<Bitmap> {
+@NullMarked
+class BitmapScalerTask extends AsyncTask<@Nullable Bitmap> {
     private final LruCache<String, PickerCategoryView.Thumbnail> mCache;
     private final String mFilePath;
     private final int mSize;
     private final Bitmap mBitmap;
-    private final String mVideoDuration;
+    private final @Nullable String mVideoDuration;
     private final float mRatio;
 
     /** A BitmapScalerTask constructor. */
@@ -29,7 +32,7 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
             LruCache<String, PickerCategoryView.Thumbnail> cache,
             Bitmap bitmap,
             String filePath,
-            String videoDuration,
+            @Nullable String videoDuration,
             int size,
             float ratio) {
         mCache = cache;
@@ -46,7 +49,7 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
      * @return A sorted list of images (by last-modified first).
      */
     @Override
-    protected Bitmap doInBackground() {
+    protected @Nullable Bitmap doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
@@ -64,7 +67,7 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
      * @param bitmap The resulting scaled bitmap.
      */
     @Override
-    protected void onPostExecute(Bitmap bitmap) {
+    protected void onPostExecute(@Nullable Bitmap bitmap) {
         if (isCancelled()) {
             return;
         }

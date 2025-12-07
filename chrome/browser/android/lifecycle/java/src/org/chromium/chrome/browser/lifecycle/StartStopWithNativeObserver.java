@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.lifecycle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Implement this interface and register in {@link ActivityLifecycleDispatcher} to receive start and
  * stop with native events.
  */
+@NullMarked
 public interface StartStopWithNativeObserver extends LifecycleObserver {
     /**
      * Called when activity is started, provided that native is initialized.

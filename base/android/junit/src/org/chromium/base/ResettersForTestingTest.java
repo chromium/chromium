@@ -43,7 +43,7 @@ public class ResettersForTestingTest {
     private static class ResetsToNullAndIncrementsWithOneShotResetter {
         public static String str;
         public static int resetCount;
-        private static Runnable sResetter =
+        private static final Runnable sResetter =
                 () -> {
                     str = null;
                     resetCount++;

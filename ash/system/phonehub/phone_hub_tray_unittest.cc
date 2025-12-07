@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_tray.h"
+
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/multidevice_feature_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -30,11 +32,13 @@
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -75,21 +79,16 @@ class PhoneHubTrayTest : public AshTestBase {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kPhoneHub,
-                              features::kPhoneHubCameraRoll,
-                              features::kEcheLauncher, features::kEcheSWA,
+                              features::kPhoneHubCameraRoll, features::kEcheSWA,
                               features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
 
     phone_hub_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
     // Disable pulse animation so the tests will not hang.
-    ui::ScopedAnimationDurationScaleMode duration_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     GetFeatureStatusProvider()->SetStatus(
         phonehub::FeatureStatus::kEnabledAndConnected);
@@ -103,7 +102,6 @@ class PhoneHubTrayTest : public AshTestBase {
   }
 
   void TearDown() override {
-    delegate_provider_.reset();
     AshTestBase::TearDown();
   }
 
@@ -137,7 +135,7 @@ class PhoneHubTrayTest : public AshTestBase {
     task_environment()->FastForwardBy(kConnectingViewGracePeriod);
   }
 
-  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
   views::View* bubble_view() { return phone_hub_tray_->GetBubbleView(); }
 
@@ -190,8 +188,7 @@ class PhoneHubTrayTest : public AshTestBase {
   raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(PhoneHubTrayTest, SetPhoneHubManager) {
@@ -666,8 +663,8 @@ TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {
 }
 
 TEST_F(PhoneHubTrayTest, OnSessionChanged) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Disable the tray first.
   GetFeatureStatusProvider()->SetStatus(
@@ -832,6 +829,36 @@ TEST_F(PhoneHubTrayTest, TrayPressedMetrics) {
 
   LeftClickOn(phone_hub_tray()->eche_icon_);
   histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 3);
+}
+
+TEST_F(PhoneHubTrayTest, AccessibleNames) {
+  {
+    ui::AXNodeData node_data;
+    phone_hub_tray_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
+  }
+
+  Shell::Get()->focus_cycler()->FocusWidget(phone_hub_tray_->GetWidget());
+  phone_hub_tray_->RequestFocus();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+  // Generate a tab key press.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+
+  // The bubble widget should get focus when it's opened by keyboard and the tab
+  // key is pressed.
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  ASSERT_TRUE(bubble_view());
+
+  {
+    ui::AXNodeData node_data;
+    bubble_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              phone_hub_tray()->GetAccessibleNameForBubble());
+  }
 }
 
 }  // namespace ash

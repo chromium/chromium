@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -83,8 +84,8 @@ void LoadFileFromDisk(const base::FilePath& path,
   std::string result;
   CHECK(base::ReadFileToString(path, &result));
 
-  std::move(callback).Run(new base::RefCountedBytes(
-      reinterpret_cast<const unsigned char*>(result.data()), result.size()));
+  std::move(callback).Run(
+      new base::RefCountedBytes(base::as_byte_span(result)));
 }
 
 void LoadResponseFromDisk(const base::FilePath& root,

@@ -4,24 +4,22 @@
 
 #import "ios/web/download/download_native_task_bridge.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_util.h"
 #import "base/functional/callback.h"
 #import "base/task/thread_pool.h"
 #import "ios/web/download/download_result.h"
-#import "ios/web/web_view/error_translation_util.h"
+#import "ios/web/util/error_translation_util.h"
 #import "net/base/net_errors.h"
 
 namespace {
 
 // Helper to get the size of file at `file_path`. Returns -1 in case of error.
 int64_t FileSizeForFileAtPath(base::FilePath file_path) {
-  int64_t file_size = 0;
-  if (!base::GetFileSize(file_path, &file_size))
-    return -1;
-
-  return file_size;
+  return base::GetFileSize(file_path).value_or(-1);
 }
 
 // Helper to invoke the download complete callback after getting the file
@@ -111,28 +109,12 @@ enum class DownloadNativeTaskState {
   if (_status == DownloadNativeTaskState::kPendingStart) {
     // WKDownload will pass a block to its delegate when calling its
     // - download:decideDestinationUsingResponse:suggestedFilename
-    //:completionHandler: method. WKDownload enforces that this block is called
+    //: completionHandler: method. WKDownload enforces that this block is called
     // before the object is destroyed or the download is cancelled. Thus it
     // must be called now.
-    //
-    // Call it with a temporary path, and schedule a block to delete the file
-    // later (to avoid keeping the file around). Use a random non-empty name
-    // for the file as `self.suggestedFilename` can be `nil` which would result
-    // in the deletion of the directory `NSTemporaryDirectory()` preventing the
-    // creation of any temporary file afterwards.
-    NSString* filename = [[NSUUID UUID] UUIDString];
-    NSURL* url =
-        [NSURL fileURLWithPath:[NSTemporaryDirectory()
-                                   stringByAppendingPathComponent:filename]];
-
     CHECK(_startDownloadBlock);
-    _startDownloadBlock(url);
+    _startDownloadBlock(nil);
     _startDownloadBlock = nil;
-
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-      NSFileManager* manager = [NSFileManager defaultManager];
-      [manager removeItemAtURL:url error:nil];
-    });
   }
 
   [self stopObservingDownloadProgress];
@@ -352,7 +334,7 @@ enum class DownloadNativeTaskState {
         base::apple::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
   }
 
-  std::move(_responseCallback).Run(http_error, response.MIMEType);
+  std::move(_responseCallback).Run(http_error, response.MIMEType, response.URL);
 }
 
 @end

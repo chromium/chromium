@@ -90,7 +90,7 @@ void ServiceWorkerContextAdapterImpl::RunningServiceWorker::
 
 void ServiceWorkerContextAdapterImpl::RunningServiceWorker::
     RenderProcessHostDestroyed(content::RenderProcessHost* host) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // ServiceWorkerContextAdapterImpl ---------------------------------------------
@@ -165,7 +165,7 @@ void ServiceWorkerContextAdapterImpl::OnControlleeAdded(
   bool inserted =
       service_worker_clients_[version_id].insert(client_uuid).second;
   if (!inserted) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -207,12 +207,12 @@ void ServiceWorkerContextAdapterImpl::OnControlleeNavigationCommitted(
   // not already a client of |version_id|.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
   if (it->second.find(client_uuid) == it->second.end()) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

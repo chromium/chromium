@@ -86,7 +86,7 @@ def CopyConfigPythonTranslation(robo_configuration):
     for opsys in ("android", "linux", "linux-noasm", "mac", "win"):
         for target in ("Chromium", "Chrome"):
             for arch in ("arm", "arm-neon", "arm64", "ia32", "x64", "mipsel",
-                         "mips64el"):
+                         "mips64el", "riscv64"):
                 gen_dir = robo_configuration.target_config_directory(
                     arch, opsys, target)
                 export_dir = robo_configuration.exported_configs_directory(
@@ -94,13 +94,15 @@ def CopyConfigPythonTranslation(robo_configuration):
                 if not os.path.exists(os.path.join(gen_dir, "config.h")):
                     continue  # Don't waste time on non-existent configs.
                     # if there is no config.h, skip.
-                for file in (("config.h", ), ("config_components.h", ),
-                             ("config.asm", ), ("libavutil", "avconfig.h"),
-                             ("libavutil", "ffversion.h"), ("libavcodec",
-                                                            "bsf_list.c"),
-                             ("libavcodec", "codec_list.c"), ("libavcodec",
-                                                              "parser_list.c"),
-                             ("libavformat", "demuxer_list.c"),
+                for file in (("config.h", ), ("config_components.asm", ),
+                             ("config_components.h", ), ("config.asm", ),
+                             ("libavutil", "avconfig.h"), ("libavutil",
+                                                           "ffversion.h"),
+                             ("libavcodec", "bsf_list.c"), ("libavcodec",
+                                                            "codec_list.c"),
+                             ("libavcodec",
+                              "parser_list.c"), ("libavformat",
+                                                 "demuxer_list.c"),
                              ("libavformat",
                               "muxer_list.c"), ("libavformat",
                                                 "protocol_list.c")):
@@ -111,17 +113,27 @@ def CopyConfigPythonTranslation(robo_configuration):
                             os.makedirs(os.path.dirname(copy_to))
                         print(f'CP {copy_from} {copy_to}')
                         shutil.copy(copy_from, copy_to)
-            # Since we cannot cross-compile for ios, we just duplicate the mac config
-            # for this platform.
-            if opsys == "mac":
-                mac_dir = robo_configuration.target_config_directory(
-                    arch, opsys, "noarch")
-                ios_dir = robo_configuration.target_config_directory(
-                    arch, 'ios', "noarch")
-                copy_from = os.path.dirname(mac_dir)
-                if os.path.exists(copy_from):
-                    copy_to = os.path.dirname(ios_dir)
-                    shutil.copy(copy_from, copy_to)
+                # Since we cannot cross-compile for ios, we just duplicate the
+                # mac config for this platform and arch.
+                if opsys == "mac":
+                    copy_from = export_dir
+                    ios_dir = robo_configuration.exported_configs_directory(
+                        arch, 'ios', target)
+                    if robo_configuration.Call(["mkdir", "-p", ios_dir]):
+                        raise Exception(
+                            f"Could not make iOS config directory {ios_dir}")
+                    # `cp -r` is a little odd.  If the target directory does
+                    # not exist, then `cp a b` will copy the contents of `a`
+                    # into a newly created `b` such that `ls a` and `ls b`
+                    # will show the same files.  If the target directory does
+                    # exist already (e.g., if you run the command twice), then
+                    # the second copy will result in a subdirectory called `a`
+                    # inside `b`.  `-T` fixes this.
+                    if robo_configuration.Call(
+                        ["cp", "-rT", copy_from, ios_dir]):
+                        raise Exception(
+                            f"Could not copy iOS configs from {copy_from} to {ios_dir}"
+                        )
 
 
 def BuildAndImportAllFFmpegConfigs(robo_configuration):

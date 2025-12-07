@@ -20,13 +20,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
@@ -59,6 +57,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 sync_pb::EntitySpecifics MakeSpecifics(DataType data_type) {
@@ -69,7 +68,7 @@ sync_pb::EntitySpecifics MakeSpecifics(DataType data_type) {
 
 sync_pb::EntitySpecifics MakeBookmarkSpecificsToCommit() {
   sync_pb::EntitySpecifics specifics = MakeSpecifics(BOOKMARKS);
-  // The worker DCHECKs for the validity of the |type| and |unique_position|
+  // The worker DCHECKs for the validity of the `type` and `unique_position`
   // fields for outgoing commits.
   specifics.mutable_bookmark()->set_type(sync_pb::BookmarkSpecifics::URL);
   *specifics.mutable_bookmark()->mutable_unique_position() =
@@ -114,11 +113,11 @@ class SyncerTest : public testing::Test,
   void OnReceivedCustomNudgeDelays(
       const std::map<DataType, base::TimeDelta>& delay_map) override {
     auto iter = delay_map.find(BOOKMARKS);
-    if (iter != delay_map.end() && iter->second.is_positive())
+    if (iter != delay_map.end() && iter->second.is_positive()) {
       last_bookmarks_commit_delay_ = iter->second;
+    }
   }
 
-  void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}
   void OnReceivedMigrationRequest(DataTypeSet types) override {}
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,
@@ -498,11 +497,19 @@ TEST_F(SyncerTest, CommitManyItemsInOneGo_PostBufferFail) {
   EXPECT_EQ(2, GetProcessor(PREFERENCES)->GetLocalChangesCallCount());
 
   histogram_tester.ExpectBucketCount("Sync.CommitResponse.PREFERENCE",
-                                     SyncerErrorValueForUma::kSyncServerError,
+                                     SyncerErrorValueForUma::kHttpError,
                                      /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Sync.CommitResponse",
-                                     SyncerErrorValueForUma::kSyncServerError,
+                                     SyncerErrorValueForUma::kHttpError,
                                      /*expected_count=*/1);
+
+  // Latency is not recorded for failed commits (only 1 commit succeeded).
+  histogram_tester.ExpectBucketCount("Sync.CommitResponse",
+                                     SyncerErrorValueForUma::kSyncerOk,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.CommitLatency", /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.CommitLatency.PREFERENCE",
+                                    /*expected_count=*/1);
 }
 
 // Test that a single conflict response from the server will cause us to exit
@@ -930,10 +937,6 @@ TEST_F(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
 
 TEST_F(SyncerTest,
        ShouldNotPopulateOptimizationFlagsIfDeviceInfoRecentlyUpdated) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
-
   EnableDatatype(DEVICE_INFO);
   mock_server_->AddUpdateSpecifics("id", /*parent_id=*/"", "name",
                                    /*version=*/1, /*sync_ts=*/10,
@@ -1083,13 +1086,14 @@ TEST_F(SyncerTest, ConfigureDownloadsTwoBatchesSuccess) {
 
   // The type should have received the initial updates.
   EXPECT_EQ(1U, GetProcessor(PREFERENCES)->GetNumUpdateResponses());
+  EXPECT_THAT(mock_server_->requests(), SizeIs(2));
 }
 
 // Same as the above case, but this time the second batch fails to download.
 TEST_F(SyncerTest, ConfigureFailsDontApplyUpdates) {
-  // The scenario: we have two batches of updates with one update each.  A
-  // normal confgure step would download all the updates one batch at a time and
-  // apply them.  This configure will succeed in downloading the first batch
+  // The scenario: we have two batches of updates with one update each. A
+  // normal configure step would download all the updates one batch at a time
+  // and apply them. This configure will succeed in downloading the first batch
   // then fail when downloading the second.
   mock_server_->FailNthPostBufferToPathCall(2);
 
@@ -1178,6 +1182,31 @@ TEST_F(SyncerTest, CommitOnlyTypes) {
   EXPECT_EQ(2, commit.entries_size());
   EXPECT_TRUE(commit.entries(0).specifics().has_extension());
   EXPECT_TRUE(commit.entries(1).specifics().has_user_event());
+}
+
+TEST_F(SyncerTest, ShouldEarlyExitDownloadIfRequested) {
+  // Construct the first GetUpdates response.
+  mock_server_->AddUpdatePref("id1", "", "one", 1, 10);
+  mock_server_->SetChangesRemaining(1);
+  mock_server_->NextUpdateBatch();
+
+  // Construct the second GetUpdates response.
+  mock_server_->AddUpdatePref("id2", "", "two", 2, 20);
+
+  ASSERT_EQ(0U, GetProcessor(PREFERENCES)->GetNumUpdateResponses());
+
+  // Request early exit. The first GetUpdates response should be downloaded, but
+  // the second one should be skipped.
+  cancelation_signal_.Signal();
+  SyncShareConfigure();
+
+  // No updates should be applied to the processor but there should be a single
+  // GetUpdates request.
+  EXPECT_EQ(0U, GetProcessor(PREFERENCES)->GetNumUpdateResponses());
+  EXPECT_THAT(mock_server_->requests(), SizeIs(1));
+
+  // One update is still pending.
+  mock_server_->ClearUpdatesQueue();
 }
 
 enum {

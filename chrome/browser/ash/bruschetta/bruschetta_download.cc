@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "chrome/browser/ash/bruschetta/bruschetta_download.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_network_context.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -68,25 +70,11 @@ std::string Sha256File(const base::FilePath& path) {
     return "";
   }
 
-  std::unique_ptr<crypto::SecureHash> ctx(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  const size_t kReadBufferSize = 4096;
-  char buffer[kReadBufferSize];
-  while (true) {
-    int count = file.ReadAtCurrentPos(buffer, kReadBufferSize);
-
-    // Treat EOF the same as any other error, stop reading and return the hash
-    // of what we read. If there was a disk error or something we'll end up with
-    // an invalid hash, same as if the file were truncated.
-    if (count <= 0) {
-      break;
-    }
-    ctx->Update(buffer, count);
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  if (!crypto::hash::HashFile(crypto::hash::kSha256, &file, hash)) {
+    return "";
   }
-
-  uint8_t digest_bytes[crypto::kSHA256Length];
-  ctx->Finish(digest_bytes, crypto::kSHA256Length);
-  return base::HexEncode(digest_bytes);
+  return base::HexEncode(hash);
 }
 
 }  // namespace
@@ -95,7 +83,8 @@ std::string Sha256FileForTesting(const base::FilePath& path) {
   return Sha256File(path);
 }
 
-SimpleURLLoaderDownload::SimpleURLLoaderDownload() = default;
+SimpleURLLoaderDownload::SimpleURLLoaderDownload(PrefService& local_state)
+    : local_state_(local_state) {}
 
 SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   auto seq = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -129,9 +118,11 @@ void SimpleURLLoaderDownload::Download(
   auto path = scoped_temp_dir_->GetPath().Append("download");
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = url_;
+  req->site_for_cookies = net::SiteForCookies::FromUrl(url_);
   loader_ = network::SimpleURLLoader::Create(std::move(req),
                                              kBruschettaTrafficAnnotation);
-  network_context_ = std::make_unique<BruschettaNetworkContext>(profile);
+  network_context_ =
+      std::make_unique<BruschettaNetworkContext>(profile, local_state_.get());
   loader_->DownloadToFile(network_context_->GetURLLoaderFactory(),
                           base::BindOnce(&SimpleURLLoaderDownload::Finished,
                                          weak_ptr_factory_.GetWeakPtr()),

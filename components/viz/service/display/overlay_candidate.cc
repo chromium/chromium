@@ -4,11 +4,12 @@
 
 #include "components/viz/service/display/overlay_candidate.h"
 
+#include <variant>
+
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -53,13 +54,12 @@ bool OverlayCandidate::QuadHasRoundedDisplayMasks(const DrawQuad* quad) {
 // static
 void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
                                  const gfx::RectF& clip_rect) {
-  DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  DCHECK(std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
   if (!clip_rect.Contains(candidate.display_rect)) {
     // Apply the buffer transform to the candidate's |uv_rect| so that it is
     // in the same orientation as |display_rect| when applying the clip.
     gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
-        absl::get<gfx::OverlayTransform>(candidate.transform),
-        gfx::SizeF(1, 1));
+        std::get<gfx::OverlayTransform>(candidate.transform), gfx::SizeF(1, 1));
     candidate.uv_rect = buffer_transform.MapRect(candidate.uv_rect);
 
     gfx::RectF intersect_clip_display = clip_rect;
@@ -85,9 +85,6 @@ bool OverlayCandidate::RequiresOverlay(const DrawQuad* quad) {
                  OverlayPriority::kRequired;
     case DrawQuad::Material::kVideoHole:
       return true;
-    case DrawQuad::Material::kYuvVideoContent:
-      return YUVVideoDrawQuad::MaterialCast(quad)->protected_video_type ==
-             gfx::ProtectedVideoType::kHardwareProtected;
     default:
       return false;
   }
@@ -96,8 +93,8 @@ bool OverlayCandidate::RequiresOverlay(const DrawQuad* quad) {
 // static
 gfx::RectF OverlayCandidate::DisplayRectInTargetSpace(
     const OverlayCandidate& candidate) {
-  if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
-    return absl::get<gfx::Transform>(candidate.transform)
+  if (std::holds_alternative<gfx::Transform>(candidate.transform)) {
+    return std::get<gfx::Transform>(candidate.transform)
         .MapRect(candidate.display_rect);
   }
   return candidate.display_rect;

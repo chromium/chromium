@@ -1,0 +1,44 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web FAB Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[push button] name='Add' enabled sensitive
+++++++++[section] enabled sensitive
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web FAB Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[push button] name='Add' enabled sensitive
+++++++++[section] enabled sensitive
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web FAB Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[push button] name='Add' enabled sensitive
+++++++++[section] enabled sensitive
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web FAB Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[push button] name='Add' enabled sensitive
+++++++++[section] enabled sensitive
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web FAB Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[push button] name='Add' enabled sensitive
+++++++++[section] enabled sensitive
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web FAB Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[push button] name='Add' enabled sensitive
+++++++++[section] enabled sensitive
+=== End accessibility tree ===

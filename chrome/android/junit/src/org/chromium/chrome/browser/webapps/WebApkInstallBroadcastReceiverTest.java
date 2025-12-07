@@ -16,10 +16,11 @@ import android.graphics.Bitmap;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
@@ -29,30 +30,32 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webapps.WebApkInstallResult;
 
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class})
-@EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION})
+@EnableFeatures({
+    ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+    NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED
+})
 public class WebApkInstallBroadcastReceiverTest {
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";
     private static final String URL = "https://test.com";
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private final byte[] mSerializedProto = new byte[] {1, 2};
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
 
-    @Mock private Context mContextMock;
-
     private WebApkInstallBroadcastReceiver mReceiver;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mContext);

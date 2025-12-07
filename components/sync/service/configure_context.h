@@ -8,9 +8,10 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -18,17 +19,20 @@ namespace syncer {
 // be assumed to be fixed while sync is enabled (or, more precisely, is
 // representative of the last (re)configuration request). It's built by
 // SyncServiceImpl and plumbed through DataTypeManager until datatype
-// controllers, which for USS datatypes propagate analogous information to the
-// processor/bridge via DataTypeActivationRequest.
+// controllers, which propagate analogous information to the processor/bridge
+// via DataTypeActivationRequest.
 struct ConfigureContext {
-  CoreAccountId authenticated_account_id;
+  ConfigureContext();
+  ConfigureContext(const ConfigureContext&);
+  ~ConfigureContext();
+
+  GaiaId authenticated_gaia_id;
+  signin::AccountManagedStatusFinderOutcome account_managed_status =
+      signin::AccountManagedStatusFinderOutcome::kPending;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
-  ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
+  ConfigureReason reason = ConfigureReason::kUnknown;
   base::Time configuration_start_time;
-  // TODO(mastiz): Consider adding |requested_types| here, but currently there
-  // are subtle differences across layers (e.g. where control types are
-  // enforced).
 };
 
 }  // namespace syncer

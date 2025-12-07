@@ -11,6 +11,8 @@
 
 namespace content {
 
+class DevToolsAgentHostImpl;
+
 namespace protocol {
 
 class DeviceAccessHandler : public DevToolsDomainHandler,

@@ -41,9 +41,9 @@ class XPathContext {
   xpath::EvaluationContext context_;
 };
 
-using XPathArguments = HeapVector<Member<xpath::Expression>>;
+using XPathArguments = GCedHeapVector<Member<xpath::Expression>>;
 
-static String Substring(XPathArguments& args) {
+static String Substring(XPathArguments* args) {
   XPathContext xpath;
   xpath::Expression* call = xpath::CreateFunction("substring", args);
   xpath::Value result = call->Evaluate(xpath.Context());
@@ -51,17 +51,17 @@ static String Substring(XPathArguments& args) {
 }
 
 static String Substring(const char* string, double pos) {
-  XPathArguments args;
-  args.push_back(MakeGarbageCollected<xpath::StringExpression>(string));
-  args.push_back(MakeGarbageCollected<xpath::Number>(pos));
+  XPathArguments* args = MakeGarbageCollected<XPathArguments>();
+  args->push_back(MakeGarbageCollected<xpath::StringExpression>(string));
+  args->push_back(MakeGarbageCollected<xpath::Number>(pos));
   return Substring(args);
 }
 
 static String Substring(const char* string, double pos, double len) {
-  XPathArguments args;
-  args.push_back(MakeGarbageCollected<xpath::StringExpression>(string));
-  args.push_back(MakeGarbageCollected<xpath::Number>(pos));
-  args.push_back(MakeGarbageCollected<xpath::Number>(len));
+  XPathArguments* args = MakeGarbageCollected<XPathArguments>();
+  args->push_back(MakeGarbageCollected<xpath::StringExpression>(string));
+  args->push_back(MakeGarbageCollected<xpath::Number>(pos));
+  args->push_back(MakeGarbageCollected<xpath::Number>(len));
   return Substring(args);
 }
 

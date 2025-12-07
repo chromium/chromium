@@ -5,11 +5,11 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
+#include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,11 +33,9 @@ namespace performance_manager::policies {
 
 namespace {
 
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
 struct PolicyTestParam {
-  const MemoryPressureLevel memory_pressure_level =
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
+  const base::MemoryPressureLevel memory_pressure_level =
+      base::MEMORY_PRESSURE_LEVEL_MODERATE;
   bool tab_backgrounded = false;
   bool enable_policy = true;
   int foreground_cache_size_on_moderate_pressure = 3;
@@ -55,12 +53,10 @@ const PolicyTestParam kPolicyTestParams[] = {
     // Tab backgrounded, moderate memory pressure.
     {.tab_backgrounded = true, .expected_cached_pages = 2},
     // Tab foregrounded, critical memory pressure.
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .expected_cached_pages = 1},
     // Tab backgrounded, critical memory pressure.
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .tab_backgrounded = true,
      .expected_cached_pages = 0},
     // Tab foregrounded, moderate memory pressure, cache limit is -1 (no limit).
@@ -69,12 +65,10 @@ const PolicyTestParam kPolicyTestParams[] = {
     {.tab_backgrounded = true,
      .background_cache_size_on_moderate_pressure = -1},
     // Tab foregrounded, critical memory pressure, cache limit is -1 (no limit).
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .foreground_cache_size_on_critical_pressure = -1},
     // Tab backgrounded, critical memory pressure, cache limit is -1 (no limit).
-    {.memory_pressure_level =
-         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+    {.memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL,
      .tab_backgrounded = true,
      .background_cache_size_on_critical_pressure = -1}};
 
@@ -123,7 +117,7 @@ class BFCachePolicyBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     // Disable tab discarding to avoid interference.
-    mechanism::PageDiscarder::DisableForTesting();
+    policies::UrgentPageDiscardingPolicy::DisableForTesting();
   }
 
  protected:

@@ -1,7 +1,6 @@
 {
   "description": "Source destination limit FIFO",
   "api_config": {
-    "needs_source_destination_limit": true,
     "max_destinations_per_source_site_reporting_site": "3",
     "rate_limit_max_attributions": "1"
   },
@@ -432,7 +431,6 @@
             "attribution_destination": "https://destination1.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3608",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },

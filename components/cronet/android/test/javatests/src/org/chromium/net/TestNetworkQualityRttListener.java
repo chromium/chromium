@@ -21,13 +21,14 @@ class TestNetworkQualityRttListener extends NetworkQualityRttListener {
     private int mRttObservationCount;
 
     // Holds the RTT observations counts indexed by source.
-    private SparseIntArray mRttObservationCountBySource = new SparseIntArray();
+    private final SparseIntArray mRttObservationCountBySource = new SparseIntArray();
 
     private Thread mExecutorThread;
 
-    /*
+    /**
      * Constructs a NetworkQualityRttListener that can listen to the RTT observations at various
      * layers of the network stack.
+     *
      * @param executor The executor on which the observations are reported.
      */
     TestNetworkQualityRttListener(Executor executor) {

@@ -130,10 +130,9 @@ TEST_F(CSSPropertyValueSetTest, SetCustomPropertyReturnValue) {
                 /*context_style_sheet=*/nullptr,
                 /*is_animation_tainted=*/false));
 
-  // Custom property values are compared by instance rather than by value
-  // (due to performance constraints), so we don't get a kUnchanged
+  // Custom property values are compared by value, so we get a kUnchanged
   // return value here.
-  EXPECT_EQ(MutableCSSPropertyValueSet::kModifiedExisting,
+  EXPECT_EQ(MutableCSSPropertyValueSet::kUnchanged,
             properties->ParseAndSetCustomProperty(
                 AtomicString("--my-property"), "red", /*important=*/false,
                 SecureContextMode::kInsecureContext,

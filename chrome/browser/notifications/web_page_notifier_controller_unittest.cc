@@ -94,8 +94,7 @@ void WebPageNotifierControllerTest::TestGetNotifiersList(
     provider->SetWebsiteSetting(
         ContentSettingsPattern::FromString(pattern),
         ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        base::Value(content_setting), /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
+        base::Value(content_setting), /*constraints=*/{});
   }
 
   content_settings::TestUtils::OverrideProvider(

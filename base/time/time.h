@@ -69,7 +69,6 @@
 #include <concepts>
 #include <iosfwd>
 #include <limits>
-#include <ostream>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -78,7 +77,6 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
@@ -96,11 +94,13 @@
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include <unistd.h>
 #include <sys/time.h>
+#include <unistd.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"
 
@@ -117,6 +117,7 @@ struct TimeSpan;
 namespace base {
 
 #if BUILDFLAG(IS_WIN)
+class CommandLine;
 class PlatformThreadHandle;
 #endif
 class TimeDelta;
@@ -132,7 +133,7 @@ constexpr bool isnan(double d) {
   return d != d;
 }
 
-}
+}  // namespace
 
 // TimeDelta ------------------------------------------------------------------
 
@@ -211,6 +212,10 @@ class BASE_EXPORT TimeDelta {
   constexpr bool is_inf() const { return is_min() || is_max(); }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  // According to https://en.cppreference.com/w/c/chrono/timespec, negative
+  // timespecs are invalid, so this function clamps negative TimeDeltas to 0.
+  // In addition, this function clamps the upper bound of TimeDelta values to
+  // what a `time_t` can hold.
   struct timespec ToTimeSpec() const;
 #endif
 #if BUILDFLAG(IS_FUCHSIA)
@@ -260,8 +265,9 @@ class BASE_EXPORT TimeDelta {
     return *this = (*this - other);
   }
   constexpr TimeDelta operator-() const {
-    if (!is_inf())
+    if (!is_inf()) {
       return TimeDelta(-delta_);
+    }
     return (delta_ < 0) ? Max() : Min();
   }
 
@@ -298,8 +304,9 @@ class BASE_EXPORT TimeDelta {
     return ToDouble() / a.ToDouble();
   }
   constexpr int64_t IntDiv(TimeDelta a) const {
-    if (!is_inf() && !a.is_zero())
+    if (!is_inf() && !a.is_zero()) {
       return int64_t{delta_ / a.delta_};
+    }
 
     // For consistency, use the same edge case CHECKs and behavior as the code
     // above.
@@ -340,8 +347,9 @@ class BASE_EXPORT TimeDelta {
   // Returns a double representation of this TimeDelta's tick count.  In
   // particular, Max()/Min() are converted to +/-infinity.
   constexpr double ToDouble() const {
-    if (!is_inf())
+    if (!is_inf()) {
       return static_cast<double>(delta_);
+    }
     return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
                         : std::numeric_limits<double>::infinity();
   }
@@ -351,8 +359,9 @@ class BASE_EXPORT TimeDelta {
 };
 
 constexpr TimeDelta TimeDelta::operator+(TimeDelta other) const {
-  if (!other.is_inf())
+  if (!other.is_inf()) {
     return TimeDelta(delta_ + other.delta_);
+  }
 
   // Additions involving two infinities are only valid if signs match.
   CHECK(!is_inf() || (delta_ == other.delta_));
@@ -360,8 +369,9 @@ constexpr TimeDelta TimeDelta::operator+(TimeDelta other) const {
 }
 
 constexpr TimeDelta TimeDelta::operator-(TimeDelta other) const {
-  if (!other.is_inf())
+  if (!other.is_inf()) {
     return TimeDelta(delta_ - other.delta_);
+  }
 
   // Subtractions involving two infinities are only valid if signs differ.
   CHECK_NE(int64_t{delta_}, int64_t{other.delta_});
@@ -387,7 +397,7 @@ namespace time_internal {
 // classes. Each subclass provides for strong type-checking to ensure
 // semantically meaningful comparison/math of time values from the same clock
 // source or timeline.
-template<class TimeClass>
+template <class TimeClass>
 class TimeBase {
  public:
   static constexpr int64_t kHoursPerDay = 24;
@@ -409,11 +419,11 @@ class TimeBase {
       kMicrosecondsPerHour * kHoursPerDay;
   static constexpr int64_t kMicrosecondsPerWeek = kMicrosecondsPerDay * 7;
   static constexpr int64_t kNanosecondsPerMicrosecond = 1000;
+  static constexpr int64_t kNanosecondsPerMillisecond =
+      kNanosecondsPerMicrosecond * kMicrosecondsPerMillisecond;
   static constexpr int64_t kNanosecondsPerSecond =
       kNanosecondsPerMicrosecond * kMicrosecondsPerSecond;
 
-  // TODO(crbug.com/40247732): Remove concept of "null" from base::Time.
-  //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
   // interpreted as a "null" value. If you find yourself using this method or
@@ -456,7 +466,8 @@ class TimeBase {
 #if !defined(__aarch64__) && BUILDFLAG(IS_ANDROID)
   NOINLINE  // https://crbug.com/1369775
 #endif
-  constexpr TimeDelta operator-(const TimeBase<TimeClass>& other) const;
+      constexpr TimeDelta
+      operator-(const TimeBase<TimeClass>& other) const;
 
   // Return a new time modified by some delta.
   constexpr TimeClass operator+(TimeDelta delta) const;
@@ -587,8 +598,6 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
     bool HasValidValues() const;
   };
 
-  // TODO(crbug.com/40247732): Remove concept of "null" from base::Time.
-  //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
   // interpreted as a "null" value. If you find yourself using this constructor
@@ -954,8 +963,9 @@ constexpr int TimeDelta::InMinutes() const {
 }
 
 constexpr double TimeDelta::InSecondsF() const {
-  if (!is_inf())
+  if (!is_inf()) {
     return static_cast<double>(delta_) / Time::kMicrosecondsPerSecond;
+  }
   return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
                       : std::numeric_limits<double>::infinity();
 }
@@ -1062,8 +1072,9 @@ constexpr TimeClass TimeBase<TimeClass>::operator-(TimeDelta delta) const {
 
 // static
 constexpr Time Time::FromTimeT(time_t tt) {
-  if (tt == 0)
+  if (tt == 0) {
     return Time();  // Preserve 0 so we can tell it doesn't exist.
+  }
   return (tt == std::numeric_limits<time_t>::max())
              ? Max()
              : (UnixEpoch() + Seconds(tt));
@@ -1179,6 +1190,19 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // microsecond.
   static TimeTicks Now();
 
+  // Lower overhead, lower resolution platform-dependent tick count representing
+  // "right now." The resolution may be as coarse as ~15.6ms on Windows and
+  // single digit ms on other platforms. LowResolutionNow() can be used in place
+  // of Now() to reduce overhead of high frequency timekeeping where the finer
+  // resolution of Now() is not required. Generally, prefer to use Now() over
+  // LowResolutionNow() unless profiling shows measurable overhead.
+  //
+  // Note: LowResolutionNow() and Now() are NOT comparable. They use different
+  // underlying clocks on some platforms (e.g. Mac, iOS). On other platforms the
+  // monotonically non-decreasing property of TimeTicks does not hold for mixed
+  // comparisons.
+  static TimeTicks LowResolutionNow();
+
   // Returns true if the high resolution clock is working on this system and
   // Now() will return high resolution values. Note that, on systems where the
   // high resolution clock works but is deemed inefficient, the low resolution
@@ -1203,6 +1227,18 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // value has the same origin as Now(). Do NOT attempt to use this if
   // IsHighResolution() returns false.
   static TimeTicks FromQPCValue(LONGLONG qpc_value);
+
+  // If this device doesn't have an invariant TSC, it may be added to the
+  // client-side trial to try to use QPC anyway. This function returns true for
+  // all devices in the trial (which is all the devices without an invariant
+  // TSC), and populates `trial_name` and `group_name` for them. `group_name`
+  // can be "Enabled" and "Control", as well as "Excluded" for devices where
+  // QueryPerformanceFrequency returns 0 (which shouldn't happen, but the
+  // assertion to validate this is new).
+  static bool GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
+                                                   std::string* group_name);
+
+  static void MaybeAddHighResolutionTimeTicksSwitch(CommandLine* command_line);
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -1221,7 +1257,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // milliseconds) performed by uptimeMillis().
   static TimeTicks FromUptimeMillis(int64_t uptime_millis_value);
 
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // Converts to TimeTicks the value obtained from System.nanoTime(). This
@@ -1381,6 +1417,8 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // Similar to Now() above except this returns thread-specific CPU time for an
   // arbitrary thread. All comments for Now() method above apply apply to this
   // method as well.
+  // TODO(crbug.com/420681350): Migrate the only use of this to
+  // PlatformThreadMetrics, to minimize the platform differences in base::Time.
   static ThreadTicks GetForThread(const PlatformThreadHandle& thread_handle);
 #endif
 

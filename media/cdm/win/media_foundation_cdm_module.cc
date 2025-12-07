@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hstring.h"
 #include "media/base/win/hresults.h"
@@ -39,7 +40,7 @@ MediaFoundationCdmModule* MediaFoundationCdmModule::GetInstance() {
 MediaFoundationCdmModule::MediaFoundationCdmModule() = default;
 MediaFoundationCdmModule::~MediaFoundationCdmModule() = default;
 
-void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
+bool MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": cdm_path=" << cdm_path.value();
   CHECK(!initialized_)
       << "MediaFoundationCdmModule can only be initialized once!";
@@ -59,7 +60,7 @@ void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
                                        ? CdmLoadResult::kLoadFailed
                                        : CdmLoadResult::kFileMissing);
       ReportLoadErrorCode(kUmaPrefix, library_.GetError());
-      return;
+      return false;
     }
 
     // Only report load time for success loads.
@@ -67,6 +68,8 @@ void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
 
     ReportLoadResult(kUmaPrefix, CdmLoadResult::kLoadSuccess);
   }
+
+  return true;
 }
 
 HRESULT MediaFoundationCdmModule::GetCdmFactory(
@@ -104,7 +107,7 @@ HRESULT MediaFoundationCdmModule::GetCdmFactory(
 }
 
 HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
-  DCHECK(initialized_);
+  CHECK(initialized_);
 
   if (activated_) {
     DLOG(ERROR) << "CDM failed to activate previously";
@@ -115,7 +118,7 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
 
   // For OS or store CDM, the `cdm_path_` is empty. Just use default creation.
   if (cdm_path_.empty()) {
-    DCHECK(!library_.is_valid());
+    CHECK(!library_.is_valid());
     ComPtr<IMFMediaEngineClassFactory4> class_factory;
     RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
                                       CLSCTX_INPROC_SERVER,

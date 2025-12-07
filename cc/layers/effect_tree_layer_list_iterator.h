@@ -67,10 +67,9 @@ class CC_EXPORT EffectTreeLayerListIterator {
         return effect_tree_->GetRenderSurface(target_node_id);
       }
       case State::kEnd:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   struct Position {

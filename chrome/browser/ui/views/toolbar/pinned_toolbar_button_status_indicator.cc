@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -13,6 +15,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -63,14 +66,19 @@ PinnedToolbarButtonStatusIndicator::PinnedToolbarButtonStatusIndicator() {
 
 void PinnedToolbarButtonStatusIndicator::OnPaint(gfx::Canvas* canvas) {
   canvas->SaveLayerAlpha(SK_AlphaOPAQUE);
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(GetLocalBounds()), height() / 2,
-                    height() / 2);
+  const SkPath path = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(GetLocalBounds()), height() / 2, height() / 2));
 
   cc::PaintFlags flags;
-  std::optional<ui::ColorId> color_id = GetWidget()->ShouldPaintAsActive()
-                                            ? active_color_id_
-                                            : inactive_color_id_;
+
+  // Non-mac desktop devices show active icon colors even when the browser
+  // window is inactive.
+  const bool paint_as_active =
+      !views::PlatformStyle::kInactiveWidgetControlsAppearDisabled ||
+      GetWidget()->ShouldPaintAsActive();
+
+  std::optional<ui::ColorId> color_id =
+      paint_as_active ? active_color_id_ : inactive_color_id_;
 
   flags.setColor(color_id.has_value()
                      ? GetColorProvider()->GetColor(color_id.value())

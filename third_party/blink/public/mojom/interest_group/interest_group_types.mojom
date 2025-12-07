@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -41,6 +42,12 @@ struct InterestGroupAd {
   // receive reports with macros. All origins must be HTTPS. Only meaningful in
   // `InterestGroup.ads`, but ignored in `InterestGroup.ad_components`.
   array<url.mojom.Origin>? allowed_reporting_origins;
+
+  // Optional metadata sent to trusted seller signals server in V1 protocol,
+  // ostensively to help do things like scan creatives against malware.
+  // This is opaque to Chrome, and will be passed to the server URL verbatim
+  // (modulo escaping required by being a query param).
+  string? creative_scanning_metadata;
 };
 
 // The maximum size of a valid interest group in bytes.
@@ -70,6 +77,7 @@ struct AuctionServerRequestFlags {
   // render ID would appear (currently just the ads, componentAds and prevWins
   // fields).
   bool include_full_ads = false;
+  bool omit_user_bidding_signals = false;
 };
 
 // A container used for making changes to ad render URLs. 'match' is what we use
@@ -171,6 +179,9 @@ struct InterestGroup {
   // An optional field for matching the encryption key, and indicating which
   // version of the key-value server this interest group uses.
   url.mojom.Origin? trusted_bidding_signals_coordinator;
+  // Stores the set of origins that are allowed to provide view and click
+  // counts to this interest group's generateBid() function.
+  array<url.mojom.Origin>? view_and_click_counts_providers;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? user_bidding_signals;
   array<InterestGroupAd>? ads;
@@ -186,6 +197,100 @@ struct InterestGroup {
 
   // Origin for the Coordinator to be used for Private Aggregation.
   url.mojom.Origin? aggregation_coordinator_origin;
+};
+
+struct PreviousWin {
+  // Approximate time a particular group won an auction.
+  //
+  // TODO(mmenke): Provide this as an integer time since an auction was won, in
+  // seconds, to reduce time resolution of cross-site information provided to an
+  // untrusted service.
+  //
+  // TODO(crbug.com/40765411): Decide what to do when wins are
+  // "in the future" due to clock changes.
+  mojo_base.mojom.Time time;
+
+  // A JSON serialized object corresponding to the ad that won the auction.
+  // This field is kept serialized to avoid deserializing unless we actually
+  // need the data inside. The internal message has the following structure:
+  // struct AdJSON {
+  //   string renderURL;
+  //   string adRenderId;
+  //   string metadata;  // JSON encoded metadata object
+  // };
+  string ad_json;
+};
+
+// Used by ClickAndViewCounts -- both view and click counts share the same time
+// bucketing scheme.
+//
+// There can be some imprecison due to the fact that counts older than one hour
+// get compacted by DB maintenance to the nearest hour, to save storage.
+//
+// Note that the longer time intervals include all events in the shorter time
+// intervals. For example, every event in the past hour is also an event in the
+// past day, etc.
+struct ViewOrClickCounts {
+  // Views or clicks within the past hour.
+  int32 past_hour = 0;
+
+  // Views or clicks within the past day.
+  int32 past_day = 0;
+
+  // Views or clicks within the past week.
+  int32 past_week = 0;
+
+  // Views or clicks within the past 30 days.
+  int32 past_30_days = 0;
+
+  // Views or clicks within the past 90 days.
+  int32 past_90_days = 0;
+};
+
+// A part of BiddingBrowserSignals that provides counts of views and clicks for
+// the given buyer origin (the "eligible origin") over various time buckets.
+struct ViewAndClickCounts {
+  // Counts for view events for the given buyer origin.
+  ViewOrClickCounts view_counts;
+
+  // Counts for click events for the given buyer origin.
+  ViewOrClickCounts click_counts;
+};
+
+// Browser signals passed to the BidderWorklet's generateBid() method that are
+// stored on disk and updated by the browser, as opposed to coming from the
+// frame running the auction, or from the definition of the InterestGroup taking
+// part in an auction.
+struct BiddingBrowserSignals {
+  // How many times this interest group has been joined in the period history
+  // is maintained.
+  int32 join_count;
+
+  // How many times this interest group has made bids in auctions.
+  int32 bid_count;
+
+  // Previous times the group won auctions.
+  array<PreviousWin> prev_wins;
+
+  // Whether the browser is under lockout or the buyer's origin is under
+  // cooldown for sending forDebuggingOnly reports.
+  bool for_debugging_only_in_cooldown_or_lockout;
+
+  // Loaded time-bucketed view and click counts aggregated across the
+  // `view_and_click_counts_providers` for this interest group.
+  ViewAndClickCounts view_and_click_counts;
+};
+
+// Represents an interest group with associated metadata. This struct is
+// returned by the GetInterestGroups() method in the shared storage worklet.
+struct StorageInterestGroup {
+  InterestGroup interest_group;
+  BiddingBrowserSignals bidding_browser_signals;
+  url.mojom.Origin joining_origin;
+  mojo_base.mojom.Time join_time;
+  mojo_base.mojom.Time last_updated;
+  mojo_base.mojom.Time next_update_after;
+  uint64 estimated_size;
 };
 
 // Packages the details necessary for the browser process to retrieve a
@@ -407,15 +512,35 @@ struct AuctionAdConfigNonSharedParams {
   // call to worklet.
   AuctionAdConfigMaybePromiseJson auction_signals;
 
-  // Opaque JSON data, passed as object to the seller worklet.  At time of call
+  // Opaque JSON data, passed as object to the seller worklet. At time of call
   // to browser, it may also be a promise, but it should be resolved at time of
   // call to worklet.
   AuctionAdConfigMaybePromiseJson seller_signals;
+
+  // Seller signals of contextual data which are sent with trusted KVv2 signals
+  // to TKV servers. Values are Opaque JSON data. At time of call to browser,
+  // it may also be a promise, but it should be resolved at time of call to
+  // worklet.
+  AuctionAdConfigMaybePromiseJson seller_tkv_signals;
 
   // The value restricts the runtime of the seller's scoreAd() script.
   mojo_base.mojom.TimeDelta? seller_timeout;
 
   AuctionAdConfigMaybePromisePerBuyerSignals per_buyer_signals;
+
+  // Per buyer signals of contextual data are sent with trusted KVv2 signals to
+  // TKV servers. The keys represent buyer HTTPS origins, while the values are
+  // promises that are eventually resolved to opaque JSON data. These promises
+  // should be all resolved at time of call to the worklet, though the worklet
+  // should not need these values.
+  //
+  // An AuctionAdConfigMaybePromiseJson with a nullopt `value` means the promise
+  // was rejected or invalid data was provided, and no signals should be sent to
+  // the TKV server, though the auction should proceed.
+  //
+  // TODO(crbug.com/411554203): Move this out of AuctionAdConfigNonSharedParams,
+  // and into parent AuctionAdConfig instead, to avoid unnecessary copies.
+  map<url.mojom.Origin, AuctionAdConfigMaybePromiseJson> per_buyer_tkv_signals;
 
   // Timeouts for individual interest group worklet Javascript execution.
   AuctionAdConfigMaybePromiseBuyerTimeouts buyer_timeouts;
@@ -523,10 +648,21 @@ struct AuctionAdConfigNonSharedParams {
   // The ad render url replacements for their respective ad URL. If promise is
   // never given, this will resolve to an empty vector.
   AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements deprecated_render_url_replacements;
+
   // The maximum length limit for the trusted scoring signal fetch URL. Can
   // only be set as either 0 or a positive number. A value of 0 indicates
   // that there is no limit.
   int32 max_trusted_scoring_signals_url_length = 0;
+
+  // An optional field for matching the encryption key, and indicating which
+  // version of the key-value server the auction uses for fetching trusted
+  // scoring signals.
+  url.mojom.Origin? trusted_scoring_signals_coordinator;
+
+  // `execution_mode` of the auction config.
+  InterestGroup.ExecutionMode execution_mode = kCompatibilityMode;
+
+
 };
 
 // Configuration to pass to RunAdAuction().
@@ -595,6 +731,10 @@ struct AuctionAdConfig {
   // Origin for the Coordinator to be used for the seller's Private Aggregation
   // requests.
   url.mojom.Origin? aggregation_coordinator_origin;
+
+  // If true, data from creative_scanning_metadata field of interest groups
+  // will be sent to V1 trusted seller signals server.
+  bool? send_creative_scanning_metadata;
 };
 
 // Per-buyer config for GetInterestGroupAdAuctionData().
@@ -604,6 +744,8 @@ struct AuctionDataBuyerConfig {
 };
 
 // Configuration to pass to GetInterestGroupAdAuctionData().
+// The behavior of `request_size` and `per_buyer_configs` is described in
+// https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#buyer-controls
 struct AuctionDataConfig {
   // A specific list of buyers to include in the encrypted request and any
   // specific options for them.
@@ -611,4 +753,17 @@ struct AuctionDataConfig {
 
   // Maximum size to make the returned encrypted request.
   uint32? request_size;
+};
+
+union AdAuctionRequestOrError {
+  mojo_base.mojom.BigBuffer request;
+  string error;
+};
+
+// The per seller ad auction data for running an external auction on a bidding
+// and auction server. Upon success, `data` will contain the encrypted ad
+// auction data, or an error message upon failure.
+struct AdAuctionPerSellerRequest {
+  url.mojom.Origin seller;
+  AdAuctionRequestOrError data;
 };

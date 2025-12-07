@@ -7,14 +7,18 @@
 
 #include <stddef.h>
 
-struct ImportedBookmarkEntry;
+#include <array>
 
-const int kMaxPathSize = 5;
+namespace user_data_importer {
+struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
+
+inline constexpr int kMaxPathSize = 5;
 
 struct BookmarkInfo {
   const bool in_toolbar;
   const size_t path_size;
-  const char* path[kMaxPathSize];
+  std::array<const char*, kMaxPathSize> path;
   const wchar_t* title;
   const char* url;
 };
@@ -22,7 +26,8 @@ struct BookmarkInfo {
 // Generates an assertion error if |entry| is not equal to |expected|. Wrap this
 // method in (ASSERT|EXPECT)_NO_FATAL_FAILURE to catch the error if one is
 // generated.
-void TestEqualBookmarkEntry(const ImportedBookmarkEntry& entry,
-                            const BookmarkInfo& expected);
+void TestEqualBookmarkEntry(
+    const user_data_importer::ImportedBookmarkEntry& entry,
+    const BookmarkInfo& expected);
 
 #endif  // CHROME_BROWSER_IMPORTER_IMPORTER_UNITTEST_UTILS_H_

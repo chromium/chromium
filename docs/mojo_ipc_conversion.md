@@ -108,18 +108,12 @@ The previous section mentions **associated interfaces** as a general-purpose
 solution for establishing a mutual FIFO between multiple logical Mojo interfaces
 by having them share a single message pipe.
 
-In Chrome, the `IPC::Channel` which carries all legacy IPC messages between
-two processes is itself a Mojo message pipe. We provide a mechanism for
+In Chrome, the `IPC::Channel` which carries all legacy IPC messages between two
+processes is itself a Mojo message pipe (implicitly). We provide a mechanism for
 associating arbitrary Mojo interfaces with this pipe, which means messages can
 be converted to Mojo while preserving strict FIFO with respect to other legacy
 IPC messages. Such interfaces are designated in Chrome parlance as
 **Channel-associated interfaces**.
-
-*** aside
-**NOTE:** Channel-associated interface acquisition is not constrained by the
-Service Manager in any way, so security reviewers need to be careful to inspect
-new additions and uses of such interfaces.
-***
 
 Usage of Channel-associated interfaces should be rare but is considered a
 reasonable intermediate solution for incremental IPC conversions where it would
@@ -132,14 +126,14 @@ interfaces is restricted to the `IPC::Channel` between the browser process and
 a renderer process, as this is the most complex IPC surface with the most
 implicit ordering dependencies. A few simple APIs exist to support this.
 
-`RenderProcessHostImpl` owns an `IPC::Channel` to its corresponding
-`RenderThreadImpl` in the render process. This object has a
+`RenderProcessHostImpl` owns an `IPC::Channel` (through `IPC::ChannelProxy`)
+to its corresponding `RenderFrameImpl` in the render process. This object has a
 `GetRemoteAssociatedInterfaces` method which can be used to pass arbitrary
 associated interface requests:
 
 ``` cpp
 mojo::PendingAssociatedRemote<magic::mojom::GoatTeleporter> teleporter;
-channel_->GetRemoteAssociatedInterfaces()->GetInterface(teleporter.BindNewEndpointAndPassReceiver());
+render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&teleporter);
 
 // These messages are all guaranteed to arrive in the same order they were sent.
 channel_->Send(new FooMsg_SomeLegacyIPC);
@@ -147,17 +141,11 @@ teleporter->TeleportAllGoats();
 channel_->Send(new FooMsg_AnotherLegacyIPC);
 ```
 
-Likewise, `ChildThreadImpl` has an `IPC::Channel` that can be used in the same
-way to send such messages back to the browser.
+Likewise, `RenderFrameHostImpl` defines a `GetRemoteAssociatedInterfaces`
+method.
 
 To receive and bind incoming Channel-associated interface requests, the above
 objects also implement `IPC::Listener::OnAssociatedInterfaceRequest`.
-
-For supplementation of routed messages, both `RenderFrameHostImpl` and
-`RenderFrameImpl` define a `GetRemoteAssociatedInterfaces` method which works
-like the one on `IPC::Channel`, and both objects also implement
-`IPC::Listener::OnAssociatedInterfaceRequest` for processing incoming associated
-interface requests specific to their own frame.
 
 There are some example conversion CLs which use Channel-associated interfaces
 [here](https://codereview.chromium.org/2381493003) and
@@ -402,7 +390,7 @@ namespace mojom {
 namespace blink {
 
 class Example {
-  virtual void SendArray(const WTF::String& param1, const WTF::Vector<int32_t>& param2) = 0;
+  virtual void SendArray(const ::blink::String& param1, const ::blink::Vector<int32_t>& param2) = 0;
 }
 
 } // namespace blink
@@ -421,8 +409,8 @@ documentation.
 ### Binding callbacks
 
 Mojo methods that return a value take an instance of `base::OnceCallback`.
-Use `WTF::BindOnce()` and an appropriate wrapper function depending on the type of
-object and the callback.
+Use `blink::BindOnce()` and an appropriate wrapper function depending on the
+type of object and the callback.
 
 For garbage-collected (Oilpan) classes owning the `mojo::Remote`, it is recommended
 to use `WrapWeakPersistent(this)` for connection error handlers since they
@@ -434,11 +422,11 @@ the response is received, use `WrapWeakPersistent(this)` for binding the respons
 
 ``` cpp
 // src/third_party/blink/renderer/modules/device_orientation/device_sensor_entry.cc
-sensor_.set_connection_error_handler(WTF::BindOnce(
+sensor_.set_connection_error_handler(blink::BindOnce(
     &DeviceSensorEntry::HandleSensorError, WrapWeakPersistent(this)));
 sensor_->ConfigureReadingChangeNotifications(/*enabled=*/false);
 sensor_->AddConfiguration(
-    std::move(config), WTF::BindOnce(&DeviceSensorEntry::OnSensorAddConfiguration,
+    std::move(config), blink::BindOnce(&DeviceSensorEntry::OnSensorAddConfiguration,
                                  WrapWeakPersistent(this)));
 ```
 
@@ -448,17 +436,17 @@ use `WrapPersistent(this)` to keep the object alive:
 ``` cpp
 // src/third_party/blink/renderer/modules/nfc/nfc.cc
 ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-... 
-nfc_->CancelAllWatches(WTF::BindOnce(&NFC::OnRequestCompleted,
+...
+nfc_->CancelAllWatches(blink::BindOnce(&NFC::OnRequestCompleted,
                                  WrapPersistent(this),
                                  WrapPersistent(resolver)));
 ```
 
-Non-garbage-collected objects can use `WTF::Unretained(this)` for both response
-and error handler callbacks when the `mojo::Remote` is owned by the object bound
-to the callback or the object is guaranteed to outlive the Mojo connection for
-another reason. Otherwise a weak pointer should be used. However, it is not a
-common pattern since using Oilpan is recommended for all Blink code.
+Non-garbage-collected objects can use `blink::Unretained(this)` for both
+response and error handler callbacks when the `mojo::Remote` is owned by the
+object bound to the callback or the object is guaranteed to outlive the Mojo
+connection for another reason. Otherwise a weak pointer should be used. However,
+it is not a common pattern since using Oilpan is recommended for all Blink code.
 
 ### Implementing Mojo interfaces in Blink
 

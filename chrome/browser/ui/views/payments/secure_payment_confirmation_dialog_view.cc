@@ -5,8 +5,11 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -16,6 +19,8 @@
 #include "components/payments/core/sizes.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -28,11 +33,10 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace payments {
-
-using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
 
 namespace {
 
@@ -58,15 +62,6 @@ std::unique_ptr<views::View> CreateSpacer(
           /*width=*/1,
           views::LayoutProvider::Get()->GetDistanceMetric(vertical_distance)))
       .Build();
-}
-
-std::u16string GetTitleText(std::u16string title_text,
-                            std::u16string relying_party_id) {
-  if (features::GetNetworkAndIssuerIconsTreatment() !=
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
-    return title_text;
-  }
-  return base::ReplaceStringPlaceholders(title_text, relying_party_id, nullptr);
 }
 
 void UpdateProgressBarVisiblity(views::BubbleFrameView* bubble_frame_view,
@@ -108,6 +103,7 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
     content::WebContents* web_contents,
     base::WeakPtr<SecurePaymentConfirmationModel> model,
     VerifyCallback verify_callback,
+    AnotherWayCallback another_way_callback,
     CancelCallback cancel_callback,
     OptOutCallback opt_out_callback) {
   DCHECK(model);
@@ -134,9 +130,12 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
       base::BindOnce(&SecurePaymentConfirmationDialogView::OnDialogClosed,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
-  constrained_window::ShowWebModalDialogViews(this, web_contents);
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(this, web_contents);
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+  occlusion_observation_.Observe(widget);
 
   // The progress bar doesn't exist until after ShowWebModalDialogViews, so we
   // have to update it here in case it starts visible.
@@ -144,8 +143,9 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
                              model_->progress_bar_visible());
 
   // ui_observer_for_test_ is used in platform browsertests.
-  if (ui_observer_for_test_)
+  if (ui_observer_for_test_) {
     ui_observer_for_test_->OnUIDisplayed();
+  }
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogAccepted() {
@@ -165,13 +165,12 @@ void SecurePaymentConfirmationDialogView::OnDialogCancelled() {
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogClosed() {
-  // We can reach OnDialogClosed either when the user cancels out of the
-  // WebAuthn dialog after clicking 'Verify', or when the user chooses to
-  // opt-out. We should only run the cancellation callback in the former case;
-  // in the latter the opt-out callback will trigger from OnOptOutClicked.
-  if (!model_->opt_out_clicked()) {
-    std::move(cancel_callback_).Run();
+  // Cancel callback may be null if OnDialogCancelled was already called.
+  if (!cancel_callback_) {
+    return;
   }
+
+  std::move(cancel_callback_).Run();
 
   if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
@@ -189,14 +188,16 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   UpdateProgressBarVisiblity(GetBubbleFrameView(),
                              model_->progress_bar_visible());
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->verify_button_label());
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, model_->verify_button_enabled());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_label());
-  SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_enabled());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, model_->verify_button_label());
+  SetButtonEnabled(ui::mojom::DialogButton::kOk,
+                   model_->verify_button_enabled());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 model_->cancel_button_label());
+  SetButtonEnabled(ui::mojom::DialogButton::kCancel,
+                   model_->cancel_button_enabled());
 
   SetAccessibleTitle(model_->title());
-  UpdateLabelView(DialogViewID::TITLE,
-                  GetTitleText(model_->title(), model_->relying_party_id()));
+  UpdateLabelView(DialogViewID::TITLE, model_->title());
   UpdateLabelView(DialogViewID::MERCHANT_LABEL, model_->merchant_label());
   UpdateLabelView(
       DialogViewID::MERCHANT_VALUE,
@@ -240,13 +241,15 @@ void SecurePaymentConfirmationDialogView::UpdateLabelView(
 }
 
 void SecurePaymentConfirmationDialogView::HideDialog() {
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->Close();
+  }
 }
 
 bool SecurePaymentConfirmationDialogView::ClickOptOutForTesting() {
-  if (!model_->opt_out_visible())
+  if (!model_->opt_out_visible()) {
     return false;
+  }
   OnOptOutClicked();
   return true;
 }
@@ -285,13 +288,8 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  // When the network/issuer icons are inline with the title for the transaction
-  // UX, we don't draw an additional logo on top.
-  if (features::GetNetworkAndIssuerIconsTreatment() !=
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
-    AddChildView(CreateSecurePaymentConfirmationHeaderIcon(
-        static_cast<int>(DialogViewID::HEADER_ICON)));
-  }
+  AddChildView(CreateSecurePaymentConfirmationHeaderIcon(
+      static_cast<int>(DialogViewID::HEADER_ICON)));
 
   AddChildView(CreateBodyView());
 
@@ -318,10 +316,6 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 // | total label         value                |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-// | network label       [icon] value         |  <-- optional
-// +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-// | issuer label        [icon] value         |  <-- optional
-// +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
 SecurePaymentConfirmationDialogView::CreateBodyView() {
   auto body_view = std::make_unique<views::BoxLayoutView>();
@@ -333,29 +327,9 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   std::unique_ptr<views::Label> title_text =
-      CreateSecurePaymentConfirmationTitleLabel(
-          GetTitleText(model_->title(), model_->relying_party_id()));
+      CreateSecurePaymentConfirmationTitleLabel(model_->title());
   title_text->SetID(static_cast<int>(DialogViewID::TITLE));
-  if (features::GetNetworkAndIssuerIconsTreatment() ==
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
-    body_view->AddChildView(CreateSecurePaymentConfirmationInlineImageTitleView(
-        std::move(title_text), *model_->network_icon(),
-        static_cast<int>(DialogViewID::NETWORK_ICON), *model_->issuer_icon(),
-        static_cast<int>(DialogViewID::ISSUER_ICON)));
-
-    body_view->AddChildView(
-        CreateSpacer(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-
-    auto description_text = std::make_unique<views::Label>(
-        model_->description(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_SECONDARY);
-    description_text->SetID(static_cast<int>(DialogViewID::DESCRIPTION));
-    description_text->SetLineHeight(kDescriptionLineHeight);
-    description_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    body_view->AddChildView(std::move(description_text));
-  } else {
-    body_view->AddChildView(std::move(title_text));
-  }
+  body_view->AddChildView(std::move(title_text));
 
   body_view->AddChildView(
       CreateSpacer(views::DISTANCE_RELATED_CONTROL_VERTICAL));
@@ -365,44 +339,14 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       FormatMerchantLabel(model_->merchant_name(), model_->merchant_origin()),
       DialogViewID::MERCHANT_VALUE));
 
-  // When including the Network and Issuer icons, the Total line comes before
-  // the Payment Instrument, versus the current UI where it comes afterwards.
-  std::unique_ptr<views::View> total_line_view =
-      CreateRowView(model_->total_label(), DialogViewID::TOTAL_LABEL,
-                    model_->total_value(), DialogViewID::TOTAL_VALUE);
-  if (features::GetNetworkAndIssuerIconsTreatment() !=
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kNone) {
-    body_view->AddChildView(std::move(total_line_view));
-  }
-
   body_view->AddChildView(
       CreateRowView(model_->instrument_label(), DialogViewID::INSTRUMENT_LABEL,
                     model_->instrument_value(), DialogViewID::INSTRUMENT_VALUE,
                     model_->instrument_icon(), DialogViewID::INSTRUMENT_ICON));
 
-  if (features::GetNetworkAndIssuerIconsTreatment() ==
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kNone) {
-    body_view->AddChildView(std::move(total_line_view));
-  }
-
-  // Add the Network and Issuer icons, if the flag is enabled and an icon was
-  // specified and successfully downloaded.
-  if (features::GetNetworkAndIssuerIconsTreatment() ==
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kRows) {
-    if (!model_->network_icon()->drawsNothing()) {
-      body_view->AddChildView(
-          CreateRowView(model_->network_label(), DialogViewID::NETWORK_LABEL,
-                        model_->network_value(), DialogViewID::NETWORK_VALUE,
-                        model_->network_icon(), DialogViewID::NETWORK_ICON));
-    }
-
-    if (!model_->issuer_icon()->drawsNothing()) {
-      body_view->AddChildView(
-          CreateRowView(model_->issuer_label(), DialogViewID::ISSUER_LABEL,
-                        model_->issuer_value(), DialogViewID::ISSUER_VALUE,
-                        model_->issuer_icon(), DialogViewID::ISSUER_ICON));
-    }
-  }
+  body_view->AddChildView(
+      CreateRowView(model_->total_label(), DialogViewID::TOTAL_LABEL,
+                    model_->total_value(), DialogViewID::TOTAL_VALUE));
 
   return body_view;
 }
@@ -503,6 +447,17 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   row->AddChildView(std::move(value_text));
 
   return row;
+}
+
+void SecurePaymentConfirmationDialogView::OnOcclusionStateChanged(
+    bool occluded) {
+  if (occluded) {
+    SetEnabled(false);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SecurePaymentConfirmationDialogView::HideDialog,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 BEGIN_METADATA(SecurePaymentConfirmationDialogView)

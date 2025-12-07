@@ -9,7 +9,6 @@ found in the LICENSE file.
     <!-- The amount to fade the edges of the menu to indicate more content is available
          via scrolling. -->
     <dimen name="menu_vertical_fade_distance">15dp</dimen>
-    <dimen name="menu_negative_vertical_offset_not_top_anchored">44dp</dimen>
 
     <!-- Menu button dragging related dimensions -->
     <dimen name="auto_scroll_full_velocity">500dp</dimen>
@@ -17,10 +16,13 @@ found in the LICENSE file.
     <!-- Menu chip dimensions -->
     <dimen name="menu_chip_highlight_extension">4dp</dimen>
 
-    <!-- Menu action bar bg elevation -->
-    <dimen name="menu_action_bar_bg_elev">@dimen/default_elevation_1</dimen>
-
     <!-- Menu item icon badge dimensions. -->
     <dimen name="menu_item_icon_badge_size">8dp</dimen>
     <dimen name="menu_item_icon_badge_border_size">2dp</dimen>
+
+    <!-- Menu item text dimensions. -->
+    <dimen name="menu_item_text_padding_start">12dp</dimen>
+
+    <!-- Menu divider dimens -->
+    <dimen name="overflow_menu_divider_line_padding">5dp</dimen>
 </resources>

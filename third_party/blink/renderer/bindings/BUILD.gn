@@ -109,8 +109,8 @@ collect_idl_files("web_idl_in_modules_for_testing") {
 
 action_with_pydeps("web_idl_database") {
   visibility += [
+    "//chrome/test/fuzzing/webidl_fuzzing:*",
     "//testing/libfuzzer/research/fuzzilli_idl_fuzzing:*",
-    "//tools/privacy_budget/blink_apis:*",
   ]
 
   script = "scripts/build_web_idl_database.py"
@@ -162,7 +162,10 @@ template("generate_bindings") {
     web_idl_database_outputs = get_target_outputs(":web_idl_database")
     web_idl_database = web_idl_database_outputs[0]
 
-    inputs = [ web_idl_database ]
+    inputs = [
+      web_idl_database,
+      "union_name_map.conf",
+    ]
     outputs = invoker.outputs
 
     args = [

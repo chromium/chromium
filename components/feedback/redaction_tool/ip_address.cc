@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This is a copy of net/base/ip_address.cc circa 2023. It should be used only
 // by components/feedback/redaction_tool/. We need a copy because the
 // components/feedback/redaction_tool source code is shared into ChromeOS and
@@ -19,8 +14,9 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -42,7 +38,7 @@ constexpr uint8_t kIPv4MappedPrefix[] = {0, 0, 0, 0, 0,    0,
 // * |ip_address| is at least |prefix_length_in_bits| (bits) long;
 // * |ip_prefix| is at least |prefix_length_in_bits| (bits) long.
 bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
-                          const uint8_t* ip_prefix,
+                          base::span<const uint8_t> ip_prefix,
                           size_t prefix_length_in_bits) {
   // Compare all the bytes that fall entirely within the prefix.
   size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
@@ -113,11 +109,7 @@ bool IPAddressBytes::operator<(const IPAddressBytes& other) const {
 }
 
 bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
-  return base::ranges::equal(*this, other);
-}
-
-bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
-  return !(*this == other);
+  return std::ranges::equal(*this, other);
 }
 
 // static
@@ -218,14 +210,6 @@ IPAddress IPAddress::IPv6AllZeros() {
   return AllZeros(kIPv6AddressSize);
 }
 
-bool IPAddress::operator==(const IPAddress& that) const {
-  return ip_address_ == that.ip_address_;
-}
-
-bool IPAddress::operator!=(const IPAddress& that) const {
-  return ip_address_ != that.ip_address_;
-}
-
 bool IPAddress::operator<(const IPAddress& that) const {
   // Sort IPv4 before IPv6.
   if (ip_address_.size() != that.ip_address_.size()) {
@@ -263,10 +247,8 @@ IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
 IPAddress ConvertIPv4MappedIPv6ToIPv4(const IPAddress& address) {
   DCHECK(address.IsIPv4MappedIPv6());
 
-  absl::InlinedVector<uint8_t, 16> bytes;
-  bytes.insert(bytes.end(),
-               address.bytes().begin() + std::size(kIPv4MappedPrefix),
-               address.bytes().end());
+  auto bytes =
+      base::span(address.bytes()).subspan(std::size(kIPv4MappedPrefix));
   return IPAddress(bytes.data(), bytes.size());
 }
 
@@ -292,7 +274,7 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                                   96 + prefix_length_in_bits);
   }
 
-  return IPAddressPrefixCheck(ip_address.bytes(), ip_prefix.bytes().data(),
+  return IPAddressPrefixCheck(ip_address.bytes(), ip_prefix.bytes(),
                               prefix_length_in_bits);
 }
 

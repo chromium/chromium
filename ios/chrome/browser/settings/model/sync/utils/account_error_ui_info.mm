@@ -11,7 +11,7 @@
     userActionableType:(AccountErrorUserActionableType)userActionableType
              messageID:(int)messageID
          buttonLabelID:(int)buttonLabelID {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _errorType = errorType;
     _userActionableType = userActionableType;
     _messageID = messageID;

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
@@ -29,7 +30,8 @@ class AnimationInterpolableValueTest : public testing::Test {
     // suffices for this, and also means we can ignore the AnimatableValues for
     // the compositor (as z-index isn't compositor-compatible).
     PropertyHandle property_handle(GetCSSPropertyZIndex());
-    CSSNumberInterpolationType interpolation_type(property_handle);
+    CSSNumberInterpolationType* interpolation_type(
+        MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
     InterpolationValue start(MakeGarbageCollected<InterpolableNumber>(a));
     InterpolationValue end(MakeGarbageCollected<InterpolableNumber>(b));
     TransitionInterpolation* i = MakeGarbageCollected<TransitionInterpolation>(
@@ -39,7 +41,7 @@ class AnimationInterpolableValueTest : public testing::Test {
     i->Interpolate(0, progress);
     TypedInterpolationValue* interpolated_value = i->GetInterpolatedValue();
     EXPECT_TRUE(interpolated_value);
-    CSSToLengthConversionData length_resolver;
+    CSSToLengthConversionData length_resolver(/*element=*/nullptr);
     return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
         .Value(length_resolver);
   }
@@ -84,7 +86,7 @@ TEST_F(AnimationInterpolableValueTest, SimpleList) {
       InterpolateLists(std::move(list_a), std::move(list_b), 0.3);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   EXPECT_FLOAT_EQ(
       30, To<InterpolableNumber>(out_list.Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
@@ -111,7 +113,7 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
   InterpolableValue* interpolated_value = InterpolateLists(list_a, list_b, 0.5);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   EXPECT_FLOAT_EQ(
       50, To<InterpolableNumber>(out_list.Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
@@ -122,7 +124,7 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   InterpolableNumber* base = MakeGarbageCollected<InterpolableNumber>(10);
   ScaleAndAdd(*base, 2, *MakeGarbageCollected<InterpolableNumber>(1));
   EXPECT_FLOAT_EQ(21, base->Value(length_resolver));
@@ -146,7 +148,7 @@ TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
   add_list->Set(1, MakeGarbageCollected<InterpolableNumber>(2));
   add_list->Set(2, MakeGarbageCollected<InterpolableNumber>(3));
   ScaleAndAdd(*base_list, 2, *add_list);
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   EXPECT_FLOAT_EQ(
       11, To<InterpolableNumber>(base_list->Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
@@ -166,34 +168,33 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
     double interpolation_fraction;
     double interpolation_result;
   } test_cases[] = {
-      {"progress(11em from 1rem to 110px) * 10", 10.0, 10.0, 5.0,
-       "progress(11em from 1rem to 110px) * 11", 11.0, 0.5, 10.5},
-      {"10deg", 10.0, 10.0, 5.0, "progress(11em from 1rem to 110px) * 11deg",
-       11.0, 0.5, 10.5},
-      {"progress(11em from 1rem to 110px) * 10deg", 10.0, 10.0, 5.0, "11deg",
-       11.0, 0.5, 10.5},
+      {"progress(11em, 1rem, 110px) * 10", 10.0, 10.0, 5.0,
+       "progress(11em, 1rem, 110px) * 11", 11.0, 0.5, 10.5},
+      {"10deg", 10.0, 10.0, 5.0, "progress(11em, 1rem, 110px) * 11deg", 11.0,
+       0.5, 10.5},
+      {"progress(11em, 1rem, 110px) * 10deg", 10.0, 10.0, 5.0, "11deg", 11.0,
+       0.5, 10.5},
   };
 
   using enum CSSMathExpressionNode::Flag;
   using Flags = CSSMathExpressionNode::Flags;
 
-  Font font;
-  CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+  Font* font = MakeGarbageCollected<Font>();
+  CSSToLengthConversionData length_resolver =
+      CSSToLengthConversionData(/*element=*/nullptr);
   length_resolver.SetFontSizes(
-      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case.input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case.input);
 
     // Test expression evaluation.
     const CSSMathExpressionNode* expression =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, range, *context, Flags({AllowPercent}),
+            CSSValueID::kCalc, stream, *context, Flags({AllowPercent}),
             kCSSAnchorQueryTypesNone);
     InterpolableNumber* number = nullptr;
     if (auto* numeric_literal =
@@ -223,12 +224,10 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
               test_case.scale_value * test_case.output + test_case.add_value);
 
     // Test interpolation with other expression.
-    CSSTokenizer target_tokenizer(test_case.interpolation_input);
-    const auto target_tokens = target_tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange target_range(target_tokens);
+    CSSParserTokenStream target_stream(test_case.interpolation_input);
     const CSSMathExpressionNode* target_expression =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, target_range, *context, Flags({AllowPercent}),
+            CSSValueID::kCalc, target_stream, *context, Flags({AllowPercent}),
             kCSSAnchorQueryTypesNone);
     InterpolableNumber* target = nullptr;
     if (auto* numeric_literal =

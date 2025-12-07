@@ -1,0 +1,33 @@
+include_rules = [
+  "+components/trusted_vault/trusted_vault_server_constants.h",
+  "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
+  "+ios/chrome/browser/drag_and_drop/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+  "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/settings/model",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/synced_sessions/model",
+  "+ios/chrome/browser/tabs_search/model",
+  "+ios/chrome/browser/authentication",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled/sync/utils",
+  "+ios/chrome/browser/sharing/ui_bundled",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
+  "+ios/chrome/browser/url_loading/model",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "recent_tabs_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

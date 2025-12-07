@@ -42,6 +42,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   bool IsDeviceInDemoMode() const override;
   bool IsCloudGamingDevice() const override;
   bool IsFeatureAwareDevice() const override;
+  bool IsAppIconOnShelf(const std::string& app_id) const override;
   const std::string& GetApplicationLocale() const override;
   const std::string& GetUserLocale() const override;
 
@@ -55,7 +56,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
       const std::string& trial_name,
       const std::string& group_name) const override;
   void ClearConfig(const std::map<std::string, std::string>& params) override;
-  void RecordEvent(const std::string& event_name) override;
+  void RecordEvent(const std::string& event_name,
+                   bool trigger_campaigns) override;
   bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) override;
   signin::IdentityManager* GetIdentityManager() const override;
@@ -64,6 +66,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void OnReadyToLogImpression(int campaign_id,
                               std::optional<int> group_id,
                               bool should_log_cros_events) override;
+  void RecordImpressionEvents(int campaign_id,
+                              std::optional<int> group_id) override;
   void OnDismissed(int campaign_id,
                    std::optional<int> group_id,
                    bool should_mark_dismissed,
@@ -82,7 +86,6 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void OnTrackerInitialized(growth::OnTrackerInitializedCallback callback,
                             bool init_success);
   void UpdateConfig(const std::map<std::string, std::string>& params);
-  void RecordImpressionEvents(int campaign_id, std::optional<int> group_id);
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
 
   growth::CampaignsConfigurationProvider config_provider_;

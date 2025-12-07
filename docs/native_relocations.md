@@ -11,8 +11,8 @@
    the compiler cannot optimize away the relocation (e.g. for pointers where
    not all uses are visible, or for values that are passed to functions that
    are not inlined).
-   
- 
+
+
 Examples of things that require relative relocations:
 
 ```C++
@@ -40,17 +40,11 @@ rather than pointers in order to remove the relocations overhead
      `flags`.
    * `RELA` is default for arm64. It uses three words per relocation: `address`,
      `flags`, `addend`.
-   * [`APS2`][APS2] is what Chrome for Android uses. It stores the same fields
-     as REL` / `RELA`, but uses variable length ints (LEB128) and run-length
-     encoding.
-   * [`RELR`][RELR] is what [Chrome OS uses], and is supported in Android P+
-     ([tracking bug for enabling]). It encodes only relative relocations and
-     uses a bitmask to do so (which works well since all symbols that require
-     relocations live in `.data.rel.ro`).
- 
-[APS2]: android_native_libraries.md#Packed-Relocations
+   * [`RELR`][RELR] is what Android and [Chrome OS use]. It encodes only
+     relative relocations and uses a bitmask to do so (which works well since
+     all symbols that require relocations live in `.data.rel.ro`).
+
 [RELR]: https://maskray.me/blog/2021-10-31-relative-relocations-and-relr
-[tracking bug for enabling]: https://bugs.chromium.org/p/chromium/issues/detail?id=895194
 [Chrome OS uses]: https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1210982
 
 ### Windows Relocations (PE Format)
@@ -67,12 +61,8 @@ rather than pointers in order to remove the relocations overhead
  * On Linux, relocations are stored very inefficiently.
    * As of Oct 2019:
      * Chrome on Linux has a `.rela.dyn` section of more than 14MiB!
-     * Chrome on Android uses [`APS2`] to compress these down to ~300kb.
-     * Chrome on Android with [`RELR`] would require only 60kb, but is
-       [not yet enabled][relr_bug].
+     * With [`RELR`], this drops to 60kb.
      * Chrome on Windows (x64) has `.relocs` sections that sum to 620KiB.
-
-[relr_bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=895194
 
 ### Memory Overhead
  * On Windows, relocations are applied by the kernel during page faults. There
@@ -99,9 +89,7 @@ rather than pointers in order to remove the relocations overhead
  * On Windows, relocations are applied just-in-time, and so their overhead is
    both small and difficult to measure.
  * On other platforms, the runtime linker applies all relocations upfront.
- * On low-end Android, it can take ~100ms (measured on a first-gen Android Go
-   devices with APS2 relocations).
-   * On a Pixel 4a, it's ~50ms, and with RELR relocations, it's closer to 15ms.
+ * On a Pixel 4a, it's about 15ms.
  * On Linux, it's [closer to 20ms][zygote].
 
 ## How do I see them?

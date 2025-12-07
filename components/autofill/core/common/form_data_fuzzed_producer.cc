@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
+#include <algorithm>
 #include <bitset>
 #include <string>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -27,11 +28,32 @@ std::u16string ConsumeU16String(FuzzedDataProvider& provider) {
   // to support evolution of the fuzzed input. Let's follow whatever it does.
   const std::string s8 = provider.ConsumeRandomLengthString();
   return std::u16string(
-      reinterpret_cast<const std::u16string::value_type*>(s8.data()),
+      // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+      UNSAFE_TODO(
+          reinterpret_cast<const std::u16string::value_type*>(s8.data())),
       s8.size() / 2);
 }
 
+// A wrapper to ConsumeEnum<FormControlType> because FormControlType has gaps
+// in the used integers.
+FormControlType ConsumeFormControlType(FuzzedDataProvider& provider) {
+  FormControlType result;
+  do {
+    result = provider.ConsumeEnum<FormControlType>();
+  } while (!IsKnownEnumValue(result));
+  return result;
+}
+
 }  // namespace
+
+FieldRendererId FindNthUnusedRendererId(
+    std::vector<FieldRendererId>& unused_ids,
+    size_t n) {
+  FieldRendererId result = unused_ids[n];
+  std::swap(unused_ids[n], unused_ids.back());
+  unused_ids.pop_back();
+  return result;
+}
 
 FormData GenerateFormData(FuzzedDataProvider& provider) {
   FormData result;
@@ -46,6 +68,11 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
   // after the fuzzer's seed is exhausted, all will be 0s anyway.
   const size_t number_of_fields =
       provider.ConsumeIntegralInRange<size_t>(0, 15);
+  std::vector<FieldRendererId> unused_renderer_ids;
+  unused_renderer_ids.push_back(FieldRendererId());
+  for (size_t i = 1; i <= number_of_fields; ++i) {
+    unused_renderer_ids.push_back(FieldRendererId(i));
+  }
   std::vector<FormFieldData> fields;
   fields.resize(number_of_fields);
   int first_field_with_same_value = -1;
@@ -61,14 +88,16 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     const bool force_empty_value = bools[1];
     fields[i].set_is_focusable(bools[2]);
 
-    fields[i].set_form_control_type(provider.ConsumeEnum<FormControlType>());
+    fields[i].set_form_control_type(ConsumeFormControlType(provider));
     fields[i].set_autocomplete_attribute(provider.ConsumeRandomLengthString());
     fields[i].set_label(ConsumeU16String(provider));
     fields[i].set_name(ConsumeU16String(provider));
     fields[i].set_name_attribute(fields[i].name());
     fields[i].set_id_attribute(ConsumeU16String(provider));
-    fields[i].set_renderer_id(
-        FieldRendererId(provider.ConsumeIntegralInRange(-32, 31)));
+    fields[i].set_renderer_id(FindNthUnusedRendererId(
+        /*unused_ids=*/unused_renderer_ids,
+        /*n=*/provider.ConsumeIntegralInRange<size_t>(
+            /*min=*/0, /*max=*/unused_renderer_ids.size() - 1)));
 
     if (same_value_field) {
       if (first_field_with_same_value == -1) {

@@ -11,24 +11,26 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
-import androidx.annotation.ColorRes;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Toolbar for the bottom tab strip see {@link TabGroupUiCoordinator}. */
+@NullMarked
 public class TabGroupUiToolbarView extends FrameLayout {
-    private ChromeImageView mRightButton;
-    private ChromeImageView mLeftButton;
+    private ChromeImageView mNewTabButton;
+    private ChromeImageView mShowGroupDialogButton;
     private ChromeImageView mFadingEdgeStart;
     private ChromeImageView mFadingEdgeEnd;
     private ViewGroup mContainerView;
-    private LinearLayout mMainContent;
+    private ViewGroup mMainContent;
+    private @Nullable FrameLayout mImageTilesContainer;
+    private @Nullable Callback<Integer> mWidthPxCallback;
 
     public TabGroupUiToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,75 +40,78 @@ public class TabGroupUiToolbarView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mLeftButton = findViewById(R.id.toolbar_left_button);
-        mRightButton = findViewById(R.id.toolbar_right_button);
+        mShowGroupDialogButton = findViewById(R.id.toolbar_show_group_dialog_button);
+        mNewTabButton = findViewById(R.id.toolbar_new_tab_button);
         mFadingEdgeStart = findViewById(R.id.tab_strip_fading_edge_start);
         mFadingEdgeEnd = findViewById(R.id.tab_strip_fading_edge_end);
         mContainerView = findViewById(R.id.toolbar_container_view);
         mMainContent = findViewById(R.id.main_content);
+        mImageTilesContainer = findViewById(R.id.toolbar_image_tiles_container);
     }
 
-    void setLeftButtonOnClickListener(OnClickListener listener) {
-        mLeftButton.setOnClickListener(listener);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mWidthPxCallback != null) {
+            mWidthPxCallback.onResult(getWidth());
+        }
     }
 
-    void setRightButtonOnClickListener(OnClickListener listener) {
-        mRightButton.setOnClickListener(listener);
+    /* package */ void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
+        mShowGroupDialogButton.setOnClickListener(listener);
     }
 
-    ViewGroup getViewContainer() {
+    /* package */ void setImageTilesContainerOnClickListener(OnClickListener listener) {
+        if (mImageTilesContainer == null) return;
+
+        // TODO(crbug.com/362280397): Possibly attach to a child view instead for ripple and instead
+        // add a valid TouchDelegate.
+        mImageTilesContainer.setOnClickListener(listener);
+    }
+
+    /* package */ void setNewTabButtonOnClickListener(OnClickListener listener) {
+        mNewTabButton.setOnClickListener(listener);
+    }
+
+    /* package */ ViewGroup getViewContainer() {
         return mContainerView;
     }
 
-    void setMainContentVisibility(boolean isVisible) {
+    /* package */ void setMainContentVisibility(boolean isVisible) {
         if (mContainerView == null) {
             throw new IllegalStateException("Current Toolbar doesn't have a container view");
         }
 
-        for (int i = 0; i < ((ViewGroup) mContainerView).getChildCount(); i++) {
-            View child = ((ViewGroup) mContainerView).getChildAt(i);
+        for (int i = 0; i < mContainerView.getChildCount(); i++) {
+            View child = mContainerView.getChildAt(i);
             child.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
-    void setIsIncognito(boolean isIncognito) {
-        @ColorRes
-        int tintListRes =
-                isIncognito
-                        ? R.color.default_icon_color_light_tint_list
-                        : R.color.default_icon_color_tint_list;
-        ColorStateList tintList = ContextCompat.getColorStateList(getContext(), tintListRes);
-        setTint(tintList);
-    }
-
-    void setContentBackgroundColor(int color) {
+    /* package */ void setContentBackgroundColor(int color) {
         mMainContent.setBackgroundColor(color);
         if (mFadingEdgeStart == null || mFadingEdgeEnd == null) return;
         mFadingEdgeStart.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         mFadingEdgeEnd.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
-    void setTint(ColorStateList tint) {
-        ImageViewCompat.setImageTintList(mLeftButton, tint);
-        ImageViewCompat.setImageTintList(mRightButton, tint);
+    /* package */ void setTint(ColorStateList tint) {
+        ImageViewCompat.setImageTintList(mShowGroupDialogButton, tint);
+        ImageViewCompat.setImageTintList(mNewTabButton, tint);
     }
 
-    void setBackgroundColorTint(int color) {
-        DrawableCompat.setTint(getBackground(), color);
+    /* package */ void setShowGroupDialogButtonVisible(boolean visible) {
+        mShowGroupDialogButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /** Setup the drawable in the left button. */
-    void setLeftButtonDrawableId(int drawableId) {
-        mLeftButton.setImageResource(drawableId);
+    /* package */ void setImageTilesContainerVisible(boolean visible) {
+        if (mImageTilesContainer == null) return;
+
+        mImageTilesContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /** Set the content description of the left button. */
-    void setLeftButtonContentDescription(String string) {
-        mLeftButton.setContentDescription(string);
-    }
-
-    /** Set the content description of the right button. */
-    void setRightButtonContentDescription(String string) {
-        mRightButton.setContentDescription(string);
+    void setWidthPxCallback(Callback<Integer> widthPxCallback) {
+        mWidthPxCallback = widthPxCallback;
+        mWidthPxCallback.onResult(getWidth());
     }
 }

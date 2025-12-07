@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_launcher.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
@@ -60,9 +61,10 @@ void OnAllowChecked(Profile* profile,
     // When requested, setting the correct token should have the effect of
     // running the client app, which will bring up the installer or launch the
     // client as needed.
-    borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
-        borealis::kClientAppId, borealis::BorealisLaunchSource::kInsertCoin,
-        base::DoNothing());
+    borealis::BorealisServiceFactory::GetForProfile(profile)
+        ->AppLauncher()
+        .Launch(borealis::kClientAppId,
+                borealis::BorealisLaunchSource::kInsertCoin, base::DoNothing());
   }
   std::move(response_sender)
       .Run(AllowStatusToResponse(new_allowed, method_call));
@@ -136,9 +138,10 @@ void VmLaunchServiceProvider::ProvideVmToken(
 
   // TODO(b/317157600): Tokens are no longer required so we have the option to
   // remove this dbus method entirely.
-  borealis::BorealisService::GetForProfile(profile)->Features().IsAllowed(
-      base::BindOnce(&OnAllowChecked, profile, method_call,
-                     std::move(response_sender), launch));
+  borealis::BorealisServiceFactory::GetForProfile(profile)
+      ->Features()
+      .IsAllowed(base::BindOnce(&OnAllowChecked, profile, method_call,
+                                std::move(response_sender), launch));
 }
 
 void VmLaunchServiceProvider::EnsureVmLaunched(

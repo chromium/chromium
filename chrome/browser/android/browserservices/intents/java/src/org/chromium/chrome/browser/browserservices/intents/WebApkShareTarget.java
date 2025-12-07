@@ -4,29 +4,31 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 
 /** Stores information about the WebAPK's share intent handlers. */
+@NullMarked
 public class WebApkShareTarget {
     private static final int ACTION_INDEX = 0;
     private static final int PARAM_TITLE_INDEX = 1;
     private static final int PARAM_TEXT_INDEX = 2;
-    private String[] mData;
-    private boolean mIsShareMethodPost;
-    private boolean mIsShareEncTypeMultipart;
-    private String[] mFileNames;
-    private String[][] mFileAccepts;
+    private final String[] mData;
+    private final boolean mIsShareMethodPost;
+    private final boolean mIsShareEncTypeMultipart;
+    private final String[] mFileNames;
+    private final String[][] mFileAccepts;
 
     public WebApkShareTarget(
             String action,
-            String paramTitle,
-            String paramText,
+            @Nullable String paramTitle,
+            @Nullable String paramText,
             boolean isMethodPost,
             boolean isEncTypeMultipart,
-            String[] fileNames,
-            String[][] fileAccepts) {
+            String @Nullable [] fileNames,
+            String @Nullable [][] fileAccepts) {
         mData = new String[3];
         mData[ACTION_INDEX] = replaceNullWithEmpty(action);
         mData[PARAM_TITLE_INDEX] = replaceNullWithEmpty(paramTitle);
@@ -82,7 +84,7 @@ public class WebApkShareTarget {
     }
 
     /** Returns the value if it is non-null. Returns an empty string otherwise. */
-    private static String replaceNullWithEmpty(String value) {
+    private static String replaceNullWithEmpty(@Nullable String value) {
         return (value == null) ? "" : value;
     }
 }

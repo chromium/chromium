@@ -8,20 +8,24 @@
 #include <iterator>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
+#include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -57,9 +61,9 @@ std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
 template <typename Form>
 base::span<Form> NonFederatedSameSchemeMatches(base::span<Form> non_federated,
                                                PasswordForm::Scheme scheme) {
-  auto same_scheme_count = base::ranges::count_if(
-      non_federated, [scheme](auto& form) { return form.scheme == scheme; });
-  return non_federated.subspan(0, same_scheme_count);
+  const auto same_scheme_count = static_cast<size_t>(
+      std::ranges::count(non_federated, scheme, &Form::scheme));
+  return non_federated.first(same_scheme_count);
 }
 }  // namespace
 
@@ -78,7 +82,11 @@ void FormFetcherImpl::AddConsumer(FormFetcher::Consumer* consumer) {
   DCHECK(consumer);
   consumers_.AddObserver(consumer);
   if (state_ == State::NOT_WAITING) {
-    consumer->OnFetchCompleted();
+    // Notify the consumer immediately, but do it async so that it's in line
+    // with the regular form fetcher behavior.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&FormFetcherImpl::NotifyConsumer,
+                                  weak_ptr_factory_.GetWeakPtr(), consumer));
   }
 }
 
@@ -91,7 +99,7 @@ void FormFetcherImpl::Fetch() {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
-        client_->GetLogManager());
+        client_->GetCurrentLogManager());
     logger->LogMessage(Logger::STRING_FETCH_METHOD);
     logger->LogNumber(Logger::STRING_FORM_FETCHER_STATE,
                       static_cast<int>(state_));
@@ -175,9 +183,7 @@ base::span<const PasswordForm> FormFetcherImpl::GetFederatedMatches() const {
 }
 
 bool FormFetcherImpl::IsBlocklisted() const {
-  if (client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
-      client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-          PasswordForm::Store::kAccountStore) {
+  if (client_->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
     return is_blocklisted_in_account_store_;
   }
   return is_blocklisted_in_profile_store_;
@@ -276,6 +282,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
   result->profile_store_backend_error_ = profile_store_backend_error_;
+  result->account_store_backend_error_ = account_store_backend_error_;
 
   return result;
 }
@@ -288,6 +295,14 @@ FormFetcherImpl::GetProfileStoreBackendError() const {
 std::optional<PasswordStoreBackendError>
 FormFetcherImpl::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
+}
+
+void FormFetcherImpl::NotifyConsumer(FormFetcher::Consumer* consumer) {
+  // If a fetch has started in the meantime, the `consumer` will be notified
+  // when it finishes.
+  if (state_ == State::NOT_WAITING && consumers_.HasObserver(consumer)) {
+    consumer->OnFetchCompleted();
+  }
 }
 
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
@@ -352,7 +367,7 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
@@ -368,15 +383,15 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
   // store.
   if (store == client_->GetProfilePasswordStore()) {
     profile_store_backend_error_.reset();
-    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
       profile_store_backend_error_ =
-          absl::get<PasswordStoreBackendError>(results_or_error);
+          std::get<PasswordStoreBackendError>(results_or_error);
     }
   } else if (store == client_->GetAccountPasswordStore()) {
     account_store_backend_error_.reset();
-    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
       account_store_backend_error_ =
-          absl::get<PasswordStoreBackendError>(results_or_error);
+          std::get<PasswordStoreBackendError>(results_or_error);
     }
   }
 
@@ -444,7 +459,7 @@ void FormFetcherImpl::AggregatePasswordStoreResults(
   }
 
   if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogMessage(Logger::STRING_ON_GET_STORE_RESULTS_METHOD);
     logger.LogNumber(Logger::STRING_NUMBER_RESULTS, partial_results_.size());
   }

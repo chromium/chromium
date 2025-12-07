@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsRadioGroupElement, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsRadioGroupElement, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, GeolocationAccessLevel, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -153,6 +153,45 @@ suite('<timezone-subpage> with logged-in user', () => {
         assertTrue(!!warningText);
         // Check that warning contains the link anchor.
         assertTrue(
+            warningText?.getAttribute('warning-text-with-anchor')
+                ?.includes('<a href="#">') ??
+            false);
+      });
+
+  test(
+      'time zone shows warning w/o hyperlink when location is managed',
+      async () => {
+        const timezoneRadioGroup =
+            timezoneSubpage.shadowRoot!
+                .querySelector<SettingsRadioGroupElement>(
+                    '#timeZoneRadioGroup');
+        assert(timezoneRadioGroup);
+
+        // Enable automatic timezone.
+        timezoneSubpage.setPrefValue(
+            'generated.resolve_timezone_by_geolocation_on_off', true);
+        // Geolocation is allowed by default, the warning text should be hidden.
+        assertFalse(isVisible(
+            timezoneSubpage.shadowRoot!.querySelector('#warningText')));
+
+        // Set the geolocation pref to forced off, to replicate the policy
+        // value.
+        timezoneSubpage.setPrefValue(
+            'ash.user.geolocation_access_level',
+            GeolocationAccessLevel.DISALLOWED);
+        timezoneSubpage.prefs.ash.user.geolocation_access_level.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        timezoneSubpage.notifyPath(
+            'prefs.ash.user.geolocation_access_level.enforcement',
+            chrome.settingsPrivate.Enforcement.ENFORCED);
+        await flushTasks();
+
+        const warningText =
+            timezoneSubpage.shadowRoot!.querySelector('#warningText');
+        assertTrue(!!warningText);
+        // Check that the warning doesn't have clickable section to launch the
+        // dialog.
+        assertFalse(
             warningText?.getAttribute('warning-text-with-anchor')
                 ?.includes('<a href="#">') ??
             false);

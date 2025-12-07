@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
@@ -23,10 +23,8 @@ extern const char kKioskSessionDurationNormalHistogram[];
 extern const char kKioskSessionDurationInDaysNormalHistogram[];
 extern const char kKioskSessionDurationCrashedHistogram[];
 extern const char kKioskSessionDurationInDaysCrashedHistogram[];
-extern const char kKioskSessionRestartReasonHistogram[];
 extern const char kKioskSessionLastDayList[];
 extern const char kKioskSessionStartTime[];
-extern const char kKioskSessionEndReason[];
 
 extern const base::TimeDelta kKioskSessionDurationHistogramLimit;
 
@@ -43,50 +41,17 @@ enum class KioskSessionState {
   // No longer used, use kWebStarted for lacros platform.
   // kWebWithLacrosStarted = 6,
   kRestored = 7,
-  kMaxValue = kRestored,
-};
-
-// These values are used in UMA metrics. When a kiosk session is restarted,
-// ChromeOS logs a restart reason based on the previous kiosk session
-// ending. Actual device reboot and a session restart without reboot are
-// distinguished. Entries should not be renumbered and numeric values should
-// never be reused. Keep in sync with respective enum in
-// tools/metrics/histograms/enums.xml
-enum class KioskSessionRestartReason {
-  kStopped = 0,
-  kStoppedWithReboot = 1,
-  kCrashed = 2,
-  kCrashedWithReboot = 3,
-  kRebootPolicy = 4,
-  kRemoteActionReboot = 5,
-  kRestartApi = 6,
-  kLocalStateWasNotSaved = 7,
-  kLocalStateWasNotSavedWithReboot = 8,
-  kPluginCrashed = 9,
-  kPluginCrashedWithReboot = 10,
-  kPluginHung = 11,
-  kPluginHungWithReboot = 12,
-  kMaxValue = kPluginHungWithReboot,
-};
-
-// These values are saved to the local state during the ending of kiosk session.
-enum class KioskSessionEndReason {
-  kStopped = 0,
-  kRebootPolicy = 1,
-  kRemoteActionReboot = 2,
-  kRestartApi = 3,
-  kPluginCrashed = 4,
-  kPluginHung = 5,
-  kMaxValue = kPluginHung,
+  kIwaStarted = 8,
+  kMaxValue = kIwaStarted,
 };
 
 // This class accumulates and records kiosk UMA metrics.
-class KioskMetricsService : public chromeos::PowerManagerClient::Observer {
+class KioskMetricsService {
  public:
   explicit KioskMetricsService(PrefService* prefs);
   KioskMetricsService(KioskMetricsService&) = delete;
   KioskMetricsService& operator=(const KioskMetricsService&) = delete;
-  ~KioskMetricsService() override;
+  ~KioskMetricsService();
 
   static std::unique_ptr<KioskMetricsService> CreateForTesting(
       PrefService* prefs,
@@ -94,12 +59,10 @@ class KioskMetricsService : public chromeos::PowerManagerClient::Observer {
 
   void RecordKioskSessionStarted();
   void RecordKioskSessionWebStarted();
+  void RecordKioskSessionIwaStarted();
   void RecordKioskSessionStopped();
   void RecordKioskSessionPluginCrashed();
   void RecordKioskSessionPluginHung();
-
-  // chromeos::PowerManagerClient::Observer:
-  void RestartRequested(power_manager::RequestRestartReason reason) override;
 
  protected:
   KioskMetricsService(PrefService* prefs,
@@ -123,22 +86,17 @@ class KioskMetricsService : public chromeos::PowerManagerClient::Observer {
       const std::string& kiosk_session_duration_in_days_histogram,
       const base::Time& start_time) const;
 
-  void RecordPreviousKioskSessionEndState();
+  void CheckIfPreviousSessionCrashed();
 
-  void RecordPreviousKioskSessionCrashed(const base::Time& start_time) const;
-
-  void RecordKioskSessionRestartReason(
-      const KioskSessionRestartReason& reason) const;
+  void RecordPreviousKioskSessionCrashed(const base::Time& start_time,
+                                         bool crashed) const;
 
   size_t RetrieveLastDaySessionCount(base::Time session_start_time);
 
   void ClearStartTime();
 
   void OnPreviousKioskSessionResult(const base::Time& start_time,
-                                    bool has_recorded_session_restart_reason,
                                     bool crashed) const;
-
-  void SaveSessionEndReason(const KioskSessionEndReason& reason);
 
   raw_ptr<PrefService> prefs_;
 
@@ -150,11 +108,6 @@ class KioskMetricsService : public chromeos::PowerManagerClient::Observer {
   base::Time start_time_;
 
   const std::vector<std::string> crash_dirs_;
-
-  // Observation of chromeos::PowerManagerClient.
-  base::ScopedObservation<chromeos::PowerManagerClient,
-                          chromeos::PowerManagerClient::Observer>
-      power_manager_client_observation_{this};
 
   base::WeakPtrFactory<KioskMetricsService> weak_ptr_factory_{this};
 };

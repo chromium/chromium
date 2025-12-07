@@ -14,8 +14,9 @@ int BatteryStatusListenerMac::GetBatteryPercentage() {
   return 100;
 }
 
-bool BatteryStatusListenerMac::IsOnBatteryPower() {
-  return false;
+base::PowerStateObserver::BatteryPowerStatus
+BatteryStatusListenerMac::GetBatteryPowerStatus() const {
+  return base::PowerStateObserver::BatteryPowerStatus::kUnknown;
 }
 
 void BatteryStatusListenerMac::Start(Observer* observer) {}

@@ -9,7 +9,6 @@
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -62,7 +61,7 @@ void AwRenderViewExt::WebViewCreated(blink::WebView* web_view,
 AwRenderViewExt* AwRenderViewExt::FromWebView(blink::WebView* web_view) {
   DCHECK(web_view != nullptr);
   auto iter = GetViewExtMap()->find(web_view);
-  CHECK(GetViewExtMap()->end() != iter, base::NotFatalUntil::M130)
+  CHECK(GetViewExtMap()->end() != iter)
       << "AwRenderViewExt should always exist for a WebView";
   AwRenderViewExt* render_view_ext = iter->second;
   return render_view_ext;

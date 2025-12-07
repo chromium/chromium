@@ -7,25 +7,26 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <variant>
 
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace {
 constexpr int kMinValidTabsForOrganizing = 2;
 int kNextOrganizationID = 1;
-}
+}  // namespace
 
 TabOrganization::TabOrganization(
     TabDatas tab_datas,
     std::vector<std::u16string> names,
     int first_new_tab_index,
-    absl::variant<size_t, std::u16string> current_name,
+    std::variant<size_t, std::u16string> current_name,
     UserChoice choice)
     : first_new_tab_index_(first_new_tab_index),
       names_(names),
@@ -38,10 +39,10 @@ TabOrganization::TabOrganization(
   kNextOrganizationID++;
 
   // TabDatas must not be duplicates, immediately destroy TabDatas that are.
-  std::vector<content::WebContents*> existing_contents;
+  std::vector<const tabs::TabInterface*> existing_tabs;
   for (auto& tab_data : tab_datas) {
-    if (!base::Contains(existing_contents, tab_data->web_contents())) {
-      existing_contents.emplace_back(tab_data->web_contents());
+    if (!base::Contains(existing_tabs, tab_data->tab())) {
+      existing_tabs.emplace_back(tab_data->tab());
       tab_data->AddObserver(this);
       tab_datas_.emplace_back(std::move(tab_data));
     }
@@ -59,12 +60,12 @@ TabOrganization::~TabOrganization() {
 }
 
 const std::u16string TabOrganization::GetDisplayName() const {
-  if (absl::holds_alternative<size_t>(current_name())) {
-    const size_t index = absl::get<size_t>(current_name());
+  if (std::holds_alternative<size_t>(current_name())) {
+    const size_t index = std::get<size_t>(current_name());
     CHECK(index < names_.size());
     return names_.at(index);
-  } else if (absl::holds_alternative<std::u16string>(current_name())) {
-    return absl::get<std::u16string>(current_name());
+  } else if (std::holds_alternative<std::u16string>(current_name())) {
+    return std::get<std::u16string>(current_name());
   }
   return u"";
 }
@@ -104,7 +105,7 @@ bool TabOrganization::IsValidForOrganizing() const {
 void TabOrganization::AddTabData(std::unique_ptr<TabData> new_tab_data) {
   // Guarantee uniqueness. early return and drop the new tab data if not unique.
   for (std::unique_ptr<TabData>& existing_tab_data : tab_datas_) {
-    if (existing_tab_data->web_contents() == new_tab_data->web_contents()) {
+    if (existing_tab_data->tab() == new_tab_data->tab()) {
       return;
     }
   }
@@ -136,7 +137,7 @@ void TabOrganization::RemoveTabData(TabData::TabID tab_id) {
 }
 
 void TabOrganization::SetCurrentName(
-    absl::variant<size_t, std::u16string> new_current_name) {
+    std::variant<size_t, std::u16string> new_current_name) {
   current_name_ = new_current_name;
   NotifyObserversOfUpdate();
 }
@@ -150,14 +151,14 @@ void TabOrganization::Accept() {
   TabStripModel* tab_strip_model = tab_datas_[0]->original_tab_strip_model();
   CHECK(tab_strip_model);
   std::vector<int> valid_indices;
-  std::unordered_set<raw_ptr<const content::WebContents>> tab_data_web_contents;
+  std::unordered_set<raw_ptr<const tabs::TabInterface>> tab_data_tabs;
   for (const std::unique_ptr<TabData>& tab_data : tab_datas_) {
     // Individual tabs may become invalid. in those cases, where the tab is
     // invalid but the organization is not, do not include the tab in the
     // organization, but still create the organization.
-    const content::WebContents* web_contents = tab_data->web_contents();
-    tab_data_web_contents.insert(web_contents);
-    const int index = tab_strip_model->GetIndexOfWebContents(web_contents);
+    const tabs::TabInterface* tab = tab_data->tab();
+    tab_data_tabs.insert(tab);
+    const int index = tab_strip_model->GetIndexOfTab(tab);
     if (tab_data->IsValidForOrganizing() &&
         !base::Contains(valid_indices, index)) {
       valid_indices.emplace_back(index);
@@ -173,8 +174,7 @@ void TabOrganization::Accept() {
   // the tab strip and therefore causes |this| to be deleted. So we keep
   // a WeakPtr to |this| to detect this case and avoid accessing member
   // variables, just in case.
-  base::WeakPtr<TabOrganization> this_weak_ref =
-      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<TabOrganization> this_weak_ref = weak_ptr_factory_.GetWeakPtr();
 
   if (group_id_.has_value()) {
     CHECK(tab_strip_model->group_model()->ContainsTabGroup(group_id_.value()));
@@ -189,9 +189,9 @@ void TabOrganization::Accept() {
     std::vector<int> indices_to_remove;
     for (size_t grouped_tab_index = tab_indices.start();
          grouped_tab_index < tab_indices.end(); grouped_tab_index++) {
-      content::WebContents* web_contents =
-          tab_strip_model->GetWebContentsAt(grouped_tab_index);
-      if (!tab_data_web_contents.contains(web_contents)) {
+      const tabs::TabInterface* const tab =
+          tab_strip_model->GetTabAtIndex(grouped_tab_index);
+      if (!tab_data_tabs.contains(tab)) {
         indices_to_remove.emplace_back(grouped_tab_index);
       }
     }
@@ -205,13 +205,13 @@ void TabOrganization::Accept() {
     // grouped tab. If this group is already in the leftmost position then leave
     // it there. Else move the group at the index of that tab.
     int move_index = tab_strip_model->IndexOfFirstNonPinnedTab();
-    while (move_index < tab_strip_model->GetTabCount() &&
+    while (move_index < tab_strip_model->count() &&
            (tab_strip_model->GetTabGroupForTab(move_index).has_value() &&
             tab_strip_model->GetTabGroupForTab(move_index).value() !=
                 group_id_.value())) {
       move_index++;
     }
-    CHECK(move_index < tab_strip_model->GetTabCount());
+    CHECK(move_index < tab_strip_model->count());
 
     if (tab_strip_model->GetTabGroupForTab(move_index) != group_id_.value()) {
       tab_strip_model->MoveGroupTo(group_id_.value(), move_index);
@@ -222,8 +222,8 @@ void TabOrganization::Accept() {
       tab_strip_model->group_model()->GetTabGroup(group_id_.value());
   tab_groups::TabGroupVisualData new_visual_data(
       GetDisplayName(), tab_group->visual_data()->color());
-  tab_group->SetVisualData(std::move(new_visual_data),
-                           tab_group->IsCustomized());
+  tab_strip_model->ChangeTabGroupVisuals(tab_group->id(), new_visual_data,
+                                         tab_group->IsCustomized());
 
   // If |this| has been destroyed, there is no need to notify the observers:
   // in practice, the only observer is the TabOrganizationSession which owns

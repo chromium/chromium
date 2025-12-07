@@ -5,11 +5,14 @@
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="match" href="nested-ref.html">
 <link rel=stylesheet href="resources/compute-common.css"></link>
+<link rel=stylesheet href="resources/pause-view-transitions.css"></link>
 <script src="/common/reftest-wait.js"></script>
 <script src="resources/compute-test.js"></script>
 <style>
     ::view-transition-group(yellow) {
         opacity: 0;
+        background: yellow;
+        animation: none;
     }
 
     .yellow {

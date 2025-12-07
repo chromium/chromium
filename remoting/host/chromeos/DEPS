@@ -3,14 +3,23 @@ include_rules = [
   "+ui/wm",
   "+components/prefs",
   "+components/viz/common",
-  "+components/viz/host"
+  "+components/viz/host",
+  "+services/viz/privileged/mojom/compositing"
 ]
 
 specific_include_rules = {
+  "audio_helper_chromeos*": [
+    "+media/audio",
+    "+media/base",
+    "+media/mojo",
+  ],
   "browser_interop.cc": [
     "+chrome/browser/browser_process.h",
+    "+content/public/browser/browser_context.h",
     "+content/public/browser/browser_task_traits.h",
     "+content/public/browser/browser_thread.h",
+    "+chrome/browser/net/profile_network_context_service.h",
+    "+chrome/browser/net/profile_network_context_service_factory.h",
   ],
   "host_event_reporter_impl.*": [
     "+chrome/browser/policy/messaging_layer/proto",  # For ERP events prototypes

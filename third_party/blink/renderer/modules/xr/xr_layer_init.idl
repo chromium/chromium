@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webxrlayers-1/#xrprojectionlayerinittype
+dictionary XRProjectionLayerInit {
+  XRTextureType textureType = "texture";
+  GLenum colorFormat = 0x1908; // RGBA
+  GLenum depthFormat = 0x1902; // DEPTH_COMPONENT
+  double scaleFactor = 1.0;
+};
+
+// https://www.w3.org/TR/webxrlayers-1/#xrlayerinittype
+dictionary XRLayerInit {
+  required XRSpace space;
+  GLenum colorFormat = 0x1908; // RGBA
+  GLenum? depthFormat; // optional
+  unsigned long mipLevels = 1;
+  required unsigned long viewPixelWidth;
+  required unsigned long viewPixelHeight;
+  XRLayerLayout layout = "mono";
+  boolean isStatic = false;
+  boolean clearOnAccess = true;
+};
+
+// https://www.w3.org/TR/webxrlayers-1/#xrquadlayerinit
+dictionary XRQuadLayerInit : XRLayerInit {
+  XRTextureType textureType = "texture";
+  XRRigidTransform? transform;
+  float width = 1.0;
+  float height = 1.0;
+};
+
+// https://www.w3.org/TR/webxrlayers-1/#xrcylinderlayerinit
+dictionary XRCylinderLayerInit : XRLayerInit {
+  XRTextureType textureType = "texture";
+  XRRigidTransform? transform;
+  float radius = 2.0;
+  float centralAngle = 0.78539;
+  float aspectRatio = 2.0;
+};
+
+// https://www.w3.org/TR/webxrlayers-1/#xrequirectlayerinit
+dictionary XREquirectLayerInit : XRLayerInit {
+  XRTextureType textureType = "texture";
+  XRRigidTransform? transform;
+  float radius = 0;
+  float centralHorizontalAngle = 6.28318;
+  float upperVerticalAngle = 1.570795;
+  float lowerVerticalAngle = -1.570795;
+};
+
+// https://www.w3.org/TR/webxrlayers-1/#xrcubelayerinit
+dictionary XRCubeLayerInit : XRLayerInit {
+  DOMPointReadOnly? orientation;
+};

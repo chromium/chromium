@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTConservativeDepth::EXTConservativeDepth(WebGLRenderingContextBase* context)
+EXTConservativeDepth::EXTConservativeDepth(WebGLRenderingContextBase* context,
+                                           ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_conservative_depth");

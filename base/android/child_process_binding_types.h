@@ -10,9 +10,14 @@ namespace android {
 
 // Defines the state of bindgings with child process. See ChildProcessConnection
 // to see what the bindings are.
+//
+// Note that the numerical order in ChildBindingState should be consistent
+// because ChildBindingState is compared numerically in
+// ChildProcessRanking.java.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
 enum class ChildBindingState {
-  UNBOUND,
+  UNBOUND = 0,
   WAIVED,
   NOT_PERCEPTIBLE,
   VISIBLE,

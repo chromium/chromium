@@ -78,6 +78,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Path FileInfo Failed"/>
 </enum>
 
+<!-- LINT.IfChange(ContentSecurityPolicyInlineType) -->
+
+<enum name="ContentSecurityPolicyInlineType">
+  <int value="0" label="Navigation"/>
+  <int value="1" label="Script"/>
+  <int value="2" label="ScriptAttribute"/>
+  <int value="3" label="ScriptSpeculationRules"/>
+  <int value="4" label="Style"/>
+  <int value="5" label="StyleAttribute"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/frame/csp/content_security_policy.h:InlineType) -->
+
 <enum name="CrossProcessTimeDelta">
   <int value="0" label="Normal time delta measured"/>
   <int value="1" label="Unexpectedly negative time delta measured"/>
@@ -114,6 +127,40 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kWarmingUp"/>
   <int value="5" label="kWarmedUp"/>
 </enum>
+
+<!-- LINT.IfChange(OpenWindowUrlScheme) -->
+
+<enum name="OpenWindowUrlScheme">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kAboutBlank"/>
+  <int value="2" label="kAboutSrcDoc"/>
+  <int value="3" label="kBlob"/>
+  <int value="4" label="kContent"/>
+  <int value="5" label="kData"/>
+  <int value="6" label="kFile"/>
+  <int value="7" label="kFileSystem"/>
+  <int value="8" label="kFtp"/>
+  <int value="9" label="kHttp"/>
+  <int value="10" label="kHttps"/>
+  <int value="11" label="kJavascript"/>
+  <int value="12" label="kMailTo"/>
+  <int value="13" label="kTel"/>
+  <int value="14" label="kWs"/>
+  <int value="15" label="kWss"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/service_worker/service_worker_clients.cc:OpenWindowUrlScheme) -->
+
+<!-- LINT.IfChange(RaceNetworkRequestDataTransferResult) -->
+
+<enum name="RaceNetworkRequestDataTransferResult">
+  <int value="0" label="BothCompleted"/>
+  <int value="1" label="NetworkCompletedFetchHandlerNotCompleted"/>
+  <int value="2" label="FetchHandlerCompletedNetworkNotCompleted"/>
+  <int value="3" label="BothNotCompleted"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/common/service_worker/race_network_request_url_loader_client.cc:DataTransferCompletionResult) -->
 
 <enum name="ServiceWorkerDatabaseStatus">
   <int value="0" label="OK"/>
@@ -166,6 +213,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="AutoPreload is handling fallback"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerIPAddressSpace) -->
+
+<enum name="ServiceWorkerIPAddressSpace">
+  <int value="0" label="Loopback"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Public"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/services/storage/service_worker/service_worker_database.cc:ServiceWorkerIPAddressSpace) -->
+
 <enum name="ServiceWorkerMetrics.EventType">
   <int value="0" label="ACTIVATE"/>
   <int value="1" label="INSTALL"/>
@@ -210,32 +268,27 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="WARM_UP"/>
 </enum>
 
-<enum name="ServiceWorkerRaceNetworkRequestDataTransferMojoResult">
-  <int value="0" label="MOJO_RESULT_OK"/>
-  <int value="1" label="MOJO_RESULT_CANCELLED"/>
-  <int value="2" label="MOJO_RESULT_UNKNOWN"/>
-  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
-  <int value="4" label="MOJO_RESULT_DEADLINE_EXCEEDED"/>
-  <int value="5" label="MOJO_RESULT_NOT_FOUND"/>
-  <int value="6" label="MOJO_RESULT_ALREADY_EXISTS"/>
-  <int value="7" label="MOJO_RESULT_PERMISSION_DENIED"/>
-  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
-  <int value="9" label="MOJO_RESULT_FAILED_PRECONDITION"/>
-  <int value="10" label="MOJO_RESULT_ABORTED"/>
-  <int value="11" label="MOJO_RESULT_OUT_OF_RANGE"/>
-  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
-  <int value="13" label="MOJO_RESULT_INTERNAL"/>
-  <int value="14" label="MOJO_RESULT_UNAVAILABLE"/>
-  <int value="15" label="MOJO_RESULT_DATA_LOSS"/>
-  <int value="16" label="MOJO_RESULT_BUSY"/>
-  <int value="17" label="MOJO_RESULT_SHOULD_WAIT"/>
-</enum>
-
 <enum name="ServiceWorkerReadResponseResult">
   <int value="0" label="OK"/>
   <int value="1" label="Read headers error"/>
   <int value="2" label="Read data error"/>
 </enum>
+
+<!-- LINT.IfChange(ServiceWorkerRegistrationDeleteInitiator) -->
+
+<enum name="ServiceWorkerRegistrationDeleteInitiator">
+  <int value="0" label="Triggered by navigator.serviceWorker.unregister()"/>
+  <int value="1" label="Triggered by clearing site data"/>
+  <int value="2" label="Triggered by an emergency force-delete"/>
+  <int value="3" label="Triggered by a registration failure"/>
+  <int value="4"
+      label="Triggered via the public C++ API (e.g., extensions, DevTools)"/>
+  <int value="5"
+      label="Triggered by a user action on chrome://serviceworker-internals"/>
+  <int value="6" label="Triggered from a test"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_registration.h:DeleteInitiator) -->
 
 <enum name="ServiceWorkerRouterEvaluatorErrorEnums">
   <int value="0" label="kNoError"/>
@@ -256,6 +309,36 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Write headers error"/>
   <int value="2" label="Write data error"/>
 </enum>
+
+<!-- LINT.IfChange(SyntheticResponseBlockedSrcType) -->
+
+<enum name="SyntheticResponseBlockedSrcType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="ScriptSrcElm"/>
+  <int value="2" label="WorkerSrc"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/frame/csp/content_security_policy.h:SyntheticResponseBlockedSrcType) -->
+
+<!-- LINT.IfChange(SyntheticResponseEligibility) -->
+
+<enum name="SyntheticResponseEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="NotEligibleByReload"/>
+  <int value="2" label="NotEligibleByNoHeaderStored"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_metrics.h:SyntheticResponseEligibility) -->
+
+<!-- LINT.IfChange(SyntheticResponseReloadReason) -->
+
+<enum name="SyntheticResponseReloadReason">
+  <int value="0" label="CachedResponseHeadCleared"/>
+  <int value="1" label="HeaderInconsistent"/>
+  <int value="2" label="Redirect"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_synthetic_response_manager.cc:SyntheticResponseReloadReason) -->
 
 <enum name="WorkerOrWorkletInterfaceNameType">
   <int value="0" label="kOther"/>

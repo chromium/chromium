@@ -56,7 +56,7 @@ using web::SecurityStyle;
                      (web::NavigationManagerImpl*)navigationManager {
   DCHECK(dataSource);
   DCHECK(navigationManager);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _dataSource = dataSource;
     _navigationManager = navigationManager;
   }
@@ -125,8 +125,9 @@ using web::SecurityStyle;
                           certStatus:(CertStatus)certStatus {
   web::NavigationItem* item =
       web::GetCommittedItemWithUniqueID(_navigationManager, navigationItemID);
-  if (!item)
+  if (!item) {
     return;
+  }
 
   // NavigationItem's UniqueID is preserved even after redirects, so
   // checking that cert and URL match is necessary.
@@ -136,7 +137,7 @@ using web::SecurityStyle;
   web::SSLStatus& SSLStatus = item->GetSSL();
   if (item->GetURL().SchemeIsCryptographic() && !!SSLStatus.certificate &&
       cert && SSLStatus.certificate->EqualsIncludingChain(cert.get()) &&
-      item->GetURL().host() == GURLHost) {
+      item->GetURL().GetHost() == GURLHost) {
     web::SSLStatus previousSSLStatus = item->GetSSL();
     SSLStatus.cert_status = certStatus;
     SSLStatus.security_style = style;

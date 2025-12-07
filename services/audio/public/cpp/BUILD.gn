@@ -16,10 +16,6 @@ component("cpp") {
     "input_ipc.h",
     "output_device.cc",
     "output_device.h",
-    "sounds/audio_stream_handler.cc",
-    "sounds/audio_stream_handler.h",
-    "sounds/sounds_manager.cc",
-    "sounds/sounds_manager.h",
   ]
 
   defines = [ "IS_AUDIO_PUBLIC_CPP_IMPL" ]
@@ -44,16 +40,12 @@ source_set("test_support") {
     "fake_stream_factory.h",
     "fake_system_info.cc",
     "fake_system_info.h",
-    "sounds/test_data.cc",
-    "sounds/test_data.h",
   ]
-
-  deps = [ "//testing/gmock" ]
 
   public_deps = [
     ":cpp",
     "//base",
-    "//media",
+    "//media/mojo/mojom",
     "//services/audio",
     "//services/audio/public/mojom",
   ]

@@ -6,7 +6,6 @@
 #define SERVICES_DEVICE_USB_MOJO_DEVICE_MANAGER_IMPL_H_
 
 #include <memory>
-#include <queue>
 #include <set>
 #include <string>
 #include <vector>

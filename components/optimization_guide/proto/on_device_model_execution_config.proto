@@ -9,7 +9,9 @@ option java_outer_classname = "ModelExecutionProto";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/descriptors.proto";
+import "components/optimization_guide/proto/fieldwise_parser_config.proto";
 import "components/optimization_guide/proto/redaction.proto";
 import "components/optimization_guide/proto/substitution.proto";
 import "components/optimization_guide/proto/model_execution.proto";
@@ -23,6 +25,17 @@ message OnDeviceModelExecutionConfig {
 
   // A config used for validating the model and device after download.
   optional OnDeviceModelValidationConfig validation_config = 2;
+
+  // List of capabilities supported by the base model.
+  repeated OnDeviceModelCapability capabilities = 3;
+}
+
+enum OnDeviceModelCapability {
+  ON_DEVICE_MODEL_CAPABILITY_UNSPECIFIED = 0;
+  // The model supports taking image input.
+  ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT = 1;
+  // The model supports taking audio input.
+  ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT = 2;
 }
 
 message OnDeviceModelExecutionFeatureConfig {
@@ -45,6 +58,12 @@ message OnDeviceModelExecutionFeatureConfig {
   // Sampling parameters to use with the model.
   // These will override global defaults, but not per session configurations.
   optional SamplingParams sampling_params = 6;
+
+  // Feature defined metadata.
+  optional Any feature_metadata = 7;
+
+  // The rank of the LORA associated with this feature.
+  optional uint32 adaptation_rank = 8;
 }
 
 message OnDeviceModelExecutionInputConfig {
@@ -67,13 +86,45 @@ message OnDeviceModelExecutionInputConfig {
   // resulting string for the input context if `should_ignore_input_context` is
   // not set on any of the used substitutions.
   repeated SubstitutedString execute_substitutions = 2;
+
+  // The number of tokens generated from `input_context_substitutions` that are
+  // guaranteed to be processed before context processing can be cancelled
+  // (truncating any unprocessed tokens) to begin execution. A default value is
+  // used when this is not set. To disable cancellations, set this to be the
+  // same as `max_context_tokens`.
+  optional uint32 min_context_tokens = 4;
+
+  // The maximum number of tokens that can be generated from
+  // `input_context_substitutions`. Tokens in excess of this number will be
+  // truncated. Uses a default value when unset.
+  optional uint32 max_context_tokens = 5;
+
+  // The maximum number of tokens that can be generated from
+  // `execute_substitutions`. Tokens in excess of this number will be truncated.
+  // Uses a default value when unset.
+  optional uint32 max_execute_tokens = 6;
+}
+
+// Rules that generated output must follow.
+message ResponseConstraint {
+  oneof format {
+    // A JSON Schema describing an llguidance constraint on the output. See
+    // https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md
+    string json_schema = 1;
+    // A regex describing the llguidance constraint on the output.
+    // See https://docs.rs/regex/latest/regex/#syntax for syntax.
+    string regex = 2;
+  }
 }
 
 message OnDeviceModelExecutionOutputConfig {
+  reserved 7;
+
   // The proto type to use for the response metadata.
   optional string proto_type = 1;
 
-  // The proto field to populate the output string with.
+  // The proto field to populate the output string with. Applies for
+  // PARSER_KIND_SIMPLE only.
   optional ProtoField proto_field = 2;
 
   // Rules that result in redacting the output.
@@ -81,6 +132,18 @@ message OnDeviceModelExecutionOutputConfig {
 
   // Which output parsing implementation to use.
   optional ParserKind parser_kind = 4;
+
+  // A config for specifying parsing logic for the fieldwise parser.
+  optional FieldwiseParserConfig fieldwise_parser_config = 8;
+
+  // Whether to suppress parsing incomplete output.
+  optional bool suppress_parsing_incomplete_output = 5;
+
+  // The maximum number of tokens that can be generated as output.
+  optional uint32 max_output_tokens = 6;
+
+  // The response constraint to use when generating output.
+  optional ResponseConstraint response_constraint = 9;
 }
 
 message TextSafetyFallbackConfig {

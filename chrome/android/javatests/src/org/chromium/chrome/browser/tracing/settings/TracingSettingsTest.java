@@ -10,7 +10,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Pair;
 
 import androidx.core.app.NotificationCompat;
 import androidx.preference.CheckBoxPreference;
@@ -20,7 +19,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -31,6 +29,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -39,14 +41,16 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.TracingController;
-import org.chromium.chrome.browser.tracing.TracingNotificationManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.settings.ButtonPreference;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.io.File;
@@ -55,12 +59,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for the Tracing settings menu. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TracingSettingsTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final SettingsActivityTestRule<TracingSettings> mSettingsActivityTestRule =
@@ -71,12 +76,12 @@ public class TracingSettingsTest {
     @Before
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
-        TracingNotificationManager.overrideNotificationManagerForTesting(mMockNotificationManager);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
     }
 
     @After
     public void tearDown() {
-        TracingNotificationManager.overrideNotificationManagerForTesting(null);
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     /**
@@ -152,7 +157,7 @@ public class TracingSettingsTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testRecordTrace() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mSettingsActivityTestRule.startSettingsActivity();
         final PreferenceFragmentCompat fragment = mSettingsActivityTestRule.getFragment();
         final ButtonPreference startTracingButton =
@@ -222,7 +227,6 @@ public class TracingSettingsTest {
         // Recording started, a notification with a stop button should be displayed.
         Notification notification = waitForNotification().notification;
         Assert.assertEquals(FLAG_ONGOING_EVENT, notification.flags & FLAG_ONGOING_EVENT);
-        Assert.assertEquals(null, notification.deleteIntent);
         Assert.assertEquals(1, NotificationCompat.getActionCount(notification));
         PendingIntent stopIntent = NotificationCompat.getAction(notification, 0).actionIntent;
 
@@ -269,7 +273,7 @@ public class TracingSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testNotificationsDisabledMessage() throws Exception {
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
         final PreferenceFragmentCompat fragment = mSettingsActivityTestRule.getFragment();
@@ -284,72 +288,73 @@ public class TracingSettingsTest {
         Assert.assertFalse(startTracingButton.isEnabled());
         Assert.assertEquals(
                 TracingSettings.MSG_NOTIFICATIONS_DISABLED, statusPreference.getTitle());
+    }
 
-        mMockNotificationManager.setNotificationsEnabled(true);
+    public static class CategoryParams implements ParameterProvider {
+        private static final List<ParameterSet> sParams =
+                Arrays.asList(
+                        new ParameterSet()
+                                .value(TracingSettings.UI_PREF_DEFAULT_CATEGORIES, "toplevel")
+                                .name("DefaultCategories"),
+                        new ParameterSet()
+                                .value(
+                                        TracingSettings.UI_PREF_NON_DEFAULT_CATEGORIES,
+                                        "disabled-by-default-cc.debug")
+                                .name("NonDefaultCategories"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sParams;
+        }
     }
 
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testSelectCategories() throws Exception {
+    @ParameterAnnotations.UseMethodParameter(CategoryParams.class)
+    public void testSelectCategories(String preferenceKey, String sampleCategoryName)
+            throws Exception {
         // We need a renderer so that its tracing categories will be populated.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mSettingsActivityTestRule.startSettingsActivity();
         final PreferenceFragmentCompat fragment = mSettingsActivityTestRule.getFragment();
-        final Preference defaultCategoriesPref =
-                fragment.findPreference(TracingSettings.UI_PREF_DEFAULT_CATEGORIES);
-        final Preference nonDefaultCategoriesPref =
-                fragment.findPreference(TracingSettings.UI_PREF_NON_DEFAULT_CATEGORIES);
+        final Preference categoriesPref = fragment.findPreference(preferenceKey);
 
         waitForTracingControllerInitialization(fragment);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(defaultCategoriesPref.isEnabled());
-                    Assert.assertTrue(nonDefaultCategoriesPref.isEnabled());
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> Assert.assertTrue(categoriesPref.isEnabled()));
 
-        // Lists preferences for categories of a specific type and an example category name each.
-        List<Pair<Preference, String>> categoriesPrefs =
-                Arrays.asList(
-                        new Pair<>(defaultCategoriesPref, "toplevel"),
-                        new Pair<>(nonDefaultCategoriesPref, "disabled-by-default-cc.debug"));
-        for (Pair<Preference, String> categoriesPrefAndSampleCategory : categoriesPrefs) {
-            Preference categoriesPref = categoriesPrefAndSampleCategory.first;
-            String sampleCategoryName = categoriesPrefAndSampleCategory.second;
+        // Simulate clicking the preference, which should open a new preferences fragment in
+        // a new activity.
+        Context context = ApplicationProvider.getApplicationContext();
+        Assert.assertNotNull(categoriesPref.getExtras());
+        Assert.assertFalse(categoriesPref.getExtras().isEmpty());
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        Intent intent =
+                settingsNavigation.createSettingsIntent(
+                        context, TracingCategoriesSettings.class, categoriesPref.getExtras());
+        mSettingsActivityTestRule.launchActivity(intent);
+        SettingsActivity categoriesActivity = mSettingsActivityTestRule.getActivity();
 
-            // Simulate clicking the preference, which should open a new preferences fragment in
-            // a new activity.
-            Context context = ApplicationProvider.getApplicationContext();
-            Assert.assertNotNull(categoriesPref.getExtras());
-            Assert.assertFalse(categoriesPref.getExtras().isEmpty());
-            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-            Intent intent =
-                    settingsLauncher.createSettingsActivityIntent(
-                            context, TracingCategoriesSettings.class, categoriesPref.getExtras());
-            SettingsActivity categoriesActivity =
-                    (SettingsActivity)
-                            InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+        PreferenceFragmentCompat categoriesFragment =
+                (PreferenceFragmentCompat) categoriesActivity.getMainFragment();
+        Assert.assertEquals(TracingCategoriesSettings.class, categoriesFragment.getClass());
 
-            PreferenceFragmentCompat categoriesFragment =
-                    (PreferenceFragmentCompat) categoriesActivity.getMainFragment();
-            Assert.assertEquals(TracingCategoriesSettings.class, categoriesFragment.getClass());
+        CheckBoxPreference sampleCategoryPref =
+                (CheckBoxPreference) categoriesFragment.findPreference(sampleCategoryName);
+        Assert.assertNotNull(sampleCategoryPref);
 
-            CheckBoxPreference sampleCategoryPref =
-                    (CheckBoxPreference) categoriesFragment.findPreference(sampleCategoryName);
-            Assert.assertNotNull(sampleCategoryPref);
+        boolean originallyEnabled =
+                TracingSettings.getEnabledCategories().contains(sampleCategoryName);
+        Assert.assertEquals(originallyEnabled, sampleCategoryPref.isChecked());
 
-            boolean originallyEnabled =
-                    TracingSettings.getEnabledCategories().contains(sampleCategoryName);
-            Assert.assertEquals(originallyEnabled, sampleCategoryPref.isChecked());
-
-            // Simulate selecting / deselecting the category.
-            ThreadUtils.runOnUiThreadBlocking(sampleCategoryPref::performClick);
-            Assert.assertNotEquals(originallyEnabled, sampleCategoryPref.isChecked());
-            boolean finallyEnabled =
-                    TracingSettings.getEnabledCategories().contains(sampleCategoryName);
-            Assert.assertNotEquals(originallyEnabled, finallyEnabled);
-        }
+        // Simulate selecting / deselecting the category.
+        ThreadUtils.runOnUiThreadBlocking(sampleCategoryPref::performClick);
+        Assert.assertNotEquals(originallyEnabled, sampleCategoryPref.isChecked());
+        boolean finallyEnabled =
+                TracingSettings.getEnabledCategories().contains(sampleCategoryName);
+        Assert.assertNotEquals(originallyEnabled, finallyEnabled);
     }
 
     @Test

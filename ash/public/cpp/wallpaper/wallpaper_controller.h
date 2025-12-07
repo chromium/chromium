@@ -42,6 +42,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // successfully.
   using SetWallpaperCallback = base::OnceCallback<void(bool success)>;
 
+  // A callback specifically for `SetTimeOfDayWallpaper` that also gives
+  // information about which wallpaper image was set, and if the operation was
+  // successful.
+  using SetTimeOfDayWallpaperCallback =
+      base::OnceCallback<void(uint64_t unit_id, bool success)>;
+
   using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
   using LoadPreviewImageCallback =
@@ -57,16 +63,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   virtual void SetDriveFsDelegate(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) = 0;
-
-  // Sets paths for wallpaper directories and the device policy wallpaper path.
-  // |user_data|: Directory where user data can be written.
-  // |wallpapers|: Directory where downloaded chromeos wallpapers reside.
-  // |custom_wallpapers|: Directory where custom wallpapers reside.
-  // |device_policy_wallpaper|: Path of the device policy wallpaper (if any).
-  virtual void Init(const base::FilePath& user_data,
-                    const base::FilePath& wallpapers,
-                    const base::FilePath& custom_wallpapers,
-                    const base::FilePath& device_policy_wallpaper) = 0;
 
   // Whether the user with `account_id` can set wallpaper. Users may be
   // disallowed from setting wallpaper based on enterprise policy or if the
@@ -150,10 +146,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Downloads and sets a time of day wallpaper to be the active wallpaper.
   // |acount_id|: The user's account id.
-  // |callback|: Called with a boolean to indicate success when the wallpaper is
-  // fetched and decoded.
-  virtual void SetTimeOfDayWallpaper(const AccountId& account_id,
-                                     SetWallpaperCallback callback) = 0;
+  // |callback|: Called with the unit_id of the selected wallpaper, and a
+  // boolean to indicate success when the wallpaper is fetched and decoded.
+  virtual void SetTimeOfDayWallpaper(
+      const AccountId& account_id,
+      SetTimeOfDayWallpaperCallback callback) = 0;
 
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
   // types may have different default wallpapers.

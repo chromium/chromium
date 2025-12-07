@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/optimization_guide/core/base_model_executor.h"
+#include "components/optimization_guide/core/inference/base_model_executor.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 

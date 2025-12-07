@@ -30,12 +30,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_IMAGE_MAP_LINK_H_
 
 #include "third_party/blink/renderer/core/html/html_area_element.h"
-#include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
+class HTMLMapElement;
 
 class AXImageMapLink final : public AXNodeObject {
  public:

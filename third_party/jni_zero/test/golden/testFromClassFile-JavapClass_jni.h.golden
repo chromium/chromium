@@ -8,23 +8,30 @@
 
 #include <jni.h>
 
-#include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+#include "overridden/jni_zero_internal.h"
+#include "extra_include.h"
+
+// Class Accessors
 #ifndef org_jni_1zero_JavapClass_clazz_defined
 #define org_jni_1zero_JavapClass_clazz_defined
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunique-object-duplication"
 inline jclass org_jni_1zero_JavapClass_clazz(JNIEnv* env) {
   static const char kClassName[] = "org/jni_zero/JavapClass";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
+#pragma clang diagnostic pop
 #endif
 
+
 namespace JNI_JavapClass {
+
 // Constants
 enum Java_JavapClass_constant_fields {
   CONST_INT = 3,
 };
+
 
 // Native to Java functions
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(
@@ -40,7 +47,7 @@ enum Java_JavapClass_constant_fields {
       "()V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id());
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
@@ -57,7 +64,7 @@ enum Java_JavapClass_constant_fields {
       "(Z)V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id(), p0);
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(
@@ -74,7 +81,7 @@ enum Java_JavapClass_constant_fields {
       "(I)V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id(), as_jint(p0));
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 [[maybe_unused]] static jint Java_JavapClass_intMethod(
@@ -91,16 +98,11 @@ enum Java_JavapClass_constant_fields {
       "intMethod",
       "(Ljava/lang/String;)I",
       &cached_method_id);
-  auto _ret = env->CallIntMethod(
-      obj.obj(),
-      call_context.method_id(),
-      p0.obj());
+  auto _ret = env->CallIntMethod(obj.obj(), call_context.method_id(), p0.obj());
   return _ret;
 }
 
-[[maybe_unused]] static void Java_JavapClass_needsMangling__int(
-    JNIEnv* env,
-    JniIntWrapper p0) {
+[[maybe_unused]] static void Java_JavapClass_needsMangling__int(JNIEnv* env, JniIntWrapper p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
@@ -161,13 +163,9 @@ enum Java_JavapClass_constant_fields {
       "objTest",
       "(Ljava/lang/Object;[Ljava/lang/Runnable;)Ljava/lang/Class;",
       &cached_method_id);
-  auto _ret = env->CallObjectMethod(
-      obj.obj(),
-      call_context.method_id(),
-      p0.obj(),
-      p1.obj());
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), p0.obj(), p1.obj());
   jclass _ret2 = static_cast<jclass>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jclass>(env, _ret2);
+  return jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, _ret2);
 }
 
 [[maybe_unused]] static jint Java_JavapClass_staticIntMethod(
@@ -184,11 +182,7 @@ enum Java_JavapClass_constant_fields {
       "staticIntMethod",
       "(Ljava/lang/String;Lorg/jni_zero/JavapClass;)I",
       &cached_method_id);
-  auto _ret = env->CallStaticIntMethod(
-      clazz,
-      call_context.method_id(),
-      p0.obj(),
-      p1.obj());
+  auto _ret = env->CallStaticIntMethod(clazz, call_context.method_id(), p0.obj(), p1.obj());
   return _ret;
 }
 
@@ -205,14 +199,13 @@ enum Java_JavapClass_constant_fields {
       "staticIntMethod",
       "(Ljava/lang/String;)[[I",
       &cached_method_id);
-  auto _ret = env->CallStaticObjectMethod(
-      clazz,
-      call_context.method_id(),
-      p0.obj());
+  auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), p0.obj());
   jobjectArray _ret2 = static_cast<jobjectArray>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jobjectArray>(env, _ret2);
+  return jni_zero::ScopedJavaLocalRef<jobjectArray>::Adopt(env, _ret2);
 }
 
 
+
 }  // namespace JNI_JavapClass
+
 #endif  // org_jni_1zero_JavapClass_JNI

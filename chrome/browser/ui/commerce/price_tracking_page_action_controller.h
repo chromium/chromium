@@ -15,7 +15,6 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/image_fetcher/core/request_metadata.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/gfx/image/image.h"
 
 class GURL;

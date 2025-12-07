@@ -8,15 +8,16 @@
 #include <optional>
 
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -32,8 +33,6 @@ struct ResourceRequest;
 }
 
 namespace android_webview {
-
-class AwContentsOriginMatcher;
 
 // URL Loader Factory for Android WebView. This is the entry point for handling
 // Android WebView callbacks (i.e. error, interception and other callbacks) and
@@ -76,13 +75,14 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           cookie_manager,
       AwCookieAccessPolicy* cookie_access_policy,
       std::optional<const net::IsolationInfo> isolation_info,
-      int frame_tree_node_id,
+      std::optional<WebContentsKey> key,
+      content::FrameTreeNodeId frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       bool intercept_only,
       std::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
 
@@ -92,27 +92,18 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   ~AwProxyingURLLoaderFactory() override;
 
-  // Allows telling the loader whether the XRW origin trial is enabled for a
-  // navigation URL. This is an optimization that avoids hopping to the UI
-  // thread before starting a request.
-  static void SetXrwResultForNavigation(
-      const GURL& url,
-      blink::mojom::ResourceType resource_type,
-      int frame_tree_node_id,
-      int64_t navigation_id);
-  static void ClearXrwResultForNavigation(int64_t navigation_id);
-
   // static
   static void CreateProxy(
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       AwCookieAccessPolicy* cookie_access_policy,
       std::optional<const net::IsolationInfo> isolation_info,
-      int frame_tree_node_id,
+      std::optional<WebContentsKey> web_contents_key,
+      content::FrameTreeNodeId frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       std::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
+      std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
 
@@ -121,6 +112,14 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      network::ResourceRequest& request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
@@ -136,7 +135,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
                        base::OnceCallback<void(std::string)> callback);
 
   void SetCookieHeader(const network::ResourceRequest& request,
-                       const std::string& value,
+                       std::string_view value,
                        const std::optional<base::Time>& server_time);
 
   net::IsolationInfo GetIsolationInfo(const network::ResourceRequest& request);
@@ -144,7 +143,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   raw_ptr<AwCookieAccessPolicy> cookie_access_policy_;
   std::optional<const net::IsolationInfo> isolation_info_;
-  const int frame_tree_node_id_;
+  const std::optional<WebContentsKey> web_contents_key_;
+  const content::FrameTreeNodeId frame_tree_node_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
 
@@ -155,7 +155,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   std::optional<SecurityOptions> security_options_;
 
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
 
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 

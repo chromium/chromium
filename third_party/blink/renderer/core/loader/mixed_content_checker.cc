@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -71,6 +72,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -166,8 +168,7 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
     case mojom::blink::RequestContextType::XSLT:
       return "XSLT";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "resource";
+  NOTREACHED();
 }
 
 // Currently we have two slightly different versions, because
@@ -243,6 +244,21 @@ static bool IsInsecureUrl(const KURL& url) {
   return !IsUrlPotentiallyTrustworthy(url);
 }
 
+// Records an UMA metric for mixed content on localhost, if `parent_origin` is
+// localhost.
+static void MaybeMeasureMixedContentOnLocalhost(
+    const SecurityOrigin* parent_origin,
+    const KURL& url,
+    const LocalFrame* source) {
+  if (!parent_origin->IsLocalhost()) {
+    return;
+  }
+  if (IsInsecureUrl(url)) {
+    UseCounter::Count(source->GetDocument(),
+                      WebFeature::kMixedContentOnLocalhost);
+  }
+}
+
 static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
                                                    const KURL& url,
                                                    const LocalFrame* source) {
@@ -302,6 +318,31 @@ bool MixedContentChecker::IsMixedContent(
 }
 
 // static
+bool MixedContentChecker::IsMixedContentRestrictedInFrameContext(
+    LocalFrame* frame) {
+  if (!frame) {
+    return false;
+  }
+  // Check the top frame first.
+  Frame& top = frame->Tree().Top();
+  if (SchemeRegistry::ShouldTreatURLSchemeAsRestrictingMixedContent(
+          top.GetSecurityContext()
+              ->GetSecurityOrigin()
+              ->GetOriginOrPrecursorOriginIfOpaque()
+              ->Protocol())) {
+    return true;
+  }
+  if (SchemeRegistry::ShouldTreatURLSchemeAsRestrictingMixedContent(
+          frame->GetSecurityContext()
+              ->GetSecurityOrigin()
+              ->GetOriginOrPrecursorOriginIfOpaque()
+              ->Protocol())) {
+    return true;
+  }
+  return false;
+}
+
+// static
 Frame* MixedContentChecker::InWhichFrameIsContentMixed(LocalFrame* frame,
                                                        const KURL& url) {
   // Frameless requests cannot be mixed content.
@@ -311,12 +352,18 @@ Frame* MixedContentChecker::InWhichFrameIsContentMixed(LocalFrame* frame,
   // Check the top frame first.
   Frame& top = frame->Tree().Top();
   MeasureStricterVersionOfIsMixedContent(top, url, frame);
-  if (IsMixedContent(top.GetSecurityContext()->GetSecurityOrigin(), url))
+  MaybeMeasureMixedContentOnLocalhost(
+      top.GetSecurityContext()->GetSecurityOrigin(), url, frame);
+  if (IsMixedContent(top.GetSecurityContext()->GetSecurityOrigin(), url)) {
     return &top;
+  }
 
   MeasureStricterVersionOfIsMixedContent(*frame, url, frame);
-  if (IsMixedContent(frame->GetSecurityContext()->GetSecurityOrigin(), url))
+  MaybeMeasureMixedContentOnLocalhost(
+      frame->GetSecurityContext()->GetSecurityOrigin(), url, frame);
+  if (IsMixedContent(frame->GetSecurityContext()->GetSecurityOrigin(), url)) {
     return frame;
+  }
 
   // No mixed content, no problem.
   return nullptr;
@@ -328,22 +375,21 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
     const KURL& url,
     mojom::blink::RequestContextType request_context,
     bool allowed,
-    std::unique_ptr<SourceLocation> source_location) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
-      "insecure %s '%s'. %s",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      RequestContextName(request_context), url.ElidedString().Utf8().c_str(),
-      allowed ? "This content should also be served over HTTPS."
-              : "This request has been blocked; the content must be served "
-                "over HTTPS.");
+    SourceLocation* source_location) {
+  String message = StrCat(
+      {"Mixed Content: The page at '", main_resource_url.ElidedString(),
+       "' was loaded over HTTPS, but requested an insecure ",
+       RequestContextName(request_context), " '", url.ElidedString(), "'. ",
+       allowed ? "This content should also be served over HTTPS."
+               : "This request has been blocked; the content must be served "
+                 "over HTTPS."});
   mojom::ConsoleMessageLevel message_level =
       allowed ? mojom::ConsoleMessageLevel::kWarning
               : mojom::ConsoleMessageLevel::kError;
   if (source_location) {
     return MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity, message_level, message,
-        std::move(source_location));
+        source_location);
   }
   return MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity, message_level, message);
@@ -396,8 +442,7 @@ void MixedContentChecker::Count(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   UseCounter::Count(source->GetDocument(), feature);
 }
@@ -465,17 +510,14 @@ bool MixedContentChecker::ShouldBlockFetch(
   switch (context_type) {
     case mojom::blink::MixedContentContextType::kOptionallyBlockable:
 
-#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
-      // Fuchsia WebEngine can be configured to allow loading Mixed Content from
-      // an insecure IP address. This is a workaround to revert Fuchsia Cast
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+      // Cast receivers can be configured to allow loading Mixed Content from
+      // an insecure IP address. This is a workaround to revert Cast
       // Receivers to the behavior before crrev.com/c/4032146.
-      // TODO(crbug.com/1434440): Remove this workaround when there is a better
-      // way to disable blocking Mixed Content with an IP address.
       allowed = !strict_mode;
 #else
       allowed = !strict_mode && !GURL(url).HostIsIPAddress();
-#endif  // BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
-
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
       if (allowed) {
         if (content_settings_client)
           content_settings_client->PassiveInsecureContentFound(url);
@@ -534,31 +576,43 @@ bool MixedContentChecker::ShouldBlockFetch(
         local_frame_host.DidDisplayInsecureContent();
       break;
     case mojom::blink::MixedContentContextType::kNotMixedContent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   };
 
-  // Skip mixed content check for private and local targets.
-  // `target_address_space` here is private/local only when resource request
-  // has explicitly set `targetAddressSpace` fetch option.
-  // TODO(lyf): check the IP address space for initiator, only skip when the
-  // initiator is more public.
+  // Skip mixed content check for URLs where we can determine that the request
+  // is a Local Network Access (LNA) request. LNA checks later on will ensure
+  // that (a) the request is actually an LNA request, and (b) the user has given
+  // permission for the LNA request to go through.
+  //
+  // Reference:
+  // https://wicg.github.io/local-network-access/
+  //
+  // This only checks for mixed content subresources; subframe navigation mixed
+  // content is checked in
+  // content/browser/renderer_host/mixed_content_checker.cc.
   if (base::FeatureList::IsEnabled(
-          network::features::kPrivateNetworkAccessPermissionPrompt) &&
-      RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled(
-          frame->DomWindow())) {
-    // TODO(crbug.com/323583084): Re-enable PNA permission prompt for documents
-    // fetched via service worker.
-    if (!frame->Loader()
-             .GetDocumentLoader()
-             ->GetResponse()
-             .WasFetchedViaServiceWorker() &&
-        (target_address_space ==
-             network::mojom::blink::IPAddressSpace::kPrivate ||
-         target_address_space ==
-             network::mojom::blink::IPAddressSpace::kLocal)) {
-      UseCounter::Count(frame->GetDocument(),
-                        WebFeature::kPrivateNetworkAccessPermissionPrompt);
+          network::features::kLocalNetworkAccessChecks)) {
+    // This request is a possible LNA request if one of the following is true:
+    //
+    // (1) The `targetAddressSpace` fetch option was set.
+    //     `target_address_space` here is private/local only when resource
+    //     request has explicitly set `targetAddressSpace` fetch option.
+    // (2) The url can be determined to be hosted in the local or loopback
+    //      address spaces.
+    //
+    // Loopback addresses shouldn't need to be checked as they are considered
+    // secure and not mixed content, but it can't hurt.
+    //
+    // TODO(crbug.com/395895368): check the IP address space for initiator, only
+    // skip when the initiator is more public.
+    std::optional<network::mojom::IPAddressSpace> ip_address_space =
+        network::GetAddressSpaceFromUrl(GURL(url));
+    if (target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
+        target_address_space ==
+            network::mojom::blink::IPAddressSpace::kLoopback ||
+        (ip_address_space &&
+         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+          ip_address_space == network::mojom::IPAddressSpace::kLoopback))) {
       allowed = true;
     }
   }
@@ -651,15 +705,16 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutWebSocket(
     const KURL& main_resource_url,
     const KURL& url,
     bool allowed) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but attempted to "
-      "connect to the insecure WebSocket endpoint '%s'. %s",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      url.ElidedString().Utf8().c_str(),
-      allowed ? "This endpoint should be available via WSS. Insecure access is "
-                "deprecated."
-              : "This request has been blocked; this endpoint must be "
-                "available over WSS.");
+  String message = StrCat(
+      {"Mixed Content: The page at '", main_resource_url.ElidedString(),
+       "' was loaded over HTTPS, but attempted to connect to the insecure "
+       "WebSocket endpoint '",
+       url.ElidedString(), "'. ",
+       allowed
+           ? "This endpoint should be available via WSS. Insecure access is "
+             "deprecated."
+           : "This request has been blocked; this endpoint must be "
+             "available over WSS."});
   mojom::ConsoleMessageLevel message_level =
       allowed ? mojom::ConsoleMessageLevel::kWarning
               : mojom::ConsoleMessageLevel::kError;
@@ -794,14 +849,24 @@ bool MixedContentChecker::ShouldAutoupgrade(
     mojom::blink::RequestContextType type,
     WebContentSettingsClient* settings_client,
     const ResourceRequest& resource_request,
-    ExecutionContext* execution_context_for_logging) {
-  const HttpsState https_state = fetch_client_settings_object->GetHttpsState();
+    ExecutionContext* execution_context_for_logging,
+    LocalFrame* frame) {
   const KURL& request_url = resource_request.Url();
   // We are currently not autoupgrading plugin loaded content, which is why
   // check_mode_for_plugin is hardcoded to kStrict.
+  bool settings_restricts_mixed_content;
+  if (frame &&
+      RuntimeEnabledFeatures::
+          MixedContentAutoupgradesUseIsMixedContentRestrictedInFrameEnabled()) {
+    settings_restricts_mixed_content =
+        IsMixedContentRestrictedInFrameContext(frame);
+  } else {
+    settings_restricts_mixed_content =
+        fetch_client_settings_object->GetHttpsState() == HttpsState::kModern;
+  }
   if (!base::FeatureList::IsEnabled(
           blink::features::kMixedContentAutoupgrade) ||
-      https_state == HttpsState::kNone ||
+      !settings_restricts_mixed_content ||
       MixedContent::ContextTypeFromRequestContext(
           type, MixedContent::CheckModeForPlugin::kStrict) !=
           mojom::blink::MixedContentContextType::kOptionallyBlockable) {
@@ -832,6 +897,59 @@ bool MixedContentChecker::ShouldAutoupgrade(
       }
     }
     return false;
+  }
+
+  // Skip autoupgrades for local targets if the request is a Local Network
+  // Access (LNA) request. These requests are also exempted from mixed content
+  // checks (see `ShouldBlockFetch()`), and cannot get publicly trusted HTTPS
+  // certificates. LNA checks later on ensure that (a) the request is actually
+  // an LNA request, and (b) the user has given permission for the LNA request
+  // to go through.
+  // A request is a possible LNA request if one of the following is true:
+  //
+  // (1) The `targetAddressSpace` fetch option was set.
+  //     `target_address_space` here is local/loopback only when resource
+  //     request has explicitly set `targetAddressSpace` fetch option.
+  // (2) The url can be determined to be hosted in the local or loopback
+  //      address spaces.
+  //
+  // Loopback addresses shouldn't need to be checked as they are considered
+  // secure and not mixed content, but it can't hurt.
+  //
+  // Reference:
+  // https://wicg.github.io/local-network-access/
+  //
+  // TODO(crbug.com/395895368): check the IP address space for initiator, only
+  // skip when the initiator is more public.
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    std::optional<network::mojom::IPAddressSpace> ip_address_space =
+        network::GetAddressSpaceFromUrl(GURL(request_url));
+    if (resource_request.GetTargetAddressSpace() ==
+            network::mojom::blink::IPAddressSpace::kLocal ||
+        resource_request.GetTargetAddressSpace() ==
+            network::mojom::blink::IPAddressSpace::kLoopback ||
+        (ip_address_space &&
+         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+          ip_address_space == network::mojom::IPAddressSpace::kLoopback))) {
+      if (!request_url.ProtocolIs("https")) {
+        if (auto* window =
+                DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {
+          window->AddConsoleMessage(
+              MixedContentChecker::
+                  CreateConsoleMessageAboutFetchLocalNetworkNoAutoupgrade(
+                      fetch_client_settings_object->GlobalObjectUrl(),
+                      request_url));
+          AuditsIssue::ReportMixedContentIssue(
+              fetch_client_settings_object->GlobalObjectUrl(),
+              resource_request.Url(), resource_request.GetRequestContext(),
+              window->document()->GetFrame(),
+              MixedContentResolutionStatus::kMixedContentWarning,
+              resource_request.GetDevToolsId());
+        }
+      }
+      return false;
+    }
   }
   return true;
 }
@@ -864,11 +982,11 @@ void MixedContentChecker::MixedContentFound(
     bool was_allowed,
     const KURL& url_before_redirects,
     bool had_redirect,
-    std::unique_ptr<SourceLocation> source_location) {
+    SourceLocation* source_location) {
   // Logs to the frame console.
   frame->GetDocument()->AddConsoleMessage(CreateConsoleMessageAboutFetch(
       main_resource_url, mixed_content_url, request_context, was_allowed,
-      std::move(source_location)));
+      source_location));
 
   AuditsIssue::ReportMixedContentIssue(
       main_resource_url, mixed_content_url, request_context, frame,
@@ -915,6 +1033,22 @@ MixedContentChecker::CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
       main_resource_url.ElidedString().Utf8().c_str(),
       mixed_content_url.ElidedString().Utf8().c_str());
   return MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kSecurity,
+      mojom::blink::ConsoleMessageLevel::kWarning, message);
+}
+
+// static
+ConsoleMessage*
+MixedContentChecker::CreateConsoleMessageAboutFetchLocalNetworkNoAutoupgrade(
+    const KURL& main_resource_url,
+    const KURL& mixed_content_url) {
+  String message = String::Format(
+      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
+      "insecure element '%s'. This request was "
+      "not upgraded to HTTPS because it is a local network request.",
+      main_resource_url.ElidedString().Utf8().c_str(),
+      mixed_content_url.ElidedString().Utf8().c_str());
+  return MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kWarning, message);
 }
@@ -936,7 +1070,8 @@ void MixedContentChecker::UpgradeInsecureRequest(
     const FetchClientSettingsObject* fetch_client_settings_object,
     ExecutionContext* execution_context_for_logging,
     mojom::RequestContextFrameType frame_type,
-    WebContentSettingsClient* settings_client) {
+    WebContentSettingsClient* settings_client,
+    LocalFrame* frame) {
   // We always upgrade requests that meet any of the following criteria:
   //  1. Are for subresources.
   //  2. Are for nested frames.
@@ -961,7 +1096,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
     if (context == mojom::blink::RequestContextType::UNSPECIFIED ||
         !MixedContentChecker::ShouldAutoupgrade(
             fetch_client_settings_object, context, settings_client,
-            resource_request, execution_context_for_logging)) {
+            resource_request, execution_context_for_logging, frame)) {
       return;
     }
     // We set the upgrade if insecure flag regardless of whether we autoupgrade
@@ -1006,7 +1141,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
           mojom::blink::RequestContextType::FORM ||
       (!url.Host().IsNull() &&
        fetch_client_settings_object->GetUpgradeInsecureNavigationsSet()
-           .Contains(url.Host().Impl()->GetHash()))) {
+           .Contains(url.Host().ToString().Impl()->GetHash()))) {
     if (!resource_request.IsAutomaticUpgrade()) {
       // These UseCounters are specific for UpgradeInsecureRequests, don't log
       // for autoupgrades.
@@ -1034,7 +1169,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
                 WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable);
             break;
           case mojom::blink::MixedContentContextType::kNotMixedContent:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
       }
     }

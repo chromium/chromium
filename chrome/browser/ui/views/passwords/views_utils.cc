@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -61,7 +62,8 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int link_message_id,
     const std::u16string& email,
     base::RepeatingClosure open_link_closure,
-    int context) {
+    int context,
+    int style) {
   const std::u16string link = l10n_util::GetStringUTF16(link_message_id);
 
   std::vector<size_t> offsets;
@@ -71,7 +73,7 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
   label->SetTextContext(context);
-  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  label->SetDefaultTextStyle(style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   label->AddStyleRange(
@@ -102,7 +104,8 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     base::RepeatingClosure open_link_closure,
-    int context) {
+    int context,
+    int style) {
   const std::u16string link = l10n_util::GetStringUTF16(link_message_id);
 
   size_t link_offset;
@@ -112,7 +115,7 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
   label->SetTextContext(context);
-  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  label->SetDefaultTextStyle(style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   label->AddStyleRange(
@@ -136,7 +139,7 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       GetDisplayPassword(form), views::style::CONTEXT_DIALOG_BODY_TEXT);
   if (!form.IsFederatedCredential()) {
-    label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
+    label->SetTextStyle(views::style::STYLE_SECONDARY_MONOSPACED);
     label->SetObscured(true);
     label->SetElideBehavior(gfx::TRUNCATE);
   } else {
@@ -247,8 +250,8 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>(passwords.begin(),
                                                      passwords.end())),
-      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, kDisplayArrow,
-      std::move(reveal_password_callback));
+      views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY_MONOSPACED,
+      kDisplayArrow, std::move(reveal_password_callback));
   combobox->SetText(form.password_value);
   combobox->SetPasswordIconTooltips(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),
@@ -269,7 +272,7 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   views::Label* title_label = header->AddChildView(
       views::BubbleFrameView::CreateDefaultTitleLabel(title));
 
@@ -291,7 +294,7 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
 void EmphasizeTokens(views::Label* label,
                      views::style::TextStyle emphasize_style,
                      const std::vector<std::u16string>& tokens) {
-  const std::u16string& text = label->GetText();
+  const std::u16string_view text = label->GetText();
   for (const std::u16string& token : tokens) {
     size_t start = text.find(token, 0);
     while (start != std::u16string::npos) {

@@ -361,7 +361,7 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_enrollment_timer_;
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_device_sync_timer_;
   NetworkStateTestHelper network_helper_{
-      false /* use_default_devices_and_services */};
+      /*use_default_devices_and_services=*/false};
   std::string wifi_network_service_path_;
   std::unique_ptr<CryptAuthScheduler> scheduler_;
 };

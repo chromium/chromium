@@ -17,9 +17,8 @@
 enum class OmniboxFocusTrigger {
   kOther,
   kPinnedFakebox,
-  kPinnedLargeFakebox,
-  kUnpinnedLargeFakebox,
   kUnpinnedFakebox,
+  kNTPOmnibox,  // Note: only used when kOmniboxMobileParityUpdateV2 is enabled.
 };
 
 // Orchestrator for the animation occurring when the omnibox is

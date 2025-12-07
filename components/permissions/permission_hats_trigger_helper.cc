@@ -4,17 +4,21 @@
 
 #include "components/permissions/permission_hats_trigger_helper.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check_is_test.h"
+#include "base/i18n/number_formatting.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -24,6 +28,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,11 +47,22 @@ std::vector<std::string> SplitCsvString(const std::string& csv_string) {
 
 bool StringMatchesFilter(const std::string& string, const std::string& filter) {
   return filter.empty() ||
-         base::ranges::any_of(SplitCsvString(filter),
-                              [string](std::string_view current_filter) {
-                                return base::EqualsCaseInsensitiveASCII(
-                                    string, current_filter);
-                              });
+         std::ranges::any_of(
+             SplitCsvString(filter), [string](std::string_view current_filter) {
+               return base::EqualsCaseInsensitiveASCII(string, current_filter);
+             });
+}
+
+std::string PromptOptionsToString(PromptOptions prompt_options) {
+  if (auto* v = std::get_if<GeolocationPromptOptions>(&prompt_options)) {
+    switch (v->selected_accuracy) {
+      case GeolocationAccuracy::kPrecise:
+        return "precise";
+      case GeolocationAccuracy::kApproximate:
+        return "approximate";
+    }
+  }
+  return std::string();
 }
 
 std::map<std::string, std::pair<std::string, std::string>>
@@ -99,7 +115,16 @@ GetKeyToValueFilterPairMap(
        {content_settings::ContentSettingToString(
             prompt_parameters.initial_permission_status),
         feature_params::kPermissionPromptSurveyInitialPermissionStatusFilter
-            .Get()}}};
+            .Get()}},
+      {kPermissionPromptSurveyPromptOptionsKey,
+       {PromptOptionsToString(prompt_parameters.prompt_options), ""}},
+      {kPermissionPromptSurveyPromptDisplayDurationKey,
+       {prompt_parameters.prompt_display_duration.has_value()
+            ? base::UTF16ToUTF8(base::FormatNumber(
+                  prompt_parameters.prompt_display_duration.value()
+                      .InMilliseconds()))
+            : "",
+        ""}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -117,20 +142,17 @@ bool IsValidConfiguration(
   }
 
   // Returns false if all filter parameters are empty.
-  return !base::ranges::all_of(
-      filter_pair_map,
-      [](std::pair<std::string, std::pair<std::string, std::string>> entry) {
-        return entry.second.second.empty();
-      });
+  return !std::ranges::all_of(filter_pair_map, [](const auto& entry) {
+    return entry.second.second.empty();
+  });
 }
 
-std::vector<double> ParseProbabilityVector(std::string probability_vector_csv) {
+std::vector<double> ParseProbabilityVector() {
   std::vector<std::string> probability_string_vector =
-      base::SplitString(feature_params::kProbabilityVector.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      SplitCsvString(feature_params::kProbabilityVector.Get());
   std::vector<double> checked_probability_vector;
-  double probability;
-  for (std::string probability_string : probability_string_vector) {
+  for (const std::string& probability_string : probability_string_vector) {
+    double probability;
     if (!base::StringToDouble(probability_string, &probability)) {
       // Parsing failed, configuration error. Return empty array.
       return std::vector<double>();
@@ -140,38 +162,31 @@ std::vector<double> ParseProbabilityVector(std::string probability_vector_csv) {
   return checked_probability_vector;
 }
 
-std::vector<double>& GetProbabilityVector(std::string probability_vector_csv) {
+std::vector<double>& GetProbabilityVector() {
   static base::NoDestructor<std::vector<double>> probability_vector(
-      [probability_vector_csv] {
-        return ParseProbabilityVector(probability_vector_csv);
-      }());
-
+      [] { return ParseProbabilityVector(); }());
   if (is_test) {
     CHECK_IS_TEST();
-    *probability_vector = ParseProbabilityVector(probability_vector_csv);
+    *probability_vector = ParseProbabilityVector();
   }
   return *probability_vector;
 }
 
-std::vector<std::string> ParseRequestFilterVector(
-    std::string request_vector_csv) {
-  return base::SplitString(
-      feature_params::kPermissionsPromptSurveyRequestTypeFilter.Get(), ",",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+std::vector<std::string> ParseRequestFilterVector() {
+  return SplitCsvString(
+      feature_params::kPermissionsPromptSurveyRequestTypeFilter.Get());
 }
 
-std::vector<std::string>& GetRequestFilterVector(
-    std::string request_vector_csv) {
+std::vector<std::string>& GetRequestFilterVector() {
   static base::NoDestructor<std::vector<std::string>> request_filter_vector(
-      [request_vector_csv] {
-        return ParseRequestFilterVector(request_vector_csv);
-      }());
+      [] { return ParseRequestFilterVector(); }());
   if (is_test) {
     CHECK_IS_TEST();
-    *request_filter_vector = ParseRequestFilterVector(request_vector_csv);
+    *request_filter_vector = ParseRequestFilterVector();
   }
   return *request_filter_vector;
 }
+
 }  // namespace
 
 PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
@@ -187,7 +202,8 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     std::optional<GURL> gurl,
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
-    ContentSetting initial_permission_status)
+    ContentSetting initial_permission_status,
+    PromptOptions prompt_options)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -199,7 +215,8 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
       url(gurl.has_value() ? gurl->spec() : ""),
       pepc_prompt_position(pepc_prompt_position),
-      initial_permission_status(initial_permission_status) {}
+      initial_permission_status(initial_permission_status),
+      prompt_options(prompt_options) {}
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     double trigger_probability,
@@ -207,9 +224,9 @@ PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     std::optional<std::u16string> custom_survey_invitation,
     std::optional<messages::MessageIdentifier> message_identifier)
     : trigger_probability(trigger_probability),
-      supplied_trigger_id(supplied_trigger_id),
-      custom_survey_invitation(custom_survey_invitation),
-      message_identifier(message_identifier) {}
+      supplied_trigger_id(std::move(supplied_trigger_id)),
+      custom_survey_invitation(std::move(custom_survey_invitation)),
+      message_identifier(std::move(message_identifier)) {}
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::
     ~SurveyParametersForHats() = default;
@@ -219,14 +236,15 @@ PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
 
 PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     const PromptParametersForHats& other) = default;
+
 PermissionHatsTriggerHelper::PromptParametersForHats::
     ~PromptParametersForHats() = default;
 
 PermissionHatsTriggerHelper::SurveyProductSpecificData::
     SurveyProductSpecificData(SurveyBitsData survey_bits_data,
                               SurveyStringData survey_string_data)
-    : survey_bits_data(survey_bits_data),
-      survey_string_data(survey_string_data) {}
+    : survey_bits_data(std::move(survey_bits_data)),
+      survey_string_data(std::move(survey_string_data)) {}
 
 PermissionHatsTriggerHelper::SurveyProductSpecificData::
     ~SurveyProductSpecificData() = default;
@@ -235,7 +253,8 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData
 PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
     PromptParametersForHats prompt_parameters) {
   static const char* const kProductSpecificBitsFields[] = {
-      kPermissionsPromptSurveyHadGestureKey};
+      kPermissionsPromptSurveyHadGestureKey,
+  };
   static const char* const kProductSpecificStringFields[] = {
       kPermissionsPromptSurveyPromptDispositionKey,
       kPermissionsPromptSurveyPromptDispositionReasonKey,
@@ -246,7 +265,10 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
       kPermissionPromptSurveyPepcPromptPositionKey,
       kPermissionPromptSurveyInitialPermissionStatusKey,
-      kPermissionPromptSurveyUrlKey};
+      kPermissionPromptSurveyUrlKey,
+      kPermissionPromptSurveyPromptOptionsKey,
+      kPermissionPromptSurveyPromptDisplayDurationKey,
+  };
 
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);
   std::map<std::string, bool> bits_data;
@@ -266,7 +288,8 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
     }
   }
 
-  return SurveyProductSpecificData(bits_data, string_data);
+  return SurveyProductSpecificData(std::move(bits_data),
+                                   std::move(string_data));
 }
 
 // static
@@ -316,8 +339,7 @@ void PermissionHatsTriggerHelper::
     IncrementOneTimePermissionPromptsDecidedIfApplicable(
         ContentSettingsType type,
         PrefService* pref_service) {
-  if (base::FeatureList::IsEnabled(features::kOneTimePermission) &&
-      PermissionUtil::DoesSupportTemporaryGrants(type)) {
+  if (PermissionUtil::DoesSupportTemporaryGrants(type)) {
     pref_service->SetInteger(
         prefs::kOneTimePermissionPromptsDecidedCount,
         pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount) +
@@ -333,17 +355,20 @@ PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucket(
       pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount);
   if (count <= 1) {
     return OneTimePermissionPromptsDecidedBucket::BUCKET_0_1;
-  } else if (count <= 3) {
-    return OneTimePermissionPromptsDecidedBucket::BUCKET_2_3;
-  } else if (count <= 5) {
-    return OneTimePermissionPromptsDecidedBucket::BUCKET_4_5;
-  } else if (count <= 10) {
-    return OneTimePermissionPromptsDecidedBucket::BUCKET_6_10;
-  } else if (count <= 20) {
-    return OneTimePermissionPromptsDecidedBucket::BUCKET_11_20;
-  } else {
-    return OneTimePermissionPromptsDecidedBucket::BUCKET_GT20;
   }
+  if (count <= 3) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_2_3;
+  }
+  if (count <= 5) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_4_5;
+  }
+  if (count <= 10) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_6_10;
+  }
+  if (count <= 20) {
+    return OneTimePermissionPromptsDecidedBucket::BUCKET_11_20;
+  }
+  return OneTimePermissionPromptsDecidedBucket::BUCKET_GT20;
 }
 
 // static
@@ -363,7 +388,7 @@ std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
     case BUCKET_GT20:
       return "GT20";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -371,8 +396,7 @@ std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
 std::optional<PermissionHatsTriggerHelper::SurveyParametersForHats>
 PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
     permissions::RequestType request_type) {
-  auto& probability_vector =
-      GetProbabilityVector(feature_params::kProbabilityVector.Get());
+  auto& probability_vector = GetProbabilityVector();
 
   std::vector<std::string> permission_trigger_id_vector(
       base::SplitString(feature_params::kPermissionsPromptSurveyTriggerId.Get(),
@@ -441,41 +465,42 @@ PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
     // If a value is configured, use it, otherwise set it to 1.
     double probability =
         probability_vector.size() == 1 ? probability_vector[0] : 1.0;
-    const std::string& supplied_trigger_id =
+    std::string supplied_trigger_id =
         is_custom_invitation_arm ? custom_invitation_trigger_id_vector[0]
                                  : permission_trigger_id_vector[0];
     return PermissionHatsTriggerHelper::SurveyParametersForHats(
-        probability, supplied_trigger_id, custom_invitation);
-  } else if (permission_trigger_id_vector.size() != probability_vector.size()) {
+        probability, std::move(supplied_trigger_id),
+        std::move(custom_invitation));
+  }
+
+  if (permission_trigger_id_vector.size() != probability_vector.size()) {
     // Configuration error
     return std::nullopt;
-  } else {
-    auto& request_filter_vector = GetRequestFilterVector(
-        feature_params::kPermissionsPromptSurveyRequestTypeFilter.Get());
+  }
 
-    if (request_filter_vector.size() != permission_trigger_id_vector.size()) {
-      // Configuration error
-      return std::nullopt;
-    }
+  auto& request_filter_vector = GetRequestFilterVector();
 
-    for (unsigned long i = 0; i < permission_trigger_id_vector.size(); i++) {
-      if (base::EqualsCaseInsensitiveASCII(
-              permissions::PermissionUmaUtil::GetRequestTypeString(
-                  request_type),
-              request_filter_vector[i])) {
-        double probability = probability_vector[i];
-        const std::string& supplied_trigger_id =
-            is_custom_invitation_arm ? custom_invitation_trigger_id_vector[i]
-                                     : permission_trigger_id_vector[i];
-        return PermissionHatsTriggerHelper::SurveyParametersForHats(
-            probability, supplied_trigger_id, custom_invitation,
-            message_identifier);
-      }
-    }
-
-    // No matching filter
+  if (request_filter_vector.size() != permission_trigger_id_vector.size()) {
+    // Configuration error
     return std::nullopt;
   }
+
+  for (unsigned long i = 0; i < permission_trigger_id_vector.size(); i++) {
+    if (base::EqualsCaseInsensitiveASCII(
+            permissions::PermissionUmaUtil::GetRequestTypeString(request_type),
+            request_filter_vector[i])) {
+      double probability = probability_vector[i];
+      std::string supplied_trigger_id =
+          is_custom_invitation_arm ? custom_invitation_trigger_id_vector[i]
+                                   : permission_trigger_id_vector[i];
+      return PermissionHatsTriggerHelper::SurveyParametersForHats(
+          probability, std::move(supplied_trigger_id),
+          std::move(custom_invitation), std::move(message_identifier));
+    }
+  }
+
+  // No matching filter
+  return std::nullopt;
 }
 
 // static

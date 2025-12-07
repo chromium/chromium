@@ -5,13 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "services/network/public/mojom/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink-forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-isolate.h"
-
-namespace WTF {
-class String;
-}
 
 namespace blink {
 
@@ -24,22 +21,40 @@ class SharedStorageRunOperationMethodOptions;
 static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
 
 static constexpr char kOpaqueContextOriginCheckErrorMessage[] =
-    "the method on sharedStorage is not allowed in an opaque origin context";
+    "The shared storage method is not allowed in an opaque origin context";
 
 static constexpr char kOpaqueDataOriginCheckErrorMessage[] =
-    "the method on sharedStorage is not allowed to have an opaque data origin";
+    "The shared storage method is not allowed to have an opaque data origin";
 
-// This enum corresponds to the IDL enum `SharedStorageDataOrigin` in
+static constexpr char kInvalidKeyParameterLengthErrorMessage[] =
+    "Length of the \"key\" parameter is not valid";
+
+static constexpr char kInvalidValueParameterLengthErrorMessage[] =
+    "Length of the \"value\" parameter is not valid";
+
+// This enum classifies the value of `dataOrigin` in
 // shared_storage_worklet_options.idl.
 enum class SharedStorageDataOrigin {
   kContextOrigin = 0,
   kScriptOrigin = 1,
+  kCustomOrigin = 2,
+  kInvalid = 3,
 };
 
-// Helper method to convert v8 string to WTF::String.
-bool StringFromV8(v8::Isolate* isolate,
-                  v8::Local<v8::Value> val,
-                  WTF::String* out);
+// Helper method to convert v8 string to blink::String.
+bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out);
+
+// Whether `lock_name` is a reserved lock resource name.
+// See https://w3c.github.io/web-locks/#resource-name
+bool IsReservedLockName(const String& lock_name);
+
+// Whether `methods_with_options` is a valid batchUpdate() argument: according
+// to the specification (https://wicg.github.io/shared-storage/#batch-update),
+// none of the inner methods should specify the `with_lock` option.
+bool IsValidSharedStorageBatchUpdateMethodsArgument(
+    const Vector<
+        network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
+        methods_with_options);
 
 // Return if there is a valid browsing context associated with `script_state`.
 // Throw an error via `exception_state` if invalid.
@@ -47,10 +62,9 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state);
 
 // Return if the shared-storage permissions policy is allowed in
-// `execution_context`. Reject the `resolver` with an error if disallowed.
-bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
-                                         ExecutionContext& execution_context,
-                                         ScriptPromiseResolverBase& resolver);
+// `execution_context`. Throw an error via `exception_state` if disallowed.
+bool CheckSharedStoragePermissionsPolicy(ExecutionContext& execution_context,
+                                         ExceptionState& exception_state);
 
 // Returns true if a valid privateAggregationConfig is provided or if no config
 // is provided. A config is invalid if an invalid (i.e. too long) context_id

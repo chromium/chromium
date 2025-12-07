@@ -75,10 +75,11 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(int w,
   result.expired = false;
 
   // Create bitmap and fill with `color`.
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color), false,
-                                    &data->as_vector());
-  result.bitmap_data = data;
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color),
+                                        /*discard_transparency=*/false);
+  result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data.value()));
 
   result.pixel_size = gfx::Size(w, h);
   result.icon_url = GURL(kDummyIconUrl);
@@ -109,7 +110,7 @@ class LargeIconServiceTest : public testing::Test {
   LargeIconServiceTest(const LargeIconServiceTest&) = delete;
   LargeIconServiceTest& operator=(const LargeIconServiceTest&) = delete;
 
-  ~LargeIconServiceTest() override {}
+  ~LargeIconServiceTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -160,7 +161,8 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
               Run(favicon_base::GoogleFaviconServerRequestStatus::SUCCESS));
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
-      "Favicons.LargeIconService.DownloadedSize", 64, /*expected_count=*/1);
+      "Favicons.LargeIconService.DownloadedSize", 64,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServerWithOriginalUrl) {
@@ -312,7 +314,8 @@ TEST_F(LargeIconServiceTest, ShouldReportUnavailableIfFetchFromServerFails) {
   task_environment_.RunUntilIdle();
   // Verify that download failure gets recorded.
   histogram_tester_.ExpectUniqueSample(
-      "Favicons.LargeIconService.DownloadedSize", 0, /*expected_count=*/1);
+      "Favicons.LargeIconService.DownloadedSize", 0,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfUnavailable) {
@@ -438,7 +441,7 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
   LargeIconServiceGetterTest& operator=(const LargeIconServiceGetterTest&) =
       delete;
 
-  ~LargeIconServiceGetterTest() override {}
+  ~LargeIconServiceGetterTest() override = default;
 
   void ExpectFetchImageFromGoogleServer() {
     EXPECT_CALL(*mock_image_fetcher_,
@@ -761,7 +764,7 @@ TEST_P(LargeIconServiceGetterTest, FallbackSinceIconTooSmall) {
   EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_TRUE(HasBackgroundColor(*returned_fallback_style_, kTestColor));
   histogram_tester_.ExpectUniqueSample("Favicons.LargeIconService.FallbackSize",
-                                       16, /*expected_count=*/1);
+                                       16, /*expected_bucket_count=*/1);
 }
 
 TEST_P(LargeIconServiceGetterTest, FallbackSinceIconNotSquare) {
@@ -771,7 +774,7 @@ TEST_P(LargeIconServiceGetterTest, FallbackSinceIconNotSquare) {
   EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_TRUE(HasBackgroundColor(*returned_fallback_style_, kTestColor));
   histogram_tester_.ExpectUniqueSample("Favicons.LargeIconService.FallbackSize",
-                                       24, /*expected_count=*/1);
+                                       24, /*expected_bucket_count=*/1);
 }
 
 TEST_P(LargeIconServiceGetterTest, FallbackSinceIconMissing) {
@@ -781,7 +784,7 @@ TEST_P(LargeIconServiceGetterTest, FallbackSinceIconMissing) {
   EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_TRUE(returned_fallback_style_->is_default_background_color);
   histogram_tester_.ExpectUniqueSample("Favicons.LargeIconService.FallbackSize",
-                                       0, /*expected_count=*/1);
+                                       0, /*expected_bucket_count=*/1);
 }
 
 TEST_P(LargeIconServiceGetterTest, FallbackSinceIconMissingNoScale) {
@@ -791,7 +794,7 @@ TEST_P(LargeIconServiceGetterTest, FallbackSinceIconMissingNoScale) {
   EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_TRUE(returned_fallback_style_->is_default_background_color);
   histogram_tester_.ExpectUniqueSample("Favicons.LargeIconService.FallbackSize",
-                                       0, /*expected_count=*/1);
+                                       0, /*expected_bucket_count=*/1);
 }
 
 // Oddball case where we demand a high resolution icon to scale down. Generates
@@ -803,7 +806,7 @@ TEST_P(LargeIconServiceGetterTest, FallbackSinceTooPicky) {
   EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_TRUE(HasBackgroundColor(*returned_fallback_style_, kTestColor));
   histogram_tester_.ExpectUniqueSample("Favicons.LargeIconService.FallbackSize",
-                                       24, /*expected_count=*/1);
+                                       24, /*expected_bucket_count=*/1);
 }
 
 TEST_P(LargeIconServiceGetterTest, IconTooSmallStillWantBitmap) {

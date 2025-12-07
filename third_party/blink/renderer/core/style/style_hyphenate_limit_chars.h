@@ -36,7 +36,6 @@ class CORE_EXPORT StyleHyphenateLimitChars {
   }
 
   bool operator==(const StyleHyphenateLimitChars& other) const;
-  bool operator!=(const StyleHyphenateLimitChars& other) const;
 
  private:
   uint8_t min_word_chars_ = 0;
@@ -49,11 +48,6 @@ inline bool StyleHyphenateLimitChars::operator==(
   return min_word_chars_ == other.min_word_chars_ &&
          min_before_chars_ == other.min_before_chars_ &&
          min_after_chars_ == other.min_after_chars_;
-}
-
-inline bool StyleHyphenateLimitChars::operator!=(
-    const StyleHyphenateLimitChars& other) const {
-  return !operator==(other);
 }
 
 }  // namespace blink

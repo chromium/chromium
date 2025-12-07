@@ -191,7 +191,7 @@ const AccountId& UserContext::GetAccountId() const {
   return account_id_;
 }
 
-const std::string& UserContext::GetGaiaID() const {
+GaiaId UserContext::GetGaiaID() const {
   return account_id_.GetGaiaId();
 }
 
@@ -306,6 +306,10 @@ UserContext::GetSyncTrustedVaultKeys() const {
 
 bool UserContext::CanLockManagedGuestSession() const {
   return can_lock_managed_guest_session_;
+}
+
+bool UserContext::GenerateFreshRecoveryId() const {
+  return generate_fresh_recovery_id_;
 }
 
 bool UserContext::HasCredentials() const {
@@ -463,6 +467,10 @@ void UserContext::SetIsUnderAdvancedProtection(
 void UserContext::SetCanLockManagedGuestSession(
     bool can_lock_managed_guest_session) {
   can_lock_managed_guest_session_ = can_lock_managed_guest_session;
+}
+
+void UserContext::SetGenerateFreshRecoveryId(bool generate_fresh_recovery_id) {
+  generate_fresh_recovery_id_ = generate_fresh_recovery_id;
 }
 
 void UserContext::SetLoginInputMethodIdUsed(

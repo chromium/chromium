@@ -9,7 +9,6 @@
 #include "device/bluetooth/test/mock_bluetooth_gatt_descriptor.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 
-using testing::Invoke;
 using testing::Return;
 using testing::ReturnRefOfCopy;
 using testing::_;
@@ -30,13 +29,12 @@ MockBluetoothGattCharacteristic::MockBluetoothGattCharacteristic(
   ON_CALL(*this, GetProperties()).WillByDefault(Return(properties));
   ON_CALL(*this, GetPermissions()).WillByDefault(Return(permissions));
   ON_CALL(*this, IsNotifying()).WillByDefault(Return(false));
-  ON_CALL(*this, GetDescriptors()).WillByDefault(Invoke([this] {
+  ON_CALL(*this, GetDescriptors()).WillByDefault([this] {
     return BluetoothRemoteGattCharacteristic::GetDescriptors();
-  }));
-  ON_CALL(*this, GetDescriptor(_))
-      .WillByDefault(Invoke([this](const std::string& id) {
-        return BluetoothRemoteGattCharacteristic::GetDescriptor(id);
-      }));
+  });
+  ON_CALL(*this, GetDescriptor(_)).WillByDefault([this](const std::string& id) {
+    return BluetoothRemoteGattCharacteristic::GetDescriptor(id);
+  });
 }
 
 MockBluetoothGattCharacteristic::~MockBluetoothGattCharacteristic() = default;

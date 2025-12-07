@@ -37,28 +37,32 @@ namespace blink {
 
 namespace {
 
-class ScrollIntoViewTest : public SimTest,
-                           public ::testing::WithParamInterface<
-                               std::vector<base::test::FeatureRef>> {
+class ScrollIntoViewTest : public SimTest {
  public:
   ScrollIntoViewTest() {
-    feature_list_.InitWithFeatures(
-        GetParam(),
-        /*disabled_features=*/std::vector<base::test::FeatureRef>());
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            ::features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0.0"},          //
+                {"cubic_bezier_x2", "0.0"},          //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ScrollIntoViewTest,
-    testing::Values(std::vector<base::test::FeatureRef>{},
-                    std::vector<base::test::FeatureRef>{
-                        features::kMultiSmoothScrollIntoView}));
-
-TEST_P(ScrollIntoViewTest, InstantScroll) {
+TEST_F(ScrollIntoViewTest, InstantScroll) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -72,14 +76,14 @@ TEST_P(ScrollIntoViewTest, InstantScroll) {
   ASSERT_EQ(Window().scrollY(), 0);
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  content->scrollIntoView(
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  content->scrollIntoViewForTesting(
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options));
 
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, ScrollPaddingOnDocumentElWhenBodyDefinesViewport) {
+TEST_F(ScrollIntoViewTest, ScrollPaddingOnDocumentElWhenBodyDefinesViewport) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 300));
@@ -104,14 +108,14 @@ TEST_P(ScrollIntoViewTest, ScrollPaddingOnDocumentElWhenBodyDefinesViewport) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
   ASSERT_EQ(GetDocument().body(), GetDocument().ViewportDefiningElement());
   ASSERT_EQ(Window().scrollY(), target->OffsetTop() - 10);
 }
 
-TEST_P(ScrollIntoViewTest,
+TEST_F(ScrollIntoViewTest,
        ScrollPaddingOnDocumentElWhenDocumentElDefinesViewport) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
@@ -134,7 +138,7 @@ TEST_P(ScrollIntoViewTest,
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
   ASSERT_EQ(GetDocument().documentElement(),
@@ -142,7 +146,7 @@ TEST_P(ScrollIntoViewTest,
   ASSERT_EQ(Window().scrollY(), target->OffsetTop() - 10);
 }
 
-TEST_P(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
+TEST_F(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 300));
@@ -170,7 +174,7 @@ TEST_P(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
   ASSERT_EQ(GetDocument().documentElement(),
@@ -188,7 +192,7 @@ TEST_P(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
 // case, invoking scrollIntoView on a child element within the scrollport
 // should not trigger scrolling.
 // See https://crbug.com/40055750
-TEST_P(ScrollIntoViewTest, EmptyScrollportSinceScrollPadding) {
+TEST_F(ScrollIntoViewTest, EmptyScrollportSinceScrollPadding) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 300));
@@ -226,13 +230,13 @@ TEST_P(ScrollIntoViewTest, EmptyScrollportSinceScrollPadding) {
   Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   Element* scroller = GetDocument().getElementById(AtomicString("container"));
 
   ASSERT_EQ(scroller->scrollLeft(), 0);
 }
 
-TEST_P(ScrollIntoViewTest, SmoothScroll) {
+TEST_F(ScrollIntoViewTest, SmoothScroll) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -244,27 +248,26 @@ TEST_P(ScrollIntoViewTest, SmoothScroll) {
 
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, NestedContainer) {
+TEST_F(ScrollIntoViewTest, NestedContainer) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -281,61 +284,30 @@ TEST_P(ScrollIntoViewTest, NestedContainer) {
   Element* container = GetDocument().getElementById(AtomicString("container"));
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   ASSERT_EQ(container->scrollTop(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // If MultiSmoothScrollIntoView is enabled, the frames will also scroll the
-    // inner container.
-    ASSERT_NEAR(container->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  } else {
-    ASSERT_EQ(container->scrollTop(), 0);
-  }
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 171, 1);
+  ASSERT_NEAR(container->scrollTop(), 171, 1);
 
   // Finish scrolling the outer container
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), container->OffsetTop());
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // If MultiSmoothScrollIntoView is enabled, the frames will also have
-    // scrolled inner container.
-    ASSERT_EQ(container->scrollTop(),
-              content->OffsetTop() - container->OffsetTop());
-  } else {
-    ASSERT_EQ(container->scrollTop(), 0);
-  }
-
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // The rest of the test depends on scrolling the inner and outer scrollers
-    // sequentially, which we do not do if MultiSmoothScrollIntoView is enabled.
-    return;
-  }
-
-  // Scrolling the inner container
-  Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 794 : 299), 1);
-
-  // Finish scrolling the inner container
-  Compositor().BeginFrame(1);
   ASSERT_EQ(container->scrollTop(),
             content->OffsetTop() - container->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
+TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -359,8 +331,8 @@ TEST_P(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Element* content1 = GetDocument().getElementById(AtomicString("content1"));
   Element* content2 = GetDocument().getElementById(AtomicString("content2"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
 
@@ -369,73 +341,29 @@ TEST_P(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   ASSERT_EQ(container1->scrollTop(), 0);
   ASSERT_EQ(container2->scrollTop(), 0);
 
-  content1->scrollIntoView(arg);
+  content1->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // If MultiSmoothScrollIntoView is enabled, the frames will also scroll
-    // container1.
-    ASSERT_NEAR(container1->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  } else {
-    ASSERT_EQ(container1->scrollTop(), 0);
-  }
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 171, 1);
+  ASSERT_NEAR(container1->scrollTop(), 171, 1);
 
-  content2->scrollIntoView(arg);
+  content2->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 171 : 61), 1);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // If MultiSmoothScrollIntoView is enabled, the new scrollIntoView does not
-    // cancel the first scrollIntoView so the scroll on container1 continues.
-    ASSERT_GT(container1->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299));
-  } else {
-    ASSERT_EQ(container1->scrollTop(), 0);  // container1 should not scroll.
-  }
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 35, 1);
+  ASSERT_GT(container1->scrollTop(), 171);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), container2->OffsetTop());
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // If MultiSmoothScrollIntoView is enabled, the frames will also have
-    // scrolled inner container.
-    ASSERT_EQ(container2->scrollTop(),
-              content2->OffsetTop() - container2->OffsetTop());
-  } else {
-    ASSERT_EQ(container2->scrollTop(), 0);
-  }
-
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // The rest of the test depends on scrolling the inner and outer scrollers
-    // sequentially, which we do not do if MultiSmoothScrollIntoView is enabled.
-    return;
-  }
-
-  // Scrolling content2 in container2
-  Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container2->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 952 : 300), 1);
-
-  // Finish all the animation to make sure there is no another animation queued
-  // on container1.
-  while (Compositor().NeedsBeginFrame()) {
-    Compositor().BeginFrame();
-  }
-  ASSERT_EQ(Window().scrollY(), container2->OffsetTop());
   ASSERT_EQ(container2->scrollTop(),
             content2->OffsetTop() - container2->OffsetTop());
-  ASSERT_EQ(container1->scrollTop(), 0);
 }
 
 // Ensure an in-progress smooth sequenced scroll isn't interrupted by a
 // scrollIntoView call that doesn't actually cause scrolling.
-TEST_P(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
+TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -464,48 +392,35 @@ TEST_P(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
 
   {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock("start");
-    options->setBehavior("smooth");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+    options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
     auto* arg =
         MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-    content->scrollIntoView(arg);
+    content->scrollIntoViewForTesting(arg);
   }
 
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 250 : 241), 1);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_NEAR(container->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  } else {
-    ASSERT_EQ(container->scrollTop(), 0);
-  }
+  ASSERT_NEAR(Window().scrollY(), 288, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Since visibleElement is already on screen, this call should be a no-op.
   {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
     // "nearest" is a no-op if the element is fully on-screen.
-    options->setBlock("nearest");
-    options->setBehavior("smooth");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kNearest);
+    options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
     auto* arg =
         MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-    visibleElement->scrollIntoView(arg);
+    visibleElement->scrollIntoViewForTesting(arg);
   }
 
   // The window animation should continue running but the container shouldn't
   // yet have started unless MultiSmoothScrollIntoView support is enabled.
   Compositor().BeginFrame();
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 258 : 260), 1);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_GT(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299));
-  } else {
-    // container should not have scrolled yet.
-    ASSERT_EQ(container->scrollTop(), 0);
-  }
+  ASSERT_NEAR(Window().scrollY(), 292, 1);
+  ASSERT_GT(container->scrollTop(), 732);
 
   // Finish the animation to make sure the animation to content finishes
   // without interruption.
@@ -516,7 +431,7 @@ TEST_P(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   EXPECT_EQ(container->scrollTop(), 1000);
 }
 
-TEST_P(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
+TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -533,50 +448,39 @@ TEST_P(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Element* container = GetDocument().getElementById(AtomicString("container"));
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   ASSERT_EQ(container->scrollTop(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_NEAR(container->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
-  } else {
-    ASSERT_EQ(container->scrollTop(), 0);
-  }
+  Compositor().BeginFrame(0.15);
+  ASSERT_NEAR(Window().scrollY(), 531, 1);
+  ASSERT_NEAR(container->scrollTop(), 531, 1);
 
   ScrollToOptions* window_option = ScrollToOptions::Create();
   window_option->setLeft(0);
   window_option->setTop(0);
-  window_option->setBehavior("smooth");
-  Window().scrollTo(window_option);
+  window_option->setBehavior(V8ScrollBehavior::Enum::kSmooth);
+  Window().scrollTo(nullptr, window_option);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 165 : 58), 1);
+  ASSERT_NEAR(Window().scrollY(), 65, 1);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), 0);
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_EQ(container->scrollTop(),
-              content->OffsetTop() - container->OffsetTop());
-  } else {
-    ASSERT_EQ(container->scrollTop(), 0);
-  }
+  ASSERT_EQ(container->scrollTop(),
+            content->OffsetTop() - container->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, BlockAndInlineSettings) {
+TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -598,46 +502,46 @@ TEST_P(ScrollIntoViewTest, BlockAndInlineSettings) {
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  options->setBlock("nearest");
-  options->setInlinePosition("nearest");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kNearest);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kNearest);
   auto* arg1 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg1);
+  content->scrollIntoViewForTesting(arg1);
   ASSERT_EQ(Window().scrollX(),
             content->OffsetLeft() + content_width - window_width);
   ASSERT_EQ(Window().scrollY(),
             content->OffsetTop() + content_height - window_height);
 
-  options->setBlock("start");
-  options->setInlinePosition("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg2 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg2);
+  content->scrollIntoViewForTesting(arg2);
   ASSERT_EQ(Window().scrollX(), content->OffsetLeft());
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 
-  options->setBlock("center");
-  options->setInlinePosition("center");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kCenter);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kCenter);
   auto* arg3 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg3);
+  content->scrollIntoViewForTesting(arg3);
   ASSERT_EQ(Window().scrollX(),
             content->OffsetLeft() + (content_width - window_width) / 2);
   ASSERT_EQ(Window().scrollY(),
             content->OffsetTop() + (content_height - window_height) / 2);
 
-  options->setBlock("end");
-  options->setInlinePosition("end");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kEnd);
+  options->setInlinePosition(V8ScrollLogicalPosition::Enum::kEnd);
   auto* arg4 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg4);
+  content->scrollIntoViewForTesting(arg4);
   ASSERT_EQ(Window().scrollX(),
             content->OffsetLeft() + content_width - window_width);
   ASSERT_EQ(Window().scrollY(),
             content->OffsetTop() + content_height - window_height);
 }
 
-TEST_P(ScrollIntoViewTest, SmoothAndInstantInChain) {
+TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -660,14 +564,14 @@ TEST_P(ScrollIntoViewTest, SmoothAndInstantInChain) {
       GetDocument().getElementById(AtomicString("inner_container"));
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   ASSERT_EQ(container->scrollTop(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Instant scroll of the window should have finished.
   ASSERT_EQ(Window().scrollY(), container->OffsetTop());
   // Instant scroll of the inner container should not have started.
@@ -679,8 +583,7 @@ TEST_P(ScrollIntoViewTest, SmoothAndInstantInChain) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 794 : 299), 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -691,7 +594,7 @@ TEST_P(ScrollIntoViewTest, SmoothAndInstantInChain) {
             content->OffsetTop() - inner_container->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, SmoothScrollAnchor) {
+TEST_F(ScrollIntoViewTest, SmoothScrollAnchor) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -714,8 +617,7 @@ TEST_P(ScrollIntoViewTest, SmoothScrollAnchor) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 794 : 299), 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -723,7 +625,7 @@ TEST_P(ScrollIntoViewTest, SmoothScrollAnchor) {
             content->OffsetTop() - container->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, FindDoesNotScrollOverflowHidden) {
+TEST_F(ScrollIntoViewTest, FindDoesNotScrollOverflowHidden) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -746,7 +648,7 @@ TEST_P(ScrollIntoViewTest, FindDoesNotScrollOverflowHidden) {
   ASSERT_EQ(container->scrollTop(), 0);
 }
 
-TEST_P(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
+TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -759,19 +661,18 @@ TEST_P(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
 
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -782,7 +683,7 @@ TEST_P(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
 // prevent scrolling a non-default root scroller from the page revealing
 // ScrollIntoView (the layout viewport scroll will be animated, potentially
 // with zoom, from WebViewImpl::FinishScrollFocusedEditableIntoView.
-TEST_P(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
+TEST_F(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
   ScopedImplicitRootScrollerForTest implicit_root_scroller(true);
 
   v8::HandleScope HandleScope(
@@ -878,7 +779,7 @@ TEST_P(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
 }
 
 // This test passes if it doesn't crash/hit an ASAN check.
-TEST_P(ScrollIntoViewTest, RemoveSequencedScrollableArea) {
+TEST_F(ScrollIntoViewTest, RemoveSequencedScrollableArea) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -924,7 +825,7 @@ TEST_P(ScrollIntoViewTest, RemoveSequencedScrollableArea) {
   Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
@@ -937,7 +838,7 @@ TEST_P(ScrollIntoViewTest, RemoveSequencedScrollableArea) {
   Compositor().BeginFrame(1);
 }
 
-TEST_P(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
+TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -963,11 +864,10 @@ TEST_P(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // ProgrammaticScroll that could interrupt the current smooth scroll.
-  Window().scrollTo(0, 0);
+  Window().scrollToForTesting(0, 0);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -975,7 +875,7 @@ TEST_P(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
+TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -990,26 +890,24 @@ TEST_P(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  target->scrollIntoView(arg);
+  target->scrollIntoViewForTesting(arg);
 
   // Scrolling the window
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 79389 : 16971),
-              1);
+  ASSERT_NEAR(Window().scrollY(), 6064, 1);
 
   // Finish scrolling the container
-  Compositor().BeginFrame(0.5);
+  Compositor().BeginFrame(1.5);
   ASSERT_EQ(Window().scrollY(), target->OffsetTop());
 }
 
-TEST_P(ScrollIntoViewTest, OriginCrossingUseCounter) {
+TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -1077,7 +975,7 @@ TEST_P(ScrollIntoViewTest, OriginCrossingUseCounter) {
 
     Element* target =
         local_child_document->getElementById(AtomicString("target"));
-    target->scrollIntoView();
+    target->scrollIntoViewForTesting();
 
     ASSERT_NE(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
               ScrollOffset(0, 0));
@@ -1086,7 +984,8 @@ TEST_P(ScrollIntoViewTest, OriginCrossingUseCounter) {
   }
 
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   // Cross origin frames should record the scroll into view use count.
   {
@@ -1095,7 +994,7 @@ TEST_P(ScrollIntoViewTest, OriginCrossingUseCounter) {
 
     Element* target =
         xorigin_child_document->getElementById(AtomicString("target"));
-    target->scrollIntoView();
+    target->scrollIntoViewForTesting();
 
     ASSERT_NE(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
               ScrollOffset(0, 0));
@@ -1104,7 +1003,7 @@ TEST_P(ScrollIntoViewTest, OriginCrossingUseCounter) {
   }
 }
 
-TEST_P(ScrollIntoViewTest, FromDisplayNoneIframe) {
+TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -1168,11 +1067,11 @@ TEST_P(ScrollIntoViewTest, FromDisplayNoneIframe) {
   // Calling scroll into view on an element without a LayoutObject shouldn't
   // cause scrolling or a crash
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("smooth");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kSmooth);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  target->scrollIntoView(arg);
+  target->scrollIntoViewForTesting(arg);
 
   EXPECT_EQ(Window().scrollY(), 0);
   EXPECT_EQ(Window().scrollX(), 0);
@@ -1192,7 +1091,7 @@ TEST_P(ScrollIntoViewTest, FromDisplayNoneIframe) {
   EXPECT_EQ(Window().scrollX(), 0);
 }
 
-TEST_P(ScrollIntoViewTest, EmptyEditableElementRect) {
+TEST_F(ScrollIntoViewTest, EmptyEditableElementRect) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));

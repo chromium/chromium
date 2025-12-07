@@ -63,11 +63,13 @@ void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
     load_time_data.Set("cant_go_back", true);
   }
 
-  PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
+  PopulateHttpsOnlyModeStringsForSharedHTML(
+      load_time_data,
+      /*august2024_refresh_enabled=*/false);
   PopulateHttpsOnlyModeStringsForBlockingPage(
       load_time_data, request_url(),
       security_interstitials::https_only_mode::HttpInterstitialState{},
-      /*balanced_mode=*/false);
+      /*august2024_refresh_enabled=*/false);
 }
 
 bool HttpsOnlyModeBlockingPage::ShouldDisplayURL() const {
@@ -81,7 +83,7 @@ void HttpsOnlyModeBlockingPage::HandleCommand(
         security_interstitials::MetricsHelper::DONT_PROCEED);
     controller_->GoBack();
   } else if (command == security_interstitials::CMD_PROCEED) {
-    service_->AllowHttpForHost(request_url().host());
+    service_->AllowHttpForHost(request_url().GetHost());
 
     controller_->metrics_helper()->RecordUserDecision(
         security_interstitials::MetricsHelper::PROCEED);

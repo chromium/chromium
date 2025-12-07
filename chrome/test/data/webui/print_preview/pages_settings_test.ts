@@ -6,11 +6,9 @@ import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewPagesSettingsElement, Range} from 'chrome://print/print_preview.js';
 import {PagesValue} from 'chrome://print/print_preview.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
@@ -27,9 +25,7 @@ suite('PagesSettingsTest', function() {
     document.body.appendChild(model);
 
     pagesSection = document.createElement('print-preview-pages-settings');
-    pagesSection.settings = model.settings;
     pagesSection.disabled = false;
-    fakeDataBind(model, pagesSection, 'settings');
     document.body.appendChild(pagesSection);
   });
 
@@ -66,20 +62,21 @@ suite('PagesSettingsTest', function() {
     assertEquals(!invalid, pagesSection.getSetting('pages').valid);
     assertEquals(
         expectedError !== '',
-        pagesSection.shadowRoot!.querySelector('cr-input')!.invalid);
+        pagesSection.shadowRoot.querySelector('cr-input')!.invalid);
     assertEquals(
         expectedError,
-        pagesSection.shadowRoot!.querySelector('cr-input')!.errorMessage);
+        pagesSection.shadowRoot.querySelector('cr-input')!.errorMessage);
   }
 
   // Verifies that the pages setting updates correctly when the dropdown
   // changes.
   test('PagesDropdown', async () => {
     pagesSection.pageCount = 5;
+    await microtasksFinished();
 
     // Default value is all pages.
     const customInputCollapse =
-        pagesSection.shadowRoot!.querySelector('cr-collapse')!;
+        pagesSection.shadowRoot.querySelector('cr-collapse')!;
 
     assertFalse(pagesSection.getSetting('ranges').setFromUi);
     validateState([1, 2, 3, 4, 5], [], '', false);
@@ -87,6 +84,7 @@ suite('PagesSettingsTest', function() {
 
     // Set selection to odd pages.
     await selectOption(pagesSection, PagesValue.ODDS.toString());
+    await microtasksFinished();
     assertFalse(customInputCollapse.opened);
     validateState(
         [1, 3, 5], [{from: 1, to: 1}, {from: 3, to: 3}, {from: 5, to: 5}], '',
@@ -94,11 +92,13 @@ suite('PagesSettingsTest', function() {
 
     // Set selection to even pages.
     await selectOption(pagesSection, PagesValue.EVENS.toString());
+    await microtasksFinished();
     assertFalse(customInputCollapse.opened);
     validateState([2, 4], [{from: 2, to: 2}, {from: 4, to: 4}], '', false);
 
     // Set selection of pages 1 and 2.
     await selectOption(pagesSection, PagesValue.CUSTOM.toString());
+    await microtasksFinished();
     assertTrue(customInputCollapse.opened);
 
     await setCustomInput('1-2');
@@ -107,12 +107,14 @@ suite('PagesSettingsTest', function() {
 
     // Re-select "all".
     await selectOption(pagesSection, PagesValue.ALL.toString());
+    await microtasksFinished();
     assertFalse(customInputCollapse.opened);
     validateState([1, 2, 3, 4, 5], [], '', false);
 
     // Re-select custom. The previously entered value should be
     // restored.
     await selectOption(pagesSection, PagesValue.CUSTOM.toString());
+    await microtasksFinished();
     assertTrue(customInputCollapse.opened);
     validateState([1, 2], [{from: 1, to: 2}], '', false);
 
@@ -122,41 +124,59 @@ suite('PagesSettingsTest', function() {
     validateState([1, 2, 3, 4, 5], [], '', false);
   });
 
+  test('PagesDropdownDisabled', async () => {
+    const select = pagesSection.shadowRoot.querySelector('select');
+    assertTrue(!!select);
+
+    // Check initial state.
+    assertFalse(pagesSection.disabled);
+    assertFalse(select.disabled);
+
+    // Disable pagesSection and check <select> is also disabled.
+    pagesSection.disabled = true;
+    await microtasksFinished();
+    assertTrue(select.disabled);
+
+    // Re-enable pagesSection and check <select> is also enabled.
+    pagesSection.disabled = false;
+    await microtasksFinished();
+    assertFalse(select.disabled);
+  });
+
   // Tests that the odd-only and even-only options are hidden when the document
   // has only one page.
   test('NoParityOptions', async () => {
     pagesSection.pageCount = 1;
+    await microtasksFinished();
 
-    const oddOption = pagesSection.shadowRoot!.querySelector<HTMLOptionElement>(
+    const oddOption = pagesSection.shadowRoot.querySelector<HTMLOptionElement>(
         `[value="${PagesValue.ODDS}"]`)!;
     assertTrue(oddOption.hidden);
 
-    const evenOption =
-        pagesSection.shadowRoot!.querySelector<HTMLOptionElement>(
-            `[value="${PagesValue.EVENS}"]`)!;
+    const evenOption = pagesSection.shadowRoot.querySelector<HTMLOptionElement>(
+        `[value="${PagesValue.EVENS}"]`)!;
     assertTrue(evenOption.hidden);
   });
 
   // Tests that the odd-only and even-only selections are preserved when the
   // page counts change.
   test('ParitySelectionMemorized', async () => {
-    const select = pagesSection.shadowRoot!.querySelector('select')!;
+    const select = pagesSection.shadowRoot.querySelector('select')!;
 
     pagesSection.pageCount = 2;
+    await microtasksFinished();
     assertEquals(PagesValue.ALL.toString(), select.value);
 
     await selectOption(pagesSection, PagesValue.ODDS.toString());
+    await microtasksFinished();
     assertEquals(PagesValue.ODDS.toString(), select.value);
 
-    let whenValueChanged =
-        eventToPromise('process-select-change', pagesSection);
     pagesSection.pageCount = 1;
-    await whenValueChanged;
+    await microtasksFinished();
     assertEquals(PagesValue.ALL.toString(), select.value);
 
-    whenValueChanged = eventToPromise('process-select-change', pagesSection);
     pagesSection.pageCount = 2;
-    await whenValueChanged;
+    await microtasksFinished();
     assertEquals(PagesValue.ODDS.toString(), select.value);
   });
 
@@ -280,8 +300,9 @@ suite('PagesSettingsTest', function() {
   // with the full page range.
   test('ClearInput', async () => {
     pagesSection.pageCount = 3;
+    await microtasksFinished();
     const input = pagesSection.$.pageSettingsCustomInput.inputElement;
-    const select = pagesSection.shadowRoot!.querySelector('select')!;
+    const select = pagesSection.shadowRoot.querySelector('select')!;
     const allValue = PagesValue.ALL.toString();
     const customValue = PagesValue.CUSTOM.toString();
     assertEquals(allValue, select.value);
@@ -338,7 +359,7 @@ suite('PagesSettingsTest', function() {
     select.focus();
 
     await selectOption(pagesSection, allValue);
-    flush();
+    await microtasksFinished();
     assertEquals(allValue, select.value);
     validateState([1, 2, 3], [], '', false);
 
@@ -359,83 +380,81 @@ suite('PagesSettingsTest', function() {
     // Change the page count. Since the range was set automatically, this
     // should reset it to the new set of all pages.
     pagesSection.pageCount = 2;
-    await pagesSection.$.pageSettingsCustomInput.updateComplete;
+    await microtasksFinished();
     validateState([1, 2], [], '', false);
     assertEquals('1-2', input.value);
   });
 
   // Verifies that the input is never disabled when the validity of the
   // setting changes.
-  test(
-      'InputNotDisabledOnValidityChange', async () => {
-        pagesSection.pageCount = 3;
-        // In the real UI, the print preview app listens for this event from
-        // this section and others and sets disabled to true if any change from
-        // true to false is detected. Imitate this here. Since we are only
-        // interacting with the pages input, at no point should the input be
-        // disabled, as it will lose focus.
-        pagesSection.addEventListener('setting-valid-changed', function(e) {
-          assertFalse(pagesSection.$.pageSettingsCustomInput.disabled);
-          pagesSection.set('disabled', !(e as CustomEvent<boolean>).detail);
-          assertFalse(pagesSection.$.pageSettingsCustomInput.disabled);
-        });
+  test('InputNotDisabledOnValidityChange', async () => {
+    pagesSection.pageCount = 3;
+    // In the real UI, the print preview app listens for this event from
+    // this section and others and sets disabled to true if any change from
+    // true to false is detected. Imitate this here. Since we are only
+    // interacting with the pages input, at no point should the input be
+    // disabled, as it will lose focus.
+    pagesSection.addEventListener('setting-valid-changed', function(e) {
+      assertFalse(pagesSection.$.pageSettingsCustomInput.disabled);
+      pagesSection.disabled = !(e as CustomEvent<boolean>).detail;
+      assertFalse(pagesSection.$.pageSettingsCustomInput.disabled);
+    });
 
-        await selectOption(pagesSection, PagesValue.CUSTOM.toString());
-        await setCustomInput('1');
-        validateState([1], [{from: 1, to: 1}], '', false);
+    await selectOption(pagesSection, PagesValue.CUSTOM.toString());
+    await setCustomInput('1');
+    validateState([1], [{from: 1, to: 1}], '', false);
 
-        await setCustomInput('12');
-        validateState([1], [{from: 1, to: 1}], limitError + '3', true);
+    await setCustomInput('12');
+    validateState([1], [{from: 1, to: 1}], limitError + '3', true);
 
-        // Restore valid input
-        await setCustomInput('1');
-        validateState([1], [{from: 1, to: 1}], '', false);
+    // Restore valid input
+    await setCustomInput('1');
+    validateState([1], [{from: 1, to: 1}], '', false);
 
-        // Invalid input again
-        await setCustomInput('8');
-        validateState([1], [{from: 1, to: 1}], limitError + '3', true);
+    // Invalid input again
+    await setCustomInput('8');
+    validateState([1], [{from: 1, to: 1}], limitError + '3', true);
 
-        // Clear input
-        await setCustomInput('');
-        validateState([1], [{from: 1, to: 1}], '', false);
+    // Clear input
+    await setCustomInput('');
+    validateState([1], [{from: 1, to: 1}], '', false);
 
-        // Set valid input
-        await setCustomInput('2');
-        validateState([2], [{from: 2, to: 2}], '', false);
-      });
+    // Set valid input
+    await setCustomInput('2');
+    validateState([2], [{from: 2, to: 2}], '', false);
+  });
 
   // Verifies that the enter key event is bubbled to the pages settings
   // element, so that it will be bubbled to the print preview app to trigger a
   // print.
-  test(
-      'EnterOnInputTriggersPrint', async () => {
-        pagesSection.pageCount = 3;
-        const input = pagesSection.$.pageSettingsCustomInput.inputElement;
-        const whenPrintReceived = eventToPromise('keydown', pagesSection);
+  test('EnterOnInputTriggersPrint', async () => {
+    pagesSection.pageCount = 3;
+    const input = pagesSection.$.pageSettingsCustomInput.inputElement;
+    const whenPrintReceived = eventToPromise('keydown', pagesSection);
 
-        // Setup an empty input by selecting custom..
-        const customValue = PagesValue.CUSTOM.toString();
-        const pagesSelect = pagesSection.shadowRoot!.querySelector('select')!;
-        await Promise.all([
-          selectOption(pagesSection, customValue),
-          eventToPromise('focus', input),
-        ]);
-        assertEquals(customValue, pagesSelect.value);
-        keyEventOn(input, 'keydown', 0, [], 'Enter');
+    // Setup an empty input by selecting custom..
+    const customValue = PagesValue.CUSTOM.toString();
+    const pagesSelect = pagesSection.shadowRoot.querySelector('select')!;
+    await Promise.all([
+      selectOption(pagesSection, customValue),
+      eventToPromise('focus', input),
+    ]);
+    assertEquals(customValue, pagesSelect.value);
+    keyEventOn(input, 'keydown', 0, [], 'Enter');
 
-        await whenPrintReceived;
-        // Keep custom selected, but pages to print should still be all.
-        assertEquals(customValue, pagesSelect.value);
-        validateState([1, 2, 3], [], '', false);
+    await whenPrintReceived;
+    // Keep custom selected, but pages to print should still be all.
+    assertEquals(customValue, pagesSelect.value);
+    validateState([1, 2, 3], [], '', false);
 
-        // Select a custom input of 1.
-        await setCustomInput('1');
-        assertEquals(customValue, pagesSelect.value);
-        const whenSecondPrintReceived = eventToPromise('keydown', pagesSection);
-        keyEventOn(input, 'keydown', 0, [], 'Enter');
+    // Select a custom input of 1.
+    await setCustomInput('1');
+    assertEquals(customValue, pagesSelect.value);
+    const whenSecondPrintReceived = eventToPromise('keydown', pagesSection);
+    keyEventOn(input, 'keydown', 0, [], 'Enter');
 
-        await whenSecondPrintReceived;
-        assertEquals(customValue, pagesSelect.value);
-        validateState([1], [{from: 1, to: 1}], '', false);
-      });
+    await whenSecondPrintReceived;
+    assertEquals(customValue, pagesSelect.value);
+    validateState([1], [{from: 1, to: 1}], '', false);
+  });
 });

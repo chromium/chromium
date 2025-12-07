@@ -4,17 +4,18 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {KeyboardShortcutBanner, sanitizeInnerHtml} from 'chrome://os-settings/lazy_load.js';
+import type {KeyboardShortcutBanner} from 'chrome://os-settings/lazy_load.js';
+import {sanitizeInnerHtml} from 'chrome://os-settings/lazy_load.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
-import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
-import {MetaKey, Modifier, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {MetaKey, Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
@@ -100,7 +101,7 @@ suite('<keyboard-shortcut-banner>', () => {
         'Press Ctrl+Shift+Space to switch to the next input method',
         secondDesc!.textContent);
     const dismissButton = banner.shadowRoot!.querySelector('cr-button');
-    assertEquals('Dismiss', dismissButton!.textContent!.trim());
+    assertEquals('Dismiss', dismissButton!.textContent.trim());
   });
 
   test('displays the correct <kbd> elements', () => {
@@ -130,7 +131,7 @@ suite('<keyboard-shortcut-banner>', () => {
     banner.set('showCustomizedShortcut_', true);
     flush();
     const expectedAcceleratorProperties: ShortcutLabelProperties[] = [{
-      keyDisplay: stringToMojoString16('m'),
+      keyDisplay: 'm',
       accelerator: {
         modifiers: Modifier.CONTROL,
         keyCode: VKey.kKeyM,
@@ -158,5 +159,19 @@ suite('<keyboard-shortcut-banner>', () => {
     const [modifierNode, keyNode] = text.children;
     assertEquals((modifierNode as ShortcutInputKeyElement).key, 'ctrl');
     assertEquals((keyNode as ShortcutInputKeyElement).key, 'm');
+  });
+
+  test('controls the visibility of the dismiss button', () => {
+    const dismissButton = banner.shadowRoot!.querySelector('cr-button');
+
+    // Assert the button is visible by default.
+    assertTrue(isVisible(dismissButton));
+
+    // Hide the dismiss button.
+    banner.hideDismissButton = true;
+    flush();
+
+    // Assert the button is now hidden.
+    assertFalse(isVisible(dismissButton));
   });
 });

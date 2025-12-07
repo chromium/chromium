@@ -130,7 +130,7 @@ template <typename Arg, typename OutputT>
 OutputT ConvertExtensionUnionToMojoUnion(const Arg& arg) {
   static_assert(
       false, "ConvertExtensionUnionToMojoUnion for specific type not defined.");
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::vector<RoutineInquiryReplyField> GetNonNullFields(
@@ -321,7 +321,7 @@ crosapi::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
     case cx_diag::RoutineCommandType::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::DiagnosticsAcPowerStatusEnum ConvertAcPowerStatusRoutineType(
@@ -334,7 +334,7 @@ crosapi::DiagnosticsAcPowerStatusEnum ConvertAcPowerStatusRoutineType(
     case cx_diag::AcPowerStatus::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_diag::UserMessageType ConvertRoutineUserMessage(
@@ -361,7 +361,7 @@ crosapi::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
     case cx_diag::DiskReadRoutineType::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(

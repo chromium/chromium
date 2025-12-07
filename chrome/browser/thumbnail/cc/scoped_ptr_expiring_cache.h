@@ -27,7 +27,7 @@ class ScopedPtrExpiringCache {
   ScopedPtrExpiringCache(const ScopedPtrExpiringCache&) = delete;
   ScopedPtrExpiringCache& operator=(const ScopedPtrExpiringCache&) = delete;
 
-  ~ScopedPtrExpiringCache() {}
+  ~ScopedPtrExpiringCache() = default;
 
   void Put(const Key& key, std::unique_ptr<Value> value) {
     Remove(key);

@@ -22,7 +22,7 @@ const char kAllFramesContextMenuScript[] = "all_frames_context_menu";
 const char kMainFrameContextMenuScript[] = "main_frame_context_menu";
 
 const char kFindElementResultHandlerName[] = "FindElementResultHandler";
-}
+}  // namespace
 
 namespace web {
 

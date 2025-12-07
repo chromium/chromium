@@ -9,10 +9,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 
 namespace blink {
 
@@ -59,6 +59,7 @@ struct LogicalAlignment {
 
 LogicalAlignment ComputeAlignment(
     const ComputedStyle& style,
+    bool is_containing_block_scrollable,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 
@@ -95,19 +96,33 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   bool has_auto_inline_inset = false;
   bool has_auto_block_inset = false;
 
-  // Indicates how the insets were calculated. Besides, when we need to clamp
-  // the IMCB size, the stronger inset (i.e., the inset we are biased towards)
-  // stays at the same place, and the weaker inset is moved; If both insets are
-  // equally strong, both are moved by the same amount.
+  // If the special "default alignment overflow" behaviour applies.
+  bool inline_has_default_alignment_overflow = false;
+  bool block_has_default_alignment_overflow = false;
+
+  // The InsetBias is used to indicate which side(s) of the IMCB should be moved
+  // when calculating the insets.
+  // If both insets are equally strong, they are moved by the same amount.
   enum class InsetBias { kStart, kEnd, kEqual };
+
+  // The primary bias, this is dependent on which insets are set:
+  //  - If no insets (statically positioned), it is the static position bias.
+  //  - If a single inset, it is the bias for that inset.
+  //  - If both insets, it is based off the alignment.
   InsetBias inline_inset_bias = InsetBias::kStart;
   InsetBias block_inset_bias = InsetBias::kStart;
 
   // If safe alignment is specified (e.g. "align-self: safe end") and the
   // object overflows its containing block it'll become start aligned instead.
   // This field indicates the "start" edge of the containing block.
-  std::optional<InsetBias> safe_inline_inset_bias;
-  std::optional<InsetBias> safe_block_inset_bias;
+  std::optional<InsetBias> inline_safe_inset_bias;
+  std::optional<InsetBias> block_safe_inset_bias;
+
+  // If non-normal alignment is specified (e.g. "align-self: center") we'll
+  // adjust the position so that it doesn't overflow the containing block.
+  // This field indicates the "start" edge of the containing block.
+  std::optional<InsetBias> inline_default_inset_bias;
+  std::optional<InsetBias> block_default_inset_bias;
 
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;
@@ -133,7 +148,6 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const LogicalAlignment&,
     const LogicalOofInsets&,
     const LogicalStaticPosition&,
-    const LogicalAnchorCenterPosition&,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 
@@ -165,12 +179,15 @@ ComputeIMCBForPositionFallback(const LogicalSize& available_size,
 // Will return true if |BlockNode::ComputeMinMaxSizes| was called.
 CORE_EXPORT bool ComputeOofInlineDimensions(
     const BlockNode&,
+    const BlockBreakToken*,
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
+    const LogicalAnchorCenterPosition&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
+    const BoxStrut& container_insets,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions);
 
@@ -178,12 +195,15 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
 // otherwise it will return nullptr.
 CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BlockNode&,
+    const BlockBreakToken*,
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
+    const LogicalAnchorCenterPosition&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
+    const BoxStrut& container_insets,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions);
 

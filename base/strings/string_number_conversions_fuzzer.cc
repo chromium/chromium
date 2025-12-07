@@ -11,14 +11,18 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+
 template <class NumberType, class StringPieceType, class StringType>
 void CheckRoundtripsT(const uint8_t* data,
                       const size_t size,
                       StringType (*num_to_string)(NumberType),
                       bool (*string_to_num)(StringPieceType, NumberType*)) {
   // Ensure we can read a NumberType from |data|
-  if (size < sizeof(NumberType))
+  if (size < sizeof(NumberType)) {
     return;
+  }
   const NumberType v1 = *reinterpret_cast<const NumberType*>(data);
 
   // Because we started with an arbitrary NumberType value, not an arbitrary

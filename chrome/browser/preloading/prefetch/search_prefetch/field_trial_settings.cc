@@ -9,29 +9,29 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "net/base/features.h"
 
 namespace {
 size_t g_cache_size_for_testing = 0;
 }  // namespace
 
 BASE_FEATURE(kSearchPrefetchServicePrefetching,
-             "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
-             "SearchPrefetchBlockBeforeHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
-}
+// Kill-switch for debugging CacheAliasLoader and NVS's cache hit rate.
+// TODO(https://crbug.com/413557424): Remove the DryRun mode once the
+// investigation is done.
+BASE_FEATURE(kCacheAliasLoaderDryRunMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
   if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
     return false;
   }
 
-  return base::SysInfo::AmountOfPhysicalMemoryMB() >
+  return base::SysInfo::AmountOfPhysicalMemory().InMiB() >
          base::GetFieldTrialParamByFeatureAsInt(
              kSearchPrefetchServicePrefetching, "device_memory_threshold_MB",
              3000);
@@ -65,20 +65,19 @@ void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_size) {
   g_cache_size_for_testing = cache_size;
 }
 
-base::TimeDelta SearchPrefetchBlockHeadStart() {
-  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-      kSearchPrefetchBlockBeforeHeaders, "block_head_start_ms", 0));
-}
-
 BASE_FEATURE(kSearchNavigationPrefetch,
-             "SearchNavigationPrefetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
 
 const base::FeatureParam<std::string> kSuggestPrefetchParam{
     &kSearchNavigationPrefetch, "suggest_prefetch_param", "cs"};
 
 const base::FeatureParam<std::string> kNavigationPrefetchParam{
-    &kSearchNavigationPrefetch, "navigation_prefetch_param", "cs"};
+    &kSearchNavigationPrefetch, "navigation_prefetch_param", "op"};
 
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
@@ -110,7 +109,6 @@ bool PrefetchSearchHistorySuggestions() {
 }
 
 BASE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading,
-             "SearchPrefetchOnlyAllowDefaultMatchPreloading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool OnlyAllowDefaultMatchPreloading() {
@@ -118,9 +116,23 @@ bool OnlyAllowDefaultMatchPreloading() {
       kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 }
 
-BASE_FEATURE(kAutocompleteDictionaryPreload,
-             "SearchPrefetchDictionaryPreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsNoVarySearchDiskCacheEnabled() {
+  return base::FeatureList::IsEnabled(net::features::kHttpCacheNoVarySearch) &&
+         base::FeatureList::IsEnabled(kSearchPrefetchWithNoVarySearchDiskCache);
+}
+
+bool CacheAliasLoaderDryRunModeEnabled() {
+  return base::FeatureList::IsEnabled(kCacheAliasLoaderDryRunMode);
+}
+
+bool IsPrefetchIncognitoEnabled() {
+  return SearchPrefetchServicePrefetchingIsEnabled() &&
+         IsSearchNavigationPrefetchEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "allow_incognito", true);
+}
+
+BASE_FEATURE(kAutocompleteDictionaryPreload, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kAutocompletePreloadedDictionaryTimeout{
@@ -128,7 +140,6 @@ const base::FeatureParam<base::TimeDelta>
         "autocomplete_preloaded_dictionary_timeout", base::Milliseconds(60000)};
 
 BASE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork,
-             "SuppressesSearchPrefetchOnSlowNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Regarding how this number was chosen, see the design doc linked from

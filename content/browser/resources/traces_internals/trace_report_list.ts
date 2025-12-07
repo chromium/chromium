@@ -3,20 +3,24 @@
 // found in the LICENSE file.
 
 import './trace_report.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
+// <if expr="is_win">
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// </if>
 
-import type {ClientTraceReport} from './trace_report.mojom-webui.js';
-import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+
 import {getCss} from './trace_report_list.css.js';
 import {getHtml} from './trace_report_list.html.js';
 // clang-format on
+import {TracesBrowserProxy} from './traces_browser_proxy.js';
+import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
 
 export enum NotificationType {
   UPDATE = 'Update',
@@ -57,14 +61,14 @@ export class TraceReportListElement extends CrLitElement {
     return {
       traces_: {type: Array},
       isLoading_: {type: Boolean},
-      notification: {type: Notification},
+      notification: {type: Object},
     };
   }
 
-  private traceReportProxy_: TraceReportBrowserProxy =
-      TraceReportBrowserProxy.getInstance();
-  protected traces_: ClientTraceReport[] = [];
-  protected isLoading_: boolean = false;
+  private traceReportProxy_: TracesBrowserProxy =
+      TracesBrowserProxy.getInstance();
+  protected accessor traces_: ClientTraceReport[] = [];
+  protected accessor isLoading_: boolean = false;
   protected notification_?: Readonly<Notification>;
 
   override connectedCallback(): void {
@@ -129,6 +133,10 @@ export class TraceReportListElement extends CrLitElement {
 
   protected getNotificationType_(): string {
     return this.notification_?.type || '';
+  }
+
+  protected onRefreshTracesClick_(): Promise<void> {
+    return this.initializeList();
   }
 
   protected async onDeleteAllTracesClick_(): Promise<void> {

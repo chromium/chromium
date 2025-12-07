@@ -15,8 +15,8 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/common/constants.h"
@@ -329,7 +329,7 @@ ContinueTaskContainerView::GetRemovalAnimationForTaskView(
     return TaskViewRemovalAnimation::kFadeOut;
 
   const std::string& task_id = task_view->result()->id();
-  auto new_ids_it = base::ranges::find(new_task_ids, task_id);
+  auto new_ids_it = std::ranges::find(new_task_ids, task_id);
 
   // If the associated result was removed from the task list, animate it out.
   if (new_ids_it == new_task_ids.end())
@@ -424,7 +424,7 @@ void ContinueTaskContainerView::ClearAnimatingViews() {
     RemoveChildViewT(view);
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
 }
 
 void ContinueTaskContainerView::SetResults(
@@ -508,6 +508,7 @@ void ContinueTaskContainerView::InitializeTabletLayout() {
                   gfx::Insets::TLBR(0, kColumnSpacingTablet, 0, 0))
       .SetDefault(views::kFlexBehaviorKey,
                   views::FlexSpecification(
+                      views::LayoutOrientation::kHorizontal,
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kScaleToMaximum));
 }

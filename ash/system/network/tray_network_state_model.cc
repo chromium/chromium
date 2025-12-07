@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -147,8 +147,8 @@ class TrayNetworkStateModel::Impl
 
 TrayNetworkStateModel::TrayNetworkStateModel()
     : update_frequency_(kUpdateFrequencyMs) {
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() !=
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION) {
     update_frequency_ = 0;  // Send updates immediately for tests.
   }
 

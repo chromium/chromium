@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/cast_device_footer_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -19,11 +20,12 @@ constexpr int kBackgroundBorderThickness = 1;
 constexpr int kBackgroundCornerRadius = 8;
 constexpr int kStopCastingButtonCornerRadius = 10;
 constexpr int kBackgroundSeparator = 8;
-constexpr int kStopCastingButtonSeparator = 6;
+constexpr int kStopCastingButtonSeparator = 4;
 constexpr int kDeviceIconSize = 20;
 constexpr int kStopCastingButtonIconSize = 12;
 
-constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(14, 16);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(13, 15);
+constexpr gfx::Insets kStopCastingButtonInsets = gfx::Insets::TLBR(2, 6, 2, 8);
 
 }  // namespace
 
@@ -32,10 +34,10 @@ CastDeviceFooterView::CastDeviceFooterView(
     base::RepeatingClosure stop_casting_callback,
     media_message_center::MediaColorTheme media_color_theme)
     : stop_casting_callback_(std::move(stop_casting_callback)) {
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme.device_selector_border_color_id));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme.device_selector_background_color_id,
       kBackgroundCornerRadius));
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -45,7 +47,7 @@ CastDeviceFooterView::CastDeviceFooterView(
   // Add the device icon.
   device_icon_ = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kMediaRouterIdleIcon,
+          vector_icons::kCastIcon,
           media_color_theme.device_selector_foreground_color_id,
           kDeviceIconSize)));
 
@@ -56,8 +58,8 @@ CastDeviceFooterView::CastDeviceFooterView(
   if (device_name.has_value()) {
     device_name_->SetText(base::UTF8ToUTF16(device_name.value()));
   }
-  device_name_->SetTextStyle(views::style::STYLE_BODY_2);
-  device_name_->SetEnabledColorId(
+  device_name_->SetTextStyle(views::style::STYLE_BODY_2_MEDIUM);
+  device_name_->SetEnabledColor(
       media_color_theme.device_selector_foreground_color_id);
   device_name_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   layout->SetFlexForView(device_name_, 1);
@@ -74,11 +76,13 @@ CastDeviceFooterView::CastDeviceFooterView(
           vector_icons::kStopCircleIcon,
           media_color_theme.error_foreground_color_id,
           kStopCastingButtonIconSize));
+  stop_casting_button_->SetBorder(
+      views::CreateEmptyBorder(kStopCastingButtonInsets));
   stop_casting_button_->SetLabelStyle(views::style::STYLE_BODY_5);
-  stop_casting_button_->SetEnabledTextColorIds(
+  stop_casting_button_->SetEnabledTextColors(
       media_color_theme.error_foreground_color_id);
   stop_casting_button_->SetImageLabelSpacing(kStopCastingButtonSeparator);
-  stop_casting_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+  stop_casting_button_->SetBackground(views::CreateRoundedRectBackground(
       media_color_theme.error_container_color_id,
       kStopCastingButtonCornerRadius));
 

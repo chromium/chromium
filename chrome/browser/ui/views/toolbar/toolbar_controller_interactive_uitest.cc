@@ -4,21 +4,26 @@
 
 #include <optional>
 #include <sstream>
+#include <variant>
 
-#include "base/functional/overloaded.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -30,14 +35,17 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -49,7 +57,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
  public:
   ToolbarControllerUiTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHTabSearchFeature})) {
+            {feature_engagement::kIPHMemorySaverModeFeature})) {
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
   }
 
@@ -61,6 +69,9 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+    if (features::HasTabSearchToolbarButton()) {
+      actions_model->UpdatePinnedState(kActionTabSearch, false);
+    }
     views::test::WaitForAnimatingLayoutManager(
         browser_view_->toolbar()->pinned_toolbar_actions_container());
     toolbar_controller_ = const_cast<ToolbarController*>(
@@ -69,10 +80,11 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
         toolbar_controller_->toolbar_container_view_.get());
     overflow_button_ = toolbar_controller_->overflow_button_;
     dummy_button_size_ = overflow_button_->GetPreferredSize();
-    responsive_elements_ = toolbar_controller_->responsive_elements_;
     element_flex_order_start_ = toolbar_controller_->element_flex_order_start_;
     MaybeAddDummyButtonsToToolbarView();
     overflow_threshold_width_ = GetOverflowThresholdWidthInToolbarContainer();
+    default_browser_width_ = browser()->window()->GetBounds().width();
+    ASSERT_GT(default_browser_width_, overflow_threshold_width_);
   }
 
   void TearDownOnMainThread() override {
@@ -134,49 +146,91 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     return button;
   }
 
-  // Forces `id` to overflow by filling toolbar with dummy buttons.
-  void AddDummyButtonsToToolbarTillElementOverflows(
-      absl::variant<ui::ElementIdentifier, actions::ActionId> id) {
-    // This element must have been managed by controller.
-    EXPECT_TRUE(
-        std::find_if(
-            responsive_elements_.begin(), responsive_elements_.end(),
-            [id](const ToolbarController::ResponsiveElementInfo& element) {
-              return absl::visit(
-                  base::Overloaded(
-                      [&](ToolbarController::ElementIdInfo overflow_id) {
-                        return absl::holds_alternative<ui::ElementIdentifier>(
-                                   id) &&
-                               overflow_id.overflow_identifier ==
-                                   absl::get<ui::ElementIdentifier>(id);
-                      },
-                      [&](actions::ActionId overflow_id) {
-                        return absl::holds_alternative<actions::ActionId>(id) &&
-                               overflow_id == absl::get<actions::ActionId>(id);
-                      }),
-                  element.overflow_id);
-            }) != responsive_elements_.end());
+  auto CheckIsManagedByController(ui::ElementIdentifier id) {
+    return Check(
+        [this, id]() {
+          const std::vector<ToolbarController::ResponsiveElementInfo>&
+              responsive_elements = get_responsive_elements();
+          for (const auto& el : responsive_elements) {
+            if (const auto* info =
+                    std::get_if<ToolbarController::ElementIdInfo>(
+                        &el.overflow_id)) {
+              if (info->overflow_identifier == id) {
+                return true;
+              }
+            }
+          }
+          return false;
+        },
+        "CheckIsManagedByController()");
+  }
 
-    SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
-    absl::visit(
-        base::Overloaded{
-            [this](ui::ElementIdentifier id) {
-              const auto* element =
-                  toolbar_controller_->FindToolbarElementWithId(
-                      toolbar_container_view_, id);
-              ASSERT_NE(element, nullptr);
-              while (element->GetVisible()) {
-                toolbar_container_view_->AddChildView(CreateADummyButton());
-                views::test::RunScheduledLayout(browser_view_);
+  auto CheckIsManagedByController(actions::ActionId id) {
+    return Check(
+        [this, id]() {
+          const std::vector<ToolbarController::ResponsiveElementInfo>&
+              responsive_elements = get_responsive_elements();
+          for (const auto& el : responsive_elements) {
+            if (const auto* action =
+                    std::get_if<actions::ActionId>(&el.overflow_id)) {
+              if (*action == id) {
+                return true;
               }
-            },
-            [this](actions::ActionId id) {
-              while (!delegate()->IsOverflowed(id)) {
-                toolbar_container_view_->AddChildView(CreateADummyButton());
-                views::test::RunScheduledLayout(browser_view_);
-              }
-            }},
-        id);
+            }
+          }
+          return false;
+        },
+        "CheckIsManagedByController()");
+  }
+
+  auto CheckActionItemOverflowed(actions::ActionId id, bool overflowed) {
+    return CheckResult([this, id]() { return delegate()->IsOverflowed(id); },
+                       overflowed,
+                       base::StringPrintf("CheckActionItemOverflowed(%s)",
+                                          base::ToString(overflowed)));
+  }
+
+  // Forces `id` to overflow by filling toolbar with dummy buttons.
+  auto AddDummyButtonsToToolbarTillElementOverflows(ui::ElementIdentifier id) {
+    auto result = Steps(CheckIsManagedByController(id),
+                        Do([this]() {
+                          SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
+                        }).SetDescription("SetBrowserWidth()"),
+                        Do([this, id]() {
+                          const auto* element =
+                              toolbar_controller_->FindToolbarElementWithId(
+                                  toolbar_container_view_, id);
+                          ASSERT_NE(element, nullptr);
+                          while (element->GetVisible()) {
+                            toolbar_container_view_->AddChildView(
+                                CreateADummyButton());
+                            views::test::RunScheduledLayout(browser_view_);
+                          }
+                        }).SetDescription("ForceOverflow"),
+                        WaitForShow(kToolbarOverflowButtonElementId),
+                        WaitForHide(id));
+    AddDescriptionPrefix(result,
+                         "AddDummyButtonsToToolbarTillElementOverflows()");
+    return result;
+  }
+
+  auto AddDummyButtonsToToolbarTillElementOverflows(actions::ActionId id) {
+    auto result = Steps(CheckIsManagedByController(id),
+                        Do([this]() {
+                          SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
+                        }).SetDescription("SetBrowserWidth()"),
+                        Do([this, id]() {
+                          while (!delegate()->IsOverflowed(id)) {
+                            toolbar_container_view_->AddChildView(
+                                CreateADummyButton());
+                            views::test::RunScheduledLayout(browser_view_);
+                          }
+                        }).SetDescription("ForceOverflow"),
+                        WaitForShow(kToolbarOverflowButtonElementId),
+                        CheckActionItemOverflowed(id, true));
+    AddDescriptionPrefix(result,
+                         "AddDummyButtonsToToolbarTillElementOverflows()");
+    return result;
   }
 
   // This checks menu model, not the actual menu that pops up.
@@ -186,8 +240,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
-      const auto& responsive_elements =
-          toolbar_controller_->responsive_elements_;
+      const auto& responsive_elements = get_responsive_elements();
       for (size_t i = 0; i < responsive_elements.size(); ++i) {
         if (toolbar_controller_->IsOverflowed(responsive_elements[i])) {
           if (toolbar_controller_->GetMenuText(responsive_elements[i]) !=
@@ -201,24 +254,26 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto ActivateMenuItemWithElementId(
-      absl::variant<ui::ElementIdentifier, actions::ActionId> id) {
+      std::variant<ui::ElementIdentifier, actions::ActionId> id) {
     return Do([=, this]() {
+      const std::vector<ToolbarController::ResponsiveElementInfo>&
+          responsive_elements = get_responsive_elements();
       int command_id = -1;
-      for (size_t i = 0; i < responsive_elements_.size(); ++i) {
-        const auto& overflow_id = responsive_elements_[i].overflow_id;
-        absl::visit(
-            base::Overloaded(
+      for (size_t i = 0; i < responsive_elements.size(); ++i) {
+        const auto& overflow_id = responsive_elements[i].overflow_id;
+        std::visit(
+            absl::Overload(
                 [&](ToolbarController::ElementIdInfo overflow_id) {
-                  if (absl::holds_alternative<ui::ElementIdentifier>(id) &&
+                  if (std::holds_alternative<ui::ElementIdentifier>(id) &&
                       overflow_id.overflow_identifier ==
-                          absl::get<ui::ElementIdentifier>(id)) {
+                          std::get<ui::ElementIdentifier>(id)) {
                     command_id = i;
                     return;
                   }
                 },
                 [&](actions::ActionId overflow_id) {
-                  if (absl::holds_alternative<actions::ActionId>(id) &&
-                      overflow_id == absl::get<actions::ActionId>(id)) {
+                  if (std::holds_alternative<actions::ActionId>(id) &&
+                      overflow_id == std::get<actions::ActionId>(id)) {
                     command_id = i;
                     return;
                   }
@@ -236,17 +291,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto ForceForwardButtonOverflow() {
-    return Steps(Do([this]() {
-                   AddDummyButtonsToToolbarTillElementOverflows(
-                       kToolbarForwardButtonElementId);
-                 }),
-                 WaitForHide(kToolbarForwardButtonElementId),
-                 WaitForShow(kToolbarOverflowButtonElementId));
-  }
-
-  auto CheckActionItemOverflowed(actions::ActionId id, bool overflowed) {
-    return CheckResult([=, this]() { return delegate()->IsOverflowed(id); },
-                       overflowed);
+    return Steps(AddDummyButtonsToToolbarTillElementOverflows(
+        kToolbarForwardButtonElementId));
   }
 
   auto PinBookmarkToToolbar() {
@@ -254,10 +300,10 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_BOOKMARK_SIDE_PANEL);
                  }),
-                 WaitForShow(kSidePanelElementId), FlushEvents(),
+                 WaitForShow(kSidePanelElementId),
                  PressButton(kSidePanelPinButtonElementId),
                  PressButton(kSidePanelCloseButtonElementId),
-                 WaitForHide(kSidePanelElementId), FlushEvents());
+                 WaitForHide(kSidePanelElementId));
   }
 
   auto PinReadingModeToToolbar() {
@@ -265,19 +311,19 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_READING_MODE_SIDE_PANEL);
                  }),
-                 WaitForShow(kSidePanelElementId), FlushEvents(),
+                 WaitForShow(kSidePanelElementId),
                  PressButton(kSidePanelPinButtonElementId),
                  PressButton(kSidePanelCloseButtonElementId),
-                 WaitForHide(kSidePanelElementId), FlushEvents());
+                 WaitForHide(kSidePanelElementId));
   }
 
-  auto SetBrowserSuperWide() {
-    return Steps(Do([this]() { SetBrowserWidth(3000); }),
+  auto RestoreBrowserWidth() {
+    return Steps(Do([this]() { SetBrowserWidth(default_browser_width_); }),
                  WaitForHide(kToolbarOverflowButtonElementId));
   }
 
   auto LoadAndPinExtensionButton() {
-    return Steps(Do([this]() {
+    return Do([this]() {
       extensions::TestExtensionDir extension_directory;
       constexpr char kManifest[] = R"({
         "name": "Test Extension",
@@ -297,7 +343,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
       ASSERT_TRUE(toolbar_model);
       toolbar_model->SetActionVisibility(extension->id(), true);
       views::test::RunScheduledLayout(browser_view_);
-    }));
+    });
   }
 
   auto ResizeRelativeToOverflow(int diff) {
@@ -326,8 +372,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   const views::View* overflow_button() const { return overflow_button_; }
   int element_flex_order_start() const { return element_flex_order_start_; }
   const std::vector<ToolbarController::ResponsiveElementInfo>&
-  responsive_elements() const {
-    return responsive_elements_;
+  get_responsive_elements() const {
+    return toolbar_controller_->responsive_elements_;
   }
   int overflow_threshold_width() const { return overflow_threshold_width_; }
   std::vector<const ToolbarController::ResponsiveElementInfo*>
@@ -337,18 +383,20 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   const ui::SimpleMenuModel* GetOverflowMenu() {
     return toolbar_controller_->menu_model_for_testing();
   }
+  BrowserView* browser_view() { return browser_view_.get(); }
 
  private:
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<ToolbarController> toolbar_controller_;
   raw_ptr<views::View> toolbar_container_view_;
   raw_ptr<views::View> overflow_button_;
-  std::vector<ToolbarController::ResponsiveElementInfo> responsive_elements_;
   int element_flex_order_start_;
   gfx::Size dummy_button_size_;
 
   // The minimum width the toolbar view can be without any elements dropped out.
   int overflow_threshold_width_;
+
+  int default_browser_width_;
 };
 
 // TODO(crbug.com/41495158): Flaky on Windows.
@@ -452,7 +500,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
       Do([this]() { SetBrowserWidth(overflow_threshold_width() - 1); }),
       WaitForShow(kToolbarOverflowButtonElementId),
       PressButton(kToolbarOverflowButtonElementId),
-      WaitForActivate(kToolbarOverflowButtonElementId),
       CheckMenuMatchesOverflowedElements());
 }
 
@@ -484,55 +531,55 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }
 
+// TODO(crbug/361296257): ActionItemsOverflowAndReappear is flaky on
+// linux64-rel-ready.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ActionItemsOverflowAndReappear \
+  DISABLED_ActionItemsOverflowAndReappear
+#else
+#define MAYBE_ActionItemsOverflowAndReappear ActionItemsOverflowAndReappear
+#endif
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       ActionItemsOverflowAndReappear) {
-  RunTestSequence(PinBookmarkToToolbar(), SetBrowserSuperWide(),
+                       MAYBE_ActionItemsOverflowAndReappear) {
+  RunTestSequence(PinBookmarkToToolbar(),
                   // Pinned bookmark button is visible.
                   CheckActionItemOverflowed(
                       ChromeActionIds::kActionSidePanelShowBookmarks, false),
 
-                  Do([this]() {
-                    AddDummyButtonsToToolbarTillElementOverflows(
-                        ChromeActionIds::kActionSidePanelShowBookmarks);
-                  }),
-                  CheckActionItemOverflowed(
-                      ChromeActionIds::kActionSidePanelShowBookmarks, true),
-                  WaitForShow(kToolbarOverflowButtonElementId),
+                  AddDummyButtonsToToolbarTillElementOverflows(
+                      ChromeActionIds::kActionSidePanelShowBookmarks),
 
-                  // Set browser super wide action item reappears.
-                  SetBrowserSuperWide(),
+                  // Set browser wider; action item reappears.
+                  RestoreBrowserWidth(),
+                  WaitForShow(kPinnedToolbarActionsContainerElementId),
                   CheckActionItemOverflowed(
-                      ChromeActionIds::kActionSidePanelShowBookmarks, false),
-                  WaitForHide(kToolbarOverflowButtonElementId));
+                      ChromeActionIds::kActionSidePanelShowBookmarks, false));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        ActionItemsShowInMenuAndActivateFromMenu) {
-  RunTestSequence(
-      PinBookmarkToToolbar(), SetBrowserSuperWide(), Do([this]() {
-        AddDummyButtonsToToolbarTillElementOverflows(
-            ChromeActionIds::kActionSidePanelShowBookmarks);
-      }),
-      CheckActionItemOverflowed(ChromeActionIds::kActionSidePanelShowBookmarks,
-                                true),
-      WaitForShow(kToolbarOverflowButtonElementId),
-      PressButton(kToolbarOverflowButtonElementId),
-      CheckMenuMatchesOverflowedElements(),
+  RunTestSequence(PinBookmarkToToolbar(),
+                  AddDummyButtonsToToolbarTillElementOverflows(
+                      ChromeActionIds::kActionSidePanelShowBookmarks),
+                  PressButton(kToolbarOverflowButtonElementId),
+                  CheckMenuMatchesOverflowedElements(),
 
-      // Check bookmark menu item is activated correctly.
-      ActivateMenuItemWithElementId(
-          ChromeActionIds::kActionSidePanelShowBookmarks),
-      WaitForShow(kSidePanelElementId), FlushEvents(), Check([this]() {
-        auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-        return coordinator->IsSidePanelEntryShowing(
-            SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
-      }));
+                  // Check bookmark menu item is activated correctly.
+                  ActivateMenuItemWithElementId(
+                      ChromeActionIds::kActionSidePanelShowBookmarks),
+                  WaitForShow(kSidePanelElementId), Check([this]() {
+                    return browser()
+                        ->GetFeatures()
+                        .side_panel_ui()
+                        ->IsSidePanelEntryShowing(SidePanelEntry::Key(
+                            SidePanelEntry::Id::kBookmarks));
+                  }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        ActivatedActionItemsDoNotOverflow) {
   RunTestSequence(
-      PinBookmarkToToolbar(), SetBrowserSuperWide(),
+      PinBookmarkToToolbar(),
       CheckActionItemOverflowed(ChromeActionIds::kActionSidePanelShowBookmarks,
                                 false),
       EnsureNotPresent(kSidePanelElementId),
@@ -541,16 +588,15 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       Do([=, this]() {
         chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_SIDE_PANEL);
       }),
-      WaitForShow(kSidePanelElementId), FlushEvents(),
-      ForceForwardButtonOverflow(),
+      WaitForShow(kSidePanelElementId), ForceForwardButtonOverflow(),
 
       // Activated bookmark button is still visible because side panel is open
       // even though it should overflow earlier than forward button.
       CheckActionItemOverflowed(ChromeActionIds::kActionSidePanelShowBookmarks,
                                 false),
 
-      // Set browser wide still no overflow.
-      SetBrowserSuperWide(),
+      // Set browser wider; still no overflow.
+      RestoreBrowserWidth(),
       CheckActionItemOverflowed(ChromeActionIds::kActionSidePanelShowBookmarks,
                                 false));
 }
@@ -558,21 +604,17 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 // TODO(crbug.com/41495158): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        DISABLED_DeactivatedActionItemsOverflow) {
-  RunTestSequence(PinBookmarkToToolbar(), SetBrowserSuperWide(), Do([this]() {
-                    AddDummyButtonsToToolbarTillElementOverflows(
-                        ChromeActionIds::kActionSidePanelShowBookmarks);
-                  }),
-                  CheckActionItemOverflowed(
-                      ChromeActionIds::kActionSidePanelShowBookmarks, true),
-                  WaitForShow(kToolbarOverflowButtonElementId),
+  RunTestSequence(PinBookmarkToToolbar(),
+                  AddDummyButtonsToToolbarTillElementOverflows(
+                      ChromeActionIds::kActionSidePanelShowBookmarks),
                   PressButton(kToolbarOverflowButtonElementId),
                   ActivateMenuItemWithElementId(
                       ChromeActionIds::kActionSidePanelShowBookmarks),
-                  WaitForShow(kSidePanelElementId), FlushEvents(),
+                  WaitForShow(kSidePanelElementId),
 
                   // Close bookmark side panel.
                   PressButton(kSidePanelCloseButtonElementId),
-                  WaitForHide(kSidePanelElementId), FlushEvents(),
+                  WaitForHide(kSidePanelElementId),
 
                   // Pinned button overflows after side panel is closed.
                   CheckActionItemOverflowed(
@@ -582,8 +624,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        EveryElementHasActionMetricName) {
   for (auto& it : ToolbarController::GetDefaultResponsiveElements(browser())) {
-    absl::visit(
-        base::Overloaded(
+    std::visit(
+        absl::Overload(
             [](actions::ActionId id) {
               EXPECT_NE(
                   ToolbarController::GetActionNameFromElementIdentifier(id), "")
@@ -643,9 +685,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        MAYBE_DoNotShowIphWhenOverflowed) {
   RunTestSequence(
       ResizeRelativeToOverflow(-1),
-      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
-                     user_education::FeaturePromoResult::kBlockedByUi),
+      MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature,
+                     user_education::FeaturePromoResult::kWindowTooSmall),
       ResizeRelativeToOverflow(1),
-      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature),
+      MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature),
       PressClosePromoButton());
 }

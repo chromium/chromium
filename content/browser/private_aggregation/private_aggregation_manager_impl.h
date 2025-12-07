@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_IMPL_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -17,8 +19,10 @@
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,11 +73,12 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   [[nodiscard]] bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t filtering_id_max_bytes,
+      std::optional<size_t> max_contributions,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
@@ -103,27 +108,40 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   // for report generation from a completed mojo pipe.
   void OnReportRequestDetailsReceivedFromHost(
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>
-          contributions,
+      PrivateAggregationPendingContributions::Wrapper contributions,
       PrivateAggregationBudgetKey budget_key,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior);
+      PrivateAggregationHost::NullReportBehavior null_report_behavior);
 
  private:
+  struct InProgressBudgetRequest;
+  using BudgetRequestId = base::StrongAlias<class BudgetRequestIdTag, int64_t>;
+
   // Called when the `budgeter_` has responded to a `ConsumeBudget()` call.
   // Virtual for testing.
   virtual void OnConsumeBudgetReturned(
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior,
+      PrivateAggregationCallerApi caller_api,
+      PrivateAggregationHost::NullReportBehavior null_report_behavior,
       PrivateAggregationBudgeter::RequestResult request_result);
+
+  void OnTestBudgetAndLockReturned(
+      BudgetRequestId budget_request_id,
+      PrivateAggregationBudgeter::InspectBudgetCallResult result);
+
+  // TODO(crbug.com/381788013): Remove `WithLock` naming once
+  // `kPrivateAggregationApiErrorReporting` is fully launched and the flag is
+  // removed.
+  void OnConsumeBudgetWithLockReturned(
+      BudgetRequestId budget_request_id,
+      PrivateAggregationBudgeter::BudgetQueryResult result);
 
   virtual void OnContributionsFinalized(
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      PrivateAggregationBudgetKey::Api api_for_budgeting);
+      PrivateAggregationCallerApi caller_api);
 
   virtual void OnBudgeterGetAllDataKeysReturned(
       base::OnceCallback<void(std::set<DataKey>)> callback,
@@ -131,6 +149,16 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
 
   std::unique_ptr<PrivateAggregationBudgeter> budgeter_;
   std::unique_ptr<PrivateAggregationHost> host_;
+
+  // Used to track associated information for requests to the `budgeter_` that
+  // have not had their callbacks called yet. Only populated if
+  // `kPrivateAggregationApiErrorReporting` is enabled.
+  std::map<BudgetRequestId, InProgressBudgetRequest>
+      in_progress_budget_requests_;
+
+  // Used to vend keys for `in_progress_budget_requests_`. Only used if
+  // `kPrivateAggregationApiErrorReporting` is enabled.
+  int64_t num_requests_processed_ = 0;
 
   // Can be nullptr in unit tests.
   raw_ptr<StoragePartitionImpl> storage_partition_;

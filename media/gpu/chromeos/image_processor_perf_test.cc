@@ -9,7 +9,6 @@
 
 #include "base/bits.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -17,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -25,7 +25,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/perf_test_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -118,14 +117,17 @@ bool SupportsNecessaryGLExtension() {
 
   return gl_context->HasExtension("GL_EXT_YUV_target");
 }
-scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
-                                          VideoFrame::StorageType type) {
+scoped_refptr<VideoFrame> CreateNV12Frame(
+    const gfx::Size& size,
+    VideoFrame::StorageType type,
+    gpu::TestSharedImageInterface* test_sii) {
   const gfx::Rect visible_rect(size);
   constexpr base::TimeDelta kNullTimestamp;
-  if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    return CreateGpuMemoryBufferVideoFrame(
+  if (type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+    CHECK(test_sii);
+    return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
-        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
   } else if (type == VideoFrame::STORAGE_DMABUFS) {
     return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
                                     visible_rect, size, kNullTimestamp,
@@ -144,7 +146,8 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
                                size.height(), kMM21TileHeight));
 
-  scoped_refptr<VideoFrame> frame = CreateNV12Frame(size, type);
+  scoped_refptr<VideoFrame> frame =
+      CreateNV12Frame(size, type, /*test_sii=*/nullptr);
   if (!frame) {
     LOG(ERROR) << "Failed to create MM21 frame";
     return nullptr;
@@ -152,14 +155,10 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
 
   scoped_refptr<VideoFrame> mapped_frame;
   if (type != VideoFrame::STORAGE_OWNED_MEMORY) {
-    // The MM21 path only makes sense for V4L2, so we should never get an Intel
-    // media compressed buffer here.
-    CHECK(!IsIntelMediaCompressedModifier(frame->layout().modifier()));
     std::unique_ptr<VideoFrameMapper> frame_mapper =
         VideoFrameMapperFactory::CreateMapper(
             VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-            /*force_linear_buffer_mapper=*/true,
-            /*must_support_intel_media_compressed_buffers=*/false);
+            /*force_linear_buffer_mapper=*/true);
     if (!frame_mapper) {
       LOG(ERROR) << "Unable to create a VideoFrameMapper";
       return nullptr;
@@ -179,7 +178,7 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   base::span<uint8_t> y_plane =
       // TODO(crbug.com/338570700): VideoFrame should return spans instead of
       // unbounded pointers.
-      UNSAFE_BUFFERS(base::span(
+      UNSAFE_TODO(base::span(
           y_plane_ptr,
           y_plane_stride *
               base::checked_cast<size_t>(mapped_frame->coded_size().height())));
@@ -191,7 +190,7 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
       // TODO(crbug.com/338570700): VideoFrame should return spans instead of
       // unbounded pointers. Note: Elsewhere the `height / 2` is rounded up, but
       // here it is not.
-      UNSAFE_BUFFERS(base::span(
+      UNSAFE_TODO(base::span(
           uv_plane_ptr,
           uv_plane_stride *
               base::checked_cast<size_t>(mapped_frame->coded_size().height()) /
@@ -255,8 +254,11 @@ class ImageProcessorPerfTest : public ::testing::Test {
 
     ASSERT_EQ(test_type == kMM21Detiling, output_size == test_image_size_);
     output_frame_ =
-        CreateNV12Frame(output_size, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+        CreateNV12Frame(output_size, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+                        test_sii_.get());
     ASSERT_TRUE(output_frame_) << "Error creating output frame";
+
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
 
     error_cb_ = base::BindRepeating(
         [](scoped_refptr<base::SequencedTaskRunner> client_task_runner_,
@@ -287,9 +289,9 @@ class ImageProcessorPerfTest : public ::testing::Test {
     ASSERT_TRUE(tmp_video_frame);
 
     input_image_frame_ = test::CloneVideoFrame(
-        tmp_video_frame.get(), *input_layout,
+        tmp_video_frame.get(), *input_layout, test_sii_.get(),
         use_cpu_memory ? VideoFrame::STORAGE_OWNED_MEMORY
-                       : VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                       : VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     ASSERT_TRUE(input_image_frame_) << "Error creating input frame.";
 
@@ -309,6 +311,7 @@ class ImageProcessorPerfTest : public ::testing::Test {
   ImageProcessor::ErrorCB error_cb_;
   ImageProcessorFactory::PickFormatCB pick_format_cb_;
   scoped_refptr<VideoFrame> input_image_frame_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input
@@ -577,13 +580,14 @@ TEST_F(ImageProcessorPerfTest, GLNV12ScalingComparisonTest) {
   ASSERT_TRUE(gl_downscaling_image_processor)
       << "Error creating GLImageProcessor";
 
-  scoped_refptr<VideoFrame> gl_upscaling_output_frame =
-      CreateNV12Frame(gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  scoped_refptr<VideoFrame> gl_upscaling_output_frame = CreateNV12Frame(
+      gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
   ASSERT_TRUE(gl_upscaling_output_frame) << "Error creating GL output frame";
 
   scoped_refptr<VideoFrame> gl_downscaling_output_frame = CreateNV12Frame(
-      input_image_frame_->coded_size(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      input_image_frame_->coded_size(),
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
   ASSERT_TRUE(gl_downscaling_output_frame) << "Error creating GL output frame";
 
   ImageProcessor::FrameReadyCB gl_callback2 =
@@ -604,18 +608,10 @@ TEST_F(ImageProcessorPerfTest, GLNV12ScalingComparisonTest) {
       input_image_frame_, gl_upscaling_output_frame, std::move(gl_callback1));
   run_loop.Run();
 
-  // The image processor perf tests are currently only available with V4L2, and
-  // we should never get Intel media compressed buffers in V4L2 platforms.
-  ASSERT_FALSE(IsIntelMediaCompressedModifier(
-      gl_downscaling_output_frame->layout().modifier()));
-  ASSERT_FALSE(
-      IsIntelMediaCompressedModifier(input_image_frame_->layout().modifier()));
-
   const std::unique_ptr<VideoFrameMapper> output_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
-          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+          /*force_linear_buffer_mapper=*/true);
   ASSERT_TRUE(output_frame_mapper);
 
   const scoped_refptr<VideoFrame> mapped_gl_output = output_frame_mapper->Map(

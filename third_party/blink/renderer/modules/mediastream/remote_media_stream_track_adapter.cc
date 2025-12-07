@@ -8,6 +8,7 @@
 #include "media/base/limits.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_remote_video_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
@@ -109,7 +110,8 @@ void RemoteAudioTrackAdapter::InitializeWebAudioTrack(
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = id();
-  capabilities.echo_cancellation = Vector<bool>({false});
+  capabilities.echo_cancellation =
+      Vector<EchoCancellationMode>({EchoCancellationMode::kDisabled});
   capabilities.auto_gain_control = Vector<bool>({false});
   capabilities.noise_suppression = Vector<bool>({false});
   capabilities.voice_isolation = Vector<bool>({false});
@@ -146,8 +148,7 @@ void RemoteAudioTrackAdapter::OnChangedOnMainThread(
       track()->Source()->SetReadyState(MediaStreamSource::kReadyStateEnded);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

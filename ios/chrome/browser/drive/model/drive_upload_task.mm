@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
@@ -150,7 +151,12 @@ void DriveUploadTask::Start() {
   upload_progress_.reset();
   upload_result_.reset();
   SetState(State::kInProgress);
-  SearchFolderThenCreateFolderOrDirectlyUploadFile();
+  number_of_attempts_++;
+  if (base::FeatureList::IsEnabled(kIOSSaveToDriveClientFolder)) {
+    FetchClientFolderThenUploadFile();
+  } else {
+    SearchFolderThenCreateFolderOrDirectlyUploadFile();
+  }
 }
 
 void DriveUploadTask::Cancel() {
@@ -196,7 +202,6 @@ NSError* DriveUploadTask::GetError() const {
 #pragma mark - Private
 
 void DriveUploadTask::SearchFolderThenCreateFolderOrDirectlyUploadFile() {
-  number_of_attempts_++;
   // Search a destination Drive folder using
   // `SearchSaveToDriveFolder(folder_name, ...)`;
   uploader_->SearchSaveToDriveFolder(
@@ -233,6 +238,23 @@ void DriveUploadTask::CreateFolderOrDirectlyUploadFile(
   auto upload_file_callback = base::BindOnce(&DriveUploadTask::UploadFile,
                                              weak_ptr_factory_.GetWeakPtr());
   uploader_->CreateSaveToDriveFolder(
+      base::SysUTF8ToNSString(folder_name_),
+      std::move(record_result_successful_callback)
+          .Then(std::move(record_result_error_code_callback))
+          .Then(std::move(upload_file_callback)));
+}
+
+void DriveUploadTask::FetchClientFolderThenUploadFile() {
+  // Get or create a destination Drive folder using
+  // `FetchSaveToDriveClientFolder(folder_name, ...)`;
+  auto record_result_successful_callback =
+      base::BindOnce(RecordDriveFolderResultSuccessful,
+                     kDriveFetchClientFolderResultSuccessful);
+  auto record_result_error_code_callback = base::BindOnce(
+      RecordDriveFolderResultErrorCode, kDriveFetchClientFolderResultErrorCode);
+  auto upload_file_callback = base::BindOnce(&DriveUploadTask::UploadFile,
+                                             weak_ptr_factory_.GetWeakPtr());
+  uploader_->FetchSaveToDriveClientFolder(
       base::SysUTF8ToNSString(folder_name_),
       std::move(record_result_successful_callback)
           .Then(std::move(record_result_error_code_callback))

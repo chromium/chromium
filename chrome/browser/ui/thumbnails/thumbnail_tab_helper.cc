@@ -21,7 +21,9 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler_impl.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -147,8 +149,9 @@ class ThumbnailTabHelper::TabStateTracker
 
   // Tells our scheduling logic that a frame was received.
   void OnFrameCaptured(CaptureType capture_type) {
-    if (capture_type == CaptureType::kVideoFrame)
+    if (capture_type == CaptureType::kVideoFrame) {
       capture_driver_.GotFrame();
+    }
   }
 
   bool is_ready() const {
@@ -190,8 +193,10 @@ class ThumbnailTabHelper::TabStateTracker
   // ThumbnailImage::Delegate:
   void ThumbnailImageBeingObservedChanged(bool is_being_observed) override {
     capture_driver_.UpdateThumbnailVisibility(is_being_observed);
-    if (is_being_observed)
+    // Do not attempt to reload discarded tabs for thumbnail observation events.
+    if (is_being_observed && !web_contents()->WasDiscarded()) {
       web_contents()->GetController().LoadIfNecessary();
+    }
   }
 
   ThumbnailImage::CaptureReadiness GetCaptureReadiness() const override {
@@ -199,11 +204,17 @@ class ThumbnailTabHelper::TabStateTracker
   }
 
   void PageReadinessChanged(CaptureReadiness readiness) {
-    if (page_readiness_ == readiness)
+    if (page_readiness_ == readiness) {
       return;
+    }
+
     // If we transition back to a kNotReady state, clear any existing thumbnail,
     // as it will contain an old snapshot, possibly from a different domain.
-    if (readiness == CaptureReadiness::kNotReady) {
+    // Readiness will be reset to kNotReady when a tab is discarded. In this
+    // specific case we do not clear thumbnail data to ensure the existing
+    // preview remains available while discarded tabs are hovered.
+    if (readiness == CaptureReadiness::kNotReady &&
+        !web_contents()->WasDiscarded()) {
       thumbnail_tab_helper_->ClearData();
     }
     page_readiness_ = readiness;
@@ -285,8 +296,10 @@ ThumbnailScheduler& ThumbnailTabHelper::GetScheduler() {
   return *instance.get();
 }
 
-void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
-                                                    const SkBitmap& bitmap) {
+void ThumbnailTabHelper::StoreThumbnailForTabSwitch(
+    base::TimeTicks start_time,
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& bitmap = result.bitmap;
   UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Preview.TimeToStoreAfterTabSwitch",
                              base::TimeTicks::Now() - start_time,
                              base::Milliseconds(1), base::Seconds(1), 50);
@@ -296,6 +309,14 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
 void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
     const SkBitmap& bitmap,
     uint64_t frame_id) {
+  // If this is the first thumbnail being stored, record the time it took from
+  // capturing to storing the frame.
+  if (!thumbnail_->has_data() &&
+      start_video_capture_time_ != base::TimeTicks()) {
+    UMA_HISTOGRAM_TIMES(
+        "Tab.Preview.TimeToStoreFirstUsableFrameAfterStartCapture",
+        base::TimeTicks::Now() - start_video_capture_time_);
+  }
   StoreThumbnail(CaptureType::kVideoFrame, bitmap, frame_id);
 }
 
@@ -304,8 +325,9 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
                                         std::optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
-  if (bitmap.drawsNothing())
+  if (bitmap.drawsNothing()) {
     return;
+  }
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -319,13 +341,17 @@ void ThumbnailTabHelper::ClearData() {
 
 void ThumbnailTabHelper::StartVideoCapture() {
   content::RenderWidgetHostView* const source_view = state_->GetView();
-  if (!source_view)
+  if (!source_view) {
     return;
+  }
 
   const float scale_factor = source_view->GetDeviceScaleFactor();
   const gfx::Size source_size = source_view->GetViewBounds().size();
-  if (source_size.IsEmpty())
+  if (source_size.IsEmpty()) {
     return;
+  }
+
+  start_video_capture_time_ = base::TimeTicks::Now();
 
   last_frame_capture_info_ = GetInitialCaptureInfo(
       source_size, scale_factor, /* include_scrollbars_in_capture */ true);
@@ -334,6 +360,7 @@ void ThumbnailTabHelper::StartVideoCapture() {
 
 void ThumbnailTabHelper::StopVideoCapture() {
   background_capturer_->Stop();
+  start_video_capture_time_ = base::TimeTicks();
 }
 
 // static
@@ -367,15 +394,18 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   // Round up to make sure any scrollbar pixls are eliminated. It's better to
   // lose a single pixel of content than having a single pixel of scrollbar.
   const int scrollbar_size = std::ceil(scale_factor * scrollbar_size_dip);
-  if (source_size.width() - scrollbar_size > smallest_dimension)
+  if (source_size.width() - scrollbar_size > smallest_dimension) {
     capture_info.scrollbar_insets.set_right(scrollbar_size);
-  if (source_size.height() - scrollbar_size > smallest_dimension)
+  }
+  if (source_size.height() - scrollbar_size > smallest_dimension) {
     capture_info.scrollbar_insets.set_bottom(scrollbar_size);
+  }
 
   // Calculate the region to copy from.
   capture_info.copy_rect = gfx::Rect(source_size);
-  if (!include_scrollbars_in_capture)
+  if (!include_scrollbars_in_capture) {
     capture_info.copy_rect.Inset(capture_info.scrollbar_insets);
+  }
 
   // Compute minimum sizes for multiple uses of the thumbnail - currently,
   // tablet tabstrip previews and tab hover card preview images.

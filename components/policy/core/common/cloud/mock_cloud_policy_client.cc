@@ -30,17 +30,21 @@ MockCloudPolicyClient::MockCloudPolicyClient(
                         std::move(url_loader_factory),
                         CloudPolicyClient::DeviceDMTokenCallback()) {}
 
-MockCloudPolicyClient::~MockCloudPolicyClient() {}
+MockCloudPolicyClient::~MockCloudPolicyClient() = default;
 
 void MockCloudPolicyClient::SetDMToken(const std::string& token) {
   dm_token_ = token;
 }
 
+void MockCloudPolicyClient::SetClientId(const std::string& client_id) {
+  client_id_ = client_id;
+}
+
 void MockCloudPolicyClient::SetPolicy(const std::string& policy_type,
                                       const std::string& settings_entity_id,
                                       const em::PolicyFetchResponse& policy) {
-  last_policy_fetch_responses_[std::make_pair(policy_type,
-                                              settings_entity_id)] = policy;
+  last_policy_fetch_responses_[CloudPolicyClientTypeParams(
+      policy_type, settings_entity_id)] = policy;
 }
 
 void MockCloudPolicyClient::SetFetchedInvalidationVersion(
@@ -50,6 +54,10 @@ void MockCloudPolicyClient::SetFetchedInvalidationVersion(
 
 void MockCloudPolicyClient::SetStatus(DeviceManagementStatus status) {
   last_dm_status_ = status;
+}
+
+std::string MockCloudPolicyClient::GetOAuthToken() {
+  return oauth_token_;
 }
 
 MockCloudPolicyClientObserver::MockCloudPolicyClientObserver() = default;

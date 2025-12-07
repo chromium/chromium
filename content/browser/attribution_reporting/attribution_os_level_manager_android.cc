@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <set>
 #include <string>
@@ -16,11 +17,11 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -180,9 +181,8 @@ void AttributionOsLevelManagerAndroid::Register(
 
   Registrar registrar = registration.registrar;
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
-  std::vector<ScopedJavaLocalRef<jobject>> registration_urls;
-  base::ranges::transform(
-      registration.registration_items, std::back_inserter(registration_urls),
+  std::vector<ScopedJavaLocalRef<jobject>> registration_urls = base::ToVector(
+      registration.registration_items,
       [env](const attribution_reporting::OsRegistrationItem& item) {
         return url::GURLAndroid::FromNativeGURL(env, item.url);
       });
@@ -195,7 +195,7 @@ void AttributionOsLevelManagerAndroid::Register(
 
   switch (type) {
     case attribution_reporting::mojom::RegistrationType::kSource: {
-      DCHECK(input_event.has_value());
+      CHECK(input_event.has_value());
 
       int request_id = next_callback_id_++;
       pending_registration_callbacks_.emplace(
@@ -280,9 +280,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
 
   JNIEnv* env = AttachCurrentThread();
 
-  std::vector<ScopedJavaLocalRef<jobject>> j_origins;
-  base::ranges::transform(
-      origins, std::back_inserter(j_origins), [env](const url::Origin& origin) {
+  std::vector<ScopedJavaLocalRef<jobject>> j_origins =
+      base::ToVector(origins, [env](const url::Origin& origin) {
         return url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
       });
 
@@ -292,8 +291,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
   Java_AttributionOsLevelManager_deleteRegistrations(
       env, jobj_, request_id, delete_begin.InMillisecondsSinceUnixEpoch(),
       delete_end.InMillisecondsSinceUnixEpoch(), j_origins,
-      std::vector<std::string>(domains.begin(), domains.end()),
-      GetDeletionMode(delete_rate_limit_data), GetMatchBehavior(mode));
+      base::ToVector(domains), GetDeletionMode(delete_rate_limit_data),
+      GetMatchBehavior(mode));
 }
 
 void AttributionOsLevelManagerAndroid::OnRegistrationCompleted(JNIEnv* env,
@@ -325,3 +324,5 @@ void AttributionOsLevelManagerAndroid::OnDataDeletionCompleted(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AttributionOsLevelManager)

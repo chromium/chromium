@@ -16,7 +16,7 @@ import sys
 
 from chrome.test.variations.test_utils import helper
 from chrome.test.variations.test_utils import SRC_DIR
-from pkg_resources import packaging
+import packaging
 from typing import List, Optional
 from urllib.request import urlopen
 

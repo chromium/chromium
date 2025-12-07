@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
 import androidx.core.util.Predicate;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -31,6 +35,7 @@ import java.util.TreeSet;
  *
  *The LanguagesManager is responsible for fetching languages details from native.
  */
+@NullMarked
 public class LanguagesManager {
     /**
      * An observer interface that allows other classes to know when the accept language list is
@@ -132,12 +137,12 @@ public class LanguagesManager {
         int ALWAYS_LANGUAGES = 4;
     }
 
-    private static ProfileKeyedMap<LanguagesManager> sProfileMap;
+    private static @Nullable ProfileKeyedMap<LanguagesManager> sProfileMap;
 
     private final Profile mProfile;
     private final Map<String, LanguageItem> mLanguagesMap;
 
-    private AcceptLanguageObserver mObserver;
+    private @Nullable AcceptLanguageObserver mObserver;
 
     private LanguagesManager(Profile profile) {
         mProfile = profile;
@@ -179,7 +184,7 @@ public class LanguagesManager {
      * which list or preference a language will be added to. By default the potential languages for
      * the Accept-Language list is returned.
      *
-     * @param LanguageListType key to select which languages to get.
+     * @param potentialLanguages Key to select which languages to get.
      * @return A list of LanguageItems to choose from for the given preference.
      */
     public List<LanguageItem> getPotentialLanguages(@LanguageListType int potentialLanguages) {
@@ -199,18 +204,19 @@ public class LanguagesManager {
                 return getPotentialAcceptLanguages();
             default:
                 assert false : "No valid LanguageListType";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
     /**
      * Get a list of LanguageItems that can be used as a Translate language but excluding
      * |codesToSkip|. The current Accept-Languages are added to the front of the list.
+     *
      * @param codesToSkip Collection of String language codes to exclude from the list.
      * @return List of LanguageItems.
      */
     private List<LanguageItem> getPotentialTranslateLanguages(Collection<String> codesToSkip) {
-        HashSet<String> codesToSkipSet = new HashSet<String>(codesToSkip);
+        HashSet<String> codesToSkipSet = new HashSet<>(codesToSkip);
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         // Filter for translatable languages not in |codesToSkipSet|.
         Predicate<LanguageItem> filter =
@@ -232,6 +238,7 @@ public class LanguagesManager {
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         LanguageItem currentUiLanguage = getLanguageItem(AppLocaleUtils.getAppLanguagePref());
 
+        assumeNonNull(currentUiLanguage);
         // Add the system default language if an override language is set.
         if (!currentUiLanguage.isSystemDefault()) {
             results.add(LanguageItem.makeFollowSystemLanguageItem());
@@ -240,7 +247,7 @@ public class LanguagesManager {
         // Filter for UI languages that are not the current UI language.
         Predicate<LanguageItem> filter =
                 (item) -> {
-                    return item.isUISupported() && !item.equals(currentUiLanguage);
+                    return item.isUiSupported() && !item.equals(currentUiLanguage);
                 };
         addItemsToResult(results, getUserAcceptLanguageItems(), filter);
         addItemsToResult(results, mLanguagesMap.values(), filter);
@@ -255,7 +262,7 @@ public class LanguagesManager {
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         Predicate<LanguageItem> filter =
                 (item) -> {
-                    return item.isUISupported();
+                    return item.isUiSupported();
                 };
         addItemsToResult(results, mLanguagesMap.values(), filter);
         return new ArrayList<>(results);
@@ -330,13 +337,14 @@ public class LanguagesManager {
      * language is checked (e.g. "en" for "en-AU"). If there is still no match null is returned.
      * @return LanguageItem or null if none found
      */
-    public LanguageItem getLanguageItem(String localeCode) {
+    public @Nullable LanguageItem getLanguageItem(@Nullable String localeCode) {
         if (AppLocaleUtils.isFollowSystemLanguage(localeCode)) {
             return LanguageItem.makeFollowSystemLanguageItem();
         }
         LanguageItem result = mLanguagesMap.get(localeCode);
         if (result != null) return result;
 
+        assumeNonNull(localeCode);
         String baseLanguage = LocaleUtils.toBaseLanguage(localeCode);
         return mLanguagesMap.get(baseLanguage);
     }
@@ -346,7 +354,7 @@ public class LanguagesManager {
      *
      * @param code The language code to remove.
      */
-    public void addToAcceptLanguages(String code) {
+    public void addToAcceptLanguages(@Nullable String code) {
         TranslateBridge.updateUserAcceptLanguages(mProfile, code, /* add= */ true);
         notifyAcceptLanguageObserver();
     }
@@ -409,8 +417,10 @@ public class LanguagesManager {
 
     /** Called to release unused resources. */
     public static void recycle() {
-        sProfileMap.destroy();
-        sProfileMap = null;
+        if (sProfileMap != null) {
+            sProfileMap.destroy();
+            sProfileMap = null;
+        }
     }
 
     /** Record language settings page impression. */

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -29,21 +29,19 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "google_apis/gaia/gaia_id.h"
 
 using signin::PrimaryAccountChangeEvent;
 
-BASE_FEATURE(kRestorePrimaryAccountInfo,
-             "RestorePrimaryAccountInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRestorePrimaryAccountInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
 // Registers that the sign in occurred with an explicit user action.
 // Affected by all signin sources except when signing in to Chrome caused by a
 // web sign in or by an unknown source.
-// Note: This value is potentially set before the
-// `switches::kExplicitBrowserSigninUIOnDesktop` is enabled. It is currently not
+// Note: This value is currently not
 // expected to be used and is logged for potential usages in the future.
 const char kExplicitBrowserSigninWithoutFeatureEnabled[] =
     "signin.explicit_browser_signin";
@@ -72,8 +70,7 @@ void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
       DCHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
       base::UmaHistogramEnumeration(
           "Signin.SignIn.Completed",
-          event_details.GetSetPrimaryAccountAccessPoint().value(),
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+          event_details.GetSetPrimaryAccountAccessPoint().value());
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
@@ -92,8 +89,7 @@ void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
       DCHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
       base::UmaHistogramEnumeration(
           "Signin.SyncOptIn.Completed",
-          event_details.GetSetPrimaryAccountAccessPoint().value(),
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+          event_details.GetSetPrimaryAccountAccessPoint().value());
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
@@ -209,20 +205,113 @@ PrimaryAccountManager::PrimaryAccountManager(
       account_tracker_service_(account_tracker_service) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy=*/false);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin_allowed_.Init(
+      prefs::kSigninAllowed, client_->GetPrefs(),
+      base::BindRepeating(&PrimaryAccountManager::OnSigninAllowedPrefChanged,
+                          base::Unretained(this)));
+#else
+  scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+#endif
 
-  // Clear the pref it is was set and the feature is now off.
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                        /*commit_on_destroy=*/false);
-    scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-    scoped_pref_commit.ClearPref(
-        prefs::kCookieClearOnExitMigrationNoticeComplete);
+  // Prepare prefs before loading them.
+  PrepareToLoadPrefs();
+
+  PrefService* prefs = client_->GetPrefs();
+  std::string pref_account_id =
+      prefs->GetString(prefs::kGoogleServicesAccountId);
+  bool pref_consented_to_sync =
+      prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync);
+  LogPrimaryAccountPrefsOnInitialize(pref_account_id, pref_consented_to_sync);
+
+  if (pref_account_id.empty()) {
+    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                              scoped_pref_commit);
   } else {
-    signin_allowed_.Init(
-        prefs::kSigninAllowed, client_->GetPrefs(),
-        base::BindRepeating(&PrimaryAccountManager::OnSigninAllowedPrefChanged,
-                            base::Unretained(this)));
+    auto [account_info, account_info_state] =
+        GetOrRestorePrimaryAccountInfoOnInitialize(pref_account_id,
+                                                   pref_consented_to_sync);
+    base::UmaHistogramEnumeration(
+        "Signin.PAMInitialize.PrimaryAccountInfoState", account_info_state);
+
+    if (pref_consented_to_sync && !account_info.IsEmpty()) {
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
+                                scoped_pref_commit);
+
+      // Ensure that the last syncing account data is consistent with the
+      // primary account. The last signed-in account data is written inside
+      // SetPrimaryAccountInternal().
+      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                                   account_info.gaia.ToString());
+      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                                   account_info.email);
+    } else if (ShouldSigninAllowedPrefAffectPrimaryAccount(
+                   pref_consented_to_sync)) {
+      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                                scoped_pref_commit);
+    } else {
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
+                                scoped_pref_commit);
+    }
   }
+
+  // PrimaryAccountManager is initialized once the primary account and consent
+  // level are loaded.
+  CHECK(primary_account_.has_value());
+
+  bool migrated_sync_user_to_explicit_sign_in = false;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (!prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
+      HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // A profile that is opted in to sync can be migrated to explicit browser
+    // sign-in as the user has explicitly signed in to the browser when they
+    // opted in to sync.
+    scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+    migrated_sync_user_to_explicit_sign_in = true;
+  }
+#endif
+
+  base::UmaHistogramBoolean("Signin.ExplicitSigninMigration.FromSync",
+                            migrated_sync_user_to_explicit_sign_in);
+
+  // `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is set for sync
+  // users and new signed in users. It is not cleared on sign out.
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
+    if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      scoped_pref_commit.SetBoolean(
+          prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+    }
+  } else {
+    scoped_pref_commit.ClearPref(
+        prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+  }
+
+  std::vector<AccountInfo> accounts_in_tracker_service =
+      account_tracker_service_->GetAccounts();
+  SigninPrefs signin_prefs(*prefs);
+
+  for (const auto& account : accounts_in_tracker_service) {
+    // Clear the extensions explicit sign in pref if the feature flag is not
+    // enabled.
+    if (!switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+      signin_prefs.SetExtensionsExplicitBrowserSignin(account.gaia, false);
+    }
+    // Clear the bookmarks explicit sign in pref if the feature flag is not
+    // enabled.
+    if (!base::FeatureList::IsEnabled(
+            switches::kSyncEnableBookmarksInTransportMode)) {
+      signin_prefs.SetBookmarksExplicitBrowserSignin(account.gaia, false);
+    }
+  }
+
+  // It is important to only load credentials after starting to observe the
+  // token service.
+  token_service_observation_.Observe(token_service_);
+  token_service_->LoadCredentials(
+      GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 }
 
 PrimaryAccountManager::~PrimaryAccountManager() = default;
@@ -246,6 +335,10 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kExplicitBrowserSigninWithoutFeatureEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
+  registry->RegisterBooleanPref(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
+  registry->RegisterBooleanPref(prefs::kPrimaryAccountSetAfterSigninMigration,
+                                false);
 }
 
 // static
@@ -260,21 +353,6 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
 
   PrefService* prefs = client_->GetPrefs();
 
-  // kGoogleServicesLastSignedInUsername was introduced much later than its
-  // "Syncing" counterpart, so backfill. Note that having different values for
-  // the 2 prefs is possible (user enabled sync, disabled, then signed-in with
-  // a different account) and we should not overwrite the "SignedIn" pref in
-  // that case.
-  // TODO(crbug.com/337112658): Remove migration after 04/25.
-  std::string last_syncing_username =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingUsername);
-  std::string last_signed_in_username =
-      prefs->GetString(prefs::kGoogleServicesLastSignedInUsername);
-  if (!last_syncing_username.empty() && last_signed_in_username.empty()) {
-    prefs->SetString(prefs::kGoogleServicesLastSignedInUsername,
-                     last_syncing_username);
-  }
-
   // If the user is clearing the token service from the command line, then
   // clear their login info also (not valid to be logged in without any
   // tokens).
@@ -284,7 +362,7 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
     prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Migrate primary account ID from email to Gaia ID if needed.
   std::string pref_account_id =
       prefs->GetString(prefs::kGoogleServicesAccountId);
@@ -295,8 +373,8 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
           account_tracker_service_->FindAccountInfoByEmail(pref_account_id);
       // |account_info.gaia| could be empty if |account_id| is already gaia id.
       if (!account_info.gaia.empty()) {
-        pref_account_id = account_info.gaia;
-        prefs->SetString(prefs::kGoogleServicesAccountId, account_info.gaia);
+        pref_account_id = account_info.gaia.ToString();
+        prefs->SetString(prefs::kGoogleServicesAccountId, pref_account_id);
       }
     }
   }
@@ -329,8 +407,8 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
   }
 
   PrefService* prefs = client_->GetPrefs();
-  std::string last_syncing_gaia_id =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+  const GaiaId last_syncing_gaia_id =
+      GaiaId(prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
   if (last_syncing_gaia_id.empty()) {
     return std::make_pair(CoreAccountInfo(),
                           InitializeAccountInfoState::
@@ -353,11 +431,11 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
   }
 
   if (base::FeatureList::IsEnabled(kRestorePrimaryAccountInfo)) {
-    CHECK_EQ(account_id,
-             account_tracker_service_->SeedAccountInfo(
-                 last_syncing_gaia_id, last_syncing_email,
-                 signin_metrics::AccessPoint::
-                     ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD));
+    CHECK_EQ(
+        account_id,
+        account_tracker_service_->SeedAccountInfo(
+            last_syncing_gaia_id, last_syncing_email,
+            signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad));
 
     return std::make_pair(account_tracker_service_->GetAccountInfo(account_id),
                           InitializeAccountInfoState::
@@ -368,69 +446,6 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
         InitializeAccountInfoState::
             kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
   }
-}
-
-void PrimaryAccountManager::Initialize() {
-  // Should never call Initialize() twice.
-  CHECK(!primary_account_.has_value());
-
-  // Prepare prefs before loading them.
-  PrepareToLoadPrefs();
-
-  PrefService* prefs = client_->GetPrefs();
-  std::string pref_account_id =
-      prefs->GetString(prefs::kGoogleServicesAccountId);
-  bool pref_consented_to_sync =
-      prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync);
-  LogPrimaryAccountPrefsOnInitialize(pref_account_id, pref_consented_to_sync);
-
-  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                      /*commit_on_destroy=*/false);
-  if (pref_account_id.empty()) {
-    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
-                              scoped_pref_commit);
-  } else {
-    auto [account_info, account_info_state] =
-        GetOrRestorePrimaryAccountInfoOnInitialize(pref_account_id,
-                                                   pref_consented_to_sync);
-    base::UmaHistogramEnumeration(
-        "Signin.PAMInitialize.PrimaryAccountInfoState", account_info_state);
-
-    if (pref_consented_to_sync && !account_info.IsEmpty()) {
-      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
-                                scoped_pref_commit);
-
-      // Ensure that the last syncing account data is consistent with the
-      // primary account. The last signed-in account data is written inside
-      // SetPrimaryAccountInternal().
-      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   account_info.gaia);
-      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
-                                   account_info.email);
-    } else if (ShouldSigninAllowedPrefAffectPrimaryAccount(
-                   pref_consented_to_sync)) {
-      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
-                                scoped_pref_commit);
-    } else {
-      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
-                                scoped_pref_commit);
-    }
-  }
-
-  // PrimaryAccountManager is initialized once the primary account and consent
-  // level are loaded.
-  CHECK(primary_account_.has_value());
-
-  // Instrument metrics to know what fraction of users without a primary
-  // account previously did have one, with sync enabled.
-  RecordHadPreviousSyncAccount();
-
-  // It is important to only load credentials after starting to observe the
-  // token service.
-  token_service_observation_.Observe(token_service_);
-  token_service_->LoadCredentials(
-      GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 const PrimaryAccountManager::PrimaryAccount&
@@ -453,8 +468,9 @@ bool PrimaryAccountManager::HasPrimaryAccount(
 
 CoreAccountInfo PrimaryAccountManager::GetPrimaryAccountInfo(
     signin::ConsentLevel consent_level) const {
-  if (!HasPrimaryAccount(consent_level))
+  if (!HasPrimaryAccount(consent_level)) {
     return CoreAccountInfo();
+  }
   return GetPrimaryAccount().account_info;
 }
 
@@ -503,9 +519,10 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
           /*commit_on_destroy*/ true, std::move(prefs_committed_callback));
       SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
                                 signin_scoped_pref_commit);
-      if (account_changed)
+      if (account_changed) {
         FirePrimaryAccountChanged(previous_state, access_point,
                                   signin_scoped_pref_commit);
+      }
       return;
     }
   }
@@ -538,7 +555,7 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
   // user is signed in the corresponding preferences should match. Doing it here
   // as opposed to on signin allows us to catch the upgrade scenario.
   scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                               account_info.gaia);
+                               account_info.gaia.ToString());
   scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
                                account_info.email);
 }
@@ -570,29 +587,6 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
   }
 }
 
-void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // If sync is on currently, do not record anything.
-    return;
-  }
-
-  const std::string& last_gaia_id_with_sync_enabled =
-      client_->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-  const bool existed_primary_account_with_sync =
-      !last_gaia_id_with_sync_enabled.empty();
-
-  base::UmaHistogramBoolean(
-      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
-      existed_primary_account_with_sync);
-
-  if (!HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // The user is currently signed out (no primary account exists).
-    base::UmaHistogramBoolean(
-        "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
-        existed_primary_account_with_sync);
-  }
-}
-
 void PrimaryAccountManager::UpdatePrimaryAccountInfo() {
   CoreAccountId primary_account_id =
       GetPrimaryAccount().account_info.account_id;
@@ -616,7 +610,7 @@ void PrimaryAccountManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PrimaryAccountManager::ClearPrimaryAccount(
     signin_metrics::ProfileSignout signout_source_metric) {
   StartSignOut(signout_source_metric, RemoveAccountsOption::kRemoveAllAccounts);
@@ -628,7 +622,7 @@ void PrimaryAccountManager::RemovePrimaryAccountButKeepTokens(
                RemoveAccountsOption::kKeepAllAccountsAndClearPrimary);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void PrimaryAccountManager::RevokeSyncConsent(
     signin_metrics::ProfileSignout signout_source_metric) {
@@ -644,7 +638,7 @@ void PrimaryAccountManager::StartSignOut(
       base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
                      base::Unretained(this), signout_source_metric,
                      remove_option),
-      signout_source_metric, HasPrimaryAccount(signin::ConsentLevel::kSync));
+      signout_source_metric);
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(
@@ -668,8 +662,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
 
   if (abort_signout) {
     // TODO(crbug.com/40240858): Add 'NOTREACHED()' after updating the
-    // 'SigninManager', 'Dice Response Handler',
-    // 'Lacros Profile Account Mapper'.
+    // 'SigninManager', 'Dice Response Handler'.
     VLOG(1) << "Ignoring attempt to sign out while signout disallowed";
     return;
   }
@@ -719,51 +712,128 @@ PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
     const {
   PrimaryAccountChangeEvent::State state(GetPrimaryAccount().account_info,
                                          signin::ConsentLevel::kSignin);
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync))
+  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     state.consent_level = signin::ConsentLevel::kSync;
+  }
   return state;
 }
 
-void PrimaryAccountManager::ComputeExplicitBrowserSignin(
+void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
     const PrimaryAccountChangeEvent& event_details,
     ScopedPrefCommit& scoped_pref_commit) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case PrimaryAccountChangeEvent::Type::kNone:
-      return;
+      break;
     case PrimaryAccountChangeEvent::Type::kCleared:
       scoped_pref_commit.ClearPref(kExplicitBrowserSigninWithoutFeatureEnabled);
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-      }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+#endif
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
       CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
       signin_metrics::AccessPoint access_point =
           event_details.GetSetPrimaryAccountAccessPoint().value();
+      GaiaId current_gaia_id =
+          event_details.GetCurrentState().primary_account.gaia;
 
-      if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
-          access_point ==
-              signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        scoped_pref_commit.SetBoolean(
+            prefs::kPrimaryAccountSetAfterSigninMigration, true);
+      }
+
+      bool is_implicit_signin =
+          access_point == signin_metrics::AccessPoint::kUnknown ||
+          access_point == signin_metrics::AccessPoint::kWebSignin;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (base::FeatureList::IsEnabled(
+              switches::kWebSigninLeadsToImplicitlySignedInState)) {
+        // To allow easier testing, consider the following access points as
+        // implicit sign-in.
+        is_implicit_signin =
+            is_implicit_signin ||
+            access_point ==
+                signin_metrics::AccessPoint::kChromeSigninInterceptBubble ||
+            access_point ==
+                signin_metrics::AccessPoint::kSigninChoiceRemembered;
+      }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (is_implicit_signin) {
         scoped_pref_commit.ClearPref(
             kExplicitBrowserSigninWithoutFeatureEnabled);
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-          scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-        }
-      } else {
-        // All others access points are explicit sign ins except the Web
-        // Signin event.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+#endif
+        // Reset explicit sign-in prefs for the relevant data types.
         scoped_pref_commit.SetBoolean(
-            kExplicitBrowserSigninWithoutFeatureEnabled, true);
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-          scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
-        }
+            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
+        SigninPrefs(*client_->GetPrefs())
+            .SetExtensionsExplicitBrowserSignin(current_gaia_id, false);
+        SigninPrefs(*client_->GetPrefs())
+            .SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
+        break;
+      }
+      // All others access points are explicit sign ins except the Web
+      // Signin event.
+      scoped_pref_commit.SetBoolean(kExplicitBrowserSigninWithoutFeatureEnabled,
+                                    true);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+#endif
+      if (base::FeatureList::IsEnabled(
+              switches::kEnablePreferencesAccountStorage)) {
+        scoped_pref_commit.SetBoolean(
+            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+      }
+      if (access_point ==
+              signin_metrics::AccessPoint::kExtensionInstallBubble &&
+          switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+        // Record an opt in for the extensions explicit signin feature and use
+        // the existing pref to determine if it's a new or existing opt in.
+        bool is_new_opt_in =
+            !SigninPrefs(*client_->GetPrefs())
+                 .GetExtensionsExplicitBrowserSignin(current_gaia_id);
+        base::UmaHistogramBoolean(
+            "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+            is_new_opt_in);
+
+        SigninPrefs(*client_->GetPrefs())
+            .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
+      }
+      if (access_point == signin_metrics::AccessPoint::kBookmarkBubble &&
+          base::FeatureList::IsEnabled(
+              switches::kSyncEnableBookmarksInTransportMode)) {
+        // Record an explicit signin for bookmarks for this account only.
+        SigninPrefs(*client_->GetPrefs())
+            .SetBookmarksExplicitBrowserSignin(current_gaia_id, true);
       }
   }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // If the user turns on sync, disable account storage for bookmarks. This
+  // way the user does not get duplicate data if they turn off sync (and
+  // choose to preserve their data locally) and then sign in again.
+  // This is safe to remove with the deprecation of
+  // `signin::ConsentLevel::kSync`.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    auto current_gaia_id = event_details.GetCurrentState().primary_account.gaia;
+    auto prefs = SigninPrefs(*client_->GetPrefs());
+
+    if (prefs.GetBookmarksExplicitBrowserSignin(current_gaia_id)) {
+      base::UmaHistogramBoolean(
+          "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled", true);
+    }
+
+    prefs.SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
+  }
+#endif
 }
 
 void PrimaryAccountManager::FirePrimaryAccountChanged(
     const PrimaryAccountChangeEvent::State& previous_state,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+    std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
         event_source,
     ScopedPrefCommit& scoped_pref_commit) {
   PrimaryAccountChangeEvent::State current_state = GetPrimaryAccountState();
@@ -778,7 +848,7 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 
   LogPrimaryAccountChangeMetrics(event_details);
 
-  ComputeExplicitBrowserSignin(event_details, scoped_pref_commit);
+  SetExplicitBrowserSigninPrefs(event_details, scoped_pref_commit);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
@@ -799,21 +869,16 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 void PrimaryAccountManager::OnRefreshTokensLoaded() {
   token_service_observation_.Reset();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (account_tracker_service_->GetMigrationState() ==
       AccountTrackerService::MIGRATION_IN_PROGRESS) {
     account_tracker_service_->SetMigrationDone();
   }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
-    // If SeedAccountsRevamp is enabled, account seeding on Android is
-    // controlled by SigninManager, so don't remove any accounts here.
-    return;
-  }
-#endif
-
+// On Android, account seeding on Android is
+// controlled by SigninManager, so don't remove any accounts here.
+#if !BUILDFLAG(IS_ANDROID)
   // Remove account information from the account tracker service if needed.
   if (token_service_->HasLoadCredentialsFinishedWithNoErrors()) {
     std::vector<AccountInfo> accounts_in_tracker_service =
@@ -829,6 +894,7 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       }
     }
   }
+#endif
 }
 
 void PrimaryAccountManager::OnSigninAllowedPrefChanged() {
@@ -843,12 +909,15 @@ void PrimaryAccountManager::OnSigninAllowedPrefChanged() {
 
 bool PrimaryAccountManager::ShouldSigninAllowedPrefAffectPrimaryAccount(
     bool is_sync_consent) {
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         !signin_allowed_.GetValue() &&
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  return !signin_allowed_.GetValue() &&
          // If sync is enabled, we do not directly clear the primary account.
          // This is handled by `PrimaryAccountPolicyManager`. That flow is
          // extremely hard to follow especially for the case when the user is
          // syncing with a managed account as in that case the whole profile
          // needs to be deleted.
          !is_sync_consent;
+#else
+  return false;
+#endif
 }

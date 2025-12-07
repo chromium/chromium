@@ -10,8 +10,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/bind.h"
+#include "base/values.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/referrer.h"
@@ -20,33 +31,78 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+
 using content::BrowserThread;
 using content::NavigationController;
 using content::NavigationEntry;
 using content::Referrer;
 
-namespace {
 struct AboutURLTestCase {
   GURL test_url;
   GURL expected_url;
 };
-}
+
+}  // namespace
 
 class BrowserAboutHandlerTest : public testing::Test {
  protected:
   void TestHandleChromeAboutAndChromeSyncRewrite(
       const std::vector<AboutURLTestCase>& test_cases) {
-    TestingProfile profile;
 
     for (const auto& test_case : test_cases) {
       GURL url(test_case.test_url);
-      HandleChromeAboutAndChromeSyncRewrite(&url, &profile);
+      HandleChromeAboutAndChromeSyncRewrite(&url, profile());
       EXPECT_EQ(test_case.expected_url, url);
     }
   }
 
+  void SetUp() override {
+    profile_ = TestingProfile::Builder().Build();
+    ChromePolicyBlocklistServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindLambdaForTesting([&](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<PolicyBlocklistService>(
+                  std::make_unique<policy::URLBlocklistManager>(
+                      profile_->GetPrefs(), policy::policy_prefs::kUrlBlocklist,
+                      policy::policy_prefs::kUrlAllowlist),
+                  profile_->GetPrefs()));
+        }));
+  }
+
+  TestingProfile* profile() { return profile_.get(); }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
+
+  // Reverts the effects of a browser quit or restart attempt,
+  // specifically for testing environments to prevent test failures.
+  void ResetBrowserExitState() {
+    browser_shutdown::SetTryingToQuit(false);
+#if BUILDFLAG(IS_CHROMEOS)
+    chrome::SetSendStopRequestToSessionManager(false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void SetBlockList(base::Value::List blocklist) {
+    profile_->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                  std::move(blocklist));
+    task_environment_.RunUntilIdle();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(BrowserAboutHandlerTest, HandleChromeAboutAndChromeSyncRewrite) {
@@ -61,8 +117,6 @@ TEST_F(BrowserAboutHandlerTest, HandleChromeAboutAndChromeSyncRewrite) {
         GURL(chrome_prefix + chrome::kChromeUIChromeURLsHost)},
        {GURL(chrome_prefix + chrome::kChromeUISignInInternalsHost),
         GURL(chrome_prefix + chrome::kChromeUISignInInternalsHost)},
-       {GURL(chrome_prefix + chrome::kChromeUISyncHost),
-        GURL(chrome_prefix + chrome::kChromeUISyncInternalsHost)},
        {
            GURL(chrome_prefix + "host/path?query#ref"),
            GURL(chrome_prefix + "host/path?query#ref"),
@@ -107,12 +161,11 @@ TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
   GURL expected_virtual_url = url;
   GURL expected_url("http://.foo/");
 
-  TestingProfile profile;
   std::unique_ptr<NavigationEntry> entry(
       NavigationController::CreateNavigationEntry(
           url, Referrer(), /* initiator_origin= */ std::nullopt,
           /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_RELOAD,
-          false, std::string(), &profile,
+          false, std::string(), profile(),
           nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(expected_virtual_url, entry->GetVirtualURL());
   EXPECT_EQ(expected_url, entry->GetURL());
@@ -121,5 +174,75 @@ TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
 TEST_F(BrowserAboutHandlerTest, HandleNonNavigationAboutURL_Invalid) {
   GURL invalid_url("https:");
   ASSERT_FALSE(invalid_url.is_valid());
-  EXPECT_FALSE(HandleNonNavigationAboutURL(invalid_url));
+  EXPECT_FALSE(HandleNonNavigationAboutURL(invalid_url, profile()));
+}
+
+TEST_F(BrowserAboutHandlerTest,
+       HandleNonNavigationAboutURL_QuitDebugUrlIsBlocked) {
+  GURL url(chrome::kChromeUIQuitURL);
+  SetBlockList(base::Value::List().Append(chrome::kChromeUIQuitURL));
+
+  // Blocked URL should be handled and should not attempt to quit.
+  EXPECT_TRUE(HandleNonNavigationAboutURL(url, profile()));
+  task_environment()->RunUntilIdle();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
+#else
+  EXPECT_FALSE(chrome::IsSendingStopRequestToSessionManager());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+TEST_F(BrowserAboutHandlerTest,
+       HandleNonNavigationAboutURL_QuitDebugUrlIsNotBlocked) {
+  GURL url(chrome::kChromeUIQuitURL);
+  SetBlockList(base::Value::List());
+
+  // URL is not blocked, expect a quit attempt.
+  EXPECT_TRUE(HandleNonNavigationAboutURL(url, profile()));
+  task_environment()->RunUntilIdle();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+#else
+  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  ResetBrowserExitState();
+}
+
+TEST_F(BrowserAboutHandlerTest,
+       HandleNonNavigationAboutURL_RestartDebugUrlIsBlocked) {
+  GURL url(chrome::kChromeUIRestartURL);
+  SetBlockList(base::Value::List().Append(chrome::kChromeUIRestartURL));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kWasRestarted));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Blocked URL should be handled and should not attempt to restart.
+  EXPECT_TRUE(HandleNonNavigationAboutURL(url, profile()));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kWasRestarted));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(BrowserAboutHandlerTest,
+       HandleNonNavigationAboutURL_RestartDebugUrlIsNotBlocked) {
+  GURL url(chrome::kChromeUIRestartURL);
+  SetBlockList(base::Value::List());
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kWasRestarted));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // URL is not blocked, expect a restart attempt.
+  EXPECT_TRUE(HandleNonNavigationAboutURL(url, profile()));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kWasRestarted));
+#endif  // !BUILDFLAG(IS_ANDROID)
+  ResetBrowserExitState();
 }

@@ -60,14 +60,17 @@ bool MeetsCriteria(const PageCriteria& criteria, const OfflinePageItem& item) {
   if (!MeetsCriteria(criteria, item.client_id))
     return false;
 
-  if (criteria.file_size && item.file_size != criteria.file_size.value())
+  if (criteria.file_size && item.file_size != criteria.file_size.value()) {
     return false;
-  if (!criteria.digest.empty() && item.digest != criteria.digest)
+  }
+  if (!criteria.digest.empty() && item.digest != criteria.digest) {
     return false;
+  }
 
   if (!criteria.request_origin.empty() &&
-      item.request_origin != criteria.request_origin)
+      item.request_origin != criteria.request_origin) {
     return false;
+  }
 
   if (!criteria.url.is_empty() &&
       !EqualsIgnoringFragment(criteria.url, item.url) &&
@@ -81,8 +84,9 @@ bool MeetsCriteria(const PageCriteria& criteria, const OfflinePageItem& item) {
     return false;
   }
 
-  if (criteria.additional_criteria && !criteria.additional_criteria.Run(item))
+  if (criteria.additional_criteria && !criteria.additional_criteria.Run(item)) {
     return false;
+  }
 
   return true;
 }

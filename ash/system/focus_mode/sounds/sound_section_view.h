@@ -21,6 +21,9 @@ namespace ash {
 class PillButton;
 class PlaylistView;
 
+// Number of playlists for focus mode.
+inline constexpr size_t kFocusModePlaylistViewsNum = 4;
+
 // These are views that represent a list of playlists and we toggle between
 // `Focus Sounds` or `YouTube Music` sound sections using the slider button in
 // the focus panel. When a non-premium user toggles to show the `YouTube Music`
@@ -44,6 +47,7 @@ class ASH_EXPORT SoundSectionView : public views::View {
   // instead.
   void ShowAlternateView(bool show_alternate_view);
   void SetAlternateView(std::unique_ptr<views::BoxLayoutView> alternate_view);
+  bool IsAlternateViewVisible() const;
 
   // Updates the state of `PlaylistView` for the newly `selected_playlist` and
   // reset the state of `PlaylistView` for unselected playlists.

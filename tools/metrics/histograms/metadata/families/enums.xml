@@ -40,6 +40,21 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(ClassifyUrlThrottleFinalStatus) -->
+
+<enum name="ClassifyUrlThrottleFinalStatus">
+  <int value="0" label="Allowed">
+    The navigation is allowed as a result of aggregating filtering results from
+    SupervisedUserURLFilter
+  </int>
+  <int value="1" label="Blocked">
+    The navigation is denied as a result of aggregating filtering results from
+    SupervisedUserURLFilter, and an interstitial is scheduled.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleFinalStatus) -->
+
 <!-- LINT.IfChange(FamilyInfoLogSourceFetchStatus) -->
 
 <enum name="FamilyInfoLogSourceFetchStatus">
@@ -112,6 +127,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserLocalWebApprovalResult) -->
+
 <enum name="FamilyLinkUserLocalWebApprovalResult">
   <summary>
     The result of local web approval request. Reported by the browser once
@@ -127,29 +144,15 @@ chromium-metrics-reviews@google.com.
     Request was canceled at any point (before, during or after parent
     verification).
   </int>
-  <int value="3" label="Error">An error occured during the request flow.</int>
+  <int value="3" label="Error">
+    An error occured during the request flows, including malformed requests and
+    server-client connection errors.
+  </int>
 </enum>
 
-<enum name="FamilyLinkUserLogSegment">
-  <summary>
-    Filters family link user metrics into categories of interest.
-  </summary>
-  <int value="0" label="Other Not Supervised">
-    None of the users are supervised. This includes signed out users, and where
-    a secondary account is supervised.
-  </int>
-  <int value="1" label="Policy Enabled Supervision">
-    Users under the age of consent automatically have supervision applied to
-    their accounts.
-  </int>
-  <int value="2" label="User Enabled Supervision">
-    Users over the age of consent can opt into supervision.
-  </int>
-  <int value="3" label="Mixed Profile">
-    Profiles with different supervision types were in use during the reporting
-    window.
-  </int>
-</enum>
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
+
+<!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetError">
   <summary>
@@ -175,6 +178,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ParentAccessWidgetError) -->
+
 <enum name="FamilyLinkUserParentAccessWidgetShowDialogError">
   <summary>
     Error that prevents the parent access widget dialog from showing. ChromeOS
@@ -189,13 +194,6 @@ chromium-metrics-reviews@google.com.
     Error that occurs when ParentAccess UI invoked while instance already
     visible. Indicates a programming error.
   </int>
-</enum>
-
-<enum name="FamilyLinkWebFilterType">
-  <int value="0" label="Allow All Sites"/>
-  <int value="1" label="Try To Block Mature Sites"/>
-  <int value="2" label="Only allow Certain Sites"/>
-  <int value="3" label="Mixed web filters on device"/>
 </enum>
 
 <enum name="FamilyUserLogSegment">
@@ -213,13 +211,43 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Attempted cryptohome deletion"/>
 </enum>
 
+<!-- LINT.IfChange(LocalWebApprovalErrorType) -->
+
+<enum name="LocalWebApprovalErrorType">
+  <summary>Error type that occurs during the local web approval flow.</summary>
+  <int value="0" label="Failure to decode PACP response">
+    The response provided by the PACP widget does not have valid url base 64
+    encoding
+  </int>
+  <int value="1" label="Failure to parse PACP response">
+    The response provided by the PACP widget could not be parsed in the expected
+    format provided by the PACP contract
+  </int>
+  <int value="2" label="Unexpected PACP response">
+    The response provided by the PACP does not apply to the parent approval flow
+  </int>
+  <int value="3" label="PACP timeout exceeded">
+    Failed to connect to the PACP widget within the provided timeout
+  </int>
+  <int value="4" label="Empty PACP response">
+    The response provided by the PACP was empty
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalWebApprovalErrorType) -->
+
+<!-- LINT.IfChange(ManagedModeBlockingCommand) -->
+
 <enum name="ManagedModeBlockingCommand">
-  <int value="0" label="Preview"/>
+  <int value="0" label="Preview (deprecated)"/>
   <int value="1" label="Back"/>
-  <int value="2" label="New Tab Page"/>
+  <int value="2" label="New Tab Page (deprecated)"/>
   <int value="3" label="Remote Access Request"/>
   <int value="4" label="Local Access Request"/>
+  <int value="5" label="Learn more"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_interstitial.h:ManagedModeBlockingCommand) -->
 
 <enum name="ManagedUserURLRequestPermissionSource">
   <int value="0" label="MAIN_FRAME">Request was made from main frame</int>
@@ -377,35 +405,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ExtensionInstallDialogState) -->
 
-<!-- LINT.IfChange(SupervisedUserExtensionParentApprovalEntryPoint) -->
-
-<enum name="SupervisedUserExtensionParentApprovalEntryPoint">
-  <summary>
-    Tracks the different user flows that lead to displaying the Extension parent
-    approval dialog.
-  </summary>
-  <int value="0" label="Installed from Webstore">
-    The approval dialog is shown during a new extension installation from the
-    Webstore.
-  </int>
-  <int value="1" label="Enabled from extensions management page">
-    The approval dialog is shown when the user tries to enable an extension from
-    the extesnion management page.
-  </int>
-  <int value="2"
-      label="Enabled a disabled or terminated extension via the extension
-             enable flow">
-    The approval dialog is shown when the user tries to enable an disabled or
-    terminated via the extension enable flow.
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//extensions/browser/supervised_user_extensions_delegate.h:SupervisedUserExtensionParentApprovalEntryPoint) -->
-
 <enum name="SupervisedUserFaviconAvailability">
   <int value="0" label="Favicon Available"/>
   <int value="1" label="Favicon Unavailable"/>
 </enum>
+
+<!-- LINT.IfChange(top_level_filtering_result) -->
 
 <enum name="SupervisedUserFilterTopLevelResult">
   <int value="0" label="ALLOWED">
@@ -426,27 +431,43 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.IfChange(SupervisedUserImplicitParentApprovalGrantEntryPoint) -->
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:top_level_filtering_result) -->
 
-<enum name="SupervisedUserImplicitParentApprovalGrantEntryPoint">
+<!-- LINT.IfChange(SupervisedUserLogSegment) -->
+
+<enum name="SupervisedUserLogSegment">
   <summary>
-    Tracks the different user flows that lead to granting an automatic parent
-    approval to an extension for a supervised user.
+    Filters supervised user metrics into categories of interest.
   </summary>
-  <int value="0"
-      label="Parent configuration Extensions switch is flipped to enabled">
-    Recorded when an extension that did not have parent approval is granted it,
-    when the Family Link &quot;Extensions&quot; toggle is flipped to On. In this
-    mode no explicit parental approval is required.
+  <int value="0" label="Unsupervised">
+    None of the users are supervised or parents. This includes signed out users,
+    and where a secondary account is supervised.
   </int>
-  <int value="1" label="New extension is installed">
-    Recorded when an extension is granted parent approval at the time of its
-    installation, when it is installed under the &quot;Extensions&quot; toggle
-    set to On. In this mode no explicit parental approval is required.
+  <int value="1" label="Family Link policy enabled supervision">
+    All profiles are under the age of consent and have supervision applied to
+    their accounts (managed by Family Link).
+  </int>
+  <int value="2" label="Family Link user enabled supervision">
+    All profiles are over the age of consent and have opted in to supervision
+    (managed by Family Link).
+  </int>
+  <int value="3" label="Mixed profile with supervision">
+    Profiles with different supervision types were in use during the reporting
+    window. At least one profile must be supervised.
+  </int>
+  <int value="4" label="Parent">
+    Users that have parent accounts (family manager or parent) in Family Link.
+    There must be at least one profile with a parent and no supervision across
+    the profiles.
+  </int>
+  <int value="5" label="Supervision enabled locally">
+    Users with or without accounts that have supervision applied to their
+    devices locally. These users are mutually exclusive with those with Family
+    Link enabled supervisions. Only available for Android users.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ImplicitExtensionApprovalEntryPoint) -->
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_log_record.h:SupervisedUserLogSegment) -->
 
 <enum name="SupervisedUserParentPermissionDialog">
   <summary>
@@ -756,6 +777,33 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ToggleState) -->
+
+<!-- LINT.IfChange(SupervisedUserWebFilterType) -->
+
+<enum name="SupervisedUserWebFilterType">
+  <int value="0" label="Allow all sites">
+    This is the default value; manual blocklists take precedence over this
+    setting.
+  </int>
+  <int value="1" label="Try to block mature sites">
+    Uses external service to detect mature sites. This is the only available
+    setting for local supervision (see SupervisedUserLogSegment).
+  </int>
+  <int value="2" label="Only allow Certain Sites">
+    In this mode all sites are blocked, unless explicitly allowlisted.
+  </int>
+  <int value="3" label="Mixed web filters on device">
+    Reported when multiple browser profiles have different web filters set.
+  </int>
+  <int value="4" label="Disabled">
+    Web filter is neutralized: it behaves as if there were no filtering. The
+    difference between this and the &quot;allow all sites&quot; setting with
+    empty blocklist is that this filter type will not emit any metrics related
+    to url classification and web filtering.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:SupervisedUserWebFilterType) -->
 
 <enum name="SupervisionStatusReportEvent">
   <summary>Events that trigger status report for supervised accounts</summary>

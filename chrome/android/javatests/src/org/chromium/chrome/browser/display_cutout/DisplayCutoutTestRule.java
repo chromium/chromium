@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.display_cutout;
 
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.WindowManager.LayoutParams;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
@@ -42,7 +40,6 @@ import java.util.concurrent.TimeoutException;
  *
  * @param <T> The type of {@link ChromeActivity} to use for the test.
  */
-@RequiresApi(Build.VERSION_CODES.P)
 public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActivityTestRule<T> {
     /** These are the two test safe areas with and without the test cutout. */
     public static final Rect TEST_SAFE_AREA_WITH_CUTOUT = new Rect(10, 20, 30, 40);
@@ -157,7 +154,7 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
         super.before();
 
         startActivity();
-        mTab = getActivity().getActivityTab();
+        mTab = getActivityTab();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -176,13 +173,9 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
 
     @Override
     protected void after() {
-        super.after();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (!getActivity().isActivityFinishingOrDestroyed()) {
-                        getActivity().getFullscreenManager().removeObserver(mListener);
-                    }
-                });
+                () -> getActivity().getFullscreenManager().removeObserver(mListener));
+        super.after();
     }
 
     protected String getTestURL() {

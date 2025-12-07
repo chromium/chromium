@@ -54,4 +54,3 @@ ADDRESS_HOME_COUNTRY | onlineTransferCountry | Country | US | -default
 UNKNOWN_TYPE | onlineTransferInstitute | Bank | ACHSECUR | -default
 UNKNOWN_TYPE | otAccountNumber | Account No. |  | -default
 UNKNOWN_TYPE | otBankCode | Bank Code |  | -default
-UNKNOWN_TYPE | accept | I read and understood and I accept the terms in force in                                         IKEA | on | accept_3

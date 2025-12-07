@@ -4,15 +4,12 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/post_save_compromised_bubble_controller.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/grit/theme_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-constexpr char kTypeHistogram[] = "PasswordBubble.CompromisedBubble.Type";
 
 using BubbleType = PostSaveCompromisedBubbleController::BubbleType;
 
@@ -47,13 +44,10 @@ void PostSaveCompromisedBubbleControllerTest::CreateController(
 }
 
 TEST_F(PostSaveCompromisedBubbleControllerTest, SafeState_Destroy) {
-  base::HistogramTester histogram_tester;
   CreateController(password_manager::ui::PASSWORD_UPDATED_SAFE_STATE);
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());
   controller()->OnBubbleClosing();
-  histogram_tester.ExpectUniqueSample(kTypeHistogram,
-                                      BubbleType::kPasswordUpdatedSafeState, 1);
 }
 
 TEST_F(PostSaveCompromisedBubbleControllerTest, SafeState_DestroyImplicictly) {
@@ -85,13 +79,10 @@ TEST_F(PostSaveCompromisedBubbleControllerTest, SafeState_Click) {
 }
 
 TEST_F(PostSaveCompromisedBubbleControllerTest, MoreToFix_Destroy) {
-  base::HistogramTester histogram_tester;
   CreateController(password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX);
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());
   controller()->OnBubbleClosing();
-  histogram_tester.ExpectUniqueSample(
-      kTypeHistogram, BubbleType::kPasswordUpdatedWithMoreToFix, 1);
 }
 
 TEST_F(PostSaveCompromisedBubbleControllerTest, MoreToFix_DestroyImplicictly) {
@@ -114,7 +105,6 @@ TEST_F(PostSaveCompromisedBubbleControllerTest, MoreToFix_Content) {
 }
 
 TEST_F(PostSaveCompromisedBubbleControllerTest, MoreToFix_Click) {
-  base::HistogramTester histogram_tester;
   CreateController(password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX);
 
   EXPECT_CALL(*delegate(),

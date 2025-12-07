@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/mhtml_handle_writer.h"
 
 #include "base/containers/span.h"
@@ -18,6 +13,7 @@
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/web_thread_safe_data.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
 
@@ -31,9 +27,8 @@ MHTMLHandleWriter::~MHTMLHandleWriter() {}
 
 void MHTMLHandleWriter::WriteContents(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("page-serialization",
-                                    "Writing MHTML contents to handle",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("page-serialization", "Writing MHTML contents to handle",
+                    perfetto::Track::FromPointer(this));
   is_writing_ = true;
   WriteContentsImpl(std::move(mhtml_contents));
 }
@@ -42,9 +37,7 @@ void MHTMLHandleWriter::Finish(mojom::MhtmlSaveStatus save_status) {
   DCHECK(!RenderThread::IsMainThread())
       << "Should not run in the main renderer thread";
   if (is_writing_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("page-serialization",
-                                    "WriteContentsImpl (MHTMLHandleWriter)",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("page-serialization", perfetto::Track::FromPointer(this));
   }
   Close();
 
@@ -72,15 +65,16 @@ MHTMLFileHandleWriter::~MHTMLFileHandleWriter() {}
 
 void MHTMLFileHandleWriter::WriteContentsImpl(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  mojom::MhtmlSaveStatus save_status = mojom::MhtmlSaveStatus::kSuccess;
-  for (const blink::WebThreadSafeData& data : mhtml_contents) {
-    if (!data.IsEmpty() &&
-        file_.WriteAtCurrentPos(data.data(), data.size()) < 0) {
-      save_status = mojom::MhtmlSaveStatus::kFileWritingError;
-      break;
+  for (const auto& data : mhtml_contents) {
+    if (data.IsEmpty()) {
+      continue;
+    }
+    if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
+      Finish(mojom::MhtmlSaveStatus::kFileWritingError);
+      return;
     }
   }
-  Finish(save_status);
+  Finish(mojom::MhtmlSaveStatus::kSuccess);
 }
 
 void MHTMLFileHandleWriter::Close() {

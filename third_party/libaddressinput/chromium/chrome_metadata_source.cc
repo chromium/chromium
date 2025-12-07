@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <utility>
+#include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -37,13 +39,14 @@ void ChromeMetadataSource::Get(const std::string& key,
 
 void ChromeMetadataSource::OnSimpleLoaderComplete(
     RequestList::iterator it,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const Callback& callback = it->get()->callback;
   const std::string& key = it->get()->key;
   std::unique_ptr<std::string> data(new std::string());
-  bool ok = !!response_body;
-  if (ok)
+  bool ok = response_body.has_value();
+  if (ok) {
     data->swap(*response_body);
+  }
   callback(ok, key, data.release());
   requests_.erase(it);
 }
@@ -88,7 +91,7 @@ void ChromeMetadataSource::Download(const std::string& key,
           policy_exception_justification: "Not implemented."
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = resource;
+  resource_request->url = std::move(resource);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),

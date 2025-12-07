@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
@@ -48,7 +49,7 @@ class PageHelper {
   void SetBodyContentFromFuzzer(const uint8_t* data, size_t size) {
     FuzzedDataProvider provider(data, size);
     std::string body_content = provider.ConsumeBytesAsString(size);
-    GetDocument().documentElement()->setInnerHTML(
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         String::FromUTF8(body_content));
     UpdateAllLifecyclePhasesForTest();
   }
@@ -90,6 +91,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
+  test::TaskEnvironment task_environment;
 
   PageHelper page;
   page.SetUp();

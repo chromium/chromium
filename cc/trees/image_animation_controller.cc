@@ -9,8 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -46,9 +44,7 @@ ImageAnimationController::ImageAnimationController(
     Client* client,
     bool enable_image_animation_resync)
     : scheduler_(task_runner, client),
-      enable_image_animation_resync_(enable_image_animation_resync),
-      use_resume_behavior_(
-          base::FeatureList::IsEnabled(features::kAnimatedImageResume)) {}
+      enable_image_animation_resync_(enable_image_animation_resync) {}
 
 ImageAnimationController::~ImageAnimationController() = default;
 
@@ -62,7 +58,7 @@ void ImageAnimationController::RegisterAnimationDriver(
     PaintImage::Id paint_image_id,
     AnimationDriver* driver) {
   auto it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != animation_state_map_.end());
   it->second.AddDriver(driver);
   registered_animations_.insert(paint_image_id);
 }
@@ -71,10 +67,14 @@ void ImageAnimationController::UnregisterAnimationDriver(
     PaintImage::Id paint_image_id,
     AnimationDriver* driver) {
   auto it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != animation_state_map_.end());
   it->second.RemoveDriver(driver);
   if (!it->second.has_drivers())
     registered_animations_.erase(paint_image_id);
+}
+
+bool ImageAnimationController::IsRegistered(PaintImage::Id paint_image_id) {
+  return animation_state_map_.contains(paint_image_id);
 }
 
 const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
@@ -89,7 +89,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 
   for (auto id : registered_animations_) {
     auto it = animation_state_map_.find(id);
-    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != animation_state_map_.end());
     AnimationState& state = it->second;
 
     // Is anyone still interested in animating this image?
@@ -103,9 +103,9 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 
     // If we were able to advance this animation, invalidate it on the sync
     // tree.
-    if (state.AdvanceFrame(args, enable_image_animation_resync_,
-                           use_resume_behavior_))
+    if (state.AdvanceFrame(args, enable_image_animation_resync_)) {
       images_animated_on_sync_tree_.insert(id);
+    }
 
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                          "AnimationState", TRACE_EVENT_SCOPE_THREAD, "state",
@@ -141,7 +141,7 @@ void ImageAnimationController::UpdateStateFromDrivers() {
   std::optional<base::TimeTicks> next_invalidation_time;
   for (auto image_id : registered_animations_) {
     auto it = animation_state_map_.find(image_id);
-    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != animation_state_map_.end());
     AnimationState& state = it->second;
     state.UpdateStateFromDrivers();
 
@@ -170,7 +170,7 @@ void ImageAnimationController::DidActivate() {
 
   for (auto id : images_animated_on_sync_tree_) {
     auto it = animation_state_map_.find(id);
-    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != animation_state_map_.end());
     it->second.PushPendingToActive();
   }
   images_animated_on_sync_tree_.clear();
@@ -194,7 +194,7 @@ size_t ImageAnimationController::GetFrameIndexForImage(
     PaintImage::Id paint_image_id,
     WhichTree tree) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != animation_state_map_.end());
   return tree == WhichTree::PENDING_TREE ? it->second.pending_index()
                                          : it->second.active_index();
 }
@@ -209,14 +209,14 @@ const base::flat_set<
 ImageAnimationController::GetDriversForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != animation_state_map_.end());
   return it->second.drivers_for_testing();
 }
 
 size_t ImageAnimationController::GetLastNumOfFramesSkippedForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != animation_state_map_.end());
   return it->second.last_num_frames_skipped_for_testing();
 }
 
@@ -282,9 +282,7 @@ bool ImageAnimationController::AnimationState::ShouldAnimate(
         return false;
       break;
     case kAnimationNone:
-      NOTREACHED_IN_MIGRATION()
-          << "We shouldn't be tracking kAnimationNone images";
-      break;
+      NOTREACHED() << "We shouldn't be tracking kAnimationNone images";
     case kAnimationLoopInfinite:
       break;
     default:
@@ -320,8 +318,7 @@ bool ImageAnimationController::AnimationState::ShouldAnimate(
 // the frame should be displayed.
 bool ImageAnimationController::AnimationState::AdvanceFrame(
     const viz::BeginFrameArgs& args,
-    bool enable_image_animation_resync,
-    bool use_resume_behavior) {
+    bool enable_image_animation_resync) {
   DCHECK(ShouldAnimate(current_state_.repetitions_completed,
                        current_state_.pending_index));
   const base::TimeTicks next_tick_time = args.frame_time + args.interval;
@@ -363,23 +360,12 @@ bool ImageAnimationController::AnimationState::AdvanceFrame(
   }
 
   current_state_.num_of_frames_advanced = 0u;
-  if (use_resume_behavior) {
-    // When using the resume method, run the animation advancement starting
-    // at the current frame time rather than the saved tick time.
 
-    // Advance only as many frames as would fit in the display rate.
-    // IE if the display refresh rate is 60 Hz and the animated image updated
-    // every 11 ms, we could have a display frame that spans 2 animation
-    // frames.
-    current_state_ = AdvanceAnimationState(
-        current_state_, args, args.frame_time, enable_image_animation_resync);
-  } else {
-    // Keep catching up the animation from the last saved tick time until we
-    // reach the frame we should be displaying now.
-    current_state_ = AdvanceAnimationState(
-        current_state_, args, current_state_.next_desired_tick_time,
-        enable_image_animation_resync);
-  }
+  // Keep catching up the animation from the last saved tick time until we
+  // reach the frame we should be displaying now.
+  current_state_ = AdvanceAnimationState(current_state_, args,
+                                         current_state_.next_desired_tick_time,
+                                         enable_image_animation_resync);
   DCHECK_GE(current_state_.num_of_frames_advanced, 1u);
   last_num_frames_skipped_ = current_state_.num_of_frames_advanced - 1u;
 
@@ -451,30 +437,6 @@ ImageAnimationController::AnimationState::AdvanceAnimationState(
   // We should have advanced a single frame, anything more than that are frames
   // skipped trying to catch up.
   DCHECK_GT(animation_advancement_state.num_of_frames_advanced, 0u);
-  size_t frames_skipped =
-      animation_advancement_state.num_of_frames_advanced - 1u;
-  switch (animation_advancement_state.repetitions_completed) {
-    case 0:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "AnimatedImage.NumOfFramesSkipped.FirstAnimationLoop",
-          frames_skipped);
-      break;
-    case 1:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "AnimatedImage.NumOfFramesSkipped.SecondAnimationLoop",
-          frames_skipped);
-      break;
-    case 2:
-    case 3:
-    case 4:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "AnimatedImage.NumOfFramesSkipped.ThirdToFifthAnimationLoop",
-          frames_skipped);
-      break;
-  }
-  UMA_HISTOGRAM_COUNTS_100000("AnimatedImage.NumOfFramesSkipped.Compositor",
-                              frames_skipped);
-
   return animation_advancement_state;
 }
 

@@ -187,12 +187,11 @@ TEST_F(GuestOsMountProviderTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
 TEST_F(GuestOsMountProviderTest, CanRemountAfterUnmount) {
   ExpectMountCalls(2);
   EXPECT_CALL(*disk_manager_, UnmountPath)
-      .WillOnce(testing::Invoke(
-          [this](const std::string& mount_path,
-                 DiskMountManager::UnmountPathCallback callback) {
-            EXPECT_EQ(mount_path, "/media/fuse/" + kMountName);
-            std::move(callback).Run(ash::MountError::kSuccess);
-          }));
+      .WillOnce([this](const std::string& mount_path,
+                       DiskMountManager::UnmountPathCallback callback) {
+        EXPECT_EQ(mount_path, "/media/fuse/" + kMountName);
+        std::move(callback).Run(ash::MountError::kSuccess);
+      });
 
   provider_->Mount(
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));

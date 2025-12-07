@@ -13,24 +13,10 @@
 
 namespace blink {
 
-namespace {
-
-bool ShouldApplySnappingScaleAdjustment(const LayoutSVGRoot& layout_svg_root) {
-  // If the RuntimeEnabledFeatures flag isn't set then apply scale adjustment.
-  if (!RuntimeEnabledFeatures::SvgNoPixelSnappingScaleAdjustmentEnabled()) {
-    return true;
-  }
-  // Apply scale adjustment if the SVG root is the document root - i.e it is
-  // not an inline SVG.
-  return layout_svg_root.IsDocumentElement();
-}
-
-}  // namespace
-
 gfx::Rect SVGRootPainter::PixelSnappedSize(
     const PhysicalOffset& paint_offset) const {
   return ToPixelSnappedRect(
-      PhysicalRect(paint_offset, layout_svg_root_.Size()));
+      PhysicalRect(paint_offset, layout_svg_root_.StitchedSize()));
 }
 
 AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
@@ -38,12 +24,35 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
   const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
-  if (ShouldApplySnappingScaleAdjustment(layout_svg_root_)) {
-    PhysicalSize size = layout_svg_root_.Size();
-    if (!size.IsEmpty()) {
+  const PhysicalSize size = layout_svg_root_.StitchedSize();
+  if (!size.IsEmpty()) {
+    // Apply scale adjustment if the SVG root is the document root - i.e it is
+    // not an inline SVG.
+    if (layout_svg_root_.IsDocumentElement()) {
       paint_offset_to_border_box.Scale(
           snapped_size.width() / size.width.ToFloat(),
           snapped_size.height() / size.height.ToFloat());
+    } else if (RuntimeEnabledFeatures::
+                   SvgInlineRootPixelSnappingScaleAdjustmentEnabled()) {
+      // If snapping shrunk the box, scale it to avoid overflowing and getting
+      // clipped.
+      if (size.width > snapped_size.width() ||
+          size.height > snapped_size.height()) {
+        // Scale uniformly to fit in the snapped box.
+        const float scale_x = snapped_size.width() / size.width.ToFloat();
+        const float scale_y = snapped_size.height() / size.height.ToFloat();
+        const float uniform_scale = std::min(scale_x, scale_y);
+        PhysicalSize scaled_size = size;
+        scaled_size.Scale(uniform_scale);
+        // If scaling uniformly introduces too large of an error, then scale
+        // non-uniformly.
+        if (snapped_size.width() - scaled_size.width > 1 ||
+            snapped_size.height() - scaled_size.height > 1) {
+          paint_offset_to_border_box.Scale(scale_x, scale_y);
+        } else {
+          paint_offset_to_border_box.Scale(uniform_scale);
+        }
+      }
     }
   }
   paint_offset_to_border_box.PreConcat(

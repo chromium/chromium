@@ -109,7 +109,7 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
       // If this is not a specially handled preference, server wins.
       return server_value.Clone();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(

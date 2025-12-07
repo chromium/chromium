@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.js';
 
-import type {ExtendedKeyEvent, Point, Rect} from './constants.js';
+import type {ExtendedKeyEvent, Point, Rect, ScrollData} from './constants.js';
 import {FittingType} from './constants.js';
 import type {Gesture, PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
@@ -284,11 +284,12 @@ export class Viewport {
    * @return The factor clamped within the limits.
    */
   private clampZoom_(factor: number): number {
+    assert(this.presetZoomFactors_.length > 0);
     return Math.max(
-        this.presetZoomFactors_[0],
+        this.presetZoomFactors_[0]!,
         Math.min(
             factor,
-            this.presetZoomFactors_[this.presetZoomFactors_.length - 1]));
+            this.presetZoomFactors_[this.presetZoomFactors_.length - 1]!));
   }
 
   /** @param factors Array containing zoom/scale factors. */
@@ -507,10 +508,10 @@ export class Viewport {
     this.resetTracker();
     this.zoomManager_ = manager;
     this.tracker_.add(
-        this.zoomManager_!.getEventTarget(), 'set-zoom',
+        this.zoomManager_.getEventTarget(), 'set-zoom',
         (e: CustomEvent<number>) => this.setZoom(e.detail));
     this.tracker_.add(
-        this.zoomManager_!.getEventTarget(), 'update-zoom-from-browser',
+        this.zoomManager_.getEventTarget(), 'update-zoom-from-browser',
         this.updateZoomFromBrowserChange_.bind(this));
   }
 
@@ -704,13 +705,16 @@ export class Viewport {
 
   /** @return The y coordinate of the bottom of the given page. */
   private getPageBottom_(index: number): number {
-    return this.pageDimensions_[index].y + this.pageDimensions_[index].height;
+    // Called in getPageAtY_ in a loop that already checks |index| is in bounds.
+    return this.pageDimensions_[index]!.y + this.pageDimensions_[index]!.height;
   }
 
   /**
    * Get the page at a given y position. If there are multiple pages
-   * overlapping the given y-coordinate, return the page with the smallest
-   * index.
+   * overlapping the given y-coordinate, returns one of the two of them (does
+   * a binary search so returns whichever of the two happens to be hit first).
+   * Note: May return the wrong result in two-up view. See getTwoUpPageAtY_()
+   * for a version of this method that accounts for two-up view.
    * @param y The y-coordinate to get the page at.
    * @return The index of a page overlapping the given y-coordinate.
    */
@@ -759,6 +763,70 @@ export class Viewport {
   }
 
   /**
+   * Get the first page at a given y position in two up view. Always returns
+   * the lower index page at the y position.
+   * @param y The y-coordinate to get the page at.
+   * @return The index of a page overlapping the given y-coordinate.
+   */
+  private getTwoUpPageAtY_(y: number): number {
+    assert(y >= 0);
+
+    // Drop decimal part of |y| otherwise it can appear as larger than the
+    // bottom of the last page in the document (even without the presence of a
+    // horizontal scrollbar).
+    y = Math.floor(y);
+
+    // Search through pairs of pages. min and max are in terms of page pairs.
+    let min = 0;
+    const numPairs = Math.ceil(this.pageDimensions_.length / 2);
+    let max = numPairs - 1;
+    if (max === min) {
+      return min;
+    }
+
+    while (max >= min) {
+      const pair = min + Math.floor((max - min) / 2);
+      // page is always the even page, i.e. the first page in the pair.
+      const page = 2 * pair;
+      // There might be a gap between pairs of pages. Use the bottom of the
+      // previous pair as the top for finding the correct pair.
+      const top = page > 0 ?
+          Math.max(
+              this.getPageBottom_(page - 2), this.getPageBottom_(page - 1)) :
+          0;
+
+      // Use the bottom of the longer of the two pages in the pair as the
+      // pair's bottom.
+      let bottom = this.getPageBottom_(page);
+      if (page < this.pageDimensions_.length - 1) {
+        bottom = Math.max(bottom, this.getPageBottom_(page + 1));
+      }
+
+      if (top <= y && y <= bottom) {
+        return page;
+      }
+
+      // If the search reached the last pair, return the first page in that pair
+      // (may be the only page if document length is odd). |y| is larger than
+      // the last pair's |bottom|, which can happen either because a
+      // horizontal scrollbar exists, or the document is zoomed out enough for
+      // free space to exist at the bottom.
+      if (pair === numPairs - 1) {
+        return page;
+      }
+
+      if (top > y) {
+        max = pair - 1;
+      } else {
+        min = pair + 1;
+      }
+    }
+
+    // Should always return within the while loop above.
+    assertNotReached('Could not find page for Y position: ' + y);
+  }
+
+  /**
    * Return the last page visible in the viewport. Returns the last index of the
    * document if the viewport is below the document.
    * @return The highest index of the pages visible in the viewport.
@@ -771,7 +839,7 @@ export class Viewport {
       return pageAtY;
     }
 
-    const nextPage = this.pageDimensions_[pageAtY + 1];
+    const nextPage = this.pageDimensions_[pageAtY + 1]!;
     return getIntersectionArea(viewportRect, nextPage) > 0 ? pageAtY + 1 :
                                                              pageAtY;
   }
@@ -781,8 +849,9 @@ export class Viewport {
     const zoom = this.getZoom();
     const size = this.size;
     const position = this.position;
+    // getPageAtY_() always returns a value in range of pageDimensions_.
     const page = this.getPageAtY_((position.y + point.y) / zoom);
-    const pageWidth = this.pageDimensions_[page].width * zoom;
+    const pageWidth = this.pageDimensions_[page]!.width * zoom;
     const documentWidth = this.getDocumentDimensions().width * zoom;
 
     const outerWidth = Math.max(size.width, documentWidth);
@@ -799,12 +868,94 @@ export class Viewport {
   }
 
   /**
+   * @return The page at |point|, or -1 if there is no page at |point|.
+   */
+  getPageAtPoint(point: Point) {
+    const zoom = this.getZoom();
+    const position = this.position;
+    const size = this.size;
+    const documentWidth = this.getDocumentDimensions().width * zoom;
+    const y = position.y + point.y;
+    const pageDimensions = this.pageDimensions_;
+
+    // Checks if y is actually on `page`, and not just closer to it than other
+    // pages.
+    function yOnPage(page: number): boolean {
+      const minY = pageDimensions[page]!.y * zoom;
+      const maxY = pageDimensions[page]!.height * zoom + minY;
+      return y >= minY && y <= maxY;
+    }
+
+    if (!this.twoUpViewEnabled()) {
+      const page = this.getPageAtY_(y / zoom);
+      if (!yOnPage(page)) {
+        // The point is in the space between pages.
+        return -1;
+      }
+
+      const outerWidth = Math.max(size.width, documentWidth);
+      const pageWidth = pageDimensions[page]!.width * zoom;
+      if (pageWidth >= outerWidth) {
+        return page;
+      }
+
+      const minX = (outerWidth - pageWidth) / 2;
+      const maxX = outerWidth - minX;
+      const x = point.x + position.x;
+      return x >= minX && x <= maxX ? page : -1;
+    }
+
+    // Handle two-up view.
+    const pageAtY = this.getTwoUpPageAtY_(y / zoom);
+    const pageX = pageDimensions[pageAtY]!.x * zoom;
+    const x = point.x + position.x;
+    const documentMargin = Math.max(0, (size.width - documentWidth) / 2);
+    const minX = pageX + documentMargin;
+    if (x < minX) {
+      // The point is outside the left page boundary.
+      return -1;
+    }
+
+    const boundaryX = minX + pageDimensions[pageAtY]!.width * zoom;
+    if (x <= boundaryX) {
+      // x is in range for the left page. Check that y is actually on the page.
+      return yOnPage(pageAtY) ? pageAtY : -1;
+    }
+
+    if (pageAtY === pageDimensions.length - 1) {
+      // x is out of bounds for the left page, and there is no right page.
+      return -1;
+    }
+
+    // Check if x is in bounds for the right side of the right page, and y is on
+    // the page.
+    const maxX = pageDimensions[pageAtY + 1]!.width * zoom + boundaryX;
+    return x <= maxX && yOnPage(pageAtY + 1) ? pageAtY + 1 : -1;
+  }
+
+  /**
+   * @return Whether `location` is on a scrollbar.
+   */
+  isPointOnScrollbar(location: Point) {
+    const hasScrollbars = this.documentHasScrollbars();
+    if (hasScrollbars.vertical &&
+        ((isRTL() && location.x <= this.scrollbarWidth) ||
+         (!isRTL() && location.x >= this.size.width - this.scrollbarWidth))) {
+      return true;
+    }
+    return hasScrollbars.horizontal &&
+        location.y >= (this.size.height - this.scrollbarWidth);
+  }
+
+  /**
    * @return The index of the page with the greatest proportion of its area in
    *     the current viewport.
    */
   getMostVisiblePage(): number {
     const viewportRect = this.getViewportRect_();
 
+    // These methods always return a page that is >= 0 and
+    // < pageDimensions_.length.
     const firstVisiblePage = this.getPageAtY_(viewportRect.y);
     const lastPossibleVisiblePage = this.getLastPageInViewport_(viewportRect);
     assert(firstVisiblePage <= lastPossibleVisiblePage);
@@ -817,7 +968,7 @@ export class Viewport {
 
     for (let i = firstVisiblePage; i < lastPossibleVisiblePage + 1; i++) {
       const pageArea =
-          this.pageDimensions_[i].width * this.pageDimensions_[i].height;
+          this.pageDimensions_[i]!.width * this.pageDimensions_[i]!.height;
 
       // TODO(thestig): check whether we can remove this check.
       if (pageArea <= 0) {
@@ -825,7 +976,8 @@ export class Viewport {
       }
 
       const pageIntersectionArea =
-          getIntersectionArea(this.pageDimensions_[i], viewportRect) / pageArea;
+          getIntersectionArea(this.pageDimensions_[i]!, viewportRect) /
+          pageArea;
 
       if (pageIntersectionArea > largestIntersection) {
         mostVisiblePage = i;
@@ -993,12 +1145,15 @@ export class Viewport {
       };
 
       if (params?.page !== undefined) {
-        scrollPosition.y = this.pageDimensions_[params.page].y;
+        assert(params.page < this.pageDimensions_.length);
+        scrollPosition.y = this.pageDimensions_[params.page]!.y;
       }
 
       if (params?.viewPosition !== undefined) {
         if (params.page === undefined) {
-          scrollPosition.y = this.pageDimensions_[this.getMostVisiblePage()].y;
+          // getMostVisiblePage() always returns an index in range of
+          // pageDimensions_.
+          scrollPosition.y = this.pageDimensions_[this.getMostVisiblePage()]!.y;
         }
         scrollPosition.y += params.viewPosition;
       }
@@ -1032,19 +1187,20 @@ export class Viewport {
 
       const page =
           params?.page !== undefined ? params.page : this.getMostVisiblePage();
+      assert(this.pageDimensions_.length > page);
 
       if (params?.page !== undefined || document.fullscreenElement !== null) {
-        scrollPosition.y = this.pageDimensions_[page].y;
+        scrollPosition.y = this.pageDimensions_[page]!.y;
       }
 
       if (params?.viewPosition !== undefined) {
-        scrollPosition.x = this.pageDimensions_[page].x + params.viewPosition;
+        scrollPosition.x = this.pageDimensions_[page]!.x + params.viewPosition;
       }
 
       // When computing fit-to-height, the maximum height of the page is used.
       const dimensions = {
         width: 0,
-        height: this.pageDimensions_[page].height,
+        height: this.pageDimensions_[page]!.height,
       };
       this.setZoomInternal_(
           this.computeFittingZoom_(dimensions, false, true), scrollPosition);
@@ -1073,17 +1229,18 @@ export class Viewport {
 
       const page =
           params?.page !== undefined ? params.page : this.getMostVisiblePage();
+      assert(this.pageDimensions_.length > page);
 
       if (params?.page !== undefined || params?.scrollToTop !== false) {
         // Scroll to top of page.
         scrollPosition.x = 0;
-        scrollPosition.y = this.pageDimensions_[page].y;
+        scrollPosition.y = this.pageDimensions_[page]!.y;
       }
 
       // Fit to the page's height and the widest page's width.
       const dimensions = {
         width: this.documentDimensions_.width,
-        height: this.pageDimensions_[page].height,
+        height: this.pageDimensions_[page]!.height,
       };
       this.setZoomInternal_(
           this.computeFittingZoom_(dimensions, true, true), scrollPosition);
@@ -1245,10 +1402,11 @@ export class Viewport {
   zoomOut() {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.NONE;
-      let nextZoom = this.presetZoomFactors_[0];
+      assert(this.presetZoomFactors.length > 0);
+      let nextZoom = this.presetZoomFactors_[0]!;
       for (let i = 0; i < this.presetZoomFactors_.length; i++) {
-        if (this.presetZoomFactors_[i] < this.internalZoom_) {
-          nextZoom = this.presetZoomFactors_[i];
+        if (this.presetZoomFactors_[i]! < this.internalZoom_) {
+          nextZoom = this.presetZoomFactors_[i]!;
         }
       }
       this.setZoomInternal_(nextZoom);
@@ -1261,11 +1419,12 @@ export class Viewport {
   zoomIn() {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.NONE;
+      assert(this.presetZoomFactors_.length > 0);
       const maxZoomIndex = this.presetZoomFactors_.length - 1;
-      let nextZoom = this.presetZoomFactors_[maxZoomIndex];
+      let nextZoom = this.presetZoomFactors_[maxZoomIndex]!;
       for (let i = maxZoomIndex; i >= 0; i--) {
-        if (this.presetZoomFactors_[i] > this.internalZoom_) {
-          nextZoom = this.presetZoomFactors_[i];
+        if (this.presetZoomFactors_[i]! > this.internalZoom_) {
+          nextZoom = this.presetZoomFactors_[i]!;
         }
       }
       this.setZoomInternal_(nextZoom);
@@ -1303,12 +1462,11 @@ export class Viewport {
       const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
       const scrollOffset = (isDown ? 1 : -1) * this.size.height *
           MIN_FRACTION_TO_STEP_WHEN_PAGING;
-      this.setPosition(
-          {
-            x: this.position.x,
-            y: this.position.y + scrollOffset,
-          },
-          this.smoothScrolling_);
+      // TODO(crbug.com/40218278): Re-enable smooth scrolling for all codepaths.
+      this.setPosition({
+        x: this.position.x,
+        y: this.position.y + scrollOffset,
+      });
     }
 
     this.window_.dispatchEvent(new CustomEvent('scroll-proceeded-for-testing'));
@@ -1358,10 +1516,13 @@ export class Viewport {
   /**
    * Handle certain directional key events.
    * @param formFieldFocused Whether a form field is currently focused.
+   * @param caretBrowsingEnabled Whether caret browsing mode is currently
+   *     enabled.
    * @return Whether the event was handled.
    */
-  handleDirectionalKeyEvent(e: KeyboardEvent, formFieldFocused: boolean):
-      boolean {
+  handleDirectionalKeyEvent(
+      e: KeyboardEvent, formFieldFocused: boolean,
+      caretBrowsingEnabled: boolean): boolean {
     switch (e.key) {
       case ' ':
         this.pageUpDownSpaceHandler_(e, formFieldFocused);
@@ -1375,11 +1536,15 @@ export class Viewport {
         return true;
       case 'ArrowLeft':
       case 'ArrowRight':
-        this.arrowLeftRightHandler_(e, formFieldFocused);
+        if (!caretBrowsingEnabled) {
+          this.arrowLeftRightHandler_(e, formFieldFocused);
+        }
         return true;
       case 'ArrowDown':
       case 'ArrowUp':
-        this.arrowUpDownHandler_(e, formFieldFocused);
+        if (!caretBrowsingEnabled) {
+          this.arrowUpDownHandler_(e, formFieldFocused);
+        }
         return true;
       default:
         return false;
@@ -1435,7 +1600,7 @@ export class Viewport {
       if (page >= this.pageDimensions_.length) {
         page = this.pageDimensions_.length - 1;
       }
-      const dimensions = this.pageDimensions_[page];
+      const dimensions = this.pageDimensions_[page]!;
 
       // If `x` or `y` is not a valid number or specified, then that
       // coordinate of the current viewport position should be retained.
@@ -1501,6 +1666,7 @@ export class Viewport {
   /** @return The bounds for page `page` minus the shadows. */
   getPageInsetDimensions(page: number): ViewportRect {
     const pageDimensions = this.pageDimensions_[page];
+    assert(pageDimensions);
     const shadow = PAGE_SHADOW;
     return {
       x: pageDimensions.x + shadow.left,
@@ -1524,16 +1690,18 @@ export class Viewport {
       page = this.pageDimensions_.length - 1;
     }
 
-    const pageDimensions = this.pageDimensions_[page];
+    const pageDimensions = this.pageDimensions_[page]!;
 
     // Compute the page dimensions minus the shadows.
     const insetDimensions = this.getPageInsetDimensions(page);
 
     // Compute the x-coordinate of the page within the document.
     // TODO(raymes): This should really be set when the PDF plugin passes the
-    // page coordinates, but it isn't yet.
-    const x = (this.documentDimensions_.width - pageDimensions.width) / 2 +
-        PAGE_SHADOW.left;
+    // page coordinates, but it isn't yet except for in two-up view.
+    const x = this.twoUpViewEnabled() ?
+        pageDimensions.x + PAGE_SHADOW.left :
+        (this.documentDimensions_.width - pageDimensions.width) / 2 +
+            PAGE_SHADOW.left;
     // Compute the space on the left of the document if the document fits
     // completely in the screen.
     const zoom = this.getZoom();
@@ -1569,8 +1737,9 @@ export class Viewport {
    * Retrieves the in-screen coordinates of the current viewport position.
    */
   private retrieveCurrentScreenCoordinates_(): Point {
+    // getMostVisiblePage() always returns an index in range of pageDimensions_.
     const currentPage = this.getMostVisiblePage();
-    const dimension = this.pageDimensions_[currentPage];
+    const dimension = this.pageDimensions_[currentPage]!;
     const x = this.position.x / this.getZoom() - dimension.x;
     const y = this.position.y / this.getZoom() - dimension.y;
     return {x: x, y: y};
@@ -1596,21 +1765,30 @@ export class Viewport {
     this.smoothScrolling_ = isSmooth;
   }
 
-  /** @param point The position to which to scroll the viewport. */
-  scrollTo(point: Partial<Point>) {
+  /**
+   * @param scrollData The position to scroll the viewport to, and the smooth
+   *     scrolling option.
+   */
+  scrollTo(scrollData: Partial<ScrollData>) {
     let changed = false;
     const newPosition = this.position;
-    if (point.x !== undefined && point.x !== newPosition.x) {
-      newPosition.x = point.x;
+    if (scrollData.x !== undefined && scrollData.x !== newPosition.x) {
+      newPosition.x = scrollData.x;
       changed = true;
     }
-    if (point.y !== undefined && point.y !== newPosition.y) {
-      newPosition.y = point.y;
+    if (scrollData.y !== undefined && scrollData.y !== newPosition.y) {
+      newPosition.y = scrollData.y;
       changed = true;
     }
 
     if (changed) {
-      this.setPosition(newPosition);
+      // TODO(crbug.com/40218278): Re-enable smooth scrolling for all codepaths.
+      //
+      // {@link smoothScrolling_} is bypassed entirely unless certain caller
+      // explicitly forces smooth scrolling
+      // (e.g., `PdfViewWebPlugin::ScrollTextFragmentIntoView()`).
+      // Also see crbug.com/40218278 and crbug.com/40218245 for more context.
+      this.setPosition(newPosition, scrollData.forceSmoothScroll ?? false);
     }
   }
 
@@ -1619,7 +1797,7 @@ export class Viewport {
     const newPosition = this.position;
     newPosition.x += delta.x;
     newPosition.y += delta.y;
-    this.scrollTo(newPosition);
+    this.scrollTo({...newPosition, forceSmoothScroll: false});
   }
 
   /** Removes all events being tracked from the tracker. */
@@ -1787,8 +1965,8 @@ export class Viewport {
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/pdf_view_web_plugin.cc.
  */
+// LINT.IfChange(PinchPhase)
 export enum PinchPhase {
   NONE = 0,
   START = 1,
@@ -1796,6 +1974,7 @@ export enum PinchPhase {
   UPDATE_ZOOM_IN = 3,
   END = 4,
 }
+// LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:PinchPhase)
 
 /**
  * The increment to scroll a page by in pixels when up/down/left/right arrow

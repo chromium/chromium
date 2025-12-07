@@ -20,7 +20,6 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -28,16 +27,11 @@
 
 namespace media {
 
-BASE_DECLARE_FEATURE(kUseClientSharedImageForD3D11Video);
-
 class D3D11PictureBuffer;
 
 using CommandBufferHelperPtr = scoped_refptr<CommandBufferHelper>;
 using GetCommandBufferHelperCB =
     base::RepeatingCallback<CommandBufferHelperPtr()>;
-
-using ClientSharedImageOrMailboxHolder =
-    absl::variant<scoped_refptr<gpu::ClientSharedImage>, gpu::MailboxHolder>;
 
 // Support different strategies for processing pictures - some may need copying,
 // for example.  Each wrapper owns the resources for a single texture, so it's
@@ -74,13 +68,7 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // used to refer to it.
   virtual D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      media::ClientSharedImageOrMailboxHolder& shared_image_dest_out,
-      gfx::ColorSpace* output_color_space) = 0;
-
-  virtual void SetStreamHDRMetadata(
-      const gfx::HDRMetadata& stream_metadata) = 0;
-  virtual void SetDisplayHDRMetadata(
-      const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) = 0;
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest_out) = 0;
 };
 
 // The default texture wrapper that uses GPUResources to talk to hardware
@@ -94,15 +82,15 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   // Callback for setting shared image representation and resume picture buffer
   // after gpu resource initialization.
-  using GPUResourceInitCB = base::OnceCallback<void(
-      scoped_refptr<media::D3D11PictureBuffer>,
-      std::unique_ptr<gpu::VideoDecodeImageRepresentation>,
-      scoped_refptr<gpu::ClientSharedImage>)>;
+  using GPUResourceInitCB =
+      base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>,
+                              std::unique_ptr<gpu::VideoImageRepresentation>,
+                              scoped_refptr<gpu::ClientSharedImage>)>;
 
   // While the specific texture instance can change on every call to
   // ProcessTexture, the dxgi format must be the same for all of them.
   DefaultTexture2DWrapper(const gfx::Size& size,
-                          const gfx::ColorSpace& color_space,
+                          const gfx::ColorSpace& output_color_space,
                           DXGI_FORMAT dxgi_format,
                           ComD3D11Device device);
   ~DefaultTexture2DWrapper() override;
@@ -119,15 +107,11 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      ClientSharedImageOrMailboxHolder& shared_image_dest,
-      gfx::ColorSpace* output_color_space) override;
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
 
-  void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
-  void SetDisplayHDRMetadata(
-      const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
   void OnGPUResourceInitDone(
       scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
-      std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep,
+      std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep,
       scoped_refptr<gpu::ClientSharedImage> client_shared_image);
 
   ComD3D11Device GetVideoDevice() { return video_device_; }
@@ -141,7 +125,6 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
    public:
     GpuResources(OnErrorCB on_error_cb,
                  GetCommandBufferHelperCB get_helper_cb,
-                 const gpu::Mailbox& mailbox,
                  const gfx::Size& size,
                  const gfx::ColorSpace& color_space,
                  DXGI_FORMAT dxgi_format,
@@ -166,14 +149,14 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   // The first error status that we've received from |gpu_resources_|, if any.
   std::optional<D3D11Status> received_error_;
 
-  gfx::Size size_;
-  gfx::ColorSpace color_space_;
+  const gfx::Size size_;
+  const gfx::ColorSpace output_color_space_;
   base::SequenceBound<GpuResources> gpu_resources_;
-  ClientSharedImageOrMailboxHolder shared_image_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   DXGI_FORMAT dxgi_format_;
 
-  std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep_;
-  std::unique_ptr<gpu::VideoDecodeImageRepresentation::ScopedWriteAccess>
+  std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep_;
+  std::unique_ptr<gpu::VideoImageRepresentation::ScopedWriteAccess>
       shared_image_access_;
 
   ComD3D11Device video_device_;

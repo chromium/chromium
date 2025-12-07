@@ -10,7 +10,7 @@
 
 // DownloadManagerTabHelperDelegate which stores the state of download task.
 @interface FakeDownloadManagerTabHelperDelegate
-    : NSObject<DownloadManagerTabHelperDelegate>
+    : NSObject <DownloadManagerTabHelperDelegate>
 
 // The state of current download task. null if there is no current download task
 // or when DownloadManager's WebState was hidden.

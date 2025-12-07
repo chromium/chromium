@@ -64,7 +64,6 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_MainFrame) {
 TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
   constexpr int kExpectedDeltaHours = 42;
 
-  base::HistogramTester histogram_tester;
   EXPECT_CALL(service(), RenewPermissionGrant(
                              url::Origin::Create(GURL("https://bar.test")),
                              url::Origin::Create(GURL("https://example.test"))))
@@ -82,10 +81,6 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
 
   // Non-main-frame user activations cause the service to be invoked.
   tab_helper()->FrameReceivedUserActivation(subframe);
-
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccess.PermissionRenewedDeltaToExpiration",
-      /*sample=*/kExpectedDeltaHours, /*expected_bucket_count=*/1);
 }
 
 TEST_F(StorageAccessAPITabHelperTest,

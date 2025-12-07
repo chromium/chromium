@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
@@ -66,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, PageNoIcons) {
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(
       result.value(),
-      testing::ElementsAre(gfx::test::EqualsBitmap(GenerateBitmap(128, U'P'))));
+      testing::ElementsAre(gfx::test::EqualsBitmap(GenerateBitmap(128, u"P"))));
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, IconMetadata) {

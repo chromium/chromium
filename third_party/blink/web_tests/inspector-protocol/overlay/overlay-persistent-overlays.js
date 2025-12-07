@@ -42,7 +42,10 @@
     }]
   });
 
-  // Wait for overlay rendering to finish by requesting an animation frame.
+  //The overlay is rendered as an animation. Wait for two animation frames to be sure the overlay is actually rendered.
+  await session.evaluate(() => {
+    return new Promise(resolve => requestAnimationFrame(resolve));
+  });
   await session.evaluate(() => {
     return new Promise(resolve => requestAnimationFrame(resolve));
   });

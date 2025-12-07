@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import android.net.Network;
 
 import org.jni_zero.JNINamespace;
@@ -53,24 +55,9 @@ public class CronetTestUtil {
         return new JSONObject().put("host_resolver_rules", rules);
     }
 
-    /** Prepare {@code cronetEngine}'s network thread so libcronet_test code can run on it. */
-    public static class NetworkThreadTestConnector {
-        private final CronetUrlRequestContext mRequestContext;
-
-        public NetworkThreadTestConnector(CronetEngine cronetEngine) {
-            mRequestContext = (CronetUrlRequestContext) cronetEngine;
-            CronetTestUtilJni.get()
-                    .prepareNetworkThread(mRequestContext.getUrlRequestContextAdapter());
-        }
-
-        public void shutdown() {
-            CronetTestUtilJni.get()
-                    .cleanupNetworkThread(mRequestContext.getUrlRequestContextAdapter());
-        }
-    }
-
     /**
      * Returns the value of load flags in |urlRequest|.
+     *
      * @param urlRequest is the UrlRequest object of interest.
      */
     public static int getLoadFlags(UrlRequest urlRequest) {
@@ -101,14 +88,34 @@ public class CronetTestUtil {
         return CronetTestUtilJni.get().canGetTaggedBytes();
     }
 
+    public static String[] nativeGetClientConnectionOptions(CronetEngine engine) {
+        CronetUrlRequestContext context = (CronetUrlRequestContext) engine;
+        return CronetTestUtilJni.get()
+                .getClientConnectionOptions(context.getUrlRequestContextAdapter());
+    }
+
+    public static String[] nativeGetConnectionOptions(CronetEngine engine) {
+        CronetUrlRequestContext context = (CronetUrlRequestContext) engine;
+        return CronetTestUtilJni.get().getConnectionOptions(context.getUrlRequestContextAdapter());
+    }
+
     /**
-     * Query the system to find out how many bytes were received with tag
-     * {@code expectedTag} for our UID.
+     * Query the system to find out how many bytes were received with tag {@code expectedTag} for
+     * our UID.
+     *
      * @param expectedTag the tag to query for.
      * @return the count of received bytes.
      */
     public static long nativeGetTaggedBytes(int expectedTag) {
         return CronetTestUtilJni.get().getTaggedBytes(expectedTag);
+    }
+
+    /** Helper method to assert that the request is negotiated over QUIC. */
+    public static void assertIsQuic(UrlResponseInfo responseInfo) {
+        String protocol = responseInfo.getNegotiatedProtocol();
+        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was %s", protocol)
+                .that(protocol.startsWith("http/2+quic") || protocol.startsWith("h3"))
+                .isTrue();
     }
 
     @NativeMethods("cronet_tests")
@@ -124,5 +131,9 @@ public class CronetTestUtil {
         void cleanupNetworkThread(long contextAdapter);
 
         boolean uRLRequestContextExistsForTesting(long contextAdapter, long networkHandle);
+
+        String[] getClientConnectionOptions(long contextAdapter);
+
+        String[] getConnectionOptions(long contextAdapter);
     }
 }

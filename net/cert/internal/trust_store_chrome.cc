@@ -8,11 +8,13 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
@@ -32,17 +34,23 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     std::optional<base::Time> sct_not_after,
     std::optional<base::Time> sct_all_after,
     std::optional<base::Version> min_version,
-    std::optional<base::Version> max_version_exclusive)
+    std::optional<base::Version> max_version_exclusive,
+    std::vector<std::string> permitted_dns_names)
     : sct_not_after(sct_not_after),
       sct_all_after(sct_all_after),
       min_version(std::move(min_version)),
-      max_version_exclusive(std::move(max_version_exclusive)) {}
+      max_version_exclusive(std::move(max_version_exclusive)),
+      permitted_dns_names(std::move(permitted_dns_names)) {}
+
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     const StaticChromeRootCertConstraints& constraints)
     : sct_not_after(constraints.sct_not_after),
       sct_all_after(constraints.sct_all_after),
       min_version(constraints.min_version),
       max_version_exclusive(constraints.max_version_exclusive) {
+  for (std::string_view name : constraints.permitted_dns_names) {
+    permitted_dns_names.emplace_back(name);
+  }
   if (min_version) {
     CHECK(min_version->IsValid());
   }
@@ -50,6 +58,7 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     CHECK(max_version_exclusive->IsValid());
   }
 }
+
 ChromeRootCertConstraints::~ChromeRootCertConstraints() = default;
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     const ChromeRootCertConstraints& other) = default;
@@ -63,8 +72,21 @@ ChromeRootCertConstraints& ChromeRootCertConstraints::operator=(
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints)
+    : ChromeRootStoreData::Anchor::Anchor(
+          certificate,
+          constraints,
+          /*enforce_anchor_expiry=*/false,
+          /*enforce_anchor_constraints=*/false) {}
+
+ChromeRootStoreData::Anchor::Anchor(
+    std::shared_ptr<const bssl::ParsedCertificate> certificate,
+    std::vector<ChromeRootCertConstraints> constraints,
+    bool enforce_anchor_expiry,
+    bool enforce_anchor_constraints)
     : certificate(std::move(certificate)),
-      constraints(std::move(constraints)) {}
+      constraints(std::move(constraints)),
+      enforce_anchor_expiry(enforce_anchor_expiry),
+      enforce_anchor_constraints(enforce_anchor_constraints) {}
 ChromeRootStoreData::Anchor::~Anchor() = default;
 
 ChromeRootStoreData::Anchor::Anchor(const Anchor& other) = default;
@@ -85,59 +107,99 @@ ChromeRootStoreData& ChromeRootStoreData::operator=(
 ChromeRootStoreData& ChromeRootStoreData::operator=(
     ChromeRootStoreData&& other) = default;
 
+namespace {
+
+std::optional<ChromeRootStoreData::Anchor> CreateChromeRootStoreDataAnchor(
+    const chrome_root_store::TrustAnchor& anchor) {
+  if (anchor.der().empty()) {
+    LOG(ERROR) << "Error anchor with empty DER in update";
+    return std::nullopt;
+  }
+
+  auto parsed = bssl::ParsedCertificate::Create(
+      net::x509_util::CreateCryptoBuffer(anchor.der()),
+      net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  if (!parsed) {
+    LOG(ERROR) << "Error parsing cert for update";
+    return std::nullopt;
+  }
+
+  std::vector<ChromeRootCertConstraints> constraints;
+  for (const auto& constraint : anchor.constraints()) {
+    std::optional<base::Version> min_version;
+    if (constraint.has_min_version()) {
+      min_version = base::Version(constraint.min_version());
+      if (!min_version->IsValid()) {
+        LOG(ERROR) << "Error parsing version";
+        return std::nullopt;
+      }
+    }
+
+    std::optional<base::Version> max_version_exclusive;
+    if (constraint.has_max_version_exclusive()) {
+      max_version_exclusive = base::Version(constraint.max_version_exclusive());
+      if (!max_version_exclusive->IsValid()) {
+        LOG(ERROR) << "Error parsing version";
+        return std::nullopt;
+      }
+    }
+
+    constraints.emplace_back(
+        constraint.has_sct_not_after_sec()
+            ? std::optional(base::Time::UnixEpoch() +
+                            base::Seconds(constraint.sct_not_after_sec()))
+            : std::nullopt,
+        constraint.has_sct_all_after_sec()
+            ? std::optional(base::Time::UnixEpoch() +
+                            base::Seconds(constraint.sct_all_after_sec()))
+            : std::nullopt,
+        min_version, max_version_exclusive,
+        base::ToVector(constraint.permitted_dns_names()));
+  }
+  return ChromeRootStoreData::Anchor(std::move(parsed), std::move(constraints),
+                                     anchor.enforce_anchor_expiry(),
+                                     anchor.enforce_anchor_constraints());
+}
+
+}  // namespace
+
 std::optional<ChromeRootStoreData>
-ChromeRootStoreData::CreateChromeRootStoreData(
+ChromeRootStoreData::CreateFromRootStoreProto(
     const chrome_root_store::RootStore& proto) {
   ChromeRootStoreData root_store_data;
 
-  for (auto& anchor : proto.trust_anchors()) {
-    if (anchor.der().empty()) {
-      LOG(ERROR) << "Error anchor with empty DER in update";
+  for (const auto& anchor : proto.trust_anchors()) {
+    // |trust_anchors| are not supposed to have the |tls_trust_anchor| field
+    // set, since they are TLS trust anchors definitionally.
+    CHECK(!anchor.has_tls_trust_anchor());
+    std::optional<ChromeRootStoreData::Anchor> chrome_root_store_data_anchor =
+        CreateChromeRootStoreDataAnchor(anchor);
+    if (!chrome_root_store_data_anchor) {
       return std::nullopt;
     }
+    if (anchor.eutl()) {
+      root_store_data.eutl_certs_.emplace_back(
+          chrome_root_store_data_anchor.value());
+    }
+    root_store_data.trust_anchors_.emplace_back(
+        std::move(chrome_root_store_data_anchor.value()));
+  }
 
-    auto parsed = bssl::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBuffer(anchor.der()),
-        net::x509_util::DefaultParseCertificateOptions(), nullptr);
-    if (!parsed) {
-      LOG(ERROR) << "Error parsing cert for update";
+  std::vector<ChromeRootStoreData::Anchor> additional_certs;
+  for (const auto& anchor : proto.additional_certs()) {
+    std::optional<ChromeRootStoreData::Anchor> chrome_root_store_data_anchor =
+        CreateChromeRootStoreDataAnchor(anchor);
+    if (!chrome_root_store_data_anchor) {
       return std::nullopt;
     }
-
-    std::vector<ChromeRootCertConstraints> constraints;
-    for (const auto& constraint : anchor.constraints()) {
-      std::optional<base::Version> min_version;
-      if (constraint.has_min_version()) {
-        min_version = base::Version(constraint.min_version());
-        if (!min_version->IsValid()) {
-          LOG(ERROR) << "Error parsing version";
-          return std::nullopt;
-        }
-      }
-
-      std::optional<base::Version> max_version_exclusive;
-      if (constraint.has_max_version_exclusive()) {
-        max_version_exclusive =
-            base::Version(constraint.max_version_exclusive());
-        if (!max_version_exclusive->IsValid()) {
-          LOG(ERROR) << "Error parsing version";
-          return std::nullopt;
-        }
-      }
-
-      constraints.emplace_back(
-          constraint.has_sct_not_after_sec()
-              ? std::optional(base::Time::UnixEpoch() +
-                              base::Seconds(constraint.sct_not_after_sec()))
-              : std::nullopt,
-          constraint.has_sct_all_after_sec()
-              ? std::optional(base::Time::UnixEpoch() +
-                              base::Seconds(constraint.sct_all_after_sec()))
-              : std::nullopt,
-          min_version, max_version_exclusive);
+    if (anchor.eutl()) {
+      root_store_data.eutl_certs_.emplace_back(
+          chrome_root_store_data_anchor.value());
     }
-    root_store_data.anchors_.emplace_back(std::move(parsed),
-                                          std::move(constraints));
+    if (anchor.tls_trust_anchor()) {
+      root_store_data.trust_anchors_.emplace_back(
+          std::move(chrome_root_store_data_anchor.value()));
+    }
   }
 
   root_store_data.version_ = proto.version_major();
@@ -145,22 +207,26 @@ ChromeRootStoreData::CreateChromeRootStoreData(
   return root_store_data;
 }
 
-TrustStoreChrome::TrustStoreChrome()
-    : TrustStoreChrome(
-          kChromeRootCertList,
-          /*certs_are_static=*/true,
-          /*version=*/CompiledChromeRootStoreVersion(),
-          /*override_constraints=*/InitializeConstraintsOverrides()) {}
+ChromeRootStoreData ChromeRootStoreData::CreateFromCompiledRootStore() {
+  return ChromeRootStoreData(kChromeRootCertList, kEutlRootCertList,
+                             /*certs_are_static=*/true,
+                             /*version=*/CompiledChromeRootStoreVersion());
+}
 
-TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
-                                   bool certs_are_static,
-                                   int64_t version,
-                                   ConstraintOverrideMap override_constraints)
-    : override_constraints_(std::move(override_constraints)) {
-  std::vector<
-      std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
-      constraints;
+ChromeRootStoreData ChromeRootStoreData::CreateForTesting(
+    base::span<const ChromeRootCertInfo> certs,
+    base::span<const base::span<const uint8_t>> eutl_certs,
+    int64_t version) {
+  return ChromeRootStoreData(certs, eutl_certs,
+                             /*certs_are_static=*/false, version);
+}
 
+ChromeRootStoreData::ChromeRootStoreData(
+    base::span<const ChromeRootCertInfo> certs,
+    base::span<const base::span<const uint8_t>> eutl_certs,
+    bool certs_are_static,
+    int64_t version)
+    : version_(version) {
   // TODO(hchao, sleevi): Explore keeping a CRYPTO_BUFFER of just the DER
   // certificate and subject name. This would hopefully save memory compared
   // to keeping the full parsed representation in memory, especially when
@@ -185,33 +251,67 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     // There should always be a valid cert, because we should be parsing Chrome
     // Root Store static data compiled in.
     CHECK(parsed);
-    if (!cert_info.constraints.empty()) {
-      std::vector<ChromeRootCertConstraints> cert_constraints;
-      for (const auto& constraint : cert_info.constraints) {
-        cert_constraints.emplace_back(constraint);
-      }
-      constraints.emplace_back(parsed->der_cert().AsStringView(),
-                               std::move(cert_constraints));
+    std::vector<ChromeRootCertConstraints> cert_constraints;
+    for (const auto& constraint : cert_info.constraints) {
+      cert_constraints.emplace_back(constraint);
     }
-    trust_store_.AddTrustAnchor(std::move(parsed));
+    trust_anchors_.emplace_back(std::move(parsed), std::move(cert_constraints),
+                                cert_info.enforce_anchor_expiry,
+                                cert_info.enforce_anchor_constraints);
   }
 
-  constraints_ = base::flat_map(std::move(constraints));
-  version_ = version;
+  for (const auto& cert_bytes : eutl_certs) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert;
+    if (certs_are_static) {
+      cert = x509_util::CreateCryptoBufferFromStaticDataUnsafe(cert_bytes);
+    } else {
+      cert = x509_util::CreateCryptoBuffer(cert_bytes);
+    }
+    bssl::CertErrors errors;
+    auto parsed = bssl::ParsedCertificate::Create(
+        std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
+    CHECK(parsed);
+    eutl_certs_.emplace_back(std::move(parsed),
+                             std::vector<ChromeRootCertConstraints>());
+  }
 }
 
+TrustStoreChrome::TrustStoreChrome()
+    : TrustStoreChrome(ChromeRootStoreData::CreateFromCompiledRootStore()) {}
+
 TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data)
-    : override_constraints_(InitializeConstraintsOverrides()) {
+    : TrustStoreChrome(root_store_data, InitializeConstraintsOverrides()) {}
+
+TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data,
+                                   ConstraintOverrideMap override_constraints)
+    : override_constraints_(std::move(override_constraints)) {
   std::vector<
       std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
       constraints;
 
-  for (const auto& anchor : root_store_data.anchors()) {
+  for (const auto& anchor : root_store_data.trust_anchors()) {
     if (!anchor.constraints.empty()) {
-      constraints.emplace_back(anchor.certificate->der_cert().AsStringView(),
-                               anchor.constraints);
+      constraints.emplace_back(
+          base::as_string_view(anchor.certificate->der_cert()),
+          anchor.constraints);
     }
-    trust_store_.AddTrustAnchor(anchor.certificate);
+
+    // If the anchor is configured to enforce expiry and/or X.509 constraints,
+    // tell BoringSSL to do so via CertificateTrust settings. Expiry and X.509
+    // constraints are enforced by BoringSSL, whereas other constraints in
+    // ChromeRootStoreConstraints are enforced by Chrome itself.
+    bssl::CertificateTrust certificate_trust =
+        bssl::CertificateTrust::ForTrustAnchor();
+    if (anchor.enforce_anchor_expiry) {
+      certificate_trust = certificate_trust.WithEnforceAnchorExpiry();
+    }
+    if (anchor.enforce_anchor_constraints) {
+      certificate_trust = certificate_trust.WithEnforceAnchorConstraints();
+    }
+    trust_store_.AddCertificate(anchor.certificate, certificate_trust);
+  }
+  for (const auto& anchor : root_store_data.eutl_certs()) {
+    eutl_trust_store_.AddTrustAnchor(anchor.certificate);
   }
 
   constraints_ = base::flat_map(std::move(constraints));
@@ -298,6 +398,8 @@ TrustStoreChrome::ParseCrsConstraintsSwitch(std::string_view switch_value) {
           continue;
         }
         constraint.max_version_exclusive = version;
+      } else if (constraint_name_lower == "dns") {
+        constraint.permitted_dns_names.push_back(constraint_value);
       } else {
         LOG(ERROR) << "unrecognized constraint " << constraint_name_lower;
       }
@@ -338,7 +440,7 @@ TrustStoreChrome::GetConstraintsForCert(
     }
   }
 
-  auto it = constraints_.find(cert->der_cert().AsStringView());
+  auto it = constraints_.find(base::as_string_view(cert->der_cert()));
   if (it != constraints_.end()) {
     return it->second;
   }
@@ -348,38 +450,32 @@ TrustStoreChrome::GetConstraintsForCert(
 // static
 std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
     base::span<const ChromeRootCertInfo> certs,
+    base::span<const base::span<const uint8_t>> eutl_certs,
     int64_t version,
     ConstraintOverrideMap override_constraints) {
   // Note: wrap_unique is used because the constructor is private.
   return base::WrapUnique(new TrustStoreChrome(
-      certs,
-      /*certs_are_static=*/false,
-      /*version=*/version, std::move(override_constraints)));
+      ChromeRootStoreData::CreateForTesting(certs, eutl_certs, version),
+      std::move(override_constraints)));
+}
+
+// static
+std::vector<std::vector<uint8_t>>
+TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(
+    base::span<const ChromeRootCertInfo> cert_list_for_testing) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids;
+  for (const auto& anchor :
+       (cert_list_for_testing.empty() ? kChromeRootCertList
+                                      : cert_list_for_testing)) {
+    if (!anchor.trust_anchor_id.empty()) {
+      trust_anchor_ids.emplace_back(base::ToVector(anchor.trust_anchor_id));
+    }
+  }
+  return trust_anchor_ids;
 }
 
 int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
-}
-
-std::vector<ChromeRootStoreData::Anchor> CompiledChromeRootStoreAnchors() {
-  std::vector<ChromeRootStoreData::Anchor> anchors;
-  for (const auto& cert_info : kChromeRootCertList) {
-    bssl::UniquePtr<CRYPTO_BUFFER> cert =
-        x509_util::CreateCryptoBufferFromStaticDataUnsafe(
-            cert_info.root_cert_der);
-    bssl::CertErrors errors;
-    auto parsed = bssl::ParsedCertificate::Create(
-        std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
-    DCHECK(parsed);
-
-    std::vector<ChromeRootCertConstraints> cert_constraints;
-    for (const auto& constraint : cert_info.constraints) {
-      cert_constraints.emplace_back(constraint);
-    }
-    anchors.emplace_back(std::move(parsed), std::move(cert_constraints));
-  }
-
-  return anchors;
 }
 
 }  // namespace net

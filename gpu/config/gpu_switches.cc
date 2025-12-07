@@ -32,6 +32,9 @@ const char kGpuPreferences[] = "gpu-preferences";
 // Ignores GPU blocklist.
 const char kIgnoreGpuBlocklist[] = "ignore-gpu-blocklist";
 
+// Disables the GPU shader on disk cache.
+const char kDisableGpuShaderDiskCache[] = "disable-gpu-shader-disk-cache";
+
 // Allows explicitly specifying the shader disk cache size for embedded devices.
 // Default value is 6MB. On Android, 2MB is default and 128KB for low-end
 // devices.
@@ -43,6 +46,8 @@ const char kDisableGpuProcessForDX12InfoCollection[] =
 
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 
+const char kForceHighPerformanceGPU[] = "force-high-performance-gpu";
+
 // Enables WebGPU developer features which are not generally exposed to the web
 // platform.
 const char kEnableWebGPUDeveloperFeatures[] =
@@ -52,11 +57,10 @@ const char kEnableWebGPUDeveloperFeatures[] =
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 
 // The adapter to use for WebGPU content.
-GPU_EXPORT extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
+extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
 
 // The adapter selecting strategy related to GPUPowerPreference.
-GPU_EXPORT extern const char kUseWebGPUPowerPreference[] =
-    "use-webgpu-power-preference";
+extern const char kUseWebGPUPowerPreference[] = "use-webgpu-power-preference";
 
 // Force all WebGPU content to run in WebGPU Compatibility mode.
 const char kForceWebGPUCompat[] = "force-webgpu-compat";
@@ -66,6 +70,10 @@ const char kEnableDawnFeatures[] = "enable-dawn-features";
 
 // Set the Dawn features(toggles) disabled on the creation of Dawn devices.
 const char kDisableDawnFeatures[] = "disable-dawn-features";
+
+// Start the GPU process for Dawn info collection immediately after the browser
+// starts. The default is to delay for 120 seconds.
+const char kCollectDawnInfoEagerly[] = "collect-dawn-info-eagerly";
 
 // Start the non-sandboxed GPU process for DX12 and Vulkan info collection
 // immediately after the browser starts. The default is to delay for 120
@@ -144,7 +152,12 @@ const char kSkiaGraphiteBackendMetal[] = "metal";
 const char kDisableSkiaGraphite[] = "disable-skia-graphite";
 const char kEnableSkiaGraphite[] = "enable-skia-graphite";
 
-const char kShaderCachePath[] = "shader-cache-path";
+// Force disabling/enabling Skia Graphite's Pipeline Precompilation. Disabling
+// will take precedence over enabling if both are specified.
+const char kDisableSkiaGraphitePrecompilation[] =
+    "disable-skia-graphite-precompilation";
+const char kEnableSkiaGraphitePrecompilation[] =
+    "enable-skia-graphite-precompilation";
 
 // Try to use a redistributable DirectML.dll. Used for testing WebNN
 // against newer DirectML release before it is integrated into Windows OS.
@@ -156,5 +169,10 @@ const char kUseRedistributableDirectML[] = "use-redist-dml";
 // CrGpuMain as suffix.
 const char kEnableGpuMainTimeKeeperMetrics[] =
     "enable-gpu-main-time-keeper-metrics";
+
+// Suppresses GL_DEBUG_TYPE_PERFORMANCE log messages for web tests that can get
+// sent to the JS console and cause unnecessary test failures due test output
+// log expectation comparisons.
+const char kSuppressPerformanceLogs[] = "suppress-performance-logs";
 
 }  // namespace switches

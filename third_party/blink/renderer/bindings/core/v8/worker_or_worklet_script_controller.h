@@ -54,7 +54,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   WorkerOrWorkletScriptController& operator=(
       const WorkerOrWorkletScriptController&) = delete;
 
-  virtual ~WorkerOrWorkletScriptController();
+  ~WorkerOrWorkletScriptController();
   void Dispose();
 
   bool IsExecutionForbidden() const;

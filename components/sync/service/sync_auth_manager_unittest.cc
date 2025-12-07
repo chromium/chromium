@@ -4,14 +4,16 @@
 
 #include "components/sync/service/sync_auth_manager.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "net/base/net_errors.h"
@@ -23,40 +25,38 @@ namespace syncer {
 
 namespace {
 
+class MockDelegate : public SyncAuthManager::Delegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+
+  MOCK_METHOD(void, SyncAuthAccountStateChanged, (), (override));
+  MOCK_METHOD(void, SyncAuthCredentialsChanged, (), (override));
+};
+
 class SyncAuthManagerTest : public testing::Test {
  protected:
-  using AccountStateChangedCallback =
-      SyncAuthManager::AccountStateChangedCallback;
-  using CredentialsChangedCallback =
-      SyncAuthManager::CredentialsChangedCallback;
-
   SyncAuthManagerTest() : identity_env_(&test_url_loader_factory_) {}
 
   ~SyncAuthManagerTest() override = default;
 
   std::unique_ptr<SyncAuthManager> CreateAuthManager() {
-    return CreateAuthManager(base::DoNothing(), base::DoNothing());
-  }
-
-  std::unique_ptr<SyncAuthManager> CreateAuthManager(
-      const AccountStateChangedCallback& account_state_changed,
-      const CredentialsChangedCallback& credentials_changed) {
     return std::make_unique<SyncAuthManager>(identity_env_.identity_manager(),
-                                             account_state_changed,
-                                             credentials_changed);
+                                             &delegate_);
   }
 
   std::unique_ptr<SyncAuthManager> CreateAuthManagerForLocalSync() {
-    return std::make_unique<SyncAuthManager>(nullptr, base::DoNothing(),
-                                             base::DoNothing());
+    return std::make_unique<SyncAuthManager>(nullptr, &delegate_);
   }
 
   signin::IdentityTestEnvironment* identity_env() { return &identity_env_; }
+  MockDelegate& delegate() { return delegate_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_env_;
+  testing::NiceMock<MockDelegate> delegate_;
 };
 
 TEST_F(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
@@ -72,12 +72,10 @@ TEST_F(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
 }
 
 TEST_F(SyncAuthManagerTest, IgnoresEventsIfNotRegistered) {
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  EXPECT_CALL(account_state_changed, Run()).Times(0);
-  EXPECT_CALL(credentials_changed, Run()).Times(0);
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
 
   // Fire some auth events. We haven't called RegisterForAuthNotifications, so
   // none of this should result in any callback calls.
@@ -95,15 +93,15 @@ TEST_F(SyncAuthManagerTest, IgnoresEventsIfNotRegistered) {
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 
 // ChromeOS doesn't support sign-out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   identity_env()->ClearPrimaryAccount();
   EXPECT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // ChromeOS doesn't support sign-out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
@@ -112,12 +110,9 @@ TEST_F(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
                                         signin::ConsentLevel::kSync)
           .account_id;
 
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  EXPECT_CALL(account_state_changed, Run()).Times(0);
-  EXPECT_CALL(credentials_changed, Run()).Times(0);
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
 
   auth_manager->RegisterForAuthNotifications();
 
@@ -125,17 +120,17 @@ TEST_F(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
             account_id);
 
   // Sign out of the account.
-  EXPECT_CALL(account_state_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
   // Note: The ordering of removing the refresh token and the actual sign-out is
   // undefined, see comment on IdentityManager::Observer. So we might or might
-  // not get a |credentials_changed| call here.
-  EXPECT_CALL(credentials_changed, Run()).Times(testing::AtMost(1));
+  // not get a `credentials_changed` call here.
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(testing::AtMost(1));
   identity_env()->ClearPrimaryAccount();
   EXPECT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 
   // Sign in to a different account.
-  EXPECT_CALL(account_state_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
   CoreAccountId second_account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
@@ -153,10 +148,7 @@ TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
                                         signin::ConsentLevel::kSync)
           .account_id;
 
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), base::DoNothing());
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
 
   auth_manager->RegisterForAuthNotifications();
 
@@ -171,7 +163,7 @@ TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Sign out of the account.
-  EXPECT_CALL(account_state_changed, Run()).WillOnce([&]() {
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).WillOnce([&]() {
     // At the time the callback gets run, the access token should still be here.
     EXPECT_FALSE(auth_manager->GetCredentials().access_token.empty());
   });
@@ -181,24 +173,21 @@ TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
   ASSERT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Unconsented primary accounts are only supported on Win/Mac/Linux.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  EXPECT_CALL(account_state_changed, Run()).Times(0);
-  EXPECT_CALL(credentials_changed, Run()).Times(0);
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
 
   ASSERT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 
   // Make a primary account available without Sync consent.
-  EXPECT_CALL(account_state_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
   AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
       "test@email.com", signin::ConsentLevel::kSignin);
 
@@ -207,7 +196,7 @@ TEST_F(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
             account_info.account_id);
 
   // Make the account Sync-consented.
-  EXPECT_CALL(account_state_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
   signin::PrimaryAccountMutator* primary_account_mutator =
       identity_env()->identity_manager()->GetPrimaryAccountMutator();
   primary_account_mutator->SetPrimaryAccount(account_info.account_id,
@@ -215,11 +204,11 @@ TEST_F(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
 
   EXPECT_TRUE(auth_manager->GetActiveAccountInfo().is_sync_consented);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) &&
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_IOS)
 
 // ChromeOS doesn't support sign-out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncAuthManagerTest, ClearsAuthErrorOnSignoutWithRefreshTokenRemoval) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
@@ -284,7 +273,7 @@ TEST_F(SyncAuthManagerTest,
   EXPECT_EQ(auth_manager->GetLastAuthError().state(),
             GoogleServiceAuthError::NONE);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncAuthManagerTest, DoesNotClearAuthErrorOnSyncDisable) {
   // Start out already signed in before the SyncAuthManager is created.
@@ -326,12 +315,9 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
                                         signin::ConsentLevel::kSync)
           .account_id;
 
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  EXPECT_CALL(account_state_changed, Run()).Times(0);
-  EXPECT_CALL(credentials_changed, Run()).Times(0);
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
 
   auth_manager->RegisterForAuthNotifications();
 
@@ -341,19 +327,19 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
   auth_manager->ConnectionOpened();
 
   // Once an access token is available, the callback should get run.
-  EXPECT_CALL(credentials_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged);
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
   // Now the refresh token gets updated. The access token will get dropped, so
   // this should cause another notification.
-  EXPECT_CALL(credentials_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged);
   identity_env()->SetRefreshTokenForPrimaryAccount();
   ASSERT_TRUE(auth_manager->GetCredentials().access_token.empty());
 
   // Once a new token is available, there's another notification.
-  EXPECT_CALL(credentials_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged);
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token_2", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token_2");
@@ -363,7 +349,8 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
   // Note: On ChromeOS-Ash, setting an invalid refresh token causes 2
   // "credentials changed" events, one for the token change itself, and another
   // one for the auth error caused by the invalid token.
-  EXPECT_CALL(credentials_changed, Run()).Times(testing::AtLeast(1));
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged)
+      .Times(testing::AtLeast(1));
   identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
 }
@@ -837,12 +824,9 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
                                         signin::ConsentLevel::kSync)
           .account_id;
 
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  EXPECT_CALL(account_state_changed, Run()).Times(0);
-  EXPECT_CALL(credentials_changed, Run()).Times(0);
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
   ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
             account_id);
@@ -855,7 +839,8 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
   // Note: Depending on the exact sequence of IdentityManager::Observer calls
   // (refresh token changed and/or auth error changed), the credentials-changed
   // callback might get run multiple times.
-  EXPECT_CALL(credentials_changed, Run()).Times(testing::AtLeast(1));
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged)
+      .Times(testing::AtLeast(1));
   identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
   ASSERT_TRUE(auth_manager->GetCredentials().access_token.empty());
   ASSERT_TRUE(auth_manager->IsSyncPaused());
@@ -868,7 +853,7 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
       access_token_requested.Get());
   // This *should* notify about changed credentials though, so that the
   // SyncService can decide to start syncing.
-  EXPECT_CALL(credentials_changed, Run());
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged);
   identity_env()->SetRefreshTokenForPrimaryAccount();
   ASSERT_FALSE(auth_manager->IsSyncPaused());
 
@@ -897,7 +882,7 @@ TEST_F(SyncAuthManagerTest, PrimaryAccountWithNoSyncConsent) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Primary account with no sync consent is not supported on Android and iOS.
 // On CrOS the unconsented primary account can't be changed or removed, but can
 // be granted sync consent.
@@ -939,7 +924,7 @@ TEST_F(SyncAuthManagerTest,
   EXPECT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) &&
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_IOS)
 
 TEST_F(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
@@ -954,19 +939,174 @@ TEST_F(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
 
   // On initialization, SyncAuthManager should pick up the auth error. This
   // should not result in a notification.
-  base::MockCallback<AccountStateChangedCallback> account_state_changed;
-  base::MockCallback<CredentialsChangedCallback> credentials_changed;
-  EXPECT_CALL(account_state_changed, Run()).Times(0);
-  EXPECT_CALL(credentials_changed, Run()).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
 
-  std::unique_ptr<SyncAuthManager> auth_manager =
-      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
   auth_manager->RegisterForAuthNotifications();
   ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
             account_id);
 
   EXPECT_TRUE(auth_manager->GetLastAuthError().IsPersistentError());
 }
+
+class SyncAuthManagerWithDetermineAccountTypeTest : public SyncAuthManagerTest {
+ public:
+  SyncAuthManagerWithDetermineAccountTypeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kSyncDetermineAccountManagedStatus);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
+       DeterminesAccountTypeSynchronously) {
+  // There is a primary account. It's @gmail.com so it's managed status can be
+  // determined synchronously.
+  AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  base::HistogramTester histograms;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_info.account_id);
+
+  // The managed status should be known synchronously, with no notification.
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerGmail);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kConsumerGmail, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Even when the hosted domain gets determined later, there should be no
+  // notification (since nothing relevant changed).
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain(std::string()).Build();
+  identity_env()->UpdateAccountInfoForAccount(account_info);
+
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerGmail);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusSynchronousOutcome", 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+}
+
+TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
+       DeterminesAccountTypeAsynchronously) {
+  // There is a primary account, whose managed-ness status isn't known yet.
+  AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
+      "test@consumer.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  base::HistogramTester histograms;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_info.account_id);
+
+  // The managed status should initially be unknown (pending).
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kPending);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kPending, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Once the account's hosted domain is determined, the managed status should
+  // become known too, and this should trigger a notification.
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain(std::string()).Build();
+  identity_env()->UpdateAccountInfoForAccount(account_info);
+
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusSynchronousOutcome", 1);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusAsynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 1);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
+       AccountChangeWhileDeterminingAccountType) {
+  // There is a primary account, whose managed-ness status isn't known yet.
+  AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
+      "test@consumer.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(0);
+  EXPECT_CALL(delegate(), SyncAuthCredentialsChanged).Times(0);
+
+  base::HistogramTester histograms;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_info.account_id);
+
+  // The managed status should initially be unknown (pending).
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kPending);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kPending, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Before the account type can be determined, the account signs out again, and
+  // a different account signs in (whose status is also not known yet).
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged).Times(2);
+  identity_env()->ClearPrimaryAccount();
+  AccountInfo account_info2 = identity_env()->MakePrimaryAccountAvailable(
+      "test2@consumer.com", signin::ConsentLevel::kSignin);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusSynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kPending, 2);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusAsynchronousOutcome",
+                              0);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
+
+  // Once the second account's hosted domain is determined, the managed status
+  // should become known too, and this should trigger a notification.
+  EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
+  account_info2 = AccountInfo::Builder(account_info2)
+                      .SetHostedDomain(std::string())
+                      .Build();
+  identity_env()->UpdateAccountInfoForAccount(account_info2);
+
+  EXPECT_EQ(auth_manager->GetActiveAccountInfo().managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusSynchronousOutcome", 2);
+  histograms.ExpectBucketCount(
+      "Sync.AccountManagedStatusAsynchronousOutcome",
+      signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown, 1);
+  histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

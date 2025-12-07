@@ -43,7 +43,7 @@ std::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
     }
 
     if (!base::HexStringToSpan(mac_address_string.substr(string_idx, 2),
-                               parsed_mac_address_span.subspan(span_idx, 1))) {
+                               parsed_mac_address_span.subspan(span_idx, 1u))) {
       return std::nullopt;
     }
   }
@@ -79,6 +79,12 @@ std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
           ash::system::kDockMacAddressKey))),
       EmptyIfAbsent(statistics_provider->GetMachineStatistic(
           ash::system::kManufactureDateKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          ash::system::kFlexSysVendorKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          ash::system::kFlexProductNameKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          ash::system::kFlexProductVersionKey)),
       service, url_loader_factory, std::move(device_dm_token_callback));
 }
 

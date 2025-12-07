@@ -76,6 +76,12 @@ void ArchiveAnalyzer::SetFinishedCallbackForTesting(
   finished_analysis_callback_ = std::move(callback);
 }
 
+void ArchiveAnalyzer::SetAnalysisDelegate(
+    std::unique_ptr<ArchiveAnalysisDelegate> analysis_delegate) {
+  CHECK(analysis_delegate);
+  analysis_delegate_ = std::move(analysis_delegate);
+}
+
 base::File& ArchiveAnalyzer::GetArchiveFile() {
   return archive_file_;
 }
@@ -93,12 +99,17 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
                                             bool is_encrypted,
                                             bool is_directory,
                                             bool contents_valid) {
-  if (base::FeatureList::IsEnabled(kNestedArchives) && !is_encrypted) {
+  if (!is_encrypted) {
     nested_analyzer_ = ArchiveAnalyzer::CreateForArchiveType(GetFileType(path));
     if (nested_analyzer_) {
       // Archive analyzers expect to start at the beginning of the
       // archive, but we may be at the end.
       entry.Seek(base::File::FROM_BEGIN, 0);
+      if (analysis_delegate_) {
+        nested_analyzer_->SetAnalysisDelegate(
+            analysis_delegate_->CreateNestedDelegate(entry.Duplicate()));
+      }
+
       nested_analyzer_->Analyze(
           entry.Duplicate(), path, password(),
           base::BindOnce(&ArchiveAnalyzer::NestedAnalysisFinished, GetWeakPtr(),
@@ -115,7 +126,8 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
   }
 
   UpdateArchiveAnalyzerResultsWithFile(path, &entry, file_length, is_encrypted,
-                                       is_directory, contents_valid, results_);
+                                       is_directory, contents_valid,
+                                       IsTopLevelArchive(), results_);
   return true;
 }
 
@@ -157,6 +169,10 @@ void ArchiveAnalyzer::NestedAnalysisFinished(base::File entry,
   if (ResumeExtraction()) {
     std::move(finished_analysis_callback_).Run();
   }
+}
+
+bool ArchiveAnalyzer::IsTopLevelArchive() const {
+  return root_path_.empty();
 }
 
 }  // namespace safe_browsing

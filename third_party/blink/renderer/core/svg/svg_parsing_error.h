@@ -109,9 +109,6 @@ class SVGParsingError {
 inline bool operator==(const SVGParsingError& error, SVGParseStatus status) {
   return error.Status() == status;
 }
-inline bool operator!=(const SVGParsingError& error, SVGParseStatus status) {
-  return !(error == status);
-}
 
 }  // namespace blink
 

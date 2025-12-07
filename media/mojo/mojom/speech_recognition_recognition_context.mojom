@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// Definition of the phrase for speech recognition biasing.
+struct SpeechRecognitionPhrase {
+  // Text to be boosted for speech recognition biasing.
+  string phrase;
+
+  // Represents approximately the natural log of the number of times more likely
+  // you think this phrase is than what the recognizer knows. A reasonable boost
+  // value should be inside the range [0, 10], with a default value of 1. A
+  // boost value of 0 means the phrase is not boosted at all, and a higher boost
+  // value means the phrase is more likely to appear.
+  float boost;
+};
+
+// A collection of recognition context for speech recognition biasing.
+struct SpeechRecognitionRecognitionContext {
+  // A list of speech recognition phrases to be plugged into the model.
+  array<SpeechRecognitionPhrase> phrases;
+};

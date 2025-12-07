@@ -5,7 +5,10 @@
 #include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -179,12 +182,14 @@ void SvgIconTranscoder::OnDownloadImage(base::FilePath png_path,
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           [](const SkBitmap& bitmap) {
-            std::vector<unsigned char> compressed;
-            if (!bitmap.empty() &&
-                gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &compressed)) {
-              return std::string(compressed.begin(), compressed.end());
+            if (bitmap.empty()) {
+              return std::string();
             }
-            return std::string();
+            std::optional<std::vector<uint8_t>> compressed =
+                gfx::PNGCodec::EncodeBGRASkBitmap(
+                    bitmap, /*discard_transparency=*/false);
+            return std::string(base::as_string_view(
+                compressed.value_or(std::vector<uint8_t>())));
           },
           bitmap),
       base::BindOnce(

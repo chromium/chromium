@@ -65,7 +65,7 @@ class FindInPageCallbackReceiver {
   bool IsCalled() { return is_called; }
 
   void AssertFindMatchRects(int expected_version,
-                            const WebVector<gfx::RectF>& expected_rects,
+                            const Vector<gfx::RectF>& expected_rects,
                             const gfx::RectF& expected_active_match_rect,
                             int actual_version,
                             const Vector<gfx::RectF>& actual_rects,
@@ -85,7 +85,7 @@ class FindInPageCallbackReceiver {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
-  GetDocument().body()->setInnerHTML("aAaAbBaBbAaAaA");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("aAaAbBaBbAaAaA");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -102,10 +102,10 @@ TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
   FindInPageCallbackReceiver callback_receiver;
   GetFindInPage().FindMatchRects(
       rects_version - 1,
-      WTF::BindOnce(&FindInPageCallbackReceiver::AssertFindMatchRects,
-                    WTF::Unretained(&callback_receiver), rects_version,
-                    GetTextFinder().FindMatchRects(),
-                    GetTextFinder().ActiveFindMatchRect()));
+      BindOnce(&FindInPageCallbackReceiver::AssertFindMatchRects,
+               Unretained(&callback_receiver), rects_version,
+               GetTextFinder().FindMatchRects(),
+               GetTextFinder().ActiveFindMatchRect()));
   EXPECT_TRUE(callback_receiver.IsCalled());
 }
 #endif
@@ -115,7 +115,7 @@ TEST_F(FindInPageTest, FindAllAs) {
   for (int i = 0; i < 10'000; ++i)
     str << "a ";
 
-  GetDocument().body()->setInnerHTML(str.str().c_str());
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(str.str().c_str());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;

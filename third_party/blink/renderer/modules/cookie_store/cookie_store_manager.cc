@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
@@ -84,24 +85,18 @@ KURL DefaultCookieURL(ServiceWorkerRegistration* registration) {
 }  // namespace
 
 // static
-const char CookieStoreManager::kSupplementName[] = "CookieStoreManager";
-
-// static
 CookieStoreManager* CookieStoreManager::cookies(
     ServiceWorkerRegistration& registration) {
-  auto* supplement =
-      Supplement<ServiceWorkerRegistration>::From<CookieStoreManager>(
-          registration);
+  CookieStoreManager* supplement = registration.GetCookieStoreManager();
   if (!supplement) {
     supplement = MakeGarbageCollected<CookieStoreManager>(registration);
-    ProvideTo(registration, supplement);
+    registration.SetCookieStoreManager(supplement);
   }
   return supplement;
 }
 
 CookieStoreManager::CookieStoreManager(ServiceWorkerRegistration& registration)
-    : Supplement<ServiceWorkerRegistration>(registration),
-      registration_(&registration),
+    : registration_(&registration),
       backend_(registration.GetExecutionContext()),
       default_cookie_url_(DefaultCookieURL(&registration)) {
   auto* execution_context = registration.GetExecutionContext();
@@ -131,8 +126,8 @@ ScriptPromise<IDLUndefined> CookieStoreManager::subscribe(
       script_state, exception_state.GetContext());
   backend_->AddSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
-      WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&CookieStoreManager::OnSubscribeResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -157,8 +152,8 @@ ScriptPromise<IDLUndefined> CookieStoreManager::unsubscribe(
       script_state, exception_state.GetContext());
   backend_->RemoveSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
-      WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&CookieStoreManager::OnSubscribeResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -176,15 +171,14 @@ CookieStoreManager::getSubscriptions(ScriptState* script_state,
       script_state, exception_state.GetContext());
   backend_->GetSubscriptions(
       registration_->RegistrationId(),
-      WTF::BindOnce(&CookieStoreManager::OnGetSubscriptionsResult,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&CookieStoreManager::OnGetSubscriptionsResult,
+               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
 void CookieStoreManager::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(backend_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 

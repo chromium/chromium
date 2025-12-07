@@ -222,6 +222,7 @@ typedef EGLint(GL_BINDING_CALL* eglLabelObjectKHRProc)(EGLDisplay display,
                                                        EGLenum objectType,
                                                        EGLObjectKHR object,
                                                        EGLLabelKHR label);
+typedef void(GL_BINDING_CALL* eglLockVulkanQueueANGLEProc)(EGLDisplay dpy);
 typedef EGLBoolean(GL_BINDING_CALL* eglMakeCurrentProc)(EGLDisplay dpy,
                                                         EGLSurface draw,
                                                         EGLSurface read,
@@ -232,6 +233,10 @@ typedef EGLBoolean(GL_BINDING_CALL* eglPostSubBufferNVProc)(EGLDisplay dpy,
                                                             EGLint y,
                                                             EGLint width,
                                                             EGLint height);
+typedef EGLBoolean(GL_BINDING_CALL* eglPresentationTimeANDROIDProc)(
+    EGLDisplay dpy,
+    EGLSurface surface,
+    EGLnsecsANDROID time);
 typedef EGLenum(GL_BINDING_CALL* eglQueryAPIProc)(void);
 typedef EGLBoolean(GL_BINDING_CALL* eglQueryContextProc)(EGLDisplay dpy,
                                                          EGLContext ctx,
@@ -347,6 +352,7 @@ typedef EGLBoolean(GL_BINDING_CALL* eglSwapBuffersWithDamageKHRProc)(
 typedef EGLBoolean(GL_BINDING_CALL* eglSwapIntervalProc)(EGLDisplay dpy,
                                                          EGLint interval);
 typedef EGLBoolean(GL_BINDING_CALL* eglTerminateProc)(EGLDisplay dpy);
+typedef void(GL_BINDING_CALL* eglUnlockVulkanQueueANGLEProc)(EGLDisplay dpy);
 typedef EGLBoolean(GL_BINDING_CALL* eglWaitClientProc)(void);
 typedef EGLBoolean(GL_BINDING_CALL* eglWaitGLProc)(void);
 typedef EGLBoolean(GL_BINDING_CALL* eglWaitNativeProc)(EGLint engine);
@@ -375,8 +381,10 @@ struct GL_EXPORT ClientExtensionsEGL {
   bool b_EGL_EXT_device_base;
   bool b_EGL_EXT_device_enumeration;
   bool b_EGL_EXT_device_query;
+  bool b_EGL_EXT_platform_base;
   bool b_EGL_EXT_platform_device;
   bool b_EGL_KHR_debug;
+  bool b_EGL_KHR_platform_gbm;
   bool b_EGL_MESA_platform_surfaceless;
 
   void InitializeClientExtensionSettings();
@@ -392,11 +400,14 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANDROID_get_frame_timestamps;
   bool b_EGL_ANDROID_get_native_client_buffer;
   bool b_EGL_ANDROID_native_fence_sync;
+  bool b_EGL_ANDROID_presentation_time;
   bool b_EGL_ANGLE_context_virtualization;
   bool b_EGL_ANGLE_create_context_backwards_compatible;
   bool b_EGL_ANGLE_create_context_client_arrays;
+  bool b_EGL_ANGLE_create_context_passthrough_shaders;
   bool b_EGL_ANGLE_create_context_webgl_compatibility;
   bool b_EGL_ANGLE_d3d_share_handle_client_buffer;
+  bool b_EGL_ANGLE_device_vulkan;
   bool b_EGL_ANGLE_display_semaphore_share_group;
   bool b_EGL_ANGLE_display_texture_share_group;
   bool b_EGL_ANGLE_external_context_and_surface;
@@ -512,8 +523,10 @@ struct ProcsEGL {
   eglImageFlushExternalEXTProc eglImageFlushExternalEXTFn;
   eglInitializeProc eglInitializeFn;
   eglLabelObjectKHRProc eglLabelObjectKHRFn;
+  eglLockVulkanQueueANGLEProc eglLockVulkanQueueANGLEFn;
   eglMakeCurrentProc eglMakeCurrentFn;
   eglPostSubBufferNVProc eglPostSubBufferNVFn;
+  eglPresentationTimeANDROIDProc eglPresentationTimeANDROIDFn;
   eglQueryAPIProc eglQueryAPIFn;
   eglQueryContextProc eglQueryContextFn;
   eglQueryDebugKHRProc eglQueryDebugKHRFn;
@@ -550,6 +563,7 @@ struct ProcsEGL {
   eglSwapBuffersWithDamageKHRProc eglSwapBuffersWithDamageKHRFn;
   eglSwapIntervalProc eglSwapIntervalFn;
   eglTerminateProc eglTerminateFn;
+  eglUnlockVulkanQueueANGLEProc eglUnlockVulkanQueueANGLEFn;
   eglWaitClientProc eglWaitClientFn;
   eglWaitGLProc eglWaitGLFn;
   eglWaitNativeProc eglWaitNativeFn;
@@ -744,6 +758,7 @@ class GL_EXPORT EGLApi {
                                      EGLenum objectType,
                                      EGLObjectKHR object,
                                      EGLLabelKHR label) = 0;
+  virtual void eglLockVulkanQueueANGLEFn(EGLDisplay dpy) = 0;
   virtual EGLBoolean eglMakeCurrentFn(EGLDisplay dpy,
                                       EGLSurface draw,
                                       EGLSurface read,
@@ -754,6 +769,9 @@ class GL_EXPORT EGLApi {
                                           EGLint y,
                                           EGLint width,
                                           EGLint height) = 0;
+  virtual EGLBoolean eglPresentationTimeANDROIDFn(EGLDisplay dpy,
+                                                  EGLSurface surface,
+                                                  EGLnsecsANDROID time) = 0;
   virtual EGLenum eglQueryAPIFn(void) = 0;
   virtual EGLBoolean eglQueryContextFn(EGLDisplay dpy,
                                        EGLContext ctx,
@@ -848,6 +866,7 @@ class GL_EXPORT EGLApi {
                                                    EGLint n_rects) = 0;
   virtual EGLBoolean eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) = 0;
   virtual EGLBoolean eglTerminateFn(EGLDisplay dpy) = 0;
+  virtual void eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) = 0;
   virtual EGLBoolean eglWaitClientFn(void) = 0;
   virtual EGLBoolean eglWaitGLFn(void) = 0;
   virtual EGLBoolean eglWaitNativeFn(EGLint engine) = 0;
@@ -860,6 +879,7 @@ class GL_EXPORT EGLApi {
 
 }  // namespace gl
 
+#if BINDINGS_EGL_PROTOTYPES
 #define eglAcquireExternalContextANGLE \
   ::gl::g_current_egl_context->eglAcquireExternalContextANGLEFn
 #define eglBindAPI ::gl::g_current_egl_context->eglBindAPIFn
@@ -940,8 +960,12 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglImageFlushExternalEXTFn
 #define eglInitialize ::gl::g_current_egl_context->eglInitializeFn
 #define eglLabelObjectKHR ::gl::g_current_egl_context->eglLabelObjectKHRFn
+#define eglLockVulkanQueueANGLE \
+  ::gl::g_current_egl_context->eglLockVulkanQueueANGLEFn
 #define eglMakeCurrent ::gl::g_current_egl_context->eglMakeCurrentFn
 #define eglPostSubBufferNV ::gl::g_current_egl_context->eglPostSubBufferNVFn
+#define eglPresentationTimeANDROID \
+  ::gl::g_current_egl_context->eglPresentationTimeANDROIDFn
 #define eglQueryAPI ::gl::g_current_egl_context->eglQueryAPIFn
 #define eglQueryContext ::gl::g_current_egl_context->eglQueryContextFn
 #define eglQueryDebugKHR ::gl::g_current_egl_context->eglQueryDebugKHRFn
@@ -994,6 +1018,8 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglSwapBuffersWithDamageKHRFn
 #define eglSwapInterval ::gl::g_current_egl_context->eglSwapIntervalFn
 #define eglTerminate ::gl::g_current_egl_context->eglTerminateFn
+#define eglUnlockVulkanQueueANGLE \
+  ::gl::g_current_egl_context->eglUnlockVulkanQueueANGLEFn
 #define eglWaitClient ::gl::g_current_egl_context->eglWaitClientFn
 #define eglWaitGL ::gl::g_current_egl_context->eglWaitGLFn
 #define eglWaitNative ::gl::g_current_egl_context->eglWaitNativeFn
@@ -1001,5 +1027,6 @@ class GL_EXPORT EGLApi {
 #define eglWaitSyncKHR ::gl::g_current_egl_context->eglWaitSyncKHRFn
 #define eglWaitUntilWorkScheduledANGLE \
   ::gl::g_current_egl_context->eglWaitUntilWorkScheduledANGLEFn
+#endif  // BINDINGS_EGL_PROTOTYPES
 
 #endif  // UI_GL_GL_BINDINGS_AUTOGEN_EGL_H_

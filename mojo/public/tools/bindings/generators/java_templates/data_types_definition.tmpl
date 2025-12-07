@@ -125,6 +125,10 @@ if ({{variable}} != null) {
 {%- endmacro %}
 
 {%- macro struct_def(struct, inner_class=False) %}
+{%- if not inner_class %}
+@NullMarked
+@SuppressWarnings("NullAway")
+{%- endif %}
 {{'static' if inner_class else 'public'}} final class {{struct|name}} extends org.chromium.mojo.bindings.Struct {
 
     private static final int STRUCT_SIZE = {{struct.versions[-1].num_bytes}};
@@ -145,7 +149,7 @@ if ({{variable}} != null) {
 {%- if struct.fields %}
 
 {%-   for field in struct.fields %}
-    public {{field.kind|java_type}} {{field|name}};
+    public {{field.kind|java_type(with_nullable=True)}} {{field|name}};
 {%-   endfor %}
 {%- endif %}
 
@@ -179,7 +183,7 @@ if ({{variable}} != null) {
     }
 
     @SuppressWarnings("unchecked")
-    public static {{struct|name}} decode(org.chromium.mojo.bindings.Decoder decoder0) {
+    public static {{struct|name}} decode(org.chromium.mojo.bindings.@Nullable Decoder decoder0) {
         if (decoder0 == null) {
             return null;
         }
@@ -271,6 +275,8 @@ if ({{variable}} != null) {
 
 
 {%- macro union_def(union) %}
+@NullMarked
+@SuppressWarnings("NullAway")
 public final class {{union|name}} extends org.chromium.mojo.bindings.Union {
 
     public static final class Tag {
@@ -280,17 +286,17 @@ public final class {{union|name}} extends org.chromium.mojo.bindings.Union {
     };
 
 {%-   for field in union.fields %}
-    private {{field.kind|java_type}} m{{field|ucc}};
+    private {{field.kind|java_type(with_nullable=True)}} m{{field|ucc}};
 {%-   endfor %}
 
 {%-   for field in union.fields %}
 
-    public void set{{field|ucc}}({{field.kind|java_type}} {{field|name}}) {
+    public void set{{field|ucc}}({{field.kind|java_type(with_nullable=True)}} {{field|name}}) {
         this.mTag = Tag.{{field|ucc}};
         this.m{{field|ucc}} = {{field|name}};
     }
 
-    public {{field.kind|java_type}} get{{field|ucc}}() {
+    public {{field.kind|java_type(with_nullable=True)}} get{{field|ucc}}() {
         assert this.mTag == Tag.{{field|ucc}};
         return this.m{{field|ucc}};
     }

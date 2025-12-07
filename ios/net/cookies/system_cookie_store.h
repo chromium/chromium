@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -56,7 +57,7 @@ class SystemCookieStore {
   // creation time |optional_creation_time| or to the current time if
   // |optional_creation_time| is nil, then calls |callback| after it's set.
   virtual void SetCookieAsync(NSHTTPCookie* cookie,
-                              const base::Time* optional_creation_time,
+                              std::optional<base::Time> optional_creation_time,
                               SystemCookieCallback callback) = 0;
 
   // Same as SetCookieAsync but uses actual time of setting the cookie.

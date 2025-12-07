@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 
@@ -48,7 +51,7 @@ std::optional<base::TimeDelta> PaymentsRequest::GetTimeout() const {
 }
 
 base::Value::Dict PaymentsRequest::BuildRiskDictionary(
-    const std::string& encoded_risk_data) {
+    std::string_view encoded_risk_data) {
   base::Value::Dict risk_data;
 #if BUILDFLAG(IS_IOS)
   // Browser fingerprinting is not available on iOS. Instead, we generate
@@ -76,14 +79,21 @@ base::Value::Dict PaymentsRequest::BuildCustomerContextDictionary(
 base::Value::Dict PaymentsRequest::BuildChromeUserContext(
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     bool full_sync_enabled) {
-  base::Value::Dict chrome_user_context;
+  base::Value::Dict chrome_user_context =
+      BuildChromeUserContext(client_behavior_signals);
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled);
+  return chrome_user_context;
+}
+
+base::Value::Dict PaymentsRequest::BuildChromeUserContext(
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals) {
+  base::Value::Dict chrome_user_context;
   if (!client_behavior_signals.empty()) {
     base::Value::List active_client_signals;
     for (ClientBehaviorConstants signal : client_behavior_signals) {
       active_client_signals.Append(base::to_underlying(signal));
     }
-    base::ranges::sort(active_client_signals);
+    std::ranges::sort(active_client_signals);
     chrome_user_context.Set("client_behavior_signals",
                             std::move(active_client_signals));
   }
@@ -98,8 +108,7 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, NAME_FULL, app_locale,
-                        PaymentsNetworkInterface::kRecipientName,
-                        postal_address);
+                        PaymentsRequest::kRecipientName, postal_address);
   }
 
   base::Value::List address_lines;
@@ -129,7 +138,7 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, PHONE_HOME_WHOLE_NUMBER, app_locale,
-                        PaymentsNetworkInterface::kPhoneNumber, address);
+                        PaymentsRequest::kPhoneNumber, address);
   }
 
   return address;
@@ -172,14 +181,40 @@ void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
 }
 
 // static
-void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
+void PaymentsRequest::SetStringIfNotEmpty(const FormGroup& form_group,
                                           const FieldType& type,
                                           const std::string& app_locale,
                                           const std::string& path,
                                           base::Value::Dict& dictionary) {
-  std::u16string value = profile.GetInfo(type, app_locale);
+  std::u16string value = form_group.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));
+}
+
+std::vector<std::pair<int, int>>
+PaymentsRequest::ParseSupportedCardBinRangesString(
+    const std::string& supported_card_bin_ranges_string) {
+  std::vector<std::pair<int, int>> supported_card_bin_ranges;
+  std::vector<std::string> range_strings =
+      base::SplitString(supported_card_bin_ranges_string, ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (std::string& range_string : range_strings) {
+    std::vector<std::string> range = base::SplitString(
+        range_string, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    DCHECK(range.size() <= 2);
+    int start;
+    base::StringToInt(range[0], &start);
+    if (range.size() == 1) {
+      supported_card_bin_ranges.emplace_back(start, start);
+    } else {
+      int end;
+      base::StringToInt(range[1], &end);
+      DCHECK_LE(start, end);
+      supported_card_bin_ranges.emplace_back(start, end);
+    }
+  }
+  return supported_card_bin_ranges;
 }
 
 }  // namespace autofill::payments

@@ -1,0 +1,251 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
+
+#include <memory>
+
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/web_package/web_bundle_builder.h"
+#include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
+#include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
+#include "components/webapps/isolated_web_apps/test_support/signed_web_bundle_utils.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "net/base/net_errors.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
+
+namespace web_app {
+namespace {
+
+using ::base::test::ErrorIs;
+using ::base::test::HasValue;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
+using ::testing::Return;
+
+class IsolatedWebAppResponseReaderTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    IwaIdentityValidator::CreateSingleton();
+    ON_CALL(iwa_client(), ValidateTrust(_, web_bundle_id_, _))
+        .WillByDefault(Return(base::ok()));
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
+
+  base::FilePath CreateSignedBundleAndWriteToDisk() {
+    web_package::WebBundleBuilder builder;
+    builder.AddExchange("/",
+                        {{":status", "200"}, {"content-type", "text/html"}},
+                        "Hello World");
+    auto unsigned_bundle = builder.CreateBundle();
+
+    auto signed_bundle = web_package::test::WebBundleSigner::SignBundle(
+        unsigned_bundle, test::GetDefaultEd25519KeyPair());
+
+    base::FilePath web_bundle_path;
+    EXPECT_TRUE(
+        CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
+    EXPECT_TRUE(base::WriteFile(web_bundle_path, signed_bundle));
+
+    return web_bundle_path;
+  }
+
+  SignedWebBundleReader::Result CreateReaderAndInitialize(
+      const base::FilePath& web_bundle_path,
+      const std::optional<GURL>& base_url,
+      bool verify_signatures = true) {
+    base::test::TestFuture<SignedWebBundleReader::Result> future;
+    SignedWebBundleReader::Create(web_bundle_path, base_url, verify_signatures,
+                                  future.GetCallback());
+    return future.Take();
+  }
+
+  test::MockIwaClient& iwa_client() { return iwa_client_; }
+
+  content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  base::ScopedTempDir temp_dir_;
+
+  content::TestBrowserContext browser_context_;
+  web_package::SignedWebBundleId web_bundle_id_ =
+      test::GetDefaultEd25519WebBundleId();
+  testing::NiceMock<test::MockIwaClient> iwa_client_;
+
+  GURL base_url_ = GURL(base::StrCat(
+      {"isolated-app", url::kStandardSchemeSeparator, web_bundle_id_.id()}));
+};
+
+TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
+  base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
+
+  ASSERT_OK_AND_ASSIGN(auto reader,
+                       CreateReaderAndInitialize(web_bundle_path, base_url_));
+
+  auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+
+  {
+    network::ResourceRequest request;
+    request.url = base_url_;
+    base::test::TestFuture<
+        base::expected<IsolatedWebAppResponseReader::Response,
+                       IsolatedWebAppResponseReader::Error>>
+        response_future;
+    response_reader->ReadResponse(request, response_future.GetCallback());
+    EXPECT_THAT(response_future.Get(), HasValue());
+  }
+
+  testing::Mock::VerifyAndClearExpectations(&iwa_client());
+  ON_CALL(iwa_client(), ValidateTrust)
+      .WillByDefault(Return(base::unexpected("Trust is gone :(")));
+
+  {
+    network::ResourceRequest request;
+    request.url = base_url_;
+    base::test::TestFuture<
+        base::expected<IsolatedWebAppResponseReader::Response,
+                       IsolatedWebAppResponseReader::Error>>
+        response_future;
+    response_reader->ReadResponse(request, response_future.GetCallback());
+    EXPECT_THAT(
+        response_future.Get(),
+        ErrorIs(
+            Field(&IsolatedWebAppResponseReader::Error::type,
+                  Eq(IsolatedWebAppResponseReader::Error::Type::kNotTrusted))));
+  }
+}
+
+// Tests that query parameters and fragment are stripped from requests before
+// looking up the corresponding resources inside of the bundle.
+TEST_F(IsolatedWebAppResponseReaderTest,
+       ReadResponseStripsQueryParametersAndFragment) {
+  base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
+  ASSERT_OK_AND_ASSIGN(auto reader,
+                       CreateReaderAndInitialize(web_bundle_path, base_url_));
+
+  auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+
+  {
+    network::ResourceRequest request;
+    request.url = base_url_;
+    base::test::TestFuture<
+        base::expected<IsolatedWebAppResponseReader::Response,
+                       IsolatedWebAppResponseReader::Error>>
+        response_future;
+    response_reader->ReadResponse(request, response_future.GetCallback());
+    EXPECT_THAT(response_future.Get(), HasValue());
+  }
+
+  {
+    network::ResourceRequest request;
+    request.url = base_url_.Resolve("/?some-query-parameter#some-fragment");
+    base::test::TestFuture<
+        base::expected<IsolatedWebAppResponseReader::Response,
+                       IsolatedWebAppResponseReader::Error>>
+        response_future;
+    response_reader->ReadResponse(request, response_future.GetCallback());
+    EXPECT_THAT(response_future.Get(), HasValue());
+  }
+}
+
+TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
+  base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
+  ASSERT_OK_AND_ASSIGN(auto reader,
+                       CreateReaderAndInitialize(web_bundle_path, base_url_));
+
+  auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+
+  network::ResourceRequest request;
+  request.url = base_url_;
+  base::test::TestFuture<base::expected<IsolatedWebAppResponseReader::Response,
+                                        IsolatedWebAppResponseReader::Error>>
+      response_future;
+  response_reader->ReadResponse(request, response_future.GetCallback());
+  ASSERT_THAT(response_future.Get(), HasValue());
+
+  IsolatedWebAppResponseReader::Response response = *response_future.Take();
+  EXPECT_THAT(response.head()->response_code, Eq(200));
+
+  {
+    std::string response_content = ReadAndFulfillResponseBody(
+        response.head()->payload_length,
+        base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
+                       base::Unretained(&response)));
+    EXPECT_THAT(response_content, Eq("Hello World"));
+  }
+
+  // If the response_reader is deleted, then reading the response should return
+  // `net::ERR_FAILED`.
+  response_reader.reset();
+  {
+    base::test::TestFuture<net::Error> response_body_future;
+    ReadResponseBody(
+        response.head()->payload_length,
+        base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
+                       base::Unretained(&response)),
+        response_body_future.GetCallback());
+    EXPECT_THAT(response_body_future.Get(), Eq(net::ERR_FAILED));
+  }
+}
+
+TEST_F(IsolatedWebAppResponseReaderTest, Close) {
+  base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
+
+  ASSERT_OK_AND_ASSIGN(auto reader,
+                       CreateReaderAndInitialize(web_bundle_path, base_url_));
+  auto* raw_reader = reader.get();
+
+  auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+
+  network::ResourceRequest request;
+  request.url = base_url_;
+  base::test::TestFuture<base::expected<IsolatedWebAppResponseReader::Response,
+                                        IsolatedWebAppResponseReader::Error>>
+      response_future;
+  response_reader->ReadResponse(request, response_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                       response_future.Take());
+
+  base::test::TestFuture<void> close_future;
+  response_reader->Close(close_future.GetCallback());
+  ASSERT_TRUE(close_future.Wait());
+
+  EXPECT_TRUE(raw_reader->IsClosed());
+
+  // If the response_reader is closed, then reading the response should return
+  // `net::ERR_FAILED`.
+  base::test::TestFuture<net::Error> response_body_future;
+  ReadResponseBody(
+      response.head()->payload_length,
+      base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
+                     base::Unretained(&response)),
+      response_body_future.GetCallback());
+  EXPECT_THAT(response_body_future.Get(), Eq(net::ERR_FAILED));
+}
+
+}  // namespace
+}  // namespace web_app

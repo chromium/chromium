@@ -20,7 +20,6 @@ class CORE_EXPORT TextIteratorBehavior final {
   TextIteratorBehavior();
 
   bool operator==(const TextIteratorBehavior& other) const;
-  bool operator!=(const TextIteratorBehavior& other) const;
 
   bool DoesNotBreakAtReplacedElement() const {
     return values_.bits.does_not_break_at_replaced_element;
@@ -80,6 +79,8 @@ class CORE_EXPORT TextIteratorBehavior final {
   static TextIteratorBehavior IgnoresStyleVisibilityBehavior();
   static TextIteratorBehavior DefaultRangeLengthBehavior();
   static TextIteratorBehavior AllVisiblePositionsRangeLengthBehavior();
+  static TextIteratorBehavior
+  AllVisiblePositionsIncludingShadowRootRangeLengthBehavior();
   static TextIteratorBehavior NoTrailingSpaceRangeLengthBehavior();
 
  private:

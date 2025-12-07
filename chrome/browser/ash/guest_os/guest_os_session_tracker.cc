@@ -13,7 +13,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -38,10 +37,6 @@ GuestInfo::GuestInfo(GuestInfo&&) = default;
 GuestInfo::GuestInfo(const GuestInfo&) = default;
 GuestInfo& GuestInfo::operator=(GuestInfo&&) = default;
 GuestInfo& GuestInfo::operator=(const GuestInfo&) = default;
-
-GuestOsSessionTracker* GuestOsSessionTracker::GetForProfile(Profile* profile) {
-  return GuestOsSessionTrackerFactory::GetForProfile(profile);
-}
 
 GuestOsSessionTracker::GuestOsSessionTracker(std::string owner_id)
     : owner_id_(std::move(owner_id)) {

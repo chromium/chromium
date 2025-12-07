@@ -4,16 +4,16 @@
 
 #include "ash/public/cpp/image_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
@@ -24,7 +24,7 @@ namespace image_util {
 namespace {
 
 const int64_t kMaxImageSizeInBytes =
-    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
+    static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize);
 
 std::string ReadFileToString(const base::FilePath& path) {
   std::string result;
@@ -49,7 +49,7 @@ void ToImageSkia(DecodeImageCallback callback, const SkBitmap& bitmap) {
 void ToFrames(DecodeAnimationCallback callback,
               std::vector<data_decoder::mojom::AnimationFramePtr> raw_frames) {
   std::vector<AnimationFrame> frames(raw_frames.size());
-  base::ranges::transform(
+  std::ranges::transform(
       raw_frames, frames.begin(),
       [](const data_decoder::mojom::AnimationFramePtr& frame_ptr) {
         return AnimationFrame{

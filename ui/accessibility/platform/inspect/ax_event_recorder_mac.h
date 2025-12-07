@@ -13,14 +13,22 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
+namespace base {
+class RunLoop;
+}  // namespace base
+
 namespace ui {
+
+class AXPlatformTreeManager;
 
 // Implementation of AXEventRecorder that uses AXObserver to watch for
 // NSAccessibility events.
 class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderMac
     : public AXEventRecorder {
  public:
-  AXEventRecorderMac(base::ProcessId pid, const AXTreeSelector& selector);
+  AXEventRecorderMac(base::WeakPtr<AXPlatformTreeManager> manager,
+                     base::ProcessId pid,
+                     const AXTreeSelector& selector);
 
   AXEventRecorderMac(const AXEventRecorderMac&) = delete;
   AXEventRecorderMac& operator=(const AXEventRecorderMac&) = delete;
@@ -41,12 +49,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderMac
   // observer.
   void AddNotification(NSString* notification);
 
+  base::WeakPtr<AXPlatformTreeManager> manager_;
+
   // The AXUIElement for the application.
   base::apple::ScopedCFTypeRef<AXUIElementRef> application_;
 
   // The AXObserver we use to monitor AX notifications.
   base::apple::ScopedCFTypeRef<AXObserverRef> observer_ref_;
   CFRunLoopSourceRef observer_run_loop_source_;
+
+  bool has_seen_end_of_test_sentinel_ = false;
+  std::unique_ptr<base::RunLoop> end_of_test_loop_runner_;
 };
 
 }  // namespace ui

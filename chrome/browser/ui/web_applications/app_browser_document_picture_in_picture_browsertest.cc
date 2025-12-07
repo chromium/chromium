@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -20,11 +25,15 @@
 namespace {
 
 // Helper class to wait for widget bound changes. Stops waiting once widget size
-// matches the `expected_size_`.
+// passes the given `size_ready_callback` check.
 class WidgetResizeWaiter : public views::WidgetObserver {
  public:
-  explicit WidgetResizeWaiter(views::Widget* widget, gfx::Size expected_size)
-      : expected_size_(expected_size) {
+  // Should return true if the given size should end waiting.
+  using SizeReadyCallback = base::RepeatingCallback<bool(const gfx::Size&)>;
+
+  WidgetResizeWaiter(views::Widget* widget,
+                     SizeReadyCallback size_ready_callback)
+      : size_ready_callback_(std::move(size_ready_callback)) {
     observation_.Observe(widget);
   }
 
@@ -32,7 +41,7 @@ class WidgetResizeWaiter : public views::WidgetObserver {
 
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override {
-    if (bounds.size() == expected_size_) {
+    if (size_ready_callback_.Run(bounds.size())) {
       run_loop_.Quit();
     }
   }
@@ -40,7 +49,7 @@ class WidgetResizeWaiter : public views::WidgetObserver {
  private:
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
-  gfx::Size expected_size_;
+  SizeReadyCallback size_ready_callback_;
   base::RunLoop run_loop_;
 };
 
@@ -57,6 +66,11 @@ class AppBrowserDocumentPictureInPictureBrowserTest
  protected:
   DocumentPictureInPictureMixinTestBase picture_in_picture_mixin_test_base_{
       &mixin_host_};
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
@@ -164,8 +178,16 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
       PictureInPictureWindowManager::GetMinimumInnerWindowSize().height());
 }
 
+// TODO(https://crbug.com/422947648): This times out on win11-arm64 builders.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_ResizeToRespectsMaximumWindowSize \
+  DISABLED_ResizeToRespectsMaximumWindowSize
+#else
+#define MAYBE_ResizeToRespectsMaximumWindowSize \
+  ResizeToRespectsMaximumWindowSize
+#endif
 IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
-                       ResizeToRespectsMaximumWindowSize) {
+                       MAYBE_ResizeToRespectsMaximumWindowSize) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
 
@@ -187,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
 
   const BrowserWindow* const pip_browser_window = pip_browser->window();
   const gfx::NativeWindow native_window = pip_browser_window->GetNativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayNearestWindow(native_window);
 
@@ -212,12 +234,20 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
   {
     WidgetResizeWaiter waiter(
         pip_browser_view->GetWidget(),
-        PictureInPictureWindowManager::GetMaximumWindowSize(display));
+        base::BindRepeating(
+            [](gfx::Size maximum_window_size, const gfx::Size& size) {
+              return size.width() <= maximum_window_size.width() &&
+                     size.height() <= maximum_window_size.height();
+            },
+            maximum_window_size));
     EXPECT_TRUE(ExecJs(pip_web_contents, script));
     waiter.Wait();
   }
 
-  EXPECT_EQ(pip_browser_view->GetBounds().size(), maximum_window_size);
+  EXPECT_LE(pip_browser_view->GetBounds().size().width(),
+            maximum_window_size.width());
+  EXPECT_LE(pip_browser_view->GetBounds().size().height(),
+            maximum_window_size.height());
 }
 
 }  // namespace

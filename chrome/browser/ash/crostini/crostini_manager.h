@@ -21,6 +21,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/crostini/baguette_installer.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
@@ -94,8 +95,9 @@ class ExportContainerProgressObserver {
   // A successfully started container export will continually fire progress
   // events until the original callback from ExportLxdContainer is invoked with
   // a status of SUCCESS or CONTAINER_EXPORT_FAILED.
-  virtual void OnExportContainerProgress(const guest_os::GuestId& container_id,
-                                         const StreamingExportStatus&) = 0;
+  virtual void OnExportContainerProgress(
+      const guest_os::GuestId& container_id,
+      const StreamingExportStatus& status) = 0;
 };
 
 class ImportContainerProgressObserver {
@@ -112,6 +114,16 @@ class ImportContainerProgressObserver {
       const std::string& architecture_container,
       uint64_t available_space,
       uint64_t minimum_required_space) = 0;
+};
+
+class DiskImageProgressObserver {
+ public:
+  // A successfully started container export will continually fire progress
+  // events until the original callback from ExportLxdContainer is invoked with
+  // a status of SUCCESS or CONTAINER_EXPORT_FAILED.
+  virtual void OnDiskImageProgress(const guest_os::GuestId& container_id,
+                                   DiskImageProgressStatus status,
+                                   int progress) = 0;
 };
 
 class UpgradeContainerProgressObserver {
@@ -153,12 +165,16 @@ class ContainerShutdownObserver : public base::CheckedObserver {
 class CrostiniManager : public KeyedService,
                         public ash::AnomalyDetectorClient::Observer,
                         public ash::ConciergeClient::VmObserver,
+                        public ash::ConciergeClient::DiskImageObserver,
                         public ash::CiceroneClient::Observer,
                         public ash::NetworkStateHandlerObserver,
                         public chromeos::PowerManagerClient::Observer {
  public:
   using CrostiniResultCallback =
       base::OnceCallback<void(CrostiniResult result)>;
+  using BaguetteImageCallback =
+      base::OnceCallback<void(std::optional<base::ScopedFD> fd,
+                              CrostiniResult result)>;
   using ExportLxdContainerResultCallback =
       base::OnceCallback<void(CrostiniResult result,
                               uint64_t container_size,
@@ -168,6 +184,13 @@ class CrostiniManager : public KeyedService,
 
   using RestartId = int;
   static const RestartId kUninitializedRestartId = -1;
+
+  enum class TerminaFlavor {
+    UNKNOWN,
+    UNINSTALLED,
+    BAGUETTE,
+    CROSTINI,
+  };
 
   // Observer class for the Crostini restart flow.
   class RestartObserver {
@@ -211,6 +234,9 @@ class CrostiniManager : public KeyedService,
 
   base::WeakPtr<CrostiniManager> GetWeakPtr();
 
+  // Returns 'flavor' of termina installed - if any.
+  static TerminaFlavor GetTerminaFlavor(Profile* profile);
+
   // Returns true if the /dev/kvm directory is present.
   static bool IsDevKvmPresent();
 
@@ -223,6 +249,9 @@ class CrostiniManager : public KeyedService,
 
   // Installs termina using the DLC service.
   void InstallTermina(CrostiniResultCallback callback);
+
+  // Installs baguette using GS downloader or local file.
+  void InstallBaguette(BaguetteImageCallback callback);
 
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
   // basis. The callback passed to InstallTermina is still run upon completion.
@@ -243,6 +272,8 @@ class CrostiniManager : public KeyedService,
       // the image itself. The image name should match the
       // name of the VM that it will be used for.
       const std::string& vm_name,
+      // We may already have a disk image to use that has been downloaded.
+      std::optional<base::ScopedFD> disk_image,
       // The storage location for the disk image
       vm_tools::concierge::StorageLocation storage_location,
       // The logical size of the disk image, in bytes
@@ -280,6 +311,12 @@ class CrostiniManager : public KeyedService,
   // been started.
   void StartLxd(std::string vm_name, CrostiniResultCallback callback);
 
+  // Wrapper for ConciergeClient::SetUpVmUser
+  // |callback| is called immediately if the arguments are bad.
+  void SetUpBaguetteUser(std::string vm_name,
+                         std::optional<std::string> container_username,
+                         CrostiniResultCallback callback);
+
   // Checks the arguments for creating an Lxd container via
   // CiceroneClient::CreateLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been created.
@@ -313,6 +350,25 @@ class CrostiniManager : public KeyedService,
                              std::string container_username,
                              BoolCallback callback);
 
+  // Checks the arguments for exporting a vm disk image via
+  // ConciergeClient::ExportDiskImage. |callback| is called immedaitely if the
+  // arguments are bad, or after the method call finishes.
+  // using DiskImageCallback = base::OnceCallback<void(CrostiniResult result)>;
+  void ExportDiskImage(guest_os::GuestId vm_id,
+                       std::string user_id_hash,
+                       base::FilePath export_path,
+                       bool force,
+                       CrostiniResultCallback callback);
+
+  // Checks the arguments for exporting a vm disk image via
+  // ConciergeClient::ImportDiskImage. |callback| is called immedaitely if the
+  // arguments are bad, or after the method call finishes.
+  // using DiskImageCallback = base::OnceCallback<void(CrostiniResult result)>;
+  void ImportDiskImage(guest_os::GuestId vm_id,
+                       std::string user_id_hash,
+                       base::FilePath import_path,
+                       CrostiniResultCallback callback);
+
   // Checks the arguments for exporting an Lxd container via
   // CiceroneClient::ExportLxdContainer. |callback| is called immediately if the
   // arguments are bad, or after the method call finishes.
@@ -326,6 +382,10 @@ class CrostiniManager : public KeyedService,
   void ImportLxdContainer(guest_os::GuestId container_id,
                           base::FilePath import_path,
                           CrostiniResultCallback callback);
+
+  // Checks the arguments for cancelling a disk image export via
+  // ConciergeClient::CancelExportDiskImage.
+  void CancelDiskImageOp(guest_os::GuestId key);
 
   // Checks the arguments for cancelling a Lxd container export via
   // CiceroneClient::CancelExportLxdContainer .
@@ -472,6 +532,10 @@ class CrostiniManager : public KeyedService,
   void RemoveImportContainerProgressObserver(
       ImportContainerProgressObserver* observer);
 
+  // Add/remove observers for disk image export/import
+  void AddDiskImageProgressObserver(DiskImageProgressObserver* observer);
+  void RemoveDiskImageProgressObserver(DiskImageProgressObserver* observer);
+
   // Add/remove observers for container upgrade
   void AddUpgradeContainerProgressObserver(
       UpgradeContainerProgressObserver* observer);
@@ -495,6 +559,10 @@ class CrostiniManager : public KeyedService,
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
   void OnVmStopping(
       const vm_tools::concierge::VmStoppingSignal& signal) override;
+
+  // ConciergeClient::DiskImageObserver
+  void OnDiskImageProgress(
+      const vm_tools::concierge::DiskImageStatusResponse& signal) override;
 
   // CiceroneClient::Observer:
   void OnContainerStarted(
@@ -647,9 +715,10 @@ class CrostiniManager : public KeyedService,
 
   // Callback for ConciergeClient::StopVm. Called after the Concierge
   // service method finishes.
-  void OnStopVm(std::string vm_name,
-                CrostiniResultCallback callback,
-                std::optional<vm_tools::concierge::StopVmResponse> response);
+  void OnStopVm(
+      std::string vm_name,
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Callback for ConciergeClient::GetVmEnterpriseReportingInfo.
   // Currently used to report the Termina kernel version for enterprise
@@ -663,6 +732,23 @@ class CrostiniManager : public KeyedService,
   void OnStartLxd(std::string vm_name,
                   CrostiniResultCallback callback,
                   std::optional<vm_tools::cicerone::StartLxdResponse> response);
+
+  // Callback for ConciergeClient::SetUpVmUser.
+  void OnSetUpBaguetteUser(
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SetUpVmUserResponse> response);
+
+  // Callback for ConciergeClient::ExportDiskImage. Called after the Concierge
+  // service method finishes.
+  void OnExportDiskImage(
+      guest_os::GuestId vm_id,
+      std::optional<vm_tools::concierge::ExportDiskImageResponse> response);
+
+  // Callback for ConciergeClient::ImportDiskImage. Called after the Concierge
+  // service method finishes.
+  void OnImportDiskImage(
+      guest_os::GuestId vm_id,
+      std::optional<vm_tools::concierge::ImportDiskImageResponse> response);
 
   // Callback for CiceroneClient::CreateLxdContainer. May indicate the container
   // is still being created, in which case we will wait for an
@@ -706,6 +792,11 @@ class CrostiniManager : public KeyedService,
   void OnImportLxdContainer(
       const guest_os::GuestId& container_id,
       std::optional<vm_tools::cicerone::ImportLxdContainerResponse> response);
+
+  // Callback for CiceroneClient::CancelExportDiskImage.
+  void OnCancelDiskImageOp(
+      const guest_os::GuestId& key,
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Callback for CiceroneClient::CancelExportLxdContainer.
   void OnCancelExportLxdContainer(
@@ -797,7 +888,7 @@ class CrostiniManager : public KeyedService,
 
   // Tries to query Concierge for the type of disk the named VM has then emits a
   // metric logging the type. Mostly happens async and best-effort.
-  void EmitVmDiskTypeMetric(const std::string vm_name);
+  void EmitVmDiskTypeMetric(const std::string& vm_name);
 
   // Runs things that should happened whenever a container shutdowns e.g.
   // triggering observers.
@@ -845,6 +936,8 @@ class CrostiniManager : public KeyedService,
       delete_lxd_container_callbacks_;
   std::map<guest_os::GuestId, ExportLxdContainerResultCallback>
       export_lxd_container_callbacks_;
+  std::map<guest_os::GuestId, CrostiniResultCallback> disk_image_callbacks_;
+  std::map<std::string, guest_os::GuestId> disk_image_uuid_to_guest_id_;
   std::map<guest_os::GuestId, CrostiniResultCallback>
       import_lxd_container_callbacks_;
 
@@ -877,6 +970,9 @@ class CrostiniManager : public KeyedService,
       UncheckedAndDanglingUntriaged export_container_progress_observers_;
   base::ObserverList<ImportContainerProgressObserver>::
       UncheckedAndDanglingUntriaged import_container_progress_observers_;
+
+  base::ObserverList<DiskImageProgressObserver>::UncheckedAndDanglingUntriaged
+      disk_image_progress_observers_;
 
   base::ObserverList<UpgradeContainerProgressObserver>::
       UncheckedAndDanglingUntriaged upgrade_container_progress_observers_;
@@ -915,9 +1011,11 @@ class CrostiniManager : public KeyedService,
   std::unique_ptr<CrostiniUpgradeAvailableNotification>
       upgrade_available_notification_;
 
-  TerminaInstaller termina_installer_{};
+  TerminaInstaller termina_installer_;
+  BaguetteInstaller baguette_installer_;
 
   bool install_termina_never_completes_for_testing_ = false;
+  bool install_baguette_never_completes_for_testing_ = false;
 
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
 

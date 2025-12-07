@@ -1,0 +1,19 @@
+diff --git a/third_party/blink/renderer/core/css/css_math_expression_node_test.cc b/third_party/blink/renderer/core/css/css_math_expression_node_test.cc
+index b46959ea55ee2..2d936569b4378 100644
+--- a/third_party/blink/renderer/core/css/css_math_expression_node_test.cc
++++ b/third_party/blink/renderer/core/css/css_math_expression_node_test.cc
+@@ -57,6 +57,14 @@ void PrintTo(const CSSLengthArray& length_array, ::std::ostream* os) {
+ 
+ namespace {
+ 
++TEST(CSSCalculationValue, DummyTest) {
++  CSSLengthArray expectation, actual;
++  EXPECT_EQ(expectation.values, SetLengthArray("0", actual).values);
++
++  expectation.values.at(CSSPrimitiveValue::kUnitTypePixels) = 20;
++  EXPECT_EQ(expectation.values, SetLengthArray("30px", actual).values);
++}
++
+ void TestAccumulatePixelsAndPercent(
+     const CSSToLengthConversionData& conversion_data,
+     CSSMathExpressionNode* expression,

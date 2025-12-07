@@ -4,7 +4,7 @@
 
 /** @fileoverview Assertion helper functions wrapping the chaijs API. */
 
-import './chai.js';
+import {assert, expect} from '//webui-test/chai.js';
 
 /**
  * value The value to check.
@@ -12,7 +12,7 @@ import './chai.js';
  */
 export function assertTrue(
     value: boolean, message?: string): asserts value {
-  chai.assert.isTrue(value, message);
+  assert.isTrue(value, message);
 }
 
 /**
@@ -20,7 +20,7 @@ export function assertTrue(
  * message Additional error message.
  */
 export function assertFalse(value: boolean, message?: string) {
-  chai.assert.isFalse(value, message);
+  assert.isFalse(value, message);
 }
 
 /**
@@ -30,7 +30,7 @@ export function assertFalse(value: boolean, message?: string) {
  */
 export function assertGE(
     value1: number, value2: number, message?: string) {
-  chai.expect(value1).to.be.at.least(value2, message);
+  expect(value1).to.be.at.least(value2, message);
 }
 
 /**
@@ -40,7 +40,7 @@ export function assertGE(
  */
 export function assertGT(value1: number, value2: number,
                          message?: string) {
-  chai.assert.isAbove(value1, value2, message);
+  assert.isAbove(value1, value2, message);
 }
 
 /**
@@ -50,12 +50,12 @@ export function assertGT(value1: number, value2: number,
  */
 export function assertEquals(
     expected: any, actual: any, message?: string) {
-  chai.assert.strictEqual(actual, expected, message);
+  assert.strictEqual(actual, expected, message);
 }
 
 export function assertDeepEquals(expected: any, actual: any,
                                  message?: string) {
-  chai.assert.deepEqual(actual, expected, message);
+  assert.deepEqual(actual, expected, message);
 }
 
 /**
@@ -65,7 +65,7 @@ export function assertDeepEquals(expected: any, actual: any,
  */
 export function assertLE(value1: number, value2: number,
                          message?: string) {
-  chai.expect(value1).to.be.at.most(value2, message);
+  expect(value1).to.be.at.most(value2, message);
 }
 
 /**
@@ -75,7 +75,7 @@ export function assertLE(value1: number, value2: number,
  */
 export function assertLT(value1: number, value2: number,
                          message?: string) {
-  chai.assert.isBelow(value1, value2, message);
+  assert.isBelow(value1, value2, message);
 }
 
 /**
@@ -85,14 +85,24 @@ export function assertLT(value1: number, value2: number,
  */
 export function assertNotEquals(expected: any, actual: any,
                                 message?: string) {
-  chai.assert.notStrictEqual(actual, expected, message);
+  assert.notStrictEqual(actual, expected, message);
+}
+
+/**
+ * @param expected The expected value.
+ * @param actual The actual value.
+ * @param message Additional error message.
+ */
+export function assertNotDeepEquals(
+    expected: any, actual: any, message?: string) {
+  assert.notDeepEqual(actual, expected, message);
 }
 
 /**
  * @param message Additional error message.
  */
 export function assertNotReached(message?: string): never {
-  chai.assert.fail(null, null, message);
+  assert.fail(null, null, message);
 }
 
 /**
@@ -119,10 +129,9 @@ export function assertThrows(
   // TODO(crbug.com/40097498): Refactor this into something that makes sense when
   // tests are actually compiled and we can do that safely.
   if ('string' === typeof expectedOrConstructor) {
-    chai.assert.throws(
-        testFunction, expectedOrConstructor as string);
+    assert.throws(testFunction, expectedOrConstructor as string);
   } else {
-    chai.assert.throws(
+    assert.throws(
         testFunction, expectedOrConstructor as ErrorConstructor, message);
   }
 }
@@ -137,11 +146,11 @@ export function assertArrayEquals(expected: any[], actual: any[]) {
 }
 
 export function assertStringContains(expected: string, contains: string) {
-  chai.expect(expected).to.have.string(contains);
+  expect(expected).to.have.string(contains);
 }
 
 export function assertStringExcludes(expected: string, excludes: string): void {
-  chai.expect(expected).not.to.have.string(excludes);
+  expect(expected).not.to.have.string(excludes);
 }
 
 /**
@@ -149,5 +158,5 @@ export function assertStringExcludes(expected: string, excludes: string): void {
  * @param message Optional error message.
  */
 export function assertNull(value: any, message?: string) {
-  chai.assert.isNull(value, message);
+  assert.isNull(value, message);
 }

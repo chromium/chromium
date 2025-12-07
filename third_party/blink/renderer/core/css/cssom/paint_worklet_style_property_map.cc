@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -33,8 +34,7 @@ class PaintWorkletStylePropertyMapIterationSource final
 
   bool FetchNextItem(ScriptState*,
                      String& key,
-                     CSSStyleValueVector& value,
-                     ExceptionState&) override {
+                     CSSStyleValueVector& value) override {
     if (index_ >= values_.size()) {
       return false;
     }
@@ -176,7 +176,8 @@ CSSStyleValueVector PaintWorkletStylePropertyMap::getAll(
     ExceptionState& exception_state) const {
   CSSPropertyID property_id = CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
-    exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid propertyName: ", property_name}));
     return CSSStyleValueVector();
   }
 
@@ -203,9 +204,7 @@ unsigned PaintWorkletStylePropertyMap::size() const {
 }
 
 PaintWorkletStylePropertyMap::IterationSource*
-PaintWorkletStylePropertyMap::CreateIterationSource(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+PaintWorkletStylePropertyMap::CreateIterationSource(ScriptState* script_state) {
   // TODO(xidachen): implement this function. Note that the output should be
   // sorted.
   HeapVector<PaintWorkletStylePropertyMap::StylePropertyMapEntry> result;

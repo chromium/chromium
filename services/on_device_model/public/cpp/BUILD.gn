@@ -5,36 +5,54 @@
 import("//build/buildflag_header.gni")
 import("//services/on_device_model/on_device_model.gni")
 
-source_set("cpp") {
+component("cpp") {
   output_name = "on_device_model_cpp"
-  sources = [ "on_device_model.h" ]
+  sources = [
+    "cpu.cc",
+    "cpu.h",
+    "features.cc",
+    "features.h",
+    "service_client.cc",
+    "service_client.h",
+    "text_safety_assets.cc",
+    "text_safety_assets.h",
+  ]
   public_deps = [
     ":buildflags",
-    ":model_assets",
+    ":types",
     "//base",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//services/on_device_model/public/mojom",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
 
-component("model_assets") {
+component("types") {
   sources = [
     "adaptation_assets_mojom_traits.cc",
     "adaptation_assets_mojom_traits.h",
+    "capabilities.h",
     "model_assets.cc",
     "model_assets.h",
     "model_assets_mojom_traits.cc",
     "model_assets_mojom_traits.h",
+    "model_file_mojom_traits.cc",
+    "model_file_mojom_traits.h",
   ]
   public_deps = [
     "//base",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//services/on_device_model/public/mojom:mojom_shared",
+    "//skia:skia_core_public_headers",
   ]
-  defines = [ "IS_ON_DEVICE_MODEL_ASSETS_CPP_IMPL" ]
+  defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "USE_CHROMEOS_MODEL_SERVICE=$use_chromeos_model_service" ]
+  flags = [
+    "USE_ON_DEVICE_MODEL_SERVICE=$use_on_device_model_service",
+    "USE_CHROMEOS_MODEL_SERVICE=$use_chromeos_model_service",
+  ]
 }

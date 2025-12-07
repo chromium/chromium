@@ -13,12 +13,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #include "url/gurl.h"
 
 namespace leveldb_proto {
@@ -30,12 +34,13 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
-class TabUrlProvider;
-class TopHostProvider;
+class HintsManager;
+class ModelExecutionManager;
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
 class PredictionManager;
-class HintsManager;
+class TabUrlProvider;
+class TopHostProvider;
 }  // namespace optimization_guide
 
 namespace signin {
@@ -46,6 +51,7 @@ class BrowserList;
 class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
 class PrefService;
+class TabResumptionMediatorProxy;
 
 // A BrowserState keyed service that is used to own the underlying Optimization
 // Guide components. This is a rough copy of the OptimizationGuideKeyedService
@@ -57,13 +63,9 @@ class PrefService;
 class OptimizationGuideService
     : public KeyedService,
       public optimization_guide::OptimizationGuideDecider,
+      public optimization_guide::RemoteModelExecutor,
       public optimization_guide::OptimizationGuideModelProvider {
  public:
-  // BackgroundDownloadService is only available once the profile is fully
-  // initialized and that cannot be done as part of `Initialize`. Get a provider
-  // to retrieve the service when it is needed.
-  using BackgroundDownloadServiceProvider =
-      base::OnceCallback<download::BackgroundDownloadService*(void)>;
   OptimizationGuideService(
       leveldb_proto::ProtoDatabaseProvider* proto_db_provider,
       const base::FilePath& profile_path,
@@ -73,14 +75,13 @@ class OptimizationGuideService
       PrefService* pref_service,
       BrowserList* browser_list,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      BackgroundDownloadServiceProvider background_download_service_provider,
       signin::IdentityManager* identity_manager);
   ~OptimizationGuideService() override;
 
   OptimizationGuideService(const OptimizationGuideService&) = delete;
   OptimizationGuideService& operator=(const OptimizationGuideService&) = delete;
 
-  // Some initialization parts must be done once the browser_state is fully
+  // Some initialization parts must be done once the profile is fully
   // initialized.
   void DoFinalInit(download::BackgroundDownloadService*
                        background_download_service = nullptr);
@@ -98,10 +99,19 @@ class OptimizationGuideService
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata) override;
 
+  // optimization_guide::RemoteModelExecutor implementation:
+  void ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const google::protobuf::MessageLite& request_metadata,
+      const optimization_guide::ModelExecutionOptions& options,
+      optimization_guide::OptimizationGuideModelExecutionResultCallback
+          callback) override;
+
   // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -124,6 +134,12 @@ class OptimizationGuideService
     return optimization_guide_logger_.get();
   }
 
+  // Getter for model quality logs uploader service.
+  optimization_guide::ModelQualityLogsUploaderService*
+  GetModelQualityLogsUploaderService() {
+    return model_quality_logs_uploader_service_.get();
+  }
+
   // Adds hints for a URL with provided metadata to the optimization guide. For
   // testing purposes only. This will flush any callbacks for `url` that were
   // registered via `CanApplyOptimization`. If no applicable callbacks were
@@ -133,10 +149,14 @@ class OptimizationGuideService
       optimization_guide::proto::OptimizationType optimization_type,
       const std::optional<optimization_guide::OptimizationMetadata>& metadata);
 
+  // Returns an error message describing a given error code.
+  std::string ResponseForErrorCode(int error_code);
+
  private:
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;
   friend class OptimizationGuideTestAppInterfaceWrapper;
+  friend class TabResumptionMediatorProxy;
 
   // Notifies `hints_manager_` that the navigation associated with
   // `navigation_data` has started or redirected.
@@ -176,16 +196,26 @@ class OptimizationGuideService
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
-  // Manages the storing, loading, and evaluating of optimization target
-  // prediction models.
-  std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
+  // Manages the model execution. Not created for off the record profiles.
+  std::unique_ptr<optimization_guide::ModelExecutionManager>
+      model_execution_manager_;
 
-  // The PrefService of the browser state this service is linked to.
+  // Manage user opt-in settings and states. Not created for off the record
+  // profiles.
+  std::unique_ptr<optimization_guide::ModelExecutionFeaturesController>
+      model_execution_features_controller_;
+
+  // Manages the model quality logs uploader service. Not created for off the
+  // record profiles.
+  std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_logs_uploader_service_;
+
+  // The PrefService of the profile this service is linked to.
   const raw_ptr<PrefService> pref_service_ = nullptr;
 
-  // Whether the service is linked to an incognito browser state.
+  // Whether the service is linked to an incognito profile.
   const bool off_the_record_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -29,13 +29,16 @@ class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
   ~FakeVideoCaptureHost() override;
 
   // mojom::VideoCaptureHost implementations
-  MOCK_METHOD1(RequestRefreshFrame, void(const base::UnguessableToken&));
-  MOCK_METHOD3(ReleaseBuffer,
-               void(const base::UnguessableToken&,
-                    int32_t,
-                    const media::VideoCaptureFeedback&));
-  MOCK_METHOD0(OnStopped, void());
-  MOCK_METHOD2(OnLog, void(const base::UnguessableToken&, const std::string&));
+  MOCK_METHOD(void, RequestRefreshFrame, (const base::UnguessableToken&));
+  MOCK_METHOD(void,
+              ReleaseBuffer,
+              (const base::UnguessableToken&,
+               int32_t,
+               const media::VideoCaptureFeedback&));
+  MOCK_METHOD(void, OnStopped, ());
+  MOCK_METHOD(void, OnPaused, ());
+  MOCK_METHOD(void, OnLog, (const base::UnguessableToken&, const std::string&));
+  MOCK_METHOD(void, OnResumed, ());
 
   void Start(const base::UnguessableToken& device_id,
              const base::UnguessableToken& session_id,

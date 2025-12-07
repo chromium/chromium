@@ -9,7 +9,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {down} from 'chrome://webui-test/mouse_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestStore} from './test_store.js';
@@ -45,7 +45,7 @@ suite('<bookmarks-app>', function() {
 
     app = document.createElement('bookmarks-app');
     replaceBody(app);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('write and load closed folder state', async function() {
@@ -53,6 +53,7 @@ suite('<bookmarks-app>', function() {
     const folderOpenState = new Map(folderOpenStateList);
     store.data.folderOpenState = folderOpenState;
     store.notifyObservers();
+    await microtasksFinished();
 
     // Ensure closed folders are written to local storage.
     assertDeepEquals(
@@ -62,7 +63,7 @@ suite('<bookmarks-app>', function() {
     resetStore();
     app = document.createElement('bookmarks-app');
     replaceBody(app);
-    await flushTasks();
+    await microtasksFinished();
 
     // Ensure closed folders are read from local storage.
     assertDeepEquals(
@@ -72,7 +73,7 @@ suite('<bookmarks-app>', function() {
   test('write and load sidebar width', async function() {
     assertEquals(
         getComputedStyle(app.$.sidebar).width,
-        app.shadowRoot!.querySelector('bookmarks-toolbar')!.sidebarWidth);
+        app.shadowRoot.querySelector('bookmarks-toolbar')!.sidebarWidth);
 
     const sidebarWidth = '500px';
     app.$.sidebar.style.width = sidebarWidth;
@@ -82,16 +83,16 @@ suite('<bookmarks-app>', function() {
 
     app = document.createElement('bookmarks-app');
     replaceBody(app);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(sidebarWidth, app.$.sidebar.style.width);
   });
 
   test('focus ring hides and restores', async function() {
-    const list = app.shadowRoot!.querySelector('bookmarks-list');
+    const list = app.shadowRoot.querySelector('bookmarks-list');
     assertTrue(!!list);
-    await flushTasks();
-    const item = list.shadowRoot!.querySelectorAll('bookmarks-item')[0];
+    await microtasksFinished();
+    const item = list.shadowRoot.querySelectorAll('bookmarks-item')[0];
     assertTrue(!!item);
     const hasFocusAttribute = () => app.hasAttribute(HIDE_FOCUS_RING_ATTRIBUTE);
 
@@ -111,7 +112,7 @@ suite('<bookmarks-app>', function() {
 
   test('when find shortcut is invoked, focus on search input', async () => {
     const searchField =
-        app.shadowRoot!.querySelector('bookmarks-toolbar')!.searchField;
+        app.shadowRoot.querySelector('bookmarks-toolbar')!.searchField;
     const searchInput = searchField.getSearchInput();
     searchInput.blur();
     assertNotEquals(searchInput, getDeepActiveElement());

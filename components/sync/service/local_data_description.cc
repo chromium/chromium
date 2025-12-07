@@ -29,6 +29,15 @@ using base::android::ToJavaArrayOfStrings;
 
 namespace syncer {
 
+LocalDataItemModel::LocalDataItemModel() = default;
+LocalDataItemModel::~LocalDataItemModel() = default;
+LocalDataItemModel::LocalDataItemModel(const LocalDataItemModel&) = default;
+LocalDataItemModel& LocalDataItemModel::operator=(const LocalDataItemModel&) =
+    default;
+LocalDataItemModel::LocalDataItemModel(LocalDataItemModel&& other) = default;
+LocalDataItemModel& LocalDataItemModel::operator=(LocalDataItemModel&& other) =
+    default;
+
 LocalDataDescription::LocalDataDescription() = default;
 
 LocalDataDescription::LocalDataDescription(const std::vector<GURL>& all_urls)
@@ -97,7 +106,7 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaLocalDataDescription(
       local_data_description.domain_count);
 }
 
-std::u16string JNI_LocalDataDescription_GetDomainsDisplayText(
+static std::u16string JNI_LocalDataDescription_GetDomainsDisplayText(
     JNIEnv* env,
     int item_count,
     std::vector<std::string>& domains,
@@ -111,3 +120,7 @@ std::u16string JNI_LocalDataDescription_GetDomainsDisplayText(
 #endif
 
 }  // namespace syncer
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(LocalDataDescription)
+#endif

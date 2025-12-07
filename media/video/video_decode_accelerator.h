@@ -24,7 +24,7 @@
 #include "media/video/picture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 typedef unsigned int GLenum;
 

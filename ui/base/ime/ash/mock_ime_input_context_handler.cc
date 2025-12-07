@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
@@ -27,9 +27,7 @@ void MockIMEInputContextHandler::CommitText(
     ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   ++commit_text_call_count_;
   last_commit_text_ = text;
-  for (Observer& observer : observers_) {
-    observer.OnCommitText(text);
-  }
+  observers_.Notify(&Observer::OnCommitText, text);
 }
 
 void MockIMEInputContextHandler::UpdateCompositionText(

@@ -8,7 +8,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 #include "ui/display/screen_info.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace display {
 

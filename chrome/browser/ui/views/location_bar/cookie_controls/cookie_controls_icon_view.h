@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_ICON_VIEW_H_
 
 #include <memory>
+
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.  This is the new version of
@@ -33,7 +34,7 @@ class CookieControlsIconView : public PageActionIconView,
   // CookieControlsObserver:
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
-      bool protections_on,
+      CookieControlsState controls_state,
       CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
@@ -43,10 +44,13 @@ class CookieControlsIconView : public PageActionIconView,
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
+  void UpdateTooltipText() override;
 
-  CookieControlsBubbleCoordinator* GetCoordinatorForTesting() const;
-  void SetCoordinatorForTesting(
-      std::unique_ptr<CookieControlsBubbleCoordinator> coordinator);
+  // Button:
+  std::u16string GetAlternativeAccessibleName() const override;
+
+  CookieControlsBubbleCoordinator& GetCoordinatorForTesting() const;
+  void SetCoordinatorForTesting(CookieControlsBubbleCoordinator& coordinator);
 
   void DisableUpdatesForTesting();
 
@@ -65,21 +69,25 @@ class CookieControlsIconView : public PageActionIconView,
   void OnIPHClosed();
 
   // Attempts to show IPH for the cookie controls icon.
-  // Returns whether IPH was successfully shown.
-  bool MaybeShowIPH();
+  void MaybeShowIPH();
+  // Callback for when we try to show the IPH.
+  void OnShowPromoResult(user_education::FeaturePromoResult result);
 
-  bool MaybeAnimateIcon();
+  void MaybeAnimateIcon();
   void UpdateIcon();
 
-  int GetLabelForStatus() const;
-  void SetLabelAndTooltip();
+  int GetLabelForState() const;
+  void SetLabelForState();
 
   bool icon_visible_ = false;
-  bool protections_on_ = false;
+  CookieControlsState controls_state_ = CookieControlsState::kHidden;
+  bool state_changed_ = true;
   bool did_animate_ = false;
   // Whether we should have a visual indicator highlighting the icon.
   bool should_highlight_ = false;
   GURL last_visited_url_;
+
+  std::u16string custom_tooltip_text_;
 
   // True if calls to UpdateImpl should noop for testing purposes.
   // TODO: 344042974 - Remove this once the issue has been resolved.
@@ -91,8 +99,7 @@ class CookieControlsIconView : public PageActionIconView,
   raw_ptr<Browser> browser_ = nullptr;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
-  std::unique_ptr<CookieControlsBubbleCoordinator> bubble_coordinator_ =
-      nullptr;
+  raw_ref<CookieControlsBubbleCoordinator> bubble_coordinator_;
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};

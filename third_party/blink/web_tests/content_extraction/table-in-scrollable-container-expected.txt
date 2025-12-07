@@ -1,0 +1,18 @@
+Before scroll:
+text "ABC DEF GHI JKL MNO PQR STU VWX YZ 0123456789"
+  outer_bounding_box: [0,0 100x50]
+  visible_bounding_box: [0,0 70x30]
+  fragment_visible_bounding_boxes:
+    [0,0 70x10]
+    [0,10 70x10]
+    [0,20 70x10]
+
+After scroll:
+text "ABC DEF GHI JKL MNO PQR STU VWX YZ 0123456789"
+  outer_bounding_box: [-15,-15 100x50]
+  visible_bounding_box: [0,0 70x30]
+  fragment_visible_bounding_boxes:
+    [0,0 55x5]
+    [0,5 55x10]
+    [0,15 70x10]
+    [0,25 70x5]

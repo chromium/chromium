@@ -64,16 +64,18 @@ class DCOMPTextureBacking : public ClearTrackingSharedImageBacking {
   DCOMPTextureBacking(scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy,
                       const Mailbox& mailbox,
                       const gfx::Size& size)
-      : ClearTrackingSharedImageBacking(mailbox,
-                                        viz::SinglePlaneFormat::kBGRA_8888,
-                                        size,
-                                        gfx::ColorSpace::CreateSRGB(),
-                                        kTopLeft_GrSurfaceOrigin,
-                                        kPremul_SkAlphaType,
-                                        gpu::SHARED_IMAGE_USAGE_SCANOUT,
-                                        {},
-                                        /*estimated_size=*/0,
-                                        /*is_thread_safe=*/false),
+      : ClearTrackingSharedImageBacking(
+            mailbox,
+            viz::SinglePlaneFormat::kBGRA_8888,
+            size,
+            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                            gfx::ColorSpace::TransferID::BT709),
+            kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType,
+            gpu::SHARED_IMAGE_USAGE_SCANOUT,
+            {},
+            /*estimated_size=*/0,
+            /*is_thread_safe=*/false),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {
     SetCleared();
   }
@@ -127,7 +129,7 @@ DCOMPTexture::DCOMPTexture(
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   receiver_.Bind(std::move(receiver), runner);
   context_state_->AddContextLostObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   channel_->AddRoute(route_id, sequence_);
 }
 
@@ -138,7 +140,7 @@ DCOMPTexture::~DCOMPTexture() {
   DCHECK(!channel_);
 
   context_state_->RemoveContextLostObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 
   if (window_pos_timer_.IsRunning()) {
     window_pos_timer_.Stop();
@@ -183,7 +185,6 @@ void DCOMPTexture::ResetSizeIfNeeded() {
   // destroyed, but we are still showing the last frame), which will trigger
   // `ReleaseChannel()` and set `channel_` to null.
   if (!channel_ &&
-      protected_video_type_ == gfx::ProtectedVideoType::kHardwareProtected &&
       base::TimeTicks::Now() - last_power_change_time_ <
           kPowerChangeDetectionGracePeriod) {
     DVLOG(1) << __func__
@@ -225,7 +226,7 @@ void DCOMPTexture::SetDCOMPSurfaceHandle(
 
   base::win::ScopedHandle surface_handle =
       gl::DCOMPSurfaceRegistry::GetInstance()->TakeDCOMPSurfaceHandle(token);
-  if (!surface_handle.IsValid()) {
+  if (!surface_handle.is_valid()) {
     DLOG(ERROR) << __func__ << ": No surface registered for token " << token;
     std::move(callback).Run(false);
     return;
@@ -292,16 +293,6 @@ void DCOMPTexture::SetRect(const gfx::Rect& window_relative_rect) {
 
   if (should_send_output_rect)
     SendOutputRect();
-}
-
-void DCOMPTexture::SetProtectedVideoType(
-    gfx::ProtectedVideoType protected_video_type) {
-  if (protected_video_type == protected_video_type_)
-    return;
-
-  DVLOG(2) << __func__ << ": protected_video_type="
-           << static_cast<int>(protected_video_type);
-  protected_video_type_ = protected_video_type;
 }
 
 void DCOMPTexture::SendOutputRect() {

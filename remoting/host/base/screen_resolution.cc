@@ -47,4 +47,14 @@ bool ScreenResolution::Equals(const ScreenResolution& other) const {
   return dimensions_.equals(other.dimensions()) && dpi_.equals(other.dpi());
 }
 
+bool ScreenResolution::operator==(const ScreenResolution& other) const {
+  return Equals(other);
+}
+
+std::ostream& operator<<(std::ostream& os, const ScreenResolution& resolution) {
+  return os << resolution.dimensions().width() << "x"
+            << resolution.dimensions().height() << " @ " << resolution.dpi().x()
+            << "x" << resolution.dpi().y();
+}
+
 }  // namespace remoting

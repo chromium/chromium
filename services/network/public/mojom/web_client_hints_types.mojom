@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+// LINT.IfChange(WebClientHintsType)
 enum WebClientHintsType {
   // Enumerator values are logged in UMA histograms and must not be changed.
   // Hints may be removed from this list, so if you need the total count call
@@ -65,3 +66,4 @@ enum WebClientHintsType {
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebClientHintsType)

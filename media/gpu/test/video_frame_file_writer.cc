@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -29,10 +28,6 @@
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include <sys/mman.h>
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 namespace media {
 namespace test {
@@ -176,52 +171,32 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // Copies to |frame| in this function so that |video_frame| stays alive until
   // in the end of function.
   auto frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  const uint64_t modifier = frame->layout().modifier();
-  const bool is_intel_media_compressed_buffer =
-      IsIntelMediaCompressedModifier(modifier);
-  EXPECT_TRUE(!is_intel_media_compressed_buffer ||
-              (frame->format() == PIXEL_FORMAT_NV12 ||
-               frame->format() == PIXEL_FORMAT_P010LE));
-
-  if (!is_intel_media_compressed_buffer) {
-    if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
-      // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
-      // does not allow us to map GpuMemoryBuffers easily for testing.
-      // Therefore, we extract the dma-buf FDs. Alternatively, we could consider
-      // creating our own ClientNativePixmapFactory for testing.
-      //
-      // Note: this workaround is not needed for Intel media compressed
-      // VideoFrames because we can tell the VideoFrameMapperFactory to expect
-      // them, and it will be able to return a VideoFrameMapper that can handle
-      // them as they are.
-      frame = CreateDmabufVideoFrame(frame.get());
-      if (!frame) {
-        LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
-                   << "GpuMemoryBuffer-based VideoFrame";
-        return;
-      }
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+    // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
+    // creates ClientNativePixmapOpaque, which cannot be mapped via MappableSI,
+    // for SCANOUT_VDA_WRITE buffers. However, we need to map the contents of
+    // the frame for verification by the test (see the creation and use of
+    // VideoFrameMapper below).
+    // Therefore, we extract the dma-buf FDs. Alternatively, we could consider
+    // creating our own ClientNativePixmapFactory for testing.
+    frame = CreateDmabufVideoFrame(frame.get());
+    if (!frame) {
+      LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
+                 << "MappableSI-based VideoFrame";
+      return;
     }
   }
   // Create VideoFrameMapper if not yet created. The decoder's output pixel
   // format is not known yet when creating the VideoFrameWriter. We can only
   // create the VideoFrameMapper upon receiving the first video frame.
-  if ((frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-       is_intel_media_compressed_buffer) &&
+  if ((frame->storage_type() == VideoFrame::STORAGE_DMABUFS) &&
       !video_frame_mapper_) {
-    // TODO(b/286091514): here, we're assuming that we don't switch from regular
-    // buffers to Intel-media-compressed buffers. If that were to happen, it's
-    // possible that the cached |video_frame_mapper_| won't support the latter.
-    // Therefore, we might need to recreate |video_frame_mapper_| in that
-    // scenario.
     video_frame_mapper_ = VideoFrameMapperFactory::CreateMapper(
-        frame->format(), frame->storage_type(),
-        /*must_support_intel_media_compressed_buffers=*/
-        is_intel_media_compressed_buffer);
+        frame->format(), frame->storage_type());
     ASSERT_TRUE(video_frame_mapper_) << "Failed to create VideoFrameMapper";
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   switch (output_format_) {
     case OutputFormat::kPNG:
       WriteVideoFramePNG(frame, file_path);
@@ -242,17 +217,12 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  const uint64_t modifier = video_frame->layout().modifier();
-  const bool is_intel_media_compressed_buffer =
-      IsIntelMediaCompressedModifier(modifier);
-
-  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      is_intel_media_compressed_buffer) {
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame), PROT_READ);
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";
@@ -266,19 +236,16 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   }
 
   // Convert the ARGB frame to PNG.
-  std::vector<uint8_t> png_output;
-  const bool png_encode_status = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> png_output = gfx::PNGCodec::Encode(
       argb_out_frame->visible_data(VideoFrame::Plane::kARGB),
       gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(VideoFrame::Plane::kARGB),
-      true, /* discard_transparency */
-      std::vector<gfx::PNGCodec::Comment>(), &png_output);
-  ASSERT_TRUE(png_encode_status);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
 
   // Write the PNG data to file.
   base::FilePath file_path(
       output_folder_.Append(filename).AddExtension(FILE_PATH_LITERAL(".png")));
-  ASSERT_TRUE(base::WriteFile(file_path, png_output));
+  ASSERT_TRUE(base::WriteFile(file_path, png_output.value()));
 }
 
 void VideoFrameFileWriter::WriteVideoFrameYUV(
@@ -287,17 +254,12 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  const uint64_t modifier = video_frame->layout().modifier();
-  const bool is_intel_media_compressed_buffer =
-      IsIntelMediaCompressedModifier(modifier);
-
-  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      is_intel_media_compressed_buffer) {
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame), PROT_READ);
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";

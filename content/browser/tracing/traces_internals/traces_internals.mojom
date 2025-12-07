@@ -1,0 +1,202 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module traces_internals.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
+[EnableIf=is_win]
+import "url/mojom/url.mojom";
+
+// Keep in sync with ReportUploadState from
+// content/browser/tracing/trace_report_database.h
+enum ReportUploadState {
+  kNotUploaded = 0,
+  kPending = 1,
+  kPending_UserRequested = 2,
+  kUploaded = 3
+};
+
+// Keep in sync with SkipUploadReason from
+// content/browser/tracing/trace_report_database.h
+enum SkipUploadReason {
+  kNoSkip = 0,
+  kSizeLimitExceeded = 1,
+  kNotAnonymized = 2,
+  kScenarioQuotaExceeded = 3,
+  kUploadTimedOut = 4,
+  kLocalScenario = 5,
+};
+
+// Information about a single trace to display
+struct ClientTraceReport {
+  // A unique identifier for each trace recorded.
+  mojo_base.mojom.Token uuid;
+
+  // The time at which the report was created.
+  mojo_base.mojom.Time creation_time;
+
+  // The name of the scenario that trigger this trace to be collected and
+  // report to be created.
+  string scenario_name;
+
+  // The upload rule name that triggered this report.
+  string upload_rule_name;
+
+  // The upload rule value that triggered this report.
+  int32? upload_rule_value;
+
+  // The total size in bytes taken by the report.
+  int64 total_size;
+
+  // The current upload state for this report represented by
+  // ReportUploadState enum.
+  ReportUploadState upload_state;
+
+  // The time at which the report was successfully uploaded to a server.
+  mojo_base.mojom.Time upload_time;
+
+  // The reason for which a report was not uploaded even if the upload rules
+  // were met.
+  SkipUploadReason skip_reason;
+
+  // Whether the report has content (payload) attached to it.
+  bool has_trace_content;
+};
+
+// Keep in sync with TracingScenario::State from
+// content/browser/tracing/tracing_scenario.h
+enum TracingScenarioState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kSetup = 2,
+  kStarting = 3,
+  kRecording = 4,
+  kStopping = 5,
+  kFinalizing = 6,
+  kCloning = 7,
+};
+
+struct Scenario {
+  string scenario_name;
+  string description;
+  bool is_local_scenario;
+  bool is_enabled;
+  TracingScenarioState current_state;
+};
+
+struct TraceCategory {
+  string name;
+  bool is_group;
+  string description;
+  array<string> tags;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface TracesInternalsHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Starts the tracing session from a serialized proto config defined as
+  // `perfetto.protos.TraceConfig`. This isn't using ProtoWrapper
+  // because it's not compatible with cppgen proto headers used by perfetto.
+  // PageHandler supports only one tracing session at a time.
+  StartTraceSession(
+      mojo_base.mojom.BigBuffer config_pb,
+      bool enable_privacy_filters) => (bool success);
+
+  // Clones the current tracing session in read-only mode and returns `trace`
+  // as the captured trace snapshot along with its `uuid`, or null if the
+  // operation fails.
+  CloneTraceSession()
+      => (mojo_base.mojom.BigBuffer? trace, mojo_base.mojom.Token? uuid);
+
+  // Stops the current tracing session. If successful, this will read the trace
+  // payload and return it via Page::OnTraceComplete().
+  StopTraceSession() => (bool success);
+
+  // Return the list of the available tracing categories.
+  GetTrackEventCategories() => (array<TraceCategory> categories);
+
+  // Returns buffer usage stats for the current tracing session. PageHandler
+  // supports only one request at a time.
+  GetBufferUsage()
+      => (bool success, float percent_full, bool data_loss);
+
+  // Get visual data for all the traces currently stored locally.
+  GetAllTraceReports() => (array<ClientTraceReport> reports);
+
+  // Delete a single trace from the database.
+  DeleteSingleTrace(mojo_base.mojom.Token uuid) => (bool success);
+
+  // Delete all traces from the database.
+  DeleteAllTraces() => (bool success);
+
+  // Manually upload a trace.
+  UserUploadSingleTrace(mojo_base.mojom.Token uuid) => (bool success);
+
+  // Download locally the trace file.
+  DownloadTrace(mojo_base.mojom.Token uuid)
+    => (mojo_base.mojom.BigBuffer? trace);
+
+  // Get the tracing list of scenarios for local and field tracing.
+  GetAllScenarios() => (array<Scenario> config);
+
+  // Set the tracing scenario hashes for local tracing.
+  SetEnabledScenarios(array<string> new_config) => (bool success);
+
+  // Set scenario presets from a base64 encoded config.
+  SetScenariosConfigFromString(string config_string) => (bool success);
+
+  // Set scenario presets from a serialized proto config defined as
+  // `perfetto.protos.ChromeFieldTracingConfig`. This isn't using ProtoWrapper
+  // because it's not compatible with cppgen proto headers used by perfetto.
+  SetScenariosConfigFromBuffer(mojo_base.mojom.BigBuffer config_pb)
+      => (bool success);
+
+  // Get the user-controlled pref to enable privacy filter on local
+  // traces.
+  GetPrivacyFilterEnabled() => (bool enabled);
+
+  // Saves user-controlled pref to enable privacy filter on local
+  // traces.
+  SetPrivacyFilterEnabled(bool enable);
+
+  // Returns the current state of the Windows system tracing service for the
+  // running browser:
+  // - `service_supported`: true if the service is supported.
+  // - `service_enabled`: true if the service is enabled.
+  [EnableIf=is_win]
+  GetSystemTracingState() => (bool service_supported,
+                              bool service_registered);
+
+  // Returns a data URI containing an encoding of the system's security shield
+  // icon scaled for the current DPI for use for UAC prompts, or an empty URL if
+  // UAC is disabled.
+  [EnableIf=is_win]
+  GetSecurityShieldIconUrl() => (url.mojom.Url shield_icon_url);
+
+  // Enables the Windows system tracing service.
+  [EnableIf=is_win]
+  EnableSystemTracing() => (bool success);
+
+  // Disables the Windows system tracing service.
+  [EnableIf=is_win]
+  DisableSystemTracing() => (bool success);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // When a tracing session completes, either from calling PageHandler::Stop()
+  // or by itself, this is invoked with `trace` as the serialized trace payload
+  // and `uuid` the trace uuid.
+  OnTraceComplete(
+      mojo_base.mojom.BigBuffer? trace,
+      mojo_base.mojom.Token? uuid);
+};

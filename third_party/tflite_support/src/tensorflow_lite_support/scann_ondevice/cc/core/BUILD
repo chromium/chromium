@@ -1,11 +1,9 @@
+# Placeholder: load java_lite_proto_library
+# Placeholder: load java_proto_library
+# Placeholder: load proto_library
 load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_py_proto_library")
 
-package(
-    default_visibility = [
-        "//tensorflow_lite_support:__subpackages__",
-    ],
-    licenses = ["notice"],
-)
+package(licenses = ["notice"])
 
 proto_library(
     name = "serialized_searcher_protolib",
@@ -55,10 +53,9 @@ cc_library(
         ":processor",
         ":serialized_searcher_cc_proto",
         ":top_n_amortized_constant",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "@com_google_absl//absl/types:span",
         "@com_google_glog//:glog",
-        "@eigen//:eigen3",
+        "@eigen_archive//:eigen3",
     ],
 )
 
@@ -70,7 +67,7 @@ cc_library(
         ":serialized_searcher_cc_proto",
         "@com_google_absl//absl/types:optional",
         "@com_google_glog//:glog",
-        "@eigen//:eigen3",
+        "@eigen_archive//:eigen3",
     ],
 )
 
@@ -85,9 +82,8 @@ cc_library(
     deps = [
         ":serialized_searcher_cc_proto",
         ":top_n_amortized_constant",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "@com_google_glog//:glog",
-        "@eigen//:eigen3",
+        "@eigen_archive//:eigen3",
     ],
 )
 
@@ -102,11 +98,10 @@ cc_test(
         ":serialized_searcher_cc_proto",
         ":top_n_amortized_constant",
         "//tensorflow_lite_support/cc/port:gtest_main",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "//tensorflow_lite_support/cc/port:proto2",
         "@com_google_absl//absl/synchronization",
         "@com_google_glog//:glog",
-        "@eigen//:eigen3",
+        "@eigen_archive//:eigen3",
     ],
 )
 
@@ -129,7 +124,6 @@ cc_test(
         ":indexer",
         ":serialized_searcher_cc_proto",
         "//tensorflow_lite_support/cc/port:gtest_main",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "//tensorflow_lite_support/cc/port:proto2",
         "@com_google_glog//:glog",
     ],

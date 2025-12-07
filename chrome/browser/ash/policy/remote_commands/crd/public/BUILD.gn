@@ -1,0 +1,35 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("public") {
+  sources = [
+    "shared_crd_session_provider.cc",
+    "shared_crd_session_provider.h",
+  ]
+
+  deps = [
+    ":interface",
+    "//ash",
+    "//chrome/browser/ash/policy/remote_commands/crd",
+  ]
+}
+
+static_library("interface") {
+  sources = [
+    "crd_session_result_codes.cc",
+    "crd_session_result_codes.h",
+    "shared_crd_session.cc",
+    "shared_crd_session.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/policy/proto:",
+    "//remoting/base:errors",
+  ]
+}

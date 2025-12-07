@@ -33,6 +33,7 @@ rules {
         # Builders
         arg: "description_html"
         arg: "executable"
+        arg: "parent"
         arg: "schedule"
         arg: "triggered_by"
         arg: "triggering_policy"
@@ -53,6 +54,7 @@ rules {
         arg: "gce"
         arg: "gardener_rotations"
         arg: "tree_closing"
+        arg: "tree_closing_notifiers"
         arg: "console_view_entry"
         arg: "main_console_view"
         arg: "cq_mirrors_console_view"
@@ -94,14 +96,16 @@ rules {
         # variant
         arg: "enabled"
         arg: "identifier"
+
+        # variant/mixin
+        arg: "generate_pyl_entry"
         arg: "description"
 
         # tests
         arg: "test"
         arg: "results_handler"
+        arg: "is_android_webview"
         arg: "telemetry_test_name"
-        arg: "tast_expr"
-        arg: "test_level_retries"
         arg: "mixins"
         arg: "remove_mixins"
 
@@ -114,7 +118,6 @@ rules {
         arg: "per_test_modifications"
 
         # mixin/variant/test common fields
-        arg: "generate_pyl_entry"
         arg: "args"
         arg: "precommit_args"
         arg: "android_args"
@@ -131,16 +134,22 @@ rules {
         arg: "chromeos_swarming"
         arg: "merge"
         arg: "resultdb"
-        arg: "timeout_sec"
+        arg: "skylab"
         arg: "experiment_percentage"
 
         # swarming
-        arg: "shards"
+        arg: "targets.swarming.shards"
         arg: "dimensions"
         arg: "optional_dimensions"
         arg: "expiration_sec"
         arg: "hard_timeout_sec"
         arg: "io_timeout_sec"
+
+        # "skylab"
+        arg: "tast_expr"
+        arg: "test_level_retries"
+        arg: "targets.skylab.shards"
+        arg: "timeout_sec"
 
         # resultdb
         arg: "enable"

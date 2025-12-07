@@ -20,7 +20,7 @@ namespace blink {
 // a given website.
 //
 // NameClient should be inherited for classes which:
-// - is likely to be in a reference chain that is likely to hold a consierable
+// - is likely to be in a reference chain that is likely to hold a considerable
 //   amount of memory,
 // - Web developers would have a rough idea what it would mean, and
 //   (The name is exposed to DevTools)
@@ -36,22 +36,7 @@ namespace blink {
 //   Don't:
 //     class Bar : public GarbageCollected<Bar> {...};
 //     class Baz : public Bar, public NameClient {...};
-class PLATFORM_EXPORT NameClient : public cppgc::NameProvider {
- public:
-  NameClient() = default;
-  NameClient(const NameClient&) = delete;
-  NameClient& operator=(const NameClient&) = delete;
-  ~NameClient() override = default;
-
-  // Human-readable name of this object. The DevTools heap snapshot uses
-  // this method to show the object.
-  virtual const char* NameInHeapSnapshot() const = 0;
-
-  const char* GetHumanReadableName() const final {
-    return NameInHeapSnapshot();
-  }
-};
-
+using NameClient = cppgc::NameProvider;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NAME_CLIENT_H_

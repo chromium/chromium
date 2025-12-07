@@ -28,7 +28,7 @@ suite('cr-link-row', function() {
 
   test('check label visibility', async () => {
     const labelWrapper =
-        linkRow.shadowRoot!.querySelector<HTMLElement>('#labelWrapper')!;
+        linkRow.shadowRoot.querySelector<HTMLElement>('#labelWrapper')!;
     assertTrue(labelWrapper.hidden);
     linkRow.usingSlottedLabel = true;
     await microtasksFinished();
@@ -43,16 +43,16 @@ suite('cr-link-row', function() {
 
   test('icon', async () => {
     const iconButton =
-        linkRow.shadowRoot!.querySelector<CrIconButtonElement>('#icon')!;
+        linkRow.shadowRoot.querySelector<CrIconButtonElement>('#icon')!;
     assertFalse(linkRow.external);
-    assertEquals('cr:arrow-right', iconButton.ironIcon);
+    assertEquals('cr:chevron-right', iconButton.ironIcon);
     linkRow.external = true;
     await microtasksFinished();
     assertEquals('cr:open-in-new', iconButton.ironIcon);
   });
 
   test('role description', async () => {
-    const iconButton = linkRow.shadowRoot!.querySelector('#icon')!;
+    const iconButton = linkRow.shadowRoot.querySelector('#icon')!;
     assertEquals(undefined, linkRow.roleDescription);
     assertEquals(null, iconButton.getAttribute('aria-roledescription'));
     const description = 'self destruct button';
@@ -66,18 +66,18 @@ suite('cr-link-row', function() {
     const defaultString = 'Opens in new tab';
     const customString = 'Opens in new window';
 
-    assertEquals('', buttonAriaDescription.textContent!.trim());
+    assertEquals('', buttonAriaDescription.textContent.trim());
 
     linkRow.external = true;
     await microtasksFinished();
-    assertEquals(defaultString, buttonAriaDescription.textContent!.trim());
+    assertEquals(defaultString, buttonAriaDescription.textContent.trim());
 
     linkRow.buttonAriaDescription = customString;
     await microtasksFinished();
-    assertEquals(customString, buttonAriaDescription.textContent!.trim());
+    assertEquals(customString, buttonAriaDescription.textContent.trim());
 
     linkRow.buttonAriaDescription = '';
     await microtasksFinished();
-    assertEquals('', buttonAriaDescription.textContent!.trim());
+    assertEquals('', buttonAriaDescription.textContent.trim());
   });
 });

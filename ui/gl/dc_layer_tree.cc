@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/dc_layer_tree.h"
 
 #include <d3d11_1.h>
@@ -14,13 +9,18 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/swap_chain_presenter.h"
@@ -30,9 +30,9 @@ namespace {
 
 constexpr size_t kVideoProcessorDimensionsWindowSize = 100;
 
-bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
-  return overlay->overlay_image && overlay->overlay_image->type() !=
-                                       DCLayerOverlayType::kDCompVisualContent;
+bool NeedSwapChainPresenter(const DCLayerOverlayParams& overlay) {
+  return overlay.overlay_image && overlay.overlay_image->type() !=
+                                      DCLayerOverlayType::kDCompVisualContent;
 }
 
 // Unconditionally get a IDCompositionVisual2 as a IDCompositionVisual3.
@@ -131,7 +131,8 @@ class SolidColorSurface final {
   }
 
   // Fill the surface with the opaque part of |color|.
-  bool FillColor(ID3D11Device* d3d11_device, SkColor4f color) {
+  base::expected<void, CommitError> FillColor(ID3D11Device* d3d11_device,
+                                              SkColor4f color) {
     HRESULT hr = S_OK;
     RECT update_rect = D2D1::Rect(0, 0, kSolidColorSurfaceSize.width(),
                                   kSolidColorSurfaceSize.height());
@@ -142,7 +143,8 @@ class SolidColorSurface final {
     if (FAILED(hr)) {
       LOG(ERROR) << "BeginDraw failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(
+          CommitError{CommitError::Reason::kSolidColorSurfaceBeginDraw, hr});
     }
 
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
@@ -151,7 +153,8 @@ class SolidColorSurface final {
     if (FAILED(hr)) {
       LOG(ERROR) << "CreateRenderTargetView failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kSolidColorSurfaceCreateRenderTargetView, hr});
     }
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> immediate_context;
@@ -162,12 +165,13 @@ class SolidColorSurface final {
     hr = surface_->EndDraw();
     if (FAILED(hr)) {
       LOG(ERROR) << "EndDraw failed: " << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(
+          CommitError{CommitError::Reason::kSolidColorSurfaceEndDraw, hr});
     }
 
     color_ = color;
 
-    return true;
+    return base::ok();
   }
 
   // A surface with |DXGI_ALPHA_MODE_IGNORE|, filled with the opaque parts of
@@ -188,8 +192,8 @@ SolidColorSurfacePool::SolidColorSurfacePool(
 }
 SolidColorSurfacePool::~SolidColorSurfacePool() = default;
 
-IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
-    const SkColor4f& color) {
+base::expected<IDCompositionSurface*, CommitError>
+SolidColorSurfacePool::GetSolidColorSurface(const SkColor4f& color) {
   stats_since_last_trim_.num_surfaces_requested += 1;
 
   HRESULT hr = S_OK;
@@ -197,8 +201,8 @@ IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
   auto first_unused_surface_it =
       std::next(tracked_surfaces_.begin(), num_used_this_frame_);
 
-  if (auto found_color_it = base::ranges::find(tracked_surfaces_, color,
-                                               &SolidColorSurface::color_);
+  if (auto found_color_it = std::ranges::find(tracked_surfaces_, color,
+                                              &SolidColorSurface::color_);
       found_color_it != tracked_surfaces_.end()) {
     // We found an existing surface in the pool that already has the requested
     // color.
@@ -230,7 +234,8 @@ IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
     if (FAILED(hr)) {
       LOG(ERROR) << "CreateSurface failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return nullptr;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kSolidColorSurfacePoolCreateSurface, hr});
     }
 
     surface_to_fill_it = tracked_surfaces_.insert(
@@ -238,10 +243,7 @@ IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
   }
 
   // The surface we want to use doesn't have the right color at this point.
-  if (!surface_to_fill_it->FillColor(d3d11_device_.Get(), color)) {
-    LOG(ERROR) << "Failed to fill solid color surface with color.";
-    return nullptr;
-  }
+  RETURN_IF_ERROR(surface_to_fill_it->FillColor(d3d11_device_.Get(), color));
 
   // Update the partitioning index after |FillColor| succeeds. In the case of
   // failure, |tracked_surfaces_[num_used_this_frame_]| will still have a valid
@@ -302,15 +304,20 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_auto_hdr,
                          bool disable_vp_scaling,
                          bool disable_vp_super_resolution,
+                         bool disable_dc_letterbox_video_optimization,
                          bool force_dcomp_triple_buffer_video_swap_chain,
                          bool no_downscaled_overlay_promotion)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_vp_auto_hdr_(disable_vp_auto_hdr),
       disable_vp_scaling_(disable_vp_scaling),
       disable_vp_super_resolution_(disable_vp_super_resolution),
+      disable_dc_letterbox_video_optimization_(
+          disable_dc_letterbox_video_optimization),
       force_dcomp_triple_buffer_video_swap_chain_(
           force_dcomp_triple_buffer_video_swap_chain),
       no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),
+      tint_video_layer_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTintDcLayer)),
       ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 
 DCLayerTree::~DCLayerTree() = default;
@@ -376,6 +383,15 @@ void DCLayerTree::Initialize(
       DCOMPOSITION_BITMAP_INTERPOLATION_MODE_LINEAR);
 
   hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
+
+  if (Microsoft::WRL::ComPtr<IDCompositionDevice5> dcomp_device5;
+      SUCCEEDED(dcomp_device_.As(&dcomp_device5))) {
+    hr = dcomp_device5->CreateDynamicTexture(&primary_plane_surface_);
+    if (FAILED(hr)) {
+      LOG(WARNING) << "Failed to create IDCompositionDynamicTexture: "
+                   << logging::SystemErrorCodeToString(hr);
+    }
+  }
 }
 
 VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
@@ -384,8 +400,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     bool is_hdr_output,
     bool& video_processor_recreated) {
   video_processor_recreated = false;
-  auto& video_processor_wrapper = video_processor_wrapper_[static_cast<int>(
-      is_hdr_output ? VideoProcessorType::kHDR : VideoProcessorType::kSDR)];
+  auto& video_processor_wrapper = is_hdr_output ? video_processor_wrapper_hdr_
+                                                : video_processor_wrapper_sdr_;
   if (!video_processor_wrapper.video_device) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
     if (FAILED(d3d11_device_.As(&video_processor_wrapper.video_device))) {
@@ -472,28 +488,43 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   return &video_processor_wrapper;
 }
 
-Microsoft::WRL::ComPtr<IDXGISwapChain1>
-DCLayerTree::GetLayerSwapChainForTesting(size_t index) const {
+IDXGISwapChain1* DCLayerTree::GetLayerSwapChainForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
   CHECK_IS_TEST();
-  if (index < video_swap_chains_.size())
-    return video_swap_chains_[index]->swap_chain();
+  if (video_swap_chains_.contains(layer_id)) {
+    return video_swap_chains_.at(layer_id)->swap_chain().Get();
+  }
   return nullptr;
 }
 
-// Return properties of non root swap chain at given index.
-void DCLayerTree::GetSwapChainVisualInfoForTesting(size_t index,
-                                                   gfx::Transform* transform,
-                                                   gfx::Point* offset,
-                                                   gfx::Rect* clip_rect) const {
+DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::GetFrontMostVideoVisualSubtreeForTesting() const {
   CHECK_IS_TEST();
-  if (visual_tree_) {
-    visual_tree_->GetSwapChainVisualInfoForTesting(index, transform,  // IN-TEST
-                                                   offset, clip_rect);
+  VisualTree::VisualSubtree* front_sub_tree =
+      visual_tree_->GetFrontMostVisualSubtreeForTesting();  // IN-TEST
+  // `dcomp_visual_content` on front-most subtree should match
+  // SwapChainPresenter::content() in `video_swap_chains`
+  for (const auto& video_swap_chain : video_swap_chains_) {
+    const auto& swap_chain_presenter = video_swap_chain.second;
+    if (swap_chain_presenter->content_for_testing().Get() ==  // IN-TEST
+        front_sub_tree->dcomp_visual_content()) {
+      return front_sub_tree;
+    }
   }
+
+  return nullptr;
 }
 
 DCLayerTree::VisualTree::VisualSubtree::VisualSubtree() = default;
-DCLayerTree::VisualTree::VisualSubtree::~VisualSubtree() = default;
+DCLayerTree::VisualTree::VisualSubtree::~VisualSubtree() {
+  if (content_visual_) {
+    // Explicitly null out the `content_visual_`'s content to ensure there are
+    // no unexpected references to e.g. `IDCompositionTexture`, in case there
+    // are lingering references to `content_visual_`.
+    HRESULT hr = content_visual_->SetContent(nullptr);
+    CHECK_EQ(S_OK, hr);
+  }
+}
 
 bool DCLayerTree::VisualTree::VisualSubtree::Update(
     IDCompositionDevice3* dcomp_device,
@@ -763,6 +794,10 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     hr = content_visual_->SetContent(dcomp_visual_content_.Get());
     CHECK_EQ(hr, S_OK);
   }
+#if DCHECK_IS_ON()
+  dcomp_visual_content_changed_from_previous_frame_ =
+      dcomp_visual_content_changed;
+#endif
 
   if (dcomp_surface_serial_changed) {
     // The DComp surface has been drawn to and needs a commit to show its
@@ -815,13 +850,13 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
 }
 
 void DCLayerTree::VisualTree::VisualSubtree::GetSwapChainVisualInfoForTesting(
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
   CHECK_IS_TEST();
-  *transform = quad_to_root_transform_;
-  *offset = quad_rect_.origin();
-  *clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
+  *out_transform = quad_to_root_transform_;
+  *out_offset = quad_rect_.origin();
+  *out_clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
 }
 
 DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
@@ -829,8 +864,12 @@ DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
 
 DCLayerTree::VisualTree::~VisualTree() = default;
 
-bool DCLayerTree::VisualTree::BuildTree(
-    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays) {
+base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
+    const std::vector<DCLayerOverlayParams>& overlays) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  CHECK(std::ranges::is_sorted(overlays, {}, &DCLayerOverlayParams::z_order));
+#endif
+
   // Index into the subtree from the previous frame that is being reused in the
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
@@ -851,6 +890,9 @@ bool DCLayerTree::VisualTree::BuildTree(
   // |visual_subtrees| will become |visual_subtrees_| of the current frame;
   std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
   visual_subtrees.resize(overlays.size());
+
+  decltype(layer_ids_for_testing_) layer_ids_for_testing;
+  layer_ids_for_testing.reserve(overlays.size());
 
   // Populate the map with visual content and assign matching subtrees to the
   // overlays.
@@ -882,20 +924,24 @@ bool DCLayerTree::VisualTree::BuildTree(
 
   IDCompositionVisual2* left_sibling_visual = nullptr;
 
-  base::flat_set<uint64_t> layers_with_multiple_overlays;
+  base::flat_set<std::optional<gfx::OverlayLayerId::SharedQuadStateLayerId>>
+      layers_with_multiple_overlays;
   for (size_t i = 1; i < overlays.size(); i++) {
-    if (overlays[i]->aggregated_layer_id == 0) {
-      // A layer ID of 0 is invalid and implies no explicit layer, which should
-      // be treated as different from every other layer ID, including 0 itself.
+    const decltype(layers_with_multiple_overlays)::key_type sqs_layer_id =
+        overlays[i].layer_id.shared_quad_state_layer_id();
+    if (sqs_layer_id == decltype(layers_with_multiple_overlays)::key_type()) {
+      // A default layer ID implies no explicit layer, which should be treated
+      // as different from every other layer ID, including itself.
       continue;
     }
 
-    if (overlays[i]->aggregated_layer_id ==
-        overlays[i - 1]->aggregated_layer_id) {
+    if (overlays[i].layer_id == overlays[i - 1].layer_id) {
       // There were at least two contiguous quads in the same layer.
-      layers_with_multiple_overlays.emplace(overlays[i]->aggregated_layer_id);
+      layers_with_multiple_overlays.emplace(sqs_layer_id);
     }
   }
+
+  size_t num_layers_modified = 0;
 
   // This loop walks the overlays and builds or updates the visual subtree for
   // each overlay. |left_sibling_visual| is required to properly stack visual
@@ -914,34 +960,31 @@ bool DCLayerTree::VisualTree::BuildTree(
     }
 
     const uint64_t dcomp_surface_serial =
-        overlays[i]->overlay_image.has_value()
-            ? overlays[i]->overlay_image->dcomp_surface_serial()
+        overlays[i].overlay_image.has_value()
+            ? overlays[i].overlay_image->dcomp_surface_serial()
             : 0;
-    const gfx::Size image_size = overlays[i]->overlay_image.has_value()
-                                     ? overlays[i]->overlay_image->size()
+    const gfx::Size image_size = overlays[i].overlay_image.has_value()
+                                     ? overlays[i].overlay_image->size()
                                      : gfx::Size();
 
     // Only get a background color surface if we have a non-transparent
     // background color.
     IDCompositionSurface* background_color_surface = nullptr;
-    if (overlays[i]->background_color &&
-        overlays[i]->background_color->fA != 0.0) {
-      background_color_surface =
+    if (overlays[i].background_color &&
+        overlays[i].background_color->fA != 0.0) {
+      // TODO(http://crbug.com/1380822): Refactor to remove early exits. They
+      // may leave visual_subtrees_ corrupted.
+      ASSIGN_OR_RETURN(
+          background_color_surface,
           dc_layer_tree_->solid_color_surface_pool_->GetSolidColorSurface(
-              overlays[i]->background_color.value());
-      if (!background_color_surface) {
-        DLOG(ERROR) << "Could not get solid color surface.";
-        // TODO(http://crbug.com/1380822): Refactor to remove early exits. They
-        // may leave visual_subtrees_ corrupted.
-        return false;
-      }
+              overlays[i].background_color.value()));
     }
 
     VisualSubtree* visual_subtree = visual_subtrees[i].get();
-    visual_subtree->set_z_order(overlays[i]->z_order);
+    visual_subtree->set_z_order(overlays[i].z_order);
     IUnknown* dcomp_visual_content =
-        overlays[i]->overlay_image
-            ? overlays[i]->overlay_image->dcomp_visual_content()
+        overlays[i].overlay_image
+            ? overlays[i].overlay_image->dcomp_visual_content()
             : nullptr;
 
     // TODO(crbug.com/324460866): We turn off overlay edge antialiasing when
@@ -952,44 +995,55 @@ bool DCLayerTree::VisualTree::BuildTree(
     // content in full delegation, we'll need to parent overlays in the same
     // layer under the same transform visual.
     const bool allow_antialiasing = !layers_with_multiple_overlays.contains(
-        overlays[i]->aggregated_layer_id);
+        overlays[i].layer_id.shared_quad_state_layer_id());
 
-    needs_commit |= visual_subtrees[i]->Update(
+    const bool visual_needs_commit = visual_subtrees[i]->Update(
         dc_layer_tree_->dcomp_device_.Get(), dcomp_visual_content,
-        dcomp_surface_serial, image_size, overlays[i]->content_rect,
+        dcomp_surface_serial, image_size, overlays[i].content_rect,
         background_color_surface,
-        overlays[i]->background_color.value_or(SkColors::kTransparent),
-        overlays[i]->quad_rect, overlays[i]->nearest_neighbor_filter,
-        overlays[i]->transform, overlays[i]->rounded_corner_bounds,
-        overlays[i]->opacity, overlays[i]->clip_rect, allow_antialiasing);
+        overlays[i].background_color.value_or(SkColors::kTransparent),
+        overlays[i].quad_rect, overlays[i].nearest_neighbor_filter,
+        overlays[i].transform, overlays[i].rounded_corner_bounds,
+        overlays[i].opacity, overlays[i].clip_rect, allow_antialiasing);
 
     if (!subtree_attached_to_root) {
       HRESULT hr = dc_layer_tree_->dcomp_root_visual_.Get()->AddVisual(
           visual_subtree->container_visual(), TRUE, left_sibling_visual);
       CHECK_EQ(hr, S_OK);
-      needs_commit = true;
     }
     left_sibling_visual = visual_subtree->container_visual();
+
+    if (visual_needs_commit || !subtree_attached_to_root) {
+      num_layers_modified++;
+      needs_commit = true;
+    }
+
+    layer_ids_for_testing.push_back(overlays[i].layer_id);
   }
 
   // Update subtree_map_ and visual_subtrees_ with new values.
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
+  layer_ids_for_testing_ = std::move(layer_ids_for_testing);
+
+  UMA_HISTOGRAM_COUNTS("GPU.OsCompositor.NumLayersModified",
+                       num_layers_modified);
 
   if (needs_commit) {
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
     HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
     if (FAILED(hr)) {
       DLOG(ERROR) << "Commit failed with error 0x" << std::hex << hr;
-      return false;
+      return base::unexpected(
+          CommitError{CommitError::Reason::kIDCompositionDeviceCommit, hr});
     }
   }
-  return true;
+  return base::ok();
 }
 
 DCLayerTree::VisualTree::VisualSubtreeMap
 DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
-    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
+    const std::vector<DCLayerOverlayParams>& overlays,
     std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
     std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
     std::vector<std::optional<size_t>>& subtree_index_to_overlay) {
@@ -1005,11 +1059,11 @@ DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
   // of overlays from this frame and find the matching subtree from the
   // previous frame.
   for (size_t i = 0; i < overlays.size(); i++) {
-    if (!overlays[i]->overlay_image) {
+    if (!overlays[i].overlay_image) {
       continue;
     }
     IUnknown* dcomp_visual_content =
-        overlays[i]->overlay_image->dcomp_visual_content();
+        overlays[i].overlay_image->dcomp_visual_content();
     if (!dcomp_visual_content) {
       continue;
     }
@@ -1137,10 +1191,6 @@ bool DCLayerTree::VisualTree::DetachReusedSubtreesThatNeedRepositioningFromRoot(
     if (reused_subtree_index == prev_frame_subtree_index) {
       ++prev_frame_subtree_index;
     }
-#if DCHECK_IS_ON()
-    new_visual_subtrees[i]->attached_to_root_from_previous_frame_ =
-        prev_subtree_is_attached_to_root[reused_subtree_index];
-#endif  // DCHECK_IS_ON()
   }
   return needs_commit;
 }
@@ -1151,123 +1201,216 @@ void DCLayerTree::VisualTree::DetachSubtreeFromRoot(VisualSubtree* subtree) {
   CHECK_EQ(hr, S_OK);
 }
 
-void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
-    size_t index,
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
+DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::VisualTree::GetFrontMostVisualSubtreeForTesting() const {
   CHECK_IS_TEST();
-  for (size_t i = 0, swapchain_i = 0; i < visual_subtrees_.size(); ++i) {
-    // Skip root layer.
-    if (visual_subtrees_[i]->z_order() == 0) {
-      continue;
-    }
-
-    if (swapchain_i == index) {
-      visual_subtrees_[i]->GetSwapChainVisualInfoForTesting(  // IN-TEST
-          transform, offset, clip_rect);
-      return;
-    }
-    swapchain_i++;
-  }
+  return visual_subtrees_.back().get();
 }
 
-bool DCLayerTree::CommitAndClearPendingOverlays(
-    std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays) {
+base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
+    std::vector<DCLayerOverlayParams> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_overlays", overlays.size());
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
-  auto it = base::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
-  if (it != overlays.end() && (*it)->overlay_image) {
-    Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
-        (*it)->overlay_image->dcomp_visual_content();
-    CHECK(root_visual_content);
-    HRESULT hr = root_visual_content.As(&root_swap_chain);
-    if (hr == E_NOINTERFACE) {
-      DCHECK_EQ(root_swap_chain, nullptr);
-    } else {
-      CHECK_EQ(S_OK, hr);
-      CHECK_NE(root_swap_chain, nullptr);
-    }
-  }
+  base::ScopedUmaHistogramTimer scoped_timer(
+      "GPU.DirectComposition.CommitAndClearPendingOverlaysDuration",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
 
   // If delegated ink metadata exists for this frame, attempt to make an overlay
   // so that a visual subtree can be created for a delegated ink visual.
   // TODO(crbug.com/335553727) Consider clearing ink_renderer_ when there's no
   // metadata.
   if (pending_delegated_ink_metadata_) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
+    auto it = std::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
+    if (it != overlays.end() && (*it).overlay_image) {
+      Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
+          (*it).overlay_image->dcomp_visual_content();
+      CHECK(root_visual_content);
+      HRESULT hr = root_visual_content.As(&root_swap_chain);
+      if (hr == E_NOINTERFACE) {
+        DCHECK_EQ(root_swap_chain, nullptr);
+      } else {
+        CHECK_EQ(S_OK, hr);
+        CHECK_NE(root_swap_chain, nullptr);
+      }
+    }
+
     if (auto ink_layer = ink_renderer_->MakeDelegatedInkOverlay(
             dcomp_device_.Get(), root_swap_chain.Get(),
             std::move(pending_delegated_ink_metadata_))) {
-      overlays.push_back(std::move(ink_layer));
+      overlays.push_back(std::move(*ink_layer));
     }
   }
 
-  // Grow or shrink list of swap chain presenters to match pending overlays.
-  const size_t num_swap_chain_presenters =
-      std::count_if(overlays.begin(), overlays.end(), [](const auto& overlay) {
-        return NeedSwapChainPresenter(overlay.get());
-      });
-  // Grow or shrink list of swap chain presenters to match pending overlays.
-  if (video_swap_chains_.size() != num_swap_chain_presenters) {
-    video_swap_chains_.resize(num_swap_chain_presenters);
-    // If we need to grow or shrink swap chain presenters, we'll need to add or
-    // remove visuals.
+  // Move unused video swap chains to `unused_video_swap_chains` for potential
+  // reuse (when adjacent frames have a videos that have different layer IDs
+  // which can sometimes happen when a video's src changes), then cleanup.
+  decltype(video_swap_chains_) unused_video_swap_chains;
+  {
+    // Move all video swap chains to `unused_video_swap_chains` and the move
+    // ones that are in the current frame back into `video_swap_chains_`.
+    unused_video_swap_chains = std::move(video_swap_chains_);
+
+    // We may be moving up to all of the swap chains back.
+    video_swap_chains_.reserve(unused_video_swap_chains.size());
+
+    size_t num_swap_chain_presenters = 0;
+    for (auto& overlay : overlays) {
+      if (NeedSwapChainPresenter(overlay)) {
+        auto reused_video_swap_chain_it =
+            unused_video_swap_chains.find(overlay.layer_id);
+        if (reused_video_swap_chain_it != unused_video_swap_chains.end()) {
+          video_swap_chains_.insert(std::move(*reused_video_swap_chain_it));
+          unused_video_swap_chains.erase(reused_video_swap_chain_it);
+        }
+        num_swap_chain_presenters++;
+      }
+    }
+
+    // If there are more videos this frame, reserve enough space for them.
+    video_swap_chains_.reserve(num_swap_chain_presenters);
   }
 
-  // Sort layers by z-order.
-  std::sort(overlays.begin(), overlays.end(),
-            [](const auto& a, const auto& b) -> bool {
-              return a->z_order < b->z_order;
-            });
-
-  // |overlays| and |video_swap_chains_| do not have a 1:1 mapping because the
-  // root surface placeholder overlay does not have SwapChainPresenter, so there
-  // is one less element in |video_swap_chains_| than |overlays|.
-  auto video_swap_iter = video_swap_chains_.begin();
+  bool did_update_primary_plane_damage = false;
+  bool need_background_layer = false;
 
   // Populate |overlays| with information required to build dcomp visual tree.
-  for (auto& overlay : overlays) {
-    if (NeedSwapChainPresenter(overlay.get())) {
+  for (auto it = overlays.begin(); it != overlays.end(); it++) {
+    auto& overlay = *it;
+    if (NeedSwapChainPresenter(overlay)) {
       // Present to swap chain and update the overlay with transform, clip
       // and content.
-      auto& video_swap_chain = *(video_swap_iter++);
+      auto& video_swap_chain = video_swap_chains_[overlay.layer_id];
       if (!video_swap_chain) {
         // TODO(sunnyps): Try to find a matching swap chain based on size, type
         // of swap chain, gl image, etc.
-        video_swap_chain = std::make_unique<SwapChainPresenter>(
-            this, d3d11_device_, dcomp_device_);
-        if (frame_rate_ > 0) {
-          video_swap_chain->SetFrameRate(frame_rate_);
+        auto unused_video_swap_chain_it = unused_video_swap_chains.begin();
+        if (unused_video_swap_chain_it != unused_video_swap_chains.end()) {
+          video_swap_chain = std::move(unused_video_swap_chain_it->second);
+          unused_video_swap_chains.erase(unused_video_swap_chain_it);
+        } else {
+          video_swap_chain = std::make_unique<SwapChainPresenter>(
+              this, d3d11_device_, dcomp_device_);
         }
       }
-      gfx::Transform transform;
-      gfx::Rect clip_rect;
-      if (!video_swap_chain->PresentToSwapChain(*overlay, &transform,
-                                                &clip_rect)) {
+
+      std::optional<SwapChainPresenter::OverlayPositionAdjustment>
+          overlay_position_adjustment;
+      if (std::optional<DCLayerOverlayImage> video_image =
+              video_swap_chain->PresentToSwapChain(
+                  overlay, overlay_position_adjustment)) {
+        overlay.overlay_image = std::move(video_image);
+        overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
+
+        if (overlay_position_adjustment) {
+          overlay.transform = overlay_position_adjustment->transform;
+          overlay.quad_rect = overlay_position_adjustment->quad_rect;
+          if (overlay.clip_rect) {
+            overlay.clip_rect = overlay_position_adjustment->clip_rect;
+          }
+        }
+
+        if (overlay.video_params.is_full_screen_video &&
+            !overlay_position_adjustment &&
+            base::FeatureList::IsEnabled(
+                features::kEarlyFullScreenVideoOptimization)) {
+          // If we failed to disable the desktop plane, we need to manually add
+          // a solid color layer to act as the video background mat.
+          need_background_layer = true;
+        }
+      } else {
         DLOG(ERROR) << "PresentToSwapChain failed";
-        return false;
+        return base::unexpected(
+            CommitError{CommitError::Reason::kPresentToSwapChain});
       }
-      // |SwapChainPresenter| may have changed the size of the overlay's quad
-      // rect, e.g. to present to a swap chain exactly the size of the display
-      // rect when the source video is larger.
-      overlay->transform = transform;
-      overlay->quad_rect.set_size(video_swap_chain->content_size());
-      if (overlay->clip_rect.has_value()) {
-        overlay->clip_rect = clip_rect;
+
+      if (tint_video_layer_) {
+        SkColor4f tint_color;
+        switch (video_swap_chain->GetLastPresentationMode()) {
+          case SwapChainPresenter::PresentationMode::kDecodeSwapChain:
+            tint_color = SkColors::kBlue;
+            break;
+          case SwapChainPresenter::PresentationMode::kVpBlt:
+            tint_color = SkColors::kMagenta;
+            break;
+          case SwapChainPresenter::PresentationMode::kVpBltWithStagingTexture:
+            tint_color = SkColor4f(1.0, 0.5, 0.0, 1.0);
+            break;
+          case SwapChainPresenter::PresentationMode::kMfSurfaceProxy:
+            tint_color = SkColors::kGreen;
+            break;
+        }
+
+        DCLayerOverlayParams tint_overlay;
+        tint_overlay.quad_rect = it->quad_rect;
+        tint_overlay.transform = it->transform;
+        tint_overlay.clip_rect = it->clip_rect;
+        tint_overlay.rounded_corner_bounds = it->rounded_corner_bounds;
+        tint_overlay.z_order = it->z_order;
+        tint_overlay.opacity = 0.25;
+        tint_overlay.background_color = tint_color;
+        tint_overlay.layer_id =
+            it->layer_id.MakeForChildOfSharedQuadStateLayer(1);
+        it = overlays.insert(std::next(it), std::move(tint_overlay));
+        // Do not access `overlay` after this point since it is invalidated.
       }
-      overlay->overlay_image = DCLayerOverlayImage(
-          video_swap_chain->content_size(), video_swap_chain->content());
-      overlay->content_rect = gfx::RectF(video_swap_chain->content_size());
+    } else if (primary_plane_surface_) {
+      // If supported, "present" the primary plane buffer to a surface with
+      // incremental damage.
+      if (overlay.z_order == 0 && overlay.overlay_image) {
+        if (Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+            SUCCEEDED(Microsoft::WRL::ComPtr<IUnknown>(
+                          overlay.overlay_image->dcomp_visual_content())
+                          .As(&dcomp_texture))) {
+          DVLOG(1) << "Set primary_plane_surface_ damage: "
+                   << overlay.damage_rect.ToString();
+
+          const RECT damage_rect =
+              gfx::ToEnclosingRect(overlay.damage_rect).ToRECT();
+          HRESULT hr = primary_plane_surface_->SetTexture(dcomp_texture.Get(),
+                                                          &damage_rect, 1);
+          CHECK_EQ(hr, S_OK);
+
+          overlay.overlay_image = DCLayerOverlayImage(
+              overlay.overlay_image->size(), primary_plane_surface_,
+              primary_plane_surface_serial_++);
+          did_update_primary_plane_damage = true;
+        } else {
+          // Primary plane is not backed by `BufferQueue`.
+        }
+      } else {
+        // Overlay is not the primary plane.
+      }
     }
+  }
+
+  if (primary_plane_surface_ && primary_plane_surface_serial_ &&
+      !did_update_primary_plane_damage) {
+    // We need to commit the visual tree after `SetTexture`. We expect the
+    // primary plane overlay to be removed from the visual tree this frame,
+    // which will cause commit to happen.
+    DVLOG(1) << "Reset primary_plane_surface_ damage.";
+    primary_plane_surface_->SetTexture(nullptr);
+    primary_plane_surface_serial_ = 0;
+  }
+
+  if (need_background_layer) {
+    DCLayerOverlayParams background_mat;
+    background_mat.quad_rect = gfx::Rect(GetMonitorSizeForWindow(window()));
+    background_mat.z_order = INT_MIN;
+    background_mat.background_color = SkColors::kBlack;
+    background_mat.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+        gfx::OverlayLayerId::VizInternalId::kBackgroundColorLayer);
+    overlays.insert(overlays.begin(), std::move(background_mat));
   }
 
   if (!visual_tree_) {
     visual_tree_ = std::make_unique<VisualTree>(this);
   }
 
-  const bool status = visual_tree_->BuildTree(overlays);
+  const base::expected<void, CommitError> status =
+      visual_tree_->BuildTree(overlays);
 
   ink_renderer_->ReportPointsDrawn();
 
@@ -1275,30 +1418,6 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
   solid_color_surface_pool_->TrimAfterCommit();
 
   return status;
-}
-
-size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
-  CHECK_IS_TEST();
-  return solid_color_surface_pool_
-      ->GetNumSurfacesInPoolForTesting();  // IN-TEST
-}
-
-#if DCHECK_IS_ON()
-bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
-    size_t index) const {
-  CHECK_IS_TEST();
-  return visual_tree_
-             ? visual_tree_
-                   ->GetAttachedToRootFromPreviousFrameForTesting(  // IN-TEST
-                       index)
-             : false;
-}
-#endif  // DCHECK_IS_ON()
-
-void DCLayerTree::SetFrameRate(float frame_rate) {
-  frame_rate_ = frame_rate;
-  for (size_t ii = 0; ii < video_swap_chains_.size(); ++ii)
-    video_swap_chains_[ii]->SetFrameRate(frame_rate);
 }
 
 bool DCLayerTree::SupportsDelegatedInk() {
@@ -1318,5 +1437,108 @@ void DCLayerTree::InitDelegatedInkPointRendererReceiver(
 
   ink_renderer_->InitMessagePipeline(std::move(pending_receiver));
 }
+
+// Return properties of non root swap chain at given index.
+void DCLayerTree::GetSwapChainVisualInfoForTesting(
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
+  CHECK_IS_TEST();
+  visual_tree_->GetSwapChainVisualInfoForTesting(  // IN-TEST
+      layer_id, out_transform, out_offset, out_clip_rect);
+}
+
+size_t DCLayerTree::GetSwapChainPresenterCountForTesting() const {
+  CHECK_IS_TEST();
+  return video_swap_chains_.size();
+}
+
+size_t DCLayerTree::GetDcompLayerCountForTesting() const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetDcompLayerCountForTesting();  // IN-TEST
+}
+
+IDCompositionVisual2* DCLayerTree::GetContentVisualForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetContentVisualForTesting(layer_id);  // IN-TEST
+}
+
+IDCompositionSurface* DCLayerTree::GetBackgroundColorSurfaceForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetBackgroundColorSurfaceForTesting(  // IN-TEST
+      layer_id);
+}
+
+size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
+  CHECK_IS_TEST();
+  return solid_color_surface_pool_
+      ->GetNumSurfacesInPoolForTesting();  // IN-TEST
+}
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::DcompVisualContentChangedFromPreviousFrameForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_
+      ->DcompVisualContentChangedFromPreviousFrameForTesting(  // IN-TEST
+          layer_id);
+}
+#endif  // DCHECK_IS_ON()
+
+const DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::VisualTree::GetSubtreeFromLayerIdForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  const auto it = std::ranges::find(layer_ids_for_testing_, layer_id);
+  CHECK(it != layer_ids_for_testing_.end());
+  const size_t index =
+      std::ranges::distance(layer_ids_for_testing_.begin(), it);
+  return visual_subtrees_.at(index).get();
+}
+
+// Return properties of non root swap chain at given index.
+void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)                   // IN-TEST
+      ->GetSwapChainVisualInfoForTesting(out_transform, out_offset,  // IN-TEST
+                                         out_clip_rect);
+}
+
+size_t DCLayerTree::VisualTree::GetDcompLayerCountForTesting() const {
+  CHECK_IS_TEST();
+  return visual_subtrees_.size();
+}
+
+IDCompositionVisual2* DCLayerTree::VisualTree::GetContentVisualForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)  // IN-TEST
+      ->container_visual();
+}
+
+IDCompositionSurface*
+DCLayerTree::VisualTree::GetBackgroundColorSurfaceForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)  // IN-TEST
+      ->background_color_surface_for_testing();     // IN-TEST
+}
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::VisualTree::
+    DcompVisualContentChangedFromPreviousFrameForTesting(
+        const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)               // IN-TEST
+      ->DcompVisualContentChangedFromPreviousFrameForTesting();  // IN-TEST
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace gl

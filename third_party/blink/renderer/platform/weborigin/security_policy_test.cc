@@ -72,7 +72,7 @@ TEST(SecurityPolicyTest, GenerateReferrerRespectsReferrerSchemesRegistry) {
                             network::mojom::ReferrerPolicy::kAlways,
                             example_http_url, foobar_url)
                             .referrer);
-  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(foobar_scheme);
+  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(foobar_scheme);
 }
 
 TEST(SecurityPolicyTest, ShouldHideReferrerRespectsReferrerSchemesRegistry) {
@@ -84,7 +84,7 @@ TEST(SecurityPolicyTest, ShouldHideReferrerRespectsReferrerSchemesRegistry) {
   SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(foobar_scheme);
   EXPECT_FALSE(
       SecurityPolicy::ShouldHideReferrer(example_http_url, foobar_url));
-  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(foobar_scheme);
+  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(foobar_scheme);
 }
 
 TEST(SecurityPolicyTest, GenerateReferrer) {
@@ -290,7 +290,8 @@ TEST(SecurityPolicyTest, GenerateReferrerTruncatesLongUrl) {
   std::fill_n(std::begin(buffer), 4097, 'a');
 
   String base = "https://a.com/";
-  String string_with_4096 = base + String(buffer, 4096 - base.length());
+  String string_with_4096 =
+      base + String(base::span(buffer).first(4096 - base.length()));
   ASSERT_EQ(string_with_4096.length(), 4096u);
 
   network::mojom::ReferrerPolicy kAlways =
@@ -300,7 +301,8 @@ TEST(SecurityPolicyTest, GenerateReferrerTruncatesLongUrl) {
                 .referrer,
             string_with_4096);
 
-  String string_with_4097 = base + String(buffer, 4097 - base.length());
+  String string_with_4097 =
+      base + String(base::span(buffer).first(4097 - base.length()));
   ASSERT_EQ(string_with_4097.length(), 4097u);
   EXPECT_EQ(SecurityPolicy::GenerateReferrer(
                 kAlways, KURL("https://destination.example"), string_with_4097)
@@ -312,7 +314,8 @@ TEST(SecurityPolicyTest, GenerateReferrerTruncatesLongUrl) {
   // referrer with length > 4096 due to its path should not get stripped to its
   // outgoing origin.
   String string_with_4097_because_of_long_ref =
-      base + "path#" + String(buffer, 4097 - 5 - base.length());
+      base + "path#" +
+      String(base::span(buffer).first(4097 - 5 - base.length()));
   ASSERT_EQ(string_with_4097_because_of_long_ref.length(), 4097u);
   EXPECT_EQ(SecurityPolicy::GenerateReferrer(
                 kAlways, KURL("https://destination.example"),

@@ -53,7 +53,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   }
 
   function applyEmulatedMedia(media) {
-    TestRunner.EmulationAgent.setEmulatedMedia(media);
+    TestRunner.EmulationAgent.invoke_setEmulatedMedia({media});
     TestRunner.cssModel.mediaQueryResultChanged();
   }
 })();

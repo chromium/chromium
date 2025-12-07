@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("enterprise_device_attributes") {
+  sources = [
+    "enterprise_device_attributes_api.cc",
+    "enterprise_device_attributes_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/user_manager",
+  ]
+}

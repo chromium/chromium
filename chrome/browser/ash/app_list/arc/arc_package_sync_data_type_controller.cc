@@ -67,6 +67,10 @@ ArcPackageSyncDataTypeController::~ArcPackageSyncDataTypeController() {
     arc_session_manager->RemoveObserver(this);
   }
   arc_prefs_->RemoveObserver(this);
+  // The constructor passed a forwarding controller delegate referencing
+  // `bridge_` to the base class. They are stored by the base class and need
+  // to be destroyed before `bridge_` to avoid dangling pointers.
+  ClearDelegateMap();
 }
 
 syncer::DataTypeController::PreconditionState

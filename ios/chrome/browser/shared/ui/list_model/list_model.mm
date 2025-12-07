@@ -179,12 +179,14 @@ typedef NSMutableArray<ListItem*> SectionItems;
 
 - (ListItem*)itemAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK(indexPath);
-  DCHECK_LT(base::checked_cast<NSUInteger>(indexPath.section),
-            [_sections count]);
-  SectionItems* items = [_sections objectAtIndex:indexPath.section];
+  NSUInteger sectionIndex = base::checked_cast<NSUInteger>(indexPath.section);
+  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
 
-  DCHECK_LT(base::checked_cast<NSUInteger>(indexPath.item), [items count]);
-  return [items objectAtIndex:indexPath.item];
+  DCHECK_LT(sectionIndex, [_sections count]) << itemIndex;
+  SectionItems* items = [_sections objectAtIndex:sectionIndex];
+
+  DCHECK_LT(itemIndex, [items count]) << sectionIndex;
+  return [items objectAtIndex:itemIndex];
 }
 
 - (ListItem*)headerForSectionIndex:(NSInteger)sectionIndex {
@@ -327,8 +329,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
       return [NSIndexPath indexPathForItem:itemIndex inSection:section];
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 #pragma mark Data sourcing
@@ -349,7 +350,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
         DCHECK_LT(0ul, items.count);
         return 1;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return items.count;
 }
@@ -440,7 +441,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
 
 @end
 
-// TODO(crbug.com/41134911): Store in the browser state preference or in
+// TODO(crbug.com/41134911): Store in the profile preference or in
 // UISceneSession.unserInfo instead of NSUserDefaults.
 @implementation ListModelCollapsedMediator
 

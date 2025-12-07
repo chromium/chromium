@@ -20,6 +20,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -32,9 +33,11 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using testing::_;
 
@@ -82,8 +85,9 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
   void RunIOUntilIdle() const {
     // Make sure that tasks on IO thread are completed before moving on.
     base::RunLoop run_loop;
-    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
-        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    PostCrossThreadTaskAndReply(*Platform::Current()->GetIOTaskRunner(),
+                                FROM_HERE, CrossThreadBindOnce([] {}),
+                                CrossThreadOnceClosure(run_loop.QuitClosure()));
     run_loop.Run();
     base::RunLoop().RunUntilIdle();
   }

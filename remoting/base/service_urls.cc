@@ -18,10 +18,17 @@
 // via cmd line switch).  Release builds will point to the prod environment.
 #if defined(NDEBUG)
 constexpr char kFtlServerEndpoint[] = "instantmessaging-pa.googleapis.com";
+constexpr char kRemotingCloudPublicEndpoint[] = "remotingcloud.googleapis.com";
+constexpr char kRemotingCloudPrivateEndpoint[] =
+    "remotingcloud-pa.googleapis.com";
 constexpr char kRemotingServerEndpoint[] = "remotedesktop-pa.googleapis.com";
 #else
 constexpr char kFtlServerEndpoint[] =
     "tachyon-playground-autopush-grpc.sandbox.googleapis.com";
+constexpr char kRemotingCloudPublicEndpoint[] =
+    "autopush-remotingcloud.sandbox.googleapis.com";
+constexpr char kRemotingCloudPrivateEndpoint[] =
+    "autopush-remotingcloud-pa.sandbox.googleapis.com";
 constexpr char kRemotingServerEndpoint[] =
     "autopush-remotedesktop-pa.sandbox.googleapis.com";
 #endif
@@ -29,6 +36,10 @@ constexpr char kRemotingServerEndpoint[] =
 // Command line switches.
 #if !defined(NDEBUG)
 constexpr char kFtlServerEndpointSwitch[] = "ftl-server-endpoint";
+constexpr char kRemotingCloudPublicEndpointSwitch[] =
+    "remoting-cloud-public-endpoint";
+constexpr char kRemotingCloudPrivateEndpointSwitch[] =
+    "remoting-cloud-private-endpoint";
 constexpr char kRemotingServerEndpointSwitch[] = "remoting-server-endpoint";
 #endif  // !defined(NDEBUG)
 
@@ -36,6 +47,8 @@ namespace remoting {
 
 ServiceUrls::ServiceUrls()
     : ftl_server_endpoint_(kFtlServerEndpoint),
+      remoting_cloud_public_endpoint_(kRemotingCloudPublicEndpoint),
+      remoting_cloud_private_endpoint_(kRemotingCloudPrivateEndpoint),
       remoting_server_endpoint_(kRemotingServerEndpoint) {
 #if BUILDFLAG(REMOTING_INTERNAL)
   remoting_corp_endpoint_ = internal::GetRemotingCorpApiUrl();
@@ -59,7 +72,18 @@ ServiceUrls::ServiceUrls()
     } else {
       LOG(WARNING) << "CRD: Using autopush (non prod) remoting server";
     }
-
+    if (command_line->HasSwitch(kRemotingCloudPublicEndpointSwitch)) {
+      remoting_cloud_public_endpoint_ =
+          command_line->GetSwitchValueASCII(kRemotingCloudPublicEndpointSwitch);
+    } else {
+      LOG(WARNING) << "CRD: Using Autopush Remoting Cloud API";
+    }
+    if (command_line->HasSwitch(kRemotingCloudPrivateEndpointSwitch)) {
+      remoting_cloud_private_endpoint_ = command_line->GetSwitchValueASCII(
+          kRemotingCloudPrivateEndpointSwitch);
+    } else {
+      LOG(WARNING) << "CRD: Using Autopush Remoting Cloud Private API";
+    }
 #if BUILDFLAG(REMOTING_INTERNAL)
     const char kRemotingCorpEndpointSwitch[] = "remoting-corp-endpoint";
     if (command_line->HasSwitch(kRemotingCorpEndpointSwitch)) {

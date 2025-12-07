@@ -10,12 +10,16 @@ import android.util.AttributeSet;
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Dialog that prompts the user to clear website storage on the device. */
+@NullMarked
 public class ClearWebsiteStorage extends DialogPreference {
     Context mContext;
 
     // The host to show in the dialog.
-    String mHost;
+    @Nullable String mHost;
 
     // Whether to warn that apps will also be deleted.
     boolean mClearingApps;

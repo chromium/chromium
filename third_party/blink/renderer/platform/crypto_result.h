@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_RESULT_H_
 
+#include "base/containers/span.h"
 #include "base/synchronization/atomic_flag.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -55,8 +56,8 @@ class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
   virtual ~CryptoResult() = default;
 
   virtual void CompleteWithError(WebCryptoErrorType, const WebString&) = 0;
-  virtual void CompleteWithBuffer(const void* bytes, unsigned bytes_size) = 0;
-  virtual void CompleteWithJson(const char* utf8_data, unsigned length) = 0;
+  virtual void CompleteWithBuffer(base::span<const uint8_t> bytes) = 0;
+  virtual void CompleteWithJson(std::string_view utf8_data) = 0;
   virtual void CompleteWithBoolean(bool) = 0;
   virtual void CompleteWithKey(const WebCryptoKey&) = 0;
   virtual void CompleteWithKeyPair(const WebCryptoKey& public_key,

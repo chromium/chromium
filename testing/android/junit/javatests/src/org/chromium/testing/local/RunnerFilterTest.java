@@ -16,7 +16,7 @@ import org.junit.runners.Suite;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class RunnerFilterTest {
 
-    private class FakeTestClass {}
+    private static class FakeTestClass {}
 
     @Test
     public void testDescription() {

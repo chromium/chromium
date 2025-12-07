@@ -69,6 +69,20 @@ class ContentStabilityMetricsProvider
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            BrowserChildProcessObserverUtility);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           CdmServiceProcessObserverUtility);
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           CdmServiceProcessObserverUtilityLaunchFailed);
+#if BUILDFLAG(IS_WIN)
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           MediaFoundationServiceProcessObserverUtility);
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           MediaDrmSupportProcessObserverUtility);
+#endif  // BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           UnknownCdmServiceProcessObserverUtility);
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            RenderProcessObserver);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            MetricsServicesWebContentObserver);
@@ -76,7 +90,7 @@ class ContentStabilityMetricsProvider
                            ExtensionsNotificationObserver);
 
   // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
   void OnRenderProcessHostCreationFailed(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;

@@ -7,11 +7,13 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <cstddef>
 #include <list>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,17 +37,23 @@
 #include "content/services/auction_worklet/auction_worklet_util.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/execution_mode_util.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "content/services/auction_worklet/worklet_util.h"
@@ -52,6 +61,7 @@
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
@@ -64,6 +74,22 @@
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
+
+namespace gin {
+
+template <>
+struct GIN_EXPORT
+    Converter<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr> {
+  static v8::Local<v8::Value> ToV8(
+      v8::Isolate* isolate,
+      const auction_worklet::mojom::CreativeInfoWithoutOwnerPtr&
+          creative_info) {
+    return Converter<std::string>::ToV8(
+        isolate, creative_info->ad_descriptor.url.spec());
+  }
+};
+
+}  // namespace gin
 
 namespace auction_worklet {
 
@@ -151,6 +177,7 @@ bool AppendAuctionConfig(
     base::optional_ref<const GURL> decision_logic_url,
     base::optional_ref<const GURL> trusted_scoring_signals_url,
     const std::optional<uint16_t> experiment_group_id,
+    std::optional<bool> send_creative_scanning_metadata,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     const std::vector<std::unique_ptr<AuctionConfigLazyFiller>>&
@@ -215,8 +242,7 @@ bool AppendAuctionConfig(
           ? *auction_ad_config_non_shared_params.reporting_timeout
           : AuctionV8Helper::kScriptTimeout;
 
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
-      !auction_config_dict.Set("reportingTimeout",
+  if (!auction_config_dict.Set("reportingTimeout",
                                reporting_timeout.InMilliseconds())) {
     return false;
   }
@@ -225,6 +251,14 @@ bool AppendAuctionConfig(
     auction_config_dict.Set(
         "sellerCurrency",
         auction_ad_config_non_shared_params.seller_currency->currency_code());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeSellerScriptExecutionMode)) {
+    auction_config_dict.Set(
+        "executionMode",
+        auction_worklet::GetExecutionModeString(
+            auction_ad_config_non_shared_params.execution_mode));
   }
 
   const auto& component_auctions =
@@ -238,9 +272,10 @@ bool AppendAuctionConfig(
               v8_helper, v8_logger, context, component_auction.seller,
               component_auction.decision_logic_url,
               component_auction.trusted_scoring_signals_url,
-              experiment_group_id, component_auction.non_shared_params,
-              auction_config_lazy_fillers, pos + 1,
-              &component_auction_vector)) {
+              experiment_group_id,
+              component_auction.send_creative_scanning_metadata,
+              component_auction.non_shared_params, auction_config_lazy_fillers,
+              pos + 1, &component_auction_vector)) {
         return false;
       }
     }
@@ -256,6 +291,11 @@ bool AppendAuctionConfig(
   if (experiment_group_id.has_value()) {
     auction_config_dict.Set("experimentGroupId",
                             static_cast<unsigned>(experiment_group_id.value()));
+  }
+
+  if (send_creative_scanning_metadata.has_value()) {
+    auction_config_dict.Set("sendCreativeScanningMetadata",
+                            *send_creative_scanning_metadata);
   }
 
   args->push_back(std::move(auction_config_value));
@@ -384,8 +424,7 @@ bool SetDataVersion(
     case SellerWorklet::SignalsOriginRelation::
         kUnknownPermissionCrossOriginSignals:
       // This should be turned into permitted or forbidden by now.
-      CHECK(false);
-      return false;
+      NOTREACHED();
 
     case SellerWorklet::SignalsOriginRelation::kPermittedCrossOriginSignals:
       return browser_signals_dict.Set("crossOriginDataVersion",
@@ -393,8 +432,7 @@ bool SetDataVersion(
 
     case SellerWorklet::SignalsOriginRelation::kForbiddenCrossOriginSignals:
       // We shouldn't have a fetch to get a version from if it's forbidden.
-      CHECK(false);
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -427,14 +465,22 @@ SellerWorklet::SellerWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    const GURL& decision_logic_url,
+    TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
+    mojom::InProgressAuctionDownloadPtr decision_logic_load,
     const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
-    GetNextThreadIndexCallback get_next_thread_index_callback)
+    std::optional<bool> send_creative_scanning_metadata,
+    mojom::TrustedSignalsPublicKeyPtr public_key,
+    GetNextThreadIndexCallback get_next_thread_index_callback,
+    mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+        load_seller_worklet_client)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
-      script_source_url_(decision_logic_url),
+      trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
+      script_source_url_(decision_logic_load->url),
+      script_source_load_(std::move(decision_logic_load)),
+      send_creative_scanning_metadata_(send_creative_scanning_metadata),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
                                             *trusted_scoring_signals_url))
@@ -442,7 +488,8 @@ SellerWorklet::SellerWorklet(
       auction_network_events_handler_(
           std::move(auction_network_events_handler)),
       get_next_thread_index_callback_(
-          std::move(get_next_thread_index_callback)) {
+          std::move(get_next_thread_index_callback)),
+      load_seller_worklet_client_(std::move(load_seller_worklet_client)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK(!v8_helpers.empty());
@@ -454,12 +501,12 @@ SellerWorklet::SellerWorklet(
     debug_ids_.push_back(
         base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helpers_[i].get()));
     v8_state_.push_back(std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-        new V8State(v8_helpers_[i], debug_ids_[i],
-                    std::move(shared_storage_hosts[i]), decision_logic_url,
-                    trusted_scoring_signals_url,
-                    trusted_scoring_signals_origin_, top_window_origin,
-                    permissions_policy_state->Clone(), experiment_group_id,
-                    weak_ptr_factory_.GetWeakPtr()),
+        new V8State(
+            v8_helpers_[i], debug_ids_[i], std::move(shared_storage_hosts[i]),
+            script_source_url_, trusted_scoring_signals_url,
+            trusted_scoring_signals_origin_, top_window_origin,
+            permissions_policy_state->Clone(), experiment_group_id,
+            send_creative_scanning_metadata, weak_ptr_factory_.GetWeakPtr()),
         base::OnTaskRunnerDeleter(v8_runners_[i])));
   }
 
@@ -475,7 +522,8 @@ SellerWorklet::SellerWorklet(
                  *trusted_scoring_signals_url,
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
-                 /*public_key=*/nullptr,
+                 std::move(public_key),
+                 send_creative_scanning_metadata_.value_or(false),
                  v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(
@@ -509,6 +557,9 @@ void SellerWorklet::ScoreAd(
     const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
+    mojom::CreativeInfoWithoutOwnerPtr ad,
+    std::vector<mojom::CreativeInfoWithoutOwnerPtr> ad_components,
     const std::optional<GURL>& direct_from_seller_seller_signals,
     const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
@@ -518,13 +569,18 @@ void SellerWorklet::ScoreAd(
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
-    const GURL& browser_signal_render_url,
-    const std::vector<GURL>& browser_signal_ad_components,
+    const std::optional<std::string>&
+        browser_signal_selected_buyer_and_seller_reporting_id,
+    const std::optional<std::string>&
+        browser_signal_buyer_and_seller_reporting_id,
     uint32_t browser_signal_bidding_duration_msecs,
-    const std::optional<blink::AdSize>& browser_signal_render_size,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
+    bool browser_signal_for_debugging_only_sampling,
     const std::optional<base::TimeDelta> seller_timeout,
+    uint64_t group_by_origin_id,
+    bool allow_group_by_origin_mode,
     uint64_t trace_id,
+    const url::Origin& bidder_joining_origin,
     mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
         score_ad_client) {
   CHECK((!direct_from_seller_seller_signals &&
@@ -535,31 +591,38 @@ void SellerWorklet::ScoreAd(
   base::UmaHistogramCounts1000(
       "Ads.InterestGroup.Auction.NumberOfPendingScoreAdTasks",
       score_ad_tasks_.size());
-  score_ad_tasks_.emplace_front();
 
-  auto score_ad_task = score_ad_tasks_.begin();
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto score_ad_task = score_ad_tasks_.emplace(score_ad_tasks_.end());
   score_ad_task->ad_metadata_json = ad_metadata_json;
   score_ad_task->bid = bid;
   score_ad_task->bid_currency = bid_currency;
   score_ad_task->auction_ad_config_non_shared_params =
       auction_ad_config_non_shared_params;
+  score_ad_task->ad = std::move(ad);
+  score_ad_task->ad_components = std::move(ad_components);
   score_ad_task->browser_signals_other_seller =
       std::move(browser_signals_other_seller);
   score_ad_task->component_expect_bid_currency = component_expect_bid_currency;
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
-  score_ad_task->browser_signal_render_url = browser_signal_render_url;
-  for (const GURL& url : browser_signal_ad_components) {
-    score_ad_task->browser_signal_ad_components.emplace_back(url.spec());
-  }
+  score_ad_task->bidder_joining_origin = bidder_joining_origin;
+  score_ad_task->browser_signal_selected_buyer_and_seller_reporting_id =
+      browser_signal_selected_buyer_and_seller_reporting_id;
+  score_ad_task->browser_signal_buyer_and_seller_reporting_id =
+      browser_signal_buyer_and_seller_reporting_id;
   score_ad_task->browser_signal_bidding_duration_msecs =
       browser_signal_bidding_duration_msecs;
-  score_ad_task->browser_signal_render_size = browser_signal_render_size;
   score_ad_task->browser_signal_for_debugging_only_in_cooldown_or_lockout =
       browser_signal_for_debugging_only_in_cooldown_or_lockout;
+  score_ad_task->browser_signal_for_debugging_only_sampling =
+      browser_signal_for_debugging_only_sampling;
   score_ad_task->seller_timeout = seller_timeout;
+  score_ad_task->group_by_origin_id = group_by_origin_id;
+  score_ad_task->allow_group_by_origin_mode = allow_group_by_origin_mode;
   score_ad_task->trace_id = trace_id;
   score_ad_task->score_ad_client.Bind(std::move(score_ad_client));
+  score_ad_task->thread = get_next_thread_index_callback_.Run();
 
   // Deleting `score_ad_task` will destroy `score_ad_client` and thus
   // abort this callback, so it's safe to use Unretained(this) and
@@ -603,12 +666,58 @@ void SellerWorklet::ScoreAd(
   score_ad_task->direct_from_seller_auction_signals_header_ad_slot =
       direct_from_seller_auction_signals_header_ad_slot;
 
-  score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_score_ad_deps", trace_id);
+  if (base::FeatureList::IsEnabled(
+          features::kFledgePrepareSellerContextsInAdvance) &&
+      !base::FeatureList::IsEnabled(
+          features::kFledgeAlwaysReuseSellerContext) &&
+      IsCodeReady()) {
+    if (IsCodeReady()) {
+      score_ad_task->context_prep_task_id = cancelable_task_tracker_.PostTask(
+          v8_runners_[score_ad_task->thread].get(), FROM_HERE,
+          base::BindOnce(
+              &SellerWorklet::V8State::PrepareContextRecycler,
+              base::Unretained(v8_state_[score_ad_task->thread].get()),
+              trace_id));
+    } else if (score_ad_tasks_.size() == 1) {
+      SetEagerJsCompilation(true);
+    }
+  }
 
-  // If `trusted_signals_request_manager_` exists, there's a trusted scoring
-  // signals URL which needs to be fetched before the auction can be run.
+  score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
+  TRACE_EVENT_BEGIN("fledge", "wait_score_ad_deps", perfetto::Track(trace_id));
+
+  if (trusted_signals_cache_key) {
+    // When using the TrustedSignalsCache, must have already discovered that the
+    // signals are allowed before a key is provided. If signals were not
+    // permitted, a null key should be passed in, and no signals will be
+    // retrieved.
+    CHECK(trusted_signals_relation_ ==
+              SignalsOriginRelation::kSameOriginSignals ||
+          trusted_signals_relation_ ==
+              SignalsOriginRelation::kPermittedCrossOriginSignals);
+
+    score_ad_task->waiting_for_signals_fetch = true;
+    score_ad_task->trusted_scoring_signals_kvv2_request =
+        trusted_signals_kvv2_manager_->RequestSignals(
+            TrustedSignalsKVv2Manager::SignalsType::kScoring,
+            trusted_signals_cache_key->compression_group_token,
+            trusted_signals_cache_key->partition_id,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+    return;
+  }
+
   if (trusted_signals_request_manager_) {
+    // If there's a coordinator and `trusted_signals_kvv2_manager_` is non-null,
+    // then the KVv2 cache should be in use, and either the caller should have
+    // passed in a `trusted_signals_cache_key`, or the trusted signals URL is
+    // cross-origin and we've learned that cross-origin signals aren't allowed,
+    // which will result in the destruction of
+    // `trusted_signals_request_manager_`.
+    CHECK(!auction_ad_config_non_shared_params
+               .trusted_scoring_signals_coordinator ||
+          !trusted_signals_kvv2_manager_);
+
     // Can only start fetching trusted seller signals if they're same-origin or
     // we have confirmation they are authorized by guaranteed-same-origin
     // script, as otherwise we may end up sending sensitive IG information to an
@@ -646,6 +755,8 @@ void SellerWorklet::ReportResult(
     const url::Origin& browser_signal_interest_group_owner,
     const std::optional<std::string>&
         browser_signal_buyer_and_seller_reporting_id,
+    const std::optional<std::string>&
+        browser_signal_selected_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -670,10 +781,9 @@ void SellerWorklet::ReportResult(
                 browser_signals_other_seller->is_top_level_seller(),
             !browser_signals_component_auction_report_result_params.is_null());
 
-  report_result_tasks_.emplace_front();
-
-  auto report_result_task = report_result_tasks_.begin();
-
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto report_result_task =
+      report_result_tasks_.emplace(report_result_tasks_.end());
   report_result_task->auction_ad_config_non_shared_params =
       auction_ad_config_non_shared_params;
   report_result_task->browser_signals_other_seller =
@@ -682,6 +792,8 @@ void SellerWorklet::ReportResult(
       browser_signal_interest_group_owner;
   report_result_task->browser_signal_buyer_and_seller_reporting_id =
       browser_signal_buyer_and_seller_reporting_id;
+  report_result_task->browser_signal_selected_buyer_and_seller_reporting_id =
+      browser_signal_selected_buyer_and_seller_reporting_id;
   report_result_task->browser_signal_render_url = browser_signal_render_url;
   report_result_task->browser_signal_bid = browser_signal_bid;
   report_result_task->browser_signal_bid_currency =
@@ -736,8 +848,7 @@ void SellerWorklet::ReportResult(
       direct_from_seller_auction_signals_header_ad_slot;
 
   report_result_task->trace_wait_deps_start = base::TimeTicks::Now();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_report_result_deps",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "wait_report_result_deps", trace_id);
   RunReportResultIfReady(report_result_task);
 }
 
@@ -769,6 +880,7 @@ SellerWorklet::V8State::V8State(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
+    std::optional<bool> send_creative_scanning_metadata,
     base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
       debug_id_(debug_id),
@@ -779,7 +891,11 @@ SellerWorklet::V8State::V8State(
       trusted_scoring_signals_origin_(trusted_scoring_signals_origin),
       top_window_origin_(top_window_origin),
       permissions_policy_state_(std::move(permissions_policy_state)),
-      experiment_group_id_(experiment_group_id) {
+      experiment_group_id_(experiment_group_id),
+      send_creative_scanning_metadata_(send_creative_scanning_metadata),
+      creative_scanning_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)),
+      execution_mode_helper_(/*is_seller=*/true) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
@@ -794,12 +910,89 @@ void SellerWorklet::V8State::SetWorkletScript(
   trusted_signals_relation_ = trusted_signals_relation;
 }
 
+std::unique_ptr<ContextRecycler>
+SellerWorklet::V8State::CreateContextRecyclerAndRunTopLevel(
+    uint64_t trace_id,
+    AuctionV8Helper::TimeLimit& total_timeout,
+    bool should_deep_freeze,
+    bool& script_timed_out,
+    std::vector<std::string>& errors_out) {
+  std::unique_ptr<ContextRecycler> context_recycler =
+      std::make_unique<ContextRecycler>(v8_helper_.get());
+
+  TRACE_EVENT_BEGIN("fledge", "get_seller_context", perfetto::Track(trace_id));
+  ContextRecyclerScope context_recycler_scope(*context_recycler);
+  v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "get_seller_context"
+
+  // We want this before RunScript, both because it's meant to be visible
+  // to globals, and because we don't want to overwrite existing globals.
+  context_recycler->AddTextConversionHelpers();
+
+  v8::Local<v8::UnboundScript> unbound_worklet_script =
+      worklet_script_.Get(v8_helper_->isolate());
+
+  TRACE_EVENT_BEGIN("fledge", "sellerScript", perfetto::Track(trace_id));
+  AuctionV8Helper::Result result =
+      v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                            &total_timeout, errors_out);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "sellerScript"
+  if (result != AuctionV8Helper::Result::kSuccess) {
+    script_timed_out = (result == AuctionV8Helper::Result::kTimeout);
+    return nullptr;
+  }
+  context_recycler->AddForDebuggingOnlyBindings();
+  context_recycler->AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed,
+      /*reserved_once_allowed=*/true);
+  context_recycler->AddRealTimeReportingBindings();
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
+    context_recycler->AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        mojom::AuctionWorkletFunction::kSellerScoreAd,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
+  if (should_deep_freeze && !ExecutionModeHelper::DeepFreezeContext(
+                                context, v8_helper_, errors_out)) {
+    return nullptr;
+  }
+
+  return context_recycler;
+}
+
+void SellerWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  if (unused_context_recyclers_.size() >=
+      static_cast<std::size_t>(
+          features::kFledgeMaxSellerContextsPerThreadInAdvance.Get())) {
+    return;
+  }
+
+  bool script_timed_out;
+  std::vector<std::string> errors_out;
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(
+          /*script_timeout=*/std::nullopt);
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
+  std::unique_ptr<ContextRecycler> context_recycler =
+      CreateContextRecyclerAndRunTopLevel(trace_id, *total_timeout,
+                                          /*should_deep_freeze=*/false,
+                                          script_timed_out, errors_out);
+  unused_context_recyclers_.push_back(std::make_tuple(
+      std::move(context_recycler), script_timed_out, errors_out));
+}
+
 void SellerWorklet::V8State::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
     const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    mojom::CreativeInfoWithoutOwnerPtr ad,
+    std::vector<mojom::CreativeInfoWithoutOwnerPtr> ad_components,
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_seller_signals,
     const std::optional<std::string>&
@@ -813,12 +1006,16 @@ void SellerWorklet::V8State::ScoreAd(
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
-    const GURL& browser_signal_render_url,
-    const std::vector<std::string>& browser_signal_ad_components,
+    const std::optional<std::string>&
+        browser_signal_selected_buyer_and_seller_reporting_id,
+    const std::optional<std::string>&
+        browser_signal_buyer_and_seller_reporting_id,
     uint32_t browser_signal_bidding_duration_msecs,
-    const std::optional<blink::AdSize>& browser_signal_render_size,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
+    bool browser_signal_for_debugging_only_sampling,
     const std::optional<base::TimeDelta> seller_timeout,
+    uint64_t group_by_origin_id,
+    bool allow_group_by_origin_mode,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_score_ad_task,
     base::TimeTicks task_enqueued_time,
@@ -831,6 +1028,7 @@ void SellerWorklet::V8State::ScoreAd(
     // We must have cancelled the fetch, so nothing should be set).
     CHECK(!trusted_scoring_signals);
   }
+
   UMA_HISTOGRAM_ENUMERATION(
       "Ads.InterestGroup.Auction.TrustedSellerSignalsOriginRelation",
       trusted_signals_relation_);
@@ -838,7 +1036,7 @@ void SellerWorklet::V8State::ScoreAd(
                           base::TimeTicks::Now() - task_enqueued_time);
   base::ElapsedTimer elapsed_timer;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "post_v8_task"
 
   // Don't need to run `cleanup_score_ad_task` if this method is invoked;
   // it's bound to the closure to clean things up if this method got cancelled.
@@ -849,6 +1047,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/base::TimeDelta(),
+        /*script_timed_out=*/true,
         /*errors=*/{"scoreAd() aborted due to zero timeout."},
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -859,20 +1058,94 @@ void SellerWorklet::V8State::ScoreAd(
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(seller_timeout);
+  std::vector<std::string> errors_out;
+
   ContextRecycler* context_recycler = nullptr;
   std::unique_ptr<ContextRecycler> fresh_context_recycler;
-  if (context_recycler_for_context_reuse_) {
-    context_recycler = context_recycler_for_context_reuse_.get();
-  } else {
-    fresh_context_recycler =
-        std::make_unique<ContextRecycler>(v8_helper_.get());
-    context_recycler = fresh_context_recycler.get();
+  bool used_premade_context = false;
+  bool reused_context = false;
+  bool should_deep_freeze = false;
+
+  const auto execution_mode =
+      auction_ad_config_non_shared_params.execution_mode;
+
+  context_recycler = execution_mode_helper_.TryReuseContext(
+      execution_mode, group_by_origin_id, allow_group_by_origin_mode,
+      /*context_recycler_for_kanon_rerun=*/nullptr, should_deep_freeze);
+
+  if (context_recycler) {
+    reused_context = true;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "get_seller_context", trace_id);
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.Auction.SellerWorkletContextReused", reused_context);
+
+  if (!context_recycler) {
+    bool script_timed_out = false;
+    if (unused_context_recyclers_.empty()) {
+      fresh_context_recycler = CreateContextRecyclerAndRunTopLevel(
+          trace_id, *total_timeout, should_deep_freeze, script_timed_out,
+          errors_out);
+    } else {
+      std::tie(fresh_context_recycler, script_timed_out, errors_out) =
+          std::move(unused_context_recyclers_.back());
+      unused_context_recyclers_.pop_back();
+      // Assume context is reused unless deep freeze fails.
+      used_premade_context = true;
+      if (fresh_context_recycler && should_deep_freeze) {
+        ContextRecyclerScope scope(*fresh_context_recycler);
+        v8::Local<v8::Context> context = scope.GetContext();
+        if (!ExecutionModeHelper::DeepFreezeContext(context, v8_helper_,
+                                                    errors_out)) {
+          fresh_context_recycler.reset();
+          used_premade_context = false;
+        }
+      }
+    }
+    if (!fresh_context_recycler) {
+      PostScoreAdCallbackToUserThreadOnError(
+          std::move(callback),
+          /*scoring_latency=*/elapsed_timer.Elapsed(),
+          /*script_timed_out=*/script_timed_out,
+          /*errors=*/std::move(errors_out),
+          /*pa_requests=*/{},
+          GetRealTimeReportingContributionsOnError(
+              trusted_scoring_signals_fetch_failed,
+              /*is_bidding_signal=*/false));
+      return;
+    }
+    context_recycler = fresh_context_recycler.get();
+
+    // Save the generated context for potential reuse in subsequent calls
+    // based on the execution mode and feature flags. Contexts are saved if:
+    //  - The `kFledgeAlwaysReuseSellerContext` feature is enabled, OR
+    //  - The execution mode is `kFrozenContext`, OR
+    //  - The execution mode is `kGroupedByOriginMode` AND
+    //  `allow_group_by_origin_mode` is true.
+    // Otherwise a fresh context is used for each invocation and not saved for
+    // reuse.
+    if (base::FeatureList::IsEnabled(
+            features::kFledgeAlwaysReuseSellerContext) ||
+        (execution_mode ==
+         blink::mojom::InterestGroup::ExecutionMode::kFrozenContext) ||
+        (execution_mode ==
+             blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+         allow_group_by_origin_mode)) {
+      execution_mode_helper_.SaveContextForReuse(
+          execution_mode, group_by_origin_id, allow_group_by_origin_mode,
+          std::move(fresh_context_recycler));
+    }
+  }
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet",
+      used_premade_context);
+
+  TRACE_EVENT_BEGIN("fledge", "get_seller_context", perfetto::Track(trace_id));
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "get_seller_context", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "get_seller_context"
 
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
@@ -881,6 +1154,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::vector<std::string>(),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -892,16 +1166,17 @@ void SellerWorklet::V8State::ScoreAd(
 
   context_recycler->EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
-  if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
-                           url::Origin::Create(decision_logic_url_),
-                           decision_logic_url_, trusted_scoring_signals_url_,
-                           experiment_group_id_,
-                           auction_ad_config_non_shared_params,
-                           context_recycler->auction_config_lazy_fillers(),
-                           /*auction_config_lazy_filler_pos=*/0, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), &v8_logger, context,
+          url::Origin::Create(decision_logic_url_), decision_logic_url_,
+          trusted_scoring_signals_url_, experiment_group_id_,
+          send_creative_scanning_metadata_, auction_ad_config_non_shared_params,
+          context_recycler->auction_config_lazy_fillers(),
+          /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::vector<std::string>(),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -909,13 +1184,12 @@ void SellerWorklet::V8State::ScoreAd(
     return;
   }
 
-  std::vector<std::string> errors_out;
+  const GURL& browser_signal_render_url = ad->ad_descriptor.url;
   v8::Local<v8::Value> trusted_scoring_signals_value;
   std::optional<uint32_t> scoring_signals_data_version;
   if (trusted_scoring_signals) {
     trusted_scoring_signals_value = trusted_scoring_signals->GetScoringSignals(
-        v8_helper_.get(), context, browser_signal_render_url,
-        browser_signal_ad_components);
+        v8_helper_.get(), context, browser_signal_render_url, ad_components);
     scoring_signals_data_version = trusted_scoring_signals->GetDataVersion();
   } else {
     trusted_scoring_signals_value = v8::Null(isolate);
@@ -945,7 +1219,7 @@ void SellerWorklet::V8State::ScoreAd(
     context_recycler->AddSellerBrowserSignalsLazyFiller();
   }
   context_recycler->seller_browser_signals_lazy_filler()->FillInObject(
-      browser_signal_render_url, browser_signals);
+      browser_signal_render_url, &ad_components, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
@@ -956,11 +1230,22 @@ void SellerWorklet::V8State::ScoreAd(
           browser_signal_interest_group_owner.Serialize()) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
+      (browser_signal_selected_buyer_and_seller_reporting_id.has_value() &&
+       !browser_signals_dict.Set(
+           "selectedBuyerAndSellerReportingId",
+           *browser_signal_selected_buyer_and_seller_reporting_id)) ||
+      // We only pass the buyerAndSellerReportingId if there is a
+      // selectedBuyerAndSellerReportingId.
+      (browser_signal_selected_buyer_and_seller_reporting_id.has_value() &&
+       browser_signal_buyer_and_seller_reporting_id.has_value() &&
+       !browser_signals_dict.Set(
+           "buyerAndSellerReportingId",
+           *browser_signal_buyer_and_seller_reporting_id)) ||
       (base::FeatureList::IsEnabled(
            blink::features::kRenderSizeInScoreAdBrowserSignals) &&
-       browser_signal_render_size.has_value() &&
+       ad->ad_descriptor.size.has_value() &&
        !MaybeSetSizeMember(isolate, browser_signals_dict, "renderSize",
-                           browser_signal_render_size.value())) ||
+                           ad->ad_descriptor.size.value())) ||
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs) ||
       !browser_signals_dict.Set("bidCurrency",
@@ -968,27 +1253,34 @@ void SellerWorklet::V8State::ScoreAd(
       !SetDataVersion(trusted_signals_relation_, scoring_signals_data_version,
                       browser_signals_dict) ||
       (base::FeatureList::IsEnabled(
-           blink::features::kBiddingAndScoringDebugReportingAPI) &&
-       base::FeatureList::IsEnabled(
            blink::features::kFledgeSampleDebugReports) &&
        !browser_signals_dict.Set(
            "forDebuggingOnlyInCooldownOrLockout",
-           browser_signal_for_debugging_only_in_cooldown_or_lockout))) {
+           browser_signal_for_debugging_only_in_cooldown_or_lockout)) ||
+      (base::FeatureList::IsEnabled(
+           blink::features::kFledgeEnableSampleDebugReportOnCookieSetting) &&
+       !browser_signals_dict.Set("forDebuggingOnlySampling",
+                                 browser_signal_for_debugging_only_sampling)) ||
+      (ad->creative_scanning_metadata.has_value() &&
+       creative_scanning_enabled_ &&
+       !browser_signals_dict.Set("creativeScanningMetadata",
+                                 *ad->creative_scanning_metadata))) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::vector<std::string>(),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
             trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false));
     return;
   }
-  if (!browser_signal_ad_components.empty()) {
-    if (!browser_signals_dict.Set("adComponents",
-                                  browser_signal_ad_components)) {
+  if (!ad_components.empty()) {
+    if (!browser_signals_dict.Set("adComponents", ad_components)) {
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed_timer.Elapsed(),
+          /*script_timed_out=*/false,
           /*errors=*/std::vector<std::string>(),
           /*pa_requests=*/{},
           GetRealTimeReportingContributionsOnError(
@@ -1010,11 +1302,13 @@ void SellerWorklet::V8State::ScoreAd(
       direct_from_seller_result_auction_signals,
       direct_from_seller_auction_signals_header_ad_slot, *v8_helper_, context,
       errors_out);
+
   if (!direct_from_seller_signals_dict.Set("sellerSignals", seller_signals) ||
       !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
+        /*script_timed_out=*/false,
         /*errors=*/std::move(errors_out),
         /*pa_requests=*/{},
         GetRealTimeReportingContributionsOnError(
@@ -1023,20 +1317,17 @@ void SellerWorklet::V8State::ScoreAd(
   }
   args.push_back(direct_from_seller_signals);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
-    if (trusted_signals_relation_ ==
-        SignalsOriginRelation::kPermittedCrossOriginSignals) {
-      cross_origin_trusted_scoring_signals_value =
-          TrustedSignals::Result::WrapCrossOriginSignals(
-              v8_helper_.get(), context, *trusted_scoring_signals_origin_,
-              trusted_scoring_signals_value);
-    } else {
-      cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
-    }
-    args.push_back(cross_origin_trusted_scoring_signals_value);
+  v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kPermittedCrossOriginSignals) {
+    cross_origin_trusted_scoring_signals_value =
+        TrustedSignals::Result::WrapCrossOriginSignals(
+            v8_helper_.get(), context, *trusted_scoring_signals_origin_,
+            trusted_scoring_signals_value);
+  } else {
+    cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
   }
+  args.push_back(cross_origin_trusted_scoring_signals_value);
 
   v8::Local<v8::Value> score_ad_result;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
@@ -1044,53 +1335,17 @@ void SellerWorklet::V8State::ScoreAd(
 
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
-  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
-      v8_helper_->CreateTimeLimit(seller_timeout);
-  // For a context we're reusing, the top level script was already run and the
-  // bindings were already added.
-  if (!context_recycler_for_context_reuse_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "sellerScript", trace_id);
-    bool success =
-        v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                              total_timeout.get(),
-                              errors_out) == AuctionV8Helper::Result::kSuccess;
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "sellerScript", trace_id);
-    if (!success) {
-      PostScoreAdCallbackToUserThreadOnError(
-          std::move(callback),
-          /*scoring_latency=*/elapsed_timer.Elapsed(),
-          /*errors=*/std::move(errors_out),
-          /*pa_requests=*/{},
-          GetRealTimeReportingContributionsOnError(
-              trusted_scoring_signals_fetch_failed,
-              /*is_bidding_signal=*/false));
-      return;
-    }
-    context_recycler->AddForDebuggingOnlyBindings();
-    context_recycler->AddPrivateAggregationBindings(
-        permissions_policy_state_->private_aggregation_allowed);
-    context_recycler->AddRealTimeReportingBindings();
-    if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-      context_recycler->AddSharedStorageBindings(
-          shared_storage_host_remote_.is_bound()
-              ? shared_storage_host_remote_.get()
-              : nullptr,
-          mojom::AuctionWorkletFunction::kSellerScoreAd,
-          permissions_policy_state_->shared_storage_allowed);
-    }
+  TRACE_EVENT_BEGIN("fledge", "score_ad", perfetto::Track(trace_id));
+  v8::MaybeLocal<v8::Value> maybe_score_ad_result;
+  AuctionV8Helper::Result result = v8_helper_->CallFunction(
+      context, debug_id_.get(),
+      v8_helper_->FormatScriptName(unbound_worklet_script), "scoreAd", args,
+      total_timeout.get(), maybe_score_ad_result, errors_out);
+  if (result == AuctionV8Helper::Result::kSuccess) {
+    score_ad_result = maybe_score_ad_result.ToLocalChecked();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
-  v8::MaybeLocal<v8::Value> maybe_score_ad_result;
-  bool success =
-      v8_helper_->CallFunction(
-          context, debug_id_.get(),
-          v8_helper_->FormatScriptName(unbound_worklet_script), "scoreAd", args,
-          total_timeout.get(), maybe_score_ad_result,
-          errors_out) == AuctionV8Helper::Result::kSuccess &&
-      maybe_score_ad_result.ToLocal(&score_ad_result);
-
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "score_ad"
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime",
                           elapsed_timer.Elapsed());
 
@@ -1103,7 +1358,7 @@ void SellerWorklet::V8State::ScoreAd(
       trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false,
       real_time_contributions);
 
-  if (!success) {
+  if (result != AuctionV8Helper::Result::kSuccess) {
     // Keep debug loss reports, Private Aggregation API requests, and real time
     // reporting contributions since `scoreAd()` might use them to detect script
     // timeout or failures.
@@ -1118,17 +1373,15 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/std::nullopt,
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/result ==
+                AuctionV8Helper::Result::kFailure),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed),
-        /*scoring_latency=*/elapsed, std::move(errors_out));
+        /*scoring_latency=*/elapsed,
+        /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
+        std::move(errors_out));
     return;
-  }
-
-  if (!context_recycler_for_context_reuse_ &&
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgeAlwaysReuseSellerContext)) {
-    context_recycler_for_context_reuse_ = std::move(fresh_context_recycler);
   }
 
   double score;
@@ -1182,9 +1435,12 @@ void SellerWorklet::V8State::ScoreAd(
       base::TimeDelta elapsed = elapsed_timer.Elapsed();
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
-          /*scoring_latency=*/elapsed, std::move(errors_out),
+          /*scoring_latency=*/elapsed,
+          /*script_timed_out=*/convert_score_ad.FailureIsTimeout(),
+          std::move(errors_out),
           context_recycler->private_aggregation_bindings()
-              ->TakePrivateAggregationRequests(),
+              ->TakePrivateAggregationRequests(
+                  /*did_uncaught_error_occur=*/true),
           FilterRealtimeContributions(std::move(real_time_contributions),
                                       elapsed));
       return;
@@ -1224,9 +1480,11 @@ void SellerWorklet::V8State::ScoreAd(
         base::TimeDelta elapsed = elapsed_timer.Elapsed();
         PostScoreAdCallbackToUserThreadOnError(
             std::move(callback),
-            /*scoring_latency=*/elapsed, std::move(errors_out),
+            /*scoring_latency=*/elapsed,
+            /*script_timed_out=*/false, std::move(errors_out),
             context_recycler->private_aggregation_bindings()
-                ->TakePrivateAggregationRequests(),
+                ->TakePrivateAggregationRequests(
+                    /*did_uncaught_error_occur=*/true),
             FilterRealtimeContributions(std::move(real_time_contributions),
                                         elapsed));
         return;
@@ -1258,13 +1516,14 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params->ad = "null";
       if (result_idl.ad.has_value()) {
         std::string candidate_ad;
+
         // Can pass null for timeout here since we already have a TimeLimitScope
         // active.
-        AuctionV8Helper::Result result = v8_helper_->ExtractJson(
+        AuctionV8Helper::Result json_result = v8_helper_->ExtractJson(
             context, *result_idl.ad, /*script_timeout=*/nullptr, &candidate_ad);
-        if (result == AuctionV8Helper::Result::kSuccess) {
+        if (json_result == AuctionV8Helper::Result::kSuccess) {
           component_auction_modified_bid_params->ad = std::move(candidate_ad);
-        } else if (result == AuctionV8Helper::Result::kTimeout) {
+        } else if (json_result == AuctionV8Helper::Result::kTimeout) {
           errors_out.push_back(base::StrCat(
               {decision_logic_url_.spec(),
                " timeout serializing `ad` field of scoreAd() return value."}));
@@ -1280,10 +1539,12 @@ void SellerWorklet::V8State::ScoreAd(
                   ->TakeLossReportUrl(),
               /*debug_win_report_url=*/std::nullopt,
               context_recycler->private_aggregation_bindings()
-                  ->TakePrivateAggregationRequests(),
+                  ->TakePrivateAggregationRequests(
+                      /*did_uncaught_error_occur=*/false),
               FilterRealtimeContributions(std::move(real_time_contributions),
                                           elapsed),
-              /*scoring_latency=*/elapsed, std::move(errors_out));
+              /*scoring_latency=*/elapsed, /*script_timed_out=*/true,
+              std::move(errors_out));
           return;
         }
         // else, it's a regular failure; leave at "null".
@@ -1333,9 +1594,11 @@ void SellerWorklet::V8State::ScoreAd(
     base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
-        /*scoring_latency=*/elapsed, std::move(errors_out),
+        /*scoring_latency=*/elapsed,
+        /*script_timed_out=*/false, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/true),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed));
     return;
@@ -1352,10 +1615,12 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed),
-        /*scoring_latency=*/elapsed, std::move(errors_out));
+        /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
+        std::move(errors_out));
     return;
   }
 
@@ -1372,9 +1637,11 @@ void SellerWorklet::V8State::ScoreAd(
     base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
-        /*scoring_latency=*/elapsed, std::move(errors_out),
+        /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
+        std::move(errors_out),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/true),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed));
     return;
@@ -1396,9 +1663,11 @@ void SellerWorklet::V8State::ScoreAd(
       base::TimeDelta elapsed = elapsed_timer.Elapsed();
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
-          /*scoring_latency=*/elapsed, std::move(errors_out),
+          /*scoring_latency=*/elapsed,
+          /*script_timed_out=*/false, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
-              ->TakePrivateAggregationRequests(),
+              ->TakePrivateAggregationRequests(
+                  /*did_uncaught_error_occur=*/true),
           FilterRealtimeContributions(std::move(real_time_contributions),
                                       elapsed));
       return;
@@ -1427,9 +1696,11 @@ void SellerWorklet::V8State::ScoreAd(
       context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
       context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
       context_recycler->private_aggregation_bindings()
-          ->TakePrivateAggregationRequests(),
+          ->TakePrivateAggregationRequests(
+              /*did_uncaught_error_occur=*/false),
       FilterRealtimeContributions(std::move(real_time_contributions), elapsed),
-      /*scoring_latency=*/elapsed, std::move(errors_out));
+      /*scoring_latency=*/elapsed,
+      /*script_timed_out=*/false, std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ReportResult(
@@ -1447,6 +1718,8 @@ void SellerWorklet::V8State::ReportResult(
     const url::Origin& browser_signal_interest_group_owner,
     const std::optional<std::string>&
         browser_signal_buyer_and_seller_reporting_id,
+    const std::optional<std::string>&
+        browser_signal_selected_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -1460,7 +1733,7 @@ void SellerWorklet::V8State::ReportResult(
     uint64_t trace_id,
     ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "post_v8_task"
   base::ElapsedTimer elapsed_timer;
 
   // We may not be allowed any time to run.
@@ -1472,6 +1745,7 @@ void SellerWorklet::V8State::ReportResult(
         /*report_url=*/std::nullopt,
         /*ad_beacon_map=*/{},
         /*pa_requests=*/{}, base::TimeDelta(),
+        /*script_timed_out=*/true,
         /*errors=*/{"reportResult() aborted due to zero timeout."});
     return;
   }
@@ -1487,32 +1761,38 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
+  // We want this before RunScript, both because it's meant to be visible
+  // to globals, and because we don't want to overwrite existing globals.
+  context_recycler.AddTextConversionHelpers();
+
   v8::LocalVector<v8::Value> args(isolate);
 
   context_recycler.EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
-  if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
-                           url::Origin::Create(decision_logic_url_),
-                           decision_logic_url_, trusted_scoring_signals_url_,
-                           experiment_group_id_,
-                           auction_ad_config_non_shared_params,
-                           context_recycler.auction_config_lazy_fillers(),
-                           /*auction_config_lazy_filler_pos=*/0, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), &v8_logger, context,
+          url::Origin::Create(decision_logic_url_), decision_logic_url_,
+          trusted_scoring_signals_url_, experiment_group_id_,
+          send_creative_scanning_metadata_, auction_ad_config_non_shared_params,
+          context_recycler.auction_config_lazy_fillers(),
+          /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/std::nullopt,
                                          /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
+                                         /*script_timed_out=*/false,
                                          /*errors=*/std::vector<std::string>());
     return;
   }
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
-
   context_recycler.AddSellerBrowserSignalsLazyFiller();
+  // Passing null for ad_components here since we do not want creative scanning
+  // info here.
   context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-      browser_signal_render_url, browser_signals);
+      browser_signal_render_url, /*ad_components=*/nullptr, browser_signals);
 
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
@@ -1525,6 +1805,10 @@ void SellerWorklet::V8State::ReportResult(
        !browser_signals_dict.Set(
            "buyerAndSellerReportingId",
            *browser_signal_buyer_and_seller_reporting_id)) ||
+      (browser_signal_selected_buyer_and_seller_reporting_id.has_value() &&
+       !browser_signals_dict.Set(
+           "selectedBuyerAndSellerReportingId",
+           *browser_signal_selected_buyer_and_seller_reporting_id)) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
@@ -1546,6 +1830,7 @@ void SellerWorklet::V8State::ReportResult(
                                          /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
+                                         /*script_timed_out=*/false,
                                          /*errors=*/std::vector<std::string>());
     return;
   }
@@ -1567,6 +1852,7 @@ void SellerWorklet::V8State::ReportResult(
           /*report_url=*/std::nullopt,
           /*ad_beacon_map=*/{},
           /*pa_requests=*/{}, base::TimeDelta(),
+          /*script_timed_out=*/false,
           /*errors=*/std::vector<std::string>());
       return;
     }
@@ -1592,6 +1878,7 @@ void SellerWorklet::V8State::ReportResult(
                                          /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
+                                         /*script_timed_out=*/false,
                                          /*errors=*/errors_out);
     return;
   }
@@ -1603,32 +1890,35 @@ void SellerWorklet::V8State::ReportResult(
 
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "report_result", perfetto::Track(trace_id));
 
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
       v8_helper_->CreateTimeLimit(
           /*script_timeout=*/auction_ad_config_non_shared_params
               .reporting_timeout);
-  bool success =
+  AuctionV8Helper::Result result =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            total_timeout.get(),
-                            errors_out) == AuctionV8Helper::Result::kSuccess;
+                            total_timeout.get(), errors_out);
 
-  if (!success) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+  if (result != AuctionV8Helper::Result::kSuccess) {
+    TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "report_result"
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/std::nullopt,
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
-        /*pa_requests=*/{}, elapsed_timer.Elapsed(), std::move(errors_out));
+        /*pa_requests=*/{}, elapsed_timer.Elapsed(),
+        /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
+        std::move(errors_out));
     return;
   }
 
-  context_recycler.AddReportBindings();
+  context_recycler.AddReportBindings(
+      /*queue_report_aggregate_win_allowed=*/false);
   context_recycler.AddRegisterAdBeaconBindings();
   context_recycler.AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
+      permissions_policy_state_->private_aggregation_allowed,
+      /*reserved_once_allowed=*/false);
 
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     context_recycler.AddSharedStorageBindings(
         shared_storage_host_remote_.is_bound()
             ? shared_storage_host_remote_.get()
@@ -1638,45 +1928,46 @@ void SellerWorklet::V8State::ReportResult(
   }
 
   v8::MaybeLocal<v8::Value> maybe_signals_for_winner_value;
-  success =
-      v8_helper_->CallFunction(
-          context, debug_id_.get(),
-          v8_helper_->FormatScriptName(unbound_worklet_script), "reportResult",
-          args, total_timeout.get(), maybe_signals_for_winner_value,
-          errors_out) == AuctionV8Helper::Result::kSuccess &&
-      maybe_signals_for_winner_value.ToLocal(&signals_for_winner_value);
+  result = v8_helper_->CallFunction(
+      context, debug_id_.get(),
+      v8_helper_->FormatScriptName(unbound_worklet_script), "reportResult",
+      args, total_timeout.get(), maybe_signals_for_winner_value, errors_out);
 
   std::string signals_for_winner;
-  if (success) {
-    // Consider lack of error but no return value type, or a return value that
-    // can't be converted to JSON a valid result.
-    AuctionV8Helper::Result json_result =
-        v8_helper_->ExtractJson(context, signals_for_winner_value,
-                                total_timeout.get(), &signals_for_winner);
-    if (json_result == AuctionV8Helper::Result::kFailure) {
+  if (result == AuctionV8Helper::Result::kSuccess) {
+    signals_for_winner_value = maybe_signals_for_winner_value.ToLocalChecked();
+    result = v8_helper_->ExtractJson(context, signals_for_winner_value,
+                                     total_timeout.get(), &signals_for_winner);
+    if (result == AuctionV8Helper::Result::kFailure) {
+      // Consider lack of script error but a return value that can't be
+      // converted to JSON a valid result.
+      result = AuctionV8Helper::Result::kSuccess;
       signals_for_winner = "null";
-    } else if (json_result == AuctionV8Helper::Result::kTimeout) {
+    } else if (result == AuctionV8Helper::Result::kTimeout) {
       errors_out.push_back(
           base::StrCat({decision_logic_url_.spec(),
                         " timeout serializing reportResult() return value."}));
-      success = false;
     }
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "report_result"
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportResultTime",
                           elapsed);
 
-  if (!success) {
+  if (result != AuctionV8Helper::Result::kSuccess) {
     // Keep Private Aggregation API requests since `reportReport()` might use
     // it to detect script timeout or failures.
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/std::nullopt,
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
-        elapsed, std::move(errors_out));
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/result ==
+                AuctionV8Helper::Result::kFailure),
+        elapsed,
+        /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
+        std::move(errors_out));
     return;
   }
 
@@ -1685,8 +1976,9 @@ void SellerWorklet::V8State::ReportResult(
       context_recycler.report_bindings()->report_url(),
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.private_aggregation_bindings()
-          ->TakePrivateAggregationRequests(),
-      elapsed, std::move(errors_out));
+          ->TakePrivateAggregationRequests(
+              /*did_uncaught_error_occur=*/false),
+      elapsed, /*script_timed_out=*/false, std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ConnectDevToolsAgent(
@@ -1697,6 +1989,17 @@ void SellerWorklet::V8State::ConnectDevToolsAgent(
 
 SellerWorklet::V8State::~V8State() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
+  v8::Isolate* isolate = v8_helper_->isolate();
+  v8::HeapStatistics heap_statistics;
+  isolate->GetHeapStatistics(&heap_statistics);
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Auction.SellerWorkletIsolateUsedHeapSizeKilobytes",
+      heap_statistics.used_heap_size() / 1024);
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes",
+      heap_statistics.total_heap_size() / 1024);
 }
 
 void SellerWorklet::V8State::FinishInit(
@@ -1726,6 +2029,7 @@ void SellerWorklet::V8State::PostResumeToUserThread(
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
     ScoreAdCallbackInternal callback,
     base::TimeDelta scoring_latency,
+    bool script_timed_out,
     std::vector<std::string> errors,
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions) {
@@ -1738,7 +2042,8 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
       /*debug_loss_report_url=*/std::nullopt,
       /*debug_win_report_url=*/std::nullopt, std::move(pa_requests),
       std::move(real_time_contributions),
-      /*scoring_latency=*/scoring_latency, std::move(errors));
+      /*scoring_latency=*/scoring_latency,
+      /*script_timed_out=*/script_timed_out, std::move(errors));
 }
 
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
@@ -1754,6 +2059,7 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions,
     base::TimeDelta scoring_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1764,7 +2070,7 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
                      std::move(debug_loss_report_url),
                      std::move(debug_win_report_url), std::move(pa_requests),
                      std::move(real_time_contributions), scoring_latency,
-                     std::move(errors)));
+                     script_timed_out, std::move(errors)));
 }
 
 void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
@@ -1774,6 +2080,7 @@ void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1781,7 +2088,7 @@ void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
       base::BindOnce(std::move(callback), std::move(signals_for_winner),
                      std::move(report_url), std::move(ad_beacon_map),
                      std::move(pa_requests), reporting_latency,
-                     std::move(errors)));
+                     script_timed_out, std::move(errors)));
 }
 
 void SellerWorklet::ResumeIfPaused() {
@@ -1814,11 +2121,12 @@ void SellerWorklet::Start() {
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
       script_source_url_.spec().size());
 
+  code_download_start_ = base::TimeTicks::Now();
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(), /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
-      script_source_url_, v8_helpers_, debug_ids_,
+      std::move(script_source_load_), v8_helpers_, debug_ids_,
       std::move(on_got_cross_origin_signals_permissions),
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
@@ -1830,6 +2138,7 @@ void SellerWorklet::OnDownloadComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK_EQ(worklet_scripts.size(), v8_helpers_.size());
+  js_fetch_latency_ = base::TimeTicks::Now() - code_download_start_;
 
   // Use `worklet_scripts[0]` for metrics and for the failure check. All the
   // results should be the same.
@@ -1855,6 +2164,15 @@ void SellerWorklet::OnDownloadComplete(
 
   DCHECK_NE(trusted_signals_relation_,
             SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
+  if (load_seller_worklet_client_) {
+    mojo::Remote<mojom::LoadSellerWorkletClient>(
+        std::move(load_seller_worklet_client_))
+        ->SellerWorkletLoaded(
+            trusted_signals_relation_ ==
+                SignalsOriginRelation::kSameOriginSignals ||
+            trusted_signals_relation_ ==
+                SignalsOriginRelation::kPermittedCrossOriginSignals);
+  }
 
   for (size_t i = 0; i < v8_runners_.size(); ++i) {
     v8_runners_[i]->PostTask(
@@ -1938,6 +2256,9 @@ void SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions(
   // more.
   trusted_signals_request_manager_.reset();
 
+  // The KVv2 manager will not be needed.
+  trusted_signals_kvv2_manager_ = nullptr;
+
   // If we're here, we don't actually have to worry about kicking off scoreAd()
   // execution since we only got the headers for the script; the body hasn't
   // been handed to us yet.
@@ -1950,14 +2271,45 @@ void SellerWorklet::StartFetchingSignalsForTask(
             SignalsOriginRelation::kSameOriginSignals ||
         trusted_signals_relation_ ==
             SignalsOriginRelation::kPermittedCrossOriginSignals);
-  score_ad_task->trusted_scoring_signals_request =
-      trusted_signals_request_manager_->RequestScoringSignals(
-          score_ad_task->browser_signal_render_url,
-          score_ad_task->browser_signal_ad_components,
-          score_ad_task->auction_ad_config_non_shared_params
-              .max_trusted_scoring_signals_url_length,
-          base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
-                         base::Unretained(this), score_ad_task));
+
+  score_ad_task->waiting_for_signals_fetch = true;
+
+  bool send_creative_scanning_metadata =
+      send_creative_scanning_metadata_.value_or(false) &&
+      !trusted_signals_request_manager_->HasPublicKey();
+
+  CreativeInfo main_ad(
+      send_creative_scanning_metadata, *score_ad_task->ad,
+      score_ad_task->browser_signal_interest_group_owner,
+      score_ad_task->browser_signal_buyer_and_seller_reporting_id);
+  std::set<CreativeInfo> component_ads;
+  for (const auto& component : score_ad_task->ad_components) {
+    component_ads.emplace(
+        send_creative_scanning_metadata, *component,
+        score_ad_task->browser_signal_interest_group_owner,
+        /*browser_signal_buyer_and_seller_reporting_id=*/std::nullopt);
+  }
+
+  if (trusted_signals_request_manager_->HasPublicKey()) {
+    DCHECK(base::FeatureList::IsEnabled(
+        blink::features::kFledgeTrustedSignalsKVv2Support));
+
+    score_ad_task->trusted_scoring_signals_request =
+        trusted_signals_request_manager_->RequestKVv2ScoringSignals(
+            std::move(main_ad), std::move(component_ads),
+            score_ad_task->browser_signal_interest_group_owner,
+            score_ad_task->bidder_joining_origin,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+  } else {
+    score_ad_task->trusted_scoring_signals_request =
+        trusted_signals_request_manager_->RequestScoringSignals(
+            std::move(main_ad), std::move(component_ads),
+            score_ad_task->auction_ad_config_non_shared_params
+                .max_trusted_scoring_signals_url_length,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+  }
 }
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
@@ -1965,11 +2317,15 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     scoped_refptr<TrustedSignals::Result> result,
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  DCHECK(task->waiting_for_signals_fetch);
 
-  task->trusted_scoring_signals_result = std::move(result);
+  task->waiting_for_signals_fetch = false;
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_scoring_signals_result = std::move(result);
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
-  // Clean up single-use object, now that it has done its job.
+  // Clean up single-use object, now that it has done its job. Still need to
+  // keep `trusted_scoring_signals_kvv2_request` alive, if non-null, to allow
+  // reusing the cached data.
   task->trusted_scoring_signals_request.reset();
 
   task->wait_trusted_signals =
@@ -1978,6 +2334,10 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
 }
 
 void SellerWorklet::OnScoreAdClientDestroyed(ScoreAdTaskList::iterator task) {
+  if (task->context_prep_task_id != base::CancelableTaskTracker::kBadTaskId) {
+    cancelable_task_tracker_.TryCancel(task->context_prep_task_id);
+  }
+
   // If IsReadyToScoreAd() is false, it also hasn't posted the iterator
   // off-thread, so we can just remove the object and have it cancel everything
   // else.
@@ -2024,24 +2384,45 @@ void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedScoreAd(
   ScoreAdIfReady(task);
 }
 
+bool SellerWorklet::ScoreAdTaskHasInputs(
+    const SellerWorklet::ScoreAdTask& task) const {
+  return !task.waiting_for_signals_fetch &&
+         !task.direct_from_seller_request_seller_signals &&
+         !task.direct_from_seller_request_auction_signals;
+}
+
 bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
   // The first check should be implied by IsCodeReady(), but best to be safe.
   return trusted_signals_relation_ !=
              SignalsOriginRelation::kUnknownPermissionCrossOriginSignals &&
-         !task.trusted_scoring_signals_request &&
-         !task.direct_from_seller_request_seller_signals &&
-         !task.direct_from_seller_request_auction_signals && IsCodeReady();
+         ScoreAdTaskHasInputs(task) && IsCodeReady();
+}
+
+void SellerWorklet::SetEagerJsCompilation(bool eagerly_compile_js) {
+  for (size_t thread_index = 0; thread_index < v8_runners_.size();
+       ++thread_index) {
+    v8_runners_[thread_index]->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AuctionV8Helper::SetEagerJsCompilation,
+                       base::Unretained(v8_helpers_[thread_index].get()),
+                       eagerly_compile_js));
+  }
 }
 
 void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   if (!IsReadyToScoreAd(*task)) {
+    if (ScoreAdTaskHasInputs(*task) && worklet_loader_) {
+      // Disable eager JS compilation if we're only waiting on Javascript, so
+      // that we can begin scoring this bid as soon as we have the script.
+      SetEagerJsCompilation(false);
+    }
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "fledge", "wait_score_ad_deps", task->trace_id, "data",
+  TRACE_EVENT_END(
+      "fledge", perfetto::Track(task->trace_id), "data",
       [&](perfetto::TracedValue trace_context) {
         auto dict = std::move(trace_context).WriteDictionary();
         if (!task->wait_code.is_zero()) {
@@ -2055,7 +2436,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           dict.Add("wait_direct_from_seller_signals_ms",
                    task->wait_direct_from_seller_signals.InMillisecondsF());
         }
-      });
+      });  // "wait_score_ad_deps"
 
   ScoreAdInput slowest_input = ScoreAdInput::kScoringScript;
   base::TimeDelta slowest_input_time = task->wait_code;
@@ -2072,7 +2453,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdInputWaitTime",
                           slowest_input_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+  TRACE_EVENT_BEGIN("fledge", "post_v8_task", perfetto::Track(task->trace_id));
 
   // Normally the PostTask below will eventually get `task` cleaned up once it
   // posts back to DeliverScoreAdCallbackOnUserThread with its results, but that
@@ -2083,15 +2464,15 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
       base::BindOnce(&SellerWorklet::CleanUpScoreAdTaskOnUserThread,
                      weak_ptr_factory_.GetWeakPtr(), task));
 
-  int thread_index = get_next_thread_index_callback_.Run();
   task->score_ad_start_time = base::TimeTicks::Now();
   task->task_id = cancelable_task_tracker_.PostTask(
-      v8_runners_[thread_index].get(), FROM_HERE,
+      v8_runners_[task->thread].get(), FROM_HERE,
       base::BindOnce(
           &SellerWorklet::V8State::ScoreAd,
-          base::Unretained(v8_state_[thread_index].get()),
+          base::Unretained(v8_state_[task->thread].get()),
           task->ad_metadata_json, task->bid, std::move(task->bid_currency),
           std::move(task->auction_ad_config_non_shared_params),
+          std::move(task->ad), std::move(task->ad_components),
           std::move(task->direct_from_seller_result_seller_signals),
           std::move(task->direct_from_seller_seller_signals_header_ad_slot),
           std::move(task->direct_from_seller_result_auction_signals),
@@ -2101,12 +2482,14 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->browser_signals_other_seller),
           std::move(task->component_expect_bid_currency),
           std::move(task->browser_signal_interest_group_owner),
-          std::move(task->browser_signal_render_url),
-          std::move(task->browser_signal_ad_components),
+          std::move(
+              task->browser_signal_selected_buyer_and_seller_reporting_id),
+          std::move(task->browser_signal_buyer_and_seller_reporting_id),
           task->browser_signal_bidding_duration_msecs,
-          std::move(task->browser_signal_render_size),
           task->browser_signal_for_debugging_only_in_cooldown_or_lockout,
-          std::move(task->seller_timeout), task->trace_id,
+          task->browser_signal_for_debugging_only_sampling,
+          std::move(task->seller_timeout), std::move(task->group_by_origin_id),
+          task->allow_group_by_origin_mode, task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
           /*task_enqueued_time=*/base::TimeTicks::Now(),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
@@ -2126,6 +2509,7 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions,
     base::TimeDelta scoring_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   if (load_script_error_msg_) {
@@ -2145,7 +2529,11 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
       score, reject_reason, std::move(component_auction_modified_bid_params),
       std::move(bid_in_seller_currency), scoring_signals_data_version,
       debug_loss_report_url, debug_win_report_url, std::move(pa_requests),
-      std::move(real_time_contributions), scoring_latency,
+      std::move(real_time_contributions),
+      mojom::SellerTimingMetrics::New(
+          /*js_fetch_latency=*/js_fetch_latency_,
+          /*script_latency=*/scoring_latency,
+          /*script_timed_out=*/script_timed_out),
       mojom::ScoreAdDependencyLatencies::New(
           /*code_ready_latency=*/NullOptIfZero(task->wait_code),
           /*direct_from_seller_signals_latency=*/
@@ -2208,8 +2596,8 @@ void SellerWorklet::RunReportResultIfReady(
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "fledge", "wait_report_result_deps", task->trace_id, "data",
+  TRACE_EVENT_END(
+      "fledge", perfetto::Track(task->trace_id), "data",
       [&](perfetto::TracedValue trace_context) {
         auto dict = std::move(trace_context).WriteDictionary();
         if (!task->wait_code.is_zero()) {
@@ -2219,8 +2607,8 @@ void SellerWorklet::RunReportResultIfReady(
           dict.Add("wait_direct_from_seller_signals_ms",
                    task->wait_direct_from_seller_signals.InMillisecondsF());
         }
-      });
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+      });  // "wait_report_result_deps"
+  TRACE_EVENT_BEGIN("fledge", "post_v8_task", perfetto::Track(task->trace_id));
 
   size_t thread_index = get_next_thread_index_callback_.Run();
   cancelable_task_tracker_.PostTask(
@@ -2236,6 +2624,8 @@ void SellerWorklet::RunReportResultIfReady(
           std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_buyer_and_seller_reporting_id),
+          std::move(
+              task->browser_signal_selected_buyer_and_seller_reporting_id),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,
           std::move(task->browser_signal_bid_currency),
           task->browser_signal_desirability,
@@ -2256,6 +2646,7 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
+    bool script_timed_out,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -2265,7 +2656,12 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
 
   std::move(task->callback)
       .Run(signals_for_winner, report_url, ad_beacon_map,
-           std::move(pa_requests), reporting_latency, std::move(errors));
+           std::move(pa_requests),
+           mojom::SellerTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*script_latency=*/reporting_latency,
+               /*script_timed_out=*/script_timed_out),
+           std::move(errors));
   report_result_tasks_.erase(task);
 }
 

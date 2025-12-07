@@ -7,11 +7,13 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -23,8 +25,7 @@ class PerProfileWebUITracker;
 // WebUIs. At anytime, at most one WebContents is preloaded across all profiles.
 // If under heavy memory pressure, no preloaded contents will be created.
 //
-// To make a WebUI preloadable, update GetAllPreloadableWebUIURLs() and
-// ensure that tests pass.
+// See comments in TopChromeWebUIConfig for making a WebUI preloadable.
 class WebUIContentsPreloadManager : public ProfileObserver,
                                     public PerProfileWebUITracker::Observer {
  public:
@@ -55,7 +56,6 @@ class WebUIContentsPreloadManager : public ProfileObserver,
     bool is_ready_to_show;
   };
 
-  WebUIContentsPreloadManager();
   ~WebUIContentsPreloadManager() override;
 
   WebUIContentsPreloadManager(const WebUIContentsPreloadManager&) = delete;
@@ -68,9 +68,11 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // make a preloaded contents.
   void WarmupForBrowser(Browser* browser);
 
-  // Make a WebContents that shows `webui_url` under `browser_context`.
-  // Reuses the preloaded contents if it is under the same `browser_context`.
-  // A new preloaded contents will be created, unless we are under heavy
+  // Make a WebContents that shows `webui_url` under `browser_context`. If a
+  // preloaded WebContents exists for the same `browser_context`, it will be
+  // reused.
+  // This method handles navigation to `webui_url` internally.
+  // A new preloaded contents will be created, unless the system is under heavy
   // memory pressure.
   RequestResult Request(const GURL& webui_url,
                         content::BrowserContext* browser_context);
@@ -78,6 +80,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Returns the timeticks when the specific `web_contents` was requested.
   std::optional<base::TimeTicks> GetRequestTime(
       content::WebContents* web_contents);
+
+  // Returns true if the given `web_contents` was preloaded.
+  bool WasPreloaded(content::WebContents* web_contents) const;
 
   content::WebContents* preloaded_web_contents() {
     return preloaded_web_contents_.get();
@@ -87,28 +92,26 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // initialized.
   void DisableNavigationForTesting();
 
-  // Returns the GURL of all preloadable WebUIs.
-  static std::vector<GURL> GetAllPreloadableWebUIURLsForTesting();
-
-  // Returns the currently preloaded WebUI URL. Returns nullopt if no content is
-  // preloaded. This is a mirror of GetPreloadedURL().
-  std::optional<GURL> GetPreloadedURLForTesting() const;
-
-  // Returns the next WebUI URL to preload. This can return nullopt indicating
-  // that no new WebUI will be preloaded. This is a mirror of
-  // GetNextWebUIURLToPreload().
-  std::optional<GURL> GetNextWebUIURLToPreloadForTesting(
-      content::BrowserContext* browser_context) const;
-
-  void MaybePreloadForBrowserContextForTesting(
-      content::BrowserContext* browser_context);
-
-  void SetPreloadCandidateSelectorForTesting(
-      std::unique_ptr<webui::PreloadCandidateSelector>
-          preload_candidate_selector);
-
  private:
+  WebUIContentsPreloadManager();
+  friend class base::NoDestructor<WebUIContentsPreloadManager>;
+  friend class WebUIContentsPreloadManagerTestAPI;
   class WebUIControllerEmbedderStub;
+  class PendingPreload;
+
+  // Used in telemetry to record the reason of preloading.
+  enum class PreloadReason {
+    // Preloading triggered by calling `WarmupForBrowser()`.
+    kBrowserWarmup = 0,
+    // Preloading triggered by destroy of WebUIs tracked by
+    // `PerProfileWebUITracker`.
+    kWebUIDestroyed = 1,
+    // Preloading triggered by request of WebUIs, i.e. `Request()` is called.
+    kWebUIRequested = 2,
+    kMaxValue = kWebUIRequested,
+  };
+
+  std::vector<GURL> GetAllPreloadableWebUIURLs();
 
   // Returns the currently preloaded WebUI URL. Returns nullopt if no content is
   // preloaded.
@@ -126,7 +129,26 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // If the preloaded contents has a different browser context, replace it
   // with a new contents under the given `browser_context`.
   // If under heavy memory pressure, no preloaded contents will be created.
-  void MaybePreloadForBrowserContext(content::BrowserContext* browser_context);
+  void MaybePreloadForBrowserContext(
+      content::BrowserContext* browser_context,
+      PreloadReason preload_reason);
+
+  // Schedule a preload. This calls MaybePreloadForBrowserContext() at a later
+  // time.
+  //
+  // The preload will happen when `busy_web_contents_to_watch` emits the
+  // first non-empty paint or when the deadline has passed.
+  //
+  // When called with a nullptr `busy_web_contents_to_watch`, only watch for
+  // deadline to pass.
+  //
+  // When called while a preload is pending, cancel the pending preload and
+  // schedule a new one.
+  void MaybePreloadForBrowserContextLater(
+      content::BrowserContext* browser_context,
+      content::WebContents* busy_web_contents_to_watch,
+      PreloadReason preload_reason,
+      base::TimeDelta deadline = base::Seconds(3));
 
   // Sets the current preloaded WebContents and performs necessary bookkepping.
   // The bookkeeping includes monitoring for the shutdown of the browser context
@@ -143,6 +165,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // `browser_context`.
   bool ShouldPreloadForBrowserContext(
       content::BrowserContext* browser_context) const;
+
+  bool IsDelayPreloadEnabled() const;
 
   // Cleans up preloaded contents on browser context shutdown.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
@@ -161,14 +185,17 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // //content properly.
   bool is_navigation_disabled_for_test_ = false;
 
+  // Used in tests to disable delay preload.
+  // If not delayed, preloading waits for non-empty paint or a deadline.
+  bool is_delay_preload_disabled_for_test_ = false;
+
   // Used to prevent the preload re-entrance due to destroying the old preload
   // contents.
   bool is_setting_preloaded_web_contents_ = false;
 
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
 
-  // Tracks the timeticks when Request() is called.
-  std::map<raw_ptr<content::WebContents>, base::TimeTicks> request_time_map_;
+  std::unique_ptr<PendingPreload> pending_preload_;
 
   // Tracks the WebUI presence state under a profile.
   std::unique_ptr<PerProfileWebUITracker> webui_tracker_;

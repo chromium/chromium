@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/atomicops.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
@@ -40,10 +39,12 @@ HighResolutionTimerManager::HighResolutionTimerManager()
   // we won't receive power state change callbacks and
   // hi_res_clock_available_ will remain at its initial value.
   if (HighResolutionTimerAllowed()) {
-    DCHECK(PowerMonitor::IsInitialized());
-    PowerMonitor::AddPowerSuspendObserver(this);
+    auto* power_monitor = base::PowerMonitor::GetInstance();
+    DCHECK(power_monitor->IsInitialized());
+    power_monitor->AddPowerSuspendObserver(this);
     const bool on_battery =
-        PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+        power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
+        PowerStateObserver::BatteryPowerStatus::kBatteryPower;
     UseHiResClock(!on_battery);
 
     // Start polling the high resolution timer usage.
@@ -55,15 +56,18 @@ HighResolutionTimerManager::HighResolutionTimerManager()
 
 HighResolutionTimerManager::~HighResolutionTimerManager() {
   if (HighResolutionTimerAllowed()) {
-    PowerMonitor::RemovePowerSuspendObserver(this);
-    PowerMonitor::RemovePowerStateObserver(this);
+    auto* power_monitor = base::PowerMonitor::GetInstance();
+    power_monitor->RemovePowerSuspendObserver(this);
+    power_monitor->RemovePowerStateObserver(this);
     UseHiResClock(false);
   }
 }
 
-void HighResolutionTimerManager::OnPowerStateChange(bool on_battery_power) {
+void HighResolutionTimerManager::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
   DCHECK(HighResolutionTimerAllowed());
-  UseHiResClock(!on_battery_power);
+  UseHiResClock(battery_power_status !=
+                PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 void HighResolutionTimerManager::OnSuspend() {
@@ -81,8 +85,9 @@ void HighResolutionTimerManager::OnResume() {
 
 void HighResolutionTimerManager::UseHiResClock(bool use) {
   DCHECK(HighResolutionTimerAllowed());
-  if (use == hi_res_clock_available_)
+  if (use == hi_res_clock_available_) {
     return;
+  }
   hi_res_clock_available_ = use;
   Time::EnableHighResolutionTimer(use);
 }

@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/web_contents.h"
@@ -29,10 +30,12 @@ bool CandidatesAreValid(
       return false;
     }
 
-    // Only "prerender" action supports `target_browsing_context_name_hint`.
-    // Invalid Speculation Rules are ignored and invalid candidates are not
-    // produced in Blink.
+    // Only "prerender" and "prerender-until-script" actions support
+    // `target_browsing_context_name_hint`. Invalid Speculation Rules are
+    // ignored and invalid candidates are not produced in Blink.
     if (candidate->action != blink::mojom::SpeculationAction::kPrerender &&
+        candidate->action !=
+            blink::mojom::SpeculationAction::kPrerenderUntilScript &&
         candidate->target_browsing_context_name_hint !=
             blink::mojom::SpeculationTargetHint::kNoHint) {
       mojo::ReportBadMessage("SH_TARGET_HINT_ON_PREFETCH");
@@ -47,6 +50,24 @@ bool CandidatesAreValid(
       mojo::ReportBadMessage(
           "SH_INVALID_REQUIRES_ANONYMOUS_CLIENT_IP_WHEN_CROSS_ORIGIN");
       return false;
+    }
+
+    // Speculation rules tags must contain at least one tag. When no tags are
+    // specified in rules, this should contain std::nullopt that represents a
+    // null tag.
+    if (candidate->tags.empty()) {
+      mojo::ReportBadMessage("SH_EMPTY_TAGS");
+      return false;
+    }
+    // All speculation rules tags must be valid tokens and std::nullopt is valid
+    // by definition.
+    for (auto& tag : candidate->tags) {
+      if (tag.has_value() &&
+          !std::all_of(tag.value().begin(), tag.value().end(),
+                       base::IsAsciiPrintable<char>)) {
+        mojo::ReportBadMessage("SH_INVALID_TAG");
+        return false;
+      }
     }
   }
   return true;
@@ -71,7 +92,8 @@ SpeculationHostImpl::SpeculationHostImpl(
 SpeculationHostImpl::~SpeculationHostImpl() = default;
 
 void SpeculationHostImpl::UpdateSpeculationCandidates(
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
+    bool enable_cross_origin_prerender_iframes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!CandidatesAreValid(candidates))
     return;
@@ -84,7 +106,8 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->UpdateSpeculationCandidates(candidates);
+  preloading_decider->UpdateSpeculationCandidates(
+      candidates, enable_cross_origin_prerender_iframes);
 }
 
 void SpeculationHostImpl::OnLCPPredicted() {
@@ -99,6 +122,12 @@ void SpeculationHostImpl::InitiatePreview(const GURL& url) {
     mojo::ReportBadMessage("SH_PREVIEW");
     return;
   }
+
+  // Link Preview is not allowed in a frame with untrusted network disabled.
+  if (render_frame_host().IsUntrustedNetworkDisabled()) {
+    return;
+  }
+
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   CHECK(web_contents);

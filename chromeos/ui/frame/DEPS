@@ -1,10 +1,6 @@
 include_rules = [
-  "+chrome/browser/ui/chromeos",
-  "+chrome/test/base",
   "+chromeos/strings/grit/chromeos_strings.h",
-  "+chromeos/crosapi/mojom/test_controller.mojom.h",
   "+components/user_manager",
-  "+content/public/test",
   "+third_party/skia",
   "+ui/aura",
   "+ui/base",
@@ -14,8 +10,17 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
-  "+ui/platform_window",
+  "+ui/menus",
   "+ui/strings/grit/ui_strings.h",
   "+ui/views",
   "+ui/wm/public",
 ]
+
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/browser/ui/ash/test_util.h",
+    "+chrome/test/base",
+    "+content/public/test",
+  ]
+}

@@ -99,8 +99,8 @@ bool IndentOutdentCommand::TryIndentingAsListItem(
   // list element will change visibility of list item, e.g. :first-child
   // CSS selector.
   auto* new_list = To<HTMLElement>(GetDocument().CreateElement(
-      list_element->TagQName(), CreateElementFlags::ByCloneNode(),
-      g_null_atom));
+      list_element->TagQName(), CreateElementFlags::ByCloneNode(), g_null_atom,
+      /*registry*/ nullptr));
   InsertNodeBefore(new_list, selected_list_item, editing_state);
   if (editing_state->IsAborted())
     return false;
@@ -116,7 +116,10 @@ bool IndentOutdentCommand::TryIndentingAsListItem(
       end.AnchorNode()->IsDescendantOf(selected_list_item->lastChild());
 
   const VisiblePosition& start_of_paragraph_to_move =
-      CreateVisiblePosition(start);
+      should_keep_selected_list
+          ? CreateVisiblePosition(start)
+          : VisiblePosition::BeforeNode(*selected_list_item->firstChild());
+
   const VisiblePosition& end_of_paragraph_to_move =
       should_keep_selected_list
           ? CreateVisiblePosition(end)

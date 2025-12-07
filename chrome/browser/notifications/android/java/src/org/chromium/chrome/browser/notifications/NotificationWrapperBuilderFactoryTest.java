@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
-import android.content.Context;
-import android.os.Build;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -41,9 +38,7 @@ public class NotificationWrapperBuilderFactoryTest {
 
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-
-        mNotificationManager = new NotificationManagerProxyImpl(context);
+        mNotificationManager = NotificationManagerProxyImpl.getInstance();
 
         // Don't rely on channels already being registered.
         clearNotificationChannels(mNotificationManager);
@@ -56,11 +51,9 @@ public class NotificationWrapperBuilderFactoryTest {
     }
 
     private static void clearNotificationChannels(NotificationManagerProxy notificationManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            for (NotificationChannel channel : notificationManager.getNotificationChannels()) {
-                if (!channel.getId().equals(NotificationChannel.DEFAULT_CHANNEL_ID)) {
-                    notificationManager.deleteNotificationChannel(channel.getId());
-                }
+        for (NotificationChannel channel : notificationManager.getNotificationChannels()) {
+            if (!channel.getId().equals(NotificationChannel.DEFAULT_CHANNEL_ID)) {
+                notificationManager.deleteNotificationChannel(channel.getId());
             }
         }
     }

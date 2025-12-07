@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_renderer_host.h"
@@ -44,9 +45,9 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   }
 
   base::SimpleTestTickClock& clock() { return clock_; }
+  raw_ptr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
 
  private:
-  raw_ptr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   base::SimpleTestTickClock clock_;
 };
@@ -106,6 +107,62 @@ TEST_F(AudioContextManagerImplTest, TimeGreater10SecondsIsRoundedDown) {
     EXPECT_EQ(expected[i], *test_ukm_recorder().GetEntryMetric(
                                ukm_entries[i], UkmEntry::kAudibleTimeName));
   }
+}
+
+TEST_F(AudioContextManagerImplTest, TracksMaxConcurrentContexts) {
+  base::HistogramTester histogram_tester;
+
+  // Create 2 contexts. Max should be 2.
+  audio_context_manager()->AudioContextCreated(1);
+  audio_context_manager()->AudioContextCreated(2);
+  EXPECT_EQ(audio_context_manager()->max_concurrent_audio_contexts_, 2);
+
+  // Close 1 context. The max count should remain at 2.
+  audio_context_manager()->AudioContextClosed(1);
+  EXPECT_EQ(audio_context_manager()->max_concurrent_audio_contexts_, 2);
+
+  // Create 2 more contexts. Active contexts are now {2, 3, 4}, so the new
+  // max is 3.
+  audio_context_manager()->AudioContextCreated(3);
+  audio_context_manager()->AudioContextCreated(4);
+  EXPECT_EQ(audio_context_manager()->max_concurrent_audio_contexts_, 3);
+  // Close 3 contexts, the recorded maximum concurrent count remain as 3.
+  audio_context_manager()->AudioContextClosed(2);
+  audio_context_manager()->AudioContextClosed(3);
+  audio_context_manager()->AudioContextClosed(4);
+  EXPECT_EQ(audio_context_manager()->max_concurrent_audio_contexts_, 3);
+
+  // The UMA histogram is recorded on destruction. To test this, we must
+  // trigger the destruction of the AudioContextManager by destroying its owning
+  // RenderFrameHost.
+  audio_context_manager_ = nullptr;
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the final maximum value was correctly recorded.
+  histogram_tester.ExpectUniqueSample(
+      "WebAudio.AudioContext.ConcurrentAudioContexts",
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AudioContextManagerImplTest, NoContextsCreated) {
+  base::HistogramTester histogram_tester;
+
+  // No contexts were ever created.
+  EXPECT_EQ(audio_context_manager()->max_concurrent_audio_contexts_, 0);
+
+  // Trigger destruction to record the UMA metric.
+  audio_context_manager_ = nullptr;
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the sample for 0 was correctly recorded since no context was
+  // ever created.
+  histogram_tester.ExpectUniqueSample(
+      "WebAudio.AudioContext.ConcurrentAudioContexts",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace content

@@ -4,14 +4,16 @@
 
 #include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -21,8 +23,8 @@
 namespace web_app {
 
 TabbedWebAppNavigationThrottle::TabbedWebAppNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 TabbedWebAppNavigationThrottle::~TabbedWebAppNavigationThrottle() = default;
 
@@ -31,65 +33,81 @@ const char* TabbedWebAppNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame())
-    return nullptr;
-
-  // Reloading the page should not cause the tab to change.
-  if (handle->GetReloadType() != content::ReloadType::NONE) {
-    return nullptr;
+void TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame()) {
+    return;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
+  // Reloading the page should not cause the tab to change.
+  if (handle.GetReloadType() != content::ReloadType::NONE) {
+    return;
+  }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser || !browser->app_controller())
-    return nullptr;
+  content::WebContents* web_contents = handle.GetWebContents();
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
 
-  WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
-  if (!provider)
-    return nullptr;
+  const BrowserWindowInterface* browser_window =
+      tab->GetBrowserWindowInterface();
+  if (!browser_window || !AppBrowserController::IsWebApp(browser_window)) {
+    return;
+  }
 
-  const webapps::AppId& app_id = browser->app_controller()->app_id();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!AreWebAppsEnabled(profile)) {
+    return;
+  }
+
+  const WebAppProvider* provider =
+      WebAppProvider::GetForWebContents(web_contents);
+  CHECK(provider);
+
+  const webapps::AppId& app_id =
+      AppBrowserController::From(browser_window)->app_id();
 
   std::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
 
-  auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-
   // Only create the throttle for tabbed web apps that have a home tab.
-  if (tab_helper && tab_helper->acting_as_app() &&
+  if (WebAppTabHelper::GetAppId(web_contents) &&
       provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id) &&
       home_tab_url.has_value()) {
-    return std::make_unique<TabbedWebAppNavigationThrottle>(handle);
+    registry.AddThrottle(
+        std::make_unique<TabbedWebAppNavigationThrottle>(registry));
   }
-
-  return nullptr;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::WillStartRequest() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
-
-  WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
-  DCHECK(provider);
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  DCHECK(browser);
-  web_app::AppBrowserController* app_controller = browser->app_controller();
-  DCHECK(app_controller);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  CHECK(tab);
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
+  CHECK(browser_window);
+  const AppBrowserController* app_controller =
+      AppBrowserController::From(browser_window);
+  CHECK(app_controller);
+  const WebAppProvider* provider =
+      WebAppProvider::GetForWebContents(web_contents);
+  CHECK(provider);
 
   const webapps::AppId& app_id = app_controller->app_id();
 
-  std::optional<GURL> home_tab_url =
-      provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
-  DCHECK(home_tab_url.has_value());
+  if (!app_controller->GetPinnedHomeTab() ||
+      !provider->registrar_unsafe()
+           .GetAppPinnedHomeTabUrl(app_id)
+           .has_value()) {
+    return content::NavigationThrottle::PROCEED;
+  }
 
-  auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
-  bool navigating_from_home_tab = tab_helper->is_pinned_home_tab();
+  bool navigating_from_home_tab =
+      app_controller->GetPinnedHomeTab() == web_contents;
   bool navigation_url_is_home_url =
       app_controller->IsUrlInHomeTabScope(navigation_handle()->GetURL());
 
@@ -102,11 +120,11 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   if (!navigating_from_home_tab && navigation_url_is_home_url) {
     // target=_blank links to the home tab cause a blank tab to be opened. We
     // should close it.
-    if (browser->tab_strip_model()->count() > 1 &&
+    if (browser_window->GetTabStripModel()->count() > 1 &&
         !web_contents->GetLastCommittedURL().is_valid()) {
       web_contents->ClosePage();
     }
-    return FocusHomeTab();
+    return FocusHomeTab(*app_controller, *browser_window->GetTabStripModel());
   }
 
   return content::NavigationThrottle::PROCEED;
@@ -114,7 +132,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::WillRedirectRequest() {
-  // TODO(crbug.com/40598974): Figure out how redirects should be handled.
+  // TODO(crbug.com/400761084): Figure out how redirects should be handled.
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -123,28 +141,32 @@ TabbedWebAppNavigationThrottle::OpenInNewTab() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  // Clear the FrameTreeNode id, as the new navigation will be in a new tab
+  // rather than the frame of the original navigation.
+  params.frame_tree_node_id = content::FrameTreeNodeId();
   navigation_handle()->GetWebContents()->OpenURL(
       std::move(params), /*navigation_handle_callback=*/{});
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-TabbedWebAppNavigationThrottle::FocusHomeTab() {
-  Browser* browser =
-      chrome::FindBrowserWithTab(navigation_handle()->GetWebContents());
-  TabStripModel* tab_strip = browser->tab_strip_model();
-
+TabbedWebAppNavigationThrottle::FocusHomeTab(
+    const AppBrowserController& app_controller,
+    TabStripModel& tab_strip) {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  params.frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+  params.frame_tree_node_id = content::FrameTreeNodeId();
 
-  if (params.url != tab_strip->GetWebContentsAt(0)->GetLastCommittedURL()) {
+  content::WebContents* pinned_home_tab = app_controller.GetPinnedHomeTab();
+  CHECK(pinned_home_tab);
+  CHECK_NE(pinned_home_tab, navigation_handle()->GetWebContents());
+  if (params.url != pinned_home_tab->GetLastCommittedURL()) {
     // Only do the navigation if the URL has changed.
-    tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params),
-                                            /*navigation_handle_callback=*/{});
+    pinned_home_tab->OpenURL(std::move(params),
+                             /*navigation_handle_callback=*/{});
   }
-  tab_strip->ActivateTabAt(0);
+  tab_strip.ActivateTabAt(tab_strip.GetIndexOfWebContents(pinned_home_tab));
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
 

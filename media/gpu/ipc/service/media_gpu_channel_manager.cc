@@ -9,8 +9,6 @@
 
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/param_traits_macros.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/ipc/service/media_gpu_channel.h"
 

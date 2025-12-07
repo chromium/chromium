@@ -241,8 +241,8 @@ TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportHandled) {
 
   aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   std::optional<AggregatableReport> report =
-      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request, {hpke_key.GetPublicKey()});
+      AggregatableReport::Provider().CreateFromRequestAndPublicKey(
+          request, hpke_key.GetPublicKey());
 
   base::Time now = base::Time::Now();
 
@@ -268,8 +268,8 @@ TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportHandled_NoId) {
 
   aggregation_service::TestHpkeKey hpke_key{/*key_id=*/"id123"};
   std::optional<AggregatableReport> report =
-      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request, {hpke_key.GetPublicKey()});
+      AggregatableReport::Provider().CreateFromRequestAndPublicKey(
+          request, hpke_key.GetPublicKey());
 
   base::Time now = base::Time::Now();
 

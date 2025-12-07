@@ -32,6 +32,12 @@ ToastData GetToastData(AccessibilityToastType type) {
               /*text=*/
               l10n_util::GetStringUTF16(
                   IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_MIC_MUTED)};
+    case AccessibilityToastType::kTouchpadDisabled:
+      return {/*id=*/kAccessibilityToastId,
+              /*catalog_name=*/ToastCatalogName::kTouchpadDisabled,
+              /*text=*/
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_ACCESSIBILITY_NUDGE_TOUCHPAD_DISABLED)};
   }
 }
 
@@ -48,6 +54,10 @@ void AccessibilityNotificationController::ShowToast(
   if (show_anchored_nudge_callback_for_testing_) {
     show_anchored_nudge_callback_for_testing_.Run(type);
   }
+}
+
+void AccessibilityNotificationController::CancelToast() {
+  Shell::Get()->toast_manager()->Cancel(kAccessibilityToastId);
 }
 
 void AccessibilityNotificationController::AddShowToastCallbackForTesting(

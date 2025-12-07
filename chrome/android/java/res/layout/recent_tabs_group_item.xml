@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:id="@+id/recent_tabs_group_view"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:background="?attr/selectableItemBackground" >
+    android:background="@drawable/list_item_rounded_background_selector" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,6 +48,7 @@ found in the LICENSE file.
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/small_icon_background_selector"
         tools:ignore="ContentDescription" />
 
 </org.chromium.chrome.browser.ntp.RecentTabsGroupView>

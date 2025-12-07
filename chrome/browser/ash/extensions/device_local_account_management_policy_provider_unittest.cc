@@ -32,7 +32,7 @@ scoped_refptr<const extensions::Extension> CreateExtensionFromValues(
   values.Set(extensions::manifest_keys::kName, "test");
   values.Set(extensions::manifest_keys::kVersion, "0.1");
   values.Set(extensions::manifest_keys::kManifestVersion, 2);
-  std::string error;
+  std::u16string error;
   return extensions::Extension::Create(base::FilePath(), location, values,
                                        flags, id, &error);
 }

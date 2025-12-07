@@ -7,24 +7,29 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <deque>
 #include <limits>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -38,6 +43,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -50,10 +56,12 @@
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/display_utils.h"
+#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/frame_interval_matchers.h"
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/occlusion_culler.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -68,6 +76,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -82,21 +91,54 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
+
 namespace viz {
 
 namespace {
 
+#if !BUILDFLAG(IS_APPLE)
+DBG_FLAG_FBOOL("delegated.fd.usage", usage_every_frame)
+
+void RecordFDUsageUMA() {
+  static uint64_t sReportUsageFrameCounter = 0;
+  sReportUsageFrameCounter++;
+  constexpr uint32_t kReportEveryNFrames = 60 * 60 * 5;
+  if (((sReportUsageFrameCounter % kReportEveryNFrames) != 0) &&
+      !usage_every_frame()) {
+    return;
+  }
+
+  base::TimeDelta delta_time_taken;
+  int fd_max;
+  int active_fd_count;
+  int rlim_cur;
+
+  if (!GatherFDStats(&delta_time_taken, &fd_max, &active_fd_count, &rlim_cur)) {
+    return;
+  }
+
+  static constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+  static constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(10);
+  static constexpr int kHistogramTimeBuckets = 50;
+  int percentage_usage_int = (active_fd_count * 100) / fd_max;
+  UMA_HISTOGRAM_PERCENTAGE("Viz.FileDescriptorTracking.PercentageUsed",
+                           percentage_usage_int);
+  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumActive",
+                              active_fd_count);
+  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumSoftMax",
+                              rlim_cur);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Viz.FileDescriptorTracking.TimeToCompute", delta_time_taken,
+      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
+
+  DBG_LOG("delegated.fd.usage", "FD usage: %d / %d - time us: %f",
+          active_fd_count, fd_max, delta_time_taken.InMicrosecondsF());
+}
+#endif
+
 #if !BUILDFLAG(IS_MAC)
 constexpr base::TimeDelta kAllowedDeltaFromFuture = base::Milliseconds(16);
 #endif
-
-// Assign each Display instance a starting value for the the display-trace id,
-// so that multiple Displays all don't start at 0, because that makes it
-// difficult to associate the trace-events with the particular displays.
-int64_t GetStartingTraceId() {
-  static int64_t client = 0;
-  return ((++client & 0xffffffff) << 16);
-}
 
 gfx::PresentationFeedback SanitizePresentationFeedback(
     const gfx::PresentationFeedback& feedback,
@@ -138,15 +180,6 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
   return feedback;
 }
 
-bool SupportsSetFrameRate(const OutputSurface* output_surface) {
-#if BUILDFLAG(IS_ANDROID)
-  return output_surface->capabilities().supports_surfaceless &&
-         gfx::SurfaceControl::SupportsSetFrameRate();
-#else
-  return false;
-#endif
-}
-
 void IssueDisplayRenderingStatsEvent() {
   std::unique_ptr<base::trace_event::TracedValue> record_data =
       std::make_unique<base::trace_event::TracedValue>();
@@ -156,6 +189,50 @@ void IssueDisplayRenderingStatsEvent() {
   TRACE_EVENT_INSTANT1(
       "benchmark", "BenchmarkInstrumentation::DisplayRenderingStats",
       TRACE_EVENT_SCOPE_THREAD, "data", std::move(record_data));
+}
+
+int64_t PopFrontDisplayTraceId(std::deque<int64_t>& deque) {
+  CHECK(!deque.empty());
+  int64_t display_trace_id = deque.front();
+  deque.pop_front();
+  return display_trace_id;
+}
+
+void PopBackExpectedDisplayTraceId(std::deque<int64_t>& deque,
+                                   int64_t expected_display_trace_id) {
+  CHECK(!deque.empty());
+  CHECK_EQ(deque.back(), expected_display_trace_id);
+  deque.pop_back();
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AnimationOrInteractionType)
+enum class AnimationOrInteractionType {
+  kNone = 0,
+  kInteractionOnly = 1,
+  kAnimationOnly = 2,
+  kAnimationAndInteraction = 3,
+  kMaxValue = kAnimationAndInteraction,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FrameHandlingType)
+
+void RecordFrameTypes(bool is_handling_interaction,
+                      bool is_handling_animation) {
+  AnimationOrInteractionType type;
+  if (is_handling_interaction && is_handling_animation) {
+    type = AnimationOrInteractionType::kAnimationAndInteraction;
+  } else if (is_handling_interaction) {
+    type = AnimationOrInteractionType::kInteractionOnly;
+  } else if (is_handling_animation) {
+    type = AnimationOrInteractionType::kAnimationOnly;
+  } else {
+    type = AnimationOrInteractionType::kNone;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "GPU.Presentation.FrameHandlesAnimationOrInteraction", type);
 }
 
 }  // namespace
@@ -178,11 +255,13 @@ void Display::PresentationGroupTiming::AddPresentationHelper(
 void Display::PresentationGroupTiming::OnDraw(
     base::TimeTicks frame_time,
     base::TimeTicks draw_start_timestamp,
-    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::flat_set<base::PlatformThreadId> animation_thread_ids,
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
     HintSession::BoostType boost_type) {
   frame_time_ = frame_time;
   draw_start_timestamp_ = draw_start_timestamp;
-  thread_ids_ = std::move(thread_ids);
+  animation_thread_ids_ = std::move(animation_thread_ids);
+  renderer_main_thread_ids_ = std::move(renderer_main_thread_ids);
   boost_type_ = boost_type;
 }
 
@@ -201,7 +280,8 @@ void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
   }
   // Can be nullptr in unittests.
   if (scheduler) {
-    scheduler->ReportFrameTime(frame_latency, std::move(thread_ids_),
+    scheduler->ReportFrameTime(frame_latency, std::move(animation_thread_ids_),
+                               std::move(renderer_main_thread_ids_),
                                draw_start_timestamp_, boost_type_);
   }
 }
@@ -215,9 +295,7 @@ void Display::PresentationGroupTiming::OnPresent(
 }
 
 Display::Display(
-    SharedBitmapManager* bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
-    gpu::SyncPointManager* sync_point_manager,
     gpu::Scheduler* gpu_scheduler,
     const RendererSettings& settings,
     const DebugRendererSettings* debug_settings,
@@ -227,9 +305,7 @@ Display::Display(
     std::unique_ptr<OverlayProcessorInterface> overlay_processor,
     std::unique_ptr<DisplaySchedulerBase> scheduler,
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner)
-    : bitmap_manager_(bitmap_manager),
-      shared_image_manager_(shared_image_manager),
-      sync_point_manager_(sync_point_manager),
+    : shared_image_manager_(shared_image_manager),
       gpu_scheduler_(gpu_scheduler),
       settings_(settings),
       debug_settings_(debug_settings),
@@ -239,14 +315,11 @@ Display::Display(
       skia_output_surface_(output_surface_->AsSkiaOutputSurface()),
       scheduler_(std::move(scheduler)),
       current_task_runner_(std::move(current_task_runner)),
-      overlay_processor_(std::move(overlay_processor)),
-      swapped_trace_id_(GetStartingTraceId()),
-      last_swap_ack_trace_id_(swapped_trace_id_),
-      last_presented_trace_id_(swapped_trace_id_) {
+      overlay_processor_(std::move(overlay_processor)) {
   DCHECK(output_surface_);
   DCHECK(frame_sink_id_.is_valid());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static bool logged = false;
   // TODO(b/329688656): Remove this after the issue is resolved.
   if (!logged && output_surface_->capabilities().max_texture_size > 0) {
@@ -255,9 +328,6 @@ Display::Display(
                << output_surface_->capabilities().max_texture_size;
   }
 #endif
-
-  occlusion_culler_ = std::make_unique<OcclusionCuller>(
-      overlay_processor_.get(), settings_.occlusion_culler_settings);
 
   if (scheduler_)
     scheduler_->SetClient(this);
@@ -299,8 +369,7 @@ Display::~Display() {
 }
 
 void Display::Initialize(DisplayClient* client,
-                         SurfaceManager* surface_manager,
-                         bool hw_support_for_multiple_refresh_rates) {
+                         SurfaceManager* surface_manager) {
   DCHECK(client);
   DCHECK(surface_manager);
   gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
@@ -311,19 +380,16 @@ void Display::Initialize(DisplayClient* client,
   if (output_surface_->software_device())
     output_surface_->software_device()->BindToClient(this);
 
-  output_surface_supports_set_frame_rate_ =
-      SupportsSetFrameRate(output_surface_.get());
-  if (!base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
-    frame_rate_decider_ = std::make_unique<FrameRateDecider>(
-        surface_manager_, this, hw_support_for_multiple_refresh_rates,
-        output_surface_supports_set_frame_rate_);
-  }
-  UpdateFrameIntervalDeciderSettings();
+  frame_interval_decider_ = std::make_unique<FrameIntervalDecider>();
 
   InitializeRenderer();
 
   damage_tracker_ = std::make_unique<DisplayDamageTracker>(surface_manager_,
                                                            aggregator_.get());
+  occlusion_culler_ = std::make_unique<OcclusionCuller>(
+      overlay_processor_.get(), resource_provider_.get(),
+      settings_.occlusion_culler_settings);
+
   if (scheduler_)
     scheduler_->SetDamageTracker(damage_tracker_.get());
 
@@ -332,49 +398,6 @@ void Display::Initialize(DisplayClient* client,
   // it could miss a callback before setting this.
   if (skia_output_surface_)
     skia_output_surface_->AddContextLostObserver(this);
-}
-
-void Display::UpdateFrameIntervalDeciderSettings() {
-  if (!base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
-    return;
-  }
-
-  if (!frame_interval_decider_) {
-    frame_interval_decider_ = std::make_unique<FrameIntervalDecider>(*this);
-  }
-
-  // TODO(crbug.com/346732738): This is only implemented for android. Support
-  // other platforms / configurations.
-
-  FrameIntervalDecider::Settings settings;
-  std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
-  matchers.push_back(std::make_unique<InputBoostMatcher>());
-  matchers.push_back(std::make_unique<VideoConferenceMatcher>());
-#if BUILDFLAG(IS_ANDROID)
-  matchers.push_back(std::make_unique<OnlyVideoMatcher>());
-  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
-  matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!output_surface_supports_set_frame_rate_) {
-    FrameIntervalDecider::FixedIntervalSettings fixed_interval_settings;
-    if (fixed_supported_intervals_.empty()) {
-      fixed_interval_settings.supported_intervals = {
-          BeginFrameArgs::DefaultInterval()};
-      fixed_interval_settings.default_interval =
-          BeginFrameArgs::DefaultInterval();
-    } else {
-      fixed_interval_settings.supported_intervals = fixed_supported_intervals_;
-      fixed_interval_settings.default_interval =
-          *fixed_supported_intervals_.begin();
-    }
-    settings.fixed_intervals = fixed_interval_settings;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  frame_interval_decider_->UpdateSettings(std::move(settings),
-                                          std::move(matchers));
 }
 
 void Display::AddObserver(DisplayObserver* observer) {
@@ -396,6 +419,7 @@ void Display::SetLocalSurfaceId(const LocalSurfaceId& id,
   current_surface_id_ = SurfaceId(frame_sink_id_, id);
   device_scale_factor_ = device_scale_factor;
 
+  occlusion_culler_->UpdateDeviceScaleFactor(device_scale_factor_);
   damage_tracker_->SetNewRootSurface(current_surface_id_);
 }
 
@@ -517,8 +541,7 @@ void Display::InitializeRenderer() {
     resource_provider_ = std::move(resource_provider);
   } else {
     auto resource_provider = std::make_unique<DisplayResourceProviderSoftware>(
-        bitmap_manager_, shared_image_manager_, sync_point_manager_,
-        gpu_scheduler_);
+        shared_image_manager_, gpu_scheduler_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
@@ -542,11 +565,10 @@ void Display::InitializeRenderer() {
   }
 #if BUILDFLAG(IS_WIN)
   const bool prevent_merging_surfaces_to_root_pass =
-      features::IsDelegatedCompositingEnabled() &&
+      IsDelegatedCompositingSupportedAndEnabled(
+          output_surface_->capabilities().dc_support_level) &&
       features::kDelegatedCompositingModeParam.Get() ==
-          features::DelegatedCompositingMode::kLimitToUi &&
-      output_surface_->capabilities().dc_support_level >=
-          OutputSurface::DCSupportLevel::kDCompTexture;
+          features::DelegatedCompositingMode::kLimitToUi;
 #else
   const bool prevent_merging_surfaces_to_root_pass = false;
 #endif
@@ -641,23 +663,23 @@ void DebugDrawFrame(
                         base::NumberToString(static_cast<int>(quad->material)));
       DBG_DRAW_TEXT_OPT(
           "frame.render_pass.layer_id", DBG_OPT_BLUE, display_rect.origin(),
-          base::StringPrintf("%u:%u", sqs->layer_namespace_id, sqs->layer_id));
+          base::StringPrintf("%u:%u:%u", sqs->layer_namespace_id.first,
+                             sqs->layer_namespace_id.second, sqs->layer_id));
       DBG_DRAW_TEXT_OPT("frame.render_pass.display_rect", DBG_OPT_GREEN,
                         display_rect.origin(), display_rect.ToString());
       DBG_DRAW_TEXT_OPT(
           "frame.render_pass.resource_id", DBG_OPT_RED, display_rect.origin(),
-          base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
+          base::NumberToString(quad->resource_id.GetUnsafeValue()));
 
-      if (quad->resources.ids[0] != kInvalidResourceId) {
+      if (quad->resource_id != kInvalidResourceId) {
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_format", DBG_OPT_BLUE, display_rect.origin(),
-            resource_provider->GetSharedImageFormat(quad->resources.ids[0])
+            resource_provider->GetSharedImageFormat(quad->resource_id)
                 .ToString());
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_color_space", DBG_OPT_GREEN,
             display_rect.origin(),
-            resource_provider->GetColorSpace(quad->resources.ids[0])
-                .ToString());
+            resource_provider->GetColorSpace(quad->resource_id).ToString());
       }
       DBG_DRAW_RECT("frame.render_pass.quad", display_rect);
     }
@@ -744,7 +766,8 @@ void Display::MaybeLogQuadsProperties(
 
   SkM44 color_matrix;
   // auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_filters;
   render_pass_filters[last_render_pass.id] = &(last_render_pass.filters);
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
@@ -775,9 +798,9 @@ void Display::MaybeLogQuadsProperties(
     if (!candidate.is_opaque) {
       num_nonopaque_quads++;
     }
-    if (!absl::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
-        absl::get<gfx::OverlayTransform>(candidate.transform) !=
-             gfx::OVERLAY_TRANSFORM_NONE) {
+    if (!std::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
+        std::get<gfx::OverlayTransform>(candidate.transform) !=
+            gfx::OVERLAY_TRANSFORM_NONE) {
       num_transformation_quads++;
     }
     if (candidate.is_solid_color) {
@@ -794,9 +817,6 @@ void Display::MaybeLogQuadsProperties(
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.Display.Draw.LastPass.Quads.ColorSpaceTransferID",
         candidate.color_space.GetTransferID());
-    UMA_HISTOGRAM_ENUMERATION(
-        "Compositing.Display.Draw.LastPass.Quads.BufferFormat",
-        gpu::ToBufferFormat(candidate.format));
     gfx::RectF uv_rect = candidate.uv_rect;
     candidate_factory.HandleClipAndSubsampling(candidate);
     if (uv_rect != candidate.uv_rect) {
@@ -853,6 +873,11 @@ OverdrawTracker::OverdrawTimeSeries Display::StopTrackingOverdraw() {
 
 bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
+  VIZ_HIT_PATH("DrawAndSwap");
+#if !BUILDFLAG(IS_APPLE)
+  RecordFDUsageUMA();
+#endif
+
   if (debug_settings_->show_aggregated_damage !=
       aggregator_->HasFrameAnnotator()) {
     if (debug_settings_->show_aggregated_damage) {
@@ -872,6 +897,21 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     TRACE_EVENT_INSTANT0("viz", "No output surface", TRACE_EVENT_SCOPE_THREAD);
     return false;
   }
+
+  int64_t display_trace_id = base::trace_event::GetNextGlobalTraceId();
+  pending_presented_trace_ids_.push_back(display_trace_id);
+  pending_swap_ack_trace_ids_.push_back(display_trace_id);
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(display_trace_id),
+      [&display_trace_id](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_DRAW_AND_SWAP);
+        data->set_display_trace_id(display_trace_id);
+      });
 
   if (params.max_pending_swaps >= 0 && skia_output_surface_ &&
       skia_output_surface_->capabilities()
@@ -895,7 +935,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
   absl::Cleanup visual_debugger_sync_scoped_exit =
       [current_display_transform, current_surface_size = current_surface_size_,
-       last_presented_trace_id = last_presented_trace_id_] {
+       last_presented_trace_id = display_trace_id] {
         VisualDebuggerSync(current_display_transform, current_surface_size,
                            last_presented_trace_id);
       };
@@ -916,16 +956,9 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   base::ElapsedTimer aggregate_timer;
   AggregatedFrame frame;
   {
-    std::optional<FrameRateDecider::ScopedAggregate> scoped_aggregate;
-    if (frame_rate_decider_) {
-      scoped_aggregate.emplace(frame_rate_decider_.get());
-    }
-    std::unique_ptr<FrameIntervalDecider::ScopedAggregate>
-        scoped_interval_decider;
-    if (frame_interval_decider_) {
-      scoped_interval_decider = frame_interval_decider_->WrapAggregate(
-          *surface_manager_, params.frame_time);
-    }
+    FrameIntervalDecider::ScopedAggregate scoped_interval_decider(
+        frame_interval_decider_->WrapAggregate(*surface_manager_,
+                                               params.frame_time));
     gfx::Rect target_damage_bounding_rect;
     if (output_surface_->capabilities().supports_target_damage)
       target_damage_bounding_rect = renderer_->GetTargetDamageBoundingRect();
@@ -934,10 +967,11 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     // aggregated again so that the trail exists for a single frame.
     target_damage_bounding_rect.Union(
         renderer_->GetDelegatedInkTrailDamageRect());
+    VIZ_HIT_PATH("Aggregate");
     frame = aggregator_->Aggregate(
         current_surface_id_, params.expected_display_time,
         current_display_transform, target_damage_bounding_rect,
-        ++swapped_trace_id_);
+        display_trace_id);
   }
   DebugDrawFrame(frame, resource_provider_);
 
@@ -972,8 +1006,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     return false;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN0("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
-                           swapped_trace_id_);
+  TRACE_EVENT_BEGIN("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
+                    perfetto::Track(display_trace_id));
 
   // Run callbacks early to allow pipelining and collect presented callbacks.
   damage_tracker_->RunDrawCallbacks();
@@ -1038,11 +1072,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
   std::optional<base::ElapsedTimer> draw_timer;
   if (should_draw) {
-    TRACE_EVENT_ASYNC_STEP_INTO0("viz,benchmark",
-                                 "Graphics.Pipeline.DrawAndSwap",
-                                 swapped_trace_id_, "Draw");
+    TRACE_EVENT_BEGIN("viz,benchmark", "Graphics.Pipeline.Draw",
+                      perfetto::Track(display_trace_id));
     base::ElapsedTimer draw_occlusion_timer;
-    occlusion_culler_->RemoveOverdrawQuads(&frame, device_scale_factor_);
+    occlusion_culler_->RemoveOverdrawQuads(&frame);
     DebugDrawFrameVisible(frame);
     UMA_HISTOGRAM_COUNTS_1000(
         "Compositing.Display.Draw.Occlusion.Calculation.Time",
@@ -1056,12 +1089,15 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                                                    base::TimeTicks::Now());
     }
 
+    OverdrawTracker::EstimateAndRecordOverdrawAsUMAMetric(&frame);
+
     draw_timer.emplace();
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
     overlay_processor_->SetIsPageFullscreen(frame.page_fullscreen_mode);
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
                          std::move(frame.surface_damage_rect_list_));
+    TRACE_EVENT_END("viz,benchmark", perfetto::Track(display_trace_id));
   } else {
     TRACE_EVENT_INSTANT0("viz", "Draw skipped.", TRACE_EVENT_SCOPE_THREAD);
   }
@@ -1071,24 +1107,64 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     PresentationGroupTiming& presentation_group_timing =
         pending_presentation_group_timings_.emplace_back();
 
-    base::flat_set<base::PlatformThreadId> thread_ids;
+    const auto& main_surfaces =
+        surface_manager_->GetSurfacesReferencedByParent(current_surface_id_);
+
+    bool has_interactive_surface = false;
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
-      if (surface) {
-        base::flat_set<base::PlatformThreadId> surface_thread_ids =
-            surface->GetThreadIds();
-        thread_ids.insert(surface_thread_ids.begin(), surface_thread_ids.end());
+      if (surface && surface->HasActiveFrame() &&
+          surface->GetActiveFrameMetadata().is_handling_interaction) {
+        has_interactive_surface = true;
+        break;
       }
     }
 
-    HintSession::BoostType boost_type = HintSession::BoostType::kDefault;
-    if (IsScroll(frame.latency_info)) {
-      boost_type = HintSession::BoostType::kScrollBoost;
+    base::flat_set<base::PlatformThreadId> animation_thread_ids;
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids;
+    for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(surface_id);
+      if (surface) {
+        // current_surface_id_ is the root surface, and its threads are Browser
+        // threads. Browser threads should always be in the ADPF session.
+        // Direct children of the root surface correspond to Renderers for main
+        // frames.
+        const bool is_for_main_frame =
+            surface_id == current_surface_id_ ||
+            main_surfaces.find(surface_id) != main_surfaces.end();
+        if (surface_id != current_surface_id_) {
+          const bool is_handling_interaction =
+              surface->HasActiveFrame() &&
+              surface->GetActiveFrameMetadata().is_handling_interaction;
+          // If there's at least one frame handling an interaction, include
+          // only interactive Renderers. Otherwise include the main frame
+          // Renderer.
+          const bool should_be_included =
+              is_handling_interaction ||
+              (!has_interactive_surface && is_for_main_frame);
+          if (!should_be_included) {
+            continue;
+          }
+        }
+        std::vector<Thread> surface_threads = surface->GetThreads();
+        for (const auto& thread : surface_threads) {
+          if (thread.type == Thread::Type::kMain &&
+              surface_id != current_surface_id_) {
+            renderer_main_thread_ids.insert(thread.id);
+          } else {
+            animation_thread_ids.insert(thread.id);
+          }
+        }
+      }
     }
-    presentation_group_timing.OnDraw(params.frame_time,
-                                     draw_timer->start_time(),
-                                     std::move(thread_ids), boost_type);
 
+    presentation_group_timing.OnDraw(
+        params.frame_time, draw_timer->start_time(),
+        std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
+        /*boost_type=*/HintSession::BoostType::kDefault);
+
+    bool has_interactive_frame = false;
+    bool has_animated_frame = false;
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
@@ -1097,17 +1173,19 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         if (helper) {
           presentation_group_timing.AddPresentationHelper(std::move(helper));
         }
+
+        has_interactive_frame |=
+            surface->HasActiveFrame() &&
+            surface->GetActiveFrameMetadata().is_handling_interaction;
+        has_animated_frame |=
+            surface->HasActiveFrame() &&
+            surface->GetActiveFrameMetadata().is_handling_animation;
       }
     }
 
-    TRACE_EVENT_ASYNC_STEP_INTO0("viz,benchmark",
-                                 "Graphics.Pipeline.DrawAndSwap",
-                                 swapped_trace_id_, "WaitForSwap");
+    TRACE_EVENT_INSTANT("viz,benchmark", "Graphics.Pipeline.WaitForSwap",
+                        perfetto::Track(display_trace_id));
     swapped_since_resize_ = true;
-
-    ui::LatencyInfo::TraceIntermediateFlowEvents(
-        frame.latency_info,
-        perfetto::protos::pbzero::ChromeLatencyInfo::STEP_DRAW_AND_SWAP);
 
     IssueDisplayRenderingStatsEvent();
     DirectRenderer::SwapFrameData swap_frame_data;
@@ -1115,7 +1193,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     swap_frame_data.seq =
         current_surface_id_.local_surface_id().parent_sequence_number();
     swap_frame_data.choreographer_vsync_id = params.choreographer_vsync_id;
-    swap_frame_data.swap_trace_id = swapped_trace_id_;
+    swap_frame_data.swap_trace_id = display_trace_id;
     swap_frame_data.display_hdr_headroom =
         display_color_spaces_.GetHDRMaxLuminanceRelative();
 
@@ -1124,6 +1202,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         perfetto::Flow::Global(swap_frame_data.swap_trace_id),
         [swap_trace_id =
              swap_frame_data.swap_trace_id](perfetto::EventContext ctx) {
+          base::TaskAnnotator::EmitTaskTimingDetails(ctx);
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -1135,15 +1214,20 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     swap_frame_data.ca_layer_error_code =
         overlay_processor_->GetCALayerErrorCode();
 #endif
+    swap_frame_data.is_handling_interaction = has_interactive_frame;
+    swap_frame_data.is_handling_animation = has_animated_frame;
 
     // We must notify scheduler and increase |pending_swaps_| before calling
     // SwapBuffers() as it can call DidReceiveSwapBuffersAck synchronously.
-    if (scheduler_)
+    if (scheduler_) {
       scheduler_->DidSwapBuffers();
+    }
     pending_swaps_++;
 
     UMA_HISTOGRAM_COUNTS_100("Compositing.Display.PendingSwaps",
                              pending_swaps_);
+
+    RecordFrameTypes(has_interactive_frame, has_animated_frame);
 
     renderer_->SwapBuffers(std::move(swap_frame_data));
   } else {
@@ -1171,9 +1255,14 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     if (should_draw)
       renderer_->SwapBuffersSkipped();
 
-    TRACE_EVENT_ASYNC_END1("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
-                           swapped_trace_id_, "status", "canceled");
-    --swapped_trace_id_;
+    TRACE_EVENT_END(
+        "viz,benchmark",
+        /* Graphics.Pipeline.DrawAndSwap */ perfetto::Track(display_trace_id),
+        "status", "canceled");
+    PopBackExpectedDisplayTraceId(pending_swap_ack_trace_ids_,
+                                  display_trace_id);
+    PopBackExpectedDisplayTraceId(pending_presented_trace_ids_,
+                                  display_trace_id);
     if (scheduler_) {
       scheduler_->DidSwapBuffers();
       scheduler_->DidReceiveSwapBuffersAck();
@@ -1201,6 +1290,7 @@ void Display::DidReceiveSwapBuffersAck(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::TerminatingFlow::Global(params.swap_trace_id),
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -1219,13 +1309,12 @@ void Display::DidReceiveSwapBuffersAck(
   }
 
   const gfx::SwapTimings& timings = params.swap_response.timings;
-  ++last_swap_ack_trace_id_;
-  TRACE_EVENT_ASYNC_STEP_INTO_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap", last_swap_ack_trace_id_,
-      "Swap", timings.swap_start);
-  TRACE_EVENT_ASYNC_STEP_INTO_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap", last_swap_ack_trace_id_,
-      "WaitForPresentation", timings.swap_end);
+  int64_t swap_ack_trace_id =
+      PopFrontDisplayTraceId(pending_swap_ack_trace_ids_);
+  TRACE_EVENT_INSTANT("viz,benchmark", "Swap",
+                      perfetto::Track(swap_ack_trace_id), timings.swap_start);
+  TRACE_EVENT_INSTANT("viz,benchmark", "WaitForPresentation",
+                      perfetto::Track(swap_ack_trace_id), timings.swap_end);
 
   if (overlay_processor_)
     overlay_processor_->OverlayPresentationComplete();
@@ -1322,10 +1411,13 @@ void Display::DidReceivePresentationFeedback(
   auto& presentation_group_timing = pending_presentation_group_timings_.front();
   auto copy_feedback = SanitizePresentationFeedback(
       feedback, presentation_group_timing.draw_start_timestamp());
-  ++last_presented_trace_id_;
-  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
-      last_presented_trace_id_, copy_feedback.timestamp);
+  int64_t presented_trace_id =
+      PopFrontDisplayTraceId(pending_presented_trace_ids_);
+  copy_feedback.display_trace_id = presented_trace_id;
+  TRACE_EVENT_END(
+      "viz,benchmark",
+      /* Graphics.Pipeline.DrawAndSwap */ perfetto::Track(presented_trace_id),
+      copy_feedback.timestamp);
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
       "benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"),
       "Display::FrameDisplayed", TRACE_EVENT_SCOPE_THREAD,
@@ -1362,7 +1454,7 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   // Prevent a delegated ink trail from staying on the screen
   // for more than one frame by forcing a new frame to be produced.
   if (!renderer_->GetDelegatedInkTrailDamageRect().IsEmpty()) {
-    scheduler_->SetNeedsOneBeginFrame(true);
+    scheduler_->SetNeedsOneBeginFrame(BeginFrameArgs(), /*needs_draw=*/true);
   }
 
   frame_sequence_number_ = ack.frame_id.sequence_number;
@@ -1393,76 +1485,23 @@ void Display::ForceImmediateDrawAndSwapIfPossible() {
     scheduler_->ForceImmediateSwapIfPossible();
 }
 
-void Display::SetNeedsOneBeginFrame() {
+void Display::SetNeedsOneBeginFrame(const BeginFrameArgs& args) {
   if (scheduler_)
-    scheduler_->SetNeedsOneBeginFrame(false);
-}
-
-void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
-  if (output_surface_supports_set_frame_rate_) {
-    float interval_s = interval.InSecondsF();
-    float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
-    output_surface_->SetFrameRate(frame_rate);
-#if BUILDFLAG(IS_ANDROID)
-    // On Android we want to return early because the |client_| callback hits
-    // a platform API in the browser process.
-    return;
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-
-  client_->SetPreferredFrameInterval(interval);
-}
-
-void Display::SetFrameInterval(FrameIntervalDecider::Result result,
-                               FrameIntervalMatcherType matcher_type) {
-  TRACE_EVENT_INSTANT("viz", "SetFrameInterval", "result",
-                      FrameIntervalMatcher::ResultToString(result),
-                      "matcher_type",
-                      FrameIntervalMatcher::MatcherTypeToString(matcher_type));
-
-  // TODO(crbug.com/346732738): This is only implemented for android. Support
-  // other platforms / configurations.
-
-  base::TimeDelta interval = absl::visit(
-      base::Overloaded(
-          [&](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
-            // For now, setting 0 implies no preference, and allow the OS to use
-            // its own heuristics to estimate.
-            return base::Milliseconds(0);
-          },
-          [](base::TimeDelta interval) { return interval; }),
-      result);
-
-  if (current_interval_ == interval) {
-    return;
-  }
-  current_interval_ = interval;
-
-  SetPreferredFrameInterval(interval);
-}
-
-base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
-    const FrameSinkId& id,
-    mojom::CompositorFrameSinkType* type) {
-  return client_->GetPreferredFrameIntervalForFrameSinkId(id, type);
-}
-
-void Display::SetSupportedFrameIntervals(
-    base::flat_set<base::TimeDelta> intervals) {
-  if (frame_rate_decider_) {
-    frame_rate_decider_->SetSupportedFrameIntervals(intervals);
-  }
-  fixed_supported_intervals_ = std::move(intervals);
-  UpdateFrameIntervalDeciderSettings();
-}
-
-void Display::SetHwSupportForMultipleRefreshRates(bool support) {
-  if (frame_rate_decider_) {
-    frame_rate_decider_->SetHwSupportForMultipleRefreshRates(support);
-  }
+    scheduler_->SetNeedsOneBeginFrame(args, /*needs_draw=*/false);
 }
 
 #if BUILDFLAG(IS_ANDROID)
+bool Display::OutputSurfaceSupportsSetFrameRate() {
+  return output_surface_ &&
+         output_surface_->capabilities().supports_surfaceless &&
+         gfx::SurfaceControl::SupportsSetFrameRate();
+}
+
+void Display::SetFrameIntervalOnOutputSurface(
+    gfx::SurfaceControlFrameRate frame_rate) {
+  output_surface_->SetFrameRate(frame_rate);
+}
+
 base::ScopedClosureRunner Display::GetCacheBackBufferCb() {
   return output_surface_->GetCacheBackBufferCb();
 }
@@ -1482,6 +1521,29 @@ void Display::PreserveChildSurfaceControls() {
 void Display::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {
+  if (std::optional<switches::DelegatedInkRendererMode> mode =
+          switches::GetDelegatedInkRendererMode()) {
+    switch (mode.value()) {
+      case switches::DelegatedInkRendererMode::kSkia:
+        if (DelegatedInkPointRendererBase* ink_renderer =
+                renderer_->GetDelegatedInkPointRenderer(
+                    /*create_if_necessary=*/true)) {
+          ink_renderer->InitMessagePipeline(std::move(pending_receiver));
+        }
+        break;
+      case switches::DelegatedInkRendererMode::kSystem:
+        if (DoesPlatformSupportDelegatedInk()) {
+          output_surface_->InitDelegatedInkPointRendererReceiver(
+              std::move(pending_receiver));
+        }
+        break;
+      case switches::DelegatedInkRendererMode::kNone:
+        // Do not initialize a receiver for `kNone` or any other values.
+        return;
+    }
+    return;
+  }
+
   if (DoesPlatformSupportDelegatedInk() && output_surface_) {
     output_surface_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));

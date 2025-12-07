@@ -1,0 +1,58 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_glic)
+
+source_set("media") {
+  sources = [
+    "glic_media_context.cc",
+    "glic_media_context.h",
+    "glic_media_integration.cc",
+    "glic_media_integration.h",
+    "glic_media_link_helper.cc",
+    "glic_media_link_helper.h",
+    "glic_media_page_cache.cc",
+    "glic_media_page_cache.h",
+    "media_transcript_provider_impl.cc",
+    "media_transcript_provider_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/live_caption:utils",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
+    "//services/media_session/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "glic_media_context_unittest.cc",
+    "glic_media_integration_unittest.cc",
+    "glic_media_link_helper_unittest.cc",
+    "glic_media_page_cache_unittest.cc",
+    "media_transcript_provider_impl_unittest.cc",
+  ]
+  deps = [
+    ":media",
+    "//base/test:test_support",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/prefs",
+    "//chrome/test:test_support",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/optimization_guide/content/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 
@@ -22,8 +23,7 @@ EnumTraits<viz::mojom::BeginFrameArgsType,
     case viz::BeginFrameArgs::BeginFrameArgsType::MISSED:
       return viz::mojom::BeginFrameArgsType::MISSED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return viz::mojom::BeginFrameArgsType::INVALID;
+  NOTREACHED();
 }
 
 // static
@@ -46,17 +46,25 @@ bool EnumTraits<viz::mojom::BeginFrameArgsType,
 }
 
 // static
+bool StructTraits<viz::mojom::BeginFrameIdDataView, viz::BeginFrameId>::Read(
+    viz::mojom::BeginFrameIdDataView data,
+    viz::BeginFrameId* out) {
+  out->source_id = data.source_id();
+  out->sequence_number = data.sequence_number();
+  return true;
+}
+
+// static
 bool StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs>::
     Read(viz::mojom::BeginFrameArgsDataView data, viz::BeginFrameArgs* out) {
   if (!data.ReadFrameTime(&out->frame_time) ||
       !data.ReadDeadline(&out->deadline) ||
-      !data.ReadInterval(&out->interval) || !data.ReadType(&out->type) ||
+      !data.ReadInterval(&out->interval) || !data.ReadFrameId(&out->frame_id) ||
+      !data.ReadType(&out->type) ||
       !data.ReadDispatchTime(&out->dispatch_time) ||
       !data.ReadClientArrivalTime(&out->client_arrival_time)) {
     return false;
   }
-  out->frame_id.source_id = data.source_id();
-  out->frame_id.sequence_number = data.sequence_number();
   out->frames_throttled_since_last = data.frames_throttled_since_last();
   out->trace_id = data.trace_id();
   out->on_critical_path = data.on_critical_path();
@@ -77,15 +85,6 @@ bool StructTraits<viz::mojom::BeginFrameAckDataView, viz::BeginFrameAck>::Read(
   out->frame_id.sequence_number = data.sequence_number();
   out->trace_id = data.trace_id();
   out->has_damage = data.has_damage();
-
-  if (!data.ReadPreferredFrameInterval(&out->preferred_frame_interval)) {
-    return false;
-  }
-  // Preferred_frame_interval must be nullopt or non-negative.
-  if (out->preferred_frame_interval &&
-      out->preferred_frame_interval->is_negative()) {
-    return false;
-  }
   return true;
 }
 

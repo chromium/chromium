@@ -15,6 +15,7 @@ struct OcclusionCullerSettings {
   uint16 quad_split_limit;
   uint16 maximum_occluder_complexity;
   uint16 minimum_fragments_reduced;
+  bool generate_complex_occluder_for_rounded_corners;
 };
 
 struct RendererSettings {
@@ -30,12 +31,6 @@ struct RendererSettings {
   bool requires_alpha_channel;
 
   OcclusionCullerSettings occlusion_culler_settings;
-
-  [EnableIf=is_android]
-  gfx.mojom.Size initial_screen_size;
-
-  [EnableIf=is_android]
-  gfx.mojom.ColorSpace color_space;
 
   [EnableIf=use_ozone]
   array<OverlayStrategy> overlay_strategies;

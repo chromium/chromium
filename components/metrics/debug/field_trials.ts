@@ -66,7 +66,7 @@ class SearchFilter {
     let match = this.matchNameOrHash(this.searchText, named);
     if (!match && checkParts) {
       for (const parts of this.searchParts) {
-        match = this.matchNameOrHash(parts['groups' in named ? 0 : 1]!, named);
+        match = this.matchNameOrHash(parts['groups' in named ? 0 : 1], named);
         if (match) {
           break;
         }
@@ -214,6 +214,7 @@ interface ElementIdMap {
   'filter': HTMLInputElement;
   'filter-status': HTMLElement;
   'field-trial-list': HTMLElement;
+  'waiting-for-trial-list': HTMLElement;
 }
 
 export class FieldTrialsAppElement extends CustomElement {
@@ -264,17 +265,20 @@ export class FieldTrialsAppElement extends CustomElement {
     // submit behavior.
     this.getRequiredElement('form').addEventListener(
         'submit', (e) => e.preventDefault());
+  }
 
+  forceUpdateForTesting() {
+    this.update_();
+  }
+
+  private initFilter_() {
+    this.filterInputElement.removeAttribute('disabled');
     this.filterInputElement.value = localStorage.getItem('filter') || '';
     this.filterInputElement.addEventListener(
         'input', () => this.filterUpdated_());
     this.el('restart-button')
         .addEventListener('click', () => this.proxy_.restart());
     this.filterUpdated_();
-  }
-
-  forceUpdateForTesting() {
-    this.update_();
   }
 
   private setRestartRequired_(): void {
@@ -332,7 +336,8 @@ export class FieldTrialsAppElement extends CustomElement {
     const trialRow = this.findTrialRow(trial);
     if (trialRow) {
       for (const row of trialRow.experimentRows) {
-        row.setForceEnabled(group.forceEnabled && row.group.hash == group.hash);
+        row.setForceEnabled(
+            group.forceEnabled && row.group.hash === group.hash);
       }
     }
 
@@ -341,6 +346,9 @@ export class FieldTrialsAppElement extends CustomElement {
   }
 
   private populateState_(state: FieldTrialState) {
+    const waitingForTrialList = this.el('waiting-for-trial-list');
+    waitingForTrialList.style.display = 'none';
+
     const trialListDiv = this.el('field-trial-list');
     this.trials = state.trials.map(t => new TrialRow(this, t));
     this.trials.sort((a, b) => a.sortKey().localeCompare(b.sortKey()));
@@ -349,6 +357,7 @@ export class FieldTrialsAppElement extends CustomElement {
     if (state.restartRequired) {
       this.setRestartRequired_();
     }
+    this.initFilter_();
     this.update_();
   }
 

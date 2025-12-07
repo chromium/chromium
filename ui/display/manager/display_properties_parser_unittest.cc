@@ -15,7 +15,7 @@ namespace display {
 namespace {
 
 std::optional<base::Value> ReadJsonString(std::string_view json) {
-  return base::JSONReader::Read(json);
+  return base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 using DisplayPropertiesParserTest = ::testing::Test;

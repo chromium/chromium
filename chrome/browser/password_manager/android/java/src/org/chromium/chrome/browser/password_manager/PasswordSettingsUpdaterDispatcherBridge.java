@@ -17,23 +17,26 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountUtils;
 
 import java.util.Optional;
 
 /**
  * Java-counterpart of the native PasswordSettingsUpdaterAndroidDispatcherBridge. It forwards
- * passwords settings updates from native to the downstream implementation. Response callbacks
- * are forwarded by a separate PasswordSettingsUpdaterReceiverBridge.
+ * passwords settings updates from native to the downstream implementation. Response callbacks are
+ * forwarded by a separate PasswordSettingsUpdaterReceiverBridge.
  */
 @JNINamespace("password_manager")
+@NullMarked
 public class PasswordSettingsUpdaterDispatcherBridge {
     private final PasswordSettingsAccessor mSettingsAccessor;
     private final PasswordSettingsUpdaterReceiverBridge mReceiverBridge;
 
     PasswordSettingsUpdaterDispatcherBridge(
             PasswordSettingsUpdaterReceiverBridge settingsUpdaterReceiverBridge,
-            PasswordSettingsAccessor settingsAccessor) {
+            @Nullable PasswordSettingsAccessor settingsAccessor) {
         assertOnBackgroundThread();
         assert settingsUpdaterReceiverBridge != null;
         assert settingsAccessor != null;
@@ -46,7 +49,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
             PasswordSettingsUpdaterReceiverBridge settingsUpdaterReceiverBridge) {
         return new PasswordSettingsUpdaterDispatcherBridge(
                 settingsUpdaterReceiverBridge,
-                PasswordSettingsAccessorFactoryImpl.getOrCreate().createAccessor());
+                PasswordSettingsAccessorFactory.getOrCreate().createAccessor());
     }
 
     @CalledByNative
@@ -64,7 +67,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         offerToSavePasswords ->
                                 mReceiverBridge.onSettingValueFetched(
                                         OFFER_TO_SAVE_PASSWORDS,
-                                        offerToSavePasswords,
+                                        offerToSavePasswords.orElse(null),
                                         metricsRecorder),
                         exception ->
                                 handleFetchingExceptionOnUiThread(
@@ -75,7 +78,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         getAccount(account),
                         autoSignIn ->
                                 mReceiverBridge.onSettingValueFetched(
-                                        AUTO_SIGN_IN, autoSignIn, metricsRecorder),
+                                        AUTO_SIGN_IN, autoSignIn.orElse(null), metricsRecorder),
                         exception ->
                                 handleFetchingExceptionOnUiThread(
                                         AUTO_SIGN_IN, exception, metricsRecorder));
@@ -140,7 +143,9 @@ public class PasswordSettingsUpdaterDispatcherBridge {
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> mReceiverBridge.onSettingValueFetched(setting, value, metricsRecorder));
+                () ->
+                        mReceiverBridge.onSettingValueFetched(
+                                setting, value.orElse(null), metricsRecorder));
     }
 
     private void handleFetchingExceptionOnUiThread(
@@ -171,6 +176,6 @@ public class PasswordSettingsUpdaterDispatcherBridge {
 
     private Optional<Account> getAccount(String syncingAccount) {
         if (syncingAccount == null) return Optional.empty();
-        return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
+        return Optional.of(AccountUtils.createAccountFromEmail(syncingAccount));
     }
 }

@@ -9,21 +9,17 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-struct AccountInfo;
 class Browser;
-struct CoreAccountId;
 enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
-}
-
-namespace signin_metrics {
-enum class ReauthAccessPoint;
 }
 
 // Interface to the platform-specific managers of the Signin and Sync
@@ -54,21 +50,24 @@ class SigninViewControllerDelegate {
       SyncConfirmationStyle style,
       bool is_sync_promo);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Returns a platform-specific SigninViewControllerDelegate instance that
+  // displays the modal history sync opt in dialog. The returned object should
+  // delete itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateSyncHistoryOptInDelegate(
+      Browser* browser,
+      bool should_close_modal_dialog,
+      HistorySyncOptinLaunchContext launch_context,
+      HistorySyncOptinHelper::FlowCompletedCallback callback);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the modal sign in error dialog. The returned object should delete
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSigninErrorDelegate(
       Browser* browser);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns a platform-specific SigninViewContolllerDelegate instance that
-  // displays the reauth confirmation modal dialog. The returned object should
-  // delete itself when the window it's managing is closed.
-  static SigninViewControllerDelegate* CreateReauthConfirmationDelegate(
-      Browser* browser,
-      const CoreAccountId& account_id,
-      signin_metrics::ReauthAccessPoint access_point);
-
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the profile customization modal dialog. The returned object should
   // delete itself when the window it's managing is closed.
@@ -76,25 +75,32 @@ class SigninViewControllerDelegate {
   // display the local profile creation version of the page.
   // If |show_profile_switch_iph| is true, shows a profile switch IPH after the
   // user completes the profile customization.
+  // If |show_supervised_user_iph| is true, shows to supervised users the
+  // Supervised User Profile IPH at the end of the profile customization.
   static SigninViewControllerDelegate* CreateProfileCustomizationDelegate(
       Browser* browser,
       bool is_local_profile_creation,
-      bool show_profile_switch_iph = false);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      bool show_profile_switch_iph = false,
+      bool show_supervised_user_iph = false);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns a platform-specific SigninViewControllerDelegate instance that
+  // displays the signout confirmation dialog. The returned object should delete
+  // itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateSignoutConfirmationDelegate(
+      Browser* browser,
+      ChromeSignoutConfirmationPromptVariant variant,
+      size_t unsynced_data_count,
+      SignoutConfirmationCallback callback);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Returns a platform-specific SigninViewContolllerDelegate instance that
   // displays the managed user notice modal dialog. The returned object
   // should delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
       Browser* browser,
-      const AccountInfo& account_info,
-      bool is_oidc_account,
-      bool force_new_profile,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
 #endif
 
   void AddObserver(Observer* observer);

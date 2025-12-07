@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/test/test_session_state_animator.h"
 
+#include <array>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -18,8 +14,8 @@
 
 namespace ash {
 
-const SessionStateAnimator::Container
-    TestSessionStateAnimator::kAllContainers[] = {
+const std::array<SessionStateAnimator::Container, 7>
+    TestSessionStateAnimator::kAllContainers = {
         SessionStateAnimator::WALLPAPER,
         SessionStateAnimator::SHELF,
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
@@ -184,9 +180,8 @@ bool TestSessionStateAnimator::IsContainerAnimated(
 bool TestSessionStateAnimator::AreContainersAnimated(
     int container_mask,
     SessionStateAnimator::AnimationType type) const {
-  for (size_t i = 0; i < std::size(kAllContainers); ++i) {
-    if (container_mask & kAllContainers[i] &&
-        !IsContainerAnimated(kAllContainers[i], type)) {
+  for (const auto container : kAllContainers) {
+    if (container_mask & container && !IsContainerAnimated(container, type)) {
       return false;
     }
   }
@@ -207,9 +202,9 @@ void TestSessionStateAnimator::StartAnimation(int container_mask,
                                               AnimationType type,
                                               AnimationSpeed speed) {
   ++last_animation_epoch_;
-  for (size_t i = 0; i < std::size(kAllContainers); ++i) {
-    if (container_mask & kAllContainers[i]) {
-      AddAnimation(kAllContainers[i], type, speed, base::DoNothing(),
+  for (const auto container : kAllContainers) {
+    if (container_mask & container) {
+      AddAnimation(container, type, speed, base::DoNothing(),
                    base::DoNothing());
     }
   }
@@ -223,18 +218,19 @@ void TestSessionStateAnimator::StartAnimationWithCallback(
   ++last_animation_epoch_;
 
   int container_count = 0;
-  for (size_t i = 0; i < std::size(kAllContainers); ++i) {
-    if (container_mask & kAllContainers[i])
+  for (const auto container : kAllContainers) {
+    if (container_mask & container) {
       ++container_count;
+    }
   }
 
   base::RepeatingClosure completion_callback =
       base::BarrierClosure(container_count, std::move(callback));
-  for (size_t i = 0; i < std::size(kAllContainers); ++i) {
-    if (container_mask & kAllContainers[i]) {
+  for (const auto container : kAllContainers) {
+    if (container_mask & container) {
       // ash::SessionStateAnimatorImpl invokes the callback whether or not the
       // animation was completed successfully or not.
-      AddAnimation(kAllContainers[i], type, speed, completion_callback,
+      AddAnimation(container, type, speed, completion_callback,
                    completion_callback);
     }
   }
@@ -258,9 +254,10 @@ void TestSessionStateAnimator::HideWallpaper() {
 }
 
 void TestSessionStateAnimator::AbortAnimations(int container_mask) {
-  for (size_t i = 0; i < std::size(kAllContainers); ++i) {
-    if (container_mask & kAllContainers[i])
-      AbortAnimation(kAllContainers[i]);
+  for (const auto container : kAllContainers) {
+    if (container_mask & container) {
+      AbortAnimation(container);
+    }
   }
 }
 
@@ -270,8 +267,8 @@ void TestSessionStateAnimator::StartAnimationInSequence(
     AnimationSpeed speed,
     AnimationSequence* animation_sequence) {
   ++last_animation_epoch_;
-  for (size_t i = 0; i < std::size(kAllContainers); ++i) {
-    if (container_mask & kAllContainers[i]) {
+  for (const auto container : kAllContainers) {
+    if (container_mask & container) {
       base::OnceClosure success_callback =
           base::BindOnce(&AnimationSequence::SequenceFinished,
                          base::Unretained(animation_sequence), true);
@@ -279,7 +276,7 @@ void TestSessionStateAnimator::StartAnimationInSequence(
           base::BindOnce(&AnimationSequence::SequenceFinished,
                          base::Unretained(animation_sequence), false);
       animation_sequence->SequenceAttached();
-      AddAnimation(kAllContainers[i], type, speed, std::move(success_callback),
+      AddAnimation(container, type, speed, std::move(success_callback),
                    std::move(failed_callback));
     }
   }

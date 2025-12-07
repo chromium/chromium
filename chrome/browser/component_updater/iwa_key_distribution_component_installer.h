@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/update_client/update_client.h"
@@ -20,9 +20,18 @@ class FilePath;
 class Version;
 }  // namespace base
 
+namespace web_app {
+class IwaKeyDistributionInfoProvider;
+}  // namespace web_app
+
 namespace component_updater {
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kIwaKeyDistributionComponent);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+inline constexpr char kIwaKeyDistributionComponentExpCohort[] =
+    "iwa-kd-component-exp-cohort";
 
 class ComponentUpdateService;
 
@@ -35,17 +44,17 @@ class IwaKeyDistributionComponentInstallerPolicy
   static constexpr base::FilePath::CharType kDataFileName[] =
       FILE_PATH_LITERAL("iwa-key-distribution.pb");
 
-  using ComponentReadyCallback =
-      base::RepeatingCallback<void(const base::Version&,
-                                   const base::FilePath& installed_file_path)>;
-
-  explicit IwaKeyDistributionComponentInstallerPolicy(ComponentReadyCallback);
+  IwaKeyDistributionComponentInstallerPolicy();
   ~IwaKeyDistributionComponentInstallerPolicy() override;
 
   IwaKeyDistributionComponentInstallerPolicy(
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
   IwaKeyDistributionComponentInstallerPolicy operator=(
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
+
+  // Takes no effect if called before the component registration completes.
+  static void QueueOnDemandUpdate(
+      base::PassKey<web_app::IwaKeyDistributionInfoProvider>);
 
  private:
   // ComponentInstallerPolicy:
@@ -64,9 +73,6 @@ class IwaKeyDistributionComponentInstallerPolicy
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  // Repeatedly called from `ComponentReady()`.
-  ComponentReadyCallback on_component_ready_;
 };
 
 // Called once during startup to make the component update service aware of

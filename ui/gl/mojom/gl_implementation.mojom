@@ -25,6 +25,7 @@ enum ANGLEImplementation {
   kVulkan,
   kSwiftShader,
   kMetal,
+  kD3D11Warp,
   kDefault,
 };
 

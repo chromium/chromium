@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/web_contents.h"
@@ -82,7 +83,7 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
       std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt,
       std::optional<gfx::Rect> popup_bounds = std::nullopt) {
     if (!profile)
-      profile = browser()->profile();
+      profile = GetProfile();
 
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
         &mock_web_auth_flow_delegate_, profile, url, mode,
@@ -543,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
     InteractiveNoBrowser_WebAuthCreatesBrowserWithPopupWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   // Simulates an extension being opened, in order for the profile not to be
   // added for destruction.
   ScopedProfileKeepAlive profile_keep_alive(
@@ -575,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(
 // window does not trigger Session restore.
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
                        InteractiveNoBrowser_NotActivatingSessionRestore) {
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
 
   // Enable SessionRestore to last used pages.
   SessionStartupPref startup_pref(SessionStartupPref::LAST);
@@ -689,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
     Interactive_MarkedForDeletionProfileNotAllowedToCreatePopupWindow) {
   // Marking active profile for deletion.
-  MarkProfileDirectoryForDeletion(browser()->profile()->GetPath());
+  MarkProfileDirectoryForDeletion(GetProfile()->GetPath());
 
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
 
@@ -733,6 +734,39 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   // window title bar, which we don't want to assert exactly here.
   EXPECT_GE(bounds.width(), test_bounds.width());
   EXPECT_GE(bounds.height(), test_bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
+                       WebContentsDestroyedBeforeProfileShutDown) {
+  // Default mock implementation of OnAuthFlowFailure deletes the flow. We do
+  // not want that behavior in this test because we want to verify WebAuthFlow's
+  // internal state before destruction.
+  ON_CALL(mock(), OnAuthFlowFailure)
+      .WillByDefault([](WebAuthFlow::Failure failure) {});
+
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
+
+  // Start a WebAuthFlow that will create a popup window.
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+  StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
+  navigation_observer.Wait();
+
+  // Authentication flow should have created a popup window.
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count + 1);
+  Browser* popup = chrome::FindBrowserWithTab(web_contents());
+
+  // Simulate profile destruction notification and wait for the auth popup to
+  // close.
+  static_cast<ProfileObserver*>(web_auth_flow())
+      ->OnProfileWillBeDestroyed(GetProfile());
+  ui_test_utils::WaitForBrowserToClose(popup);
+
+  // Verify that WebAuthFlow closed the WebContents.
+  EXPECT_TRUE(web_auth_flow());
+  EXPECT_FALSE(web_auth_flow()->web_contents());
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count);
 }
 
 }  //  namespace extensions

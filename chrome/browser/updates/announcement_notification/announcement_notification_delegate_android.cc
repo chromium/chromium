@@ -21,11 +21,12 @@ AnnouncementNotificationDelegateAndroid::
 void AnnouncementNotificationDelegateAndroid::ShowNotification() {
   auto* env = base::android::AttachCurrentThread();
   GURL url = AnnouncementNotificationService::GetAnnouncementURL();
-  Java_AnnouncementNotificationManager_showNotification(
-      env, base::android::ConvertUTF8ToJavaString(env, url.spec()));
+  Java_AnnouncementNotificationManager_showNotification(env, url.spec());
 }
 
 bool AnnouncementNotificationDelegateAndroid::IsFirstRun() {
   return Java_AnnouncementNotificationManager_isFirstRun(
       base::android::AttachCurrentThread());
 }
+
+DEFINE_JNI(AnnouncementNotificationManager)

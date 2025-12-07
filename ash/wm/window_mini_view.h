@@ -45,6 +45,9 @@ class WindowMiniViewBase : public views::View {
   // Shows or hides a focus ring around this.
   void UpdateFocusState(bool focus);
 
+  [[nodiscard]] base::CallbackListSubscription AddFocusedChangedCallback(
+      views::PropertyChangedCallback callback);
+
   // Returns true if a preview of the given `window` is contained in `this`.
   virtual bool Contains(aura::Window* window) const = 0;
 
@@ -140,7 +143,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void SetSelectedWindowForFocus(aura::Window* window) override;
   void ClearFocusSelection() override;
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -167,6 +169,9 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void OnRoundedCornersSet();
 
   void InstallFocusRing(bool use_custom_predicate);
+
+  void UpdateAccessibleIgnoredState();
+  void UpdateAccessibleName();
 
   // Generates the focus ring path for `this`, which has four rounded corners by
   // default. If this is part of a snap group, the path should match the rounded

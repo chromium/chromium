@@ -1,0 +1,38 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/chromeos/extensions/telemetry/api/common",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor chromeos codes in //chrome to break these dependencies; see
+  # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
+  # this list.
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/extensions/extension_management.h",
+  "+chrome/browser/extensions/extension_management_test_util.h",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
+  "+chrome/browser/ui/web_applications/test",
+  "+components/webapps/isolated_web_apps/scheme.h",
+  "+chrome/common",
+  "+chrome/test",
+]
+
+specific_include_rules = {
+   "api_guard_delegate_unittest\\.cc": [
+      "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+   ],
+   "base_telemetry_extension_api_guard_function_browsertest\\.cc": [
+      "+chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h",
+   ],
+}

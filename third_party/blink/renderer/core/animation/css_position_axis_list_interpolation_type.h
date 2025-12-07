@@ -12,14 +12,14 @@ namespace blink {
 class CSSPositionAxisListInterpolationType
     : public CSSLengthListInterpolationType {
  public:
-  CSSPositionAxisListInterpolationType(PropertyHandle property)
+  explicit CSSPositionAxisListInterpolationType(PropertyHandle property)
       : CSSLengthListInterpolationType(property) {}
 
   static InterpolationValue ConvertPositionAxisCSSValue(const CSSValue&);
 
  private:
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 };
 

@@ -16,9 +16,12 @@
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -83,7 +86,7 @@ void ContextMenuMatcher::AppendExtensionItems(
 
   bool prepend_separator = false;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // If this is the first extension-provided menu item, and there are other
   // items in the menu, and the last item is not a separator add a separator.
   // Also, don't add separators when Smart Text Selection is enabled. Smart
@@ -328,7 +331,7 @@ void ContextMenuMatcher::RecursivelyAppendExtensionItems(
 
   bool enable_separators = false;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   enable_separators = true;
 #endif
 

@@ -35,7 +35,8 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   // live longer than the created sparse histogram.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       PersistentHistogramAllocator* allocator,
-      const char* name,
+      DurableStringView name,
+      uint64_t name_hash,
       HistogramSamples::Metadata* meta,
       HistogramSamples::Metadata* logged_meta);
 
@@ -47,12 +48,12 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   // HistogramBase:
   uint64_t name_hash() const override;
   HistogramType GetHistogramType() const override;
-  bool HasConstructionArguments(Sample expected_minimum,
-                                Sample expected_maximum,
+  bool HasConstructionArguments(Sample32 expected_minimum,
+                                Sample32 expected_maximum,
                                 size_t expected_bucket_count) const override;
-  void Add(Sample value) override;
-  void AddCount(Sample value, int count) override;
-  void AddSamples(const HistogramSamples& samples) override;
+  void Add(Sample32 value) override;
+  void AddCount(Sample32 value, int count) override;
+  bool AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
   std::unique_ptr<HistogramSamples> SnapshotSamples() const override;
   std::unique_ptr<HistogramSamples> SnapshotUnloggedSamples() const override;
@@ -67,10 +68,16 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
 
  private:
   // Clients should always use FactoryGet to create SparseHistogram.
-  explicit SparseHistogram(const char* name);
+  explicit SparseHistogram(DurableStringView name);
+
+  // Same as above, but takes a pre-computed `name_hash`. This function is more
+  // efficient as it avoids recomputing the hash if it's already known. The
+  // `name_hash` must be the hash of `name`, this is enforced with a DCHECK.
+  SparseHistogram(DurableStringView name, uint64_t name_hash);
 
   SparseHistogram(PersistentHistogramAllocator* allocator,
-                  const char* name,
+                  DurableStringView name,
+                  uint64_t name_hash,
                   HistogramSamples::Metadata* meta,
                   HistogramSamples::Metadata* logged_meta);
 

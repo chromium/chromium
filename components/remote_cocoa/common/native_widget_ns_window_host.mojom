@@ -7,7 +7,7 @@ module remote_cocoa.mojom;
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/dialog_button.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/events/mojom/event.mojom";
@@ -37,18 +37,38 @@ struct ValidateUserInterfaceItemResult {
   bool new_toggle_state;
 };
 
+// The resulf of hit testing. Used for routing mouse event to the appropriate
+// target.
+enum HitTestResult {
+  // Hits the draggable background area. The NSWindow handles the dragging.
+  kDraggableBackground,
+  // Hits the NSView that hosts views::RootView. The event is sent to this root
+  // NSView, then the toolkit-views handles the event.
+  kRootView,
+  // Hits a subview of the root NSView. The event is sent to the subview.
+  // Usually, this is a RenderWidgetHostViewCocoa which presents a content
+  // area.
+  kSubView,
+  // Hits other area. This includes resize handles, traffic lights, etc. The
+  // NSWindow handles the event.
+  kOther,
+};
+
 // The interface through which an NSWindow (possibly in a process separate from
 // the browser process) may interact with a NativeWidgetMac.
 interface NativeWidgetNSWindowHost {
   // Update the views::Widget, ui::Compositor and ui::Layer's visibility.
   OnVisibilityChanged(bool visible);
 
+  // Called when -[NSWindow isOnActiveSpace] changes.
+  OnSpaceActivationChanged(bool is_space_active);
+
   // Called when the window's native theme changes.
   OnWindowNativeThemeChanged();
 
-  // Resize the underlying views::View to |new_size| in response to the NSView's
-  // frame changing size. Note that this will not necessarily match the content
-  // bounds from OnWindowGeometryChanged.
+  // Resize the underlying views::View to |new_size| in response to the
+  // NSView's frame changing size. Note that this will not necessarily match
+  // the content bounds from OnWindowGeometryChanged.
   OnViewSizeChanged(gfx.mojom.Size new_size);
 
   // The vertical position from which sheets should be anchored, from the top
@@ -92,18 +112,22 @@ interface NativeWidgetNSWindowHost {
 
   // Called when the NSEvent monitor observes an event. If `event_handled` is
   // true, then do not continue dispatching the event.
+  // The `target_is_this_window` parameter is set to true if the event target
+  // was equal to the NSWindow this NativeWidgetNSWindowHost represents.
   [Sync]
-  DispatchMonitorEvent(ui.mojom.Event event) => (bool event_handled);
+  DispatchMonitorEvent(ui.mojom.Event event, bool target_is_this_window) =>
+      (bool event_handled);
 
   // Synchronously return in  |has_menu_controller| whether or not a menu
   // controller exists for this widget.
   [Sync]
   GetHasMenuController() => (bool has_menu_controller);
 
-  // Synchronously query if |location_in_content| is a draggable background.
+  // Synchronously hit tests point `location_in_content` in the toolkit-views
+  // tree.
   [Sync]
-  GetIsDraggableBackgroundAt(gfx.mojom.Point location_in_content) =>
-      (bool is_draggable_background);
+  GetHitTestResult(gfx.mojom.Point location_in_content) =>
+      (HitTestResult hit_test_result);
 
   // Asynchronously query the tooltip text for |location_in_content|.
   GetTooltipTextAt(gfx.mojom.Point location_in_content) =>
@@ -123,6 +147,12 @@ interface NativeWidgetNSWindowHost {
   OnWindowGeometryChanged(
       gfx.mojom.Rect window_bounds_in_screen_dips,
       gfx.mojom.Rect content_bounds_in_screen_dips);
+
+  // Called when the window is about to be live resized.
+  OnWindowWillStartLiveResize();
+
+  // Called when a live resize operation on the window has ended.
+  OnWindowDidEndLiveResize();
 
   // Called when the window begins transitioning to or from being fullscreen.
   OnWindowFullscreenTransitionStart(
@@ -163,8 +193,11 @@ interface NativeWidgetNSWindowHost {
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
 
-  // Called when this widget is reparented to another window.
-  OnWindowParentChanged(uint64 new_parent_id);
+  // Called when a sheet modal is shown.
+  OnSheetModalShown();
+
+  // Called when the sheet modal is closed.
+  OnSheetModalClosed();
 
   // Called when the toolbar reveal status changes. The toolbar is visible
   // either because there are outstanding reveal locks or the mouse is
@@ -174,7 +207,7 @@ interface NativeWidgetNSWindowHost {
   // Called when the menubar reveal status changes.
   // `reveal_amount` ranges in [0, 1]. This is the opacity of the menubar
   // and the browser window traffic lights.
-  OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
+  OnImmersiveFullscreenMenuBarRevealChanged(double reveal_amount);
 
   // Returns height of the menubar if the menubar autohides, otherwise 0.
   OnAutohidingMenuBarHeightChanged(int32 menu_bar_height);

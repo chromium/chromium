@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -73,6 +72,7 @@ PinContainerView::PinContainerView() {
   pin_keyboard_ = AddChildView(std::make_unique<PinKeyboardView>());
   bridge_ =
       std::make_unique<PinKeyboardInputBridge>(auth_input_, pin_keyboard_);
+  GetViewAccessibility().SetIsInvisible(true);
 }
 
 PinContainerView::~PinContainerView() {
@@ -93,10 +93,6 @@ gfx::Size PinContainerView::CalculatePreferredSize(
                                kVerticalSeparatorInputAndKeyboardDp +
                                pin_keyboard_size.height();
   return gfx::Size(preferred_width, preferred_height);
-}
-
-void PinContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
 }
 
 std::string PinContainerView::GetObjectName() const {

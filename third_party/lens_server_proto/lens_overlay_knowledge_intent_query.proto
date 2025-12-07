@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
@@ -13,27 +13,27 @@ import "lens_overlay_translate_stickiness_signals.proto";
 // A message representing the function call of an answers intent query.
 message FunctionCall {
   // Name of this function call.
-  optional string name = 1;
+  string name = 1;
 
   // A list of arguments of this function call.
   repeated Argument argument = 2;
 
   // Signals at the function call level
-  optional FunctionCallSignals signals = 4;
+  FunctionCallSignals signals = 4;
 }
 
 // Signals at the function call level
 message FunctionCallSignals {
-  optional TranslateStickinessSignals translate_stickiness_signals = 311378150;
+  TranslateStickinessSignals translate_stickiness_signals = 311378150;
 }
 
 // A message representing the function argument.
 message Argument {
   // Name of this argument.
-  optional string name = 1;
+  string name = 1;
 
   // The value of this argument.
-  optional ArgumentValue value = 2;
+  ArgumentValue value = 2;
 }
 
 // A message representing the value of an argument.

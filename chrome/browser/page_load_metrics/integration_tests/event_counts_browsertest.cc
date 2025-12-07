@@ -6,6 +6,7 @@
 #include "cc/base/switches.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -19,7 +20,7 @@ class EventCountsBrowserTest : public MetricIntegrationTest {
 
     // content::SimulateTouchEventAt can only be used in Aura, however
     // chrome.gpuBenchmarking.tap can be used on all platforms.
-    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+    command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
   }
 };
 

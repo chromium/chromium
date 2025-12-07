@@ -6,6 +6,7 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 
 namespace content {
@@ -17,13 +18,15 @@ void SendLogMessage(const std::string& message) {
 }  // namespace
 
 MediaStreamPowerLogger::MediaStreamPowerLogger() {
-  base::PowerMonitor::AddPowerSuspendObserver(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerSuspendObserver(this);
+  power_monitor->AddPowerThermalObserver(this);
 }
 
 MediaStreamPowerLogger::~MediaStreamPowerLogger() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
-  base::PowerMonitor::RemovePowerThermalObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->RemovePowerSuspendObserver(this);
+  power_monitor->RemovePowerThermalObserver(this);
 }
 
 void MediaStreamPowerLogger::OnSuspend() {

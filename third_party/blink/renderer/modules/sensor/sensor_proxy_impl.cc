@@ -18,12 +18,12 @@ SensorProxyImpl::SensorProxyImpl(device::mojom::blink::SensorType sensor_type,
                                  SensorProviderProxy* provider,
                                  Page* page)
     : SensorProxy(sensor_type, provider, page),
-      sensor_remote_(provider->GetSupplementable()),
-      client_receiver_(this, provider->GetSupplementable()),
+      sensor_remote_(provider->GetLocalDOMWindow()),
+      client_receiver_(this, provider->GetLocalDOMWindow()),
       task_runner_(
-          provider->GetSupplementable()->GetTaskRunner(TaskType::kSensor)),
+          provider->GetLocalDOMWindow()->GetTaskRunner(TaskType::kSensor)),
       polling_timer_(
-          provider->GetSupplementable()->GetTaskRunner(TaskType::kSensor),
+          provider->GetLocalDOMWindow()->GetTaskRunner(TaskType::kSensor),
           this,
           &SensorProxyImpl::OnPollingTimer) {}
 
@@ -47,8 +47,8 @@ void SensorProxyImpl::Initialize() {
 
   state_ = kInitializing;
   sensor_provider_proxy()->GetSensor(
-      type_, WTF::BindOnce(&SensorProxyImpl::OnSensorCreated,
-                           WrapWeakPersistent(this)));
+      type_,
+      BindOnce(&SensorProxyImpl::OnSensorCreated, WrapWeakPersistent(this)));
 }
 
 void SensorProxyImpl::AddConfiguration(
@@ -201,9 +201,9 @@ void SensorProxyImpl::OnSensorCreated(
   DCHECK_GE(device::GetSensorMaxAllowedFrequency(type_),
             frequency_limits_.second);
 
-  auto error_callback = WTF::BindOnce(
-      &SensorProxyImpl::HandleSensorError, WrapWeakPersistent(this),
-      SensorCreationResult::ERROR_NOT_AVAILABLE);
+  auto error_callback =
+      BindOnce(&SensorProxyImpl::HandleSensorError, WrapWeakPersistent(this),
+               SensorCreationResult::ERROR_NOT_AVAILABLE);
   sensor_remote_.set_disconnect_handler(std::move(error_callback));
 
   state_ = kInitialized;
@@ -241,10 +241,8 @@ void SensorProxyImpl::RemoveActiveFrequency(double frequency) {
   Vector<double>::iterator it = std::lower_bound(
       active_frequencies_.begin(), active_frequencies_.end(), frequency);
   if (it == active_frequencies_.end() || *it != frequency) {
-    NOTREACHED_IN_MIGRATION()
-        << "Attempted to remove active frequency which is not present "
-           "in the list";
-    return;
+    NOTREACHED() << "Attempted to remove active frequency which is not present "
+                    "in the list";
   }
 
   active_frequencies_.erase(it);

@@ -19,6 +19,8 @@
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -306,14 +308,30 @@ void RenderWidgetHostNSViewBridge::UnlockKeyboard() {
 void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
     const std::string& title,
     const std::string& text,
-    const std::string& url,
+    const GURL& url,
     const std::vector<std::string>& file_paths,
     ShowSharingServicePickerCallback callback) {
-  NSString* ns_title = base::SysUTF8ToNSString(title);
-  NSString* ns_url = base::SysUTF8ToNSString(url);
-  NSString* ns_text = base::SysUTF8ToNSString(text);
-
-  NSMutableArray* items = [@[ ns_title, ns_url, ns_text ] mutableCopy];
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+  if (url.is_valid()) {
+    if (@available(macOS 13.0, *)) {
+      NSString* ns_title =
+          base::SysUTF8ToNSString(title.empty() ? url.spec() : title);
+      NSURL* ns_url = net::NSURLWithGURL(url);
+      [items addObject:[[NSPreviewRepresentingActivityItem alloc]
+                           initWithItem:ns_url
+                                  title:ns_title
+                                  image:nil
+                                   icon:nil]];
+    } else {
+      [items addObject:base::SysUTF8ToNSString(url.spec())];
+      [items addObject:base::SysUTF8ToNSString(title)];
+    }
+  } else if (!title.empty()) {
+    [items addObject:base::SysUTF8ToNSString(title)];
+  }
+  if (!text.empty()) {
+    [items addObject:base::SysUTF8ToNSString(text)];
+  }
 
   for (const auto& file_path : file_paths) {
     NSString* ns_file_path = base::SysUTF8ToNSString(file_path);
@@ -397,7 +415,7 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
     // menu to finish showing to get the nested run loop of the stack.
     // Attempting to show a new menu while the old menu is still visible or
     // fading out confuses AppKit, since we're still in the nested event loop of
-    // DisplayPopupMenu(). See https://crbug.com/812260.
+    // DisplayPopupMenu(). See https://crbug.com/41370640.
     pending_menus_.emplace_back(std::move(menu), std::move(callback));
     return;
   }
@@ -413,9 +431,9 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
   }
 
   // Retain the Cocoa view for the duration of the pop-up so that it can't be
-  // dealloced if the widget is destroyed while the pop-up's up (which
-  // would in turn delete me, causing a crash once the -runMenuInView
-  // call returns. That's what was happening in <http://crbug.com/33250>).
+  // dealloced if the widget is destroyed while the pop-up's up (which would in
+  // turn delete me, causing a crash once the -runMenuInView call returns.
+  // That's what was happening in <https://crbug.com/40346793>).
   RenderWidgetHostViewCocoa* cocoa_view = cocoa_view_;
 
   // Get a weak pointer to `this`, so we can detect if we get destroyed while
@@ -466,16 +484,7 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
     return;
   }
 
-  if (runner.menuItemWasChosen) {
-    int index = runner.indexOfSelectedItem;
-    if (index < 0) {
-      std::move(callback).Run(std::nullopt);
-    } else {
-      std::move(callback).Run(index);
-    }
-  } else {
-    std::move(callback).Run(std::nullopt);
-  }
+  std::move(callback).Run(runner.selectedMenuItemIndex);
 
   std::vector<PendingPopupMenu> next_menus = std::exchange(pending_menus_, {});
   if (!next_menus.empty()) {

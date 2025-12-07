@@ -7,16 +7,16 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "content/common/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/buildflags.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/media_buildflags.h"
 

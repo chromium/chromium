@@ -10,9 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -20,34 +19,41 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/** Controls the behaviour of the Cookies privacy guide page. */
+/** Controls the behavior of the Cookies privacy guide page. */
+@NullMarked
 public class CookiesFragment extends PrivacyGuideBasePage
         implements RadioGroup.OnCheckedChangeListener {
-    private RadioButtonWithDescription mBlockThirdPartyIncognito;
+    private RadioButtonWithDescription mAllowThirdParty;
     private RadioButtonWithDescription mBlockThirdParty;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_cookies_step, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         RadioGroup radioGroup = view.findViewById(R.id.cookies_radio_button);
         radioGroup.setOnCheckedChangeListener(this);
 
-        mBlockThirdPartyIncognito = view.findViewById(R.id.block_third_party_incognito);
+        mAllowThirdParty = view.findViewById(R.id.allow_third_party);
         mBlockThirdParty = view.findViewById(R.id.block_third_party);
 
-        initialRadioButtonConfig();
+        boolean allowCookies =
+                WebsitePreferenceBridge.isCategoryEnabled(
+                        getProfile(), ContentSettingsType.COOKIES);
+        if (!allowCookies) {
+            assert false : "Cookies page should not be shown if cookies are blocked";
+        }
+        updateRadioButtonConfig();
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int clickedButtonId) {
-        WebsitePreferenceBridge.setCategoryEnabled(getProfile(), ContentSettingsType.COOKIES, true);
-
-        if (clickedButtonId == R.id.block_third_party_incognito) {
+        if (clickedButtonId == R.id.allow_third_party) {
             setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
         } else if (clickedButtonId == R.id.block_third_party) {
             setCookieControlsMode(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -56,29 +62,26 @@ public class CookiesFragment extends PrivacyGuideBasePage
         }
     }
 
-    private void initialRadioButtonConfig() {
-        boolean allowCookies =
-                WebsitePreferenceBridge.isCategoryEnabled(
-                        getProfile(), ContentSettingsType.COOKIES);
-        if (!allowCookies) {
-            assert false : "Cookies page should not be shown if cookies are blocked";
-        }
-
+    private void updateRadioButtonConfig() {
         @CookieControlsMode
         int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(getProfile());
         switch (cookieControlsMode) {
             case CookieControlsMode.INCOGNITO_ONLY:
-                mBlockThirdPartyIncognito.setChecked(true);
+            case CookieControlsMode.OFF:
+                mAllowThirdParty.setChecked(true);
                 break;
             case CookieControlsMode.BLOCK_THIRD_PARTY:
                 mBlockThirdParty.setChecked(true);
                 break;
-            case CookieControlsMode.OFF:
-                assert false : "Cookies page should not be shown when cookie control is off";
-                break;
             default:
                 assert false : "Unexpected CookieControlsMode " + cookieControlsMode;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRadioButtonConfig();
     }
 
     private void setCookieControlsMode(@CookieControlsMode int cookieControlsMode) {

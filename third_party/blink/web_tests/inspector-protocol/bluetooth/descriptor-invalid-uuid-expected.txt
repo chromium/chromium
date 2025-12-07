@@ -1,0 +1,9 @@
+Tests Bluetooth adding an invalid descriptor UUID
+{
+    error : {
+        code : -32602
+        message : abc is not a valid UUID
+    }
+    id : <number>
+}
+

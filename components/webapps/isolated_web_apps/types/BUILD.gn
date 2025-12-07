@@ -1,0 +1,48 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("types") {
+  sources = [
+    "iwa_origin.cc",
+    "iwa_origin.h",
+    "iwa_version.cc",
+    "iwa_version.h",
+    "source.cc",
+    "source.h",
+    "storage_location.cc",
+    "storage_location.h",
+    "update_channel.cc",
+    "update_channel.h",
+    "url_loading_types.h",
+  ]
+
+  deps = [
+    "//components/crx_file",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//crypto",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/web_package",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "iwa_version_unittest.cc",
+    "source_unittest.cc",
+  ]
+  deps = [
+    ":types",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

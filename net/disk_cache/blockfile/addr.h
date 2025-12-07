@@ -119,10 +119,6 @@ class NET_EXPORT_PRIVATE Addr {
     return value_ == other.value_;
   }
 
-  bool operator!=(Addr other) const {
-    return value_ != other.value_;
-  }
-
   static int BlockSizeForFileType(FileType file_type) {
     switch (file_type) {
       case RANKINGS:
@@ -140,8 +136,7 @@ class NET_EXPORT_PRIVATE Addr {
       case BLOCK_EVICTED:
         return 48;
       case EXTERNAL:
-        NOTREACHED_IN_MIGRATION();
-        return 0;
+        NOTREACHED();
     }
     return 0;
   }

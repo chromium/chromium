@@ -4,10 +4,12 @@
 
 #include "remoting/codec/video_decoder_verbatim.h"
 
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -30,7 +32,8 @@ bool VideoDecoderVerbatim::DecodePacket(const VideoPacket& packet,
                                         webrtc::DesktopFrame* frame) {
   webrtc::DesktopRegion* region = frame->mutable_updated_region();
   region->Clear();
-  const char* current_data_pos = packet.data().data();
+  base::span<const uint8_t> packet_data = base::as_byte_span(packet.data());
+  base::span<const uint8_t> remaining_data = packet_data;
   for (int i = 0; i < packet.dirty_rects_size(); ++i) {
     Rect proto_rect = packet.dirty_rects(i);
     webrtc::DesktopRect rect =
@@ -43,21 +46,18 @@ bool VideoDecoderVerbatim::DecodePacket(const VideoPacket& packet,
       return false;
     }
 
-    int rect_row_size = kBytesPerPixel * rect.width();
-    const char* rect_data_end =
-        current_data_pos + rect_row_size * rect.height();
-    if (rect_data_end > packet.data().data() + packet.data().size()) {
+    const size_t rect_data_size = kBytesPerPixel * rect.width() * rect.height();
+    if (remaining_data.size() < rect_data_size) {
       LOG(ERROR) << "Invalid packet received.";
       return false;
     }
 
-    uint8_t* source =
-        reinterpret_cast<uint8_t*>(const_cast<char*>(current_data_pos));
-    frame->CopyPixelsFrom(source, rect_row_size, rect);
-    current_data_pos = rect_data_end;
+    frame->CopyPixelsFrom(remaining_data.data(), kBytesPerPixel * rect.width(),
+                          rect);
+    remaining_data = remaining_data.subspan(rect_data_size);
   }
 
-  if (current_data_pos != packet.data().data() + packet.data().size()) {
+  if (!remaining_data.empty()) {
     LOG(ERROR) << "Invalid packet received.";
     return false;
   }

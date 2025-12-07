@@ -1,0 +1,32 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_device_authenticator.h",
+    "ios_device_authenticator.mm",
+    "ios_device_authenticator_factory.h",
+    "ios_device_authenticator_factory.mm",
+  ]
+
+  deps = [
+    "//components/device_reauth",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_device_authenticator_unittest.mm" ]
+  deps = [
+    "//base/test:test_proto",
+    "//base/test:test_support",
+    "//ios/chrome/browser/device_reauth/model",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//testing/gtest",
+  ]
+}

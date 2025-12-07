@@ -43,13 +43,8 @@ IndexedDBObjectStoreMetadata::IndexedDBObjectStoreMetadata(
     const std::u16string& name,
     int64_t id,
     const IndexedDBKeyPath& key_path,
-    bool auto_increment,
-    int64_t max_index_id)
-    : name(name),
-      id(id),
-      key_path(key_path),
-      auto_increment(auto_increment),
-      max_index_id(max_index_id) {}
+    bool auto_increment)
+    : name(name), id(id), key_path(key_path), auto_increment(auto_increment) {}
 
 IndexedDBObjectStoreMetadata::IndexedDBObjectStoreMetadata() = default;
 
@@ -72,18 +67,9 @@ bool IndexedDBObjectStoreMetadata::operator==(
          max_index_id == other.max_index_id && indexes == other.indexes;
 }
 
-IndexedDBDatabaseMetadata::IndexedDBDatabaseMetadata() : version(NO_VERSION) {}
-
-IndexedDBDatabaseMetadata::IndexedDBDatabaseMetadata(
-    const std::u16string& name,
-    int64_t id,
-    int64_t version,
-    int64_t max_object_store_id)
-    : name(name),
-      id(id),
-      version(version),
-      max_object_store_id(max_object_store_id) {}
-
+IndexedDBDatabaseMetadata::IndexedDBDatabaseMetadata() = default;
+IndexedDBDatabaseMetadata::IndexedDBDatabaseMetadata(const std::u16string& name)
+    : name(name) {}
 IndexedDBDatabaseMetadata::IndexedDBDatabaseMetadata(
     const IndexedDBDatabaseMetadata& other) = default;
 IndexedDBDatabaseMetadata::IndexedDBDatabaseMetadata(
@@ -98,7 +84,7 @@ IndexedDBDatabaseMetadata& IndexedDBDatabaseMetadata::operator=(
 
 bool IndexedDBDatabaseMetadata::operator==(
     const IndexedDBDatabaseMetadata& other) const {
-  return name == other.name && id == other.id && version == other.version &&
+  return name == other.name && version == other.version &&
          max_object_store_id == other.max_object_store_id &&
          object_stores == other.object_stores;
 }

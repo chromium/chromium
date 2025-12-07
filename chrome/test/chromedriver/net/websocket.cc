@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354307328): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/net/websocket.h"
 
 #include <stddef.h>
@@ -26,6 +21,7 @@
 #include "base/json/json_writer.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -50,8 +46,7 @@ namespace {
 bool ResolveHost(const std::string& host,
                  uint16_t port,
                  net::AddressList* address_list) {
-  struct addrinfo hints;
-  memset(&hints, 0, sizeof(hints));
+  struct addrinfo hints = {};
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
@@ -90,7 +85,7 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
   net::IPAddress address;
   net::AddressList addresses;
   uint16_t port = static_cast<uint16_t>(url_.EffectiveIntPort());
-  if (ParseURLHostnameToAddress(url_.host(), &address)) {
+  if (ParseURLHostnameToAddress(url_.GetHost(), &address)) {
     addresses = net::AddressList::CreateFromIPAddress(address, port);
   } else {
     if (!ResolveHost(url_.HostNoBrackets(), port, &addresses)) {
@@ -105,7 +100,7 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
     VLOG(0) << "resolved " << url_.HostNoBracketsPiece() << " to " << json;
   }
 
-  if (url_.host() == "localhost") {
+  if (url_.GetHost() == "localhost") {
     // Ensure that both localhost addresses are included.
     // See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3316.
     // Put IPv4 address at front, followed by IPv6 address, since that is
@@ -149,8 +144,8 @@ bool WebSocket::Send(const std::string& message) {
                header, &masking_key, base::as_writable_byte_span(header_str))));
 
   std::string masked_message = message;
-  net::MaskWebSocketFramePayload(
-      masking_key, 0, &masked_message[0], masked_message.length());
+  net::MaskWebSocketFramePayload(masking_key, 0,
+                                 base::as_writable_byte_span(masked_message));
   Write(header_str + masked_message);
   return true;
 }
@@ -177,9 +172,7 @@ void WebSocket::OnSocketConnect(int code) {
       "Pragma: no-cache\r\n"
       "Cache-Control: no-cache\r\n"
       "\r\n",
-      url_.path().c_str(),
-      url_.host().c_str(),
-      sec_key_.c_str());
+      url_.GetPath().c_str(), url_.GetHost().c_str(), sec_key_.c_str());
   VLOG(4) << "WebSocket::OnSocketConnect handshake\n" << handshake;
   Write(handshake);
   if (state_ == CLOSED) {
@@ -265,10 +258,12 @@ void WebSocket::OnRead(bool read_again, int code) {
     return;
   }
 
-  if (state_ == CONNECTING)
-    OnReadDuringHandshake(read_buffer_->data(), code);
-  else if (state_ == OPEN)
-    OnReadDuringOpen(read_buffer_->data(), code);
+  if (state_ == CONNECTING) {
+    OnReadDuringHandshake(
+        read_buffer_->first(base::checked_cast<size_t>(code)));
+  } else if (state_ == OPEN) {
+    OnReadDuringOpen(read_buffer_->first(base::checked_cast<size_t>(code)));
+  }
 
   // If we were called by the event loop due to arrival of data, call Read()
   // again to read more data. If we were called by Read(), however, simply
@@ -280,11 +275,12 @@ void WebSocket::OnRead(bool read_again, int code) {
     Read();
 }
 
-void WebSocket::OnReadDuringHandshake(const char* data, int len) {
-  VLOG(4) << "WebSocket::OnReadDuringHandshake\n" << std::string(data, len);
-  handshake_response_ += std::string(data, len);
+void WebSocket::OnReadDuringHandshake(base::span<const uint8_t> data_span) {
+  VLOG(4) << "WebSocket::OnReadDuringHandshake\n"
+          << base::as_string_view(data_span);
+  handshake_response_ += base::as_string_view(data_span);
   size_t headers_end = net::HttpUtil::LocateEndOfHeaders(
-      handshake_response_.data(), handshake_response_.size(), 0);
+      base::as_byte_span(handshake_response_), 0);
   if (headers_end == std::string::npos)
     return;
 
@@ -306,19 +302,17 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
   sec_key_.clear();
   state_ = OPEN;
   InvokeConnectCallback(net::OK);
-  if (!leftover_message.empty())
-    OnReadDuringOpen(leftover_message.c_str(), leftover_message.length());
+  if (!leftover_message.empty()) {
+    OnReadDuringOpen(base::as_writable_byte_span(leftover_message));
+  }
 }
 
-void WebSocket::OnReadDuringOpen(const char* data, int len) {
+void WebSocket::OnReadDuringOpen(base::span<uint8_t> data_span) {
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
-  CHECK(parser_.Decode(
-      base::as_bytes(
-          // TODO(crbug.com/354307328): It's not possible to construct this span
-          // soundedly here. OnReadDuringOpen() should receive a span instead of
-          // a pointer and length.
-          UNSAFE_BUFFERS(base::span(data, base::checked_cast<size_t>(len)))),
-      &frame_chunks));
+
+  // Call the parser's Decode method
+  CHECK(parser_.Decode(data_span, &frame_chunks));
+
   for (size_t i = 0; i < frame_chunks.size(); ++i) {
     const auto& header = frame_chunks[i]->header;
     if (header) {
@@ -346,7 +340,7 @@ void WebSocket::OnReadDuringOpen(const char* data, int len) {
     std::vector<char> payload(buffer.begin(), buffer.end());
     if (is_current_frame_masked_) {
       MaskWebSocketFramePayload(current_masking_key_, current_frame_offset_,
-                                payload.data(), payload.size());
+                                base::as_writable_byte_span(payload));
     }
     next_message_ += std::string(payload.data(), payload.size());
     current_frame_offset_ += payload.size();

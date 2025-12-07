@@ -15,14 +15,14 @@ import '../../components/buttons/oobe_text_button.js';
 
 import {SetupPinKeyboardElement} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
-import {OobeTypes} from '../../components/oobe_types.js';
+import type {OobeTypes} from '../../components/oobe_types.js';
 
 import {getTemplate} from './pin_setup.html.js';
 
@@ -86,9 +86,30 @@ class PinSetup extends PinSetupBase {
       },
 
       /**
+       * True when PIN is being offered as the main sign-in factor.
+       */
+      usingPinAsMainSignInFactor: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Indicates whether user is a child account.
        */
       isChildAccount: {
+        type: Boolean,
+        value: false,
+      },
+
+      // Whether the screen is being used for resetting the PIN during recovery.
+      isRecoveryMode: {
+        type: Boolean,
+        value: false,
+      },
+
+      // The button is set to disabled after the first click. This prevents
+      // multiple invocations of UserActed on the browser side. b:319863929.
+      isSetupDoneButtonEnabled: {
         type: Boolean,
         value: false,
       },
@@ -100,11 +121,10 @@ class PinSetup extends PinSetupBase {
   authToken: string;
   private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   private hasLoginSupport: boolean;
+  private usingPinAsMainSignInFactor: boolean;
   isChildAccount: boolean;
-
-  override get EXTERNAL_API(): string[] {
-    return ['setHasLoginSupport'];
-  }
+  private isRecoveryMode: boolean;
+  private isSetupDoneButtonEnabled: boolean;
 
   override get UI_STEPS() {
     return PinSetupState;
@@ -138,14 +158,9 @@ class PinSetup extends PinSetupBase {
     this.authToken = data.authToken;
     this.isChildAccount = data.isChildAccount;
     this.hasLoginSupport = data.hasLoginSupport;
-  }
-
-  /**
-   * Configures message on the final page depending on whether the PIN can
-   *  be used to log in.
-   */
-  setHasLoginSupport(hasLoginSupport: boolean): void {
-    this.hasLoginSupport = hasLoginSupport;
+    this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
+    this.isRecoveryMode = data.isRecoveryMode;
+    this.isSetupDoneButtonEnabled = true;
   }
 
   private onIsConfirmStepChanged(): void {
@@ -159,7 +174,13 @@ class PinSetup extends PinSetupBase {
   }
 
   private onSetPinDone(): void {
+    this.isSetupDoneButtonEnabled = true;
     this.setUIStep(PinSetupState.DONE);
+  }
+
+  private getSkipButtonLabel(usingPinAsMainSignInFactor: boolean): string {
+    return usingPinAsMainSignInFactor ? 'discoverPinSetupPinAsMainFactorSkip' :
+                                        'discoverPinSetupSkip';
   }
 
   private onSkipButton(): void {
@@ -182,6 +203,7 @@ class PinSetup extends PinSetupBase {
   }
 
   private onDoneButton(): void {
+    this.isSetupDoneButtonEnabled = false;
     this.authToken = '';
     this.getPinKeyboard().resetState();
     this.userActed('done-button');

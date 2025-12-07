@@ -46,7 +46,6 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   bool is_interlaced() const { return is_interlaced_; }
   float refresh_rate() const { return refresh_rate_; }
   const std::optional<float>& vsync_rate_min() const { return vsync_rate_min_; }
-  void set_vsync_rate_min(const std::optional<float>& vsync_rate_min);
 
   bool operator<(const DisplayMode& other) const;
   bool operator>(const DisplayMode& other) const;
@@ -69,10 +68,9 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   // True if the mode is interlaced.
   const bool is_interlaced_;
   // Precise minimum vsync rate achievable by this mode in Hz. May be nullopt if
-  // display range limits are not specified by the EDID. May be nullopt if this
-  // object is being used in a configuration request, and it can be assigned
-  // later after it has been matched to a drm mode.
-  std::optional<float> vsync_rate_min_;
+  // display range limits are not specified by the EDID or if this object is
+  // being used in a configuration request.
+  const std::optional<float> vsync_rate_min_;
 };
 
 // Used by gtest to print readable errors.

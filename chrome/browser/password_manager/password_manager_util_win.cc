@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <objbase.h>
 
-// windows.h must be first otherwise Win8 SDK breaks.
 #include <windows.h>
 
 #include <LM.h>
-#include <ntsecapi.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <wincred.h>
+
+#include "base/compiler_specific.h"
 
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
@@ -29,13 +25,17 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
+#include "base/win/atl.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
+#include "base/win/wincred_shim.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,7 +132,8 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   LUID luid;
   HANDLE token = INVALID_HANDLE_VALUE;
 
-  strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome");
+  UNSAFE_TODO(
+      strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome"));
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier)) {
     return GetLastError();
   }
@@ -219,9 +220,9 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
   // If the user name has a backslash, then it is of the form DOMAIN\username.
   // NetUserGetInfo() (called from GetPasswordLastChanged()) as well as
   // LogonUser() below only wants the username portion.
-  LPCWSTR backslash = wcschr(username, L'\\');
+  LPCWSTR backslash = UNSAFE_TODO(wcschr(username, L'\\'));
   if (backslash) {
-    username = backslash + 1;
+    username = UNSAFE_TODO(backslash + 1);
   }
 
   int64_t last_changed = GetPasswordLastChanged(username);
@@ -350,6 +351,11 @@ bool AuthenticateUser(gfx::NativeWindow window,
       break;
     }
 
+    absl::Cleanup buffer_cleaner = [&cred_buffer, &cred_buffer_size] {
+      ::SecureZeroMemory(cred_buffer, cred_buffer_size);
+      ::CoTaskMemFree(cred_buffer);
+    };
+
     // While CredUIPromptForWindowsCredentials() shows the currently logged
     // on user by default, it can be changed at runtime.  This is important,
     // as it allows users to change to a different type of authentication
@@ -358,6 +364,7 @@ bool AuthenticateUser(gfx::NativeWindow window,
     // sure the user authenticated with the credentials of the currently
     // logged on user.
     err = validator.IsValid(auth_package, cred_buffer, cred_buffer_size);
+
     retval = err == ERROR_SUCCESS;
   } while (!retval && tries < kMaxPasswordRetries);
 

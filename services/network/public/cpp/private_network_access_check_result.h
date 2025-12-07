@@ -19,6 +19,8 @@ namespace network {
 //
 // Please keep in sync with "PrivateNetworkAccessCheckResult" in
 // src/tools/metrics/histograms/metadata/security/enums.xml.
+//
+// LINT.IfChange(PrivateNetworkAccessCheckResult)
 enum class PrivateNetworkAccessCheckResult {
   // Request is allowed because it is missing a client security state.
   kAllowedMissingClientSecurityState = 0,
@@ -40,26 +42,13 @@ enum class PrivateNetworkAccessCheckResult {
   // Private network request: blocked because policy is `kBlock`.
   kBlockedByPolicyBlock = 5,
 
-  // Request carries a `target_ip_address_space` that matches the resource
-  // address space.
-  kAllowedByTargetIpAddressSpace = 6,
-
-  // Request carries a `target_ip_address_space` that differs from the actual
-  // resource address space. This may be indicative of a DNS rebinding attack.
-  kBlockedByTargetIpAddressSpace = 7,
-
-  // Private network request: blocked because `target_ip_address_space` is
-  // `kUnknown` and policy is `kPreflightWarn`.
-  kBlockedByPolicyPreflightWarn = 8,
-
-  // Private network request: blocked because `target_ip_address_space` is
-  // `kUnknown` and policy is `kPreflightBlock`.
-  kBlockedByPolicyPreflightBlock = 9,
-
-  // The result should have instead been `kBlockedByTargetIpAddressSpace` or
-  // `kBlockedByInconsistentIpAddressSpace`, but the policy is `kPreflightWarn`
-  // so the request was allowed.
-  kAllowedByPolicyPreflightWarn = 10,
+  // Deleted
+  //
+  // kAllowedByTargetIpAddressSpace = 6,
+  // kBlockedByTargetIpAddressSpace = 7,
+  // kBlockedByPolicyPreflightWarn = 8,
+  // kBlockedByPolicyPreflightBlock = 9,
+  // kAllowedByPolicyPreflightWarn = 10,
 
   // Request connected to two different IP address spaces for the same response.
   kBlockedByInconsistentIpAddressSpace = 11,
@@ -67,9 +56,20 @@ enum class PrivateNetworkAccessCheckResult {
   // Private network request: allowed because same origin.
   kAllowedPotentiallyTrustworthySameOrigin = 12,
 
+  // Local network access request: blocked unless user grants permission.
+  kLNAPermissionRequired = 13,
+
+  // Local network access request: allowed with warning in devtools.
+  kLNAAllowedByPolicyWarn = 14,
+
+  // Request carries a `target_ip_address_space` that did not match the ip
+  // address that served the request.
+  kBlockedByRequiredIpAddressSpaceMismatch = 15,
+
   // Required for UMA histogram logging.
-  kMaxValue = kAllowedPotentiallyTrustworthySameOrigin,
+  kMaxValue = kBlockedByRequiredIpAddressSpaceMismatch,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:PrivateNetworkAccessCheckResult)
 
 // Returns a human-readable string representing `result`, suitable for logging.
 std::string_view COMPONENT_EXPORT(NETWORK_CPP)

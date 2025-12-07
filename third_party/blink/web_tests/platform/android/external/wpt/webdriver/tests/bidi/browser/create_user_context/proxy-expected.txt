@@ -1,0 +1,41 @@
+This is a wdspec test.
+[FAIL] test_system
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_autodetect
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Autodetect proxy is not supported per user context)
+[FAIL] test_direct
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-None-None-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-None-None-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-None-127.0.0.1:443-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-None-127.0.0.1:443-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-noProxy1-None-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-noProxy1-None-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-noProxy1-127.0.0.1:443-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[None-noProxy1-127.0.0.1:443-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-None-None-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-None-None-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-None-127.0.0.1:443-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-None-127.0.0.1:443-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-noProxy1-None-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-noProxy1-None-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-noProxy1-127.0.0.1:443-None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_manual[socks1-noProxy1-127.0.0.1:443-127.0.0.1:80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

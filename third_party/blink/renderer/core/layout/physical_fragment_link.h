@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_LINK_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -36,8 +37,22 @@ struct CORE_EXPORT PhysicalFragmentLink {
   PhysicalOffset offset;
 };
 
-}  // namespace blink
+template <>
+struct ThreadingTrait<PhysicalFragmentLink> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = ThreadAffinity::kMainThreadOnly;
+};
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PhysicalFragmentLink)
+template <>
+struct VectorTraits<PhysicalFragmentLink>
+    : VectorTraitsBase<PhysicalFragmentLink> {
+  static constexpr bool kCanInitializeWithMemset = true;
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  static constexpr bool kCanMoveWithMemcpy = true;
+  static constexpr bool kCanCopyWithMemcpy = true;
+  static constexpr bool kCanTraceConcurrently = true;
+};
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_LINK_H_

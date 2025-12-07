@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+
+#include "chrome/installer/util/logging_installer.h"
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/files/file.h"
@@ -16,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/win/scoped_handle.h"
-#include "chrome/installer/util/logging_installer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(LoggingInstallerTest, TestTruncate) {
@@ -26,20 +24,19 @@ TEST(LoggingInstallerTest, TestTruncate) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
 
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size.value());
 
   EXPECT_EQ(installer::LOGFILE_TRUNCATED,
             installer::TruncateLogFileIfNeeded(temp_file));
 
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(installer::kTruncatedInstallerLogFileSize, file_size);
+  file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(installer::kTruncatedInstallerLogFileSize, file_size.value());
 
   // Check that the temporary file was deleted.
   EXPECT_FALSE(base::PathExists(temp_file.Append(L".tmp")));
@@ -52,20 +49,20 @@ TEST(LoggingInstallerTest, TestTruncationNotNeeded) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
 
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size.value());
 
   EXPECT_EQ(installer::LOGFILE_UNTOUCHED,
             installer::TruncateLogFileIfNeeded(temp_file));
   EXPECT_TRUE(base::PathExists(temp_file));
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size);
+
+  file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size.value());
 }
 
 TEST(LoggingInstallerTest, TestInUseNeedsTruncation) {
@@ -75,13 +72,12 @@ TEST(LoggingInstallerTest, TestInUseNeedsTruncation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size);
+
+  std::optional<int64_t> file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size.value());
 
   // Prevent the log file from being moved or deleted.
   uint32_t file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -92,8 +88,9 @@ TEST(LoggingInstallerTest, TestInUseNeedsTruncation) {
   EXPECT_EQ(installer::LOGFILE_UNTOUCHED,
             installer::TruncateLogFileIfNeeded(temp_file));
   EXPECT_TRUE(base::PathExists(temp_file));
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size);
+  file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size.value());
 }
 
 TEST(LoggingInstallerTest, TestMoveFailsNeedsTruncation) {
@@ -103,13 +100,11 @@ TEST(LoggingInstallerTest, TestMoveFailsNeedsTruncation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(temp_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(test_data.size()), file_size.value());
 
   // Create an inconvenient, non-deletable file in the location that
   // TruncateLogFileIfNeeded would like to move the log file to.

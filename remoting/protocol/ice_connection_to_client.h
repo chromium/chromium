@@ -48,12 +48,15 @@ class IceConnectionToClient : public ConnectionToClient,
   void SetEventHandler(
       ConnectionToClient::EventHandler* event_handler) override;
   Session* session() override;
-  void Disconnect(ErrorCode error) override;
+  void Disconnect(ErrorCode error,
+                  std::string_view error_details,
+                  const SourceLocation& error_location) override;
   std::unique_ptr<VideoStream> StartVideoStream(
       webrtc::ScreenId screen_id,
       std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
+  void ApplyNetworkSettings(const NetworkSettings& settings) override;
   ClientStub* client_stub() override;
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;

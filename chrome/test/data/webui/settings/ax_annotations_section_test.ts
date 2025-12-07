@@ -35,7 +35,7 @@ suite('SettingsAxAnnotationsSectionTest', () => {
     flush();
   });
 
-  test('test main node annotations toggle and pref', async () => {
+  test('main node annotations toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
 
     // Main node annotations toggle visibility depends on the screen reader
@@ -62,7 +62,7 @@ suite('SettingsAxAnnotationsSectionTest', () => {
     assertTrue(toggle.checked);
   });
 
-  test('test main node annotations toggle subtitle', async () => {
+  test('main node annotations toggle subtitle', async () => {
     assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
 
     // Main node annotations toggle visibility depends on the screen reader

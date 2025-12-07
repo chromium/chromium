@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/rounded_display/rounded_display_frame_factory.h"
 
 #include <memory>
@@ -234,7 +229,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
 
   // Populate resources in the resource manager.
   for (const auto* gutter : gutters) {
-    resource_manager_.OfferResource(
+    resource_manager_.OfferResourceForTesting(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
                                                      kTestSharedImageFormat,
                                                      gutter->ui_source_id(),
@@ -257,7 +252,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
   // Adding more resources.
   for (int index : {0, 0}) {
     const auto* gutter = gutters.at(index);
-    resource_manager_.OfferResource(
+    resource_manager_.OfferResourceForTesting(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
                                                      kTestSharedImageFormat,
                                                      gutter->ui_source_id(),

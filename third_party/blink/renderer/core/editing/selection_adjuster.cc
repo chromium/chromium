@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -164,8 +166,7 @@ class GranularityAdjuster final {
         return StartOfSentencePosition(passed_start.GetPosition());
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return passed_start.GetPosition();
+    NOTREACHED();
   }
 
   template <typename Strategy>
@@ -263,6 +264,14 @@ class GranularityAdjuster final {
         const VisiblePositionTemplate<Strategy> visible_paragraph_end =
             EndOfParagraph(CreateVisiblePosition(passed_end));
 
+        // If we're selecting within a table cell, constrain the selection
+        // to stay within that cell to avoid including unwanted table structure
+        if (RuntimeEnabledFeatures::
+                RestrictTableCellSelectionToBoundaryEnabled() &&
+            EnclosingTableCell(visible_paragraph_end.DeepEquivalent())) {
+          return visible_paragraph_end.DeepEquivalent();
+        }
+
         // Include the "paragraph break" (the space from the end of this
         // paragraph to the start of the next one) in the selection.
         const VisiblePositionTemplate<Strategy> end =
@@ -300,8 +309,7 @@ class GranularityAdjuster final {
         return EndOfSentence(CreateVisiblePosition(passed_end))
             .DeepEquivalent();
     }
-    NOTREACHED_IN_MIGRATION();
-    return passed_end.GetPosition();
+    NOTREACHED();
   }
 
   template <typename Strategy>

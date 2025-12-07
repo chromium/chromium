@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_buffer_converter.h"
 
 #include <algorithm>
@@ -14,6 +9,8 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -40,7 +37,7 @@ AudioBufferConverter::AudioBufferConverter(const AudioParameters& output_params)
       io_sample_rate_ratio_(1.0),
       timestamp_helper_(output_params_.sample_rate()),
       is_flushing_(false),
-      pool_(new AudioBufferMemoryPool()) {}
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {}
 
 AudioBufferConverter::~AudioBufferConverter() = default;
 
@@ -208,17 +205,21 @@ void AudioBufferConverter::ConvertIfPossible() {
     // will crash on unaligned data.
     const int frames_this_iteration = std::min(
         static_cast<int>(SincResampler::kDefaultRequestSize), frames_remaining);
-    const int offset_into_buffer =
+    const size_t offset_into_buffer =
         output_buffer->frame_count() - frames_remaining;
 
     // Wrap the portion of the AudioBuffer in an AudioBus so the AudioConverter
     // can fill it.
     output_bus->set_frames(frames_this_iteration);
     for (int ch = 0; ch < output_buffer->channel_count(); ++ch) {
+      AudioBus::Channel output_channel = UNSAFE_TODO(base::span(
+          reinterpret_cast<float*>(output_buffer->channel_data()[ch]),
+          base::checked_cast<size_t>(output_buffer->frame_count())));
+
       output_bus->SetChannelData(
-          ch,
-          reinterpret_cast<float*>(output_buffer->channel_data()[ch]) +
-              offset_into_buffer);
+          ch, output_channel.subspan(
+                  offset_into_buffer,
+                  base::checked_cast<size_t>(frames_this_iteration)));
     }
 
     // Do the actual conversion.

@@ -15,14 +15,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -30,17 +30,17 @@
 namespace subresource_filter {
 
 ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     AsyncDocumentSubresourceFilter* parent_frame_filter,
     bool alias_check_enabled,
     base::RepeatingCallback<std::string(const GURL& url)>
         disallow_message_callback)
-    : content::NavigationThrottle(handle),
+    : content::NavigationThrottle(registry),
       parent_frame_filter_(parent_frame_filter),
       alias_check_enabled_(alias_check_enabled),
       disallow_message_callback_(std::move(disallow_message_callback)) {
-  CHECK(!IsInSubresourceFilterRoot(handle), base::NotFatalUntil::M129);
-  CHECK(parent_frame_filter_, base::NotFatalUntil::M129);
+  CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()));
+  CHECK(parent_frame_filter_);
 }
 
 ChildFrameNavigationFilteringThrottle::
@@ -58,14 +58,14 @@ ChildFrameNavigationFilteringThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
-  CHECK_NE(load_policy_, LoadPolicy::DISALLOW, base::NotFatalUntil::M129);
+  CHECK_NE(load_policy_, LoadPolicy::DISALLOW);
 
   if (alias_check_enabled_) {
     std::vector<GURL> alias_urls;
     const GURL& base_url = navigation_handle()->GetURL();
 
     for (const auto& alias : navigation_handle()->GetDnsAliases()) {
-      if (alias == navigation_handle()->GetURL().host_piece()) {
+      if (alias == navigation_handle()->GetURL().host()) {
         continue;
       }
 
@@ -94,9 +94,8 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
   // run mode or checking aliases.
   if (pending_load_policy_calculations_ > 0) {
     CHECK(parent_frame_filter_->activation_state().activation_level ==
-                  mojom::ActivationLevel::kDryRun ||
-              navigation_handle()->GetDnsAliases().size() > 0,
-          base::NotFatalUntil::M129);
+              mojom::ActivationLevel::kDryRun ||
+          navigation_handle()->GetDnsAliases().size() > 0);
     DeferStart(DeferStage::kWillProcessResponse);
     return DEFER;
   }
@@ -126,7 +125,7 @@ void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
-  CHECK_NE(load_policy_, LoadPolicy::DISALLOW, base::NotFatalUntil::M129);
+  CHECK_NE(load_policy_, LoadPolicy::DISALLOW);
   if (load_policy_ == LoadPolicy::WOULD_DISALLOW) {
     return PROCEED;
   }
@@ -135,7 +134,7 @@ ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   parent_frame_filter_->GetLoadPolicyForSubdocument(
       navigation_handle()->GetURL(),
       base::BindOnce(
-          &ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy,
+          &ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicyForUrl,
           weak_ptr_factory_.GetWeakPtr()));
 
   if (ShouldDeferNavigation()) {
@@ -161,8 +160,7 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   }
 
   CHECK(defer_stage_ == DeferStage::kWillProcessResponse ||
-            defer_stage_ == DeferStage::kWillStartOrRedirectRequest,
-        base::NotFatalUntil::M129);
+        defer_stage_ == DeferStage::kWillStartOrRedirectRequest);
 
   // If we have an activation enabled and `load_policy_` is DISALLOW, we need
   // to cancel the navigation.
@@ -182,33 +180,52 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   ResumeNavigation();
 }
 
+void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicyForUrl(
+    LoadPolicy policy) {
+  if (policy != load_policy_ &&
+      policy == MoreRestrictiveLoadPolicy(policy, load_policy_)) {
+    // Child frame's hostname check determined the load policy.
+    did_alias_check_determine_load_policy_ = false;
+  }
+  OnCalculatedLoadPolicy(policy);
+}
+
 void ChildFrameNavigationFilteringThrottle::
     OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies) {
   // We deferred to check aliases in WillProcessResponse.
-  CHECK(defer_stage_ == DeferStage::kWillProcessResponse,
-        base::NotFatalUntil::M129);
-  CHECK(!policies.empty(), base::NotFatalUntil::M129);
+  CHECK(defer_stage_ == DeferStage::kWillProcessResponse);
+  CHECK(alias_check_enabled_);
+  CHECK(!policies.empty());
 
-  LoadPolicy most_restricive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
+  did_alias_check_ = true;
+
+  LoadPolicy most_restrictive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
 
   for (LoadPolicy policy : policies) {
-    most_restricive_alias_policy =
-        MoreRestrictiveLoadPolicy(most_restricive_alias_policy, policy);
+    most_restrictive_alias_policy =
+        MoreRestrictiveLoadPolicy(most_restrictive_alias_policy, policy);
   }
 
-  OnCalculatedLoadPolicy(most_restricive_alias_policy);
+  if (most_restrictive_alias_policy != load_policy_ &&
+      most_restrictive_alias_policy ==
+          MoreRestrictiveLoadPolicy(most_restrictive_alias_policy,
+                                    load_policy_)) {
+    did_alias_check_determine_load_policy_ = true;
+  }
+
+  OnCalculatedLoadPolicy(most_restrictive_alias_policy);
 }
 
 void ChildFrameNavigationFilteringThrottle::DeferStart(DeferStage stage) {
-  CHECK(defer_stage_ == DeferStage::kNotDeferring, base::NotFatalUntil::M129);
-  CHECK(stage != DeferStage::kNotDeferring, base::NotFatalUntil::M129);
+  CHECK(defer_stage_ == DeferStage::kNotDeferring);
+  CHECK(stage != DeferStage::kNotDeferring);
   defer_stage_ = stage;
   last_defer_timestamp_ = base::TimeTicks::Now();
 }
 
 void ChildFrameNavigationFilteringThrottle::UpdateDeferInfo() {
-  CHECK(defer_stage_ != DeferStage::kNotDeferring, base::NotFatalUntil::M129);
-  CHECK(!last_defer_timestamp_.is_null(), base::NotFatalUntil::M129);
+  CHECK(defer_stage_ != DeferStage::kNotDeferring);
+  CHECK(!last_defer_timestamp_.is_null());
   total_defer_time_ += base::TimeTicks::Now() - last_defer_timestamp_;
   defer_stage_ = DeferStage::kNotDeferring;
 }

@@ -19,7 +19,7 @@ class OpaqueBrowserFrameViewLayoutDelegate;
 namespace views {
 class Button;
 class Label;
-}
+}  // namespace views
 
 // Calculates the position of the widgets in the opaque browser frame view.
 //
@@ -38,6 +38,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   // Constants public for testing only.
   static constexpr int kNonClientExtraTopThickness = 1;
+  static constexpr int kFrameShadowThickness = 1;
   static const int kTopFrameEdgeThickness;
   static const int kSideFrameEdgeThickness;
   static const int kIconLeftSpacing;
@@ -62,12 +63,13 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons);
 
+  // Retrieves the given frame button, if present.
+  const views::Button* GetFrameButton(views::FrameButton which) const;
+
   gfx::Rect GetBoundsForTabStripRegion(const gfx::Size& tabstrip_minimum_size,
                                        int total_width) const;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const;
 
   // Returns the bounds of the window required to display the content area at
   // the specified bounds.
@@ -136,14 +138,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // the other overrides.
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
-
  protected:
   // Whether a specific button should be inserted on the leading or trailing
   // side.
-  enum ButtonAlignment {
-    ALIGN_LEADING,
-    ALIGN_TRAILING
-  };
+  enum class ButtonAlignment { kAlignLeading, kAlignTrailing };
 
   struct TopAreaPadding {
     int leading;

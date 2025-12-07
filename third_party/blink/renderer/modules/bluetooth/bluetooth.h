@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 class BluetoothDevice;
@@ -29,13 +28,12 @@ class Navigator;
 class ScriptState;
 
 class Bluetooth final : public EventTarget,
-                        public Supplement<Navigator>,
                         public PageVisibilityObserver,
                         public mojom::blink::WebBluetoothAdvertisementClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // IDL exposed as navigator.bluetooth
   static Bluetooth* bluetooth(Navigator&);
@@ -98,6 +96,8 @@ class Bluetooth final : public EventTarget,
       mojom::blink::WebBluetoothResult);
 
   void EnsureServiceConnection(ExecutionContext*);
+
+  Member<Navigator> navigator_;
 
   // Map of device ids to BluetoothDevice objects.
   // Ensures only one BluetoothDevice instance represents each

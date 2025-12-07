@@ -1,0 +1,116 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/services/on_device_translation/buildflags/features.gni")
+
+assert(enable_on_device_translation)
+
+source_set("on_device_translation") {
+  sources = [
+    "../component_updater/translate_kit_component_installer.cc",
+    "../component_updater/translate_kit_component_installer.h",
+    "../component_updater/translate_kit_language_pack_component_installer.cc",
+    "../component_updater/translate_kit_language_pack_component_installer.h",
+    "component_manager.cc",
+    "component_manager.h",
+    "file_operation_proxy_impl.cc",
+    "file_operation_proxy_impl.h",
+    "language_pack_util.cc",
+    "language_pack_util.h",
+    "pref_names.cc",
+    "pref_names.h",
+    "service_controller.cc",
+    "service_controller.h",
+    "service_controller_manager.cc",
+    "service_controller_manager.h",
+    "service_controller_manager_factory.cc",
+    "service_controller_manager_factory.h",
+    "translation_manager_impl.cc",
+    "translation_manager_impl.h",
+    "translation_manager_util.cc",
+    "translation_manager_util.h",
+    "translation_metrics.cc",
+    "translation_metrics.h",
+    "translator.cc",
+    "translator.h",
+  ]
+  public_deps = [ "//chrome/browser/on_device_translation:constants" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ai:ai_model_download_progress_manager",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//components/component_updater",
+    "//components/content_settings/core/browser",
+    "//components/crx_file",
+    "//components/keyed_service/content",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//components/services/on_device_translation:on_device_translation_service",
+    "//components/on_device_translation/public/mojom",
+    "//components/update_client",
+    "//content/public/browser",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/dbus/image_loader" ]
+  }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/component_updater:component_updater_paths",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "../component_updater/translate_kit_component_installer_unittest.cc",
+    "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
+    "file_operation_proxy_impl_unittest.cc",
+    "language_pack_util_unittest.cc",
+    "translation_manager_util_unittest.cc",
+    "translation_metrics_unittest.cc",
+  ]
+  deps = [
+    ":on_device_translation",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/component_updater:test_support",
+    "//components/crx_file",
+    "//components/on_device_translation/public/mojom",
+    "//components/prefs",
+    "//components/services/on_device_translation/:test_support",
+    "//components/services/on_device_translation/public/cpp",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/test_util.cc",
+    "test/test_util.h",
+  ]
+  deps = [
+    ":on_device_translation",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//components/services/on_device_translation/:test_support",
+    "//content/test:test_support",
+  ]
+}

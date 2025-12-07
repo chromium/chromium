@@ -5,28 +5,34 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /** A group of radio buttons to manage the archive time delta preference. */
+@NullMarked
 public class TabArchiveTimeDeltaPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
     // The time delta options.
-    private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 30};
+    private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 21};
     private static final String TIME_DELTA_HISTOGRAM = "Tabs.ArchiveSettings.TimeDeltaPreference";
 
-    private RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];
+    private final RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];
     private TabArchiveSettings mTabArchiveSettings;
 
     public TabArchiveTimeDeltaPreference(Context context, AttributeSet attrs) {
@@ -38,6 +44,7 @@ public class TabArchiveTimeDeltaPreference extends Preference
     /**
      * @param tabArchiveSettings The class to manage archive settings.
      */
+    @Initializer
     public void initialize(TabArchiveSettings tabArchiveSettings) {
         mTabArchiveSettings = tabArchiveSettings;
     }
@@ -51,18 +58,29 @@ public class TabArchiveTimeDeltaPreference extends Preference
             RadioButtonWithDescription layout =
                     (RadioButtonWithDescription) holder.findViewById(getIdForIndex(i));
             assert layout != null;
-            if (currentOpt == 0) {
-                layout.setPrimaryText(
-                        getContext().getString(R.string.archive_settings_time_delta_never));
-            } else {
-                layout.setPrimaryText(
-                        getContext()
-                                .getResources()
-                                .getQuantityString(
-                                        R.plurals.archive_settings_time_delta,
-                                        currentOpt,
-                                        currentOpt));
+
+            // Normally this would be handled by a pluralized string, but due to an unresolved bug
+            // (crbug.com/445193521), the delta values must be hardcoded for translators.
+            final @StringRes int archiveSettingsTimeDeltaRes;
+            switch (currentOpt) {
+                case 0:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_never;
+                    break;
+                case 7:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_7_days;
+                    break;
+                case 14:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_14_days;
+                    break;
+                case 21:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_21_days;
+                    break;
+                default:
+                    assert false : "Invalid time delta option: " + currentOpt;
+
+                    archiveSettingsTimeDeltaRes = Resources.ID_NULL;
             }
+            layout.setPrimaryText(getContext().getString(archiveSettingsTimeDeltaRes));
             mRadioButtons[i] = layout;
         }
 
@@ -130,7 +148,7 @@ public class TabArchiveTimeDeltaPreference extends Preference
 
     // Testing specific methods.
 
-    public RadioButtonWithDescription getCheckedRadioButtonForTesting() {
+    public @Nullable RadioButtonWithDescription getCheckedRadioButtonForTesting() {
         for (RadioButtonWithDescription button : mRadioButtons) {
             if (button.isChecked()) return button;
         }

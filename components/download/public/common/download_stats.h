@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_content.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -189,10 +188,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDangerousDownloadAccept(
     DownloadDangerType danger_type,
     const base::FilePath& file_path);
 
-// Records the interrupt reason when a download is retried.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadRetry(
-    DownloadInterruptReason reason);
-
 // Returns the type of download.
 COMPONENTS_DOWNLOAD_EXPORT DownloadContent
 DownloadContentFromMimeType(const std::string& mime_type_string,
@@ -200,11 +195,13 @@ DownloadContentFromMimeType(const std::string& mime_type_string,
 
 // Records the mime type of the download.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadMimeType(
-    const std::string& mime_type);
+    const std::string& mime_type,
+    bool is_transient);
 
 // Records the mime type of the download for normal profile.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadMimeTypeForNormalProfile(
-    const std::string& mime_type);
+    const std::string& mime_type,
+    bool is_transient);
 
 // Record overall bandwidth stats at the file end.
 // Does not count in any hash computation or file open/close time.

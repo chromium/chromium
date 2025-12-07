@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -17,6 +18,49 @@
 namespace chrome_pdf {
 
 namespace {
+
+struct PdfFontSubstitution {
+  std::string_view pdf_name;
+  std::string_view face;
+  bool bold;
+  bool italic;
+};
+
+constexpr PdfFontSubstitution kPdfFontSubstitutions[] = {
+    {"Courier", "Courier New", false, false},
+    {"Courier-Bold", "Courier New", true, false},
+    {"Courier-BoldOblique", "Courier New", true, true},
+    {"Courier-Oblique", "Courier New", false, true},
+    {"Helvetica", "Arial", false, false},
+    {"Helvetica-Bold", "Arial", true, false},
+    {"Helvetica-BoldOblique", "Arial", true, true},
+    {"Helvetica-Oblique", "Arial", false, true},
+    {"Times-Roman", "Times New Roman", false, false},
+    {"Times-Bold", "Times New Roman", true, false},
+    {"Times-BoldItalic", "Times New Roman", true, true},
+    {"Times-Italic", "Times New Roman", false, true},
+
+    // MS P?(Mincho|Gothic) are the most notable fonts in Japanese PDF files
+    // without embedding the glyphs. Sometimes the font names are encoded
+    // in Japanese Windows's locale (CP932/Shift_JIS) without space.
+    // Most Linux systems don't have the exact font, but for outsourcing
+    // fontconfig to find substitutable font in the system, we pass ASCII
+    // font names to it.
+    {"MS-PGothic", "MS PGothic", false, false},
+    {"MS-Gothic", "MS Gothic", false, false},
+    {"MS-PMincho", "MS PMincho", false, false},
+    {"MS-Mincho", "MS Mincho", false, false},
+    // MS PGothic in Shift_JIS encoding.
+    {"\x82\x6C\x82\x72\x82\x6F\x83\x53\x83\x56\x83\x62\x83\x4E", "MS PGothic",
+     false, false},
+    // MS Gothic in Shift_JIS encoding.
+    {"\x82\x6C\x82\x72\x83\x53\x83\x56\x83\x62\x83\x4E", "MS Gothic", false,
+     false},
+    // MS PMincho in Shift_JIS encoding.
+    {"\x82\x6C\x82\x72\x82\x6F\x96\xBE\x92\xA9", "MS PMincho", false, false},
+    // MS Mincho in Shift_JIS encoding.
+    {"\x82\x6C\x82\x72\x96\xBE\x92\xA9", "MS Mincho", false, false},
+};
 
 blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
   static_assert(blink::WebFontDescription::kWeight100 == 0, "Blink Weight min");
@@ -35,10 +79,11 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     int italic,
     int charset,
     int pitch_family,
-    const char* face) {
+    std::string_view face) {
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
-  if (strcmp(face, "Symbol") == 0) {
+  static constexpr std::string_view kSymbol("Symbol");
+  if (face == kSymbol) {
     return std::nullopt;
   }
 
@@ -51,56 +96,10 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     desc.generic_family = blink::WebFontDescription::kGenericFamilyStandard;
   }
 
-  static constexpr struct {
-    const char* pdf_name;
-    const char* face;
-    bool bold;
-    bool italic;
-  } kPdfFontSubstitutions[] = {
-      {"Courier", "Courier New", false, false},
-      {"Courier-Bold", "Courier New", true, false},
-      {"Courier-BoldOblique", "Courier New", true, true},
-      {"Courier-Oblique", "Courier New", false, true},
-      {"Helvetica", "Arial", false, false},
-      {"Helvetica-Bold", "Arial", true, false},
-      {"Helvetica-BoldOblique", "Arial", true, true},
-      {"Helvetica-Oblique", "Arial", false, true},
-      {"Times-Roman", "Times New Roman", false, false},
-      {"Times-Bold", "Times New Roman", true, false},
-      {"Times-BoldItalic", "Times New Roman", true, true},
-      {"Times-Italic", "Times New Roman", false, true},
-
-      // MS P?(Mincho|Gothic) are the most notable fonts in Japanese PDF files
-      // without embedding the glyphs. Sometimes the font names are encoded
-      // in Japanese Windows's locale (CP932/Shift_JIS) without space.
-      // Most Linux systems don't have the exact font, but for outsourcing
-      // fontconfig to find substitutable font in the system, we pass ASCII
-      // font names to it.
-      {"MS-PGothic", "MS PGothic", false, false},
-      {"MS-Gothic", "MS Gothic", false, false},
-      {"MS-PMincho", "MS PMincho", false, false},
-      {"MS-Mincho", "MS Mincho", false, false},
-      // MS PGothic in Shift_JIS encoding.
-      {"\x82\x6C\x82\x72\x82\x6F\x83\x53\x83\x56\x83\x62\x83\x4E", "MS PGothic",
-       false, false},
-      // MS Gothic in Shift_JIS encoding.
-      {"\x82\x6C\x82\x72\x83\x53\x83\x56\x83\x62\x83\x4E", "MS Gothic", false,
-       false},
-      // MS PMincho in Shift_JIS encoding.
-      {"\x82\x6C\x82\x72\x82\x6F\x96\xBE\x92\xA9", "MS PMincho", false, false},
-      // MS Mincho in Shift_JIS encoding.
-      {"\x82\x6C\x82\x72\x96\xBE\x92\xA9", "MS Mincho", false, false},
-  };
-
-  // Similar logic exists in PDFium's CFX_FolderFontInfo::FindFont().
-  if (charset == FXFONT_ANSI_CHARSET && (pitch_family & FXFONT_FF_FIXEDPITCH)) {
-    face = "Courier New";
-  }
-
   // Map from the standard PDF fonts to TrueType font names.
   bool found_substitution = false;
   for (const auto& substitution : kPdfFontSubstitutions) {
-    if (strcmp(face, substitution.pdf_name) == 0) {
+    if (face == substitution.pdf_name) {
       desc.family = blink::WebString::FromUTF8(substitution.face);
       if (substitution.bold) {
         desc.weight = blink::WebFontDescription::kWeightBold;

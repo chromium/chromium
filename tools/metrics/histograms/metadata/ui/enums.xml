@@ -1,0 +1,1147 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ChromeLabsSelectedLab">
+  <int value="0" label="User selected an unspecified lab"/>
+  <int value="1" label="User selected the Read Later lab"/>
+  <int value="2" label="User selected the Tab Search lab"/>
+  <int value="3" label="User selected the Tab Scrolling lab"/>
+  <int value="4" label="User selected the Side Panel lab"/>
+  <int value="5" label="User selected the Lens Region Search lab"/>
+  <int value="6" label="User selected the WebUI Tab Strip lab"/>
+  <int value="7" label="User selected the Tab Search Media Tabs lab"/>
+  <int value="8" label="User selected the Chrome Refresh lab"/>
+  <int value="9" label="User selected the Tab Groups Save lab"/>
+  <int value="10" label="User selected the Chrome WebUI Refresh lab"/>
+  <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
+</enum>
+
+<!-- LINT.IfChange(ContextMenuOptionDesktop) -->
+
+<enum name="ContextMenuOptionDesktop">
+  <summary>The item selected from a context menu on Desktop.</summary>
+  <int value="0" label="Open in new tab"/>
+  <int value="1" label="Open in incognito tab"/>
+  <int value="2" label="Copy link address"/>
+  <int value="3" label="Copy link text"/>
+  <int value="4" label="Save link"/>
+  <int value="5" label="Save image"/>
+  <int value="6" label="Open image in new tab"/>
+  <int value="7" label="Copy image"/>
+  <int value="8" label="Copy image URL"/>
+  <int value="9" label="Search by image"/>
+  <int value="10" label="Open link in a new window"/>
+  <int value="11" label="Print"/>
+  <int value="12" label="Search web for..."/>
+  <int value="13" label="Save media as"/>
+  <int value="14" label="Spellcheck suggestion"/>
+  <int value="15" label="Add to dictionary"/>
+  <int value="16" label="Context spelling toggle (Use enhanced spell check)"/>
+  <int value="17" label="Cut text"/>
+  <int value="18" label="Paste text"/>
+  <int value="19" label="Go to URL"/>
+  <int value="20" label="Copy link to text"/>
+  <int value="21" label="Search Image with Google Lens"/>
+  <int value="22" label="Search Images with Google Lens"/>
+  <int value="23" label="Search Images with non-Google visual search provider"/>
+  <int value="24" label="Copy link to highlight"/>
+  <int value="25" label="Open link as Profile"/>
+  <int value="26" label="Add a note"/>
+  <int value="27"
+      label="Translate text in image with non-Google visual search provider"/>
+  <int value="28" label="Translate text in image with Google Lens"/>
+  <int value="29" label="Search web for... in new tab"/>
+  <int value="30" label="Open link in preview"/>
+  <int value="31" label="Open link in split view"/>
+  <int value="32" label="Create image with Gemini in Chrome"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:ContextMenuOptionDesktop) -->
+
+<enum name="DefaultBrowserInfoBarUserInteraction">
+  <int value="0" label="Accept">
+    The user clicked the &quot;Set as default&quot; button.
+  </int>
+  <int value="1" label="Cancel">
+    The user clicked the &quot;Don't ask again&quot; button.
+  </int>
+  <int value="2" label="Ignore">
+    The user did not interact with the info bar.
+  </int>
+  <int value="3" label="Dismiss">The user explicitly closed the infobar.</int>
+</enum>
+
+<enum name="DefaultBrowserState">
+  <int value="0" label="Not Default"/>
+  <int value="1" label="Default"/>
+  <int value="2" label="Unknown"/>
+  <int value="3" label="Other Mode is Default"/>
+</enum>
+
+<!-- LINT.IfChange(DefaultBrowserStateValidationResult) -->
+
+<enum name="DefaultBrowserStateValidationResult">
+  <summary>
+    The result of comparing a secondary browser state checker's result to the
+    standard API used for determing default browser state.
+  </summary>
+  <int value="0" label="TruePositive"/>
+  <int value="1" label="TrueNegative"/>
+  <int value="2" label="FalsePositive"/>
+  <int value="3" label="FalseNegative"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_manager.cc:DefaultBrowserStateValidationResult) -->
+
+<!-- LINT.IfChange(DefaultBrowserUserInteraction) -->
+
+<enum name="DefaultBrowserUserInteraction">
+  <summary>
+    Decisions a user can take when presented with a choice to make Chrome their
+    default browser.
+  </summary>
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Ignored"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserInteractionType) -->
+
+<enum name="OpenLinkAs">
+  <int value="0" label="Open Link as Profile displayed."/>
+  <int value="1" label="Open Link as Profile clicked."/>
+  <int value="2" label="Open Link in Incognito Window displayed."/>
+  <int value="3" label="Open Link in Incognito Window clicked."/>
+</enum>
+
+<!-- LINT.IfChange(PinInfoBarUserInteraction) -->
+
+<enum name="PinInfoBarUserInteraction">
+  <int value="0" label="Accepted">
+    The user clicked the &quot;Pin Chrome&quot; button.
+  </int>
+  <int value="1" label="Dismissed">The user explicitly closed the infobar.</int>
+  <int value="2" label="Ignored">
+    The user did not interact with the infobar; logged at object destruction.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h:PinInfoBarUserInteraction) -->
+
+<!-- LINT.IfChange(ReloadButtonInputType) -->
+
+<enum name="ReloadButtonInputType">
+  <int value="0" label="MouseRelease"/>
+  <int value="1" label="KeyPress"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_ui_metrics_recorder.h:ReloadButtonInputType) -->
+
+<!-- LINT.IfChange(RenderViewContextMenuItem) -->
+
+<enum name="RenderViewContextMenuItem">
+  <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
+  <int value="1" label="IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST"/>
+  <int value="2" label="IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST"/>
+  <int value="3" label="IDC_CONTENT_CONTEXT_OPENLINKNEWTAB"/>
+  <int value="4" label="IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW"/>
+  <int value="5" label="IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD">
+    Open Link in Incognito Window is being counted as shown even when the menu
+    item is displayed but not enabled/clickable.
+  </int>
+  <int value="6" label="IDC_CONTENT_CONTEXT_SAVELINKAS"/>
+  <int value="7" label="IDC_CONTENT_CONTEXT_SAVEAVAS"/>
+  <int value="8" label="IDC_CONTENT_CONTEXT_SAVEIMAGEAS"/>
+  <int value="9" label="IDC_CONTENT_CONTEXT_COPYLINKLOCATION"/>
+  <int value="10" label="IDC_CONTENT_CONTEXT_COPYIMAGELOCATION"/>
+  <int value="11" label="IDC_CONTENT_CONTEXT_COPYAVLOCATION"/>
+  <int value="12" label="IDC_CONTENT_CONTEXT_COPYIMAGE"/>
+  <int value="13" label="IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB"/>
+  <int value="14" label="IDC_CONTENT_CONTEXT_OPENAVNEWTAB"/>
+  <int value="15" label="IDC_CONTENT_CONTEXT_PLAYPAUSE"/>
+  <int value="16" label="IDC_CONTENT_CONTEXT_MUTE"/>
+  <int value="17" label="IDC_CONTENT_CONTEXT_LOOP"/>
+  <int value="18" label="IDC_CONTENT_CONTEXT_CONTROLS"/>
+  <int value="19" label="IDC_CONTENT_CONTEXT_ROTATECW"/>
+  <int value="20" label="IDC_CONTENT_CONTEXT_ROTATECCW"/>
+  <int value="21" label="IDC_BACK"/>
+  <int value="22" label="IDC_FORWARD"/>
+  <int value="23" label="IDC_SAVE_PAGE"/>
+  <int value="24" label="IDC_RELOAD"/>
+  <int value="25" label="IDC_CONTENT_CONTEXT_RELOAD_PACKAGED_APP"/>
+  <int value="26" label="IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP"/>
+  <int value="27" label="IDC_PRINT"/>
+  <int value="28" label="IDC_VIEW_SOURCE"/>
+  <int value="29" label="IDC_CONTENT_CONTEXT_INSPECTELEMENT"/>
+  <int value="30" label="IDC_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE"/>
+  <int value="31" label="IDC_CONTENT_CONTEXT_VIEWPAGEINFO"/>
+  <int value="32" label="IDC_CONTENT_CONTEXT_TRANSLATE"/>
+  <int value="33" label="IDC_CONTENT_CONTEXT_RELOADFRAME"/>
+  <int value="34" label="IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE"/>
+  <int value="35" label="IDC_CONTENT_CONTEXT_VIEWFRAMEINFO"/>
+  <int value="36" label="IDC_CONTENT_CONTEXT_UNDO"/>
+  <int value="37" label="IDC_CONTENT_CONTEXT_REDO"/>
+  <int value="38" label="IDC_CONTENT_CONTEXT_CUT"/>
+  <int value="39" label="IDC_CONTENT_CONTEXT_COPY"/>
+  <int value="40" label="IDC_CONTENT_CONTEXT_PASTE"/>
+  <int value="41" label="IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE"/>
+  <int value="42" label="IDC_CONTENT_CONTEXT_DELETE"/>
+  <int value="43" label="IDC_CONTENT_CONTEXT_SELECTALL"/>
+  <int value="44" label="IDC_CONTENT_CONTEXT_SEARCHWEBFOR"/>
+  <int value="45" label="IDC_CONTENT_CONTEXT_GOTOURL"/>
+  <int value="46" label="IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS"/>
+  <int value="47" label="IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS"/>
+  <int value="48" label="IDC_CONTENT_CONTEXT_ADDSEARCHENGINE"/>
+  <int value="49" label="IDC_CONTENT_CONTEXT_SPEECH_INPUT_FILTER_PROFANITIES"/>
+  <int value="50" label="IDC_CONTENT_CONTEXT_SPEECH_INPUT_ABOUT"/>
+  <int value="51" label="IDC_SPEECH_INPUT_MENU"/>
+  <int value="52" label="IDC_CONTENT_CONTEXT_OPENLINKWITH"/>
+  <int value="53" label="IDC_CHECK_SPELLING_WHILE_TYPING"/>
+  <int value="54" label="IDC_SPELLCHECK_MENU"/>
+  <int value="55" label="IDC_CONTENT_CONTEXT_SPELLING_TOGGLE"/>
+  <int value="56" label="IDC_SPELLCHECK_LANGUAGES_FIRST"/>
+  <int value="57" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE"/>
+  <int value="58" label="IDC_SPELLCHECK_SUGGESTION"/>
+  <int value="59" label="IDC_SPELLCHECK_ADD_TO_DICTIONARY"/>
+  <int value="60" label="IDC_SPELLPANEL_TOGGLE"/>
+  <int value="61" label="IDC_CONTENT_CONTEXT_OPENORIGINALIMAGENEWTAB"/>
+  <int value="62" label="IDC_WRITING_DIRECTION_MENU"/>
+  <int value="63" label="IDC_WRITING_DIRECTION_DEFAULT"/>
+  <int value="64" label="IDC_WRITING_DIRECTION_LTR"/>
+  <int value="65" label="IDC_WRITING_DIRECTION_RTL"/>
+  <int value="66" label="IDC_CONTENT_CONTEXT_LOAD_IMAGE"/>
+  <int value="67" label="IDC_CONTENT_CONTEXT_FORCESAVEPASSWORD"/>
+  <int value="68" label="IDC_ROUTE_MEDIA"/>
+  <int value="69" label="IDC_CONTENT_CONTEXT_COPYLINKTEXT"/>
+  <int value="70" label="IDC_CONTENT_CONTEXT_OPENLINKINPROFILE"/>
+  <int value="71" label="IDC_OPEN_LINK_IN_PROFILE_FIRST">
+    When Open Link as Profile is a submenu (more than one extra profile), it is
+    not counted as shown if the submenu is not open. When the submenu is opened,
+    it is counted as shown one time per profile displayed in the submenu.
+  </int>
+  <int value="72" label="IDC_CONTENT_CONTEXT_GENERATEPASSWORD"/>
+  <int value="73" label="IDC_SPELLCHECK_MULTI_LINGUAL"/>
+  <int value="74" label="IDC_CONTENT_CONTEXT_OPEN_WITH1"/>
+  <int value="75" label="IDC_CONTENT_CONTEXT_OPEN_WITH2"/>
+  <int value="76" label="IDC_CONTENT_CONTEXT_OPEN_WITH3"/>
+  <int value="77" label="IDC_CONTENT_CONTEXT_OPEN_WITH4"/>
+  <int value="78" label="IDC_CONTENT_CONTEXT_OPEN_WITH5"/>
+  <int value="79" label="IDC_CONTENT_CONTEXT_OPEN_WITH6"/>
+  <int value="80" label="IDC_CONTENT_CONTEXT_OPEN_WITH7"/>
+  <int value="81" label="IDC_CONTENT_CONTEXT_OPEN_WITH8"/>
+  <int value="82" label="IDC_CONTENT_CONTEXT_OPEN_WITH9"/>
+  <int value="83" label="IDC_CONTENT_CONTEXT_OPEN_WITH10"/>
+  <int value="84" label="IDC_CONTENT_CONTEXT_OPEN_WITH11"/>
+  <int value="85" label="IDC_CONTENT_CONTEXT_OPEN_WITH12"/>
+  <int value="86" label="IDC_CONTENT_CONTEXT_OPEN_WITH13"/>
+  <int value="87" label="IDC_CONTENT_CONTEXT_OPEN_WITH14"/>
+  <int value="88" label="IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN"/>
+  <int value="89" label="IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP"/>
+  <int value="90" label="IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS"/>
+  <int value="91" label="IDC_CONTENT_CONTENT_PICTUREINPICTURE"/>
+  <int value="92" label="IDC_CONTENT_CONTEXT_EMOJI"/>
+  <int value="93" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1"/>
+  <int value="94" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION2"/>
+  <int value="95" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION3"/>
+  <int value="96" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION4"/>
+  <int value="97" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION5"/>
+  <int value="98" label="IDC_CONTENT_CONTEXT_LOOK_UP"/>
+  <int value="99" label="IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE"/>
+  <int value="100"
+      label="IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE"/>
+  <int value="101" label="IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS"/>
+  <int value="102" label="IDC_SEND_TO_MY_DEVICES"/>
+  <int value="103" label="IDC_CONTENT_LINK_SEND_TAB_TO_SELF"/>
+  <int value="104" label="IDC_SEND_TAB_TO_SELF_SINGLE_TARGET"/>
+  <int value="105" label="IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET"/>
+  <int value="106"
+      label="IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE"/>
+  <int value="107"
+      label="IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES"/>
+  <int value="108"
+      label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE"/>
+  <int value="109"
+      label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES"/>
+  <int value="110" label="IDC_CONTENT_CONTEXT_GENERATE_QR_CODE"/>
+  <int value="111"
+      label="(Obsolete) IDC_CONTENT_CLIPBOARD_HISTORY_MENU. Removed in
+             2024/12."/>
+  <int value="112" label="IDC_CONTENT_CONTEXT_COPYLINKTOTEXT"/>
+  <int value="113" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE"/>
+  <int value="114" label="IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT"/>
+  <int value="115" label="IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH"/>
+  <int value="116" label="IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH"/>
+  <int value="117" label="IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT"/>
+  <int value="118" label="IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING"/>
+  <int value="119" label="IDC_FOLLOW"/>
+  <int value="120" label="IDC_UNFOLLOW"/>
+  <int value="121"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST. Removed in
+             2023/07."/>
+  <int value="123" label="IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE"/>
+  <int value="125" label="IDC_LIVE_CAPTION"/>
+  <int value="126" label="IDC_CONTENT_CONTEXT_PDF_OCR"/>
+  <int value="127" label="IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS"/>
+  <int value="128" label="IDC_CONTENT_CONTEXT_PDF_OCR_ONCE"/>
+  <int value="129" label="IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK"/>
+  <int value="130" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB"/>
+  <int value="131" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS"/>
+  <int value="132" label="IDC_CONTENT_CONTEXT_COPYVIDEOFRAME"/>
+  <int value="133" label="IDC_CONTENT_CONTEXT_SAVEPLUGINAS"/>
+  <int value="134"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS"/>
+  <int value="135" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB"/>
+  <int value="136" label="IDC_CONTENT_CONTEXT_ORCA"/>
+  <int value="137" label="IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION"/>
+  <int value="138" label="IDC_CONTENT_PASTE_FROM_CLIPBOARD"/>
+  <int value="139" label="IDC_CONTEXT_COMPOSE"/>
+  <int value="140"
+      label="(Obsolete) IDC_CONTEXT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS"/>
+  <int value="141" label="IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS"/>
+  <int value="142" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME"/>
+  <int value="143" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME"/>
+  <int value="144" label="IDC_CONTENT_CONTEXT_OPENLINKPREVIEW"/>
+  <int value="145" label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS"/>
+  <int value="146"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS"/>
+  <int value="147"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD"/>
+  <int value="148"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS"/>
+  <int value="149"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD"/>
+  <int value="150"
+      label="(Obsolete)
+             IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS"/>
+  <int value="151"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS"/>
+  <int value="152"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
+  <int value="153" label="IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
+  <int value="154" label="IDC_CONTENT_CONTEXT_RELOAD_GLIC"/>
+  <int value="155" label="IDC_CONTENT_CONTEXT_CLOSE_GLIC"/>
+  <int value="156" label="IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW"/>
+  <int value="157" label="IDC_CONTENT_CONTEXT_GLICSHAREIMAGE"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->
+
+<enum name="ShapeRunFallback">
+  <int value="0" label="FAILED">Finding a fallback font failed.</int>
+  <int value="1" label="NO_FALLBACK">No fallback font was required.</int>
+  <int value="2" label="FALLBACK">
+    Call to GetFallbackFont(...) was required to find the appropriate font.
+  </int>
+  <int value="3" label="FALLBACKS">
+    Call to GetFallbackFonts(...) was required find the appropriate font.
+  </int>
+</enum>
+
+<enum name="SnackbarIdentifier">
+  <int value="-2" label="TEST_SNACKBAR"/>
+  <int value="-1" label="UNKNOWN"/>
+  <int value="0" label="BOOKMARK_ADDED"/>
+  <int value="1" label="BOOKMARK_DELETE_UNDO"/>
+  <int value="2" label="NTP_MOST_VISITED_DELETE_UNDO"/>
+  <int value="3" label="OFFLINE_PAGE_RELOAD"/>
+  <int value="4" label="AUTO_LOGIN"/>
+  <int value="5" label="OMNIBOX_GEOLOCATION"/>
+  <int value="6" label="LOFI"/>
+  <int value="7" label="DATA_USE_STARTED"/>
+  <int value="8" label="DATA_USE_ENDED"/>
+  <int value="9" label="DOWNLOAD_SUCCEEDED"/>
+  <int value="10" label="DOWNLOAD_FAILED"/>
+  <int value="11" label="TAB_CLOSE_UNDO"/>
+  <int value="12" label="TAB_CLOSE_ALL_UNDO"/>
+  <int value="13" label="DOWNLOAD_DELETE_UNDO"/>
+  <int value="14" label="SPECIAL_LOCALE"/>
+  <int value="15" label="BLIMP"/>
+  <int value="16" label="DATA_REDUCTION_PROMO"/>
+  <int value="17" label="HISTORY_LINK_COPIED"/>
+  <int value="18" label="TRANSLATE_ALWAYS"/>
+  <int value="19" label="TRANSLATE_NEVER"/>
+  <int value="20" label="TRANSLATE_NEVER_SITE"/>
+  <int value="21" label="SNIPPET_FETCH_FAILED"/>
+  <int value="22" label="CHROME_HOME_OPT_OUT_SURVEY"/>
+  <int value="23" label="SNIPPET_FETCH_NO_NEW_SUGGESTIONS"/>
+  <int value="24" label="MISSING_FILES_NO_SD_CARD"/>
+  <int value="25" label="OFFLINE_INDICATOR"/>
+  <int value="26" label="FEED_NTP_STREAM"/>
+  <int value="27" label="UMA_WEBAPK_PRIVACY_DISCLOSURE"/>
+  <int value="28" label="UMA_TWA_PRIVACY_DISCLOSURE"/>
+  <int value="29" label="UMA_AUTOFILL_ASSISTANT_STOP_UNDO"/>
+  <int value="30" label="UMA_TAB_CLOSE_MULTIPLE_UNDO"/>
+  <int value="31" label="UMA_SEARCH_ENGINE_CHOICE_NOTIFICATION"/>
+  <int value="32" label="UMA_TAB_GROUP_MANUAL_CREATION_UNDO"/>
+  <int value="33" label="UMA_TWA_PRIVACY_DISCLOSURE_V2"/>
+  <int value="34" label="UMA_HOMEPAGE_PROMO_CHANGED_UNDO"/>
+  <int value="35" label="UMA_CONDITIONAL_TAB_STRIP_DISMISS_UNDO"/>
+  <int value="37" label="UMA_READING_LIST_BOOKMARK_ADDED"/>
+  <int value="38" label="UMA_PRIVACY_SANDBOX_PAGE_OPEN"/>
+  <int value="39" label="UMA_WEB_FEED_FOLLOW_SUCCESS"/>
+  <int value="40" label="UMA_WEB_FEED_FOLLOW_FAILURE"/>
+  <int value="41" label="UMA_WEB_FEED_UNFOLLOW_SUCCESS"/>
+  <int value="42" label="UMA_WEB_FEED_UNFOLLOW_FAILURE"/>
+  <int value="43" label="UMA_LANGUAGE_SPLIT_RESTART"/>
+  <int value="44" label="UMA_AUTOFILL_VIRTUAL_CARD_FILLED"/>
+  <int value="45" label="UMA_WINDOW_ERROR"/>
+  <int value="46" label="UMA_MODULE_INSTALL_FAILURE"/>
+  <int value="47" label="UMA_PRICE_TRACKING_SUCCESS"/>
+  <int value="48" label="UMA_PRICE_TRACKING_FAILURE"/>
+  <int value="49" label="UMA_PRIVACY_SANDBOX_ADD_INTEREST"/>
+  <int value="50" label="UMA_PRIVACY_SANDBOX_REMOVE_INTEREST"/>
+  <int value="52" label="UMA_DOWNLOAD_INTERSTITIAL_DOWNLOAD_DELETED"/>
+  <int value="53" label="UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO"/>
+  <int value="54" label="UMA_PRIVACY_SANDBOX_ADD_SITE"/>
+  <int value="55" label="UMA_PRIVACY_SANDBOX_REMOVE_SITE"/>
+  <int value="56" label="UMA_CREATOR_FOLLOW_SUCCESS"/>
+  <int value="57" label="UMA_CREATOR_FOLLOW_FAILURE"/>
+  <int value="58" label="UMA_CREATOR_UNFOLLOW_SUCCESS"/>
+  <int value="59" label="UMA_CREATOR_UNFOLLOW_FAILURE"/>
+  <int value="60" label="UMA_QUICK_DELETE"/>
+  <int value="61" label="UMA_AUTO_TRANSLATE"/>
+  <int value="63" label="UMA_CLEAR_BROWSING_DATA"/>
+  <int value="64" label="UMA_SIGN_OUT"/>
+  <int value="65" label="UMA_TAB_GROUP_DELETE_UNDO"/>
+  <int value="66" label="UMA_SINGLE_TAB_GROUP_DELETE_UNDO"/>
+  <int value="67" label="UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION"/>
+  <int value="68" label="UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS"/>
+  <int value="69" label="UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS"/>
+  <int value="70" label="UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS"/>
+  <int value="71" label="UMA_SETTINGS_BATCH_UPLOAD"/>
+  <int value="72" label="UMA_REVOKE_FILE_EDIT_GRANT"/>
+  <int value="73" label="UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION"/>
+  <int value="74" label="UMA_BOOKMARK_BATCH_UPLOAD"/>
+  <int value="75" label="UMA_NTP_MOST_VISITED_UNPIN_UNDO"/>
+  <int value="76" label="UMA_SIGN_IN"/>
+  <int value="77" label="UMA_TAB_PICKER_LIMIT_REACHED"/>
+  <int value="78" label="UMA_FUSEBOX_MAX_ATTACHMENTS"/>
+  <int value="79" label="UMA_FUSEBOX_UPLOAD_FAILED"/>
+</enum>
+
+<enum name="WebUIPreloadReason">
+  <int value="0" label="BrowserWarmup"/>
+  <int value="1" label="WebUIDestroyed"/>
+  <int value="2" label="WebUIRequested"/>
+</enum>
+
+<enum name="WebUIPreloadResult">
+  <int value="0"
+      label="No Preload: no preloaded WebUI is available when a WebUI is
+             requested"/>
+  <int value="1" label="Hit: the preloaded WebUI matches the requested WebUI"/>
+  <int value="2"
+      label="Hit (redirected): the preloaded WebUI is redirected to the
+             requested WebUI"/>
+  <int value="3"
+      label="Miss: the preloaded WebUI does not match the requested WebUI and
+             cannot be redirected"/>
+</enum>
+
+<enum name="WebUISettingsPathHashes">
+  <int value="-2108276563" label="/adPrivacy/sites"/>
+  <int value="-2088016711" label="/startupPages"/>
+  <int value="-2082028555" label="/androidApps/details"/>
+  <int value="-2026378196" label="/contactInfo"/>
+  <int value="-2019732586" label="/printing"/>
+  <int value="-1950073287" label="/crostini/details"/>
+  <int value="-1930329480" label="/signOut"/>
+  <int value="-1924511305" label="/help"/>
+  <int value="-1837289930" label="/adPrivacy/interests"/>
+  <int value="-1820397898" label="/manageAccessibility"/>
+  <int value="-1795544471" label="/languages/inputMethods"/>
+  <int value="-1791818691" label="/content/camera"/>
+  <int value="-1732727903" label="/kerberosAccounts"/>
+  <int value="-1688600161" label="/manageProfile"/>
+  <int value="-1675675685" label="/content/clipboard"/>
+  <int value="-1610814282" label="/content/popups"/>
+  <int value="-1589300908" label="/app-management/pluginVm/sharedPaths"/>
+  <int value="-1575150353" label="/content/cookies"/>
+  <int value="-1569772500" label="/manageAccessibility/tts"/>
+  <int value="-1555301506" label="/content/notifications"/>
+  <int value="-1548884702" label="/ai"/>
+  <int value="-1484929503" label="/manageAccessibility/switchAccess"/>
+  <int value="-1435300306" label="/passwords/view"/>
+  <int value="-1402547108" label="/passwords/device"/>
+  <int value="-1381133263" label="/passwords/check"/>
+  <int value="-1334017282" label="/spellCheck"/>
+  <int value="-1312744606" label="/knownNetworks"/>
+  <int value="-1297176639" label="/fonts"/>
+  <int value="-1283080115" label="/content/backgroundSync"/>
+  <int value="-1279337432" label="/power"/>
+  <int value="-1231761426" label="/content/ar"/>
+  <int value="-1227595649" label="/all"/>
+  <int value="-1206523744" label="/app-management/detail"/>
+  <int value="-1204780990" label="/dateTime/timeZone"/>
+  <int value="-1167413307" label="/inputMethods"/>
+  <int value="-1165810228" label="/searchEngines"/>
+  <int value="-1119639824" label="/display"/>
+  <int value="-1068416040" label="/multidevice/features/smartLock"/>
+  <int value="-1058065329" label="/languages"/>
+  <int value="-1048015830" label="/"/>
+  <int value="-1037867189" label="/content/storageAccess"/>
+  <int value="-1028177121" label="/content/serialPorts"/>
+  <int value="-1007016915" label="/help/management"/>
+  <int value="-1006445425" label="/importData"/>
+  <int value="-988053194" label="/lockScreen"/>
+  <int value="-972517930" label="/googleAssistant"/>
+  <int value="-940942794" label="/content/pdfDocuments"/>
+  <int value="-922372967" label="/travel"/>
+  <int value="-916174295" label="/internet"/>
+  <int value="-907780721" label="/certificates"/>
+  <int value="-898481268" label="/multidevice/features"/>
+  <int value="-878760557" label="/ai/tabOrganizer"/>
+  <int value="-876839853" label="/content/windowManagement"/>
+  <int value="-842548379" label="/apps"/>
+  <int value="-809146474" label="/content/location"/>
+  <int value="-794215283" label="/content/images"/>
+  <int value="-710357049" label="/bluetooth"/>
+  <int value="-686834549" label="/downloads"/>
+  <int value="-655433489" label="/payments"/>
+  <int value="-590688273" label="/content/sensors"/>
+  <int value="-587521019" label="/identityDocs"/>
+  <int value="-570956986" label="/personalization"/>
+  <int value="-565073397" label="/performance"/>
+  <int value="-512116630" label="/search"/>
+  <int value="-482801316" label="/appearance"/>
+  <int value="-469021167" label="/resetProfileSettings"/>
+  <int value="-442978022" label="/networks"/>
+  <int value="-413956322" label="/content/zoomLevels"/>
+  <int value="-378866134" label="/networkDetail"/>
+  <int value="-372127353" label="/content/paymentHandler"/>
+  <int value="-327540120" label="/content/javascript"/>
+  <int value="-319293467" label="/multidevice"/>
+  <int value="-308222292" label="/trackingProtection"/>
+  <int value="-300300075" label="/system"/>
+  <int value="-295702530" label="/smbShares"/>
+  <int value="-237154443" label="/manageAccessibility/tts/googleTtsEngine"/>
+  <int value="-230959653" label="/syncSetup"/>
+  <int value="-210069062" label="/content"/>
+  <int value="-191557146" label="/content/bluetoothDevices"/>
+  <int value="-189314307" label="/crostini/exportImport"/>
+  <int value="-174226049" label="/ai/compareProducts"/>
+  <int value="-152132510" label="/captions"/>
+  <int value="-146134264" label="/content/protectedContent"/>
+  <int value="-141168426" label="/passkeys"/>
+  <int value="-74938958" label="/content/federatedIdentityApi"/>
+  <int value="-68849649" label="/securityKeys/phones"/>
+  <int value="-59332819" label="/accountManager"/>
+  <int value="-44267040" label="/bluetoothDevices"/>
+  <int value="-23311755" label="/content/vr"/>
+  <int value="-14666765" label="/accounts"/>
+  <int value="4710857" label="/content/hidDevices"/>
+  <int value="8030578" label="/crostini/sharedUsbDevices"/>
+  <int value="8530592" label="/syncSetup/advanced"/>
+  <int value="14407759" label="/ai/helpMeWrite"/>
+  <int value="16287984" label="/languages/details"/>
+  <int value="22120718" label="/adPrivacy"/>
+  <int value="53341592" label="/privacySandbox"/>
+  <int value="60238454" label="/content/ads"/>
+  <int value="91791837" label="/content/localFonts"/>
+  <int value="104900992" label="/content/insecureContent"/>
+  <int value="111607686" label="/yourSavedInfo"/>
+  <int value="223791833" label="/help/about"/>
+  <int value="254445609" label="/content/filesystem"/>
+  <int value="273561147" label="/autofill"/>
+  <int value="297583680" label="/device"/>
+  <int value="334469894" label="/people"/>
+  <int value="338873252" label="/passwords"/>
+  <int value="350639838" label="/cookies"/>
+  <int value="408074355" label="/onStartup"/>
+  <int value="463749620" label="/content/flash"/>
+  <int value="537677705" label="/cookies/detail"/>
+  <int value="547337090" label="/content/automaticDownloads"/>
+  <int value="614423407" label="/incompatibleApplications"/>
+  <int value="618530678" label="/advanced"/>
+  <int value="682420978" label="/content/bluetoothScanning"/>
+  <int value="683177973" label="/cupsPrinters"/>
+  <int value="754547746" label="/help/details"/>
+  <int value="805959528" label="/security"/>
+  <int value="834907708" label="/privacy/guide"/>
+  <int value="838443004" label="/safetyCheck"/>
+  <int value="851467961" label="/content/siteData"/>
+  <int value="856943564" label="/content/siteDetails"/>
+  <int value="868952532" label="/pointer-overlay"/>
+  <int value="871362590" label="/ai/historySearch"/>
+  <int value="872535792" label="/parentalControls"/>
+  <int value="900733129" label="/content/microphone"/>
+  <int value="912274271" label="/siteData"/>
+  <int value="943458628" label="/triggeredResetProfileSettings"/>
+  <int value="1051104480" label="/cleanup"/>
+  <int value="1114615837" label="/accessibility"/>
+  <int value="1147116633" label="/networkConfig"/>
+  <int value="1161126439" label="/content/midiDevices"/>
+  <int value="1225485397" label="/content/unsandboxedPlugins"/>
+  <int value="1258785570" label="/crostini/sharedPaths"/>
+  <int value="1300569861" label="/keyboard-overlay"/>
+  <int value="1338599766" label="/content/idleDetection"/>
+  <int value="1364454971" label="/androidApps"/>
+  <int value="1384165448" label="/stylus"/>
+  <int value="1462185522" label="/dateTime"/>
+  <int value="1463148011" label="/securityKeys"/>
+  <int value="1476368807" label="/adPrivacy/measurement"/>
+  <int value="1513138656" label="/passwordsAndForms"/>
+  <int value="1602314362" label="/storage"/>
+  <int value="1641570017" label="/defaultBrowser"/>
+  <int value="1643599659" label="/content/usbDevices"/>
+  <int value="1661964813" label="/reset"/>
+  <int value="1742260422" label="/cloudPrinters"/>
+  <int value="1798082697" label="/handlers"/>
+  <int value="1799541633" label="/addresses"/>
+  <int value="1810385625" label="/crostini"/>
+  <int value="1838355422" label="/getMostChrome"/>
+  <int value="1853516270" label="/lockScreen/fingerprint"/>
+  <int value="1935584577" label="/clearBrowserData"/>
+  <int value="1956464558" label="/changePicture"/>
+  <int value="2014923527" label="/storage/externalStoragePreferences"/>
+  <int value="2030415176" label="/files"/>
+  <int value="2037005918" label="/content/sound"/>
+  <int value="2127311241" label="/editDictionary"/>
+  <int value="2136150421" label="/content/all"/>
+  <int value="2136345292" label="/privacy"/>
+</enum>
+
+<enum name="WebUITabStripCloseActions">
+  <int value="0" label="Tap on tab counter"/>
+  <int value="1" label="Tap outside tab strip (deprecated)"/>
+  <int value="2" label="Tab selected in tab strip"/>
+  <int value="3" label="Tap in tab's content area"/>
+  <int value="4"
+      label="Omnibox focused (either by tap or by creating a new tab)"/>
+</enum>
+
+<enum name="WebUITabStripCloseTabActions">
+  <int value="0" label="Tap on close button"/>
+  <int value="1" label="Swiped to close"/>
+</enum>
+
+<enum name="WebUITabStripOpenActions">
+  <int value="0" label="Tap on tab counter"/>
+  <int value="1" label="Dragged open from toolbar"/>
+  <int value="2" label="Tab from other window dragged over toolbar"/>
+</enum>
+
+<enum name="WebUIUrlHashes">
+  <int value="-2137891043" label="chrome-untrusted://scanner-feedback/"/>
+  <int value="-2117475303" label="chrome://comments-side-panel.top-chrome/"/>
+  <int value="-2103246641" label="chrome://signin-internals/"/>
+  <int value="-2087891836" label="chrome://debug-webuis-disabled/"/>
+  <int value="-2086395469" label="chrome://dlp-internals/"/>
+  <int value="-2084645929" label="chrome://infobar-internals/"/>
+  <int value="-2069349961" label="chrome://history-clusters-internals/"/>
+  <int value="-2061366287" label="chrome://dev-ui-loader/"/>
+  <int value="-2038391710" label="chrome://tab-strip-internals/"/>
+  <int value="-2034706497" label="chrome://net-internals/"/>
+  <int value="-2031269077" label="chrome://signin-error/"/>
+  <int value="-2025866230" label="chrome://usb-internals/"/>
+  <int value="-2024468885" label="chrome://ntp-tiles-internals/"/>
+  <int value="-2020874093" label="chrome://lock-reauth/"/>
+  <int value="-2008798042" label="chrome://extended-updates-dialog/"/>
+  <int value="-1977692791" label="chrome://crash/"/>
+  <int value="-1970917350" label="chrome-untrusted://compose/"/>
+  <int value="-1969079493"
+      label="chrome-untrusted://class-tools-remote-display/"/>
+  <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
+  <int value="-1941995226" label="chrome://attribution-internals/"/>
+  <int value="-1911971715" label="chrome://history/"/>
+  <int value="-1905481895" label="chrome://reload-button.top-chrome/"/>
+  <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
+  <int value="-1887206190" label="chrome://nfc-debug/"/>
+  <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
+  <int value="-1837941403" label="chrome://launcher-internals/"/>
+  <int value="-1825876526" label="chrome://delayeduithreadhang/"/>
+  <int value="-1808179141" label="chrome://password-manager-internals/"/>
+  <int value="-1777503123" label="chrome://thumb2/"/>
+  <int value="-1774623401" label="chrome://os-print/"/>
+  <int value="-1743341803" label="chrome://bookmarks/"/>
+  <int value="-1737358104" label="chrome://account-migration-welcome/"/>
+  <int value="-1729122580" label="chrome://chrome-urls/"/>
+  <int value="-1716340463" label="chrome://safe-browsing/"/>
+  <int value="-1704400468" label="chrome://quit/"/>
+  <int value="-1700864659" label="chrome://slow/"/>
+  <int value="-1699890661" label="chrome://webui-browser/"/>
+  <int value="-1697612520" label="chrome://print-management/"/>
+  <int value="-1697077152" label="chrome://device-log/"/>
+  <int value="-1690355375" label="chrome://mobilesetup/"/>
+  <int value="-1683501080" label="chrome://family-link-user-internals/"/>
+  <int value="-1681544613" label="chrome://print/"/>
+  <int value="-1667471433" label="chrome://vc-background/"/>
+  <int value="-1663881220" label="chrome://recorder-app/"/>
+  <int value="-1649429396" label="chrome://chrome-signin/edu-coexistence/"/>
+  <int value="-1647734092" label="chrome://net-export/"/>
+  <int value="-1638649228" label="chrome://webapks/"/>
+  <int value="-1636191836"
+      label="chrome://history-clusters-side-panel.top-chrome/"/>
+  <int value="-1634933990" label="chrome://web-footer-experiment/"/>
+  <int value="-1631133219" label="chrome://help-app/"/>
+  <int value="-1620492168" label="chrome://local-files-migration/"/>
+  <int value="-1618666743" label="chrome://office-fallback/"/>
+  <int value="-1594315149"
+      label="chrome://tab-strip.top-chrome/split-view-new-tab-page/"/>
+  <int value="-1591890659" label="chrome://syncfs-internals/"/>
+  <int value="-1564946100" label="chrome://tab-strip.top-chrome/"/>
+  <int value="-1532727290" label="chrome://whats-new/"/>
+  <int value="-1500737448" label="chrome://manage-mirrorsync/"/>
+  <int value="-1493822642" label="chrome://invalidations/"/>
+  <int value="-1493762713" label="chrome://settings/cookies/"/>
+  <int value="-1491518259" label="chrome://support-tool/"/>
+  <int value="-1475777739" label="chrome://physical-web-diagnostics/"/>
+  <int value="-1471376798" label="chrome-untrusted://print/"/>
+  <int value="-1440785181" label="chrome://profile-signin-confirmation/"/>
+  <int value="-1423026122" label="chrome://md-user-manager/"/>
+  <int value="-1401057585" label="chrome://account-manager-error/"/>
+  <int value="-1398642514" label="chrome://gesture/"/>
+  <int value="-1384888924" label="chrome-untrusted://file-manager/"/>
+  <int value="-1382906531" label="chrome://managed-user-passphrase/"/>
+  <int value="-1379571130" label="chrome://newtab/"/>
+  <int value="-1378421581" label="chrome://media-router/"/>
+  <int value="-1362220223" label="chrome://connection-help/"/>
+  <int value="-1346911023" label="chrome://signin-dice-web-intercept/"/>
+  <int value="-1331415629" label="chrome://os-settings/"/>
+  <int value="-1326709686" label="chrome://class-tools-remote-display/"/>
+  <int value="-1313432739" label="chrome://plugins/"/>
+  <int value="-1296182448" label="chrome://vc-tray-tester/"/>
+  <int value="-1294799178" label="chrome://signout-confirmation/"/>
+  <int value="-1293039192" label="chrome://os-feedback/"/>
+  <int value="-1282128285" label="chrome://suggest-internals/"/>
+  <int value="-1267771224" label="chrome://sensor-info/"/>
+  <int value="-1265265027" label="chrome-untrusted://help-app/"/>
+  <int value="-1259871417" label="chrome://browser-switch/"/>
+  <int value="-1239015343" label="chrome://kill/"/>
+  <int value="-1224398205" label="chrome://prefs-internals/"/>
+  <int value="-1203248739" label="chrome://scanning/"/>
+  <int value="-1198437953" label="chrome://download-shelf.top-chrome/"/>
+  <int value="-1179878260" label="chrome://user-education-internals/"/>
+  <int value="-1177126000" label="chrome://profile-internals/"/>
+  <int value="-1176451566" label="chrome://access-code-cast/"/>
+  <int value="-1169621742" label="chrome://linux-proxy-config/"/>
+  <int value="-1147478891" label="chrome-untrusted://sample-system-web-app/"/>
+  <int value="-1137946367" label="chrome://webrt-logs/"/>
+  <int value="-1108319739" label="chrome://sync-internals/"/>
+  <int value="-1087461470" label="chrome://management/"/>
+  <int value="-1084687099" label="chrome://newtab-footer/"/>
+  <int value="-1082746738" label="chrome://credits/"/>
+  <int value="-1078583150" label="chrome://view-cert-dialog/"/>
+  <int value="-1051629910" label="chrome://mall/"/>
+  <int value="-1043041749" label="chrome://offline-internals/"/>
+  <int value="-1033927589" label="chrome://files-internals/"/>
+  <int value="-1013183905" label="chrome://media-app/"/>
+  <int value="-992950394" label="chrome://compare/"/>
+  <int value="-992301003" label="chrome://bookmarks-side-panel.top-chrome/"/>
+  <int value="-986956132" label="chrome://app-install-dialog/"/>
+  <int value="-986409800" label="chrome://identity-internals/"/>
+  <int value="-969979971" label="chrome://sandbox/"/>
+  <int value="-949665427"
+      label="chrome://customize-chrome-side-panel.top-chrome/"/>
+  <int value="-946383082" label="chrome://translate-internals/"/>
+  <int value="-940484840" label="chrome://arc-power-control/"/>
+  <int value="-936786926" label="chrome://settings/"/>
+  <int value="-933829627" label="chrome-untrusted://mako/"/>
+  <int value="-915654110" label="chrome://webui-gallery/"/>
+  <int value="-907485548" label="chrome://policy-tool/"/>
+  <int value="-905972126" label="chrome://signin-email-confirmation/"/>
+  <int value="-892484505" label="chrome://sys-internals/"/>
+  <int value="-891260101" label="chrome://inspect/"/>
+  <int value="-853789543" label="chrome://bluetooth-pairing/"/>
+  <int value="-833683433" label="chrome://on-device-internals/"/>
+  <int value="-823585847" label="chrome://chrome-signin/"/>
+  <int value="-769094624" label="chrome://borealis-credits/"/>
+  <int value="-756514973" label="chrome://version/"/>
+  <int value="-753390931" label="chrome://interstitials/"/>
+  <int value="-734627230" label="chrome://extension-icon/"/>
+  <int value="-727952446" label="chrome://nacl/"/>
+  <int value="-722142308" label="chrome://updater/"/>
+  <int value="-707542503" label="chrome://choose-mobile-network/"/>
+  <int value="-695712248" label="chrome://segmentation-internals/"/>
+  <int value="-680649366" label="chrome-untrusted://hats/"/>
+  <int value="-675896339" label="chrome://healthd-internals/"/>
+  <int value="-672072143" label="chrome://site-engagement/"/>
+  <int value="-661305899" label="chrome://set-time/"/>
+  <int value="-652517395" label="chrome://signin-reauth/"/>
+  <int value="-644310325" label="chrome://os-credits/"/>
+  <int value="-643868788"
+      label="chrome-untrusted://companion-side-panel.top-chrome/"/>
+  <int value="-634350465" label="chrome://ukm/"/>
+  <int value="-631384656" label="chrome://assistant-optin/"/>
+  <int value="-624584089"
+      label="chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/ (Bookmark
+             Manager)"/>
+  <int value="-623121238" label="chrome://arc-graphics-tracing/"/>
+  <int value="-614294009" label="chrome://crostini-credits/"/>
+  <int value="-606058756" label="chrome://accessibility/"/>
+  <int value="-601472337" label="chrome://shimless-rma/"/>
+  <int value="-566908909" label="chrome://suggestions/"/>
+  <int value="-548156607" label="chrome://feedback/"/>
+  <int value="-543577801" label="chrome://history-side-panel.top-chrome/"/>
+  <int value="-543094310" label="chrome://watermark/"/>
+  <int value="-532669066" label="chrome://traces/"/>
+  <int value="-528306235" label="chrome://sync/"/>
+  <int value="-525954994" label="chrome-untrusted://lens/"/>
+  <int value="-516792794" label="chrome://downloads/"/>
+  <int value="-515586256" label="chrome-untrusted://media-app/"/>
+  <int value="-512782085" label="chrome://salsa/"/>
+  <int value="-511253776" label="chrome://snippets-internals/"/>
+  <int value="-492330636" label="chrome://connectivity-diagnostics/"/>
+  <int value="-485494550" label="chrome://interventions-internals/"/>
+  <int value="-451371558" label="chrome://serviceworker-internals/"/>
+  <int value="-443189279" label="chrome://enterprise-profile-welcome/"/>
+  <int value="-412283693" label="chrome://extensions-zero-state/"/>
+  <int value="-407160627" label="chrome://on-device-translation-internals/"/>
+  <int value="-394586044" label="chrome://confirm-password-change/"/>
+  <int value="-377028639" label="chrome://copresence/"/>
+  <int value="-359703631" label="chrome://slow_trace/"/>
+  <int value="-336117866" label="chrome://focus-mode-media/"/>
+  <int value="-332876060" label="chrome://autofill-ml-internals/"/>
+  <int value="-245337017" label="chrome://user-actions/"/>
+  <int value="-233401490" label="chrome://accessory-update/"/>
+  <int value="-222190329" label="chrome://dino/"/>
+  <int value="-207369615" label="chrome://location-internals/"/>
+  <int value="-206925255" label="chrome://popular-sites-internals/"/>
+  <int value="-176639700" label="chrome://omnibox/"/>
+  <int value="-123905906" label="chrome://regional-capabilities-internals/"/>
+  <int value="-108234722" label="chrome://batch-upload/"/>
+  <int value="-106823253" label="chrome://conflicts/"/>
+  <int value="-103805443" label="chrome://nearby-internals/"/>
+  <int value="-90956977" label="chrome://dns/"/>
+  <int value="-89853739" label="chrome://thumbnails/"/>
+  <int value="-88246682" label="chrome://uithreadhang/"/>
+  <int value="-68100096" label="chrome://welcome-win10/"/>
+  <int value="-58745346" label="chrome://network-errors/"/>
+  <int value="-42737706" label="chrome://extensions-frame/"/>
+  <int value="-12304525" label="chrome://tab-strip/"/>
+  <int value="-2353438" label="chrome://sim-unlock/"/>
+  <int value="1377205" label="chrome://history-frame/"/>
+  <int value="6575726" label="chrome://app-settings/"/>
+  <int value="9727114" label="chrome://favicon/"/>
+  <int value="14651785" label="chrome://download-internals/"/>
+  <int value="30059183" label="chrome://kerberos-in-browser/"/>
+  <int value="34035361" label="chrome://apps/"/>
+  <int value="43923599" label="chrome://tracing/"/>
+  <int value="47779771" label="chrome://media-router-internals/"/>
+  <int value="48333657" label="chrome://about/"/>
+  <int value="57900378" label="chrome://conch/"/>
+  <int value="58807865" label="chrome://local-state/"/>
+  <int value="67875391" label="chrome://legion-internals/"/>
+  <int value="71502624" label="chrome://history-sync-optin/"/>
+  <int value="84832110" label="chrome://fileicon/"/>
+  <int value="104579118" label="chrome://boca-app/"/>
+  <int value="110166858" label="chrome://saved-tab-groups-unsupported/"/>
+  <int value="112165789" label="chrome://device-emulator/"/>
+  <int value="114748825" label="chrome-devtools://devtools/"/>
+  <int value="164517522" label="chrome://discards/"/>
+  <int value="171659041" label="chrome://webrtc-device-provider/"/>
+  <int value="182993612" label="chrome-untrusted://help-app-kids-magazine/"/>
+  <int value="187846858" label="chrome://lens-overlay/"/>
+  <int value="232821835" label="chrome://optimization-guide-internals/"/>
+  <int value="233807382" label="chrome://privacy-sandbox-base-dialog/"/>
+  <int value="248924104" label="chrome://actor-overlay/"/>
+  <int value="253258497" label="chrome://components/"/>
+  <int value="260253931" label="chrome://devices/"/>
+  <int value="275260142" label="chrome://eoc-internals/"/>
+  <int value="296428820" label="chrome-untrusted://lens-overlay/"/>
+  <int value="325375649" label="chrome://settings-frame/"/>
+  <int value="361250371" label="chrome://nearby/"/>
+  <int value="361621847" label="chrome://make-metro/"/>
+  <int value="372516928" label="chrome://histograms/"/>
+  <int value="399773145" label="chrome://commander/"/>
+  <int value="402408777" label="chrome-untrusted://crosh/"/>
+  <int value="405280734" label="chrome://data-sharing-internals/"/>
+  <int value="435700552" label="chrome-untrusted://scalable-iph-debug/"/>
+  <int value="436626245" label="chrome://settings/content/cookies/"/>
+  <int value="440216167" label="chrome://commerce-internals/"/>
+  <int value="454041716" label="chrome://new-tab-page-third-party/"/>
+  <int value="459058510" label="chrome://status-area-internals/"/>
+  <int value="460232055" label="chrome://lens-search-bubble/"/>
+  <int value="461287992" label="chrome://help/"/>
+  <int value="507734656" label="chrome://profile-customization/"/>
+  <int value="520299179" label="chrome://media-engagement/"/>
+  <int value="543723090" label="chrome://traces-internals/"/>
+  <int value="554090510" label="chrome://first-run/"/>
+  <int value="581234974" label="chrome://tcmalloc/"/>
+  <int value="584098160" label="chrome://profile-picker/"/>
+  <int value="592330525" label="chrome://metrics-internals/"/>
+  <int value="607659257" label="chrome://cast/"/>
+  <int value="634002171" label="chrome://projector-selfie-cam/"/>
+  <int value="634165583" label="chrome://app-service-internals/"/>
+  <int value="646837226" label="chrome://crashes/"/>
+  <int value="654460550" label="chrome://contextual-tasks/"/>
+  <int value="659389881" label="chrome://gpu/"/>
+  <int value="662045902" label="chrome://smb-share-dialog/"/>
+  <int value="689991895" label="chrome://supervised-user-internals/"/>
+  <int value="701883986" label="chrome://privacy-sandbox-dialog/"/>
+  <int value="703814809" label="chrome://intro/"/>
+  <int value="705531796" label="chrome://webxr-internals/"/>
+  <int value="709341402" label="chrome://omnibox-popup.top-chrome/"/>
+  <int value="717537230" label="chrome://internals/"/>
+  <int value="733891637" label="chrome://connection-monitoring-detected/"/>
+  <int value="742272091" label="chrome://extensions/"/>
+  <int value="745470397" label="chrome://parent-access/"/>
+  <int value="748142712" label="chrome://crostini-upgrader/"/>
+  <int value="749881882" label="chrome://webuijserror/"/>
+  <int value="754315733" label="chrome://theme/"/>
+  <int value="762064551" label="chrome://graduation/"/>
+  <int value="770641362" label="chrome://shortcut-customization/"/>
+  <int value="784140714" label="chrome://predictors/"/>
+  <int value="807323521" label="chrome://glic-fre/"/>
+  <int value="812624791" label="chrome://dom-distiller/"/>
+  <int value="821023334" label="chrome://screenlock-icon/"/>
+  <int value="858923205" label="chrome://cloud-upload/"/>
+  <int value="864711974" label="chrome://emoji-picker/"/>
+  <int value="890996135" label="chrome://enterprise-reporting/"/>
+  <int value="894368493" label="chrome://internet-config-dialog/"/>
+  <int value="911597664" label="chrome://multidevice-setup/"/>
+  <int value="918960088" label="chrome://instant/"/>
+  <int value="943766809" label="chrome://view-cert/"/>
+  <int value="949558394" label="chrome://glic/"/>
+  <int value="962490408" label="chrome-untrusted://camera-app/"/>
+  <int value="971254590"
+      label="chrome://shopping-insights-side-panel.top-chrome/"/>
+  <int value="977219287" label="chrome://memory/"/>
+  <int value="985294599" label="chrome://webrtc-logs/"/>
+  <int value="1002389801" label="chrome://floating-workspace/"/>
+  <int value="1007720460" label="chrome://tab-group-home/"/>
+  <int value="1010453084" label="chrome-untrusted://data-sharing/"/>
+  <int value="1015167335" label="chrome://lens/"/>
+  <int value="1044107189" label="chrome://sample-system-web-app/"/>
+  <int value="1050328415" label="chrome://diagnostics/"/>
+  <int value="1050817548" label="chrome://camera-app/"/>
+  <int value="1055519744" label="chrome://webrtc-internals/"/>
+  <int value="1058168190" label="chrome://color-internals/"/>
+  <int value="1059833308" label="chrome://hps-internals/"/>
+  <int value="1066907868" label="chrome://physical-web/"/>
+  <int value="1069074449" label="chrome://managed-user-profile-notice/"/>
+  <int value="1076364348" label="chrome://web-app-internals/"/>
+  <int value="1084212752" label="chrome://personalization/"/>
+  <int value="1109407387" label="chrome://keyboardoverlay/"/>
+  <int value="1131279479" label="chrome://actor-internals/"/>
+  <int value="1131405887" label="chrome://taskscheduler-internals/"/>
+  <int value="1134924982" label="chrome://app-icon/"/>
+  <int value="1145000455" label="chrome://arc-overview-tracing/"/>
+  <int value="1145963223" label="chrome://process-internals/"/>
+  <int value="1148733422" label="chrome://restart/"/>
+  <int value="1181155999" label="chrome://audio/"/>
+  <int value="1206367958" label="chrome://private-aggregation-internals/"/>
+  <int value="1211642987" label="chrome://voicesearch/"/>
+  <int value="1213428635" label="chrome://memory-redirect/"/>
+  <int value="1214710734" label="chrome://welcome/"/>
+  <int value="1221097359" label="chrome://constrained-test/"/>
+  <int value="1222534887" label="chrome://multidevice-internals/"/>
+  <int value="1231883104" label="chrome://growth-internals/"/>
+  <int value="1265583806" label="chrome://password-manager/"/>
+  <int value="1272316136" label="chrome://image/"/>
+  <int value="1281801197" label="chrome://terms/"/>
+  <int value="1286620182" label="chrome://reset-password/"/>
+  <int value="1291141725" label="chrome://search-engine-choice/"/>
+  <int value="1294506555" label="chrome://borealis-motd/"/>
+  <int value="1306215264" label="chrome://activationmessage/"/>
+  <int value="1326111536" label="chrome://new-tab-page/"/>
+  <int value="1332050252" label="chrome://borealis-installer/"/>
+  <int value="1340926535" label="chrome://network/"/>
+  <int value="1354146226" label="chrome://tab-modal-confirm-dialog/"/>
+  <int value="1356087814" label="chrome://add-supervision/"/>
+  <int value="1361577626" label="chrome://connectors-internals/"/>
+  <int value="1371905827" label="chrome://flags/"/>
+  <int value="1382926998" label="chrome://color-pipeline-internals/"/>
+  <int value="1384721582" label="chrome-untrusted://demo-mode-app/"/>
+  <int value="1396129399" label="chrome://flash/"/>
+  <int value="1397728473" label="chrome://crostini-installer/"/>
+  <int value="1399992914" label="chrome://java-crash/"/>
+  <int value="1403605293" label="chrome://internet-detail-dialog/ (duplicate)"/>
+  <int value="1411665301" label="chrome://lock-network/"/>
+  <int value="1427179406" label="chrome://gcm-internals/"/>
+  <int value="1437913193" label="chrome://file-manager/"/>
+  <int value="1446796271" label="chrome-untrusted://focus-mode-player/"/>
+  <int value="1452136061" label="chrome-untrusted://terminal/"/>
+  <int value="1454088830" label="chrome://uber-frame/"/>
+  <int value="1457759734" label="chrome://user-manager/"/>
+  <int value="1463418339" label="chrome://proximity-auth/"/>
+  <int value="1466599095" label="chrome://oobe/"/>
+  <int value="1467342679" label="chrome://memory-internals/"/>
+  <int value="1476643520" label="chrome://internet-detail-dialog/"/>
+  <int value="1506419762" label="devtools://devtools/"/>
+  <int value="1527200748" label="chrome://security-curtain/"/>
+  <int value="1531448147"
+      label="chrome://urgent-password-expiry-notification/"/>
+  <int value="1540230808" label="chrome://power/"/>
+  <int value="1554928128" label="chrome://sync-confirmation/?consent-bump"/>
+  <int value="1563972074" label="chrome://autofill-internals/"/>
+  <int value="1568301017" label="chrome://media-internals/"/>
+  <int value="1585293659" label="chrome://system/"/>
+  <int value="1603463396" label="chrome://help-frame/"/>
+  <int value="1615939424" label="chrome://chrome/"/>
+  <int value="1628875649" label="chrome://quota-internals/"/>
+  <int value="1631369147" label="chrome://domain-reliability-internals/"/>
+  <int value="1645027983" label="chrome://notification-tester/"/>
+  <int value="1648729965" label="chrome://vm/"/>
+  <int value="1662453825" label="chrome://indexeddb-internals/"/>
+  <int value="1673299360" label="chrome://tab-search.top-chrome/"/>
+  <int value="1677735296" label="chrome://sync-confirmation/"/>
+  <int value="1687272877" label="chrome://syncresources/"/>
+  <int value="1691459037" label="chrome://performance-side-panel.top-chrome/"/>
+  <int value="1693406661" label="chrome://kiosk-vision-internals/"/>
+  <int value="1715073862"
+      label="chrome-untrusted://read-anything-side-panel.top-chrome/"/>
+  <int value="1725906496" label="chrome://imageburner/"/>
+  <int value="1765337366" label="chrome://certificate-manager/"/>
+  <int value="1776179126" label="chrome://thumb/"/>
+  <int value="1780987498" label="chrome://eche-app/"/>
+  <int value="1797107942" label="chrome://md-settings/"/>
+  <int value="1834776370" label="chrome://password-change/"/>
+  <int value="1846714330" label="chrome://sanitize/"/>
+  <int value="1887784693" label="chrome://policy/"/>
+  <int value="1906728906" label="chrome://privacy-sandbox-internals/"/>
+  <int value="1914132589" label="chrome-untrusted://boca-app/"/>
+  <int value="1918190389" label="chrome-untrusted://projector-annotator/"/>
+  <int value="1926101309" label="chrome://cryptohome/"/>
+  <int value="1928106753" label="chrome://app-disabled/"/>
+  <int value="1961263039" label="chrome://profiler/"/>
+  <int value="1963964324" label="chrome://read-later.top-chrome/"/>
+  <int value="1965127181" label="chrome://cast-feedback/"/>
+  <int value="1975618905" label="chrome://app-list/"/>
+  <int value="2033331720" label="chrome-untrusted://os-feedback/"/>
+  <int value="2040878656" label="chrome://bluetooth-internals/"/>
+  <int value="2052019697" label="chrome://userimage/"/>
+  <int value="2108016874" label="chrome-untrusted://projector/"/>
+  <int value="2110022659" label="chrome-untrusted://ntp-microsoft-auth/"/>
+  <int value="2111953935" label="chrome://topics-internals/"/>
+  <int value="2114840772" label="chrome://drive-internals/"/>
+  <int value="2120829362" label="chrome://account-manager-welcome/"/>
+</enum>
+
+<!-- LINT.IfChange(WrenchMenuAction) -->
+
+<enum name="WrenchMenuAction">
+  <int value="0" label="New tab"/>
+  <int value="1" label="New window"/>
+  <int value="2" label="New incognito window"/>
+  <int value="3" label="Show bookmark bar"/>
+  <int value="4" label="Show bookmark manager"/>
+  <int value="5" label="Import settings"/>
+  <int value="6" label="Bookmark page"/>
+  <int value="7" label="Bookmark all tabs"/>
+  <int value="8" label="Pin to start screen"/>
+  <int value="9" label="Restore tab"/>
+  <int value="10" label="Win desktop restart"/>
+  <int value="11" label="Win8 metro restart"/>
+  <int value="12" label="Win chromeos restart"/>
+  <int value="13" label="Distill page"/>
+  <int value="14" label="Save page"/>
+  <int value="15" label="Find"/>
+  <int value="16" label="Print"/>
+  <int value="17" label="Cut"/>
+  <int value="18" label="Copy"/>
+  <int value="19" label="Paste"/>
+  <int value="20" label="Create hosted app"/>
+  <int value="21" label="Create shortcuts"/>
+  <int value="22" label="Manage extensions"/>
+  <int value="23" label="Task manager"/>
+  <int value="24" label="Clear browsing data"/>
+  <int value="25" label="View source"/>
+  <int value="26" label="Dev tools"/>
+  <int value="27" label="Dev tools console"/>
+  <int value="28" label="Dev tools devices"/>
+  <int value="29" label="Profiling enabled"/>
+  <int value="30" label="Zoom minus"/>
+  <int value="31" label="Zoom plus"/>
+  <int value="32" label="Fullscreen"/>
+  <int value="33" label="Show history"/>
+  <int value="34" label="Show downloads"/>
+  <int value="35" label="Show sync setup (Deprecated)"/>
+  <int value="36" label="Options"/>
+  <int value="37" label="About"/>
+  <int value="38" label="Help page via menu"/>
+  <int value="39" label="Feedback"/>
+  <int value="40" label="Toggle request tablet site"/>
+  <int value="41" label="Recent tab"/>
+  <int value="42" label="Open a bookmark"/>
+  <int value="43" label="Exit"/>
+  <int value="44" label="Upgrade browser"/>
+  <int value="45" label="Cast"/>
+  <int value="46" label="Beta Forum"/>
+  <int value="47" label="Copy URL"/>
+  <int value="48" label="Open in Chrome"/>
+  <int value="49" label="Site Settings"/>
+  <int value="50" label="App Info"/>
+  <int value="51" label="Uninstall app"/>
+  <int value="52" label="Show Kaleidoscope"/>
+  <int value="53" label="Show tips for Chrome"/>
+  <int value="54" label="Show Chrome What's New"/>
+  <int value="55" label="Trigger Lacros data migration"/>
+  <int value="56" label="Menu opened"/>
+  <int value="57" label="Visited Chrome Web Store via extensions sub menu."/>
+  <int value="58" label="Password Manager"/>
+  <int value="59" label="Show Translate bubble"/>
+  <int value="60" label="Show Chrome Labs"/>
+  <int value="61" label="Install PWA"/>
+  <int value="62" label="Open in PWA window"/>
+  <int value="63" label="Send to your devices"/>
+  <int value="64" label="Create QR Code"/>
+  <int value="65" label="Customize your Chrome"/>
+  <int value="66" label="Close this profile"/>
+  <int value="67" label="Manage your Google account"/>
+  <int value="68"
+      label="Show reauth sign in prompt to user who has sync paused"/>
+  <int value="69" label="Show sync settings page"/>
+  <int value="70" label="Show turn on sync prompt"/>
+  <int value="71" label="Open Guest profile"/>
+  <int value="72" label="Add new profile"/>
+  <int value="73" label="Manage Chrome profiles"/>
+  <int value="74" label="Open recent tabs login for device tabs"/>
+  <int value="75" label="Add tab to reading list"/>
+  <int value="76" label="Show reading list"/>
+  <int value="77" label="Password Manager (submenu)"/>
+  <int value="78" label="Payment methods"/>
+  <int value="79" label="Addresses and more"/>
+  <int value="80" label="Switch directly to other profile"/>
+  <int value="82" label="Show bookmark side panel"/>
+  <int value="83" label="Show performance settings"/>
+  <int value="84" label="Show history cluster side panel"/>
+  <int value="85" label="Show reading mode side panel"/>
+  <int value="86" label="Open Safety Hub settings UI"/>
+  <int value="87" label="Show password manager checkup (Safety Hub)"/>
+  <int value="88" label="Set browser as default"/>
+  <int value="89" label="Show saved tab groups"/>
+  <int value="90" label="Show Lens overlay"/>
+  <int value="91" label="Open extension settings (Safety Hub)"/>
+  <int value="92" label="Show customize chrome side panel"/>
+  <int value="93" label="Show tab search declutter page"/>
+  <int value="94" label="Open glic"/>
+  <int value="95" label="Find Extensions"/>
+  <int value="96" label="Show signin page"/>
+  <int value="97" label="Open recent tabs from other devices"/>
+  <int value="98" label="Trigger installed app update dialog"/>
+  <int value="99" label="Identity docs"/>
+  <int value="100" label="Travel"/>
+  <int value="101" label="Contact info"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
+
+</enums>
+
+</histogram-configuration>

@@ -8,8 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -141,6 +141,11 @@ void RequestDesktopVersion() {
 
 // Verifies that the IPH for Request desktop shows when triggered
 - (void)testRequestDesktopTip {
+  // TODO(crbug.com/454538651): Re-enable the test.
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+
   [self enableDemoModeForFeature:"IPH_DefaultSiteView"];
 
   self.testServer->AddDefaultHandlers();

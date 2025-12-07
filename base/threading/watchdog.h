@@ -82,8 +82,7 @@ class BASE_EXPORT Watchdog {
  private:
   class ThreadDelegate : public PlatformThread::Delegate {
    public:
-    explicit ThreadDelegate(Watchdog* watchdog) : watchdog_(watchdog) {
-    }
+    explicit ThreadDelegate(Watchdog* watchdog) : watchdog_(watchdog) {}
     void ThreadMain() override;
 
    private:

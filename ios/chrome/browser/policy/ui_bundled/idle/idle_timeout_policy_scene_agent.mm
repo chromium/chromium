@@ -4,38 +4,42 @@
 
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_observer_bridge.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/constants.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_coordinator.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_coordinator_delegate.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_launch_screen_view_controller.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_utils.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface IdleTimeoutPolicySceneAgent () <
-    AppStateObserver,
     IdleServiceObserving,
     IdleTimeoutConfirmationCoordinatorDelegate>
 @end
@@ -62,7 +66,7 @@
 
   // Service handling IdleTimeout and IdleTimeoutActions policies.
   // IdleTimeoutPolicySceneAgents observe this service.
-  raw_ptr<enterprise_idle::IdleService> _idleService;
+  raw_ptr<enterprise_idle::IdleService, DanglingUntriaged> _idleService;
 
   // Flag indicating whether this dialog is allowed to display the snackbar.
   // This is used to show the snackbar on the same scene that shows the timeout
@@ -94,13 +98,6 @@
     _idleService = idleService;
   }
   return self;
-}
-
-#pragma mark - ObservingSceneAgent
-
-- (void)setSceneState:(SceneState*)sceneState {
-  [super setSceneState:sceneState];
-  [self.sceneState.appState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
@@ -196,11 +193,10 @@
 
 - (void)tearDownObservers {
   _idleServiceObserverBridge.reset();
-  [self.sceneState.appState removeObserver:self];
 }
 
 - (PrefService*)prefService {
-  return _mainBrowser->GetBrowserState()->GetPrefs();
+  return _mainBrowser->GetProfile()->GetPrefs();
 }
 
 // Returns whether the scene and app states allow for the idle timeout snackbar
@@ -244,7 +240,28 @@
   std::optional<int> messageId =
       enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(
           _idleService->GetLastActionSet());
-  CHECK(messageId) << "There is no snackbar message for the set of actions";
+
+  // TODO(crbug.com/409821312): Change this back to CHECK when the cause for the
+  // crash is found. The crash is possibly related to BrowserSignin=2 also being
+  // set, but it is not reproducible yet.
+  if (!messageId) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(_mainBrowser->GetProfile());
+    DUMP_WILL_BE_CHECK(messageId)
+        << "The last IdleTimeout action set was empty. IdleTimeoutActions: "
+        << _mainBrowser->GetProfile()
+               ->GetPrefs()
+               ->GetList(enterprise_idle::prefs::kIdleTimeoutActions)
+               .DebugString()
+        << ", BrowserSignin:"
+        << GetApplicationContext()->GetLocalState()->GetInteger(
+               prefs::kBrowserSigninPolicy)
+        << "Signin status: "
+        << identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    _idleService->OnIdleTimeoutSnackbarPresented();
+    return;
+  }
+
   NSString* messageText = l10n_util::GetNSString(*messageId);
 
   // Delay showing the snackbar message when voice over is on because other
@@ -266,8 +283,9 @@
 }
 
 - (void)showSnackbar:(NSString*)messageText {
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-  message.duration = kIdleTimeoutSnackbarDuration;
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
+  message.duration = kIdleTimeoutSnackbarDuration.InSeconds();
   message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];
 }
@@ -275,7 +293,7 @@
 // Returns whether the scene and app states allow for the idle timeout
 // confirmation dialog to be shown if it is needed.
 - (BOOL)isUIAvailableToShowDialog {
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }
@@ -303,6 +321,11 @@
 // 1. the UI is available
 // 2. it was never shown or if a scene displaying the dialog
 // was closed and anoher foregrouded window remained open.
+// TODO(crbug.com/364574533): `showIdleTimeoutConfirmation` will be called from
+// `sceneStateDidHideModalOverlay` in the case of multiple profiles when the
+// window that shows the _uiBlocker is closed. Call
+// `stopPresentingAndRunActionsAfterwards` without showing the dialog for <1
+// second as it looks buggy when this happens.
 - (void)maybeShowIdleTimeoutConfirmationDialog {
   // Initially set the pending snackbar flag to false in case it was set on
   // startup but actions failed to complete.
@@ -320,7 +343,8 @@
   // Set the pending snackbar flag for the agent that will show the dialog then
   // show then dismiss any modals and display the dialog.
   _pendingDisplayingSnackbar = YES;
-  _UIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
+  _UIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState,
+                                                 UIBlockerExtent::kApplication);
   __weak __typeof(self) weakSelf = self;
   [_applicationHandler dismissModalDialogsWithCompletion:^{
     [weakSelf showIdleTimeoutConfirmation];

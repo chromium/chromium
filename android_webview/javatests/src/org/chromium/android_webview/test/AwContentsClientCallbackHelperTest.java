@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClientCallbackHelper;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnLoadResourceHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
@@ -33,6 +34,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 /** Test suite for AwContentsClientCallbackHelper. */
@@ -199,9 +201,14 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
         OnReceivedErrorHelper receivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
 
         int onReceivedErrorCount = receivedErrorHelper.getCallCount();
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest();
-        request.url = TEST_URL;
-        request.isOutermostMainFrame = true;
+        AwWebResourceRequest request =
+                new AwWebResourceRequest(
+                        TEST_URL,
+                        /* isOutermostMainFrame= */ true,
+                        /* hasUserGesture= */ false,
+                        /* isRedirect= */ false,
+                        "GET",
+                        Collections.emptyMap());
         AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
         error.errorCode = ERROR_CODE;
         error.description = ERROR_MESSAGE;
@@ -209,7 +216,7 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
         receivedErrorHelper.waitForCallback(onReceivedErrorCount);
         Assert.assertEquals(ERROR_CODE, receivedErrorHelper.getError().errorCode);
         Assert.assertEquals(ERROR_MESSAGE, receivedErrorHelper.getError().description);
-        Assert.assertEquals(TEST_URL, receivedErrorHelper.getRequest().url);
+        Assert.assertEquals(TEST_URL, receivedErrorHelper.getRequest().getUrl());
     }
 
     @Test

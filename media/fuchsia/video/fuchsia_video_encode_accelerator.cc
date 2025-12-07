@@ -35,12 +35,14 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -416,7 +418,7 @@ FuchsiaVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-bool FuchsiaVideoEncodeAccelerator::Initialize(
+EncoderStatus FuchsiaVideoEncodeAccelerator::Initialize(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -429,23 +431,23 @@ bool FuchsiaVideoEncodeAccelerator::Initialize(
         << "Fuchsia MediaCodec is only tested with resolutions that have width "
            "alignment "
         << kWidthAlignment << " and height alignment " << kHeightAlignment;
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (width <= 0 || height <= 0) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   if (width > kMaxResolutionWidth || height > kMaxResolutionHeight) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   // TODO(crbug.com/40241991): Support NV12 pixel format.
   if (config.input_format != PIXEL_FORMAT_I420) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   // TODO(crbug.com/40241992): Support HEVC codec.
   if (config.output_profile != H264PROFILE_BASELINE) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   vea_client_ = client;
@@ -479,7 +481,7 @@ bool FuchsiaVideoEncodeAccelerator::Initialize(
   vea_client_->RequireBitstreamBuffers(
       /*input_count=*/1, /*input_coded_size=*/config_->input_visible_size,
       output_buffer_size);
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void FuchsiaVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -568,10 +570,10 @@ void FuchsiaVideoEncodeAccelerator::OnInputBuffersAcquired(
   DCHECK(config_);
 
   const auto& image_constraints = buffer_settings.image_format_constraints();
-  int coded_width = base::bits::AlignUp(
-      std::max(image_constraints.min_size().width,
-               image_constraints.required_max_size().width),
-      image_constraints.size_alignment().width);
+  int coded_width =
+      base::bits::AlignUp(std::max(image_constraints.min_size().width,
+                                   image_constraints.required_max_size().width),
+                          image_constraints.size_alignment().width);
   int coded_height = base::bits::AlignUp(
       std::max(image_constraints.min_size().height, image_constraints.required_max_size().height),
       image_constraints.size_alignment().height);
@@ -643,7 +645,7 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorOutputPacket(
 
 void FuchsiaVideoEncodeAccelerator::OnStreamProcessorNoKey() {
   // This method is only used for decryption.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FuchsiaVideoEncodeAccelerator::OnStreamProcessorError() {

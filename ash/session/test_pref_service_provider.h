@@ -5,11 +5,14 @@
 #ifndef ASH_SESSION_TEST_PREF_SERVICE_PROVIDER_H_
 #define ASH_SESSION_TEST_PREF_SERVICE_PROVIDER_H_
 
-#include <map>
 #include <memory>
+
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 
 class AccountId;
 class PrefService;
+class TestingPrefServiceSimple;
 
 namespace ash {
 
@@ -21,6 +24,9 @@ namespace ash {
 // references to them when that happens.
 class TestPrefServiceProvider {
  public:
+  static std::unique_ptr<TestingPrefServiceSimple>
+  CreateUserPrefServiceSimple();
+
   TestPrefServiceProvider();
 
   TestPrefServiceProvider(const TestPrefServiceProvider&) = delete;
@@ -32,14 +38,18 @@ class TestPrefServiceProvider {
   void SetSigninPrefs(std::unique_ptr<PrefService> signin_prefs);
   PrefService* GetSigninPrefs();
 
-  void CreateUserPrefs(const AccountId& account_id);
   void SetUserPrefs(const AccountId& account_id,
                     std::unique_ptr<PrefService> pref_service);
+  void SetUnownedUserPrefs(const AccountId& account_id,
+                           raw_ptr<PrefService> unowned_pref_service);
   PrefService* GetUserPrefs(const AccountId& account_id);
+
+  void ClearUnownedUserPrefs(const AccountId& account_id);
 
  private:
   std::unique_ptr<PrefService> signin_prefs_;
-  std::map<AccountId, std::unique_ptr<PrefService>> user_prefs_map_;
+  base::flat_map<AccountId, std::unique_ptr<PrefService>> user_prefs_map_;
+  base::flat_map<AccountId, raw_ptr<PrefService>> unowned_user_prefs_map_;
 };
 
 }  // namespace ash

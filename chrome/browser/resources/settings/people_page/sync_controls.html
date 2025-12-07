@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared iron-flex">
+    <style include="cr-shared-style settings-shared">
       #sync-data-types .list-item:not([hidden]) ~ .list-item:not([hidden]) {
         border-top: var(--cr-separator-line);
       }
@@ -14,6 +14,10 @@
       cr-policy-indicator {
         margin-inline-end: var(--cr-controlled-by-spacing);
       }
+
+      #toggles-header .cr-row.first h2 {
+        padding-top: 18px;
+      }
     </style>
 
 <if expr="is_chromeos">
@@ -25,64 +29,104 @@
     </div>
 </if>
 
-    <div id="sync-data-radio" class="cr-row first">
-      <cr-radio-group
-          selected="[[selectedSyncDataRadio_(syncPrefs)]]"
-          on-selected-changed="onSyncDataRadioSelectionChanged_">
-        <cr-radio-button name="sync-everything">
-          $i18n{syncEverythingCheckboxLabel}
-        </cr-radio-button>
-        <cr-radio-button name="customize-sync">
-          $i18n{customizeSyncLabel}
-        </cr-radio-button>
-      </cr-radio-group>
-    </div>
+    <template is="dom-if" if="[[!isAccountSettingsPage_]]" restamp>
+      <div id="sync-data-radio" class="cr-row first">
+        <cr-radio-group
+            selected="[[selectedSyncDataRadio_(syncPrefs)]]"
+            on-selected-changed="onSyncDataRadioSelectionChanged_">
+          <cr-radio-button name="sync-everything">
+            $i18n{syncEverythingCheckboxLabel}
+          </cr-radio-button>
+          <cr-radio-button name="customize-sync">
+            $i18n{customizeSyncLabel}
+          </cr-radio-button>
+        </cr-radio-group>
+      </div>
+    </template>
 
-    <div class="cr-row first">
+<if expr="not is_chromeos">
+    <div hidden="[[!showSyncDisabledInformation]]">
+      <div class="cr-row first">
+        <cr-policy-indicator id="syncDisabledIndicator"
+            indicator-type="userPolicy">
+        </cr-policy-indicator>
+        <div class="cr-secondary-text flex">
+          $i18n{syncDisabledUserInformation}
+        </div>
+      </div>
+    </div>
+</if>
+
+    <div class="cr-row first" hidden="[[isAccountSettingsPage_]]">
       <h2 class="cr-title-text flex">$i18n{syncData}</h2>
     </div>
+<if expr="not is_chromeos">
+    <div id="toggles-header" hidden="[[!isAccountSettingsPage_]]">
+      <div class="cr-row first">
+        <h2 class="cr-title-text flex">$i18n{accountDataTypesHeading}</h2>
+      </div>
+      <div class="cr-row continuation">
+        <div class="cr-secondary-text flex">$i18n{accountDataTypesBody}</div>
+      </div>
+      <div class="cr-row continuation" hidden="[[!shouldShowBatchUploadPromo_(
+            batchUploadPromoLocalDataCount_, isAccountSettingsPage_)]]">
+        <div class="cr-secondary-text flex" id="batchUploadPromo"
+            inner-h-t-m-l="[[getSubtitleString_(batchUploadPromoString_)]]">
+        </div>
+      </div>
+    </div>
+</if>
 
     <div class="list-frame" id="sync-data-types">
-      <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">
-<if expr="not chromeos_lacros">
-      <div id="appCheckboxLabel">$i18n{appCheckboxLabel}</div>
-      <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.appsManaged]]">
-      </cr-policy-indicator>
-      <cr-toggle checked="{{syncPrefs.appsSynced}}"
-          on-change="onSingleSyncDataTypeChanged_"
-          disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes, syncPrefs.appsManaged)]]"
-          aria-labelledby="appCheckboxLabel">
-      </cr-toggle>
+<if expr="not is_chromeos">
+      <template is="dom-if" if="[[isAccountSettingsPage_]]" restamp>
+        <div class="list-item">
+          <div>
+            <div id="historyTabsCheckboxLabel">
+              $i18n{historyTabsCheckboxLabel}
+            </div>
+            <div class="cr-secondary-text"
+                hidden="[[mergedHistoryTabsToggleChecked_(syncPrefs)]]">
+              $i18n{historyTabsCheckboxSubLabelOff}
+            </div>
+          </div>
+          <cr-policy-indicator id="mergedHistoryTabsToggleIndicator"
+              indicator-type="userPolicy"
+              hidden="[[!mergedHistoryTabsTogglePolicyIndicatorShown_(
+                  syncStatus, syncPrefs.tabsManaged,
+                  syncPrefs.typedUrlsManaged)]]">
+          </cr-policy-indicator>
+          <cr-toggle id="mergedHistoryTabsToggle"
+              checked="[[mergedHistoryTabsToggleChecked_(syncPrefs)]]"
+              on-change="onMergedHistoryTabsToggleChanged_"
+              disabled="[[mergedHistoryTabsToggleDisabled_(syncStatus,
+                  syncPrefs.tabsManaged, syncPrefs.typedUrlsManaged,
+                  syncStatus.disabled)]]"
+              aria-labelledby="historyTabsCheckboxLabel">
+          </cr-toggle>
+        </div>
+      </template>
 </if>
-<if expr="chromeos_lacros">
-      <div id="appCheckboxLabel" hidden="[[showSyncSettingsRevamp_]]">
-        $i18n{appCheckboxLabel}
-      </div>
-      <cr-link-row id="osSyncSettingsLink"
-          embedded
-          label="$i18n{appCheckboxLabel}"
-          sub-label="$i18n{appCheckboxSublabel}"
-          on-click="onOsSyncSettingsLinkClick_"
-          hidden="[[!showSyncSettingsRevamp_]]"
-          external>
-      </cr-link-row>
-      <div class="separator" hidden="[[!showSyncSettingsRevamp_]]"></div>
-      <cr-policy-indicator indicator-type="userPolicy"
-          id="appsSyncPolicyIndicator"
-          hidden="[[!showAppsPolicyIndicator_(
-            syncPrefs.appsManaged, showSyncSettingsRevamp_)]]">
-      </cr-policy-indicator>
-      <cr-toggle id="appsSyncToggle"
-          checked="{{syncPrefs.appsSynced}}"
-          on-change="onSingleSyncDataTypeChanged_"
-          disabled="[[disableAppsToggle_(
-            syncPrefs.syncAllDataTypes, showSyncSettingsRevamp_,
-            syncPrefs.appsManaged)]]"
-          aria-labelledby="appCheckboxLabel">
-      </cr-toggle>
-</if>
+
+      <div hidden="[[isAccountSettingsPage_]]">
+        <div class="list-item" hidden="[[!syncPrefs.typedUrlsRegistered]]">
+          <div id="historyCheckboxLabel">
+            $i18n{historyCheckboxLabel}
+          </div>
+          <cr-policy-indicator indicator-type="userPolicy"
+              hidden="[[!showPolicyIndicator_(syncStatus,
+                    syncPrefs.typedUrlsManaged)]]">
+          </cr-policy-indicator>
+          <cr-toggle id="historyToggle"
+              checked="{{syncPrefs.typedUrlsSynced}}"
+              on-change="onSingleSyncDataTypeChanged_"
+              disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.typedUrlsManaged,
+                syncStatus.disabled)]]"
+              aria-labelledby="historyCheckboxLabel"
+              data-type$="[[UserSelectableTypeEnum_.HISTORY]]">
+          </cr-toggle>
+        </div>
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.bookmarksRegistered]]">
@@ -90,74 +134,16 @@
           $i18n{bookmarksCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.bookmarksManaged]]">
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.bookmarksManaged)]]">
         </cr-policy-indicator>
         <cr-toggle checked="{{syncPrefs.bookmarksSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes, syncPrefs.bookmarksManaged)]]"
-            aria-labelledby="bookmarksCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!syncPrefs.extensionsRegistered]]">
-        <div id="extensionsCheckboxLabel">
-          $i18n{extensionsCheckboxLabel}
-        </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.extensionsManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.extensionsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes , syncPrefs.extensionsManaged)]]"
-            aria-labelledby="extensionsCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!syncPrefs.typedUrlsRegistered]]">
-        <div id="historyCheckboxLabel">
-          $i18n{historyCheckboxLabel}
-        </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.typedUrlsManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle id="historyToggle"
-            checked="{{syncPrefs.typedUrlsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes , syncPrefs.typedUrlsManaged)]]"
-            aria-labelledby="historyCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!syncPrefs.preferencesRegistered]]">
-        <div id="settingsCheckboxLabel">
-          $i18n{settingsCheckboxLabel}
-        </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.preferencesManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.preferencesSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes, syncPrefs.preferencesManaged)]]"
-            aria-labelledby="settingsCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!syncPrefs.themesRegistered]]">
-        <div id="themeCheckboxLabel">
-          $i18n{themeCheckboxLabel}
-        </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.themesManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.themesSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes ,syncPrefs.themesManaged)]]"
-            aria-labelledby="themeCheckboxLabel">
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.bookmarksManaged,
+                syncStatus.disabled)]]"
+            aria-labelledby="bookmarksCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.BOOKMARKS]]">
         </cr-toggle>
       </div>
 
@@ -166,59 +152,55 @@
           $i18n{readingListCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.readingListManaged]]">
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.readingListManaged)]]">
         </cr-policy-indicator>
         <cr-toggle checked="{{syncPrefs.readingListSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes ,syncPrefs.readingListManaged)]]"
-            aria-labelledby="readingListCheckboxLabel">
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes ,syncPrefs.readingListManaged,
+                syncStatus.disabled)]]"
+            aria-labelledby="readingListCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.READING_LIST]]">
         </cr-toggle>
       </div>
 
-      <div class="list-item" hidden="[[!syncPrefs.tabsRegistered]]">
-        <div id="openTabsCheckboxLabel">
-          $i18n{openTabsCheckboxLabel}
+      <div hidden="[[isAccountSettingsPage_]]">
+        <div class="list-item" hidden="[[!syncPrefs.tabsRegistered]]">
+          <div id="openTabsCheckboxLabel">
+            $i18n{openTabsCheckboxLabel}
+          </div>
+          <cr-policy-indicator indicator-type="userPolicy"
+              hidden="[[!showPolicyIndicator_(syncStatus,
+                    syncPrefs.tabsManaged)]]">
+          </cr-policy-indicator>
+          <cr-toggle checked="{{syncPrefs.tabsSynced}}"
+              on-change="onSingleSyncDataTypeChanged_"
+              disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes,syncPrefs.tabsManaged,
+                syncStatus.disabled)]]"
+              aria-labelledby="openTabsCheckboxLabel"
+              data-type$="[[UserSelectableTypeEnum_.TABS]]">
+          </cr-toggle>
         </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.tabsManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.tabsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes,syncPrefs.tabsManaged)]]"
-            aria-labelledby="openTabsCheckboxLabel">
-        </cr-toggle>
-      </div>
 
-      <div class="list-item" hidden="[[!syncPrefs.savedTabGroupsRegistered]]">
-        <div id="savedTabGroupsCheckboxLabel">
-          $i18n{savedTabGroupsCheckboxLabel}
+        <div class="list-item" hidden="[[!syncPrefs.savedTabGroupsRegistered]]">
+          <div id="savedTabGroupsCheckboxLabel">
+            $i18n{savedTabGroupsCheckboxLabel}
+          </div>
+          <cr-policy-indicator indicator-type="userPolicy"
+              hidden="[[!showPolicyIndicator_(syncStatus,
+                    syncPrefs.savedTabGroupsManaged, syncStatus.disabled)]]">
+          </cr-policy-indicator>
+          <cr-toggle checked="{{syncPrefs.savedTabGroupsSynced}}"
+              on-change="onSingleSyncDataTypeChanged_"
+              disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.savedTabGroupsManaged,
+                syncStatus.disabled)]]"
+              aria-labelledby="savedTabGroupsCheckboxLabel"
+              data-type$="[[UserSelectableTypeEnum_.SAVED_TAB_GROUPS]]">
+          </cr-toggle>
         </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.savedTabGroupsManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.savedTabGroupsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes, syncPrefs.savedTabGroupsManaged)]]"
-            aria-labelledby="savedTabGroupsCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!syncPrefs.passwordsRegistered]]">
-        <div id="passwordsCheckboxLabel">
-          $i18n{passwordsCheckboxLabel}
-        </div>
-        <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.passwordsManaged]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.passwordsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes, syncPrefs.passwordsManaged)]]"
-            aria-labelledby="passwordsCheckboxLabel">
-        </cr-toggle>
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.autofillRegistered]]">
@@ -226,14 +208,17 @@
           $i18n{autofillCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-             hidden="[[!syncPrefs.autofillManaged]]">
+             hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.autofillManaged)]]">
          </cr-policy-indicator>
         <cr-toggle id="autofillCheckbox"
             checked="{{syncPrefs.autofillSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged)]]"
-            aria-labelledby="autofillCheckboxLabel">
+            disabled="[[disableTypeCheckBox_(syncStatus,
+              syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged,
+              syncStatus.disabled)]]"
+            aria-labelledby="autofillCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.AUTOFILL]]">
         </cr-toggle>
       </div>
 
@@ -243,14 +228,105 @@
           $i18n{paymentsCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.paymentsManaged]]">
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.paymentsManaged)]]">
         </cr-policy-indicator>
         <cr-toggle id="paymentsCheckbox"
             checked="{{syncPrefs.paymentsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes, syncPrefs.paymentsManaged)]]"
-            aria-label="$i18n{paymentsCheckboxLabel}">
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.paymentsManaged,
+                syncStatus.disabled)]]"
+            aria-label="$i18n{paymentsCheckboxLabel}"
+            data-type$="[[UserSelectableTypeEnum_.PAYMENTS]]">
+        </cr-toggle>
+      </div>
+
+      <div class="list-item" hidden="[[!syncPrefs.passwordsRegistered]]">
+        <div id="passwordsCheckboxLabel">
+          $i18n{passwordsCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.passwordsManaged)]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.passwordsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+              syncPrefs.syncAllDataTypes, syncPrefs.passwordsManaged,
+              syncStatus.disabled)]]"
+            aria-labelledby="passwordsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.PASSWORDS]]">
+        </cr-toggle>
+      </div>
+
+      <div class="list-item" hidden="[[!syncPrefs.preferencesRegistered]]">
+        <div id="settingsCheckboxLabel">
+          $i18n{settingsCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.preferencesManaged)]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.preferencesSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.preferencesManaged,
+                syncStatus.disabled)]]"
+            aria-labelledby="settingsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.PREFERENCES]]">
+        </cr-toggle>
+      </div>
+
+      <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">
+        <div id="appCheckboxLabel">$i18n{appCheckboxLabel}</div>
+        <cr-policy-indicator indicator-type="userPolicy"
+              hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.appsManaged)]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.appsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.appsManaged,
+                syncStatus.disabled)]]"
+            aria-labelledby="appCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.APPS]]">
+        </cr-toggle>
+      </div>
+
+      <div class="list-item" hidden="[[!syncPrefs.extensionsRegistered]]">
+        <div id="extensionsCheckboxLabel">
+          $i18n{extensionsCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.extensionsManaged)]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.extensionsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes , syncPrefs.extensionsManaged,
+                syncStatus.disabled)]]"
+            aria-labelledby="extensionsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.EXTENSIONS]]">
+        </cr-toggle>
+      </div>
+
+      <div class="list-item" hidden="[[!syncPrefs.themesRegistered]]">
+        <div id="themeCheckboxLabel">
+          $i18n{themeCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.themesManaged)]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.themesSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes ,syncPrefs.themesManaged,
+                syncStatus.disabled)]]"
+            aria-labelledby="themeCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.THEMES]]">
         </cr-toggle>
       </div>
 
@@ -260,30 +336,35 @@
           $i18n{productComparisonsCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.productComparisonManaged]]">
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.productComparisonManaged)]]">
         </cr-policy-indicator>
         <cr-toggle checked="{{syncPrefs.productComparisonSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged)]]"
-            aria-labelledby="productComparisonsCheckboxLabel">
+            disabled="[[disableTypeCheckBox_(syncStatus,
+              syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged,
+              syncStatus.disabled)]]"
+            aria-labelledby="productComparisonsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.PRODUCT_COMPARISON]]">
         </cr-toggle>
       </div>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
       <div class="list-item" id="cookiesSyncItem" hidden="[[hideCookieItem_(
         syncStatus.syncCookiesSupported, syncPrefs.cookiesRegistered)]]">
         <div>
           $i18n{cookiesCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.cookiesManaged]]">
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.cookiesManaged)]]">
         </cr-policy-indicator>
         <cr-toggle id="cookiesCheckbox"
             checked="{{syncPrefs.cookiesSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-                syncPrefs.syncAllDataTypes, syncPrefs.cookiesManaged)]]"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+                syncPrefs.syncAllDataTypes, syncPrefs.cookiesManaged,
+                syncStatus.disabled)]]"
             aria-label="$i18n{cookiesCheckboxLabel}">
         </cr-toggle>
       </div>
@@ -294,12 +375,14 @@
           $i18n{wifiConfigurationsCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.wifiConfigurationsManaged]]">
+            hidden="[[!showPolicyIndicator_(syncStatus,
+                  syncPrefs.wifiConfigurationsManaged)]]">
         </cr-policy-indicator>
         <cr-toggle checked="{{syncPrefs.wifiConfigurationsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes,syncPrefs.wifiConfigurationsManaged)]]"
+            disabled="[[disableTypeCheckBox_(syncStatus,
+              syncPrefs.syncAllDataTypes,syncPrefs.wifiConfigurationsManaged,
+              syncStatus.disabled)]]"
             aria-labelledby="wifiConfigurationsCheckboxLabel">
         </cr-toggle>
       </div>

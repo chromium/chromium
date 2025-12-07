@@ -14,14 +14,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -35,7 +34,16 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using ::testing::Return;
+
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
 
 namespace content {
 
@@ -210,11 +218,30 @@ class PlatformNotificationContextTest : public ::testing::Test {
     return notification_id;
   }
 
+  // Writes metadata with the provided key and value to the database and returns
+  // the success status.
+  bool WriteNotificationMetadataSync(PlatformNotificationContextImpl* context,
+                                     const std::string& notification_id,
+                                     const GURL& origin,
+                                     const std::string& metadata_key,
+                                     const std::string& metadata_value) {
+    bool result = false;
+    base::RunLoop run_loop;
+    context->WriteNotificationMetadata(
+        notification_id, origin, metadata_key, metadata_value,
+        base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
   void SetPermissionStatus(const GURL& origin,
                            blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::NOTIFICATIONS,
+                PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS),
                 url::Origin::Create(origin), url::Origin::Create(origin)))
         .WillByDefault(Return(content::PermissionResult(
             permission_status, PermissionStatusSource::UNSPECIFIED)));
@@ -618,7 +645,7 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
   // Now drop the Service Worker registration which owns that notification.
   embedded_worker_test_helper->context()->UnregisterServiceWorker(
       origin, key,
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       base::BindOnce(
           &PlatformNotificationContextTest::DidUnregisterServiceWorker,
           base::Unretained(this), &unregister_status));
@@ -839,6 +866,14 @@ TEST_F(PlatformNotificationContextTest, SynchronizeNotifications) {
 }
 
 TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histogram_tester;
   scoped_refptr<PlatformNotificationContextImpl> context =
       CreatePlatformNotificationContext();
@@ -950,9 +985,6 @@ TEST_F(PlatformNotificationContextTest, WriteReadNotificationResources) {
 }
 
 TEST_F(PlatformNotificationContextTest, ReDisplayNotifications) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   PlatformNotificationService* service =
       browser_context()->GetPlatformNotificationService();
 
@@ -1003,9 +1035,6 @@ TEST_F(PlatformNotificationContextTest, ReDisplayNotifications) {
 }
 
 TEST_F(PlatformNotificationContextTest, CountVisibleNotification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   PlatformNotificationService* service =
       browser_context()->GetPlatformNotificationService();
 
@@ -1138,6 +1167,14 @@ TEST_F(PlatformNotificationContextTest, DeleteNotificationsWithTagFromBrowser) {
 }
 
 TEST_F(PlatformNotificationContextTest, GetOldestNotificationTime) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histogram_tester;
 
   scoped_refptr<PlatformNotificationContextImpl> context =
@@ -1208,6 +1245,68 @@ TEST_F(PlatformNotificationContextTest,
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(PlatformNotificationContextTest, WriteReadNotificationMetadata) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<PlatformNotificationContextImpl> context =
+      CreatePlatformNotificationContext();
+  GURL origin("https://example.com");
+
+  // Write a notification to the database.
+  NotificationDatabaseData data;
+  std::string notification_id =
+      WriteNotificationDataSync(context.get(), origin, data);
+
+  // Writing metadata should succeed. Get serialized metadata string for
+  // checking database write.
+  std::string metadata_key_1 = "content-detection";
+  std::string old_metadata_value_1 = "{\"bad\":\"value\"}";
+  ASSERT_TRUE(WriteNotificationMetadataSync(context.get(), notification_id,
+                                            origin, metadata_key_1,
+                                            old_metadata_value_1));
+
+  // Update `metadata_key` metadata with new value.
+  std::string new_metadata_value_1 = "{\"good\":\"value\"}";
+  ASSERT_TRUE(WriteNotificationMetadataSync(context.get(), notification_id,
+                                            origin, metadata_key_1,
+                                            new_metadata_value_1));
+
+  // Update notification database entry with another type of metadata.
+  std::string metadata_key_2 = "other-type-of-metadata";
+  std::string metadata_value_2 = "{\"key\":\"other value\"}";
+  ASSERT_TRUE(WriteNotificationMetadataSync(context.get(), notification_id,
+                                            origin, metadata_key_2,
+                                            metadata_value_2));
+
+  // The write operation should have succeeded with a notification id.
+  context->ReadNotificationDataAndRecordInteraction(
+      notification_id, origin, PlatformNotificationContext::Interaction::NONE,
+      base::BindOnce(&PlatformNotificationContextTest::DidReadNotificationData,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  // The read operation should have succeeded, with the right notification.
+  ASSERT_TRUE(success());
+
+  const NotificationDatabaseData& read_database_data = database_data();
+  EXPECT_EQ(origin, read_database_data.origin);
+  ASSERT_TRUE(read_database_data.serialized_metadata.contains(metadata_key_1));
+  EXPECT_EQ(new_metadata_value_1,
+            read_database_data.serialized_metadata.at(metadata_key_1));
+  ASSERT_TRUE(read_database_data.serialized_metadata.contains(metadata_key_2));
+  EXPECT_EQ(metadata_value_2,
+            read_database_data.serialized_metadata.at(metadata_key_2));
+
+  // Check histogram statuses are logged with value `0`, corresponding to
+  // `STATUS_OK`.
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Database.WriteNotificationMetadataReadResult",
+      /*sample=*/0, /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Database.WriteNotificationMetadataUpdateResult",
+      /*sample=*/0, /*expected_count=*/3);
 }
 
 }  // namespace content

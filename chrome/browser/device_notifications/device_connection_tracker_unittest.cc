@@ -8,8 +8,11 @@
 
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "extensions/browser/extension_registrar.h"
 
 namespace {
 
@@ -281,11 +284,11 @@ void DeviceConnectionTrackerTestBase::AddExtensionToProfile(
   extensions::ExtensionService* extension_service =
       extension_system->extension_service();
   if (!extension_service) {
-    extension_service = extension_system->CreateExtensionService(
+    extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(),
         /*autoupdate_enabled=*/false);
   }
-  extension_service->AddExtension(extension);
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(extension);
 }
 
 void DeviceConnectionTrackerTestBase::TestDeviceConnectionExtensionOrigins(

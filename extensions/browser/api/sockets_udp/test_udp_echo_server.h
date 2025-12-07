@@ -31,8 +31,8 @@ class TestUdpEchoServer {
   TestUdpEchoServer& operator=(const TestUdpEchoServer&) = delete;
 
   // Starts the echo server, and returns an error on failure. Sets
-  // |host_port_pair| to the the host and port the server is listening on.
-  // |host_port_pair| must not be null. Spins the current message loop while
+  // `host_port_pair` to the the host and port the server is listening on.
+  // `host_port_pair` must not be null. Spins the current message loop while
   // waiting for the server to start.
   [[nodiscard]] bool Start(network::mojom::NetworkContext* network_context,
                            net::HostPortPair* host_port_pair);

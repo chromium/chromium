@@ -17,10 +17,11 @@ JobDetails::JobDetails() = default;
 JobDetails::~JobDetails() = default;
 
 void JobDetails::MarkJobAsStarted() {
-  if (job_state == State::kPendingWillStartDownloading)
+  if (job_state == State::kPendingWillStartDownloading) {
     job_state = State::kStartedAndDownloading;
-  else if (job_state == State::kPendingWillStartPaused)
+  } else if (job_state == State::kPendingWillStartPaused) {
     job_state = State::kStartedButPaused;
+  }
 }
 
 void JobDetails::UpdateJobOnDownloadComplete(const std::string& download_guid) {
@@ -34,8 +35,9 @@ void JobDetails::UpdateJobOnDownloadComplete(const std::string& download_guid) {
 }
 
 uint64_t JobDetails::GetTotalBytes() const {
-  if (!ShouldReportProgressBySize())
+  if (!ShouldReportProgressBySize()) {
     return -1;
+  }
 
   // If we have completed all downloads, update progress max to the processed
   // bytes in case the provided totals were set too high. This avoids
@@ -80,10 +82,11 @@ void JobDetails::UpdateInProgressBytes(const std::string& download_guid,
 
   // If we started receiving download bytes then the upload was complete and is
   // accounted for in |uploaded_bytes|.
-  if (bytes_downloaded > 0u)
+  if (bytes_downloaded > 0u) {
     request_data.in_progress_uploaded_bytes = 0u;
-  else
+  } else {
     request_data.in_progress_uploaded_bytes = bytes_uploaded;
+  }
 
   request_data.in_progress_downloaded_bytes = bytes_downloaded;
 }

@@ -24,19 +24,36 @@ int GetSortingGroup(const PaymentApp& app) {
     case PaymentApp::Type::NATIVE_MOBILE_APP:
       return 2;
     case PaymentApp::Type::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      return 99;
+      NOTREACHED();
   }
 }
 }  // namespace
 
+PaymentApp::PaymentEntityLogo::PaymentEntityLogo(std::u16string label,
+                                                 std::unique_ptr<SkBitmap> icon,
+                                                 GURL url)
+    : label(std::move(label)), icon(std::move(icon)), url(std::move(url)) {}
+
+PaymentApp::PaymentEntityLogo::PaymentEntityLogo(
+    PaymentApp::PaymentEntityLogo&&) = default;
+
+PaymentApp::PaymentEntityLogo& PaymentApp::PaymentEntityLogo::operator=(
+    PaymentApp::PaymentEntityLogo&&) = default;
+
+PaymentApp::PaymentEntityLogo::~PaymentEntityLogo() = default;
+
 PaymentApp::PaymentApp(int icon_resource_id, Type type)
     : icon_resource_id_(icon_resource_id), type_(type) {}
 
-PaymentApp::~PaymentApp() {}
+PaymentApp::~PaymentApp() = default;
 
 const SkBitmap* PaymentApp::icon_bitmap() const {
   return nullptr;
+}
+
+std::vector<PaymentApp::PaymentEntityLogo*>
+PaymentApp::GetPaymentEntitiesLogos() {
+  return {};
 }
 
 std::string PaymentApp::GetApplicationIdentifierToHide() const {

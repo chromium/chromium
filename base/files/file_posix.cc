@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file.h"
 
 // The only 32-bit platform that uses this file is Android. On Android APIs
@@ -27,9 +22,9 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -38,7 +33,15 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#include "base/android/virtual_document_path.h"
+#include "base/files/file_android.h"
+#include "base/files/file_util.h"
 #include "base/os_compat_android.h"
+#endif
+
+#if BUILDFLAG(IS_AIX)
+#include "base/notimplemented.h"
 #endif
 
 namespace base {
@@ -50,75 +53,79 @@ static_assert(File::FROM_BEGIN == SEEK_SET && File::FROM_CURRENT == SEEK_CUR &&
 
 namespace {
 
-#if BUILDFLAG(IS_APPLE)
-// When enabled, `F_FULLFSYNC` is not used in `File::Flush`. Instead,
-// `F_BARRIERFSYNC` or `flush()` is used (depending on the
-// "MacEfficientFileFlushUseBarrier" param). The feature exists to measure the
-// cost of `F_FULLFSYNC` compared to other solutions (not ready to enable by
-// default as-is). See
-// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
-BASE_FEATURE(kMacEfficientFileFlush,
-             "MacEfficientFileFlush",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+#define OffsetType off64_t
+// In case __USE_FILE_OFFSET64 is not used, the `File` methods in this file need
+// to call lseek64(), pread64() and pwrite64() instead of lseek(), pread() and
+// pwrite();
+#define LSeekFunc lseek64
+#define PReadFunc pread64
+#define PWriteFunc pwrite64
+#else
+#define OffsetType off_t
+#define LSeekFunc lseek
+#define PReadFunc pread
+#define PWriteFunc pwrite
+#endif
 
-const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
-    &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};
+static_assert(sizeof(int64_t) == sizeof(OffsetType));
 
-enum class MacFileFlushMechanism {
-  kFlush,
-  kFullFsync,
-  kBarrierFsync,
-};
+bool IsReadWriteRangeValid(int64_t offset, int size) {
+  if (size < 0 || !CheckAdd(offset, size - 1).IsValid() ||
+      !IsValueInRangeForNumericType<OffsetType>(offset + size - 1)) {
+    return false;
+  }
 
-std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
-    MacFileFlushMechanism::kFullFsync};
-#endif  // BUILDFLAG(IS_APPLE)
+  return true;
+}
 
-// NaCl doesn't provide the following system calls, so either simulate them or
+// AIX doesn't provide the following system calls, so either simulate them or
 // wrap them in order to minimize the number of #ifdef's in this file.
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
+#if !BUILDFLAG(IS_AIX)
 bool IsOpenAppend(PlatformFile file) {
   return (fcntl(file, F_GETFL) & O_APPEND) != 0;
 }
 
 int CallFtruncate(PlatformFile file, int64_t length) {
 #if BUILDFLAG(IS_BSD) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
-  static_assert(sizeof(off_t) >= sizeof(int64_t),
-                "off_t is not a 64-bit integer");
   return HANDLE_EINTR(ftruncate(file, length));
 #else
   return HANDLE_EINTR(ftruncate64(file, length));
 #endif
 }
 
-int CallFutimes(PlatformFile file, const struct timeval times[2]) {
+int CallFutimes(PlatformFile file, const std::array<struct timeval, 2> times) {
 #ifdef __USE_XOPEN2K8
   // futimens should be available, but futimes might not be
   // http://pubs.opengroup.org/onlinepubs/9699919799/
 
-  timespec ts_times[2];
-  ts_times[0].tv_sec  = times[0].tv_sec;
+  std::array<timespec, 2> ts_times;
+  ts_times[0].tv_sec = times[0].tv_sec;
   ts_times[0].tv_nsec = times[0].tv_usec * 1000;
-  ts_times[1].tv_sec  = times[1].tv_sec;
+  ts_times[1].tv_sec = times[1].tv_sec;
   ts_times[1].tv_nsec = times[1].tv_usec * 1000;
 
-  return futimens(file, ts_times);
+  return futimens(file, ts_times.data());
 #else
-  return futimes(file, times);
+#pragma clang diagnostic push  // Can be removed once Cronet's min-sdk is >= 26.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+  return futimes(file, times.data());
+#pragma clang diagnostic pop
 #endif
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
 short FcntlFlockType(std::optional<File::LockMode> mode) {
-  if (!mode.has_value())
+  if (!mode.has_value()) {
     return F_UNLCK;
+  }
   switch (mode.value()) {
     case File::LockMode::kShared:
       return F_RDLCK;
     case File::LockMode::kExclusive:
       return F_WRLCK;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
@@ -128,37 +135,49 @@ File::Error CallFcntlFlock(PlatformFile file,
   lock.l_whence = SEEK_SET;
   lock.l_start = 0;
   lock.l_len = 0;  // Lock entire file.
-  if (HANDLE_EINTR(fcntl(file, F_SETLK, &lock)) == -1)
+  if (HANDLE_EINTR(fcntl(file, F_SETLK, &lock)) == -1) {
     return File::GetLastFileError();
+  }
   return File::FILE_OK;
 }
 #endif
 
-#else   // BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
+#else   // !BUILDFLAG(IS_AIX)
 
 bool IsOpenAppend(PlatformFile file) {
-  // NaCl doesn't implement fcntl. Since NaCl's write conforms to the POSIX
+  // AIX doesn't implement fcntl. Since AIX's write conforms to the POSIX
   // standard and always appends if the file is opened with O_APPEND, just
   // return false here.
   return false;
 }
 
 int CallFtruncate(PlatformFile file, int64_t length) {
-  NOTIMPLEMENTED();  // NaCl doesn't implement ftruncate.
+  NOTIMPLEMENTED();  // AIX doesn't implement ftruncate.
   return 0;
 }
 
 int CallFutimes(PlatformFile file, const struct timeval times[2]) {
-  NOTIMPLEMENTED();  // NaCl doesn't implement futimes.
+  NOTIMPLEMENTED();  // AIX doesn't implement futimes.
   return 0;
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
                            std::optional<File::LockMode> mode) {
-  NOTIMPLEMENTED();  // NaCl doesn't implement flock struct.
+  NOTIMPLEMENTED();  // AIX doesn't implement flock struct.
   return File::FILE_ERROR_INVALID_OPERATION;
 }
-#endif  // BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(IS_AIX)
+
+#if BUILDFLAG(IS_ANDROID)
+bool GetContentUriInfo(const base::FilePath& path, File::Info* info) {
+  FileEnumerator::FileInfo file_info;
+  bool result = internal::ContentUriGetFileInfo(path, &file_info);
+  if (result) {
+    info->FromStat(file_info.stat());
+  }
+  return result;
+}
+#endif
 
 }  // namespace
 
@@ -237,11 +256,17 @@ PlatformFile File::TakePlatformFile() {
 }
 
 void File::Close() {
-  if (!IsValid())
+  if (!IsValid()) {
     return;
+  }
 
   SCOPED_FILE_TRACE("Close");
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+#if BUILDFLAG(IS_ANDROID)
+  if (java_parcel_file_descriptor_) {
+    internal::ContentUriClose(java_parcel_file_descriptor_);
+  }
+#endif
   file_.reset();
 }
 
@@ -250,34 +275,28 @@ int64_t File::Seek(Whence whence, int64_t offset) {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE_WITH_SIZE("Seek", offset);
-
-#if BUILDFLAG(IS_ANDROID)
-  static_assert(sizeof(int64_t) == sizeof(off64_t), "off64_t must be 64 bits");
-  return lseek64(file_.get(), static_cast<off64_t>(offset),
-                 static_cast<int>(whence));
-#else
-  static_assert(sizeof(int64_t) == sizeof(off_t), "off_t must be 64 bits");
-  return lseek(file_.get(), static_cast<off_t>(offset),
-               static_cast<int>(whence));
-#endif
+  return LSeekFunc(file_.get(), static_cast<OffsetType>(offset),
+                   static_cast<int>(whence));
 }
 
 int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset + size - 1))
+  if (!IsReadWriteRangeValid(offset, size)) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
 
   int bytes_read = 0;
   long rv;
   do {
-    rv = HANDLE_EINTR(pread(file_.get(), data + bytes_read,
-                            static_cast<size_t>(size - bytes_read),
-                            static_cast<off_t>(offset + bytes_read)));
-    if (rv <= 0)
+    rv = HANDLE_EINTR(PReadFunc(file_.get(), data + bytes_read,
+                                static_cast<size_t>(size - bytes_read),
+                                static_cast<OffsetType>(offset + bytes_read)));
+    if (rv <= 0) {
       break;
+    }
 
     bytes_read += rv;
   } while (bytes_read < size);
@@ -288,8 +307,9 @@ int File::Read(int64_t offset, char* data, int size) {
 int File::ReadAtCurrentPos(char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
 
@@ -298,8 +318,9 @@ int File::ReadAtCurrentPos(char* data, int size) {
   do {
     rv = HANDLE_EINTR(read(file_.get(), data + bytes_read,
                            static_cast<size_t>(size - bytes_read)));
-    if (rv <= 0)
+    if (rv <= 0) {
       break;
+    }
 
     bytes_read += rv;
   } while (bytes_read < size);
@@ -307,23 +328,30 @@ int File::ReadAtCurrentPos(char* data, int size) {
   return bytes_read ? bytes_read : checked_cast<int>(rv);
 }
 
-int File::ReadNoBestEffort(int64_t offset, char* data, int size) {
+std::optional<size_t> File::ReadNoBestEffort(int64_t offset,
+                                             base::span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset))
-    return -1;
+  if (!IsValueInRangeForNumericType<off_t>(offset)) {
+    return std::nullopt;
+  }
 
-  SCOPED_FILE_TRACE_WITH_SIZE("ReadNoBestEffort", size);
-  return checked_cast<int>(
-      HANDLE_EINTR(pread(file_.get(), data, static_cast<size_t>(size),
-                         static_cast<off_t>(offset))));
+  SCOPED_FILE_TRACE_WITH_SIZE("ReadNoBestEffort",
+                              base::checked_cast<int64_t>(data.size()));
+  const ssize_t bytes_read = HANDLE_EINTR(
+      pread(file_.get(), data.data(), data.size(), static_cast<off_t>(offset)));
+  if (bytes_read < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(bytes_read);
 }
 
 int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPosNoBestEffort", size);
   return checked_cast<int>(
@@ -333,33 +361,27 @@ int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
 int File::Write(int64_t offset, const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (IsOpenAppend(file_.get()))
+  if (IsOpenAppend(file_.get())) {
     return WriteAtCurrentPos(data, size);
+  }
 
   DCHECK(IsValid());
-  if (size < 0)
+  if (!IsReadWriteRangeValid(offset, size)) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
 
   int bytes_written = 0;
   long rv;
   do {
-#if BUILDFLAG(IS_ANDROID)
-    // In case __USE_FILE_OFFSET64 is not used, we need to call pwrite64()
-    // instead of pwrite().
-    static_assert(sizeof(int64_t) == sizeof(off64_t),
-                  "off64_t must be 64 bits");
-    rv = HANDLE_EINTR(pwrite64(file_.get(), data + bytes_written,
-                               static_cast<size_t>(size - bytes_written),
-                               offset + bytes_written));
-#else
-    rv = HANDLE_EINTR(pwrite(file_.get(), data + bytes_written,
-                             static_cast<size_t>(size - bytes_written),
-                             offset + bytes_written));
-#endif
-    if (rv <= 0)
+    rv = HANDLE_EINTR(
+        PWriteFunc(file_.get(), data + bytes_written,
+                   static_cast<size_t>(size - bytes_written),
+                   static_cast<OffsetType>(offset + bytes_written)));
+    if (rv <= 0) {
       break;
+    }
 
     bytes_written += rv;
   } while (bytes_written < size);
@@ -370,8 +392,9 @@ int File::Write(int64_t offset, const char* data, int size) {
 int File::WriteAtCurrentPos(const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
 
@@ -380,8 +403,9 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   do {
     rv = HANDLE_EINTR(write(file_.get(), data + bytes_written,
                             static_cast<size_t>(size - bytes_written)));
-    if (rv <= 0)
+    if (rv <= 0) {
       break;
+    }
 
     bytes_written += rv;
   } while (bytes_written < size);
@@ -389,15 +413,19 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   return bytes_written ? bytes_written : checked_cast<int>(rv);
 }
 
-int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
+std::optional<size_t> File::WriteAtCurrentPosNoBestEffort(
+    base::span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
-    return -1;
 
-  SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPosNoBestEffort", size);
-  return checked_cast<int>(
-      HANDLE_EINTR(write(file_.get(), data, static_cast<size_t>(size))));
+  SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPosNoBestEffort",
+                              base::checked_cast<int64_t>(data.size()));
+  const ssize_t bytes_written =
+      HANDLE_EINTR(write(file_.get(), data.data(), data.size()));
+  if (bytes_written < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(bytes_written);
 }
 
 int64_t File::GetLength() const {
@@ -405,11 +433,12 @@ int64_t File::GetLength() const {
 
   SCOPED_FILE_TRACE("GetLength");
 
-  stat_wrapper_t file_info;
-  if (Fstat(file_.get(), &file_info))
+  Info info;
+  if (!GetInfo(&info)) {
     return -1;
+  }
 
-  return file_info.st_size;
+  return info.size;
 }
 
 bool File::SetLength(int64_t length) {
@@ -426,24 +455,43 @@ bool File::SetTimes(Time last_access_time, Time last_modified_time) {
 
   SCOPED_FILE_TRACE("SetTimes");
 
-  timeval times[2];
+  std::array<timeval, 2> times;
   times[0] = last_access_time.ToTimeVal();
   times[1] = last_modified_time.ToTimeVal();
 
   return !CallFutimes(file_.get(), times);
 }
 
-bool File::GetInfo(Info* info) {
+bool File::GetInfo(Info* info) const {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE("GetInfo");
 
   stat_wrapper_t file_info;
-  if (Fstat(file_.get(), &file_info))
-    return false;
-
-  info->FromStat(file_info);
-  return true;
+  bool success = (Fstat(file_.get(), &file_info) == 0);
+  if (success) {
+    info->FromStat(file_info);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (path_.IsContentUri()) {
+    // Content-URIs may represent files on the local disk, or may be virtual
+    // files backed by a ContentProvider which may or may not use FUSE to back
+    // the FDs.
+    //
+    // For Document URIs, always use ContentUriGetFileInfo() since it will
+    // succeed by using the Java API DocumentFile, which can provide
+    // last-modified where FUSE cannot. FUSE always returns the current-time
+    // which is problematic because Blobs are registered with an
+    // expected-last-modified, and will fail if it changes by the time a client
+    // accesses it.
+    //
+    // For other Content-URIS, if fstat() succeeded with a non-zero size, then
+    // use the result, otherwise try via the Java APIs.
+    return (success && info->size > 0 && !internal::IsDocumentUri(path_)) ||
+           GetContentUriInfo(path_, info);
+  }
+#endif
+  return success;
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -459,33 +507,19 @@ File::Error File::Unlock() {
 #endif
 
 File File::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return File();
+  }
 
   SCOPED_FILE_TRACE("Duplicate");
 
   ScopedPlatformFile other_fd(HANDLE_EINTR(dup(GetPlatformFile())));
-  if (!other_fd.is_valid())
+  if (!other_fd.is_valid()) {
     return File(File::GetLastFileError());
+  }
 
   return File(std::move(other_fd), async());
 }
-
-#if BUILDFLAG(IS_APPLE)
-void File::InitializeFeatures() {
-  if (FeatureList::IsEnabled(kMacEfficientFileFlush)) {
-    // "relaxed" because there is no dependency between these memory operations
-    // and other memory operations.
-    if (kMacEfficientFileFlushUseBarrier.Get()) {
-      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kBarrierFsync,
-                                       std::memory_order_relaxed);
-    } else {
-      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kFlush,
-                                       std::memory_order_relaxed);
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_APPLE)
 
 // Static.
 File::Error File::OSErrorToFileError(int saved_errno) {
@@ -496,9 +530,7 @@ File::Error File::OSErrorToFileError(int saved_errno) {
     case EPERM:
       return FILE_ERROR_ACCESS_DENIED;
     case EBUSY:
-#if !BUILDFLAG(IS_NACL)  // ETXTBSY not defined by NaCl.
     case ETXTBSY:
-#endif
       return FILE_ERROR_IN_USE;
     case EEXIST:
       return FILE_ERROR_EXISTS;
@@ -522,16 +554,15 @@ File::Error File::OSErrorToFileError(int saved_errno) {
   }
 }
 
-// NaCl doesn't implement system calls to open files directly.
-#if !BUILDFLAG(IS_NACL)
 // TODO(erikkay): does it make sense to support FLAG_EXCLUSIVE_* here?
 void File::DoInitialize(const FilePath& path, uint32_t flags) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(!IsValid());
 
   int open_flags = 0;
-  if (flags & FLAG_CREATE)
+  if (flags & FLAG_CREATE) {
     open_flags = O_CREAT | O_EXCL;
+  }
 
   created_ = false;
 
@@ -548,10 +579,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   }
 
   if (!open_flags && !(flags & FLAG_OPEN) && !(flags & FLAG_OPEN_ALWAYS)) {
-    NOTREACHED_IN_MIGRATION();
-    errno = EOPNOTSUPP;
-    error_details_ = FILE_ERROR_FAILED;
-    return;
+    NOTREACHED();
   }
 
   if (flags & FLAG_WRITE && flags & FLAG_READ) {
@@ -563,16 +591,18 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     // Note: For FLAG_WRITE_ATTRIBUTES and no other read/write flags, we'll
     // open the file in O_RDONLY mode (== 0, see static_assert below), so that
     // we get a fd that can be used for SetTimes().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
-  if (flags & FLAG_TERMINAL_DEVICE)
+  if (flags & FLAG_TERMINAL_DEVICE) {
     open_flags |= O_NOCTTY | O_NDELAY;
+  }
 
-  if (flags & FLAG_APPEND && flags & FLAG_READ)
+  if (flags & FLAG_APPEND && flags & FLAG_READ) {
     open_flags |= O_APPEND | O_RDWR;
-  else if (flags & FLAG_APPEND)
+  } else if (flags & FLAG_APPEND) {
     open_flags |= O_APPEND | O_WRONLY;
+  }
 
   static_assert(O_RDONLY == 0, "O_RDONLY must equal zero");
 
@@ -581,14 +611,34 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   mode |= S_IRGRP | S_IROTH;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    auto result = files_internal::OpenAndroidFile(path, flags);
+    if (!result.has_value()) {
+      error_details_ = result.error();
+      return;
+    }
+
+    // Save path for any call to GetInfo().
+    path_ = result->content_uri;
+    file_.reset(result->fd);
+    java_parcel_file_descriptor_ = result->java_parcel_file_descriptor;
+    created_ = result->created;
+    async_ = (flags & FLAG_ASYNC);
+    error_details_ = FILE_OK;
+    return;
+  }
+#endif
+
   int descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));
 
   if (flags & FLAG_OPEN_ALWAYS) {
     if (descriptor < 0) {
       open_flags |= O_CREAT;
       descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));
-      if (descriptor >= 0)
+      if (descriptor >= 0) {
         created_ = true;
+      }
     }
   }
 
@@ -597,67 +647,50 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     return;
   }
 
-  if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE))
+  if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE)) {
     created_ = true;
+  }
 
-  if (flags & FLAG_DELETE_ON_CLOSE)
+  if (flags & FLAG_DELETE_ON_CLOSE) {
     unlink(path.value().c_str());
+  }
 
   async_ = ((flags & FLAG_ASYNC) == FLAG_ASYNC);
   error_details_ = FILE_OK;
   file_.reset(descriptor);
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 bool File::Flush() {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   SCOPED_FILE_TRACE("Flush");
 
-#if BUILDFLAG(IS_NACL)
-  NOTIMPLEMENTED();  // NaCl doesn't implement fsync.
-  return true;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
   return !HANDLE_EINTR(fdatasync(file_.get()));
 #elif BUILDFLAG(IS_APPLE)
   // On macOS and iOS, fsync() is guaranteed to send the file's data to the
   // underlying storage device, but may return before the device actually writes
   // the data to the medium. When used by database systems, this may result in
-  // unexpected data loss. Depending on experiment state, this function may use
-  // F_BARRIERFSYNC or F_FULLFSYNC to provide stronger guarantees than fsync().
+  // unexpected data loss. This function uses F_BARRIERFSYNC to provide stronger
+  // guarantees than fsync(). The default behavior used to be `F_FULLFSYNC`.
+  // Changing it to F_BARRIERFSYNC for greatly reduced latency was extensively
+  // tried via experiment and showed no detectable sign of increased corruption
+  // in mechanisms that make use of this function. For similar discussions
+  // regarding rationale one can refer to the SQLite documentation where the
+  // default is to go directly to fsync. (See PRAGMA fullfsync)
   //
   // See documentation:
   // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
   //
-  // "relaxed" because there is no dependency between this memory operation and
-  // other memory operations.
-  switch (g_mac_file_flush_mechanism.load(std::memory_order_relaxed)) {
-    case MacFileFlushMechanism::kBarrierFsync: {
-      if (!HANDLE_EINTR(fcntl(file_.get(), F_BARRIERFSYNC))) {
-        return true;
-      }
-      // Fall back to `fsync()` in case of failure.
-      break;
-    }
-    case MacFileFlushMechanism::kFullFsync: {
-      if (!HANDLE_EINTR(fcntl(file_.get(), F_FULLFSYNC))) {
-        return true;
-      }
-      // Fall back to `fsync()` in case of failure.
-      break;
-    }
-    case MacFileFlushMechanism::kFlush: {
-      // Fall back to `fsync()`.
-      break;
-    }
+  if (!HANDLE_EINTR(fcntl(file_.get(), F_BARRIERFSYNC))) {
+    return true;
   }
 
-  // `fsync()` if `F_BARRIERFSYNC` or `F_FULLFSYNC` failed, or if the mechanism
-  // is `kFlush`. Some file systems do not support `F_FULLFSYNC` /
+  // `fsync()` if `F_BARRIERFSYNC` failed. Some file systems do not support
   // `F_BARRIERFSYNC` but we cannot use the error code as a definitive indicator
-  // that it's the case, so we'll keep trying `F_FULLFSYNC` / `F_BARRIERFSYNC`
-  // for every call to this method when it's the case. See the CL description at
+  // that it's the case, so we'll keep trying `F_BARRIERFSYNC` for every call to
+  // this method when it's the case. See the CL description at
   // https://crrev.com/c/1400159 for details.
   return !HANDLE_EINTR(fsync(file_.get()));
 #else
@@ -677,6 +710,37 @@ File::Error File::GetLastFileError() {
 
 int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    std::optional<FilePath> content_uri = base::ResolveToContentUri(path);
+    if (!content_uri) {
+      errno = ENOENT;
+      return -1;
+    }
+    // Attempt to open the file and call GetInfo(), otherwise call Java code
+    // with the path which is required for dirs.
+    File file(*content_uri, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    Info info;
+    if ((file.IsValid() && file.GetInfo(&info)) ||
+        GetContentUriInfo(*content_uri, &info)) {
+      UNSAFE_BUFFERS(memset(sb, 0, sizeof(*sb)));
+      sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
+      sb->st_size = info.size;
+      sb->st_mtime = info.last_modified.ToTimeT();
+      // Time internally is stored as microseconds since windows epoch, so first
+      // get subsecond time, and then convert to nanos. Do not subtract
+      // Time::UnixEpoch() (which is a little bigger than 2^53), or convert to
+      // nanos (multiply by 10^3 which is just under 2^10) prior to doing
+      // modulo as these can cause overflow / clamping at [-2^63, 2^63) which
+      // will corrupt the result.
+      sb->st_mtime_nsec =
+          (info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+           Time::kMicrosecondsPerSecond) *
+          Time::kNanosecondsPerMicrosecond;
+      return 0;
+    }
+  }
+#endif
   return stat(path.value().c_str(), sb);
 }
 int File::Fstat(int fd, stat_wrapper_t* sb) {
@@ -686,6 +750,21 @@ int File::Fstat(int fd, stat_wrapper_t* sb) {
 int File::Lstat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return lstat(path.value().c_str(), sb);
+}
+
+int File::Mkdir(const FilePath& path, mode_t mode) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsVirtualDocumentPath()) {
+    std::optional<files_internal::VirtualDocumentPath> vp =
+        files_internal::VirtualDocumentPath::Parse(path.value());
+    if (!vp) {
+      errno = ENOENT;
+      return -1;
+    }
+    return vp->Mkdir(mode) ? 0 : -1;
+  }
+#endif
+  return mkdir(path.value().c_str(), mode);
 }
 
 }  // namespace base

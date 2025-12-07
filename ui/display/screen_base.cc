@@ -4,14 +4,15 @@
 
 #include "ui/display/screen_base.h"
 
+#include "base/notimplemented.h"
 #include "ui/display/display_finder.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace display {
 
-ScreenBase::ScreenBase() {}
+ScreenBase::ScreenBase() = default;
 
-ScreenBase::~ScreenBase() {}
+ScreenBase::~ScreenBase() = default;
 
 gfx::Point ScreenBase::GetCursorScreenPoint() {
   NOTIMPLEMENTED_LOG_ONCE();

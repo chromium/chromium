@@ -19,6 +19,7 @@ static_library("common") {
     "pref_names.h",
     "supervised_user_constants.cc",
     "supervised_user_constants.h",
+    "supervised_user_shared_constants.cc",
     "supervised_users.h",
   ]
 
@@ -27,10 +28,9 @@ static_library("common") {
     "//base",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/url_matcher:url_matcher",
+    "//components/url_matcher",
     "//extensions/buildflags",
     "//ui/base",
-    "//url",
   ]
 
   public_deps = [ ":features" ]
@@ -44,24 +44,9 @@ source_set("features") {
 
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//extensions/buildflags",
-  ]
-}
-
-source_set("test_utils") {
-  testonly = true
-
-  sources = [
-    "features_testutils.cc",
-    "features_testutils.h",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/supervised_user/core/common:features",
-    "//testing/gtest",
   ]
 }
 

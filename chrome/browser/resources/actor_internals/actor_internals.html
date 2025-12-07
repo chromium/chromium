@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Actor Debug Page</title>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="actor_internals.css">
+  <script type="module" src="actor_internals.js"></script>
+</head>
+<body>
+  <p style="font-size: 1.2em; max-width: 800px;">
+    This page will automatically display actor events below. Click the 'Start Logging' button to persist the logs to a file. Logs can be opened in <a href="https://ui.perfetto.dev" target="_blank">ui.perfetto.dev</a>. For more information visit <a href="http://go/actor-internals-user-guide" target="_blank">go/actor-internals-user-guide</a>.
+  </p>
+  <div class="commands">
+    <button id="start-logging">Start Trace Logging</button>
+    <button id="stop-logging">Stop Trace Logging</button>
+    <input type="text" id="task-id-filter" placeholder="Enter Task ID">
+    <button id="filter-by-task-id">Filter by Task ID</button>
+    <button id="clear-filter">Clear Filter</button>
+  </div>
+  <table id="actor-events-table">
+    <thead>
+      <th>TaskId</th>
+      <th>URL</th>
+      <th>Event</th>
+      <th>Type</th>
+      <th>Details</th>
+      <th>Timestamp</th>
+    </thead>
+  </table>
+  <template id="actor-events-row">
+    <tr data-timestamp data-task-id>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </template>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<title>This test should not crash.</title>
+<input type="password" id="testnode">
+<script>
+async_test( t => {
+  window.addEventListener('DOMContentLoaded', () => {
+    internals.settings.setPasswordEchoEnabledPhysical(true);
+    internals.settings.setPasswordEchoEnabledTouch(true);
+    const testnode = document.getElementById('testnode');
+    testnode.focus();
+    document.execCommand("InsertHTML", false, "12x&#x305;&#x332;45");
+    document.execCommand("selectAll");
+    t.step_timeout(()=>{
+      t.done();
+    },1100);
+  });
+}, 'The renderer should not crash');
+</script>

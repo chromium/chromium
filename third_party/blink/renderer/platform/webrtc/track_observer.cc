@@ -15,7 +15,7 @@
 namespace blink {
 
 class TrackObserver::TrackObserverImpl
-    : public WTF::ThreadSafeRefCounted<TrackObserver::TrackObserverImpl>,
+    : public ThreadSafeRefCounted<TrackObserver::TrackObserverImpl>,
       public webrtc::ObserverInterface {
  public:
   TrackObserverImpl(
@@ -63,7 +63,7 @@ class TrackObserver::TrackObserverImpl
   }
 
  private:
-  friend class WTF::ThreadSafeRefCounted<TrackObserverImpl>;
+  friend class ThreadSafeRefCounted<TrackObserverImpl>;
   ~TrackObserverImpl() override {
     DCHECK(!track_.get()) << "must have been unregistered before deleting";
   }

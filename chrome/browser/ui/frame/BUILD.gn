@@ -10,5 +10,8 @@ source_set("frame") {
     "window_frame_util.h",
   ]
   public_deps = [ "//skia" ]
-  deps = [ "//ui/gfx/geometry" ]
+  deps = [
+    "//chrome/browser/ui:layout_constants",
+    "//ui/gfx/geometry",
+  ]
 }

@@ -7,8 +7,13 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include <vector>
+
+#include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "components/services/font/public/cpp/mapped_font_file.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +26,10 @@ namespace font_service {
 namespace internal {
 class FontServiceThread;
 }
+
+struct SkFontConfigInterfaceFontIdentityHash {
+  std::size_t operator()(const SkFontConfigInterface::FontIdentity& sp) const;
+};
 
 // FontConfig implementation for Skia which proxies to the font service to get
 // out of the sandbox. This methods of this class (as imposed by blink
@@ -45,9 +54,11 @@ class FontLoader : public SkFontConfigInterface,
                        FontIdentity* out_font_identifier,
                        SkString* out_family_name,
                        SkFontStyle* out_style) override;
-  SkStreamAsset* openStream(const FontIdentity& identity) override;
+  SkStreamAsset* openStream(const FontIdentity& identity) override
+      LOCKS_EXCLUDED(mapped_font_files_lock_);
   sk_sp<SkTypeface> makeTypeface(const FontIdentity& identity,
-                                 sk_sp<SkFontMgr> mgr) override;
+                                 sk_sp<SkFontMgr> mgr) override
+      LOCKS_EXCLUDED(typeface_cache_lock_);
 
   // Additional cross-thread accessible methods below.
 
@@ -85,11 +96,13 @@ class FontLoader : public SkFontConfigInterface,
                              uint32_t charset,
                              uint32_t fallbackFamilyType,
                              base::File* out_font_file_handle);
+  std::vector<std::string> ListFamilies();
 #endif  // BUILDFLAG(ENABLE_PDF)
 
  private:
   // internal::MappedFontFile::Observer:
-  void OnMappedFontFileDestroyed(internal::MappedFontFile* f) override;
+  void OnMappedFontFileDestroyed(internal::MappedFontFile* f) override
+      LOCKS_EXCLUDED(mapped_font_files_lock_);
 
   // Thread to own the mojo message pipe. Because FontLoader can be called on
   // multiple threads, we create a dedicated thread to send and receive mojo
@@ -98,10 +111,24 @@ class FontLoader : public SkFontConfigInterface,
 
   // Lock preventing multiple threads from opening font file and accessing
   // |mapped_font_files_| map at the same time.
-  base::Lock lock_;
+  base::Lock mapped_font_files_lock_;
 
   // Maps font identity ID to the memory-mapped file with font data.
-  std::unordered_map<uint32_t, internal::MappedFontFile*> mapped_font_files_;
+  std::unordered_map<uint32_t,
+                     raw_ptr<internal::MappedFontFile, CtnExperimental>>
+      mapped_font_files_ GUARDED_BY(mapped_font_files_lock_);
+
+  // Lock preventing multiple threads from modifying the |typeface_cache_|
+  // at the same time. Must not hold |mapped_font_files_lock_| when taking
+  // this lock.
+  base::Lock typeface_cache_lock_ ACQUIRED_BEFORE(mapped_font_files_lock_);
+
+  // Caches recent SkTypefaces to reduce duplication and increase underlying
+  // cache hit rates.
+  base::HashingLRUCache<FontIdentity,
+                        sk_sp<SkTypeface>,
+                        SkFontConfigInterfaceFontIdentityHash>
+      typeface_cache_ GUARDED_BY(typeface_cache_lock_);
 };
 
 }  // namespace font_service

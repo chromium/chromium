@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 #include <sys/socket.h>
@@ -16,16 +11,14 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
-#include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
 namespace wl {
@@ -34,9 +27,14 @@ namespace {
 
 void handle_client_destroyed(struct wl_listener* listener, void* data) {
   TestServerListener* destroy_listener =
-      // SAFETY: TODO(crbug.com/353039516): fix unsafe pointer arithmetic.
-      wl_container_of(listener, /*sample=*/destroy_listener,
-                      /*member=*/listener);
+      // SAFETY: wl_container_of is used to calculate the address of the
+      // containing TestServerListener struct, which uses unsafe pointer
+      // arithmetic. This is valid because `listener` is guaranteed to be
+      // contained inside a TestServerListener, which is true because of
+      // how handle_client_destroyed is registered, down in
+      // TestWaylandServerThread::Start
+      UNSAFE_BUFFERS(wl_container_of(listener, /*sample=*/destroy_listener,
+                                     /*member=*/listener));
   DCHECK(destroy_listener);
   destroy_listener->test_server->OnClientDestroyed(
       static_cast<struct wl_client*>(data));
@@ -56,8 +54,6 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
       client_destroy_listener_(this),
       config_(config),
       compositor_(config.compositor_version),
-      output_(this),
-      zcr_text_input_extension_v1_(config.text_input_extension_version),
       controller_(FROM_HERE) {
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -75,8 +71,12 @@ TestWaylandServerThread::~TestWaylandServerThread() {
 
   Stop();
 
-  if (protocol_logger_)
-    wl_protocol_logger_destroy(protocol_logger_);
+  if (protocol_logger_) {
+    auto* temp = protocol_logger_.get();
+    protocol_logger_ = nullptr;
+    wl_protocol_logger_destroy(temp);
+    temp = nullptr;
+  }
   protocol_logger_ = nullptr;
 
   // Check if the client has been destroyed after the thread is stopped. This
@@ -113,15 +113,8 @@ bool TestWaylandServerThread::Start() {
   if (!alpha_compositing_.Initialize(display_.get()))
     return false;
 
-  if (config_.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
-    // The aura output managers should be initialized before any wl_output
-    // globals.
-    if (!zaura_output_manager_v2_.Initialize(display_.get())) {
-      return false;
-    }
-
-    output_.set_aura_shell_enabled();
-    if (!zaura_shell_.Initialize(display_.get())) {
+  if (config_.supports_viewporter_surface_scaling) {
+    if (!fractional_scale_manager_.Initialize(display_.get())) {
       return false;
     }
   }
@@ -141,22 +134,16 @@ bool TestWaylandServerThread::Start() {
   if (!xdg_shell_.Initialize(display_.get()))
     return false;
 
-  if (!zcr_stylus_.Initialize(display_.get()))
-    return false;
-  if (config_.text_input_wrapper_type == ZWPTextInputWrapperType::kV3) {
+  if (config_.text_input_type == ZwpTextInputType::kV3) {
     if (!zwp_text_input_manager_v3_.Initialize(display_.get())) {
       return false;
     }
   } else {
-    if (!zcr_text_input_extension_v1_.Initialize(display_.get())) {
-      return false;
-    }
     if (!zwp_text_input_manager_v1_.Initialize(display_.get())) {
       return false;
     }
   }
-  if (!SetupExplicitSynchronizationProtocol(
-          config_.use_explicit_synchronization)) {
+  if (!SetupLinuxDrmSyncobjProtocol(config_.use_linux_drm_syncobj)) {
     return false;
   }
   if (!zwp_linux_dmabuf_v1_.Initialize(display_.get()))
@@ -165,10 +152,10 @@ bool TestWaylandServerThread::Start() {
     return false;
   if (!wp_pointer_gestures_.Initialize(display_.get()))
     return false;
-  if (!zcr_color_manager_v1_.Initialize(display_.get())) {
+  if (!xdg_activation_v1_.Initialize(display_.get())) {
     return false;
   }
-  if (!xdg_activation_v1_.Initialize(display_.get())) {
+  if (!xdg_toplevel_icon_manager_v1_.Initialize(display_.get())) {
     return false;
   }
 
@@ -243,28 +230,6 @@ MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
   return nullptr;
 }
 
-TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (surface_augmenter_.Initialize(display_.get()))
-    return &surface_augmenter_;
-  return nullptr;
-}
-
-void TestWaylandServerThread::OnTestOutputFlush(
-    TestOutput* test_output,
-    const TestOutputMetrics& metrics) {
-  if (zaura_output_manager_v2_.resource()) {
-    zaura_output_manager_v2_.SendOutputMetrics(test_output, metrics);
-  }
-}
-
-void TestWaylandServerThread::OnTestOutputGlobalDestroy(
-    TestOutput* test_output) {
-  if (zaura_output_manager_v2_.resource()) {
-    zaura_output_manager_v2_.OnTestOutputGlobalDestroy(test_output);
-  }
-}
-
 void TestWaylandServerThread::OnClientDestroyed(wl_client* client) {
   if (!client_)
     return;
@@ -299,24 +264,23 @@ bool TestWaylandServerThread::SetupPrimarySelectionManager(
   return primary_selection_device_manager_->Initialize(display_.get());
 }
 
-bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
-    ShouldUseExplicitSynchronizationProtocol usage) {
+bool TestWaylandServerThread::SetupLinuxDrmSyncobjProtocol(
+    ShouldUseLinuxDrmSyncobjProtocol usage) {
   switch (usage) {
-    case ShouldUseExplicitSynchronizationProtocol::kNone:
+    case wl::ShouldUseLinuxDrmSyncobjProtocol::kNone:
       return true;
-    case ShouldUseExplicitSynchronizationProtocol::kUse:
-      return zwp_linux_explicit_synchronization_v1_.Initialize(display_.get());
+    case wl::ShouldUseLinuxDrmSyncobjProtocol::kUse:
+      return wp_linux_drm_syncobj_manager_v1_.Initialize(display_.get());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::unique_ptr<base::MessagePump> TestWaylandServerThread::CreateMessagePump(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto pump = std::make_unique<base::MessagePumpLibevent>();
+  auto pump = std::make_unique<base::MessagePumpEpoll>();
   pump->WatchFileDescriptor(wl_event_loop_get_fd(event_loop_), true,
-                            base::MessagePumpLibevent::WATCH_READ, &controller_,
+                            base::MessagePumpEpoll::WATCH_READ, &controller_,
                             this);
   std::move(closure).Run();
   return std::move(pump);

@@ -7,10 +7,13 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** Conversion utility for misc types needed in the JNI layer for the service. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingConversionBridge {
 
     @CalledByNative
@@ -32,8 +35,16 @@ public class DataSharingConversionBridge {
     }
 
     @CalledByNative
-    public static DataSharingService.ParseURLResult createParseURLResult(
+    public static DataSharingService.ParseUrlResult createParseUrlResult(
             GroupToken groupToken, int status) {
-        return new DataSharingService.ParseURLResult(groupToken, status);
+        return new DataSharingService.ParseUrlResult(groupToken, status);
+    }
+
+    @CalledByNative
+    public static DataSharingService.SharedDataPreviewOrFailureOutcome
+            createSharedDataPreviewOrFailureOutcome(
+                    SharedTabGroupPreview sharedTabGroupPreview, int status) {
+        return new DataSharingService.SharedDataPreviewOrFailureOutcome(
+                new SharedDataPreview(sharedTabGroupPreview), status);
     }
 }

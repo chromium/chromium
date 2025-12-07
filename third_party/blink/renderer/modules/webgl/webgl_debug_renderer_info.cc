@@ -28,7 +28,8 @@
 namespace blink {
 
 WebGLDebugRendererInfo::WebGLDebugRendererInfo(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {}
 
 WebGLExtensionName WebGLDebugRendererInfo::GetName() const {

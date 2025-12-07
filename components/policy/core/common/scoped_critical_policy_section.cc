@@ -30,18 +30,35 @@ void EnterSection(
   //
   // If we failed to aquire lock or the API is timeout, we will read the policy
   // regardless, as we used to have.
-  handles.user_handle = ::EnterCriticalPolicySection(false);
+  handles.user_handle = ScopedCriticalPolicySection::ScopedHandle(
+      ::EnterCriticalPolicySection(false));
   if (!handles.user_handle) {
     PLOG(WARNING) << "Failed to enter user critical policy section.";
   }
-  handles.machine_handle = ::EnterCriticalPolicySection(true);
+  handles.machine_handle = ScopedCriticalPolicySection::ScopedHandle(
+      ::EnterCriticalPolicySection(true));
   if (!handles.machine_handle) {
     PLOG(WARNING) << "Failed to enter machine critical policy section.";
   }
-  std::move(callback).Run(handles);
+  std::move(callback).Run(std::move(handles));
 }
 
 }  // namespace
+
+void ScopedCriticalPolicySection::HandleDeleter::operator()(
+    HANDLE handle) const {
+  if (handle && !::LeaveCriticalPolicySection(handle)) {
+    PLOG(WARNING) << "Failed to leave critical policy section";
+  }
+}
+
+ScopedCriticalPolicySection::Handles::Handles() = default;
+ScopedCriticalPolicySection::Handles::Handles(
+    ScopedCriticalPolicySection::Handles&&) = default;
+ScopedCriticalPolicySection::Handles&
+ScopedCriticalPolicySection::Handles::operator=(
+    ScopedCriticalPolicySection::Handles&&) = default;
+ScopedCriticalPolicySection::Handles::~Handles() = default;
 
 // static
 void ScopedCriticalPolicySection::Enter(
@@ -73,15 +90,7 @@ ScopedCriticalPolicySection::ScopedCriticalPolicySection(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner) {}
 
-ScopedCriticalPolicySection::~ScopedCriticalPolicySection() {
-  if (machine_handle_) {
-    ::LeaveCriticalPolicySection(machine_handle_);
-  }
-
-  if (user_handle_) {
-    ::LeaveCriticalPolicySection(user_handle_);
-  }
-}
+ScopedCriticalPolicySection::~ScopedCriticalPolicySection() = default;
 
 void ScopedCriticalPolicySection::Init(base::OnceClosure callback) {
   DCHECK(!callback_);
@@ -113,8 +122,8 @@ void ScopedCriticalPolicySection::Init(base::OnceClosure callback) {
 
 void ScopedCriticalPolicySection::OnSectionEntered(Handles handles) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  machine_handle_ = handles.machine_handle;
-  user_handle_ = handles.user_handle;
+  machine_handle_ = std::move(handles.machine_handle);
+  user_handle_ = std::move(handles.user_handle);
   std::move(callback_).Run();
 }
 

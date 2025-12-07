@@ -18,12 +18,12 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy.h"
 
 struct wl_buffer;
 struct wl_registry;
-struct zcr_ui_controls_v1;
+struct zcr_ui_controls_v2;
 struct wl_callback;
 
 namespace wl {
@@ -56,28 +56,13 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                             int accelerator_state,
                             uint32_t request_id);
 
-  // |touch_screen_location| is in DIP.
-  void EmulateTouch(int action,
-                    const gfx::Point& touch_screen_location,
-                    int touch_id,
-                    uint32_t request_id);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // |display_specs| is the spec for the display(s).
-  void EmulateUpdateDisplay(const std::string& display_specs,
-                            uint32_t request_id);
-#endif
-
-#if BUILDFLAG(IS_LINUX)
   void ForceUseScreenCoordinatesOnce();
-#endif
 
  private:
   enum PendingRequestType {
     KeyPress,
     MouseMove,
     MouseButton,
-    Touch,
   };
 
   // Pending emulation request.
@@ -131,10 +116,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     bool buffer_attached_and_configured = false;
 
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
-    raw_ptr<wl_callback, DanglingUntriaged> frame_callback = nullptr;
+    raw_ptr<wl_callback> frame_callback = nullptr;
 
     // The attached buffer.
-    raw_ptr<wl_buffer, DanglingUntriaged> buffer = nullptr;
+    raw_ptr<wl_buffer> buffer = nullptr;
 
     // True if the window was created or assigned a role and is now waiting for
     // a buffer to be committed.
@@ -143,6 +128,9 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     base::WeakPtrFactory<TestWindow> weak_factory{this};
   };
 
+  // Destroys `window`'s frame callback and buffer.
+  void DestroyTestWindowState(TestWindow* window);
+
   // WaylandProxy::Delegate:
   void OnWindowAdded(gfx::AcceleratedWidget widget) override;
   void OnWindowRemoved(gfx::AcceleratedWidget widget) override;
@@ -150,9 +138,9 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                           bool is_configured) override;
   void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) override;
 
-  // zcr_ui_controls_v1_listener callbacks:
+  // zcr_ui_controls_v2_listener callbacks:
   static void OnRequestProcessed(void* data,
-                                 zcr_ui_controls_v1* ui_controls,
+                                 zcr_ui_controls_v2* ui_controls,
                                  uint32_t id);
 
   // wl_registry_listener callbacks:
@@ -191,7 +179,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   base::RepeatingCallback<void(uint32_t)> request_processed_callback_;
 
   // If true, the next `EmulatePointerMotion` call will use global screen
-  // coordinates, i.e. send zcr_ui_controls_v1.mouse_move with the `surface`
+  // coordinates, i.e. send zcr_ui_controls_v2.mouse_move with the `surface`
   // parameter set to NULL.
   // Note: this does not affect whether `EmulatePointerMotion` uses the
   // coordinates from its `mouse_surface_location` or `mouse_screen_location`
@@ -202,7 +190,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // class belongs to cannot depend on the "wayland" target in the
   // //ui/ozone/platform/wayland/BUILD.gn
   raw_ptr<wl_registry> registry_ = nullptr;
-  raw_ptr<zcr_ui_controls_v1> ui_controls_ = nullptr;
+  raw_ptr<zcr_ui_controls_v2> ui_controls_ = nullptr;
 };
 
 }  // namespace wl

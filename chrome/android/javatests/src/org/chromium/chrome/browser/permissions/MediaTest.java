@@ -13,12 +13,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Test suite for media permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -39,7 +41,7 @@ public class MediaTest {
     private void testMediaPermissionsPlumbing(
             String prefix, String script, int numUpdates, boolean withGesture, boolean isDialog)
             throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(prefix, mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
@@ -48,15 +50,13 @@ public class MediaTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
-    /**
-     * Verify asking for microphone creates a dialog and works when the permission is granted.
-     *
-     * @throws Exception
-     */
+    /** Verify asking for microphone creates a dialog and works when the permission is granted. */
     @Test
     @MediumTest
     @Feature({"MediaPermissions", "Main"})
     @CommandLineFlags.Add({FAKE_DEVICE})
+    @DisableIf.Device(
+            DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136, https://crbug.com/383407975
     public void testMicrophoneMediaPermissionsPlumbingDialog() throws Exception {
         testMediaPermissionsPlumbing("Mic count:", "initiate_getMicrophone()", 1, true, true);
     }
@@ -64,8 +64,6 @@ public class MediaTest {
     /**
      * Verify asking for camera with no gesture creates a dialog and works when the permission is
      * granted.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest
@@ -78,13 +76,12 @@ public class MediaTest {
     /**
      * Verify asking for both mic and camera creates a combined dialog and works when the
      * permissions are granted.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest
     @Feature({"MediaPermissions", "Main"})
     @CommandLineFlags.Add({FAKE_DEVICE})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testCombinedPermissionsPlumbingDialog() throws Exception {
         testMediaPermissionsPlumbing("Combined count:", "initiate_getCombined()", 1, true, true);
     }

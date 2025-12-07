@@ -32,16 +32,18 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
                base::TimeTicks reference_time,
                base::TimeDelta timestamp,
                std::optional<base::TimeTicks> capture_begin_time,
+               const std::optional<VideoFrameMetadata>& metadata,
                int frame_feedback_id),
               (override));
   MOCK_METHOD(void,
-              OnIncomingCapturedGfxBuffer,
-              (gfx::GpuMemoryBuffer * buffer,
+              OnIncomingCapturedImage,
+              (scoped_refptr<gpu::ClientSharedImage> shared_image,
                const VideoCaptureFormat& frame_format,
                int clockwise_rotation,
                base::TimeTicks reference_time,
                base::TimeDelta timestamp,
                std::optional<base::TimeTicks> capture_begin_time,
+               const std::optional<VideoFrameMetadata>& metadata,
                int frame_feedback_id),
               (override));
   MOCK_METHOD(void,
@@ -50,7 +52,8 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
                base::TimeTicks reference_time,
                base::TimeDelta timestamp,
                std::optional<base::TimeTicks> capture_begin_time,
-               const gfx::Rect& visible_rect),
+               const gfx::Rect& visible_rect,
+               const std::optional<VideoFrameMetadata>& additional_metadata),
               (override));
   MOCK_METHOD(ReserveResult,
               ReserveOutputBuffer,
@@ -74,7 +77,8 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
       const VideoCaptureFormat& format,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
-      std::optional<base::TimeTicks> capture_begin_time) override;
+      std::optional<base::TimeTicks> capture_begin_time,
+      const std::optional<VideoFrameMetadata>& metadata) override;
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const VideoCaptureFormat& format,
@@ -83,7 +87,7 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
       gfx::Rect visible_rect,
-      const VideoFrameMetadata& additional_metadata) override;
+      const std::optional<VideoFrameMetadata>& additional_metadata) override;
 
   MOCK_METHOD(
       void,
@@ -98,7 +102,7 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
                base::TimeTicks reference_time,
                base::TimeDelta timestamp,
                gfx::Rect visible_rect,
-               const VideoFrameMetadata& additional_metadata),
+               const std::optional<VideoFrameMetadata>& additional_metadata),
               ());
 
   static std::unique_ptr<MockVideoCaptureDeviceClient>

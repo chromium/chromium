@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -18,6 +17,8 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -32,11 +33,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -56,6 +58,11 @@ constexpr char kDemoSetupEnrollDurationHistogram[] =
 constexpr char kDemoSetupLoadingDurationHistogram[] =
     "DemoMode.Setup.LoadingDuration";
 constexpr char kDemoSetupNumRetriesHistogram[] = "DemoMode.Setup.NumRetries";
+constexpr char kDemoSetupComponentInitialLoadingResultHistogram[] =
+    "DemoMode.Setup.ComponentInitialLoadingResult";
+constexpr char kDemoSetupComponentLoadingRetryResultHistogram[] =
+    "DemoMode.Setup.ComponentLoadingRetryResult";
+constexpr char kDemoSetupErrorHistogram[] = "DemoMode.Setup.Error";
 
 struct DemoSetupStepInfo {
   DemoSetupController::DemoSetupStep step;
@@ -103,6 +110,7 @@ DemoSetupController::DemoSetupError CreateFromClientStatus(
     case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
     case policy::DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
     case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
+    case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
       return DemoSetupController::DemoSetupError(ErrorCode::kDemoAccountError,
                                                  RecoveryMethod::kUnknown,
                                                  debug_message);
@@ -144,10 +152,7 @@ DemoSetupController::DemoSetupError CreateFromClientStatus(
       return DemoSetupController::DemoSetupError(
           ErrorCode::kArcError, RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported client status";
-  return DemoSetupController::DemoSetupError(
-      ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown, debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported client status";
 }
 
 DemoSetupController::DemoSetupError CreateFromLockStatus(
@@ -173,10 +178,7 @@ DemoSetupController::DemoSetupError CreateFromLockStatus(
       return DemoSetupController::DemoSetupError(
           ErrorCode::kAlreadyLocked, RecoveryMethod::kPowerwash, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported lock status";
-  return DemoSetupController::DemoSetupError(
-      ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown, debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported lock status";
 }
 
 }  //  namespace
@@ -237,10 +239,7 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported enrollment status";
-  return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
-                        debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported enrollment status";
 }
 
 // static
@@ -257,10 +256,7 @@ DemoSetupController::DemoSetupError::CreateFromOtherEnrollmentError(
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported enrollment error";
-  return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
-                        debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported enrollment error";
 }
 
 // static
@@ -362,10 +358,12 @@ std::u16string DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_DM_TOKEN_STORE_ERROR);
     case ErrorCode::kUnexpectedError:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_UNEXPECTED_ERROR);
+    case ErrorCode::kSuccess:
+      // We don't display the success message. It's for recording the UMA
+      // metrics only.
+      return std::u16string();
   }
-  NOTREACHED_IN_MIGRATION()
-      << "No localized error message available for demo setup error.";
-  return std::u16string();
+  NOTREACHED() << "No localized error message available for demo setup error.";
 }
 
 std::u16string
@@ -384,9 +382,8 @@ DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
     case RecoveryMethod::kUnknown:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_RECOVERY_FATAL);
   }
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "No localized error message available for demo setup recovery method.";
-  return std::u16string();
 }
 
 std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
@@ -394,13 +391,6 @@ std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
                             static_cast<int>(error_code_),
                             static_cast<int>(recovery_method_),
                             debug_message_.c_str());
-}
-
-void DemoSetupController::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kDemoModeConfig,
-      static_cast<int>(DemoSession::DemoModeConfig::kNone));
 }
 
 // static
@@ -451,7 +441,7 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   std::string country_lowercase = base::ToLowerASCII(country);
 
   // Exclude US as it is the default country.
-  if (base::Contains(DemoSession::kSupportedCountries, country_uppercase)) {
+  if (base::Contains(demo_mode::kSupportedCountries, country_uppercase)) {
     if (chromeos::features::IsCloudGamingDeviceEnabled()) {
       return base::StringPrintf("admin-%s-blazey@%s", country_lowercase.c_str(),
                                 policy::kDemoModeDomain);
@@ -484,7 +474,7 @@ std::string DemoSetupController::GetDemoSetupStepString(
       return "complete";
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DemoSetupController::DemoSetupController() = default;
@@ -523,7 +513,7 @@ void DemoSetupController::Enroll(
       return;
     case DemoSession::DemoModeConfig::kNone:
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
-      NOTREACHED_IN_MIGRATION() << "No valid demo mode config specified";
+      NOTREACHED() << "No valid demo mode config specified";
   }
 }
 
@@ -577,21 +567,51 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   auto resources_component_error =
       demo_components_->resources_component_error().value_or(
           component_updater::ComponentManagerAsh::Error::NOT_FOUND);
+  auto app_component_error = demo_components_->app_component_error().value_or(
+      component_updater::ComponentManagerAsh::Error::NOT_FOUND);
+  // We determine it's an initial loading or retry based on the
+  // `num_setup_retries_` count.
+  const std::string kDemoSetupComponentlLoadingResultHistogram =
+      num_setup_retries_ == 0 ? kDemoSetupComponentInitialLoadingResultHistogram
+                              : kDemoSetupComponentLoadingRetryResultHistogram;
+
   if (resources_component_error !=
       component_updater::ComponentManagerAsh::Error::NONE) {
+    // Reporting the corresponding enum based on the app component error.
+    base::UmaHistogramEnumeration(
+        kDemoSetupComponentlLoadingResultHistogram,
+        app_component_error ==
+                component_updater::ComponentManagerAsh::Error::NONE
+            ? DemoSetupComponentLoadingResult::kAppSuccessResourcesFailure
+            : DemoSetupComponentLoadingResult::kAppFailureResourcesFailure);
+
     SetupFailed(DemoSetupError::CreateFromComponentError(
         resources_component_error,
         DemoComponents::kDemoModeResourcesComponentName));
     return;
   }
-  auto app_component_error = demo_components_->app_component_error().value_or(
-      component_updater::ComponentManagerAsh::Error::NOT_FOUND);
+
   if (app_component_error !=
       component_updater::ComponentManagerAsh::Error::NONE) {
+    // There should be no error on the resources component loading if we've got
+    // to this point. It should've been handled in the previous "if block".
+    DCHECK(resources_component_error ==
+           component_updater::ComponentManagerAsh::Error::NONE);
+    base::UmaHistogramEnumeration(
+        kDemoSetupComponentlLoadingResultHistogram,
+        DemoSetupComponentLoadingResult::kAppFailureResourcesSuccess);
+
     SetupFailed(DemoSetupError::CreateFromComponentError(
         app_component_error, DemoComponents::kDemoModeAppComponentName));
     return;
   }
+
+  // There should be no error on both the app and the resources components
+  // loading if we've got to this point. It should've been handled in the
+  // previous two "if blocks".
+  base::UmaHistogramEnumeration(
+      kDemoSetupComponentlLoadingResultHistogram,
+      DemoSetupComponentLoadingResult::kAppSuccessResourcesSuccess);
 
   VLOG(1) << "Starting online enrollment";
 
@@ -602,10 +622,8 @@ void DemoSetupController::OnDemoComponentsLoaded() {
       policy::EnrollmentRequisitionManager::kDemoRequisition);
   policy::EnrollmentRequisitionManager::SetSubOrganization(
       GetSubOrganizationEmail());
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
-  config.management_domain = policy::kDemoModeDomain;
-  config.license_type = policy::LicenseType::kEnterprise;
+  policy::EnrollmentConfig config =
+      policy::EnrollmentConfig::GetDemoModeEnrollmentConfig();
 
   enrollment_launcher_ =
       EnrollmentLauncher::Create(this, config, policy::kDemoModeDomain);
@@ -613,7 +631,7 @@ void DemoSetupController::OnDemoComponentsLoaded() {
 }
 
 void DemoSetupController::OnAuthError(const GoogleServiceAuthError& error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DemoSetupController::OnEnrollmentError(policy::EnrollmentStatus status) {
@@ -634,6 +652,7 @@ void DemoSetupController::OnDeviceEnrolled() {
     base::UmaHistogramLongTimes100(kDemoSetupEnrollDurationHistogram,
                                    enroll_duration);
   }
+  UMA_HISTOGRAM_ENUMERATION(kDemoSetupErrorHistogram, ErrorCode::kSuccess);
   VLOG(1) << "Marking device registered";
   StartupUtils::MarkDeviceRegistered(
       base::BindOnce(&DemoSetupController::OnDeviceRegistered,
@@ -641,11 +660,11 @@ void DemoSetupController::OnDeviceEnrolled() {
 }
 
 void DemoSetupController::OnDeviceAttributeUploadCompleted(bool success) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DemoSetupController::OnDeviceAttributeUpdatePermission(bool granted) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DemoSetupController::SetCrOSComponentLoadErrorForTest(
@@ -695,6 +714,7 @@ void DemoSetupController::SetupFailed(const DemoSetupError& error) {
   LOG(ERROR) << error.GetDebugDescription();
   if (!on_setup_error_.is_null())
     std::move(on_setup_error_).Run(error);
+  UMA_HISTOGRAM_ENUMERATION(kDemoSetupErrorHistogram, error.error_code());
 }
 
 void DemoSetupController::Reset() {

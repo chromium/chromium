@@ -22,6 +22,7 @@
 #include "url/gurl.h"
 
 namespace metrics {
+namespace {
 
 class NetMetricsLogUploaderTest : public testing::Test {
  public:
@@ -208,4 +209,5 @@ TEST_F(NetMetricsLogUploaderTest, MessageOverHTTPLocalhostIsNotEncrypted) {
   EXPECT_EQ(last_upload_data(), "dummy_data");
 }
 
+}  // namespace
 }  // namespace metrics

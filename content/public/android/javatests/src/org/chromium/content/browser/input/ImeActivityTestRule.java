@@ -36,6 +36,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper.InputConnectionProvider;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.base.ime.TextInputType;
 
@@ -113,6 +114,9 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         WebContentsImpl webContents = (WebContentsImpl) getWebContents();
         mCallbackContainer = new TestCallbackHelperContainer(webContents);
         DOMUtils.waitForNonZeroNodeBounds(webContents, "input_text");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
         boolean result = DOMUtils.clickNode(webContents, "input_text");
 
         Assert.assertEquals("Failed to dispatch touch event.", true, result);
@@ -125,7 +129,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         Assert.assertEquals(0, mConnectionFactory.getOutAttrs().initialSelStart);
         Assert.assertEquals(0, mConnectionFactory.getOutAttrs().initialSelEnd);
 
-        waitForEventLogs("selectionchange");
+        waitForEventLogState("selectionchange");
         clearEventLogs();
 
         waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);

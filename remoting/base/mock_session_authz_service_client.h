@@ -6,6 +6,7 @@
 #define REMOTING_BASE_MOCK_SESSION_AUTHZ_SERVICE_CLIENT_H_
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/proto/session_authz_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,11 +21,13 @@ class MockSessionAuthzServiceClient : public SessionAuthzServiceClient {
   MOCK_METHOD(void, GenerateHostToken, (GenerateHostTokenCallback callback));
   MOCK_METHOD(void,
               VerifySessionToken,
-              (const internal::VerifySessionTokenRequestStruct& request,
+              (std::string_view session_token,
                VerifySessionTokenCallback callback));
   MOCK_METHOD(void,
               ReauthorizeHost,
-              (const internal::ReauthorizeHostRequestStruct& request,
+              (std::string_view session_reauth_token,
+               std::string_view session_id,
+               base::TimeTicks token_expire_time,
                ReauthorizeHostCallback callback));
 };
 

@@ -1,0 +1,6 @@
+Tests Bluetooth adding and removing characteristic from a service
+After adding measurement interval characteristic: 00002a21-0000-1000-8000-00805f9b34fb,read,notify
+After adding date time characteristic: 00002a21-0000-1000-8000-00805f9b34fb,read,notify,00002a08-0000-1000-8000-00805f9b34fb,read
+After removing date time characteristic: 00002a21-0000-1000-8000-00805f9b34fb,read,notify
+After removing measurement interval characteristic: No Characteristics found in service.
+

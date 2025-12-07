@@ -125,6 +125,62 @@ TEST_F(WebNNTensorDescTest, TransposeTensorDesc) {
   EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{1, 6, 3}));
 }
 
+TEST_F(WebNNTensorDescTest, FlattenTensorDesc) {
+  std::vector<uint32_t> dimensions = {2, 2, 2, 2, 3};
+  TensorDesc tensor(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+  EXPECT_TRUE(tensor.RightAlignedFlattenTo(4));
+  EXPECT_EQ(tensor.GetDimensions(), (std::vector<uint32_t>{4, 2, 2, 3}));
+  EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{12, 6, 3, 1}));
+}
+
+TEST_F(WebNNTensorDescTest, TransposeAndFlattenTensorDesc) {
+  {
+    std::vector<uint32_t> dimensions = {2, 2, 1, 2, 3};
+    TensorDesc tensor(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+    tensor.Transpose(std::vector<uint32_t>{0, 1, 2, 4, 3});
+    EXPECT_TRUE(tensor.RightAlignedFlattenTo(4));
+    EXPECT_EQ(tensor.GetDimensions(), (std::vector<uint32_t>{4, 1, 3, 2}));
+    EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{6, 6, 1, 3}));
+  }
+  {
+    std::vector<uint32_t> dimensions = {2, 2, 1, 2, 3};
+    TensorDesc tensor(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+    tensor.Transpose(std::vector<uint32_t>{1, 0, 2, 3, 4});
+    EXPECT_TRUE(tensor.RightAlignedFlattenTo(3));
+    EXPECT_EQ(tensor.GetDimensions(), (std::vector<uint32_t>{4, 2, 3}));
+    EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{6, 3, 1}));
+  }
+  // Test that some transposed tensor can't be flattened.
+  {
+    std::vector<uint32_t> dimensions = {5, 4, 3, 2, 1};
+    TensorDesc tensor(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+    tensor.Transpose(std::vector<uint32_t>{1, 0, 2, 3, 4});
+    EXPECT_FALSE(tensor.RightAlignedFlattenTo(4));
+    EXPECT_EQ(tensor.GetDimensions(), (std::vector<uint32_t>{4, 5, 3, 2, 1}));
+    EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{6, 24, 2, 1, 1}));
+  }
+}
+
+TEST_F(WebNNTensorDescTest, BroadcastAndFlattenTensorDesc) {
+  {
+    std::vector<uint32_t> dimensions = {1, 1, 3};
+    TensorDesc tensor(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+    tensor.BroadcastTo(std::vector<uint32_t>{2, 2, 3});
+    EXPECT_TRUE(tensor.RightAlignedFlattenTo(2));
+    EXPECT_EQ(tensor.GetDimensions(), (std::vector<uint32_t>{4, 3}));
+    EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{0, 1}));
+  }
+  // Test that some broadcasted tensor can't be flattened.
+  {
+    std::vector<uint32_t> dimensions = {1, 2, 3};
+    TensorDesc tensor(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+    tensor.BroadcastTo(std::vector<uint32_t>{2, 2, 3});
+    EXPECT_FALSE(tensor.RightAlignedFlattenTo(2));
+    EXPECT_EQ(tensor.GetDimensions(), (std::vector<uint32_t>{2, 2, 3}));
+    EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{0, 3, 1}));
+  }
+}
+
 TEST_F(WebNNTensorDescTest, CreateAndBroadcastTensorDesc) {
   // Test creating a TensorDesc with dimensions and broadcasting it.
   std::vector<uint32_t> dimensions = {1, 1, 3};

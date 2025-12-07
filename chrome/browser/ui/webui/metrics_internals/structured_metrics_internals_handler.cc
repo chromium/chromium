@@ -42,10 +42,11 @@ void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
     const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(
-      callback_id, structured_metrics_debug_provider_
-                       ? structured_metrics_debug_provider_->events().Clone()
-                       : base::Value::List());
+  const base::Value::List empty_events;
+  ResolveJavascriptCallback(callback_id,
+                            structured_metrics_debug_provider_
+                                ? structured_metrics_debug_provider_->events()
+                                : empty_events);
 }
 
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsSummary(

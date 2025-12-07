@@ -73,6 +73,7 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
   void RemoveRegistrar(Registrar* registrar);
 
   // PrefObserver implementation.
+  void OnServiceDestroyed(PrefService* service) override;
   void OnPreferenceChanged(PrefService* service,
                            std::string_view pref_name) override;
 

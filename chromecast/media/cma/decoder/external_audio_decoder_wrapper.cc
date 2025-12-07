@@ -7,8 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -122,7 +123,7 @@ class ExternalAudioDecoderWrapper::DecodedBuffer : public DecoderBufferBase {
   DecodedBuffer(StreamId stream_id, size_t capacity)
       : stream_id_(stream_id),
         capacity_(capacity),
-        data_(std::make_unique<uint8_t[]>(capacity_)) {}
+        data_(base::HeapArray<uint8_t>::Uninit(capacity_)) {}
 
   void set_size(size_t size) {
     DCHECK_LE(size, capacity_);
@@ -135,8 +136,10 @@ class ExternalAudioDecoderWrapper::DecodedBuffer : public DecoderBufferBase {
   void set_timestamp(base::TimeDelta timestamp) override {
     timestamp_ = timestamp;
   }
-  const uint8_t* data() const override { return data_.get(); }
-  uint8_t* writable_data() const override { return data_.get(); }
+  const uint8_t* data() const override { return data_.data(); }
+  uint8_t* writable_data() const override {
+    return const_cast<uint8_t*>(data_.data());
+  }
   size_t data_size() const override { return size_; }
   const CastDecryptConfig* decrypt_config() const override { return nullptr; }
   bool end_of_stream() const override { return false; }
@@ -148,7 +151,7 @@ class ExternalAudioDecoderWrapper::DecodedBuffer : public DecoderBufferBase {
   const StreamId stream_id_;
   const size_t capacity_;
 
-  const std::unique_ptr<uint8_t[]> data_;
+  const base::HeapArray<uint8_t> data_;
 
   base::TimeDelta timestamp_;
   size_t size_ = 0;
@@ -220,13 +223,14 @@ void ExternalAudioDecoderWrapper::DecodeDeferred(
     const size_t frame_size = sizeof(float) * output_config_.channel_number;
     size_t total_frames = size / frame_size;
     for (int c = 0; c < output_config_.channel_number; ++c) {
-      uint8_t* dest =
-          decoded->writable_data() + c * total_frames * sizeof(float);
+      uint8_t* dest = UNSAFE_TODO(decoded->writable_data() +
+                                  c * total_frames * sizeof(float));
       for (size_t i = 0; i < buffer_count; ++i) {
         size_t frames = buffers_[i]->data_size() / frame_size;
-        void* src = buffers_[i]->writable_data() + c * frames * sizeof(float);
-        memcpy(dest, src, frames * sizeof(float));
-        dest += frames * sizeof(float);
+        void* src = UNSAFE_TODO(buffers_[i]->writable_data() +
+                                c * frames * sizeof(float));
+        UNSAFE_TODO(memcpy(dest, src, frames * sizeof(float)));
+        UNSAFE_TODO(dest += frames * sizeof(float));
       }
     }
   }
@@ -255,7 +259,8 @@ void ExternalAudioDecoderWrapper::ConvertToS16(DecodedBuffer* buffer) {
 
   const float* src = reinterpret_cast<const float*>(buffer->data());
   for (int c = 0; c < channels; ++c) {
-    std::copy_n(src + c * frames, frames, conversion_buffer_->channel(c));
+    std::copy_n(UNSAFE_TODO(src + c * frames), frames,
+                conversion_buffer_->channel_span(c).data());
   }
 
   int16_t* dest = reinterpret_cast<int16_t*>(buffer->writable_data());

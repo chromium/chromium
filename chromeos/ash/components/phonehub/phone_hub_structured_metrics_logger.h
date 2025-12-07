@@ -19,12 +19,12 @@
 #include "components/metrics/structured/event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 base::TimeDelta kMaxStructuredMetricsPseudonymousIdDays = base::Days(90);
-}
+}  // namespace
+
 namespace ash::phonehub {
 
 enum class DiscoveryEntryPoint {

@@ -146,15 +146,13 @@ class MockChromeClientForOrientationLockDelegate final
                        const FullscreenOptions*,
                        FullscreenRequestType) override {
     frame.GetTaskRunner(TaskType::kInternalNavigationAssociated)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(DidEnterFullscreen,
-                                 WrapPersistent(frame.GetDocument())));
+        ->PostTask(FROM_HERE, BindOnce(DidEnterFullscreen,
+                                       WrapPersistent(frame.GetDocument())));
   }
   void ExitFullscreen(LocalFrame& frame) override {
     frame.GetTaskRunner(TaskType::kInternalNavigationAssociated)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(DidExitFullscreen,
-                                 WrapPersistent(frame.GetDocument())));
+        ->PostTask(FROM_HERE, BindOnce(DidExitFullscreen,
+                                       WrapPersistent(frame.GetDocument())));
   }
 
   const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
@@ -390,8 +388,7 @@ class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest
         RotateDeviceTo(0, 90);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   void RotateDeviceTo(double beta, double gamma) {

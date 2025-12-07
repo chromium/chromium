@@ -96,7 +96,7 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
   EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
                                           extension7.get(), "/test"));
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("sandboxed_pages_invalid_1.json",
                errors::kInvalidSandboxedPagesList),
       Testcase("sandboxed_pages_invalid_2.json", errors::kInvalidSandboxedPage),
@@ -106,7 +106,7 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP)),
       Testcase("sandboxed_pages_invalid_5.json",
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP))};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(CSPInfoUnitTest, CSPStringKey) {
@@ -117,18 +117,18 @@ TEST_F(CSPInfoUnitTest, CSPStringKey) {
             CSPInfo::GetExtensionPagesCSP(extension.get()));
 
   // Manifest V2 extensions bypass the main world CSP in their isolated worlds.
-  const std::string* isolated_world_csp =
+  std::optional<std::string> isolated_world_csp =
       CSPInfo::GetIsolatedWorldCSP(*extension);
   ASSERT_TRUE(isolated_world_csp);
   EXPECT_TRUE(isolated_world_csp->empty());
 
   RunTestcase(Testcase("csp_invalid_1.json", GetInvalidManifestKeyError(
                                                  keys::kContentSecurityPolicy)),
-              EXPECT_TYPE_ERROR);
+              ExpectType::kError);
 }
 
 TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
-  struct {
+  static constexpr struct {
     const char* file_name;
     const char* csp;
   } cases[] = {{"csp_dictionary_valid_1.json", "default-src 'none'"},
@@ -144,7 +144,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
     EXPECT_EQ(test_case.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("csp_invalid_2.json",
                GetInvalidManifestKeyError(
                    keys::kContentSecurityPolicy_ExtensionPagesPath)),
@@ -162,7 +162,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                    keys::kContentSecurityPolicy_ExtensionPagesPath,
                    "'unsafe-eval'", "worker-src")),
   };
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 // Tests the requirements for object-src specifications.
@@ -345,7 +345,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
                   extension.get(), test_case.resource_path));
   }
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       {"sandbox_both_keys.json", errors::kSandboxPagesCSPKeyNotAllowed},
       {"sandbox_csp_with_dictionary.json",
        errors::kSandboxPagesCSPKeyNotAllowed},
@@ -355,7 +355,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
       {"unsandboxed_csp.json",
        GetInvalidManifestKeyError(
            keys::kContentSecurityPolicy_SandboxedPagesPath)}};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 // Ensures that using a dictionary for the keys::kContentSecurityPolicy manifest
@@ -375,10 +375,14 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
         LoadAndExpectSuccess(filename, mojom::ManifestLocation::kInternal);
     ASSERT_TRUE(extension);
 
-    const std::string* isolated_world_csp =
+    std::optional<std::string> isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(CSPHandler::GetMinimumMV3CSPForTesting(), *isolated_world_csp);
+    std::string expected_csp = base::StringPrintf(
+        "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
+        "%s; object-src 'self';",
+        extension->dynamic_url().spec().c_str());
+    EXPECT_EQ(expected_csp, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));
@@ -399,11 +403,14 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
         LoadAndExpectSuccess(filename, mojom::ManifestLocation::kUnpacked);
     ASSERT_TRUE(extension);
 
-    const std::string* isolated_world_csp =
+    std::optional<std::string> isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(CSPHandler::GetMinimumUnpackedMV3CSPForTesting(),
-              *isolated_world_csp);
+    std::string expected_csp = base::StringPrintf(
+        "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
+        "http://localhost:* http://127.0.0.1:* %s; object-src 'self';",
+        extension->dynamic_url().spec().c_str());
+    EXPECT_EQ(expected_csp, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));

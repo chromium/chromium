@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++staticText name='before content' nameFrom=contents
+++++++++inlineTextBox name='before content' nameFrom=contents
+++++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='content here...' nameFrom=contents
+++++++++++inlineTextBox name='content here...' nameFrom=contents
+++++++genericContainer ignored
+++++++genericContainer
+=== Start Continuation ===
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++staticText name='before content' nameFrom=contents
+++++++++inlineTextBox name='before content' nameFrom=contents
+++++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='content here...' nameFrom=contents
+++++++++++inlineTextBox name='content here...' nameFrom=contents
+++++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='done' nameFrom=contents
+++++++++++inlineTextBox name='done' nameFrom=contents

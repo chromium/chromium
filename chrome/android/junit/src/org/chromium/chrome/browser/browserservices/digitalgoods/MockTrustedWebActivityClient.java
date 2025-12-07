@@ -25,8 +25,8 @@ import org.chromium.components.embedder_support.util.Origin;
  * talking to the Digital Goods handler in the TWA shell, providing hardcoded responses.
  */
 public class MockTrustedWebActivityClient {
-    private TrustedWebActivityClientWrappers.Connection mConnection;
-    private TrustedWebActivityClient mClient;
+    private final TrustedWebActivityClientWrappers.Connection mConnection;
+    private final TrustedWebActivityClient mClient;
     private Runnable mCallback;
     private int mVersion = 2;
 

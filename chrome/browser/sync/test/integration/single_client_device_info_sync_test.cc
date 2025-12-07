@@ -8,7 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -35,6 +34,8 @@
 
 namespace {
 
+using bookmarks_helper::GetBookmarkModel;
+using bookmarks_helper::StoreType;
 using device_info_helper::HasCacheGuid;
 using device_info_helper::HasSharingFields;
 using syncer::DataType;
@@ -160,11 +161,15 @@ class DeviceInfoCommitChecker : public SingleClientStatusChangeChecker {
   const raw_ptr<fake_server::FakeServer> fake_server_;
 };
 
-class SingleClientDeviceInfoSyncTest : public SyncTest {
+class SingleClientDeviceInfoSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        {syncer::kSkipInvalidationOptimizationsWhenDeviceInfoUpdated}, {});
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
   }
 
   SingleClientDeviceInfoSyncTest(const SingleClientDeviceInfoSyncTest&) =
@@ -173,6 +178,10 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
       const SingleClientDeviceInfoSyncTest&) = delete;
 
   ~SingleClientDeviceInfoSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   std::string GetLocalCacheGuid() const {
     return GetCacheGuid(/*profile_index=*/0);
@@ -203,12 +212,23 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
- private:
-  base::test::ScopedFeatureList override_features_;
+  StoreType GetStoreType() const {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? StoreType::kAccountStore
+               : StoreType::kLocalOrSyncableStore;
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientDeviceInfoSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        UmaEnabledSetFullHardwareClass) {
   bool uma_enabled = true;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
@@ -221,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        UmaDisabledFullHardwareClassEmpty) {
   bool uma_enabled = false;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
@@ -234,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 #else
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        UmaEnabledFullHardwareClassOnNonChromeOS) {
   bool uma_enabled = true;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
@@ -246,9 +266,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
   ASSERT_TRUE(SetupSync());
 
   // The local device should eventually be committed to the server.
@@ -257,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
   InjectDeviceInfoEntityToServer(/*suffix=*/2);
 
@@ -275,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(2))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        DownloadRemoteDeviceWithoutChromeVersion) {
   sync_pb::DeviceInfoSpecifics device_info_specifics =
       CreateSpecifics(/*suffix=*/1);
@@ -287,11 +307,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // Devices without a chrome_version correspond to non-Chromium-based clients
   // and should be excluded.
   EXPECT_THAT(
-      GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      GetDeviceInfoTracker()->GetAllChromeDeviceInfo(),
       UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid())));
+  EXPECT_THAT(
+      GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid()),
+                           ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        DownloadRemoteDeviceWithNewVersionFieldOnly) {
   sync_pb::DeviceInfoSpecifics device_info_specifics =
       CreateSpecifics(/*suffix=*/1);
@@ -312,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
 // On ChromeOS, Sync-the-feature gets started automatically once a primary
 // account is signed in and transport mode is not a thing.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/40756482): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
@@ -321,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 #else
 #define MAYBE_CommitLocalDevice_TransportOnly CommitLocalDevice_TransportOnly
 #endif  // BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        MAYBE_CommitLocalDevice_TransportOnly) {
   ASSERT_TRUE(SetupClients());
 
@@ -347,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 #define MAYBE_DownloadRemoteDevices_TransportOnly \
   DownloadRemoteDevices_TransportOnly
 #endif  // BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        MAYBE_DownloadRemoteDevices_TransportOnly) {
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
   InjectDeviceInfoEntityToServer(/*suffix=*/2);
@@ -367,9 +391,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {
   ASSERT_TRUE(SetupSync());
 
@@ -380,15 +404,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // GetUpdates request. The next sync cycle may download the latest committed
   // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
   // there are at least 2 sync cycles and check the second one only.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   // Perform the second sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   // Double check that DeviceInfo hasn't been committed during the test. It may
@@ -408,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                   .single_client_with_standalone_invalidations());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientDeviceInfoSyncTest,
     ShouldSetTheOnlyClientFlagForStandaloneInvalidationsOnly) {
   // A client without standalone invalidations shouldn't affect |single_client|
@@ -421,15 +449,19 @@ IN_PROC_BROWSER_TEST_F(
   // GetUpdates request. The next sync cycle may download the latest committed
   // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
   // there are at least 2 sync cycles and check the second one only.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   // Perform the second sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -441,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(
                   .single_client_with_standalone_invalidations());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlagForDataType) {
   // There is a remote client which is not interested in BOOKMARKS.
   const DataTypeSet remote_interested_data_types =
@@ -455,15 +487,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // GetUpdates request. The next sync cycle may download the latest committed
   // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
   // there are at least 2 sync cycles and check the second one only.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   // Perform the second sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -478,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                   .single_client_with_standalone_invalidations());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldNotProvideTheOnlyClientFlag) {
   InjectDeviceInfoSpecificsToServer(CreateSpecifics(
       /*suffix=*/1, "fcm_token_1", DefaultInterestedDataTypes()));
@@ -492,14 +528,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
   // Download all the updates from the server to prevent DeviceInfo update while
   // committing.
-  GetSyncService(0)->TriggerRefresh({syncer::DEVICE_INFO});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown,
+      {syncer::DEVICE_INFO});
 
   // Everything's ready to verify that the next commit request contains
   // single_client which is false. Commit a bookmark to trigger a commit
   // request.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"),
+                           GetStoreType());
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -513,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
 // This test verifies that single_client optimization flag is not set after
 // DeviceInfo has been received (even within the same sync cycle).
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldNotPopulateTheOnlyClientWhenDeviceInfoUpdated) {
   ASSERT_TRUE(SetupSync());
 
@@ -559,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
               IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldReuploadLocalDeviceIfRemovedFromServer) {
   ASSERT_TRUE(SetupSync());
 
@@ -577,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldRetryDeviceInfoCommitOnAuthError) {
   ASSERT_TRUE(SetupSync());
 
@@ -587,8 +627,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // Create a checker to catch a commit request before disabling the data type.
   DeviceInfoCommitChecker device_info_committer_checker(GetSyncService(0),
                                                         GetFakeServer());
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   ASSERT_TRUE(device_info_committer_checker.Wait());
 
   GetFakeServer()->ClearHttpError();
@@ -601,18 +641,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
 // PRE_* tests aren't supported on Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        ShouldNotSendDeviceInfoAfterBrowserRestart) {
   const std::vector<sync_pb::SyncEntity> entities_before =
       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetClient(0)->AwaitInvalidationsStatus(/*expected_status=*/true));
 
   bool has_local_changes = false;

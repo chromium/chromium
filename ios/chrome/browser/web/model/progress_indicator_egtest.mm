@@ -45,14 +45,14 @@ const char kSimplePageURL[] = "http://simplepage";
 // ProgressView from primary toolbar.
 id<GREYMatcher> ProgressViewInPrimaryToolbar() {
   return grey_allOf(grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
-                    grey_kindOfClassName(@"MDCProgressView"), nil);
+                    grey_kindOfClassName(@"UIProgressView"), nil);
 }
 
 // ProgresView from secondary toolbar.
 id<GREYMatcher> ProgressViewInSecondaryToolbar() {
   return grey_allOf(
       grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
-      grey_kindOfClassName(@"MDCProgressView"), nil);
+      grey_kindOfClassName(@"UIProgressView"), nil);
 }
 
 // Matcher for `progressView` that should be visible at `progress`.
@@ -142,8 +142,9 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
       *response_body = base::StringPrintf("<p>%s</p>", kPageText);
       {
         base::AutoLock auto_lock(lock_);
-        while (!aborted_.load(std::memory_order_acquire))
+        while (!aborted_.load(std::memory_order_acquire)) {
           condition_variable_.Wait();
+        }
         terminated_.store(true, std::memory_order_release);
       }
     }
@@ -178,10 +179,9 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
 // Returns an HTML string for a form with the submission action set to
 // `submitURL`.
 - (std::string)formPageHTMLWithFormSubmitURL:(GURL)submitURL {
-  return base::StringPrintf(
-      "<p>%s</p><form id='%s' method='post' action='%s'>"
-      "<input type='submit'></form>",
-      kFormPageText, kFormID, submitURL.spec().c_str());
+  return base::StringPrintf("<p>%s</p><form id='%s' method='post' action='%s'>"
+                            "<input type='submit'></form>",
+                            kFormPageText, kFormID, submitURL.spec().c_str());
 }
 
 // Returns an HTML string for a form with a submit event that returns false.

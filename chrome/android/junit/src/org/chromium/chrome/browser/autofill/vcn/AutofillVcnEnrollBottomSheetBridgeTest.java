@@ -20,6 +20,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -31,20 +32,28 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowActivity;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -52,40 +61,56 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
+@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
 public final class AutofillVcnEnrollBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE = 0xa1fabe7a;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AutofillVcnEnrollBottomSheetBridge.Natives mBridgeNatives;
+    @Mock private Profile.Natives mProfileNatives;
     @Mock private WebContents mWebContents;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private Profile mProfile;
+    @Mock private AutofillImageFetcher mImageFetcher;
 
     private ShadowActivity mShadowActivity;
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetBridge mBridge;
 
+    private static final int ISSUER_ICON_RESOURCE_ID = R.drawable.mc_card;
+    private static final GURL ISSUER_ICON_URL = new GURL("https://example.test/card.png");
+
     @Before
     public void setUp() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        FeatureList.setTestValues(testValues);
-
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
+        AutofillImageFetcherFactory.setInstanceForTesting(mImageFetcher);
+        ProfileJni.setInstanceForTesting(mProfileNatives);
+        when(mProfileNatives.fromWebContents(any())).thenReturn(mProfile);
+        AutofillVcnEnrollBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(activity);
-        mWindow = new WindowAndroid(activity);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
+        when(mImageFetcher.getImageIfAvailable(
+                        ISSUER_ICON_URL,
+                        IconSpecs.create(
+                                mWindow.getContext().get(),
+                                ImageType.CREDIT_CARD_ART_IMAGE,
+                                ImageSize.SMALL)))
+                .thenReturn(
+                        Bitmap.createBitmap(
+                                /* colors= */ new int[4],
+                                /* width= */ 2,
+                                /* height= */ 2,
+                                Config.ARGB_8888));
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mBridge = new AutofillVcnEnrollBottomSheetBridge();
 
@@ -102,9 +127,9 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     private void requestShowContent(WebContents webContents) {
-        LinkedList<LegalMessageLine> googleLegalMessages = new LinkedList<>();
+        ArrayList<LegalMessageLine> googleLegalMessages = new ArrayList<>();
         googleLegalMessages.add(new LegalMessageLine("Google legal messages."));
-        LinkedList<LegalMessageLine> issuerLegalMessages = new LinkedList<>();
+        ArrayList<LegalMessageLine> issuerLegalMessages = new ArrayList<>();
         issuerLegalMessages.add(new LegalMessageLine("Issuer legal messages."));
 
         mBridge.requestShowContent(
@@ -113,19 +138,18 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 "Message text",
                 "Description text. Learn more",
                 "Learn more",
-                "Card container accessibility description",
-                /* issuerIcon= */ Bitmap.createBitmap(
+                /* issuerIconBitmap= */ Bitmap.createBitmap(
                         /* colors= */ new int[1],
                         /* width= */ 1,
                         /* height= */ 1,
                         Bitmap.Config.ARGB_8888),
+                /* networkIconResource= */ ISSUER_ICON_RESOURCE_ID,
+                /* issuerIconUrl= */ ISSUER_ICON_URL,
                 "Card label",
-                "Card description",
                 googleLegalMessages,
                 issuerLegalMessages,
                 "Accept button label",
-                "Cancel button label",
-                "Loading description");
+                "Cancel button label");
     }
 
     @Test
@@ -155,6 +179,19 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     @Test
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
+    public void testShowBottomSheetWithBitmapIcon() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        requestShowContent(mWebContents);
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
+    }
+
+    @Test
     public void testShowBottomSheet() {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
@@ -164,6 +201,27 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         verify(mBottomSheetController)
                 .requestShowContent(
                         any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
+    public void testInitialBitmapValue() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        requestShowContent(mWebContents);
+
+        assertTrue(
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)
+                        .mBitmap
+                        .sameAs(
+                                Bitmap.createBitmap(
+                                        /* colors= */ new int[1],
+                                        /* width= */ 1,
+                                        /* height= */ 1,
+                                        Bitmap.Config.ARGB_8888)));
     }
 
     @Test
@@ -190,34 +248,17 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                         .getPropertyModelForTesting()
                         .get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)
                         .mLearnMoreLinkText);
-        assertEquals(
-                "Card container accessibility description",
+        IssuerIcon issuerIcon =
                 mBridge.getCoordinatorForTesting()
                         .getPropertyModelForTesting()
-                        .get(
-                                AutofillVcnEnrollBottomSheetProperties
-                                        .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
-        assertTrue(
-                mBridge.getCoordinatorForTesting()
-                        .getPropertyModelForTesting()
-                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)
-                        .mBitmap
-                        .sameAs(
-                                Bitmap.createBitmap(
-                                        /* colors= */ new int[1],
-                                        /* width= */ 1,
-                                        /* height= */ 1,
-                                        Bitmap.Config.ARGB_8888)));
+                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON);
+        assertEquals(issuerIcon.mIconResource, ISSUER_ICON_RESOURCE_ID);
+        assertEquals(issuerIcon.mIconUrl, ISSUER_ICON_URL);
         assertEquals(
                 "Card label",
                 mBridge.getCoordinatorForTesting()
                         .getPropertyModelForTesting()
                         .get(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL));
-        assertEquals(
-                "Card description",
-                mBridge.getCoordinatorForTesting()
-                        .getPropertyModelForTesting()
-                        .get(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION));
         assertEquals(
                 1,
                 mBridge.getCoordinatorForTesting()
@@ -262,11 +303,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 mBridge.getCoordinatorForTesting()
                         .getPropertyModelForTesting()
                         .get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
-        assertEquals(
-                "Loading description",
-                mBridge.getCoordinatorForTesting()
-                        .getPropertyModelForTesting()
-                        .get(AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION));
     }
 
     @Test

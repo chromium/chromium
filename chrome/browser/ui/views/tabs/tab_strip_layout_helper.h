@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_model.h"
@@ -48,8 +49,7 @@ class TabStripLayoutHelper {
   // GetTabs() and all tab group headers.
   std::vector<TabSlotView*> GetTabSlotViews() const;
 
-  int active_tab_width() { return active_tab_width_; }
-  int inactive_tab_width() { return inactive_tab_width_; }
+  LayoutDomain layout_domain() { return tab_strip_layout_domain_; }
 
   // Returns the number of pinned tabs in the tabstrip.
   size_t GetPinnedTabCount() const;
@@ -60,37 +60,37 @@ class TabStripLayoutHelper {
     return group_header_ideal_bounds_;
   }
 
-  // Inserts a new tab at |index|.
+  // Inserts a new tab at `index`.
   void InsertTabAt(int model_index, Tab* tab, TabPinned pinned);
 
-  // Marks the tab at |model_index| as closing, but does not remove it from
-  // |slots_|.
+  // Marks the tab at `model_index` as closing, but does not remove it from
+  // `slots_`.
   void MarkTabAsClosing(int model_index, Tab* tab);
 
   // Removes `tab` from `slots_`.
   void RemoveTab(Tab* tab);
 
-  // Moves the tab at |prev_index| with group |moving_tab_group| to |new_index|.
+  // Moves the tab at `prev_index` with group `moving_tab_group` to `new_index`.
   // Also updates the group header's location if necessary.
   void MoveTab(std::optional<tab_groups::TabGroupId> moving_tab_group,
                int prev_index,
                int new_index);
 
-  // Sets the tab at |index|'s pinned state to |pinned|.
+  // Sets the tab at `index`'s pinned state to `pinned`.
   void SetTabPinned(int model_index, TabPinned pinned);
 
-  // Inserts a new group header for |group|.
+  // Inserts a new group header for `group`.
   void InsertGroupHeader(tab_groups::TabGroupId group, TabGroupHeader* header);
 
-  // Removes the group header for |group|.
+  // Removes the group header for `group`.
   void RemoveGroupHeader(tab_groups::TabGroupId group);
 
-  // Ensures the group header for |group| is at the correct index. Should be
+  // Ensures the group header for `group` is at the correct index. Should be
   // called externally when group membership changes but nothing else about the
   // layout does.
   void UpdateGroupHeaderIndex(tab_groups::TabGroupId group);
 
-  // Changes the active tab from |prev_active_index| to |new_active_index|.
+  // Changes the active tab from `prev_active_index` to `new_active_index`.
   void SetActiveTab(std::optional<size_t> prev_active_index,
                     std::optional<size_t> new_active_index);
 
@@ -100,10 +100,8 @@ class TabStripLayoutHelper {
   // Calculates the width the tabs would occupy if they have enough space.
   int CalculatePreferredWidth();
 
-  // Generates and sets the ideal bounds for the views in |tabs| and
-  // |group_headers|. Updates the cached widths in |active_tab_width_| and
-  // |inactive_tab_width_|. Returns the total width occupied by the new ideal
-  // bounds.
+  // Generates and sets the ideal bounds for the views in `tabs` and
+  // `group_headers`. Returns the total width occupied by the new ideal bounds.
   int UpdateIdealBounds(int available_width);
 
  private:
@@ -111,15 +109,15 @@ class TabStripLayoutHelper {
 
   // Calculates the bounds each tab should occupy, subject to the provided
   // width constraint.
-  std::vector<gfx::Rect> CalculateIdealBounds(
+  std::pair<std::vector<gfx::Rect>, LayoutDomain> CalculateIdealBounds(
       std::optional<int> available_width);
 
-  // Given |model_index| for a tab already present in |slots_|, return
-  // the corresponding index in |slots_|.
+  // Given `model_index` for a tab already present in `slots_`, return
+  // the corresponding index in `slots_`.
   int GetSlotIndexForExistingTab(int model_index) const;
 
-  // For a new tab at |new_model_index|, get the insertion index in
-  // |slots_|. |group| is the new tab's group.
+  // For a new tab at `new_model_index`, get the insertion index in
+  // `slots_`. `group` is the new tab's group.
   int GetSlotInsertionIndexForNewTab(
       int new_model_index,
       std::optional<tab_groups::TabGroupId> group) const;
@@ -130,24 +128,24 @@ class TabStripLayoutHelper {
       tab_groups::TabGroupId group) const;
 
   // Used internally in the above two functions. For a tabstrip with N
-  // tabs, this takes 0 <= |model_index| <= N and returns the first
+  // tabs, this takes 0 <= `model_index` <= N and returns the first
   // possible slot corresponding to this model index.
   //
-  // This means that if |model_index| is the first tab in a group, the
+  // This means that if `model_index` is the first tab in a group, the
   // returned slot index will point to the group header. For other tabs,
   // the slot index corresponding to that tab will be returned. Finally,
-  // if |model_index| = N, slots_.size() will be returned.
+  // if `model_index` = N, slots_.size() will be returned.
   int GetFirstSlotIndexForTabModelIndex(int model_index) const;
 
   // Given a group ID, returns the index of its header's corresponding TabSlot
-  // in |slots_|.
+  // in `slots_`.
   int GetSlotIndexForGroupHeader(tab_groups::TabGroupId group) const;
 
-  // Updates the value of either |active_tab_width_| or |inactive_tab_width_|,
-  // as appropriate.
-  void UpdateCachedTabWidth(int tab_index, int tab_width, bool active);
+  // If the tab at `slot_index` is split, returns the index of the adjacent
+  // split tab. Otherwise returns `std::nullopt`.
+  std::optional<int> GetAdjacentSplitTab(int slot_index) const;
 
-  // True iff the slot at index |i| is a tab that is in a collapsed group.
+  // True iff the slot at index `i` is a tab that is in a collapsed group.
   bool SlotIsCollapsedTab(int i) const;
 
   // The owning TabContainer's controller.
@@ -163,10 +161,7 @@ class TabStripLayoutHelper {
   // Contains the ideal bounds of tab group headers.
   std::map<tab_groups::TabGroupId, gfx::Rect> group_header_ideal_bounds_;
 
-  // The current widths of tabs. If the space for tabs is not evenly divisible
-  // into these widths, the initial tabs in the strip will be 1 px larger.
-  int active_tab_width_;
-  int inactive_tab_width_;
+  LayoutDomain tab_strip_layout_domain_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_

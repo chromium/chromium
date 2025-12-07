@@ -20,14 +20,22 @@
 
 class GoogleGroupsManager;
 class PrefService;
+class SharingMessageBridge;
+class TemplateURLService;
 
 namespace autofill {
+class AddressDataManager;
 class AutofillWebDataService;
+class AccountSettingService;
 }  // namespace autofill
 
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
+
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
 
 namespace commerce {
 class ProductSpecificationsService;
@@ -40,6 +48,10 @@ class ConsentAuditor;
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
+
+namespace data_sharing::personal_collaboration_data {
+class PersonalCollaborationDataService;
+}  // namespace data_sharing::personal_collaboration_data
 
 namespace favicon {
 class FaviconService;
@@ -59,10 +71,6 @@ namespace plus_addresses {
 class PlusAddressSettingService;
 class PlusAddressWebDataService;
 }  // namespace plus_addresses
-
-namespace power_bookmarks {
-class PowerBookmarkService;
-}  // namespace power_bookmarks
 
 namespace reading_list {
 class DualReadingListModel;
@@ -101,6 +109,10 @@ class SyncService;
 class UserEventService;
 }  // namespace syncer
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -123,9 +135,13 @@ class CommonControllerBuilder {
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
+  void SetAccountSettingService(
+      autofill::AccountSettingService* account_setting_service);
+  void SetAddressDataManagerGetter(
+      base::RepeatingCallback<autofill::AddressDataManager*()>
+          address_data_manager_getter);
   void SetAutofillWebDataService(
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
-      const scoped_refptr<base::SequencedTaskRunner>& db_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_on_disk,
       const scoped_refptr<autofill::AutofillWebDataService>&
@@ -136,6 +152,12 @@ class CommonControllerBuilder {
           local_or_syncable_bookmark_sync_service,
       sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service);
   void SetConsentAuditor(consent_auditor::ConsentAuditor* consent_auditor);
+  void SetCollaborationService(
+      collaboration::CollaborationService* collaboration_service);
+  void SetPersonalCollaborationDataService(
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataService*
+              personal_collaboration_data_service);
   void SetDataSharingService(
       data_sharing::DataSharingService* data_sharing_service);
   void SetDeviceInfoSyncService(
@@ -164,8 +186,6 @@ class CommonControllerBuilder {
       plus_addresses::PlusAddressSettingService* plus_address_setting_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service);
-  void SetPowerBookmarkService(
-      power_bookmarks::PowerBookmarkService* power_bookmark_service);
   void SetPrefService(PrefService* pref_service);
   void SetPrefServiceSyncable(
       sync_preferences::PrefServiceSyncable* pref_service_syncable);
@@ -177,6 +197,7 @@ class CommonControllerBuilder {
                                        send_tab_to_self_sync_service);
   void SetSessionSyncService(
       sync_sessions::SessionSyncService* session_sync_service);
+  void SetSharingMessageBridge(SharingMessageBridge* sharing_message_bridge);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   void SetSupervisedUserSettingsService(
@@ -184,6 +205,9 @@ class CommonControllerBuilder {
           supervised_user_settings_service);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+  void SetTabGroupSyncService(
+      tab_groups::TabGroupSyncService* tab_group_sync_service);
+  void SetTemplateURLService(TemplateURLService* template_url_service);
   void SetUserEventService(syncer::UserEventService* user_event_service);
 
   // Actually builds the controllers. All setters above must have been called
@@ -233,6 +257,10 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
+  SafeOptional<raw_ptr<autofill::AccountSettingService>>
+      account_setting_service_;
+  base::RepeatingCallback<autofill::AddressDataManager*()>
+      address_data_manager_getter_;
   SafeOptional<raw_ptr<signin::IdentityManager>> identity_manager_;
   SafeOptional<raw_ptr<consent_auditor::ConsentAuditor>> consent_auditor_;
   SafeOptional<raw_ptr<syncer::DeviceInfoSyncService>>
@@ -258,12 +286,10 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<syncer::UserEventService>> user_event_service_;
   SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
       autofill_web_data_ui_thread_;
-  SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
-      autofill_web_data_db_thread_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
-      autofill_web_data_service_on_disk_;
+      profile_autofill_web_data_service_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
-      autofill_web_data_service_in_memory_;
+      account_autofill_web_data_service_;
   SafeOptional<scoped_refptr<password_manager::PasswordStoreInterface>>
       profile_password_store_;
   SafeOptional<scoped_refptr<password_manager::PasswordStoreInterface>>
@@ -273,8 +299,6 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<sync_bookmarks::BookmarkSyncService>>
       account_bookmark_sync_service_;
   SafeOptional<raw_ptr<bookmarks::BookmarkModel>> bookmark_model_;
-  SafeOptional<raw_ptr<power_bookmarks::PowerBookmarkService>>
-      power_bookmark_service_;
   SafeOptional<raw_ptr<supervised_user::SupervisedUserSettingsService>>
       supervised_user_settings_service_;
   SafeOptional<raw_ptr<plus_addresses::PlusAddressSettingService>>
@@ -283,7 +307,16 @@ class CommonControllerBuilder {
       plus_address_webdata_service_;
   SafeOptional<raw_ptr<commerce::ProductSpecificationsService>>
       product_specifications_service_;
+  SafeOptional<raw_ptr<collaboration::CollaborationService>>
+      collaboration_service_;
+  SafeOptional<raw_ptr<data_sharing::personal_collaboration_data::
+                           PersonalCollaborationDataService>>
+      personal_collaboration_data_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
+  SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
+  SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>
+      tab_group_sync_service_;
+  SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
 };
 
 }  // namespace browser_sync

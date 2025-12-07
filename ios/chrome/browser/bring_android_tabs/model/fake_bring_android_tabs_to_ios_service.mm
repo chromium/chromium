@@ -16,11 +16,11 @@ FakeBringAndroidTabsToIOSService::FakeBringAndroidTabsToIOSService(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher,
     syncer::SyncService* sync_service,
     sync_sessions::SessionSyncService* session_sync_service,
-    PrefService* browser_state_prefs)
+    PrefService* profile_prefs)
     : BringAndroidTabsToIOSService(dispatcher,
                                    sync_service,
                                    session_sync_service,
-                                   browser_state_prefs),
+                                   profile_prefs),
       tabs_(std::move(tabs)) {}
 
 FakeBringAndroidTabsToIOSService::~FakeBringAndroidTabsToIOSService() {}

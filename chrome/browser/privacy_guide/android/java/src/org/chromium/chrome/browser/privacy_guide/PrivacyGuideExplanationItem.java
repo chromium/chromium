@@ -15,7 +15,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A custom view for an item (icon + text) of a setting explanation for the privacy guide. */
+@NullMarked
 public class PrivacyGuideExplanationItem extends LinearLayout {
     private final TextView mSummary;
 

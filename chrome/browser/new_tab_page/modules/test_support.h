@@ -49,23 +49,9 @@ class MockHistoryService : public history::HistoryService {
           const history::ClusterVisit::InteractionState interaction_state,
           base::OnceClosure callback,
           base::CancelableTaskTracker* tracker));
-
-  MOCK_METHOD3(
-      GetMostRecentVisitForEachURL,
-      base::CancelableTaskTracker::TaskId(
-          const std::vector<GURL>& urls,
-          base::OnceCallback<void(std::map<GURL, history::VisitRow>)> callback,
-          base::CancelableTaskTracker* tracker));
-
-  MOCK_CONST_METHOD4(ToAnnotatedVisits,
-                     base::CancelableTaskTracker::TaskId(
-                         const history::VisitVector& visit_rows,
-                         bool compute_redirect_chain_start_properties,
-                         ToAnnotatedVisitsCallback callback,
-                         base::CancelableTaskTracker* tracker));
 };
 
-static constexpr size_t kNumModuleFeatures = 5;
+inline constexpr size_t kNumModuleFeatures = 5;
 extern const std::vector<base::test::FeatureRef>& kAllModuleFeatures;
 
 std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(

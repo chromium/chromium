@@ -14,11 +14,14 @@ Table of contents:
   * [Step 2 Create Raw Profiles](#step-2-create-raw-profiles)
   * [Step 3 Create Indexed Profile](#step-3-create-indexed-profile)
   * [Step 4 Create Coverage Reports](#step-4-create-coverage-reports)
+- [Read The Artifact](#read-the-artifact)
+  * [HTML report](#html-report)
+  * [lcov report](#lcov-report)
 - [Contacts](#contacts)
 - [FAQ](#faq)
 
 
-This document is divided into two parts. 
+This document is divided into two parts.
 - The first part introduces the code coverage infrastructure that
 continuously generates code coverage information for the whole codebase and for
 specific CLs in Gerrit. For the latter, refer to
@@ -157,7 +160,7 @@ process.
 
 ### Step 0 Download Tooling
 Generating code coverage reports requires llvm-profdata and llvm-cov tools.
-You can get them by adding `"checkout_clang_coverage_tools": True,` to 
+You can get them by adding `"checkout_clang_coverage_tools": True,` to
 `custom_vars` in the `.gclient` config and run `gclient runhooks`. You can also
 download the tools manually ([tools link])
 
@@ -244,6 +247,62 @@ If creating a report for Android, the -object arg would be the lib.unstripped
 file, ie out/coverage/lib.unstripped/libcrypto_unittests__library.so
 
 For more information on how to use llvm-cov, please refer to the [guide].
+
+## Read The Artifact
+
+The code coverage tool generates some artifacts, and it is good to
+understand the data format to be used by automation tools.
+
+### HTML Report
+
+If the argument `--format=html` is used in the `llvm-cov export` command, it
+generates a report in html format. In this html report, it shows the source
+files, lists the functions and coverage metadata on whether the functions are
+executed or not.
+
+Reading a html report is straightforward: Just open up this html page with a
+Chrome browser.
+
+### lcov Report
+
+If the argument `--format=lcov` is used in the `llvm-cov export` command, it
+generates a report in lcov format.
+
+In the lcov file, the meaning of these keywords are listed below.
+
+* `SF`: source file name (typically beginning of one record)
+* `FN`: mangled function symbol
+* `FNDA`: functions execution
+* `FNF`: functions found
+* `FNH`: functions hit
+* `DA`:  lines executed
+* `BRH`: branches hit
+* `BRF`: branches found
+* `LH`: lines hit
+* `LF`: lines found
+* `end_of_record` end of one record
+
+The number right after `FN` indicates the starting line number of this function.
+The number right after `FNDA` indicates the total number of execution of this
+function.
+
+In the following example record, it means that function `_ZN4apps18AppLifetimeMonitorC2EPN7content14BrowserContextE` is defined at line
+21 in file `app_lifetime_monitor.cc` and it is executed once.
+
+```
+SF:../../chromium/src/apps/app_lifetime_monitor.cc
+FN:21,_ZN4apps18AppLifetimeMonitorC2EPN7content14BrowserContextE
+FN:32,_ZN4apps18AppLifetimeMonitorD2Ev
+FNDA:1,_ZN4apps18AppLifetimeMonitorC2EPN7content14BrowserContextE
+FNF:7
+FNH:1
+DA:34,0
+BRF:0
+BRH:0
+LF:5
+LH:1
+end_of_record
+```
 
 ## Contacts
 

@@ -9,8 +9,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash {
@@ -18,10 +16,7 @@ namespace ash {
 // Pixel tests for the quick settings footer.
 class QuickSettingsFooterPixelTest : public AshTestBase {
  public:
-  QuickSettingsFooterPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly},
-                                   {features::kAdaptiveCharging});
-  }
+  QuickSettingsFooterPixelTest() = default;
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -59,8 +54,6 @@ class QuickSettingsFooterPixelTest : public AshTestBase {
   QuickSettingsFooter* GetFooter() { return footer_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   // Owned by view hierarchy.
   raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_ = nullptr;
 };
@@ -69,16 +62,16 @@ TEST_F(QuickSettingsFooterPixelTest, FooterShouldBeRenderedCorrectly) {
   InitPowerStatusAndOpenBubble();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "with_no_extra_button",
-      /*revision_number=*/6, GetFooter()));
+      /*revision_number=*/8, GetFooter()));
   CloseBubble();
 
   // Regression test for b/293484037: The settings button is missing when
   // there's no enough space for the battery label.
-  SimulateUserLogin("test@gmail.com", user_manager::UserType::kPublicAccount);
+  SimulateUserLogin({"test@gmail.com", user_manager::UserType::kPublicAccount});
   InitPowerStatusAndOpenBubble();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "with_exit_button",
-      /*revision_number=*/6, GetFooter()));
+      /*revision_number=*/8, GetFooter()));
   CloseBubble();
 }
 

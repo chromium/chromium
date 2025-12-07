@@ -5,31 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#import "base/no_destructor.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
-namespace supervised_user {
-// Factory helper method that returns true if we need to show the first
-// time banner on the interstitial. The banner informs existing Desktop/iOS
-// users about the application of parental controls.
-bool ShouldShowFirstTimeBanner(ChromeBrowserState* browser_state);
-}  // namespace supervised_user
-
-// Singleton that owns SupervisedUserService object and associates
-// them with ChromeBrowserState.
-class SupervisedUserServiceFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that owns SupervisedUserService objects and associates
+// them with Profiles.
+class SupervisedUserServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static supervised_user::SupervisedUserService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static supervised_user::SupervisedUserService* GetForProfile(
+      ProfileIOS* profile);
 
   static SupervisedUserServiceFactory* GetInstance();
-
-  SupervisedUserServiceFactory(const SupervisedUserServiceFactory&) = delete;
-  SupervisedUserServiceFactory& operator=(const SupervisedUserServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<SupervisedUserServiceFactory>;
@@ -37,9 +26,9 @@ class SupervisedUserServiceFactory : public BrowserStateKeyedServiceFactory {
   SupervisedUserServiceFactory();
   ~SupervisedUserServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_FACTORY_H_

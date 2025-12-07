@@ -39,6 +39,12 @@ ScreenWinDisplay::ScreenWinDisplay(const Display& display,
       pixel_bounds_(display_info.screen_rect()),
       pixels_per_inch_(display_info.pixels_per_inch()),
       screen_rect_(display_info.screen_rect()),
-      screen_work_rect_(display_info.screen_work_rect()) {}
+      screen_work_rect_(display_info.screen_work_rect()),
+      hmonitor_(display_info.hmonitor()) {}
+
+void ScreenWinDisplay::InvalidateHMONITOR() {
+  hmonitor_.reset();
+}
+
 }  // namespace win
 }  // namespace display

@@ -39,9 +39,8 @@ class CertProvisioningSchedulerUserServiceFactory
   CertProvisioningSchedulerUserServiceFactory();
   ~CertProvisioningSchedulerUserServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   bool ServiceIsCreatedWithBrowserContext() const override;
-  // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };

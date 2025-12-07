@@ -4,12 +4,20 @@
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
-import("//build/config/ios/ios_sdk.gni")
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/ios/rules.gni")
 import("//build/ios/extension_bundle_data.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/features.gni")
 import("//ios/features.gni")
+
+declare_args() {
+  # When true, modifies the chrome_app template to additionally build
+  # a framework with a single ChromeMain() entry point. This framework
+  # is not used or linked against, but can be uploaded as a build
+  # artifact.
+  ios_force_build_chrome_framework = false
+}
 
 # Template used to create a Chrome-like app bundle that depends on
 # EarlyMallocZoneRegistration.
@@ -17,11 +25,11 @@ import("//ios/features.gni")
 template("chrome_app") {
   _target_name = target_name
 
-  if (use_blink) {
-    assert(ios_partition_alloc_enabled)
+  if (ios_force_build_chrome_framework || use_blink) {
     ios_framework_bundle("${_target_name}_framework") {
       forward_variables_from(invoker,
                              [
+                               "bundle_deps",
                                "deps",
                                "framework_dirs",
                                "frameworks",
@@ -40,13 +48,23 @@ template("chrome_app") {
       }
 
       output_name = "${_target_name}_framework"
-      transparent = true
+      transparent = use_blink
+
+      # When variants are present, the ios_app_bundle rule has logic to copy
+      # bundle_deps from the first variant. Replicate that logic here as well.
+      if (!transparent) {
+        if (defined(invoker.variants) && invoker.variants != []) {
+          _variants = invoker.variants
+          _default_variant = _variants[0]
+          bundle_deps += _default_variant.bundle_deps
+        }
+      }
 
       info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
-      extra_substitutions =
-          [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
     }
+  }
 
+  if (use_blink) {
     template("browserkit_extension") {
       _process_target = target_name
       _outer_target = _target_name
@@ -86,14 +104,16 @@ template("chrome_app") {
         output_name = target_name
         transparent = true
 
-        configs += [ "//build/config/ios:ios_extension_executable_flags" ]
-
         deps = [
           ":${_outer_target}_framework+link",
           "//content/app/ios/appex:${_process_target}",
         ]
 
-        ldflags = [
+        if (!defined(ldflags)) {
+          ldflags = []
+        }
+
+        ldflags += [
           "-Wl,--ignore-auto-link-option=CoreAudioTypes",
           "-Wl,-no_application_extension",
           "-Wl,-rpath,@executable_path/../../Frameworks",
@@ -105,19 +125,23 @@ template("chrome_app") {
       }
     }
 
+    set_defaults("browserkit_extension") {
+      configs = [ "//build/config/ios:ios_extension_executable_flags" ]
+    }
+
     browserkit_extension("gpu_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.GPUProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.GPUProcessExtension"
     }
 
     browserkit_extension("network_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.NetworkProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.NetworkProcessExtension"
     }
 
     browserkit_extension("content_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.ContentProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.ContentProcessExtension"
     }
 
     ios_app_bundle(_target_name) {
@@ -142,9 +166,9 @@ template("chrome_app") {
         ":${target_name}_network_process_bundle",
         "//ios/chrome/app:app_trampoline",
         "//ios/chrome/app:early_partition_alloc_framework+bundle",
+        "//ios/chrome/app:early_partition_alloc_framework+link",
       ]
 
-      frameworks = [ "EarlyMallocZoneRegistration.framework" ]
       bundle_deps += [
         ":${_target_name}_framework+bundle",
         "//ios/chrome/app:early_partition_alloc_framework+bundle",
@@ -154,11 +178,12 @@ template("chrome_app") {
     ios_app_bundle(_target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      if (ios_partition_alloc_enabled) {
-        frameworks = [ "EarlyMallocZoneRegistration.framework" ]
-        bundle_deps +=
-            [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
-      }
+      deps += [
+        "//ios/chrome/app:app_trampoline",
+        "//ios/chrome/app:early_partition_alloc_framework+link",
+      ]
+      bundle_deps +=
+          [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
     }
   }
 }

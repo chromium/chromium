@@ -17,9 +17,9 @@
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gfx {
 class Size;
@@ -54,7 +54,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
-      bool is_thread_safe) = 0;
+      bool is_thread_safe);
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -65,7 +65,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe,
-      base::span<const uint8_t> pixel_data) = 0;
+      base::span<const uint8_t> pixel_data);
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -75,7 +75,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
-      gfx::GpuMemoryBufferHandle handle) = 0;
+      bool is_thread_safe,
+      gfx::GpuMemoryBufferHandle handle);
 
   // This new api is introduced for MappableSI work where client code sends
   // |buffer_usage| info while creating shared image. This info is used in some

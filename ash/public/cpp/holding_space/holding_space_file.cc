@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 
+#include <tuple>
+
 namespace ash {
 
 HoldingSpaceFile::HoldingSpaceFile(const base::FilePath& file_path,

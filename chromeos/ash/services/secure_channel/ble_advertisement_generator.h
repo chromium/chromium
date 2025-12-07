@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_ADVERTISEMENT_GENERATOR_H_
 
 #include <memory>
+#include <string>
 
 namespace ash {
 

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 
 #include <linux/v4l2-controls.h>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -32,7 +38,7 @@ class V4L2VP9Picture : public VP9Picture {
   ~V4L2VP9Picture() override = default;
 
   scoped_refptr<VP9Picture> CreateDuplicate() override {
-    return new V4L2VP9Picture(dec_surface_);
+    return base::MakeRefCounted<V4L2VP9Picture>(dec_surface_);
   }
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
@@ -102,49 +108,12 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
 
   SafeArrayMemcpy(v4l2_seg->feature_data, vp9_seg_params.feature_data);
 }
-
-void FillV4L2VP9MvProbsParams(const Vp9FrameContext& vp9_ctx,
-                              struct v4l2_vp9_mv_probs* v4l2_mv_probs) {
-  SafeArrayMemcpy(v4l2_mv_probs->joint, vp9_ctx.mv_joint_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->sign, vp9_ctx.mv_sign_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->classes, vp9_ctx.mv_class_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->class0_bit, vp9_ctx.mv_class0_bit_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->bits, vp9_ctx.mv_bits_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->class0_fr, vp9_ctx.mv_class0_fr_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->fr, vp9_ctx.mv_fr_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->class0_hp, vp9_ctx.mv_class0_hp_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->hp, vp9_ctx.mv_hp_prob);
-}
-
-void FillV4L2VP9ProbsParams(const Vp9FrameContext& vp9_ctx,
-                            struct v4l2_ctrl_vp9_compressed_hdr* v4l2_probs) {
-  SafeArrayMemcpy(v4l2_probs->tx8, vp9_ctx.tx_probs_8x8);
-  SafeArrayMemcpy(v4l2_probs->tx16, vp9_ctx.tx_probs_16x16);
-  SafeArrayMemcpy(v4l2_probs->tx32, vp9_ctx.tx_probs_32x32);
-  SafeArrayMemcpy(v4l2_probs->coef, vp9_ctx.coef_probs);
-  SafeArrayMemcpy(v4l2_probs->skip, vp9_ctx.skip_prob);
-  SafeArrayMemcpy(v4l2_probs->inter_mode, vp9_ctx.inter_mode_probs);
-  SafeArrayMemcpy(v4l2_probs->interp_filter, vp9_ctx.interp_filter_probs);
-  SafeArrayMemcpy(v4l2_probs->is_inter, vp9_ctx.is_inter_prob);
-  SafeArrayMemcpy(v4l2_probs->comp_mode, vp9_ctx.comp_mode_prob);
-  SafeArrayMemcpy(v4l2_probs->single_ref, vp9_ctx.single_ref_prob);
-  SafeArrayMemcpy(v4l2_probs->comp_ref, vp9_ctx.comp_ref_prob);
-  SafeArrayMemcpy(v4l2_probs->y_mode, vp9_ctx.y_mode_probs);
-  SafeArrayMemcpy(v4l2_probs->uv_mode, vp9_ctx.uv_mode_probs);
-  SafeArrayMemcpy(v4l2_probs->partition, vp9_ctx.partition_probs);
-
-  FillV4L2VP9MvProbsParams(vp9_ctx, &v4l2_probs->mv);
-}
-
 }  // namespace
 
 V4L2VideoDecoderDelegateVP9::V4L2VideoDecoderDelegateVP9(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : surface_handler_(surface_handler),
-      device_(device),
-      supports_compressed_header_(
-          device->IsCtrlExposed(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)) {
+    : surface_handler_(surface_handler), device_(device) {
   VLOGF(1);
   DCHECK(surface_handler_);
   DCHECK(device_);
@@ -164,7 +133,7 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9Picture() {
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2VP9Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
 }
 
 scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9PictureSecure(
@@ -175,7 +144,7 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9PictureSecure(
     return nullptr;
   }
 
-  return new V4L2VP9Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
 }
 
 DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
@@ -236,10 +205,6 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   v4l2_frame_params.interpolation_filter = frame_hdr->interpolation_filter;
   v4l2_frame_params.tile_cols_log2 = frame_hdr->tile_cols_log2;
   v4l2_frame_params.tile_rows_log2 = frame_hdr->tile_rows_log2;
-  if (supports_compressed_header_) {
-    v4l2_frame_params.reference_mode =
-        frame_hdr->compressed_header.reference_mode;
-  }
   for (size_t i = 0; i < Vp9RefType::VP9_FRAME_MAX - VP9_FRAME_LAST; i++) {
     v4l2_frame_params.ref_frame_sign_bias |=
         (frame_hdr->ref_frame_sign_bias[i + VP9_FRAME_LAST] ? (1 << i) : 0);
@@ -272,7 +237,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
           v4l2_frame_params.alt_frame_ts = ref_surface->GetReferenceID();
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
+          NOTREACHED() << "Invalid reference frame index";
       }
     }
   }
@@ -288,17 +253,6 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
        .ptr = &v4l2_frame_params},
   };
 
-  struct v4l2_ctrl_vp9_compressed_hdr v4l2_compressed_hdr_probs;
-  if (supports_compressed_header_) {
-    memset(&v4l2_compressed_hdr_probs, 0, sizeof(v4l2_compressed_hdr_probs));
-    v4l2_compressed_hdr_probs.tx_mode = frame_hdr->compressed_header.tx_mode;
-    FillV4L2VP9ProbsParams(frame_hdr->frame_context,
-                           &v4l2_compressed_hdr_probs);
-    ext_ctrls.push_back({.id = V4L2_CID_STATELESS_VP9_COMPRESSED_HDR,
-                         .size = sizeof(v4l2_compressed_hdr_probs),
-                         .ptr = &v4l2_compressed_hdr_probs});
-  }
-
   const __u32 ext_ctrls_size = base::checked_cast<__u32>(ext_ctrls.size());
   struct v4l2_ext_controls ctrls = {.count = ext_ctrls_size,
                                     .controls = ext_ctrls.data()};
@@ -306,7 +260,6 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
       VP9PictureToV4L2DecodeSurface(pic.get());
   dec_surface->PrepareSetCtrls(&ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return DecodeStatus::kFail;
   }
@@ -324,8 +277,8 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   // Copy the frame data into the V4L2 buffer.
   if (!surface_handler_->SubmitSlice(
           dec_surface.get(),
-          dec_surface->secure_handle() ? nullptr : frame_hdr->data,
-          frame_hdr->frame_size)) {
+          dec_surface->secure_handle() ? nullptr : frame_hdr->data.data(),
+          frame_hdr->data.size())) {
     return DecodeStatus::kFail;
   }
 
@@ -342,10 +295,6 @@ bool V4L2VideoDecoderDelegateVP9::OutputPicture(scoped_refptr<VP9Picture> pic) {
                                  pic->bitstream_id(), pic->visible_rect(),
                                  pic->get_colorspace());
   return true;
-}
-
-bool V4L2VideoDecoderDelegateVP9::NeedsCompressedHeaderParsed() const {
-  return supports_compressed_header_;
 }
 
 }  // namespace media

@@ -65,6 +65,11 @@ struct StructTraits<viz::mojom::OcclusionCullerSettingsDataView,
     return input.minimum_fragments_reduced;
   }
 
+  static bool generate_complex_occluder_for_rounded_corners(
+      const viz::RendererSettings::OcclusionCullerSettings& input) {
+    return input.generate_complex_occluder_for_rounded_corners;
+  }
+
   static bool Read(viz::mojom::OcclusionCullerSettingsDataView data,
                    viz::RendererSettings::OcclusionCullerSettings* out);
 };
@@ -119,16 +124,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
   occlusion_culler_settings(const viz::RendererSettings& input) {
     return input.occlusion_culler_settings;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  static gfx::Size initial_screen_size(const viz::RendererSettings& input) {
-    return input.initial_screen_size;
-  }
-
-  static gfx::ColorSpace color_space(const viz::RendererSettings& input) {
-    return input.color_space;
-  }
-#endif
 
 #if BUILDFLAG(IS_OZONE)
   static std::vector<viz::OverlayStrategy> overlay_strategies(

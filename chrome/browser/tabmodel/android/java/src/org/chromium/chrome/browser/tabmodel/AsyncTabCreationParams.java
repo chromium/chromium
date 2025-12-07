@@ -6,26 +6,29 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.content.ComponentName;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Data that will be used later when a Tab is opened via an intent. Often only the necessary
- * subset of the data will be set. All data is removed once the Tab finishes initializing.
+ * Data that will be used later when a Tab is opened via an intent. Often only the necessary subset
+ * of the data will be set. All data is removed once the Tab finishes initializing.
  */
+@NullMarked
 public class AsyncTabCreationParams implements AsyncTabParams {
     /** Parameters used for opening a URL in the new Tab. */
     private final LoadUrlParams mLoadUrlParams;
 
     /** WebContents object to initialize the Tab with. Set only by the TabDelegate. */
-    private final WebContents mWebContents;
+    private final @Nullable WebContents mWebContents;
 
-    /** The tab launch request ID from the ServiceTabLauncher. **/
-    private final Integer mRequestId;
+    /** The tab launch request ID from the ServiceTabLauncher. */
+    private final @Nullable Integer mRequestId;
 
     /** Specifies which component to fire the Intent at. */
-    private final ComponentName mComponentName;
+    private final @Nullable ComponentName mComponentName;
 
     /** Create parameters for creating a Tab asynchronously. */
     public AsyncTabCreationParams(LoadUrlParams loadUrlParams) {
@@ -56,25 +59,25 @@ public class AsyncTabCreationParams implements AsyncTabParams {
     }
 
     @Override
-    public Integer getRequestId() {
+    public @Nullable Integer getRequestId() {
         return mRequestId;
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mWebContents;
     }
 
     @Override
-    public ComponentName getComponentName() {
+    public @Nullable ComponentName getComponentName() {
         return mComponentName;
     }
 
     private AsyncTabCreationParams(
             LoadUrlParams loadUrlParams,
-            WebContents webContents,
-            Integer requestId,
-            ComponentName componentName) {
+            @Nullable WebContents webContents,
+            @Nullable Integer requestId,
+            @Nullable ComponentName componentName) {
         assert loadUrlParams != null;
 
         // These parameters are set in very, very specific and exclusive circumstances.
@@ -95,7 +98,7 @@ public class AsyncTabCreationParams implements AsyncTabParams {
     }
 
     @Override
-    public Tab getTabToReparent() {
+    public @Nullable Tab getTabToReparent() {
         return null;
     }
 

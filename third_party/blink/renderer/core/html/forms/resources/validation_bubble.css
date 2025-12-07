@@ -28,9 +28,7 @@
   position: absolute;
   will-change: opacity, transform;
   word-break: break-word;
-}
 
-#container.shown-initially {
   /* If scaleY is smaller than 0.2, an assertion failure occurs in Skia. */
   transform: scale(0.96, 1);
 }
@@ -47,7 +45,7 @@
   transition: opacity 133.33ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#container.shown-initially -webkit-any(#icon, #main-message, #sub-message) {
+#container:not(.shown-fully) -webkit-any(#icon, #main-message, #sub-message) {
   opacity: 0;
 }
 

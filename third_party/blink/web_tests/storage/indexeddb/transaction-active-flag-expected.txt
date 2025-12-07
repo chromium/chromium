@@ -10,7 +10,7 @@ store.createIndex('index', 'keypath')
 
 
 runTransaction():
-transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})
+transaction = db.transaction('store', 'readwrite')
 
 
 Verify that transactions are created with |active| flag set:

@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 
@@ -36,13 +37,16 @@ class StatusChangeChecker {
   // becomes true. Checkers should call CheckExitCondition upon changes, which
   // can cause Wait() to immediately return true if IsExitConditionSatisfied(),
   // and continue to block if not. Returns false if and only if timeout occurs.
-  virtual bool Wait();
+  bool Wait(const base::Location& location = FROM_HERE);
 
   // Returns true if the blocking wait was exited because of a timeout.
   bool TimedOut() const;
 
  protected:
   virtual ~StatusChangeChecker();
+
+  // Allows subclasses to run custom logic when Wait() is invoked.
+  virtual void WillStartWaiting();
 
   // Returns whether the state the checker is currently in is its desired
   // configuration. |os| must not be null and allows subclasses to provide
@@ -67,13 +71,13 @@ class StatusChangeChecker {
   // CheckExitCondition(), if a timeout occurs, or if StopWaiting() is called.
   //
   // The timeout length is specified with GetTimeoutDuration().
-  void StartBlockingWait();
+  void StartBlockingWait(const base::Location& location);
 
   // Stop the nested running of the message loop started in StartBlockingWait().
   void StopWaiting();
 
   // Called when the blocking wait timeout is exceeded.
-  void OnTimeout();
+  void OnTimeout(const base::Location& location);
 
   const base::TimeDelta timeout_;
   base::RunLoop run_loop_;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_drag_event_init.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -91,10 +93,7 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(mouse_event.GetModifiers()));
   initializer->setView(target_node->GetDocument().domWindow());
-  initializer->setComposed(
-      RuntimeEnabledFeatures::NonComposedEnterLeaveEventsEnabled()
-          ? !is_mouse_enter_or_leave
-          : true);
+  initializer->setComposed(!is_mouse_enter_or_leave);
   initializer->setDetail(click_count);
   initializer->setRelatedTarget(related_target);
   UIEventWithKeyState::SetFromWebInputEventModifiers(
@@ -122,11 +121,11 @@ constexpr base::TimeDelta kTextDragDelay = base::Seconds(0.0);
 
 }  // namespace
 
-enum class DragInitiator { kMouse, kTouch };
-
 MouseEventManager::MouseEventManager(LocalFrame& frame,
                                      ScrollManager& scroll_manager)
-    : frame_(frame), scroll_manager_(scroll_manager) {
+    : frame_(frame),
+      scroll_manager_(scroll_manager),
+      is_mouse_position_unknown_(true) {
   Clear();
 }
 
@@ -136,33 +135,30 @@ void MouseEventManager::Clear() {
   mouse_press_node_ = nullptr;
   mouse_down_may_start_autoscroll_ = false;
   mouse_down_may_start_drag_ = false;
-  captures_dragging_ = false;
-  is_mouse_position_unknown_ = true;
-  last_known_mouse_position_in_root_frame_ = PhysicalOffset();
-  last_known_mouse_position_ = gfx::PointF();
-  last_known_mouse_screen_position_ = gfx::PointF();
   mouse_pressed_ = false;
   click_count_ = 0;
-  click_element_ = nullptr;
+  mousedown_element_ = nullptr;
   mouse_down_pos_ = gfx::Point();
   mouse_down_timestamp_ = base::TimeTicks();
   mouse_down_ = WebMouseEvent();
   svg_pan_ = false;
   drag_start_pos_in_root_frame_ = PhysicalOffset();
   hover_state_dirty_ = false;
+
+  // We deliberately avoid clearing mouse position fields (last_known_mouse_*
+  // and is_mouse_position_unknown_) so that we can apply hover effects in the
+  // new document after a navigation.  See crbug.com/354649089.
+
   ResetDragSource();
   ClearDragDataTransfer();
 }
-
-MouseEventManager::~MouseEventManager() = default;
 
 void MouseEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(scroll_manager_);
   visitor->Trace(element_under_mouse_);
   visitor->Trace(mouse_press_node_);
-  visitor->Trace(click_element_);
-  SynchronousMutationObserver::Trace(visitor);
+  visitor->Trace(mousedown_element_);
 }
 
 MouseEventManager::MouseEventBoundaryEventDispatcher::
@@ -180,15 +176,6 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
     EventTarget* related_target,
     const AtomicString& type,
     bool check_for_listener) {
-  if (target && type == event_type_names::kMouseover) {
-    HTMLImageElement* image_element =
-        DynamicTo<HTMLImageElement>(target->ToNode());
-    if (image_element && image_element->IsLCPElement()) {
-      PaintTiming& paint_timing =
-          PaintTiming::From(image_element->GetDocument());
-      paint_timing.SetLCPMouseoverDispatched();
-    }
-  }
   mouse_event_manager_->DispatchMouseEvent(target, type, *web_mouse_event_,
                                            nullptr, related_target,
                                            check_for_listener);
@@ -204,15 +191,15 @@ void MouseEventManager::SendBoundaryEvents(EventTarget* exited_target,
       exited_target, original_exited_target_removed, entered_target);
 }
 
-WebInputEventResult MouseEventManager::DispatchMouseEvent(
-    EventTarget* target,
-    const AtomicString& mouse_event_type,
-    const WebMouseEvent& mouse_event,
-    const gfx::PointF* last_position,
-    EventTarget* related_target,
-    bool check_for_listener,
-    const PointerId& pointer_id,
-    const String& pointer_type) {
+std::pair<MouseEvent*, WebInputEventResult>
+MouseEventManager::DispatchMouseEvent(EventTarget* target,
+                                      const AtomicString& mouse_event_type,
+                                      const WebMouseEvent& mouse_event,
+                                      const gfx::PointF* last_position,
+                                      EventTarget* related_target,
+                                      bool check_for_listener,
+                                      const PointerId& pointer_id,
+                                      const String& pointer_type) {
   DCHECK(mouse_event_type == event_type_names::kMouseup ||
          mouse_event_type == event_type_names::kMousedown ||
          mouse_event_type == event_type_names::kMousemove ||
@@ -235,7 +222,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
         mouse_event_type == event_type_names::kAuxclick) {
       click_count = click_count_;
     }
-    std::unique_ptr<EventTiming> event_timing;
+    std::optional<EventTiming> event_timing;
     bool should_dispatch =
         !check_for_listener || target->HasEventListeners(mouse_event_type);
     if (mouse_event_type == event_type_names::kContextmenu ||
@@ -252,11 +239,14 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      if (frame_ && frame_->DomWindow())
-        event_timing = EventTiming::Create(frame_->DomWindow(), *event, target);
+      if (frame_ && frame_->DomWindow()) {
+        event_timing =
+            EventTiming::TryCreate(frame_->DomWindow(), *event, target);
+      }
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
+        return {event, input_event_result};
       }
     } else {
       MouseEventInit* initializer = MouseEventInit::Create();
@@ -268,31 +258,46 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      if (frame_ && frame_->DomWindow())
-        event_timing = EventTiming::Create(frame_->DomWindow(), *event, target);
+      if (frame_ && frame_->DomWindow()) {
+        event_timing =
+            EventTiming::TryCreate(frame_->DomWindow(), *event, target);
+      }
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
+        return {event, input_event_result};
       }
     }
   }
 
-  return input_event_result;
+  return {nullptr, input_event_result};
 }
 
 // TODO(https://crbug.com/1147674): This bypasses PointerEventManager states!
 // This method is called only from GestureManager, and that's one of the reasons
 // PointerEvents are incomplete for touch gesture.
-WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
+WebInputEventResult
+MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
     Element* target_element,
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
+  // This method is used by GestureManager::HandleGestureTap to apply hover
+  // states based on the tap. Note that we do not want to update the cached
+  // mouse position here (using SetLastKnownMousePosition), since that would
+  // cause the hover state to stick to the tap's viewport coordinates after a
+  // scroll.
+  //
+  // TODO(crbug.com/368256331): If there IS a cached mouse position, the hover
+  // state will revert to it as soon as somebody calls MarkHoverStateDirty,
+  // which isn't ideal.
+
   SetElementUnderMouse(target_element, web_mouse_event);
   return DispatchMouseEvent(
-      element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
-      false, web_mouse_event.id,
-      PointerEventFactory::PointerTypeNameForWebPointPointerType(
-          web_mouse_event.pointer_type));
+             element_under_mouse_, event_type, web_mouse_event, nullptr,
+             nullptr, false, web_mouse_event.id,
+             PointerEventFactory::PointerTypeNameForWebPointPointerType(
+                 web_mouse_event.pointer_type))
+      .second;
 }
 
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
@@ -314,35 +319,31 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
 #endif
 
   const bool should_dispatch_click_event =
-      click_count_ > 0 && !context_menu_event && click_element_ &&
-      mouse_release_target && click_element_->isConnected();
+      click_count_ > 0 && !context_menu_event && mousedown_element_ &&
+      mouse_release_target && mousedown_element_->isConnected();
   if (!should_dispatch_click_event)
     return WebInputEventResult::kNotHandled;
 
   Node* click_target_node = nullptr;
-  if (RuntimeEnabledFeatures::ClickToCapturedPointerEnabled() &&
-      captured_click_target) {
+  if (captured_click_target) {
     click_target_node = captured_click_target;
-  } else if (click_element_->GetDocument() ==
+  } else if (mousedown_element_->GetDocument() ==
              mouse_release_target->GetDocument()) {
     click_target_node = mouse_release_target->CommonAncestor(
-        *click_element_, event_handling_util::ParentForClickEvent);
+        *mousedown_element_, event_handling_util::ParentForClickEvent);
   }
 
   if (!click_target_node)
     return WebInputEventResult::kNotHandled;
 
-  if (captured_click_target && (click_target_node != captured_click_target)) {
-    UseCounter::Count(frame_->GetDocument(),
-                      WebFeature::kExplicitPointerCaptureClickTargetDiff);
-  }
-
-  return DispatchMouseEvent(
-      click_target_node,
+  const AtomicString click_event_type =
       (mouse_event.button == WebPointerProperties::Button::kLeft)
           ? event_type_names::kClick
-          : event_type_names::kAuxclick,
-      mouse_event, nullptr, nullptr, false, pointer_id, pointer_type);
+          : event_type_names::kAuxclick;
+
+  return DispatchMouseEvent(click_target_node, click_event_type, mouse_event,
+                            nullptr, nullptr, false, pointer_id, pointer_type)
+      .second;
 }
 
 void MouseEventManager::RecomputeMouseHoverStateIfNeeded() {
@@ -415,33 +416,6 @@ void MouseEventManager::SetElementUnderMouse(
   // Clear the "removed" state for the updated `element_under_mouse_`.
   original_element_under_mouse_removed_ = false;
 
-  // TODO(mustaq): Why do we need the `ScrollableArea` code below and not in
-  // `PointerEventManager::SetElementUnderPointer()`?
-  PaintLayer* layer_for_last_node =
-      event_handling_util::LayerForNode(last_element_under_mouse);
-  PaintLayer* layer_for_node_under_mouse =
-      event_handling_util::LayerForNode(element_under_mouse_.Get());
-  Page* page = frame_->GetPage();
-
-  if (page && (layer_for_last_node &&
-               (!layer_for_node_under_mouse ||
-                layer_for_node_under_mouse != layer_for_last_node))) {
-    // The mouse has moved between layers.
-    if (ScrollableArea* scrollable_area_for_last_node =
-            event_handling_util::AssociatedScrollableArea(layer_for_last_node))
-      scrollable_area_for_last_node->MouseExitedContentArea();
-  }
-
-  if (page && (layer_for_node_under_mouse &&
-               (!layer_for_last_node ||
-                layer_for_node_under_mouse != layer_for_last_node))) {
-    // The mouse has moved between layers.
-    if (ScrollableArea* scrollable_area_for_node_under_mouse =
-            event_handling_util::AssociatedScrollableArea(
-                layer_for_node_under_mouse))
-      scrollable_area_for_node_under_mouse->MouseEnteredContentArea();
-  }
-
   if (last_element_under_mouse &&
       last_element_under_mouse->GetDocument() != frame_->GetDocument()) {
     last_element_under_mouse = nullptr;
@@ -453,36 +427,35 @@ void MouseEventManager::SetElementUnderMouse(
 }
 
 void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
-  if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-    return;
-  }
-  if (container == click_element_)
-    return;
-  if (!click_element_ ||
-      !container.IsShadowIncludingInclusiveAncestorOf(*click_element_))
-    return;
-  click_element_ = nullptr;
+  HandleRemoveSubtree(container, /*include_root=*/false);
 }
 
-void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
-  if (click_element_ && node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-                            *click_element_)) {
+void MouseEventManager::NodeWillBeRemoved(Node& node) {
+  HandleRemoveSubtree(node, /*include_root=*/true);
+}
+
+void MouseEventManager::HandleRemoveSubtree(Node& node, bool include_root) {
+  Node* remaining_node = include_root ? node.parentNode() : &node;
+  if (mousedown_element_ && (include_root || mousedown_element_ != node) &&
+      node.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
     // We don't dispatch click events if the mousedown node is removed
     // before a mouseup event. It is compatible with IE and Firefox.
-    click_element_ = nullptr;
+    mousedown_element_ = nullptr;
   }
-  if (mouse_press_node_ &&
-      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-          *mouse_press_node_)) {
+  if (mouse_press_node_ && (include_root || mouse_press_node_ != node) &&
+      node.IsShadowIncludingInclusiveAncestorOf(*mouse_press_node_)) {
     // If the mouse_press_node_ is removed, we should dispatch future default
     // keyboard actions (i.e. scrolling) to the still connected parent.
-    mouse_press_node_ = node_to_be_removed.parentNode();
+    mouse_press_node_ = remaining_node;
   }
   if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled() &&
-      element_under_mouse_ &&
-      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-          *element_under_mouse_)) {
-    element_under_mouse_ = node_to_be_removed.parentElement();
+      element_under_mouse_ && (include_root || element_under_mouse_ != node) &&
+      node.IsShadowIncludingInclusiveAncestorOf(*element_under_mouse_)) {
+    Element* remaining_element = DynamicTo<Element>(remaining_node);
+    if (!remaining_element) {
+      remaining_element = remaining_node->ParentOrShadowHostElement();
+    }
+    element_under_mouse_ = remaining_element;
     original_element_under_mouse_removed_ = true;
   }
 }
@@ -497,9 +470,9 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If clicking on a frame scrollbar, do not mess up with content focus.
   if (auto* layout_view = frame_->ContentLayoutObject()) {
     if (hit_test_result.GetScrollbar() && frame_->ContentLayoutObject()) {
-      if (hit_test_result.GetScrollbar()->GetScrollableArea() ==
-          layout_view->GetScrollableArea())
+      if (hit_test_result.GetScrollbar()->GetLayoutBox() == layout_view) {
         return WebInputEventResult::kNotHandled;
+      }
     }
   }
 
@@ -507,26 +480,17 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
 
   Element* element = element_under_mouse_;
-
-  if (!RuntimeEnabledFeatures::LabelAndDelegatesFocusNewHandlingEnabled()) {
-    // When clicking on a <label> for a form associated custom element with
-    // delegatesFocus, we should focus the custom element's focus delegate.
-    if (auto* label = DynamicTo<HTMLLabelElement>(element)) {
-      auto* control = label->control();
-      if (control && control->IsShadowHostWithDelegatesFocus()) {
-        element = control;
-      }
-    }
-  }
-
-  for (; element; element = element->ParentOrShadowHostElement()) {
-    if (element->IsFocusable() && element->IsFocusedElementInDocument())
+  while (element) {
+    if (element->IsMouseFocusable() && element->IsFocusedElementInDocument()) {
       return WebInputEventResult::kNotHandled;
-    if (element->IsFocusable() || element->IsShadowHostWithDelegatesFocus()) {
+    }
+    if (element->IsMouseFocusable() ||
+        element->IsShadowHostWithDelegatesFocus()) {
       break;
     }
+    element = FlatTreeTraversal::ParentElement(*element);
   }
-  DCHECK(!element || element->IsFocusable() ||
+  DCHECK(!element || element->IsMouseFocusable() ||
          element->IsShadowHostWithDelegatesFocus());
 
   // To fix <rdar://problem/4895428> Can't drag selected ToDo, we don't focus
@@ -538,12 +502,21 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // crbug.com/657237 for details.
   if (element &&
       frame_->Selection().ComputeVisibleSelectionInDOMTree().IsRange()) {
-    const EphemeralRange& range = frame_->Selection()
-                                      .ComputeVisibleSelectionInDOMTree()
-                                      .ToNormalizedEphemeralRange();
-    if (IsNodeFullyContained(range, *element) &&
-        element->IsDescendantOf(frame_->GetDocument()->FocusedElement()))
-      return WebInputEventResult::kNotHandled;
+    // Don't check for scroll controls pseudo-elements, since they can't
+    // be in selection, until we support selecting their content.
+    // Just clear the selection, since it won't be cleared otherwise.
+    if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&
+        element->IsScrollControlPseudoElement()) {
+      frame_->Selection().Clear();
+    } else {
+      const EphemeralRange& range = frame_->Selection()
+                                        .ComputeVisibleSelectionInDOMTree()
+                                        .ToNormalizedEphemeralRange();
+      if (IsNodeFullyContained(range, *element) &&
+          element->IsDescendantOf(frame_->GetDocument()->FocusedElement())) {
+        return WebInputEventResult::kNotHandled;
+      }
+    }
   }
 
   // Only change the focus when clicking scrollbars if it can transfered to a
@@ -558,9 +531,26 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If focus shift is blocked, we eat the event. Note we should never
   // clear swallowEvent if the page already set it (e.g., by canceling
   // default behavior).
-  if (element && !element->IsFocusable() &&
-      SlideFocusOnShadowHostIfNecessary(*element)) {
-    return WebInputEventResult::kHandledSystem;
+  if (element && !element->IsMouseFocusable()) {
+    if (Element* delegated_target = element->GetFocusableArea()) {
+      // If element has a shadow host with a delegated target, we should slide
+      // focus on this target only if it is not already focused.
+      if (delegated_target->IsFocusedElementInDocument()) {
+        return WebInputEventResult::kNotHandled;
+      }
+      // Use FocusType::kMouse instead of FocusType::kForward
+      // in order to prevent :focus-visible from being set
+      delegated_target->Focus(FocusParams(
+          SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kMouse,
+          nullptr, FocusOptions::Create(), FocusTrigger::kUserGesture));
+      // If the delegated target is a text control element such as input text,
+      // the event is handled.
+      if (delegated_target->IsTextControl()) {
+        return WebInputEventResult::kHandledSystem;
+      }
+      // Else, we should mark it not handled so its selection can be set.
+      return WebInputEventResult::kNotHandled;
+    }
   }
 
   // We call setFocusedElement even with !element in order to blur
@@ -575,19 +565,6 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   return WebInputEventResult::kNotHandled;
 }
 
-bool MouseEventManager::SlideFocusOnShadowHostIfNecessary(
-    const Element& element) {
-  if (Element* delegated_target = element.GetFocusableArea()) {
-    // Use FocusType::kMouse instead of FocusType::kForward
-    // in order to prevent :focus-visible from being set
-    delegated_target->Focus(FocusParams(
-        SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kMouse,
-        nullptr, FocusOptions::Create(), FocusTrigger::kUserGesture));
-    return true;
-  }
-  return false;
-}
-
 void MouseEventManager::HandleMouseReleaseEventUpdateStates() {
   ClearDragHeuristicState();
   InvalidateClick();
@@ -598,7 +575,6 @@ void MouseEventManager::HandleMouseReleaseEventUpdateStates() {
 void MouseEventManager::HandleMousePressEventUpdateStates(
     const WebMouseEvent& mouse_event) {
   mouse_pressed_ = true;
-  captures_dragging_ = true;
   SetLastKnownMousePosition(mouse_event);
   mouse_down_may_start_drag_ = false;
   mouse_down_may_start_autoscroll_ = false;
@@ -675,8 +651,10 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|. |FocusDocumentView| above is the last possible
   // modifications before we call |SelectionController|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   Node* inner_node = event.InnerNode();
 
@@ -713,8 +691,10 @@ WebInputEventResult MouseEventManager::HandleMouseReleaseEvent(
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|. |FocusDocumentView| above is the last possible
   // modifications before we call |SelectionController|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   return frame_->GetEventHandler()
                  .GetSelectionController()
@@ -730,8 +710,9 @@ void MouseEventManager::UpdateSelectionForMouseDrag() {
                                    last_known_mouse_position_in_root_frame_);
 }
 
-bool MouseEventManager::HandleDragDropIfPossible(
-    const GestureEventWithHitTestResults& targeted_event) {
+DragHandlingResult MouseEventManager::HandleDragDropIfPossible(
+    const GestureEventWithHitTestResults& targeted_event,
+    PointerId pointer_id) {
   const WebGestureEvent& gesture_event = targeted_event.Event();
   unsigned modifiers = gesture_event.GetModifiers();
 
@@ -747,7 +728,7 @@ bool MouseEventManager::HandleDragDropIfPossible(
       WebPointerProperties::Button::kLeft, 1,
       modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
           WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
-      base::TimeTicks::Now());
+      base::TimeTicks::Now(), pointer_id);
   HitTestRequest request(HitTestRequest::kReadOnly);
   MouseEventWithHitTestResults mev =
       event_handling_util::PerformMouseEventHitTest(frame_, request,
@@ -756,7 +737,10 @@ bool MouseEventManager::HandleDragDropIfPossible(
   ResetDragSource();
   mouse_down_pos_ = frame_->View()->ConvertFromRootFrame(
       gfx::ToFlooredPoint(mouse_drag_event.PositionInRootFrame()));
-  return HandleDrag(mev, DragInitiator::kTouch);
+  return HandleDrag(mev, gesture_event.primary_pointer_type ==
+                                 blink::WebPointerProperties::PointerType::kPen
+                             ? DragAndDropToolType::kStylusViaGesture
+                             : DragAndDropToolType::kFinger);
 }
 
 void MouseEventManager::FocusDocumentView() {
@@ -770,8 +754,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event) {
   TRACE_EVENT0("blink", "MouseEventManager::handleMouseDraggedEvent");
 
-  bool is_pen = event.Event().pointer_type ==
-                blink::WebPointerProperties::PointerType::kPen;
+  bool is_pen = (event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kPen ||
+                 event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kEraser);
 
   WebPointerProperties::Button pen_drag_button =
       WebPointerProperties::Button::kLeft;
@@ -799,10 +785,12 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
   should_handle_drag = !is_pen;
 #endif
 
-  if (should_handle_drag && HandleDrag(event, DragInitiator::kMouse)) {
-    // `HandleDrag()` returns true for both kHandledApplication and
-    // kHandledSystem.  We are returning kHandledApplication here to make the
-    // UseCounter in the caller work.
+  if (should_handle_drag &&
+      HandleDrag(event, is_pen ? DragAndDropToolType::kStylusViaButton
+                               : DragAndDropToolType::kMouse) !=
+          DragHandlingResult::kNotHandled) {
+    // We are returning kHandledApplication here to make the UseCounter
+    // in the caller work.
     return WebInputEventResult::kHandledApplication;
   }
 
@@ -824,8 +812,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
 
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   mouse_down_may_start_drag_ = false;
 
@@ -860,17 +850,17 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
   return selection_controller_drag_result;
 }
 
-// TODO(mustaq@chromium.org): The return value here is questionable.  Why even a
-// failing `TryStartDrag()` below returns a `true` here?
-bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
-                                   DragInitiator initiator) {
+DragHandlingResult MouseEventManager::HandleDrag(
+    const MouseEventWithHitTestResults& event,
+    DragAndDropToolType initiator) {
   DCHECK(event.Event().GetType() == WebInputEvent::Type::kMouseMove);
   // Callers must protect the reference to LocalFrameView, since this function
   // may dispatch DOM events, causing page/LocalFrameView to go away.
   DCHECK(frame_);
   DCHECK(frame_->View());
-  if (!frame_->GetPage())
-    return false;
+  if (!frame_->GetPage()) {
+    return DragHandlingResult::kNotHandled;
+  }
 
   if (mouse_down_may_start_drag_) {
     HitTestRequest request(HitTestRequest::kReadOnly);
@@ -895,22 +885,27 @@ bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
       mouse_down_may_start_drag_ = false;  // no element is draggable
   }
 
+  const bool initiated_by_button_press =
+      initiator == DragAndDropToolType::kMouse ||
+      initiator == DragAndDropToolType::kStylusViaButton;
   if (!mouse_down_may_start_drag_) {
-    return initiator == DragInitiator::kMouse &&
-           !frame_->GetEventHandler()
-                .GetSelectionController()
-                .MouseDownMayStartSelect() &&
-           !mouse_down_may_start_autoscroll_;
+    const bool mouse_down_suppressed = initiated_by_button_press &&
+                                       !frame_->GetEventHandler()
+                                            .GetSelectionController()
+                                            .MouseDownMayStartSelect() &&
+                                       !mouse_down_may_start_autoscroll_;
+    return mouse_down_suppressed ? DragHandlingResult::kHandledDragNotStarted
+                                 : DragHandlingResult::kNotHandled;
   }
 
-  if (initiator == DragInitiator::kMouse &&
-      !DragThresholdExceeded(
-          gfx::ToFlooredPoint(event.Event().PositionInRootFrame()))) {
+  if (initiated_by_button_press && !DragThresholdExceeded(gfx::ToFlooredPoint(
+                                       event.Event().PositionInRootFrame()))) {
     ResetDragSource();
-    return true;
+    return DragHandlingResult::kHandledDragNotStarted;
   }
 
-  if (!TryStartDrag(event)) {
+  const bool drag_started = TryStartDrag(event);
+  if (!drag_started) {
     // Something failed to start the drag, clean up.
     ClearDragDataTransfer();
     ResetDragSource();
@@ -921,19 +916,19 @@ bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
 
     // Since drag operation started we need to send a pointercancel for the
     // corresponding pointer.
-    if (initiator == DragInitiator::kMouse) {
+    if (initiated_by_button_press) {
       frame_->GetEventHandler().HandlePointerEvent(
           WebPointerEvent::CreatePointerCausesUaActionEvent(
               WebPointerProperties::PointerType::kMouse,
               event.Event().TimeStamp()),
           Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
     }
+    drag_initiator_ = initiator;
   }
 
   mouse_down_may_start_drag_ = false;
-  // Whether or not the drag actually started, no more default handling (like
-  // selection).
-  return true;
+  return drag_started ? DragHandlingResult::kHandledDragStarted
+                      : DragHandlingResult::kHandledDragNotStarted;
 }
 
 DataTransfer* MouseEventManager::CreateDraggingDataTransfer() const {
@@ -1050,6 +1045,15 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
   initializer->setRelatedTarget(related_target);
   initializer->setView(frame_->GetDocument()->domWindow());
   initializer->setComposed(true);
+  if (RuntimeEnabledFeatures::PreserveDropEffectEnabled()) {
+    if (event_type == event_type_names::kDragenter ||
+        event_type == event_type_names::kDragover) {
+      data_transfer->SetDestinationOperationFromEffectAllowed();
+    } else if (event_type == event_type_names::kDragleave) {
+      data_transfer->SetDestinationOperation(
+          ui::mojom::blink::DragOperation::kNone);
+    }
+  }
   initializer->setGetDataTransfer(data_transfer);
   initializer->setSourceCapabilities(
       frame_->GetDocument()->domWindow()
@@ -1088,6 +1092,7 @@ void MouseEventManager::DragSourceEndedAt(
     // The return value is ignored because dragend is not cancelable.
     DispatchDragSrcEvent(event_type_names::kDragend, event);
   }
+  ReportDragEnd();
   ClearDragDataTransfer();
   ResetDragSource();
   // In case the drag was ended due to an escape key press we need to ensure
@@ -1147,7 +1152,6 @@ void MouseEventManager::ClearDragHeuristicState() {
   // Used to prevent mouseMoveEvent from initiating a drag before
   // the mouse is pressed again.
   mouse_pressed_ = false;
-  captures_dragging_ = false;
   mouse_down_may_start_drag_ = false;
   mouse_down_may_start_autoscroll_ = false;
 }
@@ -1163,7 +1167,7 @@ bool MouseEventManager::HandleSvgPanIfNeeded(bool is_release_event) {
 
 void MouseEventManager::InvalidateClick() {
   click_count_ = 0;
-  click_element_ = nullptr;
+  mousedown_element_ = nullptr;
 }
 
 bool MouseEventManager::MousePressed() {
@@ -1174,14 +1178,6 @@ void MouseEventManager::ReleaseMousePress() {
   mouse_pressed_ = false;
 }
 
-bool MouseEventManager::CapturesDragging() const {
-  return captures_dragging_;
-}
-
-void MouseEventManager::SetCapturesDragging(bool captures_dragging) {
-  captures_dragging_ = captures_dragging;
-}
-
 Node* MouseEventManager::MousePressNode() {
   return mouse_press_node_.Get();
 }
@@ -1190,17 +1186,8 @@ void MouseEventManager::SetMousePressNode(Node* node) {
   mouse_press_node_ = node;
 }
 
-Element* MouseEventManager::ClickElement() {
-  return click_element_.Get();
-}
-
-void MouseEventManager::SetClickElement(Element* element) {
-  // TODO(mustaq): Why is SetDocument() not called earlier at
-  // LocalFrame::DidAttachDocument()?  Because this is delayed call, the methods
-  // MouseEventManager::WillBeRemoved() are not called until a mouse-press or
-  // tap!
-  SetDocument(element ? element->ownerDocument() : nullptr);
-  click_element_ = element;
+void MouseEventManager::SetMouseDownElement(Element* element) {
+  mousedown_element_ = element;
 }
 
 void MouseEventManager::SetClickCount(int click_count) {
@@ -1209,6 +1196,11 @@ void MouseEventManager::SetClickCount(int click_count) {
 
 bool MouseEventManager::MouseDownMayStartDrag() {
   return mouse_down_may_start_drag_;
+}
+
+void MouseEventManager::ReportDragEnd() {
+  base::UmaHistogramEnumeration("Event.DragDrop.Tool", drag_initiator_);
+  drag_initiator_ = DragAndDropToolType::kUnknown;
 }
 
 }  // namespace blink

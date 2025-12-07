@@ -25,7 +25,8 @@
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "headless/test/headless_devtooled_browsertest.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -71,192 +72,6 @@ class HeadlessDevToolsClientNavigationTest
 };
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientNavigationTest);
-
-class HeadlessDevToolsClientWindowManagementTest
-    : public HeadlessDevTooledBrowserTest {
- public:
-  int window_id() {
-    return HeadlessWebContentsImpl::From(web_contents_)->window_id();
-  }
-
-  void SetWindowBounds(
-      const gfx::Rect& rect,
-      SimpleDevToolsProtocolClient::ResponseCallback callback) {
-    base::Value::Dict params;
-    params.Set("windowId", window_id());
-    params.SetByDottedPath("bounds.left", rect.x());
-    params.SetByDottedPath("bounds.top", rect.y());
-    params.SetByDottedPath("bounds.width", rect.width());
-    params.SetByDottedPath("bounds.height", rect.height());
-    params.SetByDottedPath("bounds.windowState", "normal");
-
-    browser_devtools_client_.SendCommand(
-        "Browser.setWindowBounds", std::move(params), std::move(callback));
-  }
-
-  void SetWindowState(const std::string& window_state,
-                      SimpleDevToolsProtocolClient::ResponseCallback callback) {
-    base::Value::Dict params;
-    params.Set("windowId", window_id());
-    params.SetByDottedPath("bounds.windowState", window_state);
-
-    browser_devtools_client_.SendCommand(
-        "Browser.setWindowBounds", std::move(params), std::move(callback));
-  }
-
-  void GetWindowBounds(
-      SimpleDevToolsProtocolClient::ResponseCallback callback) {
-    browser_devtools_client_.SendCommand("Browser.getWindowBounds",
-                                         Param("windowId", window_id()),
-                                         std::move(callback));
-  }
-
-  void CheckWindowBounds(const gfx::Rect& bounds,
-                         const std::string window_state,
-                         base::Value::Dict result) {
-    gfx::Rect actual_bounds(DictInt(result, "result.bounds.left"),
-                            DictInt(result, "result.bounds.top"),
-                            DictInt(result, "result.bounds.width"),
-                            DictInt(result, "result.bounds.height"));
-
-    std::string actual_window_state =
-        DictString(result, "result.bounds.windowState");
-
-    // Mac does not support repositioning, as we don't show any actual window.
-#if !BUILDFLAG(IS_MAC)
-    EXPECT_EQ(bounds.x(), actual_bounds.x());
-    EXPECT_EQ(bounds.y(), actual_bounds.y());
-#endif  // !BUILDFLAG(IS_MAC)
-    EXPECT_EQ(bounds.width(), actual_bounds.width());
-    EXPECT_EQ(bounds.height(), actual_bounds.height());
-    EXPECT_EQ(window_state, actual_window_state);
-  }
-};
-
-class HeadlessDevToolsClientChangeWindowBoundsTest
-    : public HeadlessDevToolsClientWindowManagementTest {
-  gfx::Rect new_bounds() { return gfx::Rect(100, 200, 300, 400); }
-
-  void RunDevTooledTest() override {
-    SetWindowBounds(
-        new_bounds(),
-        base::BindOnce(
-            &HeadlessDevToolsClientChangeWindowBoundsTest::OnSetWindowBounds,
-            base::Unretained(this)));
-  }
-
-  void OnSetWindowBounds(base::Value::Dict result) {
-    GetWindowBounds(base::BindOnce(
-        &HeadlessDevToolsClientChangeWindowBoundsTest::OnGetWindowBounds,
-        base::Unretained(this)));
-  }
-
-  void OnGetWindowBounds(base::Value::Dict result) {
-    CheckWindowBounds(new_bounds(), "normal", std::move(result));
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientChangeWindowBoundsTest);
-
-class HeadlessDevToolsClientOuterSizeTest
-    : public HeadlessDevToolsClientWindowManagementTest {
-  void RunDevTooledTest() override {
-    SetWindowBounds(
-        gfx::Rect(100, 200, 800, 600),
-        base::BindOnce(&HeadlessDevToolsClientOuterSizeTest::OnSetWindowBounds,
-                       base::Unretained(this)));
-  }
-
-  void OnSetWindowBounds(base::Value::Dict) {
-    EXPECT_EQ(800, Evaluate("window.outerWidth"));
-    EXPECT_EQ(600, Evaluate("window.outerHeight"));
-
-    FinishAsynchronousTest();
-  }
-
-  int Evaluate(const std::string& expression) {
-    base::Value::Dict result = SendCommandSync(
-        devtools_client_, "Runtime.evaluate", Param("expression", expression));
-    return DictInt(result, "result.result.value");
-  }
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientOuterSizeTest);
-
-class HeadlessDevToolsClientChangeWindowStateTest
-    : public HeadlessDevToolsClientWindowManagementTest {
- public:
-  explicit HeadlessDevToolsClientChangeWindowStateTest(
-      const std::string& window_state)
-      : window_state_(window_state) {}
-
-  void RunDevTooledTest() override {
-    SetWindowState(
-        window_state_,
-        base::BindOnce(
-            &HeadlessDevToolsClientChangeWindowStateTest::OnSetWindowState,
-            base::Unretained(this)));
-  }
-
-  void OnSetWindowState(base::Value::Dict) {
-    GetWindowBounds(base::BindOnce(
-        &HeadlessDevToolsClientChangeWindowStateTest::OnGetWindowState,
-        base::Unretained(this)));
-  }
-
-  void OnGetWindowState(base::Value::Dict result) {
-    HeadlessBrowser::Options::Builder builder;
-    const HeadlessBrowser::Options kDefaultOptions = builder.Build();
-    CheckWindowBounds(gfx::Rect(kDefaultOptions.window_size), window_state_,
-                      std::move(result));
-    FinishAsynchronousTest();
-  }
-
- protected:
-  std::string window_state_;
-};
-
-class HeadlessDevToolsClientMinimizeWindowTest
-    : public HeadlessDevToolsClientChangeWindowStateTest {
- public:
-  HeadlessDevToolsClientMinimizeWindowTest()
-      : HeadlessDevToolsClientChangeWindowStateTest("minimized") {}
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientMinimizeWindowTest);
-
-class HeadlessDevToolsClientMaximizeWindowTest
-    : public HeadlessDevToolsClientChangeWindowStateTest {
- public:
-  HeadlessDevToolsClientMaximizeWindowTest()
-      : HeadlessDevToolsClientChangeWindowStateTest("maximized") {}
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientMaximizeWindowTest);
-
-class HeadlessDevToolsClientFullscreenWindowTest
-    : public HeadlessDevToolsClientChangeWindowStateTest {
- public:
-  HeadlessDevToolsClientFullscreenWindowTest()
-      : HeadlessDevToolsClientChangeWindowStateTest("fullscreen") {}
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientFullscreenWindowTest);
-
-class HeadlessDevToolsClientEvalTest : public HeadlessDevTooledBrowserTest {
- public:
-  void RunDevTooledTest() override {
-    base::Value::Dict result = SendCommandSync(
-        devtools_client_, "Runtime.evaluate", Param("expression", "1 + 2"));
-
-    EXPECT_THAT(result, DictHasValue("result.result.value", 3));
-
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientEvalTest);
 
 class HeadlessDevToolsNavigationControlTest
     : public HeadlessDevTooledBrowserTest {
@@ -327,8 +142,8 @@ class HeadlessCrashObserverTest : public HeadlessDevTooledBrowserTest {
   void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
 
   // Make sure we don't fail because the renderer crashed!
-  void RenderProcessExited(base::TerminationStatus status,
-                           int exit_code) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
     // TODO(crbug.com/40577245): Make ASan not interfere and expect a crash.
     // ASan's normal error exit code is 1, which base categorizes as the process
@@ -389,9 +204,12 @@ class HeadlessDevToolsNetworkBlockedUrlTest
     SendCommandSync(devtools_client_, "Page.enable");
 
     base::Value::List urls;
-    urls.Append("dom_tree_test.css");
+    base::Value::Dict url_pattern;
+    url_pattern.Set("urlPattern", "*://*:*/hello.html");
+    url_pattern.Set("block", true);
+    urls.Append(std::move(url_pattern));
     devtools_client_.SendCommand("Network.setBlockedURLs",
-                                 Param("urls", std::move(urls)));
+                                 Param("urlPatterns", std::move(urls)));
 
     devtools_client_.SendCommand(
         "Page.navigate",
@@ -401,7 +219,7 @@ class HeadlessDevToolsNetworkBlockedUrlTest
 
   std::string GetUrlPath(const std::string& url) const {
     GURL gurl(url);
-    return gurl.path();
+    return gurl.GetPath();
   }
 
   void OnRequestWillBeSent(const base::Value::Dict& params) {
@@ -422,13 +240,15 @@ class HeadlessDevToolsNetworkBlockedUrlTest
   }
 
   void OnLoadEventFired(const base::Value::Dict&) {
-    EXPECT_THAT(
-        requests_to_be_sent_,
-        testing::UnorderedElementsAre("/dom_tree_test.html",
-                                      "/dom_tree_test.css", "/iframe.html"));
+    EXPECT_THAT(requests_to_be_sent_,
+                testing::UnorderedElementsAre(
+                    "/dom_tree_test.html", "/dom_tree_test.css", "/iframe.html",
+                    "/Ahem.ttf", "/hello.html"));
     EXPECT_THAT(responses_received_,
-                ElementsAre("/dom_tree_test.html", "/iframe.html"));
-    EXPECT_THAT(failures_, ElementsAre("/dom_tree_test.css"));
+                testing::UnorderedElementsAre("/dom_tree_test.html",
+                                              "/dom_tree_test.css",
+                                              "/iframe.html", "/Ahem.ttf"));
+    EXPECT_THAT(failures_, ElementsAre("/hello.html"));
 
     FinishAsynchronousTest();
   }
@@ -806,22 +626,22 @@ class BlockedByClient_NetworkObserver_Test
 
 HEADLESS_DEVTOOLED_TEST_F(BlockedByClient_NetworkObserver_Test);
 
+// This class simulates sending GETs to a proxy server by using a standard
+// EmbeddedTestServer as the proxy server, and giving it a a proxy auth handler.
+// While there is no actual proxy, the EmbeddedTestServer's file handler handles
+// HTTP-proxy-style GETs directly, no actual proxy needed.
 class DevtoolsInterceptionWithAuthProxyTest
     : public HeadlessDevTooledBrowserTest {
  public:
-  DevtoolsInterceptionWithAuthProxyTest()
-      : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-                      base::FilePath(FILE_PATH_LITERAL("headless/test/data"))) {
-  }
+  DevtoolsInterceptionWithAuthProxyTest() = default;
 
   void SetUp() override {
-    ASSERT_TRUE(proxy_server_.Start());
+    RegisterProxyBasicAuthHandler(*embedded_test_server(), "user", "pass");
+    ASSERT_TRUE(embedded_test_server()->Start());
     HeadlessDevTooledBrowserTest::SetUp();
   }
 
   void RunDevTooledTest() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-
     devtools_client_.AddEventHandler(
         "Network.requestIntercepted",
         base::BindRepeating(
@@ -844,10 +664,13 @@ class DevtoolsInterceptionWithAuthProxyTest
 
     SendCommandSync(devtools_client_, "Page.enable");
 
+    // Hostname used here doesn't actually matter, since the proxy handles the
+    // requests itself without sending them to a server.
     devtools_client_.SendCommand(
         "Page.navigate",
-        Param("url",
-              embedded_test_server()->GetURL("/dom_tree_test.html").spec()));
+        Param("url", embedded_test_server()
+                         ->GetURL("host.test", "/dom_tree_test.html")
+                         .spec()));
   }
 
   void OnRequestIntercepted(const base::Value::Dict& params) {
@@ -860,13 +683,13 @@ class DevtoolsInterceptionWithAuthProxyTest
 
       base::Value::Dict auth_challenge_response;
       auth_challenge_response.Set("response", "ProvideCredentials");
-      auth_challenge_response.Set("username", "foo");
-      auth_challenge_response.Set("password", "bar");
+      auth_challenge_response.Set("username", "user");
+      auth_challenge_response.Set("password", "pass");
       continue_intercept_params.Set("authChallengeResponse",
                                     std::move(auth_challenge_response));
     } else {
       GURL url(DictString(params, "params.request.url"));
-      files_loaded_.insert(url.path());
+      files_loaded_.insert(url.GetPath());
     }
 
     devtools_client_.SendCommand("Network.continueInterceptedRequest",
@@ -876,8 +699,9 @@ class DevtoolsInterceptionWithAuthProxyTest
   void OnLoadEventFired(const base::Value::Dict&) {
     EXPECT_TRUE(auth_challenge_seen_);
     EXPECT_THAT(files_loaded_,
-                ElementsAre("/Ahem.ttf", "/dom_tree_test.css",
-                            "/dom_tree_test.html", "/iframe.html"));
+                testing::UnorderedElementsAre("/Ahem.ttf", "/dom_tree_test.css",
+                                              "/dom_tree_test.html",
+                                              "/iframe.html", "/hello.html"));
 
     FinishAsynchronousTest();
   }
@@ -886,26 +710,18 @@ class DevtoolsInterceptionWithAuthProxyTest
       HeadlessBrowserContext::Builder& builder) override {
     std::unique_ptr<net::ProxyConfig> proxy_config(new net::ProxyConfig);
     proxy_config->proxy_rules().ParseFromString(
-        proxy_server_.host_port_pair().ToString());
+        embedded_test_server()->host_port_pair().ToString());
     // TODO(crbug.com/40600992): Don't rely on proxying localhost.
     proxy_config->proxy_rules().bypass_rules.AddRulesToSubtractImplicit();
     builder.SetProxyConfig(std::move(proxy_config));
   }
 
  private:
-  net::SpawnedTestServer proxy_server_;
   bool auth_challenge_seen_ = false;
   std::set<std::string> files_loaded_;
 };
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/40697469): Reenable on Fuchsia when fixed.
-// NOTE: This macro expands to:
-//   DevtoolsInterceptionWithAuthProxyTest.RunAsyncTest
-DISABLED_HEADLESS_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);
-#else
 HEADLESS_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);
-#endif
 
 class NavigatorLanguages : public HeadlessDevTooledBrowserTest {
  public:

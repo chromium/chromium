@@ -10,8 +10,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/functional/bind.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -89,8 +89,8 @@ TEST_F(TabletModeMultitaskCueControllerTest, SplitCueBounds) {
 
 // Tests that the `OneShotTimer` properly dismisses the cue after firing.
 TEST_F(TabletModeMultitaskCueControllerTest, DismissTimerFiring) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto window = CreateAppWindow();
 
@@ -111,8 +111,8 @@ TEST_F(TabletModeMultitaskCueControllerTest, DismissTimerFiring) {
 
 // Tests that the cue dismisses properly during the fade out animation.
 TEST_F(TabletModeMultitaskCueControllerTest, DismissEarly) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto window = CreateAppWindow();
 

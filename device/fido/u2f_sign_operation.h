@@ -16,12 +16,29 @@
 #include "base/memory/weak_ptr.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_operation.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
 class FidoDevice;
 class AuthenticatorGetAssertionResponse;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(U2fSignOperationResult)
+enum class U2fSignOperationResult {
+  kSuccess = 0,
+  kCancelled = 1,
+  kNoCredentials = 2,
+  kFatalError = 3,
+  kLowLevelErrorThenSuccess = 4,
+  kLowLevelErrorThenCancelled = 5,
+  kLowLevelErrorThenNoCredentials = 6,
+  kLowLevelErrorThenFatalError = 7,
+  kMaxValue = kLowLevelErrorThenFatalError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:U2fSignOperationResultEnum)
 
 // Represents per device authentication logic for U2F tokens. Handles iterating
 // through credentials in the allowed list.
@@ -59,6 +76,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   // primary value) or an RP-provided U2F AppID.
   ApplicationParameterType app_param_type_ = ApplicationParameterType::kPrimary;
   bool canceled_ = false;
+  bool failed_and_retried_ = false;
   base::WeakPtrFactory<U2fSignOperation> weak_factory_{this};
 };
 

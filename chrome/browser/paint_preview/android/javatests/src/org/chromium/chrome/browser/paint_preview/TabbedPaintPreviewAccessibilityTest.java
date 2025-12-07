@@ -19,11 +19,15 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -36,14 +40,16 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedPaintPreviewAccessibilityTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
+    private WebPageStation mPage;
+
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL(TEST_URL));
+        mPage = mActivityTestRule.startOnTestServerUrl(TEST_URL);
         PaintPreviewTabService.setAccessibilityEnabledForTesting(true);
     }
 
@@ -51,7 +57,7 @@ public class TabbedPaintPreviewAccessibilityTest {
     @Test
     @MediumTest
     public void smokeTest() throws ExecutionException, TimeoutException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         TabbedPaintPreview tabbedPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
 
@@ -118,5 +124,83 @@ public class TabbedPaintPreviewAccessibilityTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(true, false));
         CriteriaHelper.pollUiThread(
                 () -> !tabbedPaintPreview.isAttached(), "Paint Preview not removed.");
+    }
+
+    /*
+     * Test omnibox keeps focus when the paint preview is removed.
+     */
+    @Test
+    @MediumTest
+    public void testOmniboxKeepsFocus() throws ExecutionException, TimeoutException {
+        // Open the omnibox and focus the URL bar.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ToolbarManager toolbarManager = cta.getToolbarManager();
+        String urlBarText = "hello";
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocusAndText(true, 0, urlBarText));
+
+        // Set up a paint preview in the background.
+        Tab tab = mPage.getTab();
+        TabbedPaintPreview tabbedPaintPreview =
+                ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
+
+        // Capture paint preview.
+        CallbackHelper captureSuccessCallback = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        tabbedPaintPreview.capture(
+                                result -> {
+                                    if (result) {
+                                        captureSuccessCallback.notifyCalled();
+                                    } else {
+                                        Assert.fail("Failed to capture paint preview.");
+                                    }
+                                }));
+        captureSuccessCallback.waitForOnly("Timeout waiting for paint preview capture.");
+
+        // Show the captured paint preview.
+        CallbackHelper viewReadyCallback = new CallbackHelper();
+        PlayerManager.Listener listener =
+                new TabbedPaintPreviewTest.EmptyPlayerListener() {
+                    @Override
+                    public void onCompositorError(int status) {
+                        Assert.fail(
+                                "Paint Preview should have been displayed successfully"
+                                        + "with no errors.");
+                    }
+
+                    @Override
+                    public void onViewReady() {
+                        viewReadyCallback.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.maybeShow(listener));
+
+        // Wait until it's displayed.
+        viewReadyCallback.waitForOnly("Paint preview view ready never happened.");
+
+        // Assert accessibility support is initialized.
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        tabbedPaintPreview
+                                        .getPlayerManagerForTesting()
+                                        .getWebContentsAccessibilityForTesting()
+                                != null,
+                "PlayerManager doesn't have a valid WebContentsAccessibility.");
+
+        // Remove the paint preview.
+        ThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(false, false));
+        CriteriaHelper.pollUiThread(
+                () -> !tabbedPaintPreview.isAttached(), "Paint Preview not removed.");
+
+        // Check that the omnibox has not lost focus.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isOmniboxFocused = toolbarManager.isUrlBarFocused();
+                    Assert.assertTrue("Omnibox focused.", isOmniboxFocused);
+                },
+                10000,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }

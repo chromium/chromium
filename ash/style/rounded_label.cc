@@ -25,17 +25,24 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
       preferred_height_(preferred_height) {
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
-  SetEnabledColorId(kColorAshTextColorPrimary);
+  SetEnabledColor(kColorAshTextColorPrimary);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(rounding_dp));
   layer()->SetIsFastRoundedCorner(true);
+
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 RoundedLabel::~RoundedLabel() = default;
@@ -46,16 +53,10 @@ gfx::Size RoundedLabel::CalculatePreferredSize(
                    preferred_height_);
 }
 
-int RoundedLabel::GetHeightForWidth(int width) const {
-  return preferred_height_;
-}
-
 void RoundedLabel::OnPaintBorder(gfx::Canvas* canvas) {
   views::HighlightBorder::PaintBorderToCanvas(
       canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
 }
 
 BEGIN_METADATA(RoundedLabel)

@@ -7,16 +7,23 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
 TestPushNotificationClient::TestPushNotificationClient(size_t client_id)
-    : PushNotificationClient(static_cast<PushNotificationClientId>(client_id)) {
-}
+    : PushNotificationClient(static_cast<PushNotificationClientId>(client_id),
+                             PushNotificationClientScope::kPerProfile) {}
 TestPushNotificationClient::~TestPushNotificationClient() = default;
 
-void TestPushNotificationClient::HandleNotificationInteraction(
-    UNNotificationResponse* notification) {
-  has_notification_received_interaction_ = true;
+bool TestPushNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return can_handle_notification_;
 }
 
-UIBackgroundFetchResult TestPushNotificationClient::HandleNotificationReception(
+bool TestPushNotificationClient::HandleNotificationInteraction(
+    UNNotificationResponse* notification) {
+  has_notification_received_interaction_ = true;
+  return false;
+}
+
+std::optional<UIBackgroundFetchResult>
+TestPushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
   return fetch_result_;
 }
@@ -32,7 +39,7 @@ bool TestPushNotificationClient::HasNotificationReceivedInteraction() {
 }
 
 void TestPushNotificationClient::SetBackgroundFetchResult(
-    UIBackgroundFetchResult result) {
+    std::optional<UIBackgroundFetchResult> result) {
   fetch_result_ = result;
 }
 
@@ -42,4 +49,9 @@ void TestPushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 
 bool TestPushNotificationClient::IsBrowserReady() {
   return is_browser_ready_;
+}
+
+void TestPushNotificationClient::SetCanHandleNotification(
+    bool can_handle_notification) {
+  can_handle_notification_ = can_handle_notification;
 }

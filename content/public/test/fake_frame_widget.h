@@ -59,7 +59,16 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override {}
   void DragSourceSystemDragEnded() override {}
-  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override {}
+  void OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+      const gfx::Rect& focus_widget_rect_in_dips,
+#endif  // BUILDFLAG(IS_WIN)
+      OnStartStylusWritingCallback callback) override {
+  }
+#if BUILDFLAG(IS_ANDROID)
+  void PassImeRenderWidgetHost(
+      mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost>) override {}
+#endif
   void SetBackgroundOpaque(bool value) override {}
   void SetTextDirection(base::i18n::TextDirection direction) override;
   void NotifyClearedDisplayedGraphics() override {}
@@ -74,8 +83,9 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
                         GetStringAtPointCallback callback) override;
 #endif
-  void EnableDeviceEmulation(
-      const blink::DeviceEmulationParams& parameters) override {}
+  void EnableDeviceEmulation(const blink::DeviceEmulationParams& parameters,
+                             const blink::mojom::DeviceEmulationCacheBehavior
+                                 cache_behavior) override {}
   void DisableDeviceEmulation() override {}
   void BindWidgetCompositor(
       mojo::PendingReceiver<blink::mojom::WidgetCompositor> receiver) override {

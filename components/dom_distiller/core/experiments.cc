@@ -34,8 +34,7 @@ DistillerHeuristicsType GetDistillerHeuristicsType() {
     if (switch_value == switches::reader_mode_heuristics::kNone) {
       return DistillerHeuristicsType::NONE;
     }
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid value for " << switches::kReaderModeHeuristics;
+    NOTREACHED() << "Invalid value for " << switches::kReaderModeHeuristics;
   } else {
     if (base::StartsWith(group_name, "AdaBoost",
                          base::CompareCase::INSENSITIVE_ASCII)) {

@@ -4,17 +4,24 @@
 
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 
+#include "base/byte_count.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 
-MemorySaverOptInIPHController::MemorySaverOptInIPHController(Browser* browser)
-    : browser_(browser) {
+// Devices with at least 16 GB of total memory should never be shown the memory
+// saver opt-in IPH.
+constexpr base::ByteCount kMemoryCap16GB = base::GiB(16);
+
+MemorySaverOptInIPHController::MemorySaverOptInIPHController(
+    BrowserWindowInterface* interface)
+    : browser_window_interface_(interface) {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   memory_saver_observer_.Observe(manager);
@@ -35,12 +42,13 @@ void MemorySaverOptInIPHController::OnJankThresholdReached() {
 }
 
 void MemorySaverOptInIPHController::MaybeTriggerPromo() {
-  BrowserWindow* const browser_window = browser_->window();
   auto* const manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  if (browser_window != nullptr && manager->IsMemorySaverModeDefault() &&
-      !manager->IsMemorySaverModeActive()) {
-    browser_window->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHMemorySaverModeFeature);
+  if (manager->IsMemorySaverModeDefault() &&
+      !manager->IsMemorySaverModeActive() &&
+      base::SysInfo::AmountOfPhysicalMemory() <= kMemoryCap16GB) {
+    BrowserUserEducationInterface::From(browser_window_interface_)
+        ->MaybeShowStartupFeaturePromo(
+            feature_engagement::kIPHMemorySaverModeFeature);
   }
 }

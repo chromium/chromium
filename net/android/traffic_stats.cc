@@ -41,3 +41,5 @@ bool GetCurrentUidRxBytes(int64_t* bytes) {
 }
 
 }  // namespace net::android::traffic_stats
+
+DEFINE_JNI(AndroidTrafficStats)

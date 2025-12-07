@@ -51,9 +51,9 @@ public class ParameterizedRunnerTest {
 
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class BadTestClassWithMultipleClassParameter {
-        @ClassParameter private static List<ParameterSet> sParamA = new ArrayList<>();
+        @ClassParameter private static final List<ParameterSet> sParamA = new ArrayList<>();
 
-        @ClassParameter private static List<ParameterSet> sParamB = new ArrayList<>();
+        @ClassParameter private static final List<ParameterSet> sParamB = new ArrayList<>();
     }
 
     @Test(expected = ParameterizedRunner.IllegalParameterArgumentException.class)

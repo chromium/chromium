@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/page_info/core/features.h"
+#include "components/variations/service/variations_service.h"
 
 namespace page_info {
 
@@ -16,26 +17,15 @@ bool IsAboutThisSiteFeatureEnabled() {
       g_browser_process->GetApplicationLocale());
 }
 
-bool IsAboutThisSiteAsyncFetchingEnabled() {
-  return IsAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(kAboutThisSiteAsyncFetching);
+BASE_FEATURE(kPrivacyPolicyInsights, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsMerchantTrustFeatureEnabled() {
+  auto* variations_service = g_browser_process->variations_service();
+  auto country_code =
+      variations_service ? variations_service->GetStoredPermanentCountry() : "";
+
+  return page_info::IsMerchantTrustFeatureEnabled(
+      country_code, g_browser_process->GetApplicationLocale());
 }
-
-BASE_FEATURE(kAboutThisSiteAsyncFetching,
-             "AboutThisSiteAsyncFetching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID)
-bool IsPersistentSidePanelEntryFeatureEnabled() {
-  return IsAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(
-             page_info::kAboutThisSitePersistentSidePanelEntry);
-}
-
-BASE_FEATURE(kAboutThisSitePersistentSidePanelEntry,
-             "AboutThisSitePersistentSidePanelEntry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif
 
 }  // namespace page_info

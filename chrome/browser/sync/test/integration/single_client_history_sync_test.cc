@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -25,6 +27,7 @@
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
@@ -35,6 +38,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
@@ -60,8 +64,15 @@ using testing::UnorderedElementsAre;
 
 namespace {
 
-const char kRedirectFromPath[] = "/redirect.html";
-const char kRedirectToPath[] = "/sync/simple.html";
+constexpr char kRedirectFromPath[] = "/redirect.html";
+constexpr char kRedirectToPath[] = "/sync/simple.html";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+constexpr char kMetricNameWithHistorySync[] =
+    "Session.TotalDurationMax1Day.WithHistorySync";
+constexpr char kMetricNameWithHistorySyncWithoutAuthError[] =
+    "Session.TotalDurationMax1Day.WithHistorySyncWithoutAuthError";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 GURL GetFileUrl(const char* file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -122,26 +133,28 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
 
   MOCK_METHOD(void,
               OnURLVisited,
-              (history::HistoryService*,
-               const history::URLRow&,
-               const history::VisitRow&),
+              (history::HistoryService*, const history::VisitedURLInfo&),
               (override));
 
   MOCK_METHOD(void,
               OnURLVisitedWithNavigationId,
-              (history::HistoryService*,
-               const history::URLRow&,
-               const history::VisitRow&,
-               std::optional<int64_t>),
+              (history::HistoryService*, const history::VisitedURLInfo&),
               (override));
 };
 
-class SingleClientHistorySyncTest : public SyncTest {
+class SingleClientHistorySyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientHistorySyncTest() : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    features_.InitAndDisableFeature(features::kHttpsUpgrades);
+    features_.InitWithFeatures(
+        enabled_features, /*disabled_features=*/{features::kHttpsUpgrades});
   }
   ~SingleClientHistorySyncTest() override = default;
 
@@ -185,6 +198,10 @@ class SingleClientHistorySyncTest : public SyncTest {
 #endif
 
     return true;
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   void NavigateToURL(const GURL& url,
@@ -235,9 +252,14 @@ class SingleClientHistorySyncTest : public SyncTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientHistorySyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DoesNotUploadRetroactively) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Navigate somewhere before Sync is turned on.
   GURL not_synced_url =
@@ -256,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // waits for an "about:blank" tab to show up in the Sessions data on the fake
   // server. Since this test already navigated away, that'll never happen. So
   // use the slightly-weaker WAIT_FOR_SYNC_SETUP_TO_COMPLETE here.
-  ASSERT_TRUE(SetupSync(SyncTest::WAIT_FOR_SYNC_SETUP_TO_COMPLETE))
-      << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
 
   // After Sync was enabled, navigate further.
   GURL synced_url2 =
@@ -272,9 +293,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       UrlIs(synced_url1.spec()), UrlIs(synced_url2.spec()))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DoesNotUploadUnsyncableURLs) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some unsyncable URLs. Note that some of these are excluded by
   // the history system itself (see CanAddURLToHistory()) and thus don't even
@@ -294,10 +315,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 }
 
 // TODO(crbug.com/40871747): EnterSyncPausedStateForPrimaryAccount is currently
-// not supported on Android. Enable this test once it is.
+// not supported on Android. Enable these tests once it is.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate somewhere and make sure the URL arrives on the server.
   GURL synced_url1 =
@@ -307,7 +328,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
       WaitForServerHistory(UnorderedElementsAre(UrlIs(synced_url1.spec()))));
 
   // Enter the Sync-paused state.
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+  }
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
 
@@ -324,7 +349,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
       embedded_test_server()->GetURL("synced2.com", "/sync/simple.html");
   NavigateToURL(synced_url2);
 
-  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
+  }
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
 
@@ -338,10 +367,78 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
       UnorderedElementsAre(UrlIs(synced_url1.spec()), UrlIs(synced_url2.spec()),
                            UrlIs(synced_url3.spec()))));
 }
+
+// Session total duration is not instrumented on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
+                       PRE_ReportsSessionTotalDurationWhilePaused) {
+  {
+    ASSERT_TRUE(SetupSync());
+
+    base::HistogramTester histograms;
+    metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+    histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 1);
+  }
+
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+  }
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(GetSyncService(0)->HasCachedPersistentAuthErrorForMetrics());
+
+  base::HistogramTester histograms;
+  metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+  histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+  histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
+                       ReportsSessionTotalDurationWhilePaused) {
+  // Invoke the base class directly as this test doesn't need a tab, and it
+  // allows verifying that the very initial transport state is *not* PAUSED.
+  ASSERT_TRUE(SyncTest::SetupClients());
+
+  ASSERT_NE(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(GetSyncService(0)->HasCachedPersistentAuthErrorForMetrics());
+
+  {
+    base::HistogramTester histograms;
+    metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+    histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+  }
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportPaused());
+
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
+  }
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+
+  {
+    base::HistogramTester histograms;
+    metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+    histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 1);
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, UploadsAllFields) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some URL, and make sure it shows up on the server.
   GURL url1 =
@@ -371,9 +468,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
             ReferrerURLIs(url1.spec())))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        UploadsMarkVisitAsKnownToSync) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some URL, and make sure it shows up on the server.
   GURL url1 =
@@ -389,8 +486,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_TRUE(visits[0].is_known_to_sync);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsServerRedirect) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, UploadsServerRedirect) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to a URL which will redirect to another URL via a server redirect
   // i.e. an HTTP 3xx response (see SetUpOnMainThread()).
@@ -408,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsServerRedirect) {
       IsChainStart(), IsChainEnd(), Not(HasReferringVisit())))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsClientMetaRedirect) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, UploadsClientMetaRedirect) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to a URL which will redirect to another URL via an html <meta>
   // tag.
@@ -431,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsClientMetaRedirect) {
             Not(IsChainStart()), IsChainEnd(), HasReferringVisit()))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsClientJSRedirect) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, UploadsClientJSRedirect) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to a page.
   const GURL url1 =
@@ -456,9 +553,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsClientJSRedirect) {
             IsChainEnd()))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        UploadsReplaceStateNavigation) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some page.
   const GURL url1 =
@@ -484,8 +581,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
             IsChainEnd(), HasOpenerVisit()))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsExternalReferrer) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, UploadsExternalReferrer) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some URL, and specify a referrer that is not actually in the
   // history DB.
@@ -499,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsExternalReferrer) {
             Not(HasReferringVisit()), ReferrerURLIs(referrer.spec())))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, DownloadsAndMerges) {
+  ASSERT_TRUE(SetupClients());
 
   // Before Sync gets enabled, one URL exists locally, one remotely, and one in
   // both places.
@@ -518,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
 
   // Turn on Sync - this should cause the two remote URLs to get downloaded and
   // merged with the existing local ones.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Now the "local" and "remote" URLs should have one visit each, while the
   // "both" one should have two.
@@ -538,9 +635,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   EXPECT_EQ(row_both.visit_count(), 2);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        ObserversCallBothOnURLVisitedForSyncedVisits) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(GetProfile(0),
@@ -556,15 +653,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // The History Service Observer should be called for the synced visit.
   history::VisitRow visit_row;
   history::VisitRow visit_row2;
-  EXPECT_CALL(mock_observer, OnURLVisited(history_service, _, _))
-      .WillOnce(testing::SaveArg<2>(&visit_row));
-  EXPECT_CALL(mock_observer,
-              OnURLVisitedWithNavigationId(history_service, _, _,
-                                           testing::Eq(std::nullopt)))
-      .WillOnce(testing::SaveArg<2>(&visit_row2));
+  EXPECT_CALL(mock_observer, OnURLVisited(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            visit_row = info.visit_row;
+          });
+  EXPECT_CALL(mock_observer, OnURLVisitedWithNavigationId(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            visit_row2 = info.visit_row;
+          });
 
   // Turn on Sync - this should cause the remote URL to get downloaded.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // The remote URL should have one visit marked as known to Sync.
   history::URLRow row_remote;
@@ -588,9 +689,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   history_service->RemoveObserver(&mock_observer);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DownloadsAndMarksRemoteVisitAsKnownToSync) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // This simple test only has a single remote visit.
   const GURL url_remote("https://www.url-remote.com");
@@ -598,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
 
   // Turn on Sync - this should download the single remote visit.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // The "remote" URLs should have one visit marked as known to Sync.
   history::URLRow row_remote;
@@ -612,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_TRUE(visits[0].is_known_to_sync);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DownloadsServerRedirectChain) {
   const GURL url1("https://www.url1.com");
   const GURL url2("https://www.url2.com");
@@ -622,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       CreateSpecifics(base::Time::Now() - base::Minutes(5), "other_cache_guid",
                       {url1, url2, url3}, {101, 102, 103})));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Make sure the chain arrived intact.
   history::URLRow url_row;
@@ -648,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_EQ(url_row3.url(), url3);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DownloadsClientRedirectChain) {
   const GURL url1("https://www.url1.com");
   const GURL url2("https://www.url2.com");
@@ -670,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics1));
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Make sure the chain arrived intact (i.e. was stitched back together).
   history::URLRow url_row;
@@ -692,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_EQ(url_row2.url(), url2);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DownloadsAndRemapsReferrer) {
   const GURL url1("https://www.url1.com");
   const GURL url2("https://www.url2.com");
@@ -708,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics1));
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Make sure the visits arrived, and the referrer link got properly remapped.
   // Also grab their local visit IDs.
@@ -740,7 +841,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 #if BUILDFLAG(IS_ANDROID)
   // On Android, invalidations for HISTORY are disabled, so trigger an explicit
   // refresh to fetch the updated data.
-  GetSyncService(0)->TriggerRefresh({syncer::HISTORY});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::HISTORY});
 #endif
 
   // Wait for the updates to arrive.
@@ -778,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
   const GURL url("https://www.url.com");
   const GURL referrer("https://www.referrer.com");
 
@@ -789,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Make sure the visit arrived, and its referrer URL was stored as an
   // "external" referrer.
@@ -801,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
   EXPECT_EQ(visit.external_referrer_url, referrer);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DoesNotDownloadUnwantedURLs) {
   // Several visits to "unwanted" URLs exist on the server (e.g. a bad other
   // client might have added them). These shouldn't be added to the history DB,
@@ -821,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics3));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // None of these should have made it into the history DB.
   EXPECT_TRUE(
@@ -832,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       history_helper::GetVisitsForURLFromClient(/*index=*/0, url3).empty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        RecordsLatencyForIncrementalUpdates) {
   const base::Time now = base::Time::Now();
   // Lots of history exists on the server - enough to require multiple
@@ -847,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   base::HistogramTester histograms;
 
   // Turn on Sync - this causes all of the remote URLs to get downloaded.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Spot-check that the URLs made it to the client.
   history::URLRow row0;
@@ -873,7 +975,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 #if BUILDFLAG(IS_ANDROID)
   // On Android, invalidations for HISTORY are disabled by default, so
   // explicitly trigger a GetUpdates.
-  GetSyncService(0)->TriggerRefresh({syncer::HISTORY});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::HISTORY});
 #endif  // BUILDFLAG(IS_ANDROID)
   WaitForLocalHistory({{new_url, testing::SizeIs(1)}});
 
@@ -882,12 +985,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.HISTORY", 1);
 }
 
-// Signing out or turning off Sync isn't possible in ChromeOS-Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Signing out or turning off Sync isn't possible on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        ClearsForeignHistoryOnTurningSyncOff) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Before Sync gets enabled, one URL exists locally, one remotely, and one
   // redirect chain consisting of 3 URLs also remotely.
@@ -909,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                       {101, 102, 103})));
 
   // Turn on Sync - this will cause the remote URLs to get downloaded.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Make sure the "local" and "remote" URLs both exist in the DB.
   history::URLRow row;
@@ -939,9 +1042,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain3, &row));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        ClearsForeignHistoryOnTurningSyncOffInTwoSteps) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Before Sync gets enabled, one URL exists locally, one remotely.
   const GURL url_local("https://www.url-local.com");
@@ -953,7 +1056,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
 
   // Turn on Sync - this will cause the remote URL to get downloaded.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Make sure the "local" and "remote" URLs both exist in the DB.
   history::URLRow row;
@@ -981,9 +1084,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        DoesNotDuplicateEntriesWhenTurningSyncOffAndOnAgain) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // One URL exists on the server already.
   const GURL url_other_client("https://www.other-client.com");
@@ -992,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                       url_other_client)));
 
   // Turn on Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // After Sync was enabled, navigate somewhere, and make sure this arrives on
   // the server.
@@ -1034,62 +1137,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// On Android, switches::kSyncUserForTest isn't supported (the passed-in
-// username gets ignored in SyncSigninDelegateAndroid::SigninFake()), so it's
-// not currently possible to simulate a non-@gmail.com account.
-#if !BUILDFLAG(IS_ANDROID)
-
-class SingleClientHistoryNonGmailSyncTest : public SingleClientHistorySyncTest {
- public:
-  void SetUp() override {
-    // Set up a non-@gmail.com account, so that it'll be treated as a potential
-    // Dasher (aka managed aka enterprise) account.
-    // Note: This can't be done in SetUpCommandLine() because that happens
-    // slightly too late (SyncTest::SetUp() already consumes this param).
-    base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-    cl->AppendSwitchASCII(switches::kSyncUserForTest,
-                          "user@managed-domain.com");
-    SingleClientHistorySyncTest::SetUp();
-  }
-
-  void SignInAndSetAccountInfo(bool is_managed) {
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
-
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(GetProfile(0));
-    CoreAccountInfo account =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-
-    // A non-empty hosted domain means the account is managed.
-    std::string hosted_domain = is_managed ? "managed-domain.com" : "";
-    signin::SimulateSuccessfulFetchOfAccountInfo(
-        identity_manager, account.account_id, account.email, account.gaia,
-        hosted_domain, "Full Name", "Given Name", "en-US", "");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        HistorySyncDisabledForManagedAccount) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  SignInAndSetAccountInfo(/*is_managed=*/true);
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync(SyncTestAccount::kEnterpriseAccount1));
 
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().empty());
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        HistorySyncEnabledForNonManagedAccount) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  SignInAndSetAccountInfo(/*is_managed=*/false);
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync(SyncTestAccount::kConsumerAccount1));
 
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

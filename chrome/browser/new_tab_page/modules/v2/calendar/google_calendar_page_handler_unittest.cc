@@ -9,11 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/hash/hash.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -31,6 +36,7 @@ namespace {
 
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
+const int32_t kNumEvents = 10;
 
 base::Value::List CreateAttachments() {
   base::Value::List attachments = base::Value::List();
@@ -105,7 +111,7 @@ base::Value::Dict CreateEvent(int index) {
 
 bool CreateEventsJson(std::string* json) {
   base::Value::List events = base::Value::List();
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < kNumEvents; i++) {
     events.Append(CreateEvent(i));
   }
   base::Value::Dict result_dict =
@@ -189,6 +195,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
         response);
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   PrefService& pref_service() { return *pref_service_; }
   TestingProfile& profile() { return *profile_; }
   content::BrowserTaskEnvironment& task_environment() {
@@ -214,6 +221,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<PrefService> pref_service_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
@@ -244,16 +252,16 @@ TEST_F(GoogleCalendarPageHandlerTest, DismissModuleAffectsEvents) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback2;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response1 = std::move(events);
-          }));
+          });
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response2 = std::move(events);
-          }));
+          });
 
   handler->DismissModule();
 
@@ -284,10 +292,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response = std::move(events);
-          }));
+          });
 
   handler->GetEvents(callback.Get());
   EXPECT_EQ(response.size(), 5u);
@@ -319,10 +327,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response = std::move(events);
-          }));
+          });
 
   std::string json;
   bool data_success = CreateEventsJson(&json);
@@ -335,8 +343,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
 
-  // The test data has 10 events, but we never return more than 6.
-  ASSERT_EQ(response.size(), 6u);
+  // The test data has 10 events, but we never return more than 5.
+  ASSERT_EQ(response.size(), 5u);
   // The first event was an all day event, and the second event was declined by
   // the user. They were both filtered out, so the rest of the events should be
   // two numbers higher in their fields.
@@ -369,6 +377,11 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
                 "https://foo-icon.com/" + base::NumberToString(j));
     }
   }
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.GoogleCalendar.RequestResult", kNumEvents, 1);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.Modules.DataRequest",
+      base::PersistentHash(ntp_modules::kGoogleCalendarModuleId), 1);
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
@@ -386,10 +399,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response = std::move(events);
-          }));
+          });
 
   // Setting the request url here tests that the feature params are working
   // properly. If they are not, the url loader won't intercept the call.

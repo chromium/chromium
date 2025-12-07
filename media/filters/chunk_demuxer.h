@@ -80,10 +80,9 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   // https://w3c.github.io/media-source/#sourcebuffer-coded-frame-eviction
   bool EvictCodedFrames(base::TimeDelta media_time, size_t newDataSize);
 
-  void OnMemoryPressure(
-      base::TimeDelta media_time,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-      bool force_instant_gc);
+  void OnMemoryPressure(base::TimeDelta media_time,
+                        base::MemoryPressureLevel memory_pressure_level,
+                        bool force_instant_gc);
 
   // Signal to the stream that duration has changed to |duration|.
   void OnSetDuration(base::TimeDelta duration);
@@ -306,13 +305,10 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // buffered, returns base::TimeDelta().
   base::TimeDelta GetHighestPresentationTimestamp(const std::string& id) const;
 
-  void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
-
-  void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       std::optional<MediaTrack::Id> track_id,
+                       base::TimeDelta curr_time,
+                       TrackChangeCB change_completed_cb) override;
 
   void SetPlaybackRate(double rate) override {}
 
@@ -405,11 +401,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                                       base::TimeDelta currentMediaTime,
                                       size_t newDataSize);
 
-  void OnMemoryPressure(
-      base::TimeDelta currentMediaTime,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-      bool force_instant_gc);
-
   // Returns the current presentation duration.
   double GetDuration();
   double GetDuration_Locked();
@@ -477,14 +468,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
       const std::string& id,
       std::unique_ptr<media::StreamParser> stream_parser,
       std::optional<std::string_view> expected_codecs);
-
-  // Helper for video and audio track changing. For the `track_type`, enables
-  // tracks associated with `track_ids` and disables the rest. Fires
-  // `change_completed_cb` when the operation is completed.
-  void FindAndEnableProperTracks(const std::vector<MediaTrack::Id>& track_ids,
-                                 base::TimeDelta curr_time,
-                                 DemuxerStream::Type track_type,
-                                 TrackChangeCB change_completed_cb);
 
   void ChangeState_Locked(State new_state);
 
@@ -603,7 +586,8 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // in a shut down state, so reading from them will return EOS.
   std::vector<std::unique_ptr<ChunkDemuxerStream>> removed_streams_;
 
-  std::map<MediaTrack::Id, ChunkDemuxerStream*> track_id_to_demux_stream_map_;
+  std::map<MediaTrack::Id, raw_ptr<ChunkDemuxerStream, CtnExperimental>>
+      track_id_to_demux_stream_map_;
 
   bool supports_change_type_ = true;
 };

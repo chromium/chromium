@@ -82,15 +82,19 @@ bool FederatedCredential::IsFederatedCredential() const {
 void SetIdpSigninStatus(const blink::LocalFrameToken& local_frame_token,
                         const url::Origin& origin,
                         mojom::blink::IdpSigninStatus status) {
-  CHECK(WTF::IsMainThread());
+  CHECK(IsMainThread());
   LocalFrame* local_frame = LocalFrame::FromFrameToken(local_frame_token);
-  if (!local_frame) {
+  // Null checking DomWindow() and GetFrame() for detached frame case. See
+  // https://crbug.com/382646175 for details.
+  if (!local_frame || !local_frame->DomWindow() ||
+      !local_frame->DomWindow()->GetFrame()) {
     return;
   }
   auto* auth_request = CredentialManagerProxy::From(local_frame->DomWindow())
                            ->FederatedAuthRequest();
   auth_request->SetIdpSigninStatus(SecurityOrigin::CreateFromUrlOrigin(origin),
-                                   status);
+                                   status, /*options=*/nullptr,
+                                   base::DoNothing());
 }
 
 }  // namespace blink

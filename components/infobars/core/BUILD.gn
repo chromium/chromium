@@ -14,10 +14,14 @@ static_library("core") {
   sources = [
     "confirm_infobar_delegate.cc",
     "confirm_infobar_delegate.h",
+    "features.cc",
+    "features.h",
     "infobar.cc",
     "infobar.h",
     "infobar_container.cc",
     "infobar_container.h",
+    "infobar_container_with_priority.cc",
+    "infobar_container_with_priority.h",
     "infobar_delegate.cc",
     "infobar_delegate.h",
     "infobar_manager.cc",
@@ -47,6 +51,22 @@ static_library("core") {
   if (use_aura || (!is_ios && !is_android)) {
     deps += [ "//ui/native_theme" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "infobar_container_unittest.cc",
+    "infobar_container_with_priority_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//url",
+  ]
 }
 
 if (is_android) {

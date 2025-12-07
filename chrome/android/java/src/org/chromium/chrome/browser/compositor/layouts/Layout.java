@@ -10,8 +10,11 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -34,6 +37,7 @@ import java.util.List;
  * alternative to the Android UI for lower level hardware accelerated rendering.
  * This layout also pass through all the events that may happen.
  */
+@NullMarked
 public abstract class Layout {
     /** The orientation of the device. */
     @IntDef({Orientation.UNSET, Orientation.PORTRAIT, Orientation.LANDSCAPE})
@@ -87,7 +91,7 @@ public abstract class Layout {
         int HIDDEN = 3;
     }
 
-    /** Length of the unstalling animation. **/
+    /** Length of the unstalling animation. */
     public static final long UNSTALLED_ANIMATION_DURATION_MS = 500;
 
     private static final float SNAP_SPEED = 1.0f; // dp per second
@@ -103,8 +107,8 @@ public abstract class Layout {
     private @Orientation int mCurrentOrientation;
 
     // Tabs
-    protected TabModelSelector mTabModelSelector;
-    protected TabContentManager mTabContentManager;
+    protected @Nullable TabModelSelector mTabModelSelector;
+    protected @Nullable TabContentManager mTabContentManager;
 
     // Helpers
     private final LayoutUpdateHost mUpdateHost;
@@ -112,7 +116,7 @@ public abstract class Layout {
 
     /** The tabs currently being rendered as part of this layout. The tabs are
      * drawn using the same ordering as this array. */
-    protected LayoutTab[] mLayoutTabs;
+    protected LayoutTab @Nullable [] mLayoutTabs;
 
     // Current state of the Layout.
     private @LayoutState int mLayoutState;
@@ -121,12 +125,16 @@ public abstract class Layout {
     protected final float mDpToPx;
     protected final float mPxToDp;
 
+    // Whether the {@link Layout} is currently active.
+    private boolean mIsActive;
+
     /**
-     * The {@link Layout} is not usable until sizeChanged is called.
-     * This is convenient this way so we can pre-create the layout before the host is fully defined.
-     * @param context      The current Android's context.
-     * @param updateHost   The parent {@link LayoutUpdateHost}.
-     * @param renderHost   The parent {@link LayoutRenderHost}.
+     * The {@link Layout} is not usable until sizeChanged is called. This is convenient this way so
+     * we can pre-create the layout before the host is fully defined.
+     *
+     * @param context The current Android's context.
+     * @param updateHost The parent {@link LayoutUpdateHost}.
+     * @param renderHost The parent {@link LayoutRenderHost}.
      */
     public Layout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost) {
         mContext = context;
@@ -164,37 +172,26 @@ public abstract class Layout {
         return mContext;
     }
 
+    protected void setIsActive(boolean active) {
+        mIsActive = active;
+    }
+
     /**
      * @return Whether the {@link Layout} is currently active.
      */
     public boolean isActive() {
-        return mUpdateHost.isActiveLayout(this);
+        return mIsActive;
     }
 
     /**
      * Creates a {@link LayoutTab}.
-     * @param id              The id of the reference {@link Tab} in the {@link TabModel}.
-     * @param isIncognito     Whether the new tab is incognito.
-     * @return                The newly created {@link LayoutTab}.
+     *
+     * @param id The id of the reference {@link Tab} in the {@link TabModel}.
+     * @param isIncognito Whether the new tab is incognito.
+     * @return The newly created {@link LayoutTab}.
      */
     public LayoutTab createLayoutTab(int id, boolean isIncognito) {
-        return createLayoutTab(id, isIncognito, -1.f, -1.f);
-    }
-
-    /**
-     * Creates a {@link LayoutTab}.
-     * @param id               The id of the reference {@link Tab} in the {@link TabModel}.
-     * @param isIncognito      Whether the new tab is incognito.
-     * @param maxContentWidth  The max content width of the tab.  Negative numbers will use the
-     *                         original content width.
-     * @param maxContentHeight The max content height of the tab.  Negative numbers will use the
-     *                         original content height.
-     * @return                 The newly created {@link LayoutTab}.
-     */
-    public LayoutTab createLayoutTab(
-            int id, boolean isIncognito, float maxContentWidth, float maxContentHeight) {
-        LayoutTab layoutTab =
-                mUpdateHost.createLayoutTab(id, isIncognito, maxContentWidth, maxContentHeight);
+        LayoutTab layoutTab = mUpdateHost.createLayoutTab(id, isIncognito);
         initLayoutTabFromHost(layoutTab);
         return layoutTab;
     }
@@ -225,7 +222,7 @@ public abstract class Layout {
         final boolean doneAnimating = onUpdateAnimation(time, false);
 
         // Don't update the layout if onUpdateAnimation ended up making a new layout active.
-        if (mUpdateHost.isActiveLayout(this)) updateLayout(time, dt);
+        if (mIsActive) updateLayout(time, dt);
 
         return doneAnimating;
     }
@@ -291,8 +288,9 @@ public abstract class Layout {
     /**
      * Called when the context and size of the view has changed.
      *
-     * @param context     The current Android's context.
+     * @param context The current Android's context.
      */
+    @CallSuper
     public void contextChanged(Context context) {
         mContext = context;
         LayoutTab.resetDimensionConstants(context);
@@ -312,16 +310,20 @@ public abstract class Layout {
 
     /**
      * Sets the the {@link TabModelSelector} for the layout.
+     *
      * @param modelSelector The {@link TabModelSelector} to be set on the layout.
      */
+    @CallSuper
     public void setTabModelSelector(TabModelSelector modelSelector) {
         mTabModelSelector = modelSelector;
     }
 
     /**
      * Sets the {@link TabContentManager} needed for the layout to get thumbnails.
+     *
      * @param manager The {@link TabContentManager} to get tab display content.
      */
+    @CallSuper
     protected void setTabContentManager(TabContentManager manager) {
         if (manager == null) return;
 
@@ -371,14 +373,8 @@ public abstract class Layout {
         return mLayoutState == LayoutState.STARTING_TO_SHOW;
     }
 
-    /**
-     * @return The incognito state of the layout.
-     */
-    public boolean isIncognito() {
-        return mTabModelSelector.isIncognitoSelected();
-    }
-
     /** To be called when the transition into the layout is done. */
+    @CallSuper
     public void doneShowing() {
         if (mLayoutState != LayoutState.STARTING_TO_SHOW) return;
 
@@ -387,9 +383,10 @@ public abstract class Layout {
     }
 
     /**
-     * To be called when the transition out of the view mode is done.
-     * This is currently called by the renderer when all the animation are done while hiding.
+     * To be called when the transition out of the view mode is done. This is currently called by
+     * the renderer when all the animation are done while hiding.
      */
+    @CallSuper
     public void doneHiding() {
         if (mLayoutState != LayoutState.STARTING_TO_HIDE) return;
 
@@ -408,6 +405,7 @@ public abstract class Layout {
      * @param time The current time of the app in ms.
      * @param animate Whether to play an entry animation.
      */
+    @CallSuper
     public void show(long time, boolean animate) {
         // TODO(crbug.com/40141330): Remove after LayoutManager explicitly hide the old layout.
         mLayoutState = LayoutState.STARTING_TO_SHOW;
@@ -465,15 +463,6 @@ public abstract class Layout {
         return false;
     }
 
-    /** Called by the LayoutManager when an animation should be killed. */
-    public void unstallImmediately() {}
-
-    /**
-     * Called by the LayoutManager when an animation should be killed.
-     * @param tabId The tab that the kill signal is associated with
-     */
-    public void unstallImmediately(int tabId) {}
-
     /**
      * Called by the LayoutManager when they system back button is pressed.
      * @return Whether or not the layout consumed the event.
@@ -481,33 +470,6 @@ public abstract class Layout {
     public boolean onBackPressed() {
         return false;
     }
-
-    /**
-     * Called when a tab get selected. Typically when a tab get closed and the new current tab get
-     * selected.
-     * @param time      The current time of the app in ms.
-     * @param tabId     The id of the selected tab.
-     * @param prevId    The id of the previously selected tab.
-     * @param incognito Whether or not the affected model was incognito.
-     */
-    public void onTabSelected(long time, int tabId, int prevId, boolean incognito) {}
-
-    /**
-     * Called when a tab is being closed. When called, the closing tab will not
-     * be part of the model.
-     * @param time      The current time of the app in ms.
-     * @param tabId     The id of the tab being closed.
-     * @param nextTabId The id if the tab that is being switched to.
-     * @param incognito Whether or not the affected model was incognito.
-     */
-    public void onTabClosed(long time, int tabId, int nextTabId, boolean incognito) {}
-
-    /**
-     * Called when all the tabs in the current stack will be closed.
-     * When called, the tabs will still be part of the model.
-     * @param incognito True if this is the incognito tab model.
-     */
-    public void onTabsAllClosing(boolean incognito) {}
 
     /**
      * Called before a tab is created from the top left button.
@@ -540,28 +502,6 @@ public abstract class Layout {
             float originY) {}
 
     /**
-     * Called when a tab is restored (created FROM_RESTORE).
-     * @param time  The current time of the app in ms.
-     * @param tabId The id of the restored tab.
-     */
-    public void onTabRestored(long time, int tabId) {}
-
-    /**
-     * Called when the current tabModel switched (e.g. standard -> incognito).
-     *
-     * @param incognito True if the new model is incognito.
-     */
-    public void onTabModelSwitched(boolean incognito) {}
-
-    /**
-     * Called when a tab is finally closed if the action was previously undoable.
-     * @param time      The current time of the app in ms.
-     * @param id        The id of the Tab.
-     * @param incognito True if the tab is incognito
-     */
-    public void onTabClosureCommitted(long time, int id, boolean incognito) {}
-
-    /**
      * Steps the animation forward and updates all the animated values.
      * @param time      The current time of the app in ms.
      * @param jumpToEnd Whether to finish the animation.
@@ -574,7 +514,7 @@ public abstract class Layout {
     /**
      * @return The {@link LayoutTab}s to be drawn.
      */
-    public LayoutTab[] getLayoutTabsToRender() {
+    public LayoutTab @Nullable [] getLayoutTabsToRender() {
         return mLayoutTabs;
     }
 
@@ -609,14 +549,13 @@ public abstract class Layout {
     }
 
     /**
-     * @param e                 The {@link MotionEvent} to consider.
-     * @param offsets           The current motion offsets that should be applied to the
-     *                          {@link EventFilter}s.
+     * @param e The {@link MotionEvent} to consider.
+     * @param offsets The current motion offsets that should be applied to the {@link EventFilter}s.
      * @param isKeyboardShowing Whether or not the keyboard is showing.
      * @return The {@link EventFilter} the {@link Layout} is listening to.
      */
-    public EventFilter findInterceptingEventFilter(
-            MotionEvent e, PointF offsets, boolean isKeyboardShowing) {
+    public @Nullable EventFilter findInterceptingEventFilter(
+            MotionEvent e, @Nullable PointF offsets, boolean isKeyboardShowing) {
         EventFilter layoutEventFilter = getEventFilter();
         if (layoutEventFilter != null) {
             if (offsets != null) {
@@ -643,7 +582,7 @@ public abstract class Layout {
      * @return                  A {@link SceneLayer} that represents the content for this
      *                          {@link Layout}.
      */
-    public final SceneLayer getUpdatedSceneLayer(
+    public final @Nullable SceneLayer getUpdatedSceneLayer(
             RectF viewport,
             RectF visibleViewport,
             TabContentManager tabContentManager,
@@ -671,7 +610,7 @@ public abstract class Layout {
     /**
      * @return The EventFilter to use for processing events for this Layout.
      */
-    protected abstract EventFilter getEventFilter();
+    protected abstract @Nullable EventFilter getEventFilter();
 
     /**
      * Get an instance of {@link SceneLayer}. Any class inheriting {@link Layout}
@@ -679,7 +618,7 @@ public abstract class Layout {
      *
      * @return The scene layer for this {@link Layout}.
      */
-    protected abstract SceneLayer getSceneLayer();
+    protected abstract @Nullable SceneLayer getSceneLayer();
 
     /**
      * Update {@link SceneLayer} instance this layout holds. Any class inheriting {@link Layout}

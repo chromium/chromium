@@ -9,6 +9,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using signin::ConsentLevel;
@@ -30,7 +31,7 @@ class PrimaryAccountChangeEventTest : public testing::Test {
     account2_signin_ = State(account_info2, ConsentLevel::kSignin);
     account1_sync_ = State(account_info1, ConsentLevel::kSync);
     account2_sync_ = State(account_info2, ConsentLevel::kSync);
-    access_point_ = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+    access_point_ = signin_metrics::AccessPoint::kUnknown;
     profile_signout_ = signin_metrics::ProfileSignout::kTest;
   }
 
@@ -46,8 +47,8 @@ class PrimaryAccountChangeEventTest : public testing::Test {
  private:
   CoreAccountInfo GetCoreAccountInfoFrom(const char* gaia_id) {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
-    account_info.gaia = gaia_id;
+    account_info.account_id = CoreAccountId::FromGaiaId(GaiaId(gaia_id));
+    account_info.gaia = GaiaId(gaia_id);
     account_info.email = std::string(gaia_id) + "@gmail.com";
     return account_info;
   }

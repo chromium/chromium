@@ -4,21 +4,24 @@
 
 #include "components/cronet/url_request_context_config.h"
 
+#include <algorithm>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/cronet/stale_host_resolver.h"
+#include "components/cronet/cronet_proxy_delegate.h"
 #include "net/base/address_family.h"
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
@@ -27,6 +30,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mapped_host_resolver.h"
+#include "net/dns/stale_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log.h"
@@ -34,8 +38,10 @@
 #include "net/quic/set_quic_flag.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_key_logger_impl.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "url/origin.h"
 
@@ -44,6 +50,44 @@
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 namespace cronet {
+
+// There's still a risk where setting a tag to be ON does not
+// necessarily mean that it will actually be used as it could be
+// conflicting with another flag, for example: Enable TBBR will indicate
+// that QUICHE should use BBR as a congestion control algorithm. However,
+// if RENO is also declared, then QUICHE will end up using RENO instead of
+// BBR due to how the code is structured. This means that the flag user
+// should be aware of how the tag is used in QUICHE.
+//
+// The above warning applies to both client copts and copts.
+BASE_FEATURE(kOverrideConnectionOptions, base::FEATURE_DISABLED_BY_DEFAULT);
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kConnectionOptionsForceOn,
+                   &kOverrideConnectionOptions,
+                   "ForceOn",
+                   "");
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kConnectionOptionsForceOff,
+                   &kOverrideConnectionOptions,
+                   "ForceOff",
+                   "");
+
+BASE_FEATURE(kOverrideClientConnectionOptions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kClientConnectionOptionsForceOn,
+                   &kOverrideClientConnectionOptions,
+                   "ForceOn",
+                   "");
+// The expected format for this flag is comma-separated tags.
+BASE_FEATURE_PARAM(std::string,
+                   kClientConnectionOptionsForceOff,
+                   &kOverrideClientConnectionOptions,
+                   "ForceOff",
+                   "");
 
 namespace {
 
@@ -236,7 +280,7 @@ URLRequestContextConfig::QuicHint::QuicHint(const std::string& host,
                                             int alternate_port)
     : host(host), port(port), alternate_port(alternate_port) {}
 
-URLRequestContextConfig::QuicHint::~QuicHint() {}
+URLRequestContextConfig::QuicHint::~QuicHint() = default;
 
 URLRequestContextConfig::Pkp::Pkp(const std::string& host,
                                   bool include_subdomains,
@@ -245,7 +289,7 @@ URLRequestContextConfig::Pkp::Pkp(const std::string& host,
       include_subdomains(include_subdomains),
       expiration_date(expiration_date) {}
 
-URLRequestContextConfig::Pkp::~Pkp() {}
+URLRequestContextConfig::Pkp::~Pkp() = default;
 
 URLRequestContextConfig::PreloadedNelAndReportingHeader::
     PreloadedNelAndReportingHeader(const url::Origin& origin, std::string value)
@@ -268,7 +312,8 @@ URLRequestContextConfig::URLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    std::optional<int> network_thread_priority)
+    std::optional<int> network_thread_priority,
+    std::optional<cronet::proto::ProxyOptions> proxy_options)
     : enable_quic(enable_quic),
       enable_spdy(enable_spdy),
       enable_brotli(enable_brotli),
@@ -286,11 +331,12 @@ URLRequestContextConfig::URLRequestContextConfig(
       experimental_options(std::move(experimental_options)),
       network_thread_priority(network_thread_priority),
       bidi_stream_detect_broken_connection(false),
-      heartbeat_interval(base::Seconds(0)) {
+      heartbeat_interval(base::Seconds(0)),
+      proxy_options(std::move(proxy_options)) {
   SetContextConfigExperimentalOptions();
 }
 
-URLRequestContextConfig::~URLRequestContextConfig() {}
+URLRequestContextConfig::~URLRequestContextConfig() = default;
 
 // static
 std::unique_ptr<URLRequestContextConfig>
@@ -308,7 +354,8 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    std::optional<int> network_thread_priority) {
+    std::optional<int> network_thread_priority,
+    std::optional<cronet::proto::ProxyOptions> proxy_options) {
   std::optional<base::Value::Dict> experimental_options =
       ParseExperimentalOptions(unparsed_experimental_options);
   if (!experimental_options) {
@@ -325,7 +372,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
       std::move(experimental_options).value(), std::move(mock_cert_verifier),
       enable_network_quality_estimator,
       bypass_public_key_pinning_for_local_trust_anchors,
-      network_thread_priority));
+      network_thread_priority, std::move(proxy_options)));
 }
 
 // static
@@ -338,7 +385,7 @@ URLRequestContextConfig::ParseExperimentalOptions(
     unparsed_experimental_options = "{}";
   DVLOG(1) << "Experimental Options:" << unparsed_experimental_options;
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      unparsed_experimental_options);
+      unparsed_experimental_options, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Parsing experimental options failed: '"
                << unparsed_experimental_options << "', error "
@@ -388,7 +435,14 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   bool is_network_bound = bound_network != net::handles::kInvalidNetworkHandle;
   std::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
 
-  StaleHostResolver::StaleOptions stale_dns_options;
+  net::StaleHostResolver::StaleOptions stale_dns_options;
+  // TODO(crbug.com/399372859): Run an experiment to use the default
+  // StaleOptions() values.
+  stale_dns_options.allow_other_network = false;
+  stale_dns_options.max_stale_uses = 0;
+  stale_dns_options.use_stale_on_name_not_resolved = false;
+  stale_dns_options.max_expired_time = base::Milliseconds(0);
+
   const std::string* host_resolver_rules_string;
 
   for (auto iter = experimental_options.begin();
@@ -718,6 +772,32 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
     }
   }
 
+  auto reconcile_quic_tags = [](quic::QuicTagVector& quic_tags,
+                                const quic::QuicTagVector& tags_to_force_on,
+                                const quic::QuicTagVector& tags_to_force_off) {
+    std::ranges::copy_if(tags_to_force_on, std::back_inserter(quic_tags),
+                         [&](quic::QuicTag tag) {
+                           return !quic::ContainsQuicTag(quic_tags, tag);
+                         });
+    std::erase_if(quic_tags, [&](quic::QuicTag tag) {
+      return quic::ContainsQuicTag(tags_to_force_off, tag);
+    });
+  };
+
+  if (base::FeatureList::IsEnabled(kOverrideClientConnectionOptions)) {
+    reconcile_quic_tags(
+        quic_params->client_connection_options,
+        quic::ParseQuicTagVector(kClientConnectionOptionsForceOn.Get()),
+        quic::ParseQuicTagVector(kClientConnectionOptionsForceOff.Get()));
+  }
+
+  if (base::FeatureList::IsEnabled(kOverrideConnectionOptions)) {
+    reconcile_quic_tags(
+        quic_params->connection_options,
+        quic::ParseQuicTagVector(kConnectionOptionsForceOn.Get()),
+        quic::ParseQuicTagVector(kConnectionOptionsForceOff.Get()));
+  }
+
   if (async_dns_enable || stale_dns_enable || host_resolver_rules_enable ||
       disable_ipv6_on_wifi || is_network_bound || https_svcb_options) {
     net::HostResolver::ManagerOptions host_resolver_manager_options;
@@ -734,7 +814,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       // for Cronet HostResolvers.
       if (stale_dns_enable) {
         DCHECK(!disable_ipv6_on_wifi);
-        host_resolver = std::make_unique<StaleHostResolver>(
+        host_resolver = std::make_unique<net::StaleHostResolver>(
             net::HostResolver::CreateStandaloneContextResolver(
                 net::NetLog::Get(), std::move(host_resolver_manager_options)),
             stale_dns_options);
@@ -780,6 +860,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
     net::URLRequestContextBuilder* context_builder,
+    CronetContext::NetworkTasks* network_tasks,
     net::handles::NetworkHandle bound_network) {
   std::string config_cache;
   if (http_cache != DISABLED) {
@@ -816,13 +897,18 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   context_builder->set_http_network_session_params(session_params);
   context_builder->set_quic_context(std::move(quic_context));
 
+  if (proxy_options.has_value()) {
+    context_builder->set_proxy_delegate(
+        std::make_unique<CronetProxyDelegate>(*proxy_options, network_tasks));
+  }
+
   if (mock_cert_verifier)
     context_builder->SetCertVerifier(std::move(mock_cert_verifier));
   // TODO(mef): Use |config| to set cookies.
 }
 
-URLRequestContextConfigBuilder::URLRequestContextConfigBuilder() {}
-URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() {}
+URLRequestContextConfigBuilder::URLRequestContextConfigBuilder() = default;
+URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() = default;
 
 std::unique_ptr<URLRequestContextConfig>
 URLRequestContextConfigBuilder::Build() {
@@ -832,7 +918,7 @@ URLRequestContextConfigBuilder::Build() {
       experimental_options, std::move(mock_cert_verifier),
       enable_network_quality_estimator,
       bypass_public_key_pinning_for_local_trust_anchors,
-      network_thread_priority);
+      network_thread_priority, std::optional<cronet::proto::ProxyOptions>());
 }
 
 }  // namespace cronet

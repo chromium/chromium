@@ -8,10 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/ui.h"
-#include "chrome/browser/vr/graphics_delegate_win.h"
 #include "ui/gfx/geometry/quaternion.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/vr/graphics_delegate_win.h"
+#endif
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef DrawState
@@ -123,12 +127,16 @@ int VRBrowserRendererThread::GetNextRequestId() {
 
 void VRBrowserRendererThread::OnWebXrTimeoutImminent() {
   OnSpinnerVisibilityChanged(true);
-  scheduler_ui_->OnWebXrTimeoutImminent();
+  if (scheduler_ui_) {
+    scheduler_ui_->OnWebXrTimeoutImminent();
+  }
 }
 
 void VRBrowserRendererThread::OnWebXrTimedOut() {
   OnSpinnerVisibilityChanged(true);
-  scheduler_ui_->OnWebXrTimedOut();
+  if (scheduler_ui_) {
+    scheduler_ui_->OnWebXrTimedOut();
+  }
 }
 
 void VRBrowserRendererThread::UpdateOverlayState() {
@@ -203,8 +211,12 @@ void VRBrowserRendererThread::SetVisibleExternalPromptNotification(
 
   if (!ui_) {
     // If the ui is dismissed, make sure that we don't *actually* have a prompt
-    // state that we needed to set.
-    DCHECK(prompt == ExternalPromptNotificationType::kPromptNone);
+    // state that we needed to set. Note that spinning the ui back up is async;
+    // so if we don't have a ui_ object and we need one, ensure that it's being
+    // spun back up.
+    if (prompt != ExternalPromptNotificationType::kPromptNone) {
+      DCHECK(started_);
+    }
     return;
   }
 
@@ -283,6 +295,10 @@ void VRBrowserRendererThread::OnGraphicsReady(
   static_cast<UiInterface*>(ui.get())->OnGlInitialized();
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();
+
+  if (draw_state_.GetPrompt() != ExternalPromptNotificationType::kPromptNone) {
+    ui_->SetVisibleExternalPromptNotification(draw_state_.GetPrompt());
+  }
 
   // Create the BrowserRenderer to drive UI rendering based on the delegates.
   browser_renderer_ = std::make_unique<BrowserRenderer>(

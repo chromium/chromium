@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -52,8 +53,8 @@ class TaskManagerInterface {
   // task cannot be found it will be attributed to the browser process task.
   static void UpdateAccumulatedStatsNetworkForRoute(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      int64_t recv_bytes,
-      int64_t sent_bytes);
+      base::ByteCount recv_bytes,
+      base::ByteCount sent_bytes);
 
   void AddObserver(TaskManagerObserver* observer);
   void RemoveObserver(TaskManagerObserver* observer);
@@ -65,8 +66,8 @@ class TaskManagerInterface {
   // Returns if the task is killable.
   virtual bool IsTaskKillable(TaskId task_id) = 0;
 
-  // Kills the task with |task_id|.
-  virtual void KillTask(TaskId task_id) = 0;
+  // Kills the task with |task_id|. Returns true if the process terminates.
+  virtual bool KillTask(TaskId task_id) = 0;
 
   // Returns the CPU usage of the process on which |task_id| is running, over
   // the most recent refresh cycle. The value is in the range zero to
@@ -85,15 +86,15 @@ class TaskManagerInterface {
   // Returns the current memory footprint/swapped memory of the task with
   // |task_id| in bytes. A value of -1 means no valid value is currently
   // available.
-  virtual int64_t GetMemoryFootprintUsage(TaskId task_id) const = 0;
-  virtual int64_t GetSwappedMemoryUsage(TaskId task_id) const = 0;
+  virtual base::ByteCount GetMemoryFootprintUsage(TaskId task_id) const = 0;
+  virtual base::ByteCount GetSwappedMemoryUsage(TaskId task_id) const = 0;
 
   // Returns the GPU memory usage of the task with |task_id| in bytes. A value
   // of -1 means no valid value is currently available.
   // |has_duplicates| will be set to true if this process' GPU resource count is
   // inflated because it is counting other processes' resources.
-  virtual int64_t GetGpuMemoryUsage(TaskId task_id,
-                                    bool* has_duplicates) const = 0;
+  virtual base::ByteCount GetGpuMemoryUsage(TaskId task_id,
+                                            bool* has_duplicates) const = 0;
 
   // Returns the number of average idle CPU wakeups per second since the last
   // refresh cycle. A value of -1 means no valid value is currently available.
@@ -102,11 +103,6 @@ class TaskManagerInterface {
   // Returns the number of hard page faults per second since the last refresh
   // cycle. A value of -1 means no valid value is currently available.
   virtual int GetHardFaultsPerSecond(TaskId task_id) const = 0;
-
-  // Returns the NaCl GDB debug stub port. A value of
-  // |nacl::kGdbDebugStubPortUnknown| means no valid value is currently
-  // available. A value of -2 means NaCl is not enabled for this build.
-  virtual int GetNaClDebugStubPort(TaskId task_id) const = 0;
 
   // On Windows, gets the current and peak number of GDI and USER handles in
   // use. A value of -1 means no valid value is currently available.
@@ -142,8 +138,14 @@ class TaskManagerInterface {
   virtual const base::ProcessHandle& GetProcessHandle(TaskId task_id) const = 0;
   virtual const base::ProcessId& GetProcessId(TaskId task_id) const = 0;
 
+  // Returns the task id of the process which spawned |task_id|.
+  virtual TaskId GetRootTaskId(TaskId task_id) const = 0;
+
   // Returns the type of the task with |task_id|.
   virtual Task::Type GetType(TaskId task_id) const = 0;
+
+  // Returns the subtype of the task with |task_id|.
+  virtual Task::SubType GetSubType(TaskId task_id) const = 0;
 
   // Gets the unique ID of the tab if the task with |task_id| represents a
   // WebContents of a tab. Returns -1 otherwise.
@@ -169,36 +171,36 @@ class TaskManagerInterface {
 
   // Returns the network usage (in bytes per second) during the current refresh
   // cycle for the task with |task_id|.
-  virtual int64_t GetNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteCount GetNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the network usage during the current lifetime of the task
   // for the task with |task_id|.
-  virtual int64_t GetCumulativeNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the total network usage (in bytes per second) during the current
   // refresh cycle for the process on which the task with |task_id| is running.
   // This is the sum of all the network usage of the individual tasks (that
   // can be gotten by the above GetNetworkUsage()). A value of -1 means network
   // usage calculation refresh is currently not available.
-  virtual int64_t GetProcessTotalNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the total network usage during the lifetime of the process
   // on which the task with |task_id| is running.
   // This is the sum of all the network usage of the individual tasks (that
   // can be gotten by the above GetTotalNetworkUsage()).
-  virtual int64_t GetCumulativeProcessTotalNetworkUsage(
+  virtual base::ByteCount GetCumulativeProcessTotalNetworkUsage(
       TaskId task_id) const = 0;
 
   // Returns the Sqlite used memory (in bytes) for the task with |task_id|.
   // A value of -1 means no valid value is currently available.
-  virtual int64_t GetSqliteMemoryUsed(TaskId task_id) const = 0;
+  virtual base::ByteCount GetSqliteMemoryUsed(TaskId task_id) const = 0;
 
   // Returns the allocated and used V8 memory (in bytes) for the task with
   // |task_id|. A return value of false means no valid value is currently
   // available.
   virtual bool GetV8Memory(TaskId task_id,
-                           int64_t* allocated,
-                           int64_t* used) const = 0;
+                           base::ByteCount* allocated,
+                           base::ByteCount* used) const = 0;
 
   // Gets the Blink resource cache stats for the task with |task_id|.
   // A return value of false means that task does NOT report WebCache stats.
@@ -234,6 +236,11 @@ class TaskManagerInterface {
   virtual TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const = 0;
 
+  // Returns whether a task is valid by the implementer. Concept of 'valid' is
+  // delegated to the implementer. An example of validness is
+  // task_manager_impl.cc tracking tasks in task_groups_by_task_ids_.
+  virtual bool IsTaskValid(TaskId task_id) const;
+
   // Returns true if the resource |type| usage calculation is enabled and
   // the implementation should refresh its value (this means that at least one
   // of the observers require this value). False otherwise.
@@ -250,7 +257,6 @@ class TaskManagerInterface {
   void NotifyObserversOnRefreshWithBackgroundCalculations(
       const TaskIdList& task_ids);
   void NotifyObserversOnTaskUnresponsive(TaskId id);
-  void NotifyObserversOnActiveTaskFetched(TaskId id);
 
   // Refresh all the enabled resources usage of all the available tasks.
   virtual void Refresh() = 0;

@@ -11,26 +11,37 @@
 #include "components/reporting/util/status.h"
 
 namespace reporting::internal {
-
 std::optional<Status> ShouldReturnStatus(const Status& status) {
-  return status.ok() ? std::optional<Status>(std::nullopt) : status;
+  if (status.ok()) {
+    return std::nullopt;
+  } else {
+    return status;
+  }
 }
 
 std::optional<Status> ShouldReturnStatus(Status&& status) {
-  return status.ok() ? std::optional<Status>(std::nullopt) : std::move(status);
+  if (status.ok()) {
+    return std::nullopt;
+  } else {
+    return std::move(status);
+  }
 }
 
 std::optional<base::unexpected<Status>> ShouldReturnStatus(
     const base::unexpected<Status>& status) {
-  return status.error().ok()
-             ? std::optional<base::unexpected<Status>>(std::nullopt)
-             : status;
+  if (status.error().ok()) {
+    return std::nullopt;
+  } else {
+    return status;
+  }
 }
 
 std::optional<base::unexpected<Status>> ShouldReturnStatus(
     base::unexpected<Status>&& status) {
-  return status.error().ok()
-             ? std::optional<base::unexpected<Status>>(std::nullopt)
-             : std::move(status);
+  if (status.error().ok()) {
+    return std::nullopt;
+  } else {
+    return std::move(status);
+  }
 }
 }  // namespace reporting::internal

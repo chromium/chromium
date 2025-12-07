@@ -1,0 +1,25 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+div[slot='body'] ul {
+  background-color: #ffebee;  /* --paper-red-50 */
+  margin: 0;
+  padding-bottom: 10px;
+  padding-inline-end: 10px;
+  padding-top: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  div[slot='body'] ul {
+    /* TODO(dbeam): merge with --cr-input-background-color? */
+    background-color: rgba(0, 0, 0, .3);
+    color: var(--error-color);
+  }
+}

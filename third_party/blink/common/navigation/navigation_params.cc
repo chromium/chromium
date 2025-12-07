@@ -11,6 +11,7 @@ namespace blink {
 mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
   auto common_params = mojom::CommonNavigationParams::New();
   common_params->referrer = mojom::Referrer::New();
+  common_params->actual_navigation_start = base::TimeTicks::Now();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->source_location = network::mojom::SourceLocation::New();
 
@@ -24,6 +25,7 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
   commit_params->navigation_api_history_entry_arrays =
       mojom::NavigationApiHistoryEntryArrays::New();
   commit_params->content_settings = CreateDefaultRendererContentSettings();
+  commit_params->navigation_metrics_token = base::UnguessableToken::Create();
 
   return commit_params;
 }
@@ -39,7 +41,7 @@ mojom::RendererContentSettingsPtr CreateDefaultRendererContentSettings() {
   //   allow_image is not supported on Android), then these defaults are used.
   return mojom::RendererContentSettings::New(
       /*allow_script=*/true, /*allow_image=*/true, /*allow_popup=*/false,
-      /*allow_mixed_content=*/false);
+      /*allow_mixed_content=*/false, /*allow_controlled_frame=*/false);
 }
 
 }  // namespace blink

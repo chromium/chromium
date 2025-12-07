@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_NETWORK_LOCATION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
-#include "url/gurl.h"
 
 namespace net {
 struct PartialNetworkTrafficAnnotationTag;
@@ -29,18 +29,50 @@ class SimpleURLLoader;
 
 namespace device {
 
+// Defines the possible outcomes of a network location request. NOTE: Do not
+// renumber these as that would confuse interpretation of previously logged
+// data. When making changes, also update the enum list in
+// tools/metrics/histograms/metadata/geolocation/enums.xml to keep it in sync.
+enum class NetworkLocationRequestResult {
+  kSuccess = 0,
+  kCanceled = 1,
+  kNetworkError = 2,
+  kResponseNotOk = 3,
+  kResponseEmpty = 4,
+  kResponseMalformed = 5,
+  kInvalidPosition = 6,
+  kMaxValue = kInvalidPosition,
+};
+
+// Holds the result of a location request, including the position,
+// the request status, and the raw response from the network.
+struct LocationResponseResult {
+  LocationResponseResult(mojom::GeopositionResultPtr position,
+                         NetworkLocationRequestResult result_code,
+                         mojom::NetworkLocationResponsePtr raw_response);
+
+  LocationResponseResult(LocationResponseResult&& other);
+  LocationResponseResult& operator=(LocationResponseResult&& other);
+
+  ~LocationResponseResult();
+
+  mojom::GeopositionResultPtr position;
+  NetworkLocationRequestResult result_code;
+  mojom::NetworkLocationResponsePtr raw_response;
+};
+
 // Takes wifi data and sends it to a server to get a position fix.
 // It performs formatting of the request and interpretation of the response.
 class NetworkLocationRequest {
  public:
-  // Called when a new geo position is available. The second argument indicates
-  // whether there was a server error or not. It is true when there was a
-  // server or network error - either no response or a 500 error code.
-  using LocationResponseCallback = base::RepeatingCallback<void(
-      mojom::GeopositionResultPtr /* result */,
-      bool /* server_error */,
-      const WifiData& /* wifi_data */,
-      mojom::NetworkLocationResponsePtr /* response data */)>;
+  // Called when a new geo position is available. The first argument includes
+  // the collection of information (position / request result code / raw
+  // response) from a network request. The second argument provides the wifi
+  // access point data that can be used to create a position cache to prevent
+  // unnecessary network requests.
+  using LocationResponseCallback =
+      base::RepeatingCallback<void(LocationResponseResult /* result */,
+                                   const WifiData& /* wifi_data */)>;
 
   NetworkLocationRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -68,7 +100,7 @@ class NetworkLocationRequest {
   std::vector<mojom::AccessPointDataPtr> GetRequestDataForDiagnostics() const;
 
  private:
-  void OnRequestComplete(std::unique_ptr<std::string> data);
+  void OnRequestComplete(std::optional<std::string> data);
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;

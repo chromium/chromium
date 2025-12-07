@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/printing/printer_event_tracker_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/usb_printer_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -152,7 +152,11 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
     DetectedPrinter entry;
     if (!UsbDeviceToPrinter(device_info, &entry)) {
       // An error will already have been logged if we failed to convert.
-      PRINTER_LOG(EVENT) << "USB printer was detected but not recognized";
+      PRINTER_LOG(EVENT) << "USB printer "
+                         << base::StringPrintf("%04x:%04x",
+                                               device_info.vendor_id,
+                                               device_info.product_id)
+                         << " was detected but not recognized";
       return;
     }
     std::string make_and_model = GuessEffectiveMakeAndModel(device_info);
@@ -173,7 +177,7 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
                                /*blocked_interface_classes=*/{},
                                device.BindNewPipeAndPassReceiver(),
                                /*device_client=*/mojo::NullRemote());
-    GetDeviceId(std::move(device),
+    GetDeviceId(std::move(device_info), std::move(device),
                 base::BindOnce(&UsbPrinterDetectorImpl::OnGetDeviceId,
                                weak_factory_.GetWeakPtr(), std::move(entry),
                                device_info.guid));

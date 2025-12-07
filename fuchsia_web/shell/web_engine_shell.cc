@@ -114,10 +114,6 @@ int main(int argc, char** argv) {
 
   std::optional<uint16_t> remote_debugging_port =
       GetRemoteDebuggingPort(*command_line);
-  if (!remote_debugging_port) {
-    PrintUsage();
-    return 1;
-  }
 
   const bool is_headless = command_line->HasSwitch(kHeadlessSwitch);
   const bool enable_protected_media_identifier_access =
@@ -183,7 +179,9 @@ int main(int argc, char** argv) {
   }
 
   create_context_params.set_features(features);
-  create_context_params.set_remote_debugging_port(*remote_debugging_port);
+  if (remote_debugging_port) {
+    create_context_params.set_remote_debugging_port(*remote_debugging_port);
+  }
 
   // DRM services require cdm_data_directory to be populated, so create a
   // directory under /data and use that as the cdm_data_directory.
@@ -223,13 +221,13 @@ int main(int argc, char** argv) {
             *base::ComponentContextForProcess()->outgoing(),
             /*is_web_instance_component_in_same_package=*/false);
     if (enable_web_instance_tmp) {
-      const zx_status_t status = fdio_open(
+      const zx_status_t status = fdio_open3(
           "/tmp",
-          static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                                fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-                                fuchsia::io::OpenFlags::DIRECTORY),
+          static_cast<uint64_t>(fuchsia::io::PERM_READABLE |
+                                fuchsia::io::PERM_WRITABLE |
+                                fuchsia::io::Flags::PROTOCOL_DIRECTORY),
           tmp_directory.NewRequest().TakeChannel().release());
-      ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
+      ZX_CHECK(status == ZX_OK, status) << "fdio_open3(/tmp)";
       web_instance_host->set_tmp_dir(std::move(tmp_directory));
     }
     fidl::InterfaceRequest<fuchsia::io::Directory> services_request;
@@ -253,7 +251,9 @@ int main(int argc, char** argv) {
 
   // Create the browser |frame| which will contain the webpage.
   fuchsia::web::CreateFrameParams frame_params;
-  frame_params.set_enable_remote_debugging(true);
+  if (remote_debugging_port) {
+    frame_params.set_enable_remote_debugging(true);
+  }
 
   fuchsia::web::FramePtr frame;
   context->CreateFrameWithParams(std::move(frame_params), frame.NewRequest());
@@ -266,18 +266,6 @@ int main(int argc, char** argv) {
   fuchsia::web::ContentAreaSettings settings;
   settings.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   frame->SetContentAreaSettings(std::move(settings));
-
-  // Log the debugging port.
-  context->GetRemoteDebuggingPort(
-      [](fuchsia::web::Context_GetRemoteDebuggingPort_Result result) {
-        if (result.is_err()) {
-          LOG(ERROR) << "Remote debugging service was not opened.";
-          return;
-        }
-        // Telemetry expects this exact format of log line output to retrieve
-        // the remote debugging port.
-        LOG(INFO) << "Remote debugging port: " << result.response().port;
-      });
 
   // Navigate |frame| to |url|.
   fuchsia::web::LoadUrlParams load_params;
@@ -302,8 +290,7 @@ int main(int argc, char** argv) {
     fuchsia::web::PermissionDescriptor protected_media_permission;
     protected_media_permission.set_type(
         fuchsia::web::PermissionType::PROTECTED_MEDIA_IDENTIFIER);
-    frame->SetPermissionState(std::move(protected_media_permission),
-                              url.DeprecatedGetOriginAsURL().spec(),
+    frame->SetPermissionState(std::move(protected_media_permission), "*",
                               fuchsia::web::PermissionState::GRANTED);
   }
 

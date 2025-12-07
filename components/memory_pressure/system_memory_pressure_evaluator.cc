@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
@@ -20,12 +19,6 @@
 #endif
 
 namespace memory_pressure {
-
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kUseWinOSMemoryPressureSignals,
-             "UseWinOSMemoryPressureSignals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 const base::TimeDelta SystemMemoryPressureEvaluator::kRenotifyVotePeriod =
     base::Seconds(5);
@@ -45,11 +38,6 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   auto evaluator =
       std::make_unique<memory_pressure::win::SystemMemoryPressureEvaluator>(
           monitor->CreateVoter());
-  // Also subscribe to the OS signals if they're available and the feature is
-  // enabled.
-  if (base::FeatureList::IsEnabled(kUseWinOSMemoryPressureSignals)) {
-    evaluator->CreateOSSignalPressureEvaluator(monitor->CreateVoter());
-  }
   return evaluator;
 #else
   // Chrome OS and Chromecast evaluators are created in separate components.
@@ -59,13 +47,13 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
-    : current_vote_(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE),
+    : current_vote_(base::MEMORY_PRESSURE_LEVEL_NONE),
       voter_(std::move(voter)) {}
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() = default;
 
 void SystemMemoryPressureEvaluator::SetCurrentVote(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_vote_ = level;
 }

@@ -28,8 +28,6 @@ template("aggregate_vector_icons") {
       defined(invoker.icon_directory),
       "Need icon_directory in $target_name where the icons and templates live.")
 
-  public_deps = [ "//base" ]
-
   action(target_name) {
     visibility = [ ":*" ]
 
@@ -61,5 +59,13 @@ template("aggregate_vector_icons") {
       "--output_cc=" + rebase_path(output_cc, root_build_dir),
       "--output_h=" + rebase_path(output_h, root_build_dir),
     ]
+
+    if (defined(invoker.generate_unittests) && invoker.generate_unittests) {
+      output_test_h = "$target_gen_dir/vector_icons_unittest.h"
+      templates += [ "vector_icons_unittest.h.template" ]
+      outputs += [ output_test_h ]
+      args +=
+          [ "--output_test_h=" + rebase_path(output_test_h, root_build_dir) ]
+    }
   }
 }

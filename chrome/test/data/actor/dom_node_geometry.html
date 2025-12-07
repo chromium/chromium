@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--<meta name="viewport" content="width=device-width, minimum-scale=1.0"> -->
+  <meta name="viewport" content="width=800">
+  <title>APC Utils Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    #a, #b, #c, #d, #e {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    #a {
+      background-color: #f9f9f9;
+    }
+    #b {
+      background-color: #e9e9e9;
+      padding-right: 10%;
+    }
+    #c {
+      background-color: #d9d9d9;
+      width: 10%;
+    }
+    #d {
+      background-color: #f9f9f9;
+      width: 20%;
+      text-align: left;
+    }
+    #e {
+      width: 20%;
+      float: right;
+    }
+  </style>
+  <script>
+    window.isIframeLoaded = false;
+    function iframeLoaded() {
+      window.isIframeLoaded = true;
+    }
+  </script>
+</head>
+
+<body>
+  <script>
+    /**
+     * Creates a colored dot and places it on the page at specific coordinates.
+     * @param {number} x - The horizontal coordinate (from the left edge of the page).
+     * @param {number} y - The vertical coordinate (from the top edge of the page).
+     * @param {string} [color='red'] - The color of the dot (e.g., 'red', '#ff0000').
+     * @param {number} [size=15] - The diameter of 1the dot in pixels.
+     */
+    function placeDot(x, y, color = 'red', size = 8) {
+      const dot = document.createElement('div');
+      dot.style.position = 'absolute';
+      dot.style.width = `${size}px`;
+      dot.style.height = `${size}px`;
+      dot.style.backgroundColor = color;
+      dot.style.borderRadius = '50%';
+      dot.style.left = `${x - size / 2}px`;
+      dot.style.top = `${y - size / 2}px`;
+      document.body.appendChild(dot);
+  }
+  </script>
+
+  <div id="e" aria-label="e_div">
+    <strong>E</strong>
+  </div>
+  <div id="a" aria-label="a_div">
+    <strong aria-label="a">A</strong>
+    <div id="b" aria-label="b_div">
+      <strong aria-label="b">B</strong>
+      <div id="c" aria-label="c_div"><strong>C</strong></div>
+    </div>
+    <iframe src="dom_node_geometry_iframe.html"></iframe>
+  </div>
+  <center>
+    <div id="d" aria-label="d_div">
+      <strong>D</strong>
+    </div>
+  </center>
+</body>
+</html>

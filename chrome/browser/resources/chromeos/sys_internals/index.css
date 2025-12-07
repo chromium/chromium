@@ -132,6 +132,7 @@ body {
   background-color: #f8f8f8;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   height: 100%;
   left: 0;
   overflow-x: scroll;
@@ -144,6 +145,10 @@ body {
 .infopage-panel {
   flex-grow: 1;
   padding: 30px 30px 30px 60px;
+}
+
+.infopage-panel.hidden {
+  display: none;
 }
 
 .infopage-panel .title {

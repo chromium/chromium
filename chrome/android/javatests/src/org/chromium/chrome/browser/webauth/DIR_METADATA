@@ -1,1 +1,7 @@
-mixins: "//chrome/android/java/src/org/chromium/chrome/browser/webauth/COMMON_METADATA"
+monorail: {
+  component: "Blink>WebAuthentication"
+}
+team_email: "identity-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456855
+}

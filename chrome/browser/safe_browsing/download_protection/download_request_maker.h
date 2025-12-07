@@ -19,14 +19,21 @@
 
 namespace safe_browsing {
 
-class DownloadProtectionService;
-
 // This class encapsulate the process of populating all the fields in a Safe
 // Browsing download ping.
 class DownloadRequestMaker {
  public:
+  // Details about a DownloadRequestMaker run, to pass back to the caller.
+  struct RequestCreationDetails {
+    // What type of file inspection was performed.
+    DownloadFileType::InspectionType inspection_type = DownloadFileType::NONE;
+  };
+
   using Callback =
       base::OnceCallback<void(std::unique_ptr<ClientDownloadRequest>)>;
+  using CallbackWithDetails =
+      base::OnceCallback<void(RequestCreationDetails,
+                              std::unique_ptr<ClientDownloadRequest>)>;
 
   // URL and referrer of the window the download was started from.
   struct TabUrls {
@@ -41,14 +48,13 @@ class DownloadRequestMaker {
 
   static std::unique_ptr<DownloadRequestMaker> CreateFromFileSystemAccess(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-      DownloadProtectionService* service,
       const content::FileSystemAccessWriteItem& item);
 
   DownloadRequestMaker(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
       content::BrowserContext* browser_context,
       TabUrls tab_urls,
-      base::FilePath target_file_path,
+      base::FilePath target_file_name,
       base::FilePath full_path,
       GURL source_url,
       std::string sha256_hash,
@@ -69,6 +75,9 @@ class DownloadRequestMaker {
   // Starts filling in fields in the download ping. Will run the callback with
   // the fully-populated ping.
   void Start(Callback callback);
+
+  // Same as above but also returns a RequestCreationDetails to the caller.
+  void Start(CallbackWithDetails callback);
 
  private:
   // Callback when |file_analyzer_| is done analyzing the download.
@@ -94,8 +103,13 @@ class DownloadRequestMaker {
   // referrer.
   TabUrls tab_urls_;
 
-  // The ultimate destination for the download.
-  const base::FilePath target_file_path_;
+  // The ultimate destination/filename for the download. This is used to
+  // determine the filetype and populate request fields requiring a
+  // human-readable filename. On platforms where the target file *path* does not
+  // contain file name but is instead a different identifier (e.g. a content-URI
+  // on Android), this should be populated with the file *name* i.e. a display
+  // name for the download.
+  const base::FilePath target_file_name_;
 
   // The current path to the file contents.
   const base::FilePath full_path_;
@@ -106,7 +120,9 @@ class DownloadRequestMaker {
   // system accesses.
   base::OnceCallback<void(const FileAnalyzer::Results&)> on_results_callback_;
 
-  Callback callback_;
+  CallbackWithDetails callback_;
+
+  RequestCreationDetails details_;
 
   base::WeakPtrFactory<DownloadRequestMaker> weakptr_factory_{this};
 };

@@ -27,20 +27,6 @@ PrintPreviewWebcontentsAdapterAsh::~PrintPreviewWebcontentsAdapterAsh() {
   dialog_controller_->RemoveObserver(this);
 }
 
-void PrintPreviewWebcontentsAdapterAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::PrintPreviewCrosDelegate> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
-}
-
-void PrintPreviewWebcontentsAdapterAsh::RegisterMojoClient(
-    mojo::PendingRemote<crosapi::mojom::PrintPreviewCrosClient> client,
-    RegisterMojoClientCallback callback) {
-  mojo_client_.reset();
-  mojo_client_.Bind(std::move(client));
-  std::move(callback).Run(/*success=*/true);
-}
-
 void PrintPreviewWebcontentsAdapterAsh::RegisterAshClient(
     crosapi::mojom::PrintPreviewCrosClient* client) {
   ash_client_ = client;
@@ -65,33 +51,16 @@ void PrintPreviewWebcontentsAdapterAsh::StartGetPreview(
     const base::UnguessableToken& token,
     crosapi::mojom::PrintSettingsPtr settings,
     base::OnceCallback<void(bool)> callback) {
-  // Call on the ash client if the initiating webcontents is from ash-chrome.
-  if (!mojo_client_) {
-    ash_client_->GeneratePrintPreview(token, std::move(settings),
-                                      std::move(callback));
-  } else {
-    // Otherwise call on the mojo client if the initiating webcontents is from
-    // lacros.
-    mojo_client_->GeneratePrintPreview(token, std::move(settings),
-                                       std::move(callback));
-  }
+  ash_client_->GeneratePrintPreview(token, std::move(settings),
+                                    std::move(callback));
 }
 
 void PrintPreviewWebcontentsAdapterAsh::OnDialogClosed(
     const base::UnguessableToken& token) {
-  if (!mojo_client_) {
-    // ash-chrome client.
-    ash_client_->HandleDialogClosed(
-        token, base::BindOnce(
-                   &PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback,
-                   weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // lacros client.
-    mojo_client_->HandleDialogClosed(
-        token, base::BindOnce(
-                   &PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback,
-                   weak_ptr_factory_.GetWeakPtr()));
-  }
+  ash_client_->HandleDialogClosed(
+      token,
+      base::BindOnce(&PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback(bool success) {

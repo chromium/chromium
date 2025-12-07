@@ -18,7 +18,7 @@ limitations under the License.
 #include <utility>
 
 #include "absl/types/optional.h"  // from @com_google_absl
-#include "Eigen/Core"  // from @eigen
+#include "Eigen/Core"  // from @eigen_archive
 #include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 
 namespace tflite {

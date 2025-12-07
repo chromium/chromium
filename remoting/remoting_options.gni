@@ -3,13 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
 remoting_use_x11 = ozone_platform_x11 && (is_linux && !is_castos)
 
-enable_remoting_host = is_win || is_mac || is_chromeos_ash || remoting_use_x11
+enable_remoting_client =
+    is_chromeos || (is_linux && !is_castos) || is_mac || is_win
+
+enable_remoting_host = is_win || is_mac || is_chromeos || remoting_use_x11
 
 enable_me2me_host = is_win || is_mac || remoting_use_x11
 
@@ -27,5 +29,10 @@ if (is_chrome_branded) {
 } else {
   branding_path = "//remoting/branding_Chromium"
 }
+
+# h.264 is disabled since it isn't well tested or optimized, and it has issues
+# such as crbug.com/378730864. This option may be enabled locally for testing or
+# development.
+remoting_enable_h264 = false
 
 rdp_desktop_session_guid = "6a7699f0-ee43-43e7-aa30-a6738f9bd470"

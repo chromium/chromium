@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/test/fake_paint_image_generator.h"
 
+#include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 
 namespace cc {
@@ -44,7 +41,7 @@ FakePaintImageGenerator::FakePaintImageGenerator(
 
 FakePaintImageGenerator::~FakePaintImageGenerator() = default;
 
-sk_sp<SkData> FakePaintImageGenerator::GetEncodedData() const {
+sk_sp<const SkData> FakePaintImageGenerator::GetEncodedData() const {
   return SkData::MakeEmpty();
 }
 
@@ -53,6 +50,10 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
                                         PaintImage::GeneratorClientId client_id,
                                         uint32_t lazy_pixel_ref) {
   base::AutoLock lock(lock_);
+
+  if (force_fail_decode_) {
+    return false;
+  }
 
   CHECK(!is_yuv_ || expect_fallback_to_rgb_);
   const SkImageInfo& dst_info = dst_pixmap.info();
@@ -91,17 +92,22 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
     PaintImage::GeneratorClientId client_id) {
   base::AutoLock lock(lock_);
 
+  if (force_fail_decode_) {
+    return false;
+  }
+
   CHECK(is_yuv_);
   CHECK(!expect_fallback_to_rgb_);
   if (image_backing_memory_.empty())
     return false;
-  size_t plane_sizes[SkYUVAInfo::kMaxPlanes];
-  yuva_pixmap_info_.computeTotalBytes(plane_sizes);
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> plane_sizes;
+  yuva_pixmap_info_.computeTotalBytes(plane_sizes.data());
   uint8_t* src_plane_memory = image_backing_memory_.data();
   int num_planes = pixmaps.numPlanes();
   for (int i = 0; i < num_planes; ++i) {
-    memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory, plane_sizes[i]);
-    src_plane_memory += plane_sizes[i];
+    UNSAFE_TODO(memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory,
+                       plane_sizes[i]));
+    UNSAFE_TODO(src_plane_memory += plane_sizes[i]);
   }
   if (!base::Contains(frames_decoded_count_, frame_index)) {
     frames_decoded_count_[frame_index] = 1;

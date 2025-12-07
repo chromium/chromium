@@ -1,6 +1,7 @@
 include_rules = [
   "+components/browser_ui/share/android",
   "+components/browser_ui/device_lock/android",
+  "+components/image_fetcher/android",
 ]
 
 specific_include_rules = {

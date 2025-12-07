@@ -10,10 +10,12 @@
 
 namespace gfx {
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // TODO(crbug.com/323934468): Initialize decoder settings dynamically using
-  // fuzzer input.
-  JPEGCodec::Decode(data, size);
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
+  // TODO(https://crbug.com/323934468): Initialize decoder settings dynamically
+  // using fuzzer input.
+  // SAFETY: libfuzzer gives a valid pointer and size pair.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+  JPEGCodec::Decode(data);
   return 0;
 }
 

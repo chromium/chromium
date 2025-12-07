@@ -34,7 +34,8 @@ std::string CreateRandomSalt() {
 
 MediaDeviceSaltDatabase::MediaDeviceSaltDatabase(const base::FilePath& db_path)
     : db_path_(db_path),
-      db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 16}) {}
+      db_(sql::DatabaseOptions().set_cache_size(16),
+          /*tag=*/"MediaDeviceSalts") {}
 
 std::optional<std::string> MediaDeviceSaltDatabase::GetOrInsertSalt(
     const blink::StorageKey& storage_key,
@@ -167,7 +168,7 @@ std::vector<blink::StorageKey> MediaDeviceSaltDatabase::GetAllStorageKeys() {
   sql::Statement statement(db_.GetUniqueStatement(kGetStorageKeysSql));
   while (statement.Step()) {
     std::optional<blink::StorageKey> key =
-        blink::StorageKey::Deserialize(statement.ColumnString(0));
+        blink::StorageKey::Deserialize(statement.ColumnStringView(0));
     if (key.has_value()) {
       storage_keys.push_back(*key);
     }
@@ -184,7 +185,6 @@ bool MediaDeviceSaltDatabase::EnsureOpen(bool is_retry) {
     return false;
   }
 
-  db_.set_histogram_tag("MediaDeviceSalts");
   // base::Unretained() is safe here because `this` owns `db`.
   db_.set_error_callback(base::BindRepeating(
       &MediaDeviceSaltDatabase::OnDatabaseError, base::Unretained(this)));
@@ -214,7 +214,7 @@ bool MediaDeviceSaltDatabase::EnsureOpen(bool is_retry) {
   }
 
   db_.Raze();
-  return is_retry ? false : EnsureOpen(/*is_retry=*/true);
+  return !is_retry && EnsureOpen(/*is_retry=*/true);
 }
 
 void MediaDeviceSaltDatabase::OnDatabaseError(int error,

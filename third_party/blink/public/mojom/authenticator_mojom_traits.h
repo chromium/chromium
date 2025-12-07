@@ -10,14 +10,15 @@
 #include <vector>
 
 #include "base/containers/flat_tree.h"
-#include "device/fido/authenticator_selection_criteria.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "base/notreached.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "mojo/public/cpp/bindings/array_traits_stl.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -198,8 +199,7 @@ struct BLINK_COMMON_EXPORT
       case device::CableDiscoveryData::Version::V2:
         return 2;
       case device::CableDiscoveryData::Version::INVALID:
-        CHECK(false);
-        return 0;
+        NOTREACHED();
     }
   }
 

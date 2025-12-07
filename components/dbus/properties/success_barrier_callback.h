@@ -15,7 +15,7 @@
 // wrapper is called with false, |done_callback| is immediately run with an
 // argument of false.  Further calls after |done_callback| has already been run
 // will have no effect.
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 base::RepeatingCallback<void(bool)> SuccessBarrierCallback(
     size_t num_calls,
     base::OnceCallback<void(bool)> done_callback);

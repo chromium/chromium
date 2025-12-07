@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/aw_context_menu_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,8 +12,8 @@ found in the LICENSE file.
 
     <ViewStub
         android:id="@+id/aw_context_menu_stub"
-        android:layout="@layout/aw_context_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:layout="@layout/aw_context_menu_dialog" />
 </FrameLayout>

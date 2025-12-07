@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 namespace {
+using page_content_annotations::HistoryVisit;
 const char kSensitiveRelUrl[] = "/android/sensitive.html";
 const char kNonSensitiveRelUrl[] = "/android/hello.html";
 const char kNonSensitiveRelUrl2[] = "/android/second.html";
@@ -92,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda =
       std::make_unique<SensitivityPersistedTabDataAndroid>(tab_android);
-  sptda->set_is_sensitive(true);
+  sptda->set_sensitivity_score(0.2);
   Remove(sptda.get());
   tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                            std::move(sptda));
@@ -101,9 +102,12 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
       base::BindOnce(
           [](base::OnceClosure done,
              PersistedTabDataAndroid* persisted_tab_data) {
-            EXPECT_TRUE(static_cast<SensitivityPersistedTabDataAndroid*>(
-                            persisted_tab_data)
-                            ->is_sensitive());
+            SensitivityPersistedTabDataAndroid* sensitive_persisted_tab_data =
+                static_cast<SensitivityPersistedTabDataAndroid*>(
+                    persisted_tab_data);
+            EXPECT_TRUE(sensitive_persisted_tab_data->is_sensitive());
+            EXPECT_FLOAT_EQ(0.2,
+                            sensitive_persisted_tab_data->sensitivity_score());
             std::move(done).Run();
           },
           run_loop.QuitClosure()));
@@ -114,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
                        TestSerialize) {
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   SensitivityPersistedTabDataAndroid sptda(tab_android);
-  sptda.set_is_sensitive(true);
+  sptda.set_sensitivity_score(0.2);
   std::unique_ptr<const std::vector<uint8_t>> serialized = Serialize(&sptda);
   SensitivityPersistedTabDataAndroid deserialized(tab_android);
   EXPECT_FALSE(deserialized.is_sensitive());
@@ -128,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   SensitivityPersistedTabDataAndroid* sptda =
       new SensitivityPersistedTabDataAndroid(tab_android);
-  sptda->set_is_sensitive(true);
+  sptda->set_sensitivity_score(0.1);
   tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                            nullptr);
   Save(sptda);
@@ -138,9 +142,12 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
       base::BindOnce(
           [](base::OnceClosure done,
              PersistedTabDataAndroid* persisted_tab_data) {
-            EXPECT_TRUE(static_cast<SensitivityPersistedTabDataAndroid*>(
-                            persisted_tab_data)
-                            ->is_sensitive());
+            SensitivityPersistedTabDataAndroid* sensitive_persisted_tab_data =
+                static_cast<SensitivityPersistedTabDataAndroid*>(
+                    persisted_tab_data);
+            EXPECT_TRUE(sensitive_persisted_tab_data->is_sensitive());
+            EXPECT_FLOAT_EQ(0.1,
+                            sensitive_persisted_tab_data->sensitivity_score());
             std::move(done).Run();
           },
           run_loop.QuitClosure()));
@@ -160,8 +167,10 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
 
   EXPECT_EQ(tab_android->GetURL().spec(), sensitive_url.spec());
 
-  sptda->OnPageContentAnnotated(sensitive_url, kSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, sensitive_url),
+                                kSensitiveResult);
   EXPECT_TRUE(sptda->is_sensitive());
+  EXPECT_FLOAT_EQ(0.1, sptda->sensitivity_score());
 }
 
 IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
@@ -176,8 +185,10 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
       new SensitivityPersistedTabDataAndroid(tab_android);
   EXPECT_EQ(tab_android->GetURL().spec(), non_sensitive_url.spec());
 
-  sptda->OnPageContentAnnotated(non_sensitive_url, kNonSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, non_sensitive_url),
+                                kNonSensitiveResult);
   EXPECT_FALSE(sptda->is_sensitive());
+  EXPECT_FLOAT_EQ(0.7, sptda->sensitivity_score());
 }
 
 IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
@@ -199,9 +210,12 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   EXPECT_EQ(tab_android->GetURL().spec(), sensitive_url.spec());
 
   // Annotate both sensitive and non-sensitive tabs
-  sptda->OnPageContentAnnotated(non_sensitive_url, kNonSensitiveResult);
-  sptda->OnPageContentAnnotated(sensitive_url, kSensitiveResult);
-  sptda->OnPageContentAnnotated(non_sensitive_url2, kNonSensitiveResult2);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, non_sensitive_url),
+                                kNonSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, sensitive_url),
+                                kSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, non_sensitive_url2),
+                                kNonSensitiveResult2);
   tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                            nullptr);
 
@@ -210,9 +224,12 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
       base::BindOnce(
           [](base::OnceClosure done,
              PersistedTabDataAndroid* persisted_tab_data) {
-            EXPECT_TRUE(static_cast<SensitivityPersistedTabDataAndroid*>(
-                            persisted_tab_data)
-                            ->is_sensitive());
+            SensitivityPersistedTabDataAndroid* sensitive_persisted_tab_data =
+                static_cast<SensitivityPersistedTabDataAndroid*>(
+                    persisted_tab_data);
+            EXPECT_TRUE(sensitive_persisted_tab_data->is_sensitive());
+            EXPECT_FLOAT_EQ(0.1,
+                            sensitive_persisted_tab_data->sensitivity_score());
             std::move(done).Run();
           },
           run_loop.QuitClosure()));

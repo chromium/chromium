@@ -26,7 +26,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -132,7 +131,7 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
   // histograms.xml.
   static constexpr std::array<const char*, 4> kAllowList{
       "Secure_Preferences", "Preferences", "Local_State", "AccountPreferences"};
-  auto it = base::ranges::find(kAllowList, spaceless_basename);
+  auto it = std::ranges::find(kAllowList, spaceless_basename);
   return it != kAllowList.end() ? *it : "";
 }
 
@@ -143,9 +142,9 @@ std::optional<std::string> DoSerialize(base::ValueView value,
     // Failed to serialize prefs file. Backup the existing prefs file and
     // crash.
     BackupPrefsFile(path);
-    NOTREACHED_NORETURN() << "Failed to serialize preferences : " << path
-                          << "\nBacked up under "
-                          << path.ReplaceExtension(kBadExtension);
+    NOTREACHED() << "Failed to serialize preferences : " << path
+                 << "\nBacked up under "
+                 << path.ReplaceExtension(kBadExtension);
   }
   return output;
 }
@@ -471,8 +470,7 @@ void JsonPrefStore::OnFileRead(std::unique_ptr<ReadResult> read_result) {
         // can't complete synchronously, it should never be returned by the read
         // operation itself.
       case PREF_READ_ERROR_MAX_ENUM:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -550,4 +548,8 @@ void JsonPrefStore::ScheduleWrite(uint32_t flags) {
 
 bool JsonPrefStore::HasReadErrorDelegate() const {
   return error_delegate_.has_value();
+}
+
+PrefFilter* JsonPrefStore::GetFilter() {
+  return pref_filter_.get();
 }

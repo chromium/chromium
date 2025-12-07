@@ -703,7 +703,6 @@ virtual GLint GetProgramResourceLocation(GLuint program,
                                          const char* name) = 0;
 virtual void MemoryBarrierEXT(GLbitfield barriers) = 0;
 virtual void MemoryBarrierByRegion(GLbitfield barriers) = 0;
-virtual void SwapBuffers(GLuint64 swap_id, GLbitfield flags = 0) = 0;
 virtual GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                            GLsizei count,
                                            GLenum type,
@@ -734,11 +733,6 @@ virtual void* MapTexSubImage2DCHROMIUM(GLenum target,
                                        GLenum type,
                                        GLenum access) = 0;
 virtual void UnmapTexSubImage2DCHROMIUM(const void* mem) = 0;
-virtual void ResizeCHROMIUM(GLuint width,
-                            GLuint height,
-                            GLfloat scale_factor,
-                            GLcolorSpace color_space,
-                            GLboolean alpha) = 0;
 virtual const GLchar* GetRequestableExtensionsCHROMIUM() = 0;
 virtual void RequestExtensionCHROMIUM(const char* extension) = 0;
 virtual void GetProgramInfoCHROMIUM(GLuint program,
@@ -834,9 +828,6 @@ virtual void BindFragDataLocationEXT(GLuint program,
                                      GLuint colorNumber,
                                      const char* name) = 0;
 virtual GLint GetFragDataIndexEXT(GLuint program, const char* name) = 0;
-virtual void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
-virtual void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
-virtual bool LockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
 virtual void WindowRectanglesEXT(GLenum mode,
                                  GLsizei count,
                                  const GLint* box) = 0;
@@ -857,39 +848,12 @@ virtual GLuint CreateAndTexStorage2DSharedImageCHROMIUM(
 virtual void BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                   GLenum mode) = 0;
 virtual void EndSharedImageAccessDirectCHROMIUM(GLuint texture) = 0;
-virtual void ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
-                                                GLenum plane_config,
-                                                GLenum subsampling,
-                                                const GLbyte* mailboxes) = 0;
-virtual void ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
-                                               GLint src_y,
-                                               GLsizei width,
-                                               GLsizei height,
-                                               GLenum planes_yuv_color_space,
-                                               GLenum plane_config,
-                                               GLenum subsampling,
-                                               const GLbyte* mailboxes) = 0;
-virtual void ConvertYUVAMailboxesToTextureINTERNAL(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageINTERNAL(GLint xoffset,
                                      GLint yoffset,
                                      GLint x,
                                      GLint y,
                                      GLsizei width,
                                      GLsizei height,
-                                     GLboolean unpack_flip_y,
                                      const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageToTextureINTERNAL(GLuint texture,
                                               GLenum target,
@@ -899,7 +863,7 @@ virtual void CopySharedImageToTextureINTERNAL(GLuint texture,
                                               GLint src_y,
                                               GLsizei width,
                                               GLsizei height,
-                                              GLboolean flip_y,
+                                              GLboolean is_dst_origin_top_left,
                                               const GLbyte* src_mailbox) = 0;
 virtual GLboolean ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                                   const void* dst_color_space,

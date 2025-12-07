@@ -45,11 +45,9 @@ access if the app requeested it). One consequence of this is WebView uses the
 app's data directory, so each app has a separate cookie jar, network cache, etc.
 
 WebView follows Chrome's architecture by separating browser and renderer code.
-Due to platform limitations, WebView runs renderer content "in process" (in the
-browser process) on Android L, M, and N devices and "out of process" (in a
-separate renderer process) on Android O and above. See [this document][renderer]
-for details. WebView's renderer process also runs in the app's context, although
-this process is sandboxed so it actually has even fewer permissions.
+See [this document][renderer] for details. WebView's renderer process also runs
+in the app's context, although this process is sandboxed so it actually has even
+fewer permissions.
 
 WebView runs other services (ex. GPU service, Network Service) in-process on all
 OS versions. This saves memory (which is why Chrome for Android does the same
@@ -62,11 +60,36 @@ own context. This includes a limited amount of UI code as well as a service. See
 [`//android_webview/nonembedded/`](/android_webview/nonembedded/README.md) for
 details.
 
+## Mixed-Bitness
+
+On Android systems that support both 32-bit and 64-bit binaries, the
+out-of-process renderer bitness is independent of the browser "process" bitness,
+so the renderer/browser can be in any combination (32/32, 64/64, 32/64, 64/32).
+IPC between processes thus needs to handle mixed bitness. Mojo is designed to be
+bitness-independent, but struct-based serialization methods (like those used in
+GPU IPC and Dawn Wire) also need to work in this situation.
+
+"Browser process" code, including GPU process and other services, runs inside
+the host process, so its bitness is that of that host process.
+To control this manually, use a host app that supports running in both 32-bit
+and 64-bit modes (like `apks/SystemWebViewShell.apk`), and install it with
+`adb install --abi armeabi-v7a` or `arm64-v8a` (or `x86` or `x86_64`) as
+described in the [Android docs](https://developer.android.com/ndk/guides/abis).
+
+The bitness of the renderer process is always the "primary" bitness of the
+WebView provider package. Normally, this is selected automatically.
+To control this manually, use the GN arg `enable_android_secondary_abi = true`
+and build and install one of the targets that has an bitness in the name
+(e.g. `trichrome_webview_{32,64,32_64,64_32}_bundle`).
+The first number indicates the primary (renderer) bitness. The second number, if
+present, indicates that package _also_ supports hosts of a "secondary" bitness,
+and thus can run in mixed-bitness configurations. (A host app can't load WebView
+at all if the current provider doesn't support the host's bitness.)
+
 ## Packaging variants
 
 Since Android Lollipop, WebView has been implemented by an updatable package. We
-ship WebView to users in one of 3 packaging variants: standalone WebView,
-Monochrome, and Trichrome. See [Packaging
+ship WebView to users as either standalone WebView or Trichrome. See [Packaging
 Variants](webview-packaging-variants.md) for details.
 
 ## See also

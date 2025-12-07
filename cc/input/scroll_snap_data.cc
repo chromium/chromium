@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "cc/base/features.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -125,7 +124,7 @@ std::optional<SnapSearchResult> SearchResultForDodgingRange(
       offset = max_offset;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   min_offset = area_range.start() - scroll_padding;
@@ -415,9 +414,7 @@ SnapContainerData::GetTargetSnapAreaSearchResult(
   for (const SnapAreaData& area : snap_area_list_) {
     if (area.element_id == target_id && strategy.IsValidSnapArea(axis, area)) {
       auto aligned_result = GetSnapSearchResult(axis, area);
-      if (base::FeatureList::IsEnabled(
-              features::kScrollSnapPreferCloserCovering) &&
-          CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
+      if (CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
         // This code path handles snapping after layout changes. If the
         // target snap area is larger than the snapport, we need to consider
         // snap areas nested within it, which may themselves be large snap areas
@@ -533,7 +530,11 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
   float base_position =
       horiz ? strategy.base_position().x() : strategy.base_position().y();
 
+  // True if we have found a "preferred" candidate.
+  bool preferred_candidate = false;
   float smallest_distance = horiz ? proximity_range_.x() : proximity_range_.y();
+  float proximity_distance =
+      horiz ? proximity_range_.x() : proximity_range_.y();
 
   auto evaluate = [&](const SnapSearchResult& candidate,
                       const SnapAreaData& area) {
@@ -544,20 +545,38 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
       return;
     }
     float distance = std::abs(candidate.snap_offset() - base_position);
-    if (distance > smallest_distance) {
+    if (distance > proximity_distance) {
+      return;
+    }
+
+    bool is_preferred_candidate =
+        strategy.IsPreferredSnapPosition(axis, candidate.snap_offset());
+    // If we have a preferred candidate, skip those which are not preferred.
+    if (preferred_candidate && !is_preferred_candidate) {
+      return;
+    }
+    // If this snap area is further away from the best candidate, and
+    // we either already have a preferred candidate or this candidate is not
+    // preferred, then skip it.
+    if (distance > smallest_distance &&
+        (preferred_candidate || !is_preferred_candidate)) {
       return;
     }
     // Aligned snap areas that have focus should be given preference when
     // selecting snap targets.
-    if (distance < smallest_distance || candidate.has_focus_within()) {
+    if (distance < smallest_distance ||
+        (is_preferred_candidate &&
+         (!preferred_candidate || candidate.has_focus_within()))) {
       smallest_distance = distance;
       closest = candidate;
+      preferred_candidate = is_preferred_candidate;
     } else if (closest && !closest->has_focus_within()) {
       if (closest->element_id() == targeted_area_id_) {
         return;
       }
       if (candidate.element_id() == targeted_area_id_) {
         closest = candidate;
+        preferred_candidate = is_preferred_candidate;
         return;
       }
       const auto candidate_rect = candidate.rect();
@@ -571,11 +590,13 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
           closest_rect != candidate_rect) {
         smallest_distance = distance;
         closest = candidate;
+        preferred_candidate = is_preferred_candidate;
       } else if ((scroll_snap_type_.axis == SnapAxis::kBoth) &&
                  (area.scroll_snap_align.alignment_block !=
                   SnapAlignment::kNone) &&
                  (area.scroll_snap_align.alignment_inline !=
-                  SnapAlignment::kNone)) {
+                  SnapAlignment::kNone) &&
+                 is_preferred_candidate == preferred_candidate) {
         // This candidate is equally aligned with the current closest. Since it
         // can be snapped to in both axes, designate it a potential alternative
         // if we don't already have a potential alternative or it is a better
@@ -601,9 +622,7 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
     SnapSearchResult candidate = GetSnapSearchResult(axis, area);
     evaluate(candidate, area);
     if (should_consider_covering &&
-        (base::FeatureList::IsEnabled(features::kScrollSnapPreferCloserCovering)
-             ? CanCoverSnapportOnAxis(axis, snapport(), area.rect)
-             : IsSnapportCoveredOnAxis(axis, intended_position, area.rect))) {
+        CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
       if (std::optional<SnapSearchResult> covering =
               FindCoveringCandidate(area, axis, candidate, intended_position)) {
         covering->set_has_focus_within(area.has_focus_within);
@@ -654,7 +673,7 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
         result.set_snap_offset(area.rect.right() - rect.right());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     result.Clip(max_position_.x());
     result.set_snapport_max_visible(max_position_.y());
@@ -672,7 +691,7 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
         result.set_snap_offset(area.rect.bottom() - rect.bottom());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     result.Clip(max_position_.y());
     result.set_snapport_max_visible(max_position_.x());
@@ -707,66 +726,63 @@ std::optional<SnapSearchResult> SnapContainerData::FindCoveringCandidate(
   gfx::RangeF middle_dodging_range = area_range;
   gfx::RangeF forward_dodging_range = area_range;
 
-  if (base::FeatureList::IsEnabled(
-          features::kScrollSnapCoveringAvoidNestedSnapAreas)) {
-    for (const SnapAreaData& intruder : snap_area_list_) {
-      gfx::RangeF intruder_range =
-          horiz ? gfx::RangeF(intruder.rect.x(), intruder.rect.right())
-                : gfx::RangeF(intruder.rect.y(), intruder.rect.bottom());
+  for (const SnapAreaData& intruder : snap_area_list_) {
+    gfx::RangeF intruder_range =
+        horiz ? gfx::RangeF(intruder.rect.x(), intruder.rect.right())
+              : gfx::RangeF(intruder.rect.y(), intruder.rect.bottom());
 
-      if (intruder_range.start() > area_range.end() ||
-          intruder_range.end() < area_range.start()) {
-        // Does not intrude.
-        continue;
-      }
-      if (intruder_range.start() <= area_range.start() &&
-          intruder_range.end() >= area_range.end()) {
-        // Superset of `area` also not treated as an intruder.
-        continue;
-      }
+    if (intruder_range.start() > area_range.end() ||
+        intruder_range.end() < area_range.start()) {
+      // Does not intrude.
+      continue;
+    }
+    if (intruder_range.start() <= area_range.start() &&
+        intruder_range.end() >= area_range.end()) {
+      // Superset of `area` also not treated as an intruder.
+      continue;
+    }
 
-      // Try three ways of dodging the intruders.
-      // In full generality this requires an interval tree. But we can simplify
-      // somewhat because we only care about a dodging range that is potentially
-      // closer than an aligned snap position, which each intruder also
-      // produces. For example, given:
-      //      |---A---|     |---preferred snapport---|
-      //             |---B---|
-      // We do not care about the dodging range before the start of A.
+    // Try three ways of dodging the intruders.
+    // In full generality this requires an interval tree. But we can simplify
+    // somewhat because we only care about a dodging range that is potentially
+    // closer than an aligned snap position, which each intruder also
+    // produces. For example, given:
+    //      |---A---|     |---preferred snapport---|
+    //             |---B---|
+    // We do not care about the dodging range before the start of A.
 
-      // backward_dodging_range finds a dodging range that is above any intruder
-      // that intersects the snapport.
-      if (intruder_range.end() < preferred_snapport.start()) {
-        backward_dodging_range.set_start(
-            std::max(backward_dodging_range.start(), intruder_range.end()));
-      } else {
-        backward_dodging_range.set_end(
-            std::min(backward_dodging_range.end(), intruder_range.start()));
-      }
+    // backward_dodging_range finds a dodging range that is above any intruder
+    // that intersects the snapport.
+    if (intruder_range.end() < preferred_snapport.start()) {
+      backward_dodging_range.set_start(
+          std::max(backward_dodging_range.start(), intruder_range.end()));
+    } else {
+      backward_dodging_range.set_end(
+          std::min(backward_dodging_range.end(), intruder_range.start()));
+    }
 
-      // forward_dodging_range finds a dodging range that is below any intruder
-      // that intersects the snapport.
-      if (intruder_range.start() > preferred_snapport.end()) {
-        forward_dodging_range.set_end(
-            std::min(forward_dodging_range.end(), intruder_range.start()));
-      } else {
-        forward_dodging_range.set_start(
-            std::max(forward_dodging_range.start(), intruder_range.end()));
-      }
+    // forward_dodging_range finds a dodging range that is below any intruder
+    // that intersects the snapport.
+    if (intruder_range.start() > preferred_snapport.end()) {
+      forward_dodging_range.set_end(
+          std::min(forward_dodging_range.end(), intruder_range.start()));
+    } else {
+      forward_dodging_range.set_start(
+          std::max(forward_dodging_range.start(), intruder_range.end()));
+    }
 
-      // middle_dodging_range finds a dodging range inside the snapport, if
-      // there are intruders from above and below.
-      if (intruder_range.Contains(preferred_snapport) ||
-          preferred_snapport.Contains(intruder_range)) {
-        middle_dodging_range = gfx::RangeF();
-      } else if (intruder_range.start() <= preferred_snapport.start()) {
-        middle_dodging_range.set_start(
-            std::max(middle_dodging_range.start(), intruder_range.end()));
-      } else {
-        DCHECK(intruder_range.end() >= preferred_snapport.end());
-        middle_dodging_range.set_end(
-            std::min(middle_dodging_range.end(), intruder_range.start()));
-      }
+    // middle_dodging_range finds a dodging range inside the snapport, if there
+    // are intruders from above and below.
+    if (intruder_range.Contains(preferred_snapport) ||
+        preferred_snapport.Contains(intruder_range)) {
+      middle_dodging_range = gfx::RangeF();
+    } else if (intruder_range.start() <= preferred_snapport.start()) {
+      middle_dodging_range.set_start(
+          std::max(middle_dodging_range.start(), intruder_range.end()));
+    } else {
+      DCHECK(intruder_range.end() >= preferred_snapport.end());
+      middle_dodging_range.set_end(
+          std::min(middle_dodging_range.end(), intruder_range.start()));
     }
   }
 

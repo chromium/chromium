@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/errors.h"
+#include "remoting/protocol/network_settings.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -91,6 +92,10 @@ class ConnectionToHost {
 
   // Disconnects the host connection.
   virtual void Disconnect(ErrorCode error) = 0;
+
+  // Applies network settings. The connection may be blocked until this method
+  // is called.
+  virtual void ApplyNetworkSettings(const NetworkSettings& settings) = 0;
 
   // Returns the session configuration that was negotiated with the host.
   virtual const SessionConfig& config() = 0;

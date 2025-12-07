@@ -9,7 +9,9 @@
 #include <string>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reference_space_type.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -20,8 +22,8 @@ class XRReferenceSpace : public XRSpace {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static device::mojom::blink::XRReferenceSpaceType StringToReferenceSpaceType(
-      const String& reference_space_type);
+  static device::mojom::blink::XRReferenceSpaceType V8EnumToReferenceSpaceType(
+      V8XRReferenceSpaceType::Enum reference_space_type);
 
   XRReferenceSpace(XRSession* session,
                    device::mojom::blink::XRReferenceSpaceType type);
@@ -36,6 +38,8 @@ class XRReferenceSpace : public XRSpace {
   std::optional<gfx::Transform> MojoFromNative() const override;
 
   bool IsStationary() const override;
+
+  bool IsInputSpace() const override;
 
   gfx::Transform NativeFromOffsetMatrix() const override;
   gfx::Transform OffsetFromNativeMatrix() const override;
@@ -54,6 +58,8 @@ class XRReferenceSpace : public XRSpace {
 
   std::string ToString() const override;
 
+  bool IsReferenceSpace() const override { return true; }
+
   void Trace(Visitor*) const override;
 
   virtual void OnReset();
@@ -62,16 +68,17 @@ class XRReferenceSpace : public XRSpace {
   virtual XRReferenceSpace* cloneWithOriginOffset(
       XRRigidTransform* origin_offset) const;
 
-  // Updates the mojo_from_floor_ transform to match the one present in the
-  // latest display parameters of a session.
-  void SetMojoFromFloor() const;
+  std::optional<gfx::Transform> GetMojoFromFloorFallback() const;
 
-  mutable uint32_t stage_parameters_id_ = 0;
-
-  // Floor from mojo (aka local-floor_from_mojo) transform.
-  mutable std::unique_ptr<gfx::Transform> mojo_from_floor_;
   Member<XRRigidTransform> origin_offset_;
   device::mojom::blink::XRReferenceSpaceType type_;
+};
+
+template <>
+struct DowncastTraits<XRReferenceSpace> {
+  static bool AllowFrom(const XRSpace& space) {
+    return space.IsReferenceSpace();
+  }
 };
 
 }  // namespace blink

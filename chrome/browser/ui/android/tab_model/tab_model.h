@@ -9,12 +9,15 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 struct NavigateParams;
 
@@ -37,10 +40,14 @@ class TabModelObserver;
 // Abstract representation of a Tab Model for Android.  Since Android does
 // not use Browser/BrowserList, this is required to allow Chrome to interact
 // with Android's Tabs and Tab Model.
-class TabModel {
+class TabModel : public TabListInterface {
  public:
+  DECLARE_USER_DATA(TabModel);
+  // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
   // Values must be numbered from 0 and can't have gaps.
+  // This enum is used to back a histogram, entries should not be renumbered or
+  // reused.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
   enum class TabLaunchType {
     // Opened from a link. Sets up a relationship between the newly created tab
@@ -91,6 +98,8 @@ class TabModel {
     // Tab group UI include:
     // - "+" button in the bottom tab strip
     // - "+" button in the tab grid dialog
+    // - "New tab in group" option in the tab strip group context menu
+    // - "Reopen" action in shared tab group messages.
     FROM_TAB_GROUP_UI,
     // Open from the long press context menu item 'Open in new tab in group'.
     // Will not be brought to the foreground.
@@ -122,6 +131,56 @@ class TabModel {
     // Open most recent tab in foregroud, used by ctrl-shift-t to restore
     // most recently closed tab or tabs.
     FROM_RECENT_TABS_FOREGROUND,
+    // Open a new tab to prevent collaborations from having 0 tabs.
+    FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+    // Opened from the bookmark bar. Will not be brought to the foreground.
+    FROM_BOOKMARK_BAR_BACKGROUND,
+    // Changed windows by moving from one activity to another. Will be opened
+    // in the background. Use FROM_REPARENTING above to open the re-parented tab
+    // in the foreground.
+    FROM_REPARENTING_BACKGROUND,
+    // From history navigation (back / forward) when opening a new tab/window in
+    // the background.
+    FROM_HISTORY_NAVIGATION_BACKGROUND,
+    // From history navigation (back / forward) when opening a new tab/window in
+    // the foreground.
+    FROM_HISTORY_NAVIGATION_FOREGROUND,
+    // Like FROM_LONGPRESS_FOREGROUND, but used when the parent tab is part of a
+    // group.
+    FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+    // Open tab using the TabListInterface API. This tab is created
+    // programmatically from operations such as OpenTab or DuplicateTab.
+    FROM_TAB_LIST_INTERFACE,
+    // Open a link, creating a new window.
+    FROM_LINK_CREATING_NEW_WINDOW,
+    // Like FROM_CHROME_UI, and opens a tip notification, creating a new tab.
+    FROM_TIPS_NOTIFICATIONS,
+    // Must be last.
+    SIZE
+  };
+  // When adding a new TabLaunchType, make sure to update the following files.
+  // Some of the files have multiple switch cases for TabLaunchType, so make
+  // sure to update all of them! Note that there are likely other files that
+  // need to be updated depending on the desired side-effects of the new
+  // TabLaunchType.
+  //
+  // Long term, this would ideally be refactored to a traits system such that
+  // the different types of side-effects are canonically defined, and listed
+  // explicitly for each TabLaunchType in a single location.
+  //
+  // Multiple lines are not supported by IFTTT.
+  // clang-format off
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:TabLaunchType,//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java,//chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/flatbuffer/tab_state_common.fbs,//chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer.java)
+  // clang-format on
+
+  // Various ways tabs can be closed.
+  // Values must be numbered from 0 and can't have gaps.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
+  enum class TabClosingSource {
+    // Tab closing from all other sources.
+    UNKNOWN,
+    // Tab closing from tablet tab strip.
+    TABLET_TAB_STRIP,
     // Must be last.
     SIZE
   };
@@ -174,8 +233,6 @@ class TabModel {
   virtual SessionID GetSessionId() const;
   virtual sessions::LiveTabContext* GetLiveTabContext() const;
 
-  virtual int GetTabCount() const = 0;
-  virtual int GetActiveIndex() const = 0;
   virtual content::WebContents* GetActiveWebContents() const;
   virtual content::WebContents* GetWebContentsAt(int index) const = 0;
   // This will return NULL if the tab has not yet been initialized.
@@ -183,6 +240,7 @@ class TabModel {
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const = 0;
 
   virtual void SetActiveIndex(int index) = 0;
+  virtual void ForceCloseAllTabs() = 0;
   virtual void CloseTabAt(int index) = 0;
 
   // Used for restoring tabs from synced foreign sessions.
@@ -195,7 +253,8 @@ class TabModel {
 
   // Used by Developer Tools to create a new tab with a given URL.
   // Replaces CreateTabForTesting.
-  virtual content::WebContents* CreateNewTabForDevTools(const GURL& url) = 0;
+  virtual content::WebContents* CreateNewTabForDevTools(const GURL& url,
+                                                        bool new_window) = 0;
 
   // Return true if we are currently restoring sessions asynchronously.
   virtual bool IsSessionRestoreInProgress() const = 0;
@@ -225,13 +284,25 @@ class TabModel {
 
  protected:
   TabModel(Profile* profile, chrome::android::ActivityType activity_type);
-  virtual ~TabModel();
+  ~TabModel() override;
 
   // Instructs the TabModel to broadcast a notification that all tabs are now
   // loaded from storage.
   void BroadcastSessionRestoreComplete();
 
   LocationBarModel* GetLocationBarModel();
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Sets the |SessionID|.
+  //
+  // This is only needed on desktop Android, where |BrowserWindowInterface|
+  // should be the source of truth for |SessionID|. This function will be
+  // called when |TabModel| is associated with a |BrowserWindowInterface|.
+  //
+  // TODO(http://crbug.com/444518651): remove the if-def when
+  // |BrowserWindowInterface| is compiled into all Android builds.
+  void SetSessionId(SessionID sessionId);
+#endif
 
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_;

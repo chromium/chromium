@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/aligned_memory.h"
@@ -64,7 +65,7 @@ class MEDIA_EXPORT SincResampler {
   ~SincResampler();
 
   // Resample |frames| of data from |read_cb_| into |destination|.
-  void Resample(int frames, float* destination);
+  void Resample(base::span<float> destination);
 
   // The maximum size in output frames that guarantees Resample() will only make
   // a single call to |read_cb_| for more data.  Note: If PrimeWithSilence() is

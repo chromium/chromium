@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash,
-       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
 source_set("repository") {
   sources = [
@@ -45,14 +42,14 @@ source_set("repository") {
   ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/bluetooth_config/public/cpp",
     "//chromeos/ash/services/quick_pair/public/cpp",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -144,4 +141,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

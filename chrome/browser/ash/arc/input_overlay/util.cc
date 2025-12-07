@@ -6,12 +6,12 @@
 
 #include <algorithm>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -72,17 +72,14 @@ InputElement* GetInputBindingByBindingOption(Action* action,
     case BindingOption::kOriginal:
       input_binding = action->original_input();
       break;
-    case BindingOption::kPending:
-      input_binding = action->pending_input();
-      break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return input_binding;
 }
 
 std::string GetCurrentSystemVersion() {
-  return kSystemVersionAlphaV2;
+  return kSystemVersionAlphaV2Plus;
 }
 
 void ResetFocusTo(views::View* view) {
@@ -128,11 +125,6 @@ void UpdateFlagAndProperty(aura::Window* window,
     window->SetProperty(ash::kArcGameControlsFlagsKey,
                         UpdateFlag(flags, flag, turn_on));
   }
-}
-
-bool IsBeta() {
-  return ash::features::IsGameDashboardEnabled() &&
-         arc::GetArcAndroidSdkVersionAsInt() > arc::kArcVersionP;
 }
 
 }  // namespace arc::input_overlay

@@ -2,10 +2,11 @@ Name: WebP image encoder/decoder
 Short Name: libwebp
 URL: https://chromium.googlesource.com/webm/libwebp
 Version: N/A
-Revision: 845d5476a866141ba35ac133f856fa62f0b7445f
-CPEPrefix: cpe:/a:webmproject:libwebp:1.4.0
-License: BSD
-License File: LICENSE
+Revision: c00d83f6642e7838a12bb03bca94237f03cc2e00
+Update Mechanism: Manual
+CPEPrefix: cpe:/a:webmproject:libwebp:1.6.0
+License: BSD-3-Clause, Patent
+License File: src/COPYING, src/PATENTS
 Security Critical: Yes
 Shipped: yes
 

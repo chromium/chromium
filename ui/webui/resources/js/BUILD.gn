@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//components/signin/features.gni")
 import("../tools/build_webui.gni")
 
 include_polymer = !is_android && !is_ios
@@ -10,7 +10,7 @@ include_polymer = !is_android && !is_ios
 build_webui("build") {
   grd_prefix = "webui_js"
 
-  non_web_component_files = [
+  ts_files = [
     "action_link.ts",
     "assert.ts",
     "color_utils.ts",
@@ -22,10 +22,11 @@ build_webui("build") {
     "focus_grid.ts",
     "focus_outline_manager.ts",
     "focus_row.ts",
+    "focus_without_ink.ts",
     "icon.ts",
     "keyboard_shortcut_list.ts",
-    "load_time_data_deprecated.js",
     "load_time_data.ts",
+    "load_time_data_deprecated.js",
     "metrics_reporter/browser_proxy.ts",
     "metrics_reporter/metrics_reporter.ts",
     "mojo_type_util.ts",
@@ -37,32 +38,31 @@ build_webui("build") {
     "search_highlight_utils.ts",
     "static_types.ts",
     "store.ts",
+    "tracked_element/tracked_element_manager.ts",
+    "tracked_element/tracked_element_proxy.ts",
     "test_loader.ts",
     "test_loader_util.ts",
     "util.ts",
   ]
 
-  if (is_chromeos) {
-    non_web_component_files += [ "os_about.ts" ]
-  }
-
   if (is_ios) {
-    non_web_component_files += [
+    ts_files += [
       "ios/mojo_api.js",
       "ios/web_ui.js",
     ]
   }
 
-  if (is_chromeos_ash || is_ios) {
+  if (is_chromeos || is_ios) {
     # Used by ChromeOS UIs and ios inspect and omaha UIs
-    non_web_component_files += [ "util_deprecated.js" ]
+    ts_files += [ "util_deprecated.js" ]
   }
 
   if (include_polymer) {
-    non_web_component_files += [
-      "focus_without_ink.ts",
-      "browser_command/browser_command_proxy.ts",
-    ]
+    ts_files += [ "browser_command/browser_command_proxy.ts" ]
+  }
+
+  if (enable_dice_support) {
+    ts_files += [ "batch_upload_promo/batch_upload_promo_proxy.ts" ]
   }
 
   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]
@@ -71,6 +71,11 @@ build_webui("build") {
   if (include_polymer) {
     mojo_files_deps += [ "./browser_command:mojo_bindings_ts__generator" ]
     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]
+  }
+
+  if (enable_dice_support) {
+    mojo_files_deps += [ "./batch_upload_promo:mojo_bindings_ts__generator" ]
+    mojo_files += [ "$root_gen_dir/ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom-webui.ts" ]
   }
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/js"

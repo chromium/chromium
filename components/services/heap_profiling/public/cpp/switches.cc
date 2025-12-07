@@ -16,6 +16,7 @@ const char kMemlogModeMinimal[] = "minimal";
 const char kMemlogModeRendererSampling[] = "renderer-sampling";
 const char kMemlogModeUtilityAndBrowser[] = "utility-and-browser";
 const char kMemlogModeUtilitySampling[] = "utility-sampling";
+const char kMemlogModeAllUtilities[] = "all-utilities";
 
 const char kMemlogSamplingRate[] = "memlog-sampling-rate";
 const char kMemlogSamplingRate10KB[] = "10000";

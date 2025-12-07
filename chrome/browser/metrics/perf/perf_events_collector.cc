@@ -4,16 +4,16 @@
 
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -31,10 +31,6 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace metrics {
-
-BASE_FEATURE(kCWPCollectsETM,
-             "CWPCollectsETM",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -113,15 +109,17 @@ void ExtractVersionNumbers(const std::string& version,
                            int32_t* bugfix_version) {
   *major_version = *minor_version = *bugfix_version = 0;
   // Parse out the version numbers from the string.
-  sscanf(version.c_str(), "%d.%d.%d", major_version, minor_version,
-         bugfix_version);
+  UNSAFE_TODO(sscanf(version.c_str(), "%d.%d.%d", major_version, minor_version,
+                     bugfix_version));
 }
 
 // Returns if a micro-architecture supports the cycles:ppp event.
 bool MicroarchitectureHasCyclesPPPEvent(const std::string& uarch) {
   return uarch == "Goldmont" || uarch == "GoldmontPlus" || uarch == "Tremont" ||
          uarch == "Broadwell" || uarch == "Kabylake" || uarch == "Tigerlake" ||
-         uarch == "AlderLake" || uarch == "RaptorLake" || uarch == "Gracemont";
+         uarch == "AlderLake" || uarch == "RaptorLake" ||
+         uarch == "Gracemont" || uarch == "CannonLake" ||
+         uarch == "CometLake" || uarch == "RocketLake";
 }
 
 // Returns if a kernel release properly flushes PEBS on a context switch. The
@@ -289,7 +287,7 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   }
   if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
       cpu_uarch == "Tigerlake" || cpu_uarch == "IceLake" ||
-      cpu_uarch == "CometLake") {
+      cpu_uarch == "CometLake" || cpu_uarch == "CannonLake") {
     dap_dtlb_miss_cmd = kPerfDTLBMissesDAPSkylake;
   } else if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
     dap_dtlb_miss_cmd = kPerfDTLBMissesDAPGoldmont;
@@ -342,7 +340,8 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Airmont" || cpu_uarch == "Goldmont" ||
       cpu_uarch == "GoldmontPlus" || cpu_uarch == "Tremont" ||
       cpu_uarch == "AlderLake" || cpu_uarch == "RaptorLake" ||
-      cpu_uarch == "Gracemont") {
+      cpu_uarch == "Gracemont" || cpu_uarch == "CannonLake" ||
+      cpu_uarch == "CometLake" || cpu_uarch == "RocketLake") {
     cmds.emplace_back(15.0, lbr_cmd);
     cmds.emplace_back(5.0, itlb_miss_cycles_cmd);
     cmds.emplace_back(5.0, dtlb_miss_cycles_cmd);
@@ -374,8 +373,7 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_aarch64(
   using WeightAndValue = RandomSelector::WeightAndValue;
   std::vector<WeightAndValue> cmds;
 
-  if (base::FeatureList::IsEnabled(kCWPCollectsETM) &&
-      (model == "TROGDOR" || model == "STRONGBAD" || model == "HEROBRINE")) {
+  if (model == "TROGDOR" || model == "STRONGBAD" || model == "HEROBRINE") {
     cmds.emplace_back(50.0, kPerfCyclesHGCmd);
     cmds.emplace_back(20.0, kPerfFPCallgraphHGCmd);
     cmds.emplace_back(30.0, kPerfETMCmd);
@@ -600,9 +598,9 @@ void PerfCollector::ParseOutputProtoIfValid(
   }
   if (has_cycles) {
     // Store CPU max frequencies in the sampled profile.
-    base::ranges::copy(max_frequencies_mhz_,
-                       google::protobuf::RepeatedFieldBackInserter(
-                           sampled_profile->mutable_cpu_max_frequency_mhz()));
+    std::ranges::copy(max_frequencies_mhz_,
+                      google::protobuf::RepeatedFieldBackInserter(
+                          sampled_profile->mutable_cpu_max_frequency_mhz()));
   }
 
   bool posted = base::ThreadPool::PostTaskAndReply(

@@ -7,18 +7,23 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -27,6 +32,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
@@ -38,25 +44,32 @@
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
-#include "components/undo/bookmark_undo_utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
 
 namespace {
 
-constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 100000;
+// Expiration period for the error state when the initial download of remote
+// bookmarks exceeds the limit. After this period, a new attempt to download all
+// bookmarks is made.
+constexpr base::TimeDelta kInitialMergeRemoteUpdatesExceededLimitErrorTtl =
+    base::Days(30);
+
+// Jitter to be subtracted from
+// `kInitialMergeRemoteUpdatesExceededLimitErrorTtl` to add randomness and avoid
+// that all clients attempt to redownload bookmarks at the same time.
+constexpr base::TimeDelta
+    kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter = base::Days(7);
 
 class ScopedRemoteUpdateBookmarks {
  public:
-  // `bookmark_model`, `bookmark_undo_service` and `observer` must not be null
-  // and must outlive this object.
+  // `bookmark_model` and `observer` must not be null and must outlive this
+  // object.
   ScopedRemoteUpdateBookmarks(BookmarkModelView* bookmark_model,
-                              BookmarkUndoService* bookmark_undo_service,
                               bookmarks::BookmarkModelObserver* observer)
-      : bookmark_model_(bookmark_model),
-        suspend_undo_(bookmark_undo_service),
-        observer_(observer) {
+      : bookmark_model_(bookmark_model), observer_(observer) {
     // Notify UI intensive observers of BookmarkModel that we are about to make
     // potentially significant changes to it, so the updates may be batched. For
     // example, on Mac, the bookmarks bar displays animations when bookmark
@@ -82,16 +95,12 @@ class ScopedRemoteUpdateBookmarks {
 
  private:
   const raw_ptr<BookmarkModelView> bookmark_model_;
-
-  // Changes made to the bookmark model due to sync should not be undoable.
-  ScopedSuspendBookmarkUndo suspend_undo_;
-
   const raw_ptr<bookmarks::BookmarkModelObserver> observer_;
 };
 
 std::string ComputeServerDefinedUniqueTagForDebugging(
     const bookmarks::BookmarkNode* node,
-    BookmarkModelView* model) {
+    const BookmarkModelView* model) {
   if (node == model->bookmark_bar_node()) {
     return "bookmark_bar";
   }
@@ -104,7 +113,7 @@ std::string ComputeServerDefinedUniqueTagForDebugging(
   return "";
 }
 
-size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
+size_t CountSyncableBookmarksFromModel(const BookmarkModelView* model) {
   size_t count = 0;
   ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
       model->root_node());
@@ -120,26 +129,25 @@ size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
 
 void RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
     const SyncedBookmarkTracker& tracker) {
-  size_t num_unsynced_entities = 0;
-  for (const auto* entity : tracker.GetAllEntities()) {
-    if (entity->IsUnsynced()) {
-      num_unsynced_entities++;
-    }
-  }
-  syncer::SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
-      syncer::BOOKMARKS, num_unsynced_entities);
+  syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+      syncer::UnsyncedDataRecordingEvent::kOnModelReady,
+      {{syncer::BOOKMARKS, tracker.GetUnsyncedDataCount()}});
+}
+
+// Returns whether `gc_directive` has a version_watermark based GC directive,
+// which indicates to clear all sync data that's stored locally.
+bool HasClearAllDirective(
+    const std::optional<sync_pb::GarbageCollectionDirective>& gc_directive) {
+  return gc_directive.has_value() && gc_directive->has_version_watermark();
 }
 
 }  // namespace
 
 BookmarkDataTypeProcessor::BookmarkDataTypeProcessor(
-    BookmarkUndoService* bookmark_undo_service,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior)
-    : bookmark_undo_service_(bookmark_undo_service),
-      wipe_model_upon_sync_disabled_behavior_(
-          wipe_model_upon_sync_disabled_behavior),
-      max_bookmarks_till_sync_enabled_(kDefaultMaxBookmarksTillSyncEnabled) {}
+    : wipe_model_upon_sync_disabled_behavior_(
+          wipe_model_upon_sync_disabled_behavior) {}
 
 BookmarkDataTypeProcessor::~BookmarkDataTypeProcessor() {
   if (bookmark_model_ && bookmark_model_observer_) {
@@ -178,8 +186,8 @@ void BookmarkDataTypeProcessor::GetLocalChanges(
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Processor should never connect if
-  // `last_initial_merge_remote_updates_exceeded_limit_` is set.
-  DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
+  // `initial_merge_remote_updates_exceeded_limit_timestamp_` is set.
+  DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
   BookmarkLocalChangesBuilder builder(bookmark_tracker_.get(), bookmark_model_);
   std::move(callback).Run(builder.BuildCommitRequests(max_entries));
 }
@@ -219,55 +227,18 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
   DCHECK(syncer::IsInitialSyncDone(data_type_state.initial_sync_state()));
   DCHECK(start_callback_.is_null());
   // Processor should never connect if
-  // `last_initial_merge_remote_updates_exceeded_limit_` is set.
-  DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
-
-  // TODO(crbug.com/40860698): validate incoming updates, e.g. `gc_directive`
-  // must be empty for Bookmarks.
+  // `initial_merge_remote_updates_exceeded_limit_timestamp_` is set.
+  DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
 
   // Clients before M94 did not populate the parent UUID in specifics.
   PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
 
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(data_type_state, std::move(updates));
-    return;
-  }
-
-  // Incremental updates.
-  {
-    ScopedRemoteUpdateBookmarks update_bookmarks(
-        bookmark_model_, bookmark_undo_service_,
-        bookmark_model_observer_.get());
-    BookmarkRemoteUpdatesHandler updates_handler(
-        bookmark_model_, favicon_service_, bookmark_tracker_.get());
-    const bool got_new_encryption_requirements =
-        bookmark_tracker_->data_type_state().encryption_key_name() !=
-        data_type_state.encryption_key_name();
-    bookmark_tracker_->set_data_type_state(data_type_state);
-    updates_handler.Process(updates, got_new_encryption_requirements);
-  }
-
-  // Issue error and stop sync if bookmarks count exceeds limit.
-  if (bookmark_tracker_->TrackedBookmarksCount() >
-      max_bookmarks_till_sync_enabled_) {
-    // Local changes continue to be tracked in order to allow users to delete
-    // bookmarks and recover upon restart.
-    DisconnectSync();
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
-    return;
-  }
-
-  if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
-    NudgeForCommitIfNeeded();
-  }
-
-  // There are cases when we receive non-empty updates that don't result in
-  // model changes (e.g. reflections). In that case, issue a write to persit the
-  // progress marker in order to avoid downloading those updates again.
-  if (!updates.empty()) {
-    // Schedule save just in case one is needed.
-    schedule_save_closure_.Run();
+  } else if (HasClearAllDirective(gc_directive)) {
+    ApplyFullUpdateAsIncrementalUpdate(data_type_state, std::move(updates));
+  } else {
+    OnIncrementalUpdateReceived(data_type_state, std::move(updates));
   }
 }
 
@@ -302,24 +273,156 @@ bool BookmarkDataTypeProcessor::IsConnectedForTest() const {
 std::string BookmarkDataTypeProcessor::EncodeSyncMetadata() const {
   std::string metadata_str;
   if (bookmark_tracker_) {
-    // `last_initial_merge_remote_updates_exceeded_limit_` is only set in error
-    // cases where the tracker would not be initialized.
-    DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
+    // `initial_merge_remote_updates_exceeded_limit_timestamp_` is only set
+    // in error cases where the tracker would not be initialized.
+    DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
 
     sync_pb::BookmarkModelMetadata model_metadata =
         bookmark_tracker_->BuildBookmarkModelMetadata();
     // Ensure that BuildBookmarkModelMetadata() never populates this field.
     DCHECK(
         !model_metadata.has_last_initial_merge_remote_updates_exceeded_limit());
+    DCHECK(
+        !model_metadata
+             .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
     model_metadata.SerializeToString(&metadata_str);
-  } else if (last_initial_merge_remote_updates_exceeded_limit_) {
+  } else if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
     sync_pb::BookmarkModelMetadata model_metadata;
-    // Setting the field only when true guarantees that the empty-string case
-    // is interpreted as no-metadata-to-clear.
-    model_metadata.set_last_initial_merge_remote_updates_exceeded_limit(true);
+
+    model_metadata
+        .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+            initial_merge_remote_updates_exceeded_limit_timestamp_
+                ->ToDeltaSinceWindowsEpoch()
+                .InMicroseconds());
     model_metadata.SerializeToString(&metadata_str);
   }
   return metadata_str;
+}
+
+void BookmarkDataTypeProcessor::MigrateLegacyExceededLimitError(
+    sync_pb::BookmarkModelMetadata* model_metadata) {
+  if (!model_metadata->last_initial_merge_remote_updates_exceeded_limit() ||
+      model_metadata
+          ->has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
+    model_metadata->clear_last_initial_merge_remote_updates_exceeded_limit();
+    return;
+  }
+
+  // For legacy clients, set a random timestamp from 23-30 days ago to
+  // represent the error state. This is to preserve the error across restarts.
+  // This will also be used to decide whether to reset the error.
+  const base::Time limit_set_time =
+      base::Time::Now() - kInitialMergeRemoteUpdatesExceededLimitErrorTtl +
+      base::RandTimeDeltaUpTo(
+          kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter);
+  model_metadata
+      ->set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+          limit_set_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  // Clear the legacy field as it is no longer needed.
+  model_metadata->clear_last_initial_merge_remote_updates_exceeded_limit();
+  schedule_save_closure_.Run();
+}
+
+void BookmarkDataTypeProcessor::MaybeResetExceededLimitError(
+    sync_pb::BookmarkModelMetadata* model_metadata) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncResetBookmarksInitialMergeLimitExceededError)) {
+    return;
+  }
+  if (!model_metadata
+           ->has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
+    return;
+  }
+
+  const base::Time limit_set_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+          model_metadata
+              ->initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
+
+  // For users who have a timestamp, reset the error
+  // after 30 days to give users a chance to recover.
+  if (base::Time::Now() - limit_set_time >
+      kInitialMergeRemoteUpdatesExceededLimitErrorTtl) {
+    model_metadata->clear_last_initial_merge_remote_updates_exceeded_limit();
+    model_metadata
+        ->clear_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros();
+    schedule_save_closure_.Run();
+  }
+}
+
+bool BookmarkDataTypeProcessor::HandlePreviousErrorState(
+    const sync_pb::BookmarkModelMetadata& model_metadata) {
+  if (!model_metadata
+           .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
+    return false;
+  }
+  // Report error if remote updates fetched last time during initial merge
+  // exceeded limit. Note that here we are only setting
+  // `last_initial_merge_remote_updates_exceeded_limit_timestamp_`, the
+  // actual error would be reported in ConnectIfReady().
+  initial_merge_remote_updates_exceeded_limit_timestamp_ =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+          model_metadata
+              .initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
+  return true;
+}
+
+std::optional<sync_pb::BookmarkModelMetadata>
+BookmarkDataTypeProcessor::ParseAndValidateMetadata(
+    const std::string& metadata_str) {
+  if (HandlePendingClearMetadata(metadata_str)) {
+    return std::nullopt;
+  }
+
+  sync_pb::BookmarkModelMetadata model_metadata;
+  model_metadata.ParseFromString(metadata_str);
+
+  MigrateLegacyExceededLimitError(&model_metadata);
+  // Ensure that the legacy field is not set, as it should have been migrated.
+  CHECK(!model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+  MaybeResetExceededLimitError(&model_metadata);
+
+  if (HandlePreviousErrorState(model_metadata)) {
+    return std::nullopt;
+  }
+  return model_metadata;
+}
+
+void BookmarkDataTypeProcessor::InitTracker(
+    sync_pb::BookmarkModelMetadata model_metadata,
+    const std::string& metadata_str) {
+  bookmark_tracker_ = SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+      bookmark_model_, std::move(model_metadata));
+
+  if (bookmark_tracker_) {
+    StartTrackingMetadata();
+    RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
+        *bookmark_tracker_);
+  } else if (!metadata_str.empty()) {
+    DLOG(WARNING)
+        << "Persisted bookmark sync metadata invalidated when loading.";
+    // Schedule a save to make sure the corrupt metadata is deleted from
+    // disk as soon as possible, to avoid reporting again after restart if
+    // nothing else schedules a save meanwhile (which is common if sync is
+    // not running properly, e.g. auth error).
+    schedule_save_closure_.Run();
+  }
+}
+
+bool BookmarkDataTypeProcessor::HandlePendingClearMetadata(
+    const std::string& metadata_str) {
+  if (!pending_clear_metadata_) {
+    return false;
+  }
+
+  pending_clear_metadata_ = false;
+  // Schedule save empty metadata, if not already empty.
+  if (!metadata_str.empty()) {
+    LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
+                                          /*is_delayed_call=*/true);
+    schedule_save_closure_.Run();
+  }
+  return true;
 }
 
 void BookmarkDataTypeProcessor::ModelReadyToSync(
@@ -327,7 +430,6 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
     const base::RepeatingClosure& schedule_save_closure,
     BookmarkModelView* model) {
   DCHECK(model);
-  DCHECK(model->loaded());
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_tracker_);
   DCHECK(!bookmark_model_observer_);
@@ -337,75 +439,20 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
   bookmark_model_ = model;
   schedule_save_closure_ = schedule_save_closure;
 
-  sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.ParseFromString(metadata_str);
+  std::optional<sync_pb::BookmarkModelMetadata> model_metadata =
+      ParseAndValidateMetadata(metadata_str);
 
-  if (pending_clear_metadata_) {
-    pending_clear_metadata_ = false;
-    // Schedule save empty metadata, if not already empty.
-    if (!metadata_str.empty()) {
-      LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
-                                            /*is_delayed_call=*/true);
-      if (syncer::IsInitialSyncDone(
-              model_metadata.data_type_state().initial_sync_state())) {
-        // There used to be a tracker, which is dropped now due to
-        // `pending_clear_metadata_`. This isn't very different to
-        // ClearMetadataIfStopped(), in the sense that the need to wipe the
-        // local model needs to be considered.
-        TriggerWipeModelUponSyncDisabledBehavior();
-      }
-      schedule_save_closure_.Run();
-    }
-  } else if (model_metadata
-                 .last_initial_merge_remote_updates_exceeded_limit()) {
-    // Report error if remote updates fetched last time during initial merge
-    // exceeded limit. Note that here we are only setting
-    // `last_initial_merge_remote_updates_exceeded_limit_`, the actual error
-    // would be reported in ConnectIfReady().
-    last_initial_merge_remote_updates_exceeded_limit_ = true;
-  } else {
-    bookmark_tracker_ =
-        SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-            model, std::move(model_metadata));
-
-    if (bookmark_tracker_) {
-      StartTrackingMetadata();
-      RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
-          *bookmark_tracker_);
-    } else if (!metadata_str.empty()) {
-      DLOG(WARNING)
-          << "Persisted bookmark sync metadata invalidated when loading.";
-      // Schedule a save to make sure the corrupt metadata is deleted from disk
-      // as soon as possible, to avoid reporting again after restart if nothing
-      // else schedules a save meanwhile (which is common if sync is not running
-      // properly, e.g. auth error).
-      schedule_save_closure_.Run();
-    }
+  if (model_metadata) {
+    InitTracker(std::move(*model_metadata), metadata_str);
   }
 
-  if (!bookmark_tracker_) {
-    switch (wipe_model_upon_sync_disabled_behavior_) {
-      case syncer::WipeModelUponSyncDisabledBehavior::kNever:
-        // Nothing to do.
-        break;
-      case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
-        // Since the model isn't initially tracking metadata, move away from
-        // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync
-        // is turned on later and back to off. This should be practically
-        // unreachable because usually ClearMetadataIfStopped() would be invoked
-        // earlier, but let's be extra safe and avoid relying on this behavior.
-        wipe_model_upon_sync_disabled_behavior_ =
-            syncer::WipeModelUponSyncDisabledBehavior::kNever;
-        break;
-      case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
-        // Remove any previous data that may exist, if its lifetime is strongly
-        // coupled with the tracker's (sync metadata's).
-        bookmark_model_->RemoveAllSyncableNodes();
-        break;
-    }
-  }
-
-  ConnectIfReady();
+  // Post a task instead of invoking ConnectIfReady() immediately to avoid
+  // sophisticated operations while BookmarkModel is being loaded. In
+  // particular, cache GUID mismatches (edge case) lead to deleting account
+  // bookmarks.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&BookmarkDataTypeProcessor::ConnectIfReady,
+                                weak_ptr_factory_for_controller_.GetWeakPtr()));
 }
 
 void BookmarkDataTypeProcessor::SetFaviconService(
@@ -452,7 +499,8 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
   if (!bookmark_model_) {
     return;
   }
-  // Return if Sync didn't start yet.
+  // Return if Sync didn't start yet, or ConnectIfReady() already succeeded
+  // before.
   if (!start_callback_) {
     return;
   }
@@ -463,32 +511,20 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
 
   // Report error if remote updates fetched last time during initial merge
   // exceeded limit.
-  if (last_initial_merge_remote_updates_exceeded_limit_) {
-    // `last_initial_merge_remote_updates_exceeded_limit_` is only set in error
-    // case and thus tracker should be empty.
+  if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
+    // `initial_merge_remote_updates_exceeded_limit_timestamp_` is only set
+    // in error case and thus tracker should be empty.
     DCHECK(!bookmark_tracker_);
     start_callback_.Reset();
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE,
-                           "Latest remote bookmarks count exceeded limit. Turn "
-                           "off and turn on sync to retry."));
+    activation_request_.error_handler.Run(syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kBookmarksRemoteCountExceededLimitLastInitialMerge));
     return;
   }
 
-  // Issue error and stop sync if bookmarks exceed limit.
-  // TODO(crbug.com/40854724): Think about adding two different limits: one for
-  // when sync just starts, the other (larger one) as hard limit, incl.
-  // incremental changes.
-  const size_t count = bookmark_tracker_
-                           ? bookmark_tracker_->TrackedBookmarksCount()
-                           : CountSyncableBookmarksFromModel(bookmark_model_);
-  if (count > max_bookmarks_till_sync_enabled_) {
-    // For the case where a tracker already exists, local changes will continue
-    // to be tracked in order order to allow users to delete bookmarks and
-    // recover upon restart.
-    start_callback_.Reset();
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitOnSyncStart)) {
     return;
   }
 
@@ -496,7 +532,7 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
 
   if (bookmark_tracker_ && bookmark_tracker_->data_type_state().cache_guid() !=
                                activation_request_.cache_guid) {
-    // In case of a cache uuid mismatch, treat it as a corrupted metadata and
+    // In case of a cache guid mismatch, treat it as a corrupted metadata and
     // start clean.
     StopTrackingMetadataAndResetTracker();
   }
@@ -517,6 +553,47 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
           weak_ptr_factory_for_worker_.GetWeakPtr(),
           base::SequencedTaskRunner::GetCurrentDefault());
   std::move(start_callback_).Run(std::move(activation_context));
+}
+
+bool BookmarkDataTypeProcessor::DoesCountExceedBookmarksSyncLimit(
+    size_t count,
+    size_t offset) const {
+  if (sync_bookmarks_limit_for_tests_.has_value()) {
+    return count > sync_bookmarks_limit_for_tests_.value() + offset;
+  }
+  // Count is less than the default limit so should not bother checking against
+  // `kSyncBookmarksLimitValue` which is bound to be >= the default limit.
+  if (count <= syncer::kDefaultSyncBookmarksLimit + offset) {
+    return false;
+  }
+  return count > syncer::kSyncBookmarksLimitValue.Get() + offset;
+}
+
+bool BookmarkDataTypeProcessor::MaybeReportBookmarkCountLimitExceededError(
+    syncer::ModelError::Type error_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If `activation_request_.error_handler` is not set, the check is ignored
+  // because this gets re-evaluated in ConnectIfReady().
+  if (!activation_request_.error_handler) {
+    return false;
+  }
+
+  const size_t count = bookmark_tracker_
+                           ? bookmark_tracker_->TrackedBookmarksCount()
+                           : CountSyncableBookmarksFromModel(bookmark_model_);
+  if (DoesCountExceedBookmarksSyncLimit(count)) {
+    // For the case where a tracker already
+    // exists, local changes will continue
+    // to be tracked in order order to allow users to delete bookmarks and
+    // recover upon restart.
+    DisconnectSync();
+    start_callback_.Reset();
+
+    activation_request_.error_handler.Run(
+        syncer::ModelError(FROM_HERE, error_type));
+    return true;
+  }
+  return false;
 }
 
 void BookmarkDataTypeProcessor::OnSyncStopping(
@@ -545,7 +622,7 @@ void BookmarkDataTypeProcessor::OnSyncStopping(
       if (bookmark_tracker_) {
         StopTrackingMetadataAndResetTracker();
       }
-      last_initial_merge_remote_updates_exceeded_limit_ = false;
+      initial_merge_remote_updates_exceeded_limit_timestamp_.reset();
       schedule_save_closure_.Run();
       break;
     }
@@ -558,18 +635,9 @@ void BookmarkDataTypeProcessor::OnSyncStopping(
 void BookmarkDataTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
 
-  // Issue error and stop sync if the number of local bookmarks exceed limit.
-  // If `activation_request_.error_handler` is not set, the check is ignored
-  // because this gets re-evaluated in ConnectIfReady().
-  if (activation_request_.error_handler &&
-      bookmark_tracker_->TrackedBookmarksCount() >
-          max_bookmarks_till_sync_enabled_) {
-    // Local changes continue to be tracked in order to allow users to delete
-    // bookmarks and recover upon restart.
-    DisconnectSync();
-    start_callback_.Reset();
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitNudgeForCommit)) {
     return;
   }
 
@@ -603,19 +671,18 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   TRACE_EVENT0("sync", "BookmarkDataTypeProcessor::OnInitialUpdateReceived");
 
+  // Report error if count of remote updates is more than the limit.
   // `updates` can contain an additional root folder. The server may or may not
   // deliver a root node - it is not guaranteed, but this works as an
   // approximated safeguard.
-  const size_t max_initial_updates_count = max_bookmarks_till_sync_enabled_ + 1;
-
-  // Report error if count of remote updates is more than the limit.
   // Note that we are not having this check for incremental updates as it is
   // very unlikely that there will be many updates downloaded.
-  if (updates.size() > max_initial_updates_count) {
+  if (DoesCountExceedBookmarksSyncLimit(updates.size(), /*offset=*/1)) {
     DisconnectSync();
-    last_initial_merge_remote_updates_exceeded_limit_ = true;
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE, "Remote bookmarks count exceed limit."));
+    initial_merge_remote_updates_exceeded_limit_timestamp_ = base::Time::Now();
+    activation_request_.error_handler.Run(syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kBookmarksRemoteCountExceededLimitInitialMerge));
     schedule_save_closure_.Run();
     return;
   }
@@ -625,8 +692,7 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   {
     ScopedRemoteUpdateBookmarks update_bookmarks(
-        bookmark_model_, bookmark_undo_service_,
-        bookmark_model_observer_.get());
+        bookmark_model_, bookmark_model_observer_.get());
 
     bookmark_model_->EnsurePermanentNodesExist();
     BookmarkModelMerger model_merger(std::move(updates), bookmark_model_,
@@ -643,18 +709,130 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
           bookmark_model_->mobile_node())) {
     DisconnectSync();
     StopTrackingMetadataAndResetTracker();
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE, "Permanent bookmark entities missing"));
+    activation_request_.error_handler.Run(syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kBookmarksInitialMergePermanentEntitiesMissing));
     return;
   }
 
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    bookmark_model_->MaybeRemoveUnderlyingModelDuplicatesUponInitialSync();
+  }
 
   LogDataTypeConfigurationTime(syncer::BOOKMARKS, activation_request_.sync_mode,
                                activation_request_.configuration_start_time);
 
   schedule_save_closure_.Run();
   NudgeForCommitIfNeeded();
+}
+
+void BookmarkDataTypeProcessor::OnIncrementalUpdateReceived(
+    const sync_pb::DataTypeState& type_state,
+    syncer::UpdateResponseDataList updates) {
+  {
+    ScopedRemoteUpdateBookmarks update_bookmarks(
+        bookmark_model_, bookmark_model_observer_.get());
+    BookmarkRemoteUpdatesHandler updates_handler(
+        bookmark_model_, favicon_service_, bookmark_tracker_.get());
+
+    const bool got_new_encryption_requirements =
+        bookmark_tracker_->data_type_state().encryption_key_name() !=
+        type_state.encryption_key_name();
+    bookmark_tracker_->set_data_type_state(type_state);
+    updates_handler.Process(updates, got_new_encryption_requirements);
+  }
+
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitOnUpdateReceived)) {
+    return;
+  }
+
+  if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
+    NudgeForCommitIfNeeded();
+  }
+
+  // There are cases when we receive non-empty updates that don't result in
+  // model changes (e.g. reflections). In that case, issue a write to persist
+  // the progress marker in order to avoid downloading those updates again.
+  if (!updates.empty()) {
+    // Schedule save just in case one is needed.
+    schedule_save_closure_.Run();
+  }
+}
+
+void BookmarkDataTypeProcessor::ApplyFullUpdateAsIncrementalUpdate(
+    const sync_pb::DataTypeState& type_state,
+    syncer::UpdateResponseDataList updates) {
+  absl::flat_hash_set<const SyncedBookmarkTrackerEntity*> updated_entities;
+  for (const syncer::UpdateResponseData& update : updates) {
+    bool should_ignore_update = false;
+    const SyncedBookmarkTrackerEntity* tracked_entity =
+        BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
+            bookmark_tracker_.get(), update.entity, &should_ignore_update);
+    if (tracked_entity) {
+      // If the update is invalid and should be ignored, there should be no
+      // `tracked_entity`.
+      CHECK(!should_ignore_update);
+      updated_entities.insert(tracked_entity);
+    }
+  }
+
+  // Simulate the deletion of all entities that are not in the update (and
+  // synced).
+  for (const SyncedBookmarkTrackerEntity* entity :
+       bookmark_tracker_->GetAllEntities()) {
+    // Don't create deletions for permanent nodes.
+    if (entity->bookmark_node()->is_permanent_node()) {
+      continue;
+    }
+    if (entity->IsUnsyncedLocalCreation()) {
+      // Special case a local creation to avoid generating a deletion.
+      // Otherwise, it would result in a conflict with a remote deletion
+      // which is not real, polluting UMA metrics. This would still result
+      // in keeping the local creation but it'd be fragile and non-obvious.
+      continue;
+    }
+
+    // Do not handle local updates and deletions explicitly. Consider the
+    // following scenarios:
+    // 1. Local update, remote entity still exists. A deletion won't be
+    //    generated in this case, so it's a normal conflict.
+    // 2. Local update, remote entity deleted. A deletion will be generated
+    //    but the local update will be preferred during conflict resolution.
+    // 3. Local deletion, remote entity deleted. A deletion will be
+    //    generated in this case, so it's a normal conflict resulting in a
+    //    no-op for the bridge.
+    // 4. Local deletion, remote entity still exists. This case will result
+    //    in restoring the entity during conflict resolution. It's not ideal
+    //    but safer than data loss.
+    // TODO(crbug.com/40668179): Improve handling of local deletions during
+    // full updates.
+    if (updated_entities.contains(entity)) {
+      // Consider this as a normal incremental update. Note that this update
+      // might be dropped due to the version having been seen before.
+      continue;
+    }
+
+    syncer::UpdateResponseData deletion;
+    deletion.entity.id = entity->metadata().server_id();
+    deletion.entity.client_tag_hash = entity->GetClientTagHash();
+    deletion.entity.creation_time =
+        syncer::ProtoTimeToTime(entity->metadata().creation_time());
+    deletion.entity.modification_time =
+        syncer::ProtoTimeToTime(entity->metadata().modification_time());
+    deletion.entity.name = "tombstone";
+
+    // Increment the version to ensure that the deletion is not immediately
+    // ignored.
+    deletion.response_version = entity->metadata().server_version() + 1;
+    updates.push_back(std::move(deletion));
+  }
+
+  OnIncrementalUpdateReceived(type_state, std::move(updates));
 }
 
 void BookmarkDataTypeProcessor::StartTrackingMetadata() {
@@ -671,16 +849,19 @@ void BookmarkDataTypeProcessor::StartTrackingMetadata() {
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
 }
 
-void BookmarkDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(bookmark_tracker_ &&
-                          bookmark_tracker_->HasLocalChanges());
+void BookmarkDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(
+      bookmark_tracker_ ? bookmark_tracker_->GetUnsyncedDataCount() : 0);
 }
 
 void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(bookmark_model_);
+
   base::Value::List all_nodes;
+
   // Create a permanent folder since sync server no longer create root folders,
   // and USS won't migrate root folders from directory, we create root folders.
 
@@ -705,7 +886,7 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
     }
   }
 
-  std::move(callback).Run(syncer::BOOKMARKS, std::move(all_nodes));
+  std::move(callback).Run(std::move(all_nodes));
 }
 
 void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(
@@ -796,7 +977,7 @@ void BookmarkDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
 
 void BookmarkDataTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
     size_t limit) {
-  max_bookmarks_till_sync_enabled_ = limit;
+  sync_bookmarks_limit_for_tests_ = limit;
 }
 
 void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {
@@ -818,10 +999,10 @@ void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {
     StopTrackingMetadataAndResetTracker();
     // Schedule save empty metadata.
     schedule_save_closure_.Run();
-  } else if (last_initial_merge_remote_updates_exceeded_limit_) {
+  } else if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
     LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
                                           /*is_delayed_call=*/false);
-    last_initial_merge_remote_updates_exceeded_limit_ = false;
+    initial_merge_remote_updates_exceeded_limit_timestamp_.reset();
     // Schedule save empty metadata.
     schedule_save_closure_.Run();
   }
@@ -831,8 +1012,9 @@ void BookmarkDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DisconnectSync();
-  activation_request_.error_handler.Run(
-      syncer::ModelError(FROM_HERE, "Report error for test"));
+  activation_request_.error_handler.Run(syncer::ModelError(
+      FROM_HERE, syncer::ModelError::Type::
+                     kBookmarksInitialMergePermanentEntitiesMissing));
 }
 
 void BookmarkDataTypeProcessor::StopTrackingMetadataAndResetTracker() {
@@ -854,13 +1036,6 @@ void BookmarkDataTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       // Nothing to do.
       break;
-    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
-      // Do it this time, but switch to kNever so it doesn't trigger next
-      // time.
-      syncer::SyncRecordModelClearedOnceHistogram(syncer::BOOKMARKS);
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
-      [[fallthrough]];
     case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
       bookmark_model_->RemoveAllSyncableNodes();
       break;

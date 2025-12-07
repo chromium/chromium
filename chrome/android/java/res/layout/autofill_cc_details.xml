@@ -26,7 +26,7 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/message_divider"
-        android:background="@macro/divider_line_bg_color"
+        android:background="@drawable/divider_line_bg"
         android:importantForAccessibility="no"
         android:layout_height="16dp"
         android:layout_width="1dp"

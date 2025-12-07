@@ -5,16 +5,16 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_DUMP_UTIL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_DUMP_UTIL_H_
 
-#include "base/containers/fixed_flat_map.h"
-
 #include <list>
 #include <string>
+
+#include "base/strings/to_string.h"
 
 namespace ui {
 class WaylandWindow;
 
 inline std::string ToBoolString(bool b) {
-  return b ? "true" : "false";
+  return base::ToString(b);
 }
 
 inline std::string GetWindowName(const WaylandWindow* window) {
@@ -22,7 +22,7 @@ inline std::string GetWindowName(const WaylandWindow* window) {
   return window ? "exits" : "nullptr";
 }
 
-inline std::string ListToString(const std::list<std::string> list) {
+inline std::string ListToString(const std::list<std::string>& list) {
   std::string out;
   for (const auto& i : list) {
     out += i + ",";

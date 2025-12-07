@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/computed_hashes.h"
 
 #include <memory>
@@ -20,21 +15,21 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace extensions {
 
 namespace computed_hashes {
-const char kBlockHashesKey[] = "block_hashes";
-const char kBlockSizeKey[] = "block_size";
-const char kFileHashesKey[] = "file_hashes";
-const char kPathKey[] = "path";
-const char kVersionKey[] = "version";
-const int kVersion = 2;
+constexpr char kBlockHashesKey[] = "block_hashes";
+constexpr char kBlockSizeKey[] = "block_size";
+constexpr char kFileHashesKey[] = "file_hashes";
+constexpr char kPathKey[] = "path";
+constexpr char kVersionKey[] = "version";
+constexpr int kVersion = 2;
 }  // namespace computed_hashes
 
 namespace {
@@ -108,7 +103,8 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     return std::nullopt;
   }
 
-  std::optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
+  std::optional<base::Value> top_dictionary =
+      base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* dictionary =
       top_dictionary ? top_dictionary->GetIfDict() : nullptr;
   if (!dictionary) {
@@ -201,12 +197,14 @@ std::optional<ComputedHashes::Data> ComputedHashes::Compute(
   // First discover all the file paths and put them in a sorted set.
   SortedFilePathSet paths;
   while (true) {
-    if (is_cancelled && is_cancelled.Run())
+    if (is_cancelled && is_cancelled.Run()) {
       return std::nullopt;
+    }
 
     base::FilePath full_path = enumerator.Next();
-    if (full_path.empty())
+    if (full_path.empty()) {
       break;
+    }
     paths.insert(full_path);
   }
 
@@ -214,19 +212,22 @@ std::optional<ComputedHashes::Data> ComputedHashes::Compute(
   // for each one.
   Data data;
   for (const auto& full_path : paths) {
-    if (is_cancelled && is_cancelled.Run())
+    if (is_cancelled && is_cancelled.Run()) {
       return std::nullopt;
+    }
 
     base::FilePath relative_path;
     extension_root.AppendRelativePath(full_path, &relative_path);
 
-    if (!should_compute_hashes_for_resource.Run(relative_path))
+    if (!should_compute_hashes_for_resource.Run(relative_path)) {
       continue;
+    }
 
     std::optional<std::vector<std::string>> hashes =
         ComputeAndCheckResourceHash(full_path, block_size);
-    if (hashes)
+    if (hashes) {
       data.Add(relative_path, block_size, std::move(hashes.value()));
+    }
   }
 
   return data;
@@ -236,8 +237,9 @@ bool ComputedHashes::GetHashes(const base::FilePath& relative_path,
                                int* block_size,
                                std::vector<std::string>* hashes) const {
   const Data::HashInfo* hash_info = data_.GetItem(relative_path);
-  if (!hash_info)
+  if (!hash_info) {
     return false;
+  }
 
   *block_size = hash_info->block_size;
   *hashes = hash_info->hashes;
@@ -246,8 +248,9 @@ bool ComputedHashes::GetHashes(const base::FilePath& relative_path,
 
 bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   // Make sure the directory exists.
-  if (!base::CreateDirectoryAndGetError(path.DirName(), nullptr))
+  if (!base::CreateDirectoryAndGetError(path.DirName(), nullptr)) {
     return false;
+  }
 
   base::Value::List file_list;
   for (const auto& resource_info : data_.items()) {
@@ -275,8 +278,9 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   top_dictionary.Set(computed_hashes::kVersionKey, computed_hashes::kVersion);
   top_dictionary.Set(computed_hashes::kFileHashesKey, std::move(file_list));
 
-  if (!base::JSONWriter::Write(top_dictionary, &json))
+  if (!base::JSONWriter::Write(top_dictionary, &json)) {
     return false;
+  }
   if (!base::WriteFile(path, json)) {
     LOG(ERROR) << "Error writing " << path.AsUTF8Unsafe();
     return false;
@@ -293,21 +297,16 @@ std::vector<std::string> ComputedHashes::GetHashesForContent(
   // Even when the contents is empty, we want to output at least one hash
   // block (the hash of the empty string).
   do {
-    const char* block_start = contents.data() + offset;
-    DCHECK(offset <= contents.size());
+    DCHECK_LE(offset, contents.size());
     size_t bytes_to_read = std::min(contents.size() - offset, block_size);
-    std::unique_ptr<crypto::SecureHash> hash(
-        crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-    hash->Update(block_start, bytes_to_read);
-
-    std::string buffer;
-    buffer.resize(crypto::kSHA256Length);
-    hash->Finish(std::data(buffer), buffer.size());
-    hashes.push_back(std::move(buffer));
+    std::string_view data =
+        std::string_view(contents).substr(offset, bytes_to_read);
+    hashes.emplace_back(base::as_string_view(crypto::hash::Sha256(data)));
 
     // If |contents| is empty, then we want to just exit here.
-    if (bytes_to_read == 0)
+    if (bytes_to_read == 0) {
       break;
+    }
 
     offset += bytes_to_read;
   } while (offset < contents.size());

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/bind_post_task.h"
 #include "content/browser/media/media_devices_util.h"
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "content/browser/browser_main_loop.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
@@ -41,7 +43,7 @@ namespace {
 bool IsSpecialAudioDeviceId(MediaDeviceType device_type,
                             const std::string& device_id) {
   return (device_type == MediaDeviceType::kMediaAudioInput ||
-          device_type == MediaDeviceType::kMediaAudioOuput) &&
+          device_type == MediaDeviceType::kMediaAudioOutput) &&
          (media::AudioDeviceDescription::IsDefaultDevice(device_id) ||
           media::AudioDeviceDescription::IsCommunicationsDevice(device_id));
 }
@@ -113,7 +115,7 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
         FROM_HERE, base::BindLambdaForTesting([&]() {
           MediaDevicesManager::BoolDeviceTypes types;
           types[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] = true;
-          types[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] = true;
+          types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] = true;
           types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] = true;
           base::test::TestFuture<const MediaDeviceEnumeration&> future;
           media_stream_manager->media_devices_manager()->EnumerateDevices(
@@ -183,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslateDeviceIdAndBack) {
       std::optional<MediaStreamType> stream_type =
           ToMediaStreamType(device_type);
       EXPECT_EQ(stream_type.has_value(),
-                device_type != MediaDeviceType::kMediaAudioOuput);
+                device_type != MediaDeviceType::kMediaAudioOutput);
       if (!stream_type.has_value()) {
         continue;
       }
@@ -290,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   const MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
   const std::string existing_raw_device_id =
       device_enumeration_[static_cast<size_t>(
-          MediaDeviceType::kMediaAudioOuput)][0]
+          MediaDeviceType::kMediaAudioOutput)][0]
           .device_id;
   const std::string existing_hmac_device_id =
       GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
@@ -298,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   base::test::TestFuture<const std::optional<std::string>&> future;
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
-                                MediaDeviceType::kMediaAudioOuput,
+                                MediaDeviceType::kMediaAudioOutput,
                                 salt_and_origin, existing_hmac_device_id,
                                 base::SequencedTaskRunner::GetCurrentDefault(),
                                 future.GetCallback()));
@@ -313,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
-                     MediaDeviceType::kMediaAudioOuput, GetSaltAndOrigin(),
+                     MediaDeviceType::kMediaAudioOutput, GetSaltAndOrigin(),
                      "nonexisting_hmac_device_id",
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      future.GetCallback()));

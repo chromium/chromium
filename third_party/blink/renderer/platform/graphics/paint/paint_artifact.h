@@ -33,7 +33,7 @@ class PLATFORM_EXPORT PaintArtifact final
   PaintArtifact(PaintArtifact&& other) = delete;
   PaintArtifact& operator=(PaintArtifact&& other) = delete;
 
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(chunks_); }
 
   bool IsEmpty() const { return chunks_.empty(); }
 
@@ -48,7 +48,8 @@ class PLATFORM_EXPORT PaintArtifact final
   DisplayItemRange DisplayItemsInChunk(wtf_size_t chunk_index) const {
     DCHECK_LT(chunk_index, chunks_.size());
     auto& chunk = chunks_[chunk_index];
-    return display_item_list_.ItemsInRange(chunk.begin_index, chunk.end_index);
+    return UNSAFE_TODO(
+        display_item_list_.ItemsInRange(chunk.begin_index, chunk.end_index));
   }
 
   // Returns the approximate memory usage, excluding memory likely to be

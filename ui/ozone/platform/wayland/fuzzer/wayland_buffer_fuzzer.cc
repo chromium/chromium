@@ -28,15 +28,17 @@
 #include "base/test/test_timeouts.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
+#include "ui/ozone/platform/wayland/test/wayland_connection_test_api.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -72,7 +74,7 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   MOCK_METHOD0(OnWillDestroyAcceleratedWidget, void());
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
-  MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD0(OnCursorUpdate, void());
 };
 
 struct Environment {
@@ -183,7 +185,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   env.SetTerminateGpuCallback(manager_host);
   manager_host->CreateDmabufBasedBuffer(
       mojo::PlatformHandle(std::move(fd)), buffer_size, strides, offsets,
-      modifiers, kFormat, kPlaneCount, kBufferId);
+      modifiers, kFormat, kPlaneCount, gfx::ColorSpace(), gfx::HDRMetadata(),
+      kBufferId);
 
   // Wait until the buffers are created.
   test_api.SyncDisplay();

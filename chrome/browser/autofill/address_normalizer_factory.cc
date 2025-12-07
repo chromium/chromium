@@ -40,7 +40,7 @@ AddressNormalizerFactory::AddressNormalizerFactory()
           ValidationRulesStorageFactory::CreateStorage(),
           g_browser_process->GetApplicationLocale()) {}
 
-AddressNormalizerFactory::~AddressNormalizerFactory() {}
+AddressNormalizerFactory::~AddressNormalizerFactory() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>
@@ -50,3 +50,7 @@ JNI_AddressNormalizerFactory_GetInstance(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AddressNormalizerFactory)
+#endif

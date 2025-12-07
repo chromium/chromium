@@ -34,12 +34,14 @@ CLANG_PLATFORM_TO_PACKAGE_FILES = {
         'clang-tidy',
         'clangd',
         'llvm-code-coverage',
+        'llvmobjdump',
     ],
     'Mac_arm64': [
         'clang',
         'clang-tidy',
         'clangd',
         'llvm-code-coverage',
+        'llvmobjdump',
     ],
     'Win': [
         'clang',
@@ -72,12 +74,12 @@ def GetDepsObjectInfo(object_name: str) -> str:
   #     ETag:                   COvj8aXjj4YDEAE=
   #     Generation:             1715780189975019
   #     Metageneration:         1
-  generation = re.search('Generation:\s+([0-9]+)', output).group(1)
-  size_bytes = re.search('Content-Length:\s+([0-9]+)', output).group(1)
+  generation = re.search(r'Generation:\s+([0-9]+)', output).group(1)
+  size_bytes = re.search(r'Content-Length:\s+([0-9]+)', output).group(1)
   with tempfile.NamedTemporaryFile() as f:
     DownloadUrl(url, f)
     f.seek(0)
-    sha256sum = hashlib.file_digest(f, 'sha256').hexdigest()
+    sha256sum = hashlib.sha256(f.read()).hexdigest()
 
   return f'{object_name},{sha256sum},{size_bytes},{generation}'
 

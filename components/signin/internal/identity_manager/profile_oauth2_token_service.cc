@@ -4,13 +4,14 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -22,11 +23,9 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
-
-using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
-
-}  // namespace
+#if BUILDFLAG(IS_IOS)
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#endif
 
 ProfileOAuth2TokenService::ProfileOAuth2TokenService(
     PrefService* user_prefs,
@@ -49,6 +48,11 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
 }
 
 ProfileOAuth2TokenService::~ProfileOAuth2TokenService() {
+  // Reset the observation before calling Shutdown(). Shutdown() may trigger
+  // immediate delegate destruction, and the delegate's ObserverList destructor
+  // checks that all observers have been removed (DUMP_WILL_BE_CHECK in
+  // base/observer_list.h).
+  token_service_observation_.Reset();
   token_manager_.reset();
   GetDelegate()->Shutdown();
 }
@@ -144,34 +148,72 @@ ProfileOAuth2TokenService::StartRequest(
   return token_manager_->StartRequest(account_id, scopes, consumer);
 }
 
-std::unique_ptr<OAuth2AccessTokenManager::Request>
-ProfileOAuth2TokenService::StartRequestForMultilogin(
+#if BUILDFLAG(IS_IOS)
+void ProfileOAuth2TokenService::GetRefreshTokenFromDevice(
     const CoreAccountId& account_id,
-    OAuth2AccessTokenManager::Consumer* consumer) {
-  const std::string refresh_token =
-      delegate_->GetTokenForMultilogin(account_id);
+    const OAuth2AccessTokenManager::ScopeSet& scopes,
+    signin::AccessTokenFetcher::TokenCallback callback) {
+  delegate_->GetRefreshTokenFromDevice(account_id, scopes, std::move(callback));
+}
+#endif
+
+void ProfileOAuth2TokenService::StartRequestForMultilogin(
+    signin::OAuthMultiloginTokenRequest& request,
+    const std::string& token_binding_challenge,
+    const std::string& ephemeral_public_key) {
+  std::string refresh_token =
+      delegate_->GetTokenForMultilogin(request.account_id());
   if (refresh_token.empty()) {
     // If we can't get refresh token from the delegate, start request for access
     // token.
-    OAuth2AccessTokenManager::ScopeSet scopes;
-    scopes.insert(GaiaConstants::kOAuth1LoginScope);
-    return token_manager_->StartRequest(account_id, scopes, consumer);
+    request.StartAccessTokenRequest(*token_manager_,
+                                    {GaiaConstants::kOAuth1LoginScope});
+    return;
   }
-  std::unique_ptr<OAuth2AccessTokenManager::RequestImpl> request(
-      new OAuth2AccessTokenManager::RequestImpl(account_id, consumer));
-  // Create token response from token. Expiration time and id token do not
-  // matter and should not be accessed.
-  // TODO(crbug.com/40158125): See bug description for why the refresh token is
-  // passed in the access token field.
-  OAuth2AccessTokenConsumer::TokenResponse token_response =
-      TokenResponseBuilder().WithAccessToken(refresh_token).build();
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool is_bound = delegate_->IsRefreshTokenBound(request.account_id());
+
+  // Sign `token_binding_challenge` asynchronously if it's required.
+  if (is_bound && !token_binding_challenge.empty()) {
+    auto create_response_callback = base::BindOnce(
+        [](std::string token, std::string assertion) {
+          if (assertion.empty()) {
+            // Even if the assertion failed, we want to make a server request
+            // because the server doesn't verify assertions during dark launch.
+            // TODO(crbug.com/377942773): fail here immediately after the
+            // feature is fully launched.
+            assertion = GaiaConstants::kTokenBindingAssertionFailedPlaceholder;
+          }
+          return signin::OAuthMultiloginTokenResponse(std::move(token),
+                                                      std::move(assertion));
+        },
+        std::move(refresh_token));
+    auto notify_request_callback =
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &signin::OAuthMultiloginTokenRequest::InvokeCallbackWithResult,
+            request.AsWeakPtr()));
+    delegate_->GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+        request.account_id(), token_binding_challenge, ephemeral_public_key,
+        std::move(create_response_callback)
+            .Then(std::move(notify_request_callback)));
+    return;
+  }
+
+  signin::OAuthMultiloginTokenResponse response(
+      std::move(refresh_token),
+      is_bound ? std::string(GaiaConstants::kTokenBindingAssertionSentinel)
+               : std::string());
+#else
+  signin::OAuthMultiloginTokenResponse response(std::move(refresh_token));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  // Create multilogin token response from the refresh token.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&OAuth2AccessTokenManager::RequestImpl::InformConsumer,
-                     request.get()->AsWeakPtr(),
-                     GoogleServiceAuthError(GoogleServiceAuthError::NONE),
-                     token_response));
-  return std::move(request);
+      base::BindOnce(
+          &signin::OAuthMultiloginTokenRequest::InvokeCallbackWithResult,
+          request.AsWeakPtr(), std::move(response)));
 }
 
 std::unique_ptr<OAuth2AccessTokenManager::Request>
@@ -199,17 +241,19 @@ void ProfileOAuth2TokenService::InvalidateAccessToken(
     const CoreAccountId& account_id,
     const OAuth2AccessTokenManager::ScopeSet& scopes,
     const std::string& access_token) {
+  CHECK(!account_id.empty(), base::NotFatalUntil::M145);
+  CHECK(!access_token.empty(), base::NotFatalUntil::M145);
+
   token_manager_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 
 void ProfileOAuth2TokenService::InvalidateTokenForMultilogin(
     const CoreAccountId& failed_account,
     const std::string& token) {
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kOAuth1LoginScope);
   // Remove from cache. This will have no effect on desktop since token is a
   // refresh token and is not in cache.
-  InvalidateAccessToken(failed_account, scopes, token);
+  InvalidateAccessToken(failed_account, {GaiaConstants::kOAuth1LoginScope},
+                        token);
   // For desktop refresh tokens can be invalidated directly in delegate. This
   // will have no effect on mobile.
   delegate_->InvalidateTokenForMultilogin(failed_account);
@@ -226,26 +270,17 @@ void ProfileOAuth2TokenService::SetRefreshTokenRevokedFromSourceCallback(
 }
 
 void ProfileOAuth2TokenService::LoadCredentials(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
-  GetDelegate()->LoadCredentials(primary_account_id, is_syncing);
+    const CoreAccountId& primary_account_id) {
+  GetDelegate()->LoadCredentials(primary_account_id);
 }
 
 void ProfileOAuth2TokenService::UpdateCredentials(
     const CoreAccountId& account_id,
     const std::string& refresh_token,
-    signin_metrics::SourceForRefreshTokenOperation source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    ,
-    const std::vector<uint8_t>& wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-) {
-  GetDelegate()->UpdateCredentials(account_id, refresh_token, source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                   ,
-                                   wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+    signin_metrics::SourceForRefreshTokenOperation source,
+    const std::vector<uint8_t>& wrapped_binding_key) {
+  GetDelegate()->UpdateCredentials(account_id, refresh_token, source,
+                                   wrapped_binding_key);
 }
 
 void ProfileOAuth2TokenService::RevokeCredentials(
@@ -283,15 +318,24 @@ std::vector<CoreAccountId> ProfileOAuth2TokenService::GetAccounts() const {
   return GetDelegate()->GetAccounts();
 }
 
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo> ProfileOAuth2TokenService::GetAccountsOnDevice()
+    const {
+  return GetDelegate()->GetAccountsOnDevice();
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 bool ProfileOAuth2TokenService::RefreshTokenIsAvailable(
     const CoreAccountId& account_id) const {
   return delegate_->RefreshTokenIsAvailable(account_id);
 }
 
-bool ProfileOAuth2TokenService::RefreshTokenHasError(
+#if BUILDFLAG(IS_IOS)
+bool ProfileOAuth2TokenService::RefreshTokenIsAvailableOnDevice(
     const CoreAccountId& account_id) const {
-  return GetAuthError(account_id) != GoogleServiceAuthError::AuthErrorNone();
+  return delegate_->RefreshTokenIsAvailableOnDevice(account_id);
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 GoogleServiceAuthError ProfileOAuth2TokenService::GetAuthError(
     const CoreAccountId& account_id) const {
@@ -306,12 +350,16 @@ void ProfileOAuth2TokenService::UpdateAuthErrorForTesting(
   GetDelegate()->UpdateAuthError(account_id, error);
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::vector<uint8_t> ProfileOAuth2TokenService::GetWrappedBindingKey(
     const CoreAccountId& account_id) const {
   return delegate_->GetWrappedBindingKey(account_id);
 }
-#endif
+
+bool ProfileOAuth2TokenService::AllBoundTokensShareSameBindingKey() const {
+  return delegate_->AllBoundTokensShareSameBindingKey();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void ProfileOAuth2TokenService::
     set_max_authorization_token_fetch_retries_for_testing(int max_retries) {
@@ -394,7 +442,7 @@ bool ProfileOAuth2TokenService::HasLoadCredentialsFinishedWithNoErrors() {
 
 void ProfileOAuth2TokenService::RecreateDeviceIdIfNeeded() {
 // On ChromeOS the device ID is not managed by the token service.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (AreAllCredentialsLoaded() && HasLoadCredentialsFinishedWithNoErrors() &&
       GetAccounts().empty()) {
     signin::RecreateSigninScopedDeviceId(user_prefs_);

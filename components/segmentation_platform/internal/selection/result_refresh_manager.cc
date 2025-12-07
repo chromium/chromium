@@ -17,12 +17,6 @@ namespace {
 
 const int kModelInitializationTimeoutMs = 5000;
 
-int GetModelInitializationTimeoutMs() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kSegmentationPlatformModelInitializationDelay,
-      kModelInitializationDelay, kModelInitializationTimeoutMs);
-}
-
 // Checks if the model result supports multi output model.
 bool SupportMultiOutput(SegmentResultProvider::SegmentResult* result) {
   return result && result->result.has_output_config();
@@ -75,7 +69,7 @@ void ResultRefreshManager::RefreshModelResults(bool is_startup) {
         FROM_HERE,
         base::BindOnce(&ResultRefreshManager::RefreshModelResultsInternal,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Milliseconds(GetModelInitializationTimeoutMs()));
+        base::Milliseconds(kModelInitializationTimeoutMs));
     return;
   }
   if (delay_state_ == DelayState::DELAY_EXECUTED) {

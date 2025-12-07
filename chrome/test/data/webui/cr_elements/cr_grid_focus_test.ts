@@ -366,4 +366,40 @@ suite('CrElementsGridFocusTest', () => {
     keydown(focusableChildren[2]!, 'ArrowRight');
     assertFocus(focusableChildren[0]!);
   });
+
+  test('Fires cr-grid-focus-changed event', async () => {
+    const grid = createGrid(12);
+
+    // Right arrow
+    let whenFocusChanged = eventToPromise('cr-grid-focus-changed', grid) as
+        Promise<CustomEvent<HTMLElement>>;
+    keydown(grid.children[0]!, 'ArrowRight');
+    let event = await whenFocusChanged;
+    assertEquals(grid.children[1]!, event.detail);
+    assertFocus(grid.children[1]!);
+
+    // Left arrow
+    whenFocusChanged = eventToPromise('cr-grid-focus-changed', grid) as
+        Promise<CustomEvent<HTMLElement>>;
+    keydown(grid.children[1]!, 'ArrowLeft');
+    event = await whenFocusChanged;
+    assertEquals(grid.children[0]!, event.detail);
+    assertFocus(grid.children[0]!);
+
+    // Down arrow
+    whenFocusChanged = eventToPromise('cr-grid-focus-changed', grid) as
+        Promise<CustomEvent<HTMLElement>>;
+    keydown(grid.children[0]!, 'ArrowDown');
+    event = await whenFocusChanged;
+    assertEquals(grid.children[6]!, event.detail);
+    assertFocus(grid.children[6]!);
+
+    // Up arrow
+    whenFocusChanged = eventToPromise('cr-grid-focus-changed', grid) as
+        Promise<CustomEvent<HTMLElement>>;
+    keydown(grid.children[6]!, 'ArrowUp');
+    event = await whenFocusChanged;
+    assertEquals(grid.children[0]!, event.detail);
+    assertFocus(grid.children[0]!);
+  });
 });

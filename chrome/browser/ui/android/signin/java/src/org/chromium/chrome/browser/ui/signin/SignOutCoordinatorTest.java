@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,10 +38,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -59,7 +56,6 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.HashSet;
@@ -68,10 +64,6 @@ import java.util.Set;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
-})
 public class SignOutCoordinatorTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -79,8 +71,6 @@ public class SignOutCoordinatorTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Rule public final JniMocker mocker = new JniMocker();
 
     @Mock private Profile mProfile;
     @Mock private FragmentManager mFragmentManager;
@@ -104,25 +94,29 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testLegacyDialog_replaceSyncPromosFeatureDisabled() {
+    public void testLegacyDialogWithRevokeSyncConsentReason() {
         setUpMocks();
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        when(mProfile.isChild()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
 
-        startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
+        startSignOutFlow(
+                SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS, mOnSignOut, false);
 
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.turn_off_sync_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
     public void testLegacyDialog_hasSyncingAccount() {
         setUpMocks();
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
@@ -163,12 +157,48 @@ public class SignOutCoordinatorTest {
                     Assert.assertTrue(mSnackbarManager.isShowing());
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(), Snackbar.UMA_SIGN_OUT);
+                            Snackbar.UMA_SIGN_OUT, currentSnackbar.getIdentifierForTesting());
                     Assert.assertEquals(
                             currentSnackbar.getTextForTesting(),
                             mActivityTestRule
                                     .getActivity()
                                     .getString(R.string.sign_out_snackbar_message));
+                });
+        verify(mOnSignOut).run();
+    }
+
+    /**
+     * Test Snackbar is suppressed when the user signout from the settings panel.
+     *
+     * <p>This is a regression test for crbug.com/361747614.
+     */
+    @Test
+    @MediumTest
+    public void testSnackbarSuppressedByParameter() {
+        setUpMocks();
+        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
+        doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
+        doAnswer(
+                        args -> {
+                            args.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .runAfterOperationInProgress(any(Runnable.class));
+        doAnswer(
+                        args -> {
+                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
+                            signOutCallback.signOutComplete();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+
+        startSignOutFlow(signOutReason, mOnSignOut, false, /* suppressSnackbar= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(mSnackbarManager.isShowing());
                 });
         verify(mOnSignOut).run();
     }
@@ -288,7 +318,7 @@ public class SignOutCoordinatorTest {
                     Assert.assertTrue(mSnackbarManager.isShowing());
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(), Snackbar.UMA_SIGN_OUT);
+                            Snackbar.UMA_SIGN_OUT, currentSnackbar.getIdentifierForTesting());
                     Assert.assertEquals(
                             currentSnackbar.getTextForTesting(),
                             mActivityTestRule
@@ -324,6 +354,58 @@ public class SignOutCoordinatorTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    @SmallTest
+    public void testUndoSignInWithSnackbarThrowsOnUnsyncedData() {
+        setUpMocks();
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
+
+        assertUndoSignInWithSnackbarThrows(
+                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+    }
+
+    @Test
+    @SmallTest
+    public void testUndoSignInWithSnackbarThrowsForUnsupportedReasons() {
+        for (@SignoutReason int reason = 0; reason <= SignoutReason.MAX_VALUE; reason++) {
+            if (reason == SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN) {
+                continue;
+            }
+            // All other reasons should throw.
+            assertUndoSignInWithSnackbarThrows(IllegalArgumentException.class, reason);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testUndoSigninWithSnackbarThrowsNotSignedIn() {
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        doReturn(mIdentityManagerMock)
+                .when(mIdentityServicesProviderMock)
+                .getIdentityManager(mProfile);
+        doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
+
+        assertUndoSignInWithSnackbarThrows(
+                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+    }
+
+    private <T extends Throwable> void assertUndoSignInWithSnackbarThrows(
+            Class<T> expectedThrowable, @SignoutReason int reason) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertThrows(
+                            expectedThrowable,
+                            () ->
+                                    SignOutCoordinator.undoSignInWithSnackbar(
+                                            mActivityTestRule.getActivity(),
+                                            mProfile,
+                                            mSnackbarManager,
+                                            reason,
+                                            mOnSignOut));
+                });
+        verify(mOnSignOut, never()).run();
+    }
+
     private void setUpMocks() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         doReturn(mIdentityManagerMock)
@@ -353,7 +435,10 @@ public class SignOutCoordinatorTest {
     }
 
     private void startSignOutFlow(
-            @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
+            @SignoutReason int signoutReason,
+            Runnable onSignOut,
+            boolean showConfirmDialog,
+            boolean suppressSnackbar) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SignOutCoordinator.startSignOutFlow(
@@ -364,6 +449,12 @@ public class SignOutCoordinatorTest {
                                 mSnackbarManager,
                                 signoutReason,
                                 showConfirmDialog,
-                                onSignOut));
+                                onSignOut,
+                                suppressSnackbar));
+    }
+
+    private void startSignOutFlow(
+            @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
+        startSignOutFlow(signoutReason, onSignOut, showConfirmDialog, false);
     }
 }

@@ -23,28 +23,34 @@
 
 namespace blink {
 
-// static
-const char VirtualKeyboard::kSupplementName[] = "VirtualKeyboard";
+namespace {
+
+// Kill switch for allowing `virtualKeyboard.show()` if this page was navigated
+// from a same-site page that had user gesture.
+BASE_FEATURE(kShowKeyboardIfLastPageHadGesture,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 // static
 VirtualKeyboard* VirtualKeyboard::virtualKeyboard(Navigator& navigator) {
-  auto* keyboard = Supplement<Navigator>::From<VirtualKeyboard>(navigator);
+  VirtualKeyboard* keyboard = navigator.GetVirtualKeyboard();
   if (!keyboard) {
     keyboard = MakeGarbageCollected<VirtualKeyboard>(navigator);
-    ProvideTo(navigator, keyboard);
+    navigator.SetVirtualKeyboard(keyboard);
   }
   return keyboard;
 }
 
 VirtualKeyboard::VirtualKeyboard(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      VirtualKeyboardOverlayChangedObserver(
-          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr) {
+    : VirtualKeyboardOverlayChangedObserver(
+          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr),
+      navigator_(navigator) {
   bounding_rect_ = DOMRect::Create();
 }
 
 ExecutionContext* VirtualKeyboard::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return navigator_->DomWindow();
 }
 
 const AtomicString& VirtualKeyboard::InterfaceName() const {
@@ -54,7 +60,7 @@ const AtomicString& VirtualKeyboard::InterfaceName() const {
 VirtualKeyboard::~VirtualKeyboard() = default;
 
 bool VirtualKeyboard::overlaysContent() const {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   if (!window)
     return false;
 
@@ -74,7 +80,7 @@ DOMRect* VirtualKeyboard::boundingRect() const {
 }
 
 void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   if (!window)
     return;
 
@@ -102,7 +108,7 @@ void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
 void VirtualKeyboard::VirtualKeyboardOverlayChanged(
     const gfx::Rect& keyboard_rect) {
   TRACE_EVENT0("vk", "VirtualKeyboard::VirtualKeyboardOverlayChanged");
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   if (!window)
     return;
 
@@ -127,11 +133,17 @@ void VirtualKeyboard::VirtualKeyboardOverlayChanged(
 
 void VirtualKeyboard::show() {
   TRACE_EVENT0("vk", "VirtualKeyboard::show");
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   if (!window)
     return;
 
-  if (window->GetFrame()->HasStickyUserActivation()) {
+  // To show the keyboard, the page needs to have transient user activation.
+  // We also allow showing the keyboard if the page had sticky user activation
+  // that was consumed by a recent cross-origin navigation (which clears the
+  // user activation state).
+  if (window->GetFrame()->HasStickyUserActivation() ||
+      (base::FeatureList::IsEnabled(kShowKeyboardIfLastPageHadGesture) &&
+       window->GetFrame()->HadStickyUserActivationBeforeNavigation())) {
     window->GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
         ui::mojom::VirtualKeyboardVisibilityRequest::SHOW);
   } else {
@@ -146,7 +158,7 @@ void VirtualKeyboard::show() {
 
 void VirtualKeyboard::hide() {
   TRACE_EVENT0("vk", "VirtualKeyboard::hide");
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   if (!window)
     return;
 
@@ -156,8 +168,8 @@ void VirtualKeyboard::hide() {
 
 void VirtualKeyboard::Trace(Visitor* visitor) const {
   visitor->Trace(bounding_rect_);
+  visitor->Trace(navigator_);
   EventTarget::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

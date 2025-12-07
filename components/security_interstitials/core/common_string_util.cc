@@ -17,7 +17,7 @@
 namespace security_interstitials::common_string_util {
 
 std::u16string GetFormattedHostName(const GURL& gurl) {
-  std::u16string host = url_formatter::IDNToUnicode(gurl.host());
+  std::u16string host = url_formatter::IDNToUnicode(gurl.GetHost());
   if (base::i18n::IsRTL())
     base::i18n::WrapStringWithLTRFormatting(&host);
   return host;
@@ -31,10 +31,6 @@ void PopulateSSLLayoutStrings(int cert_error,
                      l10n_util::GetStringUTF16(IDS_SSL_OPEN_DETAILS_BUTTON));
   load_time_data.Set("closeDetails",
                      l10n_util::GetStringUTF16(IDS_SSL_CLOSE_DETAILS_BUTTON));
-  // Not used by most interstitials; can be overridden by individual
-  // interstitials as needed.
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
   load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
                                       IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
   load_time_data.Set(
@@ -42,8 +38,8 @@ void PopulateSSLLayoutStrings(int cert_error,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
-void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
-                                 const base::Time time_triggered,
+void PopulateSSLDebuggingStrings(const net::SSLInfo& ssl_info,
+                                 base::Time time_triggered,
                                  base::Value::Dict& load_time_data) {
   load_time_data.Set("subject", ssl_info.cert->subject().GetDisplayName());
   load_time_data.Set("issuer", ssl_info.cert->issuer().GetDisplayName());

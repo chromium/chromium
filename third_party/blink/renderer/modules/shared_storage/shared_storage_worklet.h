@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -26,10 +27,9 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SharedStorageWorklet* Create(ScriptState*,
-                                      bool cross_origin_script_allowed);
+  static SharedStorageWorklet* Create(ScriptState*);
 
-  explicit SharedStorageWorklet(bool cross_origin_script_allowed);
+  SharedStorageWorklet() = default;
 
   ~SharedStorageWorklet() override = default;
 
@@ -67,10 +67,40 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                        const WorkletOptions* options,
                        ExceptionState&,
                        bool resolve_to_worklet,
-                       SharedStorageDataOrigin data_origin_type);
+                       SharedStorageDataOrigin data_origin_type,
+                       scoped_refptr<SecurityOrigin> custom_data_origin);
 
  private:
-  // Set when addModule() was called and passed early renderer checks.
+  // These internal methods wrap logic that requires IPCs. Since the
+  // corresponding IPCs are not valid during prerendering, they have to be
+  // deferred until prerendering pages being activated.
+  void AddModuleOnLocalDomWindow(
+      LocalDOMWindow* dom_window,
+      KURL script_source_url,
+      scoped_refptr<SecurityOrigin> shared_storage_origin,
+      SharedStorageDataOrigin data_origin_type,
+      network::mojom::CredentialsMode credentials_mode,
+      bool resolve_to_worklet,
+      base::TimeTicks start_time,
+      ScriptPromiseResolverBase* resolver);
+  void SelectUrlInternal(
+      ScriptState* script_state,
+      const String& name,
+      Vector<mojom::blink::SharedStorageUrlWithMetadataPtr> converted_urls,
+      BlinkCloneableMessage serialized_data,
+      const SharedStorageRunOperationMethodOptions* options,
+      base::TimeTicks start_time,
+      ScriptPromiseResolver<V8SharedStorageResponse>* resolver);
+  void RunInternal(ScriptState* script_state,
+                   const String& name,
+                   BlinkCloneableMessage serialized_data,
+                   const SharedStorageRunOperationMethodOptions* options,
+                   base::TimeTicks start_time,
+                   ScriptPromiseResolver<IDLAny>* resolver);
+
+  // On non-prerendering pages, set when addModule() was called and passed
+  // early renderer checks. When it comes to prerendering pages, it also needs
+  // to wait for the page to be activated before setting the Mojo connection.
   HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
       worklet_host_{nullptr};
 
@@ -79,8 +109,6 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   url::Origin shared_storage_origin_;
 
   bool keep_alive_after_operation_ = true;
-
-  bool cross_origin_script_allowed_ = false;
 };
 
 }  // namespace blink

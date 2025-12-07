@@ -10,14 +10,17 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 
 /**
  * Top strip view of the custom tab toolbar. Pass forward touch events to
  * {@link CustomTabHandleStrategy} for dragging CCT up and down.
  */
+@NullMarked
 public class CustomTabDragBar extends FrameLayout {
-    private HandleStrategy mHandleStrategy;
+    private @Nullable HandleStrategy mHandleStrategy;
 
     public CustomTabDragBar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,11 +33,11 @@ public class CustomTabDragBar extends FrameLayout {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mHandleStrategy != null ? mHandleStrategy.onTouchEvent(event) : false;
+        return mHandleStrategy != null && mHandleStrategy.onTouchEvent(event);
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return mHandleStrategy != null ? mHandleStrategy.onInterceptTouchEvent(event) : false;
+        return mHandleStrategy != null && mHandleStrategy.onInterceptTouchEvent(event);
     }
 }

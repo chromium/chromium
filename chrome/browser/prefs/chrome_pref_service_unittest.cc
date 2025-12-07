@@ -13,6 +13,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using blink::web_pref::WebPreferences;
@@ -77,11 +78,11 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
 
   // These values have been overridden by the profile preferences.
   EXPECT_EQ("UTF-8", webkit_prefs.default_encoding);
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   EXPECT_EQ(20, webkit_prefs.default_font_size);
 #else
-  // This pref is not configurable on Android so the default of 16 is always
-  // used.
+  // This pref is not configurable on Android without extensions so the default
+  // of 16 is always used.
   EXPECT_EQ(16, webkit_prefs.default_font_size);
 #endif
   EXPECT_FALSE(webkit_prefs.text_areas_are_resizable);

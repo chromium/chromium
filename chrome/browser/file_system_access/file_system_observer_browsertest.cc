@@ -8,12 +8,14 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -72,7 +74,18 @@ class FileSystemObserverTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
     // Convert path to long format to avoid mixing long and 8.3 formats in test.
     ASSERT_TRUE(temp_dir_.Set(base::MakeLongFilePath(temp_dir_.Take())));
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
+    // Temporary files in Mac are created under /var/, which is a symlink that
+    // resolves to /private/var/. Set `temp_dir_` directly to the resolved file
+    // path, given that the expected FSEvents event paths are reported as
+    // resolved paths.
+    base::FilePath resolved_path =
+        base::MakeAbsoluteFilePath(temp_dir_.GetPath());
+    if (!resolved_path.empty()) {
+      temp_dir_.Take();
+      ASSERT_TRUE(temp_dir_.Set(resolved_path));
+    }
+#endif
     ASSERT_TRUE(embedded_test_server()->Start());
     test_url_ = embedded_test_server()->GetURL("/title1.html");
 
@@ -105,6 +118,21 @@ class FileSystemObserverTest : public InProcessBrowserTest {
     return file_path;
   }
 
+  base::FilePath CreateDirectoryToBePicked() {
+    base::FilePath dir_path;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::CreateTemporaryDirInDir(
+          temp_dir_.GetPath(), FILE_PATH_LITERAL("test"), &dir_path));
+    }
+
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{dir_path}));
+    EXPECT_TRUE(NavigateToURL(GetWebContents(), test_url_));
+    return dir_path;
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable experimental web platform features to enable read/write access.
     command_line->AppendSwitch(
@@ -119,20 +147,16 @@ class FileSystemObserverTest : public InProcessBrowserTest {
   }
 
   bool SupportsReportingModifiedPath() const {
-    // TODO(crbug.com/321980270): Some platforms do not support reporting the
-    // modified path.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
     return true;
 #else
     return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
   }
 
-  bool SupportsChangeInfo() const {
-    // TODO(crbug.com/321980270): Reporting change info and the modified path
-    // are both only supported on inotify and Windows, for now.
-    return SupportsReportingModifiedPath();
-  }
+  bool SupportsChangeInfo() const { return SupportsReportingModifiedPath(); }
 
  protected:
   base::ScopedTempDir temp_dir_;
@@ -277,14 +301,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     ASSERT_TRUE(base::WriteFile(file, "content"));
-    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
-
+    auto records =
+        EvalJs(GetWebContents(), get_results_script).TakeValue().TakeList();
     const std::string expected_change_type =
         SupportsChangeInfo() ? "modified" : "unknown";
 
     // Expect that we received at least one "modified" event.
-    ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-    EXPECT_THAT(records.GetList().front().GetString(),
+    ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+    EXPECT_THAT(records.front().GetString(),
                 testing::StrEq(expected_change_type));
   }
 
@@ -293,20 +317,104 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+    auto records =
+        EvalJs(GetWebContents(), get_results_script).TakeValue().TakeList();
 
     // Expect that we received only one "errored" event.
-    ASSERT_THAT(records.GetList(), testing::SizeIs(1));
-    EXPECT_THAT(records.GetList().front().GetString(),
-                testing::StrEq("errored"));
+    ASSERT_THAT(records, testing::SizeIs(1));
+    EXPECT_THAT(records.front().GetString(), testing::StrEq("errored"));
   }
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::WriteFile(file, "content v2"));
-    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+    auto records =
+        EvalJs(GetWebContents(), get_results_script).TakeValue().TakeList();
 
     // Expect that no more events are received after it's errored.
-    ASSERT_THAT(records.GetList(), testing::IsEmpty());
+    ASSERT_THAT(records, testing::IsEmpty());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
+                       ErrorsAfterRevokeAllActiveGrants) {
+  auto dir = CreateDirectoryToBePicked();
+
+  auto* browser_profile = browser()->profile();
+  TestFileSystemAccessPermissionContext permission_context(browser_profile);
+  content::SetFileSystemAccessPermissionContext(browser_profile,
+                                                &permission_context);
+
+  FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  std::string setup_script = content::JsReplace(
+      R"""((async () => {
+        // Constants
+        const actionTimeoutMs = $1;
+
+        // Setup observer
+        let records = [];
+        function onChange(recs) {
+          records.push(...recs.map(record => record.type));
+        };
+        self.observer = new FileSystemObserver(onChange);
+
+        // Observe a directory.
+        const dir = await self.showDirectoryPicker();
+        await observer.observe(dir, { recursive: false });
+
+        // Returns a promise that resolves after `actionTimeoutMs` to the list
+        // of records observed by the observer.
+        self.collectRecords = () => {
+          const {promise, resolve} = Promise.withResolvers();
+          setTimeout(() => {
+            resolve([...records]);
+            records = [];
+          }, actionTimeoutMs);
+          return promise;
+        };
+      })())""",
+      base::Int64ToValue(TestTimeouts::action_timeout().InMilliseconds()));
+
+  EXPECT_TRUE(ExecJs(GetWebContents(), setup_script));
+
+  base::FilePath file = dir.Append(FILE_PATH_LITERAL("file.txt"));
+  std::string get_results_script = "collectRecords()";
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(file, "content"));
+    auto records =
+        EvalJs(GetWebContents(), get_results_script).TakeValue().TakeList();
+    const std::string expected_change_type =
+        SupportsChangeInfo() ? "appeared" : "unknown";
+
+    // We expect to receive an "appeared" event when the file is created.
+    ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+    EXPECT_THAT(records.front().GetString(),
+                testing::StrEq(expected_change_type));
+  }
+
+  permission_context.RevokeAllActiveGrants();
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    auto records =
+        EvalJs(GetWebContents(), get_results_script).TakeValue().TakeList();
+
+    // Expect that we received an "errored" event due to the active grants being
+    // revoked.
+    ASSERT_THAT(records, testing::SizeIs(1));
+    EXPECT_THAT(records.front().GetString(), testing::StrEq("errored"));
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(file, "content v2"));
+    auto records =
+        EvalJs(GetWebContents(), get_results_script).TakeValue().TakeList();
+
+    // Expect that no more events are received after it's errored.
+    ASSERT_THAT(records, testing::IsEmpty());
   }
 }

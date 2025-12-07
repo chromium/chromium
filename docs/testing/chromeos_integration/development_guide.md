@@ -17,10 +17,6 @@ run on DUT.
 ## How to run Ash test
 Please see: [go/crosier-run](http://go/crosier-run)
 
-## How to run Lacros test
-See the [demo test](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/crosier/demo_integration_test.cc;l=19)
-for instructions
-
 ## Test metadata
 
 Each Crosier test being added should include test metadata in `yaml` format.
@@ -36,15 +32,8 @@ developer library resources are available:
 https://www.chromium.org/chromium-os/developer-library/guides/#debugging
 
 ## Continuous builders
-Currently the test binary runs against both Ash and Lacros on CI only.
-
-Ash:
 
 https://ci.chromium.org/ui/p/chromium/builders/ci/chromeos-amd64-generic-rel
-
-Lacros:
-
-https://ci.chromium.org/ui/p/chromium/builders/ci/lacros-amd64-generic-rel
 
 Target name is 'chromeos_integration_tests'.
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:lowerFab()
+@EXECUTE-AND-WAIT-FOR:unlowerFab()
+@EXECUTE-AND-WAIT-FOR:clickFab()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web FAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-fab",
+            "md-branded-fab",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const fabs = [
+                { icon: "add", id: "test-fab" },
+                { icon: "edit", size: "small" },
+                { icon: "favorite", size: "large" },
+                { icon: "create", label: "Extended FAB" },
+                { icon: "share", lowered: true },
+                { icon: "android", branded: true }
+            ];
+            fabs.forEach(fabInfo => {
+                const fab = document.createElement(fabInfo.branded ? "md-branded-fab" : "md-fab");
+                if (fabInfo.id) {
+                    fab.id = fabInfo.id;
+                }
+                const icon = document.createElement("md-icon");
+                icon.slot = "icon";
+                icon.textContent = fabInfo.icon;
+                fab.appendChild(icon);
+                if (fabInfo.size) {
+                    fab.size = fabInfo.size;
+                }
+                if (fabInfo.label) {
+                    fab.label = fabInfo.label;
+                }
+                if (fabInfo.lowered) {
+                    fab.lowered = true;
+                }
+                statusDiv.appendChild(fab);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function lowerFab() {
+        const fab = document.getElementById("test-fab");
+        if (fab) {
+            await fab.updateComplete;
+            fab.lowered = true;
+            await fab.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "FAB Lowered";
+            statusDiv.appendChild(statusText);
+            return "FAB Lowered";
+        }
+        return "Failed to lower FAB";
+    }
+
+    async function unlowerFab() {
+        const fab = document.getElementById("test-fab");
+        if (fab) {
+            await fab.updateComplete;
+            fab.lowered = false;
+            await fab.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "FAB Unlowered";
+            statusDiv.appendChild(statusText);
+            return "FAB Unlowered";
+        }
+        return "Failed to unlower FAB";
+    }
+
+    async function clickFab() {
+        const fab = document.getElementById("test-fab");
+        if (fab) {
+            await fab.updateComplete;
+            fab.click();
+            await fab.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "FAB Clicked";
+            statusDiv.appendChild(statusText);
+            return "FAB Clicked";
+        }
+        return "Failed to click FAB";
+    }
+</script>
+</html>

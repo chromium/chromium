@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -137,7 +137,7 @@ class UpgradeDetector {
     return critical_update_acknowledged_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_factory_reset_required() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_factory_reset_required_;
@@ -147,7 +147,7 @@ class UpgradeDetector {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_rollback_;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   UpgradeNotificationAnnoyanceLevel upgrade_notification_stage() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -240,6 +240,22 @@ class UpgradeDetector {
   // annoyance levels.
   static base::TimeDelta GetGracePeriod(base::TimeDelta elevated_to_high_delta);
 
+  // Returns the network time, falling back to system time if unavailable.
+  // Returns true if it's network time, or false if it's not.
+  bool GetNetworkTimeWithFallback(base::Time& network_time);
+
+  // Returns true if `last_served_date_` is known and older than the number
+  // of days specified by the RelaunchFastIfOutdated policy.
+  bool ShouldRelaunchFast();
+
+  // Returns true if the last served date should be fetched on update, for
+  // the RelaunchOutdatedInstall policy.
+  bool ShouldFetchLastServedDate() const;
+
+  // Fetches the last served date via GetLastServedDate(), and updates
+  // `last_served_date_`.
+  void FetchLastServedDate();
+
   const base::Clock* clock() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return clock_;
@@ -320,7 +336,7 @@ class UpgradeDetector {
     upgrade_notification_stage_ = stage;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_is_factory_reset_required(bool is_factory_reset_required) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     is_factory_reset_required_ = is_factory_reset_required;
@@ -330,7 +346,7 @@ class UpgradeDetector {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     is_rollback_ = is_rollback;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AppMenuModelTest, Basics);
@@ -340,10 +356,11 @@ class UpgradeDetector {
   friend class RelaunchNotificationControllerUiTest;
   friend class UpgradeMetricsProviderTest;
 
-  // Called on the UI thread after one or more monitored prefs have changed. If
-  // an update has been detected, subclasses may need to recompute the schedule
-  // for advancing through the annoyance levels.
-  virtual void OnMonitoredPrefsChanged() {}
+  // Called on the UI thread after one or more monitored prefs or
+  // `last_served_date_` have changed. If an update has been detected,
+  // subclasses may need to recompute the schedule for advancing through the
+  // annoyance levels.
+  virtual void RecomputeSchedule() {}
 
   // Initiates an Idle check. Tells us whether Chrome has received any
   // input events since the specified time.
@@ -353,6 +370,9 @@ class UpgradeDetector {
   // preferences. Posts a task to call OnThresholdPrefChanged() if it isn't
   // already posted and pending for execution.
   void OnRelaunchPrefChanged();
+
+  // Handles the result of GetLastServedDate().
+  void OnGotLastServedDate(std::optional<base::Time> last_served_date);
 
   // A provider of Time to the detector.
   const raw_ptr<const base::Clock> clock_;
@@ -384,7 +404,7 @@ class UpgradeDetector {
   // for execution.
   bool pref_change_task_pending_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Whether a factory reset is needed to complete an update.
   bool is_factory_reset_required_ = false;
 
@@ -392,7 +412,7 @@ class UpgradeDetector {
   // to an earlier version of Chrome OS, which results in the device being
   // wiped when it's rebooted.
   bool is_rollback_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // A timer to check to see if we've been idle for long enough to show the
   // critical warning. Should only be set if |upgrade_available_| is
@@ -405,6 +425,9 @@ class UpgradeDetector {
   // Whether we have waited long enough after detecting an upgrade (to see
   // is we should start nagging about upgrading).
   bool notify_upgrade_;
+
+  bool fetched_last_served_date_ = false;
+  std::optional<base::Time> last_served_date_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

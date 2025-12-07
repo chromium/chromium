@@ -27,7 +27,6 @@ class WaylandBufferBackingSinglePixel : public WaylandBufferBacking {
   // WaylandBufferBacking override:
   void RequestBufferHandle(
       base::OnceCallback<void(wl::Object<wl_buffer>)> callback) override;
-  BufferBackingType GetBackingType() const override;
 
   SkColor4f color_;
 };

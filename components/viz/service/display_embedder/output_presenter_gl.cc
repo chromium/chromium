@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -108,8 +109,7 @@ void OutputPresenterGL::Present(SwapCompletionCallback completion_callback,
 
 void OutputPresenterGL::ScheduleOverlayPlane(
     const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
-    ScopedOverlayAccess* access,
-    std::unique_ptr<gfx::GpuFence> acquire_fence) {
+    ScopedOverlayAccess* access) {
   // Note that |overlay_plane_candidate| has different types on different
   // platforms. On Android, Ozone, and Windows, it is an OverlayCandidate and on
   // macOS it is a CALayeroverlay.
@@ -118,80 +118,83 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   // TODO(crbug.com/40239878): Add ScopedOverlayAccess::GetOverlayImage() that
   // works on all platforms.
   gl::OverlayImage overlay_image = access ? access->GetNativePixmap() : nullptr;
+  if (!overlay_image && !overlay_plane_candidate.is_solid_color) {
+    // Allow non-root overlays to be skipped if missing for transient causes.
+    // E.g. missing overlay_image because video decoder is destroyed during
+    // navigation.
+    // TODO(crbug.com/405022140): root_render_pass overlay_image should exist,
+    // but when there is a CopyOutputRequest, root_render_pass can be a
+    // WrappedSkImage without overlay access. Plumb such information and fail
+    // properly.
+    LOG_IF(WARNING, overlay_plane_candidate.is_root_render_pass)
+        << "root_render_pass is missing overlay_image.";
+    return;
+  }
 #elif BUILDFLAG(IS_ANDROID)
   gl::OverlayImage overlay_image =
       access ? access->GetAHardwareBufferFenceSync() : nullptr;
-#endif
-  // TODO(msisov): Once shared image factory allows creating a non backed
-  // images, remove the if condition that checks if this is a solid color
-  // overlay plane.
-  //
-  // Solid color overlays can be non-backed and are delegated for processing
-  // to underlying backend. The only backend that uses them is Wayland - it
-  // may have a protocol that asks Wayland compositor to create a solid color
-  // buffer for a client. OverlayProcessorDelegated decides if a solid color
-  // overlay is an overlay candidate and should be scheduled.
-  if (overlay_image || overlay_plane_candidate.is_solid_color) {
-#if DCHECK_IS_ON()
-    if (overlay_plane_candidate.is_solid_color) {
-      LOG_IF(FATAL, !overlay_plane_candidate.color.has_value())
-          << "Solid color quads must have color set.";
-    }
-
-    if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
-      CHECK(access);
-      CHECK_EQ(gpu::GrContextType::kGL,
-               dependency_->GetSharedContextState()->gr_context_type());
-      CHECK(features::IsDelegatedCompositingEnabled());
-      CHECK(access->representation()->usage().Has(
-          gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING));
-    }
-#endif
-
-    // Access fence takes priority over composite fence iff it exists.
-    if (access) {
-      auto access_fence = TakeGpuFence(access->TakeAcquireFence());
-      if (access_fence) {
-        DCHECK(!acquire_fence);
-        acquire_fence = std::move(access_fence);
-      }
-    }
-
-    presenter_->ScheduleOverlayPlane(
-        std::move(overlay_image), std::move(acquire_fence),
-        gfx::OverlayPlaneData(
-            overlay_plane_candidate.plane_z_order,
-            overlay_plane_candidate.transform,
-            overlay_plane_candidate.display_rect,
-            overlay_plane_candidate.uv_rect, !overlay_plane_candidate.is_opaque,
-            ToEnclosingRect(overlay_plane_candidate.damage_rect),
-            overlay_plane_candidate.opacity,
-            overlay_plane_candidate.priority_hint,
-            overlay_plane_candidate.rounded_corners,
-            overlay_plane_candidate.color_space,
-            overlay_plane_candidate.hdr_metadata, overlay_plane_candidate.color,
-            overlay_plane_candidate.is_solid_color,
-            overlay_plane_candidate.is_root_render_pass,
-            overlay_plane_candidate.clip_rect,
-            overlay_plane_candidate.overlay_type));
+  if (!overlay_image) {
+    return;
   }
+#endif
+#if DCHECK_IS_ON()
+  if (overlay_plane_candidate.is_solid_color) {
+    LOG_IF(FATAL, !overlay_plane_candidate.color.has_value())
+        << "Solid color quads must have color set.";
+  }
+#endif  // DCHECK_IS_ON()
+
+  std::unique_ptr<gfx::GpuFence> acquire_fence;
+  if (access) {
+    auto access_fence = TakeGpuFence(access->TakeAcquireFence());
+    if (access_fence) {
+      DCHECK(!acquire_fence);
+      acquire_fence = std::move(access_fence);
+    }
+  }
+
+  presenter_->ScheduleOverlayPlane(
+      std::move(overlay_image), std::move(acquire_fence),
+      gfx::OverlayPlaneData(
+          overlay_plane_candidate.plane_z_order,
+          overlay_plane_candidate.transform,
+          overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
+          !overlay_plane_candidate.is_opaque,
+          ToEnclosingRect(overlay_plane_candidate.damage_rect),
+          overlay_plane_candidate.opacity,
+          overlay_plane_candidate.priority_hint,
+          overlay_plane_candidate.rounded_corners,
+          overlay_plane_candidate.color_space,
+          overlay_plane_candidate.hdr_metadata, overlay_plane_candidate.color,
+          overlay_plane_candidate.is_solid_color,
+          overlay_plane_candidate.is_root_render_pass,
+          overlay_plane_candidate.clip_rect,
+          overlay_plane_candidate.overlay_type));
 #elif BUILDFLAG(IS_APPLE)
-  presenter_->ScheduleCALayer(ui::CARendererLayerParams(
-      overlay_plane_candidate.clip_rect.has_value(),
-      overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
-      overlay_plane_candidate.rounded_corners,
-      overlay_plane_candidate.sorting_context_id,
-      absl::get<gfx::Transform>(overlay_plane_candidate.transform),
-      access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
-      access ? access->representation()->color_space() : gfx::ColorSpace(),
-      overlay_plane_candidate.uv_rect,
-      gfx::ToEnclosingRect(overlay_plane_candidate.display_rect),
-      overlay_plane_candidate.color.value_or(SkColors::kTransparent),
-      overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
-      overlay_plane_candidate.nearest_neighbor_filter,
-      overlay_plane_candidate.hdr_metadata,
-      overlay_plane_candidate.protected_video_type,
-      overlay_plane_candidate.is_render_pass_draw_quad));
+  gfx::ScopedIOSurface io_surface;
+  gfx::ColorSpace io_surface_color_space;
+  std::vector<gfx::MTLSharedEventFence> backpressure_fences;
+  if (access) {
+    io_surface = access->GetIOSurface();
+    io_surface_color_space = access->representation()->color_space();
+    backpressure_fences = access->GetBackpressureFences();
+  }
+  presenter_->ScheduleCALayer(
+      ui::CARendererLayerParams(
+          overlay_plane_candidate.clip_rect.has_value(),
+          overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
+          overlay_plane_candidate.rounded_corners,
+          overlay_plane_candidate.sorting_context_id,
+          std::get<gfx::Transform>(overlay_plane_candidate.transform),
+          io_surface, io_surface_color_space, overlay_plane_candidate.uv_rect,
+          gfx::ToEnclosingRect(overlay_plane_candidate.display_rect),
+          overlay_plane_candidate.color.value_or(SkColors::kTransparent),
+          overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
+          overlay_plane_candidate.nearest_neighbor_filter,
+          overlay_plane_candidate.hdr_metadata,
+          overlay_plane_candidate.protected_video_type,
+          overlay_plane_candidate.is_render_pass_draw_quad),
+      std::move(backpressure_fences));
 
 #endif
 }

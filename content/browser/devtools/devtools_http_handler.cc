@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/devtools_http_handler.h"
 
 #include <stddef.h>
@@ -33,14 +28,15 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/util/chromium_git_revision.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,11 +46,10 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "net/base/io_buffer.h"
-#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -66,19 +61,16 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 extern const int kCcompressedProtocolJSON;
 #endif
 
 namespace content {
 
 namespace {
-
-const base::FilePath::CharType kDevToolsActivePortFileName[] =
-    FILE_PATH_LITERAL("DevToolsActivePort");
 
 const char kDevToolsHandlerThreadName[] = "Chrome_DevToolsHandlerThread";
 
@@ -94,17 +86,13 @@ const char kTargetUrlField[] = "url";
 const char kTargetFaviconUrlField[] = "faviconUrl";
 const char kTargetWebSocketDebuggerUrlField[] = "webSocketDebuggerUrl";
 const char kTargetDevtoolsFrontendUrlField[] = "devtoolsFrontendUrl";
+const char kMissingGitRevision[] = "@0000000000000000000000000000000000000000";
 
 const int32_t kSendBufferSizeForDevTools = 256 * 1024 * 1024;  // 256Mb
 const int32_t kReceiveBufferSizeForDevTools = 100 * 1024 * 1024;  // 100Mb
 
 const char kRemoteUrlPattern[] =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    "https://chrome-devtools-frontend.appspot.com/serve_internal_file/%s/"
-    "%s.html";
-#else
     "https://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html";
-#endif
 
 constexpr net::NetworkTrafficAnnotationTag
     kDevtoolsHttpHandlerTrafficAnnotation =
@@ -136,7 +124,13 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info) {
   if (header.empty())
     return true;
   GURL url = GURL("https://" + header);
-  return url.HostIsIPAddress() || net::IsLocalHostname(url.host());
+  return url.HostIsIPAddress() || net::IsLocalHostname(url.GetHost());
+}
+
+// Returns the (incorrectly named, for historical reasons) WebKit version, in
+// the form "major.minor (@chromium_git_revision)".
+std::string GetWebKitVersion() {
+  return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
 }
 
 }  // namespace
@@ -361,8 +355,7 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
     constexpr char kMsg[] =
         "{\"method\":\"Inspector.detached\","
         "\"params\":{\"reason\":\"target_closed\"}}";
-    DispatchProtocolMessage(
-        agent_host, base::as_bytes(base::make_span(kMsg, strlen(kMsg))));
+    DispatchProtocolMessage(agent_host, base::byte_span_from_cstring(kMsg));
 
     agent_host_ = nullptr;
     task_runner_->PostTask(
@@ -402,13 +395,26 @@ static bool TimeComparator(scoped_refptr<DevToolsAgentHost> host1,
 
 // DevToolsHttpHandler -------------------------------------------------------
 
+net::IPEndPoint DevToolsHttpHandler::GetServerIpAddress() const {
+  if (server_ip_address_) {
+    return *server_ip_address_;
+  }
+  return net::IPEndPoint();
+}
+
 DevToolsHttpHandler::~DevToolsHttpHandler() {
+  if (delegate_ &&
+      mode_ ==
+          DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    delegate_->SetActiveWebSocketConnections(0);
+  }
   // Disconnecting sessions might lead to the last minute messages generated
   // by the targets. It is essential that this happens before we issue delete
   // soon for the server wrapper.
   connection_to_client_.clear();
   TerminateOnUI(std::move(thread_), std::move(server_wrapper_),
                 std::move(socket_factory_));
+  delegate_ = nullptr;
 }
 
 static std::string PathWithoutParams(const std::string& path) {
@@ -529,15 +535,16 @@ std::string DevToolsHttpHandler::GetFrontendURLInternal(
     const std::string& id,
     const std::string& host) {
   std::string frontend_url;
-  if (delegate_->HasBundledFrontendResources()) {
+  const std::string git_revision = CHROMIUM_GIT_REVISION;
+  if (git_revision == kMissingGitRevision &&
+      delegate_->HasBundledFrontendResources()) {
     frontend_url = "/devtools/inspector.html";
   } else {
     std::string type = agent_host->GetType();
     bool is_worker = type == DevToolsAgentHost::kTypeServiceWorker ||
                      type == DevToolsAgentHost::kTypeSharedWorker;
-    frontend_url =
-        base::StringPrintf(kRemoteUrlPattern, GetChromiumGitRevision().c_str(),
-                           is_worker ? "worker_app" : "inspector");
+    frontend_url = base::StringPrintf(kRemoteUrlPattern, git_revision.c_str(),
+                                      is_worker ? "worker_app" : "inspector");
   }
   return base::StringPrintf("%s?ws=%s%s%s", frontend_url.c_str(), host.c_str(),
                             kPageUrlPrefix, id.c_str());
@@ -571,6 +578,11 @@ static bool ParseJsonPath(
 void DevToolsHttpHandler::OnJsonRequest(
     int connection_id,
     const net::HttpServerRequestInfo& info) {
+  if (mode_ ==
+      DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    Send404(connection_id);
+    return;
+  }
   // Trim /json
   std::string path = info.path.substr(5);
 
@@ -607,7 +619,7 @@ void DevToolsHttpHandler::OnJsonRequest(
         base::StringPrintf("ws://%s%s", host.c_str(), browser_guid_.c_str()));
 #if BUILDFLAG(IS_ANDROID)
     version.Set("Android-Package",
-                base::android::BuildInfo::GetInstance()->host_package_name());
+                base::android::apk_info::host_package_name());
 #endif
     SendJson(connection_id, net::HTTP_OK, version, std::string());
     return;
@@ -653,9 +665,11 @@ void DevToolsHttpHandler::OnJsonRequest(
       url = GURL(url::kAboutBlankURL);
     // TODO(dsv): Remove for "for_tab" support once DevTools Frontend
     // no longer needs it for e2e tests
-    scoped_refptr<DevToolsAgentHost> agent_host = delegate_->CreateNewTarget(
-        url, for_tab ? DevToolsManagerDelegate::kTab
-                     : DevToolsManagerDelegate::kFrame);
+    scoped_refptr<DevToolsAgentHost> agent_host =
+        delegate_->CreateNewTarget(url,
+                                   for_tab ? DevToolsManagerDelegate::kTab
+                                           : DevToolsManagerDelegate::kFrame,
+                                   /*new_window=*/false);
     if (!agent_host) {
       SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, std::nullopt,
                "Could not create new page");
@@ -702,9 +716,7 @@ void DevToolsHttpHandler::OnJsonRequest(
 }
 
 void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-  NOTREACHED_IN_MIGRATION();
-#else
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   scoped_refptr<base::RefCountedMemory> bytes =
       GetContentClient()->GetDataResourceBytes(kCcompressedProtocolJSON);
   CHECK(bytes) << "Could not load protocol";
@@ -717,7 +729,9 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
                                 base::Unretained(server_wrapper_.get()),
                                 connection_id, response));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 }
 
 void DevToolsHttpHandler::RespondToJsonList(int connection_id,
@@ -736,6 +750,11 @@ void DevToolsHttpHandler::RespondToJsonList(int connection_id,
 }
 
 void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
+  if (mode_ ==
+      DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    Send404(connection_id);
+    return;
+  }
   net::HttpServerResponseInfo response(net::HTTP_OK);
   response.AddHeader("X-Frame-Options", "DENY");
   response.SetBody(delegate_->GetDiscoveryPageHTML(),
@@ -749,13 +768,38 @@ void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(
     int connection_id, const std::string& path) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  Send404(connection_id);
-#else
+  if (mode_ ==
+      DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    Send404(connection_id);
+    return;
+  }
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   Send200(connection_id,
           content::DevToolsFrontendHost::GetFrontendResource(path),
           GetMimeType(path));
+#else
+  Send404(connection_id);
 #endif
+}
+
+void DevToolsHttpHandler::HandleDebuggingApproval(
+    int connection_id,
+    const net::HttpServerRequestInfo& request,
+    DevToolsManagerDelegate::AcceptConnectionResult result) {
+  if (result == DevToolsManagerDelegate::AcceptConnectionResult::kAllow) {
+    scoped_refptr<DevToolsAgentHost> browser_agent =
+        DevToolsAgentHost::CreateForBrowser(
+            thread_->task_runner(),
+            base::BindRepeating(&DevToolsSocketFactory::CreateForTethering,
+                                base::Unretained(socket_factory_.get())));
+    connection_to_client_[connection_id] =
+        std::make_unique<DevToolsAgentHostClientImpl>(
+            thread_->task_runner(), server_wrapper_.get(), connection_id,
+            browser_agent);
+    AcceptWebSocket(connection_id, request);
+  } else {
+    Send403(connection_id, "Connection rejected");
+  }
 }
 
 void DevToolsHttpHandler::OnWebSocketRequest(
@@ -776,6 +820,21 @@ void DevToolsHttpHandler::OnWebSocketRequest(
         origin.c_str(), origin.c_str());
     Send403(connection_id, message);
     LOG(ERROR) << message;
+    return;
+  }
+
+  // If we require user approval, we do not require guid.
+  if (mode_ ==
+      DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    if (base::StartsWith(request.path, kBrowserUrlPrefix,
+                         base::CompareCase::SENSITIVE)) {
+      delegate_->AcceptDebugging(
+          base::BindOnce(&DevToolsHttpHandler::HandleDebuggingApproval,
+                         weak_factory_.GetWeakPtr(), connection_id, request));
+
+      return;
+    }
+    Send403(connection_id, "Connection rejected");
     return;
   }
 
@@ -819,20 +878,26 @@ void DevToolsHttpHandler::OnWebSocketMessage(int connection_id,
                                              std::string data) {
   auto it = connection_to_client_.find(connection_id);
   if (it != connection_to_client_.end()) {
-    it->second->OnMessage(base::as_bytes(base::make_span(data)));
+    it->second->OnMessage(base::as_byte_span(data));
   }
 }
 
 void DevToolsHttpHandler::OnClose(int connection_id) {
-  connection_to_client_.erase(connection_id);
+  auto removed_count = connection_to_client_.erase(connection_id);
+  if (delegate_ && removed_count > 0 &&
+      mode_ ==
+          DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    delegate_->SetActiveWebSocketConnections(connection_to_client_.size());
+  }
 }
 
 DevToolsHttpHandler::DevToolsHttpHandler(
     DevToolsManagerDelegate* delegate,
     std::unique_ptr<DevToolsSocketFactory> socket_factory,
     const base::FilePath& output_directory,
-    const base::FilePath& debug_frontend_dir)
-    : delegate_(delegate) {
+    const base::FilePath& debug_frontend_dir,
+    DevToolsAgentHost::RemoteDebuggingServerMode mode)
+    : mode_(mode), delegate_(delegate) {
   browser_guid_ =
       delegate_->IsBrowserTargetDiscoverable()
           ? kBrowserUrlPrefix
@@ -886,8 +951,7 @@ void DevToolsHttpHandler::SendJson(int connection_id,
     base::JSONWriter::WriteWithOptions(
         *value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_value);
   }
-  std::string json_message;
-  base::JSONWriter::Write(base::Value(message), &json_message);
+  std::string json_message = base::WriteJson(base::Value(message)).value_or("");
 
   net::HttpServerResponseInfo response(status_code);
   response.AddHeader("Content-Security-Policy", "frame-ancestors 'none'");
@@ -947,6 +1011,10 @@ void DevToolsHttpHandler::AcceptWebSocket(
     const net::HttpServerRequestInfo& request) {
   if (!thread_)
     return;
+  if (mode_ ==
+      DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    delegate_->SetActiveWebSocketConnections(connection_to_client_.size());
+  }
   thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ServerWrapper::AcceptWebSocket,
                                 base::Unretained(server_wrapper_.get()),

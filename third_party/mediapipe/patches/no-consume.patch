@@ -1,18 +1,18 @@
-From 469b9fb31deffff60d9d6c66ba9d43d356de16fd Mon Sep 17 00:00:00 2001
-From: Clark DuVall <cduvall@chromium.org>
-Date: Mon, 15 Apr 2024 10:44:51 -0700
-Subject: [PATCH] no consume
+From a9bc54a3a92c437b101794a062fb6c28404f929d Mon Sep 17 00:00:00 2001
+From: Ahmed Moussa <ahmedmoussa@google.com>
+Date: Tue, 27 Aug 2024 21:28:32 +0000
+Subject: [PATCH 2/2] no-consume
 
 ---
  .../src/mediapipe/framework/packet.h          | 73 +------------------
  1 file changed, 3 insertions(+), 70 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/framework/packet.h b/third_party/mediapipe/src/mediapipe/framework/packet.h
-index d5cc87001d80d..bd0050d1678fa 100644
+index ef0b5d113925b..a5501848e9f2b 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/packet.h
 +++ b/third_party/mediapipe/src/mediapipe/framework/packet.h
-@@ -635,53 +635,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
- 
+@@ -691,53 +691,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
+
  template <typename T>
  inline absl::StatusOr<std::unique_ptr<T>> Packet::Consume() {
 -  // If type validation fails, returns error.
@@ -22,7 +22,7 @@ index d5cc87001d80d..bd0050d1678fa 100644
 -  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
--        holder_->As<T>()->Release();
+-        holder_->AsMutable<T>()->Release();
 -    if (release_result.ok()) {
 -      VLOG(2) << "Setting " << DebugString() << " to empty.";
 -      holder_.reset();
@@ -35,7 +35,7 @@ index d5cc87001d80d..bd0050d1678fa 100644
 -                      "Packet isn't the sole owner of the holder.");
 +  return absl::InternalError("Consume isn't supported.");
  }
- 
+
  template <typename T>
  inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
      bool* was_copied,
@@ -45,7 +45,7 @@ index d5cc87001d80d..bd0050d1678fa 100644
 -  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
--        holder_->As<T>()->Release();
+-        holder_->AsMutable<T>()->Release();
 -    if (release_result.ok()) {
 -      VLOG(2) << "Setting " << DebugString() << " to empty.";
 -      holder_.reset();
@@ -65,9 +65,9 @@ index d5cc87001d80d..bd0050d1678fa 100644
 -  return std::move(data_ptr);
 +  return absl::InternalError("ConsumeOrCopy isn't supported.");
  }
- 
+
  template <typename T>
-@@ -689,35 +650,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
+@@ -745,35 +706,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
      bool* was_copied,
      typename std::enable_if<std::is_array<T>::value &&
                              std::extent<T>::value != 0>::type*) {
@@ -76,7 +76,7 @@ index d5cc87001d80d..bd0050d1678fa 100644
 -  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
--        holder_->As<T>()->Release();
+-        holder_->AsMutable<T>()->Release();
 -    if (release_result.ok()) {
 -      VLOG(2) << "Setting " << DebugString() << " to empty.";
 -      holder_.reset();
@@ -102,8 +102,7 @@ index d5cc87001d80d..bd0050d1678fa 100644
 -  return std::move(data_ptr);
 +  return absl::InternalError("ConsumeOrCopy isn't supported.");
  }
- 
- template <typename T>
--- 
-2.44.0.683.g7961c838ac-goog
 
+ template <typename T>
+--
+2.46.0.295.g3b9ea8a38a-goog

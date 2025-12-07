@@ -4,6 +4,9 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +29,11 @@ class ChromePrefetchServiceDelegateTest : public ::testing::Test {
 
 TEST_F(ChromePrefetchServiceDelegateTest,
        DefaultSearchEngineIsContaminationExempt) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {chrome::android::kCCTNavigationalPrefetch}, {});
+#endif  // BUILDFLAG(IS_ANDROID)
   TemplateURLData data;
   data.SetShortName(u"Sherlock");
   data.SetKeyword(u"sherlock");
@@ -35,8 +43,8 @@ TEST_F(ChromePrefetchServiceDelegateTest,
   template_url_service()->SetUserSelectedDefaultSearchProvider(search_engine);
 
   ChromePrefetchServiceDelegate delegate(&profile());
-  EXPECT_TRUE(delegate.IsContaminationExempt(
-      GURL("https://sherlock.example/?q=professor+moriarty")));
-  EXPECT_FALSE(
-      delegate.IsContaminationExempt(GURL("https://another.example/")));
+  EXPECT_TRUE(delegate.IsContaminationExempt(url::Origin::Create(
+      GURL("https://sherlock.example/?q=professor+moriarty"))));
+  EXPECT_FALSE(delegate.IsContaminationExempt(
+      url::Origin::Create(GURL("https://another.example/"))));
 }

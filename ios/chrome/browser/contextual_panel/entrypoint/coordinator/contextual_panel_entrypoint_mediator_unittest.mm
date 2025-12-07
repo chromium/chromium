@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -42,15 +43,14 @@
 
 @property(nonatomic, assign) BOOL entrypointIsColored;
 
-@property(nonatomic, assign) base::WeakPtr<ContextualPanelItemConfiguration>
-    currentConfiguration;
+@property(nonatomic, assign)
+    ContextualPanelItemConfiguration* currentConfiguration;
 
 @end
 
 @implementation FakeEntrypointConsumer
 
-- (void)setEntrypointConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
   self.currentConfiguration = config;
 }
 
@@ -75,10 +75,15 @@
 }
 
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
+  // No-op.
 }
 
 - (void)setEntrypointColored:(BOOL)colored {
   self.entrypointIsColored = colored;
+}
+
+- (void)updateAccessibilityStatus {
+  // No-op.
 }
 
 @end
@@ -128,12 +133,14 @@ class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
  public:
   explicit FakeContextualPanelTabHelper(
       web::WebState* web_state,
-      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models)
+      std::map<ContextualPanelItemType,
+               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models)
       : ContextualPanelTabHelper(web_state, models) {}
 
   static void CreateForWebState(
       web::WebState* web_state,
-      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models) {
+      std::map<ContextualPanelItemType,
+               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models) {
     web_state->SetUserData(
         UserDataKey(),
         std::make_unique<FakeContextualPanelTabHelper>(web_state, models));
@@ -184,7 +191,9 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   ContextualPanelEntrypointMediatorTest()
       : web_state_list_(&web_state_list_delegate_) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+        models;
     FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
     InfoBarManagerImpl::CreateForWebState(web_state.get());
     InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
@@ -203,6 +212,10 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
 
     tracker_ = feature_engagement::CreateTestTracker();
 
+    // Make sure tracker is initialized.
+    tracker_->AddOnInitializedCallback(BoolArgumentQuitClosure());
+    run_loop_.Run();
+
     mediator_ = [[ContextualPanelEntrypointMediator alloc]
           initWithWebStateList:&web_state_list_
              engagementTracker:tracker_.get()
@@ -217,8 +230,13 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   }
 
  protected:
+  base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
+    return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::RunLoop run_loop_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
@@ -244,7 +262,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
   [[mocked_contextual_sheet_handler_ expect] openContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:YES];
+      dismissContextualPanelEntrypointIPH:YES];
 
   [mediator_ entrypointTapped];
   tab_helper->OpenContextualPanel();
@@ -252,7 +270,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
   [[mocked_contextual_sheet_handler_ expect] closeContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:YES];
+      dismissContextualPanelEntrypointIPH:YES];
 
   [mediator_ entrypointTapped];
   tab_helper->CloseContextualPanel();
@@ -281,7 +299,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   // Start off with entrypoint showing.
   [entrypoint_consumer_ showEntrypoint];
@@ -300,7 +318,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
 TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
   const base::HistogramTester histogram_tester;
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   ContextualPanelItemConfiguration configuration(
       ContextualPanelItemType::SamplePanelItem);
@@ -320,7 +338,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
 
   ASSERT_TRUE(entrypoint_consumer_.currentConfiguration);
-  EXPECT_EQ(&configuration, entrypoint_consumer_.currentConfiguration.get());
+  EXPECT_EQ(&configuration, entrypoint_consumer_.currentConfiguration);
 
   [mocked_entrypoint_help_handler_ verify];
 
@@ -351,7 +369,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestDisconnect) {
 TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
   const base::HistogramTester histogram_tester;
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   std::unique_ptr<SamplePanelItemConfiguration> configuration =
       std::make_unique<SamplePanelItemConfiguration>();
@@ -413,23 +431,22 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       std::make_unique<SamplePanelItemConfiguration>();
   configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
   configuration->entrypoint_message = "test";
-  configuration->iph_entrypoint_used_event_name = "testEvent";
+  configuration->iph_entrypoint_used_event_name = "testUsedEvent";
+  configuration->iph_entrypoint_explicitly_dismissed =
+      "testExplicitlyDismissedEvent";
   configuration->iph_feature =
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   configuration->iph_text = "test_text";
   configuration->iph_title = "test_title";
-  configuration->iph_image_name = "test_image";
-
-  auto weak_config = configuration->weak_ptr_factory.GetWeakPtr();
 
   OCMStub([mocked_entrypoint_help_handler_
-              maybeShowContextualPanelEntrypointIPHWithConfig:weak_config
-                                                  anchorPoint:CGPointMake(0, 0)
-                                              isBottomOmnibox:NO])
+              showContextualPanelEntrypointIPHWithConfig:configuration.get()
+                                             anchorPoint:CGPointMake(0, 0)
+                                         isBottomOmnibox:NO])
       .andReturn(YES);
 
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   delegate_.canShowLargeContextualPanelEntrypoint = YES;
 
@@ -458,7 +475,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsColored);
 
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:YES];
+      dismissContextualPanelEntrypointIPH:YES];
 
   // Advance time until the IPH is dismissed.
   task_environment_.FastForwardBy(
@@ -489,10 +506,14 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
 // Tests a change in the active WebState.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestWebStateListChanged) {
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPH:NO];
 
   auto web_state = std::make_unique<web::FakeWebState>();
-  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+  std::map<ContextualPanelItemType,
+           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+      models;
   FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
   InfoBarManagerImpl::CreateForWebState(web_state.get());
   InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());

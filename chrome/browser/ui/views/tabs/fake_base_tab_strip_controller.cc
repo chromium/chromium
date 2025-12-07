@@ -12,6 +12,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/range/range.h"
@@ -26,13 +27,16 @@ void FakeBaseTabStripController::AddTab(int index,
   num_tabs_++;
   tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
+  std::vector<std::pair<int, TabRendererData>> data_list;
   TabRendererData data;
   if (is_pinned == TabPinned::kPinned) {
     num_pinned_tabs_++;
     data.pinned = true;
   }
-  if (tab_strip_)
-    tab_strip_->AddTabAt(index, std::move(data));
+  data_list.emplace_back(index, std::move(data));
+  if (tab_strip_) {
+    tab_strip_->AddTabsAt(std::move(data_list));
+  }
   if (is_active == TabActive::kActive) {
     SetActiveIndex(index);
   } else if (active_index_.has_value() && index <= active_index_) {
@@ -44,8 +48,9 @@ void FakeBaseTabStripController::MoveTab(int from_index, int to_index) {
   std::optional<tab_groups::TabGroupId> prev_group = tab_groups_[from_index];
   tab_groups_.erase(tab_groups_.begin() + from_index);
   tab_groups_.insert(tab_groups_.begin() + to_index, prev_group);
-  if (tab_strip_)
+  if (tab_strip_) {
     tab_strip_->MoveTab(from_index, to_index, TabRendererData());
+  }
 }
 
 void FakeBaseTabStripController::MoveGroup(const tab_groups::TabGroupId& group,
@@ -62,8 +67,9 @@ void FakeBaseTabStripController::ToggleTabGroupCollapsedState(
 void FakeBaseTabStripController::RemoveTab(int index) {
   DCHECK(IsValidIndex(index));
   num_tabs_--;
-  if (index < num_pinned_tabs_)
+  if (index < num_pinned_tabs_) {
     num_pinned_tabs_--;
+  }
   tab_groups_.erase(tab_groups_.begin() + index);
 
   const bool was_active = index == active_index_;
@@ -84,8 +90,9 @@ void FakeBaseTabStripController::RemoveTab(int index) {
 
   if (tab_strip_) {
     tab_strip_->RemoveTabAt(nullptr, index, was_active);
-    if (active_index_.has_value() && IsValidIndex(active_index_.value()))
+    if (active_index_.has_value() && IsValidIndex(active_index_.value())) {
       tab_strip_->SetSelection(selection_model_);
+    }
   }
 }
 
@@ -135,14 +142,16 @@ void FakeBaseTabStripController::MoveTabIntoGroup(
 
   if (tab_strip_ && old_group.has_value()) {
     tab_strip_->AddTabToGroup(std::nullopt, index);
-    if (!base::Contains(tab_groups_, old_group))
+    if (!base::Contains(tab_groups_, old_group)) {
       tab_strip_->OnGroupClosed(old_group.value());
-    else
+    } else {
       tab_strip_->OnGroupContentsChanged(old_group.value());
+    }
   }
   if (tab_strip_ && new_group.has_value()) {
-    if (!group_exists)
+    if (!group_exists) {
       tab_strip_->OnGroupCreated(new_group.value());
+    }
     tab_strip_->AddTabToGroup(new_group.value(), index);
     tab_strip_->OnGroupContentsChanged(new_group.value());
   }
@@ -151,11 +160,17 @@ void FakeBaseTabStripController::MoveTabIntoGroup(
 std::optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
   for (size_t i = 0; i < tab_groups_.size(); ++i) {
-    if (tab_groups_[i] == group)
+    if (tab_groups_[i] == group) {
       return i;
+    }
   }
 
   return std::nullopt;
+}
+
+TabGroup* FakeBaseTabStripController::GetTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  return nullptr;
 }
 
 gfx::Range FakeBaseTabStripController::ListTabsInGroup(
@@ -163,8 +178,9 @@ gfx::Range FakeBaseTabStripController::ListTabsInGroup(
   int first_tab = -1;
   int last_tab = -1;
   for (size_t i = 0; i < tab_groups_.size(); i++) {
-    if (tab_groups_[i] != group)
+    if (tab_groups_[i] != group) {
       continue;
+    }
 
     if (first_tab == -1) {
       first_tab = i;
@@ -179,8 +195,8 @@ gfx::Range FakeBaseTabStripController::ListTabsInGroup(
   return first_tab > -1 ? gfx::Range(first_tab, last_tab) : gfx::Range();
 }
 
-const ui::ListSelectionModel&
-FakeBaseTabStripController::GetSelectionModel() const {
+const ui::ListSelectionModel& FakeBaseTabStripController::GetSelectionModel()
+    const {
   return selection_model_;
 }
 
@@ -193,8 +209,9 @@ bool FakeBaseTabStripController::IsValidIndex(int index) const {
 }
 
 bool FakeBaseTabStripController::IsActiveTab(int index) const {
-  if (!IsValidIndex(index))
+  if (!IsValidIndex(index)) {
     return false;
+  }
   return active_index_ == index;
 }
 
@@ -203,34 +220,39 @@ std::optional<int> FakeBaseTabStripController::GetActiveIndex() const {
 }
 
 bool FakeBaseTabStripController::IsTabSelected(int index) const {
-  return false;
+  return GetSelectionModel().IsSelected(index);
 }
 
 bool FakeBaseTabStripController::IsTabPinned(int index) const {
   return index < num_pinned_tabs_;
 }
 
+bool FakeBaseTabStripController::IsBrowserClosing() const {
+  return false;
+}
+
 void FakeBaseTabStripController::SelectTab(int index, const ui::Event& event) {
-  if (!IsValidIndex(index) || active_index_ == index)
+  if (!IsValidIndex(index) || active_index_ == index) {
     return;
+  }
 
   SetActiveIndex(index);
 }
 
-void FakeBaseTabStripController::ExtendSelectionTo(int index) {
-}
+void FakeBaseTabStripController::RecordMetricsOnTabSelectionChange(
+    std::optional<tab_groups::TabGroupId> group) {}
 
-void FakeBaseTabStripController::ToggleSelected(int index) {
-}
+void FakeBaseTabStripController::ExtendSelectionTo(int index) {}
 
-void FakeBaseTabStripController::AddSelectionFromAnchorTo(int index) {
-}
+void FakeBaseTabStripController::ToggleSelected(int index) {}
+
+void FakeBaseTabStripController::AddSelectionFromAnchorTo(int index) {}
 
 void FakeBaseTabStripController::OnCloseTab(
     int index,
     CloseTabSource source,
-    base::OnceCallback<void()> callback) {
-  std::move(callback).Run();
+    base::OnceCallback<void(CloseTabSource)> callback) {
+  std::move(callback).Run(source);
 }
 
 void FakeBaseTabStripController::ToggleTabAudioMute(int index) {}
@@ -242,8 +264,7 @@ void FakeBaseTabStripController::CloseTab(int index) {
 void FakeBaseTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
-}
+    ui::mojom::MenuSourceType source_type) {}
 
 int FakeBaseTabStripController::HasAvailableDragActions() const {
   return 0;
@@ -252,7 +273,7 @@ int FakeBaseTabStripController::HasAvailableDragActions() const {
 void FakeBaseTabStripController::OnDropIndexUpdate(std::optional<int> index,
                                                    bool drop_before) {}
 
-void FakeBaseTabStripController::CreateNewTab() {
+void FakeBaseTabStripController::CreateNewTab(NewTabTypes context) {
   AddTab(num_tabs_, TabActive::kActive);
 }
 
@@ -282,10 +303,6 @@ bool FakeBaseTabStripController::CanDrawStrokes() const {
   return false;
 }
 
-bool FakeBaseTabStripController::IsFrameButtonsRightAligned() const {
-  return false;
-}
-
 SkColor FakeBaseTabStripController::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return gfx::kPlaceholderColor;
@@ -301,15 +318,39 @@ std::u16string FakeBaseTabStripController::GetAccessibleTabName(
   return std::u16string();
 }
 
+std::optional<tab_groups::TabGroupId>
+FakeBaseTabStripController::GetFocusedGroup() const {
+  return focused_group_;
+}
+
+void FakeBaseTabStripController::SetFocusedGroup(
+    std::optional<tab_groups::TabGroupId> group) {
+  focused_group_ = group;
+}
+
 Profile* FakeBaseTabStripController::GetProfile() const {
   return nullptr;
 }
 
-const Browser* FakeBaseTabStripController::GetBrowser() const {
+BrowserWindowInterface*
+FakeBaseTabStripController::GetBrowserWindowInterface() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+Browser* FakeBaseTabStripController::GetBrowser() {
+  return nullptr;
+}
+
+bool FakeBaseTabStripController::CanShowModalUI() const {
+  return false;
+}
+
+std::unique_ptr<ScopedTabStripModalUI>
+FakeBaseTabStripController::ShowModalUI() {
+  return nullptr;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 bool FakeBaseTabStripController::IsLockedForOnTask() {
   return on_task_locked_;
 }
@@ -319,6 +360,7 @@ void FakeBaseTabStripController::SetActiveIndex(int new_index) {
   DCHECK(IsValidIndex(new_index));
   active_index_ = new_index;
   selection_model_.SetSelectedIndex(active_index_);
-  if (tab_strip_)
+  if (tab_strip_) {
     tab_strip_->SetSelection(selection_model_);
+  }
 }

@@ -11,7 +11,6 @@
 #include <stdint.h>
 #include <sys/xattr.h>
 
-#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
@@ -221,8 +220,7 @@ bool MacSignatureEvaluator::PerformEvaluation(
     if (!exec_url)
       return false;
 
-    exec_path =
-        base::apple::NSURLToFilePath(base::apple::CFToNSPtrCast(exec_url));
+    exec_path = base::apple::CFURLToFilePath(exec_url);
     if (exec_path != path_) {
       ReportAlteredFiles(exec_url, path_, incident);
     } else {

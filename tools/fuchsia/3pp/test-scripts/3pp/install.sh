@@ -14,6 +14,18 @@ fi
 
 PREFIX="$1"
 
+# The internal image version is only used in chromium, and shouldn't be
+# published altogether with test scripts.
+rm -f linux_internal.sdk.sha1
+
+# Presubmit tests should be executed in chromium.
+rm -f PRESUBMIT.py
+rm -f test/PRESUBMIT.py
+
+# Code coverage and coding style only apply to chromium.
+rm -f test/.coveragerc
+rm -f test/.style.yapf
+
 # Use "--parents" to reserve the relative paths, e.g.
 # common/py_utils -> $PREFIX/common/py_utils
 cp -rf --parents * "$PREFIX"/

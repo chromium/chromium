@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_types.h"
 
 class GURL;
@@ -37,7 +38,7 @@ class HistoryDatabase;
 // Encapsulates visit expiration criteria and type of visits to expire.
 class ExpiringVisitsReader {
  public:
-  virtual ~ExpiringVisitsReader() {}
+  virtual ~ExpiringVisitsReader() = default;
   // Populates `visits` from `db`, using provided `end_time` and `max_visits`
   // cap.
   virtual bool Read(base::Time end_time, HistoryDatabase* db,
@@ -211,7 +212,7 @@ class ExpireHistoryBackend {
   //
   // The visits in the given vector should have already been deleted from the
   // database, and the list of affected URLs already be filled into
-  // `depenencies->affected_urls`.
+  // `dependencies->affected_urls`.
   //
   // Starred URLs will not be deleted. The information in the dependencies that
   // DeleteOneURL fills in will be updated, and this function will also delete

@@ -15,9 +15,6 @@ found in the LICENSE file.
     <style name="FilledButtonThemeOverlay">
         <item name="android:buttonStyle">@style/FilledButton</item>
     </style>
-    <style name="FilledButtonThemeOverlay.Flat" tools:ignore="UnusedResources">
-        <item name="android:buttonStyle">@style/FilledButton.Flat</item>
-    </style>
     <style name="TextButtonThemeOverlay" tools:ignore="UnusedResources">
         <item name="android:buttonStyle">@style/TextButton</item>
     </style>
@@ -41,10 +38,6 @@ found in the LICENSE file.
         <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
         <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
-        <item name="buttonRaised">true</item>
-    </style>
-    <style name="FilledButton.Flat" tools:ignore="UnusedResources">
-        <item name="buttonRaised">false</item>
     </style>
     <style name="TextButton" parent="ButtonCompatBase" tools:ignore="UnusedResources">
         <item name="android:paddingStart">8dp</item>
@@ -58,13 +51,18 @@ found in the LICENSE file.
           the buttons with a solid background.
         -->
         <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
-        <item name="buttonRaised">false</item>
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
-        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="buttonBorderWidth">@dimen/button_outlined_border_width</item>
         <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
-
+    <style name="FilledTonalButton" parent="TextButton" tools:ignore="UnusedResources">
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Filled</item>
+        <item name="buttonTextColor">?attr/globalFilledTonalButtonTextColor</item>
+        <item name="buttonColor">?attr/globalFilledTonalButtonBgColor</item>
+    </style>
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif</item>
@@ -125,6 +123,11 @@ found in the LICENSE file.
         <item name="leading">@dimen/text_size_small_leading</item>
     </style>
 
+    <style name="TextAppearance.TextXsmall">
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
+        <item name="leading">@dimen/text_size_xsmall_leading</item>
+    </style>
+
     <!-- Non Adaptive Text Styles -->
     <!--  Light version  -->
     <style name="TextAppearance.Headline.Primary.Baseline.Light" tools:ignore="UnusedResources">
@@ -155,6 +158,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
     <style name="TextAppearance.TextMedium.Secondary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Secondary.Baseline.Light"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
 
@@ -275,6 +282,10 @@ found in the LICENSE file.
         parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_light</item>
     </style>
+    <style name="TextAppearance.TextSmall.Blue.Baseline.Light"
+        parent="TextAppearance.TextSmall" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    </style>
     <style name="TextAppearance.TextLarge.Blue.Baseline.Dark" parent="TextAppearance.TextLarge"
         tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
@@ -334,6 +345,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_secondary_list_baseline</item>
     </style>
 
+    <style name="TextAppearance.ListMenuItem.Subtitle" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
     <!-- Error Text Styles -->
     <style name="TextAppearance.ErrorCaption" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_error</item>
@@ -349,6 +364,11 @@ found in the LICENSE file.
     <!-- Toast UI -->
     <style name="TextAppearance.Toast" parent="TextAppearance.TextSmall">
         <item name="android:textColor">@color/default_text_color_light</item>
+    </style>
+
+    <!-- Pill UI -->
+    <style name="TextAppearance.Pill" parent="TextAppearance.TextXsmall">
+        <item name="android:textColor">@color/baseline_primary_10</item>
     </style>
 
     <!-- Dividers -->
@@ -389,22 +409,41 @@ found in the LICENSE file.
         <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom_left</item>
     </style>
 
-    <!-- ListMenuButton -->
+    <!-- PopupWindowAnimationStyle -->
+    <style name="PopupWindowAnimDropdown">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_dropdown</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_dropdown</item>
+    </style>
+    <style name="PopupWindowAnimRaiseup">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_raiseup</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_raiseup</item>
+    </style>
+    <style name="PopupWindowAnimFade">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_fade</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_fade</item>
+    </style>
+
+    <!-- ListMenu -->
     <style name="ListMenuItemStyle">
+        <item name="android:minHeight">?attr/listItemHeight</item>
         <item name="android:paddingStart">@dimen/list_menu_item_horizontal_padding</item>
         <item name="android:paddingEnd">@dimen/list_menu_item_horizontal_padding</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
     <style name="ListMenuItemIconStyle">
-        <item name="android:layout_width">@dimen/list_menu_item_icon_size</item>
-        <item name="android:layout_height">@dimen/list_menu_item_icon_size</item>
+        <item name="android:layout_width">?attr/listItemIconSize</item>
+        <item name="android:layout_height">?attr/listItemIconSize</item>
     </style>
     <style name="ListMenuItemIconStyle.Start">
         <item name="android:layout_marginStart">0dp</item>
-        <item name="android:layout_marginEnd">@dimen/list_menu_item_start_icon_end_margin</item>
+        <item name="android:layout_marginEnd">?attr/listItemIconTextSpacing</item>
     </style>
-    <style name="TextAppearance.ListMenuItem">
+    <style name="TextAppearance.DensityAdaptive.ListMenuItem" parent="TextAppearance">
         <item name="android:textColor">@color/list_menu_item_text_color_list</item>
-        <item name="android:textSize">@dimen/list_menu_item_text_size</item>
+        <item name="android:textSize">?attr/textLargeSize</item>
+    </style>
+    <style name="TextAppearance.DensityAdaptive.ListMenuItem.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="EndIconMenuAnim" parent="AnchoredPopupAnimEndTop" />

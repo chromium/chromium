@@ -32,7 +32,7 @@ void DeviceCountMetrics::RecordDeviceCountsIfNeeded(
 }
 
 void DeviceCountMetrics::SetClockForTest(base::Clock* clock) {
-  clock_ = std::move(clock);
+  clock_ = clock;
 }
 
 // static
@@ -75,8 +75,6 @@ const char CastAnalytics::kHistogramCastChannelConnectResult[] =
     "MediaRouter.Cast.Channel.ConnectResult";
 const char CastAnalytics::kHistogramCastChannelError[] =
     "MediaRouter.Cast.Channel.Error";
-const char CastAnalytics::kHistogramCastDeviceNameLength[] =
-    "MediaRouter.Cast.DeviceNameLength";
 const char CastAnalytics::kHistogramCastMdnsChannelOpenSuccess[] =
     "MediaRouter.Cast.Mdns.Channel.Open_Success";
 const char CastAnalytics::kHistogramCastMdnsChannelOpenFailure[] =
@@ -107,11 +105,6 @@ void CastAnalytics::RecordDeviceChannelOpenDuration(
   } else {
     UMA_HISTOGRAM_TIMES(kHistogramCastMdnsChannelOpenFailure, duration);
   }
-}
-
-// static
-void CastAnalytics::RecordDeviceNameLength(size_t length) {
-  base::UmaHistogramCounts100(kHistogramCastDeviceNameLength, length);
 }
 
 void WiredDisplayDeviceCountMetrics::RecordDeviceCounts(

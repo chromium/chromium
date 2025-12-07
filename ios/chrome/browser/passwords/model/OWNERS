@@ -4,3 +4,9 @@ vasilii@chromium.org
 vincb@google.com
 
 per-file password_controller_egtest.mm=vincb@google.com
+
+# KeyedService factories are co-owned to facilitate //components API refactors.
+per-file *factory*=file://components/password_manager/OWNERS
+
+# For trivially adding/removing files/deps.
+per-file BUILD.gn=*

@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
@@ -24,7 +23,7 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
-#include "chrome/browser/infobars/infobar_observer.h"
+#include "chrome/browser/infobars/test_support/infobar_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -37,36 +36,34 @@
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
+#include "chrome/browser/ui/tab_sharing/mock_tab_sharing_ui.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_infobar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
-#include "components/nacl/common/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
-#include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #endif
 
@@ -80,30 +77,22 @@
 #include "components/translate/core/browser/translate_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "chrome/browser/nacl_host/nacl_infobar_delegate.h"
-#endif
-
 class InfoBarsTest : public InProcessBrowserTest {
  public:
-  InfoBarsTest() {}
+  InfoBarsTest() = default;
 
   void InstallExtension(const char* filename) {
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII(filename));
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
-
     extensions::TestExtensionRegistryObserver observer(
         extensions::ExtensionRegistry::Get(browser()->profile()));
 
     std::unique_ptr<ExtensionInstallPrompt> client(new ExtensionInstallPrompt(
         browser()->tab_strip_model()->GetActiveWebContents()));
     scoped_refptr<extensions::CrxInstaller> installer(
-        extensions::CrxInstaller::Create(service, std::move(client)));
-    installer->set_install_cause(extension_misc::INSTALL_CAUSE_AUTOMATION);
+        extensions::CrxInstaller::Create(browser()->profile(),
+                                         std::move(client)));
     installer->InstallCrx(path);
 
     observer.WaitForExtensionLoaded();
@@ -176,11 +165,12 @@ class InfoBarUiTest : public TestInfoBar {
 
  private:
   using IBD = infobars::InfoBarDelegate;
+
+  MockTabSharingUI mock_tab_sharing_ui_views_;
 };
 
 void InfoBarUiTest::ShowUi(const std::string& name) {
   if (name == "multiple_infobars") {
-    ShowUi("hung_plugin");
     ShowUi("dev_tools");
     ShowUi("extension_dev_tools");
     ShowUi("incognito_connectability");
@@ -195,7 +185,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"incognito_connectability",
            IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
           {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
-          {"nacl", IBD::NACL_INFOBAR_DELEGATE},
           {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
           {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
           {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
@@ -210,9 +199,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-          {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
           {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-          {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
   const auto id_entry = kIdentifiers.find(name);
@@ -254,30 +241,12 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
               browser()->profile(), base::OnceClosure()));
       break;
 
-    case IBD::NACL_INFOBAR_DELEGATE:
-#if BUILDFLAG(ENABLE_NACL)
-      NaClInfoBarDelegate::Create(GetInfoBarManager());
-#else
-      ADD_FAILURE() << "This infobar is not supported when NaCl is disabled.";
-#endif
-      break;
-
 #if BUILDFLAG(ENABLE_PLUGINS)
-    case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
-      HungPluginInfoBarDelegate::Create(GetInfoBarManager(), nullptr, 0,
-                                        u"Test Plugin");
-      break;
-
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
       ReloadPluginInfoBarDelegate::Create(
           GetInfoBarManager(), nullptr,
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
                                      u"Test Plugin"));
-      break;
-
-    case IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE:
-      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarManager(),
-                                                  u"Test Plugin");
       break;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -310,17 +279,17 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     }
 
     case IBD::BAD_FLAGS_INFOBAR_DELEGATE:
-      chrome::ShowBadFlagsInfoBar(GetWebContents(),
-                                  IDS_BAD_FLAGS_WARNING_MESSAGE,
-                                  sandbox::policy::switches::kNoSandbox);
+      ShowBadFlagsInfoBar(GetWebContents(), IDS_BAD_FLAGS_WARNING_MESSAGE,
+                          sandbox::policy::switches::kNoSandbox);
       break;
 
     case IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #else
-      chrome::DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
-                                                    browser()->profile());
+      DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
+                                            browser()->profile(),
+                                            /*can_pin_to_taskbar=*/false);
 #endif
       break;
 
@@ -330,10 +299,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
       ObsoleteSystemInfoBarDelegate::Create(GetInfoBarManager());
-      break;
-
-    case IBD::SESSION_CRASHED_INFOBAR_DELEGATE_IOS:
-      ADD_FAILURE() << "This infobar is not supported on this OS.";
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:
@@ -365,15 +330,18 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       TabSharingInfoBarDelegate::Create(
           /*infobar_manager=*/GetInfoBarManager(),
           /*old_infobar=*/nullptr,
+          /*shared_tab_id=*/content::GlobalRenderFrameHostId(),
+          /*capturer_id=*/content::GlobalRenderFrameHostId(),
           /*shared_tab_name=*/u"example.com",
           /*capturer_name=*/u"application.com",
           /*web_contents=*/nullptr,
           /*role=*/TabSharingInfoBarDelegate::TabRole::kOtherTab,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
-          /*focus_target=*/std::nullopt,
+          /*focus_target=*/content::GlobalRenderFrameHostId(),
           /*captured_surface_control_active=*/false,
-          /*ui=*/nullptr, TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+          /*ui=*/&mock_tab_sharing_ui_views_,
+          TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 
     default:
@@ -415,22 +383,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_theme_installed) {
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(ENABLE_NACL)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_nacl) {
-  ShowAndVerifyUi();
-}
-#endif
-
 #if BUILDFLAG(ENABLE_PLUGINS)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_reload_plugin) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_plugin_observer) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -457,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_bad_flags) {
   ShowAndVerifyUi();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_default_browser) {
   ShowAndVerifyUi();
 }
@@ -502,6 +456,12 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_multiple_infobars) {
+// Consistently failing on Windows https://crbug.com/1462107.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_multiple_infobars DISABLED_InvokeUi_multiple_infobars
+#else
+#define MAYBE_InvokeUi_multiple_infobars InvokeUi_multiple_infobars
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_multiple_infobars) {
   ShowAndVerifyUi();
 }

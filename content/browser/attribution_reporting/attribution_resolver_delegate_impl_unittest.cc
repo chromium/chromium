@@ -72,10 +72,13 @@ TEST(AttributionResolverDelegateImplTest,
                     : 1)
             .BuildStored();
 
-    auto result = AttributionResolverDelegateImpl(AttributionNoiseMode::kNone)
-                      .GetRandomizedResponse(source.common_info().source_type(),
-                                             source.trigger_specs(),
-                                             source.event_level_epsilon());
+    auto result =
+        AttributionResolverDelegateImpl(AttributionNoiseMode::kNone)
+            .GetRandomizedResponse(
+                source.common_info().source_type(), source.trigger_data(),
+                source.event_report_windows(), source.max_event_level_reports(),
+                source.event_level_epsilon(),
+                /*attribution_scope_data=*/std::nullopt);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(result->rate(), 0);
     ASSERT_EQ(result->response(), std::nullopt);
@@ -92,31 +95,31 @@ TEST(AttributionResolverDelegateImplTest,
   } kTestCases[] = {
       {
           .source_type = SourceType::kNavigation,
-          .max_event_info_gain = 0,
+          .max_event_info_gain = 0.1,
           .expected_ok = true,
       },
       {
           .source_type = SourceType::kNavigation,
-          .max_navigation_info_gain = 0,
+          .max_navigation_info_gain = 0.1,
           .expected_ok = false,
       },
       {
           .source_type = SourceType::kEvent,
-          .max_navigation_info_gain = 0,
+          .max_navigation_info_gain = 0.1,
           .expected_ok = true,
       },
       {
           .source_type = SourceType::kEvent,
-          .max_event_info_gain = 0,
+          .max_event_info_gain = 0.1,
           .expected_ok = false,
       },
   };
 
   for (const auto& test_case : kTestCases) {
     AttributionConfig config;
-    config.event_level_limit.max_navigation_info_gain =
+    config.privacy_math_config.max_channel_capacity_navigation =
         test_case.max_navigation_info_gain;
-    config.event_level_limit.max_event_info_gain =
+    config.privacy_math_config.max_channel_capacity_event =
         test_case.max_event_info_gain;
 
     auto delegate = AttributionResolverDelegateImpl::CreateForTesting(
@@ -125,9 +128,11 @@ TEST(AttributionResolverDelegateImplTest,
     const auto source =
         SourceBuilder().SetSourceType(test_case.source_type).BuildStored();
 
-    auto result = delegate->GetRandomizedResponse(test_case.source_type,
-                                                  source.trigger_specs(),
-                                                  source.event_level_epsilon());
+    auto result = delegate->GetRandomizedResponse(
+        test_case.source_type, source.trigger_data(),
+        source.event_report_windows(), source.max_event_level_reports(),
+        source.event_level_epsilon(),
+        /*attribution_scope_data=*/std::nullopt);
 
     EXPECT_EQ(result.has_value(), test_case.expected_ok);
   }

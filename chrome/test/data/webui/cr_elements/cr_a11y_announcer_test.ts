@@ -35,16 +35,16 @@ suite('CrA11yAnnouncerElementTest', () => {
     announcer.announce(message1);
     announcer.announce(message2);
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
-    assertTrue(messagesDiv.textContent!.includes(message1));
-    assertTrue(messagesDiv.textContent!.includes(message2));
+    assertTrue(messagesDiv.textContent.includes(message1));
+    assertTrue(messagesDiv.textContent.includes(message2));
 
     // Queue up 1 message, and assert it clears out previous messages.
     const message3 = 'No jokes allowed';
     announcer.announce(message3);
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
-    assertFalse(messagesDiv.textContent!.includes(message1));
-    assertFalse(messagesDiv.textContent!.includes(message2));
-    assertTrue(messagesDiv.textContent!.includes(message3));
+    assertFalse(messagesDiv.textContent.includes(message1));
+    assertFalse(messagesDiv.textContent.includes(message2));
+    assertTrue(messagesDiv.textContent.includes(message3));
   });
 
   test('ClearsAnnouncerOnDisconnect', async () => {
@@ -54,7 +54,7 @@ suite('CrA11yAnnouncerElementTest', () => {
     announcer.remove();
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
     assertFalse(
-        announcer.shadowRoot!.querySelector('#messages')!.textContent!.includes(
+        announcer.shadowRoot!.querySelector('#messages')!.textContent.includes(
             lostMessage));
 
     // Creates new announcer since previous announcer is removed from instances.

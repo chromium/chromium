@@ -198,14 +198,13 @@ class FrameInjectingDemuxerStream
     }
   }
 
-  // DemuxerStream partial implementation.
-  void Read(uint32_t count, ReadCB read_cb) final {
+  // DemuxerStream partial implementation. Method returns only a single buffer
+  // at a time, hence |count| is not taken into account.
+  void Read(uint32_t /*count*/, ReadCB read_cb) final {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!pending_read_cb_);
     DCHECK(!buffer_requester_ || current_buffer_provider_);
-    DCHECK_EQ(count, 1u)
-        << "FrameInjectingDemuxerStream only reads a single buffer.";
 
     pending_read_cb_ = std::move(read_cb);
 
@@ -293,10 +292,7 @@ class FrameInjectingAudioDemuxerStream final
  private:
   // DemuxerStream remainder of implementation.
   media::AudioDecoderConfig audio_decoder_config() final { return config(); }
-  media::VideoDecoderConfig video_decoder_config() final {
-    NOTREACHED_IN_MIGRATION();
-    return media::VideoDecoderConfig();
-  }
+  media::VideoDecoderConfig video_decoder_config() final { NOTREACHED(); }
   Type type() const final { return Type::AUDIO; }
 };
 
@@ -310,10 +306,7 @@ class FrameInjectingVideoDemuxerStream final
 
  private:
   // DemuxerStream remainder of implementation.
-  media::AudioDecoderConfig audio_decoder_config() final {
-    NOTREACHED_IN_MIGRATION();
-    return media::AudioDecoderConfig();
-  }
+  media::AudioDecoderConfig audio_decoder_config() final { NOTREACHED(); }
   media::VideoDecoderConfig video_decoder_config() final { return config(); }
   Type type() const final { return Type::VIDEO; }
 };
@@ -503,23 +496,14 @@ FrameInjectingDemuxer::GetContainerForMetrics() const {
 }
 
 // Not supported.
-void FrameInjectingDemuxer::OnEnabledAudioTracksChanged(
-    const std::vector<media::MediaTrack::Id>& track_ids,
+void FrameInjectingDemuxer::OnTracksChanged(
+    media::DemuxerStream::Type track_type,
+    std::optional<media::MediaTrack::Id> track_id,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
-  DLOG(WARNING) << "Track changes are not supported.";
-  std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(media::DemuxerStream::AUDIO, streams);
-}
-
-// Not supported.
-void FrameInjectingDemuxer::OnSelectedVideoTrackChanged(
-    const std::vector<media::MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  DLOG(WARNING) << "Track changes are not supported.";
-  std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(media::DemuxerStream::VIDEO, streams);
+  // TODO(crbug.com/416543891): Demuxers should have a way to report that they
+  // do not support exposing track switching to JS.
+  NOTREACHED();
 }
 
 }  // namespace cast_streaming

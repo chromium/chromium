@@ -27,9 +27,11 @@ bool StructTraits<gfx::mojom::DelegatedInkMetadataDataView,
       !data.ReadColor(&color) || !data.ReadFrameTime(&frame_time)) {
     return false;
   }
+  // Render pass id is not set in the renderer process, therefore does not need
+  // to be serialized by mojo.
   *out = std::make_unique<gfx::DelegatedInkMetadata>(
       point, data.diameter(), color, timestamp, presentation_area, frame_time,
-      data.is_hovering());
+      data.is_hovering(), /*render_pass_id=*/0);
   return true;
 }
 

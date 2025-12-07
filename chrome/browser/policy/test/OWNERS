@@ -1,0 +1,5 @@
+per-file autofill_ai_policy_browsertest.cc=file://components/autofill/OWNERS
+per-file autofill_policy_browsertest.cc=file://components/autofill/OWNERS
+per-file translator_api_policy_browsertest.cc=file://chrome/browser/ai/OWNERS
+per-file v8_optimizer_policy_browsertest.cc=jacastro@chromium.org
+per-file v8_optimizer_policy_browsertest.cc=pkotwicz@chromium.org

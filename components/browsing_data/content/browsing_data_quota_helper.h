@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 class BrowsingDataQuotaHelper;
 
@@ -44,9 +43,7 @@ class BrowsingDataQuotaHelper
   struct QuotaInfo {
     QuotaInfo();
     explicit QuotaInfo(const blink::StorageKey& storage_key);
-    QuotaInfo(const blink::StorageKey& storage_key,
-              int64_t temporary_usage,
-              int64_t syncable_usage);
+    QuotaInfo(const blink::StorageKey& storage_key, int64_t usage);
     ~QuotaInfo();
 
     // Certain versions of MSVC 2008 have bad implementations of ADL for nested
@@ -56,8 +53,7 @@ class BrowsingDataQuotaHelper
     bool operator==(const QuotaInfo& rhs) const;
 
     blink::StorageKey storage_key;
-    int64_t temporary_usage = 0;
-    int64_t syncable_usage = 0;
+    int64_t usage = 0;
   };
 
   using QuotaInfoArray = std::list<QuotaInfo>;
@@ -71,14 +67,7 @@ class BrowsingDataQuotaHelper
 
   virtual void StartFetching(FetchResultCallback callback) = 0;
 
-  // TODO(crbug.com/40273188): DEPRECATED please prefer using
-  // `DeleteStorageKeyData`. This should be removed as part of
-  // `CookiesTreeModel` deprecation.
-  virtual void DeleteHostData(const std::string& host,
-                              blink::mojom::StorageType type) = 0;
-
   virtual void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                                    blink::mojom::StorageType type,
                                     base::OnceClosure completed) = 0;
 
  protected:

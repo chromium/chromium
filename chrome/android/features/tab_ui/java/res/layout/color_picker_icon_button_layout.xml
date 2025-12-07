@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/color_picker_icon"
+        style="@style/ColorPickerButtonStyle"
+        android:layout_width="?attr/minInteractTargetSize"
+        android:layout_height="?attr/minInteractTargetSize"
+        android:checkable="true" />
+</FrameLayout>

@@ -85,11 +85,11 @@ class UserScriptInjector : public ScriptInjector,
   const raw_ptr<UserScriptSet, DanglingUntriaged> user_script_set_;
 
   // The id of the associated user script. We cache this because when we update
-  // the |script_| associated with this injection, the old reference may be
+  // the `script_` associated with this injection, the old reference may be
   // deleted.
   std::string script_id_;
 
-  // The associated host id, preserved for the same reason as |script_id|.
+  // The associated host id, preserved for the same reason as `script_id`.
   mojom::HostID host_id_;
 
   // Indicates whether or not this script is declarative. This influences which

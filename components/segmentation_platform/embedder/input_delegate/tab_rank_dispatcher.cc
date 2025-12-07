@@ -119,7 +119,7 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
     return;
   }
 
-  const RankedTab tab = std::move(candidate_tabs.front());
+  RankedTab tab = std::move(candidate_tabs.front());
   // Fetch tab every time from the `tab_fetcher_` for accessing the tab data
   // since the tab could have been destroyed.
   TabFetcher::Tab fetched_tab = tab_fetcher_->FindTab(tab.tab);

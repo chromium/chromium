@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 
 #include <utility>
+
 #include "base/functional/function_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
@@ -180,7 +182,7 @@ TEST_P(RasterInvalidatorTest, LayerOffsetChangeWithCachedSubsequence) {
 }
 
 TEST_P(RasterInvalidatorTest, LayerStateChangeWithCachedSubsequence) {
-  auto t1 = Create2DTranslation(t0(), 100, 50);
+  auto* t1 = Create2DTranslation(t0(), 100, 50);
   PropertyTreeState chunk_state(*t1, c0(), e0());
   PaintChunkSubset chunks(
       TestPaintArtifact().Chunk(0).Properties(chunk_state).Build());
@@ -435,8 +437,8 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeRounded) {
   FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
                                 gfx::SizeF(3, 4), gfx::SizeF(4, 5));
   FloatRoundedRect clip_rect(gfx::RectF(-1000, -1000, 2000, 2000), radii);
-  auto clip0 = CreateClip(c0(), t0(), clip_rect);
-  auto clip2 = CreateClip(*clip0, t0(), clip_rect);
+  auto* clip0 = CreateClip(c0(), t0(), clip_rect);
+  auto* clip2 = CreateClip(*clip0, t0(), clip_rect);
 
   PropertyTreeState layer_state(t0(), *clip0, e0());
   PropertyTreeState chunk_state(t0(), *clip2, e0());
@@ -492,8 +494,8 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeRounded) {
 // Tests the path detecting change of PaintChunkInfo::chunk_to_layer_clip.
 TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
   FloatRoundedRect clip_rect(-1000, -1000, 2000, 2000);
-  auto clip0 = CreateClip(c0(), t0(), clip_rect);
-  auto clip1 = CreateClip(*clip0, t0(), clip_rect);
+  auto* clip0 = CreateClip(c0(), t0(), clip_rect);
+  auto* clip1 = CreateClip(*clip0, t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
   PaintChunkSubset chunks(
@@ -559,7 +561,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
 
 TEST_P(RasterInvalidatorTest, ClipChangeOnCachedSubsequence) {
   FloatRoundedRect clip_rect(-1000, -1000, 2000, 2000);
-  auto c1 = CreateClip(c0(), t0(), clip_rect);
+  auto* c1 = CreateClip(c0(), t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
   PaintChunkSubset chunks(
@@ -598,7 +600,7 @@ TEST_P(RasterInvalidatorTest, ClipChangeOnCachedSubsequence) {
 // effects, so incremental invalidation is not suitable.
 TEST_P(RasterInvalidatorTest, ClipPropertyChangeWithOutsetForRasterEffects) {
   FloatRoundedRect clip_rect(-1000, -1000, 2000, 2000);
-  auto clip = CreateClip(c0(), t0(), clip_rect);
+  auto* clip = CreateClip(c0(), t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
   PaintChunkSubset chunks(
@@ -630,13 +632,13 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeWithOutsetForRasterEffects) {
 }
 
 TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChange) {
-  auto t1 = CreateTransform(t0(), gfx::Transform());
-  auto t2 = CreateTransform(*t1, gfx::Transform());
+  auto* t1 = CreateTransform(t0(), gfx::Transform());
+  auto* t2 = CreateTransform(*t1, gfx::Transform());
 
   FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
                                 gfx::SizeF(3, 4), gfx::SizeF(4, 5));
   FloatRoundedRect clip_rect(gfx::RectF(-1000, -1000, 2000, 2000), radii);
-  auto c1 = CreateClip(c0(), *t1, clip_rect);
+  auto* c1 = CreateClip(c0(), *t1, clip_rect);
 
   PropertyTreeState layer_state = DefaultPropertyTreeState();
   PaintChunkSubset chunks(
@@ -666,14 +668,14 @@ TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChange) {
 // path by letting the clip's LocalTransformSpace be the same as the chunk's
 // transform.
 TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChangeNoInvalidation) {
-  auto t1 = CreateTransform(t0(), gfx::Transform());
-  auto t2 = CreateTransform(*t1, gfx::Transform());
+  auto* t1 = CreateTransform(t0(), gfx::Transform());
+  auto* t2 = CreateTransform(*t1, gfx::Transform());
 
   FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
                                 gfx::SizeF(3, 4), gfx::SizeF(4, 5));
   FloatRoundedRect clip_rect(gfx::RectF(-1000, -1000, 2000, 2000), radii);
   // This set is different from ClipLocalTransformSpaceChange.
-  auto c1 = CreateClip(c0(), *t2, clip_rect);
+  auto* c1 = CreateClip(c0(), *t2, clip_rect);
 
   PropertyTreeState layer_state = DefaultPropertyTreeState();
   PaintChunkSubset chunks(
@@ -697,9 +699,9 @@ TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChangeNoInvalidation) {
 }
 
 TEST_P(RasterInvalidatorTest, TransformPropertyChange) {
-  auto layer_transform = CreateTransform(t0(), MakeScaleMatrix(5));
-  auto transform0 = Create2DTranslation(*layer_transform, 10, 20);
-  auto transform1 = Create2DTranslation(*transform0, -50, -60);
+  auto* layer_transform = CreateTransform(t0(), MakeScaleMatrix(5));
+  auto* transform0 = Create2DTranslation(*layer_transform, 10, 20);
+  auto* transform1 = Create2DTranslation(*transform0, -50, -60);
 
   PropertyTreeState layer_state(*layer_transform, c0(), e0());
   PaintChunkSubset chunks(TestPaintArtifact()
@@ -728,7 +730,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyChange) {
   // the new node become the transform of the layer state should not cause
   // raster invalidation in the layer. This simulates a composited layer is
   // scrolled from its original location.
-  auto new_layer_transform = Create2DTranslation(*layer_transform, -100, -200);
+  auto* new_layer_transform = Create2DTranslation(*layer_transform, -100, -200);
   layer_state = PropertyTreeState(*new_layer_transform, c0(), e0());
   transform0->Update(*new_layer_transform,
                      TransformPaintPropertyNode::State{{transform0->Matrix()}});
@@ -776,8 +778,8 @@ TEST_P(RasterInvalidatorTest, TransformPropertyChange) {
 }
 
 TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
-  auto layer_transform = CreateTransform(t0(), MakeScaleMatrix(5));
-  auto chunk_transform = Create2DTranslation(*layer_transform, 10, 20);
+  auto* layer_transform = CreateTransform(t0(), MakeScaleMatrix(5));
+  auto* chunk_transform = Create2DTranslation(*layer_transform, 10, 20);
 
   PropertyTreeState layer_state(*layer_transform, c0(), e0());
   PaintChunkSubset chunks(TestPaintArtifact()
@@ -827,8 +829,8 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
 }
 
 TEST_P(RasterInvalidatorTest, TransformPropertyTinyChangeScale) {
-  auto layer_transform = CreateTransform(t0(), MakeScaleMatrix(5));
-  auto chunk_transform =
+  auto* layer_transform = CreateTransform(t0(), MakeScaleMatrix(5));
+  auto* chunk_transform =
       CreateTransform(*layer_transform, MakeScaleMatrix(1e-6));
   gfx::Rect chunk_bounds(0, 0, 10000000, 10000000);
 
@@ -870,12 +872,12 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChangeScale) {
 }
 
 TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChange) {
-  auto t1 = CreateTransform(t0(), gfx::Transform());
-  auto t2 = CreateTransform(*t1, gfx::Transform());
+  auto* t1 = CreateTransform(t0(), gfx::Transform());
+  auto* t2 = CreateTransform(*t1, gfx::Transform());
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(20);
-  auto e1 = CreateFilterEffect(e0(), *t1, &c0(), filter);
-  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
+  auto* e1 = CreateFilterEffect(e0(), *t1, &c0(), filter);
+  auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
 
   PropertyTreeState layer_state = DefaultPropertyTreeState();
   PaintChunkSubset chunks(TestPaintArtifact()
@@ -910,12 +912,12 @@ TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChange) {
 // invalidation path by letting the effect's LocalTransformSpace be the same as
 // the chunk's transform.
 TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChangeNoInvalidation) {
-  auto t1 = CreateTransform(t0(), gfx::Transform());
-  auto t2 = CreateTransform(*t1, gfx::Transform());
+  auto* t1 = CreateTransform(t0(), gfx::Transform());
+  auto* t2 = CreateTransform(*t1, gfx::Transform());
   // This setup is different from EffectLocalTransformSpaceChange.
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(20);
-  auto e1 = CreateFilterEffect(e0(), *t2, &c0(), filter);
+  auto* e1 = CreateFilterEffect(e0(), *t2, &c0(), filter);
 
   PropertyTreeState layer_state = DefaultPropertyTreeState();
   PaintChunkSubset chunks(
@@ -942,8 +944,8 @@ TEST_P(RasterInvalidatorTest, AliasEffectParentChanges) {
   CompositorFilterOperations filter;
   filter.AppendOpacityFilter(0.5);
   // Create an effect and an alias for that effect.
-  auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
-  auto alias_effect = EffectPaintPropertyNodeAlias::Create(*e1);
+  auto* e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
+  auto* alias_effect = EffectPaintPropertyNodeAlias::Create(*e1);
 
   // The artifact has a chunk pointing to the alias.
   PropertyTreeState layer_state = DefaultPropertyTreeState();
@@ -974,9 +976,9 @@ TEST_P(RasterInvalidatorTest, NestedAliasEffectParentChanges) {
   CompositorFilterOperations filter;
   filter.AppendOpacityFilter(0.5);
   // Create an effect and an alias for that effect.
-  auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
-  auto alias_effect_1 = EffectPaintPropertyNodeAlias::Create(*e1);
-  auto alias_effect_2 = EffectPaintPropertyNodeAlias::Create(*alias_effect_1);
+  auto* e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
+  auto* alias_effect_1 = EffectPaintPropertyNodeAlias::Create(*e1);
+  auto* alias_effect_2 = EffectPaintPropertyNodeAlias::Create(*alias_effect_1);
 
   // The artifact has a chunk pointing to the nested alias.
   PropertyTreeState layer_state = DefaultPropertyTreeState();
@@ -1005,13 +1007,13 @@ TEST_P(RasterInvalidatorTest, NestedAliasEffectParentChanges) {
 }
 
 TEST_P(RasterInvalidatorTest, EffectWithAliasTransformWhoseParentChanges) {
-  auto t1 = CreateTransform(t0(), MakeScaleMatrix(5));
-  auto alias_transform = TransformPaintPropertyNodeAlias::Create(*t1);
+  auto* t1 = CreateTransform(t0(), MakeScaleMatrix(5));
+  auto* alias_transform = TransformPaintPropertyNodeAlias::Create(*t1);
 
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(0);
   // Create an effect and an alias for that effect.
-  auto e1 = CreateFilterEffect(e0(), *alias_transform, &c0(), filter);
+  auto* e1 = CreateFilterEffect(e0(), *alias_transform, &c0(), filter);
 
   // The artifact has a chunk pointing to the alias.
   PropertyTreeState layer_state = PropertyTreeState::Root();
@@ -1040,7 +1042,7 @@ TEST_P(RasterInvalidatorTest, EffectWithAliasTransformWhoseParentChanges) {
 
 TEST_P(RasterInvalidatorTest, EffectChangeSimple) {
   PropertyTreeState layer_state = DefaultPropertyTreeState();
-  auto e1 = CreateOpacityEffect(e0(), t0(), &c0(), 0.5);
+  auto* e1 = CreateOpacityEffect(e0(), t0(), &c0(), 0.5);
   PropertyTreeState chunk_state(t0(), c0(), *e1);
   PaintChunkSubset chunks(
       TestPaintArtifact().Chunk(0).Properties(chunk_state).Build());
@@ -1064,7 +1066,7 @@ TEST_P(RasterInvalidatorTest, EffectChangeSimple) {
 
 TEST_P(RasterInvalidatorTest, EffectChangeOnCachedSubsequence) {
   PropertyTreeState layer_state = DefaultPropertyTreeState();
-  auto e1 = CreateOpacityEffect(e0(), t0(), &c0(), 0.5);
+  auto* e1 = CreateOpacityEffect(e0(), t0(), &c0(), 0.5);
   PropertyTreeState chunk_state(t0(), c0(), *e1);
   PaintChunkSubset chunks(TestPaintArtifact()
                               .Chunk(0)
@@ -1086,6 +1088,74 @@ TEST_P(RasterInvalidatorTest, EffectChangeOnCachedSubsequence) {
   EXPECT_THAT(TrackedRasterInvalidations(),
               ElementsAre(ChunkInvalidation(
                   chunks, 0, PaintInvalidationReason::kPaintProperty)));
+  FinishCycle(chunks);
+}
+
+static CompositorFilterOperations CreateReferenceFilterOperations(
+    const gfx::Rect& filter_bounds,
+    SkColor4f color) {
+  PaintFilter::CropRect paint_filter_rect(gfx::RectToSkRect(filter_bounds));
+  CompositorFilterOperations filter;
+  filter.AppendReferenceFilter(sk_make_sp<ColorFilterPaintFilter>(
+      cc::ColorFilter::MakeBlend(color, SkBlendMode::kSrc), nullptr,
+      &paint_filter_rect));
+  filter.SetReferenceBox(gfx::RectF(0, 0, 50, 50));
+  return filter;
+}
+
+TEST_P(RasterInvalidatorTest, EffectReferenceFilterChangeOnEmptyChunk) {
+  gfx::Rect filter_bounds(0, 0, 100, 100);
+  auto* e1 = CreateFilterEffect(
+      e0(), t0(), &c0(),
+      CreateReferenceFilterOperations(filter_bounds, SkColors::kBlue));
+  auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
+
+  auto* e2 = CreateOpacityEffect(*e1, t0(), clip_expander, 0.5);
+
+  PropertyTreeState layer_state = DefaultPropertyTreeState();
+
+  // Note that this test intentionally creates a chunk where the effect node
+  // chain is opacity -> reference filter -> root where opacity and the
+  // reference filter effects both apply to the chunk. This is not a valid chain
+  // per the effect node hierarchy defined in object_paint_properties.h but
+  // helps future-proof the invalidation code against changes in the hierarchy.
+  PropertyTreeState chunk_state(t0(), *clip_expander, *e2);
+
+  auto& artifact = TestPaintArtifact()
+                       .Chunk(0)
+                       .Properties(chunk_state)
+                       .DrawableBounds(gfx::Rect(0, 0, 0, 0))
+                       .Build();
+  PaintChunkSubset chunks(artifact);
+
+  invalidator_->Generate(chunks, kDefaultLayerOffset, kDefaultLayerBounds,
+                         layer_state);
+  FinishCycle(chunks);
+
+  invalidator_->SetTracksRasterInvalidations(true);
+  // Modify the reference filter operations to use a different color. This
+  // should trigger a PaintPropertyChangeType::kChangedOnlyValues which should
+  // be treated as a raster invalidation even with an empty drawable bounds.
+  EffectPaintPropertyNode::State state{&t0(), &c0()};
+  CompositorFilterOperations filter =
+      CreateReferenceFilterOperations(filter_bounds, SkColors::kRed);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+      filter, filter.MapRect(gfx::ToEnclosingRect(filter.ReferenceBox())));
+  PaintPropertyChangeType change = e1->Update(*e1->Parent(), std::move(state));
+  ASSERT_TRUE(change == PaintPropertyChangeType::kChangedOnlyValues);
+
+  invalidator_->Generate(chunks, kDefaultLayerOffset, kDefaultLayerBounds,
+                         layer_state);
+  DisplayItemClientId client_id = chunks.begin()->id.client_id;
+  // The invalidation rect should have the size of the filter bounds and not the
+  // drawable bounds due to the filter's potential to be decomposed.
+  EXPECT_THAT(TrackedRasterInvalidations(),
+              ElementsAre(RasterInvalidationInfo{
+                  client_id, artifact.ClientDebugName(client_id),
+                  gfx::Rect(-kDefaultLayerOffset.x(), -kDefaultLayerOffset.y(),
+                            filter_bounds.width(), filter_bounds.height()),
+                  PaintInvalidationReason::kPaintProperty}));
+
   FinishCycle(chunks);
 }
 

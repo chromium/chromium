@@ -9,7 +9,7 @@
 namespace ash {
 
 bool InTabletMode() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 }  // namespace ash

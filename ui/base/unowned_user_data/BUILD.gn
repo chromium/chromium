@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Technically, this could be supported on more platforms, but these are the only
+# ones where it's needed today.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+component("unowned_user_data") {
+  defines = [ "IS_UNOWNED_USER_DATA_IMPL" ]
+
+  public = [
+    "scoped_unowned_user_data.h",
+    "unowned_user_data_host.h",
+    "user_data_factory.h",
+  ]
+
+  sources = [
+    "unowned_user_data_host.cc",
+    "user_data_factory.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base/interaction",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "unowned_user_data_unittest.cc",
+    "user_data_factory_unittest.cc",
+  ]
+
+  deps = [
+    ":unowned_user_data",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

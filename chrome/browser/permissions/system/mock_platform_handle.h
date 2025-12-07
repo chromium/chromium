@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_SYSTEM_MOCK_PLATFORM_HANDLE_H_
 #define CHROME_BROWSER_PERMISSIONS_SYSTEM_MOCK_PLATFORM_HANDLE_H_
 
+#include "base/functional/callback.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

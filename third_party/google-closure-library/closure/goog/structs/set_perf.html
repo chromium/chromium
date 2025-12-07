@@ -152,11 +152,11 @@ See the COPYING file for details.
       }
 
       table.run(function() {
-        goog.structs.forEach(bigSet, goog.nullFunction);
+        goog.structs.forEach(bigSet, () => {});
       }, 'Iterate over set with forEach');
 
       table.run(function() {
-        goog.structs.forEach(bigStringSet, goog.nullFunction);
+        goog.structs.forEach(bigStringSet, () => {});
       }, 'Iterate over string set with forEach');
     }
 
@@ -170,13 +170,13 @@ See the COPYING file for details.
 
       table.run(function() {
         for (var i = 0; i < 100; i++) {
-          goog.structs.forEach(bigSet, goog.nullFunction);
+          goog.structs.forEach(bigSet, () => {});
         }
       }, 'Iterate over set of large strings with forEach');
 
       table.run(function() {
         for (var i = 0; i < 100; i++) {
-          goog.structs.forEach(bigStringSet, goog.nullFunction);
+          goog.structs.forEach(bigStringSet, () => {});
         }
       }, 'Iterate over string set of large strings with forEach');
     }

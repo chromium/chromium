@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_SEARCH_H_
 #define CHROME_BROWSER_SEARCH_SEARCH_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 
 class GURL;
@@ -41,6 +43,9 @@ bool NavEntryIsInstantNTP(content::WebContents* contents,
 // in an Instant process.
 bool IsInstantNTPURL(const GURL& url, Profile* profile);
 
+// Returns true if |url| corresponds to a Split View New Tab page.
+bool IsSplitViewNewTabPage(const GURL& url);
+
 // Returns the New Tab page URL for the given |profile|.
 GURL GetNewTabPageURL(Profile* profile);
 
@@ -53,7 +58,7 @@ bool ShouldAssignURLToInstantRenderer(const GURL& url, Profile* profile);
 bool ShouldUseProcessPerSiteForInstantSiteURL(const GURL& site_url,
                                               Profile* profile);
 
-// Transforms the input |url| into its "effective URL". |url| must be an
+// Returns the "effective URL" based on the input |url|. |url| must be an
 // Instant URL, i.e. ShouldAssignURLToInstantRenderer must return true. The
 // returned URL facilitates grouping process-per-site. The |url| is transformed,
 // for example, from
@@ -66,12 +71,13 @@ bool ShouldUseProcessPerSiteForInstantSiteURL(const GURL& site_url,
 //
 // Notice the scheme change.
 //
-// If the input is already a privileged URL then that same URL is returned.
+// If the input is already a privileged URL then std::nullopt is returned.
 //
 // If |url| is that of the online NTP, its host is replaced with "remote-ntp".
 // This forces the NTP and search results pages to have different SiteIntances,
 // and hence different processes.
-GURL GetEffectiveURLForInstant(const GURL& url, Profile* profile);
+std::optional<GURL> GetEffectiveURLForInstant(const GURL& url,
+                                              Profile* profile);
 
 // Rewrites |url| to the actual NTP URL to use if
 //   1. |url| is "chrome://newtab" or starts with "chrome-search://local-ntp",

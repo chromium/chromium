@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -25,14 +25,16 @@ import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 
 /**
  * Dispatches lifecycle events of activities extending {@link AsyncInitializationActivity} to
  * registered observers.
  *
- * All observers will be automatically cleared when the backing activity is destroyed.
+ * <p>All observers will be automatically cleared when the backing activity is destroyed.
  */
+@NullMarked
 public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatcher {
     private final ObserverList<InflationObserver> mInflationObservers = new ObserverList<>();
     private final ObserverList<NativeInitObserver> mNativeInitObservers = new ObserverList<>();
@@ -54,19 +56,25 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             new ObserverList<>();
     private final ObserverList<TopResumedActivityChangedObserver>
             mTopResumedActivityChangedObservers = new ObserverList<>();
+    private final ObserverList<TopResumedActivityChangedWithNativeObserver>
+            mTopResumedActivityChangedWithNativeObservers = new ObserverList<>();
 
-    private final Activity mActivity;
+    private @Nullable Activity mActivity;
 
     private @ActivityState int mActivityState = ActivityState.DESTROYED;
     private boolean mIsNativeInitialized;
     private boolean mDestroyed;
 
-    public ActivityLifecycleDispatcherImpl(Activity activity) {
+    public ActivityLifecycleDispatcherImpl(@Nullable Activity activity) {
         mActivity = activity;
     }
 
     @Override
     public void register(LifecycleObserver observer) {
+        assert mActivity != null;
+        if (mActivity == null) {
+            return;
+        }
         if (observer instanceof InflationObserver) {
             mInflationObservers.addObserver((InflationObserver) observer);
         }
@@ -104,6 +112,10 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof TopResumedActivityChangedObserver) {
             mTopResumedActivityChangedObservers.addObserver(
                     (TopResumedActivityChangedObserver) observer);
+        }
+        if (observer instanceof TopResumedActivityChangedWithNativeObserver) {
+            mTopResumedActivityChangedWithNativeObservers.addObserver(
+                    (TopResumedActivityChangedWithNativeObserver) observer);
         }
     }
 
@@ -147,6 +159,10 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             mTopResumedActivityChangedObservers.removeObserver(
                     (TopResumedActivityChangedObserver) observer);
         }
+        if (observer instanceof TopResumedActivityChangedWithNativeObserver) {
+            mTopResumedActivityChangedWithNativeObservers.removeObserver(
+                    (TopResumedActivityChangedWithNativeObserver) observer);
+        }
     }
 
     @Override
@@ -161,7 +177,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
 
     @Override
     public boolean isActivityFinishingOrDestroyed() {
-        return mDestroyed || mActivity.isFinishing();
+        return mDestroyed || mActivity == null || mActivity.isFinishing();
     }
 
     void dispatchPreInflationStartup() {
@@ -222,21 +238,21 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
     }
 
-    void onDestroyStarted() {
+    public void onDestroyStarted() {
         mDestroyed = true;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    protected void dispatchOnDestroy() {
+    public void dispatchOnDestroy() {
         mActivityState = ActivityState.DESTROYED;
+
+        // Clear mActivity to prevent future calls to register().
+        mActivity = null;
 
         for (DestroyObserver destroyable : mDestroyables) {
             destroyable.onDestroy();
         }
 
         // Drain observers to prevent possible memory leaks.
-        // TODO(twellington): Add some state to this class to prevent observers from being
-        //                    registered after the activity has been destroyed.
         mInflationObservers.clear();
         mPauseResumeObservers.clear();
         mStartStopObservers.clear();
@@ -262,7 +278,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
     }
 
-    void dispatchOnActivityResultWithNative(int requestCode, int resultCode, Intent data) {
+    void dispatchOnActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent data) {
         for (ActivityResultWithNativeObserver observer : mActivityResultWithNativeObservers) {
             observer.onActivityResultWithNative(requestCode, resultCode, data);
         }
@@ -289,6 +306,13 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     void dispatchOnTopResumedActivityChanged(boolean isTopResumedActivity) {
         for (TopResumedActivityChangedObserver observer : mTopResumedActivityChangedObservers) {
             observer.onTopResumedActivityChanged(isTopResumedActivity);
+        }
+    }
+
+    void dispatchOnTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
+        for (TopResumedActivityChangedWithNativeObserver observer :
+                mTopResumedActivityChangedWithNativeObservers) {
+            observer.onTopResumedActivityChangedWithNative(isTopResumedActivity);
         }
     }
 }

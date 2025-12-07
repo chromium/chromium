@@ -6,15 +6,18 @@
 #define CHROME_RENDERER_PLUGINS_PDF_PLUGIN_PLACEHOLDER_H_
 
 #include "components/plugins/renderer/plugin_placeholder.h"
+#include "gin/public/wrappable_pointer_tags.h"
+#include "v8/include/cppgc/persistent.h"
 
 // Placeholder that allows users to click to download a PDF for when
 // plugins are disabled and the PDF fails to load.
 // TODO(amberwon): Flesh out the class more to download an embedded PDF when the
 // PDF plugin is disabled or unavailable.
-class PDFPluginPlaceholder final : public plugins::PluginPlaceholderBase,
-                                   public gin::Wrappable<PDFPluginPlaceholder> {
+class PDFPluginPlaceholder final : public gin::Wrappable<PDFPluginPlaceholder>,
+                                   public plugins::PluginPlaceholderBase {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kPDFPluginPlaceholder};
 
   // Returned placeholder is owned by the associated plugin, which can be
   // retrieved with PluginPlaceholderBase::plugin().
@@ -22,10 +25,13 @@ class PDFPluginPlaceholder final : public plugins::PluginPlaceholderBase,
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params);
 
- private:
   PDFPluginPlaceholder(content::RenderFrame* render_frame,
                        const blink::WebPluginParams& params);
   ~PDFPluginPlaceholder() final;
+
+ private:
+  // gin::WrappableBase overrides:
+  const gin::WrapperInfo* wrapper_info() const override;
 
   // WebViewPlugin::Delegate methods:
   v8::Local<v8::Value> GetV8Handle(v8::Isolate* isolate) final;
@@ -34,6 +40,12 @@ class PDFPluginPlaceholder final : public plugins::PluginPlaceholderBase,
       v8::Isolate* isolate) final;
 
   void OpenPDFCallback();
+
+  // RenderFrameObserver override.
+  void OnDestruct() override;
+
+  // Keeps `this` alive until `OnDestruct()` is called.
+  cppgc::Persistent<PDFPluginPlaceholder> self_;
 };
 
 #endif  // CHROME_RENDERER_PLUGINS_PDF_PLUGIN_PLACEHOLDER_H_

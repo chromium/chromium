@@ -129,6 +129,11 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-HorizontalPadding()]
     ]];
+
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateFontOnTraitChange)];
   }
   return self;
 }
@@ -140,19 +145,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
   self.cellDefaultBackgroundColor = nil;
   if (self.cellAnimator.isRunning) {
     [self.cellAnimator stopAnimation:YES];
-  }
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    UIFontDescriptor* baseDescriptor = [UIFontDescriptor
-        preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
-    UIFontDescriptor* styleDescriptor = [baseDescriptor
-        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    self.titleLabel.font = [UIFont fontWithDescriptor:styleDescriptor
-                                                 size:kUseDefaultFontSize];
   }
 }
 
@@ -234,7 +226,17 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
   return _cellDefaultBackgroundColor;
 }
 
-#pragma mark - Accessibility
+// Updates the font of the title label when UITraits have changed.
+- (void)updateFontOnTraitChange {
+  UIFontDescriptor* baseDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
+  UIFontDescriptor* styleDescriptor = [baseDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  self.titleLabel.font = [UIFont fontWithDescriptor:styleDescriptor
+                                               size:kUseDefaultFontSize];
+}
+
+#pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
   // If no subtitleLabel text has been set only use the titleLabel text.

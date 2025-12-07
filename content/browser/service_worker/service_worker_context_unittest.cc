@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,7 +194,9 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
   }
   void OnRegistrationStored(int64_t registration_id,
                             const GURL& scope,
-                            const blink::StorageKey& key) override {
+                            const blink::StorageKey& key,
+                            const ServiceWorkerRegistrationInformation&
+                                service_worker_info) override {
     NotificationLog log;
     log.type = REGISTRATION_STORED;
     log.scope = scope;
@@ -314,7 +317,9 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   }
 
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override {
+                            const GURL& scope,
+                            const ServiceWorkerRegistrationInformation&
+                                service_worker_info) override {
     EventLog log;
     log.type = EventType::RegistrationStored;
     log.registration_id = registration_id;
@@ -681,7 +686,7 @@ TEST_F(ServiceWorkerContextTest, Register) {
   EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
@@ -736,7 +741,7 @@ TEST_F(ServiceWorkerContextTest, Register_RejectInstall) {
   EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
@@ -792,7 +797,7 @@ TEST_F(ServiceWorkerContextTest, Register_RejectActivate) {
   EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
@@ -824,14 +829,16 @@ TEST_F(ServiceWorkerContextTest, Unregister) {
   EXPECT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
 
   called = false;
-  context()->UnregisterServiceWorker(scope, key, /*is_immediate=*/false,
-                                     MakeUnregisteredCallback(&called));
+  context()->UnregisterServiceWorker(
+      scope, key, /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kTest,
+      MakeUnregisteredCallback(&called));
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(called);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
@@ -948,23 +955,23 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(called);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id1, key1,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id2, key1,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id3, key2,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id4, key3,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
@@ -1224,7 +1231,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(called);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id, key,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
@@ -1242,7 +1249,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
 
   // The storage is disabled while the recovery process is running, so the
   // operation should be aborted.
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id, key,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorAbort,
@@ -1251,7 +1258,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
 
   // The context started over and the storage was re-initialized, so the
   // registration should not be found.
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id, key,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
@@ -1292,7 +1299,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(called);
 
-  context()->registry()->FindRegistrationForId(
+  context()->registry().FindRegistrationForId(
       registration_id, key,
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,

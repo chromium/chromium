@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ui/base/clipboard/clipboard_mac.h"
-
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 
@@ -21,11 +21,12 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/pasteboard_changed_observation.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -37,17 +38,27 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_mac.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "url/gurl.h"
+
+@interface NSPasteboard (SPI)
+// Sets the pasteboard to expire at the specified date. Tested to exist and work
+// from macOS 12+. This must be called immediately after clearing the pasteboard
+// or else it will not work and will log an error. This is used by WebKit; see
+// https://github.com/WebKit/WebKit/commit/978bbafb7a3ab151703ba7e9694b78e2d63c3fe1
+- (BOOL)_setExpirationDate:(NSDate*)date;
+@end
 
 namespace ui {
 
@@ -87,13 +98,8 @@ std::vector<uint8_t> GetPngFromPasteboard(NSPasteboard* pasteboard) {
   }
 
   NSData* data = [pasteboard dataForType:NSPasteboardTypePNG];
-  if (!data) {
-    return {};
-  }
-
-  const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-  std::vector<uint8_t> png(bytes, bytes + data.length);
-  return png;
+  auto span = base::apple::NSDataToSpan(data);
+  return {span.begin(), span.end()};
 }
 
 std::vector<uint8_t> EncodeGfxImageToPng(gfx::Image image) {
@@ -119,10 +125,35 @@ Clipboard* Clipboard::Create() {
 // ClipboardMac implementation.
 ClipboardMac::ClipboardMac() {
   DCHECK(CalledOnValidThread());
+  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
+    ClipboardMonitor::GetInstance()->SetNotifier(this);
+  }
 }
 
 ClipboardMac::~ClipboardMac() {
   DCHECK(CalledOnValidThread());
+  if (ClipboardMonitor::GetInstance()->GetNotifier() == this) {
+    ClipboardMonitor::GetInstance()->SetNotifier(nullptr);
+  }
+  if (clipboard_change_subscription_) {
+    StopNotifying();
+  }
+}
+
+void ClipboardMac::StartNotifying() {
+  if (!clipboard_change_subscription_) {
+    // Unretained is safe because the subscription's lifetime is scoped to the
+    // lifetime of this object.
+    clipboard_change_subscription_ =
+        base::RegisterPasteboardChangedCallback(base::BindRepeating(
+            &ClipboardMac::ClipboardChanged, base::Unretained(this)));
+  }
+}
+
+void ClipboardMac::StopNotifying() {
+  if (clipboard_change_subscription_) {
+    clipboard_change_subscription_ = base::CallbackListSubscription();
+  }
 }
 
 void ClipboardMac::OnPreShutdown() {}
@@ -138,7 +169,7 @@ std::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceURL];
+  NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceUrl];
 
   if (!source_url) {
     return std::nullopt;
@@ -222,23 +253,28 @@ std::vector<std::u16string> ClipboardMac::GetStandardFormats(
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
   NSPasteboard* pb = GetPasteboard();
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
+                        data_dst)) {
+    types.push_back(kMimeTypePlainText16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeHtml16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeSvg16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeRtf16);
+  }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+    types.push_back(kMimeTypeUriList16);
   } else if (pb && [NSImage canInitWithPasteboard:pb]) {
     // Finder Cmd+C places both file and icon onto the clipboard
     // (http://crbug.com/553686), so ignore images if we have detected files.
     // This means that if an image is present with file content, we will always
     // ignore the image, but this matches observable Safari behavior.
-    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+    types.push_back(kMimeTypePng16);
   }
   return types;
 }
@@ -259,10 +295,7 @@ void ClipboardMac::ReadAvailableTypes(
   if ([pb.types containsObject:kUTTypeChromiumDataTransferCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumDataTransferCustomData];
     if ([data length]) {
-      ReadCustomDataTypes(
-          base::span(reinterpret_cast<const uint8_t*>([data bytes]),
-                     [data length]),
-          types);
+      ReadCustomDataTypes(base::apple::NSDataToSpan(data), types);
     }
   }
 }
@@ -380,10 +413,8 @@ void ClipboardMac::ReadDataTransferCustomData(
   if ([[pb types] containsObject:kUTTypeChromiumDataTransferCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumDataTransferCustomData];
     if ([data length]) {
-      if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
-              base::span(reinterpret_cast<const uint8_t*>([data bytes]),
-                         [data length]),
-              type);
+      if (std::optional<std::u16string> maybe_result =
+              ReadCustomDataForType(base::apple::NSDataToSpan(data), type);
           maybe_result) {
         *result = std::move(*maybe_result);
       }
@@ -402,7 +433,7 @@ void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
 
   std::vector<ui::FileInfo> files =
       clipboard_util::FilesFromPasteboard(GetPasteboard());
-  base::ranges::move(files, std::back_inserter(*result));
+  std::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -415,7 +446,7 @@ void ClipboardMac::ReadBookmark(const DataTransferEndpoint* data_dst,
   NSPasteboard* pb = GetPasteboard();
 
   if (title) {
-    NSString* contents = [pb stringForType:kUTTypeURLName];
+    NSString* contents = [pb stringForType:kUTTypeUrlName];
     *title = base::SysNSStringToUTF16(contents);
   }
 
@@ -437,23 +468,26 @@ void ClipboardMac::ReadData(const ClipboardFormatType& format,
   RecordRead(ClipboardFormatMetric::kData);
   NSData* data = [GetPasteboard() dataForType:format.ToNSString()];
   if ([data length])
-    result->assign(static_cast<const char*>([data bytes]), [data length]);
+    *result = as_string_view(base::apple::NSDataToSpan(data));
 }
 
 void ClipboardMac::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
   WritePortableAndPlatformRepresentationsInternal(
-      buffer, objects, std::move(platform_representations), std::move(data_src),
-      GetPasteboard(), privacy_types);
+      buffer, objects, std::move(raw_objects),
+      std::move(platform_representations), std::move(data_src), GetPasteboard(),
+      privacy_types);
 }
 
 void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     NSPasteboard* pasteboard,
@@ -461,24 +495,58 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
+  NSPasteboardContentsOptions pasteboard_options = 0;
   if (privacy_types & Clipboard::PrivacyTypes::kNoCloudClipboard) {
-    WriteUploadCloudClipboard();
+    pasteboard_options |= NSPasteboardContentsCurrentHostOnly;
+  }
+  [pasteboard prepareForNewContentsWithOptions:pasteboard_options];
+
+  if (privacy_types & Clipboard::PrivacyTypes::kNoLocalClipboardHistory) {
+    // One way to not add the pasteboard to the history is to give it an
+    // expiration. For data that has "no history" specified, give it a
+    // restricted lifetime so that the user has time to take action with it.
+    //
+    // WebKit uses this mechanism to implement privacy for data copied from
+    // their ephemeral sessions. They use a lifetime of 8 minutes, derived from
+    // their private browser lock time. The use of 5 minutes here is arbitrary,
+    // but inspired by the rough lifetime that they chose.
+    //
+    // Note that another possible approach is also SPI; in macOS 26+ there
+    // exists a method -[NSPasteboard _setShouldExcludeFromHistory:] which is
+    // more explicitly an "exclude from history" method than the "set an
+    // expiration" method used here. However, it is not available on all macOS
+    // releases that Chromium supports. When Chromium requires macOS 26+, it
+    // might be worthwhile looking into whether that is a better choice.
+    [GetPasteboard()
+        _setExpirationDate:[NSDate dateWithTimeIntervalSinceNow:5 * 60]];
   }
 
-  [pasteboard declareTypes:@[] owner:nil];
+  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
+    [GetPasteboard() setData:nil forType:kUTTypeConfidentialData];
+  }
 
   DispatchPlatformRepresentations(std::move(platform_representations));
-  for (const auto& object : objects)
+  for (const auto& object : objects) {
     DispatchPortableRepresentation(object.second);
+  }
+  for (const auto& raw_object : raw_objects) {
+    DispatchPortableRepresentation(raw_object);
+  }
 
   if (data_src && data_src->IsUrlType()) {
     [pasteboard setString:base::SysUTF8ToNSString(data_src->GetURL()->spec())
-                  forType:kUTTypeChromiumSourceURL];
+                  forType:kUTTypeChromiumSourceUrl];
   }
-  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
-    WriteConfidentialDataForPassword();
+
+  // If not actively monitoring, notify immediately. Otherwise, when monitoring,
+  // the change to the pasteboard's `changeCount` will be detected by
+  // `CheckClipboardForChanges` (called by `clipboard_polling_timer_`),
+  // which will then update `last_known_sequence_number_` and
+  // `clipboard_sequence_`, and subsequently call
+  // `NotifyClipboardDataChanged`. This avoids redundant notifications.
+  if (!clipboard_change_subscription_) {
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 void ClipboardMac::WriteText(std::string_view text) {
@@ -502,8 +570,7 @@ void ClipboardMac::WriteSvg(std::string_view markup) {
 }
 
 void ClipboardMac::WriteRTF(std::string_view rtf) {
-  WriteData(ClipboardFormatType::RtfType(),
-            base::as_bytes(base::make_span(rtf)));
+  WriteData(ClipboardFormatType::RtfType(), base::as_byte_span(rtf));
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -529,22 +596,6 @@ void ClipboardMac::WriteData(const ClipboardFormatType& format,
                              base::span<const uint8_t> data) {
   [GetPasteboard() setData:[NSData dataWithBytes:data.data() length:data.size()]
                    forType:format.ToNSString()];
-}
-
-void ClipboardMac::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardMac::WriteUploadCloudClipboard() {
-  // Make the pasteboard content current host only.
-  [GetPasteboard()
-      prepareForNewContentsWithOptions:NSPasteboardContentsCurrentHostOnly];
-}
-
-void ClipboardMac::WriteConfidentialDataForPassword() {
-  DCHECK(CalledOnValidThread());
-
-  [GetPasteboard() setData:nil forType:kUTTypeConfidentialData];
 }
 
 // Write an extra flavor that signifies WebKit was the last to modify the
@@ -613,6 +664,19 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   [image addRepresentation:image_rep];
   [image setSize:NSMakeSize(bitmap.width(), bitmap.height())];
   [pasteboard writeObjects:@[ image ]];
+}
+
+void ClipboardMac::ClipboardChanged() {
+  NSInteger current_sequence_number = GetPasteboard().changeCount;
+  if (current_sequence_number != last_known_sequence_number_) {
+    last_known_sequence_number_ = current_sequence_number;
+    // Update clipboard_sequence_ to reflect the new number and generate a new
+    // token, so subsequent calls to GetSequenceNumber() return the latest
+    // state.
+    clipboard_sequence_ = {current_sequence_number,
+                           ClipboardSequenceNumberToken()};
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 }  // namespace ui

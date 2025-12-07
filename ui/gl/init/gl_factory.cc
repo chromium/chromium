@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/gl_factory.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -11,10 +12,10 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
@@ -51,15 +52,26 @@ GLImplementationParts GetRequestedGLImplementation() {
   // If the passthrough command decoder is enabled, put ANGLE first if allowed
   if (UsePassthroughCommandDecoder(cmd)) {
     std::vector<GLImplementationParts> angle_impls = {};
-    bool software_gl_allowed = false;
+    std::vector<GLImplementationParts> software_impls = {};
     auto iter = allowed_impls.begin();
     while (iter != allowed_impls.end()) {
-      if ((*iter) == GetSoftwareGLImplementation()) {
-        software_gl_allowed = true;
-        allowed_impls.erase(iter);
+      // Filter out disabled software implementations
+      if (IsSwiftShaderGLImplementation(*iter) &&
+          !features::IsSwiftShaderAllowed(cmd)) {
+        iter++;
+        continue;
+      }
+      if (IsWARPGLImplementation(*iter) && !features::IsWARPAllowed(cmd)) {
+        iter++;
+        continue;
+      }
+
+      if (IsSoftwareGLImplementation(*iter)) {
+        software_impls.emplace_back(*iter);
+        iter = allowed_impls.erase(iter);
       } else if (iter->gl == kGLImplementationEGLANGLE) {
         angle_impls.emplace_back(*iter);
-        allowed_impls.erase(iter);
+        iter = allowed_impls.erase(iter);
       } else {
         iter++;
       }
@@ -67,10 +79,9 @@ GLImplementationParts GetRequestedGLImplementation() {
     allowed_impls.insert(allowed_impls.begin(), angle_impls.begin(),
                          angle_impls.end());
     // Insert software implementations at the end, after all other hardware
-    // implementations
-    if (software_gl_allowed) {
-      allowed_impls.emplace_back(GetSoftwareGLImplementation());
-    }
+    // implementations.
+    allowed_impls.insert(allowed_impls.begin(), software_impls.begin(),
+                         software_impls.end());
   }
 
   if (allowed_impls.empty()) {
@@ -85,6 +96,8 @@ GLImplementationParts GetRequestedGLImplementation() {
   if (!impl_from_cmdline)
     return allowed_impls[0];
 
+  // Allow software GL if explicitly requested by command line, even if it's not
+  // in the allowed_impls list.
   if (IsSoftwareGLImplementation(*impl_from_cmdline))
     return *impl_from_cmdline;
 
@@ -116,7 +129,7 @@ GLDisplay* InitializeGLOneOffPlatformHelper(bool init_extensions,
 }  // namespace
 
 GLDisplay* InitializeGLOneOff(gl::GpuPreference gpu_preference) {
-  TRACE_EVENT0("gpu,startup", "gl::init::InitializeOneOff");
+  TRACE_EVENT("gpu,startup", "gl::init::InitializeOneOff");
 
   if (!InitializeStaticGLBindingsOneOff())
     return nullptr;
@@ -144,6 +157,7 @@ GLDisplay* InitializeGLNoExtensionsOneOff(bool init_bindings,
 
 bool InitializeStaticGLBindingsOneOff() {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
+  TRACE_EVENT("gpu,startup", "gl::init::InitializeStaticGLBindingsOneOff");
 
   GLImplementationParts impl = GetRequestedGLImplementation();
   if (impl.gl == kGLImplementationDisabled) {

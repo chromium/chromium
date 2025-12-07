@@ -31,7 +31,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
       : TestSafeBrowsingDatabaseManager(
-            base::SequencedTaskRunner::GetCurrentDefault(),
             base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
@@ -45,7 +44,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
 
  protected:
-  ~MockSafeBrowsingDatabaseManager() override {}
+  ~MockSafeBrowsingDatabaseManager() override = default;
 };
 }  // namespace
 

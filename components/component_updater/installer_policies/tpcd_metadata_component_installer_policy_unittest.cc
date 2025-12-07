@@ -48,8 +48,6 @@ class TpcdMetadataComponentInstallerPolicyTest
     CHECK(!path_.empty());
   }
 
-  ~TpcdMetadataComponentInstallerPolicyTest() override = default;
-
   bool IsTpcdMetadataGrantsEnabled() { return std::get<0>(GetParam()); }
   bool IsTpcdMetadataStagingEnabled() { return std::get<1>(GetParam()); }
 
@@ -149,7 +147,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   auto* me = metadata.add_metadata_entries();
   me->set_primary_pattern_spec(primary_pattern_spec);
   me->set_secondary_pattern_spec(secondary_pattern_spec);
-  me->set_source(Parser::kSourceTest);
+  me->set_source(tpcd::metadata::Parser::kSourceTest);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -175,7 +173,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   auto* me = metadata.add_metadata_entries();
   me->set_primary_pattern_spec(primary_pattern_spec);
   me->set_secondary_pattern_spec(secondary_pattern_spec);
-  me->set_source(Parser::kSourceTest);
+  me->set_source(tpcd::metadata::Parser::kSourceTest);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -254,9 +252,9 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_FiresCallback) {
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec,
-                                              Parser::kSourceCriticalSector);
+  tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      tpcd::metadata::Parser::kSourceCriticalSector);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -291,9 +289,9 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec,
-                                              Parser::kSourceCriticalSector);
+  tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      tpcd::metadata::Parser::kSourceCriticalSector);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -303,7 +301,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   std::unique_ptr<component_updater::ComponentInstallerPolicy> policy =
       std::make_unique<TpcdMetadataComponentInstallerPolicy>(
           base::BindLambdaForTesting(
-              [&](const std::string& raw_metadata) { NOTREACHED_NORETURN(); }));
+              [&](const std::string& raw_metadata) { NOTREACHED(); }));
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(policy->VerifyInstallation(base::Value::Dict(), install_dir()));

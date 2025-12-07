@@ -7,11 +7,10 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -57,6 +56,7 @@ class RenderSurfaceImpl;
 struct RenderSurfacePropertyChangedFlags;
 struct CompositorCommitData;
 struct ViewportPropertyIds;
+enum class ScrollSourceType;
 
 using SyncedScrollOffset =
     SyncedProperty<AdditionGroup<gfx::PointF, gfx::Vector2dF>>;
@@ -76,6 +76,7 @@ class CC_EXPORT PropertyTree {
 
 #if DCHECK_IS_ON()
   bool operator==(const PropertyTree<T>& other) const;
+  std::string ToString() const;
 #endif
 
   int Insert(const T& tree_node, int parent_id);
@@ -231,6 +232,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   void SetRootScaleAndTransform(float device_scale_factor,
                                 const gfx::Transform& device_transform);
+  void set_device_transform_scale_factor(float device_transform_scale_factor) {
+    device_transform_scale_factor_ = device_transform_scale_factor;
+  }
   float device_transform_scale_factor() const {
     return device_transform_scale_factor_;
   }
@@ -244,6 +248,38 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   const std::vector<int>& nodes_affected_by_outer_viewport_bounds_delta()
       const {
     return nodes_affected_by_outer_viewport_bounds_delta_;
+  }
+  void set_nodes_affected_by_outer_viewport_bounds_delta(
+      std::vector<int> nodes) {
+    nodes_affected_by_outer_viewport_bounds_delta_ = std::move(nodes);
+  }
+
+  void NeedTransformUpdateForSafeAreaInsetBottom();
+
+  void AddNodeAffectedBySafeAreaInsetBottom(int node_id);
+
+  bool HasNodesAffectedBySafeAreaBottom() const;
+
+  const std::vector<int>& nodes_affected_by_safe_area_bottom() const {
+    return nodes_affected_by_safe_area_inset_bottom_;
+  }
+  void set_nodes_affected_by_safe_area_bottom(std::vector<int> nodes) {
+    nodes_affected_by_safe_area_inset_bottom_ = std::move(nodes);
+  }
+
+  const std::vector<StickyPositionNodeData>& sticky_position_data() const {
+    return sticky_position_data_;
+  }
+  std::vector<StickyPositionNodeData>& sticky_position_data() {
+    return sticky_position_data_;
+  }
+
+  const std::vector<AnchorPositionScrollData>& anchor_position_scroll_data()
+      const {
+    return anchor_position_scroll_data_;
+  }
+  std::vector<AnchorPositionScrollData>& anchor_position_scroll_data() {
+    return anchor_position_scroll_data_;
   }
 
   const gfx::Transform& FromScreen(int node_id) const;
@@ -288,6 +324,24 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
                               int dest_id,
                               gfx::Transform* transform) const;
 
+  const base::flat_map<ElementId, gfx::Vector2dF>& drawn_elastic_overscroll()
+      const {
+    return drawn_elastic_overscroll_;
+  }
+  base::flat_map<ElementId, gfx::Vector2dF>& drawn_elastic_overscroll() {
+    return drawn_elastic_overscroll_;
+  }
+
+  bool SetDrawnElasticOverscroll(ElementId id,
+                                 const gfx::Vector2dF& elastic_overscroll);
+
+  gfx::Vector2dF GetDrawnElasticOverscroll(ElementId id) const;
+
+  std::pair<ElementId, gfx::Vector2dF>
+  FindDrawnElasticOverscrollFromTransformId(
+      int transform_id,
+      const ViewportPropertyIds* viewport_property_ids) const;
+
  private:
   // Returns true iff the node at |desc_id| is a descendant of the node at
   // |anc_id|.
@@ -318,9 +372,14 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   float device_scale_factor_;
   float device_transform_scale_factor_;
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
+  std::vector<int> nodes_affected_by_safe_area_inset_bottom_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
   std::vector<AnchorPositionScrollData> anchor_position_scroll_data_;
+  // Elastic overscroll effect that has been visibly applied to this tree. May
+  // be out of date from the active `ScrollTree::elastic_overscroll()` which is
+  // the amount that the user has currently overscrolled.
+  base::flat_map<ElementId, gfx::Vector2dF> drawn_elastic_overscroll_;
 };
 
 struct CC_EXPORT AnchorPositionScrollData {
@@ -338,7 +397,7 @@ struct CC_EXPORT AnchorPositionScrollData {
   bool needs_scroll_adjustment_in_y = false;
 };
 
-struct StickyPositionNodeData {
+struct CC_EXPORT StickyPositionNodeData {
   int scroll_ancestor;
   StickyPositionConstraint constraints;
 
@@ -360,6 +419,8 @@ struct StickyPositionNodeData {
       : scroll_ancestor(kInvalidPropertyNodeId),
         nearest_node_shifting_sticky_box(kInvalidPropertyNodeId),
         nearest_node_shifting_containing_block(kInvalidPropertyNodeId) {}
+
+  bool operator==(const StickyPositionNodeData&) const;
 };
 
 class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
@@ -405,7 +466,9 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   void UpdateHasFilters(EffectNode* node, EffectNode* parent_node);
   void UpdateHasFastRoundedCorner(EffectNode* node, EffectNode* parent_node);
 
-  typedef std::unordered_multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
+  // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to
+  // 'multimap'.
+  typedef std::multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
       CopyRequestMap;
 
   void AddCopyRequest(int node_id,
@@ -472,8 +535,9 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
                                           EffectNode* parent_node);
 
   // Stores copy requests, keyed by node id.
-  std::unordered_multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
-      copy_requests_;
+  // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to
+  // 'multimap'.
+  std::multimap<int, std::unique_ptr<viz::CopyOutputRequest>> copy_requests_;
 
   // Indexed by node id.
   std::vector<std::unique_ptr<RenderSurfaceImpl>> render_surfaces_;
@@ -487,6 +551,7 @@ class ScrollCallbacks {
   virtual void DidCompositorScroll(
       ElementId scroll_element_id,
       const gfx::PointF&,
+      ScrollSourceType type,
       const std::optional<TargetSnapAreaElementIds>&) = 0;
   // Called after the hidden status of composited scrollbars changed. Note that
   // |scroll_element_id| is the element id of the scroll not of the scrollbars.
@@ -581,7 +646,21 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       synced_offset->set_clobber_active_value();
   }
 
+  bool SetElasticOverscroll(const ScrollNode& scroll_node,
+                            const gfx::Vector2dF& elastic_overscroll);
+  gfx::Vector2dF GetElasticOverscroll(const ScrollNode& scroll_node) const;
+  gfx::Vector2dF GetElasticOverscrollFromElementId(ElementId id) const;
+  std::pair<ElementId, gfx::Vector2dF> FindElasticOverscrollFromTransformId(
+      int transform_id,
+      const ViewportPropertyIds* viewport_property_ids) const;
+
+  // Sets the painting cull rect of scrolling contents of a scroll. If set, the
+  // painting of scrolling contents in this cull rect is guaranteed to be
+  // complete. It's in the space of `transform_id` of the corresponding scroll
+  // node. If not set or after ClearScrollingContentsCullRect is called, the
+  // cull rect is supposed to always cover all scrolling contents.
   void SetScrollingContentsCullRect(ElementId id, const gfx::Rect& cull_rect);
+  void ClearScrollingContentsCullRect(ElementId id);
   const gfx::Rect* ScrollingContentsCullRect(ElementId id) const;
 
   SyncedScrollOffset* GetOrCreateSyncedScrollOffsetForTesting(ElementId id);
@@ -611,6 +690,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void NotifyDidCompositorScroll(
       ElementId scroll_element_id,
       const gfx::PointF& scroll_offset,
+      ScrollSourceType type,
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden) const;
@@ -626,16 +706,37 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   bool ShouldRealizeScrollsOnMain(const ScrollNode& node) const;
 
   // Reports reasons for blocking scroll updates on main-thread repaint.
-  // Returns bitfield of values from MainThreadScrollingReason.
   uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
+
+  using SyncedScrollOffsetMap =
+      base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
+
+  const SyncedScrollOffsetMap& synced_scroll_offset_map() const {
+    return synced_scroll_offset_map_;
+  }
+  SyncedScrollOffsetMap& synced_scroll_offset_map() {
+    return synced_scroll_offset_map_;
+  }
+
+  const base::flat_map<ElementId, gfx::Rect>& scrolling_contents_cull_rects()
+      const {
+    return scrolling_contents_cull_rects_;
+  }
+  base::flat_map<ElementId, gfx::Rect>& scrolling_contents_cull_rects() {
+    return scrolling_contents_cull_rects_;
+  }
+
+  const base::flat_map<ElementId, gfx::Vector2dF>& elastic_overscroll() const {
+    return elastic_overscroll_;
+  }
+  base::flat_map<ElementId, gfx::Vector2dF>& elastic_overscroll() {
+    return elastic_overscroll_;
+  }
 
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;
   using PropertyTree::set_needs_update;
-
-  using SyncedScrollOffsetMap =
-      base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 
   int currently_scrolling_node_id_ = kInvalidPropertyNodeId;
 
@@ -646,6 +747,10 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // and impl threads.
   ScrollOffsetMap scroll_offset_map_;
   SyncedScrollOffsetMap synced_scroll_offset_map_;
+
+  // Maps from scroll element id to the current elastic overscroll on that
+  // element.
+  base::flat_map<ElementId, gfx::Vector2dF> elastic_overscroll_;
 
   // Maps from scroll element id to scrolling contents cull rect.
   base::flat_map<ElementId, gfx::Rect> scrolling_contents_cull_rects_;
@@ -706,7 +811,7 @@ struct DrawTransforms {
 
 struct DrawTransformData {
   int update_number = kInvalidUpdateNumber;
-  int target_id = kInvalidPropertyNodeId;
+  int effect_id = kInvalidPropertyNodeId;
 
   // TODO(sunxd): Move screen space transforms here if it can improve
   // performance.
@@ -722,9 +827,11 @@ struct PropertyTreesCachedData {
   ~PropertyTreesCachedData();
 };
 
-struct PropertyTreesChangeState {
+struct CC_EXPORT PropertyTreesChangeState {
   PropertyTreesChangeState();
   ~PropertyTreesChangeState();
+  PropertyTreesChangeState(PropertyTreesChangeState&&);
+  PropertyTreesChangeState& operator=(PropertyTreesChangeState&&);
   bool changed = false;
   bool needs_rebuild = false;
   bool full_tree_damaged = false;
@@ -804,6 +911,7 @@ class CC_EXPORT PropertyTrees final {
   void MaximumAnimationScaleChanged(ElementId element_id, float maximum_scale);
   void SetInnerViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void SetOuterViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
+  void SetTransformDeltaBySafeAreaInsetBottom(float);
   void UpdateChangeTracking();
   void GetChangedNodes(std::vector<int>& effect_nodes,
                        std::vector<int>& transform_nodes) const;
@@ -823,6 +931,10 @@ class CC_EXPORT PropertyTrees final {
   }
   gfx::Vector2dF outer_viewport_container_bounds_delta() const {
     return outer_viewport_container_bounds_delta_.Read(synchronizer());
+  }
+
+  float transform_delta_by_safe_area_inset_bottom() const {
+    return transform_delta_by_safe_area_inset_bottom_.Read(synchronizer());
   }
 
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
@@ -884,6 +996,7 @@ class CC_EXPORT PropertyTrees final {
       inner_viewport_container_bounds_delta_;
   ProtectedSequenceReadable<gfx::Vector2dF>
       outer_viewport_container_bounds_delta_;
+  ProtectedSequenceReadable<float> transform_delta_by_safe_area_inset_bottom_;
 
   const AnimationScaleData& GetAnimationScaleData(int transform_id);
 

@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -577,8 +577,7 @@ TEST(DequeTest, emplace_front) {
   EXPECT_EQ(2, deque[1].value2);
 }
 
-static_assert(!IsTraceable<Deque<int>>::value,
-              "Deque<int> must not be traceable.");
+static_assert(!IsTraceableV<Deque<int>>, "Deque<int> must not be traceable.");
 
 }  // anonymous namespace
-}  // namespace WTF
+}  // namespace blink

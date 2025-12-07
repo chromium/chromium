@@ -439,9 +439,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
     if (position.IsAfterAnchor()) {
       return ComputeInlineCaretPositionAfterInline(position_with_affinity);
     }
-    NOTREACHED_IN_MIGRATION()
-        << "Caller should not pass a position inside inline: " << position;
-    return InlineCaretPosition();
+    NOTREACHED() << "Caller should not pass a position inside inline: "
+                 << position;
   }
 
   LayoutBlockFlow* const context = NGInlineFormattingContextOf(position);
@@ -453,9 +452,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
 
   const OffsetMapping* const mapping = InlineNode::GetOffsetMapping(context);
   if (!mapping) {
-    // TODO(yosin): We should find when we reach here[1].
-    // [1] http://crbug.com/1100481
-    NOTREACHED_IN_MIGRATION() << context;
+    // A block containing the position might be display-locked.
+    // See editing/caret/caret-display-locked-crash.html
     return InlineCaretPosition();
   }
   const std::optional<unsigned> maybe_offset =
@@ -465,9 +463,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
     if (auto* data = DynamicTo<Text>(position.AnchorNode())) {
       DCHECK_EQ(data->length(), 0u);
     } else {
-      // TODO(xiaochengh): Investigate if we reach here.
-      NOTREACHED_IN_MIGRATION();
-      return InlineCaretPosition();
+      // TODO(crbug.com/444003274): This branch is reachable unexpectedly,
+      // however we don't know how to reproduce it.
     }
   }
 
@@ -485,7 +482,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
   // See AccessibilitySelectionTest.FromCurrentSelectionInTextareaWithAffinity
   const unsigned adjusted_offset =
       affinity == TextAffinity::kUpstream && offset &&
-              mapping->GetText()[offset - 1] == kZeroWidthSpaceCharacter
+              mapping->GetText()[offset - 1] == uchar::kZeroWidthSpace
           ? offset - 1
           : offset;
   return ComputeInlineCaretPosition(*context, adjusted_offset, affinity,
@@ -523,7 +520,7 @@ PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
         // TODO(yosin): We're not sure why |mapping| is |nullptr|. It seems
         // we are attempt to use destroyed/moved |FragmentItem|.
         // See http://crbug.com/1145514
-        NOTREACHED_IN_MIGRATION()
+        DUMP_WILL_BE_NOTREACHED()
             << cursor << " " << cursor.Current().GetLayoutObject();
         return PositionWithAffinity();
       }
@@ -539,8 +536,7 @@ PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
       }
       return PositionWithAffinity(position, affinity);
   }
-  NOTREACHED_IN_MIGRATION();
-  return PositionWithAffinity();
+  NOTREACHED();
 }
 
 }  // namespace blink

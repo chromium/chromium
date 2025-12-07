@@ -4,7 +4,7 @@
     display: none;
   }
 
-  iron-icon {
+  cr-icon {
     --iron-icon-width: var(--cr-icon-size);
     --iron-icon-height: var(--cr-icon-size);
   }
@@ -63,16 +63,16 @@
   <div slot="body">
     <div id="detailsContainer">
       <div class="counter-row">
-        <iron-icon icon="passwords-icon:password">
-        </iron-icon>
+        <cr-icon icon="passwords-icon:password">
+        </cr-icon>
         <div>
           <h3 class="counter-summary">[[passwordsCount_]]</h3>
           <div class="counter-details">[[passwordsCountDetails_]]</div>
         </div>
       </div>
       <div class="counter-row">
-        <iron-icon icon="passwords-icon:passkey-filled">
-        </iron-icon>
+        <cr-icon icon="passwords-icon:passkey-filled">
+        </cr-icon>
         <div>
           <h3 class="counter-summary">[[passkeysCount_]]</h3>
           <div class="counter-details">[[passkeysCountDetails_]]</div>
@@ -80,8 +80,8 @@
       </div>
     </div>
     <div id="warningContainer">
-      <iron-icon id="warningIcon" icon="passwords-icon:outlined-warning">
-      </iron-icon>
+      <cr-icon id="warningIcon" icon="passwords-icon:outlined-warning">
+      </cr-icon>
       <div>$i18n{fullResetConfirmationDescription}</div>
     </div>
   </div>

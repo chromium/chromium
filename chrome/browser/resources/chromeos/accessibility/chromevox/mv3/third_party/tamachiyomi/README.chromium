@@ -1,0 +1,12 @@
+Name: Tamachiyomi
+Short Name: N/A
+URL: Google Internal
+Version: 0
+Update Mechanism: Manual
+License: MIT
+License File: LICENSE
+Security Critical: No
+Shipped: yes
+Description: Provides Japanese phonetic reading data for ChromeVox. Data files only, thus not security critical.
+Local Modifications:
+Imported from google3/third_party/tamachiyomi/ and wrapped for use by ChromeVox.

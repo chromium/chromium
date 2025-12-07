@@ -48,8 +48,9 @@ Value::Dict GenerateDict() {
 
 // Generates a tree-like dictionary value with a size of O(breadth ** depth).
 Value::Dict GenerateLayeredDict(int breadth, int depth) {
-  if (depth == 1)
+  if (depth == 1) {
     return GenerateDict();
+  }
 
   Value::Dict root = GenerateDict();
   Value::Dict next = GenerateLayeredDict(breadth, depth - 1);
@@ -79,7 +80,7 @@ class JSONPerfTest : public testing::Test {
     reporter.AddResult(kMetricWriteTime, end_write - start_write);
 
     TimeTicks start_read = TimeTicks::Now();
-    JSONReader::Read(json);
+    JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
     TimeTicks end_read = TimeTicks::Now();
     reporter.AddResult(kMetricReadTime, end_read - start_read);
   }

@@ -8,7 +8,7 @@
 #include <dawn/dawn_proc_table.h>
 #include <dawn/webgpu.h>
 
-#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "gpu/command_buffer/client/interface_base.h"
 #include "gpu/command_buffer/common/webgpu_cmd_enums.h"
@@ -20,6 +20,14 @@ namespace gpu {
 struct Mailbox;
 
 namespace webgpu {
+
+struct ReservedBuffer {
+  WGPUBuffer buffer;
+  uint32_t id;
+  uint32_t generation;
+  uint32_t deviceId;
+  uint32_t deviceGeneration;
+};
 
 struct ReservedTexture {
   WGPUTexture texture;
@@ -65,6 +73,10 @@ class WebGPUInterface : public InterfaceBase {
 
   // Get a strong reference to the APIChannel backing the implementation.
   virtual scoped_refptr<APIChannel> GetAPIChannel() const = 0;
+
+  virtual ReservedBuffer ReserveBuffer(
+      WGPUDevice device,
+      const WGPUBufferDescriptor* optionalDesc = nullptr) = 0;
 
   virtual ReservedTexture ReserveTexture(
       WGPUDevice device,
@@ -141,6 +153,13 @@ class WebGPUInterface : public InterfaceBase {
     AssociateMailbox(device_id, device_generation, id, generation, usage, 0,
                      nullptr, 0, WEBGPU_MAILBOX_NONE, mailbox);
   }
+
+  virtual void AssociateMailboxForBuffer(GLuint device_id,
+                                         GLuint device_generation,
+                                         GLuint id,
+                                         GLuint generation,
+                                         uint64_t usage,
+                                         const Mailbox& mailbox) = 0;
 
   void SetWebGPUExecutionContextToken(
       const blink::WebGPUExecutionContextToken& token) {

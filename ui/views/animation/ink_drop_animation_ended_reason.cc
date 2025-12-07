@@ -17,7 +17,7 @@ std::string ToString(InkDropAnimationEndedReason reason) {
     case InkDropAnimationEndedReason::PRE_EMPTED:
       return "PRE_EMPTED";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace views

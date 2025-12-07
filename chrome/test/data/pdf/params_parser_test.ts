@@ -504,4 +504,63 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
+  function testParamsGetTextFragments() {
+    const paramsParser = getParamsParser();
+
+    // Checking single text fragment.
+    let fragments = paramsParser.getTextFragments(`${URL}#:~:text=apples`);
+    chrome.test.assertEq(fragments.length, 1);
+    chrome.test.assertEq(fragments[0], 'apples');
+
+    // Checking multiple text fragments.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#:~:text=apples&text=oranges&text=hello-,world,there,-world`);
+    chrome.test.assertEq(fragments.length, 3);
+    chrome.test.assertEq(fragments[0], 'apples');
+    chrome.test.assertEq(fragments[1], 'oranges');
+    chrome.test.assertEq(fragments[2], 'hello-,world,there,-world');
+
+    // Checking case where no text fragments are present.
+    fragments = paramsParser.getTextFragments(`${URL}#page=3`);
+    chrome.test.assertEq(fragments.length, 0);
+
+    // Check case where only delimiter is present.
+    fragments = paramsParser.getTextFragments(`${URL}#:~:`);
+    chrome.test.assertEq(fragments.length, 0);
+
+    // Check case where there are other viewport parameters before the text
+    // fragments.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=foo&text=bar`);
+    chrome.test.assertEq(fragments.length, 2);
+    chrome.test.assertEq(fragments[0], 'foo');
+    chrome.test.assertEq(fragments[1], 'bar');
+
+    // Check case where text fragment could have percent-encoded values that
+    // are used as part of the prefix / suffix like `,` and `-`.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=foo%2C-,apples,-bar%2D&text=bar%2D`);
+    chrome.test.assertEq(fragments.length, 2);
+    chrome.test.assertEq(fragments[0], 'foo%2C-,apples,-bar%2D');
+    chrome.test.assertEq(fragments[1], 'bar%2D');
+
+    // Check case where text fragments are empty.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=&text=&text=`);
+    chrome.test.assertEq(fragments.length, 0);
+
+    // Check case where some text fragments are empty.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=&text=foo%2C-,apples,-bar%2D&text=`);
+    chrome.test.assertEq(fragments.length, 1);
+    chrome.test.assertEq(fragments[0], 'foo%2C-,apples,-bar%2D');
+
+    // Check case where URL fragment is invalid and contains multiple
+    // octothorpes.
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV#:~:text=&text=foo%2C-,apples,-bar%2D&text=`);
+    chrome.test.assertEq(fragments.length, 0);
+
+    chrome.test.succeed();
+  },
 ]);

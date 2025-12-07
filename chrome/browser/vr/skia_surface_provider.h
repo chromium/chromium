@@ -8,7 +8,7 @@
 #include "base/functional/function_ref.h"
 #include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 class SkSurface;
 class SkCanvas;

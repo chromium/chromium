@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Contextual Tasks -->
+  <message name ="IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE" desc="The title of contextual tasks.">
+    Contextual tasks
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB" desc="The 'Open in new tab' option in the 3-dot menu.">
+    Open in new tab
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY" desc="The 'My Activity' option in the 3-dot menu.">
+    My Activity
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_MENU_HELP" desc="The 'Help' option in the 3-dot menu.">
+    Help
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TITLE" desc="Title shown on the context management popup in the side panel to show the list of context user has shared with the current thread.">
+    Shared tabs and files
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER" desc="A sub header shown on the context management popup in the side panel to show the list of tabs user has shared with the current thread.">
+    Tabs
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SOURCES_MENU_IMAGES_HEADER" desc="A sub header shown on the context management popup in the side panel to show the list of images user has shared with the current thread.">
+    Images
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SOURCES_MENU_FILES_HEADER" desc="A sub header shown on the context management popup in the side panel to show the list of files user has shared with the current thread.">
+    Files
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_TITLE" desc="Title of the tool tip shown on the first run experience of the contextual task page.">
+    Ask questions about this tab with AI Mode
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION" desc="Description of the tool tip shown on the first run experience of the contextual task page.">
+    When tabs are shared, their contents and URLs are sent to Google.
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE" desc="Learn more clickable span shown on the first run experience of the contextual task page.">
+    Learn more
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTINUE_THREAD_MESSAGE" desc="Text on the side panel to ask user whether they want to continue the current thread.">
+    Continue this thread?
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_REOPEN_TABS_BUTTON_TEXT" desc="Text on the side panel to confirm that user want to continue the current thread and reopen tabs.">
+    Reopen tabs
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_RECENT_TABS" desc="Context menu label on the compose box of the contextual task page to show user a list of recent tabs.">
+    Recent tabs
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_ADD_IMAGES" desc="Context menu option on the compose box of the contextual task page to let user add image context to the current thread.">
+    Add images
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_ADD_FILES" desc="Context menu option on the compose box of the contextual task page to let user add file context to the current thread.">
+    Add files
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_AI_SIDE_PANEL_TOOL_TIP" desc="Tool tip text displayed on the AI side panel button on the Chrome tool bar to open side panel when contextual task is enabled.">
+    AI side panel
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP" desc="Tool tip text displayed on the create thread button on the side panel to create a new contextual task.">
+    New thread
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP" desc="Tool tip text displayed on the history button on the side panel to show history threads.">
+    AI Mode history
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP" desc="Tool tip text displayed on the context button on the side panel to show tabs and files context attached to the current thread.">
+    Tabs and files
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP" desc="Tool tip text displayed on the 3-dot overflow menu button on the side panel to allow user to list more options for contextual tasks.">
+    More options
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP" desc="Tool tip text displayed on the close button on the side panel to allow user to close the side panel.">
+    Close
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ADD_TAB_CONTEXT_ERROR_TOAST" desc="An error toast shown on the compose box on the contextual task page when user try to add a tab context to the current thread.">
+    Add up to 10 tabs
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CANNOT_SHARE_TAB_TOOL_TIP" desc="A tool tip shown on the compose box on the contextual task page when user try to add a tab that cannot be shared.">
+    This tab can’t be shared
+  </message>
+</grit-part>

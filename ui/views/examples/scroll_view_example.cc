@@ -66,8 +66,9 @@ class ScrollViewExample::ScrollableView : public BoxLayoutView {
 
   std::pair<SkColor, SkColor> GetColors() const {
     auto* const cp = GetColorProvider();
-    if (!cp)
+    if (!cp) {
       return {gfx::kPlaceholderColor, gfx::kPlaceholderColor};
+    }
     return {cp->GetColor(from_color_id_), cp->GetColor(to_color_id_)};
   }
 
@@ -103,7 +104,7 @@ void ScrollViewExample::CreateExampleView(View* container) {
 
   auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
                                      MaximumFlexSizeRule::kUnbounded)
-                       .WithWeight(1);
+                       .WithWeight(4);
 
   // Add scroll view.
   scroll_view_ = container->AddChildView(std::move(scroll_view));
@@ -111,6 +112,10 @@ void ScrollViewExample::CreateExampleView(View* container) {
 
   // Add control buttons.
   auto* button_panel = container->AddChildView(std::make_unique<View>());
+  button_panel->SetProperty(views::kFlexBehaviorKey,
+                            FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
+                                              MaximumFlexSizeRule::kUnbounded)
+                                .WithWeight(1));
   button_panel->SetLayoutManager(std::make_unique<FlexLayout>())
       ->SetOrientation(LayoutOrientation::kHorizontal);
 
@@ -146,8 +151,9 @@ void ScrollViewExample::CreateExampleView(View* container) {
                           gfx::Rect(20, 500, 1000, 500)),
       GetStringUTF16(IDS_SCROLL_VIEW_SCROLL_TO_LABEL)));
 
-  for (View* child : button_panel->children())
+  for (View* child : button_panel->children()) {
     child->SetProperty(views::kFlexBehaviorKey, full_flex);
+  }
 }
 
 void ScrollViewExample::ButtonPressed(gfx::Rect bounds,

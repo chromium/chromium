@@ -4,10 +4,10 @@
 
 #include "third_party/webrtc_overrides/p2p/base/bridge_ice_controller.h"
 
-#include <algorithm>
-#include <iterator>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/algorithm/container.h"
 #include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/connection.h"
@@ -33,13 +34,13 @@
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
 
 namespace {
-using cricket::Connection;
-using cricket::IceAgentInterface;
-using cricket::IceConfig;
-using cricket::IceControllerInterface;
-using cricket::IceMode;
-using cricket::IceRole;
-using cricket::NominationMode;
+using webrtc::Connection;
+using webrtc::IceAgentInterface;
+using webrtc::IceConfig;
+using webrtc::IceControllerInterface;
+using webrtc::IceMode;
+using webrtc::IceRole;
+using webrtc::NominationMode;
 }  // unnamed namespace
 
 namespace blink {
@@ -48,7 +49,7 @@ BridgeIceController::BridgeIceController(
     scoped_refptr<base::SequencedTaskRunner> network_task_runner,
     IceControllerObserverInterface* observer,
     IceAgentInterface* ice_agent,
-    std::unique_ptr<cricket::IceControllerInterface> native_controller)
+    std::unique_ptr<webrtc::IceControllerInterface> native_controller)
     : network_task_runner_(std::move(network_task_runner)),
       interaction_proxy_(
           base::MakeRefCounted<IceInteractionProxy>(this,
@@ -167,7 +168,7 @@ void BridgeIceController::SelectAndPingConnection() {
   agent_.UpdateConnectionStates();
 
   IceControllerInterface::PingResult result =
-      native_controller_->SelectConnectionToPing(agent_.GetLastPingSentMs());
+      native_controller_->GetConnectionToPing(agent_.GetLastPingSent());
   bool reply_expected = false;
   if (observer_) {
     // Ping proposal without a connection may still be useful to indicate a
@@ -190,7 +191,7 @@ void BridgeIceController::OnPingProposalAccepted(
   DCHECK(proposal.connection().has_value())
       << "Can't accept a ping proposal without a connection";
 
-  const cricket::Connection* connection =
+  const webrtc::Connection* connection =
       FindConnection(proposal.connection().value().id());
   if (!connection) {
     RTC_LOG(LS_WARNING)
@@ -213,12 +214,13 @@ void BridgeIceController::OnPingProposalRejected(
 }
 
 void BridgeIceController::DoPerformPing(
-    const cricket::IceControllerInterface::PingResult result) {
+    const webrtc::IceControllerInterface::PingResult result) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
-  DoPerformPing(result.connection.value_or(nullptr), result.recheck_delay_ms);
+  DoPerformPing(result.connection.value_or(nullptr),
+                result.recheck_delay().ms());
 }
 
-void BridgeIceController::DoPerformPing(const cricket::Connection* connection,
+void BridgeIceController::DoPerformPing(const webrtc::Connection* connection,
                                         std::optional<int> recheck_delay_ms) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
@@ -245,7 +247,7 @@ void BridgeIceController::DoSchedulePingRecheck(
 }
 
 void BridgeIceController::OnSortAndSwitchRequest(
-    cricket::IceSwitchReason reason) {
+    webrtc::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   if (!sort_pending_) {
     // To avoid recursion, enqueue a task to sort connections and check if a
@@ -265,7 +267,7 @@ void BridgeIceController::OnSortAndSwitchRequest(
 }
 
 void BridgeIceController::SortAndSwitchToBestConnection(
-    cricket::IceSwitchReason reason) {
+    webrtc::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   if (!sort_pending_) {
     return;
@@ -277,13 +279,13 @@ void BridgeIceController::SortAndSwitchToBestConnection(
 }
 
 void BridgeIceController::OnImmediateSortAndSwitchRequest(
-    cricket::IceSwitchReason reason) {
+    webrtc::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   DoSortAndSwitchToBestConnection(reason);
 }
 
 void BridgeIceController::DoSortAndSwitchToBestConnection(
-    cricket::IceSwitchReason reason) {
+    webrtc::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   // Make sure the connection states are up-to-date since this affects how they
@@ -309,7 +311,7 @@ void BridgeIceController::DoSortAndSwitchToBestConnection(
 }
 
 bool BridgeIceController::OnImmediateSwitchRequest(
-    cricket::IceSwitchReason reason,
+    webrtc::IceSwitchReason reason,
     const Connection* selected) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   IceControllerInterface::SwitchResult result =
@@ -331,7 +333,7 @@ void BridgeIceController::OnSwitchProposalAccepted(
   DCHECK(proposal.connection().has_value())
       << "Can't accept a switch proposal without a connection";
 
-  const cricket::Connection* connection =
+  const webrtc::Connection* connection =
       FindConnection(proposal.connection().value().id());
   if (!connection) {
     RTC_LOG(LS_WARNING)
@@ -340,7 +342,7 @@ void BridgeIceController::OnSwitchProposalAccepted(
     return;
   }
 
-  std::optional<cricket::IceRecheckEvent> recheck_event = std::nullopt;
+  std::optional<webrtc::IceRecheckEvent> recheck_event = std::nullopt;
   if (proposal.recheck_event().has_value()) {
     recheck_event.emplace(
         ConvertToWebrtcIceSwitchReason(proposal.recheck_event()->reason),
@@ -350,7 +352,7 @@ void BridgeIceController::OnSwitchProposalAccepted(
   std::vector<const Connection*> connections_to_forget_state_on;
   for (const IceConnection& ice_connection :
        proposal.connections_to_forget_state_on()) {
-    const cricket::Connection* conn = FindConnection(ice_connection.id());
+    const webrtc::Connection* conn = FindConnection(ice_connection.id());
     if (conn) {
       connections_to_forget_state_on.push_back(conn);
     } else {
@@ -374,7 +376,7 @@ void BridgeIceController::OnSwitchProposalRejected(
   RTC_LOG(LS_INFO) << "Rejected proposal to switch connection";
 
   // Don't switch, but schedule a recheck if it was proposed.
-  std::optional<cricket::IceRecheckEvent> recheck_event = std::nullopt;
+  std::optional<webrtc::IceRecheckEvent> recheck_event = std::nullopt;
   if (proposal.recheck_event().has_value()) {
     recheck_event.emplace(
         ConvertToWebrtcIceSwitchReason(proposal.recheck_event()->reason),
@@ -388,7 +390,7 @@ void BridgeIceController::OnSwitchProposalRejected(
 }
 
 void BridgeIceController::DoPerformSwitch(
-    cricket::IceSwitchReason reason_for_switch,
+    webrtc::IceSwitchReason reason_for_switch,
     const IceControllerInterface::SwitchResult result) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   DoPerformSwitch(reason_for_switch, result.connection.value_or(nullptr),
@@ -396,10 +398,10 @@ void BridgeIceController::DoPerformSwitch(
 }
 
 void BridgeIceController::DoPerformSwitch(
-    cricket::IceSwitchReason reason_for_switch,
-    const cricket::Connection* connection,
-    std::optional<cricket::IceRecheckEvent> recheck_event,
-    base::span<const cricket::Connection* const>
+    webrtc::IceSwitchReason reason_for_switch,
+    const webrtc::Connection* connection,
+    std::optional<webrtc::IceRecheckEvent> recheck_event,
+    base::span<const webrtc::Connection* const>
         connections_to_forget_state_on) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
@@ -418,7 +420,7 @@ void BridgeIceController::DoPerformSwitch(
 }
 
 void BridgeIceController::DoScheduleSwitchRecheck(
-    std::optional<cricket::IceRecheckEvent> recheck_event) {
+    std::optional<webrtc::IceRecheckEvent> recheck_event) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   if (recheck_event.has_value()) {
@@ -451,7 +453,7 @@ void BridgeIceController::PruneConnections() {
   // TODO(honghaiz): This is not enough to prevent a connection from being
   // pruned too early because with aggressive nomination, the controlling side
   // will nominate every connection until it becomes writable.
-  if (agent_.GetIceRole() == cricket::ICEROLE_CONTROLLING ||
+  if (agent_.GetIceRole() == webrtc::ICEROLE_CONTROLLING ||
       (selected_connection_ && selected_connection_->nominated())) {
     std::vector<const Connection*> connections_to_prune =
         native_controller_->PruneConnections();
@@ -486,9 +488,9 @@ void BridgeIceController::OnPruneProposalAccepted(
   DCHECK(proposal.reply_expected())
       << "Can't reject an unsolicited prune proposal";
 
-  std::vector<const cricket::Connection*> connections_to_prune;
+  std::vector<const webrtc::Connection*> connections_to_prune;
   for (const IceConnection& ice_connection : proposal.connections_to_prune()) {
-    const cricket::Connection* connection = FindConnection(ice_connection.id());
+    const webrtc::Connection* connection = FindConnection(ice_connection.id());
     if (connection) {
       connections_to_prune.push_back(connection);
     } else {
@@ -515,7 +517,7 @@ void BridgeIceController::OnPruneProposalRejected(
 }
 
 void BridgeIceController::DoPerformPrune(
-    base::span<const cricket::Connection* const> connections) {
+    base::span<const webrtc::Connection* const> connections) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   agent_.PruneConnections(connections);
 }
@@ -532,7 +534,7 @@ webrtc::RTCError BridgeIceController::OnPingRequested(
 
   // TODO(crbug.com/1369096) add rate-limiting checks.
 
-  const cricket::Connection* connection = FindConnection(ice_connection.id());
+  const webrtc::Connection* connection = FindConnection(ice_connection.id());
   if (!connection) {
     RTC_LOG(LS_WARNING)
         << "Received ping request for unknown or destroyed connection id="
@@ -551,7 +553,7 @@ webrtc::RTCError BridgeIceController::OnSwitchRequested(
   // TODO(crbug.com/1369096) should we check with the native controller about
   // this switch, similar to an ImmediateSwitchRequest?
 
-  const cricket::Connection* connection = FindConnection(ice_connection.id());
+  const webrtc::Connection* connection = FindConnection(ice_connection.id());
   if (!connection) {
     RTC_LOG(LS_WARNING)
         << "Received switch request for unknown or destroyed connection id="
@@ -559,8 +561,8 @@ webrtc::RTCError BridgeIceController::OnSwitchRequested(
     return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER);
   }
 
-  DoPerformSwitch(cricket::IceSwitchReason::APPLICATION_REQUESTED, connection,
-                  std::nullopt, base::span<const cricket::Connection* const>());
+  DoPerformSwitch(webrtc::IceSwitchReason::APPLICATION_REQUESTED, connection,
+                  std::nullopt, base::span<const webrtc::Connection* const>());
   return webrtc::RTCError::OK();
 }
 
@@ -568,9 +570,9 @@ webrtc::RTCError BridgeIceController::OnPruneRequested(
     base::span<const IceConnection> ice_connections_to_prune) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
-  std::vector<const cricket::Connection*> connections_to_prune;
+  std::vector<const webrtc::Connection*> connections_to_prune;
   for (const IceConnection& ice_connection : ice_connections_to_prune) {
-    const cricket::Connection* connection = FindConnection(ice_connection.id());
+    const webrtc::Connection* connection = FindConnection(ice_connection.id());
     if (connection) {
       connections_to_prune.push_back(connection);
     } else {
@@ -588,10 +590,10 @@ webrtc::RTCError BridgeIceController::OnPruneRequested(
   return webrtc::RTCError::OK();
 }
 
-const cricket::Connection* BridgeIceController::FindConnection(
+const webrtc::Connection* BridgeIceController::FindConnection(
     uint32_t id) const {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
-  rtc::ArrayView<const Connection* const> conns =
+  webrtc::ArrayView<const Connection* const> conns =
       native_controller_->GetConnections();
   auto it = absl::c_find_if(
       conns, [id](const Connection* c) { return c->id() == id; });

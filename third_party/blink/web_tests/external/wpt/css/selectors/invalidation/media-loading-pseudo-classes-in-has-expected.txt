@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test :has(:stalled) invalidation
+  assert_implements: :stalled is not supported undefined
+[FAIL] Test :has(:buffering) invalidation
+  assert_implements: :buffering is not supported undefined
+Harness: the test ran to completion.
+

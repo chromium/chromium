@@ -163,4 +163,43 @@ test(() => {
     },
     '<textarea id="ta">apple| </textarea>');
 }, 'spellcheck-replace-in-textarea');
+
+test(() => {
+  assert_not_equals(window.internals,
+                    undefined,
+                    'This test requires internals.');
+
+  assert_selection(
+    '<div contenteditable id="editable">|appla^ </div>',
+    selection => {
+      const document = selection.document;
+      internals.setMarker(document, selection.getRangeAt(0), 'Spelling');
+      const editable = document.getElementById('editable');
+
+      let beforeinputDispatched = false;
+      editable.addEventListener('beforeinput', (event) => {
+        beforeinputDispatched = true;
+        editable.removeChild(editable.firstChild);
+        let newContent = document.createTextNode('Some random text');
+        editable.appendChild(newContent);
+        let range = document.createRange();
+        range.setStart(newContent, 16);
+        range.setEnd(newContent, 16);
+        let selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      });
+
+      let inputDispatched = false;
+      editable.addEventListener('input', (event) => {
+        inputDispatched = true;
+      });
+
+      internals.replaceMisspelled(document, 'apple');
+
+      assert_true(beforeinputDispatched);
+      assert_false(inputDispatched);
+    },
+    '<div contenteditable id="editable">|Some random text</div>');
+}, 'spellcheck-replace-with-beforeinput-change-value');
 </script>

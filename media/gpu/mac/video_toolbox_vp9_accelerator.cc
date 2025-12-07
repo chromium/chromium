@@ -73,12 +73,6 @@ bool VideoToolboxVP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool VideoToolboxVP9Accelerator::NeedsCompressedHeaderParsed() const {
-  DVLOG(4) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
-}
-
 bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -112,9 +106,9 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   }
 
   // Append this picture to the current superframe.
-  AppendData(frame_data_.get(), pic->frame_hdr->data,
-             pic->frame_hdr->frame_size);
-  frame_sizes_.push_back(pic->frame_hdr->frame_size);
+  AppendData(frame_data_.get(), pic->frame_hdr->data.data(),
+             pic->frame_hdr->data.size());
+  frame_sizes_.push_back(pic->frame_hdr->data.size());
 
   // If this is an output picture, submit the current superframe for decoding.
   if (pic->frame_hdr->show_frame || pic->frame_hdr->show_existing_frame) {
@@ -130,6 +124,11 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
                                                bool* format_changed) {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (pic->frame_hdr->show_existing_frame) {
+    *format_changed = false;
+    return true;
+  }
 
   // TODO(crbug.com/40227557): Consider merging with CreateFormatExtensions() to
   // avoid converting back and forth.
@@ -161,6 +160,10 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
 
   gfx::Size coded_size(static_cast<int>(pic->frame_hdr->frame_width),
                        static_cast<int>(pic->frame_hdr->frame_height));
+  if (coded_size.IsEmpty()) {
+    DLOG(ERROR) << "Invalid frame size";
+    return false;
+  }
 
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||

@@ -7,10 +7,11 @@
 
 #include <stddef.h>
 
+#include <variant>
+
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/system_impl_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 namespace core {
@@ -42,9 +43,9 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformSharedMemoryMapping {
   size_t GetLength() const;
 
  private:
-  absl::variant<absl::monostate,
-                base::ReadOnlySharedMemoryMapping,
-                base::WritableSharedMemoryMapping>
+  std::variant<std::monostate,
+               base::ReadOnlySharedMemoryMapping,
+               base::WritableSharedMemoryMapping>
       mapping_;
 };
 

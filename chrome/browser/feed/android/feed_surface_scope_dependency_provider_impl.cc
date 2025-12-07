@@ -51,11 +51,11 @@ void OnFetchResourceFinished(JNIEnv* env,
 
 static void JNI_FeedSurfaceScopeDependencyProviderImpl_FetchResource(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url,
-    const base::android::JavaParamRef<jstring>& j_method,
-    const base::android::JavaParamRef<jobjectArray>& j_header_name_and_values,
-    const base::android::JavaParamRef<jbyteArray>& j_post_data,
-    const base::android::JavaParamRef<jobject>& callback_obj) {
+    const base::android::JavaRef<jobject>& j_url,
+    const base::android::JavaRef<jstring>& j_method,
+    const base::android::JavaRef<jobjectArray>& j_header_name_and_values,
+    const base::android::JavaRef<jbyteArray>& j_post_data,
+    const base::android::JavaRef<jobject>& callback_obj) {
   FeedApi* feed_stream_api = GetFeedApi();
   if (!feed_stream_api) {
     return;
@@ -75,3 +75,5 @@ static void JNI_FeedSurfaceScopeDependencyProviderImpl_FetchResource(
 }
 
 }  // namespace feed::android
+
+DEFINE_JNI(FeedSurfaceScopeDependencyProviderImpl)

@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("desktop_session_duration") {
+  sources = [
+    "audible_contents_tracker.h",
+    "chrome_visibility_observer.h",
+    "desktop_session_duration_tracker.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
+}

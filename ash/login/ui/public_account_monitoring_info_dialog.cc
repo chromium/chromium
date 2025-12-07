@@ -9,6 +9,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -43,9 +45,9 @@ class BulletView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override {
     View::OnPaint(canvas);
 
-    SkPath path;
-    path.addCircle(GetLocalBounds().CenterPoint().x(),
-                   GetLocalBounds().CenterPoint().y(), radius_);
+    const SkPath path =
+        SkPath::Circle(GetLocalBounds().CenterPoint().x(),
+                       GetLocalBounds().CenterPoint().y(), radius_);
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(color_);
@@ -67,8 +69,8 @@ END_METADATA
 PublicAccountMonitoringInfoDialog::PublicAccountMonitoringInfoDialog(
     base::WeakPtr<LoginExpandedPublicAccountView> controller)
     : controller_(controller) {
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetModalType(ui::mojom::ModalType::kSystem);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   auto layout = std::make_unique<views::FlexLayout>();
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   SetLayoutManager(std::move(layout));
@@ -94,8 +96,8 @@ PublicAccountMonitoringInfoDialog::PublicAccountMonitoringInfoDialog(
         gfx::Size(kBulletContainerSizeDp, kBulletContainerSizeDp));
 
     container->AddChildView(bullet_view);
-    container->AddChildView(label);
-    AddChildView(container);
+    container->AddChildViewRaw(label);
+    AddChildViewRaw(container);
   };
 
   add_bulleted_label(l10n_util::GetStringUTF16(

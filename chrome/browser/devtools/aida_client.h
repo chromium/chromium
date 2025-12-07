@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -33,45 +34,45 @@ class AidaClient {
 
   void PrepareRequestOrFail(
       base::OnceCallback<
-          void(absl::variant<network::ResourceRequest, std::string>)> callback);
+          void(std::variant<network::ResourceRequest, std::string>)> callback);
+  void RemoveAccessToken();
 
   // Needed because VariationsService is not available for unit tests.
   static ScopedOverride OverrideCountryForTesting(std::string country_code);
 
-  void OverrideAidaEndpointAndScopeForTesting(const std::string& aida_endpoint,
-                                              const std::string& aida_scope);
+  static constexpr std::string_view kDoConversationUrl =
+      "https://aida.googleapis.com/v1/aida:doConversation";
+  static constexpr std::string_view kCompleteCodeUrl =
+      "https://aida.googleapis.com/v1/aida:completeCode";
+  static constexpr std::string_view kRegisterClientEventUrl =
+      "https://aida.googleapis.com/v1:registerClientEvent";
 
-  static constexpr std::string_view kDoConversationUrlPath =
-      "/v1/aida:doConversation";
-  static constexpr std::string_view kRegisterClientEventUrlPath =
-      "/v1:registerClientEvent";
-
-  struct BlockedReason {
-    bool blocked = false;
-    bool blocked_by_age = false;
-    bool blocked_by_enterprise_policy = false;
-    bool blocked_by_feature_flag = false;
-    bool blocked_by_geo = false;
+  struct Availability {
+    bool available = false;
+    bool blocked = true;
+    bool blocked_by_age = true;
+    bool blocked_by_enterprise_policy = true;
+    bool blocked_by_geo = true;
     bool blocked_by_rollout = false;
-    bool disallow_logging = false;
+    bool disallow_logging = true;
+    DevToolsGenAiEnterprisePolicyValue enterprise_policy_value =
+        DevToolsGenAiEnterprisePolicyValue::kAllow;
   };
 
-  static BlockedReason CanUseAida(Profile* profile);
+  static Availability CanUseAida(Profile* profile);
 
  private:
   void PrepareAidaRequest(
       base::OnceCallback<
-          void(absl::variant<network::ResourceRequest, std::string>)> callback);
+          void(std::variant<network::ResourceRequest, std::string>)> callback);
   void AccessTokenFetchFinished(
       base::OnceCallback<
-          void(absl::variant<network::ResourceRequest, std::string>)> callback,
+          void(std::variant<network::ResourceRequest, std::string>)> callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
   const raw_ref<Profile> profile_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
-  std::string aida_endpoint_;
-  std::string aida_scope_;
   std::string access_token_;
   base::Time access_token_expiration_;
 };

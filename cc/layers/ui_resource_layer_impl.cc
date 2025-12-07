@@ -79,7 +79,8 @@ bool UIResourceLayerImpl::WillDraw(
   return LayerImpl::WillDraw(draw_mode, resource_provider);
 }
 
-void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void UIResourceLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                      viz::CompositorRenderPass* render_pass,
                                       AppendQuadsData* append_quads_data) {
   DCHECK(!bounds().IsEmpty());
 
@@ -91,9 +92,8 @@ void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
           ? layer_tree_impl()->ResourceIdForUIResource(ui_resource_id_)
           : viz::kInvalidResourceId;
   bool are_contents_opaque =
-      resource ? (layer_tree_impl()->IsUIResourceOpaque(ui_resource_id_) ||
-                  contents_opaque())
-               : false;
+      resource && (layer_tree_impl()->IsUIResourceOpaque(ui_resource_id_) ||
+                   contents_opaque());
   PopulateSharedQuadState(shared_quad_state, are_contents_opaque);
   AppendDebugBorderQuad(render_pass, gfx::Rect(bounds()), shared_quad_state,
                         append_quads_data);
@@ -101,12 +101,10 @@ void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (!resource)
     return;
 
-  static const bool flipped = false;
   static const bool nearest_neighbor = false;
-  static const bool premultiplied_alpha = true;
 
   gfx::Rect quad_rect(bounds());
-  bool needs_blending = are_contents_opaque ? false : true;
+  bool needs_blending = !are_contents_opaque;
   gfx::Rect visible_quad_rect =
       draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
           quad_rect);
@@ -115,8 +113,8 @@ void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-               resource, premultiplied_alpha, uv_top_left_, uv_bottom_right_,
-               SkColors::kTransparent, flipped, nearest_neighbor,
+               resource, uv_top_left_, uv_bottom_right_, SkColors::kTransparent,
+               nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
 }

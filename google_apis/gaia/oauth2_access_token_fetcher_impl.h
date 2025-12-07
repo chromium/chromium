@@ -6,14 +6,16 @@
 #define GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
+#include "google_apis/gaia/oauth2_response.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -43,26 +45,6 @@ class SharedURLLoaderFactory;
 class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
     : public OAuth2AccessTokenFetcher {
  public:
-  // Enumerated constants of server responses, matching RFC 6749.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum OAuth2Response {
-    kUnknownError = 0,
-    kOk = 1,
-    kOkUnexpectedFormat = 2,
-    kErrorUnexpectedFormat = 3,
-    kInvalidRequest = 4,
-    kInvalidClient = 5,
-    kInvalidGrant = 6,
-    kUnauthorizedClient = 7,
-    kUnsuportedGrantType = 8,
-    kInvalidScope = 9,
-    kRestrictedClient = 10,
-    kRateLimitExceeded = 11,
-    kInternalFailure = 12,
-    kMaxValue = kInternalFailure,
-  };
-
   OAuth2AccessTokenFetcherImpl(
       OAuth2AccessTokenConsumer* consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -101,11 +83,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
   // Derived classes must specify a network annotation for the fetcher.
   virtual net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const = 0;
 
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Helper methods for the flow.
   void StartGetAccessToken();
-  void EndGetAccessToken(std::unique_ptr<std::string> response_body);
+  void EndGetAccessToken(std::optional<std::string> response_body);
 
   // Helper mehtods for reporting back results.
   void OnGetTokenSuccess(

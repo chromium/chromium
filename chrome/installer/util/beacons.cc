@@ -68,7 +68,7 @@ Beacon::Beacon(std::wstring_view name, BeaconType type, BeaconScope scope)
   Initialize(name);
 }
 
-Beacon::~Beacon() {}
+Beacon::~Beacon() = default;
 
 void Beacon::Update() {
   const REGSAM kAccess = KEY_WOW64_32KEY | KEY_QUERY_VALUE | KEY_SET_VALUE;
@@ -127,8 +127,9 @@ void Beacon::Initialize(std::wstring_view name) {
     // This should never fail. If it does, the beacon will be written in the
     // key's default value, which is okay since the majority case is likely a
     // machine with a single user.
-    if (!base::win::GetUserSidString(&value_name_))
-      NOTREACHED_IN_MIGRATION();
+    if (!base::win::GetUserSidString(&value_name_)) {
+      NOTREACHED();
+    }
   }
 }
 

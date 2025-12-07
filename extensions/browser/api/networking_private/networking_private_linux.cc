@@ -7,18 +7,23 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -115,80 +120,97 @@ void ReportNotSupported(
 // Fires the appropriate callback when the network connect operation succeeds
 // or fails.
 void OnNetworkConnectOperationCompleted(
-    std::unique_ptr<std::string> error,
     NetworkingPrivateDelegate::VoidCallback success_callback,
-    NetworkingPrivateDelegate::FailureCallback failure_callback) {
-  if (!error->empty()) {
-    std::move(failure_callback).Run(*error);
+    NetworkingPrivateDelegate::FailureCallback failure_callback,
+    std::string error) {
+  if (!error.empty()) {
+    std::move(failure_callback).Run(error);
     return;
   }
   std::move(success_callback).Run();
 }
 
-// Fires the appropriate callback when the network properties are returned
-// from the |dbus_thread_|.
-void GetCachedNetworkPropertiesCallback(
-    std::unique_ptr<std::string> error,
-    std::unique_ptr<base::Value::Dict> properties,
-    NetworkingPrivateDelegate::DictionaryCallback success_callback,
-    NetworkingPrivateDelegate::FailureCallback failure_callback) {
-  if (!error->empty()) {
-    std::move(failure_callback).Run(*error);
-    return;
-  }
-  std::move(success_callback).Run(std::move(*properties));
-}
-
-// Fires the appropriate callback when the network properties are returned
-// from the |dbus_thread_|.
-void GetCachedNetworkPropertiesResultCallback(
-    std::unique_ptr<std::string> error,
-    std::unique_ptr<base::Value::Dict> properties,
-    NetworkingPrivateDelegate::PropertiesCallback callback) {
-  if (!error->empty()) {
-    LOG(ERROR) << "GetCachedNetworkProperties failed: " << *error;
-    std::move(callback).Run(std::nullopt, *error);
-    return;
-  }
-  std::move(callback).Run(std::move(*properties), std::nullopt);
-}
-
 }  // namespace
 
-NetworkingPrivateLinux::NetworkingPrivateLinux()
-    : dbus_thread_("Networking Private DBus"), network_manager_proxy_(nullptr) {
-  base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
+class NetworkingPrivateLinux::GetAllWiFiAccessPointsState
+    : public base::RefCounted<GetAllWiFiAccessPointsState> {
+ public:
+  explicit GetAllWiFiAccessPointsState(
+      base::OnceCallback<void(std::unique_ptr<NetworkMap>)> final_callback)
+      : callback(std::move(final_callback)),
+        network_map(std::make_unique<NetworkMap>()) {}
 
-  dbus_thread_.StartWithOptions(std::move(thread_options));
-  dbus_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&NetworkingPrivateLinux::Initialize,
-                                base::Unretained(this)));
-}
+  base::OnceCallback<void(std::unique_ptr<NetworkMap>)> callback;
+  std::unique_ptr<NetworkMap> network_map;
 
-NetworkingPrivateLinux::~NetworkingPrivateLinux() {
-  if (dbus_) {
-    // dbus_thread_.Stop() below will wait for this task.
-    dbus_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, dbus_));
+ private:
+  friend class base::RefCounted<GetAllWiFiAccessPointsState>;
+
+  ~GetAllWiFiAccessPointsState() {
+    if (callback) {
+      std::move(callback).Run(std::move(network_map));
+    }
   }
-  dbus_thread_.Stop();
-}
+};
 
-void NetworkingPrivateLinux::AssertOnDBusThread() {
-  DCHECK(dbus_task_runner_->RunsTasksInCurrentSequence());
-}
+struct NetworkingPrivateLinux::GetAccessPointInfoState {
+  GetAccessPointInfoState(
+      const dbus::ObjectPath& access_point_path,
+      const dbus::ObjectPath& device_path,
+      const dbus::ObjectPath& connected_access_point_path,
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> final_callback,
+      dbus::ObjectProxy* proxy)
+      : access_point_path(access_point_path),
+        device_path(device_path),
+        connected_access_point_path(connected_access_point_path),
+        callback(std::move(final_callback)),
+        access_point_proxy(proxy) {}
 
-void NetworkingPrivateLinux::Initialize() {
-  dbus_task_runner_ = dbus_thread_.task_runner();
-  // This has to be called after the task runner is initialized.
-  AssertOnDBusThread();
+  ~GetAccessPointInfoState() {
+    if (callback) {
+      if (failed) {
+        std::move(callback).Run(std::nullopt);
+      } else {
+        std::move(callback).Run(std::move(access_point_info));
+      }
+    }
+  }
 
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  dbus_options.connection_type = dbus::Bus::PRIVATE;
-  dbus_options.dbus_task_runner = dbus_task_runner_;
+  const dbus::ObjectPath access_point_path;
+  const dbus::ObjectPath device_path;
+  const dbus::ObjectPath connected_access_point_path;
+  base::OnceCallback<void(std::optional<base::Value::Dict>)> callback;
+  raw_ptr<dbus::ObjectProxy> access_point_proxy;
+  base::Value::Dict access_point_info;
+  uint32_t wpa_security_flags = 0;
+  bool failed = false;
+};
 
-  dbus_ = base::MakeRefCounted<dbus::Bus>(dbus_options);
+class NetworkingPrivateLinux::GetConnectedAccessPointState
+    : public base::RefCounted<GetConnectedAccessPointState> {
+ public:
+  GetConnectedAccessPointState(
+      const dbus::ObjectPath& device_path,
+      base::OnceCallback<void(dbus::ObjectPath)> final_callback)
+      : device_path(device_path), callback(std::move(final_callback)) {}
+
+  const dbus::ObjectPath device_path;
+  base::OnceCallback<void(dbus::ObjectPath)> callback;
+  std::vector<dbus::ObjectPath> connection_paths;
+
+ private:
+  friend class base::RefCounted<GetConnectedAccessPointState>;
+
+  ~GetConnectedAccessPointState() {
+    if (callback) {
+      std::move(callback).Run(dbus::ObjectPath());
+    }
+  }
+};
+
+NetworkingPrivateLinux::NetworkingPrivateLinux() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  dbus_ = dbus_thread_linux::GetSharedSystemBus();
   network_manager_proxy_ = dbus_->GetObjectProxy(
       networking_private::kNetworkManagerNamespace,
       dbus::ObjectPath(networking_private::kNetworkManagerPath));
@@ -196,16 +218,18 @@ void NetworkingPrivateLinux::Initialize() {
   if (!network_manager_proxy_) {
     LOG(ERROR) << "Platform does not support NetworkManager over DBUS";
   }
-
-  network_map_ = std::make_unique<NetworkMap>();
 }
 
+NetworkingPrivateLinux::~NetworkingPrivateLinux() = default;
+
 bool NetworkingPrivateLinux::CheckNetworkManagerSupported() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return network_manager_proxy_ != nullptr;
 }
 
 void NetworkingPrivateLinux::GetProperties(const std::string& guid,
                                            PropertiesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!network_manager_proxy_) {
     LOG(WARNING) << "NetworkManager over DBus is not supported";
     std::move(callback).Run(std::nullopt,
@@ -213,27 +237,22 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
     return;
   }
 
-  auto error = std::make_unique<std::string>();
-  auto network_properties = std::make_unique<base::Value::Dict>();
+  std::string error;
+  base::Value::Dict network_properties;
 
-  // Runs GetCachedNetworkProperties() on |dbus_thread|. We can safely pass the
-  // internal raw pointers since it is guaranteed to outlive
-  // GetCachedNetworkProperties() because ownership is given to the callback.
-  std::string* error_ptr = error.get();
-  base::Value::Dict* network_properties_ptr = network_properties.get();
-  dbus_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::GetCachedNetworkProperties,
-                     base::Unretained(this), guid,
-                     base::Unretained(network_properties_ptr),
-                     base::Unretained(error_ptr)),
-      base::BindOnce(&GetCachedNetworkPropertiesResultCallback,
-                     std::move(error), std::move(network_properties),
-                     std::move(callback)));
+  GetCachedNetworkProperties(guid, &network_properties, &error);
+
+  if (!error.empty()) {
+    LOG(ERROR) << "GetCachedNetworkProperties failed: " << error;
+    std::move(callback).Run(std::nullopt, error);
+    return;
+  }
+  std::move(callback).Run(std::move(network_properties), std::nullopt);
 }
 
 void NetworkingPrivateLinux::GetManagedProperties(const std::string& guid,
                                                   PropertiesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   LOG(WARNING) << "GetManagedProperties is not supported";
   std::move(callback).Run(std::nullopt,
                           extensions::networking_private::kErrorNotSupported);
@@ -242,35 +261,28 @@ void NetworkingPrivateLinux::GetManagedProperties(const std::string& guid,
 void NetworkingPrivateLinux::GetState(const std::string& guid,
                                       DictionaryCallback success_callback,
                                       FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("GetState", std::move(failure_callback));
     return;
   }
 
-  auto error = std::make_unique<std::string>();
-  auto network_properties = std::make_unique<base::Value::Dict>();
+  std::string error;
+  base::Value::Dict network_properties;
+  GetCachedNetworkProperties(guid, &network_properties, &error);
 
-  // Runs GetCachedNetworkProperties() on |dbus_thread|. We can safely pass the
-  // internal raw pointers since it is guaranteed to outlive
-  // GetCachedNetworkProperties() because ownership is given to the callback.
-  std::string* error_ptr = error.get();
-  base::Value::Dict* network_properties_ptr = network_properties.get();
-  dbus_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::GetCachedNetworkProperties,
-                     base::Unretained(this), guid,
-                     base::Unretained(network_properties_ptr),
-                     base::Unretained(error_ptr)),
-      base::BindOnce(&GetCachedNetworkPropertiesCallback, std::move(error),
-                     std::move(network_properties), std::move(success_callback),
-                     std::move(failure_callback)));
+  if (!error.empty()) {
+    std::move(failure_callback).Run(error);
+    return;
+  }
+  std::move(success_callback).Run(std::move(network_properties));
 }
 
 void NetworkingPrivateLinux::GetCachedNetworkProperties(
     const std::string& guid,
     base::Value::Dict* properties,
     std::string* error) {
-  AssertOnDBusThread();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string ssid;
 
   if (!GuidToSsid(guid, &ssid)) {
@@ -279,8 +291,8 @@ void NetworkingPrivateLinux::GetCachedNetworkProperties(
   }
 
   NetworkMap::const_iterator network_iter =
-      network_map_->find(base::UTF8ToUTF16(ssid));
-  if (network_iter == network_map_->end()) {
+      network_map_.find(base::UTF8ToUTF16(ssid));
+  if (network_iter == network_map_.end()) {
     *error = "Unknown network GUID";
     return;
   }
@@ -293,6 +305,7 @@ void NetworkingPrivateLinux::SetProperties(const std::string& guid,
                                            bool allow_set_shared_config,
                                            VoidCallback success_callback,
                                            FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("SetProperties", std::move(failure_callback));
 }
 
@@ -300,6 +313,7 @@ void NetworkingPrivateLinux::CreateNetwork(bool shared,
                                            base::Value::Dict properties,
                                            StringCallback success_callback,
                                            FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("CreateNetwork", std::move(failure_callback));
 }
 
@@ -307,6 +321,7 @@ void NetworkingPrivateLinux::ForgetNetwork(const std::string& guid,
                                            bool allow_forget_shared_config,
                                            VoidCallback success_callback,
                                            FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(zentaro): Implement for Linux.
   ReportNotSupported("ForgetNetwork", std::move(failure_callback));
 }
@@ -317,12 +332,11 @@ void NetworkingPrivateLinux::GetNetworks(const std::string& network_type,
                                          int limit,
                                          NetworkListCallback success_callback,
                                          FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("GetNetworks", std::move(failure_callback));
     return;
   }
-
-  auto network_map = std::make_unique<NetworkMap>();
 
   if (!(network_type == ::onc::network_type::kWiFi ||
         network_type == ::onc::network_type::kWireless ||
@@ -333,38 +347,28 @@ void NetworkingPrivateLinux::GetNetworks(const std::string& network_type,
     return;
   }
 
-  // Runs GetAllWiFiAccessPoints on the dbus_thread and returns the
+  // Runs GetAllWiFiAccessPoints and returns the
   // results back to OnAccessPointsFound where the callback is fired.
-  NetworkMap* network_map_ptr = network_map.get();
-  dbus_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::GetAllWiFiAccessPoints,
-                     base::Unretained(this), configured_only, visible_only,
-                     limit, base::Unretained(network_map_ptr)),
+  GetAllWiFiAccessPoints(
+      configured_only, visible_only, limit,
       base::BindOnce(&NetworkingPrivateLinux::OnAccessPointsFound,
-                     base::Unretained(this), std::move(network_map),
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(success_callback), std::move(failure_callback)));
 }
 
 bool NetworkingPrivateLinux::GetNetworksForScanRequest() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!network_manager_proxy_) {
     return false;
   }
 
-  auto network_map = std::make_unique<NetworkMap>();
-
-  // Runs GetAllWiFiAccessPoints on the dbus_thread and returns the
+  // Runs GetAllWiFiAccessPoints and returns the
   // results back to SendNetworkListChangedEvent to fire the event. No
   // callbacks are used in this case.
-  NetworkMap* network_map_ptr = network_map.get();
-  dbus_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::GetAllWiFiAccessPoints,
-                     base::Unretained(this), false /* configured_only */,
-                     false /* visible_only */, 0 /* limit */,
-                     base::Unretained(network_map_ptr)),
+  GetAllWiFiAccessPoints(
+      false /* configured_only */, false /* visible_only */, 0 /* limit */,
       base::BindOnce(&NetworkingPrivateLinux::OnAccessPointsFoundViaScan,
-                     base::Unretained(this), std::move(network_map)));
+                     weak_ptr_factory_.GetWeakPtr()));
 
   return true;
 }
@@ -376,9 +380,10 @@ bool NetworkingPrivateLinux::GetNetworksForScanRequest() {
 //     'ssid': 'FooNetwork'
 //   }
 // }
-void NetworkingPrivateLinux::ConnectToNetwork(const std::string& guid,
-                                              std::string* error) {
-  AssertOnDBusThread();
+void NetworkingPrivateLinux::ConnectToNetwork(
+    const std::string& guid,
+    base::OnceCallback<void(std::string)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string device_path_str;
   std::string access_point_path_str;
   std::string ssid;
@@ -386,14 +391,14 @@ void NetworkingPrivateLinux::ConnectToNetwork(const std::string& guid,
 
   if (!ParseNetworkGuid(guid, &device_path_str, &access_point_path_str,
                         &ssid)) {
-    *error = "Invalid Network GUID format";
+    std::move(callback).Run("Invalid Network GUID format");
     return;
   }
 
   // Set the connection state to connecting in the map.
   if (!SetConnectionStateAndPostEvent(guid, ssid,
                                       ::onc::connection_state::kConnecting)) {
-    *error = "Unknown network GUID";
+    std::move(callback).Run("Unknown network GUID");
     return;
   }
 
@@ -438,56 +443,65 @@ void NetworkingPrivateLinux::ConnectToNetwork(const std::string& guid,
   builder.AppendObjectPath(device_path);
   builder.AppendObjectPath(access_point_path);
 
-  std::unique_ptr<dbus::Response> response(
-      network_manager_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
+  network_manager_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnConnectToNetworkResponse,
+                     weak_ptr_factory_.GetWeakPtr(), guid, ssid,
+                     std::move(callback)));
+}
+
+void NetworkingPrivateLinux::OnConnectToNetworkResponse(
+    const std::string& guid,
+    const std::string& ssid,
+    base::OnceCallback<void(std::string)> callback,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
     LOG(ERROR) << "Failed to add a new connection";
-    *error = "Failed to connect.";
 
     // Set the connection state to NotConnected in the map.
     SetConnectionStateAndPostEvent(guid, ssid,
                                    ::onc::connection_state::kNotConnected);
+    std::move(callback).Run("Failed to connect.");
     return;
   }
 
-  dbus::MessageReader reader(response.get());
+  dbus::MessageReader reader(response);
   dbus::ObjectPath connection_settings_path;
   dbus::ObjectPath active_connection_path;
 
   if (!reader.PopObjectPath(&connection_settings_path)) {
     LOG(ERROR) << "Unexpected response for add connection path "
                << ": " << response->ToString();
-    *error = "Failed to connect.";
 
     // Set the connection state to NotConnected in the map.
     SetConnectionStateAndPostEvent(guid, ssid,
                                    ::onc::connection_state::kNotConnected);
+    std::move(callback).Run("Failed to connect.");
     return;
   }
 
   if (!reader.PopObjectPath(&active_connection_path)) {
     LOG(ERROR) << "Unexpected response for connection path "
                << ": " << response->ToString();
-    *error = "Failed to connect.";
 
     // Set the connection state to NotConnected in the map.
     SetConnectionStateAndPostEvent(guid, ssid,
                                    ::onc::connection_state::kNotConnected);
+    std::move(callback).Run("Failed to connect.");
     return;
   }
 
   // Set the connection state to Connected in the map.
   SetConnectionStateAndPostEvent(guid, ssid,
                                  ::onc::connection_state::kConnected);
-  return;
+  std::move(callback).Run("");
 }
 
-void NetworkingPrivateLinux::DisconnectFromNetwork(const std::string& guid,
-                                                   std::string* error) {
-  AssertOnDBusThread();
+void NetworkingPrivateLinux::DisconnectFromNetwork(
+    const std::string& guid,
+    base::OnceCallback<void(std::string)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string device_path_str;
   std::string access_point_path_str;
   std::string ssid;
@@ -495,18 +509,15 @@ void NetworkingPrivateLinux::DisconnectFromNetwork(const std::string& guid,
 
   if (!ParseNetworkGuid(guid, &device_path_str, &access_point_path_str,
                         &ssid)) {
-    *error = "Invalid Network GUID format";
+    std::move(callback).Run("Invalid Network GUID format");
     return;
   }
 
-  auto network_map = std::make_unique<NetworkMap>();
-  GetAllWiFiAccessPoints(false /* configured_only */, false /* visible_only */,
-                         0 /* limit */, network_map.get());
-
   NetworkMap::const_iterator network_iter =
-      network_map->find(base::UTF8ToUTF16(ssid));
-  if (network_iter == network_map->end()) {
+      network_map_.find(base::UTF8ToUTF16(ssid));
+  if (network_iter == network_map_.end()) {
     // This network doesn't exist so there's nothing to do.
+    std::move(callback).Run("");
     return;
   }
 
@@ -514,6 +525,7 @@ void NetworkingPrivateLinux::DisconnectFromNetwork(const std::string& guid,
       *network_iter->second.FindString(kAccessPointInfoConnectionState);
   if (connection_state == ::onc::connection_state::kNotConnected) {
     // Already disconnected so nothing to do.
+    std::move(callback).Run("");
     return;
   }
 
@@ -524,56 +536,55 @@ void NetworkingPrivateLinux::DisconnectFromNetwork(const std::string& guid,
   dbus::MethodCall method_call(
       networking_private::kNetworkManagerDeviceNamespace,
       networking_private::kNetworkManagerDisconnectMethod);
-  std::unique_ptr<dbus::Response> response(
-      device_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
+  device_proxy->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnDisconnectResponse,
+                     weak_ptr_factory_.GetWeakPtr(), guid, ssid,
+                     std::move(callback)));
+}
 
+void NetworkingPrivateLinux::OnDisconnectResponse(
+    const std::string& guid,
+    const std::string& ssid,
+    base::OnceCallback<void(std::string)> callback,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
-    LOG(WARNING) << "Failed to disconnect network on device "
-                 << device_path_str;
-    *error = "Failed to disconnect network";
+    LOG(WARNING) << "Failed to disconnect network on device " << guid;
+    std::move(callback).Run("Failed to disconnect network");
+  } else {
+    SetConnectionStateAndPostEvent(guid, ssid,
+                                   ::onc::connection_state::kNotConnected);
+    std::move(callback).Run("");
   }
 }
 
 void NetworkingPrivateLinux::StartConnect(const std::string& guid,
                                           VoidCallback success_callback,
                                           FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("StartConnect", std::move(failure_callback));
     return;
   }
 
-  std::unique_ptr<std::string> error(new std::string);
-
-  // Runs ConnectToNetwork on |dbus_thread|.
-  std::string* error_ptr = error.get();
-  dbus_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::ConnectToNetwork,
-                     base::Unretained(this), guid, base::Unretained(error_ptr)),
-      base::BindOnce(&OnNetworkConnectOperationCompleted, std::move(error),
-                     std::move(success_callback), std::move(failure_callback)));
+  ConnectToNetwork(guid, base::BindOnce(&OnNetworkConnectOperationCompleted,
+                                        std::move(success_callback),
+                                        std::move(failure_callback)));
 }
 
 void NetworkingPrivateLinux::StartDisconnect(const std::string& guid,
                                              VoidCallback success_callback,
                                              FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("StartDisconnect", std::move(failure_callback));
     return;
   }
 
-  std::unique_ptr<std::string> error(new std::string);
-
-  // Runs DisconnectFromNetwork on |dbus_thread|.
-  std::string* error_ptr = error.get();
-  dbus_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::DisconnectFromNetwork,
-                     base::Unretained(this), guid, base::Unretained(error_ptr)),
-      base::BindOnce(&OnNetworkConnectOperationCompleted, std::move(error),
+  DisconnectFromNetwork(
+      guid,
+      base::BindOnce(&OnNetworkConnectOperationCompleted,
                      std::move(success_callback), std::move(failure_callback)));
 }
 
@@ -581,6 +592,7 @@ void NetworkingPrivateLinux::GetCaptivePortalStatus(
     const std::string& guid,
     StringCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("GetCaptivePortalStatus", std::move(failure_callback));
 }
 
@@ -590,6 +602,7 @@ void NetworkingPrivateLinux::UnlockCellularSim(
     const std::string& puk,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("UnlockCellularSim", std::move(failure_callback));
 }
 
@@ -600,6 +613,7 @@ void NetworkingPrivateLinux::SetCellularSimState(
     const std::string& new_pin,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("SetCellularSimState", std::move(failure_callback));
 }
 
@@ -608,12 +622,14 @@ void NetworkingPrivateLinux::SelectCellularMobileNetwork(
     const std::string& network_id,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("SelectCellularMobileNetwork",
                      std::move(failure_callback));
 }
 
 void NetworkingPrivateLinux::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Value::List network_list;
   network_list.Append(::onc::network_type::kWiFi);
   std::move(callback).Run(std::move(network_list));
@@ -621,6 +637,7 @@ void NetworkingPrivateLinux::GetEnabledNetworkTypes(
 
 void NetworkingPrivateLinux::GetDeviceStateList(
     DeviceStateListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DeviceStateList device_state_list;
   api::networking_private::DeviceStateProperties& properties =
       device_state_list.emplace_back();
@@ -630,61 +647,78 @@ void NetworkingPrivateLinux::GetDeviceStateList(
 }
 
 void NetworkingPrivateLinux::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(base::Value::Dict());
 }
 
 void NetworkingPrivateLinux ::GetCertificateLists(
     GetCertificateListsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(base::Value::Dict());
 }
 
 void NetworkingPrivateLinux::EnableNetworkType(const std::string& type,
                                                BoolCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(false);
 }
 
 void NetworkingPrivateLinux::DisableNetworkType(const std::string& type,
                                                 BoolCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(false);
 }
 
 void NetworkingPrivateLinux::RequestScan(const std::string& /* type */,
                                          BoolCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(GetNetworksForScanRequest());
 }
 
 void NetworkingPrivateLinux::AddObserver(
     NetworkingPrivateDelegateObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network_events_observers_.AddObserver(observer);
 }
 
 void NetworkingPrivateLinux::RemoveObserver(
     NetworkingPrivateDelegateObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network_events_observers_.RemoveObserver(observer);
 }
 
 void NetworkingPrivateLinux::OnAccessPointsFound(
-    std::unique_ptr<NetworkMap> network_map,
     NetworkListCallback success_callback,
-    FailureCallback failure_callback) {
+    FailureCallback failure_callback,
+    std::unique_ptr<NetworkMap> network_map) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!network_map) {
+    std::move(failure_callback).Run("Failed to get network list.");
+    return;
+  }
   base::Value::List network_list = CopyNetworkMapToList(*network_map);
   // Give ownership to the member variable.
-  network_map_.swap(network_map);
+  network_map_.swap(*network_map);
   SendNetworkListChangedEvent(network_list);
   std::move(success_callback).Run(std::move(network_list));
 }
 
 void NetworkingPrivateLinux::OnAccessPointsFoundViaScan(
     std::unique_ptr<NetworkMap> network_map) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!network_map) {
+    return;
+  }
   base::Value::List network_list = CopyNetworkMapToList(*network_map);
   // Give ownership to the member variable.
-  network_map_.swap(network_map);
+  network_map_.swap(*network_map);
   SendNetworkListChangedEvent(network_list);
 }
 
 void NetworkingPrivateLinux::SendNetworkListChangedEvent(
     const base::Value::List& network_list) {
-  GuidList guidsForEventCallback;
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  GuidList guids_for_event_callback;
 
   for (const auto& network : network_list) {
     if (!network.is_dict()) {
@@ -692,42 +726,54 @@ void NetworkingPrivateLinux::SendNetworkListChangedEvent(
     }
     if (const std::string* guid =
             network.GetDict().FindString(kAccessPointInfoGuid)) {
-      guidsForEventCallback.push_back(*guid);
+      guids_for_event_callback.push_back(*guid);
     }
   }
 
-  OnNetworkListChangedEventOnUIThread(guidsForEventCallback);
+  for (auto& observer : network_events_observers_) {
+    observer.OnNetworkListChangedEvent(guids_for_event_callback);
+  }
 }
 
-bool NetworkingPrivateLinux::GetNetworkDevices(
-    std::vector<dbus::ObjectPath>* device_paths) {
-  AssertOnDBusThread();
+void NetworkingPrivateLinux::GetNetworkDevices(
+    base::OnceCallback<void(std::optional<std::vector<dbus::ObjectPath>>)>
+        callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::MethodCall method_call(
       networking_private::kNetworkManagerNamespace,
       networking_private::kNetworkManagerGetDevicesMethod);
 
-  std::unique_ptr<dbus::Response> device_response(
-      network_manager_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-
-  if (!device_response) {
-    return false;
-  }
-
-  dbus::MessageReader reader(device_response.get());
-  if (!reader.PopArrayOfObjectPaths(device_paths)) {
-    LOG(WARNING) << "Unexpected response: " << device_response->ToString();
-    return false;
-  }
-
-  return true;
+  network_manager_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetNetworkDevicesResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-NetworkingPrivateLinux::DeviceType NetworkingPrivateLinux::GetDeviceType(
-    const dbus::ObjectPath& device_path) {
-  AssertOnDBusThread();
+void NetworkingPrivateLinux::OnGetNetworkDevicesResponse(
+    base::OnceCallback<void(std::optional<std::vector<dbus::ObjectPath>>)>
+        callback,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::vector<dbus::ObjectPath> device_paths;
+  dbus::MessageReader reader(response);
+  if (!reader.PopArrayOfObjectPaths(&device_paths)) {
+    LOG(WARNING) << "Unexpected response: " << response->ToString();
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(std::move(device_paths));
+}
+
+void NetworkingPrivateLinux::GetDeviceType(
+    const dbus::ObjectPath& device_path,
+    base::OnceCallback<void(std::optional<DeviceType>)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* device_proxy = dbus_->GetObjectProxy(
       networking_private::kNetworkManagerNamespace, device_path);
   dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES,
@@ -736,261 +782,356 @@ NetworkingPrivateLinux::DeviceType NetworkingPrivateLinux::GetDeviceType(
   builder.AppendString(networking_private::kNetworkManagerDeviceNamespace);
   builder.AppendString(networking_private::kNetworkManagerDeviceType);
 
-  std::unique_ptr<dbus::Response> response(
-      device_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-
-  if (!response) {
-    LOG(ERROR) << "Failed to get the device type for device "
-               << device_path.value();
-    return NetworkingPrivateLinux::NM_DEVICE_TYPE_UNKNOWN;
-  }
-
-  dbus::MessageReader reader(response.get());
-  uint32_t device_type = 0;
-  if (!reader.PopVariantOfUint32(&device_type)) {
-    LOG(ERROR) << "Unexpected response for device " << device_type << ": "
-               << response->ToString();
-    return NM_DEVICE_TYPE_UNKNOWN;
-  }
-
-  return static_cast<NetworkingPrivateLinux::DeviceType>(device_type);
+  device_proxy->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetDeviceTypeResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void NetworkingPrivateLinux::GetAllWiFiAccessPoints(bool configured_only,
-                                                    bool visible_only,
-                                                    int limit,
-                                                    NetworkMap* network_map) {
-  AssertOnDBusThread();
+void NetworkingPrivateLinux::OnGetDeviceTypeResponse(
+    base::OnceCallback<void(std::optional<DeviceType>)> callback,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    LOG(ERROR) << "Failed to get the device type for device";
+    std::move(callback).Run(NM_DEVICE_TYPE_UNKNOWN);
+    return;
+  }
+
+  dbus::MessageReader reader(response);
+  uint32_t device_type = 0;
+  if (!reader.PopVariantOfUint32(&device_type)) {
+    LOG(ERROR) << "Unexpected response for device type: "
+               << response->ToString();
+    std::move(callback).Run(NM_DEVICE_TYPE_UNKNOWN);
+    return;
+  }
+
+  std::move(callback).Run(static_cast<DeviceType>(device_type));
+}
+
+void NetworkingPrivateLinux::GetAllWiFiAccessPoints(
+    bool configured_only,
+    bool visible_only,
+    int limit,
+    base::OnceCallback<void(std::unique_ptr<NetworkMap>)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(zentaro): The filters are not implemented and are ignored.
-  std::vector<dbus::ObjectPath> device_paths;
-  if (!GetNetworkDevices(&device_paths)) {
+  auto state =
+      base::MakeRefCounted<GetAllWiFiAccessPointsState>(std::move(callback));
+
+  GetNetworkDevices(base::BindOnce(
+      &NetworkingPrivateLinux::OnGetNetworkDevicesForGetAllWiFiAccessPoints,
+      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void NetworkingPrivateLinux::OnGetNetworkDevicesForGetAllWiFiAccessPoints(
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    std::optional<std::vector<dbus::ObjectPath>> device_paths) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!device_paths) {
     LOG(ERROR) << "Failed to enumerate network devices";
     return;
   }
 
-  for (const auto& device_path : device_paths) {
-    NetworkingPrivateLinux::DeviceType device_type = GetDeviceType(device_path);
+  if (device_paths->empty()) {
+    return;
+  }
 
-    // Get the access points for each WiFi adapter. Other network types are
-    // ignored.
-    if (device_type != NetworkingPrivateLinux::NM_DEVICE_TYPE_WIFI) {
-      continue;
-    }
-
-    // Found a wlan adapter
-    if (!AddAccessPointsFromDevice(device_path, network_map)) {
-      // Ignore devices we can't enumerate.
-      LOG(WARNING) << "Failed to add access points from device "
-                   << device_path.value();
-    }
+  for (const auto& device_path : *device_paths) {
+    GetDeviceType(
+        device_path,
+        base::BindOnce(
+            &NetworkingPrivateLinux::OnGetDeviceTypeForGetAllWiFiAccessPoints,
+            weak_ptr_factory_.GetWeakPtr(), state, device_path));
   }
 }
 
-std::unique_ptr<dbus::Response> NetworkingPrivateLinux::GetAccessPointProperty(
+void NetworkingPrivateLinux::OnGetDeviceTypeForGetAllWiFiAccessPoints(
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    const dbus::ObjectPath& device_path,
+    std::optional<DeviceType> device_type) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!device_type.has_value() ||
+      *device_type != NetworkingPrivateLinux::NM_DEVICE_TYPE_WIFI) {
+    return;
+  }
+
+  // Found a wlan adapter
+  AddAccessPointsFromDevice(
+      device_path, state,
+      base::BindOnce(
+          &NetworkingPrivateLinux::OnAddAccessPointsFromDeviceFinished,
+          weak_ptr_factory_.GetWeakPtr(), state));
+}
+
+void NetworkingPrivateLinux::OnAddAccessPointsFromDeviceFinished(
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!success) {
+    // Ignore devices we can't enumerate.
+    LOG(WARNING) << "Failed to add access points from a device.";
+  }
+}
+
+void NetworkingPrivateLinux::GetAccessPointProperty(
     dbus::ObjectProxy* access_point_proxy,
-    const std::string& property_name) {
-  AssertOnDBusThread();
+    const std::string& property_name,
+    base::OnceCallback<void(dbus::Response*)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES,
                                networking_private::kNetworkManagerGetMethod);
   dbus::MessageWriter builder(&method_call);
   builder.AppendString(networking_private::kNetworkManagerAccessPointNamespace);
   builder.AppendString(property_name);
-  std::unique_ptr<dbus::Response> response =
-      access_point_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  if (!response) {
-    LOG(ERROR) << "Failed to get property for " << property_name;
-  }
-  return response;
+  access_point_proxy->CallMethod(&method_call,
+                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                 std::move(callback));
 }
 
-bool NetworkingPrivateLinux::GetAccessPointInfo(
+void NetworkingPrivateLinux::GetAccessPointInfo(
     const dbus::ObjectPath& access_point_path,
-    base::Value::Dict* access_point_info) {
-  AssertOnDBusThread();
+    const dbus::ObjectPath& device_path,
+    const dbus::ObjectPath& connected_access_point_path,
+    base::OnceCallback<void(std::optional<base::Value::Dict>)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* access_point_proxy = dbus_->GetObjectProxy(
       networking_private::kNetworkManagerNamespace, access_point_path);
 
-  // Read the SSID. The GUID is derived from the Ssid.
-  {
-    std::unique_ptr<dbus::Response> response(GetAccessPointProperty(
-        access_point_proxy, networking_private::kNetworkManagerSsidProperty));
+  auto state = std::make_unique<GetAccessPointInfoState>(
+      access_point_path, device_path, connected_access_point_path,
+      std::move(callback), access_point_proxy);
 
-    if (!response) {
-      return false;
-    }
+  GetAccessPointProperty(
+      access_point_proxy, networking_private::kNetworkManagerSsidProperty,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetSsidForAccessPointInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+}
 
-    // The response should contain a variant that contains an array of bytes.
-    dbus::MessageReader reader(response.get());
-    dbus::MessageReader variant_reader(response.get());
-    if (!reader.PopVariant(&variant_reader)) {
-      LOG(ERROR) << "Unexpected response for " << access_point_path.value()
-                 << ": " << response->ToString();
-      return false;
-    }
-
-    std::string ssidUTF8;
-    if (!variant_reader.PopString(&ssidUTF8)) {
-      LOG(ERROR) << "Unexpected response for " << access_point_path.value()
-                 << ": " << response->ToString();
-      return false;
-    }
-    std::u16string ssid = base::UTF8ToUTF16(ssidUTF8);
-    access_point_info->Set(kAccessPointInfoName, ssid);
+void NetworkingPrivateLinux::OnGetSsidForAccessPointInfo(
+    std::unique_ptr<GetAccessPointInfoState> state,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    state->failed = true;
+    return;
   }
 
-  // Read signal strength.
-  {
-    std::unique_ptr<dbus::Response> response(GetAccessPointProperty(
-        access_point_proxy,
-        networking_private::kNetworkManagerStrengthProperty));
-    if (!response) {
-      return false;
-    }
-
-    dbus::MessageReader reader(response.get());
-    uint8_t strength = 0;
-    if (!reader.PopVariantOfByte(&strength)) {
-      LOG(ERROR) << "Unexpected response for " << access_point_path.value()
-                 << ": " << response->ToString();
-      return false;
-    }
-
-    access_point_info->SetByDottedPath(kAccessPointInfoWifiSignalStrengthDotted,
-                                       strength);
+  // The response should contain a variant that contains an array of bytes.
+  dbus::MessageReader reader(response);
+  dbus::MessageReader variant_reader(response);
+  if (!reader.PopVariant(&variant_reader)) {
+    LOG(ERROR) << "Unexpected response for " << state->access_point_path.value()
+               << ": " << response->ToString();
+    state->failed = true;
+    return;
   }
 
-  // Read the security type. This is from the WpaFlags and RsnFlags property
-  // which are of the same type and can be OR'd together to find all supported
-  // security modes.
+  std::string ssidUTF8;
+  if (!variant_reader.PopString(&ssidUTF8)) {
+    LOG(ERROR) << "Unexpected response for " << state->access_point_path.value()
+               << ": " << response->ToString();
+    state->failed = true;
+    return;
+  }
+  state->access_point_info.Set(kAccessPointInfoName,
+                               base::UTF8ToUTF16(ssidUTF8));
+  std::string network_guid = ConstructNetworkGuid(
+      state->device_path, state->access_point_path, ssidUTF8);
+  state->access_point_info.Set(kAccessPointInfoGuid, network_guid);
 
-  uint32_t wpa_security_flags = 0;
-  {
-    std::unique_ptr<dbus::Response> response(GetAccessPointProperty(
-        access_point_proxy,
-        networking_private::kNetworkManagerWpaFlagsProperty));
-    if (!response) {
-      return false;
-    }
+  auto* access_point_proxy = state->access_point_proxy.get();
+  GetAccessPointProperty(
+      access_point_proxy, networking_private::kNetworkManagerStrengthProperty,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetStrengthForAccessPointInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+}
 
-    dbus::MessageReader reader(response.get());
-
-    if (!reader.PopVariantOfUint32(&wpa_security_flags)) {
-      LOG(ERROR) << "Unexpected response for " << access_point_path.value()
-                 << ": " << response->ToString();
-      return false;
-    }
+void NetworkingPrivateLinux::OnGetStrengthForAccessPointInfo(
+    std::unique_ptr<GetAccessPointInfoState> state,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    state->failed = true;
+    return;
   }
 
+  dbus::MessageReader reader(response);
+  uint8_t strength = 0;
+  if (!reader.PopVariantOfByte(&strength)) {
+    LOG(ERROR) << "Unexpected response for " << state->access_point_path.value()
+               << ": " << response->ToString();
+    state->failed = true;
+    return;
+  }
+  state->access_point_info.SetByDottedPath(
+      kAccessPointInfoWifiSignalStrengthDotted, strength);
+
+  auto* access_point_proxy = state->access_point_proxy.get();
+  GetAccessPointProperty(
+      access_point_proxy, networking_private::kNetworkManagerWpaFlagsProperty,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetWpaFlagsForAccessPointInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void NetworkingPrivateLinux::OnGetWpaFlagsForAccessPointInfo(
+    std::unique_ptr<GetAccessPointInfoState> state,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    state->failed = true;
+    return;
+  }
+
+  dbus::MessageReader reader(response);
+  if (!reader.PopVariantOfUint32(&state->wpa_security_flags)) {
+    LOG(ERROR) << "Unexpected response for " << state->access_point_path.value()
+               << ": " << response->ToString();
+    state->failed = true;
+    return;
+  }
+
+  auto* access_point_proxy = state->access_point_proxy.get();
+  GetAccessPointProperty(
+      access_point_proxy, networking_private::kNetworkManagerRsnFlagsProperty,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetRsnFlagsForAccessPointInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void NetworkingPrivateLinux::OnGetRsnFlagsForAccessPointInfo(
+    std::unique_ptr<GetAccessPointInfoState> state,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    state->failed = true;
+    return;
+  }
+
+  dbus::MessageReader reader(response);
   uint32_t rsn_security_flags = 0;
-  {
-    std::unique_ptr<dbus::Response> response(GetAccessPointProperty(
-        access_point_proxy,
-        networking_private::kNetworkManagerRsnFlagsProperty));
-    if (!response) {
-      return false;
-    }
-
-    dbus::MessageReader reader(response.get());
-
-    if (!reader.PopVariantOfUint32(&rsn_security_flags)) {
-      LOG(ERROR) << "Unexpected response for " << access_point_path.value()
-                 << ": " << response->ToString();
-      return false;
-    }
+  if (!reader.PopVariantOfUint32(&rsn_security_flags)) {
+    LOG(ERROR) << "Unexpected response for " << state->access_point_path.value()
+               << ": " << response->ToString();
+    state->failed = true;
+    return;
   }
 
   std::string security;
-  MapSecurityFlagsToString(rsn_security_flags | wpa_security_flags, &security);
-  access_point_info->SetByDottedPath(kAccessPointInfoWifiSecurityDotted,
-                                     security);
-  access_point_info->Set(kAccessPointInfoType, kAccessPointInfoTypeWifi);
-  access_point_info->Set(kAccessPointInfoConnectable, true);
-  return true;
+  MapSecurityFlagsToString(rsn_security_flags | state->wpa_security_flags,
+                           &security);
+  state->access_point_info.SetByDottedPath(kAccessPointInfoWifiSecurityDotted,
+                                           security);
+  state->access_point_info.Set(kAccessPointInfoType, kAccessPointInfoTypeWifi);
+  state->access_point_info.Set(kAccessPointInfoConnectable, true);
+  std::string connection_state =
+      (state->access_point_path == state->connected_access_point_path)
+          ? ::onc::connection_state::kConnected
+          : ::onc::connection_state::kNotConnected;
+  state->access_point_info.Set(kAccessPointInfoConnectionState,
+                               connection_state);
 }
 
-bool NetworkingPrivateLinux::AddAccessPointsFromDevice(
+void NetworkingPrivateLinux::AddAccessPointsFromDevice(
     const dbus::ObjectPath& device_path,
-    NetworkMap* network_map) {
-  AssertOnDBusThread();
-  dbus::ObjectPath connected_access_point;
-  if (!GetConnectedAccessPoint(device_path, &connected_access_point)) {
-    return false;
-  }
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  GetConnectedAccessPoint(
+      device_path,
+      base::BindOnce(
+          &NetworkingPrivateLinux::OnGetConnectedAccessPointForAddAccessPoints,
+          weak_ptr_factory_.GetWeakPtr(), device_path, state,
+          std::move(callback)));
+}
 
+void NetworkingPrivateLinux::OnGetConnectedAccessPointForAddAccessPoints(
+    const dbus::ObjectPath& device_path,
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    base::OnceCallback<void(bool)> callback,
+    dbus::ObjectPath connected_access_point) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* device_proxy = dbus_->GetObjectProxy(
       networking_private::kNetworkManagerNamespace, device_path);
   dbus::MethodCall method_call(
       networking_private::kNetworkManagerWirelessDeviceNamespace,
       networking_private::kNetworkManagerGetAccessPointsMethod);
-  std::unique_ptr<dbus::Response> response(
-      device_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
+  device_proxy->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetAccessPointsForDevice,
+                     weak_ptr_factory_.GetWeakPtr(), device_path, state,
+                     std::move(callback), std::move(connected_access_point)));
+}
 
+void NetworkingPrivateLinux::OnGetAccessPointsForDevice(
+    const dbus::ObjectPath& device_path,
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    base::OnceCallback<void(bool)> callback,
+    dbus::ObjectPath connected_access_point,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
     LOG(WARNING) << "Failed to get access points data for "
                  << device_path.value();
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
-  dbus::MessageReader reader(response.get());
+  dbus::MessageReader reader(response);
   std::vector<dbus::ObjectPath> access_point_paths;
   if (!reader.PopArrayOfObjectPaths(&access_point_paths)) {
     LOG(ERROR) << "Unexpected response for " << device_path.value() << ": "
                << response->ToString();
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
+
+  if (access_point_paths.empty()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      access_point_paths.size(), base::BindOnce(std::move(callback), true));
 
   for (const auto& access_point_path : access_point_paths) {
-    base::Value::Dict access_point;
-
-    if (GetAccessPointInfo(access_point_path, &access_point)) {
-      std::string connection_state =
-          (access_point_path == connected_access_point)
-              ? ::onc::connection_state::kConnected
-              : ::onc::connection_state::kNotConnected;
-
-      access_point.Set(kAccessPointInfoConnectionState, connection_state);
-      std::string ssid = *access_point.FindString(kAccessPointInfoName);
-
-      std::string network_guid =
-          ConstructNetworkGuid(device_path, access_point_path, ssid);
-
-      // Adds the network to the map. Since each SSID can actually have multiple
-      // access point paths, this consolidates them. If it is already
-      // in the map it updates the signal strength and GUID paths if this
-      // network is stronger or the one that is connected.
-      AddOrUpdateAccessPoint(network_map, network_guid, &access_point);
-    }
+    GetAccessPointInfo(
+        access_point_path, device_path, connected_access_point,
+        base::BindOnce(&NetworkingPrivateLinux::OnGetAccessPointInfo,
+                       weak_ptr_factory_.GetWeakPtr(), state, barrier));
   }
+}
 
-  return true;
+void NetworkingPrivateLinux::OnGetAccessPointInfo(
+    scoped_refptr<GetAllWiFiAccessPointsState> state,
+    base::RepeatingClosure finished_callback,
+    std::optional<base::Value::Dict> access_point_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (access_point_info) {
+    AddOrUpdateAccessPoint(state->network_map.get(),
+                           std::move(*access_point_info));
+  }
+  finished_callback.Run();
 }
 
 void NetworkingPrivateLinux::AddOrUpdateAccessPoint(
     NetworkMap* network_map,
-    const std::string& network_guid,
-    base::Value::Dict* access_point) {
+    base::Value::Dict access_point) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(access_point.FindString(kAccessPointInfoGuid));
   std::string connection_state =
-      *access_point->FindString(kAccessPointInfoConnectionState);
-  int signal_strength = *access_point->FindIntByDottedPath(
-      kAccessPointInfoWifiSignalStrengthDotted);
+      *access_point.FindString(kAccessPointInfoConnectionState);
+  int signal_strength =
+      access_point.FindIntByDottedPath(kAccessPointInfoWifiSignalStrengthDotted)
+          .value_or(0);
   std::u16string ssid =
-      base::UTF8ToUTF16(*access_point->FindString(kAccessPointInfoName));
-  access_point->Set(kAccessPointInfoGuid, network_guid);
+      base::UTF8ToUTF16(*access_point.FindString(kAccessPointInfoName));
 
   auto existing_access_point_iter = network_map->find(ssid);
 
   if (existing_access_point_iter == network_map->end()) {
     // Unseen access point. Add it to the map.
-    network_map->insert(NetworkMap::value_type(ssid, std::move(*access_point)));
+    network_map->insert(NetworkMap::value_type(ssid, std::move(access_point)));
   } else {
     // Already seen access point. Update the record if this is the connected
     // record or if the signal strength is higher. But don't override a weaker
@@ -1012,13 +1153,15 @@ void NetworkingPrivateLinux::AddOrUpdateAccessPoint(
                                 connection_state);
       existing_access_point.SetByDottedPath(
           kAccessPointInfoWifiSignalStrengthDotted, signal_strength);
-      existing_access_point.Set(kAccessPointInfoGuid, network_guid);
+      existing_access_point.Set(kAccessPointInfoGuid,
+                                *access_point.FindString(kAccessPointInfoGuid));
     }
   }
 }
 
 void NetworkingPrivateLinux::MapSecurityFlagsToString(uint32_t security_flags,
                                                       std::string* security) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Valid values are None, WEP-PSK, WEP-8021X, WPA-PSK, WPA-EAP
   if (security_flags == NetworkingPrivateLinux::NM_802_11_AP_SEC_NONE) {
     *security = kAccessPointSecurityNone;
@@ -1036,67 +1179,95 @@ void NetworkingPrivateLinux::MapSecurityFlagsToString(uint32_t security_flags,
   DVLOG(1) << "Network security setting " << *security;
 }
 
-bool NetworkingPrivateLinux::GetConnectedAccessPoint(
+void NetworkingPrivateLinux::GetConnectedAccessPoint(
     const dbus::ObjectPath& device_path,
-    dbus::ObjectPath* access_point_path) {
-  AssertOnDBusThread();
+    base::OnceCallback<void(dbus::ObjectPath)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  OnGetActiveConnections(base::MakeRefCounted<GetConnectedAccessPointState>(
+      device_path, std::move(callback)));
+}
+
+void NetworkingPrivateLinux::OnGetActiveConnections(
+    scoped_refptr<GetConnectedAccessPointState> state) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES,
                                networking_private::kNetworkManagerGetMethod);
   dbus::MessageWriter builder(&method_call);
   builder.AppendString(networking_private::kNetworkManagerNamespace);
   builder.AppendString(networking_private::kNetworkManagerActiveConnections);
 
-  std::unique_ptr<dbus::Response> response(
-      network_manager_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-
-  if (!response) {
-    LOG(WARNING) << "Failed to get a list of active connections";
-    return false;
-  }
-
-  dbus::MessageReader reader(response.get());
-  dbus::MessageReader variant_reader(response.get());
-  if (!reader.PopVariant(&variant_reader)) {
-    LOG(ERROR) << "Unexpected response: " << response->ToString();
-    return false;
-  }
-
-  std::vector<dbus::ObjectPath> connection_paths;
-  if (!variant_reader.PopArrayOfObjectPaths(&connection_paths)) {
-    LOG(ERROR) << "Unexpected response: " << response->ToString();
-    return false;
-  }
-
-  for (const auto& connection_path : connection_paths) {
-    dbus::ObjectPath connections_device_path;
-    if (!GetDeviceOfConnection(connection_path, &connections_device_path)) {
-      return false;
-    }
-
-    if (connections_device_path == device_path) {
-      if (!GetAccessPointForConnection(connection_path, access_point_path)) {
-        return false;
-      }
-
-      break;
-    }
-  }
-
-  return true;
+  network_manager_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetActiveConnectionsResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
 
-bool NetworkingPrivateLinux::GetDeviceOfConnection(
+void NetworkingPrivateLinux::OnGetActiveConnectionsResponse(
+    scoped_refptr<GetConnectedAccessPointState> state,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!response) {
+    LOG(WARNING) << "Failed to get a list of active connections";
+    return;
+  }
+
+  dbus::MessageReader reader(response);
+  dbus::MessageReader variant_reader(response);
+  if (!reader.PopVariant(&variant_reader)) {
+    LOG(ERROR) << "Unexpected response: " << response->ToString();
+    return;
+  }
+
+  if (!variant_reader.PopArrayOfObjectPaths(&state->connection_paths)) {
+    LOG(ERROR) << "Unexpected response: " << response->ToString();
+    return;
+  }
+
+  if (state->connection_paths.empty()) {
+    return;
+  }
+
+  for (const auto& connection_path : state->connection_paths) {
+    GetDeviceOfConnection(
+        connection_path,
+        base::BindOnce(&NetworkingPrivateLinux::OnGetDeviceOfConnection,
+                       weak_ptr_factory_.GetWeakPtr(), state, connection_path));
+  }
+}
+
+void NetworkingPrivateLinux::OnGetDeviceOfConnection(
+    scoped_refptr<GetConnectedAccessPointState> state,
+    const dbus::ObjectPath& connection_path,
+    dbus::ObjectPath device_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (device_path == state->device_path) {
+    GetAccessPointForConnection(
+        connection_path,
+        base::BindOnce(&NetworkingPrivateLinux::OnGetAccessPointForConnection,
+                       weak_ptr_factory_.GetWeakPtr(), state));
+    return;
+  }
+}
+
+void NetworkingPrivateLinux::OnGetAccessPointForConnection(
+    scoped_refptr<GetConnectedAccessPointState> state,
+    dbus::ObjectPath access_point_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!access_point_path.value().empty() && state->callback) {
+    std::move(state->callback).Run(access_point_path);
+  }
+}
+
+void NetworkingPrivateLinux::GetDeviceOfConnection(
     dbus::ObjectPath connection_path,
-    dbus::ObjectPath* device_path) {
-  AssertOnDBusThread();
+    base::OnceCallback<void(dbus::ObjectPath)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* connection_proxy = dbus_->GetObjectProxy(
       networking_private::kNetworkManagerNamespace, connection_path);
 
   if (!connection_proxy) {
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
   dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES,
@@ -1106,48 +1277,54 @@ bool NetworkingPrivateLinux::GetDeviceOfConnection(
       networking_private::kNetworkManagerActiveConnectionNamespace);
   builder.AppendString("Devices");
 
-  std::unique_ptr<dbus::Response> response(
-      connection_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
+  connection_proxy->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&NetworkingPrivateLinux::OnGetDeviceOfConnectionResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void NetworkingPrivateLinux::OnGetDeviceOfConnectionResponse(
+    base::OnceCallback<void(dbus::ObjectPath)> callback,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
     LOG(ERROR) << "Failed to get devices";
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
-  dbus::MessageReader reader(response.get());
-  dbus::MessageReader variant_reader(response.get());
+  dbus::MessageReader reader(response);
+  dbus::MessageReader variant_reader(response);
   if (!reader.PopVariant(&variant_reader)) {
     LOG(ERROR) << "Unexpected response: " << response->ToString();
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
   std::vector<dbus::ObjectPath> device_paths;
   if (!variant_reader.PopArrayOfObjectPaths(&device_paths)) {
     LOG(ERROR) << "Unexpected response: " << response->ToString();
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
   if (device_paths.size() == 1) {
-    *device_path = device_paths[0];
-
-    return true;
+    std::move(callback).Run(device_paths[0]);
+  } else {
+    std::move(callback).Run(dbus::ObjectPath());
   }
-
-  return false;
 }
 
-bool NetworkingPrivateLinux::GetAccessPointForConnection(
+void NetworkingPrivateLinux::GetAccessPointForConnection(
     dbus::ObjectPath connection_path,
-    dbus::ObjectPath* access_point_path) {
-  AssertOnDBusThread();
+    base::OnceCallback<void(dbus::ObjectPath)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* connection_proxy = dbus_->GetObjectProxy(
       networking_private::kNetworkManagerNamespace, connection_path);
 
   if (!connection_proxy) {
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
   dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES,
@@ -1157,40 +1334,48 @@ bool NetworkingPrivateLinux::GetAccessPointForConnection(
       networking_private::kNetworkManagerActiveConnectionNamespace);
   builder.AppendString(networking_private::kNetworkManagerSpecificObject);
 
-  std::unique_ptr<dbus::Response> response(
-      connection_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
+  connection_proxy->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(
+          &NetworkingPrivateLinux::OnGetAccessPointForConnectionResponse,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void NetworkingPrivateLinux::OnGetAccessPointForConnectionResponse(
+    base::OnceCallback<void(dbus::ObjectPath)> callback,
+    dbus::Response* response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
     LOG(WARNING) << "Failed to get access point from active connection";
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
-  dbus::MessageReader reader(response.get());
-  dbus::MessageReader variant_reader(response.get());
+  dbus::MessageReader reader(response);
+  dbus::MessageReader variant_reader(response);
   if (!reader.PopVariant(&variant_reader)) {
     LOG(ERROR) << "Unexpected response: " << response->ToString();
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
-  if (!variant_reader.PopObjectPath(access_point_path)) {
+  dbus::ObjectPath access_point_path;
+  if (!variant_reader.PopObjectPath(&access_point_path)) {
     LOG(ERROR) << "Unexpected response: " << response->ToString();
-    return false;
+    std::move(callback).Run(dbus::ObjectPath());
+    return;
   }
 
-  return true;
+  std::move(callback).Run(access_point_path);
 }
 
 bool NetworkingPrivateLinux::SetConnectionStateAndPostEvent(
     const std::string& guid,
     const std::string& ssid,
     const std::string& connection_state) {
-  AssertOnDBusThread();
-
-  auto network_iter = network_map_->find(base::UTF8ToUTF16(ssid));
-  if (network_iter == network_map_->end()) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto network_iter = network_map_.find(base::UTF8ToUTF16(ssid));
+  if (network_iter == network_map_.end()) {
     return false;
   }
 
@@ -1202,7 +1387,7 @@ bool NetworkingPrivateLinux::SetConnectionStateAndPostEvent(
   // changed event.
   std::string* connected_network_guid = nullptr;
   if (connection_state == ::onc::connection_state::kConnected) {
-    for (auto& network : *network_map_) {
+    for (auto& network : network_map_) {
       if (std::string* other_connection_state =
               network.second.FindString(kAccessPointInfoConnectionState)) {
         if (*other_connection_state == ::onc::connection_state::kConnected) {
@@ -1218,7 +1403,7 @@ bool NetworkingPrivateLinux::SetConnectionStateAndPostEvent(
   // Set the status.
   network_iter->second.Set(kAccessPointInfoConnectionState, connection_state);
 
-  std::unique_ptr<GuidList> changed_networks(new GuidList());
+  auto changed_networks = std::make_unique<GuidList>();
   changed_networks->push_back(guid);
 
   // Only add a second network if it exists and it is not the same as the
@@ -1228,40 +1413,10 @@ bool NetworkingPrivateLinux::SetConnectionStateAndPostEvent(
     changed_networks->push_back(*connected_network_guid);
   }
 
-  PostOnNetworksChangedToUIThread(std::move(changed_networks));
+  for (auto& observer : network_events_observers_) {
+    observer.OnNetworksChangedEvent(*changed_networks);
+  }
   return true;
-}
-
-void NetworkingPrivateLinux::OnNetworksChangedEventOnUIThread(
-    const GuidList& network_guids) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto& observer : network_events_observers_) {
-    observer.OnNetworksChangedEvent(network_guids);
-  }
-}
-
-void NetworkingPrivateLinux::OnNetworkListChangedEventOnUIThread(
-    const GuidList& network_guids) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto& observer : network_events_observers_) {
-    observer.OnNetworkListChangedEvent(network_guids);
-  }
-}
-
-void NetworkingPrivateLinux::PostOnNetworksChangedToUIThread(
-    std::unique_ptr<GuidList> guid_list) {
-  AssertOnDBusThread();
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NetworkingPrivateLinux::OnNetworksChangedEventTask,
-                     base::Unretained(this), std::move(guid_list)));
-}
-
-void NetworkingPrivateLinux::OnNetworksChangedEventTask(
-    std::unique_ptr<GuidList> guid_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  OnNetworksChangedEventOnUIThread(*guid_list);
 }
 
 }  // namespace extensions

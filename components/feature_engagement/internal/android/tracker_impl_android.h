@@ -73,63 +73,46 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
 
   // Tracker JNI bridge implementation.
   virtual void NotifyEvent(JNIEnv* env,
-                           const base::android::JavaRef<jobject>& jobj,
-                           const base::android::JavaParamRef<jstring>& jevent);
-  virtual bool ShouldTriggerHelpUI(
+                           const base::android::JavaRef<jstring>& jevent);
+  virtual bool ShouldTriggerHelpUi(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature);
+      const base::android::JavaRef<jstring>& jfeature);
   virtual base::android::ScopedJavaLocalRef<jobject>
-  ShouldTriggerHelpUIWithSnooze(
+  ShouldTriggerHelpUiWithSnooze(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature);
-  virtual bool WouldTriggerHelpUI(
+      const base::android::JavaRef<jstring>& jfeature);
+  virtual bool WouldTriggerHelpUi(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature);
-  virtual bool HasEverTriggered(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature,
-      const jboolean j_from_window);
-  virtual jint GetTriggerState(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature);
+      const base::android::JavaRef<jstring>& jfeature);
+  virtual bool HasEverTriggered(JNIEnv* env,
+                                const base::android::JavaRef<jstring>& jfeature,
+                                const jboolean j_from_window);
+  virtual jint GetTriggerState(JNIEnv* env,
+                               const base::android::JavaRef<jstring>& jfeature);
   virtual void Dismissed(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& jobj,
-                         const base::android::JavaParamRef<jstring>& jfeature);
+                         const base::android::JavaRef<jstring>& jfeature);
   virtual void DismissedWithSnooze(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature,
+      const base::android::JavaRef<jstring>& jfeature,
       const jint snooze_action);
   virtual base::android::ScopedJavaLocalRef<jobject> AcquireDisplayLock(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj);
+      JNIEnv* env);
   virtual void SetPriorityNotification(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature);
+      const base::android::JavaRef<jstring>& jfeature);
   virtual base::android::ScopedJavaLocalRef<jstring>
-  GetPendingPriorityNotification(JNIEnv* env,
-                                 const base::android::JavaRef<jobject>& jobj);
+  GetPendingPriorityNotification(JNIEnv* env);
   virtual void RegisterPriorityNotificationHandler(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature,
+      const base::android::JavaRef<jstring>& jfeature,
       const base::android::JavaRef<jobject>& jcallback);
   virtual void UnregisterPriorityNotificationHandler(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jstring>& jfeature);
-  virtual bool IsInitialized(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& jobj);
+      const base::android::JavaRef<jstring>& jfeature);
+  virtual bool IsInitialized(JNIEnv* env);
   virtual void AddOnInitializedCallback(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
-      const base::android::JavaParamRef<jobject>& j_callback_obj);
+      const base::android::JavaRef<jobject>& j_callback_obj);
 
  private:
   // A map from the feature name to the base::Feature, to ensure that the Java

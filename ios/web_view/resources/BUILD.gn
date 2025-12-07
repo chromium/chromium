@@ -1,0 +1,64 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web_view/resources/repack.gni")
+import("//tools/grit/repack.gni")
+
+group("resources") {
+  visibility = [ "//ios/web_view/*" ]
+  deps = [
+    ":repack_locales",
+    ":repack_resources",
+    ":repack_scalable_resources",
+  ]
+}
+
+repack_locales("repack_locales") {
+  visibility = [ ":resources" ]
+  source_patterns = [
+    "${root_gen_dir}/components/strings/components_strings_",
+    "${root_gen_dir}/components/strings/components_locale_settings_",
+    "${root_gen_dir}/ui/strings/app_locale_settings_",
+    "${root_gen_dir}/ui/strings/ax_strings_",
+    "${root_gen_dir}/ui/strings/ui_strings_",
+  ]
+
+  deps = [
+    "//components/strings:components_locale_settings",
+    "//components/strings:components_strings",
+    "//ui/strings:app_locale_settings",
+    "//ui/strings:ax_strings",
+    "//ui/strings:ui_strings",
+  ]
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
+  copy_data_to_bundle = true
+}
+
+repack("repack_resources") {
+  visibility = [ ":resources" ]
+  deps = [
+    "//components/resources:components_resources",
+    "//components/sync/service/resources",
+    "//ios/web:resources",
+    "//ui/webui/resources",
+  ]
+  sources = [
+    "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
+    "$root_gen_dir/ios/web/ios_web_resources.pak",
+    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
+  ]
+  output = "$target_gen_dir/web_view_resources.pak"
+  copy_data_to_bundle = true
+}
+
+ios_web_view_repack_all_scales("repack_scalable_resources") {
+  visibility = [ ":resources" ]
+  scales = [
+    "100",
+    "200",
+    "300",
+  ]
+}

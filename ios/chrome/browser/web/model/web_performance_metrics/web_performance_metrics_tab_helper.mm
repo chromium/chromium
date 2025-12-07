@@ -52,5 +52,3 @@ void WebPerformanceMetricsTabHelper::SetFirstInputDelayLoggingStatus(
     bool first_input_delay_logging_status) {
   first_input_delay_has_been_logged = first_input_delay_logging_status;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebPerformanceMetricsTabHelper)

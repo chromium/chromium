@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "arc_input_method_surface_manager_unittest\.cc": [
+    "+components/viz/common/resources/shared_image_format.h",
+    "+gpu/command_buffer/client",
+  ],
+}

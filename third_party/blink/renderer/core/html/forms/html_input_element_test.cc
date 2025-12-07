@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -69,16 +71,17 @@ class HTMLInputElementTest : public PageTestBase {
 };
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsNoList) {
-  GetDocument().documentElement()->setInnerHTML("<input id=test>");
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test>");
   EXPECT_TRUE(TestElement().FilteredDataListOptions().empty());
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input id=test list=dl1><datalist id=dl1></datalist>");
   EXPECT_TRUE(TestElement().FilteredDataListOptions().empty());
 }
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input id=test value=BC list=dl2>"
       "<datalist id=dl2>"
       "<option>AbC DEF</option>"
@@ -90,7 +93,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {
   EXPECT_EQ("AbC DEF", options[0]->value().Utf8());
   EXPECT_EQ("ghi", options[1]->value().Utf8());
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input id=test value=i list=dl2>"
       "<datalist id=dl2>"
       "<option>I</option>"
@@ -104,7 +107,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {
 }
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsForMultipleEmail) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <input id=test value='foo@example.com, tkent' list=dl3 type=email
     multiple>
     <datalist id=dl3>
@@ -118,7 +121,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsForMultipleEmail) {
 }
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <input id=test value='40m auto reel' list=dl4>
     <datalist id=dl4>
     <option>Hozelock 10m Mini Auto Reel - 2485</option>
@@ -131,7 +134,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
   EXPECT_EQ(1u, options.size());
   EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[0]->value().Utf8());
 
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <input id=test value='autoreel' list=dl4>
     <datalist id=dl4>
     <option>Hozelock 10m Mini Auto Reel - 2485</option>
@@ -157,11 +160,7 @@ TEST_F(HTMLInputElementTest, create) {
       GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute, kAttributePrealloc>());
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
-  } else {
-    EXPECT_NE(nullptr, input->UserAgentShadowRoot());
-  }
+  EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
 }
 
 TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
@@ -175,7 +174,7 @@ TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
 
   // Create an input element with type "range" inside a document without frame.
   To<HTMLBodyElement>(html->firstChild())
-      ->setInnerHTML("<input type='range' />");
+      ->SetInnerHTMLWithoutTrustedTypes("<input type='range' />");
   document_without_frame->AppendChild(html);
 
   auto page_holder = std::make_unique<DummyPageHolder>();
@@ -223,7 +222,7 @@ TEST_F(HTMLInputElementTest, ImageTypeCrash) {
 
 TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
   // crbug.com/697286
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<input type=radio name=g><input type=radio name=g>");
   auto& radio1 = To<HTMLInputElement>(*GetDocument().body()->firstChild());
   auto& radio2 = To<HTMLInputElement>(*radio1.nextSibling());
@@ -240,7 +239,7 @@ TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
 TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   GetDocument().View()->GetFrame().GetPage()->GetVisualViewport().SetScale(2.f);
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<input type='date' style='width:200px;height:50px' />");
   UpdateAllLifecyclePhasesForTest();
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
@@ -258,8 +257,8 @@ TEST_F(HTMLInputElementTest, StepDownOverflow) {
   input->setAttribute(html_names::kMinAttr, AtomicString("2010-02-10"));
   input->setAttribute(html_names::kStepAttr,
                       AtomicString("9223372036854775556"));
-  // InputType::applyStep() should not pass an out-of-range value to
-  // setValueAsDecimal, and WTF::msToYear() should not cause a DCHECK failure.
+  // InputType::ApplyStep() should not pass an out-of-range value to
+  // SetValueAsDecimal, and blink::MsToYear() should not cause a DCHECK failure.
   input->stepDown(1, ASSERT_NO_EXCEPTION);
 }
 
@@ -279,13 +278,15 @@ TEST_F(HTMLInputElementTest, StepDownDefaultToMin) {
 }
 
 TEST_F(HTMLInputElementTest, CheckboxHasNoShadowRoot) {
-  GetDocument().body()->setInnerHTML("<input type='checkbox' />");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input type='checkbox' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
 }
 
 TEST_F(HTMLInputElementTest, ChangingInputTypeCausesShadowRootToBeCreated) {
-  GetDocument().body()->setInnerHTML("<input type='checkbox' />");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input type='checkbox' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->setAttribute(html_names::kTypeAttr, AtomicString("text"));
@@ -293,7 +294,8 @@ TEST_F(HTMLInputElementTest, ChangingInputTypeCausesShadowRootToBeCreated) {
 }
 
 TEST_F(HTMLInputElementTest, RepaintAfterClearingFile) {
-  GetDocument().body()->setInnerHTML("<input type='file' />");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input type='file' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
 
   FileChooserFileInfoList files;
@@ -332,7 +334,7 @@ TEST_F(HTMLInputElementTest, UpdateTypeDcheck) {
 }
 
 TEST_F(HTMLInputElementTest, LazilyCreateShadowTree) {
-  GetDocument().body()->setInnerHTML("<input/>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input/>");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   ASSERT_TRUE(input);
   EXPECT_FALSE(IsShadowHost(*input));
@@ -341,7 +343,8 @@ TEST_F(HTMLInputElementTest, LazilyCreateShadowTree) {
 }
 
 TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithPlaceholder) {
-  GetDocument().body()->setInnerHTML("<input placeholder='x'/>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input placeholder='x'/>");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   ASSERT_TRUE(input);
   EXPECT_FALSE(IsShadowHost(*input));
@@ -350,10 +353,37 @@ TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithPlaceholder) {
 }
 
 TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithValue) {
-  GetDocument().body()->setInnerHTML("<input value='x'/>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input value='x'/>");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   ASSERT_TRUE(input);
   EXPECT_FALSE(IsShadowHost(*input));
+}
+
+// Tests that HasBeenPasswordField() remains true as the form control type
+// changes, until it changes to a non-text form control type.
+TEST_F(HTMLInputElementTest, HasBeenPasswordField) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kPassword);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kText);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kNumber);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kCheckbox);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+
+  // MaybeSetHasBeenPasswordField() only has an effect on IsTextType() elements.
+  input->setType(input_type_names::kUrl);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kRadio);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_FALSE(input->HasBeenPasswordField());
 }
 
 struct PasswordFieldResetParam {
@@ -381,7 +411,7 @@ class HTMLInputElementPasswordFieldResetTest
 // particularly relevant for field types where setValue("") does not imply
 // value().IsEmpty(), such as <input type="range"> (see crbug.com/1265130).
 TEST_P(HTMLInputElementPasswordFieldResetTest, PasswordFieldReset) {
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input id=test type=password>");
   GetDocument().UpdateStyleAndLayoutTree();
 

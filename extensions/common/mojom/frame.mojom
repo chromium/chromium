@@ -10,6 +10,8 @@ import "extensions/common/mojom/context_type.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
+import "extensions/common/mojom/extension_id.mojom";
+import "extensions/common/mojom/match_origin_as_fallback.mojom";
 import "extensions/common/mojom/message_port.mojom";
 import "extensions/common/mojom/run_location.mojom";
 import "extensions/common/mojom/stack_frame.mojom";
@@ -30,8 +32,8 @@ struct ExecuteCodeParams {
 
   // The webview guest source who calls to execute code.
   url.mojom.Url webview_src;
-  // Whether to inject into about:blank (sub)frames.
-  bool match_about_blank;
+  // Behavior for frames where the URL cannot be matched directly.
+  MatchOriginAsFallbackBehavior match_origin_as_fallback_behavior;
   // When to inject the code.
   RunLocation run_at;
   // Whether the request is coming from a <webview>.
@@ -47,6 +49,7 @@ struct RequestParams {
   // Extension ID this request was sent from. This can be empty, in the case
   // where we expose APIs to normal web pages using the extension function
   // system.
+  // TODO(crbug.com/404555668): Convert to extensions::mojom::ExtensionId.
   string extension_id;
   // URL of the frame the request was sent from. This isn't necessarily an
   // extension url. Extension requests can also originate from content scripts,
@@ -100,7 +103,7 @@ interface LocalFrame {
   // If |extension_id| is non-empty, the function will be invoked only in
   // contexts owned by the extension. |args| is a list of primitive Value types
   // that are passed to the function.
-  MessageInvoke(string extension_id,
+  MessageInvoke(ExtensionId extension_id,
                 string module_name,
                 string function_name,
                 mojo_base.mojom.ListValue args);
@@ -116,7 +119,7 @@ interface LocalFrame {
 
   // Trigger to execute declarative content script under browser control.
   ExecuteDeclarativeScript(int32 tab_id,
-                           string extension_id,
+                           ExtensionId extension_id,
                            string script_id,
                            url.mojom.Url url);
 
@@ -143,7 +146,7 @@ interface LocalFrameHost {
   // The reply is sent back to the renderer with |granted| for granting
   // permission for a script to run. If |granted| is false, the permission
   // should not be handled.
-  RequestScriptInjectionPermission(string extension_id,
+  RequestScriptInjectionPermission(ExtensionId extension_id,
                       InjectionType script_type,
                       RunLocation run_location) => (bool granted);
 

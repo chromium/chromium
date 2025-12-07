@@ -7,6 +7,7 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/public/swap_completion_callback.h"

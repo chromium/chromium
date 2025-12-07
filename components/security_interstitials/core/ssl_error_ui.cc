@@ -5,6 +5,7 @@
 #include "components/security_interstitials/core/ssl_error_ui.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -13,6 +14,7 @@
 #include "components/ssl_errors/error_classification.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {
@@ -79,16 +81,20 @@ void SSLErrorUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
       l10n_util::GetStringFUTF16(
           IDS_SSL_V2_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url_)));
-  load_time_data.Set(
-      "recurrentErrorParagraph",
-      l10n_util::GetStringUTF16(IDS_SSL_V2_RECURRENT_ERROR_PARAGRAPH));
-  load_time_data.Set("show_recurrent_error_paragraph",
-                     controller_->HasSeenRecurrentError());
 
-  if (soft_override_enabled_)
+  load_time_data.Set("is_qwac_enabled",
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+                     base::FeatureList::IsEnabled(net::features::kVerifyQWACs)
+#else
+                     false
+#endif
+  );
+
+  if (soft_override_enabled_) {
     PopulateOverridableStrings(load_time_data);
-  else
+  } else {
     PopulateNonOverridableStrings(load_time_data);
+  }
 }
 
 const net::SSLInfo& SSLErrorUI::ssl_info() const {
@@ -170,8 +176,9 @@ void SSLErrorUI::PopulateNonOverridableStrings(
       help_string = IDS_SSL_NONOVERRIDABLE_INVALID;
       break;
     default:
-      if (requested_strict_enforcement_)
+      if (requested_strict_enforcement_) {
         help_string = IDS_SSL_NONOVERRIDABLE_HSTS;
+      }
   }
   load_time_data.Set("finalParagraph",
                      l10n_util::GetStringFUTF16(help_string, url));
@@ -208,7 +215,8 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
           security_interstitials::MetricsHelper::SHOW_ADVANCED);
       break;
     }
-    case CMD_OPEN_HELP_CENTER: {
+    case CMD_OPEN_HELP_CENTER:
+    case CMD_OPEN_HELP_CENTER_IN_NEW_TAB: {
       controller_->metrics_helper()->RecordUserInteraction(
           security_interstitials::MetricsHelper::SHOW_LEARN_MORE);
 
@@ -233,11 +241,13 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
       controller_->Reload();
       break;
     }
-    case CMD_OPEN_REPORTING_PRIVACY: {
+    case CMD_OPEN_REPORTING_PRIVACY:
+    case CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB: {
       controller_->OpenExtendedReportingPrivacyPolicy(true);
       break;
     }
-    case CMD_OPEN_WHITEPAPER: {
+    case CMD_OPEN_WHITEPAPER:
+    case CMD_OPEN_WHITEPAPER_IN_NEW_TAB: {
       controller_->OpenExtendedReportingWhitepaper(true);
       break;
     }
@@ -247,12 +257,25 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
       controller_->OpenEnhancedProtectionSettings();
       break;
     }
+    case CMD_SHOW_CERTIFICATE_VIEWER: {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      controller_->metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::VIEW_CERTIFICATE);
+      controller_->ShowCertificateViewer();
+      break;
+#else
+      NOTREACHED();
+#endif
+    }
     case CMD_OPEN_DATE_SETTINGS:
     case CMD_OPEN_DIAGNOSTIC:
     case CMD_OPEN_LOGIN:
     case CMD_REPORT_PHISHING_ERROR:
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
-    case CMD_REQUEST_SITE_ACCESS_PERMISSION: {
+    case CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
+    case CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
+    case CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB: {
       // Not supported by the SSL error page.
       DUMP_WILL_BE_NOTREACHED() << "Unsupported command: " << command;
       break;
@@ -266,4 +289,4 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
   }
 }
 
-}  // security_interstitials
+}  // namespace security_interstitials

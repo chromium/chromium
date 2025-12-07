@@ -1,0 +1,16 @@
+Name: transport-backend-cct
+Short Name: transport-backend-cct
+URL: https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-backend-cct/3.1.9/transport-backend-cct-3.1.9.aar
+Version: 3.1.9
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Datatransport transport backend cct pulled in via gradle.
+
+Local Modifications:
+No modifications.

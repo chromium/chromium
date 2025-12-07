@@ -6,10 +6,13 @@ package org.chromium.components.find_in_page;
 
 import android.graphics.Rect;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Java equivalent to the C++ FindNotificationDetails class
  * defined in components/find_in_page/find_notification_details.h
  */
+@NullMarked
 public class FindNotificationDetails {
     /** How many matches were found. */
     public final int numberOfMatches;

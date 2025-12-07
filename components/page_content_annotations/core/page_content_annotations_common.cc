@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/json/json_writer.h"
@@ -155,7 +156,7 @@ PageContentAnnotationsResult& PageContentAnnotationsResult::operator=(
 PageContentAnnotationsResult::~PageContentAnnotationsResult() = default;
 
 AnnotationType PageContentAnnotationsResult::GetType() const {
-  if (absl::holds_alternative<ContentVisibilityScore>(result_)) {
+  if (std::holds_alternative<ContentVisibilityScore>(result_)) {
     return AnnotationType::kContentVisibility;
   }
   return AnnotationType::kUnknown;
@@ -164,7 +165,7 @@ AnnotationType PageContentAnnotationsResult::GetType() const {
 PageContentAnnotationsResult::ContentVisibilityScore
 PageContentAnnotationsResult::GetContentVisibilityScore() const {
   DCHECK_EQ(AnnotationType::kContentVisibility, GetType());
-  return absl::get<PageContentAnnotationsResult::ContentVisibilityScore>(
+  return std::get<PageContentAnnotationsResult::ContentVisibilityScore>(
       result_);
 }
 

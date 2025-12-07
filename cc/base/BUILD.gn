@@ -69,14 +69,14 @@ if (is_android) {
     # External code should depend on ":cc_base_java" instead.
     visibility = [ ":*" ]
     sources = [ "switches.cc" ]
-    template = "android/java/src/org/chromium/cc/base/CcSwitches.java.tmpl"
+    class_name = "org.chromium.cc.base.CcSwitches"
   }
 
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":cc_base_java" instead.
     visibility = [ ":*" ]
     sources = [ "features.cc" ]
-    template = "android/java/src/org/chromium/cc/base/CcFeatures.java.tmpl"
+    class_name = "org.chromium.cc.base.CcFeatures"
   }
 
   android_library("cc_base_java") {

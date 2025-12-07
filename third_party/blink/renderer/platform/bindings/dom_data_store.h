@@ -33,6 +33,7 @@
 
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
@@ -69,10 +70,10 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return DOMWrapperWorld::Current(isolate).DomDataStore();
   }
 
-  // Sets the `return_value` from `value`. Can be used from any world. Will only
-  // consider the current world.
+  // Sets the `return_value` from `value` in the given `context`.
   static inline bool SetReturnValue(v8::ReturnValue<v8::Value> return_value,
-                                    ScriptWrappable* value);
+                                    ScriptWrappable* value,
+                                    v8::Local<v8::Context> context);
 
   // Sets the `return_value` from `value` in a world that can use inline
   // storage.
@@ -89,8 +90,22 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
                                         v8::Local<v8::Object> v8_receiver,
                                         const ScriptWrappable* blink_receiver);
 
+  // Returns the wrapper for `object` in the world corresponding to
+  // `script_state`. Can be used from any world. Cross-checks the world in
+  // `script_state` against the current world used by the Isolate (in the script
+  // state).
+  //
+  // Prefer this method over the version taking the Isolate parameter for
+  // performance reasons.
+  static inline v8::MaybeLocal<v8::Object> GetWrapper(
+      ScriptState* script_state,
+      const ScriptWrappable* object);
+
   // Returns the wrapper for `object` in the world corresponding to `isolate`.
   // Can be used from any world. Will only consider the current world.
+  //
+  // Prefer the method taking the ScriptState if possible for performance
+  // reasons.
   static inline v8::MaybeLocal<v8::Object> GetWrapper(
       v8::Isolate* isolate,
       const ScriptWrappable* object);
@@ -198,7 +213,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return false;
   }
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   // We can use the inline storage in a ScriptWrappable when we're in the main
@@ -207,7 +222,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   // other hand, if this method returns false, nothing is guaranteed (we might
   // be in the main world).
   static bool CanUseInlineStorageForWrapper() {
-    return !WTF::MayNotBeMainThread() &&
+    return !MayNotBeMainThread() &&
            !DOMWrapperWorld::NonMainWorldsExistInMainThread();
   }
 
@@ -249,12 +264,13 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
 
 // static
 bool DOMDataStore::SetReturnValue(v8::ReturnValue<v8::Value> return_value,
-                                  ScriptWrappable* value) {
+                                  ScriptWrappable* value,
+                                  v8::Local<v8::Context> context) {
   if (CanUseInlineStorageForWrapper()) {
     return SetReturnValueFromInlineStorage(return_value, value);
   }
-  return Current(return_value.GetIsolate())
-      .SetReturnValueFrom(return_value, value);
+  auto& world = DOMWrapperWorld::World(return_value.GetIsolate(), context);
+  return world.DomDataStore().SetReturnValueFrom(return_value, value);
 }
 
 // static
@@ -310,12 +326,24 @@ v8::MaybeLocal<v8::Object> DOMDataStore::GetWrapper(
   return Current(isolate).Get(isolate, object);
 }
 
+// static
+v8::MaybeLocal<v8::Object> DOMDataStore::GetWrapper(
+    ScriptState* script_state,
+    const ScriptWrappable* object) {
+  DOMDataStore& store = script_state->World().DomDataStore();
+  auto* isolate = script_state->GetIsolate();
+  return store.Get(isolate, object);
+}
+
 template <bool entered_context>
 v8::MaybeLocal<v8::Object> DOMDataStore::Get(v8::Isolate* isolate,
                                              const ScriptWrappable* object) {
+  DCHECK(!CanUseInlineStorageForWrapper() || can_use_inline_storage_);
   if (can_use_inline_storage_) {
-    return entered_context ? GetInlineStorage(isolate, object).Get(isolate)
-                           : GetUncheckedInlineStorage(object).Get(isolate);
+    // The following will crash if no context is entered. This is by design. The
+    // validation can be skipped with `entered_context`.
+    DCHECK(!entered_context || Current(isolate).can_use_inline_storage_);
+    return GetUncheckedInlineStorage(object).Get(isolate);
   }
   if (const auto it = wrapper_map_.find(object); it != wrapper_map_.end()) {
     return it->value.Get(isolate);

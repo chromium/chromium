@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 
-#include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -63,6 +62,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void DetachLayoutTree(bool performing_reattach) override;
 
   HTMLFormElement* formOwner() const final;
+  HTMLElement* formForBinding() const final;
 
   bool IsDisabledFormControl() const override;
 
@@ -101,42 +101,18 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     void Trace(Visitor* visitor) const { visitor->Trace(popover); }
   };
 
-  enum class PopoverTriggerSupport {
-    kNone,
-    kSupported,
-  };
+  // Returns the popover target element and triggering behavior.
+  static PopoverTargetElement popoverTargetElement(HTMLElement& element);
 
   // Retrieves the popover target element and triggering behavior.
   PopoverTargetElement popoverTargetElement();
-  virtual PopoverTriggerSupport SupportsPopoverTriggering() const {
-    return PopoverTriggerSupport::kNone;
-  }
 
-  // The IDL reflections:
-  AtomicString popoverTargetAction() const;
-  void setPopoverTargetAction(const AtomicString& value);
+  bool IsValidInterestInvoker(Element& target) const override;
 
-  Element* commandForElement();
-
-  AtomicString command() const;
-  CommandEventType GetCommandEventType() const;
-
-  Element* interestTargetElement() override;
-
-  AtomicString interestAction() const override;
+  // Handles popover activation for the given event and element.
+  static void HandlePopoverActivation(Event& event, HTMLElement& element);
 
   void DefaultEventHandler(Event&) override;
-
-  void SetHovered(bool hovered) override;
-  void HandlePopoverInvokerHovered(bool hovered);
-
-  // Getter and setter for the PII type of the element derived from the autofill
-  // field semantic prediction.
-  virtual FormElementPiiType GetFormElementPiiType() const {
-    return FormElementPiiType::kUnknown;
-  }
-  virtual void SetFormElementPiiType(FormElementPiiType form_element_pii_type) {
-  }
 
   bool willValidate() const override;
 
@@ -188,10 +164,10 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void DidChangeForm() override;
   void DidMoveToNewDocument(Document& old_document) override;
 
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldHaveFocusAppearance() const override;
 
   virtual void ResetImpl() {}
@@ -204,6 +180,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   void HandlePopoverTriggering(HTMLElement* popover,
                                PopoverTriggerAction action);
+  // Checks if the element exists, is a valid Popover element, and (if it's a
+  // form control) supports popover triggering.
+  static bool IsValidPopoverTrigger(const HTMLElement& element);
 
   enum WebAutofillState autofill_state_;
 
@@ -211,20 +190,16 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 };
 
 template <>
-inline bool IsElementOfType<const HTMLFormControlElement>(const Node& node) {
-  return IsA<HTMLFormControlElement>(node);
-}
-template <>
 struct DowncastTraits<HTMLFormControlElement> {
   static bool AllowFrom(const Node& node) {
-    auto* html_element = DynamicTo<HTMLElement>(node);
-    return html_element && AllowFrom(*html_element);
+    auto* element = DynamicTo<Element>(node);
+    return element && AllowFrom(*element);
   }
   static bool AllowFrom(const ListedElement& control) {
     return control.IsFormControlElement();
   }
-  static bool AllowFrom(const HTMLElement& html_element) {
-    return html_element.IsFormControlElement();
+  static bool AllowFrom(const Element& element) {
+    return element.IsFormControlElement();
   }
 };
 

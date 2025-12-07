@@ -24,8 +24,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -36,3 +36,5 @@ static jlong JNI_SubresourceFilterFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace subresource_filter
+
+DEFINE_JNI(SubresourceFilterFeatureMap)

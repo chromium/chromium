@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -19,6 +20,7 @@
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 
 namespace extensions {
@@ -36,6 +38,7 @@ class ServiceWorkerData
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
       const std::optional<base::UnguessableToken>& activation_sequence,
+      const blink::ServiceWorkerToken& service_worker_token,
       ScriptContext* context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
 
@@ -93,6 +96,7 @@ class ServiceWorkerData
   raw_ptr<blink::WebServiceWorkerContextProxy> proxy_;
   const int64_t service_worker_version_id_;
   const std::optional<base::UnguessableToken> activation_sequence_;
+  const blink::ServiceWorkerToken service_worker_token_;
   const raw_ptr<ScriptContext, DanglingUntriaged> context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
@@ -105,6 +109,8 @@ class ServiceWorkerData
   mojo::AssociatedRemote<mojom::RendererAutomationRegistry>
       renderer_automation_registry_remote_;
   mojo::AssociatedReceiver<mojom::ServiceWorker> receiver_{this};
+
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ServiceWorkerData> weak_ptr_factory_{this};
 };

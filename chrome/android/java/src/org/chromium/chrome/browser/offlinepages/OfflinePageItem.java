@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Simple object representing an offline page. */
+@NullMarked
 public class OfflinePageItem {
     private final String mUrl;
     private final long mOfflineId;

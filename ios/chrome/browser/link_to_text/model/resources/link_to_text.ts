@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import * as utils from '//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js';
 
 /**
@@ -16,7 +16,7 @@ import * as utils from '//third_party/text-fragments-polyfill/src/src/fragment-g
  */
 function getLinkToText() {
   const selection = window.getSelection();
-  let selectionRect = {x: 0, y: 0, width: 0, height: 0};
+  const selectionRect = {x: 0, y: 0, width: 0, height: 0};
 
   if (selection && selection.rangeCount) {
     // Get the selection range's first client rect.
@@ -38,9 +38,10 @@ function getLinkToText() {
     fragment: response.fragment,
     selectedText: selectedText,
     selectionRect: selectionRect,
-    canonicalUrl: canonicalLinkNode
-        && canonicalLinkNode.getAttribute('href')
+    canonicalUrl: canonicalLinkNode && canonicalLinkNode.getAttribute('href'),
   };
 }
 
-gCrWeb.linkToText =  { getLinkToText };
+const linkToTextApi = new CrWebApi();
+linkToTextApi.addFunction('getLinkToText', getLinkToText);
+gCrWeb.registerApi('linkToText', linkToTextApi);

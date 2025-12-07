@@ -14,21 +14,28 @@ import android.os.SystemClock;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.InflateException;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Log;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.util.StyleUtils;
 
 /** A factory that creates text and favicon bitmaps. */
+@NullMarked
 public class TitleBitmapFactory {
     private static final String TAG = "TitleBitmapFactory";
 
@@ -44,7 +51,7 @@ public class TitleBitmapFactory {
     private final int mMaxWidth;
     private final int mViewHeight;
     private int mFaviconDimension;
-    private boolean mIncognito;
+    private final boolean mIncognito;
 
     private final TextPaint mTabTextPaint;
     private final float mTabTextHeight;
@@ -57,13 +64,16 @@ public class TitleBitmapFactory {
     /**
      * @param context The current Android's context.
      * @param incognito Whether the title are for incognito mode.
+     * @param tabStripHeightPx The height of the tab strip in pixels.
      */
-    public TitleBitmapFactory(Context context, boolean incognito) {
+    public TitleBitmapFactory(Context context, boolean incognito, int tabStripHeightPx) {
         Resources res = context.getResources();
         mIncognito = incognito;
 
         boolean fakeBoldText = res.getBoolean(R.bool.compositor_tab_title_fake_bold_text);
+        float density = res.getDisplayMetrics().density;
 
+        // Tab text properties
         mTabTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         if (mIncognito) {
             int incognitoTabTextColor =
@@ -80,11 +90,14 @@ public class TitleBitmapFactory {
                 /* applyTextSize= */ true,
                 !mIncognito);
         mTabTextPaint.setFakeBoldText(fakeBoldText);
-        mTabTextPaint.density = res.getDisplayMetrics().density;
+        mTabTextPaint.density = density;
+        enforceMaxTextHeight(mTabTextPaint, tabStripHeightPx);
+
         FontMetrics tabTextFontMetrics = mTabTextPaint.getFontMetrics();
-        mTabTextHeight = (float) Math.ceil(tabTextFontMetrics.bottom - tabTextFontMetrics.top);
+        mTabTextHeight = (float) Math.ceil(getMaxHeightOfFont(tabTextFontMetrics));
         mTabTextYOffset = -tabTextFontMetrics.top;
 
+        // Group text properties.
         mGroupTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         StyleUtils.applyTextAppearanceToTextPaint(
                 context,
@@ -94,29 +107,32 @@ public class TitleBitmapFactory {
                 /* applyTextSize= */ true,
                 /* applyTextColor= */ false);
         mGroupTextPaint.setFakeBoldText(fakeBoldText);
-        mGroupTextPaint.density = res.getDisplayMetrics().density;
+        mGroupTextPaint.density = density;
+        float maxGroupTextHeight =
+                tabStripHeightPx - (StripLayoutGroupTitle.TOTAL_MARGIN_HEIGHT * density);
+        enforceMaxTextHeight(mGroupTextPaint, maxGroupTextHeight);
+
         FontMetrics groupTextFontMetrics = mGroupTextPaint.getFontMetrics();
         mGroupTextHeight = (int) Math.ceil(groupTextFontMetrics.bottom - groupTextFontMetrics.top);
         mGroupTextYOffset = -groupTextFontMetrics.top;
 
+        // Favicon properties
         mFaviconDimension = res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
         mViewHeight = (int) Math.max(mFaviconDimension, mTabTextHeight);
 
         int width = res.getDisplayMetrics().widthPixels;
         int height = res.getDisplayMetrics().heightPixels;
         mMaxWidth = (int) (TITLE_WIDTH_PERCENTAGE * Math.max(width, height));
-
-        // Set the favicon dimension here.
         mFaviconDimension = Math.min(mMaxWidth, mFaviconDimension);
     }
 
     /**
      * Generates the favicon bitmap.
      *
-     * @param favicon   The favicon of the tab.
-     * @return          The Bitmap with the favicon.
+     * @param favicon The favicon of the tab.
+     * @return The Bitmap with the favicon.
      */
-    public Bitmap getFaviconBitmap(Bitmap favicon) {
+    public @Nullable Bitmap getFaviconBitmap(Bitmap favicon) {
         assert favicon != null;
         try {
             Bitmap b =
@@ -150,7 +166,7 @@ public class TitleBitmapFactory {
      * @param title The title of the group.
      * @return The Bitmap with the title.
      */
-    public Bitmap getTabTitleBitmap(String title) {
+    public @Nullable Bitmap getTabTitleBitmap(String title) {
         return getTitleBitmap(mTabTextPaint, mTabTextHeight, mTabTextYOffset, title);
     }
 
@@ -159,16 +175,18 @@ public class TitleBitmapFactory {
      *
      * @param filter To fetch tab information from.
      * @param context The current Android's context.
-     * @param rootId The root ID of the group.
+     * @param groupId The group ID.
      * @param title The title of the group.
-     * @return The Bitmap with the title.
+     * @return The Bitmap with the title. {@code null} if it cannot be generated.
      */
-    public Bitmap getGroupTitleBitmap(
-            TabGroupModelFilter filter, Context context, int rootId, String title) {
-        @TabGroupColorId int colorId = filter.getTabGroupColor(rootId);
+    public @Nullable Bitmap getGroupTitleBitmap(
+            TabGroupModelFilter filter, Context context, Token groupId, String title) {
+        if (!filter.tabGroupExists(groupId)) return null;
+        @TabGroupColorId int colorId = filter.getTabGroupColor(groupId);
         @ColorInt
         int color =
-                ColorPickerUtils.getTabGroupColorPickerItemTextColor(context, colorId, mIncognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                        context, colorId, mIncognito);
         mGroupTextPaint.setColor(color);
         return getTitleBitmap(mGroupTextPaint, mGroupTextHeight, mGroupTextYOffset, title);
     }
@@ -182,7 +200,8 @@ public class TitleBitmapFactory {
      * @param title The title of the tab.
      * @return The Bitmap with the title.
      */
-    public Bitmap getTitleBitmap(TextPaint textPaint, float height, float yOffset, String title) {
+    public @Nullable Bitmap getTitleBitmap(
+            TextPaint textPaint, float height, float yOffset, String title) {
         try {
             final long startTime = SystemClock.elapsedRealtime();
             boolean drawText = !TextUtils.isEmpty(title);
@@ -237,5 +256,21 @@ public class TitleBitmapFactory {
 
     private int getTitleWidth(String titleString, TextPaint textPaint) {
         return (int) Math.ceil(Layout.getDesiredWidth(titleString, textPaint));
+    }
+
+    @VisibleForTesting
+    static void enforceMaxTextHeight(TextPaint textPaint, float tabStripHeightPx) {
+        float effectiveFontHeightPx = getMaxHeightOfFont(textPaint.getFontMetrics());
+        if (effectiveFontHeightPx > tabStripHeightPx) {
+            // Scale down the text to fit the tab strip container if needed.
+            float scaleRatio = tabStripHeightPx / effectiveFontHeightPx;
+            textPaint.setTextSize(textPaint.getTextSize() * scaleRatio);
+        }
+    }
+
+    @VisibleForTesting
+    @Px
+    static float getMaxHeightOfFont(FontMetrics fontMetrics) {
+        return fontMetrics.bottom - fontMetrics.top;
     }
 }

@@ -5,14 +5,17 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -20,16 +23,19 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * Properties defined here reflect the visible state of the facilitated payments bottom sheet
  * component.
  */
+@NullMarked
 class FacilitatedPaymentsPaymentMethodsProperties {
     static final WritableIntPropertyKey VISIBLE_STATE = new WritableIntPropertyKey("visible_state");
     static final WritableIntPropertyKey SCREEN = new WritableIntPropertyKey("screen");
     static final WritableObjectPropertyKey<PropertyModel> SCREEN_VIEW_MODEL =
             new WritableObjectPropertyKey("screen_view_model");
-    static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
-            new ReadableObjectPropertyKey<>("dismiss_handler");
+    static final ReadableObjectPropertyKey<Callback<Integer>> UI_EVENT_LISTENER =
+            new ReadableObjectPropertyKey<>("ui_event_listener");
+    static final WritableBooleanPropertyKey SURVIVES_NAVIGATION =
+            new WritableBooleanPropertyKey("survives_navigation");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, DISMISS_HANDLER
+        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, UI_EVENT_LISTENER, SURVIVES_NAVIGATION
     };
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.
@@ -49,6 +55,10 @@ class FacilitatedPaymentsPaymentMethodsProperties {
 
         // A footer section containing additional actions.
         int FOOTER = 4;
+
+        int EWALLET = 5;
+
+        int PAYMENT_APP = 6;
     }
 
     // The visible state of the Facilitated Payments bottom sheet.
@@ -74,6 +84,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int PROGRESS_SCREEN = 2;
         // The screen showing an error message.
         int ERROR_SCREEN = 3;
+        // The screen showing the PIX account linking prompt.
+        int PIX_ACCOUNT_LINKING_PROMPT = 4;
     }
 
     /**
@@ -95,23 +107,66 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static class BankAccountProperties {
         static final ReadableObjectPropertyKey<String> BANK_NAME =
                 new ReadableObjectPropertyKey("bank_name");
-        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_SUMMARY =
-                new ReadableObjectPropertyKey("bank_account_summary");
-        static final ReadableIntPropertyKey BANK_ACCOUNT_DRAWABLE_ID =
-                new ReadableIntPropertyKey("bank_account_drawable_id");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_PAYMENT_RAIL =
+                new ReadableObjectPropertyKey("bank_account_payment_rail");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_TYPE =
+                new ReadableObjectPropertyKey("bank_account_type");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_NUMBER =
+                new ReadableObjectPropertyKey("bank_account_number");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_TRANSACTION_LIMIT =
+                new ReadableObjectPropertyKey("bank_account_transaction_limit");
+        static final ReadableObjectPropertyKey<Drawable> BANK_ACCOUNT_ICON =
+                new ReadableObjectPropertyKey<>("bank_account_icon");
         static final ReadableObjectPropertyKey<Runnable> ON_BANK_ACCOUNT_CLICK_ACTION =
                 new ReadableObjectPropertyKey<>("on_bank_account_click_action");
-        static final ReadableObjectPropertyKey<Bitmap> BANK_ACCOUNT_ICON_BITMAP =
-                new ReadableObjectPropertyKey<>("bank_account_icon_bitmap");
         static final PropertyKey[] NON_TRANSFORMING_KEYS = {
             BANK_NAME,
-            BANK_ACCOUNT_SUMMARY,
-            BANK_ACCOUNT_DRAWABLE_ID,
-            ON_BANK_ACCOUNT_CLICK_ACTION,
-            BANK_ACCOUNT_ICON_BITMAP
+            BANK_ACCOUNT_PAYMENT_RAIL,
+            BANK_ACCOUNT_TYPE,
+            BANK_ACCOUNT_NUMBER,
+            BANK_ACCOUNT_TRANSACTION_LIMIT,
+            BANK_ACCOUNT_ICON,
+            ON_BANK_ACCOUNT_CLICK_ACTION
         };
 
         private BankAccountProperties() {}
+    }
+
+    static class EwalletProperties {
+        static final ReadableObjectPropertyKey<String> EWALLET_NAME =
+                new ReadableObjectPropertyKey("ewallet_name");
+        static final ReadableObjectPropertyKey<String> ACCOUNT_DISPLAY_NAME =
+                new ReadableObjectPropertyKey("account_display_name");
+        static final ReadableIntPropertyKey EWALLET_DRAWABLE_ID =
+                new ReadableIntPropertyKey("ewallet_drawable_id");
+        static final ReadableObjectPropertyKey<Runnable> ON_EWALLET_CLICK_ACTION =
+                new ReadableObjectPropertyKey<>("on_ewallet_click_action");
+        static final ReadableObjectPropertyKey<Bitmap> EWALLET_ICON_BITMAP =
+                new ReadableObjectPropertyKey<>("ewallet_icon_bitmap");
+        static final PropertyKey[] NON_TRANSFORMING_KEYS = {
+            EWALLET_NAME,
+            ACCOUNT_DISPLAY_NAME,
+            EWALLET_DRAWABLE_ID,
+            ON_EWALLET_CLICK_ACTION,
+            EWALLET_ICON_BITMAP
+        };
+
+        private EwalletProperties() {}
+    }
+
+    /** Properties for a payment app entry in the facilitated payments bottom sheet. */
+    static class PaymentAppProperties {
+        static final ReadableObjectPropertyKey<String> PAYMENT_APP_NAME =
+                new ReadableObjectPropertyKey("payment_app_name");
+        static final ReadableObjectPropertyKey<Drawable> PAYMENT_APP_ICON =
+                new ReadableObjectPropertyKey<>("payment_app_icon");
+        static final ReadableObjectPropertyKey<Runnable> ON_PAYMENT_APP_CLICK_ACTION =
+                new ReadableObjectPropertyKey<>("on_payment_app_click_action");
+        static final PropertyKey[] NON_TRANSFORMING_KEYS = {
+            PAYMENT_APP_NAME, PAYMENT_APP_ICON, ON_PAYMENT_APP_CLICK_ACTION
+        };
+
+        private PaymentAppProperties() {}
     }
 
     /**
@@ -119,13 +174,30 @@ class FacilitatedPaymentsPaymentMethodsProperties {
      * bottom sheet for payments.
      */
     static class HeaderProperties {
-        static final ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
-                new ReadableIntPropertyKey("image_drawable_id");
-        static final ReadableIntPropertyKey TITLE_ID = new ReadableIntPropertyKey("title_id");
+        static final ReadableIntPropertyKey PRODUCT_ICON_DRAWABLE_ID =
+                new ReadableIntPropertyKey("product_icon_drawable_id");
+        static final ReadableIntPropertyKey PRODUCT_ICON_HEIGHT =
+                new ReadableIntPropertyKey("product_icon_height");
+        static final ReadableIntPropertyKey PRODUCT_ICON_CONTENT_DESCRIPTION_ID =
+                new ReadableIntPropertyKey("product_icon_content_description_id");
+        static final ReadableIntPropertyKey SECURITY_CHECK_DRAWABLE_ID =
+                new ReadableIntPropertyKey("security_check_drawable_id");
+        static final ReadableObjectPropertyKey<String> TITLE =
+                new ReadableObjectPropertyKey("title");
         static final ReadableIntPropertyKey DESCRIPTION_ID =
                 new ReadableIntPropertyKey("description_id");
+        static final ReadableIntPropertyKey PAYMENT_LINK_TITLE_TOP_MARGIN =
+                new ReadableIntPropertyKey("payment_link_title_top_margin");
 
-        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID, DESCRIPTION_ID};
+        static final PropertyKey[] ALL_KEYS = {
+            PRODUCT_ICON_DRAWABLE_ID,
+            PRODUCT_ICON_HEIGHT,
+            PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
+            SECURITY_CHECK_DRAWABLE_ID,
+            TITLE,
+            DESCRIPTION_ID,
+            PAYMENT_LINK_TITLE_TOP_MARGIN
+        };
 
         private HeaderProperties() {}
     }
@@ -174,6 +246,20 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final PropertyKey[] ALL_KEYS = {PRIMARY_BUTTON_CALLBACK};
 
         private ErrorScreenProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the Pix account linking prompt shown in
+     * a bottom sheet.
+     */
+    static class PixAccountLinkingPromptProperties {
+        static final WritableObjectPropertyKey<OnClickListener> ACCEPT_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("accept_button_callback");
+        static final WritableObjectPropertyKey<OnClickListener> DECLINE_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("decline_button_callback");
+
+        /** All the properties of Pix account linking prompt. */
+        static final PropertyKey[] ALL_KEYS = {ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK};
     }
 
     private FacilitatedPaymentsPaymentMethodsProperties() {}

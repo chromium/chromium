@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 
@@ -25,13 +21,12 @@ namespace ui {
 namespace {
 
 constexpr gfx::AcceleratedWidget kPrimaryWidget = 1;
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
 
 OverlaySurfaceCandidate CreateCandidate(const gfx::Rect& rect,
                                         int plane_z_order) {
   ui::OverlaySurfaceCandidate candidate;
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  candidate.format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  candidate.format = viz::MultiPlaneFormat::kNV12;
   candidate.plane_z_order = plane_z_order;
   candidate.buffer_size = rect.size();
   candidate.display_rect = gfx::RectF(rect);
@@ -59,14 +54,13 @@ class WaylandOverlayManagerTest : public WaylandTest {
     WaylandTest::SetUp();
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(
-        std::move(manager_ptr), kSupportedFormatsWithModifiers,
-        /*supports_dma_buf=*/false,
-        /*supports_viewporter=*/true,
-        /*supports_acquire_fence=*/false,
-        /*supports_overlays=*/true, kAugmentedSurfaceNotSupportedVersion,
-        /*supports_single_pixel_buffer=*/true,
-        /*server_version=*/{});
+    buffer_manager_gpu_->Initialize(std::move(manager_ptr),
+                                    kSupportedFormatsWithModifiers,
+                                    /*supports_dma_buf=*/false,
+                                    /*supports_viewporter=*/true,
+                                    /*supports_acquire_fence=*/false,
+                                    /*supports_overlays=*/true,
+                                    /*supports_single_pixel_buffer=*/true);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();
@@ -100,7 +94,7 @@ TEST_P(WaylandOverlayManagerTest, FormatSupportTest) {
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
       CreateCandidate(gfx::Rect(10, 10, 20, 20), 1)};
-  candidates[1].format = gfx::BufferFormat::RGBX_8888;
+  candidates[1].format = viz::SinglePlaneFormat::kRGBX_8888;
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
   EXPECT_TRUE(candidates[0].overlay_handled);
   EXPECT_FALSE(candidates[1].overlay_handled);
@@ -141,19 +135,6 @@ void NonIntegerDisplayRectTestHelper(WaylandBufferManagerGpu* manager_gpu,
 }  // namespace
 
 TEST_P(WaylandOverlayManagerTest, DoesNotSupportNonIntegerDisplayRect) {
-  constexpr std::array<std::array<bool, 2>, 2> test_data = {
-      {{false, false}, {true, false}}};
-  for (const auto& data : test_data) {
-    NonIntegerDisplayRectTestHelper(buffer_manager_gpu_.get(),
-                                    data[0] /* is_delegated_context */,
-                                    data[1] /* expect_candidates_handled */);
-  }
-}
-
-TEST_P(WaylandOverlayManagerTest, SupportsNonIntegerDisplayRect) {
-  // WaylandBufferManagerGpu manager_gpu;
-  buffer_manager_gpu_->supports_subpixel_accurate_position_ = true;
-
   constexpr std::array<std::array<bool, 2>, 2> test_data = {
       {{false, false}, {true, false}}};
   for (const auto& data : test_data) {

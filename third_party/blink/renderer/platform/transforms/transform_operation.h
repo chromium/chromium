@@ -73,7 +73,6 @@ class PLATFORM_EXPORT TransformOperation
   bool operator==(const TransformOperation& o) const {
     return IsSameType(o) && IsEqualAssumingSameType(o);
   }
-  bool operator!=(const TransformOperation& o) const { return !(*this == o); }
 
   virtual void Apply(gfx::Transform&,
                      const gfx::SizeF& border_box_size) const = 0;

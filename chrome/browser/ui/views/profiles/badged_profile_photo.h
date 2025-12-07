@@ -19,15 +19,15 @@ class BadgedProfilePhoto : public views::View {
   METADATA_HEADER(BadgedProfilePhoto, views::View)
 
  public:
-  enum BadgeType {
-    BADGE_TYPE_NONE,
-    BADGE_TYPE_SUPERVISOR,
-    BADGE_TYPE_CHILD,
-    BADGE_TYPE_SYNC_COMPLETE,
-    BADGE_TYPE_SYNC_ERROR,
-    BADGE_TYPE_SYNC_PAUSED,
-    BADGE_TYPE_SYNC_DISABLED,
-    BADGE_TYPE_SYNC_OFF,
+  enum class BadgeType {
+    kNone,
+    kSupervisor,
+    kChild,
+    kSyncComplete,
+    kSyncError,
+    kSyncPaused,
+    kSyncDisabled,
+    kSyncOff,
   };
 
   // Width/Height of the profile photo.
@@ -37,7 +37,7 @@ class BadgedProfilePhoto : public views::View {
   // |badge_type| positioned in the bottom-right corner of |profile_photo|. In
   // RTL mode the badge is positioned in the bottom-left corner. The profile
   // photo will be adjusted to be circular and of size 40x40 (kImageSize).
-  // If |badge_type| is BADGE_TYPE_NONE no badge will be placed on top of the
+  // If |badge_type| is BadgeType::kNone no badge will be placed on top of the
   // profile photo. The size of the View is fixed.
   // TODO(tangltom): Add accessibility features in the future.
   BadgedProfilePhoto(BadgeType badge_type, const gfx::Image& profile_photo);

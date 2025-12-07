@@ -33,7 +33,7 @@ namespace {
 bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
                         const CoreAccountId& account_id) {
   const std::vector<gaia::ListedAccount>& accounts =
-      cookie_info.signed_in_accounts;
+      cookie_info.GetPotentiallyInvalidSignedInAccounts();
   return base::Contains(accounts, account_id, &gaia::ListedAccount::id);
 }
 
@@ -65,7 +65,7 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
       IdentityManagerFactory::GetForProfile(profile_);
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager->GetAccountsInCookieJar();
-  if (cookie_info.accounts_are_fresh &&
+  if (cookie_info.AreAccountsFresh() &&
       CookieInfoContains(cookie_info, account_id_)) {
     MoveTab();
   } else {
@@ -91,8 +91,9 @@ void DiceInterceptedSessionStartupHelper::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
   if (error != GoogleServiceAuthError::AuthErrorNone())
     return;
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh)
+  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
     return;
+  }
   if (!CookieInfoContains(accounts_in_cookie_jar_info, account_id_))
     return;
 

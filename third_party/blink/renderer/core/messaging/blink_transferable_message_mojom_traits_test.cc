@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/null_task_runner.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -31,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -51,10 +50,8 @@ scoped_refptr<SerializedScriptValue> BuildSerializedScriptValue(
     Transferables& transferables) {
   SerializedScriptValue::SerializeOptions options;
   options.transferables = &transferables;
-  ExceptionState exceptionState(isolate, v8::ExceptionContext::kOperation,
-                                "MessageChannel", "postMessage");
   return SerializedScriptValue::Serialize(isolate, value, options,
-                                          exceptionState);
+                                          PassThroughException(isolate));
 }
 
 TEST(BlinkTransferableMessageStructTraitsTest,
@@ -71,9 +68,11 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     v8::Local<v8::ArrayBuffer> v8_buffer =
         v8::ArrayBuffer::New(isolate, num_elements);
     auto backing_store = v8_buffer->GetBackingStore();
-    uint8_t* original_data = static_cast<uint8_t*>(backing_store->Data());
-    for (size_t i = 0; i < num_elements; i++)
-      original_data[i] = static_cast<uint8_t>(i);
+    {
+      ArrayBufferContents buffer_contents(backing_store);
+      uint8_t i = 0;
+      std::ranges::generate(buffer_contents.ByteSpan(), [&i]() { return i++; });
+    }
 
     DOMArrayBuffer* array_buffer =
         NativeValueTraits<DOMArrayBuffer>::NativeValue(
@@ -95,8 +94,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   ArrayBufferContents& deserialized_contents =
       out.message->GetArrayBufferContentsArray()[0];
   Vector<uint8_t> deserialized_data;
-  deserialized_data.Append(static_cast<uint8_t*>(deserialized_contents.Data()),
-                           8);
+  deserialized_data.AppendSpan(deserialized_contents.ByteSpan().first(8u));
   ASSERT_EQ(deserialized_data.size(), 8U);
   for (wtf_size_t i = 0; i < deserialized_data.size(); i++) {
     ASSERT_TRUE(deserialized_data[i] == i);
@@ -113,10 +111,12 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   v8::Local<v8::ArrayBuffer> v8_buffer =
       v8::ArrayBuffer::New(isolate, num_elements);
   auto backing_store = v8_buffer->GetBackingStore();
-  void* originalContentsData = backing_store->Data();
-  uint8_t* contents = static_cast<uint8_t*>(originalContentsData);
-  for (size_t i = 0; i < num_elements; i++)
-    contents[i] = static_cast<uint8_t>(i);
+  auto* originalContentsData = static_cast<uint8_t*>(backing_store->Data());
+  {
+    ArrayBufferContents buffer_contents(backing_store);
+    uint8_t i = 0;
+    std::ranges::generate(buffer_contents.ByteSpan(), [&i]() { return i++; });
+  }
 
   DOMArrayBuffer* original_array_buffer =
       NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, v8_buffer,
@@ -143,7 +143,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   ASSERT_EQ(originalContentsData, deserialized_contents.Data());
 
   // The original ArrayBufferContents should be detached.
-  ASSERT_EQ(nullptr, v8_buffer->GetBackingStore()->Data());
+  ASSERT_TRUE(v8_buffer->WasDetached());
+  ASSERT_EQ(0UL, v8_buffer->GetBackingStore()->ByteLength());
   ASSERT_TRUE(original_array_buffer->IsDetached());
 }
 
@@ -226,14 +227,11 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
  public:
   void SetUp() override {
-    auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    sii_ = sii.get();
-    context_provider_ = viz::TestContextProvider::Create(std::move(sii));
-    InitializeSharedGpuContextGLES2(context_provider_.get());
+    context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContextRaster(context_provider_.get());
   }
 
   void TearDown() override {
-    sii_ = nullptr;
     SharedGpuContext::Reset();
   }
 
@@ -246,20 +244,18 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
   ImageBitmap* CreateAcceleratedStaticImageBitmap() {
-    auto client_si = gpu::ClientSharedImage::CreateForTesting();
+    auto client_si = gpu::ClientSharedImage::CreateForTesting(
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ);
 
     return MakeGarbageCollected<ImageBitmap>(
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-            std::move(client_si), GenTestSyncToken(100), 0,
-            SkImageInfo::MakeN32Premul(100, 100), GL_TEXTURE_2D, true,
+            std::move(client_si), GenTestSyncToken(100), kPremul_SkAlphaType,
             SharedGpuContext::ContextProviderWrapper(),
             base::PlatformThread::CurrentRef(),
             base::MakeRefCounted<base::NullTaskRunner>(),
-            WTF::BindOnce(&BlinkTransferableMessageStructTraitsWithFakeGpuTest::
-                              OnImageDestroyed,
-                          WTF::Unretained(this)),
-            /*supports_display_compositing=*/true,
-            /*is_overlay_candidate=*/true));
+            BindOnce(&BlinkTransferableMessageStructTraitsWithFakeGpuTest::
+                         OnImageDestroyed,
+                     Unretained(this))));
   }
 
   void OnImageDestroyed(const gpu::SyncToken&, bool) {
@@ -267,7 +263,6 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
  protected:
-  gpu::TestSharedImageInterface* sii_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
 
   bool image_destroyed_ = false;

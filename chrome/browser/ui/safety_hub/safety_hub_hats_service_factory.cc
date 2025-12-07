@@ -6,6 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -34,7 +36,7 @@ SafetyHubHatsServiceFactory::SafetyHubHatsServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
-  DependsOn(SafetyHubMenuNotificationServiceFactory::GetInstance());
+  DependsOn(HatsServiceFactory::GetInstance());
 }
 
 SafetyHubHatsServiceFactory::~SafetyHubHatsServiceFactory() = default;
@@ -45,8 +47,8 @@ SafetyHubHatsServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* profile = Profile::FromBrowserContext(context);
   TrustSafetySentimentService* tss_service =
       TrustSafetySentimentServiceFactory::GetForProfile(profile);
-  SafetyHubMenuNotificationService* menu_notification_service =
-      SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
-  return std::make_unique<SafetyHubHatsService>(
-      tss_service, *menu_notification_service, *profile);
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  return std::make_unique<SafetyHubHatsService>(tss_service, hats_service,
+                                                *profile);
 }

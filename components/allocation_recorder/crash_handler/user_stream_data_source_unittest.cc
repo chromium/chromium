@@ -101,7 +101,6 @@ TEST_F(AllocationRecorderStreamDataSourceTest,
       base::MakeRefCounted<StreamDataSourceFactoryMock>();
 
   EXPECT_CALL(*allocation_trace_recorder_holder_mock, Initialize(_)).Times(0);
-  EXPECT_CALL(*stream_data_source_factory_mock, CreateReportStream(_)).Times(0);
   EXPECT_CALL(*stream_data_source_factory_mock,
               CreateErrorMessage(Eq("!!NO ALLOCATION RECORDER AVAILABLE!!")))
       .Times(1);

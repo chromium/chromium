@@ -21,6 +21,11 @@ bool IsEmpty(const mojom::PaintTiming& timing);
 bool IsEmpty(const mojom::ParseTiming& timing);
 bool IsEmpty(const mojom::PageLoadTiming& timing);
 bool IsEmpty(const mojom::InteractiveTiming& timing);
+bool IsEmpty(const mojom::InputTiming& timing);
+bool IsEmpty(const mojom::LcpResourceLoadTimings& timing);
+bool IsEmpty(const mojom::LargestContentfulPaintTiming& timing);
+bool IsEmpty(const mojom::MonotonicPaintTiming& timing);
+bool IsEmpty(const mojom::SoftNavigationMetrics& timing);
 
 void InitPageLoadTimingForTest(mojom::PageLoadTiming* timing);
 

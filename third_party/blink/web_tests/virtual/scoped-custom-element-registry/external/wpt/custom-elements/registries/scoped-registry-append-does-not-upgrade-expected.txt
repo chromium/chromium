@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Connecting a custom element candiate with null registry does not set the registry
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Connecting a custom element candiate with a scoped custom element registry does not change the registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Inserting a custom element candiate with null registry does not change the registry
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Inserting a node from another document with global registry results in the custom element registry to be set and upgraded.
+  ABElement is not defined
+Harness: the test ran to completion.
+

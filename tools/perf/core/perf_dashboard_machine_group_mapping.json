@@ -60,6 +60,7 @@
   "client.webrtc.fyi": "WebRTCFYI",
   "client.webrtc.perf": "WebRTCPerf",
   "tryserver.blink": "BlinkTryServer",
+  "tryserver.chrome": "ChromeFYIInternal",
   "tryserver.chromium.android": "TryserverChromiumAndroid",
   "tryserver.chromium.angle": "TryServerANGLE",
   "tryserver.chromium.chromiumos": "TryserverChromiumChromiumOS",

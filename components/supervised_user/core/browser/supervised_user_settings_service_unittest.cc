@@ -15,6 +15,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -24,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
+namespace {
 
 const char kAtomicItemName[] = "X-Wombat";
 const char kSettingsName[] = "TestingSetting";
@@ -32,8 +35,8 @@ const char kSplitItemName[] = "X-SuperMoosePowers";
 
 class SupervisedUserSettingsServiceTest : public ::testing::Test {
  protected:
-  SupervisedUserSettingsServiceTest() {}
-  ~SupervisedUserSettingsServiceTest() override {}
+  SupervisedUserSettingsServiceTest() = default;
+  ~SupervisedUserSettingsServiceTest() override = default;
 
   std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncProcessor() {
     sync_processor_ = std::make_unique<syncer::FakeSyncChangeProcessor>();
@@ -79,7 +82,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     }
     ASSERT_TRUE(expected_value);
     EXPECT_EQ(*expected_value,
-              base::JSONReader::Read(supervised_user_setting.value()));
+              base::JSONReader::Read(supervised_user_setting.value(),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
   void OnNewSettingsAvailable(const base::Value::Dict& settings) {
@@ -105,7 +109,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
               base::JSONReader::Read(sync_change.sync_data()
                                          .GetSpecifics()
                                          .managed_user_setting()
-                                         .value()));
+                                         .value(),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
     // It should also show up in local Sync data.
     syncer::SyncDataList sync_data = settings_service_.GetAllSyncDataForTesting(
@@ -116,7 +121,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
         EXPECT_EQ(
             std::optional<base::Value>(true),
             base::JSONReader::Read(
-                sync_data_item.GetSpecifics().managed_user_setting().value()));
+                sync_data_item.GetSpecifics().managed_user_setting().value(),
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS));
         return;
       }
     }
@@ -433,4 +439,38 @@ TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
                        "ContentPackManualBehaviorHosts:youtube.com");
 }
 
+TEST_F(SupervisedUserSettingsServiceTest,
+       DeactivationClearsConsumingPrefStore) {
+  // Example pref store that consumes changes in the settings service. Has a
+  // private destructor.
+  scoped_refptr<SupervisedUserPrefStore> pref_store =
+      new SupervisedUserPrefStore(
+          &settings_service_,
+          /*supervised_user_content_filters_service=*/nullptr);
+  StartSyncing(syncer::SyncDataList());
+
+  // Implementation detail: SupervisedUserPrefStore presets value of
+  // kSafeSitesEnabled. This is why this tests checks both values to avoid
+  // situation where verified value is that default.
+  for (bool setting : {true, false}) {
+    syncer::SyncChangeList change_list;
+    change_list.emplace_back(
+        FROM_HERE, syncer::SyncChange::ACTION_ADD,
+        SupervisedUserSettingsService::CreateSyncDataForSetting(
+            kSafeSitesEnabled, base::Value(setting)));
+    settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
+
+    const base::Value* value = nullptr;
+    ASSERT_TRUE(pref_store->GetValue(prefs::kSupervisedUserSafeSites, &value));
+    EXPECT_EQ(*value, base::Value(setting));
+  }
+
+  settings_service_.SetActive(false);
+  {
+    const base::Value* value = nullptr;
+    EXPECT_FALSE(pref_store->GetValue(prefs::kSupervisedUserSafeSites, &value));
+  }
+}
+
+}  // namespace
 }  // namespace supervised_user

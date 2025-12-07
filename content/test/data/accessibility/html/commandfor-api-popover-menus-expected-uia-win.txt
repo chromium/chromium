@@ -1,0 +1,15 @@
+Document
+++Group IsControlElement=false
+++++Button ExpandCollapse.ExpandCollapseState='Collapsed'
+++++MenuBar IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++MenuItem Name='First item' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++MenuItem Name='No command item'
+++++++MenuItem Name='Custom command item'
+++++Button ExpandCollapse.ExpandCollapseState='Collapsed'
+++++MenuBar IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++MenuItem Name='First item' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++MenuBar IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++MenuItem Name='First item' ExpandCollapse.ExpandCollapseState='Expanded'
+++++Group IsControlElement=false
+++++++MenuItem Name='Submenu1 first item'
+++++++MenuItem Name='Submenu1 second item' ExpandCollapse.ExpandCollapseState='Collapsed'

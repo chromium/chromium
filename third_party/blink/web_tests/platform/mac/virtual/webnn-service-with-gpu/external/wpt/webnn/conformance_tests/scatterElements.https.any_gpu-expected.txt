@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] scatterElements float32 tensors along axis 0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] [required] scatterElements float32 tensors along axis 1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] [required] scatterElements float16 tensors along axis 0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] [required] scatterElements float16 tensors along axis 1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+Harness: the test ran to completion.
+

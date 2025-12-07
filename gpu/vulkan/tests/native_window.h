@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_TESTS_NATIVE_WINDOW_H_
 #define GPU_VULKAN_TESTS_NATIVE_WINDOW_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Rect;

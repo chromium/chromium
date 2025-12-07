@@ -9,10 +9,11 @@ import android.content.Intent;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -39,6 +41,7 @@ import java.util.Set;
  * Creates and destroys the Web Bluetooth notification when a website is either connected
  * to a Bluetooth device or scanning for nearby Bluetooth devices.
  */
+@NullMarked
 public class BluetoothNotificationManager {
     private static final String NOTIFICATION_NAMESPACE = "BluetoothNotificationManager";
 
@@ -57,16 +60,14 @@ public class BluetoothNotificationManager {
         int IS_SCANNING = 2;
     }
 
-    private BluetoothNotificationManagerDelegate mDelegate;
-    private BaseNotificationManagerProxy mNotificationManager;
-    private SharedPreferencesManager mSharedPreferences;
+    private final BluetoothNotificationManagerDelegate mDelegate;
+    private final BaseNotificationManagerProxy mNotificationManager;
+    private final SharedPreferencesManager mSharedPreferences;
     private final SparseIntArray mNotifications = new SparseIntArray();
 
-    public BluetoothNotificationManager(
-            BaseNotificationManagerProxy notificationManager,
-            BluetoothNotificationManagerDelegate delegate) {
+    public BluetoothNotificationManager(BluetoothNotificationManagerDelegate delegate) {
         mDelegate = delegate;
-        mNotificationManager = notificationManager;
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
         mSharedPreferences = ChromeSharedPreferences.getInstance();
     }
 
@@ -89,7 +90,7 @@ public class BluetoothNotificationManager {
         return mNotifications.indexOfKey(notificationId) >= 0;
     }
 
-    public void onStartCommand(Intent intent, int flags, int startId) {
+    public void onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (intent == null || intent.getExtras() == null) {
             cancelPreviousBluetoothNotifications();
             mDelegate.stopSelf();
@@ -132,7 +133,7 @@ public class BluetoothNotificationManager {
     private void updateNotification(
             int notificationId,
             @BluetoothType int bluetoothType,
-            String url,
+            @Nullable String url,
             boolean isIncognito,
             int startId) {
         if (doesNotificationExist(notificationId)
@@ -167,7 +168,10 @@ public class BluetoothNotificationManager {
      * @param isIncognito Whether the notification comes from incognito mode.
      */
     private void createNotification(
-            int notificationId, @BluetoothType int bluetoothType, String url, boolean isIncognito) {
+            int notificationId,
+            @BluetoothType int bluetoothType,
+            @Nullable String url,
+            boolean isIncognito) {
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -273,7 +277,7 @@ public class BluetoothNotificationManager {
     }
 
     private static boolean shouldStartService(
-            Context context, @BluetoothType int bluetoothType, int notificationTabId) {
+            @BluetoothType int bluetoothType, int notificationTabId) {
         if (!ContentFeatureMap.isEnabled(
                 ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
             return false;
@@ -290,6 +294,7 @@ public class BluetoothNotificationManager {
     /**
      * Send an intent to the bluetooth notification service to either create or destroy the
      * notification identified by notificationTabId.
+     *
      * @param context The activity context.
      * @param service The bluetooth notification service class.
      * @param notificationTabId The tab id.
@@ -305,7 +310,7 @@ public class BluetoothNotificationManager {
             GURL url,
             boolean isIncognito) {
         @BluetoothType int bluetoothType = getBluetoothType(webContents);
-        if (!shouldStartService(context, bluetoothType, notificationTabId)) return;
+        if (!shouldStartService(bluetoothType, notificationTabId)) return;
         Intent intent = new Intent(context, service);
         intent.setAction(ACTION_BLUETOOTH_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, notificationTabId);

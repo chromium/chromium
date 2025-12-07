@@ -5,28 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_LANGUAGE_MODEL_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_LANGUAGE_MODEL_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 
-#include <memory>
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace language {
 class AcceptLanguagesService;
 }
 
 // AcceptLanguagesServiceFactory is a way to associate an
-// AcceptLanguagesService instance to a BrowserState.
-class AcceptLanguagesServiceFactory : public BrowserStateKeyedServiceFactory {
+// AcceptLanguagesService instance to a Profile.
+class AcceptLanguagesServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static language::AcceptLanguagesService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static language::AcceptLanguagesService* GetForProfile(ProfileIOS* profile);
   static AcceptLanguagesServiceFactory* GetInstance();
-
-  AcceptLanguagesServiceFactory(const AcceptLanguagesServiceFactory&) = delete;
-  AcceptLanguagesServiceFactory& operator=(
-      const AcceptLanguagesServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AcceptLanguagesServiceFactory>;
@@ -34,11 +27,9 @@ class AcceptLanguagesServiceFactory : public BrowserStateKeyedServiceFactory {
   AcceptLanguagesServiceFactory();
   ~AcceptLanguagesServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_MODEL_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_

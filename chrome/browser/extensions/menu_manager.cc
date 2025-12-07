@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/menu_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -15,32 +16,41 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/chrome_web_view_internal.h"
 #include "chrome/common/extensions/api/context_menus.h"
+#include "components/guest_view/buildflags/buildflags.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+// Intentionally outside if BUILDFLAG(ENABLE_GUEST_VIEW) so we can use
+// kInstanceIDNone constant.
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/text_elider.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "chrome/common/extensions/api/chrome_web_view_internal.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::ChildProcessHost;
 using content::WebContents;
@@ -118,6 +128,57 @@ bool GetStringList(const base::Value::Dict& dict,
   return true;
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+// Constructs and dispatches an event related to a menu |item|, with an optional
+// |webview_guest|.
+void DispatchEventWithGuestView(const MenuItem& item,
+                                const events::HistogramValue& event_type,
+                                const std::string& event_name,
+                                base::Value::List* args,
+                                content::BrowserContext* context,
+                                WebViewGuest* webview_guest,
+                                EventRouter* event_router) {
+  auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
+                                       context);
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
+
+  if (webview_guest) {
+    event->filter_info->has_instance_id = true;
+    event->filter_info->instance_id = webview_guest->view_instance_id();
+  }
+
+  if (!item.extension_id().empty()) {
+    // For extensions and ChromeApps Webview.
+    event_router->DispatchEventToExtension(item.extension_id(),
+                                           std::move(event));
+  } else if (item.extension_id().empty() && webview_guest) {
+    // For Controlled Frame.
+    event_router->DispatchEventToURL(
+        webview_guest->owner_rfh()->GetLastCommittedURL(), std::move(event));
+  } else {
+    NOTREACHED();
+  }
+}
+#else
+// Constructs and dispatches an event related to a menu |item|.
+void DispatchEvent(const MenuItem& item,
+                   const events::HistogramValue& event_type,
+                   const std::string& event_name,
+                   base::Value::List* args,
+                   content::BrowserContext* context,
+                   EventRouter* event_router) {
+  auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
+                                       context);
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
+
+  if (!item.extension_id().empty()) {
+    // For extensions and ChromeApps Webview.
+    event_router->DispatchEventToExtension(item.extension_id(),
+                                           std::move(event));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
 }  // namespace
 
 MenuItem::MenuItem(const Id& id,
@@ -135,8 +196,7 @@ MenuItem::MenuItem(const Id& id,
       enabled_(enabled),
       contexts_(contexts) {}
 
-MenuItem::~MenuItem() {
-}
+MenuItem::~MenuItem() = default;
 
 std::unique_ptr<MenuItem> MenuItem::ReleaseChild(const Id& child_id,
                                                  bool recursive) {
@@ -423,8 +483,7 @@ bool MenuManager::DescendantOf(MenuItem* item,
       return true;
     MenuItem* next = GetItemById(*id);
     if (!next) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     id = next->parent_id();
   }
@@ -448,8 +507,7 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
   if (old_parent_id != nullptr) {
     MenuItem* old_parent = GetItemById(*old_parent_id);
     if (!old_parent) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     child = old_parent->ReleaseChild(child_id, false /* non-recursive search*/);
     DCHECK(child.get() == child_ptr);
@@ -460,15 +518,13 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
     const MenuItem::ExtensionKey& child_key = child_ptr->id().extension_key;
     auto i = context_items_.find(child_key);
     if (i == context_items_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     MenuItem::OwnedList& list = i->second;
     auto j =
-        base::ranges::find(list, child_ptr, &std::unique_ptr<MenuItem>::get);
+        std::ranges::find(list, child_ptr, &std::unique_ptr<MenuItem>::get);
     if (j == list.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     child = std::move(*j);
     list.erase(j);
@@ -496,8 +552,7 @@ bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
   const MenuItem::ExtensionKey extension_key = id.extension_key;
   auto i = context_items_.find(extension_key);
   if (i == context_items_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool result = false;
@@ -579,15 +634,13 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
   if (item->parent_id()) {
     MenuItem* parent = GetItemById(*item->parent_id());
     if (!parent) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     list = &(parent->children());
   } else {
     const MenuItem::ExtensionKey& key = item->id().extension_key;
     if (context_items_.find(key) == context_items_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     list = &context_items_[key];
   }
@@ -600,8 +653,7 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
       break;
   }
   if (item_location == list->end()) {
-    NOTREACHED_IN_MIGRATION();  // We should have found the item.
-    return;
+    NOTREACHED();  // We should have found the item.
   }
 
   // Iterate backwards from |item| and uncheck any adjacent radio items.
@@ -679,20 +731,18 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
 
   properties.Set("editable", params.is_editable);
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewGuest* webview_guest =
       WebViewGuest::FromRenderFrameHost(render_frame_host);
-  if (webview_guest) {
-    // This is used in web_view_internalcustom_bindings.js.
-    // The property is not exposed to developer API.
-    properties.Set("webviewInstanceId", webview_guest->view_instance_id());
-  }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   base::Value::List args;
   args.Append(std::move(properties));
 
   // Add the tab info to the argument list.
   // No tab info in a platform app.
-  if (!extension || !extension->is_platform_app()) {
+  // Do not add tab info if not extension (i.e. Controlled Frame).
+  if (extension && !extension->is_platform_app()) {
     // Note: web_contents are null in unit tests :(
     if (web_contents) {
       int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
@@ -730,44 +780,52 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   }
 
   // Note: web_contents are null in unit tests :(
-  if (web_contents && TabHelper::FromWebContents(web_contents)) {
-    TabHelper::FromWebContents(web_contents)
-        ->active_tab_permission_granter()
+  if (web_contents &&
+      ActiveTabPermissionGranter::FromWebContents(web_contents)) {
+    ActiveTabPermissionGranter::FromWebContents(web_contents)
         ->GrantIfRequested(extension);
   }
-
-  if (!item->extension_id().empty()) {
+  {
     // Dispatch to menu item's .onclick handler (this is the legacy API, from
     // before chrome.contextMenus.onClicked existed).
-    auto event = std::make_unique<Event>(
+    auto args_cloned = args.Clone();
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    if (webview_guest) {
+      // This is used in
+      // extensions/renderer/resources/context_menus_handlers.js.
+      // The property is not exposed to developer API.
+      args_cloned[0].GetDict().Set("webviewInstanceId",
+                                   webview_guest->view_instance_id());
+    }
+    DispatchEventWithGuestView(
+        *item,
         webview_guest ? events::WEB_VIEW_INTERNAL_CONTEXT_MENUS
                       : events::CONTEXT_MENUS,
-        webview_guest ? kOnWebviewContextMenus : kOnContextMenus, args.Clone(),
-        context);
-    event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
-    event_router->DispatchEventToExtension(item->extension_id(),
-                                           std::move(event));
+        webview_guest ? (webview_guest->IsOwnedByControlledFrameEmbedder()
+                             ? "controlledFrameInternal.contextMenus"
+                             : kOnWebviewContextMenus)
+                      : kOnContextMenus,
+        &args_cloned, context, webview_guest, event_router);
+#else
+    DispatchEvent(*item, events::CONTEXT_MENUS, kOnContextMenus, &args_cloned,
+                  context, event_router);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   }
   {
     // Dispatch to .contextMenus.onClicked handler.
-    auto event = std::make_unique<Event>(
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    DispatchEventWithGuestView(
+        *item,
         webview_guest ? events::CHROME_WEB_VIEW_INTERNAL_ON_CLICKED
                       : events::CONTEXT_MENUS_ON_CLICKED,
         webview_guest ? api::chrome_web_view_internal::OnClicked::kEventName
                       : api::context_menus::OnClicked::kEventName,
-        std::move(args), context);
-    event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
-    if (webview_guest) {
-      event->filter_info->has_instance_id = true;
-      event->filter_info->instance_id = webview_guest->view_instance_id();
-    }
-    if (item->extension_id().empty() && webview_guest) {
-      event_router->DispatchEventToURL(
-          webview_guest->owner_rfh()->GetLastCommittedURL(), std::move(event));
-    } else {
-      event_router->DispatchEventToExtension(item->extension_id(),
-                                             std::move(event));
-    }
+        &args, context, webview_guest, event_router);
+#else
+    DispatchEvent(*item, events::CONTEXT_MENUS_ON_CLICKED,
+                  api::context_menus::OnClicked::kEventName, &args, context,
+                  event_router);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   }
 }
 
@@ -817,8 +875,7 @@ bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
   if (!menu_item->parent_id()) {
     auto i = context_items_.find(menu_item->id().extension_key);
     if (i == context_items_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   }
 
@@ -986,7 +1043,7 @@ MenuItem::ExtensionKey::ExtensionKey()
 MenuItem::ExtensionKey::ExtensionKey(const std::string& extension_id)
     : extension_id(extension_id),
       webview_embedder_process_id(ChildProcessHost::kInvalidUniqueID),
-      webview_embedder_frame_id(MSG_ROUTING_NONE),
+      webview_embedder_frame_id(IPC::mojom::kRoutingIdNone),
       webview_instance_id(kInstanceIDNone) {
   DCHECK(!extension_id.empty());
 }
@@ -1030,10 +1087,6 @@ bool MenuItem::ExtensionKey::operator<(const ExtensionKey& other) const {
   return extension_id < other.extension_id;
 }
 
-bool MenuItem::ExtensionKey::operator!=(const ExtensionKey& other) const {
-  return !(*this == other);
-}
-
 bool MenuItem::ExtensionKey::empty() const {
   return extension_id.empty() &&
       webview_embedder_process_id == ChildProcessHost::kInvalidUniqueID &&
@@ -1045,18 +1098,7 @@ MenuItem::Id::Id() : incognito(false), uid(0) {}
 MenuItem::Id::Id(bool incognito, const MenuItem::ExtensionKey& extension_key)
     : incognito(incognito), extension_key(extension_key), uid(0) {}
 
-MenuItem::Id::~Id() {
-}
-
-bool MenuItem::Id::operator==(const Id& other) const {
-  return (incognito == other.incognito &&
-          extension_key == other.extension_key && uid == other.uid &&
-          string_uid == other.string_uid);
-}
-
-bool MenuItem::Id::operator!=(const Id& other) const {
-  return !(*this == other);
-}
+MenuItem::Id::~Id() = default;
 
 bool MenuItem::Id::operator<(const Id& other) const {
   return std::tie(incognito, extension_key, uid, string_uid) <

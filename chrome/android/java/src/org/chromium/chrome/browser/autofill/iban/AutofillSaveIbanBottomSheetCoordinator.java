@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.autofill.iban;
 
 import android.content.Context;
-import android.widget.EditText;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -19,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  *
  * <p>This component shows a bottom sheet to let the user choose to save a IBAN.
  */
+@NullMarked
 public class AutofillSaveIbanBottomSheetCoordinator {
     /** Native callbacks for the IBAN bottom sheet. */
     public interface NativeDelegate {
@@ -37,10 +40,10 @@ public class AutofillSaveIbanBottomSheetCoordinator {
         void onUiIgnored();
     }
 
+    private final Context mContext;
     private final AutofillSaveIbanBottomSheetMediator mMediator;
     private final AutofillSaveIbanBottomSheetView mView;
-    private PropertyModel mModel;
-    protected EditText mNickname;
+    private final PropertyModel mModel;
 
     /**
      * Creates the coordinator.
@@ -62,14 +65,18 @@ public class AutofillSaveIbanBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel) {
+        mContext = context;
         mView = new AutofillSaveIbanBottomSheetView(context);
-
         mModel =
                 new PropertyModel.Builder(AutofillSaveIbanBottomSheetProperties.ALL_KEYS)
+                        .with(AutofillSaveIbanBottomSheetProperties.LOGO_ICON, uiInfo.getLogoIcon())
                         .with(AutofillSaveIbanBottomSheetProperties.TITLE, uiInfo.getTitleText())
                         .with(
-                                AutofillSaveIbanBottomSheetProperties.IBAN_LABEL,
-                                uiInfo.getIbanLabel())
+                                AutofillSaveIbanBottomSheetProperties.DESCRIPTION,
+                                uiInfo.getDescriptionText())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.IBAN_VALUE,
+                                uiInfo.getIbanValue())
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL,
                                 uiInfo.getAcceptText())
@@ -84,6 +91,10 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION,
                                 v -> this.onCancelButtonClick())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
+                                new AutofillSaveIbanBottomSheetProperties.LegalMessage(
+                                        uiInfo.getLegalMessageLines(), this::openLegalMessageLink))
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveIbanBottomSheetViewBinder::bind);
@@ -95,7 +106,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                                 mView.mContentView, mView.mScrollView),
                         bottomSheetController,
                         layoutStateProvider,
-                        tabModel);
+                        tabModel,
+                        uiInfo.isServerSave());
     }
 
     void onAcceptButtonClick(String userProvidedNickname) {
@@ -112,8 +124,12 @@ public class AutofillSaveIbanBottomSheetCoordinator {
     }
 
     /** Destroys this component, hiding the bottom sheet if needed. */
-    public void destroy() {
-        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
+    public void destroy(@StateChangeReason int hideReason) {
+        mMediator.hide(hideReason);
+    }
+
+    void openLegalMessageLink(String url) {
+        CustomTabActivity.showInfoPage(mContext, url);
     }
 
     /** Retrieves the PropertyModel associated with the view for testing purposes. */

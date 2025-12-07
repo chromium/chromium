@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 
 namespace video_capture {
@@ -62,11 +61,11 @@ class VirtualDeviceTest : public ::testing::Test {
     EXPECT_CALL(*producer_, DoOnNewBuffer(_, _, _))
         .Times(SharedMemoryVirtualDeviceMojoAdapter::
                    max_buffer_pool_buffer_count())
-        .WillRepeatedly(Invoke(
-            [](int32_t buffer_id, media::mojom::VideoBufferHandlePtr* handle,
-               mojom::Producer::OnNewBufferCallback& callback) {
-              std::move(callback).Run();
-            }));
+        .WillRepeatedly([](int32_t buffer_id,
+                           media::mojom::VideoBufferHandlePtr* handle,
+                           mojom::Producer::OnNewBufferCallback& callback) {
+          std::move(callback).Run();
+        });
     // Should receive valid buffer for up to the maximum buffer count.
     for (int i = 0;
          i <
@@ -161,10 +160,10 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithReceiver) {
       request_frame_buffer_callback;
   EXPECT_CALL(request_frame_buffer_callback, Run(_))
       .Times(1)
-      .WillOnce(Invoke([this](int32_t buffer_id) {
+      .WillOnce([this](int32_t buffer_id) {
         // Verify that the returned |buffer_id| is a known buffer ID.
         EXPECT_TRUE(base::Contains(received_buffer_ids_, buffer_id));
-      }));
+      });
   device_adapter_->RequestFrameBuffer(kTestFrameSize, kTestPixelFormat, nullptr,
                                       request_frame_buffer_callback.Get());
   wait_loop2.RunUntilIdle();
@@ -178,8 +177,7 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithReceiver) {
         .Times(SharedMemoryVirtualDeviceMojoAdapter::
                    max_buffer_pool_buffer_count());
     EXPECT_CALL(video_frame_handler, OnStopped())
-        .WillOnce(Invoke(
-            [&wait_for_stopped_loop]() { wait_for_stopped_loop.Quit(); }));
+        .WillOnce([&wait_for_stopped_loop]() { wait_for_stopped_loop.Quit(); });
   }
   device_adapter_->Stop();
   wait_for_stopped_loop.Run();

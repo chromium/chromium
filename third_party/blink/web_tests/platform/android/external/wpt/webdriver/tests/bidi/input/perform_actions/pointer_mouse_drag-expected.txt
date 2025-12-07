@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_drag_and_drop[0-15-0]
+  assert 57 == 58.5 ± 1.0e+00
+[FAIL] test_drag_and_drop[0-15-300]
+  assert 57 == 58.5 ± 1.0e+00
+[FAIL] test_drag_and_drop[0-15-800]
+  assert 57 == 58.5 ± 1.0e+00
+[FAIL] test_drag_and_drop[-10--15-0]
+  assert 47 == 48.5 ± 1.0e+00
+[FAIL] test_drag_and_drop[-10--15-300]
+  assert 47 == 48.5 ± 1.0e+00
+[FAIL] test_drag_and_drop[-10--15-800]
+  assert 47 == 48.5 ± 1.0e+00
+Harness: the test ran to completion.
+

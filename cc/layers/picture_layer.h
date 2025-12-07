@@ -37,9 +37,6 @@ class CC_EXPORT PictureLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
   bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   sk_sp<const SkPicture> GetPicture() const override;
@@ -49,6 +46,9 @@ class CC_EXPORT PictureLayer : public Layer {
                       std::vector<NodeInfo>* content) const override;
 
   ContentLayerClient* client() { return client_; }
+
+  // Forces an update of recording source even without invalidation.
+  void SetForceUpdateRecordingSource();
 
   RecordingSource& GetRecordingSourceForTesting() {
     return recording_source_.Write(*this);
@@ -61,14 +61,18 @@ class CC_EXPORT PictureLayer : public Layer {
   explicit PictureLayer(ContentLayerClient* client);
   ~PictureLayer() override;
 
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
+
   bool HasDrawableContent() const override;
 
   // Can be overridden in tests to customize RasterSource.
   virtual scoped_refptr<RasterSource> CreateRasterSource() const;
 
  private:
-  friend class TestSerializationPictureLayer;
-
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
 
@@ -76,7 +80,7 @@ class CC_EXPORT PictureLayer : public Layer {
 
   // These fields are not protected because they are only modified during
   // LayerTreeHost::PaintContent().
-  raw_ptr<ContentLayerClient, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<ContentLayerClient> client_ = nullptr;
   bool is_backdrop_filter_mask_ = false;
 
   ProtectedSequenceWritable<RecordingSource> recording_source_;

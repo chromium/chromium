@@ -69,7 +69,7 @@ bool WebMProjectionParser::OnUInt(int id, int64_t val) {
 
 // WebMParserClient
 bool WebMProjectionParser::OnFloat(int id, double val) {
-  double* dst = NULL;
+  double* dst = nullptr;
   bool is_valid = false;
 
   switch (id) {
@@ -140,6 +140,15 @@ bool WebMProjectionParser::Validate() const {
   }
 
   return true;
+}
+
+VideoTransformation WebMProjectionParser::GetVideoTransformation() const {
+  DCHECK(Validate());
+  CHECK_GE(pose_yaw_, -180.0);
+  CHECK_LE(pose_yaw_, 180.0);
+  constexpr double kYawMirrorThreshold = 1.0;
+  return media::VideoTransformation(
+      pose_roll_, std::abs(std::abs(pose_yaw_) - 180.0) < kYawMirrorThreshold);
 }
 
 }  // namespace media

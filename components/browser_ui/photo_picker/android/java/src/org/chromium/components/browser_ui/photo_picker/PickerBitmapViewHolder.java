@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
@@ -13,11 +15,15 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Holds on to a {@link PickerBitmapView} that displays information about a picker bitmap. */
+@NullMarked
 public class PickerBitmapViewHolder extends ViewHolder
         implements DecoderServiceHost.ImagesDecodedCallback {
     // Our parent category.
@@ -46,8 +52,8 @@ public class PickerBitmapViewHolder extends ViewHolder
             String filePath,
             boolean isVideo,
             boolean fullWidth,
-            List<Bitmap> bitmaps,
-            String videoDuration,
+            @Nullable List<Bitmap> bitmaps,
+            @Nullable String videoDuration,
             float ratio) {
         if (bitmaps == null || bitmaps.size() == 0) return;
 
@@ -109,11 +115,13 @@ public class PickerBitmapViewHolder extends ViewHolder
      * @param position The position of the item to fetch.
      * @return The decoding action required to display the item.
      */
+    @Initializer
     public @PickerAdapter.DecodeActions int displayItem(
             PickerCategoryView categoryView, int position) {
         mCategoryView = categoryView;
 
         List<PickerBitmap> pickerBitmaps = mCategoryView.getPickerBitmaps();
+        assumeNonNull(pickerBitmaps);
         mBitmapDetails = pickerBitmaps.get(position);
 
         if (mBitmapDetails.type() == PickerBitmap.TileTypes.CAMERA
@@ -122,6 +130,7 @@ public class PickerBitmapViewHolder extends ViewHolder
             return PickerAdapter.DecodeActions.NO_ACTION;
         }
 
+        assumeNonNull(mBitmapDetails.getUri());
         String filePath = mBitmapDetails.getUri().getPath();
         PickerCategoryView.Thumbnail original =
                 mCategoryView.isInMagnifyingMode()
@@ -163,14 +172,14 @@ public class PickerBitmapViewHolder extends ViewHolder
             mItemView.initialize(mBitmapDetails, null, null, true, -1);
         }
 
-        mCategoryView
-                .getDecoderServiceHost()
-                .decodeImage(
-                        mBitmapDetails.getUri(),
-                        mBitmapDetails.type(),
-                        width,
-                        mCategoryView.isInMagnifyingMode(),
-                        this);
+        DecoderServiceHost decoderServiceHost = mCategoryView.getDecoderServiceHost();
+        assumeNonNull(decoderServiceHost);
+        decoderServiceHost.decodeImage(
+                mBitmapDetails.getUri(),
+                mBitmapDetails.type(),
+                width,
+                mCategoryView.isInMagnifyingMode(),
+                this);
         return PickerAdapter.DecodeActions.DECODE;
     }
 
@@ -178,12 +187,13 @@ public class PickerBitmapViewHolder extends ViewHolder
      * Returns the file path of the current request, or null if no request is in progress for this
      * holder.
      */
-    public String getFilePath() {
+    public @Nullable String getFilePath() {
         if (mBitmapDetails == null
                 || (mBitmapDetails.type() != PickerBitmap.TileTypes.PICTURE
                         && mBitmapDetails.type() != PickerBitmap.TileTypes.VIDEO)) {
             return null;
         }
+        assumeNonNull(mBitmapDetails.getUri());
         return mBitmapDetails.getUri().getPath();
     }
 }

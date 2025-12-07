@@ -26,6 +26,8 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
+    NS_UNAVAILABLE;
 
 @end
 

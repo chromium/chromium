@@ -1,0 +1,42 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Explainer: https://github.com/explainers-by-googlers/fetch-retry.
+// Note: In the final form, we might remove some of these settings if e.g. we
+// ended up not having use cases for them / browser-controlled policies are
+// enough. We will re-evaluate them after origin trial.
+dictionary RetryOptions {
+  // Required: Maximum number of retry attempts after the initial one fails.
+  // A value of 0 means no retries beyond the initial attempt.
+  required unsigned long maxAttempts;
+
+  // Optional: Delay before the first retry attempt in milliseconds.
+  // Defaults to browser-configured value if not specified.
+  unsigned long? initialDelay;
+
+  // Optional: Multiplier for increasing delay between retries (e.g., 2.0 for exponential backoff).
+  // A factor of 1.0 means fixed delay. Defaults to browser-configured value if not specified.
+  double? backoffFactor;
+
+  // Maximum total time allowed for all retry attempts in milliseconds, measure
+  // from when the first request starts. If this duration is exceeded, no further
+  // retries will be made, even if maxAttempts has not been reached.
+  required unsigned long maxAge;
+
+  // Optional: Controls whether the browser should continue attempting retries
+  // even after the originating document has been unloaded.
+  // This requires `keepalive: true` to be set on the Request.
+  // Defaults to false.
+  boolean retryAfterUnload = false;
+
+  // Optional: Specifies whether to retry when the HTTP request method is
+  // non-idempotent (e.g. POST, PUT, DELETE). If this is not set while the HTTP
+  // request method of the fetch is non-idempotent, no retry will be attempted.
+  // Defaults to false.
+  boolean retryNonIdempotent = false;
+
+  // Optional: Specifies whether to retry when the network request is guaranteed
+  // to have not reach the server yet (e.g. a connection can't be established).
+  boolean retryOnlyIfServerUnreached = false;
+};

@@ -6,7 +6,10 @@
 
 #include <stdint.h>
 
+#include <set>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -28,6 +31,7 @@
 #include "sql/statement_id.h"
 #include "sql/transaction.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -150,7 +154,7 @@ AggregatableDebugRateLimitTable::AllowedForRateLimit(
     }
 
     total_global_budget += consumed_budget;
-    if (serialized_reporting_site == statement.ColumnString(0)) {
+    if (serialized_reporting_site == statement.ColumnStringView(0)) {
       total_reporting_budget += consumed_budget;
     }
   }
@@ -241,7 +245,7 @@ bool AggregatableDebugRateLimitTable::ClearDataForOriginsInRange(
   while (select_statement.Step()) {
     int64_t rate_limit_id = select_statement.ColumnInt64(0);
     if (filter.Run(blink::StorageKey::CreateFirstParty(
-            DeserializeOrigin(select_statement.ColumnString(1))))) {
+            DeserializeOrigin(select_statement.ColumnStringView(1))))) {
       delete_statement.Reset(/*clear_bound_vars=*/false);
       delete_statement.BindInt64(0, rate_limit_id);
       if (!delete_statement.Run()) {
@@ -270,6 +274,23 @@ bool AggregatableDebugRateLimitTable::ClearAllDataInRange(
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
   return statement.Run();
+}
+
+void AggregatableDebugRateLimitTable::AppendRateLimitDataKeys(
+    sql::Database* db,
+    std::set<AttributionDataModel::DataKey>& keys) {
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kGetAggregatableDebugRateLimitDataKeysSql));
+
+  while (statement.Step()) {
+    url::Origin reporting_origin =
+        DeserializeOrigin(statement.ColumnStringView(0));
+    if (reporting_origin.opaque()) {
+      continue;
+    }
+    keys.emplace(std::move(reporting_origin));
+  }
 }
 
 void AggregatableDebugRateLimitTable::SetDelegate(

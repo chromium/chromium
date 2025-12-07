@@ -1,0 +1,16 @@
+include_rules = [
+  "+ash/frame/frame_view_ash.h",
+  "+ash/resources/vector_icons",
+  "+ash/shell.h",
+  "+chromeos/ui/base/window_properties.h",
+  "+chromeos/ui/frame/caption_buttons/frame_center_button.h",
+  "+chromeos/ui/frame/default_frame_header.h",
+  "+ash/wm/resize_shadow_controller.h",
+  "+components/strings/grit/components_strings.h",
+  "+ui/aura",
+  "+ui/color",
+  "+ui/gfx",
+  "+ui/strings",
+  "+ui/views",
+  "+ui/wm/public",
+]

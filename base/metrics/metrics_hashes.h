@@ -21,6 +21,9 @@ BASE_EXPORT uint64_t HashMetricName(std::string_view name);
 // can be more suitable for contexts where memory use is a concern.
 BASE_EXPORT uint32_t HashMetricNameAs32Bits(std::string_view name);
 
+// Computes a uint32_t hash of a given uint64_t hash.
+BASE_EXPORT uint32_t ParseMetricHashTo32Bits(uint64_t hash);
+
 // Computes a uint32_t hash of a given string based on its SHA1 hash. Suitable
 // for uniquely identifying field trial names and group names.
 BASE_EXPORT uint32_t HashFieldTrialName(std::string_view name);

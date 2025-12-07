@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_ADDRESS_NORMALIZER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/autofill/core/browser/address_normalizer_impl.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
 
 namespace autofill {
 

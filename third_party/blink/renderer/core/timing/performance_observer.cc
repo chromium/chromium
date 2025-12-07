@@ -15,11 +15,10 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_observer_entry_list.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -39,12 +38,12 @@ PerformanceObserver* PerformanceObserver::Create(
   if (window) {
     UseCounter::Count(context, WebFeature::kPerformanceObserverForWindow);
     return MakeGarbageCollected<PerformanceObserver>(
-        context, DOMWindowPerformance::performance(*window), callback);
+        context, GlobalPerformance::performance(*window), callback);
   }
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
     UseCounter::Count(context, WebFeature::kPerformanceObserverForWorker);
     return MakeGarbageCollected<PerformanceObserver>(
-        context, WorkerGlobalScopePerformance::performance(*scope), callback);
+        context, GlobalPerformance::performance(*scope), callback);
   }
   V8ThrowException::ThrowTypeError(
       script_state->GetIsolate(),
@@ -75,16 +74,19 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
   }
 
   PerformanceEntryType mask = types_supported_on_window;
-  if (RuntimeEnabledFeatures::NavigationIdEnabled(execution_context)) {
+  if (RuntimeEnabledFeatures::
+          BackForwardCacheRestorationPerformanceEntryEnabled(
+              execution_context)) {
     mask |= PerformanceEntry::kBackForwardCacheRestoration;
   }
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
           execution_context)) {
-    mask |= PerformanceEntry::kSoftNavigation;
+    mask |= PerformanceEntry::kSoftNavigation |
+            PerformanceEntry::kInteractionContentfulPaint;
   }
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          execution_context)) {
-    mask |= PerformanceEntry::kLongAnimationFrame;
+  mask |= PerformanceEntry::kLongAnimationFrame;
+  if (RuntimeEnabledFeatures::ContainerTimingEnabled(execution_context)) {
+    mask |= PerformanceEntry::kContainer;
   }
   return mask;
 }
@@ -103,6 +105,9 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
     supportedEntryTypes.push_back(
         performance_entry_names::kBackForwardCacheRestoration);
   }
+  if (mask & PerformanceEntry::kContainer) {
+    supportedEntryTypes.push_back(performance_entry_names::kContainer);
+  }
   if (mask & PerformanceEntry::kElement) {
     supportedEntryTypes.push_back(performance_entry_names::kElement);
   }
@@ -111,6 +116,10 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
   }
   if (mask & PerformanceEntry::kFirstInput) {
     supportedEntryTypes.push_back(performance_entry_names::kFirstInput);
+  }
+  if (mask & PerformanceEntry::kInteractionContentfulPaint) {
+    supportedEntryTypes.push_back(
+        performance_entry_names::kInteractionContentfulPaint);
   }
   if (mask & PerformanceEntry::kLargestContentfulPaint) {
     supportedEntryTypes.push_back(
@@ -201,8 +210,8 @@ void PerformanceObserver::observe(ScriptState* script_state,
       PerformanceEntry::EntryType entry_type =
           PerformanceEntry::ToEntryTypeEnum(AtomicString(entry_type_string));
       if (!(supported_types & entry_type)) {
-        String message = "The entry type '" + entry_type_string +
-                         "' does not exist or isn't supported.";
+        String message = StrCat({"The entry type '", entry_type_string,
+                                 "' does not exist or isn't supported."});
         if (GetExecutionContext()) {
           GetExecutionContext()->AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
@@ -252,8 +261,8 @@ void PerformanceObserver::observe(ScriptState* script_state,
     PerformanceEntryType entry_type =
         PerformanceEntry::ToEntryTypeEnum(entry_type_atomic_string);
     if (!(supported_types & entry_type)) {
-      String message = "The entry type '" + observer_init->type() +
-                       "' does not exist or isn't supported.";
+      String message = StrCat({"The entry type '", observer_init->type(),
+                               "' does not exist or isn't supported."});
       if (GetExecutionContext()) {
         GetExecutionContext()->AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
@@ -262,14 +271,11 @@ void PerformanceObserver::observe(ScriptState* script_state,
       }
       return;
     }
-    include_soft_navigation_observations_ =
-        observer_init->includeSoftNavigationObservations();
     if (observer_init->buffered()) {
       // Append all entries of this type to the current performance_entries_
       // to be returned on the next callback.
       performance_entries_.AppendVector(performance_->getBufferedEntriesByType(
-          AtomicString(observer_init->type()),
-          include_soft_navigation_observations_));
+          AtomicString(observer_init->type())));
       std::sort(performance_entries_.begin(), performance_entries_.end(),
                 PerformanceEntry::StartTimeCompareLessThan);
       is_buffered = true;
@@ -306,6 +312,10 @@ void PerformanceObserver::observe(ScriptState* script_state,
   if (filter_options_ & PerformanceEntry::kLongAnimationFrame) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kLongAnimationFrameObserver);
+  }
+  if (filter_options_ & PerformanceEntry::kContainer) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kContainerTimingObserverRegistered);
   }
 
   requires_dropped_entries_ = true;

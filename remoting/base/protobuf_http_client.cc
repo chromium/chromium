@@ -4,13 +4,16 @@
 
 #include "remoting/base/protobuf_http_client.h"
 
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/url_loader_network_service_observer.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -18,22 +21,17 @@
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
-namespace {
-
-constexpr char kAuthorizationHeaderFormat[] = "Authorization: Bearer %s";
-constexpr char kApiKeyHeaderFormat[] = "x-goog-api-key: %s";
-
-}  // namespace
-
 namespace remoting {
 
 ProtobufHttpClient::ProtobufHttpClient(
     const std::string& server_endpoint,
     OAuthTokenGetter* token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store)
     : server_endpoint_(server_endpoint),
       token_getter_(token_getter),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      client_cert_store_(std::move(client_cert_store)) {}
 
 ProtobufHttpClient::~ProtobufHttpClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -44,8 +42,8 @@ void ProtobufHttpClient::ExecuteRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!request->config().authenticated) {
-    DoExecuteRequest(std::move(request), OAuthTokenGetter::Status::SUCCESS, {},
-                     {});
+    DoExecuteRequest(std::move(request), OAuthTokenGetter::Status::SUCCESS,
+                     OAuthTokenInfo());
     return;
   }
 
@@ -71,81 +69,92 @@ bool ProtobufHttpClient::HasPendingRequests() const {
 void ProtobufHttpClient::DoExecuteRequest(
     std::unique_ptr<ProtobufHttpRequestBase> request,
     OAuthTokenGetter::Status status,
-    const std::string& user_email,
-    const std::string& access_token) {
+    const OAuthTokenInfo& token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != OAuthTokenGetter::Status::SUCCESS) {
     std::string error_message =
         base::StringPrintf("Failed to fetch access token. Status: %d", status);
     LOG(ERROR) << error_message;
-    ProtobufHttpStatus::Code code;
+    HttpStatus::Code code;
     switch (status) {
       case OAuthTokenGetter::Status::AUTH_ERROR:
-        code = ProtobufHttpStatus::Code::UNAUTHENTICATED;
+        code = HttpStatus::Code::UNAUTHENTICATED;
         break;
-      // TODO: yuweih - this should be mapped to `NETWORK_ERROR`. Fix this and
-      // downstream code that relies on this behavior.
       case OAuthTokenGetter::Status::NETWORK_ERROR:
-        code = ProtobufHttpStatus::Code::UNAVAILABLE;
+        code = HttpStatus::Code::NETWORK_ERROR;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown OAuthTokenGetter Status: " << status;
-        code = ProtobufHttpStatus::Code::UNKNOWN;
+        NOTREACHED() << "Unknown OAuthTokenGetter Status: " << status;
     }
-    request->OnAuthFailed(ProtobufHttpStatus(code, error_message));
+    request->OnAuthFailed(HttpStatus(code, error_message));
     return;
   }
 
+  // SimpleURLLoader can only be used once, so we just bind and pass a creator
+  // callback.
+  // Can't bind a WeakPtr here since the callback returns a value. Using
+  // Unretained is safe since `request` is owned by `this`.
+  auto create_simple_url_loader = base::BindRepeating(
+      &ProtobufHttpClient::CreateSimpleUrlLoader, base::Unretained(this),
+      status == OAuthTokenGetter::Status::SUCCESS ? token_info.access_token()
+                                                  : std::string(),
+      request->GetRequestTimeoutDuration());
+  auto* unowned_request = request.get();
+  base::OnceClosure invalidator = base::BindOnce(
+      &ProtobufHttpClient::CancelRequest, weak_factory_.GetWeakPtr(),
+      pending_requests_.insert(pending_requests_.end(), std::move(request)));
+  unowned_request->StartRequest(url_loader_factory_.get(),
+                                std::move(create_simple_url_loader),
+                                std::move(invalidator));
+}
+
+std::unique_ptr<network::SimpleURLLoader>
+ProtobufHttpClient::CreateSimpleUrlLoader(
+    const std::string& access_token,
+    base::TimeDelta timeout_duration,
+    const ProtobufHttpRequestConfig& config) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      GURL("https://" + server_endpoint_ + request->config().path);
+  resource_request->url = GURL("https://" + server_endpoint_ + config.path);
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->method = config.method;
 
-  if (status == OAuthTokenGetter::Status::SUCCESS && !access_token.empty()) {
-    resource_request->headers.AddHeaderFromString(
-        base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
+  if (!access_token.empty()) {
+    resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                        "Bearer " + access_token);
   } else {
     VLOG(1) << "Attempting to execute request without access token";
   }
 
-  if (!request->config().api_key.empty()) {
-    resource_request->headers.AddHeaderFromString(base::StringPrintf(
-        kApiKeyHeaderFormat, request->config().api_key.c_str()));
+  if (!config.api_key.empty()) {
+    google_apis::AddAPIKeyToRequest(*resource_request, config.api_key);
   }
 
-  if (request->config().provide_certificate) {
+  if (config.provide_certificate) {
     if (!resource_request->trusted_params.has_value()) {
       resource_request->trusted_params.emplace();
     }
 
-    service_observer_.emplace();
+    if (!service_observer_.has_value()) {
+      CHECK(client_cert_store_);
+      service_observer_.emplace(std::move(client_cert_store_));
+    }
     resource_request->trusted_params->url_loader_network_observer =
         service_observer_->Bind();
   }
 
   std::unique_ptr<network::SimpleURLLoader> send_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
-                                       request->config().traffic_annotation);
-  base::TimeDelta timeout_duration = request->GetRequestTimeoutDuration();
+                                       config.traffic_annotation);
   if (!timeout_duration.is_zero()) {
-    send_url_loader->SetTimeoutDuration(request->GetRequestTimeoutDuration());
+    send_url_loader->SetTimeoutDuration(timeout_duration);
   }
   send_url_loader->AttachStringForUpload(
-      request->config().request_message->SerializeAsString(),
-      "application/x-protobuf");
+      config.request_message->SerializeAsString(), "application/x-protobuf");
   send_url_loader->SetAllowHttpErrorResults(true);
-  auto* unowned_request = request.get();
-  base::OnceClosure invalidator = base::BindOnce(
-      &ProtobufHttpClient::CancelRequest, weak_factory_.GetWeakPtr(),
-      pending_requests_.insert(pending_requests_.end(), std::move(request)));
-  unowned_request->StartRequest(url_loader_factory_.get(),
-                                std::move(send_url_loader),
-                                std::move(invalidator));
+  return send_url_loader;
 }
 
 void ProtobufHttpClient::CancelRequest(

@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "one_time_token.cc",
+    "one_time_token.h",
+    "one_time_token_cache.cc",
+    "one_time_token_cache.h",
+    "one_time_token_retrieval_error.h",
+    "one_time_token_service.h",
+    "one_time_token_service_impl.cc",
+    "one_time_token_service_impl.h",
+    "one_time_token_type.h",
+    "sms_otp_backend.cc",
+    "sms_otp_backend.h",
+    "util/expiring_subscription.cc",
+    "util/expiring_subscription.h",
+    "util/expiring_subscription_manager.cc",
+    "util/expiring_subscription_manager.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "one_time_token_cache_unittest.cc",
+    "one_time_token_service_impl_unittest.cc",
+    "one_time_token_unittest.cc",
+    "util/expiring_subscription_manager_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

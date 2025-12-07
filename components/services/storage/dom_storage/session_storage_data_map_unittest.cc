@@ -15,9 +15,12 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -31,12 +34,12 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-MATCHER(OKStatus, "Equality matcher for type OK leveldb::Status") {
+MATCHER(OKStatus, "Equality matcher for type OK DbStatus") {
   return arg.ok();
 }
 
 base::span<const uint8_t> MakeBytes(std::string_view str) {
-  return base::as_bytes(base::make_span(str));
+  return base::as_byte_span(str);
 }
 
 mojo::PendingRemote<blink::mojom::StorageAreaObserver> MakeStubObserver() {
@@ -53,7 +56,7 @@ class MockListener : public SessionStorageDataMap::Listener {
                void(const std::vector<uint8_t>& map_id,
                     SessionStorageDataMap* map));
   MOCK_METHOD1(OnDataMapDestruction, void(const std::vector<uint8_t>& map_id));
-  MOCK_METHOD1(OnCommitResult, void(leveldb::Status status));
+  MOCK_METHOD1(OnCommitResult, void(DbStatus status));
 };
 
 void GetAllDataCallback(base::OnceClosure callback,
@@ -72,25 +75,29 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
 class SessionStorageDataMapTest : public testing::Test {
  public:
   SessionStorageDataMapTest() {
+    // Create an in-memory LevelDB.
     base::RunLoop loop;
-    database_ = AsyncDomStorageDatabase::OpenInMemory(
-        std::nullopt, "SessionStorageDataMapTest",
+    database_ = AsyncDomStorageDatabase::Open(
+        StorageType::kSessionStorage,
+        /*directory=*/base::FilePath(), "SessionStorageDataMapTest",
+        /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        base::BindLambdaForTesting([&](leveldb::Status status) {
+        base::BindLambdaForTesting([&](DbStatus status) {
           ASSERT_TRUE(status.ok());
           loop.Quit();
         }));
     loop.Run();
 
     database_->database().PostTaskWithThisObject(
-        base::BindOnce([](const DomStorageDatabase& db) {
+        base::BindOnce([](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB* db = &dom_storage_database->GetLevelDB();
           // Should show up in first map.
-          leveldb::Status status =
-              db.Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
+          DbStatus status =
+              db->Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
           ASSERT_TRUE(status.ok());
 
           // Dummy data to verify we don't delete everything.
-          status = db.Put(MakeBytes("map-3-key1"), MakeBytes("data3"));
+          status = db->Put(MakeBytes("map-3-key1"), MakeBytes("data3"));
           ASSERT_TRUE(status.ok());
         }));
   }
@@ -100,10 +107,10 @@ class SessionStorageDataMapTest : public testing::Test {
   std::map<std::string, std::string> GetDatabaseContents() {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
-          leveldb::Status status = db.GetPrefixed({}, &entries);
-          ASSERT_TRUE(status.ok());
+    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
+          ASSERT_OK_AND_ASSIGN(entries, db.GetPrefixed({}));
           loop.Quit();
         }));
     loop.Run();
@@ -154,7 +161,12 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
 
   // Test data is not cleared on deletion.
   map = nullptr;
-  EXPECT_EQ(2u, GetDatabaseContents().size());
+
+  // The database must contain 3 entries:
+  // (1) This map's key/value pair.
+  // (2) The other map's key/value pair
+  // (3) The database schema version.
+  EXPECT_EQ(3u, GetDatabaseContents().size());
 }
 
 TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
@@ -181,7 +193,12 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 
   // Test data is not cleared on deletion.
   map = nullptr;
-  EXPECT_EQ(2u, GetDatabaseContents().size());
+
+  // The database must contain 3 entries:
+  // (1) This map's key/value pair.
+  // (2) The other map's key/value pair
+  // (3) The database schema version.
+  EXPECT_EQ(3u, GetDatabaseContents().size());
 }
 
 TEST_F(SessionStorageDataMapTest, Clone) {
@@ -229,7 +246,13 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   // Test data is not cleared on deletion.
   map1 = nullptr;
   map2 = nullptr;
-  EXPECT_EQ(3u, GetDatabaseContents().size());
+
+  // The database must contain 4 entries:
+  // (1) This map's key/value pair.
+  // (2) The cloned map's key/value pair.
+  // (3) The other map's key/value pair
+  // (4) The database schema version.
+  EXPECT_EQ(4u, GetDatabaseContents().size());
 }
 
 }  // namespace storage

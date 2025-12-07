@@ -14,6 +14,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 
 namespace syncer {
 
@@ -62,7 +63,7 @@ struct EntityData {
   // Entity name, used mostly for Debug purposes.
   std::string name;
 
-  // Model type specific sync data.
+  // Data type specific sync data.
   sync_pb::EntitySpecifics specifics;
 
   // Entity creation and modification timestamps.
@@ -80,20 +81,19 @@ struct EntityData {
   // only outgoing password sharing invitations (created locally).
   sync_pb::CrossUserSharingPublicKey recipient_public_key;
 
-  // Indicate whether bookmark's |unique_position| was missing in the original
-  // specifics during GetUpdates. If the |unique_position| in specifics was
+  // Indicate whether bookmark's `unique_position` was missing in the original
+  // specifics during GetUpdates. If the `unique_position` in specifics was
   // evaluated by AdaptUniquePositionForBookmark(), this field will be set to
   // true. Relevant only for bookmarks.
   bool is_bookmark_unique_position_in_specifics_preprocessed = false;
 
-  // Collaboration with which the current entity is associated. Empty for
-  // non-shared types.
-  std::string collaboration_id;
+  // Collaboration metadata for the entity. Present only for shared entities.
+  std::optional<CollaborationMetadata> collaboration_metadata;
 
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its
   // specifics hasn't been set.
-  bool is_deleted() const { return specifics.ByteSize() == 0; }
+  bool is_deleted() const { return specifics.ByteSizeLong() == 0; }
 
   // Optionally populated for outgoing deletions. See corresponding field in
   // SyncEntity for details.

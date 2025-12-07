@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
 
-OVERLAY_USER_DATA_SETUP_IMPL(ConfirmationOverlayResponse);
-
 ConfirmationOverlayResponse::ConfirmationOverlayResponse(bool confirmed)
     : confirmed_(confirmed) {}
 

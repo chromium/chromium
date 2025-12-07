@@ -6,11 +6,10 @@
 
 #import <map>
 
+#import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback_forward.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
@@ -20,19 +19,18 @@
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_image_file_manager.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage+Testing.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 
 namespace {
 
-// Maximum size in number of elements that the LRU cache can hold before
+// Base size in number of elements that the LRU cache can hold before
 // starting to evict elements.
-const NSUInteger kLRUCacheMaxCapacity = 6;
+const NSUInteger kLRUCacheBaseCapacity = 6;
 
-// Maximum size in number of elements that the LRU cache can hold before
-// starting to evict elements when PinnedTabs feature is enabled.
+// Additional capacity of elements that the LRU cache can hold before starting
+// to evict elements when PinnedTabs feature is enabled.
 //
 // To calculate the cache size number we'll start with the assumption that
 // currently snapshot preloading feature "works fine". In the reality it might
@@ -41,7 +39,26 @@ const NSUInteger kLRUCacheMaxCapacity = 6;
 // used. Based on that kLRUCacheMaxCapacityForPinnedTabsEnabled is
 // kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed
 // for pinned tabs feature.
-const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
+const NSUInteger kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4;
+
+// Convert `wrappers` to a vector of SnapshotID.
+std::vector<SnapshotID> ToSnapshotIDs(NSArray<SnapshotIDWrapper*>* wrappers) {
+  std::vector<SnapshotID> snapshot_ids;
+  snapshot_ids.reserve(wrappers.count);
+  for (SnapshotIDWrapper* wrapper in wrappers) {
+    snapshot_ids.push_back(wrapper.snapshot_id);
+  }
+  return snapshot_ids;
+}
+
+// Returns a default LegacySnapshotLRUCache instance.
+LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
+  NSUInteger cacheSize = kLRUCacheBaseCapacity;
+  if (IsPinnedTabsEnabled()) {
+    cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled;
+  }
+  return [[LegacySnapshotLRUCache alloc] initWithCacheSize:cacheSize];
+}
 
 }  // namespace
 
@@ -72,17 +89,12 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
   __strong LegacyImageFileManager* _fileManager;
 }
 
-- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
-                         legacyPath:(const base::FilePath&)legacyPath {
+- (instancetype)initWithLRUCache:(LegacySnapshotLRUCache*)lruCache
+                     storagePath:(const base::FilePath&)storagePath {
   if ((self = [super init])) {
-    NSUInteger cacheSize = IsPinnedTabsEnabled()
-                               ? kLRUCacheMaxCapacityForPinnedTabsEnabled
-                               : kLRUCacheMaxCapacity;
-    _lruCache = [[LegacySnapshotLRUCache alloc] initWithCacheSize:cacheSize];
-
+    _lruCache = lruCache;
     _fileManager =
-        [[LegacyImageFileManager alloc] initWithStoragePath:storagePath
-                                                 legacyPath:legacyPath];
+        [[LegacyImageFileManager alloc] initWithStoragePath:storagePath];
 
     _observers = [SnapshotStorageObservers observers];
 
@@ -97,11 +109,13 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
                name:UIApplicationDidEnterBackgroundNotification
              object:nil];
   }
+
   return self;
 }
 
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath {
-  return [self initWithStoragePath:storagePath legacyPath:base::FilePath()];
+  return [self initWithLRUCache:CreateDefaultSnapshotLRUCache()
+                    storagePath:storagePath];
 }
 
 - (void)dealloc {
@@ -115,8 +129,103 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
               object:nil];
 }
 
-- (void)retrieveImageForSnapshotID:(SnapshotID)snapshotID
-                          callback:(void (^)(UIImage*))callback {
+#pragma mark - SnapshotStorage
+
+- (void)retrieveImageWithSnapshotID:(SnapshotIDWrapper*)snapshotID
+                       snapshotKind:(SnapshotKind)snapshotKind
+                         completion:(void (^)(UIImage*))completion {
+  switch (snapshotKind) {
+    case SnapshotKindColor:
+      [self retrieveColorImageForSnapshotID:snapshotID.snapshot_id
+                                   callback:completion];
+      break;
+
+    case SnapshotKindGreyscale:
+      [self retrieveGreyImageForSnapshotID:snapshotID.snapshot_id
+                                  callback:completion];
+      break;
+  }
+}
+
+- (void)setImage:(UIImage*)image
+    withSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper {
+  const SnapshotID snapshotID = snapshotIDWrapper.snapshot_id;
+  if (!image || !snapshotID.valid()) {
+    return;
+  }
+
+  [_lruCache setObject:image forKey:snapshotID];
+
+  [self.observers didUpdateSnapshotStorageWithSnapshotID:snapshotIDWrapper];
+
+  // Save the image to disk.
+  [_fileManager writeImage:image withSnapshotID:snapshotID];
+}
+
+- (void)removeImageWithSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper {
+  const SnapshotID snapshotID = snapshotIDWrapper.snapshot_id;
+  [_lruCache removeObjectForKey:snapshotID];
+
+  [self.observers
+      didUpdateSnapshotStorageWithSnapshotID:
+          [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshotID]];
+
+  [_fileManager removeImageWithSnapshotID:snapshotID];
+}
+
+- (void)removeAllImages {
+  [_lruCache removeAllObjects];
+
+  [_fileManager removeAllImages];
+}
+
+- (void)purgeImagesOlderThanWithThresholdDate:(NSDate*)thresholdDate
+                              liveSnapshotIDs:(NSArray<SnapshotIDWrapper*>*)
+                                                  liveSnapshotIDs {
+  [_fileManager purgeImagesOlderThan:base::Time::FromNSDate(thresholdDate)
+                             keeping:ToSnapshotIDs(liveSnapshotIDs)];
+}
+
+- (void)migrateImageWithSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper
+                destinationStorage:(id<SnapshotStorage>)destinationStorage {
+  const SnapshotID snapshotID = snapshotIDWrapper.snapshot_id;
+  // Copy to the destination storage.
+  if (UIImage* image = [_lruCache objectForKey:snapshotID]) {
+    // Copy both on-disk and in-memory versions.
+    [destinationStorage setImage:image withSnapshotID:snapshotIDWrapper];
+  } else {
+    // Only copy on-disk.
+    [_fileManager copyImage:base::apple::NSURLToFilePath([self
+                                imagePathWithSnapshotID:snapshotIDWrapper])
+                  toNewPath:base::apple::NSURLToFilePath([destinationStorage
+                                imagePathWithSnapshotID:snapshotIDWrapper])];
+  }
+
+  // Remove the snapshot from this storage.
+  [self removeImageWithSnapshotID:snapshotIDWrapper];
+}
+
+- (void)addObserver:(id<SnapshotStorageObserver>)observer {
+  [self.observers addObserver:observer];
+}
+
+- (void)removeObserver:(id<SnapshotStorageObserver>)observer {
+  [self.observers removeObserver:observer];
+}
+
+- (NSURL*)imagePathWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
+  return base::apple::FilePathToNSURL(
+      [_fileManager imagePathForSnapshotID:snapshotID.snapshot_id]);
+}
+
+- (void)shutdown {
+  [_fileManager shutdown];
+}
+
+#pragma mark - Private methods
+
+- (void)retrieveColorImageForSnapshotID:(SnapshotID)snapshotID
+                               callback:(void (^)(UIImage*))callback {
   DCHECK(snapshotID.valid());
   DCHECK(callback);
 
@@ -161,70 +270,6 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
                              })];
 }
 
-- (void)setImage:(UIImage*)image withSnapshotID:(SnapshotID)snapshotID {
-  if (!image || !snapshotID.valid()) {
-    return;
-  }
-
-  [_lruCache setObject:image forKey:snapshotID];
-
-  // Each image in the cache has the same resolution and hence the same size.
-  size_t imageSizes = CGImageGetBytesPerRow(image.CGImage) *
-                      CGImageGetHeight(image.CGImage) * [_lruCache count];
-  base::UmaHistogramMemoryKB("IOS.Snapshots.CacheSize", imageSizes / 1024);
-
-  [self.observers
-      didUpdateSnapshotStorageWithSnapshotID:
-          [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshotID]];
-
-  // Save the image to disk.
-  [_fileManager writeImage:image withSnapshotID:snapshotID];
-}
-
-- (void)removeImageWithSnapshotID:(SnapshotID)snapshotID {
-  [_lruCache removeObjectForKey:snapshotID];
-
-  [self.observers
-      didUpdateSnapshotStorageWithSnapshotID:
-          [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshotID]];
-
-  [_fileManager removeImageWithSnapshotID:snapshotID];
-}
-
-- (void)removeAllImages {
-  [_lruCache removeAllObjects];
-
-  [_fileManager removeAllImages];
-}
-
-- (void)purgeImagesOlderThan:(base::Time)date
-                     keeping:(const std::vector<SnapshotID>&)liveSnapshotIDs {
-  [_fileManager purgeImagesOlderThan:date keeping:liveSnapshotIDs];
-}
-
-- (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
-                         toIDs:(const std::vector<SnapshotID>&)newIDs {
-  DCHECK_EQ(oldIDs.count, newIDs.size());
-  [_fileManager renameSnapshotsWithIDs:oldIDs toIDs:newIDs];
-}
-
-- (void)migrateImageWithSnapshotID:(SnapshotID)snapshotID
-                 toSnapshotStorage:(LegacySnapshotStorage*)destinationStorage {
-  // Copy to the destination storage.
-  if (UIImage* image = [_lruCache objectForKey:snapshotID]) {
-    // Copy both on-disk and in-memory versions.
-    [destinationStorage setImage:image withSnapshotID:snapshotID];
-  } else {
-    // Only copy on-disk.
-    [_fileManager
-        copyImage:[self imagePathForSnapshotID:snapshotID]
-        toNewPath:[destinationStorage imagePathForSnapshotID:snapshotID]];
-  }
-
-  // Remove the snapshot from this storage.
-  [self removeImageWithSnapshotID:snapshotID];
-}
-
 // Remove all UIImages from `lruCache_`.
 - (void)handleLowMemory {
   [_lruCache removeAllObjects];
@@ -232,32 +277,6 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 
 // Remove all UIImages from `lruCache_`.
 - (void)handleEnterBackground {
-  [_lruCache removeAllObjects];
-}
-
-- (void)addObserver:(id<SnapshotStorageObserver>)observer {
-  [self.observers addObserver:observer];
-}
-
-- (void)removeObserver:(id<SnapshotStorageObserver>)observer {
-  [self.observers removeObserver:observer];
-}
-
-- (void)shutdown {
-  [_fileManager shutdown];
-}
-
-#pragma mark - Testing
-
-- (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID {
-  return [_fileManager imagePathForSnapshotID:snapshotID];
-}
-
-- (NSUInteger)lruCacheMaxSize {
-  return [_lruCache maxCacheSize];
-}
-
-- (void)clearCache {
   [_lruCache removeAllObjects];
 }
 

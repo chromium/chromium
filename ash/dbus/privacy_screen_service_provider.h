@@ -7,7 +7,7 @@
 
 #include "ash/dbus/privacy_screen/privacy_screen.pb.h"
 #include "ash/display/privacy_screen_controller.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"

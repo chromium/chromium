@@ -14,10 +14,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -76,7 +79,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // services in testing situations (See
 // chrome/browser/ash/api/tasks/tasks_client_impl_unittest.cc).
 std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
-    const std::vector<std::string>& scopes,
+    signin::OAuthConsumerId oauth_consumer_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   signin::IdentityManager* identity_manager =
@@ -88,7 +91,7 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
       std::make_unique<google_apis::AuthService>(
           identity_manager,
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          url_loader_factory, scopes);
+          url_loader_factory, oauth_consumer_id);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -121,8 +124,15 @@ void ChromeTasksDelegate::UpdateClientForProfileSwitch(
       !user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     auto& client = clients_[account_id];
     if (!client) {
+      Profile* profile =
+          ProfileHelper::Get()->GetProfileByAccountId(account_id);
+      apps::AppServiceProxy* app_service_proxy =
+          apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
+              ? apps::AppServiceProxyFactory::GetForProfile(profile)
+              : nullptr;
       client = std::make_unique<TasksClientImpl>(
-          ProfileHelper::Get()->GetProfileByAccountId(account_id),
+          profile->GetPrefs(), app_service_proxy,
+          AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
           base::BindRepeating(&CreateRequestSenderForClient),
           kTrafficAnnotation);
     }

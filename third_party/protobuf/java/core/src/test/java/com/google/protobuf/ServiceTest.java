@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf;
 
@@ -37,15 +14,15 @@ import static org.mockito.Mockito.when;
 
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.Descriptors.MethodDescriptor;
-import protobuf_unittest.MessageWithNoOuter;
-import protobuf_unittest.ServiceWithNoOuter;
-import protobuf_unittest.UnittestProto.BarRequest;
-import protobuf_unittest.UnittestProto.BarResponse;
-import protobuf_unittest.UnittestProto.FooRequest;
-import protobuf_unittest.UnittestProto.FooResponse;
-import protobuf_unittest.UnittestProto.TestAllTypes;
-import protobuf_unittest.UnittestProto.TestService;
-import protobuf_unittest.no_generic_services_test.UnittestNoGenericServices;
+import proto2_unittest.MessageWithNoOuter;
+import proto2_unittest.ServiceWithNoOuter;
+import proto2_unittest.UnittestProto.BarRequest;
+import proto2_unittest.UnittestProto.BarResponse;
+import proto2_unittest.UnittestProto.FooRequest;
+import proto2_unittest.UnittestProto.FooResponse;
+import proto2_unittest.UnittestProto.TestAllTypes;
+import proto2_unittest.UnittestProto.TestService;
+import proto2_unittest.no_generic_services_test.UnittestNoGenericServices;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
@@ -215,7 +192,7 @@ public class ServiceTest {
 
     // Build a list of the class names nested in UnittestNoGenericServices.
     String outerName =
-        "protobuf_unittest.no_generic_services_test.UnittestNoGenericServices";
+        "proto2_unittest.no_generic_services_test.UnittestNoGenericServices";
     Class<?> outerClass = Class.forName(outerName);
 
     Set<String> innerClassNames = new HashSet<>();

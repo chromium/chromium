@@ -11,8 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -30,10 +28,14 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
 class Profile;
@@ -41,21 +43,20 @@ class Profile;
 namespace arc {
 
 // The file exists only when ARC container is in use.
-constexpr const char kGeneratedBuildPropertyFilePath[] =
+inline constexpr char kGeneratedBuildPropertyFilePath[] =
     "/run/arc/host_generated/build.prop";
 
 // The file exists only when ARCVM is in use.
-constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
+inline constexpr char kGeneratedCombinedPropertyFilePathVm[] =
     "/run/arcvm/host_generated/combined.prop";
 
 // Maximum number of auto-resumes for ARCVM /data migration. When this number of
 // auto-resumes have been already attempted but the migration has not finished,
 // ARC is blocked and the user needs to manually trigger the resume by clicking
 // a notification.
-constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
+inline constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
 
 class ArcDataRemover;
-class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
@@ -145,7 +146,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   ArcSessionManager(std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
-                        adb_sideloading_availability_delegate);
+                        adb_sideloading_availability_delegate,
+                    ArcDlcInstaller* arc_dlc_installer);
 
   ArcSessionManager(const ArcSessionManager&) = delete;
   ArcSessionManager& operator=(const ArcSessionManager&) = delete;
@@ -385,6 +387,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
 
+  // Helper to Get Serial number for Attestation and KeyMint.
+  // Calls GetSerialNumber() internally.
+  std::string GetSerialNumberForKeyMint();
+
   // Stops mini-ARC instance. This should only be called before login.
   void StopMiniArcIfNecessary();
 
@@ -393,7 +399,25 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     return is_activation_delayed_.value_or(false);
   }
 
+  // Sets a callback that is run when the provisioning timer is started.
+  void SetProvisioningTimerStartedCallbackForTesting(
+      base::OnceClosure callback) {
+    provisioning_timer_started_callback_for_testing_ = std::move(callback);
+  }
+
  private:
+  // TODO(crbug.com/395161942, crbug.com/393644378): Tracking
+  // internal state transition for the production behavior.
+  // We saw some unexpected behavior, but we didn't see the root cause
+  // yet. This is for additional logging purpose only. We should remove
+  // once we get the idea why unexpected behavior happens.
+  enum InternalState {
+    kNotInitialized,
+    kRunning,
+    kShutdown,
+    kDestroying,
+  };
+
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
 
@@ -504,6 +528,17 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // will be no-op.
   void MaybeRecordFirstActivationDuringUserSessionStartUp(bool value);
 
+  // Called after the ARCVM DLC state has been checked. Starts the provisioning
+  // timer with the appropriate timeout.
+  void OnDlcCheckDoneForTimer(ArcDlcInstaller::DlcState state);
+
+  // Starts the ARC sign-in provisioning timer with the specified |timeout|.
+  void StartProvisioningTimerWithTimeout(base::TimeDelta timeout);
+
+  // Invoked after WaitForServiceToBeAvailable(). Proceeds to query DLC state
+  // if |available|, otherwise aborts ARC provisioning
+  void OnDlcServiceReady(bool available);
+
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
       adb_sideloading_availability_delegate_;
@@ -517,6 +552,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Internal state machine. See also State enum class.
   State state_ = State::NOT_INITIALIZED;
+
+  // Internal state for investigation purpose.
+  // TODO(crbug.com/395161942, crbug.com/393644378): remove these once
+  // we figure out the cause.
+  InternalState internal_state_ = InternalState::kNotInitialized;
 
   base::ObserverList<ArcSessionManagerObserver>::UncheckedAndDanglingUntriaged
       observer_list_;
@@ -550,6 +590,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
+  const raw_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;
@@ -579,14 +620,14 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   std::optional<bool> property_files_expansion_result_;
 
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
-
   std::optional<guest_os::GuestOsMountProviderRegistry::Id>
       arcvm_mount_provider_id_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
+
+  base::OnceClosure provisioning_timer_started_callback_for_testing_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};

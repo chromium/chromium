@@ -4,6 +4,7 @@
 
 #include "storage/browser/test/fake_blob_data_handle.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
@@ -29,14 +30,15 @@ void FakeBlobDataHandle::Read(mojo::ScopedDataPipeProducerHandle producer,
   }
 
   base::span<const uint8_t> bytes = base::as_byte_span(body_data_);
-  bytes = bytes.subspan(src_offset);
+  bytes = bytes.subspan(static_cast<size_t>(src_offset));
   bytes = bytes.first(base::checked_cast<size_t>(bytes_to_read));
   MojoResult result = producer->WriteAllData(bytes);
 
   // This should all succeed.
   DCHECK_EQ(MOJO_RESULT_OK, result);
 
-  std::move(callback).Run(base::checked_cast<int>(bytes.size()));
+  // The callback expects a `net::Error` only and not the number of bytes read.
+  std::move(callback).Run(net::OK);
 }
 
 uint64_t FakeBlobDataHandle::GetSideDataSize() const {
@@ -51,7 +53,7 @@ void FakeBlobDataHandle::ReadSideData(
   }
 
   mojo_base::BigBuffer buffer(side_data_.size());
-  memcpy(buffer.data(), side_data_.data(), side_data_.size());
+  UNSAFE_TODO(memcpy(buffer.data(), side_data_.data(), side_data_.size()));
 
   std::move(callback).Run(side_data_.size(), std::move(buffer));
 }

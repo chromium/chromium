@@ -28,8 +28,8 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
@@ -41,17 +41,18 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -176,8 +177,7 @@ const ComputedStyle* CSSComputedStyleDeclaration::ComputeComputedStyle() const {
   Element* styled_element = StyledElement();
   DCHECK(styled_element);
   const ComputedStyle* style = styled_element->EnsureComputedStyle(
-      styled_element->IsPseudoElement() ? kPseudoIdNone
-                                        : pseudo_element_specifier_,
+      (styled_element == element_) ? pseudo_element_specifier_ : kPseudoIdNone,
       pseudo_argument_);
   if (style && style->IsEnsuredOutsideFlatTree()) {
     UseCounter::Count(element_->GetDocument(),
@@ -207,12 +207,10 @@ Element* CSSComputedStyleDeclaration::StyledElement() const {
   }
 
   if (pseudo_element_specifier_ == kPseudoIdInvalid) {
-    CHECK(RuntimeEnabledFeatures::
-              CSSComputedStyleFullPseudoElementParserEnabled());
     return nullptr;
   }
 
-  if (PseudoElement* pseudo_element = element_->GetNestedPseudoElement(
+  if (Element* pseudo_element = element_->GetStyledPseudoElement(
           pseudo_element_specifier_, pseudo_argument_)) {
     return pseudo_element;
   }
@@ -301,7 +299,7 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
   // property set by the UA stylesheet is queried.
   if (IsTransitionPseudoElement(styled_element->GetPseudoId())) {
     if (auto* view = document.View()) {
-      view->UpdateLifecycleToPrePaintClean(
+      view->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kComputedStyle);
     }
     return;
@@ -341,6 +339,12 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   if (!styled_element) {
     return nullptr;
   }
+
+  // TODO(crbug.com/417967839): Investigate if the performance of this scope
+  // (which invalidate view transition pseudos for specific pseudo id requests)
+  // is acceptable.
+  ViewTransitionUtils::GetPropertyCSSValueScope scope(
+      styled_element->GetDocument(), pseudo_element_specifier_);
 
   UpdateStyleAndLayoutTreeIfNeeded(&property_name,
                                    /*for_all_properties=*/false);
@@ -478,8 +482,7 @@ MutableCSSPropertyValueSet* CSSComputedStyleDeclaration::CopyPropertiesInSet(
       list.push_back(CSSPropertyValue(name, *value, false));
     }
   }
-  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list.data(),
-                                                          list.size());
+  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list);
 }
 
 CSSRule* CSSComputedStyleDeclaration::parentRule() const {
@@ -526,8 +529,8 @@ void CSSComputedStyleDeclaration::setProperty(const ExecutionContext*,
                                               ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
-      "These styles are computed, and therefore the '" + name +
-          "' property is read-only.");
+      StrCat({"These styles are computed, and therefore the '", name,
+              "' property is read-only."}));
 }
 
 String CSSComputedStyleDeclaration::removeProperty(
@@ -535,9 +538,14 @@ String CSSComputedStyleDeclaration::removeProperty(
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
-      "These styles are computed, and therefore the '" + name +
-          "' property is read-only.");
+      StrCat({"These styles are computed, and therefore the '", name,
+              "' property is read-only."}));
   return String();
+}
+
+void CSSComputedStyleDeclaration::QuietlyRemoveProperty(
+    const String& property_name) {
+  NOTREACHED();
 }
 
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
@@ -560,15 +568,13 @@ String CSSComputedStyleDeclaration::GetPropertyValueInternal(
 String CSSComputedStyleDeclaration::GetPropertyValueWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String CSSComputedStyleDeclaration::GetPropertyPriorityWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void CSSComputedStyleDeclaration::SetPropertyInternal(
@@ -580,9 +586,9 @@ void CSSComputedStyleDeclaration::SetPropertyInternal(
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
-      "These styles are computed, and therefore the '" +
-          CSSUnresolvedProperty::Get(id).GetPropertyNameString() +
-          "' property is read-only.");
+      StrCat({"These styles are computed, and therefore the '",
+              CSSUnresolvedProperty::Get(id).GetPropertyNameString(),
+              "' property is read-only."}));
 }
 
 void CSSComputedStyleDeclaration::Trace(Visitor* visitor) const {

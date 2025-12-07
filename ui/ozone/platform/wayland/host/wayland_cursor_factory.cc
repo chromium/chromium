@@ -38,7 +38,14 @@ float GetRoundedScale(float scale) {
 
 WaylandCursorFactory::ThemeData::ThemeData() = default;
 
-WaylandCursorFactory::ThemeData::~ThemeData() = default;
+WaylandCursorFactory::ThemeData::~ThemeData() {
+  for (auto& [cursor_type, cursor] : cache()) {
+    // Avoids Dangling raw_ptr of wl_cursor*.
+    if (cursor->bitmap_cursor()) {
+        cursor->bitmap_cursor()->clear_platform_data();
+    }
+  }
+}
 
 void WaylandCursorFactory::ThemeData::AddThemeLoadedCallback(
     Callback callback) {
@@ -65,6 +72,7 @@ WaylandCursorFactory::WaylandCursorFactory(WaylandConnection* connection)
 }
 
 WaylandCursorFactory::~WaylandCursorFactory() {
+  connection_->UpdateCursor();
   connection_->SetCursorBufferListener(nullptr);
 }
 
@@ -85,8 +93,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateImageCursor(
   // must upscale cursor images with non-integer scales to integer scaled
   // images so that the cursor is displayed correctly.
   float rounded_scale = GetRoundedScale(scale);
-  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
-      !connection_->surface_submission_in_pixel_coordinates()) {
+  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon()) {
     const SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
         std::round(bitmap.width() * (rounded_scale / scale)),
@@ -111,8 +118,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateAnimatedCursor(
   scoped_refptr<BitmapCursor> bitmap_cursor;
 
   float rounded_scale = GetRoundedScale(scale);
-  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
-      !connection_->surface_submission_in_pixel_coordinates()) {
+  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon()) {
     std::vector<SkBitmap> scaled_bitmaps;
     for (const auto& bitmap : bitmaps) {
       scaled_bitmaps.push_back(skia::ImageOperations::Resize(
@@ -140,10 +146,7 @@ void WaylandCursorFactory::FinishCursorLoad(
     wl_cursor* theme_cursor = GetCursorFromTheme(loaded_theme, name);
     if (theme_cursor) {
       cursor->SetBitmapCursor(base::MakeRefCounted<BitmapCursor>(
-          type, theme_cursor,
-          connection_->surface_submission_in_pixel_coordinates()
-              ? scale
-              : GetRoundedScale(scale)));
+          type, theme_cursor, GetRoundedScale(scale)));
       return;
     }
   }
@@ -164,14 +167,14 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
     float scale) {
   auto* const current_theme = GetThemeForScale(scale);
   DCHECK(current_theme);
-  if (current_theme->cache.count(type) == 0) {
+  if (current_theme->cache().count(type) == 0) {
     auto async_cursor = base::MakeRefCounted<WaylandAsyncCursor>();
-    current_theme->cache[type] = async_cursor;
+    current_theme->cache()[type] = async_cursor;
     current_theme->AddThemeLoadedCallback(
         base::BindOnce(&WaylandCursorFactory::FinishCursorLoad,
                        weak_factory_.GetWeakPtr(), async_cursor, type, scale));
   }
-  return current_theme->cache[type];
+  return current_theme->cache()[type];
 }
 
 wl_cursor* WaylandCursorFactory::GetCursorFromTheme(wl_cursor_theme* theme,
@@ -207,7 +210,7 @@ void WaylandCursorFactory::OnCursorBufferAttached(wl_cursor* cursor_data) {
     return;
   }
   for (auto& item : *theme_cache_) {
-    for (auto& subitem : item.second->cache) {
+    for (auto& subitem : item.second->cache()) {
       auto bitmap_cursor = subitem.second->bitmap_cursor();
       if (bitmap_cursor && bitmap_cursor->platform_data() == cursor_data) {
         // The cursor that has been just attached is from the current theme.
@@ -252,7 +255,7 @@ WaylandCursorFactory::ThemeData* WaylandCursorFactory::GetThemeForScale(
 void WaylandCursorFactory::FlushThemeCache(bool force) {
   size_t num_cursor_objects = 0;
   for (auto& entry : *theme_cache_) {
-    num_cursor_objects += entry.second->cache.size();
+    num_cursor_objects += entry.second->cache().size();
   }
   if (force) {
     unloaded_theme_.reset();
@@ -271,14 +274,7 @@ void WaylandCursorFactory::FlushThemeCache(bool force) {
 }
 
 int WaylandCursorFactory::GetScaledSize(float scale) const {
-  if (connection_->surface_submission_in_pixel_coordinates()) {
-    // When surface submission in pixel coordinates is enabled, true
-    // fractional scaled cursors can be represented without scaling, so
-    // load the cursor with its proper size.
-    return base::checked_cast<int>(size_ * scale);
-  } else {
-    return base::checked_cast<int>(size_ * GetRoundedScale(scale));
-  }
+  return base::checked_cast<int>(size_ * GetRoundedScale(scale));
 }
 
 void WaylandCursorFactory::FinishThemeLoad(base::WeakPtr<ThemeData> cache_entry,
@@ -287,6 +283,8 @@ void WaylandCursorFactory::FinishThemeLoad(base::WeakPtr<ThemeData> cache_entry,
   // have to be cautious when we actually load the shape.
   if (cache_entry) {
     cache_entry->SetLoadedTheme(loaded_theme);
+  } else {
+    wl_cursor_theme_destroy(loaded_theme);
   }
 }
 

@@ -15,10 +15,12 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/background.h"
 
 namespace ash {
 
@@ -87,13 +89,17 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
   label->SizeToFit(kEducationBubblePreferredWidth);
   education_nudge_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
-  ui::Layer* layer = education_nudge_->layer();
-  layer->SetColor(
-      ShelfConfig::Get()->GetDefaultShelfColor(education_nudge_->GetWidget()));
-  layer->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{static_cast<float>(GetBubbleCornerRadius())});
-  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  // TODO(b:375253816): Figure out an opaque color id.
+  const auto background_color =
+      ShelfConfig::Get()->GetDefaultShelfColor(education_nudge_->GetWidget());
+  education_nudge_->SetBackground(views::CreateLayerBasedRoundedBackground(
+      background_color, gfx::RoundedCornersF{kBubbleCornerRadius}));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    ui::Layer* layer = education_nudge_->layer();
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   gfx::Rect anchor_rect =
       keyboard_brightness_slider_view->GetAnchorBoundsInScreen();

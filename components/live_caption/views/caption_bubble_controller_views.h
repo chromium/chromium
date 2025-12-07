@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
-#include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
@@ -26,7 +25,9 @@ namespace captions {
 
 class CaptionBubble;
 class CaptionBubbleModel;
+class CaptionBubbleSettings;
 class CaptionBubbleSessionObserver;
+class TranslationViewWrapperBase;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller for Views
@@ -36,8 +37,10 @@ class CaptionBubbleSessionObserver;
 class CaptionBubbleControllerViews : public CaptionBubbleController,
                                      public speech::SodaInstaller::Observer {
  public:
-  CaptionBubbleControllerViews(PrefService* profile_prefs,
-                               const std::string& application_locale);
+  CaptionBubbleControllerViews(
+      CaptionBubbleSettings* caption_bubble_settings,
+      const std::string& application_locale,
+      std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper);
   ~CaptionBubbleControllerViews() override;
   CaptionBubbleControllerViews(const CaptionBubbleControllerViews&) = delete;
   CaptionBubbleControllerViews& operator=(const CaptionBubbleControllerViews&) =
@@ -46,7 +49,8 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
   // Called when a transcription is received from the service. Returns whether
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
-  bool OnTranscription(CaptionBubbleContext* caption_bubble_context,
+  bool OnTranscription(content::RenderFrameHost* rfh,
+                       CaptionBubbleContext* caption_bubble_context,
                        const media::SpeechRecognitionResult& result) override;
 
   // Called when the speech service has an error.
@@ -57,7 +61,8 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
       OnDoNotShowAgainClickedCallback error_silenced_callback) override;
 
   // Called when the audio stream has ended.
-  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context) override;
+  void OnAudioStreamEnd(content::RenderFrameHost* rfh,
+                        CaptionBubbleContext* caption_bubble_context) override;
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
@@ -67,6 +72,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
   bool IsGenericErrorMessageVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
   void OnLanguageIdentificationEvent(
+      content::RenderFrameHost* rfh,
       CaptionBubbleContext* caption_bubble_context,
       const media::mojom::LanguageIdentificationEventPtr& event) override;
   void CloseActiveModelForTesting() override;

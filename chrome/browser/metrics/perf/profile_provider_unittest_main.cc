@@ -23,6 +23,7 @@
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -133,7 +134,7 @@ class TestProfileProvider : public ProfileProvider {
 // real collections from debugd.
 class ProfileProviderRealCollectionTest : public testing::Test {
  public:
-  ProfileProviderRealCollectionTest() {}
+  ProfileProviderRealCollectionTest() = default;
 
   ProfileProviderRealCollectionTest(const ProfileProviderRealCollectionTest&) =
       delete;
@@ -189,7 +190,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::DBusThreadManager::Shutdown();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
   void AssertProfileData(SampledProfile::TriggerEvent trigger_event) {

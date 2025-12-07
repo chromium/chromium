@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("infra") {
   sources = [ "cached_callback.h" ]
@@ -21,7 +21,6 @@ source_set("unit_tests") {
     ":infra",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//testing/gmock",
     "//testing/gtest",

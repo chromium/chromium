@@ -1,0 +1,171 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("webauthn") {
+  sources = [ "authenticator_request_dialog_view_controller.h" ]
+  public_deps = []
+
+  if (toolkit_views) {
+    sources += [
+      "account_hover_list_model.h",
+      "ambient/ambient_signin_controller.h",
+      "authenticator_request_sheet_model.h",
+      "authenticator_request_window.h",
+      "context_menu_helper.h",
+      "hover_list_model.h",
+      "passkey_deleted_confirmation_controller.h",
+      "passkey_not_accepted_bubble_controller.h",
+      "passkey_saved_confirmation_controller.h",
+      "passkey_updated_confirmation_controller.h",
+      "passkey_upgrade_request_controller.h",
+      "sheet_models.h",
+      "transport_hover_list_model.h",
+      "user_actions.h",
+      "webauthn_ui_helpers.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/ui/passwords/bubble_controllers",
+      "//chrome/browser/webauthn",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//content/public/browser",
+      "//device/fido",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+}
+
+source_set("impl") {
+  if (toolkit_views) {
+    sources = [
+      "account_hover_list_model.cc",
+      "ambient/ambient_signin_controller.cc",
+      "authenticator_request_sheet_model.cc",
+      "authenticator_request_window.cc",
+      "context_menu_helper.cc",
+      "passkey_deleted_confirmation_controller.cc",
+      "passkey_not_accepted_bubble_controller.cc",
+      "passkey_saved_confirmation_controller.cc",
+      "passkey_updated_confirmation_controller.cc",
+      "passkey_upgrade_request_controller.cc",
+      "sheet_models.cc",
+      "transport_hover_list_model.cc",
+      "user_actions.cc",
+      "webauthn_ui_helpers.cc",
+    ]
+    deps = [
+      ":webauthn",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:resources",
+      "//chrome/browser:resources_grit",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/passwords/bubble_controllers",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/webauthn",
+      "//components/autofill/content/browser",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/device_event_log",
+      "//components/keyed_service/core",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser:password_form",
+      "//components/password_manager/core/browser/features:utils",
+      "//components/password_manager/core/browser/form_parsing",
+      "//components/password_manager/core/browser/password_store:password_store_impl",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/common",
+      "//components/signin/public/identity_manager",
+      "//components/strings:components_strings",
+      "//components/sync/service",
+      "//components/url_formatter",
+      "//components/vector_icons",
+      "//content/public/browser",
+      "//device/fido",
+      "//google_apis",
+      "//net",
+      "//ui/base",
+      "//ui/color:color_headers",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//url",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "context_menu_helper_unittest.cc",
+      "passkey_deleted_confirmation_controller_unittest.cc",
+      "passkey_not_accepted_bubble_controller_unittest.cc",
+      "passkey_saved_confirmation_controller_unittest.cc",
+      "passkey_updated_confirmation_controller_unittest.cc",
+      "sheet_models_unittest.cc",
+    ]
+    deps = [
+      ":webauthn",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
+      "//chrome/test:test_support",
+      "//components/autofill/content/browser",
+      "//components/autofill/content/browser:test_support",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common",
+      "//components/autofill/core/common:test_support",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:metrics_util",
+      "//content/test:test_support",
+      "//device/fido",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "authenticator_dialog_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/webauthn",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/network_session_configurator/common",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//device/fido",
+      "//google_apis",
+      "//net",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

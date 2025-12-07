@@ -7,7 +7,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace commerce::metrics {
 
@@ -19,14 +23,27 @@ void DiscountsMetricCollector::RecordDiscountsBubbleCopyButtonClicked(
 }
 
 void DiscountsMetricCollector::DiscountsBubbleCopyStatusOnBubbleClosed(
-    bool is_copy_button_clicked) {
+    bool is_copy_button_clicked,
+    const std::vector<DiscountInfo>& discounts) {
   base::UmaHistogramBoolean(
       "Commerce.Discounts.DiscountsBubbleCouponCodeIsCopied",
       is_copy_button_clicked);
+  if (!is_copy_button_clicked) {
+    return;
+  }
+
+  if (commerce::kDiscountOnShoppyPage.Get()) {
+    base::UmaHistogramEnumeration(
+        "Commerce.Discounts.DiscountsBubble.TypeOnCopy",
+        discounts[0].cluster_type);
+  }
+  base::UmaHistogramEnumeration(
+      "Commerce.Discounts.DiscountsBubble.SourceTypeOnCopy", discounts[0].type);
 }
 
 void DiscountsMetricCollector::RecordDiscountsPageActionIconExpandState(
-    bool is_expanded) {
+    bool is_expanded,
+    const std::vector<DiscountInfo>& discounts) {
   if (is_expanded) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.Discounts.DiscountsPageActionIcon.Expanded"));
@@ -36,23 +53,47 @@ void DiscountsMetricCollector::RecordDiscountsPageActionIconExpandState(
   }
   base::UmaHistogramBoolean(
       "Commerce.Discounts.DiscountsPageActionIconIsExpanded", is_expanded);
+
+  if (commerce::kDiscountOnShoppyPage.Get()) {
+    base::UmaHistogramEnumeration(
+        "Commerce.Discounts.PageActionIcon.TypeOnShown",
+        discounts[0].cluster_type);
+  }
+  base::UmaHistogramEnumeration(
+      "Commerce.Discounts.PageActionIcon.SourceTypeOnShown", discounts[0].type);
 }
 
 void DiscountsMetricCollector::RecordDiscountsPageActionIconClicked(
-    bool is_expanded) {
+    bool is_expanded,
+    const std::vector<DiscountInfo>& discounts) {
   base::RecordAction(base::UserMetricsAction(
       "Commerce.Discounts.DiscountsPageActionIcon.Clicked"));
 
   base::UmaHistogramBoolean(
       "Commerce.Discounts.DiscountsPageActionIconIsExpandedWhenClicked",
       is_expanded);
+
+  if (commerce::kDiscountOnShoppyPage.Get()) {
+    base::UmaHistogramEnumeration(
+        "Commerce.Discounts.PageActionIcon.TypeOnClick",
+        discounts[0].cluster_type);
+  }
 }
 
 void DiscountsMetricCollector::RecordDiscountBubbleShown(
     bool is_auto_shown,
-    ukm::SourceId ukm_source_id) {
+    ukm::SourceId ukm_source_id,
+    const std::vector<DiscountInfo>& discounts) {
   base::UmaHistogramBoolean("Commerce.Discounts.DiscountsBubbleIsAutoShown",
                             is_auto_shown);
+
+  if (commerce::kDiscountOnShoppyPage.Get()) {
+    base::UmaHistogramEnumeration(
+        "Commerce.Discounts.DiscountBubble.TypeOnShow",
+        discounts[0].cluster_type);
+  }
+  base::UmaHistogramEnumeration(
+      "Commerce.Discounts.DiscountBubble.SourceTypeOnShow", discounts[0].type);
 
   if (is_auto_shown) {
     base::RecordAction(base::UserMetricsAction(
@@ -60,6 +101,14 @@ void DiscountsMetricCollector::RecordDiscountBubbleShown(
   } else {
     RecordShoppingActionUKM(ukm_source_id, ShoppingAction::kDiscountOpened);
   }
+}
+
+void DiscountsMetricCollector::RecordDiscountAutoPopupEligibleButSuppressed(
+    ukm::SourceId ukm_source_id,
+    bool is_suppressed) {
+  auto ukm_builder = ukm::builders::Shopping_Discounts(ukm_source_id);
+  ukm_builder.SetAutoPopupEligibleButSuppressed(is_suppressed);
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace commerce::metrics

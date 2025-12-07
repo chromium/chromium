@@ -90,6 +90,7 @@ enum class BehaviorType {
   kDefault,
   kProjector,
   kGameDashboard,
+  kSunfish,
 };
 
 // Converts the enum class `RecordingType` to its integer value.
@@ -101,6 +102,70 @@ constexpr int ToInt(RecordingType type) {
 enum class SessionType {
   kNull,
   kReal,
+};
+
+// Defines the type of action button used for a selected region. Higher enum
+// values correspond to higher ranks. Buttons of same type are grouped together.
+enum class ActionButtonType {
+  kOther,
+  kScanner,
+  kCopyText,
+  kSunfish,
+};
+
+// Defines the capture type to be performed and how the captured image will be
+// used.
+enum class PerformCaptureType {
+  // Captured from normal capture mode to take a screenshot.
+  kCapture,
+  // Captured when the "search" button is pressed from normal capture mode. The
+  // captured image will be sent to a search service.
+  kSearch,
+  // Captured when the "smart actions" button is pressed from normal capture
+  // mode. The captured image will be sent to the Scanner service.
+  kScanner,
+  // Captured when a region is selected from normal capture mode. The captured
+  // image will be processed by on-device OCR to detect text.
+  kTextDetection,
+  // Captured when a region is selected from Sunfish mode. The captured image
+  // will be sent to a search service and the Scanner service.
+  kSunfish,
+};
+
+// Defines the rank of an action button for a selected region. Higher ranked
+// buttons are placed further to the right than lower ranked ones. Lower ranked
+// buttons may not be visible if there are too many action buttons available.
+struct ActionButtonRank {
+  ActionButtonRank(ActionButtonType type, int weight)
+      : type(type), weight(weight) {}
+
+  // Returns `true` if `this` is less than `rhs`. The comparison is done
+  // by `type` first, then by `weight`.
+  bool operator<(const ActionButtonRank& rhs) const {
+    if (type == rhs.type) {
+      return weight < rhs.weight;
+    }
+
+    return type < rhs.type;
+  }
+
+  ActionButtonType type;
+
+  // Buttons are weighted against other buttons of the same `ActionButtonType`.
+  // For example, an `ActionButtonType::kDefault` button with weight 1 will have
+  // a higher rank compared to an `ActionButtonType::kDefault` button with
+  // weight 0, and thus be placed to its right.
+  int weight;
+};
+
+// View IDs for the `ActionButtonView`s. Note these are not 1:1 to
+// `ActionButtonType`s.
+enum ActionButtonViewID {
+  kSmartActionsButton = 1,
+  kCopyTextButton = 2,
+  kSearchButton = 3,
+  kScannerButton = 4,  // Placeholder view ID for unknown Scanner buttons.
+                       // Replace with explicit buttons as they are known.
 };
 
 }  // namespace ash

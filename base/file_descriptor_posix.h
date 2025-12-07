@@ -27,7 +27,7 @@ constexpr int kInvalidFd = -1;
 // a message that contains a base::FileDescriptor if auto_close == true. On the
 // other end, the receiver must make sure to close() |fd| after it has finished
 // processing the IPC message. See the IPC::ParamTraits<> specialization in
-// ipc/ipc_message_utils.h for all the details.
+// ipc/param_traits_utils.h for all the details.
 // -----------------------------------------------------------------------------
 struct BASE_EXPORT FileDescriptor {
   FileDescriptor();
@@ -35,8 +35,8 @@ struct BASE_EXPORT FileDescriptor {
   explicit FileDescriptor(File file);
   explicit FileDescriptor(ScopedFD fd);
 
-  bool operator==(const FileDescriptor& other) const;
-  bool operator!=(const FileDescriptor& other) const;
+  friend bool operator==(const FileDescriptor&,
+                         const FileDescriptor&) = default;
 
   // A comparison operator so that we can use these as keys in a std::map.
   bool operator<(const FileDescriptor& other) const;

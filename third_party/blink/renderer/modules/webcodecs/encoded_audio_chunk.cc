@@ -60,7 +60,7 @@ EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
                 init->duration()))
           : media::kNoTimestamp);
 
-  buffer->set_is_key_frame(init->type() == "key");
+  buffer->set_is_key_frame(init->type() == V8EncodedAudioChunkType::Enum::kKey);
 
   if (init->hasDecryptConfig()) {
     auto decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
@@ -78,8 +78,10 @@ EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
 EncodedAudioChunk::EncodedAudioChunk(scoped_refptr<media::DecoderBuffer> buffer)
     : buffer_(std::move(buffer)) {}
 
-String EncodedAudioChunk::type() const {
-  return buffer_->is_key_frame() ? "key" : "delta";
+V8EncodedAudioChunkType EncodedAudioChunk::type() const {
+  return V8EncodedAudioChunkType(buffer_->is_key_frame()
+                                     ? V8EncodedAudioChunkType::Enum::kKey
+                                     : V8EncodedAudioChunkType::Enum::kDelta);
 }
 
 int64_t EncodedAudioChunk::timestamp() const {
@@ -100,18 +102,19 @@ void EncodedAudioChunk::copyTo(const AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
   auto dest_wrapper = AsSpan<uint8_t>(destination);
-  if (dest_wrapper.size() < buffer_->size()) {
+  auto buffer_span = base::span(*buffer_);
+  if (dest_wrapper.size() < buffer_span.size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;
   }
 
-  if (buffer_->empty()) {
+  if (buffer_span.empty()) {
     // Calling memcpy with nullptr is UB, even if count is zero.
     return;
   }
 
   // Copy data.
-  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->size());
+  dest_wrapper.copy_prefix_from(buffer_span);
 }
 
 }  // namespace blink

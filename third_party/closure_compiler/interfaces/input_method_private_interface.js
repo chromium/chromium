@@ -21,7 +21,9 @@ InputMethodPrivate.prototype = {
   getInputMethodConfig: function(callback) {},
 
   /**
-   * Gets all whitelisted input methods.
+   * Gets all enabled input methods, sorted in ascending order of their
+   * localized full display names, according to the lexicographical order
+   * defined by the current system locale aka. display language.
    * @param {function(!Array<{
    *   id: string,
    *   name: string,
@@ -48,6 +50,15 @@ InputMethodPrivate.prototype = {
   setCurrentInputMethod: function(inputMethodId, callback) {},
 
   /**
+   * Switches to the last used input method. If no last used input method, this
+   * is a no-op.
+   * @param {function(): void=} callback Callback which is called once the input
+   *     method is swapped (if applicable). If unsuccessful
+   *     $(ref:runtime.lastError) is set.
+   */
+  switchToLastUsedInputMethod: function(callback) {},
+
+  /**
    * Fetches a list of all the words currently in the dictionary.
    * @param {function(!Array<string>): void} callback Callback which is called
    *     once the list of dictionary words are ready.
@@ -61,13 +72,6 @@ InputMethodPrivate.prototype = {
    *     is added. If unsuccessful $(ref:runtime.lastError) is set.
    */
   addWordToDictionary: function(word, callback) {},
-
-  /**
-   * Gets whether the encrypt sync is enabled.
-   * @param {function(boolean): void=} callback Callback which is called to
-   *     provide the result.
-   */
-  getEncryptSyncEnabled: function(callback) {},
 
   /**
    * Sets the XKB layout for the given input method.
@@ -86,18 +90,6 @@ InputMethodPrivate.prototype = {
    * @param {function(): void=} callback Called when the operation completes.
    */
   finishComposingText: function(parameters, callback) {},
-
-  /**
-   * Sets the selection range
-   * @param {{
-   *   contextID: number,
-   *   selectionStart: (number|undefined),
-   *   selectionEnd: (number|undefined)
-   * }} parameters
-   * @param {function(boolean): void=} callback Called when the operation
-   *     completes with a boolean indicating if the text was accepted or not.
-   */
-  setSelectionRange: function(parameters, callback) {},
 
   /**
    * Shows the input view window. If the input view window is already shown,
@@ -121,18 +113,9 @@ InputMethodPrivate.prototype = {
   openOptionsPage: function(inputMethodId) {},
 
   /**
-   * Gets the composition bounds
-   * @param {function(!Array<{
-   *   x: number,
-   *   y: number,
-   *   w: number,
-   *   h: number
-   * }>): void} callback Callback which is called to provide the result
-   */
-  getCompositionBounds: function(callback) {},
-
-  /**
-   * Gets the surrounding text of the current selection
+   * Gets the surrounding text of the current selection. WARNING: This could
+   * return a stale cache that doesn't reflect reality, due to async between IMF
+   * and TextInputClient.
    * @param {number} beforeLength The number of characters before the current
    *     selection.
    * @param {number} afterLength The number of characters after the current
@@ -166,8 +149,8 @@ InputMethodPrivate.prototype = {
   setSettings: function(engineID, settings, callback) {},
 
   /**
-   * Set the composition range. If this extension does not own the active IME,
-   * this fails.
+   * (Deprecated) Set the composition range. If this extension does not own the
+   * active IME, this fails. Use setComposingRange instead.
    * @param {{
    *   contextID: number,
    *   selectionBefore: number,
@@ -185,24 +168,41 @@ InputMethodPrivate.prototype = {
   setCompositionRange: function(parameters, callback) {},
 
   /**
-   * Set the autocorrect range and autocorrect word. If this extension does not
-   * own the active IME, this fails.
-   * @param {{
-   *   contextID: number,
-   *   autocorrectString: string,
-   *   selectionStart: number,
-   *   selectionEnd: number
-   * }} parameters
-   * @param {function(): void=} callback Called when the operation completes. On
-   *     failure, chrome.runtime.lastError is set.
-   */
-  setAutocorrectRange: function(parameters, callback) {},
-
-  /**
    * Resets the current engine to its initial state. Fires an OnReset event.
    */
   reset: function() {},
+
+  /**
+   * Called after a word has been autocorrected to show some UI for autocorrect.
+   * @param {{
+   *   contextID: number,
+   *   typedWord: string,
+   *   correctedWord: string,
+   *   startIndex: number
+   * }} parameters
+   */
+  onAutocorrect: function(parameters) {},
+
+  /**
+   * Notifies Chrome that the current input method is ready to accept key events
+   * from Tast.
+   */
+  notifyInputMethodReadyForTesting: function() {},
+
+  /**
+   * Gets the aggregate status of all language packs for a given input method.
+   * @param {string} inputMethodId Fully qualified ID of the input method
+   * @param {function(!chrome.inputMethodPrivate.LanguagePackStatus): void}
+   *     callback Called with a LanguagePackStatus when the operation completes.
+   */
+  getLanguagePackStatus: function(inputMethodId, callback) {},
 };
+
+/**
+ * Fired when the caret bounds change.
+ * @type {!ChromeEvent}
+ */
+InputMethodPrivate.prototype.onCaretBoundsChanged;
 
 /**
  * Fired when the input method is changed.
@@ -250,13 +250,6 @@ InputMethodPrivate.prototype.onImeMenuItemsChanged;
 InputMethodPrivate.prototype.onFocus;
 
 /**
- * This event is sent when the settings for any input method changed. It is sent
- * to all extensions that are listening to this event, and enabled by the user.
- * @type {!ChromeEvent}
- */
-InputMethodPrivate.prototype.onSettingsChanged;
-
-/**
  * This event is sent when the screen is being mirrored or the desktop is being
  * cast.
  * @type {!ChromeEvent}
@@ -274,3 +267,9 @@ InputMethodPrivate.prototype.onSuggestionsChanged;
  * @type {!ChromeEvent}
  */
 InputMethodPrivate.prototype.onInputMethodOptionsChanged;
+
+/**
+ * This event is sent when any IME's language pack status is changed.
+ * @type {!ChromeEvent}
+ */
+InputMethodPrivate.prototype.onLanguagePackStatusChanged;

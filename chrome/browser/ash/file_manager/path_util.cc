@@ -8,8 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -31,16 +29,18 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -52,6 +52,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -59,7 +61,9 @@
 #include "extensions/common/extension.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -83,6 +87,7 @@ constexpr char kCrostiniMapLinuxFiles[] = "LinuxFiles";
 constexpr char kCrostiniMapMyDrive[] = "MyDrive";
 constexpr char kCrostiniMapPlayFiles[] = "PlayFiles";
 constexpr char kCrostiniMapSmbFs[] = "SMB";
+constexpr char kCrostiniMapFusebox[] = "Fusebox";
 constexpr char kCrostiniMapTeamDrives[] = "SharedDrives";
 constexpr char kCrostiniMapSharedWithMe[] = "SharedWithMe";
 constexpr char kCrostiniMapShortcutsSharedWithMe[] = "ShortcutsSharedWithMe";
@@ -111,12 +116,12 @@ constexpr FilePath::CharType kArcExternalFilesRoot[] =
 constexpr char kArcStorageContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
 // A predefined removable media UUID for testing. Defined in
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/1274481): Move ash-wide constants to a common place.
 constexpr char kArcRemovableMediaUuidForTesting[] =
     "00000000000000000000000000000000DEADBEEF";
 // The dummy UUID of the MyFiles volume is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kArcMyFilesContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/"
@@ -243,6 +248,17 @@ bool AppendRelativePath(const FilePath& parent,
   return child == parent || parent.AppendRelativePath(child, path);
 }
 
+// Same as parent.AppendRelativePath(child, path) except that the relative path
+// to the child is just set to `path` (instead of being appended).
+// Note that `path` is always cleared at the beginning, so it becomes empty when
+// parent.IsParent(child) does not hold.
+bool SetRelativePath(const FilePath& parent,
+                     const FilePath& child,
+                     FilePath* path) {
+  path->clear();
+  return parent.AppendRelativePath(child, path);
+}
+
 // Translates known DriveFS folders into their localized message id.
 std::optional<int> DriveFsFolderToMessageId(std::string folder) {
   if (folder == kDriveFsDirRoot) {
@@ -269,6 +285,21 @@ std::optional<int> MyFilesFolderToMessageId(std::string folder) {
     return IDS_FILE_BROWSER_CAMERA_DIRECTORY_LABEL;
   }
   return std::nullopt;
+}
+
+std::string GetMountPointNameForProfile(Profile* profile,
+                                        const std::string& folder_name) {
+  // To distinguish profiles in multi-profile session, we append user name hash
+  // to folder_name. Note that some profiles (like login or test profiles)
+  // are not associated with an user account. In that case, no suffix is added
+  // because such a profile never belongs to a multi-profile session.
+  const user_manager::User* const user =
+      user_manager::UserManager::IsInitialized()
+          ? ash::ProfileHelper::Get()->GetUserByProfile(
+                profile->GetOriginalProfile())
+          : nullptr;
+  const std::string id = user ? "-" + user->username_hash() : "";
+  return base::EscapeQueryParamValue(folder_name + id, false);
 }
 
 }  // namespace
@@ -434,17 +465,11 @@ bool MigrateToDriveFs(Profile* profile,
 }
 
 std::string GetDownloadsMountPointName(Profile* profile) {
-  // To distinguish profiles in multi-profile session, we append user name hash
-  // to "Downloads". Note that some profiles (like login or test profiles)
-  // are not associated with an user account. In that case, no suffix is added
-  // because such a profile never belongs to a multi-profile session.
-  const user_manager::User* const user =
-      user_manager::UserManager::IsInitialized()
-          ? ash::ProfileHelper::Get()->GetUserByProfile(
-                profile->GetOriginalProfile())
-          : nullptr;
-  const std::string id = user ? "-" + user->username_hash() : "";
-  return base::EscapeQueryParamValue(kFolderNameDownloads + id, false);
+  return GetMountPointNameForProfile(profile, kFolderNameDownloads);
+}
+
+std::string GetShareCacheMountPointName(Profile* profile) {
+  return GetMountPointNameForProfile(profile, kFolderNameShareCache);
 }
 
 std::string GetAndroidFilesMountPointName() {
@@ -456,7 +481,7 @@ std::string GetAndroidFilesMountPointName() {
 bool IsBruschettaMountPointName(const std::string& name,
                                 Profile* profile,
                                 guest_os::GuestId* guest_id) {
-  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
   if (!service) {
     return false;
   }
@@ -573,8 +598,8 @@ bool ConvertFileSystemURLToPathInsideVM(
     // Crostini.
     if (map_crostini_home) {
       auto container_info =
-          guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
-              crostini::DefaultContainerId());
+          guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)
+              ->GetInfo(crostini::DefaultContainerId());
       if (!container_info) {
         return false;
       }
@@ -586,7 +611,7 @@ bool ConvertFileSystemURLToPathInsideVM(
     // Bruschetta: use path to homedir, which is currently the empty string
     // because sftp-server inside the VM runs in the homedir.
     auto container_info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetInfo(
             guest_id);
     if (!container_info) {
       return false;
@@ -599,6 +624,14 @@ bool ConvertFileSystemURLToPathInsideVM(
     // mount ID.
     *inside = vm_mount.Append(kCrostiniMapSmbFs);
     *inside = inside->Append(id);
+  } else if (file_system_url.type() == storage::kFileSystemTypeFuseBox) {
+    // `inside` should be of the form <vm_mount>/Fusebox/<subdir>/foo/bar.
+    // Since <subdir> is not available in either `id` or `path`, we look up
+    // `file_system_url.path()` (the raw VFS path), which is of the form
+    // /media/fuse/fusebox/<subdir>/foo/bar.
+    *inside = vm_mount.Append(kCrostiniMapFusebox);
+    return base::FilePath(kFuseBoxMediaPath)
+        .AppendRelativePath(file_system_url.path(), inside);
   } else {
     return false;
   }
@@ -612,6 +645,20 @@ bool ConvertFileSystemURLToPathInsideCrostini(
   return ConvertFileSystemURLToPathInsideVM(
       profile, file_system_url, crostini::ContainerChromeOSBaseDirectory(),
       /*map_crostini_home=*/true, inside);
+}
+
+bool ConvertFuseboxMonikerPathToPathInsideVM(const base::FilePath& path,
+                                             const base::FilePath& vm_mount,
+                                             base::FilePath* inside) {
+  base::FilePath relative_path;
+  if (!base::FilePath(fusebox::kMonikerFilenamePrefixWithTrailingSlash)
+           .AppendRelativePath(path, &relative_path)) {
+    return false;
+  }
+  *inside = vm_mount.Append(kCrostiniMapFusebox)
+                .Append(fusebox::kMonikerSubdir)
+                .Append(relative_path);
+  return true;
 }
 
 bool ConvertPathInsideVMToFileSystemURL(
@@ -636,7 +683,7 @@ bool ConvertPathInsideVMToFileSystemURL(
 
   if (map_crostini_home) {
     auto container_info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetInfo(
             crostini::DefaultContainerId());
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
@@ -710,6 +757,23 @@ bool ConvertPathInsideVMToFileSystemURL(
     mount_name = components[0];
     path.clear();
     FilePath(mount_name).AppendRelativePath(relative_path, &path);
+  } else if (FilePath(kCrostiniMapFusebox)
+                 .AppendRelativePath(path, &relative_path)) {
+    // For Fusebox files, `mount_name` is the first component of the virtual
+    // path, and `path` is the remaining part of the virtual path.
+    const FilePath absolute_path =
+        FilePath(kFuseBoxMediaPath).Append(relative_path);
+    FilePath virtual_path;
+    if (!mount_points->GetVirtualPath(absolute_path, &virtual_path)) {
+      return false;
+    }
+    const std::vector<FilePath::StringType> components =
+        virtual_path.GetComponents();
+    if (components.size() < 1) {
+      return false;
+    }
+    mount_name = components[0];
+    SetRelativePath(FilePath(mount_name), virtual_path, &path);
   } else {
     return false;
   }
@@ -755,7 +819,7 @@ bool ConvertPathToArcUrl(const FilePath& path,
 
   // Convert paths under /media/removable.
   FilePath relative_path;
-  if (FilePath(kRemovableMediaPath).AppendRelativePath(path, &relative_path)) {
+  if (SetRelativePath(FilePath(kRemovableMediaPath), path, &relative_path)) {
     const std::string volume_name =
         ExtractVolumeNameFromRelativePathForRemovableMedia(relative_path);
     if (volume_name.empty()) {
@@ -780,8 +844,8 @@ bool ConvertPathToArcUrl(const FilePath& path,
   }
 
   // Convert paths under MyFiles.
-  if (GetMyFilesFolderForProfile(primary_profile)
-          .AppendRelativePath(path, &relative_path)) {
+  if (SetRelativePath(GetMyFilesFolderForProfile(primary_profile), path,
+                      &relative_path)) {
     *arc_url_out = GURL(kArcMyFilesContentUrlPrefix)
                        .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
     return true;
@@ -792,8 +856,8 @@ bool ConvertPathToArcUrl(const FilePath& path,
   const DriveIntegrationService* integration_service =
       drive::util::GetIntegrationServiceByProfile(primary_profile);
   if (integration_service &&
-      integration_service->GetMountPointPath().AppendRelativePath(
-          path, &relative_path)) {
+      SetRelativePath(integration_service->GetMountPointPath(), path,
+                      &relative_path)) {
     // TODO(b/157297349) Remove this condition.
     if (arc::IsArcVmEnabled()) {
       *arc_url_out =
@@ -808,14 +872,25 @@ bool ConvertPathToArcUrl(const FilePath& path,
     force_external = true;
   }
 
-  // Force external URL for Crostini.
-  if (GetCrostiniMountDirectory(primary_profile)
-          .AppendRelativePath(path, &relative_path)) {
+  // Convert paths under /media/fuse/crostini_...
+  if (SetRelativePath(GetCrostiniMountDirectory(primary_profile), path,
+                      &relative_path)) {
+    if (arc::IsArcVmEnabled()) {
+      // For ARCVM, we can use ArcVolumeProvider URL and ask Seneschal to share
+      // the path to ARCVM so ARCVM does not need to talk through Chrome.
+      *arc_url_out =
+          GURL("content://org.chromium.arc.volumeprovider/crostini/")
+              .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
+      *requires_sharing_out = true;
+      return true;
+    }
+
+    // Use ChromeContentProvider for ARC++ Container to proxy through Chrome.
     force_external = true;
   }
 
   // Convert path under /media/archive.
-  if (FilePath(kArchiveMountPath).AppendRelativePath(path, &relative_path)) {
+  if (SetRelativePath(FilePath(kArchiveMountPath), path, &relative_path)) {
     // TODO(b/157297349) Remove this condition.
     if (arc::IsArcVmEnabled()) {
       *arc_url_out =
@@ -833,7 +908,7 @@ bool ConvertPathToArcUrl(const FilePath& path,
           ash::smb_client::SmbServiceFactory::Get(primary_profile)) {
     if (const ash::smb_client::SmbFsShare* const share =
             service->GetSmbFsShareForPath(path)) {
-      if (share->mount_path().AppendRelativePath(path, &relative_path)) {
+      if (SetRelativePath(share->mount_path(), path, &relative_path)) {
         // TODO(b/157297349) Remove this condition.
         if (arc::IsArcVmEnabled()) {
           *arc_url_out =
@@ -849,10 +924,22 @@ bool ConvertPathToArcUrl(const FilePath& path,
     }
   }
 
+  // Convert path under /media/fuse/fusebox.
+  if (SetRelativePath(FilePath(kFuseBoxMediaPath), path, &relative_path)) {
+    if (arc::IsArcVmEnabled()) {
+      *arc_url_out =
+          GURL("content://org.chromium.arc.volumeprovider/fusebox/")
+              .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
+      *requires_sharing_out = true;
+      return true;
+    }
+    // Use ChromeContentProvider for ARC++ container.
+    force_external = true;
+  }
+
   // ShareCache files are not available as mount-passthrough and must be shared
   // through ChromeContentProvider.
-  if (GetShareCacheFilePath(primary_profile)
-          .AppendRelativePath(path, &relative_path)) {
+  if (GetShareCacheFilePath(primary_profile).IsParent(path)) {
     force_external = true;
   }
 
@@ -867,6 +954,18 @@ bool ConvertPathToArcUrl(const FilePath& path,
 
   // TODO(kinaba): Add conversion logic once other file systems are supported.
   return false;
+}
+
+base::FilePath ConvertFileSystemURLToPathForSharingWithArc(
+    const storage::FileSystemURL& file_system_url) {
+  switch (file_system_url.type()) {
+    // Use Fusebox path for FSP and MTP.
+    case storage::kFileSystemTypeProvided:
+    case storage::kFileSystemTypeDeviceMediaAsFileStorage:
+      return fusebox::Server::SubstituteFuseboxFilePath(file_system_url);
+    default:
+      return file_system_url.path();
+  }
 }
 
 void ConvertToContentUrls(
@@ -915,16 +1014,18 @@ void ConvertToContentUrls(
       }
     }
 
-    GURL arc_url;
-    bool requires_sharing = false;
-    if (file_system_url.mount_type() == storage::kFileSystemTypeExternal &&
-        ConvertPathToArcUrl(file_system_url.path(), &arc_url,
-                            &requires_sharing)) {
-      if (requires_sharing) {
-        paths_to_share_ptr->push_back(file_system_url.path());
+    if (file_system_url.mount_type() == storage::kFileSystemTypeExternal) {
+      const base::FilePath path =
+          ConvertFileSystemURLToPathForSharingWithArc(file_system_url);
+      GURL arc_url;
+      bool requires_sharing = false;
+      if (ConvertPathToArcUrl(path, &arc_url, &requires_sharing)) {
+        if (requires_sharing) {
+          paths_to_share_ptr->push_back(path);
+        }
+        single_content_url_callback.Run(index, arc_url);
+        continue;
       }
-      single_content_url_callback.Run(index, arc_url);
-      continue;
     }
 
     single_content_url_callback.Run(index, GURL());
@@ -932,8 +1033,8 @@ void ConvertToContentUrls(
 }
 
 bool ReplacePrefix(std::string* const s,
-                   const std::string_view prefix,
-                   const std::string_view replacement) {
+                   std::string_view prefix,
+                   std::string_view replacement) {
   DCHECK(s);
   if (s->starts_with(prefix) &&
       (prefix.ends_with('/') || s->size() <= prefix.size() ||
@@ -946,7 +1047,7 @@ bool ReplacePrefix(std::string* const s,
 }
 
 std::string GetPathDisplayTextForSettings(Profile* const profile,
-                                          const std::string_view path) {
+                                          std::string_view path) {
   std::string result(path);
   DriveIntegrationService* service =
       DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -1195,8 +1296,7 @@ std::optional<FilePath> GetDisplayablePath(Profile* profile, FilePath path) {
     case VOLUME_TYPE_SYSTEM_INTERNAL:
       return std::nullopt;
     case NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
   while (cur_component != path_components.end()) {
     result = result.Append(*cur_component);

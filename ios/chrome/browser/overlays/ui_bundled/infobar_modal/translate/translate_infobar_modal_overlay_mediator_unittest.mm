@@ -11,10 +11,10 @@
 #import "components/translate/core/browser/translate_step.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_translate_modal_consumer.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/test/fake_infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_translate_modal_consumer.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -63,7 +63,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<FakeTranslateInfoBarDelegate> translate_delegate_;
+  raw_ptr<FakeTranslateInfoBarDelegate, DanglingUntriaged> translate_delegate_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;

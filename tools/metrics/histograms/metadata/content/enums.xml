@@ -75,18 +75,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Disabled Sports Notifications Toggle."/>
 </enum>
 
-<enum name="ContentNotificationSetUpListPromoAction">
-  <int value="0" label="Accept"/>
-  <int value="1" label="Cancel"/>
-  <int value="2" label="Remind Me Later"/>
-</enum>
-
-<enum name="ContentNotificationSetUpListPromoEvent">
-  <int value="0" label="Notification promo Sheet shown"/>
-  <int value="1" label="Notification promo Sheet dismissed"/>
-  <int value="2" label="OS Notification permission prompt shown"/>
-</enum>
-
 <enum name="ContentNotificationSnackbarEvent">
   <int value="0" label="Notification confirmation snackbar shown"/>
   <int value="1"
@@ -146,16 +134,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unspecified"/>
   <int value="1" label="Grouped"/>
   <int value="2" label="Reverse Chronological"/>
-</enum>
-
-<enum name="FeedControlsActions">
-  <int value="0" label="Clicked on My activity"/>
-  <int value="1" label="Clicked on Manage interests"/>
-  <int value="2" label="Clicked on Learn more"/>
-  <int value="3" label="Toggled the feed"/>
-  <int value="4" label="Clicked on the feed menu button"/>
-  <int value="5" label="Clicked on autoplay"/>
-  <int value="6" label="Clicked on Manage"/>
 </enum>
 
 <enum name="FeedEngagementType">
@@ -221,6 +199,10 @@ chromium-metrics-reviews@google.com.
              account"/>
   <int value="28" label="Failed - account token fetch timed out"/>
   <int value="29" label="Failed - network fetch timed out"/>
+  <int value="30" label="Failed - loading not allowed due to being disabled"/>
+  <int value="31"
+      label="Failed - loading not allowed due to being disabled by DSE"/>
+  <int value="32" label="Failed - no card received"/>
 </enum>
 
 <enum name="FeedRefreshTrigger">
@@ -385,27 +367,31 @@ chromium-metrics-reviews@google.com.
   <int value="44"
       label="User tapped the Follow button on the page overflow menu."/>
   <int value="45"
-      label="User selected the Discover feed from the feed header."/>
+      label="User selected the Discover feed from the feed header.
+             (Deprecated M143)"/>
   <int value="46"
-      label="User selected the Following feed from the feed header."/>
+      label="User selected the Following feed from the feed header.
+             (Deprecated M143)"/>
   <int value="47"
       label="User tapped the Unfollow button on the page overflow menu."/>
-  <int value="48" label="Show Follow Succeed Snackbar."/>
-  <int value="49" label="Show Follow Failed Snackbar."/>
-  <int value="50" label="Show Unfollow Succeed Snackbar."/>
-  <int value="51" label="Show Unfollow Failed Snackbar."/>
+  <int value="48" label="Show Follow Succeed Snackbar. (Deprecated M143)"/>
+  <int value="49" label="Show Follow Failed Snackbar. (Deprecated M143)"/>
+  <int value="50" label="Show Unfollow Succeed Snackbar. (Deprecated M143)"/>
+  <int value="51" label="Show Unfollow Failed Snackbar. (Deprecated M143)"/>
   <int value="52"
       label="User tapped to go to Following feed using the snackbar 'go to
              Following' option."/>
   <int value="53" label="User tapped the Crow button in the context menu."/>
-  <int value="54" label="Show First Follow Sheet."/>
+  <int value="54" label="Show First Follow Sheet. (Deprecated M143)"/>
   <int value="55"
-      label="User tapped the 'Go To Feed' button on the first follow sheet."/>
+      label="User tapped the 'Go To Feed' button on the first follow sheet.
+             (Deprecated M143)"/>
   <int value="56"
-      label="User tapped the 'Got It' button on the first follow sheet."/>
+      label="User tapped the 'Got It' button on the first follow sheet.
+             (Deprecated M143)"/>
   <int value="57"
       label="Show Follow Recommendation IPH telling users that they are able
-             to follow a website."/>
+             to follow a website. (Deprecated M143)"/>
   <int value="58"
       label="User opened the article in a new tab in group from the back of
              card menu."/>
@@ -505,6 +491,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Popup clicked through (no gesture)"/>
   <int value="3" label="Popup clicked through (abusive)"/>
 </enum>
+
+<!-- LINT.IfChange(SharedWorkerHostDestructionSource) -->
+
+<enum name="SharedWorkerHostDestructionSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Context closed"/>
+  <int value="2" label="Render process host destroyed"/>
+  <int value="3" label="No clients left"/>
+  <int value="4" label="Worker connection lost"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/worker_host/shared_worker_host.cc:SharedWorkerHostDestructionSource) -->
 
 <enum name="SingleWebFeedEntryPoint">
   <int value="0" label="Menu"/>

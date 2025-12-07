@@ -49,19 +49,17 @@ HostStatusProvider::HostStatusWithDevice::HostStatusWithDevice(
   if (host_status_ == mojom::HostStatus::kNoEligibleHosts ||
       host_status_ == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
     if (host_device_) {
-      PA_LOG(ERROR) << "HostStatusWithDevice::HostStatusWithDevice(): Tried to "
-                    << "construct a HostStatusWithDevice with a status "
-                    << "indicating no device, but a device was provided. "
-                    << "Status: " << host_status_ << ", IDs: "
-                    << host_device_->GetInstanceIdDeviceIdForLogs();
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED() << "HostStatusWithDevice::HostStatusWithDevice(): Tried to "
+                   << "construct a HostStatusWithDevice with a status "
+                   << "indicating no device, but a device was provided. "
+                   << "Status: " << host_status_
+                   << ", IDs: " << host_device_->GetInstanceIdDeviceIdForLogs();
     }
   } else if (!host_device_) {
-    PA_LOG(ERROR) << "HostStatusWithDevice::HostStatusWithDevice(): Tried to "
-                  << "construct a HostStatusWithDevice with a status "
-                  << "indicating a device, but no device was provided. "
-                  << "Status: " << host_status_;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "HostStatusWithDevice::HostStatusWithDevice(): Tried to "
+                 << "construct a HostStatusWithDevice with a status "
+                 << "indicating a device, but no device was provided. "
+                 << "Status: " << host_status_;
   }
 }
 

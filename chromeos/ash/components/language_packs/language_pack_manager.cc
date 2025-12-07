@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
 #include <optional>
@@ -17,7 +12,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -45,24 +42,20 @@ namespace {
 
 LanguagePackManager* g_instance = nullptr;
 
-const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
-  // Map of all features and corresponding Base Pack DLC IDs.
-  static const base::NoDestructor<base::flat_map<std::string, std::string>>
-      all_dlc_ids({
-          {kHandwritingFeatureId, "handwriting-base"},
-      });
-
-  return *all_dlc_ids;
-}
-
 // Finds the ID of the DLC corresponding to the Base Pack for a feature.
 // Returns the DLC ID if the feature has a Base Pack or std::nullopt
 // otherwise.
-std::optional<std::string> GetDlcIdForBasePack(const std::string& feature_id) {
-  // We search in the static list for the given |feature_id|.
-  const auto it = GetAllBasePackDlcIds().find(feature_id);
+std::optional<std::string_view> GetDlcIdForBasePack(
+    const std::string& feature_id) {
+  // Map of all features and corresponding Base Pack DLC IDs.
+  static constexpr auto kAllBasePackDlcIds =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {kHandwritingFeatureId, "handwriting-base"},
+      });
 
-  if (it == GetAllBasePackDlcIds().end()) {
+  // We search in the static list for the given |feature_id|.
+  const auto it = kAllBasePackDlcIds.find(feature_id);
+  if (it == kAllBasePackDlcIds.end()) {
     return std::nullopt;
   }
 
@@ -75,7 +68,7 @@ void RunCallbackLater(base::OnceClosure task) {
                                                               std::move(task));
 }
 
-void InstallDlc(const std::string& dlc_id,
+void InstallDlc(std::string_view dlc_id,
                 DlcserviceClient::InstallCallback callback) {
   DlcserviceClient* client = DlcserviceClient::Get();
   if (client) {
@@ -264,9 +257,9 @@ void OnGetExistingDlcs(PrefService* prefs,
 
   const base::flat_set<std::string> hwr_locales =
       ConvertDlcsWithContentToHandwritingLocales(dlcs_with_content);
-  UpdateFromInputMethodPrefs({hwr_locales.begin(), hwr_locales.end()},
-                             InputMethodManager::Get()->GetInputMethodUtil(),
-                             prefs);
+  UpdateFromInputMethodPrefs(
+      UNSAFE_TODO({hwr_locales.begin(), hwr_locales.end()}),
+      InputMethodManager::Get()->GetInputMethodUtil(), prefs);
 }
 
 }  // namespace
@@ -354,7 +347,7 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kTtsFeatureId, "el"}, "tts-el-gr-c"},
           {{kTtsFeatureId, "en-au"}, "tts-en-au-c"},
           {{kTtsFeatureId, "en-gb"}, "tts-en-gb-c"},
-          {{kTtsFeatureId, "en-us"}, "tts-en-us-c"},
+          {{kTtsFeatureId, "en-us"}, "tts-en-us-d"},
           {{kTtsFeatureId, "es-es"}, "tts-es-es-c"},
           {{kTtsFeatureId, "es-us"}, "tts-es-us-c"},
           {{kTtsFeatureId, "fi"}, "tts-fi-fi-c"},
@@ -512,7 +505,8 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
 void LanguagePackManager::InstallBasePack(
     const std::string& feature_id,
     OnInstallBasePackCompleteCallback callback) {
-  const std::optional<std::string> dlc_id = GetDlcIdForBasePack(feature_id);
+  const std::optional<std::string_view> dlc_id =
+      GetDlcIdForBasePack(feature_id);
 
   // If the given |feature_id| doesn't have a Base Pack, run callback and
   // don't reach the DLC Service.

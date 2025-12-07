@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -58,6 +59,11 @@ int FakeDataTypeControllerDelegate::clear_metadata_count() const {
   return clear_metadata_count_;
 }
 
+void FakeDataTypeControllerDelegate::SetNodesForDebugging(
+    base::Value::List nodes) {
+  all_nodes_for_debugging_ = std::move(nodes);
+}
+
 void FakeDataTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
@@ -91,14 +97,14 @@ void FakeDataTypeControllerDelegate::OnSyncStopping(
   sync_started_ = false;
 }
 
-void FakeDataTypeControllerDelegate::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
+void FakeDataTypeControllerDelegate::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(/*count=*/0);
 }
 
 void FakeDataTypeControllerDelegate::GetAllNodesForDebugging(
     DataTypeControllerDelegate::AllNodesCallback callback) {
-  std::move(callback).Run(type_, base::Value::List());
+  std::move(callback).Run(all_nodes_for_debugging_.Clone());
 }
 
 void FakeDataTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}
@@ -132,7 +138,8 @@ void FakeDataTypeControllerDelegate::ClearMetadataIfStopped() {
 }
 
 void FakeDataTypeControllerDelegate::ReportBridgeErrorForTest() {
-  SimulateModelError(ModelError(FROM_HERE, "Report error for test"));
+  SimulateModelError(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 }
 
 }  // namespace syncer

@@ -62,14 +62,14 @@ Network.responseReceived{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 261
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 441
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -83,7 +83,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>
@@ -105,7 +105,7 @@ Network.responseReceivedExtraInfo{
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 441
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -115,11 +115,11 @@ Network.responseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 702
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
@@ -136,9 +136,9 @@ Network.requestWillBeSent{
     request : {
         headers : {
             Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-            Purpose : prefetch
             Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3Dhttps%253A%252F%252Flocalhost%253A8443%252Fresources%252Fblank.html
             Sec-Purpose : prefetch
+            Sec-Speculation-Tags : null
             Upgrade-Insecure-Requests : 1
             sec-ch-ua : "content_shell";v="999"
             sec-ch-ua-mobile : ?0
@@ -164,12 +164,12 @@ Network.requestWillBeSentExtraInfo{
         Accept-Language : en-us,en
         Connection : keep-alive
         Host : 127.0.0.1:8443
-        Purpose : prefetch
         Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3Dhttps%253A%252F%252Flocalhost%253A8443%252Fresources%252Fblank.html
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
+        Sec-Speculation-Tags : null
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
         sec-ch-ua : "content_shell";v="999"
@@ -194,13 +194,13 @@ Network.requestWillBeSent{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 248
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Connection : Keep-Alive
-            Content-Length : 0
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             Keep-Alive : timeout=10
@@ -214,7 +214,7 @@ Network.requestWillBeSent{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 302
         statusText : Found
         timing : <object>
@@ -223,7 +223,6 @@ Network.requestWillBeSent{
     request : {
         headers : {
             Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-            Purpose : prefetch
             Referer : https://127.0.0.1:8443/
             Sec-Purpose : prefetch
             Upgrade-Insecure-Requests : 1
@@ -253,7 +252,7 @@ Network.responseReceivedExtraInfo{
     ]
     headers : {
         Connection : Keep-Alive
-        Content-Length : 0
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         Keep-Alive : timeout=10
@@ -263,7 +262,7 @@ Network.responseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 302
 }
 Network.requestWillBeSentExtraInfo{
@@ -272,13 +271,12 @@ Network.requestWillBeSentExtraInfo{
     connectTiming : <object>
     headers : {
         Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-        Accept-Encoding : gzip, deflate, br
+        Accept-Encoding : gzip, deflate, br, zstd
         Connection : keep-alive
         Host : localhost:8443
-        Purpose : prefetch
         Referer : https://127.0.0.1:8443/
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
@@ -300,14 +298,14 @@ Network.responseReceived{
         charset : 
         connectionId : <number>
         connectionReused : false
-        encodedDataLength : 257
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : true
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 0
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -321,7 +319,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>
@@ -343,7 +341,7 @@ Network.responseReceivedExtraInfo{
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 0
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -353,11 +351,11 @@ Network.responseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 257
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }

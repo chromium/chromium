@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/download/ui_bundled/download_manager_consumer.h"
+#import "ios/chrome/browser/download/ui/download_manager_consumer.h"
 
 // Consumer for the download manager mediator to be used in tests.
-@interface FakeDownloadManagerConsumer : NSObject<DownloadManagerConsumer>
+@interface FakeDownloadManagerConsumer : NSObject <DownloadManagerConsumer>
 
 // Name of the file being downloaded.
 @property(nonatomic, copy) NSString* fileName;
@@ -24,12 +24,18 @@
 // Download progress. 1.0 if the download is complete.
 @property(nonatomic) float progress;
 
-// State of the download task. Default is kDownloadManagerStateNotStarted.
+// State of the download task. Default is DownloadManagerState::kNotStarted.
 @property(nonatomic) DownloadManagerState state;
 
 // Visible state of Install Google Drive button.
 @property(nonatomic, getter=isInstallDriveButtonVisible)
     BOOL installDriveButtonVisible;
+
+// The host that triggered the download.
+@property(nonatomic) NSString* originatingHost;
+
+// Whether the originating host is displayed.
+@property(nonatomic) BOOL originatingHostDisplayed;
 
 @end
 

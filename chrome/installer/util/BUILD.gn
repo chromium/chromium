@@ -16,6 +16,8 @@ if (is_win) {
       "lzma_util.h",
       "self_cleaning_temp_dir.cc",
       "self_cleaning_temp_dir.h",
+      "unbuffered_file_writer.cc",
+      "unbuffered_file_writer.h",
     ]
     deps = [ "//third_party/lzma_sdk/google:seven_zip_reader" ]
     public_deps = [
@@ -148,12 +150,16 @@ static_library("with_no_strings") {
       "l10n_string_util.h",
       "logging_installer.cc",
       "logging_installer.h",
+      "per_install_values.cc",
+      "per_install_values.h",
       "registry_entry.cc",
       "registry_entry.h",
       "scoped_token_privilege.cc",
       "scoped_token_privilege.h",
       "shell_util.cc",
       "shell_util.h",
+      "system_tracing_util.cc",
+      "system_tracing_util.h",
       "taskbar_util.cc",
       "taskbar_util.h",
     ]
@@ -239,7 +245,7 @@ source_set("strings") {
 source_set("constants") {
   public = [ "initial_preferences_constants.h" ]
 
-  sources = [ "initial_preferences_constants.cc" ]
+  sources = []
 
   if (is_win) {
     public += [
@@ -285,20 +291,30 @@ if (is_win) {
   # setup_unittests, which does so.
   source_set("serial_unittests") {
     testonly = true
-    sources = [ "install_service_work_item_unittest.cc" ]
+    sources = [
+      "install_service_work_item_unittest.cc",
+      "per_install_values_unittest.cc",
+    ]
     deps = [
       ":with_no_strings",
       "//base",
+      "//base/test:test_support",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   test("installer_util_unittests") {
     sources = [
       "additional_parameters_unittest.cc",
       "advanced_firewall_manager_win_unittest.cc",
+      "auto_launch_util_unittest.cc",
       "beacons_unittest.cc",
       "callback_work_item_unittest.cc",
       "conditional_work_item_list_unittest.cc",
@@ -331,6 +347,7 @@ if (is_win) {
       "self_cleaning_temp_dir_unittest.cc",
       "set_reg_value_work_item_unittest.cc",
       "shell_util_unittest.cc",
+      "unbuffered_file_writer_unittest.cc",
       "work_item_list_unittest.cc",
       "work_item_mocks.cc",
       "work_item_mocks.h",

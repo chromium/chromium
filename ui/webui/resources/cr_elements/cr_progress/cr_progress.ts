@@ -72,12 +72,12 @@ export class CrProgressElement extends CrLitElement {
     };
   }
 
-  value: number = 0;
-  min: number = 0;
-  max: number = 100;
-  step: number = 1;
-  indeterminate: boolean = false;
-  disabled: boolean = false;
+  accessor value: number = 0;
+  accessor min: number = 0;
+  accessor max: number = 100;
+  accessor step: number = 1;
+  accessor indeterminate: boolean = false;
+  accessor disabled: boolean = false;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);

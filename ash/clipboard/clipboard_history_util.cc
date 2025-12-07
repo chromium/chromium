@@ -10,7 +10,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -18,9 +17,9 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -179,7 +178,7 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
 
   // Attempt to read file system sources in the custom data.
   if (std::optional<std::u16string> maybe_sources = ui::ReadCustomDataForType(
-          base::as_bytes(base::span(data.GetDataTransferCustomData())),
+          base::as_byte_span(data.GetDataTransferCustomData()),
           kFileSystemSourcesType);
       maybe_sources) {
     return std::move(*maybe_sources);
@@ -189,19 +188,17 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
 }
 
 const gfx::VectorIcon& GetShortcutKeyIcon() {
-  if (!Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
-    return kClipboardSearchIcon;
+  switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
+    case ui::mojom::MetaKey::kSearch:
+      return kClipboardSearchIcon;
+    case ui::mojom::MetaKey::kLauncher:
+      return kClipboardLauncherNoAssistantIcon;
+    case ui::mojom::MetaKey::kLauncherRefresh:
+      return kCampbellHeroIcon;
+    case ui::mojom::MetaKey::kExternalMeta:
+    case ui::mojom::MetaKey::kCommand:
+      NOTREACHED();
   }
-
-  const auto* const assistant_state = AssistantState::Get();
-  const bool is_assistant_available =
-      assistant_state &&
-      assistant_state->allowed_state() ==
-          assistant::AssistantAllowedState::ALLOWED &&
-      assistant_state->settings_enabled().value_or(false);
-
-  return is_assistant_available ? kClipboardLauncherIcon
-                                : kClipboardLauncherNoAssistantIcon;
 }
 
 std::u16string GetShortcutKeyName() {
@@ -271,12 +268,9 @@ ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
 
 ui::ImageModel GetHtmlPreviewPlaceholder() {
   static base::NoDestructor<ui::ImageModel> model(
-      chromeos::features::IsClipboardHistoryRefreshEnabled()
-          ? ui::ImageModel::FromVectorIcon(
-                kUnrenderedHtmlPlaceholderIcon, cros_tokens::kCrosSysOutline,
-                ClipboardHistoryViews::kBitmapItemPlaceholderIconSize)
-          : ui::ImageModel::FromImageSkia(gfx::CanvasImageSource::MakeImageSkia<
-                                          UnrenderedHtmlPlaceholderImage>()));
+      ui::ImageModel::FromVectorIcon(
+          kUnrenderedHtmlPlaceholderIcon, cros_tokens::kCrosSysOutline,
+          ClipboardHistoryViews::kBitmapItemPlaceholderIconSize));
   return *model;
 }
 
@@ -288,11 +282,8 @@ crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
 
 int GetPreferredItemViewWidth() {
   const auto& menu_config = views::MenuConfig::instance();
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? std::clamp(kPreferredMenuWidth,
-                          menu_config.touchable_menu_min_width,
-                          menu_config.touchable_menu_max_width)
-             : menu_config.touchable_menu_min_width;
+  return std::clamp(kPreferredMenuWidth, menu_config.touchable_menu_min_width,
+                    menu_config.touchable_menu_max_width);
 }
 
 }  // namespace ash::clipboard_history_util

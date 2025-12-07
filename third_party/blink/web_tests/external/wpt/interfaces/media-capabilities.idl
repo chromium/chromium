@@ -90,12 +90,12 @@ dictionary MediaCapabilitiesInfo {
 };
 
 dictionary MediaCapabilitiesDecodingInfo : MediaCapabilitiesInfo {
-  required MediaKeySystemAccess keySystemAccess;
-  MediaDecodingConfiguration configuration;
+  required MediaKeySystemAccess? keySystemAccess;
+  required MediaDecodingConfiguration configuration;
 };
 
 dictionary MediaCapabilitiesEncodingInfo : MediaCapabilitiesInfo {
-  MediaEncodingConfiguration configuration;
+  required MediaEncodingConfiguration configuration;
 };
 
 [Exposed=Window]
@@ -110,6 +110,8 @@ partial interface WorkerNavigator {
 
 [Exposed=(Window, Worker)]
 interface MediaCapabilities {
-  [NewObject] Promise<MediaCapabilitiesDecodingInfo> decodingInfo(MediaDecodingConfiguration configuration);
-  [NewObject] Promise<MediaCapabilitiesEncodingInfo> encodingInfo(MediaEncodingConfiguration configuration);
+  [NewObject] Promise<MediaCapabilitiesDecodingInfo> decodingInfo(
+      MediaDecodingConfiguration configuration);
+  [NewObject] Promise<MediaCapabilitiesEncodingInfo> encodingInfo(
+      MediaEncodingConfiguration configuration);
 };

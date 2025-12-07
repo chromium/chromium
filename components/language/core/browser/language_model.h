@@ -29,7 +29,7 @@ class LanguageModel {
     float score;
   };
 
-  virtual ~LanguageModel() {}
+  virtual ~LanguageModel() = default;
 
   // The set of languages that the user understands. The languages are ranked
   // from most important to least.

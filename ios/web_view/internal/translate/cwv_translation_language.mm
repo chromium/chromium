@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
-
 #import <string>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 
 @implementation CWVTranslationLanguage
 
@@ -24,6 +23,15 @@
     _nativeName = base::SysUTF16ToNSString(nativeName);
   }
   return self;
+}
+
++ (instancetype)autoLanguageWithLocalizedName:(NSString*)localizedName
+                                   nativeName:(NSString*)nativeName {
+  std::u16string validLocalizedName = base::SysNSStringToUTF16(localizedName);
+  std::u16string validNativeName = base::SysNSStringToUTF16(nativeName);
+  return [[CWVTranslationLanguage alloc] initWithLanguageCode:"auto"
+                                                localizedName:validLocalizedName
+                                                   nativeName:validNativeName];
 }
 
 - (BOOL)isEqual:(id)object {

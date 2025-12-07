@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.contextmenu.ContextMenuHeaderTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/context_menu_padding"
+    android:background="?attr/listChoiceBackgroundIndicator">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/menu_header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+        app:leading="@dimen/text_size_small_leading" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/menu_header_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:textDirection="ltr"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/menu_header_secondary_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:textDirection="ltr"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading"
+        android:visibility="gone" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/menu_header_tertiary_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:textDirection="ltr"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading"
+        android:visibility="gone" />
+</org.chromium.chrome.browser.contextmenu.ContextMenuHeaderTextView>

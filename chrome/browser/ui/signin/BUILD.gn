@@ -1,0 +1,238 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+import("//build/config/ui.gni")
+import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(!is_android && !is_fuchsia)
+
+source_set("signin") {
+  sources = [
+    "cookie_clear_on_exit_migration_notice.h",
+    "signin_modal_dialog.h",
+    "signin_modal_dialog_impl.h",
+    "signin_view_controller.h",
+    "signin_view_controller_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
+    "//chrome/common",
+    "//components/signin/public/base",
+    "//components/sync/base",
+    "//ui/base/interaction",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    # //c/b/u/signin and //c/b/ui/webui/signin use different include of each of
+    # other. Thus, allow them to depend on each other.
+    "//chrome/browser/ui/webui/signin",
+  ]
+
+  if (enable_dice_support) {
+    sources += [
+      "chrome_signout_confirmation_prompt.h",
+      "dice_migration_service.h",
+      "dice_migration_service_factory.h",
+      "dice_web_signin_interceptor_delegate.h",
+      "promos/bubble_signin_promo_delegate.h",
+      "promos/bubble_signin_promo_signin_button_view.h",
+      "promos/bubble_signin_promo_view.h",
+      "promos/signin_promo_tab_helper.h",
+    ]
+    public_deps += [ "//chrome/browser/signin" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "cookie_clear_on_exit_migration_notice.cc",
+    "signin_modal_dialog.cc",
+    "signin_modal_dialog_impl.cc",
+    "signin_view_controller.cc",
+    "signin_view_controller_delegate.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/profiles",
+
+    # TODO(crubug.com/430804948): This dependency is needed because
+    # `signin_view_controller.cc` includes `signin_intercept_first_run_experience_dialog.h`,
+    # temporarily built from profiles:impl, due to a circular dependency.
+    "//chrome/browser/signin:signin_promo",
+    "//chrome/browser/ui/profiles:impl",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/common",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//google_apis",
+    "//ui/base/interaction",
+    "//url",
+  ]
+
+  if (enable_dice_support) {
+    sources += [
+      "chrome_signout_confirmation_prompt.cc",
+      "dice_migration_service.cc",
+      "dice_migration_service_factory.cc",
+      "dice_web_signin_interceptor_delegate.cc",
+      "promos/bubble_signin_promo_delegate.cc",
+      "promos/bubble_signin_promo_signin_button_view.cc",
+      "promos/bubble_signin_promo_view.cc",
+      "promos/signin_promo_tab_helper.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/web_applications",
+      "//components/pref_registry",
+      "//components/user_education/common",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+}
+
+if (!is_android) {
+  # This is not applicable to ChromeOS, but to desktop platforms.
+  if (!is_chromeos_device && !is_chromeos) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+      sources = [
+        "promos/bubble_signin_promo_interactive_uitest.cc",
+        "signin_view_controller_interactive_uitest.cc",
+      ]
+      deps = [
+        ":signin",
+        "//base",
+        "//base/test:test_support",
+        "//chrome/browser",
+        "//chrome/browser/ui",
+        "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui:ui_features",
+        "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/extensions",
+        "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/hats:test_support",
+        "//chrome/browser/ui/passwords:test_support",
+        "//chrome/browser/ui/webui/signin:test_support_ui",
+        "//chrome/test:test_support",
+        "//chrome/test:test_support_ui",
+        "//components/autofill/content/browser",
+        "//components/autofill/core/browser:test_support",
+        "//components/password_manager/core/browser:test_support",
+        "//components/signin/public/base",
+        "//components/signin/public/identity_manager",
+        "//components/signin/public/identity_manager:test_support",
+        "//components/sync:test_support",
+        "//components/sync_bookmarks",
+        "//content/public/browser",
+        "//content/test:test_support",
+        "//google_apis",
+        "//testing/gmock",
+        "//ui/base",
+        "//ui/events:events_base",
+        "//ui/views:test_support",
+      ]
+      if (enable_dice_support) {
+        sources += [
+          "dice_migration_service_interactive_uitest.cc",
+          "dice_migration_service_pixel_browsertest.cc",
+        ]
+        deps += [ "//chrome/browser/ui/toasts" ]
+
+        # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+        # enable the diagnostic by removing this line.
+        configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+      }
+    }
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = []
+
+    deps = [
+      ":signin",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
+      "//chrome/test:test_support_ui",
+      "//components/signin/public/base",
+      "//components/signin/public/base:signin_switches",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync/base",
+      "//content/test:test_support",
+      "//google_apis",
+    ]
+
+    if (enable_dice_support) {
+      sources += [
+        "dice_migration_service_browsertest.cc",
+        "promos/bubble_sign_in_promo_delegate_browsertest.cc",
+        "promos/signin_promo_tab_helper_browsertest.cc",
+        "signin_view_controller_browsertest.cc",
+      ]
+      deps += [
+        "//chrome/browser/ui/toasts/api:toasts",
+        "//chrome/browser/ui/webui/signin/signout_confirmation",
+        "//chrome/browser/web_applications:web_applications_test_support",
+        "//chrome/test:test_support",
+        "//components/sync:test_support",
+      ]
+    }
+
+    if (!is_chromeos) {
+      sources += [
+        "account_settings_page_pixel_browsertest.cc",
+        "chrome_signout_confirmation_prompt_browsertest.cc",
+        "cookie_clear_on_exit_migration_notice_browsertest.cc",
+      ]
+
+      deps += [ "//chrome/browser/content_settings:content_settings_factory" ]
+    }
+  }
+}

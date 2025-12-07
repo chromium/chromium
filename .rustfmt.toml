@@ -2,10 +2,10 @@
 # See also https://rust-lang.github.io/rustfmt
 
 # Rust language edition to be used by the parser.
-edition = "2021"
+edition = "2024"
 
 # Version of the formatting rules to use.
-version = "Two"
+style_edition = "2021"
 
 # Line endings will be converted to \n.
 newline_style = "Unix"
@@ -20,7 +20,8 @@ wrap_comments = true
 use_small_heuristics = "Max"
 
 # Third party code is formatted upstream.
+# Please use negative pattern (!path) for any path you do want to format.
 ignore = [
-  "third_party/rust/**/crate",
-  "third_party/rust/chromium_crates_io/vendor",
+  "third_party/**",
+  "!third_party/blink/**",
 ]

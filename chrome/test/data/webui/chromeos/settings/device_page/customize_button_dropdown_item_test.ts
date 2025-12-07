@@ -42,9 +42,9 @@ suite('<customize-button-dropdown-item>', () => {
 
   function getOptionElement(): HTMLElement {
     const option =
-        dropdownItem.shadowRoot!.querySelector('#container')! as HTMLElement;
+        dropdownItem.shadowRoot!.querySelector<HTMLElement>('#container');
     assertTrue(!!option);
-    return option!;
+    return option;
   }
 
   test('Initialize customize button dropdown item', async () => {
@@ -57,7 +57,7 @@ suite('<customize-button-dropdown-item>', () => {
 
     await flushTasks();
     assertTrue(!!dropdownItem);
-    assertEquals('Default', getOptionElement()!.textContent?.trim());
+    assertEquals('Default', getOptionElement().textContent?.trim());
 
     dropdownItem.set('option', {
       value: 'key combination',
@@ -65,7 +65,7 @@ suite('<customize-button-dropdown-item>', () => {
     });
 
     await flushTasks();
-    assertEquals('ctrl + z', getOptionElement()!.textContent?.trim());
+    assertEquals('ctrl + z', getOptionElement().textContent?.trim());
   });
 
   test('clicking option item will fire event', async () => {
@@ -76,7 +76,7 @@ suite('<customize-button-dropdown-item>', () => {
       name: 'key combination',
     });
 
-    getOptionElement()!.click();
+    getOptionElement().click();
     await flushTasks();
 
     assertEquals(dropdownSelectedEventCount, 1);

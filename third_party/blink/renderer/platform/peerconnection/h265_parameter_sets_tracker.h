@@ -41,7 +41,7 @@ class PLATFORM_EXPORT H265ParameterSetsTracker {
   };
   struct FixedBitstream {
     PacketAction action;
-    rtc::scoped_refptr<webrtc::EncodedImageBuffer> bitstream;
+    webrtc::scoped_refptr<webrtc::EncodedImageBuffer> bitstream;
   };
 
   H265ParameterSetsTracker();
@@ -59,7 +59,7 @@ class PLATFORM_EXPORT H265ParameterSetsTracker {
   // parameter set is not found, the returned FixedBitstream will get |action|
   // set to kRequestkeyframe, and its |bitstream| member will not be set.
   virtual FixedBitstream MaybeFixBitstream(
-      rtc::ArrayView<const uint8_t> bitstream);
+      webrtc::ArrayView<const uint8_t> bitstream);
 
  private:
   // Stores PPS payload and the active SPS ID.
@@ -105,21 +105,21 @@ class PLATFORM_EXPORT H265ParameterSetsTracker {
   webrtc::H265BitstreamParser parser_;
   // Map from vps_video_parameter_set_id to the VPS payload associated with this
   // ID.
-  WTF::HashMap<uint32_t,
-               std::unique_ptr<PpsData>,
-               IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t,
+          std::unique_ptr<PpsData>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       pps_data_;
   // Map from sps_video_parameter_set_id to the SPS payload associated with this
   // ID.
-  WTF::HashMap<uint32_t,
-               std::unique_ptr<SpsData>,
-               IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t,
+          std::unique_ptr<SpsData>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       sps_data_;
   // Map from pps_pic_parameter_set_id to the PPS payload associated with this
   // ID.
-  WTF::HashMap<uint32_t,
-               std::unique_ptr<VpsData>,
-               IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t,
+          std::unique_ptr<VpsData>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       vps_data_;
 };
 

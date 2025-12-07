@@ -1,0 +1,63 @@
+{
+  "__comment__": [ "Example comment" ],
+  "PATTERN_1": {
+    "de": {
+      "" : [
+        {
+          "positive_pattern": "something german",
+          "positive_score": 1.0,
+          "negative_pattern": "negative pattern",
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "SomeFeatureFlag" : [
+        {
+          "positive_pattern": "something updated german",
+          "positive_score": 1.0,
+          "negative_pattern": "negative pattern",
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "en": [
+      {
+        "positive_pattern": "english",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL",
+          "NAME"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT",
+          "INPUT_NUMBER"
+        ]
+      }
+    ]
+  },
+  "PATTERN_2": {
+    "en": [
+      {
+        "positive_pattern": "pattern 2's regex",
+        "positive_score": 2.3,
+        "negative_pattern": null,
+        "match_field_attributes": [ "LABEL" ],
+        "form_control_types": [ "INPUT_TEXT" ]
+      }
+    ]
+  }
+}

@@ -9,6 +9,8 @@
 
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/notimplemented.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_buildflags.h"
@@ -56,9 +58,10 @@ bool IsAlsaDeviceAvailable(CastAudioManagerAlsa::StreamType type,
   // it or not.
   if (type == CastAudioManagerAlsa::kStreamCapture) {
     // Check if the device is in the list of invalid devices.
-    for (size_t i = 0; i < std::size(kInvalidAudioInputDevices); ++i) {
-      if (kInvalidAudioInputDevices[i] == device_name)
+    for (const auto& invalid_audio_input_device : kInvalidAudioInputDevices) {
+      if (invalid_audio_input_device == device_name) {
         return false;
+      }
     }
     return true;
   } else {
@@ -203,35 +206,34 @@ void CastAudioManagerAlsa::GetAlsaDevicesInfo(
   const std::string unwanted_device_type =
       UnwantedDeviceTypeWhenEnumerating(type);
 
-  for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+  for (void** hint_iter = hints; *hint_iter != NULL; UNSAFE_TODO(hint_iter++)) {
     // Only examine devices of the right type.  Valid values are
     // "Input", "Output", and NULL which means both input and output.
-    std::unique_ptr<char, base::FreeDeleter> io(
-        wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
-    if (io && unwanted_device_type == io.get())
+    auto io = wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName);
+    if (unwanted_device_type == base::as_string_view(io)) {
       continue;
+    }
 
     // Get the unique device name for the device.
-    std::unique_ptr<char, base::FreeDeleter> unique_device_name(
-        wrapper_->DeviceNameGetHint(*hint_iter, kNameHintName));
+    auto unique_device_name =
+        wrapper_->DeviceNameGetHint(*hint_iter, kNameHintName);
 
     // Find out if the device is available.
-    if (IsAlsaDeviceAvailable(type, unique_device_name.get())) {
+    if (IsAlsaDeviceAvailable(type, unique_device_name.data())) {
       // Get the description for the device.
-      std::unique_ptr<char, base::FreeDeleter> desc(
-          wrapper_->DeviceNameGetHint(*hint_iter, kDescriptionHintName));
+      auto desc = wrapper_->DeviceNameGetHint(*hint_iter, kDescriptionHintName);
 
       ::media::AudioDeviceName name;
-      name.unique_id = unique_device_name.get();
-      if (desc) {
-        name.device_name = desc.get();
+      name.unique_id = base::as_string_view(unique_device_name);
+      if (!desc.empty()) {
         // Use the more user friendly description as name.
         // Replace '\n' with '-'.
-        name.device_name.replace(name.device_name.find('\n'), 1, 1, '-');
+        std::ranges::replace(desc, '\n', '-');
+        name.device_name = base::as_string_view(desc);
       } else {
         // Virtual devices don't necessarily have descriptions.
         // Use their names instead.
-        name.device_name = unique_device_name.get();
+        name.device_name = base::as_string_view(unique_device_name);
       }
 
       // Store the device information.

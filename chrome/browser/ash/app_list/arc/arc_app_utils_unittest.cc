@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+
 #include <utility>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +44,6 @@ TEST_F(ArcAppUtilsTest, IsArcItemDoesNotCrashWithInvalidCrxFileIds) {
 
 TEST_F(ArcAppUtilsTest, GetAndroidId) {
   content::BrowserTaskEnvironment task_environment;
-  TestingProfile testing_profile;
 
   // ARC++ is not running.
   bool ok = true;
@@ -53,7 +53,10 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   EXPECT_EQ(0, android_id);
 
   ArcAppTest arc_app_test_;
-  arc_app_test_.SetUp(&testing_profile);
+  arc_app_test_.PreProfileSetUp();
+
+  auto testing_profile = std::make_unique<TestingProfile>();
+  arc_app_test_.PostProfileSetUp(testing_profile.get());
 
   constexpr int64_t kAndroidIdForTest = 1000;
   arc_app_test_.app_instance()->set_android_id(kAndroidIdForTest);
@@ -61,5 +64,7 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   EXPECT_TRUE(ok);
   EXPECT_EQ(kAndroidIdForTest, android_id);
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  testing_profile.reset();
+  arc_app_test_.PostProfileTearDown();
 }

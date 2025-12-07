@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(UI_BASE_IDLE) IdlePollingService {
   struct State {
     bool locked;
     base::TimeDelta idle_time;
+
+    bool operator==(const State& other) const = default;
   };
 
   class Observer : public base::CheckedObserver {
@@ -61,6 +63,7 @@ class COMPONENT_EXPORT(UI_BASE_IDLE) IdlePollingService {
   IdlePollingService();
   ~IdlePollingService();
 
+  State CreateCurrentIdleState() const;
   void PollIdleState();
 
   base::TimeDelta poll_interval_;

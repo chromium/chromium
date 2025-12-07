@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import './toggle_row.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,7 +14,7 @@ import {recordSettingChange} from '../../metrics_recorder.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './pin_to_shelf_item.html.js';
-import {AppManagementToggleRowElement} from './toggle_row.js';
+import type {AppManagementToggleRowElement} from './toggle_row.js';
 
 export class AppManagementPinToShelfItemElement extends PolymerElement {
   static get is() {

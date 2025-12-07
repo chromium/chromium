@@ -26,15 +26,14 @@ class GrowableIOBuffer;
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 
 // Class to parse incoming stream data wrapped with a StreamBody protobuf
 // message.
 class ProtobufHttpStreamParser final {
  public:
   using MessageCallback = base::RepeatingCallback<void(const std::string&)>;
-  using StreamClosedCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&)>;
+  using StreamClosedCallback = base::OnceCallback<void(const HttpStatus&)>;
 
   ProtobufHttpStreamParser(const MessageCallback& message_callback,
                            StreamClosedCallback stream_closed_callback);

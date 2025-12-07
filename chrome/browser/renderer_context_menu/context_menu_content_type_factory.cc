@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "content/public/browser/web_contents.h"
@@ -27,14 +26,14 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/session_manager/core/session_manager.h"
 #endif
 
 namespace {
 
 bool IsUserSessionBlocked() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (session_manager::SessionManager::Get() &&
       session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return true;
@@ -60,11 +59,9 @@ class NullContextMenuContentType : public ContextMenuContentType {
 
 }  // namespace
 
-ContextMenuContentTypeFactory::ContextMenuContentTypeFactory() {
-}
+ContextMenuContentTypeFactory::ContextMenuContentTypeFactory() = default;
 
-ContextMenuContentTypeFactory::~ContextMenuContentTypeFactory() {
-}
+ContextMenuContentTypeFactory::~ContextMenuContentTypeFactory() = default;
 
 // static.
 std::unique_ptr<ContextMenuContentType> ContextMenuContentTypeFactory::Create(
@@ -82,7 +79,7 @@ ContextMenuContentTypeFactory::CreateInternal(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     return base::WrapUnique(new ContextMenuContentTypeAppMode(params));
   }
 

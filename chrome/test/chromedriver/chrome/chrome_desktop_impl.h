@@ -20,7 +20,6 @@ class TimeDelta;
 
 class DevToolsClient;
 class Status;
-class WebView;
 
 class ChromeDesktopImpl : public ChromeImpl {
  public:
@@ -36,15 +35,16 @@ class ChromeDesktopImpl : public ChromeImpl {
                     base::ScopedTempDir* user_data_dir,
                     base::ScopedTempDir* extension_dir,
                     bool network_emulation_enabled,
-                    bool autoaccept_beforeunload);
+                    bool autoaccept_beforeunload,
+                    bool enable_extension_targets,
+                    bool quit_gracefully);
   ~ChromeDesktopImpl() override;
 
-  // Waits for a page with the given URL to appear and finish loading.
-  // Returns an error if the timeout is exceeded.
-  Status WaitForPageToLoad(const std::string& url,
-                           const base::TimeDelta& timeout,
-                           std::unique_ptr<WebView>* web_view,
-                           bool w3c_compliant);
+  // Waits for an extension's page with the given URL to appear and finish
+  // loading. Returns an error if the timeout is exceeded.
+  Status WaitForExtensionPageToLoad(const std::string& url,
+                                    const base::TimeDelta& timeout,
+                                    bool w3c_compliant);
 
   // Overridden from Chrome:
   Status GetAsDesktop(ChromeDesktopImpl** desktop) override;
@@ -69,6 +69,7 @@ class ChromeDesktopImpl : public ChromeImpl {
   ScopedTempDirWithRetry extension_dir_;
   bool network_connection_enabled_;
   int network_connection_;
+  bool quit_gracefully_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CHROME_DESKTOP_IMPL_H_

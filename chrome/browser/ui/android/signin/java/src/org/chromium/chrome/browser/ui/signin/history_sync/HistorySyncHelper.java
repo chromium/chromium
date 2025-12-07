@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -21,26 +26,30 @@ import java.time.Duration;
 import java.util.Set;
 
 /** A helper object that provides history sync opt-in related utilities. */
+@NullMarked
 public class HistorySyncHelper {
     private static final int MAX_SUCCESSIVE_DECLINES = 2;
     private static final long MIN_DAYS_SINCE_LAST_DECLINE = 14;
-    @Nullable private static HistorySyncHelper sHistorySyncHelperForTest;
+    @Nullable private static HistorySyncHelper sInstance;
     private final SyncService mSyncService;
     private final PrefService mPrefService;
 
     public static HistorySyncHelper getForProfile(Profile profile) {
-        if (sHistorySyncHelperForTest != null) {
-            return sHistorySyncHelperForTest;
+        if (sInstance == null) {
+            sInstance = new HistorySyncHelper(profile);
         }
-        return new HistorySyncHelper(profile);
+        return sInstance;
     }
 
     public static void setInstanceForTesting(HistorySyncHelper historySyncHelper) {
-        sHistorySyncHelperForTest = historySyncHelper;
+        var oldInstance = sInstance;
+        sInstance = historySyncHelper;
+        ResettersForTesting.register(() -> sInstance = oldInstance);
     }
 
-    private HistorySyncHelper(Profile profile) {
-        mSyncService = SyncServiceFactory.getForProfile(profile);
+    @VisibleForTesting
+    HistorySyncHelper(Profile profile) {
+        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mPrefService = UserPrefs.get(profile);
     }
 
@@ -49,6 +58,18 @@ public class HistorySyncHelper {
         return mSyncService
                 .getSelectedTypes()
                 .containsAll(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+    }
+
+    /**
+     * Whether history sync is enabled.
+     *
+     * <p>History and Tabs should usually have the same value, but in some cases they may not, e.g.
+     * if one of them is disabled by policy. In that case, this method returns true if at least one
+     * of them is enabled.
+     */
+    public boolean isHistorySyncEnabled() {
+        return mSyncService.getSelectedTypes().contains(UserSelectableType.HISTORY)
+                || mSyncService.getSelectedTypes().contains(UserSelectableType.TABS);
     }
 
     /** Whether history sync is disabled by enterprise policy. */
@@ -64,11 +85,11 @@ public class HistorySyncHelper {
                 || mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS);
     }
 
-    /** Whether the history sync prompt should be suppressed. */
-    public boolean shouldSuppressHistorySync() {
-        return didAlreadyOptIn()
-                || isHistorySyncDisabledByCustodian()
-                || isHistorySyncDisabledByPolicy();
+    /** Whether the history sync prompt should be displayed. */
+    public boolean shouldDisplayHistorySync() {
+        return !didAlreadyOptIn()
+                && !isHistorySyncDisabledByCustodian()
+                && !isHistorySyncDisabledByPolicy();
     }
 
     /** Whether history sync is often declined. */
@@ -108,13 +129,20 @@ public class HistorySyncHelper {
         mPrefService.clearPref(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);
     }
 
+    /** Enables or clears history and tabs sync */
+    public void setHistoryAndTabsSync(boolean turnTypesOn) {
+        mSyncService.setSelectedType(UserSelectableType.HISTORY, turnTypesOn);
+        mSyncService.setSelectedType(UserSelectableType.TABS, turnTypesOn);
+    }
+
     private void recordUserAlreadyOptedIn(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint, SigninAccessPoint.MAX_VALUE);
     }
 
     private void recordHistorySyncSkipped(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Skipped", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Skipped", accessPoint,
+                SigninAccessPoint.MAX_VALUE);
     }
 }

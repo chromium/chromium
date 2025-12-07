@@ -79,14 +79,6 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   void SetSelectedView(AppListItemView* view) override;
   void ClearSelectedView() override;
   bool IsSelectedView(const AppListItemView* view) const override;
-  bool InitiateDrag(AppListItemView* view,
-                    const gfx::Point& location,
-                    const gfx::Point& root_location,
-                    base::OnceClosure drag_start_callback,
-                    base::OnceClosure drag_end_callback) override;
-  void StartDragAndDropHostDragAfterLongPress() override;
-  bool UpdateDragFromItem(bool is_touch,
-                          const ui::LocatedEvent& event) override;
   void EndDrag(bool cancel) override;
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override;

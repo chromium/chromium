@@ -34,7 +34,7 @@ class AppWindowDesktopWindowTreeHostWin
  private:
   // Overridden from DesktopWindowTreeHostWin:
   bool GetClientAreaInsets(gfx::Insets* insets,
-                           HMONITOR monitor) const override;
+                           int frame_thickness) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void HandleFrameChanged() override;
 

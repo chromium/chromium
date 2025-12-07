@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AIPageContentMode">
+  <int value="0" label="Default"/>
+  <int value="1" label="ActionableElements"/>
+</enum>
+
 <enum name="BooleanAnnotated">
   <int value="0" label="Not Annotated"/>
   <int value="1" label="Annotated"/>
@@ -69,7 +74,8 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Not visible because model execution capability was disabled for
              the user account"/>
-  <int value="7" label="Not visible because the feature is already graduated"/>
+  <int value="7"
+      label="DEPRECATED: Not visible because the feature is already graduated"/>
   <int value="8"
       label="Not visible because the device is unsupported by the feature."/>
 </enum>
@@ -86,6 +92,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="[Deprecated] Host Model Features"/>
 </enum>
 
+<!-- Use following code to get the hash from the model version.
+import struct
+import hashlib
+version='2025.5.5.2308'
+struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
+-->
+
+<enum name="OnDeviceBaseModelVersion">
+  <summary>The versions for the foundational model</summary>
+  <int value="946907700" label="2025.5.5.2308"/>
+</enum>
+
 <enum name="OnDeviceModelAdaptationAvailability">
   <int value="0" label="Adaptation model was available"/>
   <int value="1" label="Base model was not available"/>
@@ -93,20 +111,16 @@ chromium-metrics-reviews@google.com.
       label="Base model spec was invalid, so adaptation model cannot be
              fetched"/>
   <int value="3" label="Adaptation model was not available"/>
-  <int value="4" label="The recieved adaptation model was invalid"/>
+  <int value="4" label="The received adaptation model was invalid"/>
   <int value="5"
       label="The received adaptation model was incompatible with the base
              model"/>
   <int value="6"
       label="The execution config in the adaptation model was invalid"/>
   <int value="7" label="The model execution feature was not recently used."/>
-</enum>
-
-<enum name="OnDeviceModelLoadResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="GPU blocked"/>
-  <int value="3" label="Failed to load library"/>
+  <int value="8"
+      label="The received adaptation model was incompatible with the base
+             model's performance hints"/>
 </enum>
 
 <enum name="OnDeviceModelPerformanceClass">
@@ -254,6 +268,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Request was filtered"/>
   <int value="9" label="Response was disabled"/>
   <int value="10" label="The request was cancelled"/>
+  <int value="11" label="Response quality was low"/>
 </enum>
 
 <enum name="OptimizationGuideModelQualityLogsUploadStatus">
@@ -359,7 +374,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Feature not enabled">
     The feature gating use of the on-device model is not enabled.
   </int>
-  <int value="3" label="Model not available">
+  <int value="3" label="DEPRECATED: Model not available">
     The on-device model is not available.
   </int>
   <int value="4" label="Config not available for feature">
@@ -371,7 +386,7 @@ chromium-metrics-reviews@google.com.
     The service running the on-device model has experienced too many crashes in
     a row.
   </int>
-  <int value="7" label="Too many recent timeouts">
+  <int value="7" label="DEPRECATED: Too many recent timeouts">
     The service took too long to respond too many times in a row.
   </int>
   <int value="8" label="Safety model not available">
@@ -403,6 +418,17 @@ chromium-metrics-reviews@google.com.
     The on-device model is not available, but it may be downloaded and installed
     later.
   </int>
+  <int value="16" label="Model not eligible">
+    The device is not eligible for running the on-device model.
+  </int>
+  <int value="17" label="Insufficient disk space">
+    The device does not have enough space to download and install the on-device
+    model.
+  </int>
+  <int value="18" label="No on-device feature used">
+    There was no on-device feature usage so the model has not been downloaded
+    yet.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelStatus">
@@ -421,6 +447,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Installed too late">
     The model is ready, but it wasn't ready early enough for
     OnDeviceModelServiceController to use it.
+  </int>
+  <int value="5" label="Not ready for unknown reason">
+    The model is not ready, and the reason is unknown.
+  </int>
+  <int value="6" label="Insufficient disk space">
+    The client does not have enough space to install the model.
+  </int>
+  <int value="7" label="No on-device feature used">
+    The client is eligible for downloading and installing the model, but there
+    was no on-device feature used so the model is not installed yet.
   </int>
 </enum>
 
@@ -514,6 +550,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Requested">Model was requested to be downloaded.</int>
   <int value="2" label="Started">
     Download service started the model download.
+  </int>
+  <int value="3" label="NoDownloadServiceFromTracker">
+    No download service was available from the service tracker.
   </int>
 </enum>
 
@@ -615,10 +654,7 @@ chromium-metrics-reviews@google.com.
     Component file was received and read successfully but did not contain a
     valid configuration.
   </int>
-  <int value="4" label="Failed processing">
-    Failed to finish processing same version previously so skipping to avoid
-    potential crash loop.
-  </int>
+  <int value="4" label="Deprecated: Failed finished processing"/>
   <int value="5" label="Skipped hints processing">
     Skipped processing hints, likely because the hint cache already contains the
     same version.
@@ -716,6 +752,49 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="AUTOFILL_ABLATION_SITES_LIST5"/>
   <int value="65" label="AUTOFILL_ABLATION_SITES_LIST6"/>
   <int value="67" label="AMOUNT_EXTRACTION_ALLOWLIST"/>
+  <int value="68" label="Deprecated2"/>
+  <int value="69" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM"/>
+  <int value="70" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP"/>
+  <int value="71" label="SAVED_TAB_GROUP"/>
+  <int value="73" label="FORMS_ANNOTATIONS"/>
+  <int value="74" label="TEXT_CLASSIFIER_ENTITY_DETECTION"/>
+  <int value="75" label="EWALLET_MERCHANT_ALLOWLIST"/>
+  <int value="76" label="OPTIMIZATION_GUIDE_ICON_VIEW"/>
+  <int value="77" label="PRIVACY_POLICY_ANNOTATION"/>
+  <int value="78" label="BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS"/>
+  <int value="79" label="BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS"/>
+  <int value="80" label="BMO_CREDIT_CARD_DINING_BENEFITS"/>
+  <int value="81" label="BMO_CREDIT_CARD_DRUGSTORE_BENEFITS"/>
+  <int value="82" label="BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS"/>
+  <int value="83" label="BMO_CREDIT_CARD_GROCERY_BENEFITS"/>
+  <int value="84" label="BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS"/>
+  <int value="85" label="BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS"/>
+  <int value="86" label="BMO_CREDIT_CARD_TRANSIT_BENEFITS"/>
+  <int value="87" label="BMO_CREDIT_CARD_TRAVEL_BENEFITS"/>
+  <int value="88" label="BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS"/>
+  <int value="90" label="GLIC_CONTEXTUAL_CUEING"/>
+  <int value="91" label="GLIC_ZERO_STATE_SUGGESTIONS"/>
+  <int value="92" label="GLIC_ACTION_PAGE_BLOCK"/>
+  <int value="93" label="FEDCM_CLICKTHROUGH_RATE"/>
+  <int value="97" label="DIGITAL_CREDENTIALS_LOW_FRICTION"/>
+  <int value="98" label="A2A_MERCHANT_ALLOWLIST"/>
+  <int value="99" label="WALLETABLE_PASS_DETECTION_ALLOWLIST"/>
+  <int value="100" label="SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST"/>
+  <int value="102" label="BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA"/>
+  <int value="103" label="BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM"/>
+  <int value="104" label="BUY_NOW_PAY_LATER_BLOCKLIST_ZIP"/>
+  <int value="105" label="BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA"/>
+  <int value="106" label="LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST"/>
+  <int value="107" label="LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST"/>
+  <int value="108" label="WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST"/>
+  <int value="109" label="WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST"/>
+  <int value="110" label="NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST"/>
+  <int value="111" label="NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST"/>
+  <int value="112" label="READER_MODE_ELIGIBLE"/>
+  <int value="113" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID"/>
+  <int value="114" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID"/>
+  <int value="115" label="BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID"/>
+  <int value="116" label="AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">
@@ -733,6 +812,16 @@ chromium-metrics-reviews@google.com.
     Visits for the URL the content annotations are for were found, but not the
     specific visit we were annotating for.
   </int>
+</enum>
+
+<enum name="PageContentExtractionAndCachingStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ExtractionObservedInForeground"/>
+  <int value="2" label="ExtractionObservedInBackground"/>
+  <int value="3" label="ContentsAvailableWhenBackgrounded"/>
+  <int value="4" label="ContentsNotAvailableWhenBackgrounded"/>
+  <int value="5" label="ContentsDeletedOnTabClose"/>
+  <int value="6" label="ContentsDeletedOnTabUpdate"/>
 </enum>
 
 </enums>

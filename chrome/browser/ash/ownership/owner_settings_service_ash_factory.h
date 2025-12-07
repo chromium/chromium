@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_FACTORY_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -23,7 +23,6 @@ namespace ash {
 
 class DeviceSettingsService;
 class OwnerSettingsServiceAsh;
-class StubCrosSettingsProvider;
 
 class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
  public:
@@ -40,9 +39,6 @@ class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
   static void SetDeviceSettingsServiceForTesting(
       DeviceSettingsService* device_settings_service);
 
-  static void SetStubCrosSettingsProviderForTesting(
-      StubCrosSettingsProvider* stub_cros_settings_provider);
-
   scoped_refptr<ownership::OwnerKeyUtil> GetOwnerKeyUtil();
 
   void SetOwnerKeyUtilForTesting(
@@ -56,7 +52,7 @@ class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides:
   bool ServiceIsCreatedWithBrowserContext() const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;

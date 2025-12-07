@@ -8,13 +8,21 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+
+@protocol FormSuggestionProvider;
 
 // Metadata tied to the form suggestion that gives more context around the
 // suggestion.
 struct FormSuggestionMetadata {
   // True if the suggestion is for a single username form.
   bool is_single_username_form = false;
+  // True if the field that triggered the suggestion was (1) obfuscated and (2)
+  // determined to be likely a real password field based on a best guess.
+  bool likely_from_real_password_field = false;
 };
 
 // Enum class used to determine the feature for in-product help for the
@@ -25,7 +33,23 @@ enum class SuggestionFeatureForIPH {
   // Denoting IPH for the external account profile suggestion.
   kAutofillExternalAccountProfile = 1,
   // Denoting IPH for the plus address create suggestion.
-  kPlusAddressCreation = 2
+  kPlusAddressCreation = 2,
+  // Denoting IPH for the home and work address suggestion.
+  kHomeAndWorkAddressSuggestion = 3,
+  // Denoting IPH for the name and email suggestion.
+  kAccountNameEmailSuggestion = 4
+};
+
+// Enum class used to determine the icon for the suggestion.
+enum class SuggestionIconType {
+  // Default value.
+  kNone = 0,
+  // Home address profile icon.
+  kAccountHome = 1,
+  // Work address profile icon.
+  kAccountWork = 2,
+  // Backup password icon.
+  kBackupPassword = 3,
 };
 
 // Represents a user-selectable suggestion for a single field within a form
@@ -41,12 +65,16 @@ enum class SuggestionFeatureForIPH {
 // An optional user-visible description for this suggestion.
 @property(copy, readonly, nonatomic) NSString* displayDescription;
 
-// The credit card icon; either a custom icon if available, or the network icon
+// The suggestion icon; either a custom icon if available, or the network icon
 // otherwise.
 @property(copy, readonly, nonatomic) UIImage* icon;
 
 // Denotes the suggestion type.
 @property(assign, readonly, nonatomic) autofill::SuggestionType type;
+
+// Denotes the field's filling type.
+@property(assign, readonly, nonatomic)
+    autofill::FieldType fieldByFieldFillingTypeUsed;
 
 // Indicates if the user should re-authenticate with the device before applying
 // the suggestion.
@@ -58,19 +86,31 @@ enum class SuggestionFeatureForIPH {
 // If specified, shows in-product help for the suggestion.
 @property(assign, nonatomic) SuggestionFeatureForIPH featureForIPH;
 
-// The `Suggestion::BackendId` associated with this suggestion. Would be GUID
-// for the addresses and credit cards where `identifier` > 0.
-@property(copy, readonly, nonatomic) NSString* backendIdentifier;
+// If specified, describes the icon type for the suggestion.
+@property(assign, nonatomic) SuggestionIconType suggestionIconType;
+
+// The payload associated with this suggestion.
+@property(assign, readonly, nonatomic) autofill::Suggestion::Payload payload;
 
 // Metadata tied to the suggestion that gives more context.
 @property(assign, readonly, nonatomic) FormSuggestionMetadata metadata;
+
+// Parameters giving the context surrounding the form activity for which that
+// suggestion was generated. Must be set before the suggestion is filled when
+// using the stateless FormSuggestionController.
+@property(assign, nonatomic) std::optional<autofill::FormActivityParams> params;
+
+// The FormSuggestionProvider that provided this suggestion. This allows
+// knowing which provider to use for filling the suggestion. Must be set before
+// the suggestion is filled when kStatelessFormSuggestionController is enabled.
+@property(nonatomic, weak) id<FormSuggestionProvider> provider;
 
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                               payload:(autofill::Suggestion::Payload)payload
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
                               metadata:(FormSuggestionMetadata)metadata;
@@ -81,7 +121,9 @@ enum class SuggestionFeatureForIPH {
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                               payload:(autofill::Suggestion::Payload)payload
+           fieldByFieldFillingTypeUsed:
+               (autofill::FieldType)fieldByFieldFillingTypeUsed
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
 
@@ -90,8 +132,14 @@ enum class SuggestionFeatureForIPH {
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                               payload:(autofill::Suggestion::Payload)payload
                         requiresReauth:(BOOL)requiresReauth;
+
+// Copies the contents of `formSuggestionToCopy` and sets/overrides the
+// params and provider of the copy.
++ (FormSuggestion*)copy:(FormSuggestion*)formSuggestionToCopy
+           andSetParams:(std::optional<autofill::FormActivityParams>)params
+               provider:(id<FormSuggestionProvider>)provider;
 
 @end
 

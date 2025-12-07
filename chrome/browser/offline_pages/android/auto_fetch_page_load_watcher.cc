@@ -148,7 +148,7 @@ InternalImpl::InternalImpl(AutoFetchNotifier* notifier,
       delegate_(delegate),
       tab_finder_(std::move(tab_finder)) {}
 
-InternalImpl::~InternalImpl() {}
+InternalImpl::~InternalImpl() = default;
 
 void InternalImpl::RequestListInitialized(std::vector<RequestInfo> request) {
   DCHECK(!requests_initialized_);
@@ -354,34 +354,26 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
 
   void RegisterTabObserver() {
     if (!TabModelList::models().empty()) {
-      OnTabModelAdded();
+      ObserveNonOffTheRecordTabModel();
     } else {
       TabModelList::AddObserver(this);
     }
   }
 
   // TabModelObserver.
-  void TabPendingClosure(TabAndroid* tab) override {
-    impl_->TabClosed(tab->GetAndroidId());
-  }
-
-  // TabModelListObserver.
-  void OnTabModelAdded() override {
-    if (observed_tab_model_)
-      return;
-    // The assumption is that there can be at most one non-off-the-record tab
-    // model. Observe it if it exists.
-    for (TabModel* model : TabModelList::models()) {
-      if (!model->IsOffTheRecord()) {
-        observed_tab_model_ = model;
-        observed_tab_model_->AddObserver(this);
-        impl_->TabModelReady();
-        break;
-      }
+  void OnTabClosePending(const std::vector<TabAndroid*>& tabs,
+                         TabModel::TabClosingSource source) override {
+    for (TabAndroid* tab : tabs) {
+      impl_->TabClosed(tab->GetAndroidId());
     }
   }
 
-  void OnTabModelRemoved() override {
+  // TabModelListObserver.
+  void OnTabModelAdded(TabModel* tab_model) override {
+    ObserveNonOffTheRecordTabModel();
+  }
+
+  void OnTabModelRemoved(TabModel* tab_model) override {
     if (!observed_tab_model_)
       return;
 
@@ -395,6 +387,22 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
  private:
   base::WeakPtr<TabWatcher> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void ObserveNonOffTheRecordTabModel() {
+    if (observed_tab_model_) {
+      return;
+    }
+    // The assumption is that there can be at most one non-off-the-record tab
+    // model. Observe it if it exists.
+    for (TabModel* model : TabModelList::models()) {
+      if (!model->IsOffTheRecord()) {
+        observed_tab_model_ = model;
+        observed_tab_model_->AddObserver(this);
+        impl_->TabModelReady();
+        break;
+      }
+    }
   }
 
   raw_ptr<InternalImpl> impl_;

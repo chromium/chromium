@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -22,7 +23,7 @@ class ExpandableContainerView : public views::View {
   METADATA_HEADER(ExpandableContainerView, views::View)
 
  public:
-  explicit ExpandableContainerView(const std::vector<std::u16string>& details);
+  explicit ExpandableContainerView(const std::u16string& details);
   ExpandableContainerView(const ExpandableContainerView&) = delete;
   ExpandableContainerView& operator=(const ExpandableContainerView&) = delete;
   ~ExpandableContainerView() override;
@@ -36,11 +37,11 @@ class ExpandableContainerView : public views::View {
 
  private:
   // Helper class representing the list of details, that can hide itself.
-  class DetailsView : public views::View {
-    METADATA_HEADER(DetailsView, views::View)
+  class DetailsView : public views::BoxLayoutView {
+    METADATA_HEADER(DetailsView, views::BoxLayoutView)
 
    public:
-    explicit DetailsView(const std::vector<std::u16string>& details);
+    explicit DetailsView(const std::u16string& details);
     DetailsView(const DetailsView&) = delete;
     DetailsView& operator=(const DetailsView&) = delete;
     ~DetailsView() override;

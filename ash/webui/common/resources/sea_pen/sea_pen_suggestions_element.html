@@ -34,35 +34,31 @@
 
   #container cr-button.shuffle {
     border: none;
-  }
-
-  #shuffle iron-icon {
-    margin-inline-start: 4px;
+    margin-inline-end: 10px;
   }
 </style>
 <div id="container">
   <iron-a11y-keys id="keys" keys="left right"
       on-keys-pressed="onSuggestionKeyPressed_">
   </iron-a11y-keys>
+  <cr-button id="shuffle"
+      class="shuffle"
+      aria-label$="[[i18n('seaPenFreeformAriaLabelShuffleSuggestions')]]"
+      on-click="onShuffleClicked_">
+    <iron-icon icon="personalization-shared:refresh"></iron-icon>
+  </cr-button>
   <iron-selector
       id="suggestionSelector"
       selected="0"
-      selected-item="{{ironSelectedSuggestion_}}"
-      role="radiogroup">
-    <template is="dom-repeat" items="[[suggestions_]]" as="suggestion">
+      aria-label$="[[i18n('seaPenFreeformAriaLabelSuggestions')]]"
+      aria-setsize$="[[selectableSuggestions_.length]]">
+    <template is="dom-repeat" items="[[selectableSuggestions_]]" as="suggestion">
       <cr-button
           class="suggestion"
           on-click="onClickSuggestion_"
-          role="radio"
           tabindex$="[[getSuggestionTabIndex_(index)]]">
-        [[suggestion]]
+        [[i18n(suggestion)]]
       </cr-button>
     </template>
   </iron-selector>
-  <cr-button id="shuffle"
-      class="shuffle"
-      on-click="onShuffleClicked_">
-    [[i18n('seaPenFreeformMoreSuggestionsButton')]]
-    <iron-icon icon="personalization-shared:refresh"></iron-icon>
-  </cr-button>
 </div>

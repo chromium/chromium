@@ -53,12 +53,13 @@ class TestChromeWebUIControllerFactoryTest : public InProcessBrowserTest {
             test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
 
     test_factory_->AddFactoryOverride(
-        GURL(kChromeTestChromeWebUIControllerFactory).host(), &mock_provider_);
+        GURL(kChromeTestChromeWebUIControllerFactory).GetHost(),
+        &mock_provider_);
   }
 
   void TearDownOnMainThread() override {
     test_factory_->RemoveFactoryOverride(
-        GURL(kChromeTestChromeWebUIControllerFactory).host());
+        GURL(kChromeTestChromeWebUIControllerFactory).GetHost());
   }
 
  protected:

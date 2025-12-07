@@ -30,9 +30,9 @@ namespace network {
 //
 // Requests are eligible for shared storage when
 // `ResourceRequest::shared_storage_writable` is true (which can only occur when
-// `blink::features::kSharedStorageAPI` is enabled). When a request is eligible,
-// `ProcessOutgoingRequest()` will add the "Sec-Shared-Storage-Writable" request
-// header to the outgoing request.
+// `network::features::kSharedStorageAPI` is enabled). When a request is
+// eligible, `ProcessOutgoingRequest()` will add the
+// "Sec-Shared-Storage-Writable" request header to the outgoing request.
 //
 // When "Shared-Storage-Write" response header(s) are received, if the request
 // is eligible for shared storage, then `ProcessIncomingRequest()` will process
@@ -74,7 +74,7 @@ class SharedStorageRequestHelper {
                        std::string_view value,
                        base::OnceClosure done);
 
-  void OnOperationsQueued(base::OnceClosure done);
+  void OnMethodsQueued(base::OnceClosure done);
 
   // True if the current request should have the
   // `kSharedStorageWritable` header attached and is eligible to

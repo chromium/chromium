@@ -89,6 +89,10 @@ const char kPasswordOnFocusRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.PasswordFieldOnFocus";
 const char kPasswordOnFocusVerdictHistogram[] =
     "PasswordProtection.Verdict.PasswordFieldOnFocus";
+const char kOneTimePasswordFieldDetectedRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.OneTimePasswordFieldDetected";
+const char kOneTimePasswordFieldDetectedVerdictHistogram[] =
+    "PasswordProtection.Verdict.OneTimePasswordFieldDetected";
 const char kNonSyncPasswordEntryRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.NonSyncPasswordEntry";
 const char kSyncPasswordEntryRequestOutcomeHistogram[] =
@@ -115,6 +119,8 @@ const char kPasswordOnFocusRequestWithTokenHistogram[] =
     "PasswordProtection.RequestWithToken.PasswordFieldOnFocus";
 const char kAnyPasswordEntryRequestWithTokenHistogram[] =
     "PasswordProtection.RequestWithToken.AnyPasswordEntry";
+const char kReusedPasswordAccountTypeHistogram[] =
+    "PasswordProtection.ReusedPasswordAccountType";
 
 void LogPasswordProtectionRequestTokenHistogram(
     LoginReputationClientRequest::TriggerType trigger_type,
@@ -167,6 +173,11 @@ void LogPasswordOnFocusRequestOutcome(RequestOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, outcome);
 }
 
+void LogOneTimePasswordFieldDetectedRequestOutcome(RequestOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION(
+      kOneTimePasswordFieldDetectedRequestOutcomeHistogram, outcome);
+}
+
 void LogPasswordAlertModeOutcome(
     RequestOutcome outcome,
     ReusedPasswordAccountType password_account_type) {
@@ -188,10 +199,16 @@ void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
                         RequestOutcome reason,
                         ReusedPasswordAccountType password_account_type) {
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
-         trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
+         trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
+         trigger_type ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED);
 
   if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
     UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, reason);
+  } else if (trigger_type ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kOneTimePasswordFieldDetectedRequestOutcomeHistogram, reason);
   } else {
     LogPasswordEntryRequestOutcome(reason, password_account_type);
   }
@@ -269,16 +286,14 @@ void LogPasswordProtectionVerdict(
             (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       }
       break;
+    case LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED:
+      UMA_HISTOGRAM_ENUMERATION(
+          kOneTimePasswordFieldDetectedVerdictHistogram, verdict_type,
+          (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+      break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-}
-
-void LogSyncAccountType(SyncAccountType sync_account_type) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordProtection.PasswordReuseSyncAccountType", sync_account_type,
-      LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType_MAX +
-          1);
 }
 
 void LogPasswordProtectionNetworkResponseAndDuration(
@@ -393,16 +408,53 @@ void LogWarningAction(WarningUIType ui_type,
       }
       break;
     case WarningUIType::NOT_USED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
 void LogModalWarningDialogLifetime(
     base::TimeTicks modal_construction_start_time) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "PasswordProtection.ModalWarningDialogLifetime",
       base::TimeTicks::Now() - modal_construction_start_time);
+}
+
+void LogReusedPasswordAccountType(
+    ReusedPasswordAccountType password_account_type) {
+  switch (password_account_type.account_type()) {
+    case ReusedPasswordAccountType::UNKNOWN:
+      UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                AccountTypeWithSyncState::UNKNOWN);
+      break;
+    case ReusedPasswordAccountType::GSUITE:
+      if (password_account_type.is_account_syncing()) {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GSUITE_SYNCING);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GSUITE);
+      }
+      break;
+    case ReusedPasswordAccountType::GMAIL:
+      if (password_account_type.is_account_syncing()) {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GMAIL_SYNCING);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GMAIL);
+      }
+      break;
+    case ReusedPasswordAccountType::NON_GAIA_ENTERPRISE:
+      UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                AccountTypeWithSyncState::NON_GAIA_ENTERPRISE);
+      break;
+    case ReusedPasswordAccountType::SAVED_PASSWORD:
+      UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                AccountTypeWithSyncState::SAVED_PASSWORD);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace safe_browsing

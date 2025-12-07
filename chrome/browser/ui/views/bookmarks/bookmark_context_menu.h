@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class Browser;
@@ -16,10 +17,10 @@ class Browser;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 // Observer for the BookmarkContextMenu.
-class BookmarkContextMenuObserver {
+class BookmarkContextMenuObserver : public base::CheckedObserver {
  public:
   // Invoked before the specified items are removed from the bookmark model.
   virtual void WillRemoveBookmarks(
@@ -33,7 +34,7 @@ class BookmarkContextMenuObserver {
   virtual void OnContextMenuClosed() = 0;
 
  protected:
-  virtual ~BookmarkContextMenuObserver() {}
+  ~BookmarkContextMenuObserver() override;
 };
 
 class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
@@ -45,7 +46,6 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
                       Browser* browser,
                       Profile* profile,
                       BookmarkLaunchLocation opened_from,
-                      const bookmarks::BookmarkNode* parent,
                       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                                 VectorExperimental>>& selection,
                       bool close_on_remove);
@@ -62,13 +62,12 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   // Shows the context menu at the specified point.
   void RunMenuAt(const gfx::Point& point,
-                 ui::MenuSourceType source_type);
+                 ui::mojom::MenuSourceType source_type);
 
   views::MenuItemView* menu() const { return menu_; }
 
-  void set_observer(BookmarkContextMenuObserver* observer) {
-    observer_ = observer;
-  }
+  void AddObserver(BookmarkContextMenuObserver* observer);
+  void RemoveObserver(BookmarkContextMenuObserver* observer);
 
   // Overridden from views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -98,7 +97,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   // The menu itself. This is owned by `menu_runner_`.
   const raw_ptr<views::MenuItemView> menu_;
 
-  raw_ptr<BookmarkContextMenuObserver> observer_ = nullptr;
+  base::ObserverList<BookmarkContextMenuObserver> observers_;
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;

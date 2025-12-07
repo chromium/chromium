@@ -200,7 +200,7 @@ void HostConnectionMetricsLogger::RecordConnectToHostDuration(
       clock_->Now() - connect_to_host_start_time_;
   connect_to_host_start_time_ = base::Time();
 
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "InstantTethering.Performance.ConnectToHostDuration.Background",
       connect_to_host_duration);
 }

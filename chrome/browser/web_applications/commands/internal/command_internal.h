@@ -14,11 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/locks/noop_lock.h"
-#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
-#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 
 enum class CommandResult;
 
@@ -72,6 +67,8 @@ class CommandBase {
 
   void SetScheduledLocation(base::PassKey<WebAppCommandManager>,
                             const base::Location& location);
+
+  void SetScheduledAt(base::PassKey<WebAppCommandManager>);
 
   // Sets the command manager, allowing `CompleteAndSelfDestruct` to
   // work correctly.
@@ -158,10 +155,10 @@ class CommandWithLock : public CommandBase {
   virtual void StartWithLock(std::unique_ptr<LockType> lock) = 0;
 
  private:
-  void PrepareForStart(LockAcquiredCallback on_lock_acquired,
-                       std::unique_ptr<LockType> lock);
+  void PrepareForStart(LockAcquiredCallback on_lock_acquired);
 
   const LockDescription initial_lock_request_;
+  std::unique_ptr<LockType> initial_lock_;
   base::WeakPtrFactory<CommandWithLock<LockType>> weak_factory_{this};
 };
 

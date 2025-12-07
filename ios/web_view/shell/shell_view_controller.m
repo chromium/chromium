@@ -28,9 +28,9 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                    UIScrollViewDelegate,
                                    UITextFieldDelegate>
 // Header containing navigation buttons and |field|.
-@property(nonatomic, strong) UIView* headerBackgroundView;
+@property(nonatomic, strong) UIStackView* headerBackgroundView;
 // Header containing navigation buttons and |field|.
-@property(nonatomic, strong) UIView* headerContentView;
+@property(nonatomic, strong) UIStackView* headerContentView;
 // Button to navigate backwards.
 @property(nonatomic, strong) UIButton* backButton;
 // Button to navigate forwards.
@@ -50,7 +50,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 // The on-going download task if any.
 @property(nonatomic, strong, nullable) CWVDownloadTask* downloadTask;
 // The path to a local file which the download task is writing to.
-@property(nonatomic, strong, nullable) NSString* downloadFilePath;
+@property(nonatomic, copy, nullable) NSString* downloadFilePath;
 // A controller to show a "Share" menu for the downloaded file.
 @property(nonatomic, strong, nullable)
     UIDocumentInteractionController* documentInteractionController;
@@ -103,9 +103,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   self.popupWebViews = [[NSMutableArray alloc] init];
 
   // View creation.
-  self.headerBackgroundView = [[UIView alloc] init];
-  self.headerContentView = [[UIView alloc] init];
+  self.headerBackgroundView = [[UIStackView alloc] init];
+  self.headerContentView = [[UIStackView alloc] init];
   self.contentView = [[UIView alloc] init];
+  self.contentView.restorationIdentifier = @"contentView";
   self.backButton = [[UIButton alloc] init];
   self.forwardButton = [[UIButton alloc] init];
   self.reloadOrStopButton = [[UIButton alloc] init];
@@ -113,20 +114,36 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   self.field = [[UITextField alloc] init];
 
   // View hierarchy.
+  // `_headerBackgroundView` is a 1-item UIStackView. We use a UIStackView so
+  // that we can:
+  // 1. Easily hide `_headerContentView` when entering fullscreen mode in a way
+  // that removes it from the layout.
+  // 2. Let UIStackView figure out most constraints for `_headerContentView` so
+  // that we do not have to do it manually.
   [self.view addSubview:_headerBackgroundView];
   [self.view addSubview:_contentView];
-  [_headerBackgroundView addSubview:_headerContentView];
-  [_headerContentView addSubview:_backButton];
-  [_headerContentView addSubview:_forwardButton];
-  [_headerContentView addSubview:_reloadOrStopButton];
-  [_headerContentView addSubview:_menuButton];
-  [_headerContentView addSubview:_field];
+  [_headerBackgroundView addArrangedSubview:_headerContentView];
+  [_headerContentView addArrangedSubview:_backButton];
+  [_headerContentView addArrangedSubview:_forwardButton];
+  [_headerContentView addArrangedSubview:_reloadOrStopButton];
+  [_headerContentView addArrangedSubview:_menuButton];
+  [_headerContentView addArrangedSubview:_field];
 
   // Additional view setup.
   _headerBackgroundView.backgroundColor = [UIColor colorWithRed:66.0 / 255.0
                                                           green:133.0 / 255.0
                                                            blue:244.0 / 255.0
                                                           alpha:1.0];
+  _headerBackgroundView.alignment = UIStackViewAlignmentBottom;
+  _headerBackgroundView.axis = UILayoutConstraintAxisHorizontal;
+  // Use the root view's layout margins (which account for safe areas and the
+  // system's minimum margins).
+  _headerBackgroundView.layoutMarginsRelativeArrangement = YES;
+  _headerBackgroundView.preservesSuperviewLayoutMargins = YES;
+
+  _headerContentView.alignment = UIStackViewAlignmentCenter;
+  _headerContentView.axis = UILayoutConstraintAxisHorizontal;
+  _headerContentView.spacing = 16.0;
 
   [_backButton setImage:[UIImage imageNamed:@"ic_back"]
                forState:UIControlStateNormal];
@@ -163,21 +180,17 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                   action:@selector(showMainMenu)
         forControlEvents:UIControlEventTouchUpInside];
 
+  _field.borderStyle = UITextBorderStyleRoundedRect;
   _field.placeholder = @"Search or type URL";
   _field.backgroundColor = [UIColor whiteColor];
   _field.tintColor = _headerBackgroundView.backgroundColor;
   [_field setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
                             forAxis:UILayoutConstraintAxisHorizontal];
   _field.delegate = self;
-  _field.layer.cornerRadius = 2.0;
   _field.keyboardType = UIKeyboardTypeWebSearch;
   _field.autocapitalizationType = UITextAutocapitalizationTypeNone;
   _field.clearButtonMode = UITextFieldViewModeWhileEditing;
   _field.autocorrectionType = UITextAutocorrectionTypeNo;
-  UIView* spacerView = [[UIView alloc] init];
-  spacerView.frame = CGRectMake(0, 0, 8, 8);
-  _field.leftViewMode = UITextFieldViewModeAlways;
-  _field.leftView = spacerView;
 
   // Constraints.
   _headerBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -188,21 +201,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
         constraintEqualToAnchor:self.view.leadingAnchor],
     [_headerBackgroundView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [_headerBackgroundView.bottomAnchor
-        constraintEqualToAnchor:_headerContentView.bottomAnchor],
   ]];
 
   _headerContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [_headerContentView.topAnchor
-        constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
-                                    .topAnchor],
-    [_headerContentView.leadingAnchor
-        constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
-                                    .leadingAnchor],
-    [_headerContentView.trailingAnchor
-        constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
-                                    .trailingAnchor],
     [_headerContentView.heightAnchor constraintEqualToConstant:56.0],
   ]];
 
@@ -217,56 +219,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     [_contentView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
   ]];
 
-  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_backButton.leadingAnchor
-        constraintEqualToAnchor:_headerContentView.safeAreaLayoutGuide
-                                    .leadingAnchor
-                       constant:16.0],
-    [_backButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-
-  _forwardButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_forwardButton.leadingAnchor
-        constraintEqualToAnchor:_backButton.trailingAnchor
-                       constant:16.0],
-    [_forwardButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-
-  _reloadOrStopButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_reloadOrStopButton.leadingAnchor
-        constraintEqualToAnchor:_forwardButton.trailingAnchor
-                       constant:16.0],
-    [_reloadOrStopButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-  _menuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_menuButton.leadingAnchor
-        constraintEqualToAnchor:_reloadOrStopButton.trailingAnchor
-                       constant:16.0],
-    [_menuButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-
-  _field.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_field.leadingAnchor constraintEqualToAnchor:_menuButton.trailingAnchor
-                                         constant:16.0],
-    [_field.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-    [_field.trailingAnchor
-        constraintEqualToAnchor:_headerContentView.safeAreaLayoutGuide
-                                    .trailingAnchor
-                       constant:-16.0],
-    [_field.heightAnchor constraintEqualToConstant:32.0],
-  ]];
-
-  [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
+  CWVGlobalState.sharedInstance.userAgentProduct = @"Dummy/1.0";
   CWVWebView.chromeContextMenuEnabled = YES;
 
   CWVWebView.webInspectorEnabled = YES;
@@ -514,9 +467,11 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                   weakAlertController.textFields[1].text;
                               NSString* site =
                                   weakAlertController.textFields[2].text;
+                              NSDate* now = [NSDate date];
                               [dataManager addNewPasswordForUsername:username
                                                             password:password
-                                                                site:site];
+                                                                site:site
+                                                           timestamp:now];
                             }]];
   [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -583,10 +538,11 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          NSString* newPassword =
                                              weakAlertController.textFields
                                                  .lastObject.text;
-                                         [dataManager
-                                             updatePassword:password
-                                                newUsername:newUsername
-                                                newPassword:newPassword];
+                                         NSDate* now = [NSDate date];
+                                         [dataManager updatePassword:password
+                                                         newUsername:newUsername
+                                                         newPassword:newPassword
+                                                           timestamp:now];
                                        }]];
   [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -1214,8 +1170,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)field {
-  NSURL* URL = [NSURL URLWithString:field.text];
-  if (URL.scheme.length == 0) {
+  CWVOmniboxInput* input = [[CWVOmniboxInput alloc] initWithText:field.text
+                                   shouldUseHTTPSAsDefaultScheme:NO];
+  NSURL* URL = input.URL;
+  if (input.type != CWVOmniboxInputTypeURL) {
     NSString* enteredText = field.text;
     enteredText =
         [enteredText stringByAddingPercentEncodingWithAllowedCharacters:
@@ -1361,33 +1319,33 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     [[UIPasteboard generalPasteboard] setItems:@[ item ]];
   };
 
-  UIContextMenuConfiguration* configuration = [UIContextMenuConfiguration
-      configurationWithIdentifier:nil
-      previewProvider:^{
-        UIViewController* controller = [[UIViewController alloc] init];
-        CGRect frame = CGRectMake(10, 200, 200, 21);
-        UILabel* label = [[UILabel alloc] initWithFrame:frame];
-        label.text = @"iOS13 Preview Page";
-        [controller.view addSubview:label];
-        return controller;
-      }
-      actionProvider:^(id _) {
-        NSArray* actions = @[
-          [UIAction actionWithTitle:@"Copy Link"
-                              image:nil
-                         identifier:nil
-                            handler:copyHandler],
-          [UIAction actionWithTitle:@"Cancel"
-                              image:nil
-                         identifier:nil
-                            handler:^(id ignore){
-                            }]
-        ];
-        NSString* menuTitle =
-            [NSString stringWithFormat:@"iOS13 Context Menu: %@",
-                                       element.hyperlink.absoluteString];
-        return [UIMenu menuWithTitle:menuTitle children:actions];
-      }];
+  UIContextMenuConfiguration* configuration =
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+          previewProvider:^{
+            UIViewController* controller = [[UIViewController alloc] init];
+            CGRect frame = CGRectMake(10, 200, 200, 21);
+            UILabel* label = [[UILabel alloc] initWithFrame:frame];
+            label.text = @"iOS13 Preview Page";
+            [controller.view addSubview:label];
+            return controller;
+          }
+          actionProvider:^(id _) {
+            NSArray* actions = @[
+              [UIAction actionWithTitle:@"Copy Link"
+                                  image:nil
+                             identifier:nil
+                                handler:copyHandler],
+              [UIAction actionWithTitle:@"Cancel"
+                                  image:nil
+                             identifier:nil
+                                handler:^(id ignore){
+                                }]
+            ];
+            NSString* menuTitle =
+                [NSString stringWithFormat:@"iOS13 Context Menu: %@",
+                                           element.hyperlink.absoluteString];
+            return [UIMenu menuWithTitle:menuTitle children:actions];
+          }];
 
   completionHandler(configuration);
 }

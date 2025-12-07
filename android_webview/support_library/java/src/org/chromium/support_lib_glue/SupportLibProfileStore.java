@@ -9,7 +9,9 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.webview.chromium.Profile;
 import com.android.webview.chromium.ProfileStore;
+import com.android.webview.chromium.ProfileStore.CallSite;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.ProfileStoreBoundaryInterface;
@@ -37,15 +39,19 @@ public class SupportLibProfileStore implements ProfileStoreBoundaryInterface {
             @NonNull String name) {
         recordApiCall(ApiCall.GET_OR_CREATE_PROFILE);
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibProfile(mImpl.getOrCreateProfile(name)));
+                new SupportLibProfile(mImpl.getOrCreateProfile(name, CallSite.ANDROIDX_API_CALL)));
     }
 
     @Override
     @Nullable
     public /* ProfileBoundaryInterface */ InvocationHandler getProfile(@NonNull String name) {
         recordApiCall(ApiCall.GET_PROFILE);
+        final Profile profile = mImpl.getProfile(name);
+        if (profile == null) {
+            return null;
+        }
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibProfile(mImpl.getProfile(name)));
+                new SupportLibProfile(profile));
     }
 
     @Override
@@ -56,7 +62,6 @@ public class SupportLibProfileStore implements ProfileStoreBoundaryInterface {
     }
 
     @Override
-    @NonNull
     public boolean deleteProfile(@NonNull String name) {
         recordApiCall(ApiCall.DELETE_PROFILE);
         return mImpl.deleteProfile(name);

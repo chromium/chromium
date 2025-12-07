@@ -10,11 +10,15 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
+#include "chromecast/starboard/media/media/starboard_resampler.h"
 
 namespace chromecast {
 namespace media {
@@ -85,7 +89,9 @@ static StarboardAudioSampleInfo ToAudioSampleInfo(const AudioConfig& config) {
 }
 
 StarboardAudioDecoder::StarboardAudioDecoder(StarboardApiWrapper* starboard)
-    : StarboardDecoder(starboard, kStarboardMediaTypeAudio) {}
+    : StarboardDecoder(starboard, kStarboardMediaTypeAudio),
+      format_to_decode_to_(
+          StarboardPcmSampleFormat::kStarboardPcmSampleFormatS16) {}
 
 StarboardAudioDecoder::~StarboardAudioDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -99,19 +105,20 @@ void StarboardAudioDecoder::InitializeInternal() {
     GetStarboardApi().SetVolume(GetPlayer(), *volume_);
     volume_ = std::nullopt;
   }
-
-  // This might not be the correct location for this, so this is subject to
-  // change. We may eventually want to get this value from
-  // CastStarboardApiAdapter::GetInstance() (e.g. by adding a
-  // CastStarboardApiAdapterGetStarboardPcmSampleFormat() function to the
-  // adapter).
-  format_to_decode_to_ = StarboardPcmSampleFormat::kStarboardPcmSampleFormatS16;
 }
 
 const std::optional<StarboardAudioSampleInfo>&
 StarboardAudioDecoder::GetAudioSampleInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return audio_sample_info_;
+}
+
+std::optional<EncryptionScheme> StarboardAudioDecoder::GetEncryptionScheme() {
+  if (audio_sample_info_.has_value()) {
+    // The config is populated when audio_sample_info_ is populated.
+    return config_.encryption_scheme;
+  }
+  return std::nullopt;
 }
 
 bool StarboardAudioDecoder::SetConfig(const AudioConfig& config) {
@@ -167,32 +174,36 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   }
 
   DCHECK(audio_sample_info_);
-  size_t size_of_buffer = buffer->data_size();
-  std::unique_ptr<uint8_t[]> data_copy;
+
+  // SAFETY: This is not safe, but is necessary since the CastDecoderBuffer API
+  // only exposes its data as a pointer + size.
+  //
+  // TODO(crbug.com/323610278): once CMA is deprecated, we will not need this
+  // class.
+  auto buffer_span = UNSAFE_BUFFERS(
+      base::span<const uint8_t>(buffer->data(), buffer->data_size()));
+  base::HeapArray<uint8_t> data_copy;
 
   if (audio_sample_info_->codec == kStarboardAudioCodecPcm) {
-    // This call will also set the value for `size_of_buffer`.
     data_copy = ResamplePCMAudioDataForStarboard(
         format_to_decode_to_, config_.sample_format, config_.codec,
-        audio_sample_info_->number_of_channels, *buffer, size_of_buffer);
+        audio_sample_info_->number_of_channels, buffer_span);
   } else {
     // Need to do this when not resampling to ensure that the input data is not
     // freed until Starboard is done using it.
-    data_copy = std::make_unique<uint8_t[]>(size_of_buffer);
-    memcpy(data_copy.get(), buffer->data(), size_of_buffer);
+    data_copy = base::HeapArray<uint8_t>::CopiedFrom(buffer_span);
   }
 
   StarboardSampleInfo sample = {};
   sample.type = kStarboardMediaTypeAudio;
   sample.timestamp = buffer->timestamp();
-  sample.side_data = nullptr;
-  sample.side_data_count = 0;
+  sample.side_data = base::span<const StarboardSampleSideData>();
   sample.audio_sample_info = *audio_sample_info_;
 
-  decoded_bytes_ += size_of_buffer;
+  decoded_bytes_ += data_copy.size();
 
-  return PushBufferInternal(std::move(sample), GetDrmInfo(*buffer),
-                            std::move(data_copy), size_of_buffer);
+  return PushBufferInternal(std::move(sample), DrmInfoWrapper::Create(*buffer),
+                            std::move(data_copy));
 }
 
 void StarboardAudioDecoder::GetStatistics(Statistics* statistics) {
@@ -216,6 +227,12 @@ StarboardAudioDecoder::GetAudioTrackTimestamp() {
 
 int StarboardAudioDecoder::GetStartThresholdInFrames() {
   return 0;
+}
+
+// This must return false, so that AudioPipelineImpl does not clear the
+// encryption field of the audio config.
+bool MediaPipelineBackend::AudioDecoder::RequiresDecryption() {
+  return false;
 }
 
 }  // namespace media

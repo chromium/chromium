@@ -10,6 +10,7 @@
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,7 +26,7 @@ PasswordStatusCheckResultAndroid& PasswordStatusCheckResultAndroid::operator=(
     const PasswordStatusCheckResultAndroid&) = default;
 
 // static
-std::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubResult>>
 PasswordStatusCheckResultAndroid::GetResult(const PrefService* pref_service) {
   int compromised_passwords_count =
       pref_service->GetInteger(prefs::kBreachedCredentialsCount);
@@ -38,8 +39,8 @@ void PasswordStatusCheckResultAndroid::UpdateCompromisedPasswordCount(
   compromised_passwords_count_ = count;
 }
 
-std::unique_ptr<SafetyHubService::Result>
-PasswordStatusCheckResultAndroid::Clone() const {
+std::unique_ptr<SafetyHubResult> PasswordStatusCheckResultAndroid::Clone()
+    const {
   return std::make_unique<PasswordStatusCheckResultAndroid>(*this);
 }
 

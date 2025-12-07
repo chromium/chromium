@@ -14,7 +14,6 @@
 #include "chrome/android/chrome_jni_headers/AutofillSnackbarController_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -35,8 +34,9 @@ void AutofillSnackbarViewAndroid::Show() {
       controller_->GetWebContents()->GetNativeView();
   DCHECK(view_android);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return;
+  }
 
   java_object_.Reset(Java_AutofillSnackbarController_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
@@ -67,3 +67,5 @@ void AutofillSnackbarViewAndroid::OnDismissed(JNIEnv* env) {
 AutofillSnackbarViewAndroid::~AutofillSnackbarViewAndroid() = default;
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillSnackbarController)

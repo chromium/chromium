@@ -4,10 +4,10 @@
 
 #include "services/device/generic_sensor/platform_sensor_util.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
 namespace device {
@@ -149,10 +149,6 @@ void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
 
     case mojom::SensorType::MAGNETOMETER:
       RoundMagnetometerReading(&reading->magn);
-      break;
-
-    case mojom::SensorType::PRESSURE:
-    case mojom::SensorType::PROXIMITY:
       break;
   }
 }

@@ -35,6 +35,7 @@ static_library("sync_sessions") {
     "synced_session_tracker.h",
     "synced_tab_delegate.cc",
     "synced_tab_delegate.h",
+    "synced_window_delegate.cc",
     "synced_window_delegate.h",
     "synced_window_delegates_getter.cc",
     "synced_window_delegates_getter.h",
@@ -60,7 +61,7 @@ static_library("sync_sessions") {
     "//components/sync_user_events",
     "//components/version_info",
     "//google_apis",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/gfx",
     "//url",
   ]
@@ -116,7 +117,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 }

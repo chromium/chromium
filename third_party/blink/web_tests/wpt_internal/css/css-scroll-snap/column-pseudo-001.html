@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/fragmentation">
+<link rel="match" href="column-pseudo-001-ref.html">
+<style>
+  #container {
+    overflow: hidden;
+    scroll-snap-type: both mandatory;
+    columns: 3;
+    column-fill: auto;
+    gap: 0;
+    orphans: 1;
+    widows: 1;
+    width: 420px;
+    height: 100px;
+    border: 15px solid;
+    line-height: 20px;
+    background: yellow;
+  }
+  #container::column {
+    scroll-snap-align: start;
+  }
+</style>
+<div id="container">
+  First column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Second column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Third column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Fourth column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Fifth column<br>
+</div>
+<script>
+  container.scrollLeft = 71;
+</script>

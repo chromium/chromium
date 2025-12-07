@@ -1,19 +1,24 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+#ifdef UNSAFE_BUFFERS_BUILD
+// We need to conform to the GBM API, which unfortunately involves a lot of
+// unsafe buffer access to maintain C99 compatibility.
+#pragma allow_unsafe_buffers
+#endif
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 
 #include <drm_fourcc.h>
 #include <va/va_drmcommon.h>
 
-#include <unordered_set>
-
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media::internal {
 
@@ -49,20 +54,19 @@ std::unique_ptr<FakeSurface> FakeSurface::Create(
                                             /*mapped_bo=*/{}));
   }
 
-#if defined(MINIGBM)
   // Verify attributes and extract surface descriptor.
-  std::unordered_set<VASurfaceAttribType> attribs;
+  absl::flat_hash_set<VASurfaceAttribType> attribs;
   VADRMPRIMESurfaceDescriptor* surf_desc = nullptr;
   for (auto attrib : attrib_list) {
-    CHECK(attrib.type == VASurfaceAttribExternalBufferDescriptor ||
-          attrib.type == VASurfaceAttribMemoryType);
+    // Some libva clients are quirky about their surface attributes, so
+    // simply ignore unexpected attribute types.
     CHECK(attribs.find(attrib.type) == attribs.end());
     attribs.insert(attrib.type);
 
     if (attrib.type == VASurfaceAttribMemoryType) {
       CHECK_EQ(attrib.value.type, VAGenericValueTypeInteger);
       CHECK_EQ(attrib.value.value.i, VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME_2);
-    } else {
+    } else if (attrib.type == VASurfaceAttribExternalBufferDescriptor) {
       CHECK_EQ(attrib.value.type, VAGenericValueTypePointer);
       surf_desc =
           static_cast<VADRMPRIMESurfaceDescriptor*>(attrib.value.value.p);
@@ -124,12 +128,6 @@ std::unique_ptr<FakeSurface> FakeSurface::Create(
   return base::WrapUnique(new FakeSurface(id, format, surf_desc->fourcc, width,
                                           height, std::move(attrib_list),
                                           std::move(mapped_bo)));
-#else
-  NOTIMPLEMENTED();
-  return base::WrapUnique(new FakeSurface(id, format, /*va_fourcc=*/0u, width,
-                                          height, std::move(attrib_list),
-                                          /*mapped_bo=*/{}));
-#endif
 }
 
 FakeSurface::IdType FakeSurface::GetID() const {

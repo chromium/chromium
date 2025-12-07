@@ -8,10 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,20 +23,21 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/app_restore/app_launch_info.h"
@@ -83,17 +83,14 @@ constexpr int kCpuUsageThreshold = 90;
 // |kCpuRestrictCoresCondition|.
 constexpr int kCpuRestrictCoresCondition = 2;
 
-constexpr char kRestoredArcAppResultHistogram[] = "Apps.RestoreArcAppsResult";
-
 constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
-
-constexpr char kRestoreArcAppStatesHistogram[] = "Apps.RestoreArcAppStates";
 
 constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
 
 }  // namespace
 
-ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
+ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler(
+    SchedulerConfigurationManager* scheduler_configuration_manager) {
   if (aura::Env::HasInstance())
     env_observer_.Observe(aura::Env::GetInstance());
 
@@ -104,10 +101,9 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
       activation_client->AddObserver(this);
   }
 
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager) {
+  if (scheduler_configuration_manager) {
     std::optional<std::pair<bool, size_t>> scheduler_configuration =
-        manager->GetLastReply();
+        scheduler_configuration_manager->GetLastReply();
     if (scheduler_configuration) {
       // Logical CPU core number should consider system HyperThread status.
       should_apply_cpu_restirction_ =
@@ -116,8 +112,11 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
     } else {
       // If the configuration not exist, add observer to receive configuration
       // update.
-      manager->AddObserver(this);
+      scheduler_configuration_manager_observer_.Observe(
+          scheduler_configuration_manager);
     }
+  } else {
+    CHECK_IS_TEST();
   }
 }
 
@@ -128,10 +127,6 @@ ArcAppQueueRestoreHandler::~ArcAppQueueRestoreHandler() {
     if (activation_client)
       activation_client->RemoveObserver(this);
   }
-
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager)
-    manager->RemoveObserver(this);
 }
 
 void ArcAppQueueRestoreHandler::RestoreArcApps(
@@ -151,8 +146,9 @@ void ArcAppQueueRestoreHandler::RestoreArcApps(
     return;
   }
 
-  window_handler_ = AppRestoreArcTaskHandler::GetForProfile(handler_->profile())
-                        ->window_handler();
+  window_handler_ =
+      AppRestoreArcTaskHandlerFactory::GetForProfile(handler_->profile())
+          ->window_handler();
 
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(handler_->profile())
@@ -348,9 +344,8 @@ void ArcAppQueueRestoreHandler::OnConfigurationSet(bool success,
   should_apply_cpu_restirction_ =
       (base::SysInfo::NumberOfProcessors() - num_cores_disabled) <=
       kCpuRestrictCoresCondition;
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager)
-    manager->RemoveObserver(this);
+
+  scheduler_configuration_manager_observer_.Reset();
 }
 
 void ArcAppQueueRestoreHandler::LoadRestoreData() {
@@ -377,8 +372,20 @@ void ArcAppQueueRestoreHandler::AddWindows(const std::string& app_id) {
 void ArcAppQueueRestoreHandler::PrepareLaunchApps() {
   is_shelf_ready_ = true;
 
-  // Explicit check if the root window controller initialized. b/321719023
-  if (RootWindowController::root_window_controllers().empty()) {
+  // Explicit check if the root window controller initialized.
+  // crbug.com/321719023
+  bool window_controller_ready =
+      !RootWindowController::root_window_controllers().empty();
+  if (window_controller_ready) {
+    // Expect the always on top controller exist.
+    for (const auto& controller :
+         RootWindowController::root_window_controllers()) {
+      if (!controller->always_on_top_controller()) {
+        window_controller_ready = false;
+      }
+    }
+  }
+  if (!window_controller_ready) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ArcAppQueueRestoreHandler::PrepareLaunchApps,
@@ -512,14 +519,8 @@ bool ArcAppQueueRestoreHandler::HasRestoreData() {
 }
 
 bool ArcAppQueueRestoreHandler::CanLaunchApp() {
-  // Checks CPU usage limiting and memory pressure, make sure it can
-  // be recorded for UMA statistic data.
   bool is_under_cpu_usage_limiting = IsUnderCPUUsageLimiting();
-  if (is_under_cpu_usage_limiting)
-    was_cpu_usage_limited_ = true;
   bool is_under_memory_pressure = IsUnderMemoryPressure();
-  if (is_under_memory_pressure)
-    was_memory_pressured_ = true;
   bool is_root_window_controller_initialized =
       !RootWindowController::root_window_controllers().empty();
   return !is_under_cpu_usage_limiting && !is_under_memory_pressure &&
@@ -762,9 +763,7 @@ void ArcAppQueueRestoreHandler::StopRestore() {
     stop_restore_timer_->Stop();
   stop_restore_timer_.reset();
 
-  auto* manager = GetSchedulerConfigurationManager();
-  if (manager)
-    manager->RemoveObserver(this);
+  scheduler_configuration_manager_observer_.Reset();
 
   StopCpuUsageCount();
 
@@ -839,49 +838,10 @@ void ArcAppQueueRestoreHandler::RecordArcGhostWindowLaunch(
 }
 
 void ArcAppQueueRestoreHandler::RecordRestoreResult() {
-  bool isFinished = !HasRestoreData();
-
-  base::UmaHistogramEnumeration(
-      kRestoredArcAppResultHistogram,
-      isFinished ? RestoreResult::kFinish : RestoreResult::kNotFinish);
-
-  ArcRestoreState restore_state = ArcRestoreState::kFailedWithUnknown;
-  if (isFinished) {
-    if (was_cpu_usage_limited_ && was_memory_pressured_) {
-      restore_state =
-          ArcRestoreState::kSuccessWithMemoryPressureAndCPUUsageRateLimiting;
-    } else if (was_cpu_usage_limited_) {
-      restore_state = ArcRestoreState::kSuccessWithCPUUsageRateLimiting;
-    } else if (was_memory_pressured_) {
-      restore_state = ArcRestoreState::kSuccessWithMemoryPressure;
-    } else {
-      restore_state = ArcRestoreState::kSuccess;
-    }
-  } else {
-    if (was_cpu_usage_limited_ && was_memory_pressured_) {
-      restore_state =
-          ArcRestoreState::kFailedWithMemoryPressureAndCPUUsageRateLimiting;
-    } else if (was_cpu_usage_limited_) {
-      restore_state = ArcRestoreState::kFailedWithCPUUsageRateLimiting;
-    } else if (was_memory_pressured_) {
-      restore_state = ArcRestoreState::kFailedWithMemoryPressure;
-    }
-    // For other cases, mark the failed state as "unknown".
-  }
-
-  base::UmaHistogramEnumeration(kRestoreArcAppStatesHistogram, restore_state);
-
   if (window_handler_) {
     base::UmaHistogramCounts100(kGhostWindowPopToArcHistogram,
                                 window_handler_->ghost_window_pop_count());
   }
-}
-
-SchedulerConfigurationManager*
-ArcAppQueueRestoreHandler::GetSchedulerConfigurationManager() {
-  if (!g_browser_process || !g_browser_process->platform_part())
-    return nullptr;
-  return g_browser_process->platform_part()->scheduler_configuration_manager();
 }
 
 }  // namespace ash::app_restore

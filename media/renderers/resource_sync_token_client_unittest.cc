@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,13 +22,15 @@ class SyncTokenTestInterface : public viz::TestGLES2Interface {
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override {
     viz::TestGLES2Interface::GenSyncTokenCHROMIUM(sync_token);
     gpu::SyncToken sync_token_data;
-    memcpy(sync_token_data.GetData(), sync_token, sizeof(sync_token_data));
+    UNSAFE_TODO(
+        memcpy(sync_token_data.GetData(), sync_token, sizeof(sync_token_data)));
     generated_tokens_.push_back(sync_token_data);
   }
 
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override {
     gpu::SyncToken sync_token_data;
-    memcpy(sync_token_data.GetData(), sync_token, sizeof(sync_token_data));
+    UNSAFE_TODO(
+        memcpy(sync_token_data.GetData(), sync_token, sizeof(sync_token_data)));
     viz::TestGLES2Interface::WaitSyncTokenCHROMIUM(sync_token);
     waited_tokens_.push_back(sync_token_data);
   }

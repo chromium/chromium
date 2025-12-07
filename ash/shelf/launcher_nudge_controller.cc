@@ -25,8 +25,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -152,8 +152,9 @@ bool LauncherNudgeController::ShouldShowNudge(base::Time& recheck_time) const {
   }
 
   // Only show the launcher nudge in clamshell mode.
-  if (Shell::Get()->IsInTabletMode())
+  if (display::Screen::Get()->InTabletMode()) {
     return false;
+  }
 
   // If the shown count meets the limit or the launcher has been opened before,
   // don't show the nudge.
@@ -220,7 +221,7 @@ void LauncherNudgeController::MaybeShowNudge() {
 
   // Don't run the nudge animation if the duration multiplier is 0 to prevent
   // crashes that caused by showing the animation that immediately gets deleted.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() != 0) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() != 0) {
     // Only show the nudge on the home button which is on the same display with
     // the cursor.
     int64_t display_id_for_nudge =
@@ -287,8 +288,9 @@ void LauncherNudgeController::OnAppListVisibilityChanged(bool shown,
   // require explicit user action. As a result, don't track app list visibility
   // changes in tablet mode as actions affecting nudge availability in clamshell
   // mode.
-  if (Shell::Get()->IsInTabletMode())
+  if (display::Screen::Get()->InTabletMode()) {
     return;
+  }
 
   if (!WasLauncherShownPreviously(prefs) && shown) {
     ScopedDictPrefUpdate update(prefs, prefs::kShelfLauncherNudge);

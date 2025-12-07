@@ -8,17 +8,21 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_class_properties.h"
 
 DiscountsIconView::DiscountsIconView(
@@ -28,10 +32,8 @@ DiscountsIconView::DiscountsIconView(
                          0,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "Discounts"),
-      bubble_coordinator_(this) {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+                         "Discounts") {
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kDiscountsChipElementId);
@@ -40,7 +42,28 @@ DiscountsIconView::DiscountsIconView(
 DiscountsIconView::~DiscountsIconView() = default;
 
 views::BubbleDialogDelegate* DiscountsIconView::GetBubble() const {
-  return bubble_coordinator_.GetBubble();
+  const commerce::CommerceUiTabHelper* tab_helper = GetTabHelper();
+
+  if (!tab_helper) {
+    return nullptr;
+  }
+
+  return tab_helper->GetDiscountsBubbleCoordinator().GetBubble();
+}
+
+void DiscountsIconView::SetIsLabelExpanded(bool is_expanded) {
+  is_label_expanded_ = is_expanded;
+  OnPropertyChanged(&is_label_expanded_, views::PropertyEffects::kNone);
+}
+
+bool DiscountsIconView::GetIsLabelExpanded() const {
+  return is_label_expanded_;
+}
+
+base::CallbackListSubscription
+DiscountsIconView::AddIsLabelExpandedChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&is_label_expanded_, std::move(callback));
 }
 
 void DiscountsIconView::OnExecuting(
@@ -55,7 +78,8 @@ void DiscountsIconView::OnExecuting(
 
   commerce::metrics::DiscountsMetricCollector::
       RecordDiscountsPageActionIconClicked(
-          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts));
+          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts),
+          tab_helper->GetDiscounts());
 }
 
 const gfx::VectorIcon& DiscountsIconView::GetVectorIcon() const {
@@ -68,6 +92,7 @@ void DiscountsIconView::UpdateImpl() {
   if (should_show) {
     MaybeShowPageActionLabel();
   } else {
+    scoped_window_call_to_action_ptr_.reset();
     HidePageActionLabel();
   }
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
@@ -91,6 +116,17 @@ void DiscountsIconView::MaybeShowPageActionLabel() {
       !tab_helper->ShouldExpandPageActionIcon(PageActionIconType::kDiscounts)) {
     return;
   }
+
+  if (!tabs::TabInterface::GetFromContents(GetWebContents())
+           ->GetBrowserWindowInterface()
+           ->CanShowCallToAction()) {
+    return;
+  }
+
+  scoped_window_call_to_action_ptr_ =
+      tabs::TabInterface::GetFromContents(GetWebContents())
+          ->GetBrowserWindowInterface()
+          ->ShowCallToAction();
 
   should_extend_label_shown_duration_ = true;
   AnimateIn(IDS_DISCOUNT_ICON_EXPANDED_TEXT);
@@ -121,11 +157,25 @@ void DiscountsIconView::AnimationProgressed(const gfx::Animation* animation) {
         FROM_HERE, kLabelPersistDuration,
         base::BindRepeating(&DiscountsIconView::UnpauseAnimation,
                             base::Unretained(this)));
+    SetIsLabelExpanded(true);
     MaybeShowBubble(false);
   }
 }
 
+void DiscountsIconView::UnpauseAnimation() {
+  IconLabelBubbleView::UnpauseAnimation();
+  // The label is collapsed during UnpauseAnimation, so sets the label is
+  // expanded to false here. See the comment in AnimationProgressed for more
+  // details.
+  SetIsLabelExpanded(false);
+}
+
 commerce::CommerceUiTabHelper* DiscountsIconView::GetTabHelper() {
+  return const_cast<commerce::CommerceUiTabHelper*>(
+      std::as_const(*this).GetTabHelper());
+}
+
+const commerce::CommerceUiTabHelper* DiscountsIconView::GetTabHelper() const {
   auto* web_contents = GetWebContents();
   if (!web_contents) {
     return nullptr;
@@ -155,19 +205,36 @@ void DiscountsIconView::MaybeShowBubble(bool from_user) {
     return;
   }
 
+  if (!from_user && should_auto_show) {
+    // If commerce::kDiscountDialogAutoPopupCounterfactual is enabled, we
+    // purposely not show the bubble.
+    bool should_suppress = base::FeatureList::IsEnabled(
+        commerce::kDiscountDialogAutoPopupCounterfactual);
+
+    commerce::metrics::DiscountsMetricCollector::
+        RecordDiscountAutoPopupEligibleButSuppressed(
+            GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+            should_suppress);
+
+    if (should_suppress) {
+      return;
+    }
+  }
+
   if (animate_out_timer_.IsRunning()) {
     animate_out_timer_.Stop();
   }
 
-  bubble_coordinator_.Show(GetWebContents(), discount_infos[0],
-                           base::BindOnce(&DiscountsIconView::UnpauseAnimation,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  tab_helper->ShowDiscountBubble(
+      discount_infos[0], base::BindOnce(&DiscountsIconView::UnpauseAnimation,
+                                        weak_ptr_factory_.GetWeakPtr()));
 
   tab_helper->DiscountsBubbleShown(discount_infos[0].id);
 
   commerce::metrics::DiscountsMetricCollector::RecordDiscountBubbleShown(
       should_auto_show,
-      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      tab_helper->GetDiscounts());
 }
 
 BEGIN_METADATA(DiscountsIconView)

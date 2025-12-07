@@ -104,6 +104,7 @@ void FakeExternalBeginFrameSource::TestOnBeginFrame(
     pending_frames_[obs]++;
     obs->OnBeginFrame(current_args_);
   }
+  IssueBeginFrameToSchedulerClient(args);
   if (tick_automatically_)
     PostTestOnBeginFrame();
 }

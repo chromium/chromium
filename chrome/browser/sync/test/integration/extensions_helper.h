@@ -14,7 +14,10 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -23,14 +26,6 @@ namespace extensions_helper {
 // Returns true iff profiles with indices |index1| and |index2| have the same
 // extensions.
 [[nodiscard]] bool HasSameExtensions(int index1, int index2);
-
-// Returns true iff the profile with index |index| has the same extensions
-// as the verifier.
-[[nodiscard]] bool HasSameExtensionsAsVerifier(int index);
-
-// Returns true iff all existing profiles have the same extensions
-// as the verifier.
-[[nodiscard]] bool AllProfilesHaveSameExtensionsAsVerifier();
 
 // Returns true iff all existing profiles have the same extensions.
 [[nodiscard]] bool AllProfilesHaveSameExtensions();

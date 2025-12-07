@@ -39,7 +39,8 @@ class MediaStreamAudioSourceHandler final : public AudioHandler {
   // AudioHandler: MediaStreamAudioSourceNode never propagates silence.
   bool PropagatesSilence() const override { return false; }
 
-  void SendLogMessage(const String& message);
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name, const String& message);
 
   std::unique_ptr<AudioSourceProvider> audio_source_provider_;
 

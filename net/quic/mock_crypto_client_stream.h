@@ -78,6 +78,7 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   std::unique_ptr<quic::QuicDecrypter>
   AdvanceKeysAndCreateCurrentOneRttDecrypter() override;
   bool EarlyDataAccepted() const override;
+  ssl_early_data_reason_t EarlyDataReason() const override;
   // Override QuicCryptoClientStream::SetServerApplicationStateForResumption()
   // to avoid tripping over the DCHECK on handshaker state.
   void SetServerApplicationStateForResumption(

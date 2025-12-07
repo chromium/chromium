@@ -15,10 +15,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -43,20 +44,16 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
     private void setUp() {
         // The NotificationPlatformBridge must be overriden prior to the browser process starting.
         mMockNotificationManager = new MockNotificationManagerProxy();
-        NotificationPlatformBridge.overrideNotificationManagerForTesting(mMockNotificationManager);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         startMainActivityWithURL(UrlConstants.NTP_URL);
         ModalDialogView.disableButtonTapProtectionForTesting();
-    }
-
-    private void tearDown() {
-        NotificationPlatformBridge.overrideNotificationManagerForTesting(null);
     }
 
     /**
      * Sets the permission to use Web Notifications for the test HTTP server's origin to |setting|.
      */
     public void setNotificationContentSettingForOrigin(
-            final @ContentSettingValues int setting, String origin) throws TimeoutException {
+            final @ContentSetting int setting, String origin) throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // The notification content setting does not consider the embedder origin.
@@ -72,9 +69,9 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                 });
 
         String permission = runJavaScriptCodeInCurrentTab("Notification.permission");
-        if (setting == ContentSettingValues.ALLOW) {
+        if (setting == ContentSetting.ALLOW) {
             Assert.assertEquals("\"granted\"", permission);
-        } else if (setting == ContentSettingValues.BLOCK) {
+        } else if (setting == ContentSetting.BLOCK) {
             Assert.assertEquals("\"denied\"", permission);
         } else {
             Assert.assertEquals("\"default\"", permission);
@@ -113,6 +110,13 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                 POLLING_INTERVAL_MS);
     }
 
+    public void flushNotificationManagerMutations() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    while (mMockNotificationManager.getMutationCountAndDecrement() > 0) {}
+                });
+    }
+
     /**
      * Waits until the specified number of notifications are active in the mocked
      * NotificationManager.
@@ -134,7 +138,6 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                     public void evaluate() throws Throwable {
                         setUp();
                         base.evaluate();
-                        tearDown();
                     }
                 },
                 description);

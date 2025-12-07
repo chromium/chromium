@@ -11,6 +11,7 @@
 
 namespace web {
 namespace proto {
+class WebStateStorage;
 class WebStateMetadataStorage;
 }  // namespace proto
 
@@ -31,7 +32,6 @@ class WebStateImpl::SerializedData {
   // is used when the WebState will transition to "realized" state.
   SerializedData(WebStateImpl* owner,
                  BrowserState* browser_state,
-                 NSString* stable_identifier,
                  WebStateID unique_identifier,
                  proto::WebStateMetadataStorage metadata,
                  WebStateStorageLoader storage_loader,
@@ -48,17 +48,11 @@ class WebStateImpl::SerializedData {
   // pointer (thus it must be non-null).
   void TearDown();
 
-  // Getter and setter for the CRWSessionStorage; only available when the
-  // session serialization optimisation feature is disabled.
-  // TODO(crbug.com/40245950): remove once the feature is fully launched.
-  CRWSessionStorage* GetSessionStorage() const;
-  void SetSessionStorage(CRWSessionStorage* storage);
-
   // Serializes the metadata to `storage`.
   void SerializeMetadataToProto(proto::WebStateMetadataStorage& storage) const;
 
-  // Returns the callback used to load the complete data from disk.
-  WebStateStorageLoader TakeStorageLoader();
+  // Loads the data from disk, or create a default one using the metadata.
+  proto::WebStateStorage LoadStorage();
 
   // Returns the callback used to fetch the native session data blob.
   NativeSessionFetcher TakeNativeSessionFetcher();
@@ -67,7 +61,6 @@ class WebStateImpl::SerializedData {
   base::Time GetLastActiveTime() const;
   base::Time GetCreationTime() const;
   BrowserState* GetBrowserState() const;
-  NSString* GetStableIdentifier() const;
   WebStateID GetUniqueIdentifier() const;
   const std::u16string& GetTitle() const;
   const FaviconStatus& GetFaviconStatus() const;
@@ -91,8 +84,7 @@ class WebStateImpl::SerializedData {
   // The owning BrowserState. Indirectly owns this object.
   const raw_ptr<BrowserState> browser_state_;
 
-  // The stable and unique identifiers.
-  NSString* const stable_identifier_;
+  // The unique identifier.
   const WebStateID unique_identifier_;
 
   // Information about this WebState available when the object is not
@@ -110,11 +102,6 @@ class WebStateImpl::SerializedData {
   // Callbacks used to load the full data about this WebState.
   WebStateStorageLoader storage_loader_;
   NativeSessionFetcher session_fetcher_;
-
-  // Serialized representation of the session; only available when the
-  // session serialization optimisation feature is disabled.
-  // TODO(crbug.com/40245950): remove once the feature is fully launched.
-  __strong CRWSessionStorage* session_storage_ = nil;
 };
 
 }  // namespace web

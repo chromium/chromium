@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "The cloud upload dialog is ash-chrome only")
+assert(is_chromeos, "The cloud upload dialog is ChromeOS only")
 
 mojom("mojo_bindings") {
   sources = [ "cloud_upload.mojom" ]
@@ -47,8 +46,9 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/hats",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/drivefs",
@@ -78,16 +78,18 @@ static_library("cloud_upload") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/extensions",
     "//chrome/browser/resources/chromeos/cloud_upload:resources",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
@@ -106,13 +108,13 @@ static_library("cloud_upload") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/extensions",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
 }
@@ -143,8 +145,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
     "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ash/system_web_apps/types",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -155,8 +155,9 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/file_manager:constants",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//components/drive",
     "//content/public/browser",
     "//content/test:test_support",
@@ -198,9 +199,12 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/message_center",
+    "//ui/message_center:test_support",
   ]
 }

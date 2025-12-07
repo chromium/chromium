@@ -16,6 +16,7 @@
 class SkRegion;
 
 namespace aura {
+class Window;
 template <typename T>
 using WindowProperty = ui::ClassProperty<T>;
 }  // namespace aura
@@ -73,9 +74,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<int32_t>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kExcludeInMruKey;
 
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kFrameRateThrottleKey;
-
 // A property key to indicate whether we should hide this window in overview
 // mode and Alt + Tab.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
@@ -98,6 +96,11 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 // dragged.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kIsDraggingTabsKey;
+
+// A property key to store the address of the source window that the drag
+// originated from if the window is currently in tab-dragging process.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<aura::Window*>* const
+    kTabDraggingSourceWindowKey;
 
 // If true, the window will be ignored when mirroring the desk contents into
 // the desk's mini_view.
@@ -219,8 +222,22 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
     kWindowPipResizeHandleBoundsKey;
 
-// Alphabetical sort.
-
 }  // namespace ash
+
+// Declare template specializations introduced by Ash here to make sure that the
+// compiler knows about them before the first template instance use. Using a
+// template instance before its specialization is declared in a translation unit
+// is an error.
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, SkRegion*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                        ash::ArcGameControlsFlag)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                        ash::ArcResizeLockType)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                        ash::ResizeShadowType)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, bool*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, uint64_t)
 
 #endif  // ASH_PUBLIC_CPP_WINDOW_PROPERTIES_H_

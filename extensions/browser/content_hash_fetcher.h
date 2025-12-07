@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/common/extension_id.h"
 
@@ -54,7 +54,7 @@ class ContentHashFetcher {
   ContentHashFetcher(const ContentHashFetcher&) = delete;
   ContentHashFetcher& operator=(const ContentHashFetcher&) = delete;
 
-  // Note: |this| is deleted once OnSimpleLoaderComplete() completes.
+  // Note: `this` is deleted once OnSimpleLoaderComplete() completes.
   void Start(HashFetcherCallback hash_fetcher_callback);
 
  private:

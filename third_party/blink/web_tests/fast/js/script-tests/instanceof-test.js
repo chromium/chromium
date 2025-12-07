@@ -20,6 +20,3 @@ shouldBeFalse("(new Array()) instanceof WebKitCSSMatrix");
 
 shouldBeTrue("(new Worker('instanceof-operator-dummy-worker.js')) instanceof Worker");
 shouldBeFalse("(new Array()) instanceof Worker");
-
-shouldBeTrue("(new XSLTProcessor()) instanceof XSLTProcessor");
-shouldBeFalse("(new Array()) instanceof XSLTProcessor");

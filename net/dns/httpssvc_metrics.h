@@ -19,7 +19,7 @@ namespace net {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. (See HttpssvcDnsRcode in
 // tools/metrics/histograms/enums.xml.)
-enum HttpssvcDnsRcode {
+enum class HttpssvcDnsRcode {
   kTimedOut = 0,
   kUnrecognizedRcode,
   kMissingDnsResponse,
@@ -54,10 +54,6 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   // May be called many times.
   void SaveForAddressQuery(base::TimeDelta resolve_time,
                            enum HttpssvcDnsRcode rcode);
-
-  // Save the fact that the non-integrity queries failed. Prevents metrics from
-  // being recorded.
-  void SaveAddressQueryFailure();
 
   // Must only be called once.
   void SaveForHttps(enum HttpssvcDnsRcode rcode,

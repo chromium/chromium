@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_ACTION_CONTEXT_H_
 
 #import "base/memory/raw_ptr.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/public/types.h"
 
 class Browser;
 

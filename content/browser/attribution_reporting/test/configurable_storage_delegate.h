@@ -16,6 +16,10 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 
+namespace attribution_reporting {
+class AttributionScopesData;
+}
+
 namespace content {
 
 class ConfigurableStorageDelegate : public AttributionResolverDelegate {
@@ -31,17 +35,19 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
+  base::TimeDelta GetDeleteExpiredOsRegistrationsFrequency() const override;
   base::Uuid NewReportID() const override;
   std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
-  std::optional<double> GetRandomizedResponseRate(
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) override;
+      const attribution_reporting::TriggerDataSet&,
+      const attribution_reporting::EventReportWindows&,
+      attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon,
+      const std::optional<attribution_reporting::AttributionScopesData>&)
+      override;
   bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig)
@@ -63,6 +69,8 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   void set_delete_expired_sources_frequency(base::TimeDelta frequency);
 
   void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency);
+
+  void set_delete_expired_os_registrations_frequency(base::TimeDelta frequency);
 
   void set_report_delay(base::TimeDelta report_delay);
 
@@ -90,6 +98,8 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   base::TimeDelta delete_expired_sources_frequency_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::TimeDelta delete_expired_rate_limits_frequency_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeDelta delete_expired_os_registrations_frequency_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::TimeDelta report_delay_ GUARDED_BY_CONTEXT(sequence_checker_);

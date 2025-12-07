@@ -8,7 +8,7 @@
 
 namespace offline_pages {
 
-ClientId::ClientId() {}
+ClientId::ClientId() = default;
 
 ClientId::ClientId(const std::string& name_space, const std::string& id)
     : name_space(name_space), id(id) {}
@@ -18,8 +18,9 @@ bool ClientId::operator==(const ClientId& client_id) const {
 }
 
 bool ClientId::operator<(const ClientId& client_id) const {
-  if (name_space == client_id.name_space)
+  if (name_space == client_id.name_space) {
     return (id < client_id.id);
+  }
 
   return name_space < client_id.name_space;
 }

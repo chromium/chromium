@@ -11,34 +11,36 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/ash/common/personalization/common.css.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_suggestions_element.js';
+import './sea_pen.css.js';
+import './sea_pen_icons.html.js';
+import './sea_pen_suggestions_element.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
-import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
-import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
+import type {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
+import type {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY} from './constants.js';
+import {QUERY, SEA_PEN_SAMPLES} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import type {SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES} from './sea_pen.mojom-webui.js';
 import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
+import {SeaPenHistoryPromptSelectedEvent} from './sea_pen_images_element.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
-import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
+import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
+import {SeaPenRecentImageDeleteEvent} from './sea_pen_recent_wallpapers_element.js';
 import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
-import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
+import type {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
 import {isSelectionEvent} from './sea_pen_utils.js';
 
 export interface SeaPenInputQueryElement {
@@ -96,9 +98,16 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         type: Boolean,
         value: false,
       },
+
+      autoplay_: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
+  private autoplay_: boolean;
+  private maxTextLength_: number;
   private textValue_: string;
   private seaPenQuery_: SeaPenQuery|null;
   private thumbnails_: SeaPenThumbnail[]|null;
@@ -108,12 +117,21 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private shouldShowSuggestions_: boolean;
   private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
+  private replacePromptListener_: (e: SeaPenSampleSelectedEvent|
+                                   SeaPenHistoryPromptSelectedEvent) => void;
+  private deleteRecentImageListener_: EventListener;
 
   static get observers() {
     return [
       'updateShouldShowSuggestions_(textValue_, thumbnailsLoading_)',
       'updateSearchButton_(thumbnails_, seaPenQuery_)',
     ];
+  }
+
+  constructor() {
+    super();
+    this.replacePromptListener_ = this.replacePrompt_.bind(this);
+    this.deleteRecentImageListener_ = this.focusInput_.bind(this);
   }
 
   override connectedCallback() {
@@ -128,19 +146,20 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.updateFromStore();
 
     document.body.addEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME,
-        this.onSampleSelected_.bind(this));
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.replacePromptListener_);
+    document.body.addEventListener(
+        SeaPenRecentImageDeleteEvent.EVENT_NAME,
+        this.deleteRecentImageListener_);
+    document.body.addEventListener(
+        SeaPenHistoryPromptSelectedEvent.EVENT_NAME,
+        this.replacePromptListener_);
 
-    this.$.queryInput.focusInput();
+    this.focusInput_();
 
     this.resizeObserver_ =
         new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
-      const inspireMeAnimation = this.getInspireMeAnimationElement_();
-      if (inspireMeAnimation) {
-        inspireMeAnimation.autoplay = false;
-      }
 
       this.innerContainerOriginalHeight_ = this.$.innerContainer.scrollHeight;
       this.$.innerContainer.style.height =
@@ -153,11 +172,28 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.resizeObserver_.disconnect();
 
     document.body.removeEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME, this.onSampleSelected_);
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.replacePromptListener_);
+    document.body.removeEventListener(
+        SeaPenRecentImageDeleteEvent.EVENT_NAME,
+        this.deleteRecentImageListener_);
+    document.body.removeEventListener(
+        SeaPenHistoryPromptSelectedEvent.EVENT_NAME,
+        this.replacePromptListener_);
   }
 
-  private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
+  private replacePrompt_(e: SeaPenSampleSelectedEvent|
+                         SeaPenHistoryPromptSelectedEvent) {
     this.textValue_ = e.detail;
+    this.showCreateButton_();
+    this.focusInput_();
+    if (e.type === SeaPenSampleSelectedEvent.EVENT_NAME &&
+        !this.thumbnailsLoading_) {
+      this.searchInputQuery_();
+    }
+  }
+
+  private focusInput_() {
+    this.$.queryInput.focusInput();
   }
 
   // Called when there is a custom dom-change event dispatched from
@@ -195,7 +231,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onClickInspire_() {
     const index = Math.floor(Math.random() * SEA_PEN_SAMPLES.length);
-    this.textValue_ = SEA_PEN_SAMPLES[index].prompt;
+    this.textValue_ = this.i18n(SEA_PEN_SAMPLES[index].prompt);
+    this.showCreateButton_();
+    this.searchInputQuery_();
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
@@ -205,12 +243,25 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private onTextInputFocused_() {
     // Show suggestions when there is text input.
     this.shouldShowSuggestions_ = !!this.textValue_;
+    window.scrollTo(0, 0);
   }
 
   private onClickInputQuerySearchButton_(event: Event) {
     if (!isSelectionEvent(event)) {
       return;
     }
+    // Stop the event propagation, otherwise, the event will be passed to parent
+    // element, this.onClick_ will be triggered improperly.
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.textValue_.trim()) {
+      this.onClickInspire_();
+      return;
+    }
+    this.searchInputQuery_();
+  }
+
+  private searchInputQuery_() {
     assert(this.textValue_, 'input query should not be empty.');
     try {
       // Throws an error if the textValue_ contains insecure HTML/javascript.
@@ -221,36 +272,38 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       this.shouldShowSuggestions_ = false;
       return;
     }
-    // This only works for English. We only support English queries for now.
-    logNumWordsInTextQuery(this.textValue_.split(/\s+/).length);
     const query: SeaPenQuery = {
       textQuery: this.textValue_,
     };
     getSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(QUERY);
-    // Stop the event propagation, otherwise, the event will be passed to parent
-    // element, this.onClick_ will be triggered improperly.
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onSuggestionSelected_(event: SeaPenSuggestionSelectedEvent) {
     this.textValue_ = this.textValue_.trim();
-    this.textValue_ = this.textValue_.length > 0 ?
-        `${this.textValue_}, ${event.detail}` :
-        event.detail;
+    const newTextValue = `${this.textValue_}, ${event.detail}`;
+    if (newTextValue.length > this.maxTextLength_) {
+      // Do nothing if the suggestion overflows the max text length.
+      return;
+    }
+    this.textValue_ = this.textValue_.length > 0 ? newTextValue : event.detail;
+    this.focusInput_();
   }
 
   private updateSearchButton_(
       thumbnails: SeaPenThumbnail[]|null, seaPenQuery: SeaPenQuery|null) {
     if (!thumbnails || !seaPenQuery) {
       // The thumbnails are not loaded yet.
-      this.searchButtonText_ = this.i18n('seaPenCreateButton');
-      this.searchButtonIcon_ = 'sea-pen:photo-spark';
+      this.showCreateButton_();
     } else {
       this.searchButtonText_ = this.i18n('seaPenRecreateButton');
       this.searchButtonIcon_ = 'personalization-shared:refresh';
     }
+  }
+
+  private showCreateButton_() {
+    this.searchButtonText_ = this.i18n('seaPenCreateButton');
+    this.searchButtonIcon_ = 'sea-pen:photo-spark';
   }
 
   private updateShouldShowSuggestions_(

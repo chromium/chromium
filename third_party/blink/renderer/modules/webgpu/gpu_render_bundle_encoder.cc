@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle_encoder.h"
 
 #include "base/containers/heap_array.h"
@@ -100,12 +95,73 @@ void GPURenderBundleEncoder::setBindGroup(
     return;
   }
 
-  const uint32_t* data =
-      dynamic_offsets_data.data() + dynamic_offsets_data_start;
+  base::span<const uint32_t> data_span = dynamic_offsets_data.subspan(
+      base::checked_cast<size_t>(dynamic_offsets_data_start),
+      dynamic_offsets_data_length);
 
   GetHandle().SetBindGroup(
       index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),
-      dynamic_offsets_data_length, data);
+      data_span.size(), data_span.data());
+}
+
+void GPURenderBundleEncoder::setImmediates(uint32_t range_offset,
+                                           const DOMArrayBufferBase* data,
+                                           uint64_t data_offset,
+                                           ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), 1, data_offset)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPURenderBundleEncoder::setImmediates(uint32_t range_offset,
+                                           const DOMArrayBufferBase* data,
+                                           uint64_t data_offset,
+                                           uint64_t size,
+                                           ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), 1, data_offset, size)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPURenderBundleEncoder::setImmediates(
+    uint32_t range_offset,
+    const MaybeShared<DOMArrayBufferView>& data,
+    uint64_t data_offset,
+    ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), data->TypeSize(), data_offset)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPURenderBundleEncoder::setImmediates(
+    uint32_t range_offset,
+    const MaybeShared<DOMArrayBufferView>& data,
+    uint64_t data_offset,
+    uint64_t size,
+    ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), data->TypeSize(), data_offset, size)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
 }
 
 GPURenderBundle* GPURenderBundleEncoder::finish(

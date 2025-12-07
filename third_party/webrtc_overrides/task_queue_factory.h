@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
-#include "base/memory/scoped_refptr.h"
+#include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 

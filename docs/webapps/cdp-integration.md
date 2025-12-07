@@ -98,7 +98,8 @@ async function current_page_session() {
 
 The demo installs a webapp https://developer.chrome.com/, launches it, inspects its states, opens it into its own app window, and uninstalls it.
 
-The source code is at [cdp/demo2.mjs](cdp/demo2.mjs).
+The source code is at [cdp/demo2.mjs](cdp/demo2.mjs); run with the command
+`nodejs docs/webapps/cdp/demo2.mjs`.
 
 A video of running demo2.mjs on chrome canary channel on linux can be found at https://youtu.be/G4wmhSCXhH4.
 

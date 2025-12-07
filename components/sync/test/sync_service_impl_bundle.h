@@ -16,6 +16,10 @@
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace syncer {
 
 // Aggregate this class to get all necessary support for creating a
@@ -33,7 +37,7 @@ class SyncServiceImplBundle {
   // Creates a mock sync client that leverages the dependencies in this bundle.
   std::unique_ptr<SyncClientMock> CreateSyncClientMock();
 
-  // Creates an InitParams instance with the specified |sync_client|, and fills
+  // Creates an InitParams instance with the specified `sync_client`, and fills
   // the rest with fake values and objects owned by the bundle.
   SyncServiceImpl::InitParams CreateBasicInitParams(
       std::unique_ptr<SyncClient> sync_client);
@@ -69,6 +73,7 @@ class SyncServiceImplBundle {
   FakeSyncEngineFactory engine_factory_;
   testing::NiceMock<MockSyncInvalidationsService> sync_invalidations_service_;
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 }  // namespace syncer

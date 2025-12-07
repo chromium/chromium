@@ -19,7 +19,26 @@ GuideName* const kVoiceSearchButtonGuide = @"kVoiceSearchButtonGuide";
 GuideName* const kFeedIPHNamedGuide = @"kFeedIPHNamedGuide";
 GuideName* const kShareButtonGuide = @"kShareButtonGuide";
 GuideName* const kTabGridBottomToolbarGuide = @"kTabGridBottomToolbarGuide";
+GuideName* const kTabGridPageControlGuide = @"kTabGridPageControlGuide";
+GuideName* const kTabGridPageControlIncognitoGuide =
+    @"kTabGridPageControlIncognitoGuide";
+GuideName* const kTabGridPageControlTabGroupsGuide =
+    @"kTabGridPageControlTabGroupsGuide";
 GuideName* const kAutofillFirstSuggestionGuide =
     @"kAutofillFirstSuggestionGuide";
 GuideName* const kLensKeyboardButtonGuide = @"kLensKeyboardButtonGuide";
 GuideName* const kMagicStackGuide = @"kMagicStackGuide";
+GuideName* const kContextualPanelLargeEntrypointGuide =
+    @"kContextualPanelLargeEntrypointGuide";
+GuideName* const kFakeboxLensIconGuide = @"kFakeboxLensIconGuide";
+GuideName* const kLensOverlayEntrypointGuide = @"kLensOverlayEntrypointGuide";
+GuideName* const kPageActionMenuEntrypointGuide =
+    @"kPageActionMenuEntrypointGuide";
+GuideName* const kReaderModeOptionsEntrypointGuide =
+    @"kReaderModeOptionsEntrypointGuide";
+GuideName* const kNTPIdentityDiscButtonGuide = @"kNTPIdentityDiscButtonGuide";
+GuideName* const kSelectedRegularCellGuide = @"kSelectedRegularCellGuide";
+GuideName* const kLocationBarBadgeLargeEntrypointGuide =
+    @"kLocationBarBadgeLargeEntrypointGuide";
+GuideName* const kInputAccessoryViewLayoutGuide =
+    @"kInputAccessoryViewLayoutGuide";

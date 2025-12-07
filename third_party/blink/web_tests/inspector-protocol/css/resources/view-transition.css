@@ -7,7 +7,7 @@
 
 ::view-transition-group(root),
 ::view-transition-group(target) {
-  animation-duration: 300s;
+  animation-play-state: paused;
 }
 
 ::view-transition-group(target) {

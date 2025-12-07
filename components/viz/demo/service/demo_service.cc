@@ -24,7 +24,7 @@ namespace {
 
 std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
-  thread_options.thread_type = base::ThreadType::kCompositing;
+  thread_options.thread_type = base::ThreadType::kDisplayCritical;
   auto io_thread = std::make_unique<base::Thread>("VizDemoGpuIOThread");
   CHECK(io_thread->StartWithOptions(std::move(thread_options)));
   return io_thread;
@@ -53,8 +53,6 @@ DemoService::DemoService(
     init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
     init_params.io_runner = io_thread_->task_runner();
     init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
-    init_params.exit_callback =
-        base::BindOnce(&DemoService::ExitProcess, base::Unretained(this));
 
     gpu_service_ = std::make_unique<viz::GpuServiceImpl>(
         gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
@@ -69,17 +67,12 @@ DemoService::DemoService(
         std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
         gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                            gfx::Size()),
-        /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
-        /*scheduler=*/nullptr, /*shutdown_event=*/nullptr);
+        viz::mojom::GpuServiceCreationParams::New());
   }
 
   runner_->CreateFrameSinkManager(std::move(params), gpu_service_.get());
 }
 
 DemoService::~DemoService() = default;
-
-void DemoService::ExitProcess(viz::ExitCode immediate_exit_code) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
 
 }  // namespace demo

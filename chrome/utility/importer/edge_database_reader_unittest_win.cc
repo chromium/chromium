@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -166,8 +169,8 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
     GUID guid_col_value = {};
     GUID expected_guid_col_value = {};
     EXPECT_TRUE(table_enum->RetrieveColumn(L"GuidCol", &guid_col_value));
-    memset(&expected_guid_col_value, row_count,
-           sizeof(expected_guid_col_value));
+    UNSAFE_TODO(memset(&expected_guid_col_value, row_count,
+                       sizeof(expected_guid_col_value)));
     EXPECT_EQ(expected_guid_col_value, guid_col_value);
 
     FILETIME filetime_col_value = {};
@@ -186,7 +189,7 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
               filetime_col_value.dwHighDateTime);
 
     std::u16string row_string =
-        base::AsString16(base::StringPrintf(L"String: %d", row_count));
+        base::ASCIIToUTF16(base::StringPrintf("String: %d", row_count));
     std::u16string str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
@@ -262,7 +265,7 @@ TEST_F(EdgeDatabaseReaderTest, EmptyTableDatabaseTest) {
 }
 
 TEST_F(EdgeDatabaseReaderTest, UnicodeStringsDatabaseTest) {
-  const char* utf8_strings[] = {
+  static constexpr std::array utf8_strings = {
       "\xE3\x81\x93\xE3\x81\xAB\xE3\x81\xA1\xE3\x81\xAF",
       "\xE4\xBD\xA0\xE5\xA5\xBD",
       ("\xD0\x97\xD0\xB4\xD1\x80\xD0\xB0\xD0\xB2\xD1\x81\xD1\x82\xD0\xB2\xD1"
@@ -278,16 +281,16 @@ TEST_F(EdgeDatabaseReaderTest, UnicodeStringsDatabaseTest) {
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"UnicodeTable");
   EXPECT_NE(nullptr, table_enum);
-  size_t utf8_strings_count = std::size(utf8_strings);
-  for (size_t row_count = 0; row_count < utf8_strings_count; ++row_count) {
+  for (size_t row_count = 0; row_count < utf8_strings.size(); ++row_count) {
     std::u16string row_string = base::UTF8ToUTF16(utf8_strings[row_count]);
     std::u16string str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
-    if (row_count < utf8_strings_count - 1)
+    if (row_count < utf8_strings.size() - 1) {
       EXPECT_TRUE(table_enum->Next());
-    else
+    } else {
       EXPECT_FALSE(table_enum->Next());
+    }
   }
 }
 
@@ -329,9 +332,8 @@ TEST_F(EdgeDatabaseReaderTest, CheckNullColumnDatabaseTest) {
 
   GUID guid_col_value = {};
   GUID expected_guid_col_value = {};
-  memset(&guid_col_value, 0x1, sizeof(guid_col_value));
+  UNSAFE_TODO(memset(&guid_col_value, 0x1, sizeof(guid_col_value)));
   EXPECT_TRUE(table_enum->RetrieveColumn(L"GuidCol", &guid_col_value));
-  memset(&expected_guid_col_value, 0, sizeof(expected_guid_col_value));
   EXPECT_EQ(expected_guid_col_value, guid_col_value);
 
   FILETIME filetime_col_value = {1, 1};

@@ -9,6 +9,8 @@
 #include "ash/style/system_shadow.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -65,7 +67,7 @@ SkPath BackgroundPath(SkScalar height,
                       bool draw_triangle_on_left,
                       SkScalar origin_offset = 0,
                       SkScalar corner_radius = kCornerRadius) {
-  SkPath path;
+  SkPathBuilder path;
   const SkScalar short_length =
       SkIntToScalar(kMenuWidth) - kTriangleHeight - 2 * corner_radius;
   const SkScalar short_height = height - 2 * corner_radius;
@@ -95,8 +97,8 @@ SkPath BackgroundPath(SkScalar height,
   }
   // Top left after corner radius to top right corner radius.
   path.rLineTo(short_length, 0);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, corner_radius, corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {corner_radius, corner_radius});
   if (draw_triangle_on_left) {
     // Top right after corner radius to bottom right corner radius.
     path.rLineTo(0, short_height);
@@ -106,26 +108,28 @@ SkPath BackgroundPath(SkScalar height,
     // Triangle shape.
     path.rLineTo(kTriangleHeight - dx, kTriangleLength / 2 - dy);
     // Draw triangle rounded corner.
-    path.rArcTo(triangle_radius, triangle_radius, 0, SkPath::kSmall_ArcSize,
-                SkPathDirection::kCW, 0, kTriangleRoundDistance);
+    path.rArcTo({triangle_radius, triangle_radius}, 0,
+                SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+                {0, kTriangleRoundDistance});
     path.rLineTo(-kTriangleHeight + dx, kTriangleLength / 2 - dy);
     // After midway point to bottom right corner radius.
     path.rLineTo(0, limit - action_offset);
   }
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -corner_radius, corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {-corner_radius, corner_radius});
   // Bottom right after corner radius to bottom left corner radius.
   path.rLineTo(-short_length, 0);
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -corner_radius, -corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {-corner_radius, -corner_radius});
   if (draw_triangle_on_left) {
     // bottom left after corner radius to midway point.
     path.rLineTo(0, -limit + action_offset);
     // Triangle shape.
     path.rLineTo(-kTriangleHeight + dx, -kTriangleLength / 2 + dy);
     // Draw triangle rounded corner.
-    path.rArcTo(triangle_radius, triangle_radius, 0, SkPath::kSmall_ArcSize,
-                SkPathDirection::kCW, 0, -kTriangleRoundDistance);
+    path.rArcTo({triangle_radius, triangle_radius}, 0,
+                SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+                {0, -kTriangleRoundDistance});
     path.rLineTo(kTriangleHeight - dx, -kTriangleLength / 2 + dy);
     // After midway point to bottom right corner radius.
     path.rLineTo(0, -limit - action_offset);
@@ -133,11 +137,11 @@ SkPath BackgroundPath(SkScalar height,
     // Bottom left after corner radius to top left corner radius.
     path.rLineTo(0, -short_height);
   }
-  path.rArcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, corner_radius, -corner_radius);
+  path.rArcTo({corner_radius, corner_radius}, 0, SkPathBuilder::kSmall_ArcSize,
+              SkPathDirection::kCW, {corner_radius, -corner_radius});
   // Path finish.
   path.close();
-  return path;
+  return path.detach();
 }
 
 gfx::ShadowValues GetShadowValues() {

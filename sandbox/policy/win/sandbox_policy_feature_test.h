@@ -23,6 +23,7 @@ class SandboxFeatureTest
   enum TestParameter { kEnableRendererAppContainer, kEnableKtmMitigation };
 
   SandboxFeatureTest();
+  ~SandboxFeatureTest();
 
   virtual IntegrityLevel GetExpectedIntegrityLevel();
   virtual TokenLevel GetExpectedLockdownTokenLevel();

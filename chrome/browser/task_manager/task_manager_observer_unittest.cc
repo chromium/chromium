@@ -52,8 +52,7 @@ TEST_F(TaskManagerObserverTest, Basic) {
   int64_t flags1 = RefreshType::REFRESH_TYPE_CPU |
                    RefreshType::REFRESH_TYPE_WEBCACHE_STATS |
                    RefreshType::REFRESH_TYPE_HANDLES;
-  int64_t flags2 = RefreshType::REFRESH_TYPE_MEMORY_FOOTPRINT |
-                   RefreshType::REFRESH_TYPE_NACL;
+  int64_t flags2 = RefreshType::REFRESH_TYPE_MEMORY_FOOTPRINT;
 
   TestObserver observer1(refresh_time1, flags1);
   TestObserver observer2(refresh_time2, flags2);
@@ -78,8 +77,7 @@ TEST_F(TaskManagerObserverTest, TaskManagerResponseToObservers) {
   int64_t flags1 = RefreshType::REFRESH_TYPE_CPU |
                    RefreshType::REFRESH_TYPE_WEBCACHE_STATS |
                    RefreshType::REFRESH_TYPE_HANDLES;
-  int64_t flags2 = RefreshType::REFRESH_TYPE_MEMORY_FOOTPRINT |
-                   RefreshType::REFRESH_TYPE_NACL;
+  int64_t flags2 = RefreshType::REFRESH_TYPE_MEMORY_FOOTPRINT;
   int64_t flags3 = RefreshType::REFRESH_TYPE_MEMORY_FOOTPRINT |
                    RefreshType::REFRESH_TYPE_CPU;
   int64_t flags4 = RefreshType::REFRESH_TYPE_GPU_MEMORY;

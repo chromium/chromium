@@ -21,6 +21,9 @@
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/ipc/service/command_buffer_stub.h"
+#include "media/base/encoder_status.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
@@ -54,9 +57,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  Client* client,
-                  std::unique_ptr<MediaLog> media_log) override;
+  EncoderStatus Initialize(const Config& config,
+                           Client* client,
+                           std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
@@ -70,6 +73,12 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
+  void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) override;
+  void SetSharedImageInterfaceForTesting(
+      scoped_refptr<gpu::SharedImageInterface> sii) override;
 
  private:
   // Auto-destroy reference for BitstreamBuffer, for tracking buffers passed to
@@ -258,6 +267,12 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Recycle output buffer of image processor with |output_buffer_index|.
   void ReuseImageProcessorOutputBuffer(size_t output_buffer_index);
 
+  // Chrome specific metadata about the encoded frame.
+  BitstreamBufferMetadata GetMetadata(const uint8_t* data,
+                                      size_t data_size_bytes,
+                                      bool key_frame,
+                                      base::TimeDelta timestamp);
+
   // Copy encoded stream data from an output V4L2 buffer at |bitstream_data|
   // of size |bitstream_size| into a BitstreamBuffer referenced by |buffer_ref|,
   // injecting stream headers if required. Return the size in bytes of the
@@ -268,6 +283,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   // Initializes input_memory_type_.
   bool InitInputMemoryType(const Config& config);
+
+  void OnSharedImageInterfaceAvailable(
+      scoped_refptr<gpu::SharedImageInterface> sii);
 
   // Having too many encoder instances at once may cause us to run out of FDs
   // and subsequently crash (crbug.com/1289465). To avoid that, we limit the
@@ -366,9 +384,25 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // The number of frames that are being processed by |image_processor_|.
   size_t num_frames_in_image_processor_ = 0;
 
+  // Indicates whether V4L2VideoEncodeAccelerator runs in L1T2 or not.
+  bool h264_l1t2_enabled_ = false;
+
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
   SEQUENCE_CHECKER(encoder_sequence_checker_);
 
+  // These data members are saved so that initialization can take place in the
+  // correct order on each thread. The order is as follows.
+  // 1. SetCommandBufferHelperCB - stores gpu callback and task runner
+  // 2. Initialize - stores 'config_' and posts gpu callback task
+  // 3. OnSharedImageInterfaceAvailable - ssi is ready from gpu post
+  //    'InitializeTask' to encoder
+  //
+  Config config_;
+  // These are set on 'SetCommandBufferHelperCB' but the post task waits for
+  // 'Initialize' to be called.
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+      get_command_buffer_helper_cb_;
   // The device polling thread handles notifications of V4L2 device changes.
   // TODO(sheu): replace this thread with an TYPE_IO encoder_thread_.
   base::Thread device_poll_thread_;
@@ -378,6 +412,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // |child_task_runner_|.
   base::WeakPtr<Client> client_;
   std::unique_ptr<base::WeakPtrFactory<Client>> client_ptr_factory_;
+  scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // WeakPtr<> pointing to |this| for use in posting tasks to
   // |encoder_task_runner_|.

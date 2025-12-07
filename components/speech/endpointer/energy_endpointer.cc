@@ -6,16 +6,12 @@
 // based of, see
 // https://wiki.corp.google.com/twiki/bin/view/Main/ChromeGoogleCodeXRef
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/speech/endpointer/energy_endpointer.h"
 
 #include <math.h>
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 
 namespace {
@@ -25,8 +21,8 @@ float RMS(const int16_t* samples, int num_samples) {
   int64_t ssq_int64 = 0;
   int64_t sum_int64 = 0;
   for (int i = 0; i < num_samples; ++i) {
-    sum_int64 += samples[i];
-    ssq_int64 += samples[i] * samples[i];
+    sum_int64 += UNSAFE_TODO(samples[i]);
+    ssq_int64 += UNSAFE_TODO(samples[i]) * UNSAFE_TODO(samples[i]);
   }
   // now convert to floats.
   double sum = static_cast<double>(sum_int64);
@@ -156,7 +152,7 @@ EnergyEndpointer::EnergyEndpointer()
       end_lag_(0),
       user_input_start_time_us_(0) {}
 
-EnergyEndpointer::~EnergyEndpointer() {}
+EnergyEndpointer::~EnergyEndpointer() = default;
 
 int EnergyEndpointer::TimeToFrame(float time) const {
   return static_cast<int32_t>(0.5 + (time / params_.frame_period()));

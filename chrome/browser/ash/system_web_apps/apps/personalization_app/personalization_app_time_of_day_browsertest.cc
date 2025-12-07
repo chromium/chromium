@@ -23,10 +23,8 @@
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,12 +38,14 @@
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
@@ -113,7 +113,7 @@ class PersonalizationAppTimeOfDayBrowserTest
  public:
   PersonalizationAppTimeOfDayBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+        personalization_app::GetTimeOfDayFeatures(), {});
     base::Time start_time = StartTime();
     clock_.SetNow(start_time);
     tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));
@@ -167,7 +167,9 @@ class PersonalizationAppTimeOfDayBrowserTest
         geolocation_url_loader_factory =
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
     geolocation_url_loader_factory->set_position(GetGeoposition());
-    SimpleGeolocationProvider::GetInstance()
+    SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
+        ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory);
     // Request immediate geoposition to fetch and broadcast the fixed
     // geoposition set by TestSharedUrlLoaderFactory above.
@@ -237,8 +239,8 @@ class PersonalizationAppTimeOfDayBrowserTest
   std::vector<base::Time> GenerateTimesToTest() {
     const auto& timestamps = GetParam().timestamps_to_test;
     std::vector<base::Time> times;
-    base::ranges::transform(timestamps, std::back_inserter(times),
-                            TimeFromString);
+    std::ranges::transform(timestamps, std::back_inserter(times),
+                           TimeFromString);
     return times;
   }
 
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
     WallpaperChangedWaiter waiter(loop.QuitClosure());
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"personalizationTestApi.selectTimeOfDayWallpaper();",
-        base::DoNothing());
+        base::DoNothing(), content::ISOLATED_WORLD_ID_GLOBAL);
     loop.Run();
   }
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FAVICON_SOURCE_H_
 #define CHROME_BROWSER_UI_WEBUI_FAVICON_SOURCE_H_
 
-#include <map>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +13,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/url_data_source.h"
-#include "ui/gfx/favicon_size.h"
 
 class Profile;
 
@@ -25,11 +23,16 @@ class RefCountedMemory;
 namespace chrome {
 enum class FaviconUrlFormat;
 struct ParsedFaviconPath;
-}
+}  // namespace chrome
 
 namespace ui {
 class NativeTheme;
 }
+
+enum class DefaultFaviconBehavior {
+  kUseGlobeIcon = 0,
+  kUseEmptyIcon = 1,
+};
 
 // FaviconSource is the gateway between network-level chrome:
 // requests for favicons and the history backend that serves these.
@@ -38,8 +41,13 @@ class NativeTheme;
 // favicon_url_parser.h.
 class FaviconSource : public content::URLDataSource {
  public:
-  // |type| is the type of icon this FaviconSource will provide.
-  explicit FaviconSource(Profile* profile, chrome::FaviconUrlFormat format);
+  // By default, favicons are served via a chrome trusted URL (chrome://). If
+  // |serve_untrusted| is set to true, favicons will be served via
+  // chrome-untrusted://. Note that chrome-untrusted:// only supports the
+  // favicon2 URL format and does not support the legacy URL format.
+  explicit FaviconSource(Profile* profile,
+                         chrome::FaviconUrlFormat format,
+                         bool serve_untrusted = false);
 
   FaviconSource(const FaviconSource&) = delete;
   FaviconSource& operator=(const FaviconSource&) = delete;
@@ -61,8 +69,6 @@ class FaviconSource : public content::URLDataSource {
 
  protected:
   // Exposed for testing.
-  virtual ui::NativeTheme* GetNativeTheme(
-      const content::WebContents::Getter& wc_getter);
   virtual base::RefCountedMemory* LoadIconBytes(float scale_factor,
                                                 int resource_id);
 
@@ -70,12 +76,10 @@ class FaviconSource : public content::URLDataSource {
 
  private:
   // Defines the allowed pixel sizes for requested favicons.
-  enum IconSize {
-    SIZE_16,
-    SIZE_32,
-    SIZE_64,
-    NUM_SIZES
-  };
+  enum IconSize { SIZE_16, SIZE_32, SIZE_64, NUM_SIZES };
+
+  ui::NativeTheme* GetNativeTheme(
+      const content::WebContents::Getter& wc_getter);
 
   // Called when favicon data is available from the history backend. If
   // |bitmap_result| is valid, returns it to caller using |callback|. Otherwise
@@ -87,9 +91,11 @@ class FaviconSource : public content::URLDataSource {
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
   // Sends the 16x16 DIP 1x default favicon.
-  void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
-                           const content::WebContents::Getter& wc_getter,
-                           bool force_light_mode = false);
+  void SendDefaultResponse(
+      content::URLDataSource::GotDataCallback callback,
+      const content::WebContents::Getter& wc_getter,
+      bool force_light_mode = false,
+      DefaultFaviconBehavior behavior = DefaultFaviconBehavior::kUseGlobeIcon);
 
   // Sends back default favicon or fallback monogram.
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
@@ -100,11 +106,14 @@ class FaviconSource : public content::URLDataSource {
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
                            int size_in_dip,
                            float scale_factor,
-                           bool dark_mode);
+                           bool dark_mode,
+                           DefaultFaviconBehavior behavior);
 
   chrome::FaviconUrlFormat url_format_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  bool serve_untrusted_;
 
   base::WeakPtrFactory<FaviconSource> weak_ptr_factory_{this};
 };

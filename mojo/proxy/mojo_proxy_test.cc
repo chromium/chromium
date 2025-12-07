@@ -4,30 +4,32 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -51,7 +53,7 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy::test {
@@ -72,8 +74,9 @@ base::FilePath GetProxyExecutablePath() {
 std::string ReadWholeFile(base::File& file) {
   auto size = base::checked_cast<size_t>(file.GetLength());
   std::vector<char> contents(size);
-  int64_t num_bytes_read = file.Read(0, contents.data(), size);
-  CHECK_EQ(size, base::checked_cast<size_t>(num_bytes_read));
+  std::optional<size_t> num_bytes_read =
+      file.Read(0, base::as_writable_byte_span(contents));
+  CHECK_EQ(size, num_bytes_read.value());
   return std::string{contents.begin(), contents.end()};
 }
 
@@ -81,7 +84,7 @@ std::string ReadWholeFile(base::File& file) {
 base::ReadOnlySharedMemoryRegion CreateMemory(std::string_view contents) {
   auto region = base::WritableSharedMemoryRegion::Create(contents.size());
   auto mapping = region.Map();
-  memcpy(mapping.memory(), contents.data(), contents.size());
+  UNSAFE_TODO(memcpy(mapping.memory(), contents.data(), contents.size()));
   return base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
 }
 
@@ -118,7 +121,7 @@ class TempFileFactory {
     uint32_t flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
                      base::File::FLAG_WRITE;
     base::File new_file{temp_dir_.GetPath().AppendASCII(name), flags};
-    new_file.Write(0, contents.data(), contents.size());
+    new_file.Write(0, base::as_byte_span(contents));
     return new_file;
   }
 
@@ -153,7 +156,7 @@ class TestServiceImpl : public mojom::TestService {
 
   void FlipFile(base::File file, FlipFileCallback callback) override {
     std::string contents = ReadWholeFile(file);
-    base::ranges::reverse(contents);
+    std::ranges::reverse(contents);
     std::move(callback).Run(
         file_factory_.CreateFileWithContents("flipped", contents));
   }
@@ -161,7 +164,7 @@ class TestServiceImpl : public mojom::TestService {
   void FlipMemory(base::ReadOnlySharedMemoryRegion region,
                   FlipMemoryCallback callback) override {
     std::string contents = ReadMemory(std::move(region));
-    base::ranges::reverse(contents);
+    std::ranges::reverse(contents);
     std::move(callback).Run(CreateMemory(contents));
   }
 
@@ -216,8 +219,8 @@ class LegacyAppLauncher {
   mojom::TestService* AddInitialRemote() {
     CHECK(!app_process_.IsValid());
     CHECK(!exit_code_);
-    CHECK(absl::holds_alternative<size_t>(attachment_info_));
-    const uint64_t index = absl::get<size_t>(attachment_info_)++;
+    CHECK(std::holds_alternative<size_t>(attachment_info_));
+    const uint64_t index = std::get<size_t>(attachment_info_)++;
     auto remote = std::make_unique<mojo::Remote<mojom::TestService>>(
         mojo::PendingRemote<mojom::TestService>{
             invitation_.AttachMessagePipe(index), 0});
@@ -227,8 +230,8 @@ class LegacyAppLauncher {
   mojom::TestService* CreateNamedRemote(std::string_view name) {
     CHECK(!app_process_.IsValid());
     CHECK(!exit_code_);
-    CHECK(absl::holds_alternative<size_t>(attachment_info_));
-    CHECK_EQ(absl::get<size_t>(attachment_info_), 0u);
+    CHECK(std::holds_alternative<size_t>(attachment_info_));
+    CHECK_EQ(std::get<size_t>(attachment_info_), 0u);
     attachment_info_.emplace<std::string>(name);
     auto remote = std::make_unique<mojo::Remote<mojom::TestService>>(
         mojo::PendingRemote<mojom::TestService>{
@@ -282,16 +285,16 @@ class LegacyAppLauncher {
     proxy_command_line.AppendSwitchASCII(
         switches::kHostIpczTransportFd,
         base::NumberToString(kHostIpczTransportFdValue));
-    absl::visit(base::Overloaded{[&](size_t num_attachments) {
-                                   proxy_command_line.AppendSwitchASCII(
-                                       switches::kNumAttachments,
-                                       base::NumberToString(num_attachments));
-                                 },
-                                 [&](const std::string& name) {
-                                   proxy_command_line.AppendSwitchASCII(
-                                       switches::kAttachmentName, name);
-                                 }},
-                attachment_info_);
+    std::visit(absl::Overload{[&](size_t num_attachments) {
+                                proxy_command_line.AppendSwitchASCII(
+                                    switches::kNumAttachments,
+                                    base::NumberToString(num_attachments));
+                              },
+                              [&](const std::string& name) {
+                                proxy_command_line.AppendSwitchASCII(
+                                    switches::kAttachmentName, name);
+                              }},
+               attachment_info_);
     if (!mojo::core::GetIpczNodeOptions().is_broker) {
       // When connecting though the proxy from a non-broker subprocess, we need
       // to inform the proxy that it must inherit our broker.
@@ -328,7 +331,7 @@ class LegacyAppLauncher {
 
  private:
   mojo::OutgoingInvitation invitation_;
-  absl::variant<size_t, std::string> attachment_info_{0};
+  std::variant<size_t, std::string> attachment_info_{0u};
   base::Process app_process_;
   base::Process proxy_process_;
   std::optional<int> exit_code_;

@@ -86,42 +86,44 @@ instead of "initial value".
 |   <option>
 |     "initial value"
 |     <shadow:root>
+|       <span>
+|         aria-hidden="true"
+|         pseudo="-internal-option-label-container"
+|         shadow:pseudoId="-internal-option-label-container"
+|         "initial value"
 |       <slot>
+|         pseudo="-internal-option-slot"
+|         shadow:pseudoId="-internal-option-slot"
 |   <option>
 |     "inserted value"
 |     <shadow:root>
+|       <span>
+|         aria-hidden="true"
+|         pseudo="-internal-option-label-container"
+|         shadow:pseudoId="-internal-option-label-container"
+|         "inserted value"
 |       <slot>
+|         pseudo="-internal-option-slot"
+|         shadow:pseudoId="-internal-option-slot"
 |   <shadow:root>
 |     <div>
 |       aria-hidden="true"
 |       "initial value"
 |     <slot>
-|       id="select-options"
-|     <slot>
 |       id="select-button"
-|       <button>
-|         pseudo="select-fallback-button"
-|         type="popover"
-|         shadow:pseudoId="select-fallback-button"
-|         <span>
-|           pseudo="select-fallback-button-text"
-|           shadow:pseudoId="select-fallback-button-text"
-|           "initial value"
-|         <div>
-|           pseudo="select-fallback-button-icon"
-|           shadow:pseudoId="select-fallback-button-icon"
-|           <svg svg>
-|             fill="none"
-|             viewBox="0 0 20 16"
-|             <svg path>
-|               d="M4 6 L10 12 L 16 6"
-|     <slot>
-|       id="select-datalist"
-|       <datalist>
-|         pseudo="select-fallback-datalist"
-|         shadow:pseudoId="select-fallback-datalist"
-|         <slot>
-|           id="select-datalist-options"
+|     <div>
+|       popover="auto"
+|       pseudo="picker(select)"
+|       shadow:pseudoId="picker(select)"
+|       <slot>
+|         id="select-popover-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): suggested value"
 | "input.selectionStart: 0"

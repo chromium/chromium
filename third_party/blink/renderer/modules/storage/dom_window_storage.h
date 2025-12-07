@@ -8,7 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -17,10 +17,8 @@ class LocalDOMWindow;
 class StorageArea;
 
 class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
-                               public Supplement<LocalDOMWindow> {
+                               public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   static DOMWindowStorage& From(LocalDOMWindow&);
   static StorageArea* sessionStorage(LocalDOMWindow&, ExceptionState&);
   static StorageArea* localStorage(LocalDOMWindow&, ExceptionState&);
@@ -29,8 +27,6 @@ class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
 
   StorageArea* sessionStorage(ExceptionState&) const;
   StorageArea* localStorage(ExceptionState&) const;
-  StorageArea* OptionalSessionStorage() const { return session_storage_.Get(); }
-  StorageArea* OptionalLocalStorage() const { return local_storage_.Get(); }
 
   // These Init* methods allow initializing the StorageArea as an optimization
   // to avoid it being requested from the browser process, which can be slow.
@@ -53,6 +49,7 @@ class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
       const;
 
+  Member<LocalDOMWindow> local_dom_window_;
   mutable Member<StorageArea> session_storage_;
   mutable Member<StorageArea> local_storage_;
 };

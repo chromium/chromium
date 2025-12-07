@@ -112,29 +112,35 @@ class HookManager {
   void RegisterHook() {
     AutoLock auto_lock(lock_);
     ++init_count_;
-    if (disabled_)
+    if (disabled_) {
       return;
-    if (init_count_ == 1)
+    }
+    if (init_count_ == 1) {
       WriteHook();
+    }
   }
 
   void UnregisterHook() {
     AutoLock auto_lock(lock_);
     DCHECK_NE(0U, init_count_);
     --init_count_;
-    if (disabled_)
+    if (disabled_) {
       return;
-    if (init_count_ == 0)
+    }
+    if (init_count_ == 0) {
       RevertHook();
+    }
   }
 
   void DisableCOMChecksForProcess() {
     AutoLock auto_lock(lock_);
-    if (disabled_)
+    if (disabled_) {
       return;
+    }
     disabled_ = true;
-    if (init_count_ > 0)
+    if (init_count_ > 0) {
       RevertHook();
+    }
   }
 
  private:
@@ -159,8 +165,9 @@ class HookManager {
     DCHECK(!ole32_library_);
     ole32_library_ = ::LoadLibrary(L"ole32.dll");
 
-    if (!ole32_library_)
+    if (!ole32_library_) {
       return;
+    }
 
     // See banner comment above why this subtracts 5 bytes.
     co_create_instance_padded_address_ =
@@ -182,20 +189,17 @@ class HookManager {
     HotpatchPlaceholderFormat format = GetHotpatchPlaceholderFormat(
         reinterpret_cast<const void*>(co_create_instance_padded_address_));
     if (format == HotpatchPlaceholderFormat::UNKNOWN) {
-      NOTREACHED_IN_MIGRATION()
-          << "Unrecognized hotpatch function format: "
-          << FirstSevenBytesToString(co_create_instance_padded_address_);
-      return;
+      NOTREACHED() << "Unrecognized hotpatch function format: "
+                   << FirstSevenBytesToString(
+                          co_create_instance_padded_address_);
     } else if (format == HotpatchPlaceholderFormat::EXTERNALLY_PATCHED) {
-      hotpatch_placeholder_format_ = format;
-      NOTREACHED_IN_MIGRATION()
-          << "CoCreateInstance appears to be previously patched. <"
-          << FirstSevenBytesToString(co_create_instance_padded_address_)
-          << "> Attempted to write <"
-          << FirstSevenBytesToString(
-                 reinterpret_cast<uint32_t>(&structured_hotpatch_))
-          << ">";
-      return;
+      NOTREACHED() << "CoCreateInstance appears to be previously patched. <"
+                   << FirstSevenBytesToString(
+                          co_create_instance_padded_address_)
+                   << "> Attempted to write <"
+                   << FirstSevenBytesToString(
+                          reinterpret_cast<uint32_t>(&structured_hotpatch_))
+                   << ">";
     } else if (format == HotpatchPlaceholderFormat::APPHELP_SHIM) {
       // The apphelp shim placeholder does not allocate enough bytes for a
       // trampolined jump. In this case, we skip patching.
@@ -208,8 +212,9 @@ class HookManager {
         reinterpret_cast<void*>(co_create_instance_padded_address_),
         reinterpret_cast<void*>(&structured_hotpatch_),
         sizeof(structured_hotpatch_));
-    if (patch_result == NO_ERROR)
+    if (patch_result == NO_ERROR) {
       hotpatch_placeholder_format_ = format;
+    }
   }
 
   void RevertHook() {
@@ -218,16 +223,18 @@ class HookManager {
     DWORD revert_result = NO_ERROR;
     switch (hotpatch_placeholder_format_) {
       case HotpatchPlaceholderFormat::INT3:
-        if (WasHotpatchChanged())
+        if (WasHotpatchChanged()) {
           return;
+        }
         revert_result = internal::ModifyCode(
             reinterpret_cast<void*>(co_create_instance_padded_address_),
             reinterpret_cast<const void*>(&g_hotpatch_placeholder_int3),
             sizeof(g_hotpatch_placeholder_int3));
         break;
       case HotpatchPlaceholderFormat::NOP:
-        if (WasHotpatchChanged())
+        if (WasHotpatchChanged()) {
           return;
+        }
         revert_result = internal::ModifyCode(
             reinterpret_cast<void*>(co_create_instance_padded_address_),
             reinterpret_cast<const void*>(&g_hotpatch_placeholder_nop),
@@ -291,19 +298,17 @@ class HookManager {
       return false;
     }
 
-    NOTREACHED_IN_MIGRATION()
-        << "CoCreateInstance patch overwritten. Expected: <"
-        << FirstSevenBytesToString(co_create_instance_padded_address_)
-        << ">, Actual: <"
-        << FirstSevenBytesToString(
-               reinterpret_cast<uint32_t>(&structured_hotpatch_))
-        << ">";
-    return true;
+    NOTREACHED() << "CoCreateInstance patch overwritten. Expected: <"
+                 << FirstSevenBytesToString(co_create_instance_padded_address_)
+                 << ">, Actual: <"
+                 << FirstSevenBytesToString(
+                        reinterpret_cast<uint32_t>(&structured_hotpatch_))
+                 << ">";
   }
 
   // Indirect call to original_co_create_instance_body_function_ triggers CFI
   // so this function must have CFI disabled.
-  static DISABLE_CFI_ICALL HRESULT __stdcall DCheckedCoCreateInstance(
+  DISABLE_CFI_ICALL static HRESULT __stdcall DCheckedCoCreateInstance(
       const CLSID& rclsid,
       IUnknown* pUnkOuter,
       DWORD dwClsContext,
@@ -345,8 +350,8 @@ class HookManager {
   HotpatchPlaceholderFormat hotpatch_placeholder_format_ =
       HotpatchPlaceholderFormat::UNKNOWN;
   StructuredHotpatch structured_hotpatch_;
-  static decltype(
-      ::CoCreateInstance)* original_co_create_instance_body_function_;
+  static decltype(::CoCreateInstance)*
+      original_co_create_instance_body_function_;
 };
 
 decltype(::CoCreateInstance)*

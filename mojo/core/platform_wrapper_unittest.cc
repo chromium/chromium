@@ -9,12 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/platform_handle.h"
@@ -115,9 +116,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
 
   // Expect to read the same message from the file.
   std::vector<char> data(message.size());
-  EXPECT_EQ(file.ReadAtCurrentPos(data.data(), static_cast<int>(data.size())),
-            static_cast<int>(data.size()));
-  EXPECT_TRUE(base::ranges::equal(message, data));
+  EXPECT_TRUE(file.ReadAtCurrentPosAndCheck(base::as_writable_byte_span(data)));
+  EXPECT_TRUE(std::ranges::equal(message, data));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
@@ -239,7 +239,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
                            MOJO_READ_MESSAGE_FLAG_NONE));
   EXPECT_EQ(sizeof(MojoSharedBufferGuid), guid_bytes.size());
   auto* expected_guid =
-      reinterpret_cast<MojoSharedBufferGuid*>(guid_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<MojoSharedBufferGuid*>(guid_bytes.data()));
   EXPECT_EQ(expected_guid->high, mojo_guid.high);
   EXPECT_EQ(expected_guid->low, mojo_guid.low);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));

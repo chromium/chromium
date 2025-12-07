@@ -4,23 +4,24 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /** Records tab switcher related metrics for the Hub. */
+@NullMarked
 public class HubTabSwitcherMetricsRecorder {
     private final Callback<Boolean> mOnHubVisiblityChanged = this::onHubVisiblilityChanged;
     private final Callback<TabModel> mOnTabModelChanged = this::onTabModelChanged;
@@ -32,9 +33,9 @@ public class HubTabSwitcherMetricsRecorder {
                 }
             };
 
-    private final @NonNull TabModelSelector mTabModelSelector;
-    private final @NonNull ObservableSupplier<Boolean> mHubVisibilitySupplier;
-    private final @NonNull ObservableSupplier<Pane> mFocusedPaneSupplier;
+    private final TabModelSelector mTabModelSelector;
+    private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final ObservableSupplier<Pane> mFocusedPaneSupplier;
 
     private @Nullable TabModel mTabModelWhenShown;
     private @Nullable Integer mPaneIdWhenShown;
@@ -47,9 +48,9 @@ public class HubTabSwitcherMetricsRecorder {
      * @param focusedPaneSupplier The supplier of the focused {@link Pane}.
      */
     public HubTabSwitcherMetricsRecorder(
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ObservableSupplier<Boolean> hubVisibilitySupplier,
-            @NonNull ObservableSupplier<Pane> focusedPaneSupplier) {
+            TabModelSelector tabModelSelector,
+            ObservableSupplier<Boolean> hubVisibilitySupplier,
+            ObservableSupplier<Pane> focusedPaneSupplier) {
         mTabModelSelector = tabModelSelector;
 
         mHubVisibilitySupplier = hubVisibilitySupplier;
@@ -77,17 +78,18 @@ public class HubTabSwitcherMetricsRecorder {
         if (mPaneIdWhenShown.intValue() == currentPane.getPaneId()) {
             if (tab.getId() == mTabIdWhenShown) {
                 // TODO(crbug.com/40132120): Differentiate list.
-                if (!TabUiFeatureUtilities.shouldUseListMode()) {
-                    RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
-                }
+                RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
 
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
                 RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);
             } else {
-                TabModelFilter filter =
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-                int previousIndex = filter.indexOf(previousTab);
-                int currentIndex = filter.indexOf(tab);
+                TabGroupModelFilter filter =
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getCurrentTabGroupModelFilter();
+                assumeNonNull(filter);
+                int previousIndex = filter.representativeIndexOf(previousTab);
+                int currentIndex = filter.representativeIndexOf(tab);
                 if (previousIndex != currentIndex) {
                     if (!filter.isTabInTabGroup(tab)) {
                         RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
@@ -109,8 +111,11 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabSwitched");
             }
 
-            TabModelFilter filter =
-                    mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+            TabGroupModelFilter filter =
+                    mTabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter();
+            assumeNonNull(filter);
             if (!filter.isTabInTabGroup(tab)) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }
@@ -150,7 +155,7 @@ public class HubTabSwitcherMetricsRecorder {
         mIndexInModelWhenSwitched = TabModel.INVALID_TAB_INDEX;
     }
 
-    private void onTabModelChanged(TabModel tabModel) {
+    private void onTabModelChanged(@Nullable TabModel tabModel) {
         if (tabModel == null) return;
 
         if (mTabModelWhenShown == tabModel) {

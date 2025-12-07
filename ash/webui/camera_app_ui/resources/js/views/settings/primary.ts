@@ -108,7 +108,7 @@ export class PrimarySettings extends BaseSettings {
       this.videoResolutionSettings,
     ];
 
-    cameraManager.registerCameraUI({
+    cameraManager.registerCameraUi({
       onCameraUnavailable: () => {
         for (const setting of cameraSettings) {
           setting.disabled = true;

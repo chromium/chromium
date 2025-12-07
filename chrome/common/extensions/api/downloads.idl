@@ -101,35 +101,36 @@ namespace downloads {
     DOMString? body;
   };
 
-  // <dl><dt>file</dt>
-  //     <dd>The download's filename is suspicious.</dd>
-  //     <dt>url</dt>
-  //     <dd>The download's URL is known to be malicious.</dd>
-  //     <dt>content</dt>
-  //     <dd>The downloaded file is known to be malicious.</dd>
-  //     <dt>uncommon</dt>
-  //     <dd>The download's URL is not commonly downloaded and could be
-  //     dangerous.</dd>
-  //     <dt>host</dt>
-  //     <dd>The download came from a host known to distribute malicious
-  //     binaries and is likely dangerous.</dd>
-  //     <dt>unwanted</dt>
-  //     <dd>The download is potentially unwanted or unsafe. E.g. it could make
-  //     changes to browser or computer settings.</dd>
-  //     <dt>safe</dt>
-  //     <dd>The download presents no known danger to the user's computer.</dd>
-  //     <dt>accepted</dt>
-  //     <dd>The user has accepted the dangerous download.</dd>
-  // </dl>
   enum DangerType {
+    // The download's filename is suspicious.
     file,
+
+    // The download's URL is known to be malicious.
     url,
+
+    // The downloaded file is known to be malicious.
     content,
+
+
+    // The download's URL is not commonly downloaded and could be dangerous.
     uncommon,
+
+    // The download came from a host known to distribute malicious binaries and
+    // is likely dangerous.
     host,
+
+    // The download is potentially unwanted or unsafe. E.g. it could make
+    // changes to browser or computer settings.
     unwanted,
+
+
+    // The download presents no known danger to the user's computer.
     safe,
+
+    // The user has accepted the dangerous download.
     accepted,
+
+    // Enterprise-related values.
     allowlistedByPolicy,
     asyncScanning,
     asyncLocalPasswordScanning,
@@ -143,7 +144,12 @@ namespace downloads {
     promptForScanning,
     promptForLocalPasswordScanning,
     accountCompromise,
-    blockedScanFailed
+    blockedScanFailed,
+
+    // For use by the Secure Enterprise Browser extension. When required, Chrome
+    // will block the download to disc and download the file directly to Google
+    // Drive.
+    forceSaveToGdrive
   };
 
   // <dl><dt>in_progress</dt>

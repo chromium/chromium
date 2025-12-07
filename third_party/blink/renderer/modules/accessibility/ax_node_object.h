@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_NODE_OBJECT_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -56,13 +55,12 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ~AXNodeObject() override;
 
   static std::optional<String> GetCSSAltText(const Element*);
+  static std::optional<String> GetCSSContentText(const Element*);
 
   void Trace(Visitor*) const override;
 
   // Call to force-load inline text boxes for the current subtree.
   void LoadInlineTextBoxes() override;
-  // Should inline text boxes be considered when adding chldren to this node.
-  bool ShouldLoadInlineTextBoxes() const override;
 
   ScrollableArea* GetScrollableAreaIfScrollable() const final;
 
@@ -78,17 +76,18 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // The ARIA role, not taking the native role into account.
   ax::mojom::blink::Role aria_role_ = ax::mojom::blink::Role::kUnknown;
 
+  bool HasCustomElementTreeProcessing() const;
+  bool ShouldIncludeCustomElement() const;
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
       IgnoredReasons* = nullptr) const;
-  bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool ComputeIsIgnored(IgnoredReasons*) const override;
+  bool ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() override;
   ax::mojom::blink::Role DetermineRoleValue() override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   void AlterSliderOrSpinButtonValue(bool increase);
   AXObject* ActiveDescendant() const override;
   String AriaAccessibilityDescription() const;
   String AutoComplete() const override;
-  void AccessibilityChildrenFromAOMProperty(AOMRelationListProperty,
-                                            AXObject::AXObjectVector&) const;
 
   // For table objects.
   bool IsDataTable() const override;
@@ -133,7 +132,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsLoaded() const override;
   bool IsMultiSelectable() const override;
   bool IsNativeImage() const final;
-  bool IsOffScreen() const override;
   bool IsProgressIndicator() const override;
   bool IsSlider() const override;
   bool IsSpinButton() const override;
@@ -223,8 +221,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // ARIA attributes.
   ax::mojom::blink::Role RawAriaRole() const final;
-  void AriaDescribedbyElements(AXObjectVector&) const override;
-  void AriaOwnsElements(AXObjectVector&) const override;
   ax::mojom::blink::HasPopup HasPopup() const override;
   ax::mojom::blink::IsPopup IsPopup() const override;
   bool IsEditableRoot() const override;
@@ -236,7 +232,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // AX name calculation.
   String GetName(ax::mojom::blink::NameFrom&,
-                 AXObjectVector* name_objects) const override;
+                 AXObjectVector* name_objects,
+                 NameSources* name_sources) const override;
   String TextAlternative(bool recursive,
                          const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
@@ -282,6 +279,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Add a child that must be included in tree, enforced via DCHECK.
   void AddChildAndCheckIncluded(AXObject*, bool is_from_aria_owns = false);
   // If node is non-null, GetOrCreate an AXObject for it and add as a child.
+  // This includes expanding the given node if the structure needs to be
+  // unpacked. For example, scrollers and their nested scroll-marker-groups
+  // become siblings.
   void AddNodeChild(Node*);
   // Set is_from_aria_owns to true if the child is being insert because it was
   // pointed to from aria-owns.
@@ -295,12 +295,12 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Element* ActionElement() const override;
   Element* AnchorElement() const override;
   Document* GetDocument() const override;
-  Node* GetNode() const final;
-  LayoutObject* GetLayoutObject() const final;
+  // This function is manually inlined because it is very hot and LTO/PGO
+  // doesn't manage to inline it. To call it, you will need to include
+  // ax_object-inl.h.
+  ALWAYS_INLINE Node* GetNode() const;
 
-  // DOM and layout tree access.
-  bool HasAttribute(const QualifiedName&) const override;
-  const AtomicString& GetAttribute(const QualifiedName&) const override;
+  LayoutObject* GetLayoutObject() const final;
 
   // Modify or take an action on an object.
   bool OnNativeBlurAction() final;
@@ -317,12 +317,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // exists. Error messages from ARIA will always override native error
   // messages.
   AXObjectVector ErrorMessage() const override;
-  // Gets a list of nodes specified by `aria-errormessage` that form an error
-  // message for this node, if any exist.
-  AXObjectVector ErrorMessageFromAria() const override;
   // Gets a list of nodes created from HTML validation that form an error
   // message for this node, if any exist.
   AXObjectVector ErrorMessageFromHTML() const override;
+  // Gets a list of nodes specified by `aria-errormessage`, `aria-controls`,
+  // etc. that form an error message for this node, if any exist.
+  AXObjectVector RelationVectorFromAria(
+      const QualifiedName& attr_name) const override;
 
   // Position in set and Size of set
   int PosInSet() const override;
@@ -356,9 +357,22 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                          Vector<int>& word_ends) const override;
 
  private:
-  bool HasInternalsAttribute(Element&, const QualifiedName&) const;
-  const AtomicString& GetInternalsAttribute(Element&,
-                                            const QualifiedName&) const;
+  // Store values that could change over the lifetime of the AXObject, but
+  // are repeatedly looked up during serialization. While the tree is frozen,
+  // the value remains constant. The generation ID is incremented each time
+  // the tree is frozen. Anytime a value is recomputed that is stored in this
+  // cache, it compares the current vs cached generation, updating the cached
+  // value and generation if needed.
+  struct GenerationalCache : public GarbageCollected<GenerationalCache> {
+    virtual void Trace(Visitor*) const;
+    uint64_t generation = 0;
+    Member<AXObject> next_on_line;
+    Member<AXObject> previous_on_line;
+  };
+  mutable Member<GenerationalCache> generational_cache_;
+  void MaybeResetCache() const;
+  AXObject* SetNextOnLine(AXObject* next_on_line) const;
+  AXObject* SetPreviousOnLine(AXObject* previous_on_line) const;
 
   // This function returns the text of a tooltip associated with the element.
   // Although there are two ways of doing this, it is unlikely that an author
@@ -395,11 +409,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool UseNameFromSelectedOption() const;
   virtual bool IsTabItemSelected() const;
 
+  void AddNodeChildImpl(Node*);
   void AddChildrenImpl();
   void AddNodeChildren();
   void AddPseudoElementChildrenFromLayoutTree();
   bool CanAddLayoutChild(LayoutObject& child);
   void AddInlineTextBoxChildren();
+  void AddInlineTextBoxChildrenWithBlockFlowIterator();
   void AddImageMapChildren();
   void AddPopupChildren();
   bool HasValidHTMLTableStructureAndLayout() const;
@@ -408,6 +424,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();
   void AddOwnedChildren();
+  void AddScrollMarkerGroupChildren();
 #if DCHECK_IS_ON()
   void CheckValidChild(AXObject* child);
 #endif
@@ -431,12 +448,18 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       bool first) const;
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
-#if defined(REDUCE_AX_INLINE_TEXTBOXES)
-  bool always_load_inline_text_boxes_ = false;
-#endif
 
   Member<Node> node_;
   Member<LayoutObject> layout_object_;
+
+  friend class AXObject;  // For GetNode().
+};
+
+template <>
+struct DowncastTraits<AXNodeObject> {
+  static bool AllowFrom(const AXObject& object) {
+    return object.IsNodeObject();
+  }
 };
 
 }  // namespace blink

@@ -19,7 +19,7 @@ namespace execution_context {
 
 // An adapter that can be used to associate NodeAttachedData with all node
 // types that represent execution contexts. Under the hood this wraps
-// ExternalNodeAttachedDataImpl for each of the underlying node types.
+// NodeAttachedDataImpl for each of the underlying node types.
 // It is expected that UserDataType have a constructor with the signature
 // "UserDataType(const ExecutionContext*)".
 template <typename UserDataType>
@@ -55,7 +55,7 @@ class ExecutionContextAttachedData {
  private:
   // A small adapter for UserDataType that makes it compatible with
   // underlying node types.
-  class UserDataWrapper : public ExternalNodeAttachedDataImpl<UserDataWrapper>,
+  class UserDataWrapper : public NodeAttachedDataImpl<UserDataWrapper>,
                           public UserDataType {
    public:
     explicit UserDataWrapper(const FrameNode* frame_node)
@@ -75,21 +75,21 @@ class ExecutionContextAttachedData {
     using ReturnType = UserDataType*;
     template <typename NodeType>
     static UserDataType* Do(const NodeType* node) {
-      return ExternalNodeAttachedDataImpl<UserDataWrapper>::GetOrCreate(node);
+      return NodeAttachedDataImpl<UserDataWrapper>::GetOrCreate(node);
     }
   };
   struct GetFunctor {
     using ReturnType = UserDataType*;
     template <typename NodeType>
     static UserDataType* Do(const NodeType* node) {
-      return ExternalNodeAttachedDataImpl<UserDataWrapper>::Get(node);
+      return NodeAttachedDataImpl<UserDataWrapper>::Get(node);
     }
   };
   struct DestroyFunctor {
     using ReturnType = bool;
     template <typename NodeType>
     static bool Do(const NodeType* node) {
-      return ExternalNodeAttachedDataImpl<UserDataWrapper>::Destroy(node);
+      return NodeAttachedDataImpl<UserDataWrapper>::Destroy(node);
     }
   };
 

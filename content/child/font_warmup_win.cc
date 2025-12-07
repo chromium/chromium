@@ -6,17 +6,18 @@
 
 #include <dwrite.h>
 #include <stdint.h>
+
 #include <map>
 #include <string>
 #include <utility>
 
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -25,14 +26,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "ppapi/shared_impl/proxy_lock.h"
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 namespace content {
 
@@ -67,8 +63,9 @@ SC_HANDLE WINAPI OpenServiceWPatch(SC_HANDLE sc_manager,
 
 BOOL WINAPI CloseServiceHandlePatch(SC_HANDLE service_handle) {
   if (service_handle != reinterpret_cast<SC_HANDLE>(kFakeServiceHandle) &&
-      service_handle != reinterpret_cast<SC_HANDLE>(kFakeSCMHandle))
-    CHECK(false);
+      service_handle != reinterpret_cast<SC_HANDLE>(kFakeSCMHandle)) {
+    NOTREACHED();
+  }
   ::SetLastError(0);
   return TRUE;
 }
@@ -76,8 +73,9 @@ BOOL WINAPI CloseServiceHandlePatch(SC_HANDLE service_handle) {
 BOOL WINAPI StartServiceWPatch(SC_HANDLE service,
                                DWORD args,
                                const wchar_t** arg_vectors) {
-  if (service != reinterpret_cast<SC_HANDLE>(kFakeServiceHandle))
-    CHECK(false);
+  if (service != reinterpret_cast<SC_HANDLE>(kFakeServiceHandle)) {
+    NOTREACHED();
+  }
   ::SetLastError(ERROR_ACCESS_DENIED);
   return FALSE;
 }
@@ -189,8 +187,10 @@ class FakeGdiObjectFactory {
   base::Lock objects_lock_;
 };
 
-base::LazyInstance<FakeGdiObjectFactory>::Leaky g_fake_gdi_object_factory =
-    LAZY_INSTANCE_INITIALIZER;
+FakeGdiObjectFactory& GetFakeGdiObjectFactory() {
+  static base::NoDestructor<FakeGdiObjectFactory> fake_gdi_object_factory;
+  return *fake_gdi_object_factory;
+}
 
 // Magic values for the fake GDI objects.
 const uint32_t kFakeDCMagic = 'fkdc';
@@ -207,16 +207,13 @@ sk_sp<SkTypeface> GetTypefaceFromLOGFONT(const LOGFONTW* log_font) {
                                        : SkFontStyle::kUpright_Slant);
 
   std::string family_name = base::WideToUTF8(log_font->lfFaceName);
-#if BUILDFLAG(ENABLE_PPAPI)
-  ppapi::ProxyAutoLock lock;  // Needed for DirectWrite font proxy.
-#endif                        // BUILDFLAG(ENABLE_PPAPI)
   return sk_sp<SkTypeface>(
       g_warmup_fontmgr->matchFamilyStyle(family_name.c_str(), style));
 }
 
 HDC WINAPI CreateCompatibleDCPatch(HDC dc_handle) {
   scoped_refptr<FakeGdiObject> ret =
-      g_fake_gdi_object_factory.Get().Create(kFakeDCMagic);
+      GetFakeGdiObjectFactory().Create(kFakeDCMagic);
   return static_cast<HDC>(ret->handle());
 }
 
@@ -229,19 +226,18 @@ HFONT WINAPI CreateFontIndirectWPatch(const LOGFONTW* log_font) {
     return nullptr;
 
   scoped_refptr<FakeGdiObject> ret =
-      g_fake_gdi_object_factory.Get().Create(kFakeFontMagic);
+      GetFakeGdiObjectFactory().Create(kFakeFontMagic);
   ret->set_typeface(std::move(typeface));
 
   return static_cast<HFONT>(ret->handle());
 }
 
 BOOL WINAPI DeleteDCPatch(HDC dc_handle) {
-  return g_fake_gdi_object_factory.Get().DeleteObject(dc_handle, kFakeDCMagic);
+  return GetFakeGdiObjectFactory().DeleteObject(dc_handle, kFakeDCMagic);
 }
 
 BOOL WINAPI DeleteObjectPatch(HGDIOBJ object_handle) {
-  return g_fake_gdi_object_factory.Get().DeleteObject(object_handle,
-                                                      kFakeFontMagic);
+  return GetFakeGdiObjectFactory().DeleteObject(object_handle, kFakeFontMagic);
 }
 
 int WINAPI EnumFontFamiliesExWPatch(HDC dc_handle,
@@ -250,7 +246,7 @@ int WINAPI EnumFontFamiliesExWPatch(HDC dc_handle,
                                     LPARAM callback_param,
                                     DWORD flags) {
   scoped_refptr<FakeGdiObject> dc_obj =
-      g_fake_gdi_object_factory.Get().Validate(dc_handle, kFakeDCMagic);
+      GetFakeGdiObjectFactory().Validate(dc_handle, kFakeDCMagic);
   if (!dc_obj)
     return 1;
 
@@ -279,7 +275,7 @@ DWORD WINAPI GetFontDataPatch(HDC dc_handle,
                               LPVOID buffer,
                               DWORD buffer_length) {
   scoped_refptr<FakeGdiObject> dc_obj =
-      g_fake_gdi_object_factory.Get().Validate(dc_handle, kFakeDCMagic);
+      GetFakeGdiObjectFactory().Validate(dc_handle, kFakeDCMagic);
   if (!dc_obj)
     return GDI_ERROR;
 
@@ -306,12 +302,12 @@ DWORD WINAPI GetFontDataPatch(HDC dc_handle,
 
 HGDIOBJ WINAPI SelectObjectPatch(HDC dc_handle, HGDIOBJ object_handle) {
   scoped_refptr<FakeGdiObject> dc_obj =
-      g_fake_gdi_object_factory.Get().Validate(dc_handle, kFakeDCMagic);
+      GetFakeGdiObjectFactory().Validate(dc_handle, kFakeDCMagic);
   if (!dc_obj)
     return nullptr;
 
   scoped_refptr<FakeGdiObject> font_obj =
-      g_fake_gdi_object_factory.Get().Validate(object_handle, kFakeFontMagic);
+      GetFakeGdiObjectFactory().Validate(object_handle, kFakeFontMagic);
   if (!font_obj)
     return nullptr;
 
@@ -319,7 +315,7 @@ HGDIOBJ WINAPI SelectObjectPatch(HDC dc_handle, HGDIOBJ object_handle) {
   scoped_refptr<FakeGdiObject> new_font_obj;
   sk_sp<SkTypeface> old_typeface = dc_obj->typeface();
   if (old_typeface) {
-    new_font_obj = g_fake_gdi_object_factory.Get().Create(kFakeFontMagic);
+    new_font_obj = GetFakeGdiObjectFactory().Create(kFakeFontMagic);
     new_font_obj->set_typeface(std::move(old_typeface));
   }
   dc_obj->set_typeface(font_obj->typeface());
@@ -429,11 +425,11 @@ GdiFontPatchData* PatchGdiFontEnumeration(const base::FilePath& path) {
 }
 
 size_t GetEmulatedGdiHandleCountForTesting() {
-  return g_fake_gdi_object_factory.Get().GetObjectCount();
+  return GetFakeGdiObjectFactory().GetObjectCount();
 }
 
 void ResetEmulatedGdiHandlesForTesting() {
-  g_fake_gdi_object_factory.Get().ResetObjectHandles();
+  GetFakeGdiObjectFactory().ResetObjectHandles();
 }
 
 void SetPreSandboxWarmupFontMgrForTesting(sk_sp<SkFontMgr> fontmgr) {

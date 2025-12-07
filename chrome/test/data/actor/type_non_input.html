@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Test non-input element type action</title>
+    <style>
+      div {
+        position: absolute;
+        left: 50vw;
+        width: 50px;
+        height: 50px;
+      }
+      #focusableDiv{
+        top: 25vh;
+        background-color: limegreen;
+      }
+
+      #unfocusableDiv{
+        top: 75vh;
+        background-color: firebrick;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- tabindex="0" makes the div focusable -->
+    <div id="focusableDiv" tabindex="0"></div>
+    <div id="unfocusableDiv"></div>
+    <script>
+      let input_event_log = [];
+      let log_handler = e => {
+          input_event_log.push(`${e.type}[${e.key}]`);
+      }
+      const targets = document.querySelectorAll("div");
+      for (let target of targets) {
+        target.addEventListener('keydown', log_handler);
+        target.addEventListener('keypress', log_handler);
+        target.addEventListener('keyup', log_handler);
+      }
+    </script>
+  </body>
+</html>

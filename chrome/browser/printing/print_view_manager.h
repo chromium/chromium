@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -47,7 +48,7 @@ class PrintViewManager : public PrintViewManagerBase,
   // selection or the entire frame is being printed.
   bool PrintPreviewNow(content::RenderFrameHost* rfh, bool has_selection);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Initiate print preview of the current document and provide the renderer
   // a printing::mojom::PrintRenderer to perform the actual rendering of
   // the print document.
@@ -104,7 +105,7 @@ class PrintViewManager : public PrintViewManagerBase,
   // false if print preview is impossible at the moment.
   bool PrintPreview(
       content::RenderFrameHost* rfh,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
       bool has_selection);

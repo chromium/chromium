@@ -30,6 +30,8 @@ class HttpRequestHeaders;
 
 namespace safe_browsing {
 
+struct V4ProtocolConfig;
+
 // The size of the hash prefix, in bytes. It should be between 4 to 32 (full
 // hash).
 using PrefixSize = size_t;
@@ -51,36 +53,6 @@ using ListUpdateRequest = FetchThreatListUpdatesRequest::ListUpdateRequest;
 using ListUpdateResponse = FetchThreatListUpdatesResponse::ListUpdateResponse;
 
 void SetSbV4UrlPrefixForTesting(const char* url_prefix);
-
-// Config passed to the constructor of a V4 protocol manager.
-struct V4ProtocolConfig {
-  // The safe browsing client name sent in each request.
-  std::string client_name;
-
-  // Disable auto-updates using a command line switch.
-  bool disable_auto_update;
-
-  // The Google API key.
-  std::string key_param;
-
-  // Current product version sent in each request.
-  std::string version;
-
-  V4ProtocolConfig(const std::string& client_name,
-                   bool disable_auto_update,
-                   const std::string& key_param,
-                   const std::string& version);
-  V4ProtocolConfig(const V4ProtocolConfig& other);
-  ~V4ProtocolConfig();
-
- private:
-  V4ProtocolConfig() = delete;
-};
-
-// Get the v4 protocol config struct with a given client name, and ability to
-// enable/disable database auto update.
-V4ProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
-                                     bool disable_auto_update);
 
 // Returns the URL to use for sending threat reports and other Safe Browsing
 // hits back to Safe Browsing service.
@@ -125,8 +97,9 @@ enum class SBThreatType {
   // The download URL is malware.
   SB_THREAT_TYPE_URL_BINARY_MALWARE = 5,
 
-  // Url detected by the client-side phishing model.  Note that unlike the
-  // above values, this does not correspond to a downloaded list.
+  // Url detected by the client-side phishing model or the on-device model. Note
+  // that unlike the above values, this does not correspond to a downloaded
+  // list.
   SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING = 6,
 
   // The Chrome extension or app (given by its ID) is malware.
@@ -226,8 +199,8 @@ class ListIdentifier {
                  ThreatType threat_type);
   explicit ListIdentifier(const ListUpdateResponse&);
 
-  bool operator==(const ListIdentifier& other) const;
-  bool operator!=(const ListIdentifier& other) const;
+  friend bool operator==(const ListIdentifier&,
+                         const ListIdentifier&) = default;
   size_t hash() const;
 
   PlatformType platform_type() const { return platform_type_; }
@@ -276,8 +249,8 @@ struct StoreAndHashPrefix {
   StoreAndHashPrefix(ListIdentifier list_id, const HashPrefixStr& hash_prefix);
   ~StoreAndHashPrefix();
 
-  bool operator==(const StoreAndHashPrefix& other) const;
-  bool operator!=(const StoreAndHashPrefix& other) const;
+  friend bool operator==(const StoreAndHashPrefix&,
+                         const StoreAndHashPrefix&) = default;
   size_t hash() const;
 
  private:
@@ -408,7 +381,7 @@ class V4ProtocolManagerUtil {
       std::vector<std::string>* list_client_states);
 
  private:
-  V4ProtocolManagerUtil() {}
+  V4ProtocolManagerUtil() = default;
 
   FRIEND_TEST_ALL_PREFIXES(V4ProtocolManagerUtilTest, TestBackOffLogic);
   FRIEND_TEST_ALL_PREFIXES(V4ProtocolManagerUtilTest,

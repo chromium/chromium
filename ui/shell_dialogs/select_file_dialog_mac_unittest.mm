@@ -11,13 +11,13 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#include <algorithm>
+
 #import "base/apple/foundation_util.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 #define EXPECT_EQ_BOOL(a, b) \
@@ -88,7 +89,8 @@ class SelectFileDialogMacTest : public PlatformTest,
 
     dialog_->SelectFile(args.type, args.title, args.default_path,
                         args.file_types, args.file_type_index,
-                        args.default_extension, parent_window, nullptr);
+                        args.default_extension,
+                        gfx::NativeWindow(parent_window), nullptr);
 
     // At this point, the Mojo IPC to show the dialog is queued up. Spin the
     // message loop to get the Mojo IPC to happen.

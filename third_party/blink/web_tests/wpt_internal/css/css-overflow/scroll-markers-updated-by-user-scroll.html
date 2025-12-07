@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test: scroll tracking for ::scroll-marker </title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/css/css-transitions/support/helper.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
+<style>
+  #scroller {
+    overflow: scroll;
+    scroll-marker-group: before;
+    height: 100px;
+  }
+
+  #scroller::scroll-marker-group {
+    border: 3px solid black;
+    display: flex;
+    width: 100px;
+    height: 20px;
+  }
+
+  #scroller div {
+    width: 100px;
+    height: 100px;
+  }
+
+  #scroller div::scroll-marker {
+    content: '';
+    background-color: red;
+    display: inline-flex;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  #scroller div::scroll-marker:target-current {
+    background-color: green;
+  }
+</style>
+<div id='scroller'>
+  <div id="marker1" class="marker"></div>
+  <div id="marker2" class="marker"></div>
+  <div id="marker3" class="marker"></div>
+</div>
+<script>
+  let scroll_marker_originating_elements =
+    scroller.querySelectorAll(".marker");
+  const GREEN = "rgb(0, 128, 0)";
+  const RED = "rgb(255, 0, 0)";
+
+  let selected_scroll_markers = [];
+
+  function isSelectedScrollMarker(element) {
+    const pseudoStyle = getComputedStyle(element, "::scroll-marker");
+    const pseudoBackgroundColor =
+      pseudoStyle.getPropertyValue('background-color');
+    return pseudoBackgroundColor === GREEN;
+  }
+
+  function trackSelectedScrollMarkers() {
+    let num_selected = 0;
+    let selected;
+    for (const marker of scroll_marker_originating_elements) {
+      if (isSelectedScrollMarker(marker)) {
+        num_selected++;
+        selected = marker;
+      }
+    }
+    assert_equals(num_selected, 1, "exactly 1 scroll-marker is selected");
+
+    let list_size = selected_scroll_markers.length;
+    if (list_size === 0) {
+      selected_scroll_markers.push(selected);
+      list_size = 1;
+    }
+
+    if (selected !== selected_scroll_markers[list_size - 1]) {
+      selected_scroll_markers.push(selected);
+    }
+
+    requestAnimationFrame(trackSelectedScrollMarkers);
+  }
+
+  function scrollPromise(targetOffset) {
+    return new Promise((resolve) => {
+      // For browsers that don't support the scrollend event, just wait till
+      // we reach the target offset.
+      if (document.scrollingElement.onscrollend === undefined) {
+        function scrollListener() {
+          if (Math.abs(scroller.scrollTop - targetOffset) <= 1) {
+            scroller.removeEventListener(scrollListener);
+            resolve();
+          }
+        }
+        scroller.addEventListener("scroll", scrollListener);
+      } else {
+        function scrollEndListener() {
+          scroller.removeEventListener("scrollend", scrollEndListener);
+          resolve();
+        }
+        scroller.addEventListener("scrollend", scrollEndListener);
+      }
+    });
+  };
+
+  async function doVertical3pointDrag(point1, point2, point3) {
+    return new test_driver.Actions()
+      .addPointer('TestPointer', 'touch')
+      .pointerMove(0, 0, { origin: scroller }) // 0, 0 is center of element.
+      .pointerDown()
+      .addTick()
+      .pointerMove(0, point1, { origin: scroller }) //  Drag up to move down.
+      .addTick()
+      .pause(200) //  Prevent inertial scroll.
+      .pointerMove(0, point2, { origin: scroller })
+      .addTick()
+      .pause(200) //  Prevent inertial scroll.
+      .pointerMove(0, point3, { origin: scroller })
+      .addTick()
+      .pause(200) //  Prevent inertial scroll.
+      .pointerUp()
+      .send();
+  }
+
+  promise_test(async (t) => {
+    await waitForCompositorCommit();
+
+    let expected = [];
+    function assert_tracked_scroll_markers() {
+      assert_equals(selected_scroll_markers.length, 3,
+        "all the scroll-markers should have been selected");
+      for (let i = 0; i < 3; i++) {
+        assert_equals(selected_scroll_markers[i], expected[i],
+          "the selected scroll-marker was updated as the scroller was " +
+          "scrolled from top to bottom");
+      }
+    }
+
+    // Kick off tracking the selected scroll markers in
+    // |selected_scroll_markers|.
+    trackSelectedScrollMarkers();
+
+    // Scroll from top to bottom, expect scroll-markers 1, 2, and 3 (in
+    // that order) to have been selected.
+    const total_delta = scroller.scrollHeight - scroller.clientHeight;
+    const partial_delta = Math.round(total_delta / 3);
+    let scroll_promise = scrollPromise(total_delta);
+    await doVertical3pointDrag(-partial_delta,
+      -2 * partial_delta,
+      -3 * partial_delta);
+    await scroll_promise;
+    expected = [marker1, marker2, marker3];
+    assert_tracked_scroll_markers();
+
+    // Reset |selected_scroll_markers|.
+    selected_scroll_markers = [];
+
+    // Scroll from bottom to top, expect scroll-markers 3, 2, and 1 (in
+    // that order) to have been selected.
+    scroll_promise = scrollPromise(0);
+    await doVertical3pointDrag(partial_delta,
+      2 * partial_delta,
+      3 * partial_delta);
+    await scroll_promise;
+    expected = [marker3, marker2, marker1];
+    assert_tracked_scroll_markers();
+  }, "The selected ::scroll-marker is updated using the current scroll " +
+  "position for a user scroll");
+</script>

@@ -5,19 +5,36 @@
 package org.chromium.chrome.browser.logo;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.View.MeasureSpec;
 
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
+
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Coordinator used to fetch and load logo image for Start surface and NTP.*/
+/** Coordinator used to fetch and load logo image for Start surface and NTP. */
+@NullMarked
 public class LogoCoordinator {
-    private final LogoMediator mMediator;
     private final PropertyModel mLogoModel;
+    private LogoMediator mMediator;
     private LogoView mLogoView;
+    private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
 
     // The default google logo that is shared across all NTPs.
     static final CachedTintedBitmap sDefaultGoogleLogo =
@@ -34,47 +51,99 @@ public class LogoCoordinator {
      * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoView The view that shows the search provider logo.
-     * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
-     * @param isLogoPolishFlagEnabled True if logo polish flag is enabled.
      */
     public LogoCoordinator(
             Context context,
             Callback<LoadUrlParams> logoClickedCallback,
             LogoView logoView,
-            boolean shouldFetchDoodle,
             Callback<Logo> onLogoAvailableCallback,
-            VisibilityObserver visibilityObserver,
-            boolean isLogoPolishFlagEnabled) {
+            @Nullable VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/40881870): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, isLogoPolishFlagEnabled);
+
+        Drawable defaultGoogleLogoDrawable = null;
+        if (ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) {
+            defaultGoogleLogoDrawable =
+                    ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
+            if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+                NtpCustomizationUtils.setTintForDefaultGoogleLogo(
+                        context, defaultGoogleLogoDrawable);
+            }
+        }
+
         mMediator =
                 new LogoMediator(
                         context,
                         logoClickedCallback,
                         mLogoModel,
-                        shouldFetchDoodle,
                         onLogoAvailableCallback,
                         visibilityObserver,
-                        sDefaultGoogleLogo);
+                        sDefaultGoogleLogo,
+                        defaultGoogleLogoDrawable);
+
+        // Should be called after mMediator is created.
+        maybeInitHomepageStateListener(context);
+    }
+
+    private void maybeInitHomepageStateListener(Context context) {
+        if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()
+                || !ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+            return;
+        }
+
+        mHomepageStateListener =
+                new NtpCustomizationConfigManager.HomepageStateListener() {
+                    @Override
+                    public void onBackgroundImageChanged(
+                            Bitmap originalBitmap,
+                            @Nullable BackgroundImageInfo backgroundImageInfo,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        maybeUpdateTintForDefaultGoogleLogo(
+                                context, newType, /* primaryColor= */ null);
+                    }
+
+                    @Override
+                    public void onBackgroundColorChanged(
+                            @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                            int backgroundColor,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        @ColorInt
+                        Integer primaryColor =
+                                ntpThemeColorInfo == null
+                                        ? null
+                                        : NtpThemeColorUtils.getPrimaryColorFromColorInfo(
+                                                context, ntpThemeColorInfo);
+                        maybeUpdateTintForDefaultGoogleLogo(context, newType, primaryColor);
+                    }
+                };
+        // Skips being notified from NtpCustomizationConfigManager since the drawable has been
+        // tinted if necessary when the initial logo view is shown.
+        NtpCustomizationConfigManager.getInstance()
+                .addListener(mHomepageStateListener, context, /* skipNotify= */ true);
     }
 
     /**
-     * @see LogoMediator#initWithNative
+     * @see LogoMediator#initWithNative(Profile)
      */
-    public void initWithNative() {
+    public void initWithNative(Profile profile) {
         // TODO(crbug.com/40881870): Would be more elegant if we were given an
         //  onNativeInitializedObserver and didn't rely on the good will of outside callers to
         //  invoke this.
-        mMediator.initWithNative();
+        mMediator.initWithNative(profile);
     }
 
-    /** @see LogoMediator#loadSearchProviderLogoWithAnimation */
+    /**
+     * @see LogoMediator#loadSearchProviderLogoWithAnimation
+     */
     public void loadSearchProviderLogoWithAnimation() {
         mMediator.loadSearchProviderLogoWithAnimation();
     }
@@ -89,10 +158,15 @@ public class LogoCoordinator {
     /**
      * @see LogoMediator#destroy
      */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
         mLogoView.destroy();
         mLogoView = null;
+        if (mHomepageStateListener != null) {
+            NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
+            mHomepageStateListener = null;
+        }
     }
 
     /**
@@ -138,23 +212,41 @@ public class LogoCoordinator {
     }
 
     /**
-     * Updates the logo size to use when logo polish is enabled.
+     * Updates the logo size to use when logo is a google doodle.
      *
-     * @param logoSizeForLogoPolish The logo size to use when logo polish is enabled.
+     * @param doodleSize The logo size to use when logo is a google doodle.
      */
-    public void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, logoSizeForLogoPolish);
+    public void setDoodleSize(int doodleSize) {
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, doodleSize);
     }
 
     /**
-     * @see LogoMediator#isLogoVisible
+     * Updates the default Google logo with a tint color if it is shown.
+     *
+     * @param context The context to get themed color.
+     * @param backgroundType The NTP's background theme type.
+     * @param primaryColor The primary color is selected.
      */
-    public boolean isLogoVisible() {
-        return mMediator.isLogoVisible();
+    private void maybeUpdateTintForDefaultGoogleLogo(
+            Context context,
+            @NtpBackgroundImageType int backgroundType,
+            @Nullable @ColorInt Integer primaryColor) {
+        // If the default Google logo isn't shown, returns here.
+        if (!mMediator.isDefaultGoogleLogoShown()) return;
+
+        Drawable defaultGoogleLogoDrawable =
+                ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
+        Drawable tintedDrawable =
+                NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
+                        context, defaultGoogleLogoDrawable, backgroundType, primaryColor);
+        mMediator.updateDefaultGoogleLogo(tintedDrawable);
     }
 
-    /** @see LogoMediator#onTemplateURLServiceChanged */
+    /**
+     * @see LogoMediator#onTemplateURLServiceChanged
+     */
     public void onTemplateURLServiceChangedForTesting() {
+        mMediator.resetSearchEngineKeywordForTesting(); // IN-TEST
         mMediator.onTemplateURLServiceChanged();
     }
 
@@ -169,5 +261,9 @@ public class LogoCoordinator {
 
     public void setOnLogoClickUrlForTesting(String onLogoClickUrl) {
         mMediator.setOnLogoClickUrlForTesting(onLogoClickUrl);
+    }
+
+    void setMediatorForTesting(LogoMediator mediator) {
+        mMediator = mediator;
     }
 }

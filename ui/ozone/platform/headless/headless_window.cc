@@ -6,9 +6,10 @@
 
 #include <string>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/ozone/platform/headless/headless_window_manager.h"
@@ -91,16 +92,6 @@ void HeadlessWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {
     RestoreWindowBounds();
     UpdateWindowState(PlatformWindowState::kNormal);
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Setting kImmersive when it's fullscreen on headless window since the
-  // immersive fullscreen is default for fullscreen on Lacros.
-  delegate_->OnFullscreenTypeChanged(
-      window_state_ == PlatformWindowState::kFullScreen
-          ? PlatformFullscreenType::kImmersive
-          : PlatformFullscreenType::kNone,
-      fullscreen ? PlatformFullscreenType::kImmersive
-                 : PlatformFullscreenType::kNone);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void HeadlessWindow::Maximize() {
@@ -125,6 +116,10 @@ void HeadlessWindow::Minimize() {
       RestoreWindowBounds();
     }
     UpdateWindowState(PlatformWindowState::kMinimized);
+    // Minimized windows are inactive. Aura activates minimized windows
+    // when restoring. If we don't deactivate the window here, the subsequent
+    // activation will be optimized away, causing https://crbug.com/358998544.
+    Deactivate();
   }
 }
 
@@ -180,10 +175,11 @@ void HeadlessWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
 void HeadlessWindow::SizeConstraintsChanged() {}
 
 void HeadlessWindow::ZoomWindowBounds() {
-  gfx::Rect new_bounds = bounds_;
-  new_bounds.set_width(bounds_.width() * 2);
-  new_bounds.set_height(bounds_.height() * 2);
-  UpdateBounds(new_bounds);
+  gfx::Rect zoomed_bounds =
+      display::Screen::Get()->GetDisplayMatching(bounds_).work_area();
+  // Convert the work area bounds from DIP to device pixels before setting
+  // the platform window's geometry.
+  UpdateBounds(delegate_->ConvertRectToPixels(zoomed_bounds));
 }
 
 void HeadlessWindow::RestoreWindowBounds() {

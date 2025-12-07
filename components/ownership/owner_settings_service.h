@@ -11,7 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -38,7 +38,7 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when signed policy was stored, or when an error happed during
     // policy storage..
@@ -52,6 +52,8 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
     // OwnerSettingsService.
     virtual void OnTentativeChangesInPolicy(
         const enterprise_management::PolicyData& policy_data) {}
+
+    virtual void OnServiceShutdown() {}
   };
 
   typedef base::OnceCallback<void(
@@ -129,6 +131,9 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   // Run callbacks in test setting. Mocks ownership when full device setup is
   // not needed.
   void RunPendingIsOwnerCallbacksForTesting(bool is_owner);
+
+  // KeyedService:
+  void Shutdown() override;
 
  protected:
   void ReloadKeypair();

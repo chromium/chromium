@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -20,7 +19,6 @@ import android.os.Looper;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -28,6 +26,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
@@ -47,6 +47,7 @@ import org.chromium.webapk.lib.runtime_library.IWebApkApi;
  * Provides APIs for browsers to communicate with WebAPK services. Each WebAPK has its own "WebAPK
  * service".
  */
+@NullMarked
 public class WebApkServiceClient {
     // Callback which catches RemoteExceptions thrown due to IWebApkApi failure.
     @FunctionalInterface
@@ -54,7 +55,7 @@ public class WebApkServiceClient {
         void useApi(IWebApkApi api) throws RemoteException;
 
         @Override
-        default void onConnected(IBinder api) {
+        default void onConnected(@Nullable IBinder api) {
             if (api == null) {
                 return;
             }
@@ -78,10 +79,10 @@ public class WebApkServiceClient {
     // A bundle key for a {@link PermissionStatus}.
     private static final String KEY_PERMISSION_STATUS = "permissionStatus";
 
-    private static WebApkServiceClient sInstance;
+    private static @Nullable WebApkServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK services. */
-    private WebApkServiceConnectionManager mConnectionManager;
+    private final WebApkServiceConnectionManager mConnectionManager;
 
     public static WebApkServiceClient getInstance() {
         if (sInstance == null) {
@@ -98,15 +99,16 @@ public class WebApkServiceClient {
 
     /**
      * Gets the notification permission setting for the package.
+     *
      * @param permissionCallback To be called on a background thread with a permission setting, one
-     *         of {@link ContentSettingValues}.
+     *     of {@link ContentSetting}.
      */
     public void checkNotificationPermission(
             String webApkPackage, Callback<Integer> permissionCallback) {
         connect(
                 webApkPackage,
                 api -> {
-                    @ContentSettingValues
+                    @ContentSetting
                     int settingValue = toContentSettingValue(api.checkNotificationPermission());
                     permissionCallback.onResult(settingValue);
                 });
@@ -116,7 +118,7 @@ public class WebApkServiceClient {
         return new Handler(
                 Looper.getMainLooper(),
                 message -> {
-                    @ContentSettingValues
+                    @ContentSetting
                     int settingValue =
                             toContentSettingValue(
                                     message.getData()
@@ -128,8 +130,9 @@ public class WebApkServiceClient {
 
     /**
      * Requests the notification permission for the package.
+     *
      * @param permissionCallback To be called on a background thread with a permission setting, one
-     *         of {@link ContentSettingValues}.
+     *     of {@link ContentSetting}.
      */
     public void requestNotificationPermission(
             String webApkPackage, Callback<Integer> permissionCallback) {
@@ -148,7 +151,7 @@ public class WebApkServiceClient {
                             api.requestNotificationPermission(
                                     channelName, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
                     if (permissionRequestIntent == null) {
-                        permissionCallback.onResult(ContentSettingValues.ASK);
+                        permissionCallback.onResult(ContentSetting.ASK);
                         return;
                     }
 
@@ -157,7 +160,7 @@ public class WebApkServiceClient {
                     extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                     try {
                         ActivityOptions options = ActivityOptions.makeBasic();
-                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
+                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(
                                 options);
                         permissionRequestIntent.send(
                                 ContextUtils.getApplicationContext(),
@@ -190,45 +193,41 @@ public class WebApkServiceClient {
                     fallbackToWebApkIconIfNecessary(
                             notificationBuilder, webApkPackage, api.getSmallIconId());
 
-                    @ContentSettingValues
+                    @ContentSetting
                     int settingValue = toContentSettingValue(api.checkNotificationPermission());
 
                     // See http://crbug.com/1340854. Temporary fallback in case the shell has not
                     // yet been updated to support checkNotificationPermission(). Delete this
                     // after shell v154 has been fully launched.
-                    if (settingValue != ContentSettingValues.ALLOW
+                    if (settingValue != ContentSetting.ALLOW
                             && api.notificationPermissionEnabled()) {
                         Log.d(TAG, "Fallback to notificationPermissionEnabled().");
-                        settingValue = ContentSettingValues.ALLOW;
+                        settingValue = ContentSetting.ALLOW;
                     }
 
                     WebApkUmaRecorder.recordNotificationPermissionStatus(settingValue);
 
-                    if (settingValue != ContentSettingValues.ALLOW) {
+                    if (settingValue != ContentSetting.ALLOW) {
                         Origin origin = Origin.create(originString);
                         if (origin == null) {
                             Log.w(TAG, "String (%s) could not be parsed as Origin.", originString);
                             return;
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            InstalledWebappPermissionManager.get()
-                                    .updatePermission(
-                                            origin,
-                                            webApkPackage,
-                                            ContentSettingsType.NOTIFICATIONS,
-                                            settingValue);
+                            InstalledWebappPermissionManager.updatePermission(
+                                    origin,
+                                    webApkPackage,
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    settingValue);
                         }
                         return;
                     }
 
-                    String channelName = null;
-                    if (webApkTargetsAtLeastO(webApkPackage)) {
-                        notificationBuilder.setChannelId(
-                                ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-                        channelName =
-                                ContextUtils.getApplicationContext()
-                                        .getString(R.string.webapk_notification_channel_name);
-                    }
+                    notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                    String channelName =
+                            ContextUtils.getApplicationContext()
+                                    .getString(R.string.webapk_notification_channel_name);
+
                     NotificationMetadata metadata =
                             new NotificationMetadata(
                                     NotificationUmaTracker.SystemNotificationType.WEBAPK,
@@ -262,6 +261,7 @@ public class WebApkServiceClient {
 
     /** Finishes and removes the WebAPK's task. */
     public void finishAndRemoveTaskSdk23(final Activity activity, WebApkExtras webApkExtras) {
+        assert webApkExtras.webApkPackageName != null;
         connect(
                 webApkExtras.webApkPackageName,
                 api -> {
@@ -287,20 +287,6 @@ public class WebApkServiceClient {
         sInstance.mConnectionManager.disconnectAll(ContextUtils.getApplicationContext());
     }
 
-    /** Returns whether the WebAPK targets SDK 26+. */
-    private boolean webApkTargetsAtLeastO(String webApkPackage) {
-        try {
-            ApplicationInfo info =
-                    ContextUtils.getApplicationContext()
-                            .getPackageManager()
-                            .getApplicationInfo(webApkPackage, 0);
-            return info.targetSdkVersion >= Build.VERSION_CODES.O;
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-
-        return false;
-    }
-
     /** Decodes into a Bitmap an Image resource stored in an APK with the given package name. */
     private static @Nullable Bitmap decodeImageResourceFromPackage(
             String packageName, int resourceId) {
@@ -318,16 +304,16 @@ public class WebApkServiceClient {
                 ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
     }
 
-    private static @ContentSettingValues int toContentSettingValue(
+    private static @ContentSetting int toContentSettingValue(
             @PermissionStatus int permissionStatus) {
         if (permissionStatus == PermissionStatus.ALLOW) {
-            return ContentSettingValues.ALLOW;
+            return ContentSetting.ALLOW;
         }
 
         if (permissionStatus == PermissionStatus.ASK) {
-            return ContentSettingValues.ASK;
+            return ContentSetting.ASK;
         }
 
-        return ContentSettingValues.BLOCK;
+        return ContentSetting.BLOCK;
     }
 }

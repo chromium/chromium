@@ -8,9 +8,9 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -24,7 +24,7 @@ FORWARD_DECLARE_TEST(SizeTest, ClampsToZero);
 FORWARD_DECLARE_TEST(SizeTest, ConsistentClamping);
 
 // A floating version of gfx::Size.
-class GEOMETRY_EXPORT SizeF {
+class COMPONENT_EXPORT(GEOMETRY) SizeF {
  public:
   constexpr SizeF() : width_(0.f), height_(0.f) {}
   constexpr SizeF(float width, float height)
@@ -96,6 +96,8 @@ class GEOMETRY_EXPORT SizeF {
 
   std::string ToString() const;
 
+  friend constexpr bool operator==(const SizeF&, const SizeF&) = default;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SizeFTest, IsEmpty);
   FRIEND_TEST_ALL_PREFIXES(SizeFTest, ClampsToZero);
@@ -114,14 +116,6 @@ class GEOMETRY_EXPORT SizeF {
   float height_;
 };
 
-constexpr bool operator==(const SizeF& lhs, const SizeF& rhs) {
-  return lhs.width() == rhs.width() && lhs.height() == rhs.height();
-}
-
-constexpr bool operator!=(const SizeF& lhs, const SizeF& rhs) {
-  return !(lhs == rhs);
-}
-
 inline SizeF operator+(const SizeF& lhs, const SizeF& rhs) {
   return SizeF(lhs.width() + rhs.width(), lhs.height() + rhs.height());
 }
@@ -130,7 +124,8 @@ inline SizeF operator-(const SizeF& lhs, const SizeF& rhs) {
   return SizeF(lhs.width() - rhs.width(), lhs.height() - rhs.height());
 }
 
-GEOMETRY_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
 
 inline SizeF ScaleSize(const SizeF& p, float scale) {
   return ScaleSize(p, scale, scale);

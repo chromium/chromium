@@ -142,7 +142,7 @@ followed by `"META": {"join": ##}`, e.g.:
   },
   "foo/bar/ddd.grd": {
     "META": {"join": 2}
-    "includes": [1120],
+    "includes": [1200],
   },
 ```
 This means:

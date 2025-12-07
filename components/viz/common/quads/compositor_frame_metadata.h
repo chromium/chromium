@@ -19,6 +19,7 @@
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -36,6 +37,10 @@
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/selection_bound.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
 
 namespace viz {
 
@@ -87,6 +92,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   CompositorFrameMetadata Clone() const;
 
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+
   // The device scale factor used to generate this compositor frame. Must be
   // greater than zero.
   float device_scale_factor = 0.f;
@@ -98,6 +105,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   gfx::SizeF scrollable_viewport_size;
 
+  // The size of the viewport for the visible region in DIP.
+  gfx::Size visible_viewport_size;
+
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 
   bool may_contain_video = false;
@@ -108,6 +118,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // This includes during the touch interaction just prior to the initiation of
   // gesture scroll events.
   bool is_handling_interaction = false;
+
+  // True if this compositor frame contains animations.
+  bool is_handling_animation = false;
 
   // This color is usually obtained from the background color of the <body>
   // element. It can be used for filling in gutter areas around the frame when
@@ -172,6 +185,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // applicable to frames of the root surface.
   gfx::OverlayTransform display_transform_hint = gfx::OVERLAY_TRANSFORM_NONE;
 
+  // Please refer RenderFrameMetadata::is_mobile_optimized for detailed comment.
+  bool is_mobile_optimized = false;
+
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two
   // conditions are met:
@@ -219,6 +235,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Information used to compute overall ideal frame interval.
   FrameIntervalInputs frame_interval_inputs;
+
+  // Timestamps for TreesInViz metric reporting.
+  TreesInVizTiming trees_in_viz_timing_details;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

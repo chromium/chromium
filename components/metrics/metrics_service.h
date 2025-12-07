@@ -12,11 +12,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,7 +31,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_store.h"
@@ -44,6 +44,11 @@ FORWARD_DECLARE_TEST(ChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
 FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
+
+namespace first_run {
+class FirstRunCoordinatorMetricsHelper;
+class FirstRunProfileAgentMetricsHelper;
+}
 
 namespace variations {
 class SyntheticTrialRegistry;
@@ -102,6 +107,30 @@ class MetricsService {
   void EnableReporting();
   void DisableReporting();
 
+  // A passkey for owner-approved classes to access
+  // StartOutOfBandUploadIfPossible() - see
+  // </docs/patterns/passkey.md>.
+  class OutOfBandUploadPasskey {
+   private:
+    OutOfBandUploadPasskey() = default;
+    ~OutOfBandUploadPasskey() = default;
+    friend class first_run::FirstRunCoordinatorMetricsHelper;
+    friend class first_run::FirstRunProfileAgentMetricsHelper;
+
+    FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, OutOfBandLogUpload);
+  };
+
+  // Starts the process of uploading metrics data outside of the uploads
+  // scheduled by the MetricsRotationScheduler. Upload attempt is silently
+  // dropped (never retried) and function returns false if:
+  // 1) the MetricsService has not uploaded the first ongoing log OR
+  // 2) recording is disabled OR
+  // 3) reporting is off and the first ongoing log hasn't been created.
+  //
+  // This function is currently only used within the iOS FRE screens and should
+  // be used very sparingly.
+  bool StartOutOfBandUploadIfPossible(OutOfBandUploadPasskey passkey);
+
   // Returns the client ID for this client, or the empty string if metrics
   // recording is not currently running.
   std::string GetClientId() const;
@@ -110,14 +139,6 @@ class MetricsService {
   int GetLowEntropySource();
   int GetOldLowEntropySource();
   int GetPseudoLowEntropySource();
-
-  // Set an external provided id for the metrics service. This method can be
-  // set by a caller which wants to explicitly control the *next* id used by the
-  // metrics service. Note that setting the external client id will *not* change
-  // the current metrics client id. In order to change the current client id,
-  // callers should call ResetClientId to change the current client id to the
-  // provided id.
-  void SetExternalClientId(const std::string& id);
 
   // Returns the date at which the current metrics client ID was created as
   // an int64_t containing seconds since the epoch.
@@ -134,6 +155,17 @@ class MetricsService {
   void OnApplicationNotIdle();
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Increments the global `fg_bg_id` for when OnAppEnterBackground() or
+  // OnAppEnterForeground() below has closed the current log. In some cases,
+  // this may be no-op; see implementation for details.
+  void IncrementFgBgIdIfNeeded(
+      std::optional<bool> previous_is_in_foreground) const;
+
+  // Clears `fg_bg_id` from the current log for when OnAppEnterBackground() or
+  // OnAppEnterForeground() below cannot close it. In some cases, this may be
+  // no-op; see implementation for details.
+  void ClearFgBgIdIfNeeded(std::optional<bool> previous_is_in_foreground) const;
+
   // Called when the application is going into background mode.
   // If |keep_recording_in_background| is true, UMA is still recorded and
   // reported while in the background.
@@ -141,7 +173,13 @@ class MetricsService {
 
   // Called when the application is coming out of background mode.
   void OnAppEnterForeground(bool force_open_new_log = false);
+
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  // Flushes state that would be lost if the browser were to be killed. On
+  // Android, this should be called when an Activity pauses, as Android could
+  // suddenly kill the app at that point.
+  void Flush();
 
   // Called when a document first starts loading.
   void OnPageLoadStarted();
@@ -177,7 +215,7 @@ class MetricsService {
   // be included in the next log.
   void MarkCurrentHistogramsAsReported();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Binds a user log store to store unsent logs. This log store will be
   // fully managed by MetricsLogStore. This will no-op if another log store has
   // already been set.
@@ -227,9 +265,7 @@ class MetricsService {
 
   // Updates the current user metrics consent. No-ops if no user has logged in.
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Forces the client ID to be reset and generates a new client ID. This will
   // be called when a user re-consents to metrics collection and the user had
   // consented in the past.
@@ -273,20 +309,17 @@ class MetricsService {
     return logs_event_observer_.get();
   }
 
-  // Observers will be notified when the enablement state changes. The callback
-  // should accept one boolean argument, which will signal whether or not the
-  // metrics collection has been enabled.
-  base::CallbackListSubscription AddEnablementObserver(
-      const base::RepeatingCallback<void(bool)>& observer);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  bool IsInForegroundForTesting() const { return is_in_foreground_; }
-#endif
-
   // Creates a new MetricsLog instance with the given |log_type|.
   std::unique_ptr<MetricsLog> CreateLogForTesting(
       MetricsLog::LogType log_type) {
     return CreateLog(log_type);
+  }
+
+  // Used to test observers of the logs_event_manager_.
+  void NotifyLogsEventManagerForTesting(MetricsLogsEventManager::LogEvent event,
+                                        std::string_view log_hash,
+                                        std::string_view message) {
+    logs_event_manager_.NotifyLogEvent(event, log_hash, message);
   }
 
  protected:
@@ -368,37 +401,25 @@ class MetricsService {
     // samples (the deltas) as logged.
     void SnapshotStatisticsRecorderDeltas();
 
-    // Snapshots the unlogged samples of histograms known by the
-    // StatisticsRecorder and writes them to the log passed in the constructor.
-    // Note that unlike SnapshotStatisticsRecorderDeltas(), this does not mark
-    // the samples as logged. To do so, a call to MarkUnloggedSamplesAsLogged()
-    // (in |histogram_snapshot_manager_|) should be made.
-    void SnapshotStatisticsRecorderUnloggedSamples();
-
     base::HistogramSnapshotManager* histogram_snapshot_manager() {
       return histogram_snapshot_manager_.get();
     }
 
-    base::StatisticsRecorder::SnapshotTransactionId snapshot_transaction_id() {
-      return snapshot_transaction_id_;
-    }
+    // Notifies the histogram writer that the `log` passed in through the
+    // constructor is about to be destroyed.
+    void NotifyLogBeingFinalized();
 
    private:
     // Used to select which histograms to record when calling
-    // SnapshotStatisticsRecorderHistograms() or
-    // SnapshotStatisticsRecorderUnloggedSamples().
+    // SnapshotStatisticsRecorderHistograms().
     const base::HistogramBase::Flags required_flags_;
 
-    // Used to write histograms to the log passed in the constructor.
+    // Used to write histograms to the log passed in the constructor. Null after
+    // `NotifyLogBeingFinalized()`.
     std::unique_ptr<base::HistogramFlattener> flattener_;
 
     // Used to snapshot histograms.
     std::unique_ptr<base::HistogramSnapshotManager> histogram_snapshot_manager_;
-
-    // The snapshot transaction ID of a call to either
-    // SnapshotStatisticsRecorderDeltas() or
-    // SnapshotStatisticsRecorderUnloggedSamples().
-    base::StatisticsRecorder::SnapshotTransactionId snapshot_transaction_id_;
   };
 
   // Loads "independent" metrics from a metrics provider and executes a
@@ -464,16 +485,6 @@ class MetricsService {
 
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
-  // Get the amount of uptime since this process started and since the last
-  // call to this function.  Also updates the cumulative uptime metric (stored
-  // as a pref) for uninstall.  Uptimes are measured using TimeTicks, which
-  // guarantees that it is monotonic and does not jump if the user changes
-  // their clock.  The TimeTicks implementation also makes the clock not
-  // count time the computer is suspended.
-  void GetUptimes(PrefService* pref,
-                  base::TimeDelta* incremental_uptime,
-                  base::TimeDelta* uptime);
-
   // Turns recording on or off.
   // DisableRecording() also forces a persistent save of logging state (if
   // anything has been recorded, or transmitted).
@@ -497,11 +508,7 @@ class MetricsService {
   // Closes out the current log after adding any last information. |async|
   // determines whether finalizing the log will be done in a background thread.
   // |log_stored_callback| will be run (on the main thread) after the finalized
-  // log is stored. Note that when |async| is true, the closed log could end up
-  // not being stored (see MaybeCleanUpAndStoreFinalizedLog()). Regardless,
-  // |log_stored_callback| is still run. Note that currently, there is only
-  // support to close one log asynchronously at a time (this should be enforced
-  // by the caller).
+  // log is stored.
   void CloseCurrentLog(
       bool async,
       MetricsLogsEventManager::CreateReason reason,
@@ -512,18 +519,6 @@ class MetricsService {
                          MetricsLogsEventManager::CreateReason reason,
                          base::OnceClosure done_callback,
                          FinalizedLog finalized_log);
-
-  // Calls MarkUnloggedSamplesAsLogged() on |log_histogram_writer| and stores
-  // the |finalized_log| (see StoreFinalizedLog()), but only if the
-  // StatisticRecorder's last transaction ID is the same as the one from
-  // |log_histogram_writer| at the time of calling. See comments in the
-  // implementation for more details.
-  void MaybeCleanUpAndStoreFinalizedLog(
-      std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
-      MetricsLog::LogType log_type,
-      MetricsLogsEventManager::CreateReason reason,
-      base::OnceClosure done_callback,
-      FinalizedLog finalized_log);
 
   // Pushes the text of the current and staged logs into persistent storage.
   void PushPendingLogsToPersistentStorage(
@@ -586,24 +581,8 @@ class MetricsService {
   // Snapshots histogram deltas using the passed |log_histogram_writer| and then
   // finalizes |log| by calling FinalizeLog(). |log|, |current_app_version| and
   // |signing_key| are used to finalize the log (see FinalizeLog()).
-  // Semantically, this is equivalent to SnapshotUnloggedSamplesAndFinalizeLog()
-  // followed by MarkUnloggedSamplesAsLogged().
   static FinalizedLog SnapshotDeltasAndFinalizeLog(
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
-      std::unique_ptr<MetricsLog> log,
-      bool truncate_events,
-      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
-      std::string&& current_app_version,
-      std::string&& signing_key);
-
-  // Snapshots unlogged histogram samples using the passed
-  // |log_histogram_writer| and then finalizes |log| by calling FinalizeLog().
-  // |log|, |current_app_version| and |signing_key| are used to finalize the log
-  // (see FinalizeLog()). Note that unlike SnapshotDeltasAndFinalizeLog(), this
-  // does not own the passed |log_histogram_writer|, because it should be
-  // available to eventually mark the unlogged samples as logged.
-  static FinalizedLog SnapshotUnloggedSamplesAndFinalizeLog(
-      MetricsLogHistogramWriter* log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
       std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
@@ -663,22 +642,12 @@ class MetricsService {
   // The scheduler for determining when log rotations should happen.
   std::unique_ptr<MetricsRotationScheduler> rotation_scheduler_;
 
-  // Stores the time of the first call to |GetUptimes()|.
-  base::TimeTicks first_updated_time_;
-
-  // Stores the time of the last call to |GetUptimes()|.
-  base::TimeTicks last_updated_time_;
-
   // Indicates if loading of independent metrics is currently active.
   bool independent_loader_active_ = false;
 
   // Indicates whether or not there is currently a periodic ongoing log being
   // finalized (or is scheduled to be finalized).
   bool pending_ongoing_log_ = false;
-
-  // Stores the time when we last posted a task to finalize a periodic ongoing
-  // log asynchronously.
-  base::TimeTicks async_ongoing_log_posted_time_;
 
   // Logs event manager to keep track of the various logs that the metrics
   // service interacts with. An unowned pointer of this instance is passed down
@@ -692,9 +661,6 @@ class MetricsService {
   // page.
   std::unique_ptr<MetricsServiceObserver> logs_event_observer_;
 
-  // A set of observers that keeps track of the metrics reporting state.
-  base::RepeatingCallbackList<void(bool)> enablement_observers_;
-
   // Subscription for a callback that runs if this install is detected as
   // cloned.
   base::CallbackListSubscription cloned_install_subscription_;
@@ -702,7 +668,7 @@ class MetricsService {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Indicates whether OnAppEnterForeground() (true) or OnAppEnterBackground
   // (false) was called.
-  bool is_in_foreground_ = false;
+  std::optional<bool> is_in_foreground_ = std::nullopt;
 #endif
 
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, ActiveFieldTrialsReported);

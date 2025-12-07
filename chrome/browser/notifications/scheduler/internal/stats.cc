@@ -8,6 +8,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 
@@ -34,6 +36,26 @@ std::string ToHistogramSuffix(SchedulerClientType client_type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
+    case SchedulerClientType::kTips:
+      return "Tips";
+  }
+}
+
+// Returns the histogram tips suffix for a feature type. Should match suffix
+// NotificationTipsFeatureType in histograms.xml.
+std::string ToHistogramTipsFeatureSuffix(
+    TipsNotificationsFeatureType feature_type) {
+  switch (feature_type) {
+    case TipsNotificationsFeatureType::kEnhancedSafeBrowsing:
+      return ".EnhancedSafeBrowsing";
+    case TipsNotificationsFeatureType::kQuickDelete:
+      return ".QuickDelete";
+    case TipsNotificationsFeatureType::kGoogleLens:
+      return ".GoogleLens";
+    case TipsNotificationsFeatureType::kBottomOmnibox:
+      return ".BottomOmnibox";
+    default:
+      NOTREACHED();
   }
 }
 
@@ -46,6 +68,17 @@ void LogHistogramEnumWithSuffix(const std::string& name,
   auto name_with_suffix = name;
   name_with_suffix.append(".").append(ToHistogramSuffix(client_type));
   base::UmaHistogramEnumeration(name_with_suffix, value);
+}
+
+// Logs a histogram enumeration with a tips feature type suffix.
+template <typename T>
+void LogHistogramEnumWithTipsFeatureSuffix(
+    std::string_view name,
+    T value,
+    TipsNotificationsFeatureType feature_type) {
+  base::UmaHistogramEnumeration(name, value);
+  base::UmaHistogramEnumeration(
+      base::StrCat({name, ToHistogramTipsFeatureSuffix(feature_type)}), value);
 }
 
 }  // namespace
@@ -81,6 +114,19 @@ void LogNotificationLifeCycleEvent(NotificationLifeCycleEvent event,
                                    SchedulerClientType client_type) {
   LogHistogramEnumWithSuffix(
       "Notifications.Scheduler.NotificationLifeCycleEvent", event, client_type);
+}
+
+void LogTipsNotificationFeatureTypeAction(
+    UserActionType action,
+    TipsNotificationsFeatureType feature_type) {
+  LogHistogramEnumWithTipsFeatureSuffix(
+      "Notifications.Scheduler.Tips.FeatureTypeAction", action, feature_type);
+}
+
+void LogTipsNotificationFeatureTypeShown(
+    TipsNotificationsFeatureType feature_type) {
+  base::UmaHistogramEnumeration("Notifications.Scheduler.Tips.FeatureTypeShown",
+                                feature_type);
 }
 }  // namespace stats
 }  // namespace notifications

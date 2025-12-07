@@ -43,10 +43,10 @@ class UkmDataManagerTestUtils {
   // Sets up the UKM testing for the `profile`. Can be called multiple times in
   // the same process for different profiles, but WillDestroyProfile() must be
   // called before setting up the next profile.
-  void SetupForProfile(ChromeBrowserState* profile);
+  void SetupForProfile(ProfileIOS* profile);
 
   // Must be called before destroying `profile`.
-  void WillDestroyProfile(ChromeBrowserState* profile);
+  void WillDestroyProfile(ProfileIOS* profile);
 
   // The UKM observers are registered after platform initialization. Wait for it
   // to register observers, so that the UKM signals written by tests will be

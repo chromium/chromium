@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_file_stream_reader.h"
 
 #include <string.h>
@@ -16,15 +11,15 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_file_system_instance.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
@@ -43,14 +38,6 @@ constexpr char kArcUrlFile[] = "content://org.chromium.foo/file";
 
 // URL which returns a file descriptor of a pipe's read end.
 constexpr char kArcUrlPipe[] = "content://org.chromium.foo/pipe";
-
-// URL which returns a file descriptor of a regular file with unknown size.
-constexpr char kArcUrlFileUnknownSize[] =
-    "content://org.chromium.foo/file-unknown-size";
-
-// URL which returns a file descriptor of a pipe's read end with unknown size.
-constexpr char kArcUrlPipeUnknownSize[] =
-    "content://org.chromium.foo/pipe-unknown-size";
 
 constexpr char kData[] = "abcdefghijklmnopqrstuvwxyz";
 
@@ -102,10 +89,6 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
         File(kArcUrlFile, kData, kMimeType, File::Seekable::YES));
     fake_file_system_.AddFile(
         File(kArcUrlPipe, kData, kMimeType, File::Seekable::NO));
-    fake_file_system_.AddFile(File(kArcUrlFileUnknownSize, kData, kMimeType,
-                                   File::Seekable::YES, -1));
-    fake_file_system_.AddFile(
-        File(kArcUrlPipeUnknownSize, kData, kMimeType, File::Seekable::NO, -1));
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
@@ -157,8 +140,9 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffset) {
     EXPECT_TRUE(ReadData(&reader, buffer.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
-            std::string_view(buffer->data(), buffer->size()));
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
+                std::string_view(buffer->data(), buffer->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffsets) {
@@ -173,11 +157,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffsets) {
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest,
@@ -196,11 +181,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest,
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipe) {
@@ -223,8 +209,9 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffset) {
     EXPECT_TRUE(ReadData(&reader, buffer.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
-            std::string_view(buffer->data(), buffer->size()));
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset10, strlen(kData) - kOffset10),
+                std::string_view(buffer->data(), buffer->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffsets) {
@@ -239,11 +226,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffsets) {
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest,
@@ -261,11 +249,12 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest,
     EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
-            std::string_view(buffer1->data(), buffer1->size()));
-  EXPECT_EQ(
+  UNSAFE_TODO(
+      EXPECT_EQ(std::string_view(kData + kOffset5, kOffset15 - kOffset5),
+                std::string_view(buffer1->data(), buffer1->size())));
+  UNSAFE_TODO(EXPECT_EQ(
       std::string_view(kData + kOffset15, strlen(kData) - kOffset5 - kOffset15),
-      std::string_view(buffer2->data(), buffer2->size()));
+      std::string_view(buffer2->data(), buffer2->size())));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {
@@ -275,31 +264,6 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {
 
     net::TestInt64CompletionCallback callback;
     EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
-              callback.GetResult(reader.GetLength(callback.callback())));
-  }
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLengthUnknownSizeSeekable) {
-  {
-    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFileUnknownSize),
-                                                /*offset=*/0);
-
-    net::TestInt64CompletionCallback callback;
-    EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
-              callback.GetResult(reader.GetLength(callback.callback())));
-  }
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(ArcContentFileSystemFileStreamReaderTest,
-       GetLengthUnknownSizeNotSeekable) {
-  {
-    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipeUnknownSize),
-                                                /*offset=*/0);
-
-    net::TestInt64CompletionCallback callback;
-    EXPECT_EQ(static_cast<int64_t>(net::ERR_FAILED),
               callback.GetResult(reader.GetLength(callback.callback())));
   }
   base::RunLoop().RunUntilIdle();

@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
@@ -56,7 +57,7 @@ class FilePathWatcherKQueue : public FilePathWatcher::PlatformDelegate {
   void OnKQueueReadable();
 
   // Returns true if the kevent values are error free.
-  bool AreKeventValuesValid(struct kevent* kevents, int count);
+  bool AreKeventValuesValid(base::span<const struct kevent> kevents, int count);
 
   // Respond to a change of attributes of the path component represented by
   // |event|. Sets |target_file_affected| to true if |target_| is affected.

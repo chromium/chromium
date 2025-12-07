@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace device_signals {
@@ -18,6 +19,15 @@ class MockSystemSignalsServiceHost : public SystemSignalsServiceHost {
   ~MockSystemSignalsServiceHost() override;
 
   MOCK_METHOD(mojom::SystemSignalsService*, GetService, (), (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (device_signals::SystemSignalsServiceHost::Observer*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (device_signals::SystemSignalsServiceHost::Observer*),
+              (override));
+  MOCK_METHOD(void, NotifyServiceDisconnect, (), (override));
 };
 
 class MockSystemSignalsService : public mojom::SystemSignalsService {
@@ -38,6 +48,15 @@ class MockSystemSignalsService : public mojom::SystemSignalsService {
               (override));
   MOCK_METHOD(void, GetHotfixSignals, (GetHotfixSignalsCallback), (override));
 #endif  // BUILDFLAG(IS_WIN)
+
+  mojo::PendingRemote<device_signals::mojom::SystemSignalsService>
+  BindNewPipeAndPassRemote();
+
+  // Simulates a service disconnect.
+  void SimulateDisconnect();
+
+ private:
+  mojo::Receiver<device_signals::mojom::SystemSignalsService> receiver_;
 };
 
 }  // namespace device_signals

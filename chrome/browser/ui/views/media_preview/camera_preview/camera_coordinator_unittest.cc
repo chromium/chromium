@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
@@ -96,8 +97,8 @@ class CameraCoordinatorTest : public TestWithBrowserView {
 
     coordinator_.emplace(*parent_view_,
                          /*needs_borders=*/true, eligible_camera_ids,
-                         *profile()->GetPrefs(),
-                         /*allow_device_selection=*/true, GetMetricsContext());
+                         /*allow_device_selection=*/true,
+                         profile()->GetWeakPtr(), GetMetricsContext());
   }
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {

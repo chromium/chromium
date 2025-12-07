@@ -6,8 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_MANAGER_H_
 
 #include <stddef.h>
+
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -23,15 +25,17 @@
 #include "components/version_info/channel.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/isolation_info.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
 class PrefService;
 
+namespace network {
+class SimpleURLLoader;
+}
+
 namespace autofill {
 
 class AutofillClient;
-class LogManager;
 
 inline constexpr size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
@@ -42,12 +46,15 @@ struct ScopedActiveAutofillExperiments {
   ~ScopedActiveAutofillExperiments();
 };
 
+enum class CrowdsourcingRequestType {
+  kRequestQuery,
+  kRequestUpload,
+};
+
 // Obtains Autofill server predictions and upload votes for generating them.
 class AutofillCrowdsourcingManager {
  public:
   // Names of UMA metrics recorded in this class.
-  static constexpr char kUmaApiUrlIsTooLong[] =
-      "Autofill.Query.ApiUrlIsTooLong";
   static constexpr char kUmaGetUrlLength[] = "Autofill.Query.GetUrlLength";
   static constexpr char kUmaMethod[] = "Autofill.Query.Method";
   static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";
@@ -56,24 +63,32 @@ class AutofillCrowdsourcingManager {
   // `channel` determines the value for the the Google-API-key HTTP header and
   // whether raw metadata uploading is enabled.
   AutofillCrowdsourcingManager(AutofillClient* client,
-                          version_info::Channel channel,
-                          LogManager* log_manager);
+                               version_info::Channel channel);
 
   virtual ~AutofillCrowdsourcingManager();
 
-  // The callback executed on successful completion of a query request. The
-  // first parameter contains the server response and the second parameter the
-  // queried form signatures.
-  using QueryRequestCompleteCallback =
-      base::OnceCallback<void(std::string, const std::vector<FormSignature>&)>;
+  struct QueryResponse {
+    QueryResponse(std::string response,
+                  std::vector<FormSignature> queried_form_signatures);
+    QueryResponse(QueryResponse&&);
+    QueryResponse& operator=(QueryResponse&&);
+    ~QueryResponse();
 
-  // Starts a query request to Autofill servers. The observer is called with the
-  // list of the fields of all requested forms.
-  // `forms` - array of forms aggregated in this request.
+    std::string response;
+    std::vector<FormSignature> queried_form_signatures;
+  };
+
+  // Starts a query request to Autofill servers for `forms`. It always calls
+  // `callback`: with the QueryResponse if the query is successful and with
+  // std::nullopt if it the query wasn't made or was unsuccessful.
+  //
+  // Returns true if a query is made.
+  // TODO: crbug.com/40100455 - Make the return type `void`.
   virtual bool StartQueryRequest(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+      const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
+          forms,
       std::optional<net::IsolationInfo> isolation_info,
-      QueryRequestCompleteCallback callback);
+      base::OnceCallback<void(std::optional<QueryResponse>)> callback);
 
   // Starts an upload request for `upload_contents`. If `upload_contents` has
   // more than one element, then `upload_contents[0]` is expected to correspond
@@ -98,9 +113,7 @@ class AutofillCrowdsourcingManager {
   static int GetMaxServerAttempts();
 
  protected:
-  AutofillCrowdsourcingManager(AutofillClient* client,
-                               const std::string& api_key,
-                               LogManager* log_manager);
+  AutofillCrowdsourcingManager(AutofillClient* client, std::string api_key);
 
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
@@ -145,7 +158,15 @@ class AutofillCrowdsourcingManager {
       std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
       FormRequestData request_data,
       base::TimeTicks request_start,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
+
+  // Records the number of requests of a given `request_type` in the last minute
+  static void RecordRequestsInLastMinute(CrowdsourcingRequestType request_type);
+
+  // Returns the timestamps at which requests of type `request_type` were sent
+  // recently.
+  static std::deque<base::TimeTicks>& GetRecentRequestTimestamps(
+      CrowdsourcingRequestType request_type);
 
   // The AutofillClient that this instance will use. Must not be null, and must
   // outlive this instance.
@@ -153,9 +174,6 @@ class AutofillCrowdsourcingManager {
 
   // Callback function to retrieve API key.
   const std::string api_key_;
-
-  // Access to leave log messages for chrome://autofill-internals, may be null.
-  const raw_ptr<LogManager> log_manager_;
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.

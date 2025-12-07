@@ -10,6 +10,8 @@
 
 namespace net::test_server {
 
+HttpConnection::HttpConnection(Protocol protocol) : protocol_(protocol) {}
+
 std::unique_ptr<HttpConnection> HttpConnection::Create(
     std::unique_ptr<StreamSocket> socket,
     EmbeddedTestServerConnectionListener* listener,

@@ -1,11 +1,12 @@
 Name: PLY (Python Lex-Yacc)
 Current version: 3.11
 URL: http://www.dabeaz.com/ply/ply-3.11.tar.gz
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: no
 Version: 3.11
+Update Mechanism: Manual
 
 PLY is used by (at least) the Mojo python bindings, the PPAPI
 IDL generator, and the Blink IDL generator.

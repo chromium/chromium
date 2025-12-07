@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdlib.h>
+
+#include <array>
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -137,17 +134,16 @@ class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
 // actually support MacOS X if and when it switches to Aura.
 #if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 // Flaky on Chrome OS: http://crbug.com/468259
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ScreenOrientationChange DISABLED_ScreenOrientationChange
 #else
 #define MAYBE_ScreenOrientationChange ScreenOrientationChange
 #endif
 IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
                        MAYBE_ScreenOrientationChange) {
-  std::string types[] = { "portrait-primary",
-                          "portrait-secondary",
-                          "landscape-primary",
-                          "landscape-secondary" };
+  auto types =
+      std::to_array<std::string>({"portrait-primary", "portrait-secondary",
+                                  "landscape-primary", "landscape-secondary"});
   GURL test_url = GetTestUrl("screen_orientation",
                              "screen_orientation_screenorientationchange.html");
 
@@ -173,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 
 // Flaky on Chrome OS: http://crbug.com/468259
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WindowOrientationChange DISABLED_WindowOrientationChange
 #else
 #define MAYBE_WindowOrientationChange WindowOrientationChange
@@ -229,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest, DISABLED_LockSmoke) {
       "NotSupportedError"; // Locking isn't supported.
 #endif
 
-  EXPECT_EQ(expected, shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ(expected, shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 // Check that using screen orientation after a frame is detached doesn't crash
@@ -279,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockDisabledBrowserTest,
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     navigation_observer.Wait();
     EXPECT_EQ("NotSupportedError",
-              shell()->web_contents()->GetLastCommittedURL().ref());
+              shell()->web_contents()->GetLastCommittedURL().GetRef());
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -292,8 +288,9 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
   WaitForResizeComplete(shell()->web_contents());
 #endif  // USE_AURA || BUILDFLAG(IS_ANDROID)
 
-  std::string types[] = {"portrait-primary", "portrait-secondary",
-                         "landscape-primary", "landscape-secondary"};
+  auto types =
+      std::to_array<std::string>({"portrait-primary", "portrait-secondary",
+                                  "landscape-primary", "landscape-secondary"});
 
   int angle = GetOrientationAngle();
 
@@ -328,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
 // blink::mojom::FrameWidget::EnableDeviceEmulation, which calls
 // RenderWidget::Resize on the renderer side.  The test fakes this by directly
 // sending the resize message to the widget.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ScreenOrientationInPendingMainFrame \
   DISABLED_ScreenOrientationInPendingMainFrame
 #else
@@ -524,8 +521,8 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
 
   // Start a prerender.
   const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper_.AddPrerender(prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
 
   // Shut down the prerendered page. It shouldn't trigger orientation unlock.
   test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);

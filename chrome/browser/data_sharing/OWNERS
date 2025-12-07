@@ -1,4 +1,8 @@
 file://components/data_sharing/OWNERS
 
+haileywang@google.com
+
 # For Android UI changes
+ckitagawa@chromium.org
 salg@google.com
+skym@chromium.org

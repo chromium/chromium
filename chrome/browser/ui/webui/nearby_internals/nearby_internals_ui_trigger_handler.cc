@@ -478,7 +478,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::Value::List& args) {
     return;
   }
 
-  std::string share_target_id = args[1].GetString();
+  const std::string& share_target_id = args[1].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     CD_LOG(ERROR, Feature::NS)
@@ -507,7 +507,7 @@ void NearbyInternalsUiTriggerHandler::Accept(const base::Value::List& args) {
     return;
   }
 
-  std::string share_target_id = args[0].GetString();
+  const std::string& share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     CD_LOG(ERROR, Feature::NS)
@@ -529,7 +529,7 @@ void NearbyInternalsUiTriggerHandler::Open(const base::Value::List& args) {
     return;
   }
 
-  std::string share_target_id = args[0].GetString();
+  const std::string& share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     CD_LOG(ERROR, Feature::NS)
@@ -550,7 +550,7 @@ void NearbyInternalsUiTriggerHandler::Reject(const base::Value::List& args) {
     return;
   }
 
-  std::string share_target_id = args[0].GetString();
+  const std::string& share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     CD_LOG(ERROR, Feature::NS)
@@ -572,7 +572,7 @@ void NearbyInternalsUiTriggerHandler::Cancel(const base::Value::List& args) {
     return;
   }
 
-  std::string share_target_id = args[0].GetString();
+  const std::string& share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     CD_LOG(ERROR, Feature::NS)

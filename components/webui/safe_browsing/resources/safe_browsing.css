@@ -1,0 +1,109 @@
+/* Copyright 2017 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  color: rgb(48, 57, 66);
+  font-size: 1em;
+  margin: 15px;
+}
+p {
+  white-space: pre-wrap;
+}
+.content {
+  background-color: #fbfbfb;
+  border: 1px solid #cecece;
+  border-radius: 3px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  padding: 19px;
+}
+#sb-title {
+  font-size: 2em;
+  margin-bottom: 0.8em;
+}
+h1,
+h2,
+p {
+  font-weight: normal;
+  line-height: 1.5;
+}
+cr-tab-box {
+  font-size: 1.3rem;
+}
+table.expandable-events {
+  border: 1px solid #cecece;
+  border-radius: 3px;
+  table-layout: fixed;
+  white-space: pre-wrap;
+  width: 100%;
+  word-break: break-all;
+}
+
+table.expandable-events th {
+  background-color: #f2f2f2;
+  border-bottom: #ddd;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.expandable-events td {
+  background-color: #ffffff;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.expander::before {
+  content: '▶';
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.1s;
+}
+
+.expander.expanded::before {
+  transform: rotate(90deg);
+}
+
+.details-row {
+  display: none;
+}
+
+.details-row.visible {
+  display: table-row;
+}
+
+.details-cell {
+  background-color: #f0f0f0;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.expander-cell {
+  display: flex;
+  white-space: nowrap;
+}
+
+.copy-button {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-inline-start: 10px;
+  padding: 2px 6px;
+}
+
+.copy-button:hover {
+  background-color: #e0e0e0;
+}
+
+.bold-span {
+  font-weight: bold;
+}
+.result-container {
+  font-weight: normal;
+  line-height: 1.5;
+  white-space: normal;
+}

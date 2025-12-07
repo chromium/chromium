@@ -38,10 +38,7 @@ class ASH_EXPORT HotspotTrayView
 
   std::u16string GetAccessibleNameString() const;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
  private:
   // views::TrayItemView:
@@ -62,9 +59,7 @@ class ASH_EXPORT HotspotTrayView
 
   void UpdateIconImage();
   void UpdateIconVisibilityAndTooltip();
-
-  // The tooltip and accessible name string used for the icon.
-  std::u16string tooltip_;
+  void UpdateAccessibleName();
 
   hotspot_config::mojom::HotspotState state_ =
       hotspot_config::mojom::HotspotState::kDisabled;

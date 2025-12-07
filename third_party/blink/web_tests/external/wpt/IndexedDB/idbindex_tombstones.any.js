@@ -1,5 +1,6 @@
 // META: title=Index Tombstones
 // META: script=resources/support-promises.js
+'use strict';
 
 // This test is used to trigger a special case in Chrome with how it deals with
 // index creation & modification. This had caused issues before.
@@ -42,10 +43,19 @@ async function run_test(testCase, transactionMode, direction) {
   await createTombstones(testCase, db);
 
   const txn = db.transaction(['objectStore'], transactionMode);
-  cursor = txn.objectStore('objectStore').index('index').openCursor(
+  const cursor = txn.objectStore('objectStore').index('index').openCursor(
       IDBKeyRange.bound(-11, 11), direction);
   let results = await iterateAndReturnAllCursorResult(testCase, cursor);
   assert_equals(results.length, 3);
+  // Verify count().
+  await new Promise((resolve, reject) => {
+    const countRequest = txn.objectStore('objectStore').index('index').count();
+    countRequest.onsuccess = testCase.step_func(event => {
+      assert_equals(event.target.result, 3);
+      resolve();
+    });
+    countRequest.onerror = reject;
+  });
   db.close();
 }
 

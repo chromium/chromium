@@ -116,8 +116,9 @@ void LoggerImpl::Log(Severity severity,
       TruncateMessage(message), log_util::TruncateId(sink_id),
       MediaSource(media_source).TruncateForLogging(kSourceMaxLength),
       log_util::TruncateId(session_id));
-  if (entries_.size() > capacity_)
+  if (entries_.size() > capacity_) {
     entries_.pop_front();
+  }
 }
 
 std::string LoggerImpl::GetLogsAsJson() const {
@@ -133,8 +134,9 @@ std::string LoggerImpl::GetLogsAsJson() const {
 
 base::Value LoggerImpl::GetLogsAsValue() const {
   base::Value::List entries_val;
-  for (const auto& entry : entries_)
+  for (const auto& entry : entries_) {
     entries_val.Append(AsValue(entry));
+  }
   return base::Value(std::move(entries_val));
 }
 

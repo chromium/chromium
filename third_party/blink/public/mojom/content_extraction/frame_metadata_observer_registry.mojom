@@ -1,0 +1,38 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
+import "url/mojom/url.mojom";
+
+// An observer to be notified whenever metadata derived from the associated
+// Document changes.
+interface PaidContentMetadataObserver {
+  // Called when the paid content metadata changes.  Clients should consider the
+  // value to be unspecified (eg. document not loaded yet) until this method
+  // is called.
+  // This value is based solely on this frame's Document.
+  OnPaidContentMetadataChanged(bool has_paid_content);
+};
+
+// An observer to be notified when meta tags change.
+interface MetaTagsObserver {
+  // Called when meta tags change.  This is based solely on this frame's
+  // document.
+  OnMetaTagsChanged(array<MetaTag> meta_tags);
+};
+
+// Allows observers in the browser to register to be notified whenever metadata
+// derived from the associated Document changes.
+interface FrameMetadataObserverRegistry {
+  // Adds an observer to be notified whenever metadata derived from the
+  // associated Document changes.
+  AddPaidContentMetadataObserver(
+      pending_remote<PaidContentMetadataObserver> observer);
+
+  // Adds an observer to be notified whenever meta tags change.
+  AddMetaTagsObserver(
+      array<string> names, pending_remote<MetaTagsObserver> observer);
+};

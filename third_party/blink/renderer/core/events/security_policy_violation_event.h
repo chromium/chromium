@@ -34,6 +34,7 @@
 namespace blink {
 
 class SecurityPolicyViolationEventInit;
+class V8SecurityPolicyViolationEventDisposition;
 
 class SecurityPolicyViolationEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -61,12 +62,13 @@ class SecurityPolicyViolationEvent final : public Event {
   const String& violatedDirective() const { return violated_directive_; }
   const String& effectiveDirective() const { return effective_directive_; }
   const String& originalPolicy() const { return original_policy_; }
-  const String& disposition() const;
+  V8SecurityPolicyViolationEventDisposition disposition() const;
   const String& sourceFile() const { return source_file_; }
   const String& sample() const { return sample_; }
   int lineNumber() const { return line_number_; }
   int columnNumber() const { return column_number_; }
   uint16_t statusCode() const { return status_code_; }
+  const String& evalHash() const { return eval_hash_; }
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kSecurityPolicyViolationEvent;
@@ -88,6 +90,7 @@ class SecurityPolicyViolationEvent final : public Event {
   int line_number_ = 0;
   int column_number_ = 0;
   uint16_t status_code_ = 0;
+  String eval_hash_;
 };
 
 }  // namespace blink

@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <iterator>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -26,31 +27,31 @@ namespace {
 
 // If you change any of the switch strings, update the `kHelpMsg`,
 // `kAllowedSwitches` and `kRequiredSwitches` accordingly.
-constexpr char kSwitchHelp[] = "help";
-constexpr char kSwitchHelpShort[] = "h";
-constexpr char kSwitchOperation[] = "operation";
-constexpr char kSwitchBucket[] = "bucket";
-constexpr char kSwitchValue[] = "value";
-constexpr char kSwitchAlternativeAggregationMode[] =
-    "alternative-aggregation-mode";
-constexpr char kSwitchReportingOrigin[] = "reporting-origin";
-constexpr char kSwitchHelperKeyUrls[] = "helper-key-urls";
-constexpr char kSwitchHelperKeyFiles[] = "helper-key-files";
-constexpr char kSwitchOutputFile[] = "output-file";
-constexpr char kSwitchOutputUrl[] = "output-url";
-constexpr char kSwitchDisablePayloadEncryption[] = "disable-payload-encryption";
-constexpr char kSwitchAdditionalFields[] = "additional-fields";
-constexpr char kSwitchAdditionalSharedInfoFields[] =
+constexpr std::string_view kSwitchHelp = "help";
+constexpr std::string_view kSwitchHelpShort = "h";
+constexpr std::string_view kSwitchOperation = "operation";
+constexpr std::string_view kSwitchBucket = "bucket";
+constexpr std::string_view kSwitchValue = "value";
+constexpr std::string_view kSwitchReportingOrigin = "reporting-origin";
+constexpr std::string_view kSwitchHelperKeyUrl = "helper-key-url";
+constexpr std::string_view kSwitchHelperKeyFile = "helper-key-file";
+constexpr std::string_view kSwitchOutputFile = "output-file";
+constexpr std::string_view kSwitchOutputUrl = "output-url";
+constexpr std::string_view kSwitchDisablePayloadEncryption =
+    "disable-payload-encryption";
+constexpr std::string_view kSwitchAdditionalFields = "additional-fields";
+constexpr std::string_view kSwitchAdditionalSharedInfoFields =
     "additional-shared-info-fields";
-constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
-constexpr char kSwitchApiVersion[] = "api-version";
-constexpr char kSwitchApi[] = "api";
+constexpr std::string_view kSwitchEnableDebugMode = "enable-debug-mode";
+constexpr std::string_view kSwitchApiVersion = "api-version";
+constexpr std::string_view kSwitchApi = "api";
 
-constexpr char kHelpMsg[] = R"(
+constexpr std::string_view kHelpMsg = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
-  --value=<value> --aggregation-mode=<aggregation_mode>
+  --value=<value>
   --reporting-origin=<reporting_origin>
-  --helper-keys=<helper_server_keys> [--output=<output_file>]
+  --helper-key-url=<helper_key_url> (or --helper-key-file=<helper_key_file>)
+  [--output=<output_file>]
   [--output-url=<output_url>] [--disable-payload-encryption]
   [--additional-fields=<additional_fields>]
   [--additional-shared-info-fields=<additional_shared_info_fields]
@@ -58,15 +59,15 @@ constexpr char kHelpMsg[] = R"(
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
-  --alternative-aggregation-mode="experimental-poplar" --reporting-origin="https://example.com"
-  --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
+  --reporting-origin="https://example.com"
+  --helper-key-url="https://a.com/keys.json"
   --output-file="output.json" --enable-debug-mode --api-version="1.0"
   --api="attribution-reporting" --additional-fields=
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
   or
   aggregation_service_tool --bucket=1234 --value=5
   --reporting-origin="https://example.com"
-  --helper-key-files="keys.json"
+  --helper-key-file="keys.json"
   --output-url="https://c.com/reports"
 
   aggregation_service_tool is a command-line tool that accepts report contents
@@ -82,17 +83,13 @@ constexpr char kHelpMsg[] = R"(
              integer.
   --value = Bucket value of the histogram contribution, must be non-negative
             integer.
-  --alternative-aggregation-mode = Optional switch to specify an alternative
-                                   aggregation mode. Supports "tee-based",
-                                   "experimental-poplar" and "default"
-                                   (default value, equivalent to "tee-based").
   --reporting-origin = The reporting origin endpoint.
-  --helper-key-urls = Optional switch to specify the URL(s) to fetch the public
-                      key json file(s) from. Spaces are used as separators.
-                      Either this or "--helper-key-files" must be specified.
-  --helper-key-files = Optional switch to specify the local public key json
-                       file(s) to use. Spaces are used as separators. Either
-                       this or "--helper-key-urls" must be specified.
+  --helper-key-url = Optional switch to specify the URL to fetch the public key
+                     json file from. Either this or "--helper-key-file" must be
+                     specified.
+  --helper-key-file = Optional switch to specify the local public key json file
+                      to use. Either this or "--helper-key-url" must be
+                      specified.
   --output-file = Optional switch to specify the output file path. Eiter this or
                   "--output-url" must be specified.
   --output-url = Optional switch to specify the output url. Eiter this or
@@ -137,16 +134,15 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  const std::vector<std::string> kAllowedSwitches = {
+  const std::vector<std::string_view> kAllowedSwitches = {
       kSwitchHelp,
       kSwitchHelpShort,
       kSwitchOperation,
       kSwitchBucket,
       kSwitchValue,
-      kSwitchAlternativeAggregationMode,
       kSwitchReportingOrigin,
-      kSwitchHelperKeyUrls,
-      kSwitchHelperKeyFiles,
+      kSwitchHelperKeyUrl,
+      kSwitchHelperKeyFile,
       kSwitchOutputFile,
       kSwitchOutputUrl,
       kSwitchDisablePayloadEncryption,
@@ -171,10 +167,10 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  const std::vector<std::string> kRequiredSwitches = {
+  const std::vector<std::string_view> kRequiredSwitches = {
       kSwitchBucket, kSwitchValue, kSwitchReportingOrigin};
-  for (const std::string& required_switch : kRequiredSwitches) {
-    if (!command_line.HasSwitch(required_switch.c_str())) {
+  for (std::string_view required_switch : kRequiredSwitches) {
+    if (!command_line.HasSwitch(required_switch)) {
       LOG(ERROR) << "aggregation_service_tool expects " << required_switch
                  << " to be specified.";
       PrintHelp();
@@ -193,10 +189,10 @@ int main(int argc, char* argv[]) {
   }
 
   // Either helper key URL or file should be specified, but not both.
-  if (!(command_line.HasSwitch(kSwitchHelperKeyUrls) ^
-        command_line.HasSwitch(kSwitchHelperKeyFiles))) {
+  if (!(command_line.HasSwitch(kSwitchHelperKeyUrl) ^
+        command_line.HasSwitch(kSwitchHelperKeyFile))) {
     LOG(ERROR) << "aggregation_service_tool expects either "
-               << kSwitchHelperKeyUrls << " or " << kSwitchHelperKeyFiles
+               << kSwitchHelperKeyUrl << " or " << kSwitchHelperKeyFile
                << " to be specified, but not both.";
     PrintHelp();
     return 1;
@@ -208,63 +204,37 @@ int main(int argc, char* argv[]) {
       /*should_disable=*/command_line.HasSwitch(
           kSwitchDisablePayloadEncryption));
 
-  std::vector<GURL> processing_urls;
+  GURL processing_url;
 
-  if (command_line.HasSwitch(kSwitchHelperKeyUrls)) {
-    std::string switch_value =
-        command_line.GetSwitchValueASCII(kSwitchHelperKeyUrls);
-    std::vector<std::string> helper_key_url_strings =
-        base::SplitString(switch_value, /*separators=*/" ",
-                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-
-    for (const std::string& url_string : helper_key_url_strings) {
-      GURL helper_key_url(url_string);
-      if (!network::IsUrlPotentiallyTrustworthy(helper_key_url)) {
-        LOG(ERROR) << "Helper key URL " << url_string
-                   << " is not potentially trustworthy.";
-        return 1;
-      }
-      processing_urls.emplace_back(std::move(helper_key_url));
-    }
-  } else {
-    std::string switch_value =
-        command_line.GetSwitchValueASCII(kSwitchHelperKeyFiles);
-
-    std::vector<std::string> helper_key_file_strings =
-        base::SplitString(switch_value, /*separators=*/" ",
-                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-
-    if (helper_key_file_strings.empty() || helper_key_file_strings.size() > 2) {
-      LOG(ERROR) << kSwitchHelperKeyFiles
-                 << " specified an invalid number of files: "
-                 << helper_key_file_strings.size();
+  if (command_line.HasSwitch(kSwitchHelperKeyUrl)) {
+    std::string url_string =
+        command_line.GetSwitchValueASCII(kSwitchHelperKeyUrl);
+    processing_url = GURL(url_string);
+    if (!network::IsUrlPotentiallyTrustworthy(processing_url)) {
+      LOG(ERROR) << "Helper key URL " << url_string
+                 << " is not potentially trustworthy.";
       return 1;
     }
+  } else {
+    std::string file_string =
+        command_line.GetSwitchValueASCII(kSwitchHelperKeyFile);
 
-    std::vector<aggregation_service::UrlKeyFile> key_files;
-    for (size_t i = 0; i < helper_key_file_strings.size(); ++i) {
-      // We need to choose some URL to store each set of public keys under.
-      std::string fake_helper_url =
-          base::StringPrintf("https://fake_%zu.example/keys.json", i);
-      key_files.emplace_back(GURL(fake_helper_url), helper_key_file_strings[i]);
-      processing_urls.emplace_back(std::move(fake_helper_url));
-    }
+    // We need to choose some URL to store the set of public keys under.
+    aggregation_service::UrlKeyFile key_file(
+        GURL("https://fake.example/keys.json"), file_string);
 
-    if (!tool.SetPublicKeys(key_files)) {
+    if (!tool.SetPublicKeys(key_file)) {
       LOG(ERROR) << "aggregation_service_tool failed to set public keys.";
       return 1;
     }
+
+    processing_url = std::move(key_file.url);
   }
 
   std::string operation =
       command_line.HasSwitch(kSwitchOperation)
           ? command_line.GetSwitchValueASCII(kSwitchOperation)
           : "histogram";
-
-  std::string aggregation_mode =
-      command_line.HasSwitch(kSwitchAlternativeAggregationMode)
-          ? command_line.GetSwitchValueASCII(kSwitchAlternativeAggregationMode)
-          : "default";
 
   url::Origin reporting_origin = url::Origin::Create(
       GURL(command_line.GetSwitchValueASCII(kSwitchReportingOrigin)));
@@ -300,10 +270,9 @@ int main(int argc, char* argv[]) {
   base::Value::Dict report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
-      std::move(aggregation_mode), std::move(reporting_origin),
-      std::move(processing_urls), is_debug_mode_enabled,
-      std::move(additional_shared_info_fields), std::move(api_version),
-      std::move(api_identifier));
+      std::move(reporting_origin), std::move(processing_url),
+      is_debug_mode_enabled, std::move(additional_shared_info_fields),
+      std::move(api_version), std::move(api_identifier));
   if (report_dict.empty()) {
     LOG(ERROR)
         << "aggregation_service_tool failed to create the aggregatable report.";
@@ -345,8 +314,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  if (!succeeded)
+  if (!succeeded) {
     return 1;
+  }
 
   return 0;
 }

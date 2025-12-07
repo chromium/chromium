@@ -30,6 +30,11 @@ void PopulateTerminationInfo(
   info->renderer_has_visible_clients =
       content_info.renderer_has_visible_clients;
   info->renderer_was_subframe = content_info.renderer_was_subframe;
+  info->is_spare_renderer = content_info.is_spare_renderer;
+  info->has_spare_renderer = content_info.has_spare_renderer;
+  info->last_spare_renderer_creation_info =
+      content_info.last_spare_renderer_creation_info;
+  info->memory_pressure_metrics = content_info.memory_pressure_metrics;
 }
 
 }  // namespace
@@ -66,11 +71,12 @@ void ChildExitObserver::ChildReceivedCrashSignal(base::ProcessId pid,
   DCHECK(result);
 }
 
-void ChildExitObserver::OnRenderProcessHostCreated(
+void ChildExitObserver::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   // The child process pid isn't available when process is gone, keep a mapping
   // between process_host_id and pid, so we can find it later.
-  process_host_id_to_pid_[host->GetID()] = host->GetProcess().Handle();
+  process_host_id_to_pid_[host->GetDeprecatedID()] =
+      host->GetProcess().Handle();
   if (!render_process_host_observation_.IsObservingSource(host)) {
     render_process_host_observation_.AddObservation(host);
   }
@@ -151,7 +157,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
     const content::ChildProcessTerminationInfo* content_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TerminationInfo info;
-  info.process_host_id = rph->GetID();
+  info.process_host_id = rph->GetDeprecatedID();
   info.pid = rph->GetProcess().Handle();
   info.process_type = content::PROCESS_TYPE_RENDERER;
   info.app_state = base::android::APPLICATION_STATE_UNKNOWN;
@@ -165,14 +171,17 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
   // chromecast.
   if (collector) {
     // SharedMemory creation / Map() might fail.
-    DCHECK(collector->MemoryMetrics());
-    info.blink_oom_metrics = *collector->MemoryMetrics();
+    info.blink_oom_metrics = collector->MemoryMetrics();
   }
 
   if (content_info) {
-    // We do not care about android fast shutdowns as it is a known case where
-    // the renderer is intentionally killed when we are done with it.
-    info.normal_termination = rph->FastShutdownStarted();
+    // RenderProcessHost is normally terminated by
+    // RenderProcessHost::FastShutdownIfPossible() or
+    // RenderProcessHost::Cleanup(). RenderProcessHost terminating by
+    // FastShutdownIfPossible() is marked as FastShutdownStarted() and
+    // RenderProcessHost terminating by Cleanup() is marked as IsDeletingSoon().
+    info.normal_termination =
+        rph->FastShutdownStarted() || rph->IsDeletingSoon();
     info.renderer_shutdown_requested = rph->ShutdownRequested();
     info.app_state = base::android::ApplicationStatusListener::GetState();
     PopulateTerminationInfo(*content_info, &info);
@@ -183,7 +192,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
     info.renderer_shutdown_requested = rph->ShutdownRequested();
   }
 
-  const auto& iter = process_host_id_to_pid_.find(rph->GetID());
+  const auto& iter = process_host_id_to_pid_.find(rph->GetDeprecatedID());
   if (iter == process_host_id_to_pid_.end()) {
     return;
   }

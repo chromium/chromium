@@ -19,6 +19,8 @@ export interface BookmarkNode {
   dateGroupModified?: number;
   unmodifiable?: string;
   children?: string[];
+  folderType?: chrome.bookmarks.FolderType;
+  syncing?: boolean;
 }
 
 export interface ObjectMap<Type> {

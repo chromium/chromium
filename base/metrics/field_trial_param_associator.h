@@ -5,13 +5,13 @@
 #ifndef BASE_METRICS_FIELD_TRIAL_PARAM_ASSOCIATOR_H_
 #define BASE_METRICS_FIELD_TRIAL_PARAM_ASSOCIATOR_H_
 
+#include <functional>
 #include <map>
 #include <string>
 #include <utility>
 
 #include "base/base_export.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
@@ -19,6 +19,8 @@
 class AppShimController;
 
 namespace base {
+
+class FieldTrial;
 
 // Keeps track of the parameters of all field trials and ensures access to them
 // is thread-safe.
@@ -74,12 +76,12 @@ class BASE_EXPORT FieldTrialParamAssociator {
   friend struct DefaultSingletonTraits<FieldTrialParamAssociator>;
 
   // (field_trial_name, field_trial_group)
-  typedef std::pair<std::string, std::string> FieldTrialKey;
+  using FieldTrialKey = std::pair<std::string, std::string>;
   // The following type can be used for lookups without needing to copy strings.
-  typedef std::pair<const std::string&, const std::string&> FieldTrialRefKey;
+  using FieldTrialRefKey = std::pair<const std::string&, const std::string&>;
 
   Lock lock_;
-  std::map<FieldTrialKey, FieldTrialParams> field_trial_params_;
+  std::map<FieldTrialKey, FieldTrialParams, std::less<>> field_trial_params_;
 };
 
 }  // namespace base

@@ -6,10 +6,12 @@
 
 #include <cstring>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+
 namespace partition_alloc {
 
 SimplePartitionStatsDumper::SimplePartitionStatsDumper() {
-  memset(&stats_, 0, sizeof(stats_));
+  PA_UNSAFE_TODO(memset(&stats_, 0, sizeof(stats_)));
 }
 
 void SimplePartitionStatsDumper::PartitionDumpTotals(

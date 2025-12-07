@@ -4,6 +4,8 @@
 
 #import "base/mac/launch_application.h"
 
+#include <variant>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
@@ -34,7 +36,7 @@ void LogLaunchResult(LaunchResult result) {
 
 NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
   if (const CommandLine* command_line =
-          absl::get_if<CommandLine>(&command_line_args)) {
+          std::get_if<CommandLine>(&command_line_args)) {
     const auto& argv = command_line->argv();
     size_t argc = argv.size();
     DCHECK_GT(argc, 0lu);
@@ -50,7 +52,7 @@ NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
   }
 
   if (const std::vector<std::string>* string_vector =
-          absl::get_if<std::vector<std::string>>(&command_line_args)) {
+          std::get_if<std::vector<std::string>>(&command_line_args)) {
     NSMutableArray* args_array =
         [NSMutableArray arrayWithCapacity:string_vector->size()];
     for (const auto& arg : *string_vector) {
@@ -86,7 +88,7 @@ NSWorkspaceOpenConfiguration* GetOpenConfiguration(
   return config;
 }
 
-// Sometimes macOS 11 and 12 report an error launching even though the launch
+// Sometimes macOS 12 reports an error launching even though the launch
 // succeeded anyway. This helper returns true for the error codes we have
 // observed where scanning the list of running applications appears to be a
 // usable workaround for this.
@@ -109,13 +111,13 @@ void LogResultAndInvokeCallback(const base::FilePath& app_bundle_path,
                                 LaunchApplicationCallback callback,
                                 NSRunningApplication* app,
                                 NSError* error) {
-  // Sometimes macOS 11 and 12 report an error launching even though the
-  // launch succeeded anyway. To work around such cases, check if we can
-  // find a running application matching the app we were trying to launch.
-  // Only do this if `options.create_new_instance` is false though, as
-  // otherwise we wouldn't know which instance to return.
-  if ((MacOSMajorVersion() == 11 || MacOSMajorVersion() == 12) &&
-      !create_new_instance && !app && ShouldScanRunningAppsForError(error)) {
+  // Sometimes macOS 12 reports an error launching even though the launch
+  // succeeded anyway. To work around such a case, check if we can find a
+  // running application matching the app we were trying to launch. Only do this
+  // if `options.create_new_instance` is false though, as otherwise we wouldn't
+  // know which instance to return.
+  if (MacOSMajorVersion() == 12 && !create_new_instance && !app &&
+      ShouldScanRunningAppsForError(error)) {
     NSArray<NSRunningApplication*>* all_apps =
         NSWorkspace.sharedWorkspace.runningApplications;
     for (NSRunningApplication* running_app in all_apps) {

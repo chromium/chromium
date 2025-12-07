@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanInteractive">
-  <int value="0" label="Non-interactive"/>
-  <int value="1" label="Interactive"/>
-</enum>
-
 <enum name="CloudProvider">
   <int value="0" label="None"/>
   <int value="1" label="Unknown"/>
@@ -476,25 +471,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="AbortedInternally"/>
 </enum>
 
-<enum name="FuseboxPosixErrorCode">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="OK"/>
-  <int value="2" label="EOTHER"/>
-  <int value="3" label="EFAULT"/>
-  <int value="4" label="EBUSY"/>
-  <int value="5" label="EEXIST"/>
-  <int value="6" label="ENOENT"/>
-  <int value="7" label="EACCES"/>
-  <int value="8" label="EMFILE"/>
-  <int value="9" label="ENOMEM"/>
-  <int value="10" label="ENOSPC"/>
-  <int value="11" label="ENOTDIR"/>
-  <int value="12" label="ENOTSUP"/>
-  <int value="13" label="EINVAL"/>
-  <int value="14" label="ENOTEMPTY"/>
-  <int value="15" label="EIO"/>
-</enum>
-
 <enum name="GoogleDrive.BulkPinning.MountFailureReason">
   <int value="0" label="Successfully mounted"/>
   <int value="1" label="More than 3 consecutive startup failures"/>
@@ -574,6 +550,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Disable Drive preference set"/>
   <int value="15" label="Drive disabled for account type"/>
   <int value="16" label="Cannot get relative path"/>
+  <int value="17" label="DriveFs unavailable"/>
 </enum>
 
 <enum name="OfficeFileHandler">
@@ -703,6 +680,43 @@ chromium-metrics-reviews@google.com.
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="OfficeOneDriveAuthAttemptType">
+  <int value="0" label="Non-interactive"/>
+  <int value="1" label="Interactive"/>
+  <int value="2" label="Automated"/>
+</enum>
+
+<enum name="OfficeOneDriveAuthResultAutomated">
+  <int value="0" label="Success using refresh token"/>
+  <int value="1" label="Success using non-interactive auth"/>
+  <int value="2" label="Failed to get authorization code: failed to load page"/>
+  <int value="3" label="Failed to get authorization code: page load timed out"/>
+  <int value="4"
+      label="Failed to get authorization code: interaction required (remote)"/>
+  <int value="5"
+      label="Failed to get authorization code: interaction required (Chrome)"/>
+  <int value="6" label="Failed to get authorization code: other error"/>
+  <int value="7" label="Failed to get access token: fetch error"/>
+  <int value="8" label="Failed to get access token: bad response"/>
+  <int value="9" label="Failed to get access token: other error"/>
+  <int value="10" label="Failed to get authorization code: login required"/>
+  <int value="11" label="Failed to get authorization code: access denied"/>
+  <int value="12" label="Failed to get authorization code: server error"/>
+  <int value="13" label="Failed to get authorization code: developer error"/>
+  <int value="14"
+      label="Failed to get authorization code: session information not
+             sufficient"/>
+  <int value="15"
+      label="Failed to get authorization code: multi factor auth required"/>
+  <int value="16" label="Failed to get authorization code: password expired"/>
+  <int value="17" label="Failed to get authorization code: unauthorized scope"/>
+  <int value="18"
+      label="Failed to get authorization code: sign in and application access
+             required"/>
+  <int value="19" label="Failed to get authorization code: user account error"/>
+  <int value="20" label="Failed due to improper account restrictions policy"/>
+</enum>
+
 <enum name="OfficeOneDriveAuthResultInteractive">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to get authorization code: failed to load page"/>
@@ -747,6 +761,13 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Failed to get authorization code: user account error"/>
 </enum>
 
+<enum name="OfficeOneDriveAutomatedMountResult">
+  <int value="0" label="Success (Microsoft)"/>
+  <int value="1" label="Success (third party)"/>
+  <int value="2" label="Failed during third party authentication"/>
+  <int value="3" label="Failed during Microsoft authentication"/>
+</enum>
+
 <enum name="OfficeOneDriveOpenErrors">
   <int value="0" label="Success"/>
   <int value="1" label="Offline"/>
@@ -763,6 +784,18 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Emails do not match"/>
   <int value="13" label="Unsupported Android OneDrive location"/>
   <int value="14" label="Invalid Android OneDrive URL"/>
+  <int value="15" label="Failed to launch"/>
+  <int value="16" label="MS365 not installed"/>
+</enum>
+
+<enum name="OfficeOneDriveThirdPartyAuthResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success (no action required)"/>
+  <int value="2" label="Authentication timeout"/>
+  <int value="3" label="Microsoft domain mismatched policy"/>
+  <int value="4" label="Unexpectedly found Microsoft signin page"/>
+  <int value="5" label="Unexpectedly found Microsoft error page"/>
+  <int value="6" label="Failed for unknown reasons"/>
 </enum>
 
 <enum name="OfficeOneDriveType">
@@ -839,6 +872,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Cancelled at fallback after open attempt"/>
   <int value="20" label="Cannot get fallback choice after open attempt"/>
   <int value="21" label="File already being opened"/>
+  <int value="22" label="Cannot get source type"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">
@@ -855,14 +889,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Picker"/>
 </enum>
 
+<enum name="TrashAutoCleanupError">
+  <int value="0" label="Trash file successfully deleted"/>
+  <int value="1" label="Invalid trash info file"/>
+  <int value="2" label="Failed to get trash info file last modified time"/>
+  <int value="3" label="Failed to parse trash info file"/>
+  <int value="4" label="Failed to delete Trash file"/>
+</enum>
+
 <enum name="WebUrlFormat">
   <int value="0" label="Missing"/>
   <int value="1" label="Empty"/>
   <int value="2" label="1drv.ms"/>
-  <int value="3" label="onedrive.live.com"/>
+  <int value="3" label="onedrive.live.com (unknown format)"/>
   <int value="4" label="sharepoint.com"/>
   <int value="5" label="Unknown"/>
   <int value="6" label="onedrive.live.com (fixed)"/>
+  <int value="7" label="onedrive.live.com (known bad format)"/>
 </enum>
 
 <enum name="ZipFileCreator.Result">

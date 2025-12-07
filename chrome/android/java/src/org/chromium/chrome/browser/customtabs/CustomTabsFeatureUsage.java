@@ -5,18 +5,24 @@
 package org.chromium.chrome.browser.customtabs;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.BitSet;
 
 /** Records a histogram that tracks usage of all the CCT features of interest. */
+@NullMarked
 public class CustomTabsFeatureUsage {
+    @VisibleForTesting
+    public static final String CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM = "CustomTabs.FeatureUsage";
+
     // NOTE: This must be kept in sync with the definition |CustomTabsFeatureUsed|
-    // in tools/metrics/histograms/enums.xml.
+    // in tools/metrics/histograms/metadata/custom_tabs/enums.xml.
+    // LINT.IfChange(CustomTabsFeature)
     @IntDef({
         CustomTabsFeature.CTF_SESSIONS,
         CustomTabsFeature.EXTRA_ACTION_BUTTON_BUNDLE,
@@ -61,7 +67,6 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_ADDITIONAL_TRUSTED_ORIGINS,
         CustomTabsFeature.EXTRA_ENABLE_URLBAR_HIDING,
         CustomTabsFeature.EXTRA_AUTO_TRANSLATE_LANGUAGE,
-        CustomTabsFeature.EXTRA_INTENT_FEATURE_OVERRIDES,
         CustomTabsFeature.CTF_PARTIAL_SIDE_SHEET,
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP,
         CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_WIDTH_PX,
@@ -71,12 +76,19 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
-        CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB,
         CustomTabsFeature.EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE,
-        CustomTabsFeature.EXTRA_OPEN_NEW_EPHEMERAL_TAB,
+        CustomTabsFeature.EXTRA_ENABLE_EPHEMERAL_BROWSING,
         CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR,
         CustomTabsFeature.EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS,
         CustomTabsFeature.EXTRA_NETWORK,
+        CustomTabsFeature.EXTRA_LAUNCH_AUTH_TAB,
+        CustomTabsFeature.EXTRA_REDIRECT_SCHEME,
+        CustomTabsFeature.EXTRA_HTTPS_REDIRECT_HOST,
+        CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH,
+        CustomTabsFeature.EXTRA_OPEN_IN_BROWSER_STATE,
+        CustomTabsFeature.EXTRA_LAUNCH_HANDLER,
+        CustomTabsFeature.EXTRA_FILE_HANDLERS,
+        CustomTabsFeature.EXTRA_CUSTOM_CONTENT_ACTIONS,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -126,7 +138,7 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ADDITIONAL_TRUSTED_ORIGINS = 40;
         int EXTRA_ENABLE_URLBAR_HIDING = 41;
         int EXTRA_AUTO_TRANSLATE_LANGUAGE = 42;
-        int EXTRA_INTENT_FEATURE_OVERRIDES = 43;
+        // int EXTRA_INTENT_FEATURE_OVERRIDES = 43; Deprecated.
         int CTF_PARTIAL_SIDE_SHEET = 44;
         int EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP = 45;
         int EXTRA_INITIAL_ACTIVITY_WIDTH_PX = 46;
@@ -136,37 +148,31 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ACTIVITY_SIDE_SHEET_POSITION = 50;
         int EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR = 51;
         int EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION = 52;
-        int EXTRA_ENABLE_PAGE_INSIGHTS_HUB = 53;
         int EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE = 54;
-        int EXTRA_OPEN_NEW_EPHEMERAL_TAB = 55;
+        int EXTRA_ENABLE_EPHEMERAL_BROWSING = 55;
         int EXTRA_ENABLE_GOOGLE_BOTTOM_BAR = 56;
         int EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS = 57;
         int EXTRA_NETWORK = 58;
+        int EXTRA_LAUNCH_AUTH_TAB = 59;
+        int EXTRA_REDIRECT_SCHEME = 60;
+        int EXTRA_HTTPS_REDIRECT_HOST = 61;
+        int EXTRA_HTTPS_REDIRECT_PATH = 62;
+        int EXTRA_OPEN_IN_BROWSER_STATE = 63;
+        int EXTRA_LAUNCH_HANDLER = 64;
+        int EXTRA_FILE_HANDLERS = 65;
+        int EXTRA_CUSTOM_CONTENT_ACTIONS = 66;
 
         /** Total count of entries. */
-        int COUNT = 59;
+        int COUNT = 67;
     }
 
-    // Whether flag-enabled or not.
-    private boolean mIsEnabled;
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsFeatureUsed)
 
     /** Tracks whether we have written each enum or not. */
-    private BitSet mUsed = new BitSet(CustomTabsFeature.COUNT);
-
-    /** Tracks the usage of Chrome Custom Tabs in a single large histogram. */
-    public CustomTabsFeatureUsage() {
-        mIsEnabled = isEnabled();
-    }
-
-    /** @return whether this feature is enabled or not. */
-    static boolean isEnabled() {
-        return ChromeFeatureList.sCctFeatureUsage.isEnabled();
-    }
+    private final BitSet mUsed = new BitSet(CustomTabsFeature.COUNT);
 
     /** Logs the usage of the given feature, if enabled. */
     void log(@CustomTabsFeature int feature) {
-        if (!mIsEnabled) return;
-
         logInternal(feature);
         // Make sure we've logged a Session.
         // This ensures no feature can have a higher usage that SESSIONS.
@@ -180,6 +186,6 @@ public class CustomTabsFeatureUsage {
 
         mUsed.set(feature);
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.FeatureUsage", feature, CustomTabsFeature.COUNT);
+                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM, feature, CustomTabsFeature.COUNT);
     }
 }

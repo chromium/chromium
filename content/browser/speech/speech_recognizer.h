@@ -10,6 +10,10 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 
+namespace media {
+struct SpeechRecognitionRecognitionContext;
+}
+
 namespace content {
 
 class SpeechRecognitionEventListener;
@@ -18,15 +22,15 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
  public:
-  SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id)
-      : listener_(listener), session_id_(session_id) {
-    DCHECK(listener_);
-  }
+  SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id);
 
   SpeechRecognizer(const SpeechRecognizer&) = delete;
   SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;
 
   virtual void StartRecognition(const std::string& device_id) = 0;
+  virtual void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext&
+          recognition_context) = 0;
   virtual void AbortRecognition() = 0;
   virtual void StopAudioCapture() = 0;
   virtual bool IsActive() const = 0;

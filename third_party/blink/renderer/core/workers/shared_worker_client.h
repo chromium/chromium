@@ -26,6 +26,8 @@ class SharedWorkerClient final : public mojom::blink::SharedWorkerClient {
   void OnCreated(mojom::SharedWorkerCreationContextType) override;
   void OnConnected(const Vector<mojom::WebFeature>& features_used) override;
   void OnScriptLoadFailed(const String& error_message) override;
+  void OnReportException(
+      mojom::blink::SharedWorkerExceptionDetailsPtr details) override;
   void OnFeatureUsed(mojom::WebFeature feature) override;
 
  private:

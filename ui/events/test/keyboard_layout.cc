@@ -5,7 +5,7 @@
 #include "ui/events/test/keyboard_layout.h"
 
 #include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_OZONE)

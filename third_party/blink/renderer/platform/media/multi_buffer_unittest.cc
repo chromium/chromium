@@ -2,23 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -29,9 +24,12 @@
 #include "media/base/test_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 namespace {
+
 class FakeMultiBufferDataProvider;
 
 const int kBlockSizeShift = 8;
@@ -114,7 +112,7 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
       block->writable_data()[x] =
           static_cast<uint8_t>((byte_pos * 15485863) >> 16);
     }
-    block->set_data_size(static_cast<int>(x));
+    block->set_size(static_cast<int>(x));
     fifo_.push_back(block);
     if (byte_pos == file_size_) {
       fifo_.push_back(media::DataBuffer::CreateEOSBuffer());
@@ -157,10 +155,10 @@ class TestMultiBuffer : public MultiBuffer {
   void CheckPresentState() {
     IntervalMap<MultiBufferBlockId, int32_t> tmp;
     for (auto i = data_.begin(); i != data_.end(); ++i) {
-      CHECK(i->second);  // Null poineters are not allowed in data_
-      CHECK_NE(!!pinned_[i->first], lru_->Contains(this, i->first))
-          << " i->first = " << i->first;
-      tmp.IncrementInterval(i->first, i->first + 1, 1);
+      CHECK(i->value);  // Null pointers are not allowed in data_.
+      CHECK_NE(!!pinned_[i->key], lru_->Contains(this, i->key))
+          << " i->key = " << i->key;
+      tmp.IncrementInterval(i->key, i->key + 1, 1);
     }
     IntervalMap<MultiBufferBlockId, int32_t>::const_iterator tmp_iterator =
         tmp.begin();
@@ -180,10 +178,10 @@ class TestMultiBuffer : public MultiBuffer {
 
   void CheckLRUState() {
     for (auto i = data_.begin(); i != data_.end(); ++i) {
-      CHECK(i->second);  // Null poineters are not allowed in data_
-      CHECK_NE(!!pinned_[i->first], lru_->Contains(this, i->first))
-          << " i->first = " << i->first;
-      CHECK_EQ(1, present_[i->first]) << " i->first = " << i->first;
+      CHECK(i->value);  // Null pointers are not allowed in data_.
+      CHECK_NE(!!pinned_[i->key], lru_->Contains(this, i->key))
+          << " i->key = " << i->key;
+      CHECK_EQ(1, present_[i->key]) << " i->key = " << i->key;
     }
   }
 
@@ -281,10 +279,10 @@ TEST_F(MultiBufferTest, ReadAll) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
-    int64_t bytes_read = reader.TryRead(buffer, to_read);
+    int64_t bytes_read = reader.TryRead(base::span(buffer).first(to_read));
     if (bytes_read) {
       EXPECT_EQ(buffer[17], 17);
       for (int64_t i = 0; i < bytes_read; i++) {
@@ -310,12 +308,12 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
     while (AdvanceAll()) {
     }
-    int64_t bytes = reader.TryRead(buffer, to_read);
+    int64_t bytes = reader.TryRead(base::span(buffer).first(to_read));
     EXPECT_GT(bytes, 0);
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
@@ -341,12 +339,12 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
     while (AdvanceAll()) {
     }
-    int64_t bytes = reader.TryRead(buffer, to_read);
+    int64_t bytes = reader.TryRead(base::span(buffer).first(to_read));
     EXPECT_GT(bytes, 0);
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
@@ -373,12 +371,12 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer2) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
     while (AdvanceAll()) {
     }
-    int64_t bytes = reader.TryRead(buffer, to_read);
+    int64_t bytes = reader.TryRead(base::span(buffer).first(to_read));
     EXPECT_GT(bytes, 0);
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
@@ -520,10 +518,11 @@ class ReadHelper {
   bool Read() {
     if (read_size_ == 0)
       return true;
-    unsigned char buffer[4096];
+    std::array<uint8_t, 4096> buffer;
     CHECK_LE(read_size_, static_cast<int64_t>(sizeof(buffer)));
     CHECK_EQ(pos_, reader_.Tell());
-    int64_t bytes_read = reader_.TryRead(buffer, read_size_);
+    int64_t bytes_read = reader_.TryRead(
+        base::span(buffer).first(base::checked_cast<size_t>(read_size_)));
     if (bytes_read) {
       for (int64_t i = 0; i < bytes_read; i++) {
         unsigned char expected = (pos_ * 15485863) >> 16;
@@ -540,8 +539,7 @@ class ReadHelper {
     CHECK_EQ(pos_, reader_.Tell());
     read_size_ = std::min(1 + rnd_->Rand() % (max_read_size_ - 1), end_ - pos_);
     if (!Read()) {
-      reader_.Wait(read_size_,
-                   base::BindOnce(&ReadHelper::WaitCB, base::Unretained(this)));
+      reader_.Wait(read_size_, BindOnce(&ReadHelper::WaitCB, Unretained(this)));
     }
   }
 

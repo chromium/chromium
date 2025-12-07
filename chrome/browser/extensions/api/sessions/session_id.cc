@@ -8,6 +8,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

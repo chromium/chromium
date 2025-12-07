@@ -5,29 +5,33 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
 // Enum passed to EndDrag().
-enum EndDragReason {
+enum class EndDragReason {
   // Complete the drag.
-  END_DRAG_COMPLETE,
+  kComplete,
 
   // Cancel/revert the drag.
-  END_DRAG_CANCEL,
+  kCancel,
 
   // The drag should end as the result of a capture lost.
-  END_DRAG_CAPTURE_LOST,
+  kCaptureLost,
 
   // The model mutated.
-  END_DRAG_MODEL_ADDED_TAB,
+  kModelAddedTab,
 };
 
 // Source of the call to CloseTab().
-enum CloseTabSource {
-  CLOSE_TAB_FROM_MOUSE,
-  CLOSE_TAB_FROM_TOUCH,
+enum class CloseTabSource {
+  // Tab was closed by a mouse event on the tab or its close button
+  kFromMouse,
+  // Tab was closed by a touch event on the tab or its close button
+  kFromTouch,
+  // Tab is closed by some means other than direct tab interaction
+  kFromNonUIEvent,
 };
 
 // Source of the call to ToggleTabGroup(). The source of the call can trigger
 // different behaviors such as logging and different animations. Tests will
-// generally use |kMenuAction| unless testing a particular code path.
+// generally use `kMenuAction` unless testing a particular code path.
 enum class ToggleTabGroupCollapsedStateOrigin {
   // Use when triggering a submenu action or other automated process such as
   // "Add tab to group".

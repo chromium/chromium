@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -81,8 +82,7 @@ V8MIDIPortDeviceState MIDIPort::state() const {
     case PortState::OPENED:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return V8MIDIPortDeviceState(V8MIDIPortDeviceState::Enum::kConnected);
+  NOTREACHED();
 }
 
 V8MIDIPortType MIDIPort::type() const {
@@ -98,8 +98,8 @@ ScriptPromise<MIDIPort> MIDIPort::open(ScriptState* script_state) {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&MIDIPort::OpenAsynchronously,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+                 BindOnce(&MIDIPort::OpenAsynchronously, WrapPersistent(this),
+                          WrapPersistent(resolver)));
   running_open_count_++;
   return resolver->Promise();
 }
@@ -109,8 +109,8 @@ void MIDIPort::open() {
     return;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&MIDIPort::OpenAsynchronously,
-                                          WrapPersistent(this), nullptr));
+      ->PostTask(FROM_HERE, BindOnce(&MIDIPort::OpenAsynchronously,
+                                     WrapPersistent(this), nullptr));
   running_open_count_++;
 }
 
@@ -123,8 +123,8 @@ ScriptPromise<MIDIPort> MIDIPort::close(ScriptState* script_state) {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&MIDIPort::CloseAsynchronously,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+                 BindOnce(&MIDIPort::CloseAsynchronously, WrapPersistent(this),
+                          WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -145,8 +145,7 @@ void MIDIPort::SetState(PortState state) {
     case PortState::CONNECTED:
       switch (connection_) {
         case MIDIPortConnectionState::kOpen:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
         case MIDIPortConnectionState::kPending:
           // We do not use |setStates| in order not to dispatch events twice.
           // |open| calls |setStates|.
@@ -159,8 +158,7 @@ void MIDIPort::SetState(PortState state) {
       }
       break;
     case PortState::OPENED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -206,8 +204,7 @@ void MIDIPort::OpenAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
       SetStates(state_, MIDIPortConnectionState::kOpen);
       break;
     case PortState::OPENED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (resolver)
     resolver->Resolve(this);

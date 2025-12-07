@@ -56,6 +56,7 @@ PointerProperties GetPointerPropertiesFromTouchEvent(const TouchEvent& touch) {
         default_size = 1;
         break;
       default:
+        pointer_properties.has_native_touch_major = false;
         default_size =
             2.f * GestureConfiguration::GetInstance()->default_radius();
         break;
@@ -73,9 +74,9 @@ PointerProperties GetPointerPropertiesFromTouchEvent(const TouchEvent& touch) {
 
 }  // namespace
 
-MotionEventAura::MotionEventAura() {}
+MotionEventAura::MotionEventAura() = default;
 
-MotionEventAura::~MotionEventAura() {}
+MotionEventAura::~MotionEventAura() = default;
 
 bool MotionEventAura::OnTouch(const TouchEvent& touch) {
   int index = FindPointerIndexOfId(touch.pointer_details().id);
@@ -113,8 +114,7 @@ bool MotionEventAura::OnTouch(const TouchEvent& touch) {
       UpdateTouch(touch);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   UpdateCachedAction(touch);
@@ -182,8 +182,7 @@ void MotionEventAura::UpdateCachedAction(const TouchEvent& touch) {
       set_action(Action::MOVE);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

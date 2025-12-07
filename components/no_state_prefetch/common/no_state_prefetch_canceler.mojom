@@ -1,0 +1,17 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module prerender.mojom;
+
+// This interface is provided to a renderer that is used for NoStatePrefetching.
+// It enables the renderer to detect and respond to cases that should cause the
+// NoStatePrefetching to be cancelled.
+interface NoStatePrefetchCanceler {
+  // Cancels NoStatePrefetching because of an unsupported scheme.
+  CancelNoStatePrefetchForUnsupportedScheme();
+
+  // Cancels NoStatePrefetching because the resource prefetcher has discovered
+  // all possible subresources and issued requests for them.
+  CancelNoStatePrefetchAfterSubresourcesDiscovered();
+};

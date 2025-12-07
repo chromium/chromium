@@ -31,13 +31,10 @@ class RecentTabsPagePrefs {
   void SetSyncPromoCollapsed(JNIEnv* env,
                              jboolean is_collapsed);
 
-  jboolean GetForeignSessionCollapsed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& session_tag);
-  void SetForeignSessionCollapsed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& session_tag,
-      jboolean is_collapsed);
+  jboolean GetForeignSessionCollapsed(JNIEnv* env, std::string& session_tag);
+  void SetForeignSessionCollapsed(JNIEnv* env,
+                                  std::string& session_tag,
+                                  jboolean is_collapsed);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

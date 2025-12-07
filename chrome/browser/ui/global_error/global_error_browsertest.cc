@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -12,16 +13,16 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
-#include "chrome/browser/extensions/extension_error_ui_default.h"
+#include "chrome/browser/extensions/extension_error_ui_desktop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_error.h"
-#include "chrome/browser/extensions/test_blocklist.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/recovery/recovery_install_global_error.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -36,10 +37,12 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/browser/test_blocklist.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
@@ -92,8 +95,9 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
 
   // GlobalErrorObserver
   void OnGlobalErrorsChanged() override {
-    if (service_->GetFirstGlobalErrorWithBubbleView())
+    if (service_->GetFirstGlobalErrorWithBubbleView()) {
       run_loop_.Quit();
+    }
   }
 
   void Wait() { run_loop_.Run(); }
@@ -122,8 +126,6 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
   Profile* profile = browser()->profile();
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
 
@@ -131,23 +133,35 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
   builder.SetAction(extensions::ActionInfo::Type::kBrowser);
   builder.SetLocation(extensions::mojom::ManifestLocation::kInternal);
   scoped_refptr<const extensions::Extension> test_extension = builder.Build();
-  extension_service->AddExtension(test_extension.get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(test_extension);
 
   if (name == "ExtensionDisabledGlobalError") {
     GlobalErrorWaiter waiter(profile);
-    extensions::AddExtensionDisabledError(extension_service,
-                                          test_extension.get(), false);
+    extensions::AddExtensionDisabledError(profile, test_extension.get(), false);
+    waiter.Wait();
+    ShowPendingError(browser());
+  } else if (name == "ExtensionWithLongNameDisabledGlobalError") {
+    const std::string long_name =
+        "This extension name should be longer than our truncation threshold "
+        "to test that the bubble can handle long names";
+    scoped_refptr<const extensions::Extension> long_name_extension =
+        extensions::ExtensionBuilder(long_name).Build();
+    extensions::ExtensionRegistrar::Get(profile)->AddExtension(
+        long_name_extension);
+
+    GlobalErrorWaiter waiter(profile);
+    extensions::AddExtensionDisabledError(profile, long_name_extension.get(),
+                                          /*is_remote_install=*/false);
     waiter.Wait();
     ShowPendingError(browser());
   } else if (name == "ExtensionDisabledGlobalErrorRemote") {
     GlobalErrorWaiter waiter(profile);
-    extensions::AddExtensionDisabledError(extension_service,
-                                          test_extension.get(), true);
+    extensions::AddExtensionDisabledError(profile, test_extension.get(), true);
     waiter.Wait();
     ShowPendingError(browser());
   } else if (name == "ExtensionGlobalError") {
     extensions::TestBlocklist test_blocklist(
-        extensions::Blocklist::Get(profile));
+        extensions::BlocklistFactory::GetForBrowserContext(profile));
     extension_registry->AddBlocklisted(test_extension);
     // Only BLOCKLISTED_MALWARE results in a bubble displaying to the user.
     // Other types are greylisted, not blocklisted.
@@ -161,6 +175,8 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     // happens via a callback from the SafeBrowsing DB, but TestBlocklist
     // replaced the SafeBrowsing DB with a fake one, so the notification source
     // is different.
+    extensions::ExtensionService* extension_service =
+        extensions::ExtensionSystem::Get(profile)->extension_service();
     static_cast<extensions::Blocklist::Observer*>(extension_service)
         ->OnBlocklistUpdated();
     base::RunLoop().RunUntilIdle();
@@ -183,23 +199,20 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
         &temp_dir, "update_from_webstore", "update_from_webstore.pem");
 
     GlobalErrorWaiter waiter(profile);
+    extensions::ExternalProviderManager* external_provider_manager =
+        extensions::ExternalProviderManager::Get(profile);
     auto provider = std::make_unique<extensions::MockExternalProvider>(
-        extension_service, extensions::mojom::ManifestLocation::kExternalPref);
+        external_provider_manager,
+        extensions::mojom::ManifestLocation::kExternalPref);
     extensions::MockExternalProvider* provider_ptr = provider.get();
-    extension_service->AddProviderForTesting(std::move(provider));
+    external_provider_manager->AddProviderForTesting(std::move(provider));
     provider_ptr->UpdateOrAddExtension(kExtensionWithUpdateUrl, "1.0.0.0",
                                        crx_path);
-    extension_service->CheckForExternalUpdates();
+    external_provider_manager->CheckForExternalUpdates();
 
     // ExternalInstallError::OnDialogReady() adds the error and shows the dialog
     // immediately.
     waiter.Wait();
-  } else if (name == "RecoveryInstallGlobalError") {
-    GlobalErrorWaiter waiter(profile);
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kRecoveryComponentNeedsElevation, true);
-    waiter.Wait();
-    ShowPendingError(browser());
   } else {
     ADD_FAILURE();
   }
@@ -207,6 +220,11 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
 
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
                        InvokeUi_ExtensionDisabledGlobalError) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
+                       InvokeUi_ExtensionWithLongNameDisabledGlobalError) {
   ShowAndVerifyUi();
 }
 
@@ -225,17 +243,12 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
 
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
                        InvokeUi_ExternalInstallBubbleAlert) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override(crx_file::VerifierFormat::CRX3);
   extensions::FeatureSwitch::ScopedOverride prompt(
       extensions::FeatureSwitch::prompt_for_external_extensions(), true);
   ShowAndVerifyUi();
 }
-
-// RecoveryInstallGlobalError only exists on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
-                       InvokeUi_RecoveryInstallGlobalError) {
-  ShowAndVerifyUi();
-}
-#endif

@@ -9,15 +9,19 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 
 #include "base/unguessable_token.h"
-#include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
+
+namespace net {
+class CookiePartitionKey;
+class IsolationInfo;
+}
 
 namespace blink {
 
@@ -183,6 +187,10 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   const net::SchemefulSite& top_level_site() const { return top_level_site_; }
 
+  // Returns true if unpartitioned storage access is forbidden for the current
+  // storage key.
+  bool ForbidsUnpartitionedStorageAccess() const { return nonce_.has_value(); }
+
   const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
   blink::mojom::AncestorChainBit ancestor_chain_bit() const {
@@ -297,12 +305,18 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // (7B) Operators.
   // Note that not all must be friends, but all are to consolidate the header.
-  BLINK_COMMON_EXPORT
-  friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
-  BLINK_COMMON_EXPORT
-  friend bool operator!=(const StorageKey& lhs, const StorageKey& rhs);
-  BLINK_COMMON_EXPORT
-  friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
+  friend bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
+    return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
+                    lhs.ancestor_chain_bit_) ==
+           std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
+                    rhs.ancestor_chain_bit_);
+  }
+  friend auto operator<=>(const StorageKey& lhs, const StorageKey& rhs) {
+    return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
+                    lhs.ancestor_chain_bit_) <=>
+           std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
+                    rhs.ancestor_chain_bit_);
+  }
   BLINK_COMMON_EXPORT
   friend std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk);
 
@@ -311,6 +325,16 @@ class BLINK_COMMON_EXPORT StorageKey {
   // a key to ensure correctness. This does not imply that the key is
   // serializable as keys with opaque origins will still return true.
   bool IsValid() const;
+
+  // Not currently implemented in BlinkStorageKey since Blink generally uses
+  // WTF::HashMap and its variants.
+  template <typename H>
+  friend H AbslHashValue(H h, const StorageKey& key) {
+    return H::combine(std::move(h), key.origin_, key.top_level_site_,
+                      key.top_level_site_if_third_party_enabled_, key.nonce_,
+                      key.ancestor_chain_bit_,
+                      key.ancestor_chain_bit_if_third_party_enabled_);
+  }
 
   // [Block 8 - Private Members] - Keep in sync with BlinkStorageKey.
 

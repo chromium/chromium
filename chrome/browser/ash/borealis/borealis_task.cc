@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -26,8 +27,10 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -64,7 +67,7 @@ CheckAllowed::CheckAllowed() : BorealisTask("CheckAllowed") {}
 CheckAllowed::~CheckAllowed() = default;
 
 void CheckAllowed::RunInternal(BorealisContext* context) {
-  BorealisService::GetForProfile(context->profile())
+  BorealisServiceFactory::GetForProfile(context->profile())
       ->Features()
       .IsAllowed(base::BindOnce(&CheckAllowed::OnAllowednessChecked,
                                 weak_factory_.GetWeakPtr(), context));
@@ -86,7 +89,7 @@ GetLaunchOptions::GetLaunchOptions() : BorealisTask("GetLaunchOptions") {}
 GetLaunchOptions::~GetLaunchOptions() = default;
 
 void GetLaunchOptions::RunInternal(BorealisContext* context) {
-  BorealisService::GetForProfile(context->profile())
+  BorealisServiceFactory::GetForProfile(context->profile())
       ->LaunchOptions()
       .Build(base::BindOnce(&GetLaunchOptions::HandleOptions,
                             weak_factory_.GetWeakPtr(), context));
@@ -325,7 +328,7 @@ void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
   // It is safe to BindOnce() the context* since it is guaranteed to be alive
   // until this task calls Complete().
   subscription_ =
-      guest_os::GuestOsSessionTracker::GetForProfile(context->profile())
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(context->profile())
           ->RunOnceContainerStarted(
               id, base::BindOnce(&AwaitBorealisStartup::OnContainerStarted,
                                  weak_factory_.GetWeakPtr(), context));
@@ -350,7 +353,7 @@ void PushFlag(const base::Feature& feature,
               std::vector<std::string>& out_command) {
   out_command.emplace_back(
       std::string(feature.name) + "=" +
-      (base::FeatureList::IsEnabled(feature) ? "true" : "false"));
+      base::ToString(base::FeatureList::IsEnabled(feature)));
 }
 
 // Helper for converting |feature| and |param| of enum type into

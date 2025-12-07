@@ -13,41 +13,77 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/allocation.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/anybitpattern.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/checked.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/contiguous.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/internal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/must.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/no_uninit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/offset_of.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/pod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/pod_in_option.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/transparent.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/zeroable.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.16.1/src/zeroable_in_option.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/allocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/anybitpattern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/checked.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/contiguous.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/derive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/must.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/no_uninit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/offset_of.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/pod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/pod_in_option.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/transparent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable_in_option.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.16.1"
   cargo_pkg_authors = "Lokathor <zefria@gmail.com>"
   cargo_pkg_name = "bytemuck"
   cargo_pkg_description = "A crate for mucking around with piles of bytes."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  cargo_pkg_repository = "https://github.com/Lokathor/bytemuck"
+  cargo_pkg_version = "1.24.0"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/bytemuck_derive/v1:lib" ]
   features = [
     "bytemuck_derive",
     "derive",
     "min_const_generics",
+    "nightly_portable_simd",
   ]
+
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  rustflags = [ "-Zallow-features=portable_simd" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }

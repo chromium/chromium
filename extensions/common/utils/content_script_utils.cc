@@ -11,18 +11,24 @@
 #include <string_view>
 
 #include "base/files/file_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/common/user_script.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "net/base/mime_util.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -48,6 +54,48 @@ constexpr char kInvalidMatchDynamicScriptError[] =
     "Script with ID '*' has invalid value for matches[*]: *";
 constexpr char kForbiddenInlineCodeScriptError[] =
     "Script with ID '*' has forbidden inline code source";
+
+// Returns true if the given path's mime type can be used for the given content
+// script type.
+bool IsMimeTypeValid(const base::FilePath& relative_path,
+                     ContentScriptType content_script_type) {
+  auto file_extension = relative_path.Extension();
+  if (file_extension.empty()) {
+    return false;
+  }
+
+  // Strip leading ".".
+  file_extension = file_extension.substr(1);
+
+  // Allow .user.js files, which normally have no mime type, for JS content
+  // scripts.
+  if (content_script_type == ContentScriptType::kJs &&
+      base::EqualsCaseInsensitiveASCII(file_extension,
+                                       UserScript::kFileExtension)) {
+    return true;
+  }
+
+  // Allow .scss files for CSS content scripts for compatibility with existing
+  // extensions that were using such files before the mime type check was
+  // introduced.
+  if (content_script_type == ContentScriptType::kCss &&
+      base::EqualsCaseInsensitiveASCII(file_extension, "scss")) {
+    return true;
+  }
+
+  std::string mime_type;
+  if (!net::GetWellKnownMimeTypeFromExtension(file_extension, &mime_type)) {
+    return false;
+  }
+
+  switch (content_script_type) {
+    case ContentScriptType::kJs:
+      return blink::IsSupportedJavascriptMimeType(mime_type);
+
+    case ContentScriptType::kCss:
+      return mime_type == "text/css";
+  }
+}
 
 // Returns false and sets the error if script file can't be loaded, or if it's
 // not UTF-8 encoded. If a script file can be loaded but will exceed
@@ -291,7 +339,7 @@ bool ParseFileSources(
     result->js_scripts().reserve(js->size());
     for (const auto& source : *js) {
       if (source.file) {
-        GURL url = extension->GetResourceURL(*source.file);
+        GURL url = extension->GetResourceURL(base::EscapePath(*source.file));
         ExtensionResource resource = extension->GetResource(*source.file);
         result->js_scripts().push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));
@@ -320,7 +368,7 @@ bool ParseFileSources(
     result->css_scripts().reserve(css->size());
     for (const auto& source : *css) {
       if (source.file) {
-        GURL url = extension->GetResourceURL(*source.file);
+        GURL url = extension->GetResourceURL(base::EscapePath(*source.file));
         ExtensionResource resource = extension->GetResource(*source.file);
         result->css_scripts().push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));
@@ -354,6 +402,28 @@ void ParseGlobs(const std::vector<std::string>* include_globs,
   }
 }
 
+bool ValidateMimeTypeFromFileExtension(const base::FilePath& relative_path,
+                                       ContentScriptType content_script_type,
+                                       std::string* error) {
+  if (!IsMimeTypeValid(relative_path, content_script_type)) {
+    switch (content_script_type) {
+      case ContentScriptType::kJs:
+        *error = l10n_util::GetStringFUTF8(
+            IDS_EXTENSION_CONTENT_SCRIPT_FILE_BAD_JS_MIME_TYPE,
+            relative_path.LossyDisplayName());
+        return false;
+
+      case ContentScriptType::kCss:
+        *error = l10n_util::GetStringFUTF8(
+            IDS_EXTENSION_CONTENT_SCRIPT_FILE_BAD_CSS_MIME_TYPE,
+            relative_path.LossyDisplayName());
+        return false;
+    }
+  }
+
+  return true;
+}
+
 bool ValidateFileSources(const UserScriptList& scripts,
                          ExtensionResource::SymlinkPolicy symlink_policy,
                          std::string* error,
@@ -366,6 +436,16 @@ bool ValidateFileSources(const UserScriptList& scripts,
       // Don't validate scripts with inline code source, since they don't have
       // file sources.
       if (js_script->source() == UserScript::Content::Source::kInlineCode) {
+        continue;
+      }
+
+      // Files with invalid mime types will be ignored.
+      if (!ValidateMimeTypeFromFileExtension(js_script->relative_path(),
+                                             ContentScriptType::kJs, error)) {
+        warnings->emplace_back(
+            base::StringPrintf(errors::kInvalidUserScriptMimeType,
+                               error->c_str()),
+            api::content_scripts::ManifestKeys::kContentScripts);
         continue;
       }
 
@@ -383,6 +463,16 @@ bool ValidateFileSources(const UserScriptList& scripts,
 
     for (const std::unique_ptr<UserScript::Content>& css_script :
          script->css_scripts()) {
+      // Files with invalid mime types will be ignored.
+      if (!ValidateMimeTypeFromFileExtension(css_script->relative_path(),
+                                             ContentScriptType::kCss, error)) {
+        warnings->emplace_back(
+            base::StringPrintf(errors::kInvalidUserScriptMimeType,
+                               error->c_str()),
+            api::content_scripts::ManifestKeys::kContentScripts);
+        continue;
+      }
+
       const base::FilePath& path = ExtensionResource::GetFilePath(
           css_script->extension_root(), css_script->relative_path(),
           symlink_policy);
@@ -399,8 +489,35 @@ bool ValidateFileSources(const UserScriptList& scripts,
   return true;
 }
 
+bool ValidateUserScriptMimeTypesFromFileExtensions(const UserScript& script,
+                                                   std::string* error) {
+  for (const std::unique_ptr<UserScript::Content>& js_script :
+       script.js_scripts()) {
+    // Don't validate scripts with inline code source, since they don't have
+    // file sources.
+    if (js_script->source() == UserScript::Content::Source::kInlineCode) {
+      continue;
+    }
+
+    if (!ValidateMimeTypeFromFileExtension(js_script->relative_path(),
+                                           ContentScriptType::kJs, error)) {
+      return false;
+    }
+  }
+
+  for (const std::unique_ptr<UserScript::Content>& css_script :
+       script.css_scripts()) {
+    if (!ValidateMimeTypeFromFileExtension(css_script->relative_path(),
+                                           ContentScriptType::kCss, error)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool ValidateMatchOriginAsFallback(
-    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback,
     const URLPatternSet& url_patterns,
     std::u16string* error_out) {
   // If the extension is using `match_origin_as_fallback`, we require the
@@ -409,7 +526,8 @@ bool ValidateMatchOriginAsFallback(
   // a pattern of `"https://google.com/maps/*"`, this script would also run
   // on about:blank, data:, etc frames from https://google.com (because in
   // both cases, the precursor origin is https://google.com).
-  if (match_origin_as_fallback == MatchOriginAsFallbackBehavior::kAlways) {
+  if (match_origin_as_fallback ==
+      mojom::MatchOriginAsFallbackBehavior::kAlways) {
     for (const auto& pattern : url_patterns) {
       if (pattern.path() != "/*") {
         *error_out = errors::kMatchOriginAsFallbackCantHavePaths;

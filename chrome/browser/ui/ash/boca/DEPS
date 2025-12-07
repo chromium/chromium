@@ -1,0 +1,14 @@
+specific_include_rules = {
+  ".*(_browsertest|_unittest)\\.(h|cc)": [
+    "+chrome/browser/apps/platform_apps",
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_tabstrip.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
+    "+chrome/test",
+  ],
+}

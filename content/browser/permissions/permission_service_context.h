@@ -6,11 +6,13 @@
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_SERVICE_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -67,10 +69,10 @@ class CONTENT_EXPORT PermissionServiceContext
       mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
 
   void CreateSubscription(
-      blink::PermissionType permission_type,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       const url::Origin& origin,
-      PermissionStatus current_status,
-      PermissionStatus last_known_status,
+      PermissionResult current_result,
+      PermissionResult last_known_result,
       bool should_include_device_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer);
 
@@ -81,7 +83,7 @@ class CONTENT_EXPORT PermissionServiceContext
   // May return nullptr during teardown, or when showing an interstitial.
   BrowserContext* GetBrowserContext() const;
 
-  GURL GetEmbeddingOrigin() const;
+  std::optional<GURL> GetEmbeddingOrigin() const;
 
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
   RenderProcessHost* render_process_host() const {
@@ -91,8 +93,8 @@ class CONTENT_EXPORT PermissionServiceContext
   // RenderProcessHostObserver:
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  void StoreStatusAtBFCacheEntry();
-  void NotifyPermissionStatusChangedIfNeeded();
+  void StoreResultAtBFCacheEntry();
+  void NotifyPermissionResultChangedIfNeeded();
 
   std::set<blink::PermissionType>& GetOnchangeEventListeners() {
     return onchange_event_listeners_;

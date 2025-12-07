@@ -22,7 +22,7 @@ import org.chromium.net.UrlResponseInfo;
 public abstract class CronetSmokeTestRule implements TestRule {
     public ExperimentalCronetEngine.Builder mCronetEngineBuilder;
     public CronetEngine mCronetEngine;
-    private TestSupport mTestSupport = initTestSupport();
+    private final TestSupport mTestSupport = initTestSupport();
 
     @Override
     public Statement apply(final Statement base, Description desc) {

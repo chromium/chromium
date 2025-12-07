@@ -5,9 +5,16 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
+#include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,9 +28,13 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
-constexpr gfx::Size kCloseButtonSize{20, 20};
+constexpr gfx::Size kCloseButtonSize{28, 28};
 
 constexpr int kBackgroundBorderThickness = 1;
 constexpr int kBackgroundCornerRadius = 8;
@@ -31,12 +42,14 @@ constexpr int kDeviceEntryCornerRadius = 4;
 constexpr int kBackgroundSeparator = 8;
 constexpr int kDeviceContainerSeparator = 4;
 constexpr int kDeviceEntrySeparator = 8;
-constexpr int kCloseButtonIconSize = 16;
+constexpr int kCloseButtonIconSize = 20;
 constexpr int kDeviceEntryIconSize = 20;
+constexpr int kPermissionRejectedLabelWidth = 400;
 
-constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
-constexpr gfx::Insets kCastToRowInsets = gfx::Insets::VH(0, 8);
-constexpr gfx::Insets kIssueHoverButtonInsets = gfx::Insets::VH(6, 16);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::TLBR(12, 8, 16, 8);
+constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::TLBR(0, 8, 0, 4);
+constexpr gfx::Insets kIconHoverButtonInsets = gfx::Insets::VH(6, 8);
+constexpr gfx::Insets kThrobberHoverButtonInsets = gfx::Insets::VH(0, 8);
 
 }  // namespace
 
@@ -53,7 +66,7 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
   GetViewAccessibility().SetName(
       base::JoinString({device_name, status_text}, u"\n"));
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kIssueHoverButtonInsets,
+      views::BoxLayout::Orientation::kHorizontal, kIconHoverButtonInsets,
       kDeviceEntrySeparator));
 
   // Create a column to hold the info icon view.
@@ -81,22 +94,18 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
       std::make_unique<views::Label>(device_name, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_2));
   device_name_label_->SetCanProcessEventsWithinSubtree(false);
-  device_name_label_->SetEnabledColorId(device_name_color_id);
+  device_name_label_->SetEnabledColor(device_name_color_id);
 
   status_text_label_ = label_column->AddChildView(
       std::make_unique<views::Label>(status_text, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_4));
   status_text_label_->SetCanProcessEventsWithinSubtree(false);
-  status_text_label_->SetEnabledColorId(status_text_color_id);
+  status_text_label_->SetEnabledColor(status_text_color_id);
 }
 
 gfx::Size IssueHoverButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return GetLayoutManager()->GetPreferredSize(this);
-}
-
-int IssueHoverButton::GetHeightForWidth(int w) const {
-  return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+  return GetLayoutManager()->GetPreferredSize(this, available_size);
 }
 
 BEGIN_METADATA(IssueHoverButton)
@@ -112,27 +121,30 @@ CastDeviceSelectorView::CastDeviceSelectorView(
     : device_list_host_(std::move(device_list_host)),
       device_list_client_(this, std::move(device_list_client)),
       media_color_theme_(media_color_theme) {
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme_.device_selector_border_color_id));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.device_selector_background_color_id,
       kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kBackgroundInsets,
       kBackgroundSeparator));
 
-  // |cast_to_row| holds the cast to label and the close button.
-  auto* cast_to_row = AddChildView(std::make_unique<views::BoxLayoutView>());
-  cast_to_row->SetInsideBorderInsets(kCastToRowInsets);
+  // |cast_header_row| holds the cast header label and the close button.
+  auto* cast_header_row =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  cast_header_row->SetInsideBorderInsets(kCastHeaderRowInsets);
+  cast_header_row->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Create the cast to label.
-  views::Label* cast_to_label =
-      cast_to_row->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAST_TO_TEXT),
+  // Create the cast header label.
+  views::Label* cast_header_label =
+      cast_header_row->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAST_HEADER_TEXT),
           views::style::CONTEXT_LABEL, views::style::STYLE_HEADLINE_5));
-  cast_to_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  cast_to_row->SetFlexForView(cast_to_label, 1);
+  cast_header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  cast_header_row->SetFlexForView(cast_header_label, 1);
 
   // Create the close button.
   auto close_button =
@@ -141,11 +153,11 @@ CastDeviceSelectorView::CastDeviceSelectorView(
                               base::Unretained(this)),
           global_media_controls::kEmptyMediaActionButtonId,
           IDS_GLOBAL_MEDIA_CONTROLS_CLOSE_DEVICE_LIST_TEXT,
-          kCloseButtonIconSize, vector_icons::kCloseIcon, kCloseButtonSize,
+          kCloseButtonIconSize, vector_icons::kCloseSmallIcon, kCloseButtonSize,
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.focus_ring_color_id);
-  close_button_ = cast_to_row->AddChildView(std::move(close_button));
+  close_button_ = cast_header_row->AddChildView(std::move(close_button));
 
   // Create the container view to hold available devices.
   device_container_view_ =
@@ -153,6 +165,10 @@ CastDeviceSelectorView::CastDeviceSelectorView(
   device_container_view_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
   device_container_view_->SetBetweenChildSpacing(kDeviceContainerSeparator);
+
+  // Create the container view to hold the permission rejected error.
+  permission_rejected_view_ =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
 
   if (show_devices) {
     ShowDevices();
@@ -193,7 +209,8 @@ bool CastDeviceSelectorView::IsDeviceSelectorExpanded() {
 void CastDeviceSelectorView::OnDevicesUpdated(
     std::vector<global_media_controls::mojom::DevicePtr> devices) {
   device_container_view_->RemoveAllChildViews();
-  has_issue_ = false;
+  has_permission_rejected_issue_ = false;
+  has_device_issue_ = false;
   for (const auto& device : devices) {
     auto device_view = BuildCastDeviceEntryView(
         base::BindRepeating(&CastDeviceSelectorView::OnCastDeviceSelected,
@@ -202,11 +219,68 @@ void CastDeviceSelectorView::OnDevicesUpdated(
         base::UTF8ToUTF16(device->status_text));
     device_container_view_->AddChildView(std::move(device_view));
   }
-  if (media_item_ui_updated_view_) {
-    media_item_ui_updated_view_->UpdateDeviceSelectorAvailability(
-        device_container_view_->children().size() > 0);
-    media_item_ui_updated_view_->UpdateDeviceSelectorIssue(has_issue_);
+  UpdateVisibility();
+}
+
+void CastDeviceSelectorView::OnPermissionRejected() {
+  if (has_permission_rejected_issue_ ||
+      g_browser_process->local_state()->GetBoolean(
+          media_router::prefs::kSuppressLocalDiscoveryPermissionError)) {
+    return;
   }
+  has_permission_rejected_issue_ = true;
+  media_router::MediaRouterMetrics::
+      RecordMediaRouterUiPermissionRejectedViewEvents(
+          media_router::MediaRouterUiPermissionRejectedViewEvents::
+              kGmcDialogErrorShown);
+
+  size_t offset;
+  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
+  std::u16string label_text = l10n_util::GetStringFUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
+      settings_text_for_link, &offset);
+
+  // TODO(crbug.com/359973625): Do not set the accessibility name for
+  // `permission_rejected_view_` once AXPlatformNodeCocoa::AXBoundsForRange is
+  // implemented.
+  permission_rejected_view_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kGroup);
+  permission_rejected_view_->GetViewAccessibility().SetName(
+      label_text, ax::mojom::NameFrom::kRelatedElement);
+  permission_rejected_view_->SetFocusBehavior(
+      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+
+  auto* permission_rejected_label_ = permission_rejected_view_->AddChildView(
+      std::make_unique<views::StyledLabel>());
+  permission_rejected_label_->SetBorder(
+      views::CreateEmptyBorder(kCastHeaderRowInsets));
+  permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  permission_rejected_label_->SetDefaultEnabledColorId(
+      media_color_theme_.secondary_foreground_color_id);
+  permission_rejected_label_->SetText(label_text);
+  gfx::Size preferred_size(kPermissionRejectedLabelWidth,
+                           permission_rejected_label_->GetHeightForWidth(
+                               kPermissionRejectedLabelWidth));
+  permission_rejected_label_->SetPreferredSize(preferred_size);
+
+#if BUILDFLAG(IS_MAC)
+  base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
+    // TODO(crbug.com/358725038): Open the Local Network sub-pane in system
+    // settings directly once the feature request to Apple (FB14789617) is
+    // solved.
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity);
+    media_router::MediaRouterMetrics::
+        RecordMediaRouterUiPermissionRejectedViewEvents(
+            media_router::MediaRouterUiPermissionRejectedViewEvents::
+                kGmcDialogLinkClicked);
+  });
+  permission_rejected_label_->AddStyleRange(
+      gfx::Range(offset, offset + settings_text_for_link.length()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(open_settings_cb));
+#endif
+
   UpdateVisibility();
 }
 
@@ -227,9 +301,10 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
 
     device_entry_button = std::make_unique<HoverButton>(
         std::move(callback), std::move(throbber), device_name);
-    device_entry_button->title()->SetDefaultTextStyle(
-        views::style::STYLE_BODY_2);
-    device_entry_button->title()->SetDefaultEnabledColorId(
+    device_entry_button->SetBorder(
+        views::CreateEmptyBorder(kThrobberHoverButtonInsets));
+    device_entry_button->title()->SetTextStyle(views::style::STYLE_BODY_2);
+    device_entry_button->title()->SetEnabledColor(
         media_color_theme_.secondary_foreground_color_id);
   } else if (icon == global_media_controls::mojom::IconType::kInfo) {
     // Create the device entry button with a static info icon view, and
@@ -238,7 +313,7 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
         std::move(callback), icon, device_name, status_text,
         media_color_theme_.secondary_foreground_color_id,
         media_color_theme_.error_foreground_color_id);
-    has_issue_ = true;
+    has_device_issue_ = true;
   } else {
     // Create the device entry button with a static icon view.
     device_entry_button = std::make_unique<HoverButton>(
@@ -248,8 +323,10 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
             media_color_theme_.secondary_foreground_color_id,
             kDeviceEntryIconSize),
         device_name);
+    device_entry_button->SetBorder(
+        views::CreateEmptyBorder(kIconHoverButtonInsets));
     device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
-    device_entry_button->SetEnabledTextColorIds(
+    device_entry_button->SetEnabledTextColors(
         media_color_theme_.secondary_foreground_color_id);
     device_entry_button->SetImageLabelSpacing(kDeviceEntrySeparator);
   }
@@ -265,9 +342,12 @@ void CastDeviceSelectorView::OnCastDeviceSelected(
 }
 
 void CastDeviceSelectorView::UpdateVisibility() {
-  // Show the view if user requests to show the list and there are also
-  // available devices.
-  SetVisible(is_expanded_ && (device_container_view_->children().size() > 0));
+  // Show the view if user requests to show the list and the device selector is
+  // available.
+  SetVisible(is_expanded_ && IsDeviceSelectorAvailable());
+
+  device_container_view_->SetVisible(!has_permission_rejected_issue_);
+  permission_rejected_view_->SetVisible(has_permission_rejected_issue_);
 
   // Visibility changes can result in size changes, which should change sizes of
   // parent views too.
@@ -275,6 +355,10 @@ void CastDeviceSelectorView::UpdateVisibility() {
 
   // Update the casting state on the parent view.
   if (media_item_ui_updated_view_) {
+    media_item_ui_updated_view_->UpdateDeviceSelectorAvailability(
+        IsDeviceSelectorAvailable());
+    media_item_ui_updated_view_->UpdateDeviceSelectorIssue(
+        has_device_issue_ || has_permission_rejected_issue_);
     media_item_ui_updated_view_->UpdateDeviceSelectorVisibility(is_expanded_);
   }
 }
@@ -284,14 +368,28 @@ void CastDeviceSelectorView::CloseButtonPressed() {
       global_media_controls::kMediaItemUIUpdatedViewActionHistogram,
       global_media_controls::MediaItemUIUpdatedViewAction::
           kCloseDeviceListForCasting);
+  if (has_permission_rejected_issue_) {
+    media_router::MediaRouterMetrics::
+        RecordMediaRouterUiPermissionRejectedViewEvents(
+            media_router::MediaRouterUiPermissionRejectedViewEvents::
+                kGmcDialogErrorDismissed);
+    g_browser_process->local_state()->SetBoolean(
+        media_router::prefs::kSuppressLocalDiscoveryPermissionError, true);
+    has_permission_rejected_issue_ = false;
+  }
+
   HideDevices();
 }
 
+bool CastDeviceSelectorView::IsDeviceSelectorAvailable() {
+  return !device_container_view_->children().empty() ||
+         has_permission_rejected_issue_;
+}
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions for testing:
 
-bool CastDeviceSelectorView::GetHasIssueForTesting() {
-  return has_issue_;
+bool CastDeviceSelectorView::GetHasDeviceIssueForTesting() {
+  return has_device_issue_;
 }
 
 global_media_controls::MediaActionButton*
@@ -301,6 +399,10 @@ CastDeviceSelectorView::GetCloseButtonForTesting() {
 
 views::View* CastDeviceSelectorView::GetDeviceContainerViewForTesting() {
   return device_container_view_;
+}
+
+views::View* CastDeviceSelectorView::GetPermissionRejectedViewForTesting() {
+  return permission_rejected_view_;
 }
 
 BEGIN_METADATA(CastDeviceSelectorView)

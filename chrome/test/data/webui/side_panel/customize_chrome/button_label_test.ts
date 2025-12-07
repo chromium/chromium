@@ -45,6 +45,6 @@ suite('ButtonLabelTest', () => {
             buttonLabelElement.$.labelDescription, 'display', 'none');
         assertEquals('foo', buttonLabelElement.$.label.textContent);
         assertEquals(
-            'bar', buttonLabelElement.$.labelDescription.textContent!.trim());
+            'bar', buttonLabelElement.$.labelDescription.textContent.trim());
       });
 });

@@ -1,0 +1,109 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("user_session_activity") {
+  sources = [
+    "user_session_activity_reporter.cc",
+    "user_session_activity_reporter.h",
+    "user_session_activity_reporter_delegate.cc",
+    "user_session_activity_reporter_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser/profiles" ]
+
+  deps = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting",
+    "//chrome/browser/ash/policy/status_collector",
+    "//chrome/browser/ash/power/ml",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/settings",
+    "//components/viz/host",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "user_session_activity_reporter_delegate_unittest.cc",
+    "user_session_activity_reporter_unittest.cc",
+  ]
+
+  deps = [
+    ":user_session_activity",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting",
+    "//chrome/browser/ash/policy/reporting:test_support",
+    "//chrome/browser/ash/power/ml",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/power",
+    "//components/policy/core/common",
+    "//components/reporting/client:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "user_session_activity_reporter_browsertest.cc" ]
+
+  deps = [
+    ":user_session_activity",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/reporting:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/dbus/missive:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

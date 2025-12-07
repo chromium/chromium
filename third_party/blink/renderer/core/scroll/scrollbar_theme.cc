@@ -28,8 +28,10 @@
 #include <optional>
 
 #include "build/build_config.h"
+#include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -94,14 +96,12 @@ ScrollbarPart ScrollbarTheme::HitTest(const Scrollbar& scrollbar,
 
 void ScrollbarTheme::PaintScrollCorner(
     GraphicsContext& context,
-    const Scrollbar* vertical_scrollbar,
+    const ScrollableArea& scrollable_area,
     const DisplayItemClient& display_item_client,
-    const gfx::Rect& corner_rect,
-    mojom::blink::ColorScheme color_scheme,
-    bool in_forced_colors,
-    const ui::ColorProvider* color_provider) {
-  if (corner_rect.IsEmpty())
+    const gfx::Rect& corner_rect) {
+  if (corner_rect.IsEmpty()) {
     return;
+  }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))
@@ -113,19 +113,25 @@ void ScrollbarTheme::PaintScrollCorner(
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 #else
   WebThemeEngine::ScrollbarTrackExtraParams scrollbar_track;
-  if (vertical_scrollbar != nullptr &&
-      vertical_scrollbar->ScrollbarTrackColor().has_value()) {
-    scrollbar_track.track_color = vertical_scrollbar->ScrollbarTrackColor()
-                                      .value()
-                                      .toSkColor4f()
-                                      .toSkColor();
+  const Scrollbar* scrollbar = scrollable_area.VerticalScrollbar();
+  if (!scrollbar) {
+    scrollbar = scrollable_area.HorizontalScrollbar();
+  }
+  // The scroll corner exists means at least one scrollbar exists.
+  CHECK(scrollbar);
+  if (scrollbar->ScrollbarTrackColor().has_value()) {
+    scrollbar_track.track_color =
+        scrollbar->ScrollbarTrackColor().value().toSkColor4f().toSkColor();
   }
   // TODO(crbug.com/1493088): Rounded corner of scroll corner for form controls.
   WebThemeEngine::ExtraParams extra_params(scrollbar_track);
+  mojom::blink::ColorScheme color_scheme = scrollbar->UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, corner_rect, &extra_params, color_scheme,
-      in_forced_colors, color_provider);
+      WebThemeEngine::kStateNormal, corner_rect, &extra_params,
+      scrollbar->InForcedColorsMode(), color_scheme,
+      scrollbar->GetPreferredContrast(),
+      scrollbar->GetColorProvider(color_scheme));
 #endif
 }
 
@@ -202,19 +208,9 @@ int ScrollbarTheme::ThumbLength(const Scrollbar& scrollbar) const {
   if (!scrollbar.Enabled())
     return 0;
 
-  float overhang = fabsf(scrollbar.ElasticOverscroll());
-  float proportion = 0.0f;
-  float total_size = scrollbar.TotalSize();
-  if (total_size > 0.0f) {
-    proportion = (scrollbar.VisibleSize() - overhang) / total_size;
-  }
-  int track_len = TrackLength(scrollbar);
-  int length = round(proportion * track_len);
-  length = std::max(length, MinimumThumbLength(scrollbar));
-  if (length > track_len)
-    length = track_len;  // Once the thumb is below the track length,
-                         // it fills the track.
-  return length;
+  return cc::ScrollUtils::CalculateScrollbarThumbLength(
+      scrollbar.TotalSize(), scrollbar.VisibleSize(), TrackLength(scrollbar),
+      MinimumThumbLength(scrollbar));
 }
 
 int ScrollbarTheme::TrackPosition(const Scrollbar& scrollbar) const {
@@ -300,7 +296,6 @@ void ScrollbarTheme::PaintTrackBackgroundAndButtons(GraphicsContext& context,
                                                     const gfx::Rect& rect) {
   // CustomScrollbarTheme must override this method.
   DCHECK(!scrollbar.IsCustomScrollbar());
-  CHECK_EQ(rect.size(), scrollbar.FrameRect().size());
   gfx::Vector2d offset = rect.origin() - scrollbar.Location();
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
@@ -320,8 +315,10 @@ void ScrollbarTheme::PaintTrackBackgroundAndButtons(GraphicsContext& context,
   }
 
   gfx::Rect track_rect = TrackRect(scrollbar);
-  track_rect.Offset(offset);
-  PaintTrackBackground(context, scrollbar, track_rect);
+  if (!track_rect.IsEmpty()) {
+    track_rect.Offset(offset);
+    PaintTrackBackground(context, scrollbar, track_rect);
+  }
 }
 
 void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,

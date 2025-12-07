@@ -157,7 +157,21 @@ enum NTPLoggingEventType {
   // The NTP <ntp-app> element was created and ready() was called.
   NTP_APP_RENDERED = 84,
 
-  NTP_EVENT_TYPE_LAST = NTP_APP_RENDERED
+  // The visibility of personal shortcuts was changed.
+  NTP_CUSTOMIZE_PERSONAL_SHORTCUT_TOGGLE_VISIBILITY = 85,
+
+  // An enterprise shortcut was removed.
+  NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_REMOVE = 86,
+  // An enterprise shortcut action was undone.
+  NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO = 87,
+  // All enterprise shortcuts were restored.
+  NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL = 88,
+  // An enterprise shortcut was updated.
+  NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UPDATE = 89,
+  // The visibility of enterprise shortcuts was changed.
+  NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY = 90,
+
+  NTP_EVENT_TYPE_LAST = NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY
 };
 
 #endif  // CHROME_COMMON_SEARCH_NTP_LOGGING_EVENTS_H_

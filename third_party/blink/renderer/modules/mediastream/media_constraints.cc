@@ -43,19 +43,37 @@ namespace blink {
 namespace {
 
 template <typename T>
-void MaybeEmitNamedValue(StringBuilder& builder,
-                         bool emit,
-                         const char* name,
-                         T value) {
+void MaybeEmitNamedNumber(StringBuilder& builder,
+                          bool emit,
+                          const char* name,
+                          T value) {
   if (!emit) {
     return;
   }
   if (builder.length() > 1) {
     builder.Append(", ");
   }
+  builder.Append("\"");
   builder.Append(name);
-  builder.Append(": ");
+  builder.Append("\": ");
   builder.AppendNumber(value);
+}
+
+template <typename T>
+void MaybeEmitNamedString(StringBuilder& builder,
+                          bool emit,
+                          const char* name,
+                          T value) {
+  if (!emit) {
+    return;
+  }
+  if (builder.length() > 1) {
+    builder.Append(", ");
+  }
+  builder.Append("\"");
+  builder.Append(name);
+  builder.Append("\": ");
+  builder.Append(value);
 }
 
 void MaybeEmitNamedBoolean(StringBuilder& builder,
@@ -68,8 +86,9 @@ void MaybeEmitNamedBoolean(StringBuilder& builder,
   if (builder.length() > 1) {
     builder.Append(", ");
   }
+  builder.Append("\"");
   builder.Append(name);
-  builder.Append(": ");
+  builder.Append("\": ");
   if (value) {
     builder.Append("true");
   } else {
@@ -147,7 +166,7 @@ const String MediaConstraintsPrivate::ToString() const {
       if (builder.length() > 1) {
         builder.Append(", ");
       }
-      builder.Append("advanced: [");
+      builder.Append("\"advanced\": [");
       bool first = true;
       for (const auto& constraint_set : Advanced()) {
         if (!first) {
@@ -210,10 +229,10 @@ void LongConstraint::ResetToUnconstrained() {
 String LongConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
-  MaybeEmitNamedValue(builder, has_min_, "min", min_);
-  MaybeEmitNamedValue(builder, has_max_, "max", max_);
-  MaybeEmitNamedValue(builder, has_exact_, "exact", exact_);
-  MaybeEmitNamedValue(builder, has_ideal_, "ideal", ideal_);
+  MaybeEmitNamedNumber(builder, has_min_, "min", min_);
+  MaybeEmitNamedNumber(builder, has_max_, "max", max_);
+  MaybeEmitNamedNumber(builder, has_exact_, "exact", exact_);
+  MaybeEmitNamedNumber(builder, has_ideal_, "ideal", ideal_);
   builder.Append('}');
   return builder.ToString();
 }
@@ -256,12 +275,68 @@ void DoubleConstraint::ResetToUnconstrained() {
 String DoubleConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
-  MaybeEmitNamedValue(builder, has_min_, "min", min_);
-  MaybeEmitNamedValue(builder, has_max_, "max", max_);
-  MaybeEmitNamedValue(builder, has_exact_, "exact", exact_);
-  MaybeEmitNamedValue(builder, has_ideal_, "ideal", ideal_);
+  MaybeEmitNamedNumber(builder, has_min_, "min", min_);
+  MaybeEmitNamedNumber(builder, has_max_, "max", max_);
+  MaybeEmitNamedNumber(builder, has_exact_, "exact", exact_);
+  MaybeEmitNamedNumber(builder, has_ideal_, "ideal", ideal_);
   builder.Append('}');
   return builder.ToString();
+}
+
+DoubleOrBooleanConstraint::DoubleOrBooleanConstraint(const char* name)
+    : DoubleConstraint(name) {}
+
+bool DoubleOrBooleanConstraint::HasMandatory() const {
+  return DoubleConstraint::HasMandatory() || HasExactBoolean();
+}
+
+bool DoubleOrBooleanConstraint::Matches(double value) const {
+  return DoubleConstraint::Matches(value) && MatchesBoolean(true);
+}
+
+bool DoubleOrBooleanConstraint::MatchesBoolean(bool value) const {
+  if (HasExactBoolean() && ExactBoolean() != value) {
+    return false;
+  }
+  if (!value && DoubleConstraint::HasMandatory()) {
+    return false;
+  }
+  return true;
+}
+
+bool DoubleOrBooleanConstraint::IsPresentAndNotFalse() const {
+  if (!IsPresent()) {
+    return false;
+  }
+  if (HasExactBoolean()) {
+    DCHECK(DoubleConstraint::IsUnconstrained());
+    DCHECK(!HasIdealBoolean());
+    return ExactBoolean();
+  }
+  if (HasIdealBoolean()) {
+    DCHECK(DoubleConstraint::IsUnconstrained());
+    DCHECK(!HasExactBoolean());
+    return IdealBoolean();
+  }
+  return true;
+}
+
+bool DoubleOrBooleanConstraint::IsUnconstrained() const {
+  return DoubleConstraint::IsUnconstrained() && !HasExactBoolean() &&
+         !HasIdealBoolean();
+}
+
+void DoubleOrBooleanConstraint::ResetToUnconstrained() {
+  *this = DoubleOrBooleanConstraint(GetName());
+}
+
+String DoubleOrBooleanConstraint::ToString() const {
+  if (DoubleConstraint::IsUnconstrained() &&
+      (HasExactBoolean() || HasIdealBoolean())) {
+    bool value = HasExactBoolean() ? ExactBoolean() : IdealBoolean();
+    return value ? "true" : "false";
+  }
+  return DoubleConstraint::ToString();
 }
 
 StringConstraint::StringConstraint(const char* name)
@@ -299,7 +374,7 @@ String StringConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
   if (!ideal_.empty()) {
-    builder.Append("ideal: [");
+    builder.Append("\"ideal\": [");
     bool first = true;
     for (const auto& iter : ideal_) {
       if (!first) {
@@ -316,7 +391,7 @@ String StringConstraint::ToString() const {
     if (builder.length() > 1) {
       builder.Append(", ");
     }
-    builder.Append("exact: [");
+    builder.Append("\"exact\": [");
     bool first = true;
     for (const auto& iter : exact_) {
       if (!first) {
@@ -363,6 +438,36 @@ String BooleanConstraint::ToString() const {
   return builder.ToString();
 }
 
+BooleanOrStringConstraint::BooleanOrStringConstraint(const char* name)
+    : BaseConstraint(name) {}
+
+bool BooleanOrStringConstraint::HasExact() const {
+  return HasExactBoolean() || HasExactString();
+}
+
+bool BooleanOrStringConstraint::HasIdeal() const {
+  return HasIdealBoolean() || HasIdealString();
+}
+
+bool BooleanOrStringConstraint::IsUnconstrained() const {
+  return !HasExact() && !HasIdeal();
+}
+
+void BooleanOrStringConstraint::ResetToUnconstrained() {
+  *this = BooleanOrStringConstraint(GetName());
+}
+
+String BooleanOrStringConstraint::ToString() const {
+  StringBuilder builder;
+  builder.Append('{');
+  MaybeEmitNamedBoolean(builder, HasExactBoolean(), "exact", ExactBoolean());
+  MaybeEmitNamedString(builder, HasExactString(), "exact", ExactString());
+  MaybeEmitNamedBoolean(builder, HasIdealBoolean(), "ideal", IdealBoolean());
+  MaybeEmitNamedString(builder, HasIdealString(), "exact", IdealString());
+  builder.Append('}');
+  return builder.ToString();
+}
+
 MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
     : width("width"),
       height("height"),
@@ -374,13 +479,15 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       sample_rate("sampleRate"),
       sample_size("sampleSize"),
       echo_cancellation("echoCancellation"),
+      auto_gain_control("autoGainControl"),
+      noise_suppression("noiseSuppression"),
       voice_isolation("voiceIsolation"),
-      echo_cancellation_type("echoCancellationType"),
       latency("latency"),
       channel_count("channelCount"),
       device_id("deviceId"),
       disable_local_echo("disableLocalEcho"),
       suppress_local_audio_playback("suppressLocalAudioPlayback"),
+      restrict_own_audio("restrictOwnAudio"),
       group_id("groupId"),
       display_surface("displaySurface"),
       exposure_compensation("exposureCompensation"),
@@ -397,18 +504,11 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       zoom("zoom"),
       torch("torch"),
       background_blur("backgroundBlur"),
+      background_segmentation_mask("backgroundSegmentationMask"),
       eye_gaze_correction("eyeGazeCorrection"),
       face_framing("faceFraming"),
       media_stream_source("mediaStreamSource"),
       render_to_associated_sink("chromeRenderToAssociatedSink"),
-      goog_echo_cancellation("googEchoCancellation"),
-      goog_experimental_echo_cancellation("googExperimentalEchoCancellation"),
-      goog_auto_gain_control("autoGainControl"),
-      goog_noise_suppression("noiseSuppression"),
-      goog_highpass_filter("googHighpassFilter"),
-      goog_experimental_noise_suppression("googExperimentalNoiseSuppression"),
-      goog_audio_mirroring("googAudioMirroring"),
-      goog_da_echo_cancellation("googDAEchoCancellation"),
       goog_noise_reduction("googNoiseReduction") {}
 
 Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
@@ -423,7 +523,9 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &sample_rate,
           &sample_size,
           &echo_cancellation,
-          &echo_cancellation_type,
+          &auto_gain_control,
+          &noise_suppression,
+          &voice_isolation,
           &latency,
           &channel_count,
           &device_id,
@@ -432,6 +534,7 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &media_stream_source,
           &disable_local_echo,
           &suppress_local_audio_playback,
+          &restrict_own_audio,
           &exposure_compensation,
           &exposure_time,
           &color_temperature,
@@ -446,18 +549,10 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &zoom,
           &torch,
           &background_blur,
+          &background_segmentation_mask,
           &eye_gaze_correction,
           &face_framing,
           &render_to_associated_sink,
-          &goog_echo_cancellation,
-          &goog_experimental_echo_cancellation,
-          &goog_auto_gain_control,
-          &goog_noise_suppression,
-          &voice_isolation,
-          &goog_highpass_filter,
-          &goog_experimental_noise_suppression,
-          &goog_audio_mirroring,
-          &goog_da_echo_cancellation,
           &goog_noise_reduction};
 }
 
@@ -515,8 +610,9 @@ String MediaTrackConstraintSetPlatform::ToString() const {
       if (!first) {
         builder.Append(", ");
       }
+      builder.Append("\"");
       builder.Append(constraint->GetName());
-      builder.Append(": ");
+      builder.Append("\": ");
       builder.Append(constraint->ToString());
       first = false;
     }
@@ -574,7 +670,7 @@ const Vector<MediaTrackConstraintSetPlatform>& MediaConstraints::Advanced()
 
 const String MediaConstraints::ToString() const {
   if (IsNull()) {
-    return String("");
+    return g_empty_string;
   }
   return private_->ToString();
 }

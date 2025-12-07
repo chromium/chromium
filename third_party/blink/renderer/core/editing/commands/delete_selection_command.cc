@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/delete_selection_command.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -43,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -221,8 +224,8 @@ static Position TrailingWhitespacePosition(const Position& position,
       CharacterAfter(visible_position);
   const bool is_space =
       option == kConsiderNonCollapsibleWhitespace
-          ? (IsSpaceOrNewline(character_after_visible_position) ||
-             character_after_visible_position == kNoBreakSpaceCharacter)
+          ? (unicode::IsSpaceOrNewline(character_after_visible_position) ||
+             character_after_visible_position == uchar::kNoBreakSpace)
           : IsCollapsibleWhitespace(character_after_visible_position);
   // The space must not be in another paragraph and it must be editable.
   if (is_space && !IsEndOfParagraph(visible_position) &&
@@ -254,16 +257,11 @@ void DeleteSelectionCommand::InitializePositionData(
     editing_state->Abort();
     return;
   }
-  if (!IsEditablePosition(end)) {
-    if (!RuntimeEnabledFeatures::
-            HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled() ||
-        !(end.IsAfterAnchor() ||
-          Position::LastPositionInNode(*(end.AnchorNode()))
-              .IsEquivalent(end))) {
-      Node* highest_root = HighestEditableRoot(start);
-      DCHECK(highest_root);
-      end = LastEditablePositionBeforePositionInRoot(end, *highest_root);
-    }
+  if (!IsEditablePosition(end) && !end.IsAfterAnchor() &&
+      !Position::LastPositionInNode(*(end.AnchorNode())).IsEquivalent(end)) {
+    Node* highest_root = HighestEditableRoot(start);
+    DCHECK(highest_root);
+    end = LastEditablePositionBeforePositionInRoot(end, *highest_root);
   }
 
   upstream_start_ = MostBackwardCaretPosition(start);
@@ -609,7 +607,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
   // this requires document.NeedsLayoutTreeUpdate() returning false.
   if (!need_placeholder_) {
     need_placeholder_ =
-        base::ranges::any_of(nodes_to_be_removed, [&](Node* node) {
+        std::ranges::any_of(nodes_to_be_removed, [&](Node* node) {
           if (node == start_block_) {
             VisiblePosition previous = PreviousPositionOf(
                 VisiblePosition::FirstPositionInNode(*start_block_.Get()));
@@ -626,6 +624,8 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
         });
   }
 
+  const ShouldAssumeContentIsAlwaysEditable always_editable(
+      EnclosingTextControl(node));
   // Actually remove the nodes in |nodes_to_be_removed|.
   for (Node* node_to_be_removed : nodes_to_be_removed) {
     if (!downstream_end_.AnchorNode()->IsDescendantOf(node_to_be_removed)) {
@@ -647,7 +647,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
         // clear them.
         RemoveAllChildrenIfPossible(To<ContainerNode>(node_to_be_removed),
                                     editing_state,
-                                    kDoNotAssumeContentIsAlwaysEditable);
+                                    ShouldAssumeContentIsAlwaysEditable(false));
         if (editing_state->IsAborted())
           return;
 
@@ -661,7 +661,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
       // Likewise for the root editable element.
       RemoveAllChildrenIfPossible(To<ContainerNode>(node_to_be_removed),
                                   editing_state,
-                                  kDoNotAssumeContentIsAlwaysEditable);
+                                  ShouldAssumeContentIsAlwaysEditable(false));
       if (editing_state->IsAborted())
         return;
 
@@ -681,7 +681,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
     ending_position_ =
         ComputePositionForNodeRemoval(ending_position_, *node_to_be_removed);
     CompositeEditCommand::RemoveNode(node_to_be_removed, editing_state,
-                                     kDoNotAssumeContentIsAlwaysEditable);
+                                     always_editable);
     if (editing_state->IsAborted())
       return;
   }
@@ -718,8 +718,12 @@ void DeleteSelectionCommand::
         EditingState* editing_state) {
   Range* range = CreateRange(CreateVisibleSelection(selection_to_delete_)
                                  .ToNormalizedEphemeralRange());
+  if (!range) {
+    return;
+  }
   Node* node = range->FirstNode();
-  while (node && node != range->PastLastNode()) {
+  Node* past_last = range->PastLastNode();
+  while (node && node != past_last) {
     Node* next_node = NodeTraversal::Next(*node);
     if (IsA<HTMLStyleElement>(*node) || IsA<HTMLLinkElement>(*node)) {
       next_node = NodeTraversal::NextSkippingChildren(*node);
@@ -813,14 +817,10 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
         upstream_start_.AnchorNode()->IsDescendantOf(
             downstream_end_.AnchorNode());
 
-    bool end_node_is_selected_from_first_position = false;
-    if (RuntimeEnabledFeatures::
-            RemoveNodeHavingChildrenIfFullySelectedEnabled()) {
-      end_node_is_selected_from_first_position =
-          ComparePositions(upstream_start_,
-                           Position::FirstPositionInNode(
-                               *downstream_end_.AnchorNode())) <= 0;
-    }
+    bool end_node_is_selected_from_first_position =
+        ComparePositions(
+            upstream_start_,
+            Position::FirstPositionInNode(*downstream_end_.AnchorNode())) <= 0;
 
     // The selection to delete spans more than one node.
     Node* node(start_node);
@@ -854,17 +854,32 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
         downstream_end_.IsConnected() &&
         downstream_end_.ComputeEditingOffset() >=
             CaretMinOffset(downstream_end_.AnchorNode())) {
-      bool is_node_fully_selected =
-          downstream_end_.AtLastEditingPositionForNode() &&
-          !CanHaveChildrenForEditing(downstream_end_.AnchorNode());
-      if (RuntimeEnabledFeatures::
-              RemoveNodeHavingChildrenIfFullySelectedEnabled()) {
-        // Even though `downstream_end_` has children, it can be fully selected.
-        // Update `is_node_fully_selected` if the selection includes the first
-        // position of the node.
-        if (!is_node_fully_selected &&
-            downstream_end_.AtLastEditingPositionForNode()) {
-          is_node_fully_selected = end_node_is_selected_from_first_position;
+      bool is_node_fully_selected = false;
+      if (downstream_end_.AtLastEditingPositionForNode()) {
+        if (!CanHaveChildrenForEditing(downstream_end_.AnchorNode())) {
+          is_node_fully_selected = true;
+        } else if (end_node_is_selected_from_first_position) {
+          // If the selection includes the first position of the
+          // node, the node may be considered fully selected.
+          if (downstream_end_.AnchorNode()->IsDescendantOf(
+                  upstream_start_.AnchorNode())) {
+            // The node is a child of the `upstream_start_.AnchorNode()`,
+            // the node be fully selected.
+            // See https://issues.chromium.org/issues/331074432.
+            is_node_fully_selected = true;
+          } else if (ComparePositions(downstream_end_,
+                                      GetDocument()
+                                          .GetFrame()
+                                          ->Selection()
+                                          .GetSelectionInDOMTree()
+                                          .Focus()) <= 0) {
+            // `downstream_end_` in FrameSelection(Use FrameSelection because
+            // we need non-visual selection), the node be fully selected.
+            // FrameSelection can be used to delete the node that is
+            // invisible, such as `<span></span>`.
+            // See https://issues.chromium.org/issues/415911524.
+            is_node_fully_selected = true;
+          }
         }
       }
       if (is_node_fully_selected) {
@@ -957,15 +972,12 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
   if (upstream_start_ == downstream_end_)
     return;
 
-  if (RuntimeEnabledFeatures::
-          RemoveNodeHavingChildrenIfFullySelectedEnabled()) {
-    // It can be the same position even though `upstream_start_` and
-    // `downstream_end_` are not identical.
-    // Compare them using ParentAnchoredEquivalent().
-    if (upstream_start_.ParentAnchoredEquivalent() ==
-        downstream_end_.ParentAnchoredEquivalent()) {
-      return;
-    }
+  // It can be the same position even though `upstream_start_` and
+  // `downstream_end_` are not identical.
+  // Compare them using ParentAnchoredEquivalent().
+  if (upstream_start_.ParentAnchoredEquivalent() ==
+      downstream_end_.ParentAnchoredEquivalent()) {
+    return;
   }
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
@@ -1010,6 +1022,11 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
   VisiblePosition start_of_paragraph_to_move = StartOfParagraph(merge_origin);
   VisiblePosition end_of_paragraph_to_move =
       EndOfParagraph(merge_origin, kCanSkipOverEditingBoundary);
+  if (RuntimeEnabledFeatures::TraverseFlatTreeToHandleSlotsEnabled()) {
+    start_of_paragraph_to_move = StartOfParagraphInFlatTree(merge_origin);
+    end_of_paragraph_to_move =
+        EndOfParagraphInFlatTree(merge_origin, kCanSkipOverEditingBoundary);
+  }
 
   if (merge_destination.DeepEquivalent() ==
       end_of_paragraph_to_move.DeepEquivalent())
@@ -1214,14 +1231,8 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
   // If selection has not been set to a custom selection when the command was
   // created, use the current ending selection.
   if (!has_selection_to_delete_) {
-    if (RuntimeEnabledFeatures::
-            HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled()) {
-      selection_to_delete_ =
-          SelectionForUndoStep::From(EndingSelection().AsSelection());
-    } else {
-      selection_to_delete_ =
-          SelectionForUndoStep::From(EndingVisibleSelection().AsSelection());
-    }
+    selection_to_delete_ =
+        SelectionForUndoStep::From(EndingSelection().AsSelection());
   }
 
   if (!selection_to_delete_.IsValidFor(GetDocument()) ||
@@ -1241,12 +1252,22 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
 
   Position downstream_end =
       MostForwardCaretPosition(selection_to_delete_.End());
+  const Node* downstream_container_node = downstream_end.ComputeContainerNode();
+  const Element* downstream_container_root_element =
+      RootEditableElement(*downstream_container_node);
+
+  // Check to determine if the root will stay open without a placeholder.
+  // This is done by checking if the downstream end is within a root editable
+  // element that has an inline layout object, or if the downstream end's
+  // container node is within a shadow host that is a text control.
   bool root_will_stay_open_without_placeholder =
-      downstream_end.ComputeContainerNode() ==
-          RootEditableElement(*downstream_end.ComputeContainerNode()) ||
-      (downstream_end.ComputeContainerNode()->IsTextNode() &&
-       downstream_end.ComputeContainerNode()->parentNode() ==
-           RootEditableElement(*downstream_end.ComputeContainerNode()));
+      (downstream_container_node == downstream_container_root_element) ||
+      (downstream_container_root_element &&
+       downstream_container_root_element->GetLayoutObject() &&
+       downstream_container_root_element->GetLayoutObject()->IsInline()) ||
+      (downstream_container_node->OwnerShadowHost() &&
+       downstream_container_node->OwnerShadowHost()->IsTextControl());
+
   VisiblePosition visible_start = CreateVisiblePosition(
       selection_to_delete_.Start(),
       selection_to_delete_.IsRange() ? TextAffinity::kDownstream : affinity);
@@ -1334,9 +1355,14 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
                         !line_break_at_end_of_selection_to_delete;
   }
 
-  auto* placeholder = need_placeholder_
-                          ? MakeGarbageCollected<HTMLBRElement>(GetDocument())
-                          : nullptr;
+  Node* placeholder = nullptr;
+  if (need_placeholder_) {
+    if (auto* text_control = EnclosingTextControl(ending_position_)) {
+      placeholder = text_control->CreatePlaceholderBreakElement();
+    } else {
+      placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
+    }
+  }
 
   if (placeholder) {
     if (options_.IsSanitizeMarkup()) {
@@ -1344,7 +1370,7 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
       if (editing_state->IsAborted())
         return;
     }
-    // HandleGeneralDelete cause DOM mutation events so |ending_position_|
+    // HandleGeneralDelete cause DOM synchronous events so |ending_position_|
     // can be out of document.
     if (ending_position_.IsValidFor(GetDocument())) {
       InsertNodeAt(placeholder, ending_position_, editing_state);

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_jpeg_encode_accelerator.h"
 
 #include <errno.h>
@@ -16,6 +21,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +30,8 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/native_pixmap.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 #define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_name) \
   do {                                                           \
@@ -117,7 +125,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyTask() {
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   device_ = base::MakeRefCounted<V4L2Device>();
-  gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
+  client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
   output_buffer_pixelformat_ = V4L2_PIX_FMT_JPEG;
   if (!device_->Open(V4L2Device::Type::kJpegEncoder,
                      output_buffer_pixelformat_)) {
@@ -198,7 +206,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return true;
@@ -569,26 +577,26 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
   // In this case, we use the R_8 buffer with height == 1 to represent a data
   // container. As a result, we use plane.stride as size of the data here since
   // plane.size might be larger due to height alignment.
-  const gfx::Size output_gmb_buffer_size(
+  const gfx::Size native_pixmap_size(
       base::checked_cast<int32_t>(output_frame->layout().planes()[0].stride),
       1);
 
-  auto output_gmb_buffer =
-      gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
-          std::move(output_gmb_handle), output_gmb_buffer_size,
-          gfx::BufferFormat::R_8, gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-          base::DoNothing());
-  if (!output_gmb_buffer) {
-    VLOGF(1) << "Failed to import gmb buffer";
+  std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
+      client_native_pixmap_factory_->ImportFromHandle(
+          std::move(output_gmb_handle).native_pixmap_handle(),
+          native_pixmap_size, viz::SinglePlaneFormat::kR_8,
+          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
+  if (!native_pixmap) {
+    VLOGF(1) << "Failed to import native pixmap";
     return 0;
   }
 
-  bool isMapped = output_gmb_buffer->Map();
+  bool isMapped = native_pixmap->Map();
   if (!isMapped) {
-    VLOGF(1) << "Failed to map gmb buffer";
+    VLOGF(1) << "Failed to map native pixmap";
     return 0;
   }
-  uint8_t* dst_ptr = static_cast<uint8_t*>(output_gmb_buffer->memory(0));
+  uint8_t* dst_ptr = static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0));
 
   // Fill SOI and EXIF markers.
   static const uint8_t kJpegStart[] = {0xFF, JPEG_SOI};
@@ -643,10 +651,10 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported output pixel format";
+      NOTREACHED() << "Unsupported output pixel format";
   }
 
-  output_gmb_buffer->Unmap();
+  native_pixmap->Unmap();
 
   return idx;
 }

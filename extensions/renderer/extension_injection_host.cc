@@ -15,7 +15,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
@@ -23,7 +23,8 @@ namespace extensions {
 ExtensionInjectionHost::ExtensionInjectionHost(const Extension* extension)
     : InjectionHost(
           mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id())),
-      extension_(extension) {}
+      extension_(extension),
+      isolated_world_csp_(CSPInfo::GetIsolatedWorldCSP(*extension_)) {}
 
 ExtensionInjectionHost::~ExtensionInjectionHost() {
 }
@@ -40,7 +41,7 @@ std::unique_ptr<const InjectionHost> ExtensionInjectionHost::Create(
 }
 
 const std::string* ExtensionInjectionHost::GetContentSecurityPolicy() const {
-  return CSPInfo::GetIsolatedWorldCSP(*extension_);
+  return isolated_world_csp_ ? &(isolated_world_csp_.value()) : nullptr;
 }
 
 const GURL& ExtensionInjectionHost::url() const {

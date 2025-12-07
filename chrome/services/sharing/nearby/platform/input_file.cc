@@ -4,12 +4,15 @@
 
 #include "chrome/services/sharing/nearby/platform/input_file.h"
 
+#include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
+#include "third_party/abseil-cpp/absl/time/time.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 InputFile::InputFile(base::File file) : file_(std::move(file)) {}
 
@@ -27,6 +30,12 @@ std::int64_t InputFile::GetTotalSize() const {
   return file_.GetLength();
 }
 
+absl::Time InputFile::GetLastModifiedTime() const {
+  // Intentionally left not implemented. Not supported in Chromium Nearby.
+  NOTIMPLEMENTED();
+  return absl::Now();
+}
+
 ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
   if (!file_.IsValid())
     return Exception::kIo;
@@ -36,12 +45,14 @@ ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
   }
 
   std::vector<char> buf(size);
-  int num_bytes_read = file_.ReadAtCurrentPos(buf.data(), size);
-
-  if (num_bytes_read < 0 || num_bytes_read > GetTotalSize())
+  const std::optional<size_t> bytes_read =
+      file_.ReadAtCurrentPos(base::as_writable_byte_span(buf));
+  if (!bytes_read ||
+      base::checked_cast<int64_t>(*bytes_read) > GetTotalSize()) {
     return Exception::kIo;
+  }
 
-  return ExceptionOr<ByteArray>(ByteArray(buf.data(), num_bytes_read));
+  return ExceptionOr<ByteArray>(ByteArray(buf.data(), *bytes_read));
 }
 
 Exception InputFile::Close() {
@@ -56,5 +67,4 @@ base::File InputFile::ExtractUnderlyingFile() {
   return std::move(file_);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

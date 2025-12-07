@@ -15,6 +15,9 @@ class GURL;
 namespace url_matcher {
 namespace util {
 
+// Maximum filters allowed. Filters over this index are ignored.
+inline constexpr size_t kMaxFiltersAllowed = 1000;
+
 // Converts a ValueList `value` of strings into a vector. Returns true if
 // successful.
 bool GetAsStringVector(const base::Value* value, std::vector<std::string>* out);
@@ -26,6 +29,10 @@ URL_MATCHER_EXPORT GURL Normalize(const GURL& url);
 // Google AMP or Google Translate. Returns an empty GURL if `url` doesn't match
 // a known format.
 URL_MATCHER_EXPORT GURL GetEmbeddedURL(const GURL& url);
+
+// Helper function to extract the underlying URL wrapped by Google AMP viewer.
+// Returns an empty GURL if `url` doesn't match a known format.
+URL_MATCHER_EXPORT GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url);
 
 // Utility struct used to represent a url filter scheme into its components.
 struct URL_MATCHER_EXPORT FilterComponents {
@@ -86,46 +93,59 @@ URL_MATCHER_EXPORT bool FilterToComponents(const std::string& filter,
                                            std::string* path,
                                            std::string* query);
 
-// Adds the filters in `patterns` to `url_matcher` as a ConditionSet::Vector.
-// `matcher` is the URLMatcher where filters are added.
-// `allow` specifies whether the filter accepts or blocks the macthed urls.
-// `id` is the id of given to the filter being added.
-// `patterns` is a list of url schemes following the format described
-// http://www.chromium.org/administrators/url-blocklist-filter-format and
-// accepts wildcards.
-// `filters` is an optional map of id to FilterComponent where the generated
-// FilterComponent will be added.
-URL_MATCHER_EXPORT void AddFilters(
+// Adds a limited number of URL filters `patterns` to a URLMatcher
+// `matcher`. The `max_filters` parameter specifies the maximum number of
+// filters added.
+//
+// If `allow` is true, the filters will allow matching URLs; otherwise, they
+// block them. The `id` parameter provides a pointer to the ID assigned to the
+// filters, incremented for each filter added.
+//
+// `patterns` should be a list of URL patterns (see format description at
+// http://www.chromium.org/administrators/url-blocklist-filter-format).
+//
+// An optional map to store the generated FilterComponents can be provided
+// via |filters|.
+URL_MATCHER_EXPORT void AddFiltersWithLimit(
     url_matcher::URLMatcher* matcher,
     bool allow,
     base::MatcherStringPattern::ID* id,
     const base::Value::List& patterns,
-    std::map<base::MatcherStringPattern::ID,
-             url_matcher::util::FilterComponents>* filters = nullptr);
+    std::map<base::MatcherStringPattern::ID, FilterComponents>* filters =
+        nullptr,
+    size_t max_filters = kMaxFiltersAllowed);
 
-// Adds the filters in `patterns` to `url_matcher` as a ConditionSet::Vector.
-// `matcher` is the URLMatcher where filters are added.
-// `allow` specifies whether the filter accepts or blocks the macthed urls.
-// `id` is the id of given to the filter being added.
-// `patterns` is a list of url schemes following the format described
-// http://www.chromium.org/administrators/url-blocklist-filter-format and
-// accepts wildcards.
-// `filters` is an optional map of id to FilterComponent where the generated
-// FilterComponent will be added.
-URL_MATCHER_EXPORT void AddFilters(
+// Adds a limited number of URL filters `patterns` to a URLMatcher
+// `matcher`. The `max_filters` parameter specifies the maximum number of
+// filters added.
+//
+// If `allow` is true, the filters will allow matching URLs; otherwise, they
+// block them. The `id` parameter provides a pointer to the ID assigned to the
+// filters, incremented for each filter added.
+//
+// `patterns` should be a list of URL patterns (see format description at
+// http://www.chromium.org/administrators/url-blocklist-filter-format).
+//
+// An optional map to store the generated FilterComponents can be provided
+// via |filters|.
+URL_MATCHER_EXPORT void AddFiltersWithLimit(
     url_matcher::URLMatcher* matcher,
     bool allow,
     base::MatcherStringPattern::ID* id,
     const std::vector<std::string>& patterns,
-    std::map<base::MatcherStringPattern::ID,
-             url_matcher::util::FilterComponents>* filters = nullptr);
+    std::map<base::MatcherStringPattern::ID, FilterComponents>* filters =
+        nullptr,
+    size_t max_filters = kMaxFiltersAllowed);
 
-URL_MATCHER_EXPORT void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                                        const base::Value::List& patterns);
-
-URL_MATCHER_EXPORT void AddAllowFilters(
+URL_MATCHER_EXPORT void AddAllowFiltersWithLimit(
     url_matcher::URLMatcher* matcher,
-    const std::vector<std::string>& patterns);
+    const base::Value::List& patterns,
+    size_t max_filters = kMaxFiltersAllowed);
+
+URL_MATCHER_EXPORT void AddAllowFiltersWithLimit(
+    url_matcher::URLMatcher* matcher,
+    const std::vector<std::string>& patterns,
+    size_t max_filters = kMaxFiltersAllowed);
 
 }  // namespace util
 }  // namespace url_matcher

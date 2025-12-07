@@ -17,12 +17,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
@@ -66,7 +67,7 @@ bool ChromeProcessManagerDelegate::AreBackgroundPagesAllowedForContext(
 bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
     content::BrowserContext* context,
     const Extension& extension) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
 
   const bool is_signin_profile = ash::ProfileHelper::IsSigninProfile(profile) &&
@@ -90,11 +91,6 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
-      !profile->IsOffTheRecord()) {
-    return extension.permissions_data()->HasAPIPermission(
-        mojom::APIPermissionID::kLockScreen);
-  }
 #endif
 
   return AreBackgroundPagesAllowedForContext(context);
@@ -102,15 +98,10 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 
 bool ChromeProcessManagerDelegate::DeferCreatingStartupBackgroundHosts(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-
   // The profile may not be valid yet if it is still being initialized.
   // In that case, defer loading, since it depends on an initialized profile.
   // Background hosts will be loaded later via OnProfileAdded.
-  // http://crbug.com/222473
-  // Unit tests may not have a profile manager.
-  return (g_browser_process->profile_manager() &&
-          !g_browser_process->profile_manager()->IsValidProfile(profile));
+  return !ExtensionsBrowserClient::Get()->IsValidContext(context);
 }
 
 void ChromeProcessManagerDelegate::OnBrowserAdded(Browser* browser) {

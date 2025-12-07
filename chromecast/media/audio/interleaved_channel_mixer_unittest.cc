@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
@@ -26,14 +27,6 @@ using TestParams = std::tuple<::media::ChannelLayout /* input layout */,
                               ::media::ChannelLayout /* output layout */>;
 
 class InterleavedChannelMixerTest : public testing::TestWithParam<TestParams> {
- public:
-  InterleavedChannelMixerTest() = default;
-
-  InterleavedChannelMixerTest(const InterleavedChannelMixerTest&) = delete;
-  InterleavedChannelMixerTest& operator=(const InterleavedChannelMixerTest&) =
-      delete;
-
-  ~InterleavedChannelMixerTest() override = default;
 };
 
 TEST_P(InterleavedChannelMixerTest, Transform) {
@@ -47,9 +40,10 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   auto original = ::media::AudioBus::Create(num_input_channels, kNumFrames);
   for (int c = 0; c < num_input_channels; ++c) {
+    auto channel = original->channel_span(c);
     for (int f = 0; f < kNumFrames; ++f) {
-      original->channel(c)[f] = std::pow(-1, f + c) * 0.01 +
-                                c / static_cast<float>(num_input_channels * 10);
+      channel[f] = std::pow(-1, f + c) * 0.01 +
+                   c / static_cast<float>(num_input_channels * 10);
     }
   }
 
@@ -58,9 +52,8 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   // Check that the output of upstream ChannelMixer + interleave is the same
   // as the output of interleave + InterleavedChannelMixer.
-  ::media::ChannelMixer channel_mixer(
-      input_layout, ::media::ChannelLayoutToChannelCount(input_layout),
-      output_layout, ::media::ChannelLayoutToChannelCount(output_layout));
+  ::media::ChannelMixer channel_mixer(input_layout, num_input_channels,
+                                      output_layout, num_output_channels);
   channel_mixer.Transform(original.get(), transformed.get());
 
   std::vector<float> original_interleaved(num_input_channels * kNumFrames);
@@ -79,8 +72,9 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   for (int f = 0; f < kNumFrames; ++f) {
     for (int c = 0; c < num_output_channels; ++c) {
-      EXPECT_FLOAT_EQ(interleaved_mixed[f * num_output_channels + c],
-                      transformed_interleaved[f * num_output_channels + c])
+      UNSAFE_TODO(
+          EXPECT_FLOAT_EQ(interleaved_mixed[f * num_output_channels + c],
+                          transformed_interleaved[f * num_output_channels + c]))
           << "at frame " << f << ", channel " << c;
     }
   }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/install.h"
 
 #include <stddef.h>
@@ -16,20 +11,20 @@
 #include <tuple>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat_win.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
@@ -37,7 +32,6 @@
 #include "chrome/installer/setup/install_worker.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/setup_constants.h"
-#include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/install_util.h"
@@ -236,9 +230,7 @@ class InstallShortcutTest : public testing::Test {
                                   chrome_properties.icon_index);
     expected_properties_.set_app_id(chrome_properties.app_id);
     expected_properties_.set_description(chrome_properties.description);
-    expected_properties_.set_dual_mode(false);
     expected_start_menu_properties_ = expected_properties_;
-    expected_start_menu_properties_.set_dual_mode(false);
 
     prefs_.reset(GetFakeInitialPrefs(false, false));
 
@@ -305,9 +297,9 @@ class InstallShortcutTest : public testing::Test {
     std::string initial_prefs("{\"distribution\":{");
     for (size_t i = 0; i < std::size(desired_prefs); ++i) {
       initial_prefs += (i == 0 ? "\"" : ",\"");
-      initial_prefs += desired_prefs[i].pref_name;
+      initial_prefs += UNSAFE_TODO(desired_prefs[i]).pref_name;
       initial_prefs += "\":";
-      initial_prefs += desired_prefs[i].is_desired ? "true" : "false";
+      initial_prefs += base::ToString(UNSAFE_TODO(desired_prefs[i]).is_desired);
     }
     initial_prefs += "}}";
 
@@ -371,46 +363,38 @@ TEST_P(CreateVisualElementsManifestTest, VisualElementsManifestCreated) {
 TEST(OsUpdateHandlerCmdTest, OsUpdated) {
   constexpr wchar_t kInstalledVersion[] = L"128.0.0.0";
   constexpr wchar_t kLastWindowsVersion[] = L"1.1.1.1";
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
+  constexpr wchar_t kCurWindowsVersion[] = L"1.1.1.2";
+  base::CommandLine setup_command_line(base::CommandLine::NO_PROGRAM);
   base::FilePath path(L"c:\\tmp");
-  installer::UpdateLastWindowsVersion(kLastWindowsVersion);
-  const auto cmd_line =
-      installer::GetOsUpdateHandlerCommand(path, kInstalledVersion);
+  installer::InstallerState system_level_installer_state(
+      installer::InstallerState::SYSTEM_LEVEL);
+  system_level_installer_state.set_target_path_for_testing(path);
+  setup_command_line.ParseFromString(base::StrCat(
+      {L"c:\\tmp\\setup.exe ", kLastWindowsVersion, L"-", kCurWindowsVersion}));
+
+  // Test system-level install command line.
+  auto cmd_line = installer::GetOsUpdateHandlerCommand(
+      system_level_installer_state, kInstalledVersion, setup_command_line);
   EXPECT_TRUE(cmd_line.has_value());
-  std::wstring expected_cmd_line = base::StrCat(
-      {L"\"", path.value(), L"\\", kInstalledVersion, L"\\",
-       installer::kOsUpdateHandlerExe, L"\" ", kLastWindowsVersion, L"-",
-       base::ASCIIToWide(base::win::OSInfo::GetInstance()
-                             ->Kernel32BaseVersion()
-                             .GetString())});
+  std::wstring expected_cmd_line =
+      base::StrCat({L"\"", path.value(), L"\\", kInstalledVersion, L"\\",
+                    installer::kOsUpdateHandlerExe, L"\" --",
+                    base::ASCIIToWide(installer::switches::kSystemLevel), L" ",
+                    kLastWindowsVersion, L"-", kCurWindowsVersion});
   EXPECT_EQ(expected_cmd_line, cmd_line->GetCommandLineString());
-}
 
-// Test case where last version not stored in registry.
-TEST(OsUpdateHandlerCmdTest, FirstAttemptToRun) {
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
-  base::FilePath path(L"c:\\tmp");
-  const auto cmd_line =
-      installer::GetOsUpdateHandlerCommand(path, L"128.0.0.0");
-  EXPECT_FALSE(cmd_line.has_value());
-}
-
-TEST(OsUpdateHandlerCmdTest, OsNotUpdated) {
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
-  base::FilePath path(L"c:\\tmp");
-  const auto current_os_version = base::ASCIIToWide(
-      base::win::OSInfo::GetInstance()->Kernel32BaseVersion().GetString());
-  installer::UpdateLastWindowsVersion(current_os_version);
-
-  const auto cmd_line =
-      installer::GetOsUpdateHandlerCommand(path, L"128.0.0.0");
-  EXPECT_FALSE(cmd_line.has_value());
+  // Test user-level install command line.
+  installer::InstallerState user_level_installer_state(
+      installer::InstallerState::USER_LEVEL);
+  user_level_installer_state.set_target_path_for_testing(path);
+  cmd_line = installer::GetOsUpdateHandlerCommand(
+      user_level_installer_state, kInstalledVersion, setup_command_line);
+  EXPECT_TRUE(cmd_line.has_value());
+  expected_cmd_line =
+      base::StrCat({L"\"", path.value(), L"\\", kInstalledVersion, L"\\",
+                    installer::kOsUpdateHandlerExe, L"\" ", kLastWindowsVersion,
+                    L"-", kCurWindowsVersion});
+  EXPECT_EQ(expected_cmd_line, cmd_line->GetCommandLineString());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

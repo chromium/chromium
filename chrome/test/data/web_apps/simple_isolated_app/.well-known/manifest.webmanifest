@@ -4,10 +4,11 @@
   "id": "/",
   "scope": "/",
   "start_url": "/index.html",
-  "display": "standalone",
+  "update_manifest_url": "https://otterly-awesome-iwa.com/update_manifest.json",
   "permissions_policy": {
     "clipboard-read": [ "*" ],
     "clipboard-write": [ "*" ],
+    "controlled-frame": [ "*" ],
     "cross-origin-isolated": [ "*" ],
     "direct-sockets": [ "*" ],
     "fullscreen": [ "*" ],

@@ -14,6 +14,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -22,11 +23,11 @@ namespace ash {
 
 namespace {
 
-const std::string kUserEmail("user1@gmail.com");
+constexpr char kUserEmail[] = "user1@gmail.com";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
 
 const std::u16string kTitle(u"Auth header view pixeltest title");
 const std::u16string kErrorTitle(u"Auth header view pixeltest error");
-
 const std::u16string kDescription(u"Auth header view pixeltest description");
 
 class AuthHeaderPixelTest : public AshTestBase {
@@ -47,18 +48,21 @@ class AuthHeaderPixelTest : public AshTestBase {
     AshTestBase::SetUp();
     UpdateDisplay("600x800");
 
-    widget_ = CreateFramelessTestWidget();
-
-    AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(account_id);
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(local_state());
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kUserEmail, kFakeGaia);
+    fake_user_manager->AddGaiaUser(account_id,
+                                   user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
+
+    widget_ = CreateFramelessTestWidget();
 
     std::unique_ptr<AuthHeaderView> header_view =
         std::make_unique<AuthHeaderView>(account_id, kTitle, kDescription);
 
-    header_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    header_view->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated, 0));
 
     widget_->SetSize(header_view->GetPreferredSize());
@@ -75,6 +79,7 @@ class AuthHeaderPixelTest : public AshTestBase {
   void TearDown() override {
     header_view_ = nullptr;
     widget_.reset();
+    scoped_user_manager_.reset();
     AshTestBase::TearDown();
   }
 
@@ -88,15 +93,15 @@ TEST_F(AuthHeaderPixelTest, DayMode) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   //  Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DayMode", /*revision_number=*/1, header_view_));
+      "DayMode", /*revision_number=*/2, header_view_));
   // Verify the error.
   header_view_->SetErrorTitle(kErrorTitle);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Error", /*revision_number=*/1, header_view_));
+      "Error", /*revision_number=*/2, header_view_));
   // Verify the restore
   header_view_->RestoreTitle();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Restore", /*revision_number=*/1, header_view_));
+      "Restore", /*revision_number=*/2, header_view_));
 }
 
 }  // namespace

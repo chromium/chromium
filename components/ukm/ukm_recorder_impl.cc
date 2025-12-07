@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/ukm/ukm_recorder_impl.h"
 
 #include <memory>
@@ -57,6 +52,8 @@ BASE_FEATURE(kUkmSamplingRateFeature,
 
 namespace {
 
+// Allowlisted source ids are sent. Non-allowlisted source ids are sent if the
+// url matches that of an allow-listed source.
 bool IsAllowlistedSourceId(SourceId source_id) {
   SourceIdType type = GetSourceIdType(source_id);
   switch (type) {
@@ -70,7 +67,8 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
     case ukm::SourceIdObj::Type::NOTIFICATION_ID:
-    case ukm::SourceIdObj::Type::EXTENSION_ID: {
+    case ukm::SourceIdObj::Type::EXTENSION_ID:
+    case ukm::SourceIdObj::Type::CDM_ID: {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
@@ -155,26 +153,26 @@ void AppendAllowlistedUrls(
   }
 }
 
-// Returns true if the event corresponding to |event_hash| has a comprehensive
-// decode map that includes all valid metrics.
-bool HasComprehensiveDecodeMap(int64_t event_hash) {
-  // All events other than "Identifiability" conforms to its decode map.
-  // TODO(asanka): It is technically an abstraction violation for
-  // //components/ukm to know this fact.
-  return event_hash != builders::Identifiability::kEntryNameHash;
-}
-
 bool HasUnknownMetrics(const builders::DecodeMap& decode_map,
                        const mojom::UkmEntry& entry) {
   const auto it = decode_map.find(entry.event_hash);
-  if (it == decode_map.end())
+  if (it == decode_map.end()) {
+    DVLOG(DebuggingLogLevel::Medium)
+        << "Event hash not in the decode map:"
+        << " [event_hash=" << entry.event_hash
+        << " decode_map.size()=" << decode_map.size() << "]";
     return true;
-  if (!HasComprehensiveDecodeMap(entry.event_hash))
-    return false;
+  }
   const auto& metric_map = it->second.metric_map;
   for (const auto& metric : entry.metrics) {
-    if (metric_map.count(metric.first) == 0)
+    if (metric_map.count(metric.first) == 0) {
+      DVLOG(DebuggingLogLevel::Medium)
+          << "Metric hash not in the decode map:"
+          << " [event_hash=" << entry.event_hash
+          << " metric_hash=" << metric.first
+          << " decode_map.size()=" << decode_map.size() << "]";
       return true;
+    }
   }
   return false;
 }
@@ -347,24 +345,17 @@ void UkmRecorderImpl::SetIsWebstoreExtensionCallback(
   is_webstore_extension_callback_ = callback;
 }
 
-void UkmRecorderImpl::SetEntryFilter(
-    std::unique_ptr<UkmEntryFilter> entry_filter) {
-  DCHECK(!entry_filter_ || !entry_filter);
-  entry_filter_ = std::move(entry_filter);
-}
-
 void UkmRecorderImpl::AddUkmRecorderObserver(
     const base::flat_set<uint64_t>& event_hashes,
     UkmRecorderObserver* observer) {
   DCHECK(observer);
   {
     base::AutoLock auto_lock(lock_);
-    if (!observers_.contains(event_hashes)) {
-      observers_.insert(
-          {event_hashes, base::MakeRefCounted<UkmRecorderObserverList>()});
+    auto [it, inserted] = observers_.try_emplace(event_hashes, nullptr);
+    if (inserted) {
+      it->second = base::MakeRefCounted<UkmRecorderObserverList>();
     }
-
-    observers_[event_hashes]->AddObserver(observer);
+    it->second->AddObserver(observer);
   }
   // Update the UkmRecorderParameters to capture a UKM event which is being
   // observed by any UkmRecorderObserver in |observers_|.
@@ -388,6 +379,14 @@ void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
 
 void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
   NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, state);
+}
+
+void UkmRecorderImpl::StoreWebDXFeaturesDownsamplingParameter(Report* report) {
+  Report::DownsamplingRate* rate = report->add_downsampling_rates();
+  // TODO(crbug.com/381251064): Consider populating all the other applied
+  // downsampling rates too.
+  rate->set_event_hash(base::HashMetricName(kWebFeatureSamplingKeyword));
+  rate->set_standard_rate(webdx_features_sampling_);
 }
 
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
@@ -566,13 +565,13 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   }
   source_counts_proto->set_entryless_sources(num_sources_entryless);
 
-  // Notify observers that a report was generated.
-  if (entry_filter_) {
-    entry_filter_->OnStoreRecordingsInReport();
-  }
   DVLOG(DebuggingLogLevel::Rare)
       << "StoreRecordingsInReport done [num_serialized_entries="
       << num_serialized_entries << "]";
+
+  StoreWebDXFeaturesDownsamplingParameter(report);
+  DVLOG(DebuggingLogLevel::Rare) << "# of downsampling parameters stored: "
+                                 << report->downsampling_rates().size();
 }
 
 int UkmRecorderImpl::PruneData(std::set<SourceId>& source_ids_seen) {
@@ -621,34 +620,7 @@ bool UkmRecorderImpl::ShouldDropEntry(mojom::UkmEntry* entry) {
     return true;
   }
 
-  if (!ApplyEntryFilter(entry)) {
-    RecordDroppedEntry(entry->event_hash,
-                       DroppedDataReason::REJECTED_BY_FILTER);
-    return true;
-  }
-
   return false;
-}
-
-bool UkmRecorderImpl::ApplyEntryFilter(mojom::UkmEntry* entry) {
-  base::flat_set<uint64_t> dropped_metric_hashes;
-
-  if (!entry_filter_)
-    return true;
-
-  bool keep_entry = entry_filter_->FilterEntry(entry, &dropped_metric_hashes);
-
-  for (auto metric : dropped_metric_hashes) {
-    recordings_.event_aggregations[entry->event_hash]
-        .metrics[metric]
-        .dropped_due_to_filter++;
-  }
-
-  if (!keep_entry) {
-    recordings_.event_aggregations[entry->event_hash].dropped_due_to_filter++;
-    return false;
-  }
-  return true;
 }
 
 int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources,
@@ -803,6 +775,7 @@ UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
     case SourceIdType::CHROMEOS_WEBSITE_ID:
     case SourceIdType::EXTENSION_ID:
     case SourceIdType::NOTIFICATION_ID:
+    case SourceIdType::CDM_ID:
       return UkmConsentType::MSBB;
   }
   return UkmConsentType::MSBB;
@@ -855,7 +828,8 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
     case ukm::SourceIdObj::Type::EXTENSION_ID:
-    case ukm::SourceIdObj::Type::NOTIFICATION_ID: {
+    case ukm::SourceIdObj::Type::NOTIFICATION_ID:
+    case ukm::SourceIdObj::Type::CDM_ID: {
       // Don't keep sources of these types after current report because their
       // entries are logged only at source creation time.
       MarkSourceForDeletion(source_id);
@@ -895,8 +869,7 @@ bool UkmRecorderImpl::ShouldDropExtensionUrl(
   // If the extension is not a webstore extension, drop the record with
   // `EXTENSION_NOT_SYNCED`.
   if (!is_webstore_extension_callback_ ||
-      !is_webstore_extension_callback_.Run(
-          sanitized_extension_url.host_piece())) {
+      !is_webstore_extension_callback_.Run(sanitized_extension_url.host())) {
     RecordDroppedSource(has_recorded_reason,
                         DroppedDataReason::EXTENSION_NOT_SYNCED);
     return true;
@@ -992,7 +965,12 @@ void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
 
 void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!HasUnknownMetrics(decode_map_, *entry));
+
+  // This should not happen in practice, but possible if an event name
+  // coming from Android implementation in UkmRecorder.java is misspelled.
+  if (HasUnknownMetrics(decode_map_, *entry)) {
+    return;
+  }
 
   NotifyObserversWithNewEntry(*entry);
 
@@ -1163,7 +1141,7 @@ void UkmRecorderImpl::LoadExperimentSamplingParams(
 
     // Special string value used in the experiment configs for webdx features
     // sampling.
-    if (event_name == "_webdx_features_sampling") {
+    if (event_name == kWebFeatureSamplingKeyword) {
       // Sampling rates must be non-negative integers.
       if (base::StringToInt(event_param, &sampling_rate) &&
           sampling_rate >= 0) {

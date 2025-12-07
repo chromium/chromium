@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from './testing/test_import_manager.js';
+
 /**
  * This class assists with processing repeated tree changes in nontrivial ways
  * by allowing only the most recent tree change to be processed.
@@ -53,3 +55,5 @@ export class RepeatedTreeChangeHandler {
     this.callback_(change!);
   }
 }
+
+TestImportManager.exportForTesting(RepeatedTreeChangeHandler);

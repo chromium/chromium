@@ -1,0 +1,10 @@
+# TODO(crbug.com/423945285): figure out less restricted blockage for
+# Chromium third_party/
+third_party/*
+!third_party/angle
+!third_party/blink
+!third_party/catapult
+!third_party/dawn
+
+# No AI features or AI indexing is needed for out/ dir
+out/

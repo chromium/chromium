@@ -25,22 +25,24 @@ export type MicrophoneInfo = BasicMicInfo&InternalMicInfo;
 
 type MicInfoCallback = (deviceId: string) => Promise<InternalMicInfo>;
 
-async function listAllMicrophones(infoCallback: MicInfoCallback
+async function listAllMicrophones(
+  infoCallback: MicInfoCallback,
 ): Promise<MicrophoneInfo[]> {
   const allDevices = await navigator.mediaDevices.enumerateDevices();
 
   // Use only audioinput, and remove the device with the deviceId "default"
   // since it's a duplicated entry and can't be used to get the internal info.
   const devices = allDevices.filter(
-    (d) => d.kind === 'audioinput' && d.deviceId !== DEFAULT_MIC_ID
+    (d) => d.kind === 'audioinput' && d.deviceId !== DEFAULT_MIC_ID,
   );
 
   // Retrieve the internal info from mojo.
-  const devicesWithInfo =
-    await Promise.all(devices.map(async ({deviceId, label}) => {
+  const devicesWithInfo = await Promise.all(
+    devices.map(async ({deviceId, label}) => {
       const internalMicInfo = await infoCallback(deviceId);
       return {...internalMicInfo, deviceId, label};
-    }));
+    }),
+  );
 
   // Microphones sorting order: Default mic, Internal mics, then by label.
   const sortedDevices = devicesWithInfo.sort((a, b) => {
@@ -62,33 +64,35 @@ async function listAllMicrophones(infoCallback: MicInfoCallback
  * @param micId DeviceId of the microphone.
  * @return Whether the given `micId` is a valid microphone deviceId.
  */
-function isValidMicId(microphones: MicrophoneInfo[], micId: string|null):
-  boolean {
+function isValidMicId(
+  microphones: MicrophoneInfo[],
+  micId: string|null,
+): boolean {
   return microphones.some((device) => device.deviceId === micId);
 }
 
 /**
  * Return the deviceId of the selected microphone.
  *
- * In case the latest selected microphone is still connected, returns
- * `currentMicId`, otherwise, returns the deviceId of the default microphone.
+ * Returns `currentMicId` if the latest selected microphone is still connected.
+ * Otherwise, returns `deviceId` of the default microphone or null if no
+ * microphone is connected.
  *
  * @param microphoneList List of all connected microphones.
  * @param currentMicId DeviceId of the current selected microphone.
  * @return DeviceId of the selected microphone.
  */
 function getSelectedMicId(
-  microphoneList: MicrophoneInfo[], currentMicId: string|null
+  microphoneList: MicrophoneInfo[],
+  currentMicId: string|null,
 ): string|null {
   if (isValidMicId(microphoneList, currentMicId)) {
     return currentMicId;
   }
 
-  // TODO(kamchonlathorn): Handle the case when there are no microphones,
-  // probably show an error dialog.
   if (microphoneList.length === 0) {
     console.error('There are no connected microphones.');
-    return '';
+    return null;
   }
 
   // In case the microphone is unplugged, fall back to the default device.
@@ -102,7 +106,8 @@ export class MicrophoneManager {
 
   private readonly updateMicListQueue = new AsyncJobQueue('keepLatest');
 
-  static async create(infoCallback: MicInfoCallback
+  static async create(
+    infoCallback: MicInfoCallback,
   ): Promise<MicrophoneManager> {
     const microphoneList = await listAllMicrophones(infoCallback);
     return new MicrophoneManager(microphoneList, infoCallback);
@@ -110,7 +115,7 @@ export class MicrophoneManager {
 
   private constructor(
     microphoneList: MicrophoneInfo[],
-    private readonly infoCallback: MicInfoCallback
+    private readonly infoCallback: MicInfoCallback,
   ) {
     this.cachedMicrophoneList.value = microphoneList;
     this.selectedMicId.value = getSelectedMicId(microphoneList, null);
@@ -130,7 +135,7 @@ export class MicrophoneManager {
   setSelectedMicId(micId: string): void {
     assert(
       isValidMicId(this.cachedMicrophoneList.value, micId),
-      `Invalid microphone deviceId: ${micId}`
+      `Invalid microphone deviceId: ${micId}`,
     );
     this.selectedMicId.value = micId;
   }
@@ -138,7 +143,9 @@ export class MicrophoneManager {
   private async updateActiveMicrophones(): Promise<void> {
     const microphones = await listAllMicrophones(this.infoCallback);
     this.cachedMicrophoneList.value = microphones;
-    this.selectedMicId.value =
-      getSelectedMicId(microphones, this.selectedMicId.value);
+    this.selectedMicId.value = getSelectedMicId(
+      microphones,
+      this.selectedMicId.value,
+    );
   }
 }

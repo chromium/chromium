@@ -5,7 +5,8 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -13,31 +14,29 @@
 class SupervisedUserMetricsServiceFactoryTest : public PlatformTest {
  protected:
   SupervisedUserMetricsServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
-  // ChromeBrowserState needs thread.
+  // ProfileIOS needs thread.
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that SupervisedUserMetricsServiceFactory creates
 // SupervisedUserSettingsService.
 TEST_F(SupervisedUserMetricsServiceFactoryTest, CreateService) {
   supervised_user::SupervisedUserMetricsService* service =
-      SupervisedUserMetricsServiceFactory::GetForBrowserState(
-          browser_state_.get());
+      SupervisedUserMetricsServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
 }
 
 // Tests that SupervisedUserMetricsServiceFactory returns null
-// with an off-the-record ChromeBrowserState.
+// with an off-the-record ProfileIOS.
 TEST_F(SupervisedUserMetricsServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
-  ChromeBrowserState* otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories();
-  CHECK(otr_browser_state);
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
+  CHECK(otr_profile);
   supervised_user::SupervisedUserMetricsService* service =
-      SupervisedUserMetricsServiceFactory::GetForBrowserState(
-          otr_browser_state);
+      SupervisedUserMetricsServiceFactory::GetForProfile(otr_profile);
   ASSERT_FALSE(service);
 }

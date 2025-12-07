@@ -21,6 +21,7 @@ xsltinc_HEADERS = 			\
 	documents.h			\
 	preproc.h			\
 	transform.h			\
+	transformInternals.h	\
 	security.h			\
 	xsltInternals.h			\
 	xsltexports.h			\
@@ -70,5 +71,7 @@ EXTRA_DIST = $(man_MANS) trio.h triodef.h libxslt.syms
 xsltproc: all
 	@(cd ../xsltproc ; $(MAKE))
 
+if WITH_MODULES
 install-exec-hook:
 	$(MKDIR_P) "$(DESTDIR)$(libdir)/libxslt-plugins"
+endif

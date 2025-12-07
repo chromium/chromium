@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace ash {

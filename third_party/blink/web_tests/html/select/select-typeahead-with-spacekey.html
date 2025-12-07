@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<select id="select">
+    <option>Canada</option>
+    <option>Spain</option>
+    <option>United Arab Emirates</option>
+    <option>United States</option>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<script>
+description('Two keystrokes are considered as part of one typehead session if time difference between them is less than 1 sec');
+
+window.jsTestIsAsync = true;
+
+function keyDown(key, modifiers)
+{
+    if (!window.eventSender)
+      debug("No event sender");
+    eventSender.keyDown(key, modifiers);
+}
+
+var select = document.getElementById("select");
+
+function test1() {
+    debug('1. space key as part of search string.');
+    select.focus();
+    select.value = "Canada";
+    keyDown('U');
+    keyDown('n');
+    keyDown('i');
+    keyDown('t');
+    keyDown('e');
+    keyDown('d');
+    keyDown(' ');
+    keyDown('S');
+    shouldBeFalse('select.matches(":open")');
+    shouldBeEqualToString('select.value', 'United States');
+    select.blur();
+
+    debug('2. space key as part of search string with some delay.');
+    select.focus();
+    select.value = "Canada";
+    keyDown('U');
+    keyDown('n');
+    keyDown('i');
+    keyDown('t');
+    keyDown('e');
+    keyDown('d');
+    keyDown(' ');
+    internals.resetTypeAheadSession(select);
+    keyDown('S');
+    shouldBeFalse('select.matches(":open")');
+    shouldBeEqualToString('select.value', 'Spain');
+    select.blur();
+
+    debug('3. space key to open select menu.');
+    select.focus();
+    select.value = "Canada";
+    keyDown('U');
+    keyDown('n');
+    keyDown('i');
+    keyDown('t');
+    keyDown('e');
+    keyDown('d');
+    internals.resetTypeAheadSession(select);
+    keyDown(' ');
+    shouldBeTrue('select.matches(":open")');
+    shouldBeEqualToString('select.value', 'United Arab Emirates');
+    select.blur();
+
+    finishJSTest();
+}
+
+test1();
+</script>
+</body>

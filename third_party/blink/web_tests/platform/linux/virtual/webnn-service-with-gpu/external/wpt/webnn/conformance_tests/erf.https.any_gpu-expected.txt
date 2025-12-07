@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [required] erf float16 0D scalar
+  assert_array_approx_equals: test erf float16 property 0, expected -0.004909515380859375 +/- 0.001953125, expected -0.004909515380859375 but got -0.001953125
+Harness: the test ran to completion.
+

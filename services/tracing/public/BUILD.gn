@@ -9,7 +9,7 @@ if (is_android) {
     # External code should depend on ":features_java" instead.
     visibility = [ ":*" ]
     sources = [ "cpp/tracing_features.cc" ]
-    template = "java/src/org/chromium/services/network/public/TracingServiceFeatures.java.tmpl"
+    class_name = "org.chromium.services.tracing.TracingServiceFeatures"
   }
 
   android_library("features_java") {

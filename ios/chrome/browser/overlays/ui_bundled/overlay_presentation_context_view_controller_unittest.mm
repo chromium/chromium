@@ -9,18 +9,18 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_presented_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_resizing_presented_overlay_request_config.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_impl.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test/fake_overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test_modality/test_presented_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test_modality/test_resizing_presented_overlay_coordinator.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // The frame of resizable presened overlay UI.
@@ -31,8 +31,8 @@ const CGRect kWindowFrame = {{100.0, 100.0}, {100.0, 100.0}};
 class OverlayPresentationContextViewControllerTest : public PlatformTest {
  public:
   OverlayPresentationContextViewControllerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     view_controller_ = [[OverlayPresentationContextViewController alloc] init];
     root_view_controller_.definesPresentationContext = YES;
@@ -65,7 +65,7 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeOverlayRequestCoordinatorDelegate delegate_;
   ScopedKeyWindow scoped_window_;
@@ -87,13 +87,6 @@ TEST_F(OverlayPresentationContextViewControllerTest, NoPresentedUI) {
 // showing overlay UI presented over its context.
 TEST_F(OverlayPresentationContextViewControllerTest,
        PresentedOverCurrentContext) {
-  if (@available(iOS 15.7.1, *)) {
-    if (@available(iOS 15.7.2, *)) {
-    } else {
-      // TODO(crbug.com/40254110): Failing on a few 15.7.1 devices.
-      return;
-    }
-  }
   // Create a fake overlay coordinator that presents its UI over
   // `view_controller_`.
   std::unique_ptr<OverlayRequest> request =
@@ -146,13 +139,6 @@ TEST_F(OverlayPresentationContextViewControllerTest,
 // container view if it is shown using custom UIViewController presentation that
 // resizes the contianer view.
 TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
-  if (@available(iOS 15.7.1, *)) {
-    if (@available(iOS 15.7.2, *)) {
-    } else {
-      // TODO(crbug.com/40254110): Failing on a few 15.7.1 devices.
-      return;
-    }
-  }
   // Create a fake overlay coordinator that presents its UI over
   // `view_controller_` and resizes its presentation container view to
   // kWindowFrame.

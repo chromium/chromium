@@ -9,6 +9,18 @@
 @class SearchImageWithLensCommand;
 enum class LensEntrypoint;
 
+// Different causes of dismising the overlay.
+typedef NS_ENUM(NSUInteger, LensOverlayDismissalCause) {
+  // The user dismissed the overlay with a swipe down from selection.
+  LensOverlayDismissalCauseSwipeDownFromSelection,
+  // The user dismissed the overlay with a swipe down from translate.
+  LensOverlayDismissalCauseSwipeDownFromTranslate,
+  // The user dismissed the overlay by pressing the dismiss button.
+  LensOverlayDismissalCauseDismissButton,
+  // An external navigation caused the overlay to be dismissed.
+  LensOverlayDismissalCauseExternalNavigation
+};
+
 // Commands related to Lens.
 @protocol LensCommands
 
@@ -17,6 +29,14 @@ enum class LensEntrypoint;
 
 // Opens the input selection UI with the given settings.
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command;
+
+// Notifies that the associated post capture will be dismissed.
+- (void)lensOverlayWillDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause;
+
+// Notifies that the associated post capture has been dismissed.
+- (void)lensOverlayDidDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause;
 
 @end
 

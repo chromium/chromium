@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 
+#include <array>
 #include <cstdint>
 #include <memory>
 
@@ -166,8 +162,13 @@ bool TabMemoryMetricsReporter::EmitMemoryMetricsAfterPageLoaded(
 
 base::TimeDelta TabMemoryMetricsReporter::NextEmitTimeAfterPageLoaded(
     TabMemoryMetricsReporter::ReportState state) {
-  static constexpr base::TimeDelta next_emit_time_after_page_loaded[] = {
-      base::Minutes(1), base::Minutes(5), base::Minutes(10), base::Minutes(15)};
+  constexpr static const auto next_emit_time_after_page_loaded =
+      std::to_array<base::TimeDelta>({
+          base::Minutes(1),
+          base::Minutes(5),
+          base::Minutes(10),
+          base::Minutes(15),
+      });
   DCHECK(NO_METRICS_EMITTED <= state && state < EMITTED_ALL_METRICS);
   return next_emit_time_after_page_loaded[state];
 }

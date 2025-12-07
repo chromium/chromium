@@ -6,6 +6,7 @@
 
 #include "base/observer_list.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 
 FakeQuickAnswersState::FakeQuickAnswersState() = default;
 
@@ -51,6 +52,26 @@ void FakeQuickAnswersState::OnPrefsInitialized() {
   MaybeNotifyIsEnabledChanged();
 }
 
+void FakeQuickAnswersState::SetDefinitionEligible(bool eligible) {
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kDefinition,
+                                     eligible);
+}
+
+void FakeQuickAnswersState::SetTranslationEligible(bool eligible) {
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kTranslation,
+                                     eligible);
+}
+
+void FakeQuickAnswersState::SetUnitConversionEligible(bool eligible) {
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kUnitConversion,
+                                     eligible);
+}
+
+void FakeQuickAnswersState::OverrideFeatureType(
+    QuickAnswersState::FeatureType feature_type) {
+  feature_type_ = feature_type;
+}
+
 void FakeQuickAnswersState::AsyncWriteConsentUiImpressionCount(int32_t count) {
   consent_ui_impression_count_ = count;
 }
@@ -64,4 +85,13 @@ void FakeQuickAnswersState::AsyncWriteEnabled(bool enabled) {
   quick_answers_enabled_ = enabled;
 
   MaybeNotifyIsEnabledChanged();
+}
+
+base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+FakeQuickAnswersState::GetFeatureTypeExpected() const {
+  if (feature_type_) {
+    return feature_type_.value();
+  }
+
+  return QuickAnswersState::GetFeatureTypeExpected();
 }

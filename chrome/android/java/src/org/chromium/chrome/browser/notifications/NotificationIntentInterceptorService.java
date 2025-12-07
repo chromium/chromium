@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.notifications;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 
 /**
@@ -15,9 +16,11 @@ import org.chromium.chrome.browser.base.SplitCompatIntentService;
  *
  * <p>See {@link NotificationIntentInterceptor.ServiceImpl}.
  */
+@NullMarked
 public class NotificationIntentInterceptorService extends SplitCompatIntentService {
     private static final String TAG = NotificationIntentInterceptorService.class.getSimpleName();
 
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$ServiceImpl";
 

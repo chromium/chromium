@@ -9,18 +9,11 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {
 
 extern const char kGeneratedSafeBrowsingPref[];
-
-// Must be kept in sync with the SafeBrowsing enum located in
-// chrome/browser/resources/settings/privacy_page/security_page.js.
-enum class SafeBrowsingSetting {
-  ENHANCED,
-  STANDARD,
-  DISABLED,
-};
 
 // A generated preference which represents the effective Safe Browsing setting
 // state (including non-user management) based on the underlying Safe Browsing

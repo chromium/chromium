@@ -65,6 +65,6 @@ def ReadCssProperties(filename):
 
 if __name__ == '__main__':
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml', 'MappedCSSProperties',
-      ReadCssProperties(USE_COUNTER_MOJOM_PATH), USE_COUNTER_MOJOM_PATH,
-      os.path.basename(__file__))
+      'tools/metrics/histograms/metadata/blink/enums.xml',
+      'MappedCSSProperties', ReadCssProperties(USE_COUNTER_MOJOM_PATH),
+      USE_COUNTER_MOJOM_PATH, os.path.basename(__file__))

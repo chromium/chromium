@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_SHELL_INTEGRATION_H_
 #define CHROME_BROWSER_SHELL_INTEGRATION_H_
 
-#include <map>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -75,6 +73,13 @@ bool CanSetAsDefaultBrowser();
 // Returns an empty string on failure.
 std::u16string GetApplicationNameForScheme(const GURL& url);
 
+#if BUILDFLAG(IS_WIN)
+// Returns a string representing the ProgID of the default handler for the
+// scheme of the requested url.
+// Returns an empty string on failure.
+std::u16string GetProgIdForScheme(const GURL& url);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Returns a vector which containing all the application paths that can be used
 // to launch the requested URL.
@@ -129,6 +134,25 @@ std::string GetFirefoxProgIdSuffix();
 // application for the given scheme and return the appropriate state.
 DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme);
 
+#if BUILDFLAG(IS_WIN)
+// Returns a `DefaultWebClientState` indicating whether this instance of Chrome
+// is the default app for `file_extension`. `file_extension` must include a
+// leading `.`, e.g., ".pdf".
+DefaultWebClientState IsDefaultHandlerForFileExtension(
+    const std::string& file_extension);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+// Returns a `DefaultWebClientState` indicating whether this instance of Chrome
+// is the default app for `type`. `type` must be a UTType identifier,
+// e.g., "com.adobe.pdf".
+DefaultWebClientState IsDefaultHandlerForUTType(const std::string& type);
+
+// Sets Chrome as the default app for `type` (only for the current user). `type`
+// must be a UTType identifier, e.g., "com.adobe.pdf".
+bool SetAsDefaultHandlerForUTType(const std::string& type);
+#endif  // BUILDFLAG(IS_MAC)
+
 // Is the current instance of Chrome running in App mode.
 bool IsRunningInAppMode();
 
@@ -161,6 +185,20 @@ void AppendProfileArgs(const base::FilePath& profile_path,
 // Gets the name of the Chrome Apps menu folder in which to place app
 // shortcuts. This is needed for Mac and Linux.
 std::u16string GetAppShortcutsSubdirName();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+// Returns the URL scheme for google-chrome:// URLs.
+// This varies based on channel, branding, and platform to ensure that
+// different installations do not collide. For example:
+// - "google-chrome" for Google Chrome stable
+// - "google-chrome-beta" on Linux for Google Chrome beta, and on macOS and
+//   Windows for side-by-side Google Chrome beta installs.
+// - "chromium" for Chromium
+// This should not be used for Chrome for Testing builds, as those builds
+// are not intended for user installation or shell integration.
+std::string GetDirectLaunchUrlScheme();
 #endif
 
 // The type of callback used to communicate processing state to consumers of
@@ -293,6 +331,14 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   void StartCheckIsDefaultAndGetDefaultClientName(
       DefaultSchemeHandlerWorkerCallback callback);
 
+#if BUILDFLAG(IS_WIN)
+  // Checks to see if Chrome is the default application for the |url_|.
+  // The provided callback will be run to communicate the default state to the
+  // caller, and also return the program ID of the default client if available.
+  void StartCheckIsDefaultAndGetDefaultClientProgId(
+      DefaultSchemeHandlerWorkerCallback callback);
+#endif
+
   const std::string& scheme() const { return scheme_; }
   const GURL& url() const { return url_; }
 
@@ -300,9 +346,9 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   ~DefaultSchemeClientWorker() override;
 
   // Communicates the result via |callback|.
-  void OnCheckIsDefaultAndGetDefaultClientNameComplete(
+  void OnCheckIsDefaultAndGetDefaultClientValueComplete(
       DefaultWebClientState state,
-      std::u16string program_name,
+      std::u16string client_value,
       DefaultSchemeHandlerWorkerCallback callback);
 
  private:
@@ -311,12 +357,25 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   void CheckIsDefaultAndGetDefaultClientName(
       DefaultSchemeHandlerWorkerCallback callback);
 
+#if BUILDFLAG(IS_WIN)
+  // Checks whether Chrome is the default client for |url_|. This also returns
+  // the default client's program ID if available.
+  void CheckIsDefaultAndGetDefaultClientProgId(
+      DefaultSchemeHandlerWorkerCallback callback);
+#endif
+
   // Check if Chrome is the default handler for this scheme.
   DefaultWebClientState CheckIsDefaultImpl() override;
 
   // Gets the default client name for |scheme_|. Always called on a blocking
   // sequence.
   virtual std::u16string GetDefaultClientNameImpl();
+
+#if BUILDFLAG(IS_WIN)
+  // Gets the default client program ID for |scheme_|. Always called on a
+  // blocking sequence.
+  std::u16string GetDefaultClientProgIdImpl();
+#endif
 
   // Set Chrome as the default handler for this scheme.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;

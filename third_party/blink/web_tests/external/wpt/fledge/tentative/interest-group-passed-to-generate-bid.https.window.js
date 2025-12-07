@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -21,7 +22,7 @@
 // META: variant=?76-80
 // META: variant=?81-85
 
-"use strict;"
+"use strict";
 
 // These tests focus on making sure InterestGroup fields are passed to generateBid(),
 // and are normalized if necessary. This test does not check the behaviors of the

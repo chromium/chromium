@@ -91,28 +91,12 @@ std::set<std::string> GetFileExtensionsFromFileHandler(
   return file_extensions;
 }
 
-bool operator==(const FileHandler::AcceptEntry& accept_entry1,
-                const FileHandler::AcceptEntry& accept_entry2) {
-  return std::tie(accept_entry1.mime_type, accept_entry1.file_extensions) ==
-         std::tie(accept_entry2.mime_type, accept_entry2.file_extensions);
-}
-
 bool operator==(const FileHandler& file_handler1,
                 const FileHandler& file_handler2) {
   return std::tie(file_handler1.action, file_handler1.accept,
                   file_handler1.display_name, file_handler1.launch_type) ==
          std::tie(file_handler2.action, file_handler2.accept,
                   file_handler2.display_name, file_handler2.launch_type);
-}
-
-bool operator!=(const FileHandler::AcceptEntry& accept_entry1,
-                const FileHandler::AcceptEntry& accept_entry2) {
-  return !(accept_entry1 == accept_entry2);
-}
-
-bool operator!=(const FileHandler& file_handler1,
-                const FileHandler& file_handler2) {
-  return !(file_handler1 == file_handler2);
 }
 
 }  // namespace apps

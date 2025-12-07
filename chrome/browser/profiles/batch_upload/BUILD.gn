@@ -1,0 +1,113 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+assert(enable_dice_support)
+
+source_set("batch_upload") {
+  sources = [
+    "batch_upload_delegate.h",
+    "batch_upload_service.h",
+    "batch_upload_service_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/sync/service",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "batch_upload_service.cc",
+    "batch_upload_service_factory.cc",
+  ]
+  deps = [
+    ":batch_upload",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ui/base",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "batch_upload_service_test_helper.cc",
+    "batch_upload_service_test_helper.h",
+  ]
+
+  public_deps = [
+    ":batch_upload",
+    "//chrome/browser/ui/profiles",
+    "//components/prefs:test_support",
+    "//components/sync:test_support",
+    "//components/sync/service",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "batch_upload_service_unittest.cc" ]
+  deps = [
+    ":batch_upload",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/signin",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "batch_upload_browsertest.cc" ]
+  deps = [
+    ":batch_upload",
+    ":test_support",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

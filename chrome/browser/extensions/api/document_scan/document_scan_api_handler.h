@@ -22,7 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class PrefRegistrySimple;
 
@@ -30,14 +30,11 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace gfx {
-class Image;
-}  // namespace gfx
-
 namespace extensions {
 
 class Extension;
 class ScannerDiscoveryRunner;
+class SimpleScanRunner;
 class StartScanRunner;
 
 // Handles chrome.documentScan API function calls.
@@ -80,9 +77,6 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
   // Returns the current instance for `browser_context`.
   static DocumentScanAPIHandler* Get(content::BrowserContext* browser_context);
 
-  // Registers the documentScan API preference with the |registry|.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   // ExtensionRegistryObserver implementation:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
@@ -97,7 +91,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
   // Scans one page from the first available scanner on the system and passes
   // the result to `callback`.  `mime_types` is a list of MIME types the caller
   // is willing to receive back as the image format.
-  void SimpleScan(const std::vector<std::string>& mime_types,
+  void SimpleScan(scoped_refptr<const Extension> extension,
+                  const std::vector<std::string>& mime_types,
                   SimpleScanCallback callback);
 
   // If the user approves, gets a list of available scanners that match
@@ -235,22 +230,16 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
   // Cleanup all handles and state for the given extension.
   void ExtensionCleanup(const ExtensionId& id);
 
-  void OnSimpleScanNamesReceived(bool force_virtual_usb_printer,
-                                 SimpleScanCallback callback,
-                                 const std::vector<std::string>& scanner_names);
-  void OnSimpleScanCompleted(SimpleScanCallback callback,
-                             crosapi::mojom::ScanFailureMode failure_mode,
-                             const std::optional<std::string>& scan_data);
+  void OnSimpleScanCompleted(
+      std::unique_ptr<SimpleScanRunner> runner,
+      SimpleScanCallback callback,
+      std::optional<api::document_scan::ScanResults> scan_results,
+      std::optional<std::string> error);
 
-  void SendGetScannerListRequest(const api::document_scan::DeviceFilter& filter,
-                                 GetScannerListCallback callback);
-  void ShowScanDiscoveryDialog(const api::document_scan::DeviceFilter& filter,
-                               GetScannerListCallback callback,
-                               const gfx::Image& icon);
   void OnScannerListReceived(
       std::unique_ptr<ScannerDiscoveryRunner> discovery_runner,
       GetScannerListCallback callback,
-      crosapi::mojom::GetScannerListResponsePtr response);
+      api::document_scan::GetScannerListResponse response);
   void OnOpenScannerResponse(const ExtensionId& extension_id,
                              const std::string& scanner_id,
                              OpenScannerCallback callback,
@@ -284,9 +273,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
 };
 
 template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const;
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const;
 
 }  // namespace extensions
 

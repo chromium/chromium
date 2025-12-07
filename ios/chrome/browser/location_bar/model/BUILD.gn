@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "web_location_bar.cc",
+    "web_location_bar.h",
+    "web_location_bar_delegate.h",
+    "web_location_bar_impl.h",
+    "web_location_bar_impl.mm",
+  ]
+  deps = [
+    "//components/omnibox/browser:location_bar",
+    "//components/search_engines",
+    "//ios/chrome/browser/location_bar/ui_bundled:protocols",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/omnibox/ui",
+    "//ui/base",
+    "//ui/base:types",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_web_location_bar.cc",
+    "test_web_location_bar.h",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/omnibox/browser:location_bar",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

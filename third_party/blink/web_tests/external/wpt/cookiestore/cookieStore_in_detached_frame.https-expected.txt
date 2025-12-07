@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] cookieStore on DOMWindow of detached iframe
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

@@ -33,6 +33,7 @@
 #include <hb.h>
 #include <stdarg.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -60,10 +61,12 @@ class BlinkOTSContext final : public ots::OTSContext {
  public:
   void Message(int level, const char* format, ...) override;
   ots::TableAction GetTableAction(uint32_t tag) override;
-  const String& GetErrorString() { return error_string_; }
+  const String& GetErrorString() { return accumulated_error_string_; }
 
  private:
-  String error_string_;
+  void AppendErrorMessage(const String&& new_error_string);
+
+  String accumulated_error_string_;
 };
 
 void BlinkOTSContext::Message(int level, const char* format, ...) {
@@ -74,22 +77,35 @@ void BlinkOTSContext::Message(int level, const char* format, ...) {
   int result = _vscprintf(format, args);
 #else
   char ch;
-  int result = vsnprintf(&ch, 1, format, args);
+  int result = UNSAFE_TODO(vsnprintf(&ch, 1, format, args));
 #endif
   va_end(args);
 
   if (result <= 0) {
-    error_string_ = String("OTS Error");
+    AppendErrorMessage(String("Unspecified OTS Error"));
   } else {
     Vector<char, 256> buffer;
     unsigned len = result;
     buffer.Grow(len + 1);
 
     va_start(args, format);
-    vsnprintf(buffer.data(), buffer.size(), format, args);
+    UNSAFE_TODO(vsnprintf(buffer.data(), buffer.size(), format, args));
     va_end(args);
-    error_string_ =
-        StringImpl::Create(reinterpret_cast<const LChar*>(buffer.data()), len);
+
+    AppendErrorMessage(
+        String(StringImpl::Create(base::span(buffer).first(len))));
+  }
+}
+
+void BlinkOTSContext::AppendErrorMessage(const String&& new_error_string) {
+  if (accumulated_error_string_.empty()) {
+    accumulated_error_string_ = new_error_string;
+  } else {
+    if (accumulated_error_string_.Contains(new_error_string)) {
+      return;
+    }
+    accumulated_error_string_ =
+        StrCat({accumulated_error_string_, "\n", new_error_string});
   }
 }
 

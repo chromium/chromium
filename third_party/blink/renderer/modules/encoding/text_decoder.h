@@ -54,7 +54,7 @@ class TextDecoder final : public ScriptWrappable {
                              const TextDecoderOptions*,
                              ExceptionState&);
 
-  TextDecoder(const WTF::TextEncoding&, bool fatal, bool ignore_bom);
+  TextDecoder(const TextEncoding&, bool fatal, bool ignore_bom);
   ~TextDecoder() override;
 
   // Implement the IDL
@@ -67,13 +67,12 @@ class TextDecoder final : public ScriptWrappable {
   String decode(ExceptionState&);
 
  private:
-  String decode(const char* start,
-                uint32_t length,
+  String Decode(base::span<const uint8_t> input,
                 const TextDecodeOptions*,
                 ExceptionState&);
 
-  WTF::TextEncoding encoding_;
-  std::unique_ptr<WTF::TextCodec> codec_;
+  TextEncoding encoding_;
+  std::unique_ptr<TextCodec> codec_;
   bool do_not_flush_ = false;
   bool fatal_;
   bool ignore_bom_;

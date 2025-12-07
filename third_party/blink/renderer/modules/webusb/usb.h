@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -32,14 +31,11 @@ class USBDevice;
 class USBDeviceRequestOptions;
 
 class USB final : public EventTarget,
-                  public Supplement<NavigatorBase>,
                   public ExecutionContextLifecycleObserver,
                   public device::mojom::blink::UsbDeviceManagerClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Getter for navigator.usb
   static USB* usb(NavigatorBase&);
 
@@ -94,6 +90,7 @@ class USB final : public EventTarget,
 
   bool IsFeatureEnabled(ReportOptions) const;
 
+  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::WebUsbService> service_;
   HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<USBDevice>>>>
       get_devices_requests_;

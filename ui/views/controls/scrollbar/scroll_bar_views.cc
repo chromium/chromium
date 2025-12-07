@@ -7,14 +7,16 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
@@ -22,6 +24,7 @@
 #include "ui/views/controls/scrollbar/scroll_bar_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -58,8 +61,9 @@ ScrollBarThumb::~ScrollBarThumb() = default;
 
 gfx::Size ScrollBarThumb::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return gfx::Size();
+  }
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }
@@ -70,13 +74,14 @@ void ScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   const ui::NativeTheme::ExtraParams extra_params(GetNativeThemeParams());
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           GetNativeThemePart(), theme_state, local_bounds,
-                          extra_params);
+                          extra_params, /*forced_colors=*/false, GetColorScheme());
   const ui::NativeTheme::Part gripper_part =
       scroll_bar_->GetOrientation() == ScrollBar::Orientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalGripper
           : ui::NativeTheme::kScrollbarVerticalGripper;
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), gripper_part,
-                          theme_state, local_bounds, extra_params);
+                          theme_state, local_bounds, extra_params,
+                          /*forced_colors=*/false, GetColorScheme());
 }
 
 void ScrollBarThumb::OnThemeChanged() {
@@ -109,7 +114,7 @@ ui::NativeTheme::State ScrollBarThumb::GetNativeThemeState() const {
     case Button::STATE_NORMAL:
       return ui::NativeTheme::kNormal;
     case Button::STATE_COUNT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -180,8 +185,9 @@ int ScrollBarViews::GetVerticalScrollBarWidth(const ui::NativeTheme* theme) {
 
 void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetTrackBounds();
-  if (bounds.IsEmpty())
+  if (bounds.IsEmpty()) {
     return;
+  }
 
   ui::NativeTheme::ScrollbarTrackExtraParams scrollbar_track;
   scrollbar_track.track_x = bounds.x();
@@ -201,7 +207,7 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   }
   if (!upper_bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
-                            state_, upper_bounds, params);
+                            state_, upper_bounds, params, /*forced_colors=*/false, GetColorScheme());
   }
 
   scrollbar_track.is_upper = false;
@@ -214,7 +220,7 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   }
   if (!bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
-                            state_, bounds, params);
+                            state_, bounds, params, /*forced_colors=*/false, GetColorScheme());
   }
 }
 

@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -114,7 +113,7 @@ void UsbService::RemoveDeviceForTesting(const std::string& device_guid) {
   auto testing_devices_it = testing_devices_.find(device_guid);
   if (testing_devices_it != testing_devices_.end()) {
     auto devices_it = devices_.find(device_guid);
-    CHECK(devices_it != devices_.end(), base::NotFatalUntil::M130);
+    CHECK(devices_it != devices_.end());
     scoped_refptr<UsbDevice> device = devices_it->second;
     devices_.erase(devices_it);
     testing_devices_.erase(testing_devices_it);
@@ -128,7 +127,7 @@ void UsbService::GetTestDevices(
   devices->reserve(testing_devices_.size());
   for (const std::string& guid : testing_devices_) {
     auto it = devices_.find(guid);
-    CHECK(it != devices_.end(), base::NotFatalUntil::M130);
+    CHECK(it != devices_.end());
     devices->push_back(it->second);
   }
 }

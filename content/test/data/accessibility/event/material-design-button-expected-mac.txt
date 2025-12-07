@@ -1,0 +1,70 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Filled Button'
+++++AXGroup
+++++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Outlined Button'
+=== End accessibility tree ===
+AXFocusedUIElementChanged on AXButton AXDescription='Filled Button'
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Filled Button'
+++++AXGroup
+++++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Outlined Button'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Filled Button'
+++++AXGroup
+++++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Outlined Button'
+=== End accessibility tree ===
+AXFocusedUIElementChanged on AXWebArea AXTitle='Material Web Button Events'
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Filled Button'
+++++AXGroup
+++++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Outlined Button'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Filled Button'
+++++AXGroup
+++++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Outlined Button'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Filled Button'
+++++AXGroup
+++++++AXGroup
+++++++AXGroup
+++++++AXButton AXDescription='Outlined Button'
+=== End accessibility tree ===

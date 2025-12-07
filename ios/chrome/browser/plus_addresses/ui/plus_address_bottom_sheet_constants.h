@@ -11,10 +11,6 @@
 // the description in automation.
 extern NSString* const kPlusAddressSheetDescriptionAccessibilityIdentifier;
 
-// Accessibility identifier for the bottom sheet's error message used to locate
-// the error message in automation.
-extern NSString* const kPlusAddressSheetErrorMessageAccessibilityIdentifier;
-
 // Accessibility identifier for the bottom sheet's notice message used to locate
 // the notice message in automation.
 extern NSString* const kPlusAddressSheetNoticeMessageAccessibilityIdentifier;
@@ -69,12 +65,10 @@ extern const CGFloat kPlusAddressSheetBrandingIconContainerViewTopPadding;
 
 // Enum specifying the URL the bottom sheet should open.
 enum class PlusAddressURLType {
-  // A bug reporting URL for plus addresses.
-  kErrorReport = 0,
   // A plus address management surface on accounts.google.com.
-  kManagement = 1,
+  kManagement = 0,
   // A help center page to learn more about plus addresses.
-  kLearnMore = 2,
+  kLearnMore = 1,
 };
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSTANTS_H_

@@ -53,7 +53,7 @@ class OwnerPendingSettingController
   // owner, and it will cause a pending write to be buffered and written later
   // if the device has no owner yet. It will write a warning and skip if the
   // device already has an owner, and |profile| is not that owner.
-  void Set(Profile* profile, const base::Value& value);
+  void Set(Profile* profile, base::Value value);
 
   // Returns the latest value - regardless of whether this has been successfully
   // signed and persisted, or if it is still stored as a pending write. Can
@@ -77,6 +77,7 @@ class OwnerPendingSettingController
 
   // ownership::OwnerSettingsService::Observer implementation:
   void OnSignedPolicyStored(bool success) override;
+  void OnServiceShutdown() override;
 
   // Clears any value waiting to be written (from storage in local state).
   void ClearPendingValue();
@@ -90,12 +91,12 @@ class OwnerPendingSettingController
   // Delegates immediately to SetWithService if |service| is ready, otherwise
   // runs SetWithService asynchronously once |service| is ready.
   void SetWithServiceAsync(ownership::OwnerSettingsService* service,
-                           const base::Value& value);
+                           base::Value value);
 
   // Callback used by SetWithServiceAsync.
   void SetWithServiceCallback(
       const base::WeakPtr<ownership::OwnerSettingsService>& service,
-      const base::Value value,
+      const base::Value& value,
       bool is_owner);
 
   // Uses |service| to write the latest value, as long as |service| belongs

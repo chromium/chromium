@@ -8,16 +8,6 @@
 #include <certt.h>
 #include <stddef.h>
 
-#include <algorithm>
-#include <memory>
-#include <tuple>
-
-#include "chrome/third_party/mozilla_security_manager/nsNSSCertHelper.h"
-#include "chrome/third_party/mozilla_security_manager/nsNSSCertificate.h"
-#include "net/cert/x509_util_nss.h"
-
-namespace psm = mozilla_security_manager;
-
 namespace {
 
 // Convert a char* return value from NSS into a std::string and free the NSS
@@ -50,40 +40,12 @@ namespace x509_certificate_model {
 
 using std::string;
 
-std::string GetRawNickname(CERTCertificate* cert_handle) {
-  if (cert_handle->nickname) {
-    return cert_handle->nickname;
-  }
-  return std::string();
-}
-
 string GetCertNameOrNickname(CERTCertificate* cert_handle) {
   string name = ProcessIDN(
       Stringize(CERT_GetCommonName(&cert_handle->subject), std::string()));
   if (!name.empty())
     return name;
   return GetNickname(cert_handle);
-}
-
-net::CertType GetType(CERTCertificate* cert_handle) {
-  return psm::GetCertType(cert_handle);
-}
-
-string GetSubjectOrgName(CERTCertificate* cert_handle,
-                         const string& alternative_text) {
-  return Stringize(CERT_GetOrgName(&cert_handle->subject), alternative_text);
-}
-
-string GetTitle(CERTCertificate* cert_handle) {
-  return psm::GetCertTitle(cert_handle);
-}
-
-std::string GetIssuerDisplayName(CERTCertificate* cert_handle) {
-  return net::x509_util::GetCERTNameDisplayName(&cert_handle->issuer);
-}
-
-std::string GetSubjectDisplayName(CERTCertificate* cert_handle) {
-  return net::x509_util::GetCERTNameDisplayName(&cert_handle->subject);
 }
 
 }  // namespace x509_certificate_model

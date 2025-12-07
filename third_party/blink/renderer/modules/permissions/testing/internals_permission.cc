@@ -10,12 +10,13 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions/permission_automation.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/test/mojom/permissions/permission_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -35,7 +36,7 @@ ScriptPromise<IDLUndefined> InternalsPermission::setPermission(
     ScriptState* script_state,
     Internals&,
     const ScriptValue& raw_descriptor,
-    const String& state,
+    const V8PermissionState& state,
     ExceptionState& exception_state) {
   mojom::blink::PermissionDescriptorPtr descriptor =
       ParsePermissionDescriptor(script_state, raw_descriptor, exception_state);
@@ -74,9 +75,9 @@ ScriptPromise<IDLUndefined> InternalsPermission::setPermission(
   auto promise = resolver->Promise();
   auto* raw_permission_automation = permission_automation.get();
   raw_permission_automation->SetPermission(
-      std::move(descriptor), ToPermissionStatus(state.Utf8()), url,
+      std::move(descriptor), ToPermissionStatus(state.AsCStr()), url,
       embedding_url,
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,

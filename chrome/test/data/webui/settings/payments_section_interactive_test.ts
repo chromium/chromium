@@ -7,14 +7,16 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
+import {verifyBooleanHistogramRecorded} from './payments_section_utils.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 /**
@@ -26,6 +28,15 @@ async function typeInNickname(
   await nicknameInput.updateComplete;
   nicknameInput.dispatchEvent(
       new CustomEvent('input', {bubbles: true, composed: true}));
+}
+
+/**
+ * Helper function to wait for IBAN validation to complete and any associated UI
+ * to be updated.
+ */
+async function ibanValidated(paymentsManager: TestPaymentsManager) {
+  await paymentsManager.whenCalled('isValidIban');
+  await microtasksFinished();
 }
 
 suite('PaymentsSectionCreditCardEditDialogTest', function() {
@@ -67,10 +78,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    * Creates the Add Credit Card dialog. Simulate clicking "Add" button in
    * payments section.
    */
-  async function createAddCreditCardDialog():
+  async function createAddCreditCardDialog(
+      existingCards?: chrome.autofillPrivate.CreditCardEntry[]):
       Promise<SettingsCreditCardEditDialogElement> {
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[]);
+        existingCards !== undefined ? existingCards : [], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments section.
     assertFalse(!!section.shadowRoot!.querySelector(
         'settings-credit-card-edit-dialog'));
@@ -143,7 +155,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         section.shadowRoot!.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
     ibanDialog.$.saveButton.disabled = false;
-    return ibanDialog!;
+    return ibanDialog;
   }
 
   /**
@@ -223,6 +235,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   }
 
   test('add card dialog', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     loadTimeData.overrideValues({
       showIbansSettings: false,
     });
@@ -252,6 +267,14 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(numberInput.matches(':focus-within'));
+
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.AddCardClicked2', true);
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
+        true);
   });
 
   test('add card dialog from dropdown list', async function() {
@@ -278,6 +301,28 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(numberInput.matches(':focus-within'));
+  });
+
+  test('add card with existing cards', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
+    const existingCreditCard = createCreditCardEntry();
+    const creditCardDialog =
+        await createAddCreditCardDialog([existingCreditCard]);
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    // The only additional thing to verify here versus other tests is that the
+    // metric is recorded correctly.
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
+        false);
   });
 
   test('save new card', async function() {
@@ -571,31 +616,31 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input.
-    nicknameInput!.focus();
+    nicknameInput.focus();
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new card, the nickname is unset.
-    assertTrue(characterCount.textContent!.includes('0/25'));
+    assertTrue(characterCount.textContent.includes('0/25'));
 
     // User types in one character. Ensure the character count is dynamically
     // updated.
-    await typeInNickname(nicknameInput!, 'a');
-    assertTrue(characterCount.textContent!.includes('1/25'));
+    await typeInNickname(nicknameInput, 'a');
+    assertTrue(characterCount.textContent.includes('1/25'));
     // User types in total 5 characters.
-    await typeInNickname(nicknameInput!, 'abcde');
-    assertTrue(characterCount.textContent!.includes('5/25'));
+    await typeInNickname(nicknameInput, 'abcde');
+    assertTrue(characterCount.textContent.includes('5/25'));
 
     // User click outside of nickname input, the character count isn't shown.
-    nicknameInput!.blur();
+    nicknameInput.blur();
     await nicknameInput.updateComplete;
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input again.
-    nicknameInput!.focus();
+    nicknameInput.focus();
     await nicknameInput.updateComplete;
     // Character count is shown when nickname input field is re-focused.
     assertTrue(isVisible(characterCount));
-    assertTrue(characterCount.textContent!.includes('5/25'));
+    assertTrue(characterCount.textContent.includes('5/25'));
   });
 
   test('expired card', async function() {
@@ -679,24 +724,28 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertTrue(!!characterCount);
     assertFalse(isVisible(characterCount));
     // User clicks on nickname input.
-    nicknameInput!.focus();
+    nicknameInput.focus();
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new IBAN, the nickname is unset.
-    assertTrue(characterCount.textContent!.includes('0/25'));
+    assertTrue(characterCount.textContent.includes('0/25'));
 
     // Fill in IBAN value and nickname, and trigger the on-input handler.
     nicknameInput.value = 'My doctor\'s IBAN';
     await nicknameInput.updateComplete;
-    assertTrue(characterCount.textContent!.includes('16/25'));
+    assertTrue(characterCount.textContent.includes('16/25'));
 
     valueInput.value = 'IT60X0542811101000000123456';
-    await valueInput.updateComplete;
-    flush();
+
+    // IBAN validation is asynchronous, so wait for it to complete and the save
+    // button state to be updated.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    await ibanValidated(paymentsManager);
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
-    saveButton!.click();
+    saveButton.click();
     const saveEvent = await savedPromise;
 
     // Verify the input values are correctly passed to save-iban.
@@ -720,9 +769,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const valueInput = ibanDialog.$.valueInput;
     nicknameInput.value = '   My doctor\'s IBAN  ';
     valueInput.value = '  IT60 X054 2811 1010 0000 0123 456 ';
-    await Promise.all(
-        [nicknameInput.updateComplete, valueInput.updateComplete]);
-    flush();
+
+    // IBAN validation is asynchronous, so wait for it to complete and the save
+    // button state to be updated.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    await ibanValidated(paymentsManager);
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
@@ -732,7 +784,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify the input values are correctly passed to save-iban.
     // `guid` is undefined when saving a new IBAN.
     assertEquals(saveEvent.detail.guid, undefined);
-    assertEquals(saveEvent.detail.value, 'IT60 X054 2811 1010 0000 0123 456');
+    assertEquals(saveEvent.detail.value, 'IT60X0542811101000000123456');
     assertEquals(saveEvent.detail.nickname, 'My doctor\'s IBAN');
   });
 
@@ -752,9 +804,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const valueInput = ibanDialog.$.valueInput;
     valueInput.value = 'DE75 5121 0800 1245 1261 99';
     nicknameInput.value = 'My brother\'s IBAN';
-    await Promise.all(
-        [valueInput.updateComplete, nicknameInput.updateComplete]);
-    flush();
+
+    // IBAN validation is asynchronous, so wait for it to complete and the save
+    // button state to be updated.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    await ibanValidated(paymentsManager);
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
@@ -763,7 +818,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Verify the updated values are correctly passed to save-iban.
     assertEquals(saveEvent.detail.guid, iban.guid);
-    assertEquals(saveEvent.detail.value, 'DE75 5121 0800 1245 1261 99');
+    assertEquals(saveEvent.detail.value, 'DE75512108001245126199');
     assertEquals(saveEvent.detail.nickname, 'My brother\'s IBAN');
   });
 

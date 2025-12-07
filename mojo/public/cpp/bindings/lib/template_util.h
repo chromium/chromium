@@ -5,7 +5,10 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_TEMPLATE_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_TEMPLATE_UTIL_H_
 
+#include <optional>
 #include <type_traits>
+
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo::internal {
 
@@ -25,9 +28,11 @@ template <template <typename...> class Template, typename... Args>
 struct IsSpecializationOf<Template, Template<Args...>> : std::true_type {};
 
 template <typename T>
-struct AlwaysFalse {
-  static const bool value = false;
-};
+using IsStdOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
+
+template <typename T>
+using IsOptionalAsPointer =
+    IsSpecializationOf<mojo::OptionalAsPointer, std::decay_t<T>>;
 
 }  // namespace mojo::internal
 

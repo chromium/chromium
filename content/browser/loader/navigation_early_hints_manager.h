@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
@@ -91,7 +92,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   NavigationEarlyHintsManager(BrowserContext& browser_context,
                               StoragePartition& storage_partition,
-                              int frame_tree_node_id,
+                              FrameTreeNodeId frame_tree_node_id,
                               NavigationEarlyHintsManagerParams params);
 
   ~NavigationEarlyHintsManager();
@@ -156,7 +157,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   const raw_ref<BrowserContext> browser_context_;
   const raw_ref<StoragePartition> storage_partition_;
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
   // This needs to be declared last because it holds a pointer on
   // `loader_factory`, and thus needs to be destroyed before factory gets

@@ -13,15 +13,15 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace safe_browsing {
 
-BinaryFeatureExtractor::BinaryFeatureExtractor() {}
+BinaryFeatureExtractor::BinaryFeatureExtractor() = default;
 
-BinaryFeatureExtractor::~BinaryFeatureExtractor() {}
+BinaryFeatureExtractor::~BinaryFeatureExtractor() = default;
 
 bool BinaryFeatureExtractor::ExtractImageFeatures(
     const base::FilePath& file_path,
@@ -48,8 +48,8 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
   if (!mapped_file.Initialize(std::move(temp_file))) {
     return false;
   }
-  return ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
-                                      options, image_headers, signed_data);
+  return ExtractImageFeaturesFromData(mapped_file.bytes(), options,
+                                      image_headers, signed_data);
 }
 
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromFile(
@@ -60,8 +60,8 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromFile(
   base::MemoryMappedFile mapped_file;
   if (!mapped_file.Initialize(std::move(file)))
     return false;
-  return ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
-      options, image_headers, signed_data);
+  return ExtractImageFeaturesFromData(mapped_file.bytes(), options,
+                                      image_headers, signed_data);
 }
 
 void BinaryFeatureExtractor::ExtractDigest(
@@ -69,23 +69,21 @@ void BinaryFeatureExtractor::ExtractDigest(
     ClientDownloadRequest_Digests* digests) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (file.IsValid()) {
-    const int kBufferSize = 1 << 12;
-    auto buf = base::HeapArray<uint8_t>::Uninit(kBufferSize);
-    std::unique_ptr<crypto::SecureHash> ctx(
-        crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+    auto buf = base::HeapArray<uint8_t>::Uninit(1 << 12);
+    crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
     std::optional<size_t> result;
     while (true) {
       result = file.ReadAtCurrentPos(buf);
       if (!result.has_value() || result.value() == 0) {
         break;
       }
-      ctx->Update(buf.data(), result.value());
+      hasher.Update(buf.first(*result));
     }
     // The loop was broken out of because of EOF, not an error.
     if (result.has_value() && result.value() == 0) {
-      uint8_t hash[crypto::kSHA256Length];
-      ctx->Finish(hash, sizeof(hash));
-      digests->set_sha256(hash, sizeof(hash));
+      std::array<uint8_t, crypto::hash::kSha256Size> hash;
+      hasher.Finish(hash);
+      digests->set_sha256(base::as_string_view(hash));
     }
   }
 }

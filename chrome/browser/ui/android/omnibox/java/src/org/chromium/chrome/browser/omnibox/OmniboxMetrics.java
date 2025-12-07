@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -17,9 +18,9 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Optional;
 
 /** This class collects a variety of different Omnibox related metrics. */
+@NullMarked
 public class OmniboxMetrics {
     /**
      * Maximum number of suggest tile types we want to record. Anything beyond this will be reported
@@ -52,6 +53,13 @@ public class OmniboxMetrics {
     @VisibleForTesting
     public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
             "Android.Omnibox.OmniboxAction.Valid";
+
+    @VisibleForTesting
+    public static final String HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP =
+            "NewTabPage.Incognito.OmniboxAutofocus.OnFocus.ZeroSuggestSuppressed";
+
+    public static final String HISTOGRAM_FOCUS_TO_IME_ANIMATION_START =
+            "Android.Omnibox.SuggestionList.FocusToImeAnimationStart";
 
     /**
      * The amount of time it takes to process a touch down event. A touch down event can send a
@@ -213,7 +221,7 @@ public class OmniboxMetrics {
      * Record the length of time between when omnibox gets focused and when a omnibox match is open.
      */
     public static void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
     }
 
@@ -370,43 +378,62 @@ public class OmniboxMetrics {
      *     value is null if no prefetches have been started in the current omnibox session.
      */
     public static void recordTouchDownPrefetchResult(
-            @NonNull AutocompleteMatch navSuggestion,
-            @NonNull Optional<AutocompleteMatch> prefetchSuggestion) {
+            AutocompleteMatch navSuggestion, @Nullable AutocompleteMatch prefetchSuggestion) {
+
         @PrefetchResult
         int result =
-                prefetchSuggestion
-                        .map(
-                                match ->
-                                        navSuggestion.getNativeObjectRef() != 0
-                                                        && navSuggestion.getNativeObjectRef()
-                                                                == match.getNativeObjectRef()
-                                                ? PrefetchResult.HIT
-                                                : PrefetchResult.MISS)
-                        .orElse(PrefetchResult.NO_PREFETCH);
+                prefetchSuggestion == null
+                        ? PrefetchResult.NO_PREFETCH
+                        : prefetchSuggestion.getNativeObjectRef()
+                                        == navSuggestion.getNativeObjectRef()
+                                ? PrefetchResult.HIT
+                                : PrefetchResult.MISS;
 
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT, result, PrefetchResult.COUNT);
     }
 
     /**
+     * Records the wall time elapsed between focusing the omnibox and the onPrepare event of the IME
+     * WindowInsets animation.
+     */
+    public static TimingMetric recordTimeFromFocusToImeAnimation() {
+        return TimingMetric.shortUptime(HISTOGRAM_FOCUS_TO_IME_ANIMATION_START);
+    }
+
+    /** Records whether zero-prefix suggestions were suppressed on the Incognito NTP. */
+    public static void recordZeroSuggestSuppressedOnIncognitoNtp(boolean suppressed) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP, suppressed);
+    }
+
+    /**
      * Translate the pageClass to a histogram suffix.
      *
-     * @param histogram Histogram prefix.
+     * @param prefix Histogram prefix.
      * @param pageClass Page classification to translate.
      * @return Metric name.
      */
-    private static String histogramName(@NonNull String prefix, int pageClass) {
+    private static String histogramName(String prefix, int pageClass) {
         String suffix = "Other";
 
         switch (pageClass) {
-            case PageClassification.NTP_VALUE:
             case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
-            case PageClassification.INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.NTP_REALBOX_VALUE:
+            case PageClassification.NTP_VALUE:
+            case PageClassification.NTP_ZPS_PREFETCH_VALUE:
+            case PageClassification.SEARCH_BUTTON_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.START_SURFACE_HOMEPAGE_VALUE:
+            case PageClassification.START_SURFACE_NEW_TAB_VALUE:
                 suffix = "NTP";
                 break;
 
+            case PageClassification.LENS_SIDE_PANEL_SEARCHBOX_VALUE:
             case PageClassification.SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT_VALUE:
             case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
+            case PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE:
+            case PageClassification.SEARCH_SIDE_PANEL_SEARCHBOX_VALUE:
+            case PageClassification.SRP_ZPS_PREFETCH_VALUE:
                 suffix = "SRP";
                 break;
 
@@ -415,17 +442,36 @@ public class OmniboxMetrics {
                 suffix = "Widget";
                 break;
 
+            case PageClassification.ANDROID_HUB_VALUE:
+                suffix = "HUB";
+                break;
+
             case PageClassification.BLANK_VALUE:
+            case PageClassification.CONTEXTUAL_SEARCHBOX_VALUE:
             case PageClassification.HOME_PAGE_VALUE:
+            case PageClassification.JOURNEYS_VALUE:
+            case PageClassification.OTHER_ON_CCT_VALUE:
             case PageClassification.OTHER_VALUE:
+            case PageClassification.OTHER_ZPS_PREFETCH_VALUE:
                 // use default value for websites.
                 break;
 
+            case PageClassification.OBSOLETE_INSTANT_NTP_VALUE:
+            case PageClassification.OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+                assert false
+                        : "Obsolete page classification. Please use the OMNIBOX variant instead.";
+                break;
+
             default:
-                // Report an error, but fall back to a default value.
-                // Use this to detect missing new cases.
-                // TODO(crbug.com/40221519): This assert fails persistently on tablets.
-                // assert false : "Unknown page classification: " + pageClass;
+                // May trigger if nev PageClassifications were added to
+                // third_party/metrics_proto/omnibox_event.proto file,
+                // but have not been reflected here. If that's the case, file a bug for the
+                // author of the new PageClassification.
+                // Last supported value: OTHER_ON_CCT.
+                assert false
+                        : "b/40221519: Invalid page classification: "
+                                + pageClass
+                                + ". Please re-open bug, and attach captured stack trace.";
                 break;
         }
 

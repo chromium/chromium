@@ -33,6 +33,7 @@ blink_core_sources_fragment_directive = [
 
 blink_core_tests_fragment_directive = [
   "css_selector_fragment_anchor_test.cc",
+  "fragment_directive_test.cc",
   "same_block_word_iterator_test.cc",
   "text_fragment_anchor_metrics_test.cc",
   "text_fragment_anchor_test.cc",

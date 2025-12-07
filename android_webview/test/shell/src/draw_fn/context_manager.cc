@@ -10,12 +10,14 @@
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
+#include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
-#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
+#include "gpu/vulkan/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
@@ -28,17 +30,17 @@
 #include "third_party/skia/include/core/SkDrawable.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrBackendDrawableInfo.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanExtensions.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
@@ -171,8 +173,8 @@ class ContextManagerGL : public ContextManager {
   }
 
   int rgbaToArgb(GLubyte* bytes) {
-    return (bytes[3] & 0xff) << 24 | (bytes[0] & 0xff) << 16 |
-           (bytes[1] & 0xff) << 8 | (bytes[2] & 0xff);
+    return (UNSAFE_TODO(bytes[3]) & 0xff) << 24 | (bytes[0] & 0xff) << 16 |
+           (UNSAFE_TODO(bytes[1]) & 0xff) << 8 | (UNSAFE_TODO(bytes[2]) & 0xff);
   }
 
   EGLConfig GetConfig(bool* out_use_es3) {
@@ -461,7 +463,7 @@ class FunctorDrawable : public SkDrawable {
 
  protected:
   SkRect onGetBounds() override { return SkRect::MakeWH(width_, height_); }
-  void onDraw(SkCanvas*) override { NOTREACHED_IN_MIGRATION(); }
+  void onDraw(SkCanvas*) override { NOTREACHED(); }
 
   std::unique_ptr<GpuDrawHandler> onSnapGpuDrawHandler(
       GrBackendApi backend_api,
@@ -666,8 +668,7 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
   backend_context.fMaxAPIVersion = vulkan_implementation_->GetVulkanInstance()
                                        ->vulkan_info()
                                        .used_api_version;
-  backend_context.fMemoryAllocator =
-      gpu::CreateSkiaVulkanMemoryAllocator(device_queue_.get());
+  backend_context.fMemoryAllocator = device_queue_->GetSkiaVkMemoryAllocator();
 
   skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
                                      VkDevice device) {
@@ -836,3 +837,5 @@ static jlong JNI_ContextManager_Init(JNIEnv* env, jboolean use_vulkan) {
 }
 
 }  // namespace draw_fn
+
+DEFINE_JNI(ContextManager)

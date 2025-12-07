@@ -4,6 +4,8 @@
 
 #include "ui/gfx/geometry/mask_filter_info.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -63,8 +65,13 @@ void MaskFilterInfo::ApplyTransform(const AxisTransform2d& transform) {
 std::string MaskFilterInfo::ToString() const {
   std::string result = "MaskFilterInfo{" + rounded_corner_bounds_.ToString();
 
-  if (gradient_mask_)
+  if (gradient_mask_) {
     result += ", gradient_mask=" + gradient_mask_->ToString();
+  }
+
+  if (clip_id_.has_value()) {
+    result += ", clip_id=" + base::NumberToString(clip_id_.value());
+  }
 
   result += "}";
 

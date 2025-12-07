@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
@@ -20,8 +19,6 @@
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
-
-class GrDirectContext;
 
 namespace base {
 class Lock;
@@ -96,11 +93,6 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // must have been successfully bound to a thread before calling this.
   virtual gpu::ContextSupport* ContextSupport() = 0;
 
-  // Get a Skia GPU raster interface to the 3d context.  The context provider
-  // must have been successfully bound to a thread before calling this.  Returns
-  // nullptr if a GrContext fails to initialize on this context.
-  virtual class GrDirectContext* GrContext() = 0;
-
   virtual gpu::SharedImageInterface* SharedImageInterface() = 0;
 
   // Returns the capabilities of the currently bound 3d context.  The context
@@ -115,9 +107,6 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // Get a Raster interface to the 3d context.  The context provider must have
   // been successfully bound to a thread before calling this.
   virtual gpu::raster::RasterInterface* RasterInterface() = 0;
-
-  // Returns the format that should be used for GL texture storage.
-  virtual unsigned int GetGrGLTextureFormat(SharedImageFormat format) const = 0;
 
  protected:
   virtual ~RasterContextProvider() = default;

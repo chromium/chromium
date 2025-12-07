@@ -38,13 +38,17 @@ class WallpaperWindowStateManagerTest : public AshTestBase {
 };
 
 TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {
-  SimulateUserLogin(kTestAccount);
+  SimulateUserLogin({kTestAccount});
   std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
-  std::unique_ptr<aura::Window> window3(CreateTestWindowInShellWithId(3));
-  std::unique_ptr<aura::Window> window4(CreateTestWindowInShellWithId(4));
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 2}));
+  std::unique_ptr<aura::Window> window3(
+      CreateTestWindowInShell({.window_id = 3}));
+  std::unique_ptr<aura::Window> window4(
+      CreateTestWindowInShell({.window_id = 4}));
 
   WindowState* wallpaper_picker_window_state =
       WindowState::Get(wallpaper_picker_window.get());
@@ -101,10 +105,11 @@ TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {
 // 2. If some windows are unminimized by user, the following call will minimize
 //    the unminimized windows again.
 TEST_F(WallpaperWindowStateManagerTest, HideAndManualUnminimizeWindows) {
-  SimulateUserLogin(kTestAccount);
+  SimulateUserLogin({kTestAccount});
   std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
 
   WindowState* wallpaper_picker_window_state =
       WindowState::Get(wallpaper_picker_window.get());
@@ -146,11 +151,13 @@ TEST_F(WallpaperWindowStateManagerTest, HideAndManualUnminimizeWindows) {
 // Test that invisible windows (e.g. those belonging to an inactive user) should
 // not be affected by |MinimizeInactiveWindows| or |RestoreMinimizedWindows|.
 TEST_F(WallpaperWindowStateManagerTest, IgnoreInvisibleWindows) {
-  SimulateUserLogin(kTestAccount);
+  SimulateUserLogin({kTestAccount});
   std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.window_id = 2}));
 
   WindowState* wallpaper_picker_window_state =
       WindowState::Get(wallpaper_picker_window.get());

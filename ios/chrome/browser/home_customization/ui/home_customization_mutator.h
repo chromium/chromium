@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
+@protocol BackgroundCustomizationConfiguration;
+
 // Mutator protocol for the UI layer to communicate to the
 // HomeCustomizationMediator.
 @protocol HomeCustomizationMutator
@@ -20,6 +22,9 @@
 
 // Navigates to an external URL for a given `type`.
 - (void)navigateToLinkForType:(CustomizationLinkType)type;
+
+// Dismisses the top page of the menu stack.
+- (void)dismissMenuPage;
 
 @end
 

@@ -28,10 +28,22 @@ struct LoggedClientIds {
   int64 client_id;
 };
 
+// Information on Model Quality Logging Service (MQLS) logs to be displayed on
+// WebUI page, for debugging purposes.
+struct MqlsLog {
+  // Feature associated with the MQLS log.
+  string feature;
+  // Serialization of proto to be uploaded as an MQLS log.
+  string proto;
+  // Status of the MQLS log upload.
+  string status;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreatePageHandler(pending_remote<Page> page);
+
   // The WebUI calls this method when the models page is open, to retrieve
   // information of downloaded models for debugging purposes.
   RequestDownloadedModelsInfo() =>
@@ -41,6 +53,10 @@ interface PageHandlerFactory {
   // information of all client ids for the past 28 days to allow users to opt-out of logs.
   RequestLoggedModelQualityClientIds() =>
       (array<LoggedClientIds> logged_client_ids);
+
+  // The WebUI calls this method when the MQLS logs page is open, to retrieve
+  // information on MQLS logs for debugging purposes.
+  RequestMqlsLogs() => (array<MqlsLog> mqls_logs);
 };
 
 // Renderer-side handler for internals WebUI page to process the updates from

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/display/manager/display_change_observer.h"
 
 #include <algorithm>
+#include <cmath>
 #include <map>
 #include <set>
 #include <string>
@@ -21,10 +18,8 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/display/display.h"
@@ -58,34 +53,90 @@ struct DeviceScaleFactorDPIThreshold {
 
 // Update the list of zoom levels whenever a new device scale factor is added
 // here. See zoom level list in /ui/display/manager/util/display_manager_util.cc
-const DeviceScaleFactorDPIThreshold kThresholdTableForInternal[] = {
-    {310.f, kDsf_2_666}, {270.0f, 2.4f},  {230.0f, 2.0f}, {220.0f, kDsf_1_777},
-    {180.0f, 1.6f},      {150.0f, 1.25f}, {0.0f, 1.0f},
-};
+const std::array<DeviceScaleFactorDPIThreshold, 7>
+    kThresholdTableForLcdInternal{{
+        {310.f, kDsf_2_666},
+        {270.0f, 2.4f},
+        {230.0f, 2.0f},
+        {220.0f, kDsf_1_777},
+        {180.0f, 1.6f},
+        {150.0f, 1.25f},
+        {0.0f, 1.0f},
+    }};
 
-// Returns a list of display modes for the given |output| that doesn't exclude
-// any mode. The returned list is sorted by size, then by refresh rate, then by
-// is_interlaced.
-ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
-    const DisplaySnapshot& output) {
-  ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
-  for (const auto& mode_info : output.modes()) {
-    display_mode_list.emplace_back(mode_info->size(), mode_info->refresh_rate(),
-                                   mode_info->is_interlaced(),
-                                   output.native_mode() == mode_info.get(),
-                                   1.0);
+// Same as |kThresholdTableForLcdInternal|, but used for Oled displays with
+// |display::features::kOledScaleFactorEnabled| set.
+const std::array<DeviceScaleFactorDPIThreshold, 8>
+    kThresholdTableForOledInternal{{
+        {310.f, kDsf_2_666},
+        {270.0f, 2.4f},
+        {230.0f, 2.0f},
+        {220.0f, kDsf_1_777},
+        {180.0f, 1.6f},
+        {160.0f, kDsf_1_333},
+        {140.0f, 1.25f},
+        {0.0f, 1.0f},
+    }};
+
+// Return the diagonal length of the rect.
+float GetDiagonalLength(const gfx::Size& rect) {
+  return std::sqrt(std::pow(rect.width(), 2) + std::pow(rect.height(), 2));
+}
+
+// Only use if the ops-display-scale-factor feature flag is set to true and
+// physical size is valid. OPS stands for Open Pluggable Specification.
+float GetOpsDisplayScaleFactor(const gfx::Size& physical_size,
+                               const gfx::Size& size_in_pixels) {
+  // Common OPS displays are over 50 inches.
+  constexpr float kMinSizeForOps = 50.0f;
+  // The diagonal length of the display in inches.
+  const float diagonal_length = GetDiagonalLength(physical_size) / kInchInMm;
+  // Check against this number to not capture user using the device as
+  // ChromeBox.
+  if (diagonal_length < kMinSizeForOps) {
+    return 1.0f;
   }
 
-  std::sort(
-      display_mode_list.begin(), display_mode_list.end(),
-      [](const ManagedDisplayMode& lhs, const ManagedDisplayMode& rhs) {
-        return std::forward_as_tuple(lhs.size().width(), lhs.size().height(),
-                                     lhs.refresh_rate(), lhs.is_interlaced()) <
-               std::forward_as_tuple(rhs.size().width(), rhs.size().height(),
-                                     rhs.refresh_rate(), rhs.is_interlaced());
-      });
+  // These are the scale factors that will result in non-fractional logical
+  // pixels for 4k UHD (3840 x 2160) and 4k WUHD (5120 x 2160) displays.
+  // Note: List should be sorted.
+  constexpr float kScaleFactorsForOPSDisplay[] = {
+      1.0f, 1.25f, kDsf_1_333, 1.6f, kDsf_1_777, 2.0f, kDsf_2_666};
 
-  return display_mode_list;
+  const float original_dpi =
+      GetDiagonalLength(size_in_pixels) / diagonal_length;
+  // Ideal scale factor to dpi ratio is 1.0f to 40pi. We try to find the closest
+  // valid display scale factor based on the target display's dpi.
+  const float ideal_scale_factor = original_dpi / 40.0f;
+  float closest_dsf = 1.0f;
+  float dsf_delta = std::abs(ideal_scale_factor - closest_dsf);
+  for (const float scale_factor : kScaleFactorsForOPSDisplay) {
+    const float delta = std::abs(ideal_scale_factor - scale_factor);
+    if (delta <= dsf_delta) {
+      // Check if the scaling will result in fractional pixels.
+      gfx::RectF f(size_in_pixels);
+      f.InvScale(scale_factor);
+      float int_part;
+      if (std::modf(f.width(), &int_part) == 0 &&
+          std::modf(f.height(), &int_part) == 0) {
+        closest_dsf = scale_factor;
+        dsf_delta = delta;
+      }
+
+    } else {
+      return closest_dsf;
+    }
+  }
+  return closest_dsf;
+}
+
+// External Display size is always set to 1.0 unless otherwise specified.
+float GetExternalDisplayScaleFactor(const gfx::Size& physical_size,
+                                    const gfx::Size& size_in_pixels) {
+  if (features::IsOpsDisplayScaleFactorEnabled()) {
+    return GetOpsDisplayScaleFactor(physical_size, size_in_pixels);
+  }
+  return 1.0f;
 }
 
 std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
@@ -96,7 +147,8 @@ std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
 
   std::optional<base::Value> display_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kDisplayProperties));
+          switches::kDisplayProperties),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!display_switch_value.has_value()) {
     return std::nullopt;
@@ -124,68 +176,26 @@ DisplayChangeObserver::GetInternalManagedDisplayModeList(
 ManagedDisplayInfo::ManagedDisplayModeList
 DisplayChangeObserver::GetExternalManagedDisplayModeList(
     const DisplaySnapshot& output) {
-  if (display::features::IsListAllDisplayModesEnabled())
-    return GetModeListWithAllRefreshRates(output);
-
-  struct SizeComparator {
-    constexpr bool operator()(const gfx::Size& lhs,
-                              const gfx::Size& rhs) const {
-      return std::forward_as_tuple(lhs.width(), lhs.height()) <
-             std::forward_as_tuple(rhs.width(), rhs.height());
-    }
-  };
-
-  using DisplayModeMap =
-      std::map<gfx::Size, ManagedDisplayMode, SizeComparator>;
-  DisplayModeMap display_mode_map;
-
-  ManagedDisplayMode native_mode;
+  // Returns a list of display modes for the given |output| that doesn't exclude
+  // any mode. The returned list is sorted by size, then by refresh rate, then
+  // by is_interlaced.
+  ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
   for (const auto& mode_info : output.modes()) {
-    const gfx::Size size = mode_info->size();
-
-    ManagedDisplayMode display_mode(
+    display_mode_list.emplace_back(
         mode_info->size(), mode_info->refresh_rate(),
         mode_info->is_interlaced(), output.native_mode() == mode_info.get(),
-        1.0);
-    if (display_mode.native())
-      native_mode = display_mode;
-
-    // Add the display mode if it isn't already present and override interlaced
-    // display modes with non-interlaced ones. We prioritize having non
-    // interlaced mode over refresh rate. A mode having lower refresh rate
-    // but is not interlaced will be picked over a mode having high refresh
-    // rate but is interlaced.
-    auto display_mode_it = display_mode_map.find(size);
-    if (display_mode_it == display_mode_map.end()) {
-      display_mode_map.emplace(size, display_mode);
-    } else if (display_mode_it->second.is_interlaced() &&
-               !display_mode.is_interlaced()) {
-      display_mode_it->second = std::move(display_mode);
-    } else if (!display_mode.is_interlaced() &&
-               display_mode_it->second.refresh_rate() <
-                   display_mode.refresh_rate()) {
-      display_mode_it->second = std::move(display_mode);
-    }
+        GetExternalDisplayScaleFactor(output.physical_size(),
+                                      mode_info->size()));
   }
 
-  if (output.native_mode()) {
-    const gfx::Size size = native_mode.size();
-
-    auto it = display_mode_map.find(size);
-    CHECK(it != display_mode_map.end(), base::NotFatalUntil::M130)
-        << "Native mode must be part of the mode list.";
-
-    // If the native mode was replaced (e.g. by a mode with similar size but
-    // higher refresh rate), we overwrite that mode with the native mode. The
-    // native mode will always be chosen as the best mode for this size (see
-    // DisplayConfigurator::FindDisplayModeMatchingSize()).
-    if (!it->second.native())
-      it->second = native_mode;
-  }
-
-  ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
-  for (const auto& display_mode_pair : display_mode_map)
-    display_mode_list.push_back(std::move(display_mode_pair.second));
+  std::sort(
+      display_mode_list.begin(), display_mode_list.end(),
+      [](const ManagedDisplayMode& lhs, const ManagedDisplayMode& rhs) {
+        return std::forward_as_tuple(lhs.size().width(), lhs.size().height(),
+                                     lhs.refresh_rate(), lhs.is_interlaced()) <
+               std::forward_as_tuple(rhs.size().width(), rhs.size().height(),
+                                     rhs.refresh_rate(), rhs.is_interlaced());
+      });
 
   return display_mode_list;
 }
@@ -207,8 +217,7 @@ MultipleDisplayState DisplayChangeObserver::GetStateForDisplayIds(
     return MULTIPLE_DISPLAY_STATE_SINGLE;
   DisplayIdList list =
       GenerateDisplayIdList(display_states, &DisplaySnapshot::display_id);
-  return display_manager_->ShouldSetMirrorModeOn(
-             list, /*should_check_hardware_mirroring=*/true)
+  return display_manager_->ShouldSetMirrorModeOn(list)
              ? MULTIPLE_DISPLAY_STATE_MULTI_MIRROR
              : MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED;
 }
@@ -271,10 +280,10 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     float dpi,
     const gfx::Size& size_in_pixels) {
   // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
-  constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
+  constexpr gfx::Size k225DisplaySizeHackNocturne = kNocturne;  // (3000, 2000);
   // Keep the Chell's scale factor 2.252 until we make decision.
-  constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
-  constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
+  constexpr gfx::Size k2DisplaySizeHackChell = kQHD_PLUS;  // (3200, 1800);
+  constexpr gfx::Size k18DisplaySizeHackCoachZ = kLux;     // (2160, 1440);
 
   if (size_in_pixels == k225DisplaySizeHackNocturne) {
     return kDsf_2_252;
@@ -285,11 +294,23 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
   if (size_in_pixels == k18DisplaySizeHackCoachZ) {
     return kDsf_1_8;
   }
-  for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {
-    if (dpi >= kThresholdTableForInternal[i].dpi) {
-      return kThresholdTableForInternal[i].device_scale_factor;
+
+  if (features::IsOledScaleFactorEnabled()) {
+    for (const DeviceScaleFactorDPIThreshold& threshold :
+         kThresholdTableForOledInternal) {
+      if (dpi >= threshold.dpi) {
+        return threshold.device_scale_factor;
+      }
+    }
+  } else {
+    for (const DeviceScaleFactorDPIThreshold& threshold :
+         kThresholdTableForLcdInternal) {
+      if (dpi >= threshold.dpi) {
+        return threshold.device_scale_factor;
+      }
     }
   }
+
   return 1.0f;
 }
 
@@ -421,9 +442,12 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
     const DisplayMode* native_mode = snapshot->native_mode();
     native = *mode_info == *native_mode;
 
-    // External display scale factor is always 1.
     CHECK(snapshot->type() != DISPLAY_CONNECTION_TYPE_INTERNAL);
-    device_scale_factor = 1.0f;
+    device_scale_factor =
+        IsDisplaySizeValid(snapshot->physical_size())
+            ? GetExternalDisplayScaleFactor(snapshot->physical_size(),
+                                            mode_info->size())
+            : 1.0f;
   }
   std::string name = (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
                          ? l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL)
@@ -435,8 +459,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
 
   gfx::RoundedCornersF panel_radii;
 
-  if (display::features::IsRoundedDisplayEnabled() &&
-      snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
+  if (snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
     panel_radii = internal_panel_radii_.value_or(gfx::RoundedCornersF());
   }
 

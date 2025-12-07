@@ -8,6 +8,7 @@
 #include "chromecast/media/audio/capture_service/constants.h"
 #include "chromecast/media/audio/capture_service/message_parsing_utils.h"
 #include "media/audio/audio_manager_base.h"
+#include "media/base/audio_bus.h"
 
 namespace chromecast {
 namespace media {

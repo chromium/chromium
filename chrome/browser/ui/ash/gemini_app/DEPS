@@ -1,0 +1,30 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+]
+
+specific_include_rules = {
+  "gemini_app_interactive_uitest\.cc": [
+    "+chrome/browser/ash/app_list",
+    "+chrome/browser/ash/app_restore",
+    "+chrome/browser/ash/login/test",
+    "+chrome/browser/ash/system_web_apps",
+    "+chrome/browser/ui/browser_element_identifiers.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_list_observer.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
+    "+chrome/browser/ui/chrome_pages.h",
+    "+chrome/browser/ui/web_applications",
+    "+chrome/browser/web_applications/preinstalled_web_apps",
+    "+chrome/browser/web_applications/test",
+    "+chrome/browser/web_applications/web_app_provider.h",
+    "+chrome/common",
+    "+chrome/test",
+
+    # TODO(http://b/333907855): Remove after migrating app.
+    "+chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h",
+  ]
+}

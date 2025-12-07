@@ -33,3 +33,5 @@ static void JNI_MetricsRecorder_RecordNotificationTimedOut(JNIEnv* env) {
 }
 
 }  // namespace send_tab_to_self
+
+DEFINE_JNI(MetricsRecorder)

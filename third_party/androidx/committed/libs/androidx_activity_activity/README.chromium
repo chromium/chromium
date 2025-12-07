@@ -1,0 +1,20 @@
+Name: Activity
+Short Name: activity
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/activity/activity/1.13.0-SNAPSHOT/activity-1.13.0-20251126.133552-1.aar
+Version: 1.13.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Provides the base Activity subclass and the relevant hooks to build a composable structure on top.
+
+See also: https://developer.android.com/jetpack/androidx/releases/activity#1.13.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

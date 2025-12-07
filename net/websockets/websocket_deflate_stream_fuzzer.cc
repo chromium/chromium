@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -75,7 +76,7 @@ class WebSocketFuzzedStream final : public WebSocketStream {
         fuzzed_data_provider_
             ->ConsumeIntegralInRange<WebSocketFrameHeader::OpCode>(
                 WebSocketFrameHeader::kOpCodeContinuation,
-                WebSocketFrameHeader::kOpCodeControlUnused);
+                WebSocketFrameHeader::kOpCodeControlUnusedF);
     auto frame = std::make_unique<WebSocketFrame>(opcode);
     // Bad news: ConsumeBool actually consumes a whole byte per call, so do
     // something hacky to conserve precious bits.
@@ -90,9 +91,9 @@ class WebSocketFuzzedStream final : public WebSocketStream {
     std::vector<char> payload =
         fuzzed_data_provider_->ConsumeBytes<char>(payload_length);
     auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload.size());
-    memcpy(buffer->data(), payload.data(), payload.size());
+    buffer->span().copy_from(base::as_byte_span(payload));
     buffers_.push_back(buffer);
-    frame->payload = buffer->data();
+    frame->payload = buffer->span();
     frame->header.payload_length = payload.size();
     return frame;
   }

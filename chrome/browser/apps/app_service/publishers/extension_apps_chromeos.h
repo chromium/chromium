@@ -43,8 +43,6 @@ class NotificationDisplayService;
 
 namespace apps {
 
-class PublisherHost;
-
 // An app publisher (in the App Service sense) of extension-backed apps for
 // ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
 // hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
@@ -68,13 +66,10 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   void ObserveArc();
 
- private:
-  friend class PublisherHost;
-
   // ExtensionAppsBase overrides.
   void Initialize() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+ private:
   // Requests a compressed icon data for an app identified by `app_id`. The icon
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.
@@ -82,7 +77,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
                              LoadIconCallback callback) override;
-#endif
 
   void LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                LaunchCallback callback) override;
@@ -215,7 +209,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // and is set by updating SystemDisabledMode policy.
   bool is_disabled_apps_mode_hidden_ = false;
 
-  std::map<extensions::AppWindow*, aura::Window*> app_window_to_aura_window_;
+  std::map<extensions::AppWindow*, raw_ptr<aura::Window, CtnExperimental>>
+      app_window_to_aura_window_;
 
   raw_ptr<ArcAppListPrefs> arc_prefs_ = nullptr;
 

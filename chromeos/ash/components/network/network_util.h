@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -28,29 +27,35 @@ class NetworkTypePattern;
 
 // Struct for passing wifi access point data.
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) WifiAccessPoint {
-  WifiAccessPoint();
-  WifiAccessPoint(const WifiAccessPoint& other);
-  ~WifiAccessPoint();
   std::string ssid;  // The ssid of the WiFi node if available.
   std::string mac_address;  // The mac address of the WiFi node.
   base::Time timestamp;  // Timestamp when this AP was detected.
   int signal_strength;  // Radio signal strength measured in dBm.
   int signal_to_noise;  // Current signal to noise ratio measured in dB.
   int channel;  // Wifi channel number.
+
+  WifiAccessPoint();
+  WifiAccessPoint(const WifiAccessPoint& other);
+  ~WifiAccessPoint();
+
+  bool operator==(const WifiAccessPoint&) const = default;
 };
 
 // Struct for passing cellular location data
 // The age, signalStrength, and timingAdvance fields are currently unused:
 // https://developers.google.com/maps/documentation/geolocation/intro#cell_tower_object
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) CellTower {
-  CellTower();
-  CellTower(const CellTower& other);
-  ~CellTower();
   std::string mcc;       // The mobile country code if available
   std::string mnc;       // The mobile network code if available
   std::string lac;       // The location area code if available
   std::string ci;        // The cell id if availabe
   base::Time timestamp;  // Timestamp when this location was detected.
+
+  CellTower();
+  CellTower(const CellTower& other);
+  ~CellTower();
+
+  bool operator==(const CellTower&) const = default;
 };
 
 // Struct for passing network scan result data.

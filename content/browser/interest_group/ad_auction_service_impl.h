@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
@@ -21,6 +23,8 @@
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
+#include "content/browser/interest_group/dwa_auction_metrics.h"
+#include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
@@ -30,12 +34,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -71,7 +75,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const std::vector<std::string>& interest_groups_to_keep,
       ClearOriginJoinedInterestGroupsCallback callback) override;
   void UpdateAdInterestGroups() override;
-  void CreateAuctionNonce(CreateAuctionNonceCallback callback) override;
   void RunAdAuction(
       const blink::AuctionConfig& config,
       mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
@@ -86,8 +89,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           replacements,
       DeprecatedReplaceInURNCallback callback) override;
   void GetInterestGroupAdAuctionData(
-      const url::Origin& seller,
-      const std::optional<url::Origin>& coordinator,
+      const base::flat_map<url::Origin, std::optional<url::Origin>>& sellers,
       blink::mojom::AuctionDataConfigPtr config,
       GetInterestGroupAdAuctionDataCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
@@ -108,7 +110,11 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   RenderFrameHostImpl* GetFrame() override;
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
-  std::optional<std::string> GetCookieDeprecationLabel() override;
+  void GetTrustedKeyValueServerKey(
+      const url::Origin& scope_origin,
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override;
 
   using DocumentService::origin;
   using DocumentService::render_frame_host;
@@ -123,13 +129,15 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
         BiddingAndAuctionDataConstructionState&& other);
     ~BiddingAndAuctionDataConstructionState();
 
-    base::TimeTicks start_time;
-    std::unique_ptr<BiddingAndAuctionServerKey> key;
+    base::TimeTicks start_time;  // time used for metrics
+    std::map<url::Origin, BiddingAndAuctionServerKey> keys;
     std::unique_ptr<BiddingAndAuctionData> data;
     base::Uuid request_id;
-    url::Origin seller;
-    std::optional<url::Origin> coordinator;
+    base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+    base::Time timestamp;  // timestamp to include in the request.
     blink::mojom::AuctionDataConfigPtr config;
+    std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests;
+    bool has_valid_request = false;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 
@@ -154,7 +162,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // feature across cross-origin frames were switched to disabled instead of
   // enabled.
   bool IsPermissionPolicyEnabledAndWarnIfNeeded(
-      blink::mojom::PermissionsPolicyFeature feature,
+      network::mojom::PermissionsPolicyFeature feature,
       const char* method);
 
   // Returns true if `origin` is allowed to perform the specified
@@ -175,7 +183,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
-      std::unique_ptr<InterestGroupAuctionReporter> reporter);
+      std::unique_ptr<InterestGroupAuctionReporter> reporter,
+      bool contained_server_auction,
+      bool contained_on_device_auction,
+      AuctionResult result);
 
   void OnReporterComplete(ReporterList::iterator reporter_it);
 
@@ -183,16 +194,22 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
           private_aggregation_requests);
 
-  // On failing to fetch ad auction data, call the first callback in
-  // ba_data_callbacks_ & start loading the next following request in
-  // ba_data_callbacks_.
-  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string msg);
+  // On failing to fetch ad auction data, set `seller`'s request to an empty
+  // request with error `msg`.
+  void AddEmptyGetInterestGroupAdAuctionDataRequest(const url::Origin& seller,
+                                                    const std::string& msg);
+  // Call the first callback in ba_data_callbacks_ & start loading the next
+  // following request in ba_data_callbacks_.
+  void RunGetInterestGroupAdAuctionDataCallback(base::Uuid request_id);
   void LoadAuctionDataAndKeyForNextQueuedRequest();
   void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
-  void OnGotBiddingAndAuctionServerKey(
+  void OnGotOneBiddingAndAuctionServerKey(
       base::Uuid request_id,
+      const url::Origin& seller,
       base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
-  void OnGotAuctionDataAndKey(base::Uuid request_id);
+  void OnGotAuctionDataAndKey(base::Uuid request_id,
+                              const url::Origin& seller,
+                              const BiddingAndAuctionServerKey& ba_key);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
 
@@ -202,6 +219,13 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
   AdAuctionPageData* GetAdAuctionPageData();
+
+  // For each buyer in `config`, preconnect to its origin and bidding signals
+  // origin if the origins have been cached from previous interest group joins
+  // or auctions. This function needs to be called separately to preconnect to
+  // origins for `config`'s component auctions. Returns the number of buyers
+  // that were preconnected.
+  size_t PreconnectToBuyerOrigins(const blink::AuctionConfig& config);
 
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame
@@ -224,13 +248,17 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // `auction_metrics_recorder_manager_`.
   AuctionMetricsRecorderManager auction_metrics_recorder_manager_;
 
+  // Keeps track of metrics associated with each seller across the auction
+  // run.
+  DwaAuctionMetricsManager dwa_auction_metrics_manager_;
+
   // This must be before `auctions_`, since auctions may own references to
   // worklets it manages.
   AuctionWorkletManager auction_worklet_manager_;
 
   // Manages auction nonces issued by prior calls to CreateAuctionNonce,
   // which are used by subsequent calls to RunAdAuction.
-  std::unique_ptr<AuctionNonceManager> auction_nonce_manager_;
+  AuctionNonceManager auction_nonce_manager_;
 
   // Use a map instead of a list so can remove entries without destroying them.
   // TODO(mmenke): Switch to std::set() and use extract() once that's allowed.
@@ -248,6 +276,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   bool has_logged_extended_private_aggregation_web_feature_ = false;
   bool has_logged_private_aggregation_enable_debug_mode_web_feature_ = false;
   bool has_logged_private_aggregation_filtering_id_web_feature_ = false;
+  bool has_logged_private_aggregation_error_reporting_web_feature_ = false;
 
   // Track the state of GetInterestGroupAdAuctionData calls. One request will be
   // handled at a time (the first in the queue). The first
@@ -258,7 +287,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // True if a feature is currently enabled, but would be disabled if the
   // default policy for the feature were switched to EnableForSelf. Lazily
   // populated.
-  std::map<blink::mojom::PermissionsPolicyFeature, bool>
+  std::map<network::mojom::PermissionsPolicyFeature, bool>
       should_warn_about_feature_;
 
   base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};

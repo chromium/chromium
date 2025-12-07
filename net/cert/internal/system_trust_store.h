@@ -63,6 +63,8 @@ class SystemTrustStore {
   // certificate is not constrained.
   virtual base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::ParsedCertificate* cert) const = 0;
+
+  virtual bssl::TrustStore* eutl_trust_store() = 0;
 #endif
 };
 

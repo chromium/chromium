@@ -29,7 +29,7 @@ namespace blink {
 // descendants due to serialization), or a nullptr once that attachment was
 // started. Locking is used to prevent read/write collision for this scenario.
 class HandleAttachmentProvider final
-    : public WTF::ThreadSafeRefCounted<HandleAttachmentProvider> {
+    : public ThreadSafeRefCounted<HandleAttachmentProvider> {
  public:
   explicit HandleAttachmentProvider(
       scoped_refptr<MediaSourceAttachment> attachment);

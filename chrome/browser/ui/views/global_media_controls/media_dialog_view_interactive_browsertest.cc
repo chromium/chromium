@@ -7,9 +7,9 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,12 +24,14 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/media_router/browser/media_routes_observer.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -53,12 +56,10 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view_utils.h"
 
 using media_session::mojom::MediaSessionAction;
-
-// Global Media Controls are not supported on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -66,9 +67,8 @@ class TestWebContentsPresentationManager
     : public media_router::WebContentsPresentationManager {
  public:
   void NotifyPresentationsChanged(bool has_presentation) {
-    for (auto& observer : observers_) {
-      observer.OnPresentationsChanged(has_presentation);
-    }
+    observers_.Notify(&content::PresentationObserver::OnPresentationsChanged,
+                      has_presentation);
   }
 
   void AddObserver(content::PresentationObserver* observer) override {
@@ -111,15 +111,16 @@ class TestMediaRouter : public media_router::MockMediaRouter {
   }
 
   media_router::LoggerImpl* GetLogger() override {
-    if (!logger_)
+    if (!logger_) {
       logger_ = std::make_unique<media_router::LoggerImpl>();
+    }
     return logger_.get();
   }
 
   void NotifyMediaRoutesChanged(
       const std::vector<media_router::MediaRoute>& routes) {
-    for (auto& observer : routes_observers_)
-      observer.OnRoutesUpdated(routes);
+    routes_observers_.Notify(
+        &media_router::MediaRoutesObserver::OnRoutesUpdated, routes);
   }
 
  private:
@@ -132,10 +133,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   MediaDialogViewBrowserTest() {
     feature_list_.InitWithFeatures(
-        {media::kGlobalMediaControls, media::kLiveCaption,
+        {media::kGlobalMediaControls,
          feature_engagement::kIPHLiveCaptionFeature,
-         media::kFeatureManagementLiveTranslateCrOS,
-         media::kLiveCaptionMultiLanguage, media::kLiveTranslate,
+         media::kFeatureManagementLiveTranslateCrOS, media::kLiveTranslate,
          media::kGlobalMediaControlsUpdatedUI},
         {});
   }
@@ -184,14 +184,14 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void OpenTestURL() {
-    GURL url = ui_test_utils::GetTestUrl(
+    GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("media/session")),
         base::FilePath(FILE_PATH_LITERAL("video-with-metadata.html")));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void OpenDifferentMetadataURLInNewTab() {
-    GURL url = ui_test_utils::GetTestUrl(
+    GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("media/session")),
         base::FilePath(
             FILE_PATH_LITERAL("video-with-different-metadata.html")));
@@ -204,7 +204,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     // The test HTML files used in these tests contain "play()" functions that
     // play the video.
     GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"play()", base::NullCallback());
+        u"play()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void WaitForStart() {
@@ -223,17 +223,20 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void DisablePictureInPicture() {
     GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"disablePictureInPicture()", base::NullCallback());
+        u"disablePictureInPicture()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void EnablePictureInPicture() {
     GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"enablePictureInPicture()", base::NullCallback());
+        u"enablePictureInPicture()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void WaitForEnterPictureInPicture() {
-    if (GetActiveWebContents()->HasPictureInPictureVideo())
+    if (GetActiveWebContents()->HasPictureInPictureVideo()) {
       return;
+    }
 
     content::MediaStartStopObserver observer(
         GetActiveWebContents(),
@@ -242,8 +245,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForExitPictureInPicture() {
-    if (!GetActiveWebContents()->HasPictureInPictureVideo())
+    if (!GetActiveWebContents()->HasPictureInPictureVideo()) {
       return;
+    }
 
     content::MediaStartStopObserver observer(
         GetActiveWebContents(),
@@ -353,8 +357,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   // Returns true if |target| exists in |base|'s forward focus chain
   bool ViewFollowsInFocusChain(views::View* base, views::View* target) {
     for (views::View* cur = base; cur; cur = cur->GetNextFocusableView()) {
-      if (cur == target)
+      if (cur == target) {
         return true;
+      }
     }
     return false;
   }
@@ -365,6 +370,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   views::Label* GetLiveTranslateTitleLabel() {
     return MediaDialogView::GetDialogViewForTesting()->live_translate_title_;
+  }
+
+  views::View* GetLiveTranslateDropdown() {
+    return MediaDialogView::GetDialogViewForTesting()
+        ->target_language_container_;
   }
 
   void OnSodaProgress(int progress) {
@@ -410,8 +420,15 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/385697200
+#define MAYBE_ShowsMetadataAndControlsMedia \
+  DISABLED_ShowsMetadataAndControlsMedia
+#else
+#define MAYBE_ShowsMetadataAndControlsMedia ShowsMetadataAndControlsMedia
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ShowsMetadataAndControlsMedia) {
+                       MAYBE_ShowsMetadataAndControlsMedia) {
   // The toolbar icon should not start visible.
   EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
@@ -459,8 +476,16 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_FALSE(ui_.IsDialogVisible());
 }
 
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/385697200
+#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
+  DISABLED_ShowsMetadataAndControlsMediaInRTL
+#else
+#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
+  ShowsMetadataAndControlsMediaInRTL
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ShowsMetadataAndControlsMediaInRTL) {
+                       MAYBE_ShowsMetadataAndControlsMediaInRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -550,8 +575,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
   ui_.WaitForDialogToContainText(u"Another Artist");
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/394510267): Flaky on mac
+#define MAYBE_ClickingOnItemGoesBackToTab DISABLED_ClickingOnItemGoesBackToTab
+#else
+#define MAYBE_ClickingOnItemGoesBackToTab ClickingOnItemGoesBackToTab
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ClickingOnItemGoesBackToTab) {
+                       MAYBE_ClickingOnItemGoesBackToTab) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
@@ -617,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   ui_.WaitForItemCount(1);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1224071
 #define MAYBE_PictureInPicture DISABLED_PictureInPicture
 #else
@@ -897,7 +928,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/385697200
+#define MAYBE_LiveTranslate DISABLED_LiveTranslate
+#else
+#define MAYBE_LiveTranslate LiveTranslate
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveTranslate) {
   // Live captioning is not currently supported on Win Arm64.
   if (!captions::IsLiveCaptionFeatureSupported()) {
     GTEST_SKIP() << "Live caption feature not supported";
@@ -929,13 +966,64 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
 
-  // Click the Live Caption toggle to toggle it off, which toggles off Live
-  // Translate as well.
+  // Click the Live Caption toggle to toggle it off, which does not toggle off
+  // Translate.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
+}
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/394510267): Flaky on mac
+#define MAYBE_TargetLanguageDropdown DISABLED_TargetLanguageDropdown
+#else
+#define MAYBE_TargetLanguageDropdown TargetLanguageDropdown
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
+                       MAYBE_TargetLanguageDropdown) {
+  // Live Caption is currently not supported on Win Arm64.
+  if (!captions::IsLiveCaptionFeatureSupported()) {
+    GTEST_SKIP() << "Live caption feature not supported";
+  }
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
+
+  // Open the media dialog.
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
+
+  // Click the Live Caption toggle to toggle it on. The dropdown should be
+  // hidden.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
+
+  // Click the Live Translate toggle to toggle it on. The dropdown should be
+  // visible.
+  ClickEnableLiveTranslateOnDialog();
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveTranslateEnabled));
+  EXPECT_TRUE(GetLiveTranslateDropdown()->GetVisible());
+
+  // Click the Live Caption toggle to toggle it off. Live Translate should still
+  // be enabled but the dropdown should be hidden.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveTranslateEnabled));
+  EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
 }
 
 class MediaDialogViewWithBackForwardCacheBrowserTest
@@ -945,17 +1033,9 @@ class MediaDialogViewWithBackForwardCacheBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         content::GetBasicBackForwardCacheFeatureForTesting({
 #if BUILDFLAG(IS_ANDROID)
-          {features::kBackForwardCache,
-           {
-             { "process_binding_strength",
-               "NORMAL" }
-           }},
+            {features::kBackForwardCache,
+             { {"process_binding_strength", "NORMAL"} }},
 #endif
-          {
-            features::kBackForwardCacheMediaSessionService, {
-              {}
-            }
-          }
         }),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
@@ -1117,5 +1197,3 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh2->GetLifecycleState());
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

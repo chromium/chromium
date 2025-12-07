@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
 namespace ui {
@@ -25,26 +24,42 @@ ClipboardMonitor* ClipboardMonitor::GetInstance() {
 
 void ClipboardMonitor::NotifyClipboardDataChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (ClipboardObserver& observer : observers_)
-    observer.OnClipboardDataChanged();
+  observers_.Notify(&ClipboardObserver::OnClipboardDataChanged);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ClipboardMonitor::NotifyClipboardDataRead() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (ClipboardObserver& observer : observers_)
-    observer.OnClipboardDataRead();
+  observers_.Notify(&ClipboardObserver::OnClipboardDataRead);
 }
 #endif
 
 void ClipboardMonitor::AddObserver(ClipboardObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  bool should_start_notifying = false;
+  if (observers_.empty()) {
+    should_start_notifying = true;
+  }
   observers_.AddObserver(observer);
+  if (should_start_notifying && notifier_) {
+    notifier_.get()->StartNotifying();
+  }
 }
 
 void ClipboardMonitor::RemoveObserver(ClipboardObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observers_.RemoveObserver(observer);
+  if (observers_.empty() && notifier_) {
+    notifier_.get()->StopNotifying();
+  }
+}
+
+void ClipboardMonitor::SetNotifier(ClipboardChangeNotifier* source) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  notifier_ = source;
+  if (notifier_ && !observers_.empty()) {
+    notifier_.get()->StartNotifying();
+  }
 }
 
 }  // namespace ui

@@ -60,8 +60,7 @@ bool HTMLMetaCharsetParser::ProcessMeta(const HTMLToken& token) {
 // is over.
 static const int kBytesToCheckUnconditionally = 1024;
 
-bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
-                                                wtf_size_t length) {
+bool HTMLMetaCharsetParser::CheckForMetaCharset(base::span<const char> data) {
   if (done_checking_)
     return true;
 
@@ -84,15 +83,14 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
   // are disallowed in <head>, we don't bail out until we've checked at least
   // bytesToCheckUnconditionally bytes of input.
 
-  input_.Append(SegmentedString(assumed_codec_->Decode(data, length)));
+  input_.Append(SegmentedString(assumed_codec_->Decode(base::as_bytes(data))));
 
   while (HTMLToken* token = tokenizer_->NextToken(input_)) {
     bool end = token->GetType() == HTMLToken::kEndTag;
     if (end || token->GetType() == HTMLToken::kStartTag) {
-      const html_names::HTMLTag tag =
-          token->GetName().IsEmpty()
-              ? html_names::HTMLTag::kUnknown
-              : lookupHTMLTag(token->GetName().data(), token->GetName().size());
+      const html_names::HTMLTag tag = token->GetName().IsEmpty()
+                                          ? html_names::HTMLTag::kUnknown
+                                          : LookupHtmlTag(token->GetName());
       if (!end && tag != html_names::HTMLTag::kUnknown) {
         tokenizer_->UpdateStateFor(tag);
         if (tag == html_names::HTMLTag::kMeta && ProcessMeta(*token)) {

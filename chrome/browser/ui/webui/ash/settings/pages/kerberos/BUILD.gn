@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("kerberos") {
   sources = [
@@ -17,6 +15,7 @@ static_library("kerberos") {
   public_deps = [
     "//base",
     "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
     "//components/signin/public/identity_manager",
   ]
@@ -27,7 +26,6 @@ static_library("kerberos") {
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:constants",
@@ -37,5 +35,6 @@ static_library("kerberos") {
     "//ui/base",
     "//ui/chromeos/resources",
     "//ui/gfx",
+    "//ui/webui",
   ]
 }

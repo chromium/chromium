@@ -62,7 +62,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
     DEPRECATED_METHOD_GET_FALLBACK_FONT_FOR_CHAR = 64,
     DEPRECATED_METHOD_GET_CHILD_WITH_INODE,
     DEPRECATED_METHOD_GET_STYLE_FOR_STRIKE,
-    METHOD_MAKE_SHARED_MEMORY_SEGMENT,
+    DEPRECATED_METHOD_MAKE_SHARED_MEMORY_SEGMENT,
     DEPRECATED_METHOD_MATCH_WITH_FALLBACK,
   };
 
@@ -171,12 +171,12 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Stop |thread| in a way that can be trusted by the sandbox.
   void StopThread(base::Thread* thread);
 
-  // Returns the status of the renderer, worker and ppapi sandbox. Can only
-  // be queried after going through PreinitializeSandbox(). This is a bitmask
-  // and uses the constants defined in "enum Status" above. Since the
-  // status needs to be provided before the sandboxes are actually started,
-  // this returns what will actually happen once InitializeSandbox()
-  // is called from inside these processes.
+  // Returns the status of the renderer and worker sandbox. Can only be queried
+  // after going through PreinitializeSandbox(). This is a bitmask and uses the
+  // constants defined in "enum Status" above. Since the status needs to be
+  // provided before the sandboxes are actually started, this returns what will
+  // actually happen once InitializeSandbox() is called from inside these
+  // processes.
   int GetStatus();
 
   // Returns true if the current process is single-threaded or if the number
@@ -241,9 +241,6 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // syscalls that take pathnames, so we can enforce pathname whitelisting.
   // Only usable if StartBrokerProcess() was already called.
   bpf_dsl::ResultExpr HandleViaBroker(int sysno) const;
-
-  // Reports Landlock status through UMA metrics.
-  static void ReportLandlockStatus();
 
  private:
   friend struct base::DefaultSingletonTraits<SandboxLinux>;

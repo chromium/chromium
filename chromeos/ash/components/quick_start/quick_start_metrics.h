@@ -37,7 +37,9 @@ class QuickStartMetrics {
     kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,  // Critical Update
     kChooseChromebookSetup = 8,
     kConsumerUpdate = 9,
-    kQSResumingConnectionAfterUpdate = 10,
+    kQSConnectingToPhone =
+        10,  // UI when advertising without a QR code, either when automatically
+             // resuming after an update or at the start of PIN flow.
     kQSGettingGoogleAccountInfo = 11,
     kQSComplete = 12,
     kSetupDevicePIN = 13,         // After Quick Start flow is complete.
@@ -61,6 +63,8 @@ class QuickStartMetrics {
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(ScreenClosedReason)
   enum ScreenClosedReason {
     kAdvancedInFlow,   // User moved to next screen as expected via flow.
     kUserCancelled,    // User clicked cancel.
@@ -69,6 +73,7 @@ class QuickStartMetrics {
     kError,            // An error occurred.
     kMaxValue = kError
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:ScreenClosedReason)
 
   enum class ExitReason {
     kAdvancedInFlow,
@@ -79,12 +84,15 @@ class QuickStartMetrics {
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartAuthenticationMethod)
   enum class AuthenticationMethod {
     kPin = 0,
     kQRCode = 1,
     kResumeAfterUpdate = 2,
     kMaxValue = kResumeAfterUpdate,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartAuthenticationMethod)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
@@ -92,6 +100,8 @@ class QuickStartMetrics {
   // be never modified or deleted. Only additions possible. The UMA enum cannot
   // use |device::BluetoothAdvertisement::ErrorCode| directly, because it is
   // missing the required |kMaxValue| field.
+  //
+  // LINT.IfChange(QuickStartFastPairAdvertisingErrorCode)
   enum class FastPairAdvertisingErrorCode {
     kUnsupportedPlatform = 0,
     kAdvertisementAlreadyExists = 1,
@@ -104,11 +114,14 @@ class QuickStartMetrics {
     kInvalidAdvertisementErrorCode = 8,
     kMaxValue = kInvalidAdvertisementErrorCode,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartFastPairAdvertisingErrorCode)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartNearbyConnectionsAdvertisingErrorCode)
   enum class NearbyConnectionsAdvertisingErrorCode {
     kError = 0,
     kOutOfOrderApiCall = 1,
@@ -121,11 +134,14 @@ class QuickStartMetrics {
     kOther = 8,
     kMaxValue = kOther,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartNearbyConnectionsAdvertisingErrorCode)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartHandshakeResultErrorCode)
   enum class HandshakeErrorCode {
     kFailedToReadResponse = 0,
     kFailedToParse = 1,
@@ -136,11 +152,14 @@ class QuickStartMetrics {
     kInvalidHandshakeErrorCode = 6,
     kMaxValue = kInvalidHandshakeErrorCode,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartHandshakeResultErrorCode)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartMessageType)
   enum class MessageType {
     kWifiCredentials = 0,
     kBootstrapConfigurations = 1,
@@ -152,33 +171,42 @@ class QuickStartMetrics {
     kBootstrapStateComplete = 7,
     kMaxValue = kBootstrapStateComplete,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartMessageType)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartMessageReceivedErrorCode)
   enum class MessageReceivedErrorCode {
     kTimeOut = 0,
     kDeserializationFailure = 1,
     kUnknownError = 2,
     kMaxValue = kUnknownError,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartMessageReceivedErrorCode)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartAttestationCertificateFetchFailureReason)
   enum class AttestationCertificateRequestErrorCode {
     kUnknownError = 0,
     kBadRequest = 1,
     kAttestationNotSupportedOnDevice = 2,
     kMaxValue = kAttestationNotSupportedOnDevice,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartAttestationCertificateFetchFailureReason)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartGaiaAuthenticationResult)
   enum class GaiaAuthenticationResult {
     kUnknownError = 0,
     kSuccess = 1,
@@ -188,11 +216,14 @@ class QuickStartMetrics {
     kAdditionalChallengesOnTarget = 5,
     kMaxValue = kAdditionalChallengesOnTarget,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartGaiaAuthenticationResult)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartWifiTransferResultFailureReason)
   enum class WifiTransferResultFailureReason {
     kConnectionDroppedDuringAttempt = 0,
     kEmptyResponseBytes = 1,
@@ -207,11 +238,14 @@ class QuickStartMetrics {
     kWifiHideStatusNotFound = 10,
     kMaxValue = kWifiHideStatusNotFound,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartWifiTransferResultFailureReason)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(QuickStartGaiaTransferResultFailureReason)
   enum class GaiaTransferResultFailureReason {
     kNoAccountOnPhone = 0,
     kFailedFetchingChallengeBytesFromGaia = 1,
@@ -224,6 +258,7 @@ class QuickStartMetrics {
     kObfuscatedGaiaIdMissing = 8,
     kMaxValue = kObfuscatedGaiaIdMissing,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/quickstart/enums.xml:QuickStartGaiaTransferResultFailureReason)
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
@@ -253,7 +288,8 @@ class QuickStartMetrics {
     NETWORK_SCREEN = 1,
     GAIA_INFO_SCREEN = 2,
     GAIA_SCREEN = 3,
-    kMaxValue = GAIA_SCREEN,
+    AUTO_RESUME_AFTER_UPDATE = 4,
+    kMaxValue = AUTO_RESUME_AFTER_UPDATE,
   };
 
   // Helper function that returns the MessageType equivalent of
@@ -282,6 +318,8 @@ class QuickStartMetrics {
 
   static void RecordEntryPoint(EntryPoint entry_point);
 
+  static void RecordEntryPointVisible(EntryPoint entry_point);
+
   static void RecordAuthenticationMethod(AuthenticationMethod auth_method);
 
   static void RecordAbortFlowReason(AbortFlowReason reason);
@@ -291,6 +329,8 @@ class QuickStartMetrics {
   static void RecordConsumerUpdateCancelled();
 
   static void RecordEstablishConnection(bool success, bool is_automatic_resume);
+
+  static void RecordSetupComplete();
 
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;

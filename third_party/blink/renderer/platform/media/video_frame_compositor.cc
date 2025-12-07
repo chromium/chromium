@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/video_frame_compositor.h"
+#include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
 
 #include <memory>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -17,7 +15,10 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "third_party/blink/public/platform/web_video_frame_submitter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -39,23 +40,26 @@ VideoFrameCompositor::VideoFrameCompositor(
       background_rendering_timer_(
           FROM_HERE,
           base::Milliseconds(kBackgroundRenderingTimeoutMs),
-          base::BindRepeating(&VideoFrameCompositor::BackgroundRender,
-                              base::Unretained(this),
-                              RenderingMode::kBackground)),
+          ConvertToBaseRepeatingCallback(
+              CrossThreadBindRepeating(&VideoFrameCompositor::BackgroundRender,
+                                       CrossThreadUnretained(this),
+                                       RenderingMode::kBackground))),
       force_begin_frames_timer_(
           FROM_HERE,
           base::Milliseconds(kForceBeginFramesTimeoutMs),
-          base::BindRepeating(&VideoFrameCompositor::StopForceBeginFrames,
-                              base::Unretained(this))),
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &VideoFrameCompositor::StopForceBeginFrames,
+              CrossThreadUnretained(this)))),
       submitter_(std::move(submitter)) {
   if (submitter_) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VideoFrameCompositor::InitializeSubmitter,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    update_submission_state_callback_ = base::BindPostTask(
-        task_runner_,
-        base::BindRepeating(&VideoFrameCompositor::SetIsSurfaceVisible,
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&VideoFrameCompositor::InitializeSubmitter,
                             weak_ptr_factory_.GetWeakPtr()));
+    update_submission_state_callback_ = base::BindPostTask(
+        task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                          &VideoFrameCompositor::SetIsSurfaceVisible,
+                          weak_ptr_factory_.GetWeakPtr())));
   }
 }
 
@@ -117,7 +121,7 @@ void VideoFrameCompositor::OnRendererStateUpdate(bool new_state) {
   if (!auto_open_close_) {
     auto_open_close_ = std::make_unique<
         base::trace_event::AutoOpenCloseEvent<kTracingCategory>>(
-        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::ASYNC,
+        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::kAsync,
         "VideoPlayback");
   }
 
@@ -223,9 +227,10 @@ void VideoFrameCompositor::Start(RenderCallback* callback) {
   base::AutoLock lock(callback_lock_);
   DCHECK(!callback_);
   callback_ = callback;
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
-                                weak_ptr_factory_.GetWeakPtr(), true));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
+                          weak_ptr_factory_.GetWeakPtr(), true));
 }
 
 void VideoFrameCompositor::Stop() {
@@ -235,19 +240,21 @@ void VideoFrameCompositor::Stop() {
   base::AutoLock lock(callback_lock_);
   DCHECK(callback_);
   callback_ = nullptr;
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
-                                weak_ptr_factory_.GetWeakPtr(), false));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
+                          weak_ptr_factory_.GetWeakPtr(), false));
 }
 
 void VideoFrameCompositor::PaintSingleFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool repaint_duplicate_frame) {
   if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VideoFrameCompositor::PaintSingleFrame,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(frame), repaint_duplicate_frame));
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&VideoFrameCompositor::PaintSingleFrame,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(frame),
+                            repaint_duplicate_frame));
     return;
   }
   if (ProcessNewFrame(std::move(frame), tick_clock_->NowTicks(),
@@ -304,9 +311,10 @@ void VideoFrameCompositor::SetOnFramePresentedCallback(
   base::AutoLock lock(current_frame_lock_);
   new_presented_frame_cb_ = std::move(present_cb);
 
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoFrameCompositor::StartForceBeginFrames,
-                                weak_ptr_factory_.GetWeakPtr()));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&VideoFrameCompositor::StartForceBeginFrames,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VideoFrameCompositor::StartForceBeginFrames() {
@@ -339,18 +347,21 @@ VideoFrameCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->presented_frames = presentation_counter_;
   }
 
-  frame_metadata->width = last_frame->visible_rect().width();
-  frame_metadata->height = last_frame->visible_rect().height();
-
-  frame_metadata->media_time = last_frame->timestamp();
-
-  frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
+  if (last_frame) {
+    frame_metadata->width = last_frame->visible_rect().width();
+    frame_metadata->height = last_frame->visible_rect().height();
+    frame_metadata->media_time = last_frame->timestamp();
+    frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
+  }
 
   {
     base::AutoLock lock(callback_lock_);
     if (callback_) {
       frame_metadata->average_frame_duration =
           callback_->GetPreferredRenderInterval();
+    } else if (last_frame && last_frame->metadata().frame_duration) {
+      frame_metadata->average_frame_duration =
+          *last_frame->metadata().frame_duration;
     }
     frame_metadata->rendering_interval = last_interval_;
   }
@@ -369,7 +380,7 @@ bool VideoFrameCompositor::ProcessNewFrame(
     return false;
   }
 
-  // TODO(crbug.com/1447318): Add other cases where the frame is not readable.
+  // TODO(crbug.com/40064689): Add other cases where the frame is not readable.
   bool is_frame_readable = !frame->metadata().dcomp_surface;
 
   // Copy to a local variable to avoid potential deadlock when executing the
@@ -488,8 +499,8 @@ void VideoFrameCompositor::OnContextLost() {
   // is not valid any more. current_frame_ should be reset. Now the compositor
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock lock(current_frame_lock_);
-  if (!current_frame_ || (!current_frame_->HasTextures() &&
-                          !current_frame_->HasMappableGpuBuffer())) {
+  if (!current_frame_ || (!current_frame_->HasSharedImage() &&
+                          !current_frame_->HasMappableSharedImage())) {
     return;
   }
   scoped_refptr<media::VideoFrame> black_frame =

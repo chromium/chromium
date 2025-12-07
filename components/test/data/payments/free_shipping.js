@@ -11,7 +11,7 @@
  */
 function buyWithMethods(methodData) {
   try {
-    var details = {
+    const details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
       shippingOptions: [{
         id: 'freeShippingOption',
@@ -20,9 +20,8 @@ function buyWithMethods(methodData) {
         selected: true,
       }],
     };
-    var request = new PaymentRequest(
-        methodData,
-        details, {requestShipping: true});
+    const request =
+        new PaymentRequest(methodData, details, {requestShipping: true});
     request.addEventListener('shippingaddresschange', function(e) {
       e.updateWith(new Promise(function(resolve) {
         // No changes in price based on shipping address change.

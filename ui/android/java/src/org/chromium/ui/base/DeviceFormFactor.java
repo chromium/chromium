@@ -12,48 +12,117 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
 /** UI utilities for accessing form factor information. */
+@NullMarked
 public class DeviceFormFactor {
     /**
-     * Minimum screen size in dp to be considered a tablet. Matches the value
-     * used by res/ directories. E.g.: res/values-sw600dp/values.xml
+     * Desktop form factor. It's not guaranteed to have freeform windows.
+     *
+     * <p>As identified by <code>DeviceInfo.isDesktop() == true</code>.
      */
-    public static final int MINIMUM_TABLET_WIDTH_DP = 600;
+    public static final String DESKTOP = "Desktop";
+
+    /**
+     * Desktop form factor, guaranteed to have freeform windows.
+     *
+     * <p>As identified by <code>UiRestriction.isDesktopFreeform() == true</code>; to be used only
+     * for restricting multi-window tests on the desktop Android OS.
+     */
+    public static final String DESKTOP_FREEFORM = "DesktopFreeform";
+
+    /**
+     * Phone form factor.
+     *
+     * <p>Based on screen size of the device, as identified by <code>
+     * isNonMultiDisplayContextOnTablet() == false</code>.
+     */
+    public static final String PHONE = "Phone";
+
+    /**
+     * Tablet or desktop form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>Based on screen size of the device, as identified by <code>
+     * isNonMultiDisplayContextOnTablet() == true &&
+     * isDesktop() == false</code>.
+     */
+    public static final String ONLY_TABLET = "Tablet";
+
+    /**
+     * Tablet or desktop form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>Based on screen size of the device, as identified by <code>
+     * isNonMultiDisplayContextOnTablet() == true</code>.
+     */
+    public static final String TABLET_OR_DESKTOP = "TabletOrDesktop";
+
+    /**
+     * Phone or tablet form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>As identified by <code>isDesktop() == false</code>.
+     */
+    public static final String PHONE_OR_TABLET = "PhoneOrTablet";
+
+    /**
+     * Minimum screen size in dp to be considered a tablet. Matches the value used by res/
+     * directories. E.g.: res/values-sw600dp/values.xml
+     */
+    public static final int MINIMUM_TABLET_WIDTH_DP =
+            DeviceInfo.LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP;
 
     /** Matches the value set in res/values-sw600dp/values.xml */
     @VisibleForTesting public static final int SCREEN_BUCKET_TABLET = 2;
 
     /** Matches the value set in res/values-sw720dp/values.xml */
-    private static final int SCREEN_BUCKET_LARGET_TABLET = 3;
+    private static final int SCREEN_BUCKET_LARGE_TABLET = 3;
+
+    /** See {@link #setIsTabletForTesting(boolean)}. */
+    private static @Nullable Boolean sIsTabletForTesting;
 
     /**
      * Each activity could be on a different display, and this will just tell you whether the
-     * display associated with the application context is "tablet sized".
-     * Use {@link #isNonMultiDisplayContextOnTablet} or {@link #isWindowOnTablet} instead.
+     * display associated with the application context is "tablet sized". Use {@link
+     * #isNonMultiDisplayContextOnTablet} or {@link #isWindowOnTablet} instead.
      */
     @CalledByNative
     @Deprecated
     public static boolean isTablet() {
+        if (sIsTabletForTesting != null) {
+            return sIsTabletForTesting;
+        }
         return detectScreenWidthBucket(ContextUtils.getApplicationContext())
                 >= SCREEN_BUCKET_TABLET;
     }
 
     /**
-     * See {@link DisplayAndroid#getNonMultiDisplay}} for what "NonMultiDisplay" means.
-     * When possible, it is generally more correct to use {@link #isWindowOnTablet}.
-     * Only Activity instances and Contexts that wrap Activities are meaningfully associated with
-     * displays, so care should be taken to pass a context that makes sense.
+     * Modifies the output of {@link #isTablet()} for testing. Note that it is preferable to use
+     * {@link org.robolectric.annotation.Config} annotations to specify screen dimensions when
+     * possible. This method exists for instances where it is not possible or where it is cumbersome
+     * to do so, e.g. when device form factor is parameterized in a test suite.
+     */
+    public static void setIsTabletForTesting(Boolean isTablet) {
+        sIsTabletForTesting = isTablet;
+        ResettersForTesting.register(() -> sIsTabletForTesting = null);
+    }
+
+    /**
+     * See {@link DisplayAndroid#getNonMultiDisplay}} for what "NonMultiDisplay" means. When
+     * possible, it is generally more correct to use {@link #isWindowOnTablet}. Only Activity
+     * instances and Contexts that wrap Activities are meaningfully associated with displays, so
+     * care should be taken to pass a context that makes sense.
      *
      * @return Whether the display associated with the given context is large enough to be
-     *         considered a tablet and will thus load tablet-specific resources (those in the config
-     *         -sw600).
-     *         Not affected by Android N multi-window, but can change for external displays.
-     *         E.g. http://developer.samsung.com/samsung-dex/testing
+     *     considered a tablet and will thus load tablet-specific resources (those in the config
+     *     -sw600). Not affected by Android N multi-window, but can change for external displays.
+     *     E.g. http://developer.samsung.com/samsung-dex/testing
      */
     public static boolean isNonMultiDisplayContextOnTablet(Context context) {
         return detectScreenWidthBucket(context) >= SCREEN_BUCKET_TABLET;
@@ -73,13 +142,12 @@ public class DeviceFormFactor {
 
     /**
      * @return Whether the display associated with the given context is large enough to be
-     *         considered a large tablet and will thus load large-tablet-specific resources (those
-     *         in the config -sw720).
-     *         Not affected by Android N multi-window, but can change for external displays.
-     *         E.g. http://developer.samsung.com/samsung-dex/testing
+     *     considered a large tablet and will thus load large-tablet-specific resources (those in
+     *     the config -sw720). Not affected by Android N multi-window, but can change for external
+     *     displays. E.g. http://developer.samsung.com/samsung-dex/testing
      */
     public static boolean isNonMultiDisplayContextOnLargeTablet(Context context) {
-        return detectScreenWidthBucket(context) == SCREEN_BUCKET_LARGET_TABLET;
+        return detectScreenWidthBucket(context) == SCREEN_BUCKET_LARGE_TABLET;
     }
 
     /**

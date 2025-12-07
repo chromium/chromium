@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/emulation/fake_central.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -201,8 +201,98 @@ void FakeCentral::SetNextGATTDiscoveryResponse(
   std::move(callback).Run(true);
 }
 
+void FakeCentral::SimulateGATTOperationResponse(
+    mojom::GATTOperationType type,
+    const std::string& address,
+    uint16_t code,
+    SimulateGATTOperationResponseCallback callback) {
+  FakePeripheral* fake_peripheral = GetFakePeripheral(address);
+  if (fake_peripheral == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  switch (type) {
+    case mojom::GATTOperationType::kConnect:
+      fake_peripheral->SimulateGATTConnectionResponse(code);
+      std::move(callback).Run(true);
+      break;
+    case mojom::GATTOperationType::kDiscovery:
+      fake_peripheral->SimulateGATTDiscoveryResponse(code);
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
+void FakeCentral::SimulateCharacteristicOperationResponse(
+    mojom::CharacteristicOperationType type,
+    const std::string& characteristic_id,
+    const std::string& service_id,
+    const std::string& peripheral_address,
+    uint16_t code,
+    const std::optional<std::vector<uint8_t>>& data,
+    SimulateCharacteristicOperationResponseCallback callback) {
+  FakeRemoteGattCharacteristic* fake_remote_gatt_characteristic =
+      GetFakeRemoteGattCharacteristic(peripheral_address, service_id,
+                                      characteristic_id);
+  if (fake_remote_gatt_characteristic == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  switch (type) {
+    case mojom::CharacteristicOperationType::kRead:
+      fake_remote_gatt_characteristic->SimulateReadResponse(code, data);
+      std::move(callback).Run(true);
+      break;
+    case mojom::CharacteristicOperationType::kWrite:
+      fake_remote_gatt_characteristic->SimulateWriteResponse(code);
+      std::move(callback).Run(true);
+      break;
+    case mojom::CharacteristicOperationType::kSubscribeToNotifications:
+      fake_remote_gatt_characteristic->SimulateSubscribeToNotificationsResponse(
+          code);
+      std::move(callback).Run(true);
+      break;
+    case mojom::CharacteristicOperationType::kUnsubscribeFromNotifications:
+      fake_remote_gatt_characteristic
+          ->SimulateUnsubscribeFromNotificationsResponse(code);
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
+void FakeCentral::SimulateDescriptorOperationResponse(
+    mojom::DescriptorOperationType type,
+    const std::string& descriptor_id,
+    const std::string& characteristic_id,
+    const std::string& service_id,
+    const std::string& peripheral_address,
+    uint16_t code,
+    const std::optional<std::vector<uint8_t>>& data,
+    SimulateCharacteristicOperationResponseCallback callback) {
+  FakeRemoteGattDescriptor* fake_remote_gatt_descriptor =
+      GetFakeRemoteGattDescriptor(peripheral_address, service_id,
+                                  characteristic_id, descriptor_id);
+  if (fake_remote_gatt_descriptor == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  switch (type) {
+    case mojom::DescriptorOperationType::kRead:
+      fake_remote_gatt_descriptor->SimulateReadResponse(code, data);
+      std::move(callback).Run(true);
+      break;
+    case mojom::DescriptorOperationType::kWrite:
+      fake_remote_gatt_descriptor->SimulateWriteResponse(code);
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
 bool FakeCentral::AllResponsesConsumed() {
-  return base::ranges::all_of(devices_, [](const auto& e) {
+  return std::ranges::all_of(devices_, [](const auto& e) {
     // static_cast is safe because the parent class's devices_ is only
     // populated via this FakeCentral, and only with FakePeripherals.
     return static_cast<FakePeripheral*>(e.second.get())->AllResponsesConsumed();
@@ -495,19 +585,17 @@ void FakeCentral::Initialize(base::OnceClosure callback) {
 }
 
 std::string FakeCentral::GetAddress() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string FakeCentral::GetName() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void FakeCentral::SetName(const std::string& name,
                           base::OnceClosure callback,
                           ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeCentral::IsInitialized() const {
@@ -522,8 +610,7 @@ bool FakeCentral::IsPresent() const {
     case mojom::CentralState::POWERED_ON:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool FakeCentral::IsPowered() const {
@@ -536,42 +623,37 @@ bool FakeCentral::IsPowered() const {
     case mojom::CentralState::POWERED_ON:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FakeCentral::SetPowered(bool powered,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeCentral::IsDiscoverable() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FakeCentral::SetDiscoverable(bool discoverable,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 base::TimeDelta FakeCentral::GetDiscoverableTimeout() const {
-  NOTREACHED_IN_MIGRATION();
-  return base::Microseconds(0);
+  NOTREACHED();
 }
 #endif
 
 bool FakeCentral::IsDiscovering() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 FakeCentral::UUIDList FakeCentral::GetUUIDs() const {
-  NOTREACHED_IN_MIGRATION();
-  return UUIDList();
+  NOTREACHED();
 }
 
 void FakeCentral::CreateRfcommService(
@@ -579,7 +661,7 @@ void FakeCentral::CreateRfcommService(
     const ServiceOptions& options,
     CreateServiceCallback callback,
     CreateServiceErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeCentral::CreateL2capService(
@@ -587,14 +669,14 @@ void FakeCentral::CreateL2capService(
     const ServiceOptions& options,
     CreateServiceCallback callback,
     CreateServiceErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeCentral::RegisterAdvertisement(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
     CreateAdvertisementCallback callback,
     AdvertisementErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -603,40 +685,44 @@ void FakeCentral::SetAdvertisingInterval(
     const base::TimeDelta& max,
     base::OnceClosure callback,
     AdvertisementErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 void FakeCentral::ResetAdvertising(base::OnceClosure callback,
                                    AdvertisementErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 void FakeCentral::ConnectDevice(
     const std::string& address,
     const std::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ConnectDeviceErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 
 device::BluetoothLocalGattService* FakeCentral::GetGattService(
     const std::string& identifier) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void FakeCentral::SetServiceAllowList(const UUIDList& uuids,
                                       base::OnceClosure callback,
                                       ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+void FakeCentral::SetSimpleSecurePairingEnabled(bool enabled,
+                                                base::OnceClosure callback,
+                                                ErrorCallback error_callback) {
+  NOTREACHED();
 }
 
 std::unique_ptr<device::BluetoothLowEnergyScanSession>
 FakeCentral::StartLowEnergyScanSession(
     std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
     base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
@@ -646,24 +732,20 @@ FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 
 std::vector<device::BluetoothAdapter::BluetoothRole>
 FakeCentral::GetSupportedRoles() {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<device::BluetoothAdapter::BluetoothRole>{};
+  NOTREACHED();
+}
+
+void FakeCentral::SetStandardChromeOSAdapterName() {
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void FakeCentral::SetStandardChromeOSAdapterName() {
-  NOTREACHED_IN_MIGRATION();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool FakeCentral::SetPoweredImpl(bool powered) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FakeCentral::UpdateFilter(
@@ -721,7 +803,7 @@ void FakeCentral::StopScan(DiscoverySessionResultCallback callback) {
 
 void FakeCentral::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 FakeCentral::~FakeCentral() = default;
@@ -784,6 +866,40 @@ FakeRemoteGattDescriptor* FakeCentral::GetFakeRemoteGattDescriptor(
   // with FakeRemoteGattDescriptors.
   return static_cast<FakeRemoteGattDescriptor*>(
       fake_remote_gatt_characteristic->GetDescriptor(descriptor_id));
+}
+
+void FakeCentral::DispatchGATTOperationEvent(
+    mojom::GATTOperationType type,
+    const std::string& peripheral_address) {
+  if (client_.is_bound()) {
+    client_->DispatchGATTOperationEvent(type, peripheral_address);
+  }
+}
+
+void FakeCentral::DispatchCharacteristicOperationEvent(
+    mojom::CharacteristicOperationType type,
+    const std::optional<std::vector<uint8_t>>& data,
+    const std::optional<mojom::WriteType> write_type,
+    const std::string& characteristic_id) {
+  if (client_.is_bound()) {
+    client_->DispatchCharacteristicOperationEvent(type, data, write_type,
+                                                  characteristic_id);
+  }
+}
+
+void FakeCentral::DispatchDescriptorOperationEvent(
+    mojom::DescriptorOperationType type,
+    const std::optional<std::vector<uint8_t>>& data,
+    const std::string& descriptor_id) {
+  if (client_.is_bound()) {
+    client_->DispatchDescriptorOperationEvent(type, data, descriptor_id);
+  }
+}
+
+void FakeCentral::SetClient(
+    ::mojo::PendingAssociatedRemote<mojom::FakeCentralClient> client) {
+  CHECK(!client_.is_bound());
+  client_.Bind(std::move(client));
 }
 
 }  // namespace bluetooth

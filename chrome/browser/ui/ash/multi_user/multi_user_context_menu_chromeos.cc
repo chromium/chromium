@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -13,8 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,7 +25,7 @@
 #include "components/user_manager/user_manager_pref_names.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace {
 
@@ -38,7 +38,7 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
   MultiUserContextMenuChromeos& operator=(const MultiUserContextMenuChromeos&) =
       delete;
 
-  ~MultiUserContextMenuChromeos() override {}
+  ~MultiUserContextMenuChromeos() override = default;
 
   // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override { return false; }
@@ -62,15 +62,16 @@ void OnAcceptTeleportWarning(const AccountId& account_id,
                              aura::Window* window_,
                              bool accepted,
                              bool no_show_again) {
-  if (!accepted)
+  if (!accepted) {
     return;
+  }
 
   PrefService* pref = ProfileManager::GetActiveUserProfile()->GetPrefs();
   pref->SetBoolean(user_manager::prefs::kMultiProfileWarningShowDismissed,
                    no_show_again);
 
-  MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
-      window_, account_id);
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(window_,
+                                                                    account_id);
 }
 
 }  // namespace
@@ -83,10 +84,11 @@ std::unique_ptr<ui::MenuModel> CreateMultiUserContextMenu(
 
   if (logged_in_users.size() > 1u) {
     // If this window is not owned, we don't show the menu addition.
-    auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+    auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
     const AccountId& account_id = window_manager->GetWindowOwner(window);
-    if (!account_id.is_valid() || !window)
+    if (!account_id.is_valid() || !window) {
       return model;
+    }
     auto* menu = new MultiUserContextMenuChromeos(window);
     model.reset(menu);
     int command_id = IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT;
@@ -144,6 +146,6 @@ void ExecuteVisitDesktopCommand(int command_id, aura::Window* window) {
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }

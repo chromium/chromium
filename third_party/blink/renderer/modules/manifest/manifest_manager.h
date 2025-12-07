@@ -7,14 +7,13 @@
 
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-blink.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -37,11 +36,10 @@ class ResourceResponse;
 // they are not specified in the json.
 class MODULES_EXPORT ManifestManager
     : public GarbageCollected<ManifestManager>,
-      public Supplement<LocalDOMWindow>,
       public mojom::blink::ManifestManager,
       public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static ManifestManager* From(LocalDOMWindow&);
 
@@ -65,6 +63,7 @@ class MODULES_EXPORT ManifestManager
 
   // mojom::blink::ManifestManager implementation.
   void RequestManifest(RequestManifestCallback callback) override;
+  void RequestManifestAndErrors(RequestManifestAndErrorsCallback) override;
   void RequestManifestDebugInfo(
       RequestManifestDebugInfoCallback callback) override;
   void ParseManifestFromString(
@@ -122,7 +121,6 @@ class MODULES_EXPORT ManifestManager
   void ParseManifestFromPage(const KURL& document_url,
                              std::optional<KURL> manifest_url,
                              const String& data);
-  void RecordMetrics(const mojom::blink::Manifest& manifest);
   void ResolveCallbacks(Result result);
 
   void BindReceiver(
@@ -132,6 +130,7 @@ class MODULES_EXPORT ManifestManager
 
   friend class ManifestManagerTest;
 
+  Member<LocalDOMWindow> local_dom_window_;
   Member<ManifestFetcher> fetcher_;
   Member<ManifestChangeNotifier> manifest_change_notifier_;
 

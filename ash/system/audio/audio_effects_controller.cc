@@ -23,13 +23,24 @@
 namespace ash {
 
 bool IsStyleTransferSupportedByVc() {
-  return CrasAudioHandler::Get()->IsStyleTransferSupportedForDevice(
-      CrasAudioHandler::Get()->GetPrimaryActiveInputNode());
+  // The toggle is added only if it's supported. After added, dlc progress will
+  // be queried. To avoid getting `nullopt` when querying dlcs, we export
+  // `false` here if it's `nullopt`.
+  if (CrasAudioHandler::Get()->GetAudioEffectDlcs() == std::nullopt) {
+    return false;
+  }
+  return CrasAudioHandler::Get()->style_transfer_supported();
 }
 
 // Vc can only support either noise cancellation or style transfer. So we skip
 // noise cancellation if style transfer is supported already.
 bool IsNoiseCancellationSupportedByVc() {
+  // The toggle is added only if it's supported. After added, dlc progress will
+  // be queried. To avoid getting `nullopt` when querying dlcs, we export
+  // `false` here if it's `nullopt`.
+  if (CrasAudioHandler::Get()->GetAudioEffectDlcs() == std::nullopt) {
+    return false;
+  }
   return CrasAudioHandler::Get()->IsNoiseCancellationSupportedForDevice(
              CrasAudioHandler::Get()->GetPrimaryActiveInputNode()) &&
          !IsStyleTransferSupportedByVc();
@@ -65,8 +76,9 @@ bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
+      NOTREACHED();
   }
 }
 
@@ -85,8 +97,9 @@ std::optional<int> AudioEffectsController::GetEffectState(
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
+      NOTREACHED();
   }
 }
 
@@ -121,8 +134,9 @@ void AudioEffectsController::OnEffectControlActivated(
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
-      NOTREACHED_IN_MIGRATION();
-      return;
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
+      NOTREACHED();
   }
 }
 

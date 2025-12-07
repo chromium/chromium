@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -19,8 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -31,12 +27,13 @@
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #endif
 
@@ -92,8 +89,7 @@ ChromeAppSorting::ChromeAppSorting(content::BrowserContext* browser_context)
   MigrateAppIndex(extensions);
 }
 
-ChromeAppSorting::~ChromeAppSorting() {
-}
+ChromeAppSorting::~ChromeAppSorting() = default;
 
 void ChromeAppSorting::CreateOrdinalsIfNecessary(size_t minimum_size) {
   // Create StringOrdinal values as required to ensure |ntp_ordinal_map_| has at
@@ -259,7 +255,8 @@ void ChromeAppSorting::FixNTPOrdinalCollisions() {
       }
     }
   }
-  InstallTracker::Get(browser_context_)->OnAppsReordered(std::nullopt);
+  InstallTrackerFactory::GetForBrowserContext(browser_context_)
+      ->OnAppsReordered(std::nullopt);
 }
 
 void ChromeAppSorting::EnsureValidOrdinals(
@@ -338,13 +335,22 @@ void ChromeAppSorting::OnExtensionMoved(
 
   SyncIfNeeded(moved_extension_id);
 
-  InstallTracker::Get(browser_context_)->OnAppsReordered(moved_extension_id);
+  InstallTrackerFactory::GetForBrowserContext(browser_context_)
+      ->OnAppsReordered(moved_extension_id);
 }
 
 syncer::StringOrdinal ChromeAppSorting::GetAppLaunchOrdinal(
     const ExtensionId& extension_id) const {
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id))
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return web_app_registrar_->GetAppById(extension_id)->user_launch_ordinal();
+  }
 
   std::string raw_value;
   // If the preference read fails then raw_value will still be unset and we
@@ -369,7 +375,14 @@ void ChromeAppSorting::SetAppLaunchOrdinal(
       extension_id, page_ordinal, GetAppLaunchOrdinal(extension_id));
   AddOrdinalMapping(extension_id, page_ordinal, new_app_launch_ordinal);
 
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id)) {
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     web_app_sync_bridge_->SetUserLaunchOrdinal(extension_id,
                                                new_app_launch_ordinal);
     return;
@@ -433,8 +446,16 @@ syncer::StringOrdinal ChromeAppSorting::GetNaturalAppPageOrdinal() const {
 
 syncer::StringOrdinal ChromeAppSorting::GetPageOrdinal(
     const ExtensionId& extension_id) const {
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id))
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return web_app_registrar_->GetAppById(extension_id)->user_page_ordinal();
+  }
 
   std::string raw_data;
   // If the preference read fails then raw_data will still be unset and we will
@@ -456,7 +477,14 @@ void ChromeAppSorting::SetPageOrdinal(
       extension_id, GetPageOrdinal(extension_id), app_launch_ordinal);
   AddOrdinalMapping(extension_id, new_page_ordinal, app_launch_ordinal);
 
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id)) {
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     web_app_sync_bridge_->SetUserPageOrdinal(extension_id, new_page_ordinal);
     return;
   }
@@ -690,16 +718,14 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
   default_ordinals_created_ = true;
 
   // The following defines the default order of apps.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<std::string> app_ids;
   chromeos::default_app_order::Get(&app_ids);
 #else
-  const char* const kDefaultAppOrder[] = {
+  static constexpr std::array app_ids = {
       app_constants::kChromeAppId,
       kWebStoreAppId,
   };
-  const std::vector<const char*> app_ids(
-      kDefaultAppOrder, kDefaultAppOrder + std::size(kDefaultAppOrder));
 #endif
 
   syncer::StringOrdinal page_ordinal = CreateFirstAppPageOrdinal();

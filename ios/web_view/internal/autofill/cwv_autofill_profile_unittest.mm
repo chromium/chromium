@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
-
 #import <Foundation/Foundation.h>
-#include <string>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import <string>
+
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_type.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/resource/resource_bundle.h"
 
 namespace ios_web_view {
 

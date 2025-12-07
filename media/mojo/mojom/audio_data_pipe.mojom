@@ -6,9 +6,8 @@ module media.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
 
-// Used by audio streams for realtime-ish data transfer. ReadWriteAudioDataPipe
-// is used for output streams and ReadOnlyAudioDataPipe is used for input
-// streams, see AudioDeviceThread, AudioSyncReader, and AudioInputSyncWriter.
+// Used by audio streams for realtime-ish data transfer, see AudioDeviceThread,
+// SyncReader, and InputSyncWriter.
 // |socket| is a base::SyncSocket used for signaling and |shared_memory| is used
 // for the actual audio data.
 //
@@ -18,19 +17,26 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 // it finished writing. Then the process continues with |n+1|. This model is
 // used to get data for playout.
 //
-// When using a push model, the code pushing data writes a buffer to
-// |shared_memory| and writes |n| to the socket. When the other side finished
-// reading the buffer, it writes |n| to the socket to signal that the memory is
-// safe to write to again. |shared_memory| may have room for several buffers,
-// in which case the next buffer can be pushed without waiting for the previous
-// one to be consumed. This model used is to deliver microphone data to a
-// consumer.
+//
+// When using a push model, there are two different models. For both models,
+// |shared_memory| may have |S| slots for several buffers, in which case several
+// buffers can be pushed without waiting for previous buffers to be consumed.
+// TODO(crbug.com/380422501): Run experiment to evaluate the models and only use
+// the best one.
+//
+// Model 1 (baseline):
+// The code pushing data writes a buffer to |shared_memory| and writes |n| to
+// the socket. When the other side finished reading the buffer, it writes
+// |n| + 1 to the socket to signal that the memory is safe to write to again.
+//
+// Model 2 (experimental):
+// The code pushing data writes a buffer to slot |n|%|S| in |shared_memory| and
+// writes |n| to the socket. When the other side finished reading the buffer, it
+// sets an atomic flag at slot |n|%|S| in |shared_memory| to signal that the
+// memory is safe to write to again.
+//
+// These models are used to deliver microphone data to a consumer.
 struct ReadWriteAudioDataPipe {
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory;
-  handle<platform> socket;
-};
-
-struct ReadOnlyAudioDataPipe {
-  mojo_base.mojom.ReadOnlySharedMemoryRegion shared_memory;
   handle<platform> socket;
 };

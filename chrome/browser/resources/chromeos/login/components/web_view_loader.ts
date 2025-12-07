@@ -263,7 +263,6 @@ export class WebViewLoader {
 
     if (details && details.error === 'net::ERR_ABORTED') {
       // Retry triggers net::ERR_ABORTED, so ignore it.
-      // TODO(crbug.com/1327977): Load an embedded offline copy as a fallback.
       return;
     }
 

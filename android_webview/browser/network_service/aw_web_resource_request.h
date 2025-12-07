@@ -40,22 +40,6 @@ struct AwWebResourceRequest final {
   AwWebResourceRequest& operator=(AwWebResourceRequest&& other);
   ~AwWebResourceRequest();
 
-  // The java equivalent
-  struct AwJavaWebResourceRequest {
-    AwJavaWebResourceRequest();
-    ~AwJavaWebResourceRequest();
-
-    base::android::ScopedJavaLocalRef<jstring> jurl;
-    base::android::ScopedJavaLocalRef<jstring> jmethod;
-    base::android::ScopedJavaLocalRef<jobjectArray> jheader_names;
-    base::android::ScopedJavaLocalRef<jobjectArray> jheader_values;
-  };
-
-  // Convenience method to convert AwWebResourceRequest to Java equivalent.
-  static void ConvertToJava(JNIEnv* env,
-                            const AwWebResourceRequest& request,
-                            AwJavaWebResourceRequest* jRequest);
-
   std::string url;
   std::string method;
   bool is_outermost_main_frame;
@@ -66,5 +50,12 @@ struct AwWebResourceRequest final {
 };
 
 }  // namespace android_webview
+
+namespace jni_zero {
+template <>
+ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const android_webview::AwWebResourceRequest& request);
+}
 
 #endif  // ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_REQUEST_H_

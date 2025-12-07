@@ -1,0 +1,83 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.picture_in_picture"
+
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTest.java",
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPictureInPictureTabHelperTest.java",
+  ]
+
+  deps = [
+    ":test_support_java",
+    "//base:base_java_test_support",
+    "//base:callback_java",
+    "//base/test:public_transit_java",
+    "//chrome/android:chrome_java",
+    "//chrome/android/javatests:chrome_test_java_helper",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.picture_in_picture"
+
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTestUtils.java",
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPictureInPictureTabHelperTestUtils.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/jni_zero:jni_zero_java",
+    "//url:url_java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+}
+
+generate_jni("jni_headers") {
+  testonly = true
+  visibility = [ ":*" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTestUtils.java",
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPictureInPictureTabHelperTestUtils.java",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "android/auto_pip_tab_helper_test_utils.cc",
+    "android/auto_pip_tab_model_observer_test_utils.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/picture_in_picture",
+    "//content/public/browser",
+  ]
+}

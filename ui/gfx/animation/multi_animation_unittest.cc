@@ -13,9 +13,8 @@ namespace gfx {
 TEST(MultiAnimationTest, Basic) {
   // Create a MultiAnimation with two parts.
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(base::Milliseconds(100), Tween::LINEAR));
-  parts.push_back(
-      MultiAnimation::Part(base::Milliseconds(100), Tween::EASE_OUT));
+  parts.emplace_back(base::Milliseconds(100), Tween::LINEAR);
+  parts.emplace_back(base::Milliseconds(100), Tween::EASE_OUT);
 
   MultiAnimation animation(parts);
   AnimationContainerElement* as_element =
@@ -40,7 +39,7 @@ TEST(MultiAnimationTest, Basic) {
 // Makes sure multi-animation stops if cycles is false.
 TEST(MultiAnimationTest, DontCycle) {
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(base::Milliseconds(200), Tween::LINEAR));
+  parts.emplace_back(base::Milliseconds(200), Tween::LINEAR);
   MultiAnimation animation(parts);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
@@ -72,7 +71,7 @@ class CurrentValueDelegate : public AnimationDelegate {
 // and not running continuously.
 TEST(MultiAnimationTest, ExceedCycleNonContinuous) {
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(base::Milliseconds(200), Tween::LINEAR));
+  parts.emplace_back(base::Milliseconds(200), Tween::LINEAR);
   MultiAnimation animation(parts);
   CurrentValueDelegate delegate;
   animation.set_delegate(&delegate);
@@ -89,7 +88,7 @@ TEST(MultiAnimationTest, ExceedCycleNonContinuous) {
 // Makes sure multi-animation cycles correctly.
 TEST(MultiAnimationTest, Cycle) {
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(base::Milliseconds(200), Tween::LINEAR));
+  parts.emplace_back(base::Milliseconds(200), Tween::LINEAR);
   MultiAnimation animation(parts);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
@@ -108,9 +107,9 @@ TEST(MultiAnimationTest, GetCurrentValueDerivedFromStartAndEndOfCurrentPart) {
   constexpr double kSecondPartStart = 0.8;
   constexpr double kSecondPartEnd = 0.4;
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(base::Milliseconds(100), Tween::LINEAR));
-  parts.push_back(MultiAnimation::Part(base::Milliseconds(100), Tween::EASE_OUT,
-                                       kSecondPartStart, kSecondPartEnd));
+  parts.emplace_back(base::Milliseconds(100), Tween::LINEAR);
+  parts.emplace_back(base::Milliseconds(100), Tween::EASE_OUT, kSecondPartStart,
+                     kSecondPartEnd);
 
   MultiAnimation animation(parts);
   animation.set_continuous(false);

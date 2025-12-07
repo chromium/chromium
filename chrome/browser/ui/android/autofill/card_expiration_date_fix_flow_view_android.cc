@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
+
 #include <memory>
 #include <utility>
-
-#include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AutofillExpirationDateFixFlowBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
@@ -29,21 +29,16 @@ CardExpirationDateFixFlowViewAndroid::CardExpirationDateFixFlowViewAndroid(
 
 void CardExpirationDateFixFlowViewAndroid::OnUserAccept(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const std::u16string& month,
     const std::u16string& year) {
   controller_->OnAccepted(month, year);
 }
 
-void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
   controller_->OnDismissed();
 }
 
-void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardExpirationDateFixFlowViewAndroid::PromptDismissed(JNIEnv* env) {
   delete this;
 }
 
@@ -75,8 +70,11 @@ void CardExpirationDateFixFlowViewAndroid::ControllerGone() {
 }
 
 CardExpirationDateFixFlowViewAndroid::~CardExpirationDateFixFlowViewAndroid() {
-  if (controller_)
+  if (controller_) {
     controller_->OnDialogClosed();
+  }
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillExpirationDateFixFlowBridge)

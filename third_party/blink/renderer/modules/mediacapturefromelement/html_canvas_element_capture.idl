@@ -6,5 +6,5 @@
 [
     ImplementedAs=HTMLCanvasElementCapture
 ] partial interface HTMLCanvasElement {
-    [HighEntropy, MeasureAs=CanvasCaptureStream, RaisesException, CallWith=ScriptState] MediaStream captureStream (optional double frameRate);
+    [MeasureAs=CanvasCaptureStream, RaisesException, CallWith=ScriptState] MediaStream captureStream (optional double frameRate);
 };

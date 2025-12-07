@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -65,13 +66,14 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
  private:
   // Record for input/output buffers.
   struct BufferRecord {
-    BufferRecord();
-    ~BufferRecord();
-    void* address[VIDEO_MAX_PLANES];  // mmap() address.
-    size_t length[VIDEO_MAX_PLANES];  // mmap() length.
+    BufferRecord() = default;
+    ~BufferRecord() = default;
+
+    void* address[VIDEO_MAX_PLANES] = {};  // mmap() address.
+    size_t length[VIDEO_MAX_PLANES] = {};  // mmap() length.
 
     // Set true during QBUF and DQBUF. |address| will be accessed by hardware.
-    bool at_device;
+    bool at_device = false;
   };
 
   void EnqueueInput();
@@ -151,7 +153,7 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // The client of this class.
-  chromeos_camera::MjpegDecodeAccelerator::Client* client_;
+  raw_ptr<chromeos_camera::MjpegDecodeAccelerator::Client> client_;
 
   // The V4L2Device this class is operating upon. This is accessed on
   // |decoder_task_runner_| and |device_poll_task_runner_|.
@@ -197,11 +199,12 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   // variables on |decoder_task_runner_| in destructor, because a task can
   // be posted to |decoder_task_runner_| within DestroyTask().
   base::WeakPtr<V4L2MjpegDecodeAccelerator> weak_ptr_for_decoder_;
-  base::WeakPtrFactory<V4L2MjpegDecodeAccelerator> weak_factory_for_decoder_;
 
   // Point to |this| for use in posting tasks from the decoder thread back to
   // |io_task_runner_|.
   base::WeakPtr<V4L2MjpegDecodeAccelerator> weak_ptr_;
+
+  base::WeakPtrFactory<V4L2MjpegDecodeAccelerator> weak_factory_for_decoder_;
   base::WeakPtrFactory<V4L2MjpegDecodeAccelerator> weak_factory_;
 };
 

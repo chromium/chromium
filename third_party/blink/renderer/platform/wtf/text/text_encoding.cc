@@ -28,33 +28,32 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
-namespace WTF {
+namespace blink {
 
 TextEncoding::TextEncoding(const char* name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {
-}
+    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
 
 TextEncoding::TextEncoding(const String& name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {
-}
+    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
 
-String TextEncoding::Decode(const char* data,
-                            wtf_size_t length,
+String TextEncoding::Decode(base::span<const uint8_t> data,
                             bool stop_on_error,
                             bool& saw_error) const {
   if (!name_)
     return String();
 
-  return NewTextCodec(*this)->Decode(data, length, FlushBehavior::kDataEOF,
+  return NewTextCodec(*this)->Decode(data, FlushBehavior::kDataEOF,
                                      stop_on_error, saw_error);
 }
 
-std::string TextEncoding::Encode(const String& string,
+std::string TextEncoding::Encode(const StringView& string,
                                  UnencodableHandling handling) const {
   if (!name_)
     return std::string();
@@ -63,14 +62,9 @@ std::string TextEncoding::Encode(const String& string,
     return std::string();
 
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);
-  std::string encoded_string;
-  if (string.Is8Bit())
-    encoded_string =
-        text_codec->Encode(string.Characters8(), string.length(), handling);
-  else
-    encoded_string =
-        text_codec->Encode(string.Characters16(), string.length(), handling);
-  return encoded_string;
+  return VisitCharacters(string, [&text_codec, handling](auto chars) {
+    return text_codec->Encode(chars, handling);
+  });
 }
 
 bool TextEncoding::UsesVisualOrdering() const {
@@ -82,13 +76,13 @@ bool TextEncoding::UsesVisualOrdering() const {
 }
 
 bool TextEncoding::IsNonByteBasedEncoding() const {
-  return *this == UTF16LittleEndianEncoding() ||
-         *this == UTF16BigEndianEncoding();
+  return *this == Utf16LittleEndianEncoding() ||
+         *this == Utf16BigEndianEncoding();
 }
 
 const TextEncoding& TextEncoding::ClosestByteBasedEquivalent() const {
   if (IsNonByteBasedEncoding())
-    return UTF8Encoding();
+    return Utf8Encoding();
   return *this;
 }
 
@@ -97,11 +91,11 @@ const TextEncoding& TextEncoding::ClosestByteBasedEquivalent() const {
 // encoding and can contain 0x00.
 const TextEncoding& TextEncoding::EncodingForFormSubmission() const {
   if (IsNonByteBasedEncoding())
-    return UTF8Encoding();
+    return Utf8Encoding();
   return *this;
 }
 
-const TextEncoding& ASCIIEncoding() {
+const TextEncoding& AsciiEncoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_ascii_encoding,
                                   ("ASCII"));
   return global_ascii_encoding;
@@ -113,19 +107,19 @@ const TextEncoding& Latin1Encoding() {
   return global_latin1_encoding;
 }
 
-const TextEncoding& UTF16BigEndianEncoding() {
+const TextEncoding& Utf16BigEndianEncoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       const TextEncoding, global_utf16_big_endian_encoding, ("UTF-16BE"));
   return global_utf16_big_endian_encoding;
 }
 
-const TextEncoding& UTF16LittleEndianEncoding() {
+const TextEncoding& Utf16LittleEndianEncoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       const TextEncoding, global_utf16_little_endian_encoding, ("UTF-16LE"));
   return global_utf16_little_endian_encoding;
 }
 
-const TextEncoding& UTF8Encoding() {
+const TextEncoding& Utf8Encoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_utf8_encoding,
                                   ("UTF-8"));
   DCHECK(global_utf8_encoding.IsValid());
@@ -144,4 +138,4 @@ const TextEncoding& UnknownEncoding() {
   return global_unknown_encoding;
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "ash/constants/ash_switches.h"
@@ -13,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -37,16 +37,15 @@ CrosSettings* CrosSettings::Get() {
   return g_cros_settings;
 }
 
-// static
-void CrosSettings::SetInstance(CrosSettings* cros_settings) {
-  CHECK(!g_cros_settings || !cros_settings);
-  g_cros_settings = cros_settings;
+CrosSettings::CrosSettings() {
+  CHECK(!g_cros_settings);
+  g_cros_settings = this;
 }
-
-CrosSettings::CrosSettings() = default;
 
 CrosSettings::~CrosSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(g_cros_settings, this);
+  g_cros_settings = nullptr;
 }
 
 bool CrosSettings::IsCrosSettings(std::string_view path) {
@@ -59,9 +58,7 @@ const base::Value* CrosSettings::GetPref(std::string_view path) const {
   CrosSettingsProvider* provider = GetProvider(path);
   if (provider)
     return provider->Get(path);
-  NOTREACHED_IN_MIGRATION()
-      << path << " preference was not found in the signed settings.";
-  return nullptr;
+  NOTREACHED() << path << " preference was not found in the signed settings.";
 }
 
 CrosSettingsProvider::TrustedStatus CrosSettings::PrepareTrustedValues(
@@ -196,8 +193,7 @@ bool CrosSettings::FindEmailInList(const base::Value::List& list,
   bool found_wildcard_match = false;
   for (const auto& entry : list) {
     if (!entry.is_string()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     std::string canonicalized_entry(
         gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry.GetString())));
@@ -245,8 +241,8 @@ bool CrosSettings::AddSettingsProvider(
 std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
     CrosSettingsProvider* provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(providers_, provider,
-                               &std::unique_ptr<CrosSettingsProvider>::get);
+  auto it = std::ranges::find(providers_, provider,
+                              &std::unique_ptr<CrosSettingsProvider>::get);
   if (it != providers_.end()) {
     std::unique_ptr<CrosSettingsProvider> ptr = std::move(*it);
     providers_.erase(it);
@@ -256,7 +252,7 @@ std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
 }
 
 base::CallbackListSubscription CrosSettings::AddSettingsObserver(
-    const std::string& path,
+    std::string_view path,
     base::RepeatingClosure callback) {
   DCHECK(!path.empty());
   DCHECK(callback);
@@ -264,16 +260,11 @@ base::CallbackListSubscription CrosSettings::AddSettingsObserver(
   DCHECK(GetProvider(path));
 
   // Get the callback registry associated with the path.
-  base::RepeatingClosureList* registry = nullptr;
-  auto observer_iterator = settings_observers_.find(path);
-  if (observer_iterator == settings_observers_.end()) {
-    settings_observers_[path] = std::make_unique<base::RepeatingClosureList>();
-    registry = settings_observers_[path].get();
-  } else {
-    registry = observer_iterator->second.get();
+  auto it = settings_observers_.find(path);
+  if (it == settings_observers_.end()) {
+    it = settings_observers_.try_emplace(std::string(path)).first;
   }
-
-  return registry->Add(std::move(callback));
+  return it->second.Add(std::move(callback));
 }
 
 CrosSettingsProvider* CrosSettings::GetProvider(std::string_view path) const {
@@ -288,10 +279,11 @@ CrosSettingsProvider* CrosSettings::GetProvider(std::string_view path) const {
 void CrosSettings::FireObservers(const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto observer_iterator = settings_observers_.find(path);
-  if (observer_iterator == settings_observers_.end())
+  if (observer_iterator == settings_observers_.end()) {
     return;
+  }
 
-  observer_iterator->second->Notify();
+  observer_iterator->second.Notify();
 }
 
 }  // namespace ash

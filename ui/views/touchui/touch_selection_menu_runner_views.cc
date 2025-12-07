@@ -78,16 +78,18 @@ void TouchSelectionMenuRunnerViews::OpenMenu(
   DCHECK(client);
   CloseMenu();
 
-  if (!TouchSelectionMenuViews::IsMenuAvailable(client.get()))
+  if (!TouchSelectionMenuViews::IsMenuAvailable(client.get())) {
     return;
+  }
 
   menu_ = new TouchSelectionMenuViews(this, client, context);
   menu_->ShowMenu(anchor_rect, handle_image_size);
 }
 
 void TouchSelectionMenuRunnerViews::CloseMenu() {
-  if (!menu_)
+  if (!menu_) {
     return;
+  }
 
   // Closing the menu sets |menu_| to nullptr and eventually deletes the object.
   menu_->CloseMenu();

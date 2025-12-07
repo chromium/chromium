@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_POLICIES_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_POLICIES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {

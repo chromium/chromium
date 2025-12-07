@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_errors.h"
 #include "content/common/android/gin_java_bridge_value.h"
@@ -41,20 +42,25 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     gin::Arguments* args) {
   if (!dispatcher_) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
-        args->isolate(), kMethodInvocationErrorMessage)));
+        args->isolate(), base::StrCat({"Error invoking ", method_name_, ": ",
+                                       kMethodInvocationErrorMessage}))));
     return v8::Undefined(args->isolate());
   }
 
   if (args->IsConstructCall()) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
-        args->isolate(), kMethodInvocationAsConstructorDisallowed)));
+        args->isolate(),
+        base::StrCat({"Error invoking ", method_name_, ": ",
+                      kMethodInvocationAsConstructorDisallowed}))));
     return v8::Undefined(args->isolate());
   }
 
   content::GinJavaBridgeObject* object = nullptr;
   if (!args->GetHolder(&object) || !object) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
-        args->isolate(), kMethodInvocationOnNonInjectedObjectDisallowed)));
+        args->isolate(),
+        base::StrCat({"Error invoking ", method_name_, ": ",
+                      kMethodInvocationOnNonInjectedObjectDisallowed}))));
     return v8::Undefined(args->isolate());
   }
 
@@ -90,7 +96,8 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
   }
   if (!result.get()) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
-        args->isolate(), GinJavaBridgeErrorToString(error))));
+        args->isolate(), base::StrCat({"Error invoking ", method_name_, ": ",
+                                       GinJavaBridgeErrorToString(error)}))));
     return v8::Undefined(args->isolate());
   }
   if (!result->is_blob()) {
@@ -101,17 +108,17 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
   std::unique_ptr<const GinJavaBridgeValue> gin_value =
       GinJavaBridgeValue::FromValue(result.get());
   if (gin_value->IsType(GinJavaBridgeValue::TYPE_OBJECT_ID)) {
-    GinJavaBridgeObject* object_result = NULL;
+    GinJavaBridgeObject* object_result = nullptr;
     GinJavaBridgeDispatcher::ObjectID object_id;
     if (gin_value->GetAsObjectID(&object_id)) {
       object_result = dispatcher_->GetObject(object_id);
     }
     if (object_result) {
-      gin::Handle<GinJavaBridgeObject> controller =
-          gin::CreateHandle(args->isolate(), object_result);
-      if (controller.IsEmpty())
+      v8::Local<v8::Value> controller;
+      if (!object_result->GetWrapper(args->isolate()).ToLocal(&controller)) {
         return v8::Undefined(args->isolate());
-      return controller.ToV8();
+      }
+      return controller;
     }
   } else if (gin_value->IsType(GinJavaBridgeValue::TYPE_NONFINITE)) {
     float float_value;

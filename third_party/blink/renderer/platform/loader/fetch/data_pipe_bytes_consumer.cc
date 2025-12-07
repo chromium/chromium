@@ -50,16 +50,15 @@ DataPipeBytesConsumer::DataPipeBytesConsumer(
   watcher_.Watch(
       data_pipe_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      WTF::BindRepeating(&DataPipeBytesConsumer::Notify, WrapPersistent(this)));
+      BindRepeating(&DataPipeBytesConsumer::Notify, WrapPersistent(this)));
 }
 
 DataPipeBytesConsumer::~DataPipeBytesConsumer() {}
 
-BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
-                                                       size_t* available) {
+BytesConsumer::Result DataPipeBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   DCHECK(!is_in_two_phase_read_);
-  *buffer = nullptr;
-  *available = 0;
+  buffer = {};
   if (state_ == InternalState::kClosed)
     return Result::kDone;
   if (state_ == InternalState::kErrored)
@@ -72,13 +71,10 @@ BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
 
   base::span<const uint8_t> bytes;
   MojoResult rv = data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, bytes);
-  base::span<const char> chars = base::as_chars(bytes);
-
   switch (rv) {
     case MOJO_RESULT_OK:
       is_in_two_phase_read_ = true;
-      *buffer = chars.data();
-      *available = chars.size();
+      buffer = base::as_chars(bytes);
       return Result::kOk;
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();
@@ -100,8 +96,6 @@ BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
       SetError(Error("error"));
       return Result::kError;
   }
-
-  NOTREACHED_IN_MIGRATION();
 }
 
 BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
@@ -134,8 +128,8 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
   if (has_pending_notification_) {
     has_pending_notification_ = false;
     task_runner_->PostTask(FROM_HERE,
-                           WTF::BindOnce(&DataPipeBytesConsumer::Notify,
-                                         WrapPersistent(this), MOJO_RESULT_OK));
+                           BindOnce(&DataPipeBytesConsumer::Notify,
+                                    WrapPersistent(this), MOJO_RESULT_OK));
   }
   return Result::kOk;
 }

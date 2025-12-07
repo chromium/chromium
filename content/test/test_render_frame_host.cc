@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -26,7 +27,6 @@
 #include "content/test/test_navigation_url_loader.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -191,7 +191,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChild(
 
 TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
     const std::string& frame_name,
-    const blink::ParsedPermissionsPolicy& allow) {
+    const network::ParsedPermissionsPolicy& allow) {
   std::string frame_unique_name =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   OnCreateChildFrame(
@@ -202,7 +202,10 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::DocumentToken(),
-      blink::FramePolicy({network::mojom::WebSandboxFlags::kNone, allow, {}}),
+      blink::FramePolicy({network::mojom::WebSandboxFlags::kNone,
+                          allow,
+                          {},
+                          blink::mojom::DeferredFetchPolicy::kDisabled}),
       blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   return static_cast<TestRenderFrameHost*>(
@@ -405,6 +408,10 @@ void TestRenderFrameHost::SendNavigateWithParamsAndInterfaceParams(
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     bool was_within_same_document) {
   last_commit_was_error_page_ = params->url_is_unreachable;
+  if (params->commit_navigation_start.is_null()) {
+    params->commit_navigation_start = base::TimeTicks::Now();
+    params->commit_navigation_end = base::TimeTicks::Now();
+  }
   if (was_within_same_document) {
     SendDidCommitSameDocumentNavigation(
         std::move(params), blink::mojom::SameDocumentNavigationType::kFragment,
@@ -423,6 +430,12 @@ void TestRenderFrameHost::SendDidCommitSameDocumentNavigation(
       same_document_navigation_type;
   same_doc_params->should_replace_current_entry = should_replace_current_entry;
   params->http_status_code = last_http_status_code();
+  if (params->commit_navigation_start.is_null()) {
+    params->commit_navigation_start = base::TimeTicks::Now();
+    params->commit_navigation_end = base::TimeTicks::Now();
+  }
+  same_doc_params->same_document_metrics_token =
+      base::UnguessableToken::Create();
   DidCommitSameDocumentNavigation(std::move(params),
                                   std::move(same_doc_params));
 }
@@ -626,7 +639,7 @@ void TestRenderFrameHost::SendCommitNavigation(
         keep_alive_loader_factory,
     mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
         fetch_later_loader_factory,
-    const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+    const std::optional<network::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {
@@ -647,10 +660,26 @@ void TestRenderFrameHost::SendCommitFailedNavigation(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
+    const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container) {
   CHECK(navigation_client);
   commit_failed_callback_[navigation_request] =
       BuildCommitFailedNavigationCallback(navigation_request);
+}
+
+void TestRenderFrameHost::SendBeforeUnload(
+    bool is_reload,
+    base::WeakPtr<RenderFrameHostImpl> impl,
+    bool for_legacy,
+    const bool is_renderer_initiated_navigation) {
+  if (on_sendbeforeunload_begin_) {
+    std::move(on_sendbeforeunload_begin_).Run();
+  }
+  RenderFrameHostImpl::SendBeforeUnload(is_reload, std::move(impl), for_legacy,
+                                        is_renderer_initiated_navigation);
+  if (on_sendbeforeunload_end_) {
+    std::move(on_sendbeforeunload_end_).Run();
+  }
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr
@@ -702,6 +731,9 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
 
   params->page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
       url, params->item_sequence_number, params->document_sequence_number);
+
+  params->commit_navigation_start = base::TimeTicks::Now();
+  params->commit_navigation_end = base::TimeTicks::Now();
 
   return params;
 }

@@ -1,0 +1,79 @@
+<style include="print-preview-shared">
+  .container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    margin-block: 16px 0;
+    margin-inline: auto;
+    text-align: center;
+    max-width: 368px;
+  }
+
+  .message-container {
+    /* TODO(b/290239226): Replace with on-surface-variant after print-preview is
+                          configured to use dynamic styling. */
+    color: var(--google-grey-700);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .message-detail {
+    font: var(--cros-body-1-font);
+    margin-block: 0;
+  }
+
+  .message-heading {
+    font: var(--cros-display-7-font);
+    margin-block: 0;
+  }
+
+  cr-button {
+    font: var(--cros-button-2-font);
+  }
+
+  /* TODO(b/290239226): Remove hard-coded SVG colors after print-preview is
+                        configured to use dynamic colors. */
+  cr-icon {
+    --cros-sys-illo-base: #FFFFFF;
+    --cros-sys-illo-color1-2: #DBE1FF;
+    --cros-sys-illo-color3: #EE9829;
+    --cros-sys-illo-color4: #FF5449;
+    --cros-sys-illo-color5: #C6A0BF;
+    --cros-sys-illo-secondary: #E2E1EC;
+    --iron-icon-height: 200px;
+    --iron-icon-width: 268px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .message-container {
+      /* TODO(b/290239226): Remove after print-preview is configured to use
+                            dynamic styling. */
+      color: var(--google-grey-400);
+    }
+
+    cr-icon {
+      --cros-sys-illo-base: #000000;
+      --cros-sys-illo-color1-2: #414659;
+      --cros-sys-illo-color3: #FFB866;
+      --cros-sys-illo-color4: #FF5449;
+      --cros-sys-illo-color5: #745470;
+      --cros-sys-illo-secondary: #5D5E67;
+    }
+  }
+</style>
+<div class="container">
+  <cr-icon icon="print-preview:no-printer-available"
+      hidden$="[[!showIllustration]]">
+  </cr-icon>
+  <div class="message-container">
+    <h2 class="message-heading">[[getMessageHeading(messageType)]]</h2>
+    <p class="message-detail">[[getMessageDetail(messageType)]]</p>
+  </div>
+  <cr-button class="action-button" on-click="onManagePrintersClicked"
+      hidden$="[[!showManagePrintersButton]]">
+    $i18n{managePrintersLabel}
+  </cr-button>
+</div>

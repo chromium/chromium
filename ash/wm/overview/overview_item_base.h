@@ -161,8 +161,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   // Returns the window associated with this, which can be a single window or
   // a list of windows.
-  // TODO(michelefan): This is temporarily added to reduce the scope of the
-  // task, which will be replaced by `GetWindows()` in a follow-up cl.
   virtual aura::Window* GetWindow() = 0;
 
   // Returns the window(s) associated with this, which can be a single window or
@@ -415,8 +413,8 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   void HideItemWidgetWindow();
   void ShowItemWidgetWindow();
 
-  // TODO(sammiequon): Current events go from `OverviewItemView` to
-  // `EventHandlerDelegate` to `OverviewSession` to
+  // TODO: Current events go from `OverviewItemView` to `EventHandlerDelegate`
+  // to `OverviewSession` to
   // `OverviewWindowDragController`. We may be able to shorten this pipeline.
   void HandlePressEvent(const gfx::PointF& location_in_screen,
                         bool from_touch_gesture,

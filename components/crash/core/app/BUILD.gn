@@ -12,18 +12,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-static_library("url_constants") {
-  sources = [ "url_constants.h" ]
-
-  if (is_chrome_branded && is_official_build) {
-    sources += [ "internal/url_constants.cc" ]
-  } else {
-    sources += [ "url_constants.cc" ]
-  }
-
-  deps = [ "//build:branding_buildflags" ]
-}
-
 source_set("lib") {
   visibility = [ ":*" ]
 
@@ -33,8 +21,8 @@ source_set("lib") {
   ]
 
   deps = [
-    ":url_constants",
     "//base",
+    "//build:branding_buildflags",
   ]
 }
 
@@ -44,7 +32,7 @@ source_set("crashpad_handler_main") {
   deps = [
     "//base:debugging_buildflags",
     "//components/gwp_asan/buildflags",
-    "//third_party/crashpad/crashpad/handler:handler",
+    "//third_party/crashpad/crashpad/handler",
   ]
 
   if (is_linux || is_chromeos || is_mac) {
@@ -102,6 +90,8 @@ static_library("app") {
 
   if (is_ios) {
     deps -= [ "//content/public/common:content_descriptors" ]
+    deps += [ "//third_party/crashpad/crashpad/handler:common" ]
+    public_deps += [ "//third_party/crashpad/crashpad/client" ]
   }
 
   if (is_android) {
@@ -157,6 +147,10 @@ static_library("app") {
     sources += [ "crashpad_ios.mm" ]
     deps += [ "//third_party/crashpad/crashpad/minidump" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_win) {
@@ -178,7 +172,6 @@ if (is_win) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//components/app_launch_prefetch",
       "//components/gwp_asan/buildflags",
       "//components/stability_report",
@@ -216,6 +209,8 @@ if (is_win) {
       "crash_export_thunks.h",
     ]
 
+    defines = [ "CRASH_IMPLEMENTATION" ]
+
     deps = [
       ":app",
       "//base",
@@ -227,6 +222,7 @@ if (is_win) {
   # time.
   source_set("crash_export_stubs") {
     testonly = true
+    defines = [ "CRASH_IMPLEMENTATION" ]
 
     sources = [
       "crash_export_stubs.cc",
@@ -251,7 +247,7 @@ if (is_mac || is_android || is_linux || is_chromeos) {
       "//third_party/crashpad/crashpad/handler",
     ]
 
-    if (is_mac && (is_component_build || is_asan)) {
+    if (is_mac && (is_component_build || is_asan || is_ubsan_any)) {
       ldflags = [
         # The handler is in
         # Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/A/Helpers/
@@ -324,8 +320,8 @@ source_set("unit_tests") {
       ":run_as_crashpad_handler",
       "//components/crash/win:unit_tests",
       "//third_party/breakpad:client",
-      "//third_party/crashpad/crashpad/client:client",
-      "//third_party/crashpad/crashpad/snapshot:snapshot",
+      "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/snapshot",
       "//third_party/crashpad/crashpad/util",
     ]
   }

@@ -4,6 +4,8 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.Size;
@@ -13,12 +15,15 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** Manages the bitmaps shown in the PlayerFrameView at a given scale factor. */
+@NullMarked
 public class PlayerFrameBitmapState {
     private final UnguessableToken mGuid;
 
@@ -26,28 +31,32 @@ public class PlayerFrameBitmapState {
     private final Size mTileSize;
 
     /** The scale factor of bitmaps. */
-    private float mScaleFactor;
+    private final float mScaleFactor;
 
-    /** Bitmaps that make up the contents. */
-    private Bitmap[][] mBitmapMatrix;
+    /**
+     * Bitmaps that make up the contents.
+     * Should be "@Nullable Bitmap @Nullable [][]", but there is a bug in NullAway
+     * (https://github.com/uber/NullAway/issues/1150) that prevents us from doing that.
+     */
+    private Bitmap @Nullable [][] mBitmapMatrix;
 
     /** Whether a request for a bitmap tile is pending. */
-    private BitmapRequestHandler[][] mPendingBitmapRequests;
+    private BitmapRequestHandler @Nullable [][] mPendingBitmapRequests;
 
     /**
      * Whether we currently need a bitmap tile. This is used for deleting bitmaps that we don't
      * need and freeing up memory.
      */
-    private boolean[][] mRequiredBitmaps;
+    private boolean @Nullable [][] mRequiredBitmaps;
 
     /** Whether a bitmap is visible for a given request. */
-    private boolean[][] mVisibleBitmaps;
+    private final boolean[][] mVisibleBitmaps;
 
     /** Delegate for accessing native to request bitmaps. */
     private final PlayerCompositorDelegate mCompositorDelegate;
 
     private final PlayerFrameBitmapStateController mStateController;
-    private Set<Integer> mInitialMissingVisibleBitmaps = new HashSet<>();
+    private @Nullable Set<Integer> mInitialMissingVisibleBitmaps = new HashSet<>();
 
     PlayerFrameBitmapState(
             UnguessableToken guid,
@@ -79,11 +88,11 @@ public class PlayerFrameBitmapState {
         mVisibleBitmaps = new boolean[rows][cols];
     }
 
-    boolean[][] getRequiredBitmapsForTest() {
+    boolean @Nullable [][] getRequiredBitmapsForTest() {
         return mRequiredBitmaps;
     }
 
-    Bitmap[][] getMatrix() {
+    Bitmap @Nullable [][] getMatrix() {
         return mBitmapMatrix;
     }
 
@@ -106,6 +115,7 @@ public class PlayerFrameBitmapState {
     void destroy() {
         mRequiredBitmaps = null;
         mPendingBitmapRequests = null;
+        assumeNonNull(mBitmapMatrix);
         for (int i = 0; i < mBitmapMatrix.length; i++) {
             for (int j = 0; j < mBitmapMatrix[i].length; j++) {
                 if (mBitmapMatrix[i][j] != null) {
@@ -220,7 +230,6 @@ public class PlayerFrameBitmapState {
 
         mRequiredBitmaps[row][col] = true;
         if (mPendingBitmapRequests != null && mPendingBitmapRequests[row][col] != null) {
-            mPendingBitmapRequests[row][col].setVisible(mVisibleBitmaps[row][col]);
             return false;
         }
         if (mBitmapMatrix == null
@@ -233,8 +242,7 @@ public class PlayerFrameBitmapState {
         final int y = row * mTileSize.getHeight();
         final int x = col * mTileSize.getWidth();
 
-        BitmapRequestHandler bitmapRequestHandler =
-                new BitmapRequestHandler(row, col, mScaleFactor, mVisibleBitmaps[row][col]);
+        BitmapRequestHandler bitmapRequestHandler = new BitmapRequestHandler(row, col);
         mPendingBitmapRequests[row][col] = bitmapRequestHandler;
         int requestId =
                 mCompositorDelegate.requestBitmap(
@@ -334,22 +342,13 @@ public class PlayerFrameBitmapState {
 
     /** Used as the callback for bitmap requests from the Paint Preview compositor. */
     private class BitmapRequestHandler implements Callback<Bitmap> {
-        int mRequestRow;
-        int mRequestCol;
-        float mRequestScaleFactor;
-        boolean mVisible;
+        final int mRequestRow;
+        final int mRequestCol;
         int mRequestId;
 
-        private BitmapRequestHandler(
-                int requestRow, int requestCol, float requestScaleFactor, boolean visible) {
+        private BitmapRequestHandler(int requestRow, int requestCol) {
             mRequestRow = requestRow;
             mRequestCol = requestCol;
-            mRequestScaleFactor = requestScaleFactor;
-            mVisible = visible;
-        }
-
-        private void setVisible(boolean visible) {
-            mVisible = visible;
         }
 
         private void setRequestId(int requestId) {
@@ -363,18 +362,10 @@ public class PlayerFrameBitmapState {
             return ret;
         }
 
-        /**
-         * Called when bitmap is successfully composited.
-         * @param result
-         */
+        /** Called when bitmap is successfully composited. */
         @Override
         public void onResult(Bitmap result) {
             TraceEvent.begin("BitmapRequestHandler.onResult");
-            if (result == null) {
-                onError();
-                TraceEvent.end("BitmapRequestHandler.onResult");
-                return;
-            }
             if (mBitmapMatrix == null
                     || mPendingBitmapRequests == null
                     || mRequiredBitmaps == null

@@ -8,19 +8,27 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
+#include "base/synchronization/lock.h"
 
 namespace variations {
-
 namespace {
 
 // The internal singleton accessor for the map, used to keep it thread-safe.
 class GroupMapAccessor {
  public:
-  typedef std::map<ActiveGroupId, VariationID, ActiveGroupIdCompare>
+  struct VariationEntry {
+    VariationID id;
+    TimeWindow time_window;
+  };
+
+  typedef std::map<ActiveGroupId, VariationEntry, ActiveGroupIdCompare>
       GroupToIDMap;
 
   // Retrieve the singleton.
@@ -32,60 +40,72 @@ class GroupMapAccessor {
   GroupMapAccessor(const GroupMapAccessor&) = delete;
   GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
 
-  // Ensures that |group_identifier| is associated with only one non-trigger,
-  // trigger, or signed-in key.
-  void ValidateID(IDCollectionKey key,
-                  const ActiveGroupId& group_identifier,
-                  const VariationID id) {
+  // Validates the specified mapping. A `group_identifier` is allowed to only
+  // have one `key`, except in the case of `GOOGLE_APP`. A `GOOGLE_APP` key may
+  // coexist with another provided they have the same `id` value.
+  bool ValidateID(IDCollectionKey key,
+                  ActiveGroupId group_identifier,
+                  VariationID id) {
     static_assert(ID_COLLECTION_COUNT == 6,
                   "If you add a new collection key, add handling code here!");
-#if DCHECK_IS_ON()
     for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
       IDCollectionKey other_key = static_cast<IDCollectionKey>(i);
-      if (key == other_key)
-        continue;
-
-      VariationID other_id = GetID(other_key, group_identifier);
-
-      // For a GOOGLE_APP key, validate that all other collections with this
-      // |group_identifier| have the same associated ID.
-      if (key == GOOGLE_APP) {
-        DCHECK(other_id == EMPTY_ID || other_id == id);
+      if (key == other_key) {
         continue;
       }
 
-      // The ID should not be registered under a different non-GOOGLE_APP
-      // IDCollectionKey.
-      if (other_key != GOOGLE_APP)
-        DCHECK_EQ(EMPTY_ID, other_id);
+      VariationID other_id = GetID(other_key, group_identifier);
+      if (other_id == EMPTY_ID) {
+        continue;
+      }
+
+      // In the case of a GOOGLE_APP key, another entry is allowed provided that
+      // the IDs match.
+      if (key == GOOGLE_APP || other_key == GOOGLE_APP) {
+        if (other_id != id) {
+          return false;
+        }
+        continue;
+      }
+
+      // `group_identifier` may not be registered under multiple non-GOOGLE_APP
+      // IDCollectionKey values.
+      return false;
     }
-#endif  // DCHECK_IS_ON()
+    return true;
   }
 
-  // Note that this normally only sets the ID for a group the first time, unless
-  // |force| is set to true, in which case it will always override it.
   void AssociateID(IDCollectionKey key,
-                   const ActiveGroupId& group_identifier,
-                   const VariationID id,
-                   const bool force) {
-    ValidateID(key, group_identifier, id);
+                   ActiveGroupId group_identifier,
+                   VariationID id,
+                   TimeWindow time_window) {
+    if (!ValidateID(key, group_identifier, id)) {
+      // In the case of a validation failure, omit the association and instead
+      // report the issue via a crash dump, to notify us of a problem with the
+      // server-side configs.
+      SCOPED_CRASH_KEY_NUMBER("InvalidVariationsID", "id", id);
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
 
     base::AutoLock scoped_lock(lock_);
 
     GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
-    if (force ||
-        group_to_id_map->find(group_identifier) == group_to_id_map->end())
-      (*group_to_id_map)[group_identifier] = id;
+    (*group_to_id_map)[group_identifier] = {id, time_window};
   }
 
   VariationID GetID(IDCollectionKey key,
-                    const ActiveGroupId& group_identifier) {
+                    ActiveGroupId group_identifier,
+                    std::optional<base::Time> current_time = std::nullopt) {
     base::AutoLock scoped_lock(lock_);
     GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
     GroupToIDMap::const_iterator it = group_to_id_map->find(group_identifier);
-    if (it == group_to_id_map->end())
+    if (it == group_to_id_map->end() ||
+        (current_time.has_value() &&
+         !it->second.time_window.Contains(*current_time))) {
       return EMPTY_ID;
-    return it->second;
+    }
+    return it->second.id;
   }
 
   void ClearAllMapsForTesting() {
@@ -98,62 +118,96 @@ class GroupMapAccessor {
     }
   }
 
+  base::Time GetNextTimeWindowEvent(base::Time time) const {
+    base::AutoLock scoped_lock(lock_);
+    base::Time next_event = base::Time::Max();
+    // This double loop is O(N) where N is the number of field trials having an
+    // associated variations ID, which should be in the order of 10s at most.
+    for (const auto& id_map : group_to_id_maps_) {
+      for (const auto& [id, entry] : id_map) {
+        // Update the next time window event if the start or end time is after
+        // `time`  but also before `next_event`.
+        if (entry.time_window.start() > time &&
+            entry.time_window.start() < next_event) {
+          next_event = entry.time_window.start();
+        }
+        if (entry.time_window.end() > time &&
+            entry.time_window.end() < next_event) {
+          next_event = entry.time_window.end();
+        }
+      }
+    }
+    return next_event;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<GroupMapAccessor>;
 
-  // Retrieves the GroupToIDMap for |key|.
+  // Retrieves the GroupToIDMap for `key`.
   GroupToIDMap* GetGroupToIDMap(IDCollectionKey key) {
     return &group_to_id_maps_[key];
   }
 
-  GroupMapAccessor() {
-    group_to_id_maps_.resize(ID_COLLECTION_COUNT);
-  }
-  ~GroupMapAccessor() {}
+  GroupMapAccessor() { group_to_id_maps_.resize(ID_COLLECTION_COUNT); }
+  ~GroupMapAccessor() = default;
 
-  base::Lock lock_;
+  mutable base::Lock lock_;
   std::vector<GroupToIDMap> group_to_id_maps_;
 };
+
 }  // namespace
 
-void AssociateGoogleVariationID(IDCollectionKey key,
-                                const std::string& trial_name,
-                                const std::string& group_name,
-                                VariationID id) {
+void AssociateGoogleVariationID(base::PassKey<VariationsSeedProcessor> pass_key,
+                                IDCollectionKey key,
+                                ActiveGroupId active_group_id,
+                                VariationID variation_id,
+                                TimeWindow time_window) {
+  GroupMapAccessor::GetInstance()->AssociateID(key, active_group_id,
+                                               variation_id, time_window);
+}
+
+void AssociateGoogleVariationID(base::PassKey<SyntheticTrialRegistry> pass_key,
+                                IDCollectionKey key,
+                                ActiveGroupId active_group_id,
+                                VariationID variation_id,
+                                TimeWindow time_window) {
+  GroupMapAccessor::GetInstance()->AssociateID(key, active_group_id,
+                                               variation_id, time_window);
+}
+
+void AssociateGoogleVariationIDForTesting(IDCollectionKey key,
+                                          std::string_view trial_name,
+                                          std::string_view group_name,
+                                          VariationID variation_id,
+                                          TimeWindow time_window) {
   GroupMapAccessor::GetInstance()->AssociateID(
-      key, MakeActiveGroupId(trial_name, group_name), id, false);
-}
-
-void AssociateGoogleVariationIDForce(IDCollectionKey key,
-                                     const std::string& trial_name,
-                                     const std::string& group_name,
-                                     VariationID id) {
-  AssociateGoogleVariationIDForceHashes(
-      key, MakeActiveGroupId(trial_name, group_name), id);
-}
-
-void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
-                                           const ActiveGroupId& active_group,
-                                           VariationID id) {
-  GroupMapAccessor::GetInstance()->AssociateID(key, active_group, id, true);
+      key, MakeActiveGroupId(trial_name, group_name), variation_id,
+      time_window);
 }
 
 VariationID GetGoogleVariationID(IDCollectionKey key,
-                                 const std::string& trial_name,
-                                 const std::string& group_name) {
-  return GetGoogleVariationIDFromHashes(
-      key, MakeActiveGroupId(trial_name, group_name));
+                                 std::string_view trial_name,
+                                 std::string_view group_name,
+                                 std::optional<base::Time> current_time) {
+  return GetGoogleVariationID(
+      key, MakeActiveGroupId(trial_name, group_name), current_time);
 }
 
-VariationID GetGoogleVariationIDFromHashes(
+VariationID GetGoogleVariationID(
     IDCollectionKey key,
-    const ActiveGroupId& active_group) {
-  return GroupMapAccessor::GetInstance()->GetID(key, active_group);
+    ActiveGroupId active_group_id,
+    std::optional<base::Time> current_time) {
+  return GroupMapAccessor::GetInstance()->GetID(key, active_group_id,
+                                                current_time);
+}
+
+base::Time GetNextTimeWindowEvent(base::Time current_time) {
+  return GroupMapAccessor::GetInstance()->GetNextTimeWindowEvent(current_time);
 }
 
 // Functions below are exposed for testing explicitly behind this namespace.
 // They simply wrap existing functions in this file.
-namespace testing {
+namespace test {
 
 void ClearAllVariationIDs() {
   GroupMapAccessor::GetInstance()->ClearAllMapsForTesting();
@@ -162,7 +216,5 @@ void ClearAllVariationIDs() {
 void ClearAllVariationParams() {
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }
-
-}  // namespace testing
-
+}  // namespace test
 }  // namespace variations

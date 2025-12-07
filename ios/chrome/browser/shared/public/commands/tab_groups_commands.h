@@ -7,6 +7,8 @@
 
 #import <set>
 
+#import "base/memory/weak_ptr.h"
+
 class TabGroup;
 enum class TabGroupActionType;
 namespace web {
@@ -25,6 +27,9 @@ class WebStateID;
 - (void)showTabGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers;
 
+// Shows the tab group creation view and creates a new tab for the group.
+- (void)showTabGroupCreationWithoutTabs;
+
 // Hides the tab group creation view.
 - (void)hideTabGroupCreationAnimated:(BOOL)animated;
 
@@ -38,15 +43,26 @@ class WebStateID;
 // bottom on iPhone to confirm that selected `group` is going to take an
 // `actionType`.
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                                sourceView:(UIView*)sourceView;
 
-// Displays a confirmation dialog anchoring to `sourceButtonItem` on iPad or at
-// the bottom on iPhone to confirm that selected `group` is going to take an
-// `actionType`.
-- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
-                         sourceButtonItem:(UIBarButtonItem*)sourceButtonItem;
+// Starts the leave or delete shared group flow.
+- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
+                            forAction:(TabGroupActionType)actionType
+                           sourceView:(UIView*)sourceView;
+
+// Displays a snackbar after closing tab groups locally.
+- (void)showTabGridTabGroupSnackbarAfterClosingGroups:(int)numberOfClosedGroups;
+
+// Displays a half sheet of the recent activity in a shared tab group.
+- (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
+
+// Displays a management page for managing a shared group.
+- (void)showManageForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
+
+// Displays a share page for sharing a group.
+- (void)showShareForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
 @end
 

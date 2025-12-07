@@ -2,10 +2,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_ENUM_CONVERSIONS_H_
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
 class V8GPUBufferBindingType;
+class V8GPUBufferMapState;
 class V8GPUSamplerBindingType;
 class V8GPUTextureSampleType;
 class V8GPUStorageTextureAccess;
@@ -31,7 +33,6 @@ class V8GPUCullMode;
 class V8GPUFrontFace;
 class V8GPUTextureAspect;
 class V8GPUErrorFilter;
-class V8WGSLFeatureName;
 enum class PredefinedColorSpace;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
@@ -69,16 +70,17 @@ wgpu::CullMode AsDawnEnum(const V8GPUCullMode& webgpu_enum);
 wgpu::FrontFace AsDawnEnum(const V8GPUFrontFace& webgpu_enum);
 wgpu::TextureAspect AsDawnEnum(const V8GPUTextureAspect& webgpu_enum);
 wgpu::ErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum);
+wgpu::ComponentSwizzle AsDawnEnum(const UChar c);
 
 // Convert Dawn enums to WebGPU IDL enums.
-const char* FromDawnEnum(wgpu::QueryType dawn_enum);
-const char* FromDawnEnum(wgpu::TextureDimension dawn_enum);
-const char* FromDawnEnum(wgpu::TextureFormat dawn_enum);
-const char* FromDawnEnum(wgpu::BufferMapState dawn_enum);
+V8GPUQueryType FromDawnEnum(wgpu::QueryType dawn_enum);
+V8GPUTextureDimension FromDawnEnum(wgpu::TextureDimension dawn_enum);
+V8GPUTextureFormat FromDawnEnum(wgpu::TextureFormat dawn_enum);
+V8GPUBufferMapState FromDawnEnum(wgpu::BufferMapState dawn_enum);
 const char* FromDawnEnum(wgpu::BackendType dawn_enum);
 const char* FromDawnEnum(wgpu::AdapterType dawn_enum);
-[[nodiscard]] bool FromDawnEnum(wgpu::WGSLFeatureName dawn_enum,
-                                V8WGSLFeatureName* result);
+const char* FromDawnEnum(wgpu::PowerPreference dawn_enum);
+const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum);
 
 }  // namespace blink
 

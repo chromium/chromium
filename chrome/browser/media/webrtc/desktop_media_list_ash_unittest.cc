@@ -11,36 +11,25 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
+#include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
-int kThumbnailSize = 100;
+constexpr int kThumbnailSize = 100;
 
 using testing::AtLeast;
 using testing::DoDefault;
 
-class MockDesktopMediaListObserver : public DesktopMediaListObserver {
- public:
-  MOCK_METHOD1(OnSourceAdded, void(int index));
-  MOCK_METHOD1(OnSourceRemoved, void(int index));
-  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
-  MOCK_METHOD1(OnSourceNameChanged, void(int index));
-  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
-  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
-  MOCK_METHOD0(OnDelegatedSourceListSelection, void());
-  MOCK_METHOD0(OnDelegatedSourceListDismissed, void());
-};
-
 class DesktopMediaListAshTest : public ChromeAshTestBase {
  public:
-  DesktopMediaListAshTest() {}
+  DesktopMediaListAshTest() = default;
 
   DesktopMediaListAshTest(const DesktopMediaListAshTest&) = delete;
   DesktopMediaListAshTest& operator=(const DesktopMediaListAshTest&) = delete;
 
-  ~DesktopMediaListAshTest() override {}
+  ~DesktopMediaListAshTest() override = default;
 
   void TearDown() override {
     // Reset the unique_ptr so the list stops refreshing.
@@ -57,7 +46,7 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
   }
 
  protected:
-  MockDesktopMediaListObserver observer_;
+  DesktopMediaListMockObserver observer_;
   std::unique_ptr<DesktopMediaListAsh> list_;
 };
 
@@ -68,7 +57,8 @@ ACTION_P2(QuitMessageLoop, quit_closure) {
 TEST_F(DesktopMediaListAshTest, ScreenOnly) {
   CreateList(DesktopMediaList::Type::kScreen);
   base::RunLoop loop;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
 
   EXPECT_CALL(observer_, OnSourceAdded(0));
   EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
@@ -85,7 +75,8 @@ TEST_F(DesktopMediaListAshTest, WindowOnly) {
   {
     base::RunLoop loop1;
     base::RunLoop loop2;
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+    std::unique_ptr<aura::Window> window(
+        CreateTestWindowInShell({.window_id = 0}));
 
     EXPECT_CALL(observer_, OnSourceAdded(0));
     EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))

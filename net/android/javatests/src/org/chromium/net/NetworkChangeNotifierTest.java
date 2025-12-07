@@ -9,6 +9,8 @@ import static android.net.NetworkCapabilities.TRANSPORT_CELLULAR;
 import static android.net.NetworkCapabilities.TRANSPORT_VPN;
 import static android.net.NetworkCapabilities.TRANSPORT_WIFI;
 
+import static org.mockito.Mockito.when;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -36,6 +38,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -53,7 +56,6 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect.NetworkState;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.WifiManagerDelegate;
 import org.chromium.net.test.util.NetworkChangeNotifierTestUtil;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -101,44 +103,59 @@ public class NetworkChangeNotifierTest {
     }
 
     private static class Helper {
-        private static final Constructor<Network> sNetworkConstructor;
 
-        static {
-            try {
-                sNetworkConstructor =
-                        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                ? Network.class.getConstructor(Integer.TYPE)
-                                : null;
-            } catch (NoSuchMethodException | SecurityException e) {
-                throw new RuntimeException("Unable to get Network constructor", e);
-            }
-        }
-
-        static NetworkCapabilities getCapabilities(int transport) {
+        static NetworkCapabilitiesWrapper getCapabilities(int transport) {
             // Create a NetworkRequest with corresponding capabilities
             NetworkRequest request =
                     new NetworkRequest.Builder()
                             .addCapability(NET_CAPABILITY_INTERNET)
                             .addTransportType(transport)
                             .build();
-            // Extract the NetworkCapabilities from the NetworkRequest.
-            try {
-                return (NetworkCapabilities)
-                        request.getClass().getDeclaredField("networkCapabilities").get(request);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                return null;
+            // Pre S, we can extract the NetworkCapabilities using reflection.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                // Extract the NetworkCapabilities from the NetworkRequest.
+                try {
+                    return new NetworkCapabilitiesWrapper(
+                            (NetworkCapabilities)
+                                    request.getClass()
+                                            .getDeclaredField("networkCapabilities")
+                                            .get(request));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    return null;
+                }
             }
+            // On S+, there are APIs to get the underlying data from the NetworkCapabilities.
+            int[] capabilities = request.getCapabilities();
+            int[] transportTypes = request.getTransportTypes();
+            return new NetworkCapabilitiesWrapper(capabilities, transportTypes);
         }
 
-        // Create Network object given a NetID.
+        // Create Network object given a NetID. The implementation is based on the code in
+        // android.net.Network#getNetworkHandle.
         static Network netIdToNetwork(int netId) {
-            try {
-                return sNetworkConstructor.newInstance(netId);
-            } catch (InstantiationException
-                    | InvocationTargetException
-                    | IllegalAccessException e) {
-                throw new IllegalStateException("Trying to create Network when not allowed");
+            // Use the constructor on Android versions which can access it (R and below).
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                try {
+                    return Network.class.getConstructor(Integer.TYPE).newInstance(netId);
+                } catch (InstantiationException
+                        | InvocationTargetException
+                        | IllegalAccessException
+                        | NoSuchMethodException e) {
+                    throw new IllegalStateException("Trying to create Network when not allowed");
+                }
             }
+            // We can't use fromNetworkHandle to create a network with netId 0 as it causes an
+            // IllegalArgumentException so mock it instead.
+            if (netId == 0) {
+                Network mock = Mockito.mock(Network.class);
+                when(mock.getNetworkHandle()).thenReturn(0L);
+                return mock;
+            }
+            // If these tests start failing suddenly with IllegalArgumentException. Check whether
+            // this magic value has been updated in android.net.Network.java.
+            long magic = 0xcafed00dL;
+            long networkHandle = ((long) netId << 32) | magic;
+            return Network.fromNetworkHandle(networkHandle);
         }
     }
 
@@ -157,7 +174,7 @@ public class NetworkChangeNotifierTest {
     /** Mocks out calls to the ConnectivityManager. */
     private class MockConnectivityManagerDelegate extends ConnectivityManagerDelegate {
         // A network we're pretending is currently connected.
-        private class MockNetwork {
+        private static class MockNetwork {
             // Network identifier
             final int mNetId;
             // Transport, one of android.net.NetworkCapabilities.TRANSPORT_*
@@ -165,7 +182,7 @@ public class NetworkChangeNotifierTest {
             // Is this VPN accessible to the current user?
             final boolean mVpnAccessible;
 
-            NetworkCapabilities getCapabilities() {
+            NetworkCapabilitiesWrapper getCapabilities() {
                 return Helper.getCapabilities(mTransport);
             }
 
@@ -208,7 +225,7 @@ public class NetworkChangeNotifierTest {
         }
 
         @Override
-        protected NetworkCapabilities getNetworkCapabilities(Network network) {
+        protected NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
             int netId = demungeNetId(NetworkChangeNotifierAutoDetect.networkToNetId(network));
             for (MockNetwork mockNetwork : mMockNetworks) {
                 if (netId == mockNetwork.mNetId) {
@@ -301,6 +318,7 @@ public class NetworkChangeNotifierTest {
 
         /**
          * Pretends a network connects.
+         *
          * @param netId Network identifier
          * @param transport Transport, one of android.net.NetworkCapabilities.TRANSPORT_*
          * @param vpnAccessible Is this VPN accessible to the current user?
@@ -351,7 +369,7 @@ public class NetworkChangeNotifierTest {
 
     // Types of network changes. Each is associated with a NetworkChangeNotifierAutoDetect.Observer
     // callback, and NONE is provided to indicate no callback observed.
-    private static enum ChangeType {
+    private enum ChangeType {
         NONE,
         CONNECT,
         SOON_TO_DISCONNECT,
@@ -441,7 +459,7 @@ public class NetworkChangeNotifierTest {
     private MockConnectivityManagerDelegate mConnectivityDelegate;
     private MockWifiManagerDelegate mWifiDelegate;
 
-    private static enum WatchForChanges {
+    private enum WatchForChanges {
         ALWAYS,
         ONLY_WHEN_APP_IN_FOREGROUND,
     }
@@ -854,24 +872,22 @@ public class NetworkChangeNotifierTest {
             delegate.getNetworkState(
                     new WifiManagerDelegate(InstrumentationRegistry.getTargetContext()));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // getConnectionType(Network) doesn't crash upon invalid Network argument.
-            Network invalidNetwork = Helper.netIdToNetwork(NetId.INVALID);
-            Assert.assertEquals(
-                    ConnectionType.CONNECTION_NONE, delegate.getConnectionType(invalidNetwork));
+        // getConnectionType(Network) doesn't crash upon invalid Network argument.
+        Network invalidNetwork = Helper.netIdToNetwork(NetId.INVALID);
+        Assert.assertEquals(
+                ConnectionType.CONNECTION_NONE, delegate.getConnectionType(invalidNetwork));
 
-            Network[] networks = delegate.getAllNetworksUnfiltered();
-            Assert.assertNotNull(networks);
-            if (networks.length >= 1) {
-                delegate.getConnectionType(networks[0]);
-            }
-            delegate.getDefaultNetwork();
-            NetworkCallback networkCallback = new NetworkCallback();
-            NetworkRequest networkRequest = new NetworkRequest.Builder().build();
-            delegate.registerNetworkCallback(
-                    networkRequest, networkCallback, new Handler(Looper.myLooper()));
-            delegate.unregisterNetworkCallback(networkCallback);
+        Network[] networks = delegate.getAllNetworksUnfiltered();
+        Assert.assertNotNull(networks);
+        if (networks.length >= 1) {
+            delegate.getConnectionType(networks[0]);
         }
+        delegate.getDefaultNetwork();
+        NetworkCallback networkCallback = new NetworkCallback();
+        NetworkRequest networkRequest = new NetworkRequest.Builder().build();
+        delegate.registerNetworkCallback(
+                networkRequest, networkCallback, new Handler(Looper.myLooper()));
+        delegate.unregisterNetworkCallback(networkCallback);
     }
 
     /**
@@ -894,8 +910,8 @@ public class NetworkChangeNotifierTest {
     }
 
     /**
-     * Tests that NetworkChangeNotifierAutoDetect query-able APIs return expected
-     * values from the inserted mock ConnectivityManager.
+     * Tests that NetworkChangeNotifierAutoDetect query-able APIs return expected values from the
+     * inserted mock ConnectivityManager.
      */
     @Test
     @UiThreadTest
@@ -909,12 +925,6 @@ public class NetworkChangeNotifierTest {
         NetworkChangeNotifierAutoDetect ncn =
                 new NetworkChangeNotifierAutoDetect(
                         observer, new RegistrationPolicyApplicationStatus());
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            Assert.assertEquals(0, ncn.getNetworksAndTypes().length);
-            Assert.assertEquals(NetId.INVALID, ncn.getDefaultNetId());
-            return;
-        }
 
         // Insert a mocked dummy implementation for the ConnectivityDelegate.
         ncn.setConnectivityManagerDelegateForTests(
@@ -933,7 +943,7 @@ public class NetworkChangeNotifierTest {
                     }
 
                     @Override
-                    protected NetworkCapabilities getNetworkCapabilities(Network network) {
+                    protected NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
                         return Helper.getCapabilities(TRANSPORT_WIFI);
                     }
 
@@ -964,7 +974,6 @@ public class NetworkChangeNotifierTest {
     @Test
     @MediumTest
     @Feature({"Android-AppBase"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
     public void testNetworkCallbacks() throws Exception {
         // Setup NetworkChangeNotifierAutoDetect
         final TestNetworkChangeNotifierAutoDetectObserver observer =

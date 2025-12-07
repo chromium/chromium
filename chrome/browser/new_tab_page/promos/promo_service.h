@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -86,7 +87,7 @@ class PromoService : public KeyedService {
   void PromoDataLoaded(Status status, const std::optional<PromoData>& data);
 
  private:
-  void OnLoadDone(std::unique_ptr<std::string> response_body);
+  void OnLoadDone(std::optional<std::string> response_body);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   void NotifyObservers();

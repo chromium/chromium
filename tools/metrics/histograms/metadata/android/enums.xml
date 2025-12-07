@@ -48,6 +48,20 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Auto with Read Aloud (Listen to this page)"/>
 </enum>
 
+<!-- LINT.IfChange(AInputEventType) -->
+
+<enum name="AInputEventType">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="AINPUT_EVENT_TYPE_KEY"/>
+  <int value="2" label="AINPUT_EVENT_TYPE_MOTION"/>
+  <int value="3" label="AINPUT_EVENT_TYPE_FOCUS"/>
+  <int value="4" label="AINPUT_EVENT_TYPE_CAPTURE"/>
+  <int value="5" label="AINPUT_EVENT_TYPE_DRAG"/>
+  <int value="6" label="AINPUT_EVENT_TYPE_TOUCH_MODE"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/input/android/android_input_callback.cc:AInputEventType)-->
+
 <enum name="Android.MemoryPressureNotification">
   <int value="0" label="Unknown onTrimMemory() level"/>
   <int value="1" label="TRIM_MEMORY_COMPLETE"/>
@@ -60,24 +74,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="onLowMemory()"/>
 </enum>
 
-<enum name="AndroidApiLevel">
-  <int value="16" label="JELLY_BEAN"/>
-  <int value="17" label="JELLY_BEAN_MR1"/>
-  <int value="18" label="JELLY_BEAN_MR2"/>
-  <int value="19" label="KITKAT"/>
-  <int value="20" label="KITKAT_WATCH"/>
-  <int value="21" label="LOLLIPOP"/>
-  <int value="22" label="LOLLIPOP_MR1"/>
-  <int value="23" label="M"/>
-  <int value="24" label="N"/>
-  <int value="25" label="N_MR1"/>
-  <int value="26" label="O"/>
-  <int value="27" label="O_MR1"/>
-  <int value="28" label="P"/>
-  <int value="29" label="Q"/>
-  <int value="30" label="R"/>
-</enum>
-
 <enum name="AndroidAutoDarkModeSettingsChangeSource">
   <summary>See Android.DarkTheme.AutoDarkMode.SettingsChangeSource.*</summary>
   <int value="0" label="Theme settings"/>
@@ -86,11 +82,23 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Site settings exception list"/>
 </enum>
 
+<enum name="AndroidChildProcessConnectionEvents">
+  <int value="0" label="SCHEDULE_TIMEOUT_SANDBOXED"/>
+  <int value="1" label="SCHEDULE_TIMEOUT_UNSANDBOXED"/>
+  <int value="2" label="FALLBACK_ON_TIMEOUT_SANDBOXED"/>
+  <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
+</enum>
+
+<!-- LINT.IfChange(AndroidDefaultBrowserState) -->
+
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
   <int value="0" label="No Default"/>
   <int value="1" label="Other Default"/>
   <int value="2" label="Chrome Default"/>
+  <int value="3" label="Other Chrome Default"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/DefaultBrowserInfo.java:AndroidDefaultBrowserState)-->
 
 <enum name="AndroidDefaultBrowserPromoType">
   <int value="0" label="No Default"/>
@@ -106,17 +114,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Color Picker Dialog"/>
   <int value="6" label="Select Dialog"/>
   <int value="7" label="JavaScript Dialog"/>
-</enum>
-
-<enum name="AndroidDownloadFilterType">
-  <int value="0" label="All"/>
-  <int value="1" label="Page"/>
-  <int value="2" label="Video"/>
-  <int value="3" label="Audio"/>
-  <int value="4" label="Image"/>
-  <int value="5" label="Document"/>
-  <int value="6" label="Other"/>
-  <int value="7" label="Prefetched"/>
 </enum>
 
 <enum name="AndroidDownloadOpenSource">
@@ -177,20 +174,49 @@ chromium-metrics-reviews@google.com.
   <int value="327684" label="5.4"/>
   <int value="327690" label="5.10"/>
   <int value="327695" label="5.15"/>
+  <int value="327696" label="5.16"/>
+  <int value="327697" label="5.17"/>
+  <int value="327698" label="5.18"/>
+  <int value="327699" label="5.19"/>
+  <int value="393216" label="6.0"/>
+  <int value="393217" label="6.1"/>
+  <int value="393218" label="6.2"/>
+  <int value="393219" label="6.3"/>
+  <int value="393220" label="6.4"/>
+  <int value="393221" label="6.5"/>
+  <int value="393222" label="6.6"/>
+  <int value="393223" label="6.7"/>
+  <int value="393224" label="6.8"/>
+  <int value="393225" label="6.9"/>
+  <int value="393226" label="6.10"/>
+  <int value="393227" label="6.11"/>
+  <int value="393228" label="6.12"/>
 </enum>
+
+<enum name="AndroidPdfLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Abort"/>
+</enum>
+
+<!-- LINT.IfChange(AndroidRestoreResult) -->
 
 <enum name="AndroidRestoreResult">
   <int value="0" label="No restore attempted"/>
   <int value="1" label="Restore successful"/>
   <int value="2" label="Failed: Chrome already run locally"/>
   <int value="3" label="Failed: Chrome startup failed"/>
-  <int value="4" label="Failed: Cannot sign in as previous user"/>
+  <int value="4" label="Failed: Previous user not found on the device"/>
   <int value="5" label="DEPRECATED: Failed: Sign-in timed-out or interrupted"/>
   <int value="6"
       label="DEPRECATED: Restore status histogram sent (never recorded)"/>
   <int value="7" label="Failed: Sign-in timed-out or interrupted"/>
   <int value="8" label="Failed: Restore flow timed-out or crashed"/>
+  <int value="9" label="Failed: Backup contains no signed-in account"/>
+  <int value="10" label="Failed: User already signed-in"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java:RestoreStatus)-->
 
 <enum name="AndroidSearchEngineChoiceEvents">
   <summary>Events related to Search Engine Choice feature.</summary>
@@ -232,6 +258,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Sandbox Engaged"/>
 </enum>
 
+<enum name="AndroidStorageSystemType">
+  <int value="0" label="UFS"/>
+  <int value="1" label="EMMC"/>
+  <int value="2" label="Unknown"/>
+  <int value="3" label="Undetermined">
+    Failed to determine storage type by falling through all checks.
+  </int>
+</enum>
+
 <enum name="AndroidThemeSettingsEntry">
   <summary>See Android.DarkTheme.ThemeSettingsEntry.</summary>
   <int value="0" label="Settings"/>
@@ -245,6 +280,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chrome Link"/>
   <int value="4" label="Chrome Image"/>
 </enum>
+
+<!-- LINT.IfChange(AndroidUidType) -->
+
+<enum name="AndroidUidType">
+  <int value="0" label="root"/>
+  <int value="1" label="system"/>
+  <int value="2" label="phone"/>
+  <int value="3" label="nfc"/>
+  <int value="4" label="bluetooth"/>
+  <int value="5" label="wifi"/>
+  <int value="6" label="shell"/>
+  <int value="7" label="Other non-app UID"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java:UidType)-->
 
 <enum name="AndroidWebViewCrashCollectionState">
   <int value="0" label="ENABLED_BY_COMMANDLINE">
@@ -343,6 +393,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="TOKEN_REQUEST_MISSING_RESPONSE_PORT"/>
 </enum>
 
+<enum name="AndroidWebViewMediaIntegrityNonRecoverableErrorReason">
+  <int value="0" label="MISMATCHED_ORIGINS"/>
+  <int value="1" label="GET_PROVIDER_SECURITY_EXCEPTION"/>
+  <int value="2" label="AOSP_BUILD"/>
+  <int value="3" label="MAPPED_SERVICE_RESPONSE"/>
+</enum>
+
 <enum name="AndroidWebViewMediaIntegrityStatus">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="UNKNOWN_ERROR"/>
@@ -381,6 +438,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="AndroidWebViewSafeModeActionName">
+<!-- LINT.IfChange(SafeModeActionIds) -->
+
   <int value="0" label="Delete Variations Seed"/>
   <int value="1" label="Fast Variations Seed"/>
   <int value="2" label="Noop"/>
@@ -389,6 +448,10 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Disable Origin Trials"/>
   <int value="6" label="Disable Safe Browsing"/>
   <int value="7" label="Reset Component Updater"/>
+  <int value="8" label="Disable Supervision Checks"/>
+  <int value="9" label="Disable Startup Tasks Logic"/>
+<!-- LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/common/SafeModeActionIds.java:SafeModeActionIds) -->
+
 </enum>
 
 <enum name="AndroidWebViewSafeModeResult">
@@ -405,11 +468,18 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidWebViewSupervisedUserUrlCheckResult">
   <int value="0" label="ALLOWED_SITE_LOADED"/>
-  <int value="1" label="ALLOWED_SITE_DETECTED"/>
+  <int value="1" label="(Obsolete) ALLOWED_SITE_DETECTED. Removed in 2025/02"/>
   <int value="2" label="DISALLOWED_SITE_BLOCKED"/>
-  <int value="3" label="DISALLOWED_SITE_DETECTED"/>
+  <int value="3"
+      label="(Obsolete) DISALLOWED_SITE_DETECTED. Removed in 2025/02"/>
   <int value="4" label="TIMEOUT"/>
   <int value="5" label="UNKNOWN_ERROR"/>
+</enum>
+
+<enum name="AndroidWebViewSupportedThreatTypesResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="TIMEOUT"/>
+  <int value="2" label="UNKNOWN_ERROR"/>
 </enum>
 
 <enum name="AndroidWebViewTextSelectionMenuOrdering">
@@ -499,13 +569,17 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="WebMessagePayload.getAsString"/>
   <int value="67" label="WebMessagePayload.getAsArrayBuffer"/>
   <int value="68"
-      label="WebSettingsCompat.setRequestedWithHeaderOriginAllowList"/>
+      label="WebSettingsCompat.setRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="69"
-      label="WebViewCompat.WebSettingsCompat.getRequestedWithHeaderOriginAllowList"/>
+      label="WebViewCompat.WebSettingsCompat.getRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="70"
-      label="ServiceWorkerWebSettingsCompat.setRequestedWithHeaderOriginAllowList"/>
+      label="ServiceWorkerWebSettingsCompat.setRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="71"
-      label="ServiceWorkerWebSettingsCompat.getRequestedWithHeaderOriginAllowList"/>
+      label="ServiceWorkerWebSettingsCompat.getRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="72"
       label="WebViewProviderFactory.getDropDataProviderImplementation"/>
   <int value="73"
@@ -549,7 +623,72 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="WebSettingsCompat.setBackForwardCacheEnabled"/>
   <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
   <int value="108" label="Profile.prefetchUrl"/>
-  <int value="109" label="Profile.clearPrefetchCache"/>
+  <int value="109" label="Profile.prefetchUrlWithParams"/>
+  <int value="110" label="Profile.clearPrefetch"/>
+  <int value="111" label="Profile.cancelPrefetch"/>
+  <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
+  <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
+  <int value="114" label="WebViewCompat.startUpWebView"/>
+  <int value="115" label="WebViewCompat.prerenderUrl"/>
+  <int value="116" label="WebViewCompat.prerenderUrlWithParams"/>
+  <int value="117" label="WebStorageCompat.deleteBrowsingData"/>
+  <int value="118" label="WebStorageCompat.deleteBrowsingDataForSite"/>
+  <int value="119" label="Profile.setSpeculativeLoadingConfig"/>
+  <int value="120" label="WebViewCompat.saveState"/>
+  <int value="121" label="WebViewCompat.getNavigationClient"/>
+  <int value="122" label="WebViewCompat.setNavigationClient"/>
+  <int value="123" label="Navigation.getUrl"/>
+  <int value="124" label="Navigation.wasInitiatedByPage"/>
+  <int value="125" label="Navigation.isSameDocument"/>
+  <int value="126" label="Navigation.isReload"/>
+  <int value="127" label="Navigation.isHistory"/>
+  <int value="128" label="Navigation.isRestore"/>
+  <int value="129" label="Navigation.isBack"/>
+  <int value="130" label="Navigation.isForward"/>
+  <int value="131" label="Navigation.didCommit"/>
+  <int value="132" label="Navigation.didCommitErrorPage"/>
+  <int value="133" label="Navigation.getStatusCode"/>
+  <int value="134" label="WebViewCompat.clearAsyncShouldInterceptRequest"/>
+  <int value="135" label="WebViewCompat.setAsyncShouldInterceptRequest"/>
+  <int value="136"
+      label="ServiceWorkerControllerCompat.clearAsyncShouldInterceptRequest"/>
+  <int value="137"
+      label="ServiceWorkerControllerCompat.setAsyncShouldInterceptRequest"/>
+  <int value="138" label="WebViewCompat.WebResponseCallback.doNotIntercept"/>
+  <int value="139" label="WebViewCompat.WebResponseCallback.intercept"/>
+  <int value="140" label="Navigation.getPage"/>
+  <int value="141" label="WebSettingsCompat.setPaymentRequestEnabled"/>
+  <int value="142" label="WebSettingsCompat.getPaymentRequestEnabled"/>
+  <int value="143" label="WebSettingsCompat.setHasEnrolledInstrumentEnabled"/>
+  <int value="144" label="WebSettingsCompat.getHasEnrolledInstrumentEnabled"/>
+  <int value="145" label="WebViewBuilder"/>
+  <int value="146" label="WebSettingsCompat.setIncludeCookiesOnIntercept"/>
+  <int value="147" label="WebSettingsCompat.getIncludeCookiesOnIntercept"/>
+  <int value="148"
+      label="ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept"/>
+  <int value="149"
+      label="ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept"/>
+  <int value="150" label="Profile.warmUpRendererProcess"/>
+  <int value="151" label="Profile.setOriginMatchedHeader"/>
+  <int value="152" label="Profile.hasCustomHeader"/>
+  <int value="153" label="Profile.clearCustomHeader"/>
+  <int value="154" label="Profile.clearAllCustomHeaders"/>
+  <int value="155" label="WebSettingsCompat.setBackForwardCacheSettings"/>
+  <int value="156" label="WebSettingsCompat.getBackForwardCacheSettings"/>
+  <int value="157" label="BackForwardCacheSettings.getTimeoutInSeconds"/>
+  <int value="158" label="BackForwardCacheSettings.getMaxPagesInCache"/>
+  <int value="159" label="Profile.preconnect"/>
+  <int value="160" label="WebSettingsCompat.setHyperlinkContextMenuItems"/>
+  <int value="161" label="Page.isPrerendering"/>
+  <int value="162" label="Profile.addCustomHeader"/>
+  <int value="163" label="Profile.getCustomHeaders"/>
+  <int value="164" label="WebSettingsCompat.setRendererLibraryPrefetchMode"/>
+  <int value="165" label="WebSettingsCompat.getRendererLibraryPrefetchMode"/>
+  <int value="166" label="BackForwardCacheSettings.setTimeoutInSec"/>
+  <int value="167" label="BackForwardCacheSettings.setMaxPagesInCache"/>
+  <int value="168" label="WebSettingsCompat.addWebNavigationListener"/>
+  <int value="169" label="WebSettingsCompat.removeWebNavigationListener"/>
+  <int value="170" label="Profile.addQuicHints"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -590,14 +729,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FINISHED">AsyncTask is done.</int>
 </enum>
 
-<enum name="AwIpProtectionTokenBatchRequestResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed - BSA Transient Error"/>
-  <int value="2" label="Failed - BSA Persistent Error"/>
-  <int value="3" label="Failed - BSA Error Other"/>
-  <int value="4" label="Disabled feature"/>
-</enum>
-
 <enum name="BackgroundTaskId">
   <int value="-1" label="Not found"/>
   <int value="0" label="Test task (should not appear)"/>
@@ -632,6 +763,8 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Download auto-resumption any network task"/>
   <int value="31" label="Notification pre-unsubscribe action"/>
   <int value="32" label="Safety Hub fetch task"/>
+  <int value="33" label="Auxiliary search donate task"/>
+  <int value="34" label="Chrome signals reporting task"/>
 </enum>
 
 <enum name="BackPressConsumer">
@@ -645,25 +778,48 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(XX) VR_DELEGATE (Deprecated)"/>
   <int value="2" label="(XX) AR_DELEGATE (Deprecated)"/>
   <int value="3" label="(02) SCENE_OVERLAY"/>
-  <int value="4" label="(05) START_SURFACE (with tab switcher if enabled)"/>
+  <int value="4"
+      label="(XX) START_SURFACE (with tab switcher if enabled. Deprecated)"/>
   <int value="5" label="(10) SELECTION_POPUP"/>
   <int value="6" label="(11) MANUAL_FILLING"/>
   <int value="7" label="(09) FULLSCREEN"/>
   <int value="8" label="(03) BOTTOM_SHEET"/>
-  <int value="9" label="(13) TAB_MODAL_HANDLER"/>
-  <int value="10" label="(08) TAB_SWITCHER (if Start surface is disabled)"/>
-  <int value="11" label="(14) CLOSE_WATCHER"/>
-  <int value="12" label="(17) TAB_HISTORY (and bottom controls)"/>
+  <int value="9" label="(15) TAB_MODAL_HANDLER"/>
+  <int value="10"
+      label="(XX) TAB_SWITCHER (if Start surface is disabled. Deprecated)"/>
+  <int value="11" label="(16) CLOSE_WATCHER"/>
+  <int value="12" label="(19) TAB_HISTORY"/>
   <int value="13" label="(XX) TAB_RETURN_TO_CHROME_START_SURFACE (Deprecated)"/>
-  <int value="14" label="(18) SHOW_READING_LIST"/>
-  <int value="15" label="(19) MINIMIZE_APP_AND_CLOSE_TAB"/>
-  <int value="16" label="(15) FIND_TOOLBAR"/>
-  <int value="17" label="(12) LOCATION_BAR"/>
+  <int value="14" label="(21) SHOW_READING_LIST"/>
+  <int value="15" label="(22) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="16" label="(17) FIND_TOOLBAR"/>
+  <int value="17" label="(14) LOCATION_BAR"/>
   <int value="18" label="(01) XR_DELEGATE"/>
   <int value="19" label="(04) PAGE_INSIGHTS_BOTTOM_SHEET"/>
-  <int value="20" label="(16) BOTTOM_CONTROLS"/>
+  <int value="20" label="(18) BOTTOM_CONTROLS"/>
   <int value="21" label="(07) HUB"/>
   <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
+  <int value="23" label="(20) NATIVE_PAGE"/>
+  <int value="24" label="(12) CANCEL_TAB_STRIP_DRAG"/>
+  <int value="25" label="(13) CANCEL_TAB_SWITCHER_DRAG"/>
+</enum>
+
+<!-- LINT.IfChange(BackPressTabCloseType) -->
+
+<enum name="BackPressTabCloseType">
+  <int value="0" label="close without minimization"/>
+  <int value="1" label="close during minimization by chrome"/>
+  <int value="2" label="close during minimization by os"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java:TabClosureType)-->
+
+<enum name="BackupNavbarInsetsSource">
+  <int value="0" label="None"/>
+  <int value="1" label="Tappable Element (Deprecated)"/>
+  <int value="2" label="Mandatory system gestures"/>
+  <int value="3" label="Filtered explicitly disabled"/>
+  <int value="4" label="Filtered weaker signals"/>
 </enum>
 
 <enum name="BiometricsAvailability">
@@ -674,7 +830,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Hardware unavailable"/>
   <int value="5" label="Not enrolled"/>
   <int value="6" label="Security update required"/>
-  <int value="7" label="Android version not supported"/>
+  <int value="7" label="(obsolete) Android version not supported"/>
+  <int value="8" label="(obsolete) Biometric auth is mandatory"/>
+  <int value="9"
+      label="(obsolete) Biometric auth is mandatory, but has an error"/>
 </enum>
 
 <enum name="BooleanGranted">
@@ -687,16 +846,36 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Retain"/>
 </enum>
 
-<enum name="BooleanSameArray">
-  <int value="0" label="Not the same resource array"/>
-  <int value="1" label="App returned same resource array instance"/>
-</enum>
-
 <enum name="BottomControlsStatus">
   <int value="0" label="HEIGHT_ZERO"/>
   <int value="1" label="HIDDEN"/>
   <int value="2" label="VISIBLE_FULL_HEIGHT"/>
   <int value="3" label="VISIBLE_PARTIAL_HEIGHT"/>
+</enum>
+
+<enum name="BrowserControlsLockReason">
+  <summary>The reason why browser controls were locked.</summary>
+  <int value="0" label="CHROME_URL"/>
+  <int value="1" label="TAB_CONTENT_DANGEROUS"/>
+  <int value="2" label="EDITABLE_NODE_FOCUS"/>
+  <int value="3" label="TAB_ERROR"/>
+  <int value="4" label="TAB_HIDDEN"/>
+  <int value="5" label="FULLSCREEN_LOADING"/>
+  <int value="6" label="A11Y_ENABLED"/>
+  <int value="7" label="FULLSCREEN_DISABLED"/>
+</enum>
+
+<enum name="CacheQuotaFreshness">
+  <int value="0" label="Value returned from memory"/>
+  <int value="1" label="Value returned from prefs"/>
+  <int value="2" label="Value is absent"/>
+</enum>
+
+<enum name="CaptureNativeViewResult">
+  <int value="0" label="Not captured: Null WindowAndroid"/>
+  <int value="1" label="Not captured: View not laid out"/>
+  <int value="2" label="Not catpured: Between native pages"/>
+  <int value="3" label="Will capture a screenshot"/>
 </enum>
 
 <enum name="ChromeActivityType">
@@ -706,6 +885,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="WebAPK"/>
   <int value="4" label="Webapp (not WebAPK)"/>
   <int value="5" label="Pre-First-Tab (Startup/Warmup)"/>
+  <int value="6" label="Auth Tab"/>
 </enum>
 
 <enum name="ChromeStartupDelegateFailureType">
@@ -725,11 +905,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Disallow"/>
 </enum>
 
-<enum name="CommittedRequestedWithHeaderMode">
-  <int value="0" label="No header set"/>
-  <int value="1" label="App package name"/>
-  <int value="2" label="Constant string 'WebView'"/>
-  <int value="3" label="Header set by client code"/>
+<enum name="CloseWindowAppSource">
+  <int value="0" label="Other"/>
+  <int value="1" label="Window manager"/>
+  <int value="2" label="Instance retention period expiration"/>
+  <int value="3" label="No tabs in window"/>
 </enum>
 
 <enum name="ContactsPickerDialogAction">
@@ -754,12 +934,50 @@ chromium-metrics-reviews@google.com.
       label="Icons, Addresses, Names, Emails, and Telephone numbers"/>
 </enum>
 
+<enum name="CookieManagerThreadingCondition">
+  <int value="0" label="Not called before UI thread is set"/>
+  <int value="1" label="Called on a non-looper thread"/>
+  <int value="2"
+      label="Called from background looper and UI thread is main looper"/>
+  <int value="3"
+      label="Called from background looper and UI thread is the same
+             background looper"/>
+  <int value="4"
+      label="Called from background looper and UI thread is a different
+             background looper"/>
+  <int value="5" label="Called from main looper and UI thread is main looper"/>
+  <int value="6"
+      label="Called from main looper and UI thread is a background looper"/>
+</enum>
+
 <enum name="CpuAbiBitnessSupport">
   <int value="0" label="Neither"/>
   <int value="1" label="32-bit only"/>
   <int value="2" label="64-bit only"/>
   <int value="3" label="Both 32-bit and 64-bit"/>
 </enum>
+
+<!-- LINT.IfChange(CreateAndroidInputReceiverResult) -->
+
+<enum name="CreateAndroidInputReceiverResult">
+  <int value="0" label="SuccessfullyCreated"/>
+  <int value="1" label="FailedUnknown"/>
+  <int value="2" label="FailedNullSurfaceControl"/>
+  <int value="3" label="FailedNullLooper"/>
+  <int value="4" label="FailedNullInputTransferToken"/>
+  <int value="5" label="FailedNullCallbacks"/>
+  <int value="6" label="SuccessfulButNullTransferToken"/>
+  <int value="7" label="ReuseExistingInputReceiver"/>
+  <int value="8" label="NullBrowserInputToken"/>
+  <int value="9" label="NotCreatingMoreThanOneReceiver"/>
+  <int value="10" label="RootCompositorFrameSinkDestroyed"/>
+  <int value="11" label="FailedChoreographerNotSupported"/>
+  <int value="12" label="FailedNullChoreographer"/>
+  <int value="13" label="FailedNullParentSurfaceControl"/>
+  <int value="14" label="FailedNullChildSurfaceControl"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/input/input_manager.cc:CreateAndroidInputReceiverResult) -->
 
 <enum name="DebuggingEnabled">
   <int value="0" label="Debugging not enabled."/>
@@ -773,12 +991,11 @@ chromium-metrics-reviews@google.com.
 <enum name="DesktopWindowHeuristicResult">
   <int value="0" label="Invalid result."/>
   <int value="1" label="The app is in a desktop window."/>
-  <int value="2" label="The app is not in multi-window mode."/>
-  <int value="3" label="Navigation bar bottom insets are present."/>
-  <int value="4"
-      label="Caption bar insets hold an unexpected number of bounding rects."/>
-  <int value="5" label="Caption bar top insets are not present."/>
-  <int value="6" label="Caption bar bounding rect has an invalid height."/>
+  <int value="2" label="Caption bar top insets are not present."/>
+  <int value="3" label="Caption bar bounding rect has an invalid height."/>
+  <int value="4" label="Caption bar customizable space unavailable."/>
+  <int value="5" label="The app is open on an external display."/>
+  <int value="6" label="Caption bar has a complex unoccluded region."/>
 </enum>
 
 <enum name="DesktopWindowModeState">
@@ -793,6 +1010,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Icognito"/>
   <int value="3" label="Device Lock Page"/>
   <int value="4" label="Settings Batch Upload"/>
+  <int value="5" label="Bookmark Batch Upload"/>
+  <int value="6" label="Passwords CSV Download"/>
 </enum>
 
 <enum name="DeviceLockDialogAction">
@@ -827,11 +1046,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="START_STICKY"/>
 </enum>
 
-<enum name="DragDropTabResult">
+<enum name="DragDropResult">
   <summary>
     SUCCESS is recorded during ACTION_DRAG_ENDED. The rest enums are all for
     failed drops, which are recorded in ACTION_DROP. Also see
-    Android.DragDrop.Tab.FromStrip.Result
+    Android.DragDrop.Tab.FromStrip.Result and
+    Android.DragDrop.TabGroup.FromStrip.Result.
   </summary>
   <int value="0" label="SUCCESS"/>
   <int value="1" label="IGNORED_TOOLBAR"/>
@@ -840,15 +1060,40 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="IGNORED_SAME_INSTANCE"/>
   <int value="5" label="ERROR_TAB_NOT_FOUND"/>
   <int value="6" label="IGNORED_MAX_INSTANCES"/>
+  <int value="7" label="IGNORED_MHTML_TAB"/>
 </enum>
 
 <enum name="DragDropType">
-  <summary>See Android.DragDrop.Tab.Type</summary>
+  <summary>
+    See Android.DragDrop.Tab.Type and Android.DragDrop.TabGroup.Type
+  </summary>
   <int value="0" label="TAB_STRIP_TO_TAB_STRIP"/>
   <int value="1" label="TAB_STRIP_TO_CONTENT"/>
   <int value="2" label="TAB_STRIP_TO_NEW_INSTANCE"/>
   <int value="3" label="LINK_TO_NEW_INSTANCE"/>
   <int value="4" label="UNKNOWN_TO_NEW_INSTANCE"/>
+</enum>
+
+<!-- LINT.IfChange(DroppedSequenceEventAndDownTimeDelta) -->
+
+<enum name="DroppedSequenceEventAndDownTimeDelta">
+  <int value="0" label="EventTimeLessThanDownTime"/>
+  <int value="1" label="EventTimeEqualsDownTime"/>
+  <int value="2" label="EventTimeGreaterThanDownTime"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/input/android_state_transfer_handler.cc:DroppedSequenceEventAndDownTimeDelta) -->
+
+<enum name="EdgeToEdgeConfigurationSwitchOutcome">
+  <summary>
+    When edge to edge changed into unsupported configuration, what's the outcome
+  </summary>
+  <int value="0" label="ADD_PADDING_NEW_INSETS"/>
+  <int value="1" label="ADD_PADDING_ORIGINAL_INSETS"/>
+  <int value="2" label="ERROR_ADD_PADDING_BOTH_INSETS_EMPTY"/>
+  <int value="3" label="NO_PADDING_BOTH_INSETS_EMPTY"/>
+  <int value="4" label="NO_PADDING_NO_NEW_INSETS"/>
+  <int value="5" label="ERROR_NO_PADDING_WITH_NEW_INSETS"/>
 </enum>
 
 <enum name="ExifOrientation">
@@ -863,101 +1108,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Undefined"/>
 </enum>
 
-<enum name="FeatureModuleAvailabilityStatus">
-  <int value="0" label="Requested">
-    Feature module has been requested but is not installed yet.
-  </int>
-  <int value="1" label="Installed Requested">
-    Feature module is installed after being requested.
-  </int>
-  <int value="2" label="Installed Unrequested">
-    Feature module is installed but has not been requested previously.
-  </int>
-</enum>
-
-<enum name="FeatureModuleInstallingStatus">
-  <int value="0" label="UnknownCode">Unknown update status.</int>
-  <int value="1" label="Requested">Module requested (on-demand).</int>
-  <int value="2" label="Pending">Module pending.</int>
-  <int value="3" label="Downloading">Module downloading.</int>
-  <int value="4" label="Downloaded">Module downloaded.</int>
-  <int value="5" label="Installing">Module installing.</int>
-  <int value="6" label="Installed">Module installed.</int>
-  <int value="7" label="Failed">Module request failed.</int>
-  <int value="8" label="Canceling">Module request canceling.</int>
-  <int value="9" label="Canceled">Module request canceled.</int>
-  <int value="10" label="RequiresUserConfirmation">
-    Module request requires user confirmation.
-  </int>
-  <int value="11" label="RequestedDeferred">Module requested (deferred).</int>
-</enum>
-
-<enum name="FeatureModuleInstallStatus">
-  <int value="0" label="Success">Installation succeeded.</int>
-  <int value="1" label="Failure (deprecated)">
-    (deprecated) Catch-all for install failures.
-  </int>
-  <int value="2" label="Request Error (deprecated)">
-    (deprecated) Catch-all for request failures.
-  </int>
-  <int value="3" label="Cancellation">The installation has been cancelled.</int>
-  <int value="4" label="Access Denied">
-    Download not permitted under current device circumstances (e.g. in
-    background).
-  </int>
-  <int value="5" label="Active Sessions Limit Exceeded">
-    Too many sessions are running for current app, existing sessions must be
-    resolved first.
-  </int>
-  <int value="6" label="API Not Available">
-    Split Install API is not available.
-  </int>
-  <int value="7" label="Incompatible with Existing Session">
-    Requested session contains modules from an existing active session and also
-    new modules.
-  </int>
-  <int value="8" label="Insufficient Storage">
-    Install failed due to insufficient storage.
-  </int>
-  <int value="9" label="Invalid Request">Request is otherwise invalid.</int>
-  <int value="10" label="Module Unavailable">
-    A requested module is not available (to this user/device, for the installed
-    apk).
-  </int>
-  <int value="11" label="Network Error">
-    Network error: unable to obtain split details
-  </int>
-  <int value="12" label="No Error"/>
-  <int value="13" label="Service Died">
-    Service handling split install has died.
-  </int>
-  <int value="14" label="Session Not Found">
-    Requested session is not found.
-  </int>
-  <int value="15" label="Splitcompat Copy Error">
-    Error in copying files for SplitCompat.
-  </int>
-  <int value="16" label="Splitcompat Emulation Error">
-    Error in SplitCompat emulation.
-  </int>
-  <int value="17" label="Splitcompat Verification Error">
-    Signature verification error when invoking SplitCompat.
-  </int>
-  <int value="18" label="Internal Error">
-    Unknown error processing split install.
-  </int>
-  <int value="19" label="Split Install Unknown Error">
-    Unmapped error processing split install error code.
-  </int>
-  <int value="20" label="Unknown Request Error">
-    Catch-all for unknown request failures.
-  </int>
-  <int value="21" label="No SplitCompat">SplitCompat has not been enabled.</int>
-</enum>
-
-<enum name="FrameJankStatus">
-  <int value="0" label="Janky"/>
-  <int value="1" label="NonJanky"/>
+<enum name="FontLoadingOutcome">
+  <int value="0" label="Fallback Font Family"/>
+  <int value="1" label="Font resource"/>
+  <int value="2" label="Font family"/>
 </enum>
 
 <enum name="GmsShortVersionCode">
@@ -980,12 +1134,46 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
+<enum name="HasSeenNonZeroNavBarState">
+  <int value="0" label="GestureNav First NavBar Missing"/>
+  <int value="1" label="GestureNav Corrected"/>
+  <int value="2" label="GestureNav Regressed"/>
+  <int value="3" label="TappableNav First NavBar Missing"/>
+  <int value="4" label="TappableNav Corrected"/>
+  <int value="5" label="TappableNav Regressed"/>
+  <int value="6" label="BothNav First NavBar Missing"/>
+  <int value="7" label="BothNav Corrected"/>
+  <int value="8" label="BothNav Regressed"/>
+  <int value="9" label="NeitherNav First NavBar Missing"/>
+  <int value="10" label="NeitherNav Corrected"/>
+  <int value="11" label="NeitherNav Regressed"/>
+</enum>
+
+<!-- LINT.IfChange(HubPaneId) -->
+
 <enum name="HubPaneId">
   <int value="0" label="Regular tab switcher"/>
   <int value="1" label="Incognito tab switcher"/>
   <int value="2" label="Bookmarks"/>
   <int value="3" label="Tab groups"/>
+  <int value="4" label="Cross device"/>
+  <int value="5" label="History"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub/PaneId.java:PaneId) -->
+
+<!-- LINT.IfChange(HubSearchEntrypoint) -->
+
+<enum name="HubSearchEntrypoint">
+  <int value="0" label="Regular searchbox"/>
+  <int value="1" label="Incognito searchbox"/>
+  <int value="2" label="Regular loupe"/>
+  <int value="3" label="Incognito loupe"/>
+  <int value="4" label="Tab groups searchbox"/>
+  <int value="5" label="Tab groups loupe"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
 
 <enum name="IncognitoReauthPromoActionType">
   <int value="0" label="Promo accepted"/>
@@ -1011,6 +1199,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Touchpad"/>
   <int value="3" label="Mouse"/>
   <int value="4" label="Stylus"/>
+</enum>
+
+<!-- LINT.IfChange(InputOnVizSequenceDroppedReason) -->
+
+<enum name="InputOnVizSequenceDroppedReason">
+  <int value="0" label="ActiveSeqOnVizAbnormalDownTime"/>
+  <int value="1" label="FailedToTransferPotentialPointer"/>
+  <int value="2" label="AndroidOSTransferredANewSequence"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/input/input_transfer_handler_android.h:InputOnVizSequenceDroppedReason)-->
+
+<enum name="InputOnVizStateProcessingResult">
+  <int value="0" label="ProcessedSuccessfully"/>
+  <int value="1" label="CouldNotFindViewForFrameSinkId"/>
+  <int value="2" label="FrameSinkIdCorrespondsToChildView"/>
+  <int value="3" label="FrameSinkIdNotAttachedToRootCFS"/>
+  <int value="4" label="DroppedOutOfOrderDownTime"/>
+  <int value="5" label="DroppedTooManyPendingStates"/>
+  <int value="6" label="DroppedUnusedOlderStates"/>
+  <int value="7" label="TransferBackToBrowserSuccessfully"/>
+  <int value="8" label="DroppedTransferBackToBrowserFailed"/>
 </enum>
 
 <enum name="LightTheme">
@@ -1043,6 +1253,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Android Media Picker indirectly (ACTION_GET_CONTENT)"/>
 </enum>
 
+<!-- LINT.IfChange(MessageIdentifier) -->
+
 <enum name="MessageIdentifier">
   <int value="0" label="InvalidMessage"/>
   <int value="1" label="SavePassword"/>
@@ -1052,8 +1264,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="SafetyTip"/>
   <int value="6" label="SaveAddressProfile"/>
   <int value="7" label="MerchantTrust"/>
-  <int value="8" label="AddToHomescreenIPH"/>
-  <int value="9" label="SendTabToSelf"/>
+  <int value="9" label="(obsolete) SendTabToSelf"/>
   <int value="10" label="ReaderMode"/>
   <int value="11" label="ChromeSurvey"/>
   <int value="12" label="SaveCard"/>
@@ -1094,8 +1305,25 @@ chromium-metrics-reviews@google.com.
   <int value="48" label="PermissionBlocked"/>
   <int value="49" label="SaveCardFailure"/>
   <int value="50" label="VirtualCardEnrollFailure"/>
-  <int value="51" label="PromptHatsQuickDelete"/>
+  <int value="51" label="DEPRECATED: PromptHatsQuickDelete"/>
+  <int value="52" label="DEPRECATED: PromptHatsSafetyHub"/>
+  <int value="53" label="DefaultBrowserPromo"/>
+  <int value="54" label="TabRemovedThroughCollaboration"/>
+  <int value="55" label="TabNavigatedThroughCollaboration"/>
+  <int value="56" label="CollaborationMemberAdded"/>
+  <int value="57" label="CollaborationRemoved"/>
+  <int value="58" label="CctAccountMismatchNotice"/>
+  <int value="59" label="DEPRECATED: PromptHatsClearBrowsingData"/>
+  <int value="60" label="OsAdvancedProtectionSettingChangedMessage"/>
+  <int value="61" label="MultiInstanceRestorationOnDowngradedLimit"/>
+  <int value="62" label="UpdateChromeForTabGroupShare"/>
+  <int value="63" label="ModeBRollbackMessage"/>
+  <int value="64" label="ReloadPage"/>
+  <int value="65" label="MultiInstanceCreationLimit"/>
+  <int value="66" label="PermissionPromptLoud"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->
 
 <enum name="MinimizeAppAndCloseTabType">
   <int value="0" label="App is minimized but current tab is not closed"/>
@@ -1109,10 +1337,41 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device lock restored"/>
 </enum>
 
+<enum name="MissingNavbarInsetsReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="InMultiWindow"/>
+  <int value="2" label="InDesktopWindow"/>
+  <int value="3" label="InFullscreen"/>
+  <int value="4" label="ActivityNotVisible"/>
+  <int value="5" label="SystemBarInsetsEmpty"/>
+</enum>
+
+<enum name="MotionEventAction">
+  <int value="0" label="NONE"/>
+  <int value="1" label="DOWN"/>
+  <int value="2" label="UP"/>
+  <int value="3" label="MOVE"/>
+  <int value="4" label="CANCEL"/>
+  <int value="5" label="POINTER_DOWN"/>
+  <int value="6" label="POINTER_UP"/>
+  <int value="7" label="HOVER_ENTER"/>
+  <int value="8" label="HOVER_EXIT"/>
+  <int value="9" label="HOVER_MOVE"/>
+  <int value="10" label="BUTTON_PRESS"/>
+  <int value="11" label="BUTTON_RELEASE"/>
+</enum>
+
 <enum name="MultipleUserProfilesState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Single user profile"/>
   <int value="2" label="Multiple user profiles"/>
+</enum>
+
+<enum name="NavigationDirection">
+  <summary>The direction of the navigation.</summary>
+  <int value="0" label="ForwardNavigation"/>
+  <int value="1" label="BackwardNavigation"/>
+  <int value="2" label="Neither"/>
 </enum>
 
 <enum name="NavigationInterceptResult">
@@ -1120,6 +1379,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Created external intent with tab clobbering"/>
   <int value="2" label="Created async dialog for confirming external intent"/>
   <int value="3" label="Navigation not intercepted"/>
+  <int value="4" label="Tab closed after successful authentication"/>
 </enum>
 
 <enum name="NavigationInterceptScheme">
@@ -1129,6 +1389,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Intent scheme"/>
   <int value="4" label="MDoc scheme"/>
   <int value="5" label="openid4vp"/>
+  <int value="6" label="OpenId4Vci"/>
+  <int value="7" label="Haip"/>
+</enum>
+
+<enum name="NewWindowAppSource">
+  <int value="0" label="Undefined app source."/>
+  <int value="1" label="Menu option (eg. app menu, context menu, etc.)"/>
 </enum>
 
 <enum name="NightMode">
@@ -1159,7 +1426,23 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Query tiles NTP omnibox tapped."/>
   <int value="14" label="Focus restored on fold configuration change."/>
   <int value="15" label="Drag and drop on the omnibox."/>
+  <int value="16" label="Tapped after default focus with hardware keyboard."/>
+  <int value="17" label="Focus restored on activity recreation."/>
+  <int value="18" label="Location bar state restoration on tab change"/>
+  <int value="19" label="NTP AI Mode button."/>
 </enum>
+
+<!-- LINT.IfChange(OmniboxJumpStartState) -->
+
+<enum name="OmniboxJumpStartState">
+  <int value="0" label="Not Eligible"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled By User"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java:OmniboxJumpStartState) -->
+
+<!-- LINT.IfChange(OmniboxSuggestionUiType) -->
 
 <enum name="OmniboxSuggestionUiType">
   <int value="0" label="DEFAULT"/>
@@ -1170,42 +1453,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CLIPBOARD_SUGGESTION"/>
   <int value="6" label="HEADER"/>
   <int value="7" label="TILE_NAVSUGGEST"/>
-  <int value="8" label="PEDAL_SUGGESTION"/>
-  <int value="9" label="DIVIDER_LINE"/>
-  <int value="10" label="QUERY_TILES"/>
+  <int value="8" label="GROUP_SEPARATOR"/>
+  <int value="9" label="OBSOLETE_QUERY_TILES"/>
+  <int value="10" label="TAB_GROUP_SUGGESTION"/>
 </enum>
 
-<enum name="PageSummaryModelDownloadEvents">
-  <int value="0" label="Download Started"/>
-  <int value="1" label="Download Succeeded"/>
-  <int value="2" label="Download Failed"/>
-</enum>
-
-<enum name="PageSummaryModelExecutionResults">
-  <int value="0" label="Successful"/>
-  <int value="1" label="Input filtered"/>
-  <int value="2" label="Output filtered"/>
-  <int value="3" label="Request too large"/>
-  <int value="4" label="Canceled"/>
-  <int value="5" label="Unknown Error"/>
-</enum>
-
-<enum name="PageSummaryModelState">
-  <int value="0" label="Not Available"/>
-  <int value="1" label="Available"/>
-  <int value="2" label="Downloadable"/>
-  <int value="3" label="Downloading"/>
-</enum>
-
-<enum name="PageSummaryShareSheetVisibility">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Not shown, model not available"/>
-  <int value="2" label="Not shown, model session already running"/>
-  <int value="3" label="Not shown, tab is not valid"/>
-  <int value="4" label="Not shown, URL is not http/https"/>
-  <int value="5" label="Not shown, profile does not support summarization"/>
-  <int value="6" label="Not shown, tab does not support summarization"/>
-</enum>
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/suggestions/OmniboxSuggestionUiType.java:OmniboxSuggestionUiType) -->
 
 <enum name="PartnerCustomizationProviderDelegate">
   <int value="0" label="None: default delegate inValid"/>
@@ -1267,6 +1520,21 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="In app task, different task, not Finishing"/>
 </enum>
 
+<enum name="PredictiveNavTransitionPhase">
+  <int value="0" label="Activated"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Completed"/>
+</enum>
+
+<enum name="PrefetchStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="WrongOrdering"/>
+  <int value="2" label="ForkFailed"/>
+  <int value="3" label="ChildProcessCrashed"/>
+  <int value="4" label="ChildProcessKilled"/>
+  <int value="5" label="MadviseFailed"/>
+</enum>
+
 <enum name="PrimaryCpuAbiBitness">
   <int value="0" label="Unknown"/>
   <int value="1" label="32-bit"/>
@@ -1278,6 +1546,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Used on Search Suggestion in zero-prefix context"/>
   <int value="2" label="Used on Search Suggestion in non-zero-prefix context"/>
   <int value="3" label="Used on Search Suggestion in both contexts"/>
+</enum>
+
+<enum name="RelatedAppType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Regular app"/>
+  <int value="2" label="Instant app"/>
+  <int value="3" label="WebApk owned by the caller"/>
+  <int value="4" label="Other WebApk"/>
+</enum>
+
+<enum name="RendererLibraryPrefetchMode">
+  <int value="0" label="Default"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Enabled"/>
 </enum>
 
 <enum name="RestoreTabsOnFREDeviceRestoredFrom">
@@ -1316,12 +1598,33 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Root View was Not Focused (calls Focus())"/>
 </enum>
 
+<!-- LINT.IfChange(ScrimClient) -->
+
+<enum name="ScrimClient">
+  <int value="0" label="NONE"/>
+  <int value="1" label="CREATOR_COORDINATOR"/>
+  <int value="2" label="SIGNIN_ACCOUNT_PICKER_COORDINATOR"/>
+  <int value="3" label="ROOT_UI_COORDINATOR"/>
+  <int value="4" label="TABBED_ROOT_UI_COORDINATOR"/>
+  <int value="5" label="HISTORY_ACTIVITY"/>
+  <int value="6" label="SETTINGS_ACTIVITY"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimManager.java:ScrimClient) -->
+
+<!-- LINT.IfChange(IntentOrigin) -->
+
 <enum name="SearchActivityIntentOrigin">
   <int value="0" label="Unknown / External"/>
   <int value="1" label="Search Widget"/>
   <int value="2" label="Shortcuts Widget"/>
   <int value="3" label="Custom Tab"/>
+  <int value="4" label="Hub"/>
+  <int value="5" label="Launcher"/>
+  <int value="6" label="WebSearch / External"/>
 </enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:IntentOriginVariants) -->
 
 <enum name="SearchActivitySearchType">
   <int value="0" label="Text"/>
@@ -1329,31 +1632,27 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Lens"/>
 </enum>
 
+<!-- LINT.IfChange(SearchActivityTerminationReason) -->
+
 <enum name="SearchActivityTerminationReason">
   <int value="0" label="Navigation"/>
-  <int value="1" label="Unspecified termination"/>
+  <int value="1" label="Unspecified Termination"/>
   <int value="2" label="Tap Outside"/>
   <int value="3" label="Back Key Pressed"/>
   <int value="4" label="Omnibox Focus Lost"/>
   <int value="5" label="Activity Focus Lost"/>
   <int value="6" label="FRE Not Completed"/>
+  <int value="7" label="Custom back arrow"/>
+  <int value="8" label="Bring Tab To Front"/>
+  <int value="9" label="Bring Tab Group To Front"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java:TerminationReason) -->
 
 <enum name="SearchPrefetchTouchDownPrefetchResult">
   <int value="0" label="Hit, last prefetch matches navigation"/>
   <int value="1" label="Miss, last prefetch does not match navigation"/>
   <int value="2" label="No prefetch"/>
-</enum>
-
-<enum name="SecondaryActivity">
-  <int value="0" label="Download"/>
-  <int value="1" label="Bookmark"/>
-  <int value="2" label="FirstRun"/>
-  <int value="3" label="LightWeightFirstRun"/>
-  <int value="4" label="History"/>
-  <int value="5" label="Settings"/>
-  <int value="6" label="BookmarkFolderPicker"/>
-  <int value="7" label="SigninAndHistorySync"/>
 </enum>
 
 <enum name="SecureCookieAction">
@@ -1428,19 +1727,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Tab Destroyed"/>
 </enum>
 
-<enum name="StackingAnimationThreeStackedType">
-  <summary>
-    The scenarios of stacking animation when it is posisble to have 3 messages
-    on the screen.
-  </summary>
-  <int value="0"
-      label="HIGH_PRIORITY - A high-priority message is inserted to a full
-             container"/>
-  <int value="1"
-      label="IN_SEQUENCE - The front message is dismissed in a full container
-             and a 3rd message is incoming."/>
-</enum>
-
 <enum name="StackingAnimationType">
   <summary>
     The type of stacking animation when it is triggered. The type indicates the
@@ -1466,7 +1752,25 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Frequent"/>
   <int value="3" label="Rare"/>
   <int value="4" label="Restricted"/>
-  <int value="5" label="Exempted"/>
+  <int value="5" label="(obsolete) Unsupported"/>
+  <int value="6" label="Exempted"/>
+  <int value="7" label="Never"/>
+  <int value="8" label="Other"/>
+</enum>
+
+<enum name="SupportedConfigurationStrangeInsetsState">
+  <summary>
+    The state of insets that don't seem to align with a configuration that
+    supports edge-to-edge.
+  </summary>
+  <int value="0" label="TAPPABLE_ELEMENT_NOT_GESTURE_NAV"/>
+  <int value="1" label="NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV"/>
+  <int value="2" label="ERROR_TAPPABLE_ELEMENT_GESTURE_NAV"/>
+</enum>
+
+<enum name="SupportedConfigurationSwitch">
+  <int value="0" label="FromSupportedToUnsupported"/>
+  <int value="1" label="FromUnsupportedToSupported"/>
 </enum>
 
 <enum name="SurveyDownloadResponseCodes2">
@@ -1558,6 +1862,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="READINESS_CHECKED"/>
 </enum>
 
+<!-- This mirrors the BrowserControlsStateProvider.ControlsPosition intdef. -->
+
+<enum name="ToolbarPosition">
+  <int value="0" label="TOP"/>
+  <int value="1" label="BOTTOM"/>
+  <int value="2" label="NONE; No toolbar present, e.g. NoTouchActivity"/>
+</enum>
+
 <enum name="ToolbarSnapshotDifference">
   <int value="0" label="NONE">
     This value will not be reported, only other actaul differences will be
@@ -1582,6 +1894,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="FORWARD_BUTTON"/>
   <int value="18" label="RELOAD_BUTTON"/>
   <int value="19" label="MINIMIZE_BUTTON"/>
+  <int value="20" label="CONTROLS_POSITION"/>
 </enum>
 
 <enum name="TopToolbarAllowCaptureReason">
@@ -1606,7 +1919,32 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="NTP_Y_TRANSLATION"/>
   <int value="13" label="FULLSCREEN"/>
   <int value="14" label="TABLET_BUTTON_ANIMATION_IN_PROGRESS"/>
+  <int value="15" label="LAYOUT_REQUESTED"/>
 </enum>
+
+<!-- LINT.IfChange(TransferInputToVizResult) -->
+
+<enum name="TransferInputToVizResult">
+  <int value="0" label="SuccessfullyTransferred"/>
+  <int value="1" label="InputTransferHandlerNotFoundInMap"/>
+  <int value="2" label="NonFingerToolType"/>
+  <int value="3" label="VizInitializationNotComplete"/>
+  <int value="4" label="SelectionHandlesActive"/>
+  <int value="5" label="(Obsolete) CanTriggerBackGesture"/>
+  <int value="6" label="ImeIsActive"/>
+  <int value="7" label="RequestedByEmbedder"/>
+  <int value="8" label="SystemServerDidNotTransfer"/>
+  <int value="9" label="BrowserTokenChanged"/>
+  <int value="10" label="MultipleBrowserWindowsOpen"/>
+  <int value="11" label="DownTimeAfterEventTime"/>
+  <int value="12" label="SequenceTransferredBackFromViz"/>
+  <int value="13" label="WebContentsIgnoringInputEvents"/>
+  <int value="14" label="RIRDelegateConnectionNotSetup"/>
+  <int value="15" label="SharedMemoryUnavailable"/>
+  <int value="16" label="PositiveEventAndDownTimeDelta"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/android/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
 
 <enum name="UrlTargetType">
   <int value="0" label="URL"/>
@@ -1626,6 +1964,14 @@ chromium-metrics-reviews@google.com.
 
   <int value="0" label="Unknown"/>
 </enum>
+
+<!-- LINT.IfChange(VizSequenceDroppedReason) -->
+
+<enum name="VizSequenceDroppedReason">
+  <int value="0" label="OlderSequenceInQueue"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/input/android_state_transfer_handler.cc:VizSequenceDroppedReason) -->
 
 <enum name="WebChromeClientMethod">
   <int value="0" label="UNKNOWN"/>
@@ -1674,6 +2020,74 @@ chromium-metrics-reviews@google.com.
              WebChromeClient$FileChooserParams)"/>
   <int value="28" label="void openFileChooser(ValueCallback, String, String)"/>
   <int value="29" label="void setupAutoFill(Message)"/>
+</enum>
+
+<enum name="WebPageContentProviderEvent">
+  <int value="0" label="GET_CONTENT_URI_FAILED">
+    WebPageContentProvider failed to generate a JSON string with URIs for the
+    current web page, nothing will be attached to AssistContent
+  </int>
+  <int value="1" label="REQUEST_STARTED">
+    WebPageContentProvider received a query by an external app
+  </int>
+  <int value="2" label="REQUEST_FAILED_CURRENT_TAB_CHANGED">
+    WebPageContentProvider returned an empty cursor while processing a query
+    because the current tab no longer matches
+  </int>
+  <int value="3" label="REQUEST_FAILED_INVALID_URI">
+    WebPageContentProvider threw an error while processing a query because it
+    had an invalid URI
+  </int>
+  <int value="4" label="REQUEST_FAILED_INVALID_ID">
+    WebPageContentProvider returned an empty cursor while processing a query
+    because the URI had an invalid id (e.g. non existing or no longer valid).
+  </int>
+  <int value="5" label="REQUEST_FAILED_TO_GET_CURRENT_TAB">
+    WebPageContentProvider returned an empty cursor while processing a query
+    because we failed to get the current tab from the browser process
+  </int>
+  <int value="6" label="REQUEST_SUCCEEDED_ALREADY_EXTRACTING (Deprecated)">
+    WebPageContentProvider returned a cursor with a pending result for a page
+    extraction task that was already running
+  </int>
+  <int value="7" label="REQUEST_SUCCEEDED_RETURNED_EXTRACTED">
+    WebPageContentProvider returned a cursor with page contents successfully
+  </int>
+  <int value="8" label="REQUEST_SUCCEEDED_STARTED_EXTRACTION (Deprecated)">
+    WebPageContentProvider successfully started a page extraction task and
+    returned a cursor with a pending result
+  </int>
+  <int value="9" label="REQUEST_FAILED_EMPTY_RESULT">
+    WebPageContentProvider's page extraction task failed to execute
+  </int>
+  <int value="10" label="TEXT_EXTRACTION_FAILED_TAB_CHANGED (Deprecated)">
+    WebPageContentProvider's page extraction task succeeded, but the result was
+    discarded because the tab is no longer current
+  </int>
+  <int value="11" label="TEXT_EXTRACTION_SUCCEEDED (Deprecated)">
+    WebPageContentProvider's page extraction task completed successfully and
+    observers were notified
+  </int>
+  <int value="12" label="URI_INVALIDATED_TIMEOUT">
+    The last URI generated by WebPageContentProvider was not queried on time and
+    it's no longer valid.
+  </int>
+  <int value="13" label="REQUEST_FAILED_INTERRUPTED">
+    Asynchronous text extraction task was interrupted, query call failed.
+  </int>
+  <int value="14" label="REQUEST_FAILED_TIMED_OUT">
+    Asynchronous text extraction task timed out, query call failed.
+  </int>
+  <int value="15" label="REQUEST_FAILED_EXCEPTION">
+    An exception was thrown while extracting text, query call failed.
+  </int>
+  <int value="16" label="GET_CONTENT_URI_SUCCESS">
+    PageContentProvider generated a JSON string with URIs for the current web
+    page to be attached to AssistContent.
+  </int>
+  <int value="17" label="URI_INVALIDATED_NEW_REQUEST">
+    An exception was thrown while extracting text, query call failed.
+  </int>
 </enum>
 
 <enum name="WebViewApiCall">
@@ -1935,6 +2349,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="WebView.isMultiProcessEnabled"/>
   <int value="10" label="WebView.getVariationsHeader"/>
   <int value="11" label="GeoLocationPermissions.getInstance"/>
+  <int value="12" label="WebView.setDefaultTrafficStatsTag"/>
+  <int value="13" label="WebView.setDefaultTrafficStatsUid"/>
+  <int value="14" label="WebViewCompat.setRendererLibraryPrefetchMode"/>
+  <int value="15" label="WebViewCompat.getRendererLibraryPrefetchMode"/>
 <!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/SharedStatics.java:ApiCall) -->
 
 </enum>
@@ -1999,6 +2417,17 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="WebViewClient.onRenderProcessGone"/>
   <int value="39" label="WebViewClient.onScaleChanged"/>
 </enum>
+
+<!-- LINT.IfChange(WebViewChromiumStartupMode) -->
+
+<enum name="WebViewChromiumStartupMode">
+  <int value="0" label="FULLY_SYNC"/>
+  <int value="1" label="FULLY_ASYNC"/>
+  <int value="2" label="PARTIAL_ASYNC_THEN_SYNC"/>
+  <int value="3" label="ASYNC_BUT_FULLY_SYNC"/>
+</enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:WebViewChromiumStartupMode) -->
 
 <enum name="WebViewClientMethod">
   <int value="0" label="UNKNOWN"/>
@@ -2112,6 +2541,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="WebView light, night mode off"/>
 </enum>
 
+<enum name="WebViewLayoutAlgorithm">
+  <int value="0" label="NORMAL"/>
+  <int value="1" label="SINGLE_COLUMN"/>
+  <int value="2" label="NARROW_COLUMNS"/>
+  <int value="3" label="TEXT_AUTOSIZING"/>
+</enum>
+
 <enum name="WebViewMixedContentMode">
   <int value="0" label="Always allow"/>
   <int value="1" label="Never allow"/>
@@ -2154,18 +2590,142 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Text dark, night mode off"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewSendIntentState) -->
+
+<enum name="WebViewSendIntentState">
+  <int value="0" label="Did not invoke sendBrowsingIntent"/>
+  <int value="1" label="Invoked sendBrowsingIntent"/>
+  <int value="2" label="New activity started"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/AwContentsClient.java:SendIntentState) -->
+
+<enum name="WebViewShouldInterceptRequestOverridden">
+  <int value="0"
+      label="shouldInterceptRequest is not overridden by WebViewClient."/>
+  <int value="1"
+      label="shouldInterceptRequest is overridden by WebViewClient."/>
+  <int value="2"
+      label="Error while determining if it was overridden by WebViewClient."/>
+  <int value="3" label="ServiceWorkerClient is null."/>
+  <int value="4" label="ServiceWorkerClient is non-null."/>
+</enum>
+
+<!-- LINT.IfChange(WebViewStartupCallSite) -->
+
 <enum name="WebViewStartupCallSite">
   <int value="0" label="getAwTracingController"/>
   <int value="1" label="getAwProxyController"/>
-  <int value="2" label="webViewInstance"/>
-  <int value="3" label="getStatics"/>
+  <int value="2" label="(Obsolete) webViewInstance"/>
+  <int value="3" label="(Obsolete) getStatics"/>
   <int value="4" label="getDefaultGeolocationPermissions"/>
   <int value="5" label="getDefaultServiceWorkerController"/>
   <int value="6" label="getWebIconDatabase"/>
   <int value="7" label="getDefaultWebStorage"/>
   <int value="8" label="getDefaultWebViewDatabase"/>
   <int value="9" label="getTracingController"/>
+  <int value="10" label="asyncWebViewStartUp"/>
+  <int value="11" label="webViewInstanceOverlayHorizontalScrollbar"/>
+  <int value="12" label="webViewInstanceOverlayVerticalScrollbar"/>
+  <int value="13" label="webViewInstanceGetCertificate"/>
+  <int value="14" label="webViewInstanceGetHttpAuthUsernamePassword"/>
+  <int value="15" label="webViewInstanceSaveState"/>
+  <int value="16" label="webViewInstanceRestoreState"/>
+  <int value="17" label="webViewInstanceLoadUrl"/>
+  <int value="18" label="webViewInstancePostUrl"/>
+  <int value="19" label="webViewInstanceLoadData"/>
+  <int value="20" label="webViewInstanceLoadDataWithBaseUrl"/>
+  <int value="21" label="webViewInstanceEvaluateJavascript"/>
+  <int value="22" label="webViewInstanceCanGoBack"/>
+  <int value="23" label="webViewInstanceCanGoForward"/>
+  <int value="24" label="webViewInstanceCanGoBackOrForward"/>
+  <int value="25" label="webViewInstanceIsPaused"/>
+  <int value="26" label="webViewInstanceCopyBackForwardList"/>
+  <int value="27" label="webViewInstanceShowFindDialog"/>
+  <int value="28" label="webViewInstanceSetWebviewClient"/>
+  <int value="29" label="webViewInstanceSetWebchromeClient"/>
+  <int value="30" label="webViewInstanceCreateWebmessageChannel"/>
+  <int value="31" label="webViewInstanceGetZoomControls"/>
+  <int value="32" label="webViewInstanceZoomIn"/>
+  <int value="33" label="webViewInstanceZoomOut"/>
+  <int value="34" label="webViewInstanceZoomBy"/>
+  <int value="35" label="webViewInstanceSetRendererPriorityPolicy"/>
+  <int value="36" label="webViewInstanceGetRendererRequestedPriority"/>
+  <int value="37"
+      label="webViewInstanceGetRendererPriorityWaivedWhenNotVisible"/>
+  <int value="38" label="webViewInstanceSetTextClassifier"/>
+  <int value="39" label="webViewInstanceGetTextClassifier"/>
+  <int value="40" label="webViewInstanceAutofill"/>
+  <int value="41" label="webViewInstanceOnProvideAutofillVirtualStructure"/>
+  <int value="42" label="webViewInstanceOnProvideContentCaptureStructure"/>
+  <int value="43" label="webViewInstanceShouldDelayChildPressedState"/>
+  <int value="44" label="webViewInstanceGetAccessibilityNodeProvider"/>
+  <int value="45" label="webViewInstanceOnProvideVirtualStructure"/>
+  <int value="46" label="webViewInstancePerformAccessibilityAction"/>
+  <int value="47" label="webViewInstanceOnDraw"/>
+  <int value="48" label="webViewInstanceSetLayoutParams"/>
+  <int value="49" label="webViewInstanceOnDragEvent"/>
+  <int value="50" label="webViewInstanceOnCreateInputConnection"/>
+  <int value="51" label="webViewInstanceOnKeyMultiple"/>
+  <int value="52" label="webViewInstanceOnKeyDown"/>
+  <int value="53" label="webViewInstanceOnKeyUp"/>
+  <int value="54" label="webViewInstanceOnAttachedToWindow"/>
+  <int value="55" label="webViewInstanceDispatchKeyEvent"/>
+  <int value="56" label="webViewInstanceOnTouchEvent"/>
+  <int value="57" label="webViewInstanceOnHoverEvent"/>
+  <int value="58" label="webViewInstanceOnGenericMotionEvent"/>
+  <int value="59" label="webViewInstanceRequestFocus"/>
+  <int value="60" label="webViewInstanceOnMeasure"/>
+  <int value="61" label="webViewInstanceRequestChildRectangleOnScreen"/>
+  <int value="62" label="webViewInstanceSetBackgroundColor"/>
+  <int value="63" label="webViewInstanceOnStartTemporaryDetach"/>
+  <int value="64" label="webViewInstanceOnFinishTemporaryDetach"/>
+  <int value="65" label="webViewInstanceOnCheckIsTextEditor"/>
+  <int value="66" label="webViewInstanceOnApplyWindowInsets"/>
+  <int value="67" label="webViewInstanceOnResolvePointerIcon"/>
+  <int value="68" label="webViewInstanceComputeHorizontalScrollRange"/>
+  <int value="69" label="webViewInstanceComputeHorizontalScrollOffset"/>
+  <int value="70" label="webViewInstanceComputeVerticalScrollRange"/>
+  <int value="71" label="webViewInstanceComputeVerticalScrollOffset"/>
+  <int value="72" label="webViewInstanceComputeVerticalScrollExtent"/>
+  <int value="73" label="webViewInstanceComputeScroll"/>
+  <int value="74" label="webViewInstanceCreatePrintDocumentAdapter"/>
+  <int value="75" label="webViewInstanceExtractSmartClipData"/>
+  <int value="76" label="webViewInstanceSetSmartClipResultHandler"/>
+  <int value="77" label="webViewInstanceGetRenderProcess"/>
+  <int value="78" label="webViewInstanceGetWebviewRendererClientAdapter"/>
+  <int value="79" label="webViewInstancePageUp"/>
+  <int value="80" label="webViewInstancePageDown"/>
+  <int value="81" label="webViewInstanceLoadUrlAdditionalHeaders"/>
+  <int value="82" label="webViewInstanceInit"/>
+  <int value="83" label="webViewInstanceCapturePicture"/>
+  <int value="84" label="webViewInstanceGetScale"/>
+  <int value="85" label="webViewInstanceSetInitialScale"/>
+  <int value="86" label="webViewInstanceGetHitTestResults"/>
+  <int value="87" label="webViewInstanceGetUrl"/>
+  <int value="88" label="webViewInstanceGetOriginalUrl"/>
+  <int value="89" label="webViewInstanceGetTitle"/>
+  <int value="90" label="webViewInstanceGetFavicon"/>
+  <int value="91" label="staticFindAddress"/>
+  <int value="92" label="staticGetDefaultUserAgent"/>
+  <int value="93" label="staticSetWebContentsDebuggingEnabled"/>
+  <int value="94" label="staticClearClientCertPreferences"/>
+  <int value="95" label="staticFreeMemoryForTests"/>
+  <int value="96" label="staticEnableSlowWholeDocumentDraw"/>
+  <int value="97" label="staticParseFileChooserResult"/>
+  <int value="98" label="staticInitSafeBrowsing"/>
+  <int value="99" label="staticSetSafeBrowsingAllowlist"/>
+  <int value="100" label="staticGetSafeBrowsingPrivacyPolicyUrl"/>
+  <int value="101" label="staticIsMultiProcessEnabled"/>
+  <int value="102" label="staticGetVariationsHeader"/>
+  <int value="103" label="(Obsolete) staticSetDefaultTrafficStatsTag"/>
+  <int value="104" label="(Obsolete) staticSetDefaultTrafficStatsUid"/>
+  <int value="105" label="staticSetRendererLibraryPrefetchMode"/>
+  <int value="106" label="staticGetRendererLibraryPrefetchMode"/>
+  <int value="107" label="getDefaultCookieManager"/>
 </enum>
+
+<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->
 
 <enum name="WebViewUrlScheme">
   <int value="0" label="Empty URL"/>
@@ -2193,6 +2753,16 @@ chromium-metrics-reviews@google.com.
 <enum name="WebViewVisibility">
   <int value="0" label="Visible"/>
   <int value="1" label="NotVisible"/>
+</enum>
+
+<enum name="WindowingMode">
+  <int value="0" label="Mode is unknown."/>
+  <int value="1" label="The app is running in a fullscreen window."/>
+  <int value="2" label="The app is running in a picture-in-picture window."/>
+  <int value="3" label="The app is running in a desktop window."/>
+  <int value="4"
+      label="The app is running in a multi-windowing mode not equivalent to
+             any of the other modes."/>
 </enum>
 
 </enums>

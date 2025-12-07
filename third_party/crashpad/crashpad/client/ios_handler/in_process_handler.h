@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef CRASHPAD_CLIENT_IOS_HANDLER_IN_PROCESS_IN_PROCESS_HANDLER_H_
+#define CRASHPAD_CLIENT_IOS_HANDLER_IN_PROCESS_IN_PROCESS_HANDLER_H_
+
 #include <mach/mach.h>
 #include <stdint.h>
 
@@ -26,9 +29,11 @@
 #include "client/ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h"
 #include "client/upload_behavior_ios.h"
 #include "handler/crash_report_upload_thread.h"
+#include "handler/user_stream_data_source.h"
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/ios_system_data_collector.h"
+#include "util/mach/mach_extensions.h"
 #include "util/misc/capture_context.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -159,17 +164,27 @@ class InProcessHandler {
   //!     minidumps and trigger an upload if possible.
   //!
   //! \param[in] annotations Process annotations to set in each crash report.
+  //! \param[in] user_stream_sources An optional vector containing the
+  //!     extensibility data sources to call on crash. Each time a minidump is
+  //!     created, the sources are called in turn. Any streams returned are
+  //!     added to the minidump.
   void ProcessIntermediateDumps(
-      const std::map<std::string, std::string>& annotations);
+      const std::map<std::string, std::string>& annotations,
+      const UserStreamDataSources* user_stream_sources);
 
   //! \brief Requests that the handler convert a specific intermediate dump into
   //!     a minidump and trigger an upload if possible.
   //!
   //! \param[in] path Path to the specific intermediate dump.
   //! \param[in] annotations Process annotations to set in each crash report.
+  //! \param[in] user_stream_sources An optional vector containing the
+  //!     extensibility data sources to call on crash. Each time a minidump is
+  //!     created, the sources are called in turn. Any streams returned are
+  //!     added to the minidump.
   void ProcessIntermediateDump(
       const base::FilePath& path,
-      const std::map<std::string, std::string>& annotations = {});
+      const std::map<std::string, std::string>& annotations = {},
+      const UserStreamDataSources* user_stream_sources = {});
 
   //! \brief Requests that the handler begin in-process uploading of any
   //!     pending reports.
@@ -180,10 +195,11 @@ class InProcessHandler {
   void StartProcessingPendingReports(
       UploadBehavior upload_behavior = UploadBehavior::kUploadWhenAppIsActive);
 
-  //! \brief Inject a callback into Mach handling. Intended to be used by
-  //!     tests to trigger a reentrant exception.
-  void SetMachExceptionCallbackForTesting(void (*callback)()) {
-    mach_exception_callback_for_testing_ = callback;
+  //! \brief Inject a callback into the Mach exception and signal handling
+  //!     mechanisms. Intended to be used by tests to trigger a reentrant
+  //      exception.
+  void SetExceptionCallbackForTesting(void (*callback)()) {
+    exception_callback_for_testing_ = callback;
   }
 
  private:
@@ -239,7 +255,12 @@ class InProcessHandler {
 
   //! \brief Writes a minidump to the Crashpad database from the
   //!     \a process_snapshot, and triggers the upload_thread_ if started.
-  void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot);
+  //! \param[in] user_stream_sources An optional vector containing the
+  //!     extensibility data sources to call on crash. Each time a minidump is
+  //!     created, the sources are called in turn. Any streams returned are
+  //!     added to the minidump.
+  void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot,
+                    const UserStreamDataSources* user_stream_sources = {});
 
   //! \brief Process a maximum of 20 pending intermediate dumps. Dumps named
   //!     with our bundle id get first priority to prevent spamming.
@@ -262,8 +283,9 @@ class InProcessHandler {
   const base::FilePath NewLockedFilePath();
 
   // Intended to be used by tests triggering a reentrant exception. Called
-  // in DumpExceptionFromMachException after aquiring the cached_writer_.
-  void (*mach_exception_callback_for_testing_)() = nullptr;
+  // in DumpExceptionFromMachException and DumpExceptionFromSignal after
+  // acquiring the cached_writer_.
+  void (*exception_callback_for_testing_)() = nullptr;
 
   // Used to synchronize access to UpdatePruneAndUploadThreads().
   base::Lock prune_and_upload_lock_;
@@ -284,3 +306,5 @@ class InProcessHandler {
 
 }  // namespace internal
 }  // namespace crashpad
+
+#endif  // CRASHPAD_CLIENT_IOS_HANDLER_IN_PROCESS_IN_PROCESS_HANDLER_H_

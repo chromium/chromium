@@ -23,10 +23,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -47,10 +44,10 @@ class CORE_EXPORT StyleSheet : public ScriptWrappable {
   virtual void setDisabled(bool) = 0;
   virtual Node* ownerNode() const = 0;
   virtual StyleSheet* parentStyleSheet() const { return nullptr; }
-  virtual WTF::String href() const = 0;
-  virtual WTF::String title() const = 0;
+  virtual String href() const = 0;
+  virtual String title() const = 0;
   virtual MediaList* media() { return nullptr; }
-  virtual WTF::String type() const = 0;
+  virtual String type() const = 0;
 
   virtual CSSRule* ownerRule() const { return nullptr; }
   virtual void ClearOwnerNode() = 0;

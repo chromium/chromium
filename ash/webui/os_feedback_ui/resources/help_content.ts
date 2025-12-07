@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './help_resources_icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import '//resources/ash/common/cr_elements/cr_icons.css.js';
 import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -13,12 +13,13 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from '//resources/ash/common/typescript_utils/strict_query.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchResult} from './feedback_types.js';
+import type {SearchResult} from './feedback_types.js';
 import {getTemplate} from './help_content.html.js';
-import {HelpContent, HelpContentType} from './os_feedback_ui.mojom-webui.js';
+import type {HelpContent} from './os_feedback_ui.mojom-webui.js';
+import {HelpContentType} from './os_feedback_ui.mojom-webui.js';
 
 /** The host of trusted parent page. */
 export const OS_FEEDBACK_TRUSTED_ORIGIN = 'chrome://os-feedback';
@@ -138,7 +139,7 @@ export class HelpContentElement extends HelpContentElementBase {
 
   /** Extract the title as JS string from help content. */
   private getTitle(helpContent: HelpContent): string {
-    return mojoString16ToString(helpContent.title);
+    return helpContent.title;
   }
 
   private handleHelpContentClicked(e: Event): void {

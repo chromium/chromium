@@ -98,7 +98,7 @@ void UpdateProtocolHandlerApprovalCommand::StartWithLock(
   }
   // Notify observers that the list of allowed or disallowed protocols was
   // updated.
-  lock_->registrar().NotifyWebAppProtocolSettingsChanged();
+  lock_->registrar().NotifyWebAppProtocolSettingsChanged(app_id_);
 
   os_integration_manager.Synchronize(
       app_id_,

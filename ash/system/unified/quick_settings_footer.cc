@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <numeric>
+#include <string>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
@@ -32,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -101,7 +103,7 @@ class UserAvatarButton : public views::Button {
       : views::Button(std::move(callback)) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
-    AddChildView(CreateUserAvatarView(/*user_index=*/0));
+    AddChildViewRaw(CreateUserAvatarView(/*user_index=*/0));
     SetTooltipText(GetUserItemAccessibleString(/*user_index=*/0));
     SetInstallFocusRingOnFocus(true);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -174,11 +176,10 @@ void QsBatteryInfoViewBase::UpdateIconAndText(bool bsm_active) {
   // Change to icon type if battery saver mode is enabled with
   // QsBatteryLabelView.
   SetPillButtonType(Type::kPrimaryWithIconLeading);
-  SetButtonTextColorId(bsm_active
-                           ? cros_tokens::kCrosSysSystemOnWarningContainer
-                           : cros_tokens::kCrosSysOnPositiveContainer);
-  SetBackgroundColorId(bsm_active ? cros_tokens::kCrosSysSystemWarningContainer
-                                  : cros_tokens::kCrosSysPositiveContainer);
+  SetButtonTextColor(bsm_active ? cros_tokens::kCrosSysSystemOnWarningContainer
+                                : cros_tokens::kCrosSysOnPositiveContainer);
+  SetBackgroundColor(bsm_active ? cros_tokens::kCrosSysSystemWarningContainer
+                                : cros_tokens::kCrosSysPositiveContainer);
 
   const std::u16string percentage_text =
       PowerStatus::Get()->GetStatusStrings().first;
@@ -198,7 +199,7 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
                  : cros_tokens::kCrosSysOnPositiveContainer);
   const std::optional<SkColor> battery_badge_color =
       bsm_active ? std::optional<SkColor>(GetColorProvider()->GetColor(
-                       cros_tokens::kCrosSysSystemWarningContainer))
+                       cros_tokens::kCrosSysSystemOnWarningContainer))
                  : std::nullopt;
 
   PowerStatus::BatteryImageInfo info =
@@ -232,7 +233,7 @@ void QsBatteryLabelView::Update() {
   if (PowerStatus::Get()->IsBatterySaverActive()) {
     UpdateIconAndText(true);
   } else {
-    SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+    SetButtonTextColor(cros_tokens::kCrosSysOnSurface);
 
     const std::u16string status_string =
         PowerStatus::Get()->GetInlinedStatusString();
@@ -326,11 +327,9 @@ QuickSettingsFooter::QuickSettingsFooter(
   views::View* end_container = nullptr;
   if (PowerStatus::Get()->IsBatteryPresent()) {
     end_container = CreateEndContainer();
-    const bool use_smart_charging_ui =
-        ash::features::IsAdaptiveChargingEnabled() &&
-        Shell::Get()
-            ->adaptive_charging_controller()
-            ->is_adaptive_delaying_charge();
+    const bool use_smart_charging_ui = Shell::Get()
+                                           ->adaptive_charging_controller()
+                                           ->is_adaptive_delaying_charge();
 
     if (use_smart_charging_ui) {
       end_container->AddChildView(
@@ -384,6 +383,14 @@ void QuickSettingsFooter::UpdateSettingsButtonState() {
   settings_button_->SetState(settings_icon_enabled
                                  ? views::Button::STATE_NORMAL
                                  : views::Button::STATE_DISABLED);
+  const std::u16string tooltip =
+      settings_icon_enabled
+          ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS)
+          : l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS_DISABLED);
+  settings_button_->SetTooltipText(tooltip);
+
+  settings_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS));
 }
 
 views::View* QuickSettingsFooter::CreateEndContainer() {

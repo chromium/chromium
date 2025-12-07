@@ -6,16 +6,16 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,7 +27,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #endif
 
@@ -50,8 +50,7 @@ CustomHomePagesTableModel::CustomHomePagesTableModel(Profile* profile)
       observer_(nullptr),
       num_outstanding_title_lookups_(0) {}
 
-CustomHomePagesTableModel::~CustomHomePagesTableModel() {
-}
+CustomHomePagesTableModel::~CustomHomePagesTableModel() = default;
 
 void CustomHomePagesTableModel::SetURLs(const std::vector<GURL>& urls) {
   entries_.resize(urls.size());
@@ -60,65 +59,6 @@ void CustomHomePagesTableModel::SetURLs(const std::vector<GURL>& urls) {
     entries_[i].title.erase();
   }
   LoadAllTitles();
-}
-
-/**
- * Move a number of existing entries to a new position, reordering the table.
- *
- * We determine the range of elements affected by the move, save the moved
- * elements, compact the remaining ones, and re-insert moved elements.
- * Expects |index_list| to be ordered ascending.
- */
-void CustomHomePagesTableModel::MoveURLs(
-    size_t insert_before,
-    const std::vector<size_t>& index_list) {
-  if (index_list.empty()) return;
-  DCHECK(insert_before <= RowCount());
-
-  // The range of elements that needs to be reshuffled is [ |first|, |last| ).
-  size_t first = std::min(insert_before, index_list.front());
-  size_t last = std::max(insert_before, index_list.back() + 1);
-
-  // Save the dragged elements. Also, adjust insertion point if it is before a
-  // dragged element.
-  std::vector<Entry> moved_entries;
-  for (size_t i = 0; i < index_list.size(); ++i) {
-    moved_entries.push_back(entries_[index_list[i]]);
-    if (index_list[i] == insert_before)
-      insert_before++;
-  }
-
-  // Compact the range between beginning and insertion point, moving downwards.
-  size_t skip_count = 0;
-  for (size_t i = first; i < insert_before; ++i) {
-    if (skip_count < index_list.size() && index_list[skip_count] == i)
-      skip_count++;
-    else
-      entries_[i - skip_count] = entries_[i];
-  }
-
-  // Moving items down created a gap. We start compacting up after it.
-  first = insert_before;
-  insert_before -= skip_count;
-
-  // Now compact up for elements after the insertion point.
-  skip_count = 0;
-  for (size_t i = last; i > first; --i) {
-    const size_t index = i - 1;
-    if (skip_count < index_list.size() &&
-        index_list[index_list.size() - skip_count - 1] == index) {
-      skip_count++;
-    } else {
-      entries_[index + skip_count] = entries_[index];
-    }
-  }
-
-  // Insert moved elements.
-  base::ranges::copy(moved_entries, entries_.begin() + insert_before);
-
-  // Possibly large change, so tell the view to just rebuild itself.
-  if (observer_)
-    observer_->OnModelChanged();
 }
 
 void CustomHomePagesTableModel::AddWithoutNotification(size_t index,
@@ -131,8 +71,9 @@ void CustomHomePagesTableModel::AddWithoutNotification(size_t index,
 void CustomHomePagesTableModel::Add(size_t index, const GURL& url) {
   AddWithoutNotification(index, url);
   LoadTitle(&(entries_[index]));
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsAdded(index, 1);
+  }
 }
 
 void CustomHomePagesTableModel::RemoveWithoutNotification(size_t index) {
@@ -149,41 +90,48 @@ void CustomHomePagesTableModel::RemoveWithoutNotification(size_t index) {
 
 void CustomHomePagesTableModel::Remove(size_t index) {
   RemoveWithoutNotification(index);
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsRemoved(index, 1);
+  }
 }
 
 void CustomHomePagesTableModel::SetToCurrentlyOpenPages(
     content::WebContents* ignore_contents) {
   // Remove the current entries.
-  while (RowCount())
+  while (RowCount()) {
     RemoveWithoutNotification(0);
+  }
 
   // Add tabs from appropriate browser windows.
   size_t add_index = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!ShouldIncludeBrowser(browser))
-      continue;
-
-    for (int tab_index = 0;
-         tab_index < browser->tab_strip_model()->count();
-         ++tab_index) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(tab_index);
-      if (contents == ignore_contents)
-        continue;
-      const GURL url = contents->GetURL();
-      if (!url.is_empty() && !url.SchemeIs(content::kChromeDevToolsScheme))
-        AddWithoutNotification(add_index++, url);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, ignore_contents, &add_index](BrowserWindowInterface* browser) {
+        if (!ShouldIncludeBrowser(browser)) {
+          return true;
+        }
+        TabStripModel* const tab_model = browser->GetTabStripModel();
+        for (int tab_index = 0; tab_index < tab_model->count(); ++tab_index) {
+          content::WebContents* const contents =
+              tab_model->GetWebContentsAt(tab_index);
+          if (contents == ignore_contents) {
+            continue;
+          }
+          const GURL url = contents->GetURL();
+          if (!url.is_empty() &&
+              !url.SchemeIs(content::kChromeDevToolsScheme)) {
+            AddWithoutNotification(add_index++, url);
+          }
+        }
+        return true;
+      });
   LoadAllTitles();
 }
 
 std::vector<GURL> CustomHomePagesTableModel::GetURLs() {
   std::vector<GURL> urls(entries_.size());
-  for (size_t i = 0; i < entries_.size(); ++i)
+  for (size_t i = 0; i < entries_.size(); ++i) {
     urls[i] = entries_[i].url;
+  }
   return urls;
 }
 
@@ -209,11 +157,13 @@ void CustomHomePagesTableModel::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
 }
 
-bool CustomHomePagesTableModel::ShouldIncludeBrowser(Browser* browser) {
+bool CustomHomePagesTableModel::ShouldIncludeBrowser(
+    BrowserWindowInterface* browser) {
   // Do not include incognito browsers.
-  if (browser->profile() != profile_)
+  if (browser->GetProfile() != profile_) {
     return false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not include the Settings window.
   if (chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(
           browser)) {
@@ -229,7 +179,7 @@ void CustomHomePagesTableModel::LoadTitle(Entry* entry) {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service) {
     entry->task_id = history_service->QueryURL(
-        entry->url, false,
+        entry->url,
         base::BindOnce(&CustomHomePagesTableModel::OnGotTitle,
                        base::Unretained(this), entry->url, false),
         &task_tracker_);
@@ -247,14 +197,15 @@ void CustomHomePagesTableModel::LoadAllTitles() {
   for (Entry& entry : entries_) {
     if (history_service) {
       entry.task_id = history_service->QueryURL(
-          entry.url, false,
+          entry.url,
           base::BindOnce(&CustomHomePagesTableModel::OnGotOneOfManyTitles,
                          base::Unretained(this), entry.url),
           &task_tracker_);
     }
   }
-  if (entries_.empty())
+  if (entries_.empty()) {
     observer_->OnModelChanged();
+  }
 }
 
 void CustomHomePagesTableModel::OnGotOneOfManyTitles(
@@ -262,8 +213,9 @@ void CustomHomePagesTableModel::OnGotOneOfManyTitles(
     history::QueryURLResult result) {
   OnGotTitle(entry_url, false, std::move(result));
   DCHECK_GE(num_outstanding_title_lookups_, 1);
-  if (--num_outstanding_title_lookups_ == 0 && observer_)
+  if (--num_outstanding_title_lookups_ == 0 && observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
@@ -285,8 +237,9 @@ void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
   entry->task_id = base::CancelableTaskTracker::kBadTaskId;
   if (result.success && !result.row.title().empty()) {
     entry->title = result.row.title();
-    if (observer_ && observable)
+    if (observer_ && observable) {
       observer_->OnItemsChanged(entry_index, 1);
+    }
   }
 }
 

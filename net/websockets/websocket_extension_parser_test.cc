@@ -14,87 +14,69 @@ namespace net {
 namespace {
 
 TEST(WebSocketExtensionParserTest, ParseEmpty) {
-  WebSocketExtensionParser parser;
-  EXPECT_FALSE(parser.Parse("", 0));
-
-  EXPECT_EQ(0U, parser.extensions().size());
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("");
+  EXPECT_EQ(0U, extensions.size());
 }
 
 TEST(WebSocketExtensionParserTest, ParseSimple) {
-  WebSocketExtensionParser parser;
   WebSocketExtension expected("foo");
 
-  EXPECT_TRUE(parser.Parse("foo"));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("foo");
 
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
-}
-
-TEST(WebSocketExtensionParserTest, ParseMoreThanOnce) {
-  WebSocketExtensionParser parser;
-  WebSocketExtension expected("foo");
-
-  EXPECT_TRUE(parser.Parse("foo"));
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
-
-  EXPECT_FALSE(parser.Parse(""));
-  EXPECT_EQ(0U, parser.extensions().size());
-
-  EXPECT_TRUE(parser.Parse("foo"));
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
+  ASSERT_EQ(1U, extensions.size());
+  EXPECT_TRUE(expected.Equivalent(extensions[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseOneExtensionWithOneParamWithoutValue) {
-  WebSocketExtensionParser parser;
   WebSocketExtension expected("foo");
   expected.Add(WebSocketExtension::Parameter("bar"));
 
-  EXPECT_TRUE(parser.Parse("\tfoo ; bar"));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("\tfoo ; bar");
 
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
+  ASSERT_EQ(1U, extensions.size());
+  EXPECT_TRUE(expected.Equivalent(extensions[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseOneExtensionWithOneParamWithValue) {
-  WebSocketExtensionParser parser;
   WebSocketExtension expected("foo");
   expected.Add(WebSocketExtension::Parameter("bar", "baz"));
 
-  EXPECT_TRUE(parser.Parse("foo ; bar= baz\t"));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("foo ; bar= baz\t");
 
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
+  ASSERT_EQ(1U, extensions.size());
+  EXPECT_TRUE(expected.Equivalent(extensions[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseOneExtensionWithParams) {
-  WebSocketExtensionParser parser;
   WebSocketExtension expected("foo");
   expected.Add(WebSocketExtension::Parameter("bar", "baz"));
   expected.Add(WebSocketExtension::Parameter("hoge", "fuga"));
 
-  EXPECT_TRUE(parser.Parse("foo ; bar= baz;\t \thoge\t\t=fuga"));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("foo ; bar= baz;\t \thoge\t\t=fuga");
 
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
+  ASSERT_EQ(1U, extensions.size());
+  EXPECT_TRUE(expected.Equivalent(extensions[0]));
 }
 
 TEST(WebSocketExtensionParserTest, ParseTwoExtensions) {
-  WebSocketExtensionParser parser;
-
   WebSocketExtension expected0("foo");
   expected0.Add(WebSocketExtension::Parameter("alpha", "x"));
 
   WebSocketExtension expected1("bar");
   expected1.Add(WebSocketExtension::Parameter("beta", "y"));
 
-  EXPECT_TRUE(parser.Parse(" foo ; alpha = x , bar ; beta = y "));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions(" foo ; alpha = x , bar ; beta = y ");
 
-  ASSERT_EQ(2U, parser.extensions().size());
+  ASSERT_EQ(2U, extensions.size());
 
-  EXPECT_TRUE(expected0.Equivalent(parser.extensions()[0]));
-  EXPECT_TRUE(expected1.Equivalent(parser.extensions()[1]));
+  EXPECT_TRUE(expected0.Equivalent(extensions[0]));
+  EXPECT_TRUE(expected1.Equivalent(extensions[1]));
 }
 
 TEST(WebSocketExtensionParserTest, InvalidPatterns) {
@@ -143,28 +125,27 @@ TEST(WebSocketExtensionParserTest, InvalidPatterns) {
   };
 
   for (const auto* pattern : patterns) {
-    WebSocketExtensionParser parser;
-    EXPECT_FALSE(parser.Parse(pattern));
-    EXPECT_EQ(0U, parser.extensions().size());
+    EXPECT_EQ(0U, ParseWebSocketExtensions(pattern).size());
   }
 }
 
 TEST(WebSocketExtensionParserTest, QuotedParameterValue) {
-  WebSocketExtensionParser parser;
   WebSocketExtension expected("foo");
   expected.Add(WebSocketExtension::Parameter("bar", "baz"));
 
-  EXPECT_TRUE(parser.Parse("foo; bar = \"ba\\z\" "));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("foo; bar = \"ba\\z\" ");
 
-  ASSERT_EQ(1U, parser.extensions().size());
-  EXPECT_TRUE(expected.Equivalent(parser.extensions()[0]));
+  ASSERT_EQ(1U, extensions.size());
+  EXPECT_TRUE(expected.Equivalent(extensions[0]));
 }
 
 // This is a regression test for crbug.com/647156
 TEST(WebSocketExtensionParserTest, InvalidToken) {
   static constexpr char kInvalidInput[] = "\304;\304!*777\377=\377\254\377";
-  WebSocketExtensionParser parser;
-  EXPECT_FALSE(parser.Parse(kInvalidInput));
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions(kInvalidInput);
+  EXPECT_TRUE(extensions.empty());
 }
 
 }  // namespace

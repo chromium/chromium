@@ -1,5 +1,6 @@
 include_rules = [
   "+chromecast/common/mojom",
+  "+chromecast/starboard",
   "+media/mojo",
   "+mojo/public/cpp",
   "+services/service_manager/public",

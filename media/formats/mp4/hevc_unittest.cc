@@ -2,24 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "media/formats/mp4/hevc.h"
+
+#include <array>
 
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
 TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const bool is_keyframe;
-  } test_cases[] = {
-      {"I", true},          {"I I I I", true}, {"AUD I", true},
-      {"AUD SPS I", true},  {"I EOS", true},   {"I EOS EOB", true},
-      {"I EOB", true},      {"P", false},      {"P P P P", false},
-      {"AUD SPS P", false}, {"AUD,I", true},   {"AUD,SPS,I", true},
   };
+  auto test_cases = std::to_array<TestCases>({
+      {"I", true},
+      {"I I I I", true},
+      {"AUD I", true},
+      {"AUD SPS I", true},
+      {"I EOS", true},
+      {"I EOS EOB", true},
+      {"I EOB", true},
+      {"P", false},
+      {"P P P P", false},
+      {"AUD SPS P", false},
+      {"AUD,I", true},
+      {"AUD,SPS,I", true},
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
@@ -29,18 +40,25 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 HEVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, HEVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
 
+TEST(HEVCAnalyzeAnnexBTest, EmptyBuffer) {
+  std::vector<SubsampleEntry> subsamples;
+  auto result = HEVC::AnalyzeAnnexB(base::span<const uint8_t>(), subsamples);
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(subsamples.empty());
+  EXPECT_FALSE(result.is_keyframe.has_value());
+}
+
 TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const std::optional<bool> is_keyframe;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
       // reports std::nullopt (which means undetermined analysis result).
@@ -60,7 +78,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
       // failure, so the non-conformant frame is reported as a non-keyframe.
       {"P SPS P",
        false},  // SPS after first VCL would indicate a new access unit.
-  };
+  });
 
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;
@@ -70,9 +88,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 HEVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, HEVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
@@ -89,11 +105,10 @@ TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordTakenFromStream) {
       0xca, 0xe0, 0x10, 0x00, 0x00, 0x06, 0x40, 0x00, 0x00, 0xbb, 0x50, 0x80,
       0x22, 0x00, 0x01, 0x00, 0x06, 0x44, 0x01, 0xc1, 0x73, 0xd1, 0x89};
   HEVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
   std::vector<uint8_t> output;
   EXPECT_TRUE(record.Serialize(output));
   EXPECT_TRUE(test_data == output);
 }
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4

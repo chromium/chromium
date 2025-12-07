@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -69,6 +70,7 @@ static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
     case kWindowNamedItems:
     case kFormControls:
     case kPopoverInvokers:
+    case kCommandInvokers:
       return false;
     case kNodeChildren:
     case kTRCells:
@@ -81,8 +83,7 @@ static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static NodeListSearchRoot SearchRootFromCollectionType(
@@ -120,6 +121,7 @@ static NodeListSearchRoot SearchRootFromCollectionType(
       DCHECK(IsA<HTMLFormElement>(owner));
       return NodeListSearchRoot::kTreeScope;
     case kPopoverInvokers:
+    case kCommandInvokers:
       return NodeListSearchRoot::kTreeScope;
     case kNameNodeListType:
     case kRadioNodeListType:
@@ -127,8 +129,7 @@ static NodeListSearchRoot SearchRootFromCollectionType(
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return NodeListSearchRoot::kOwnerNode;
+  NOTREACHED();
 }
 
 static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
@@ -171,14 +172,15 @@ static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
       return kInvalidateOnClassAttrChange;
     case kPopoverInvokers:
       return kInvalidateOnPopoverInvokerAttrChange;
+    case kCommandInvokers:
+      return kInvalidateOnCommandInvokerAttrChange;
     case kNameNodeListType:
     case kRadioNodeListType:
     case kRadioImgNodeListType:
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kDoNotInvalidateOnAttributeChanges;
+  NOTREACHED();
 }
 
 HTMLCollection::HTMLCollection(ContainerNode& owner_node,
@@ -237,8 +239,10 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kSelectOptions:
       return To<HTMLOptionsCollection>(html_collection).ElementMatches(element);
     case kSelectedOptions: {
-      auto* option_element = DynamicTo<HTMLOptionElement>(element);
-      return option_element && option_element->Selected();
+      if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+        return option->Selected() && option->OwnerSelectElement() == html_collection.ownerNode();
+      }
+      return false;
     }
     case kDataListOptions:
       return To<HTMLDataListOptionsCollection>(html_collection)
@@ -269,6 +273,12 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
         return invoker->popoverTargetElement().popover != nullptr;
       }
       return false;
+    case kCommandInvokers:
+      if (auto* invoker =
+              DynamicTo<HTMLButtonElement>(const_cast<HTMLElement&>(element))) {
+        return invoker->commandForElement() != nullptr;
+      }
+      return false;
     case kClassCollectionType:
     case kTagCollectionType:
     case kTagCollectionNSType:
@@ -281,7 +291,7 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kRadioNodeListType:
     case kRadioImgNodeListType:
     case kLabelsNodeListType:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return false;
 }
@@ -339,8 +349,7 @@ static inline IsMatch<HTMLCollectionType> MakeIsMatch(
 }
 
 Element* HTMLCollection::VirtualItemAfter(Element*) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // https://html.spec.whatwg.org/C/#all-named-elements

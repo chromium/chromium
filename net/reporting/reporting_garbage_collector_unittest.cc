@@ -51,7 +51,7 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
   EXPECT_FALSE(garbage_collection_timer()->IsRunning());
 
   cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     base::Value::Dict(), 0, tick_clock()->NowTicks(), 0,
+                     base::Value::Dict(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
 
   EXPECT_TRUE(garbage_collection_timer()->IsRunning());
@@ -63,7 +63,7 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
 
 TEST_F(ReportingGarbageCollectorTest, Report) {
   cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     base::Value::Dict(), 0, tick_clock()->NowTicks(), 0,
+                     base::Value::Dict(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
   garbage_collection_timer()->Fire();
 
@@ -72,7 +72,7 @@ TEST_F(ReportingGarbageCollectorTest, Report) {
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
   cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     base::Value::Dict(), 0, tick_clock()->NowTicks(), 0,
+                     base::Value::Dict(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
   tick_clock()->Advance(2 * policy().max_report_age);
   garbage_collection_timer()->Fire();
@@ -82,7 +82,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
 
 TEST_F(ReportingGarbageCollectorTest, FailedReport) {
   cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     base::Value::Dict(), 0, tick_clock()->NowTicks(), 0,
+                     base::Value::Dict(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
@@ -125,7 +125,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredSourceWithPendingReports) {
                                    kIsolationInfo_, kUrl_);
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0, ReportingTargetType::kDeveloper);
+                     ReportingTargetType::kDeveloper);
   // Mark the source as expired. The source data should be removed as soon as
   // all reports are delivered.
   cache()->SetExpiredSource(*kReportingSource_);

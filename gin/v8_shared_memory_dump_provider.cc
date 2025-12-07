@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/singleton.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "v8/include/v8-initialization.h"

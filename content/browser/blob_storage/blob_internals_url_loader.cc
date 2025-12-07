@@ -8,6 +8,7 @@
 #include "content/browser/blob_storage/blob_internals_url_loader.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/view_blob_internals_job.h"
 
@@ -18,7 +19,15 @@ void StartBlobInternalsURLLoader(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     ChromeBlobStorageContext* blob_storage_context) {
   scoped_refptr<net::HttpResponseHeaders> headers(
-      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+      net::HttpResponseHeaders::Builder({1, 1}, "200 OK")
+          // You may need to update this sha value if you change the page.
+          // Happily the correct sha value will be included in the console error
+          // which will be be logged by
+          // ChromeInternalUrlsBrowserTest.NoCspMessages
+          .AddHeader("Content-Security-Policy",
+                     "default-src 'self'; style-src "
+                     "'sha256-g+/2AlzACJdzkiBKPtiN55eBX0m6yuepQUgvEH3IP4s='")
+          .Build());
   auto resource_response = network::mojom::URLResponseHead::New();
   resource_response->headers = headers;
   resource_response->mime_type = "text/html";

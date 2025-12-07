@@ -140,7 +140,8 @@ std::string FakeAuthorizationServer::ReceivePOSTWithJSON(
     base::Value::Dict& out_params) {
   std::string payload;
   auto msg = GetNextRequest("POST", url, "application/json", payload);
-  auto content = base::JSONReader::Read(payload);
+  auto content =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   out_params.clear();
   if (content && content->is_dict()) {
     out_params = std::move(content).value().TakeDict();
@@ -201,11 +202,14 @@ std::string FakeAuthorizationServer::GetNextRequest(
   std::string msg;
   msg += ExpectEqual("HTTP method", current_request_->request.method, method);
   msg += ExpectEqual("URL", current_request_->request.url.spec(), url);
-  std::string value;
-  current_request_->request.headers.GetHeader("Content-Type", &value);
-  msg += ExpectEqual("header Content-Type", value, content_type);
-  if (current_request_->request.headers.GetHeader("Accept", &value)) {
-    msg += ExpectEqual("header Accept", value, "application/json");
+  msg += ExpectEqual("header Content-Type",
+                     current_request_->request.headers.GetHeader("Content-Type")
+                         .value_or(std::string()),
+                     content_type);
+  std::optional<std::string> value =
+      current_request_->request.headers.GetHeader("Accept");
+  if (value) {
+    msg += ExpectEqual("header Accept", *value, "application/json");
   }
   return msg;
 }

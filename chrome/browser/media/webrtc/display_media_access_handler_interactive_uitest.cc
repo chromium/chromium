@@ -10,10 +10,11 @@
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -35,8 +36,8 @@ bool FocusWidgetAndWait(content::WebContents* contents) {
   }
 
   return base::test::RunUntil([browser_view]() {
-    browser_view->frame()->Activate();
-    return browser_view->frame()->IsActive();
+    browser_view->browser_widget()->Activate();
+    return browser_view->browser_widget()->IsActive();
   });
 }
 
@@ -86,6 +87,11 @@ class DisplayMediaAccessHandlerInteractiveUITest
   // what's actually going on.
   raw_ptr<content::WebContents, DisableDanglingPtrDetection>
       actual_ui_web_contents_ = nullptr;
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Verify that the picker shows up in the correct window when document picture
@@ -160,3 +166,61 @@ IN_PROC_BROWSER_TEST_P(DisplayMediaAccessHandlerInteractiveUITest,
 INSTANTIATE_TEST_SUITE_P(DisplayMediaAccessHandlerInteractiveUITest,
                          DisplayMediaAccessHandlerInteractiveUITest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerInteractiveUITest,
+                       PickerShowsUpEvenIfOpenerIsHidden) {
+#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
+  // Wayland doesn't support changing window activation programmatically, so we
+  // can't re-focus the pip window.
+  GTEST_SKIP();
+#endif
+#endif
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an empty page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  DesktopMediaPickerManager* picker_manager = DesktopMediaPickerManager::Get();
+  picker_manager->AddObserver(this);
+
+  content::WebContents* opener_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  run_loop_ = std::make_unique<base::RunLoop>();
+  // Open a pip window and wait for it to show up.
+  EXPECT_EQ(true, content::EvalJs(opener_web_contents->GetPrimaryMainFrame(),
+                                  R"((async () => {
+    var pip = await documentPictureInPicture.requestWindow();
+    return await new Promise((resolve, reject) => {
+    pip.requestAnimationFrame(()=>{resolve(true);});
+    }
+    );
+  })())"));
+
+  content::WebContents* pip_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+
+  // Open a new tab in the original window. This will put the opener into the
+  // background.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Re-focus the pip window.
+  FocusWidgetAndWait(pip_web_contents);
+
+  // Request media from the opener. This should be allowed despite the fact that
+  // it's in the background since it will show up in the pip window.
+  EXPECT_EQ(true, content::EvalJs(opener_web_contents->GetPrimaryMainFrame(),
+                                  R"((async () => {
+    navigator.mediaDevices.getDisplayMedia({
+        audio: true, systemAudio: 'include'});
+    return true;
+  })())"));
+  run_loop_->Run();
+
+  // Verify that the picker showed up in the pip window.
+  EXPECT_EQ(actual_ui_web_contents_, pip_web_contents);
+}

@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_style.h"
@@ -33,8 +33,10 @@ TabGroupViews::TabGroupViews(views::View* container_view,
   style_ = std::make_unique<const TabGroupStyle>(*this);
   const TabGroupStyle* style = style_.get();
 
-  header_ = container_view->AddChildView(
-      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_, *style));
+  auto header =
+      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_, *style);
+  header->Init(group_);
+  header_ = container_view->AddChildView(std::move(header));
   underline_ = container_view->AddChildView(
       std::make_unique<TabGroupUnderline>(this, group_, *style));
   drag_underline_ = drag_container_view->AddChildView(
@@ -54,8 +56,9 @@ TabGroupViews::~TabGroupViews() {
 
 void TabGroupViews::UpdateBounds() {
   // If we're tearing down we should ignore events.
-  if (InTearDown())
+  if (InTearDown()) {
     return;
+  }
 
   auto [leading_group_view, trailing_group_view] =
       GetLeadingTrailingGroupViews();
@@ -101,8 +104,9 @@ void TabGroupViews::UpdateBounds() {
 void TabGroupViews::OnGroupVisualsChanged() {
   // If we're tearing down we should ignore events. (We can still receive them
   // here if the editor bubble was open when the tab group was closed.)
-  if (InTearDown())
+  if (InTearDown()) {
     return;
+  }
 
   header_->VisualsChanged();
   underline_->SchedulePaint();
@@ -156,7 +160,7 @@ TabGroupViews::GetLeadingTrailingDraggedGroupViews() const {
 std::tuple<views::View*, views::View*>
 TabGroupViews::GetLeadingTrailingGroupViews(
     std::vector<raw_ptr<views::View, VectorExperimental>> children) const {
-  // Elements of |children| may be in different coordinate spaces. Canonicalize
+  // Elements of `children` may be in different coordinate spaces. Canonicalize
   // to widget space for comparison, since they will be in the same widget.
   views::View* leading_child = nullptr;
   gfx::Rect leading_child_widget_bounds;
@@ -167,8 +171,9 @@ TabGroupViews::GetLeadingTrailingGroupViews(
   for (views::View* child : children) {
     TabSlotView* tab_slot_view = views::AsViewClass<TabSlotView>(child);
     if (!tab_slot_view || tab_slot_view->group() != group_ ||
-        !tab_slot_view->GetVisible())
+        !tab_slot_view->GetVisible()) {
       continue;
+    }
 
     gfx::Rect child_widget_bounds =
         child->ConvertRectToWidget(child->GetLocalBounds());

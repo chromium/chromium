@@ -25,13 +25,21 @@ class ProcessState {
   bool RevertedToSelf() const;
   // Returns true if Csrss is connected.
   bool IsCsrssConnected() const;
+  // Returns true if the LowerToken operation has been completed.
+  bool InitCompleted() const;
   // Set the current state.
   void SetInitCalled();
   void SetRevertedToSelf();
   void SetCsrssConnected(bool csrss_connected);
+  void SetInitCompleted();
 
  private:
-  enum class ProcessStateInternal { NONE = 0, INIT_CALLED, REVERTED_TO_SELF };
+  enum class ProcessStateInternal {
+    NONE = 0,
+    INIT_CALLED,
+    REVERTED_TO_SELF,
+    INIT_COMPLETED
+  };
 
   ProcessStateInternal process_state_;
   bool csrss_connected_;

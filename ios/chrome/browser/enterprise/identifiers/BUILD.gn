@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("profile_id_service_factory") {
+  sources = [
+    "profile_id_delegate_ios_impl.h",
+    "profile_id_delegate_ios_impl.mm",
+    "profile_id_service_factory_ios.h",
+    "profile_id_service_factory_ios.mm",
+  ]
+
+  deps = [
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_id_service_factory_ios_unittest.mm" ]
+  deps = [
+    ":profile_id_service_factory",
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

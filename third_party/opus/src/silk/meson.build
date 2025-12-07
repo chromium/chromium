@@ -2,6 +2,8 @@ silk_sources = sources['SILK_SOURCES']
 
 silk_sources_sse4_1 = sources['SILK_SOURCES_SSE4_1']
 
+silk_sources_avx2 = sources['SILK_SOURCES_AVX2']
+
 silk_sources_neon_intr = sources['SILK_SOURCES_ARM_NEON_INTR']
 
 silk_sources_fixed_neon_intr = sources['SILK_SOURCES_FIXED_ARM_NEON_INTR']
@@ -9,6 +11,10 @@ silk_sources_fixed_neon_intr = sources['SILK_SOURCES_FIXED_ARM_NEON_INTR']
 silk_sources_fixed = sources['SILK_SOURCES_FIXED']
 
 silk_sources_fixed_sse4_1 = sources['SILK_SOURCES_FIXED_SSE4_1']
+
+silk_sources_float_sse4_1 = []
+silk_sources_float_neon_intr = []
+silk_sources_float_avx2 = sources['SILK_SOURCES_FLOAT_AVX2']
 
 silk_sources_float = sources['SILK_SOURCES_FLOAT']
 
@@ -31,15 +37,15 @@ if host_cpu_family in ['arm', 'aarch64'] and have_arm_intrinsics_or_asm
   endif
 endif
 
-foreach intr_name : ['sse4_1', 'neon_intr']
+foreach intr_name : ['sse4_1', 'avx2', 'neon_intr']
   have_intr = get_variable('have_' + intr_name)
   if not have_intr
     continue
   endif
 
   intr_sources = get_variable('silk_sources_' + intr_name)
-  if opt_fixed_point
-    intr_sources += get_variable('silk_sources_fixed_' + intr_name)
+  if not opt_fixed_point
+    intr_sources += get_variable('silk_sources_float_' + intr_name)
   endif
 
   intr_args = get_variable('opus_@0@_args'.format(intr_name), [])
@@ -58,6 +64,6 @@ silk_lib = static_library('opus-silk',
   silk_sources,
   c_args: silk_c_args,
   include_directories: silk_includes,
-  link_whole: silk_static_libs,
+  link_whole: [silk_static_libs],
   dependencies: libm,
   install: false)

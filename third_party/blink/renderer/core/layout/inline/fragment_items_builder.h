@@ -98,12 +98,11 @@ class CORE_EXPORT FragmentItemsBuilder {
   //
   // When |stop_at_dirty| is true, this function checks reusability of previous
   // items and stops copying before the first dirty line.
-  AddPreviousItemsResult AddPreviousItems(
-      const PhysicalBoxFragment& container,
-      const FragmentItems& items,
-      BoxFragmentBuilder* container_builder = nullptr,
-      const FragmentItem* end_item = nullptr,
-      wtf_size_t max_lines = 0);
+  AddPreviousItemsResult AddPreviousItems(const PhysicalBoxFragment& container,
+                                          const FragmentItems& items,
+                                          const FragmentItem& end_item,
+                                          BoxFragmentBuilder* container_builder,
+                                          wtf_size_t max_lines = 0);
 
   struct ItemWithOffset {
     DISALLOW_NEW();
@@ -126,8 +125,8 @@ class CORE_EXPORT FragmentItemsBuilder {
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
   using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
 
-  // Moves all the |FragmentItem|s by |offset| in the block-direction.
-  void MoveChildrenInBlockDirection(LayoutUnit offset);
+  // Moves all the |FragmentItem|s by |offset| in the block or inline direction.
+  void MoveChildrenInDirection(LayoutUnit offset, bool is_block_direction);
 
   // Converts the |FragmentItem| vector to the physical coordinate space and
   // returns the result. This should only be used for determining the inline

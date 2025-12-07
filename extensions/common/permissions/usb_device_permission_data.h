@@ -28,7 +28,7 @@ class UsbDevicePermissionData {
     // from ChromeOS permission_broker project.
     SPECIAL_VALUE_ANY = -1,
 
-    // A special interface id for |Check| to indicate that interface field is
+    // A special interface id for `Check` to indicate that interface field is
     // not to be checked. Not used in manifest file.
     SPECIAL_VALUE_UNSPECIFIED = -2
   };
@@ -39,18 +39,20 @@ class UsbDevicePermissionData {
                           int interface_id,
                           int interface_class);
 
-  // Check if |param| (which must be a UsbDevicePermissionData::CheckParam)
-  // matches the vendor and product IDs associated with |this|.
+  // Check if `param` (which must be a UsbDevicePermissionData::CheckParam)
+  // matches the vendor and product IDs associated with `this`.
   bool Check(const APIPermission::CheckParam* param) const;
 
-  // Convert |this| into a base::Value.
+  // Convert `this` into a base::Value.
   std::unique_ptr<base::Value> ToValue() const;
 
-  // Populate |this| from a base::Value.
+  // Populate `this` from a base::Value.
   bool FromValue(const base::Value* value);
 
-  bool operator<(const UsbDevicePermissionData& rhs) const;
-  bool operator==(const UsbDevicePermissionData& rhs) const;
+  friend auto operator<=>(const UsbDevicePermissionData&,
+                          const UsbDevicePermissionData&) = default;
+  friend bool operator==(const UsbDevicePermissionData&,
+                         const UsbDevicePermissionData&) = default;
 
   const int& vendor_id() const { return vendor_id_; }
   const int& product_id() const { return product_id_; }

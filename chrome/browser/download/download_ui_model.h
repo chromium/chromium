@@ -52,8 +52,8 @@ class DownloadUIModel {
     kNoTailoredWarning = 0,
     // Base cookie theft warning.
     kCookieTheft = 1,
-    // Cookie theft warning with account info.
-    kCookieTheftWithAccountInfo = 2,
+    // Deprecated. Cookie theft warning with account info.
+    // kCookieTheftWithAccountInfo = 2,
     // Suspicious archive warning.
     kSuspiciousArchive = 3,
     kMaxValue = kSuspiciousArchive
@@ -76,6 +76,10 @@ class DownloadUIModel {
   };
 
   // Abstract base class for building StatusText
+  // TODO(crbug.com/401528883): Clean up vestiges of the download shelf. Unify
+  // the strings/logic as much as possible. Rename StatusTextBuilder to
+  // DownloadPageStatusTextBuilder, and make all usages specify which set of
+  // strings is desired by providing a builder explicitly.
   class StatusTextBuilderBase {
    public:
     virtual ~StatusTextBuilderBase() = default;
@@ -111,7 +115,7 @@ class DownloadUIModel {
     raw_ptr<DownloadUIModel> model_ = nullptr;
   };
 
-  // Used in Download shelf and page, default option.
+  // Used in Download page, default option.
   class StatusTextBuilder : public StatusTextBuilderBase {
    public:
     std::u16string GetInProgressStatusText() const override;
@@ -132,16 +136,10 @@ class DownloadUIModel {
     FRIEND_TEST_ALL_PREFIXES(DownloadItemModelTest,
                              GetBubbleStatusMessageWithBytes);
 
-    static std::u16string GetBubbleStatusMessageWithBytes(
-        const std::u16string& bytes_substring,
-        const std::u16string& detail_message,
-        bool is_active);
     std::u16string GetBubbleWarningStatusText() const;
   };
 
   using DownloadUIModelPtr = std::unique_ptr<DownloadUIModel>;
-
-  DownloadUIModel();
 
   explicit DownloadUIModel(
       std::unique_ptr<StatusTextBuilderBase> status_text_builder);
@@ -229,6 +227,10 @@ class DownloadUIModel {
   // total size of the download is not known. Virtual for testing.
   virtual int64_t GetTotalBytes() const;
 
+  // Returns the total number of bytes uploaded to the cloud. Returns 0 if the
+  // upload has not started.
+  virtual int64_t GetUploadedBytes() const;
+
   // Rough percent complete. Returns -1 if the progress is unknown.
   virtual int PercentComplete() const;
 
@@ -246,36 +248,16 @@ class DownloadUIModel {
   // Implies IsDangerous() and !IsMalicious().
   virtual bool IsInsecure() const;
 
-  // Returns |true| if this download is expected to complete successfully and
-  // thereafter be removed from the shelf.  Downloads that are opened
-  // automatically or are temporary will be removed from the shelf on successful
-  // completion.
-  //
-  // Returns |false| if the download is not expected to complete (interrupted,
-  // cancelled, dangerous, malicious), or won't be removed on completion.
-  //
-  // Since the expectation of successful completion may change, the return value
-  // of this function will change over the course of a download.
-  virtual bool ShouldRemoveFromShelfWhenComplete() const;
-
-  // Returns |true| if the download started animation (big download arrow
-  // animates down towards the shelf) should be displayed for this download.
+  // Returns |true| if the download started animation (download icon animates
+  // towards the UI) should be displayed for this download.
   // Downloads that were initiated via "Save As" or are extension installs don't
   // show the animation.
   virtual bool ShouldShowDownloadStartedAnimation() const;
 
-  // Returns |true| if this download should be displayed in the downloads shelf.
-  virtual bool ShouldShowInShelf() const;
-
-  // Change whether the download should be displayed on the downloads
-  // shelf. Setting this is only effective if the download hasn't already been
-  // displayed in the shelf.
-  virtual void SetShouldShowInShelf(bool should_show);
-
   // Returns |true| if the UI should be notified when the download is ready to
-  // be presented in the UI. Note that this is independent of
-  // ShouldShowInShelf() since there might be actions other than showing in the
-  // shelf that the UI must perform.
+  // be presented in the UI. Note that this is independent of ShouldShowInUi()
+  // since there might be actions other than displaying the download that the UI
+  // must perform.
   virtual bool ShouldNotifyUI() const;
 
   // Returns |true| if the UI has been notified about this download. By default,
@@ -335,7 +317,7 @@ class DownloadUIModel {
   // ShouldPreferOpeningInBrowser().
   virtual void OpenUsingPlatformHandler();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the Media App action (open or edit) we should show for the item if
   // one should be shown.
   virtual std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()
@@ -473,9 +455,19 @@ class DownloadUIModel {
   virtual void ExecuteCommand(DownloadCommands* download_commands,
                               DownloadCommands::Command command);
 
-  // Returns |true| if this download should be displayed in the download bubble.
-  // Note that this may return true even if the download bubble is not enabled
-  // on the platform.
+  // Returns true if this download should be displayed in the download UI
+  // on desktop platforms. This includes the chrome://downloads WebUI and the
+  // downloads UI implemented in native toolkit.
+  virtual bool ShouldShowInUi() const;
+
+  // Change whether the download should be displayed in the downloads UI on
+  // desktop platforms. Setting this is only effective if the download hasn't
+  // already been displayed in the UI.
+  virtual void SetShouldShowInUi(bool should_show);
+
+  // Returns true if this download should be displayed in the download bubble
+  // on platforms where the download bubble is available.
+  // TODO(crbug.com/401528883): This does not need to be compiled on ChromeOS.
   virtual bool ShouldShowInBubble() const;
 
   // Returns the type of tailored warning. Returns kNoTailoredWarning if this
@@ -485,14 +477,14 @@ class DownloadUIModel {
   // Returns the UI pattern to be used for the download, e.g. dangerous or
   // suspicious. Returns kNoWarning if the download has no warning.
   virtual DangerUiPattern GetDangerUiPattern() const;
+#endif
 
-  // Ephemeral warnings are ones that are quickly removed from the bubble if the
+  // Ephemeral warnings are ones that are quickly removed from the UI if the
   // user has not acted on them, and later deleted altogether. Is this that kind
   // of warning?
   virtual bool IsEphemeralWarning() const;
-#endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // Complete the Safe Browsing scan early.
   virtual void CompleteSafeBrowsingScan();
 
@@ -516,9 +508,10 @@ class DownloadUIModel {
   // download is in progress.
   virtual std::u16string GetInProgressAccessibleAlertText() const;
 
-  // Determines whether the file is an encrypted archive. This is used to
-  // specialize certain strings.
-  virtual bool IsEncryptedArchive() const;
+  // Determines whether the file is an encrypted archive at the top
+  // level (i.e. the encryption is not within a nested archive). This is
+  // used to specialize certain strings.
+  virtual bool IsTopLevelEncryptedArchive() const;
 
   // Returns whether the download is triggered by an extension.
   virtual bool IsExtensionDownload() const;

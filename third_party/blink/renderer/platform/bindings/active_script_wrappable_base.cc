@@ -5,14 +5,12 @@
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
 
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
-void ActiveScriptWrappableBase::RegisterActiveScriptWrappable(
-    v8::Isolate* isolate) {
-  V8PerIsolateData::From(isolate)->GetActiveScriptWrappableManager()->Add(this);
+void ActiveScriptWrappableBase::RegisterActiveScriptWrappable() {
+  ThreadState::Current()->GetActiveScriptWrappableManager()->Add(this);
 }
 
 }  // namespace blink

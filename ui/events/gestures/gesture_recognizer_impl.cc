@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -176,7 +176,7 @@ void GestureRecognizerImpl::TransferEventsTo(
   CancelActiveTouchesExceptImpl(current_consumer);
 
   std::vector<std::unique_ptr<TouchEvent>> cancelling_touches =
-      GetEventPerPointForConsumer(current_consumer, EventType::kTouchCancelled);
+      GetCancelledEventPerPointForConsumer(current_consumer);
 
   TransferConsumer(current_consumer, new_consumer_ptr.get(), consumers_);
 
@@ -189,8 +189,7 @@ void GestureRecognizerImpl::TransferEventsTo(
         GetGestureProviderForConsumer(current_consumer);
 
     for (std::unique_ptr<TouchEvent>& event : cancelling_touches) {
-      gesture_provider->OnTouchEnter(event->pointer_details().id, event->x(),
-                                     event->y());
+      gesture_provider->OnTouchEnter(*event);
       helper->DispatchSyntheticTouchEvent(event.get());
     }
   }
@@ -230,8 +229,8 @@ bool GestureRecognizerImpl::GetLastTouchPointForTarget(
 }
 
 std::vector<std::unique_ptr<TouchEvent>>
-GestureRecognizerImpl::GetEventPerPointForConsumer(GestureConsumer* consumer,
-                                                   EventType type) {
+GestureRecognizerImpl::GetCancelledEventPerPointForConsumer(
+    GestureConsumer* consumer) {
   std::vector<std::unique_ptr<TouchEvent>> cancelling_touches;
   GestureProviderAura* provider = consumer->provider();
   if (!provider) {
@@ -244,7 +243,7 @@ GestureRecognizerImpl::GetEventPerPointForConsumer(GestureConsumer* consumer,
   cancelling_touches.reserve(pointer_state.GetPointerCount());
   for (size_t i = 0; i < pointer_state.GetPointerCount(); ++i) {
     auto touch_event = std::make_unique<TouchEvent>(
-        type, gfx::Point(), EventTimeForNow(),
+        EventType::kTouchCancelled, gfx::Point(), EventTimeForNow(),
         PointerDetails(ui::EventPointerType::kTouch,
                        pointer_state.GetPointerId(i)),
         EF_IS_SYNTHESIZED);
@@ -292,8 +291,13 @@ bool GestureRecognizerImpl::ProcessTouchEventPreDispatch(
 
 void GestureRecognizerImpl::SetupTargets(const TouchEvent& event,
                                          GestureConsumer* target) {
-  event_to_gesture_provider_[event.unique_event_id()] =
-      GetGestureProviderForConsumer(target);
+  if (event.type() == ui::EventType::kTouchReleased ||
+      event.type() == ui::EventType::kTouchCancelled ||
+      event.type() == ui::EventType::kTouchPressed) {
+    event_to_gesture_provider_[event.unique_event_id()] =
+        GetGestureProviderForConsumer(target);
+  }
+
   if (event.type() == ui::EventType::kTouchReleased ||
       event.type() == ui::EventType::kTouchCancelled) {
     touch_id_target_.erase(event.pointer_details().id);
@@ -355,7 +359,7 @@ bool GestureRecognizerImpl::CancelActiveTouchesImpl(GestureConsumer* consumer) {
     return false;
 
   std::vector<std::unique_ptr<TouchEvent>> cancelling_touches =
-      GetEventPerPointForConsumer(consumer, EventType::kTouchCancelled);
+      GetCancelledEventPerPointForConsumer(consumer);
   if (cancelling_touches.empty())
     return false;
   for (const std::unique_ptr<TouchEvent>& cancelling_touch : cancelling_touches)
@@ -390,7 +394,7 @@ void GestureRecognizerImpl::AddGestureEventHelper(GestureEventHelper* helper) {
 
 void GestureRecognizerImpl::RemoveGestureEventHelper(
     GestureEventHelper* helper) {
-  auto it = base::ranges::find(helpers_, helper);
+  auto it = std::ranges::find(helpers_, helper);
   if (it != helpers_.end())
     helpers_.erase(it);
 }

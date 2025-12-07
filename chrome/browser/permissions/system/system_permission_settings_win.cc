@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/permissions/system/geolocation_observation.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
+#include "chrome/browser/permissions/system/system_media_source_win.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/device_features.h"
@@ -38,6 +39,13 @@ class PlatformHandleImpl : public PlatformHandle {
           return false;
         }
       }
+      // crbug.com/414523295: while the status of camera/microphone can be
+      // determined, we currently don't support requesting them on Windows.
+      // Until this is fixed we will return `false`.
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::MEDIASTREAM_MIC:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+        return false;
       default:
         return false;
     }
@@ -54,6 +62,12 @@ class PlatformHandleImpl : public PlatformHandle {
         } else {
           return false;
         }
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::MEDIASTREAM_MIC:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+        return SystemMediaSourceWin::GetInstance().SystemPermissionStatus(
+                   type) == SystemMediaSourceWin::Status::kDenied;
+
       default:
         return false;
     }
@@ -70,6 +84,11 @@ class PlatformHandleImpl : public PlatformHandle {
         } else {
           return true;
         }
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::MEDIASTREAM_MIC:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+        return SystemMediaSourceWin::GetInstance().SystemPermissionStatus(
+                   type) == SystemMediaSourceWin::Status::kAllowed;
       default:
         return true;
     }
@@ -84,6 +103,12 @@ class PlatformHandleImpl : public PlatformHandle {
           device::GeolocationSystemPermissionManager::GetInstance()
               ->OpenSystemPermissionSetting();
         }
+        return;
+      }
+      case ContentSettingsType::MEDIASTREAM_MIC:
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM: {
+        SystemMediaSourceWin::GetInstance().OpenSystemPermissionSetting(type);
         return;
       }
       default:
@@ -116,7 +141,6 @@ class PlatformHandleImpl : public PlatformHandle {
         return;
       }
       default:
-        std::move(callback).Run();
         NOTREACHED();
     }
   }

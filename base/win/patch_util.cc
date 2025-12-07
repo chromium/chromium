@@ -4,6 +4,7 @@
 
 #include "base/win/patch_util.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 
 namespace base {
@@ -12,8 +13,7 @@ namespace internal {
 
 DWORD ModifyCode(void* destination, const void* source, size_t length) {
   if ((nullptr == destination) || (nullptr == source) || (0 == length)) {
-    NOTREACHED_IN_MIGRATION();
-    return ERROR_INVALID_PARAMETER;
+    NOTREACHED();
   }
 
   // Change the page protection so that we can write.
@@ -34,7 +34,7 @@ DWORD ModifyCode(void* destination, const void* source, size_t length) {
                      is_executable ? PAGE_EXECUTE_READWRITE : PAGE_READWRITE,
                      &old_page_protection)) {
     // Write the data.
-    CopyMemory(destination, source, length);
+    UNSAFE_TODO(CopyMemory(destination, source, length));
 
     // Restore the old page protection.
     error = ERROR_SUCCESS;

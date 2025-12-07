@@ -10,7 +10,6 @@
 typedef NS_ENUM(NSInteger, BubbleAlignment);
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 
-// TODO(crbug.com/40277360): Rename parameters.
 namespace bubble_util {
 
 // The default fixed distance from the leading edge of the bubble to the anchor

@@ -60,8 +60,10 @@ proto::SchedulerClientType ToSchedulerClientType(SchedulerClientType type) {
       return proto::SchedulerClientType::PREFETCH;
     case SchedulerClientType::kReadingList:
       return proto::SchedulerClientType::READING_LIST;
+    case SchedulerClientType::kTips:
+      return proto::SchedulerClientType::TIPS;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Converts SchedulerClientType from its associated enum in proto buffer.
@@ -84,8 +86,10 @@ SchedulerClientType FromSchedulerClientType(
       return SchedulerClientType::kPrefetch;
     case proto::SchedulerClientType::READING_LIST:
       return SchedulerClientType::kReadingList;
+    case proto::SchedulerClientType::TIPS:
+      return SchedulerClientType::kTips;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Converts UserFeedback to its associated enum in proto buffer.
@@ -104,7 +108,7 @@ proto::Impression_UserFeedback ToUserFeedback(UserFeedback feedback) {
     case UserFeedback::kIgnore:
       return proto::Impression_UserFeedback_IGNORE;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Converts UserFeedback from its associated enum in proto buffer.
@@ -123,7 +127,7 @@ UserFeedback FromUserFeedback(proto::Impression_UserFeedback feedback) {
     case proto::Impression_UserFeedback_IGNORE:
       return UserFeedback::kIgnore;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Converts ImpressionResult to its associated enum in proto buffer.
@@ -138,7 +142,7 @@ proto::Impression_ImpressionResult ToImpressionResult(ImpressionResult result) {
     case ImpressionResult::kNeutral:
       return proto::Impression_ImpressionResult_NEUTRAL;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Converts ImpressionResult from its associated enum in proto buffer.
@@ -154,7 +158,7 @@ ImpressionResult FromImpressionResult(
     case proto::Impression_ImpressionResult_NEUTRAL:
       return ImpressionResult::kNeutral;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 proto::IconType ToIconType(IconType type) {
@@ -166,7 +170,7 @@ proto::IconType ToIconType(IconType type) {
     case IconType::kLargeIcon:
       return proto::IconType::LARGE_ICON;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 IconType FromIconType(proto::IconType proto_type) {
@@ -178,7 +182,7 @@ IconType FromIconType(proto::IconType proto_type) {
     case proto::IconType::LARGE_ICON:
       return IconType::kLargeIcon;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 proto::ActionButtonType ToActionButtonType(ActionButtonType type) {
@@ -190,7 +194,7 @@ proto::ActionButtonType ToActionButtonType(ActionButtonType type) {
     case ActionButtonType::kUnhelpful:
       return proto::ActionButtonType::UNHELPFUL;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ActionButtonType FromActionButtonType(proto::ActionButtonType proto_type) {

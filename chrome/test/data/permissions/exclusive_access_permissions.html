@@ -11,7 +11,7 @@
   <button id="pointer-lock">
     Get pointer lock
   </button>
-  <button id="keybard-and-pointer-lock">
+  <button id="keyboard-and-pointer-lock">
     Get both keyboard lock and pointer lock
   </button>
   <script>
@@ -23,7 +23,7 @@
       () => {
         document.documentElement.requestPointerLock();
       });
-    document.querySelector("#keybard-and-pointer-lock").addEventListener(
+    document.querySelector("#keyboard-and-pointer-lock").addEventListener(
       "click",
       () => {
         navigator.keyboard.lock();

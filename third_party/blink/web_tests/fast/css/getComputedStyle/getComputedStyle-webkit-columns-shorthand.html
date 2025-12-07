@@ -21,20 +21,20 @@ computedStyle = window.getComputedStyle(e, null);
 shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '10px 2');
 
 e.style.webkitColumns="10px";
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '10px auto');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '10px');
 
 e.style.webkitColumns=""
 e.style.webkitColumnCount="2"
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", 'auto 2');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '2');
 
 e.style.webkitColumns="auto 2"
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", 'auto 2');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '2');
 
 e.style.webkitColumnCount="auto";
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", 'auto auto');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", 'auto');
 
 e.style.webkitColumnWidth="10px";
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '10px auto');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-columns')", '10px');
 
 document.body.removeChild(testContainer);
 

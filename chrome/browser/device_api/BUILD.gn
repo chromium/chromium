@@ -1,0 +1,126 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("device_api") {
+  sources = [
+    "device_attribute_api.h",
+    "device_service_impl.h",
+    "managed_configuration_api.h",
+    "managed_configuration_api_factory.h",
+    "managed_configuration_service.h",
+    "managed_configuration_store.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/value_store",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "device_attribute_api.cc",
+    "device_service_impl.cc",
+    "managed_configuration_api.cc",
+    "managed_configuration_api_factory.cc",
+    "managed_configuration_service.cc",
+    "managed_configuration_store.cc",
+  ]
+
+  deps = [
+    ":device_api",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/permissions",
+    "//chrome/browser/policy:policy_util",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/content_settings/core/common",
+    "//components/permissions:permissions_common",
+    "//components/pref_registry",
+    "//components/value_store",
+    "//services/network/public/cpp",
+    "//third_party/blink/public:runtime_features_for_public",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/app_mode/isolated_web_app",
+      "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/handlers",
+      "//chromeos/ash/components/system",
+      "//chromeos/components/kiosk",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "device_service_unittest.cc",
+    "managed_configuration_service_unittest.cc",
+  ]
+  deps = [
+    ":device_api",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/web_applications:web_app_test",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications:web_applications_unit_tests",
+    "//chrome/test:test_support",
+    "//components/permissions:test_support",
+    "//components/profile_metrics",
+    "//components/sync_preferences:test_support",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/app_mode/web_app" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "managed_configuration_api_browsertest.cc" ]
+  deps = [
+    ":device_api",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "device_attribute_api_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/policy/core:test_support",
+      "//chromeos/ash/components/system",
+    ]
+  }
+}

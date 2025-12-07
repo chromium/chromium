@@ -39,8 +39,8 @@ cast_source_set("desktop") {
 
 cast_source_set("mixer_output") {
   sources = [
+    "mixer_output_stream_desktop.cc",
     "mixer_output_stream_desktop.h",
-    "mixer_output_stream_desktop.cc"
   ]
   deps = [
     "//base",
@@ -48,4 +48,3 @@ cast_source_set("mixer_output") {
     "//media",
   ]
 }
-

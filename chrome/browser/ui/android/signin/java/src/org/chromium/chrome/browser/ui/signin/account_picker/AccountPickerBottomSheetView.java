@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,13 +15,13 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -32,10 +33,11 @@ import org.chromium.ui.widget.TextViewWithLeading;
 /**
  * This class is the AccountPickerBottomsheet view for the web sign-in flow.
  *
- * The bottom sheet shows a single account with a |Continue as ...| button by default, clicking
+ * <p>The bottom sheet shows a single account with a |Continue as ...| button by default, clicking
  * on the account will expand the bottom sheet to an account list together with other sign-in
  * options like "Add account".
  */
+@NullMarked
 class AccountPickerBottomSheetView implements BottomSheetContent {
     /** Listener for the back-press button. */
     interface BackPressListener {
@@ -77,7 +79,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
-    private final View mSigninInProgressView;
     private final ButtonCompat mDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
     private @Nullable @ViewState Integer mCurrentViewState;
@@ -90,11 +91,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mActivity = activity;
         mBackPressListener = backPressListener;
 
-        int contentLayoutId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.layout.account_picker_bottom_sheet_view
-                        : R.layout.account_picker_bottom_sheet_view_old;
+        int contentLayoutId = R.layout.account_picker_bottom_sheet_view;
 
         mContentView = LayoutInflater.from(mActivity).inflate(contentLayoutId, null);
 
@@ -111,10 +108,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_selected_account);
-        mSigninInProgressView =
-                mViewFlipper
-                        .getChildAt(ViewState.SIGNIN_IN_PROGRESS)
-                        .findViewById(R.id.account_picker_state_signin_in_progress);
         mDismissButton =
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
@@ -136,15 +129,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper.getChildAt(ViewState.SIGNIN_AUTH_ERROR),
                 R.string.auth_error_card_button);
 
+        // TODO(crbug.com/460030880): Decouple the 'Confirm Management' cancel button from this
+        // general back press handler using a dedicated property and callback
         mViewFlipper
                 .getChildAt(ViewState.CONFIRM_MANAGEMENT)
                 .findViewById(R.id.confirm_management_cancel_button)
                 .setOnClickListener((View v) -> handleBackPress());
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
-        }
+        getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
     }
 
     /** The account list view is visible when the account list is expanded. */
@@ -175,14 +167,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /** Sets the displayed view according to the given {@link ViewState}. */
     void setDisplayedView(@ViewState int state) {
+        assert state != ViewState.NONE : "This indicates no specific active view state";
         if (mCurrentViewState != null && mCurrentViewState == state) {
             return;
         }
 
         mViewFlipper.setDisplayedChild(state);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && state == ViewState.SIGNIN_IN_PROGRESS
-                && mCurrentViewState != null) {
+        if (state == ViewState.SIGNIN_IN_PROGRESS && mCurrentViewState != null) {
             // The goal here is to make the progress view take the height of the previously shown
             // view, to prevent the bottom sheet from "jumping" visually.
             // (See https://crbug.com/327127097)
@@ -197,7 +188,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
         mCurrentViewState = state;
         View titleView = mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
-        titleView.setFocusable(true);
         titleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
@@ -225,7 +215,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /** Sets the title, subtitle, and dismiss button text. */
     void setBottomSheetStrings(
-            @StringRes int title, @StringRes int subtitle, @StringRes int cancelButton) {
+            String title, @Nullable String subtitle, @Nullable String cancelButton) {
         final int[] viewStates = {
             ViewState.COLLAPSED_ACCOUNT_LIST, ViewState.EXPANDED_ACCOUNT_LIST, ViewState.NO_ACCOUNTS
         };
@@ -235,7 +225,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
             TextViewWithLeading subtitleView =
                     view.findViewById(R.id.account_picker_header_subtitle);
-            if (subtitle == 0) {
+            if (subtitle == null) {
                 subtitleView.setVisibility(View.GONE);
             } else {
                 subtitleView.setText(subtitle);
@@ -243,7 +233,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             }
         }
 
-        if (cancelButton == 0) {
+        if (cancelButton == null) {
             showDismissButton(false);
         } else {
             mDismissButton.setText(cancelButton);
@@ -265,11 +255,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     @Override
     public int getVerticalScrollOffset() {
         return 0;
-    }
-
-    @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
     }
 
     @Override
@@ -306,22 +291,22 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.signin_account_picker_bottom_sheet_subtitle;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.signin_account_picker_bottom_sheet_subtitle);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_opened;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_opened;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_closed;
     }
 

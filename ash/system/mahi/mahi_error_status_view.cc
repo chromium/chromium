@@ -23,6 +23,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -30,7 +31,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+#include "ui/views/view_targeter.h"
 
 namespace ash {
 
@@ -41,7 +44,7 @@ namespace {
 constexpr auto kContentsPaddings =
     gfx::Insets::VH(/*vertical=*/40, /*horizontal=*/0);
 
-constexpr auto kErrorStatusViewPaddings = gfx::Insets(/*all=*/8);
+constexpr int kErrorStatusViewPaddings = 8;
 
 constexpr auto kImagePaddings = gfx::Insets::TLBR(/*top=*/0,
                                                   /*left=*/56,
@@ -84,14 +87,14 @@ class ErrorContentsView : public views::FlexLayoutView,
                 }))
                 .CopyAddressTo(&error_status_text_)
                 .SetBorder(views::CreateEmptyBorder(kLabelPaddings))
-                .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
                 .SetID(mahi_constants::ViewId::kErrorStatusLabel)
                 .SetMultiLine(true)
                 .SetMaximumWidth(kLabelMaximumWidth),
             views::Builder<views::Link>()
                 .CopyAddressTo(&retry_link_)
-                .SetForceUnderline(false)
+                .SetForceUnderline(true)
                 .SetID(mahi_constants::ViewId::kErrorStatusRetryLink)
                 .SetText(l10n_util::GetStringUTF16(
                     IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT))
@@ -139,6 +142,7 @@ class ErrorContentsView : public views::FlexLayoutView,
       case MahiUiUpdateType::kAnswerLoaded:
       case MahiUiUpdateType::kContentsRefreshInitiated:
       case MahiUiUpdateType::kOutlinesLoaded:
+      case MahiUiUpdateType::kPanelBoundsChanged:
       case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
       case MahiUiUpdateType::kQuestionPosted:
       case MahiUiUpdateType::kQuestionReAsked:
@@ -146,6 +150,8 @@ class ErrorContentsView : public views::FlexLayoutView,
       case MahiUiUpdateType::kSummaryLoaded:
       case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
       case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+      case MahiUiUpdateType::kElucidationRequested:
+      case MahiUiUpdateType::kElucidationLoaded:
         return;
     }
   }
@@ -162,8 +168,11 @@ MahiErrorStatusView::MahiErrorStatusView(MahiUiController* ui_controller)
     : MahiUiController::Delegate(ui_controller) {
   CHECK(chromeos::features::IsMahiEnabled());
 
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
   views::Builder<views::FlexLayoutView>(this)
-      .SetBorder(views::CreateEmptyBorder(kErrorStatusViewPaddings))
+      .SetBorder(views::CreateEmptyBorder(
+          gfx::Insets(/*all=*/kErrorStatusViewPaddings)))
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetID(mahi_constants::ViewId::kErrorStatusView)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -183,9 +192,26 @@ bool MahiErrorStatusView::GetViewVisibility(VisibilityState state) const {
     case VisibilityState::kError:
       return true;
     case VisibilityState::kQuestionAndAnswer:
-    case VisibilityState::kSummaryAndOutlines:
+    case VisibilityState::kSummaryAndOutlinesAndElucidation:
       return false;
   }
+}
+
+void MahiErrorStatusView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  SetClipPath(mahi_utils::GetCutoutClipPath(
+      /*contents_size=*/GetContentsBounds().size()));
+}
+
+bool MahiErrorStatusView::DoesIntersectRect(const views::View* target,
+                                            const gfx::Rect& rect) const {
+  if (!mahi_utils::ShouldShowFeedbackButton()) {
+    return views::ViewTargeterDelegate::DoesIntersectRect(target, rect);
+  }
+
+  auto contents_bounds = GetContentsBounds();
+  contents_bounds.Outset(gfx::Outsets(kErrorStatusViewPaddings));
+
+  return !rect.Intersects(mahi_utils::GetCornerCutoutRegion(contents_bounds));
 }
 
 BEGIN_METADATA(MahiErrorStatusView)

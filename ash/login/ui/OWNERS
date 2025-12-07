@@ -7,3 +7,5 @@ per-file lock_contents_view*=file://ash/login/LOGIN_LOCK_OWNERS
 per-file *auth_factor*=hansberry@chromium.org
 
 per-file lock_screen_media*=file://components/global_media_controls/OWNERS
+
+per-file management_disclosure*=rborzello@google.com

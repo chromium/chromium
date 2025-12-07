@@ -6,29 +6,55 @@ found in the LICENSE file.
 -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView
+    <!--        TODO(crbug.com/439911511): Legacy dropdown.-->
+    <LinearLayout
+        android:id="@+id/autofill_credit_card_editor_legacy_dropdown_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
+            android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+            android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
+            android:labelFor="@+id/autofill_credit_card_editor_billing_address_spinner"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:text="@string/autofill_credit_card_editor_billing_address" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/autofill_credit_card_editor_billing_address_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/min_touch_target_size"
+            android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
+            android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+            android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:textDirection="locale" />
+
+        <View style="@style/PreferenceSpinnerUnderlineView"
+            android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+            android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding" />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/autofill_credit_card_editor_billing_address_outlined_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
-        android:labelFor="@+id/autofill_credit_card_editor_billing_address_spinner"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-        android:text="@string/autofill_credit_card_editor_billing_address" />
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:visibility="gone">
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/autofill_credit_card_editor_billing_address_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/min_touch_target_size"
-        android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:textDirection="locale" />
+        <AutoCompleteTextView
+            android:id="@+id/autofill_credit_card_editor_billing_address_spinner_outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:hint="@string/autofill_credit_card_editor_billing_address"
+            android:textDirection="locale" />
 
-    <View style="@style/PreferenceSpinnerUnderlineView"
-        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding" />
+    </com.google.android.material.textfield.TextInputLayout>
 </merge>

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("parent_access_code") {
   sources = [
@@ -25,7 +25,6 @@ static_library("parent_access_code") {
 
   deps = [
     "//ash/public/cpp",
-    "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//components/prefs",
     "//components/user_manager",
@@ -70,15 +69,16 @@ source_set("browser_tests") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
     "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support_ui",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/prefs",
     "//components/user_manager",
     "//content/test:test_support",

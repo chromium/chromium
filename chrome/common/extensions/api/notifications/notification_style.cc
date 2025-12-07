@@ -6,12 +6,10 @@
 
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
-NotificationBitmapSizes::NotificationBitmapSizes() {
-}
+NotificationBitmapSizes::NotificationBitmapSizes() = default;
 NotificationBitmapSizes::NotificationBitmapSizes(
     const NotificationBitmapSizes& other) = default;
-NotificationBitmapSizes::~NotificationBitmapSizes() {
-}
+NotificationBitmapSizes::~NotificationBitmapSizes() = default;
 
 NotificationBitmapSizes GetNotificationBitmapSizes() {
   NotificationBitmapSizes sizes;

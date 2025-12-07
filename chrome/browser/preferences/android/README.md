@@ -23,20 +23,20 @@ Java by way of a `java_cpp_strings` build target such as [this one][4].
 
 Ask yourself the following questions about the preference to be stored:
 
-* Will the preference need to be accessed from native C++ code?
-* Should the preference be configured as syncable, so that its state can be
-  managed by Chrome Sync at Backup and Restore?
-* Does the preference need a managed policy setting?
+*   Will the preference need to be accessed from native C++ code?
+*   Should the preference be configured as syncable, so that its state can be
+    managed by Chrome Sync at Backup and Restore?
+*   Does the preference need a managed policy setting?
 
 If the answer to one or more of the above questions is Yes, then the preference
 should be stored in PrefService. If the answer to all of the above questions is
 No, then SharedPreferences should be preferred.
 
-**What if the PrefService type I need to access is not supported by
-PrefService (i.e. double, Time, etc.)?**
+**What if the PrefService type I need to access is not supported by PrefService
+(i.e. double, Time, etc.)?**
 
-If a base value type is supported by PrefService, then PrefService should
-be extended to support it once it's needed.
+If a base value type is supported by PrefService, then PrefService should be
+extended to support it once it's needed.
 
 **How do I access a PrefService pref associated with local state rather than
 browser profile?**
@@ -44,15 +44,26 @@ browser profile?**
 Most Chrome for Android preferences should be associated with a specific
 profile. If your preference should instead be associated with [local state][5]
 (for example, if it is related to the First Run Experience), then you should not
-use PrefService and should instead create your own feature-specific JNI
-bridge to access the correct PrefService instance (see [`first_run_utils.cc`][6]).
+use PrefService and should instead create your own feature-specific JNI bridge
+to access the correct PrefService instance (see [`first_run_utils.cc`][6]).
 
 **Can I move a pref from SharedPreferences to PrefService?**
 
-In general, SharedPreferences are not exposed to C++. There is limited
-support in [`shared_preferences_migrator_android.h`][7] for reading,
-writing, and clearing values from SharedPreferences.
+In general, SharedPreferences are not exposed to C++. There is limited support
+in [`shared_preferences_migrator_android.h`][7] for reading, writing, and
+clearing values from SharedPreferences.
 
+**Should I use the default SharedPreferences or create my own?**
+
+You should prefer to use the default one through `SharedPreferencesManager`
+unless you are going to store large amounts of data.
+
+Rationale:
+
+*   SharedPreferences are stored in binary xml files in the app's data directory
+    and cached in memory the first time they are accessed.
+*   The default one is prefetched on early start-up, so you can always rely on
+    it being in memory (no need to read it on a background thread).
 
 
 [0]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java

@@ -22,15 +22,18 @@ namespace bubble_anchor_util {
 AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor anchor) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  auto* location_bar_view = browser_view->GetLocationBarView();
+  auto* location_bar_view =
+      browser_view ? browser_view->GetLocationBarView() : nullptr;
 
   if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
+          content_settings::features::kLeftHandSideActivityIndicators) &&
+      location_bar_view) {
     auto* permission_dashboard_view =
         location_bar_view->permission_dashboard_controller()
             ->permission_dashboard_view();
 
-    if (anchor == kLocationBar && permission_dashboard_view->GetVisible()) {
+    if (anchor == Anchor::kLocationBar &&
+        permission_dashboard_view->GetVisible()) {
       if (permission_dashboard_view->GetIndicatorChip()->GetVisible()) {
         return {permission_dashboard_view->GetIndicatorChip(),
                 permission_dashboard_view->GetIndicatorChip(),
@@ -42,40 +45,43 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
               views::BubbleBorder::TOP_LEFT};
     }
   } else {
-    auto* request_chip_view = location_bar_view->GetChipController()->chip();
-    if (anchor == kLocationBar && request_chip_view->GetVisible()) {
-      return {request_chip_view, request_chip_view,
-              views::BubbleBorder::TOP_LEFT};
+    auto chip_anchor = browser->window()->GetLocationBar()->GetChipAnchor();
+    if (anchor == Anchor::kLocationBar && chip_anchor) {
+      return *chip_anchor;
     }
   }
 
-  if (anchor == kLocationBar && location_bar_view->IsDrawn()) {
+  if (anchor == Anchor::kLocationBar && location_bar_view->IsDrawn()) {
     return {location_bar_view, location_bar_view->location_icon_view(),
             views::BubbleBorder::TOP_LEFT};
   }
 
-  if (anchor == kLocationBar && browser_view->GetIsPictureInPictureType()) {
+  if (anchor == Anchor::kLocationBar &&
+      browser_view->GetIsPictureInPictureType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
     return {frame_view->GetLocationIconView(),
             frame_view->GetLocationIconView(), views::BubbleBorder::TOP_LEFT};
   }
 
-  if (anchor == kCustomTabBar && browser_view->toolbar()->custom_tab_bar())
+  if (anchor == Anchor::kCustomTabBar &&
+      browser_view->toolbar()->custom_tab_bar()) {
     return {browser_view->toolbar()->custom_tab_bar(),
             browser_view->toolbar()->custom_tab_bar()->location_icon_view(),
             views::BubbleBorder::TOP_LEFT};
+  }
 
   // Fall back to menu button.
   views::Button* app_menu_button =
       browser_view->toolbar_button_provider()->GetAppMenuButton();
-  if (!app_menu_button || !app_menu_button->IsDrawn())
+  if (!app_menu_button || !app_menu_button->IsDrawn()) {
     return {};
+  }
 
   // The app menu button is not visible when immersive mode is enabled and the
   // title bar is not revealed. So return null anchor configuration.
-  if (browser_view->IsImmersiveModeEnabled() &&
-      !browser_view->immersive_mode_controller()->IsRevealed()) {
+  auto* const controller = ImmersiveModeController::From(browser);
+  if (controller->IsEnabled() && !controller->IsRevealed()) {
     return {};
   }
 
@@ -85,7 +91,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view->GetLocationBarView()->GetChipController() &&
+  if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
       browser_view->GetLocationBarView()
           ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
@@ -97,13 +103,14 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
 }
 
 AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser) {
-  return GetPageInfoAnchorConfiguration(browser, kAppMenuButton);
+  return GetPageInfoAnchorConfiguration(browser, Anchor::kAppMenuButton);
 }
 
 gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
-  // GetPageInfoAnchorConfiguration()'s anchor_view should be preferred if
+  // GetPageInfoAnchorConfiguration()'s anchor should be preferred if
   // available.
-  DCHECK_EQ(GetPageInfoAnchorConfiguration(browser).anchor_view, nullptr);
+  DCHECK(std::holds_alternative<std::nullptr_t>(
+      GetPageInfoAnchorConfiguration(browser).anchor));
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   // Get position in view (taking RTL UI into account).

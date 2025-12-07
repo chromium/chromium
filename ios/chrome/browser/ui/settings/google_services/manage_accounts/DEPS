@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/trusted_vault/trusted_vault_server_constants.h",
-]

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/test/gmock_expected_support.h"
 
+#include <optional>
 #include <string>
 
 #include "base/types/expected.h"
@@ -18,10 +15,30 @@
 namespace base::test {
 namespace {
 
+TEST(GmockExpectedSupportTest, ExpectOk) {
+  const expected<void, std::string> e_void;
+  EXPECT_OK(e_void);
+
+  const expected<int, std::string> e_int = 1;
+  EXPECT_OK(e_int);
+}
+
+TEST(GmockExpectedSupportTest, AssertOk) {
+  const expected<void, std::string> e_void;
+  ASSERT_OK(e_void);
+
+  const expected<int, std::string> e_int = 1;
+  ASSERT_OK(e_int);
+}
+
 TEST(GmockExpectedSupportTest, AssertOkAndAssign) {
   const expected<int, std::string> e_int = 1;
-  ASSERT_OK_AND_ASSIGN(int result, e_int);
-  EXPECT_EQ(1, result);
+  ASSERT_OK_AND_ASSIGN(int result1, e_int);
+  EXPECT_EQ(1, result1);
+
+  const std::optional<int> o_int = 2;
+  ASSERT_OK_AND_ASSIGN(int result2, o_int);
+  EXPECT_EQ(2, result2);
 }
 
 TEST(GmockExpectedSupportTest, VoidOkEquals) {

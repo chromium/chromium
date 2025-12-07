@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_SETTINGS_UPDATER_ANDROID_RECEIVER_BRIDGE_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
 
 namespace password_manager {

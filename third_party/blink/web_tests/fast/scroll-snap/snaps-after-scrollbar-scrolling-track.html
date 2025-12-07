@@ -33,14 +33,16 @@
     }
 
     promise_test (async () => {
-      scroller.scrollTo(0, 0);
+      await waitForCompositorCommit();
+      await waitForScrollReset(scroller);
       const thumb = horizontalThumb(scroller);
       await mousePressOn(trackPos, thumb.y, clickDuration);
       await waitForScrollEnd(scroller, scrollLeft, snapPoint);
     }, "Snaps after clicking the forward track on the horizontal scrollbar.");
 
     promise_test (async () => {
-      scroller.scrollTo(0, 0);
+      await waitForCompositorCommit();
+      await waitForScrollReset(scroller);
       const thumb = verticalThumb(scroller);
       await mousePressOn(thumb.x, trackPos, clickDuration);
       await waitForScrollEnd(scroller, scrollTop, snapPoint);

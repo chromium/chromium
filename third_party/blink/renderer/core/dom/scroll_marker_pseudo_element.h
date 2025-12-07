@@ -13,14 +13,11 @@ class ScrollMarkerGroupPseudoElement;
 
 class ScrollMarkerPseudoElement : public PseudoElement {
  public:
-  explicit ScrollMarkerPseudoElement(Element* originating_element)
-      : PseudoElement(originating_element, kPseudoIdScrollMarker) {
-    SetTabIndexExplicitly();
-  }
+  explicit ScrollMarkerPseudoElement(Element* originating_element);
 
   bool IsScrollMarkerPseudoElement() const final { return true; }
 
-  void SetSelected(bool value);
+  void SetSelected(bool value, bool apply_snap_alignment = true);
   bool IsSelected() const { return is_selected_; }
   int DefaultTabIndex() const override { return 0; }
   void DefaultEventHandler(Event&) override;
@@ -33,8 +30,19 @@ class ScrollMarkerPseudoElement : public PseudoElement {
     return scroll_marker_group_;
   }
 
+  void AttachLayoutTree(AttachContext&) final;
   void Dispose() final;
   void Trace(Visitor* v) const final;
+
+  // Focused ::scroll-marker should set :focus-within on its
+  // ::scroll-marker-group, its scroll container and all ancestors, but since
+  // ::scroll-marker-group is not ancestor of ::scroll-marker in the flat tree,
+  // we need to start from ::scroll-marker-group.
+  void SetHasFocusWithinUpToAncestor(bool has_focus_within,
+                                     Element* ancestor,
+                                     bool need_snap_container_search) final;
+
+  void ScrollIntoView(bool apply_snap_alignment);
 
  private:
   bool is_selected_ = false;

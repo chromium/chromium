@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "chromecast/media/api/audio_clock_simulator.h"
 #include "chromecast/media/api/audio_provider.h"
@@ -90,7 +91,8 @@ class AudioClockSimulatorImpl : public AudioClockSimulator {
       pending_rate_.reset();
     }
     for (size_t c = 0; c < num_channels_; ++c) {
-      std::copy_n(resample_buffer_->channel(c), num_frames, channel_data[c]);
+      std::copy_n(resample_buffer_->channel_span(c).data(), num_frames,
+                  UNSAFE_TODO(channel_data[c]));
     }
     return num_frames;
   }
@@ -103,7 +105,7 @@ class AudioClockSimulatorImpl : public AudioClockSimulator {
   void ResamplerReadCallback(int frame_delay, ::media::AudioBus* output) {
     float* channels[kMaxChannels];
     for (size_t c = 0; c < num_channels_; ++c) {
-      channels[c] = output->channel(c);
+      UNSAFE_TODO(channels[c]) = output->channel_span(c).data();
     }
 
     int64_t timestamp =

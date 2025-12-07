@@ -1,0 +1,42 @@
+owners:
+- hchao@chromium.org
+- cthomp@chromium.org
+- chrome-secure-web-and-net@chromium.org
+
+caption: Allow sites to make requests to local network endpoints.
+
+desc: |-
+  List of URL patterns. Requests initiated from websites served by matching origins are not subject to <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks.
+
+  If an origin is covered by both this policy and by LocalNetworkAccessBlockedForUrls, LocalNetworkAccessBlockedForUrls takes precedence.
+
+  For origins not covered by the patterns specified here, the user's personal configuration will apply.
+
+  For detailed information on valid URL patterns, please see https://chromeenterprise.google/policies/url-patterns/.
+
+  See https://wicg.github.io/local-network-access/ for <ph
+  name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
+
+example_value:
+- http://www.example.com:8080
+- '[*.]example.edu'
+- '*'
+
+supported_on:
+- chrome.*:139-
+- chrome_os:139-
+- android:140-
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+type: list
+
+schema:
+  items:
+    type: string
+  type: array
+
+tags:
+- system-security

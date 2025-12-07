@@ -10,8 +10,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/layer_tree_impl_test_base.h"
@@ -2453,15 +2455,12 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   CopyProperties(root, child2);
   CopyProperties(root, child3);
 
-  Region empty_invalidation;
-  scoped_refptr<RasterSource> raster_source1(
-      FakeRasterSource::CreateFilledWithPaintWorklet(child1->bounds()));
-  child1->UpdateRasterSource(raster_source1, &empty_invalidation);
-  child1->RegenerateDiscardableImageMapIfNeeded();
-  scoped_refptr<RasterSource> raster_source3(
-      FakeRasterSource::CreateFilledWithPaintWorklet(child3->bounds()));
-  child3->UpdateRasterSource(raster_source3, &empty_invalidation);
-  child3->RegenerateDiscardableImageMapIfNeeded();
+  scoped_refptr<RasterSource> raster_source1 =
+      FakeRasterSource::CreateFilledWithPaintWorklet(child1->bounds());
+  child1->SetRasterSourceForTesting(raster_source1);
+  scoped_refptr<RasterSource> raster_source3 =
+      FakeRasterSource::CreateFilledWithPaintWorklet(child3->bounds());
+  child3->SetRasterSourceForTesting(raster_source3);
 
   // The set should correctly track which layers are in it.
   const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>& layers =
@@ -2471,10 +2470,10 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   EXPECT_TRUE(layers.contains(child3));
 
   // Test explicitly removing a layer from the set.
-  scoped_refptr<RasterSource> empty_raster_source(
-      FakeRasterSource::CreateFilled(child1->bounds()));
-  child1->UpdateRasterSource(empty_raster_source, &empty_invalidation);
-  child1->RegenerateDiscardableImageMapIfNeeded();
+  scoped_refptr<RasterSource> empty_raster_source =
+      FakeRasterSource::CreateFilled(child1->bounds());
+  child1->SetRasterSourceForTesting(empty_raster_source);
+
   EXPECT_EQ(layers.size(), 1u);
   EXPECT_FALSE(layers.contains(child1));
 
@@ -2482,138 +2481,11 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   EXPECT_EQ(layers.size(), 0u);
 }
 
-TEST_F(LayerTreeImplTest, ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kNoPreserveLastMutation);
-  ASSERT_FALSE(host_impl().CommitsToActiveTree());
-
-  // When we have a pending tree (e.g. commit_to_active_tree is false), the
-  // various ElementId to animation maps should not track anything for the
-  // active tree (as they are only used on the sync tree).
-  LayerTreeImpl* active_tree = host_impl().active_tree();
-  UpdateDrawProperties(active_tree);
-  LayerImpl* active_root = active_tree->root_layer();
-
-  auto& active_opacity_map =
-      active_tree->element_id_to_opacity_animations_for_testing();
-  ASSERT_EQ(active_opacity_map.size(), 0u);
-  active_tree->SetOpacityMutated(active_root->element_id(), 0.5f);
-  EXPECT_EQ(active_opacity_map.size(), 0u);
-
-  auto& active_transform_map =
-      active_tree->element_id_to_transform_animations_for_testing();
-  ASSERT_EQ(active_transform_map.size(), 0u);
-  active_tree->SetTransformMutated(active_root->element_id(), gfx::Transform());
-  EXPECT_EQ(active_transform_map.size(), 0u);
-
-  auto& active_filter_map =
-      active_tree->element_id_to_filter_animations_for_testing();
-  ASSERT_EQ(active_filter_map.size(), 0u);
-  active_tree->SetFilterMutated(active_root->element_id(), FilterOperations());
-  EXPECT_EQ(active_filter_map.size(), 0u);
-
-  // The pending/recycle tree however should track them. Here we need two nodes
-  // (the root and a child) as we will be adding entries for both the pending
-  // and recycle tree cases.
-  host_impl().CreatePendingTree();
-  LayerTreeImpl* pending_tree = host_impl().pending_tree();
-  LayerImpl* pending_root = EnsureRootLayerInPendingTree();
-  pending_root->SetBounds(gfx::Size(1, 1));
-  LayerImpl* child = AddLayerInPendingTree<LayerImpl>();
-  pending_tree->SetElementIdsForTesting();
-
-  // A scale transform forces a TransformNode.
-  gfx::Transform scale3d;
-  scale3d.Scale3d(1, 1, 0.5);
-  CopyProperties(pending_root, child);
-  CreateTransformNode(child).local = scale3d;
-  // A non-one opacity forces an EffectNode.
-  CreateEffectNode(child).opacity = 0.9f;
-
-  UpdateDrawProperties(pending_tree);
-
-  auto& pending_opacity_map =
-      pending_tree->element_id_to_opacity_animations_for_testing();
-  ASSERT_EQ(pending_opacity_map.size(), 0u);
-  pending_tree->SetOpacityMutated(pending_root->element_id(), 0.5f);
-  EXPECT_EQ(pending_opacity_map.size(), 1u);
-
-  auto& pending_transform_map =
-      pending_tree->element_id_to_transform_animations_for_testing();
-  ASSERT_EQ(pending_transform_map.size(), 0u);
-  pending_tree->SetTransformMutated(pending_root->element_id(),
-                                    gfx::Transform());
-  EXPECT_EQ(pending_transform_map.size(), 1u);
-
-  auto& pending_filter_map =
-      pending_tree->element_id_to_filter_animations_for_testing();
-  ASSERT_EQ(pending_filter_map.size(), 0u);
-  pending_tree->SetFilterMutated(pending_root->element_id(),
-                                 FilterOperations());
-  EXPECT_EQ(pending_filter_map.size(), 1u);
-
-  // Finally, check the recycle tree - this should still track them.
-  host_impl().ActivateSyncTree();
-  LayerTreeImpl* recycle_tree = host_impl().recycle_tree();
-  ASSERT_TRUE(recycle_tree);
-
-  auto& recycle_opacity_map =
-      recycle_tree->element_id_to_opacity_animations_for_testing();
-  ASSERT_EQ(recycle_opacity_map.size(), 1u);
-  recycle_tree->SetOpacityMutated(child->element_id(), 0.5f);
-  EXPECT_EQ(recycle_opacity_map.size(), 2u);
-
-  auto& recycle_transform_map =
-      recycle_tree->element_id_to_transform_animations_for_testing();
-  ASSERT_EQ(recycle_transform_map.size(), 1u);
-  recycle_tree->SetTransformMutated(child->element_id(), gfx::Transform());
-  EXPECT_EQ(recycle_transform_map.size(), 2u);
-
-  auto& recycle_filter_map =
-      recycle_tree->element_id_to_filter_animations_for_testing();
-  ASSERT_EQ(recycle_filter_map.size(), 1u);
-  recycle_tree->SetFilterMutated(child->element_id(), FilterOperations());
-  EXPECT_EQ(recycle_filter_map.size(), 2u);
-}
-
 class CommitToActiveTreeLayerTreeImplTest : public LayerTreeImplTest {
  public:
   CommitToActiveTreeLayerTreeImplTest()
       : LayerTreeImplTest(CommitToActiveTreeLayerListSettings()) {}
 };
-
-TEST_F(CommitToActiveTreeLayerTreeImplTest,
-       ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
-  // The kNoPreserveLastMutation feature makes this test obsolete.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kNoPreserveLastMutation);
-
-  ASSERT_TRUE(host_impl().CommitsToActiveTree());
-
-  // When we are commiting directly to the active tree, the various ElementId to
-  // animation maps should track on the active tree (as it is the sync tree, and
-  // they are used on the sync tree).
-  LayerTreeImpl* active_tree = host_impl().active_tree();
-  UpdateDrawProperties(active_tree);
-  LayerImpl* root = active_tree->root_layer();
-
-  auto& opacity_map =
-      active_tree->element_id_to_opacity_animations_for_testing();
-  ASSERT_EQ(opacity_map.size(), 0u);
-  active_tree->SetOpacityMutated(root->element_id(), 0.5f);
-  EXPECT_EQ(opacity_map.size(), 1u);
-
-  auto& transform_map =
-      active_tree->element_id_to_transform_animations_for_testing();
-  ASSERT_EQ(transform_map.size(), 0u);
-  active_tree->SetTransformMutated(root->element_id(), gfx::Transform());
-  EXPECT_EQ(transform_map.size(), 1u);
-
-  auto& filter_map = active_tree->element_id_to_filter_animations_for_testing();
-  ASSERT_EQ(filter_map.size(), 0u);
-  active_tree->SetFilterMutated(root->element_id(), FilterOperations());
-  EXPECT_EQ(filter_map.size(), 1u);
-}
 
 // Verifies that the effect node's |is_fast_rounded_corner| is set to a draw
 // properties of a RenderSurface, and then correctly forwarded to the shared
@@ -2649,8 +2521,8 @@ TEST_F(LayerTreeImplTest, CheckRenderSurfaceIsFastRoundedCorner) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
-  render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),
-                              &append_quads_data);
+  render_surface->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                              render_pass.get(), &append_quads_data);
 
   ASSERT_EQ(1u, render_pass->shared_quad_state_list.size());
   viz::SharedQuadState* shared_quad_state =
@@ -2699,6 +2571,48 @@ TEST_F(LayerTreeImplOcclusionTest, Occlusion) {
   EXPECT_TRUE(active_tree->UnoccludedScreenSpaceRegion().IsEmpty());
   EXPECT_TRUE(bottom_layer->draw_properties()
                   .occlusion_in_content_space.HasOcclusion());
+}
+
+TEST_F(LayerTreeImplTest, TotalScrollOffsetForElement) {
+  LayerImpl* root = root_layer();
+  root->SetBounds(gfx::Size(100, 100));
+
+  LayerImpl* scroller = AddLayerInActiveTree<LayerImpl>();
+  scroller->SetBounds(gfx::Size(50, 50));
+  scroller->SetElementId(ElementId(100));
+  CopyProperties(root, scroller);
+  CreateTransformNode(scroller);
+  // Create a scroll node. The content is larger than the container.
+  CreateScrollNode(scroller, gfx::Size(50, 50));
+  GetScrollNode(scroller)->bounds = gfx::Size(100, 200);
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  // Initial state, no scroll.
+  EXPECT_POINTF_EQ(
+      gfx::PointF(0, 0),
+      host_impl().active_tree()->TotalScrollOffset(scroller->element_id()));
+  EXPECT_POINTF_EQ(
+      gfx::PointF(50, 150),
+      host_impl().active_tree()->TotalMaxScrollOffset(scroller->element_id()));
+
+  // Apply some scroll.
+  SetScrollOffset(scroller, gfx::PointF(10, 20));
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  EXPECT_POINTF_EQ(
+      gfx::PointF(10, 20),
+      host_impl().active_tree()->TotalScrollOffset(scroller->element_id()));
+
+  // Test with invalid ElementId.
+  EXPECT_POINTF_EQ(
+      gfx::PointF(0, 0),
+      host_impl().active_tree()->TotalScrollOffset(ElementId(999)));
+  EXPECT_POINTF_EQ(
+      gfx::PointF(0, 0),
+      host_impl().active_tree()->TotalMaxScrollOffset(ElementId(999)));
 }
 
 }  // namespace

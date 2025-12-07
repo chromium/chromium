@@ -11,6 +11,8 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"

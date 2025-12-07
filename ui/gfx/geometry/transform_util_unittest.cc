@@ -157,10 +157,7 @@ TEST(TransformUtilTest, Transform2dScaleComponents) {
   const float infinity_or_zero = std::numeric_limits<float>::has_infinity
                                      ? std::numeric_limits<float>::infinity()
                                      : 0;
-  const float denorm_min_or_zero =
-      (std::numeric_limits<float>::has_denorm == std::denorm_present)
-          ? std::numeric_limits<float>::denorm_min()
-          : 0;
+  const float denorm_min = std::numeric_limits<float>::denorm_min();
 
   const struct {
     Transform transform;
@@ -254,7 +251,7 @@ TEST(TransformUtilTest, Transform2dScaleComponents) {
       {Transform::RowMajor(3, 0, 0, -23,
                            0, 7, 0, 31,
                            0, 0, 11, 47,
-                           0, 0, 0, denorm_min_or_zero),
+                           0, 0, 0, denorm_min),
        std::nullopt},
       // clang-format on
   };

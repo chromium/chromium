@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
 import("//build/config/ui.gni")
 
@@ -24,8 +23,6 @@ _grit_defines = [
   "SHARED_INTERMEDIATE_DIR=" + shared_intermediate_dir,
   "_google_chrome=${is_chrome_branded}",
   "_is_chrome_for_testing_branded=${is_chrome_for_testing_branded}",
-  "chromeos_ash=${is_chromeos_ash}",
-  "chromeos_lacros=${is_chromeos_lacros}",
 
   # This is related to Chrome OS.
   "reven=${is_reven}",
@@ -34,8 +31,10 @@ _grit_defines = [
   "use_aura=${use_aura}",
   "use_ozone=${use_ozone}",
 
-  # Mac and iOS want Title Case strings.
-  "use_titlecase=${is_apple}",
+  # Mac wants Title Case strings.
+  "use_titlecase=${is_mac}",
+
+  "is_desktop_android=${is_desktop_android}",
 ]
 
 # Must match `enable_hidpi` in ui/base/ui_features.gni.

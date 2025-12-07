@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +25,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/onc/onc_constants.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -31,6 +33,7 @@
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace extensions {
@@ -77,14 +80,15 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
 
-    const AccountId account_id = AccountId::FromUserEmail("test@test");
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->UserLoggedIn(account_id, kUserHash,
-                                    /*browser_restart=*/false,
-                                    /*is_child=*/false);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    user_manager::UserManager::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
+    fake_user_manager_->UserLoggedIn(account_id, kUserHash);
 
     ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,
@@ -101,7 +105,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void TearDown() override {
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
 
     ash::LoginState::Shutdown();
 
@@ -317,14 +321,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     if (!ui_data_json) {
       return std::nullopt;
     }
-
-    JSONStringValueDeserializer deserializer(*ui_data_json);
-    auto deserialized = deserializer.Deserialize(nullptr, nullptr);
-
-    if (!deserialized || !deserialized->is_dict()) {
-      return std::nullopt;
-    }
-    return std::move(*deserialized).TakeDict();
+    return base::JSONReader::ReadDict(*ui_data_json,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   }
 
   bool GetUserSettingStringData(const std::string& guid,
@@ -368,7 +366,9 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
@@ -389,7 +389,8 @@ TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkPropertiesWebUI) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", {"Priority": 0}])", kSharedWifiGuid));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()
@@ -406,7 +407,8 @@ TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkProperties) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", {"Priority": 0}])", kPrivateWifiGuid));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()
@@ -515,7 +517,8 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
   EXPECT_TRUE(
@@ -597,7 +600,8 @@ TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork) {
 
   RunFunction(set_properties.get(),
               base::StringPrintf(R"(["%s", {"Priority": 2}])", guid.c_str()));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   EXPECT_EQ(2, GetNetworkPriority(network));
 }

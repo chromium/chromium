@@ -7,26 +7,29 @@ package org.chromium.chrome.test.util.browser.signin;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
  * Base class for defining methods for signing in an live account for testing. The correct version
  * of LiveSigninTestUtilImpl will be determined at compile time via build rules.
  */
-public abstract class LiveSigninTestUtil {
+public class LiveSigninTestUtil {
     private static final String TAG = "LiveSigninTestUtil";
     private static final long MAX_TIME_TO_POLL_MS = 10000L;
     private static LiveSigninTestUtil sInstance;
 
     public static LiveSigninTestUtil getInstance() {
         if (sInstance == null) {
-            sInstance = new LiveSigninTestUtilImpl();
+            sInstance = ServiceLoaderUtil.maybeCreate(LiveSigninTestUtil.class);
+            if (sInstance == null) {
+                sInstance = new LiveSigninTestUtil();
+            }
         }
         return sInstance;
     }
@@ -38,11 +41,11 @@ public abstract class LiveSigninTestUtil {
         Log.i(TAG, "Finished signin for account %s", coreAccountInfo.toString());
     }
 
-    /** Add a live account to the device and signs in for testing, and enables Sync-the-feature. */
-    public void addAccountWithPasswordThenSigninAndEnableSync(String accountName, String password) {
+    /** Add a live account to the device and signs in for testing with consent level Sync. */
+    public void addAccountWithPasswordThenSigninWithConsentLevelSync(
+            String accountName, String password) {
         CoreAccountInfo coreAccountInfo = addAccountWithPassword(accountName, password);
-        SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+        SigninTestUtil.signinWithConsentLevelSync(coreAccountInfo);
         Log.i(TAG, "Finished signin and enabling sync for account %s", coreAccountInfo.toString());
     }
 

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ash/webui/scanning/scanning_ui.h"
 
@@ -31,8 +27,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -175,9 +170,8 @@ ScanningUI::ScanningUI(
 
   accessibility_features_ = std::make_unique<AccessibilityFeatures>();
 
-  const auto resources =
-      base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source, resources, IDR_ASH_SCANNING_APP_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, kAshScanningAppResources,
+                       IDR_ASH_SCANNING_APP_INDEX_HTML);
 
   AddScanningAppStrings(html_source);
 
@@ -200,12 +194,6 @@ void ScanningUI::BindInterface(
     mojo::PendingReceiver<common::mojom::AccessibilityFeatures>
         pending_receiver) {
   accessibility_features_->BindInterface(std::move(pending_receiver));
-}
-
-void ScanningUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ScanningUI)

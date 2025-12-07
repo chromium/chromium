@@ -6,6 +6,8 @@ package org.chromium.mojo.bindings;
 
 import android.annotation.SuppressLint;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.Watcher;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /** Implementation of {@link Router}. */
+@NullMarked
 @SuppressLint("UseSparseArrays") // https://crbug.com/600699
 public class RouterImpl implements Router {
 
@@ -64,6 +67,7 @@ public class RouterImpl implements Router {
         }
 
         @Override
+        @SuppressWarnings("Finalize") // TODO(crbug.com/40286193): Use LifetimeAssert instead.
         protected void finalize() throws Throwable {
             if (!mAcceptWasInvoked) {
                 // We close the pipe here as a way of signaling to the calling application that an
@@ -82,20 +86,20 @@ public class RouterImpl implements Router {
      * The {@link MessageReceiverWithResponder} that will consume the messages received from the
      * pipe.
      */
-    private MessageReceiverWithResponder mIncomingMessageReceiver;
+    private @Nullable MessageReceiverWithResponder mIncomingMessageReceiver;
 
     /** The next id to use for a request id which needs a response. It is auto-incremented. */
     private long mNextRequestId = 1;
 
     /** The map from request ids to {@link MessageReceiver} of request currently in flight. */
-    private Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
+    private final Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
 
     /**
      * An Executor that will run on the thread associated with the MessagePipe to which
      * this Router is bound. This may be {@code Null} if the MessagePipeHandle passed
      * in to the constructor is not valid.
      */
-    private final Executor mExecutor;
+    private final @Nullable Executor mExecutor;
 
     /**
      * Constructor that will use the default {@link Watcher}.
@@ -103,7 +107,7 @@ public class RouterImpl implements Router {
      * @param messagePipeHandle The {@link MessagePipeHandle} to route message for.
      */
     public RouterImpl(MessagePipeHandle messagePipeHandle) {
-        this(messagePipeHandle, BindingsHelper.getWatcherForHandle(messagePipeHandle));
+        this(messagePipeHandle, BindingsHelper.getWatcherForHandleNonNull(messagePipeHandle));
     }
 
     /**

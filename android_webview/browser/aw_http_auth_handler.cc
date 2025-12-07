@@ -20,15 +20,16 @@
 #include "android_webview/browser_jni_headers/AwHttpAuthHandler_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::BrowserThread;
 
 namespace android_webview {
 
-AwHttpAuthHandler::AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
-                                     content::WebContents* web_contents,
-                                     bool first_auth_attempt,
-                                     LoginAuthRequiredCallback callback)
+AwHttpAuthHandler::AwHttpAuthHandler(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    bool first_auth_attempt,
+    content::LoginDelegate::LoginAuthRequiredCallback callback)
     : host_(auth_info.challenger.host()),
       realm_(auth_info.realm),
       callback_(std::move(callback)) {
@@ -52,9 +53,8 @@ AwHttpAuthHandler::~AwHttpAuthHandler() {
 }
 
 void AwHttpAuthHandler::Proceed(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
-                                const JavaParamRef<jstring>& user,
-                                const JavaParamRef<jstring>& password) {
+                                const JavaRef<jstring>& user,
+                                const JavaRef<jstring>& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (callback_) {
     std::move(callback_).Run(
@@ -63,7 +63,7 @@ void AwHttpAuthHandler::Proceed(JNIEnv* env,
   }
 }
 
-void AwHttpAuthHandler::Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void AwHttpAuthHandler::Cancel(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (callback_) {
     std::move(callback_).Run(std::nullopt);
@@ -89,3 +89,5 @@ void AwHttpAuthHandler::Start() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwHttpAuthHandler)

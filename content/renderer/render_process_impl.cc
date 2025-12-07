@@ -50,12 +50,6 @@
 
 namespace {
 
-void SetV8FlagIfFeature(const base::Feature& feature, const char* v8_flag) {
-  if (base::FeatureList::IsEnabled(feature)) {
-    v8::V8::SetFlagsFromString(v8_flag, strlen(v8_flag));
-  }
-}
-
 void SetV8FlagIfOverridden(const base::Feature& feature,
                            const char* enabling_flag,
                            const char* disabling_flag) {
@@ -82,25 +76,17 @@ GetThreadPoolInitParams() {
   size_t desired_num_threads =
       std::max(kMaxNumThreadsInForegroundPoolLowerBound,
                content::GetMinForegroundThreadsInRendererThreadPool());
-  if (base::FeatureList::IsEnabled(base::kThreadPoolCap2)) {
-    // Cap the threadpool to an initial fixed size.
-    // Note: The size can still grow beyond the value set here
-    // when tasks are blocked for a certain period of time.
-    const int max_allowed_workers_per_pool =
-        base::kThreadPoolCapRestrictedCount.Get();
-    desired_num_threads = std::min(
-        desired_num_threads, static_cast<size_t>(max_allowed_workers_per_pool));
-  }
   return std::make_unique<base::ThreadPoolInstance::InitParams>(
       desired_num_threads);
 }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
-  // TODO(siggi): Set a crash key or a breadcrumb so the fact that we hit a
-  //     V8 DCHECK gets out in the crash report.
-  ::logging::LogMessage(file, line, logging::LOGGING_DCHECK).stream()
-      << message;
+  // Only file/line are used from base::Location::Current() inside DCHECKs right
+  // now so this should correctly pretend to be the original v8 point of
+  // failure.
+  ::logging::CheckError::DCheck(message,
+                                base::Location::Current("", file, line));
 }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
@@ -131,59 +117,61 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-  if (base::SysInfo::IsLowEndDevice()) {
-    std::string optimize_flag("--optimize-for-size");
-    v8::V8::SetFlagsFromString(optimize_flag.c_str(), optimize_flag.size());
+  // Do not apply V8 flag overrides if disallowed.
+  const bool disallow_v8_feature_flag_overrides =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisallowV8FeatureFlagOverrides);
+  if (!disallow_v8_feature_flag_overrides) {
+    if (base::SysInfo::IsLowEndDevice()) {
+      std::string_view optimize_flag("--optimize-for-size");
+      v8::V8::SetFlagsFromString(optimize_flag.data(), optimize_flag.size());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // V8 flags are typically set in gin/v8_initializer.cc. Only those flags
+    // should be set here that cannot be set in gin/v8_initializer.cc because
+    // e.g. the flag can be set in chrome://flags.
+    ////////////////////////////////////////////////////////////////////////////
+    SetV8FlagIfHasSwitch(switches::kDisableJavaScriptHarmonyShipping,
+                         "--noharmony-shipping");
+    SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
+    SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
+                         "--wasm-staging");
+
+    SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
+
+#if BUILDFLAG(IS_ANDROID)
+    SetV8FlagIfOverridden(features::kV8AndroidDesktopHighEndConfig,
+                          "--high-end-android", "--no-high-end-android");
+#endif
+
+    SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
+                          "--no-liftoff");
+
+    SetV8FlagIfOverridden(
+        features::kEnableExperimentalWebAssemblySharedEverything,
+        "--experimental-wasm-shared", "--no-experimental-wasm-shared");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
+                          "--wasm-lazy-compilation",
+                          "--no-wasm-lazy-compilation");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
+                          "--no-wasm-tier-up");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
+                          "--wasm-dynamic-tiering",
+                          "--no-wasm-dynamic-tiering");
+
+    SetV8FlagIfOverridden(blink::features::kJavaScriptSourcePhaseImports,
+                          "--js-source-phase-imports",
+                          "--no-js-source-phase-imports");
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // V8 flags are typically set in gin/v8_initializer.cc. Only those flags
-  // should be set here that cannot be set in gin/v8_initializer.cc because
-  // e.g. the flag can be set in chrome://flags.
-  /////////////////////////////////////////////////////////////////////////////
-  SetV8FlagIfHasSwitch(switches::kDisableJavaScriptHarmonyShipping,
-                       "--noharmony-shipping");
-  SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
-  SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
-                       "--wasm-staging");
-
-  SetV8FlagIfFeature(features::kJavaScriptExperimentalSharedMemory,
-                     "--shared-string-table --harmony-struct");
-
-  SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
-                        "--no-liftoff");
-
-  // V8's WASM stack switching support is sufficient to enable JavaScript
-  // Promise Integration.
-  SetV8FlagIfOverridden(features::kEnableExperimentalWebAssemblyJSPI,
-                        "--experimental-wasm-jspi",
-                        "--no-experimental-wasm-jspi");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
-                        "--wasm-lazy-compilation",
-                        "--no-wasm-lazy-compilation");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyMemory64,
-                        "--experimental-wasm-memory64",
-                        "--no-experimental-wasm-memory64");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
-                        "--no-wasm-tier-up");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
-                        "--wasm-dynamic-tiering", "--no-wasm-dynamic-tiering");
 
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Bypass the SAB restriction for the Finch "kill switch".
-  enable_shared_array_buffer_unconditionally =
-      enable_shared_array_buffer_unconditionally ||
-      base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop);
-
   // Bypass the SAB restriction when enabled by Enterprise Policy.
   if (!enable_shared_array_buffer_unconditionally &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -194,7 +182,12 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif
 
-  if (!enable_shared_array_buffer_unconditionally) {
+  // Do not conditionally set the V8 SharedArrayBuffer feature flag if V8
+  // feature flag overrides are disallowed.
+  // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is complete and
+  // kSharedArrayBuffer is enabled by default.
+  if (!enable_shared_array_buffer_unconditionally &&
+      !disallow_v8_feature_flag_overrides) {
     // It is still possible to enable SharedArrayBuffer per context using the
     // `SharedArrayBufferConstructorEnabledCallback`. This will be done if the
     // context is cross-origin isolated or if it opts in into the reverse origin
@@ -224,11 +217,11 @@ std::unique_ptr<RenderProcess> RenderProcessImpl::Create() {
 }
 
 void RenderProcessImpl::AddRefProcess() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderProcessImpl::ReleaseProcess() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

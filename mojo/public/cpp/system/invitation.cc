@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/c/system/invitation.h"
@@ -178,7 +179,7 @@ ScopedMessagePipeHandle OutgoingInvitation::AttachMessagePipe(
 
 ScopedMessagePipeHandle OutgoingInvitation::AttachMessagePipe(uint64_t name) {
   return AttachMessagePipe(
-      std::string_view(reinterpret_cast<const char*>(&name), sizeof(name)));
+      base::as_string_view(base::byte_span_from_ref(name)));
 }
 
 ScopedMessagePipeHandle OutgoingInvitation::ExtractMessagePipe(
@@ -195,7 +196,7 @@ ScopedMessagePipeHandle OutgoingInvitation::ExtractMessagePipe(
 
 ScopedMessagePipeHandle OutgoingInvitation::ExtractMessagePipe(uint64_t name) {
   return ExtractMessagePipe(
-      std::string_view(reinterpret_cast<const char*>(&name), sizeof(name)));
+      base::as_string_view(base::byte_span_from_ref(name)));
 }
 
 // static
@@ -396,7 +397,7 @@ ScopedMessagePipeHandle IncomingInvitation::ExtractMessagePipe(
 
 ScopedMessagePipeHandle IncomingInvitation::ExtractMessagePipe(uint64_t name) {
   return ExtractMessagePipe(
-      std::string_view(reinterpret_cast<const char*>(&name), sizeof(name)));
+      base::as_string_view(base::byte_span_from_ref(name)));
 }
 
 }  // namespace mojo

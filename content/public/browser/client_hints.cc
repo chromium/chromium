@@ -13,10 +13,10 @@ void AddClientHintsHeadersToPrefetchNavigation(
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
-    bool is_javascript_enabled) {
+    FrameTreeNode* ftn_for_devtools_override) {
   AddPrefetchNavigationRequestClientHintsHeaders(origin, headers, context,
                                                  delegate, is_ua_override_on,
-                                                 is_javascript_enabled);
+                                                 ftn_for_devtools_override);
 }
 
 }  // namespace content

@@ -18,13 +18,13 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -92,16 +92,21 @@ bool ContributionsFilteringIdsFitWithinMaxBytes(
   return true;
 }
 
-}  // namespace
-
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError11",
                                 error);
 }
 
-// static
-base::expected<TriggerRegistration, TriggerRegistrationError>
-TriggerRegistration::Parse(base::Value::Dict dict) {
+void RecordFeatureUsage(const TriggerRegistration& registration) {
+  base::UmaHistogramCounts100("Conversions.ScopesPerTriggerRegistration",
+                              registration.attribution_scopes.scopes().size());
+  base::UmaHistogramCounts100(
+      "Conversions.NamedBudgetsPerTriggerRegistration",
+      registration.aggregatable_named_budget_candidates.size());
+}
+
+base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
+    base::Value::Dict dict) {
   TriggerRegistration registration;
 
   ASSIGN_OR_RETURN(
@@ -135,6 +140,13 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
           &AggregatableTriggerData::FromJSON));
 
   ASSIGN_OR_RETURN(
+      registration.aggregatable_named_budget_candidates,
+      ParseList<AggregatableNamedBudgetCandidate>(
+          dict.Find(kAggregatableNamedBudgets),
+          TriggerRegistrationError::kAggregatableNamedBudgetWrongType,
+          &AggregatableNamedBudgetCandidate::FromJSON));
+
+  ASSIGN_OR_RETURN(
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
@@ -163,7 +175,21 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
             : TriggerRegistrationError::kAggregatableValuesValueInvalid);
   }
 
+  RecordFeatureUsage(registration);
+
   return registration;
+}
+
+}  // namespace
+
+// static
+base::expected<TriggerRegistration, TriggerRegistrationError>
+TriggerRegistration::Parse(base::Value value) {
+  if (base::Value::Dict* dict = value.GetIfDict()) {
+    return ParseDict(std::move(*dict));
+  } else {
+    return base::unexpected(TriggerRegistrationError::kRootWrongType);
+  }
 }
 
 // static
@@ -172,15 +198,9 @@ TriggerRegistration::Parse(std::string_view json) {
   base::expected<TriggerRegistration, TriggerRegistrationError> trigger =
       base::unexpected(TriggerRegistrationError::kInvalidJson);
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
-
-  if (value) {
-    if (base::Value::Dict* dict = value->GetIfDict()) {
-      trigger = Parse(std::move(*dict));
-    } else {
-      trigger = base::unexpected(TriggerRegistrationError::kRootWrongType);
-    }
+  if (std::optional<base::Value> value =
+          base::JSONReader::Read(json, base::JSON_PARSE_RFC)) {
+    trigger = Parse(*std::move(value));
   }
 
   if (!trigger.has_value()) {
@@ -230,7 +250,10 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   aggregatable_debug_reporting_config.Serialize(dict);
 
-  attribution_scopes.Serialize(dict);
+  attribution_scopes.SerializeForTrigger(dict);
+
+  SerializeListIfNotEmpty(dict, kAggregatableNamedBudgets,
+                          aggregatable_named_budget_candidates);
 
   return dict;
 }

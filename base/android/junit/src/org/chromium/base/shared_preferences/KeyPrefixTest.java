@@ -23,11 +23,11 @@ public class KeyPrefixTest {
     public void testSuccess_validPattern() {
         KeyPrefix prefix = new KeyPrefix("Chrome.Feature.KP.*");
 
-        assertEquals(prefix.pattern(), "Chrome.Feature.KP.*");
+        assertEquals("Chrome.Feature.KP.*", prefix.pattern());
 
-        assertEquals(prefix.createKey("DynamicKey"), "Chrome.Feature.KP.DynamicKey");
-        assertEquals(prefix.createKey("Level.DynamicKey"), "Chrome.Feature.KP.Level.DynamicKey");
-        assertEquals(prefix.createKey(42), "Chrome.Feature.KP.42");
+        assertEquals("Chrome.Feature.KP.DynamicKey", prefix.createKey("DynamicKey"));
+        assertEquals("Chrome.Feature.KP.Level.DynamicKey", prefix.createKey("Level.DynamicKey"));
+        assertEquals("Chrome.Feature.KP.42", prefix.createKey(42));
 
         assertTrue(prefix.hasGenerated("Chrome.Feature.KP.DynamicKey"));
         assertTrue(prefix.hasGenerated("Chrome.Feature.KP.Level.DynamicKey"));
@@ -40,8 +40,8 @@ public class KeyPrefixTest {
     public void testSuccess_validLegacyPattern() {
         KeyPrefix prefix = new KeyPrefix("legacy_pattern_*");
 
-        assertEquals(prefix.pattern(), "legacy_pattern_*");
-        assertEquals(prefix.createKey("DynamicKey"), "legacy_pattern_DynamicKey");
+        assertEquals("legacy_pattern_*", prefix.pattern());
+        assertEquals("legacy_pattern_DynamicKey", prefix.createKey("DynamicKey"));
 
         assertTrue(prefix.hasGenerated("legacy_pattern_DynamicKey"));
         assertFalse(prefix.hasGenerated("OtherKey"));

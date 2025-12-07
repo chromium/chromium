@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_OTR_DELEGATE_H_
 #define CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_OTR_DELEGATE_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/host_zoom_map.h"

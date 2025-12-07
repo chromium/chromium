@@ -93,12 +93,24 @@ class BLINK_PLATFORM_EXPORT WebURL {
   bool is_valid_;
 };
 
+// This can be used as a projection, e.g. when calling base::ToVector().
+#if INSIDE_BLINK
+inline WebURL ToWebURL(const KURL& url) {
+  return WebURL(url);
+}
+// To convert a std::vector<WebURL> to Vector<KURL>, use
+//   Vector<KURL>(std_vector_web_url).
+#else
+inline WebURL ToWebURL(const GURL& url) {
+  return WebURL(url);
+}
+inline GURL ToGURL(const WebURL& url) {
+  return GURL(url);
+}
+#endif
+
 inline bool operator==(const WebURL& a, const WebURL& b) {
   return a.GetString().Equals(b.GetString());
-}
-
-inline bool operator!=(const WebURL& a, const WebURL& b) {
-  return !(a == b);
 }
 
 }  // namespace blink

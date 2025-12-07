@@ -16,7 +16,7 @@
 
 static jboolean JNI_SafetyCheckBridge_UserSignedIn(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jhandle) {
+    const base::android::JavaRef<jobject>& jhandle) {
   return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
       signin::GetIdentityManagerForBrowserContext(
           content::BrowserContextFromJavaHandle(jhandle)));
@@ -24,8 +24,10 @@ static jboolean JNI_SafetyCheckBridge_UserSignedIn(
 
 static jint JNI_SafetyCheckBridge_CheckSafeBrowsing(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jhandle) {
+    const base::android::JavaRef<jobject>& jhandle) {
   return static_cast<int>(
       safety_check::CheckSafeBrowsing(user_prefs::UserPrefs::Get(
           content::BrowserContextFromJavaHandle(jhandle))));
 }
+
+DEFINE_JNI(SafetyCheckBridge)

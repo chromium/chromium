@@ -18,55 +18,52 @@
 
 namespace blink {
 
-class CORE_EXPORT StyleInheritedVariables
-    : public GarbageCollected<StyleInheritedVariables> {
+class CORE_EXPORT StyleInheritedVariables {
+  DISALLOW_NEW();
+
  public:
-  StyleInheritedVariables();
-  StyleInheritedVariables(StyleInheritedVariables& other);
+  StyleInheritedVariables() = default;
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(variables_);
-    visitor->Trace(root_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(variables_); }
 
-  bool operator==(const StyleInheritedVariables& other) const;
-  bool operator!=(const StyleInheritedVariables& other) const {
-    return !(*this == other);
+  bool operator==(const StyleInheritedVariables& other) const {
+    return variables_ == other.variables_;
   }
 
   void SetData(const AtomicString& name, CSSVariableData* value) {
     DCHECK(!value || !value->NeedsVariableResolution());
     variables_.SetData(name, value);
   }
-  StyleVariables::OptionalData GetData(const AtomicString&) const;
+  std::optional<CSSVariableData*> GetData(const AtomicString& name) const {
+    return variables_.GetData(name);
+  }
 
   void SetValue(const AtomicString& name, const CSSValue* value) {
     variables_.SetValue(name, value);
   }
-  StyleVariables::OptionalValue GetValue(const AtomicString&) const;
+  std::optional<const CSSValue*> GetValue(const AtomicString& name) const {
+    return variables_.GetValue(name);
+  }
 
   // Note that not all custom property names returned here necessarily have
   // valid values, due to cycles or references to invalid variables without
   // using a fallback.
-  void CollectNames(HashSet<AtomicString>&) const;
+  void CollectNames(HashSet<AtomicString>& names) const {
+    variables_.CollectNames(names);
+  }
 
-  const StyleVariables::DataMap& Data() const { return variables_.Data(); }
-  const StyleVariables::ValueMap& Values() const { return variables_.Values(); }
+  bool IsEmpty() const { return variables_.IsEmpty(); }
+  unsigned GetHash() const { return variables_.GetHash(); }
+
+  // For debugging/logging.
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const StyleInheritedVariables& variables) {
+    return stream << variables.variables_;
+  }
 
  private:
-  bool HasEquivalentRoots(const StyleInheritedVariables& other) const;
-
   StyleVariables variables_;
-  Member<StyleInheritedVariables> root_;
-
-  friend CORE_EXPORT std::ostream& operator<<(
-      std::ostream& stream,
-      const StyleInheritedVariables& variables);
 };
-
-// For debugging/logging.
-CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
-                                     const StyleInheritedVariables& variables);
 
 }  // namespace blink
 

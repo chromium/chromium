@@ -7,14 +7,12 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_page_archiver.h"
-#include "content/public/browser/mhtml_generation_result.h"
 
 namespace base {
 class FilePath;
@@ -70,7 +68,7 @@ class OfflinePageMHTMLArchiver : public OfflinePageArchiver {
                            const std::u16string& title,
                            const std::string& name_space,
                            base::Time mhtml_start_time,
-                           const content::MHTMLGenerationResult& result);
+                           int64_t file_size);
   void OnComputeDigestDone(const GURL& url,
                            const base::FilePath& file_path,
                            const std::u16string& title,

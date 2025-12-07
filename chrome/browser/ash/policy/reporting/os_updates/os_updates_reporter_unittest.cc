@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -23,6 +22,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -36,6 +36,18 @@ CHROMEOS_RELEASE_VERSION=11012.0.2018_08_28_1422
 )";
 
 namespace ash::reporting {
+
+class MockOsUpdateEventLogObserver
+    : public ::reporting::OsUpdatesReporter::OsUpdateEventBasedLogObserver {
+ public:
+  MockOsUpdateEventLogObserver() = default;
+  ~MockOsUpdateEventLogObserver() override = default;
+
+  MOCK_METHOD(void, OnOsUpdateFailed, (std::string upload_id), (override));
+};
+
+using MockOsUpdateEventLogObserverStrict =
+    testing::StrictMock<MockOsUpdateEventLogObserver>;
 
 struct OsUpdatesReporterTestCase {
   update_engine::Operation operation;
@@ -104,7 +116,7 @@ class TestHelper {
 class OsUpdatesReporterTest
     : public ::testing::TestWithParam<OsUpdatesReporterTestCase> {
  protected:
-  OsUpdatesReporterTest() {}
+  OsUpdatesReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
@@ -127,6 +139,13 @@ TEST_F(OsUpdatesReporterTest, ReportSuccessfulUpdatePolicyEnabled) {
       /*reporting_enabled=*/true);
   auto reporter = ::reporting::OsUpdatesReporter::CreateForTesting(
       std::move(reporter_helper));
+
+  // Observer should only be called for failed updates. For this test case, it
+  // shouldn't be called.
+  std::unique_ptr<MockOsUpdateEventLogObserverStrict> mock_observer =
+      std::make_unique<MockOsUpdateEventLogObserverStrict>();
+  EXPECT_CALL(*mock_observer, OnOsUpdateFailed(_)).Times(0);
+  reporter->AddObserver(mock_observer.get());
 
   // Build and send update status.
   update_engine::StatusResult status;
@@ -159,6 +178,13 @@ TEST_F(OsUpdatesReporterTest, ReportSuccessfulUpdatePolicyDisabled) {
   auto reporter = ::reporting::OsUpdatesReporter::CreateForTesting(
       std::move(reporter_helper));
 
+  // Observer should only be called for failed updates. For this test case, it
+  // shouldn't be called.
+  std::unique_ptr<MockOsUpdateEventLogObserverStrict> mock_observer =
+      std::make_unique<MockOsUpdateEventLogObserverStrict>();
+  EXPECT_CALL(*mock_observer, OnOsUpdateFailed(_)).Times(0);
+  reporter->AddObserver(mock_observer.get());
+
   // Build and send update status.
   update_engine::StatusResult status;
   status.set_new_version(kNewVersion);
@@ -185,6 +211,12 @@ TEST_P(OsUpdatesReporterTest, ReportFailedUpdateRollbackPolicyEnabled) {
       /*reporting_enabled=*/true);
   auto reporter = ::reporting::OsUpdatesReporter::CreateForTesting(
       std::move(reporter_helper));
+
+  // Observer should be called for an update failure.
+  std::unique_ptr<MockOsUpdateEventLogObserverStrict> mock_observer =
+      std::make_unique<MockOsUpdateEventLogObserverStrict>();
+  EXPECT_CALL(*mock_observer, OnOsUpdateFailed(_)).Times(1);
+  reporter->AddObserver(mock_observer.get());
 
   // Build and send update status.
   update_engine::StatusResult status;
@@ -222,6 +254,12 @@ TEST_P(OsUpdatesReporterTest, ReportFailedUpdateRollbackPolicyDisabled) {
   auto reporter = ::reporting::OsUpdatesReporter::CreateForTesting(
       std::move(reporter_helper));
 
+  // Observer won't be called when policy is disabled.
+  std::unique_ptr<MockOsUpdateEventLogObserverStrict> mock_observer =
+      std::make_unique<MockOsUpdateEventLogObserverStrict>();
+  EXPECT_CALL(*mock_observer, OnOsUpdateFailed(_)).Times(0);
+  reporter->AddObserver(mock_observer.get());
+
   // Build and send update status.
   update_engine::StatusResult status;
   status.set_new_version(kNewVersion);
@@ -248,7 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PowerwashTest : public ::testing::TestWithParam<bool> {
  protected:
-  PowerwashTest() {}
+  PowerwashTest() = default;
 
   void SetUp() override {
     test_helper_.Init();

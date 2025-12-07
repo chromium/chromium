@@ -18,7 +18,7 @@
 
 class OmniboxNavigationObserver {
  public:
-  virtual ~OmniboxNavigationObserver() {}
+  virtual ~OmniboxNavigationObserver() = default;
 
   // Returns true iff this observer has seen a pending load since its
   // creation.

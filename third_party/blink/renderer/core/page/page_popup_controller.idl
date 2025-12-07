@@ -35,7 +35,7 @@
     LegacyNoInterfaceObject,
     RuntimeEnabled=PagePopup
 ] interface PagePopupController {
-    void setValueAndClosePopup(long numberValue, DOMString stringValue);
+    void setValueAndClosePopup(long numberValue, DOMString stringValue, boolean is_keyboard_event);
     void setValue(DOMString value);
     void closePopup();
     DOMString localizeNumberString(DOMString numberString);

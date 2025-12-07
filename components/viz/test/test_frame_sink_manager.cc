@@ -19,4 +19,12 @@ void TestFrameSinkManagerImpl::BindReceiver(
   client_.Bind(std::move(client));
 }
 
+void TestFrameSinkManagerImpl::InvalidateFrameSinkId(
+    const FrameSinkId& frame_sink_id,
+    InvalidateFrameSinkIdCallback callback) {
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
 }  // namespace viz

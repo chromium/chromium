@@ -1,0 +1,20 @@
+Name: AndroidX Test Library
+Short Name: storage
+URL: https://dl.google.com/dl/android/maven2/androidx/test/services/storage/1.6.0/storage-1.6.0.aar
+Version: 1.6.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+The AndroidX Test Library provides an extensive framework for testing Android apps
+
+See also: https://developer.android.com/testing
+
+
+Local Modifications:
+No modifications.

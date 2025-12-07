@@ -9,11 +9,13 @@ import android.os.HandlerThread;
 import android.os.Looper;
 
 import org.chromium.base.task.TaskRunner;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Collection of helpers for testing the java PostTask. */
+@NullMarked
 public class SchedulerTestHelpers {
     public static void postRecordOrderTask(
             TaskRunner taskQueue, List<Integer> orderList, int order) {

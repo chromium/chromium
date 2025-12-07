@@ -22,18 +22,6 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
-    StructTraits<network::mojom::SiteIndexDataView,
-                 net::FirstPartySetEntry::SiteIndex> {
-  static uint32_t value(const net::FirstPartySetEntry::SiteIndex& i) {
-    return i.value();
-  }
-
-  static bool Read(network::mojom::SiteIndexDataView index,
-                   net::FirstPartySetEntry::SiteIndex* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     EnumTraits<network::mojom::SiteType, net::SiteType> {
   static network::mojom::SiteType ToMojom(net::SiteType site_type);
 
@@ -50,11 +38,6 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
 
   static net::SiteType site_type(const net::FirstPartySetEntry& e) {
     return e.site_type();
-  }
-
-  static const std::optional<net::FirstPartySetEntry::SiteIndex>& site_index(
-      const net::FirstPartySetEntry& e) {
-    return e.site_index();
   }
 
   static bool Read(network::mojom::FirstPartySetEntryDataView entry,
@@ -103,11 +86,6 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return sets.manual_config_;
   }
 
-  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-  manual_aliases(const net::GlobalFirstPartySets& sets) {
-    return sets.manual_aliases_;
-  }
-
   static bool Read(network::mojom::GlobalFirstPartySetsDataView sets,
                    net::GlobalFirstPartySets* out_sets);
 };
@@ -134,8 +112,12 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
   customizations(const net::FirstPartySetsContextConfig& config) {
     return config.customizations_;
   }
+  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases(
+      const net::FirstPartySetsContextConfig& config) {
+    return config.aliases_;
+  }
 
-  static bool Read(network::mojom::FirstPartySetsContextConfigDataView config,
+  static bool Read(network::mojom::FirstPartySetsContextConfigDataView view,
                    net::FirstPartySetsContextConfig* out_config);
 };
 

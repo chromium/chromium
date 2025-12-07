@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
+
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -12,8 +14,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
-#import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
-#include "chrome/browser/ui/views/frame/browser_frame_mac.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest_mac.h"
+#include "ui/gfx/native_ui_types.h"
 
 // A class that watches for invalidations of a window's touch bar by calls
 // to -setTouchBar:.
@@ -162,24 +164,28 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
 
   NSTouchBar* MakeTouchBar() {
     auto* delegate =
-        static_cast<NSObject<WindowTouchBarDelegate>*>(native_window());
+        static_cast<NSObject<WindowTouchBarDelegate>*>(ns_window());
     return [delegate makeTouchBar];
   }
 
-  NSWindow* native_window() const {
-    return browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  gfx::NativeWindow native_window() const {
+    return browser()->window()->GetNativeWindow();
   }
+
+  NSWindow* ns_window() const { return native_window().GetNativeNSWindow(); }
 
   BrowserWindowTouchBarController* browser_touch_bar_controller() const {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(native_window());
     EXPECT_TRUE(browser_view);
-    if (!browser_view)
+    if (!browser_view) {
       return nil;
+    }
 
-    BrowserFrameMac* browser_frame = static_cast<BrowserFrameMac*>(
-        browser_view->frame()->native_browser_frame());
-    return browser_frame->GetTouchBarController();
+    BrowserNativeWidgetMac* native_widget =
+        static_cast<BrowserNativeWidgetMac*>(
+            browser_view->browser_widget()->browser_native_widget());
+    return native_widget->GetTouchBarController();
   }
 };
 
@@ -192,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, TabChanges) {
   MakeTouchBar();
   EXPECT_TRUE(browser_touch_bar_controller());
 
-  auto* current_touch_bar = [native_window() touchBar];
+  auto* current_touch_bar = [ns_window() touchBar];
   EXPECT_TRUE(current_touch_bar);
 
   // Insert a new tab in the foreground. The window should invalidate its
@@ -206,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, TabChanges) {
   EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
 
   // Update the touch bar.
-  [native_window() touchBar];
+  [ns_window() touchBar];
 
   // Activating the original tab should invalidate the touch bar.
   [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
@@ -227,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, PageReload) {
   EXPECT_TRUE(browser_touch_bar_controller());
 
   // Make sure the touch bar exists for the window.
-  auto* current_touch_bar = [native_window() touchBar];
+  auto* current_touch_bar = [ns_window() touchBar];
   EXPECT_TRUE(current_touch_bar);
 
   // We can't just ask the BrowserWindowDefaultTouchBar for the value of the
@@ -252,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   EXPECT_TRUE(browser_touch_bar_controller());
 
   // Make sure the touch bar exists for the window.
-  auto* current_touch_bar = [native_window() touchBar];
+  auto* current_touch_bar = [ns_window() touchBar];
   EXPECT_TRUE(current_touch_bar);
   BrowserWindowDefaultTouchBar* touch_bar_delegate =
       base::apple::ObjCCastStrict<BrowserWindowDefaultTouchBar>(
@@ -278,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   MakeTouchBar();
 
   // Force the window to create the touch bar.
-  [native_window() touchBar];
+  [ns_window() touchBar];
   NSString* orig_search_button_title =
       [[[browser_touch_bar_controller() defaultTouchBar] searchButton] title];
   EXPECT_TRUE(orig_search_button_title);
@@ -299,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   // That's expensive (view creation, autolayout, etc.). Instead we now retain
   // the original touch bar and expect touch bar invalidation to force an
   // update of the search item.
-  [native_window() touchBar];
+  [ns_window() touchBar];
   EXPECT_FALSE([orig_search_button_title
       isEqualToString:[[[browser_touch_bar_controller() defaultTouchBar]
                           searchButton] title]]);

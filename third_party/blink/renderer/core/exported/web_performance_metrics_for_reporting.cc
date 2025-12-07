@@ -56,8 +56,7 @@ WebNavigationType WebPerformanceMetricsForReporting::GetNavigationType() const {
     case PerformanceNavigation::kTypeReserved:
       return kWebNavigationTypeOther;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kWebNavigationTypeOther;
+  NOTREACHED();
 }
 
 double WebPerformanceMetricsForReporting::NavigationStart() const {
@@ -75,7 +74,7 @@ WebPerformanceMetricsForReporting::BackForwardCacheRestore() const {
       restore_timings =
           private_->timingForReporting()->BackForwardCacheRestore();
 
-  WebVector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
+  std::vector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
   for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     timings[i].navigation_start =
         base::Milliseconds(restore_timings[i].navigation_start).InSecondsF();
@@ -114,6 +113,10 @@ double WebPerformanceMetricsForReporting::ConnectStart() const {
   return base::Milliseconds(private_->timing()->connectStart()).InSecondsF();
 }
 
+double WebPerformanceMetricsForReporting::ConnectEnd() const {
+  return base::Milliseconds(private_->timing()->connectEnd()).InSecondsF();
+}
+
 double WebPerformanceMetricsForReporting::DomContentLoadedEventStart() const {
   return base::Milliseconds(private_->timing()->domContentLoadedEventStart())
       .InSecondsF();
@@ -138,14 +141,19 @@ double WebPerformanceMetricsForReporting::FirstPaint() const {
       .InSecondsF();
 }
 
+base::TimeTicks WebPerformanceMetricsForReporting::FirstPaintAsMonotonicTime()
+    const {
+  return private_->timingForReporting()->FirstPaintAsMonotonicTimeForMetrics();
+}
+
 double WebPerformanceMetricsForReporting::FirstImagePaint() const {
   return base::Milliseconds(private_->timingForReporting()->FirstImagePaint())
       .InSecondsF();
 }
 
 double WebPerformanceMetricsForReporting::FirstContentfulPaint() const {
-  return base::Milliseconds(private_->timingForReporting()
-                                ->FirstContentfulPaintIgnoringSoftNavigations())
+  return base::Milliseconds(
+             private_->timingForReporting()->FirstContentfulPaint())
       .InSecondsF();
 }
 

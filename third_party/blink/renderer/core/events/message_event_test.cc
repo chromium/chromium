@@ -29,28 +29,28 @@ TEST_F(MessageEventTest, AccountForStringMemory) {
 
   // We are only interested in a string of size |string_size|. The content is
   // irrelevant.
-  UChar* tmp;
-  WTF::String data =
-      WTF::String::CreateUninitialized(static_cast<unsigned>(string_size), tmp);
+  base::span<UChar> tmp;
+  String data =
+      String::CreateUninitialized(static_cast<unsigned>(string_size), tmp);
 
   // We read the |AmountOfExternalAllocatedMemory| before and after allocating
   // the |MessageEvent|. The difference has to be at least the string size.
   // Afterwards we trigger a blocking GC to deallocated the |MessageEvent|
   // again. After that the |AmountOfExternalAllocatedMemory| should be reduced
   // by at least the string size again.
-  int64_t initial =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t initial = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   MessageEvent::Create(data);
 
-  int64_t size_with_event =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_with_event = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(initial + string_size, size_with_event);
 
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
-  int64_t size_after_gc =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_after_gc = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(size_after_gc + string_size, size_with_event);
 
   scope.GetIsolate()->Exit();
@@ -82,21 +82,23 @@ TEST_F(MessageEventTest, AccountForArrayBufferMemory) {
   // Afterwards we trigger a blocking GC to deallocated the |MessageEvent|
   // again. After that the |AmountOfExternalAllocatedMemory| should be reduced
   // by at least the buffer size again.
-  int64_t initial =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t initial = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
 
-  MessagePortArray* ports = MakeGarbageCollected<MessagePortArray>(0);
-  MessageEvent::Create(ports, serialized_script_value);
+  GCedMessagePortArray* ports = MakeGarbageCollected<GCedMessagePortArray>(0);
+  MessageEvent::Create(ports, serialized_script_value, /* origin=*/nullptr,
+                       MessageEvent::kMessageIsSameOrigin,
+                       /* last_event_id=*/{}, /* source=*/nullptr);
 
-  int64_t size_with_event =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_with_event = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(initial + buffer_size, size_with_event);
 
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
-  int64_t size_after_gc =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_after_gc = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(size_after_gc + buffer_size, size_with_event);
 
   scope.GetIsolate()->Exit();

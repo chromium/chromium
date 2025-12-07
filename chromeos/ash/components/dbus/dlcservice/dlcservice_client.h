@@ -123,6 +123,11 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
   // Removes an observer from observers list.
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Waits for the dlcservice daemon to be available and invokes the
+  // callback with the result.
+  virtual void WaitForServiceToBeAvailable(
+      base::OnceCallback<void(bool)> callback) = 0;
+
   // Creates and initializes the global instance. `bus` must not be nullptr.
   static void Initialize(dbus::Bus* bus);
 

@@ -15,7 +15,8 @@ enum TabLaunchTypeAtCreation:int {
     // FlatBufferTabStateSerializer. An alternative is to set SIZE to a large
     // value but this is not possible as the enum values need to be sequential.
     SIZE = -2,
-    // UNKNOWN indicates the TabLaunchType is null/not known.
+    // Deprecated: UNKNOWN indicated the TabLaunchType was null/not known.
+    // Moving forward use UNSET instead.
     UNKNOWN = -1,
     FROM_LINK = 0,
     FROM_EXTERNAL_APP = 1,
@@ -43,6 +44,15 @@ enum TabLaunchTypeAtCreation:int {
     UNSET = 22,
     FROM_SYNC_BACKGROUND = 23,
     FROM_RECENT_TABS_FOREGROUND = 24,
+    FROM_COLLABORATION_BACKGROUND_IN_GROUP = 25,
+    FROM_BOOKMARK_BAR_BACKGROUND = 26,
+    FROM_REPARENTING_BACKGROUND = 27,
+    FROM_HISTORY_NAVIGATION_BACKGROUND = 28,
+    FROM_HISTORY_NAVIGATION_FOREGROUND = 29,
+    FROM_LONGPRESS_FOREGROUND_IN_GROUP = 30,
+    FROM_TAB_LIST_INTERFACE = 31,
+    FROM_LINK_CREATING_NEW_WINDOW = 32,
+    FROM_TIPS_NOTIFICATIONS = 33,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

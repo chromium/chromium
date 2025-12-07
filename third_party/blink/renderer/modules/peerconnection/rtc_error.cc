@@ -12,30 +12,28 @@ namespace blink {
 
 namespace {
 
-String RTCErrorDetailToString(webrtc::RTCErrorDetailType detail) {
+V8RTCErrorDetailType::Enum RTCErrorDetailToEnum(
+    webrtc::RTCErrorDetailType detail) {
   switch (detail) {
     case webrtc::RTCErrorDetailType::NONE:
-      // This should not happen, it indicates an error in webrtc
-      LOG(ERROR) << "RTCError: RTCErrorDetail is NONE";
-      return "";
+      return V8RTCErrorDetailType::Enum::kNoInfo;
     case webrtc::RTCErrorDetailType::DATA_CHANNEL_FAILURE:
-      return "data-channel-failure";
+      return V8RTCErrorDetailType::Enum::kDataChannelFailure;
     case webrtc::RTCErrorDetailType::DTLS_FAILURE:
-      return "dtls-failure";
+      return V8RTCErrorDetailType::Enum::kDtlsFailure;
     case webrtc::RTCErrorDetailType::FINGERPRINT_FAILURE:
-      return "fingerprint-failure";
+      return V8RTCErrorDetailType::Enum::kFingerprintFailure;
     case webrtc::RTCErrorDetailType::SCTP_FAILURE:
-      return "sctp-failure";
+      return V8RTCErrorDetailType::Enum::kSctpFailure;
     case webrtc::RTCErrorDetailType::SDP_SYNTAX_ERROR:
-      return "sdp-syntax-error";
+      return V8RTCErrorDetailType::Enum::kSdpSyntaxError;
     case webrtc::RTCErrorDetailType::HARDWARE_ENCODER_NOT_AVAILABLE:
-      return "hardware-encoder-not-available";
+      return V8RTCErrorDetailType::Enum::kHardwareEncoderNotAvailable;
     case webrtc::RTCErrorDetailType::HARDWARE_ENCODER_ERROR:
-      return "hardware-encoder-error";
+      return V8RTCErrorDetailType::Enum::kHardwareEncoderError;
     default:
       // Included to ease introduction of new errors at the webrtc layer.
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -47,7 +45,7 @@ RTCError* RTCError::Create(const RTCErrorInit* init, String message) {
 
 RTCError::RTCError(const RTCErrorInit* init, String message)
     : DOMException(DOMExceptionCode::kOperationError, std::move(message)),
-      error_detail_(init->errorDetail()),
+      error_detail_(init->errorDetail().AsEnum()),
       sdp_line_number_(init->hasSdpLineNumber()
                            ? std::optional<int32_t>(init->sdpLineNumber())
                            : std::nullopt),
@@ -67,13 +65,13 @@ RTCError::RTCError(const RTCErrorInit* init, String message)
 
 RTCError::RTCError(webrtc::RTCError err)
     : DOMException(DOMExceptionCode::kOperationError, err.message()),
-      error_detail_(RTCErrorDetailToString(err.error_detail())),
+      error_detail_(RTCErrorDetailToEnum(err.error_detail())),
       sctp_cause_code_(err.sctp_cause_code()
                            ? std::optional<int32_t>(*err.sctp_cause_code())
                            : std::nullopt) {}
 
-const String& RTCError::errorDetail() const {
-  return error_detail_;
+V8RTCErrorDetailType RTCError::errorDetail() const {
+  return V8RTCErrorDetailType(error_detail_);
 }
 
 }  // namespace blink

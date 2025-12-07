@@ -200,6 +200,7 @@ def main():
         'target_os="android"',
         'treat_warnings_as_errors=false',
         'is_component_build=false',
+        'enable_chrome_android_internal=false',
         'is_cronet_build = true',
     ]
     built_targets = build_all_lint_targets(out_dir,

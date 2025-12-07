@@ -32,7 +32,9 @@ UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;
 
 UnsafeResource::~UnsafeResource() = default;
 
-bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck() const {
+// static
+bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
+    safe_browsing::SBThreatType threat_type) {
   using enum safe_browsing::SBThreatType;
   switch (threat_type) {
     // Client-side phishing detection interstitials never block the main
@@ -77,7 +79,11 @@ void UnsafeResource::DispatchCallback(
   DCHECK(callback_sequence);
   UrlCheckResult result(proceed, showed_interstitial,
                         has_post_commit_interstitial_skipped);
-  callback_sequence->PostTask(from_here, base::BindOnce(callback, result));
+  if (callback_sequence->RunsTasksInCurrentSequence()) {
+    callback.Run(result);
+  } else {
+    callback_sequence->PostTask(from_here, base::BindOnce(callback, result));
+  }
 }
 
 }  // namespace security_interstitials

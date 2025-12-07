@@ -1,0 +1,9 @@
+This is a wdspec test.
+[ERROR] test_websocket_disconnected
+  In-test skip decorators are disallowed, please use WPT metadata to ignore tests.
+[ERROR] test_service_worker_fetch
+  In-test skip decorators are disallowed, please use WPT metadata to ignore tests.
+[ERROR] test_service_worker_websocket_disconnected
+  In-test skip decorators are disallowed, please use WPT metadata to ignore tests.
+Harness: the test ran to completion.
+

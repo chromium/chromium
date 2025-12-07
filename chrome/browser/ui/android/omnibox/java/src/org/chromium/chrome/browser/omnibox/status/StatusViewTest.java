@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +31,18 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -45,10 +53,10 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
@@ -56,29 +64,38 @@ import java.util.concurrent.ExecutionException;
 /** Tests for {@link StatusView} and {@link StatusViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class StatusViewTest extends BlankUiTestActivityTestCase {
+public class StatusViewTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
     private PropertyModelChangeProcessor mStatusMCP;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.initMocks(this);
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() {
         runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup view = new LinearLayout(getActivity());
+                    ViewGroup view = new LinearLayout(sActivity);
 
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.MATCH_PARENT);
 
-                    getActivity().setContentView(view, params);
+                    sActivity.setContentView(view, params);
 
                     mStatusView =
-                            getActivity()
+                            sActivity
                                     .getLayoutInflater()
                                     .inflate(R.layout.location_status, view, true)
                                     .findViewById(R.id.location_bar_status);
@@ -90,10 +107,9 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mStatusMCP::destroy);
-        super.tearDownTest();
     }
 
     @Test
@@ -169,7 +185,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Omnibox"})
     public void statusView_goneWhenIncognitoBadgeVisible() {
         // Set location_bar_status_icon is VISIBLE in the beginning.
@@ -179,7 +195,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                             StatusProperties.STATUS_ICON_RESOURCE,
                             new StatusIconResource(R.drawable.ic_search, 0));
                 });
-        onView(withId(R.id.location_bar_status_icon_frame))
+        onView(withId(R.id.location_bar_status_icon))
                 .check(
                         (view, e) -> {
                             assertEquals(View.VISIBLE, view.getVisibility());
@@ -200,7 +216,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                 () -> {
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
                 });
-        onView(withId(R.id.location_bar_status_icon_frame))
+        onView(withId(R.id.location_bar_status_icon))
                 .check(
                         (view, e) -> {
                             assertEquals(View.GONE, view.getVisibility());
@@ -209,7 +225,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Omnibox"})
     public void testSearchEngineLogo_incognito_noMarginEnd() {
         // Set incognito badge visible.
@@ -269,7 +285,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(
                 () -> mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconResource));
 
-        onView(withId(R.id.location_bar_status_icon_frame))
+        onView(withId(R.id.location_bar_status_icon))
                 .check(
                         (view, e) -> {
                             assertEquals(View.VISIBLE, view.getVisibility());
@@ -343,6 +359,34 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                             (ChromeTransitionDrawable)
                                     ((ImageView) mStatusView.getSecurityView()).getDrawable();
                     assertTrue(nextTransitionDrawable.getAnimatorForTesting().isStarted());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testShowStatusViewToggleVisibility()
+            throws ExecutionException, InterruptedException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, true);
+                    assertEquals(View.VISIBLE, mStatusView.getVisibility());
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, false);
+                    assertEquals(View.GONE, mStatusView.getVisibility());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testShowStatusViewNotAffectedByShowIconView()
+            throws ExecutionException, InterruptedException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, false);
+                    assertEquals(View.GONE, mStatusView.getVisibility());
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+                    assertEquals(View.GONE, mStatusView.getVisibility());
                 });
     }
 }
